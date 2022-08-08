@@ -1,91 +1,63 @@
-Content-Type: multipart/mixed; boundary="===============9158152065147387156=="
+Content-Type: multipart/mixed; boundary="===============0658183333762178761=="
 MIME-Version: 1.0
 From: Sakari Ailus <sakari.ailus@linux.intel.com>
 To: lkp@lists.01.org
-Subject: Re: [ACPI] 1d52f10917: BUG:KASAN:use-after-free_in_strlen
-Date: Mon, 08 Aug 2022 20:53:30 +0000
-Message-ID: <YvF3ynw8CmisQAR6@paasikivi.fi.intel.com>
-In-Reply-To: <57f48ba3-d01c-f3d8-8e33-65d3cd9a349e@intel.com>
+Subject: [PATCH 1/1] ACPI: property: Fix error handling in acpi_init_properties()
+Date: Tue, 09 Aug 2022 00:12:13 +0300
+Message-ID: <20220808211213.1055148-1-sakari.ailus@linux.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============9158152065147387156==
+--===============0658183333762178761==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+buf.pointer, memory for storing _DSD data and nodes, was released if either
+parsing properties or, as recently added, attaching data node tags failed.
+Alas, properties were still left pointing to this memory if parsing
+properties were successful but attaching data node tags failed.
+
+Fix this by separating error handling for the two, and leaving properties
+intact if data nodes cannot be tagged for a reason or another.
+
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Fixes: 1d52f10917a7 ("ACPI: property: Tie data nodes to acpi handles")
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+---
 Hi Rafael,
 
-On Mon, Aug 08, 2022 at 06:54:49PM +0200, Rafael J. Wysocki wrote:
-> Hi Sakari,
-> =
+This should fix the immediate problem. It needs to be figured out why data
+node tagging doesn't work sometimes but that can wait.
 
-> On 8/7/2022 2:45 PM, kernel test robot wrote:
-> > =
+ drivers/acpi/property.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-> > Greeting,
-> > =
+diff --git a/drivers/acpi/property.c b/drivers/acpi/property.c
+index 9711482014a6..201a5a9b2671 100644
+--- a/drivers/acpi/property.c
++++ b/drivers/acpi/property.c
+@@ -566,13 +566,13 @@ void acpi_init_properties(struct acpi_device *adev)
+ 					&adev->data, acpi_fwnode_handle(adev)))
+ 		adev->data.pointer =3D buf.pointer;
+ =
 
-> > FYI, we noticed the following commit (built with gcc-11):
-> > =
-
-> > commit: 1d52f10917a751f90e269a0ed9b6cca60dbe0300 ("ACPI: property: Tie =
-data nodes to acpi handles")
-> > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
-> > =
-
-> > in testcase: xsave-test
-> > version: xsave-test-x86_64-c2e44fa-1_20220609
-> > with following parameters:
-> > =
-
-> > 	ucode: 0xec
-> > =
-
-> > =
-
-> > =
-
-> > on test machine: 12 threads 1 sockets Intel(R) Core(TM) i7-8700 CPU @ 3=
-.20GHz with 16G memory
-> > =
-
-> > caused below changes (please refer to attached dmesg/kmsg for entire lo=
-g/backtrace):
-> > =
-
-> > =
-
-> > =
-
-> > If you fix the issue, kindly add following tag
-> > Reported-by: kernel test robot <oliver.sang@intel.com>
-> =
-
-> The crash below occurs right after a "Can't tag data node" message from
-> acpi_tie_nondev_subnodes() and I'm really unsure why acpi_attach_data() h=
-as
-> failed here, because none of the arguments is NULL.
-> =
-
-> Can you have a look at this, please?
-
-Thanks for forwarding this to me.
-
-Faulty error handling code appears to be the direct cause for the crash. It
-releases buf.pointer which was still being used by the properties --- even
-if tagging data nodes failed (for whatever reason).
-
-It'd be cool if someone could send me DSDT/SSDT from this machine. I wonder
-if there's a data node that is referred to from more than one location, and
-whether that could lead to two references to the same acpi_handle. I'd hope
-this could be disallowed in DSD Guide.
-
-I'll send a patch soon.
-
+-	if (!adev->data.pointer ||
+-	    !acpi_tie_nondev_subnodes(&adev->data)) {
+-		acpi_untie_nondev_subnodes(&adev->data);
++	if (!adev->data.pointer) {
+ 		acpi_handle_debug(adev->handle, "Invalid _DSD data, skipping\n");
+ 		ACPI_FREE(buf.pointer);
++	} else {
++		if (!acpi_tie_nondev_subnodes(&adev->data))
++			acpi_untie_nondev_subnodes(&adev->data);
+ 	}
+-
+  out:
+ 	if (acpi_of && !adev->flags.of_compatible_ok)
+ 		acpi_handle_info(adev->handle,
 -- =
 
-Kind regards,
+2.30.2
 
-Sakari Ailus
---===============9158152065147387156==--
+--===============0658183333762178761==--
 
