@@ -1,98 +1,201 @@
-Content-Type: multipart/mixed; boundary="===============7050343567535215414=="
+Content-Type: multipart/mixed; boundary="===============8774406912037042561=="
 MIME-Version: 1.0
-From: Feng Tang <feng.tang@intel.com>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 To: lkp@lists.01.org
-Subject: Re: [mm/slub] 3616799128: BUG_kmalloc-#(Not_tainted):kmalloc_Redzone_overwritten
-Date: Thu, 04 Aug 2022 20:22:31 +0800
-Message-ID: <Yuu6B0vUuXvtEG8b@feng-clx>
-In-Reply-To: <CACT4Y+Zzzj7+LwUwyMoBketXFBHRksnx148B1aLATZ48AU9o3w@mail.gmail.com>
+Subject: Re: [ata] 0568e61225: stress-ng.copy-file.ops_per_sec -15.0% regression
+Date: Mon, 08 Aug 2022 07:52:17 -0700
+Message-ID: <1f498d4a-f93f-ceb4-b713-753196e5e08d@opensource.wdc.com>
+In-Reply-To: <YuzPMMnnY739Tnit@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7050343567535215414==
+--===============8774406912037042561==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Aug 04, 2022 at 06:47:58PM +0800, Dmitry Vyukov wrote:
->  On Thu, 4 Aug 2022 at 08:29, Feng Tang <feng.tang@intel.com> wrote:
-[...]
-> >
-> > ---8<---
-> > From c4fc739ea4d5222f0aba4b42b59668d64a010082 Mon Sep 17 00:00:00 2001
-> > From: Feng Tang <feng.tang@intel.com>
-> > Date: Thu, 4 Aug 2022 13:25:35 +0800
-> > Subject: [PATCH] mm: kasan: Add free_meta size info in struct kasan_cac=
-he
-> >
-> > When kasan is enabled for slab/slub, it may save kasan' free_meta
-> > data in the former part of slab object data area in slab object
-> > free path, which works fine.
-> >
-> > There is ongoing effort to extend slub's debug function which will
-> > redzone the latter part of kmalloc object area, and when both of
-> > the debug are enabled, there is possible conflict, especially when
-> > the kmalloc object has small size, as caught by 0Day bot [1]
-> >
-> > For better information for slab/slub, add free_meta's data size
-> > info 'kasan_cache', so that its users can take right action to
-> > avoid data conflict.
-> >
-> > [1]. https://lore.kernel.org/lkml/YuYm3dWwpZwH58Hu(a)xsang-OptiPlex-902=
-0/
-> > Reported-by: kernel test robot <oliver.sang@intel.com>
-> > Signed-off-by: Feng Tang <feng.tang@intel.com>
+On 2022/08/05 1:05, kernel test robot wrote:
 > =
 
-> Acked-by: Dmitry Vyukov <dvyukov@google.com>
- =
+> =
 
-Thanks for your suggestion and review!
+> Greeting,
+> =
 
-> I assume there will be a second patch that uses
-> free_meta_size_in_object  in slub debug code.
- =
+> FYI, we noticed a -15.0% regression of stress-ng.copy-file.ops_per_sec du=
+e to commit:
+> =
 
-Yes, it will be called in the slub kmalloc object redzone debug code.
+> =
 
-Thanks,
-Feng
+> commit: 0568e6122574dcc1aded2979cd0245038efe22b6 ("ata: libata-scsi: cap =
+ata_device->max_sectors according to shost->max_sectors")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+> =
 
-> > ---
-> >  include/linux/kasan.h | 2 ++
-> >  mm/kasan/common.c     | 2 ++
-> >  2 files changed, 4 insertions(+)
-> >
-> > diff --git a/include/linux/kasan.h b/include/linux/kasan.h
-> > index b092277bf48d..293bdaa0ba09 100644
-> > --- a/include/linux/kasan.h
-> > +++ b/include/linux/kasan.h
-> > @@ -100,6 +100,8 @@ static inline bool kasan_has_integrated_init(void)
-> >  struct kasan_cache {
-> >         int alloc_meta_offset;
-> >         int free_meta_offset;
-> > +       /* size of free_meta data saved in object's data area */
-> > +       int free_meta_size_in_object;
-> >         bool is_kmalloc;
-> >  };
-> >
-> > diff --git a/mm/kasan/common.c b/mm/kasan/common.c
-> > index 78be2beb7453..a627efa267d1 100644
-> > --- a/mm/kasan/common.c
-> > +++ b/mm/kasan/common.c
-> > @@ -201,6 +201,8 @@ void __kasan_cache_create(struct kmem_cache *cache,=
- unsigned int *size,
-> >                         cache->kasan_info.free_meta_offset =3D KASAN_NO=
-_FREE_META;
-> >                         *size =3D ok_size;
-> >                 }
-> > +       } else {
-> > +               cache->kasan_info.free_meta_size_in_object =3D sizeof(s=
-truct kasan_free_meta);
-> >         }
-> >
-> >         /* Calculate size with optimal redzone. */
-> > --
-> > 2.27.0
->=20
---===============7050343567535215414==--
+> in testcase: stress-ng
+> on test machine: 96 threads 2 sockets Ice Lake with 256G memory
+> with following parameters:
+> =
+
+> 	nr_threads: 10%
+> 	disk: 1HDD
+> 	testtime: 60s
+> 	fs: f2fs
+> 	class: filesystem
+> 	test: copy-file
+> 	cpufreq_governor: performance
+> 	ucode: 0xb000280
+
+Without knowing what the device adapter is, hard to say where the problem i=
+s. I
+suspect that with the patch applied, we may be ending up with a small defau=
+lt
+max_sectors value, causing overhead due to more commands than necessary.
+
+Will check what I see with my test rig.
+
+> =
+
+> =
+
+> =
+
+> =
+
+> If you fix the issue, kindly add following tag
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> =
+
+> =
+
+> Details are as below:
+> -------------------------------------------------------------------------=
+------------------------->
+> =
+
+> =
+
+> To reproduce:
+> =
+
+>         git clone https://github.com/intel/lkp-tests.git
+>         cd lkp-tests
+>         sudo bin/lkp install job.yaml           # job file is attached in=
+ this email
+>         bin/lkp split-job --compatible job.yaml # generate the yaml file =
+for lkp run
+>         sudo bin/lkp run generated-yaml-file
+> =
+
+>         # if come across any failure that blocks the test,
+>         # please remove ~/.lkp and /lkp dir to run from a clean state.
+> =
+
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> class/compiler/cpufreq_governor/disk/fs/kconfig/nr_threads/rootfs/tbox_gr=
+oup/test/testcase/testtime/ucode:
+>   filesystem/gcc-11/performance/1HDD/f2fs/x86_64-rhel-8.3/10%/debian-11.1=
+-x86_64-20220510.cgz/lkp-icl-2sp1/copy-file/stress-ng/60s/0xb000280
+> =
+
+> commit: =
+
+>   4cbfca5f77 ("scsi: scsi_transport_sas: cap shost opt_sectors according =
+to DMA optimal limit")
+>   0568e61225 ("ata: libata-scsi: cap ata_device->max_sectors according to=
+ shost->max_sectors")
+> =
+
+> 4cbfca5f7750520f 0568e6122574dcc1aded2979cd0 =
+
+> ---------------- --------------------------- =
+
+>          %stddev     %change         %stddev
+>              \          |                \  =
+
+>       1627           -14.9%       1385        stress-ng.copy-file.ops
+>      27.01           -15.0%      22.96        stress-ng.copy-file.ops_per=
+_sec
+>    8935079           -11.9%    7870629        stress-ng.time.file_system_=
+outputs
+>      14.88 =C2=B1  5%     -31.8%      10.14 =C2=B1  3%  stress-ng.time.pe=
+rcent_of_cpu_this_job_got
+>      50912           -14.7%      43413        vmstat.io.bo
+>      93.78            +1.4%      95.10        iostat.cpu.idle
+>       3.89           -31.6%       2.66        iostat.cpu.iowait
+>       4.01            -1.3        2.74        mpstat.cpu.all.iowait%
+>       0.23 =C2=B1  9%      -0.1        0.17 =C2=B1 11%  mpstat.cpu.all.sy=
+s%
+>       1.66 =C2=B1 37%      -1.2        0.51 =C2=B1 55%  perf-profile.call=
+trace.cycles-pp.f2fs_write_end.generic_perform_write.f2fs_buffered_write_it=
+er.f2fs_file_write_iter.do_iter_readv_writev
+>       1.66 =C2=B1 37%      -1.1        0.59 =C2=B1 25%  perf-profile.chil=
+dren.cycles-pp.f2fs_write_end
+>       1.51 =C2=B1 40%      -1.1        0.45 =C2=B1 26%  perf-profile.chil=
+dren.cycles-pp.f2fs_dirty_data_folio
+>       1.21 =C2=B1 49%      -1.0        0.23 =C2=B1 33%  perf-profile.chil=
+dren.cycles-pp.f2fs_update_dirty_folio
+>       0.88 =C2=B1 56%      -0.8        0.04 =C2=B1111%  perf-profile.chil=
+dren.cycles-pp.native_queued_spin_lock_slowpath
+>       0.14 =C2=B1 26%      +0.1        0.25 =C2=B1 28%  perf-profile.chil=
+dren.cycles-pp.page_cache_ra_unbounded
+>       0.88 =C2=B1 56%      -0.8        0.04 =C2=B1112%  perf-profile.self=
+.cycles-pp.native_queued_spin_lock_slowpath
+>    3164876 =C2=B1  9%     -20.2%    2524713 =C2=B1  7%  perf-stat.i.cache=
+-misses
+>  4.087e+08            -4.6%  3.899e+08        perf-stat.i.dTLB-loads
+>     313050 =C2=B1 10%     -18.4%     255410 =C2=B1  6%  perf-stat.i.node-=
+loads
+>     972573 =C2=B1  9%     -16.4%     812873 =C2=B1  6%  perf-stat.i.node-=
+stores
+>    3114748 =C2=B1  9%     -20.2%    2484807 =C2=B1  7%  perf-stat.ps.cach=
+e-misses
+>  4.022e+08            -4.6%  3.837e+08        perf-stat.ps.dTLB-loads
+>     308178 =C2=B1 10%     -18.4%     251418 =C2=B1  6%  perf-stat.ps.node=
+-loads
+>     956996 =C2=B1  9%     -16.4%     799948 =C2=B1  6%  perf-stat.ps.node=
+-stores
+>     358486            -8.3%     328694        proc-vmstat.nr_active_file
+>    1121620           -11.9%     987816        proc-vmstat.nr_dirtied
+>     179906            -6.7%     167912        proc-vmstat.nr_dirty
+>    1151201            -1.7%    1131322        proc-vmstat.nr_file_pages
+>     100181            +9.9%     110078 =C2=B1  2%  proc-vmstat.nr_inactiv=
+e_file
+>     846362           -14.6%     722471        proc-vmstat.nr_written
+>     358486            -8.3%     328694        proc-vmstat.nr_zone_active_=
+file
+>     100181            +9.9%     110078 =C2=B1  2%  proc-vmstat.nr_zone_in=
+active_file
+>     180668            -6.8%     168456        proc-vmstat.nr_zone_write_p=
+ending
+>     556469            -3.5%     536985        proc-vmstat.pgactivate
+>    3385454           -14.6%    2889953        proc-vmstat.pgpgout
+> =
+
+> =
+
+> =
+
+> =
+
+> Disclaimer:
+> Results have been estimated based on internal Intel analysis and are prov=
+ided
+> for informational purposes only. Any difference in system hardware or sof=
+tware
+> design or configuration may affect actual performance.
+> =
+
+> =
+
+
+
+-- =
+
+Damien Le Moal
+Western Digital Research
+--===============8774406912037042561==--
 
