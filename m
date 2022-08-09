@@ -1,90 +1,50 @@
-Content-Type: multipart/mixed; boundary="===============7349954670289452096=="
+Content-Type: multipart/mixed; boundary="===============4437029128400470577=="
 MIME-Version: 1.0
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: David Laight <David.Laight@ACULAB.COM>
 To: lkp@lists.01.org
 Subject: Re: [ata] 0568e61225: stress-ng.copy-file.ops_per_sec -15.0% regression
-Date: Tue, 09 Aug 2022 07:57:51 -0700
-Message-ID: <ef84d2dd-84ea-e1c7-05ef-f0a082d4f7d0@opensource.wdc.com>
-In-Reply-To: <16f03f81-a8c7-bacf-c74c-67231f7f7202@huawei.com>
+Date: Tue, 09 Aug 2022 15:16:26 +0000
+Message-ID: <c4b45c0e06af473abe17e3471e1bb948@AcuMS.aculab.com>
+In-Reply-To: <e4106ffa-3842-45c0-9756-5226cfcfa17d@opensource.wdc.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7349954670289452096==
+--===============4437029128400470577==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 2022/08/09 7:16, John Garry wrote:
-> On 09/08/2022 10:58, John Garry wrote:
->>>>
->>>> commit: 0568e6122574dcc1aded2979cd0245038efe22b6 ("ata: libata-scsi: =
-
->>>> cap ata_device->max_sectors according to shost->max_sectors")
->>>> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
->>>>
->>>> in testcase: stress-ng
->>>> on test machine: 96 threads 2 sockets Ice Lake with 256G memory
->>>> with following parameters:
->>>>
->>>> =C2=A0=C2=A0=C2=A0=C2=A0nr_threads: 10%
->>>> =C2=A0=C2=A0=C2=A0=C2=A0disk: 1HDD
->>>> =C2=A0=C2=A0=C2=A0=C2=A0testtime: 60s
->>>> =C2=A0=C2=A0=C2=A0=C2=A0fs: f2fs
->>>> =C2=A0=C2=A0=C2=A0=C2=A0class: filesystem
->>>> =C2=A0=C2=A0=C2=A0=C2=A0test: copy-file
->>>> =C2=A0=C2=A0=C2=A0=C2=A0cpufreq_governor: performance
->>>> =C2=A0=C2=A0=C2=A0=C2=A0ucode: 0xb000280
->>>
->>> Without knowing what the device adapter is, hard to say where the =
-
->>> problem is. I
->>> suspect that with the patch applied, we may be ending up with a small =
-
->>> default
->>> max_sectors value, causing overhead due to more commands than necessary.
->>>
->>> Will check what I see with my test rig.
->>
->> As far as I can see, this patch should not make a difference unless the =
-
->> ATA shost driver is setting the max_sectors value unnecessarily low.
+...
+> >> Without knowing what the device adapter is, hard to say where the prob=
+lem is. I
+> >> suspect that with the patch applied, we may be ending up with a small =
+default
+> >> max_sectors value, causing overhead due to more commands than necessar=
+y.
+> >>
+> >> Will check what I see with my test rig.
+> >
+> > As far as I can see, this patch should not make a difference unless the
+> > ATA shost driver is setting the max_sectors value unnecessarily low.
 > =
 
-> For __ATA_BASE_SHT, we don't set max_sectors. As such, we default =
+> That is my hunch too, hence my question about which host driver is being =
+used
+> for this test... That is not apparent from the problem report.
 
-> shost->max_sectors =3D SCSI_DEFAULT_MAX_SECTORS (=3D1024) in =
+No one's fallen over the old problem and managed to limit
+the number of sectors in a read to the number of sectors
+in (IIRC) a 'multi sector' read that uses a single DMA burst?
 
-> scsi_host_alloc(). I assume no shost dma mapping limit applied.
-> =
+Was always a good way of killing disk performance.
 
-> Then - for example - we could select dev->max_sectors =3D =
+IIRC the maximum number of sectors for an ATA disk transfer is 255.
 
-> ATA_MAX_SECTORS_LBA48 (=3D65535) in ata_dev_configure().
-> =
+	David
 
-> So with commit 0568e6122574 we would have final max sectors =3D 1024, as =
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1=
+PT, UK
+Registration No: 1397386 (Wales)
 
-> opposed to 65535 previously. I guess that the problem is something like =
-
-> this.
-> =
-
-> If so, it seems that we would need to apply the shost dma mapping limit =
-
-> separately in ata_scsi_dev_config() and not use shost->max_sectors.
-
-OK. Will have a look at that.
-
-> =
-
-> thanks,
-> John
-> =
-
-
-
--- =
-
-Damien Le Moal
-Western Digital Research
---===============7349954670289452096==--
+--===============4437029128400470577==--
 
