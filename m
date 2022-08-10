@@ -1,106 +1,72 @@
-Content-Type: multipart/mixed; boundary="===============1177362933476971680=="
+Content-Type: multipart/mixed; boundary="===============8684200031658705991=="
 MIME-Version: 1.0
-From: Gavin Shan <gshan@redhat.com>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 To: lkp@lists.01.org
-Subject: Re: [KVM] e923b0537d: kernel-selftests.kvm.rseq_test.fail
-Date: Tue, 16 Aug 2022 15:02:46 +1000
-Message-ID: <5034abb9-e176-d480-c577-1ec5dd47182b@redhat.com>
-In-Reply-To: <Yvq9wzXNF4ZnlCdk@google.com>
+Subject: Re: [ata] 0568e61225: stress-ng.copy-file.ops_per_sec -15.0% regression
+Date: Wed, 10 Aug 2022 06:52:03 -0700
+Message-ID: <b3ce0a28-0f94-6d2a-3f88-998da8f870b4@opensource.wdc.com>
+In-Reply-To: <82dbf4d6-2d43-20ff-22a7-857f9f11a5ce@huawei.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1177362933476971680==
+--===============8684200031658705991==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Sean,
-
-On 8/16/22 7:42 AM, Sean Christopherson wrote:
-> On Mon, Aug 15, 2022, kernel test robot wrote:
->> commit: e923b0537d28e15c9d31ce8b38f810b325816903 ("KVM: selftests: Fix t=
-arget thread to be migrated in rseq_test")
->> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+On 2022/08/10 1:33, John Garry wrote:
+> On 09/08/2022 15:57, Damien Le Moal wrote:
+>>>> As far as I can see, this patch should not make a difference unless the
+>>>> ATA shost driver is setting the max_sectors value unnecessarily low.
+>>> For __ATA_BASE_SHT, we don't set max_sectors. As such, we default
+>>> shost->max_sectors =3D SCSI_DEFAULT_MAX_SECTORS (=3D1024) in
+>>> scsi_host_alloc(). I assume no shost dma mapping limit applied.
+>>>
+>>> Then - for example - we could select dev->max_sectors =3D
+>>> ATA_MAX_SECTORS_LBA48 (=3D65535) in ata_dev_configure().
+>>>
+>>> So with commit 0568e6122574 we would have final max sectors =3D 1024, as
+>>> opposed to 65535 previously. I guess that the problem is something like
+>>> this.
+>>>
+>>> If so, it seems that we would need to apply the shost dma mapping limit
+>>> separately in ata_scsi_dev_config() and not use shost->max_sectors.
+>> OK. Will have a look at that.
+>>
 > =
 
-> ...
+> We may need to introduce something like shost->max_hw_sectors, which is =
+
+> set according to sht max sectors and dma mapping limits. That could be =
+
+> also used in USB scsiglue slave_configure()
 > =
 
->> # selftests: kvm: rseq_test
->> # =3D=3D=3D=3D Test Assertion Failure =3D=3D=3D=3D
->> #   rseq_test.c:278: i > (NR_TASK_MIGRATIONS / 2)
->> #   pid=3D49599 tid=3D49599 errno=3D4 - Interrupted system call
->> #      1	0x000000000040265d: main at rseq_test.c:278
->> #      2	0x00007fe44eed07fc: ?? ??:0
->> #      3	0x00000000004026d9: _start at ??:?
->> #   Only performed 23174 KVM_RUNs, task stalled too much?
->> #
->> not ok 56 selftests: kvm: rseq_test # exit=3D254
+> Or else set max_sectors value for __ATA_BASE_SHT, but I don't know a =
+
+> sane value there considering ATA_MAX_SECTORS_LBA48 gives max_sectors of =
+
+> 65535.
 > =
 
-> ...
+> Damien, please let me know if you need help now. I am just waiting for =
+
+> you to test to prove this theory about dev->max_sectors being capped. I =
+
+> don't have an AHCI setup readily-available for testing - just SAS cards =
+
+> or QEMU.
+
+I am on it.
+
 > =
 
->> # Automatically generated file; DO NOT EDIT.
->> # Linux/x86_64 5.19.0-rc6 Kernel Configuration
->> #
->> CONFIG_CC_VERSION_TEXT=3D"gcc-11 (Debian 11.3.0-3) 11.3.0"
->> CONFIG_CC_IS_GCC=3Dy
->> CONFIG_GCC_VERSION=3D110300
->> CONFIG_CLANG_VERSION=3D0
->> CONFIG_AS_IS_GNU=3Dy
->> CONFIG_AS_VERSION=3D23800
->> CONFIG_LD_IS_BFD=3Dy
->> CONFIG_LD_VERSION=3D23800
->> CONFIG_LLD_VERSION=3D0
-> =
-
-> Assuming 23800 =3D=3D 2.38, this is a known issue.
-> =
-
-> https://lore.kernel.org/all/20220810104114.6838-1-gshan(a)redhat.com
-> =
+> Thanks,
+> John
 
 
-It's probably different story this time. The assert is triggered because
-of the following instructions. I would guess the reason is vcpu thread
-has been running on CPU where we has high CPU load. In this case, the
-vcpu thread can't be run in time. More specific, the vcpu thread can't
-be run in the 1 - 10us time window, which is specified by the migration
-worker (thread).
+-- =
 
-     TEST_ASSERT(i > (NR_TASK_MIGRATIONS / 2),
-                 "Only performed %d KVM_RUNs, task stalled too much?\n", i);
-
-I think we need to improve the handshake mechanism between the vcpu thread
-and migration worker. In current implementation, the handshake is done thro=
-ugh
-the atomic counter. The mechanism is simple enough, but vcpu thread can miss
-the aforementioned time window. Another issue is the test case much more ti=
-me
-than expected to finish.
-
-Sean, if you think it's reasonable, I can figure out something to do:
-
-- Reuse the atomic counter for a full synchronization between these two
-   threads. Something like below:
-
-   #define RSEQ_TEST_STATE_RUN_VCPU       0     // vcpu_run()
-   #define RSEQ_TEST_STATE_MIGRATE        1     // sched_setaffinity()
-   #define RSEQ_TEST_STATE_CHECK          2     // Check rseq.cpu_id and ge=
-t_cpu()
-
-   The atomic counter is reset to RSEQ_TEST_STATE_RUN_VCPU after RSEQ_TEST_=
-STATE_RUN_VCPU
-
-- Reduce NR_TASK_MIGRATIONS from 100000 to num_of_online_cpus(). With this,
-   less time is needed to finish the test case.
-
-Thanks,
-Gavin
-
-   =
-
-
-
---===============1177362933476971680==--
+Damien Le Moal
+Western Digital Research
+--===============8684200031658705991==--
 
