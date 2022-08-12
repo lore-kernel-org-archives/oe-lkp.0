@@ -1,59 +1,74 @@
-Content-Type: multipart/mixed; boundary="===============3370099377810384930=="
+Content-Type: multipart/mixed; boundary="===============7148179175571214772=="
 MIME-Version: 1.0
 From: John Garry <john.garry@huawei.com>
 To: lkp@lists.01.org
 Subject: Re: [ata] 0568e61225: stress-ng.copy-file.ops_per_sec -15.0% regression
-Date: Wed, 10 Aug 2022 09:33:23 +0100
-Message-ID: <82dbf4d6-2d43-20ff-22a7-857f9f11a5ce@huawei.com>
-In-Reply-To: <ef84d2dd-84ea-e1c7-05ef-f0a082d4f7d0@opensource.wdc.com>
+Date: Fri, 12 Aug 2022 18:17:39 +0100
+Message-ID: <fd2b1dbe-8482-cb89-2568-4909db1239b0@huawei.com>
+In-Reply-To: <4642848c-a386-d6a0-6255-8b16800e0548@opensource.wdc.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3370099377810384930==
+--===============7148179175571214772==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 09/08/2022 15:57, Damien Le Moal wrote:
->>> As far as I can see, this patch should not make a difference unless the
->>> ATA shost driver is setting the max_sectors value unnecessarily low.
->> For __ATA_BASE_SHT, we don't set max_sectors. As such, we default
->> shost->max_sectors =3D SCSI_DEFAULT_MAX_SECTORS (=3D1024) in
->> scsi_host_alloc(). I assume no shost dma mapping limit applied.
->>
->> Then - for example - we could select dev->max_sectors =3D
->> ATA_MAX_SECTORS_LBA48 (=3D65535) in ata_dev_configure().
->>
->> So with commit 0568e6122574 we would have final max sectors =3D 1024, as
->> opposed to 65535 previously. I guess that the problem is something like
->> this.
->>
->> If so, it seems that we would need to apply the shost dma mapping limit
->> separately in ata_scsi_dev_config() and not use shost->max_sectors.
-> OK. Will have a look at that.
+On 12/08/2022 16:41, Damien Le Moal wrote:
+>>> we noticed the commit is already in mainline now, and in our tests, the=
+re is
+>>> still similar regression and also on other platforms.
+>>> could you guide us how to check "which host driver is being used for th=
+is
+>>> test"? hope to supply some useful information.
+>>>
+>> For me, a complete kernel log may help.
+> I had a look yesterday with my test rig. I did not see any difference in =
+the
+> default max_sectors_kb values for various drives between 5.18 and 5.19 (c=
+urrent
+> linus tree). The test machine has 2 AHCI adapters: Intel and Marvell. Bot=
+h use
+> the regular AHCI driver. I have another rig with different ATA adapters b=
+ut it
+> is powered down and I am traveling... So cannot test that right now.
 > =
 
 
-We may need to introduce something like shost->max_hw_sectors, which is =
+FWIW, on QEMU I get a difference for IDE disk for ata_piix host.
 
-set according to sht max sectors and dma mapping limits. That could be =
+Interestingly ata dev max_sectors kb also gets capped from 32MB (LBA48) =
 
-also used in USB scsiglue slave_configure()
+-> 256KB due to swiotlb max mapping size. (It would be capped by shost =
 
-Or else set max_sectors value for __ATA_BASE_SHT, but I don't know a =
+default max sectors 512KB without that swiotlb limit). I assume capping =
 
-sane value there considering ATA_MAX_SECTORS_LBA48 gives max_sectors of =
+due to swiotlb limit is not occuring on Oliver's machine.
 
-65535.
-
-Damien, please let me know if you need help now. I am just waiting for =
-
-you to test to prove this theory about dev->max_sectors being capped. I =
-
-don't have an AHCI setup readily-available for testing - just SAS cards =
-
-or QEMU.
-
-Thanks,
+thanks,
 John
---===============3370099377810384930==--
+
+[    1.497233] ata7: found unknown device (class 0)
+[    1.498341] ata7.00: ATA-7: QEMU HARDDISK, 2.5+, max UDMA/100
+[    1.499030] ata7.00: 209716 sectors, multi 16: LBA48
+[    1.623795] ata2: SATA link down (SStatus 0 SControl 300)
+[    1.624633] ata1: SATA link down (SStatus 0 SControl 300)
+[    1.633395] ata6: SATA link down (SStatus 0 SControl 300)
+[    1.634200] ata5: SATA link down (SStatus 0 SControl 300)
+[    1.635094] ata4: SATA link down (SStatus 0 SControl 300)
+[    1.635887] ata3: SATA link down (SStatus 0 SControl 300)
+[    1.636748] scsi 6:0:0:0: Direct-Access     ATA      QEMU HARDDISK =
+
+  2.5+ PQ: 0 ANSI: 5
+[    1.641298] sd 6:0:0:0: [sda] 209716 512-byte logical blocks: (107 =
+
+MB/102 MiB)
+[    1.642188] sd 6:0:0:0: [sda] Write Protect is off
+[    1.642770] sd 6:0:0:0: [sda] Mode Sense: 00 3a 00 00
+[    1.642783] sd 6:0:0:0: [sda] Write cache: enabled, read cache: =
+
+enabled, doesn't support DPO or FUA
+[    1.644149] sd 6:0:0:0: [sda] Preferred minimum I/O size 512 bytes
+[    1.645142] sd 6:0:0:0: Attached scsi generic sg0 type 0
+[    1.655145] sd 6:0:0:0: [sda] Attached SCSI disk
+--===============7148179175571214772==--
 
