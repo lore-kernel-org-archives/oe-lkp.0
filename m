@@ -1,92 +1,140 @@
-Content-Type: multipart/mixed; boundary="===============6612044115655961185=="
+Content-Type: multipart/mixed; boundary="===============4777229247808630601=="
 MIME-Version: 1.0
-From: Stefan Roesch <shr@fb.com>
+From: Gavin Shan <gshan@redhat.com>
 To: lkp@lists.01.org
-Subject: Re: [fs] faf99b5635: will-it-scale.per_thread_ops -9.0% regression
-Date: Tue, 16 Aug 2022 11:35:44 +0200
-Message-ID: <16d100df-6d88-c7c5-9b1b-fea40ec40d96@fb.com>
-In-Reply-To: <20220815100044.7j2u2yjlkanhkrfg@wittgenstein>
+Subject: Re: [KVM] e923b0537d: kernel-selftests.kvm.rseq_test.fail
+Date: Tue, 16 Aug 2022 20:02:14 +1000
+Message-ID: <9bfeae26-b4b1-eedb-6cbd-b4f9f1e1cc55@redhat.com>
+In-Reply-To: <5034abb9-e176-d480-c577-1ec5dd47182b@redhat.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============6612044115655961185==
+--===============4777229247808630601==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
+Hi Sean,
 
-On 8/15/22 12:00 PM, Christian Brauner wrote:
-> !-------------------------------------------------------------------|
->   This Message Is From an External Sender
-> =
-
-> |-------------------------------------------------------------------!
-> =
-
-> On Mon, Aug 15, 2022 at 12:32:25PM +0800, kernel test robot wrote:
+On 8/16/22 3:02 PM, Gavin Shan wrote:
+> On 8/16/22 7:42 AM, Sean Christopherson wrote:
+>> On Mon, Aug 15, 2022, kernel test robot wrote:
+>>> commit: e923b0537d28e15c9d31ce8b38f810b325816903 ("KVM: selftests: Fix =
+target thread to be migrated in rseq_test")
+>>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 >>
+>> ...
 >>
->> Greeting,
+>>> # selftests: kvm: rseq_test
+>>> # =3D=3D=3D=3D Test Assertion Failure =3D=3D=3D=3D
+>>> #=C2=A0=C2=A0 rseq_test.c:278: i > (NR_TASK_MIGRATIONS / 2)
+>>> #=C2=A0=C2=A0 pid=3D49599 tid=3D49599 errno=3D4 - Interrupted system ca=
+ll
+>>> #=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 1=C2=A0=C2=A0=C2=A0 0x000000000040265d:=
+ main at rseq_test.c:278
+>>> #=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 2=C2=A0=C2=A0=C2=A0 0x00007fe44eed07fc:=
+ ?? ??:0
+>>> #=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 3=C2=A0=C2=A0=C2=A0 0x00000000004026d9:=
+ _start at ??:?
+>>> #=C2=A0=C2=A0 Only performed 23174 KVM_RUNs, task stalled too much?
+>>> #
+>>> not ok 56 selftests: kvm: rseq_test # exit=3D254
 >>
->> FYI, we noticed a -9.0% regression of will-it-scale.per_thread_ops due t=
-o commit:
+>> ...
 >>
+>>> # Automatically generated file; DO NOT EDIT.
+>>> # Linux/x86_64 5.19.0-rc6 Kernel Configuration
+>>> #
+>>> CONFIG_CC_VERSION_TEXT=3D"gcc-11 (Debian 11.3.0-3) 11.3.0"
+>>> CONFIG_CC_IS_GCC=3Dy
+>>> CONFIG_GCC_VERSION=3D110300
+>>> CONFIG_CLANG_VERSION=3D0
+>>> CONFIG_AS_IS_GNU=3Dy
+>>> CONFIG_AS_VERSION=3D23800
+>>> CONFIG_LD_IS_BFD=3Dy
+>>> CONFIG_LD_VERSION=3D23800
+>>> CONFIG_LLD_VERSION=3D0
 >>
->> commit: faf99b563558f74188b7ca34faae1c1da49a7261 ("fs: add __remove_file=
-_privs() with flags parameter")
->> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>> Assuming 23800 =3D=3D 2.38, this is a known issue.
+>>
+>> https://lore.kernel.org/all/20220810104114.6838-1-gshan(a)redhat.com
+>>
 > =
 
-> This seems overall pretty odd tbh at least it's not immediately obvious
-> how that specific commit would've caused this. But fwiw, I think there's
-> one issue in this change which we originally overlooked which might
-> explain this.
+> It's probably different story this time. The assert is triggered because
+> of the following instructions. I would guess the reason is vcpu thread
+> has been running on CPU where we has high CPU load. In this case, the
+> vcpu thread can't be run in time. More specific, the vcpu thread can't
+> be run in the 1 - 10us time window, which is specified by the migration
+> worker (thread).
 > =
 
-> Before faf99b563558 ("fs: add __remove_file_privs() with flags
-> parameter") inode_has_no_xattr() was called when
-> dentry_needs_remove_privs() returned 0.
+>  =C2=A0=C2=A0=C2=A0 TEST_ASSERT(i > (NR_TASK_MIGRATIONS / 2),
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 "Only performed %d KVM_RUNs, task stalled too much?\n", =
+i);
 > =
 
-> 	int error =3D 0
-> 	[...]
-> 	kill =3D dentry_needs_remove_privs(dentry);
-> 	if (kill < 0)
-> 		return kill;
-> 	if (kill)
-> 		error =3D __remove_privs(file_mnt_user_ns(file), dentry, kill);
-> 	if (!error)
-> 		inode_has_no_xattr(inode);
+> I think we need to improve the handshake mechanism between the vcpu thread
+> and migration worker. In current implementation, the handshake is done th=
+rough
+> the atomic counter. The mechanism is simple enough, but vcpu thread can m=
+iss
+> the aforementioned time window. Another issue is the test case much more =
+time
+> than expected to finish.
 > =
 
-> but now we do:
+> Sean, if you think it's reasonable, I can figure out something to do:
 > =
 
-> 	kill =3D dentry_needs_remove_privs(dentry);
-> 	if (kill <=3D 0)
-> 		return kill;
+> - Reuse the atomic counter for a full synchronization between these two
+>  =C2=A0 threads. Something like below:
 > =
 
-> which means we don't call inode_has_no_xattr(). I don't think that we
-> did this intentionally. inode_has_no_xattr() just sets S_NOSEC which
-> means next time we call into __file_remove_privs() we can return earlier
-> instead of hitting dentry_needs_remove_privs() again:
+>  =C2=A0 #define RSEQ_TEST_STATE_RUN_VCPU=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0 0=C2=A0=C2=A0=C2=A0=C2=A0 // vcpu_run()
+>  =C2=A0 #define RSEQ_TEST_STATE_MIGRATE=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 1=C2=A0=C2=A0=C2=A0=C2=A0 // sched_setaffinity()
+>  =C2=A0 #define RSEQ_TEST_STATE_CHECK=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 2=C2=A0=C2=A0=C2=A0=C2=A0 // Check rseq.cpu_id and get_c=
+pu()
 > =
 
-> if (IS_NOSEC(inode) || !S_ISREG(inode->i_mode))
-> 	return 0;
+>  =C2=A0 The atomic counter is reset to RSEQ_TEST_STATE_RUN_VCPU after RSE=
+Q_TEST_STATE_RUN_VCPU
 > =
 
-> So I think that needs to be fixed?
+> - Reduce NR_TASK_MIGRATIONS from 100000 to num_of_online_cpus(). With thi=
+s,
+>  =C2=A0 less time is needed to finish the test case.
 > =
 
 
-Christian,
+I'm able to recreate the issue on my local arm64 system.
 
-thanks for looking into this. I'll prepare a fix to maintain the original b=
-ehavior.
+- From the source code, the iteration count is changed from 100000 to 1000
+- Only CPU#0 and CPU#1 are exposed in calc_min_max_cpu, meaning other CPUs
+   are cleared from @possible_mask
+- Run some CPU bound task on CPU#0 and CPU#1
+   # while true; do taskset -c 0 ./a; done
+   # while true; do taskset -c 1 ./a; done
+- Run 'rseq_test' and hit the issue
+   # ./rseq_test
+   calc_min_max_cpu: nproc=3D224
+   calc_min_max_cpu: min_cpu=3D0, max_cpu=3D1
+   main: Required tests: 1000   Succeeds: 1
+   =3D=3D=3D=3D Test Assertion Failure =3D=3D=3D=3D
+     rseq_test.c:280: i > (NR_TASK_MIGRATIONS / 2)
+     pid=3D9624 tid=3D9624 errno=3D4 - Interrupted system call
+        1	0x0000000000401cf3: main at rseq_test.c:280
+        2	0x0000ffffbc64679b: ?? ??:0
+        3	0x0000ffffbc64686b: ?? ??:0
+        4	0x0000000000401def: _start at ??:?
+     Only performed 1 KVM_RUNs, task stalled too much?
 
---Stefan
+Thanks,
+Gavin
 
-> Christian
---===============6612044115655961185==--
+
+--===============4777229247808630601==--
 
