@@ -1,157 +1,117 @@
-Content-Type: multipart/mixed; boundary="===============7207352579129604711=="
+Content-Type: multipart/mixed; boundary="===============0789524366200593925=="
 MIME-Version: 1.0
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Alan Stern <stern@rowland.harvard.edu>
 To: lkp@lists.01.org
-Subject: Re: [ata] 0568e61225: stress-ng.copy-file.ops_per_sec -15.0% regression
-Date: Wed, 17 Aug 2022 08:55:00 -0700
-Message-ID: <e46c8627-3444-1dd1-8fd9-a10b7f3f3851@opensource.wdc.com>
-In-Reply-To: <c93e529d-b688-9910-50c4-779c2f85fbc3@huawei.com>
+Subject: Re: [USB] 3a2b1036e8: WARNING:possible_recursive_locking_detected
+Date: Wed, 17 Aug 2022 17:52:21 -0400
+Message-ID: <Yv1jFcPocWBkgL4v@rowland.harvard.edu>
+In-Reply-To: <113d66dd-b2b5-fa2e-fbd3-53c5a5666867@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7207352579129604711==
+--===============0789524366200593925==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 2022/08/16 13:44, John Garry wrote:
-> On 16/08/2022 21:02, Damien Le Moal wrote:
->>> ou confirm this? Thanks!
->>>
->>> On this basis, it appears that max_hw_sectors_kb is getting capped from
->>> scsi default @ 1024 sectors by commit 0568e61225. If it were getting
->>> capped by swiotlb mapping limit then that would give us 512 sectors -
->>> this value is fixed.
->>>
->>> So for my SHT change proposal I am just trying to revert to previous
->>> behaviour in 5.19 - make max_hw_sectors_kb crazy big again.
->> I reread the entire thing and I think I got things reverted here. The pe=
-rf
->> regression happens with the 512/512 settings, while the original 1280/32=
-767
->> before your patches was OK.
+On Wed, Aug 17, 2022 at 04:43:01PM +0800, kernel test robot wrote:
+> Greeting,
 > =
 
-> Right, that's as I read it. It would be useful for Oliver to confirm the =
-
-> results.
+> FYI, we noticed the following commit (built with gcc-11):
 > =
 
->> So is your patch defining the optimal mapping size
->> cause the reduction to 512/512.
-> =
+> commit: 3a2b1036e8951328b7e59517408897c700a74871 ("USB: gadget: Fix use-a=
+fter-free Read in usb_udc_uevent()")
+> https://git.kernel.org/cgit/linux/kernel/git/stable/linux-stable-rc.git l=
+inux-5.4.y
 
-> The optimal mapping size only affects specifically sas controllers, so I =
+How did you come by that combination?  The "USB: gadget: Fix =
 
-> think that we can ignore that one for now. The reduction to 512/512 =
+use-after-free Read in usb_udc_uevent()" patch is not supposed to be =
 
-> comes from the change in ata_scsi_dev_config().
-> =
+applied to the 5.4.y kernel series.  It is only supposed to be applied =
 
->> It would mean that for ATA, we need a sane
->> default mapping instead of SCSI default 1024 sectors.
-> =
+to kernels which have [a backported version of] commit fc274c1e9973 =
 
-> Right
-> =
+("USB: gadget: Add a new bus for gadgets").
 
->> Now I understand your
->> proposed change using ATA_MAX_SECTORS_LBA48.
->>
->> However, that would be correct only for LBA48 capable drives.
->> ata_dev_configure() already sets dev->max_sectors correctly according to=
- the
->> drive type, capabilities and eventual quirks. So the problem comes from =
-the
->> libata-scsi change:
->>
->> dev->max_sectors =3D min(dev->max_sectors, sdev->host->max_sectors);
->>
->> when sdev->host->max_sectors is 0 (not initialized).
-> =
+It's not surprising that you found an issue, applying that patch to a =
 
-> That cannot happen. If sht->max_sectors is 0, then we set =
+kernel where it doesn't belong.
 
-> shost->max_sectors at SCSI default 1024 sectors in scsi_host_alloc()
-> =
-
-> For my proposed change, dev->max_sectors would still be initialized in =
-
-> ata_dev_configure() according to drive type, etc. And it should be <=3D =
-
-> LBA48 max sectors (=3D65535).
-> =
-
-> So then in ata_scsi_dev_config():
-> =
-
-> dev->max_sectors =3D min(dev->max_sectors, sdev->host->max_sectors)
-> =
-
-> this only has an impact for ahci controllers if sdev->host->max_sectors =
-
-> was capped according to host dma dev max mapping size.
-
-Got it. I think your fix is fine then. It brings everything the defaults to=
- what
-they were before the dma max mapping patches.
+Alan Stern
 
 > =
 
-> I will admit that this is not ideal. An alt approach is to change =
-
-> ata_scsi_dev_config() to cap the dev max_sectors only according to shost =
-
-> dma dev mapping limit (similar to scsi_add_host_with_dma()), but that =
-
-> would not work for a controller like ipr, which does have a geniune =
-
-> max_sectors limit (which we should respect).
+> in testcase: boot
 > =
 
-> Thanks,
-> John
+> on test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m =
+4G
+> =
+
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
 > =
 
 > =
 
->> So maybe simply changing
->> this line to:
->>
->> dev->max_sectors =3D min_not_zero(dev->max_sectors, sdev->host->max_sect=
-ors);
->>
->> would do the trick ? Any particular adapter driver that needs a mapping =
-cap on
->> the adpter max mapping size can still set sdev->host->max_sectors as nee=
-ded, and
->> we keep the same defaults as before when it is not set. Thoughts ? Or am=
- I
->> missing something else ?
->>
->>
->>>> The regression may come not from commands becoming tiny, but from the =
-fact that
->>>> after the patch, max_sectors_kb is too large,
->>> I don't think it is, but need confirmation.
->>>
->>>> causing a lot of overhead with
->>>> qemu swiotlb mapping and slowing down IO processing.
->>>> Above, it can be seen that we ed up with max_sectors_kb being 1280, wh=
-ich is the
->>>> default for most scsi disks (including ATA drives). That is normal. Bu=
-t before
->>>> that, it was 512, which likely better fits qemu swiotlb and does not g=
-enerate
->>> Again, I don't think this this is the case. Need confirmation.
->>>
->>>> overhead. So the above fix will not change anything I think...
+> If you fix the issue, kindly add following tag
+> Reported-by: kernel test robot <yujie.liu@intel.com>
 > =
 
+> =
 
-
--- =
-
-Damien Le Moal
-Western Digital Research
---===============7207352579129604711==--
+> [   11.163772][    T1] WARNING: possible recursive locking detected
+> [   11.163947][    T1] 5.4.210-00049-g3a2b1036e895 #2 Not tainted
+> [   11.163947][    T1] --------------------------------------------
+> [   11.163947][    T1] swapper/1 is trying to acquire lock:
+> [ 11.163947][ T1] c1d981d8 (udc_lock){+.+.}, at: usb_udc_uevent (core.c:?)
+> [   11.163947][    T1]
+> [   11.163947][    T1] but task is already holding lock:
+> [ 11.163947][ T1] c1d981d8 (udc_lock){+.+.}, at: usb_add_gadget_udc_relea=
+se (??:?)
+> [   11.163947][    T1]
+> [   11.163947][    T1] other info that might help us debug this:
+> [   11.163947][    T1]  Possible unsafe locking scenario:
+> [   11.163947][    T1]
+> [   11.163947][    T1]        CPU0
+> [   11.163947][    T1]        ----
+> [   11.163947][    T1]   lock(udc_lock);
+> [   11.163947][    T1]
+> [   11.163947][    T1]  *** DEADLOCK ***
+> [   11.163947][    T1]
+> [   11.163947][    T1]  May be due to missing lock nesting notation
+> [   11.163947][    T1]
+> [   11.163947][    T1] 2 locks held by swapper/1:
+> [ 11.163947][ T1] #0: ee5440d8 (&dev->mutex){....}, at: device_lock (pci-=
+sysfs.c:?)
+> [ 11.163947][ T1] #1: c1d981d8 (udc_lock){+.+.}, at: usb_add_gadget_udc_r=
+elease (??:?)
+> [   11.163947][    T1]
+> [   11.163947][    T1] stack backtrace:
+> [   11.163947][    T1] CPU: 0 PID: 1 Comm: swapper Not tainted 5.4.210-00=
+049-g3a2b1036e895 #2
+> [   11.163947][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 19=
+96), BIOS 1.16.0-debian-1.16.0-4 04/01/2014
+> [   11.163947][    T1] Call Trace:
+> [ 11.163947][ T1] dump_stack (??:?)
+> [ 11.163947][ T1] __lock_acquire (lockdep.c:?)
+> [ 11.163947][ T1] lock_acquire (??:?)
+> [ 11.163947][ T1] ? usb_udc_uevent (core.c:?)
+> [ 11.163947][ T1] __mutex_lock (mutex.c:?)
+> [ 11.163947][ T1] ? usb_udc_uevent (core.c:?)
+> [ 11.163947][ T1] ? add_uevent_var (??:?)
+> [ 11.163947][ T1] mutex_lock_nested (??:?)
+> [ 11.163947][ T1] ? usb_udc_uevent (core.c:?)
+> [ 11.163947][ T1] usb_udc_uevent (core.c:?)
+> [ 11.163947][ T1] dev_uevent (core.c:?)
+> [ 11.163947][ T1] ? device_get_devnode (core.c:?)
+> [ 11.163947][ T1] kobject_uevent_env (??:?)
+> [ 11.163947][ T1] kobject_uevent (??:?)
+> [ 11.163947][ T1] device_add (??:?)
+> [ 11.163947][ T1] usb_add_gadget_udc_release (??:?)
+> [ 11.163947][ T1] usb_add_gadget_udc (??:?)
+> [ 11.163947][ T1] dummy_udc_probe (dummy_hcd.c:?)
+--===============0789524366200593925==--
 
