@@ -1,117 +1,90 @@
-Content-Type: multipart/mixed; boundary="===============0789524366200593925=="
+Content-Type: multipart/mixed; boundary="===============5542426020955381917=="
 MIME-Version: 1.0
-From: Alan Stern <stern@rowland.harvard.edu>
+From: Oliver Sang <oliver.sang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [USB] 3a2b1036e8: WARNING:possible_recursive_locking_detected
-Date: Wed, 17 Aug 2022 17:52:21 -0400
-Message-ID: <Yv1jFcPocWBkgL4v@rowland.harvard.edu>
-In-Reply-To: <113d66dd-b2b5-fa2e-fbd3-53c5a5666867@intel.com>
+Subject: Re: [ata] 0568e61225: stress-ng.copy-file.ops_per_sec -15.0% regression
+Date: Thu, 18 Aug 2022 10:06:48 +0800
+Message-ID: <Yv2euLFLjl8bEaeI@xsang-OptiPlex-9020>
+In-Reply-To: <743867a6-b266-58e4-a8a6-542757916f0a@huawei.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0789524366200593925==
+--===============5542426020955381917==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Aug 17, 2022 at 04:43:01PM +0800, kernel test robot wrote:
-> Greeting,
+hi John,
+
+On Wed, Aug 17, 2022 at 03:04:06PM +0100, John Garry wrote:
+> On 17/08/2022 14:51, Oliver Sang wrote:
 > =
 
-> FYI, we noticed the following commit (built with gcc-11):
+> Hi Oliver,
 > =
 
-> commit: 3a2b1036e8951328b7e59517408897c700a74871 ("USB: gadget: Fix use-a=
-fter-free Read in usb_udc_uevent()")
-> https://git.kernel.org/cgit/linux/kernel/git/stable/linux-stable-rc.git l=
-inux-5.4.y
+> > > v5.19 + 0568e61225 : 512/512
+> > > v5.19 + 0568e61225 + 4cbfca5f77 : 512/512
+> > > v5.19: 1280/32767
+> > > =
 
-How did you come by that combination?  The "USB: gadget: Fix =
+> > > They are want makes sense to me, at least.
+> > > =
 
-use-after-free Read in usb_udc_uevent()" patch is not supposed to be =
+> > > Oliver, can you confirm this? Thanks!
+> > I confirm below two:
+> > v5.19 + 0568e61225 : 512/512
+> > v5.19: 1280/32767 (as last already reported)
+> =
 
-applied to the 5.4.y kernel series.  It is only supposed to be applied =
+> ack
+> =
 
-to kernels which have [a backported version of] commit fc274c1e9973 =
+> > =
 
-("USB: gadget: Add a new bus for gadgets").
+> > but below failed to build:
+> > v5.19 + 0568e61225 + 4cbfca5f77
+> > =
 
-It's not surprising that you found an issue, applying that patch to a =
+> > build_errors:
+> >    - "drivers/scsi/scsi_transport_sas.c:242:33: error: implicit declara=
+tion of function 'dma_opt_mapping_size'; did you mean 'dma_max_mapping_size=
+'? [-Werror=3Dimplicit-function-declaration]"
+> >    - "drivers/scsi/scsi_transport_sas.c:241:24: error: 'struct Scsi_Hos=
+t' has no member named 'opt_sectors'; did you mean 'max_sectors'?"
+> > =
 
-kernel where it doesn't belong.
+> > not sure if I understand this correctly?
+> > for this, I just cherry-pick 0568e61225 upon v5.19,
+> > then cherry-pick 4cbfca5f77 again.
+> > so my branch looks like:
+> > =
 
-Alan Stern
+> > a11d8b97c3ecb8 v5.19 + 0568e61225 + 4cbfca5f77
+> > 1b59440cf71f99 v5.19 + 0568e61225
+> > 3d7cb6b04c3f31 (tag: v5.19,
+> > =
+
+> > did I do the right thing?
+> =
+
+> Sorry but I was not really interested in 4cbfca5f77 and I see where that
+> build error is coming, but don't be concerned with it. However, for
+> avoidance of doubt, if you have results for vanilla v6.0-rc1 then that wo=
+uld
+> be appreciated.
+
+for v6.0-rc1, it's still 512/512
 
 > =
 
-> in testcase: boot
-> =
+> I will also send a separate patch for testing if you don't mind.
 
-> on test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m =
-4G
-> =
-
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
-> =
+sure! we are very glad that we could help.
 
 > =
 
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <yujie.liu@intel.com>
-> =
-
-> =
-
-> [   11.163772][    T1] WARNING: possible recursive locking detected
-> [   11.163947][    T1] 5.4.210-00049-g3a2b1036e895 #2 Not tainted
-> [   11.163947][    T1] --------------------------------------------
-> [   11.163947][    T1] swapper/1 is trying to acquire lock:
-> [ 11.163947][ T1] c1d981d8 (udc_lock){+.+.}, at: usb_udc_uevent (core.c:?)
-> [   11.163947][    T1]
-> [   11.163947][    T1] but task is already holding lock:
-> [ 11.163947][ T1] c1d981d8 (udc_lock){+.+.}, at: usb_add_gadget_udc_relea=
-se (??:?)
-> [   11.163947][    T1]
-> [   11.163947][    T1] other info that might help us debug this:
-> [   11.163947][    T1]  Possible unsafe locking scenario:
-> [   11.163947][    T1]
-> [   11.163947][    T1]        CPU0
-> [   11.163947][    T1]        ----
-> [   11.163947][    T1]   lock(udc_lock);
-> [   11.163947][    T1]
-> [   11.163947][    T1]  *** DEADLOCK ***
-> [   11.163947][    T1]
-> [   11.163947][    T1]  May be due to missing lock nesting notation
-> [   11.163947][    T1]
-> [   11.163947][    T1] 2 locks held by swapper/1:
-> [ 11.163947][ T1] #0: ee5440d8 (&dev->mutex){....}, at: device_lock (pci-=
-sysfs.c:?)
-> [ 11.163947][ T1] #1: c1d981d8 (udc_lock){+.+.}, at: usb_add_gadget_udc_r=
-elease (??:?)
-> [   11.163947][    T1]
-> [   11.163947][    T1] stack backtrace:
-> [   11.163947][    T1] CPU: 0 PID: 1 Comm: swapper Not tainted 5.4.210-00=
-049-g3a2b1036e895 #2
-> [   11.163947][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 19=
-96), BIOS 1.16.0-debian-1.16.0-4 04/01/2014
-> [   11.163947][    T1] Call Trace:
-> [ 11.163947][ T1] dump_stack (??:?)
-> [ 11.163947][ T1] __lock_acquire (lockdep.c:?)
-> [ 11.163947][ T1] lock_acquire (??:?)
-> [ 11.163947][ T1] ? usb_udc_uevent (core.c:?)
-> [ 11.163947][ T1] __mutex_lock (mutex.c:?)
-> [ 11.163947][ T1] ? usb_udc_uevent (core.c:?)
-> [ 11.163947][ T1] ? add_uevent_var (??:?)
-> [ 11.163947][ T1] mutex_lock_nested (??:?)
-> [ 11.163947][ T1] ? usb_udc_uevent (core.c:?)
-> [ 11.163947][ T1] usb_udc_uevent (core.c:?)
-> [ 11.163947][ T1] dev_uevent (core.c:?)
-> [ 11.163947][ T1] ? device_get_devnode (core.c:?)
-> [ 11.163947][ T1] kobject_uevent_env (??:?)
-> [ 11.163947][ T1] kobject_uevent (??:?)
-> [ 11.163947][ T1] device_add (??:?)
-> [ 11.163947][ T1] usb_add_gadget_udc_release (??:?)
-> [ 11.163947][ T1] usb_add_gadget_udc (??:?)
-> [ 11.163947][ T1] dummy_udc_probe (dummy_hcd.c:?)
---===============0789524366200593925==--
+> thanks,
+> John
+>=20
+--===============5542426020955381917==--
 
