@@ -1,71 +1,41 @@
-Content-Type: multipart/mixed; boundary="===============5149904533456378325=="
+Content-Type: multipart/mixed; boundary="===============7447717519339181597=="
 MIME-Version: 1.0
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: John Garry <john.garry@huawei.com>
 To: lkp@lists.01.org
-Subject: Re: [USB] 3a2b1036e8: WARNING:possible_recursive_locking_detected
-Date: Thu, 18 Aug 2022 08:30:27 +0200
-Message-ID: <Yv3cgyNJDlFvuzW7@kroah.com>
-In-Reply-To: <8f500c8c-c0a1-7825-a70d-3c2690fee18b@intel.com>
+Subject: Re: [ata] 0568e61225: stress-ng.copy-file.ops_per_sec -15.0% regression
+Date: Thu, 18 Aug 2022 10:28:30 +0100
+Message-ID: <d1b1d434-059d-4d76-5fc6-092ab9ba6e16@huawei.com>
+In-Reply-To: <Yv2euLFLjl8bEaeI@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5149904533456378325==
+--===============7447717519339181597==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Aug 18, 2022 at 02:07:10PM +0800, Yujie Liu wrote:
-> On 8/18/2022 05:52, Alan Stern wrote:
-> > On Wed, Aug 17, 2022 at 04:43:01PM +0800, kernel test robot wrote:
-> > > Greeting,
-> > > =
+On 18/08/2022 03:06, Oliver Sang wrote:
 
-> > > FYI, we noticed the following commit (built with gcc-11):
-> > > =
+Hi Oliver,
 
-> > > commit: 3a2b1036e8951328b7e59517408897c700a74871 ("USB: gadget: Fix u=
-se-after-free Read in usb_udc_uevent()")
-> > > https://git.kernel.org/cgit/linux/kernel/git/stable/linux-stable-rc.g=
-it linux-5.4.y
-> > =
-
-> > How did you come by that combination?  The "USB: gadget: Fix
-> > use-after-free Read in usb_udc_uevent()" patch is not supposed to be
-> > applied to the 5.4.y kernel series.  It is only supposed to be applied
-> > to kernels which have [a backported version of] commit fc274c1e9973
-> > ("USB: gadget: Add a new bus for gadgets").
-> > =
-
-> > It's not surprising that you found an issue, applying that patch to a
-> > kernel where it doesn't belong.
+>>> did I do the right thing?
+>> Sorry but I was not really interested in 4cbfca5f77 and I see where that
+>> build error is coming, but don't be concerned with it. However, for
+>> avoidance of doubt, if you have results for vanilla v6.0-rc1 then that w=
+ould
+>> be appreciated.
+> for v6.0-rc1, it's still 512/512
 > =
 
-> We happened to catch a v5.4.211-rc1 patch series yesterday, and it does
-> include the "USB: gadget: Fix use-after-free Read in usb_udc_uevent()" pa=
-tch.
-> But now the head of linux-stable-rc/linux-5.4.y branch has been rebased to
-> v5.4.210.
-> =
+>> I will also send a separate patch for testing if you don't mind.
+> sure! we are very glad that we could help.
 
-> =
+As you probably saw, I sent "[RFT PATCH] ata: libata: Set __ATA_BASE_SHT =
 
-> da19aaf18f551 Linux 5.4.211-rc1
-> ...
-> 3a2b1036e8951 USB: gadget: Fix use-after-free Read in usb_udc_uevent()
-> ...
-> de0cd3ea700d1 (tag: v5.4.210, linux-stable-rc/linux-5.4.y) Linux 5.4.210
-> =
+max_sectors" for testing on top of v6.0-rc1, and I hope that then we can =
 
-> =
+get same performance as v5.19
 
-> Looks like we have some delay when updating the latest state of this tree.
-> Sorry for this false report, we'll update our workflow to avoid similar
-> cases in the future.
-
-That commit was inproperly added to the stable trees and then later
-dropped.
-
-thanks,
-
-greg k-h
---===============5149904533456378325==--
+Thanks,
+John
+--===============7447717519339181597==--
 
