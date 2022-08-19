@@ -1,87 +1,54 @@
-Content-Type: multipart/mixed; boundary="===============2317402912589362322=="
+Content-Type: multipart/mixed; boundary="===============5105173791183489945=="
 MIME-Version: 1.0
-From: Michal Hocko <mhocko@suse.com>
+From: Oliver Sang <oliver.sang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH 1/3] mm: page_counter: remove unneeded atomic ops for low/min
-Date: Mon, 22 Aug 2022 11:55:33 +0200
-Message-ID: <YwNSlZFPMgclrSCz@dhcp22.suse.cz>
-In-Reply-To: <20220822001737.4120417-2-shakeelb@google.com>
+Subject: Re: [ata] 0568e61225: stress-ng.copy-file.ops_per_sec -15.0% regression
+Date: Fri, 19 Aug 2022 14:24:03 +0800
+Message-ID: <Yv8sg3J8PLD56osY@xsang-OptiPlex-9020>
+In-Reply-To: <d1b1d434-059d-4d76-5fc6-092ab9ba6e16@huawei.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2317402912589362322==
+--===============5105173791183489945==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon 22-08-22 00:17:35, Shakeel Butt wrote:
-> For cgroups using low or min protections, the function
-> propagate_protected_usage() was doing an atomic xchg() operation
-> irrespectively. It only needs to do that operation if the new value of
-> protection is different from older one. This patch does that.
-
-This doesn't really explain why.
-
-> To evaluate the impact of this optimization, on a 72 CPUs machine, we
-> ran the following workload in a three level of cgroup hierarchy with top
-> level having min and low setup appropriately. More specifically
-> memory.min equal to size of netperf binary and memory.low double of
-> that.
-
-I have hard time to really grasp what is the actual setup and why it
-matters and why the patch makes any difference. Please elaborate some
-more here.
-
->  $ netserver -6
->  # 36 instances of netperf with following params
->  $ netperf -6 -H ::1 -l 60 -t TCP_SENDFILE -- -m 10K
+On Thu, Aug 18, 2022 at 10:28:30AM +0100, John Garry wrote:
+> On 18/08/2022 03:06, Oliver Sang wrote:
 > =
 
-> Results (average throughput of netperf):
-> Without (6.0-rc1)	10482.7 Mbps
-> With patch		14542.5 Mbps (38.7% improvement)
+> Hi Oliver,
 > =
 
-> With the patch, the throughput improved by 38.7%
+> > > > did I do the right thing?
+> > > Sorry but I was not really interested in 4cbfca5f77 and I see where t=
+hat
+> > > build error is coming, but don't be concerned with it. However, for
+> > > avoidance of doubt, if you have results for vanilla v6.0-rc1 then tha=
+t would
+> > > be appreciated.
+> > for v6.0-rc1, it's still 512/512
+> > =
+
+> > > I will also send a separate patch for testing if you don't mind.
+> > sure! we are very glad that we could help.
 > =
 
-> Signed-off-by: Shakeel Butt <shakeelb@google.com>
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> ---
->  mm/page_counter.c | 13 ++++++-------
->  1 file changed, 6 insertions(+), 7 deletions(-)
+> As you probably saw, I sent "[RFT PATCH] ata: libata: Set __ATA_BASE_SHT
+> max_sectors" for testing on top of v6.0-rc1, and I hope that then we can =
+get
+> same performance as v5.19
+
+yeah, our test confirmed your expectation:
+
+stress-ng.copy-file.ops_per_sec
+v5.19                 - 26.85
+v6.0-rc1              - 23.03
+v6.0-rc1 + your patch - 26.94
+
 > =
 
-> diff --git a/mm/page_counter.c b/mm/page_counter.c
-> index eb156ff5d603..47711aa28161 100644
-> --- a/mm/page_counter.c
-> +++ b/mm/page_counter.c
-> @@ -17,24 +17,23 @@ static void propagate_protected_usage(struct page_cou=
-nter *c,
->  				      unsigned long usage)
->  {
->  	unsigned long protected, old_protected;
-> -	unsigned long low, min;
->  	long delta;
->  =
-
->  	if (!c->parent)
->  		return;
->  =
-
-> -	min =3D READ_ONCE(c->min);
-> -	if (min || atomic_long_read(&c->min_usage)) {
-> -		protected =3D min(usage, min);
-> +	protected =3D min(usage, READ_ONCE(c->min));
-> +	old_protected =3D atomic_long_read(&c->min_usage);
-> +	if (protected !=3D old_protected) {
-
-I have to cache that code back into brain. It is really subtle thing and
-it is not really obvious why this is still correct. I will think about
-that some more but the changelog could help with that a lot.
-
--- =
-
-Michal Hocko
-SUSE Labs
---===============2317402912589362322==--
+> Thanks,
+> John
+--===============5105173791183489945==--
 
