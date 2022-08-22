@@ -1,65 +1,108 @@
-Content-Type: multipart/mixed; boundary="===============5949120939544846963=="
+Content-Type: multipart/mixed; boundary="===============2144717527607396955=="
 MIME-Version: 1.0
 From: Shakeel Butt <shakeelb@google.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH 1/3] mm: page_counter: remove unneeded atomic ops for low/min
-Date: Mon, 22 Aug 2022 07:55:58 -0700
-Message-ID: <CALvZod720nwfP68OM2QtyyWJpOV5aO8xF6iuN0U2hpX9Pzj8PA@mail.gmail.com>
-In-Reply-To: <YwNX+vq9svMynVgW@dhcp22.suse.cz>
+Subject: Re: [PATCH 2/3] mm: page_counter: rearrange struct page_counter fields
+Date: Mon, 22 Aug 2022 08:06:14 -0700
+Message-ID: <CALvZod5pw_7hnH44hdC3rDGQxQB2XATrViNNGosG3FnUoWo-4A@mail.gmail.com>
+In-Reply-To: <YwNZD4YlRkvQCWFi@dhcp22.suse.cz>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5949120939544846963==
+--===============2144717527607396955==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Aug 22, 2022 at 3:18 AM Michal Hocko <mhocko@suse.com> wrote:
+On Mon, Aug 22, 2022 at 3:23 AM Michal Hocko <mhocko@suse.com> wrote:
 >
-> On Mon 22-08-22 11:55:33, Michal Hocko wrote:
-> > On Mon 22-08-22 00:17:35, Shakeel Butt wrote:
-> [...]
-> > > diff --git a/mm/page_counter.c b/mm/page_counter.c
-> > > index eb156ff5d603..47711aa28161 100644
-> > > --- a/mm/page_counter.c
-> > > +++ b/mm/page_counter.c
-> > > @@ -17,24 +17,23 @@ static void propagate_protected_usage(struct page=
-_counter *c,
-> > >                                   unsigned long usage)
-> > >  {
-> > >     unsigned long protected, old_protected;
-> > > -   unsigned long low, min;
-> > >     long delta;
-> > >
-> > >     if (!c->parent)
-> > >             return;
-> > >
-> > > -   min =3D READ_ONCE(c->min);
-> > > -   if (min || atomic_long_read(&c->min_usage)) {
-> > > -           protected =3D min(usage, min);
-> > > +   protected =3D min(usage, READ_ONCE(c->min));
-> > > +   old_protected =3D atomic_long_read(&c->min_usage);
-> > > +   if (protected !=3D old_protected) {
+> On Mon 22-08-22 00:17:36, Shakeel Butt wrote:
+> > With memcg v2 enabled, memcg->memory.usage is a very hot member for
+> > the workloads doing memcg charging on multiple CPUs concurrently.
+> > Particularly the network intensive workloads. In addition, there is a
+> > false cache sharing between memory.usage and memory.high on the charge
+> > path. This patch moves the usage into a separate cacheline and move all
+> > the read most fields into separate cacheline.
 > >
-> > I have to cache that code back into brain. It is really subtle thing and
-> > it is not really obvious why this is still correct. I will think about
-> > that some more but the changelog could help with that a lot.
+> > To evaluate the impact of this optimization, on a 72 CPUs machine, we
+> > ran the following workload in a three level of cgroup hierarchy with top
+> > level having min and low setup appropriately. More specifically
+> > memory.min equal to size of netperf binary and memory.low double of
+> > that.
 >
-> OK, so the this patch will be most useful when the min > 0 && min <
-> usage because then the protection doesn't really change since the last
-> call. In other words when the usage grows above the protection and your
-> workload benefits from this change because that happens a lot as only a
-> part of the workload is protected. Correct?
-
-Yes, that is correct. I hope the experiment setup is clear now.
-
+> Again the workload description is not particularly useful. I guess the
+> only important aspect is the netserver part below and the number of CPUs
+> because min and low setup doesn't have much to do with this, right? At
+> least that is my reading of the memory.high mentioned above.
 >
-> Unless I have missed anything this shouldn't break the correctness but I
-> still have to think about the proportional distribution of the
-> protection because that adds to the complexity here.
 
-The patch is not changing any semantics. It is just removing an
-unnecessary atomic xchg() for a specific scenario (min > 0 && min <
-usage). I don't think there will be any change related to proportional
-distribution of the protection.
---===============5949120939544846963==--
+The experiment numbers below are for only this patch independently
+i.e. the unnecessary min/low atomic xchg() is still happening for both
+setups. I could run the experiment without setting min and low but I
+wanted to keep the setup exactly the same for all three optimizations.
+
+This patch and the following perf numbers shows only the impact of
+removing false sharing in struct page_counter for memcg->memory on the
+charging code path.
+
+> >  $ netserver -6
+> >  # 36 instances of netperf with following params
+> >  $ netperf -6 -H ::1 -l 60 -t TCP_SENDFILE -- -m 10K
+> >
+> > Results (average throughput of netperf):
+> > Without (6.0-rc1)     10482.7 Mbps
+> > With patch            12413.7 Mbps (18.4% improvement)
+> >
+> > With the patch, the throughput improved by 18.4%.
+> >
+> > One side-effect of this patch is the increase in the size of struct
+> > mem_cgroup. However for the performance improvement, this additional
+> > size is worth it. In addition there are opportunities to reduce the size
+> > of struct mem_cgroup like deprecation of kmem and tcpmem page counters
+> > and better packing.
+> >
+> > Signed-off-by: Shakeel Butt <shakeelb@google.com>
+> > Reported-by: kernel test robot <oliver.sang@intel.com>
+> > ---
+> >  include/linux/page_counter.h | 34 +++++++++++++++++++++++-----------
+> >  1 file changed, 23 insertions(+), 11 deletions(-)
+> >
+> > diff --git a/include/linux/page_counter.h b/include/linux/page_counter.h
+> > index 679591301994..8ce99bde645f 100644
+> > --- a/include/linux/page_counter.h
+> > +++ b/include/linux/page_counter.h
+> > @@ -3,15 +3,27 @@
+> >  #define _LINUX_PAGE_COUNTER_H
+> >
+> >  #include <linux/atomic.h>
+> > +#include <linux/cache.h>
+> >  #include <linux/kernel.h>
+> >  #include <asm/page.h>
+> >
+> > +#if defined(CONFIG_SMP)
+> > +struct pc_padding {
+> > +     char x[0];
+> > +} ____cacheline_internodealigned_in_smp;
+> > +#define PC_PADDING(name)     struct pc_padding name
+> > +#else
+> > +#define PC_PADDING(name)
+> > +#endif
+> > +
+> >  struct page_counter {
+> > +     /*
+> > +      * Make sure 'usage' does not share cacheline with any other fiel=
+d. The
+> > +      * memcg->memory.usage is a hot member of struct mem_cgroup.
+> > +      */
+> > +     PC_PADDING(_pad1_);
+>
+> Why don't you simply require alignment for the structure?
+
+I don't just want the alignment of the structure. I want different
+fields of this structure to not share the cache line. More
+specifically the 'high' and 'usage' fields. With this change the usage
+will be its own cache line, the read-most fields will be on separate
+cache line and the fields which sometimes get updated on charge path
+based on some condition will be a different cache line from the
+previous two.
+--===============2144717527607396955==--
 
