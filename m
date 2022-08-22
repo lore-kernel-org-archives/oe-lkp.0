@@ -1,25 +1,28 @@
-Content-Type: multipart/mixed; boundary="===============8805999723932783451=="
+Content-Type: multipart/mixed; boundary="===============8174354652545791250=="
 MIME-Version: 1.0
 From: Feng Tang <feng.tang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH 2/3] mm: page_counter: rearrange struct page_counter fields
-Date: Mon, 22 Aug 2022 10:10:58 +0800
-Message-ID: <YwLlsr0jNq5m6v8z@feng-clx>
-In-Reply-To: <20220822001737.4120417-3-shakeelb@google.com>
+Subject: Re: [PATCH 3/3] memcg: increase MEMCG_CHARGE_BATCH to 64
+Date: Mon, 22 Aug 2022 10:30:51 +0800
+Message-ID: <YwLqW8Bc2CWCJsAE@feng-clx>
+In-Reply-To: <20220822001737.4120417-4-shakeelb@google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8805999723932783451==
+--===============8174354652545791250==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Aug 22, 2022 at 08:17:36AM +0800, Shakeel Butt wrote:
-> With memcg v2 enabled, memcg->memory.usage is a very hot member for
-> the workloads doing memcg charging on multiple CPUs concurrently.
-> Particularly the network intensive workloads. In addition, there is a
-> false cache sharing between memory.usage and memory.high on the charge
-> path. This patch moves the usage into a separate cacheline and move all
-> the read most fields into separate cacheline.
+On Mon, Aug 22, 2022 at 08:17:37AM +0800, Shakeel Butt wrote:
+> For several years, MEMCG_CHARGE_BATCH was kept at 32 but with bigger
+> machines and the network intensive workloads requiring througput in
+> Gbps, 32 is too small and makes the memcg charging path a bottleneck.
+> For now, increase it to 64 for easy acceptance to 6.0. We will need to
+> revisit this in future for ever increasing demand of higher performance.
+> =
+
+> Please note that the memcg charge path drain the per-cpu memcg charge
+> stock, so there should not be any oom behavior change.
 > =
 
 > To evaluate the impact of this optimization, on a 72 CPUs machine, we
@@ -35,73 +38,53 @@ On Mon, Aug 22, 2022 at 08:17:36AM +0800, Shakeel Butt wrote:
 > =
 
 > Results (average throughput of netperf):
-> Without (6.0-rc1)	10482.7 Mbps
-> With patch		12413.7 Mbps (18.4% improvement)
+> Without (6.0-rc1)       10482.7 Mbps
+> With patch              17064.7 Mbps (62.7% improvement)
 > =
 
-> With the patch, the throughput improved by 18.4%.
-> =
-
-> One side-effect of this patch is the increase in the size of struct
-> mem_cgroup. However for the performance improvement, this additional
-> size is worth it. In addition there are opportunities to reduce the size
-> of struct mem_cgroup like deprecation of kmem and tcpmem page counters
-> and better packing.
+> With the patch, the throughput improved by 62.7%.
 > =
 
 > Signed-off-by: Shakeel Butt <shakeelb@google.com>
 > Reported-by: kernel test robot <oliver.sang@intel.com>
 
-Looks good to me, with one nit below. =
-
+This batch number has long been a pain point :) thanks for the work!
 
 Reviewed-by: Feng Tang <feng.tang@intel.com>
 
+- Feng
+
 > ---
->  include/linux/page_counter.h | 34 +++++++++++++++++++++++-----------
->  1 file changed, 23 insertions(+), 11 deletions(-)
+>  include/linux/memcontrol.h | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
 > =
 
-> diff --git a/include/linux/page_counter.h b/include/linux/page_counter.h
-> index 679591301994..8ce99bde645f 100644
-> --- a/include/linux/page_counter.h
-> +++ b/include/linux/page_counter.h
-> @@ -3,15 +3,27 @@
->  #define _LINUX_PAGE_COUNTER_H
+> diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
+> index 4d31ce55b1c0..70ae91188e16 100644
+> --- a/include/linux/memcontrol.h
+> +++ b/include/linux/memcontrol.h
+> @@ -354,10 +354,11 @@ struct mem_cgroup {
+>  };
 >  =
 
->  #include <linux/atomic.h>
-> +#include <linux/cache.h>
->  #include <linux/kernel.h>
->  #include <asm/page.h>
+>  /*
+> - * size of first charge trial. "32" comes from vmscan.c's magic value.
+> - * TODO: maybe necessary to use big numbers in big irons.
+> + * size of first charge trial.
+> + * TODO: maybe necessary to use big numbers in big irons or dynamic base=
+d of the
+> + * workload.
+>   */
+> -#define MEMCG_CHARGE_BATCH 32U
+> +#define MEMCG_CHARGE_BATCH 64U
 >  =
 
-> +#if defined(CONFIG_SMP)
-> +struct pc_padding {
-> +	char x[0];
-> +} ____cacheline_internodealigned_in_smp;
-> +#define PC_PADDING(name)	struct pc_padding name
-> +#else
-> +#define PC_PADDING(name)
-> +#endif
+>  extern struct mem_cgroup *root_mem_cgroup;
+>  =
 
-There are 2 similar padding definitions in mmzone.h and memcontrol.h:
+> -- =
 
-	struct memcg_padding {
-		char x[0];
-	} ____cacheline_internodealigned_in_smp;
-	#define MEMCG_PADDING(name)      struct memcg_padding name
-
-	struct zone_padding {
-		char x[0];
-	} ____cacheline_internodealigned_in_smp;
-	#define ZONE_PADDING(name)	struct zone_padding name;
-
-Maybe we can generalize them, and lift it into include/cache.h? so
-that more places can reuse it in future.
-
-Thanks,
-Feng
-
---===============8805999723932783451==--
+> 2.37.1.595.g718a3a8f04-goog
+>=20
+--===============8174354652545791250==--
 
