@@ -1,22 +1,24 @@
-Content-Type: multipart/mixed; boundary="===============3802680924569302045=="
+Content-Type: multipart/mixed; boundary="===============8733597673843377223=="
 MIME-Version: 1.0
 From: Shakeel Butt <shakeelb@google.com>
 To: lkp@lists.01.org
-Subject: [PATCH 1/3] mm: page_counter: remove unneeded atomic ops for low/min
-Date: Mon, 22 Aug 2022 00:17:35 +0000
-Message-ID: <20220822001737.4120417-2-shakeelb@google.com>
+Subject: [PATCH 2/3] mm: page_counter: rearrange struct page_counter fields
+Date: Mon, 22 Aug 2022 00:17:36 +0000
+Message-ID: <20220822001737.4120417-3-shakeelb@google.com>
 In-Reply-To: <20220822001737.4120417-1-shakeelb@google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3802680924569302045==
+--===============8733597673843377223==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-For cgroups using low or min protections, the function
-propagate_protected_usage() was doing an atomic xchg() operation
-irrespectively. It only needs to do that operation if the new value of
-protection is different from older one. This patch does that.
+With memcg v2 enabled, memcg->memory.usage is a very hot member for
+the workloads doing memcg charging on multiple CPUs concurrently.
+Particularly the network intensive workloads. In addition, there is a
+false cache sharing between memory.usage and memory.high on the charge
+path. This patch moves the usage into a separate cacheline and move all
+the read most fields into separate cacheline.
 
 To evaluate the impact of this optimization, on a 72 CPUs machine, we
 ran the following workload in a three level of cgroup hierarchy with top
@@ -30,58 +32,91 @@ that.
 
 Results (average throughput of netperf):
 Without (6.0-rc1)	10482.7 Mbps
-With patch		14542.5 Mbps (38.7% improvement)
+With patch		12413.7 Mbps (18.4% improvement)
 
-With the patch, the throughput improved by 38.7%
+With the patch, the throughput improved by 18.4%.
+
+One side-effect of this patch is the increase in the size of struct
+mem_cgroup. However for the performance improvement, this additional
+size is worth it. In addition there are opportunities to reduce the size
+of struct mem_cgroup like deprecation of kmem and tcpmem page counters
+and better packing.
 
 Signed-off-by: Shakeel Butt <shakeelb@google.com>
 Reported-by: kernel test robot <oliver.sang@intel.com>
 ---
- mm/page_counter.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ include/linux/page_counter.h | 34 +++++++++++++++++++++++-----------
+ 1 file changed, 23 insertions(+), 11 deletions(-)
 
-diff --git a/mm/page_counter.c b/mm/page_counter.c
-index eb156ff5d603..47711aa28161 100644
---- a/mm/page_counter.c
-+++ b/mm/page_counter.c
-@@ -17,24 +17,23 @@ static void propagate_protected_usage(struct page_count=
-er *c,
- 				      unsigned long usage)
- {
- 	unsigned long protected, old_protected;
--	unsigned long low, min;
- 	long delta;
+diff --git a/include/linux/page_counter.h b/include/linux/page_counter.h
+index 679591301994..8ce99bde645f 100644
+--- a/include/linux/page_counter.h
++++ b/include/linux/page_counter.h
+@@ -3,15 +3,27 @@
+ #define _LINUX_PAGE_COUNTER_H
  =
 
- 	if (!c->parent)
- 		return;
+ #include <linux/atomic.h>
++#include <linux/cache.h>
+ #include <linux/kernel.h>
+ #include <asm/page.h>
  =
 
--	min =3D READ_ONCE(c->min);
--	if (min || atomic_long_read(&c->min_usage)) {
--		protected =3D min(usage, min);
-+	protected =3D min(usage, READ_ONCE(c->min));
-+	old_protected =3D atomic_long_read(&c->min_usage);
-+	if (protected !=3D old_protected) {
- 		old_protected =3D atomic_long_xchg(&c->min_usage, protected);
- 		delta =3D protected - old_protected;
- 		if (delta)
- 			atomic_long_add(delta, &c->parent->children_min_usage);
- 	}
++#if defined(CONFIG_SMP)
++struct pc_padding {
++	char x[0];
++} ____cacheline_internodealigned_in_smp;
++#define PC_PADDING(name)	struct pc_padding name
++#else
++#define PC_PADDING(name)
++#endif
++
+ struct page_counter {
++	/*
++	 * Make sure 'usage' does not share cacheline with any other field. The
++	 * memcg->memory.usage is a hot member of struct mem_cgroup.
++	 */
++	PC_PADDING(_pad1_);
+ 	atomic_long_t usage;
+-	unsigned long min;
+-	unsigned long low;
+-	unsigned long high;
+-	unsigned long max;
++	PC_PADDING(_pad2_);
  =
 
--	low =3D READ_ONCE(c->low);
--	if (low || atomic_long_read(&c->low_usage)) {
--		protected =3D min(usage, low);
-+	protected =3D min(usage, READ_ONCE(c->low));
-+	old_protected =3D atomic_long_read(&c->low_usage);
-+	if (protected !=3D old_protected) {
- 		old_protected =3D atomic_long_xchg(&c->low_usage, protected);
- 		delta =3D protected - old_protected;
- 		if (delta)
+ 	/* effective memory.min and memory.min usage tracking */
+ 	unsigned long emin;
+@@ -23,16 +35,16 @@ struct page_counter {
+ 	atomic_long_t low_usage;
+ 	atomic_long_t children_low_usage;
+ =
+
+-	/* legacy */
+ 	unsigned long watermark;
+ 	unsigned long failcnt;
+ =
+
+-	/*
+-	 * 'parent' is placed here to be far from 'usage' to reduce
+-	 * cache false sharing, as 'usage' is written mostly while
+-	 * parent is frequently read for cgroup's hierarchical
+-	 * counting nature.
+-	 */
++	/* Keep all the read most fields in a separete cacheline. */
++	PC_PADDING(_pad3_);
++
++	unsigned long min;
++	unsigned long low;
++	unsigned long high;
++	unsigned long max;
+ 	struct page_counter *parent;
+ };
+ =
+
 -- =
 
 2.37.1.595.g718a3a8f04-goog
 
---===============3802680924569302045==--
+--===============8733597673843377223==--
 
