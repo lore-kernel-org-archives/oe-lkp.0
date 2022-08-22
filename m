@@ -1,45 +1,46 @@
-Content-Type: multipart/mixed; boundary="===============4242362483992182141=="
+Content-Type: multipart/mixed; boundary="===============7317394414618756220=="
 MIME-Version: 1.0
-From: Michal Hocko <mhocko@suse.com>
+From: Shakeel Butt <shakeelb@google.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH 3/3] memcg: increase MEMCG_CHARGE_BATCH to 64
-Date: Mon, 22 Aug 2022 17:22:39 +0200
-Message-ID: <YwOfP/6PtS8BxNhz@dhcp22.suse.cz>
-In-Reply-To: <CALvZod5YGVSTvsg25P6goqyGEY21eVnahsXcs2BGsp6OXxLwsg@mail.gmail.com>
+Subject: Re: [PATCH 2/3] mm: page_counter: rearrange struct page_counter fields
+Date: Mon, 22 Aug 2022 09:04:59 -0700
+Message-ID: <CALvZod4whYX+0ZuCGgyKuG-Q_9d0g7N_x+=WXOeB_1TM=3Q7vg@mail.gmail.com>
+In-Reply-To: <YwOde3qFvne7Umld@dhcp22.suse.cz>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4242362483992182141==
+--===============7317394414618756220==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon 22-08-22 08:09:01, Shakeel Butt wrote:
-> On Mon, Aug 22, 2022 at 3:47 AM Michal Hocko <mhocko@suse.com> wrote:
-> >
+On Mon, Aug 22, 2022 at 8:15 AM Michal Hocko <mhocko@suse.com> wrote:
+>
+> On Mon 22-08-22 08:06:14, Shakeel Butt wrote:
 > [...]
+> > > >  struct page_counter {
+> > > > +     /*
+> > > > +      * Make sure 'usage' does not share cacheline with any other =
+field. The
+> > > > +      * memcg->memory.usage is a hot member of struct mem_cgroup.
+> > > > +      */
+> > > > +     PC_PADDING(_pad1_);
+> > >
+> > > Why don't you simply require alignment for the structure?
 > >
-> > > To evaluate the impact of this optimization, on a 72 CPUs machine, we
-> > > ran the following workload in a three level of cgroup hierarchy with =
-top
-> > > level having min and low setup appropriately. More specifically
-> > > memory.min equal to size of netperf binary and memory.low double of
-> > > that.
-> >
-> > a similar feedback to the test case description as with other patches.
-> =
+> > I don't just want the alignment of the structure. I want different
+> > fields of this structure to not share the cache line. More
+> > specifically the 'high' and 'usage' fields. With this change the usage
+> > will be its own cache line, the read-most fields will be on separate
+> > cache line and the fields which sometimes get updated on charge path
+> > based on some condition will be a different cache line from the
+> > previous two.
+>
+> I do not follow. If you make an explicit requirement for the structure
+> alignement then the first field in the structure will be guarantied to
+> have that alignement and you achieve the rest to be in the other cache
+> line by adding padding behind that.
 
-> What more info should I add to the description? Why did I set up min
-> and low or something else?
-
-I do see why you wanted to keep the test consistent over those three
-patches. I would just drop the reference to the protection configuration
-because it likely doesn't make much of an impact, does it? It is the
-multi cpu setup and false sharing that makes the real difference. Or am
-I wrong in assuming that?
-
--- =
-
-Michal Hocko
-SUSE Labs
---===============4242362483992182141==--
+Oh, you were talking explicitly about _pad1_, yes, we can remove it
+and make the struct cache align. I will do it in the next version.
+--===============7317394414618756220==--
 
