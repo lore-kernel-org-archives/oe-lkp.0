@@ -1,63 +1,87 @@
-Content-Type: multipart/mixed; boundary="===============7665919592770658282=="
+Content-Type: multipart/mixed; boundary="===============3802680924569302045=="
 MIME-Version: 1.0
 From: Shakeel Butt <shakeelb@google.com>
 To: lkp@lists.01.org
-Subject: [PATCH 0/3] memcg: optimizatize charge codepath
-Date: Mon, 22 Aug 2022 00:17:34 +0000
-Message-ID: <20220822001737.4120417-1-shakeelb@google.com>
+Subject: [PATCH 1/3] mm: page_counter: remove unneeded atomic ops for low/min
+Date: Mon, 22 Aug 2022 00:17:35 +0000
+Message-ID: <20220822001737.4120417-2-shakeelb@google.com>
+In-Reply-To: <20220822001737.4120417-1-shakeelb@google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7665919592770658282==
+--===============3802680924569302045==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Recently Linux networking stack has moved from a very old per socket
-pre-charge caching to per-cpu caching to avoid pre-charge fragmentation
-and unwarranted OOMs. One impact of this change is that for network
-traffic workloads, memcg charging codepath can become a bottleneck. The
-kernel test robot has also reported this regression. This patch series
-tries to improve the memcg charging for such workloads.
+For cgroups using low or min protections, the function
+propagate_protected_usage() was doing an atomic xchg() operation
+irrespectively. It only needs to do that operation if the new value of
+protection is different from older one. This patch does that.
 
-This patch series implement three optimizations:
-(A) Reduce atomic ops in page counter update path.
-(B) Change layout of struct page_counter to eliminate false sharing
-    between usage and high.
-(C) Increase the memcg charge batch to 64.
-
-To evaluate the impact of these optimizations, on a 72 CPUs machine, we
-ran the following workload in root memcg and then compared with scenario
-where the workload is run in a three level of cgroup hierarchy with top
-level having min and low setup appropriately.
+To evaluate the impact of this optimization, on a 72 CPUs machine, we
+ran the following workload in a three level of cgroup hierarchy with top
+level having min and low setup appropriately. More specifically
+memory.min equal to size of netperf binary and memory.low double of
+that.
 
  $ netserver -6
  # 36 instances of netperf with following params
  $ netperf -6 -H ::1 -l 60 -t TCP_SENDFILE -- -m 10K
 
 Results (average throughput of netperf):
-1. root memcg		21694.8
-2. 6.0-rc1		10482.7 (-51.6%)
-3. 6.0-rc1 + (A)	14542.5 (-32.9%)
-4. 6.0-rc1 + (B)	12413.7 (-42.7%)
-5. 6.0-rc1 + (C)	17063.7 (-21.3%)
-6. 6.0-rc1 + (A+B+C)	20120.3 (-7.2%)
+Without (6.0-rc1)	10482.7 Mbps
+With patch		14542.5 Mbps (38.7% improvement)
 
-With all three optimizations, the memcg overhead of this workload has
-been reduced from 51.6% to just 7.2%.
+With the patch, the throughput improved by 38.7%
 
-Shakeel Butt (3):
-  mm: page_counter: remove unneeded atomic ops for low/min
-  mm: page_counter: rearrange struct page_counter fields
-  memcg: increase MEMCG_CHARGE_BATCH to 64
+Signed-off-by: Shakeel Butt <shakeelb@google.com>
+Reported-by: kernel test robot <oliver.sang@intel.com>
+---
+ mm/page_counter.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
- include/linux/memcontrol.h   |  7 ++++---
- include/linux/page_counter.h | 34 +++++++++++++++++++++++-----------
- mm/page_counter.c            | 13 ++++++-------
- 3 files changed, 33 insertions(+), 21 deletions(-)
+diff --git a/mm/page_counter.c b/mm/page_counter.c
+index eb156ff5d603..47711aa28161 100644
+--- a/mm/page_counter.c
++++ b/mm/page_counter.c
+@@ -17,24 +17,23 @@ static void propagate_protected_usage(struct page_count=
+er *c,
+ 				      unsigned long usage)
+ {
+ 	unsigned long protected, old_protected;
+-	unsigned long low, min;
+ 	long delta;
+ =
 
+ 	if (!c->parent)
+ 		return;
+ =
+
+-	min =3D READ_ONCE(c->min);
+-	if (min || atomic_long_read(&c->min_usage)) {
+-		protected =3D min(usage, min);
++	protected =3D min(usage, READ_ONCE(c->min));
++	old_protected =3D atomic_long_read(&c->min_usage);
++	if (protected !=3D old_protected) {
+ 		old_protected =3D atomic_long_xchg(&c->min_usage, protected);
+ 		delta =3D protected - old_protected;
+ 		if (delta)
+ 			atomic_long_add(delta, &c->parent->children_min_usage);
+ 	}
+ =
+
+-	low =3D READ_ONCE(c->low);
+-	if (low || atomic_long_read(&c->low_usage)) {
+-		protected =3D min(usage, low);
++	protected =3D min(usage, READ_ONCE(c->low));
++	old_protected =3D atomic_long_read(&c->low_usage);
++	if (protected !=3D old_protected) {
+ 		old_protected =3D atomic_long_xchg(&c->low_usage, protected);
+ 		delta =3D protected - old_protected;
+ 		if (delta)
 -- =
 
 2.37.1.595.g718a3a8f04-goog
 
---===============7665919592770658282==--
+--===============3802680924569302045==--
 
