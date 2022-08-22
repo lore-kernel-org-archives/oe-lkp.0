@@ -1,43 +1,65 @@
-Content-Type: multipart/mixed; boundary="===============1636674506091930401=="
+Content-Type: multipart/mixed; boundary="===============5949120939544846963=="
 MIME-Version: 1.0
-From: John Garry <john.garry@huawei.com>
+From: Shakeel Butt <shakeelb@google.com>
 To: lkp@lists.01.org
-Subject: Re: [ata] 0568e61225: stress-ng.copy-file.ops_per_sec -15.0% regression
-Date: Fri, 19 Aug 2022 08:54:42 +0100
-Message-ID: <4014a51d-0925-c0dc-70dc-1a465dd278e7@huawei.com>
-In-Reply-To: <Yv8sg3J8PLD56osY@xsang-OptiPlex-9020>
+Subject: Re: [PATCH 1/3] mm: page_counter: remove unneeded atomic ops for low/min
+Date: Mon, 22 Aug 2022 07:55:58 -0700
+Message-ID: <CALvZod720nwfP68OM2QtyyWJpOV5aO8xF6iuN0U2hpX9Pzj8PA@mail.gmail.com>
+In-Reply-To: <YwNX+vq9svMynVgW@dhcp22.suse.cz>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1636674506091930401==
+--===============5949120939544846963==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 19/08/2022 07:24, Oliver Sang wrote:
->> As you probably saw, I sent "[RFT PATCH] ata: libata: Set __ATA_BASE_SHT
->> max_sectors" for testing on top of v6.0-rc1, and I hope that then we can=
- get
+On Mon, Aug 22, 2022 at 3:18 AM Michal Hocko <mhocko@suse.com> wrote:
+>
+> On Mon 22-08-22 11:55:33, Michal Hocko wrote:
+> > On Mon 22-08-22 00:17:35, Shakeel Butt wrote:
+> [...]
+> > > diff --git a/mm/page_counter.c b/mm/page_counter.c
+> > > index eb156ff5d603..47711aa28161 100644
+> > > --- a/mm/page_counter.c
+> > > +++ b/mm/page_counter.c
+> > > @@ -17,24 +17,23 @@ static void propagate_protected_usage(struct page=
+_counter *c,
+> > >                                   unsigned long usage)
+> > >  {
+> > >     unsigned long protected, old_protected;
+> > > -   unsigned long low, min;
+> > >     long delta;
+> > >
+> > >     if (!c->parent)
+> > >             return;
+> > >
+> > > -   min =3D READ_ONCE(c->min);
+> > > -   if (min || atomic_long_read(&c->min_usage)) {
+> > > -           protected =3D min(usage, min);
+> > > +   protected =3D min(usage, READ_ONCE(c->min));
+> > > +   old_protected =3D atomic_long_read(&c->min_usage);
+> > > +   if (protected !=3D old_protected) {
+> >
+> > I have to cache that code back into brain. It is really subtle thing and
+> > it is not really obvious why this is still correct. I will think about
+> > that some more but the changelog could help with that a lot.
+>
+> OK, so the this patch will be most useful when the min > 0 && min <
+> usage because then the protection doesn't really change since the last
+> call. In other words when the usage grows above the protection and your
+> workload benefits from this change because that happens a lot as only a
+> part of the workload is protected. Correct?
 
-Based on result below, I wonder if SAS HBAs (which use libata) should =
+Yes, that is correct. I hope the experiment setup is clear now.
 
-not use default SCSI max_sectors also. Any libsas HBA driver does today, =
+>
+> Unless I have missed anything this shouldn't break the correctness but I
+> still have to think about the proportional distribution of the
+> protection because that adds to the complexity here.
 
-IIRC.
-
->> same performance as v5.19
-> yeah, our test confirmed your expectation:
-> =
-
-> stress-ng.copy-file.ops_per_sec
-> v5.19                 - 26.85
-> v6.0-rc1              - 23.03
-> v6.0-rc1 + your patch - 26.94
-> =
-
-
-great, thanks
-
-Thanks,
-John
---===============1636674506091930401==--
+The patch is not changing any semantics. It is just removing an
+unnecessary atomic xchg() for a specific scenario (min > 0 && min <
+usage). I don't think there will be any change related to proportional
+distribution of the protection.
+--===============5949120939544846963==--
 
