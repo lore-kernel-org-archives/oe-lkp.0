@@ -1,94 +1,58 @@
-Content-Type: multipart/mixed; boundary="===============4860063059949734193=="
+Content-Type: multipart/mixed; boundary="===============5552283602482310354=="
 MIME-Version: 1.0
 From: Roman Gushchin <roman.gushchin@linux.dev>
 To: lkp@lists.01.org
-Subject: Re: [PATCH 1/3] mm: page_counter: remove unneeded atomic ops for low/min
-Date: Mon, 22 Aug 2022 11:23:56 -0700
-Message-ID: <YwPJvGL6ZhgrYTeK@P9FQF9L96D>
-In-Reply-To: <20220822001737.4120417-2-shakeelb@google.com>
+Subject: Re: [PATCH 2/3] mm: page_counter: rearrange struct page_counter fields
+Date: Mon, 22 Aug 2022 11:27:46 -0700
+Message-ID: <YwPKojTHxV4PFoKn@P9FQF9L96D>
+In-Reply-To: <CALvZod4whYX+0ZuCGgyKuG-Q_9d0g7N_x+=WXOeB_1TM=3Q7vg@mail.gmail.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============4860063059949734193==
+--===============5552283602482310354==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Aug 22, 2022 at 12:17:35AM +0000, Shakeel Butt wrote:
-> For cgroups using low or min protections, the function
-> propagate_protected_usage() was doing an atomic xchg() operation
-> irrespectively. It only needs to do that operation if the new value of
-> protection is different from older one. This patch does that.
+On Mon, Aug 22, 2022 at 09:04:59AM -0700, Shakeel Butt wrote:
+> On Mon, Aug 22, 2022 at 8:15 AM Michal Hocko <mhocko@suse.com> wrote:
+> >
+> > On Mon 22-08-22 08:06:14, Shakeel Butt wrote:
+> > [...]
+> > > > >  struct page_counter {
+> > > > > +     /*
+> > > > > +      * Make sure 'usage' does not share cacheline with any othe=
+r field. The
+> > > > > +      * memcg->memory.usage is a hot member of struct mem_cgroup.
+> > > > > +      */
+> > > > > +     PC_PADDING(_pad1_);
+> > > >
+> > > > Why don't you simply require alignment for the structure?
+> > >
+> > > I don't just want the alignment of the structure. I want different
+> > > fields of this structure to not share the cache line. More
+> > > specifically the 'high' and 'usage' fields. With this change the usage
+> > > will be its own cache line, the read-most fields will be on separate
+> > > cache line and the fields which sometimes get updated on charge path
+> > > based on some condition will be a different cache line from the
+> > > previous two.
+> >
+> > I do not follow. If you make an explicit requirement for the structure
+> > alignement then the first field in the structure will be guarantied to
+> > have that alignement and you achieve the rest to be in the other cache
+> > line by adding padding behind that.
 > =
 
-> To evaluate the impact of this optimization, on a 72 CPUs machine, we
-> ran the following workload in a three level of cgroup hierarchy with top
-> level having min and low setup appropriately. More specifically
-> memory.min equal to size of netperf binary and memory.low double of
-> that.
-> =
+> Oh, you were talking explicitly about _pad1_, yes, we can remove it
+> and make the struct cache align. I will do it in the next version.
 
->  $ netserver -6
->  # 36 instances of netperf with following params
->  $ netperf -6 -H ::1 -l 60 -t TCP_SENDFILE -- -m 10K
-> =
-
-> Results (average throughput of netperf):
-> Without (6.0-rc1)	10482.7 Mbps
-> With patch		14542.5 Mbps (38.7% improvement)
-> =
-
-> With the patch, the throughput improved by 38.7%
-
-Nice savings!
-
-> =
-
-> Signed-off-by: Shakeel Butt <shakeelb@google.com>
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> ---
->  mm/page_counter.c | 13 ++++++-------
->  1 file changed, 6 insertions(+), 7 deletions(-)
-> =
-
-> diff --git a/mm/page_counter.c b/mm/page_counter.c
-> index eb156ff5d603..47711aa28161 100644
-> --- a/mm/page_counter.c
-> +++ b/mm/page_counter.c
-> @@ -17,24 +17,23 @@ static void propagate_protected_usage(struct page_cou=
-nter *c,
->  				      unsigned long usage)
->  {
->  	unsigned long protected, old_protected;
-> -	unsigned long low, min;
->  	long delta;
->  =
-
->  	if (!c->parent)
->  		return;
->  =
-
-> -	min =3D READ_ONCE(c->min);
-> -	if (min || atomic_long_read(&c->min_usage)) {
-> -		protected =3D min(usage, min);
-> +	protected =3D min(usage, READ_ONCE(c->min));
-> +	old_protected =3D atomic_long_read(&c->min_usage);
-> +	if (protected !=3D old_protected) {
->  		old_protected =3D atomic_long_xchg(&c->min_usage, protected);
->  		delta =3D protected - old_protected;
->  		if (delta)
->  			atomic_long_add(delta, &c->parent->children_min_usage);
-
-What if there is a concurrent update of c->min_usage? Then the patched vers=
-ion
-can miss an update. I can't imagine a case when it will lead to bad consequ=
-ences,
-so probably it's ok. But not super obvious.
-I think the way to think of it is that a missed update will be fixed by the=
- next
-one, so it's ok to run some time with old numbers.
-
+Yes, please, it caught my eyes too.
+With this change:
 Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
 
+Also, can you, please, include the numbers on the additional memory overhea=
+d?
+I think it still worth it, just think we need to include them for a record.
+
 Thanks!
---===============4860063059949734193==--
+--===============5552283602482310354==--
 
