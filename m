@@ -1,28 +1,23 @@
-Content-Type: multipart/mixed; boundary="===============8174354652545791250=="
+Content-Type: multipart/mixed; boundary="===============8496025793005949578=="
 MIME-Version: 1.0
 From: Feng Tang <feng.tang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [PATCH 3/3] memcg: increase MEMCG_CHARGE_BATCH to 64
-Date: Mon, 22 Aug 2022 10:30:51 +0800
-Message-ID: <YwLqW8Bc2CWCJsAE@feng-clx>
-In-Reply-To: <20220822001737.4120417-4-shakeelb@google.com>
+Subject: Re: [PATCH 1/3] mm: page_counter: remove unneeded atomic ops for low/min
+Date: Mon, 22 Aug 2022 10:39:02 +0800
+Message-ID: <YwLsRqJDRtshKQ1P@feng-clx>
+In-Reply-To: <20220822001737.4120417-2-shakeelb@google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8174354652545791250==
+--===============8496025793005949578==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Aug 22, 2022 at 08:17:37AM +0800, Shakeel Butt wrote:
-> For several years, MEMCG_CHARGE_BATCH was kept at 32 but with bigger
-> machines and the network intensive workloads requiring througput in
-> Gbps, 32 is too small and makes the memcg charging path a bottleneck.
-> For now, increase it to 64 for easy acceptance to 6.0. We will need to
-> revisit this in future for ever increasing demand of higher performance.
-> =
-
-> Please note that the memcg charge path drain the per-cpu memcg charge
-> stock, so there should not be any oom behavior change.
+On Mon, Aug 22, 2022 at 08:17:35AM +0800, Shakeel Butt wrote:
+> For cgroups using low or min protections, the function
+> propagate_protected_usage() was doing an atomic xchg() operation
+> irrespectively. It only needs to do that operation if the new value of
+> protection is different from older one. This patch does that.
 > =
 
 > To evaluate the impact of this optimization, on a 72 CPUs machine, we
@@ -38,53 +33,69 @@ On Mon, Aug 22, 2022 at 08:17:37AM +0800, Shakeel Butt wrote:
 > =
 
 > Results (average throughput of netperf):
-> Without (6.0-rc1)       10482.7 Mbps
-> With patch              17064.7 Mbps (62.7% improvement)
+> Without (6.0-rc1)	10482.7 Mbps
+> With patch		14542.5 Mbps (38.7% improvement)
 > =
 
-> With the patch, the throughput improved by 62.7%.
+> With the patch, the throughput improved by 38.7%
 > =
 
 > Signed-off-by: Shakeel Butt <shakeelb@google.com>
 > Reported-by: kernel test robot <oliver.sang@intel.com>
 
-This batch number has long been a pain point :) thanks for the work!
-
 Reviewed-by: Feng Tang <feng.tang@intel.com>
+
+Thanks!
 
 - Feng
 
 > ---
->  include/linux/memcontrol.h | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
+>  mm/page_counter.c | 13 ++++++-------
+>  1 file changed, 6 insertions(+), 7 deletions(-)
 > =
 
-> diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-> index 4d31ce55b1c0..70ae91188e16 100644
-> --- a/include/linux/memcontrol.h
-> +++ b/include/linux/memcontrol.h
-> @@ -354,10 +354,11 @@ struct mem_cgroup {
->  };
+> diff --git a/mm/page_counter.c b/mm/page_counter.c
+> index eb156ff5d603..47711aa28161 100644
+> --- a/mm/page_counter.c
+> +++ b/mm/page_counter.c
+> @@ -17,24 +17,23 @@ static void propagate_protected_usage(struct page_cou=
+nter *c,
+>  				      unsigned long usage)
+>  {
+>  	unsigned long protected, old_protected;
+> -	unsigned long low, min;
+>  	long delta;
 >  =
 
->  /*
-> - * size of first charge trial. "32" comes from vmscan.c's magic value.
-> - * TODO: maybe necessary to use big numbers in big irons.
-> + * size of first charge trial.
-> + * TODO: maybe necessary to use big numbers in big irons or dynamic base=
-d of the
-> + * workload.
->   */
-> -#define MEMCG_CHARGE_BATCH 32U
-> +#define MEMCG_CHARGE_BATCH 64U
+>  	if (!c->parent)
+>  		return;
 >  =
 
->  extern struct mem_cgroup *root_mem_cgroup;
+> -	min =3D READ_ONCE(c->min);
+> -	if (min || atomic_long_read(&c->min_usage)) {
+> -		protected =3D min(usage, min);
+> +	protected =3D min(usage, READ_ONCE(c->min));
+> +	old_protected =3D atomic_long_read(&c->min_usage);
+> +	if (protected !=3D old_protected) {
+>  		old_protected =3D atomic_long_xchg(&c->min_usage, protected);
+>  		delta =3D protected - old_protected;
+>  		if (delta)
+>  			atomic_long_add(delta, &c->parent->children_min_usage);
+>  	}
 >  =
 
+> -	low =3D READ_ONCE(c->low);
+> -	if (low || atomic_long_read(&c->low_usage)) {
+> -		protected =3D min(usage, low);
+> +	protected =3D min(usage, READ_ONCE(c->low));
+> +	old_protected =3D atomic_long_read(&c->low_usage);
+> +	if (protected !=3D old_protected) {
+>  		old_protected =3D atomic_long_xchg(&c->low_usage, protected);
+>  		delta =3D protected - old_protected;
+>  		if (delta)
 > -- =
 
 > 2.37.1.595.g718a3a8f04-goog
 >=20
---===============8174354652545791250==--
+--===============8496025793005949578==--
 
