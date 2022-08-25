@@ -1,79 +1,54 @@
-Content-Type: multipart/mixed; boundary="===============0608686498229102131=="
+Content-Type: multipart/mixed; boundary="===============8768173091982419276=="
 MIME-Version: 1.0
-From: Shakeel Butt <shakeelb@google.com>
+From: Andrew Morton <akpm@linux-foundation.org>
 To: lkp@lists.01.org
-Subject: [PATCH v2 3/3] memcg: increase MEMCG_CHARGE_BATCH to 64
-Date: Thu, 25 Aug 2022 00:05:06 +0000
-Message-ID: <20220825000506.239406-4-shakeelb@google.com>
-In-Reply-To: <20220825000506.239406-1-shakeelb@google.com>
+Subject: Re: [PATCH v2 2/3] mm: page_counter: rearrange struct page_counter fields
+Date: Wed, 24 Aug 2022 17:33:30 -0700
+Message-ID: <20220824173330.2a15bcda24d2c3c248bc43c7@linux-foundation.org>
+In-Reply-To: <20220825000506.239406-3-shakeelb@google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============0608686498229102131==
+--===============8768173091982419276==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-For several years, MEMCG_CHARGE_BATCH was kept at 32 but with bigger
-machines and the network intensive workloads requiring througput in
-Gbps, 32 is too small and makes the memcg charging path a bottleneck.
-For now, increase it to 64 for easy acceptance to 6.0. We will need to
-revisit this in future for ever increasing demand of higher performance.
+On Thu, 25 Aug 2022 00:05:05 +0000 Shakeel Butt <shakeelb@google.com> wro=
+te:
 
-Please note that the memcg charge path drain the per-cpu memcg charge
-stock, so there should not be any oom behavior change. Though it does
-have impact on rstat flushing and high limit reclaim backoff.
+> With memcg v2 enabled, memcg->memory.usage is a very hot member for
+> the workloads doing memcg charging on multiple CPUs concurrently.
+> Particularly the network intensive workloads. In addition, there is a
+> false cache sharing between memory.usage and memory.high on the charge
+> path. This patch moves the usage into a separate cacheline and move all
+> the read most fields into separate cacheline.
+> =
 
-To evaluate the impact of this optimization, on a 72 CPUs machine, we
-ran the following workload in a three level of cgroup hierarchy.
+> To evaluate the impact of this optimization, on a 72 CPUs machine, we
+> ran the following workload in a three level of cgroup hierarchy.
+> =
 
- $ netserver -6
- # 36 instances of netperf with following params
- $ netperf -6 -H ::1 -l 60 -t TCP_SENDFILE -- -m 10K
+>  $ netserver -6
+>  # 36 instances of netperf with following params
+>  $ netperf -6 -H ::1 -l 60 -t TCP_SENDFILE -- -m 10K
+> =
 
-Results (average throughput of netperf):
-Without (6.0-rc1)       10482.7 Mbps
-With patch              17064.7 Mbps (62.7% improvement)
+> Results (average throughput of netperf):
+> Without (6.0-rc1)	10482.7 Mbps
+> With patch		12413.7 Mbps (18.4% improvement)
+> =
 
-With the patch, the throughput improved by 62.7%.
+> With the patch, the throughput improved by 18.4%.
+> =
 
-Signed-off-by: Shakeel Butt <shakeelb@google.com>
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-Reviewed-by: Feng Tang <feng.tang@intel.com>
-Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
----
-Changes since v1:
-- Updated commit message
+> One side-effect of this patch is the increase in the size of struct
+> mem_cgroup. For example with this patch on 64 bit build, the size of
+> struct mem_cgroup increased from 4032 bytes to 4416 bytes. However for
+> the performance improvement, this additional size is worth it. In
+> addition there are opportunities to reduce the size of struct
+> mem_cgroup like deprecation of kmem and tcpmem page counters and
+> better packing.
 
- include/linux/memcontrol.h | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-index 4d31ce55b1c0..70ae91188e16 100644
---- a/include/linux/memcontrol.h
-+++ b/include/linux/memcontrol.h
-@@ -354,10 +354,11 @@ struct mem_cgroup {
- };
- =
-
- /*
-- * size of first charge trial. "32" comes from vmscan.c's magic value.
-- * TODO: maybe necessary to use big numbers in big irons.
-+ * size of first charge trial.
-+ * TODO: maybe necessary to use big numbers in big irons or dynamic based =
-of the
-+ * workload.
-  */
--#define MEMCG_CHARGE_BATCH 32U
-+#define MEMCG_CHARGE_BATCH 64U
- =
-
- extern struct mem_cgroup *root_mem_cgroup;
- =
-
--- =
-
-2.37.1.595.g718a3a8f04-goog
-
---===============0608686498229102131==--
+Did you evaluate the effects of using a per-cpu counter of some form?
+--===============8768173091982419276==--
 
