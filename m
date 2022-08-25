@@ -1,19 +1,23 @@
-Content-Type: multipart/mixed; boundary="===============5041617829402365904=="
+Content-Type: multipart/mixed; boundary="===============5165515171512245976=="
 MIME-Version: 1.0
-From: Michal Hocko <mhocko@suse.com>
+From: Muchun Song <muchun.song@linux.dev>
 To: lkp@lists.01.org
 Subject: Re: [PATCH v2 3/3] memcg: increase MEMCG_CHARGE_BATCH to 64
-Date: Thu, 25 Aug 2022 08:49:05 +0200
-Message-ID: <YwcbYQHRuThE18QN@dhcp22.suse.cz>
+Date: Thu, 25 Aug 2022 16:30:48 +0800
+Message-ID: <4A0F7B38-2701-486D-A847-DCC4B49F8EAF@linux.dev>
 In-Reply-To: <20220825000506.239406-4-shakeelb@google.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5041617829402365904==
+--===============5165515171512245976==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Thu 25-08-22 00:05:06, Shakeel Butt wrote:
+
+
+> On Aug 25, 2022, at 08:05, Shakeel Butt <shakeelb@google.com> wrote:
+> =
+
 > For several years, MEMCG_CHARGE_BATCH was kept at 32 but with bigger
 > machines and the network intensive workloads requiring througput in
 > Gbps, 32 is too small and makes the memcg charging path a bottleneck.
@@ -30,9 +34,9 @@ On Thu 25-08-22 00:05:06, Shakeel Butt wrote:
 > ran the following workload in a three level of cgroup hierarchy.
 > =
 
->  $ netserver -6
->  # 36 instances of netperf with following params
->  $ netperf -6 -H ::1 -l 60 -t TCP_SENDFILE -- -m 10K
+> $ netserver -6
+> # 36 instances of netperf with following params
+> $ netperf -6 -H ::1 -l 60 -t TCP_SENDFILE -- -m 10K
 > =
 
 > Results (average throughput of netperf):
@@ -41,6 +45,9 @@ On Thu 25-08-22 00:05:06, Shakeel Butt wrote:
 > =
 
 > With the patch, the throughput improved by 62.7%.
+
+This is very impressive.
+
 > =
 
 > Signed-off-by: Shakeel Butt <shakeelb@google.com>
@@ -49,48 +56,8 @@ On Thu 25-08-22 00:05:06, Shakeel Butt wrote:
 > Reviewed-by: Feng Tang <feng.tang@intel.com>
 > Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
 
-Acked-by: Michal Hocko <mhocko@suse.com>
-Thanks!
+Acked-by: Muchun Song <songmuchun@bytedance.com>
 
-> ---
-> Changes since v1:
-> - Updated commit message
-> =
-
->  include/linux/memcontrol.h | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
-> =
-
-> diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-> index 4d31ce55b1c0..70ae91188e16 100644
-> --- a/include/linux/memcontrol.h
-> +++ b/include/linux/memcontrol.h
-> @@ -354,10 +354,11 @@ struct mem_cgroup {
->  };
->  =
-
->  /*
-> - * size of first charge trial. "32" comes from vmscan.c's magic value.
-> - * TODO: maybe necessary to use big numbers in big irons.
-> + * size of first charge trial.
-> + * TODO: maybe necessary to use big numbers in big irons or dynamic base=
-d of the
-> + * workload.
->   */
-> -#define MEMCG_CHARGE_BATCH 32U
-> +#define MEMCG_CHARGE_BATCH 64U
->  =
-
->  extern struct mem_cgroup *root_mem_cgroup;
->  =
-
-> -- =
-
-> 2.37.1.595.g718a3a8f04-goog
-
--- =
-
-Michal Hocko
-SUSE Labs
---===============5041617829402365904==--
+Thanks.
+--===============5165515171512245976==--
 
