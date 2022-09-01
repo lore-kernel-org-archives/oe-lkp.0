@@ -1,448 +1,339 @@
-Content-Type: multipart/mixed; boundary="===============7316867668988783718=="
+Content-Type: multipart/mixed; boundary="===============7247461408117429512=="
 MIME-Version: 1.0
-From: Russ Weight <russell.h.weight@intel.com>
+From: Nathan Chancellor <nathan@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [selftests] a37ddddd86: BUG:KASAN:use-after-free_in_firmware_upload_unregister
-Date: Thu, 01 Sep 2022 09:20:03 -0700
-Message-ID: <be12970a-4288-d093-adf2-f2cf14be1a17@intel.com>
-In-Reply-To: <95b1f303-421c-420a-0d34-6f00ffaae723@intel.com>
+Subject: Re: [mm] d88f8edb09: dmesg.Kernel_panic-not_syncing:Fatal_exception
+Date: Thu, 01 Sep 2022 12:28:40 -0700
+Message-ID: <YxEH6BbPa5VJYGiD@dev-arch.thelio-3990X>
+In-Reply-To: <35fb81bd-6020-f256-27cc-c2787b4dd9ef@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============7316867668988783718==
+--===============7247461408117429512==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Thanks for the reply. I was able to reproduce it a couple of weeks ago and
-I have already submitted a fix.
+Hi Yujie,
 
-- Russ
+On Thu, Sep 01, 2022 at 05:04:03PM +0800, Yujie Liu wrote:
+> On 8/25/2022 12:18, Yu Zhao wrote:
+> > On Wed, Aug 24, 2022 at 7:55 PM kernel test robot <yujie.liu@intel.co=
+m> wrote:
+> > > =
 
-On 8/31/22 22:43, Yujie Liu wrote:
-> Hi Russ,
->
-> On 8/2/2022 04:42, Russ Weight wrote:
->> Oliver,
->>
->> On 7/29/22 00:08, kernel test robot wrote:
->>>
->>> Greeting,
->>>
->>> FYI, we noticed the following commit (built with gcc-11):
->>>
->>> commit: a37ddddd86037c896c702b4df416bc4e51b2a5a0 ("selftests: firmware:=
- Add firmware upload selftests")
->>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
->>>
->>> in testcase: kernel-selftests
->>> version: kernel-selftests-x86_64-4cb0bec3-1_20220724
->>> with following parameters:
->>>
->>> =C2=A0=C2=A0=C2=A0=C2=A0group: firmware
->>> =C2=A0=C2=A0=C2=A0=C2=A0ucode: 0xec
->>>
->>> test-description: The kernel contains a set of "self tests" under the t=
-ools/testing/selftests/ directory. These are intended to be small unit test=
-s to exercise individual code paths in the kernel.
->>> test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
->>>
->>>
->>> on test machine: 8 threads Intel(R) Core(TM) i7-6700 CPU @ 3.40GHz with=
- 28G memory
->>>
->>> caused below changes (please refer to attached dmesg/kmsg for entire lo=
-g/backtrace):
->>>
->>>
->>>
->>> If you fix the issue, kindly add following tag
->>> Reported-by: kernel test robot <oliver.sang@intel.com>
->>>
->>>
->>> [ 103.520572][ T2443] BUG: KASAN: use-after-free in firmware_upload_unr=
-egister (drivers/base/firmware_loader/sysfs_upload.c:395)
->>> [=C2=A0 103.520579][ T2443] Read of size 8 at addr ffff8881e186c808 by =
-task fw_upload.sh/2443
->>> [=C2=A0 103.528481][=C2=A0 T395]
->>> [=C2=A0 103.534696][ T2443]
->>> [=C2=A0 103.534698][ T2443] CPU: 7 PID: 2443 Comm: fw_upload.sh Not tai=
-nted 5.18.0-rc2-00036-ga37ddddd8603 #1
->>> [=C2=A0 103.534701][ T2443] Hardware name: Dell Inc. OptiPlex 7040/0Y7W=
-YT, BIOS 1.2.8 01/26/2016
->>> [=C2=A0 103.534703][ T2443] Call Trace:
->>> [=C2=A0 103.534705][ T2443]=C2=A0 <TASK>
->>> [ 103.534707][ T2443] ? firmware_upload_unregister (drivers/base/firmwa=
-re_loader/sysfs_upload.c:395)
->> I believe I understand the problem, but I have been unable to reproduce =
-the error to verify the fix:
->>
->> 394=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 device_unregister(&f=
-w_sysfs->dev);
->> 395=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 module_put(fw_upload=
-_priv->module);
->>
->> The device_unregister() call could result in the dev_release
->> function freeing the fw_upload_priv structure before it is
->> dereferenced on line 395. Copying fw_upload_priv->module to a
->> local variable for use when calling device_unregister()
->> should fix the problem.
->>
->>> [ 103.534713][ T2443] dump_stack_lvl (lib/dump_stack.c:107 (discriminat=
-or 4))
->>> [ 103.588011][ T2443] print_address_description+0x1f/0x200
->>> [ 103.594406][ T2443] ? firmware_upload_unregister (drivers/base/firmwa=
-re_loader/sysfs_upload.c:395)
->>> [ 103.600112][ T2443] print_report.cold (mm/kasan/report.c:430)
->>> [ 103.604782][ T2443] ? do_raw_spin_lock (arch/x86/include/asm/atomic.h=
-:202 include/linux/atomic/atomic-instrumented.h:543 include/asm-generic/qsp=
-inlock.h:82 kernel/locking/spinlock_debug.c:115)
->>> [ 103.609624][ T2443] kasan_report (mm/kasan/report.c:162 mm/kasan/repo=
-rt.c:493)
->>> [ 103.613861][ T2443] ? firmware_upload_unregister (drivers/base/firmwa=
-re_loader/sysfs_upload.c:395)
->>> [ 103.619561][ T2443] firmware_upload_unregister (drivers/base/firmware=
-_loader/sysfs_upload.c:395)
->>> [ 103.625091][ T2443] upload_unregister_store (lib/test_firmware.c:1060=
- lib/test_firmware.c:1321)
->>> [ 103.630377][ T2443] ? sysfs_file_ops (fs/sysfs/file.c:129)
->>> [ 103.635046][ T2443] kernfs_fop_write_iter (fs/kernfs/file.c:294)
->>> [ 103.640145][ T2443] new_sync_write (fs/read_write.c:505 (discriminato=
-r 1))
->>> [ 103.644642][ T2443] ? new_sync_read (fs/read_write.c:494)
->>> [ 103.649225][ T2443] ? ksys_write (fs/read_write.c:644)
->>> [ 103.653463][ T2443] ? rcu_read_unlock (include/linux/rcupdate.h:723 (=
-discriminator 5))
->>> [ 103.658057][ T2443] ? lock_is_held_type (kernel/locking/lockdep.c:538=
-2 kernel/locking/lockdep.c:5684)
->>> [ 103.662909][ T2443] vfs_write (fs/read_write.c:591)
->>> [ 103.666984][ T2443] ksys_write (fs/read_write.c:644)
->>> [ 103.671057][ T2443] ? __ia32_sys_read (fs/read_write.c:634)
->>> [ 103.675645][ T2443] ? lockdep_hardirqs_on_prepare (kernel/locking/loc=
-kdep.c:4501)
->>> [ 103.682051][ T2443] ? syscall_enter_from_user_mode (arch/x86/include/=
-asm/irqflags.h:45 arch/x86/include/asm/irqflags.h:80 kernel/entry/common.c:=
-109)
->>> [ 103.687756][ T2443] do_syscall_64 (arch/x86/entry/common.c:50 arch/x8=
-6/entry/common.c:80)
->>> [ 103.692010][ T2443] ? pick_file (fs/file.c:660)
->>> [ 103.696165][ T2443] ? do_raw_spin_unlock (arch/x86/include/asm/atomic=
-.h:29 include/linux/atomic/atomic-instrumented.h:28 include/asm-generic/qsp=
-inlock.h:28 kernel/locking/spinlock_debug.c:100 kernel/locking/spinlock_deb=
-ug.c:140)
->>> [ 103.701094][ T2443] ? syscall_exit_to_user_mode (kernel/entry/common.=
-c:129 kernel/entry/common.c:296)
->>> [ 103.706539][ T2443] ? lockdep_hardirqs_on_prepare (kernel/locking/loc=
-kdep.c:4501)
->>> [ 103.712929][ T2443] ? do_syscall_64 (arch/x86/entry/common.c:87)
->>> [ 103.717343][ T2443] ? lockdep_hardirqs_on_prepare (kernel/locking/loc=
-kdep.c:4501)
->>> [ 103.723747][ T2443] entry_SYSCALL_64_after_hwframe (arch/x86/entry/en=
-try_64.S:115)
->>> [=C2=A0 103.729451][ T2443] RIP: 0033:0x7f1020308f33
->>> [ 103.733709][ T2443] Code: 8b 15 61 ef 0c 00 f7 d8 64 89 02 48 c7 c0 f=
-f ff ff ff eb b7 0f 1f 00 64 8b 04 25 18 00 00 00 85 c0 75 14 b8 01 00 00 0=
-0 0f 05 <48> 3d 00 f0 ff ff 77 55 c3 0f 1f 40 00 48 83 ec 28 48 89 54 24 18
->>> All code
->>> =3D=3D=3D=3D=3D=3D=3D=3D
->>> =C2=A0=C2=A0=C2=A0 0:=C2=A0=C2=A0=C2=A0 8b 15 61 ef 0c 00=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 mov=C2=A0=C2=A0=C2=A0 0xcef61(%rip),%edx=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 # 0xcef67
->>> =C2=A0=C2=A0=C2=A0 6:=C2=A0=C2=A0=C2=A0 f7 d8=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0 neg=C2=A0=C2=A0=C2=A0 %eax
->>> =C2=A0=C2=A0=C2=A0 8:=C2=A0=C2=A0=C2=A0 64 89 02=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
- mov=C2=A0=C2=A0=C2=A0 %eax,%fs:(%rdx)
->>> =C2=A0=C2=A0=C2=A0 b:=C2=A0=C2=A0=C2=A0 48 c7 c0 ff ff ff ff=C2=A0=C2=
-=A0=C2=A0=C2=A0 mov=C2=A0=C2=A0=C2=A0 $0xffffffffffffffff,%rax
->>> =C2=A0=C2=A0 12:=C2=A0=C2=A0=C2=A0 eb b7=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0 jmp=C2=A0=C2=A0=C2=A0 0xffffffffffffffcb
->>> =C2=A0=C2=A0 14:=C2=A0=C2=A0=C2=A0 0f 1f 00=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 nopl=
-=C2=A0=C2=A0 (%rax)
->>> =C2=A0=C2=A0 17:=C2=A0=C2=A0=C2=A0 64 8b 04 25 18 00 00=C2=A0=C2=A0=C2=
-=A0=C2=A0 mov=C2=A0=C2=A0=C2=A0 %fs:0x18,%eax
->>> =C2=A0=C2=A0 1e:=C2=A0=C2=A0=C2=A0 00
->>> =C2=A0=C2=A0 1f:=C2=A0=C2=A0=C2=A0 85 c0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0 test=C2=A0=C2=A0 %eax,%eax
->>> =C2=A0=C2=A0 21:=C2=A0=C2=A0=C2=A0 75 14=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0 jne=C2=A0=C2=A0=C2=A0 0x37
->>> =C2=A0=C2=A0 23:=C2=A0=C2=A0=C2=A0 b8 01 00 00 00=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 mov=C2=A0=C2=A0=C2=A0 $0x1,%eax
->>> =C2=A0=C2=A0 28:=C2=A0=C2=A0=C2=A0 0f 05=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0 syscall
->>> =C2=A0=C2=A0 2a:*=C2=A0=C2=A0=C2=A0 48 3d 00 f0 ff ff=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0 cmp=C2=A0=C2=A0=C2=A0 $0xfffffffffffff000,%rax=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 <-- trapping instruction
->>> =C2=A0=C2=A0 30:=C2=A0=C2=A0=C2=A0 77 55=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0 ja=C2=A0=C2=A0=C2=A0=C2=A0 0x87
->>> =C2=A0=C2=A0 32:=C2=A0=C2=A0=C2=A0 c3=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0 retq
->>> =C2=A0=C2=A0 33:=C2=A0=C2=A0=C2=A0 0f 1f 40 00=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 nopl=C2=A0=C2=A0 0x0=
-(%rax)
->>> =C2=A0=C2=A0 37:=C2=A0=C2=A0=C2=A0 48 83 ec 28=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 sub=C2=A0=C2=A0=C2=
-=A0 $0x28,%rsp
->>> =C2=A0=C2=A0 3b:=C2=A0=C2=A0=C2=A0 48 89 54 24 18=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 mov=C2=A0=C2=A0=C2=A0 %rdx,0x18(%rs=
-p)
->>>
->>> Code starting with the faulting instruction
->>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->>> =C2=A0=C2=A0=C2=A0 0:=C2=A0=C2=A0=C2=A0 48 3d 00 f0 ff ff=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 cmp=C2=A0=C2=A0=C2=A0 $0xfffffffffffff000,%r=
-ax
->>> =C2=A0=C2=A0=C2=A0 6:=C2=A0=C2=A0=C2=A0 77 55=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0 ja=C2=A0=C2=A0=C2=A0=C2=A0 0x5d
->>> =C2=A0=C2=A0=C2=A0 8:=C2=A0=C2=A0=C2=A0 c3=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 retq
->>> =C2=A0=C2=A0=C2=A0 9:=C2=A0=C2=A0=C2=A0 0f 1f 40 00=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 nopl=C2=A0=C2=
-=A0 0x0(%rax)
->>> =C2=A0=C2=A0=C2=A0 d:=C2=A0=C2=A0=C2=A0 48 83 ec 28=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 sub=C2=A0=C2=
-=A0=C2=A0 $0x28,%rsp
->>> =C2=A0=C2=A0 11:=C2=A0=C2=A0=C2=A0 48 89 54 24 18=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 mov=C2=A0=C2=A0=C2=A0 %rdx,0x18(%rs=
-p)
->>> [=C2=A0 103.753040][ T2443] RSP: 002b:00007fffe4075988 EFLAGS: 00000246=
- ORIG_RAX: 0000000000000001
->>> [=C2=A0 103.761244][ T2443] RAX: ffffffffffffffda RBX: 0000000000000003=
- RCX: 00007f1020308f33
->>> [=C2=A0 103.769013][ T2443] RDX: 0000000000000003 RSI: 00005582df845b80=
- RDI: 0000000000000001
->>> [=C2=A0 103.776791][ T2443] RBP: 00005582df845b80 R08: 00000000ffffffff=
- R09: 0000000000000003
->>> [=C2=A0 103.784561][ T2443] R10: 00005582df833c80 R11: 0000000000000246=
- R12: 0000000000000003
->>> [=C2=A0 103.792328][ T2443] R13: 00007f10203d96a0 R14: 0000000000000003=
- R15: 00007f10203d98a0
->>> [=C2=A0 103.800100][ T2443]=C2=A0 </TASK>
->>> [=C2=A0 103.802957][ T2443]
->>> [=C2=A0 103.805125][ T2443] Allocated by task 2443:
->>> [ 103.809276][ T2443] kasan_save_stack (mm/kasan/common.c:39)
->>> [ 103.813781][ T2443] __kasan_kmalloc (mm/kasan/common.c:45 mm/kasan/co=
-mmon.c:436 mm/kasan/common.c:515 mm/kasan/common.c:524)
->>> [ 103.818190][ T2443] firmware_upload_register (drivers/base/firmware_l=
-oader/sysfs_upload.c:160)
->>> [ 103.824150][ T2443] upload_register_store (lib/test_firmware.c:1279)
->>> [ 103.829250][ T2443] kernfs_fop_write_iter (fs/kernfs/file.c:294)
->>> [ 103.834350][ T2443] new_sync_write (fs/read_write.c:505 (discriminato=
-r 1))
->>> [ 103.838846][ T2443] vfs_write (fs/read_write.c:591)
->>> [ 103.842910][ T2443] ksys_write (fs/read_write.c:644)
->>> [ 103.846975][ T2443] do_syscall_64 (arch/x86/entry/common.c:50 arch/x8=
-6/entry/common.c:80)
->>> [ 103.851217][ T2443] entry_SYSCALL_64_after_hwframe (arch/x86/entry/en=
-try_64.S:115)
->>> [=C2=A0 103.856932][ T2443]
->>> [=C2=A0 103.859100][ T2443] Freed by task 2443:
->>> [ 103.862907][ T2443] kasan_save_stack (mm/kasan/common.c:39)
->>> [ 103.867415][ T2443] kasan_set_track (mm/kasan/common.c:45)
->>> [ 103.871822][ T2443] kasan_set_free_info (mm/kasan/generic.c:372)
->>> [ 103.876579][ T2443] __kasan_slab_free (mm/kasan/common.c:368 mm/kasan=
-/common.c:328 mm/kasan/common.c:374)
->>> [ 103.881331][ T2443] slab_free_freelist_hook (mm/slub.c:1754)
->>> [ 103.886517][ T2443] kfree (mm/slub.c:3510 mm/slub.c:4552)
->>> [ 103.890156][ T2443] fw_dev_release (drivers/base/firmware_loader/sysf=
-s.c:102)
->>> [ 103.894483][ T2443] device_release (drivers/base/core.c:2235)
->>> [ 103.898902][ T2443] kobject_cleanup (lib/kobject.c:677)
->>> [ 103.903492][ T2443] firmware_upload_unregister (drivers/base/firmware=
-_loader/sysfs_upload.c:395)
->>> [ 103.909034][ T2443] upload_unregister_store (lib/test_firmware.c:1060=
- lib/test_firmware.c:1321)
->>> [ 103.914311][ T2443] kernfs_fop_write_iter (fs/kernfs/file.c:294)
->>> [ 103.919429][ T2443] new_sync_write (fs/read_write.c:505 (discriminato=
-r 1))
->>> [ 103.923927][ T2443] vfs_write (fs/read_write.c:591)
->>> [ 103.927990][ T2443] ksys_write (fs/read_write.c:644)
->>> [ 103.932054][ T2443] do_syscall_64 (arch/x86/entry/common.c:50 arch/x8=
-6/entry/common.c:80)
->>> [ 103.936290][ T2443] entry_SYSCALL_64_after_hwframe (arch/x86/entry/en=
-try_64.S:115)
->>> [=C2=A0 103.941992][ T2443]
->>> [=C2=A0 103.944159][ T2443] Last potentially related work creation:
->>> [ 103.949704][ T2443] kasan_save_stack (mm/kasan/common.c:39)
->>> [ 103.954216][ T2443] __kasan_record_aux_stack (mm/kasan/generic.c:348)
->>> [ 103.959400][ T2443] insert_work (include/linux/instrumented.h:71 incl=
-ude/asm-generic/bitops/instrumented-non-atomic.h:134 kernel/workqueue.c:635=
- kernel/workqueue.c:642 kernel/workqueue.c:1361)
->>> [ 103.963552][ T2443] __queue_work (kernel/workqueue.c:1520)
->>> [ 103.967888][ T2443] queue_work_on (kernel/workqueue.c:1546)
->>> [ 103.972141][ T2443] fw_upload_start (drivers/base/firmware_loader/sys=
-fs_upload.c:263)
->>> [ 103.976723][ T2443] firmware_loading_store (drivers/base/firmware_loa=
-der/sysfs.c:213)
->>> [ 103.981910][ T2443] kernfs_fop_write_iter (fs/kernfs/file.c:294)
->>> [ 103.987022][ T2443] new_sync_write (fs/read_write.c:505 (discriminato=
-r 1))
->>> [ 103.991537][ T2443] vfs_write (fs/read_write.c:591)
->>> [ 103.995604][ T2443] ksys_write (fs/read_write.c:644)
->>> [ 103.999673][ T2443] do_syscall_64 (arch/x86/entry/common.c:50 arch/x8=
-6/entry/common.c:80)
->>> [ 104.003930][ T2443] entry_SYSCALL_64_after_hwframe (arch/x86/entry/en=
-try_64.S:115)
->>> [=C2=A0 104.009631][ T2443]
->>> [=C2=A0 104.011800][ T2443] Second to last potentially related work cre=
-ation:
->>> [ 104.018219][ T2443] kasan_save_stack (mm/kasan/common.c:39)
->>> [ 104.022727][ T2443] __kasan_record_aux_stack (mm/kasan/generic.c:348)
->>> [ 104.027938][ T2443] insert_work (include/linux/instrumented.h:71 incl=
-ude/asm-generic/bitops/instrumented-non-atomic.h:134 kernel/workqueue.c:635=
- kernel/workqueue.c:642 kernel/workqueue.c:1361)
->>> [ 104.032101][ T2443] __queue_work (kernel/workqueue.c:1520)
->>> [ 104.036423][ T2443] queue_work_on (kernel/workqueue.c:1546)
->>> [ 104.040658][ T2443] fw_upload_start (drivers/base/firmware_loader/sys=
-fs_upload.c:263)
->>> [ 104.045240][ T2443] firmware_loading_store (drivers/base/firmware_loa=
-der/sysfs.c:213)
->>> [ 104.050423][ T2443] kernfs_fop_write_iter (fs/kernfs/file.c:294)
->>> [ 104.055522][ T2443] new_sync_write (fs/read_write.c:505 (discriminato=
-r 1))
->>> [ 104.060016][ T2443] vfs_write (fs/read_write.c:591)
->>> [ 104.064081][ T2443] ksys_write (fs/read_write.c:644)
->>> [ 104.068144][ T2443] do_syscall_64 (arch/x86/entry/common.c:50 arch/x8=
-6/entry/common.c:80)
->>> [ 104.072381][ T2443] entry_SYSCALL_64_after_hwframe (arch/x86/entry/en=
-try_64.S:115)
->>> [=C2=A0 104.078083][ T2443]
->>> [=C2=A0 104.080249][ T2443] The buggy address belongs to the object at =
-ffff8881e186c800
->>> [=C2=A0 104.080249][ T2443]=C2=A0 which belongs to the cache kmalloc-51=
-2 of size 512
->>> [=C2=A0 104.094049][ T2443] The buggy address is located 8 bytes inside=
- of
->>> [=C2=A0 104.094049][ T2443]=C2=A0 512-byte region [ffff8881e186c800, ff=
-ff8881e186ca00)
->>> [=C2=A0 104.106914][ T2443]
->>> [=C2=A0 104.109084][ T2443] The buggy address belongs to the physical p=
-age:
->>> [=C2=A0 104.115315][ T2443] page:0000000037a5888d refcount:1 mapcount:0=
- mapping:0000000000000000 index:0x0 pfn:0x1e1868
->>> [=C2=A0 104.125336][ T2443] head:0000000037a5888d order:3 compound_mapc=
-ount:0 compound_pincount:0
->>> [=C2=A0 104.133454][ T2443] flags: 0x17ffffc0010200(slab|head|node=3D0|=
-zone=3D2|lastcpupid=3D0x1fffff)
->>> [=C2=A0 104.141498][ T2443] raw: 0017ffffc0010200 ffffea0005491e00 dead=
-000000000002 ffff888100042c80
->>> [=C2=A0 104.149885][ T2443] raw: 0000000000000000 0000000000200020 0000=
-0001ffffffff 0000000000000000
->>> [=C2=A0 104.158274][ T2443] page dumped because: kasan: bad access dete=
-cted
->>> [=C2=A0 104.164492][ T2443]
->>>
->>>
->>> To reproduce:
->>>
->>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 git clone https://gith=
-ub.com/intel/lkp-tests.git
->>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 cd lkp-tests
->>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 sudo bin/lkp install j=
-ob.yaml=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 # job f=
-ile is attached in this email
->> I have tried these steps on Fedora35 and on CentOS Stream. In both
->> cases I have missing packages that I have not yet resolved:
->>
->> Error: Unable to find a match: arping lib32gcc-dev libc6-dev-i386 libc6-=
-i386 libc6-x32 libhugetlbfs-dev libmnl-dev libmount-dev libpci3 libreadline=
--dev libx32asan5 libx32atomic1 libx32gcc1 libx32gcc-dev libx32gomp1 libx32i=
-tm1 libx32quadmath0 libx32ubsan1 linux-libc-dev-amd64-cross netcat-openbsd =
-openvswitch-common openvswitch-switch sendip libpci-dev
->>
->> Simply running the fw_upload selftests in a loop is not sufficient to
->> trigger the error. Can you provide additional instructions for
->> running the lkp tests manually? Do I need a specific OS? How can I
->> access the missing packages?
->
-> We can reproduce this error on bare metal by simply running fw_upload.sh.
->
-> ~/linux/tools/testing/selftests/firmware# ./fw_upload.sh
-> ./fw_upload.sh: firmware upload cancellation works
-> ./fw_upload.sh: firmware upload error handling works
-> ./fw_upload.sh: oversized firmware error handling works
-> ./fw_upload.sh: firmware upload for fw1 works
-> ./fw_upload.sh: firmware upload for fw2 works
-> ./fw_upload.sh: firmware upload for fw3 works
->
-> Message from syslogd(a)debian-x8664 at Sep=C2=A0 1 05:06:54 ...
-> =C2=A0kernel:[ 1090.872590][ T1293] Kernel panic - not syncing: Fatal exc=
-eption
->
-> dmesg read from serial:
->
-> [ 1089.654274][ T1293] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+> > > Greeting,
+> > > =
+
+> > > FYI, we noticed the following commit (built with clang-16):
+> > > =
+
+> > > commit: d88f8edb095214f8c36eeec6b89cebcfcbe3ea62 ("mm: multi-gen LRU:=
+ optimize multiple memcgs")
+> > > https://github.com/steev/linux lenovo-x13s-5.19.0
+> > > =
+
+> > > in testcase: boot
+> > > =
+
+> > > on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp=
+ 2 -m 16G
+> > > =
+
+> > > caused below changes (please refer to attached dmesg/kmsg for entire =
+log/backtrace):
+> > > =
+
+> > > =
+
+> > > [    5.440406][    T1] general protection fault, probably for non-can=
+onical address 0xe686464b00000166: 0000 [#1] KASAN PTI
+> > > [    5.441841][    T1] KASAN: maybe wild-memory-access in range [0x34=
+32525800000b30-0x3432525800000b37]
+> > > [    5.443045][    T1] CPU: 0 PID: 1 Comm: swapper Tainted: G        =
+        T 5.19.0-00144-gd88f8edb0952 #1
+> > > [    5.443471][    T1] RIP: 0010:drm_atomic_helper_check_modeset+0x59=
+/0x2c80
+> > > [    5.443471][    T1] Code: 03 48 89 85 20 ff ff ff 42 80 3c 20 00 7=
+4 08 4c 89 f7 e8 7a a0 b6 fe 48 89 5d a8 bb 30 08 00 00 49 03 1e 48 89 d8 4=
+8 c1 e8 03 <42> 0f b6 04 20 84 c0 0f 85 b6 2a 00 00 83 3b 00 4c 89 b5 58 ff=
+ ff
+> > > [    5.443471][    T1] RSP: 0018:ffffc9000001f580 EFLAGS: 00010206
+> > > [    5.443471][    T1] RAX: 06864a4b00000166 RBX: 3432525800000b30 RC=
+X: ffffc9000001f890
+> > > [    5.443471][    T1] RDX: dffffc0000000000 RSI: ffffc9000001f888 RD=
+I: ffffc9000001f888
+> > > [    5.443471][    T1] RBP: ffffc9000001f6c0 R08: ffff88811d82c800 R0=
+9: ffffc9000001f898
+> > > [    5.443471][    T1] R10: ffffc9000001f88c R11: ffffffff82b8a800 R1=
+2: dffffc0000000000
+> > > [    5.443471][    T1] R13: 1ffff92000003f13 R14: ffffc9000001f890 R1=
+5: 0000000000000014
+> > > [    5.443471][    T1] FS:  0000000000000000(0000) GS:ffffffff880c600=
+0(0000) knlGS:0000000000000000
+> > > [    5.443471][    T1] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050=
+033
+> > > [    5.443471][    T1] CR2: 00007f6aae86f480 CR3: 0000000008036000 CR=
+4: 00000000000406f0
+> > > [    5.443471][    T1] DR0: 0000000000000000 DR1: 0000000000000000 DR=
+2: 0000000000000000
+> > > [    5.443471][    T1] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR=
+7: 0000000000000400
+> > > [    5.443471][    T1] Call Trace:
+> > > [    5.443471][    T1]  <TASK>
+> > > [    5.443471][    T1]  ? validate_chain+0x1379/0x5b80
+> > > [    5.443471][    T1]  drm_atomic_helper_check+0x18/0x100
+> > > [    5.443471][    T1]  drm_get_format_info+0x67/0x180
+> > > [    5.443471][    T1]  drm_internal_framebuffer_create+0x280/0x19c0
+> > > [    5.443471][    T1]  drm_mode_addfb2+0x9b/0x300
+> > > [    5.443471][    T1]  drm_mode_addfb+0x25d/0x580
+> > > [    5.443471][    T1]  drm_client_framebuffer_create+0x412/0x8c0
+> > > [    5.443471][    T1]  drm_fb_helper_generic_probe+0x191/0x980
+> > > [    5.443471][    T1]  ? __kasan_check_write+0x14/0x40
+> > > [    5.443471][    T1]  ? __mutex_unlock_slowpath+0x1d7/0x740
+> > > [    5.443471][    T1]  __drm_fb_helper_initial_config_and_unlock+0x1=
+159/0x1b80
+> > > [    5.443471][    T1]  drm_fbdev_client_hotplug+0x547/0x740
+> > > [    5.443471][    T1]  drm_fbdev_generic_setup+0x13b/0x3c0
+> > > [    5.443471][    T1]  vkms_init+0x4b6/0x640
+> > > [    5.443471][    T1]  ? vgem_init+0x240/0x240
+> > > [    5.443471][    T1]  do_one_initcall+0x16d/0x440
+> > > [    5.443471][    T1]  ? vgem_init+0x240/0x240
+> > > [    5.443471][    T1]  do_initcall_level+0x1a3/0x280
+> > > [    5.443471][    T1]  do_initcalls+0x4b/0x80
+> > > [    5.443471][    T1]  do_basic_setup+0x69/0x80
+> > > [    5.443471][    T1]  kernel_init_freeable+0xe2/0x180
+> > > [    5.443471][    T1]  ? rest_init+0x140/0x140
+> > > [    5.443471][    T1]  kernel_init+0x18/0x1c0
+> > > [    5.443471][    T1]  ? rest_init+0x140/0x140
+> > > [    5.443471][    T1]  ret_from_fork+0x22/0x30
+> > > [    5.443471][    T1]  </TASK>
+> > > [    5.443471][    T1] Modules linked in:
+> > > [    5.476918][    T1] ---[ end trace 0000000000000000 ]---
+> > > [    5.477623][    T1] RIP: 0010:drm_atomic_helper_check_modeset+0x59=
+/0x2c80
+> > > [    5.478507][    T1] Code: 03 48 89 85 20 ff ff ff 42 80 3c 20 00 7=
+4 08 4c 89 f7 e8 7a a0 b6 fe 48 89 5d a8 bb 30 08 00 00 49 03 1e 48 89 d8 4=
+8 c1 e8 03 <42> 0f b6 04 20 84 c0 0f 85 b6 2a 00 00 83 3b 00 4c 89 b5 58 ff=
+ ff
+> > > [    5.481043][    T1] RSP: 0018:ffffc9000001f580 EFLAGS: 00010206
+> > > [    5.481851][    T1] RAX: 06864a4b00000166 RBX: 3432525800000b30 RC=
+X: ffffc9000001f890
+> > > [    5.482887][    T1] RDX: dffffc0000000000 RSI: ffffc9000001f888 RD=
+I: ffffc9000001f888
+> > > [    5.483950][    T1] RBP: ffffc9000001f6c0 R08: ffff88811d82c800 R0=
+9: ffffc9000001f898
+> > > [    5.484993][    T1] R10: ffffc9000001f88c R11: ffffffff82b8a800 R1=
+2: dffffc0000000000
+> > > [    5.486020][    T1] R13: 1ffff92000003f13 R14: ffffc9000001f890 R1=
+5: 0000000000000014
+> > > [    5.487054][    T1] FS:  0000000000000000(0000) GS:ffffffff880c600=
+0(0000) knlGS:0000000000000000
+> > > [    5.488258][    T1] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050=
+033
+> > > [    5.489116][    T1] CR2: 00007f6aae86f480 CR3: 0000000008036000 CR=
+4: 00000000000406f0
+> > > [    5.490109][    T1] DR0: 0000000000000000 DR1: 0000000000000000 DR=
+2: 0000000000000000
+> > > [    5.491150][    T1] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR=
+7: 0000000000000400
+> > > [    5.492241][    T1] Kernel panic - not syncing: Fatal exception
+> > > [    5.493037][    T1] Kernel Offset: disabled
+> > > =
+
+> > > =
+
+> > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> [ 1089.662192][ T1293] BUG: KASAN: use-after-free in firmware_upload_unre=
-gister+0x16e/0x1c0
-> [ 1089.670282][ T1293] Read of size 8 at addr ffff88873a872008 by task fw=
-_upload.sh/1293
-> [ 1089.678107][ T1293]
-> [ 1089.680291][ T1293] CPU: 4 PID: 1293 Comm: fw_upload.sh Not tainted 5.=
-18.0-rc2-00036-ga37ddddd8603 #1
-> [ 1089.689527][ T1293] Hardware name: Dell Inc. OptiPlex 7040/0Y7WYT, BIO=
-S 1.2.8 01/26/2016
-> [ 1089.697612][ T1293] Call Trace:
-> [ 1089.700751][ T1293]=C2=A0 <TASK>
-> [ 1089.703557][ T1293]=C2=A0 ? firmware_upload_unregister+0x16e/0x1c0
-> [ 1089.709313][ T1293]=C2=A0 dump_stack_lvl+0x45/0x59
-> [ 1089.713669][ T1293]=C2=A0 print_address_description.constprop.0+0x1f/0=
-x200
-> [ 1089.720107][ T1293]=C2=A0 ? firmware_upload_unregister+0x16e/0x1c0
-> [ 1089.725851][ T1293]=C2=A0 print_report.cold+0x55/0x22c
-> [ 1089.730556][ T1293]=C2=A0 ? do_raw_spin_lock+0x12e/0x280
-> [ 1089.735432][ T1293]=C2=A0 kasan_report+0xbe/0x1c0
->
->
-> Could you please help check if the .config file used to compile the kernel
-> matches the one we attached in the original report? Here we attach it aga=
-in
-> for your reference.
->
->
-> About the issue of missing packages during setting up lkp test environmen=
-t,
-> we wish to support various OS and distributions, but sometimes our package
-> dependencies are not updated in time, sorry for the inconvenience. We use
-> debian OS in our test environment, and it can install the required packag=
-es
-> successfully. We will fix the package issue on other OS soon. For this ca=
-se,
-> we still recommend to run fw_upload.sh to trigger the error, because it's
-> much easier than setting up lkp tests environment.
->
-> -- =
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > > tbox_group/testcase/rootfs/kconfig/compiler/sleep:
+> > >       vm-snb/boot/yocto-x86_64-minimal-20190520.cgz/x86_64-randconfig=
+-a003-20220801/clang-16/1
+> > > =
 
-> Thanks,
-> Yujie
->
->>
->> Thanks,
->> - Russ
->>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 bin/lkp split-job --co=
-mpatible job.yaml # generate the yaml file for lkp run
->>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 sudo bin/lkp run gener=
-ated-yaml-file
->>>
->>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 # if come across any f=
-ailure that blocks the test,
->>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 # please remove ~/.lkp=
- and /lkp dir to run from a clean state.
->>>
->>>
->>>
->>
+> > > commit:
+> > >       fe2bb20302a87cfeda355e4be3cc3029478a5214
+> > >       d88f8edb095214f8c36eeec6b89cebcfcbe3ea62
+> > > =
 
---===============7316867668988783718==--
+> > > fe2bb20302a87cfe d88f8edb095214f8c36eeec6b89
+> > > ---------------- ---------------------------
+> > >            fail:runs  %reproduction    fail:runs
+> > >                |             |             |
+> > >                :30         133%          40:40    dmesg.Kernel_panic-=
+not_syncing:Fatal_exception
+> > >                :30         133%          40:40    dmesg.RIP:drm_atomi=
+c_helper_check_modeset
+> > > =
+
+> > > =
+
+> > > The kconfig of this boot test has "# CONFIG_LRU_GEN is not set"
+> > =
+
+> > This means the aforementioned commit was not built at all. So it
+> > shouldn't cause the crash.
+> > =
+
+> > > We also tried to enable CONFIG_LRU_GEN and re-test it, then boot is s=
+uccessful.
+> > =
+
+> > Nor should it fix the crash.
+> > =
+
+> > > https://github.com/steev/linux lenovo-x13s-5.19.0
+> > =
+
+> > This tree has other patches. In case you want to make sure MGLRU has
+> > nothing to do with the crash, please try the patchset on top of the
+> > official 5.19.0 and try again.
+> =
+
+> Hi Yu,
+> =
+
+> Sorry for this wrong report. The crash has no relation with the patch sin=
+ce LRU_GEN
+> is not enabled at all. This looks like a tricky issue related with clang =
+compiler,
+> so let me add llvm folks.
+> =
+
+> Hi Nathan, Hi Nick,
+> =
+
+> For this case, we build the kernels under completely same environment for=
+ twice
+> (kernel commit: d88f8edb09, llvm commit: c55b41d519, kconfig attached), o=
+ne of them
+> works well, but the other fails to boot. Could you please help to look at=
+ this issue?
+> If required, we can provide more details for further analysis.
+> =
+
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> commit/compiler/kconfig/testcase:
+>   d88f8edb095214f8c36eeec6b89cebcfcbe3ea62/clang-16/x86_64-randconfig-a00=
+3-20220801/boot
+> =
+
+> debug-setup:
+>   clang-16-c55b41d519-0
+>   clang-16-c55b41d519-1
+> =
+
+> clang-16-c55b41d519-0      clang-16-c55b41d519-1
+> ---------------- ---------------------------
+>        fail:runs  %reproduction    fail:runs
+>            |             |             |
+>          20:20        -100%            :20    last_state.booting
+>          20:20        -100%            :20    last_state.is_incomplete_run
+>          20:20        -100%            :20    dmesg.BUG:KASAN:vmalloc-out=
+-of-bounds_in_drm_vram_helper_mode_valid
+>          20:20        -100%            :20    dmesg.BUG:unable_to_handle_=
+page_fault_for_address
+>          20:20        -100%            :20    dmesg.Kernel_panic-not_sync=
+ing:Fatal_exception
+>          20:20        -100%            :20    dmesg.Oops:#[##]
+>          20:20        -100%            :20    dmesg.RIP:drm_vram_helper_m=
+ode_valid
+
+I am running into a similar issue of only being able to reproduce a
+crash sporadically at the same commit with the same configuration,
+although my version of LLVM is slightly newer (c7511b4ecf45c17). I will
+continue to try and reproduce this consistently to continue
+investigating, although I do need to move on to other things today. I
+wonder if this is a recent LLVM regression...
+
+For what it's worth, the last crash I did get was similar but not the
+exact same as the one you noticed:
+
+[    0.807218][    T1] general protection fault, probably for non-canonical=
+ address 0xe686464b000001d7: 0000 [#1] KASAN NOPTI
+[    0.808207][    T1] KASAN: maybe wild-memory-access in range [0x34325258=
+00000eb8-0x3432525800000ebf]
+[    0.808551][    T1] CPU: 0 PID: 1 Comm: swapper Tainted: G              =
+  T 5.19.0-00144-gd88f8edb0952 #1
+[    0.808551][    T1] RIP: 0010:drm_atomic_helper_setup_commit+0x58/0x1140
+[    0.808551][    T1] Code: e8 03 48 89 85 70 ff ff ff 42 80 3c 28 00 74 0=
+8 4c 89 e7 e8 3a c9 b5 fe 49 8b 1c 24 48 8d bb b8 0b 00 00 48 89 f8 48 c1 e=
+8 03 <42> 80 3c 28 00 74 05 e8 1c c9 b5 fe 48 8b 83 b8 0b 00 00 48 89 85
+[    0.808551][    T1] RSP: 0018:ffffc9000001f5d0 EFLAGS: 00010216
+[    0.808551][    T1] RAX: 06864a4b000001d7 RBX: 3432525800000300 RCX: dff=
+ffc0000000000
+[    0.808551][    T1] RDX: dffffc0000000000 RSI: 0000000000000000 RDI: 343=
+2525800000eb8
+[    0.808551][    T1] RBP: ffffc9000001f690 R08: ffff88800d788800 R09: fff=
+fc9000001f898
+[    0.808551][    T1] R10: ffffc9000001f88c R11: ffffffff82b92040 R12: fff=
+fc9000001f890
+[    0.808551][    T1] R13: dffffc0000000000 R14: ffffc9000001f888 R15: 000=
+0000000000014
+[    0.808551][    T1] FS:  0000000000000000(0000) GS:ffffffff880c6000(0000=
+) knlGS:0000000000000000
+[    0.808551][    T1] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    0.808551][    T1] CR2: 00005576db60448f CR3: 0000000008036000 CR4: 000=
+00000003506b0
+[    0.808551][    T1] Call Trace:
+[    0.808551][    T1]  <TASK>
+[    0.808551][    T1]  drm_atomic_helper_commit+0x50/0x6c0
+[    0.808551][    T1]  drm_get_format_info+0x67/0x180
+[    0.808551][    T1]  drm_internal_framebuffer_create+0x280/0x19c0
+[    0.808551][    T1]  drm_mode_addfb2+0x9b/0x300
+[    0.808551][    T1]  drm_mode_addfb+0x25d/0x580
+[    0.808551][    T1]  drm_client_framebuffer_create+0x412/0x8c0
+[    0.808551][    T1]  drm_fb_helper_generic_probe+0x191/0x980
+[    0.808551][    T1]  ? __kasan_check_write+0x14/0x40
+[    0.808551][    T1]  ? __mutex_unlock_slowpath+0x1d7/0x740
+[    0.808551][    T1]  __drm_fb_helper_initial_config_and_unlock+0x1159/0x=
+1b80
+[    0.808551][    T1]  drm_fbdev_client_hotplug+0x547/0x740
+[    0.808551][    T1]  drm_fbdev_generic_setup+0x13b/0x3c0
+[    0.808551][    T1]  vkms_init+0x4b6/0x640
+[    0.808551][    T1]  ? vgem_init+0x240/0x240
+[    0.808551][    T1]  do_one_initcall+0x16d/0x440
+[    0.808551][    T1]  ? vgem_init+0x240/0x240
+[    0.808551][    T1]  do_initcall_level+0x1a3/0x280
+[    0.808551][    T1]  do_initcalls+0x4b/0x80
+[    0.808551][    T1]  do_basic_setup+0x69/0x80
+[    0.808551][    T1]  kernel_init_freeable+0xe2/0x180
+[    0.808551][    T1]  ? rest_init+0x140/0x140
+[    0.808551][    T1]  kernel_init+0x18/0x1c0
+[    0.808551][    T1]  ? rest_init+0x140/0x140
+[    0.808551][    T1]  ret_from_fork+0x22/0x30
+[    0.808551][    T1]  </TASK>
+[    0.808551][    T1] Modules linked in:
+[    0.828450][    T1] ---[ end trace 0000000000000000 ]---
+[    0.828882][    T1] RIP: 0010:drm_atomic_helper_setup_commit+0x58/0x1140
+[    0.829433][    T1] Code: e8 03 48 89 85 70 ff ff ff 42 80 3c 28 00 74 0=
+8 4c 89 e7 e8 3a c9 b5 fe 49 8b 1c 24 48 8d bb b8 0b 00 00 48 89 f8 48 c1 e=
+8 03 <42> 80 3c 28 00 74 05 e8 1c c9 b5 fe 48 8b 83 b8 0b 00 00 48 89 85
+[    0.831048][    T1] RSP: 0018:ffffc9000001f5d0 EFLAGS: 00010216
+[    0.831541][    T1] RAX: 06864a4b000001d7 RBX: 3432525800000300 RCX: dff=
+ffc0000000000
+[    0.832177][    T1] RDX: dffffc0000000000 RSI: 0000000000000000 RDI: 343=
+2525800000eb8
+[    0.832827][    T1] RBP: ffffc9000001f690 R08: ffff88800d788800 R09: fff=
+fc9000001f898
+[    0.833476][    T1] R10: ffffc9000001f88c R11: ffffffff82b92040 R12: fff=
+fc9000001f890
+[    0.834121][    T1] R13: dffffc0000000000 R14: ffffc9000001f888 R15: 000=
+0000000000014
+[    0.834765][    T1] FS:  0000000000000000(0000) GS:ffffffff880c6000(0000=
+) knlGS:0000000000000000
+[    0.835480][    T1] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    0.836014][    T1] CR2: 00005576db60448f CR3: 0000000008036000 CR4: 000=
+00000003506b0
+[    0.836656][    T1] Kernel panic - not syncing: Fatal exception
+[    0.837141][    T1] Kernel Offset: disabled
+[    0.837492][    T1] ---[ end Kernel panic - not syncing: Fatal exception=
+ ]---
+
+Cheers,
+Nathan
+--===============7247461408117429512==--
 
