@@ -1,14 +1,14 @@
-Content-Type: multipart/mixed; boundary="===============2623973787466357150=="
+Content-Type: multipart/mixed; boundary="===============2625713648066182911=="
 MIME-Version: 1.0
 From: Hyeonggon Yoo <42.hyeyoo@gmail.com>
 To: lkp@lists.01.org
 Subject: Re: [mm/sl[au]b] 3c4cafa313: canonical_address#:#[##]
-Date: Tue, 06 Sep 2022 23:56:37 +0900
-Message-ID: <YxdfpTDdfBt6VIpo@hyeyoo>
+Date: Wed, 07 Sep 2022 00:09:45 +0900
+Message-ID: <YxdiueiU4+9llP0K@hyeyoo>
 In-Reply-To: <208c1757-5edd-fd42-67d4-1940cc43b50f@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============2623973787466357150==
+--===============2625713648066182911==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -142,20 +142,7 @@ fffc9000e1d3df0
 > [ 317.296278][ T590] compact_zone (mm/compaction.c:2393)
 > [ 317.301202][ T590] proactive_compact_node (mm/compaction.c:2661 (discri=
 minator 2))
-
-Hmm... Let's debug.
-
-FYI, simply echo 1 > /proc/sys/vm/compact_memory invokes same bug on my test
-environment.
-
-the 'mops' is invalid address in mm/migrate.c:103.
-
-Hmm, why is this slab page confused as movable page?
--> Because page->'mapping' and slab->slabs field has same offset.
-
-I think this is invoked because lowest two bits of slab->slabs is not 0.
-
-Vlastimil, any thoughts?
+> =
 
 > =
 
@@ -189,6 +176,24 @@ for lkp run
 
 > 0-DAY CI Kernel Test Service
 > https://01.org/lkp
+
+For More Information, just dumped the page ;)
+
+[   10.186703] page:0000000005426696 refcount:2 mapcount:0 mapping:00000000=
+00000000 index:0x0 pfn:0x100040
+[   10.187194] flags: 0x17ffffc0000201(locked|slab|node=3D0|zone=3D2|lastcp=
+upid=3D0x1fffff)
+[   10.187673] raw: 0017ffffc0000201 ffff888100042100 dead000000000100 dead=
+000000000122
+[   10.188124] raw: 0000000000000000 0000000000400040 00000002ffffffff 0000=
+000000000000
+[   10.188567] page dumped because: dump for debugging
+[   10.188567]
+
+(below is from silly printk)
+[   10.188949] mapping=3Ddead000000000122, slab->slabs=3D290(%d)=3D122(%lx)=
+, slab->next=3Ddead000000000100
+
 
 > #
 > # Automatically generated file; DO NOT EDIT.
@@ -7424,5 +7429,5 @@ z/turbostat-x86_64-210e04ff7681-1_20220518.cgz,/osimage/deps/debian-11.1-x8=
 
 Thanks,
 Hyeonggon
---===============2623973787466357150==--
+--===============2625713648066182911==--
 
