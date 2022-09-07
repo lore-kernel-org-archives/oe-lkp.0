@@ -1,102 +1,38 @@
-Content-Type: multipart/mixed; boundary="===============3358408872349213302=="
+Content-Type: multipart/mixed; boundary="===============3578585755310777811=="
 MIME-Version: 1.0
-From: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+From: Nick Desaulniers <ndesaulniers@google.com>
 To: lkp@lists.01.org
-Subject: Re: [mm/sl[au]b] 3c4cafa313: canonical_address#:#[##]
-Date: Sat, 10 Sep 2022 12:34:25 +0900
-Message-ID: <YxwFwY+YZeLBcOI9@hyeyoo>
-In-Reply-To: <cf7404ac-0838-7985-cdd0-524d540ad42a@suse.cz>
+Subject: Re: [fortify] ab66e7d1d8: BUG:kernel_failed_in_early-boot_stage, last_printk:Booting_the_kernel
+Date: Tue, 06 Sep 2022 23:02:50 -0700
+Message-ID: <CAKwvOdk8R9HS_aJfFPKyuka8TM9jPpnT21TTvQ8ffv_p+RcGUw@mail.gmail.com>
+In-Reply-To: <332d9d42-c4ae-47a8-b3d6-32907eddb7ba@intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3358408872349213302==
+--===============3578585755310777811==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Sep 09, 2022 at 11:16:51PM +0200, Vlastimil Babka wrote:
-> On 9/9/22 16:32, Hyeonggon Yoo wrote:
-> > On Fri, Sep 09, 2022 at 03:44:19PM +0200, Vlastimil Babka wrote:
-> >> On 9/9/22 13:05, Hyeonggon Yoo wrote:
-> >> >> ----8<----
-> >> >> From d6f9fbb33b908eb8162cc1f6ce7f7c970d0f285f Mon Sep 17 00:00:00 2=
-001
-> >> >> From: Vlastimil Babka <vbabka@suse.cz>
-> >> >> Date: Fri, 9 Sep 2022 12:03:10 +0200
-> >> >> Subject: [PATCH 2/3] mm/migrate: make isolate_movable_page() skip s=
-lab pages
-> >> >> =
+On Tue, Sep 6, 2022 at 10:54 PM kernel test robot <yujie.liu@intel.com> w=
+rote:
+>
+> Greeting,
+>
+> FYI, we noticed the following commit (built with gcc-11):
+>
+> commit: ab66e7d1d8a90f6addac0da9b3ae13d77f095f76 ("[PATCH 2/3] fortify: c=
+osmetic cleanups to __compiletime_strlen")
+> url: https://github.com/intel-lab-lkp/linux/commits/Nick-Desaulniers/Fix-=
+FORTIFY-y-UBSAN_LOCAL_BOUNDS-y/20220831-045536
+> base: https://git.kernel.org/cgit/linux/kernel/git/kees/linux.git for-nex=
+t/hardening
+> patch link: https://lore.kernel.org/linux-hardening/20220830205309.312864=
+-3-ndesaulniers(a)google.com
 
-> >> >> In the next commit we want to rearrange struct slab fields to allow=
- a
-> >> >> larger rcu_head. Afterwards, the page->mapping field will overlap
-> >> >> with SLUB's "struct list_head slab_list", where the value of prev
-> >> >> pointer can become LIST_POISON2, which is 0x122 + POISON_POINTER_DE=
-LTA.
-> >> >> Unfortunately the bit 1 being set can confuse PageMovable() to be a
-> >> >> false positive and cause a GPF as reported by lkp [1].
-> >> >> =
-
-> >> >> To fix this, make isolate_movable_page() skip pages with the PageSl=
-ab
-> >> >> flag set. This is a bit tricky as we need to add memory barriers to=
- SLAB
-> >> >> and SLUB's page allocation and freeing, and their counterparts to
-> >> >> isolate_movable_page().
-> >> > =
-
-> >> > Hello, I just took a quick grasp,
-> >> > Is this approach okay with folio_test_anon()?
-> >> =
-
-> >> Not if used on a completely random page as compaction scanners can, but
-> >> relies on those being first tested for PageLRU or coming from a page t=
-able
-> >> lookup etc.
-> >> Not ideal huh. Well I could improve also by switching 'next' and 'slab=
-s'
-> >> field and relying on the fact that the value of LIST_POISON2 doesn't i=
-nclude
-> >> 0x1, just 0x2.
-> > =
-
-> > What about swapping counters and freelist?
-> > freelist should be always aligned.  =
-
-> =
-
-> Great suggestion, thanks!
-> =
-
-> Had to deal with SLAB too as there was list_head.prev also aliasing
-> page->mapping. Wanted to use freelist as well, but turns out it's not
-> aligned, so had to use s_mem instead.
-> =
-
-> The patch that isolate_movable_page() skip slab pages was thus dropped. T=
-he
-> result is in slab.git below and if nothing blows up, will restore it to -=
-next
-> =
-
-> https://git.kernel.org/pub/scm/linux/kernel/git/vbabka/slab.git/log/?h=3D=
-for-6.1/fit_rcu_head
-
-Looks fine to me, Thanks!
-
-> =
-
-> =
-
-> =
-
-> =
-
-> =
-
-
+Thanks for the report! Series dropped! Kees sent a v2.
 -- =
 
 Thanks,
-Hyeonggon
---===============3358408872349213302==--
+~Nick Desaulniers
+--===============3578585755310777811==--
 
