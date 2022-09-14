@@ -1,123 +1,151 @@
-Content-Type: multipart/mixed; boundary="===============5138404500456019480=="
+Content-Type: multipart/mixed; boundary="===============0336757419202880817=="
 MIME-Version: 1.0
-From: Matthew Wilcox <willy@infradead.org>
+From: Oliver Sang <oliver.sang@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [mm/sl[au]b] 3c4cafa313: canonical_address#:#[##]
-Date: Wed, 14 Sep 2022 08:42:38 +0100
-Message-ID: <YyGF7rHetCp0mWhV@casper.infradead.org>
-In-Reply-To: <YyF1zgAC2GBdW3Bk@hyeyoo>
+Subject: Re: [cpuidle, intel_idle] 32d4fd5751: WARNING:at_kernel/rcu/tree.c:#rcu_eqs_exit
+Date: Wed, 14 Sep 2022 16:26:58 +0800
+Message-ID: <YyGQUu9S+ISHaNFi@xsang-OptiPlex-9020>
+In-Reply-To: <20220623112358.chwk2ld6k6sufeb5@shindev>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5138404500456019480==
+--===============0336757419202880817==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Sep 14, 2022 at 03:33:50PM +0900, Hyeonggon Yoo wrote:
-> On Fri, Sep 09, 2022 at 11:16:51PM +0200, Vlastimil Babka wrote:
-> > On 9/9/22 16:32, Hyeonggon Yoo wrote:
-> > > On Fri, Sep 09, 2022 at 03:44:19PM +0200, Vlastimil Babka wrote:
-> > >> On 9/9/22 13:05, Hyeonggon Yoo wrote:
-> > >> >> ----8<----
-> > >> >> From d6f9fbb33b908eb8162cc1f6ce7f7c970d0f285f Mon Sep 17 00:00:00=
- 2001
-> > >> >> From: Vlastimil Babka <vbabka@suse.cz>
-> > >> >> Date: Fri, 9 Sep 2022 12:03:10 +0200
-> > >> >> Subject: [PATCH 2/3] mm/migrate: make isolate_movable_page() skip=
- slab pages
-> > >> >> =
+Hi Shin'ichiro Kawasaki and Peter Zijlstra,
 
-> > >> >> In the next commit we want to rearrange struct slab fields to all=
-ow a
-> > >> >> larger rcu_head. Afterwards, the page->mapping field will overlap
-> > >> >> with SLUB's "struct list_head slab_list", where the value of prev
-> > >> >> pointer can become LIST_POISON2, which is 0x122 + POISON_POINTER_=
-DELTA.
-> > >> >> Unfortunately the bit 1 being set can confuse PageMovable() to be=
- a
-> > >> >> false positive and cause a GPF as reported by lkp [1].
-> > >> >> =
-
-> > >> >> To fix this, make isolate_movable_page() skip pages with the Page=
-Slab
-> > >> >> flag set. This is a bit tricky as we need to add memory barriers =
-to SLAB
-> > >> >> and SLUB's page allocation and freeing, and their counterparts to
-> > >> >> isolate_movable_page().
-> > >> > =
-
-> > >> > Hello, I just took a quick grasp,
-> > >> > Is this approach okay with folio_test_anon()?
-> > >> =
-
-> > >> Not if used on a completely random page as compaction scanners can, =
-but
-> > >> relies on those being first tested for PageLRU or coming from a page=
- table
-> > >> lookup etc.
-> > >> Not ideal huh. Well I could improve also by switching 'next' and 'sl=
-abs'
-> > >> field and relying on the fact that the value of LIST_POISON2 doesn't=
- include
-> > >> 0x1, just 0x2.
-> > > =
-
-> > > What about swapping counters and freelist?
-> > > freelist should be always aligned.  =
+On Thu, Jun 23, 2022 at 11:23:59AM +0000, Shinichiro Kawasaki wrote:
+> On Jun 13, 2022 / 00:00, kernel test robot wrote:
+> > =
 
 > > =
 
-> > Great suggestion, thanks!
+> > Greeting,
 > > =
 
-> > Had to deal with SLAB too as there was list_head.prev also aliasing
-> > page->mapping. Wanted to use freelist as well, but turns out it's not
-> > aligned, so had to use s_mem instead.
+> > FYI, we noticed the following commit (built with gcc-11):
 > > =
 
-> > The patch that isolate_movable_page() skip slab pages was thus dropped.=
- The
-> > result is in slab.git below and if nothing blows up, will restore it to=
- -next
+> > commit: 32d4fd5751eadbe1823a37eb38df85ec5c8e6207 ("cpuidle,intel_idle: =
+Fix CPUIDLE_FLAG_IRQ_ENABLE")
+> > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 > > =
 
-> > https://git.kernel.org/pub/scm/linux/kernel/git/vbabka/slab.git/log/?h=
-=3Dfor-6.1/fit_rcu_head
+> > in testcase: kernel-selftests
+> > version: kernel-selftests-x86_64-cef46213-1_20220609
+> > with following parameters:
+> > =
+
+> > 	group: resctrl
+> > 	ucode: 0x500320a
+> > =
+
+> > test-description: The kernel contains a set of "self tests" under the t=
+ools/testing/selftests/ directory. These are intended to be small unit test=
+s to exercise individual code paths in the kernel.
+> > test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
+> > =
+
+> > =
+
+> > on test machine: 88 threads 2 sockets Intel(R) Xeon(R) Gold 6238M CPU @=
+ 2.10GHz with 128G memory
+> > =
+
+> > caused below changes (please refer to attached dmesg/kmsg for entire lo=
+g/backtrace):
+> > =
+
+> > =
+
+> > =
+
+> > If you fix the issue, kindly add following tag
+> > Reported-by: kernel test robot <oliver.sang@intel.com>
+> > =
+
+> > =
+
+> > [ 29.104402][ T0] WARNING: CPU: 0 PID: 0 at kernel/rcu/tree.c:864 rcu_e=
+qs_exit+0x4b/0xc0 =
+
+> > [   29.104417][    T0]
+> > [   29.104418][    T0] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > [   29.104419][    T0] WARNING: suspicious RCU usage
+> > [   29.104421][    T0] 5.19.0-rc1-00001-g32d4fd5751ea #1 Not tainted
+> > [   29.104424][    T0] -----------------------------
 > =
 
-> I realized that there is also relevant comment in
-> include/linux/mm_types.h:
+> FYI, I observe this WARNING on my test servers for fstests, with kernel
+> v5.19-rc3. It was observed at system boot, and was also observed repeated=
+ly
+> during fstests run. I reverted the commit 32d4fd5751ea then the WARNING
+> disappeared. The WARNING was observed on systems with 20 threads CPU, but
+> not observed on systems with 8 threads CPU.
 > =
 
-> >  62  * SLUB uses cmpxchg_double() to atomically update its freelist and=
- counters.
-> >  63  * That requires that freelist & counters in struct slab be adjacen=
-t and
-> >  64  * double-word aligned. Because struct slab currently just reinterp=
-rets the
-> >  65  * bits of struct page, we align all struct pages to double-word bo=
-undaries,
-> >  66  * and ensure that 'freelist' is aligned within struct slab.
-> >  67  */
+> Looking in the commit, I'm not sure how it is related to the RCU warning.
+> If any further action on my system would help, please let me know.
+
+recently we made further tests and confirmed the issue is existing on this
+commit but clean on parent, still on test machine:
+  88 threads 2 sockets Intel(R) Xeon(R) Gold 6238M CPU @ 2.10GHz with 128G =
+memory
+
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+compiler/group/kconfig/rootfs/tbox_group/testcase:
+  gcc-11/resctrl/x86_64-rhel-8.3-kselftests/debian-11.1-x86_64-20220510.cgz=
+/lkp-csl-2sp9/kernel-selftests
+
+commit:
+  v5.19-rc1
+  32d4fd5751eadbe1823a37eb38df85ec5c8e6207
+
+       v5.19-rc1 32d4fd5751eadbe1823a37eb38d
+---------------- ---------------------------
+       fail:runs  %reproduction    fail:runs
+           |             |             |
+           :20         100%          20:20    dmesg.RIP:rcu_eqs_exit   <---=
+---
+           :20          95%          19:20    dmesg.RIP:sched_clock_tick
+           :20          90%          18:20    dmesg.WARNING:at_kernel/rcu/t=
+ree.c:#rcu_eqs_exit
+           :20          90%          18:20    dmesg.WARNING:at_kernel/sched=
+/clock.c:#sched_clock_tick
+           :20         100%          20:20    dmesg.WARNING:suspicious_RCU_=
+usage
+           :20         100%          20:20    dmesg.boot_failures
+           :20           5%           1:20    dmesg.include/linux/rcupdate.=
+h:#rcu_read_lock()used_illegally_while_idle
+           :20           5%           1:20    dmesg.include/linux/rcupdate.=
+h:#rcu_read_unlock()used_illegally_while_idle
+           :20          95%          19:20    dmesg.include/trace/events/er=
+ror_report.h:#suspicious_rcu_dereference_check()usage
+           :20         100%          20:20    dmesg.include/trace/events/lo=
+ck.h:#suspicious_rcu_dereference_check()usage
+
+
+as Shin'ichiro Kawasaki mentioned, the issues seems not be able to reproduc=
+e on
+systems with small number of threads of CPU. so we tested on a vm which only
+have 2 threads
+  qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+
+we confirmed the issue cannot be reproduced.
+
+we actually don't have related knolwedge, if need extra data or testing we =
+can
+help.
+
 > =
 
-> Also we may add a comment,
-> something like this?
-> =
+> -- =
 
-> --- a/include/linux/mm_types.h
-> +++ b/include/linux/mm_types.h
-> @@ -79,6 +79,9 @@ struct page {
->          * WARNING: bit 0 of the first word is used for PageTail(). That
->          * means the other users of this union MUST NOT use the bit to
->          * avoid collision and false-positive PageTail().
-> +        *
-> +        * WARNING: lower two bits of third word is used for PAGE_MAPPING=
-_FLAGS.
-> +        * using those bits can lead compaction code to general protectio=
-n fault.
-
-I'm really not comfortable with adding that documentation.  I feel the
-compaction code should be fixed.
---===============5138404500456019480==--
+> Shin'ichiro Kawasaki
+--===============0336757419202880817==--
 
