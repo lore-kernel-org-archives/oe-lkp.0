@@ -1,139 +1,133 @@
-Content-Type: multipart/mixed; boundary="===============5270343625221295203=="
+Content-Type: multipart/mixed; boundary="===============2415716755251322880=="
 MIME-Version: 1.0
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Dave Chinner <david@fromorbit.com>
 To: lkp@lists.01.org
-Subject: Re: [kbuild] b3830bad81: System_halted
-Date: Tue, 11 Oct 2022 04:29:36 +0900
-Message-ID: <CAK7LNASUhDMo72eNge_GvdfbmOkpBCJA88Xw=_V69jcf+_072Q@mail.gmail.com>
-In-Reply-To: <202210090942.a159fe4-yujie.liu@intel.com>
+Subject: Re: [xfs] a1df10d42b: xfstests.generic.31*.fail
+Date: Tue, 11 Oct 2022 07:54:40 +1100
+Message-ID: <20221010205440.GV3600936@dread.disaster.area>
+In-Reply-To: <Y0NoKUei4Xfn/afb@rli9-MOBL1.ccr.corp.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============5270343625221295203==
+--===============2415716755251322880==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Oct 9, 2022 at 10:21 AM kernel test robot <yujie.liu@intel.com> w=
-rote:
->
-> Greeting,
->
-> FYI, we noticed the following commit (built with gcc-11):
->
-> commit: b3830bad81e872632431363853c810c5f652a040 ("[PATCH v3 2/8] kbuild:=
- rebuild .vmlinux.export.o when its prerequisite is updated")
-> url: https://github.com/intel-lab-lkp/linux/commits/Masahiro-Yamada/Unify=
--linux-export-h-and-asm-export-h-remove-EXPORT_DATA_SYMBOL-faster-TRIM_UNUS=
-ED_KSYMS/20220928-144539
-> base: https://git.kernel.org/cgit/linux/kernel/git/masahiroy/linux-kbuild=
-.git for-next
-> patch link: https://lore.kernel.org/linux-kbuild/20220928063947.299333-3-=
-masahiroy(a)kernel.org
->
-> in testcase: boot
->
-> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -=
-m 16G
->
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
+On Mon, Oct 10, 2022 at 08:32:41AM +0800, Philip Li wrote:
+> On Mon, Oct 10, 2022 at 11:07:40AM +1100, Dave Chinner wrote:
+> > On Sun, Oct 09, 2022 at 03:17:55PM +0800, Oliver Sang wrote:
+> > > Hi Dave,
+> > > =
+
+> > > On Thu, Oct 06, 2022 at 08:35:43AM +1100, Dave Chinner wrote:
+> > > > On Wed, Oct 05, 2022 at 09:45:12PM +0800, kernel test robot wrote:
+> > > > > =
+
+> > > > > Greeting,
+> > > > > =
+
+> > > > > FYI, we noticed the following commit (built with gcc-11):
+> > > > > =
+
+> > > > > commit: a1df10d42ba99c946f6a574d4d31951bc0a57e33 ("xfs: fix excep=
+tion caused by unexpected illegal bestcount in leaf dir")
+> > > > > url: https://github.com/intel-lab-lkp/linux/commits/UPDATE-202209=
+29-162751/Guo-Xuenan/xfs-fix-uaf-when-leaf-dir-bestcount-not-match-with-dir=
+-data-blocks/20220831-195920
+> > > > > =
+
+[....]
+
+> > commit a1df10d42ba99c946f6a574d4d31951bc0a57e33 *does not exist in
+> > the upstream xfs-dev tree*. The URL provided pointing to the commit
+> > above resolves to a "404 page not found" error, so I have not idea
+> > what code was even being tested here.
+> > =
+
+> > AFAICT, the patch being tested is this one (based on the github url
+> > matching the patch title:
+> > =
+
+> > https://lore.kernel.org/linux-xfs/20220831121639.3060527-1-guoxuenan(a)=
+huawei.com/
+> > =
+
+> > Which I NACKed almost a whole month ago! The latest revision of the
+> > patch was posted 2 days ago here:
+> > =
+
+> > https://lore.kernel.org/linux-xfs/20221008033624.1237390-1-guoxuenan(a)=
+huawei.com/
+> > =
+
+> > Intel kernel robot maintainers: I've just wasted the best part of 2
+> > hours trying to reproduce and track down a corruption bug that this
+> > report lead me to beleive was in the upstream XFS tree.
+> =
+
+> hi Dave, we are very sorry to waste your time on this report. It's our fa=
+ult to not
+> make it clear that this is testing a review patch in mailing list. And we=
+ also
+> miss the NACKed information in your review, and send out this meaningless=
+ report.
+
+The biggest issue was how it was presented.
+
+Normally I see reports from the kernel robot for specific
+uncommitted patches like this as a threaded reply to the specific
+patch that was identified as having a problem.  And normally this
+sort of standalone test failure report comes from a failure bisected
+to a commit already in an upstream tree. =
 
 
-I think this is a false-positive alarm.
-
-As I replied before [1], I know my patch set is broken.
-I think 0day bot is testing the patch set I had already retracted.
-
-I only picked up low-hanging fruits with fixes to my tree,
-and did boot tests.
-
-Please let me know if linux-next is broken.
+So my confusion here is largely because a bug in an uncommitted
+patch was reported in the same manner as an upstream regression
+would be reported - as a standalone bug report...
 
 
-[1] : https://lore.kernel.org/linux-kbuild/CAK7LNATcD6k+R66YFVg_mhe7-FGNc0n=
-YaTPuORCcd34Qw3ra2g(a)mail.gmail.com/T/#t
+> > You need to make it very clear that your bug report is for a commit
+> > that *hasn't been merged into an upstream tree*. The CI robot
+> > noticed a bug in an *old* NACKed patch, not a bug in a new upstream
+> > commit. Please make it *VERY CLEAR* where the code the CI robot is
+> > testing has come from.
+> =
 
+> We will correct our process ASAP to =
 
+> =
 
+> 1) make it clear, what is tested from, a review patch or a patch on upstr=
+eam tree
 
+Yes, commit ID by itself is not sufficient to identify the issue,
+nor is a pointer to the CI tree the robot built. For a patch pulled
+from a list, it should not be reported as a "commit that failed".
+It should be reported as "uncommitted patch that failed", with:
 
+- a lore link to the patch that was identified as having an issue;
+- a pointer to the base tree the patch(es) were applied to (e.g.
+  linus-v5.19-rc7, linux-next-2022-25-09, etc)
+- a pointer to the CI integration tree (that doesn't) the patch was
+  applied to and tested.
 
+For an upstream commit that failed, reporting "<commit id> failed"
+is a good start, but it really needs to include the tree as the
+robot might be testing dev trees or linux-next rather than Linus's
+tree. i.e. report as "<tree, commit id> failed <test>".
 
+> 2) do not send such report, if the patch has already been NACKed
 
+That's not so much a problem. The real problem that needs solving is
+ensuring that the recipients of the bug report are able to quickly
+and obviously identify what was being tested when the issue was hit.
 
+Cheers,
 
->
-> early console in setup code
-> Probing EDD (edd=3Doff to disable)... ok
-> No EFI environment detected.
-> early console in extract_kernel
-> input_data: 0x0000000002e5740d
-> input_len: 0x000000000099c37e
-> output: 0x0000000001000000
-> output_len: 0x000000000234aa00
-> kernel_total_size: 0x0000000002828000
-> needed_size: 0x0000000002a00000
-> trampoline_32bit: 0x000000000009d000
->
-> Decompressing Linux... Parsing ELF...
->
-> Alignment of LOAD segment isn't multiple of 2MB
->
->  -- System haltedBUG: kernel hang in boot stage
->
->
->
-> 61682ee38a ("kbuild: move modules.builtin(.modinfo) rules to Makefile.vml=
-inux_o")
-> b3830bad81 ("kbuild: rebuild .vmlinux.export.o when its prerequisite is u=
-pdated")
->
-> +----------------+------------+------------+
-> |                | 61682ee38a | b3830bad81 |
-> +----------------+------------+------------+
-> | boot_successes | 24         | 0          |
-> | boot_failures  | 0          | 18         |
-> | System_halted  | 0          | 18         |
-> +----------------+------------+------------+
->
->
-> If you fix the issue, kindly add following tag
-> | Reported-by: kernel test robot <yujie.liu@intel.com>
-> | Link: https://lore.kernel.org/r/202210090942.a159fe4-yujie.liu(a)intel.=
-com
->
->
-> To reproduce:
->
->         # build kernel
->         cd linux
->         cp config-6.0.0-rc7-00038-gb3830bad81e8 .config
->         make HOSTCC=3Dgcc-11 CC=3Dgcc-11 ARCH=3Dx86_64 olddefconfig prepa=
-re modules_prepare bzImage modules
->         make HOSTCC=3Dgcc-11 CC=3Dgcc-11 ARCH=3Dx86_64 INSTALL_MOD_PATH=
-=3D<mod-install-dir> modules_install
->         cd <mod-install-dir>
->         find lib/ | cpio -o -H newc --quiet | gzip > modules.cgz
->
->
->         git clone https://github.com/intel/lkp-tests.git
->         cd lkp-tests
->         bin/lkp qemu -k <bzImage> -m modules.cgz job-script # job-script =
-is attached in this email
->
->         # if come across any failure that blocks the test,
->         # please remove ~/.lkp and /lkp dir to run from a clean state.
->
->
-> --
-> 0-DAY CI Kernel Test Service
-> https://01.org/lkp
-
-
-
+Dave.
 -- =
 
-Best Regards
-Masahiro Yamada
---===============5270343625221295203==--
+Dave Chinner
+david(a)fromorbit.com
+--===============2415716755251322880==--
 
