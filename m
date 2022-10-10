@@ -1,226 +1,172 @@
-Content-Type: multipart/mixed; boundary="===============3603293188595079820=="
+Content-Type: multipart/mixed; boundary="===============5516845302182034962=="
 MIME-Version: 1.0
-From: Huang, Ying <ying.huang@intel.com>
+From: Dave Chinner <david@fromorbit.com>
 To: lkp@lists.01.org
-Subject: Re: [mm] f35b5d7d67: will-it-scale.per_process_ops -95.5% regression
-Date: Thu, 20 Oct 2022 13:07:09 +0800
-Message-ID: <871qr3nkw2.fsf@yhuang6-desk2.ccr.corp.intel.com>
-In-Reply-To: <Y1DNQaoPWxE+rGce@dev-arch.thelio-3990X>
+Subject: Re: [xfs] a1df10d42b: xfstests.generic.31*.fail
+Date: Mon, 10 Oct 2022 11:07:40 +1100
+Message-ID: <20221010000740.GU3600936@dread.disaster.area>
+In-Reply-To: <Y0J1oxBFwW53udvJ@xsang-OptiPlex-9020>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3603293188595079820==
+--===============5516845302182034962==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi, Nathan,
+On Sun, Oct 09, 2022 at 03:17:55PM +0800, Oliver Sang wrote:
+> Hi Dave,
+> =
 
-Thanks for your information!  That's valuable.
+> On Thu, Oct 06, 2022 at 08:35:43AM +1100, Dave Chinner wrote:
+> > On Wed, Oct 05, 2022 at 09:45:12PM +0800, kernel test robot wrote:
+> > > =
 
-Nathan Chancellor <nathan@kernel.org> writes:
+> > > Greeting,
+> > > =
 
-> Hi Ying,
->
-> On Wed, Oct 19, 2022 at 10:05:50AM +0800, Huang, Ying wrote:
->> Hi, Yujie,
->> =
+> > > FYI, we noticed the following commit (built with gcc-11):
+> > > =
 
->> >      32528  48%    +147.6%      80547  38%  numa-meminfo.node0.AnonHug=
-ePages
->> >      92821  23%     +59.3%     147839  28%  numa-meminfo.node0.AnonPag=
-es
->> =
+> > > commit: a1df10d42ba99c946f6a574d4d31951bc0a57e33 ("xfs: fix exception=
+ caused by unexpected illegal bestcount in leaf dir")
+> > > url: https://github.com/intel-lab-lkp/linux/commits/UPDATE-20220929-1=
+62751/Guo-Xuenan/xfs-fix-uaf-when-leaf-dir-bestcount-not-match-with-dir-dat=
+a-blocks/20220831-195920
+> > > =
 
->> The Anon pages allocated are much more than the parent commit.  This is
->> expected, because THP instead of normal page will be allocated for
->> aligned memory area.
->> =
+> > > in testcase: xfstests
+> > > version: xfstests-x86_64-5a5e419-1_20220927
+> > > with following parameters:
+> > > =
 
->> >      95.23           -79.8       15.41   6%  perf-profile.calltrace.cy=
-cles-pp.__munmap
->> >      95.08           -79.7       15.40   6%  perf-profile.calltrace.cy=
-cles-pp.entry_SYSCALL_64_after_hwframe.__munmap
->> >      95.02           -79.6       15.39   6%  perf-profile.calltrace.cy=
-cles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.__munmap
->> >      94.96           -79.6       15.37   6%  perf-profile.calltrace.cy=
-cles-pp.__x64_sys_munmap.do_syscall_64.entry_SYSCALL_64_after_hwframe.__mun=
-map
->> >      94.95           -79.6       15.37   6%  perf-profile.calltrace.cy=
-cles-pp.__vm_munmap.__x64_sys_munmap.do_syscall_64.entry_SYSCALL_64_after_h=
-wframe.__munmap
->> >      94.86           -79.5       15.35   6%  perf-profile.calltrace.cy=
-cles-pp.__do_munmap.__vm_munmap.__x64_sys_munmap.do_syscall_64.entry_SYSCAL=
-L_64_after_hwframe
->> >      94.38           -79.2       15.22   6%  perf-profile.calltrace.cy=
-cles-pp.unmap_region.__do_munmap.__vm_munmap.__x64_sys_munmap.do_syscall_64
->> >      42.74           -42.7        0.00        perf-profile.calltrace.c=
-ycles-pp.lru_add_drain.unmap_region.__do_munmap.__vm_munmap.__x64_sys_munmap
->> >      42.74           -42.7        0.00        perf-profile.calltrace.c=
-ycles-pp.lru_add_drain_cpu.lru_add_drain.unmap_region.__do_munmap.__vm_munm=
-ap
->> >      42.72           -42.7        0.00        perf-profile.calltrace.c=
-ycles-pp.folio_batch_move_lru.lru_add_drain_cpu.lru_add_drain.unmap_region.=
-__do_munmap
->> >      41.84           -41.8        0.00        perf-profile.calltrace.c=
-ycles-pp.folio_lruvec_lock_irqsave.folio_batch_move_lru.lru_add_drain_cpu.l=
-ru_add_drain.unmap_region
->> >      41.70           -41.7        0.00        perf-profile.calltrace.c=
-ycles-pp._raw_spin_lock_irqsave.folio_lruvec_lock_irqsave.folio_batch_move_=
-lru.lru_add_drain_cpu.lru_add_drain
->> >      41.62           -41.6        0.00        perf-profile.calltrace.c=
-ycles-pp.folio_lruvec_lock_irqsave.release_pages.tlb_batch_pages_flush.tlb_=
-finish_mmu.unmap_region
->> >      41.55 -41.6 0.00
->> > perf-profile.calltrace.cycles-pp.native_queued_spin_lock_slowpath._raw=
-_spin_lock_irqsave.folio_lruvec_lock_irqsave.folio_batch_move_lru.lru_add_d=
-rain_cpu
->> >      41.52           -41.5        0.00        perf-profile.calltrace.c=
-ycles-pp._raw_spin_lock_irqsave.folio_lruvec_lock_irqsave.release_pages.tlb=
-_batch_pages_flush.tlb_finish_mmu
->> >      41.28 -41.3 0.00
->> > perf-profile.calltrace.cycles-pp.native_queued_spin_lock_slowpath._raw=
-_spin_lock_irqsave.folio_lruvec_lock_irqsave.release_pages.tlb_batch_pages_=
-flush
->> =
+> > > 	disk: 4HDD
+> > > 	fs: xfs
+> > > 	test: generic-group-15
+> > > =
 
->> In the parent commit, most CPU cycles are used for contention on LRU loc=
-k.
->> =
+> > > test-description: xfstests is a regression test suite for xfs and oth=
+er files ystems.
+> > > test-url: git://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git
+> > > =
 
->> >       0.00            +4.8        4.82   7%  perf-profile.calltrace.cy=
-cles-pp.do_huge_pmd_anonymous_page.__handle_mm_fault.handle_mm_fault.do_use=
-r_addr_fault.exc_page_fault
->> >       0.00            +4.9        4.88   7%  perf-profile.calltrace.cy=
-cles-pp.zap_huge_pmd.zap_pmd_range.unmap_page_range.unmap_vmas.unmap_region
->> >       0.00            +8.2        8.22   8%  perf-profile.calltrace.cy=
-cles-pp.native_queued_spin_lock_slowpath._raw_spin_lock.rmqueue_bulk.rmqueu=
-e.get_page_from_freelist
->> >       0.00            +8.2        8.23   8%  perf-profile.calltrace.cy=
-cles-pp._raw_spin_lock.rmqueue_bulk.rmqueue.get_page_from_freelist.__alloc_=
-pages
->> >       0.00            +8.3        8.35   8%  perf-profile.calltrace.cy=
-cles-pp.native_queued_spin_lock_slowpath._raw_spin_lock.free_pcppages_bulk.=
-free_unref_page.release_pages
->> >       0.00            +8.3        8.35   8%  perf-profile.calltrace.cy=
-cles-pp._raw_spin_lock.free_pcppages_bulk.free_unref_page.release_pages.tlb=
-_batch_pages_flush
->> >       0.00            +8.4        8.37   8%  perf-profile.calltrace.cy=
-cles-pp.free_pcppages_bulk.free_unref_page.release_pages.tlb_batch_pages_fl=
-ush.tlb_finish_mmu
->> >       0.00            +9.6        9.60   6%  perf-profile.calltrace.cy=
-cles-pp.free_unref_page.release_pages.tlb_batch_pages_flush.tlb_finish_mmu.=
-unmap_region
->> >       0.00           +65.5       65.48   2%  perf-profile.calltrace.cy=
-cles-pp.clear_page_erms.clear_huge_page.__do_huge_pmd_anonymous_page.__hand=
-le_mm_fault.handle_mm_fault
->> >       0.00           +72.5       72.51   2%  perf-profile.calltrace.cy=
-cles-pp.clear_huge_page.__do_huge_pmd_anonymous_page.__handle_mm_fault.hand=
-le_mm_fault.do_user_addr_fault
->> =
+> > > =
 
->> With the commit, most CPU cycles are consumed for clear huge page.  This
->> is expected.  We allocate more pages, so, we need more cycles to clear
->> them.
->> =
+> > > on test machine: 4 threads 1 sockets Intel(R) Core(TM) i3-3220 CPU @ =
+3.30GHz (Ivy Bridge) with 8G memory
+> > > =
 
->> Check the source code of test case (will-it-scale/malloc1), I found that
->> it will allocate some memory with malloc() then free it.
->> =
+> > > caused below changes (please refer to attached dmesg/kmsg for entire =
+log/backtrace):
+> > =
 
->> In the parent commit, because the virtual memory address isn't aligned
->> with 2M, normal page will be allocated.  With the commit, THP will be
->> allocated, so more page clearing and less LRU lock contention.  I think
->> this is the expected behavior of the commit.  And the test case isn't so
->> popular (malloc() then free() but don't access the memory allocated).  So
->> this regression isn't important.  We can just ignore it.
->
-> For what it's worth, I just bisected a massive and visible performance
-> regression on my Threadripper 3990X workstation to commit f35b5d7d676e
-> ("mm: align larger anonymous mappings on THP boundaries"), which seems
-> directly related to this report/analysis. I initially noticed this
-> because my full set of kernel builds against mainline went from 2 hours
-> and 20 minutes or so to over 3 hours. Zeroing in on x86_64 allmodconfig,
-> which I used for the bisect:
->
-> @ 7b5a0b664ebe ("mm/page_ext: remove unused variable in offline_page_ext"=
-):
->
-> Benchmark 1: make -skj128 LLVM=3D1 allmodconfig all
->   Time (mean =C2=B1 =CF=83):     318.172 s =C2=B1  0.730 s    [User: 3175=
-0.902 s, System: 4564.246 s]
->   Range (min =E2=80=A6 max):   317.332 s =E2=80=A6 318.662 s    3 runs
->
-> @ f35b5d7d676e ("mm: align larger anonymous mappings on THP boundaries"):
->
-> Benchmark 1: make -skj128 LLVM=3D1 allmodconfig all
+> > THe attached dmesg ends at:
+> > =
 
-Have you tried to build with gcc?  Want to check whether is this clang
-specific issue or not.
+> > [...]
+> > [  102.727610][  T315] generic/309       IPMI BMC is not supported on t=
+his machine, skip bmc-watchdog setup!
+> > [  102.727630][  T315] =
 
-Best Regards,
-Huang, Ying
+> > [  103.884498][ T7407] XFS (sda1): EXPERIMENTAL online scrub feature in=
+ use. Use at your own risk!
+> > [  103.993962][ T7431] XFS (sda1): Unmounting Filesystem
+> > [  104.193659][ T7580] XFS (sda1): Mounting V5 Filesystem
+> > [  104.221178][ T7580] XFS (sda1): Ending clean mount
+> > [  104.223821][ T7580] xfs filesystem being mounted at /fs/sda1 support=
+s timestamps until 2038 (0x7fffffff)
+> > [  104.285615][  T315]  2s
+> > [  104.285629][  T315] =
 
->   Time (mean =C2=B1 =CF=83):     406.688 s =C2=B1  0.676 s    [User: 3181=
-9.526 s, System: 16327.022 s]
->   Range (min =E2=80=A6 max):   405.954 s =E2=80=A6 407.284 s    3 run
->
-> That is a pretty big difference (27%), which is visible while doing a
-> lot of builds, only because of the extra system time. If there is any
-> way to improve this, it should certainly be considered.
->
-> For now, I'll just revert it locally.
->
-> Cheers,
-> Nathan
->
-> # bad: [aae703b02f92bde9264366c545e87cec451de471] Merge tag 'for-6.1-rc1-=
-tag' of git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux
-> # good: [4fe89d07dcc2804c8b562f6c7896a45643d34b2f] Linux 6.0
-> git bisect start 'aae703b02f92bde9264366c545e87cec451de471' 'v6.0'
-> # good: [18fd049731e67651009f316195da9281b756f2cf] Merge tag 'arm64-upstr=
-eam' of git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux
-> git bisect good 18fd049731e67651009f316195da9281b756f2cf
-> # good: [ab0c23b535f3f9d8345d8ad4c18c0a8594459d55] MAINTAINERS: add RISC-=
-V's patchwork
-> git bisect good ab0c23b535f3f9d8345d8ad4c18c0a8594459d55
-> # bad: [f721d24e5dae8358b49b24399d27ba5d12a7e049] Merge tag 'pull-tmpfile=
-' of git://git.kernel.org/pub/scm/linux/kernel/git/viro/vfs
-> git bisect bad f721d24e5dae8358b49b24399d27ba5d12a7e049
-> # good: [ada3bfb6492a6d0d3eca50f3b61315fe032efc72] Merge tag 'tpmdd-next-=
-v6.1-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpm=
-dd
-> git bisect good ada3bfb6492a6d0d3eca50f3b61315fe032efc72
-> # bad: [4e07acdda7fc23f5c4666e54961ef972a1195ffd] mm/hwpoison: add __init=
-/__exit annotations to module init/exit funcs
-> git bisect bad 4e07acdda7fc23f5c4666e54961ef972a1195ffd
-> # bad: [000a449345bbb4ffbd880f7143b5fb4acac34121] radix tree test suite: =
-add allocation counts and size to kmem_cache
-> git bisect bad 000a449345bbb4ffbd880f7143b5fb4acac34121
-> # bad: [47d55419951312d723de1b6ad53ee92948b8eace] btrfs: convert process_=
-page_range() to use filemap_get_folios_contig()
-> git bisect bad 47d55419951312d723de1b6ad53ee92948b8eace
-> # bad: [4d86d4f7227c6f2acfbbbe0623d49865aa71b756] mm: add more BUILD_BUG_=
-ONs to gfp_migratetype()
-> git bisect bad 4d86d4f7227c6f2acfbbbe0623d49865aa71b756
-> # bad: [816284a3d0e27828b5cc35f3cf539b0711939ce3] userfaultfd: update doc=
-umentation to describe /dev/userfaultfd
-> git bisect bad 816284a3d0e27828b5cc35f3cf539b0711939ce3
-> # good: [be6667b0db97e10b2a6d57a906c2c8fd2b985e5e] selftests/vm: dedup hu=
-gepage allocation logic
-> git bisect good be6667b0db97e10b2a6d57a906c2c8fd2b985e5e
-> # bad: [2ace36f0f55777be8a871c370832527e1cd54b15] mm: memory-failure: cle=
-anup try_to_split_thp_page()
-> git bisect bad 2ace36f0f55777be8a871c370832527e1cd54b15
-> # good: [9d0d946840075e0268f4f77fe39ba0f53e84c7c4] selftests/vm: add self=
-test to verify multi THP collapse
-> git bisect good 9d0d946840075e0268f4f77fe39ba0f53e84c7c4
-> # bad: [f35b5d7d676e59e401690b678cd3cfec5e785c23] mm: align larger anonym=
-ous mappings on THP boundaries
-> git bisect bad f35b5d7d676e59e401690b678cd3cfec5e785c23
-> # good: [7b5a0b664ebe2625965a0fdba2614c88c4b9bbc6] mm/page_ext: remove un=
-used variable in offline_page_ext
-> git bisect good 7b5a0b664ebe2625965a0fdba2614c88c4b9bbc6
-> # first bad commit: [f35b5d7d676e59e401690b678cd3cfec5e785c23] mm: align =
-larger anonymous mappings on THP boundaries
---===============3603293188595079820==--
+> > [  104.339232][ T1469] run fstests generic/310 at 2022-10-01 13:36:36
+> > (END)
+> > =
+
+> > The start of the failed test. Do you have the logs from generic/310
+> > so we might have some idea what corruption/shutdown event occurred
+> > during that test run?
+> =
+
+> sorry for that. I attached dmesg for another run.
+
+[  109.424124][ T1474] run fstests generic/310 at 2022-10-01 10:14:01
+[  169.865043][ T7563] XFS (sda1): Metadata corruption detected at xfs_dir3=
+_leaf_check_int+0x381/0x600 [xfs], xfs_dir3_leafn block 0x4000088 =
+
+[  169.865406][ T7563] XFS (sda1): Unmount and run xfs_repair
+[  169.865510][ T7563] XFS (sda1): First 128 bytes of corrupted metadata bu=
+ffer:
+[  169.865639][ T7563] 00000000: 00 80 00 01 00 00 00 00 3d ff 00 00 00 00 =
+00 00  ........=3D.......
+[  169.865793][ T7563] 00000010: 00 00 00 00 04 00 00 88 00 00 00 00 00 00 =
+00 00  ................
+[  169.865945][ T7563] 00000020: 27 64 dd b1 81 61 45 2b 86 66 64 67 56 f2 =
+40 58  'd...aE+.fdgV.(a)X
+[  169.866122][ T7563] 00000030: 00 00 00 00 00 00 00 87 00 fc 00 00 00 00 =
+00 00  ................
+[  169.866293][ T7563] 00000040: 00 00 00 2e 00 00 00 08 00 00 00 31 00 00 =
+00 0c  ...........1....
+[  169.866467][ T7563] 00000050: 00 00 00 32 00 00 00 0e 00 00 00 33 00 00 =
+00 10  ...2.......3....
+[  169.866640][ T7563] 00000060: 00 00 00 34 00 00 00 12 00 00 00 35 00 00 =
+00 14  ...4.......5....
+[  169.866816][ T7563] 00000070: 00 00 00 36 00 00 00 16 00 00 00 37 00 00 =
+00 18  ...6.......7....
+[  169.867002][ T7563] XFS (sda1): Corruption of in-memory data (0x8) detec=
+ted at _xfs_buf_ioapply+0x508/0x600 [xfs] (fs/xfs/xfs_buf.c:1552).  Shuttin=
+g down filesystem.
+
+I don't see any corruption in the leafn header or the first few hash
+entries there. It does say it has 0xfc entries in the block, which
+is correct for a full leaf of hash pointers. It has no stale
+entries, which is correct according to the what the test does (it
+does not remove directory entries at all. It has a forward pointer
+but no backwards pointer, which is expected as the hash values tell
+me this should be the left-most leaf block in the tree.
+
+The error has been detected at write time, which means the problem
+was detected before it got written to disk. But I don't see what
+code in xfs_dir3_leaf_check_int() is even triggering a warning on a
+leafn block here - what line of code does
+xfs_dir3_leaf_check_int+0x381/0x600 actually resolve to?
+
+.....
+
+<nnngggghhh>
+
+No wonder I can't reproduce this locally.
+
+commit a1df10d42ba99c946f6a574d4d31951bc0a57e33 *does not exist in
+the upstream xfs-dev tree*. The URL provided pointing to the commit
+above resolves to a "404 page not found" error, so I have not idea
+what code was even being tested here.
+
+AFAICT, the patch being tested is this one (based on the github url
+matching the patch title:
+
+https://lore.kernel.org/linux-xfs/20220831121639.3060527-1-guoxuenan(a)huaw=
+ei.com/
+
+Which I NACKed almost a whole month ago! The latest revision of the
+patch was posted 2 days ago here:
+
+https://lore.kernel.org/linux-xfs/20221008033624.1237390-1-guoxuenan(a)huaw=
+ei.com/
+
+Intel kernel robot maintainers: I've just wasted the best part of 2
+hours trying to reproduce and track down a corruption bug that this
+report lead me to beleive was in the upstream XFS tree.
+
+You need to make it very clear that your bug report is for a commit
+that *hasn't been merged into an upstream tree*. The CI robot
+noticed a bug in an *old* NACKed patch, not a bug in a new upstream
+commit. Please make it *VERY CLEAR* where the code the CI robot is
+testing has come from.
+
+Not happy.
+
+-- =
+
+Dave Chinner
+david(a)fromorbit.com
+--===============5516845302182034962==--
 
