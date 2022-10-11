@@ -1,37 +1,44 @@
-Content-Type: multipart/mixed; boundary="===============8719295816720931611=="
+Content-Type: multipart/mixed; boundary="===============0614569136431639921=="
 MIME-Version: 1.0
-From: Kees Cook <keescook@chromium.org>
+From: Johannes Berg <johannes@sipsolutions.net>
 To: lkp@lists.01.org
-Subject: Re: [fortify] 54d9469bc5: WARNING:at_fs/nfs/namespace.c:#nfs_d_automount
-Date: Mon, 10 Oct 2022 23:54:01 -0700
-Message-ID: <202210102352.B80BC62@keescook>
-In-Reply-To: <202210110948.26b43120-yujie.liu@intel.com>
+Subject: Re: [fortify] 54d9469bc5: WARNING:at_net/wireless/wext-core.c:#wireless_send_event
+Date: Tue, 11 Oct 2022 08:59:49 +0200
+Message-ID: <0d8be2bcb891a56c42760c8e955877841046458b.camel@sipsolutions.net>
+In-Reply-To: <202210102312.1CC8197@keescook>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============8719295816720931611==
+--===============0614569136431639921==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Oct 11, 2022 at 11:45:56AM +0800, kernel test robot wrote:
-> FYI, we noticed the following commit (built with gcc-11):
+On Mon, 2022-10-10 at 23:17 -0700, Kees Cook wrote:
+> On Tue, Oct 11, 2022 at 11:46:21AM +0800, kernel test robot wrote:
+> > commit: 54d9469bc515dc5fcbc20eecbe19cea868b70d68 ("fortify: Add run-tim=
+e WARN for cross-field memcpy()")
+> > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> > [...]
+> > caused below changes (please refer to attached dmesg/kmsg for entire lo=
+g/backtrace):
+> > [...]
+> > [   95.913726][   T36] memcpy: detected field-spanning write (size 16) =
+of single field "&compat_event->pointer" at net/wireless/wext-core.c:623 (s=
+ize 4)
 > =
 
-> commit: 54d9469bc515dc5fcbc20eecbe19cea868b70d68 ("fortify: Add run-time =
-WARN for cross-field memcpy()")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> This was fixed with:
+> e3e6e1d16a4c ("wifi: wext: use flex array destination for memcpy()")
 > =
 
-> [...]
-> [   57.256986][ T4357] memcpy: detected field-spanning write (size 28) of=
- single field "&ctx->nfs_server.address" at fs/nfs/namespace.c:178 (size 16)
+> I expect this will land before -rc1 closes, but Johannes will know more
+> about the schedule.
+> =
 
-Thanks for the report! I've sent a patch for this now:
-https://lore.kernel.org/lkml/20221011065243.583650-1-keescook(a)chromium.or=
-g/
 
--- =
+Yes, we're planning to send a pull request today, so that should go to
+Linus with the net pull request tomorrow.
 
-Kees Cook
---===============8719295816720931611==--
+johannes
+--===============0614569136431639921==--
 
