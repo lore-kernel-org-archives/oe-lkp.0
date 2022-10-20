@@ -1,130 +1,113 @@
-Content-Type: multipart/mixed; boundary="===============1651064100320439976=="
+Content-Type: multipart/mixed; boundary="===============2248973743742657334=="
 MIME-Version: 1.0
-From: Nathan Chancellor <nathan@kernel.org>
+From: Yujie Liu <yujie.liu@intel.com>
 To: lkp@lists.01.org
-Subject: Re: [mm] f35b5d7d67: will-it-scale.per_process_ops -95.5% regression
-Date: Thu, 20 Oct 2022 10:16:17 -0700
-Message-ID: <Y1GCYXGtEVZbcv/5@dev-arch.thelio-3990X>
-In-Reply-To: <366045a27a96e01d0526d63fd78d4f3c5d1f530b.camel@surriel.com>
+Subject: Re: [lib/cpumask] 6f9c07be9d: WARNING:at_include/linux/cpumask.h:#prefill_possible_map
+Date: Fri, 21 Oct 2022 01:39:02 +0800
+Message-ID: <Y1GHthWAyAq2Q+Yz@yujie-X299>
+In-Reply-To: <Y1FzKVLlLPrhb47D@yury-laptop>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============1651064100320439976==
+--===============2248973743742657334==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Hi Rik,
-
-On Thu, Oct 20, 2022 at 11:28:16AM -0400, Rik van Riel wrote:
-> On Thu, 2022-10-20 at 13:07 +0800, Huang, Ying wrote:
+On Thu, Oct 20, 2022 at 09:11:21AM -0700, Yury Norov wrote:
+> On Thu, Oct 20, 2022 at 06:05:51PM +0800, kernel test robot wrote:
 > > =
 
-> > Nathan Chancellor <nathan@kernel.org> writes:
-> > > =
-
-> > > For what it's worth, I just bisected a massive and visible
-> > > performance
-> > > regression on my Threadripper 3990X workstation to commit
-> > > f35b5d7d676e
-> > > ("mm: align larger anonymous mappings on THP boundaries"), which
-> > > seems
-> > > directly related to this report/analysis. I initially noticed this
-> > > because my full set of kernel builds against mainline went from 2
-> > > hours
-> > > and 20 minutes or so to over 3 hours. Zeroing in on x86_64
-> > > allmodconfig,
-> > > which I used for the bisect:
-> > > =
-
-> > > @ 7b5a0b664ebe ("mm/page_ext: remove unused variable in
-> > > offline_page_ext"):
-> > > =
-
-> > > Benchmark 1: make -skj128 LLVM=3D1 allmodconfig all
-> > > =C2=A0 Time (mean =C2=B1 =CF=83):=C2=A0=C2=A0=C2=A0=C2=A0 318.172 s =
-=C2=B1=C2=A0 0.730 s=C2=A0=C2=A0=C2=A0 [User: 31750.902 s,
-> > > System: 4564.246 s]
-> > > =C2=A0 Range (min =E2=80=A6 max):=C2=A0=C2=A0 317.332 s =E2=80=A6 318=
-.662 s=C2=A0=C2=A0=C2=A0 3 runs
-> > > =
-
-> > > @ f35b5d7d676e ("mm: align larger anonymous mappings on THP
-> > > boundaries"):
-> > > =
-
-> > > Benchmark 1: make -skj128 LLVM=3D1 allmodconfig all
-> > >   Time (mean =C2=B1 =CF=83):     406.688 s =C2=B1  0.676 s    [User: =
-31819.526 s,
-> System: 16327.022 s]
-> > >   Range (min =E2=80=A6 max):   405.954 s =E2=80=A6 407.284 s    3 run
+> > Hi Yury,
 > > =
 
-> > Have you tried to build with gcc?=C2=A0 Want to check whether is this
-> > clang
-> > specific issue or not.
+> > We noticed that below patch adds a FORCE_NR_CPUS config, and it is
+> > expected to show a warning when this config is enabled and
+> > CONFIG_NR_CPUS doesn't match the actual number of CPUs we have. But we
+> > also noticed that it not only shows a warning but could also break boot
+> > test in some cases. We are not sure if the break is actually related to
+> > this patch or not, so we send this report FYI.
+> > =
+
+> > We noticed that a fix patch was posted at:
+> > =
+
+> > https://lore.kernel.org/all/20221019225939.1646349-1-yury.norov(a)gmail=
+.com/
+> > =
+
+> > FORCE_NR_CPUS won't be enabled by allmodconfig or allyesconfig after
+> > applying the fix, but looks it could still be enabled by randconfig. Not
+> > sure if this is an expected behavior, but since our test robot runs many
+> > randconfig tests, this warning could still be triggered frequently and
+> > go to boot failure at last.
+> > =
+
+> > Please kindly help to give some advice on handling this config in our
+> > testing. Thanks.
+> > =
+
+> > Please check below report for more details:
+> > =
+
+> > =
+
+> > Greeting,
 > =
 
-> This may indeed be something LLVM specific. In previous tests,
-> GCC has generally seen a benefit from increased THP usage.
-> Many other applications also benefit from getting more THPs.
-
-Indeed, GCC builds actually appear to be slightly faster on my system now,
-apologies for not trying that before reporting :/
-
-7b5a0b664ebe:
-
-Benchmark 1: make -skj128 allmodconfig all
-  Time (mean =C2=B1 =CF=83):     355.294 s =C2=B1  0.931 s    [User: 33620.=
-469 s, System: 6390.064 s]
-  Range (min =E2=80=A6 max):   354.571 s =E2=80=A6 356.344 s    3 runs
-
-f35b5d7d676e:
-
-Benchmark 1: make -skj128 allmodconfig all
-  Time (mean =C2=B1 =CF=83):     347.400 s =C2=B1  2.029 s    [User: 34389.=
-724 s, System: 4603.175 s]
-  Range (min =E2=80=A6 max):   345.815 s =E2=80=A6 349.686 s    3 runs
-
-> LLVM showing 10% system time before this change, and a whopping
-> 30% system time after that change, suggests that LLVM is behaving
-> quite differently from GCC in some ways.
-
-The above tests were done with GCC 12.2.0 from Arch Linux. The previous LLVM
-tests were done with a self-compiled version of LLVM from the main branch
-(16.0.0), optimized with BOLT [1]. To eliminate that as a source of issues,=
- I
-used my distribution's version of clang (14.0.6) and saw similar results as
-before:
-
-7b5a0b664ebe:
-
-Benchmark 1: make -skj128 LLVM=3D/usr/bin/ allmodconfig all
-  Time (mean =C2=B1 =CF=83):     462.517 s =C2=B1  1.214 s    [User: 48544.=
-240 s, System: 5586.212 s]
-  Range (min =E2=80=A6 max):   461.115 s =E2=80=A6 463.245 s    3 runs
-
-f35b5d7d676e:
-
-Benchmark 1: make -skj128 LLVM=3D/usr/bin/ allmodconfig all
-  Time (mean =C2=B1 =CF=83):     547.927 s =C2=B1  0.862 s    [User: 47913.=
-709 s, System: 17682.514 s]
-  Range (min =E2=80=A6 max):   547.429 s =E2=80=A6 548.922 s    3 runs
-
-> If we can figure out what these differences are, maybe we can
-> just fine tune the code to avoid this issue.
+> Hi guys,
 > =
 
-> I'll try to play around with LLVM compilation a little bit next
-> week, to see if I can figure out what might be going on. I wonder
-> if LLVM is doing lots of mremap calls or something...
+> Thanks for the report.
+> =
 
-If there is any further information I can provide or patches I can test,
-I am more than happy to do so.
+> Indeed, if FORCE_NR_CPUS is enabled by randconfig, it may cause at least
+> boot warning. I'm either not sure if the following alloc_pages is
+> related to the config, but anyways...
+> =
 
-[1]: https://github.com/llvm/llvm-project/tree/96552e73900176d65ee6650facae=
-8d669d6f9498/bolt
+> The most logical solution would be disabling FORCE_NR_CPUS in
+> randconfig before building the kernel. We can do it in a post-script,
+> like:
+> =
 
-Cheers,
-Nathan
---===============1651064100320439976==--
+> make randconfig
+> scripts/config -d FORCE_NR_CPUS
+> scripts/config -e UNFORCE_NR_CPUS
+> make
+
+This seems to need extra work to run config script for each randconfig
+build.
+
+> =
+
+> Or we can create a pre-configuration file, so that randconfig would do
+> its work based on that. We already have such pre-configs for powerpc
+> and risc:
+>         arch/riscv/configs/32-bit.config
+>         arch/powerpc/configs/32-bit.config
+>         arch/powerpc/configs/64-bit.config
+>         arch/riscv/configs/64-bit.config
+> =
+
+> Maybe it's time to create a generic config of this sort.
+
+It would be nice to have a pre-config file to ensure this config won't
+be enabled accidentally by randconfig if users are not aware of. This
+would also be consistent with common build flow so no extra steps are
+needed.
+
+Best Regards,
+Yujie
+
+> =
+
+> Please let me know if that sounds sane to you. I'm not very familiar
+> to build system things, but I'll be happy to help implementing this,
+> if needed.
+> =
+
+> Thanks,
+> Yury
+> =20
+--===============2248973743742657334==--
 
