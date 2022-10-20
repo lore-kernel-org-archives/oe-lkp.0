@@ -1,102 +1,206 @@
-Content-Type: multipart/mixed; boundary="===============3873250484117233513=="
+Content-Type: multipart/mixed; boundary="===============5311226571876329449=="
 MIME-Version: 1.0
-From: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+From: Nathan Chancellor <nathan@kernel.org>
 To: lkp@lists.01.org
-Subject: Re: [drm/gem] 79e2cf2e7a: WARNING:at_drivers/gpu/drm/drm_gem.c:#drm_gem_vunmap
-Date: Thu, 20 Oct 2022 06:38:40 +0300
-Message-ID: <72534bd1-a941-b627-4efd-34c8d87127d3@collabora.com>
-In-Reply-To: <202210201109.c762970e-yujie.liu@intel.com>
+Subject: Re: [mm] f35b5d7d67: will-it-scale.per_process_ops -95.5% regression
+Date: Wed, 19 Oct 2022 21:23:29 -0700
+Message-ID: <Y1DNQaoPWxE+rGce@dev-arch.thelio-3990X>
+In-Reply-To: <87edv4r2ip.fsf@yhuang6-desk2.ccr.corp.intel.com>
 List-Id: <oe-lkp.lists.linux.dev>
 
---===============3873250484117233513==
+--===============5311226571876329449==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-On 10/20/22 06:23, kernel test robot wrote:
-> Greeting,
+Hi Ying,
+
+On Wed, Oct 19, 2022 at 10:05:50AM +0800, Huang, Ying wrote:
+> Hi, Yujie,
 > =
 
-> FYI, we noticed WARNING:at_drivers/gpu/drm/drm_gem.c:#drm_gem_vunmap due =
-to commit (built with clang-14):
+> >      32528  48%    +147.6%      80547  38%  numa-meminfo.node0.AnonHuge=
+Pages
+> >      92821  23%     +59.3%     147839  28%  numa-meminfo.node0.AnonPages
 > =
 
-> commit: 79e2cf2e7a193473dfb0da3b9b869682b43dc60f ("drm/gem: Take reservat=
-ion lock for vmap/vunmap operations")
-> git://anongit.freedesktop.org/drm/drm-misc drm-misc-next
+> The Anon pages allocated are much more than the parent commit.  This is
+> expected, because THP instead of normal page will be allocated for
+> aligned memory area.
 > =
 
-> in testcase: boot
+> >      95.23           -79.8       15.41   6%  perf-profile.calltrace.cyc=
+les-pp.__munmap
+> >      95.08           -79.7       15.40   6%  perf-profile.calltrace.cyc=
+les-pp.entry_SYSCALL_64_after_hwframe.__munmap
+> >      95.02           -79.6       15.39   6%  perf-profile.calltrace.cyc=
+les-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.__munmap
+> >      94.96           -79.6       15.37   6%  perf-profile.calltrace.cyc=
+les-pp.__x64_sys_munmap.do_syscall_64.entry_SYSCALL_64_after_hwframe.__munm=
+ap
+> >      94.95           -79.6       15.37   6%  perf-profile.calltrace.cyc=
+les-pp.__vm_munmap.__x64_sys_munmap.do_syscall_64.entry_SYSCALL_64_after_hw=
+frame.__munmap
+> >      94.86           -79.5       15.35   6%  perf-profile.calltrace.cyc=
+les-pp.__do_munmap.__vm_munmap.__x64_sys_munmap.do_syscall_64.entry_SYSCALL=
+_64_after_hwframe
+> >      94.38           -79.2       15.22   6%  perf-profile.calltrace.cyc=
+les-pp.unmap_region.__do_munmap.__vm_munmap.__x64_sys_munmap.do_syscall_64
+> >      42.74           -42.7        0.00        perf-profile.calltrace.cy=
+cles-pp.lru_add_drain.unmap_region.__do_munmap.__vm_munmap.__x64_sys_munmap
+> >      42.74           -42.7        0.00        perf-profile.calltrace.cy=
+cles-pp.lru_add_drain_cpu.lru_add_drain.unmap_region.__do_munmap.__vm_munmap
+> >      42.72           -42.7        0.00        perf-profile.calltrace.cy=
+cles-pp.folio_batch_move_lru.lru_add_drain_cpu.lru_add_drain.unmap_region._=
+_do_munmap
+> >      41.84           -41.8        0.00        perf-profile.calltrace.cy=
+cles-pp.folio_lruvec_lock_irqsave.folio_batch_move_lru.lru_add_drain_cpu.lr=
+u_add_drain.unmap_region
+> >      41.70           -41.7        0.00        perf-profile.calltrace.cy=
+cles-pp._raw_spin_lock_irqsave.folio_lruvec_lock_irqsave.folio_batch_move_l=
+ru.lru_add_drain_cpu.lru_add_drain
+> >      41.62           -41.6        0.00        perf-profile.calltrace.cy=
+cles-pp.folio_lruvec_lock_irqsave.release_pages.tlb_batch_pages_flush.tlb_f=
+inish_mmu.unmap_region
+> >      41.55           -41.6        0.00        perf-profile.calltrace.cy=
+cles-pp.native_queued_spin_lock_slowpath._raw_spin_lock_irqsave.folio_lruve=
+c_lock_irqsave.folio_batch_move_lru.lru_add_drain_cpu
+> >      41.52           -41.5        0.00        perf-profile.calltrace.cy=
+cles-pp._raw_spin_lock_irqsave.folio_lruvec_lock_irqsave.release_pages.tlb_=
+batch_pages_flush.tlb_finish_mmu
+> >      41.28           -41.3        0.00        perf-profile.calltrace.cy=
+cles-pp.native_queued_spin_lock_slowpath._raw_spin_lock_irqsave.folio_lruve=
+c_lock_irqsave.release_pages.tlb_batch_pages_flush
 > =
 
-> on test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m =
-4G
+> In the parent commit, most CPU cycles are used for contention on LRU lock.
 > =
 
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
+> >       0.00            +4.8        4.82   7%  perf-profile.calltrace.cyc=
+les-pp.do_huge_pmd_anonymous_page.__handle_mm_fault.handle_mm_fault.do_user=
+_addr_fault.exc_page_fault
+> >       0.00            +4.9        4.88   7%  perf-profile.calltrace.cyc=
+les-pp.zap_huge_pmd.zap_pmd_range.unmap_page_range.unmap_vmas.unmap_region
+> >       0.00            +8.2        8.22   8%  perf-profile.calltrace.cyc=
+les-pp.native_queued_spin_lock_slowpath._raw_spin_lock.rmqueue_bulk.rmqueue=
+.get_page_from_freelist
+> >       0.00            +8.2        8.23   8%  perf-profile.calltrace.cyc=
+les-pp._raw_spin_lock.rmqueue_bulk.rmqueue.get_page_from_freelist.__alloc_p=
+ages
+> >       0.00            +8.3        8.35   8%  perf-profile.calltrace.cyc=
+les-pp.native_queued_spin_lock_slowpath._raw_spin_lock.free_pcppages_bulk.f=
+ree_unref_page.release_pages
+> >       0.00            +8.3        8.35   8%  perf-profile.calltrace.cyc=
+les-pp._raw_spin_lock.free_pcppages_bulk.free_unref_page.release_pages.tlb_=
+batch_pages_flush
+> >       0.00            +8.4        8.37   8%  perf-profile.calltrace.cyc=
+les-pp.free_pcppages_bulk.free_unref_page.release_pages.tlb_batch_pages_flu=
+sh.tlb_finish_mmu
+> >       0.00            +9.6        9.60   6%  perf-profile.calltrace.cyc=
+les-pp.free_unref_page.release_pages.tlb_batch_pages_flush.tlb_finish_mmu.u=
+nmap_region
+> >       0.00           +65.5       65.48   2%  perf-profile.calltrace.cyc=
+les-pp.clear_page_erms.clear_huge_page.__do_huge_pmd_anonymous_page.__handl=
+e_mm_fault.handle_mm_fault
+> >       0.00           +72.5       72.51   2%  perf-profile.calltrace.cyc=
+les-pp.clear_huge_page.__do_huge_pmd_anonymous_page.__handle_mm_fault.handl=
+e_mm_fault.do_user_addr_fault
 > =
 
+> With the commit, most CPU cycles are consumed for clear huge page.  This
+> is expected.  We allocate more pages, so, we need more cycles to clear
+> them.
 > =
 
-> [    5.483437][    T1] ------------[ cut here ]------------
-> [    5.484265][    T1] WARNING: CPU: 1 PID: 1 at drivers/gpu/drm/drm_gem.=
-c:1191 drm_gem_vunmap+0x50/0xa0
-> [    5.485640][    T1] Modules linked in:
-> [    5.486298][    T1] CPU: 1 PID: 1 Comm: swapper/0 Not tainted 6.0.0-rc=
-2-00895-g79e2cf2e7a19 #1 d064e7e3c98977ac595341fa8e33617722110e67
-> [    5.488083][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 19=
-96), BIOS 1.16.0-debian-1.16.0-4 04/01/2014
-> [    5.489590][    T1] EIP: drm_gem_vunmap+0x50/0xa0
-> [    5.490359][    T1] Code: ff ff e8 f3 29 97 00 85 c0 0f 94 c3 eb 02 31=
- db 0f b6 fb b8 90 74 8e c3 89 fa 31 c9 6a 00 e8 77 ca 7b ff 83 c4 04 84 db=
- 74 02 <0f> 0b b8 a8 74 8e c3 89 fa 31 c9 6a 00 e8 5e ca 7b ff 83 c4 04 83
-> [    5.493049][    T1] EAX: c38e74a0 EBX: ffffff01 ECX: 00000000 EDX: 000=
-00001
-> [    5.494179][    T1] ESI: c6d8b870 EDI: 00000001 EBP: c46d7d34 ESP: c46=
-d7d24
-> [    5.495296][    T1] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068 EFLAG=
-S: 00010202
-> [    5.496530][    T1] CR0: 80050033 CR2: 00000000 CR3: 03aa0000 CR4: 000=
-406d0
-> [    5.497647][    T1] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 000=
-00000
-> [    5.498759][    T1] DR6: fffe0ff0 DR7: 00000400
-> [    5.499486][    T1] Call Trace:
-> [    5.500104][    T1]  drm_client_buffer_delete+0x1d/0x90
-> [    5.500877][    T1]  drm_client_framebuffer_delete+0x37/0x60
-> [    5.501805][    T1]  drm_fbdev_cleanup+0x80/0x90
-> [    5.502653][    T1]  drm_fbdev_client_hotplug+0x1b6/0x210
-> [    5.503585][    T1]  drm_fbdev_generic_setup+0x143/0x1a0
-> [    5.504571][    T1]  vkms_init+0x23f/0x244
-> [    5.505338][    T1]  ? vgem_init+0x133/0x133
-> [    5.506130][    T1]  do_one_initcall+0x10e/0x210
-> [    5.506976][    T1]  ? vgem_init+0x133/0x133
-> [    5.507775][    T1]  do_initcall_level+0x80/0x92
-> [    5.508630][    T1]  do_initcalls+0x41/0x6f
-> [    5.509386][    T1]  do_basic_setup+0x17/0x19
-> [    5.510106][    T1]  kernel_init_freeable+0xb4/0xe5
-> [    5.510970][    T1]  ? rest_init+0x180/0x180
-> [    5.511745][    T1]  kernel_init+0x17/0x180
-> [    5.512522][    T1]  ret_from_fork+0x19/0x24
-> [    5.513333][    T1] irq event stamp: 118087
-> [    5.514101][    T1] hardirqs last  enabled at (118097): [<c1107774>] _=
-_up_console_sem+0x64/0xb0
-> [    5.515620][    T1] hardirqs last disabled at (118110): [<c110775b>] _=
-_up_console_sem+0x4b/0xb0
-> [    5.517061][    T1] softirqs last  enabled at (117834): [<c236bd86>] _=
-_do_softirq+0x2c6/0x329
-> [    5.518391][    T1] softirqs last disabled at (117825): [<c102bb62>] d=
-o_softirq_own_stack+0x22/0x30
-> [    5.519760][    T1] ---[ end trace 0000000000000000 ]---
+> Check the source code of test case (will-it-scale/malloc1), I found that
+> it will allocate some memory with malloc() then free it.
+> =
 
-That's a good catch, I missed to touch drm_client.c. At a quick glance
-will be fine to switch it to the unlocked drm_gem_vun/map functions.
+> In the parent commit, because the virtual memory address isn't aligned
+> with 2M, normal page will be allocated.  With the commit, THP will be
+> allocated, so more page clearing and less LRU lock contention.  I think
+> this is the expected behavior of the commit.  And the test case isn't so
+> popular (malloc() then free() but don't access the memory allocated).  So
+> this regression isn't important.  We can just ignore it.
 
--- =
+For what it's worth, I just bisected a massive and visible performance
+regression on my Threadripper 3990X workstation to commit f35b5d7d676e
+("mm: align larger anonymous mappings on THP boundaries"), which seems
+directly related to this report/analysis. I initially noticed this
+because my full set of kernel builds against mainline went from 2 hours
+and 20 minutes or so to over 3 hours. Zeroing in on x86_64 allmodconfig,
+which I used for the bisect:
 
-Best regards,
-Dmitry
+@ 7b5a0b664ebe ("mm/page_ext: remove unused variable in offline_page_ext"):
 
---===============3873250484117233513==--
+Benchmark 1: make -skj128 LLVM=3D1 allmodconfig all
+  Time (mean =C2=B1 =CF=83):     318.172 s =C2=B1  0.730 s    [User: 31750.=
+902 s, System: 4564.246 s]
+  Range (min =E2=80=A6 max):   317.332 s =E2=80=A6 318.662 s    3 runs
+
+@ f35b5d7d676e ("mm: align larger anonymous mappings on THP boundaries"):
+
+Benchmark 1: make -skj128 LLVM=3D1 allmodconfig all
+  Time (mean =C2=B1 =CF=83):     406.688 s =C2=B1  0.676 s    [User: 31819.=
+526 s, System: 16327.022 s]
+  Range (min =E2=80=A6 max):   405.954 s =E2=80=A6 407.284 s    3 run
+
+That is a pretty big difference (27%), which is visible while doing a
+lot of builds, only because of the extra system time. If there is any
+way to improve this, it should certainly be considered.
+
+For now, I'll just revert it locally.
+
+Cheers,
+Nathan
+
+# bad: [aae703b02f92bde9264366c545e87cec451de471] Merge tag 'for-6.1-rc1-ta=
+g' of git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux
+# good: [4fe89d07dcc2804c8b562f6c7896a45643d34b2f] Linux 6.0
+git bisect start 'aae703b02f92bde9264366c545e87cec451de471' 'v6.0'
+# good: [18fd049731e67651009f316195da9281b756f2cf] Merge tag 'arm64-upstrea=
+m' of git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux
+git bisect good 18fd049731e67651009f316195da9281b756f2cf
+# good: [ab0c23b535f3f9d8345d8ad4c18c0a8594459d55] MAINTAINERS: add RISC-V'=
+s patchwork
+git bisect good ab0c23b535f3f9d8345d8ad4c18c0a8594459d55
+# bad: [f721d24e5dae8358b49b24399d27ba5d12a7e049] Merge tag 'pull-tmpfile' =
+of git://git.kernel.org/pub/scm/linux/kernel/git/viro/vfs
+git bisect bad f721d24e5dae8358b49b24399d27ba5d12a7e049
+# good: [ada3bfb6492a6d0d3eca50f3b61315fe032efc72] Merge tag 'tpmdd-next-v6=
+.1-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd
+git bisect good ada3bfb6492a6d0d3eca50f3b61315fe032efc72
+# bad: [4e07acdda7fc23f5c4666e54961ef972a1195ffd] mm/hwpoison: add __init/_=
+_exit annotations to module init/exit funcs
+git bisect bad 4e07acdda7fc23f5c4666e54961ef972a1195ffd
+# bad: [000a449345bbb4ffbd880f7143b5fb4acac34121] radix tree test suite: ad=
+d allocation counts and size to kmem_cache
+git bisect bad 000a449345bbb4ffbd880f7143b5fb4acac34121
+# bad: [47d55419951312d723de1b6ad53ee92948b8eace] btrfs: convert process_pa=
+ge_range() to use filemap_get_folios_contig()
+git bisect bad 47d55419951312d723de1b6ad53ee92948b8eace
+# bad: [4d86d4f7227c6f2acfbbbe0623d49865aa71b756] mm: add more BUILD_BUG_ON=
+s to gfp_migratetype()
+git bisect bad 4d86d4f7227c6f2acfbbbe0623d49865aa71b756
+# bad: [816284a3d0e27828b5cc35f3cf539b0711939ce3] userfaultfd: update docum=
+entation to describe /dev/userfaultfd
+git bisect bad 816284a3d0e27828b5cc35f3cf539b0711939ce3
+# good: [be6667b0db97e10b2a6d57a906c2c8fd2b985e5e] selftests/vm: dedup huge=
+page allocation logic
+git bisect good be6667b0db97e10b2a6d57a906c2c8fd2b985e5e
+# bad: [2ace36f0f55777be8a871c370832527e1cd54b15] mm: memory-failure: clean=
+up try_to_split_thp_page()
+git bisect bad 2ace36f0f55777be8a871c370832527e1cd54b15
+# good: [9d0d946840075e0268f4f77fe39ba0f53e84c7c4] selftests/vm: add selfte=
+st to verify multi THP collapse
+git bisect good 9d0d946840075e0268f4f77fe39ba0f53e84c7c4
+# bad: [f35b5d7d676e59e401690b678cd3cfec5e785c23] mm: align larger anonymou=
+s mappings on THP boundaries
+git bisect bad f35b5d7d676e59e401690b678cd3cfec5e785c23
+# good: [7b5a0b664ebe2625965a0fdba2614c88c4b9bbc6] mm/page_ext: remove unus=
+ed variable in offline_page_ext
+git bisect good 7b5a0b664ebe2625965a0fdba2614c88c4b9bbc6
+# first bad commit: [f35b5d7d676e59e401690b678cd3cfec5e785c23] mm: align la=
+rger anonymous mappings on THP boundaries
+--===============5311226571876329449==--
 
