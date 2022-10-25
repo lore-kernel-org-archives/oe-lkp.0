@@ -1,158 +1,76 @@
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10B7523AC
-	for <oe-lkp@lists.linux.dev>; Tue, 25 Oct 2022 14:18:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666707508; x=1698243508;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=nuQLZtC4vhyeQead1YNuDOkNCSGKwr8pK64lkEcfBE4=;
-  b=UuZh/E3fw02q9qMebUnbuGHOOca6mf/j5reNyi83Dyzi//5isHGJOIin
-   +sENc3eCFvANRkSpZa3gaG2hKggsNdCSnNQyRedlnePENp7C3C/rb5Pxl
-   DhJOjn9rk2P8SIPol2rWc4YIrffl40REHAeKiq8l+MrRGxnsDrNUAjhl2
-   tB75C5gGRFyT57jcNC2O9tNYuM3TMahVNurkojvkmE1lxaPzp2C669DGw
-   4H8x9J5vN9GqyVrxAayumCmUB7mJM1rFAITfT4kzQ15XrWnhZRpBCLfqc
-   wY7iLwwwVljiRLVXTg5FmvE+2codi5q95vBxqOcXAu95Uxv8X4dVnZQZy
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10510"; a="288081157"
-X-IronPort-AV: E=Sophos;i="5.95,212,1661842800"; 
-   d="scan'208";a="288081157"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2022 07:15:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10510"; a="634109684"
-X-IronPort-AV: E=Sophos;i="5.95,212,1661842800"; 
-   d="scan'208";a="634109684"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by fmsmga007.fm.intel.com with ESMTP; 25 Oct 2022 07:15:06 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 25 Oct 2022 07:15:05 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Tue, 25 Oct 2022 07:15:05 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.173)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Tue, 25 Oct 2022 07:15:05 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dQGvyPkNQVRrKwIR9kDRFVLrLgUjA0Y7nejeMSj9qRENJ6s6E7e2ghEOPdiMFroE7Xaxu6VzYkY6v8an2Cm+pBc3IYW0syMorilla0u3f4hk03i7Yk46SmzK5herdYQGM7itwcwxj7aRFdnlQ1zKsWCum7YSgmiPic2rWxNv57UpGE3vF8XH26yETjWI12VVpZb6IeKLuCvcZWJ1r8O8TsHVfjxzycOcSPJcrq0vL1e6IN+jDMuzstvoUW6CcLc8nGRVeHsLqiPPBks2PEcuwy7qdgVeYHm5NJJA6d/njU1u5IMt0dCjrvg6YyOa5rKq5qS+aBrE1gwxeOXj9yTy4g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=w54209OiwuNo+yxwtLvu8X1xs4okdf/s+vby3qtv27k=;
- b=cKGs2ZRcIqRyEjyDcunDdXX2p3cEVvg9rftbLkxCPiEQOxC37PatsRjI834lwsMp19qUemmxMShbGhfszEm/tPRj6IKDcdjzhQqnHg4WkMRQpRtdAodxt0XDDnKnBI29DEQW2G+/aqAWqKFqqX5B3H55Ij4rkep5sIKm0cbQ1TaN9p3xtzOMDWRkJSyoHSvww9P7qnDE9MRkuh2LqmRqMHnY34Jlr1cO5ChWXh4pmQWPKhUuSpTI7PpxcXsfXcJI7Qi6v8TjNheYNNRyLgQt421WvWEHDXBtXEWQb2d1kTiW69/g5LviPLtJaN1DJKFhzCuut3agZDbrgrA35SpMBA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from CO1PR11MB4820.namprd11.prod.outlook.com (2603:10b6:303:6f::8)
- by MN2PR11MB4742.namprd11.prod.outlook.com (2603:10b6:208:26b::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.23; Tue, 25 Oct
- 2022 14:15:01 +0000
-Received: from CO1PR11MB4820.namprd11.prod.outlook.com
- ([fe80::982a:b36f:967f:257c]) by CO1PR11MB4820.namprd11.prod.outlook.com
- ([fe80::982a:b36f:967f:257c%9]) with mapi id 15.20.5723.034; Tue, 25 Oct 2022
- 14:15:01 +0000
-Message-ID: <f8fdb75b-c626-b4cd-cdad-0e2dd23f1d74@intel.com>
-Date: Tue, 25 Oct 2022 22:14:49 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Firefox/102.0 Thunderbird/102.4.0
-Subject: Re: [tip:x86/mm] [x86/mm] 1248fb6a82:
- Kernel_panic-not_syncing:kasan_populate_pmd:Failed_to_allocate_page
-To: Peter Zijlstra <peterz@infradead.org>, kernel test robot
-	<yujie.liu@intel.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Dave Hansen
-	<dave.hansen@linux.intel.com>, Seth Jenkins <sethjenkins@google.com>, "Kees
- Cook" <keescook@chromium.org>, <linux-kernel@vger.kernel.org>,
-	<x86@kernel.org>, Andrey Ryabinin <ryabinin.a.a@gmail.com>, "Alexander
- Potapenko" <glider@google.com>, Andrey Konovalov <andreyknvl@gmail.com>,
-	Dmitry Vyukov <dvyukov@google.com>, Vincenzo Frascino
-	<vincenzo.frascino@arm.com>, <kasan-dev@googlegroups.com>
-References: <202210241508.2e203c3d-yujie.liu@intel.com>
- <Y1e7kgKweck6S954@hirez.programming.kicks-ass.net>
-Content-Language: en-US
-From: "Yin, Fengwei" <fengwei.yin@intel.com>
-In-Reply-To: <Y1e7kgKweck6S954@hirez.programming.kicks-ass.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SG2PR01CA0191.apcprd01.prod.exchangelabs.com
- (2603:1096:4:189::6) To CO1PR11MB4820.namprd11.prod.outlook.com
- (2603:10b6:303:6f::8)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DD977B
+	for <oe-lkp@lists.linux.dev>; Tue, 25 Oct 2022 15:39:10 +0000 (UTC)
+Received: by mail-lf1-f50.google.com with SMTP id be13so22764033lfb.4
+        for <oe-lkp@lists.linux.dev>; Tue, 25 Oct 2022 08:39:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Rc6vP6aw0tpiHFL5bJLFi2OMc2JAOBh2wNmcX8c+8ps=;
+        b=NHQQEGq71Q+6Il33iUAFVexn9iQ9mWzEpO59NT/JRQmp1rXaGuradS+hrrsXAABJEc
+         U7+PYBkWWTrZuVX++OEabLPKlbh2MwvYGa2ZDOgLYbLRvL/JCw+mvgf+2vRP+BMoDmES
+         50uLNq2wVutVOjjXsr0E24szHMNb6UdlNj5ujOGxzWZWZ1XfwpNViglNC5TvcH8cIeeh
+         VDNX60G8aZyrTU1leILKjgGDu4weUlcQbh0HsW5v+Q/NAeAgb62XhB0taMIpQ97SmIkv
+         0JmGjlfvm1nsAxuYX5VMu2aQNtl4EL0MaqZEK9ux1Rryi8tJ/ftoDDmszB4DXeDMSNPw
+         3Gtw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Rc6vP6aw0tpiHFL5bJLFi2OMc2JAOBh2wNmcX8c+8ps=;
+        b=7PC8hl4Skk8zptva72JVRC17qe/pF4Kmn45UNRNMR3SUDNeUfkZf+lHDko3I9nXblq
+         CMpb+uPMNgba9wi1P4Hdsv9vvroEHxoX201CCgF88pWSpbapI1OC72XyJxmas1oWGexH
+         0kDyAbhF5o6/mmLa5+weLSHMJahrmdponLG4MaOdzPFtLKA/ATXNAZFAQUaaXAWMFJvI
+         fw6O/t8MKMeGb6EHhE38T8hu1Llx9mAB7TKn23AQf4ThyxN9GRw5vo2poMhR4FIQReuy
+         p/QlZKFXWjTzPQX18mTt/Cx1NrTIItCe0Wht/QooNMMwSaaZcwd6ZVjHztI7+lOFDCrJ
+         4A3A==
+X-Gm-Message-State: ACrzQf2R4yaSB92L46Kgt+QLXgiCCX1vt9iZ5k+Re6VxYi0FneFH3Bsw
+	ek4XBWYjBCYqs7K1gcw4vzg=
+X-Google-Smtp-Source: AMsMyM69dhdvfPKkhT7iauQ6D+ADqgjpD7E6mXZhD5FujxKc5923A11jM3+aHCM/KMbUhPo9KbpOTg==
+X-Received: by 2002:a05:6512:261c:b0:49f:af36:d47 with SMTP id bt28-20020a056512261c00b0049faf360d47mr13775733lfb.284.1666712348133;
+        Tue, 25 Oct 2022 08:39:08 -0700 (PDT)
+Received: from ?IPV6:2a02:6b8:0:107:3e85:844d:5b1d:60a? ([2a02:6b8:0:107:3e85:844d:5b1d:60a])
+        by smtp.gmail.com with ESMTPSA id p8-20020a2eba08000000b0026e00df2ed0sm547761lja.30.2022.10.25.08.39.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Oct 2022 08:39:07 -0700 (PDT)
+Message-ID: <278cc353-6289-19e8-f7a9-0acd70bc8e11@gmail.com>
+Date: Tue, 25 Oct 2022 18:39:07 +0300
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PR11MB4820:EE_|MN2PR11MB4742:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3d8251c8-bd9b-4333-37be-08dab6934e33
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 3zqtzGxBOWx4UQb6B8R8C5qtDudQaDryxshT1cje/7F2KXd9I36Df4dSMWttq0jOUyanIDZ/QuAd+Dxn6a1unNOjoUmL2/xR8sH4RV2aawtGJM4Ftw+vcFkFkXrDxdAO5aVFVSuKYAK01RBVu4OcTcBcyhjdHbbBDj7ht7UukFBXj7m1du+OFiqJDUdGgQEuwxkqbCIMskoJYIRBFXa7+1Ytam1q/w1WZV79rSob7hPH/8F1epUjKj4QZafUC6ORKePLzwNm3wupdHUuOlqS47CzfGruU3H1EEzmOJVKqmfk9c8QRIESm4vpjMlZAspaBfhG8U4r2dDQmmKxsLcdcUg3OtOMIPtpBvdToKDnqLJtOEIJRjEoaJprCsbv8azEG2cuRaeuGZgG+T1kOa2Ba5302RqqHNeN94MbGWlllGVUPgpOfrjGyvIXIWyitfniBVNX98JFOA4w5QjSFpIN2p7nYyGcDMmv1csE8PIxtXMCT+xY+u7MeYDNMtDcL7ZxwfqQEddamrIeBYI/uS3aqCpHrUuuXdcyOxQ+J/25aNImggpVl+B7LslUIS+AiESbkvvMQjQ4tU45aVNWvphTq/X3yStOZxwpHIhTzfqIHNdPY2ej+/8nK96Id6K0dVXxbn6ExV0prt9T2E4Yo4IvDibkwryPtueddel2Fsm2cPyIQjIH+wHnvxXkQ4hojFZK+tExFxjqA2m1OHeZBvTQW6ttUR7VE5An7ZB5odkUadgcUAmIiOxLaVeWmaxXwndadpV4bzU9EIGKQpSQIq1Qg2qSD6B4FMX8E2TrNY6WlGR4vulTR46e0TsuyoocZViSMgc50RLrygnHD4BWsQHKGA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4820.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(39860400002)(396003)(376002)(366004)(136003)(346002)(451199015)(36756003)(38100700002)(110136005)(54906003)(6636002)(82960400001)(6506007)(26005)(6512007)(83380400001)(41300700001)(86362001)(8936002)(7416002)(53546011)(31696002)(2906002)(6666004)(316002)(5660300002)(66556008)(66476007)(66946007)(4326008)(8676002)(31686004)(966005)(6486002)(478600001)(2616005)(186003)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?VlNNeng3WTUreU1xSDFTbFYxbndoY1htNlArQ0hRZm9oaDZrN2NRV0NVY2hR?=
- =?utf-8?B?Y3hNazhmbXpqVHJVUUFxeDlsempqVGpHQW1CMEpHZHc2Vk4wSHcvbGtNNlVk?=
- =?utf-8?B?UkJmUDdVbUNiNXhpS1g3ejVQTm54VGtvcFl3VG1EeUtuMzdYTlVFZjI0L0tM?=
- =?utf-8?B?R0hDY3RNTWszRnFQaHBmYldqU3Q5dHNQeFlQcGU1OTFZRTVZdGZDRHdjMW9D?=
- =?utf-8?B?d0d0L09LaWtUSDJSd004YkptM0VqTXROa3FWcExCWTQ4YXVrb1F1TTRRU0Rv?=
- =?utf-8?B?eTQ1bVkyYXB4bHluemQ2WFlpT0RKNmxtZWwxK1dBV2M2eXF0Mnl4dkRhY25O?=
- =?utf-8?B?bWZxZW9wamtJNnhZU214QTc4ZW5HQ2NSdm5odVhSVzBSSmJoa0tyQzBLaU1j?=
- =?utf-8?B?Y3FEeFBDSFowWDArRkdTY1BzYmIzaVRidXVva0U4aCtleHdDNEJVa0tmSTFI?=
- =?utf-8?B?UjlQQ0VpakVFZ2htRDJuWVJoM28xQlp1YzNDZlEza2lXM0RUd3RqSVVwN0cr?=
- =?utf-8?B?MitFRmRKMEJuV0IrOTQyRFhOdGJUbUdWc0h0SlJYL003NXpEaHhOR3ZZWDFM?=
- =?utf-8?B?am9vMEtLOFErREduSC8rd01rRWNDR0hwcjhhVVhTVFczM2ZSOU1tdFlENmhl?=
- =?utf-8?B?c2NrTEpkUHR4ZnBpYUw2dmxncStCRHpQTStSQUtqbmxBSlBOWUFvVkFyeU1u?=
- =?utf-8?B?YnNQRDhkaUNxSGZQTFNEK1pJZXlYN0V5SEhJY1Z1d3BNNFNYeEN3bWF1Ulht?=
- =?utf-8?B?MTAzamtic25EbnpFSW1nYnNjamRiOG5QLzBLZDI1YjR6Y1NtaDdDNzc0cnhL?=
- =?utf-8?B?Y1REbzZnRVFackhTWG9xZ1ZDUzFHSDN1L2tHT2J6RDZoTnJaM2JyMFRiQ0hq?=
- =?utf-8?B?NjgxY3E4TENVK1hLWjJIcUZ2K3VLajBKVzEvRlorbkVpcTcvVDIwOG5NY1pm?=
- =?utf-8?B?U2VPaVpVNWQ2OVl5UjRpQklsc1Z1OFJzVDEwTlVvZVpEM0N2OG1ZbjBCalpw?=
- =?utf-8?B?WUtFNFFNS3M3dG5UU1FiOTVHMFVtVE9RVjI0VjVacEtxZ1VKd3lkY0xZT052?=
- =?utf-8?B?M2x5Tkw5SHhJenVWVUdkT1phSW5ITUVkMHphaWhFMFczeDB3TzlaWUxLbmVO?=
- =?utf-8?B?S091MmgwZ0I1ZGp2WVJxTlhtQnloclluUkMxcTNaL1AyVzlCaWhyM0hlU3Ez?=
- =?utf-8?B?cDVYV3hWZG4rRXkwTlFBSEYrK3pvaExUQUFaSkQ5V1J6djFnY1c4VGJWVHFq?=
- =?utf-8?B?eTBxdllPck16MUROVWtTNVJoT2JaQnFuVDcrbTRSakxHRWQzUzJHUnhJUHNY?=
- =?utf-8?B?azVjZng4SUFyc2Q0d3ZvQkpKNk5ad2tsRXlFYTdIQVkzYUlYZDkvSXIxMmJK?=
- =?utf-8?B?U0NlS05TMmRGRlVLWG11Ukc5K0t6eTFsUElqNmtUSmo3OXdXTjZZT1IrbGhR?=
- =?utf-8?B?THZXclFIS2xrT0tCV0kza0dZMVNEUjJTVGt6NXVHV1JQSG04MDFVRkt0dzd1?=
- =?utf-8?B?L3l1RUgzN2dqdXQzWDM4SWd6RU95T0llWHRtRzRER0Z3TTR1QkhyUllOMlVv?=
- =?utf-8?B?WW5jV2VQOG1xenVXNTZnNkVIK0dISWx0dE5CbGtveng0c2Vrclo0V2hER1VV?=
- =?utf-8?B?aXYzRkk0Uml2Qm5xWjBQUmV6eEdDSnQrNDFhME5uZnp1S3J2bWtJMWw0cUVL?=
- =?utf-8?B?RVJVdHhpb05KTWtOK1pBcWUySlJuakFON2E4bzRseUhaM1BqQlpaMkUxMFhQ?=
- =?utf-8?B?bGRnczJBdm5PRXM0MktFQWhJRmV4dG5YY0V4cTI3UHc4Z0E0UGU1T01rVkFr?=
- =?utf-8?B?NlRkN3hzVEsralZGMnlLNUszb3FnUERha1RsNzdyUnROdHg5WGpzSWlXVHAr?=
- =?utf-8?B?em9YRnFqWnNaOU1pMzRMZjFoOEQ0WmFmL0xyaDVGa1RjRnE1bWVuQThrTFc2?=
- =?utf-8?B?TmIremtTeEJtUEJzdzIrY1ZZNUF4RXl5NkZqdEpZWGhIb0VBOHNTM3FCNlE4?=
- =?utf-8?B?L1gyZVFFelF3ZGVqdEpnMExqUWhOZTNqc0t4NlRwU2RJNk9DNVVkcDFONFdn?=
- =?utf-8?B?RG03ZEJVYUtoUVMrUEZZYVE3OWZIcGx6dDNkazhFd2lZdjdHSEU0TFExa0Rz?=
- =?utf-8?B?UjRHVTZlSGF0elBiVzhCQ0hiREtDN0JCN3JWT1p0ZE5aV0hOTmRRZ2pERFhy?=
- =?utf-8?B?R1E9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3d8251c8-bd9b-4333-37be-08dab6934e33
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4820.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Oct 2022 14:15:01.7585
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: RDZgSULFZ0hVjmdbYTz7kBaxsW6QhC8kHCEPCy5qVq+tezhVxHdRCMeEG7IGYZoiJgDOnEJHMMtJCRrWlwmh+g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB4742
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+Subject: Re: [tip:x86/mm] [x86/mm] 1248fb6a82:
+ Kernel_panic-not_syncing:kasan_populate_pmd:Failed_to_allocate_page
+Content-Language: en-US
+To: Peter Zijlstra <peterz@infradead.org>,
+ kernel test robot <yujie.liu@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
+ Dave Hansen <dave.hansen@linux.intel.com>,
+ Seth Jenkins <sethjenkins@google.com>, Kees Cook <keescook@chromium.org>,
+ linux-kernel@vger.kernel.org, x86@kernel.org,
+ Alexander Potapenko <glider@google.com>,
+ Andrey Konovalov <andreyknvl@gmail.com>, Dmitry Vyukov <dvyukov@google.com>,
+ Vincenzo Frascino <vincenzo.frascino@arm.com>, kasan-dev@googlegroups.com,
+ "Yin, Fengwei" <fengwei.yin@intel.com>
+References: <202210241508.2e203c3d-yujie.liu@intel.com>
+ <Y1e7kgKweck6S954@hirez.programming.kicks-ass.net>
+From: Andrey Ryabinin <ryabinin.a.a@gmail.com>
+In-Reply-To: <Y1e7kgKweck6S954@hirez.programming.kicks-ass.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Hi Peter,
 
-On 10/25/2022 6:33 PM, Peter Zijlstra wrote:
+
+On 10/25/22 13:33, Peter Zijlstra wrote:
 > On Tue, Oct 25, 2022 at 12:54:40PM +0800, kernel test robot wrote:
 >> Hi Peter,
 >>
@@ -204,34 +122,90 @@ On 10/25/2022 6:33 PM, Peter Zijlstra wrote:
 > 
 > Are you trying to allocate backing space for .5T of vspace and failing
 > that because the kvm thing doesn't have enough memory?
-Here is what I got when I checked whether this report is valid or not:
-
-KASAN create shadow for cpu entry area:
-        shadow_cpu_entry_begin = (void *)CPU_ENTRY_AREA_BASE;
-        shadow_cpu_entry_begin = kasan_mem_to_shadow(shadow_cpu_entry_begin);
-        shadow_cpu_entry_begin = (void *)round_down(
-                        (unsigned long)shadow_cpu_entry_begin, PAGE_SIZE);
-
-        shadow_cpu_entry_end = (void *)(CPU_ENTRY_AREA_BASE +
-                                        CPU_ENTRY_AREA_MAP_SIZE);
-                                        ^^^^^^^^^^^^^^^^^^^^^^^
-        shadow_cpu_entry_end = kasan_mem_to_shadow(shadow_cpu_entry_end);
-        shadow_cpu_entry_end = (void *)round_up(
-                        (unsigned long)shadow_cpu_entry_end, PAGE_SIZE);
-
-        .....
-        kasan_populate_shadow((unsigned long)shadow_cpu_entry_begin,
-                              (unsigned long)shadow_cpu_entry_end, 0)
-
-Before the patch, the CPU_ENTRY_AREA_MAP_SIZE is:
-  (CPU_ENTRY_AREA_PER_CPU + CPU_ENTRY_AREA_ARRAY_SIZE - CPU_ENTRY_AREA_BASE)
-
-After the patch, it's same for 32bit. But for 64bit, it's: P4D_SIZE.
-And trigger kasan_populate_shadow() applied to a very large range.
-
-Hope this info could help somehow. Thanks.
-
-Regards
-Yin, Fengwei
-
 > 
+
+KASAN tries to allocate shadow memory for the whole cpu entry area.
+The size is CPU_ENTRY_AREA_MAP_SIZE/8 and this is obviously fails after your patch.
+The fix this might be something like this:
+
+
+---
+ arch/x86/include/asm/kasan.h |  2 ++
+ arch/x86/mm/cpu_entry_area.c |  3 +++
+ arch/x86/mm/kasan_init_64.c  | 16 +++++++++++++---
+ 3 files changed, 18 insertions(+), 3 deletions(-)
+
+diff --git a/arch/x86/include/asm/kasan.h b/arch/x86/include/asm/kasan.h
+index 13e70da38bed..77dd8b57f1e2 100644
+--- a/arch/x86/include/asm/kasan.h
++++ b/arch/x86/include/asm/kasan.h
+@@ -28,9 +28,11 @@
+ #ifdef CONFIG_KASAN
+ void __init kasan_early_init(void);
+ void __init kasan_init(void);
++void __init kasan_populate_shadow_for_vaddr(void *va, size_t size);
+ #else
+ static inline void kasan_early_init(void) { }
+ static inline void kasan_init(void) { }
++static inline void kasan_populate_shadow_for_vaddr(void *va, size_t size) { }
+ #endif
+ 
+ #endif
+diff --git a/arch/x86/mm/cpu_entry_area.c b/arch/x86/mm/cpu_entry_area.c
+index ad1f750517a1..602daa550543 100644
+--- a/arch/x86/mm/cpu_entry_area.c
++++ b/arch/x86/mm/cpu_entry_area.c
+@@ -9,6 +9,7 @@
+ #include <asm/cpu_entry_area.h>
+ #include <asm/fixmap.h>
+ #include <asm/desc.h>
++#include <asm/kasan.h>
+ 
+ static DEFINE_PER_CPU_PAGE_ALIGNED(struct entry_stack_page, entry_stack_storage);
+ 
+@@ -91,6 +92,8 @@ void cea_set_pte(void *cea_vaddr, phys_addr_t pa, pgprot_t flags)
+ static void __init
+ cea_map_percpu_pages(void *cea_vaddr, void *ptr, int pages, pgprot_t prot)
+ {
++	kasan_populate_shadow_for_vaddr(cea_vaddr, pages*PAGE_SIZE);
++
+ 	for ( ; pages; pages--, cea_vaddr+= PAGE_SIZE, ptr += PAGE_SIZE)
+ 		cea_set_pte(cea_vaddr, per_cpu_ptr_to_phys(ptr), prot);
+ }
+diff --git a/arch/x86/mm/kasan_init_64.c b/arch/x86/mm/kasan_init_64.c
+index e7b9b464a82f..dbee52f14700 100644
+--- a/arch/x86/mm/kasan_init_64.c
++++ b/arch/x86/mm/kasan_init_64.c
+@@ -316,6 +316,19 @@ void __init kasan_early_init(void)
+ 	kasan_map_early_shadow(init_top_pgt);
+ }
+ 
++void __init kasan_populate_shadow_for_vaddr(void *va, size_t size)
++{
++	unsigned long shadow_start, shadow_end;
++
++	shadow_start = (unsigned long)kasan_mem_to_shadow(va);
++	shadow_start = round_down(shadow_start, PAGE_SIZE);
++	shadow_end = (unsigned long)kasan_mem_to_shadow(va + size);
++	shadow_end = round_up(shadow_end, PAGE_SIZE);
++
++	kasan_populate_shadow(shadow_start, shadow_end,
++			      early_pfn_to_nid(__pa(va)));
++}
++
+ void __init kasan_init(void)
+ {
+ 	int i;
+@@ -393,9 +406,6 @@ void __init kasan_init(void)
+ 		kasan_mem_to_shadow((void *)VMALLOC_END + 1),
+ 		shadow_cpu_entry_begin);
+ 
+-	kasan_populate_shadow((unsigned long)shadow_cpu_entry_begin,
+-			      (unsigned long)shadow_cpu_entry_end, 0);
+-
+ 	kasan_populate_early_shadow(shadow_cpu_entry_end,
+ 			kasan_mem_to_shadow((void *)__START_KERNEL_map));
+ 
+-- 
+2.37.4
+
