@@ -1,87 +1,84 @@
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BEDC1363
-	for <oe-lkp@lists.linux.dev>; Thu, 27 Oct 2022 02:25:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D838BA25
+	for <oe-lkp@lists.linux.dev>; Thu, 27 Oct 2022 07:11:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666837506; x=1698373506;
-  h=message-id:date:subject:from:to:cc:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=EOh4xVQ3BKJtalq/YdaZdDfUCGkVBDTrMeEEuli8TVI=;
-  b=cFIOdwJx371R0CR7bERJDJRSsIKo0HA+KyOJeB1eaoHfPirlO/yRyf43
-   mJzOb600libUMtlkQWWXPYue2ftEE8UA6rqfjl4d4fH0MJ9L8Q8dsulDk
-   Vh1VJBpz7hlUhVWcWNN8AsZF5kkYdq4IL3IxC0LyLZsQZQiyT2tO2om1l
-   Ka24KnVJoHfIAa/xWCgCt+W0dGu/ZZgrx+bFrPPwriisQ85traJOyGXeK
-   v0DQDStPCSWoYZxFUzVVRpn0F0HFhfe//+DBfuTI3mgsI184n2Z8ZzygO
-   F9nBkH+X7vEm8Z/hgZitgs6C1lrRdWOJpO/vJknqUx/v/Edu0eIRSc1gH
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10512"; a="309204154"
-X-IronPort-AV: E=Sophos;i="5.95,215,1661842800"; 
-   d="scan'208";a="309204154"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2022 19:25:05 -0700
+  t=1666854716; x=1698390716;
+  h=date:from:to:cc:subject:message-id:references:
+   content-transfer-encoding:in-reply-to:mime-version;
+  bh=Q0UPWzJhz3Ue7OdFBDfLnhI7okozKNaH5CoD0NtSf24=;
+  b=FSLnNnTQf65vjAmBwtwNEJU7pahxZdkNUMgyNkhtHzHbt1QN2YrSh+r+
+   0006TxcN/+mBOAKImtfP4uDcgKlBdedD49DB148UYNrYm+eyvhDQTZrmF
+   MKpPhqIr/PpjpH7L05MZ17sVxBvL2fWWuJTrHZvjtmaIGq627E0527Mou
+   TAyynZeLnJ41CM2oR2Y/1oWHHJHNNBej7b2vgbaw+i4NR2KgCqswsPuLi
+   LBHss5i6WKee10OWlr+Mj+jJXpwS1eHSeayUUc7M01H6kjwevuWoQfuR6
+   U1bQu7OUDfbjwwL0HuPWoT4ttQLQwrl44Sqgb0xPzqNLs5hI8FhrWztKz
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10512"; a="334777537"
+X-IronPort-AV: E=Sophos;i="5.95,217,1661842800"; 
+   d="scan'208";a="334777537"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2022 00:11:42 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10512"; a="583383529"
-X-IronPort-AV: E=Sophos;i="5.95,215,1661842800"; 
-   d="scan'208";a="583383529"
+X-IronPort-AV: E=McAfee;i="6500,9779,10512"; a="632302244"
+X-IronPort-AV: E=Sophos;i="5.95,217,1661842800"; 
+   d="scan'208";a="632302244"
 Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orsmga003.jf.intel.com with ESMTP; 26 Oct 2022 19:25:05 -0700
+  by orsmga002.jf.intel.com with ESMTP; 27 Oct 2022 00:11:41 -0700
 Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
  fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 26 Oct 2022 19:25:04 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ 15.1.2375.31; Thu, 27 Oct 2022 00:11:41 -0700
+Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
  fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Wed, 26 Oct 2022 19:25:04 -0700
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.43) by
- edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ 15.1.2375.31; Thu, 27 Oct 2022 00:11:40 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Thu, 27 Oct 2022 00:11:40 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.103)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Wed, 26 Oct 2022 19:25:03 -0700
+ 15.1.2375.31; Thu, 27 Oct 2022 00:11:40 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MvQAHvF980EeFjeC6kIrYrNYKAy7aduPc4u16gYN3z8pvE8sL1+1qFwREuc9MTAgT6UzNBuofLieY+EkIJJihgkREuFKC4zCYHj1X2ShrAY9eC4xssNL6860gUL1qV7UH75S/ObgW/XlHv/l94a0SJ5GY3DpoL5acwDLxchyu9VZbmFtfY8OKeHZzjSF706SsEGUGG3YRRsoybQUQO4LDXLuZJ28E2QDVkNIHuQ+3pRVbWHKa+1wmVwbs4ffBReaW5ATssFrbPXrFUdf9gjq4s2uoJQSUX17vzcTZs80lcbkvHCXC5vvRaAaL+uFSxdj8VPKJT+A2/zbgXgw7exA7g==
+ b=ao6Umd34jw2+B0IFgfMjDB3q7TstkmESLCy49c1aKQFIRZf9JRkZnLlXrKKL8ipMmTN350tpX2Cyt7yTuG/NtWljyCT8en5aUwk+N79yws2gOEjKjA8VNsPSEZGnVR0zQCXOEmMb3Fd1iA3cCxXx5IDd2OuIgHmBSxpaHDIyIJNf3Tgr8I5PAHAMrPx7TmGgObF86Sg5ING4SbjMpsoyFPIafOtfjyY3Tq+/uTID4mIs3kYj5GQJ72G+xxaoBX0f7ZGNRB4BCkxDudvQr0qbtkBWKSngCeKmCST3KSeq6BsaSP7prynx4E88UBBZUxNpHU9DwJibkjH3NaZ3adLDhQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gfR4gYvGKQ5gxPvsgBubr86vfEiDHGySNQoNY04EVKg=;
- b=Br78QrRlj86uZqky17DpufQ2fv0p0SLZkMpFDUbxXPCdi5ySIDEfcpXKI/+n6/Stl6xJC+By3V8H6uepLgXnc5lkaXKA7TJXLJkWfRcKdnHwzs3FAWAfqRybfkrjYVd+Na/NweSWczmt1d9+Pn5OAYpCI7sO8vR630EGYPEFA9gn/82mMktpqPHexy1BLrMaIdsQi8JfHgOv4ulrAaF79AjerkszarNWsvXL/3kQfpC4kaDeoPe2jSrIdVnED7B19xBrkuKY74JHknJHbjDkwImMXlDZbBifeMSPnWn5f8HDkjQQZDqKQKkqzuHu73uLUi/IImgQVnse5Z4UEomdCQ==
+ bh=imYYUn3/bwIfrzSPbDmQX+FbSoQvBSBQhg6D7w3H798=;
+ b=oQlsH4SoEhzXYGB5OTCbdTOG+RLcNNv4zjHWcLOum5up39znIBwhzq17/EQ8zDbWUCLv+MTrD9TRqzjGn0OI/YMD3HDnfQ/iG+Mi7TVI4bhvPb09w3aEBxAPwvmpou815dLnsw62Hz305f/Yk4H5p2KDQNmNB0cqSMi20C8EBamYIwK1FVMCcfpU2EPrdUhLS98F3y/G898UQK9JtM7wU4CGUDHwaroTTlDBXb2c0j07lePLHG87ioYpKFW0vWyqKcFuG4E1fo1Oz3FEH9N0VM+Ds910vOD+6pc1I6SiI458QWteA6SfVycFxL1FTi9PJdc7dg8kb0MinUPfaFi4Gg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from CY5PR11MB6392.namprd11.prod.outlook.com (2603:10b6:930:37::15)
- by SA0PR11MB4653.namprd11.prod.outlook.com (2603:10b6:806:94::19) with
+ by IA1PR11MB6244.namprd11.prod.outlook.com (2603:10b6:208:3e6::8) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.26; Thu, 27 Oct
- 2022 02:25:02 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.28; Thu, 27 Oct
+ 2022 07:11:38 +0000
 Received: from CY5PR11MB6392.namprd11.prod.outlook.com
  ([fe80::a397:a46c:3d1b:c35d]) by CY5PR11MB6392.namprd11.prod.outlook.com
  ([fe80::a397:a46c:3d1b:c35d%9]) with mapi id 15.20.5746.028; Thu, 27 Oct 2022
- 02:25:01 +0000
-Message-ID: <2543dfb1-d9dc-0888-dbea-e420a19d732c@intel.com>
-Date: Thu, 27 Oct 2022 10:24:51 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Firefox/102.0 Thunderbird/102.4.0
-Subject: Re: [tip:x86/core] [kallsyms] f138918162:
- WARNING:CPU:#PID:#at_fs/xfs/xfs_message.c:#xfs_buf_alert_ratelimited.cold-#[xfs]
+ 07:11:38 +0000
+Date: Thu, 27 Oct 2022 15:09:53 +0800
 From: Yujie Liu <yujie.liu@intel.com>
-To: Peter Zijlstra <peterz@infradead.org>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Thomas Gleixner
-	<tglx@linutronix.de>, <linux-kernel@vger.kernel.org>, <x86@kernel.org>,
-	<fengwei.yin@intel.com>, <ying.huang@intel.com>, <fstests@vger.kernel.org>,
-	"Darrick J. Wong" <djwong@kernel.org>, <linux-xfs@vger.kernel.org>
-References: <202210241614.2ae4c1f5-yujie.liu@intel.com>
- <Y1kDEmLeRA2UGeF8@hirez.programming.kicks-ass.net>
- <Y1kiuTIYobR4nexS@hirez.programming.kicks-ass.net>
- <Y1nobODPLUjcteJ0@yujie-X299>
-Content-Language: en-US
-In-Reply-To: <Y1nobODPLUjcteJ0@yujie-X299>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SG2PR01CA0156.apcprd01.prod.exchangelabs.com
- (2603:1096:4:8f::36) To CY5PR11MB6392.namprd11.prod.outlook.com
+To: Amir Goldstein <amir73il@gmail.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Jan Kara <jack@suse.cz>
+Subject: Re: [amir73il:fanotify_pre_content] [fanotify] 2731bef965:
+ fxmark.ssd_xfs_MRPL_72_bufferedio.works/sec -12.0% regression
+Message-ID: <Y1ouwRLR2y2Dcu4Y@yujie-X299>
+References: <202210240921.4f794c80-yujie.liu@intel.com>
+ <CAOQ4uxj3pxAfJHap5y=4V28v1iJbcBeeTDuWEyvTi0kVnsQ94g@mail.gmail.com>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAOQ4uxj3pxAfJHap5y=4V28v1iJbcBeeTDuWEyvTi0kVnsQ94g@mail.gmail.com>
+X-ClientProxiedBy: SG2PR04CA0192.apcprd04.prod.outlook.com
+ (2603:1096:4:14::30) To CY5PR11MB6392.namprd11.prod.outlook.com
  (2603:10b6:930:37::15)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -90,109 +87,153 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY5PR11MB6392:EE_|SA0PR11MB4653:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9f18c8d3-7776-4bfa-91ab-08dab7c27361
+X-MS-TrafficTypeDiagnostic: CY5PR11MB6392:EE_|IA1PR11MB6244:EE_
+X-MS-Office365-Filtering-Correlation-Id: 574520d8-3095-46da-aeb4-08dab7ea7dbe
 X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: m7uDjfzbTP6HlGh424AIBBroD2qqZng4974/80ivoZ8O3UhCGWxzkElc+E4tdO0pT3eqL9rt/c7rDYLU5NtNjQxC2PyagRN0XYOmxLSv4gayeKDMDTHgICWY80IKJAl0zhOPYocP+1UCFcIjLqsi6kqzOh7yAxCudMBH+Ce982+zLN5G1h6+G/RBKOMSj3XUyQgkvbqbebMntJ6ksn6rdIXSHu5z/+Psj1TUgY1RodC2hsiGb62hBW2Cmk5AYEQgA33WABdu+YihSIOVG+3oY4L1/ogcGOcv9IJ/1D9S9YB8ghnA7celVaJjvlGrP5mdc7z1MhBy9wm0+HtrTbn+L52BCfC3eAQbs8x+p6kpkEJWcowC1sQolQiCCEeX7PMApLAkmx9p/kwVkpB9lP9R0yxycELFspTFb4A8PF2RhDTdLGegvwHsdyr0NFW4iob6EM6R4W5/r/zHGW6Dt4HZa2CtfUdhnM/GTWjGAL78u46d1DdXxBtqHgf+EB2RxRjeWdbeBrDoTYcSZcSfi5WPUKfI70BZ3CPHKO3GxkboHVPwEOk5+OdNKD0a054v+TeFGPDkijacD7D8dsc9ru6gUUSXR+pCGytaypZ9lZ5aVfbpA00bRd8FaAsWYeF9m73SXWzs11E9NwR7aZwyIUhb4YIx+VCXhuEKWBbBBfa3Oji38xqVj97sjBstiAiq/jjAuECVOwYylpYXaWcS/Su+dX5EZ0+n8kHHzK6sm183NVyHI1Aenm0HzGajsV4NmafNyuHAh/S5673CO9RqWF70mp5OFCpfo1x0ttHxwtd7OvBLKuzWhT5H1wFJ+fhANtJ/PDBZzDqDYPVuc0GctyBJ3lL+nTvKebfuEx/fUJdcQu7hXUHiRoLW+ix+738Nk7Py
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR11MB6392.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(346002)(396003)(376002)(39860400002)(136003)(366004)(451199015)(966005)(31686004)(2616005)(44832011)(2906002)(186003)(478600001)(6486002)(6666004)(316002)(54906003)(36756003)(6916009)(82960400001)(66946007)(66556008)(66476007)(4326008)(53546011)(8676002)(6506007)(8936002)(5660300002)(6512007)(31696002)(26005)(41300700001)(86362001)(38100700002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: dBfk9FVHhg9r2UJwdYCWfIV3KVXvgQ9zeS/i84EjbJzVQlRoWooVIL08Incepl5TNW71Jymctxhbu/NJx4rN4lq4PwC5faWk6JgUEuPdAukjqtin/IJ1ckIiPl2LYvES0EqNzAWs6N1R50eO5PdjdbSaQ45L08MBUTbBdpD42rDCNQUnjnH8Qwd9lc8O9p0/36vzrd/sxjsiuz2QaX9zTn3en+sjzm68rbx/2MwR9YB85ejdm0YScUiV0m3fMsXkHc0TD96B8W8UjFlvynOUAkUcZa4KrU4PzrSeud2GqPHCG72yFLoAkzQMrc7dBLo9xK5LjNKGeI4wCo0EWhRu9pwX3MnHjAAW5zaBJtEZ2qnZItorGrlrJBNvSBFLLM9U4bjgi0eRS4bCW4UF1R+tSJ2+/jBvjtG8S6KC7v5ztTuSyHFogm3BhtE8/CgLOb6C+wsU/AeTXrBgna6O8b0enIjrz9d5HQCRYEBAOMwAG41pA1N7lSTn8BuLPkW0EvgDVSSx+ffGT8w6sp06Gpx0onXiv8FmqWlPTTIWHA9cooVUboVTTaEfYSaRb34Y9/2guJPw1IEu2xme/9A7Q1dGSciLhpz+Si/epHG4nj9qrNUTAZgcvDbVbFRLzl5dtu/5vi6rDJRjCnka+OIJmjXRQrY/YhCqBj8x0MH77gyfUzuAR4pJPjSPYrHc7c7CnmeJpL88wUh7P8iT5ZAVYdghV2zGK1V7mUl/c/n3MN1TXlKic/cRGNLrZ1iIG95BPl6TG8iR3p5IMyZvSm4k42IsCQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR11MB6392.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(376002)(346002)(366004)(136003)(39860400002)(396003)(451199015)(86362001)(38100700002)(82960400001)(83380400001)(53546011)(6512007)(186003)(6506007)(9686003)(26005)(2906002)(33716001)(44832011)(6486002)(966005)(8936002)(478600001)(6666004)(6916009)(8676002)(66556008)(316002)(66476007)(4326008)(66946007)(5660300002)(41300700001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UkxzVHFXR1AvNTFlKzVFYnFwZmxtUWhjb20xNkIxQ3A2d2FvWEV2UjViSzlV?=
- =?utf-8?B?S3RlVnhQVjcxbmZucjRkWU9zdFlWcU5ZM3M4TTVBeUpaVUdNZmtyK1EvNDI0?=
- =?utf-8?B?REVzbnRhWWdtUVpYYkNOd2dDMkV2TTNnV0FGZEt1QWtMa2toYkxDMlJENk5K?=
- =?utf-8?B?MmxGdWNyK0tuL1ExSC9Vb2t3Sng5eDM3eHVjOGpiOVQ2alVCNzVhZzNvVXpZ?=
- =?utf-8?B?UFlkOGMvRjlza3FaSUlLRk16eWt4ajZzbXEzcjc1dGs5TW4vRmF2UE5yRFp4?=
- =?utf-8?B?cDF4b1l0MzV3VmpyUjdDTFRHbGdSQ3liRGQ5VFN6UkZQdG1jQkxCWnNtcEVB?=
- =?utf-8?B?QWZndHRySGw0aFRLbHl2R3BxVzZUMDcxcFRQUXE4c0svSk9ZemorUkhyR3BW?=
- =?utf-8?B?SzZOdWd2RzRvN05GV3k5YVNiZjdLL0duR2g0YmxrQnc3ckw2RGpVZ0VYK3JZ?=
- =?utf-8?B?blF5V0VhMnB5WWMvbFpnbEVMV2N6Tm9OZzBPb1QxUHdHOHhGZktJdjVCNW1X?=
- =?utf-8?B?ckZjblplRFg3THhEbUdUNzMwbFlRKzNsbDFmREdINUVHSmJoYjAzU0xHMnla?=
- =?utf-8?B?TnVqWnNKbzYyRk5JeEpRcEx3NFFQVzN1M1lVekUvVWpPS3l1Rmsrc2J3K3NP?=
- =?utf-8?B?cFhkRHQ4OHAzTjd2aDgvVDB5RU5jTFp0Tkd1VlUydUl5bkpzakRJZk81dHJX?=
- =?utf-8?B?YWhjbXh6OG13TVFwYU5aQVJocHhwMDRaR1E5UStUVGN0cjU1dG5JYWhpZkxL?=
- =?utf-8?B?aERKdG5MN1NpSDlUUUxMK1dKZnU4V2ROQ1ZXOHJ2NDZxNHZIZ2lvNVJraHFz?=
- =?utf-8?B?NE1RVk9DQUIwejBRaUJGTnNZRVpCNFJWQVRpakhhVVhYamRWMHB2Uno3Tlkz?=
- =?utf-8?B?VWw1TVFTcmNEV2lIU0V2dk5iRkprV2NvOUpDNzRpNmpvZytKL2hWck5HQXRK?=
- =?utf-8?B?K2ltc2xzenlBTDZDaEdTaWZnUTBERDAvbFpYUnJQb04zOXhpUHhrbVN6WTQz?=
- =?utf-8?B?VytRL0JsN014SWZTZG9LelViY1oyQ3N4aTd2Z1dRTXlGWkM0WlNZZlpwdXVK?=
- =?utf-8?B?SXN1TlRDaG5XQzZZeXlGK2dXd3NQdmdFdnl6VHVFbW9lN2d5UThleXJJY0JC?=
- =?utf-8?B?SExTUnFFbEJYRGFvUytmdGU5TnVkVTMxUGJxdU0yY0txWitOek9JdXNKSmhY?=
- =?utf-8?B?NUtsUWZGRituWWdGaTJrTkhpc21PV1QyQkdvdVVGcnlCQ05MdUdxOVlUMjBN?=
- =?utf-8?B?ZWJkM2pqaUZOSmVWcFBPYXEyNFlXb2NkV0hyaWhqREpwTk96bzdVdXh0aTlm?=
- =?utf-8?B?b0RFRFhVYkNVcFRNWVRsVmFLTW9ZODF1ekw2T3Q5OUpXYk53Um4xNFJxS0dD?=
- =?utf-8?B?bDhlbjgvTDNmRWpOWlVqSk5mQWZiL0l3ejlJamZySUlUM2UvUXoxRnN5aFpB?=
- =?utf-8?B?UmNUbEV3bVRRT2FmU2VOdFBkblpFNjdVaDlzNFJjV3dGZ1Y0NGU3U3NORVFz?=
- =?utf-8?B?c1MzUTkyZlpSUURpa3hIZnNJWWhZc0xSUnl4WUFHS3F5WjNybjdTeWVTdjJa?=
- =?utf-8?B?MHV3TlFTYmhVd2Q2VitDWDh1M1RIQkZxTWFvYThudkRYQml1cjdlMVR3Y0tz?=
- =?utf-8?B?a21vdTBFTFp2VnZkL2xYbk1zbnVDY0dHUkw5RnpSZDFRbldHRFl6S3EzYy9x?=
- =?utf-8?B?UXVZMXM5eXhJRXdSRnVXK2dqZk9TRytRbi9YSmduemlKN1FFb1JzZnZxMysz?=
- =?utf-8?B?MjNIY3p5bVRPWkxSRElvdmtycGRGRzk0NXBpNkJnQzlTdmdwTW05aGt2ckNL?=
- =?utf-8?B?SjBaT3BUTFMzY1lxYTZHYnFOMFUxa2xnTTlScGc5eE9rNFFXSVFORzIzZmZs?=
- =?utf-8?B?bWlIcE9SOW5rY2xVWGJPM29PNmZSZklCVGxURG5HM2lGaDdPQ3kvMktneGFO?=
- =?utf-8?B?OUl1R1RlTTZ2ZnhFYkhvMGR2R1pKUnhzczYxSU43ak14SXh3OUg1YnJHUGVj?=
- =?utf-8?B?ak5TL0x2UWJkSmVLUG4rRjQ3QTdzekgwdmdUckZEaDN3WnlpZTJMWmFUUUJH?=
- =?utf-8?B?LzNRMi9kRHAxdjZBY0hkSFdFRklNdVhXcC84NndFRXBJaUtVQ2Y5bVRHWHhy?=
- =?utf-8?Q?r8Y42Oxq80gUBBWzmAxBeGPq5?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9f18c8d3-7776-4bfa-91ab-08dab7c27361
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?qMEcCTakhZyIeb4vwDmVi9dTPUi0hF7yI4jeOjGAkRVwgl7PsqCCHZP462?=
+ =?iso-8859-1?Q?uOokYVQid1TqmWxBYqeSL2LlNGgjgIcLx3OSX6SldgqanvKBEPIoYnnIK/?=
+ =?iso-8859-1?Q?92ZNAw5RegMIc5Vv1R5HsAK1Fjx7fEdjhbUkUF7FumVuqHjpG57X9zIA37?=
+ =?iso-8859-1?Q?iBy91eKxCS9FKjJKdOtBTJYHuBTmSNdWSKrpK3ehiL+1Fn/I8LlG/RmLgh?=
+ =?iso-8859-1?Q?JRmNf6u8U21+5BEOET2MB6LOhyZV6nAynZq+Y7oXBZzTY4H2GLtYiXeI28?=
+ =?iso-8859-1?Q?nDbpTlu+4sBjmhDxD6oAE+mlOb0oNdu2jzmrDO4ACNmnnPiudT76sL2EXW?=
+ =?iso-8859-1?Q?Q08FpGhGJki7y7F3wsD9XKSEIhvEEjTUarhem4dDnXVOX97wYo+RCKFkob?=
+ =?iso-8859-1?Q?BNclJsiJkOJGamGlPl40NalU4GkHSaLq5vLrh5nlcFE7wAbCz563NDEzlv?=
+ =?iso-8859-1?Q?lvSJA2EjrTF3789l9nvvSPIHrK575czBoCiW4Q01hrAm2nJ5u+DrvRiGPV?=
+ =?iso-8859-1?Q?TIOiYq0+320zXq9sL1j6u0ffr62h3edTHprciJZJt74ZnRdgDUVgNl73wq?=
+ =?iso-8859-1?Q?Nr7WfKV1iUrqTtpzw52422wgHR83aFWlcJTME1I9gZMtjHHln4VylB56v9?=
+ =?iso-8859-1?Q?h/iByQv8kRAg+JtLnZIdFFJN6Xqj2KHEmo08GY35YnmWp119Y3zYnK1dqH?=
+ =?iso-8859-1?Q?VNAvpQb/TMQbmoIf9NtXQlFYlu7wTcB5gUDojYDyCUhWkL4qLuPBkYyPOC?=
+ =?iso-8859-1?Q?Qgh5VZNn4YQ8HwlLawW823GFLj58D2q65hzjDCRn64W096I/KYYGnR6XVn?=
+ =?iso-8859-1?Q?AjdlP9tYxX8VtlUqIVtiN6fRkQ57y/tOnfg1wM63MPHSpyjeT6eIVjNaqH?=
+ =?iso-8859-1?Q?m9ZU5rnSwFnLSlvf39dVYSH6HPdCuaqXM3Ga54J0wQD3gWUK6CmpiOjCic?=
+ =?iso-8859-1?Q?MDM7uRqFrKA07Adc0/BQjlxkMR6rvUrgyT+P3ACtN6Qgx7+rEHtc0BnORp?=
+ =?iso-8859-1?Q?uEPNExSLtM7DC+HmFI/YwI48/w6yoQwqvf94RpTh3mG6uqIRqnNfERCic0?=
+ =?iso-8859-1?Q?q7cGZJ63wePSvW/PwEVFuU48IJu/u3I9AUpD/FdevkxSJR0xlj/BfXZNgv?=
+ =?iso-8859-1?Q?hvdIUj6pWGcY9Y5CJLe/l7+N4zZn8lS4TAw/GmNU6aq3wVK028jS1L9yiy?=
+ =?iso-8859-1?Q?AB73NO3dZgmEsFVs2h62UFPWh5M3i6FIHsRPHtEiqrjkndJZIpeJ0mMqso?=
+ =?iso-8859-1?Q?lbQViZa54vM6XiRolDkS6WjVJcr8BjcW9LDu77scCwUsHCK+05tjbJg3Lo?=
+ =?iso-8859-1?Q?+bAsdq3xQ8pkbvdUE7n+DZVYDWYSaRtXwfx+dWXgC3b0h5C1u5ifiTGBvn?=
+ =?iso-8859-1?Q?63C+yqUC8psZbbze6aLP2H6yHI+BxN9pGd1ST1jC90DWSRrDRRKL0vZ+dy?=
+ =?iso-8859-1?Q?QSAPJg8PiPNax/3M0k35VcrkrDLMNyNiXC+6HgXy6rxI3OX61h7MGcmHdE?=
+ =?iso-8859-1?Q?tlJ7MiFKC0eKiTTAdfBVzeDG5UM2gZPT8FFueVAvKPTDLFKVG+XKZgqxqr?=
+ =?iso-8859-1?Q?YvnLkQaIqEPUe7G5NlX4hbyfY3gPmSX5cB4JLNx2eUo9Co00hixxp9YVLb?=
+ =?iso-8859-1?Q?X2/l8Fh6S33YqKrgMIUsf2dZTnDMHVWo/5?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 574520d8-3095-46da-aeb4-08dab7ea7dbe
 X-MS-Exchange-CrossTenant-AuthSource: CY5PR11MB6392.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Oct 2022 02:25:01.6471
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Oct 2022 07:11:38.8256
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: jw0VmMv7E4UlkM5XfRZJUCdl8LU2KyFzjZvWug29YpE8Kh1j8gwRDyqxazlJ3Eiipz9rbISiPfuBvaEZcD0OoA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR11MB4653
+X-MS-Exchange-CrossTenant-UserPrincipalName: d9nnTHtBhaXClSDZzPhH029/nx/MzLSUzE0x9uBt3Ci206bxIt8oRMyzLgqKxz6bOH+3oO/r5sZ8mn4eck4Nkw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB6244
 X-OriginatorOrg: intel.com
 
-On 10/27/2022 10:09, Yujie Liu wrote:
-> On Wed, Oct 26, 2022 at 02:06:17PM +0200, Peter Zijlstra wrote:
->> On Wed, Oct 26, 2022 at 11:51:14AM +0200, Peter Zijlstra wrote:
->>> On Wed, Oct 26, 2022 at 05:10:28PM +0800, kernel test robot wrote:
->>>> Hi Peter,
->>>>
->>>> For below patch, we couldn't find any connection between the code
->>>> change of kallsyms and xfstests testcase, but we got very stable test
->>>> results. We tested commit f1389181622a and its parent commit
->>>> 7825451fa4dc for 12 runs each, parent was 100% good while this commit
->>>> was 100% bad, so we still send out this report FYI though we don't have
->>>> clear clue of the root cause. Please check the details below if
->>>> interested in further investigation. Thanks.
->>>
->>> *groan* I'll go have a poke.
->>>
->>> Also; I've had these patches in my queue.git for over a month now and
->>> this is the first report, how comes?
+On Wed, Oct 26, 2022 at 06:06:45PM +0300, Amir Goldstein wrote:
+> On Mon, Oct 24, 2022 at 4:34 AM kernel test robot <yujie.liu@intel.com> wrote:
+> >
+> > Greeting,
+> >
+> > FYI, we noticed a -12.0% regression of fxmark.ssd_xfs_MRPL_72_bufferedio.works/sec due to commit:
+> >
+> > commit: 2731bef9653952cab508c5eb701592ea78dc6e75 ("fanotify: introduce FAN_LOOKUP_PERM event")
+> > https://github.com/amir73il/linux fanotify_pre_content
+> >
+> > in testcase: fxmark
+> > on test machine: 128 threads 2 sockets Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz (Ice Lake) with 128G memory
+> > with following parameters:
+> >
+> >         disk: 1SSD
+> >         media: ssd
+> >         test: MRPL
+> >         fstype: xfs
+> >         directio: bufferedio
+> >         cpufreq_governor: performance
+> >
+> > test-description: FxMark is a filesystem benchmark that test multicore scalability.
+> > test-url: https://github.com/sslab-gatech/fxmark
+> >
+> >
+> > If you fix the issue, kindly add following tag
+> > | Reported-by: kernel test robot <yujie.liu@intel.com>
+> >
+> >
+> > Details are as below:
+> >
+> > =========================================================================================
+> > compiler/cpufreq_governor/directio/disk/fstype/kconfig/media/rootfs/tbox_group/test/testcase:
+> >   gcc-11/performance/bufferedio/1SSD/xfs/x86_64-rhel-8.3/ssd/debian-11.1-x86_64-20220510.cgz/lkp-icl-2sp5/MRPL/fxmark
+> >
+> > commit:
+> >   da8d464cb0 ("fanotify: allow O_PATH flag in event_f_flags")
+> >   2731bef965 ("fanotify: introduce FAN_LOOKUP_PERM event")
 > 
-> Hi Peter,
+> Hello!
 > 
-> Sorry about late report. We did catch this problem on
-> call-depth-tracking branch of queue.git in Semtember, but we used to
-> think it may be a false alarm since we cannot connect the code change
-> with xfstests, so didn't report at that time. After merged to x86 tip,
-> we did more tests and reviewed this problem with more developers, and
-> sent out the report finally.
+> Thanks for the report.
 > 
->> dmesg starts at 42 seconds, you don't happen to have a complete one?
+> Could you please run this test on branch
+> https://github.com/amir73il/fan_lookup_perm
 > 
-> Sorry for the incomplete dmesg. Please check if attached kmsg.xz helps?
-> The time may vary a little since it is captured from another run.
-> Thanks.
+>   2731bef96539 ("fanotify: introduce FAN_LOOKUP_PERM event")
+>   87f9aa515fd0 ("fsnotify: optimize fsnotify_lookup_perm() hook")
 > 
-> Not sure if this has anything to do with xfs or testcases, so add
-> xfs folks to consult.
-> 
-> Hi xfs folks,
-> 
-> Could you please help check the original report at
-> https://lore.kernel.org/r/202210241508.2e203c3d-yujie.liu@intel.com
-> to see if can find any clue for the problem? Thanks.
+> To see if it fixes the reported regression?
 
-Sorry, wrong link. Should be:
+Hi Amir,
 
-https://lore.kernel.org/all/202210241614.2ae4c1f5-yujie.liu@intel.com/
+Thanks for the fix, we tested above commits and found that the
+regression has been resolved.
+
+  Tested-by: Yujie Liu <yujie.liu@intel.com>
+
+=========================================================================================
+compiler/cpufreq_governor/directio/disk/fstype/kconfig/media/rootfs/tbox_group/test/testcase:
+  gcc-11/performance/bufferedio/1SSD/xfs/x86_64-rhel-8.3/ssd/debian-11.1-x86_64-20220510.cgz/lkp-icl-2sp5/MRPL/fxmark
+
+commit:
+  da8d464cb0251 ("fanotify: allow O_PATH flag in event_f_flags")
+  2731bef965395 ("fanotify: introduce FAN_LOOKUP_PERM event")
+  87f9aa515fd01 ("fsnotify: optimize fsnotify_lookup_perm() hook")
+
+da8d464cb02517d3 2731bef9653952cab508c5eb701 87f9aa515fd01eabda2b1ac2707
+---------------- --------------------------- ---------------------------
+         %stddev     %change         %stddev     %change         %stddev
+             \          |                \          |                \
+     44.04           -11.7%      38.90            -1.0%      43.62        fxmark.ssd_xfs_MRPL_18_bufferedio.user_sec
+      4.89           -11.7%       4.32            -1.0%       4.84        fxmark.ssd_xfs_MRPL_18_bufferedio.user_util
+ 1.624e+09           -12.0%   1.43e+09            -0.7%  1.613e+09        fxmark.ssd_xfs_MRPL_18_bufferedio.works
+  32484848           -12.0%   28590324            -0.7%   32266981        fxmark.ssd_xfs_MRPL_18_bufferedio.works/sec
+      2.51 ±  4%     -12.1%       2.20 ±  3%      +0.7%       2.52 ±  2%  fxmark.ssd_xfs_MRPL_1_bufferedio.user_sec
+      5.01 ±  4%     -12.1%       4.41 ±  3%      +0.7%       5.05 ±  2%  fxmark.ssd_xfs_MRPL_1_bufferedio.user_util
+  91798396           -12.1%   80692995            -0.4%   91437550        fxmark.ssd_xfs_MRPL_1_bufferedio.works
+   1835968           -12.1%    1613860            -0.4%    1828751        fxmark.ssd_xfs_MRPL_1_bufferedio.works/sec
+ 1.847e+08           -11.9%  1.627e+08            -0.6%  1.837e+08        fxmark.ssd_xfs_MRPL_2_bufferedio.works
+   3694940           -11.9%    3254103            -0.6%    3673299        fxmark.ssd_xfs_MRPL_2_bufferedio.works/sec
+     88.28           -11.7%      77.95            -1.0%      87.38        fxmark.ssd_xfs_MRPL_36_bufferedio.user_sec
+      4.90           -11.7%       4.33            -1.0%       4.85        fxmark.ssd_xfs_MRPL_36_bufferedio.user_util
+ 3.055e+09           -11.9%  2.692e+09            -0.9%  3.027e+09        fxmark.ssd_xfs_MRPL_36_bufferedio.works
+  61109619           -11.9%   53847415            -0.9%   60548779        fxmark.ssd_xfs_MRPL_36_bufferedio.works/sec
+     10.02 ±  2%     -12.2%       8.79            -0.9%       9.93 ±  2%  fxmark.ssd_xfs_MRPL_4_bufferedio.user_sec
+      5.01 ±  2%     -12.2%       4.39            -0.9%       4.96 ±  2%  fxmark.ssd_xfs_MRPL_4_bufferedio.user_util
+ 3.699e+08           -11.8%  3.263e+08            -0.3%  3.689e+08        fxmark.ssd_xfs_MRPL_4_bufferedio.works
+   7397404           -11.8%    6525259            -0.3%    7378874        fxmark.ssd_xfs_MRPL_4_bufferedio.works/sec
+    132.91 ±  2%     -12.3%     116.60            -0.8%     131.91        fxmark.ssd_xfs_MRPL_54_bufferedio.user_sec
+      4.92 ±  2%     -12.3%       4.32            -0.8%       4.88        fxmark.ssd_xfs_MRPL_54_bufferedio.user_util
+ 4.664e+09           -12.0%  4.105e+09            -0.7%  4.629e+09        fxmark.ssd_xfs_MRPL_54_bufferedio.works
+  93279586           -12.0%   82101317            -0.7%   92583640        fxmark.ssd_xfs_MRPL_54_bufferedio.works/sec
+    167.55           -12.7%     146.34            -0.7%     166.45        fxmark.ssd_xfs_MRPL_72_bufferedio.user_sec
+      4.65           -12.7%       4.06            -0.7%       4.62        fxmark.ssd_xfs_MRPL_72_bufferedio.user_util
+   5.6e+09           -12.0%  4.926e+09            -1.1%  5.539e+09        fxmark.ssd_xfs_MRPL_72_bufferedio.works
+  1.12e+08           -12.0%   98517557            -1.1%  1.108e+08        fxmark.ssd_xfs_MRPL_72_bufferedio.works/sec
+
 
 --
 Best Regards,
