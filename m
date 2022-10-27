@@ -1,75 +1,149 @@
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4B7B2F31
-	for <oe-lkp@lists.linux.dev>; Thu, 27 Oct 2022 15:12:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666883551; x=1698419551;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=8A/YviDx8iqyRdDwX9h7ESPZbhw7TVDZ5xd3lzXfDHw=;
-  b=XFQBQuOxhjPOJP3Jb3Iv5PM76jpZRcCF9ZPsIT1W+QOAUdMKzVzH4KwV
-   0hTrlj9hu0aYYJOKeypmZLTssbETfSVKycVVXjn/zzqPqzBtgYb8gWlK9
-   /eQx2+sVT1Tc8GDn4Y9fov2Fkyyb4/r9cpmsANUfmUFcDtf5OjJr9CfME
-   pyL1RUoqextgRPtZidRuhlUsHwpnPupHbzzNsueb2OKuexMpWa2AmtwWR
-   vvHipOlV+CfJZkTK/EmC34hNx3wIv2EMqtzlX3GZpsbV4qOka17cpHZH/
-   PyYzm7uSyXVega4apzENkpVNXpS+nO0bjdTayciglmwWO5sOANidQTR2O
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10513"; a="295659611"
-X-IronPort-AV: E=Sophos;i="5.95,218,1661842800"; 
-   d="scan'208";a="295659611"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2022 08:12:30 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10513"; a="701378321"
-X-IronPort-AV: E=Sophos;i="5.95,218,1661842800"; 
-   d="scan'208";a="701378321"
-Received: from vstelter-mobl.amr.corp.intel.com (HELO [10.212.214.108]) ([10.212.214.108])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2022 08:12:28 -0700
-Message-ID: <864b4fbe-4462-9962-7afd-9140d5165cdb@intel.com>
-Date: Thu, 27 Oct 2022 08:12:26 -0700
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51BFD46A6
+	for <oe-lkp@lists.linux.dev>; Thu, 27 Oct 2022 16:20:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5497C433D6;
+	Thu, 27 Oct 2022 16:20:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1666887647;
+	bh=TOUqKmgEkAaTeK7T8K0JzVzaY6XgBGR/nI/YoSk8f8A=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=JiCaQQHRv2vDjm0fmPDW615OPN0zDbLG7r5aetEdobj4aEP9ci8Bc0pvOREce2oSZ
+	 zZHWrVNgzAPTRP7c9z8GCOq+ZbSHQm7ecyoW52jJFWHm1UxZeDIAIxOHQGjf2euFZF
+	 aymc3x8q+qGFbOkfjKW+hf8SnOW7J8luy8UwvXUBBlC7LVJ9mvhwr9Xk9LeQe3VCed
+	 g/FgQuUZF02td0BPmGB1lv07foEGH4IeW4nb/C75aNFxnebrsn97fBZaFZ/58bAjsU
+	 7NVnXrWUH/lCsX3TACuWOo0Ags7/t7Jj0+Yuxkbx/iwBQIYAKt3kRRyDF8zjfkcTkL
+	 xEHxoIS/ipaWQ==
+Date: Thu, 27 Oct 2022 09:20:46 -0700
+From: "Darrick J. Wong" <djwong@kernel.org>
+To: Yujie Liu <yujie.liu@intel.com>
+Cc: Peter Zijlstra <peterz@infradead.org>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, Thomas Gleixner <tglx@linutronix.de>,
+	linux-kernel@vger.kernel.org, x86@kernel.org, fengwei.yin@intel.com,
+	ying.huang@intel.com, fstests@vger.kernel.org,
+	linux-xfs@vger.kernel.org
+Subject: Re: [tip:x86/core] [kallsyms] f138918162:
+ WARNING:CPU:#PID:#at_fs/xfs/xfs_message.c:#xfs_buf_alert_ratelimited.cold-#[xfs]
+Message-ID: <Y1qv3ku6ULHy8hOF@magnolia>
+References: <202210241614.2ae4c1f5-yujie.liu@intel.com>
+ <Y1kDEmLeRA2UGeF8@hirez.programming.kicks-ass.net>
+ <Y1kiuTIYobR4nexS@hirez.programming.kicks-ass.net>
+ <Y1nobODPLUjcteJ0@yujie-X299>
+ <2543dfb1-d9dc-0888-dbea-e420a19d732c@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [tip:x86/mm] [x86/mm] 1248fb6a82:
- Kernel_panic-not_syncing:kasan_populate_pmd:Failed_to_allocate_page
-Content-Language: en-US
-To: Andrey Ryabinin <ryabinin.a.a@gmail.com>,
- Peter Zijlstra <peterz@infradead.org>,
- kernel test robot <yujie.liu@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
- Dave Hansen <dave.hansen@linux.intel.com>,
- Seth Jenkins <sethjenkins@google.com>, Kees Cook <keescook@chromium.org>,
- linux-kernel@vger.kernel.org, x86@kernel.org,
- Alexander Potapenko <glider@google.com>,
- Andrey Konovalov <andreyknvl@gmail.com>, Dmitry Vyukov <dvyukov@google.com>,
- Vincenzo Frascino <vincenzo.frascino@arm.com>, kasan-dev@googlegroups.com,
- "Yin, Fengwei" <fengwei.yin@intel.com>
-References: <202210241508.2e203c3d-yujie.liu@intel.com>
- <Y1e7kgKweck6S954@hirez.programming.kicks-ass.net>
- <278cc353-6289-19e8-f7a9-0acd70bc8e11@gmail.com>
-From: Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <278cc353-6289-19e8-f7a9-0acd70bc8e11@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2543dfb1-d9dc-0888-dbea-e420a19d732c@intel.com>
 
-On 10/25/22 08:39, Andrey Ryabinin wrote:
-> KASAN tries to allocate shadow memory for the whole cpu entry area.
-> The size is CPU_ENTRY_AREA_MAP_SIZE/8 and this is obviously fails after your patch.
-> The fix this might be something like this:
+On Thu, Oct 27, 2022 at 10:24:51AM +0800, Yujie Liu wrote:
+> On 10/27/2022 10:09, Yujie Liu wrote:
+> > On Wed, Oct 26, 2022 at 02:06:17PM +0200, Peter Zijlstra wrote:
+> > > On Wed, Oct 26, 2022 at 11:51:14AM +0200, Peter Zijlstra wrote:
+> > > > On Wed, Oct 26, 2022 at 05:10:28PM +0800, kernel test robot wrote:
+> > > > > Hi Peter,
+> > > > > 
+> > > > > For below patch, we couldn't find any connection between the code
+> > > > > change of kallsyms and xfstests testcase, but we got very stable test
+> > > > > results. We tested commit f1389181622a and its parent commit
+> > > > > 7825451fa4dc for 12 runs each, parent was 100% good while this commit
+> > > > > was 100% bad, so we still send out this report FYI though we don't have
+> > > > > clear clue of the root cause. Please check the details below if
+> > > > > interested in further investigation. Thanks.
+> > > > 
+> > > > *groan* I'll go have a poke.
+> > > > 
+> > > > Also; I've had these patches in my queue.git for over a month now and
+> > > > this is the first report, how comes?
+> > 
+> > Hi Peter,
+> > 
+> > Sorry about late report. We did catch this problem on
+> > call-depth-tracking branch of queue.git in Semtember, but we used to
+> > think it may be a false alarm since we cannot connect the code change
+> > with xfstests, so didn't report at that time. After merged to x86 tip,
+> > we did more tests and reviewed this problem with more developers, and
+> > sent out the report finally.
+> > 
+> > > dmesg starts at 42 seconds, you don't happen to have a complete one?
+> > 
+> > Sorry for the incomplete dmesg. Please check if attached kmsg.xz helps?
+> > The time may vary a little since it is captured from another run.
+> > Thanks.
+> > 
+> > Not sure if this has anything to do with xfs or testcases, so add
+> > xfs folks to consult.
+> > 
+> > Hi xfs folks,
+> > 
+> > Could you please help check the original report at
+> > https://lore.kernel.org/r/202210241508.2e203c3d-yujie.liu@intel.com
+> > to see if can find any clue for the problem? Thanks.
 > 
-> ---
->  arch/x86/include/asm/kasan.h |  2 ++
->  arch/x86/mm/cpu_entry_area.c |  3 +++
->  arch/x86/mm/kasan_init_64.c  | 16 +++++++++++++---
->  3 files changed, 18 insertions(+), 3 deletions(-)
+> Sorry, wrong link. Should be:
+> 
+> https://lore.kernel.org/all/202210241614.2ae4c1f5-yujie.liu@intel.com/
 
-Andrey, if you have a minute, could you send this as a real patch, with
-a SoB?
+xfs/439 corrupts the log and checks that log recovery will notice the
+corruption and abort the mount.
 
-Alternatively, do you have any issues if we add your SoB and apply it?
+Excerpted dmesg from the link above:
+
+[   75.708690][ T3668] ------------[ cut here ]------------
+[   75.714041][ T3668] WARNING: CPU: 1 PID: 3668 at fs/xfs/xfs_message.c:104 xfs_buf_alert_ratelimited.cold-0x7/0x45 [xfs]
+[   75.779828][ T3668] CPU: 1 PID: 3668 Comm: mount Not tainted 6.1.0-rc1-00053-gf1389181622a #1
+[   75.788389][ T3668] Hardware name: Hewlett-Packard HP Pro 3340 MT/17A1, BIOS 8.07 01/24/2013
+[   75.796864][ T3668] RIP: 0010:xfs_buf_alert_ratelimited.cold-0x7/0x45 [xfs]
+[ 75.898077][ T3668] xlog_find_verify_log_record (fs/xfs/xfs_log_recover.c:431) xfs
+[ 75.910856][ T3668] xlog_find_head (fs/xfs/xfs_log_recover.c:705) xfs
+[ 75.925847][ T3668] xlog_find_tail (fs/xfs/xfs_log_recover.c:1256) xfs
+[ 75.951249][ T3668] xlog_recover (fs/xfs/xfs_log_recover.c:3355) xfs
+[ 75.961324][ T3668] xfs_log_mount (fs/xfs/xfs_log.c:739) xfs
+[ 75.966486][ T3668] xfs_mountfs (fs/xfs/xfs_mount.c:805 (discriminator 4)) xfs
+[ 75.998070][ T3668] xfs_fs_fill_super (fs/xfs/xfs_super.c:1666) xfs
+
+So yes, this is xlog_find_verify_log_record behaving as intended:
+
+		if (i < start_blk) {
+			/* valid log record not found */
+			xfs_warn(log->l_mp,
+		"Log inconsistent (didn't find previous header)");
+			ASSERT(0);  <------------------ here
+			error = -EFSCORRUPTED;
+			goto out;
+		}
+
+However, I noticed that the callsite in the WARNING: message has changed
+from the usual 'asswarn' (which is the caller of WARN_ON) to
+'xfs_buf_alert_ratelimited', which seems totally wrong since XFS log
+recovery doesn't touch xfs_buf objects at all.
+
+The reason this turned into a fstests regression is that xfs/439 uses
+_filter_assert_dmesg to check for warnings in dmesg that are not the
+result of an ASSERT failing (common/rc in fstests):
+
+	# We generate assert related WARNINGs on purpose and make sure
+	# test doesn't fail because of these warnings. This is a helper
+	# for _check_dmesg() to filter out them.
+	_filter_assert_dmesg()
+	{
+		local warn1="WARNING:.*fs/xfs/xfs_message\.c:.*asswarn.*"
+		local warn2="WARNING:.*fs/xfs/xfs_message\.c:.*assfail.*"
+		sed -e "s#$warn1#Intentional warnings in asswarn#" \
+		    -e "s#$warn2#Intentional warnings in assfail#"
+	}
+
+As for why that commit reports the wrong caller ... I don't know.  The
+function name and line number are correct.
+
+--D
+
+> 
+> --
+> Best Regards,
+> Yujie
