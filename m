@@ -1,64 +1,75 @@
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECD86186A
-	for <oe-lkp@lists.linux.dev>; Thu, 27 Oct 2022 10:13:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=ujmvw+TZR5k4uN3HoiTdwWd48LImUMTszRZtFiaHkwM=; b=ejJYmTDqpc2QFxATe5idMUsCi0
-	s0DaAVktP9XDrv10JRqJXpEU8DF0NXIh+5Hh7TFqb3UKmI8vZHAENIe0+rlnABnmdsiTEOBUyqmSo
-	XAGQC9b4ltYk/2iXbC0+roivF8FDPM7mw2/Akm0TZRCB1UbPnwTi+HTPXw4Jqf58X1neH6/XpnmYA
-	dY96tvBZ82dikRUKk8c0Xc0fFlUrLlJaECJpBYLHUnr63rfImTF0W5rmIsLammfflZPFLxjhsGbbF
-	sgt5/g+WJ/9Ckg6R+5ruiSwqcpVd7nqRWh1GMAI9VLCy9U3mgRMKiGGKaKMT45Ld5F+NNnibtB4Rt
-	ZvdGUFUQ==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-	by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-	id 1onztA-0007C6-D6; Thu, 27 Oct 2022 10:13:28 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
-	(Client did not present a certificate)
-	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 344BD30041D;
-	Thu, 27 Oct 2022 12:13:23 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-	id 1D3F32C450484; Thu, 27 Oct 2022 12:13:23 +0200 (CEST)
-Date: Thu, 27 Oct 2022 12:13:23 +0200
-From: Peter Zijlstra <peterz@infradead.org>
-To: Yujie Liu <yujie.liu@intel.com>
-Cc: Andrey Ryabinin <ryabinin.a.a@gmail.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, Dave Hansen <dave.hansen@linux.intel.com>,
-	Seth Jenkins <sethjenkins@google.com>,
-	Kees Cook <keescook@chromium.org>, linux-kernel@vger.kernel.org,
-	x86@kernel.org, Alexander Potapenko <glider@google.com>,
-	Andrey Konovalov <andreyknvl@gmail.com>,
-	Dmitry Vyukov <dvyukov@google.com>,
-	Vincenzo Frascino <vincenzo.frascino@arm.com>,
-	kasan-dev@googlegroups.com, "Yin, Fengwei" <fengwei.yin@intel.com>
-Subject: Re: [tip:x86/mm] [x86/mm] 1248fb6a82:
- Kernel_panic-not_syncing:kasan_populate_pmd:Failed_to_allocate_page
-Message-ID: <Y1pZwwuRfYmh8A4L@hirez.programming.kicks-ass.net>
-References: <202210241508.2e203c3d-yujie.liu@intel.com>
- <Y1e7kgKweck6S954@hirez.programming.kicks-ass.net>
- <278cc353-6289-19e8-f7a9-0acd70bc8e11@gmail.com>
- <Y1pXJheAg+sMj7eG@yujie-X299>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4B7B2F31
+	for <oe-lkp@lists.linux.dev>; Thu, 27 Oct 2022 15:12:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1666883551; x=1698419551;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=8A/YviDx8iqyRdDwX9h7ESPZbhw7TVDZ5xd3lzXfDHw=;
+  b=XFQBQuOxhjPOJP3Jb3Iv5PM76jpZRcCF9ZPsIT1W+QOAUdMKzVzH4KwV
+   0hTrlj9hu0aYYJOKeypmZLTssbETfSVKycVVXjn/zzqPqzBtgYb8gWlK9
+   /eQx2+sVT1Tc8GDn4Y9fov2Fkyyb4/r9cpmsANUfmUFcDtf5OjJr9CfME
+   pyL1RUoqextgRPtZidRuhlUsHwpnPupHbzzNsueb2OKuexMpWa2AmtwWR
+   vvHipOlV+CfJZkTK/EmC34hNx3wIv2EMqtzlX3GZpsbV4qOka17cpHZH/
+   PyYzm7uSyXVega4apzENkpVNXpS+nO0bjdTayciglmwWO5sOANidQTR2O
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10513"; a="295659611"
+X-IronPort-AV: E=Sophos;i="5.95,218,1661842800"; 
+   d="scan'208";a="295659611"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2022 08:12:30 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10513"; a="701378321"
+X-IronPort-AV: E=Sophos;i="5.95,218,1661842800"; 
+   d="scan'208";a="701378321"
+Received: from vstelter-mobl.amr.corp.intel.com (HELO [10.212.214.108]) ([10.212.214.108])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2022 08:12:28 -0700
+Message-ID: <864b4fbe-4462-9962-7afd-9140d5165cdb@intel.com>
+Date: Thu, 27 Oct 2022 08:12:26 -0700
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y1pXJheAg+sMj7eG@yujie-X299>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [tip:x86/mm] [x86/mm] 1248fb6a82:
+ Kernel_panic-not_syncing:kasan_populate_pmd:Failed_to_allocate_page
+Content-Language: en-US
+To: Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+ Peter Zijlstra <peterz@infradead.org>,
+ kernel test robot <yujie.liu@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
+ Dave Hansen <dave.hansen@linux.intel.com>,
+ Seth Jenkins <sethjenkins@google.com>, Kees Cook <keescook@chromium.org>,
+ linux-kernel@vger.kernel.org, x86@kernel.org,
+ Alexander Potapenko <glider@google.com>,
+ Andrey Konovalov <andreyknvl@gmail.com>, Dmitry Vyukov <dvyukov@google.com>,
+ Vincenzo Frascino <vincenzo.frascino@arm.com>, kasan-dev@googlegroups.com,
+ "Yin, Fengwei" <fengwei.yin@intel.com>
+References: <202210241508.2e203c3d-yujie.liu@intel.com>
+ <Y1e7kgKweck6S954@hirez.programming.kicks-ass.net>
+ <278cc353-6289-19e8-f7a9-0acd70bc8e11@gmail.com>
+From: Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <278cc353-6289-19e8-f7a9-0acd70bc8e11@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Thu, Oct 27, 2022 at 06:02:14PM +0800, Yujie Liu wrote:
-> Thanks for posting the fix. The issue is resolved after applying the fix.
+On 10/25/22 08:39, Andrey Ryabinin wrote:
+> KASAN tries to allocate shadow memory for the whole cpu entry area.
+> The size is CPU_ENTRY_AREA_MAP_SIZE/8 and this is obviously fails after your patch.
+> The fix this might be something like this:
 > 
->   Tested-by: Yujie Liu <yujie.liu@intel.com>
+> ---
+>  arch/x86/include/asm/kasan.h |  2 ++
+>  arch/x86/mm/cpu_entry_area.c |  3 +++
+>  arch/x86/mm/kasan_init_64.c  | 16 +++++++++++++---
+>  3 files changed, 18 insertions(+), 3 deletions(-)
 
-Excellent; I'll talk to Dave if we want to ammend the original commit or
-stuff this on top but we'll get it sorted.
+Andrey, if you have a minute, could you send this as a real patch, with
+a SoB?
 
-Thanks!
+Alternatively, do you have any issues if we add your SoB and apply it?
