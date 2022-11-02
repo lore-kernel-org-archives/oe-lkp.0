@@ -1,80 +1,93 @@
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD8A87E
-	for <oe-lkp@lists.linux.dev>; Wed,  2 Nov 2022 03:04:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B6F87C
+	for <oe-lkp@lists.linux.dev>; Wed,  2 Nov 2022 08:20:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667358273; x=1698894273;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   mime-version;
-  bh=iPs436Eq9VzSey3ibqn3+2ih3pZBjFxq07ka7EizxWU=;
-  b=QlSoG6eYWgib49jCmGhIBeDzveMrCefw7DloubdOsIqHhvdMMMxXTKj1
-   0l728OvDIFhFv9uYCEpEMxil3vbJsrynk7KnV0s/lWTwovBmA3J3t9D7Y
-   hZ5j/xtFjTE+IpbYeDpzFAnSCMcue9DDMFcVJ8ELn7ry3eBVEGXF7dSYu
-   qQIglQANY2wsTFAdRIVyXhhoHcZbvVG+1Ynzyw/tt6pjhD7vUkI8H9Gqm
-   S4Xf3w736v/Ri2vqZUL1lDBJY3T3DLH0VEwiunSmb6oPy6SeaoxB2TsVf
-   24pfFa+gXJN1imrGtwaA1UJjYHQ3DwxHTjBbSVIe08HHGqaZJp8rwCZlp
+  t=1667377251; x=1698913251;
+  h=date:from:to:cc:subject:message-id:
+   content-transfer-encoding:in-reply-to:mime-version;
+  bh=RXUNvigRFeGIFjfNd3W7Mpl+gZApJOtlKc76A4LGEqc=;
+  b=dAHlG/me6XWlkX9fTxBUcmGdX2XNecZIAKj0FnGtGtLZsfblyLxN0rKo
+   3TL1CfCvXr4Mck6cJCv3KwwI5wnN/0nLfHDqJpCtoENGu/0JNhlC/tF2V
+   bgvHMiAY9oJjOV5iu6ogSDzOcahgAKu7VMsCpY3uY4YhHTrYvZinpWO00
+   QiOCInuTYcY0/8DbPkekwCarpAj5GR0jE65GRXIOB/SOGOSuf6MTZ+D27
+   FT0LD5t4hbE24RW07eb+GdZ9SiPynzLONIYYyPZPbtuo8g50JWPZbs9Cj
+   +BTSQIlFvg4s1IjiOMTFYqmm5RLaeJeij4Yutk09th0QiYIgQ05Czwp9L
    A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10518"; a="308020756"
+X-IronPort-AV: E=McAfee;i="6500,9779,10518"; a="371435215"
 X-IronPort-AV: E=Sophos;i="5.95,232,1661842800"; 
-   d="xz'?yaml'?scan'208";a="308020756"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Nov 2022 20:04:31 -0700
+   d="yaml'?scan'208";a="371435215"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2022 01:20:49 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10518"; a="585230831"
+X-IronPort-AV: E=McAfee;i="6500,9779,10518"; a="723463286"
 X-IronPort-AV: E=Sophos;i="5.95,232,1661842800"; 
-   d="xz'?yaml'?scan'208";a="585230831"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orsmga003.jf.intel.com with ESMTP; 01 Nov 2022 20:04:30 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+   d="yaml'?scan'208";a="723463286"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by FMSMGA003.fm.intel.com with ESMTP; 02 Nov 2022 01:20:48 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 1 Nov 2022 20:04:29 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ 15.1.2375.31; Wed, 2 Nov 2022 01:20:48 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Tue, 1 Nov 2022 20:04:29 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.174)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ 15.1.2375.31 via Frontend Transport; Wed, 2 Nov 2022 01:20:48 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.100)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Tue, 1 Nov 2022 20:04:28 -0700
+ 15.1.2375.31; Wed, 2 Nov 2022 01:20:47 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Xha2OxsZrJJcPqheYlD83gGIb24lU/MJk6dMeNsuVQzh2JDzd9/TJyGK+LlsQSos6yIyF0Vw1Z9pXoqVPMFIrcl7xvPNIY29PIyFTIlko3l8BFa93kQ5t8HGnum4MCdmmLfADNp/Ntsjt1iOC/UVWH/lqTBjK1F3qwIIGOgrUskGy5dU6g7qcUkriEfoRn6G0nm0L6YcK+pFwalIg+Zq/lHGqGdvIqM8S3LvipmWF7jO5z1BZv+8w4YA6eREqSMeZje5Cnr71SmNA9dUPz7lgMnMlEd4+x7zrqqN/9X0qprF9sLoGGMJywe5RmoO7l6vK98mlA9C4HAdGeorwpYIjA==
+ b=PST2qszQcfjJN7GnABsHkhM6Hr0kpGsiZgV8U9h2GX2id5sOYmK9CREAQR4DvX/DmJjMnS7F7VX8CTA0+0ZdQk6qabD932mnJRjdaxmGVEPV1Me+Tff+JNVy9kxb7sSdW9Oh452Gh/kY1PYs3zOSowJEWSYtJEHIAZFJQXlPKiOxYCh9i0wX0u/eyiu8Y6Y5O1mTaAyPi+YWxbN9s4+syTEgdGj5Adiw6RYuhIz4VCITYfNMMFUiDfJQzAIEwkBzfYJGU1XprTAIFJPwZYYq5gds862SV/JrElzjK6Tr+2M1W9aUbEmr3vuvGcbb9+XsAIUuu4NjlnE60NqS0zPS5Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5Ccc8DYgOravBmYUD2IR6voUwL9ekLxo7+Xi1xFDD3M=;
- b=DWcRG8+JbWuOsWPutf9Rax/68qkoHCAv1bcz8jaPJz83gHoyFDdbZfb461iw1oRz/QBhSrQFpD4ykXlo7twMz0/huV2g0J6IqyYTFRAZCFznaJLIaLo9xA4uAfUiGQKccW/SSdY32lxfGHQLmEgCaNkYfVGrCj+jFdehqIK1jZdI0tf+rU0SFn/lwr9kCRTM48ZYvoBdHB/uHMs9HBVHdzZbuqGzN91oeu+QjtNFsYf3BPhKx6zm9AJjxzaHVqWh2lQ0EuVgmbXfISjs/EiXocjPTXorjPzhyji1HdH3tpCVyYIU5E2zRjPFPJb5xuT2AkV1Y5+wARnWl6woVAvp1w==
+ bh=JaK/PzpxsTsDxQQ1kPGUiGMQJLkKM3v9MDbH4znRVjI=;
+ b=QnbY6pauMXqEEu+vMWnNh9Xa+Nmldijf8pyOYQ2qPo4oAMlYReKzwfwUjzccSW4Jrwz4+0TwhEZXLal+YtDDe5CkmoTlCJysLUMyEBhbRWwbIObZsLfRb9wAH+IYF9h7HgqK0WeyAp1ieJ7xFItCYGi653ibsUEgr+CQ9qrTBTUYTaLG3SkcbrYOrIcrI1ldLrYOQDN+cy8WGG8W36KxJIED1P6+Kx5bstS2Q4fMw6Ut7O9TtN9SJd/u4NJV9PqOPrM/Y1lOEl62jbqEzbDO+spKMzxymG2CwBRdH0E9XVr85VO/t6FvYS39u7e29JlftN9lNlslgipvvD1JOF2l+Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from CY5PR11MB6392.namprd11.prod.outlook.com (2603:10b6:930:37::15)
- by CY8PR11MB7033.namprd11.prod.outlook.com (2603:10b6:930:53::16) with
+ by BN9PR11MB5308.namprd11.prod.outlook.com (2603:10b6:408:119::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.21; Wed, 2 Nov
- 2022 03:04:22 +0000
+ 2022 08:20:39 +0000
 Received: from CY5PR11MB6392.namprd11.prod.outlook.com
  ([fe80::a397:a46c:3d1b:c35d]) by CY5PR11MB6392.namprd11.prod.outlook.com
  ([fe80::a397:a46c:3d1b:c35d%8]) with mapi id 15.20.5769.019; Wed, 2 Nov 2022
- 03:04:22 +0000
-Date: Wed, 2 Nov 2022 11:02:29 +0800
+ 08:20:39 +0000
+Date: Wed, 2 Nov 2022 16:18:41 +0800
 From: kernel test robot <yujie.liu@intel.com>
-To: Joel Savitz <jsavitz@redhat.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-mm@kvack.org>,
-	<linux-kernel@vger.kernel.org>, Joel Savitz <jsavitz@redhat.com>, "Andrew
- Morton" <akpm@linux-foundation.org>, Shuah Khan <shuah@kernel.org>,
-	<linux-kselftest@vger.kernel.org>, <linux-next@vger.kernel.org>, Nico Pache
-	<npache@redhat.com>
-Subject: Re: [PATCH v9] selftests/vm: enable running select groups of tests
-Message-ID: <202211021026.61b267d1-yujie.liu@intel.com>
-Content-Type: multipart/mixed; boundary="BA5iauX4JIsXc3PQ"
+To: Chen Yu <yu.c.chen@intel.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Tim Chen
+	<tim.c.chen@intel.com>, K Prateek Nayak <kprateek.nayak@amd.com>,
+	<linux-kernel@vger.kernel.org>, <ying.huang@intel.com>,
+	<feng.tang@intel.com>, <zhengjun.xing@linux.intel.com>,
+	<fengwei.yin@intel.com>, Peter Zijlstra <peterz@infradead.org>, "Vincent
+ Guittot" <vincent.guittot@linaro.org>, Mel Gorman
+	<mgorman@techsingularity.net>, Juri Lelli <juri.lelli@redhat.com>, "Rik van
+ Riel" <riel@surriel.com>, Aaron Lu <aaron.lu@intel.com>, Abel Wu
+	<wuyun.abel@bytedance.com>, Yicong Yang <yangyicong@hisilicon.com>, "Gautham
+ R . Shenoy" <gautham.shenoy@amd.com>, Ingo Molnar <mingo@redhat.com>,
+	"Dietmar Eggemann" <dietmar.eggemann@arm.com>, Steven Rostedt
+	<rostedt@goodmis.org>, Ben Segall <bsegall@google.com>, Daniel Bristot de
+ Oliveira <bristot@redhat.com>, Valentin Schneider <vschneid@redhat.com>,
+	Hillf Danton <hdanton@sina.com>, Honglei Wang <wanghonglei@didichuxing.com>,
+	Len Brown <len.brown@intel.com>, Chen Yu <yu.chen.surf@gmail.com>, Chen Yu
+	<yu.c.chen@intel.com>
+Subject: Re: [RFC PATCH v2 2/2] sched/fair: Choose the CPU where short task
+ is running during wake up
+Message-ID: <202211021600.ceb04ba9-yujie.liu@intel.com>
+Content-Type: multipart/mixed; boundary="mgNSv49cLZEyiul+"
 Content-Disposition: inline
-In-Reply-To: <20221018231222.1884715-1-jsavitz@redhat.com>
-X-ClientProxiedBy: SI2PR06CA0006.apcprd06.prod.outlook.com
- (2603:1096:4:186::19) To CY5PR11MB6392.namprd11.prod.outlook.com
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1a34e009de0dbe5900c7b2c6074c8e0c04e8596a.1666531576.git.yu.c.chen@intel.com>
+X-ClientProxiedBy: SI1PR02CA0007.apcprd02.prod.outlook.com
+ (2603:1096:4:1f7::6) To CY5PR11MB6392.namprd11.prod.outlook.com
  (2603:10b6:930:37::15)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -83,120 +96,624 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY5PR11MB6392:EE_|CY8PR11MB7033:EE_
-X-MS-Office365-Filtering-Correlation-Id: 09b767a2-19eb-4151-3d18-08dabc7ef06d
+X-MS-TrafficTypeDiagnostic: CY5PR11MB6392:EE_|BN9PR11MB5308:EE_
+X-MS-Office365-Filtering-Correlation-Id: f2fe0c58-edbe-4448-db09-08dabcab1fa9
 X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: OgHtwE0P03y5+n/0KnqPB5Ki+wwCP/vjInfkMvd1lW9gBURp3G5NuYK2tA+iofh9e0f6fEgk4/WQFYAfuQ3IHRj86BQro7vBdEYKuoWzmBO84WlBLj1MG5N4bggi7PiPC3nrTM4GaxQ6FpCIHZNw3G1934cgSTm61wTgSBm9+qrybnwZ0tecBWEJdJnBlbY8MzxoLmtI4dq3yePmuFo2EBUOkyTGGFyFRWraulf9FRuE1dfVhQd5gqcTSwM9OHoJTKUR1eqCAB+4a9xqRC7B336fwbtO5TPFVXHLit3PUUMVyZ6kSYEn6SvXfZJz2uABfFzNifCQ/KWKJEUxewXIy1CzPi0M/aV1yolJBR03cVoMqbzROOFreU3BT6X6yK/wbqXXo6icY3iG3QoY28j0TAQm5gjNNmIJ0jKphNyM9lshvh4uUJEtFoG4J2ACHioUeRwn47ekvVfafDrNtLQzfj1e6a+Dwmwsdpcp9xFNLpj9nUy1KsRcuwBpW93SCPlJswkw3ECgP1P0OwyXpXkh7TIvxGb/uJxEsJCZczl9IjiOK4ad12hjJqV4yP24i/3hzVISN2TWRen2JNsZgFKz29o4dHnYBrkje8XdJKIYWjIY/wvWGDkNXb7jD78qtZcHECCZiJZaFmYB1zSt3MJpNd0gvqqiuhRrxFfSjQ3noYF48hFJgihVbrxwHaZw0EPIJpZNW/z3fAydYW2tHbR1vJz9RDdP6UzCR4z71i73s11ZYM+jUFUmVRfAS5GUW10e2epZCNsow9QYgTCcgoS7zc/gNLLRsznntOm5q7BE2+U4Qr8fEZ5wJWf6rWjJEVGxcjX65jybdRTz5qBGv7XJLg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR11MB6392.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(346002)(396003)(39860400002)(366004)(136003)(376002)(451199015)(4326008)(316002)(54906003)(478600001)(8676002)(44144004)(6506007)(66556008)(66946007)(66476007)(2906002)(2616005)(6512007)(41300700001)(26005)(186003)(1076003)(6486002)(8936002)(235185007)(6916009)(966005)(5660300002)(36756003)(86362001)(21490400003)(82960400001)(83380400001)(38100700002)(2700100001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: OP4C0fqZOc5wOzWwbOosKQAn+GoRMAS0RIl4vk0PfArxcLa8+qvGb/VuiJf+xh9Py6LqEFHaKxoHi1Eq+21pyqePje7+guCBIwPH5PhMGqxkSdUUGENoqrhQWHPh3KdHbr1MJ53fvR4vJI/o8LcCHZmfGOwjY61273cmM9UaqmsctzwfGMHJTqtHr9dGsVrzfjgD2vkgsM0yKQcjQGWbMMdljXhw6LVfzZmcM4hOSmUSQMe1HyC51gY7CPfaaRoYWb/S2lFTd8E/gkQmdxVsZ8IRnmf8vIWk4AGPOVhlGq7X3feUxg03VVtPj8wHY1LffOYB4DpzqFISrIX6csLrDMj7DErr9atUBob/bMDvi4qV8IrNiObGhOHx2MDExUBvP/wIT0SKSC0Qx0CSmnDsdzyZod7YO1yGJfH33a/rwwM8L8JXjqzjt6cAtEum5Z/hv13GpJdYhvAx0+v90EnUpRREC8xPI4PDOiSTpGpaOkkuIdx7RksRt/qPz5gwQ4vPQaP/CFxqXslaybZ1dtf2GhHIrMYYsIOI7Cuo8lU62GsXCiRIP4TdRTMV7iUtZFu5XPM227UfkaPIRvYjGBVEW2NXPsRLdpoRuWwOILqDj2IYrDVatPKDKcx4BzwvN3SUor12CLEzcKWuvlUQ4nwASG1N1lZ95fPrXu84RKtRTyVFcBAzKGiBOl6N2zoqMPMqrRvIDi16REH6p5RVTAidLTu+H4ET7O6FCMIwOtVXiE+v1HlP65faRxYn7IyiR44MkwKkVxrGrltPkBDB25l0HrPMvLkE0Lh/bgnkdUl5hQPqD5Hl/EmssKss1tdMBUbBFnRQEzWXm/2D1Q7fLXM1qA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR11MB6392.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(39860400002)(396003)(346002)(366004)(136003)(376002)(451199015)(83380400001)(86362001)(5660300002)(2906002)(38100700002)(235185007)(82960400001)(7416002)(6862004)(30864003)(21490400003)(4326008)(66946007)(8676002)(66476007)(66556008)(6666004)(44144004)(6506007)(478600001)(186003)(37006003)(8936002)(6636002)(2616005)(6512007)(316002)(26005)(54906003)(41300700001)(966005)(6486002)(1076003)(36756003)(2700100001)(579004)(559001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?z7TP8n8E8lE4tyjEMNNtaon/r3HX7tgrVUcKjmx077BpTNCn40V/4g5i7LAT?=
- =?us-ascii?Q?eGJWt4mZiHvODuPUF2zUQL2vhqX1I6TI6sAmlfvTxw5Oqz6jjt1hqGfAzhmV?=
- =?us-ascii?Q?oyw+FHvdhweEb/sZDE9OBtRUxK6JvSI8gRH6HKar7k/pKMVYz9J85UvBrdQc?=
- =?us-ascii?Q?lxVPpThLa9zIbl2pgix9UaPvpsc9j4VNeAzaWOW/4YPX1ofOUNKnxEyVUzRK?=
- =?us-ascii?Q?wjTHrEMwLGnDGvLAHEcMe6qozbLiDIKA+vO9gYUzHHf6iBkCT6hgMgQq0dGr?=
- =?us-ascii?Q?3NBQcYJvybCCa8t6IZx0NIakT2apYOMu2vyaNCBXumggMincUBom9Xtvip95?=
- =?us-ascii?Q?F0PwKUFzgPUet8r29oTwqcxxyHdJW2eZlFY968htZefRZE7AbAwrT5wSsVhv?=
- =?us-ascii?Q?mRA1BNAMss03zzbWq/oqwWyZJf5cEO/9Kf8mRYKN0pTOwDfebw5BbhV5YLs6?=
- =?us-ascii?Q?BGvMj1uBDdvNfe7ouzxjIo5L3Z1gje8hav5FEnAJTw8birzk7FwG1heC3FWO?=
- =?us-ascii?Q?uIJ4wy+z7kHtG+7jSX9m44CXIqAHRiaWcmIJJtt6jvSuwWkCb6iBOLXE+omG?=
- =?us-ascii?Q?xDz6ex7PI8VScKjJECnuSVPZXG0vXlLZn2UmWNcnNKGYO0gG69fgwcXe0tp8?=
- =?us-ascii?Q?f4TprIO9bBfzwaqHWUv5oiMfqaP9KQ0hsW2nY9TLtvgRfyiqOjFHwA4wDkGS?=
- =?us-ascii?Q?YKarSdIDUAPO2Ss9qms84USyk9+Lh6N8wjUEs6IFFjfZfx+ELyEC7hUJrUgy?=
- =?us-ascii?Q?XdjXtnasYfJRa4a8xSP1xqMUU6Usma10Epc08bjL1bZ7Q88m/7zdePSMWXy4?=
- =?us-ascii?Q?lm5daWI0sJkmCTbDNg7OWjxhhO1tdkiLkNVoS2qOqP4UmSY/CYmPWdIwcoLO?=
- =?us-ascii?Q?YKc9+FDjTqHV73uwMwrSdhkSnRUMjaqPcxQtZAkYHMvbWg7acVe1qAuNPMwf?=
- =?us-ascii?Q?EY0G/Q7C+/AUyr2PljQir1bIZOUrcGyrbt0lRgzOcyJI6cdWtuppcSOJTXGH?=
- =?us-ascii?Q?PFHZCJMf5UJql9wAfD7LhHFx1NVnAg4pr8gHrTdLKLnZUjppXt8hsjCefPbd?=
- =?us-ascii?Q?X43kXiwTn2mIdIDEcee/VJs4amE8AVpJkLabXN2LzGOxL7/iTmrFO3SuFxIw?=
- =?us-ascii?Q?i8ZypuseVJC5/KnTWyY8c/fnpmzZcptnyQWqeFeWfKxFZXanDhFvRg0uigOi?=
- =?us-ascii?Q?H3Eo8G2ZcUqFv+uCvonat7Wh2wNanDzftgc+4rU4KB3RTV+JPCakX3TxaVQa?=
- =?us-ascii?Q?2k++qGSxHzvTT+S5l84bLf15ZkVvwv4XNi1PhhT0ZJGIdszJv5m+RhzmwxMF?=
- =?us-ascii?Q?4cWVRVjjXh796OWb0KofuL4O+oGWtsK0rFPax1gzBFFwRMGMkh4I3AxEqAFO?=
- =?us-ascii?Q?0PMjkPY/SOiZds2RAc167NZ6VT1Lz217M0PpHXE4RU9hfx/W//JhRJK8vQRa?=
- =?us-ascii?Q?t6lqsO/aLD5kgA4g/dSJ4bvd4cBNQEFvzeAuHxeWYLEL2zncBqBTBPDHM4Y3?=
- =?us-ascii?Q?MkX6LWFR1vmFDhotgUuDbEpHdjYBeOCNvc/G2flu7b654rFu6AZtcdlizLOH?=
- =?us-ascii?Q?JpHlSo2YstERppZxAH2nfXheD7/9nGJw8sNexvCj?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 09b767a2-19eb-4151-3d18-08dabc7ef06d
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?NHpEPP+iKnRhYeE+g/oBkORh+0lYyyIv5oMB6/EDGMiAPxkEMxS03ybd5a?=
+ =?iso-8859-1?Q?9JzTzrf6Aw8QU7FmPil6B8rlz0GyehMEWRUou9MuoeEicG1XoDLnUkr1He?=
+ =?iso-8859-1?Q?rYo1NfV2FBEayf6RrmkXHOpgrFiW9fNKVuMSG09h2izR5PJjw9JxmOKP9a?=
+ =?iso-8859-1?Q?7jmtBiwJuAN4Hnf1MsteDas/ocBULROfACrcEcUDU7wXxDPzoqLaAaGLOa?=
+ =?iso-8859-1?Q?vuSsv3ePo73MvXMY5wjXNBnkM3Dxpcw1Ezc7AC7Uxbu5Zw8g4AP+lhuWQ6?=
+ =?iso-8859-1?Q?Cab5H+CgjWpiikkmfsXBqIqlxLBwYKUOCfd7djVAXCW/vdpirJjjMDpzgX?=
+ =?iso-8859-1?Q?uH7hVW5Ml0mz8OLc9NfC1/7xavFVuaz7YgWqQMRFP4ri/2ylo5tT/i/raG?=
+ =?iso-8859-1?Q?17MQBLxyxCp5/c54VAMjyRPSQeHrIO/dSQHtCW8bergaWALqytdj5/PNlt?=
+ =?iso-8859-1?Q?1a8JU4L3fZ1jTHCqtSUy3Zp3Ia1cWmiQKnsCykF84SLEj4mDH5XXGqIEtC?=
+ =?iso-8859-1?Q?64lwLLdOyqyhm0apy0j2Lfsy7NWbIGeLPlh6+QKmmcDbOtY7S2riBzsj/q?=
+ =?iso-8859-1?Q?7xe+gbn43w8L9nPae6NSTuDk8UEA9oaLeSpPv14NKxD0+CWiWszXQldTXJ?=
+ =?iso-8859-1?Q?vsJIwbTuWBLjCMwER3+8M4xMi4m3av7zPHvxjnjDMH0wY3IJTnassibvSu?=
+ =?iso-8859-1?Q?fAvpzzSOqgt8LDgXHWVdAo3bWWn+svE1GK2JCIG8A2yS9zJqFQDIE2cHtF?=
+ =?iso-8859-1?Q?ffA+tozgSnm9X4tmPdGe+U6w/wE6U9ZYCIydDsHsX23mOnjfBHHY8+IxML?=
+ =?iso-8859-1?Q?/Hj7rVkA1/DA87QHuiT4/l9EA93D62Kf7kRdPrEzRgTd9GUtazbgHTXjjP?=
+ =?iso-8859-1?Q?GVTtiM+vrXVGn5xqScsG/KPWinZBRUK0mQYE0cTL0p/ZWy6LPmwe2cavqY?=
+ =?iso-8859-1?Q?KMun18irtA+5xIkAmU4zp+gP+Tfim9rERs6VZSm62FsF1Wl5hAvorZskMv?=
+ =?iso-8859-1?Q?bT62b4Zz89ZtTvzBVlPadCmshmkBcUTTD11MrNhDH2V6rmmI/h9hVdCsz5?=
+ =?iso-8859-1?Q?e62R0EgOIw/MekhiOvW8mNAVud1zYTVbIMTXr6r1Qfq0daAHfG7O6h2Wk2?=
+ =?iso-8859-1?Q?NeRMtSxANjEeRaTdjsGKAsbBWnOC3SXpd8jx9TKQxl7twM6JXpwchNxsnZ?=
+ =?iso-8859-1?Q?IkBRFhwMr0bf97kLCdr2N60tlAvHzhwq8VGGDrCcaAtk+FYc/t7FZsNupo?=
+ =?iso-8859-1?Q?H0sDy5tbCF6yge20eKgFANDJ55oyFiVmfNY/ZCmmDf8d6iCGxdRLrnLqQq?=
+ =?iso-8859-1?Q?x1i+2wKvdoF0skyoUxyMcg+CucMRxmbuTOvLgw1AMLPqyuCOtIbLJPCUEg?=
+ =?iso-8859-1?Q?Fb2eRA7ARR++60lF31dG9ztivzmDgX0SUoaHCebp63Mdh2Yl6nxUs2VF1w?=
+ =?iso-8859-1?Q?uwZ8wJyKObLhOYlEGU6yfixT1aRshrVLFap2YT1K3nlICRWDf78/Y54D8I?=
+ =?iso-8859-1?Q?YJ43vOGhGfyCZzaHeaQ+BvntX5V7yjFzOSCzurF0V6BnQaEmY7YRPNLXtv?=
+ =?iso-8859-1?Q?2NynlFEkuRrQSUfYWrZ1pr8K3Y0yGq9tzC/0FmtnqRwCfjs9/KCvEJMkU8?=
+ =?iso-8859-1?Q?Mj/iN658CXHfmrxUToDYQpsQupBWByYAsJ?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: f2fe0c58-edbe-4448-db09-08dabcab1fa9
 X-MS-Exchange-CrossTenant-AuthSource: CY5PR11MB6392.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Nov 2022 03:04:22.3330
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Nov 2022 08:20:39.1919
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KSa856r2yecGEY1i+VKFxRkQ6qq6j8FM/9yLpCphZAK8cNE+IWgDKWfKAGnwa3pvT7EBqOUervvB9VUioSGedw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR11MB7033
+X-MS-Exchange-CrossTenant-UserPrincipalName: jwePwmHF8EHgkqvG7bvkzHd+LMUkWUuzQYMSxrnTq3Y5QJg1GYe0JCOUjzkx+D+Dg3o8LZB9e3sUqe7+cS7CUA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR11MB5308
 X-OriginatorOrg: intel.com
 
---BA5iauX4JIsXc3PQ
-Content-Type: text/plain; charset="us-ascii"
+--mgNSv49cLZEyiul+
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
 Greeting,
 
-FYI, we noticed kernel-selftests.vm.run_vmtests.sh../hugepage_shm.fail due to commit (built with gcc-11):
+FYI, we noticed a 131.8% improvement of stress-ng.vm-rw.ops_per_sec due to commit:
 
-commit: fd0dfc48f1ed0430088e3bb2c6e7d51379165afd ("[PATCH v9] selftests/vm: enable running select groups of tests")
-url: https://github.com/intel-lab-lkp/linux/commits/Joel-Savitz/selftests-vm-enable-running-select-groups-of-tests/20221019-071314
-base: https://git.kernel.org/cgit/linux/kernel/git/akpm/mm.git mm-everything
-patch link: https://lore.kernel.org/lkml/20221018231222.1884715-1-jsavitz@redhat.com
-patch subject: [PATCH v9] selftests/vm: enable running select groups of tests
+commit: 697253a9d6dbed4645b9cc8ff8520ff074ff48f0 ("[RFC PATCH v2 2/2] sched/fair: Choose the CPU where short task is running during wake up")
+url: https://github.com/intel-lab-lkp/linux/commits/Chen-Yu/sched-fair-Choose-the-CPU-where-short-task-is-running-during-wake-up/20221023-233434
+base: https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git fdf756f7127185eeffe00e918e66dfee797f3625
+patch link: https://lore.kernel.org/lkml/1a34e009de0dbe5900c7b2c6074c8e0c04e8596a.1666531576.git.yu.c.chen@intel.com
+patch subject: [RFC PATCH v2 2/2] sched/fair: Choose the CPU where short task is running during wake up
 
-in testcase: kernel-selftests
-version: kernel-selftests-x86_64-9313ba54-1_20221017
+in testcase: stress-ng
+on test machine: 128 threads 2 sockets Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz (Ice Lake) with 128G memory
 with following parameters:
 
-	sc_nr_hugepages: 2
-	group: vm
-
-test-description: The kernel contains a set of "self tests" under the tools/testing/selftests/ directory. These are intended to be small unit tests to exercise individual code paths in the kernel.
-test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
-
-on test machine: 88 threads 2 sockets Intel(R) Xeon(R) Gold 6238M CPU @ 2.10GHz (Cascade Lake) with 128G memory
-
-caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
+	nr_threads: 100%
+	testtime: 60s
+	class: memory
+	test: vm-rw
+	cpufreq_governor: performance
 
 
-2022-11-01 19:40:05 make quicktest=1 run_tests -C vm
-...
-# selftests: vm: run_vmtests.sh
-...
-# running: ./hugepage-shm
-# ----------------------
-# running ./hugepage-shm
-# ----------------------
-# shmget: Cannot allocate memory
-# [FAIL]
-# running: ./map_hugetlb
-# ---------------------
-# running ./map_hugetlb
-# ---------------------
-# mmap: Cannot allocate memory
-# Default size hugepages
-# Mapping 256 Mbytes
-# [FAIL]
-# running: ./hugepage-mremap
-# -------------------------
-# running ./hugepage-mremap
-# -------------------------
-# mmap1: Cannot allocate memory
-# Map haddr: Returned address is 0xffffffffffffffff
-# [FAIL]
-...
-# running: ./hugetlb-madvise
-# -------------------------
-# running ./hugetlb-madvise
-# -------------------------
-# Not enough free huge pages to test, exiting!
-# [FAIL]
+Details are as below:
 
+=========================================================================================
+class/compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
+  memory/gcc-11/performance/x86_64-rhel-8.3/100%/debian-11.1-x86_64-20220510.cgz/lkp-icl-2sp6/vm-rw/stress-ng/60s
 
-If you fix the issue, kindly add following tag
-| Reported-by: kernel test robot <yujie.liu@intel.com>
-| Link: https://lore.kernel.org/oe-lkp/202211021026.61b267d1-yujie.liu@intel.com
+commit: 
+  829d111895 ("sched/fair: Introduce short duration task check")
+  697253a9d6 ("sched/fair: Choose the CPU where short task is running during wake up")
+
+829d11189582c49d 697253a9d6dbed4645b9cc8ff85 
+---------------- --------------------------- 
+         %stddev     %change         %stddev
+             \          |                \  
+   7435055         +3807.6%  2.905e+08        stress-ng.time.involuntary_context_switches
+    120430 ±  3%     -12.0%     106023        stress-ng.time.minor_page_faults
+      8873           +36.9%      12148        stress-ng.time.percent_of_cpu_this_job_got
+      5230           +37.4%       7187        stress-ng.time.system_time
+    286.34           +24.6%     356.82        stress-ng.time.user_time
+ 2.511e+08           +17.3%  2.944e+08        stress-ng.time.voluntary_context_switches
+ 1.262e+08          +131.8%  2.925e+08        stress-ng.vm-rw.ops
+   2102613          +131.8%    4874433        stress-ng.vm-rw.ops_per_sec
+     79179 ±  4%     +12.2%      88811 ±  5%  meminfo.Mapped
+      6580           -19.1%       5326        uptime.idle
+ 1.833e+09           -65.6%  6.314e+08 ±  4%  cpuidle..time
+ 1.663e+08           -97.0%    4915816 ± 60%  cpuidle..usage
+ 1.996e+09          +129.6%  4.582e+09        numa-vmstat.node0.nr_foll_pin_acquired
+ 1.996e+09          +129.6%  4.582e+09        numa-vmstat.node0.nr_foll_pin_released
+     2e+09 ±  2%    +125.9%  4.519e+09        numa-vmstat.node1.nr_foll_pin_acquired
+     2e+09 ±  2%    +125.9%  4.519e+09        numa-vmstat.node1.nr_foll_pin_released
+     26.17           -65.0%       9.17 ±  7%  vmstat.cpu.id
+    111.50           +11.7%     124.50        vmstat.procs.r
+   6420994           +38.6%    8899424        vmstat.system.cs
+    977879           -69.2%     300736        vmstat.system.in
+     24.55           -17.7        6.82 ±  7%  mpstat.cpu.all.idle%
+      2.79            -1.8        0.99 ±  2%  mpstat.cpu.all.irq%
+      0.17 ±  3%      -0.1        0.02 ± 19%  mpstat.cpu.all.soft%
+     68.77           +19.1       87.92        mpstat.cpu.all.sys%
+      3.72            +0.5        4.26        mpstat.cpu.all.usr%
+ 4.003e+09          +128.2%  9.134e+09        proc-vmstat.nr_foll_pin_acquired
+ 4.003e+09          +128.2%  9.134e+09        proc-vmstat.nr_foll_pin_released
+     19813 ±  4%     +12.3%      22254 ±  4%  proc-vmstat.nr_mapped
+    100711 ±  2%     -13.3%      87357 ±  3%  proc-vmstat.numa_hint_faults
+     92618 ±  4%     -13.2%      80424        proc-vmstat.numa_hint_faults_local
+    518490            -2.3%     506357        proc-vmstat.pgfault
+     81.24           +11.3       92.52        turbostat.Busy%
+      3227            -6.1%       3031        turbostat.Bzy_MHz
+  70721405 ±  3%     -97.7%    1647001 ± 81%  turbostat.C1
+      6.32 ±  2%      -6.2        0.08 ± 74%  turbostat.C1%
+  95028420           -97.2%    2652278 ± 57%  turbostat.C1E
+     13.16 ± 18%      -9.4        3.76 ± 62%  turbostat.C1E%
+     16.36 ± 14%     -74.9%       4.11 ± 59%  turbostat.CPU%c1
+      0.16 ±  2%     +88.8%       0.31        turbostat.IPC
+  64640303           -69.3%   19839421        turbostat.IRQ
+    132.00 ± 14%     +50.6      182.63        turbostat.PKG_%
+      0.05            -0.0        0.01 ±100%  turbostat.POLL%
+    182221 ± 19%    -100.0%      26.69 ±223%  sched_debug.cfs_rq:/.MIN_vruntime.avg
+   2444942           -99.9%       1808 ±223%  sched_debug.cfs_rq:/.MIN_vruntime.max
+    634471 ±  8%    -100.0%     212.22 ±223%  sched_debug.cfs_rq:/.MIN_vruntime.stddev
+      2.58 ± 13%     -38.7%       1.58 ± 11%  sched_debug.cfs_rq:/.h_nr_running.max
+      0.52 ±  6%     -39.0%       0.32 ±  6%  sched_debug.cfs_rq:/.h_nr_running.stddev
+    206008 ±118%     -88.0%      24663 ± 19%  sched_debug.cfs_rq:/.load.max
+     23619 ±108%     -82.9%       4047 ±  7%  sched_debug.cfs_rq:/.load.stddev
+    182221 ± 19%    -100.0%      26.69 ±223%  sched_debug.cfs_rq:/.max_vruntime.avg
+   2444942           -99.9%       1808 ±223%  sched_debug.cfs_rq:/.max_vruntime.max
+    634471 ±  8%    -100.0%     212.22 ±223%  sched_debug.cfs_rq:/.max_vruntime.stddev
+   2423739           +48.3%    3593823        sched_debug.cfs_rq:/.min_vruntime.avg
+   2482870           +50.7%    3740568 ±  2%  sched_debug.cfs_rq:/.min_vruntime.max
+   2135362           +36.0%    2904507        sched_debug.cfs_rq:/.min_vruntime.min
+     36312 ± 22%    +139.1%      86809 ±  7%  sched_debug.cfs_rq:/.min_vruntime.stddev
+      0.44 ±  5%     +23.1%       0.54        sched_debug.cfs_rq:/.nr_running.avg
+      0.35 ±  5%     -56.5%       0.15 ±  7%  sched_debug.cfs_rq:/.nr_running.stddev
+      1929 ± 11%     -28.7%       1376 ± 18%  sched_debug.cfs_rq:/.runnable_avg.max
+    154.25 ±  5%    +174.1%     422.75 ± 22%  sched_debug.cfs_rq:/.runnable_avg.min
+    368.90 ±  4%     -50.7%     181.74 ± 13%  sched_debug.cfs_rq:/.runnable_avg.stddev
+   -294805          +134.0%    -689810        sched_debug.cfs_rq:/.spread0.min
+     36310 ± 21%    +139.8%      87082 ±  7%  sched_debug.cfs_rq:/.spread0.stddev
+    535.54 ±  3%     +18.6%     635.03        sched_debug.cfs_rq:/.util_avg.avg
+      1521 ± 12%     -28.2%       1092 ±  7%  sched_debug.cfs_rq:/.util_avg.max
+    155.42          +130.0%     357.42 ± 25%  sched_debug.cfs_rq:/.util_avg.min
+    296.64 ±  4%     -44.3%     165.28 ±  5%  sched_debug.cfs_rq:/.util_avg.stddev
+    196.62 ±  5%    +141.7%     475.18 ±  2%  sched_debug.cfs_rq:/.util_est_enqueued.avg
+    191.00 ±  6%     -48.0%      99.34 ± 23%  sched_debug.cfs_rq:/.util_est_enqueued.stddev
+    883143 ± 16%     +99.5%    1762034 ± 53%  sched_debug.cpu.avg_idle.max
+      5112 ±  8%     -38.6%       3136 ± 13%  sched_debug.cpu.avg_idle.min
+    121922 ±  9%    +143.8%     297254 ± 70%  sched_debug.cpu.avg_idle.stddev
+      5.19 ± 11%    +119.5%      11.39 ± 21%  sched_debug.cpu.clock.stddev
+      2406 ±  3%     +31.2%       3157        sched_debug.cpu.curr->pid.avg
+      1818 ±  3%     -64.7%     641.10 ± 11%  sched_debug.cpu.curr->pid.stddev
+     24202 ± 13%    +488.8%     142495 ±113%  sched_debug.cpu.max_idle_balance_cost.stddev
+      0.00 ± 12%     +38.2%       0.00 ±  8%  sched_debug.cpu.next_balance.stddev
+      0.52 ±  4%     +13.0%       0.59        sched_debug.cpu.nr_running.avg
+      2.42 ± 22%     -34.5%       1.58 ± 11%  sched_debug.cpu.nr_running.max
+      0.49 ±  9%     -41.5%       0.29 ±  3%  sched_debug.cpu.nr_running.stddev
+   1580988           +38.4%    2188325        sched_debug.cpu.nr_switches.avg
+   1630017           +40.3%    2286191        sched_debug.cpu.nr_switches.max
+   1389050 ±  2%     +27.3%    1768693 ±  4%  sched_debug.cpu.nr_switches.min
+     30550 ± 26%     +93.2%      59014 ± 21%  sched_debug.cpu.nr_switches.stddev
+     25.37           -97.5%       0.63 ± 28%  perf-stat.i.MPKI
+ 3.278e+10           +99.7%  6.545e+10        perf-stat.i.branch-instructions
+      0.43 ±  4%      -0.1        0.28 ±  5%  perf-stat.i.branch-miss-rate%
+ 1.131e+08            +6.5%  1.204e+08        perf-stat.i.branch-misses
+      0.65 ± 19%      +6.5        7.14 ± 26%  perf-stat.i.cache-miss-rate%
+  18561546 ±  3%     -60.0%    7428815 ±  8%  perf-stat.i.cache-misses
+ 4.386e+09           -97.3%  1.202e+08 ± 36%  perf-stat.i.cache-references
+   6797620           +38.9%    9438603        perf-stat.i.context-switches
+      2.08           -47.5%       1.09        perf-stat.i.cpi
+ 3.558e+11            +3.8%  3.694e+11        perf-stat.i.cpu-cycles
+   2285969           -99.9%       3198 ± 64%  perf-stat.i.cpu-migrations
+     19017 ±  4%    +161.7%      49759 ±  7%  perf-stat.i.cycles-between-cache-misses
+      0.23 ±  7%      -0.2        0.01 ± 49%  perf-stat.i.dTLB-load-miss-rate%
+  97291251 ±  7%     -99.0%     969721 ± 18%  perf-stat.i.dTLB-load-misses
+ 4.155e+10           +97.7%  8.216e+10        perf-stat.i.dTLB-loads
+      0.11 ±  4%      -0.1        0.00 ± 48%  perf-stat.i.dTLB-store-miss-rate%
+  26172452 ±  4%     -99.5%     123305 ± 15%  perf-stat.i.dTLB-store-misses
+ 2.359e+10           +97.5%  4.659e+10        perf-stat.i.dTLB-stores
+ 1.688e+11          +100.8%   3.39e+11        perf-stat.i.instructions
+      0.49           +87.2%       0.92        perf-stat.i.ipc
+      2.77            +4.0%       2.89        perf-stat.i.metric.GHz
+    798.02           +90.2%       1517        perf-stat.i.metric.M/sec
+      4375            -3.8%       4209        perf-stat.i.minor-faults
+     91.07            +5.2       96.32        perf-stat.i.node-load-miss-rate%
+   3387594 ±  6%     -35.5%    2184384 ±  5%  perf-stat.i.node-load-misses
+    329242 ± 16%     -79.2%      68577 ±  6%  perf-stat.i.node-loads
+     69.98 ±  2%     +24.2       94.21        perf-stat.i.node-store-miss-rate%
+   3757932 ±  4%      +8.9%    4092914 ±  3%  perf-stat.i.node-store-misses
+   1521063 ±  4%     -89.0%     167096 ± 15%  perf-stat.i.node-stores
+      4375            -3.8%       4209        perf-stat.i.page-faults
+     25.98           -98.6%       0.36 ± 36%  perf-stat.overall.MPKI
+      0.34            -0.2        0.18        perf-stat.overall.branch-miss-rate%
+      0.42 ±  3%      +6.4        6.83 ± 26%  perf-stat.overall.cache-miss-rate%
+      2.11           -48.3%       1.09        perf-stat.overall.cpi
+     19191 ±  4%    +160.7%      50036 ±  7%  perf-stat.overall.cycles-between-cache-misses
+      0.23 ±  8%      -0.2        0.00 ± 18%  perf-stat.overall.dTLB-load-miss-rate%
+      0.11 ±  5%      -0.1        0.00 ± 15%  perf-stat.overall.dTLB-store-miss-rate%
+      0.47           +93.5%       0.92        perf-stat.overall.ipc
+     90.95            +5.8       96.76        perf-stat.overall.node-load-miss-rate%
+     71.15 ±  2%     +25.0       96.11        perf-stat.overall.node-store-miss-rate%
+ 3.222e+10          +100.1%  6.447e+10        perf-stat.ps.branch-instructions
+ 1.111e+08            +6.7%  1.185e+08        perf-stat.ps.branch-misses
+  18267699 ±  3%     -59.9%    7316963 ±  8%  perf-stat.ps.cache-misses
+ 4.312e+09           -97.3%  1.185e+08 ± 36%  perf-stat.ps.cache-references
+   6681494           +39.1%    9295148        perf-stat.ps.context-switches
+   3.5e+11            +4.0%  3.639e+11        perf-stat.ps.cpu-cycles
+   2247108           -99.9%       3066 ± 63%  perf-stat.ps.cpu-migrations
+  95654455 ±  7%     -99.0%     978934 ± 18%  perf-stat.ps.dTLB-load-misses
+ 4.085e+10           +98.1%  8.092e+10        perf-stat.ps.dTLB-loads
+  25726088 ±  4%     -99.5%     120909 ± 15%  perf-stat.ps.dTLB-store-misses
+ 2.319e+10           +97.9%  4.589e+10        perf-stat.ps.dTLB-stores
+ 1.659e+11          +101.2%  3.339e+11        perf-stat.ps.instructions
+      4267            -3.3%       4125        perf-stat.ps.minor-faults
+   3332737 ±  6%     -35.5%    2149192 ±  5%  perf-stat.ps.node-load-misses
+    329640 ± 16%     -78.3%      71563 ±  5%  perf-stat.ps.node-loads
+   3695109 ±  4%      +9.1%    4030054 ±  3%  perf-stat.ps.node-store-misses
+   1496222 ±  4%     -89.1%     163294 ± 15%  perf-stat.ps.node-stores
+      4267            -3.3%       4125        perf-stat.ps.page-faults
+ 1.055e+13          +100.4%  2.114e+13        perf-stat.total.instructions
+     18.71           -18.6        0.10 ±223%  perf-profile.calltrace.cycles-pp.secondary_startup_64_no_verify
+     18.56           -18.5        0.10 ±223%  perf-profile.calltrace.cycles-pp.start_secondary.secondary_startup_64_no_verify
+     18.55           -18.4        0.10 ±223%  perf-profile.calltrace.cycles-pp.cpu_startup_entry.start_secondary.secondary_startup_64_no_verify
+     18.53           -18.4        0.10 ±223%  perf-profile.calltrace.cycles-pp.do_idle.cpu_startup_entry.start_secondary.secondary_startup_64_no_verify
+     13.24            -9.2        3.99        perf-profile.calltrace.cycles-pp.pipe_read.vfs_read.ksys_read.do_syscall_64.entry_SYSCALL_64_after_hwframe
+     16.02            -9.2        6.78        perf-profile.calltrace.cycles-pp.read
+     14.88            -9.2        5.72        perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.read
+     13.60            -9.1        4.45        perf-profile.calltrace.cycles-pp.vfs_read.ksys_read.do_syscall_64.entry_SYSCALL_64_after_hwframe.read
+     14.68            -9.1        5.60        perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.read
+     13.81            -8.7        5.08        perf-profile.calltrace.cycles-pp.ksys_read.do_syscall_64.entry_SYSCALL_64_after_hwframe.read
+      8.37            -8.3        0.09 ±223%  perf-profile.calltrace.cycles-pp.cpuidle_idle_call.do_idle.cpu_startup_entry.start_secondary.secondary_startup_64_no_verify
+     10.17            -8.1        2.03 ±  2%  perf-profile.calltrace.cycles-pp.schedule.pipe_read.vfs_read.ksys_read.do_syscall_64
+     10.06            -8.1        1.94 ±  2%  perf-profile.calltrace.cycles-pp.__schedule.schedule.pipe_read.vfs_read.ksys_read
+      7.57            -7.6        0.00        perf-profile.calltrace.cycles-pp.cpuidle_enter.cpuidle_idle_call.do_idle.cpu_startup_entry.start_secondary
+      7.55            -7.5        0.00        perf-profile.calltrace.cycles-pp.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call.do_idle.cpu_startup_entry
+      7.44 ±  2%      -7.4        0.00        perf-profile.calltrace.cycles-pp.flush_smp_call_function_queue.do_idle.cpu_startup_entry.start_secondary.secondary_startup_64_no_verify
+      9.10            -6.5        2.58 ±  3%  perf-profile.calltrace.cycles-pp.__wake_up_common.__wake_up_common_lock.pipe_write.vfs_write.ksys_write
+      9.27            -6.5        2.78 ±  2%  perf-profile.calltrace.cycles-pp.__wake_up_common_lock.pipe_write.vfs_write.ksys_write.do_syscall_64
+     11.36            -6.5        4.90        perf-profile.calltrace.cycles-pp.ksys_write.do_syscall_64.entry_SYSCALL_64_after_hwframe.write
+     11.05            -6.4        4.62        perf-profile.calltrace.cycles-pp.vfs_write.ksys_write.do_syscall_64.entry_SYSCALL_64_after_hwframe.write
+     10.54            -6.3        4.24 ±  2%  perf-profile.calltrace.cycles-pp.pipe_write.vfs_write.ksys_write.do_syscall_64.entry_SYSCALL_64_after_hwframe
+      8.73            -6.3        2.47 ±  3%  perf-profile.calltrace.cycles-pp.try_to_wake_up.autoremove_wake_function.__wake_up_common.__wake_up_common_lock.pipe_write
+      8.76            -6.2        2.52 ±  3%  perf-profile.calltrace.cycles-pp.autoremove_wake_function.__wake_up_common.__wake_up_common_lock.pipe_write.vfs_write
+      6.84 ±  2%      -6.0        0.86        perf-profile.calltrace.cycles-pp.dequeue_task_fair.__schedule.schedule.pipe_read.vfs_read
+     21.14            -5.8       15.29        perf-profile.calltrace.cycles-pp.copy_user_enhanced_fast_string.copyout._copy_to_iter.copy_page_to_iter.process_vm_rw_single_vec
+      5.64 ±  2%      -5.6        0.00        perf-profile.calltrace.cycles-pp.sched_ttwu_pending.flush_smp_call_function_queue.do_idle.cpu_startup_entry.start_secondary
+     21.40            -5.6       15.80        perf-profile.calltrace.cycles-pp.copyout._copy_to_iter.copy_page_to_iter.process_vm_rw_single_vec.process_vm_rw_core
+      5.31 ±  2%      -5.3        0.00        perf-profile.calltrace.cycles-pp.dequeue_entity.dequeue_task_fair.__schedule.schedule.pipe_read
+      5.11 ±  2%      -5.1        0.00        perf-profile.calltrace.cycles-pp.ttwu_do_activate.sched_ttwu_pending.flush_smp_call_function_queue.do_idle.cpu_startup_entry
+      5.07 ±  2%      -5.1        0.00        perf-profile.calltrace.cycles-pp.enqueue_task_fair.ttwu_do_activate.sched_ttwu_pending.flush_smp_call_function_queue.do_idle
+     11.46            -4.7        6.77        perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.write
+     11.50            -4.6        6.92        perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.write
+     23.22            -3.9       19.30        perf-profile.calltrace.cycles-pp._copy_to_iter.copy_page_to_iter.process_vm_rw_single_vec.process_vm_rw_core.process_vm_rw
+     11.71            -3.8        7.95        perf-profile.calltrace.cycles-pp.write
+     23.63            -3.3       20.33        perf-profile.calltrace.cycles-pp.copy_page_to_iter.process_vm_rw_single_vec.process_vm_rw_core.process_vm_rw.__x64_sys_process_vm_readv
+      1.04 ±  4%      -0.5        0.56 ±  2%  perf-profile.calltrace.cycles-pp.stress_vm_child
+      0.72 ±  4%      +0.3        1.00 ±  5%  perf-profile.calltrace.cycles-pp.enqueue_task_fair.ttwu_do_activate.try_to_wake_up.autoremove_wake_function.__wake_up_common
+      0.72 ±  4%      +0.3        1.04 ±  5%  perf-profile.calltrace.cycles-pp.ttwu_do_activate.try_to_wake_up.autoremove_wake_function.__wake_up_common.__wake_up_common_lock
+      0.73            +0.5        1.19        perf-profile.calltrace.cycles-pp.__might_fault._copy_to_iter.copy_page_to_iter.process_vm_rw_single_vec.process_vm_rw_core
+      0.78            +0.5        1.32        perf-profile.calltrace.cycles-pp.stress_vm_rw
+      0.00            +0.5        0.55        perf-profile.calltrace.cycles-pp.__import_iovec.import_iovec.process_vm_rw.__x64_sys_process_vm_writev.do_syscall_64
+      0.00            +0.6        0.55        perf-profile.calltrace.cycles-pp.__import_iovec.import_iovec.process_vm_rw.__x64_sys_process_vm_readv.do_syscall_64
+      0.00            +0.6        0.57        perf-profile.calltrace.cycles-pp.import_iovec.process_vm_rw.__x64_sys_process_vm_writev.do_syscall_64.entry_SYSCALL_64_after_hwframe
+      0.00            +0.6        0.57        perf-profile.calltrace.cycles-pp.import_iovec.process_vm_rw.__x64_sys_process_vm_readv.do_syscall_64.entry_SYSCALL_64_after_hwframe
+      0.00            +0.6        0.59 ±  2%  perf-profile.calltrace.cycles-pp.copy_page_from_iter.pipe_write.vfs_write.ksys_write.do_syscall_64
+      0.00            +0.6        0.63        perf-profile.calltrace.cycles-pp.__might_resched.__might_fault._copy_to_iter.copy_page_to_iter.process_vm_rw_single_vec
+      0.00            +0.6        0.64        perf-profile.calltrace.cycles-pp.__might_resched.__might_fault._copy_from_iter.copy_page_from_iter.process_vm_rw_single_vec
+      0.00            +1.1        1.12        perf-profile.calltrace.cycles-pp.__schedule.schedule.exit_to_user_mode_loop.exit_to_user_mode_prepare.syscall_exit_to_user_mode
+      0.00            +1.1        1.13        perf-profile.calltrace.cycles-pp.mod_node_page_state.gup_put_folio.unpin_user_pages.process_vm_rw_single_vec.process_vm_rw_core
+      0.00            +1.1        1.13        perf-profile.calltrace.cycles-pp.__might_resched.__get_user_pages.__get_user_pages_remote.process_vm_rw_single_vec.process_vm_rw_core
+      0.00            +1.1        1.14        perf-profile.calltrace.cycles-pp.mod_node_page_state.gup_put_folio.unpin_user_pages_dirty_lock.process_vm_rw_single_vec.process_vm_rw_core
+      0.00            +1.2        1.20        perf-profile.calltrace.cycles-pp.__might_fault._copy_from_iter.copy_page_from_iter.process_vm_rw_single_vec.process_vm_rw_core
+      0.00            +1.2        1.20        perf-profile.calltrace.cycles-pp.schedule.exit_to_user_mode_loop.exit_to_user_mode_prepare.syscall_exit_to_user_mode.do_syscall_64
+      0.00            +1.3        1.28        perf-profile.calltrace.cycles-pp.exit_to_user_mode_loop.exit_to_user_mode_prepare.syscall_exit_to_user_mode.do_syscall_64.entry_SYSCALL_64_after_hwframe
+      1.20            +1.6        2.78        perf-profile.calltrace.cycles-pp._raw_spin_lock.follow_page_pte.__get_user_pages.__get_user_pages_remote.process_vm_rw_single_vec
+      0.00            +1.7        1.70        perf-profile.calltrace.cycles-pp.exit_to_user_mode_prepare.syscall_exit_to_user_mode.do_syscall_64.entry_SYSCALL_64_after_hwframe.write
+      1.02            +1.7        2.75        perf-profile.calltrace.cycles-pp.gup_put_folio.unpin_user_pages.process_vm_rw_single_vec.process_vm_rw_core.process_vm_rw
+      0.00            +1.7        1.74        perf-profile.calltrace.cycles-pp.syscall_exit_to_user_mode.do_syscall_64.entry_SYSCALL_64_after_hwframe.write
+      0.99            +1.8        2.81        perf-profile.calltrace.cycles-pp.gup_put_folio.unpin_user_pages_dirty_lock.process_vm_rw_single_vec.process_vm_rw_core.process_vm_rw
+      0.00            +2.0        1.98        perf-profile.calltrace.cycles-pp.follow_pud_mask.__get_user_pages.__get_user_pages_remote.process_vm_rw_single_vec.process_vm_rw_core
+      1.31            +2.1        3.43 ±  2%  perf-profile.calltrace.cycles-pp.unpin_user_pages.process_vm_rw_single_vec.process_vm_rw_core.process_vm_rw.__x64_sys_process_vm_readv
+      1.26            +2.3        3.57 ±  2%  perf-profile.calltrace.cycles-pp.unpin_user_pages_dirty_lock.process_vm_rw_single_vec.process_vm_rw_core.process_vm_rw.__x64_sys_process_vm_writev
+      0.00            +2.3        2.35        perf-profile.calltrace.cycles-pp.mod_node_page_state.try_grab_page.follow_page_pte.__get_user_pages.__get_user_pages_remote
+      0.00            +2.5        2.52        perf-profile.calltrace.cycles-pp.follow_page_mask.__get_user_pages.__get_user_pages_remote.process_vm_rw_single_vec.process_vm_rw_core
+      0.00            +2.5        2.54        perf-profile.calltrace.cycles-pp.follow_pmd_mask.__get_user_pages.__get_user_pages_remote.process_vm_rw_single_vec.process_vm_rw_core
+      3.06 ±  3%      +2.6        5.68 ±  2%  perf-profile.calltrace.cycles-pp.try_grab_page.follow_page_pte.__get_user_pages.__get_user_pages_remote.process_vm_rw_single_vec
+     31.57            +6.5       38.03        perf-profile.calltrace.cycles-pp.process_vm_rw_single_vec.process_vm_rw_core.process_vm_rw.__x64_sys_process_vm_readv.do_syscall_64
+     32.70            +6.8       39.48        perf-profile.calltrace.cycles-pp.process_vm_rw_core.process_vm_rw.__x64_sys_process_vm_readv.do_syscall_64.entry_SYSCALL_64_after_hwframe
+      6.21            +7.3       13.49        perf-profile.calltrace.cycles-pp.__get_user_pages_remote.process_vm_rw_single_vec.process_vm_rw_core.process_vm_rw.__x64_sys_process_vm_readv
+     33.27            +7.4       40.69        perf-profile.calltrace.cycles-pp.process_vm_rw.__x64_sys_process_vm_readv.do_syscall_64.entry_SYSCALL_64_after_hwframe.process_vm_readv
+      6.08            +7.5       13.54        perf-profile.calltrace.cycles-pp.follow_page_pte.__get_user_pages.__get_user_pages_remote.process_vm_rw_single_vec.process_vm_rw_core
+     33.27            +7.5       40.74        perf-profile.calltrace.cycles-pp.__x64_sys_process_vm_readv.do_syscall_64.entry_SYSCALL_64_after_hwframe.process_vm_readv
+     33.41            +7.6       41.00        perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.process_vm_readv
+     33.51            +7.7       41.20        perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.process_vm_readv
+      7.38            +7.7       15.08        perf-profile.calltrace.cycles-pp.copy_user_enhanced_fast_string.copyin._copy_from_iter.copy_page_from_iter.process_vm_rw_single_vec
+     33.87            +7.9       41.80        perf-profile.calltrace.cycles-pp.process_vm_readv
+      7.60            +8.0       15.61        perf-profile.calltrace.cycles-pp.copyin._copy_from_iter.copy_page_from_iter.process_vm_rw_single_vec.process_vm_rw_core
+      4.77            +8.3       13.10        perf-profile.calltrace.cycles-pp.__get_user_pages_remote.process_vm_rw_single_vec.process_vm_rw_core.process_vm_rw.__x64_sys_process_vm_writev
+      8.95           +10.2       19.11        perf-profile.calltrace.cycles-pp._copy_from_iter.copy_page_from_iter.process_vm_rw_single_vec.process_vm_rw_core.process_vm_rw
+      9.32           +10.7       20.02        perf-profile.calltrace.cycles-pp.copy_page_from_iter.process_vm_rw_single_vec.process_vm_rw_core.process_vm_rw.__x64_sys_process_vm_writev
+     10.74           +15.2       25.97        perf-profile.calltrace.cycles-pp.__get_user_pages.__get_user_pages_remote.process_vm_rw_single_vec.process_vm_rw_core.process_vm_rw
+     15.69           +21.8       37.49        perf-profile.calltrace.cycles-pp.process_vm_rw_single_vec.process_vm_rw_core.process_vm_rw.__x64_sys_process_vm_writev.do_syscall_64
+     16.34           +22.6       38.93        perf-profile.calltrace.cycles-pp.process_vm_rw_core.process_vm_rw.__x64_sys_process_vm_writev.do_syscall_64.entry_SYSCALL_64_after_hwframe
+     16.79           +23.3       40.06        perf-profile.calltrace.cycles-pp.process_vm_rw.__x64_sys_process_vm_writev.do_syscall_64.entry_SYSCALL_64_after_hwframe.process_vm_writev
+     16.81           +23.3       40.11        perf-profile.calltrace.cycles-pp.__x64_sys_process_vm_writev.do_syscall_64.entry_SYSCALL_64_after_hwframe.process_vm_writev
+     16.88           +23.4       40.29        perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.process_vm_writev
+     16.93           +23.5       40.41        perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.process_vm_writev
+     17.20           +23.9       41.07        perf-profile.calltrace.cycles-pp.process_vm_writev
+     18.71           -18.5        0.24 ± 87%  perf-profile.children.cycles-pp.secondary_startup_64_no_verify
+     18.71           -18.5        0.24 ± 87%  perf-profile.children.cycles-pp.cpu_startup_entry
+     18.69           -18.4        0.24 ± 87%  perf-profile.children.cycles-pp.do_idle
+     18.56           -18.3        0.24 ± 88%  perf-profile.children.cycles-pp.start_secondary
+     16.17            -9.2        6.94        perf-profile.children.cycles-pp.read
+     13.28            -9.2        4.07        perf-profile.children.cycles-pp.pipe_read
+     13.63            -9.2        4.47        perf-profile.children.cycles-pp.vfs_read
+     12.26            -9.1        3.14        perf-profile.children.cycles-pp.__schedule
+     13.81            -8.7        5.09        perf-profile.children.cycles-pp.ksys_read
+      8.44            -8.2        0.20 ± 88%  perf-profile.children.cycles-pp.cpuidle_idle_call
+      7.62 ±  2%      -7.6        0.00        perf-profile.children.cycles-pp.flush_smp_call_function_queue
+      7.64            -7.5        0.18 ± 88%  perf-profile.children.cycles-pp.cpuidle_enter
+      7.62            -7.4        0.18 ± 88%  perf-profile.children.cycles-pp.cpuidle_enter_state
+      7.22 ±  2%      -7.2        0.00        perf-profile.children.cycles-pp.sched_ttwu_pending
+      7.28 ±  4%      -7.2        0.12 ±  5%  perf-profile.children.cycles-pp.update_cfs_group
+     10.19            -7.0        3.24        perf-profile.children.cycles-pp.schedule
+      7.02            -6.9        0.17 ± 88%  perf-profile.children.cycles-pp.mwait_idle_with_hints
+      9.11            -6.5        2.59 ±  2%  perf-profile.children.cycles-pp.__wake_up_common
+      9.28            -6.5        2.81 ±  2%  perf-profile.children.cycles-pp.__wake_up_common_lock
+     11.38            -6.4        4.93        perf-profile.children.cycles-pp.ksys_write
+     11.07            -6.4        4.65 ±  2%  perf-profile.children.cycles-pp.vfs_write
+     10.56            -6.3        4.29 ±  2%  perf-profile.children.cycles-pp.pipe_write
+      8.74            -6.2        2.50 ±  3%  perf-profile.children.cycles-pp.try_to_wake_up
+      8.76            -6.2        2.53 ±  3%  perf-profile.children.cycles-pp.autoremove_wake_function
+      7.22 ±  2%      -6.2        1.06 ±  5%  perf-profile.children.cycles-pp.ttwu_do_activate
+      7.18 ±  2%      -6.2        1.02 ±  5%  perf-profile.children.cycles-pp.enqueue_task_fair
+      6.86 ±  2%      -6.0        0.87        perf-profile.children.cycles-pp.dequeue_task_fair
+     22.00            -5.8       16.24        perf-profile.children.cycles-pp.copyout
+      5.66 ±  2%      -5.1        0.52 ±  5%  perf-profile.children.cycles-pp.enqueue_entity
+      5.34 ±  2%      -4.9        0.44 ±  2%  perf-profile.children.cycles-pp.dequeue_entity
+      5.60 ±  2%      -4.7        0.85        perf-profile.children.cycles-pp.update_load_avg
+      4.27            -4.2        0.08 ± 85%  perf-profile.children.cycles-pp.intel_idle
+     23.89            -4.0       19.90        perf-profile.children.cycles-pp._copy_to_iter
+     11.78            -3.7        8.11        perf-profile.children.cycles-pp.write
+     24.29            -3.4       20.93        perf-profile.children.cycles-pp.copy_page_to_iter
+      3.47            -3.2        0.31 ± 13%  perf-profile.children.cycles-pp.select_task_rq
+      3.37            -3.1        0.26 ± 15%  perf-profile.children.cycles-pp.select_task_rq_fair
+      2.96            -2.8        0.15 ± 28%  perf-profile.children.cycles-pp.select_idle_sibling
+      2.83 ±  2%      -2.7        0.09 ± 89%  perf-profile.children.cycles-pp.intel_idle_irq
+      2.53            -2.5        0.06 ±  9%  perf-profile.children.cycles-pp.select_idle_cpu
+      0.89            -0.8        0.11        perf-profile.children.cycles-pp.finish_task_switch
+      0.80            -0.8        0.04 ± 71%  perf-profile.children.cycles-pp.ttwu_queue_wakelist
+      1.00            -0.6        0.37        perf-profile.children.cycles-pp._raw_spin_lock_irqsave
+      0.90            -0.6        0.34        perf-profile.children.cycles-pp.prepare_to_wait_event
+      0.60 ±  2%      -0.5        0.07 ±  5%  perf-profile.children.cycles-pp.switch_mm_irqs_off
+      1.04 ±  4%      -0.5        0.57 ±  2%  perf-profile.children.cycles-pp.stress_vm_child
+      0.90            -0.4        0.52 ±  3%  perf-profile.children.cycles-pp.asm_sysvec_apic_timer_interrupt
+      0.66 ±  2%      -0.3        0.32 ±  3%  perf-profile.children.cycles-pp.prepare_task_switch
+      0.57 ±  2%      -0.3        0.25        perf-profile.children.cycles-pp.update_rq_clock
+      0.77            -0.3        0.47 ±  3%  perf-profile.children.cycles-pp.sysvec_apic_timer_interrupt
+      0.50            -0.3        0.22 ±  4%  perf-profile.children.cycles-pp.___perf_sw_event
+      0.68            -0.3        0.40        perf-profile.children.cycles-pp.__switch_to_asm
+      0.50            -0.2        0.29        perf-profile.children.cycles-pp.security_file_permission
+      0.26 ±  5%      -0.2        0.08 ± 14%  perf-profile.children.cycles-pp.task_tick_fair
+      0.50            -0.2        0.33        perf-profile.children.cycles-pp.set_next_entity
+      0.43 ±  3%      -0.2        0.26 ±  6%  perf-profile.children.cycles-pp.__hrtimer_run_queues
+      0.36 ±  3%      -0.2        0.21 ±  6%  perf-profile.children.cycles-pp.tick_sched_handle
+      0.40 ±  2%      -0.2        0.24        perf-profile.children.cycles-pp.apparmor_file_permission
+      0.38 ±  3%      -0.2        0.23 ±  6%  perf-profile.children.cycles-pp.tick_sched_timer
+      0.36 ±  4%      -0.2        0.21 ±  6%  perf-profile.children.cycles-pp.update_process_times
+      0.32 ±  4%      -0.1        0.17 ±  5%  perf-profile.children.cycles-pp.scheduler_tick
+      0.25 ±  2%      -0.1        0.10 ± 13%  perf-profile.children.cycles-pp.find_vma
+      0.69            -0.1        0.55 ±  2%  perf-profile.children.cycles-pp.mutex_lock
+      0.26            -0.1        0.12 ± 11%  perf-profile.children.cycles-pp.find_extend_vma
+      0.38 ±  2%      -0.1        0.26        perf-profile.children.cycles-pp.__update_load_avg_cfs_rq
+      0.54 ±  2%      -0.1        0.43 ±  4%  perf-profile.children.cycles-pp.hrtimer_interrupt
+      0.54 ±  2%      -0.1        0.43 ±  3%  perf-profile.children.cycles-pp.__sysvec_apic_timer_interrupt
+      0.26            -0.1        0.16 ±  3%  perf-profile.children.cycles-pp.sched_clock_cpu
+      0.34 ±  2%      -0.1        0.24 ±  2%  perf-profile.children.cycles-pp.perf_trace_sched_wakeup_template
+      0.17 ±  2%      -0.1        0.08 ± 15%  perf-profile.children.cycles-pp.vmacache_find
+      0.76            -0.1        0.69 ±  2%  perf-profile.children.cycles-pp.switch_fpu_return
+      0.51            -0.1        0.43        perf-profile.children.cycles-pp.__switch_to
+      0.20            -0.1        0.14 ±  3%  perf-profile.children.cycles-pp.native_sched_clock
+      0.18            -0.1        0.12 ±  5%  perf-profile.children.cycles-pp.perf_tp_event
+      0.10 ±  6%      -0.0        0.05 ±  7%  perf-profile.children.cycles-pp.anon_pipe_buf_release
+      0.58            -0.0        0.54 ±  2%  perf-profile.children.cycles-pp.restore_fpregs_from_fpstate
+      0.13            -0.0        0.10 ±  3%  perf-profile.children.cycles-pp._raw_spin_unlock_irqrestore
+      0.10            -0.0        0.07 ±  6%  perf-profile.children.cycles-pp.perf_trace_buf_update
+      0.24            -0.0        0.22 ±  2%  perf-profile.children.cycles-pp.mutex_unlock
+      0.08            -0.0        0.06        perf-profile.children.cycles-pp.__list_add_valid
+      0.11 ±  5%      -0.0        0.09        perf-profile.children.cycles-pp.aa_file_perm
+      0.22 ±  2%      -0.0        0.20 ±  2%  perf-profile.children.cycles-pp._raw_spin_lock_irq
+      0.19 ±  2%      +0.0        0.21 ±  2%  perf-profile.children.cycles-pp.mmput
+      0.05            +0.0        0.07        perf-profile.children.cycles-pp.__list_del_entry_valid
+      0.06 ±  8%      +0.0        0.08 ±  4%  perf-profile.children.cycles-pp.syscall_exit_to_user_mode_prepare
+      0.06 ±  9%      +0.0        0.08        perf-profile.children.cycles-pp.__rdgsbase_inactive
+      0.13            +0.0        0.16 ±  3%  perf-profile.children.cycles-pp.atime_needs_update
+      0.05 ±  8%      +0.0        0.09        perf-profile.children.cycles-pp.pick_next_entity
+      0.19            +0.0        0.23        perf-profile.children.cycles-pp.down_read_killable
+      0.28            +0.0        0.32 ±  3%  perf-profile.children.cycles-pp.__update_load_avg_se
+      0.02 ± 99%      +0.0        0.07        perf-profile.children.cycles-pp.__get_task_ioprio
+      0.04 ± 44%      +0.0        0.09 ±  8%  perf-profile.children.cycles-pp.perf_trace_sched_switch
+      0.04 ± 44%      +0.0        0.09 ±  7%  perf-profile.children.cycles-pp.perf_trace_sched_stat_runtime
+      0.09 ±  5%      +0.1        0.14 ±  3%  perf-profile.children.cycles-pp.__wrgsbase_inactive
+      0.00            +0.1        0.05        perf-profile.children.cycles-pp.set_next_buddy
+      0.12            +0.1        0.17 ±  6%  perf-profile.children.cycles-pp.file_update_time
+      0.00            +0.1        0.05 ±  8%  perf-profile.children.cycles-pp.fsnotify_perm
+      0.00            +0.1        0.06 ± 20%  perf-profile.children.cycles-pp.hrtimer_active
+      0.00            +0.1        0.06 ± 13%  perf-profile.children.cycles-pp.resched_curr
+      0.14 ±  3%      +0.1        0.20 ±  2%  perf-profile.children.cycles-pp.down_read
+      0.00            +0.1        0.06        perf-profile.children.cycles-pp.memcg_slab_post_alloc_hook
+      0.01 ±223%      +0.1        0.08 ±  6%  perf-profile.children.cycles-pp.kmalloc_slab
+      0.13 ±  4%      +0.1        0.20        perf-profile.children.cycles-pp.get_task_mm
+      0.07 ± 11%      +0.1        0.14 ± 10%  perf-profile.children.cycles-pp.clockevents_program_event
+      0.00            +0.1        0.07 ±  5%  perf-profile.children.cycles-pp.idr_find
+      0.13 ±  2%      +0.1        0.21        perf-profile.children.cycles-pp.ttwu_do_wakeup
+      0.00            +0.1        0.08 ± 16%  perf-profile.children.cycles-pp.ktime_get_coarse_real_ts64
+      0.11            +0.1        0.20 ±  3%  perf-profile.children.cycles-pp.check_preempt_curr
+      0.08 ±  6%      +0.1        0.17 ±  2%  perf-profile.children.cycles-pp.up_read
+      0.01 ±223%      +0.1        0.10        perf-profile.children.cycles-pp.entry_SYSCALL_64_safe_stack
+      0.00            +0.1        0.10 ±  5%  perf-profile.children.cycles-pp.__calc_delta
+      0.00            +0.1        0.10        perf-profile.children.cycles-pp.check_stack_object
+      0.81            +0.1        0.93 ±  3%  perf-profile.children.cycles-pp.pick_next_task_fair
+      0.07            +0.1        0.19        perf-profile.children.cycles-pp.put_prev_entity
+      0.13            +0.1        0.25 ±  2%  perf-profile.children.cycles-pp.syscall_enter_from_user_mode
+      0.06            +0.1        0.19 ±  7%  perf-profile.children.cycles-pp.current_time
+      0.16            +0.1        0.30 ±  3%  perf-profile.children.cycles-pp.reweight_entity
+      0.13            +0.1        0.26        perf-profile.children.cycles-pp.os_xsave
+      0.64            +0.2        0.79        perf-profile.children.cycles-pp.find_get_task_by_vpid
+      0.00            +0.2        0.16 ±  3%  perf-profile.children.cycles-pp.check_preempt_wakeup
+      0.11 ±  3%      +0.2        0.27        perf-profile.children.cycles-pp.__check_object_size
+      0.10 ±  3%      +0.2        0.27        perf-profile.children.cycles-pp.follow_huge_addr
+      0.18 ±  2%      +0.2        0.36 ±  3%  perf-profile.children.cycles-pp.__radix_tree_lookup
+      0.37 ±  2%      +0.2        0.55        perf-profile.children.cycles-pp.mm_access
+      0.12 ±  4%      +0.2        0.30 ±  2%  perf-profile.children.cycles-pp.syscall_return_via_sysret
+      0.13 ±  3%      +0.2        0.32 ±  2%  perf-profile.children.cycles-pp.kfree
+      0.13 ±  3%      +0.3        0.38        perf-profile.children.cycles-pp.mark_page_accessed
+      0.15            +0.3        0.42        perf-profile.children.cycles-pp.pud_huge
+      0.14 ±  3%      +0.3        0.42        perf-profile.children.cycles-pp.pmd_huge
+      0.30 ±  2%      +0.4        0.70        perf-profile.children.cycles-pp.__kmalloc
+      0.24            +0.4        0.66        perf-profile.children.cycles-pp.rcu_all_qs
+      0.28 ±  2%      +0.4        0.73        perf-profile.children.cycles-pp.entry_SYSRETQ_unsafe_stack
+      0.28 ±  2%      +0.5        0.80        perf-profile.children.cycles-pp.folio_mark_accessed
+      0.43            +0.5        0.97        perf-profile.children.cycles-pp.__entry_text_start
+      0.79            +0.5        1.34        perf-profile.children.cycles-pp.stress_vm_rw
+      0.70            +0.6        1.32        perf-profile.children.cycles-pp.__might_sleep
+      0.46 ±  2%      +0.7        1.12        perf-profile.children.cycles-pp.__import_iovec
+      0.34 ±  2%      +0.7        1.02        perf-profile.children.cycles-pp.vm_normal_page
+      0.48 ±  2%      +0.7        1.16        perf-profile.children.cycles-pp.import_iovec
+      0.59            +0.8        1.36        perf-profile.children.cycles-pp.__cond_resched
+      0.57 ±  8%      +0.8        1.35        perf-profile.children.cycles-pp._copy_from_user
+      2.53            +1.0        3.51        perf-profile.children.cycles-pp._raw_spin_lock
+      0.76 ±  6%      +1.1        1.84        perf-profile.children.cycles-pp.iovec_from_user
+      0.00            +1.3        1.29        perf-profile.children.cycles-pp.exit_to_user_mode_loop
+      0.83            +1.3        2.16        perf-profile.children.cycles-pp.exit_to_user_mode_prepare
+      0.93            +1.4        2.37        perf-profile.children.cycles-pp.syscall_exit_to_user_mode
+      0.80            +1.5        2.25        perf-profile.children.cycles-pp.follow_pud_mask
+      1.54            +1.7        3.26        perf-profile.children.cycles-pp.__might_fault
+      1.02            +1.8        2.79        perf-profile.children.cycles-pp.follow_page_mask
+      0.98            +1.8        2.82        perf-profile.children.cycles-pp.follow_pmd_mask
+      1.48            +1.9        3.37        perf-profile.children.cycles-pp.__might_resched
+      1.34            +2.2        3.49 ±  2%  perf-profile.children.cycles-pp.unpin_user_pages
+      1.29            +2.4        3.66 ±  2%  perf-profile.children.cycles-pp.unpin_user_pages_dirty_lock
+     29.90            +2.5       32.38        perf-profile.children.cycles-pp.copy_user_enhanced_fast_string
+      3.20 ±  3%      +2.9        6.06 ±  2%  perf-profile.children.cycles-pp.try_grab_page
+      1.38            +3.5        4.88        perf-profile.children.cycles-pp.mod_node_page_state
+      2.10            +3.7        5.81        perf-profile.children.cycles-pp.gup_put_folio
+     33.30            +7.5       40.76        perf-profile.children.cycles-pp.__x64_sys_process_vm_readv
+     33.96            +8.1       42.03        perf-profile.children.cycles-pp.process_vm_readv
+      6.43            +8.2       14.60        perf-profile.children.cycles-pp.follow_page_pte
+      7.85            +8.2       16.04        perf-profile.children.cycles-pp.copyin
+      9.42           +10.4       19.86        perf-profile.children.cycles-pp._copy_from_iter
+      9.80           +11.0       20.77        perf-profile.children.cycles-pp.copy_page_from_iter
+     10.93           +15.6       26.52        perf-profile.children.cycles-pp.__get_user_pages
+     10.98           +15.6       26.60        perf-profile.children.cycles-pp.__get_user_pages_remote
+     76.52           +17.3       93.84        perf-profile.children.cycles-pp.do_syscall_64
+     76.87           +17.5       94.33        perf-profile.children.cycles-pp.entry_SYSCALL_64_after_hwframe
+     16.81           +23.3       40.12        perf-profile.children.cycles-pp.__x64_sys_process_vm_writev
+     17.29           +24.0       41.30        perf-profile.children.cycles-pp.process_vm_writev
+     47.32           +28.4       75.68        perf-profile.children.cycles-pp.process_vm_rw_single_vec
+     49.06           +29.4       78.48        perf-profile.children.cycles-pp.process_vm_rw_core
+     50.08           +30.7       80.80        perf-profile.children.cycles-pp.process_vm_rw
+      7.27 ±  4%      -7.2        0.11 ±  5%  perf-profile.self.cycles-pp.update_cfs_group
+      6.92            -6.8        0.17 ± 88%  perf-profile.self.cycles-pp.mwait_idle_with_hints
+      4.87 ±  2%      -4.6        0.28 ±  2%  perf-profile.self.cycles-pp.update_load_avg
+      1.02            -0.7        0.34 ±  2%  perf-profile.self.cycles-pp.__schedule
+      0.98            -0.6        0.35        perf-profile.self.cycles-pp._raw_spin_lock_irqsave
+      0.59 ±  2%      -0.5        0.06 ±  7%  perf-profile.self.cycles-pp.switch_mm_irqs_off
+      0.98            -0.4        0.54        perf-profile.self.cycles-pp.stress_vm_child
+      0.44 ±  2%      -0.4        0.08 ±  5%  perf-profile.self.cycles-pp.update_rq_clock
+      0.60 ±  2%      -0.3        0.30        perf-profile.self.cycles-pp.pipe_read
+      0.35 ±  2%      -0.3        0.06 ±  8%  perf-profile.self.cycles-pp.__wake_up_common
+      0.68            -0.3        0.40        perf-profile.self.cycles-pp.__switch_to_asm
+      0.44            -0.3        0.17 ±  2%  perf-profile.self.cycles-pp.___perf_sw_event
+      0.34 ±  2%      -0.3        0.08 ±  5%  perf-profile.self.cycles-pp.finish_task_switch
+      0.34            -0.2        0.12 ±  4%  perf-profile.self.cycles-pp.enqueue_entity
+      0.27 ±  2%      -0.2        0.10 ±  4%  perf-profile.self.cycles-pp.prepare_task_switch
+      0.26 ±  5%      -0.2        0.10 ±  4%  perf-profile.self.cycles-pp.try_to_wake_up
+      0.45            -0.2        0.30 ±  4%  perf-profile.self.cycles-pp.mutex_lock
+      0.32 ± 15%      -0.2        0.17 ±  4%  perf-profile.self.cycles-pp.read
+      0.33            -0.1        0.19        perf-profile.self.cycles-pp.prepare_to_wait_event
+      0.28 ±  2%      -0.1        0.14 ±  4%  perf-profile.self.cycles-pp.apparmor_file_permission
+      0.18 ±  2%      -0.1        0.04 ± 73%  perf-profile.self.cycles-pp.select_idle_sibling
+      0.40 ±  2%      -0.1        0.28        perf-profile.self.cycles-pp.update_curr
+      0.37 ±  2%      -0.1        0.25 ±  2%  perf-profile.self.cycles-pp.__update_load_avg_cfs_rq
+      0.50            -0.1        0.41        perf-profile.self.cycles-pp.__switch_to
+      0.15 ±  3%      -0.1        0.07 ± 17%  perf-profile.self.cycles-pp.vmacache_find
+      0.16 ±  4%      -0.1        0.08 ±  4%  perf-profile.self.cycles-pp.dequeue_entity
+      0.16            -0.1        0.09 ±  4%  perf-profile.self.cycles-pp.dequeue_task_fair
+      0.20 ±  2%      -0.1        0.13        perf-profile.self.cycles-pp.native_sched_clock
+      0.11 ±  3%      -0.1        0.06 ±  9%  perf-profile.self.cycles-pp.perf_trace_sched_wakeup_template
+      0.40            -0.1        0.35        perf-profile.self.cycles-pp.find_get_task_by_vpid
+      0.19            -0.1        0.14 ±  3%  perf-profile.self.cycles-pp.switch_fpu_return
+      0.10            -0.1        0.05        perf-profile.self.cycles-pp.select_task_rq
+      0.10 ±  4%      -0.0        0.06 ±  7%  perf-profile.self.cycles-pp.security_file_permission
+      0.58            -0.0        0.54 ±  2%  perf-profile.self.cycles-pp.restore_fpregs_from_fpstate
+      0.10            -0.0        0.07 ±  5%  perf-profile.self.cycles-pp.atime_needs_update
+      0.24            -0.0        0.21 ±  2%  perf-profile.self.cycles-pp.mutex_unlock
+      0.22 ±  2%      -0.0        0.19 ±  2%  perf-profile.self.cycles-pp._raw_spin_lock_irq
+      0.10 ±  3%      -0.0        0.08        perf-profile.self.cycles-pp.aa_file_perm
+      0.08 ±  4%      -0.0        0.06 ±  9%  perf-profile.self.cycles-pp.perf_tp_event
+      0.05            +0.0        0.06        perf-profile.self.cycles-pp._raw_spin_unlock_irqrestore
+      0.04 ± 44%      +0.0        0.06        perf-profile.self.cycles-pp.syscall_exit_to_user_mode_prepare
+      0.07 ±  5%      +0.0        0.09 ±  6%  perf-profile.self.cycles-pp.get_task_mm
+      0.09            +0.0        0.12 ±  3%  perf-profile.self.cycles-pp.schedule
+      0.05            +0.0        0.08        perf-profile.self.cycles-pp.pick_next_entity
+      0.05            +0.0        0.08        perf-profile.self.cycles-pp.__rdgsbase_inactive
+      0.04 ± 44%      +0.0        0.08 ±  6%  perf-profile.self.cycles-pp.__get_user_pages_remote
+      0.08 ±  8%      +0.0        0.12 ± 10%  perf-profile.self.cycles-pp.ktime_get
+      0.25            +0.0        0.29 ±  3%  perf-profile.self.cycles-pp.__update_load_avg_se
+      0.09            +0.0        0.14 ±  2%  perf-profile.self.cycles-pp.__wrgsbase_inactive
+      0.00            +0.1        0.05        perf-profile.self.cycles-pp.file_update_time
+      0.00            +0.1        0.05        perf-profile.self.cycles-pp.memcg_slab_post_alloc_hook
+      0.00            +0.1        0.05 ±  7%  perf-profile.self.cycles-pp.__list_del_entry_valid
+      0.01 ±223%      +0.1        0.06        perf-profile.self.cycles-pp.__get_task_ioprio
+      0.00            +0.1        0.05 ±  8%  perf-profile.self.cycles-pp.resched_curr
+      0.00            +0.1        0.06 ± 20%  perf-profile.self.cycles-pp.hrtimer_active
+      0.10 ±  5%      +0.1        0.15 ±  2%  perf-profile.self.cycles-pp.vfs_write
+      0.02 ± 99%      +0.1        0.08 ±  4%  perf-profile.self.cycles-pp.perf_trace_sched_stat_runtime
+      0.02 ± 99%      +0.1        0.08 ±  8%  perf-profile.self.cycles-pp.perf_trace_sched_switch
+      0.00            +0.1        0.06        perf-profile.self.cycles-pp.kmalloc_slab
+      0.00            +0.1        0.06 ±  6%  perf-profile.self.cycles-pp.check_preempt_wakeup
+      0.00            +0.1        0.06 ±  6%  perf-profile.self.cycles-pp.idr_find
+      0.00            +0.1        0.06 ±  7%  perf-profile.self.cycles-pp.ksys_write
+      0.00            +0.1        0.07        perf-profile.self.cycles-pp.__wake_up_common_lock
+      0.00            +0.1        0.07 ± 17%  perf-profile.self.cycles-pp.ktime_get_coarse_real_ts64
+      0.13            +0.1        0.21 ±  4%  perf-profile.self.cycles-pp.pick_next_task_fair
+      0.00            +0.1        0.08        perf-profile.self.cycles-pp.check_stack_object
+      0.05            +0.1        0.13 ±  3%  perf-profile.self.cycles-pp.syscall_exit_to_user_mode
+      0.09 ±  5%      +0.1        0.17 ±  3%  perf-profile.self.cycles-pp.write
+      0.05            +0.1        0.14 ±  2%  perf-profile.self.cycles-pp.follow_huge_addr
+      0.07 ±  5%      +0.1        0.16        perf-profile.self.cycles-pp.up_read
+      0.00            +0.1        0.09 ±  4%  perf-profile.self.cycles-pp.exit_to_user_mode_loop
+      0.00            +0.1        0.09 ±  4%  perf-profile.self.cycles-pp.__calc_delta
+      0.06 ±  7%      +0.1        0.16 ±  3%  perf-profile.self.cycles-pp.__check_object_size
+      0.11            +0.1        0.21 ±  2%  perf-profile.self.cycles-pp.syscall_enter_from_user_mode
+      0.00            +0.1        0.10 ±  3%  perf-profile.self.cycles-pp.entry_SYSCALL_64_safe_stack
+      0.00            +0.1        0.10        perf-profile.self.cycles-pp.current_time
+      0.06 ±  6%      +0.1        0.17 ±  2%  perf-profile.self.cycles-pp.__import_iovec
+      0.15 ±  5%      +0.1        0.27        perf-profile.self.cycles-pp.process_vm_rw
+      0.05            +0.1        0.17        perf-profile.self.cycles-pp.exit_to_user_mode_prepare
+      0.17 ±  2%      +0.1        0.29        perf-profile.self.cycles-pp.__entry_text_start
+      0.07            +0.1        0.20 ±  3%  perf-profile.self.cycles-pp._copy_from_user
+      0.13 ±  2%      +0.1        0.26        perf-profile.self.cycles-pp.os_xsave
+      0.16 ±  2%      +0.1        0.30        perf-profile.self.cycles-pp.pipe_write
+      0.19 ±  3%      +0.1        0.32 ±  2%  perf-profile.self.cycles-pp.process_vm_readv
+      0.09            +0.2        0.25        perf-profile.self.cycles-pp.iovec_from_user
+      0.36            +0.2        0.52        perf-profile.self.cycles-pp.entry_SYSCALL_64_after_hwframe
+      0.09            +0.2        0.26        perf-profile.self.cycles-pp.mark_page_accessed
+      0.18 ±  3%      +0.2        0.35 ±  3%  perf-profile.self.cycles-pp.__radix_tree_lookup
+      0.12 ±  4%      +0.2        0.30        perf-profile.self.cycles-pp.syscall_return_via_sysret
+      0.16 ±  2%      +0.2        0.34 ±  2%  perf-profile.self.cycles-pp.copyout
+      0.10            +0.2        0.28        perf-profile.self.cycles-pp.pud_huge
+      0.13 ±  2%      +0.2        0.31        perf-profile.self.cycles-pp.process_vm_rw_core
+      0.13 ±  2%      +0.2        0.31        perf-profile.self.cycles-pp.kfree
+      0.16 ±  2%      +0.2        0.35        perf-profile.self.cycles-pp.do_syscall_64
+      0.14 ±  3%      +0.2        0.33 ±  2%  perf-profile.self.cycles-pp.process_vm_writev
+      0.09 ±  4%      +0.2        0.28        perf-profile.self.cycles-pp.pmd_huge
+      0.13 ±  3%      +0.2        0.35 ±  2%  perf-profile.self.cycles-pp.copyin
+      0.13 ±  2%      +0.2        0.35        perf-profile.self.cycles-pp.rcu_all_qs
+      0.17 ±  2%      +0.2        0.40        perf-profile.self.cycles-pp.__kmalloc
+      0.23 ±  2%      +0.3        0.57        perf-profile.self.cycles-pp.__might_fault
+      0.11 ±  3%      +0.4        0.46 ±  4%  perf-profile.self.cycles-pp.ksys_read
+      0.29 ±  3%      +0.4        0.67 ±  6%  perf-profile.self.cycles-pp.unpin_user_pages
+      0.23 ±  2%      +0.4        0.66        perf-profile.self.cycles-pp.folio_mark_accessed
+      0.27 ±  2%      +0.4        0.70 ±  2%  perf-profile.self.cycles-pp.entry_SYSRETQ_unsafe_stack
+      0.43            +0.5        0.92        perf-profile.self.cycles-pp.copy_page_from_iter
+      0.26 ±  2%      +0.5        0.76        perf-profile.self.cycles-pp.vm_normal_page
+      0.62            +0.5        1.12        perf-profile.self.cycles-pp.__might_sleep
+      0.27 ±  2%      +0.5        0.78 ±  6%  perf-profile.self.cycles-pp.unpin_user_pages_dirty_lock
+      0.31            +0.5        0.82        perf-profile.self.cycles-pp.__cond_resched
+      0.69            +0.6        1.25        perf-profile.self.cycles-pp.stress_vm_rw
+      0.41            +0.6        1.03        perf-profile.self.cycles-pp.copy_page_to_iter
+      0.51            +0.6        1.14        perf-profile.self.cycles-pp.process_vm_rw_single_vec
+      2.47 ±  4%      +1.1        3.57 ±  4%  perf-profile.self.cycles-pp.try_grab_page
+      0.64            +1.2        1.83        perf-profile.self.cycles-pp.follow_pud_mask
+      1.10            +1.2        2.32        perf-profile.self.cycles-pp._copy_to_iter
+      1.86            +1.3        3.21        perf-profile.self.cycles-pp._raw_spin_lock
+      0.96            +1.4        2.38        perf-profile.self.cycles-pp._copy_from_iter
+      0.84            +1.5        2.38        perf-profile.self.cycles-pp.follow_pmd_mask
+      1.31            +1.6        2.89        perf-profile.self.cycles-pp.__might_resched
+      0.92            +1.6        2.51        perf-profile.self.cycles-pp.follow_page_mask
+      0.86            +1.6        2.48        perf-profile.self.cycles-pp.__get_user_pages
+      1.41            +2.0        3.38 ±  2%  perf-profile.self.cycles-pp.gup_put_folio
+     29.59            +2.4       32.03        perf-profile.self.cycles-pp.copy_user_enhanced_fast_string
+      1.52            +2.8        4.30        perf-profile.self.cycles-pp.follow_page_pte
+      1.24            +3.2        4.48        perf-profile.self.cycles-pp.mod_node_page_state
+
 
 
 To reproduce:
@@ -211,18 +728,24 @@ To reproduce:
         # please remove ~/.lkp and /lkp dir to run from a clean state.
 
 
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provided
+for informational purposes only. Any difference in system hardware or software
+design or configuration may affect actual performance.
+
+
 -- 
 0-DAY CI Kernel Test Service
 https://01.org/lkp
 
---BA5iauX4JIsXc3PQ
+--mgNSv49cLZEyiul+
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: attachment;
-	filename="config-6.1.0-rc1-00143-gfd0dfc48f1ed"
+	filename="config-5.19.0-13710-g697253a9d6db"
 
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86_64 6.1.0-rc1 Kernel Configuration
+# Linux/x86_64 5.19.0 Kernel Configuration
 #
 CONFIG_CC_VERSION_TEXT="gcc-11 (Debian 11.3.0-8) 11.3.0"
 CONFIG_CC_IS_GCC=y
@@ -235,11 +758,11 @@ CONFIG_LD_VERSION=23900
 CONFIG_LLD_VERSION=0
 CONFIG_CC_CAN_LINK=y
 CONFIG_CC_CAN_LINK_STATIC=y
+CONFIG_CC_HAS_ASM_GOTO=y
 CONFIG_CC_HAS_ASM_GOTO_OUTPUT=y
 CONFIG_CC_HAS_ASM_INLINE=y
 CONFIG_CC_HAS_NO_PROFILE_FN_ATTR=y
 CONFIG_PAHOLE_VERSION=123
-CONFIG_CONSTRUCTORS=y
 CONFIG_IRQ_WORK=y
 CONFIG_BUILDTIME_TABLE_SORT=y
 CONFIG_THREAD_INFO_IN_TASK=y
@@ -292,7 +815,6 @@ CONFIG_GENERIC_IRQ_MIGRATION=y
 CONFIG_GENERIC_IRQ_INJECTION=y
 CONFIG_HARDIRQS_SW_RESEND=y
 CONFIG_IRQ_DOMAIN=y
-CONFIG_IRQ_SIM=y
 CONFIG_IRQ_DOMAIN_HIERARCHY=y
 CONFIG_GENERIC_MSI_IRQ=y
 CONFIG_GENERIC_MSI_IRQ_DOMAIN=y
@@ -344,18 +866,15 @@ CONFIG_BPF_JIT=y
 CONFIG_BPF_JIT_ALWAYS_ON=y
 CONFIG_BPF_JIT_DEFAULT_ON=y
 CONFIG_BPF_UNPRIV_DEFAULT_OFF=y
-CONFIG_USERMODE_DRIVER=y
-CONFIG_BPF_PRELOAD=y
-CONFIG_BPF_PRELOAD_UMD=y
+# CONFIG_BPF_PRELOAD is not set
 # CONFIG_BPF_LSM is not set
 # end of BPF subsystem
 
-CONFIG_PREEMPT_BUILD=y
+CONFIG_PREEMPT_VOLUNTARY_BUILD=y
 # CONFIG_PREEMPT_NONE is not set
-# CONFIG_PREEMPT_VOLUNTARY is not set
-CONFIG_PREEMPT=y
+CONFIG_PREEMPT_VOLUNTARY=y
+# CONFIG_PREEMPT is not set
 CONFIG_PREEMPT_COUNT=y
-CONFIG_PREEMPTION=y
 # CONFIG_PREEMPT_DYNAMIC is not set
 # CONFIG_SCHED_CORE is not set
 
@@ -381,12 +900,10 @@ CONFIG_CPU_ISOLATION=y
 # RCU Subsystem
 #
 CONFIG_TREE_RCU=y
-CONFIG_PREEMPT_RCU=y
 # CONFIG_RCU_EXPERT is not set
 CONFIG_SRCU=y
 CONFIG_TREE_SRCU=y
 CONFIG_TASKS_RCU_GENERIC=y
-CONFIG_TASKS_RCU=y
 CONFIG_TASKS_RUDE_RCU=y
 CONFIG_TASKS_TRACE_RCU=y
 CONFIG_RCU_STALL_COMMON=y
@@ -398,8 +915,8 @@ CONFIG_RCU_NOCB_CPU=y
 CONFIG_IKCONFIG=y
 CONFIG_IKCONFIG_PROC=y
 # CONFIG_IKHEADERS is not set
-CONFIG_LOG_BUF_SHIFT=21
-CONFIG_LOG_CPU_MAX_BUF_SHIFT=0
+CONFIG_LOG_BUF_SHIFT=20
+CONFIG_LOG_CPU_MAX_BUF_SHIFT=12
 CONFIG_PRINTK_SAFE_LOG_BUF_SHIFT=13
 # CONFIG_PRINTK_INDEX is not set
 CONFIG_HAVE_UNSTABLE_SCHED_CLOCK=y
@@ -422,6 +939,7 @@ CONFIG_CGROUPS=y
 CONFIG_PAGE_COUNTER=y
 # CONFIG_CGROUP_FAVOR_DYNMODS is not set
 CONFIG_MEMCG=y
+CONFIG_MEMCG_SWAP=y
 CONFIG_MEMCG_KMEM=y
 CONFIG_BLK_CGROUP=y
 CONFIG_CGROUP_WRITEBACK=y
@@ -438,7 +956,7 @@ CONFIG_PROC_PID_CPUSET=y
 CONFIG_CGROUP_DEVICE=y
 CONFIG_CGROUP_CPUACCT=y
 CONFIG_CGROUP_PERF=y
-CONFIG_CGROUP_BPF=y
+# CONFIG_CGROUP_BPF is not set
 # CONFIG_CGROUP_MISC is not set
 # CONFIG_CGROUP_DEBUG is not set
 CONFIG_SOCK_CGROUP_DATA=y
@@ -449,7 +967,7 @@ CONFIG_IPC_NS=y
 CONFIG_USER_NS=y
 CONFIG_PID_NS=y
 CONFIG_NET_NS=y
-CONFIG_CHECKPOINT_RESTORE=y
+# CONFIG_CHECKPOINT_RESTORE is not set
 CONFIG_SCHED_AUTOGROUP=y
 # CONFIG_SYSFS_DEPRECATED is not set
 CONFIG_RELAY=y
@@ -462,8 +980,7 @@ CONFIG_RD_XZ=y
 CONFIG_RD_LZO=y
 CONFIG_RD_LZ4=y
 CONFIG_RD_ZSTD=y
-CONFIG_BOOT_CONFIG=y
-# CONFIG_BOOT_CONFIG_EMBED is not set
+# CONFIG_BOOT_CONFIG is not set
 CONFIG_INITRAMFS_PRESERVE_MTIME=y
 CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y
 # CONFIG_CC_OPTIMIZE_FOR_SIZE is not set
@@ -472,7 +989,7 @@ CONFIG_SYSCTL=y
 CONFIG_HAVE_UID16=y
 CONFIG_SYSCTL_EXCEPTION_TRACE=y
 CONFIG_HAVE_PCSPKR_PLATFORM=y
-CONFIG_EXPERT=y
+# CONFIG_EXPERT is not set
 CONFIG_UID16=y
 CONFIG_MULTIUSER=y
 CONFIG_SGETMASK_SYSCALL=y
@@ -502,11 +1019,9 @@ CONFIG_KALLSYMS_BASE_RELATIVE=y
 CONFIG_ARCH_HAS_MEMBARRIER_SYNC_CORE=y
 CONFIG_KCMP=y
 CONFIG_RSEQ=y
-# CONFIG_DEBUG_RSEQ is not set
-CONFIG_EMBEDDED=y
+# CONFIG_EMBEDDED is not set
 CONFIG_HAVE_PERF_EVENTS=y
 CONFIG_GUEST_PERF_EVENTS=y
-# CONFIG_PC104 is not set
 
 #
 # Kernel Performance Events And Counters
@@ -533,7 +1048,6 @@ CONFIG_ARCH_MMAP_RND_BITS_MAX=32
 CONFIG_ARCH_MMAP_RND_COMPAT_BITS_MIN=8
 CONFIG_ARCH_MMAP_RND_COMPAT_BITS_MAX=16
 CONFIG_GENERIC_ISA_DMA=y
-CONFIG_GENERIC_CSUM=y
 CONFIG_GENERIC_BUG=y
 CONFIG_GENERIC_BUG_RELATIVE_POINTERS=y
 CONFIG_ARCH_MAY_HAVE_PC_FDC=y
@@ -543,7 +1057,6 @@ CONFIG_ARCH_HIBERNATION_POSSIBLE=y
 CONFIG_ARCH_NR_GPIO=1024
 CONFIG_ARCH_SUSPEND_POSSIBLE=y
 CONFIG_AUDIT_ARCH=y
-CONFIG_KASAN_SHADOW_OFFSET=0xdffffc0000000000
 CONFIG_HAVE_INTEL_TXT=y
 CONFIG_X86_64_SMP=y
 CONFIG_ARCH_SUPPORTS_UPROBES=y
@@ -560,7 +1073,7 @@ CONFIG_X86_FEATURE_NAMES=y
 CONFIG_X86_X2APIC=y
 CONFIG_X86_MPPARSE=y
 # CONFIG_GOLDFISH is not set
-CONFIG_X86_CPU_RESCTRL=y
+# CONFIG_X86_CPU_RESCTRL is not set
 CONFIG_X86_EXTENDED_PLATFORM=y
 # CONFIG_X86_NUMACHIP is not set
 # CONFIG_X86_VSMP is not set
@@ -601,16 +1114,15 @@ CONFIG_X86_MINIMUM_CPU_FAMILY=64
 CONFIG_X86_DEBUGCTLMSR=y
 CONFIG_IA32_FEAT_CTL=y
 CONFIG_X86_VMX_FEATURE_NAMES=y
-CONFIG_PROCESSOR_SELECT=y
 CONFIG_CPU_SUP_INTEL=y
 CONFIG_CPU_SUP_AMD=y
-# CONFIG_CPU_SUP_HYGON is not set
-# CONFIG_CPU_SUP_CENTAUR is not set
-# CONFIG_CPU_SUP_ZHAOXIN is not set
+CONFIG_CPU_SUP_HYGON=y
+CONFIG_CPU_SUP_CENTAUR=y
+CONFIG_CPU_SUP_ZHAOXIN=y
 CONFIG_HPET_TIMER=y
 CONFIG_HPET_EMULATE_RTC=y
 CONFIG_DMI=y
-CONFIG_GART_IOMMU=y
+# CONFIG_GART_IOMMU is not set
 CONFIG_BOOT_VESA_SUPPORT=y
 CONFIG_MAXSMP=y
 CONFIG_NR_CPUS_RANGE_BEGIN=8192
@@ -684,7 +1196,7 @@ CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS=y
 CONFIG_X86_INTEL_TSX_MODE_OFF=y
 # CONFIG_X86_INTEL_TSX_MODE_ON is not set
 # CONFIG_X86_INTEL_TSX_MODE_AUTO is not set
-CONFIG_X86_SGX=y
+# CONFIG_X86_SGX is not set
 CONFIG_EFI=y
 CONFIG_EFI_STUB=y
 CONFIG_EFI_MIXED=y
@@ -709,8 +1221,8 @@ CONFIG_HOTPLUG_CPU=y
 CONFIG_BOOTPARAM_HOTPLUG_CPU0=y
 # CONFIG_DEBUG_HOTPLUG_CPU0 is not set
 # CONFIG_COMPAT_VDSO is not set
-# CONFIG_LEGACY_VSYSCALL_XONLY is not set
-CONFIG_LEGACY_VSYSCALL_NONE=y
+CONFIG_LEGACY_VSYSCALL_XONLY=y
+# CONFIG_LEGACY_VSYSCALL_NONE is not set
 # CONFIG_CMDLINE_BOOL is not set
 CONFIG_MODIFY_LDT_SYSCALL=y
 # CONFIG_STRICT_SIGALTSTACK_SIZE is not set
@@ -722,7 +1234,9 @@ CONFIG_CC_HAS_SLS=y
 CONFIG_CC_HAS_RETURN_THUNK=y
 CONFIG_SPECULATION_MITIGATIONS=y
 CONFIG_PAGE_TABLE_ISOLATION=y
-# CONFIG_RETPOLINE is not set
+CONFIG_RETPOLINE=y
+CONFIG_RETHUNK=y
+CONFIG_CPU_UNRET_ENTRY=y
 CONFIG_CPU_IBPB_ENTRY=y
 CONFIG_CPU_IBRS_ENTRY=y
 # CONFIG_SLS is not set
@@ -735,7 +1249,6 @@ CONFIG_ARCH_MHP_MEMMAP_ON_MEMORY_ENABLE=y
 CONFIG_ARCH_HIBERNATION_HEADER=y
 CONFIG_SUSPEND=y
 CONFIG_SUSPEND_FREEZER=y
-# CONFIG_SUSPEND_SKIP_SYNC is not set
 CONFIG_HIBERNATE_CALLBACKS=y
 CONFIG_HIBERNATION=y
 CONFIG_HIBERNATION_SNAPSHOT_DEV=y
@@ -750,7 +1263,6 @@ CONFIG_PM_DEBUG=y
 # CONFIG_PM_ADVANCED_DEBUG is not set
 # CONFIG_PM_TEST_SUSPEND is not set
 CONFIG_PM_SLEEP_DEBUG=y
-# CONFIG_DPM_WATCHDOG is not set
 # CONFIG_PM_TRACE_RTC is not set
 CONFIG_PM_CLK=y
 # CONFIG_WQ_POWER_EFFICIENT_DEFAULT is not set
@@ -795,7 +1307,6 @@ CONFIG_ACPI_SBS=m
 CONFIG_ACPI_HED=y
 # CONFIG_ACPI_CUSTOM_METHOD is not set
 CONFIG_ACPI_BGRT=y
-# CONFIG_ACPI_REDUCED_HARDWARE_ONLY is not set
 CONFIG_ACPI_NFIT=m
 # CONFIG_NFIT_SECURITY_DEBUG is not set
 CONFIG_ACPI_NUMA=y
@@ -843,10 +1354,9 @@ CONFIG_CPU_FREQ_GOV_SCHEDUTIL=y
 CONFIG_X86_INTEL_PSTATE=y
 # CONFIG_X86_PCC_CPUFREQ is not set
 # CONFIG_X86_AMD_PSTATE is not set
-# CONFIG_X86_AMD_PSTATE_UT is not set
-CONFIG_X86_ACPI_CPUFREQ=y
+CONFIG_X86_ACPI_CPUFREQ=m
 CONFIG_X86_ACPI_CPUFREQ_CPB=y
-CONFIG_X86_POWERNOW_K8=y
+CONFIG_X86_POWERNOW_K8=m
 # CONFIG_X86_AMD_FREQ_SENSITIVITY is not set
 # CONFIG_X86_SPEEDSTEP_CENTRINO is not set
 CONFIG_X86_P4_CLOCKMOD=m
@@ -861,7 +1371,7 @@ CONFIG_X86_SPEEDSTEP_LIB=m
 # CPU Idle
 #
 CONFIG_CPU_IDLE=y
-CONFIG_CPU_IDLE_GOV_LADDER=y
+# CONFIG_CPU_IDLE_GOV_LADDER is not set
 CONFIG_CPU_IDLE_GOV_MENU=y
 # CONFIG_CPU_IDLE_GOV_TEO is not set
 # CONFIG_CPU_IDLE_GOV_HALTPOLL is not set
@@ -877,8 +1387,6 @@ CONFIG_INTEL_IDLE=y
 CONFIG_PCI_DIRECT=y
 CONFIG_PCI_MMCONFIG=y
 CONFIG_MMCONF_FAM10H=y
-# CONFIG_PCI_CNB20LE_QUIRK is not set
-# CONFIG_ISA_BUS is not set
 CONFIG_ISA_DMA_API=y
 CONFIG_AMD_NB=y
 # end of Bus options (PCI etc.)
@@ -899,8 +1407,6 @@ CONFIG_HAVE_KVM_IRQCHIP=y
 CONFIG_HAVE_KVM_IRQFD=y
 CONFIG_HAVE_KVM_IRQ_ROUTING=y
 CONFIG_HAVE_KVM_DIRTY_RING=y
-CONFIG_HAVE_KVM_DIRTY_RING_TSO=y
-CONFIG_HAVE_KVM_DIRTY_RING_ACQ_REL=y
 CONFIG_HAVE_KVM_EVENTFD=y
 CONFIG_KVM_MMIO=y
 CONFIG_KVM_ASYNC_PF=y
@@ -915,9 +1421,7 @@ CONFIG_KVM_XFER_TO_GUEST_WORK=y
 CONFIG_HAVE_KVM_PM_NOTIFIER=y
 CONFIG_VIRTUALIZATION=y
 CONFIG_KVM=m
-# CONFIG_KVM_WERROR is not set
 CONFIG_KVM_INTEL=m
-# CONFIG_X86_SGX_KVM is not set
 # CONFIG_KVM_AMD is not set
 # CONFIG_KVM_XEN is not set
 CONFIG_AS_AVX512=y
@@ -930,7 +1434,6 @@ CONFIG_AS_TPAUSE=y
 #
 CONFIG_CRASH_CORE=y
 CONFIG_KEXEC_CORE=y
-CONFIG_HAVE_IMA_KEXEC=y
 CONFIG_HOTPLUG_SMT=y
 CONFIG_GENERIC_ENTRY=y
 CONFIG_KPROBES=y
@@ -967,7 +1470,6 @@ CONFIG_ARCH_WANTS_NO_INSTR=y
 CONFIG_HAVE_ASM_MODVERSIONS=y
 CONFIG_HAVE_REGS_AND_STACK_ACCESS_API=y
 CONFIG_HAVE_RSEQ=y
-CONFIG_HAVE_RUST=y
 CONFIG_HAVE_FUNCTION_ARG_ACCESS_API=y
 CONFIG_HAVE_HW_BREAKPOINT=y
 CONFIG_HAVE_MIXED_BREAKPOINTS_REGS=y
@@ -999,7 +1501,6 @@ CONFIG_STACKPROTECTOR_STRONG=y
 CONFIG_ARCH_SUPPORTS_LTO_CLANG=y
 CONFIG_ARCH_SUPPORTS_LTO_CLANG_THIN=y
 CONFIG_LTO_NONE=y
-CONFIG_ARCH_SUPPORTS_CFI_CLANG=y
 CONFIG_HAVE_ARCH_WITHIN_STACK_FRAMES=y
 CONFIG_HAVE_CONTEXT_TRACKING_USER=y
 CONFIG_HAVE_CONTEXT_TRACKING_USER_OFFSTACK=y
@@ -1017,7 +1518,6 @@ CONFIG_HAVE_MOD_ARCH_SPECIFIC=y
 CONFIG_MODULES_USE_ELF_RELA=y
 CONFIG_HAVE_IRQ_EXIT_ON_IRQ_STACK=y
 CONFIG_HAVE_SOFTIRQ_ON_OWN_STACK=y
-CONFIG_SOFTIRQ_ON_OWN_STACK=y
 CONFIG_ARCH_HAS_ELF_RANDOMIZE=y
 CONFIG_HAVE_ARCH_MMAP_RND_BITS=y
 CONFIG_HAVE_EXIT_THREAD=y
@@ -1041,7 +1541,7 @@ CONFIG_HAVE_ARCH_VMAP_STACK=y
 CONFIG_VMAP_STACK=y
 CONFIG_HAVE_ARCH_RANDOMIZE_KSTACK_OFFSET=y
 CONFIG_RANDOMIZE_KSTACK_OFFSET=y
-CONFIG_RANDOMIZE_KSTACK_OFFSET_DEFAULT=y
+# CONFIG_RANDOMIZE_KSTACK_OFFSET_DEFAULT is not set
 CONFIG_ARCH_HAS_STRICT_KERNEL_RWX=y
 CONFIG_STRICT_KERNEL_RWX=y
 CONFIG_ARCH_HAS_STRICT_MODULE_RWX=y
@@ -1061,8 +1561,6 @@ CONFIG_ARCH_SUPPORTS_PAGE_TABLE_CHECK=y
 CONFIG_ARCH_HAS_ELFCORE_COMPAT=y
 CONFIG_ARCH_HAS_PARANOID_L1D_FLUSH=y
 CONFIG_DYNAMIC_SIGFRAME=y
-CONFIG_HAVE_ARCH_NODE_DEV_GROUP=y
-CONFIG_ARCH_HAS_NONLEAF_PMD_YOUNG=y
 
 #
 # GCOV-based kernel profiling
@@ -1084,9 +1582,8 @@ CONFIG_MODULE_FORCE_LOAD=y
 CONFIG_MODULE_UNLOAD=y
 # CONFIG_MODULE_FORCE_UNLOAD is not set
 # CONFIG_MODULE_UNLOAD_TAINT_TRACKING is not set
-CONFIG_MODVERSIONS=y
-CONFIG_ASM_MODVERSIONS=y
-CONFIG_MODULE_SRCVERSION_ALL=y
+# CONFIG_MODVERSIONS is not set
+# CONFIG_MODULE_SRCVERSION_ALL is not set
 CONFIG_MODULE_SIG=y
 # CONFIG_MODULE_SIG_FORCE is not set
 CONFIG_MODULE_SIG_ALL=y
@@ -1102,7 +1599,6 @@ CONFIG_MODULE_COMPRESS_NONE=y
 # CONFIG_MODULE_COMPRESS_ZSTD is not set
 # CONFIG_MODULE_ALLOW_MISSING_NAMESPACE_IMPORTS is not set
 CONFIG_MODPROBE_PATH="/sbin/modprobe"
-# CONFIG_TRIM_UNUSED_KSYMS is not set
 CONFIG_MODULES_TREE_LOOKUP=y
 CONFIG_BLOCK=y
 CONFIG_BLOCK_LEGACY_AUTOLOAD=y
@@ -1117,7 +1613,7 @@ CONFIG_BLK_DEV_THROTTLING=y
 # CONFIG_BLK_DEV_THROTTLING_LOW is not set
 CONFIG_BLK_WBT=y
 CONFIG_BLK_WBT_MQ=y
-CONFIG_BLK_CGROUP_IOLATENCY=y
+# CONFIG_BLK_CGROUP_IOLATENCY is not set
 # CONFIG_BLK_CGROUP_IOCOST is not set
 # CONFIG_BLK_CGROUP_IOPRIO is not set
 CONFIG_BLK_DEBUG_FS=y
@@ -1127,26 +1623,9 @@ CONFIG_BLK_DEBUG_FS=y
 #
 # Partition Types
 #
-CONFIG_PARTITION_ADVANCED=y
-# CONFIG_ACORN_PARTITION is not set
-# CONFIG_AIX_PARTITION is not set
-CONFIG_OSF_PARTITION=y
-CONFIG_AMIGA_PARTITION=y
-# CONFIG_ATARI_PARTITION is not set
-CONFIG_MAC_PARTITION=y
+# CONFIG_PARTITION_ADVANCED is not set
 CONFIG_MSDOS_PARTITION=y
-CONFIG_BSD_DISKLABEL=y
-CONFIG_MINIX_SUBPARTITION=y
-CONFIG_SOLARIS_X86_PARTITION=y
-CONFIG_UNIXWARE_DISKLABEL=y
-# CONFIG_LDM_PARTITION is not set
-CONFIG_SGI_PARTITION=y
-# CONFIG_ULTRIX_PARTITION is not set
-CONFIG_SUN_PARTITION=y
-CONFIG_KARMA_PARTITION=y
 CONFIG_EFI_PARTITION=y
-# CONFIG_SYSV68_PARTITION is not set
-# CONFIG_CMDLINE_PARTITION is not set
 # end of Partition Types
 
 CONFIG_BLOCK_COMPAT=y
@@ -1169,7 +1648,11 @@ CONFIG_BFQ_GROUP_IOSCHED=y
 CONFIG_PREEMPT_NOTIFIERS=y
 CONFIG_PADATA=y
 CONFIG_ASN1=y
-CONFIG_UNINLINE_SPIN_UNLOCK=y
+CONFIG_INLINE_SPIN_UNLOCK_IRQ=y
+CONFIG_INLINE_READ_UNLOCK=y
+CONFIG_INLINE_READ_UNLOCK_IRQ=y
+CONFIG_INLINE_WRITE_UNLOCK=y
+CONFIG_INLINE_WRITE_UNLOCK_IRQ=y
 CONFIG_ARCH_SUPPORTS_ATOMIC_RMW=y
 CONFIG_MUTEX_SPIN_ON_OWNER=y
 CONFIG_RWSEM_SPIN_ON_OWNER=y
@@ -1191,7 +1674,7 @@ CONFIG_COMPAT_BINFMT_ELF=y
 CONFIG_ELFCORE=y
 CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS=y
 CONFIG_BINFMT_SCRIPT=y
-CONFIG_BINFMT_MISC=y
+CONFIG_BINFMT_MISC=m
 CONFIG_COREDUMP=y
 # end of Executable file formats
 
@@ -1223,10 +1706,9 @@ CONFIG_ZSMALLOC_STAT=y
 #
 # CONFIG_SLAB is not set
 CONFIG_SLUB=y
-# CONFIG_SLOB is not set
 CONFIG_SLAB_MERGE_DEFAULT=y
 CONFIG_SLAB_FREELIST_RANDOM=y
-CONFIG_SLAB_FREELIST_HARDENED=y
+# CONFIG_SLAB_FREELIST_HARDENED is not set
 # CONFIG_SLUB_STATS is not set
 CONFIG_SLUB_CPU_PARTIAL=y
 # end of SLAB allocator options
@@ -1253,7 +1735,6 @@ CONFIG_ARCH_ENABLE_SPLIT_PMD_PTLOCK=y
 CONFIG_MEMORY_BALLOON=y
 CONFIG_BALLOON_COMPACTION=y
 CONFIG_COMPACTION=y
-CONFIG_COMPACT_UNEVICTABLE_DEFAULT=1
 CONFIG_PAGE_REPORTING=y
 CONFIG_MIGRATION=y
 CONFIG_DEVICE_MIGRATION=y
@@ -1266,12 +1747,12 @@ CONFIG_KSM=y
 CONFIG_DEFAULT_MMAP_MIN_ADDR=4096
 CONFIG_ARCH_SUPPORTS_MEMORY_FAILURE=y
 CONFIG_MEMORY_FAILURE=y
-CONFIG_HWPOISON_INJECT=y
+CONFIG_HWPOISON_INJECT=m
 CONFIG_ARCH_WANT_GENERAL_HUGETLB=y
 CONFIG_ARCH_WANTS_THP_SWAP=y
 CONFIG_TRANSPARENT_HUGEPAGE=y
-# CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS is not set
-CONFIG_TRANSPARENT_HUGEPAGE_MADVISE=y
+CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS=y
+# CONFIG_TRANSPARENT_HUGEPAGE_MADVISE is not set
 CONFIG_THP_SWAP=y
 # CONFIG_READ_ONLY_THP_FOR_FS is not set
 CONFIG_NEED_PER_CPU_EMBED_FIRST_CHUNK=y
@@ -1279,12 +1760,7 @@ CONFIG_NEED_PER_CPU_PAGE_FIRST_CHUNK=y
 CONFIG_USE_PERCPU_NUMA_NODE_ID=y
 CONFIG_HAVE_SETUP_PER_CPU_AREA=y
 CONFIG_FRONTSWAP=y
-CONFIG_CMA=y
-# CONFIG_CMA_DEBUG is not set
-# CONFIG_CMA_DEBUGFS is not set
-# CONFIG_CMA_SYSFS is not set
-CONFIG_CMA_AREAS=7
-CONFIG_MEM_SOFT_DIRTY=y
+# CONFIG_CMA is not set
 CONFIG_GENERIC_EARLY_IOREMAP=y
 CONFIG_DEFERRED_STRUCT_PAGE_INIT=y
 CONFIG_PAGE_IDLE_FLAG=y
@@ -1292,11 +1768,9 @@ CONFIG_IDLE_PAGE_TRACKING=y
 CONFIG_ARCH_HAS_CACHE_LINE_SIZE=y
 CONFIG_ARCH_HAS_CURRENT_STACK_POINTER=y
 CONFIG_ARCH_HAS_PTE_DEVMAP=y
-CONFIG_ARCH_HAS_ZONE_DMA_SET=y
 CONFIG_ZONE_DMA=y
 CONFIG_ZONE_DMA32=y
 CONFIG_ZONE_DEVICE=y
-CONFIG_HMM_MIRROR=y
 CONFIG_GET_FREE_REGION=y
 CONFIG_DEVICE_PRIVATE=y
 CONFIG_VMAP_PFN=y
@@ -1304,33 +1778,22 @@ CONFIG_ARCH_USES_HIGH_VMA_FLAGS=y
 CONFIG_ARCH_HAS_PKEYS=y
 CONFIG_VM_EVENT_COUNTERS=y
 # CONFIG_PERCPU_STATS is not set
-CONFIG_GUP_TEST=y
+# CONFIG_GUP_TEST is not set
 CONFIG_ARCH_HAS_PTE_SPECIAL=y
+CONFIG_SECRETMEM=y
 # CONFIG_ANON_VMA_NAME is not set
-CONFIG_USERFAULTFD=y
-CONFIG_HAVE_ARCH_USERFAULTFD_WP=y
-CONFIG_HAVE_ARCH_USERFAULTFD_MINOR=y
-CONFIG_PTE_MARKER=y
-CONFIG_PTE_MARKER_UFFD_WP=y
-# CONFIG_LRU_GEN is not set
+# CONFIG_USERFAULTFD is not set
 
 #
 # Data Access Monitoring
 #
-CONFIG_DAMON=y
-CONFIG_DAMON_VADDR=y
-CONFIG_DAMON_PADDR=y
-# CONFIG_DAMON_SYSFS is not set
-CONFIG_DAMON_DBGFS=y
-# CONFIG_DAMON_RECLAIM is not set
-# CONFIG_DAMON_LRU_SORT is not set
+# CONFIG_DAMON is not set
 # end of Data Access Monitoring
 # end of Memory Management options
 
 CONFIG_NET=y
 CONFIG_NET_INGRESS=y
 CONFIG_NET_EGRESS=y
-CONFIG_NET_REDIRECT=y
 CONFIG_SKB_EXTENSIONS=y
 
 #
@@ -1360,7 +1823,7 @@ CONFIG_XFRM_IPCOMP=m
 CONFIG_NET_KEY=m
 CONFIG_NET_KEY_MIGRATE=y
 CONFIG_XDP_SOCKETS=y
-CONFIG_XDP_SOCKETS_DIAG=y
+# CONFIG_XDP_SOCKETS_DIAG is not set
 CONFIG_INET=y
 CONFIG_IP_MULTICAST=y
 CONFIG_IP_ADVANCED_ROUTER=y
@@ -1373,10 +1836,10 @@ CONFIG_IP_PNP=y
 CONFIG_IP_PNP_DHCP=y
 # CONFIG_IP_PNP_BOOTP is not set
 # CONFIG_IP_PNP_RARP is not set
-CONFIG_NET_IPIP=y
-CONFIG_NET_IPGRE_DEMUX=y
-CONFIG_NET_IP_TUNNEL=y
-CONFIG_NET_IPGRE=y
+CONFIG_NET_IPIP=m
+CONFIG_NET_IPGRE_DEMUX=m
+CONFIG_NET_IP_TUNNEL=m
+CONFIG_NET_IPGRE=m
 CONFIG_NET_IPGRE_BROADCAST=y
 CONFIG_IP_MROUTE_COMMON=y
 CONFIG_IP_MROUTE=y
@@ -1385,16 +1848,16 @@ CONFIG_IP_PIMSM_V1=y
 CONFIG_IP_PIMSM_V2=y
 CONFIG_SYN_COOKIES=y
 CONFIG_NET_IPVTI=m
-CONFIG_NET_UDP_TUNNEL=y
-CONFIG_NET_FOU=y
-CONFIG_NET_FOU_IP_TUNNELS=y
+CONFIG_NET_UDP_TUNNEL=m
+# CONFIG_NET_FOU is not set
+# CONFIG_NET_FOU_IP_TUNNELS is not set
 CONFIG_INET_AH=m
 CONFIG_INET_ESP=m
 CONFIG_INET_ESP_OFFLOAD=m
 # CONFIG_INET_ESPINTCP is not set
 CONFIG_INET_IPCOMP=m
 CONFIG_INET_XFRM_TUNNEL=m
-CONFIG_INET_TUNNEL=y
+CONFIG_INET_TUNNEL=m
 CONFIG_INET_DIAG=m
 CONFIG_INET_TCP_DIAG=m
 CONFIG_INET_UDP_DIAG=m
@@ -1417,9 +1880,9 @@ CONFIG_TCP_CONG_ILLINOIS=m
 CONFIG_TCP_CONG_DCTCP=m
 # CONFIG_TCP_CONG_CDG is not set
 CONFIG_TCP_CONG_BBR=m
-# CONFIG_DEFAULT_CUBIC is not set
-CONFIG_DEFAULT_RENO=y
-CONFIG_DEFAULT_TCP_CONG="reno"
+CONFIG_DEFAULT_CUBIC=y
+# CONFIG_DEFAULT_RENO is not set
+CONFIG_DEFAULT_TCP_CONG="cubic"
 CONFIG_TCP_MD5SIG=y
 CONFIG_IPV6=y
 CONFIG_IPV6_ROUTER_PREF=y
@@ -1430,32 +1893,27 @@ CONFIG_INET6_ESP=m
 CONFIG_INET6_ESP_OFFLOAD=m
 # CONFIG_INET6_ESPINTCP is not set
 CONFIG_INET6_IPCOMP=m
-CONFIG_IPV6_MIP6=y
+CONFIG_IPV6_MIP6=m
 # CONFIG_IPV6_ILA is not set
 CONFIG_INET6_XFRM_TUNNEL=m
-CONFIG_INET6_TUNNEL=y
+CONFIG_INET6_TUNNEL=m
 CONFIG_IPV6_VTI=m
 CONFIG_IPV6_SIT=m
 CONFIG_IPV6_SIT_6RD=y
 CONFIG_IPV6_NDISC_NODETYPE=y
-CONFIG_IPV6_TUNNEL=y
-CONFIG_IPV6_GRE=y
-CONFIG_IPV6_FOU=y
-CONFIG_IPV6_FOU_TUNNEL=y
+CONFIG_IPV6_TUNNEL=m
+CONFIG_IPV6_GRE=m
 CONFIG_IPV6_MULTIPLE_TABLES=y
-CONFIG_IPV6_SUBTREES=y
+# CONFIG_IPV6_SUBTREES is not set
 CONFIG_IPV6_MROUTE=y
 CONFIG_IPV6_MROUTE_MULTIPLE_TABLES=y
 CONFIG_IPV6_PIMSM_V2=y
-CONFIG_IPV6_SEG6_LWTUNNEL=y
+# CONFIG_IPV6_SEG6_LWTUNNEL is not set
 # CONFIG_IPV6_SEG6_HMAC is not set
-CONFIG_IPV6_SEG6_BPF=y
 # CONFIG_IPV6_RPL_LWTUNNEL is not set
-CONFIG_IPV6_IOAM6_LWTUNNEL=y
+# CONFIG_IPV6_IOAM6_LWTUNNEL is not set
 CONFIG_NETLABEL=y
-CONFIG_MPTCP=y
-CONFIG_INET_MPTCP_DIAG=m
-CONFIG_MPTCP_IPV6=y
+# CONFIG_MPTCP is not set
 CONFIG_NETWORK_SECMARK=y
 CONFIG_NET_PTP_CLASSIFY=y
 CONFIG_NETWORK_PHY_TIMESTAMPING=y
@@ -1469,13 +1927,13 @@ CONFIG_BRIDGE_NETFILTER=m
 CONFIG_NETFILTER_INGRESS=y
 CONFIG_NETFILTER_EGRESS=y
 CONFIG_NETFILTER_SKIP_EGRESS=y
-CONFIG_NETFILTER_NETLINK=y
+CONFIG_NETFILTER_NETLINK=m
 CONFIG_NETFILTER_FAMILY_BRIDGE=y
 CONFIG_NETFILTER_FAMILY_ARP=y
 # CONFIG_NETFILTER_NETLINK_HOOK is not set
 # CONFIG_NETFILTER_NETLINK_ACCT is not set
-CONFIG_NETFILTER_NETLINK_QUEUE=y
-CONFIG_NETFILTER_NETLINK_LOG=y
+CONFIG_NETFILTER_NETLINK_QUEUE=m
+CONFIG_NETFILTER_NETLINK_LOG=m
 CONFIG_NETFILTER_NETLINK_OSF=m
 CONFIG_NF_CONNTRACK=m
 CONFIG_NF_LOG_SYSLOG=m
@@ -1521,7 +1979,6 @@ CONFIG_NF_TABLES_INET=y
 CONFIG_NF_TABLES_NETDEV=y
 CONFIG_NFT_NUMGEN=m
 CONFIG_NFT_CT=m
-CONFIG_NFT_FLOW_OFFLOAD=m
 CONFIG_NFT_CONNLIMIT=m
 CONFIG_NFT_LOG=m
 CONFIG_NFT_LIMIT=m
@@ -1541,16 +1998,15 @@ CONFIG_NFT_FIB_INET=m
 # CONFIG_NFT_XFRM is not set
 CONFIG_NFT_SOCKET=m
 # CONFIG_NFT_OSF is not set
-CONFIG_NFT_TPROXY=m
-CONFIG_NFT_SYNPROXY=m
+# CONFIG_NFT_TPROXY is not set
+# CONFIG_NFT_SYNPROXY is not set
 CONFIG_NF_DUP_NETDEV=m
 CONFIG_NFT_DUP_NETDEV=m
 CONFIG_NFT_FWD_NETDEV=m
 CONFIG_NFT_FIB_NETDEV=m
 # CONFIG_NFT_REJECT_NETDEV is not set
-CONFIG_NF_FLOW_TABLE_INET=m
-CONFIG_NF_FLOW_TABLE=m
-# CONFIG_NF_FLOW_TABLE_PROCFS is not set
+# CONFIG_NF_FLOW_TABLE is not set
+CONFIG_NF_FLOW_TABLE_PROCFS=y
 CONFIG_NETFILTER_XTABLES=y
 CONFIG_NETFILTER_XTABLES_COMPAT=y
 
@@ -1596,7 +2052,7 @@ CONFIG_NETFILTER_XT_TARGET_TCPOPTSTRIP=m
 # Xtables matches
 #
 CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=m
-CONFIG_NETFILTER_XT_MATCH_BPF=y
+CONFIG_NETFILTER_XT_MATCH_BPF=m
 CONFIG_NETFILTER_XT_MATCH_CGROUP=m
 CONFIG_NETFILTER_XT_MATCH_CLUSTER=m
 CONFIG_NETFILTER_XT_MATCH_COMMENT=m
@@ -1636,7 +2092,7 @@ CONFIG_NETFILTER_XT_MATCH_RECENT=m
 CONFIG_NETFILTER_XT_MATCH_SCTP=m
 CONFIG_NETFILTER_XT_MATCH_SOCKET=m
 CONFIG_NETFILTER_XT_MATCH_STATE=m
-CONFIG_NETFILTER_XT_MATCH_STATISTIC=y
+CONFIG_NETFILTER_XT_MATCH_STATISTIC=m
 CONFIG_NETFILTER_XT_MATCH_STRING=m
 CONFIG_NETFILTER_XT_MATCH_TCPMSS=m
 # CONFIG_NETFILTER_XT_MATCH_TIME is not set
@@ -1813,9 +2269,25 @@ CONFIG_BRIDGE_EBT_REDIRECT=m
 CONFIG_BRIDGE_EBT_SNAT=m
 CONFIG_BRIDGE_EBT_LOG=m
 CONFIG_BRIDGE_EBT_NFLOG=m
-CONFIG_BPFILTER=y
-CONFIG_BPFILTER_UMH=m
-# CONFIG_IP_DCCP is not set
+# CONFIG_BPFILTER is not set
+CONFIG_IP_DCCP=y
+CONFIG_INET_DCCP_DIAG=m
+
+#
+# DCCP CCIDs Configuration
+#
+# CONFIG_IP_DCCP_CCID2_DEBUG is not set
+CONFIG_IP_DCCP_CCID3=y
+# CONFIG_IP_DCCP_CCID3_DEBUG is not set
+CONFIG_IP_DCCP_TFRC_LIB=y
+# end of DCCP CCIDs Configuration
+
+#
+# DCCP Kernel Hacking
+#
+# CONFIG_IP_DCCP_DEBUG is not set
+# end of DCCP Kernel Hacking
+
 CONFIG_IP_SCTP=m
 # CONFIG_SCTP_DBG_OBJCNT is not set
 # CONFIG_SCTP_DEFAULT_COOKIE_HMAC_MD5 is not set
@@ -1841,19 +2313,20 @@ CONFIG_L2TP_DEBUGFS=m
 CONFIG_L2TP_V3=y
 CONFIG_L2TP_IP=m
 CONFIG_L2TP_ETH=m
-CONFIG_STP=y
-CONFIG_GARP=y
-CONFIG_MRP=y
-CONFIG_BRIDGE=y
+CONFIG_STP=m
+CONFIG_GARP=m
+CONFIG_MRP=m
+CONFIG_BRIDGE=m
 CONFIG_BRIDGE_IGMP_SNOOPING=y
 CONFIG_BRIDGE_VLAN_FILTERING=y
 # CONFIG_BRIDGE_MRP is not set
 # CONFIG_BRIDGE_CFM is not set
 # CONFIG_NET_DSA is not set
-CONFIG_VLAN_8021Q=y
+CONFIG_VLAN_8021Q=m
 CONFIG_VLAN_8021Q_GVRP=y
 CONFIG_VLAN_8021Q_MVRP=y
-CONFIG_LLC=y
+# CONFIG_DECNET is not set
+CONFIG_LLC=m
 # CONFIG_LLC2 is not set
 # CONFIG_ATALK is not set
 # CONFIG_X25 is not set
@@ -1879,32 +2352,31 @@ CONFIG_NET_SCH_SFB=m
 CONFIG_NET_SCH_SFQ=m
 CONFIG_NET_SCH_TEQL=m
 CONFIG_NET_SCH_TBF=m
-CONFIG_NET_SCH_CBS=m
-CONFIG_NET_SCH_ETF=m
-CONFIG_NET_SCH_TAPRIO=m
+# CONFIG_NET_SCH_CBS is not set
+# CONFIG_NET_SCH_ETF is not set
+# CONFIG_NET_SCH_TAPRIO is not set
 CONFIG_NET_SCH_GRED=m
 CONFIG_NET_SCH_DSMARK=m
-CONFIG_NET_SCH_NETEM=y
+CONFIG_NET_SCH_NETEM=m
 CONFIG_NET_SCH_DRR=m
 CONFIG_NET_SCH_MQPRIO=m
-CONFIG_NET_SCH_SKBPRIO=m
+# CONFIG_NET_SCH_SKBPRIO is not set
 CONFIG_NET_SCH_CHOKE=m
 CONFIG_NET_SCH_QFQ=m
 CONFIG_NET_SCH_CODEL=m
 CONFIG_NET_SCH_FQ_CODEL=y
-CONFIG_NET_SCH_CAKE=m
+# CONFIG_NET_SCH_CAKE is not set
 CONFIG_NET_SCH_FQ=m
 CONFIG_NET_SCH_HHF=m
 CONFIG_NET_SCH_PIE=m
-CONFIG_NET_SCH_FQ_PIE=m
-CONFIG_NET_SCH_INGRESS=y
+# CONFIG_NET_SCH_FQ_PIE is not set
+CONFIG_NET_SCH_INGRESS=m
 CONFIG_NET_SCH_PLUG=m
-CONFIG_NET_SCH_ETS=m
+# CONFIG_NET_SCH_ETS is not set
 CONFIG_NET_SCH_DEFAULT=y
 # CONFIG_DEFAULT_FQ is not set
 # CONFIG_DEFAULT_CODEL is not set
 CONFIG_DEFAULT_FQ_CODEL=y
-# CONFIG_DEFAULT_FQ_PIE is not set
 # CONFIG_DEFAULT_SFQ is not set
 # CONFIG_DEFAULT_PFIFO_FAST is not set
 CONFIG_DEFAULT_NET_SCH="fq_codel"
@@ -1934,43 +2406,37 @@ CONFIG_NET_EMATCH_NBYTE=m
 CONFIG_NET_EMATCH_U32=m
 CONFIG_NET_EMATCH_META=m
 CONFIG_NET_EMATCH_TEXT=m
-CONFIG_NET_EMATCH_CANID=m
+# CONFIG_NET_EMATCH_CANID is not set
 CONFIG_NET_EMATCH_IPSET=m
-CONFIG_NET_EMATCH_IPT=m
+# CONFIG_NET_EMATCH_IPT is not set
 CONFIG_NET_CLS_ACT=y
 CONFIG_NET_ACT_POLICE=m
 CONFIG_NET_ACT_GACT=m
 CONFIG_GACT_PROB=y
 CONFIG_NET_ACT_MIRRED=m
 CONFIG_NET_ACT_SAMPLE=m
-CONFIG_NET_ACT_IPT=m
+# CONFIG_NET_ACT_IPT is not set
 CONFIG_NET_ACT_NAT=m
 CONFIG_NET_ACT_PEDIT=m
 CONFIG_NET_ACT_SIMP=m
 CONFIG_NET_ACT_SKBEDIT=m
 CONFIG_NET_ACT_CSUM=m
-CONFIG_NET_ACT_MPLS=m
+# CONFIG_NET_ACT_MPLS is not set
 CONFIG_NET_ACT_VLAN=m
 CONFIG_NET_ACT_BPF=m
-CONFIG_NET_ACT_CONNMARK=m
-CONFIG_NET_ACT_CTINFO=m
+# CONFIG_NET_ACT_CONNMARK is not set
+# CONFIG_NET_ACT_CTINFO is not set
 CONFIG_NET_ACT_SKBMOD=m
-CONFIG_NET_ACT_IFE=m
+# CONFIG_NET_ACT_IFE is not set
 CONFIG_NET_ACT_TUNNEL_KEY=m
-CONFIG_NET_ACT_CT=m
-CONFIG_NET_ACT_GATE=m
-CONFIG_NET_IFE_SKBMARK=m
-CONFIG_NET_IFE_SKBPRIO=m
-CONFIG_NET_IFE_SKBTCINDEX=m
-CONFIG_NET_TC_SKB_EXT=y
+# CONFIG_NET_ACT_GATE is not set
+# CONFIG_NET_TC_SKB_EXT is not set
 CONFIG_NET_SCH_FIFO=y
 CONFIG_DCB=y
-CONFIG_DNS_RESOLVER=y
+CONFIG_DNS_RESOLVER=m
 # CONFIG_BATMAN_ADV is not set
 CONFIG_OPENVSWITCH=m
 CONFIG_OPENVSWITCH_GRE=m
-CONFIG_OPENVSWITCH_VXLAN=m
-CONFIG_OPENVSWITCH_GENEVE=m
 CONFIG_VSOCKETS=m
 CONFIG_VSOCKETS_DIAG=m
 CONFIG_VSOCKETS_LOOPBACK=m
@@ -1979,7 +2445,7 @@ CONFIG_VIRTIO_VSOCKETS=m
 CONFIG_VIRTIO_VSOCKETS_COMMON=m
 CONFIG_NETLINK_DIAG=m
 CONFIG_MPLS=y
-CONFIG_NET_MPLS_GSO=m
+CONFIG_NET_MPLS_GSO=y
 CONFIG_MPLS_ROUTING=m
 CONFIG_MPLS_IPTUNNEL=m
 CONFIG_NET_NSH=y
@@ -1997,7 +2463,6 @@ CONFIG_CGROUP_NET_PRIO=y
 CONFIG_CGROUP_NET_CLASSID=y
 CONFIG_NET_RX_BUSY_POLL=y
 CONFIG_BQL=y
-CONFIG_BPF_STREAM_PARSER=y
 CONFIG_NET_FLOW_LIMIT=y
 
 #
@@ -2025,7 +2490,6 @@ CONFIG_WIRELESS=y
 CONFIG_CFG80211=m
 # CONFIG_NL80211_TESTMODE is not set
 # CONFIG_CFG80211_DEVELOPER_WARNINGS is not set
-# CONFIG_CFG80211_CERTIFICATION_ONUS is not set
 CONFIG_CFG80211_REQUIRE_SIGNED_REGDB=y
 CONFIG_CFG80211_USE_KERNEL_REGDB_KEYS=y
 CONFIG_CFG80211_DEFAULT_PS=y
@@ -2055,29 +2519,9 @@ CONFIG_NET_9P_VIRTIO=y
 CONFIG_CEPH_LIB=m
 # CONFIG_CEPH_LIB_PRETTYDEBUG is not set
 CONFIG_CEPH_LIB_USE_DNS_RESOLVER=y
-CONFIG_NFC=m
-# CONFIG_NFC_DIGITAL is not set
-CONFIG_NFC_NCI=m
-# CONFIG_NFC_NCI_SPI is not set
-# CONFIG_NFC_NCI_UART is not set
-# CONFIG_NFC_HCI is not set
-
-#
-# Near Field Communication (NFC) devices
-#
-CONFIG_NFC_VIRTUAL_NCI=m
-# CONFIG_NFC_FDP is not set
-# CONFIG_NFC_PN533_USB is not set
-# CONFIG_NFC_PN533_I2C is not set
-# CONFIG_NFC_MRVL_USB is not set
-# CONFIG_NFC_ST_NCI_I2C is not set
-# CONFIG_NFC_ST_NCI_SPI is not set
-# CONFIG_NFC_NXP_NCI is not set
-# CONFIG_NFC_S3FWRN5_I2C is not set
-# end of Near Field Communication (NFC) devices
-
+# CONFIG_NFC is not set
 CONFIG_PSAMPLE=m
-CONFIG_NET_IFE=m
+# CONFIG_NET_IFE is not set
 CONFIG_LWTUNNEL=y
 CONFIG_LWTUNNEL_BPF=y
 CONFIG_DST_CACHE=y
@@ -2085,10 +2529,9 @@ CONFIG_GRO_CELLS=y
 CONFIG_SOCK_VALIDATE_XMIT=y
 CONFIG_NET_SELFTESTS=y
 CONFIG_NET_SOCK_MSG=y
-CONFIG_NET_DEVLINK=y
 CONFIG_PAGE_POOL=y
 # CONFIG_PAGE_POOL_STATS is not set
-CONFIG_FAILOVER=y
+CONFIG_FAILOVER=m
 CONFIG_ETHTOOL_NETLINK=y
 
 #
@@ -2127,11 +2570,6 @@ CONFIG_PCI_PRI=y
 CONFIG_PCI_PASID=y
 # CONFIG_PCI_P2PDMA is not set
 CONFIG_PCI_LABEL=y
-# CONFIG_PCIE_BUS_TUNE_OFF is not set
-CONFIG_PCIE_BUS_DEFAULT=y
-# CONFIG_PCIE_BUS_SAFE is not set
-# CONFIG_PCIE_BUS_PERFORMANCE is not set
-# CONFIG_PCIE_BUS_PEER2PEER is not set
 CONFIG_VGA_ARB=y
 CONFIG_VGA_ARB_MAX_GPUS=64
 CONFIG_HOTPLUG_PCI=y
@@ -2201,7 +2639,7 @@ CONFIG_FW_LOADER_USER_HELPER=y
 # CONFIG_FW_LOADER_USER_HELPER_FALLBACK is not set
 # CONFIG_FW_LOADER_COMPRESS is not set
 CONFIG_FW_CACHE=y
-CONFIG_FW_UPLOAD=y
+# CONFIG_FW_UPLOAD is not set
 # end of Firmware loader
 
 CONFIG_ALLOW_DEV_COREDUMP=y
@@ -2303,30 +2741,23 @@ CONFIG_PNP=y
 CONFIG_PNPACPI=y
 CONFIG_BLK_DEV=y
 CONFIG_BLK_DEV_NULL_BLK=m
-# CONFIG_BLK_DEV_NULL_BLK_FAULT_INJECTION is not set
 # CONFIG_BLK_DEV_FD is not set
 CONFIG_CDROM=m
 # CONFIG_PARIDE is not set
 # CONFIG_BLK_DEV_PCIESSD_MTIP32XX is not set
-CONFIG_ZRAM=m
-CONFIG_ZRAM_DEF_COMP_LZORLE=y
-# CONFIG_ZRAM_DEF_COMP_LZO is not set
-CONFIG_ZRAM_DEF_COMP="lzo-rle"
-CONFIG_ZRAM_WRITEBACK=y
-# CONFIG_ZRAM_MEMORY_TRACKING is not set
-# CONFIG_ZRAM_MULTI_COMP is not set
+# CONFIG_ZRAM is not set
 CONFIG_BLK_DEV_LOOP=m
 CONFIG_BLK_DEV_LOOP_MIN_COUNT=0
 # CONFIG_BLK_DEV_DRBD is not set
 CONFIG_BLK_DEV_NBD=m
-CONFIG_BLK_DEV_RAM=y
+CONFIG_BLK_DEV_RAM=m
 CONFIG_BLK_DEV_RAM_COUNT=16
 CONFIG_BLK_DEV_RAM_SIZE=16384
 CONFIG_CDROM_PKTCDVD=m
 CONFIG_CDROM_PKTCDVD_BUFFERS=8
 # CONFIG_CDROM_PKTCDVD_WCACHE is not set
 # CONFIG_ATA_OVER_ETH is not set
-CONFIG_VIRTIO_BLK=y
+CONFIG_VIRTIO_BLK=m
 CONFIG_BLK_DEV_RBD=m
 # CONFIG_BLK_DEV_UBLK is not set
 
@@ -2426,7 +2857,6 @@ CONFIG_MISC_RTSX_PCI=m
 CONFIG_PVPANIC=y
 # CONFIG_PVPANIC_MMIO is not set
 # CONFIG_PVPANIC_PCI is not set
-# CONFIG_GP_PCI1XXXX is not set
 # end of Misc devices
 
 #
@@ -2523,7 +2953,7 @@ CONFIG_SCSI_ISCI=m
 # CONFIG_SCSI_DC395x is not set
 # CONFIG_SCSI_AM53C974 is not set
 # CONFIG_SCSI_WD719X is not set
-# CONFIG_SCSI_DEBUG is not set
+CONFIG_SCSI_DEBUG=m
 # CONFIG_SCSI_PMCRAID is not set
 # CONFIG_SCSI_PM8001 is not set
 # CONFIG_SCSI_BFA_FC is not set
@@ -2551,7 +2981,6 @@ CONFIG_SATA_PMP=y
 CONFIG_SATA_AHCI=m
 CONFIG_SATA_MOBILE_LPM_POLICY=0
 CONFIG_SATA_AHCI_PLATFORM=m
-# CONFIG_AHCI_DWC is not set
 # CONFIG_SATA_INIC162X is not set
 # CONFIG_SATA_ACARD_AHCI is not set
 # CONFIG_SATA_SIL24 is not set
@@ -2706,31 +3135,31 @@ CONFIG_MAC_EMUMOUSEBTN=y
 CONFIG_NETDEVICES=y
 CONFIG_MII=y
 CONFIG_NET_CORE=y
-CONFIG_BONDING=m
-CONFIG_DUMMY=y
+# CONFIG_BONDING is not set
+# CONFIG_DUMMY is not set
 # CONFIG_WIREGUARD is not set
 # CONFIG_EQUALIZER is not set
 # CONFIG_NET_FC is not set
-CONFIG_IFB=m
+# CONFIG_IFB is not set
 # CONFIG_NET_TEAM is not set
 # CONFIG_MACVLAN is not set
 # CONFIG_IPVLAN is not set
-CONFIG_VXLAN=y
-CONFIG_GENEVE=y
-CONFIG_BAREUDP=m
+# CONFIG_VXLAN is not set
+# CONFIG_GENEVE is not set
+# CONFIG_BAREUDP is not set
 # CONFIG_GTP is not set
-CONFIG_AMT=m
-CONFIG_MACSEC=y
+# CONFIG_AMT is not set
+# CONFIG_MACSEC is not set
 CONFIG_NETCONSOLE=m
 CONFIG_NETCONSOLE_DYNAMIC=y
 CONFIG_NETPOLL=y
 CONFIG_NET_POLL_CONTROLLER=y
 CONFIG_TUN=m
 # CONFIG_TUN_VNET_CROSS_LE is not set
-CONFIG_VETH=y
-CONFIG_VIRTIO_NET=y
+# CONFIG_VETH is not set
+CONFIG_VIRTIO_NET=m
 # CONFIG_NLMON is not set
-CONFIG_NET_VRF=y
+# CONFIG_NET_VRF is not set
 # CONFIG_VSOCKMON is not set
 # CONFIG_ARCNET is not set
 CONFIG_ATM_DRIVERS=y
@@ -2839,11 +3268,8 @@ CONFIG_I40E=y
 # CONFIG_FM10K is not set
 CONFIG_IGC=y
 CONFIG_NET_VENDOR_WANGXUN=y
-# CONFIG_NGBE is not set
 # CONFIG_TXGBE is not set
 # CONFIG_JME is not set
-CONFIG_NET_VENDOR_ADI=y
-# CONFIG_ADIN1110 is not set
 CONFIG_NET_VENDOR_LITEX=y
 CONFIG_NET_VENDOR_MARVELL=y
 # CONFIG_MVMDIO is not set
@@ -2956,12 +3382,10 @@ CONFIG_NET_VENDOR_XILINX=y
 # CONFIG_FDDI is not set
 # CONFIG_HIPPI is not set
 # CONFIG_NET_SB1000 is not set
-CONFIG_PHYLINK=y
 CONFIG_PHYLIB=y
 CONFIG_SWPHY=y
 # CONFIG_LED_TRIGGER_PHY is not set
 CONFIG_FIXED_PHY=y
-# CONFIG_SFP is not set
 
 #
 # MII PHY device drivers
@@ -3012,7 +3436,6 @@ CONFIG_REALTEK_PHY=y
 # CONFIG_VITESSE_PHY is not set
 # CONFIG_XILINX_GMII2RGMII is not set
 # CONFIG_MICREL_KS8995MA is not set
-# CONFIG_PSE_CONTROLLER is not set
 CONFIG_CAN_DEV=m
 CONFIG_CAN_VCAN=m
 # CONFIG_CAN_VXCAN is not set
@@ -3155,6 +3578,7 @@ CONFIG_WLAN_VENDOR_INTEL=y
 # CONFIG_IWL4965 is not set
 # CONFIG_IWL3945 is not set
 # CONFIG_IWLWIFI is not set
+# CONFIG_IWLMEI is not set
 CONFIG_WLAN_VENDOR_INTERSIL=y
 # CONFIG_HOSTAP is not set
 # CONFIG_HERMES is not set
@@ -3217,8 +3641,8 @@ CONFIG_WLAN_VENDOR_QUANTENNA=y
 
 # CONFIG_VMXNET3 is not set
 # CONFIG_FUJITSU_ES is not set
-CONFIG_NETDEVSIM=m
-CONFIG_NET_FAILOVER=y
+# CONFIG_NETDEVSIM is not set
+CONFIG_NET_FAILOVER=m
 # CONFIG_ISDN is not set
 
 #
@@ -3226,7 +3650,7 @@ CONFIG_NET_FAILOVER=y
 #
 CONFIG_INPUT=y
 CONFIG_INPUT_LEDS=y
-CONFIG_INPUT_FF_MEMLESS=y
+CONFIG_INPUT_FF_MEMLESS=m
 CONFIG_INPUT_SPARSEKMAP=m
 # CONFIG_INPUT_MATRIXKMAP is not set
 CONFIG_INPUT_VIVALDIFMAP=y
@@ -3367,12 +3791,12 @@ CONFIG_SERIAL_8250_CONSOLE=y
 CONFIG_SERIAL_8250_DMA=y
 CONFIG_SERIAL_8250_PCI=y
 CONFIG_SERIAL_8250_EXAR=y
-CONFIG_SERIAL_8250_NR_UARTS=32
+CONFIG_SERIAL_8250_NR_UARTS=64
 CONFIG_SERIAL_8250_RUNTIME_UARTS=4
 CONFIG_SERIAL_8250_EXTENDED=y
 CONFIG_SERIAL_8250_MANY_PORTS=y
 CONFIG_SERIAL_8250_SHARE_IRQ=y
-CONFIG_SERIAL_8250_DETECT_IRQ=y
+# CONFIG_SERIAL_8250_DETECT_IRQ is not set
 CONFIG_SERIAL_8250_RSA=y
 CONFIG_SERIAL_8250_DWLIB=y
 CONFIG_SERIAL_8250_DW=y
@@ -3414,11 +3838,10 @@ CONFIG_NOZOMI=m
 # CONFIG_NULL_TTY is not set
 CONFIG_HVC_DRIVER=y
 # CONFIG_SERIAL_DEV_BUS is not set
-# CONFIG_TTY_PRINTK is not set
 CONFIG_PRINTER=m
 # CONFIG_LP_CONSOLE is not set
 CONFIG_PPDEV=m
-CONFIG_VIRTIO_CONSOLE=y
+CONFIG_VIRTIO_CONSOLE=m
 CONFIG_IPMI_HANDLER=m
 CONFIG_IPMI_DMI_DECODE=y
 CONFIG_IPMI_PLAT_DATA=y
@@ -3494,7 +3917,7 @@ CONFIG_I2C_MUX_MLXCPLD=m
 # end of Multiplexer I2C Chip support
 
 CONFIG_I2C_HELPER_AUTO=y
-CONFIG_I2C_SMBUS=m
+CONFIG_I2C_SMBUS=y
 CONFIG_I2C_ALGOBIT=y
 CONFIG_I2C_ALGOPCA=m
 
@@ -3511,7 +3934,7 @@ CONFIG_I2C_ALGOPCA=m
 # CONFIG_I2C_AMD756 is not set
 # CONFIG_I2C_AMD8111 is not set
 # CONFIG_I2C_AMD_MP2 is not set
-CONFIG_I2C_I801=m
+CONFIG_I2C_I801=y
 CONFIG_I2C_ISCH=m
 CONFIG_I2C_ISMT=m
 CONFIG_I2C_PIIX4=m
@@ -3552,7 +3975,6 @@ CONFIG_I2C_SIMTEC=m
 # CONFIG_I2C_DIOLAN_U2C is not set
 # CONFIG_I2C_CP2615 is not set
 CONFIG_I2C_PARPORT=m
-# CONFIG_I2C_PCI1XXXX is not set
 # CONFIG_I2C_ROBOTFUZZ_OSIF is not set
 # CONFIG_I2C_TAOS_EVM is not set
 # CONFIG_I2C_TINY_USB is not set
@@ -3590,7 +4012,6 @@ CONFIG_SPI_MASTER=y
 # CONFIG_SPI_GPIO is not set
 # CONFIG_SPI_LM70_LLP is not set
 # CONFIG_SPI_MICROCHIP_CORE is not set
-# CONFIG_SPI_MICROCHIP_CORE_QSPI is not set
 # CONFIG_SPI_LANTIQ_SSC is not set
 # CONFIG_SPI_OC_TINY is not set
 # CONFIG_SPI_PXA2XX is not set
@@ -3649,7 +4070,6 @@ CONFIG_PTP_1588_CLOCK_KVM=m
 CONFIG_PINCTRL=y
 # CONFIG_DEBUG_PINCTRL is not set
 # CONFIG_PINCTRL_AMD is not set
-# CONFIG_PINCTRL_CY8C95X0 is not set
 # CONFIG_PINCTRL_MCP23S08 is not set
 # CONFIG_PINCTRL_SX150X is not set
 
@@ -3685,7 +4105,6 @@ CONFIG_GPIOLIB=y
 CONFIG_GPIOLIB_FASTPATH_LIMIT=512
 CONFIG_GPIO_ACPI=y
 # CONFIG_DEBUG_GPIO is not set
-CONFIG_GPIO_SYSFS=y
 CONFIG_GPIO_CDEV=y
 CONFIG_GPIO_CDEV_V1=y
 
@@ -3716,6 +4135,7 @@ CONFIG_GPIO_ICH=m
 #
 # I2C GPIO expanders
 #
+# CONFIG_GPIO_ADP5588 is not set
 # CONFIG_GPIO_MAX7300 is not set
 # CONFIG_GPIO_MAX732X is not set
 # CONFIG_GPIO_PCA953X is not set
@@ -3759,9 +4179,9 @@ CONFIG_GPIO_ICH=m
 # Virtual GPIO drivers
 #
 # CONFIG_GPIO_AGGREGATOR is not set
-CONFIG_GPIO_MOCKUP=m
+# CONFIG_GPIO_MOCKUP is not set
 # CONFIG_GPIO_VIRTIO is not set
-CONFIG_GPIO_SIM=m
+# CONFIG_GPIO_SIM is not set
 # end of Virtual GPIO drivers
 
 # CONFIG_W1 is not set
@@ -3839,6 +4259,7 @@ CONFIG_SENSORS_K10TEMP=m
 CONFIG_SENSORS_FAM15H_POWER=m
 CONFIG_SENSORS_APPLESMC=m
 CONFIG_SENSORS_ASB100=m
+# CONFIG_SENSORS_ASPEED is not set
 CONFIG_SENSORS_ATXP1=m
 # CONFIG_SENSORS_CORSAIR_CPRO is not set
 # CONFIG_SENSORS_CORSAIR_PSU is not set
@@ -3884,7 +4305,6 @@ CONFIG_SENSORS_MAX1668=m
 CONFIG_SENSORS_MAX197=m
 # CONFIG_SENSORS_MAX31722 is not set
 # CONFIG_SENSORS_MAX31730 is not set
-# CONFIG_SENSORS_MAX31760 is not set
 # CONFIG_SENSORS_MAX6620 is not set
 # CONFIG_SENSORS_MAX6621 is not set
 CONFIG_SENSORS_MAX6639=m
@@ -3964,7 +4384,6 @@ CONFIG_SENSORS_MAX8688=m
 # CONFIG_SENSORS_STPDDC60 is not set
 # CONFIG_SENSORS_TPS40422 is not set
 # CONFIG_SENSORS_TPS53679 is not set
-# CONFIG_SENSORS_TPS546D24 is not set
 CONFIG_SENSORS_UCD9000=m
 CONFIG_SENSORS_UCD9200=m
 # CONFIG_SENSORS_XDPE152 is not set
@@ -3978,10 +4397,10 @@ CONFIG_SENSORS_SHT21=m
 # CONFIG_SENSORS_SHT4x is not set
 # CONFIG_SENSORS_SHTC1 is not set
 CONFIG_SENSORS_SIS5595=m
+# CONFIG_SENSORS_SY7636A is not set
 CONFIG_SENSORS_DME1737=m
 CONFIG_SENSORS_EMC1403=m
 # CONFIG_SENSORS_EMC2103 is not set
-# CONFIG_SENSORS_EMC2305 is not set
 CONFIG_SENSORS_EMC6W201=m
 CONFIG_SENSORS_SMSC47M1=m
 CONFIG_SENSORS_SMSC47M192=m
@@ -4031,6 +4450,7 @@ CONFIG_SENSORS_W83627EHF=m
 CONFIG_SENSORS_ACPI_POWER=m
 CONFIG_SENSORS_ATK0110=m
 # CONFIG_SENSORS_ASUS_WMI is not set
+# CONFIG_SENSORS_ASUS_WMI_EC is not set
 # CONFIG_SENSORS_ASUS_EC is not set
 CONFIG_THERMAL=y
 # CONFIG_THERMAL_NETLINK is not set
@@ -4050,7 +4470,7 @@ CONFIG_THERMAL_GOV_USER_SPACE=y
 #
 # Intel thermal drivers
 #
-CONFIG_INTEL_POWERCLAMP=y
+CONFIG_INTEL_POWERCLAMP=m
 CONFIG_X86_THERMAL_VECTOR=y
 CONFIG_X86_PKG_TEMP_THERMAL=m
 # CONFIG_INTEL_SOC_DTS_THERMAL is not set
@@ -4096,7 +4516,6 @@ CONFIG_WDAT_WDT=m
 CONFIG_ALIM1535_WDT=m
 CONFIG_ALIM7101_WDT=m
 # CONFIG_EBC_C384_WDT is not set
-# CONFIG_EXAR_WDT is not set
 CONFIG_F71808E_WDT=m
 # CONFIG_SP5100_TCO is not set
 CONFIG_SBC_FITPC2_WATCHDOG=m
@@ -4178,7 +4597,7 @@ CONFIG_MFD_CORE=y
 # CONFIG_HTC_PASIC3 is not set
 # CONFIG_HTC_I2CPLD is not set
 # CONFIG_MFD_INTEL_QUARK_I2C_GPIO is not set
-CONFIG_LPC_ICH=m
+CONFIG_LPC_ICH=y
 CONFIG_LPC_SCH=m
 CONFIG_MFD_INTEL_LPSS=y
 CONFIG_MFD_INTEL_LPSS_ACPI=y
@@ -4198,21 +4617,18 @@ CONFIG_MFD_INTEL_LPSS_PCI=y
 # CONFIG_MFD_MAX8997 is not set
 # CONFIG_MFD_MAX8998 is not set
 # CONFIG_MFD_MT6360 is not set
-# CONFIG_MFD_MT6370 is not set
 # CONFIG_MFD_MT6397 is not set
 # CONFIG_MFD_MENF21BMC is not set
-# CONFIG_MFD_OCELOT is not set
 # CONFIG_EZX_PCAP is not set
 # CONFIG_MFD_VIPERBOARD is not set
 # CONFIG_MFD_RETU is not set
 # CONFIG_MFD_PCF50633 is not set
-# CONFIG_MFD_SY7636A is not set
 # CONFIG_MFD_RDC321X is not set
 # CONFIG_MFD_RT4831 is not set
 # CONFIG_MFD_RT5033 is not set
-# CONFIG_MFD_RT5120 is not set
 # CONFIG_MFD_RC5T583 is not set
 # CONFIG_MFD_SI476X_CORE is not set
+# CONFIG_MFD_SIMPLE_MFD_I2C is not set
 CONFIG_MFD_SM501=m
 CONFIG_MFD_SM501_GPIO=y
 # CONFIG_MFD_SKY81452 is not set
@@ -4250,8 +4666,7 @@ CONFIG_MFD_VX855=m
 # end of Multifunction device drivers
 
 # CONFIG_REGULATOR is not set
-CONFIG_RC_CORE=y
-CONFIG_BPF_LIRC_MODE2=y
+CONFIG_RC_CORE=m
 CONFIG_LIRC=y
 CONFIG_RC_MAP=m
 CONFIG_RC_DECODERS=y
@@ -4263,7 +4678,7 @@ CONFIG_IR_RC5_DECODER=m
 CONFIG_IR_RC6_DECODER=m
 # CONFIG_IR_RCMM_DECODER is not set
 CONFIG_IR_SANYO_DECODER=m
-CONFIG_IR_SHARP_DECODER=m
+# CONFIG_IR_SHARP_DECODER is not set
 CONFIG_IR_SONY_DECODER=m
 # CONFIG_IR_XMP_DECODER is not set
 CONFIG_RC_DEVICES=y
@@ -4284,7 +4699,7 @@ CONFIG_IR_SERIAL_TRANSMITTER=y
 # CONFIG_IR_TTUSBIR is not set
 CONFIG_IR_WINBOND_CIR=m
 # CONFIG_RC_ATI_REMOTE is not set
-CONFIG_RC_LOOPBACK=m
+# CONFIG_RC_LOOPBACK is not set
 # CONFIG_RC_XBOX_DVD is not set
 
 #
@@ -4324,6 +4739,8 @@ CONFIG_MEDIA_SUBDRV_AUTOSELECT=y
 # CONFIG_MEDIA_PCI_SUPPORT is not set
 # end of Media drivers
 
+CONFIG_MEDIA_HIDE_ANCILLARY_SUBDRV=y
+
 #
 # Media ancillary drivers
 #
@@ -4333,23 +4750,15 @@ CONFIG_MEDIA_SUBDRV_AUTOSELECT=y
 # Graphics support
 #
 CONFIG_APERTURE_HELPERS=y
-CONFIG_AGP=y
-CONFIG_AGP_AMD64=y
-CONFIG_AGP_INTEL=y
-CONFIG_AGP_SIS=y
-CONFIG_AGP_VIA=y
-CONFIG_INTEL_GTT=y
+# CONFIG_AGP is not set
+CONFIG_INTEL_GTT=m
 CONFIG_VGA_SWITCHEROO=y
-CONFIG_DRM=y
+CONFIG_DRM=m
 CONFIG_DRM_MIPI_DSI=y
-# CONFIG_DRM_DEBUG_MM is not set
-CONFIG_DRM_USE_DYNAMIC_DEBUG=y
+# CONFIG_DRM_DEBUG_SELFTEST is not set
 CONFIG_DRM_KMS_HELPER=m
-# CONFIG_DRM_DEBUG_DP_MST_TOPOLOGY_REFS is not set
-CONFIG_DRM_DEBUG_MODESET_LOCK=y
 CONFIG_DRM_FBDEV_EMULATION=y
 CONFIG_DRM_FBDEV_OVERALLOC=100
-# CONFIG_DRM_FBDEV_LEAK_PHYS_SMEM is not set
 CONFIG_DRM_LOAD_EDID_FIRMWARE=y
 CONFIG_DRM_DISPLAY_HELPER=m
 CONFIG_DRM_DISPLAY_DP_HELPER=y
@@ -4361,7 +4770,7 @@ CONFIG_DRM_TTM=m
 CONFIG_DRM_BUDDY=m
 CONFIG_DRM_VRAM_HELPER=m
 CONFIG_DRM_TTM_HELPER=m
-CONFIG_DRM_GEM_SHMEM_HELPER=y
+CONFIG_DRM_GEM_SHMEM_HELPER=m
 
 #
 # I2C encoder or helper chips
@@ -4386,25 +4795,6 @@ CONFIG_DRM_I915_CAPTURE_ERROR=y
 CONFIG_DRM_I915_COMPRESS_ERROR=y
 CONFIG_DRM_I915_USERPTR=y
 # CONFIG_DRM_I915_GVT_KVMGT is not set
-
-#
-# drm/i915 Debugging
-#
-# CONFIG_DRM_I915_WERROR is not set
-# CONFIG_DRM_I915_DEBUG is not set
-# CONFIG_DRM_I915_DEBUG_MMIO is not set
-# CONFIG_DRM_I915_SW_FENCE_DEBUG_OBJECTS is not set
-# CONFIG_DRM_I915_SW_FENCE_CHECK_DAG is not set
-# CONFIG_DRM_I915_DEBUG_GUC is not set
-# CONFIG_DRM_I915_SELFTEST is not set
-# CONFIG_DRM_I915_LOW_LEVEL_TRACEPOINTS is not set
-# CONFIG_DRM_I915_DEBUG_VBLANK_EVADE is not set
-# CONFIG_DRM_I915_DEBUG_RUNTIME_PM is not set
-# end of drm/i915 Debugging
-
-#
-# drm/i915 Profile Guided Optimisation
-#
 CONFIG_DRM_I915_REQUEST_TIMEOUT=20000
 CONFIG_DRM_I915_FENCE_TIMEOUT=10000
 CONFIG_DRM_I915_USERFAULT_AUTOSUSPEND=250
@@ -4413,9 +4803,7 @@ CONFIG_DRM_I915_PREEMPT_TIMEOUT=640
 CONFIG_DRM_I915_MAX_REQUEST_BUSYWAIT=8000
 CONFIG_DRM_I915_STOP_TIMEOUT=100
 CONFIG_DRM_I915_TIMESLICE_DURATION=1
-# end of drm/i915 Profile Guided Optimisation
-
-CONFIG_DRM_VGEM=y
+# CONFIG_DRM_VGEM is not set
 # CONFIG_DRM_VKMS is not set
 # CONFIG_DRM_VMWGFX is not set
 CONFIG_DRM_GMA500=m
@@ -4481,7 +4869,7 @@ CONFIG_FB_SYS_IMAGEBLIT=m
 # CONFIG_FB_FOREIGN_ENDIAN is not set
 CONFIG_FB_SYS_FOPS=m
 CONFIG_FB_DEFERRED_IO=y
-CONFIG_FB_MODE_HELPERS=y
+# CONFIG_FB_MODE_HELPERS is not set
 CONFIG_FB_TILEBLITTING=y
 
 #
@@ -4505,7 +4893,6 @@ CONFIG_FB_EFI=y
 # CONFIG_FB_RIVA is not set
 # CONFIG_FB_I740 is not set
 # CONFIG_FB_LE80578 is not set
-# CONFIG_FB_INTEL is not set
 # CONFIG_FB_MATROX is not set
 # CONFIG_FB_RADEON is not set
 # CONFIG_FB_ATY128 is not set
@@ -4604,7 +4991,7 @@ CONFIG_HID_GENERIC=y
 #
 # Special HID drivers
 #
-CONFIG_HID_A4TECH=y
+CONFIG_HID_A4TECH=m
 # CONFIG_HID_ACCUTOUCH is not set
 CONFIG_HID_ACRUX=m
 # CONFIG_HID_ACRUX_FF is not set
@@ -4612,10 +4999,10 @@ CONFIG_HID_APPLE=m
 # CONFIG_HID_APPLEIR is not set
 CONFIG_HID_ASUS=m
 CONFIG_HID_AUREAL=m
-CONFIG_HID_BELKIN=y
+CONFIG_HID_BELKIN=m
 # CONFIG_HID_BETOP_FF is not set
 # CONFIG_HID_BIGBEN_FF is not set
-CONFIG_HID_CHERRY=y
+CONFIG_HID_CHERRY=m
 # CONFIG_HID_CHICONY is not set
 # CONFIG_HID_CORSAIR is not set
 # CONFIG_HID_COUGAR is not set
@@ -4623,14 +5010,14 @@ CONFIG_HID_CHERRY=y
 CONFIG_HID_CMEDIA=m
 # CONFIG_HID_CP2112 is not set
 # CONFIG_HID_CREATIVE_SB0540 is not set
-CONFIG_HID_CYPRESS=y
-CONFIG_HID_DRAGONRISE=y
+CONFIG_HID_CYPRESS=m
+CONFIG_HID_DRAGONRISE=m
 # CONFIG_DRAGONRISE_FF is not set
 # CONFIG_HID_EMS_FF is not set
 # CONFIG_HID_ELAN is not set
 CONFIG_HID_ELECOM=m
 # CONFIG_HID_ELO is not set
-CONFIG_HID_EZKEY=y
+CONFIG_HID_EZKEY=m
 # CONFIG_HID_FT260 is not set
 CONFIG_HID_GEMBIRD=m
 CONFIG_HID_GFRM=m
@@ -4639,18 +5026,17 @@ CONFIG_HID_GFRM=m
 # CONFIG_HID_VIVALDI is not set
 # CONFIG_HID_GT683R is not set
 CONFIG_HID_KEYTOUCH=m
-CONFIG_HID_KYE=y
+CONFIG_HID_KYE=m
 # CONFIG_HID_UCLOGIC is not set
 CONFIG_HID_WALTOP=m
 # CONFIG_HID_VIEWSONIC is not set
-# CONFIG_HID_VRC2 is not set
 # CONFIG_HID_XIAOMI is not set
-CONFIG_HID_GYRATION=y
+CONFIG_HID_GYRATION=m
 CONFIG_HID_ICADE=m
 CONFIG_HID_ITE=m
 CONFIG_HID_JABRA=m
-CONFIG_HID_TWINHAN=y
-CONFIG_HID_KENSINGTON=y
+CONFIG_HID_TWINHAN=m
+CONFIG_HID_KENSINGTON=m
 CONFIG_HID_LCPOWER=m
 CONFIG_HID_LED=m
 CONFIG_HID_LENOVO=m
@@ -4667,17 +5053,17 @@ CONFIG_HID_MAGICMOUSE=y
 # CONFIG_HID_MAYFLASH is not set
 # CONFIG_HID_MEGAWORLD_FF is not set
 # CONFIG_HID_REDRAGON is not set
-CONFIG_HID_MICROSOFT=y
-CONFIG_HID_MONTEREY=y
+CONFIG_HID_MICROSOFT=m
+CONFIG_HID_MONTEREY=m
 CONFIG_HID_MULTITOUCH=m
 # CONFIG_HID_NINTENDO is not set
 CONFIG_HID_NTI=m
 # CONFIG_HID_NTRIG is not set
 CONFIG_HID_ORTEK=m
-CONFIG_HID_PANTHERLORD=y
+CONFIG_HID_PANTHERLORD=m
 # CONFIG_PANTHERLORD_FF is not set
 # CONFIG_HID_PENMOUNT is not set
-CONFIG_HID_PETALYNX=y
+CONFIG_HID_PETALYNX=m
 CONFIG_HID_PICOLCD=m
 CONFIG_HID_PICOLCD_FB=y
 CONFIG_HID_PICOLCD_BACKLIGHT=y
@@ -4685,7 +5071,6 @@ CONFIG_HID_PICOLCD_LCD=y
 CONFIG_HID_PICOLCD_LEDS=y
 CONFIG_HID_PICOLCD_CIR=y
 CONFIG_HID_PLANTRONICS=m
-# CONFIG_HID_PXRC is not set
 # CONFIG_HID_RAZER is not set
 CONFIG_HID_PRIMAX=m
 # CONFIG_HID_RETRODE is not set
@@ -4698,15 +5083,14 @@ CONFIG_HID_SAMSUNG=m
 CONFIG_HID_SPEEDLINK=m
 # CONFIG_HID_STEAM is not set
 CONFIG_HID_STEELSERIES=m
-CONFIG_HID_SUNPLUS=y
+CONFIG_HID_SUNPLUS=m
 CONFIG_HID_RMI=m
-CONFIG_HID_GREENASIA=y
+CONFIG_HID_GREENASIA=m
 # CONFIG_GREENASIA_FF is not set
-CONFIG_HID_SMARTJOYPLUS=y
+CONFIG_HID_SMARTJOYPLUS=m
 # CONFIG_SMARTJOYPLUS_FF is not set
 CONFIG_HID_TIVO=m
-CONFIG_HID_TOPSEED=y
-# CONFIG_HID_TOPRE is not set
+CONFIG_HID_TOPSEED=m
 CONFIG_HID_THINGM=m
 CONFIG_HID_THRUSTMASTER=m
 # CONFIG_THRUSTMASTER_FF is not set
@@ -4715,8 +5099,8 @@ CONFIG_HID_THRUSTMASTER=m
 # CONFIG_HID_WACOM is not set
 CONFIG_HID_WIIMOTE=m
 CONFIG_HID_XINMO=m
-CONFIG_HID_ZEROPLUS=y
-CONFIG_ZEROPLUS_FF=y
+CONFIG_HID_ZEROPLUS=m
+# CONFIG_ZEROPLUS_FF is not set
 CONFIG_HID_ZYDACRON=m
 CONFIG_HID_SENSOR_HUB=y
 CONFIG_HID_SENSOR_CUSTOM_SENSOR=m
@@ -4771,7 +5155,6 @@ CONFIG_USB_DEFAULT_PERSIST=y
 # CONFIG_USB_DYNAMIC_MINORS is not set
 # CONFIG_USB_OTG is not set
 # CONFIG_USB_OTG_PRODUCTLIST is not set
-# CONFIG_USB_OTG_DISABLE_EXTERNAL_HUB is not set
 CONFIG_USB_LEDS_TRIGGER_USBPORT=y
 CONFIG_USB_AUTOSUSPEND_DELAY=2
 CONFIG_USB_MON=y
@@ -5253,15 +5636,13 @@ CONFIG_DMA_ENGINE_RAID=y
 # DMABUF options
 #
 CONFIG_SYNC_FILE=y
-CONFIG_SW_SYNC=y
-CONFIG_UDMABUF=y
+# CONFIG_SW_SYNC is not set
+# CONFIG_UDMABUF is not set
 # CONFIG_DMABUF_MOVE_NOTIFY is not set
 # CONFIG_DMABUF_DEBUG is not set
 # CONFIG_DMABUF_SELFTESTS is not set
-CONFIG_DMABUF_HEAPS=y
+# CONFIG_DMABUF_HEAPS is not set
 # CONFIG_DMABUF_SYSFS_STATS is not set
-CONFIG_DMABUF_HEAPS_SYSTEM=y
-# CONFIG_DMABUF_HEAPS_CMA is not set
 # end of DMABUF options
 
 CONFIG_DCA=m
@@ -5289,20 +5670,17 @@ CONFIG_VFIO_PCI=m
 # CONFIG_VFIO_PCI_IGD is not set
 CONFIG_VFIO_MDEV=m
 CONFIG_IRQ_BYPASS_MANAGER=m
-CONFIG_VIRT_DRIVERS=y
-CONFIG_VMGENID=y
-# CONFIG_VBOXGUEST is not set
-# CONFIG_NITRO_ENCLAVES is not set
-# CONFIG_EFI_SECRET is not set
+# CONFIG_VIRT_DRIVERS is not set
 CONFIG_VIRTIO_ANCHOR=y
 CONFIG_VIRTIO=y
 CONFIG_VIRTIO_PCI_LIB=y
 CONFIG_VIRTIO_PCI_LIB_LEGACY=y
 CONFIG_VIRTIO_MENU=y
+# CONFIG_VIRTIO_HARDEN_NOTIFICATION is not set
 CONFIG_VIRTIO_PCI=y
 CONFIG_VIRTIO_PCI_LEGACY=y
 # CONFIG_VIRTIO_PMEM is not set
-CONFIG_VIRTIO_BALLOON=y
+CONFIG_VIRTIO_BALLOON=m
 # CONFIG_VIRTIO_MEM is not set
 CONFIG_VIRTIO_INPUT=m
 # CONFIG_VIRTIO_MMIO is not set
@@ -5324,25 +5702,7 @@ CONFIG_VHOST_VSOCK=m
 
 # CONFIG_GREYBUS is not set
 # CONFIG_COMEDI is not set
-CONFIG_STAGING=y
-# CONFIG_PRISM2_USB is not set
-# CONFIG_RTL8192U is not set
-# CONFIG_RTLLIB is not set
-# CONFIG_RTL8723BS is not set
-# CONFIG_R8712U is not set
-# CONFIG_R8188EU is not set
-# CONFIG_RTS5208 is not set
-# CONFIG_VT6655 is not set
-# CONFIG_VT6656 is not set
-# CONFIG_FB_SM750 is not set
-# CONFIG_STAGING_MEDIA is not set
-# CONFIG_LTE_GDM724X is not set
-# CONFIG_FB_TFT is not set
-# CONFIG_KS7010 is not set
-# CONFIG_PI433 is not set
-# CONFIG_FIELDBUS_DEV is not set
-# CONFIG_QLGE is not set
-# CONFIG_VME_BUS is not set
+# CONFIG_STAGING is not set
 # CONFIG_CHROME_PLATFORMS is not set
 CONFIG_MELLANOX_PLATFORM=y
 CONFIG_MLXREG_HOTPLUG=m
@@ -5369,7 +5729,6 @@ CONFIG_MXM_WMI=m
 CONFIG_ACERHDF=m
 # CONFIG_ACER_WIRELESS is not set
 CONFIG_ACER_WMI=m
-# CONFIG_AMD_PMF is not set
 # CONFIG_AMD_PMC is not set
 # CONFIG_AMD_HSMP is not set
 # CONFIG_ADV_SWBUTTON is not set
@@ -5604,7 +5963,7 @@ CONFIG_PWM_LPSS_PLATFORM=m
 #
 # PHY Subsystem
 #
-CONFIG_GENERIC_PHY=y
+# CONFIG_GENERIC_PHY is not set
 # CONFIG_USB_LGM_PHY is not set
 # CONFIG_PHY_CAN_TRANSCEIVER is not set
 
@@ -5692,12 +6051,12 @@ CONFIG_INTEL_TH_PTI=m
 # File systems
 #
 CONFIG_DCACHE_WORD_ACCESS=y
-CONFIG_VALIDATE_FS_PARSER=y
+# CONFIG_VALIDATE_FS_PARSER is not set
 CONFIG_FS_IOMAP=y
-# CONFIG_EXT2_FS is not set
+CONFIG_EXT2_FS=m
+# CONFIG_EXT2_FS_XATTR is not set
 # CONFIG_EXT3_FS is not set
 CONFIG_EXT4_FS=y
-CONFIG_EXT4_USE_FOR_EXT2=y
 CONFIG_EXT4_FS_POSIX_ACL=y
 CONFIG_EXT4_FS_SECURITY=y
 # CONFIG_EXT4_DEBUG is not set
@@ -5778,7 +6137,7 @@ CONFIG_OVERLAY_FS=m
 #
 # Caches
 #
-CONFIG_NETFS_SUPPORT=y
+CONFIG_NETFS_SUPPORT=m
 CONFIG_NETFS_STATS=y
 CONFIG_FSCACHE=m
 CONFIG_FSCACHE_STATS=y
@@ -5823,7 +6182,6 @@ CONFIG_PROC_SYSCTL=y
 CONFIG_PROC_PAGE_MONITOR=y
 CONFIG_PROC_CHILDREN=y
 CONFIG_PROC_PID_ARCH_STATUS=y
-CONFIG_PROC_CPU_RESCTRL=y
 CONFIG_KERNFS=y
 CONFIG_SYSFS=y
 CONFIG_TMPFS=y
@@ -5886,8 +6244,8 @@ CONFIG_PSTORE_DEFLATE_COMPRESS=y
 CONFIG_PSTORE_COMPRESS=y
 CONFIG_PSTORE_DEFLATE_COMPRESS_DEFAULT=y
 CONFIG_PSTORE_COMPRESS_DEFAULT="deflate"
-CONFIG_PSTORE_CONSOLE=y
-CONFIG_PSTORE_PMSG=y
+# CONFIG_PSTORE_CONSOLE is not set
+# CONFIG_PSTORE_PMSG is not set
 # CONFIG_PSTORE_FTRACE is not set
 CONFIG_PSTORE_RAM=m
 # CONFIG_PSTORE_BLK is not set
@@ -5957,9 +6315,7 @@ CONFIG_CIFS_DFS_UPCALL=y
 CONFIG_SMBFS_COMMON=m
 # CONFIG_CODA_FS is not set
 # CONFIG_AFS_FS is not set
-CONFIG_9P_FS=y
-CONFIG_9P_FS_POSIX_ACL=y
-CONFIG_9P_FS_SECURITY=y
+# CONFIG_9P_FS is not set
 CONFIG_NLS=y
 CONFIG_NLS_DEFAULT="utf8"
 CONFIG_NLS_CODEPAGE_437=y
@@ -6043,45 +6399,30 @@ CONFIG_FORTIFY_SOURCE=y
 # CONFIG_SECURITY_SELINUX is not set
 # CONFIG_SECURITY_SMACK is not set
 # CONFIG_SECURITY_TOMOYO is not set
-# CONFIG_SECURITY_APPARMOR is not set
+CONFIG_SECURITY_APPARMOR=y
+# CONFIG_SECURITY_APPARMOR_DEBUG is not set
+CONFIG_SECURITY_APPARMOR_INTROSPECT_POLICY=y
+CONFIG_SECURITY_APPARMOR_HASH=y
+CONFIG_SECURITY_APPARMOR_HASH_DEFAULT=y
+CONFIG_SECURITY_APPARMOR_EXPORT_BINARY=y
+CONFIG_SECURITY_APPARMOR_PARANOID_LOAD=y
 # CONFIG_SECURITY_LOADPIN is not set
 CONFIG_SECURITY_YAMA=y
 # CONFIG_SECURITY_SAFESETID is not set
 # CONFIG_SECURITY_LOCKDOWN_LSM is not set
-CONFIG_SECURITY_LANDLOCK=y
+# CONFIG_SECURITY_LANDLOCK is not set
 CONFIG_INTEGRITY=y
 CONFIG_INTEGRITY_SIGNATURE=y
 CONFIG_INTEGRITY_ASYMMETRIC_KEYS=y
 CONFIG_INTEGRITY_TRUSTED_KEYRING=y
 # CONFIG_INTEGRITY_PLATFORM_KEYRING is not set
 CONFIG_INTEGRITY_AUDIT=y
-CONFIG_IMA=y
-# CONFIG_IMA_KEXEC is not set
-CONFIG_IMA_MEASURE_PCR_IDX=10
-CONFIG_IMA_NG_TEMPLATE=y
-# CONFIG_IMA_SIG_TEMPLATE is not set
-CONFIG_IMA_DEFAULT_TEMPLATE="ima-ng"
-CONFIG_IMA_DEFAULT_HASH_SHA1=y
-# CONFIG_IMA_DEFAULT_HASH_SHA256 is not set
-# CONFIG_IMA_DEFAULT_HASH_SHA512 is not set
-CONFIG_IMA_DEFAULT_HASH="sha1"
-CONFIG_IMA_WRITE_POLICY=y
-CONFIG_IMA_READ_POLICY=y
-CONFIG_IMA_APPRAISE=y
-CONFIG_IMA_ARCH_POLICY=y
-# CONFIG_IMA_APPRAISE_BUILD_POLICY is not set
-CONFIG_IMA_APPRAISE_BOOTPARAM=y
-# CONFIG_IMA_APPRAISE_MODSIG is not set
-CONFIG_IMA_TRUSTED_KEYRING=y
-# CONFIG_IMA_BLACKLIST_KEYRING is not set
-# CONFIG_IMA_LOAD_X509 is not set
-CONFIG_IMA_MEASURE_ASYMMETRIC_KEYS=y
-CONFIG_IMA_QUEUE_EARLY_BOOT_KEYS=y
-CONFIG_IMA_SECURE_AND_OR_TRUSTED_BOOT=y
-# CONFIG_IMA_DISABLE_HTABLE is not set
+# CONFIG_IMA is not set
+# CONFIG_IMA_SECURE_AND_OR_TRUSTED_BOOT is not set
 # CONFIG_EVM is not set
-CONFIG_DEFAULT_SECURITY_DAC=y
-CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,integrity,bpf"
+CONFIG_DEFAULT_SECURITY_APPARMOR=y
+# CONFIG_DEFAULT_SECURITY_DAC is not set
+CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,integrity,apparmor,selinux,smack,tomoyo,bpf"
 
 #
 # Kernel hardening options
@@ -6092,8 +6433,10 @@ CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,integrity,bpf"
 #
 CONFIG_INIT_STACK_NONE=y
 # CONFIG_GCC_PLUGIN_STRUCTLEAK_USER is not set
+# CONFIG_GCC_PLUGIN_STRUCTLEAK_BYREF is not set
+# CONFIG_GCC_PLUGIN_STRUCTLEAK_BYREF_ALL is not set
 # CONFIG_GCC_PLUGIN_STACKLEAK is not set
-CONFIG_INIT_ON_ALLOC_DEFAULT_ON=y
+# CONFIG_INIT_ON_ALLOC_DEFAULT_ON is not set
 # CONFIG_INIT_ON_FREE_DEFAULT_ON is not set
 CONFIG_CC_HAS_ZERO_CALL_USED_REGS=y
 # CONFIG_ZERO_CALL_USED_REGS is not set
@@ -6144,8 +6487,6 @@ CONFIG_CRYPTO_CRYPTD=y
 CONFIG_CRYPTO_AUTHENC=m
 # CONFIG_CRYPTO_TEST is not set
 CONFIG_CRYPTO_SIMD=y
-CONFIG_CRYPTO_ENGINE=y
-# end of Crypto core or helper
 
 #
 # Public-key cryptography
@@ -6159,96 +6500,121 @@ CONFIG_CRYPTO_ECDH=m
 # CONFIG_CRYPTO_ECRDSA is not set
 # CONFIG_CRYPTO_SM2 is not set
 # CONFIG_CRYPTO_CURVE25519 is not set
-# end of Public-key cryptography
+# CONFIG_CRYPTO_CURVE25519_X86 is not set
 
 #
-# Block ciphers
+# Authenticated Encryption with Associated Data
 #
-CONFIG_CRYPTO_AES=y
-# CONFIG_CRYPTO_AES_TI is not set
-CONFIG_CRYPTO_ANUBIS=m
-# CONFIG_CRYPTO_ARIA is not set
-CONFIG_CRYPTO_BLOWFISH=m
-CONFIG_CRYPTO_BLOWFISH_COMMON=m
-CONFIG_CRYPTO_CAMELLIA=m
-CONFIG_CRYPTO_CAST_COMMON=m
-CONFIG_CRYPTO_CAST5=m
-CONFIG_CRYPTO_CAST6=m
-CONFIG_CRYPTO_DES=m
-CONFIG_CRYPTO_FCRYPT=m
-CONFIG_CRYPTO_KHAZAD=m
-CONFIG_CRYPTO_SEED=m
-CONFIG_CRYPTO_SERPENT=m
-CONFIG_CRYPTO_SM4=y
-CONFIG_CRYPTO_SM4_GENERIC=y
-CONFIG_CRYPTO_TEA=m
-CONFIG_CRYPTO_TWOFISH=m
-CONFIG_CRYPTO_TWOFISH_COMMON=m
-# end of Block ciphers
+CONFIG_CRYPTO_CCM=m
+CONFIG_CRYPTO_GCM=y
+# CONFIG_CRYPTO_CHACHA20POLY1305 is not set
+# CONFIG_CRYPTO_AEGIS128 is not set
+# CONFIG_CRYPTO_AEGIS128_AESNI_SSE2 is not set
+CONFIG_CRYPTO_SEQIV=y
+CONFIG_CRYPTO_ECHAINIV=m
 
 #
-# Length-preserving ciphers and modes
+# Block modes
 #
-# CONFIG_CRYPTO_ADIANTUM is not set
-CONFIG_CRYPTO_ARC4=m
-CONFIG_CRYPTO_CHACHA20=m
 CONFIG_CRYPTO_CBC=y
 CONFIG_CRYPTO_CFB=y
 CONFIG_CRYPTO_CTR=y
 CONFIG_CRYPTO_CTS=m
 CONFIG_CRYPTO_ECB=y
-# CONFIG_CRYPTO_HCTR2 is not set
-# CONFIG_CRYPTO_KEYWRAP is not set
 CONFIG_CRYPTO_LRW=m
-# CONFIG_CRYPTO_OFB is not set
+CONFIG_CRYPTO_OFB=m
 CONFIG_CRYPTO_PCBC=m
 CONFIG_CRYPTO_XTS=m
-# end of Length-preserving ciphers and modes
-
-#
-# AEAD (authenticated encryption with associated data) ciphers
-#
-# CONFIG_CRYPTO_AEGIS128 is not set
-# CONFIG_CRYPTO_CHACHA20POLY1305 is not set
-CONFIG_CRYPTO_CCM=m
-CONFIG_CRYPTO_GCM=y
-CONFIG_CRYPTO_SEQIV=y
-CONFIG_CRYPTO_ECHAINIV=m
+# CONFIG_CRYPTO_KEYWRAP is not set
+# CONFIG_CRYPTO_NHPOLY1305_SSE2 is not set
+# CONFIG_CRYPTO_NHPOLY1305_AVX2 is not set
+# CONFIG_CRYPTO_ADIANTUM is not set
+# CONFIG_CRYPTO_HCTR2 is not set
 CONFIG_CRYPTO_ESSIV=m
-# end of AEAD (authenticated encryption with associated data) ciphers
 
 #
-# Hashes, digests, and MACs
+# Hash modes
 #
-CONFIG_CRYPTO_BLAKE2B=y
 CONFIG_CRYPTO_CMAC=m
-CONFIG_CRYPTO_GHASH=y
 CONFIG_CRYPTO_HMAC=y
+CONFIG_CRYPTO_XCBC=m
+CONFIG_CRYPTO_VMAC=m
+
+#
+# Digest
+#
+CONFIG_CRYPTO_CRC32C=y
+CONFIG_CRYPTO_CRC32C_INTEL=m
+CONFIG_CRYPTO_CRC32=m
+CONFIG_CRYPTO_CRC32_PCLMUL=m
+CONFIG_CRYPTO_XXHASH=m
+CONFIG_CRYPTO_BLAKE2B=m
+# CONFIG_CRYPTO_BLAKE2S_X86 is not set
+CONFIG_CRYPTO_CRCT10DIF=y
+CONFIG_CRYPTO_CRCT10DIF_PCLMUL=m
+CONFIG_CRYPTO_CRC64_ROCKSOFT=m
+CONFIG_CRYPTO_GHASH=y
+# CONFIG_CRYPTO_POLYVAL_CLMUL_NI is not set
+# CONFIG_CRYPTO_POLY1305 is not set
+# CONFIG_CRYPTO_POLY1305_X86_64 is not set
 CONFIG_CRYPTO_MD4=m
 CONFIG_CRYPTO_MD5=y
 CONFIG_CRYPTO_MICHAEL_MIC=m
-# CONFIG_CRYPTO_POLY1305 is not set
 CONFIG_CRYPTO_RMD160=m
 CONFIG_CRYPTO_SHA1=y
+CONFIG_CRYPTO_SHA1_SSSE3=y
+CONFIG_CRYPTO_SHA256_SSSE3=y
+CONFIG_CRYPTO_SHA512_SSSE3=m
 CONFIG_CRYPTO_SHA256=y
 CONFIG_CRYPTO_SHA512=y
 CONFIG_CRYPTO_SHA3=m
 # CONFIG_CRYPTO_SM3_GENERIC is not set
+# CONFIG_CRYPTO_SM3_AVX_X86_64 is not set
 # CONFIG_CRYPTO_STREEBOG is not set
-CONFIG_CRYPTO_VMAC=m
 CONFIG_CRYPTO_WP512=m
-CONFIG_CRYPTO_XCBC=m
-CONFIG_CRYPTO_XXHASH=y
-# end of Hashes, digests, and MACs
+CONFIG_CRYPTO_GHASH_CLMUL_NI_INTEL=m
 
 #
-# CRCs (cyclic redundancy checks)
+# Ciphers
 #
-CONFIG_CRYPTO_CRC32C=y
-CONFIG_CRYPTO_CRC32=m
-CONFIG_CRYPTO_CRCT10DIF=y
-CONFIG_CRYPTO_CRC64_ROCKSOFT=m
-# end of CRCs (cyclic redundancy checks)
+CONFIG_CRYPTO_AES=y
+# CONFIG_CRYPTO_AES_TI is not set
+CONFIG_CRYPTO_AES_NI_INTEL=y
+CONFIG_CRYPTO_ANUBIS=m
+CONFIG_CRYPTO_ARC4=m
+CONFIG_CRYPTO_BLOWFISH=m
+CONFIG_CRYPTO_BLOWFISH_COMMON=m
+CONFIG_CRYPTO_BLOWFISH_X86_64=m
+CONFIG_CRYPTO_CAMELLIA=m
+CONFIG_CRYPTO_CAMELLIA_X86_64=m
+CONFIG_CRYPTO_CAMELLIA_AESNI_AVX_X86_64=m
+CONFIG_CRYPTO_CAMELLIA_AESNI_AVX2_X86_64=m
+CONFIG_CRYPTO_CAST_COMMON=m
+CONFIG_CRYPTO_CAST5=m
+CONFIG_CRYPTO_CAST5_AVX_X86_64=m
+CONFIG_CRYPTO_CAST6=m
+CONFIG_CRYPTO_CAST6_AVX_X86_64=m
+CONFIG_CRYPTO_DES=m
+# CONFIG_CRYPTO_DES3_EDE_X86_64 is not set
+CONFIG_CRYPTO_FCRYPT=m
+CONFIG_CRYPTO_KHAZAD=m
+CONFIG_CRYPTO_CHACHA20=m
+CONFIG_CRYPTO_CHACHA20_X86_64=m
+CONFIG_CRYPTO_SEED=m
+# CONFIG_CRYPTO_ARIA is not set
+CONFIG_CRYPTO_SERPENT=m
+CONFIG_CRYPTO_SERPENT_SSE2_X86_64=m
+CONFIG_CRYPTO_SERPENT_AVX_X86_64=m
+CONFIG_CRYPTO_SERPENT_AVX2_X86_64=m
+# CONFIG_CRYPTO_SM4_GENERIC is not set
+# CONFIG_CRYPTO_SM4_AESNI_AVX_X86_64 is not set
+# CONFIG_CRYPTO_SM4_AESNI_AVX2_X86_64 is not set
+CONFIG_CRYPTO_TEA=m
+CONFIG_CRYPTO_TWOFISH=m
+CONFIG_CRYPTO_TWOFISH_COMMON=m
+CONFIG_CRYPTO_TWOFISH_X86_64=m
+CONFIG_CRYPTO_TWOFISH_X86_64_3WAY=m
+CONFIG_CRYPTO_TWOFISH_AVX_X86_64=m
 
 #
 # Compression
@@ -6259,10 +6625,9 @@ CONFIG_CRYPTO_LZO=y
 # CONFIG_CRYPTO_LZ4 is not set
 # CONFIG_CRYPTO_LZ4HC is not set
 # CONFIG_CRYPTO_ZSTD is not set
-# end of Compression
 
 #
-# Random number generation
+# Random Number Generation
 #
 CONFIG_CRYPTO_ANSI_CPRNG=m
 CONFIG_CRYPTO_DRBG_MENU=y
@@ -6271,11 +6636,6 @@ CONFIG_CRYPTO_DRBG_HASH=y
 CONFIG_CRYPTO_DRBG_CTR=y
 CONFIG_CRYPTO_DRBG=y
 CONFIG_CRYPTO_JITTERENTROPY=y
-# end of Random number generation
-
-#
-# Userspace interface
-#
 CONFIG_CRYPTO_USER_API=y
 CONFIG_CRYPTO_USER_API_HASH=y
 CONFIG_CRYPTO_USER_API_SKCIPHER=y
@@ -6284,48 +6644,7 @@ CONFIG_CRYPTO_USER_API_RNG=y
 CONFIG_CRYPTO_USER_API_AEAD=y
 CONFIG_CRYPTO_USER_API_ENABLE_OBSOLETE=y
 # CONFIG_CRYPTO_STATS is not set
-# end of Userspace interface
-
 CONFIG_CRYPTO_HASH_INFO=y
-
-#
-# Accelerated Cryptographic Algorithms for CPU (x86)
-#
-# CONFIG_CRYPTO_CURVE25519_X86 is not set
-CONFIG_CRYPTO_AES_NI_INTEL=y
-CONFIG_CRYPTO_BLOWFISH_X86_64=m
-CONFIG_CRYPTO_CAMELLIA_X86_64=m
-CONFIG_CRYPTO_CAMELLIA_AESNI_AVX_X86_64=m
-CONFIG_CRYPTO_CAMELLIA_AESNI_AVX2_X86_64=m
-CONFIG_CRYPTO_CAST5_AVX_X86_64=m
-CONFIG_CRYPTO_CAST6_AVX_X86_64=m
-# CONFIG_CRYPTO_DES3_EDE_X86_64 is not set
-CONFIG_CRYPTO_SERPENT_SSE2_X86_64=m
-CONFIG_CRYPTO_SERPENT_AVX_X86_64=m
-CONFIG_CRYPTO_SERPENT_AVX2_X86_64=m
-# CONFIG_CRYPTO_SM4_AESNI_AVX_X86_64 is not set
-# CONFIG_CRYPTO_SM4_AESNI_AVX2_X86_64 is not set
-CONFIG_CRYPTO_TWOFISH_X86_64=m
-CONFIG_CRYPTO_TWOFISH_X86_64_3WAY=m
-CONFIG_CRYPTO_TWOFISH_AVX_X86_64=m
-# CONFIG_CRYPTO_ARIA_AESNI_AVX_X86_64 is not set
-CONFIG_CRYPTO_CHACHA20_X86_64=m
-# CONFIG_CRYPTO_AEGIS128_AESNI_SSE2 is not set
-# CONFIG_CRYPTO_NHPOLY1305_SSE2 is not set
-# CONFIG_CRYPTO_NHPOLY1305_AVX2 is not set
-# CONFIG_CRYPTO_BLAKE2S_X86 is not set
-# CONFIG_CRYPTO_POLYVAL_CLMUL_NI is not set
-# CONFIG_CRYPTO_POLY1305_X86_64 is not set
-CONFIG_CRYPTO_SHA1_SSSE3=y
-CONFIG_CRYPTO_SHA256_SSSE3=y
-CONFIG_CRYPTO_SHA512_SSSE3=m
-# CONFIG_CRYPTO_SM3_AVX_X86_64 is not set
-CONFIG_CRYPTO_GHASH_CLMUL_NI_INTEL=m
-CONFIG_CRYPTO_CRC32C_INTEL=m
-CONFIG_CRYPTO_CRC32_PCLMUL=m
-CONFIG_CRYPTO_CRCT10DIF_PCLMUL=m
-# end of Accelerated Cryptographic Algorithms for CPU (x86)
-
 CONFIG_CRYPTO_HW=y
 CONFIG_CRYPTO_DEV_PADLOCK=m
 CONFIG_CRYPTO_DEV_PADLOCK_AES=m
@@ -6348,7 +6667,7 @@ CONFIG_CRYPTO_DEV_QAT_C3XXXVF=m
 CONFIG_CRYPTO_DEV_QAT_C62XVF=m
 CONFIG_CRYPTO_DEV_NITROX=m
 CONFIG_CRYPTO_DEV_NITROX_CNN55XX=m
-CONFIG_CRYPTO_DEV_VIRTIO=y
+# CONFIG_CRYPTO_DEV_VIRTIO is not set
 # CONFIG_CRYPTO_DEV_SAFEXCEL is not set
 # CONFIG_CRYPTO_DEV_AMLOGIC_GXL is not set
 CONFIG_ASYMMETRIC_KEY_TYPE=y
@@ -6389,7 +6708,7 @@ CONFIG_GENERIC_STRNCPY_FROM_USER=y
 CONFIG_GENERIC_STRNLEN_USER=y
 CONFIG_GENERIC_NET_UTILS=y
 CONFIG_CORDIC=m
-CONFIG_PRIME_NUMBERS=m
+# CONFIG_PRIME_NUMBERS is not set
 CONFIG_RATIONAL=y
 CONFIG_GENERIC_PCI_IOMAP=y
 CONFIG_GENERIC_IOMAP=y
@@ -6400,7 +6719,6 @@ CONFIG_ARCH_USE_SYM_ANNOTATIONS=y
 #
 # Crypto library routines
 #
-CONFIG_CRYPTO_LIB_UTILS=y
 CONFIG_CRYPTO_LIB_AES=y
 CONFIG_CRYPTO_LIB_ARC4=m
 CONFIG_CRYPTO_LIB_BLAKE2S_GENERIC=y
@@ -6416,6 +6734,7 @@ CONFIG_CRYPTO_LIB_SHA1=y
 CONFIG_CRYPTO_LIB_SHA256=y
 # end of Crypto library routines
 
+CONFIG_LIB_MEMNEQ=y
 CONFIG_CRC_CCITT=y
 CONFIG_CRC16=y
 CONFIG_CRC_T10DIF=y
@@ -6439,7 +6758,6 @@ CONFIG_ZLIB_DEFLATE=y
 CONFIG_LZO_COMPRESS=y
 CONFIG_LZO_DECOMPRESS=y
 CONFIG_LZ4_DECOMPRESS=y
-CONFIG_ZSTD_COMMON=y
 CONFIG_ZSTD_COMPRESS=m
 CONFIG_ZSTD_DECOMPRESS=y
 CONFIG_XZ_DEC=y
@@ -6479,25 +6797,11 @@ CONFIG_NEED_DMA_MAP_STATE=y
 CONFIG_ARCH_DMA_ADDR_T_64BIT=y
 CONFIG_ARCH_HAS_FORCE_DMA_UNENCRYPTED=y
 CONFIG_SWIOTLB=y
-CONFIG_DMA_CMA=y
-# CONFIG_DMA_PERNUMA_CMA is not set
-
-#
-# Default contiguous memory area size:
-#
-CONFIG_CMA_SIZE_MBYTES=0
-CONFIG_CMA_SIZE_SEL_MBYTES=y
-# CONFIG_CMA_SIZE_SEL_PERCENTAGE is not set
-# CONFIG_CMA_SIZE_SEL_MIN is not set
-# CONFIG_CMA_SIZE_SEL_MAX is not set
-CONFIG_CMA_ALIGNMENT=8
 # CONFIG_DMA_API_DEBUG is not set
-CONFIG_DMA_MAP_BENCHMARK=y
+# CONFIG_DMA_MAP_BENCHMARK is not set
 CONFIG_SGL_ALLOC=y
-CONFIG_IOMMU_HELPER=y
 CONFIG_CHECK_SIGNATURE=y
 CONFIG_CPUMASK_OFFSTACK=y
-# CONFIG_FORCE_NR_CPUS is not set
 CONFIG_CPU_RMAP=y
 CONFIG_DQL=y
 CONFIG_GLOB=y
@@ -6513,20 +6817,9 @@ CONFIG_HAVE_GENERIC_VDSO=y
 CONFIG_GENERIC_GETTIMEOFDAY=y
 CONFIG_GENERIC_VDSO_TIME_NS=y
 CONFIG_FONT_SUPPORT=y
-CONFIG_FONTS=y
+# CONFIG_FONTS is not set
 CONFIG_FONT_8x8=y
 CONFIG_FONT_8x16=y
-# CONFIG_FONT_6x11 is not set
-# CONFIG_FONT_7x14 is not set
-# CONFIG_FONT_PEARL_8x8 is not set
-# CONFIG_FONT_ACORN_8x8 is not set
-# CONFIG_FONT_MINI_4x6 is not set
-# CONFIG_FONT_6x10 is not set
-# CONFIG_FONT_10x18 is not set
-# CONFIG_FONT_SUN8x16 is not set
-# CONFIG_FONT_SUN12x22 is not set
-# CONFIG_FONT_TER16x32 is not set
-# CONFIG_FONT_6x8 is not set
 CONFIG_SG_POOL=y
 CONFIG_ARCH_HAS_PMEM_API=y
 CONFIG_MEMREGION=y
@@ -6534,7 +6827,6 @@ CONFIG_ARCH_HAS_UACCESS_FLUSHCACHE=y
 CONFIG_ARCH_HAS_COPY_MC=y
 CONFIG_ARCH_STACKWALK=y
 CONFIG_STACKDEPOT=y
-CONFIG_STACKDEPOT_ALWAYS_INIT=y
 CONFIG_SBITMAP=y
 # end of Library routines
 
@@ -6567,10 +6859,9 @@ CONFIG_DEBUG_MISC=y
 # Compile-time checks and compiler options
 #
 CONFIG_DEBUG_INFO=y
-CONFIG_AS_HAS_NON_CONST_LEB128=y
 # CONFIG_DEBUG_INFO_NONE is not set
-CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y
-# CONFIG_DEBUG_INFO_DWARF4 is not set
+# CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT is not set
+CONFIG_DEBUG_INFO_DWARF4=y
 # CONFIG_DEBUG_INFO_DWARF5 is not set
 # CONFIG_DEBUG_INFO_REDUCED is not set
 # CONFIG_DEBUG_INFO_COMPRESSED is not set
@@ -6580,15 +6871,13 @@ CONFIG_PAHOLE_HAS_SPLIT_BTF=y
 CONFIG_DEBUG_INFO_BTF_MODULES=y
 # CONFIG_MODULE_ALLOW_BTF_MISMATCH is not set
 # CONFIG_GDB_SCRIPTS is not set
-CONFIG_FRAME_WARN=8192
+CONFIG_FRAME_WARN=2048
 CONFIG_STRIP_ASM_SYMS=y
 # CONFIG_READABLE_ASM is not set
 # CONFIG_HEADERS_INSTALL is not set
 CONFIG_DEBUG_SECTION_MISMATCH=y
 CONFIG_SECTION_MISMATCH_WARN_ONLY=y
-# CONFIG_DEBUG_FORCE_FUNCTION_ALIGN_64B is not set
 CONFIG_OBJTOOL=y
-# CONFIG_VMLINUX_MAP is not set
 # CONFIG_DEBUG_FORCE_WEAK_PER_CPU is not set
 # end of Compile-time checks and compiler options
 
@@ -6606,20 +6895,10 @@ CONFIG_DEBUG_FS_ALLOW_ALL=y
 CONFIG_HAVE_ARCH_KGDB=y
 # CONFIG_KGDB is not set
 CONFIG_ARCH_HAS_UBSAN_SANITIZE_ALL=y
-CONFIG_UBSAN=y
-# CONFIG_UBSAN_TRAP is not set
-CONFIG_CC_HAS_UBSAN_BOUNDS=y
-CONFIG_UBSAN_BOUNDS=y
-CONFIG_UBSAN_ONLY_BOUNDS=y
-CONFIG_UBSAN_SHIFT=y
-# CONFIG_UBSAN_DIV_ZERO is not set
-# CONFIG_UBSAN_BOOL is not set
-# CONFIG_UBSAN_ENUM is not set
-# CONFIG_UBSAN_ALIGNMENT is not set
-CONFIG_UBSAN_SANITIZE_ALL=y
-# CONFIG_TEST_UBSAN is not set
+# CONFIG_UBSAN is not set
 CONFIG_HAVE_ARCH_KCSAN=y
 CONFIG_HAVE_KCSAN_COMPILER=y
+# CONFIG_KCSAN is not set
 # end of Generic Kernel Debugging Instruments
 
 #
@@ -6633,11 +6912,11 @@ CONFIG_HAVE_KCSAN_COMPILER=y
 #
 # Memory Debugging
 #
-CONFIG_PAGE_EXTENSION=y
+# CONFIG_PAGE_EXTENSION is not set
 # CONFIG_DEBUG_PAGEALLOC is not set
 CONFIG_SLUB_DEBUG=y
 # CONFIG_SLUB_DEBUG_ON is not set
-CONFIG_PAGE_OWNER=y
+# CONFIG_PAGE_OWNER is not set
 # CONFIG_PAGE_TABLE_CHECK is not set
 # CONFIG_PAGE_POISONING is not set
 # CONFIG_DEBUG_PAGE_REF is not set
@@ -6651,29 +6930,21 @@ CONFIG_GENERIC_PTDUMP=y
 CONFIG_HAVE_DEBUG_KMEMLEAK=y
 # CONFIG_DEBUG_KMEMLEAK is not set
 # CONFIG_DEBUG_STACK_USAGE is not set
-CONFIG_SCHED_STACK_END_CHECK=y
+# CONFIG_SCHED_STACK_END_CHECK is not set
 CONFIG_ARCH_HAS_DEBUG_VM_PGTABLE=y
 # CONFIG_DEBUG_VM is not set
 # CONFIG_DEBUG_VM_PGTABLE is not set
 CONFIG_ARCH_HAS_DEBUG_VIRTUAL=y
 # CONFIG_DEBUG_VIRTUAL is not set
 CONFIG_DEBUG_MEMORY_INIT=y
-CONFIG_MEMORY_NOTIFIER_ERROR_INJECT=m
 # CONFIG_DEBUG_PER_CPU_MAPS is not set
 CONFIG_HAVE_ARCH_KASAN=y
 CONFIG_HAVE_ARCH_KASAN_VMALLOC=y
 CONFIG_CC_HAS_KASAN_GENERIC=y
 CONFIG_CC_HAS_WORKING_NOSANITIZE_ADDRESS=y
-CONFIG_KASAN=y
-CONFIG_KASAN_GENERIC=y
-# CONFIG_KASAN_OUTLINE is not set
-CONFIG_KASAN_INLINE=y
-CONFIG_KASAN_STACK=y
-CONFIG_KASAN_VMALLOC=y
-# CONFIG_KASAN_MODULE_TEST is not set
+# CONFIG_KASAN is not set
 CONFIG_HAVE_ARCH_KFENCE=y
 # CONFIG_KFENCE is not set
-CONFIG_HAVE_ARCH_KMSAN=y
 # end of Memory Debugging
 
 CONFIG_DEBUG_SHIRQ=y
@@ -6707,38 +6978,27 @@ CONFIG_SCHEDSTATS=y
 # end of Scheduler Debugging
 
 # CONFIG_DEBUG_TIMEKEEPING is not set
-CONFIG_DEBUG_PREEMPT=y
 
 #
 # Lock Debugging (spinlocks, mutexes, etc...)
 #
 CONFIG_LOCK_DEBUGGING_SUPPORT=y
-CONFIG_PROVE_LOCKING=y
-# CONFIG_PROVE_RAW_LOCK_NESTING is not set
+# CONFIG_PROVE_LOCKING is not set
 # CONFIG_LOCK_STAT is not set
-CONFIG_DEBUG_RT_MUTEXES=y
-CONFIG_DEBUG_SPINLOCK=y
-CONFIG_DEBUG_MUTEXES=y
-CONFIG_DEBUG_WW_MUTEX_SLOWPATH=y
-CONFIG_DEBUG_RWSEMS=y
-CONFIG_DEBUG_LOCK_ALLOC=y
-CONFIG_LOCKDEP=y
-CONFIG_LOCKDEP_BITS=15
-CONFIG_LOCKDEP_CHAINS_BITS=16
-CONFIG_LOCKDEP_STACK_TRACE_BITS=19
-CONFIG_LOCKDEP_STACK_TRACE_HASH_BITS=14
-CONFIG_LOCKDEP_CIRCULAR_QUEUE_BITS=12
-# CONFIG_DEBUG_LOCKDEP is not set
+# CONFIG_DEBUG_RT_MUTEXES is not set
+# CONFIG_DEBUG_SPINLOCK is not set
+# CONFIG_DEBUG_MUTEXES is not set
+# CONFIG_DEBUG_WW_MUTEX_SLOWPATH is not set
+# CONFIG_DEBUG_RWSEMS is not set
+# CONFIG_DEBUG_LOCK_ALLOC is not set
 CONFIG_DEBUG_ATOMIC_SLEEP=y
 # CONFIG_DEBUG_LOCKING_API_SELFTESTS is not set
 # CONFIG_LOCK_TORTURE_TEST is not set
-CONFIG_WW_MUTEX_SELFTEST=m
+# CONFIG_WW_MUTEX_SELFTEST is not set
 # CONFIG_SCF_TORTURE_TEST is not set
 # CONFIG_CSD_LOCK_WAIT_DEBUG is not set
 # end of Lock Debugging (spinlocks, mutexes, etc...)
 
-CONFIG_TRACE_IRQFLAGS=y
-CONFIG_TRACE_IRQFLAGS_NMI=y
 # CONFIG_DEBUG_IRQFLAGS is not set
 CONFIG_STACKTRACE=y
 # CONFIG_WARN_ALL_UNSEEDED_RANDOM is not set
@@ -6748,19 +7008,17 @@ CONFIG_STACKTRACE=y
 # Debug kernel data structures
 #
 CONFIG_DEBUG_LIST=y
-CONFIG_DEBUG_PLIST=y
+# CONFIG_DEBUG_PLIST is not set
 # CONFIG_DEBUG_SG is not set
 # CONFIG_DEBUG_NOTIFIERS is not set
 CONFIG_BUG_ON_DATA_CORRUPTION=y
-# CONFIG_DEBUG_MAPLE_TREE is not set
 # end of Debug kernel data structures
 
-CONFIG_DEBUG_CREDENTIALS=y
+# CONFIG_DEBUG_CREDENTIALS is not set
 
 #
 # RCU Debugging
 #
-CONFIG_PROVE_RCU=y
 # CONFIG_RCU_SCALE_TEST is not set
 # CONFIG_RCU_TORTURE_TEST is not set
 # CONFIG_RCU_REF_SCALE_TEST is not set
@@ -6783,7 +7041,6 @@ CONFIG_HAVE_DYNAMIC_FTRACE=y
 CONFIG_HAVE_DYNAMIC_FTRACE_WITH_REGS=y
 CONFIG_HAVE_DYNAMIC_FTRACE_WITH_DIRECT_CALLS=y
 CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS=y
-CONFIG_HAVE_DYNAMIC_FTRACE_NO_PATCHABLE=y
 CONFIG_HAVE_FTRACE_MCOUNT_RECORD=y
 CONFIG_HAVE_SYSCALL_TRACEPOINTS=y
 CONFIG_HAVE_FENTRY=y
@@ -6796,24 +7053,21 @@ CONFIG_TRACE_CLOCK=y
 CONFIG_RING_BUFFER=y
 CONFIG_EVENT_TRACING=y
 CONFIG_CONTEXT_SWITCH_TRACER=y
-CONFIG_RING_BUFFER_ALLOW_SWAP=y
-CONFIG_PREEMPTIRQ_TRACEPOINTS=y
 CONFIG_TRACING=y
 CONFIG_GENERIC_TRACER=y
 CONFIG_TRACING_SUPPORT=y
 CONFIG_FTRACE=y
-CONFIG_BOOTTIME_TRACING=y
+# CONFIG_BOOTTIME_TRACING is not set
 CONFIG_FUNCTION_TRACER=y
 CONFIG_FUNCTION_GRAPH_TRACER=y
 CONFIG_DYNAMIC_FTRACE=y
 CONFIG_DYNAMIC_FTRACE_WITH_REGS=y
 CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS=y
 CONFIG_DYNAMIC_FTRACE_WITH_ARGS=y
-CONFIG_FPROBE=y
+# CONFIG_FPROBE is not set
 CONFIG_FUNCTION_PROFILER=y
 CONFIG_STACK_TRACER=y
-CONFIG_IRQSOFF_TRACER=y
-# CONFIG_PREEMPT_TRACER is not set
+# CONFIG_IRQSOFF_TRACER is not set
 CONFIG_SCHED_TRACER=y
 CONFIG_HWLAT_TRACER=y
 # CONFIG_OSNOISE_TRACER is not set
@@ -6821,10 +7075,10 @@ CONFIG_HWLAT_TRACER=y
 # CONFIG_MMIOTRACE is not set
 CONFIG_FTRACE_SYSCALLS=y
 CONFIG_TRACER_SNAPSHOT=y
-CONFIG_TRACER_SNAPSHOT_PER_CPU_SWAP=y
+# CONFIG_TRACER_SNAPSHOT_PER_CPU_SWAP is not set
 CONFIG_BRANCH_PROFILE_NONE=y
 # CONFIG_PROFILE_ANNOTATED_BRANCHES is not set
-CONFIG_BLK_DEV_IO_TRACE=y
+# CONFIG_BLK_DEV_IO_TRACE is not set
 CONFIG_KPROBE_EVENTS=y
 # CONFIG_KPROBE_EVENTS_ON_NOTRACE is not set
 CONFIG_UPROBE_EVENTS=y
@@ -6846,32 +7100,13 @@ CONFIG_RING_BUFFER_BENCHMARK=m
 # CONFIG_FTRACE_SORT_STARTUP_TEST is not set
 # CONFIG_RING_BUFFER_STARTUP_TEST is not set
 # CONFIG_RING_BUFFER_VALIDATE_TIME_DELTAS is not set
-CONFIG_PREEMPTIRQ_DELAY_TEST=m
+# CONFIG_PREEMPTIRQ_DELAY_TEST is not set
 # CONFIG_SYNTH_EVENT_GEN_TEST is not set
 # CONFIG_KPROBE_EVENT_GEN_TEST is not set
 # CONFIG_HIST_TRIGGERS_DEBUG is not set
 # CONFIG_RV is not set
 CONFIG_PROVIDE_OHCI1394_DMA_INIT=y
-CONFIG_SAMPLES=y
-# CONFIG_SAMPLE_AUXDISPLAY is not set
-# CONFIG_SAMPLE_TRACE_EVENTS is not set
-# CONFIG_SAMPLE_TRACE_CUSTOM_EVENTS is not set
-CONFIG_SAMPLE_TRACE_PRINTK=m
-CONFIG_SAMPLE_FTRACE_DIRECT=m
-# CONFIG_SAMPLE_FTRACE_DIRECT_MULTI is not set
-# CONFIG_SAMPLE_TRACE_ARRAY is not set
-# CONFIG_SAMPLE_KOBJECT is not set
-# CONFIG_SAMPLE_KPROBES is not set
-# CONFIG_SAMPLE_HW_BREAKPOINT is not set
-# CONFIG_SAMPLE_FPROBE is not set
-# CONFIG_SAMPLE_KFIFO is not set
-# CONFIG_SAMPLE_LIVEPATCH is not set
-# CONFIG_SAMPLE_CONFIGFS is not set
-# CONFIG_SAMPLE_VFIO_MDEV_MTTY is not set
-# CONFIG_SAMPLE_VFIO_MDEV_MDPY is not set
-# CONFIG_SAMPLE_VFIO_MDEV_MDPY_FB is not set
-# CONFIG_SAMPLE_VFIO_MDEV_MBOCHS is not set
-# CONFIG_SAMPLE_WATCHDOG is not set
+# CONFIG_SAMPLES is not set
 CONFIG_HAVE_SAMPLE_FTRACE_DIRECT=y
 CONFIG_HAVE_SAMPLE_FTRACE_DIRECT_MULTI=y
 CONFIG_ARCH_HAS_DEVMEM_IS_ALLOWED=y
@@ -6888,7 +7123,6 @@ CONFIG_EARLY_PRINTK_DBGP=y
 CONFIG_EARLY_PRINTK_USB_XDBC=y
 # CONFIG_EFI_PGT_DUMP is not set
 # CONFIG_DEBUG_TLBFLUSH is not set
-# CONFIG_IOMMU_DEBUG is not set
 CONFIG_HAVE_MMIOTRACE_SUPPORT=y
 # CONFIG_X86_DECODER_SELFTEST is not set
 CONFIG_IO_DELAY_0X80=y
@@ -6909,27 +7143,14 @@ CONFIG_UNWINDER_ORC=y
 # Kernel Testing and Coverage
 #
 # CONFIG_KUNIT is not set
-CONFIG_NOTIFIER_ERROR_INJECTION=y
-CONFIG_PM_NOTIFIER_ERROR_INJECT=m
-# CONFIG_NETDEV_NOTIFIER_ERROR_INJECT is not set
+# CONFIG_NOTIFIER_ERROR_INJECTION is not set
 CONFIG_FUNCTION_ERROR_INJECTION=y
-CONFIG_FAULT_INJECTION=y
-# CONFIG_FAILSLAB is not set
-# CONFIG_FAIL_PAGE_ALLOC is not set
-# CONFIG_FAULT_INJECTION_USERCOPY is not set
-# CONFIG_FAIL_MAKE_REQUEST is not set
-# CONFIG_FAIL_IO_TIMEOUT is not set
-# CONFIG_FAIL_FUTEX is not set
-CONFIG_FAULT_INJECTION_DEBUG_FS=y
-CONFIG_FAIL_FUNCTION=y
-# CONFIG_FAIL_MMC_REQUEST is not set
-# CONFIG_FAIL_SUNRPC is not set
-# CONFIG_FAULT_INJECTION_STACKTRACE_FILTER is not set
+# CONFIG_FAULT_INJECTION is not set
 CONFIG_ARCH_HAS_KCOV=y
 CONFIG_CC_HAS_SANCOV_TRACE_PC=y
 # CONFIG_KCOV is not set
 CONFIG_RUNTIME_TESTING_MENU=y
-CONFIG_LKDTM=y
+# CONFIG_LKDTM is not set
 # CONFIG_TEST_MIN_HEAP is not set
 # CONFIG_TEST_DIV64 is not set
 # CONFIG_BACKTRACE_SELF_TEST is not set
@@ -6943,47 +7164,41 @@ CONFIG_LKDTM=y
 # CONFIG_TEST_HEXDUMP is not set
 # CONFIG_STRING_SELFTEST is not set
 # CONFIG_TEST_STRING_HELPERS is not set
-CONFIG_TEST_STRSCPY=m
+# CONFIG_TEST_STRSCPY is not set
 # CONFIG_TEST_KSTRTOX is not set
-CONFIG_TEST_PRINTF=m
-CONFIG_TEST_SCANF=m
-CONFIG_TEST_BITMAP=m
+# CONFIG_TEST_PRINTF is not set
+# CONFIG_TEST_SCANF is not set
+# CONFIG_TEST_BITMAP is not set
 # CONFIG_TEST_UUID is not set
 # CONFIG_TEST_XARRAY is not set
 # CONFIG_TEST_RHASHTABLE is not set
 # CONFIG_TEST_SIPHASH is not set
 # CONFIG_TEST_IDA is not set
-CONFIG_TEST_LKM=m
-CONFIG_TEST_BITOPS=m
-CONFIG_TEST_VMALLOC=m
-CONFIG_TEST_USER_COPY=m
-CONFIG_TEST_BPF=m
-CONFIG_TEST_BLACKHOLE_DEV=m
+# CONFIG_TEST_LKM is not set
+# CONFIG_TEST_BITOPS is not set
+# CONFIG_TEST_VMALLOC is not set
+# CONFIG_TEST_USER_COPY is not set
+# CONFIG_TEST_BPF is not set
+# CONFIG_TEST_BLACKHOLE_DEV is not set
 # CONFIG_FIND_BIT_BENCHMARK is not set
-CONFIG_TEST_FIRMWARE=y
-CONFIG_TEST_SYSCTL=y
+# CONFIG_TEST_FIRMWARE is not set
+# CONFIG_TEST_SYSCTL is not set
 # CONFIG_TEST_UDELAY is not set
-CONFIG_TEST_STATIC_KEYS=m
-# CONFIG_TEST_DYNAMIC_DEBUG is not set
-CONFIG_TEST_KMOD=m
+# CONFIG_TEST_STATIC_KEYS is not set
+# CONFIG_TEST_KMOD is not set
 # CONFIG_TEST_MEMCAT_P is not set
-CONFIG_TEST_LIVEPATCH=m
+# CONFIG_TEST_LIVEPATCH is not set
 # CONFIG_TEST_MEMINIT is not set
-CONFIG_TEST_HMM=m
+# CONFIG_TEST_HMM is not set
 # CONFIG_TEST_FREE_PAGES is not set
-CONFIG_TEST_FPU=m
+# CONFIG_TEST_FPU is not set
 # CONFIG_TEST_CLOCKSOURCE_WATCHDOG is not set
 CONFIG_ARCH_USE_MEMTEST=y
 # CONFIG_MEMTEST is not set
 # end of Kernel Testing and Coverage
-
-#
-# Rust hacking
-#
-# end of Rust hacking
 # end of Kernel hacking
 
---BA5iauX4JIsXc3PQ
+--mgNSv49cLZEyiul+
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: attachment; filename="job-script"
 
@@ -6991,64 +7206,61 @@ Content-Disposition: attachment; filename="job-script"
 
 export_top_env()
 {
-	export suite='kernel-selftests'
-	export testcase='kernel-selftests'
-	export category='functional'
-	export job_origin='kernel-selftests-vm.yaml'
-	export queue_cmdline_keys='branch
-commit
-kbuild_queue_analysis'
-	export queue='validate'
-	export testbox='lkp-csl-2sp9'
-	export tbox_group='lkp-csl-2sp9'
-	export submit_id='63617542063ec856a33b970a'
-	export job_file='/lkp/jobs/scheduled/lkp-csl-2sp9/kernel-selftests-vm-2-debian-12-x86_64-20220629.cgz-fd0dfc48f1ed0430088e3bb2c6e7d51379165afd-20221102-22179-ab11h6-3.yaml'
-	export id='fed125d7b87dffd285f4b99af15778532d2cbc9e'
-	export queuer_version='/zday/lkp'
-	export model='Cascade Lake'
+	export suite='stress-ng'
+	export testcase='stress-ng'
+	export category='benchmark'
+	export nr_threads=128
+	export testtime=60
+	export job_origin='stress-ng-class-memory.yaml'
+	export queue_cmdline_keys=
+	export queue='int'
+	export testbox='lkp-icl-2sp6'
+	export tbox_group='lkp-icl-2sp6'
+	export submit_id='6360d5870b9a934f698c0580'
+	export job_file='/lkp/jobs/scheduled/lkp-icl-2sp6/stress-ng-memory-performance-100%-vm-rw-60s-debian-11.1-x86_64-20220510.cgz-697253a9d6dbed4645b9cc8ff8520ff074ff48f0-20221101-20329-1jrl452-0.yaml'
+	export id='7d8310b2dfa8cfdcecb6a722ab123e55814ef161'
+	export queuer_version='/lkp/xsang/.src-20221031-132528'
+	export model='Ice Lake'
 	export nr_node=2
-	export nr_cpu=88
+	export nr_cpu=128
 	export memory='128G'
-	export nr_hdd_partitions=4
-	export nr_ssd_partitions=1
-	export hdd_partitions='/dev/disk/by-id/ata-ST4000NM0035-1V4107_ZC13Q1RD-part*'
-	export ssd_partitions='/dev/disk/by-id/ata-INTEL_SSDSC2BB480G7_PHDV723200JX480BGN-part1'
-	export rootfs_partition='/dev/disk/by-id/ata-INTEL_SSDSC2BB480G7_PHDV723200JX480BGN-part2'
-	export brand='Intel(R) Xeon(R) Gold 6238M CPU @ 2.10GHz'
-	export commit='fd0dfc48f1ed0430088e3bb2c6e7d51379165afd'
-	export ucode='0x5003302'
-	export need_kconfig_hw='{"I40E"=>"y"}
-SATA_AHCI'
-	export need_kconfig=\{\"MEM_SOFT_DIRTY\"\=\>\"y,\ x86_64\"\}'
-'\{\"GUP_BENCHMARK\"\=\>\"y,\ v4.15-rc1,\ \<\=\ v5.10\"\}'
-'\{\"GUP_TEST\"\=\>\"y,\ v5.11-rc1\"\}
-	export rootfs='debian-12-x86_64-20220629.cgz'
-	export initrds='linux_headers
-linux_selftests'
-	export kconfig='x86_64-rhel-8.3-kselftests'
-	export enqueue_time='2022-11-02 03:36:34 +0800'
-	export _id='63617542063ec856a33b970a'
-	export _rt='/result/kernel-selftests/vm-2/lkp-csl-2sp9/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kselftests/gcc-11/fd0dfc48f1ed0430088e3bb2c6e7d51379165afd'
+	export nr_ssd_partitions=3
+	export nr_hdd_partitions=6
+	export hdd_partitions='/dev/disk/by-id/ata-WDC_WD20SPZX-08UA7_WD-WXE2EA06X8DA-part*'
+	export ssd_partitions='/dev/disk/by-id/ata-INTEL_SSDSC2BB800G4_PHWL4204002V800RGN-part*'
+	export rootfs_partition='/dev/disk/by-id/ata-INTEL_SSDSC2BA400G4_BTHV634503K8400NGN-part1'
+	export kernel_cmdline_hw='acpi_rsdp=0x69ffd014'
+	export brand='Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz'
+	export need_kconfig=
+	export commit='697253a9d6dbed4645b9cc8ff8520ff074ff48f0'
+	export ucode='0xd000363'
+	export bisect_dmesg=true
+	export kconfig='x86_64-rhel-8.3'
+	export enqueue_time='2022-11-01 16:15:03 +0800'
+	export _id='6360d5870b9a934f698c0580'
+	export _rt='/result/stress-ng/memory-performance-100%-vm-rw-60s/lkp-icl-2sp6/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/697253a9d6dbed4645b9cc8ff8520ff074ff48f0'
 	export user='lkp'
 	export compiler='gcc-11'
 	export LKP_SERVER='internal-lkp-server'
-	export head_commit='ab44f8460539e571cf9b2774307c57c6dd6da05f'
+	export head_commit='a1dbcef4f3c7e48c9e6edf4dafe14189c607b701'
 	export base_commit='247f34f7b80357943234f93f247a1ae6b6c3a740'
-	export branch='linux-review/Joel-Savitz/selftests-vm-enable-running-select-groups-of-tests/20221019-071314'
-	export result_root='/result/kernel-selftests/vm-2/lkp-csl-2sp9/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kselftests/gcc-11/fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/3'
-	export scheduler_version='/lkp/lkp/.src-20221101-191432'
+	export branch='linux-review/Chen-Yu/sched-fair-Choose-the-CPU-where-short-task-is-running-during-wake-up/20221023-233434'
+	export rootfs='debian-11.1-x86_64-20220510.cgz'
+	export result_root='/result/stress-ng/memory-performance-100%-vm-rw-60s/lkp-icl-2sp6/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/697253a9d6dbed4645b9cc8ff8520ff074ff48f0/3'
+	export scheduler_version='/lkp/lkp/.src-20221101-154044'
 	export arch='x86_64'
 	export max_uptime=2100
-	export initrd='/osimage/debian/debian-12-x86_64-20220629.cgz'
+	export initrd='/osimage/debian/debian-11.1-x86_64-20220510.cgz'
 	export bootloader_append='root=/dev/ram0
-RESULT_ROOT=/result/kernel-selftests/vm-2/lkp-csl-2sp9/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kselftests/gcc-11/fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/3
-BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/vmlinuz-6.1.0-rc1-00143-gfd0dfc48f1ed
-branch=linux-review/Joel-Savitz/selftests-vm-enable-running-select-groups-of-tests/20221019-071314
-job=/lkp/jobs/scheduled/lkp-csl-2sp9/kernel-selftests-vm-2-debian-12-x86_64-20220629.cgz-fd0dfc48f1ed0430088e3bb2c6e7d51379165afd-20221102-22179-ab11h6-3.yaml
+RESULT_ROOT=/result/stress-ng/memory-performance-100%-vm-rw-60s/lkp-icl-2sp6/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/697253a9d6dbed4645b9cc8ff8520ff074ff48f0/3
+BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3/gcc-11/697253a9d6dbed4645b9cc8ff8520ff074ff48f0/vmlinuz-5.19.0-13710-g697253a9d6db
+branch=linux-review/Chen-Yu/sched-fair-Choose-the-CPU-where-short-task-is-running-during-wake-up/20221023-233434
+job=/lkp/jobs/scheduled/lkp-icl-2sp6/stress-ng-memory-performance-100%-vm-rw-60s-debian-11.1-x86_64-20220510.cgz-697253a9d6dbed4645b9cc8ff8520ff074ff48f0-20221101-20329-1jrl452-0.yaml
 user=lkp
 ARCH=x86_64
-kconfig=x86_64-rhel-8.3-kselftests
-commit=fd0dfc48f1ed0430088e3bb2c6e7d51379165afd
+kconfig=x86_64-rhel-8.3
+commit=697253a9d6dbed4645b9cc8ff8520ff074ff48f0
+acpi_rsdp=0x69ffd014
 max_uptime=2100
 LKP_SERVER=internal-lkp-server
 nokaslr
@@ -7073,23 +7285,18 @@ earlyprintk=ttyS0,115200
 console=ttyS0,115200
 vga=normal
 rw'
-	export modules_initrd='/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/modules.cgz'
-	export linux_headers_initrd='/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/linux-headers.cgz'
-	export linux_selftests_initrd='/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/linux-selftests.cgz'
-	export bm_initrd='/osimage/deps/debian-12-x86_64-20220629.cgz/run-ipconfig_20220629.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/lkp_20220629.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/rsync-rootfs_20220629.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/kernel-selftests_20221017.cgz,/osimage/pkg/debian-12-x86_64-20220629.cgz/kernel-selftests-x86_64-9313ba54-1_20221017.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/hw_20220629.cgz'
+	export modules_initrd='/pkg/linux/x86_64-rhel-8.3/gcc-11/697253a9d6dbed4645b9cc8ff8520ff074ff48f0/modules.cgz'
+	export bm_initrd='/osimage/deps/debian-11.1-x86_64-20220510.cgz/run-ipconfig_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/lkp_20220513.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/rsync-rootfs_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/stress-ng_20221101.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/stress-ng-x86_64-0.11-06_20221101.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/mpstat_20220516.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/turbostat_20220514.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/turbostat-x86_64-210e04ff7681-1_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/perf_20221031.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/perf-x86_64-30a0b95b1335-1_20221031.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/sar-x86_64-c5bb321-1_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/hw_20220526.cgz'
 	export ucode_initrd='/osimage/ucode/intel-ucode-20220804.cgz'
 	export lkp_initrd='/osimage/user/lkp/lkp-x86_64.cgz'
 	export site='inn'
 	export LKP_CGI_PORT=80
 	export LKP_CIFS_PORT=139
-	export last_kernel='6.1.0-rc2-intel-next-02178-g564732b1046e'
-	export repeat_to=6
+	export last_kernel='6.1.0-rc2-wt-ath-08384-ga1dbcef4f3c7'
 	export schedule_notify_address=
-	export stop_repeat_if_found='kernel-selftests.vm.run_vmtests.sh../hugepage_shm.fail'
-	export kbuild_queue_analysis=1
-	export kernel='/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/vmlinuz-6.1.0-rc1-00143-gfd0dfc48f1ed'
-	export dequeue_time='2022-11-02 03:37:36 +0800'
-	export job_initrd='/lkp/jobs/scheduled/lkp-csl-2sp9/kernel-selftests-vm-2-debian-12-x86_64-20220629.cgz-fd0dfc48f1ed0430088e3bb2c6e7d51379165afd-20221102-22179-ab11h6-3.cgz'
+	export kernel='/pkg/linux/x86_64-rhel-8.3/gcc-11/697253a9d6dbed4645b9cc8ff8520ff074ff48f0/vmlinuz-5.19.0-13710-g697253a9d6db'
+	export dequeue_time='2022-11-01 16:41:00 +0800'
+	export job_initrd='/lkp/jobs/scheduled/lkp-icl-2sp6/stress-ng-memory-performance-100%-vm-rw-60s-debian-11.1-x86_64-20220510.cgz-697253a9d6dbed4645b9cc8ff8520ff074ff48f0-20221101-20329-1jrl452-0.cgz'
 
 	[ -n "$LKP_SRC" ] ||
 	export LKP_SRC=/lkp/${user:-lkp}/src
@@ -7105,15 +7312,39 @@ run_job()
 
 	export_top_env
 
-	run_setup sc_nr_hugepages=2 $LKP_SRC/setup/sysctl
+	run_setup $LKP_SRC/setup/cpufreq_governor 'performance'
 
+	run_monitor ignored=1 $LKP_SRC/monitors/wrapper oom-killer
 	run_monitor $LKP_SRC/monitors/wrapper kmsg
+	run_monitor $LKP_SRC/monitors/no-stdout/wrapper boot-time
+	run_monitor $LKP_SRC/monitors/wrapper uptime
+	run_monitor $LKP_SRC/monitors/wrapper iostat
 	run_monitor $LKP_SRC/monitors/wrapper heartbeat
+	run_monitor $LKP_SRC/monitors/wrapper vmstat
+	run_monitor $LKP_SRC/monitors/wrapper numa-numastat
+	run_monitor $LKP_SRC/monitors/wrapper numa-vmstat
+	run_monitor $LKP_SRC/monitors/wrapper numa-meminfo
+	run_monitor $LKP_SRC/monitors/wrapper proc-vmstat
+	run_monitor $LKP_SRC/monitors/wrapper proc-stat
 	run_monitor $LKP_SRC/monitors/wrapper meminfo
-	run_monitor $LKP_SRC/monitors/wrapper oom-killer
+	run_monitor $LKP_SRC/monitors/wrapper slabinfo
+	run_monitor $LKP_SRC/monitors/wrapper interrupts
+	run_monitor $LKP_SRC/monitors/wrapper lock_stat
+	run_monitor lite_mode=1 $LKP_SRC/monitors/wrapper perf-sched
+	run_monitor $LKP_SRC/monitors/wrapper softirqs
+	run_monitor $LKP_SRC/monitors/one-shot/wrapper bdi_dev_mapping
+	run_monitor $LKP_SRC/monitors/wrapper diskstats
+	run_monitor $LKP_SRC/monitors/wrapper nfsstat
+	run_monitor $LKP_SRC/monitors/wrapper cpuidle
+	run_monitor $LKP_SRC/monitors/wrapper cpufreq-stats
+	run_monitor $LKP_SRC/monitors/wrapper turbostat
+	run_monitor $LKP_SRC/monitors/wrapper sched_debug
+	run_monitor $LKP_SRC/monitors/wrapper perf-stat
+	run_monitor $LKP_SRC/monitors/wrapper mpstat
+	run_monitor debug_mode=0 $LKP_SRC/monitors/no-stdout/wrapper perf-profile
 	run_monitor $LKP_SRC/monitors/plain/watchdog
 
-	run_test group='vm' $LKP_SRC/tests/wrapper kernel-selftests
+	run_test class='memory' test='vm-rw' $LKP_SRC/tests/wrapper stress-ng
 }
 
 extract_stats()
@@ -7121,11 +7352,32 @@ extract_stats()
 	export stats_part_begin=
 	export stats_part_end=
 
-	env group='vm' $LKP_SRC/stats/wrapper kernel-selftests
+	env class='memory' test='vm-rw' $LKP_SRC/stats/wrapper stress-ng
 	$LKP_SRC/stats/wrapper kmsg
+	$LKP_SRC/stats/wrapper boot-time
+	$LKP_SRC/stats/wrapper uptime
+	$LKP_SRC/stats/wrapper iostat
+	$LKP_SRC/stats/wrapper vmstat
+	$LKP_SRC/stats/wrapper numa-numastat
+	$LKP_SRC/stats/wrapper numa-vmstat
+	$LKP_SRC/stats/wrapper numa-meminfo
+	$LKP_SRC/stats/wrapper proc-vmstat
 	$LKP_SRC/stats/wrapper meminfo
+	$LKP_SRC/stats/wrapper slabinfo
+	$LKP_SRC/stats/wrapper interrupts
+	$LKP_SRC/stats/wrapper lock_stat
+	env lite_mode=1 $LKP_SRC/stats/wrapper perf-sched
+	$LKP_SRC/stats/wrapper softirqs
+	$LKP_SRC/stats/wrapper diskstats
+	$LKP_SRC/stats/wrapper nfsstat
+	$LKP_SRC/stats/wrapper cpuidle
+	$LKP_SRC/stats/wrapper turbostat
+	$LKP_SRC/stats/wrapper sched_debug
+	$LKP_SRC/stats/wrapper perf-stat
+	$LKP_SRC/stats/wrapper mpstat
+	env debug_mode=0 $LKP_SRC/stats/wrapper perf-profile
 
-	$LKP_SRC/stats/wrapper time kernel-selftests.time
+	$LKP_SRC/stats/wrapper time stress-ng.time
 	$LKP_SRC/stats/wrapper dmesg
 	$LKP_SRC/stats/wrapper kmsg
 	$LKP_SRC/stats/wrapper last_state
@@ -7135,9285 +7387,120 @@ extract_stats()
 
 "$@"
 
---BA5iauX4JIsXc3PQ
-Content-Type: application/x-xz
-Content-Disposition: attachment; filename="kmsg.xz"
-Content-Transfer-Encoding: base64
-
-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
-
---BA5iauX4JIsXc3PQ
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: attachment; filename="kernel-selftests"
-Content-Transfer-Encoding: quoted-printable
-
-KERNEL SELFTESTS: linux_headers_dir is /usr/src/linux-headers-x86_64-rhel-8=
-.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d51379165afd
-2022-11-01 19:39:53 ln -sf /usr/bin/clang
-2022-11-01 19:39:54 ln -sf /usr/sbin/iptables-nft /usr/bin/iptables
-2022-11-01 19:39:54 ln -sf /usr/sbin/ip6tables-nft /usr/bin/ip6tables
-2022-11-01 19:39:54 sed -i s/default_timeout=3D45/default_timeout=3D300/ ks=
-elftest/runner.sh
-2022-11-01 19:39:54 make -C vm
-make: Entering directory '/usr/src/perf_selftests-x86_64-rhel-8.3-kselftest=
-s-fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm'
-/bin/sh ./check_config.sh gcc
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    madv_populate.=
-c vm_util.c -lrt -lpthread -o /usr/src/perf_selftests-x86_64-rhel-8.3-kself=
-tests-fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm/m=
-adv_populate
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    soft-dirty.c v=
-m_util.c -lrt -lpthread -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselftes=
-ts-fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm/soft=
--dirty
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    split_huge_pag=
-e_test.c vm_util.c -lrt -lpthread -o /usr/src/perf_selftests-x86_64-rhel-8.=
-3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftes=
-ts/vm/split_huge_page_test
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    anon_cow.c vm_=
-util.c -lrt -lpthread  -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselftest=
-s-fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm/anon_=
-cow
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    compaction_tes=
-t.c -lrt -lpthread -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd=
-0dfc48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm/compactio=
-n_test
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    gup_test.c -lr=
-t -lpthread -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f=
-1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm/gup_test
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    hmm-tests.c -l=
-rt -lpthread -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48=
-f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm/hmm-tests
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    hugetlb-madvis=
-e.c -lrt -lpthread -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd=
-0dfc48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm/hugetlb-m=
-advise
-hugetlb-madvise.c:20: warning: "__USE_GNU" redefined
-   20 | #define __USE_GNU
-      |=20
-In file included from /usr/include/x86_64-linux-gnu/bits/libc-header-start.=
-h:33,
-                 from /usr/include/stdlib.h:26,
-                 from hugetlb-madvise.c:16:
-/usr/include/features.h:407: note: this is the location of the previous def=
-inition
-  407 | # define __USE_GNU      1
-      |=20
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    hugepage-mmap.=
-c -lrt -lpthread -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0d=
-fc48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm/hugepage-mm=
-ap
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    hugepage-mrema=
-p.c -lrt -lpthread -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd=
-0dfc48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm/hugepage-=
-mremap
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    hugepage-shm.c=
- -lrt -lpthread -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0df=
-c48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm/hugepage-shm
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    hugepage-vmemm=
-ap.c -lrt -lpthread -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-f=
-d0dfc48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm/hugepage=
--vmemmap
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    khugepaged.c v=
-m_util.c -lrt -lpthread -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselftes=
-ts-fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm/khug=
-epaged
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    map_fixed_nore=
-place.c -lrt -lpthread -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselftest=
-s-fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm/map_f=
-ixed_noreplace
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    map_hugetlb.c =
--lrt -lpthread -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc=
-48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm/map_hugetlb
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    map_populate.c=
- -lrt -lpthread -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0df=
-c48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm/map_populate
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    memfd_secret.c=
- -lrt -lpthread -lcap -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests=
--fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm/memfd_=
-secret
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    migration.c -l=
-rt -lpthread -lnuma -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-f=
-d0dfc48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm/migratio=
-n
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    mlock-random-t=
-est.c -lrt -lpthread -lcap -o /usr/src/perf_selftests-x86_64-rhel-8.3-kself=
-tests-fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm/m=
-lock-random-test
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    mlock2-tests.c=
- -lrt -lpthread -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0df=
-c48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm/mlock2-tests
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    mrelease_test.=
-c -lrt -lpthread -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0d=
-fc48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm/mrelease_te=
-st
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    mremap_dontunm=
-ap.c -lrt -lpthread -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-f=
-d0dfc48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm/mremap_d=
-ontunmap
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    mremap_test.c =
--lrt -lpthread -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc=
-48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm/mremap_test
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    on-fault-limit=
-.c -lrt -lpthread -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0=
-dfc48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm/on-fault-l=
-imit
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    thuge-gen.c -l=
-rt -lpthread -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48=
-f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm/thuge-gen
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    transhuge-stre=
-ss.c -lrt -lpthread -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-f=
-d0dfc48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm/transhug=
-e-stress
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    userfaultfd.c =
-vm_util.c -lrt -lpthread -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselfte=
-sts-fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm/use=
-rfaultfd
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    ksm_tests.c -l=
-rt -lpthread -lnuma -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-f=
-d0dfc48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm/ksm_test=
-s
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie -m32 -mxsave  pro=
-tection_keys.c -lrt -lpthread -lrt -ldl -lm -o /usr/src/perf_selftests-x86_=
-64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/tools/testi=
-ng/selftests/vm/protection_keys_32
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie -m64 -mxsave  pro=
-tection_keys.c -lrt -lpthread -lrt -ldl -o /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/s=
-elftests/vm/protection_keys_64
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    va_128TBswitch=
-.c -lrt -lpthread -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0=
-dfc48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm/va_128TBsw=
-itch
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    virtual_addres=
-s_range.c -lrt -lpthread -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselfte=
-sts-fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm/vir=
-tual_address_range
-gcc -Wall -I /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1e=
-d0430088e3bb2c6e7d51379165afd/tools/testing/selftests/../../.. -I /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137=
-9165afd/tools/testing/selftests/../../../usr/include  -isystem /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kselftests-fd0dfc48f1ed0430088e3bb2c6e7d5137916=
-5afd/tools/testing/selftests/../../../usr/include -no-pie    write_to_huget=
-lbfs.c -lrt -lpthread -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests=
--fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm/write_=
-to_hugetlbfs
-
-Warning: missing liburing support. Some COW tests will be skipped.
-
-make: Leaving directory '/usr/src/perf_selftests-x86_64-rhel-8.3-kselftests=
--fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm'
-2022-11-01 19:40:05 make quicktest=3D1 run_tests -C vm
-make: Entering directory '/usr/src/perf_selftests-x86_64-rhel-8.3-kselftest=
-s-fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm'
-
-Warning: missing liburing support. Some COW tests will be skipped.
-
-TAP version 13
-1..4
-# selftests: vm: madv_populate
-# TAP version 13
-# 1..21
-# # [RUN] test_prot_read
-# ok 1 MADV_POPULATE_READ with PROT_READ
-# ok 2 MADV_POPULATE_WRITE with PROT_READ
-# # [RUN] test_prot_write
-# ok 3 MADV_POPULATE_READ with PROT_WRITE
-# ok 4 MADV_POPULATE_WRITE with PROT_WRITE
-# # [RUN] test_holes
-# ok 5 MADV_POPULATE_READ with holes in the middle
-# ok 6 MADV_POPULATE_WRITE with holes in the middle
-# ok 7 MADV_POPULATE_READ with holes at the end
-# ok 8 MADV_POPULATE_WRITE with holes at the end
-# ok 9 MADV_POPULATE_READ with holes at the beginning
-# ok 10 MADV_POPULATE_WRITE with holes at the beginning
-# # [RUN] test_populate_read
-# ok 11 range initially not populated
-# ok 12 MADV_POPULATE_READ
-# ok 13 range is populated
-# # [RUN] test_populate_write
-# ok 14 range initially not populated
-# ok 15 MADV_POPULATE_WRITE
-# ok 16 range is populated
-# # [RUN] test_softdirty
-# ok 17 range is not softdirty
-# ok 18 MADV_POPULATE_READ
-# ok 19 range is not softdirty
-# ok 20 MADV_POPULATE_WRITE
-# ok 21 range is softdirty
-# # Totals: pass:21 fail:0 xfail:0 xpass:0 skip:0 error:0
-ok 1 selftests: vm: madv_populate
-# selftests: vm: soft-dirty
-# TAP version 13
-# 1..15
-# ok 1 Test test_simple
-# ok 2 Test test_vma_reuse dirty bit of allocated page
-# ok 3 Test test_vma_reuse dirty bit of reused address page
-# ok 4 Test test_hugepage huge page allocation
-# ok 5 Test test_hugepage huge page dirty bit
-# ok 6 Test test_mprotect-anon dirty bit of new written page
-# ok 7 Test test_mprotect-anon soft-dirty clear after clear_refs
-# ok 8 Test test_mprotect-anon soft-dirty clear after marking RO
-# ok 9 Test test_mprotect-anon soft-dirty clear after marking RW
-# ok 10 Test test_mprotect-anon soft-dirty after rewritten
-# ok 11 Test test_mprotect-file dirty bit of new written page
-# ok 12 Test test_mprotect-file soft-dirty clear after clear_refs
-# ok 13 Test test_mprotect-file soft-dirty clear after marking RO
-# ok 14 Test test_mprotect-file soft-dirty clear after marking RW
-# ok 15 Test test_mprotect-file soft-dirty after rewritten
-# # Totals: pass:15 fail:0 xfail:0 xpass:0 skip:0 error:0
-ok 2 selftests: vm: soft-dirty
-# selftests: vm: split_huge_page_test
-# No THP is allocated
-not ok 3 selftests: vm: split_huge_page_test # exit=3D1
-# selftests: vm: run_vmtests.sh
-# running: ./hugepage-mmap
-# -----------------------
-# running ./hugepage-mmap
-# -----------------------
-# Open failed: No such file or directory
-# [FAIL]
-# running: ./hugepage-shm
-# ----------------------
-# running ./hugepage-shm
-# ----------------------
-# shmget: Cannot allocate memory
-# [FAIL]
-# running: ./map_hugetlb
-# ---------------------
-# running ./map_hugetlb
-# ---------------------
-# mmap: Cannot allocate memory
-# Default size hugepages
-# Mapping 256 Mbytes
-# [FAIL]
-# running: ./hugepage-mremap
-# -------------------------
-# running ./hugepage-mremap
-# -------------------------
-# mmap1: Cannot allocate memory
-# Map haddr: Returned address is 0xffffffffffffffff
-# [FAIL]
-# running: ./hugepage-vmemmap
-# --------------------------
-# running ./hugepage-vmemmap
-# --------------------------
-# Returned address is 0x7f1078000000 whose pfn is 110a600
-# [PASS]
-# running: ./hugetlb-madvise
-# -------------------------
-# running ./hugetlb-madvise
-# -------------------------
-# Not enough free huge pages to test, exiting!
-# [FAIL]
-# NOTE: These hugetlb tests provide minimal coverage.  Use
-#       https://github.com/libhugetlbfs/libhugetlbfs.git for
-#       hugetlb regression testing.
-# running: ./map_fixed_noreplace
-# -----------------------------
-# running ./map_fixed_noreplace
-# -----------------------------
-# mmap() @ 0x7fe53b510000-0x7fe53b515000 p=3D0x7fe53b510000 result=3DSucces=
-s
-# unmap() successful
-# mmap() @ 0x7fe53b511000-0x7fe53b514000 p=3D0x7fe53b511000 result=3DSucces=
-s
-# mmap() @ 0x7fe53b510000-0x7fe53b515000 p=3D0xffffffffffffffff result=3DFi=
-le exists
-# mmap() @ 0x7fe53b512000-0x7fe53b513000 p=3D0xffffffffffffffff result=3DFi=
-le exists
-# mmap() @ 0x7fe53b513000-0x7fe53b515000 p=3D0xffffffffffffffff result=3DFi=
-le exists
-# mmap() @ 0x7fe53b510000-0x7fe53b512000 p=3D0xffffffffffffffff result=3DFi=
-le exists
-# mmap() @ 0x7fe53b510000-0x7fe53b511000 p=3D0x7fe53b510000 result=3DSucces=
-s
-# mmap() @ 0x7fe53b514000-0x7fe53b515000 p=3D0x7fe53b514000 result=3DSucces=
-s
-# unmap() successful
-# OK
-# [PASS]
-# running: ./gup_test
-# ---------------------
-# running ./gup_test -u
-# ---------------------
-# GUP_FAST_BENCHMARK: Time: get:12781 put:404 us
-# [PASS]
-# running: ./gup_test
-# ---------------------
-# running ./gup_test -a
-# ---------------------
-# PIN_FAST_BENCHMARK: Time: get:13779 put:722 us
-# [PASS]
-# running: ./gup_test
-# -----------------------------------------
-# running ./gup_test -ct -F 0x1 0 19 0x1000
-# -----------------------------------------
-# DUMP_USER_PAGES_TEST: done
-# [PASS]
-# running: ./userfaultfd
-# --------------------------------
-# running ./userfaultfd anon 20 16
-# --------------------------------
-# nr_pages: 5104, nr_pages_per_cpu: 58
-# bounces: 15, mode: rnd racing ver poll, userfaults: 2690 missing (148+125=
-+123+96+108+95+88+84+90+84+91+74+79+65+69+63+55+67+52+53+50+42+56+44+53+50+=
-40+35+37+30+34+29+29+34+34+28+19+26+23+23+18+15+16+20+21+10+20+17+9+11+14+1=
-1+11+8+11+6+6+6+8+4+4+3+5+1+2+3+1+2+0+1+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0=
-+=08) 8662 wp (241+236+227+247+217+214+204+194+180+187+171+172+172+184+166+=
-171+175+151+159+150+146+152+140+141+132+126+142+130+141+134+127+125+118+117=
-+120+115+117+108+109+115+113+105+103+92+89+93+77+80+91+84+76+77+74+74+63+69=
-+60+68+61+56+68+57+55+45+44+40+40+40+33+29+29+22+21+17+20+15+13+13+16+11+15=
-+11+6+9+4+5+3+3+=08)=20
-# bounces: 14, mode: racing ver poll, userfaults: 91 missing (25+16+13+7+6+=
-4+5+4+3+5+1+1+0+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0=
-+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=
-0+0+0+0+0+0+0+0+=08) 8654 wp (181+193+196+177+169+160+158+156+166+157+152+1=
-55+152+146+135+135+139+134+123+131+124+135+120+124+125+118+109+106+110+113+=
-111+117+105+108+103+101+98+89+93+104+91+93+90+104+89+94+78+88+98+85+89+76+9=
-7+85+89+91+75+77+64+76+77+84+68+62+71+68+55+63+68+67+74+50+57+60+56+49+59+6=
-1+51+58+53+47+46+41+39+46+38+29+=08)=20
-# bounces: 13, mode: rnd ver poll, userfaults: 2783 missing (160+125+128+10=
-1+110+103+102+86+82+80+82+79+78+61+79+68+66+56+54+52+66+46+55+43+49+50+44+5=
-2+32+42+38+39+37+31+33+31+25+26+20+27+30+17+14+21+21+13+17+11+9+9+7+8+5+10+=
-9+5+8+3+8+4+2+4+3+2+0+2+2+0+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=08) 88=
-65 wp (249+232+225+243+224+201+223+198+203+201+184+170+165+175+164+158+182+=
-169+164+166+158+165+161+155+140+147+146+122+141+129+134+125+132+132+122+118=
-+120+113+112+100+105+108+103+100+97+97+94+89+83+91+84+81+81+69+64+74+61+63+=
-47+52+57+46+49+40+46+42+34+34+32+24+24+25+20+24+22+21+15+18+15+15+11+5+11+8=
-+6+3+4+3+=08)=20
-# bounces: 12, mode: ver poll, userfaults: 263 missing (33+23+23+17+15+13+1=
-2+14+10+8+8+5+4+5+7+4+4+0+2+1+0+3+1+3+3+0+0+2+5+1+1+1+0+2+4+2+0+0+1+3+0+2+2=
-+1+1+1+3+1+0+0+1+1+0+0+2+0+1+0+0+1+1+0+0+1+0+0+1+1+0+0+0+0+0+1+0+0+0+0+0+0+=
-0+0+0+1+0+0+0+0+=08) 11224 wp (319+311+283+271+296+256+256+252+239+252+237+=
-227+210+201+198+196+209+214+189+176+171+166+181+171+174+173+167+156+141+148=
-+143+150+133+139+139+104+129+129+128+120+124+121+114+108+97+125+107+94+108+=
-109+98+87+93+100+91+86+96+91+78+74+84+78+86+60+78+64+65+71+60+55+68+69+46+5=
-6+56+38+47+48+34+37+39+41+42+33+28+29+28+29+=08)=20
-# bounces: 11, mode: rnd racing poll, userfaults: 2704 missing (140+134+120=
-+120+104+99+91+94+78+82+76+71+72+67+71+58+57+62+58+50+63+49+45+45+35+46+58+=
-42+42+38+29+34+37+25+39+33+29+29+29+24+21+21+21+16+17+13+9+6+16+8+13+10+5+4=
-+10+5+2+7+4+5+4+2+2+1+2+2+3+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=08) =
-8745 wp (245+248+234+211+222+221+198+195+202+196+189+188+196+176+164+171+17=
-1+152+165+162+140+143+144+154+152+136+126+130+130+136+133+132+115+118+122+1=
-17+104+114+103+105+106+96+95+105+90+94+96+96+73+82+74+80+72+71+73+66+61+63+=
-69+57+50+54+59+49+39+52+34+32+27+28+32+23+21+21+21+17+17+10+14+11+13+8+12+6=
-+4+4+7+1+=08)=20
-# bounces: 10, mode: racing poll, userfaults: 88 missing (16+21+12+14+9+7+1=
-+2+0+2+2+2+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=
-0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0=
-+0+0+0+0+0+0+=08) 7408 wp (167+176+163+150+171+149+144+146+135+140+128+121+=
-128+128+117+116+119+131+112+105+117+112+105+103+107+97+96+97+84+102+71+87+8=
-7+94+90+87+68+89+87+75+70+77+75+85+92+74+74+76+61+69+74+68+76+73+64+72+67+6=
-3+58+65+64+58+71+64+60+66+57+55+54+52+55+62+41+53+41+54+48+37+47+44+47+36+4=
-5+35+37+34+25+32+=08)=20
-# bounces: 9, mode: rnd poll, userfaults: 2748 missing (137+143+142+135+125=
-+103+99+83+88+81+66+78+67+77+63+54+61+58+48+56+44+58+54+41+39+42+46+48+35+4=
-5+29+33+32+28+39+23+25+27+26+28+26+18+13+20+12+16+11+10+9+11+10+9+11+9+9+12=
-+4+5+3+9+3+3+2+2+3+0+1+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=08) 8839 =
-wp (274+253+248+236+220+224+194+202+175+189+187+167+179+178+164+170+149+174=
-+169+141+166+144+128+151+145+145+123+133+131+127+142+131+127+120+109+119+10=
-6+111+103+98+99+104+109+107+98+93+96+88+87+91+88+75+79+78+67+64+75+60+58+55=
-+57+61+58+48+42+47+37+43+34+27+34+28+21+21+19+21+17+10+12+18+10+13+7+12+8+5=
-+4+2+=08)=20
-# bounces: 8, mode: poll, userfaults: 285 missing (32+25+21+22+17+9+15+11+7=
-+8+5+10+5+9+3+2+5+1+2+3+3+4+4+5+3+5+0+1+2+0+3+2+4+0+2+5+2+2+0+1+1+0+1+1+1+1=
-+1+1+2+2+2+1+4+1+1+0+0+2+0+0+0+0+0+0+0+0+0+0+2+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=
-0+1+0+0+0+=08) 10828 wp (316+297+294+266+260+255+246+245+245+224+231+215+19=
-3+206+204+206+175+200+185+190+178+164+168+164+156+161+166+158+134+146+145+1=
-52+146+125+129+126+134+129+123+130+113+116+111+120+106+100+97+100+109+93+90=
-+95+92+84+86+78+95+72+78+73+72+64+62+65+65+50+63+61+61+55+59+47+63+59+46+48=
-+49+38+38+36+39+42+28+33+21+27+20+22+=08)=20
-# bounces: 7, mode: rnd racing ver read, userfaults: 2988 missing (162+136+=
-153+135+131+132+114+103+92+94+94+79+88+69+82+75+61+86+61+67+63+44+56+55+42+=
-48+38+44+43+37+41+26+27+27+31+41+27+24+22+19+22+15+13+11+18+15+9+21+10+9+12=
-+12+10+4+9+9+1+3+4+3+1+4+2+0+0+2+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=
-0+=08) 9036 wp (295+277+277+223+242+225+230+206+224+209+199+219+180+195+189=
-+187+182+167+172+175+160+156+168+119+154+153+135+150+131+142+126+118+119+13=
-4+111+119+127+119+116+99+100+97+91+101+94+100+96+86+87+72+75+82+74+67+71+56=
-+49+60+49+63+49+37+34+40+28+28+33+26+29+23+18+22+19+13+15+14+14+16+17+17+5+=
-6+9+12+6+4+3+0+=08)=20
-# bounces: 6, mode: racing ver read, userfaults: 121 missing (27+21+13+21+9=
-+6+7+8+2+2+4+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=
-0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0=
-+0+0+0+0+0+0+0+0+=08) 7277 wp (180+152+173+177+149+164+143+162+146+124+130+=
-143+143+125+144+125+129+122+132+115+109+98+97+118+100+106+91+101+102+88+102=
-+74+65+92+92+104+70+89+85+69+87+90+72+72+87+75+78+55+72+89+84+72+60+66+57+8=
-4+63+63+47+45+53+56+79+56+47+42+35+45+44+47+49+38+46+43+43+37+34+34+33+37+2=
-9+31+37+28+33+18+33+22+=08)=20
-# bounces: 5, mode: rnd ver read, userfaults: 2955 missing (165+131+146+138=
-+117+112+114+106+114+93+101+66+82+92+76+65+82+75+58+56+47+57+46+51+46+46+36=
-+38+38+40+35+40+29+39+36+23+25+24+20+32+21+19+16+15+12+13+8+10+19+19+11+10+=
-7+4+4+7+2+6+3+3+0+2+0+1+5+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=08=
-) 9065 wp (284+263+270+251+238+215+230+230+198+223+201+196+223+173+181+181+=
-181+170+184+196+158+143+148+144+171+151+159+151+123+113+128+117+122+119+125=
-+132+113+117+100+99+99+103+103+86+105+83+83+85+93+79+76+70+82+73+61+63+51+5=
-5+52+56+51+53+42+33+39+33+37+23+28+20+28+30+22+25+15+16+10+14+13+15+6+5+8+1=
-0+5+3+2+0+=08)=20
-# bounces: 4, mode: ver read, userfaults: 300 missing (50+29+26+14+15+12+12=
-+7+2+6+6+8+6+6+5+5+2+5+2+3+2+5+3+3+4+3+4+1+4+2+1+2+1+3+1+1+0+3+1+0+3+3+3+1+=
-1+2+2+1+2+1+0+1+0+1+2+0+1+0+1+0+0+0+0+0+1+1+0+1+0+0+0+2+0+0+2+0+1+0+1+0+0+0=
-+0+1+0+0+0+0+=08) 11796 wp (358+351+310+335+312+315+279+276+238+256+258+227=
-+229+221+224+215+234+207+212+187+203+161+179+195+189+179+170+177+149+156+14=
-7+138+139+142+144+144+125+116+102+142+132+129+115+120+114+114+101+103+125+1=
-08+100+87+96+98+73+98+88+73+101+81+74+73+67+59+70+49+72+71+67+58+45+55+46+4=
-9+57+51+46+42+46+40+44+39+24+28+35+30+35+27+=08)=20
-# bounces: 3, mode: rnd racing read, userfaults: 2987 missing (168+148+154+=
-149+135+145+125+99+86+90+93+88+84+84+61+83+66+66+69+50+63+66+50+55+55+50+48=
-+41+33+36+32+39+32+23+26+31+27+22+25+17+19+23+13+16+10+10+8+7+14+8+4+3+5+6+=
-3+8+4+2+2+2+4+2+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=08) 90=
-67 wp (291+279+285+272+262+213+227+206+208+215+199+213+179+197+176+165+162+=
-150+168+166+171+170+152+124+128+136+144+138+133+131+128+136+147+125+124+132=
-+105+112+117+112+105+102+91+98+95+67+91+82+78+87+78+81+77+72+57+71+58+54+44=
-+58+66+41+47+44+34+27+40+30+26+29+28+27+25+21+19+20+13+9+12+12+14+8+5+7+7+6=
-+3+3+=08)=20
-# bounces: 2, mode: racing read, userfaults: 125 missing (30+18+13+13+10+7+=
-8+6+3+4+3+5+3+1+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0=
-+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=
-0+0+0+0+0+0+0+=08) 8098 wp (192+192+202+160+190+175+166+162+149+142+151+159=
-+118+151+125+148+134+156+114+143+131+111+129+113+117+97+111+107+114+113+104=
-+118+67+108+90+95+84+96+83+61+84+64+97+84+92+91+66+82+89+99+68+83+56+85+85+=
-69+90+68+74+56+72+67+69+60+59+49+51+66+40+47+54+51+48+41+63+52+48+34+41+48+=
-43+38+49+34+20+33+37+24+=08)=20
-# bounces: 1, mode: rnd read, userfaults: 2986 missing (177+148+141+147+134=
-+121+109+112+103+96+92+82+83+83+74+74+60+73+60+69+59+57+53+46+52+43+37+40+3=
-4+39+36+33+34+34+30+27+28+19+17+21+24+20+14+11+13+15+23+14+4+13+5+4+7+8+6+6=
-+5+2+1+3+5+2+3+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=08) 8990 =
-wp (276+287+254+234+251+229+229+214+206+186+215+207+197+186+185+182+195+177=
-+170+168+154+139+168+156+146+141+142+113+116+121+127+133+115+132+96+135+129=
-+116+110+124+110+98+80+94+88+88+87+89+87+79+84+71+77+65+85+67+71+49+36+39+5=
-3+47+55+35+33+31+24+24+27+34+17+18+21+11+23+23+15+12+14+17+8+7+8+10+4+5+7+2=
-+=08)=20
-# bounces: 0, mode: read, userfaults: 229 missing (14+23+10+10+10+9+10+4+6+=
-4+7+7+3+1+7+3+4+3+7+5+2+3+5+2+2+4+3+3+2+4+1+4+3+2+3+0+3+1+2+2+2+2+3+2+1+0+1=
-+1+1+1+1+0+0+2+2+0+2+1+1+2+1+0+2+0+0+0+0+0+1+0+1+0+0+0+0+0+0+0+1+0+0+0+0+0+=
-0+0+0+0+=08) 11782 wp (367+328+332+323+306+273+274+270+292+266+220+247+226+=
-195+233+202+214+205+189+169+183+171+191+190+191+182+166+168+171+165+177+175=
-+151+148+153+118+133+160+124+141+128+123+126+107+104+96+101+128+94+99+96+98=
-+78+85+102+107+84+91+72+87+92+69+75+78+75+47+56+62+49+49+58+49+53+47+46+43+=
-38+39+43+40+48+31+49+33+35+21+40+22+=08)=20
-# testing uffd-wp with pagemap (pgsize=3D4096): done
-# testing uffd-wp with pagemap (pgsize=3D2097152): done
-# testing UFFDIO_ZEROPAGE: done.
-# testing signal delivery: done.
-# testing events (fork, remap, remove): userfaults: 5104 missing (5104+=08)=
- 5104 wp (5104+=08)=20
-# [PASS]
-# running: ./userfaultfd
-# ----------------------------------
-# running ./userfaultfd hugetlb 0 32
-# ----------------------------------
-# ERROR: invalid MiB (errno=3D0, line=3D1817)
-#=20
-# Usage: ./userfaultfd <test type> <MiB> <bounces> [hugetlbfs_file]
-#=20
-# Supported <test type>: anon, hugetlb, hugetlb_shared, shmem
-#=20
-# 'Test mods' can be joined to the test type string with a ':'. Supported m=
-ods:
-# 	syscall - Use userfaultfd(2) (default)
-# 	dev - Use /dev/userfaultfd instead of userfaultfd(2)
-# 	collapse - Test MADV_COLLAPSE of UFFDIO_REGISTER_MODE_MINOR
-# memory
-#=20
-# Example test mod usage:
-# # Run anonymous memory test with /dev/userfaultfd:
-# ./userfaultfd anon:dev 100 99999
-#=20
-# Examples:
-#=20
-# # Run anonymous memory test on 100MiB region with 99999 bounces:
-# ./userfaultfd anon 100 99999
-#=20
-# # Run the same anonymous memory test, but using /dev/userfaultfd:
-# ./userfaultfd anon:dev 100 99999
-#=20
-# # Run share memory test on 1GiB region with 99 bounces:
-# ./userfaultfd shmem 1000 99
-#=20
-# # Run hugetlb memory test on 256MiB region with 50 bounces:
-# ./userfaultfd hugetlb 256 50
-#=20
-# # Run the same hugetlb test but using shared file:
-# ./userfaultfd hugetlb_shared 256 50
-#=20
-# # 10MiB-~6GiB 999 bounces anonymous test, continue forever unless an erro=
-r triggers
-# while ./userfaultfd anon $[RANDOM % 6000 + 10] 999; do true; done
-#=20
-# [FAIL]
-# running: ./userfaultfd
-# -----------------------------------------
-# running ./userfaultfd hugetlb_shared 0 32
-# -----------------------------------------
-# ERROR: invalid MiB (errno=3D0, line=3D1817)
-#=20
-# Usage: ./userfaultfd <test type> <MiB> <bounces> [hugetlbfs_file]
-#=20
-# Supported <test type>: anon, hugetlb, hugetlb_shared, shmem
-#=20
-# 'Test mods' can be joined to the test type string with a ':'. Supported m=
-ods:
-# 	syscall - Use userfaultfd(2) (default)
-# 	dev - Use /dev/userfaultfd instead of userfaultfd(2)
-# 	collapse - Test MADV_COLLAPSE of UFFDIO_REGISTER_MODE_MINOR
-# memory
-#=20
-# Example test mod usage:
-# # Run anonymous memory test with /dev/userfaultfd:
-# ./userfaultfd anon:dev 100 99999
-#=20
-# Examples:
-#=20
-# # Run anonymous memory test on 100MiB region with 99999 bounces:
-# ./userfaultfd anon 100 99999
-#=20
-# # Run the same anonymous memory test, but using /dev/userfaultfd:
-# ./userfaultfd anon:dev 100 99999
-#=20
-# # Run share memory test on 1GiB region with 99 bounces:
-# ./userfaultfd shmem 1000 99
-#=20
-# # Run hugetlb memory test on 256MiB region with 50 bounces:
-# ./userfaultfd hugetlb 256 50
-#=20
-# # Run the same hugetlb test but using shared file:
-# ./userfaultfd hugetlb_shared 256 50
-#=20
-# # 10MiB-~6GiB 999 bounces anonymous test, continue forever unless an erro=
-r triggers
-# while ./userfaultfd anon $[RANDOM % 6000 + 10] 999; do true; done
-#=20
-# [FAIL]
-# running: ./userfaultfd
-# ---------------------------------
-# running ./userfaultfd shmem 20 16
-# ---------------------------------
-# nr_pages: 5104, nr_pages_per_cpu: 58
-# bounces: 15, mode: rnd racing ver poll, userfaults: 2787 missing (140+133=
-+118+110+107+104+99+100+98+86+80+73+82+56+68+71+59+69+62+68+53+59+52+54+45+=
-43+37+45+41+41+35+41+23+31+31+33+29+23+21+24+24+22+25+14+15+13+14+12+11+16+=
-21+9+9+6+2+7+5+5+3+4+3+1+1+0+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=
-0+=08) 9026 wp (256+233+227+232+227+217+211+210+205+203+198+198+180+197+180=
-+171+184+165+170+153+157+160+157+147+154+159+153+143+138+141+144+129+152+13=
-3+133+116+117+121+121+112+109+109+95+104+97+102+90+93+88+80+80+77+77+79+69+=
-66+61+65+59+48+53+44+47+38+33+28+29+25+27+23+26+22+21+18+20+14+14+15+13+13+=
-10+9+10+6+5+6+3+2+=08)=20
-# bounces: 14, mode: racing ver poll, userfaults: 87 missing (22+8+14+8+7+8=
-+7+1+2+8+1+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=
-0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0=
-+0+0+0+0+0+0+0+=08) 37960 wp (619+575+592+520+533+557+513+589+534+521+548+5=
-05+519+526+515+557+562+523+543+512+494+498+467+506+492+451+482+463+488+465+=
-473+452+444+457+435+433+461+450+413+470+425+455+429+429+431+427+407+400+406=
-+442+407+408+401+405+404+421+418+352+385+390+369+422+365+358+362+336+343+37=
-1+324+376+386+368+346+305+355+322+318+325+320+337+338+330+318+332+312+294+2=
-82+347+=08)=20
-# bounces: 13, mode: rnd ver poll, userfaults: 2843 missing (146+131+109+13=
-4+116+102+103+95+94+94+73+98+69+79+84+70+58+64+66+62+57+44+52+46+59+51+40+4=
-1+39+40+37+30+34+23+26+34+26+28+31+22+22+20+17+18+16+14+18+16+14+12+6+6+13+=
-10+2+7+6+4+4+4+1+0+3+2+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=08)=
- 9158 wp (251+241+242+218+229+228+221+216+202+187+212+182+206+189+175+187+1=
-88+172+168+164+166+170+159+161+148+146+155+149+151+144+139+139+134+134+126+=
-119+132+115+109+109+105+113+103+102+95+98+87+89+90+81+87+78+72+72+74+70+67+=
-62+57+50+51+51+39+43+38+32+32+30+30+25+23+26+20+22+23+19+19+20+18+14+7+12+6=
-+7+5+5+3+3+=08)=20
-# bounces: 12, mode: ver poll, userfaults: 188 missing (29+17+22+9+6+12+9+6=
-+7+8+3+5+4+4+1+4+2+1+2+4+3+2+1+2+3+2+1+1+4+0+0+0+1+1+3+1+0+1+1+0+0+0+0+0+0+=
-0+0+0+1+0+1+0+0+0+2+0+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+1+0+0+0+0+0+0+0+0+0+0=
-+0+0+0+0+0+=08) 17363 wp (413+409+395+384+372+372+352+349+358+325+325+324+3=
-16+296+298+295+305+295+281+283+271+267+275+258+248+247+245+238+233+237+251+=
-230+222+219+218+227+205+209+195+188+185+195+197+178+186+197+169+174+167+178=
-+171+173+145+154+143+136+154+142+132+139+133+117+130+121+115+122+109+93+102=
-+104+98+110+105+98+86+95+79+90+86+83+78+70+71+71+67+62+64+59+=08)=20
-# bounces: 11, mode: rnd racing poll, userfaults: 2832 missing (144+129+132=
-+109+106+104+95+94+115+93+88+75+72+75+78+65+57+57+56+62+58+50+50+56+46+53+5=
-3+41+48+38+44+37+37+39+29+32+32+22+18+21+24+17+16+16+22+17+15+9+7+9+11+11+7=
-+9+7+4+3+2+5+3+4+2+0+1+0+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=08)=
- 9118 wp (239+251+237+247+229+226+222+203+193+195+191+192+209+194+184+177+1=
-89+180+173+162+163+165+167+155+154+147+139+148+134+144+135+125+129+129+129+=
-121+111+117+116+117+111+110+117+100+95+97+95+96+92+88+81+82+80+75+75+72+60+=
-55+60+52+53+46+49+39+41+37+33+26+26+26+22+15+18+19+21+18+11+16+12+11+5+7+12=
-+6+4+7+4+3+=08)=20
-# bounces: 10, mode: racing poll, userfaults: 88 missing (28+13+9+6+6+8+3+7=
-+2+3+1+1+0+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=
-0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0=
-+0+0+0+0+0+=08) 39314 wp (609+615+591+604+551+612+590+585+576+564+584+603+5=
-35+550+549+549+511+566+518+529+517+528+509+488+498+504+504+480+468+479+488+=
-458+456+490+471+472+488+476+464+456+493+470+444+451+406+430+452+457+434+415=
-+448+405+409+400+437+391+427+359+378+398+381+353+393+400+360+379+368+377+36=
-1+345+351+359+378+349+346+329+318+325+342+313+327+341+308+337+349+318+305+3=
-13+=08)=20
-# bounces: 9, mode: rnd poll, userfaults: 2825 missing (128+131+129+108+105=
-+108+110+105+96+98+87+80+78+77+81+63+67+55+62+61+55+44+64+51+47+46+44+44+38=
-+33+40+43+32+33+27+29+29+28+27+28+19+19+16+14+17+13+17+10+15+14+15+9+4+3+7+=
-4+3+4+2+2+2+0+1+0+3+0+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=08) 9037=
- wp (256+249+230+242+230+218+212+202+199+199+193+203+192+189+177+185+180+17=
-3+174+168+164+158+150+149+161+153+148+144+146+139+138+127+130+123+127+130+1=
-21+115+114+107+108+105+109+103+98+102+86+94+81+89+84+80+72+79+66+63+63+58+5=
-5+53+48+46+42+36+39+36+34+24+26+25+23+22+17+21+15+15+15+15+11+14+10+8+8+7+8=
-+3+3+3+=08)=20
-# bounces: 8, mode: poll, userfaults: 213 missing (30+21+19+13+11+14+7+12+5=
-+3+6+8+3+7+1+5+3+1+3+2+1+1+3+0+1+3+2+0+3+1+2+1+3+2+0+2+0+0+2+1+1+1+0+0+1+0+=
-0+0+0+0+1+1+1+0+1+0+1+0+0+1+0+0+0+0+1+0+0+0+0+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0=
-+0+0+0+0+=08) 18938 wp (464+441+417+415+384+391+386+372+373+356+352+354+350=
-+337+340+330+314+316+310+314+311+304+296+277+278+287+278+271+264+258+254+25=
-0+246+231+246+224+237+229+231+210+208+218+213+198+200+204+208+181+196+196+1=
-68+182+173+167+167+166+153+156+155+148+142+135+134+137+134+115+124+123+123+=
-110+114+97+107+103+89+99+87+96+91+81+95+78+74+78+60+54+51+52+=08)=20
-# bounces: 7, mode: rnd racing ver read, userfaults: 3093 missing (168+149+=
-157+135+124+129+126+113+114+103+103+94+80+82+76+95+75+76+66+72+67+55+48+60+=
-43+52+45+49+30+44+41+37+23+46+27+22+25+25+17+18+22+20+18+17+12+15+11+10+12+=
-6+10+6+5+5+8+5+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=
-0+0+=08) 9291 wp (282+296+282+268+266+237+215+228+231+219+205+196+211+198+2=
-06+178+187+174+182+170+182+179+181+172+156+154+155+145+163+133+140+128+152+=
-119+124+125+116+119+117+113+103+101+98+98+91+90+93+85+92+69+80+75+59+55+55+=
-59+63+44+37+35+39+34+35+33+25+31+21+32+28+21+29+24+15+16+17+18+14+10+11+10+=
-11+8+6+4+4+1+5+3+=08)=20
-# bounces: 6, mode: racing ver read, userfaults: 132 missing (25+20+15+20+8=
-+11+7+3+6+6+5+3+1+0+2+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0=
-+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=
-0+0+0+0+0+0+0+0+0+=08) 38730 wp (712+689+688+678+672+623+648+663+658+663+60=
-7+660+591+660+594+622+621+586+576+610+579+582+566+545+556+574+555+559+515+5=
-07+506+529+511+500+518+488+485+450+464+466+429+454+456+474+385+432+432+381+=
-420+413+431+390+368+359+376+380+372+356+360+335+373+358+316+339+347+305+262=
-+301+296+302+316+269+298+242+244+247+273+227+253+222+220+240+217+235+194+20=
-2+171+182+=08)=20
-# bounces: 5, mode: rnd ver read, userfaults: 3069 missing (150+150+132+133=
-+131+112+114+109+114+98+86+102+77+84+75+75+73+83+69+63+70+64+62+48+54+46+50=
-+43+42+44+42+50+40+42+33+26+30+21+29+28+15+19+17+16+11+24+7+7+11+9+16+2+4+7=
-+2+3+3+0+1+0+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=08) 9=
-310 wp (274+284+278+264+250+251+222+234+205+203+217+215+201+201+193+192+203=
-+174+188+180+169+170+176+176+156+163+153+160+158+143+146+122+133+128+126+11=
-8+118+122+116+110+101+102+99+110+108+94+92+85+82+79+58+67+60+56+62+59+43+50=
-+49+45+37+44+28+31+26+28+29+25+31+23+19+17+26+20+15+9+16+15+8+14+12+14+9+7+=
-5+2+4+3+=08)=20
-# bounces: 4, mode: ver read, userfaults: 282 missing (42+23+22+16+23+11+12=
-+10+8+9+6+11+4+7+3+2+2+5+4+3+1+3+3+3+1+3+3+1+0+3+3+2+1+1+5+1+2+2+0+1+0+1+2+=
-3+0+0+0+1+1+1+0+1+0+0+0+0+0+1+0+0+0+0+1+1+1+0+0+0+2+1+0+0+0+0+1+1+0+0+1+0+0=
-+0+0+0+0+0+0+0+=08) 21896 wp (586+545+528+540+519+500+477+481+475+491+452+4=
-39+431+438+403+387+387+361+385+406+369+365+353+339+349+339+348+341+344+315+=
-302+324+306+275+299+286+287+268+278+254+251+258+244+251+225+239+240+215+207=
-+201+197+173+184+200+170+162+163+130+163+148+144+140+132+125+114+130+102+12=
-5+101+99+85+115+98+87+81+87+88+86+64+61+60+27+41+29+29+17+19+17+=08)=20
-# bounces: 3, mode: rnd racing read, userfaults: 3095 missing (164+164+139+=
-129+109+121+121+104+98+125+88+101+78+95+80+83+67+77+66+64+60+63+76+59+59+43=
-+52+60+43+42+29+39+35+39+24+29+26+30+26+19+26+20+14+14+15+15+12+9+9+6+6+8+4=
-+3+5+3+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=08)=
- 9358 wp (279+274+257+272+272+246+244+236+226+199+222+210+213+196+196+205+1=
-95+185+183+193+174+178+154+167+160+165+163+144+151+136+155+142+139+119+130+=
-126+124+113+98+104+97+108+97+99+100+99+91+86+92+73+68+76+71+62+49+51+43+46+=
-44+44+36+34+44+40+36+24+28+30+20+19+27+14+20+16+17+17+15+12+10+14+9+10+9+4+=
-3+1+5+3+=08)=20
-# bounces: 2, mode: racing read, userfaults: 143 missing (31+27+14+14+13+7+=
-12+7+1+3+9+0+1+0+2+2+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=
-0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0=
-+0+0+0+0+0+0+0+=08) 36434 wp (677+654+656+657+642+591+605+597+615+629+600+5=
-95+568+579+617+598+596+614+552+529+566+550+570+557+541+521+524+466+518+488+=
-500+455+459+446+445+467+446+432+422+435+399+412+397+444+399+393+394+369+390=
-+377+365+354+366+375+331+360+294+322+322+305+337+304+308+313+292+279+286+26=
-6+256+270+285+282+262+255+234+235+265+225+216+216+226+236+232+205+189+222+2=
-10+181+=08)=20
-# bounces: 1, mode: rnd read, userfaults: 3207 missing (170+157+153+152+133=
-+136+113+137+102+92+108+92+106+88+89+85+83+84+82+69+72+70+68+54+72+57+49+41=
-+50+48+38+40+29+32+29+30+23+16+17+26+14+20+8+10+7+9+16+8+5+4+2+5+5+1+1+0+0+=
-0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=08) 9593 wp =
-(303+297+281+261+274+246+255+239+253+247+227+234+224+224+207+210+204+183+18=
-3+199+200+184+175+174+163+162+158+156+155+132+145+145+135+139+133+123+129+1=
-20+117+111+106+96+91+95+87+95+77+82+73+63+60+63+56+61+51+37+39+47+41+36+39+=
-33+37+24+40+34+26+24+27+17+20+23+25+24+18+13+14+21+10+7+8+10+13+9+7+4+2+1+=
-=08)=20
-# bounces: 0, mode: read, userfaults: 261 missing (27+14+15+17+6+7+10+8+11+=
-6+8+12+7+3+7+4+3+5+3+3+3+5+2+2+4+2+2+1+4+4+2+6+1+3+1+0+2+3+1+0+1+0+1+0+0+3+=
-2+1+1+1+3+0+0+1+1+2+1+1+1+0+2+1+0+0+0+1+0+2+3+0+0+0+3+0+1+0+0+1+1+0+1+0+0+0=
-+0+0+1+0+=08) 21443 wp (573+567+537+512+527+511+478+474+465+437+455+416+412=
-+411+392+390+387+403+360+375+368+369+336+336+340+332+318+318+303+303+330+29=
-2+279+282+291+266+265+264+281+259+265+235+245+237+234+219+215+218+214+198+1=
-78+190+170+188+173+152+149+160+150+142+147+127+136+129+131+113+126+110+94+1=
-03+95+91+96+93+96+63+67+74+72+62+67+54+50+31+32+15+12+11+=08)=20
-# testing UFFDIO_ZEROPAGE: done.
-# testing signal delivery: done.
-# testing events (fork, remap, remove): userfaults: 5104 missing (5104+=08)=
- 5104 wp (5104+=08)=20
-# testing minor faults: userfaults: 5104 minor (5104+=08)
-# [PASS]
-# running: ./userfaultfd
-# ------------------------------------
-# running ./userfaultfd anon:dev 20 16
-# ------------------------------------
-# nr_pages: 5104, nr_pages_per_cpu: 58
-# bounces: 15, mode: rnd racing ver poll, userfaults: 2735 missing (145+123=
-+105+129+110+99+109+87+78+62+70+75+71+74+58+73+70+67+58+62+69+51+41+50+37+4=
-4+46+38+38+31+42+35+35+27+27+26+26+26+27+25+19+20+26+20+13+11+19+14+11+10+1=
-6+17+10+10+8+10+6+6+6+3+3+5+1+1+0+1+2+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0=
-+0+0+=08) 8806 wp (252+239+251+216+222+206+183+193+192+208+184+183+186+173+=
-186+167+164+160+156+156+152+160+150+146+164+153+134+140+132+139+120+125+124=
-+128+118+128+114+108+117+107+106+97+99+94+99+98+85+78+93+96+82+80+68+67+65+=
-68+67+63+57+57+59+54+54+47+44+40+36+25+27+30+23+23+22+17+18+16+14+20+12+9+1=
-3+9+11+7+9+4+5+3+=08)=20
-# bounces: 14, mode: racing ver poll, userfaults: 88 missing (26+15+13+8+4+=
-3+8+5+3+1+0+0+0+1+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0=
-+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=
-0+0+0+0+0+0+0+0+=08) 7658 wp (191+177+151+167+164+163+142+160+143+152+135+1=
-34+135+127+146+141+127+133+118+119+119+125+114+110+110+89+110+99+103+94+98+=
-89+103+77+88+96+89+87+81+91+86+84+82+82+75+77+73+76+77+66+74+73+86+64+69+72=
-+68+82+73+66+81+72+67+63+58+53+60+52+53+50+56+35+45+40+40+45+35+32+39+41+35=
-+31+44+32+29+20+22+26+=08)=20
-# bounces: 13, mode: rnd ver poll, userfaults: 2702 missing (135+131+98+103=
-+114+97+102+105+89+74+85+80+85+65+71+54+49+60+56+49+52+60+46+45+43+40+43+47=
-+34+45+36+31+36+20+33+24+17+22+21+18+29+17+14+23+12+23+21+18+17+7+9+10+13+5=
-+13+8+13+8+2+2+5+6+3+3+2+2+0+1+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=08)=
- 8754 wp (237+227+248+214+199+207+194+188+176+207+176+198+160+173+174+181+1=
-71+162+166+171+153+151+152+156+161+145+143+133+125+124+134+120+122+132+112+=
-120+128+119+109+120+98+105+106+94+95+99+86+95+93+90+83+73+69+78+62+62+56+61=
-+61+65+52+52+43+39+43+37+38+35+29+35+26+20+25+17+19+15+20+11+13+7+9+11+8+8+=
-8+5+5+5+=08)=20
-# bounces: 12, mode: ver poll, userfaults: 232 missing (37+22+18+21+16+11+4=
-+9+7+4+2+8+4+4+2+2+1+4+2+5+7+2+2+1+5+4+1+4+1+3+0+0+0+1+0+1+0+0+1+3+1+3+2+2+=
-0+0+0+0+0+2+0+0+0+0+0+0+0+1+0+0+0+0+0+0+0+0+2+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0=
-+0+0+0+0+0+0+=08) 10749 wp (315+335+289+269+262+249+265+231+231+225+220+232=
-+198+233+200+192+185+186+195+181+160+167+177+175+171+156+165+156+148+145+16=
-3+134+137+133+137+138+134+136+117+130+112+108+109+113+102+95+99+97+92+84+10=
-3+79+79+85+78+78+66+77+74+78+77+64+62+63+60+55+64+53+63+38+52+48+55+43+39+5=
-7+46+37+47+39+28+30+31+26+22+17+34+19+=08)=20
-# bounces: 11, mode: rnd racing poll, userfaults: 2678 missing (127+124+138=
-+120+98+104+78+86+87+75+80+70+71+75+69+60+59+65+60+60+48+56+54+41+42+42+47+=
-41+36+27+44+36+22+23+29+23+23+32+29+23+23+11+16+18+27+18+11+12+12+7+11+10+1=
-3+7+6+7+8+7+8+6+4+2+5+2+1+1+0+0+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=08=
-) 8695 wp (229+228+221+205+215+208+212+204+180+202+171+201+174+160+170+173+=
-168+159+166+149+161+146+141+155+136+144+134+135+140+142+117+131+140+126+121=
-+130+112+100+99+111+106+118+98+99+89+88+104+91+91+86+79+80+74+73+68+70+72+6=
-4+54+50+50+57+48+45+43+39+36+28+29+20+24+29+23+18+17+20+15+12+14+13+12+5+7+=
-5+6+3+4+3+=08)=20
-# bounces: 10, mode: racing poll, userfaults: 95 missing (23+11+19+7+6+9+4+=
-6+2+3+3+0+0+0+2+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0=
-+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=
-0+0+0+0+0+0+=08) 6930 wp (168+173+150+145+135+149+130+138+124+125+122+122+1=
-22+121+128+113+124+115+121+107+118+101+110+115+95+95+112+88+80+89+74+87+72+=
-87+86+72+73+75+70+70+71+79+81+74+80+79+73+75+73+65+69+65+51+72+58+64+57+57+=
-67+49+50+58+57+45+60+55+45+51+60+56+53+40+52+46+40+49+40+33+35+35+29+33+27+=
-27+27+23+18+26+=08)=20
-# bounces: 9, mode: rnd poll, userfaults: 2715 missing (126+135+109+109+104=
-+91+94+91+89+78+78+63+72+81+70+69+59+65+52+49+44+60+46+43+52+43+36+42+50+44=
-+37+30+30+29+36+38+32+28+23+22+21+25+21+20+21+15+16+20+18+9+13+10+8+8+6+4+1=
-+3+4+5+2+3+2+1+5+0+4+0+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=08) 8715 wp=
- (236+225+213+232+211+212+199+192+204+190+192+183+177+173+175+162+169+163+1=
-74+171+161+140+152+146+135+146+141+134+122+128+139+135+128+128+115+105+115+=
-108+110+113+110+89+96+104+101+95+86+83+91+88+83+76+83+71+72+59+69+60+59+56+=
-52+51+43+49+36+40+35+33+31+23+33+20+19+14+18+13+14+15+17+13+9+11+10+11+5+7+=
-6+2+=08)=20
-# bounces: 8, mode: poll, userfaults: 231 missing (35+24+18+16+17+8+9+8+6+7=
-+6+9+4+1+4+6+4+2+3+0+1+3+1+1+5+5+4+2+0+0+2+0+4+2+0+0+0+0+0+1+0+2+0+1+0+0+2+=
-0+0+0+0+0+1+0+1+0+0+1+1+1+0+0+0+0+0+0+1+0+0+1+0+0+0+0+0+1+0+0+0+0+0+0+0+0+0=
-+0+0+0+=08) 11263 wp (315+306+288+292+255+268+231+246+251+234+233+225+223+2=
-25+197+194+193+188+178+208+182+175+184+170+177+163+170+152+154+142+152+152+=
-142+154+134+136+126+120+143+140+141+111+119+105+113+106+92+110+99+99+107+99=
-+87+92+96+75+77+78+76+79+83+76+76+74+67+78+69+55+64+60+57+57+58+50+56+39+54=
-+38+40+46+53+45+32+34+29+38+32+24+=08)=20
-# bounces: 7, mode: rnd racing ver read, userfaults: 2901 missing (165+138+=
-138+120+105+114+105+109+107+81+70+92+83+76+64+78+78+68+55+54+63+51+43+48+52=
-+46+59+44+36+51+39+35+29+27+32+27+28+23+23+16+17+22+20+19+8+10+19+9+11+9+13=
-+11+9+9+7+8+6+4+4+4+5+2+0+1+0+0+2+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0=
-+=08) 9001 wp (285+262+257+251+237+205+244+202+231+213+217+193+186+152+197+=
-168+180+137+176+158+134+148+165+156+144+146+129+130+126+130+134+137+129+115=
-+120+132+118+122+127+104+115+104+99+115+103+95+82+90+86+67+85+73+69+69+72+6=
-8+52+58+79+43+43+53+37+41+37+39+29+27+28+24+21+23+31+22+10+19+12+15+12+12+8=
-+2+8+8+5+9+3+2+=08)=20
-# bounces: 6, mode: racing ver read, userfaults: 119 missing (23+21+21+7+14=
-+12+5+4+1+3+3+1+4+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0=
-+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=
-0+0+0+0+0+0+0+0+0+=08) 7035 wp (167+200+160+174+174+138+156+151+130+144+141=
-+134+134+128+140+113+132+121+106+115+103+96+120+75+105+97+98+92+74+87+74+92=
-+79+83+80+88+85+81+77+78+79+71+95+72+71+65+71+70+82+79+60+67+64+59+63+73+63=
-+57+60+73+56+53+59+67+50+50+46+56+34+42+50+37+37+38+30+30+34+29+24+20+25+26=
-+15+29+22+22+21+17+=08)=20
-# bounces: 5, mode: rnd ver read, userfaults: 2964 missing (152+165+145+130=
-+119+112+103+118+100+97+96+84+66+75+79+70+78+71+75+64+53+61+49+59+45+53+46+=
-44+41+40+28+31+40+26+26+30+17+26+19+15+22+18+17+19+15+10+20+12+12+12+7+11+7=
-+5+3+6+5+2+1+5+1+1+1+2+0+0+1+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=08)=
- 9148 wp (262+270+255+238+239+247+245+216+216+229+185+206+172+195+203+196+1=
-80+193+168+155+174+177+165+157+156+146+136+147+147+132+123+133+123+105+130+=
-127+118+117+124+108+95+96+97+98+90+73+79+88+72+89+75+82+66+75+68+54+79+57+4=
-9+48+38+38+39+38+40+45+44+29+35+29+23+21+22+16+25+22+19+14+9+7+11+8+13+6+6+=
-3+1+2+=08)=20
-# bounces: 4, mode: ver read, userfaults: 277 missing (51+29+15+16+14+7+8+1=
-1+10+5+4+7+4+4+4+5+7+4+1+1+6+4+3+3+2+3+3+4+4+0+3+1+3+2+2+3+0+0+1+1+2+1+1+2+=
-0+1+0+2+1+1+0+0+0+0+3+1+0+1+3+0+0+1+0+0+0+0+0+0+1+0+0+0+0+0+0+0+0+0+0+0+1+0=
-+0+0+0+0+0+0+=08) 10957 wp (335+336+314+307+291+266+273+269+232+249+199+243=
-+216+224+226+180+215+159+163+212+184+176+174+181+164+164+154+146+147+123+10=
-7+147+137+121+133+121+118+130+126+114+109+100+104+129+113+106+90+94+91+87+9=
-1+74+89+95+109+79+82+79+69+73+86+59+66+48+59+66+72+67+70+54+55+58+42+42+55+=
-44+38+34+39+32+38+35+37+34+26+27+11+24+=08)=20
-# bounces: 3, mode: rnd racing read, userfaults: 2936 missing (169+145+123+=
-139+128+107+113+103+88+97+96+84+72+90+74+66+65+66+53+58+56+50+46+46+53+47+4=
-3+47+41+48+31+42+24+43+22+26+25+27+20+25+19+13+19+24+12+18+14+14+18+14+11+8=
-+5+6+5+5+4+8+5+8+4+0+1+1+1+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=
-=08) 9023 wp (278+262+257+246+234+237+220+209+215+206+204+205+200+193+180+1=
-83+181+150+176+154+172+158+174+143+162+142+143+134+133+127+121+107+109+118+=
-120+123+128+123+114+118+101+91+96+97+77+78+103+80+83+88+67+78+81+54+70+71+5=
-7+63+60+51+58+46+42+38+34+42+27+31+20+30+36+24+32+11+16+15+13+15+8+17+13+8+=
-9+9+10+5+4+5+=08)=20
-# bounces: 2, mode: racing read, userfaults: 121 missing (25+23+16+15+9+12+=
-1+4+3+4+6+2+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0=
-+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=
-0+0+0+0+0+0+0+=08) 7190 wp (199+182+165+176+154+147+153+162+140+156+167+138=
-+119+123+121+130+136+113+126+117+121+105+118+95+106+99+126+93+89+93+91+91+8=
-3+92+94+86+84+74+80+73+73+88+70+74+77+88+70+62+94+60+61+62+73+63+53+58+58+3=
-6+48+76+72+43+49+53+35+56+49+54+43+47+30+42+42+36+38+40+36+23+35+36+24+34+1=
-4+30+16+26+15+11+=08)=20
-# bounces: 1, mode: rnd read, userfaults: 2901 missing (165+153+141+122+107=
-+111+93+115+110+102+90+97+80+81+74+72+67+59+64+58+55+47+49+58+39+53+42+38+2=
-8+30+35+34+31+26+26+26+20+21+23+26+24+18+19+22+15+12+9+16+14+10+13+8+9+9+9+=
-6+6+2+1+1+4+0+0+4+0+0+1+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=08) 8994=
- wp (277+243+271+256+243+242+254+210+200+201+202+191+190+183+167+194+190+17=
-9+177+144+170+175+162+133+156+155+152+135+126+132+111+133+109+120+96+95+115=
-+113+123+96+93+102+107+105+94+91+89+92+78+86+91+60+75+59+82+67+57+54+49+55+=
-43+42+57+42+48+31+32+21+28+26+25+21+23+16+17+15+13+9+12+10+10+12+14+5+6+2+4=
-+3+=08)=20
-# bounces: 0, mode: read, userfaults: 233 missing (22+18+7+5+10+9+9+8+4+7+2=
-+8+5+4+6+6+5+3+6+3+3+4+4+3+5+3+3+4+0+1+3+3+4+0+6+4+0+2+0+3+1+0+0+0+0+2+1+2+=
-2+2+0+0+3+3+0+1+1+2+1+1+1+1+1+0+0+2+0+0+0+2+0+0+0+1+0+0+0+0+0+1+0+0+0+0+0+0=
-+0+0+=08) 10944 wp (342+314+310+290+281+263+271+265+223+245+229+206+217+224=
-+198+207+173+200+172+166+178+173+176+160+152+169+155+171+148+161+148+140+13=
-4+136+134+138+127+117+117+108+109+115+114+113+109+102+101+102+102+108+75+81=
-+103+94+68+71+75+94+69+104+64+60+64+75+58+67+54+54+44+49+55+39+67+48+53+48+=
-51+43+47+44+34+30+30+24+26+26+25+18+=08)=20
-# testing uffd-wp with pagemap (pgsize=3D4096): done
-# testing uffd-wp with pagemap (pgsize=3D2097152): done
-# testing UFFDIO_ZEROPAGE: done.
-# testing signal delivery: done.
-# testing events (fork, remap, remove): userfaults: 5104 missing (5104+=08)=
- 5104 wp (5104+=08)=20
-# [PASS]
-# running: ./userfaultfd
-# --------------------------------------
-# running ./userfaultfd hugetlb:dev 0 32
-# --------------------------------------
-# ERROR: invalid MiB (errno=3D0, line=3D1817)
-#=20
-# Usage: ./userfaultfd <test type> <MiB> <bounces> [hugetlbfs_file]
-#=20
-# Supported <test type>: anon, hugetlb, hugetlb_shared, shmem
-#=20
-# 'Test mods' can be joined to the test type string with a ':'. Supported m=
-ods:
-# 	syscall - Use userfaultfd(2) (default)
-# 	dev - Use /dev/userfaultfd instead of userfaultfd(2)
-# 	collapse - Test MADV_COLLAPSE of UFFDIO_REGISTER_MODE_MINOR
-# memory
-#=20
-# Example test mod usage:
-# # Run anonymous memory test with /dev/userfaultfd:
-# ./userfaultfd anon:dev 100 99999
-#=20
-# Examples:
-#=20
-# # Run anonymous memory test on 100MiB region with 99999 bounces:
-# ./userfaultfd anon 100 99999
-#=20
-# # Run the same anonymous memory test, but using /dev/userfaultfd:
-# ./userfaultfd anon:dev 100 99999
-#=20
-# # Run share memory test on 1GiB region with 99 bounces:
-# ./userfaultfd shmem 1000 99
-#=20
-# # Run hugetlb memory test on 256MiB region with 50 bounces:
-# ./userfaultfd hugetlb 256 50
-#=20
-# # Run the same hugetlb test but using shared file:
-# ./userfaultfd hugetlb_shared 256 50
-#=20
-# # 10MiB-~6GiB 999 bounces anonymous test, continue forever unless an erro=
-r triggers
-# while ./userfaultfd anon $[RANDOM % 6000 + 10] 999; do true; done
-#=20
-# [FAIL]
-# running: ./userfaultfd
-# ---------------------------------------------
-# running ./userfaultfd hugetlb_shared:dev 0 32
-# ---------------------------------------------
-# ERROR: invalid MiB (errno=3D0, line=3D1817)
-#=20
-# Usage: ./userfaultfd <test type> <MiB> <bounces> [hugetlbfs_file]
-#=20
-# Supported <test type>: anon, hugetlb, hugetlb_shared, shmem
-#=20
-# 'Test mods' can be joined to the test type string with a ':'. Supported m=
-ods:
-# 	syscall - Use userfaultfd(2) (default)
-# 	dev - Use /dev/userfaultfd instead of userfaultfd(2)
-# 	collapse - Test MADV_COLLAPSE of UFFDIO_REGISTER_MODE_MINOR
-# memory
-#=20
-# Example test mod usage:
-# # Run anonymous memory test with /dev/userfaultfd:
-# ./userfaultfd anon:dev 100 99999
-#=20
-# Examples:
-#=20
-# # Run anonymous memory test on 100MiB region with 99999 bounces:
-# ./userfaultfd anon 100 99999
-#=20
-# # Run the same anonymous memory test, but using /dev/userfaultfd:
-# ./userfaultfd anon:dev 100 99999
-#=20
-# # Run share memory test on 1GiB region with 99 bounces:
-# ./userfaultfd shmem 1000 99
-#=20
-# # Run hugetlb memory test on 256MiB region with 50 bounces:
-# ./userfaultfd hugetlb 256 50
-#=20
-# # Run the same hugetlb test but using shared file:
-# ./userfaultfd hugetlb_shared 256 50
-#=20
-# # 10MiB-~6GiB 999 bounces anonymous test, continue forever unless an erro=
-r triggers
-# while ./userfaultfd anon $[RANDOM % 6000 + 10] 999; do true; done
-#=20
-# [FAIL]
-# running: ./userfaultfd
-# -------------------------------------
-# running ./userfaultfd shmem:dev 20 16
-# -------------------------------------
-# nr_pages: 5104, nr_pages_per_cpu: 58
-# bounces: 15, mode: rnd racing ver poll, userfaults: 2777 missing (142+127=
-+122+104+104+103+92+104+90+95+72+82+84+70+80+73+58+63+58+67+51+58+37+52+46+=
-46+41+47+42+44+35+36+34+29+27+27+27+24+25+33+25+16+22+15+13+13+12+10+10+12+=
-9+9+13+7+7+8+5+5+5+3+1+1+4+0+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=
-0+=08) 8948 wp (228+236+226+241+227+228+221+201+205+184+203+188+181+185+179=
-+166+183+174+174+161+166+154+173+159+151+143+153+147+136+129+139+137+136+12=
-2+126+123+121+121+113+93+105+107+97+105+101+95+93+89+92+82+82+76+70+73+71+6=
-6+62+62+54+59+52+50+37+42+34+30+29+30+22+26+25+19+18+22+17+15+12+15+13+13+1=
-6+8+9+8+4+4+2+2+=08)=20
-# bounces: 14, mode: racing ver poll, userfaults: 83 missing (22+13+10+10+5=
-+7+2+3+7+1+0+3+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=
-0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0=
-+0+0+0+0+0+0+0+0+=08) 36350 wp (605+560+585+546+537+553+561+554+521+517+505=
-+536+523+531+521+520+507+501+499+471+464+502+456+475+499+469+473+491+445+43=
-0+454+437+472+430+411+428+468+425+406+447+408+409+415+401+404+419+408+405+3=
-95+417+383+388+381+411+353+376+380+356+343+345+273+365+334+332+328+349+328+=
-342+330+344+347+333+355+298+300+290+329+325+319+327+285+280+304+281+265+275=
-+310+270+=08)=20
-# bounces: 13, mode: rnd ver poll, userfaults: 2795 missing (144+113+132+11=
-9+98+111+110+88+86+81+79+91+71+82+75+57+78+59+56+59+59+53+46+56+49+48+40+46=
-+41+42+28+34+31+36+33+32+28+25+24+25+22+18+18+17+17+15+16+13+14+9+9+13+7+6+=
-4+8+5+5+5+2+4+0+2+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=08) 89=
-80 wp (239+242+225+226+225+216+206+211+202+215+202+175+178+184+173+190+177+=
-172+173+160+164+165+167+149+151+153+142+144+137+135+142+145+136+128+124+121=
-+122+114+122+107+110+111+96+101+97+103+91+90+94+86+80+66+77+69+70+65+58+60+=
-58+53+44+48+49+43+40+34+27+25+23+36+19+22+22+16+18+21+12+14+11+12+8+11+11+7=
-+4+4+1+4+=08)=20
-# bounces: 12, mode: ver poll, userfaults: 212 missing (39+25+16+13+11+9+8+=
-5+7+5+7+7+5+3+4+5+5+3+3+0+2+3+3+1+2+0+0+1+1+1+0+1+1+0+0+3+1+1+0+0+2+0+0+0+1=
-+0+0+0+1+1+2+0+0+0+0+0+0+1+0+0+0+0+0+0+0+0+0+0+0+1+0+1+0+0+0+0+0+0+0+0+0+1+=
-0+0+0+0+0+0+=08) 17469 wp (427+425+421+399+391+388+385+366+363+335+349+341+=
-319+335+311+294+306+300+303+277+286+283+278+269+260+262+256+270+238+244+234=
-+241+236+242+207+214+218+220+192+214+196+195+192+197+174+176+191+164+169+15=
-0+166+153+154+148+146+137+139+132+129+123+120+111+103+102+114+115+104+91+10=
-1+90+83+76+71+95+88+79+75+66+79+70+66+68+63+66+65+62+55+61+=08)=20
-# bounces: 11, mode: rnd racing poll, userfaults: 2860 missing (145+133+139=
-+131+117+88+98+117+83+93+80+85+73+75+66+56+64+62+70+63+65+69+52+39+43+46+38=
-+44+45+46+43+28+28+31+27+26+28+30+28+25+21+19+19+27+20+15+15+11+12+10+11+5+=
-7+9+11+6+4+6+3+3+2+1+1+0+3+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=
-=08) 9125 wp (256+247+227+222+221+222+226+195+218+210+192+195+196+183+191+1=
-94+179+177+165+166+167+154+162+172+159+147+149+144+145+138+134+142+134+126+=
-128+130+118+118+120+109+112+114+106+98+93+95+86+100+80+91+83+83+71+73+68+67=
-+68+59+58+52+55+49+48+40+35+30+30+33+24+27+22+25+19+16+15+20+14+16+15+10+7+=
-12+8+6+4+4+2+4+=08)=20
-# bounces: 10, mode: racing poll, userfaults: 70 missing (10+14+8+5+9+7+5+5=
-+3+0+2+1+0+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=
-0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0=
-+0+0+0+0+0+=08) 44489 wp (654+668+640+624+613+638+633+621+573+615+642+617+6=
-17+609+605+588+613+577+572+542+576+558+547+569+563+552+511+543+559+595+578+=
-509+535+544+495+520+565+544+506+512+520+535+502+510+543+484+529+544+540+513=
-+525+545+477+493+433+445+455+445+471+469+469+413+459+398+397+425+448+406+42=
-3+425+412+354+414+340+407+420+401+387+420+411+418+386+378+400+381+394+368+4=
-15+=08)=20
-# bounces: 9, mode: rnd poll, userfaults: 2859 missing (137+128+119+120+109=
-+111+106+99+84+89+93+84+84+78+68+71+62+73+71+55+65+52+52+59+44+47+41+41+38+=
-41+37+40+35+36+26+34+26+24+25+23+20+15+23+12+19+18+12+19+14+11+12+14+10+10+=
-5+5+6+0+2+2+1+1+0+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=08) 91=
-40 wp (245+244+242+233+249+221+214+212+204+200+193+192+192+180+194+182+186+=
-171+173+178+162+166+157+153+156+152+151+152+145+142+136+131+138+126+132+120=
-+117+125+120+116+109+114+102+109+102+94+96+88+86+88+80+80+74+70+74+73+63+66=
-+50+59+49+43+42+32+37+33+27+29+26+29+19+21+22+19+15+18+15+13+11+12+12+8+8+5=
-+3+6+3+4+=08)=20
-# bounces: 8, mode: poll, userfaults: 218 missing (39+24+21+11+9+7+8+12+8+4=
-+6+7+8+4+3+4+2+3+5+1+1+1+0+1+2+0+0+1+0+1+1+0+2+5+1+1+2+0+0+2+0+0+0+1+0+1+1+=
-1+0+0+0+1+1+1+0+0+0+0+1+1+0+0+0+0+0+0+0+0+0+0+0+0+0+1+0+0+0+0+1+0+0+0+0+0+0=
-+0+0+0+=08) 17094 wp (415+407+387+386+376+372+355+359+333+342+333+328+317+3=
-22+302+279+304+296+287+281+286+262+261+260+259+263+254+245+249+246+233+231+=
-211+202+216+214+188+206+195+203+198+191+183+172+180+178+173+164+152+159+163=
-+162+158+154+149+148+126+136+131+135+123+117+123+105+124+111+104+106+98+92+=
-86+86+88+85+89+85+82+81+76+61+78+74+57+64+61+65+50+46+=08)=20
-# bounces: 7, mode: rnd racing ver read, userfaults: 3058 missing (147+157+=
-162+121+127+127+119+107+124+119+100+100+92+82+93+76+75+60+55+69+68+69+60+67=
-+43+41+39+37+43+46+45+34+36+28+18+34+29+18+17+23+12+20+14+15+12+6+13+9+7+8+=
-9+3+9+0+5+4+2+2+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0=
-+=08) 9191 wp (290+283+275+265+249+233+235+227+209+214+219+197+197+197+194+=
-190+191+195+189+175+185+174+153+162+164+159+152+147+153+149+116+134+140+120=
-+136+111+128+119+121+110+108+101+113+105+100+82+81+77+85+83+68+76+57+61+63+=
-46+44+47+37+42+36+34+31+27+27+36+16+25+20+20+14+16+19+16+13+13+20+12+18+10+=
-6+6+9+5+3+2+2+2+=08)=20
-# bounces: 6, mode: racing ver read, userfaults: 144 missing (41+17+23+15+9=
-+5+7+3+7+7+5+0+3+1+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=
-0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0=
-+0+0+0+0+0+0+0+0+=08) 38699 wp (746+668+692+664+672+705+651+660+655+644+625=
-+606+649+618+568+610+585+624+573+608+556+531+574+561+558+517+563+474+550+53=
-0+521+484+526+505+500+443+451+475+452+461+411+439+455+457+393+427+443+407+4=
-15+374+360+389+378+405+376+376+386+324+374+333+329+289+333+348+320+334+323+=
-332+302+313+297+284+286+290+231+264+272+271+268+267+288+264+225+184+217+182=
-+201+208+=08)=20
-# bounces: 5, mode: rnd ver read, userfaults: 3130 missing (160+156+151+131=
-+114+130+134+110+106+108+94+99+104+90+79+85+87+70+94+71+69+65+54+57+56+55+3=
-8+46+38+37+38+33+27+37+31+28+24+26+20+17+20+16+19+22+12+7+10+11+8+3+6+6+7+1=
-0+2+2+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=08) =
-9360 wp (283+284+265+273+263+259+227+233+229+231+221+205+221+207+205+211+18=
-9+193+174+179+179+168+178+173+175+162+160+143+155+134+138+149+126+139+121+1=
-14+115+125+123+109+108+94+101+93+102+88+93+92+85+76+69+61+63+52+59+52+39+54=
-+39+36+39+26+26+25+25+23+24+26+24+18+19+25+19+21+13+14+12+14+12+13+7+11+12+=
-6+3+3+3+3+=08)=20
-# bounces: 4, mode: ver read, userfaults: 851 missing (49+42+26+19+13+23+17=
-+13+17+13+13+8+10+11+14+11+16+9+11+10+8+10+4+16+4+7+7+15+9+12+5+17+13+11+8+=
-10+13+9+6+5+9+9+9+6+8+13+4+7+5+7+8+6+5+4+14+5+6+7+10+4+9+12+4+7+7+5+9+12+4+=
-10+14+8+3+5+15+6+8+2+7+8+5+2+1+1+3+2+2+0+=08) 22542 wp (556+535+568+525+545=
-+514+496+492+453+471+447+452+477+413+421+442+414+405+407+402+392+366+377+36=
-2+353+376+336+347+334+324+306+313+301+292+311+299+294+289+277+279+269+258+2=
-55+226+250+225+216+224+224+225+200+211+196+184+184+189+178+177+157+161+163+=
-154+156+149+123+119+130+117+108+110+87+84+98+64+72+68+79+63+61+48+57+49+48+=
-39+37+37+32+18+=08)=20
-# bounces: 3, mode: rnd racing read, userfaults: 3070 missing (162+154+159+=
-141+125+121+130+111+104+107+93+90+99+84+70+74+76+77+83+70+62+59+64+48+53+53=
-+42+42+34+44+32+37+31+34+30+29+26+20+17+20+14+17+16+20+13+14+15+11+5+13+3+5=
-+5+4+2+5+0+0+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=
-=08) 9247 wp (280+276+259+248+273+247+220+239+225+217+212+211+193+207+208+2=
-14+186+183+167+178+190+158+160+169+153+156+148+141+153+135+143+144+133+126+=
-133+128+105+125+111+117+113+115+97+94+94+84+87+71+79+75+75+60+68+63+54+52+4=
-9+52+41+39+34+33+35+29+28+25+29+25+23+26+25+15+25+21+20+15+14+16+15+11+10+1=
-0+5+11+4+2+5+3+=08)=20
-# bounces: 2, mode: racing read, userfaults: 144 missing (36+21+17+13+15+13=
-+7+3+2+2+3+2+3+5+2+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=
-0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0=
-+0+0+0+0+0+0+0+=08) 36994 wp (685+675+695+661+669+663+637+646+604+620+623+6=
-17+616+625+632+596+592+558+592+591+560+535+562+526+518+512+540+538+481+469+=
-456+481+489+473+478+469+459+456+425+417+413+448+416+383+416+379+393+389+357=
-+391+403+358+362+380+388+394+334+346+329+338+326+290+284+305+331+297+314+30=
-4+274+278+271+236+284+266+221+245+234+231+237+207+221+210+196+174+201+147+1=
-59+193+=08)=20
-# bounces: 1, mode: rnd read, userfaults: 3074 missing (144+148+164+134+133=
-+149+103+100+99+95+94+92+86+84+76+78+87+67+69+57+61+59+54+67+56+45+57+42+40=
-+43+28+41+30+37+33+44+22+27+18+18+23+23+23+24+12+13+7+9+8+16+6+8+7+0+3+4+2+=
-3+1+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+0+=08) 9178 wp =
-(297+277+247+252+252+234+230+239+219+224+216+211+194+196+195+193+179+183+17=
-9+182+168+173+160+156+169+158+147+142+143+151+140+129+139+129+124+108+118+1=
-26+108+111+111+100+91+98+94+89+91+91+80+68+72+68+64+62+72+53+56+59+44+44+36=
-+23+39+35+30+30+26+24+22+21+18+20+16+20+13+19+13+15+7+5+14+7+4+5+4+2+3+2+=
-=08)=20
-# bounces: 0, mode: read, userfaults: 511 missing (29+14+22+15+13+16+9+9+14=
-+12+11+8+16+9+13+10+6+13+5+7+3+4+6+6+12+6+3+2+7+6+6+8+1+12+7+5+8+7+3+7+4+1+=
-3+6+9+5+6+4+1+4+4+2+3+5+5+5+5+7+5+0+2+3+2+5+8+3+1+1+6+5+3+4+3+1+1+1+2+1+4+0=
-+0+0+0+1+0+0+0+0+=08) 23151 wp (595+578+553+565+525+526+546+483+480+471+478=
-+466+453+444+420+413+408+408+420+404+387+376+406+387+374+341+353+353+345+33=
-5+319+323+302+335+278+291+284+292+306+293+274+270+272+246+246+248+237+253+2=
-08+219+208+202+193+181+215+175+172+177+149+155+145+143+151+124+165+130+129+=
-120+138+127+112+123+109+87+89+92+65+77+50+64+57+44+31+42+41+33+31+16+=08)=20
-# testing UFFDIO_ZEROPAGE: done.
-# testing signal delivery: done.
-# testing events (fork, remap, remove): userfaults: 5104 missing (5104+=08)=
- 5104 wp (5104+=08)=20
-# testing minor faults: userfaults: 5104 minor (5104+=08)
-# [PASS]
-# running: ./compaction_test
-# -------------------------
-# running ./compaction_test
-# -------------------------
-# No of huge pages allocated =3D 29278
-# [PASS]
-# running: sudo
-# ---------------------------------------
-# running sudo -u nobody ./on-fault-limit
-# ---------------------------------------
-# [PASS]
-# running: ./map_populate
-# ----------------------
-# running ./map_populate
-# ----------------------
-# [PASS]
-# running: ./mlock-random-test
-# ---------------------------
-# running ./mlock-random-test
-# ---------------------------
-# [PASS]
-# running: ./mlock2-tests
-# ----------------------
-# running ./mlock2-tests
-# ----------------------
-# [PASS]
-# running: ./mrelease_test
-# -----------------------
-# running ./mrelease_test
-# -----------------------
-# process_mrelease with wrong pidfd: Function not implemented
-# [SKIP]
-# running: ./mremap_test
-# ---------------------
-# running ./mremap_test
-# ---------------------
-# # Test configs:
-# 	threshold_mb=3D4
-# 	pattern_seed=3D1667331763
-#=20
-# 1..14
-# # mremap failed: Invalid argument
-# ok 1 # XFAIL mremap - Source and Destination Regions Overlapping
-# 	Expected mremap failure
-# # mremap failed: Invalid argument
-# ok 2 # XFAIL mremap - Destination Address Misaligned (1KB-aligned)
-# 	Expected mremap failure
-# # Failed to map source region: Invalid argument
-# ok 3 # XFAIL mremap - Source Address Misaligned (1KB-aligned)
-# 	Expected mremap failure
-# ok 4 8KB mremap - Source PTE-aligned, Destination PTE-aligned
-# 	mremap time:        66421ns
-# ok 5 2MB mremap - Source 1MB-aligned, Destination PTE-aligned
-# 	mremap time:        85252ns
-# ok 6 2MB mremap - Source 1MB-aligned, Destination 1MB-aligned
-# 	mremap time:        79544ns
-# ok 7 4MB mremap - Source PMD-aligned, Destination PTE-aligned
-# 	mremap time:        97223ns
-# ok 8 4MB mremap - Source PMD-aligned, Destination 1MB-aligned
-# 	mremap time:        91655ns
-# ok 9 4MB mremap - Source PMD-aligned, Destination PMD-aligned
-# 	mremap time:        74636ns
-# ok 10 2GB mremap - Source PUD-aligned, Destination PTE-aligned
-# ok 11 2GB mremap - Source PUD-aligned, Destination 1MB-aligned
-# ok 12 2GB mremap - Source PUD-aligned, Destination PMD-aligned
-# ok 13 2GB mremap - Source PUD-aligned, Destination PUD-aligned
-# not ok 14 mremap expand merge
-# # Totals: pass:10 fail:1 xfail:3 xpass:0 skip:0 error:0
-# [PASS]
-# running: ./thuge-gen
-# -------------------
-# running ./thuge-gen
-# -------------------
-# Found 1024MB
-# Found 2MB
-# Not enough huge pages for page size 1024 MB, need 4
-# [PASS]
-# running: ./virtual_address_range
-# -------------------------------
-# running ./virtual_address_range
-# -------------------------------
-# [PASS]
-# running: ./va_128TBswitch.sh
-# ---------------------------
-# running ./va_128TBswitch.sh
-# ---------------------------
-# mmap(ADDR_SWITCH_HINT - PAGE_SIZE, PAGE_SIZE): 0x7f3586418000 - OK
-# mmap(ADDR_SWITCH_HINT - PAGE_SIZE, (2 * PAGE_SIZE)): 0x7f3586417000 - OK
-# mmap(ADDR_SWITCH_HINT, PAGE_SIZE): 0x7f3586418000 - OK
-# mmap(ADDR_SWITCH_HINT, 2 * PAGE_SIZE, MAP_FIXED): 0xffffffffffffffff - FA=
-ILED
-# mmap(NULL): 0x7f3586416000 - OK
-# mmap(LOW_ADDR): 0x40000000 - OK
-# mmap(HIGH_ADDR): 0x7f3586416000 - OK
-# mmap(HIGH_ADDR) again: 0x7f3586414000 - OK
-# mmap(HIGH_ADDR, MAP_FIXED): 0xffffffffffffffff - FAILED
-# mmap(-1): 0x7f3586412000 - OK
-# mmap(-1) again: 0x7f3586209000 - OK
-# mmap(ADDR_SWITCH_HINT - PAGE_SIZE, PAGE_SIZE): 0x7f3586411000 - OK
-# mmap(ADDR_SWITCH_HINT - PAGE_SIZE, 2 * PAGE_SIZE): 0x7f3586209000 - OK
-# mmap(ADDR_SWITCH_HINT - PAGE_SIZE/2 , 2 * PAGE_SIZE): 0x7f3586207000 - OK
-# mmap(ADDR_SWITCH_HINT, PAGE_SIZE): 0x7f3586411000 - OK
-# mmap(ADDR_SWITCH_HINT, 2 * PAGE_SIZE, MAP_FIXED): 0xffffffffffffffff - FA=
-ILED
-# [FAIL]
-# running: ./test_vmalloc.sh
-# -------------------------------
-# running ./test_vmalloc.sh smoke
-# -------------------------------
-# Run smoke test. Note, this test provides basic coverage.
-# Please check ./test_vmalloc.sh output how it can be used
-# for deep performance analysis as well as stress testing.
-# Done.
-# Check the kernel ring buffer to see the summary.
-# [PASS]
-# running: ./mremap_dontunmap
-# --------------------------
-# running ./mremap_dontunmap
-# --------------------------
-# OK
-# [PASS]
-# running: ./test_hmm.sh
-# ---------------------------
-# running ./test_hmm.sh smoke
-# ---------------------------
-# Running smoke test. Note, this test provides basic coverage.
-# TAP version 13
-# 1..56
-# # Starting 56 tests from 5 test cases.
-# #  RUN           hmm.hmm_device_private.open_close ...
-# #            OK  hmm.hmm_device_private.open_close
-# ok 1 hmm.hmm_device_private.open_close
-# #  RUN           hmm.hmm_device_private.anon_read ...
-# #            OK  hmm.hmm_device_private.anon_read
-# ok 2 hmm.hmm_device_private.anon_read
-# #  RUN           hmm.hmm_device_private.anon_read_prot ...
-# #            OK  hmm.hmm_device_private.anon_read_prot
-# ok 3 hmm.hmm_device_private.anon_read_prot
-# #  RUN           hmm.hmm_device_private.anon_write ...
-# #            OK  hmm.hmm_device_private.anon_write
-# ok 4 hmm.hmm_device_private.anon_write
-# #  RUN           hmm.hmm_device_private.anon_write_prot ...
-# #            OK  hmm.hmm_device_private.anon_write_prot
-# ok 5 hmm.hmm_device_private.anon_write_prot
-# #  RUN           hmm.hmm_device_private.anon_write_child ...
-# #            OK  hmm.hmm_device_private.anon_write_child
-# ok 6 hmm.hmm_device_private.anon_write_child
-# #  RUN           hmm.hmm_device_private.anon_write_child_shared ...
-# #            OK  hmm.hmm_device_private.anon_write_child_shared
-# ok 7 hmm.hmm_device_private.anon_write_child_shared
-# #  RUN           hmm.hmm_device_private.anon_write_huge ...
-# #            OK  hmm.hmm_device_private.anon_write_huge
-# ok 8 hmm.hmm_device_private.anon_write_huge
-# #  RUN           hmm.hmm_device_private.anon_write_hugetlbfs ...
-# #            OK  hmm.hmm_device_private.anon_write_hugetlbfs
-# ok 9 hmm.hmm_device_private.anon_write_hugetlbfs
-# #  RUN           hmm.hmm_device_private.file_read ...
-# #            OK  hmm.hmm_device_private.file_read
-# ok 10 hmm.hmm_device_private.file_read
-# #  RUN           hmm.hmm_device_private.file_write ...
-# #            OK  hmm.hmm_device_private.file_write
-# ok 11 hmm.hmm_device_private.file_write
-# #  RUN           hmm.hmm_device_private.migrate ...
-# #            OK  hmm.hmm_device_private.migrate
-# ok 12 hmm.hmm_device_private.migrate
-# #  RUN           hmm.hmm_device_private.migrate_fault ...
-# #            OK  hmm.hmm_device_private.migrate_fault
-# ok 13 hmm.hmm_device_private.migrate_fault
-# #  RUN           hmm.hmm_device_private.migrate_release ...
-# #            OK  hmm.hmm_device_private.migrate_release
-# ok 14 hmm.hmm_device_private.migrate_release
-# #  RUN           hmm.hmm_device_private.migrate_shared ...
-# #            OK  hmm.hmm_device_private.migrate_shared
-# ok 15 hmm.hmm_device_private.migrate_shared
-# #  RUN           hmm.hmm_device_private.migrate_multiple ...
-# #            OK  hmm.hmm_device_private.migrate_multiple
-# ok 16 hmm.hmm_device_private.migrate_multiple
-# #  RUN           hmm.hmm_device_private.anon_read_multiple ...
-# #            OK  hmm.hmm_device_private.anon_read_multiple
-# ok 17 hmm.hmm_device_private.anon_read_multiple
-# #  RUN           hmm.hmm_device_private.anon_teardown ...
-# #            OK  hmm.hmm_device_private.anon_teardown
-# ok 18 hmm.hmm_device_private.anon_teardown
-# #  RUN           hmm.hmm_device_private.mixedmap ...
-# #            OK  hmm.hmm_device_private.mixedmap
-# ok 19 hmm.hmm_device_private.mixedmap
-# #  RUN           hmm.hmm_device_private.compound ...
-# #            OK  hmm.hmm_device_private.compound
-# ok 20 hmm.hmm_device_private.compound
-# #  RUN           hmm.hmm_device_private.exclusive ...
-# #            OK  hmm.hmm_device_private.exclusive
-# ok 21 hmm.hmm_device_private.exclusive
-# #  RUN           hmm.hmm_device_private.exclusive_mprotect ...
-# #            OK  hmm.hmm_device_private.exclusive_mprotect
-# ok 22 hmm.hmm_device_private.exclusive_mprotect
-# #  RUN           hmm.hmm_device_private.exclusive_cow ...
-# #            OK  hmm.hmm_device_private.exclusive_cow
-# ok 23 hmm.hmm_device_private.exclusive_cow
-# #  RUN           hmm.hmm_device_private.hmm_gup_test ...
-# #            OK  hmm.hmm_device_private.hmm_gup_test
-# ok 24 hmm.hmm_device_private.hmm_gup_test
-# #  RUN           hmm.hmm_device_private.hmm_cow_in_device ...
-# #            OK  hmm.hmm_device_private.hmm_cow_in_device
-# ok 25 hmm.hmm_device_private.hmm_cow_in_device
-# #  RUN           hmm.hmm_device_coherent.open_close ...
-# could not open hmm dmirror driver (/dev/hmm_dmirror2)
-# #      SKIP      DEVICE_COHERENT not available
-# #            OK  hmm.hmm_device_coherent.open_close
-# ok 26 hmm.hmm_device_coherent.open_close
-# #  RUN           hmm.hmm_device_coherent.anon_read ...
-# could not open hmm dmirror driver (/dev/hmm_dmirror2)
-# #      SKIP      DEVICE_COHERENT not available
-# #            OK  hmm.hmm_device_coherent.anon_read
-# ok 27 hmm.hmm_device_coherent.anon_read
-# #  RUN           hmm.hmm_device_coherent.anon_read_prot ...
-# could not open hmm dmirror driver (/dev/hmm_dmirror2)
-# #      SKIP      DEVICE_COHERENT not available
-# #            OK  hmm.hmm_device_coherent.anon_read_prot
-# ok 28 hmm.hmm_device_coherent.anon_read_prot
-# #  RUN           hmm.hmm_device_coherent.anon_write ...
-# could not open hmm dmirror driver (/dev/hmm_dmirror2)
-# #      SKIP      DEVICE_COHERENT not available
-# #            OK  hmm.hmm_device_coherent.anon_write
-# ok 29 hmm.hmm_device_coherent.anon_write
-# #  RUN           hmm.hmm_device_coherent.anon_write_prot ...
-# could not open hmm dmirror driver (/dev/hmm_dmirror2)
-# #      SKIP      DEVICE_COHERENT not available
-# #            OK  hmm.hmm_device_coherent.anon_write_prot
-# ok 30 hmm.hmm_device_coherent.anon_write_prot
-# #  RUN           hmm.hmm_device_coherent.anon_write_child ...
-# could not open hmm dmirror driver (/dev/hmm_dmirror2)
-# #      SKIP      DEVICE_COHERENT not available
-# #            OK  hmm.hmm_device_coherent.anon_write_child
-# ok 31 hmm.hmm_device_coherent.anon_write_child
-# #  RUN           hmm.hmm_device_coherent.anon_write_child_shared ...
-# could not open hmm dmirror driver (/dev/hmm_dmirror2)
-# #      SKIP      DEVICE_COHERENT not available
-# #            OK  hmm.hmm_device_coherent.anon_write_child_shared
-# ok 32 hmm.hmm_device_coherent.anon_write_child_shared
-# #  RUN           hmm.hmm_device_coherent.anon_write_huge ...
-# could not open hmm dmirror driver (/dev/hmm_dmirror2)
-# #      SKIP      DEVICE_COHERENT not available
-# #            OK  hmm.hmm_device_coherent.anon_write_huge
-# ok 33 hmm.hmm_device_coherent.anon_write_huge
-# #  RUN           hmm.hmm_device_coherent.anon_write_hugetlbfs ...
-# could not open hmm dmirror driver (/dev/hmm_dmirror2)
-# #      SKIP      DEVICE_COHERENT not available
-# #            OK  hmm.hmm_device_coherent.anon_write_hugetlbfs
-# ok 34 hmm.hmm_device_coherent.anon_write_hugetlbfs
-# #  RUN           hmm.hmm_device_coherent.file_read ...
-# could not open hmm dmirror driver (/dev/hmm_dmirror2)
-# #      SKIP      DEVICE_COHERENT not available
-# #            OK  hmm.hmm_device_coherent.file_read
-# ok 35 hmm.hmm_device_coherent.file_read
-# #  RUN           hmm.hmm_device_coherent.file_write ...
-# could not open hmm dmirror driver (/dev/hmm_dmirror2)
-# #      SKIP      DEVICE_COHERENT not available
-# #            OK  hmm.hmm_device_coherent.file_write
-# ok 36 hmm.hmm_device_coherent.file_write
-# #  RUN           hmm.hmm_device_coherent.migrate ...
-# could not open hmm dmirror driver (/dev/hmm_dmirror2)
-# #      SKIP      DEVICE_COHERENT not available
-# #            OK  hmm.hmm_device_coherent.migrate
-# ok 37 hmm.hmm_device_coherent.migrate
-# #  RUN           hmm.hmm_device_coherent.migrate_fault ...
-# could not open hmm dmirror driver (/dev/hmm_dmirror2)
-# #      SKIP      DEVICE_COHERENT not available
-# #            OK  hmm.hmm_device_coherent.migrate_fault
-# ok 38 hmm.hmm_device_coherent.migrate_fault
-# #  RUN           hmm.hmm_device_coherent.migrate_release ...
-# could not open hmm dmirror driver (/dev/hmm_dmirror2)
-# #      SKIP      DEVICE_COHERENT not available
-# #            OK  hmm.hmm_device_coherent.migrate_release
-# ok 39 hmm.hmm_device_coherent.migrate_release
-# #  RUN           hmm.hmm_device_coherent.migrate_shared ...
-# could not open hmm dmirror driver (/dev/hmm_dmirror2)
-# #      SKIP      DEVICE_COHERENT not available
-# #            OK  hmm.hmm_device_coherent.migrate_shared
-# ok 40 hmm.hmm_device_coherent.migrate_shared
-# #  RUN           hmm.hmm_device_coherent.migrate_multiple ...
-# could not open hmm dmirror driver (/dev/hmm_dmirror2)
-# #      SKIP      DEVICE_COHERENT not available
-# #            OK  hmm.hmm_device_coherent.migrate_multiple
-# ok 41 hmm.hmm_device_coherent.migrate_multiple
-# #  RUN           hmm.hmm_device_coherent.anon_read_multiple ...
-# could not open hmm dmirror driver (/dev/hmm_dmirror2)
-# #      SKIP      DEVICE_COHERENT not available
-# #            OK  hmm.hmm_device_coherent.anon_read_multiple
-# ok 42 hmm.hmm_device_coherent.anon_read_multiple
-# #  RUN           hmm.hmm_device_coherent.anon_teardown ...
-# could not open hmm dmirror driver (/dev/hmm_dmirror2)
-# #      SKIP      DEVICE_COHERENT not available
-# #            OK  hmm.hmm_device_coherent.anon_teardown
-# ok 43 hmm.hmm_device_coherent.anon_teardown
-# #  RUN           hmm.hmm_device_coherent.mixedmap ...
-# could not open hmm dmirror driver (/dev/hmm_dmirror2)
-# #      SKIP      DEVICE_COHERENT not available
-# #            OK  hmm.hmm_device_coherent.mixedmap
-# ok 44 hmm.hmm_device_coherent.mixedmap
-# #  RUN           hmm.hmm_device_coherent.compound ...
-# could not open hmm dmirror driver (/dev/hmm_dmirror2)
-# #      SKIP      DEVICE_COHERENT not available
-# #            OK  hmm.hmm_device_coherent.compound
-# ok 45 hmm.hmm_device_coherent.compound
-# #  RUN           hmm.hmm_device_coherent.exclusive ...
-# could not open hmm dmirror driver (/dev/hmm_dmirror2)
-# #      SKIP      DEVICE_COHERENT not available
-# #            OK  hmm.hmm_device_coherent.exclusive
-# ok 46 hmm.hmm_device_coherent.exclusive
-# #  RUN           hmm.hmm_device_coherent.exclusive_mprotect ...
-# could not open hmm dmirror driver (/dev/hmm_dmirror2)
-# #      SKIP      DEVICE_COHERENT not available
-# #            OK  hmm.hmm_device_coherent.exclusive_mprotect
-# ok 47 hmm.hmm_device_coherent.exclusive_mprotect
-# #  RUN           hmm.hmm_device_coherent.exclusive_cow ...
-# could not open hmm dmirror driver (/dev/hmm_dmirror2)
-# #      SKIP      DEVICE_COHERENT not available
-# #            OK  hmm.hmm_device_coherent.exclusive_cow
-# ok 48 hmm.hmm_device_coherent.exclusive_cow
-# #  RUN           hmm.hmm_device_coherent.hmm_gup_test ...
-# could not open hmm dmirror driver (/dev/hmm_dmirror2)
-# #      SKIP      DEVICE_COHERENT not available
-# #            OK  hmm.hmm_device_coherent.hmm_gup_test
-# ok 49 hmm.hmm_device_coherent.hmm_gup_test
-# #  RUN           hmm.hmm_device_coherent.hmm_cow_in_device ...
-# could not open hmm dmirror driver (/dev/hmm_dmirror2)
-# #      SKIP      DEVICE_COHERENT not available
-# #            OK  hmm.hmm_device_coherent.hmm_cow_in_device
-# ok 50 hmm.hmm_device_coherent.hmm_cow_in_device
-# #  RUN           hmm2.hmm2_device_private.migrate_mixed ...
-# #            OK  hmm2.hmm2_device_private.migrate_mixed
-# ok 51 hmm2.hmm2_device_private.migrate_mixed
-# #  RUN           hmm2.hmm2_device_private.snapshot ...
-# #            OK  hmm2.hmm2_device_private.snapshot
-# ok 52 hmm2.hmm2_device_private.snapshot
-# #  RUN           hmm2.hmm2_device_private.double_map ...
-# #            OK  hmm2.hmm2_device_private.double_map
-# ok 53 hmm2.hmm2_device_private.double_map
-# #  RUN           hmm2.hmm2_device_coherent.migrate_mixed ...
-# could not open hmm dmirror driver (/dev/hmm_dmirror2)
-# #      SKIP      DEVICE_COHERENT not available
-# #            OK  hmm2.hmm2_device_coherent.migrate_mixed
-# ok 54 hmm2.hmm2_device_coherent.migrate_mixed
-# #  RUN           hmm2.hmm2_device_coherent.snapshot ...
-# could not open hmm dmirror driver (/dev/hmm_dmirror2)
-# #      SKIP      DEVICE_COHERENT not available
-# #            OK  hmm2.hmm2_device_coherent.snapshot
-# ok 55 hmm2.hmm2_device_coherent.snapshot
-# #  RUN           hmm2.hmm2_device_coherent.double_map ...
-# could not open hmm dmirror driver (/dev/hmm_dmirror2)
-# #      SKIP      DEVICE_COHERENT not available
-# #            OK  hmm2.hmm2_device_coherent.double_map
-# ok 56 hmm2.hmm2_device_coherent.double_map
-# # PASSED: 56 / 56 tests passed.
-# # Totals: pass:56 fail:0 xfail:0 xpass:0 skip:0 error:0
-# [PASS]
-# running: ./madv_populate
-# -----------------------
-# running ./madv_populate
-# -----------------------
-# TAP version 13
-# 1..21
-# # [RUN] test_prot_read
-# ok 1 MADV_POPULATE_READ with PROT_READ
-# ok 2 MADV_POPULATE_WRITE with PROT_READ
-# # [RUN] test_prot_write
-# ok 3 MADV_POPULATE_READ with PROT_WRITE
-# ok 4 MADV_POPULATE_WRITE with PROT_WRITE
-# # [RUN] test_holes
-# ok 5 MADV_POPULATE_READ with holes in the middle
-# ok 6 MADV_POPULATE_WRITE with holes in the middle
-# ok 7 MADV_POPULATE_READ with holes at the end
-# ok 8 MADV_POPULATE_WRITE with holes at the end
-# ok 9 MADV_POPULATE_READ with holes at the beginning
-# ok 10 MADV_POPULATE_WRITE with holes at the beginning
-# # [RUN] test_populate_read
-# ok 11 range initially not populated
-# ok 12 MADV_POPULATE_READ
-# ok 13 range is populated
-# # [RUN] test_populate_write
-# ok 14 range initially not populated
-# ok 15 MADV_POPULATE_WRITE
-# ok 16 range is populated
-# # [RUN] test_softdirty
-# ok 17 range is not softdirty
-# ok 18 MADV_POPULATE_READ
-# ok 19 range is not softdirty
-# ok 20 MADV_POPULATE_WRITE
-# ok 21 range is softdirty
-# # Totals: pass:21 fail:0 xfail:0 xpass:0 skip:0 error:0
-# [PASS]
-# running: ./memfd_secret
-# ----------------------
-# running ./memfd_secret
-# ----------------------
-# page_size: 4096, mlock.soft: 8388608, mlock.hard: 8388608
-# TAP version 13
-# 1..4
-# ok 2 # SKIP memfd_secret is not supported
-# # Planned tests !=3D run tests (4 !=3D 1)
-# # Totals: pass:0 fail:0 xfail:0 xpass:0 skip:1 error:0
-# [SKIP]
-# running: ./ksm_tests
-# ----------------------------
-# running ./ksm_tests -M -p 10
-# ----------------------------
-# OK
-# [PASS]
-# running: ./ksm_tests
-# ----------------------
-# running ./ksm_tests -U
-# ----------------------
-# OK
-# [PASS]
-# running: ./ksm_tests
-# ---------------------------------
-# running ./ksm_tests -Z -p 10 -z 0
-# ---------------------------------
-# OK
-# [PASS]
-# running: ./ksm_tests
-# ---------------------------------
-# running ./ksm_tests -Z -p 10 -z 1
-# ---------------------------------
-# OK
-# [PASS]
-# running: ./ksm_tests
-# ---------------------------
-# running ./ksm_tests -N -m 1
-# ---------------------------
-# OK
-# [PASS]
-# running: ./ksm_tests
-# ---------------------------
-# running ./ksm_tests -N -m 0
-# ---------------------------
-# OK
-# [PASS]
-# running: ./protection_keys_32
-# ----------------------------
-# running ./protection_keys_32
-# ----------------------------
-# has pkeys: 1
-# startup pkey_reg: 0000000055555550
-# test  0 PASSED (iteration 1)
-# test  1 PASSED (iteration 1)
-# test  2 PASSED (iteration 1)
-# test  3 PASSED (iteration 1)
-# test  4 PASSED (iteration 1)
-# test  5 PASSED (iteration 1)
-# test  6 PASSED (iteration 1)
-# test  7 PASSED (iteration 1)
-# test  8 PASSED (iteration 1)
-# test  9 PASSED (iteration 1)
-# test 10 PASSED (iteration 1)
-# test 11 PASSED (iteration 1)
-# test 12 PASSED (iteration 1)
-# test 13 PASSED (iteration 1)
-# test 14 PASSED (iteration 1)
-# test 15 PASSED (iteration 1)
-# test 16 PASSED (iteration 1)
-# test 17 PASSED (iteration 1)
-# [PASS]
-# running: ./protection_keys_64
-# ----------------------------
-# running ./protection_keys_64
-# ----------------------------
-# has pkeys: 1
-# startup pkey_reg: 0000000055555550
-# test  0 PASSED (iteration 1)
-# test  1 PASSED (iteration 1)
-# test  2 PASSED (iteration 1)
-# test  3 PASSED (iteration 1)
-# test  4 PASSED (iteration 1)
-# test  5 PASSED (iteration 1)
-# test  6 PASSED (iteration 1)
-# test  7 PASSED (iteration 1)
-# test  8 PASSED (iteration 1)
-# test  9 PASSED (iteration 1)
-# test 10 PASSED (iteration 1)
-# test 11 PASSED (iteration 1)
-# test 12 PASSED (iteration 1)
-# test 13 PASSED (iteration 1)
-# test 14 PASSED (iteration 1)
-# test 15 PASSED (iteration 1)
-# test 16 PASSED (iteration 1)
-# test 17 PASSED (iteration 1)
-# test 18 PASSED (iteration 1)
-# test 19 PASSED (iteration 1)
-# test  0 PASSED (iteration 2)
-# test  1 PASSED (iteration 2)
-# test  2 PASSED (iteration 2)
-# test  3 PASSED (iteration 2)
-# test  4 PASSED (iteration 2)
-# test  5 PASSED (iteration 2)
-# test  6 PASSED (iteration 2)
-# test  7 PASSED (iteration 2)
-# test  8 PASSED (iteration 2)
-# test  9 PASSED (iteration 2)
-# test 10 PASSED (iteration 2)
-# test 11 PASSED (iteration 2)
-# test 12 PASSED (iteration 2)
-# test 13 PASSED (iteration 2)
-# test 14 PASSED (iteration 2)
-# test 15 PASSED (iteration 2)
-# test 16 PASSED (iteration 2)
-# test 17 PASSED (iteration 2)
-# has pkeys: 1
-# startup pkey_reg: 0000000055555550
-# test  0 PASSED (iteration 1)
-# test  1 PASSED (iteration 1)
-# test  2 PASSED (iteration 1)
-# test  3 PASSED (iteration 1)
-# test  4 PASSED (iteration 1)
-# test  5 PASSED (iteration 1)
-# test  6 PASSED (iteration 1)
-# test  7 PASSED (iteration 1)
-# test  8 PASSED (iteration 1)
-# test  9 PASSED (iteration 1)
-# test 10 PASSED (iteration 1)
-# test 11 PASSED (iteration 1)
-# test 12 PASSED (iteration 1)
-# test 13 PASSED (iteration 1)
-# test 14 PASSED (iteration 1)
-# test 15 PASSED (iteration 1)
-# test 16 PASSED (iteration 1)
-# test 17 PASSED (iteration 1)
-# [PASS]
-# running: ./soft-dirty
-# has pkeys: 1
-# startup pkey_reg: 0000000055555550
-# test  0 PASSED (iteration 1)
-# test  1 PASSED (iteration 1)
-# test  2 PASSED (iteration 1)
-# test  3 PASSED (iteration 1)
-# test  4 PASSED (iteration 1)
-# test  5 PASSED (iteration 1)
-# test  6 PASSED (iteration 1)
-# test  7 PASSED (iteration 1)
-# test  8 PASSED (iteration 1)
-# test  9 PASSED (iteration 1)
-# test 10 PASSED (iteration 1)
-# test 11 PASSED (iteration 1)
-# test 12 PASSED (iteration 1)
-# test 13 PASSED (iteration 1)
-# test 14 PASSED (iteration 1)
-# test 15 PASSED (iteration 1)
-# test 16 PASSED (iteration 1)
-# test 17 PASSED (iteration 1)
-# test 18 PASSED (iteration 1)
-# test 19 PASSED (iteration 1)
-# test  0 PASSED (iteration 2)
-# test  1 PASSED (iteration 2)
-# test  2 PASSED (iteration 2)
-# test  3 PASSED (iteration 2)
-# test  4 PASSED (iteration 2)
-# test  5 PASSED (iteration 2)
-# test  6 PASSED (iteration 2)
-# test  7 PASSED (iteration 2)
-# test  8 PASSED (iteration 2)
-# test  9 PASSED (iteration 2)
-# test 10 PASSED (iteration 2)
-# test 11 PASSED (iteration 2)
-# test 12 PASSED (iteration 2)
-# test 13 PASSED (iteration 2)
-# test 14 PASSED (iteration 2)
-# test 15 PASSED (iteration 2)
-# test 16 PASSED (iteration 2)
-# test 17 PASSED (iteration 2)
-# test 18 PASSED (iteration 2)
-# test 19 PASSED (iteration 2)
-# test  0 PASSED (iteration 3)
-# test  1 PASSED (iteration 3)
-# test  2 PASSED (iteration 3)
-# test  3 PASSED (iteration 3)
-# test  4 PASSED (iteration 3)
-# test  5 PASSED (iteration 3)
-# test  6 PASSED (iteration 3)
-# test  7 PASSED (iteration 3)
-# test  8 PASSED (iteration 3)
-# test  9 PASSED (iteration 3)
-# test 10 PASSED (iteration 3)
-# test 11 PASSED (iteration 3)
-# test 12 PASSED (iteration 3)
-# test 13 PASSED (iteration 3)
-# test 14 PASSED (iteration 3)
-# test 15 PASSED (iteration 3)
-# test 16 PASSED (iteration 3)
-# test 17 PASSED (iteration 3)
-# --------------------
-# running ./soft-dirty
-# --------------------
-# has pkeys: 1
-# startup pkey_reg: 0000000055555550
-# test  0 PASSED (iteration 1)
-# test  1 PASSED (iteration 1)
-# test  2 PASSED (iteration 1)
-# test  3 PASSED (iteration 1)
-# test  4 PASSED (iteration 1)
-# test  5 PASSED (iteration 1)
-# test  6 PASSED (iteration 1)
-# test  7 PASSED (iteration 1)
-# test  8 PASSED (iteration 1)
-# test  9 PASSED (iteration 1)
-# test 10 PASSED (iteration 1)
-# test 11 PASSED (iteration 1)
-# test 12 PASSED (iteration 1)
-# test 13 PASSED (iteration 1)
-# test 14 PASSED (iteration 1)
-# test 15 PASSED (iteration 1)
-# test 16 PASSED (iteration 1)
-# test 17 PASSED (iteration 1)
-# test 18 PASSED (iteration 1)
-# test 19 PASSED (iteration 1)
-# test  0 PASSED (iteration 2)
-# test  1 PASSED (iteration 2)
-# test  2 PASSED (iteration 2)
-# test  3 PASSED (iteration 2)
-# test  4 PASSED (iteration 2)
-# test  5 PASSED (iteration 2)
-# test  6 PASSED (iteration 2)
-# test  7 PASSED (iteration 2)
-# test  8 PASSED (iteration 2)
-# test  9 PASSED (iteration 2)
-# test 10 PASSED (iteration 2)
-# test 11 PASSED (iteration 2)
-# test 12 PASSED (iteration 2)
-# test 13 PASSED (iteration 2)
-# test 14 PASSED (iteration 2)
-# test 15 PASSED (iteration 2)
-# test 16 PASSED (iteration 2)
-# test 17 PASSED (iteration 2)
-# has pkeys: 1
-# startup pkey_reg: 0000000055555550
-# test  0 PASSED (iteration 1)
-# test  1 PASSED (iteration 1)
-# test  2 PASSED (iteration 1)
-# test  3 PASSED (iteration 1)
-# test  4 PASSED (iteration 1)
-# test  5 PASSED (iteration 1)
-# test  6 PASSED (iteration 1)
-# test  7 PASSED (iteration 1)
-# test  8 PASSED (iteration 1)
-# test  9 PASSED (iteration 1)
-# test 10 PASSED (iteration 1)
-# test 11 PASSED (iteration 1)
-# test 12 PASSED (iteration 1)
-# test 13 PASSED (iteration 1)
-# test 14 PASSED (iteration 1)
-# test 15 PASSED (iteration 1)
-# test 16 PASSED (iteration 1)
-# test 17 PASSED (iteration 1)
-# test 18 PASSED (iteration 1)
-# test 19 PASSED (iteration 1)
-# test  0 PASSED (iteration 2)
-# test  1 PASSED (iteration 2)
-# test  2 PASSED (iteration 2)
-# test  3 PASSED (iteration 2)
-# test  4 PASSED (iteration 2)
-# test  5 PASSED (iteration 2)
-# test  6 PASSED (iteration 2)
-# test  7 PASSED (iteration 2)
-# test  8 PASSED (iteration 2)
-# test  9 PASSED (iteration 2)
-# test 10 PASSED (iteration 2)
-# test 11 PASSED (iteration 2)
-# test 12 PASSED (iteration 2)
-# test 13 PASSED (iteration 2)
-# test 14 PASSED (iteration 2)
-# test 15 PASSED (iteration 2)
-# test 16 PASSED (iteration 2)
-# test 17 PASSED (iteration 2)
-# test 18 PASSED (iteration 2)
-# test 19 PASSED (iteration 2)
-# test  0 PASSED (iteration 3)
-# test  1 PASSED (iteration 3)
-# test  2 PASSED (iteration 3)
-# test  3 PASSED (iteration 3)
-# test  4 PASSED (iteration 3)
-# test  5 PASSED (iteration 3)
-# test  6 PASSED (iteration 3)
-# test  7 PASSED (iteration 3)
-# test  8 PASSED (iteration 3)
-# test  9 PASSED (iteration 3)
-# test 10 PASSED (iteration 3)
-# test 11 PASSED (iteration 3)
-# test 12 PASSED (iteration 3)
-# test 13 PASSED (iteration 3)
-# test 14 PASSED (iteration 3)
-# test 15 PASSED (iteration 3)
-# test 16 PASSED (iteration 3)
-# test 17 PASSED (iteration 3)
-# test 18 PASSED (iteration 3)
-# test 19 PASSED (iteration 3)
-# test  0 PASSED (iteration 4)
-# test  1 PASSED (iteration 4)
-# test  2 PASSED (iteration 4)
-# test  3 PASSED (iteration 4)
-# test  4 PASSED (iteration 4)
-# test  5 PASSED (iteration 4)
-# test  6 PASSED (iteration 4)
-# test  7 PASSED (iteration 4)
-# test  8 PASSED (iteration 4)
-# test  9 PASSED (iteration 4)
-# test 10 PASSED (iteration 4)
-# test 11 PASSED (iteration 4)
-# test 12 PASSED (iteration 4)
-# test 13 PASSED (iteration 4)
-# test 14 PASSED (iteration 4)
-# test 15 PASSED (iteration 4)
-# test 16 PASSED (iteration 4)
-# test 17 PASSED (iteration 4)
-# has pkeys: 1
-# startup pkey_reg: 0000000055555550
-# test  0 PASSED (iteration 1)
-# test  1 PASSED (iteration 1)
-# test  2 PASSED (iteration 1)
-# test  3 PASSED (iteration 1)
-# test  4 PASSED (iteration 1)
-# test  5 PASSED (iteration 1)
-# test  6 PASSED (iteration 1)
-# test  7 PASSED (iteration 1)
-# test  8 PASSED (iteration 1)
-# test  9 PASSED (iteration 1)
-# test 10 PASSED (iteration 1)
-# test 11 PASSED (iteration 1)
-# test 12 PASSED (iteration 1)
-# test 13 PASSED (iteration 1)
-# test 14 PASSED (iteration 1)
-# test 15 PASSED (iteration 1)
-# test 16 PASSED (iteration 1)
-# test 17 PASSED (iteration 1)
-# test 18 PASSED (iteration 1)
-# test 19 PASSED (iteration 1)
-# test  0 PASSED (iteration 2)
-# test  1 PASSED (iteration 2)
-# test  2 PASSED (iteration 2)
-# test  3 PASSED (iteration 2)
-# test  4 PASSED (iteration 2)
-# test  5 PASSED (iteration 2)
-# test  6 PASSED (iteration 2)
-# test  7 PASSED (iteration 2)
-# test  8 PASSED (iteration 2)
-# test  9 PASSED (iteration 2)
-# test 10 PASSED (iteration 2)
-# test 11 PASSED (iteration 2)
-# test 12 PASSED (iteration 2)
-# test 13 PASSED (iteration 2)
-# test 14 PASSED (iteration 2)
-# test 15 PASSED (iteration 2)
-# test 16 PASSED (iteration 2)
-# test 17 PASSED (iteration 2)
-# test 18 PASSED (iteration 2)
-# test 19 PASSED (iteration 2)
-# test  0 PASSED (iteration 3)
-# test  1 PASSED (iteration 3)
-# test  2 PASSED (iteration 3)
-# test  3 PASSED (iteration 3)
-# test  4 PASSED (iteration 3)
-# test  5 PASSED (iteration 3)
-# test  6 PASSED (iteration 3)
-# test  7 PASSED (iteration 3)
-# test  8 PASSED (iteration 3)
-# test  9 PASSED (iteration 3)
-# test 10 PASSED (iteration 3)
-# test 11 PASSED (iteration 3)
-# test 12 PASSED (iteration 3)
-# test 13 PASSED (iteration 3)
-# test 14 PASSED (iteration 3)
-# test 15 PASSED (iteration 3)
-# test 16 PASSED (iteration 3)
-# test 17 PASSED (iteration 3)
-# has pkeys: 1
-# startup pkey_reg: 0000000055555550
-# test  0 PASSED (iteration 1)
-# test  1 PASSED (iteration 1)
-# test  2 PASSED (iteration 1)
-# test  3 PASSED (iteration 1)
-# test  4 PASSED (iteration 1)
-# test  5 PASSED (iteration 1)
-# test  6 PASSED (iteration 1)
-# test  7 PASSED (iteration 1)
-# test  8 PASSED (iteration 1)
-# test  9 PASSED (iteration 1)
-# test 10 PASSED (iteration 1)
-# test 11 PASSED (iteration 1)
-# test 12 PASSED (iteration 1)
-# test 13 PASSED (iteration 1)
-# test 14 PASSED (iteration 1)
-# test 15 PASSED (iteration 1)
-# test 16 PASSED (iteration 1)
-# test 17 PASSED (iteration 1)
-# test 18 PASSED (iteration 1)
-# test 19 PASSED (iteration 1)
-# test  0 PASSED (iteration 2)
-# test  1 PASSED (iteration 2)
-# test  2 PASSED (iteration 2)
-# test  3 PASSED (iteration 2)
-# test  4 PASSED (iteration 2)
-# test  5 PASSED (iteration 2)
-# test  6 PASSED (iteration 2)
-# test  7 PASSED (iteration 2)
-# test  8 PASSED (iteration 2)
-# test  9 PASSED (iteration 2)
-# test 10 PASSED (iteration 2)
-# test 11 PASSED (iteration 2)
-# test 12 PASSED (iteration 2)
-# test 13 PASSED (iteration 2)
-# test 14 PASSED (iteration 2)
-# test 15 PASSED (iteration 2)
-# test 16 PASSED (iteration 2)
-# test 17 PASSED (iteration 2)
-# test 18 PASSED (iteration 2)
-# test 19 PASSED (iteration 2)
-# test  0 PASSED (iteration 3)
-# test  1 PASSED (iteration 3)
-# test  2 PASSED (iteration 3)
-# test  3 PASSED (iteration 3)
-# test  4 PASSED (iteration 3)
-# test  5 PASSED (iteration 3)
-# test  6 PASSED (iteration 3)
-# test  7 PASSED (iteration 3)
-# test  8 PASSED (iteration 3)
-# test  9 PASSED (iteration 3)
-# test 10 PASSED (iteration 3)
-# test 11 PASSED (iteration 3)
-# test 12 PASSED (iteration 3)
-# test 13 PASSED (iteration 3)
-# test 14 PASSED (iteration 3)
-# test 15 PASSED (iteration 3)
-# test 16 PASSED (iteration 3)
-# test 17 PASSED (iteration 3)
-# test 18 PASSED (iteration 3)
-# test 19 PASSED (iteration 3)
-# test  0 PASSED (iteration 4)
-# test  1 PASSED (iteration 4)
-# test  2 PASSED (iteration 4)
-# test  3 PASSED (iteration 4)
-# test  4 PASSED (iteration 4)
-# test  5 PASSED (iteration 4)
-# test  6 PASSED (iteration 4)
-# test  7 PASSED (iteration 4)
-# test  8 PASSED (iteration 4)
-# test  9 PASSED (iteration 4)
-# test 10 PASSED (iteration 4)
-# test 11 PASSED (iteration 4)
-# test 12 PASSED (iteration 4)
-# test 13 PASSED (iteration 4)
-# test 14 PASSED (iteration 4)
-# test 15 PASSED (iteration 4)
-# test 16 PASSED (iteration 4)
-# test 17 PASSED (iteration 4)
-# test 18 PASSED (iteration 4)
-# test 19 PASSED (iteration 4)
-# test  0 PASSED (iteration 5)
-# test  1 PASSED (iteration 5)
-# test  2 PASSED (iteration 5)
-# test  3 PASSED (iteration 5)
-# test  4 PASSED (iteration 5)
-# test  5 PASSED (iteration 5)
-# test  6 PASSED (iteration 5)
-# test  7 PASSED (iteration 5)
-# test  8 PASSED (iteration 5)
-# test  9 PASSED (iteration 5)
-# test 10 PASSED (iteration 5)
-# test 11 PASSED (iteration 5)
-# test 12 PASSED (iteration 5)
-# test 13 PASSED (iteration 5)
-# test 14 PASSED (iteration 5)
-# test 15 PASSED (iteration 5)
-# test 16 PASSED (iteration 5)
-# test 17 PASSED (iteration 5)
-# has pkeys: 1
-# startup pkey_reg: 0000000055555550
-# test  0 PASSED (iteration 1)
-# test  1 PASSED (iteration 1)
-# test  2 PASSED (iteration 1)
-# test  3 PASSED (iteration 1)
-# test  4 PASSED (iteration 1)
-# test  5 PASSED (iteration 1)
-# test  6 PASSED (iteration 1)
-# test  7 PASSED (iteration 1)
-# test  8 PASSED (iteration 1)
-# test  9 PASSED (iteration 1)
-# test 10 PASSED (iteration 1)
-# test 11 PASSED (iteration 1)
-# test 12 PASSED (iteration 1)
-# test 13 PASSED (iteration 1)
-# test 14 PASSED (iteration 1)
-# test 15 PASSED (iteration 1)
-# test 16 PASSED (iteration 1)
-# test 17 PASSED (iteration 1)
-# test 18 PASSED (iteration 1)
-# test 19 PASSED (iteration 1)
-# test  0 PASSED (iteration 2)
-# test  1 PASSED (iteration 2)
-# test  2 PASSED (iteration 2)
-# test  3 PASSED (iteration 2)
-# test  4 PASSED (iteration 2)
-# test  5 PASSED (iteration 2)
-# test  6 PASSED (iteration 2)
-# test  7 PASSED (iteration 2)
-# test  8 PASSED (iteration 2)
-# test  9 PASSED (iteration 2)
-# test 10 PASSED (iteration 2)
-# test 11 PASSED (iteration 2)
-# test 12 PASSED (iteration 2)
-# test 13 PASSED (iteration 2)
-# test 14 PASSED (iteration 2)
-# test 15 PASSED (iteration 2)
-# test 16 PASSED (iteration 2)
-# test 17 PASSED (iteration 2)
-# test 18 PASSED (iteration 2)
-# test 19 PASSED (iteration 2)
-# test  0 PASSED (iteration 3)
-# test  1 PASSED (iteration 3)
-# test  2 PASSED (iteration 3)
-# test  3 PASSED (iteration 3)
-# test  4 PASSED (iteration 3)
-# test  5 PASSED (iteration 3)
-# test  6 PASSED (iteration 3)
-# test  7 PASSED (iteration 3)
-# test  8 PASSED (iteration 3)
-# test  9 PASSED (iteration 3)
-# test 10 PASSED (iteration 3)
-# test 11 PASSED (iteration 3)
-# test 12 PASSED (iteration 3)
-# test 13 PASSED (iteration 3)
-# test 14 PASSED (iteration 3)
-# test 15 PASSED (iteration 3)
-# test 16 PASSED (iteration 3)
-# test 17 PASSED (iteration 3)
-# test 18 PASSED (iteration 3)
-# test 19 PASSED (iteration 3)
-# test  0 PASSED (iteration 4)
-# test  1 PASSED (iteration 4)
-# test  2 PASSED (iteration 4)
-# test  3 PASSED (iteration 4)
-# test  4 PASSED (iteration 4)
-# test  5 PASSED (iteration 4)
-# test  6 PASSED (iteration 4)
-# test  7 PASSED (iteration 4)
-# test  8 PASSED (iteration 4)
-# test  9 PASSED (iteration 4)
-# test 10 PASSED (iteration 4)
-# test 11 PASSED (iteration 4)
-# test 12 PASSED (iteration 4)
-# test 13 PASSED (iteration 4)
-# test 14 PASSED (iteration 4)
-# test 15 PASSED (iteration 4)
-# test 16 PASSED (iteration 4)
-# test 17 PASSED (iteration 4)
-# has pkeys: 1
-# startup pkey_reg: 0000000055555550
-# test  0 PASSED (iteration 1)
-# test  1 PASSED (iteration 1)
-# test  2 PASSED (iteration 1)
-# test  3 PASSED (iteration 1)
-# test  4 PASSED (iteration 1)
-# test  5 PASSED (iteration 1)
-# test  6 PASSED (iteration 1)
-# test  7 PASSED (iteration 1)
-# test  8 PASSED (iteration 1)
-# test  9 PASSED (iteration 1)
-# test 10 PASSED (iteration 1)
-# test 11 PASSED (iteration 1)
-# test 12 PASSED (iteration 1)
-# test 13 PASSED (iteration 1)
-# test 14 PASSED (iteration 1)
-# test 15 PASSED (iteration 1)
-# test 16 PASSED (iteration 1)
-# test 17 PASSED (iteration 1)
-# test 18 PASSED (iteration 1)
-# test 19 PASSED (iteration 1)
-# test  0 PASSED (iteration 2)
-# test  1 PASSED (iteration 2)
-# test  2 PASSED (iteration 2)
-# test  3 PASSED (iteration 2)
-# test  4 PASSED (iteration 2)
-# test  5 PASSED (iteration 2)
-# test  6 PASSED (iteration 2)
-# test  7 PASSED (iteration 2)
-# test  8 PASSED (iteration 2)
-# test  9 PASSED (iteration 2)
-# test 10 PASSED (iteration 2)
-# test 11 PASSED (iteration 2)
-# test 12 PASSED (iteration 2)
-# test 13 PASSED (iteration 2)
-# test 14 PASSED (iteration 2)
-# test 15 PASSED (iteration 2)
-# test 16 PASSED (iteration 2)
-# test 17 PASSED (iteration 2)
-# test 18 PASSED (iteration 2)
-# test 19 PASSED (iteration 2)
-# test  0 PASSED (iteration 3)
-# test  1 PASSED (iteration 3)
-# test  2 PASSED (iteration 3)
-# test  3 PASSED (iteration 3)
-# test  4 PASSED (iteration 3)
-# test  5 PASSED (iteration 3)
-# test  6 PASSED (iteration 3)
-# test  7 PASSED (iteration 3)
-# test  8 PASSED (iteration 3)
-# test  9 PASSED (iteration 3)
-# test 10 PASSED (iteration 3)
-# test 11 PASSED (iteration 3)
-# test 12 PASSED (iteration 3)
-# test 13 PASSED (iteration 3)
-# test 14 PASSED (iteration 3)
-# test 15 PASSED (iteration 3)
-# test 16 PASSED (iteration 3)
-# test 17 PASSED (iteration 3)
-# test 18 PASSED (iteration 3)
-# test 19 PASSED (iteration 3)
-# test  0 PASSED (iteration 4)
-# test  1 PASSED (iteration 4)
-# test  2 PASSED (iteration 4)
-# test  3 PASSED (iteration 4)
-# test  4 PASSED (iteration 4)
-# test  5 PASSED (iteration 4)
-# test  6 PASSED (iteration 4)
-# test  7 PASSED (iteration 4)
-# test  8 PASSED (iteration 4)
-# test  9 PASSED (iteration 4)
-# test 10 PASSED (iteration 4)
-# test 11 PASSED (iteration 4)
-# test 12 PASSED (iteration 4)
-# test 13 PASSED (iteration 4)
-# test 14 PASSED (iteration 4)
-# test 15 PASSED (iteration 4)
-# test 16 PASSED (iteration 4)
-# test 17 PASSED (iteration 4)
-# test 18 PASSED (iteration 4)
-# test 19 PASSED (iteration 4)
-# test  0 PASSED (iteration 5)
-# test  1 PASSED (iteration 5)
-# test  2 PASSED (iteration 5)
-# test  3 PASSED (iteration 5)
-# test  4 PASSED (iteration 5)
-# test  5 PASSED (iteration 5)
-# test  6 PASSED (iteration 5)
-# test  7 PASSED (iteration 5)
-# test  8 PASSED (iteration 5)
-# test  9 PASSED (iteration 5)
-# test 10 PASSED (iteration 5)
-# test 11 PASSED (iteration 5)
-# test 12 PASSED (iteration 5)
-# test 13 PASSED (iteration 5)
-# test 14 PASSED (iteration 5)
-# test 15 PASSED (iteration 5)
-# test 16 PASSED (iteration 5)
-# test 17 PASSED (iteration 5)
-# has pkeys: 1
-# startup pkey_reg: 0000000055555550
-# test  0 PASSED (iteration 1)
-# test  1 PASSED (iteration 1)
-# test  2 PASSED (iteration 1)
-# test  3 PASSED (iteration 1)
-# test  4 PASSED (iteration 1)
-# test  5 PASSED (iteration 1)
-# test  6 PASSED (iteration 1)
-# test  7 PASSED (iteration 1)
-# test  8 PASSED (iteration 1)
-# test  9 PASSED (iteration 1)
-# test 10 PASSED (iteration 1)
-# test 11 PASSED (iteration 1)
-# test 12 PASSED (iteration 1)
-# test 13 PASSED (iteration 1)
-# test 14 PASSED (iteration 1)
-# test 15 PASSED (iteration 1)
-# test 16 PASSED (iteration 1)
-# test 17 PASSED (iteration 1)
-# test 18 PASSED (iteration 1)
-# test 19 PASSED (iteration 1)
-# test  0 PASSED (iteration 2)
-# test  1 PASSED (iteration 2)
-# test  2 PASSED (iteration 2)
-# test  3 PASSED (iteration 2)
-# test  4 PASSED (iteration 2)
-# test  5 PASSED (iteration 2)
-# test  6 PASSED (iteration 2)
-# test  7 PASSED (iteration 2)
-# test  8 PASSED (iteration 2)
-# test  9 PASSED (iteration 2)
-# test 10 PASSED (iteration 2)
-# test 11 PASSED (iteration 2)
-# test 12 PASSED (iteration 2)
-# test 13 PASSED (iteration 2)
-# test 14 PASSED (iteration 2)
-# test 15 PASSED (iteration 2)
-# test 16 PASSED (iteration 2)
-# test 17 PASSED (iteration 2)
-# test 18 PASSED (iteration 2)
-# test 19 PASSED (iteration 2)
-# test  0 PASSED (iteration 3)
-# test  1 PASSED (iteration 3)
-# test  2 PASSED (iteration 3)
-# test  3 PASSED (iteration 3)
-# test  4 PASSED (iteration 3)
-# test  5 PASSED (iteration 3)
-# test  6 PASSED (iteration 3)
-# test  7 PASSED (iteration 3)
-# test  8 PASSED (iteration 3)
-# test  9 PASSED (iteration 3)
-# test 10 PASSED (iteration 3)
-# test 11 PASSED (iteration 3)
-# test 12 PASSED (iteration 3)
-# test 13 PASSED (iteration 3)
-# test 14 PASSED (iteration 3)
-# test 15 PASSED (iteration 3)
-# test 16 PASSED (iteration 3)
-# test 17 PASSED (iteration 3)
-# test 18 PASSED (iteration 3)
-# test 19 PASSED (iteration 3)
-# test  0 PASSED (iteration 4)
-# test  1 PASSED (iteration 4)
-# test  2 PASSED (iteration 4)
-# test  3 PASSED (iteration 4)
-# test  4 PASSED (iteration 4)
-# test  5 PASSED (iteration 4)
-# test  6 PASSED (iteration 4)
-# test  7 PASSED (iteration 4)
-# test  8 PASSED (iteration 4)
-# test  9 PASSED (iteration 4)
-# test 10 PASSED (iteration 4)
-# test 11 PASSED (iteration 4)
-# test 12 PASSED (iteration 4)
-# test 13 PASSED (iteration 4)
-# test 14 PASSED (iteration 4)
-# test 15 PASSED (iteration 4)
-# test 16 PASSED (iteration 4)
-# test 17 PASSED (iteration 4)
-# test 18 PASSED (iteration 4)
-# test 19 PASSED (iteration 4)
-# test  0 PASSED (iteration 5)
-# test  1 PASSED (iteration 5)
-# test  2 PASSED (iteration 5)
-# test  3 PASSED (iteration 5)
-# test  4 PASSED (iteration 5)
-# test  5 PASSED (iteration 5)
-# test  6 PASSED (iteration 5)
-# test  7 PASSED (iteration 5)
-# test  8 PASSED (iteration 5)
-# test  9 PASSED (iteration 5)
-# test 10 PASSED (iteration 5)
-# test 11 PASSED (iteration 5)
-# test 12 PASSED (iteration 5)
-# test 13 PASSED (iteration 5)
-# test 14 PASSED (iteration 5)
-# test 15 PASSED (iteration 5)
-# test 16 PASSED (iteration 5)
-# test 17 PASSED (iteration 5)
-# test 18 PASSED (iteration 5)
-# test 19 PASSED (iteration 5)
-# test  0 PASSED (iteration 6)
-# test  1 PASSED (iteration 6)
-# test  2 PASSED (iteration 6)
-# test  3 PASSED (iteration 6)
-# test  4 PASSED (iteration 6)
-# test  5 PASSED (iteration 6)
-# test  6 PASSED (iteration 6)
-# test  7 PASSED (iteration 6)
-# test  8 PASSED (iteration 6)
-# test  9 PASSED (iteration 6)
-# test 10 PASSED (iteration 6)
-# test 11 PASSED (iteration 6)
-# test 12 PASSED (iteration 6)
-# test 13 PASSED (iteration 6)
-# test 14 PASSED (iteration 6)
-# test 15 PASSED (iteration 6)
-# test 16 PASSED (iteration 6)
-# test 17 PASSED (iteration 6)
-# has pkeys: 1
-# startup pkey_reg: 0000000055555550
-# test  0 PASSED (iteration 1)
-# test  1 PASSED (iteration 1)
-# test  2 PASSED (iteration 1)
-# test  3 PASSED (iteration 1)
-# test  4 PASSED (iteration 1)
-# test  5 PASSED (iteration 1)
-# test  6 PASSED (iteration 1)
-# test  7 PASSED (iteration 1)
-# test  8 PASSED (iteration 1)
-# test  9 PASSED (iteration 1)
-# test 10 PASSED (iteration 1)
-# test 11 PASSED (iteration 1)
-# test 12 PASSED (iteration 1)
-# test 13 PASSED (iteration 1)
-# test 14 PASSED (iteration 1)
-# test 15 PASSED (iteration 1)
-# test 16 PASSED (iteration 1)
-# test 17 PASSED (iteration 1)
-# test 18 PASSED (iteration 1)
-# test 19 PASSED (iteration 1)
-# test  0 PASSED (iteration 2)
-# test  1 PASSED (iteration 2)
-# test  2 PASSED (iteration 2)
-# test  3 PASSED (iteration 2)
-# test  4 PASSED (iteration 2)
-# test  5 PASSED (iteration 2)
-# test  6 PASSED (iteration 2)
-# test  7 PASSED (iteration 2)
-# test  8 PASSED (iteration 2)
-# test  9 PASSED (iteration 2)
-# test 10 PASSED (iteration 2)
-# test 11 PASSED (iteration 2)
-# test 12 PASSED (iteration 2)
-# test 13 PASSED (iteration 2)
-# test 14 PASSED (iteration 2)
-# test 15 PASSED (iteration 2)
-# test 16 PASSED (iteration 2)
-# test 17 PASSED (iteration 2)
-# test 18 PASSED (iteration 2)
-# test 19 PASSED (iteration 2)
-# test  0 PASSED (iteration 3)
-# test  1 PASSED (iteration 3)
-# test  2 PASSED (iteration 3)
-# test  3 PASSED (iteration 3)
-# test  4 PASSED (iteration 3)
-# test  5 PASSED (iteration 3)
-# test  6 PASSED (iteration 3)
-# test  7 PASSED (iteration 3)
-# test  8 PASSED (iteration 3)
-# test  9 PASSED (iteration 3)
-# test 10 PASSED (iteration 3)
-# test 11 PASSED (iteration 3)
-# test 12 PASSED (iteration 3)
-# test 13 PASSED (iteration 3)
-# test 14 PASSED (iteration 3)
-# test 15 PASSED (iteration 3)
-# test 16 PASSED (iteration 3)
-# test 17 PASSED (iteration 3)
-# test 18 PASSED (iteration 3)
-# test 19 PASSED (iteration 3)
-# test  0 PASSED (iteration 4)
-# test  1 PASSED (iteration 4)
-# test  2 PASSED (iteration 4)
-# test  3 PASSED (iteration 4)
-# test  4 PASSED (iteration 4)
-# test  5 PASSED (iteration 4)
-# test  6 PASSED (iteration 4)
-# test  7 PASSED (iteration 4)
-# test  8 PASSED (iteration 4)
-# test  9 PASSED (iteration 4)
-# test 10 PASSED (iteration 4)
-# test 11 PASSED (iteration 4)
-# test 12 PASSED (iteration 4)
-# test 13 PASSED (iteration 4)
-# test 14 PASSED (iteration 4)
-# test 15 PASSED (iteration 4)
-# test 16 PASSED (iteration 4)
-# test 17 PASSED (iteration 4)
-# test 18 PASSED (iteration 4)
-# test 19 PASSED (iteration 4)
-# test  0 PASSED (iteration 5)
-# test  1 PASSED (iteration 5)
-# test  2 PASSED (iteration 5)
-# test  3 PASSED (iteration 5)
-# test  4 PASSED (iteration 5)
-# test  5 PASSED (iteration 5)
-# test  6 PASSED (iteration 5)
-# test  7 PASSED (iteration 5)
-# test  8 PASSED (iteration 5)
-# test  9 PASSED (iteration 5)
-# test 10 PASSED (iteration 5)
-# test 11 PASSED (iteration 5)
-# test 12 PASSED (iteration 5)
-# test 13 PASSED (iteration 5)
-# test 14 PASSED (iteration 5)
-# test 15 PASSED (iteration 5)
-# test 16 PASSED (iteration 5)
-# test 17 PASSED (iteration 5)
-# test 18 PASSED (iteration 5)
-# test 19 PASSED (iteration 5)
-# test  0 PASSED (iteration 6)
-# test  1 PASSED (iteration 6)
-# test  2 PASSED (iteration 6)
-# test  3 PASSED (iteration 6)
-# test  4 PASSED (iteration 6)
-# test  5 PASSED (iteration 6)
-# test  6 PASSED (iteration 6)
-# test  7 PASSED (iteration 6)
-# test  8 PASSED (iteration 6)
-# test  9 PASSED (iteration 6)
-# test 10 PASSED (iteration 6)
-# test 11 PASSED (iteration 6)
-# test 12 PASSED (iteration 6)
-# test 13 PASSED (iteration 6)
-# test 14 PASSED (iteration 6)
-# test 15 PASSED (iteration 6)
-# test 16 PASSED (iteration 6)
-# test 17 PASSED (iteration 6)
-# has pkeys: 1
-# startup pkey_reg: 0000000055555550
-# test  0 PASSED (iteration 1)
-# test  1 PASSED (iteration 1)
-# test  2 PASSED (iteration 1)
-# test  3 PASSED (iteration 1)
-# test  4 PASSED (iteration 1)
-# test  5 PASSED (iteration 1)
-# test  6 PASSED (iteration 1)
-# test  7 PASSED (iteration 1)
-# test  8 PASSED (iteration 1)
-# test  9 PASSED (iteration 1)
-# test 10 PASSED (iteration 1)
-# test 11 PASSED (iteration 1)
-# test 12 PASSED (iteration 1)
-# test 13 PASSED (iteration 1)
-# test 14 PASSED (iteration 1)
-# test 15 PASSED (iteration 1)
-# test 16 PASSED (iteration 1)
-# test 17 PASSED (iteration 1)
-# test 18 PASSED (iteration 1)
-# test 19 PASSED (iteration 1)
-# test  0 PASSED (iteration 2)
-# test  1 PASSED (iteration 2)
-# test  2 PASSED (iteration 2)
-# test  3 PASSED (iteration 2)
-# test  4 PASSED (iteration 2)
-# test  5 PASSED (iteration 2)
-# test  6 PASSED (iteration 2)
-# test  7 PASSED (iteration 2)
-# test  8 PASSED (iteration 2)
-# test  9 PASSED (iteration 2)
-# test 10 PASSED (iteration 2)
-# test 11 PASSED (iteration 2)
-# test 12 PASSED (iteration 2)
-# test 13 PASSED (iteration 2)
-# test 14 PASSED (iteration 2)
-# test 15 PASSED (iteration 2)
-# test 16 PASSED (iteration 2)
-# test 17 PASSED (iteration 2)
-# test 18 PASSED (iteration 2)
-# test 19 PASSED (iteration 2)
-# test  0 PASSED (iteration 3)
-# test  1 PASSED (iteration 3)
-# test  2 PASSED (iteration 3)
-# test  3 PASSED (iteration 3)
-# test  4 PASSED (iteration 3)
-# test  5 PASSED (iteration 3)
-# test  6 PASSED (iteration 3)
-# test  7 PASSED (iteration 3)
-# test  8 PASSED (iteration 3)
-# test  9 PASSED (iteration 3)
-# test 10 PASSED (iteration 3)
-# test 11 PASSED (iteration 3)
-# test 12 PASSED (iteration 3)
-# test 13 PASSED (iteration 3)
-# test 14 PASSED (iteration 3)
-# test 15 PASSED (iteration 3)
-# test 16 PASSED (iteration 3)
-# test 17 PASSED (iteration 3)
-# test 18 PASSED (iteration 3)
-# test 19 PASSED (iteration 3)
-# test  0 PASSED (iteration 4)
-# test  1 PASSED (iteration 4)
-# test  2 PASSED (iteration 4)
-# test  3 PASSED (iteration 4)
-# test  4 PASSED (iteration 4)
-# test  5 PASSED (iteration 4)
-# test  6 PASSED (iteration 4)
-# test  7 PASSED (iteration 4)
-# test  8 PASSED (iteration 4)
-# test  9 PASSED (iteration 4)
-# test 10 PASSED (iteration 4)
-# test 11 PASSED (iteration 4)
-# test 12 PASSED (iteration 4)
-# test 13 PASSED (iteration 4)
-# test 14 PASSED (iteration 4)
-# test 15 PASSED (iteration 4)
-# test 16 PASSED (iteration 4)
-# test 17 PASSED (iteration 4)
-# test 18 PASSED (iteration 4)
-# test 19 PASSED (iteration 4)
-# test  0 PASSED (iteration 5)
-# test  1 PASSED (iteration 5)
-# test  2 PASSED (iteration 5)
-# test  3 PASSED (iteration 5)
-# test  4 PASSED (iteration 5)
-# test  5 PASSED (iteration 5)
-# test  6 PASSED (iteration 5)
-# test  7 PASSED (iteration 5)
-# test  8 PASSED (iteration 5)
-# test  9 PASSED (iteration 5)
-# test 10 PASSED (iteration 5)
-# test 11 PASSED (iteration 5)
-# test 12 PASSED (iteration 5)
-# test 13 PASSED (iteration 5)
-# test 14 PASSED (iteration 5)
-# test 15 PASSED (iteration 5)
-# test 16 PASSED (iteration 5)
-# test 17 PASSED (iteration 5)
-# test 18 PASSED (iteration 5)
-# test 19 PASSED (iteration 5)
-# test  0 PASSED (iteration 6)
-# test  1 PASSED (iteration 6)
-# test  2 PASSED (iteration 6)
-# test  3 PASSED (iteration 6)
-# test  4 PASSED (iteration 6)
-# test  5 PASSED (iteration 6)
-# test  6 PASSED (iteration 6)
-# test  7 PASSED (iteration 6)
-# test  8 PASSED (iteration 6)
-# test  9 PASSED (iteration 6)
-# test 10 PASSED (iteration 6)
-# test 11 PASSED (iteration 6)
-# test 12 PASSED (iteration 6)
-# test 13 PASSED (iteration 6)
-# test 14 PASSED (iteration 6)
-# test 15 PASSED (iteration 6)
-# test 16 PASSED (iteration 6)
-# test 17 PASSED (iteration 6)
-# test 18 PASSED (iteration 6)
-# test 19 PASSED (iteration 6)
-# test  0 PASSED (iteration 7)
-# test  1 PASSED (iteration 7)
-# test  2 PASSED (iteration 7)
-# test  3 PASSED (iteration 7)
-# test  4 PASSED (iteration 7)
-# test  5 PASSED (iteration 7)
-# test  6 PASSED (iteration 7)
-# test  7 PASSED (iteration 7)
-# test  8 PASSED (iteration 7)
-# test  9 PASSED (iteration 7)
-# test 10 PASSED (iteration 7)
-# test 11 PASSED (iteration 7)
-# test 12 PASSED (iteration 7)
-# test 13 PASSED (iteration 7)
-# test 14 PASSED (iteration 7)
-# test 15 PASSED (iteration 7)
-# test 16 PASSED (iteration 7)
-# test 17 PASSED (iteration 7)
-# has pkeys: 1
-# startup pkey_reg: 0000000055555550
-# test  0 PASSED (iteration 1)
-# test  1 PASSED (iteration 1)
-# test  2 PASSED (iteration 1)
-# test  3 PASSED (iteration 1)
-# test  4 PASSED (iteration 1)
-# test  5 PASSED (iteration 1)
-# test  6 PASSED (iteration 1)
-# test  7 PASSED (iteration 1)
-# test  8 PASSED (iteration 1)
-# test  9 PASSED (iteration 1)
-# test 10 PASSED (iteration 1)
-# test 11 PASSED (iteration 1)
-# test 12 PASSED (iteration 1)
-# test 13 PASSED (iteration 1)
-# test 14 PASSED (iteration 1)
-# test 15 PASSED (iteration 1)
-# test 16 PASSED (iteration 1)
-# test 17 PASSED (iteration 1)
-# test 18 PASSED (iteration 1)
-# test 19 PASSED (iteration 1)
-# test  0 PASSED (iteration 2)
-# test  1 PASSED (iteration 2)
-# test  2 PASSED (iteration 2)
-# test  3 PASSED (iteration 2)
-# test  4 PASSED (iteration 2)
-# test  5 PASSED (iteration 2)
-# test  6 PASSED (iteration 2)
-# test  7 PASSED (iteration 2)
-# test  8 PASSED (iteration 2)
-# test  9 PASSED (iteration 2)
-# test 10 PASSED (iteration 2)
-# test 11 PASSED (iteration 2)
-# test 12 PASSED (iteration 2)
-# test 13 PASSED (iteration 2)
-# test 14 PASSED (iteration 2)
-# test 15 PASSED (iteration 2)
-# test 16 PASSED (iteration 2)
-# test 17 PASSED (iteration 2)
-# test 18 PASSED (iteration 2)
-# test 19 PASSED (iteration 2)
-# test  0 PASSED (iteration 3)
-# test  1 PASSED (iteration 3)
-# test  2 PASSED (iteration 3)
-# test  3 PASSED (iteration 3)
-# test  4 PASSED (iteration 3)
-# test  5 PASSED (iteration 3)
-# test  6 PASSED (iteration 3)
-# test  7 PASSED (iteration 3)
-# test  8 PASSED (iteration 3)
-# test  9 PASSED (iteration 3)
-# test 10 PASSED (iteration 3)
-# test 11 PASSED (iteration 3)
-# test 12 PASSED (iteration 3)
-# test 13 PASSED (iteration 3)
-# test 14 PASSED (iteration 3)
-# test 15 PASSED (iteration 3)
-# test 16 PASSED (iteration 3)
-# test 17 PASSED (iteration 3)
-# test 18 PASSED (iteration 3)
-# test 19 PASSED (iteration 3)
-# test  0 PASSED (iteration 4)
-# test  1 PASSED (iteration 4)
-# test  2 PASSED (iteration 4)
-# test  3 PASSED (iteration 4)
-# test  4 PASSED (iteration 4)
-# test  5 PASSED (iteration 4)
-# test  6 PASSED (iteration 4)
-# test  7 PASSED (iteration 4)
-# test  8 PASSED (iteration 4)
-# test  9 PASSED (iteration 4)
-# test 10 PASSED (iteration 4)
-# test 11 PASSED (iteration 4)
-# test 12 PASSED (iteration 4)
-# test 13 PASSED (iteration 4)
-# test 14 PASSED (iteration 4)
-# test 15 PASSED (iteration 4)
-# test 16 PASSED (iteration 4)
-# test 17 PASSED (iteration 4)
-# test 18 PASSED (iteration 4)
-# test 19 PASSED (iteration 4)
-# test  0 PASSED (iteration 5)
-# test  1 PASSED (iteration 5)
-# test  2 PASSED (iteration 5)
-# test  3 PASSED (iteration 5)
-# test  4 PASSED (iteration 5)
-# test  5 PASSED (iteration 5)
-# test  6 PASSED (iteration 5)
-# test  7 PASSED (iteration 5)
-# test  8 PASSED (iteration 5)
-# test  9 PASSED (iteration 5)
-# test 10 PASSED (iteration 5)
-# test 11 PASSED (iteration 5)
-# test 12 PASSED (iteration 5)
-# test 13 PASSED (iteration 5)
-# test 14 PASSED (iteration 5)
-# test 15 PASSED (iteration 5)
-# test 16 PASSED (iteration 5)
-# test 17 PASSED (iteration 5)
-# test 18 PASSED (iteration 5)
-# test 19 PASSED (iteration 5)
-# test  0 PASSED (iteration 6)
-# test  1 PASSED (iteration 6)
-# test  2 PASSED (iteration 6)
-# test  3 PASSED (iteration 6)
-# test  4 PASSED (iteration 6)
-# test  5 PASSED (iteration 6)
-# test  6 PASSED (iteration 6)
-# test  7 PASSED (iteration 6)
-# test  8 PASSED (iteration 6)
-# test  9 PASSED (iteration 6)
-# test 10 PASSED (iteration 6)
-# test 11 PASSED (iteration 6)
-# test 12 PASSED (iteration 6)
-# test 13 PASSED (iteration 6)
-# test 14 PASSED (iteration 6)
-# test 15 PASSED (iteration 6)
-# test 16 PASSED (iteration 6)
-# test 17 PASSED (iteration 6)
-# test 18 PASSED (iteration 6)
-# test 19 PASSED (iteration 6)
-# test  0 PASSED (iteration 7)
-# test  1 PASSED (iteration 7)
-# test  2 PASSED (iteration 7)
-# test  3 PASSED (iteration 7)
-# test  4 PASSED (iteration 7)
-# test  5 PASSED (iteration 7)
-# test  6 PASSED (iteration 7)
-# test  7 PASSED (iteration 7)
-# test  8 PASSED (iteration 7)
-# test  9 PASSED (iteration 7)
-# test 10 PASSED (iteration 7)
-# test 11 PASSED (iteration 7)
-# test 12 PASSED (iteration 7)
-# test 13 PASSED (iteration 7)
-# test 14 PASSED (iteration 7)
-# test 15 PASSED (iteration 7)
-# test 16 PASSED (iteration 7)
-# test 17 PASSED (iteration 7)
-# test 18 PASSED (iteration 7)
-# test 19 PASSED (ihas pkeys: 1
-# startup pkey_reg: 0000000055555550
-# test  0 PASSED (iteration 1)
-# test  1 PASSED (iteration 1)
-# test  2 PASSED (iteration 1)
-# test  3 PASSED (iteration 1)
-# test  4 PASSED (iteration 1)
-# test  5 PASSED (iteration 1)
-# test  6 PASSED (iteration 1)
-# test  7 PASSED (iteration 1)
-# test  8 PASSED (iteration 1)
-# test  9 PASSED (iteration 1)
-# test 10 PASSED (iteration 1)
-# test 11 PASSED (iteration 1)
-# test 12 PASSED (iteration 1)
-# test 13 PASSED (iteration 1)
-# test 14 PASSED (iteration 1)
-# test 15 PASSED (iteration 1)
-# test 16 PASSED (iteration 1)
-# test 17 PASSED (iteration 1)
-# test 18 PASSED (iteration 1)
-# test 19 PASSED (iteration 1)
-# test  0 PASSED (iteration 2)
-# test  1 PASSED (iteration 2)
-# test  2 PASSED (iteration 2)
-# test  3 PASSED (iteration 2)
-# test  4 PASSED (iteration 2)
-# test  5 PASSED (iteration 2)
-# test  6 PASSED (iteration 2)
-# test  7 PASSED (iteration 2)
-# test  8 PASSED (iteration 2)
-# test  9 PASSED (iteration 2)
-# test 10 PASSED (iteration 2)
-# test 11 PASSED (iteration 2)
-# test 12 PASSED (iteration 2)
-# test 13 PASSED (iteration 2)
-# test 14 PASSED (iteration 2)
-# test 15 PASSED (iteration 2)
-# test 16 PASSED (iteration 2)
-# test 17 PASSED (iteration 2)
-# test 18 PASSED (iteration 2)
-# test 19 PASSED (iteration 2)
-# test  0 PASSED (iteration 3)
-# test  1 PASSED (iteration 3)
-# test  2 PASSED (iteration 3)
-# test  3 PASSED (iteration 3)
-# test  4 PASSED (iteration 3)
-# test  5 PASSED (iteration 3)
-# test  6 PASSED (iteration 3)
-# test  7 PASSED (iteration 3)
-# test  8 PASSED (iteration 3)
-# test  9 PASSED (iteration 3)
-# test 10 PASSED (iteration 3)
-# test 11 PASSED (iteration 3)
-# test 12 PASSED (iteration 3)
-# test 13 PASSED (iteration 3)
-# test 14 PASSED (iteration 3)
-# test 15 PASSED (iteration 3)
-# test 16 PASSED (iteration 3)
-# test 17 PASSED (iteration 3)
-# test 18 PASSED (iteration 3)
-# test 19 PASSED (iteration 3)
-# test  0 PASSED (iteration 4)
-# test  1 PASSED (iteration 4)
-# test  2 PASSED (iteration 4)
-# test  3 PASSED (iteration 4)
-# test  4 PASSED (iteration 4)
-# test  5 PASSED (iteration 4)
-# test  6 PASSED (iteration 4)
-# test  7 PASSED (iteration 4)
-# test  8 PASSED (iteration 4)
-# test  9 PASSED (iteration 4)
-# test 10 PASSED (iteration 4)
-# test 11 PASSED (iteration 4)
-# test 12 PASSED (iteration 4)
-# test 13 PASSED (iteration 4)
-# test 14 PASSED (iteration 4)
-# test 15 PASSED (iteration 4)
-# test 16 PASSED (iteration 4)
-# test 17 PASSED (iteration 4)
-# test 18 PASSED (iteration 4)
-# test 19 PASSED (iteration 4)
-# test  0 PASSED (iteration 5)
-# test  1 PASSED (iteration 5)
-# test  2 PASSED (iteration 5)
-# test  3 PASSED (iteration 5)
-# test  4 PASSED (iteration 5)
-# test  5 PASSED (iteration 5)
-# test  6 PASSED (iteration 5)
-# test  7 PASSED (iteration 5)
-# test  8 PASSED (iteration 5)
-# test  9 PASSED (iteration 5)
-# test 10 PASSED (iteration 5)
-# test 11 PASSED (iteration 5)
-# test 12 PASSED (iteration 5)
-# test 13 PASSED (iteration 5)
-# test 14 PASSED (iteration 5)
-# test 15 PASSED (iteration 5)
-# test 16 PASSED (iteration 5)
-# test 17 PASSED (iteration 5)
-# test 18 PASSED (iteration 5)
-# test 19 PASSED (iteration 5)
-# test  0 PASSED (iteration 6)
-# test  1 PASSED (iteration 6)
-# test  2 PASSED (iteration 6)
-# test  3 PASSED (iteration 6)
-# test  4 PASSED (iteration 6)
-# test  5 PASSED (iteration 6)
-# test  6 PASSED (iteration 6)
-# test  7 PASSED (iteration 6)
-# test  8 PASSED (iteration 6)
-# test  9 PASSED (iteration 6)
-# test 10 PASSED (iteration 6)
-# test 11 PASSED (iteration 6)
-# test 12 PASSED (iteration 6)
-# test 13 PASSED (iteration 6)
-# test 14 PASSED (iteration 6)
-# test 15 PASSED (iteration 6)
-# test 16 PASSED (iteration 6)
-# test 17 PASSED (iteration 6)
-# test 18 PASSED (iteration 6)
-# test 19 PASSED (iteration 6)
-# test  0 PASSED (iteration 7)
-# test  1 PASSED (iteration 7)
-# test  2 PASSED (iteration 7)
-# test  3 PASSED (iteration 7)
-# test  4 PASSED (iteration 7)
-# test  5 PASSED (iteration 7)
-# test  6 PASSED (iteration 7)
-# test  7 PASSED (iteration 7)
-# test  8 PASSED (iteration 7)
-# test  9 PASSED (iteration 7)
-# test 10 PASSED (iteration 7)
-# test 11 PASSED (iteration 7)
-# test 12 PASSED (iteration 7)
-# test 13 PASSED (iteration 7)
-# test 14 PASSED (iteration 7)
-# test 15 PASSED (iteration 7)
-# test 16 PASSED (iteration 7)
-# test 17 PASSED (iteration 7)
-# has pkeys: 1
-# startup pkey_reg: 0000000055555550
-# test  0 PASSED (iteration 1)
-# test  1 PASSED (iteration 1)
-# test  2 PASSED (iteration 1)
-# test  3 PASSED (iteration 1)
-# test  4 PASSED (iteration 1)
-# test  5 PASSED (iteration 1)
-# test  6 PASSED (iteration 1)
-# test  7 PASSED (iteration 1)
-# test  8 PASSED (iteration 1)
-# test  9 PASSED (iteration 1)
-# test 10 PASSED (iteration 1)
-# test 11 PASSED (iteration 1)
-# test 12 PASSED (iteration 1)
-# test 13 PASSED (iteration 1)
-# test 14 PASSED (iteration 1)
-# test 15 PASSED (iteration 1)
-# test 16 PASSED (iteration 1)
-# test 17 PASSED (iteration 1)
-# test 18 PASSED (iteration 1)
-# test 19 PASSED (iteration 1)
-# test  0 PASSED (iteration 2)
-# test  1 PASSED (iteration 2)
-# test  2 PASSED (iteration 2)
-# test  3 PASSED (iteration 2)
-# test  4 PASSED (iteration 2)
-# test  5 PASSED (iteration 2)
-# test  6 PASSED (iteration 2)
-# test  7 PASSED (iteration 2)
-# test  8 PASSED (iteration 2)
-# test  9 PASSED (iteration 2)
-# test 10 PASSED (iteration 2)
-# test 11 PASSED (iteration 2)
-# test 12 PASSED (iteration 2)
-# test 13 PASSED (iteration 2)
-# test 14 PASSED (iteration 2)
-# test 15 PASSED (iteration 2)
-# test 16 PASSED (iteration 2)
-# test 17 PASSED (iteration 2)
-# test 18 PASSED (iteration 2)
-# test 19 PASSED (iteration 2)
-# test  0 PASSED (iteration 3)
-# test  1 PASSED (iteration 3)
-# test  2 PASSED (iteration 3)
-# test  3 PASSED (iteration 3)
-# test  4 PASSED (iteration 3)
-# test  5 PASSED (iteration 3)
-# test  6 PASSED (iteration 3)
-# test  7 PASSED (iteration 3)
-# test  8 PASSED (iteration 3)
-# test  9 PASSED (iteration 3)
-# test 10 PASSED (iteration 3)
-# test 11 PASSED (iteration 3)
-# test 12 PASSED (iteration 3)
-# test 13 PASSED (iteration 3)
-# test 14 PASSED (iteration 3)
-# test 15 PASSED (iteration 3)
-# test 16 PASSED (iteration 3)
-# test 17 PASSED (iteration 3)
-# test 18 PASSED (iteration 3)
-# test 19 PASSED (iteration 3)
-# test  0 PASSED (iteration 4)
-# test  1 PASSED (iteration 4)
-# test  2 PASSED (iteration 4)
-# test  3 PASSED (iteration 4)
-# test  4 PASSED (iteration 4)
-# test  5 PASSED (iteration 4)
-# test  6 PASSED (iteration 4)
-# test  7 PASSED (iteration 4)
-# test  8 PASSED (iteration 4)
-# test  9 PASSED (iteration 4)
-# test 10 PASSED (iteration 4)
-# test 11 PASSED (iteration 4)
-# test 12 PASSED (iteration 4)
-# test 13 PASSED (iteration 4)
-# test 14 PASSED (iteration 4)
-# test 15 PASSED (iteration 4)
-# test 16 PASSED (iteration 4)
-# test 17 PASSED (iteration 4)
-# test 18 PASSED (iteration 4)
-# test 19 PASSED (iteration 4)
-# test  0 PASSED (iteration 5)
-# test  1 PASSED (iteration 5)
-# test  2 PASSED (iteration 5)
-# test  3 PASSED (iteration 5)
-# test  4 PASSED (iteration 5)
-# test  5 PASSED (iteration 5)
-# test  6 PASSED (iteration 5)
-# test  7 PASSED (iteration 5)
-# test  8 PASSED (iteration 5)
-# test  9 PASSED (iteration 5)
-# test 10 PASSED (iteration 5)
-# test 11 PASSED (iteration 5)
-# test 12 PASSED (iteration 5)
-# test 13 PASSED (iteration 5)
-# test 14 PASSED (iteration 5)
-# test 15 PASSED (iteration 5)
-# test 16 PASSED (iteration 5)
-# test 17 PASSED (iteration 5)
-# test 18 PASSED (iteration 5)
-# test 19 PASSED (iteration 5)
-# test  0 PASSED (iteration 6)
-# test  1 PASSED (iteration 6)
-# test  2 PASSED (iteration 6)
-# test  3 PASSED (iteration 6)
-# test  4 PASSED (iteration 6)
-# test  5 PASSED (iteration 6)
-# test  6 PASSED (iteration 6)
-# test  7 PASSED (iteration 6)
-# test  8 PASSED (iteration 6)
-# test  9 PASSED (iteration 6)
-# test 10 PASSED (iteration 6)
-# test 11 PASSED (iteration 6)
-# test 12 PASSED (iteration 6)
-# test 13 PASSED (iteration 6)
-# test 14 PASSED (iteration 6)
-# test 15 PASSED (iteration 6)
-# test 16 PASSED (iteration 6)
-# test 17 PASSED (iteration 6)
-# test 18 PASSED (iteration 6)
-# test 19 PASSED (iteration 6)
-# test  0 PASSED (iteration 7)
-# test  1 PASSED (iteration 7)
-# test  2 PASSED (iteration 7)
-# test  3 PASSED (iteration 7)
-# test  4 PASSED (iteration 7)
-# test  5 PASSED (iteration 7)
-# test  6 PASSED (iteration 7)
-# test  7 PASSED (iteration 7)
-# test  8 PASSED (iteration 7)
-# test  9 PASSED (iteration 7)
-# test 10 PASSED (iteration 7)
-# test 11 PASSED (iteration 7)
-# test 12 PASSED (iteration 7)
-# test 13 PASSED (iteration 7)
-# test 14 PASSED (iteration 7)
-# test 15 PASSED (iteration 7)
-# test 16 PASSED (iteration 7)
-# test 17 PASSED (iteration 7)
-# test 18 PASSED (iteration 7)
-# test 19 PASSED (iteration 7)
-# test  0 PASSED (iteration 8)
-# test  1 PASSED (iteration 8)
-# test  2 PASSED (iteration 8)
-# test  3 PASSED (iteration 8)
-# test  4 PASSED (iteration 8)
-# test  5 PASSED (iteration 8)
-# test  6 PASSED (iteration 8)
-# test  7 PASSED (iteration 8)
-# test  8 PASSED (iteration 8)
-# test  9 PASSED (iteration 8)
-# test 10 PASSED (iteration 8)
-# test 11 PASSED (iteration 8)
-# test 12 PASSED (iteration 8)
-# test 13 PASSED (iteration 8)
-# test 14 PASSED (iteration 8)
-# test 15 PASSED (iteration 8)
-# test 16 PASSED (iteration 8)
-# test 17 PASSED (iteration 8)
-# teration 7)
-# test  0 PASSED (iteration 8)
-# test  1 PASSED (iteration 8)
-# test  2 PASSED (iteration 8)
-# test  3 PASSED (iteration 8)
-# test  4 PASSED (iteration 8)
-# test  5 PASSED (iteration 8)
-# test  6 PASSED (iteration 8)
-# test  7 PASSED (iteration 8)
-# test  8 PASSED (iteration 8)
-# test  9 PASSED (iteration 8)
-# test 10 PASSED (iteration 8)
-# test 11 PASSED (iteration 8)
-# test 12 PASSED (iteration 8)
-# test 13 PASSED (iteration 8)
-# test 14 PASSED (iteration 8)
-# test 15 PASSED (iteration 8)
-# test 16 PASSED (iteration 8)
-# test 17 PASSED (iteration 8)
-# teration 7)
-# test  0 PASSED (iteration 8)
-# test  1 PASSED (iteration 8)
-# test  2 PASSED (iteration 8)
-# test  3 PASSED (iteration 8)
-# test  4 PASSED (iteration 8)
-# test  5 PASSED (iteration 8)
-# test  6 PASSED (iteration 8)
-# test  7 PASSED (iteration 8)
-# test  8 PASSED (iteration 8)
-# test  9 PASSED (iteration 8)
-# test 10 PASSED (iteration 8)
-# test 11 PASSED (iteration 8)
-# test 12 PASSED (iteration 8)
-# test 13 PASSED (iteration 8)
-# test 14 PASSED (iteration 8)
-# test 15 PASSED (iteration 8)
-# test 16 PASSED (iteration 8)
-# test 17 PASSED (iteration 8)
-# test 18 PASSED (iteration 8)
-# test 19 PASSED (iteration 8)
-# test  0 PASSED (iteration 9)
-# test  1 PASSED (iteration 9)
-# test  2 PASSED (iteration 9)
-# test  3 PASSED (iteration 9)
-# test  4 PASSED (iteration 9)
-# test  5 PASSED (iteration 9)
-# test  6 PASSED (iteration 9)
-# test  7 PASSED (iteration 9)
-# test  8 PASSED (iteration 9)
-# test  9 PASSED (iteration 9)
-# test 10 PASSED (iteration 9)
-# test 11 PASSED (iteration 9)
-# test 12 PASSED (iteration 9)
-# test 13 PASSED (iteration 9)
-# test 14 PASSED (iteration 9)
-# test 15 PASSED (iteration 9)
-# test 16 PASSED (iteration 9)
-# test 17 PASSED (iteration 9)
-# teration 7)
-# test  0 PASSED (iteration 8)
-# test  1 PASSED (iteration 8)
-# test  2 PASSED (iteration 8)
-# test  3 PASSED (iteration 8)
-# test  4 PASSED (iteration 8)
-# test  5 PASSED (iteration 8)
-# test  6 PASSED (iteration 8)
-# test  7 PASSED (iteration 8)
-# test  8 PASSED (iteration 8)
-# test  9 PASSED (iteration 8)
-# test 10 PASSED (iteration 8)
-# test 11 PASSED (iteration 8)
-# test 12 PASSED (iteration 8)
-# test 13 PASSED (iteration 8)
-# test 14 PASSED (iteration 8)
-# test 15 PASSED (iteration 8)
-# test 16 PASSED (iteration 8)
-# test 17 PASSED (iteration 8)
-# test 18 PASSED (iteration 8)
-# test 19 PASSED (iteration 8)
-# test  0 PASSED (iteration 9)
-# test  1 PASSED (iteration 9)
-# test  2 PASSED (iteration 9)
-# test  3 PASSED (iteration 9)
-# test  4 PASSED (iteration 9)
-# test  5 PASSED (iteration 9)
-# test  6 PASSED (iteration 9)
-# test  7 PASSED (iteration 9)
-# test  8 PASSED (iteration 9)
-# test  9 PASSED (iteration 9)
-# test 10 PASSED (iteration 9)
-# test 11 PASSED (iteration 9)
-# test 12 PASSED (iteration 9)
-# test 13 PASSED (iteration 9)
-# test 14 PASSED (iteration 9)
-# test 15 PASSED (iteration 9)
-# test 16 PASSED (iteration 9)
-# test 17 PASSED (iteration 9)
-# teration 7)
-# test  0 PASSED (iteration 8)
-# test  1 PASSED (iteration 8)
-# test  2 PASSED (iteration 8)
-# test  3 PASSED (iteration 8)
-# test  4 PASSED (iteration 8)
-# test  5 PASSED (iteration 8)
-# test  6 PASSED (iteration 8)
-# test  7 PASSED (iteration 8)
-# test  8 PASSED (iteration 8)
-# test  9 PASSED (iteration 8)
-# test 10 PASSED (iteration 8)
-# test 11 PASSED (iteration 8)
-# test 12 PASSED (iteration 8)
-# test 13 PASSED (iteration 8)
-# test 14 PASSED (iteration 8)
-# test 15 PASSED (iteration 8)
-# test 16 PASSED (iteration 8)
-# test 17 PASSED (iteration 8)
-# test 18 PASSED (iteration 8)
-# test 19 PASSED (iteration 8)
-# test  0 PASSED (iteration 9)
-# test  1 PASSED (iteration 9)
-# test  2 PASSED (iteration 9)
-# test  3 PASSED (iteration 9)
-# test  4 PASSED (iteration 9)
-# test  5 PASSED (iteration 9)
-# test  6 PASSED (iteration 9)
-# test  7 PASSED (iteration 9)
-# test  8 PASSED (iteration 9)
-# test  9 PASSED (iteration 9)
-# test 10 PASSED (iteration 9)
-# test 11 PASSED (iteration 9)
-# test 12 PASSED (iteration 9)
-# test 13 PASSED (iteration 9)
-# test 14 PASSED (iteration 9)
-# test 15 PASSED (iteration 9)
-# test 16 PASSED (iteration 9)
-# test 17 PASSED (iteration 9)
-# test 18 PASSED (iteration 9)
-# test 19 PASSED (iteration 9)
-# test  0 PASSED (iteration 10)
-# test  1 PASSED (iteration 10)
-# test  2 PASSED (iteration 10)
-# test  3 PASSED (iteration 10)
-# test  4 PASSED (iteration 10)
-# test  5 PASSED (iteration 10)
-# test  6 PASSED (iteration 10)
-# test  7 PASSED (iteration 10)
-# test  8 PASSED (iteration 10)
-# test  9 PASSED (iteration 10)
-# test 10 PASSED (iteration 10)
-# test 11 PASSED (iteration 10)
-# test 12 PASSED (iteration 10)
-# test 13 PASSED (iteration 10)
-# test 14 PASSED (iteration 10)
-# test 15 PASSED (iteration 10)
-# test 16 PASSED (iteration 10)
-# test 17 PASSED (iteration 10)
-# teration 7)
-# test  0 PASSED (iteration 8)
-# test  1 PASSED (iteration 8)
-# test  2 PASSED (iteration 8)
-# test  3 PASSED (iteration 8)
-# test  4 PASSED (iteration 8)
-# test  5 PASSED (iteration 8)
-# test  6 PASSED (iteration 8)
-# test  7 PASSED (iteration 8)
-# test  8 PASSED (iteration 8)
-# test  9 PASSED (iteration 8)
-# test 10 PASSED (iteration 8)
-# test 11 PASSED (iteration 8)
-# test 12 PASSED (iteration 8)
-# test 13 PASSED (iteration 8)
-# test 14 PASSED (iteration 8)
-# test 15 PASSED (iteration 8)
-# test 16 PASSED (iteration 8)
-# test 17 PASSED (iteration 8)
-# test 18 PASSED (iteration 8)
-# test 19 PASSED (iteration 8)
-# test  0 PASSED (iteration 9)
-# test  1 PASSED (iteration 9)
-# test  2 PASSED (iteration 9)
-# test  3 PASSED (iteration 9)
-# test  4 PASSED (iteration 9)
-# test  5 PASSED (iteration 9)
-# test  6 PASSED (iteration 9)
-# test  7 PASSED (iteration 9)
-# test  8 PASSED (iteration 9)
-# test  9 PASSED (iteration 9)
-# test 10 PASSED (iteration 9)
-# test 11 PASSED (iteration 9)
-# test 12 PASSED (iteration 9)
-# test 13 PASSED (iteration 9)
-# test 14 PASSED (iteration 9)
-# test 15 PASSED (iteration 9)
-# test 16 PASSED (iteration 9)
-# test 17 PASSED (iteration 9)
-# test 18 PASSED (iteration 9)
-# test 19 PASSED (iteration 9)
-# test  0 PASSED (iteration 10)
-# test  1 PASSED (iteration 10)
-# test  2 PASSED (iteration 10)
-# test  3 PASSED (iteration 10)
-# test  4 PASSED (iteration 10)
-# test  5 PASSED (iteration 10)
-# test  6 PASSED (iteration 10)
-# test  7 PASSED (iteration 10)
-# test  8 PASSED (iteration 10)
-# test  9 PASSED (iteration 10)
-# test 10 PASSED (iteration 10)
-# test 11 PASSED (iteration 10)
-# test 12 PASSED (iteration 10)
-# test 13 PASSED (iteration 10)
-# test 14 PASSED (iteration 10)
-# test 15 PASSED (iteration 10)
-# test 16 PASSED (iteration 10)
-# test 17 PASSED (iteration 10)
-# teration 7)
-# test  0 PASSED (iteration 8)
-# test  1 PASSED (iteration 8)
-# test  2 PASSED (iteration 8)
-# test  3 PASSED (iteration 8)
-# test  4 PASSED (iteration 8)
-# test  5 PASSED (iteration 8)
-# test  6 PASSED (iteration 8)
-# test  7 PASSED (iteration 8)
-# test  8 PASSED (iteration 8)
-# test  9 PASSED (iteration 8)
-# test 10 PASSED (iteration 8)
-# test 11 PASSED (iteration 8)
-# test 12 PASSED (iteration 8)
-# test 13 PASSED (iteration 8)
-# test 14 PASSED (iteration 8)
-# test 15 PASSED (iteration 8)
-# test 16 PASSED (iteration 8)
-# test 17 PASSED (iteration 8)
-# test 18 PASSED (iteration 8)
-# test 19 PASSED (iteration 8)
-# test  0 PASSED (iteration 9)
-# test  1 PASSED (iteration 9)
-# test  2 PASSED (iteration 9)
-# test  3 PASSED (iteration 9)
-# test  4 PASSED (iteration 9)
-# test  5 PASSED (iteration 9)
-# test  6 PASSED (iteration 9)
-# test  7 PASSED (iteration 9)
-# test  8 PASSED (iteration 9)
-# test  9 PASSED (iteration 9)
-# test 10 PASSED (iteration 9)
-# test 11 PASSED (iteration 9)
-# test 12 PASSED (iteration 9)
-# test 13 PASSED (iteration 9)
-# test 14 PASSED (iteration 9)
-# test 15 PASSED (iteration 9)
-# test 16 PASSED (iteration 9)
-# test 17 PASSED (iteration 9)
-# test 18 PASSED (iteration 9)
-# test 19 PASSED (iteration 9)
-# test  0 PASSED (iteration 10)
-# test  1 PASSED (iteration 10)
-# test  2 PASSED (iteration 10)
-# test  3 PASSED (iteration 10)
-# test  4 PASSED (iteration 10)
-# test  5 PASSED (iteration 10)
-# test  6 PASSED (iteration 10)
-# test  7 PASSED (iteration 10)
-# test  8 PASSED (iteration 10)
-# test  9 PASSED (iteration 10)
-# test 10 PASSED (iteration 10)
-# test 11 PASSED (iteration 10)
-# test 12 PASSED (iteration 10)
-# test 13 PASSED (iteration 10)
-# test 14 PASSED (iteration 10)
-# test 15 PASSED (iteration 10)
-# test 16 PASSED (iteration 10)
-# test 17 PASSED (iteration 10)
-# test 18 PASSED (iteration 10)
-# test 19 PASSED (iteration 10)
-# test  0 PASSED (iteration 11)
-# test  1 PASSED (iteration 11)
-# test  2 PASSED (iteration 11)
-# test  3 PASSED (iteration 11)
-# test  4 PASSED (iteration 11)
-# test  5 PASSED (iteration 11)
-# test  6 PASSED (iteration 11)
-# test  7 PASSED (iteration 11)
-# test  8 PASSED (iteration 11)
-# test  9 PASSED (iteration 11)
-# test 10 PASSED (iteration 11)
-# test 11 PASSED (iteration 11)
-# test 12 PASSED (iteration 11)
-# test 13 PASSED (iteration 11)
-# test 14 PASSED (iteration 11)
-# test 15 PASSED (iteration 11)
-# test 16 PASSED (iteration 11)
-# test 17 PASSED (iteration 11)
-# teration 7)
-# test  0 PASSED (iteration 8)
-# test  1 PASSED (iteration 8)
-# test  2 PASSED (iteration 8)
-# test  3 PASSED (iteration 8)
-# test  4 PASSED (iteration 8)
-# test  5 PASSED (iteration 8)
-# test  6 PASSED (iteration 8)
-# test  7 PASSED (iteration 8)
-# test  8 PASSED (iteration 8)
-# test  9 PASSED (iteration 8)
-# test 10 PASSED (iteration 8)
-# test 11 PASSED (iteration 8)
-# test 12 PASSED (iteration 8)
-# test 13 PASSED (iteration 8)
-# test 14 PASSED (iteration 8)
-# test 15 PASSED (iteration 8)
-# test 16 PASSED (iteration 8)
-# test 17 PASSED (iteration 8)
-# test 18 PASSED (iteration 8)
-# test 19 PASSED (iteration 8)
-# test  0 PASSED (iteration 9)
-# test  1 PASSED (iteration 9)
-# test  2 PASSED (iteration 9)
-# test  3 PASSED (iteration 9)
-# test  4 PASSED (iteration 9)
-# test  5 PASSED (iteration 9)
-# test  6 PASSED (iteration 9)
-# test  7 PASSED (iteration 9)
-# test  8 PASSED (iteration 9)
-# test  9 PASSED (iteration 9)
-# test 10 PASSED (iteration 9)
-# test 11 PASSED (iteration 9)
-# test 12 PASSED (iteration 9)
-# test 13 PASSED (iteration 9)
-# test 14 PASSED (iteration 9)
-# test 15 PASSED (iteration 9)
-# test 16 PASSED (iteration 9)
-# test 17 PASSED (iteration 9)
-# test 18 PASSED (iteration 9)
-# test 19 PASSED (iteration 9)
-# test  0 PASSED (iteration 10)
-# test  1 PASSED (iteration 10)
-# test  2 PASSED (iteration 10)
-# test  3 PASSED (iteration 10)
-# test  4 PASSED (iteration 10)
-# test  5 PASSED (iteration 10)
-# test  6 PASSED (iteration 10)
-# test  7 PASSED (iteration 10)
-# test  8 PASSED (iteration 10)
-# test  9 PASSED (iteration 10)
-# test 10 PASSED (iteration 10)
-# test 11 PASSED (iteration 10)
-# test 12 PASSED (iteration 10)
-# test 13 PASSED (iteration 10)
-# test 14 PASSED (iteration 10)
-# test 15 PASSED (iteration 10)
-# test 16 PASSED (iteration 10)
-# test 17 PASSED (iteration 10)
-# test 18 PASSED (iteration 10)
-# test 19 PASSED (iteration 10)
-# test  0 PASSED (iteration 11)
-# test  1 PASSED (iteration 11)
-# test  2 PASSED (iteration 11)
-# test  3 PASSED (iteration 11)
-# test  4 PASSED (iteration 11)
-# test  5 PASSED (iteration 11)
-# test  6 PASSED (iteration 11)
-# test  7 PASSED (iteration 11)
-# test  8 PASSED (iteration 11)
-# test  9 PASSED (iteration 11)
-# test 10 PASSED (iteration 11)
-# test 11 PASSED (iteration 11)
-# test 12 PASSED (iteration 11)
-# test 13 PASSED (iteration 11)
-# test 14 PASSED (iteration 11)
-# test 15 PASSED (iteration 11)
-# test 16 PASSED (iteration 11)
-# test 17 PASSED (iteration 11)
-# teration 7)
-# test  0 PASSED (iteration 8)
-# test  1 PASSED (iteration 8)
-# test  2 PASSED (iteration 8)
-# test  3 PASSED (iteration 8)
-# test  4 PASSED (iteration 8)
-# test  5 PASSED (iteration 8)
-# test  6 PASSED (iteration 8)
-# test  7 PASSED (iteration 8)
-# test  8 PASSED (iteration 8)
-# test  9 PASSED (iteration 8)
-# test 10 PASSED (iteration 8)
-# test 11 PASSED (iteration 8)
-# test 12 PASSED (iteration 8)
-# test 13 PASSED (iteration 8)
-# test 14 PASSED (iteration 8)
-# test 15 PASSED (iteration 8)
-# test 16 PASSED (iteration 8)
-# test 17 PASSED (iteration 8)
-# test 18 PASSED (iteration 8)
-# test 19 PASSED (iteration 8)
-# test  0 PASSED (iteration 9)
-# test  1 PASSED (iteration 9)
-# test  2 PASSED (iteration 9)
-# test  3 PASSED (iteration 9)
-# test  4 PASSED (iteration 9)
-# test  5 PASSED (iteration 9)
-# test  6 PASSED (iteration 9)
-# test  7 PASSED (iteration 9)
-# test  8 PASSED (iteration 9)
-# test  9 PASSED (iteration 9)
-# test 10 PASSED (iteration 9)
-# test 11 PASSED (iteration 9)
-# test 12 PASSED (iteration 9)
-# test 13 PASSED (iteration 9)
-# test 14 PASSED (iteration 9)
-# test 15 PASSED (iteration 9)
-# test 16 PASSED (iteration 9)
-# test 17 PASSED (iteration 9)
-# test 18 PASSED (iteration 9)
-# test 19 PASSED (iteration 9)
-# test  0 PASSED (iteration 10)
-# test  1 PASSED (iteration 10)
-# test  2 PASSED (iteration 10)
-# test  3 PASSED (iteration 10)
-# test  4 PASSED (iteration 10)
-# test  5 PASSED (iteration 10)
-# test  6 PASSED (iteration 10)
-# test  7 PASSED (iteration 10)
-# test  8 PASSED (iteration 10)
-# test  9 PASSED (iteration 10)
-# test 10 PASSED (iteration 10)
-# test 11 PASSED (iteration 10)
-# test 12 PASSED (iteration 10)
-# test 13 PASSED (iteration 10)
-# test 14 PASSED (iteration 10)
-# test 15 PASSED (iteration 10)
-# test 16 PASSED (iteration 10)
-# test 17 PASSED (iteration 10)
-# test 18 PASSED (iteration 10)
-# test 19 PASSED (iteration 10)
-# test  0 PASSED (iteration 11)
-# test  1 PASSED (iteration 11)
-# test  2 PASSED (iteration 11)
-# test  3 PASSED (iteration 11)
-# test  4 PASSED (iteration 11)
-# test  5 PASSED (iteration 11)
-# test  6 PASSED (iteration 11)
-# test  7 PASSED (iteration 11)
-# test  8 PASSED (iteration 11)
-# test  9 PASSED (iteration 11)
-# test 10 PASSED (iteration 11)
-# test 11 PASSED (iteration 11)
-# test 12 PASSED (iteration 11)
-# test 13 PASSED (iteration 11)
-# test 14 PASSED (iteration 11)
-# test 15 PASSED (iteration 11)
-# test 16 PASSED (iteration 11)
-# test 17 PASSED (iteration 11)
-# test 18 PASSED (iteration 11)
-# test 19 PASSED (iteration 11)
-# test  0 PASSED (iteration 12)
-# test  1 PASSED (iteration 12)
-# test  2 PASSED (iteration 12)
-# test  3 PASSED (iteration 12)
-# test  4 PASSED (iteration 12)
-# test  5 PASSED (iteration 12)
-# test  6 PASSED (iteration 12)
-# test  7 PASSED (iteration 12)
-# test  8 PASSED (iteration 12)
-# test  9 PASSED (iteration 12)
-# test 10 PASSED (iteration 12)
-# test 11 PASSED (iteration 12)
-# test 12 PASSED (iteration 12)
-# test 13 PASSED (iteration 12)
-# test 14 PASSED (iteration 12)
-# test 15 PASSED (iteration 12)
-# test 16 PASSED (iteration 12)
-# test 17 PASSED (iteration 12)
-# teration 7)
-# test  0 PASSED (iteration 8)
-# test  1 PASSED (iteration 8)
-# test  2 PASSED (iteration 8)
-# test  3 PASSED (iteration 8)
-# test  4 PASSED (iteration 8)
-# test  5 PASSED (iteration 8)
-# test  6 PASSED (iteration 8)
-# test  7 PASSED (iteration 8)
-# test  8 PASSED (iteration 8)
-# test  9 PASSED (iteration 8)
-# test 10 PASSED (iteration 8)
-# test 11 PASSED (iteration 8)
-# test 12 PASSED (iteration 8)
-# test 13 PASSED (iteration 8)
-# test 14 PASSED (iteration 8)
-# test 15 PASSED (iteration 8)
-# test 16 PASSED (iteration 8)
-# test 17 PASSED (iteration 8)
-# test 18 PASSED (iteration 8)
-# test 19 PASSED (iteration 8)
-# test  0 PASSED (iteration 9)
-# test  1 PASSED (iteration 9)
-# test  2 PASSED (iteration 9)
-# test  3 PASSED (iteration 9)
-# test  4 PASSED (iteration 9)
-# test  5 PASSED (iteration 9)
-# test  6 PASSED (iteration 9)
-# test  7 PASSED (iteration 9)
-# test  8 PASSED (iteration 9)
-# test  9 PASSED (iteration 9)
-# test 10 PASSED (iteration 9)
-# test 11 PASSED (iteration 9)
-# test 12 PASSED (iteration 9)
-# test 13 PASSED (iteration 9)
-# test 14 PASSED (iteration 9)
-# test 15 PASSED (iteration 9)
-# test 16 PASSED (iteration 9)
-# test 17 PASSED (iteration 9)
-# test 18 PASSED (iteration 9)
-# test 19 PASSED (iteration 9)
-# test  0 PASSED (iteration 10)
-# test  1 PASSED (iteration 10)
-# test  2 PASSED (iteration 10)
-# test  3 PASSED (iteration 10)
-# test  4 PASSED (iteration 10)
-# test  5 PASSED (iteration 10)
-# test  6 PASSED (iteration 10)
-# test  7 PASSED (iteration 10)
-# test  8 PASSED (iteration 10)
-# test  9 PASSED (iteration 10)
-# test 10 PASSED (iteration 10)
-# test 11 PASSED (iteration 10)
-# test 12 PASSED (iteration 10)
-# test 13 PASSED (iteration 10)
-# test 14 PASSED (iteration 10)
-# test 15 PASSED (iteration 10)
-# test 16 PASSED (iteration 10)
-# test 17 PASSED (iteration 10)
-# test 18 PASSED (iteration 10)
-# test 19 PASSED (iteration 10)
-# test  0 PASSED (iteration 11)
-# test  1 PASSED (iteration 11)
-# test  2 PASSED (iteration 11)
-# test  3 PASSED (iteration 11)
-# test  4 PASSED (iteration 11)
-# test  5 PASSED (iteration 11)
-# test  6 PASSED (iteration 11)
-# test  7 PASSED (iteration 11)
-# test  8 PASSED (iteration 11)
-# test  9 PASSED (iteration 11)
-# test 10 PASSED (iteration 11)
-# test 11 PASSED (iteration 11)
-# test 12 PASSED (iteration 11)
-# test 13 PASSED (iteration 11)
-# test 14 PASSED (iteration 11)
-# test 15 PASSED (iteration 11)
-# test 16 PASSED (iteration 11)
-# test 17 PASSED (iteration 11)
-# test 18 PASSED (iteration 11)
-# test 19 PASSED (iteration 11)
-# test  0 PASSED (iteration 12)
-# test  1 PASSED (iteration 12)
-# test  2 PASSED (iteration 12)
-# test  3 PASSED (iteration 12)
-# test  4 PASSED (iteration 12)
-# test  5 PASSED (iteration 12)
-# test  6 PASSED (iteration 12)
-# test  7 PASSED (iteration 12)
-# test  8 PASSED (iteration 12)
-# test  9 PASSED (iteration 12)
-# test 10 PASSED (iteration 12)
-# test 11 PASSED (iteration 12)
-# test 12 PASSED (iteration 12)
-# test 13 PASSED (iteration 12)
-# test 14 PASSED (iteration 12)
-# test 15 PASSED (iteration 12)
-# test 16 PASSED (iteration 12)
-# test 17 PASSED (iteration 12)
-# teration 7)
-# test  0 PASSED (iteration 8)
-# test  1 PASSED (iteration 8)
-# test  2 PASSED (iteration 8)
-# test  3 PASSED (iteration 8)
-# test  4 PASSED (iteration 8)
-# test  5 PASSED (iteration 8)
-# test  6 PASSED (iteration 8)
-# test  7 PASSED (iteration 8)
-# test  8 PASSED (iteration 8)
-# test  9 PASSED (iteration 8)
-# test 10 PASSED (iteration 8)
-# test 11 PASSED (iteration 8)
-# test 12 PASSED (iteration 8)
-# test 13 PASSED (iteration 8)
-# test 14 PASSED (iteration 8)
-# test 15 PASSED (iteration 8)
-# test 16 PASSED (iteration 8)
-# test 17 PASSED (iteration 8)
-# test 18 PASSED (iteration 8)
-# test 19 PASSED (iteration 8)
-# test  0 PASSED (iteration 9)
-# test  1 PASSED (iteration 9)
-# test  2 PASSED (iteration 9)
-# test  3 PASSED (iteration 9)
-# test  4 PASSED (iteration 9)
-# test  5 PASSED (iteration 9)
-# test  6 PASSED (iteration 9)
-# test  7 PASSED (iteration 9)
-# test  8 PASSED (iteration 9)
-# test  9 PASSED (iteration 9)
-# test 10 PASSED (iteration 9)
-# test 11 PASSED (iteration 9)
-# test 12 PASSED (iteration 9)
-# test 13 PASSED (iteration 9)
-# test 14 PASSED (iteration 9)
-# test 15 PASSED (iteration 9)
-# test 16 PASSED (iteration 9)
-# test 17 PASSED (iteration 9)
-# test 18 PASSED (iteration 9)
-# test 19 PASSED (iteration 9)
-# test  0 PASSED (iteration 10)
-# test  1 PASSED (iteration 10)
-# test  2 PASSED (iteration 10)
-# test  3 PASSED (iteration 10)
-# test  4 PASSED (iteration 10)
-# test  5 PASSED (iteration 10)
-# test  6 PASSED (iteration 10)
-# test  7 PASSED (iteration 10)
-# test  8 PASSED (iteration 10)
-# test  9 PASSED (iteration 10)
-# test 10 PASSED (iteration 10)
-# test 11 PASSED (iteration 10)
-# test 12 PASSED (iteration 10)
-# test 13 PASSED (iteration 10)
-# test 14 PASSED (iteration 10)
-# test 15 PASSED (iteration 10)
-# test 16 PASSED (iteration 10)
-# test 17 PASSED (iteration 10)
-# test 18 PASSED (iteration 10)
-# test 19 PASSED (iteration 10)
-# test  0 PASSED (iteration 11)
-# test  1 PASSED (iteration 11)
-# test  2 PASSED (iteration 11)
-# test  3 PASSED (iteration 11)
-# test  4 PASSED (iteration 11)
-# test  5 PASSED (iteration 11)
-# test  6 PASSED (iteration 11)
-# test  7 PASSED (iteration 11)
-# test  8 PASSED (iteration 11)
-# test  9 PASSED (iteration 11)
-# test 10 PASSED (iteration 11)
-# test 11 PASSED (iteration 11)
-# test 12 PASSED (iteration 11)
-# test 13 PASSED (iteration 11)
-# test 14 PASSED (iteration 11)
-# test 15 PASSED (iteration 11)
-# test 16 PASSED (iteration 11)
-# test 17 PASSED (iteration 11)
-# test 18 PASSED (iteration 11)
-# test 19 PASSED (iteration 11)
-# test  0 PASSED (iteration 12)
-# test  1 PASSED (iteration 12)
-# test  2 PASSED (iteration 12)
-# test  3 PASSED (iteration 12)
-# test  4 PASSED (iteration 12)
-# test  5 PASSED (iteration 12)
-# test  6 PASSED (iteration 12)
-# test  7 PASSED (iteration 12)
-# test  8 PASSED (iteration 12)
-# test  9 PASSED (iteration 12)
-# test 10 PASSED (iteration 12)
-# test 11 PASSED (iteration 12)
-# test 12 PASSED (iteration 12)
-# test 13 PASSED (iteration 12)
-# test 14 PASSED (iteration 12)
-# test 15 PASSED (iteration 12)
-# test 16 PASSED (iteration 12)
-# test 17 PASSED (iteration 12)
-# test 18 PASSED (iteration 12)
-# test 19 PASSED (iteration 12)
-# test  0 PASSED (iteration 13)
-# test  1 PASSED (iteration 13)
-# test  2 PASSED (iteration 13)
-# test  3 PASSED (iteration 13)
-# test  4 PASSED (iteration 13)
-# test  5 PASSED (iteration 13)
-# test  6 PASSED (iteration 13)
-# test  7 PASSED (iteration 13)
-# test  8 PASSED (iteration 13)
-# test  9 PASSED (iteration 13)
-# test 10 PASSED (iteration 13)
-# test 11 PASSED (iteration 13)
-# test 12 PASSED (iteration 13)
-# test 13 PASSED (iteration 13)
-# test 14 PASSED (iteration 13)
-# test 15 PASSED (iteration 13)
-# test 16 PASSED (iteration 13)
-# test 17 PASSED (iteration 13)
-# teration 7)
-# test  0 PASSED (iteration 8)
-# test  1 PASSED (iteration 8)
-# test  2 PASSED (iteration 8)
-# test  3 PASSED (iteration 8)
-# test  4 PASSED (iteration 8)
-# test  5 PASSED (iteration 8)
-# test  6 PASSED (iteration 8)
-# test  7 PASSED (iteration 8)
-# test  8 PASSED (iteration 8)
-# test  9 PASSED (iteration 8)
-# test 10 PASSED (iteration 8)
-# test 11 PASSED (iteration 8)
-# test 12 PASSED (iteration 8)
-# test 13 PASSED (iteration 8)
-# test 14 PASSED (iteration 8)
-# test 15 PASSED (iteration 8)
-# test 16 PASSED (iteration 8)
-# test 17 PASSED (iteration 8)
-# test 18 PASSED (iteration 8)
-# test 19 PASSED (iteration 8)
-# test  0 PASSED (iteration 9)
-# test  1 PASSED (iteration 9)
-# test  2 PASSED (iteration 9)
-# test  3 PASSED (iteration 9)
-# test  4 PASSED (iteration 9)
-# test  5 PASSED (iteration 9)
-# test  6 PASSED (iteration 9)
-# test  7 PASSED (iteration 9)
-# test  8 PASSED (iteration 9)
-# test  9 PASSED (iteration 9)
-# test 10 PASSED (iteration 9)
-# test 11 PASSED (iteration 9)
-# test 12 PASSED (iteration 9)
-# test 13 PASSED (iteration 9)
-# test 14 PASSED (iteration 9)
-# test 15 PASSED (iteration 9)
-# test 16 PASSED (iteration 9)
-# test 17 PASSED (iteration 9)
-# test 18 PASSED (iteration 9)
-# test 19 PASSED (iteration 9)
-# test  0 PASSED (iteration 10)
-# test  1 PASSED (iteration 10)
-# test  2 PASSED (iteration 10)
-# test  3 PASSED (iteration 10)
-# test  4 PASSED (iteration 10)
-# test  5 PASSED (iteration 10)
-# test  6 PASSED (iteration 10)
-# test  7 PASSED (iteration 10)
-# test  8 PASSED (iteration 10)
-# test  9 PASSED (iteration 10)
-# test 10 PASSED (iteration 10)
-# test 11 PASSED (iteration 10)
-# test 12 PASSED (iteration 10)
-# test 13 PASSED (iteration 10)
-# test 14 PASSED (iteration 10)
-# test 15 PASSED (iteration 10)
-# test 16 PASSED (iteration 10)
-# test 17 PASSED (iteration 10)
-# test 18 PASSED (iteration 10)
-# test 19 PASSED (iteration 10)
-# test  0 PASSED (iteration 11)
-# test  1 PASSED (iteration 11)
-# test  2 PASSED (iteration 11)
-# test  3 PASSED (iteration 11)
-# test  4 PASSED (iteration 11)
-# test  5 PASSED (iteration 11)
-# test  6 PASSED (iteration 11)
-# test  7 PASSED (iteration 11)
-# test  8 PASSED (iteration 11)
-# test  9 PASSED (iteration 11)
-# test 10 PASSED (iteration 11)
-# test 11 PASSED (iteration 11)
-# test 12 PASSED (iteration 11)
-# test 13 PASSED (iteration 11)
-# test 14 PASSED (iteration 11)
-# test 15 PASSED (iteration 11)
-# test 16 PASSED (iteration 11)
-# test 17 PASSED (iteration 11)
-# test 18 PASSED (iteration 11)
-# test 19 PASSED (iteration 11)
-# test  0 PASSED (iteration 12)
-# test  1 PASSED (iteration 12)
-# test  2 PASSED (iteration 12)
-# test  3 PASSED (iteration 12)
-# test  4 PASSED (iteration 12)
-# test  5 PASSED (iteration 12)
-# test  6 PASSED (iteration 12)
-# test  7 PASSED (iteration 12)
-# test  8 PASSED (iteration 12)
-# test  9 PASSED (iteration 12)
-# test 10 PASSED (iteration 12)
-# test 11 PASSED (iteration 12)
-# test 12 PASSED (iteration 12)
-# test 13 PASSED (iteration 12)
-# test 14 PASSED (iteration 12)
-# test 15 PASSED (iteration 12)
-# test 16 PASSED (iteration 12)
-# test 17 PASSED (iteration 12)
-# test 18 PASSED (iteration 12)
-# test 19 PASSED (iteration 12)
-# test  0 PASSED (iteration 13)
-# test  1 PASSED (iteration 13)
-# test  2 PASSED (iteration 13)
-# test  3 PASSED (iteration 13)
-# test  4 PASSED (iteration 13)
-# test  5 PASSED (iteration 13)
-# test  6 PASSED (iteration 13)
-# test  7 PASSED (iteration 13)
-# test  8 PASSED (iteration 13)
-# test  9 PASSED (iteration 13)
-# test 10 PASSED (iteration 13)
-# test 11 PASSED (iteration 13)
-# test 12 PASSED (iteration 13)
-# test 13 PASSED (iteration 13)
-# test 14 PASSED (iteration 13)
-# test 15 PASSED (iteration 13)
-# test 16 PASSED (iteration 13)
-# test 17 PASSED (iteration 13)
-# teration 7)
-# test  0 PASSED (iteration 8)
-# test  1 PASSED (iteration 8)
-# test  2 PASSED (iteration 8)
-# test  3 PASSED (iteration 8)
-# test  4 PASSED (iteration 8)
-# test  5 PASSED (iteration 8)
-# test  6 PASSED (iteration 8)
-# test  7 PASSED (iteration 8)
-# test  8 PASSED (iteration 8)
-# test  9 PASSED (iteration 8)
-# test 10 PASSED (iteration 8)
-# test 11 PASSED (iteration 8)
-# test 12 PASSED (iteration 8)
-# test 13 PASSED (iteration 8)
-# test 14 PASSED (iteration 8)
-# test 15 PASSED (iteration 8)
-# test 16 PASSED (iteration 8)
-# test 17 PASSED (iteration 8)
-# test 18 PASSED (iteration 8)
-# test 19 PASSED (iteration 8)
-# test  0 PASSED (iteration 9)
-# test  1 PASSED (iteration 9)
-# test  2 PASSED (iteration 9)
-# test  3 PASSED (iteration 9)
-# test  4 PASSED (iteration 9)
-# test  5 PASSED (iteration 9)
-# test  6 PASSED (iteration 9)
-# test  7 PASSED (iteration 9)
-# test  8 PASSED (iteration 9)
-# test  9 PASSED (iteration 9)
-# test 10 PASSED (iteration 9)
-# test 11 PASSED (iteration 9)
-# test 12 PASSED (iteration 9)
-# test 13 PASSED (iteration 9)
-# test 14 PASSED (iteration 9)
-# test 15 PASSED (iteration 9)
-# test 16 PASSED (iteration 9)
-# test 17 PASSED (iteration 9)
-# test 18 PASSED (iteration 9)
-# test 19 PASSED (iteration 9)
-# test  0 PASSED (iteration 10)
-# test  1 PASSED (iteration 10)
-# test  2 PASSED (iteration 10)
-# test  3 PASSED (iteration 10)
-# test  4 PASSED (iteration 10)
-# test  5 PASSED (iteration 10)
-# test  6 PASSED (iteration 10)
-# test  7 PASSED (iteration 10)
-# test  8 PASSED (iteration 10)
-# test  9 PASSED (iteration 10)
-# test 10 PASSED (iteration 10)
-# test 11 PASSED (iteration 10)
-# test 12 PASSED (iteration 10)
-# test 13 PASSED (iteration 10)
-# test 14 PASSED (iteration 10)
-# test 15 PASSED (iteration 10)
-# test 16 PASSED (iteration 10)
-# test 17 PASSED (iteration 10)
-# test 18 PASSED (iteration 10)
-# test 19 PASSED (iteration 10)
-# test  0 PASSED (iteration 11)
-# test  1 PASSED (iteration 11)
-# test  2 PASSED (iteration 11)
-# test  3 PASSED (iteration 11)
-# test  4 PASSED (iteration 11)
-# test  5 PASSED (iteration 11)
-# test  6 PASSED (iteration 11)
-# test  7 PASSED (iteration 11)
-# test  8 PASSED (iteration 11)
-# test  9 PASSED (iteration 11)
-# test 10 PASSED (iteration 11)
-# test 11 PASSED (iteration 11)
-# test 12 PASSED (iteration 11)
-# test 13 PASSED (iteration 11)
-# test 14 PASSED (iteration 11)
-# test 15 PASSED (iteration 11)
-# test 16 PASSED (iteration 11)
-# test 17 PASSED (iteration 11)
-# test 18 PASSED (iteration 11)
-# test 19 PASSED (iteration 11)
-# test  0 PASSED (iteration 12)
-# test  1 PASSED (iteration 12)
-# test  2 PASSED (iteration 12)
-# test  3 PASSED (iteration 12)
-# test  4 PASSED (iteration 12)
-# test  5 PASSED (iteration 12)
-# test  6 PASSED (iteration 12)
-# test  7 PASSED (iteration 12)
-# test  8 PASSED (iteration 12)
-# test  9 PASSED (iteration 12)
-# test 10 PASSED (iteration 12)
-# test 11 PASSED (iteration 12)
-# test 12 PASSED (iteration 12)
-# test 13 PASSED (iteration 12)
-# test 14 PASSED (iteration 12)
-# test 15 PASSED (iteration 12)
-# test 16 PASSED (iteration 12)
-# test 17 PASSED (iteration 12)
-# test 18 PASSED (iteration 12)
-# test 19 PASSED (iteration 12)
-# test  0 PASSED (iteration 13)
-# test  1 PASSED (iteration 13)
-# test  2 PASSED (iteration 13)
-# test  3 PASSED (iteration 13)
-# test  4 PASSED (iteration 13)
-# test  5 PASSED (iteration 13)
-# test  6 PASSED (iteration 13)
-# test  7 PASSED (iteration 13)
-# test  8 PASSED (iteration 13)
-# test  9 PASSED (iteration 13)
-# test 10 PASSED (iteration 13)
-# test 11 PASSED (iteration 13)
-# test 12 PASSED (iteration 13)
-# test 13 PASSED (iteration 13)
-# test 14 PASSED (iteration 13)
-# test 15 PASSED (iteration 13)
-# test 16 PASSED (iteration 13)
-# test 17 PASSED (iteration 13)
-# test 18 PASSED (iteration 13)
-# test 19 PASSED (iteration 13)
-# test  0 PASSED (iteration 14)
-# test  1 PASSED (iteration 14)
-# test  2 PASSED (iteration 14)
-# test  3 PASSED (iteration 14)
-# test  4 PASSED (iteration 14)
-# test  5 PASSED (iteration 14)
-# test  6 PASSED (iteration 14)
-# test  7 PASSED (iteration 14)
-# test  8 PASSED (iteration 14)
-# test  9 PASSED (iteration 14)
-# test 10 PASSED (iteration 14)
-# test 11 PASSED (iteration 14)
-# test 12 PASSED (iteration 14)
-# test 13 PASSED (iteration 14)
-# test 14 PASSED (iteration 14)
-# test 15 PASSED (iteration 14)
-# test 16 PASSED (iteration 14)
-# test 17 PASSED (iteration 14)
-# teration 7)
-# test  0 PASSED (iteration 8)
-# test  1 PASSED (iteration 8)
-# test  2 PASSED (iteration 8)
-# test  3 PASSED (iteration 8)
-# test  4 PASSED (iteration 8)
-# test  5 PASSED (iteration 8)
-# test  6 PASSED (iteration 8)
-# test  7 PASSED (iteration 8)
-# test  8 PASSED (iteration 8)
-# test  9 PASSED (iteration 8)
-# test 10 PASSED (iteration 8)
-# test 11 PASSED (iteration 8)
-# test 12 PASSED (iteration 8)
-# test 13 PASSED (iteration 8)
-# test 14 PASSED (iteration 8)
-# test 15 PASSED (iteration 8)
-# test 16 PASSED (iteration 8)
-# test 17 PASSED (iteration 8)
-# test 18 PASSED (iteration 8)
-# test 19 PASSED (iteration 8)
-# test  0 PASSED (iteration 9)
-# test  1 PASSED (iteration 9)
-# test  2 PASSED (iteration 9)
-# test  3 PASSED (iteration 9)
-# test  4 PASSED (iteration 9)
-# test  5 PASSED (iteration 9)
-# test  6 PASSED (iteration 9)
-# test  7 PASSED (iteration 9)
-# test  8 PASSED (iteration 9)
-# test  9 PASSED (iteration 9)
-# test 10 PASSED (iteration 9)
-# test 11 PASSED (iteration 9)
-# test 12 PASSED (iteration 9)
-# test 13 PASSED (iteration 9)
-# test 14 PASSED (iteration 9)
-# test 15 PASSED (iteration 9)
-# test 16 PASSED (iteration 9)
-# test 17 PASSED (iteration 9)
-# test 18 PASSED (iteration 9)
-# test 19 PASSED (iteration 9)
-# test  0 PASSED (iteration 10)
-# test  1 PASSED (iteration 10)
-# test  2 PASSED (iteration 10)
-# test  3 PASSED (iteration 10)
-# test  4 PASSED (iteration 10)
-# test  5 PASSED (iteration 10)
-# test  6 PASSED (iteration 10)
-# test  7 PASSED (iteration 10)
-# test  8 PASSED (iteration 10)
-# test  9 PASSED (iteration 10)
-# test 10 PASSED (iteration 10)
-# test 11 PASSED (iteration 10)
-# test 12 PASSED (iteration 10)
-# test 13 PASSED (iteration 10)
-# test 14 PASSED (iteration 10)
-# test 15 PASSED (iteration 10)
-# test 16 PASSED (iteration 10)
-# test 17 PASSED (iteration 10)
-# test 18 PASSED (iteration 10)
-# test 19 PASSED (iteration 10)
-# test  0 PASSED (iteration 11)
-# test  1 PASSED (iteration 11)
-# test  2 PASSED (iteration 11)
-# test  3 PASSED (iteration 11)
-# test  4 PASSED (iteration 11)
-# test  5 PASSED (iteration 11)
-# test  6 PASSED (iteration 11)
-# test  7 PASSED (iteration 11)
-# test  8 PASSED (iteration 11)
-# test  9 PASSED (iteration 11)
-# test 10 PASSED (iteration 11)
-# test 11 PASSED (iteration 11)
-# test 12 PASSED (iteration 11)
-# test 13 PASSED (iteration 11)
-# test 14 PASSED (iteration 11)
-# test 15 PASSED (iteration 11)
-# test 16 PASSED (iteration 11)
-# test 17 PASSED (iteration 11)
-# test 18 PASSED (iteration 11)
-# test 19 PASSED (iteration 11)
-# test  0 PASSED (iteration 12)
-# test  1 PASSED (iteration 12)
-# test  2 PASSED (iteration 12)
-# test  3 PASSED (iteration 12)
-# test  4 PASSED (iteration 12)
-# test  5 PASSED (iteration 12)
-# test  6 PASSED (iteration 12)
-# test  7 PASSED (iteration 12)
-# test  8 PASSED (iteration 12)
-# test  9 PASSED (iteration 12)
-# test 10 PASSED (iteration 12)
-# test 11 PASSED (iteration 12)
-# test 12 PASSED (iteration 12)
-# test 13 PASSED (iteration 12)
-# test 14 PASSED (iteration 12)
-# test 15 PASSED (iteration 12)
-# test 16 PASSED (iteration 12)
-# test 17 PASSED (iteration 12)
-# test 18 PASSED (iteration 12)
-# test 19 PASSED (iteration 12)
-# test  0 PASSED (iteration 13)
-# test  1 PASSED (iteration 13)
-# test  2 PASSED (iteration 13)
-# test  3 PASSED (iteration 13)
-# test  4 PASSED (iteration 13)
-# test  5 PASSED (iteration 13)
-# test  6 PASSED (iteration 13)
-# test  7 PASSED (iteration 13)
-# test  8 PASSED (iteration 13)
-# test  9 PASSED (iteration 13)
-# test 10 PASSED (iteration 13)
-# test 11 PASSED (iteration 13)
-# test 12 PASSED (iteration 13)
-# test 13 PASSED (iteration 13)
-# test 14 PASSED (iteration 13)
-# test 15 PASSED (iteration 13)
-# test 16 PASSED (iteration 13)
-# test 17 PASSED (iteration 13)
-# test 18 PASSED (iteration 13)
-# test 19 PASSED (iteration 13)
-# test  0 PASSED (iteration 14)
-# test  1 PASSED (iteration 14)
-# test  2 PASSED (iteration 14)
-# test  3 PASSED (iteration 14)
-# test  4 PASSED (iteration 14)
-# test  5 PASSED (iteration 14)
-# test  6 PASSED (iteration 14)
-# test  7 PASSED (iteration 14)
-# test  8 PASSED (iteration 14)
-# test  9 PASSED (iteration 14)
-# test 10 PASSED (iteration 14)
-# test 11 PASSED (iteration 14)
-# test 12 PASSED (iteration 14)
-# test 13 PASSED (iteration 14)
-# test 14 PASSED (iteration 14)
-# test 15 PASSED (iteration 14)
-# test 16 PASSED (iteration 14)
-# test 17 PASSED (iteration 14)
-#  (iteration 14)
-# test 18 PASSED (iteration 14)
-# test 19 PASSED (iteration 14)
-# test  0 PASSED (iteration 15)
-# test  1 PASSED (iteration 15)
-# test  2 PASSED (iteration 15)
-# test  3 PASSED (iteration 15)
-# test  4 PASSED (iteration 15)
-# test  5 PASSED (iteration 15)
-# test  6 PASSED (iteration 15)
-# test  7 PASSED (iteration 15)
-# test  8 PASSED (iteration 15)
-# test  9 PASSED (iteration 15)
-# test 10 PASSED (iteration 15)
-# test 11 PASSED (iteration 15)
-# test 12 PASSED (iteration 15)
-# test 13 PASSED (iteration 15)
-# test 14 PASSED (iteration 15)
-# test 15 PASSED (iteration 15)
-# test 16 PASSED (iteration 15)
-# test 17 PASSED (iteration 15)
-#  (iteration 14)
-# test 18 PASSED (iteration 14)
-# test 19 PASSED (iteration 14)
-# test  0 PASSED (iteration 15)
-# test  1 PASSED (iteration 15)
-# test  2 PASSED (iteration 15)
-# test  3 PASSED (iteration 15)
-# test  4 PASSED (iteration 15)
-# test  5 PASSED (iteration 15)
-# test  6 PASSED (iteration 15)
-# test  7 PASSED (iteration 15)
-# test  8 PASSED (iteration 15)
-# test  9 PASSED (iteration 15)
-# test 10 PASSED (iteration 15)
-# test 11 PASSED (iteration 15)
-# test 12 PASSED (iteration 15)
-# test 13 PASSED (iteration 15)
-# test 14 PASSED (iteration 15)
-# test 15 PASSED (iteration 15)
-# test 16 PASSED (iteration 15)
-# test 17 PASSED (iteration 15)
-#  (iteration 14)
-# test 18 PASSED (iteration 14)
-# test 19 PASSED (iteration 14)
-# test  0 PASSED (iteration 15)
-# test  1 PASSED (iteration 15)
-# test  2 PASSED (iteration 15)
-# test  3 PASSED (iteration 15)
-# test  4 PASSED (iteration 15)
-# test  5 PASSED (iteration 15)
-# test  6 PASSED (iteration 15)
-# test  7 PASSED (iteration 15)
-# test  8 PASSED (iteration 15)
-# test  9 PASSED (iteration 15)
-# test 10 PASSED (iteration 15)
-# test 11 PASSED (iteration 15)
-# test 12 PASSED (iteration 15)
-# test 13 PASSED (iteration 15)
-# test 14 PASSED (iteration 15)
-# test 15 PASSED (iteration 15)
-# test 16 PASSED (iteration 15)
-# test 17 PASSED (iteration 15)
-# test 18 PASSED (iteration 15)
-# test 19 PASSED (iteration 15)
-# test  0 PASSED (iteration 16)
-# test  1 PASSED (iteration 16)
-# test  2 PASSED (iteration 16)
-# test  3 PASSED (iteration 16)
-# test  4 PASSED (iteration 16)
-# test  5 PASSED (iteration 16)
-# test  6 PASSED (iteration 16)
-# test  7 PASSED (iteration 16)
-# test  8 PASSED (iteration 16)
-# test  9 PASSED (iteration 16)
-# test 10 PASSED (iteration 16)
-# test 11 PASSED (iteration 16)
-# test 12 PASSED (iteration 16)
-# test 13 PASSED (iteration 16)
-# test 14 PASSED (iteration 16)
-# test 15 PASSED (iteration 16)
-# test 16 PASSED (iteration 16)
-# test 17 PASSED (iteration 16)
-#  (iteration 14)
-# test 18 PASSED (iteration 14)
-# test 19 PASSED (iteration 14)
-# test  0 PASSED (iteration 15)
-# test  1 PASSED (iteration 15)
-# test  2 PASSED (iteration 15)
-# test  3 PASSED (iteration 15)
-# test  4 PASSED (iteration 15)
-# test  5 PASSED (iteration 15)
-# test  6 PASSED (iteration 15)
-# test  7 PASSED (iteration 15)
-# test  8 PASSED (iteration 15)
-# test  9 PASSED (iteration 15)
-# test 10 PASSED (iteration 15)
-# test 11 PASSED (iteration 15)
-# test 12 PASSED (iteration 15)
-# test 13 PASSED (iteration 15)
-# test 14 PASSED (iteration 15)
-# test 15 PASSED (iteration 15)
-# test 16 PASSED (iteration 15)
-# test 17 PASSED (iteration 15)
-# test 18 PASSED (iteration 15)
-# test 19 PASSED (iteration 15)
-# test  0 PASSED (iteration 16)
-# test  1 PASSED (iteration 16)
-# test  2 PASSED (iteration 16)
-# test  3 PASSED (iteration 16)
-# test  4 PASSED (iteration 16)
-# test  5 PASSED (iteration 16)
-# test  6 PASSED (iteration 16)
-# test  7 PASSED (iteration 16)
-# test  8 PASSED (iteration 16)
-# test  9 PASSED (iteration 16)
-# test 10 PASSED (iteration 16)
-# test 11 PASSED (iteration 16)
-# test 12 PASSED (iteration 16)
-# test 13 PASSED (iteration 16)
-# test 14 PASSED (iteration 16)
-# test 15 PASSED (iteration 16)
-# test 16 PASSED (iteration 16)
-# test 17 PASSED (iteration 16)
-# test 18 PASSED (iteration 16)
-# test 19 PASSED (iteration 16)
-# test  0 PASSED (iteration 17)
-# test  1 PASSED (iteration 17)
-# test  2 PASSED (iteration 17)
-# test  3 PASSED (iteration 17)
-# test  4 PASSED (iteration 17)
-# test  5 PASSED (iteration 17)
-# test  6 PASSED (iteration 17)
-# test  7 PASSED (iteration 17)
-# test  8 PASSED (iteration 17)
-# test  9 PASSED (iteration 17)
-# test 10 PASSED (iteration 17)
-# test 11 PASSED (iteration 17)
-# test 12 PASSED (iteration 17)
-# test 13 PASSED (iteration 17)
-# test 14 PASSED (iteration 17)
-# test 15 PASSED (iteration 17)
-# test 16 PASSED (iteration 17)
-# test 17 PASSED (iteration 17)
-#  (iteration 14)
-# test 18 PASSED (iteration 14)
-# test 19 PASSED (iteration 14)
-# test  0 PASSED (iteration 15)
-# test  1 PASSED (iteration 15)
-# test  2 PASSED (iteration 15)
-# test  3 PASSED (iteration 15)
-# test  4 PASSED (iteration 15)
-# test  5 PASSED (iteration 15)
-# test  6 PASSED (iteration 15)
-# test  7 PASSED (iteration 15)
-# test  8 PASSED (iteration 15)
-# test  9 PASSED (iteration 15)
-# test 10 PASSED (iteration 15)
-# test 11 PASSED (iteration 15)
-# test 12 PASSED (iteration 15)
-# test 13 PASSED (iteration 15)
-# test 14 PASSED (iteration 15)
-# test 15 PASSED (iteration 15)
-# test 16 PASSED (iteration 15)
-# test 17 PASSED (iteration 15)
-# test 18 PASSED (iteration 15)
-# test 19 PASSED (iteration 15)
-# test  0 PASSED (iteration 16)
-# test  1 PASSED (iteration 16)
-# test  2 PASSED (iteration 16)
-# test  3 PASSED (iteration 16)
-# test  4 PASSED (iteration 16)
-# test  5 PASSED (iteration 16)
-# test  6 PASSED (iteration 16)
-# test  7 PASSED (iteration 16)
-# test  8 PASSED (iteration 16)
-# test  9 PASSED (iteration 16)
-# test 10 PASSED (iteration 16)
-# test 11 PASSED (iteration 16)
-# test 12 PASSED (iteration 16)
-# test 13 PASSED (iteration 16)
-# test 14 PASSED (iteration 16)
-# test 15 PASSED (iteration 16)
-# test 16 PASSED (iteration 16)
-# test 17 PASSED (iteration 16)
-#  (iteration 14)
-# test 18 PASSED (iteration 14)
-# test 19 PASSED (iteration 14)
-# test  0 PASSED (iteration 15)
-# test  1 PASSED (iteration 15)
-# test  2 PASSED (iteration 15)
-# test  3 PASSED (iteration 15)
-# test  4 PASSED (iteration 15)
-# test  5 PASSED (iteration 15)
-# test  6 PASSED (iteration 15)
-# test  7 PASSED (iteration 15)
-# test  8 PASSED (iteration 15)
-# test  9 PASSED (iteration 15)
-# test 10 PASSED (iteration 15)
-# test 11 PASSED (iteration 15)
-# test 12 PASSED (iteration 15)
-# test 13 PASSED (iteration 15)
-# test 14 PASSED (iteration 15)
-# test 15 PASSED (iteration 15)
-# test 16 PASSED (iteration 15)
-# test 17 PASSED (iteration 15)
-# test 18 PASSED (iteration 15)
-# test 19 PASSED (iteration 15)
-# test  0 PASSED (iteration 16)
-# test  1 PASSED (iteration 16)
-# test  2 PASSED (iteration 16)
-# test  3 PASSED (iteration 16)
-# test  4 PASSED (iteration 16)
-# test  5 PASSED (iteration 16)
-# test  6 PASSED (iteration 16)
-# test  7 PASSED (iteration 16)
-# test  8 PASSED (iteration 16)
-# test  9 PASSED (iteration 16)
-# test 10 PASSED (iteration 16)
-# test 11 PASSED (iteration 16)
-# test 12 PASSED (iteration 16)
-# test 13 PASSED (iteration 16)
-# test 14 PASSED (iteration 16)
-# test 15 PASSED (iteration 16)
-# test 16 PASSED (iteration 16)
-# test 17 PASSED (iteration 16)
-# test 18 PASSED (iteration 16)
-# test 19 PASSED (iteration 16)
-# test  0 PASSED (iteration 17)
-# test  1 PASSED (iteration 17)
-# test  2 PASSED (iteration 17)
-# test  3 PASSED (iteration 17)
-# test  4 PASSED (iteration 17)
-# test  5 PASSED (iteration 17)
-# test  6 PASSED (iteration 17)
-# test  7 PASSED (iteration 17)
-# test  8 PASSED (iteration 17)
-# test  9 PASSED (iteration 17)
-# test 10 PASSED (iteration 17)
-# test 11 PASSED (iteration 17)
-# test 12 PASSED (iteration 17)
-# test 13 PASSED (iteration 17)
-# test 14 PASSED (iteration 17)
-# test 15 PASSED (iteration 17)
-# test 16 PASSED (iteration 17)
-# test 17 PASSED (iteration 17)
-# test 18 PASSED (iteration 17)
-# test 19 PASSED (iteration 17)
-# test  0 PASSED (iteration 18)
-# test  1 PASSED (iteration 18)
-# test  2 PASSED (iteration 18)
-# test  3 PASSED (iteration 18)
-# test  4 PASSED (iteration 18)
-# test  5 PASSED (iteration 18)
-# test  6 PASSED (iteration 18)
-# test  7 PASSED (iteration 18)
-# test  8 PASSED (iteration 18)
-# test  9 PASSED (iteration 18)
-# test 10 PASSED (iteration 18)
-# test 11 PASSED (iteration 18)
-# test 12 PASSED (iteration 18)
-# test 13 PASSED (iteration 18)
-# test 14 PASSED (iteration 18)
-# test 15 PASSED (iteration 18)
-# test 16 PASSED (iteration 18)
-# test 17 PASSED (iteration 18)
-#  (iteration 14)
-# test 18 PASSED (iteration 14)
-# test 19 PASSED (iteration 14)
-# test  0 PASSED (iteration 15)
-# test  1 PASSED (iteration 15)
-# test  2 PASSED (iteration 15)
-# test  3 PASSED (iteration 15)
-# test  4 PASSED (iteration 15)
-# test  5 PASSED (iteration 15)
-# test  6 PASSED (iteration 15)
-# test  7 PASSED (iteration 15)
-# test  8 PASSED (iteration 15)
-# test  9 PASSED (iteration 15)
-# test 10 PASSED (iteration 15)
-# test 11 PASSED (iteration 15)
-# test 12 PASSED (iteration 15)
-# test 13 PASSED (iteration 15)
-# test 14 PASSED (iteration 15)
-# test 15 PASSED (iteration 15)
-# test 16 PASSED (iteration 15)
-# test 17 PASSED (iteration 15)
-# test 18 PASSED (iteration 15)
-# test 19 PASSED (iteration 15)
-# test  0 PASSED (iteration 16)
-# test  1 PASSED (iteration 16)
-# test  2 PASSED (iteration 16)
-# test  3 PASSED (iteration 16)
-# test  4 PASSED (iteration 16)
-# test  5 PASSED (iteration 16)
-# test  6 PASSED (iteration 16)
-# test  7 PASSED (iteration 16)
-# test  8 PASSED (iteration 16)
-# test  9 PASSED (iteration 16)
-# test 10 PASSED (iteration 16)
-# test 11 PASSED (iteration 16)
-# test 12 PASSED (iteration 16)
-# test 13 PASSED (iteration 16)
-# test 14 PASSED (iteration 16)
-# test 15 PASSED (iteration 16)
-# test 16 PASSED (iteration 16)
-# test 17 PASSED (iteration 16)
-# test 18 PASSED (iteration 16)
-# test 19 PASSED (iteration 16)
-# test  0 PASSED (iteration 17)
-# test  1 PASSED (iteration 17)
-# test  2 PASSED (iteration 17)
-# test  3 PASSED (iteration 17)
-# test  4 PASSED (iteration 17)
-# test  5 PASSED (iteration 17)
-# test  6 PASSED (iteration 17)
-# test  7 PASSED (iteration 17)
-# test  8 PASSED (iteration 17)
-# test  9 PASSED (iteration 17)
-# test 10 PASSED (iteration 17)
-# test 11 PASSED (iteration 17)
-# test 12 PASSED (iteration 17)
-# test 13 PASSED (iteration 17)
-# test 14 PASSED (iteration 17)
-# test 15 PASSED (iteration 17)
-# test 16 PASSED (iteration 17)
-# test 17 PASSED (iteration 17)
-#  (iteration 14)
-# test 18 PASSED (iteration 14)
-# test 19 PASSED (iteration 14)
-# test  0 PASSED (iteration 15)
-# test  1 PASSED (iteration 15)
-# test  2 PASSED (iteration 15)
-# test  3 PASSED (iteration 15)
-# test  4 PASSED (iteration 15)
-# test  5 PASSED (iteration 15)
-# test  6 PASSED (iteration 15)
-# test  7 PASSED (iteration 15)
-# test  8 PASSED (iteration 15)
-# test  9 PASSED (iteration 15)
-# test 10 PASSED (iteration 15)
-# test 11 PASSED (iteration 15)
-# test 12 PASSED (iteration 15)
-# test 13 PASSED (iteration 15)
-# test 14 PASSED (iteration 15)
-# test 15 PASSED (iteration 15)
-# test 16 PASSED (iteration 15)
-# test 17 PASSED (iteration 15)
-# test 18 PASSED (iteration 15)
-# test 19 PASSED (iteration 15)
-# test  0 PASSED (iteration 16)
-# test  1 PASSED (iteration 16)
-# test  2 PASSED (iteration 16)
-# test  3 PASSED (iteration 16)
-# test  4 PASSED (iteration 16)
-# test  5 PASSED (iteration 16)
-# test  6 PASSED (iteration 16)
-# test  7 PASSED (iteration 16)
-# test  8 PASSED (iteration 16)
-# test  9 PASSED (iteration 16)
-# test 10 PASSED (iteration 16)
-# test 11 PASSED (iteration 16)
-# test 12 PASSED (iteration 16)
-# test 13 PASSED (iteration 16)
-# test 14 PASSED (iteration 16)
-# test 15 PASSED (iteration 16)
-# test 16 PASSED (iteration 16)
-# test 17 PASSED (iteration 16)
-# test 18 PASSED (iteration 16)
-# test 19 PASSED (iteration 16)
-# test  0 PASSED (iteration 17)
-# test  1 PASSED (iteration 17)
-# test  2 PASSED (iteration 17)
-# test  3 PASSED (iteration 17)
-# test  4 PASSED (iteration 17)
-# test  5 PASSED (iteration 17)
-# test  6 PASSED (iteration 17)
-# test  7 PASSED (iteration 17)
-# test  8 PASSED (iteration 17)
-# test  9 PASSED (iteration 17)
-# test 10 PASSED (iteration 17)
-# test 11 PASSED (iteration 17)
-# test 12 PASSED (iteration 17)
-# test 13 PASSED (iteration 17)
-# test 14 PASSED (iteration 17)
-# test 15 PASSED (iteration 17)
-# test 16 PASSED (iteration 17)
-# test 17 PASSED (iteration 17)
-# test 18 PASSED (iteration 17)
-# test 19 PASSED (iteration 17)
-# test  0 PASSED (iteration 18)
-# test  1 PASSED (iteration 18)
-# test  2 PASSED (iteration 18)
-# test  3 PASSED (iteration 18)
-# test  4 PASSED (iteration 18)
-# test  5 PASSED (iteration 18)
-# test  6 PASSED (iteration 18)
-# test  7 PASSED (iteration 18)
-# test  8 PASSED (iteration 18)
-# test  9 PASSED (iteration 18)
-# test 10 PASSED (iteration 18)
-# test 11 PASSED (iteration 18)
-# test 12 PASSED (iteration 18)
-# test 13 PASSED (iteration 18)
-# test 14 PASSED (iteration 18)
-# test 15 PASSED (iteration 18)
-# test 16 PASSED (iteration 18)
-# test 17 PASSED (iteration 18)
-# test 18 PASSED (iteration 18)
-# test 19 PASSED (iteration 18)
-# test  0 PASSED (iteration 19)
-# test  1 PASSED (iteration 19)
-# test  2 PASSED (iteration 19)
-# test  3 PASSED (iteration 19)
-# test  4 PASSED (iteration 19)
-# test  5 PASSED (iteration 19)
-# test  6 PASSED (iteration 19)
-# test  7 PASSED (iteration 19)
-# test  8 PASSED (iteration 19)
-# test  9 PASSED (iteration 19)
-# test 10 PASSED (iteration 19)
-# test 11 PASSED (iteration 19)
-# test 12 PASSED (iteration 19)
-# test 13 PASSED (iteration 19)
-# test 14 PASSED (iteration 19)
-# test 15 PASSED (iteration 19)
-# test 16 PASSED (iteration 19)
-# test 17 PASSED (iteration 19)
-#  (iteration 14)
-# test 18 PASSED (iteration 14)
-# test 19 PASSED (iteration 14)
-# test  0 PASSED (iteration 15)
-# test  1 PASSED (iteration 15)
-# test  2 PASSED (iteration 15)
-# test  3 PASSED (iteration 15)
-# test  4 PASSED (iteration 15)
-# test  5 PASSED (iteration 15)
-# test  6 PASSED (iteration 15)
-# test  7 PASSED (iteration 15)
-# test  8 PASSED (iteration 15)
-# test  9 PASSED (iteration 15)
-# test 10 PASSED (iteration 15)
-# test 11 PASSED (iteration 15)
-# test 12 PASSED (iteration 15)
-# test 13 PASSED (iteration 15)
-# test 14 PASSED (iteration 15)
-# test 15 PASSED (iteration 15)
-# test 16 PASSED (iteration 15)
-# test 17 PASSED (iteration 15)
-# test 18 PASSED (iteration 15)
-# test 19 PASSED (iteration 15)
-# test  0 PASSED (iteration 16)
-# test  1 PASSED (iteration 16)
-# test  2 PASSED (iteration 16)
-# test  3 PASSED (iteration 16)
-# test  4 PASSED (iteration 16)
-# test  5 PASSED (iteration 16)
-# test  6 PASSED (iteration 16)
-# test  7 PASSED (iteration 16)
-# test  8 PASSED (iteration 16)
-# test  9 PASSED (iteration 16)
-# test 10 PASSED (iteration 16)
-# test 11 PASSED (iteration 16)
-# test 12 PASSED (iteration 16)
-# test 13 PASSED (iteration 16)
-# test 14 PASSED (iteration 16)
-# test 15 PASSED (iteration 16)
-# test 16 PASSED (iteration 16)
-# test 17 PASSED (iteration 16)
-# test 18 PASSED (iteration 16)
-# test 19 PASSED (iteration 16)
-# test  0 PASSED (iteration 17)
-# test  1 PASSED (iteration 17)
-# test  2 PASSED (iteration 17)
-# test  3 PASSED (iteration 17)
-# test  4 PASSED (iteration 17)
-# test  5 PASSED (iteration 17)
-# test  6 PASSED (iteration 17)
-# test  7 PASSED (iteration 17)
-# test  8 PASSED (iteration 17)
-# test  9 PASSED (iteration 17)
-# test 10 PASSED (iteration 17)
-# test 11 PASSED (iteration 17)
-# test 12 PASSED (iteration 17)
-# test 13 PASSED (iteration 17)
-# test 14 PASSED (iteration 17)
-# test 15 PASSED (iteration 17)
-# test 16 PASSED (iteration 17)
-# test 17 PASSED (iteration 17)
-# test 18 PASSED (iteration 17)
-# test 19 PASSED (iteration 17)
-# test  0 PASSED (iteration 18)
-# test  1 PASSED (iteration 18)
-# test  2 PASSED (iteration 18)
-# test  3 PASSED (iteration 18)
-# test  4 PASSED (iteration 18)
-# test  5 PASSED (iteration 18)
-# test  6 PASSED (iteration 18)
-# test  7 PASSED (iteration 18)
-# test  8 PASSED (iteration 18)
-# test  9 PASSED (iteration 18)
-# test 10 PASSED (iteration 18)
-# test 11 PASSED (iteration 18)
-# test 12 PASSED (iteration 18)
-# test 13 PASSED (iteration 18)
-# test 14 PASSED (iteration 18)
-# test 15 PASSED (iteration 18)
-# test 16 PASSED (iteration 18)
-# test 17 PASSED (iteration 18)
-#  (iteration 14)
-# test 18 PASSED (iteration 14)
-# test 19 PASSED (iteration 14)
-# test  0 PASSED (iteration 15)
-# test  1 PASSED (iteration 15)
-# test  2 PASSED (iteration 15)
-# test  3 PASSED (iteration 15)
-# test  4 PASSED (iteration 15)
-# test  5 PASSED (iteration 15)
-# test  6 PASSED (iteration 15)
-# test  7 PASSED (iteration 15)
-# test  8 PASSED (iteration 15)
-# test  9 PASSED (iteration 15)
-# test 10 PASSED (iteration 15)
-# test 11 PASSED (iteration 15)
-# test 12 PASSED (iteration 15)
-# test 13 PASSED (iteration 15)
-# test 14 PASSED (iteration 15)
-# test 15 PASSED (iteration 15)
-# test 16 PASSED (iteration 15)
-# test 17 PASSED (iteration 15)
-# test 18 PASSED (iteration 15)
-# test 19 PASSED (iteration 15)
-# test  0 PASSED (iteration 16)
-# test  1 PASSED (iteration 16)
-# test  2 PASSED (iteration 16)
-# test  3 PASSED (iteration 16)
-# test  4 PASSED (iteration 16)
-# test  5 PASSED (iteration 16)
-# test  6 PASSED (iteration 16)
-# test  7 PASSED (iteration 16)
-# test  8 PASSED (iteration 16)
-# test  9 PASSED (iteration 16)
-# test 10 PASSED (iteration 16)
-# test 11 PASSED (iteration 16)
-# test 12 PASSED (iteration 16)
-# test 13 PASSED (iteration 16)
-# test 14 PASSED (iteration 16)
-# test 15 PASSED (iteration 16)
-# test 16 PASSED (iteration 16)
-# test 17 PASSED (iteration 16)
-# test 18 PASSED (iteration 16)
-# test 19 PASSED (iteration 16)
-# test  0 PASSED (iteration 17)
-# test  1 PASSED (iteration 17)
-# test  2 PASSED (iteration 17)
-# test  3 PASSED (iteration 17)
-# test  4 PASSED (iteration 17)
-# test  5 PASSED (iteration 17)
-# test  6 PASSED (iteration 17)
-# test  7 PASSED (iteration 17)
-# test  8 PASSED (iteration 17)
-# test  9 PASSED (iteration 17)
-# test 10 PASSED (iteration 17)
-# test 11 PASSED (iteration 17)
-# test 12 PASSED (iteration 17)
-# test 13 PASSED (iteration 17)
-# test 14 PASSED (iteration 17)
-# test 15 PASSED (iteration 17)
-# test 16 PASSED (iteration 17)
-# test 17 PASSED (iteration 17)
-# test 18 PASSED (iteration 17)
-# test 19 PASSED (iteration 17)
-# test  0 PASSED (iteration 18)
-# test  1 PASSED (iteration 18)
-# test  2 PASSED (iteration 18)
-# test  3 PASSED (iteration 18)
-# test  4 PASSED (iteration 18)
-# test  5 PASSED (iteration 18)
-# test  6 PASSED (iteration 18)
-# test  7 PASSED (iteration 18)
-# test  8 PASSED (iteration 18)
-# test  9 PASSED (iteration 18)
-# test 10 PASSED (iteration 18)
-# test 11 PASSED (iteration 18)
-# test 12 PASSED (iteration 18)
-# test 13 PASSED (iteration 18)
-# test 14 PASSED (iteration 18)
-# test 15 PASSED (iteration 18)
-# test 16 PASSED (iteration 18)
-# test 17 PASSED (iteration 18)
-# test 18 PASSED (iteration 18)
-# test 19 PASSED (iteration 18)
-# test  0 PASSED (iteration 19)
-# test  1 PASSED (iteration 19)
-# test  2 PASSED (iteration 19)
-# test  3 PASSED (iteration 19)
-# test  4 PASSED (iteration 19)
-# test  5 PASSED (iteration 19)
-# test  6 PASSED (iteration 19)
-# test  7 PASSED (iteration 19)
-# test  8 PASSED (iteration 19)
-# test  9 PASSED (iteration 19)
-# test 10 PASSED (iteration 19)
-# test 11 PASSED (iteration 19)
-# test 12 PASSED (iteration 19)
-# test 13 PASSED (iteration 19)
-# test 14 PASSED (iteration 19)
-# test 15 PASSED (iteration 19)
-# test 16 PASSED (iteration 19)
-# test 17 PASSED (iteration 19)
-# test 18 PASSED (iteration 19)
-# test 19 PASSED (iteration 19)
-# test  0 PASSED (iteration 20)
-# test  1 PASSED (iteration 20)
-# test  2 PASSED (iteration 20)
-# test  3 PASSED (iteration 20)
-# test  4 PASSED (iteration 20)
-# test  5 PASSED (iteration 20)
-# test  6 PASSED (iteration 20)
-# test  7 PASSED (iteration 20)
-# test  8 PASSED (iteration 20)
-# test  9 PASSED (iteration 20)
-# test 10 PASSED (iteration 20)
-# test 11 PASSED (iteration 20)
-# test 12 PASSED (iteration 20)
-# test 13 PASSED (iteration 20)
-# test 14 PASSED (iteration 20)
-# test 15 PASSED (iteration 20)
-# test 16 PASSED (iteration 20)
-# test 17 PASSED (iteration 20)
-#  (iteration 14)
-# test 18 PASSED (iteration 14)
-# test 19 PASSED (iteration 14)
-# test  0 PASSED (iteration 15)
-# test  1 PASSED (iteration 15)
-# test  2 PASSED (iteration 15)
-# test  3 PASSED (iteration 15)
-# test  4 PASSED (iteration 15)
-# test  5 PASSED (iteration 15)
-# test  6 PASSED (iteration 15)
-# test  7 PASSED (iteration 15)
-# test  8 PASSED (iteration 15)
-# test  9 PASSED (iteration 15)
-# test 10 PASSED (iteration 15)
-# test 11 PASSED (iteration 15)
-# test 12 PASSED (iteration 15)
-# test 13 PASSED (iteration 15)
-# test 14 PASSED (iteration 15)
-# test 15 PASSED (iteration 15)
-# test 16 PASSED (iteration 15)
-# test 17 PASSED (iteration 15)
-# test 18 PASSED (iteration 15)
-# test 19 PASSED (iteration 15)
-# test  0 PASSED (iteration 16)
-# test  1 PASSED (iteration 16)
-# test  2 PASSED (iteration 16)
-# test  3 PASSED (iteration 16)
-# test  4 PASSED (iteration 16)
-# test  5 PASSED (iteration 16)
-# test  6 PASSED (iteration 16)
-# test  7 PASSED (iteration 16)
-# test  8 PASSED (iteration 16)
-# test  9 PASSED (iteration 16)
-# test 10 PASSED (iteration 16)
-# test 11 PASSED (iteration 16)
-# test 12 PASSED (iteration 16)
-# test 13 PASSED (iteration 16)
-# test 14 PASSED (iteration 16)
-# test 15 PASSED (iteration 16)
-# test 16 PASSED (iteration 16)
-# test 17 PASSED (iteration 16)
-# test 18 PASSED (iteration 16)
-# test 19 PASSED (iteration 16)
-# test  0 PASSED (iteration 17)
-# test  1 PASSED (iteration 17)
-# test  2 PASSED (iteration 17)
-# test  3 PASSED (iteration 17)
-# test  4 PASSED (iteration 17)
-# test  5 PASSED (iteration 17)
-# test  6 PASSED (iteration 17)
-# test  7 PASSED (iteration 17)
-# test  8 PASSED (iteration 17)
-# test  9 PASSED (iteration 17)
-# test 10 PASSED (iteration 17)
-# test 11 PASSED (iteration 17)
-# test 12 PASSED (iteration 17)
-# test 13 PASSED (iteration 17)
-# test 14 PASSED (iteration 17)
-# test 15 PASSED (iteration 17)
-# test 16 PASSED (iteration 17)
-# test 17 PASSED (iteration 17)
-# test 18 PASSED (iteration 17)
-# test 19 PASSED (iteration 17)
-# test  0 PASSED (iteration 18)
-# test  1 PASSED (iteration 18)
-# test  2 PASSED (iteration 18)
-# test  3 PASSED (iteration 18)
-# test  4 PASSED (iteration 18)
-# test  5 PASSED (iteration 18)
-# test  6 PASSED (iteration 18)
-# test  7 PASSED (iteration 18)
-# test  8 PASSED (iteration 18)
-# test  9 PASSED (iteration 18)
-# test 10 PASSED (iteration 18)
-# test 11 PASSED (iteration 18)
-# test 12 PASSED (iteration 18)
-# test 13 PASSED (iteration 18)
-# test 14 PASSED (iteration 18)
-# test 15 PASSED (iteration 18)
-# test 16 PASSED (iteration 18)
-# test 17 PASSED (iteration 18)
-# test 18 PASSED (iteration 18)
-# test 19 PASSED (iteration 18)
-# test  0 PASSED (iteration 19)
-# test  1 PASSED (iteration 19)
-# test  2 PASSED (iteration 19)
-# test  3 PASSED (iteration 19)
-# test  4 PASSED (iteration 19)
-# test  5 PASSED (iteration 19)
-# test  6 PASSED (iteration 19)
-# test  7 PASSED (iteration 19)
-# test  8 PASSED (iteration 19)
-# test  9 PASSED (iteration 19)
-# test 10 PASSED (iteration 19)
-# test 11 PASSED (iteration 19)
-# test 12 PASSED (iteration 19)
-# test 13 PASSED (iteration 19)
-# test 14 PASSED (iteration 19)
-# test 15 PASSED (iteration 19)
-# test 16 PASSED (iteration 19)
-# test 17 PASSED (iteration 19)
-# test 18 PASSED (iteration 19)
-# test 19 PASSED (iteration 19)
-# test  0 PASSED (iteration 20)
-# test  1 PASSED (iteration 20)
-# test  2 PASSED (iteration 20)
-# test  3 PASSED (iteration 20)
-# test  4 PASSED (iteration 20)
-# test  5 PASSED (iteration 20)
-# test  6 PASSED (iteration 20)
-# test  7 PASSED (iteration 20)
-# test  8 PASSED (iteration 20)
-# test  9 PASSED (iteration 20)
-# test 10 PASSED (iteration 20)
-# test 11 PASSED (iteration 20)
-# test 12 PASSED (iteration 20)
-# test 13 PASSED (iteration 20)
-# test 14 PASSED (iteration 20)
-# test 15 PASSED (iteration 20)
-# test 16 PASSED (iteration 20)
-# test 17 PASSED (iteration 20)
-# test 18 PASSED (iteration 20)
-# test 19 PASSED (iteration 20)
-# test  0 PASSED (iteration 21)
-# test  1 PASSED (iteration 21)
-# test  2 PASSED (iteration 21)
-# test  3 PASSED (iteration 21)
-# test  4 PASSED (iteration 21)
-# test  5 PASSED (iteration 21)
-# test  6 PASSED (iteration 21)
-# test  7 PASSED (iteration 21)
-# test  8 PASSED (iteration 21)
-# test  9 PASSED (iteration 21)
-# test 10 PASSED (iteration 21)
-# test 11 PASSED (iteration 21)
-# test 12 PASSED (iteration 21)
-# test 13 PASSED (iteration 21)
-# test 14 PASSED (iteration 21)
-# test 15 PASSED (iteration 21)
-# test 16 PASSED (iteration 21)
-# test 17 PASSED (iteration 21)
-#  (iteration 14)
-# test 18 PASSED (iteration 14)
-# test 19 PASSED (iteration 14)
-# test  0 PASSED (iteration 15)
-# test  1 PASSED (iteration 15)
-# test  2 PASSED (iteration 15)
-# test  3 PASSED (iteration 15)
-# test  4 PASSED (iteration 15)
-# test  5 PASSED (iteration 15)
-# test  6 PASSED (iteration 15)
-# test  7 PASSED (iteration 15)
-# test  8 PASSED (iteration 15)
-# test  9 PASSED (iteration 15)
-# test 10 PASSED (iteration 15)
-# test 11 PASSED (iteration 15)
-# test 12 PASSED (iteration 15)
-# test 13 PASSED (iteration 15)
-# test 14 PASSED (iteration 15)
-# test 15 PASSED (iteration 15)
-# test 16 PASSED (iteration 15)
-# test 17 PASSED (iteration 15)
-# test 18 PASSED (iteration 15)
-# test 19 PASSED (iteration 15)
-# test  0 PASSED (iteration 16)
-# test  1 PASSED (iteration 16)
-# test  2 PASSED (iteration 16)
-# test  3 PASSED (iteration 16)
-# test  4 PASSED (iteration 16)
-# test  5 PASSED (iteration 16)
-# test  6 PASSED (iteration 16)
-# test  7 PASSED (iteration 16)
-# test  8 PASSED (iteration 16)
-# test  9 PASSED (iteration 16)
-# test 10 PASSED (iteration 16)
-# test 11 PASSED (iteration 16)
-# test 12 PASSED (iteration 16)
-# test 13 PASSED (iteration 16)
-# test 14 PASSED (iteration 16)
-# test 15 PASSED (iteration 16)
-# test 16 PASSED (iteration 16)
-# test 17 PASSED (iteration 16)
-# test 18 PASSED (iteration 16)
-# test 19 PASSED (iteration 16)
-# test  0 PASSED (iteration 17)
-# test  1 PASSED (iteration 17)
-# test  2 PASSED (iteration 17)
-# test  3 PASSED (iteration 17)
-# test  4 PASSED (iteration 17)
-# test  5 PASSED (iteration 17)
-# test  6 PASSED (iteration 17)
-# test  7 PASSED (iteration 17)
-# test  8 PASSED (iteration 17)
-# test  9 PASSED (iteration 17)
-# test 10 PASSED (iteration 17)
-# test 11 PASSED (iteration 17)
-# test 12 PASSED (iteration 17)
-# test 13 PASSED (iteration 17)
-# test 14 PASSED (iteration 17)
-# test 15 PASSED (iteration 17)
-# test 16 PASSED (iteration 17)
-# test 17 PASSED (iteration 17)
-# test 18 PASSED (iteration 17)
-# test 19 PASSED (iteration 17)
-# test  0 PASSED (iteration 18)
-# test  1 PASSED (iteration 18)
-# test  2 PASSED (iteration 18)
-# test  3 PASSED (iteration 18)
-# test  4 PASSED (iteration 18)
-# test  5 PASSED (iteration 18)
-# test  6 PASSED (iteration 18)
-# test  7 PASSED (iteration 18)
-# test  8 PASSED (iteration 18)
-# test  9 PASSED (iteration 18)
-# test 10 PASSED (iteration 18)
-# test 11 PASSED (iteration 18)
-# test 12 PASSED (iteration 18)
-# test 13 PASSED (iteration 18)
-# test 14 PASSED (iteration 18)
-# test 15 PASSED (iteration 18)
-# test 16 PASSED (iteration 18)
-# test 17 PASSED (iteration 18)
-# test 18 PASSED (iteration 18)
-# test 19 PASSED (iteration 18)
-# test  0 PASSED (iteration 19)
-# test  1 PASSED (iteration 19)
-# test  2 PASSED (iteration 19)
-# test  3 PASSED (iteration 19)
-# test  4 PASSED (iteration 19)
-# test  5 PASSED (iteration 19)
-# test  6 PASSED (iteration 19)
-# test  7 PASSED (iteration 19)
-# test  8 PASSED (iteration 19)
-# test  9 PASSED (iteration 19)
-# test 10 PASSED (iteration 19)
-# test 11 PASSED (iteration 19)
-# test 12 PASSED (iteration 19)
-# test 13 PASSED (iteration 19)
-# test 14 PASSED (iteration 19)
-# test 15 PASSED (iteration 19)
-# test 16 PASSED (iteration 19)
-# test 17 PASSED (iteration 19)
-# test 14 PASSED (iteration 21)
-# test 15 PASSED (iteration 21)
-# test 16 PASSED (iteration 21)
-# test 17 PASSED (iteration 21)
-# test 18 PASSED (iteration 21)
-# test 19 PASSED (iteration 21)
-# test  0 PASSED (iteration 22)
-# test  1 PASSED (iteration 22)
-# test  2 PASSED (iteration 22)
-# test  3 PASSED (iteration 22)
-# test  4 PASSED (iteration 22)
-# test  5 PASSED (iteration 22)
-# test  6 PASSED (iteration 22)
-# test  7 PASSED (iteration 22)
-# test  8 PASSED (iteration 22)
-# test  9 PASSED (iteration 22)
-# test 10 PASSED (iteration 22)
-# test 11 PASSED (iteration 22)
-# test 12 PASSED (iteration 22)
-# test 13 PASSED (iteration 22)
-# test 14 PASSED (iteration 22)
-# test 15 PASSED (iteration 22)
-# test 16 PASSED (iteration 22)
-# test 17 PASSED (iteration 22)
-# test 14 PASSED (iteration 21)
-# test 15 PASSED (iteration 21)
-# test 16 PASSED (iteration 21)
-# test 17 PASSED (iteration 21)
-# test 18 PASSED (iteration 21)
-# test 19 PASSED (iteration 21)
-# test  0 PASSED (iteration 22)
-# test  1 PASSED (iteration 22)
-# test  2 PASSED (iteration 22)
-# test  3 PASSED (iteration 22)
-# test  4 PASSED (iteration 22)
-# test  5 PASSED (iteration 22)
-# test  6 PASSED (iteration 22)
-# test  7 PASSED (iteration 22)
-# test  8 PASSED (iteration 22)
-# test  9 PASSED (iteration 22)
-# test 10 PASSED (iteration 22)
-# test 11 PASSED (iteration 22)
-# test 12 PASSED (iteration 22)
-# test 13 PASSED (iteration 22)
-# test 14 PASSED (iteration 22)
-# test 15 PASSED (iteration 22)
-# test 16 PASSED (iteration 22)
-# test 17 PASSED (iteration 22)
-# test 18 PASSED (iteration 22)
-# test 19 PASSED (iteration 22)
-# done (all tests OK)
-#  (iteration 14)
-# test 18 PASSED (iteration 14)
-# test 19 PASSED (iteration 14)
-# test  0 PASSED (iteration 15)
-# test  1 PASSED (iteration 15)
-# test  2 PASSED (iteration 15)
-# test  3 PASSED (iteration 15)
-# test  4 PASSED (iteration 15)
-# test  5 PASSED (iteration 15)
-# test  6 PASSED (iteration 15)
-# test  7 PASSED (iteration 15)
-# test  8 PASSED (iteration 15)
-# test  9 PASSED (iteration 15)
-# test 10 PASSED (iteration 15)
-# test 11 PASSED (iteration 15)
-# test 12 PASSED (iteration 15)
-# test 13 PASSED (iteration 15)
-# test 14 PASSED (iteration 15)
-# test 15 PASSED (iteration 15)
-# test 16 PASSED (iteration 15)
-# test 17 PASSED (iteration 15)
-# test 18 PASSED (iteration 15)
-# test 19 PASSED (iteration 15)
-# test  0 PASSED (iteration 16)
-# test  1 PASSED (iteration 16)
-# test  2 PASSED (iteration 16)
-# test  3 PASSED (iteration 16)
-# test  4 PASSED (iteration 16)
-# test  5 PASSED (iteration 16)
-# test  6 PASSED (iteration 16)
-# test  7 PASSED (iteration 16)
-# test  8 PASSED (iteration 16)
-# test  9 PASSED (iteration 16)
-# test 10 PASSED (iteration 16)
-# test 11 PASSED (iteration 16)
-# test 12 PASSED (iteration 16)
-# test 13 PASSED (iteration 16)
-# test 14 PASSED (iteration 16)
-# test 15 PASSED (iteration 16)
-# test 16 PASSED (iteration 16)
-# test 17 PASSED (iteration 16)
-# test 18 PASSED (iteration 16)
-# test 19 PASSED (iteration 16)
-# test  0 PASSED (iteration 17)
-# test  1 PASSED (iteration 17)
-# test  2 PASSED (iteration 17)
-# test  3 PASSED (iteration 17)
-# test  4 PASSED (iteration 17)
-# test  5 PASSED (iteration 17)
-# test  6 PASSED (iteration 17)
-# test  7 PASSED (iteration 17)
-# test  8 PASSED (iteration 17)
-# test  9 PASSED (iteration 17)
-# test 10 PASSED (iteration 17)
-# test 11 PASSED (iteration 17)
-# test 12 PASSED (iteration 17)
-# test 13 PASSED (iteration 17)
-# test 14 PASSED (iteration 17)
-# test 15 PASSED (iteration 17)
-# test 16 PASSED (iteration 17)
-# test 17 PASSED (iteration 17)
-# test 18 PASSED (iteration 17)
-# test 19 PASSED (iteration 17)
-# test  0 PASSED (iteration 18)
-# test  1 PASSED (iteration 18)
-# test  2 PASSED (iteration 18)
-# test  3 PASSED (iteration 18)
-# test  4 PASSED (iteration 18)
-# test  5 PASSED (iteration 18)
-# test  6 PASSED (iteration 18)
-# test  7 PASSED (iteration 18)
-# test  8 PASSED (iteration 18)
-# test  9 PASSED (iteration 18)
-# test 10 PASSED (iteration 18)
-# test 11 PASSED (iteration 18)
-# test 12 PASSED (iteration 18)
-# test 13 PASSED (iteration 18)
-# test 14 PASSED (iteration 18)
-# test 15 PASSED (iteration 18)
-# test 16 PASSED (iteration 18)
-# test 17 PASSED (iteration 18)
-# test 18 PASSED (iteration 18)
-# test 19 PASSED (iteration 18)
-# test  0 PASSED (iteration 19)
-# test  1 PASSED (iteration 19)
-# test  2 PASSED (iteration 19)
-# test  3 PASSED (iteration 19)
-# test  4 PASSED (iteration 19)
-# test  5 PASSED (iteration 19)
-# test  6 PASSED (iteration 19)
-# test  7 PASSED (iteration 19)
-# test  8 PASSED (iteration 19)
-# test  9 PASSED (iteration 19)
-# test 10 PASSED (iteration 19)
-# test 11 PASSED (iteration 19)
-# test 12 PASSED (iteration 19)
-# test 13 PASSED (iteration 19)
-# test 14 PASSED (iteration 19)
-# test 15 PASSED (iteration 19)
-# test 16 PASSED (iteration 19)
-# test 17 PASSED (iteration 19)
-# test 18 PASSED (iteration 19)
-# test 19 PASSED (iteration 19)
-# test  0 PASSED (iteration 20)
-# test  1 PASSED (iteration 20)
-# test  2 PASSED (iteration 20)
-# test  3 PASSED (iteration 20)
-# test  4 PASSED (iteration 20)
-# test  5 PASSED (iteration 20)
-# test  6 PASSED (iteration 20)
-# test  7 PASSED (iteration 20)
-# test  8 PASSED (iteration 20)
-# test  9 PASSED (iteration 20)
-# test 10 PASSED (iteration 20)
-# test 11 PASSED (iteration 20)
-# test 12 PASSED (iteration 20)
-# test 13 PASSED (iteration 20)
-# test 14 PASSED (iteration 20)
-# test 15 PASSED (iteration 20)
-# test 16 PASSED (iteration 20)
-# test 17 PASSED (iteration 20)
-#  (iteration 14)
-# test 18 PASSED (iteration 14)
-# test 19 PASSED (iteration 14)
-# test  0 PASSED (iteration 15)
-# test  1 PASSED (iteration 15)
-# test  2 PASSED (iteration 15)
-# test  3 PASSED (iteration 15)
-# test  4 PASSED (iteration 15)
-# test  5 PASSED (iteration 15)
-# test  6 PASSED (iteration 15)
-# test  7 PASSED (iteration 15)
-# test  8 PASSED (iteration 15)
-# test  9 PASSED (iteration 15)
-# test 10 PASSED (iteration 15)
-# test 11 PASSED (iteration 15)
-# test 12 PASSED (iteration 15)
-# test 13 PASSED (iteration 15)
-# test 14 PASSED (iteration 15)
-# test 15 PASSED (iteration 15)
-# test 16 PASSED (iteration 15)
-# test 17 PASSED (iteration 15)
-# test 18 PASSED (iteration 15)
-# test 19 PASSED (iteration 15)
-# test  0 PASSED (iteration 16)
-# test  1 PASSED (iteration 16)
-# test  2 PASSED (iteration 16)
-# test  3 PASSED (iteration 16)
-# test  4 PASSED (iteration 16)
-# test  5 PASSED (iteration 16)
-# test  6 PASSED (iteration 16)
-# test  7 PASSED (iteration 16)
-# test  8 PASSED (iteration 16)
-# test  9 PASSED (iteration 16)
-# test 10 PASSED (iteration 16)
-# test 11 PASSED (iteration 16)
-# test 12 PASSED (iteration 16)
-# test 13 PASSED (iteration 16)
-# test 14 PASSED (iteration 16)
-# test 15 PASSED (iteration 16)
-# test 16 PASSED (iteration 16)
-# test 17 PASSED (iteration 16)
-# test 18 PASSED (iteration 16)
-# test 19 PASSED (iteration 16)
-# test  0 PASSED (iteration 17)
-# test  1 PASSED (iteration 17)
-# test  2 PASSED (iteration 17)
-# test  3 PASSED (iteration 17)
-# test  4 PASSED (iteration 17)
-# test  5 PASSED (iteration 17)
-# test  6 PASSED (iteration 17)
-# test  7 PASSED (iteration 17)
-# test  8 PASSED (iteration 17)
-# test  9 PASSED (iteration 17)
-# test 10 PASSED (iteration 17)
-# test 11 PASSED (iteration 17)
-# test 12 PASSED (iteration 17)
-# test 13 PASSED (iteration 17)
-# test 14 PASSED (iteration 17)
-# test 15 PASSED (iteration 17)
-# test 16 PASSED (iteration 17)
-# test 17 PASSED (iteration 17)
-# test 18 PASSED (iteration 17)
-# test 19 PASSED (iteration 17)
-# test  0 PASSED (iteration 18)
-# test  1 PASSED (iteration 18)
-# test  2 PASSED (iteration 18)
-# test  3 PASSED (iteration 18)
-# test  4 PASSED (iteration 18)
-# test  5 PASSED (iteration 18)
-# test  6 PASSED (iteration 18)
-# test  7 PASSED (iteration 18)
-# test  8 PASSED (iteration 18)
-# test  9 PASSED (iteration 18)
-# test 10 PASSED (iteration 18)
-# test 11 PASSED (iteration 18)
-# test 12 PASSED (iteration 18)
-# test 13 PASSED (iteration 18)
-# test 14 PASSED (iteration 18)
-# test 15 PASSED (iteration 18)
-# test 16 PASSED (iteration 18)
-# test 17 PASSED (iteration 18)
-# test 18 PASSED (iteration 18)
-# test 19 PASSED (iteration 18)
-# test  0 PASSED (iteration 19)
-# test  1 PASSED (iteration 19)
-# test  2 PASSED (iteration 19)
-# test  3 PASSED (iteration 19)
-# test  4 PASSED (iteration 19)
-# test  5 PASSED (iteration 19)
-# test  6 PASSED (iteration 19)
-# test  7 PASSED (iteration 19)
-# test  8 PASSED (iteration 19)
-# test  9 PASSED (iteration 19)
-# test 10 PASSED (iteration 19)
-# test 11 PASSED (iteration 19)
-# test 12 PASSED (iteration 19)
-# test 13 PASSED (iteration 19)
-# test 14 PASSED (iteration 19)
-# test 15 PASSED (iteration 19)
-# test 16 PASSED (iteration 19)
-# test 17 PASSED (iteration 19)
-# test 18 PASSED (iteration 19)
-# test 19 PASSED (iteration 19)
-# test  0 PASSED (iteration 20)
-# test  1 PASSED (iteration 20)
-# test  2 PASSED (iteration 20)
-# test  3 PASSED (iteration 20)
-# test  4 PASSED (iteration 20)
-# test  5 PASSED (iteration 20)
-# test  6 PASSED (iteration 20)
-# test  7 PASSED (iteration 20)
-# test  8 PASSED (iteration 20)
-# test  9 PASSED (iteration 20)
-# test 10 PASSED (iteration 20)
-# test 11 PASSED (iteration 20)
-# test 12 PASSED (iteration 20)
-# test 13 PASSED (iteration 20)
-# test 14 PASSED (iteration 20)
-# test 15 PASSED (iteration 20)
-# test 16 PASSED (iteration 20)
-# test 17 PASSED (iteration 20)
-# test 18 PASSED (iteration 20)
-# test 19 PASSED (iteration 20)
-# test  0 PASSED (iteration 21)
-# test  1 PASSED (iteration 21)
-# test  2 PASSED (iteration 21)
-# test  3 PASSED (iteration 21)
-# test  4 PASSED (iteration 21)
-# test  5 PASSED (iteration 21)
-# test  6 PASSED (iteration 21)
-# test  7 PASSED (iteration 21)
-# test  8 PASSED (iteration 21)
-# test  9 PASSED (iteration 21)
-# test 10 PASSED (iteration 21)
-# test 11 PASSED (iteration 21)
-# test 12 PASSED (iteration 21)
-# test 13 PASSED (iteration 21)
-# test 14 PASSED (iteration 21)
-# test 15 PASSED (iteration 21)
-# test 16 PASSED (iteration 21)
-# test 17 PASSED (iteration 21)
-# test 14 PASSED (iteration 21)
-# test 15 PASSED (iteration 21)
-# test 16 PASSED (iteration 21)
-# test 17 PASSED (iteration 21)
-# test 18 PASSED (iteration 21)
-# test 19 PASSED (iteration 21)
-# test  0 PASSED (iteration 22)
-# test  1 PASSED (iteration 22)
-# test  2 PASSED (iteration 22)
-# test  3 PASSED (iteration 22)
-# test  4 PASSED (iteration 22)
-# test  5 PASSED (iteration 22)
-# test  6 PASSED (iteration 22)
-# test  7 PASSED (iteration 22)
-# test  8 PASSED (iteration 22)
-# test  9 PASSED (iteration 22)
-# test 10 PASSED (iteration 22)
-# test 11 PASSED (iteration 22)
-# test 12 PASSED (iteration 22)
-# test 13 PASSED (iteration 22)
-# test 14 PASSED (iteration 22)
-# test 15 PASSED (iteration 22)
-# test 16 PASSED (iteration 22)
-# test 17 PASSED (iteration 22)
-# test 14 PASSED (iteration 21)
-# test 15 PASSED (iteration 21)
-# test 16 PASSED (iteration 21)
-# test 17 PASSED (iteration 21)
-# test 18 PASSED (iteration 21)
-# test 19 PASSED (iteration 21)
-# test  0 PASSED (iteration 22)
-# test  1 PASSED (iteration 22)
-# test  2 PASSED (iteration 22)
-# test  3 PASSED (iteration 22)
-# test  4 PASSED (iteration 22)
-# test  5 PASSED (iteration 22)
-# test  6 PASSED (iteration 22)
-# test  7 PASSED (iteration 22)
-# test  8 PASSED (iteration 22)
-# test  9 PASSED (iteration 22)
-# test 10 PASSED (iteration 22)
-# test 11 PASSED (iteration 22)
-# test 12 PASSED (iteration 22)
-# test 13 PASSED (iteration 22)
-# test 14 PASSED (iteration 22)
-# test 15 PASSED (iteration 22)
-# test 16 PASSED (iteration 22)
-# test 17 PASSED (iteration 22)
-# test 18 PASSED (iteration 22)
-# test 19 PASSED (iteration 22)
-# done (all tests OK)
-# TAP version 13
-# 1..15
-# ok 1 Test test_simple
-# ok 2 Test test_vma_reuse dirty bit of allocated page
-# ok 3 Test test_vma_reuse dirty bit of reused address page
-# ok 4 Test test_hugepage huge page allocation
-# ok 5 Test test_hugepage huge page dirty bit
-# ok 6 Test test_mprotect-anon dirty bit of new written page
-# ok 7 Test test_mprotect-anon soft-dirty clear after clear_refs
-# ok 8 Test test_mprotect-anon soft-dirty clear after marking RO
-# ok 9 Test test_mprotect-anon soft-dirty clear after marking RW
-# ok 10 Test test_mprotect-anon soft-dirty after rewritten
-# ok 11 Test test_mprotect-file dirty bit of new written page
-# ok 12 Test test_mprotect-file soft-dirty clear after clear_refs
-# ok 13 Test test_mprotect-file soft-dirty clear after marking RO
-# ok 14 Test test_mprotect-file soft-dirty clear after marking RW
-# ok 15 Test test_mprotect-file soft-dirty after rewritten
-# # Totals: pass:15 fail:0 xfail:0 xpass:0 skip:0 error:0
-# [PASS]
-# running: ./anon_cow
-# ------------------
-# running ./anon_cow
-# ------------------
-# # [INFO] detected THP size: 2048 KiB
-# # [INFO] detected hugetlb size: 2048 KiB
-# # [INFO] detected hugetlb size: 1048576 KiB
-# TAP version 13
-# 1..120
-# # [RUN] Basic COW after fork() ... with base page
-# # [INFO] detected THP size: 2048 KiB
-# # [INFO] detected hugetlb size: 2048 KiB
-# # [INFO] detected hugetlb size: 1048576 KiB
-# TAP version 13
-# 1..120
-# # [RUN] Basic COW after fork() ... with base page
-# ok 1 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped out base page
-# ok 2 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with THP
-# # [INFO] detected THP size: 2048 KiB
-# # [INFO] detected hugetlb size: 2048 KiB
-# # [INFO] detected hugetlb size: 1048576 KiB
-# TAP version 13
-# 1..120
-# # [RUN] Basic COW after fork() ... with base page
-# ok 1 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped out base page
-# ok 2 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with THP
-# ok 3 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out THP
-# ok 4 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with PTE-mapped THP
-# # [INFO] detected THP size: 2048 KiB
-# # [INFO] detected hugetlb size: 2048 KiB
-# # [INFO] detected hugetlb size: 1048576 KiB
-# TAP version 13
-# 1..120
-# # [RUN] Basic COW after fork() ... with base page
-# ok 1 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped out base page
-# ok 2 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with THP
-# ok 3 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out THP
-# ok 4 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with PTE-mapped THP
-# ok 5 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out, PTE-mapped THP
-# ok 6 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with single PTE of THP
-# # [INFO] detected THP size: 2048 KiB
-# # [INFO] detected hugetlb size: 2048 KiB
-# # [INFO] detected hugetlb size: 1048576 KiB
-# TAP version 13
-# 1..120
-# # [RUN] Basic COW after fork() ... with base page
-# ok 1 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped out base page
-# ok 2 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with THP
-# ok 3 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out THP
-# ok 4 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with PTE-mapped THP
-# ok 5 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out, PTE-mapped THP
-# ok 6 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with single PTE of THP
-# ok 7 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with single PTE of swapped-out THP
-# ok 8 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with partially mremap()'ed THP
-# # [INFO] detected THP size: 2048 KiB
-# # [INFO] detected hugetlb size: 2048 KiB
-# # [INFO] detected hugetlb size: 1048576 KiB
-# TAP version 13
-# 1..120
-# # [RUN] Basic COW after fork() ... with base page
-# ok 1 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped out base page
-# ok 2 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with THP
-# ok 3 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out THP
-# ok 4 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with PTE-mapped THP
-# ok 5 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out, PTE-mapped THP
-# ok 6 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with single PTE of THP
-# ok 7 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with single PTE of swapped-out THP
-# ok 8 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with partially mremap()'ed THP
-# ok 9 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with partially shared THP
-# # [INFO] detected THP size: 2048 KiB
-# # [INFO] detected hugetlb size: 2048 KiB
-# # [INFO] detected hugetlb size: 1048576 KiB
-# TAP version 13
-# 1..120
-# # [RUN] Basic COW after fork() ... with base page
-# ok 1 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped out base page
-# ok 2 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with THP
-# ok 3 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out THP
-# ok 4 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with PTE-mapped THP
-# ok 5 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out, PTE-mapped THP
-# ok 6 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with single PTE of THP
-# ok 7 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with single PTE of swapped-out THP
-# ok 8 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with partially mremap()'ed THP
-# ok 9 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with partially shared THP
-# # [INFO] detected THP size: 2048 KiB
-# # [INFO] detected hugetlb size: 2048 KiB
-# # [INFO] detected hugetlb size: 1048576 KiB
-# TAP version 13
-# 1..120
-# # [RUN] Basic COW after fork() ... with base page
-# ok 1 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped out base page
-# ok 2 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with THP
-# ok 3 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out THP
-# ok 4 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with PTE-mapped THP
-# ok 5 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out, PTE-mapped THP
-# ok 6 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with single PTE of THP
-# ok 7 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with single PTE of swapped-out THP
-# ok 8 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with partially mremap()'ed THP
-# ok 9 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with partially shared THP
-# ok 10 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (2048 kB)
-# # [INFO] detected THP size: 2048 KiB
-# # [INFO] detected hugetlb size: 2048 KiB
-# # [INFO] detected hugetlb size: 1048576 KiB
-# TAP version 13
-# 1..120
-# # [RUN] Basic COW after fork() ... with base page
-# ok 1 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped out base page
-# ok 2 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with THP
-# ok 3 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out THP
-# ok 4 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with PTE-mapped THP
-# ok 5 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out, PTE-mapped THP
-# ok 6 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with single PTE of THP
-# ok 7 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with single PTE of swapped-out THP
-# ok 8 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with partially mremap()'ed THP
-# ok 9 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with partially shared THP
-# ok 10 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (2048 kB)
-# ok 11 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (1048576 kB)
-# ok 12 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in child ... with base page
-# # [INFO] detected THP size: 2048 KiB
-# # [INFO] detected hugetlb size: 2048 KiB
-# # [INFO] detected hugetlb size: 1048576 KiB
-# TAP version 13
-# 1..120
-# # [RUN] Basic COW after fork() ... with base page
-# ok 1 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped out base page
-# ok 2 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with THP
-# ok 3 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out THP
-# ok 4 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with PTE-mapped THP
-# ok 5 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out, PTE-mapped THP
-# ok 6 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with single PTE of THP
-# ok 7 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with single PTE of swapped-out THP
-# ok 8 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with partially mremap()'ed THP
-# ok 9 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with partially shared THP
-# ok 10 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (2048 kB)
-# ok 11 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (1048576 kB)
-# ok 12 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in child ... with base page
-# ok 13 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped out base page
-# ok 14 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with THP
-# # [INFO] detected THP size: 2048 KiB
-# # [INFO] detected hugetlb size: 2048 KiB
-# # [INFO] detected hugetlb size: 1048576 KiB
-# TAP version 13
-# 1..120
-# # [RUN] Basic COW after fork() ... with base page
-# ok 1 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped out base page
-# ok 2 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with THP
-# ok 3 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out THP
-# ok 4 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with PTE-mapped THP
-# ok 5 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out, PTE-mapped THP
-# ok 6 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with single PTE of THP
-# ok 7 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with single PTE of swapped-out THP
-# ok 8 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with partially mremap()'ed THP
-# ok 9 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with partially shared THP
-# ok 10 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (2048 kB)
-# ok 11 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (1048576 kB)
-# ok 12 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in child ... with base page
-# ok 13 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped out base page
-# ok 14 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with THP
-# ok 15 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped-out THP
-# ok 16 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with PTE-mapped THP
-# # [INFO] detected THP size: 2048 KiB
-# # [INFO] detected hugetlb size: 2048 KiB
-# # [INFO] detected hugetlb size: 1048576 KiB
-# TAP version 13
-# 1..120
-# # [RUN] Basic COW after fork() ... with base page
-# ok 1 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped out base page
-# ok 2 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with THP
-# ok 3 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out THP
-# ok 4 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with PTE-mapped THP
-# ok 5 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out, PTE-mapped THP
-# ok 6 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with single PTE of THP
-# ok 7 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with single PTE of swapped-out THP
-# ok 8 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with partially mremap()'ed THP
-# ok 9 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with partially shared THP
-# ok 10 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (2048 kB)
-# ok 11 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (1048576 kB)
-# ok 12 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in child ... with base page
-# ok 13 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped out base page
-# ok 14 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with THP
-# ok 15 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped-out THP
-# ok 16 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with PTE-mapped THP
-# ok 17 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped-out, PTE-mapped THP
-# ok 18 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with single PTE of THP
-# # [INFO] detected THP size: 2048 KiB
-# # [INFO] detected hugetlb size: 2048 KiB
-# # [INFO] detected hugetlb size: 1048576 KiB
-# TAP version 13
-# 1..120
-# # [RUN] Basic COW after fork() ... with base page
-# ok 1 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped out base page
-# ok 2 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with THP
-# ok 3 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out THP
-# ok 4 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with PTE-mapped THP
-# ok 5 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out, PTE-mapped THP
-# ok 6 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with single PTE of THP
-# ok 7 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with single PTE of swapped-out THP
-# ok 8 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with partially mremap()'ed THP
-# ok 9 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with partially shared THP
-# ok 10 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (2048 kB)
-# ok 11 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (1048576 kB)
-# ok 12 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in child ... with base page
-# ok 13 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped out base page
-# ok 14 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with THP
-# ok 15 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped-out THP
-# ok 16 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with PTE-mapped THP
-# ok 17 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped-out, PTE-mapped THP
-# ok 18 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with single PTE of THP
-# ok 19 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with single PTE of swapped-out TH=
-P
-# ok 20 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with partially mremap()'ed THP
-# # [INFO] detected THP size: 2048 KiB
-# # [INFO] detected hugetlb size: 2048 KiB
-# # [INFO] detected hugetlb size: 1048576 KiB
-# TAP version 13
-# 1..120
-# # [RUN] Basic COW after fork() ... with base page
-# ok 1 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped out base page
-# ok 2 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with THP
-# ok 3 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out THP
-# ok 4 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with PTE-mapped THP
-# ok 5 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out, PTE-mapped THP
-# ok 6 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with single PTE of THP
-# ok 7 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with single PTE of swapped-out THP
-# ok 8 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with partially mremap()'ed THP
-# ok 9 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with partially shared THP
-# ok 10 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (2048 kB)
-# ok 11 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (1048576 kB)
-# ok 12 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in child ... with base page
-# ok 13 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped out base page
-# ok 14 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with THP
-# ok 15 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped-out THP
-# ok 16 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with PTE-mapped THP
-# ok 17 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped-out, PTE-mapped THP
-# ok 18 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with single PTE of THP
-# ok 19 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with single PTE of swapped-out TH=
-P
-# ok 20 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with partially mremap()'ed THP
-# ok 21 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with partially shared THP
-# # [INFO] detected THP size: 2048 KiB
-# # [INFO] detected hugetlb size: 2048 KiB
-# # [INFO] detected hugetlb size: 1048576 KiB
-# TAP version 13
-# 1..120
-# # [RUN] Basic COW after fork() ... with base page
-# ok 1 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped out base page
-# ok 2 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with THP
-# ok 3 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out THP
-# ok 4 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with PTE-mapped THP
-# ok 5 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out, PTE-mapped THP
-# ok 6 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with single PTE of THP
-# ok 7 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with single PTE of swapped-out THP
-# ok 8 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with partially mremap()'ed THP
-# ok 9 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with partially shared THP
-# ok 10 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (2048 kB)
-# ok 11 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (1048576 kB)
-# ok 12 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in child ... with base page
-# ok 13 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped out base page
-# ok 14 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with THP
-# ok 15 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped-out THP
-# ok 16 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with PTE-mapped THP
-# ok 17 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped-out, PTE-mapped THP
-# ok 18 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with single PTE of THP
-# ok 19 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with single PTE of swapped-out TH=
-P
-# ok 20 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with partially mremap()'ed THP
-# ok 21 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with partially shared THP
-# # [INFO] detected THP size: 2048 KiB
-# # [INFO] detected hugetlb size: 2048 KiB
-# # [INFO] detected hugetlb size: 1048576 KiB
-# TAP version 13
-# 1..120
-# # [RUN] Basic COW after fork() ... with base page
-# ok 1 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped out base page
-# ok 2 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with THP
-# ok 3 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out THP
-# ok 4 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with PTE-mapped THP
-# ok 5 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out, PTE-mapped THP
-# ok 6 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with single PTE of THP
-# ok 7 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with single PTE of swapped-out THP
-# ok 8 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with partially mremap()'ed THP
-# ok 9 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with partially shared THP
-# ok 10 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (2048 kB)
-# ok 11 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (1048576 kB)
-# ok 12 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in child ... with base page
-# ok 13 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped out base page
-# ok 14 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with THP
-# ok 15 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped-out THP
-# ok 16 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with PTE-mapped THP
-# ok 17 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped-out, PTE-mapped THP
-# ok 18 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with single PTE of THP
-# ok 19 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with single PTE of swapped-out TH=
-P
-# ok 20 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with partially mremap()'ed THP
-# ok 21 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with partially shared THP
-# ok 22 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with hugetlb (2048 kB)
-# # [INFO] detected THP size: 2048 KiB
-# # [INFO] detected hugetlb size: 2048 KiB
-# # [INFO] detected hugetlb size: 1048576 KiB
-# TAP version 13
-# 1..120
-# # [RUN] Basic COW after fork() ... with base page
-# ok 1 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped out base page
-# ok 2 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with THP
-# ok 3 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out THP
-# ok 4 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with PTE-mapped THP
-# ok 5 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out, PTE-mapped THP
-# ok 6 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with single PTE of THP
-# ok 7 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with single PTE of swapped-out THP
-# ok 8 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with partially mremap()'ed THP
-# ok 9 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with partially shared THP
-# ok 10 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (2048 kB)
-# ok 11 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (1048576 kB)
-# ok 12 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in child ... with base page
-# ok 13 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped out base page
-# ok 14 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with THP
-# ok 15 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped-out THP
-# ok 16 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with PTE-mapped THP
-# ok 17 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped-out, PTE-mapped THP
-# ok 18 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with single PTE of THP
-# ok 19 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with single PTE of swapped-out TH=
-P
-# ok 20 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with partially mremap()'ed THP
-# ok 21 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with partially shared THP
-# ok 22 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with hugetlb (2048 kB)
-# not ok 23 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with hugetlb (1048576 kB)
-# ok 24 # SKIP need more free huge pages
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with b=
-ase page
-# # [INFO] detected THP size: 2048 KiB
-# # [INFO] detected hugetlb size: 2048 KiB
-# # [INFO] detected hugetlb size: 1048576 KiB
-# TAP version 13
-# 1..120
-# # [RUN] Basic COW after fork() ... with base page
-# ok 1 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped out base page
-# ok 2 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with THP
-# ok 3 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out THP
-# ok 4 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with PTE-mapped THP
-# ok 5 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out, PTE-mapped THP
-# ok 6 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with single PTE of THP
-# ok 7 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with single PTE of swapped-out THP
-# ok 8 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with partially mremap()'ed THP
-# ok 9 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with partially shared THP
-# ok 10 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (2048 kB)
-# ok 11 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (1048576 kB)
-# ok 12 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in child ... with base page
-# ok 13 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped out base page
-# ok 14 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with THP
-# ok 15 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped-out THP
-# ok 16 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with PTE-mapped THP
-# ok 17 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped-out, PTE-mapped THP
-# ok 18 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with single PTE of THP
-# ok 19 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with single PTE of swapped-out TH=
-P
-# ok 20 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with partially mremap()'ed THP
-# ok 21 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with partially shared THP
-# ok 22 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with hugetlb (2048 kB)
-# not ok 23 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with hugetlb (1048576 kB)
-# ok 24 # SKIP need more free huge pages
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with b=
-ase page
-# ok 25 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with s=
-wapped out base page
-# ok 26 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with T=
-HP
-# # [INFO] detected THP size: 2048 KiB
-# # [INFO] detected hugetlb size: 2048 KiB
-# # [INFO] detected hugetlb size: 1048576 KiB
-# TAP version 13
-# 1..120
-# # [RUN] Basic COW after fork() ... with base page
-# ok 1 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped out base page
-# ok 2 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with THP
-# ok 3 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out THP
-# ok 4 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with PTE-mapped THP
-# ok 5 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out, PTE-mapped THP
-# ok 6 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with single PTE of THP
-# ok 7 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with single PTE of swapped-out THP
-# ok 8 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with partially mremap()'ed THP
-# ok 9 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with partially shared THP
-# ok 10 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (2048 kB)
-# ok 11 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (1048576 kB)
-# ok 12 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in child ... with base page
-# ok 13 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped out base page
-# ok 14 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with THP
-# ok 15 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped-out THP
-# ok 16 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with PTE-mapped THP
-# ok 17 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped-out, PTE-mapped THP
-# ok 18 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with single PTE of THP
-# ok 19 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with single PTE of swapped-out TH=
-P
-# ok 20 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with partially mremap()'ed THP
-# ok 21 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with partially shared THP
-# ok 22 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with hugetlb (2048 kB)
-# not ok 23 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with hugetlb (1048576 kB)
-# ok 24 # SKIP need more free huge pages
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with b=
-ase page
-# ok 25 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with s=
-wapped out base page
-# ok 26 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with T=
-HP
-# ok 27 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with s=
-wapped-out THP
-# ok 28 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with P=
-TE-mapped THP
-# # [INFO] detected THP size: 2048 KiB
-# # [INFO] detected hugetlb size: 2048 KiB
-# # [INFO] detected hugetlb size: 1048576 KiB
-# TAP version 13
-# 1..120
-# # [RUN] Basic COW after fork() ... with base page
-# ok 1 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped out base page
-# ok 2 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with THP
-# ok 3 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out THP
-# ok 4 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with PTE-mapped THP
-# ok 5 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out, PTE-mapped THP
-# ok 6 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with single PTE of THP
-# ok 7 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with single PTE of swapped-out THP
-# ok 8 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with partially mremap()'ed THP
-# ok 9 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with partially shared THP
-# ok 10 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (2048 kB)
-# ok 11 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (1048576 kB)
-# ok 12 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in child ... with base page
-# ok 13 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped out base page
-# ok 14 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with THP
-# ok 15 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped-out THP
-# ok 16 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with PTE-mapped THP
-# ok 17 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped-out, PTE-mapped THP
-# ok 18 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with single PTE of THP
-# ok 19 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with single PTE of swapped-out TH=
-P
-# ok 20 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with partially mremap()'ed THP
-# ok 21 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with partially shared THP
-# ok 22 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with hugetlb (2048 kB)
-# not ok 23 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with hugetlb (1048576 kB)
-# ok 24 # SKIP need more free huge pages
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with b=
-ase page
-# ok 25 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with s=
-wapped out base page
-# ok 26 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with T=
-HP
-# ok 27 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with s=
-wapped-out THP
-# ok 28 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with P=
-TE-mapped THP
-# ok 29 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with s=
-wapped-out, PTE-mapped THP
-# ok 30 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with s=
-ingle PTE of THP
-# # [INFO] detected THP size: 2048 KiB
-# # [INFO] detected hugetlb size: 2048 KiB
-# # [INFO] detected hugetlb size: 1048576 KiB
-# TAP version 13
-# 1..120
-# # [RUN] Basic COW after fork() ... with base page
-# ok 1 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped out base page
-# ok 2 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with THP
-# ok 3 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out THP
-# ok 4 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with PTE-mapped THP
-# ok 5 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out, PTE-mapped THP
-# ok 6 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with single PTE of THP
-# ok 7 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with single PTE of swapped-out THP
-# ok 8 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with partially mremap()'ed THP
-# ok 9 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with partially shared THP
-# ok 10 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (2048 kB)
-# ok 11 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (1048576 kB)
-# ok 12 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in child ... with base page
-# ok 13 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped out base page
-# ok 14 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with THP
-# ok 15 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped-out THP
-# ok 16 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with PTE-mapped THP
-# ok 17 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped-out, PTE-mapped THP
-# ok 18 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with single PTE of THP
-# ok 19 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with single PTE of swapped-out TH=
-P
-# ok 20 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with partially mremap()'ed THP
-# ok 21 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with partially shared THP
-# ok 22 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with hugetlb (2048 kB)
-# not ok 23 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with hugetlb (1048576 kB)
-# ok 24 # SKIP need more free huge pages
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with b=
-ase page
-# ok 25 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with s=
-wapped out base page
-# ok 26 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with T=
-HP
-# ok 27 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with s=
-wapped-out THP
-# ok 28 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with P=
-TE-mapped THP
-# ok 29 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with s=
-wapped-out, PTE-mapped THP
-# ok 30 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with s=
-ingle PTE of THP
-# ok 31 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with s=
-ingle PTE of swapped-out THP
-# ok 32 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with p=
-artially mremap()'ed THP
-# # [INFO] detected THP size: 2048 KiB
-# # [INFO] detected hugetlb size: 2048 KiB
-# # [INFO] detected hugetlb size: 1048576 KiB
-# TAP version 13
-# 1..120
-# # [RUN] Basic COW after fork() ... with base page
-# ok 1 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped out base page
-# ok 2 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with THP
-# ok 3 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out THP
-# ok 4 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with PTE-mapped THP
-# ok 5 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out, PTE-mapped THP
-# ok 6 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with single PTE of THP
-# ok 7 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with single PTE of swapped-out THP
-# ok 8 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with partially mremap()'ed THP
-# ok 9 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with partially shared THP
-# ok 10 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (2048 kB)
-# ok 11 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (1048576 kB)
-# ok 12 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in child ... with base page
-# ok 13 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped out base page
-# ok 14 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with THP
-# ok 15 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped-out THP
-# ok 16 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with PTE-mapped THP
-# ok 17 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped-out, PTE-mapped THP
-# ok 18 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with single PTE of THP
-# ok 19 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with single PTE of swapped-out TH=
-P
-# ok 20 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with partially mremap()'ed THP
-# ok 21 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with partially shared THP
-# ok 22 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with hugetlb (2048 kB)
-# not ok 23 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with hugetlb (1048576 kB)
-# ok 24 # SKIP need more free huge pages
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with b=
-ase page
-# ok 25 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with s=
-wapped out base page
-# ok 26 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with T=
-HP
-# ok 27 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with s=
-wapped-out THP
-# ok 28 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with P=
-TE-mapped THP
-# ok 29 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with s=
-wapped-out, PTE-mapped THP
-# ok 30 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with s=
-ingle PTE of THP
-# ok 31 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with s=
-ingle PTE of swapped-out THP
-# ok 32 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with p=
-artially mremap()'ed THP
-# ok 33 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with p=
-artially shared THP
-# # [INFO] detected THP size: 2048 KiB
-# # [INFO] detected hugetlb size: 2048 KiB
-# # [INFO] detected hugetlb size: 1048576 KiB
-# TAP version 13
-# 1..120
-# # [RUN] Basic COW after fork() ... with base page
-# ok 1 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped out base page
-# ok 2 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with THP
-# ok 3 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out THP
-# ok 4 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with PTE-mapped THP
-# ok 5 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out, PTE-mapped THP
-# ok 6 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with single PTE of THP
-# ok 7 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with single PTE of swapped-out THP
-# ok 8 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with partially mremap()'ed THP
-# ok 9 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with partially shared THP
-# ok 10 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (2048 kB)
-# ok 11 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (1048576 kB)
-# ok 12 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in child ... with base page
-# ok 13 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped out base page
-# ok 14 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with THP
-# ok 15 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped-out THP
-# ok 16 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with PTE-mapped THP
-# ok 17 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped-out, PTE-mapped THP
-# ok 18 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with single PTE of THP
-# ok 19 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with single PTE of swapped-out TH=
-P
-# ok 20 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with partially mremap()'ed THP
-# ok 21 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with partially shared THP
-# ok 22 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with hugetlb (2048 kB)
-# not ok 23 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with hugetlb (1048576 kB)
-# ok 24 # SKIP need more free huge pages
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with b=
-ase page
-# ok 25 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with s=
-wapped out base page
-# ok 26 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with T=
-HP
-# ok 27 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with s=
-wapped-out THP
-# ok 28 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with P=
-TE-mapped THP
-# ok 29 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with s=
-wapped-out, PTE-mapped THP
-# ok 30 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with s=
-ingle PTE of THP
-# ok 31 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with s=
-ingle PTE of swapped-out THP
-# ok 32 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with p=
-artially mremap()'ed THP
-# ok 33 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with p=
-artially shared THP
-# # [INFO] detected THP size: 2048 KiB
-# # [INFO] detected hugetlb size: 2048 KiB
-# # [INFO] detected hugetlb size: 1048576 KiB
-# TAP version 13
-# 1..120
-# # [RUN] Basic COW after fork() ... with base page
-# ok 1 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped out base page
-# ok 2 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with THP
-# ok 3 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out THP
-# ok 4 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with PTE-mapped THP
-# ok 5 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with swapped-out, PTE-mapped THP
-# ok 6 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with single PTE of THP
-# ok 7 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with single PTE of swapped-out THP
-# ok 8 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] Basic COW after fork() ... with partially mremap()'ed THP
-# ok 9 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with partially shared THP
-# ok 10 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (2048 kB)
-# ok 11 No leak from parent into child
-# # [RUN] Basic COW after fork() ... with hugetlb (1048576 kB)
-# ok 12 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in child ... with base page
-# ok 13 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped out base page
-# ok 14 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with THP
-# ok 15 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped-out THP
-# ok 16 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with PTE-mapped THP
-# ok 17 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with swapped-out, PTE-mapped THP
-# ok 18 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with single PTE of THP
-# ok 19 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with single PTE of swapped-out TH=
-P
-# ok 20 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in child ... with partially mremap()'ed THP
-# ok 21 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with partially shared THP
-# ok 22 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with hugetlb (2048 kB)
-# not ok 23 No leak from parent into child
-# # [RUN] vmsplice() + unmap in child ... with hugetlb (1048576 kB)
-# ok 24 # SKIP need more free huge pages
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with b=
-ase page
-# ok 25 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with s=
-wapped out base page
-# ok 26 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with T=
-HP
-# ok 27 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with s=
-wapped-out THP
-# ok 28 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with P=
-TE-mapped THP
-# ok 29 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with s=
-wapped-out, PTE-mapped THP
-# ok 30 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with s=
-ingle PTE of THP
-# ok 31 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with s=
-ingle PTE of swapped-out THP
-# ok 32 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with p=
-artially mremap()'ed THP
-# ok 33 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with p=
-artially shared THP
-# ok 34 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with h=
-ugetlb (2048 kB)
-# with hugetlb (2048 kB)
-# not ok 35 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with h=
-ugetlb (1048576 kB)
-# ok 36 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in parent after fork() ... with base page
-# with hugetlb (2048 kB)
-# not ok 35 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with h=
-ugetlb (1048576 kB)
-# ok 36 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in parent after fork() ... with base page
-# ok 37 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped out ba=
-se page
-# ok 38 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with THP
-# with hugetlb (2048 kB)
-# not ok 35 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with h=
-ugetlb (1048576 kB)
-# ok 36 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in parent after fork() ... with base page
-# ok 37 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped out ba=
-se page
-# ok 38 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with THP
-# ok 39 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out TH=
-P
-# ok 40 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with PTE-mapped THP
-# with hugetlb (2048 kB)
-# not ok 35 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with h=
-ugetlb (1048576 kB)
-# ok 36 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in parent after fork() ... with base page
-# ok 37 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped out ba=
-se page
-# ok 38 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with THP
-# ok 39 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out TH=
-P
-# ok 40 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with PTE-mapped THP
-# ok 41 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out, P=
-TE-mapped THP
-# ok 42 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-THP
-# with hugetlb (2048 kB)
-# not ok 35 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with h=
-ugetlb (1048576 kB)
-# ok 36 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in parent after fork() ... with base page
-# ok 37 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped out ba=
-se page
-# ok 38 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with THP
-# ok 39 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out TH=
-P
-# ok 40 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with PTE-mapped THP
-# ok 41 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out, P=
-TE-mapped THP
-# ok 42 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-THP
-# ok 43 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-swapped-out THP
-# ok 44 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially mrem=
-ap()'ed THP
-# with hugetlb (2048 kB)
-# not ok 35 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with h=
-ugetlb (1048576 kB)
-# ok 36 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in parent after fork() ... with base page
-# ok 37 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped out ba=
-se page
-# ok 38 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with THP
-# ok 39 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out TH=
-P
-# ok 40 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with PTE-mapped THP
-# ok 41 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out, P=
-TE-mapped THP
-# ok 42 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-THP
-# ok 43 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-swapped-out THP
-# ok 44 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially mrem=
-ap()'ed THP
-# ok 45 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially shar=
-ed THP
-# with hugetlb (2048 kB)
-# not ok 35 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with h=
-ugetlb (1048576 kB)
-# ok 36 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in parent after fork() ... with base page
-# ok 37 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped out ba=
-se page
-# ok 38 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with THP
-# ok 39 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out TH=
-P
-# ok 40 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with PTE-mapped THP
-# ok 41 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out, P=
-TE-mapped THP
-# ok 42 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-THP
-# ok 43 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-swapped-out THP
-# ok 44 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially mrem=
-ap()'ed THP
-# ok 45 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially shar=
-ed THP
-# with hugetlb (2048 kB)
-# not ok 35 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with h=
-ugetlb (1048576 kB)
-# ok 36 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in parent after fork() ... with base page
-# ok 37 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped out ba=
-se page
-# ok 38 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with THP
-# ok 39 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out TH=
-P
-# ok 40 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with PTE-mapped THP
-# ok 41 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out, P=
-TE-mapped THP
-# ok 42 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-THP
-# ok 43 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-swapped-out THP
-# ok 44 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially mrem=
-ap()'ed THP
-# ok 45 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially shar=
-ed THP
-# ok 46 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with hugetlb (2048 =
-kB)
-# with hugetlb (2048 kB)
-# not ok 35 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with h=
-ugetlb (1048576 kB)
-# ok 36 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in parent after fork() ... with base page
-# ok 37 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped out ba=
-se page
-# ok 38 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with THP
-# ok 39 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out TH=
-P
-# ok 40 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with PTE-mapped THP
-# ok 41 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out, P=
-TE-mapped THP
-# ok 42 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-THP
-# ok 43 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-swapped-out THP
-# ok 44 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially mrem=
-ap()'ed THP
-# ok 45 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially shar=
-ed THP
-# ok 46 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with hugetlb (2048 =
-kB)
-# not ok 47 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with hugetlb (10485=
-76 kB)
-# ok 48 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with base page
-# with hugetlb (2048 kB)
-# not ok 35 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with h=
-ugetlb (1048576 kB)
-# ok 36 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in parent after fork() ... with base page
-# ok 37 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped out ba=
-se page
-# ok 38 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with THP
-# ok 39 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out TH=
-P
-# ok 40 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with PTE-mapped THP
-# ok 41 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out, P=
-TE-mapped THP
-# ok 42 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-THP
-# ok 43 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-swapped-out THP
-# ok 44 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially mrem=
-ap()'ed THP
-# ok 45 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially shar=
-ed THP
-# ok 46 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with hugetlb (2048 =
-kB)
-# not ok 47 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with hugetlb (10485=
-76 kB)
-# ok 48 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with base page
-# ok 49 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped out base p=
-age
-# ok 50 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with THP
-# with hugetlb (2048 kB)
-# not ok 35 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with h=
-ugetlb (1048576 kB)
-# ok 36 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in parent after fork() ... with base page
-# ok 37 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped out ba=
-se page
-# ok 38 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with THP
-# ok 39 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out TH=
-P
-# ok 40 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with PTE-mapped THP
-# ok 41 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out, P=
-TE-mapped THP
-# ok 42 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-THP
-# ok 43 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-swapped-out THP
-# ok 44 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially mrem=
-ap()'ed THP
-# ok 45 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially shar=
-ed THP
-# ok 46 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with hugetlb (2048 =
-kB)
-# not ok 47 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with hugetlb (10485=
-76 kB)
-# ok 48 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with base page
-# ok 49 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped out base p=
-age
-# ok 50 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with THP
-# ok 51 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped-out THP
-# ok 52 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with PTE-mapped THP
-# with hugetlb (2048 kB)
-# not ok 35 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with h=
-ugetlb (1048576 kB)
-# ok 36 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in parent after fork() ... with base page
-# ok 37 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped out ba=
-se page
-# ok 38 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with THP
-# ok 39 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out TH=
-P
-# ok 40 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with PTE-mapped THP
-# ok 41 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out, P=
-TE-mapped THP
-# ok 42 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-THP
-# ok 43 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-swapped-out THP
-# ok 44 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially mrem=
-ap()'ed THP
-# ok 45 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially shar=
-ed THP
-# ok 46 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with hugetlb (2048 =
-kB)
-# not ok 47 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with hugetlb (10485=
-76 kB)
-# ok 48 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with base page
-# ok 49 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped out base p=
-age
-# ok 50 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with THP
-# ok 51 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped-out THP
-# ok 52 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with PTE-mapped THP
-# ok 53 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped-out, PTE-m=
-apped THP
-# ok 54 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with single PTE of THP
-# with hugetlb (2048 kB)
-# not ok 35 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with h=
-ugetlb (1048576 kB)
-# ok 36 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in parent after fork() ... with base page
-# ok 37 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped out ba=
-se page
-# ok 38 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with THP
-# ok 39 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out TH=
-P
-# ok 40 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with PTE-mapped THP
-# ok 41 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out, P=
-TE-mapped THP
-# ok 42 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-THP
-# ok 43 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-swapped-out THP
-# ok 44 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially mrem=
-ap()'ed THP
-# ok 45 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially shar=
-ed THP
-# ok 46 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with hugetlb (2048 =
-kB)
-# not ok 47 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with hugetlb (10485=
-76 kB)
-# ok 48 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with base page
-# ok 49 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped out base p=
-age
-# ok 50 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with THP
-# ok 51 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped-out THP
-# ok 52 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with PTE-mapped THP
-# ok 53 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped-out, PTE-m=
-apped THP
-# ok 54 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with single PTE of THP
-# ok 55 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with single PTE of swap=
-ped-out THP
-# ok 56 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with partially mremap()=
-'ed THP
-# with hugetlb (2048 kB)
-# not ok 35 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with h=
-ugetlb (1048576 kB)
-# ok 36 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in parent after fork() ... with base page
-# ok 37 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped out ba=
-se page
-# ok 38 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with THP
-# ok 39 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out TH=
-P
-# ok 40 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with PTE-mapped THP
-# ok 41 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out, P=
-TE-mapped THP
-# ok 42 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-THP
-# ok 43 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-swapped-out THP
-# ok 44 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially mrem=
-ap()'ed THP
-# ok 45 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially shar=
-ed THP
-# ok 46 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with hugetlb (2048 =
-kB)
-# not ok 47 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with hugetlb (10485=
-76 kB)
-# ok 48 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with base page
-# ok 49 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped out base p=
-age
-# ok 50 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with THP
-# ok 51 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped-out THP
-# ok 52 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with PTE-mapped THP
-# ok 53 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped-out, PTE-m=
-apped THP
-# ok 54 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with single PTE of THP
-# ok 55 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with single PTE of swap=
-ped-out THP
-# ok 56 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with partially mremap()=
-'ed THP
-# ok 57 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with partially shared T=
-HP
-# with hugetlb (2048 kB)
-# not ok 35 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with h=
-ugetlb (1048576 kB)
-# ok 36 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in parent after fork() ... with base page
-# ok 37 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped out ba=
-se page
-# ok 38 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with THP
-# ok 39 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out TH=
-P
-# ok 40 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with PTE-mapped THP
-# ok 41 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out, P=
-TE-mapped THP
-# ok 42 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-THP
-# ok 43 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-swapped-out THP
-# ok 44 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially mrem=
-ap()'ed THP
-# ok 45 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially shar=
-ed THP
-# ok 46 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with hugetlb (2048 =
-kB)
-# not ok 47 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with hugetlb (10485=
-76 kB)
-# ok 48 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with base page
-# ok 49 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped out base p=
-age
-# ok 50 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with THP
-# ok 51 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped-out THP
-# ok 52 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with PTE-mapped THP
-# ok 53 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped-out, PTE-m=
-apped THP
-# ok 54 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with single PTE of THP
-# ok 55 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with single PTE of swap=
-ped-out THP
-# ok 56 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with partially mremap()=
-'ed THP
-# ok 57 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with partially shared T=
-HP
-# with hugetlb (2048 kB)
-# not ok 35 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with h=
-ugetlb (1048576 kB)
-# ok 36 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in parent after fork() ... with base page
-# ok 37 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped out ba=
-se page
-# ok 38 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with THP
-# ok 39 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out TH=
-P
-# ok 40 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with PTE-mapped THP
-# ok 41 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out, P=
-TE-mapped THP
-# ok 42 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-THP
-# ok 43 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-swapped-out THP
-# ok 44 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially mrem=
-ap()'ed THP
-# ok 45 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially shar=
-ed THP
-# ok 46 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with hugetlb (2048 =
-kB)
-# not ok 47 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with hugetlb (10485=
-76 kB)
-# ok 48 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with base page
-# ok 49 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped out base p=
-age
-# ok 50 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with THP
-# ok 51 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped-out THP
-# ok 52 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with PTE-mapped THP
-# ok 53 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped-out, PTE-m=
-apped THP
-# ok 54 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with single PTE of THP
-# ok 55 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with single PTE of swap=
-ped-out THP
-# ok 56 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with partially mremap()=
-'ed THP
-# ok 57 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with partially shared T=
-HP
-# ok 58 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with hugetlb (2048 kB)
-# with hugetlb (2048 kB)
-# not ok 35 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with h=
-ugetlb (1048576 kB)
-# ok 36 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in parent after fork() ... with base page
-# ok 37 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped out ba=
-se page
-# ok 38 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with THP
-# ok 39 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out TH=
-P
-# ok 40 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with PTE-mapped THP
-# ok 41 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out, P=
-TE-mapped THP
-# ok 42 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-THP
-# ok 43 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-swapped-out THP
-# ok 44 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially mrem=
-ap()'ed THP
-# ok 45 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially shar=
-ed THP
-# ok 46 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with hugetlb (2048 =
-kB)
-# not ok 47 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with hugetlb (10485=
-76 kB)
-# ok 48 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with base page
-# ok 49 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped out base p=
-age
-# ok 50 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with THP
-# ok 51 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped-out THP
-# ok 52 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with PTE-mapped THP
-# ok 53 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped-out, PTE-m=
-apped THP
-# ok 54 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with single PTE of THP
-# ok 55 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with single PTE of swap=
-ped-out THP
-# ok 56 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with partially mremap()=
-'ed THP
-# ok 57 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with partially shared T=
-HP
-# ok 58 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with hugetlb (2048 kB)
-# ok 59 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with hugetlb (1048576 k=
-B)
-# ok 60 # SKIP need more free huge pages
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with base page
-# with hugetlb (2048 kB)
-# not ok 35 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with h=
-ugetlb (1048576 kB)
-# ok 36 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in parent after fork() ... with base page
-# ok 37 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped out ba=
-se page
-# ok 38 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with THP
-# ok 39 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out TH=
-P
-# ok 40 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with PTE-mapped THP
-# ok 41 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out, P=
-TE-mapped THP
-# ok 42 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-THP
-# ok 43 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-swapped-out THP
-# ok 44 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially mrem=
-ap()'ed THP
-# ok 45 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially shar=
-ed THP
-# ok 46 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with hugetlb (2048 =
-kB)
-# not ok 47 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with hugetlb (10485=
-76 kB)
-# ok 48 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with base page
-# ok 49 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped out base p=
-age
-# ok 50 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with THP
-# ok 51 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped-out THP
-# ok 52 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with PTE-mapped THP
-# ok 53 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped-out, PTE-m=
-apped THP
-# ok 54 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with single PTE of THP
-# ok 55 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with single PTE of swap=
-ped-out THP
-# ok 56 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with partially mremap()=
-'ed THP
-# ok 57 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with partially shared T=
-HP
-# ok 58 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with hugetlb (2048 kB)
-# ok 59 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with hugetlb (1048576 k=
-B)
-# ok 60 # SKIP need more free huge pages
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with base page
-# ok 61 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with swapped out b=
-ase page
-# ok 62 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with THP
-# with hugetlb (2048 kB)
-# not ok 35 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with h=
-ugetlb (1048576 kB)
-# ok 36 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in parent after fork() ... with base page
-# ok 37 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped out ba=
-se page
-# ok 38 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with THP
-# ok 39 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out TH=
-P
-# ok 40 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with PTE-mapped THP
-# ok 41 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out, P=
-TE-mapped THP
-# ok 42 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-THP
-# ok 43 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-swapped-out THP
-# ok 44 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially mrem=
-ap()'ed THP
-# ok 45 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially shar=
-ed THP
-# ok 46 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with hugetlb (2048 =
-kB)
-# not ok 47 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with hugetlb (10485=
-76 kB)
-# ok 48 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with base page
-# ok 49 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped out base p=
-age
-# ok 50 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with THP
-# ok 51 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped-out THP
-# ok 52 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with PTE-mapped THP
-# ok 53 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped-out, PTE-m=
-apped THP
-# ok 54 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with single PTE of THP
-# ok 55 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with single PTE of swap=
-ped-out THP
-# ok 56 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with partially mremap()=
-'ed THP
-# ok 57 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with partially shared T=
-HP
-# ok 58 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with hugetlb (2048 kB)
-# ok 59 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with hugetlb (1048576 k=
-B)
-# ok 60 # SKIP need more free huge pages
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with base page
-# ok 61 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with swapped out b=
-ase page
-# ok 62 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with THP
-# ok 63 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with swapped-out T=
-HP
-# ok 64 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with PTE-mapped TH=
-P
-# with hugetlb (2048 kB)
-# not ok 35 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with h=
-ugetlb (1048576 kB)
-# ok 36 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in parent after fork() ... with base page
-# ok 37 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped out ba=
-se page
-# ok 38 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with THP
-# ok 39 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out TH=
-P
-# ok 40 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with PTE-mapped THP
-# ok 41 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out, P=
-TE-mapped THP
-# ok 42 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-THP
-# ok 43 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-swapped-out THP
-# ok 44 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially mrem=
-ap()'ed THP
-# ok 45 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially shar=
-ed THP
-# ok 46 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with hugetlb (2048 =
-kB)
-# not ok 47 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with hugetlb (10485=
-76 kB)
-# ok 48 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with base page
-# ok 49 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped out base p=
-age
-# ok 50 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with THP
-# ok 51 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped-out THP
-# ok 52 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with PTE-mapped THP
-# ok 53 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped-out, PTE-m=
-apped THP
-# ok 54 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with single PTE of THP
-# ok 55 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with single PTE of swap=
-ped-out THP
-# ok 56 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with partially mremap()=
-'ed THP
-# ok 57 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with partially shared T=
-HP
-# ok 58 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with hugetlb (2048 kB)
-# ok 59 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with hugetlb (1048576 k=
-B)
-# ok 60 # SKIP need more free huge pages
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with base page
-# ok 61 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with swapped out b=
-ase page
-# ok 62 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with THP
-# ok 63 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with swapped-out T=
-HP
-# ok 64 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with PTE-mapped TH=
-P
-# ok 65 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with swapped-out, =
-PTE-mapped THP
-# ok 66 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with single PTE of=
- THP
-# with hugetlb (2048 kB)
-# not ok 35 No leak from child into parent
-# # [RUN] vmsplice() before fork(), unmap in parent after fork() ... with h=
-ugetlb (1048576 kB)
-# ok 36 # SKIP need more free huge pages
-# # [RUN] vmsplice() + unmap in parent after fork() ... with base page
-# ok 37 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped out ba=
-se page
-# ok 38 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with THP
-# ok 39 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out TH=
-P
-# ok 40 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with PTE-mapped THP
-# ok 41 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with swapped-out, P=
-TE-mapped THP
-# ok 42 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-THP
-# ok 43 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with single PTE of =
-swapped-out THP
-# ok 44 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially mrem=
-ap()'ed THP
-# ok 45 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with partially shar=
-ed THP
-# ok 46 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with hugetlb (2048 =
-kB)
-# not ok 47 No leak from child into parent
-# # [RUN] vmsplice() + unmap in parent after fork() ... with hugetlb (10485=
-76 kB)
-# ok 48 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with base page
-# ok 49 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped out base p=
-age
-# ok 50 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with THP
-# ok 51 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped-out THP
-# ok 52 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with PTE-mapped THP
-# ok 53 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with swapped-out, PTE-m=
-apped THP
-# ok 54 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with single PTE of THP
-# ok 55 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with single PTE of swap=
-ped-out THP
-# ok 56 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with partially mremap()=
-'ed THP
-# ok 57 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with partially shared T=
-HP
-# ok 58 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with hugetlb (2048 kB)
-# ok 59 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped shared page ... with hugetlb (1048576 k=
-B)
-# ok 60 # SKIP need more free huge pages
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with base page
-# ok 61 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with swapped out b=
-ase page
-# ok 62 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with THP
-# ok 63 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with swapped-out T=
-HP
-# ok 64 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with PTE-mapped TH=
-P
-# ok 65 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with swapped-out, =
-PTE-mapped THP
-# ok 66 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with single PTE of=
- THP
-# ok 67 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with single PTE of=
- swapped-out THP
-# ok 68 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with partially mre=
-map()'ed THP
-# ared page ... with partially mremap()'ed THP
-# ok 69 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with partially sha=
-red THP
-# ared page ... with partially mremap()'ed THP
-# ok 69 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with partially sha=
-red THP
-# ared page ... with partially mremap()'ed THP
-# ok 69 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with partially sha=
-red THP
-# ok 70 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (2048=
- kB)
-# ared page ... with partially mremap()'ed THP
-# ok 69 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with partially sha=
-red THP
-# ok 70 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (2048=
- kB)
-# ok 71 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (1048=
-576 kB)
-# ok 72 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with base pa=
-ge
-# ared page ... with partially mremap()'ed THP
-# ok 69 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with partially sha=
-red THP
-# ok 70 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (2048=
- kB)
-# ok 71 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (1048=
-576 kB)
-# ok 72 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with base pa=
-ge
-# ok 73 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
- out base page
-# ok 74 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with THP
-# ared page ... with partially mremap()'ed THP
-# ok 69 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with partially sha=
-red THP
-# ok 70 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (2048=
- kB)
-# ok 71 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (1048=
-576 kB)
-# ok 72 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with base pa=
-ge
-# ok 73 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
- out base page
-# ok 74 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with THP
-# ok 75 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
--out THP
-# ok 76 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with PTE-map=
-ped THP
-# ared page ... with partially mremap()'ed THP
-# ok 69 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with partially sha=
-red THP
-# ok 70 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (2048=
- kB)
-# ok 71 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (1048=
-576 kB)
-# ok 72 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with base pa=
-ge
-# ok 73 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
- out base page
-# ok 74 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with THP
-# ok 75 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
--out THP
-# ok 76 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with PTE-map=
-ped THP
-# ok 77 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
--out, PTE-mapped THP
-# ok 78 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with single =
-PTE of THP
-# ared page ... with partially mremap()'ed THP
-# ok 69 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with partially sha=
-red THP
-# ok 70 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (2048=
- kB)
-# ok 71 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (1048=
-576 kB)
-# ok 72 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with base pa=
-ge
-# ok 73 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
- out base page
-# ok 74 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with THP
-# ok 75 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
--out THP
-# ok 76 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with PTE-map=
-ped THP
-# ok 77 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
--out, PTE-mapped THP
-# ok 78 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with single =
-PTE of THP
-# ok 79 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with single =
-PTE of swapped-out THP
-# ok 80 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with partial=
-ly mremap()'ed THP
-# ared page ... with partially mremap()'ed THP
-# ok 69 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with partially sha=
-red THP
-# ok 70 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (2048=
- kB)
-# ok 71 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (1048=
-576 kB)
-# ok 72 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with base pa=
-ge
-# ok 73 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
- out base page
-# ok 74 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with THP
-# ok 75 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
--out THP
-# ok 76 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with PTE-map=
-ped THP
-# ok 77 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
--out, PTE-mapped THP
-# ok 78 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with single =
-PTE of THP
-# ok 79 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with single =
-PTE of swapped-out THP
-# ok 80 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with partial=
-ly mremap()'ed THP
-# ok 81 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with partial=
-ly shared THP
-# ared page ... with partially mremap()'ed THP
-# ok 69 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with partially sha=
-red THP
-# ok 70 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (2048=
- kB)
-# ok 71 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (1048=
-576 kB)
-# ok 72 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with base pa=
-ge
-# ok 73 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
- out base page
-# ok 74 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with THP
-# ok 75 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
--out THP
-# ok 76 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with PTE-map=
-ped THP
-# ok 77 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
--out, PTE-mapped THP
-# ok 78 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with single =
-PTE of THP
-# ok 79 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with single =
-PTE of swapped-out THP
-# ok 80 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with partial=
-ly mremap()'ed THP
-# ok 81 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with partial=
-ly shared THP
-# ared page ... with partially mremap()'ed THP
-# ok 69 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with partially sha=
-red THP
-# ok 70 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (2048=
- kB)
-# ok 71 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (1048=
-576 kB)
-# ok 72 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with base pa=
-ge
-# ok 73 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
- out base page
-# ok 74 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with THP
-# ok 75 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
--out THP
-# ok 76 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with PTE-map=
-ped THP
-# ok 77 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
--out, PTE-mapped THP
-# ok 78 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with single =
-PTE of THP
-# ok 79 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with single =
-PTE of swapped-out THP
-# ok 80 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with partial=
-ly mremap()'ed THP
-# ok 81 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with partial=
-ly shared THP
-# ok 82 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with hugetlb=
- (2048 kB)
-# ared page ... with partially mremap()'ed THP
-# ok 69 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with partially sha=
-red THP
-# ok 70 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (2048=
- kB)
-# ok 71 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (1048=
-576 kB)
-# ok 72 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with base pa=
-ge
-# ok 73 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
- out base page
-# ok 74 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with THP
-# ok 75 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
--out THP
-# ok 76 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with PTE-map=
-ped THP
-# ok 77 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
--out, PTE-mapped THP
-# ok 78 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with single =
-PTE of THP
-# ok 79 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with single =
-PTE of swapped-out THP
-# ok 80 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with partial=
-ly mremap()'ed THP
-# ok 81 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with partial=
-ly shared THP
-# ok 82 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with hugetlb=
- (2048 kB)
-# ok 83 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with hugetlb=
- (1048576 kB)
-# ok 84 # SKIP need more free huge pages
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with ba=
-se page
-# ared page ... with partially mremap()'ed THP
-# ok 69 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with partially sha=
-red THP
-# ok 70 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (2048=
- kB)
-# ok 71 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (1048=
-576 kB)
-# ok 72 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with base pa=
-ge
-# ok 73 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
- out base page
-# ok 74 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with THP
-# ok 75 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
--out THP
-# ok 76 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with PTE-map=
-ped THP
-# ok 77 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
--out, PTE-mapped THP
-# ok 78 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with single =
-PTE of THP
-# ok 79 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with single =
-PTE of swapped-out THP
-# ok 80 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with partial=
-ly mremap()'ed THP
-# ok 81 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with partial=
-ly shared THP
-# ok 82 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with hugetlb=
- (2048 kB)
-# ok 83 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with hugetlb=
- (1048576 kB)
-# ok 84 # SKIP need more free huge pages
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with ba=
-se page
-# ok 85 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with sw=
-apped out base page
-# ok 86 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with TH=
-P
-# ared page ... with partially mremap()'ed THP
-# ok 69 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with partially sha=
-red THP
-# ok 70 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (2048=
- kB)
-# ok 71 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (1048=
-576 kB)
-# ok 72 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with base pa=
-ge
-# ok 73 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
- out base page
-# ok 74 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with THP
-# ok 75 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
--out THP
-# ok 76 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with PTE-map=
-ped THP
-# ok 77 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
--out, PTE-mapped THP
-# ok 78 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with single =
-PTE of THP
-# ok 79 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with single =
-PTE of swapped-out THP
-# ok 80 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with partial=
-ly mremap()'ed THP
-# ok 81 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with partial=
-ly shared THP
-# ok 82 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with hugetlb=
- (2048 kB)
-# ok 83 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with hugetlb=
- (1048576 kB)
-# ok 84 # SKIP need more free huge pages
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with ba=
-se page
-# ok 85 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with sw=
-apped out base page
-# ok 86 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with TH=
-P
-# ok 87 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with sw=
-apped-out THP
-# ok 88 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with PT=
-E-mapped THP
-# ared page ... with partially mremap()'ed THP
-# ok 69 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with partially sha=
-red THP
-# ok 70 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (2048=
- kB)
-# ok 71 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (1048=
-576 kB)
-# ok 72 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with base pa=
-ge
-# ok 73 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
- out base page
-# ok 74 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with THP
-# ok 75 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
--out THP
-# ok 76 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with PTE-map=
-ped THP
-# ok 77 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
--out, PTE-mapped THP
-# ok 78 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with single =
-PTE of THP
-# ok 79 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with single =
-PTE of swapped-out THP
-# ok 80 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with partial=
-ly mremap()'ed THP
-# ok 81 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with partial=
-ly shared THP
-# ok 82 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with hugetlb=
- (2048 kB)
-# ok 83 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with hugetlb=
- (1048576 kB)
-# ok 84 # SKIP need more free huge pages
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with ba=
-se page
-# ok 85 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with sw=
-apped out base page
-# ok 86 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with TH=
-P
-# ok 87 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with sw=
-apped-out THP
-# ok 88 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with PT=
-E-mapped THP
-# ok 89 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with sw=
-apped-out, PTE-mapped THP
-# ok 90 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with si=
-ngle PTE of THP
-# ared page ... with partially mremap()'ed THP
-# ok 69 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with partially sha=
-red THP
-# ok 70 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (2048=
- kB)
-# ok 71 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (1048=
-576 kB)
-# ok 72 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with base pa=
-ge
-# ok 73 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
- out base page
-# ok 74 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with THP
-# ok 75 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
--out THP
-# ok 76 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with PTE-map=
-ped THP
-# ok 77 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
--out, PTE-mapped THP
-# ok 78 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with single =
-PTE of THP
-# ok 79 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with single =
-PTE of swapped-out THP
-# ok 80 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with partial=
-ly mremap()'ed THP
-# ok 81 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with partial=
-ly shared THP
-# ok 82 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with hugetlb=
- (2048 kB)
-# ok 83 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with hugetlb=
- (1048576 kB)
-# ok 84 # SKIP need more free huge pages
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with ba=
-se page
-# ok 85 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with sw=
-apped out base page
-# ok 86 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with TH=
-P
-# ok 87 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with sw=
-apped-out THP
-# ok 88 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with PT=
-E-mapped THP
-# ok 89 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with sw=
-apped-out, PTE-mapped THP
-# ok 90 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with si=
-ngle PTE of THP
-# ok 91 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with si=
-ngle PTE of swapped-out THP
-# ok 92 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with pa=
-rtially mremap()'ed THP
-# ared page ... with partially mremap()'ed THP
-# ok 69 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with partially sha=
-red THP
-# ok 70 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (2048=
- kB)
-# ok 71 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (1048=
-576 kB)
-# ok 72 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with base pa=
-ge
-# ok 73 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
- out base page
-# ok 74 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with THP
-# ok 75 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
--out THP
-# ok 76 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with PTE-map=
-ped THP
-# ok 77 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
--out, PTE-mapped THP
-# ok 78 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with single =
-PTE of THP
-# ok 79 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with single =
-PTE of swapped-out THP
-# ok 80 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with partial=
-ly mremap()'ed THP
-# ok 81 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with partial=
-ly shared THP
-# ok 82 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with hugetlb=
- (2048 kB)
-# ok 83 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with hugetlb=
- (1048576 kB)
-# ok 84 # SKIP need more free huge pages
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with ba=
-se page
-# ok 85 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with sw=
-apped out base page
-# ok 86 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with TH=
-P
-# ok 87 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with sw=
-apped-out THP
-# ok 88 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with PT=
-E-mapped THP
-# ok 89 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with sw=
-apped-out, PTE-mapped THP
-# ok 90 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with si=
-ngle PTE of THP
-# ok 91 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with si=
-ngle PTE of swapped-out THP
-# ok 92 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with pa=
-rtially mremap()'ed THP
-# ok 93 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with pa=
-rtially shared THP
-# ared page ... with partially mremap()'ed THP
-# ok 69 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with partially sha=
-red THP
-# ok 70 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (2048=
- kB)
-# ok 71 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (1048=
-576 kB)
-# ok 72 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with base pa=
-ge
-# ok 73 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
- out base page
-# ok 74 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with THP
-# ok 75 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
--out THP
-# ok 76 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with PTE-map=
-ped THP
-# ok 77 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
--out, PTE-mapped THP
-# ok 78 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with single =
-PTE of THP
-# ok 79 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with single =
-PTE of swapped-out THP
-# ok 80 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with partial=
-ly mremap()'ed THP
-# ok 81 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with partial=
-ly shared THP
-# ok 82 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with hugetlb=
- (2048 kB)
-# ok 83 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with hugetlb=
- (1048576 kB)
-# ok 84 # SKIP need more free huge pages
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with ba=
-se page
-# ok 85 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with sw=
-apped out base page
-# ok 86 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with TH=
-P
-# ok 87 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with sw=
-apped-out THP
-# ok 88 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with PT=
-E-mapped THP
-# ok 89 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with sw=
-apped-out, PTE-mapped THP
-# ok 90 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with si=
-ngle PTE of THP
-# ok 91 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with si=
-ngle PTE of swapped-out THP
-# ok 92 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with pa=
-rtially mremap()'ed THP
-# ok 93 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with pa=
-rtially shared THP
-# ared page ... with partially mremap()'ed THP
-# ok 69 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with partially sha=
-red THP
-# ok 70 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (2048=
- kB)
-# ok 71 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (1048=
-576 kB)
-# ok 72 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with base pa=
-ge
-# ok 73 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
- out base page
-# ok 74 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with THP
-# ok 75 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
--out THP
-# ok 76 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with PTE-map=
-ped THP
-# ok 77 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
--out, PTE-mapped THP
-# ok 78 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with single =
-PTE of THP
-# ok 79 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with single =
-PTE of swapped-out THP
-# ok 80 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with partial=
-ly mremap()'ed THP
-# ok 81 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with partial=
-ly shared THP
-# ok 82 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with hugetlb=
- (2048 kB)
-# ok 83 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with hugetlb=
- (1048576 kB)
-# ok 84 # SKIP need more free huge pages
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with ba=
-se page
-# ok 85 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with sw=
-apped out base page
-# ok 86 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with TH=
-P
-# ok 87 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with sw=
-apped-out THP
-# ok 88 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with PT=
-E-mapped THP
-# ok 89 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with sw=
-apped-out, PTE-mapped THP
-# ok 90 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with si=
-ngle PTE of THP
-# ok 91 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with si=
-ngle PTE of swapped-out THP
-# ok 92 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with pa=
-rtially mremap()'ed THP
-# ok 93 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with pa=
-rtially shared THP
-# ok 94 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with hu=
-getlb (2048 kB)
-# ared page ... with partially mremap()'ed THP
-# ok 69 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with partially sha=
-red THP
-# ok 70 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (2048=
- kB)
-# ok 71 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped shared page ... with hugetlb (1048=
-576 kB)
-# ok 72 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with base pa=
-ge
-# ok 73 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
- out base page
-# ok 74 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with THP
-# ok 75 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
--out THP
-# ok 76 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with PTE-map=
-ped THP
-# ok 77 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with swapped=
--out, PTE-mapped THP
-# ok 78 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with single =
-PTE of THP
-# ok 79 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with single =
-PTE of swapped-out THP
-# ok 80 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with partial=
-ly mremap()'ed THP
-# ok 81 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with partial=
-ly shared THP
-# ok 82 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with hugetlb=
- (2048 kB)
-# ok 83 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped previously-shared page ... with hugetlb=
- (1048576 kB)
-# ok 84 # SKIP need more free huge pages
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with ba=
-se page
-# ok 85 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with sw=
-apped out base page
-# ok 86 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with TH=
-P
-# ok 87 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with sw=
-apped-out THP
-# ok 88 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with PT=
-E-mapped THP
-# ok 89 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with sw=
-apped-out, PTE-mapped THP
-# ok 90 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with si=
-ngle PTE of THP
-# ok 91 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with si=
-ngle PTE of swapped-out THP
-# ok 92 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with pa=
-rtially mremap()'ed THP
-# ok 93 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with pa=
-rtially shared THP
-# ok 94 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with hu=
-getlb (2048 kB)
-# ok 95 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped previously-shared page ... with hu=
-getlb (1048576 kB)
-# ok 96 # SKIP need more free huge pages
-# # [RUN] R/O GUP pin on R/O-mapped exclusive page ... with base page
-# ok 97 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped exclusive page ... with swapped out bas=
-e page
-# ok 98 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped exclusive page ... with THP
-# ok 99 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped exclusive page ... with swapped-out THP
-# ok 100 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped exclusive page ... with PTE-mapped THP
-# ok 101 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped exclusive page ... with swapped-out, PT=
-E-mapped THP
-# ok 102 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped exclusive page ... with single PTE of T=
-HP
-# ok 103 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped exclusive page ... with single PTE of s=
-wapped-out THP
-# ok 104 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped exclusive page ... with partially mrema=
-p()'ed THP
-# ok 105 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped exclusive page ... with partially share=
-d THP
-#=20
-# ok 101 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped exclusive page ... with swapped-out, PT=
-E-mapped THP
-# ok 102 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped exclusive page ... with single PTE of T=
-HP
-# ok 103 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped exclusive page ... with single PTE of s=
-wapped-out THP
-# ok 104 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped exclusive page ... with partially mrema=
-p()'ed THP
-# ok 105 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped exclusive page ... with partially share=
-d THP
-# ok 106 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped exclusive page ... with hugetlb (2048 k=
-B)
-# ok 107 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped exclusive page ... with hugetlb (104857=
-6 kB)
-# ok 108 # SKIP need more free huge pages
-# # [RUN] R/O GUP-fast pin on R/O-mapped exclusive page ... with base page
-# ok 109 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped exclusive page ... with swapped ou=
-t base page
-# ok 110 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped exclusive page ... with THP
-# ok 111 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped exclusive page ... with swapped-ou=
-t THP
-# ok 112 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped exclusive page ... with PTE-mapped=
- THP
-# ok 113 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped exclusive page ... with swapped-ou=
-t, PTE-mapped THP
-# ok 114 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped exclusive page ... with single PTE=
- of THP
-# ok 115 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped exclusive page ... with single PTE=
- of swapped-out THP
-# ok 116 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped exclusive page ... with partially =
-mremap()'ed THP
-# ok 117 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped exclusive page ... with partially =
-shared THP
-#=20
-# ok 101 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped exclusive page ... with swapped-out, PT=
-E-mapped THP
-# ok 102 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped exclusive page ... with single PTE of T=
-HP
-# ok 103 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped exclusive page ... with single PTE of s=
-wapped-out THP
-# ok 104 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP pin on R/O-mapped exclusive page ... with partially mrema=
-p()'ed THP
-# ok 105 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped exclusive page ... with partially share=
-d THP
-# ok 106 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped exclusive page ... with hugetlb (2048 k=
-B)
-# ok 107 Longterm R/O pin is reliable
-# # [RUN] R/O GUP pin on R/O-mapped exclusive page ... with hugetlb (104857=
-6 kB)
-# ok 108 # SKIP need more free huge pages
-# # [RUN] R/O GUP-fast pin on R/O-mapped exclusive page ... with base page
-# ok 109 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped exclusive page ... with swapped ou=
-t base page
-# ok 110 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped exclusive page ... with THP
-# ok 111 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped exclusive page ... with swapped-ou=
-t THP
-# ok 112 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped exclusive page ... with PTE-mapped=
- THP
-# ok 113 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped exclusive page ... with swapped-ou=
-t, PTE-mapped THP
-# ok 114 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped exclusive page ... with single PTE=
- of THP
-# ok 115 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped exclusive page ... with single PTE=
- of swapped-out THP
-# ok 116 # SKIP MADV_PAGEOUT did not work, is swap enabled?
-# # [RUN] R/O GUP-fast pin on R/O-mapped exclusive page ... with partially =
-mremap()'ed THP
-# ok 117 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped exclusive page ... with partially =
-shared THP
-# ok 118 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped exclusive page ... with hugetlb (2=
-048 kB)
-# ok 119 Longterm R/O pin is reliable
-# # [RUN] R/O GUP-fast pin on R/O-mapped exclusive page ... with hugetlb (1=
-048576 kB)
-# ok 120 # SKIP need more free huge pages
-# Bail out! 3 out of 120 tests failed
-# # Totals: pass:67 fail:3 xfail:0 xpass:0 skip:50 error:0
-# [FAIL]
-not ok 4 selftests: vm: run_vmtests.sh # exit=3D1
-make: Leaving directory '/usr/src/perf_selftests-x86_64-rhel-8.3-kselftests=
--fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/tools/testing/selftests/vm'
-
---BA5iauX4JIsXc3PQ
+--mgNSv49cLZEyiul+
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: attachment; filename="job.yaml"
 
 ---
 
-#! jobs/kernel-selftests-vm.yaml
-suite: kernel-selftests
-testcase: kernel-selftests
-category: functional
-sysctl:
-  sc_nr_hugepages: 2
-kernel-selftests:
-  group: vm
-job_origin: kernel-selftests-vm.yaml
+#! jobs/stress-ng-class-memory.yaml
+suite: stress-ng
+testcase: stress-ng
+category: benchmark
+nr_threads: 100%
+testtime: 60s
+oom-killer:
+  ignored: 1
+stress-ng:
+  class: memory
+  test: vm-rw
+job_origin: stress-ng-class-memory.yaml
 
 #! queue options
-queue_cmdline_keys:
-- branch
-- commit
-queue: bisect
-testbox: lkp-csl-2sp9
-tbox_group: lkp-csl-2sp9
-submit_id: 6360e96486d6bb4fa935ed2b
-job_file: "/lkp/jobs/scheduled/lkp-csl-2sp9/kernel-selftests-vm-2-debian-12-x86_64-20220629.cgz-fd0dfc48f1ed0430088e3bb2c6e7d51379165afd-20221101-20393-86xmgk-0.yaml"
-id: 17fab863540bb64806af730cd9c48a8bd5cac3a5
-queuer_version: "/zday/lkp"
+queue_cmdline_keys: []
+queue: int
+testbox: lkp-icl-2sp6
+tbox_group: lkp-icl-2sp6
+submit_id: 6360d5870b9a934f698c0580
+job_file: "/lkp/jobs/scheduled/lkp-icl-2sp6/stress-ng-memory-performance-100%-vm-rw-60s-debian-11.1-x86_64-20220510.cgz-697253a9d6dbed4645b9cc8ff8520ff074ff48f0-20221101-20329-1jrl452-4.yaml"
+id: 42e78e4d4b667c61dfc75780b238d49fa38b2a0c
+queuer_version: "/lkp/xsang/.src-20221031-132528"
 
-#! hosts/lkp-csl-2sp9
-model: Cascade Lake
+#! hosts/lkp-icl-2sp6
+model: Ice Lake
 nr_node: 2
-nr_cpu: 88
+nr_cpu: 128
 memory: 128G
-nr_hdd_partitions: 4
-nr_ssd_partitions: 1
-hdd_partitions: "/dev/disk/by-id/ata-ST4000NM0035-1V4107_ZC13Q1RD-part*"
-ssd_partitions: "/dev/disk/by-id/ata-INTEL_SSDSC2BB480G7_PHDV723200JX480BGN-part1"
-rootfs_partition: "/dev/disk/by-id/ata-INTEL_SSDSC2BB480G7_PHDV723200JX480BGN-part2"
-brand: Intel(R) Xeon(R) Gold 6238M CPU @ 2.10GHz
+nr_ssd_partitions: 3
+nr_hdd_partitions: 6
+hdd_partitions: "/dev/disk/by-id/ata-WDC_WD20SPZX-08UA7_WD-WXE2EA06X8DA-part*"
+ssd_partitions: "/dev/disk/by-id/ata-INTEL_SSDSC2BB800G4_PHWL4204002V800RGN-part*"
+rootfs_partition: "/dev/disk/by-id/ata-INTEL_SSDSC2BA400G4_BTHV634503K8400NGN-part1"
+kernel_cmdline_hw: acpi_rsdp=0x69ffd014
+brand: Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz
 
-#! include/category/functional
+#! include/category/benchmark
 kmsg:
+boot-time:
+uptime:
+iostat:
 heartbeat:
+vmstat:
+numa-numastat:
+numa-vmstat:
+numa-meminfo:
+proc-vmstat:
+proc-stat:
 meminfo:
+slabinfo:
+interrupts:
+lock_stat:
+perf-sched:
+  lite_mode: 1
+softirqs:
+bdi_dev_mapping:
+diskstats:
+nfsstat:
+cpuidle:
+cpufreq-stats:
+turbostat:
+sched_debug:
+perf-stat:
+mpstat:
+perf-profile:
+  debug_mode: 0
+
+#! include/category/ALL
+cpufreq_governor: performance
+
+#! include/stress-ng
+need_kconfig:
 
 #! include/queue/cyclic
-commit: fd0dfc48f1ed0430088e3bb2c6e7d51379165afd
+commit: 697253a9d6dbed4645b9cc8ff8520ff074ff48f0
 
-#! include/testbox/lkp-csl-2sp9
-ucode: '0x5003302'
-need_kconfig_hw:
-- I40E: y
-- SATA_AHCI
-
-#! include/kernel-selftests
-need_kconfig:
-- MEM_SOFT_DIRTY: y, x86_64
-- GUP_BENCHMARK: y, v4.15-rc1, <= v5.10
-- GUP_TEST: y, v5.11-rc1
-rootfs: debian-12-x86_64-20220629.cgz
-initrds:
-- linux_headers
-- linux_selftests
-kconfig: x86_64-rhel-8.3-kselftests
-enqueue_time: 2022-11-01 17:39:48.758225768 +08:00
-_id: 6360e96486d6bb4fa935ed2b
-_rt: "/result/kernel-selftests/vm-2/lkp-csl-2sp9/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kselftests/gcc-11/fd0dfc48f1ed0430088e3bb2c6e7d51379165afd"
+#! include/testbox/lkp-icl-2sp6
+ucode: '0xd000363'
+bisect_dmesg: true
+kconfig: x86_64-rhel-8.3
+enqueue_time: 2022-11-01 16:15:03.721673471 +08:00
+_id: 6360d5880b9a934f698c0584
+_rt: "/result/stress-ng/memory-performance-100%-vm-rw-60s/lkp-icl-2sp6/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/697253a9d6dbed4645b9cc8ff8520ff074ff48f0"
 
 #! schedule options
 user: lkp
 compiler: gcc-11
 LKP_SERVER: internal-lkp-server
-head_commit: ab44f8460539e571cf9b2774307c57c6dd6da05f
+head_commit: a1dbcef4f3c7e48c9e6edf4dafe14189c607b701
 base_commit: 247f34f7b80357943234f93f247a1ae6b6c3a740
-branch: linux-devel/devel-hourly-20221030-152651
-result_root: "/result/kernel-selftests/vm-2/lkp-csl-2sp9/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kselftests/gcc-11/fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/1"
+branch: linux-review/Chen-Yu/sched-fair-Choose-the-CPU-where-short-task-is-running-during-wake-up/20221023-233434
+rootfs: debian-11.1-x86_64-20220510.cgz
+result_root: "/result/stress-ng/memory-performance-100%-vm-rw-60s/lkp-icl-2sp6/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/697253a9d6dbed4645b9cc8ff8520ff074ff48f0/0"
 scheduler_version: "/lkp/lkp/.src-20221101-154044"
 arch: x86_64
 max_uptime: 2100
-initrd: "/osimage/debian/debian-12-x86_64-20220629.cgz"
+initrd: "/osimage/debian/debian-11.1-x86_64-20220510.cgz"
 bootloader_append:
 - root=/dev/ram0
-- RESULT_ROOT=/result/kernel-selftests/vm-2/lkp-csl-2sp9/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kselftests/gcc-11/fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/1
-- BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/vmlinuz-6.1.0-rc1-00143-gfd0dfc48f1ed
-- branch=linux-devel/devel-hourly-20221030-152651
-- job=/lkp/jobs/scheduled/lkp-csl-2sp9/kernel-selftests-vm-2-debian-12-x86_64-20220629.cgz-fd0dfc48f1ed0430088e3bb2c6e7d51379165afd-20221101-20393-86xmgk-0.yaml
+- RESULT_ROOT=/result/stress-ng/memory-performance-100%-vm-rw-60s/lkp-icl-2sp6/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/697253a9d6dbed4645b9cc8ff8520ff074ff48f0/0
+- BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3/gcc-11/697253a9d6dbed4645b9cc8ff8520ff074ff48f0/vmlinuz-5.19.0-13710-g697253a9d6db
+- branch=linux-review/Chen-Yu/sched-fair-Choose-the-CPU-where-short-task-is-running-during-wake-up/20221023-233434
+- job=/lkp/jobs/scheduled/lkp-icl-2sp6/stress-ng-memory-performance-100%-vm-rw-60s-debian-11.1-x86_64-20220510.cgz-697253a9d6dbed4645b9cc8ff8520ff074ff48f0-20221101-20329-1jrl452-4.yaml
 - user=lkp
 - ARCH=x86_64
-- kconfig=x86_64-rhel-8.3-kselftests
-- commit=fd0dfc48f1ed0430088e3bb2c6e7d51379165afd
+- kconfig=x86_64-rhel-8.3
+- commit=697253a9d6dbed4645b9cc8ff8520ff074ff48f0
+- acpi_rsdp=0x69ffd014
 - max_uptime=2100
 - LKP_SERVER=internal-lkp-server
 - nokaslr
@@ -16440,43 +7527,42 @@ bootloader_append:
 - rw
 
 #! runtime status
-modules_initrd: "/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/modules.cgz"
-linux_headers_initrd: "/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/linux-headers.cgz"
-linux_selftests_initrd: "/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/linux-selftests.cgz"
-bm_initrd: "/osimage/deps/debian-12-x86_64-20220629.cgz/run-ipconfig_20220629.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/lkp_20220629.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/rsync-rootfs_20220629.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/kernel-selftests_20221017.cgz,/osimage/pkg/debian-12-x86_64-20220629.cgz/kernel-selftests-x86_64-9313ba54-1_20221017.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/hw_20220629.cgz"
+modules_initrd: "/pkg/linux/x86_64-rhel-8.3/gcc-11/697253a9d6dbed4645b9cc8ff8520ff074ff48f0/modules.cgz"
+bm_initrd: "/osimage/deps/debian-11.1-x86_64-20220510.cgz/run-ipconfig_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/lkp_20220513.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/rsync-rootfs_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/stress-ng_20221101.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/stress-ng-x86_64-0.11-06_20221101.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/mpstat_20220516.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/turbostat_20220514.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/turbostat-x86_64-210e04ff7681-1_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/perf_20221031.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/perf-x86_64-30a0b95b1335-1_20221031.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/sar-x86_64-c5bb321-1_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/hw_20220526.cgz"
 ucode_initrd: "/osimage/ucode/intel-ucode-20220804.cgz"
 lkp_initrd: "/osimage/user/lkp/lkp-x86_64.cgz"
 site: inn
 
-#! /cephfs/db/releases/20221029172404/lkp-src/include/site/inn
+#! /cephfs/db/releases/20221027135311/lkp-src/include/site/inn
 LKP_CGI_PORT: 80
 LKP_CIFS_PORT: 139
-oom-killer:
 watchdog:
-last_kernel: 6.1.0-rc1-00143-gfd0dfc48f1ed
+last_kernel: 5.9.0-2-amd64
 schedule_notify_address:
-
-#! user overrides
-kernel: "/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/fd0dfc48f1ed0430088e3bb2c6e7d51379165afd/vmlinuz-6.1.0-rc1-00143-gfd0dfc48f1ed"
-dequeue_time: 2022-11-01 18:47:24.178516031 +08:00
+kernel: "/pkg/linux/x86_64-rhel-8.3/gcc-11/697253a9d6dbed4645b9cc8ff8520ff074ff48f0/vmlinuz-5.19.0-13710-g697253a9d6db"
+dequeue_time: 2022-11-01 16:23:59.436451674 +08:00
 
 #! /cephfs/db/releases/20221101133228/lkp-src/include/site/inn
 job_state: finished
-loadavg: 5.02 8.73 4.41 2/802 21388
-start_time: '1667299826'
-end_time: '1667300065'
+loadavg: 64.72 24.39 8.79 1/1066 9279
+start_time: '1667291125'
+end_time: '1667291187'
 version: "/lkp/lkp/.src-20221101-154121:944016bc7:30291e638"
 
---BA5iauX4JIsXc3PQ
+--mgNSv49cLZEyiul+
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: attachment; filename="reproduce"
 
-echo '2' > '/proc/sys/vm/nr_hugepages'
-ln -sf /usr/bin/clang
-ln -sf /usr/sbin/iptables-nft /usr/bin/iptables
-ln -sf /usr/sbin/ip6tables-nft /usr/bin/ip6tables
-sed -i s/default_timeout=45/default_timeout=300/ kselftest/runner.sh
-make -C vm
-make quicktest=1 run_tests -C vm
 
---BA5iauX4JIsXc3PQ--
+for cpu_dir in /sys/devices/system/cpu/cpu[0-9]*
+do
+	online_file="$cpu_dir"/online
+	[ -f "$online_file" ] && [ "$(cat "$online_file")" -eq 0 ] && continue
+
+	file="$cpu_dir"/cpufreq/scaling_governor
+	[ -f "$file" ] && echo "performance" > "$file"
+done
+
+ "stress-ng" "--timeout" "60" "--times" "--verify" "--metrics-brief" "--vm-rw" "128"
+
+--mgNSv49cLZEyiul+--
