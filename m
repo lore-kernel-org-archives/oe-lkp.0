@@ -1,55 +1,97 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 524301374
-	for <oe-lkp@lists.linux.dev>; Sun, 13 Nov 2022 14:11:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 297D4C433D6;
-	Sun, 13 Nov 2022 14:11:44 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-	dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="bcqpeBQw"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-	t=1668348702;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=1J62+ynSE9Alcf2NcxpAWpkNh4uJLuCMy3vCWo2LFjc=;
-	b=bcqpeBQwrQH1iSV9ZsrfqS/OWmG8xIh+1lu530xEfvg2szj+mcYMK1rr7Ahd57pktcvxVc
-	tDkBy01pGyqUIdTz29opxVHJpJTVhvXGVYNT61R8OAYARc41Iqw2ZvYAvTyUG6xm6uC2my
-	qBzdTlAcQXBbpTTJfBWBAv9QXdgMWRI=
-Received: 
-	by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 032cc457 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-	Sun, 13 Nov 2022 14:11:41 +0000 (UTC)
-Date: Sun, 13 Nov 2022 15:11:38 +0100
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	Dominik Brodowski <linux@dominikbrodowski.net>,
-	linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] hw_random: use add_hwgenerator_randomness() for early
- entropy
-Message-ID: <Y3D64rIXFfRoSCne@zx2c4.com>
-References: <20221106150243.150437-1-Jason@zx2c4.com>
- <202211132159.cd70b1c0-oliver.sang@intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DE001841
+	for <oe-lkp@lists.linux.dev>; Tue, 15 Nov 2022 00:28:27 +0000 (UTC)
+Received: by mail-pj1-f54.google.com with SMTP id l22-20020a17090a3f1600b00212fbbcfb78so15375954pjc.3
+        for <oe-lkp@lists.linux.dev>; Mon, 14 Nov 2022 16:28:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=/YrBEvXICaKRM/i8fkul3YbdI3Fttajyw5Qa3v7k3N0=;
+        b=M+ej6YNUBtys0+exFhbo4qCurKGDseeKtD/FNxml2fj+guJ2+Qh87tuvTgtCCI/+Uv
+         j+bPQN3fUWRNWLMO9+gJoZ2Vui1aMAfIgRe64Qc23smrrY7zT2RrX5ixOHMecW3VVJnk
+         uI8ZMgXwAj6GSRSnC+XKN61I+q0r7ao+JdPX9fmJwR5O/qU/h5tG3l+wXUHwxzCs/P7f
+         WGkFeYU032XfgZIyT+8CnxpveQByvSH4loZqqGJsrlv6jlNy4eOVNaq6RYVPif/MdgMX
+         4o8IyebiCPcATxs5IdXrKIQnyVfTfVA4xy4fVXSJJFHBrab6InVZHCxL01OOPQg5UVf8
+         EDoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=/YrBEvXICaKRM/i8fkul3YbdI3Fttajyw5Qa3v7k3N0=;
+        b=2Mg2wG7DJg4iJJ2fo3bKhTaQ7VXJFbvHqNOKYz48O3HU48nSBLIoA5rdFiekKbjJOA
+         8IxK5zr17KAburYKf///y9FtITJmjkwjb1Xk0rwwS762Bp1VQF2OLWdMgLfBujqZCNm9
+         hAyPJJ+Vrc6Ilgckk5WMbNvYSfJvQ6JpC5lmFT6r27gVru+xTG89SM4/WULFpgxyOnP1
+         Yw7gEL598r0xQ3Sr0xgZn7b2UvNFbnV3VFb7q+TJUc3wG72Hh+6blfc/fyOy0plFlzUW
+         SsFWgdJjjT7L2QYHuWLN5lJKNQwYXwYiBpJckjbNugThUpcEAfaY8jZoolCmrjPbMuDA
+         oX7w==
+X-Gm-Message-State: ANoB5pkVRGcA0BMrmUL9CiIQNyaSPZAIFjHwQKvu96NUDpSMcYiujCQm
+	NapOBOu/+kv5L6NmOz9ZWSV8rQ==
+X-Google-Smtp-Source: AA0mqf7/q7b6ssCUspm+iaDMDQjlHFtniiQNz/nCrmpeJBmB2STO3egYNbOX8UvBl9efghoGio6uIg==
+X-Received: by 2002:a17:902:b695:b0:186:6a1d:331d with SMTP id c21-20020a170902b69500b001866a1d331dmr1543431pls.168.1668472106475;
+        Mon, 14 Nov 2022 16:28:26 -0800 (PST)
+Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
+        by smtp.gmail.com with ESMTPSA id i3-20020a636d03000000b0046f6d7dcd1dsm6487819pgc.25.2022.11.14.16.28.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Nov 2022 16:28:26 -0800 (PST)
+Date: Tue, 15 Nov 2022 00:28:22 +0000
+From: Sean Christopherson <seanjc@google.com>
+To: kernel test robot <yujie.liu@intel.com>
+Cc: Andrey Ryabinin <ryabinin.a.a@gmail.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, Dave Hansen <dave.hansen@linux.intel.com>,
+	linux-kernel@vger.kernel.org, x86@kernel.org,
+	kasan-dev@googlegroups.com, Han Ning <ning.han@intel.com>
+Subject: Re: [tip:x86/mm] [x86/kasan] 9fd429c280:
+ BUG:unable_to_handle_page_fault_for_address
+Message-ID: <Y3LdJni8+ye/soOV@google.com>
+References: <202211121255.f840971-yujie.liu@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202211132159.cd70b1c0-oliver.sang@intel.com>
+In-Reply-To: <202211121255.f840971-yujie.liu@intel.com>
 
-On Sun, Nov 13, 2022 at 09:48:46PM +0800, kernel test robot wrote:
-> 
+On Sat, Nov 12, 2022, kernel test robot wrote:
 > Greeting,
 > 
-> FYI, we noticed WARNING:at_kernel/kthread.c:#kthread_should_stop due to commit (built with gcc-11):
+> FYI, we noticed BUG:unable_to_handle_page_fault_for_address due to commit (built with gcc-11):
 > 
-> commit: cea83a6b31856293ceab2c6ebab7843322fe105e ("[PATCH v3] hw_random: use add_hwgenerator_randomness() for early entropy")
-> url: https://github.com/intel-lab-lkp/linux/commits/UPDATE-20221106-230344/Jason-A-Donenfeld/hw_random-use-add_hwgenerator_randomness-for-early-entropy/20221106-044656
-> base: https://git.kernel.org/cgit/linux/kernel/git/gregkh/char-misc.git 30a0b95b1335e12efef89dd78518ed3e4a71a763
-> patch subject: [PATCH v3] hw_random: use add_hwgenerator_randomness() for early entropy
+> commit: 9fd429c28073fa40f5465cd6e4769a0af80bf398 ("x86/kasan: Map shadow for percpu pages on demand")
+> https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git x86/mm
+> 
+> [test failed on linux-next/master f8f60f322f0640c8edda2942ca5f84b7a27c417a]
+> 
+> on test machine: 128 threads 2 sockets Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz (Ice Lake) with 128G memory
+> 
+> caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
+> 
+> 
+> [  158.064712][ T8416] BUG: unable to handle page fault for address: fffffbc00012de04
+> [  158.074534][ T8416] #PF: supervisor read access in kernel mode
+> [  158.074537][ T8416] #PF: error_code(0x0000) - not-present page
+> [  158.095763][ T8416] PGD 207e210067 P4D 1fef217067 PUD 1fef216067 PMD 103344b067 PTE 0
+> [  158.095770][ T8416] Oops: 0000 [#1] SMP KASAN NOPTI
+> [  158.095773][ T8416] CPU: 34 PID: 8416 Comm: umip_test_basic Not tainted 6.1.0-rc2-00001-g9fd429c28073 #1
+> [ 158.107429][ T8416] RIP: 0010:get_desc (arch/x86/lib/insn-eval.c:660) 
+> [ 158.107465][ T8416] insn_get_seg_base (arch/x86/lib/insn-eval.c:725) 
+> [ 158.117492][ T8416] insn_fetch_from_user (arch/x86/lib/insn-eval.c:1476 arch/x86/lib/insn-eval.c:1505) 
+> [ 158.117496][ T8416] fixup_umip_exception (arch/x86/kernel/umip.c:353) 
+> [ 158.187382][ T8416] exc_general_protection (arch/x86/kernel/traps.c:733 arch/x86/kernel/traps.c:721) 
+> [ 158.187386][ T8416] asm_exc_general_protection (arch/x86/include/asm/idtentry.h:564) 
 
-A bit late. v4 was posted a while ago now.
+...
+
+> We are sorry that the testcase and reproducing steps are not available
+> for this case. Hope the call trace can help to investigate, and we can
+> also help to do further verification if needed. Thanks.
+
+Luckily, it's a known issue.
+
+https://lore.kernel.org/all/20221110203504.1985010-3-seanjc@google.com
