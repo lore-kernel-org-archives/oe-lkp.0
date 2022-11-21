@@ -1,128 +1,94 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F22567E
-	for <oe-lkp@lists.linux.dev>; Mon, 21 Nov 2022 08:01:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1669017665;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=0AQyYFfo+9gxGliawJp4LGdOeDV+4qepnwYb6KBjwmI=;
-	b=OIJKTikzlC7Jh0SFK50q+prNKV8ajOtQkNvL+62QBxZj1PoYytVACuGQFqxbMuGGgIWh7x
-	3M3Mjap/KIjz4oiuTDQepMndYWSpbim20ZpsH/Wt972iRDHMOt1j+vfkv7hSAlU9ll9pLW
-	T7R/sip4FLgXv1euoW96c2LBwiOCGhg=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-639-4og5xeaKP7CLkE22APM7Ag-1; Mon, 21 Nov 2022 03:01:03 -0500
-X-MC-Unique: 4og5xeaKP7CLkE22APM7Ag-1
-Received: by mail-wr1-f72.google.com with SMTP id t12-20020adfa2cc000000b0022adcbb248bso2877020wra.1
-        for <oe-lkp@lists.linux.dev>; Mon, 21 Nov 2022 00:01:02 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:organization:from
-         :content-language:references:cc:to:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=0AQyYFfo+9gxGliawJp4LGdOeDV+4qepnwYb6KBjwmI=;
-        b=RmBgAMufdpUtAZ0rKrybNj2CJ5MDEGlv96fCENqkQ0+Jwk8PPk8c4QfdceM0Kn0kga
-         7XgMBUQs9tyGnBCz1RVmNah4xqlVNR2Vz2xwMu7Eou+hiwMF/P1AOLYYGhwcApEXJUMl
-         junQPqLzRNbBSga7trDUayxTD76mkePArQnFdIOzHSC7T8O4JnhSYlRzV0zbFuYbNbez
-         EXr9MgjXVZ5tVyzrNM/kmuKNqLZzpcVtMGecfGUHZUURskK5+mkPaBve9TvfWyqBjgXK
-         okSKlFZ5oJ7UJSgBjxzZKRQ0h+c45IpFfU2TxSeaHaB/HAexv1yGjWdWXOFjkuMJ55u1
-         bfPA==
-X-Gm-Message-State: ANoB5pnmX7baW7txA7wY26W0rcQiMp72CHgX9Jrvv8l+3oKezvwdUtMp
-	J210E8bWFr7vj+SPX72d50AKp+nrBb6ha3oRI9h1MB+ZOWjaPQBBNDuHF0mQMlg9+qsSW0JdIF3
-	PWJ4kU9xkk5cIGFuK
-X-Received: by 2002:adf:eb0c:0:b0:236:6deb:4498 with SMTP id s12-20020adfeb0c000000b002366deb4498mr10407202wrn.52.1669017661915;
-        Mon, 21 Nov 2022 00:01:01 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf77j1WiPf/k1EzdHh95eZGoSHc+IIaDgk6glybs/fguxmE2Lp2ljuzCpa/dLBDvV3elHKQL7A==
-X-Received: by 2002:adf:eb0c:0:b0:236:6deb:4498 with SMTP id s12-20020adfeb0c000000b002366deb4498mr10407175wrn.52.1669017661507;
-        Mon, 21 Nov 2022 00:01:01 -0800 (PST)
-Received: from ?IPV6:2003:cb:c702:dc00:2571:c3c2:c6ea:84ef? (p200300cbc702dc002571c3c2c6ea84ef.dip0.t-ipconnect.de. [2003:cb:c702:dc00:2571:c3c2:c6ea:84ef])
-        by smtp.gmail.com with ESMTPSA id l24-20020a05600c1d1800b003cf878c4468sm19240074wms.5.2022.11.21.00.00.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Nov 2022 00:01:01 -0800 (PST)
-Message-ID: <7b2055f2-f5ce-be01-7c39-edcc4be6a7aa@redhat.com>
-Date: Mon, 21 Nov 2022 09:00:59 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 836C31C02
+	for <oe-lkp@lists.linux.dev>; Mon, 21 Nov 2022 11:54:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=fZlVpl9vCeaK6U7Z7MahRQ+/uNq3FYPecQFtqw0ZqJA=; b=jeKMRORqkRQYm4N9cBg+1WE148
+	kbhs/jDDkufSwKY2xI41Jk2ICPyGblnnDvgaoyTE7XRgIbagB+I6mrLPGh0Uzz7YXAf8Q6jx2/s6i
+	hLzLIZWxAl7PVO9rC8d1wwkLtdCLXvfpP2875+iqtM9K5QiUzWa0Kf5e7jQ7hZAL9PAz1AhmuOq21
+	YyXCSXrvTFeXUjz8qictA9iU4yYfZDyJTOyXIjJFoRAaevFoH+jFdltw2KzpSu245FPylP3JDZhcC
+	ScWwmQEo+AFpTWRuOBCm7KvQGwBJXaA9lm+jnB7rau+3LLjpatZAMIZjTuOPrp1wmwO0LuMk++Nux
+	XDN5OhxQ==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
+	by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+	id 1ox501-0059zl-7f; Mon, 21 Nov 2022 11:30:05 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(Client did not present a certificate)
+	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 3EB2A30062A;
+	Mon, 21 Nov 2022 12:29:57 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+	id EBD72203A8995; Mon, 21 Nov 2022 12:29:56 +0100 (CET)
+Date: Mon, 21 Nov 2022 12:29:56 +0100
+From: Peter Zijlstra <peterz@infradead.org>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
+	Dave Hansen <dave.hansen@intel.com>, linux-kernel@vger.kernel.org,
+	x86@kernel.org
+Subject: Re: [tip:x86/mm] [x86/mm]  127960a055:
+ WARNING:at_arch/x86/include/asm/kfence.h:#kfence_protect
+Message-ID: <Y3thNAR4AV8Lp1qZ@hirez.programming.kicks-ass.net>
+References: <202211201642.b65c9d2f-oliver.sang@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.1
-To: kernel test robot <yujie.liu@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
- Andrew Morton <akpm@linux-foundation.org>, Jason Gunthorpe <jgg@nvidia.com>,
- John Hubbard <jhubbard@nvidia.com>, Andrea Arcangeli <aarcange@redhat.com>,
- Hugh Dickins <hughd@google.com>, Peter Xu <peterx@redhat.com>,
- Alistair Popple <apopple@nvidia.com>, Nadav Amit <namit@vmware.com>,
- Yang Shi <shy828301@gmail.com>, Vlastimil Babka <vbabka@suse.cz>,
- Michal Hocko <mhocko@kernel.org>, Mike Kravetz <mike.kravetz@oracle.com>,
- Andrea Parri <parri.andrea@gmail.com>, Will Deacon <will@kernel.org>,
- Peter Zijlstra <peterz@infradead.org>, "Paul E. McKenney"
- <paulmck@kernel.org>, Christoph von Recklinghausen <crecklin@redhat.com>,
- Don Dutile <ddutile@redhat.com>, linux-kernel@vger.kernel.org,
- linux-mm@kvack.org, ying.huang@intel.com, feng.tang@intel.com,
- zhengjun.xing@linux.intel.com, fengwei.yin@intel.com
-References: <202211211037.2b2e5e1f-yujie.liu@intel.com>
-From: David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-Subject: Re: [linus:master] [mm] 088b8aa537: vm-scalability.throughput -6.5%
- regression
-In-Reply-To: <202211211037.2b2e5e1f-yujie.liu@intel.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202211201642.b65c9d2f-oliver.sang@intel.com>
 
-On 21.11.22 04:03, kernel test robot wrote:
+On Sun, Nov 20, 2022 at 04:40:51PM +0800, kernel test robot wrote:
+> 
+> hi, PeterZ,
+> 
+> we noticed this is a fix for
+> "[tip:x86/mm] [x86/mm]  b389949485: WARNING:at_arch/x86/mm/pat/set_memory.c:#__change_page_attr"
+> we reported before on
+> https://lore.kernel.org/all/202211061748.eb591682-oliver.sang@intel.com/
+> we noticed it brought below issue which is persistent in our tests. FYI
+> 
+> 
 > Greeting,
 > 
-> FYI, we noticed a -6.5% regression of vm-scalability.throughput due to commit:
+> FYI, we noticed WARNING:at_arch/x86/include/asm/kfence.h:#kfence_protect due to commit (built with gcc-11):
 > 
-> commit: 088b8aa537c2c767765f1c19b555f21ffe555786 ("mm: fix PageAnonExclusive clearing racing with concurrent RCU GUP-fast")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> commit: 127960a05548ea699a95791669e8112552eb2452 ("x86/mm: Inhibit _PAGE_NX changes from cpa_process_alias()")
+> https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git x86/mm
 > 
-> in testcase: vm-scalability
-> on test machine: 88 threads 2 sockets Intel(R) Xeon(R) Gold 6238M CPU @ 2.10GHz (Cascade Lake) with 128G memory
-> with following parameters:
+> in testcase: boot
 > 
-> 	thp_enabled: never
-> 	thp_defrag: never
-> 	nr_task: 1
-> 	nr_pmem: 2
-> 	priority: 1
-> 	test: swap-w-seq
-> 	cpufreq_governor: performance
+> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
 > 
-> test-description: The motivation behind this suite is to exercise functions and regions of the mm/ of the Linux kernel which are of interest to us.
-> test-url: https://git.kernel.org/cgit/linux/kernel/git/wfg/vm-scalability.git/
+> caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
 > 
+> 
+> +----------------------------------------------------------+------------+------------+
+> |                                                          | 5ab815e377 | 127960a055 |
+> +----------------------------------------------------------+------------+------------+
+> | WARNING:at_arch/x86/include/asm/kfence.h:#kfence_protect | 0          | 15         |
+> | RIP:kfence_protect                                       | 0          | 15         |
+> | WARNING:at_mm/kfence/core.c:#kfence_protect              | 0          | 15         |
+> +----------------------------------------------------------+------------+------------+
+> 
+> 
+> If you fix the issue, kindly add following tag
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Link: https://lore.kernel.org/oe-lkp/202211201642.b65c9d2f-oliver.sang@intel.com
+> 
+> 
+> [    1.269844][    T0] ------------[ cut here ]------------
+> [ 1.270843][ T0] WARNING: CPU: 0 PID: 0 at arch/x86/include/asm/kfence.h:46 kfence_protect (arch/x86/include/asm/kfence.h:46 mm/kfence/core.c:235) 
 
-Yes, page_try_share_anon_rmap() might now be a bit more expensive now, 
-turning try_to_unmap_one() a bit more expensive. However, that patch 
-also changes the unconditional TLB flush into a conditional TLB flush, 
-so results might vary heavily between machines/architectures.
+Should be fixed by:
 
-smp_mb__after_atomic() is a NOP on x86, so the smp_mb() before the 
-page_maybe_dma_pinned() check would have to be responsible.
+  https://lkml.kernel.org/r/41ac24c4-6c95-d946-2679-c1be2cb20536@intel.com
 
-While there might certainly be ways for optimizing that further (e.g., 
-if the ptep_get_and_clear() already implies a smp_mb()), the facts that:
-
-(1) It's a swap micro-benchmark
-(2) We have 3% stddev
-
-Don't make me get active now ;)
-
--- 
-Thanks,
-
-David / dhildenb
+I think.
 
