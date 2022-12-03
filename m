@@ -1,78 +1,75 @@
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42A8C7B
-	for <oe-lkp@lists.linux.dev>; Sat,  3 Dec 2022 14:05:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B14BF28F2
+	for <oe-lkp@lists.linux.dev>; Sat,  3 Dec 2022 14:48:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1670076309; x=1701612309;
+  t=1670078883; x=1701614883;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Iku4G2TKNyb+FBaYbBKBgQ3iOaiSKcVH5z43aaS5VDU=;
-  b=BMg/oG+bCzYV1RJ2vozYQF1Riqumptbw9KU+mDBmMnxjdAtgeqMPbzjC
-   QA9MhvE2OjXlibeLWTZmnvSSoMBlegLSYwqyfbVvQL4Axc7LnnkOC+uKx
-   KfuqwPDXCBM/9cujzN3iLy/gZBDXrjdWy0Mj10ds03eKZBzUu+RnaB6R3
-   hAOIdvv0ugxDvT5yG4RxynLsuYo6YcDzdHSTwuJjil6GtWvg0KstqQrn4
-   nBo50xs7d4PFuy9MkRmdvMNXK7brTxjooQji+WdNqvQ1RcNitS+vVCCiB
-   /zKyzxb2YygKDx5+R5sD97bjcVJE5NjPO0a/CTwWqBCamxVVe8LYrDPkK
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10549"; a="296480315"
+  bh=BDpTmo7mJ+82H9AnXoY8g/SfjZbuv5vrmIi90NL6ENI=;
+  b=IJmFDu2Kjc9pAOldXSetQGn6I8ISa7tnuEYBBVq5DlgGE3A9OrP6W0u4
+   kBcNOkywx8dGcYa2LXQpq30Zuw7HGzzvSfKUTOUzdP04+rMVA74MzSRmn
+   9gDun2vxT7hrVLoisr38TUEQNVNXsgUHXZ3v9F8Klqcp+o57VFa6NlfeX
+   lNHC+rtoO/CAbUoCHPdYZG01EUiQY+tNFMR7PP8ca/kauoiVnun1us6pD
+   QhwFjxPMKHeUdU0WPbV2XjeM2TYiWhPOXWrU0U0MD5I1OkZ6TAUTSD5z3
+   TwW2fhb4D9e0he1A00QKiyoWSPrYWA1CGzsOyK/YFSdxFldWYx8Cf4uDG
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10549"; a="402402976"
 X-IronPort-AV: E=Sophos;i="5.96,214,1665471600"; 
-   d="xz'?yaml'?scan'208";a="296480315"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Dec 2022 06:05:07 -0800
+   d="xz'?scan'208";a="402402976"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Dec 2022 06:48:02 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10549"; a="974215871"
+X-IronPort-AV: E=McAfee;i="6500,9779,10549"; a="713930441"
 X-IronPort-AV: E=Sophos;i="5.96,214,1665471600"; 
-   d="xz'?yaml'?scan'208";a="974215871"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by fmsmga005.fm.intel.com with ESMTP; 03 Dec 2022 06:05:06 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+   d="xz'?scan'208";a="713930441"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by fmsmga004.fm.intel.com with ESMTP; 03 Dec 2022 06:48:02 -0800
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Sat, 3 Dec 2022 06:05:06 -0800
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ 15.1.2507.16; Sat, 3 Dec 2022 06:48:01 -0800
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Sat, 3 Dec 2022 06:05:06 -0800
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.168)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ 15.1.2507.16 via Frontend Transport; Sat, 3 Dec 2022 06:48:01 -0800
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.169)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Sat, 3 Dec 2022 06:05:04 -0800
+ 15.1.2507.16; Sat, 3 Dec 2022 06:48:01 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nxkAEKJy02PGWlyrWUEetZ29ySAeFmHzDy94B4fSFGpqTbfXvfw3YBlQsYCzWaVhduJGoZMK14R3Jct6ywxWvJt8T95uWUhdZ1EP0lX962tKbDu8WB6kOeyPrwSRkvL0ooG1mJBc+gKXTvt7GvmiEm6/whrJtVhOb0uxWXAVxaaf/7OSWUG0WQfGnPsRqu6zeRjBsstwSG5rHw+0mq1RKdcOR2/gz2ypLhmq5l+fO2G1A6pjhRpJt7VwLjK7CFMC/uYSLp1ASdLY4KKBVE+3g7SETBb8AZH7juVAyHR4ACfNOrYlJ+TUBmaW92YaY8YqQnn8zAeRYxTjYgiCDzy9eA==
+ b=kipxk4olM8GZWfdBKICkoqN9R0XRAHmVziLWdldR9MeEuxfTqShlAOnEtlp5gJwYNcw4k6HAlFixNdyodJrJpy6oGbPyhVxP5w3pETfv7QTi3FjuuOl4m3mJru4EVXDuw3n1E0evp5mEcOZ0lTpMEhDxnmVYz+j7CAXe69MyLHOOV7xEafxuEcrtWybvPbqk2yEQplwAUQ45q+N9TAqyTOeRNUGwaTnnkmQ9qCeB6VYjZoBdqLlAHh5MryZJeoLb+8wCZt+g6j8/OirHODFJyZaG4I9s0DrCY46GbFYj+0ugsZbdhYX6feitzBcbcyVkjLnZYVHjwMqgHM685o7nLg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6tJbv2UFs+jQclfJnadNw/b3J8VvQu4di8W6cftu6ZA=;
- b=T2OLVfjMzN2FNdUQ7TeCR0BgDaq96JRs54gUzgHYA4EtaD7LGFf+ReX7LxSxaV4wU5TxZ7AvxPS1iAFTyoXebPubG+r+sFmKbjmoc2YBf7GKAnVbcb2Xb6U1FVqErosOiaCsOnCzG/noSpSOJt3Kzdkmb36z9UG5xuGitZa1nT3/JNaEt19vqz1pVbjFfI2iTz9MGWQvIVESPbjvln7bMAiuVB9GhogAC5cUCmxuTkJ0gswf2yl91puqaUN2VCQScOONANjU9drSeJ1HDIrwbjPiGoZsr0o0pKfFlGPHctm76artt1/Bt2V1ziwPjnXpZfBbqSm6r6g0YVLqTao98A==
+ bh=LREpnw6ww0yOA9UO5UGJbYR2xusp4ODHN6I2AI4xLd4=;
+ b=YWUxlNeawXGY12AgW0AtHSkMVL/QsXoVHhDe2e/BN91bRg+L5vTYnW9EOYj8bcXKLngHvnKwk2nqDEF41v3PWk1ijOsy/1qzARfxT9pJyCnUwqtgRXfKWyUkBgqMn2dkALwHV0gBBfE/cYwRfLksovwOt5xBKSXctdsf985X3fvqK42OeOVvvwzrevviLUkvSNaLCnDlwYL/yfstHWEyXej8y0UF0QQ6W2JQf0k8VF0auIsoC7XHSoXyF6bq+UoJg00r0AHciPNWDmGQ27YYwpUUW/lVpCLIi3Ebhyz5owfjr9Yetcp8bcuOW4oWT3P4TIYEvztxcsv/COTw0MNOjg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
- by PH7PR11MB5887.namprd11.prod.outlook.com (2603:10b6:510:136::20) with
+ by PH8PR11MB6683.namprd11.prod.outlook.com (2603:10b6:510:1c6::9) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.8; Sat, 3 Dec
- 2022 14:04:57 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Sat, 3 Dec
+ 2022 14:47:56 +0000
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com
  ([fe80::15c8:6dea:24bb:b4c8]) by PH8PR11MB6779.namprd11.prod.outlook.com
  ([fe80::15c8:6dea:24bb:b4c8%8]) with mapi id 15.20.5880.011; Sat, 3 Dec 2022
- 14:04:57 +0000
-Date: Sat, 3 Dec 2022 22:04:46 +0800
+ 14:47:55 +0000
+Date: Sat, 3 Dec 2022 22:47:47 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Maxim Levitsky <mlevitsk@redhat.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Paolo Bonzini
-	<pbonzini@redhat.com>, <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>,
-	<xudong.hao@intel.com>
-Subject: [linus:master] [KVM]  92e7d5c83a:
- kernel-selftests.kvm.triple_fault_event_test.fail
-Message-ID: <202212032146.b0347c81-oliver.sang@intel.com>
-Content-Type: multipart/mixed; boundary="8nAerbALHNP9BH49"
+To: "Paul E. McKenney" <paulmck@kernel.org>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>
+Subject: [linus:master] [rcutorture]  a5c095e0e9: WARNING:suspicious_RCU_usage
+Message-ID: <202212032149.66b0c23b-oliver.sang@intel.com>
+Content-Type: multipart/mixed; boundary="4SmVSleSRHaDVft5"
 Content-Disposition: inline
 User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: SI1PR02CA0013.apcprd02.prod.outlook.com
- (2603:1096:4:1f7::7) To PH8PR11MB6779.namprd11.prod.outlook.com
+X-ClientProxiedBy: SG2PR02CA0032.apcprd02.prod.outlook.com
+ (2603:1096:3:18::20) To PH8PR11MB6779.namprd11.prod.outlook.com
  (2603:10b6:510:1ca::17)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -81,108 +78,149 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|PH7PR11MB5887:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4587c95c-7658-42a1-ae0a-08dad5375b22
+X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|PH8PR11MB6683:EE_
+X-MS-Office365-Filtering-Correlation-Id: cc5d3708-0c46-4a84-1599-08dad53d5cb6
 X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: M6z3Zank3o9Trk2b5kk6XzpqraR+lJyEhRUvUBrDBzRZd6f+5/y7ies2/HE//ztYtQ/jtYyP/xdcsrF/+S8YIhBe6GA8o94SRQcKeHPlLY8dzHSlMFwaQcWxi8gvFrF8Is7aQ/Khq6Jmc5KRvF2xDU6+7/xtby9bVH4MEBTSdnxpUFYzyczEyKhyy8Z9JQRHn05yJqK0LWZImdizDWR3JKMI0+bc8/1rceBwIQnwDxyuSPZCbMcRTiPLtZOcjb7SluWM4jYV7rAfUZeFEcMSkzvFF1vOZtSe6nHONF8gE4omkMOd3kvRjgOg5HBCbbVhyCnFY52Zs5BR8E2TovHuxgapkrvLz+H09XIk4NgO03LeKpF7LXTWo7USGESAoIkdztuVyr7l9AeF8H0oRU4YQiQq/UB1SXoTbEydXAXWhSoumVVFGEFUhaovzC3WpXHwmjebu7MbUHxW0vaGjG3kHSTZvr5p4pY7E8POv+2pSHFhLhKSbcN//15QfyoP1FyixwWHkGp+X2JPV92G5SkKEuYMO/6pCBxdNNU5xr0LvQvurxqZmM8UlOseLfwoBssJmxTWbKHM2WUKcrAHXl5X7DZnbvTv5AHud435kJQLJCKB+OCYKgGLp7/0l9279VW85uMgt0+q5Ax/qDN6SkbNwUDP4kZPEFcNejFxLn+2ymFinECRKctWZn9SnH2+d+xF08efPRdfwT4tgn7xne6M8lOpBa30smwHX0s49B+nvZkv0iYBOvVCjpCa0yVtz2qY1WFzWSVYkAYHZKbr9F7hWg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(136003)(396003)(346002)(376002)(366004)(39860400002)(451199015)(478600001)(6666004)(107886003)(38100700002)(82960400001)(86362001)(6506007)(44144004)(6916009)(6486002)(2906002)(8936002)(6512007)(316002)(26005)(2616005)(4326008)(186003)(36756003)(1076003)(41300700001)(66556008)(66946007)(966005)(21490400003)(66476007)(8676002)(235185007)(83380400001)(5660300002)(2700100001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: kw8eMOT2+psbFKFvyU6QU3mj8z1z7sIecjBGgLdRiHMwwVZDSdppsHW1xmSl/LlEdFtbW9JOdhe7RrCaRYEsXJA+Fj0fGd/m7EAIKruigBkymwN8V5JuSkaUxIaCvWZKFfhIRzJlxwp/OjpBGRsAU1xLsWPOHe9/KLBlQbMl4NdNPY/Z4+qP84ZBB62DtKfji6HJ4g5wBq4YbfOKoztpzl3xmDuOg8hu9/8yuvYywucIOw+21HhLb6q5/G77JgrIyXr6nU4giPrPQzJUQbSLBtHQXtk4QOmt/U3TSfOrTAMEtoL/42sqwjbKszTKpNEg0qY5JhgY1Kgyd0o9CnJxtyUuXboVQzDzw4qOI5mYkU82D6o0GJ726fotgxs+C4KWOUZWnmLA18b9yPItAWWwdVtDn3OxiW6iPZ96bcGVDMdVnxQgWYVXMa+hmK9hM5QH6RSAjUHt26M8rxSX35ngnAjTCk8eNkrY3D+zM8fBaEfZHfk7qobWL887tFTV3W57cX9c5ri3+aqadGkXtyf+k7whlOyamu2E2WpDvv0NtvBNQX4TAp+gRb114rwKHHFVCqj8/WXfewGJGTh3cI4I34U50Cdm6HTu2gsGooCVLfPCePpd9fPiXtkTKc+JMrV5XqK1Z2qPgfq4+NqkT4JJ3G9u0Ru24aZeomS3Smh2FF6nLH0HyKpLSC3xhHFYhjYInPsAktYw5SRu02DOWhIIlmmj48FR475LR6TW3VKuupAe50MSKy18mAt1qZHLY7kAWNlFu4ARmLe9lghFUJRTsQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(366004)(39860400002)(136003)(376002)(346002)(396003)(451199015)(6512007)(8936002)(2906002)(36756003)(6486002)(8676002)(6916009)(316002)(186003)(478600001)(82960400001)(38100700002)(86362001)(4326008)(235185007)(6666004)(2616005)(1076003)(41300700001)(66556008)(966005)(44144004)(66946007)(66476007)(6506007)(5660300002)(26005)(83380400001)(2700100001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?XQgzTq0OyFfs+OTmW79Ya/hb0D4d6+nSQvHqq4WelY6NStj6v2NgAt/tE2rY?=
- =?us-ascii?Q?7gLXdtVhmOi3ZtO512o5j/DtQBLO9toIFooChCqzl3kQLFuH7D1T/KDnjc0/?=
- =?us-ascii?Q?0VLzhUeOOCAO4xyQGsjzb/r+y42UZUiNrqLxMNvpk7z7FIYHfEikCBkW+/S7?=
- =?us-ascii?Q?c2+6dXH4me1yEEL9VRRFNtfIZOfSjhxcZ+W1vCFxP+P0RM8QO9Cv40Z6mutN?=
- =?us-ascii?Q?FysuBtVjE1/hv/8e+dGgnEYME9GbsNHYP/lxXNCY2dTGbEaSAuPH5KoaexL0?=
- =?us-ascii?Q?P+LqmF4UW/yJOKTKV9R7xrhqu+X5naNZk1ER9YZezvFOENvP9+yjb+SXNp1c?=
- =?us-ascii?Q?UMrr90rE43JBRzh+7hSTFoOdn0HIX7EnDOem3TBQ3q8woETRNhgok1RBAi/T?=
- =?us-ascii?Q?lclqOMQqMzd63LR6JSdBrcq9KMRtaVV9y0WSu5pWyiXdB945abHVkB5mRlTq?=
- =?us-ascii?Q?2Y/6Lpmw1xw72RVUxtpH5a8PEt3Nb8BjF76Ii4eDdrl+6LKOiBtiyD7PWVvL?=
- =?us-ascii?Q?0E4+pUetkevJtmTnDPx9f2vBkepIQbtQ5OU4z1Eo3eJ1pUYr698Qy6BhocUS?=
- =?us-ascii?Q?82UXzGVW4cuxYhgNnQZeXBkuNtDJI5LwVx9JB4QVdBdcEhoEiXKkoPbDOYxy?=
- =?us-ascii?Q?T+DBRpBM7wpw76y8fCf6OqpOMcrb0xGYWzHZE9hngRltk6f6YVeuAtxxVRRG?=
- =?us-ascii?Q?xkNbBDgJGZnfB44rufcF7lTChO08sRszshwpn1jL7fXyr68xbQ2Ha7z0kzeS?=
- =?us-ascii?Q?++NC1BXM0uNaRCvsVnoFvOv0tv54p2SXdq4xlFIVblbdmj/9cTAw2vC3aZ1Q?=
- =?us-ascii?Q?bF2am4ox43D+lvFhzf6AOTOqPDIdgSN1/m7moilzejMoFq/gCk7n2OMgW42V?=
- =?us-ascii?Q?HXCCV0V8pOwSqyIny4bDvU7DeFa9DGQOGJSZIIb117CejdgByrM1aTVHJz/X?=
- =?us-ascii?Q?RtFcwi4o9hIO5vy18hYVilXeUOmMYbAY4/JLXPEpmPkX4w4DULzDcWgLErFK?=
- =?us-ascii?Q?5kqzYCSyIWs/swjDWKevGobRFl/t9OAu3RpJCdOXwlzu1vu5GVXFQN8MAX4y?=
- =?us-ascii?Q?/QPuc13IwyhNOoGJ7D+Uth5oqjTSgGGliVdVXFF/QkITOnRRJZ3vUVBcjJ96?=
- =?us-ascii?Q?5QfobLmBzf5oanD6l7yaw6TsLYEscXva4SaKsIB+VaFV3QgBQVOtHBylFT4i?=
- =?us-ascii?Q?Q2wMOX+4eD08zm/cDWvK5CpS7HJ2dbo+QFOBve9UfgILlXl89aIneS+OoMgx?=
- =?us-ascii?Q?zrnMAH2F6bdhaboUMEu7ti6jmVKoD5mA5/Qmf0icts6/uJ4lY+VUXaN6EjU5?=
- =?us-ascii?Q?DpisgJfmag5jh6Dr1hxybRJzRkqVH7008TAfr/SipfEftSioBpXMaG4hi6V3?=
- =?us-ascii?Q?+ZQeVA81Eg8r3igk0ac9FgwJeya/ojnQrCCOdp4mdbvJdg6+YrkVuCYD1SmJ?=
- =?us-ascii?Q?pcvXJftBL+ydNirBdp425K2/B7ptLFGmz0blMfNphF8OwPKsoQRmimwvthRf?=
- =?us-ascii?Q?KpEd38YZ5OyhtpTnAMi9oxh5daQ5AcCnb/lg3IpCO0d1jHpE8yaVVWw+sT0j?=
- =?us-ascii?Q?lkl0F7X2uYaUwJ1zpeVcdTqChpUGhagI2tFRmgboYgHAmV5e5pni7o68t0Kc?=
- =?us-ascii?Q?eQ=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4587c95c-7658-42a1-ae0a-08dad5375b22
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?vWcJ4nAqCdeEqttkgfbYOGG607StA6J1GDaZnc1AU6R/EpVrwPQ6VYd/v+L2?=
+ =?us-ascii?Q?yZT1E+8lmSzcBL/3eqjMR++FK/bZp8Mi/ogctdQUE6sc7HJ8Zvu0KH/Q7j1j?=
+ =?us-ascii?Q?VJNw/2cbJexgxp4L4DGWpCWDYlNbs22iE+ANHGf0giaK+IzHeqFpqxGl9S6x?=
+ =?us-ascii?Q?j2OyGlg3gM+NH/KVOwXW3ODpQu9B/+eplOX0P2w7bQvXTGzTjJc3Bl1JxLHR?=
+ =?us-ascii?Q?aqLSHKrccnW15UO62PxU57vFJzXvBdq9EkCzrK00hFDl4RYXggJ0lpu8490h?=
+ =?us-ascii?Q?9H2A4g9r3XIjdr6jFl/M1NQKt2QASjWaEX4RW7jTeH2beYW1h0if5AdxDLPL?=
+ =?us-ascii?Q?bH5/iQBPkttub4hGRgCuOlMQDy2JqYFuL5pWf7Fpx3erlWKNRcKl3pDUEbTu?=
+ =?us-ascii?Q?hxoayU+ob2+SEuYBDzwrtEJeRElJwFKVLMumNV6rupLkhlsSwlSAcQK/nhIs?=
+ =?us-ascii?Q?Hv80ci+opTWLth4JBGh6yZoqzuZieRHP0+U98GhdUmUStIqC+7OgVklp0JDk?=
+ =?us-ascii?Q?UW8wk9iLvLpaMYN+rVgoQXeA9LrC5BqILTiLzznl2Ot80CaXzAE/M2BL9jRE?=
+ =?us-ascii?Q?1ohBh0AZ5xUBgUaxCcASEzSC+nciTvYh74VllKyxHG8vlD7PDbUs8eNQQgbt?=
+ =?us-ascii?Q?VIpTHQcdgLdr8trxJyJliQYXaIv/MW8Y3S4nVPYt3636Bly7O566OenEStZ1?=
+ =?us-ascii?Q?+4YMRAB95kp6sVZuTigxKbKmgD+H5BdiaU9sKLfq5WcAHtA2e7xnjI+LqF9u?=
+ =?us-ascii?Q?dvDARtZCSGbn1YfSDcxiH3RQ5CMlZWQ9pnw6RGgeZiaP+VoWEpVHVkGPh1er?=
+ =?us-ascii?Q?gMuewlNuG3Not9EcKT72WMtRK3uCLFPcgNYzW+xzV1Hm3GPaDsu1pQkm2kG0?=
+ =?us-ascii?Q?svOCX1SXsXhpv+zyrkflvJQmigmeZOuGJ4ydr+LH5wdErg5DK5SxTCojmqJ6?=
+ =?us-ascii?Q?eDwSJ6BjWF5w9MMZBfu9U4lJHVLt32ZsdvB6fmp7kLyBVhiPr01Kx1Y4bOo2?=
+ =?us-ascii?Q?q2YrWsRGO71je02aoUn7Xl39GpJPTSbfXrwVg2NRewz30fMGmATvKS/awqMb?=
+ =?us-ascii?Q?1VEY0RZa8bP6rQaID2pDUj6iEeCFbr8CW+DrlQxHXo8y0lhH52vaCjJ9J0i9?=
+ =?us-ascii?Q?RhMU+0CwNLlyufHvDOe4YRzu5NGTGv/d/566e7gvj3OkyY51QBlZdlTHS143?=
+ =?us-ascii?Q?dULK2xtBy3/esejV+ue2StjCZYhuzyEe0eGJsjtRgkHCp4kFtzzpIb9cyUfc?=
+ =?us-ascii?Q?8I45wXmWufJq1ZVXkWLQ1d3uACI2bqlyLVhJBtr6gjtHrSxdbaKDE86q+/Ad?=
+ =?us-ascii?Q?qpKg3xifTR5pW/YmSm2R3SzQWDMgk+jdVlyAj24yOv3uuZDjMZ4If2Joo0Rb?=
+ =?us-ascii?Q?5VAbRXu7Hgh0mmyb6md0klAXdkNx4OKJdK7yRV1FA189LrqpMECjNDQLk+e4?=
+ =?us-ascii?Q?CTiiYyHnJIRVQHOmnw3T8jn6Lp2R8ezYWJvnyjU8OdBRzm5MQY9VX4+BNKqM?=
+ =?us-ascii?Q?AnI601/FSFd5BrLYiEdo1wb555JaaOS5UvOZeaLOP8O1y9+H2BtoJivQmlFs?=
+ =?us-ascii?Q?CJNHW+cC6aZsc8dB5P/1/68j40n+iv8qIlrI2Vhv5QZxTaq55/9cCSAeJ0F7?=
+ =?us-ascii?Q?lQ=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: cc5d3708-0c46-4a84-1599-08dad53d5cb6
 X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB6779.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Dec 2022 14:04:57.6691
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Dec 2022 14:47:55.8534
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: EcM0bs02HiGDKfw/7AHRg7OE0Fcu8ceHfwkgPxTDnI8M4N/gwl71pZLX7dlP+GC2D+JDZD190eALFDCTdyxQig==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB5887
+X-MS-Exchange-CrossTenant-UserPrincipalName: DPiXNFPEw+DMZIjk/IXUHaUyMy41aKQrD7Oh9DaBmbz9JT4VshqjhrWY0wayau1dx5R1wxxNlecnpn+j+PNw5A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR11MB6683
 X-OriginatorOrg: intel.com
 
---8nAerbALHNP9BH49
+--4SmVSleSRHaDVft5
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
 
 
 Greeting,
 
-FYI, we noticed kernel-selftests.kvm.triple_fault_event_test.fail due to commit (built with gcc-11):
+FYI, we noticed WARNING:suspicious_RCU_usage due to commit (built with gcc-11):
 
-commit: 92e7d5c83aff124f49082585e57939ed24b59c5c ("KVM: x86: allow L1 to not intercept triple fault")
+commit: a5c095e0e9b6fedcffd0907c84f77751128e2a34 ("rcutorture: Abstract read-lock-held checks")
 https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-[test failed on linux-next/master 700e0cd3a5ce6a2cb90d9a2aab729b52f092a7d6]
-
-in testcase: kernel-selftests
-version: kernel-selftests-x86_64-2ed09c3b-1_20221128
+in testcase: rcutorture
+version: 
 with following parameters:
 
-	group: kvm
+	runtime: 300s
+	test: default
+	torture_type: busted_srcud
 
-test-description: The kernel contains a set of "self tests" under the tools/testing/selftests/ directory. These are intended to be small unit tests to exercise individual code paths in the kernel.
-test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
+test-description: rcutorture is rcutorture kernel module load/unload test.
+test-url: https://www.kernel.org/doc/Documentation/RCU/torture.txt
 
 
-on test machine: 128 threads 2 sockets Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz (Ice Lake) with 128G memory
+on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
 
 caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
 
 
+
 If you fix the issue, kindly add following tag
 | Reported-by: kernel test robot <oliver.sang@intel.com>
-| Link: https://lore.kernel.org/oe-lkp/202212032146.b0347c81-oliver.sang@intel.com
+| Link: https://lore.kernel.org/oe-lkp/202212032149.66b0c23b-oliver.sang@intel.com
 
 
-# selftests: kvm: triple_fault_event_test
-# ==== Test Assertion Failure ====
-#   x86_64/triple_fault_event_test.c:87: false
-#   pid=5484 tid=5484 errno=4 - Interrupted system call
-#      1	0x0000000000402647: main at triple_fault_event_test.c:87
-#      2	0x00007fcc3e4b6189: ?? ??:0
-#      3	0x00007fcc3e4b6244: ?? ??:0
-#      4	0x0000000000402690: _start at ??:?
-#   Unexpected ucall: 0
-not ok 52 selftests: kvm: triple_fault_event_test # exit=254
+[  154.593443][  T500] WARNING: suspicious RCU usage
+[  154.594126][  T500] 5.13.0-rc1-00008-ga5c095e0e9b6 #1 Not tainted
+[  154.594990][  T500] -----------------------------
+[  154.595665][  T500] kernel/rcu/rcutorture.c:1568 suspicious rcu_dereference_check() usage!
+[  154.596944][  T500]
+[  154.596944][  T500] other info that might help us debug this:
+[  154.596944][  T500]
+[  154.598385][  T500]
+[  154.598385][  T500] rcu_scheduler_active = 2, debug_locks = 1
+[  154.599595][  T500] no locks held by rcu_torture_rea/500.
+[  154.601317][  T500]
+[  154.601317][  T500] stack backtrace:
+[  154.602154][  T500] CPU: 1 PID: 500 Comm: rcu_torture_rea Not tainted 5.13.0-rc1-00008-ga5c095e0e9b6 #1
+[  154.603441][  T500] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.0-debian-1.16.0-4 04/01/2014
+[  154.604909][  T500] Call Trace:
+[ 154.605402][ T500] ? dump_stack (??:?) 
+[ 154.606122][ T500] ? lockdep_rcu_suspicious (??:?) 
+[ 154.606892][ T500] ? rcu_torture_one_read (rcutorture.c:?) rcutorture
+[ 154.607813][ T500] ? rcutorture_loop_extend (rcutorture.c:?) rcutorture
+[ 154.608764][ T500] ? __mod_timer (timer.c:?) 
+[ 154.609578][ T500] ? do_init_timer (timer.c:?) 
+[ 154.610282][ T500] ? rcu_torture_reader (rcutorture.c:?) rcutorture
+[ 154.611202][ T500] ? rcu_torture_read_exit_child (rcutorture.c:?) rcutorture
+[ 154.612204][ T500] ? __kasan_check_read (??:?) 
+[ 154.612974][ T500] ? rcu_torture_reader (rcutorture.c:?) rcutorture
+[ 154.613950][ T500] ? __kasan_check_read (??:?) 
+[ 154.614673][ T500] ? test_bit (main.c:?) 
+[ 154.615332][ T500] ? __kthread_parkme (kthread.c:?) 
+[ 154.616059][ T500] ? kthread (kthread.c:?) 
+[ 154.616640][ T500] ? rcu_torture_read_exit_child (rcutorture.c:?) rcutorture
+[ 154.617642][ T500] ? kzalloc (resource.c:?) 
+[ 154.618361][ T500] ? ret_from_fork (??:?) 
+[  154.627467][  T483] busted_srcud-torture: Creating torture_shuffle task
+[  154.629419][  T502] busted_srcud-torture: rcu_torture_stats task started
+[  154.640374][  T483] busted_srcud-torture: Creating torture_stutter task
+[  154.644728][  T504] busted_srcud-torture: torture_shuffle task started
+[  154.645963][  T483] busted_srcud-torture: rcu_torture_fwd_prog_init: Disabled, unsupported by RCU flavor under test
+[  154.647399][  T483] busted_srcud-torture: Creating rcu_torture_read_exit task
+[  154.649698][  T505] busted_srcud-torture: torture_stutter task started
+[ 154.660318][ T483] initcall rcu_torture_init+0x0/0x2b83 [rcutorture] returned 0 after 472073 usecs 
+[  154.679808][  T507] busted_srcud-torture: rcu_torture_read_exit: Start of test
+[  160.204160][  T507] busted_srcud-torture: rcu_torture_read_exit: End of episode
+[  173.852307][  T507] busted_srcud-torture: rcu_torture_read_exit: Start of episode
 
 
 To reproduce:
 
+        # build kernel
+	cd linux
+	cp config-5.13.0-rc1-00008-ga5c095e0e9b6 .config
+	make HOSTCC=gcc-11 CC=gcc-11 ARCH=x86_64 olddefconfig prepare modules_prepare bzImage modules
+	make HOSTCC=gcc-11 CC=gcc-11 ARCH=x86_64 INSTALL_MOD_PATH=<mod-install-dir> modules_install
+	cd <mod-install-dir>
+	find lib/ | cpio -o -H newc --quiet | gzip > modules.cgz
+
+
         git clone https://github.com/intel/lkp-tests.git
         cd lkp-tests
-        sudo bin/lkp install job.yaml           # job file is attached in this email
-        bin/lkp split-job --compatible job.yaml # generate the yaml file for lkp run
-        sudo bin/lkp run generated-yaml-file
+        bin/lkp qemu -k <bzImage> -m modules.cgz job-script # job-script is attached in this email
 
         # if come across any failure that blocks the test,
         # please remove ~/.lkp and /lkp dir to run from a clean state.
@@ -195,14 +233,14 @@ https://01.org/lkp
 
 
 
---8nAerbALHNP9BH49
+--4SmVSleSRHaDVft5
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: attachment;
-	filename="config-6.1.0-rc4-00027-g92e7d5c83aff"
+	filename="config-5.13.0-rc1-00008-ga5c095e0e9b6"
 
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86_64 6.1.0-rc4 Kernel Configuration
+# Linux/x86_64 5.13.0-rc1 Kernel Configuration
 #
 CONFIG_CC_VERSION_TEXT="gcc-11 (Debian 11.3.0-8) 11.3.0"
 CONFIG_CC_IS_GCC=y
@@ -215,10 +253,9 @@ CONFIG_LD_VERSION=23900
 CONFIG_LLD_VERSION=0
 CONFIG_CC_CAN_LINK=y
 CONFIG_CC_CAN_LINK_STATIC=y
+CONFIG_CC_HAS_ASM_GOTO=y
 CONFIG_CC_HAS_ASM_GOTO_OUTPUT=y
 CONFIG_CC_HAS_ASM_INLINE=y
-CONFIG_CC_HAS_NO_PROFILE_FN_ATTR=y
-CONFIG_PAHOLE_VERSION=123
 CONFIG_CONSTRUCTORS=y
 CONFIG_IRQ_WORK=y
 CONFIG_BUILDTIME_TABLE_SORT=y
@@ -229,7 +266,6 @@ CONFIG_THREAD_INFO_IN_TASK=y
 #
 CONFIG_INIT_ENV_ARG_LIMIT=32
 # CONFIG_COMPILE_TEST is not set
-# CONFIG_WERROR is not set
 CONFIG_LOCALVERSION=""
 CONFIG_LOCALVERSION_AUTO=y
 CONFIG_BUILD_SALT=""
@@ -240,10 +276,10 @@ CONFIG_HAVE_KERNEL_XZ=y
 CONFIG_HAVE_KERNEL_LZO=y
 CONFIG_HAVE_KERNEL_LZ4=y
 CONFIG_HAVE_KERNEL_ZSTD=y
-CONFIG_KERNEL_GZIP=y
+# CONFIG_KERNEL_GZIP is not set
 # CONFIG_KERNEL_BZIP2 is not set
 # CONFIG_KERNEL_LZMA is not set
-# CONFIG_KERNEL_XZ is not set
+CONFIG_KERNEL_XZ=y
 # CONFIG_KERNEL_LZO is not set
 # CONFIG_KERNEL_LZ4 is not set
 # CONFIG_KERNEL_ZSTD is not set
@@ -251,15 +287,13 @@ CONFIG_DEFAULT_INIT=""
 CONFIG_DEFAULT_HOSTNAME="(none)"
 CONFIG_SYSVIPC=y
 CONFIG_SYSVIPC_SYSCTL=y
-CONFIG_SYSVIPC_COMPAT=y
 CONFIG_POSIX_MQUEUE=y
 CONFIG_POSIX_MQUEUE_SYSCTL=y
-# CONFIG_WATCH_QUEUE is not set
-CONFIG_CROSS_MEMORY_ATTACH=y
-# CONFIG_USELIB is not set
-CONFIG_AUDIT=y
+CONFIG_WATCH_QUEUE=y
+# CONFIG_CROSS_MEMORY_ATTACH is not set
+CONFIG_USELIB=y
+# CONFIG_AUDIT is not set
 CONFIG_HAVE_ARCH_AUDITSYSCALL=y
-CONFIG_AUDITSYSCALL=y
 
 #
 # IRQ subsystem
@@ -272,15 +306,13 @@ CONFIG_GENERIC_IRQ_MIGRATION=y
 CONFIG_GENERIC_IRQ_INJECTION=y
 CONFIG_HARDIRQS_SW_RESEND=y
 CONFIG_IRQ_DOMAIN=y
+CONFIG_IRQ_SIM=y
 CONFIG_IRQ_DOMAIN_HIERARCHY=y
-CONFIG_GENERIC_MSI_IRQ=y
-CONFIG_GENERIC_MSI_IRQ_DOMAIN=y
-CONFIG_IRQ_MSI_IOMMU=y
 CONFIG_GENERIC_IRQ_MATRIX_ALLOCATOR=y
 CONFIG_GENERIC_IRQ_RESERVATION_MODE=y
 CONFIG_IRQ_FORCED_THREADING=y
 CONFIG_SPARSE_IRQ=y
-# CONFIG_GENERIC_IRQ_DEBUGFS is not set
+CONFIG_GENERIC_IRQ_DEBUGFS=y
 # end of IRQ subsystem
 
 CONFIG_CLOCKSOURCE_WATCHDOG=y
@@ -293,8 +325,6 @@ CONFIG_GENERIC_CLOCKEVENTS_MIN_ADJUST=y
 CONFIG_GENERIC_CMOS_UPDATE=y
 CONFIG_HAVE_POSIX_CPU_TIMERS_TASK_WORK=y
 CONFIG_POSIX_CPU_TIMERS_TASK_WORK=y
-CONFIG_CONTEXT_TRACKING=y
-CONFIG_CONTEXT_TRACKING_IDLE=y
 
 #
 # Timers subsystem
@@ -302,52 +332,33 @@ CONFIG_CONTEXT_TRACKING_IDLE=y
 CONFIG_TICK_ONESHOT=y
 CONFIG_NO_HZ_COMMON=y
 # CONFIG_HZ_PERIODIC is not set
-# CONFIG_NO_HZ_IDLE is not set
-CONFIG_NO_HZ_FULL=y
-CONFIG_CONTEXT_TRACKING_USER=y
-# CONFIG_CONTEXT_TRACKING_USER_FORCE is not set
+CONFIG_NO_HZ_IDLE=y
+# CONFIG_NO_HZ_FULL is not set
+CONFIG_CONTEXT_TRACKING=y
+CONFIG_CONTEXT_TRACKING_FORCE=y
 CONFIG_NO_HZ=y
 CONFIG_HIGH_RES_TIMERS=y
-CONFIG_CLOCKSOURCE_WATCHDOG_MAX_SKEW_US=100
 # end of Timers subsystem
 
-CONFIG_BPF=y
-CONFIG_HAVE_EBPF_JIT=y
-CONFIG_ARCH_WANT_DEFAULT_BPF_JIT=y
-
-#
-# BPF subsystem
-#
-CONFIG_BPF_SYSCALL=y
-CONFIG_BPF_JIT=y
-CONFIG_BPF_JIT_ALWAYS_ON=y
-CONFIG_BPF_JIT_DEFAULT_ON=y
-CONFIG_BPF_UNPRIV_DEFAULT_OFF=y
-# CONFIG_BPF_PRELOAD is not set
-# CONFIG_BPF_LSM is not set
-# end of BPF subsystem
-
-CONFIG_PREEMPT_VOLUNTARY_BUILD=y
 # CONFIG_PREEMPT_NONE is not set
 CONFIG_PREEMPT_VOLUNTARY=y
 # CONFIG_PREEMPT is not set
 CONFIG_PREEMPT_COUNT=y
-# CONFIG_PREEMPT_DYNAMIC is not set
-# CONFIG_SCHED_CORE is not set
 
 #
 # CPU/Task time and stats accounting
 #
 CONFIG_VIRT_CPU_ACCOUNTING=y
+# CONFIG_TICK_CPU_ACCOUNTING is not set
 CONFIG_VIRT_CPU_ACCOUNTING_GEN=y
 CONFIG_IRQ_TIME_ACCOUNTING=y
 CONFIG_HAVE_SCHED_AVG_IRQ=y
 CONFIG_BSD_PROCESS_ACCT=y
-CONFIG_BSD_PROCESS_ACCT_V3=y
+# CONFIG_BSD_PROCESS_ACCT_V3 is not set
 CONFIG_TASKSTATS=y
 CONFIG_TASK_DELAY_ACCT=y
 CONFIG_TASK_XACCT=y
-CONFIG_TASK_IO_ACCOUNTING=y
+# CONFIG_TASK_IO_ACCOUNTING is not set
 # CONFIG_PSI is not set
 # end of CPU/Task time and stats accounting
 
@@ -357,25 +368,28 @@ CONFIG_CPU_ISOLATION=y
 # RCU Subsystem
 #
 CONFIG_TREE_RCU=y
-# CONFIG_RCU_EXPERT is not set
+CONFIG_RCU_EXPERT=y
 CONFIG_SRCU=y
 CONFIG_TREE_SRCU=y
 CONFIG_TASKS_RCU_GENERIC=y
+CONFIG_TASKS_RCU=y
 CONFIG_TASKS_RUDE_RCU=y
 CONFIG_TASKS_TRACE_RCU=y
 CONFIG_RCU_STALL_COMMON=y
 CONFIG_RCU_NEED_SEGCBLIST=y
-CONFIG_RCU_NOCB_CPU=y
-# CONFIG_RCU_NOCB_CPU_DEFAULT_ALL is not set
+CONFIG_RCU_FANOUT=64
+CONFIG_RCU_FANOUT_LEAF=16
+# CONFIG_RCU_FAST_NO_HZ is not set
+# CONFIG_RCU_NOCB_CPU is not set
+# CONFIG_TASKS_TRACE_RCU_READ_MB is not set
 # end of RCU Subsystem
 
 CONFIG_IKCONFIG=y
 CONFIG_IKCONFIG_PROC=y
-# CONFIG_IKHEADERS is not set
+CONFIG_IKHEADERS=y
 CONFIG_LOG_BUF_SHIFT=20
 CONFIG_LOG_CPU_MAX_BUF_SHIFT=12
 CONFIG_PRINTK_SAFE_LOG_BUF_SHIFT=13
-# CONFIG_PRINTK_INDEX is not set
 CONFIG_HAVE_UNSTABLE_SCHED_CLOCK=y
 
 #
@@ -387,76 +401,61 @@ CONFIG_HAVE_UNSTABLE_SCHED_CLOCK=y
 CONFIG_ARCH_SUPPORTS_NUMA_BALANCING=y
 CONFIG_ARCH_WANT_BATCHED_UNMAP_TLB_FLUSH=y
 CONFIG_CC_HAS_INT128=y
-CONFIG_CC_IMPLICIT_FALLTHROUGH="-Wimplicit-fallthrough=5"
-CONFIG_GCC12_NO_ARRAY_BOUNDS=y
 CONFIG_ARCH_SUPPORTS_INT128=y
-CONFIG_NUMA_BALANCING=y
-CONFIG_NUMA_BALANCING_DEFAULT_ENABLED=y
 CONFIG_CGROUPS=y
-CONFIG_PAGE_COUNTER=y
-# CONFIG_CGROUP_FAVOR_DYNMODS is not set
-CONFIG_MEMCG=y
-CONFIG_MEMCG_KMEM=y
-CONFIG_BLK_CGROUP=y
-CONFIG_CGROUP_WRITEBACK=y
-CONFIG_CGROUP_SCHED=y
-CONFIG_FAIR_GROUP_SCHED=y
-CONFIG_CFS_BANDWIDTH=y
-CONFIG_RT_GROUP_SCHED=y
-CONFIG_CGROUP_PIDS=y
-CONFIG_CGROUP_RDMA=y
-CONFIG_CGROUP_FREEZER=y
-CONFIG_CGROUP_HUGETLB=y
-CONFIG_CPUSETS=y
-CONFIG_PROC_PID_CPUSET=y
-CONFIG_CGROUP_DEVICE=y
-CONFIG_CGROUP_CPUACCT=y
-CONFIG_CGROUP_PERF=y
+# CONFIG_MEMCG is not set
+# CONFIG_CGROUP_SCHED is not set
+# CONFIG_CGROUP_PIDS is not set
+# CONFIG_CGROUP_RDMA is not set
+# CONFIG_CGROUP_FREEZER is not set
+# CONFIG_CPUSETS is not set
+# CONFIG_CGROUP_DEVICE is not set
+# CONFIG_CGROUP_CPUACCT is not set
+# CONFIG_CGROUP_PERF is not set
 # CONFIG_CGROUP_BPF is not set
 # CONFIG_CGROUP_MISC is not set
 # CONFIG_CGROUP_DEBUG is not set
-CONFIG_SOCK_CGROUP_DATA=y
 CONFIG_NAMESPACES=y
-CONFIG_UTS_NS=y
+# CONFIG_UTS_NS is not set
 CONFIG_TIME_NS=y
-CONFIG_IPC_NS=y
-CONFIG_USER_NS=y
-CONFIG_PID_NS=y
+# CONFIG_IPC_NS is not set
+# CONFIG_USER_NS is not set
+# CONFIG_PID_NS is not set
 CONFIG_NET_NS=y
-# CONFIG_CHECKPOINT_RESTORE is not set
-CONFIG_SCHED_AUTOGROUP=y
+CONFIG_CHECKPOINT_RESTORE=y
+# CONFIG_SCHED_AUTOGROUP is not set
 # CONFIG_SYSFS_DEPRECATED is not set
 CONFIG_RELAY=y
 CONFIG_BLK_DEV_INITRD=y
 CONFIG_INITRAMFS_SOURCE=""
 CONFIG_RD_GZIP=y
 CONFIG_RD_BZIP2=y
-CONFIG_RD_LZMA=y
+# CONFIG_RD_LZMA is not set
 CONFIG_RD_XZ=y
 CONFIG_RD_LZO=y
 CONFIG_RD_LZ4=y
 CONFIG_RD_ZSTD=y
-# CONFIG_BOOT_CONFIG is not set
-CONFIG_INITRAMFS_PRESERVE_MTIME=y
-CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y
-# CONFIG_CC_OPTIMIZE_FOR_SIZE is not set
+CONFIG_BOOT_CONFIG=y
+# CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE is not set
+CONFIG_CC_OPTIMIZE_FOR_SIZE=y
 CONFIG_LD_ORPHAN_WARN=y
 CONFIG_SYSCTL=y
 CONFIG_HAVE_UID16=y
 CONFIG_SYSCTL_EXCEPTION_TRACE=y
 CONFIG_HAVE_PCSPKR_PLATFORM=y
-# CONFIG_EXPERT is not set
+CONFIG_BPF=y
+CONFIG_EXPERT=y
 CONFIG_UID16=y
 CONFIG_MULTIUSER=y
 CONFIG_SGETMASK_SYSCALL=y
-CONFIG_SYSFS_SYSCALL=y
+# CONFIG_SYSFS_SYSCALL is not set
 CONFIG_FHANDLE=y
 CONFIG_POSIX_TIMERS=y
 CONFIG_PRINTK=y
+CONFIG_PRINTK_NMI=y
 CONFIG_BUG=y
-CONFIG_ELF_CORE=y
 CONFIG_PCSPKR_PLATFORM=y
-CONFIG_BASE_FULL=y
+# CONFIG_BASE_FULL is not set
 CONFIG_FUTEX=y
 CONFIG_FUTEX_PI=y
 CONFIG_EPOLL=y
@@ -465,19 +464,25 @@ CONFIG_TIMERFD=y
 CONFIG_EVENTFD=y
 CONFIG_SHMEM=y
 CONFIG_AIO=y
-CONFIG_IO_URING=y
+# CONFIG_IO_URING is not set
 CONFIG_ADVISE_SYSCALLS=y
-CONFIG_MEMBARRIER=y
+# CONFIG_MEMBARRIER is not set
 CONFIG_KALLSYMS=y
 CONFIG_KALLSYMS_ALL=y
 CONFIG_KALLSYMS_ABSOLUTE_PERCPU=y
 CONFIG_KALLSYMS_BASE_RELATIVE=y
+CONFIG_BPF_SYSCALL=y
+CONFIG_ARCH_WANT_DEFAULT_BPF_JIT=y
+CONFIG_USERMODE_DRIVER=y
+CONFIG_BPF_PRELOAD=y
+CONFIG_BPF_PRELOAD_UMD=y
+# CONFIG_USERFAULTFD is not set
 CONFIG_ARCH_HAS_MEMBARRIER_SYNC_CORE=y
 CONFIG_KCMP=y
-CONFIG_RSEQ=y
-# CONFIG_EMBEDDED is not set
+# CONFIG_RSEQ is not set
+CONFIG_EMBEDDED=y
 CONFIG_HAVE_PERF_EVENTS=y
-CONFIG_GUEST_PERF_EVENTS=y
+# CONFIG_PC104 is not set
 
 #
 # Kernel Performance Events And Counters
@@ -486,8 +491,18 @@ CONFIG_PERF_EVENTS=y
 # CONFIG_DEBUG_PERF_USE_VMALLOC is not set
 # end of Kernel Performance Events And Counters
 
-CONFIG_SYSTEM_DATA_VERIFICATION=y
-CONFIG_PROFILING=y
+CONFIG_VM_EVENT_COUNTERS=y
+CONFIG_SLUB_DEBUG=y
+# CONFIG_COMPAT_BRK is not set
+# CONFIG_SLAB is not set
+CONFIG_SLUB=y
+# CONFIG_SLOB is not set
+CONFIG_SLAB_MERGE_DEFAULT=y
+# CONFIG_SLAB_FREELIST_RANDOM is not set
+CONFIG_SLAB_FREELIST_HARDENED=y
+# CONFIG_SHUFFLE_PAGE_ALLOCATOR is not set
+CONFIG_SLUB_CPU_PARTIAL=y
+# CONFIG_PROFILING is not set
 CONFIG_TRACEPOINTS=y
 # end of General setup
 
@@ -503,61 +518,59 @@ CONFIG_ARCH_MMAP_RND_BITS_MIN=28
 CONFIG_ARCH_MMAP_RND_BITS_MAX=32
 CONFIG_ARCH_MMAP_RND_COMPAT_BITS_MIN=8
 CONFIG_ARCH_MMAP_RND_COMPAT_BITS_MAX=16
-CONFIG_GENERIC_ISA_DMA=y
-CONFIG_GENERIC_CSUM=y
 CONFIG_GENERIC_BUG=y
 CONFIG_GENERIC_BUG_RELATIVE_POINTERS=y
-CONFIG_ARCH_MAY_HAVE_PC_FDC=y
 CONFIG_GENERIC_CALIBRATE_DELAY=y
 CONFIG_ARCH_HAS_CPU_RELAX=y
+CONFIG_ARCH_HAS_FILTER_PGPROT=y
+CONFIG_HAVE_SETUP_PER_CPU_AREA=y
+CONFIG_NEED_PER_CPU_EMBED_FIRST_CHUNK=y
+CONFIG_NEED_PER_CPU_PAGE_FIRST_CHUNK=y
 CONFIG_ARCH_HIBERNATION_POSSIBLE=y
-CONFIG_ARCH_NR_GPIO=1024
 CONFIG_ARCH_SUSPEND_POSSIBLE=y
+CONFIG_ARCH_WANT_GENERAL_HUGETLB=y
+CONFIG_ZONE_DMA32=y
 CONFIG_AUDIT_ARCH=y
 CONFIG_KASAN_SHADOW_OFFSET=0xdffffc0000000000
-CONFIG_HAVE_INTEL_TXT=y
 CONFIG_X86_64_SMP=y
 CONFIG_ARCH_SUPPORTS_UPROBES=y
 CONFIG_FIX_EARLYCON_MEM=y
-CONFIG_DYNAMIC_PHYSICAL_MASK=y
-CONFIG_PGTABLE_LEVELS=5
+CONFIG_PGTABLE_LEVELS=4
 CONFIG_CC_HAS_SANE_STACKPROTECTOR=y
 
 #
 # Processor type and features
 #
+CONFIG_ZONE_DMA=y
 CONFIG_SMP=y
 CONFIG_X86_FEATURE_NAMES=y
-CONFIG_X86_X2APIC=y
-CONFIG_X86_MPPARSE=y
-# CONFIG_GOLDFISH is not set
+# CONFIG_X86_X2APIC is not set
+# CONFIG_X86_MPPARSE is not set
+CONFIG_GOLDFISH=y
+CONFIG_RETPOLINE=y
 # CONFIG_X86_CPU_RESCTRL is not set
 CONFIG_X86_EXTENDED_PLATFORM=y
-# CONFIG_X86_NUMACHIP is not set
 # CONFIG_X86_VSMP is not set
-CONFIG_X86_UV=y
 # CONFIG_X86_GOLDFISH is not set
 # CONFIG_X86_INTEL_MID is not set
-CONFIG_X86_INTEL_LPSS=y
+# CONFIG_X86_INTEL_LPSS is not set
 # CONFIG_X86_AMD_PLATFORM_DEVICE is not set
-CONFIG_IOSF_MBI=y
-# CONFIG_IOSF_MBI_DEBUG is not set
+# CONFIG_IOSF_MBI is not set
 CONFIG_X86_SUPPORTS_MEMORY_FAILURE=y
 # CONFIG_SCHED_OMIT_FRAME_POINTER is not set
 CONFIG_HYPERVISOR_GUEST=y
 CONFIG_PARAVIRT=y
 # CONFIG_PARAVIRT_DEBUG is not set
-CONFIG_PARAVIRT_SPINLOCKS=y
+# CONFIG_PARAVIRT_SPINLOCKS is not set
 CONFIG_X86_HV_CALLBACK_VECTOR=y
 # CONFIG_XEN is not set
 CONFIG_KVM_GUEST=y
 CONFIG_ARCH_CPUIDLE_HALTPOLL=y
 # CONFIG_PVH is not set
-CONFIG_PARAVIRT_TIME_ACCOUNTING=y
+# CONFIG_PARAVIRT_TIME_ACCOUNTING is not set
 CONFIG_PARAVIRT_CLOCK=y
 # CONFIG_JAILHOUSE_GUEST is not set
 # CONFIG_ACRN_GUEST is not set
-CONFIG_INTEL_TDX_GUEST=y
 # CONFIG_MK8 is not set
 # CONFIG_MPSC is not set
 # CONFIG_MCORE2 is not set
@@ -572,22 +585,19 @@ CONFIG_X86_MINIMUM_CPU_FAMILY=64
 CONFIG_X86_DEBUGCTLMSR=y
 CONFIG_IA32_FEAT_CTL=y
 CONFIG_X86_VMX_FEATURE_NAMES=y
+CONFIG_PROCESSOR_SELECT=y
 CONFIG_CPU_SUP_INTEL=y
-CONFIG_CPU_SUP_AMD=y
-CONFIG_CPU_SUP_HYGON=y
-CONFIG_CPU_SUP_CENTAUR=y
-CONFIG_CPU_SUP_ZHAOXIN=y
+# CONFIG_CPU_SUP_AMD is not set
+# CONFIG_CPU_SUP_HYGON is not set
+# CONFIG_CPU_SUP_CENTAUR is not set
+# CONFIG_CPU_SUP_ZHAOXIN is not set
 CONFIG_HPET_TIMER=y
-CONFIG_HPET_EMULATE_RTC=y
 CONFIG_DMI=y
-# CONFIG_GART_IOMMU is not set
-CONFIG_BOOT_VESA_SUPPORT=y
-CONFIG_MAXSMP=y
-CONFIG_NR_CPUS_RANGE_BEGIN=8192
-CONFIG_NR_CPUS_RANGE_END=8192
-CONFIG_NR_CPUS_DEFAULT=8192
-CONFIG_NR_CPUS=8192
-CONFIG_SCHED_CLUSTER=y
+# CONFIG_MAXSMP is not set
+CONFIG_NR_CPUS_RANGE_BEGIN=2
+CONFIG_NR_CPUS_RANGE_END=512
+CONFIG_NR_CPUS_DEFAULT=64
+CONFIG_NR_CPUS=64
 CONFIG_SCHED_SMT=y
 CONFIG_SCHED_MC=y
 CONFIG_SCHED_MC_PRIO=y
@@ -595,195 +605,142 @@ CONFIG_X86_LOCAL_APIC=y
 CONFIG_X86_IO_APIC=y
 CONFIG_X86_REROUTE_FOR_BROKEN_BOOT_IRQS=y
 CONFIG_X86_MCE=y
-CONFIG_X86_MCELOG_LEGACY=y
-CONFIG_X86_MCE_INTEL=y
-# CONFIG_X86_MCE_AMD is not set
-CONFIG_X86_MCE_THRESHOLD=y
-CONFIG_X86_MCE_INJECT=m
+# CONFIG_X86_MCELOG_LEGACY is not set
+# CONFIG_X86_MCE_INTEL is not set
+CONFIG_X86_MCE_INJECT=y
 
 #
 # Performance monitoring
 #
-CONFIG_PERF_EVENTS_INTEL_UNCORE=m
-CONFIG_PERF_EVENTS_INTEL_RAPL=m
-CONFIG_PERF_EVENTS_INTEL_CSTATE=m
-# CONFIG_PERF_EVENTS_AMD_POWER is not set
-# CONFIG_PERF_EVENTS_AMD_UNCORE is not set
-# CONFIG_PERF_EVENTS_AMD_BRS is not set
+CONFIG_PERF_EVENTS_INTEL_UNCORE=y
+CONFIG_PERF_EVENTS_INTEL_RAPL=y
+CONFIG_PERF_EVENTS_INTEL_CSTATE=y
 # end of Performance monitoring
 
-CONFIG_X86_16BIT=y
-CONFIG_X86_ESPFIX64=y
 CONFIG_X86_VSYSCALL_EMULATION=y
 CONFIG_X86_IOPL_IOPERM=y
-CONFIG_MICROCODE=y
-CONFIG_MICROCODE_INTEL=y
-# CONFIG_MICROCODE_AMD is not set
-CONFIG_MICROCODE_LATE_LOADING=y
+# CONFIG_I8K is not set
+# CONFIG_MICROCODE is not set
 CONFIG_X86_MSR=y
 CONFIG_X86_CPUID=y
-CONFIG_X86_5LEVEL=y
+# CONFIG_X86_5LEVEL is not set
 CONFIG_X86_DIRECT_GBPAGES=y
-# CONFIG_X86_CPA_STATISTICS is not set
-CONFIG_X86_MEM_ENCRYPT=y
-# CONFIG_AMD_MEM_ENCRYPT is not set
-CONFIG_NUMA=y
-# CONFIG_AMD_NUMA is not set
-CONFIG_X86_64_ACPI_NUMA=y
-CONFIG_NUMA_EMU=y
-CONFIG_NODES_SHIFT=10
+CONFIG_X86_CPA_STATISTICS=y
+# CONFIG_NUMA is not set
 CONFIG_ARCH_SPARSEMEM_ENABLE=y
 CONFIG_ARCH_SPARSEMEM_DEFAULT=y
-# CONFIG_ARCH_MEMORY_PROBE is not set
-CONFIG_ARCH_PROC_KCORE_TEXT=y
+CONFIG_ARCH_SELECT_MEMORY_MODEL=y
 CONFIG_ILLEGAL_POINTER_VALUE=0xdead000000000000
-CONFIG_X86_PMEM_LEGACY_DEVICE=y
-CONFIG_X86_PMEM_LEGACY=m
 CONFIG_X86_CHECK_BIOS_CORRUPTION=y
 # CONFIG_X86_BOOTPARAM_MEMORY_CORRUPTION_CHECK is not set
+CONFIG_X86_RESERVE_LOW=64
 CONFIG_MTRR=y
 CONFIG_MTRR_SANITIZER=y
-CONFIG_MTRR_SANITIZER_ENABLE_DEFAULT=1
+CONFIG_MTRR_SANITIZER_ENABLE_DEFAULT=0
 CONFIG_MTRR_SANITIZER_SPARE_REG_NR_DEFAULT=1
 CONFIG_X86_PAT=y
 CONFIG_ARCH_USES_PG_UNCACHED=y
+# CONFIG_ARCH_RANDOM is not set
+# CONFIG_X86_SMAP is not set
 CONFIG_X86_UMIP=y
-CONFIG_CC_HAS_IBT=y
-# CONFIG_X86_KERNEL_IBT is not set
-CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS=y
-# CONFIG_X86_INTEL_TSX_MODE_OFF is not set
+# CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS is not set
+CONFIG_X86_INTEL_TSX_MODE_OFF=y
 # CONFIG_X86_INTEL_TSX_MODE_ON is not set
-CONFIG_X86_INTEL_TSX_MODE_AUTO=y
+# CONFIG_X86_INTEL_TSX_MODE_AUTO is not set
 # CONFIG_X86_SGX is not set
 CONFIG_EFI=y
-CONFIG_EFI_STUB=y
-CONFIG_EFI_MIXED=y
+# CONFIG_EFI_STUB is not set
 # CONFIG_HZ_100 is not set
-# CONFIG_HZ_250 is not set
+CONFIG_HZ_250=y
 # CONFIG_HZ_300 is not set
-CONFIG_HZ_1000=y
-CONFIG_HZ=1000
+# CONFIG_HZ_1000 is not set
+CONFIG_HZ=250
 CONFIG_SCHED_HRTICK=y
 CONFIG_KEXEC=y
-CONFIG_KEXEC_FILE=y
-CONFIG_ARCH_HAS_KEXEC_PURGATORY=y
-# CONFIG_KEXEC_SIG is not set
+# CONFIG_KEXEC_FILE is not set
 CONFIG_CRASH_DUMP=y
-CONFIG_KEXEC_JUMP=y
 CONFIG_PHYSICAL_START=0x1000000
 CONFIG_RELOCATABLE=y
 # CONFIG_RANDOMIZE_BASE is not set
 CONFIG_PHYSICAL_ALIGN=0x200000
-CONFIG_DYNAMIC_MEMORY_LAYOUT=y
 CONFIG_HOTPLUG_CPU=y
 CONFIG_BOOTPARAM_HOTPLUG_CPU0=y
-# CONFIG_DEBUG_HOTPLUG_CPU0 is not set
+CONFIG_DEBUG_HOTPLUG_CPU0=y
 # CONFIG_COMPAT_VDSO is not set
-CONFIG_LEGACY_VSYSCALL_XONLY=y
+CONFIG_LEGACY_VSYSCALL_EMULATE=y
+# CONFIG_LEGACY_VSYSCALL_XONLY is not set
 # CONFIG_LEGACY_VSYSCALL_NONE is not set
 # CONFIG_CMDLINE_BOOL is not set
-CONFIG_MODIFY_LDT_SYSCALL=y
-# CONFIG_STRICT_SIGALTSTACK_SIZE is not set
+# CONFIG_MODIFY_LDT_SYSCALL is not set
 CONFIG_HAVE_LIVEPATCH=y
-CONFIG_LIVEPATCH=y
 # end of Processor type and features
 
-CONFIG_CC_HAS_SLS=y
-CONFIG_CC_HAS_RETURN_THUNK=y
-CONFIG_SPECULATION_MITIGATIONS=y
-CONFIG_PAGE_TABLE_ISOLATION=y
-# CONFIG_RETPOLINE is not set
-CONFIG_CPU_IBPB_ENTRY=y
-CONFIG_CPU_IBRS_ENTRY=y
-# CONFIG_SLS is not set
 CONFIG_ARCH_HAS_ADD_PAGES=y
 CONFIG_ARCH_MHP_MEMMAP_ON_MEMORY_ENABLE=y
 
 #
 # Power management and ACPI options
 #
-CONFIG_ARCH_HIBERNATION_HEADER=y
-CONFIG_SUSPEND=y
-CONFIG_SUSPEND_FREEZER=y
-CONFIG_HIBERNATE_CALLBACKS=y
-CONFIG_HIBERNATION=y
-CONFIG_HIBERNATION_SNAPSHOT_DEV=y
-CONFIG_PM_STD_PARTITION=""
-CONFIG_PM_SLEEP=y
-CONFIG_PM_SLEEP_SMP=y
-# CONFIG_PM_AUTOSLEEP is not set
-# CONFIG_PM_USERSPACE_AUTOSLEEP is not set
-# CONFIG_PM_WAKELOCKS is not set
+# CONFIG_SUSPEND is not set
 CONFIG_PM=y
 CONFIG_PM_DEBUG=y
 # CONFIG_PM_ADVANCED_DEBUG is not set
-# CONFIG_PM_TEST_SUSPEND is not set
-CONFIG_PM_SLEEP_DEBUG=y
-# CONFIG_PM_TRACE_RTC is not set
+CONFIG_DPM_WATCHDOG=y
+CONFIG_DPM_WATCHDOG_TIMEOUT=120
 CONFIG_PM_CLK=y
 # CONFIG_WQ_POWER_EFFICIENT_DEFAULT is not set
-# CONFIG_ENERGY_MODEL is not set
+CONFIG_ENERGY_MODEL=y
 CONFIG_ARCH_SUPPORTS_ACPI=y
 CONFIG_ACPI=y
 CONFIG_ACPI_LEGACY_TABLES_LOOKUP=y
 CONFIG_ARCH_MIGHT_HAVE_ACPI_PDC=y
 CONFIG_ACPI_SYSTEM_POWER_STATES_SUPPORT=y
 # CONFIG_ACPI_DEBUGGER is not set
-CONFIG_ACPI_SPCR_TABLE=y
+# CONFIG_ACPI_SPCR_TABLE is not set
 # CONFIG_ACPI_FPDT is not set
 CONFIG_ACPI_LPIT=y
-CONFIG_ACPI_SLEEP=y
 CONFIG_ACPI_REV_OVERRIDE_POSSIBLE=y
-CONFIG_ACPI_EC_DEBUGFS=m
+CONFIG_ACPI_EC_DEBUGFS=y
 CONFIG_ACPI_AC=y
 CONFIG_ACPI_BATTERY=y
 CONFIG_ACPI_BUTTON=y
-CONFIG_ACPI_VIDEO=m
+# CONFIG_ACPI_VIDEO is not set
 CONFIG_ACPI_FAN=y
-CONFIG_ACPI_TAD=m
 CONFIG_ACPI_DOCK=y
 CONFIG_ACPI_CPU_FREQ_PSS=y
 CONFIG_ACPI_PROCESSOR_CSTATE=y
 CONFIG_ACPI_PROCESSOR_IDLE=y
 CONFIG_ACPI_CPPC_LIB=y
 CONFIG_ACPI_PROCESSOR=y
-CONFIG_ACPI_IPMI=m
+CONFIG_ACPI_IPMI=y
 CONFIG_ACPI_HOTPLUG_CPU=y
-CONFIG_ACPI_PROCESSOR_AGGREGATOR=m
+# CONFIG_ACPI_PROCESSOR_AGGREGATOR is not set
 CONFIG_ACPI_THERMAL=y
-CONFIG_ACPI_PLATFORM_PROFILE=m
+CONFIG_ACPI_CUSTOM_DSDT_FILE=""
 CONFIG_ARCH_HAS_ACPI_TABLE_UPGRADE=y
-CONFIG_ACPI_TABLE_UPGRADE=y
+# CONFIG_ACPI_TABLE_UPGRADE is not set
 # CONFIG_ACPI_DEBUG is not set
-CONFIG_ACPI_PCI_SLOT=y
+# CONFIG_ACPI_PCI_SLOT is not set
 CONFIG_ACPI_CONTAINER=y
-CONFIG_ACPI_HOTPLUG_MEMORY=y
 CONFIG_ACPI_HOTPLUG_IOAPIC=y
-CONFIG_ACPI_SBS=m
+CONFIG_ACPI_SBS=y
 CONFIG_ACPI_HED=y
 # CONFIG_ACPI_CUSTOM_METHOD is not set
 CONFIG_ACPI_BGRT=y
-CONFIG_ACPI_NFIT=m
-# CONFIG_NFIT_SECURITY_DEBUG is not set
-CONFIG_ACPI_NUMA=y
-# CONFIG_ACPI_HMAT is not set
+# CONFIG_ACPI_REDUCED_HARDWARE_ONLY is not set
 CONFIG_HAVE_ACPI_APEI=y
 CONFIG_HAVE_ACPI_APEI_NMI=y
 CONFIG_ACPI_APEI=y
 CONFIG_ACPI_APEI_GHES=y
-CONFIG_ACPI_APEI_PCIEAER=y
-CONFIG_ACPI_APEI_MEMORY_FAILURE=y
-CONFIG_ACPI_APEI_EINJ=m
-# CONFIG_ACPI_APEI_ERST_DEBUG is not set
+CONFIG_ACPI_APEI_EINJ=y
+CONFIG_ACPI_APEI_ERST_DEBUG=y
 # CONFIG_ACPI_DPTF is not set
-CONFIG_ACPI_WATCHDOG=y
-CONFIG_ACPI_EXTLOG=m
-CONFIG_ACPI_ADXL=y
-# CONFIG_ACPI_CONFIGFS is not set
-# CONFIG_ACPI_PFRUT is not set
-CONFIG_ACPI_PCC=y
+CONFIG_ACPI_CONFIGFS=y
 CONFIG_PMIC_OPREGION=y
-CONFIG_ACPI_PRMT=y
+CONFIG_BYTCRC_PMIC_OPREGION=y
+CONFIG_CHTCRC_PMIC_OPREGION=y
+CONFIG_BXT_WC_PMIC_OPREGION=y
+CONFIG_CHT_DC_TI_PMIC_OPREGION=y
 CONFIG_X86_PM_TIMER=y
 
 #
@@ -793,10 +750,10 @@ CONFIG_CPU_FREQ=y
 CONFIG_CPU_FREQ_GOV_ATTR_SET=y
 CONFIG_CPU_FREQ_GOV_COMMON=y
 CONFIG_CPU_FREQ_STAT=y
-CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE=y
+# CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE is not set
 # CONFIG_CPU_FREQ_DEFAULT_GOV_POWERSAVE is not set
 # CONFIG_CPU_FREQ_DEFAULT_GOV_USERSPACE is not set
-# CONFIG_CPU_FREQ_DEFAULT_GOV_SCHEDUTIL is not set
+CONFIG_CPU_FREQ_DEFAULT_GOV_SCHEDUTIL=y
 CONFIG_CPU_FREQ_GOV_PERFORMANCE=y
 CONFIG_CPU_FREQ_GOV_POWERSAVE=y
 CONFIG_CPU_FREQ_GOV_USERSPACE=y
@@ -809,19 +766,15 @@ CONFIG_CPU_FREQ_GOV_SCHEDUTIL=y
 #
 CONFIG_X86_INTEL_PSTATE=y
 # CONFIG_X86_PCC_CPUFREQ is not set
-# CONFIG_X86_AMD_PSTATE is not set
-# CONFIG_X86_AMD_PSTATE_UT is not set
-CONFIG_X86_ACPI_CPUFREQ=m
-CONFIG_X86_ACPI_CPUFREQ_CPB=y
+CONFIG_X86_ACPI_CPUFREQ=y
 # CONFIG_X86_POWERNOW_K8 is not set
-# CONFIG_X86_AMD_FREQ_SENSITIVITY is not set
-# CONFIG_X86_SPEEDSTEP_CENTRINO is not set
-CONFIG_X86_P4_CLOCKMOD=m
+CONFIG_X86_SPEEDSTEP_CENTRINO=y
+CONFIG_X86_P4_CLOCKMOD=y
 
 #
 # shared options
 #
-CONFIG_X86_SPEEDSTEP_LIB=m
+CONFIG_X86_SPEEDSTEP_LIB=y
 # end of CPU Frequency scaling
 
 #
@@ -835,7 +788,7 @@ CONFIG_CPU_IDLE_GOV_MENU=y
 CONFIG_HALTPOLL_CPUIDLE=y
 # end of CPU Idle
 
-CONFIG_INTEL_IDLE=y
+# CONFIG_INTEL_IDLE is not set
 # end of Power management and ACPI options
 
 #
@@ -844,28 +797,72 @@ CONFIG_INTEL_IDLE=y
 CONFIG_PCI_DIRECT=y
 CONFIG_PCI_MMCONFIG=y
 CONFIG_MMCONF_FAM10H=y
-CONFIG_ISA_DMA_API=y
-CONFIG_AMD_NB=y
+# CONFIG_PCI_CNB20LE_QUIRK is not set
+CONFIG_ISA_BUS=y
+# CONFIG_ISA_DMA_API is not set
+# CONFIG_X86_SYSFB is not set
 # end of Bus options (PCI etc.)
 
 #
 # Binary Emulations
 #
 CONFIG_IA32_EMULATION=y
-# CONFIG_X86_X32_ABI is not set
+CONFIG_X86_X32=y
 CONFIG_COMPAT_32=y
 CONFIG_COMPAT=y
 CONFIG_COMPAT_FOR_U64_ALIGNMENT=y
+CONFIG_SYSVIPC_COMPAT=y
 # end of Binary Emulations
 
+#
+# Firmware Drivers
+#
+# CONFIG_EDD is not set
+# CONFIG_FIRMWARE_MEMMAP is not set
+# CONFIG_DMIID is not set
+CONFIG_DMI_SYSFS=y
+CONFIG_DMI_SCAN_MACHINE_NON_EFI_FALLBACK=y
+# CONFIG_FW_CFG_SYSFS is not set
+CONFIG_GOOGLE_FIRMWARE=y
+CONFIG_GOOGLE_SMI=y
+CONFIG_GOOGLE_COREBOOT_TABLE=y
+CONFIG_GOOGLE_MEMCONSOLE=y
+# CONFIG_GOOGLE_MEMCONSOLE_X86_LEGACY is not set
+CONFIG_GOOGLE_MEMCONSOLE_COREBOOT=y
+# CONFIG_GOOGLE_VPD is not set
+
+#
+# EFI (Extensible Firmware Interface) Support
+#
+CONFIG_EFI_VARS=y
+CONFIG_EFI_ESRT=y
+CONFIG_EFI_VARS_PSTORE=y
+CONFIG_EFI_VARS_PSTORE_DEFAULT_DISABLE=y
+# CONFIG_EFI_RUNTIME_MAP is not set
+# CONFIG_EFI_FAKE_MEMMAP is not set
+CONFIG_EFI_RUNTIME_WRAPPERS=y
+CONFIG_EFI_BOOTLOADER_CONTROL=y
+# CONFIG_EFI_CAPSULE_LOADER is not set
+# CONFIG_EFI_TEST is not set
+CONFIG_EFI_RCI2_TABLE=y
+CONFIG_EFI_DISABLE_PCI_DMA=y
+# end of EFI (Extensible Firmware Interface) Support
+
+CONFIG_UEFI_CPER=y
+CONFIG_UEFI_CPER_X86=y
+CONFIG_EFI_EARLYCON=y
+CONFIG_EFI_CUSTOM_SSDT_OVERLAYS=y
+
+#
+# Tegra firmware driver
+#
+# end of Tegra firmware driver
+# end of Firmware Drivers
+
 CONFIG_HAVE_KVM=y
-CONFIG_HAVE_KVM_PFNCACHE=y
 CONFIG_HAVE_KVM_IRQCHIP=y
 CONFIG_HAVE_KVM_IRQFD=y
 CONFIG_HAVE_KVM_IRQ_ROUTING=y
-CONFIG_HAVE_KVM_DIRTY_RING=y
-CONFIG_HAVE_KVM_DIRTY_RING_TSO=y
-CONFIG_HAVE_KVM_DIRTY_RING_ACQ_REL=y
 CONFIG_HAVE_KVM_EVENTFD=y
 CONFIG_KVM_MMIO=y
 CONFIG_KVM_ASYNC_PF=y
@@ -877,12 +874,13 @@ CONFIG_KVM_COMPAT=y
 CONFIG_HAVE_KVM_IRQ_BYPASS=y
 CONFIG_HAVE_KVM_NO_POLL=y
 CONFIG_KVM_XFER_TO_GUEST_WORK=y
-CONFIG_HAVE_KVM_PM_NOTIFIER=y
 CONFIG_VIRTUALIZATION=y
-CONFIG_KVM=m
-CONFIG_KVM_INTEL=m
+CONFIG_KVM=y
+# CONFIG_KVM_WERROR is not set
+CONFIG_KVM_INTEL=y
 # CONFIG_KVM_AMD is not set
 # CONFIG_KVM_XEN is not set
+# CONFIG_KVM_MMU_AUDIT is not set
 CONFIG_AS_AVX512=y
 CONFIG_AS_SHA1_NI=y
 CONFIG_AS_SHA256_NI=y
@@ -900,23 +898,18 @@ CONFIG_JUMP_LABEL=y
 # CONFIG_STATIC_KEYS_SELFTEST is not set
 # CONFIG_STATIC_CALL_SELFTEST is not set
 CONFIG_OPTPROBES=y
-CONFIG_KPROBES_ON_FTRACE=y
 CONFIG_UPROBES=y
 CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS=y
 CONFIG_ARCH_USE_BUILTIN_BSWAP=y
 CONFIG_KRETPROBES=y
-CONFIG_KRETPROBE_ON_RETHOOK=y
 CONFIG_USER_RETURN_NOTIFIER=y
 CONFIG_HAVE_IOREMAP_PROT=y
 CONFIG_HAVE_KPROBES=y
 CONFIG_HAVE_KRETPROBES=y
 CONFIG_HAVE_OPTPROBES=y
 CONFIG_HAVE_KPROBES_ON_FTRACE=y
-CONFIG_ARCH_CORRECT_STACKTRACE_ON_KRETPROBE=y
 CONFIG_HAVE_FUNCTION_ERROR_INJECTION=y
 CONFIG_HAVE_NMI=y
-CONFIG_TRACE_IRQFLAGS_SUPPORT=y
-CONFIG_TRACE_IRQFLAGS_NMI_SUPPORT=y
 CONFIG_HAVE_ARCH_TRACEHOOK=y
 CONFIG_HAVE_DMA_CONTIGUOUS=y
 CONFIG_GENERIC_SMP_IDLE_THREAD=y
@@ -925,11 +918,9 @@ CONFIG_ARCH_HAS_SET_MEMORY=y
 CONFIG_ARCH_HAS_SET_DIRECT_MAP=y
 CONFIG_HAVE_ARCH_THREAD_STRUCT_WHITELIST=y
 CONFIG_ARCH_WANTS_DYNAMIC_TASK_STRUCT=y
-CONFIG_ARCH_WANTS_NO_INSTR=y
 CONFIG_HAVE_ASM_MODVERSIONS=y
 CONFIG_HAVE_REGS_AND_STACK_ACCESS_API=y
 CONFIG_HAVE_RSEQ=y
-CONFIG_HAVE_RUST=y
 CONFIG_HAVE_FUNCTION_ARG_ACCESS_API=y
 CONFIG_HAVE_HW_BREAKPOINT=y
 CONFIG_HAVE_MIXED_BREAKPOINTS_REGS=y
@@ -942,7 +933,6 @@ CONFIG_HAVE_ARCH_JUMP_LABEL=y
 CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE=y
 CONFIG_MMU_GATHER_TABLE_FREE=y
 CONFIG_MMU_GATHER_RCU_TABLE_FREE=y
-CONFIG_MMU_GATHER_MERGE_VMAS=y
 CONFIG_ARCH_HAVE_NMI_SAFE_CMPXCHG=y
 CONFIG_HAVE_ALIGNED_STRUCT_PAGE=y
 CONFIG_HAVE_CMPXCHG_LOCAL=y
@@ -957,14 +947,13 @@ CONFIG_SECCOMP_FILTER=y
 CONFIG_HAVE_ARCH_STACKLEAK=y
 CONFIG_HAVE_STACKPROTECTOR=y
 CONFIG_STACKPROTECTOR=y
-CONFIG_STACKPROTECTOR_STRONG=y
+# CONFIG_STACKPROTECTOR_STRONG is not set
 CONFIG_ARCH_SUPPORTS_LTO_CLANG=y
 CONFIG_ARCH_SUPPORTS_LTO_CLANG_THIN=y
 CONFIG_LTO_NONE=y
-CONFIG_ARCH_SUPPORTS_CFI_CLANG=y
 CONFIG_HAVE_ARCH_WITHIN_STACK_FRAMES=y
-CONFIG_HAVE_CONTEXT_TRACKING_USER=y
-CONFIG_HAVE_CONTEXT_TRACKING_USER_OFFSTACK=y
+CONFIG_HAVE_CONTEXT_TRACKING=y
+CONFIG_HAVE_CONTEXT_TRACKING_OFFSTACK=y
 CONFIG_HAVE_VIRT_CPU_ACCOUNTING_GEN=y
 CONFIG_HAVE_IRQ_TIME_ACCOUNTING=y
 CONFIG_HAVE_MOVE_PUD=y
@@ -972,14 +961,12 @@ CONFIG_HAVE_MOVE_PMD=y
 CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE=y
 CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD=y
 CONFIG_HAVE_ARCH_HUGE_VMAP=y
-CONFIG_HAVE_ARCH_HUGE_VMALLOC=y
 CONFIG_ARCH_WANT_HUGE_PMD_SHARE=y
 CONFIG_HAVE_ARCH_SOFT_DIRTY=y
 CONFIG_HAVE_MOD_ARCH_SPECIFIC=y
 CONFIG_MODULES_USE_ELF_RELA=y
 CONFIG_HAVE_IRQ_EXIT_ON_IRQ_STACK=y
 CONFIG_HAVE_SOFTIRQ_ON_OWN_STACK=y
-CONFIG_SOFTIRQ_ON_OWN_STACK=y
 CONFIG_ARCH_HAS_ELF_RANDOMIZE=y
 CONFIG_HAVE_ARCH_MMAP_RND_BITS=y
 CONFIG_HAVE_EXIT_THREAD=y
@@ -987,22 +974,15 @@ CONFIG_ARCH_MMAP_RND_BITS=28
 CONFIG_HAVE_ARCH_MMAP_RND_COMPAT_BITS=y
 CONFIG_ARCH_MMAP_RND_COMPAT_BITS=8
 CONFIG_HAVE_ARCH_COMPAT_MMAP_BASES=y
-CONFIG_PAGE_SIZE_LESS_THAN_64KB=y
-CONFIG_PAGE_SIZE_LESS_THAN_256KB=y
-CONFIG_HAVE_OBJTOOL=y
-CONFIG_HAVE_JUMP_LABEL_HACK=y
-CONFIG_HAVE_NOINSTR_HACK=y
-CONFIG_HAVE_NOINSTR_VALIDATION=y
-CONFIG_HAVE_UACCESS_VALIDATION=y
 CONFIG_HAVE_STACK_VALIDATION=y
 CONFIG_HAVE_RELIABLE_STACKTRACE=y
+CONFIG_ISA_BUS_API=y
 CONFIG_OLD_SIGSUSPEND3=y
 CONFIG_COMPAT_OLD_SIGACTION=y
 CONFIG_COMPAT_32BIT_TIME=y
 CONFIG_HAVE_ARCH_VMAP_STACK=y
-CONFIG_VMAP_STACK=y
+# CONFIG_VMAP_STACK is not set
 CONFIG_HAVE_ARCH_RANDOMIZE_KSTACK_OFFSET=y
-CONFIG_RANDOMIZE_KSTACK_OFFSET=y
 # CONFIG_RANDOMIZE_KSTACK_OFFSET_DEFAULT is not set
 CONFIG_ARCH_HAS_STRICT_KERNEL_RWX=y
 CONFIG_STRICT_KERNEL_RWX=y
@@ -1010,112 +990,52 @@ CONFIG_ARCH_HAS_STRICT_MODULE_RWX=y
 CONFIG_STRICT_MODULE_RWX=y
 CONFIG_HAVE_ARCH_PREL32_RELOCATIONS=y
 CONFIG_ARCH_USE_MEMREMAP_PROT=y
-# CONFIG_LOCK_EVENT_COUNTS is not set
+CONFIG_LOCK_EVENT_COUNTS=y
 CONFIG_ARCH_HAS_MEM_ENCRYPT=y
-CONFIG_ARCH_HAS_CC_PLATFORM=y
 CONFIG_HAVE_STATIC_CALL=y
 CONFIG_HAVE_STATIC_CALL_INLINE=y
 CONFIG_HAVE_PREEMPT_DYNAMIC=y
-CONFIG_HAVE_PREEMPT_DYNAMIC_CALL=y
 CONFIG_ARCH_WANT_LD_ORPHAN_WARN=y
 CONFIG_ARCH_SUPPORTS_DEBUG_PAGEALLOC=y
-CONFIG_ARCH_SUPPORTS_PAGE_TABLE_CHECK=y
 CONFIG_ARCH_HAS_ELFCORE_COMPAT=y
-CONFIG_ARCH_HAS_PARANOID_L1D_FLUSH=y
-CONFIG_DYNAMIC_SIGFRAME=y
-CONFIG_ARCH_HAS_NONLEAF_PMD_YOUNG=y
 
 #
 # GCOV-based kernel profiling
 #
-# CONFIG_GCOV_KERNEL is not set
+CONFIG_GCOV_KERNEL=y
 CONFIG_ARCH_HAS_GCOV_PROFILE_ALL=y
+CONFIG_GCOV_PROFILE_ALL=y
 # end of GCOV-based kernel profiling
 
 CONFIG_HAVE_GCC_PLUGINS=y
 CONFIG_GCC_PLUGINS=y
-# CONFIG_GCC_PLUGIN_LATENT_ENTROPY is not set
+# CONFIG_GCC_PLUGIN_CYC_COMPLEXITY is not set
+CONFIG_GCC_PLUGIN_LATENT_ENTROPY=y
+# CONFIG_GCC_PLUGIN_RANDSTRUCT is not set
 # end of General architecture-dependent options
 
 CONFIG_RT_MUTEXES=y
-CONFIG_BASE_SMALL=0
-CONFIG_MODULE_SIG_FORMAT=y
+CONFIG_BASE_SMALL=1
 CONFIG_MODULES=y
-CONFIG_MODULE_FORCE_LOAD=y
+# CONFIG_MODULE_FORCE_LOAD is not set
 CONFIG_MODULE_UNLOAD=y
 # CONFIG_MODULE_FORCE_UNLOAD is not set
-# CONFIG_MODULE_UNLOAD_TAINT_TRACKING is not set
 # CONFIG_MODVERSIONS is not set
 # CONFIG_MODULE_SRCVERSION_ALL is not set
-CONFIG_MODULE_SIG=y
-# CONFIG_MODULE_SIG_FORCE is not set
-CONFIG_MODULE_SIG_ALL=y
-# CONFIG_MODULE_SIG_SHA1 is not set
-# CONFIG_MODULE_SIG_SHA224 is not set
-CONFIG_MODULE_SIG_SHA256=y
-# CONFIG_MODULE_SIG_SHA384 is not set
-# CONFIG_MODULE_SIG_SHA512 is not set
-CONFIG_MODULE_SIG_HASH="sha256"
+# CONFIG_MODULE_SIG is not set
 CONFIG_MODULE_COMPRESS_NONE=y
 # CONFIG_MODULE_COMPRESS_GZIP is not set
 # CONFIG_MODULE_COMPRESS_XZ is not set
 # CONFIG_MODULE_COMPRESS_ZSTD is not set
 # CONFIG_MODULE_ALLOW_MISSING_NAMESPACE_IMPORTS is not set
 CONFIG_MODPROBE_PATH="/sbin/modprobe"
+# CONFIG_TRIM_UNUSED_KSYMS is not set
 CONFIG_MODULES_TREE_LOOKUP=y
-CONFIG_BLOCK=y
-CONFIG_BLOCK_LEGACY_AUTOLOAD=y
-CONFIG_BLK_CGROUP_RWSTAT=y
-CONFIG_BLK_DEV_BSG_COMMON=y
-CONFIG_BLK_ICQ=y
-CONFIG_BLK_DEV_BSGLIB=y
-CONFIG_BLK_DEV_INTEGRITY=y
-CONFIG_BLK_DEV_INTEGRITY_T10=m
-# CONFIG_BLK_DEV_ZONED is not set
-CONFIG_BLK_DEV_THROTTLING=y
-# CONFIG_BLK_DEV_THROTTLING_LOW is not set
-CONFIG_BLK_WBT=y
-CONFIG_BLK_WBT_MQ=y
-# CONFIG_BLK_CGROUP_IOLATENCY is not set
-# CONFIG_BLK_CGROUP_IOCOST is not set
-# CONFIG_BLK_CGROUP_IOPRIO is not set
-CONFIG_BLK_DEBUG_FS=y
-# CONFIG_BLK_SED_OPAL is not set
-# CONFIG_BLK_INLINE_ENCRYPTION is not set
-
-#
-# Partition Types
-#
-# CONFIG_PARTITION_ADVANCED is not set
-CONFIG_MSDOS_PARTITION=y
-CONFIG_EFI_PARTITION=y
-# end of Partition Types
-
-CONFIG_BLOCK_COMPAT=y
-CONFIG_BLK_MQ_PCI=y
-CONFIG_BLK_MQ_VIRTIO=y
-CONFIG_BLK_PM=y
-CONFIG_BLOCK_HOLDER_DEPRECATED=y
-CONFIG_BLK_MQ_STACKING=y
-
-#
-# IO Schedulers
-#
-CONFIG_MQ_IOSCHED_DEADLINE=y
-CONFIG_MQ_IOSCHED_KYBER=y
-CONFIG_IOSCHED_BFQ=y
-CONFIG_BFQ_GROUP_IOSCHED=y
-# CONFIG_BFQ_CGROUP_DEBUG is not set
-# end of IO Schedulers
-
+# CONFIG_BLOCK is not set
 CONFIG_PREEMPT_NOTIFIERS=y
 CONFIG_PADATA=y
 CONFIG_ASN1=y
-CONFIG_INLINE_SPIN_UNLOCK_IRQ=y
-CONFIG_INLINE_READ_UNLOCK=y
-CONFIG_INLINE_READ_UNLOCK_IRQ=y
-CONFIG_INLINE_WRITE_UNLOCK=y
-CONFIG_INLINE_WRITE_UNLOCK_IRQ=y
+CONFIG_UNINLINE_SPIN_UNLOCK=y
 CONFIG_ARCH_SUPPORTS_ATOMIC_RMW=y
 CONFIG_MUTEX_SPIN_ON_OWNER=y
 CONFIG_RWSEM_SPIN_ON_OWNER=y
@@ -1127,7 +1047,6 @@ CONFIG_QUEUED_RWLOCKS=y
 CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE=y
 CONFIG_ARCH_HAS_SYNC_CORE_BEFORE_USERMODE=y
 CONFIG_ARCH_HAS_SYSCALL_WRAPPER=y
-CONFIG_FREEZER=y
 
 #
 # Executable file formats
@@ -1135,905 +1054,466 @@ CONFIG_FREEZER=y
 CONFIG_BINFMT_ELF=y
 CONFIG_COMPAT_BINFMT_ELF=y
 CONFIG_ELFCORE=y
-CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS=y
 CONFIG_BINFMT_SCRIPT=y
-CONFIG_BINFMT_MISC=m
-CONFIG_COREDUMP=y
+CONFIG_BINFMT_MISC=y
+# CONFIG_COREDUMP is not set
 # end of Executable file formats
 
 #
 # Memory Management options
 #
-CONFIG_ZPOOL=y
-CONFIG_SWAP=y
-CONFIG_ZSWAP=y
-# CONFIG_ZSWAP_DEFAULT_ON is not set
-# CONFIG_ZSWAP_COMPRESSOR_DEFAULT_DEFLATE is not set
-CONFIG_ZSWAP_COMPRESSOR_DEFAULT_LZO=y
-# CONFIG_ZSWAP_COMPRESSOR_DEFAULT_842 is not set
-# CONFIG_ZSWAP_COMPRESSOR_DEFAULT_LZ4 is not set
-# CONFIG_ZSWAP_COMPRESSOR_DEFAULT_LZ4HC is not set
-# CONFIG_ZSWAP_COMPRESSOR_DEFAULT_ZSTD is not set
-CONFIG_ZSWAP_COMPRESSOR_DEFAULT="lzo"
-CONFIG_ZSWAP_ZPOOL_DEFAULT_ZBUD=y
-# CONFIG_ZSWAP_ZPOOL_DEFAULT_Z3FOLD is not set
-# CONFIG_ZSWAP_ZPOOL_DEFAULT_ZSMALLOC is not set
-CONFIG_ZSWAP_ZPOOL_DEFAULT="zbud"
-CONFIG_ZBUD=y
-# CONFIG_Z3FOLD is not set
-CONFIG_ZSMALLOC=y
-CONFIG_ZSMALLOC_STAT=y
-
-#
-# SLAB allocator options
-#
-# CONFIG_SLAB is not set
-CONFIG_SLUB=y
-CONFIG_SLAB_MERGE_DEFAULT=y
-CONFIG_SLAB_FREELIST_RANDOM=y
-# CONFIG_SLAB_FREELIST_HARDENED is not set
-# CONFIG_SLUB_STATS is not set
-CONFIG_SLUB_CPU_PARTIAL=y
-# end of SLAB allocator options
-
-CONFIG_SHUFFLE_PAGE_ALLOCATOR=y
-# CONFIG_COMPAT_BRK is not set
+CONFIG_SELECT_MEMORY_MODEL=y
+CONFIG_SPARSEMEM_MANUAL=y
 CONFIG_SPARSEMEM=y
 CONFIG_SPARSEMEM_EXTREME=y
 CONFIG_SPARSEMEM_VMEMMAP_ENABLE=y
 CONFIG_SPARSEMEM_VMEMMAP=y
 CONFIG_HAVE_FAST_GUP=y
-CONFIG_NUMA_KEEP_MEMINFO=y
 CONFIG_MEMORY_ISOLATION=y
-CONFIG_EXCLUSIVE_SYSTEM_RAM=y
-CONFIG_HAVE_BOOTMEM_INFO_NODE=y
 CONFIG_ARCH_ENABLE_MEMORY_HOTPLUG=y
-CONFIG_ARCH_ENABLE_MEMORY_HOTREMOVE=y
-CONFIG_MEMORY_HOTPLUG=y
-# CONFIG_MEMORY_HOTPLUG_DEFAULT_ONLINE is not set
-CONFIG_MEMORY_HOTREMOVE=y
-CONFIG_MHP_MEMMAP_ON_MEMORY=y
+# CONFIG_MEMORY_HOTPLUG is not set
 CONFIG_SPLIT_PTLOCK_CPUS=4
 CONFIG_ARCH_ENABLE_SPLIT_PMD_PTLOCK=y
-CONFIG_MEMORY_BALLOON=y
-CONFIG_BALLOON_COMPACTION=y
-CONFIG_COMPACTION=y
-CONFIG_COMPACT_UNEVICTABLE_DEFAULT=1
+# CONFIG_COMPACTION is not set
 CONFIG_PAGE_REPORTING=y
 CONFIG_MIGRATION=y
-CONFIG_DEVICE_MIGRATION=y
-CONFIG_ARCH_ENABLE_HUGEPAGE_MIGRATION=y
-CONFIG_ARCH_ENABLE_THP_MIGRATION=y
 CONFIG_CONTIG_ALLOC=y
 CONFIG_PHYS_ADDR_T_64BIT=y
+CONFIG_VIRT_TO_BUS=y
 CONFIG_MMU_NOTIFIER=y
 CONFIG_KSM=y
 CONFIG_DEFAULT_MMAP_MIN_ADDR=4096
 CONFIG_ARCH_SUPPORTS_MEMORY_FAILURE=y
-CONFIG_MEMORY_FAILURE=y
-CONFIG_HWPOISON_INJECT=m
-CONFIG_ARCH_WANT_GENERAL_HUGETLB=y
+# CONFIG_MEMORY_FAILURE is not set
+# CONFIG_TRANSPARENT_HUGEPAGE is not set
 CONFIG_ARCH_WANTS_THP_SWAP=y
-CONFIG_TRANSPARENT_HUGEPAGE=y
-CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS=y
-# CONFIG_TRANSPARENT_HUGEPAGE_MADVISE is not set
-CONFIG_THP_SWAP=y
-# CONFIG_READ_ONLY_THP_FOR_FS is not set
-CONFIG_NEED_PER_CPU_EMBED_FIRST_CHUNK=y
-CONFIG_NEED_PER_CPU_PAGE_FIRST_CHUNK=y
-CONFIG_USE_PERCPU_NUMA_NODE_ID=y
-CONFIG_HAVE_SETUP_PER_CPU_AREA=y
-CONFIG_FRONTSWAP=y
-# CONFIG_CMA is not set
+# CONFIG_CLEANCACHE is not set
+CONFIG_CMA=y
+CONFIG_CMA_DEBUG=y
+# CONFIG_CMA_DEBUGFS is not set
+# CONFIG_CMA_SYSFS is not set
+CONFIG_CMA_AREAS=7
+# CONFIG_MEM_SOFT_DIRTY is not set
+CONFIG_ZPOOL=y
+# CONFIG_ZBUD is not set
+CONFIG_Z3FOLD=y
+# CONFIG_ZSMALLOC is not set
 CONFIG_GENERIC_EARLY_IOREMAP=y
 CONFIG_DEFERRED_STRUCT_PAGE_INIT=y
-CONFIG_PAGE_IDLE_FLAG=y
 CONFIG_IDLE_PAGE_TRACKING=y
 CONFIG_ARCH_HAS_CACHE_LINE_SIZE=y
-CONFIG_ARCH_HAS_CURRENT_STACK_POINTER=y
 CONFIG_ARCH_HAS_PTE_DEVMAP=y
-CONFIG_ZONE_DMA=y
-CONFIG_ZONE_DMA32=y
-CONFIG_ZONE_DEVICE=y
-CONFIG_GET_FREE_REGION=y
-CONFIG_DEVICE_PRIVATE=y
-CONFIG_VMAP_PFN=y
-CONFIG_ARCH_USES_HIGH_VMA_FLAGS=y
-CONFIG_ARCH_HAS_PKEYS=y
-CONFIG_VM_EVENT_COUNTERS=y
 # CONFIG_PERCPU_STATS is not set
 # CONFIG_GUP_TEST is not set
 CONFIG_ARCH_HAS_PTE_SPECIAL=y
-CONFIG_SECRETMEM=y
-# CONFIG_ANON_VMA_NAME is not set
-# CONFIG_USERFAULTFD is not set
-# CONFIG_LRU_GEN is not set
-
-#
-# Data Access Monitoring
-#
-# CONFIG_DAMON is not set
-# end of Data Access Monitoring
 # end of Memory Management options
 
 CONFIG_NET=y
 CONFIG_NET_INGRESS=y
-CONFIG_NET_EGRESS=y
-CONFIG_SKB_EXTENSIONS=y
 
 #
 # Networking options
 #
 CONFIG_PACKET=y
-CONFIG_PACKET_DIAG=m
+# CONFIG_PACKET_DIAG is not set
 CONFIG_UNIX=y
 CONFIG_UNIX_SCM=y
-CONFIG_AF_UNIX_OOB=y
-CONFIG_UNIX_DIAG=m
-CONFIG_TLS=m
-CONFIG_TLS_DEVICE=y
-# CONFIG_TLS_TOE is not set
-CONFIG_XFRM=y
-CONFIG_XFRM_OFFLOAD=y
-CONFIG_XFRM_ALGO=y
-CONFIG_XFRM_USER=y
-# CONFIG_XFRM_USER_COMPAT is not set
-# CONFIG_XFRM_INTERFACE is not set
-CONFIG_XFRM_SUB_POLICY=y
-CONFIG_XFRM_MIGRATE=y
-CONFIG_XFRM_STATISTICS=y
-CONFIG_XFRM_AH=m
-CONFIG_XFRM_ESP=m
-CONFIG_XFRM_IPCOMP=m
-CONFIG_NET_KEY=m
-CONFIG_NET_KEY_MIGRATE=y
-CONFIG_XDP_SOCKETS=y
-# CONFIG_XDP_SOCKETS_DIAG is not set
+# CONFIG_UNIX_DIAG is not set
+# CONFIG_TLS is not set
+# CONFIG_XFRM_USER is not set
+# CONFIG_NET_KEY is not set
+# CONFIG_XDP_SOCKETS is not set
 CONFIG_INET=y
-CONFIG_IP_MULTICAST=y
-CONFIG_IP_ADVANCED_ROUTER=y
-CONFIG_IP_FIB_TRIE_STATS=y
-CONFIG_IP_MULTIPLE_TABLES=y
-CONFIG_IP_ROUTE_MULTIPATH=y
-CONFIG_IP_ROUTE_VERBOSE=y
-CONFIG_IP_ROUTE_CLASSID=y
+# CONFIG_IP_MULTICAST is not set
+# CONFIG_IP_ADVANCED_ROUTER is not set
 CONFIG_IP_PNP=y
 CONFIG_IP_PNP_DHCP=y
 # CONFIG_IP_PNP_BOOTP is not set
 # CONFIG_IP_PNP_RARP is not set
-CONFIG_NET_IPIP=m
-CONFIG_NET_IPGRE_DEMUX=m
-CONFIG_NET_IP_TUNNEL=m
-CONFIG_NET_IPGRE=m
-CONFIG_NET_IPGRE_BROADCAST=y
-CONFIG_IP_MROUTE_COMMON=y
-CONFIG_IP_MROUTE=y
-CONFIG_IP_MROUTE_MULTIPLE_TABLES=y
-CONFIG_IP_PIMSM_V1=y
-CONFIG_IP_PIMSM_V2=y
-CONFIG_SYN_COOKIES=y
-CONFIG_NET_IPVTI=m
-CONFIG_NET_UDP_TUNNEL=m
+# CONFIG_NET_IPIP is not set
+# CONFIG_NET_IPGRE_DEMUX is not set
+CONFIG_NET_IP_TUNNEL=y
+# CONFIG_SYN_COOKIES is not set
+# CONFIG_NET_IPVTI is not set
 # CONFIG_NET_FOU is not set
 # CONFIG_NET_FOU_IP_TUNNELS is not set
-CONFIG_INET_AH=m
-CONFIG_INET_ESP=m
-CONFIG_INET_ESP_OFFLOAD=m
-# CONFIG_INET_ESPINTCP is not set
-CONFIG_INET_IPCOMP=m
-CONFIG_INET_XFRM_TUNNEL=m
-CONFIG_INET_TUNNEL=m
-CONFIG_INET_DIAG=m
-CONFIG_INET_TCP_DIAG=m
-CONFIG_INET_UDP_DIAG=m
-CONFIG_INET_RAW_DIAG=m
+# CONFIG_INET_AH is not set
+# CONFIG_INET_ESP is not set
+# CONFIG_INET_IPCOMP is not set
+CONFIG_INET_TUNNEL=y
+CONFIG_INET_DIAG=y
+CONFIG_INET_TCP_DIAG=y
+# CONFIG_INET_UDP_DIAG is not set
+# CONFIG_INET_RAW_DIAG is not set
 # CONFIG_INET_DIAG_DESTROY is not set
-CONFIG_TCP_CONG_ADVANCED=y
-CONFIG_TCP_CONG_BIC=m
+# CONFIG_TCP_CONG_ADVANCED is not set
 CONFIG_TCP_CONG_CUBIC=y
-CONFIG_TCP_CONG_WESTWOOD=m
-CONFIG_TCP_CONG_HTCP=m
-CONFIG_TCP_CONG_HSTCP=m
-CONFIG_TCP_CONG_HYBLA=m
-CONFIG_TCP_CONG_VEGAS=m
-CONFIG_TCP_CONG_NV=m
-CONFIG_TCP_CONG_SCALABLE=m
-CONFIG_TCP_CONG_LP=m
-CONFIG_TCP_CONG_VENO=m
-CONFIG_TCP_CONG_YEAH=m
-CONFIG_TCP_CONG_ILLINOIS=m
-CONFIG_TCP_CONG_DCTCP=m
-# CONFIG_TCP_CONG_CDG is not set
-CONFIG_TCP_CONG_BBR=m
-CONFIG_DEFAULT_CUBIC=y
-# CONFIG_DEFAULT_RENO is not set
 CONFIG_DEFAULT_TCP_CONG="cubic"
-CONFIG_TCP_MD5SIG=y
+# CONFIG_TCP_MD5SIG is not set
 CONFIG_IPV6=y
-CONFIG_IPV6_ROUTER_PREF=y
-CONFIG_IPV6_ROUTE_INFO=y
-CONFIG_IPV6_OPTIMISTIC_DAD=y
-CONFIG_INET6_AH=m
-CONFIG_INET6_ESP=m
-CONFIG_INET6_ESP_OFFLOAD=m
-# CONFIG_INET6_ESPINTCP is not set
-CONFIG_INET6_IPCOMP=m
-CONFIG_IPV6_MIP6=m
+# CONFIG_IPV6_ROUTER_PREF is not set
+# CONFIG_IPV6_OPTIMISTIC_DAD is not set
+# CONFIG_INET6_AH is not set
+# CONFIG_INET6_ESP is not set
+# CONFIG_INET6_IPCOMP is not set
+# CONFIG_IPV6_MIP6 is not set
 # CONFIG_IPV6_ILA is not set
-CONFIG_INET6_XFRM_TUNNEL=m
-CONFIG_INET6_TUNNEL=m
-CONFIG_IPV6_VTI=m
-CONFIG_IPV6_SIT=m
-CONFIG_IPV6_SIT_6RD=y
+# CONFIG_IPV6_VTI is not set
+CONFIG_IPV6_SIT=y
+# CONFIG_IPV6_SIT_6RD is not set
 CONFIG_IPV6_NDISC_NODETYPE=y
-CONFIG_IPV6_TUNNEL=m
-CONFIG_IPV6_GRE=m
-CONFIG_IPV6_MULTIPLE_TABLES=y
-# CONFIG_IPV6_SUBTREES is not set
-CONFIG_IPV6_MROUTE=y
-CONFIG_IPV6_MROUTE_MULTIPLE_TABLES=y
-CONFIG_IPV6_PIMSM_V2=y
+# CONFIG_IPV6_TUNNEL is not set
+# CONFIG_IPV6_MULTIPLE_TABLES is not set
+# CONFIG_IPV6_MROUTE is not set
 # CONFIG_IPV6_SEG6_LWTUNNEL is not set
 # CONFIG_IPV6_SEG6_HMAC is not set
 # CONFIG_IPV6_RPL_LWTUNNEL is not set
-# CONFIG_IPV6_IOAM6_LWTUNNEL is not set
-CONFIG_NETLABEL=y
+# CONFIG_NETLABEL is not set
 # CONFIG_MPTCP is not set
 CONFIG_NETWORK_SECMARK=y
 CONFIG_NET_PTP_CLASSIFY=y
 CONFIG_NETWORK_PHY_TIMESTAMPING=y
 CONFIG_NETFILTER=y
-CONFIG_NETFILTER_ADVANCED=y
-CONFIG_BRIDGE_NETFILTER=m
+# CONFIG_NETFILTER_ADVANCED is not set
 
 #
 # Core Netfilter Configuration
 #
 CONFIG_NETFILTER_INGRESS=y
-CONFIG_NETFILTER_EGRESS=y
-CONFIG_NETFILTER_SKIP_EGRESS=y
 CONFIG_NETFILTER_NETLINK=m
-CONFIG_NETFILTER_FAMILY_BRIDGE=y
-CONFIG_NETFILTER_FAMILY_ARP=y
-# CONFIG_NETFILTER_NETLINK_HOOK is not set
-# CONFIG_NETFILTER_NETLINK_ACCT is not set
-CONFIG_NETFILTER_NETLINK_QUEUE=m
 CONFIG_NETFILTER_NETLINK_LOG=m
-CONFIG_NETFILTER_NETLINK_OSF=m
 CONFIG_NF_CONNTRACK=m
 CONFIG_NF_LOG_SYSLOG=m
-CONFIG_NETFILTER_CONNCOUNT=m
-CONFIG_NF_CONNTRACK_MARK=y
 CONFIG_NF_CONNTRACK_SECMARK=y
-CONFIG_NF_CONNTRACK_ZONES=y
 CONFIG_NF_CONNTRACK_PROCFS=y
-CONFIG_NF_CONNTRACK_EVENTS=y
-CONFIG_NF_CONNTRACK_TIMEOUT=y
-CONFIG_NF_CONNTRACK_TIMESTAMP=y
-CONFIG_NF_CONNTRACK_LABELS=y
-CONFIG_NF_CT_PROTO_DCCP=y
-CONFIG_NF_CT_PROTO_GRE=y
-CONFIG_NF_CT_PROTO_SCTP=y
-CONFIG_NF_CT_PROTO_UDPLITE=y
-CONFIG_NF_CONNTRACK_AMANDA=m
+# CONFIG_NF_CONNTRACK_LABELS is not set
 CONFIG_NF_CONNTRACK_FTP=m
-CONFIG_NF_CONNTRACK_H323=m
 CONFIG_NF_CONNTRACK_IRC=m
-CONFIG_NF_CONNTRACK_BROADCAST=m
-CONFIG_NF_CONNTRACK_NETBIOS_NS=m
-CONFIG_NF_CONNTRACK_SNMP=m
-CONFIG_NF_CONNTRACK_PPTP=m
-CONFIG_NF_CONNTRACK_SANE=m
+# CONFIG_NF_CONNTRACK_NETBIOS_NS is not set
 CONFIG_NF_CONNTRACK_SIP=m
-CONFIG_NF_CONNTRACK_TFTP=m
 CONFIG_NF_CT_NETLINK=m
-CONFIG_NF_CT_NETLINK_TIMEOUT=m
-CONFIG_NF_CT_NETLINK_HELPER=m
-CONFIG_NETFILTER_NETLINK_GLUE_CT=y
+# CONFIG_NETFILTER_NETLINK_GLUE_CT is not set
 CONFIG_NF_NAT=m
-CONFIG_NF_NAT_AMANDA=m
 CONFIG_NF_NAT_FTP=m
 CONFIG_NF_NAT_IRC=m
 CONFIG_NF_NAT_SIP=m
-CONFIG_NF_NAT_TFTP=m
-CONFIG_NF_NAT_REDIRECT=y
 CONFIG_NF_NAT_MASQUERADE=y
-CONFIG_NETFILTER_SYNPROXY=m
-CONFIG_NF_TABLES=m
-CONFIG_NF_TABLES_INET=y
-CONFIG_NF_TABLES_NETDEV=y
-CONFIG_NFT_NUMGEN=m
-CONFIG_NFT_CT=m
-CONFIG_NFT_CONNLIMIT=m
-CONFIG_NFT_LOG=m
-CONFIG_NFT_LIMIT=m
-CONFIG_NFT_MASQ=m
-CONFIG_NFT_REDIR=m
-CONFIG_NFT_NAT=m
-# CONFIG_NFT_TUNNEL is not set
-CONFIG_NFT_OBJREF=m
-CONFIG_NFT_QUEUE=m
-CONFIG_NFT_QUOTA=m
-CONFIG_NFT_REJECT=m
-CONFIG_NFT_REJECT_INET=m
-CONFIG_NFT_COMPAT=m
-CONFIG_NFT_HASH=m
-CONFIG_NFT_FIB=m
-CONFIG_NFT_FIB_INET=m
-# CONFIG_NFT_XFRM is not set
-CONFIG_NFT_SOCKET=m
-# CONFIG_NFT_OSF is not set
-# CONFIG_NFT_TPROXY is not set
-# CONFIG_NFT_SYNPROXY is not set
-CONFIG_NF_DUP_NETDEV=m
-CONFIG_NFT_DUP_NETDEV=m
-CONFIG_NFT_FWD_NETDEV=m
-CONFIG_NFT_FIB_NETDEV=m
-# CONFIG_NFT_REJECT_NETDEV is not set
-# CONFIG_NF_FLOW_TABLE is not set
-CONFIG_NETFILTER_XTABLES=y
+# CONFIG_NF_TABLES is not set
+CONFIG_NETFILTER_XTABLES=m
 CONFIG_NETFILTER_XTABLES_COMPAT=y
 
 #
 # Xtables combined modules
 #
 CONFIG_NETFILTER_XT_MARK=m
-CONFIG_NETFILTER_XT_CONNMARK=m
-CONFIG_NETFILTER_XT_SET=m
 
 #
 # Xtables targets
 #
-CONFIG_NETFILTER_XT_TARGET_AUDIT=m
-CONFIG_NETFILTER_XT_TARGET_CHECKSUM=m
-CONFIG_NETFILTER_XT_TARGET_CLASSIFY=m
-CONFIG_NETFILTER_XT_TARGET_CONNMARK=m
 CONFIG_NETFILTER_XT_TARGET_CONNSECMARK=m
-CONFIG_NETFILTER_XT_TARGET_CT=m
-CONFIG_NETFILTER_XT_TARGET_DSCP=m
-CONFIG_NETFILTER_XT_TARGET_HL=m
-CONFIG_NETFILTER_XT_TARGET_HMARK=m
-CONFIG_NETFILTER_XT_TARGET_IDLETIMER=m
-# CONFIG_NETFILTER_XT_TARGET_LED is not set
 CONFIG_NETFILTER_XT_TARGET_LOG=m
-CONFIG_NETFILTER_XT_TARGET_MARK=m
 CONFIG_NETFILTER_XT_NAT=m
-CONFIG_NETFILTER_XT_TARGET_NETMAP=m
+# CONFIG_NETFILTER_XT_TARGET_NETMAP is not set
 CONFIG_NETFILTER_XT_TARGET_NFLOG=m
-CONFIG_NETFILTER_XT_TARGET_NFQUEUE=m
-CONFIG_NETFILTER_XT_TARGET_NOTRACK=m
-CONFIG_NETFILTER_XT_TARGET_RATEEST=m
-CONFIG_NETFILTER_XT_TARGET_REDIRECT=m
+# CONFIG_NETFILTER_XT_TARGET_REDIRECT is not set
 CONFIG_NETFILTER_XT_TARGET_MASQUERADE=m
-CONFIG_NETFILTER_XT_TARGET_TEE=m
-CONFIG_NETFILTER_XT_TARGET_TPROXY=m
-CONFIG_NETFILTER_XT_TARGET_TRACE=m
 CONFIG_NETFILTER_XT_TARGET_SECMARK=m
 CONFIG_NETFILTER_XT_TARGET_TCPMSS=m
-CONFIG_NETFILTER_XT_TARGET_TCPOPTSTRIP=m
 
 #
 # Xtables matches
 #
 CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=m
-CONFIG_NETFILTER_XT_MATCH_BPF=m
-CONFIG_NETFILTER_XT_MATCH_CGROUP=m
-CONFIG_NETFILTER_XT_MATCH_CLUSTER=m
-CONFIG_NETFILTER_XT_MATCH_COMMENT=m
-CONFIG_NETFILTER_XT_MATCH_CONNBYTES=m
-CONFIG_NETFILTER_XT_MATCH_CONNLABEL=m
-CONFIG_NETFILTER_XT_MATCH_CONNLIMIT=m
-CONFIG_NETFILTER_XT_MATCH_CONNMARK=m
 CONFIG_NETFILTER_XT_MATCH_CONNTRACK=m
-CONFIG_NETFILTER_XT_MATCH_CPU=m
-CONFIG_NETFILTER_XT_MATCH_DCCP=m
-CONFIG_NETFILTER_XT_MATCH_DEVGROUP=m
-CONFIG_NETFILTER_XT_MATCH_DSCP=m
-CONFIG_NETFILTER_XT_MATCH_ECN=m
-CONFIG_NETFILTER_XT_MATCH_ESP=m
-CONFIG_NETFILTER_XT_MATCH_HASHLIMIT=m
-CONFIG_NETFILTER_XT_MATCH_HELPER=m
-CONFIG_NETFILTER_XT_MATCH_HL=m
-# CONFIG_NETFILTER_XT_MATCH_IPCOMP is not set
-CONFIG_NETFILTER_XT_MATCH_IPRANGE=m
-CONFIG_NETFILTER_XT_MATCH_IPVS=m
-# CONFIG_NETFILTER_XT_MATCH_L2TP is not set
-CONFIG_NETFILTER_XT_MATCH_LENGTH=m
-CONFIG_NETFILTER_XT_MATCH_LIMIT=m
-CONFIG_NETFILTER_XT_MATCH_MAC=m
-CONFIG_NETFILTER_XT_MATCH_MARK=m
-CONFIG_NETFILTER_XT_MATCH_MULTIPORT=m
-# CONFIG_NETFILTER_XT_MATCH_NFACCT is not set
-CONFIG_NETFILTER_XT_MATCH_OSF=m
-CONFIG_NETFILTER_XT_MATCH_OWNER=m
-CONFIG_NETFILTER_XT_MATCH_POLICY=m
-CONFIG_NETFILTER_XT_MATCH_PHYSDEV=m
-CONFIG_NETFILTER_XT_MATCH_PKTTYPE=m
-CONFIG_NETFILTER_XT_MATCH_QUOTA=m
-CONFIG_NETFILTER_XT_MATCH_RATEEST=m
-CONFIG_NETFILTER_XT_MATCH_REALM=m
-CONFIG_NETFILTER_XT_MATCH_RECENT=m
-CONFIG_NETFILTER_XT_MATCH_SCTP=m
-CONFIG_NETFILTER_XT_MATCH_SOCKET=m
 CONFIG_NETFILTER_XT_MATCH_STATE=m
-CONFIG_NETFILTER_XT_MATCH_STATISTIC=m
-CONFIG_NETFILTER_XT_MATCH_STRING=m
-CONFIG_NETFILTER_XT_MATCH_TCPMSS=m
-# CONFIG_NETFILTER_XT_MATCH_TIME is not set
-# CONFIG_NETFILTER_XT_MATCH_U32 is not set
 # end of Core Netfilter Configuration
 
-CONFIG_IP_SET=m
-CONFIG_IP_SET_MAX=256
-CONFIG_IP_SET_BITMAP_IP=m
-CONFIG_IP_SET_BITMAP_IPMAC=m
-CONFIG_IP_SET_BITMAP_PORT=m
-CONFIG_IP_SET_HASH_IP=m
-CONFIG_IP_SET_HASH_IPMARK=m
-CONFIG_IP_SET_HASH_IPPORT=m
-CONFIG_IP_SET_HASH_IPPORTIP=m
-CONFIG_IP_SET_HASH_IPPORTNET=m
-CONFIG_IP_SET_HASH_IPMAC=m
-CONFIG_IP_SET_HASH_MAC=m
-CONFIG_IP_SET_HASH_NETPORTNET=m
-CONFIG_IP_SET_HASH_NET=m
-CONFIG_IP_SET_HASH_NETNET=m
-CONFIG_IP_SET_HASH_NETPORT=m
-CONFIG_IP_SET_HASH_NETIFACE=m
-CONFIG_IP_SET_LIST_SET=m
-CONFIG_IP_VS=m
-CONFIG_IP_VS_IPV6=y
-# CONFIG_IP_VS_DEBUG is not set
-CONFIG_IP_VS_TAB_BITS=12
-
-#
-# IPVS transport protocol load balancing support
-#
-CONFIG_IP_VS_PROTO_TCP=y
-CONFIG_IP_VS_PROTO_UDP=y
-CONFIG_IP_VS_PROTO_AH_ESP=y
-CONFIG_IP_VS_PROTO_ESP=y
-CONFIG_IP_VS_PROTO_AH=y
-CONFIG_IP_VS_PROTO_SCTP=y
-
-#
-# IPVS scheduler
-#
-CONFIG_IP_VS_RR=m
-CONFIG_IP_VS_WRR=m
-CONFIG_IP_VS_LC=m
-CONFIG_IP_VS_WLC=m
-CONFIG_IP_VS_FO=m
-CONFIG_IP_VS_OVF=m
-CONFIG_IP_VS_LBLC=m
-CONFIG_IP_VS_LBLCR=m
-CONFIG_IP_VS_DH=m
-CONFIG_IP_VS_SH=m
-# CONFIG_IP_VS_MH is not set
-CONFIG_IP_VS_SED=m
-CONFIG_IP_VS_NQ=m
-# CONFIG_IP_VS_TWOS is not set
-
-#
-# IPVS SH scheduler
-#
-CONFIG_IP_VS_SH_TAB_BITS=8
-
-#
-# IPVS MH scheduler
-#
-CONFIG_IP_VS_MH_TAB_INDEX=12
-
-#
-# IPVS application helper
-#
-CONFIG_IP_VS_FTP=m
-CONFIG_IP_VS_NFCT=y
-CONFIG_IP_VS_PE_SIP=m
+# CONFIG_IP_SET is not set
+# CONFIG_IP_VS is not set
 
 #
 # IP: Netfilter Configuration
 #
 CONFIG_NF_DEFRAG_IPV4=m
-CONFIG_NF_SOCKET_IPV4=m
-CONFIG_NF_TPROXY_IPV4=m
-CONFIG_NF_TABLES_IPV4=y
-CONFIG_NFT_REJECT_IPV4=m
-CONFIG_NFT_DUP_IPV4=m
-CONFIG_NFT_FIB_IPV4=m
-CONFIG_NF_TABLES_ARP=y
-CONFIG_NF_DUP_IPV4=m
+# CONFIG_NF_SOCKET_IPV4 is not set
+# CONFIG_NF_TPROXY_IPV4 is not set
+# CONFIG_NF_DUP_IPV4 is not set
 CONFIG_NF_LOG_ARP=m
 CONFIG_NF_LOG_IPV4=m
 CONFIG_NF_REJECT_IPV4=m
-CONFIG_NF_NAT_SNMP_BASIC=m
-CONFIG_NF_NAT_PPTP=m
-CONFIG_NF_NAT_H323=m
 CONFIG_IP_NF_IPTABLES=m
-CONFIG_IP_NF_MATCH_AH=m
-CONFIG_IP_NF_MATCH_ECN=m
-CONFIG_IP_NF_MATCH_RPFILTER=m
-CONFIG_IP_NF_MATCH_TTL=m
 CONFIG_IP_NF_FILTER=m
 CONFIG_IP_NF_TARGET_REJECT=m
-CONFIG_IP_NF_TARGET_SYNPROXY=m
 CONFIG_IP_NF_NAT=m
-CONFIG_IP_NF_TARGET_MASQUERADE=m
-CONFIG_IP_NF_TARGET_NETMAP=m
-CONFIG_IP_NF_TARGET_REDIRECT=m
+# CONFIG_IP_NF_TARGET_MASQUERADE is not set
 CONFIG_IP_NF_MANGLE=m
-# CONFIG_IP_NF_TARGET_CLUSTERIP is not set
-CONFIG_IP_NF_TARGET_ECN=m
-CONFIG_IP_NF_TARGET_TTL=m
-CONFIG_IP_NF_RAW=m
-CONFIG_IP_NF_SECURITY=m
-CONFIG_IP_NF_ARPTABLES=m
-CONFIG_IP_NF_ARPFILTER=m
-CONFIG_IP_NF_ARP_MANGLE=m
+# CONFIG_IP_NF_RAW is not set
 # end of IP: Netfilter Configuration
 
 #
 # IPv6: Netfilter Configuration
 #
-CONFIG_NF_SOCKET_IPV6=m
-CONFIG_NF_TPROXY_IPV6=m
-CONFIG_NF_TABLES_IPV6=y
-CONFIG_NFT_REJECT_IPV6=m
-CONFIG_NFT_DUP_IPV6=m
-CONFIG_NFT_FIB_IPV6=m
-CONFIG_NF_DUP_IPV6=m
+# CONFIG_NF_SOCKET_IPV6 is not set
+# CONFIG_NF_TPROXY_IPV6 is not set
+# CONFIG_NF_DUP_IPV6 is not set
 CONFIG_NF_REJECT_IPV6=m
 CONFIG_NF_LOG_IPV6=m
 CONFIG_IP6_NF_IPTABLES=m
-CONFIG_IP6_NF_MATCH_AH=m
-CONFIG_IP6_NF_MATCH_EUI64=m
-CONFIG_IP6_NF_MATCH_FRAG=m
-CONFIG_IP6_NF_MATCH_OPTS=m
-CONFIG_IP6_NF_MATCH_HL=m
 CONFIG_IP6_NF_MATCH_IPV6HEADER=m
-CONFIG_IP6_NF_MATCH_MH=m
-CONFIG_IP6_NF_MATCH_RPFILTER=m
-CONFIG_IP6_NF_MATCH_RT=m
-# CONFIG_IP6_NF_MATCH_SRH is not set
-# CONFIG_IP6_NF_TARGET_HL is not set
 CONFIG_IP6_NF_FILTER=m
 CONFIG_IP6_NF_TARGET_REJECT=m
-CONFIG_IP6_NF_TARGET_SYNPROXY=m
 CONFIG_IP6_NF_MANGLE=m
-CONFIG_IP6_NF_RAW=m
-CONFIG_IP6_NF_SECURITY=m
-CONFIG_IP6_NF_NAT=m
-CONFIG_IP6_NF_TARGET_MASQUERADE=m
-CONFIG_IP6_NF_TARGET_NPT=m
+# CONFIG_IP6_NF_RAW is not set
 # end of IPv6: Netfilter Configuration
 
 CONFIG_NF_DEFRAG_IPV6=m
-CONFIG_NF_TABLES_BRIDGE=m
-# CONFIG_NFT_BRIDGE_META is not set
-CONFIG_NFT_BRIDGE_REJECT=m
 # CONFIG_NF_CONNTRACK_BRIDGE is not set
-CONFIG_BRIDGE_NF_EBTABLES=m
-CONFIG_BRIDGE_EBT_BROUTE=m
-CONFIG_BRIDGE_EBT_T_FILTER=m
-CONFIG_BRIDGE_EBT_T_NAT=m
-CONFIG_BRIDGE_EBT_802_3=m
-CONFIG_BRIDGE_EBT_AMONG=m
-CONFIG_BRIDGE_EBT_ARP=m
-CONFIG_BRIDGE_EBT_IP=m
-CONFIG_BRIDGE_EBT_IP6=m
-CONFIG_BRIDGE_EBT_LIMIT=m
-CONFIG_BRIDGE_EBT_MARK=m
-CONFIG_BRIDGE_EBT_PKTTYPE=m
-CONFIG_BRIDGE_EBT_STP=m
-CONFIG_BRIDGE_EBT_VLAN=m
-CONFIG_BRIDGE_EBT_ARPREPLY=m
-CONFIG_BRIDGE_EBT_DNAT=m
-CONFIG_BRIDGE_EBT_MARK_T=m
-CONFIG_BRIDGE_EBT_REDIRECT=m
-CONFIG_BRIDGE_EBT_SNAT=m
-CONFIG_BRIDGE_EBT_LOG=m
-CONFIG_BRIDGE_EBT_NFLOG=m
 # CONFIG_BPFILTER is not set
 # CONFIG_IP_DCCP is not set
-CONFIG_IP_SCTP=m
-# CONFIG_SCTP_DBG_OBJCNT is not set
-# CONFIG_SCTP_DEFAULT_COOKIE_HMAC_MD5 is not set
-CONFIG_SCTP_DEFAULT_COOKIE_HMAC_SHA1=y
-# CONFIG_SCTP_DEFAULT_COOKIE_HMAC_NONE is not set
-CONFIG_SCTP_COOKIE_HMAC_MD5=y
-CONFIG_SCTP_COOKIE_HMAC_SHA1=y
-CONFIG_INET_SCTP_DIAG=m
+# CONFIG_IP_SCTP is not set
 # CONFIG_RDS is not set
-CONFIG_TIPC=m
-CONFIG_TIPC_MEDIA_UDP=y
-CONFIG_TIPC_CRYPTO=y
-CONFIG_TIPC_DIAG=m
-CONFIG_ATM=m
-CONFIG_ATM_CLIP=m
-# CONFIG_ATM_CLIP_NO_ICMP is not set
-CONFIG_ATM_LANE=m
-# CONFIG_ATM_MPOA is not set
-CONFIG_ATM_BR2684=m
-# CONFIG_ATM_BR2684_IPFILTER is not set
-CONFIG_L2TP=m
-CONFIG_L2TP_DEBUGFS=m
-CONFIG_L2TP_V3=y
-CONFIG_L2TP_IP=m
-CONFIG_L2TP_ETH=m
-CONFIG_STP=m
-CONFIG_GARP=m
-CONFIG_MRP=m
-CONFIG_BRIDGE=m
-CONFIG_BRIDGE_IGMP_SNOOPING=y
-CONFIG_BRIDGE_VLAN_FILTERING=y
-# CONFIG_BRIDGE_MRP is not set
-# CONFIG_BRIDGE_CFM is not set
+# CONFIG_TIPC is not set
+CONFIG_ATM=y
+# CONFIG_ATM_CLIP is not set
+# CONFIG_ATM_LANE is not set
+# CONFIG_ATM_BR2684 is not set
+# CONFIG_L2TP is not set
+CONFIG_STP=y
+CONFIG_GARP=y
+# CONFIG_BRIDGE is not set
 # CONFIG_NET_DSA is not set
-CONFIG_VLAN_8021Q=m
+CONFIG_VLAN_8021Q=y
 CONFIG_VLAN_8021Q_GVRP=y
-CONFIG_VLAN_8021Q_MVRP=y
-CONFIG_LLC=m
+# CONFIG_VLAN_8021Q_MVRP is not set
+CONFIG_DECNET=y
+# CONFIG_DECNET_ROUTER is not set
+CONFIG_LLC=y
 # CONFIG_LLC2 is not set
-# CONFIG_ATALK is not set
+CONFIG_ATALK=y
+CONFIG_DEV_APPLETALK=y
+# CONFIG_COPS is not set
+CONFIG_IPDDP=y
+CONFIG_IPDDP_ENCAP=y
 # CONFIG_X25 is not set
-# CONFIG_LAPB is not set
+CONFIG_LAPB=y
 # CONFIG_PHONET is not set
-CONFIG_6LOWPAN=m
-# CONFIG_6LOWPAN_DEBUGFS is not set
-# CONFIG_6LOWPAN_NHC is not set
-# CONFIG_IEEE802154 is not set
-CONFIG_NET_SCHED=y
-
-#
-# Queueing/Scheduling
-#
-CONFIG_NET_SCH_CBQ=m
-CONFIG_NET_SCH_HTB=m
-CONFIG_NET_SCH_HFSC=m
-CONFIG_NET_SCH_ATM=m
-CONFIG_NET_SCH_PRIO=m
-CONFIG_NET_SCH_MULTIQ=m
-CONFIG_NET_SCH_RED=m
-CONFIG_NET_SCH_SFB=m
-CONFIG_NET_SCH_SFQ=m
-CONFIG_NET_SCH_TEQL=m
-CONFIG_NET_SCH_TBF=m
-# CONFIG_NET_SCH_CBS is not set
-# CONFIG_NET_SCH_ETF is not set
-# CONFIG_NET_SCH_TAPRIO is not set
-CONFIG_NET_SCH_GRED=m
-CONFIG_NET_SCH_DSMARK=m
-CONFIG_NET_SCH_NETEM=m
-CONFIG_NET_SCH_DRR=m
-CONFIG_NET_SCH_MQPRIO=m
-# CONFIG_NET_SCH_SKBPRIO is not set
-CONFIG_NET_SCH_CHOKE=m
-CONFIG_NET_SCH_QFQ=m
-CONFIG_NET_SCH_CODEL=m
-CONFIG_NET_SCH_FQ_CODEL=y
-# CONFIG_NET_SCH_CAKE is not set
-CONFIG_NET_SCH_FQ=m
-CONFIG_NET_SCH_HHF=m
-CONFIG_NET_SCH_PIE=m
-# CONFIG_NET_SCH_FQ_PIE is not set
-CONFIG_NET_SCH_INGRESS=m
-CONFIG_NET_SCH_PLUG=m
-# CONFIG_NET_SCH_ETS is not set
-CONFIG_NET_SCH_DEFAULT=y
-# CONFIG_DEFAULT_FQ is not set
-# CONFIG_DEFAULT_CODEL is not set
-CONFIG_DEFAULT_FQ_CODEL=y
-# CONFIG_DEFAULT_SFQ is not set
-# CONFIG_DEFAULT_PFIFO_FAST is not set
-CONFIG_DEFAULT_NET_SCH="fq_codel"
-
-#
-# Classification
-#
-CONFIG_NET_CLS=y
-CONFIG_NET_CLS_BASIC=m
-CONFIG_NET_CLS_TCINDEX=m
-CONFIG_NET_CLS_ROUTE4=m
-CONFIG_NET_CLS_FW=m
-CONFIG_NET_CLS_U32=m
-CONFIG_CLS_U32_PERF=y
-CONFIG_CLS_U32_MARK=y
-CONFIG_NET_CLS_RSVP=m
-CONFIG_NET_CLS_RSVP6=m
-CONFIG_NET_CLS_FLOW=m
-CONFIG_NET_CLS_CGROUP=y
-CONFIG_NET_CLS_BPF=m
-CONFIG_NET_CLS_FLOWER=m
-CONFIG_NET_CLS_MATCHALL=m
-CONFIG_NET_EMATCH=y
-CONFIG_NET_EMATCH_STACK=32
-CONFIG_NET_EMATCH_CMP=m
-CONFIG_NET_EMATCH_NBYTE=m
-CONFIG_NET_EMATCH_U32=m
-CONFIG_NET_EMATCH_META=m
-CONFIG_NET_EMATCH_TEXT=m
-# CONFIG_NET_EMATCH_CANID is not set
-CONFIG_NET_EMATCH_IPSET=m
-# CONFIG_NET_EMATCH_IPT is not set
-CONFIG_NET_CLS_ACT=y
-CONFIG_NET_ACT_POLICE=m
-CONFIG_NET_ACT_GACT=m
-CONFIG_GACT_PROB=y
-CONFIG_NET_ACT_MIRRED=m
-CONFIG_NET_ACT_SAMPLE=m
-# CONFIG_NET_ACT_IPT is not set
-CONFIG_NET_ACT_NAT=m
-CONFIG_NET_ACT_PEDIT=m
-CONFIG_NET_ACT_SIMP=m
-CONFIG_NET_ACT_SKBEDIT=m
-CONFIG_NET_ACT_CSUM=m
-# CONFIG_NET_ACT_MPLS is not set
-CONFIG_NET_ACT_VLAN=m
-CONFIG_NET_ACT_BPF=m
-# CONFIG_NET_ACT_CONNMARK is not set
-# CONFIG_NET_ACT_CTINFO is not set
-CONFIG_NET_ACT_SKBMOD=m
-# CONFIG_NET_ACT_IFE is not set
-CONFIG_NET_ACT_TUNNEL_KEY=m
-# CONFIG_NET_ACT_GATE is not set
-# CONFIG_NET_TC_SKB_EXT is not set
-CONFIG_NET_SCH_FIFO=y
-CONFIG_DCB=y
-CONFIG_DNS_RESOLVER=m
-# CONFIG_BATMAN_ADV is not set
-CONFIG_OPENVSWITCH=m
-CONFIG_OPENVSWITCH_GRE=m
-CONFIG_VSOCKETS=m
-CONFIG_VSOCKETS_DIAG=m
-CONFIG_VSOCKETS_LOOPBACK=m
-CONFIG_VMWARE_VMCI_VSOCKETS=m
-CONFIG_VIRTIO_VSOCKETS=m
-CONFIG_VIRTIO_VSOCKETS_COMMON=m
-CONFIG_NETLINK_DIAG=m
-CONFIG_MPLS=y
-CONFIG_NET_MPLS_GSO=y
-CONFIG_MPLS_ROUTING=m
-CONFIG_MPLS_IPTUNNEL=m
+# CONFIG_6LOWPAN is not set
+CONFIG_IEEE802154=y
+CONFIG_IEEE802154_NL802154_EXPERIMENTAL=y
+CONFIG_IEEE802154_SOCKET=y
+# CONFIG_MAC802154 is not set
+# CONFIG_NET_SCHED is not set
+# CONFIG_DCB is not set
+CONFIG_DNS_RESOLVER=y
+CONFIG_BATMAN_ADV=y
+CONFIG_BATMAN_ADV_BATMAN_V=y
+CONFIG_BATMAN_ADV_BLA=y
+CONFIG_BATMAN_ADV_DAT=y
+CONFIG_BATMAN_ADV_NC=y
+CONFIG_BATMAN_ADV_MCAST=y
+# CONFIG_BATMAN_ADV_DEBUG is not set
+# CONFIG_BATMAN_ADV_TRACING is not set
+# CONFIG_OPENVSWITCH is not set
+CONFIG_VSOCKETS=y
+CONFIG_VSOCKETS_DIAG=y
+CONFIG_VSOCKETS_LOOPBACK=y
+CONFIG_VIRTIO_VSOCKETS=y
+CONFIG_VIRTIO_VSOCKETS_COMMON=y
+# CONFIG_NETLINK_DIAG is not set
+# CONFIG_MPLS is not set
 CONFIG_NET_NSH=y
-# CONFIG_HSR is not set
-CONFIG_NET_SWITCHDEV=y
-CONFIG_NET_L3_MASTER_DEV=y
-# CONFIG_QRTR is not set
+CONFIG_HSR=y
+# CONFIG_NET_SWITCHDEV is not set
+# CONFIG_NET_L3_MASTER_DEV is not set
+CONFIG_QRTR=y
+CONFIG_QRTR_SMD=y
+CONFIG_QRTR_TUN=y
+CONFIG_QRTR_MHI=y
 # CONFIG_NET_NCSI is not set
 CONFIG_PCPU_DEV_REFCNT=y
 CONFIG_RPS=y
 CONFIG_RFS_ACCEL=y
 CONFIG_SOCK_RX_QUEUE_MAPPING=y
 CONFIG_XPS=y
-CONFIG_CGROUP_NET_PRIO=y
-CONFIG_CGROUP_NET_CLASSID=y
+# CONFIG_CGROUP_NET_PRIO is not set
+# CONFIG_CGROUP_NET_CLASSID is not set
 CONFIG_NET_RX_BUSY_POLL=y
 CONFIG_BQL=y
+# CONFIG_BPF_JIT is not set
 CONFIG_NET_FLOW_LIMIT=y
 
 #
 # Network testing
 #
-CONFIG_NET_PKTGEN=m
-CONFIG_NET_DROP_MONITOR=y
+# CONFIG_NET_PKTGEN is not set
+# CONFIG_NET_DROP_MONITOR is not set
 # end of Network testing
 # end of Networking options
 
 # CONFIG_HAMRADIO is not set
-CONFIG_CAN=m
-CONFIG_CAN_RAW=m
-CONFIG_CAN_BCM=m
-CONFIG_CAN_GW=m
-# CONFIG_CAN_J1939 is not set
+CONFIG_CAN=y
+# CONFIG_CAN_RAW is not set
+CONFIG_CAN_BCM=y
+CONFIG_CAN_GW=y
+CONFIG_CAN_J1939=y
 # CONFIG_CAN_ISOTP is not set
-# CONFIG_BT is not set
+
+#
+# CAN Device Drivers
+#
+CONFIG_CAN_VCAN=y
+# CONFIG_CAN_VXCAN is not set
+CONFIG_CAN_SLCAN=y
+CONFIG_CAN_DEV=y
+CONFIG_CAN_CALC_BITTIMING=y
+# CONFIG_CAN_KVASER_PCIEFD is not set
+# CONFIG_CAN_C_CAN is not set
+CONFIG_CAN_CC770=y
+CONFIG_CAN_CC770_ISA=y
+# CONFIG_CAN_CC770_PLATFORM is not set
+CONFIG_CAN_IFI_CANFD=y
+CONFIG_CAN_M_CAN=y
+# CONFIG_CAN_M_CAN_PCI is not set
+# CONFIG_CAN_M_CAN_PLATFORM is not set
+# CONFIG_CAN_PEAK_PCIEFD is not set
+CONFIG_CAN_SJA1000=y
+# CONFIG_CAN_EMS_PCI is not set
+# CONFIG_CAN_F81601 is not set
+# CONFIG_CAN_KVASER_PCI is not set
+# CONFIG_CAN_PEAK_PCI is not set
+# CONFIG_CAN_PLX_PCI is not set
+CONFIG_CAN_SJA1000_ISA=y
+# CONFIG_CAN_SJA1000_PLATFORM is not set
+# CONFIG_CAN_SOFTING is not set
+# CONFIG_CAN_DEBUG_DEVICES is not set
+# end of CAN Device Drivers
+
+CONFIG_BT=y
+CONFIG_BT_BREDR=y
+CONFIG_BT_RFCOMM=y
+CONFIG_BT_RFCOMM_TTY=y
+CONFIG_BT_BNEP=y
+CONFIG_BT_BNEP_MC_FILTER=y
+CONFIG_BT_BNEP_PROTO_FILTER=y
+# CONFIG_BT_HIDP is not set
+# CONFIG_BT_HS is not set
+CONFIG_BT_LE=y
+CONFIG_BT_LEDS=y
+CONFIG_BT_MSFTEXT=y
+# CONFIG_BT_AOSPEXT is not set
+# CONFIG_BT_DEBUGFS is not set
+# CONFIG_BT_SELFTEST is not set
+
+#
+# Bluetooth device drivers
+#
+# CONFIG_BT_HCIBTSDIO is not set
+CONFIG_BT_HCIUART=y
+# CONFIG_BT_HCIUART_H4 is not set
+CONFIG_BT_HCIUART_BCSP=y
+# CONFIG_BT_HCIUART_ATH3K is not set
+# CONFIG_BT_HCIUART_INTEL is not set
+# CONFIG_BT_HCIUART_AG6XX is not set
+# CONFIG_BT_HCIVHCI is not set
+CONFIG_BT_MRVL=y
+CONFIG_BT_MRVL_SDIO=y
+CONFIG_BT_MTKSDIO=y
+# CONFIG_BT_VIRTIO is not set
+# end of Bluetooth device drivers
+
 # CONFIG_AF_RXRPC is not set
 # CONFIG_AF_KCM is not set
-CONFIG_STREAM_PARSER=y
-# CONFIG_MCTP is not set
-CONFIG_FIB_RULES=y
 CONFIG_WIRELESS=y
-CONFIG_CFG80211=m
-# CONFIG_NL80211_TESTMODE is not set
-# CONFIG_CFG80211_DEVELOPER_WARNINGS is not set
-CONFIG_CFG80211_REQUIRE_SIGNED_REGDB=y
-CONFIG_CFG80211_USE_KERNEL_REGDB_KEYS=y
-CONFIG_CFG80211_DEFAULT_PS=y
-# CONFIG_CFG80211_DEBUGFS is not set
-CONFIG_CFG80211_CRDA_SUPPORT=y
-# CONFIG_CFG80211_WEXT is not set
-CONFIG_MAC80211=m
-CONFIG_MAC80211_HAS_RC=y
-CONFIG_MAC80211_RC_MINSTREL=y
-CONFIG_MAC80211_RC_DEFAULT_MINSTREL=y
-CONFIG_MAC80211_RC_DEFAULT="minstrel_ht"
-# CONFIG_MAC80211_MESH is not set
-CONFIG_MAC80211_LEDS=y
-CONFIG_MAC80211_DEBUGFS=y
-# CONFIG_MAC80211_MESSAGE_TRACING is not set
-# CONFIG_MAC80211_DEBUG_MENU is not set
+# CONFIG_CFG80211 is not set
+
+#
+# CFG80211 needs to be enabled for MAC80211
+#
 CONFIG_MAC80211_STA_HASH_MAX_SIZE=0
-CONFIG_RFKILL=m
+CONFIG_RFKILL=y
 CONFIG_RFKILL_LEDS=y
-CONFIG_RFKILL_INPUT=y
+# CONFIG_RFKILL_INPUT is not set
 # CONFIG_RFKILL_GPIO is not set
 CONFIG_NET_9P=y
-CONFIG_NET_9P_FD=y
 CONFIG_NET_9P_VIRTIO=y
-# CONFIG_NET_9P_DEBUG is not set
+CONFIG_NET_9P_DEBUG=y
 # CONFIG_CAIF is not set
-CONFIG_CEPH_LIB=m
-# CONFIG_CEPH_LIB_PRETTYDEBUG is not set
-CONFIG_CEPH_LIB_USE_DNS_RESOLVER=y
-# CONFIG_NFC is not set
-CONFIG_PSAMPLE=m
+# CONFIG_CEPH_LIB is not set
+CONFIG_NFC=y
+# CONFIG_NFC_DIGITAL is not set
+CONFIG_NFC_NCI=y
+CONFIG_NFC_NCI_UART=y
+# CONFIG_NFC_HCI is not set
+
+#
+# Near Field Communication (NFC) devices
+#
+# CONFIG_NFC_VIRTUAL_NCI is not set
+CONFIG_NFC_FDP=y
+CONFIG_NFC_FDP_I2C=y
+CONFIG_NFC_PN533=y
+CONFIG_NFC_PN533_I2C=y
+CONFIG_NFC_MRVL=y
+CONFIG_NFC_MRVL_UART=y
+# CONFIG_NFC_MRVL_I2C is not set
+# CONFIG_NFC_ST_NCI_I2C is not set
+# CONFIG_NFC_NXP_NCI is not set
+CONFIG_NFC_S3FWRN5=y
+CONFIG_NFC_S3FWRN5_I2C=y
+# end of Near Field Communication (NFC) devices
+
+CONFIG_PSAMPLE=y
 # CONFIG_NET_IFE is not set
-CONFIG_LWTUNNEL=y
-CONFIG_LWTUNNEL_BPF=y
+# CONFIG_LWTUNNEL is not set
 CONFIG_DST_CACHE=y
 CONFIG_GRO_CELLS=y
-CONFIG_SOCK_VALIDATE_XMIT=y
-CONFIG_NET_SELFTESTS=y
 CONFIG_NET_SOCK_MSG=y
-CONFIG_PAGE_POOL=y
-# CONFIG_PAGE_POOL_STATS is not set
 CONFIG_FAILOVER=m
-CONFIG_ETHTOOL_NETLINK=y
+# CONFIG_ETHTOOL_NETLINK is not set
+CONFIG_HAVE_EBPF_JIT=y
 
 #
 # Device Drivers
 #
 CONFIG_HAVE_EISA=y
-# CONFIG_EISA is not set
+CONFIG_EISA=y
+CONFIG_EISA_VLB_PRIMING=y
+CONFIG_EISA_PCI_EISA=y
+# CONFIG_EISA_VIRTUAL_ROOT is not set
+# CONFIG_EISA_NAMES is not set
 CONFIG_HAVE_PCI=y
 CONFIG_PCI=y
 CONFIG_PCI_DOMAINS=y
-CONFIG_PCIEPORTBUS=y
-CONFIG_HOTPLUG_PCI_PCIE=y
-CONFIG_PCIEAER=y
-CONFIG_PCIEAER_INJECT=m
-CONFIG_PCIE_ECRC=y
+# CONFIG_PCIEPORTBUS is not set
 CONFIG_PCIEASPM=y
 CONFIG_PCIEASPM_DEFAULT=y
 # CONFIG_PCIEASPM_POWERSAVE is not set
 # CONFIG_PCIEASPM_POWER_SUPERSAVE is not set
 # CONFIG_PCIEASPM_PERFORMANCE is not set
-CONFIG_PCIE_PME=y
-CONFIG_PCIE_DPC=y
 # CONFIG_PCIE_PTM is not set
-# CONFIG_PCIE_EDR is not set
-CONFIG_PCI_MSI=y
-CONFIG_PCI_MSI_IRQ_DOMAIN=y
+# CONFIG_PCI_MSI is not set
 CONFIG_PCI_QUIRKS=y
 # CONFIG_PCI_DEBUG is not set
-# CONFIG_PCI_REALLOC_ENABLE_AUTO is not set
-CONFIG_PCI_STUB=y
-CONFIG_PCI_PF_STUB=m
-CONFIG_PCI_ATS=y
+# CONFIG_PCI_STUB is not set
 CONFIG_PCI_LOCKLESS_CONFIG=y
-CONFIG_PCI_IOV=y
-CONFIG_PCI_PRI=y
-CONFIG_PCI_PASID=y
-# CONFIG_PCI_P2PDMA is not set
+# CONFIG_PCI_IOV is not set
+# CONFIG_PCI_PRI is not set
+# CONFIG_PCI_PASID is not set
 CONFIG_PCI_LABEL=y
-CONFIG_VGA_ARB=y
-CONFIG_VGA_ARB_MAX_GPUS=64
-CONFIG_HOTPLUG_PCI=y
-CONFIG_HOTPLUG_PCI_ACPI=y
-CONFIG_HOTPLUG_PCI_ACPI_IBM=m
-# CONFIG_HOTPLUG_PCI_CPCI is not set
-CONFIG_HOTPLUG_PCI_SHPC=y
+# CONFIG_PCIE_BUS_TUNE_OFF is not set
+CONFIG_PCIE_BUS_DEFAULT=y
+# CONFIG_PCIE_BUS_SAFE is not set
+# CONFIG_PCIE_BUS_PERFORMANCE is not set
+# CONFIG_PCIE_BUS_PEER2PEER is not set
+# CONFIG_HOTPLUG_PCI is not set
 
 #
 # PCI controller drivers
 #
-CONFIG_VMD=y
 
 #
 # DesignWare PCI Core Support
 #
-# CONFIG_PCIE_DW_PLAT_HOST is not set
-# CONFIG_PCI_MESON is not set
 # end of DesignWare PCI Core Support
 
 #
@@ -2066,12 +1546,11 @@ CONFIG_VMD=y
 #
 # Generic Driver Options
 #
-CONFIG_AUXILIARY_BUS=y
-# CONFIG_UEVENT_HELPER is not set
+CONFIG_UEVENT_HELPER=y
+CONFIG_UEVENT_HELPER_PATH=""
 CONFIG_DEVTMPFS=y
-CONFIG_DEVTMPFS_MOUNT=y
-# CONFIG_DEVTMPFS_SAFE is not set
-CONFIG_STANDALONE=y
+# CONFIG_DEVTMPFS_MOUNT is not set
+# CONFIG_STANDALONE is not set
 CONFIG_PREVENT_FIRMWARE_BUILD=y
 
 #
@@ -2079,16 +1558,14 @@ CONFIG_PREVENT_FIRMWARE_BUILD=y
 #
 CONFIG_FW_LOADER=y
 CONFIG_FW_LOADER_PAGED_BUF=y
-CONFIG_FW_LOADER_SYSFS=y
 CONFIG_EXTRA_FIRMWARE=""
 CONFIG_FW_LOADER_USER_HELPER=y
 # CONFIG_FW_LOADER_USER_HELPER_FALLBACK is not set
-# CONFIG_FW_LOADER_COMPRESS is not set
-CONFIG_FW_CACHE=y
-# CONFIG_FW_UPLOAD is not set
+CONFIG_FW_LOADER_COMPRESS=y
 # end of Firmware loader
 
-CONFIG_ALLOW_DEV_COREDUMP=y
+CONFIG_WANT_DEV_COREDUMP=y
+# CONFIG_ALLOW_DEV_COREDUMP is not set
 # CONFIG_DEBUG_DRIVER is not set
 # CONFIG_DEBUG_DEVRES is not set
 # CONFIG_DEBUG_TEST_DRIVER_REMOVE is not set
@@ -2096,8 +1573,12 @@ CONFIG_ALLOW_DEV_COREDUMP=y
 CONFIG_GENERIC_CPU_AUTOPROBE=y
 CONFIG_GENERIC_CPU_VULNERABILITIES=y
 CONFIG_REGMAP=y
-CONFIG_REGMAP_I2C=m
-CONFIG_REGMAP_SPI=m
+CONFIG_REGMAP_I2C=y
+CONFIG_REGMAP_SPMI=y
+CONFIG_REGMAP_W1=y
+CONFIG_REGMAP_MMIO=y
+CONFIG_REGMAP_IRQ=y
+CONFIG_REGMAP_I3C=y
 CONFIG_DMA_SHARED_BUFFER=y
 # CONFIG_DMA_FENCE_TRACE is not set
 # end of Generic Driver Options
@@ -2105,490 +1586,244 @@ CONFIG_DMA_SHARED_BUFFER=y
 #
 # Bus devices
 #
-# CONFIG_MHI_BUS is not set
-# CONFIG_MHI_BUS_EP is not set
+CONFIG_MHI_BUS=y
+CONFIG_MHI_BUS_DEBUG=y
+# CONFIG_MHI_BUS_PCI_GENERIC is not set
 # end of Bus devices
 
-CONFIG_CONNECTOR=y
-CONFIG_PROC_EVENTS=y
+# CONFIG_CONNECTOR is not set
+CONFIG_GNSS=y
+CONFIG_MTD=y
+# CONFIG_MTD_TESTS is not set
 
 #
-# Firmware Drivers
+# Partition parsers
 #
+# CONFIG_MTD_AR7_PARTS is not set
+CONFIG_MTD_CMDLINE_PARTS=y
+# CONFIG_MTD_REDBOOT_PARTS is not set
+# end of Partition parsers
 
 #
-# ARM System Control and Management Interface Protocol
+# User Modules And Translation Layers
 #
-# end of ARM System Control and Management Interface Protocol
-
-CONFIG_EDD=m
-# CONFIG_EDD_OFF is not set
-CONFIG_FIRMWARE_MEMMAP=y
-CONFIG_DMIID=y
-CONFIG_DMI_SYSFS=y
-CONFIG_DMI_SCAN_MACHINE_NON_EFI_FALLBACK=y
-# CONFIG_ISCSI_IBFT is not set
-CONFIG_FW_CFG_SYSFS=y
-# CONFIG_FW_CFG_SYSFS_CMDLINE is not set
-CONFIG_SYSFB=y
-# CONFIG_SYSFB_SIMPLEFB is not set
-# CONFIG_GOOGLE_FIRMWARE is not set
+CONFIG_MTD_OOPS=y
+CONFIG_MTD_PARTITIONED_MASTER=y
 
 #
-# EFI (Extensible Firmware Interface) Support
+# RAM/ROM/Flash chip drivers
 #
-CONFIG_EFI_ESRT=y
-CONFIG_EFI_VARS_PSTORE=y
-CONFIG_EFI_VARS_PSTORE_DEFAULT_DISABLE=y
-CONFIG_EFI_RUNTIME_MAP=y
-# CONFIG_EFI_FAKE_MEMMAP is not set
-CONFIG_EFI_DXE_MEM_ATTRIBUTES=y
-CONFIG_EFI_RUNTIME_WRAPPERS=y
-CONFIG_EFI_GENERIC_STUB_INITRD_CMDLINE_LOADER=y
-# CONFIG_EFI_BOOTLOADER_CONTROL is not set
-# CONFIG_EFI_CAPSULE_LOADER is not set
-# CONFIG_EFI_TEST is not set
-# CONFIG_APPLE_PROPERTIES is not set
-# CONFIG_RESET_ATTACK_MITIGATION is not set
-# CONFIG_EFI_RCI2_TABLE is not set
-# CONFIG_EFI_DISABLE_PCI_DMA is not set
-CONFIG_EFI_EARLYCON=y
-CONFIG_EFI_CUSTOM_SSDT_OVERLAYS=y
-# CONFIG_EFI_DISABLE_RUNTIME is not set
-# CONFIG_EFI_COCO_SECRET is not set
-# end of EFI (Extensible Firmware Interface) Support
-
-CONFIG_UEFI_CPER=y
-CONFIG_UEFI_CPER_X86=y
+CONFIG_MTD_CFI=y
+# CONFIG_MTD_JEDECPROBE is not set
+CONFIG_MTD_GEN_PROBE=y
+CONFIG_MTD_CFI_ADV_OPTIONS=y
+# CONFIG_MTD_CFI_NOSWAP is not set
+CONFIG_MTD_CFI_BE_BYTE_SWAP=y
+# CONFIG_MTD_CFI_LE_BYTE_SWAP is not set
+CONFIG_MTD_CFI_GEOMETRY=y
+# CONFIG_MTD_MAP_BANK_WIDTH_1 is not set
+CONFIG_MTD_MAP_BANK_WIDTH_2=y
+# CONFIG_MTD_MAP_BANK_WIDTH_4 is not set
+CONFIG_MTD_MAP_BANK_WIDTH_8=y
+CONFIG_MTD_MAP_BANK_WIDTH_16=y
+# CONFIG_MTD_MAP_BANK_WIDTH_32 is not set
+CONFIG_MTD_CFI_I1=y
+CONFIG_MTD_CFI_I2=y
+CONFIG_MTD_CFI_I4=y
+# CONFIG_MTD_CFI_I8 is not set
+# CONFIG_MTD_OTP is not set
+# CONFIG_MTD_CFI_INTELEXT is not set
+CONFIG_MTD_CFI_AMDSTD=y
+# CONFIG_MTD_CFI_STAA is not set
+CONFIG_MTD_CFI_UTIL=y
+CONFIG_MTD_RAM=y
+CONFIG_MTD_ROM=y
+CONFIG_MTD_ABSENT=y
+# end of RAM/ROM/Flash chip drivers
 
 #
-# Tegra firmware driver
+# Mapping drivers for chip access
 #
-# end of Tegra firmware driver
-# end of Firmware Drivers
+CONFIG_MTD_COMPLEX_MAPPINGS=y
+# CONFIG_MTD_PHYSMAP is not set
+# CONFIG_MTD_PCI is not set
+# CONFIG_MTD_INTEL_VR_NOR is not set
+# CONFIG_MTD_PLATRAM is not set
+# end of Mapping drivers for chip access
 
-# CONFIG_GNSS is not set
-# CONFIG_MTD is not set
+#
+# Self-contained MTD device drivers
+#
+# CONFIG_MTD_PMC551 is not set
+CONFIG_MTD_SLRAM=y
+# CONFIG_MTD_PHRAM is not set
+CONFIG_MTD_MTDRAM=y
+CONFIG_MTDRAM_TOTAL_SIZE=4096
+CONFIG_MTDRAM_ERASE_SIZE=128
+
+#
+# Disk-On-Chip Device Drivers
+#
+# CONFIG_MTD_DOCG3 is not set
+# end of Self-contained MTD device drivers
+
+#
+# NAND
+#
+CONFIG_MTD_NAND_CORE=y
+CONFIG_MTD_ONENAND=y
+# CONFIG_MTD_ONENAND_VERIFY_WRITE is not set
+CONFIG_MTD_ONENAND_GENERIC=y
+# CONFIG_MTD_ONENAND_OTP is not set
+# CONFIG_MTD_ONENAND_2X_PROGRAM is not set
+CONFIG_MTD_RAW_NAND=y
+
+#
+# Raw/parallel NAND flash controllers
+#
+# CONFIG_MTD_NAND_DENALI_PCI is not set
+# CONFIG_MTD_NAND_CAFE is not set
+# CONFIG_MTD_NAND_MXIC is not set
+# CONFIG_MTD_NAND_GPIO is not set
+# CONFIG_MTD_NAND_PLATFORM is not set
+# CONFIG_MTD_NAND_ARASAN is not set
+
+#
+# Misc
+#
+CONFIG_MTD_NAND_NANDSIM=y
+# CONFIG_MTD_NAND_RICOH is not set
+CONFIG_MTD_NAND_DISKONCHIP=y
+# CONFIG_MTD_NAND_DISKONCHIP_PROBE_ADVANCED is not set
+CONFIG_MTD_NAND_DISKONCHIP_PROBE_ADDRESS=0
+# CONFIG_MTD_NAND_DISKONCHIP_BBTWRITE is not set
+
+#
+# ECC engine support
+#
+CONFIG_MTD_NAND_ECC=y
+CONFIG_MTD_NAND_ECC_SW_HAMMING=y
+CONFIG_MTD_NAND_ECC_SW_HAMMING_SMC=y
+CONFIG_MTD_NAND_ECC_SW_BCH=y
+# end of ECC engine support
+# end of NAND
+
+#
+# LPDDR & LPDDR2 PCM memory drivers
+#
+CONFIG_MTD_LPDDR=y
+CONFIG_MTD_QINFO_PROBE=y
+# end of LPDDR & LPDDR2 PCM memory drivers
+
+# CONFIG_MTD_UBI is not set
+CONFIG_MTD_HYPERBUS=y
 # CONFIG_OF is not set
 CONFIG_ARCH_MIGHT_HAVE_PC_PARPORT=y
-CONFIG_PARPORT=m
-CONFIG_PARPORT_PC=m
-CONFIG_PARPORT_SERIAL=m
+CONFIG_PARPORT=y
+CONFIG_PARPORT_PC=y
+# CONFIG_PARPORT_SERIAL is not set
 # CONFIG_PARPORT_PC_FIFO is not set
 # CONFIG_PARPORT_PC_SUPERIO is not set
-# CONFIG_PARPORT_AX88796 is not set
+CONFIG_PARPORT_AX88796=y
 CONFIG_PARPORT_1284=y
+CONFIG_PARPORT_NOT_PC=y
 CONFIG_PNP=y
-# CONFIG_PNP_DEBUG_MESSAGES is not set
+CONFIG_PNP_DEBUG_MESSAGES=y
 
 #
 # Protocols
 #
 CONFIG_PNPACPI=y
-CONFIG_BLK_DEV=y
-CONFIG_BLK_DEV_NULL_BLK=m
-# CONFIG_BLK_DEV_FD is not set
-CONFIG_CDROM=m
-# CONFIG_PARIDE is not set
-# CONFIG_BLK_DEV_PCIESSD_MTIP32XX is not set
-# CONFIG_ZRAM is not set
-CONFIG_BLK_DEV_LOOP=m
-CONFIG_BLK_DEV_LOOP_MIN_COUNT=0
-# CONFIG_BLK_DEV_DRBD is not set
-CONFIG_BLK_DEV_NBD=m
-CONFIG_BLK_DEV_RAM=m
-CONFIG_BLK_DEV_RAM_COUNT=16
-CONFIG_BLK_DEV_RAM_SIZE=16384
-CONFIG_CDROM_PKTCDVD=m
-CONFIG_CDROM_PKTCDVD_BUFFERS=8
-# CONFIG_CDROM_PKTCDVD_WCACHE is not set
-# CONFIG_ATA_OVER_ETH is not set
-CONFIG_VIRTIO_BLK=m
-CONFIG_BLK_DEV_RBD=m
-# CONFIG_BLK_DEV_UBLK is not set
 
 #
 # NVME Support
 #
-CONFIG_NVME_CORE=m
-CONFIG_BLK_DEV_NVME=m
-CONFIG_NVME_MULTIPATH=y
-# CONFIG_NVME_VERBOSE_ERRORS is not set
-# CONFIG_NVME_HWMON is not set
-CONFIG_NVME_FABRICS=m
-# CONFIG_NVME_FC is not set
-# CONFIG_NVME_TCP is not set
-# CONFIG_NVME_AUTH is not set
-CONFIG_NVME_TARGET=m
-# CONFIG_NVME_TARGET_PASSTHRU is not set
-CONFIG_NVME_TARGET_LOOP=m
-CONFIG_NVME_TARGET_FC=m
-# CONFIG_NVME_TARGET_TCP is not set
-# CONFIG_NVME_TARGET_AUTH is not set
 # end of NVME Support
 
 #
 # Misc devices
 #
-CONFIG_SENSORS_LIS3LV02D=m
-# CONFIG_AD525X_DPOT is not set
+CONFIG_AD525X_DPOT=y
+# CONFIG_AD525X_DPOT_I2C is not set
 # CONFIG_DUMMY_IRQ is not set
 # CONFIG_IBM_ASM is not set
 # CONFIG_PHANTOM is not set
-CONFIG_TIFM_CORE=m
-CONFIG_TIFM_7XX1=m
-# CONFIG_ICS932S401 is not set
-CONFIG_ENCLOSURE_SERVICES=m
-CONFIG_SGI_XP=m
-CONFIG_HP_ILO=m
-CONFIG_SGI_GRU=m
-# CONFIG_SGI_GRU_DEBUG is not set
-CONFIG_APDS9802ALS=m
-CONFIG_ISL29003=m
-CONFIG_ISL29020=m
-CONFIG_SENSORS_TSL2550=m
-CONFIG_SENSORS_BH1770=m
-CONFIG_SENSORS_APDS990X=m
+# CONFIG_TIFM_CORE is not set
+CONFIG_ICS932S401=y
+CONFIG_ENCLOSURE_SERVICES=y
+# CONFIG_HP_ILO is not set
+CONFIG_APDS9802ALS=y
+CONFIG_ISL29003=y
+# CONFIG_ISL29020 is not set
+# CONFIG_SENSORS_TSL2550 is not set
+CONFIG_SENSORS_BH1770=y
+CONFIG_SENSORS_APDS990X=y
 # CONFIG_HMC6352 is not set
-# CONFIG_DS1682 is not set
-CONFIG_VMWARE_BALLOON=m
-# CONFIG_LATTICE_ECP3_CONFIG is not set
-# CONFIG_SRAM is not set
+CONFIG_DS1682=y
+CONFIG_SRAM=y
 # CONFIG_DW_XDATA_PCIE is not set
 # CONFIG_PCI_ENDPOINT_TEST is not set
-# CONFIG_XILINX_SDFEC is not set
-CONFIG_MISC_RTSX=m
+CONFIG_XILINX_SDFEC=y
 # CONFIG_C2PORT is not set
 
 #
 # EEPROM support
 #
-# CONFIG_EEPROM_AT24 is not set
-# CONFIG_EEPROM_AT25 is not set
-CONFIG_EEPROM_LEGACY=m
-CONFIG_EEPROM_MAX6875=m
-CONFIG_EEPROM_93CX6=m
-# CONFIG_EEPROM_93XX46 is not set
-# CONFIG_EEPROM_IDT_89HPESX is not set
-# CONFIG_EEPROM_EE1004 is not set
+CONFIG_EEPROM_AT24=y
+# CONFIG_EEPROM_LEGACY is not set
+# CONFIG_EEPROM_MAX6875 is not set
+CONFIG_EEPROM_93CX6=y
+CONFIG_EEPROM_IDT_89HPESX=y
+CONFIG_EEPROM_EE1004=y
 # end of EEPROM support
 
-CONFIG_CB710_CORE=m
-# CONFIG_CB710_DEBUG is not set
-CONFIG_CB710_DEBUG_ASSUMPTIONS=y
+# CONFIG_CB710_CORE is not set
 
 #
 # Texas Instruments shared transport line discipline
 #
-# CONFIG_TI_ST is not set
+CONFIG_TI_ST=y
 # end of Texas Instruments shared transport line discipline
 
-CONFIG_SENSORS_LIS3_I2C=m
-CONFIG_ALTERA_STAPL=m
-CONFIG_INTEL_MEI=m
-CONFIG_INTEL_MEI_ME=m
+# CONFIG_SENSORS_LIS3_I2C is not set
+CONFIG_ALTERA_STAPL=y
+# CONFIG_INTEL_MEI is not set
+# CONFIG_INTEL_MEI_ME is not set
 # CONFIG_INTEL_MEI_TXE is not set
-# CONFIG_INTEL_MEI_GSC is not set
-# CONFIG_INTEL_MEI_HDCP is not set
-# CONFIG_INTEL_MEI_PXP is not set
-CONFIG_VMWARE_VMCI=m
+# CONFIG_VMWARE_VMCI is not set
 # CONFIG_GENWQE is not set
-# CONFIG_ECHO is not set
-# CONFIG_BCM_VK is not set
+CONFIG_ECHO=y
 # CONFIG_MISC_ALCOR_PCI is not set
-CONFIG_MISC_RTSX_PCI=m
-# CONFIG_MISC_RTSX_USB is not set
+# CONFIG_MISC_RTSX_PCI is not set
 # CONFIG_HABANA_AI is not set
 # CONFIG_UACCE is not set
-CONFIG_PVPANIC=y
-# CONFIG_PVPANIC_MMIO is not set
-# CONFIG_PVPANIC_PCI is not set
-# CONFIG_GP_PCI1XXXX is not set
+# CONFIG_PVPANIC is not set
 # end of Misc devices
+
+CONFIG_HAVE_IDE=y
 
 #
 # SCSI device support
 #
 CONFIG_SCSI_MOD=y
-CONFIG_RAID_ATTRS=m
-CONFIG_SCSI_COMMON=y
-CONFIG_SCSI=y
-CONFIG_SCSI_DMA=y
-CONFIG_SCSI_NETLINK=y
-CONFIG_SCSI_PROC_FS=y
-
-#
-# SCSI support type (disk, tape, CD-ROM)
-#
-CONFIG_BLK_DEV_SD=m
-CONFIG_CHR_DEV_ST=m
-CONFIG_BLK_DEV_SR=m
-CONFIG_CHR_DEV_SG=m
-CONFIG_BLK_DEV_BSG=y
-CONFIG_CHR_DEV_SCH=m
-CONFIG_SCSI_ENCLOSURE=m
-CONFIG_SCSI_CONSTANTS=y
-CONFIG_SCSI_LOGGING=y
-CONFIG_SCSI_SCAN_ASYNC=y
-
-#
-# SCSI Transports
-#
-CONFIG_SCSI_SPI_ATTRS=m
-CONFIG_SCSI_FC_ATTRS=m
-CONFIG_SCSI_ISCSI_ATTRS=m
-CONFIG_SCSI_SAS_ATTRS=m
-CONFIG_SCSI_SAS_LIBSAS=m
-CONFIG_SCSI_SAS_ATA=y
-CONFIG_SCSI_SAS_HOST_SMP=y
-CONFIG_SCSI_SRP_ATTRS=m
-# end of SCSI Transports
-
-CONFIG_SCSI_LOWLEVEL=y
-# CONFIG_ISCSI_TCP is not set
-# CONFIG_ISCSI_BOOT_SYSFS is not set
-# CONFIG_SCSI_CXGB3_ISCSI is not set
-# CONFIG_SCSI_CXGB4_ISCSI is not set
-# CONFIG_SCSI_BNX2_ISCSI is not set
-# CONFIG_BE2ISCSI is not set
-# CONFIG_BLK_DEV_3W_XXXX_RAID is not set
-# CONFIG_SCSI_HPSA is not set
-# CONFIG_SCSI_3W_9XXX is not set
-# CONFIG_SCSI_3W_SAS is not set
-# CONFIG_SCSI_ACARD is not set
-# CONFIG_SCSI_AACRAID is not set
-# CONFIG_SCSI_AIC7XXX is not set
-# CONFIG_SCSI_AIC79XX is not set
-# CONFIG_SCSI_AIC94XX is not set
-# CONFIG_SCSI_MVSAS is not set
-# CONFIG_SCSI_MVUMI is not set
-# CONFIG_SCSI_ADVANSYS is not set
-# CONFIG_SCSI_ARCMSR is not set
-# CONFIG_SCSI_ESAS2R is not set
-# CONFIG_MEGARAID_NEWGEN is not set
-# CONFIG_MEGARAID_LEGACY is not set
-# CONFIG_MEGARAID_SAS is not set
-CONFIG_SCSI_MPT3SAS=m
-CONFIG_SCSI_MPT2SAS_MAX_SGE=128
-CONFIG_SCSI_MPT3SAS_MAX_SGE=128
-# CONFIG_SCSI_MPT2SAS is not set
-# CONFIG_SCSI_MPI3MR is not set
-# CONFIG_SCSI_SMARTPQI is not set
-# CONFIG_SCSI_HPTIOP is not set
-# CONFIG_SCSI_BUSLOGIC is not set
-# CONFIG_SCSI_MYRB is not set
-# CONFIG_SCSI_MYRS is not set
-# CONFIG_VMWARE_PVSCSI is not set
-# CONFIG_LIBFC is not set
-# CONFIG_SCSI_SNIC is not set
-# CONFIG_SCSI_DMX3191D is not set
-# CONFIG_SCSI_FDOMAIN_PCI is not set
-CONFIG_SCSI_ISCI=m
-# CONFIG_SCSI_IPS is not set
-# CONFIG_SCSI_INITIO is not set
-# CONFIG_SCSI_INIA100 is not set
-# CONFIG_SCSI_PPA is not set
-# CONFIG_SCSI_IMM is not set
-# CONFIG_SCSI_STEX is not set
-# CONFIG_SCSI_SYM53C8XX_2 is not set
-# CONFIG_SCSI_IPR is not set
-# CONFIG_SCSI_QLOGIC_1280 is not set
-# CONFIG_SCSI_QLA_FC is not set
-# CONFIG_SCSI_QLA_ISCSI is not set
-# CONFIG_SCSI_LPFC is not set
-# CONFIG_SCSI_EFCT is not set
-# CONFIG_SCSI_DC395x is not set
-# CONFIG_SCSI_AM53C974 is not set
-# CONFIG_SCSI_WD719X is not set
-# CONFIG_SCSI_DEBUG is not set
-# CONFIG_SCSI_PMCRAID is not set
-# CONFIG_SCSI_PM8001 is not set
-# CONFIG_SCSI_BFA_FC is not set
-# CONFIG_SCSI_VIRTIO is not set
-# CONFIG_SCSI_CHELSIO_FCOE is not set
-CONFIG_SCSI_DH=y
-CONFIG_SCSI_DH_RDAC=y
-CONFIG_SCSI_DH_HP_SW=y
-CONFIG_SCSI_DH_EMC=y
-CONFIG_SCSI_DH_ALUA=y
 # end of SCSI device support
 
-CONFIG_ATA=m
-CONFIG_SATA_HOST=y
-CONFIG_PATA_TIMINGS=y
-CONFIG_ATA_VERBOSE_ERROR=y
-CONFIG_ATA_FORCE=y
-CONFIG_ATA_ACPI=y
-# CONFIG_SATA_ZPODD is not set
-CONFIG_SATA_PMP=y
-
-#
-# Controllers with non-SFF native interface
-#
-CONFIG_SATA_AHCI=m
-CONFIG_SATA_MOBILE_LPM_POLICY=0
-CONFIG_SATA_AHCI_PLATFORM=m
-# CONFIG_AHCI_DWC is not set
-# CONFIG_SATA_INIC162X is not set
-# CONFIG_SATA_ACARD_AHCI is not set
-# CONFIG_SATA_SIL24 is not set
-CONFIG_ATA_SFF=y
-
-#
-# SFF controllers with custom DMA interface
-#
-# CONFIG_PDC_ADMA is not set
-# CONFIG_SATA_QSTOR is not set
-# CONFIG_SATA_SX4 is not set
-CONFIG_ATA_BMDMA=y
-
-#
-# SATA SFF controllers with BMDMA
-#
-CONFIG_ATA_PIIX=m
-# CONFIG_SATA_DWC is not set
-# CONFIG_SATA_MV is not set
-# CONFIG_SATA_NV is not set
-# CONFIG_SATA_PROMISE is not set
-# CONFIG_SATA_SIL is not set
-# CONFIG_SATA_SIS is not set
-# CONFIG_SATA_SVW is not set
-# CONFIG_SATA_ULI is not set
-# CONFIG_SATA_VIA is not set
-# CONFIG_SATA_VITESSE is not set
-
-#
-# PATA SFF controllers with BMDMA
-#
-# CONFIG_PATA_ALI is not set
-# CONFIG_PATA_AMD is not set
-# CONFIG_PATA_ARTOP is not set
-# CONFIG_PATA_ATIIXP is not set
-# CONFIG_PATA_ATP867X is not set
-# CONFIG_PATA_CMD64X is not set
-# CONFIG_PATA_CYPRESS is not set
-# CONFIG_PATA_EFAR is not set
-# CONFIG_PATA_HPT366 is not set
-# CONFIG_PATA_HPT37X is not set
-# CONFIG_PATA_HPT3X2N is not set
-# CONFIG_PATA_HPT3X3 is not set
-# CONFIG_PATA_IT8213 is not set
-# CONFIG_PATA_IT821X is not set
-# CONFIG_PATA_JMICRON is not set
-# CONFIG_PATA_MARVELL is not set
-# CONFIG_PATA_NETCELL is not set
-# CONFIG_PATA_NINJA32 is not set
-# CONFIG_PATA_NS87415 is not set
-# CONFIG_PATA_OLDPIIX is not set
-# CONFIG_PATA_OPTIDMA is not set
-# CONFIG_PATA_PDC2027X is not set
-# CONFIG_PATA_PDC_OLD is not set
-# CONFIG_PATA_RADISYS is not set
-# CONFIG_PATA_RDC is not set
-# CONFIG_PATA_SCH is not set
-# CONFIG_PATA_SERVERWORKS is not set
-# CONFIG_PATA_SIL680 is not set
-# CONFIG_PATA_SIS is not set
-# CONFIG_PATA_TOSHIBA is not set
-# CONFIG_PATA_TRIFLEX is not set
-# CONFIG_PATA_VIA is not set
-# CONFIG_PATA_WINBOND is not set
-
-#
-# PIO-only SFF controllers
-#
-# CONFIG_PATA_CMD640_PCI is not set
-# CONFIG_PATA_MPIIX is not set
-# CONFIG_PATA_NS87410 is not set
-# CONFIG_PATA_OPTI is not set
-# CONFIG_PATA_RZ1000 is not set
-
-#
-# Generic fallback / legacy drivers
-#
-# CONFIG_PATA_ACPI is not set
-CONFIG_ATA_GENERIC=m
-# CONFIG_PATA_LEGACY is not set
-CONFIG_MD=y
-CONFIG_BLK_DEV_MD=y
-CONFIG_MD_AUTODETECT=y
-CONFIG_MD_LINEAR=m
-CONFIG_MD_RAID0=m
-CONFIG_MD_RAID1=m
-CONFIG_MD_RAID10=m
-CONFIG_MD_RAID456=m
-# CONFIG_MD_MULTIPATH is not set
-CONFIG_MD_FAULTY=m
-CONFIG_MD_CLUSTER=m
-# CONFIG_BCACHE is not set
-CONFIG_BLK_DEV_DM_BUILTIN=y
-CONFIG_BLK_DEV_DM=m
-CONFIG_DM_DEBUG=y
-CONFIG_DM_BUFIO=m
-# CONFIG_DM_DEBUG_BLOCK_MANAGER_LOCKING is not set
-CONFIG_DM_BIO_PRISON=m
-CONFIG_DM_PERSISTENT_DATA=m
-# CONFIG_DM_UNSTRIPED is not set
-CONFIG_DM_CRYPT=m
-CONFIG_DM_SNAPSHOT=m
-CONFIG_DM_THIN_PROVISIONING=m
-CONFIG_DM_CACHE=m
-CONFIG_DM_CACHE_SMQ=m
-CONFIG_DM_WRITECACHE=m
-# CONFIG_DM_EBS is not set
-CONFIG_DM_ERA=m
-# CONFIG_DM_CLONE is not set
-CONFIG_DM_MIRROR=m
-CONFIG_DM_LOG_USERSPACE=m
-CONFIG_DM_RAID=m
-CONFIG_DM_ZERO=m
-CONFIG_DM_MULTIPATH=m
-CONFIG_DM_MULTIPATH_QL=m
-CONFIG_DM_MULTIPATH_ST=m
-# CONFIG_DM_MULTIPATH_HST is not set
-# CONFIG_DM_MULTIPATH_IOA is not set
-CONFIG_DM_DELAY=m
-# CONFIG_DM_DUST is not set
-CONFIG_DM_UEVENT=y
-CONFIG_DM_FLAKEY=m
-CONFIG_DM_VERITY=m
-# CONFIG_DM_VERITY_VERIFY_ROOTHASH_SIG is not set
-# CONFIG_DM_VERITY_FEC is not set
-CONFIG_DM_SWITCH=m
-CONFIG_DM_LOG_WRITES=m
-CONFIG_DM_INTEGRITY=m
-CONFIG_DM_AUDIT=y
-CONFIG_TARGET_CORE=m
-CONFIG_TCM_IBLOCK=m
-CONFIG_TCM_FILEIO=m
-CONFIG_TCM_PSCSI=m
-CONFIG_TCM_USER2=m
-CONFIG_LOOPBACK_TARGET=m
-CONFIG_ISCSI_TARGET=m
-# CONFIG_SBP_TARGET is not set
 # CONFIG_FUSION is not set
 
 #
 # IEEE 1394 (FireWire) support
 #
-CONFIG_FIREWIRE=m
-CONFIG_FIREWIRE_OHCI=m
-CONFIG_FIREWIRE_SBP2=m
-CONFIG_FIREWIRE_NET=m
+# CONFIG_FIREWIRE is not set
 # CONFIG_FIREWIRE_NOSY is not set
 # end of IEEE 1394 (FireWire) support
 
-CONFIG_MACINTOSH_DRIVERS=y
-CONFIG_MAC_EMUMOUSEBTN=y
+# CONFIG_MACINTOSH_DRIVERS is not set
 CONFIG_NETDEVICES=y
-CONFIG_MII=y
 CONFIG_NET_CORE=y
 # CONFIG_BONDING is not set
 # CONFIG_DUMMY is not set
 # CONFIG_WIREGUARD is not set
 # CONFIG_EQUALIZER is not set
-# CONFIG_NET_FC is not set
-# CONFIG_IFB is not set
 # CONFIG_NET_TEAM is not set
 # CONFIG_MACVLAN is not set
 # CONFIG_IPVLAN is not set
@@ -2596,34 +1831,36 @@ CONFIG_NET_CORE=y
 # CONFIG_GENEVE is not set
 # CONFIG_BAREUDP is not set
 # CONFIG_GTP is not set
-# CONFIG_AMT is not set
 # CONFIG_MACSEC is not set
-CONFIG_NETCONSOLE=m
-CONFIG_NETCONSOLE_DYNAMIC=y
-CONFIG_NETPOLL=y
-CONFIG_NET_POLL_CONTROLLER=y
+# CONFIG_NETCONSOLE is not set
 # CONFIG_TUN is not set
 # CONFIG_TUN_VNET_CROSS_LE is not set
 # CONFIG_VETH is not set
 CONFIG_VIRTIO_NET=m
 # CONFIG_NLMON is not set
-# CONFIG_NET_VRF is not set
 # CONFIG_VSOCKMON is not set
+# CONFIG_MHI_NET is not set
 # CONFIG_ARCNET is not set
 CONFIG_ATM_DRIVERS=y
 # CONFIG_ATM_DUMMY is not set
 # CONFIG_ATM_TCP is not set
 # CONFIG_ATM_LANAI is not set
 # CONFIG_ATM_ENI is not set
+# CONFIG_ATM_FIRESTREAM is not set
+# CONFIG_ATM_ZATM is not set
 # CONFIG_ATM_NICSTAR is not set
 # CONFIG_ATM_IDT77252 is not set
+# CONFIG_ATM_AMBASSADOR is not set
+# CONFIG_ATM_HORIZON is not set
 # CONFIG_ATM_IA is not set
 # CONFIG_ATM_FORE200E is not set
 # CONFIG_ATM_HE is not set
 # CONFIG_ATM_SOLOS is not set
 CONFIG_ETHERNET=y
-CONFIG_MDIO=y
-# CONFIG_NET_VENDOR_3COM is not set
+CONFIG_NET_VENDOR_3COM=y
+# CONFIG_EL3 is not set
+# CONFIG_VORTEX is not set
+# CONFIG_TYPHOON is not set
 CONFIG_NET_VENDOR_ADAPTEC=y
 # CONFIG_ADAPTEC_STARFIRE is not set
 CONFIG_NET_VENDOR_AGERE=y
@@ -2634,20 +1871,16 @@ CONFIG_NET_VENDOR_ALTEON=y
 # CONFIG_ACENIC is not set
 # CONFIG_ALTERA_TSE is not set
 CONFIG_NET_VENDOR_AMAZON=y
-# CONFIG_ENA_ETHERNET is not set
 # CONFIG_NET_VENDOR_AMD is not set
 CONFIG_NET_VENDOR_AQUANTIA=y
 # CONFIG_AQTION is not set
 CONFIG_NET_VENDOR_ARC=y
-CONFIG_NET_VENDOR_ASIX=y
-# CONFIG_SPI_AX88796C is not set
 CONFIG_NET_VENDOR_ATHEROS=y
 # CONFIG_ATL2 is not set
 # CONFIG_ATL1 is not set
 # CONFIG_ATL1E is not set
 # CONFIG_ATL1C is not set
 # CONFIG_ALX is not set
-# CONFIG_CX_ECAT is not set
 CONFIG_NET_VENDOR_BROADCOM=y
 # CONFIG_B44 is not set
 # CONFIG_BCMGENET is not set
@@ -2657,6 +1890,8 @@ CONFIG_NET_VENDOR_BROADCOM=y
 # CONFIG_BNX2X is not set
 # CONFIG_SYSTEMPORT is not set
 # CONFIG_BNXT is not set
+CONFIG_NET_VENDOR_BROCADE=y
+# CONFIG_BNA is not set
 CONFIG_NET_VENDOR_CADENCE=y
 # CONFIG_MACB is not set
 CONFIG_NET_VENDOR_CAVIUM=y
@@ -2664,19 +1899,19 @@ CONFIG_NET_VENDOR_CAVIUM=y
 # CONFIG_THUNDER_NIC_VF is not set
 # CONFIG_THUNDER_NIC_BGX is not set
 # CONFIG_THUNDER_NIC_RGX is not set
-CONFIG_CAVIUM_PTP=y
+# CONFIG_CAVIUM_PTP is not set
 # CONFIG_LIQUIDIO is not set
-# CONFIG_LIQUIDIO_VF is not set
 CONFIG_NET_VENDOR_CHELSIO=y
 # CONFIG_CHELSIO_T1 is not set
 # CONFIG_CHELSIO_T3 is not set
 # CONFIG_CHELSIO_T4 is not set
 # CONFIG_CHELSIO_T4VF is not set
+CONFIG_NET_VENDOR_CIRRUS=y
+# CONFIG_CS89x0 is not set
 CONFIG_NET_VENDOR_CISCO=y
 # CONFIG_ENIC is not set
 CONFIG_NET_VENDOR_CORTINA=y
-CONFIG_NET_VENDOR_DAVICOM=y
-# CONFIG_DM9051 is not set
+# CONFIG_CX_ECAT is not set
 # CONFIG_DNET is not set
 CONFIG_NET_VENDOR_DEC=y
 # CONFIG_NET_TULIP is not set
@@ -2685,49 +1920,26 @@ CONFIG_NET_VENDOR_DLINK=y
 # CONFIG_SUNDANCE is not set
 CONFIG_NET_VENDOR_EMULEX=y
 # CONFIG_BE2NET is not set
-CONFIG_NET_VENDOR_ENGLEDER=y
-# CONFIG_TSNEP is not set
 CONFIG_NET_VENDOR_EZCHIP=y
-CONFIG_NET_VENDOR_FUNGIBLE=y
-# CONFIG_FUN_ETH is not set
 CONFIG_NET_VENDOR_GOOGLE=y
-# CONFIG_GVE is not set
 CONFIG_NET_VENDOR_HUAWEI=y
-# CONFIG_HINIC is not set
 CONFIG_NET_VENDOR_I825XX=y
 CONFIG_NET_VENDOR_INTEL=y
 # CONFIG_E100 is not set
 CONFIG_E1000=y
-CONFIG_E1000E=y
-CONFIG_E1000E_HWTS=y
-CONFIG_IGB=y
-CONFIG_IGB_HWMON=y
+# CONFIG_E1000E is not set
+# CONFIG_IGB is not set
 # CONFIG_IGBVF is not set
 # CONFIG_IXGB is not set
-CONFIG_IXGBE=y
-CONFIG_IXGBE_HWMON=y
-# CONFIG_IXGBE_DCB is not set
-# CONFIG_IXGBE_IPSEC is not set
-# CONFIG_IXGBEVF is not set
-CONFIG_I40E=y
-# CONFIG_I40E_DCB is not set
-# CONFIG_I40EVF is not set
-# CONFIG_ICE is not set
-# CONFIG_FM10K is not set
-CONFIG_IGC=y
-CONFIG_NET_VENDOR_WANGXUN=y
-# CONFIG_NGBE is not set
-# CONFIG_TXGBE is not set
+# CONFIG_IXGBE is not set
+# CONFIG_I40E is not set
+# CONFIG_IGC is not set
+CONFIG_NET_VENDOR_MICROSOFT=y
 # CONFIG_JME is not set
-CONFIG_NET_VENDOR_ADI=y
-# CONFIG_ADIN1110 is not set
-CONFIG_NET_VENDOR_LITEX=y
 CONFIG_NET_VENDOR_MARVELL=y
 # CONFIG_MVMDIO is not set
 # CONFIG_SKGE is not set
 # CONFIG_SKY2 is not set
-# CONFIG_OCTEON_EP is not set
-# CONFIG_PRESTERA is not set
 CONFIG_NET_VENDOR_MELLANOX=y
 # CONFIG_MLX4_EN is not set
 # CONFIG_MLX5_CORE is not set
@@ -2735,27 +1947,23 @@ CONFIG_NET_VENDOR_MELLANOX=y
 # CONFIG_MLXFW is not set
 CONFIG_NET_VENDOR_MICREL=y
 # CONFIG_KS8842 is not set
-# CONFIG_KS8851 is not set
 # CONFIG_KS8851_MLL is not set
 # CONFIG_KSZ884X_PCI is not set
 CONFIG_NET_VENDOR_MICROCHIP=y
-# CONFIG_ENC28J60 is not set
-# CONFIG_ENCX24J600 is not set
 # CONFIG_LAN743X is not set
 CONFIG_NET_VENDOR_MICROSEMI=y
-CONFIG_NET_VENDOR_MICROSOFT=y
 CONFIG_NET_VENDOR_MYRI=y
 # CONFIG_MYRI10GE is not set
 # CONFIG_FEALNX is not set
-CONFIG_NET_VENDOR_NI=y
-# CONFIG_NI_XGE_MANAGEMENT_ENET is not set
 CONFIG_NET_VENDOR_NATSEMI=y
 # CONFIG_NATSEMI is not set
 # CONFIG_NS83820 is not set
 CONFIG_NET_VENDOR_NETERION=y
 # CONFIG_S2IO is not set
+# CONFIG_VXGE is not set
 CONFIG_NET_VENDOR_NETRONOME=y
-# CONFIG_NFP is not set
+CONFIG_NET_VENDOR_NI=y
+# CONFIG_NI_XGE_MANAGEMENT_ENET is not set
 CONFIG_NET_VENDOR_8390=y
 # CONFIG_NE2K_PCI is not set
 CONFIG_NET_VENDOR_NVIDIA=y
@@ -2772,8 +1980,6 @@ CONFIG_NET_VENDOR_QLOGIC=y
 # CONFIG_QLCNIC is not set
 # CONFIG_NETXEN_NIC is not set
 # CONFIG_QED is not set
-CONFIG_NET_VENDOR_BROCADE=y
-# CONFIG_BNA is not set
 CONFIG_NET_VENDOR_QUALCOMM=y
 # CONFIG_QCOM_EMAC is not set
 # CONFIG_RMNET is not set
@@ -2783,22 +1989,20 @@ CONFIG_NET_VENDOR_REALTEK=y
 # CONFIG_ATP is not set
 # CONFIG_8139CP is not set
 # CONFIG_8139TOO is not set
-CONFIG_R8169=y
+# CONFIG_R8169 is not set
 CONFIG_NET_VENDOR_RENESAS=y
 CONFIG_NET_VENDOR_ROCKER=y
-# CONFIG_ROCKER is not set
 CONFIG_NET_VENDOR_SAMSUNG=y
 # CONFIG_SXGBE_ETH is not set
 CONFIG_NET_VENDOR_SEEQ=y
+CONFIG_NET_VENDOR_SOLARFLARE=y
+# CONFIG_SFC is not set
+# CONFIG_SFC_FALCON is not set
 CONFIG_NET_VENDOR_SILAN=y
 # CONFIG_SC92031 is not set
 CONFIG_NET_VENDOR_SIS=y
 # CONFIG_SIS900 is not set
 # CONFIG_SIS190 is not set
-CONFIG_NET_VENDOR_SOLARFLARE=y
-# CONFIG_SFC is not set
-# CONFIG_SFC_FALCON is not set
-# CONFIG_SFC_SIENA is not set
 CONFIG_NET_VENDOR_SMSC=y
 # CONFIG_EPIC100 is not set
 # CONFIG_SMSC911X is not set
@@ -2818,8 +2022,6 @@ CONFIG_NET_VENDOR_TEHUTI=y
 CONFIG_NET_VENDOR_TI=y
 # CONFIG_TI_CPSW_PHY_SEL is not set
 # CONFIG_TLAN is not set
-CONFIG_NET_VENDOR_VERTEXCOM=y
-# CONFIG_MSE102X is not set
 CONFIG_NET_VENDOR_VIA=y
 # CONFIG_VIA_RHINE is not set
 # CONFIG_VIA_VELOCITY is not set
@@ -2833,128 +2035,8 @@ CONFIG_NET_VENDOR_XILINX=y
 # CONFIG_FDDI is not set
 # CONFIG_HIPPI is not set
 # CONFIG_NET_SB1000 is not set
-CONFIG_PHYLINK=y
-CONFIG_PHYLIB=y
-CONFIG_SWPHY=y
-# CONFIG_LED_TRIGGER_PHY is not set
-CONFIG_FIXED_PHY=y
-# CONFIG_SFP is not set
-
-#
-# MII PHY device drivers
-#
-# CONFIG_AMD_PHY is not set
-# CONFIG_ADIN_PHY is not set
-# CONFIG_ADIN1100_PHY is not set
-# CONFIG_AQUANTIA_PHY is not set
-CONFIG_AX88796B_PHY=y
-# CONFIG_BROADCOM_PHY is not set
-# CONFIG_BCM54140_PHY is not set
-# CONFIG_BCM7XXX_PHY is not set
-# CONFIG_BCM84881_PHY is not set
-# CONFIG_BCM87XX_PHY is not set
-# CONFIG_CICADA_PHY is not set
-# CONFIG_CORTINA_PHY is not set
-# CONFIG_DAVICOM_PHY is not set
-# CONFIG_ICPLUS_PHY is not set
-# CONFIG_LXT_PHY is not set
-# CONFIG_INTEL_XWAY_PHY is not set
-# CONFIG_LSI_ET1011C_PHY is not set
-# CONFIG_MARVELL_PHY is not set
-# CONFIG_MARVELL_10G_PHY is not set
-# CONFIG_MARVELL_88X2222_PHY is not set
-# CONFIG_MAXLINEAR_GPHY is not set
-# CONFIG_MEDIATEK_GE_PHY is not set
-# CONFIG_MICREL_PHY is not set
-# CONFIG_MICROCHIP_PHY is not set
-# CONFIG_MICROCHIP_T1_PHY is not set
-# CONFIG_MICROSEMI_PHY is not set
-# CONFIG_MOTORCOMM_PHY is not set
-# CONFIG_NATIONAL_PHY is not set
-# CONFIG_NXP_C45_TJA11XX_PHY is not set
-# CONFIG_NXP_TJA11XX_PHY is not set
-# CONFIG_QSEMI_PHY is not set
-CONFIG_REALTEK_PHY=y
-# CONFIG_RENESAS_PHY is not set
-# CONFIG_ROCKCHIP_PHY is not set
-# CONFIG_SMSC_PHY is not set
-# CONFIG_STE10XP is not set
-# CONFIG_TERANETICS_PHY is not set
-# CONFIG_DP83822_PHY is not set
-# CONFIG_DP83TC811_PHY is not set
-# CONFIG_DP83848_PHY is not set
-# CONFIG_DP83867_PHY is not set
-# CONFIG_DP83869_PHY is not set
-# CONFIG_DP83TD510_PHY is not set
-# CONFIG_VITESSE_PHY is not set
-# CONFIG_XILINX_GMII2RGMII is not set
-# CONFIG_MICREL_KS8995MA is not set
-# CONFIG_PSE_CONTROLLER is not set
-CONFIG_CAN_DEV=m
-CONFIG_CAN_VCAN=m
-# CONFIG_CAN_VXCAN is not set
-CONFIG_CAN_NETLINK=y
-CONFIG_CAN_CALC_BITTIMING=y
-# CONFIG_CAN_CAN327 is not set
-# CONFIG_CAN_KVASER_PCIEFD is not set
-CONFIG_CAN_SLCAN=m
-CONFIG_CAN_C_CAN=m
-CONFIG_CAN_C_CAN_PLATFORM=m
-CONFIG_CAN_C_CAN_PCI=m
-CONFIG_CAN_CC770=m
-# CONFIG_CAN_CC770_ISA is not set
-CONFIG_CAN_CC770_PLATFORM=m
-# CONFIG_CAN_CTUCANFD_PCI is not set
-# CONFIG_CAN_IFI_CANFD is not set
-# CONFIG_CAN_M_CAN is not set
-# CONFIG_CAN_PEAK_PCIEFD is not set
-CONFIG_CAN_SJA1000=m
-CONFIG_CAN_EMS_PCI=m
-# CONFIG_CAN_F81601 is not set
-CONFIG_CAN_KVASER_PCI=m
-CONFIG_CAN_PEAK_PCI=m
-CONFIG_CAN_PEAK_PCIEC=y
-CONFIG_CAN_PLX_PCI=m
-# CONFIG_CAN_SJA1000_ISA is not set
-# CONFIG_CAN_SJA1000_PLATFORM is not set
-CONFIG_CAN_SOFTING=m
-
-#
-# CAN SPI interfaces
-#
-# CONFIG_CAN_HI311X is not set
-# CONFIG_CAN_MCP251X is not set
-# CONFIG_CAN_MCP251XFD is not set
-# end of CAN SPI interfaces
-
-#
-# CAN USB interfaces
-#
-# CONFIG_CAN_8DEV_USB is not set
-# CONFIG_CAN_EMS_USB is not set
-# CONFIG_CAN_ESD_USB is not set
-# CONFIG_CAN_ETAS_ES58X is not set
-# CONFIG_CAN_GS_USB is not set
-# CONFIG_CAN_KVASER_USB is not set
-# CONFIG_CAN_MCBA_USB is not set
-# CONFIG_CAN_PEAK_USB is not set
-# CONFIG_CAN_UCAN is not set
-# end of CAN USB interfaces
-
-# CONFIG_CAN_DEBUG_DEVICES is not set
-CONFIG_MDIO_DEVICE=y
-CONFIG_MDIO_BUS=y
-CONFIG_FWNODE_MDIO=y
-CONFIG_ACPI_MDIO=y
-CONFIG_MDIO_DEVRES=y
-# CONFIG_MDIO_BITBANG is not set
-# CONFIG_MDIO_BCM_UNIMAC is not set
-# CONFIG_MDIO_MVUSB is not set
-# CONFIG_MDIO_THUNDER is not set
-
-#
-# MDIO Multiplexers
-#
+# CONFIG_PHYLIB is not set
+# CONFIG_MDIO_DEVICE is not set
 
 #
 # PCS device drivers
@@ -2964,134 +2046,35 @@ CONFIG_MDIO_DEVRES=y
 # CONFIG_PLIP is not set
 # CONFIG_PPP is not set
 # CONFIG_SLIP is not set
-CONFIG_USB_NET_DRIVERS=y
-# CONFIG_USB_CATC is not set
-# CONFIG_USB_KAWETH is not set
-# CONFIG_USB_PEGASUS is not set
-# CONFIG_USB_RTL8150 is not set
-CONFIG_USB_RTL8152=y
-# CONFIG_USB_LAN78XX is not set
-CONFIG_USB_USBNET=y
-CONFIG_USB_NET_AX8817X=y
-CONFIG_USB_NET_AX88179_178A=y
-# CONFIG_USB_NET_CDCETHER is not set
-# CONFIG_USB_NET_CDC_EEM is not set
-# CONFIG_USB_NET_CDC_NCM is not set
-# CONFIG_USB_NET_HUAWEI_CDC_NCM is not set
-# CONFIG_USB_NET_CDC_MBIM is not set
-# CONFIG_USB_NET_DM9601 is not set
-# CONFIG_USB_NET_SR9700 is not set
-# CONFIG_USB_NET_SR9800 is not set
-# CONFIG_USB_NET_SMSC75XX is not set
-# CONFIG_USB_NET_SMSC95XX is not set
-# CONFIG_USB_NET_GL620A is not set
-# CONFIG_USB_NET_NET1080 is not set
-# CONFIG_USB_NET_PLUSB is not set
-# CONFIG_USB_NET_MCS7830 is not set
-# CONFIG_USB_NET_RNDIS_HOST is not set
-# CONFIG_USB_NET_CDC_SUBSET is not set
-# CONFIG_USB_NET_ZAURUS is not set
-# CONFIG_USB_NET_CX82310_ETH is not set
-# CONFIG_USB_NET_KALMIA is not set
-# CONFIG_USB_NET_QMI_WWAN is not set
-# CONFIG_USB_HSO is not set
-# CONFIG_USB_NET_INT51X1 is not set
-# CONFIG_USB_IPHETH is not set
-# CONFIG_USB_SIERRA_NET is not set
-# CONFIG_USB_NET_CH9200 is not set
-# CONFIG_USB_NET_AQC111 is not set
+
+#
+# Host-side USB support is needed for USB Network Adapter support
+#
 CONFIG_WLAN=y
 CONFIG_WLAN_VENDOR_ADMTEK=y
-# CONFIG_ADM8211 is not set
 CONFIG_WLAN_VENDOR_ATH=y
 # CONFIG_ATH_DEBUG is not set
-# CONFIG_ATH5K is not set
 # CONFIG_ATH5K_PCI is not set
-# CONFIG_ATH9K is not set
-# CONFIG_ATH9K_HTC is not set
-# CONFIG_CARL9170 is not set
-# CONFIG_ATH6KL is not set
-# CONFIG_AR5523 is not set
-# CONFIG_WIL6210 is not set
-# CONFIG_ATH10K is not set
-# CONFIG_WCN36XX is not set
-# CONFIG_ATH11K is not set
 CONFIG_WLAN_VENDOR_ATMEL=y
-# CONFIG_ATMEL is not set
-# CONFIG_AT76C50X_USB is not set
 CONFIG_WLAN_VENDOR_BROADCOM=y
-# CONFIG_B43 is not set
-# CONFIG_B43LEGACY is not set
-# CONFIG_BRCMSMAC is not set
-# CONFIG_BRCMFMAC is not set
 CONFIG_WLAN_VENDOR_CISCO=y
-# CONFIG_AIRO is not set
 CONFIG_WLAN_VENDOR_INTEL=y
-# CONFIG_IPW2100 is not set
-# CONFIG_IPW2200 is not set
-# CONFIG_IWL4965 is not set
-# CONFIG_IWL3945 is not set
-# CONFIG_IWLWIFI is not set
 CONFIG_WLAN_VENDOR_INTERSIL=y
 # CONFIG_HOSTAP is not set
-# CONFIG_HERMES is not set
-# CONFIG_P54_COMMON is not set
+# CONFIG_PRISM54 is not set
 CONFIG_WLAN_VENDOR_MARVELL=y
-# CONFIG_LIBERTAS is not set
-# CONFIG_LIBERTAS_THINFIRM is not set
-# CONFIG_MWIFIEX is not set
-# CONFIG_MWL8K is not set
-# CONFIG_WLAN_VENDOR_MEDIATEK is not set
+CONFIG_WLAN_VENDOR_MEDIATEK=y
 CONFIG_WLAN_VENDOR_MICROCHIP=y
-# CONFIG_WILC1000_SDIO is not set
-# CONFIG_WILC1000_SPI is not set
-CONFIG_WLAN_VENDOR_PURELIFI=y
-# CONFIG_PLFXLC is not set
 CONFIG_WLAN_VENDOR_RALINK=y
-# CONFIG_RT2X00 is not set
 CONFIG_WLAN_VENDOR_REALTEK=y
-# CONFIG_RTL8180 is not set
-# CONFIG_RTL8187 is not set
-CONFIG_RTL_CARDS=m
-# CONFIG_RTL8192CE is not set
-# CONFIG_RTL8192SE is not set
-# CONFIG_RTL8192DE is not set
-# CONFIG_RTL8723AE is not set
-# CONFIG_RTL8723BE is not set
-# CONFIG_RTL8188EE is not set
-# CONFIG_RTL8192EE is not set
-# CONFIG_RTL8821AE is not set
-# CONFIG_RTL8192CU is not set
-# CONFIG_RTL8XXXU is not set
-# CONFIG_RTW88 is not set
-# CONFIG_RTW89 is not set
 CONFIG_WLAN_VENDOR_RSI=y
-# CONFIG_RSI_91X is not set
-CONFIG_WLAN_VENDOR_SILABS=y
-# CONFIG_WFX is not set
 CONFIG_WLAN_VENDOR_ST=y
-# CONFIG_CW1200 is not set
 CONFIG_WLAN_VENDOR_TI=y
-# CONFIG_WL1251 is not set
-# CONFIG_WL12XX is not set
-# CONFIG_WL18XX is not set
-# CONFIG_WLCORE is not set
 CONFIG_WLAN_VENDOR_ZYDAS=y
-# CONFIG_USB_ZD1201 is not set
-# CONFIG_ZD1211RW is not set
 CONFIG_WLAN_VENDOR_QUANTENNA=y
-# CONFIG_QTNFMAC_PCIE is not set
-# CONFIG_MAC80211_HWSIM is not set
-# CONFIG_USB_NET_RNDIS_WLAN is not set
-# CONFIG_VIRT_WIFI is not set
 # CONFIG_WAN is not set
-
-#
-# Wireless WAN
-#
+CONFIG_IEEE802154_DRIVERS=y
 # CONFIG_WWAN is not set
-# end of Wireless WAN
-
 # CONFIG_VMXNET3 is not set
 # CONFIG_FUJITSU_ES is not set
 # CONFIG_NETDEVSIM is not set
@@ -3103,29 +2086,25 @@ CONFIG_NET_FAILOVER=m
 #
 CONFIG_INPUT=y
 CONFIG_INPUT_LEDS=y
-CONFIG_INPUT_FF_MEMLESS=m
-CONFIG_INPUT_SPARSEKMAP=m
+# CONFIG_INPUT_FF_MEMLESS is not set
+# CONFIG_INPUT_SPARSEKMAP is not set
 # CONFIG_INPUT_MATRIXKMAP is not set
-CONFIG_INPUT_VIVALDIFMAP=y
 
 #
 # Userland interfaces
 #
-CONFIG_INPUT_MOUSEDEV=y
-# CONFIG_INPUT_MOUSEDEV_PSAUX is not set
-CONFIG_INPUT_MOUSEDEV_SCREEN_X=1024
-CONFIG_INPUT_MOUSEDEV_SCREEN_Y=768
-CONFIG_INPUT_JOYDEV=m
-CONFIG_INPUT_EVDEV=y
+# CONFIG_INPUT_MOUSEDEV is not set
+# CONFIG_INPUT_JOYDEV is not set
+# CONFIG_INPUT_EVDEV is not set
 # CONFIG_INPUT_EVBUG is not set
 
 #
 # Input Device Drivers
 #
 CONFIG_INPUT_KEYBOARD=y
+# CONFIG_KEYBOARD_ADC is not set
 # CONFIG_KEYBOARD_ADP5588 is not set
 # CONFIG_KEYBOARD_ADP5589 is not set
-# CONFIG_KEYBOARD_APPLESPI is not set
 CONFIG_KEYBOARD_ATKBD=y
 # CONFIG_KEYBOARD_QT1050 is not set
 # CONFIG_KEYBOARD_QT1070 is not set
@@ -3145,11 +2124,13 @@ CONFIG_KEYBOARD_ATKBD=y
 # CONFIG_KEYBOARD_NEWTON is not set
 # CONFIG_KEYBOARD_OPENCORES is not set
 # CONFIG_KEYBOARD_SAMSUNG is not set
+# CONFIG_KEYBOARD_GOLDFISH_EVENTS is not set
 # CONFIG_KEYBOARD_STOWAWAY is not set
 # CONFIG_KEYBOARD_SUNKBD is not set
 # CONFIG_KEYBOARD_TM2_TOUCHKEY is not set
+# CONFIG_KEYBOARD_TWL4030 is not set
 # CONFIG_KEYBOARD_XTKBD is not set
-# CONFIG_KEYBOARD_CYPRESS_SF is not set
+# CONFIG_KEYBOARD_MTK_PMIC is not set
 CONFIG_INPUT_MOUSE=y
 CONFIG_MOUSE_PS2=y
 CONFIG_MOUSE_PS2_ALPS=y
@@ -3160,41 +2141,26 @@ CONFIG_MOUSE_PS2_SYNAPTICS_SMBUS=y
 CONFIG_MOUSE_PS2_CYPRESS=y
 CONFIG_MOUSE_PS2_LIFEBOOK=y
 CONFIG_MOUSE_PS2_TRACKPOINT=y
-CONFIG_MOUSE_PS2_ELANTECH=y
-CONFIG_MOUSE_PS2_ELANTECH_SMBUS=y
-CONFIG_MOUSE_PS2_SENTELIC=y
+# CONFIG_MOUSE_PS2_ELANTECH is not set
+# CONFIG_MOUSE_PS2_SENTELIC is not set
 # CONFIG_MOUSE_PS2_TOUCHKIT is not set
 CONFIG_MOUSE_PS2_FOCALTECH=y
-CONFIG_MOUSE_PS2_VMMOUSE=y
+# CONFIG_MOUSE_PS2_VMMOUSE is not set
 CONFIG_MOUSE_PS2_SMBUS=y
-CONFIG_MOUSE_SERIAL=m
+# CONFIG_MOUSE_SERIAL is not set
 # CONFIG_MOUSE_APPLETOUCH is not set
 # CONFIG_MOUSE_BCM5974 is not set
-CONFIG_MOUSE_CYAPA=m
-CONFIG_MOUSE_ELAN_I2C=m
-CONFIG_MOUSE_ELAN_I2C_I2C=y
-CONFIG_MOUSE_ELAN_I2C_SMBUS=y
-CONFIG_MOUSE_VSXXXAA=m
+# CONFIG_MOUSE_CYAPA is not set
+# CONFIG_MOUSE_ELAN_I2C is not set
+# CONFIG_MOUSE_VSXXXAA is not set
 # CONFIG_MOUSE_GPIO is not set
-CONFIG_MOUSE_SYNAPTICS_I2C=m
+# CONFIG_MOUSE_SYNAPTICS_I2C is not set
 # CONFIG_MOUSE_SYNAPTICS_USB is not set
 # CONFIG_INPUT_JOYSTICK is not set
 # CONFIG_INPUT_TABLET is not set
 # CONFIG_INPUT_TOUCHSCREEN is not set
 # CONFIG_INPUT_MISC is not set
-CONFIG_RMI4_CORE=m
-CONFIG_RMI4_I2C=m
-CONFIG_RMI4_SPI=m
-CONFIG_RMI4_SMB=m
-CONFIG_RMI4_F03=y
-CONFIG_RMI4_F03_SERIO=m
-CONFIG_RMI4_2D_SENSOR=y
-CONFIG_RMI4_F11=y
-CONFIG_RMI4_F12=y
-CONFIG_RMI4_F30=y
-CONFIG_RMI4_F34=y
-# CONFIG_RMI4_F3A is not set
-CONFIG_RMI4_F55=y
+# CONFIG_RMI4_CORE is not set
 
 #
 # Hardware I/O ports
@@ -3203,14 +2169,14 @@ CONFIG_SERIO=y
 CONFIG_ARCH_MIGHT_HAVE_PC_SERIO=y
 CONFIG_SERIO_I8042=y
 CONFIG_SERIO_SERPORT=y
-# CONFIG_SERIO_CT82C710 is not set
-# CONFIG_SERIO_PARKBD is not set
+CONFIG_SERIO_CT82C710=y
+CONFIG_SERIO_PARKBD=y
 # CONFIG_SERIO_PCIPS2 is not set
 CONFIG_SERIO_LIBPS2=y
-CONFIG_SERIO_RAW=m
-CONFIG_SERIO_ALTERA_PS2=m
-# CONFIG_SERIO_PS2MULT is not set
-CONFIG_SERIO_ARC_PS2=m
+CONFIG_SERIO_RAW=y
+CONFIG_SERIO_ALTERA_PS2=y
+CONFIG_SERIO_PS2MULT=y
+CONFIG_SERIO_ARC_PS2=y
 # CONFIG_SERIO_GPIO_PS2 is not set
 # CONFIG_USERIO is not set
 # CONFIG_GAMEPORT is not set
@@ -3221,12 +2187,7 @@ CONFIG_SERIO_ARC_PS2=m
 # Character devices
 #
 CONFIG_TTY=y
-CONFIG_VT=y
-CONFIG_CONSOLE_TRANSLATIONS=y
-CONFIG_VT_CONSOLE=y
-CONFIG_VT_CONSOLE_SLEEP=y
-CONFIG_HW_CONSOLE=y
-CONFIG_VT_HW_CONSOLE_BINDING=y
+# CONFIG_VT is not set
 CONFIG_UNIX98_PTYS=y
 # CONFIG_LEGACY_PTYS is not set
 CONFIG_LDISC_AUTOLOAD=y
@@ -3237,142 +2198,124 @@ CONFIG_LDISC_AUTOLOAD=y
 CONFIG_SERIAL_EARLYCON=y
 CONFIG_SERIAL_8250=y
 # CONFIG_SERIAL_8250_DEPRECATED_OPTIONS is not set
-CONFIG_SERIAL_8250_PNP=y
+# CONFIG_SERIAL_8250_PNP is not set
 # CONFIG_SERIAL_8250_16550A_VARIANTS is not set
-# CONFIG_SERIAL_8250_FINTEK is not set
+CONFIG_SERIAL_8250_FINTEK=y
 CONFIG_SERIAL_8250_CONSOLE=y
-CONFIG_SERIAL_8250_DMA=y
+# CONFIG_SERIAL_8250_DMA is not set
 CONFIG_SERIAL_8250_PCI=y
 CONFIG_SERIAL_8250_EXAR=y
-CONFIG_SERIAL_8250_NR_UARTS=64
+CONFIG_SERIAL_8250_NR_UARTS=4
 CONFIG_SERIAL_8250_RUNTIME_UARTS=4
-CONFIG_SERIAL_8250_EXTENDED=y
-CONFIG_SERIAL_8250_MANY_PORTS=y
-CONFIG_SERIAL_8250_SHARE_IRQ=y
-# CONFIG_SERIAL_8250_DETECT_IRQ is not set
-CONFIG_SERIAL_8250_RSA=y
+# CONFIG_SERIAL_8250_EXTENDED is not set
 CONFIG_SERIAL_8250_DWLIB=y
 CONFIG_SERIAL_8250_DW=y
 # CONFIG_SERIAL_8250_RT288X is not set
 CONFIG_SERIAL_8250_LPSS=y
 CONFIG_SERIAL_8250_MID=y
-CONFIG_SERIAL_8250_PERICOM=y
 
 #
 # Non-8250 serial port support
 #
-# CONFIG_SERIAL_MAX3100 is not set
-# CONFIG_SERIAL_MAX310X is not set
 # CONFIG_SERIAL_UARTLITE is not set
 CONFIG_SERIAL_CORE=y
 CONFIG_SERIAL_CORE_CONSOLE=y
-CONFIG_SERIAL_JSM=m
-# CONFIG_SERIAL_LANTIQ is not set
-# CONFIG_SERIAL_SCCNXP is not set
-# CONFIG_SERIAL_SC16IS7XX is not set
+# CONFIG_SERIAL_JSM is not set
+CONFIG_SERIAL_LANTIQ=y
+CONFIG_SERIAL_LANTIQ_CONSOLE=y
+CONFIG_SERIAL_SCCNXP=y
+CONFIG_SERIAL_SCCNXP_CONSOLE=y
+CONFIG_SERIAL_SC16IS7XX_CORE=y
+CONFIG_SERIAL_SC16IS7XX=y
+CONFIG_SERIAL_SC16IS7XX_I2C=y
+# CONFIG_SERIAL_BCM63XX is not set
 # CONFIG_SERIAL_ALTERA_JTAGUART is not set
-# CONFIG_SERIAL_ALTERA_UART is not set
-CONFIG_SERIAL_ARC=m
+CONFIG_SERIAL_ALTERA_UART=y
+CONFIG_SERIAL_ALTERA_UART_MAXPORTS=4
+CONFIG_SERIAL_ALTERA_UART_BAUDRATE=115200
+# CONFIG_SERIAL_ALTERA_UART_CONSOLE is not set
+CONFIG_SERIAL_ARC=y
+CONFIG_SERIAL_ARC_CONSOLE=y
 CONFIG_SERIAL_ARC_NR_PORTS=1
 # CONFIG_SERIAL_RP2 is not set
-# CONFIG_SERIAL_FSL_LPUART is not set
-# CONFIG_SERIAL_FSL_LINFLEXUART is not set
-# CONFIG_SERIAL_SPRD is not set
+CONFIG_SERIAL_FSL_LPUART=y
+# CONFIG_SERIAL_FSL_LPUART_CONSOLE is not set
+CONFIG_SERIAL_FSL_LINFLEXUART=y
+# CONFIG_SERIAL_FSL_LINFLEXUART_CONSOLE is not set
+CONFIG_SERIAL_SPRD=y
+CONFIG_SERIAL_SPRD_CONSOLE=y
 # end of Serial drivers
 
 CONFIG_SERIAL_MCTRL_GPIO=y
-CONFIG_SERIAL_NONSTANDARD=y
-# CONFIG_MOXA_INTELLIO is not set
-# CONFIG_MOXA_SMARTIO is not set
-CONFIG_SYNCLINK_GT=m
-CONFIG_N_HDLC=m
-CONFIG_N_GSM=m
-CONFIG_NOZOMI=m
-# CONFIG_NULL_TTY is not set
-CONFIG_HVC_DRIVER=y
+# CONFIG_SERIAL_NONSTANDARD is not set
+# CONFIG_GOLDFISH_TTY is not set
+CONFIG_N_GSM=y
+# CONFIG_NOZOMI is not set
+CONFIG_NULL_TTY=y
 # CONFIG_SERIAL_DEV_BUS is not set
-CONFIG_PRINTER=m
-# CONFIG_LP_CONSOLE is not set
-CONFIG_PPDEV=m
-CONFIG_VIRTIO_CONSOLE=m
-CONFIG_IPMI_HANDLER=m
+CONFIG_TTY_PRINTK=y
+CONFIG_TTY_PRINTK_LEVEL=6
+CONFIG_PRINTER=y
+CONFIG_LP_CONSOLE=y
+CONFIG_PPDEV=y
+# CONFIG_VIRTIO_CONSOLE is not set
+CONFIG_IPMI_HANDLER=y
 CONFIG_IPMI_DMI_DECODE=y
 CONFIG_IPMI_PLAT_DATA=y
 CONFIG_IPMI_PANIC_EVENT=y
 CONFIG_IPMI_PANIC_STRING=y
-CONFIG_IPMI_DEVICE_INTERFACE=m
-CONFIG_IPMI_SI=m
-CONFIG_IPMI_SSIF=m
-CONFIG_IPMI_WATCHDOG=m
-CONFIG_IPMI_POWEROFF=m
+# CONFIG_IPMI_DEVICE_INTERFACE is not set
+CONFIG_IPMI_SI=y
+CONFIG_IPMI_SSIF=y
+# CONFIG_IPMI_WATCHDOG is not set
+CONFIG_IPMI_POWEROFF=y
+# CONFIG_IPMB_DEVICE_INTERFACE is not set
 CONFIG_HW_RANDOM=y
-CONFIG_HW_RANDOM_TIMERIOMEM=m
-CONFIG_HW_RANDOM_INTEL=m
+# CONFIG_HW_RANDOM_TIMERIOMEM is not set
+CONFIG_HW_RANDOM_INTEL=y
 # CONFIG_HW_RANDOM_AMD is not set
-# CONFIG_HW_RANDOM_BA431 is not set
-CONFIG_HW_RANDOM_VIA=m
+CONFIG_HW_RANDOM_BA431=y
+CONFIG_HW_RANDOM_VIA=y
 CONFIG_HW_RANDOM_VIRTIO=y
-# CONFIG_HW_RANDOM_XIPHERA is not set
+CONFIG_HW_RANDOM_XIPHERA=y
 # CONFIG_APPLICOM is not set
 # CONFIG_MWAVE is not set
-CONFIG_DEVMEM=y
-CONFIG_NVRAM=y
+# CONFIG_DEVMEM is not set
+# CONFIG_NVRAM is not set
 CONFIG_DEVPORT=y
-CONFIG_HPET=y
-CONFIG_HPET_MMAP=y
-# CONFIG_HPET_MMAP_DEFAULT is not set
-CONFIG_HANGCHECK_TIMER=m
-CONFIG_UV_MMTIMER=m
-CONFIG_TCG_TPM=y
-CONFIG_HW_RANDOM_TPM=y
-CONFIG_TCG_TIS_CORE=y
-CONFIG_TCG_TIS=y
-# CONFIG_TCG_TIS_SPI is not set
-# CONFIG_TCG_TIS_I2C is not set
-# CONFIG_TCG_TIS_I2C_CR50 is not set
-CONFIG_TCG_TIS_I2C_ATMEL=m
-CONFIG_TCG_TIS_I2C_INFINEON=m
-CONFIG_TCG_TIS_I2C_NUVOTON=m
-CONFIG_TCG_NSC=m
-CONFIG_TCG_ATMEL=m
-CONFIG_TCG_INFINEON=m
-CONFIG_TCG_CRB=y
-# CONFIG_TCG_VTPM_PROXY is not set
-CONFIG_TCG_TIS_ST33ZP24=m
-CONFIG_TCG_TIS_ST33ZP24_I2C=m
-# CONFIG_TCG_TIS_ST33ZP24_SPI is not set
-CONFIG_TELCLOCK=m
+# CONFIG_HPET is not set
+CONFIG_HANGCHECK_TIMER=y
+# CONFIG_TCG_TPM is not set
+CONFIG_TELCLOCK=y
 # CONFIG_XILLYBUS is not set
-# CONFIG_XILLYUSB is not set
-CONFIG_RANDOM_TRUST_CPU=y
-CONFIG_RANDOM_TRUST_BOOTLOADER=y
 # end of Character devices
+
+# CONFIG_RANDOM_TRUST_BOOTLOADER is not set
 
 #
 # I2C support
 #
 CONFIG_I2C=y
-CONFIG_ACPI_I2C_OPREGION=y
+# CONFIG_ACPI_I2C_OPREGION is not set
 CONFIG_I2C_BOARDINFO=y
 CONFIG_I2C_COMPAT=y
-CONFIG_I2C_CHARDEV=m
-CONFIG_I2C_MUX=m
+CONFIG_I2C_CHARDEV=y
+CONFIG_I2C_MUX=y
 
 #
 # Multiplexer I2C Chip support
 #
 # CONFIG_I2C_MUX_GPIO is not set
-# CONFIG_I2C_MUX_LTC4306 is not set
+CONFIG_I2C_MUX_LTC4306=y
 # CONFIG_I2C_MUX_PCA9541 is not set
-# CONFIG_I2C_MUX_PCA954x is not set
-# CONFIG_I2C_MUX_REG is not set
-CONFIG_I2C_MUX_MLXCPLD=m
+CONFIG_I2C_MUX_PCA954x=y
+CONFIG_I2C_MUX_REG=y
+CONFIG_I2C_MUX_MLXCPLD=y
 # end of Multiplexer I2C Chip support
 
 CONFIG_I2C_HELPER_AUTO=y
-CONFIG_I2C_SMBUS=y
 CONFIG_I2C_ALGOBIT=y
-CONFIG_I2C_ALGOPCA=m
+CONFIG_I2C_ALGOPCA=y
 
 #
 # I2C Hardware Bus support
@@ -3387,123 +2330,89 @@ CONFIG_I2C_ALGOPCA=m
 # CONFIG_I2C_AMD756 is not set
 # CONFIG_I2C_AMD8111 is not set
 # CONFIG_I2C_AMD_MP2 is not set
-CONFIG_I2C_I801=y
-CONFIG_I2C_ISCH=m
-CONFIG_I2C_ISMT=m
-CONFIG_I2C_PIIX4=m
-CONFIG_I2C_NFORCE2=m
-CONFIG_I2C_NFORCE2_S4985=m
+# CONFIG_I2C_I801 is not set
+# CONFIG_I2C_ISCH is not set
+# CONFIG_I2C_ISMT is not set
+# CONFIG_I2C_PIIX4 is not set
+# CONFIG_I2C_NFORCE2 is not set
 # CONFIG_I2C_NVIDIA_GPU is not set
 # CONFIG_I2C_SIS5595 is not set
 # CONFIG_I2C_SIS630 is not set
-CONFIG_I2C_SIS96X=m
-CONFIG_I2C_VIA=m
-CONFIG_I2C_VIAPRO=m
+# CONFIG_I2C_SIS96X is not set
+# CONFIG_I2C_VIA is not set
+# CONFIG_I2C_VIAPRO is not set
 
 #
 # ACPI drivers
 #
-CONFIG_I2C_SCMI=m
+CONFIG_I2C_SCMI=y
 
 #
 # I2C system bus drivers (mostly embedded / system-on-chip)
 #
 # CONFIG_I2C_CBUS_GPIO is not set
-CONFIG_I2C_DESIGNWARE_CORE=m
+CONFIG_I2C_DESIGNWARE_CORE=y
 # CONFIG_I2C_DESIGNWARE_SLAVE is not set
-CONFIG_I2C_DESIGNWARE_PLATFORM=m
-# CONFIG_I2C_DESIGNWARE_AMDPSP is not set
-CONFIG_I2C_DESIGNWARE_BAYTRAIL=y
+CONFIG_I2C_DESIGNWARE_PLATFORM=y
 # CONFIG_I2C_DESIGNWARE_PCI is not set
-# CONFIG_I2C_EMEV2 is not set
-# CONFIG_I2C_GPIO is not set
-# CONFIG_I2C_OCORES is not set
-CONFIG_I2C_PCA_PLATFORM=m
-CONFIG_I2C_SIMTEC=m
-# CONFIG_I2C_XILINX is not set
+CONFIG_I2C_EMEV2=y
+CONFIG_I2C_GPIO=y
+CONFIG_I2C_GPIO_FAULT_INJECTOR=y
+CONFIG_I2C_KEMPLD=y
+CONFIG_I2C_OCORES=y
+CONFIG_I2C_PCA_PLATFORM=y
+CONFIG_I2C_SIMTEC=y
+CONFIG_I2C_XILINX=y
 
 #
 # External I2C/SMBus adapter drivers
 #
-# CONFIG_I2C_DIOLAN_U2C is not set
-# CONFIG_I2C_CP2615 is not set
-CONFIG_I2C_PARPORT=m
-# CONFIG_I2C_PCI1XXXX is not set
-# CONFIG_I2C_ROBOTFUZZ_OSIF is not set
+# CONFIG_I2C_PARPORT is not set
 # CONFIG_I2C_TAOS_EVM is not set
-# CONFIG_I2C_TINY_USB is not set
 
 #
 # Other I2C/SMBus bus drivers
 #
-CONFIG_I2C_MLXCPLD=m
-# CONFIG_I2C_VIRTIO is not set
+# CONFIG_I2C_MLXCPLD is not set
 # end of I2C Hardware Bus support
 
-CONFIG_I2C_STUB=m
-# CONFIG_I2C_SLAVE is not set
+# CONFIG_I2C_STUB is not set
+CONFIG_I2C_SLAVE=y
+# CONFIG_I2C_SLAVE_EEPROM is not set
+# CONFIG_I2C_SLAVE_TESTUNIT is not set
 # CONFIG_I2C_DEBUG_CORE is not set
 # CONFIG_I2C_DEBUG_ALGO is not set
 # CONFIG_I2C_DEBUG_BUS is not set
 # end of I2C support
 
-# CONFIG_I3C is not set
-CONFIG_SPI=y
-# CONFIG_SPI_DEBUG is not set
-CONFIG_SPI_MASTER=y
-# CONFIG_SPI_MEM is not set
+CONFIG_I3C=y
+CONFIG_CDNS_I3C_MASTER=y
+# CONFIG_DW_I3C_MASTER is not set
+# CONFIG_SVC_I3C_MASTER is not set
+# CONFIG_MIPI_I3C_HCI is not set
+# CONFIG_SPI is not set
+CONFIG_SPMI=y
+CONFIG_HSI=y
+CONFIG_HSI_BOARDINFO=y
 
 #
-# SPI Master Controller Drivers
+# HSI controllers
 #
-# CONFIG_SPI_ALTERA is not set
-# CONFIG_SPI_AXI_SPI_ENGINE is not set
-# CONFIG_SPI_BITBANG is not set
-# CONFIG_SPI_BUTTERFLY is not set
-# CONFIG_SPI_CADENCE is not set
-# CONFIG_SPI_DESIGNWARE is not set
-# CONFIG_SPI_NXP_FLEXSPI is not set
-# CONFIG_SPI_GPIO is not set
-# CONFIG_SPI_LM70_LLP is not set
-# CONFIG_SPI_MICROCHIP_CORE is not set
-# CONFIG_SPI_MICROCHIP_CORE_QSPI is not set
-# CONFIG_SPI_LANTIQ_SSC is not set
-# CONFIG_SPI_OC_TINY is not set
-# CONFIG_SPI_PXA2XX is not set
-# CONFIG_SPI_ROCKCHIP is not set
-# CONFIG_SPI_SC18IS602 is not set
-# CONFIG_SPI_SIFIVE is not set
-# CONFIG_SPI_MXIC is not set
-# CONFIG_SPI_XCOMM is not set
-# CONFIG_SPI_XILINX is not set
-# CONFIG_SPI_ZYNQMP_GQSPI is not set
-# CONFIG_SPI_AMD is not set
 
 #
-# SPI Multiplexer support
+# HSI clients
 #
-# CONFIG_SPI_MUX is not set
-
-#
-# SPI Protocol Masters
-#
-# CONFIG_SPI_SPIDEV is not set
-# CONFIG_SPI_LOOPBACK_TEST is not set
-# CONFIG_SPI_TLE62X0 is not set
-# CONFIG_SPI_SLAVE is not set
-CONFIG_SPI_DYNAMIC=y
-# CONFIG_SPMI is not set
-# CONFIG_HSI is not set
+CONFIG_HSI_CHAR=y
 CONFIG_PPS=y
 # CONFIG_PPS_DEBUG is not set
 
 #
 # PPS clients support
 #
-# CONFIG_PPS_CLIENT_KTIMER is not set
-CONFIG_PPS_CLIENT_LDISC=m
-CONFIG_PPS_CLIENT_PARPORT=m
-CONFIG_PPS_CLIENT_GPIO=m
+CONFIG_PPS_CLIENT_KTIMER=y
+# CONFIG_PPS_CLIENT_LDISC is not set
+CONFIG_PPS_CLIENT_PARPORT=y
+CONFIG_PPS_CLIENT_GPIO=y
 
 #
 # PPS generators support
@@ -3513,66 +2422,73 @@ CONFIG_PPS_CLIENT_GPIO=m
 # PTP clock support
 #
 CONFIG_PTP_1588_CLOCK=y
-CONFIG_PTP_1588_CLOCK_OPTIONAL=y
-# CONFIG_DP83640_PHY is not set
-# CONFIG_PTP_1588_CLOCK_INES is not set
-CONFIG_PTP_1588_CLOCK_KVM=m
-# CONFIG_PTP_1588_CLOCK_IDT82P33 is not set
-# CONFIG_PTP_1588_CLOCK_IDTCM is not set
+
+#
+# Enable PHYLIB and NETWORK_PHY_TIMESTAMPING to see the additional clocks.
+#
+CONFIG_PTP_1588_CLOCK_KVM=y
+CONFIG_PTP_1588_CLOCK_IDT82P33=y
+CONFIG_PTP_1588_CLOCK_IDTCM=y
 # CONFIG_PTP_1588_CLOCK_VMW is not set
+# CONFIG_PTP_1588_CLOCK_OCP is not set
 # end of PTP clock support
 
 CONFIG_PINCTRL=y
+CONFIG_PINMUX=y
+CONFIG_PINCONF=y
+CONFIG_GENERIC_PINCONF=y
 # CONFIG_DEBUG_PINCTRL is not set
 # CONFIG_PINCTRL_AMD is not set
-# CONFIG_PINCTRL_CY8C95X0 is not set
+CONFIG_PINCTRL_DA9062=y
 # CONFIG_PINCTRL_MCP23S08 is not set
 # CONFIG_PINCTRL_SX150X is not set
-
-#
-# Intel pinctrl drivers
-#
-# CONFIG_PINCTRL_BAYTRAIL is not set
+CONFIG_PINCTRL_BAYTRAIL=y
 # CONFIG_PINCTRL_CHERRYVIEW is not set
-# CONFIG_PINCTRL_LYNXPOINT is not set
+CONFIG_PINCTRL_LYNXPOINT=y
+CONFIG_PINCTRL_INTEL=y
 # CONFIG_PINCTRL_ALDERLAKE is not set
-# CONFIG_PINCTRL_BROXTON is not set
-# CONFIG_PINCTRL_CANNONLAKE is not set
+CONFIG_PINCTRL_BROXTON=y
+CONFIG_PINCTRL_CANNONLAKE=y
 # CONFIG_PINCTRL_CEDARFORK is not set
-# CONFIG_PINCTRL_DENVERTON is not set
+CONFIG_PINCTRL_DENVERTON=y
 # CONFIG_PINCTRL_ELKHARTLAKE is not set
 # CONFIG_PINCTRL_EMMITSBURG is not set
 # CONFIG_PINCTRL_GEMINILAKE is not set
-# CONFIG_PINCTRL_ICELAKE is not set
+CONFIG_PINCTRL_ICELAKE=y
 # CONFIG_PINCTRL_JASPERLAKE is not set
 # CONFIG_PINCTRL_LAKEFIELD is not set
 # CONFIG_PINCTRL_LEWISBURG is not set
-# CONFIG_PINCTRL_METEORLAKE is not set
-# CONFIG_PINCTRL_SUNRISEPOINT is not set
-# CONFIG_PINCTRL_TIGERLAKE is not set
-# end of Intel pinctrl drivers
+CONFIG_PINCTRL_SUNRISEPOINT=y
+CONFIG_PINCTRL_TIGERLAKE=y
 
 #
 # Renesas pinctrl drivers
 #
 # end of Renesas pinctrl drivers
 
+CONFIG_PINCTRL_MADERA=y
+CONFIG_PINCTRL_CS47L15=y
+CONFIG_PINCTRL_CS47L90=y
 CONFIG_GPIOLIB=y
 CONFIG_GPIOLIB_FASTPATH_LIMIT=512
 CONFIG_GPIO_ACPI=y
+CONFIG_GPIOLIB_IRQCHIP=y
 # CONFIG_DEBUG_GPIO is not set
+CONFIG_GPIO_SYSFS=y
 CONFIG_GPIO_CDEV=y
 CONFIG_GPIO_CDEV_V1=y
+CONFIG_GPIO_GENERIC=y
+CONFIG_GPIO_MAX730X=y
 
 #
 # Memory mapped GPIO drivers
 #
 # CONFIG_GPIO_AMDPT is not set
-# CONFIG_GPIO_DWAPB is not set
+CONFIG_GPIO_DWAPB=y
 # CONFIG_GPIO_EXAR is not set
 # CONFIG_GPIO_GENERIC_PLATFORM is not set
-CONFIG_GPIO_ICH=m
-# CONFIG_GPIO_MB86S7X is not set
+CONFIG_GPIO_MB86S7X=y
+CONFIG_GPIO_SIOX=y
 # CONFIG_GPIO_VX855 is not set
 # CONFIG_GPIO_AMD_FCH is not set
 # end of Memory mapped GPIO drivers
@@ -3580,28 +2496,48 @@ CONFIG_GPIO_ICH=m
 #
 # Port-mapped I/O GPIO drivers
 #
-# CONFIG_GPIO_F7188X is not set
-# CONFIG_GPIO_IT87 is not set
-# CONFIG_GPIO_SCH is not set
-# CONFIG_GPIO_SCH311X is not set
+CONFIG_GPIO_F7188X=y
+CONFIG_GPIO_IT87=y
+CONFIG_GPIO_SCH311X=y
 # CONFIG_GPIO_WINBOND is not set
-# CONFIG_GPIO_WS16C48 is not set
+CONFIG_GPIO_WS16C48=y
 # end of Port-mapped I/O GPIO drivers
 
 #
 # I2C GPIO expanders
 #
-# CONFIG_GPIO_MAX7300 is not set
-# CONFIG_GPIO_MAX732X is not set
-# CONFIG_GPIO_PCA953X is not set
-# CONFIG_GPIO_PCA9570 is not set
-# CONFIG_GPIO_PCF857X is not set
+# CONFIG_GPIO_ADP5588 is not set
+CONFIG_GPIO_MAX7300=y
+CONFIG_GPIO_MAX732X=y
+CONFIG_GPIO_MAX732X_IRQ=y
+CONFIG_GPIO_PCA953X=y
+CONFIG_GPIO_PCA953X_IRQ=y
+CONFIG_GPIO_PCA9570=y
+CONFIG_GPIO_PCF857X=y
 # CONFIG_GPIO_TPIC2810 is not set
 # end of I2C GPIO expanders
 
 #
 # MFD GPIO expanders
 #
+CONFIG_GPIO_ARIZONA=y
+CONFIG_GPIO_BD9571MWV=y
+CONFIG_GPIO_CRYSTAL_COVE=y
+CONFIG_GPIO_DA9052=y
+CONFIG_GPIO_KEMPLD=y
+CONFIG_GPIO_LP3943=y
+# CONFIG_GPIO_MADERA is not set
+CONFIG_GPIO_PALMAS=y
+CONFIG_GPIO_TPS65086=y
+# CONFIG_GPIO_TPS6586X is not set
+CONFIG_GPIO_TPS65910=y
+CONFIG_GPIO_TPS65912=y
+# CONFIG_GPIO_TQMX86 is not set
+CONFIG_GPIO_TWL4030=y
+CONFIG_GPIO_WHISKEY_COVE=y
+CONFIG_GPIO_WM831X=y
+# CONFIG_GPIO_WM8350 is not set
+# CONFIG_GPIO_WM8994 is not set
 # end of MFD GPIO expanders
 
 #
@@ -3616,316 +2552,129 @@ CONFIG_GPIO_ICH=m
 # end of PCI GPIO expanders
 
 #
-# SPI GPIO expanders
-#
-# CONFIG_GPIO_MAX3191X is not set
-# CONFIG_GPIO_MAX7301 is not set
-# CONFIG_GPIO_MC33880 is not set
-# CONFIG_GPIO_PISOSR is not set
-# CONFIG_GPIO_XRA1403 is not set
-# end of SPI GPIO expanders
-
-#
-# USB GPIO expanders
-#
-# end of USB GPIO expanders
-
-#
 # Virtual GPIO drivers
 #
-# CONFIG_GPIO_AGGREGATOR is not set
-# CONFIG_GPIO_MOCKUP is not set
-# CONFIG_GPIO_VIRTIO is not set
-# CONFIG_GPIO_SIM is not set
+CONFIG_GPIO_AGGREGATOR=y
+CONFIG_GPIO_MOCKUP=y
 # end of Virtual GPIO drivers
 
-# CONFIG_W1 is not set
-CONFIG_POWER_RESET=y
-# CONFIG_POWER_RESET_RESTART is not set
+CONFIG_W1=y
+
+#
+# 1-wire Bus Masters
+#
+# CONFIG_W1_MASTER_MATROX is not set
+CONFIG_W1_MASTER_DS2482=y
+# CONFIG_W1_MASTER_DS1WM is not set
+# CONFIG_W1_MASTER_GPIO is not set
+# CONFIG_W1_MASTER_SGI is not set
+# end of 1-wire Bus Masters
+
+#
+# 1-wire Slaves
+#
+# CONFIG_W1_SLAVE_THERM is not set
+CONFIG_W1_SLAVE_SMEM=y
+CONFIG_W1_SLAVE_DS2405=y
+# CONFIG_W1_SLAVE_DS2408 is not set
+CONFIG_W1_SLAVE_DS2413=y
+CONFIG_W1_SLAVE_DS2406=y
+# CONFIG_W1_SLAVE_DS2423 is not set
+CONFIG_W1_SLAVE_DS2805=y
+CONFIG_W1_SLAVE_DS2430=y
+CONFIG_W1_SLAVE_DS2431=y
+CONFIG_W1_SLAVE_DS2433=y
+# CONFIG_W1_SLAVE_DS2433_CRC is not set
+CONFIG_W1_SLAVE_DS2438=y
+CONFIG_W1_SLAVE_DS250X=y
+CONFIG_W1_SLAVE_DS2780=y
+CONFIG_W1_SLAVE_DS2781=y
+CONFIG_W1_SLAVE_DS28E04=y
+CONFIG_W1_SLAVE_DS28E17=y
+# end of 1-wire Slaves
+
+# CONFIG_POWER_RESET is not set
 CONFIG_POWER_SUPPLY=y
 # CONFIG_POWER_SUPPLY_DEBUG is not set
-CONFIG_POWER_SUPPLY_HWMON=y
-# CONFIG_PDA_POWER is not set
-# CONFIG_IP5XXX_POWER is not set
+CONFIG_PDA_POWER=y
+# CONFIG_GENERIC_ADC_BATTERY is not set
+CONFIG_WM831X_BACKUP=y
+CONFIG_WM831X_POWER=y
+# CONFIG_WM8350_POWER is not set
 # CONFIG_TEST_POWER is not set
-# CONFIG_CHARGER_ADP5061 is not set
-# CONFIG_BATTERY_CW2015 is not set
-# CONFIG_BATTERY_DS2780 is not set
-# CONFIG_BATTERY_DS2781 is not set
+CONFIG_BATTERY_88PM860X=y
+CONFIG_CHARGER_ADP5061=y
+CONFIG_BATTERY_CW2015=y
+CONFIG_BATTERY_DS2760=y
+CONFIG_BATTERY_DS2780=y
+CONFIG_BATTERY_DS2781=y
 # CONFIG_BATTERY_DS2782 is not set
-# CONFIG_BATTERY_SAMSUNG_SDI is not set
-# CONFIG_BATTERY_SBS is not set
-# CONFIG_CHARGER_SBS is not set
+CONFIG_BATTERY_SBS=y
+CONFIG_CHARGER_SBS=y
 # CONFIG_MANAGER_SBS is not set
-# CONFIG_BATTERY_BQ27XXX is not set
-# CONFIG_BATTERY_MAX17040 is not set
+CONFIG_BATTERY_BQ27XXX=y
+CONFIG_BATTERY_BQ27XXX_I2C=y
+# CONFIG_BATTERY_BQ27XXX_HDQ is not set
+# CONFIG_BATTERY_BQ27XXX_DT_UPDATES_NVM is not set
+CONFIG_BATTERY_DA9030=y
+# CONFIG_BATTERY_DA9052 is not set
+# CONFIG_CHARGER_DA9150 is not set
+# CONFIG_BATTERY_DA9150 is not set
+CONFIG_BATTERY_MAX17040=y
 # CONFIG_BATTERY_MAX17042 is not set
+CONFIG_BATTERY_MAX1721X=y
+# CONFIG_BATTERY_TWL4030_MADC is not set
+CONFIG_CHARGER_88PM860X=y
+CONFIG_CHARGER_PCF50633=y
+CONFIG_BATTERY_RX51=y
 # CONFIG_CHARGER_MAX8903 is not set
-# CONFIG_CHARGER_LP8727 is not set
-# CONFIG_CHARGER_GPIO is not set
-# CONFIG_CHARGER_LT3651 is not set
+CONFIG_CHARGER_TWL4030=y
+CONFIG_CHARGER_LP8727=y
+CONFIG_CHARGER_GPIO=y
+CONFIG_CHARGER_MANAGER=y
+CONFIG_CHARGER_LT3651=y
 # CONFIG_CHARGER_LTC4162L is not set
-# CONFIG_CHARGER_MAX77976 is not set
+CONFIG_CHARGER_MAX14577=y
+# CONFIG_CHARGER_MAX77693 is not set
+CONFIG_CHARGER_MAX8998=y
+CONFIG_CHARGER_MP2629=y
 # CONFIG_CHARGER_BQ2415X is not set
+CONFIG_CHARGER_BQ24190=y
 # CONFIG_CHARGER_BQ24257 is not set
-# CONFIG_CHARGER_BQ24735 is not set
-# CONFIG_CHARGER_BQ2515X is not set
+CONFIG_CHARGER_BQ24735=y
+CONFIG_CHARGER_BQ2515X=y
 # CONFIG_CHARGER_BQ25890 is not set
-# CONFIG_CHARGER_BQ25980 is not set
+CONFIG_CHARGER_BQ25980=y
 # CONFIG_CHARGER_BQ256XX is not set
+CONFIG_CHARGER_SMB347=y
+CONFIG_CHARGER_TPS65090=y
 # CONFIG_BATTERY_GAUGE_LTC2941 is not set
-# CONFIG_BATTERY_GOLDFISH is not set
-# CONFIG_BATTERY_RT5033 is not set
+CONFIG_BATTERY_GOLDFISH=y
+CONFIG_BATTERY_RT5033=y
 # CONFIG_CHARGER_RT9455 is not set
 # CONFIG_CHARGER_BD99954 is not set
-# CONFIG_BATTERY_UG3105 is not set
-CONFIG_HWMON=y
-CONFIG_HWMON_VID=m
-# CONFIG_HWMON_DEBUG_CHIP is not set
-
-#
-# Native drivers
-#
-CONFIG_SENSORS_ABITUGURU=m
-CONFIG_SENSORS_ABITUGURU3=m
-# CONFIG_SENSORS_AD7314 is not set
-CONFIG_SENSORS_AD7414=m
-CONFIG_SENSORS_AD7418=m
-CONFIG_SENSORS_ADM1025=m
-CONFIG_SENSORS_ADM1026=m
-CONFIG_SENSORS_ADM1029=m
-CONFIG_SENSORS_ADM1031=m
-# CONFIG_SENSORS_ADM1177 is not set
-CONFIG_SENSORS_ADM9240=m
-CONFIG_SENSORS_ADT7X10=m
-# CONFIG_SENSORS_ADT7310 is not set
-CONFIG_SENSORS_ADT7410=m
-CONFIG_SENSORS_ADT7411=m
-CONFIG_SENSORS_ADT7462=m
-CONFIG_SENSORS_ADT7470=m
-CONFIG_SENSORS_ADT7475=m
-# CONFIG_SENSORS_AHT10 is not set
-# CONFIG_SENSORS_AQUACOMPUTER_D5NEXT is not set
-# CONFIG_SENSORS_AS370 is not set
-CONFIG_SENSORS_ASC7621=m
-# CONFIG_SENSORS_AXI_FAN_CONTROL is not set
-CONFIG_SENSORS_K8TEMP=m
-CONFIG_SENSORS_K10TEMP=m
-CONFIG_SENSORS_FAM15H_POWER=m
-CONFIG_SENSORS_APPLESMC=m
-CONFIG_SENSORS_ASB100=m
-CONFIG_SENSORS_ATXP1=m
-# CONFIG_SENSORS_CORSAIR_CPRO is not set
-# CONFIG_SENSORS_CORSAIR_PSU is not set
-# CONFIG_SENSORS_DRIVETEMP is not set
-CONFIG_SENSORS_DS620=m
-CONFIG_SENSORS_DS1621=m
-# CONFIG_SENSORS_DELL_SMM is not set
-CONFIG_SENSORS_I5K_AMB=m
-CONFIG_SENSORS_F71805F=m
-CONFIG_SENSORS_F71882FG=m
-CONFIG_SENSORS_F75375S=m
-CONFIG_SENSORS_FSCHMD=m
-# CONFIG_SENSORS_FTSTEUTATES is not set
-CONFIG_SENSORS_GL518SM=m
-CONFIG_SENSORS_GL520SM=m
-CONFIG_SENSORS_G760A=m
-# CONFIG_SENSORS_G762 is not set
-# CONFIG_SENSORS_HIH6130 is not set
-CONFIG_SENSORS_IBMAEM=m
-CONFIG_SENSORS_IBMPEX=m
-CONFIG_SENSORS_I5500=m
-CONFIG_SENSORS_CORETEMP=m
-CONFIG_SENSORS_IT87=m
-CONFIG_SENSORS_JC42=m
-# CONFIG_SENSORS_POWR1220 is not set
-CONFIG_SENSORS_LINEAGE=m
-# CONFIG_SENSORS_LTC2945 is not set
-# CONFIG_SENSORS_LTC2947_I2C is not set
-# CONFIG_SENSORS_LTC2947_SPI is not set
-# CONFIG_SENSORS_LTC2990 is not set
-# CONFIG_SENSORS_LTC2992 is not set
-CONFIG_SENSORS_LTC4151=m
-CONFIG_SENSORS_LTC4215=m
-# CONFIG_SENSORS_LTC4222 is not set
-CONFIG_SENSORS_LTC4245=m
-# CONFIG_SENSORS_LTC4260 is not set
-CONFIG_SENSORS_LTC4261=m
-# CONFIG_SENSORS_MAX1111 is not set
-# CONFIG_SENSORS_MAX127 is not set
-CONFIG_SENSORS_MAX16065=m
-CONFIG_SENSORS_MAX1619=m
-CONFIG_SENSORS_MAX1668=m
-CONFIG_SENSORS_MAX197=m
-# CONFIG_SENSORS_MAX31722 is not set
-# CONFIG_SENSORS_MAX31730 is not set
-# CONFIG_SENSORS_MAX31760 is not set
-# CONFIG_SENSORS_MAX6620 is not set
-# CONFIG_SENSORS_MAX6621 is not set
-CONFIG_SENSORS_MAX6639=m
-CONFIG_SENSORS_MAX6650=m
-CONFIG_SENSORS_MAX6697=m
-# CONFIG_SENSORS_MAX31790 is not set
-CONFIG_SENSORS_MCP3021=m
-# CONFIG_SENSORS_MLXREG_FAN is not set
-# CONFIG_SENSORS_TC654 is not set
-# CONFIG_SENSORS_TPS23861 is not set
-# CONFIG_SENSORS_MR75203 is not set
-# CONFIG_SENSORS_ADCXX is not set
-CONFIG_SENSORS_LM63=m
-# CONFIG_SENSORS_LM70 is not set
-CONFIG_SENSORS_LM73=m
-CONFIG_SENSORS_LM75=m
-CONFIG_SENSORS_LM77=m
-CONFIG_SENSORS_LM78=m
-CONFIG_SENSORS_LM80=m
-CONFIG_SENSORS_LM83=m
-CONFIG_SENSORS_LM85=m
-CONFIG_SENSORS_LM87=m
-CONFIG_SENSORS_LM90=m
-CONFIG_SENSORS_LM92=m
-CONFIG_SENSORS_LM93=m
-CONFIG_SENSORS_LM95234=m
-CONFIG_SENSORS_LM95241=m
-CONFIG_SENSORS_LM95245=m
-CONFIG_SENSORS_PC87360=m
-CONFIG_SENSORS_PC87427=m
-# CONFIG_SENSORS_NCT6683 is not set
-CONFIG_SENSORS_NCT6775_CORE=m
-CONFIG_SENSORS_NCT6775=m
-# CONFIG_SENSORS_NCT6775_I2C is not set
-# CONFIG_SENSORS_NCT7802 is not set
-# CONFIG_SENSORS_NCT7904 is not set
-# CONFIG_SENSORS_NPCM7XX is not set
-# CONFIG_SENSORS_NZXT_KRAKEN2 is not set
-# CONFIG_SENSORS_NZXT_SMART2 is not set
-CONFIG_SENSORS_PCF8591=m
-CONFIG_PMBUS=m
-CONFIG_SENSORS_PMBUS=m
-# CONFIG_SENSORS_ADM1266 is not set
-CONFIG_SENSORS_ADM1275=m
-# CONFIG_SENSORS_BEL_PFE is not set
-# CONFIG_SENSORS_BPA_RS600 is not set
-# CONFIG_SENSORS_DELTA_AHE50DC_FAN is not set
-# CONFIG_SENSORS_FSP_3Y is not set
-# CONFIG_SENSORS_IBM_CFFPS is not set
-# CONFIG_SENSORS_DPS920AB is not set
-# CONFIG_SENSORS_INSPUR_IPSPS is not set
-# CONFIG_SENSORS_IR35221 is not set
-# CONFIG_SENSORS_IR36021 is not set
-# CONFIG_SENSORS_IR38064 is not set
-# CONFIG_SENSORS_IRPS5401 is not set
-# CONFIG_SENSORS_ISL68137 is not set
-CONFIG_SENSORS_LM25066=m
-# CONFIG_SENSORS_LT7182S is not set
-CONFIG_SENSORS_LTC2978=m
-# CONFIG_SENSORS_LTC3815 is not set
-# CONFIG_SENSORS_MAX15301 is not set
-CONFIG_SENSORS_MAX16064=m
-# CONFIG_SENSORS_MAX16601 is not set
-# CONFIG_SENSORS_MAX20730 is not set
-# CONFIG_SENSORS_MAX20751 is not set
-# CONFIG_SENSORS_MAX31785 is not set
-CONFIG_SENSORS_MAX34440=m
-CONFIG_SENSORS_MAX8688=m
-# CONFIG_SENSORS_MP2888 is not set
-# CONFIG_SENSORS_MP2975 is not set
-# CONFIG_SENSORS_MP5023 is not set
-# CONFIG_SENSORS_PIM4328 is not set
-# CONFIG_SENSORS_PLI1209BC is not set
-# CONFIG_SENSORS_PM6764TR is not set
-# CONFIG_SENSORS_PXE1610 is not set
-# CONFIG_SENSORS_Q54SJ108A2 is not set
-# CONFIG_SENSORS_STPDDC60 is not set
-# CONFIG_SENSORS_TPS40422 is not set
-# CONFIG_SENSORS_TPS53679 is not set
-# CONFIG_SENSORS_TPS546D24 is not set
-CONFIG_SENSORS_UCD9000=m
-CONFIG_SENSORS_UCD9200=m
-# CONFIG_SENSORS_XDPE152 is not set
-# CONFIG_SENSORS_XDPE122 is not set
-CONFIG_SENSORS_ZL6100=m
-# CONFIG_SENSORS_SBTSI is not set
-# CONFIG_SENSORS_SBRMI is not set
-CONFIG_SENSORS_SHT15=m
-CONFIG_SENSORS_SHT21=m
-# CONFIG_SENSORS_SHT3x is not set
-# CONFIG_SENSORS_SHT4x is not set
-# CONFIG_SENSORS_SHTC1 is not set
-CONFIG_SENSORS_SIS5595=m
-CONFIG_SENSORS_DME1737=m
-CONFIG_SENSORS_EMC1403=m
-# CONFIG_SENSORS_EMC2103 is not set
-# CONFIG_SENSORS_EMC2305 is not set
-CONFIG_SENSORS_EMC6W201=m
-CONFIG_SENSORS_SMSC47M1=m
-CONFIG_SENSORS_SMSC47M192=m
-CONFIG_SENSORS_SMSC47B397=m
-CONFIG_SENSORS_SCH56XX_COMMON=m
-CONFIG_SENSORS_SCH5627=m
-CONFIG_SENSORS_SCH5636=m
-# CONFIG_SENSORS_STTS751 is not set
-# CONFIG_SENSORS_SMM665 is not set
-# CONFIG_SENSORS_ADC128D818 is not set
-CONFIG_SENSORS_ADS7828=m
-# CONFIG_SENSORS_ADS7871 is not set
-CONFIG_SENSORS_AMC6821=m
-CONFIG_SENSORS_INA209=m
-CONFIG_SENSORS_INA2XX=m
-# CONFIG_SENSORS_INA238 is not set
-# CONFIG_SENSORS_INA3221 is not set
-# CONFIG_SENSORS_TC74 is not set
-CONFIG_SENSORS_THMC50=m
-CONFIG_SENSORS_TMP102=m
-# CONFIG_SENSORS_TMP103 is not set
-# CONFIG_SENSORS_TMP108 is not set
-CONFIG_SENSORS_TMP401=m
-CONFIG_SENSORS_TMP421=m
-# CONFIG_SENSORS_TMP464 is not set
-# CONFIG_SENSORS_TMP513 is not set
-CONFIG_SENSORS_VIA_CPUTEMP=m
-CONFIG_SENSORS_VIA686A=m
-CONFIG_SENSORS_VT1211=m
-CONFIG_SENSORS_VT8231=m
-# CONFIG_SENSORS_W83773G is not set
-CONFIG_SENSORS_W83781D=m
-CONFIG_SENSORS_W83791D=m
-CONFIG_SENSORS_W83792D=m
-CONFIG_SENSORS_W83793=m
-CONFIG_SENSORS_W83795=m
-# CONFIG_SENSORS_W83795_FANCTRL is not set
-CONFIG_SENSORS_W83L785TS=m
-CONFIG_SENSORS_W83L786NG=m
-CONFIG_SENSORS_W83627HF=m
-CONFIG_SENSORS_W83627EHF=m
-# CONFIG_SENSORS_XGENE is not set
-
-#
-# ACPI drivers
-#
-CONFIG_SENSORS_ACPI_POWER=m
-CONFIG_SENSORS_ATK0110=m
-# CONFIG_SENSORS_ASUS_WMI is not set
-# CONFIG_SENSORS_ASUS_EC is not set
+# CONFIG_HWMON is not set
 CONFIG_THERMAL=y
 # CONFIG_THERMAL_NETLINK is not set
-# CONFIG_THERMAL_STATISTICS is not set
+CONFIG_THERMAL_STATISTICS=y
 CONFIG_THERMAL_EMERGENCY_POWEROFF_DELAY_MS=0
-CONFIG_THERMAL_HWMON=y
 CONFIG_THERMAL_WRITABLE_TRIPS=y
 CONFIG_THERMAL_DEFAULT_GOV_STEP_WISE=y
 # CONFIG_THERMAL_DEFAULT_GOV_FAIR_SHARE is not set
 # CONFIG_THERMAL_DEFAULT_GOV_USER_SPACE is not set
-CONFIG_THERMAL_GOV_FAIR_SHARE=y
+# CONFIG_THERMAL_DEFAULT_GOV_POWER_ALLOCATOR is not set
+# CONFIG_THERMAL_GOV_FAIR_SHARE is not set
 CONFIG_THERMAL_GOV_STEP_WISE=y
-CONFIG_THERMAL_GOV_BANG_BANG=y
+# CONFIG_THERMAL_GOV_BANG_BANG is not set
 CONFIG_THERMAL_GOV_USER_SPACE=y
-# CONFIG_THERMAL_EMULATION is not set
+CONFIG_THERMAL_GOV_POWER_ALLOCATOR=y
+CONFIG_DEVFREQ_THERMAL=y
+CONFIG_THERMAL_EMULATION=y
 
 #
 # Intel thermal drivers
 #
-CONFIG_INTEL_POWERCLAMP=m
+# CONFIG_INTEL_POWERCLAMP is not set
 CONFIG_X86_THERMAL_VECTOR=y
 CONFIG_X86_PKG_TEMP_THERMAL=m
 # CONFIG_INTEL_SOC_DTS_THERMAL is not set
@@ -3936,97 +2685,24 @@ CONFIG_X86_PKG_TEMP_THERMAL=m
 # CONFIG_INT340X_THERMAL is not set
 # end of ACPI INT340X thermal drivers
 
-CONFIG_INTEL_PCH_THERMAL=m
+# CONFIG_INTEL_BXT_PMIC_THERMAL is not set
+# CONFIG_INTEL_PCH_THERMAL is not set
 # CONFIG_INTEL_TCC_COOLING is not set
-# CONFIG_INTEL_MENLOW is not set
-# CONFIG_INTEL_HFI_THERMAL is not set
 # end of Intel thermal drivers
 
-CONFIG_WATCHDOG=y
-CONFIG_WATCHDOG_CORE=y
-# CONFIG_WATCHDOG_NOWAYOUT is not set
-CONFIG_WATCHDOG_HANDLE_BOOT_ENABLED=y
-CONFIG_WATCHDOG_OPEN_TIMEOUT=0
-CONFIG_WATCHDOG_SYSFS=y
-# CONFIG_WATCHDOG_HRTIMER_PRETIMEOUT is not set
-
-#
-# Watchdog Pretimeout Governors
-#
-# CONFIG_WATCHDOG_PRETIMEOUT_GOV is not set
-
-#
-# Watchdog Device Drivers
-#
-CONFIG_SOFT_WATCHDOG=m
-CONFIG_WDAT_WDT=m
-# CONFIG_XILINX_WATCHDOG is not set
-# CONFIG_ZIIRAVE_WATCHDOG is not set
-# CONFIG_MLX_WDT is not set
-# CONFIG_CADENCE_WATCHDOG is not set
-# CONFIG_DW_WATCHDOG is not set
-# CONFIG_MAX63XX_WATCHDOG is not set
-# CONFIG_ACQUIRE_WDT is not set
-# CONFIG_ADVANTECH_WDT is not set
-CONFIG_ALIM1535_WDT=m
-CONFIG_ALIM7101_WDT=m
-# CONFIG_EBC_C384_WDT is not set
-# CONFIG_EXAR_WDT is not set
-CONFIG_F71808E_WDT=m
-# CONFIG_SP5100_TCO is not set
-CONFIG_SBC_FITPC2_WATCHDOG=m
-# CONFIG_EUROTECH_WDT is not set
-CONFIG_IB700_WDT=m
-CONFIG_IBMASR=m
-# CONFIG_WAFER_WDT is not set
-CONFIG_I6300ESB_WDT=y
-CONFIG_IE6XX_WDT=m
-CONFIG_ITCO_WDT=y
-CONFIG_ITCO_VENDOR_SUPPORT=y
-CONFIG_IT8712F_WDT=m
-CONFIG_IT87_WDT=m
-CONFIG_HP_WATCHDOG=m
-CONFIG_HPWDT_NMI_DECODING=y
-# CONFIG_SC1200_WDT is not set
-# CONFIG_PC87413_WDT is not set
-CONFIG_NV_TCO=m
-# CONFIG_60XX_WDT is not set
-# CONFIG_CPU5_WDT is not set
-CONFIG_SMSC_SCH311X_WDT=m
-# CONFIG_SMSC37B787_WDT is not set
-# CONFIG_TQMX86_WDT is not set
-CONFIG_VIA_WDT=m
-CONFIG_W83627HF_WDT=m
-CONFIG_W83877F_WDT=m
-CONFIG_W83977F_WDT=m
-CONFIG_MACHZ_WDT=m
-# CONFIG_SBC_EPX_C3_WATCHDOG is not set
-CONFIG_INTEL_MEI_WDT=m
-# CONFIG_NI903X_WDT is not set
-# CONFIG_NIC7018_WDT is not set
-# CONFIG_MEN_A21_WDT is not set
-
-#
-# PCI-based Watchdog Cards
-#
-CONFIG_PCIPCWATCHDOG=m
-CONFIG_WDTPCI=m
-
-#
-# USB-based Watchdog Cards
-#
-# CONFIG_USBPCWATCHDOG is not set
+CONFIG_GENERIC_ADC_THERMAL=y
+# CONFIG_WATCHDOG is not set
 CONFIG_SSB_POSSIBLE=y
 # CONFIG_SSB is not set
 CONFIG_BCMA_POSSIBLE=y
-CONFIG_BCMA=m
+CONFIG_BCMA=y
 CONFIG_BCMA_HOST_PCI_POSSIBLE=y
 CONFIG_BCMA_HOST_PCI=y
 # CONFIG_BCMA_HOST_SOC is not set
 CONFIG_BCMA_DRIVER_PCI=y
-CONFIG_BCMA_DRIVER_GMAC_CMN=y
+# CONFIG_BCMA_DRIVER_GMAC_CMN is not set
 CONFIG_BCMA_DRIVER_GPIO=y
-# CONFIG_BCMA_DEBUG is not set
+CONFIG_BCMA_DEBUG=y
 
 #
 # Multifunction device drivers
@@ -4034,210 +2710,222 @@ CONFIG_BCMA_DRIVER_GPIO=y
 CONFIG_MFD_CORE=y
 # CONFIG_MFD_AS3711 is not set
 # CONFIG_PMIC_ADP5520 is not set
-# CONFIG_MFD_AAT2870_CORE is not set
+CONFIG_MFD_AAT2870_CORE=y
 # CONFIG_MFD_BCM590XX is not set
-# CONFIG_MFD_BD9571MWV is not set
+CONFIG_MFD_BD9571MWV=y
 # CONFIG_MFD_AXP20X_I2C is not set
-# CONFIG_MFD_MADERA is not set
-# CONFIG_PMIC_DA903X is not set
-# CONFIG_MFD_DA9052_SPI is not set
-# CONFIG_MFD_DA9052_I2C is not set
+CONFIG_MFD_MADERA=y
+CONFIG_MFD_MADERA_I2C=y
+CONFIG_MFD_CS47L15=y
+# CONFIG_MFD_CS47L35 is not set
+# CONFIG_MFD_CS47L85 is not set
+CONFIG_MFD_CS47L90=y
+# CONFIG_MFD_CS47L92 is not set
+CONFIG_PMIC_DA903X=y
+CONFIG_PMIC_DA9052=y
+CONFIG_MFD_DA9052_I2C=y
 # CONFIG_MFD_DA9055 is not set
-# CONFIG_MFD_DA9062 is not set
+CONFIG_MFD_DA9062=y
 # CONFIG_MFD_DA9063 is not set
-# CONFIG_MFD_DA9150 is not set
-# CONFIG_MFD_DLN2 is not set
-# CONFIG_MFD_MC13XXX_SPI is not set
+CONFIG_MFD_DA9150=y
 # CONFIG_MFD_MC13XXX_I2C is not set
-# CONFIG_MFD_MP2629 is not set
-# CONFIG_HTC_PASIC3 is not set
+CONFIG_MFD_MP2629=y
+CONFIG_HTC_PASIC3=y
 # CONFIG_HTC_I2CPLD is not set
 # CONFIG_MFD_INTEL_QUARK_I2C_GPIO is not set
-CONFIG_LPC_ICH=y
-CONFIG_LPC_SCH=m
-CONFIG_MFD_INTEL_LPSS=y
-CONFIG_MFD_INTEL_LPSS_ACPI=y
-CONFIG_MFD_INTEL_LPSS_PCI=y
-# CONFIG_MFD_INTEL_PMC_BXT is not set
+# CONFIG_LPC_ICH is not set
+# CONFIG_LPC_SCH is not set
+CONFIG_INTEL_SOC_PMIC=y
+CONFIG_INTEL_SOC_PMIC_BXTWC=y
+# CONFIG_INTEL_SOC_PMIC_CHTWC is not set
+CONFIG_INTEL_SOC_PMIC_CHTDC_TI=y
+# CONFIG_MFD_INTEL_LPSS_ACPI is not set
+# CONFIG_MFD_INTEL_LPSS_PCI is not set
+CONFIG_MFD_INTEL_PMC_BXT=y
+# CONFIG_MFD_INTEL_PMT is not set
 # CONFIG_MFD_IQS62X is not set
 # CONFIG_MFD_JANZ_CMODIO is not set
-# CONFIG_MFD_KEMPLD is not set
-# CONFIG_MFD_88PM800 is not set
-# CONFIG_MFD_88PM805 is not set
-# CONFIG_MFD_88PM860X is not set
-# CONFIG_MFD_MAX14577 is not set
-# CONFIG_MFD_MAX77693 is not set
+CONFIG_MFD_KEMPLD=y
+CONFIG_MFD_88PM800=y
+CONFIG_MFD_88PM805=y
+CONFIG_MFD_88PM860X=y
+CONFIG_MFD_MAX14577=y
+CONFIG_MFD_MAX77693=y
 # CONFIG_MFD_MAX77843 is not set
 # CONFIG_MFD_MAX8907 is not set
 # CONFIG_MFD_MAX8925 is not set
 # CONFIG_MFD_MAX8997 is not set
-# CONFIG_MFD_MAX8998 is not set
+CONFIG_MFD_MAX8998=y
 # CONFIG_MFD_MT6360 is not set
-# CONFIG_MFD_MT6370 is not set
-# CONFIG_MFD_MT6397 is not set
+CONFIG_MFD_MT6397=y
 # CONFIG_MFD_MENF21BMC is not set
-# CONFIG_MFD_OCELOT is not set
-# CONFIG_EZX_PCAP is not set
-# CONFIG_MFD_VIPERBOARD is not set
-# CONFIG_MFD_RETU is not set
-# CONFIG_MFD_PCF50633 is not set
-# CONFIG_MFD_SY7636A is not set
+CONFIG_MFD_RETU=y
+CONFIG_MFD_PCF50633=y
+CONFIG_PCF50633_ADC=y
+CONFIG_PCF50633_GPIO=y
 # CONFIG_MFD_RDC321X is not set
-# CONFIG_MFD_RT4831 is not set
-# CONFIG_MFD_RT5033 is not set
-# CONFIG_MFD_RT5120 is not set
+CONFIG_MFD_RT5033=y
 # CONFIG_MFD_RC5T583 is not set
+CONFIG_MFD_SEC_CORE=y
 # CONFIG_MFD_SI476X_CORE is not set
-CONFIG_MFD_SM501=m
-CONFIG_MFD_SM501_GPIO=y
+CONFIG_MFD_SM501=y
+# CONFIG_MFD_SM501_GPIO is not set
 # CONFIG_MFD_SKY81452 is not set
-# CONFIG_MFD_SYSCON is not set
+CONFIG_MFD_SYSCON=y
 # CONFIG_MFD_TI_AM335X_TSCADC is not set
-# CONFIG_MFD_LP3943 is not set
+CONFIG_MFD_LP3943=y
 # CONFIG_MFD_LP8788 is not set
-# CONFIG_MFD_TI_LMU is not set
-# CONFIG_MFD_PALMAS is not set
-# CONFIG_TPS6105X is not set
+CONFIG_MFD_TI_LMU=y
+CONFIG_MFD_PALMAS=y
+CONFIG_TPS6105X=y
 # CONFIG_TPS65010 is not set
 # CONFIG_TPS6507X is not set
-# CONFIG_MFD_TPS65086 is not set
-# CONFIG_MFD_TPS65090 is not set
+CONFIG_MFD_TPS65086=y
+CONFIG_MFD_TPS65090=y
+# CONFIG_MFD_TPS68470 is not set
 # CONFIG_MFD_TI_LP873X is not set
-# CONFIG_MFD_TPS6586X is not set
-# CONFIG_MFD_TPS65910 is not set
-# CONFIG_MFD_TPS65912_I2C is not set
-# CONFIG_MFD_TPS65912_SPI is not set
-# CONFIG_TWL4030_CORE is not set
+CONFIG_MFD_TPS6586X=y
+CONFIG_MFD_TPS65910=y
+CONFIG_MFD_TPS65912=y
+CONFIG_MFD_TPS65912_I2C=y
+# CONFIG_MFD_TPS80031 is not set
+CONFIG_TWL4030_CORE=y
+CONFIG_MFD_TWL4030_AUDIO=y
 # CONFIG_TWL6040_CORE is not set
 # CONFIG_MFD_WL1273_CORE is not set
-# CONFIG_MFD_LM3533 is not set
-# CONFIG_MFD_TQMX86 is not set
-CONFIG_MFD_VX855=m
-# CONFIG_MFD_ARIZONA_I2C is not set
-# CONFIG_MFD_ARIZONA_SPI is not set
+CONFIG_MFD_LM3533=y
+CONFIG_MFD_TQMX86=y
+# CONFIG_MFD_VX855 is not set
+CONFIG_MFD_ARIZONA=y
+CONFIG_MFD_ARIZONA_I2C=y
+CONFIG_MFD_CS47L24=y
+CONFIG_MFD_WM5102=y
+CONFIG_MFD_WM5110=y
+# CONFIG_MFD_WM8997 is not set
+# CONFIG_MFD_WM8998 is not set
 # CONFIG_MFD_WM8400 is not set
-# CONFIG_MFD_WM831X_I2C is not set
-# CONFIG_MFD_WM831X_SPI is not set
-# CONFIG_MFD_WM8350_I2C is not set
-# CONFIG_MFD_WM8994 is not set
+CONFIG_MFD_WM831X=y
+CONFIG_MFD_WM831X_I2C=y
+CONFIG_MFD_WM8350=y
+CONFIG_MFD_WM8350_I2C=y
+CONFIG_MFD_WM8994=y
 # CONFIG_MFD_ATC260X_I2C is not set
-# CONFIG_MFD_INTEL_M10_BMC is not set
 # end of Multifunction device drivers
 
-# CONFIG_REGULATOR is not set
-CONFIG_RC_CORE=m
-CONFIG_LIRC=y
-CONFIG_RC_MAP=m
-CONFIG_RC_DECODERS=y
-CONFIG_IR_IMON_DECODER=m
-CONFIG_IR_JVC_DECODER=m
-CONFIG_IR_MCE_KBD_DECODER=m
-CONFIG_IR_NEC_DECODER=m
-CONFIG_IR_RC5_DECODER=m
-CONFIG_IR_RC6_DECODER=m
-# CONFIG_IR_RCMM_DECODER is not set
-CONFIG_IR_SANYO_DECODER=m
-# CONFIG_IR_SHARP_DECODER is not set
-CONFIG_IR_SONY_DECODER=m
-# CONFIG_IR_XMP_DECODER is not set
-CONFIG_RC_DEVICES=y
-CONFIG_IR_ENE=m
-CONFIG_IR_FINTEK=m
-# CONFIG_IR_IGORPLUGUSB is not set
-# CONFIG_IR_IGUANA is not set
-# CONFIG_IR_IMON is not set
-# CONFIG_IR_IMON_RAW is not set
-CONFIG_IR_ITE_CIR=m
-# CONFIG_IR_MCEUSB is not set
-CONFIG_IR_NUVOTON=m
-# CONFIG_IR_REDRAT3 is not set
-CONFIG_IR_SERIAL=m
-CONFIG_IR_SERIAL_TRANSMITTER=y
-# CONFIG_IR_STREAMZAP is not set
-# CONFIG_IR_TOY is not set
-# CONFIG_IR_TTUSBIR is not set
-CONFIG_IR_WINBOND_CIR=m
-# CONFIG_RC_ATI_REMOTE is not set
-# CONFIG_RC_LOOPBACK is not set
-# CONFIG_RC_XBOX_DVD is not set
-
-#
-# CEC support
-#
-# CONFIG_MEDIA_CEC_SUPPORT is not set
-# end of CEC support
-
-CONFIG_MEDIA_SUPPORT=m
-CONFIG_MEDIA_SUPPORT_FILTER=y
-CONFIG_MEDIA_SUBDRV_AUTOSELECT=y
-
-#
-# Media device types
-#
-# CONFIG_MEDIA_CAMERA_SUPPORT is not set
-# CONFIG_MEDIA_ANALOG_TV_SUPPORT is not set
-# CONFIG_MEDIA_DIGITAL_TV_SUPPORT is not set
-# CONFIG_MEDIA_RADIO_SUPPORT is not set
-# CONFIG_MEDIA_SDR_SUPPORT is not set
-# CONFIG_MEDIA_PLATFORM_SUPPORT is not set
-# CONFIG_MEDIA_TEST_SUPPORT is not set
-# end of Media device types
-
-#
-# Media drivers
-#
-
-#
-# Drivers filtered as selected at 'Filter media drivers'
-#
-
-#
-# Media drivers
-#
-# CONFIG_MEDIA_USB_SUPPORT is not set
-# CONFIG_MEDIA_PCI_SUPPORT is not set
-# end of Media drivers
-
-CONFIG_MEDIA_HIDE_ANCILLARY_SUBDRV=y
-
-#
-# Media ancillary drivers
-#
-# end of Media ancillary drivers
+CONFIG_REGULATOR=y
+CONFIG_REGULATOR_DEBUG=y
+CONFIG_REGULATOR_FIXED_VOLTAGE=y
+CONFIG_REGULATOR_VIRTUAL_CONSUMER=y
+# CONFIG_REGULATOR_USERSPACE_CONSUMER is not set
+CONFIG_REGULATOR_88PG86X=y
+CONFIG_REGULATOR_88PM800=y
+CONFIG_REGULATOR_88PM8607=y
+CONFIG_REGULATOR_ACT8865=y
+# CONFIG_REGULATOR_AD5398 is not set
+CONFIG_REGULATOR_AAT2870=y
+# CONFIG_REGULATOR_BD9571MWV is not set
+# CONFIG_REGULATOR_DA903X is not set
+CONFIG_REGULATOR_DA9052=y
+# CONFIG_REGULATOR_DA9062 is not set
+# CONFIG_REGULATOR_DA9210 is not set
+CONFIG_REGULATOR_DA9211=y
+# CONFIG_REGULATOR_FAN53555 is not set
+# CONFIG_REGULATOR_GPIO is not set
+# CONFIG_REGULATOR_ISL9305 is not set
+CONFIG_REGULATOR_ISL6271A=y
+# CONFIG_REGULATOR_LM363X is not set
+CONFIG_REGULATOR_LP3971=y
+CONFIG_REGULATOR_LP3972=y
+CONFIG_REGULATOR_LP872X=y
+CONFIG_REGULATOR_LP8755=y
+# CONFIG_REGULATOR_LTC3589 is not set
+CONFIG_REGULATOR_LTC3676=y
+CONFIG_REGULATOR_MAX14577=y
+# CONFIG_REGULATOR_MAX1586 is not set
+CONFIG_REGULATOR_MAX8649=y
+# CONFIG_REGULATOR_MAX8660 is not set
+CONFIG_REGULATOR_MAX8952=y
+CONFIG_REGULATOR_MAX8998=y
+CONFIG_REGULATOR_MAX77693=y
+CONFIG_REGULATOR_MAX77826=y
+# CONFIG_REGULATOR_MP8859 is not set
+CONFIG_REGULATOR_MT6311=y
+# CONFIG_REGULATOR_MT6315 is not set
+CONFIG_REGULATOR_MT6323=y
+CONFIG_REGULATOR_MT6358=y
+CONFIG_REGULATOR_MT6397=y
+CONFIG_REGULATOR_PALMAS=y
+CONFIG_REGULATOR_PCA9450=y
+CONFIG_REGULATOR_PCF50633=y
+CONFIG_REGULATOR_PV88060=y
+CONFIG_REGULATOR_PV88080=y
+CONFIG_REGULATOR_PV88090=y
+# CONFIG_REGULATOR_PWM is not set
+CONFIG_REGULATOR_QCOM_SPMI=y
+# CONFIG_REGULATOR_QCOM_USB_VBUS is not set
+# CONFIG_REGULATOR_RASPBERRYPI_TOUCHSCREEN_ATTINY is not set
+# CONFIG_REGULATOR_RT4801 is not set
+CONFIG_REGULATOR_RT5033=y
+# CONFIG_REGULATOR_RTMV20 is not set
+CONFIG_REGULATOR_S2MPA01=y
+# CONFIG_REGULATOR_S2MPS11 is not set
+CONFIG_REGULATOR_S5M8767=y
+CONFIG_REGULATOR_SLG51000=y
+# CONFIG_REGULATOR_TPS51632 is not set
+CONFIG_REGULATOR_TPS6105X=y
+CONFIG_REGULATOR_TPS62360=y
+CONFIG_REGULATOR_TPS65023=y
+CONFIG_REGULATOR_TPS6507X=y
+# CONFIG_REGULATOR_TPS65086 is not set
+# CONFIG_REGULATOR_TPS65090 is not set
+CONFIG_REGULATOR_TPS65132=y
+# CONFIG_REGULATOR_TPS6586X is not set
+CONFIG_REGULATOR_TPS65910=y
+CONFIG_REGULATOR_TPS65912=y
+# CONFIG_REGULATOR_TWL4030 is not set
+# CONFIG_REGULATOR_WM831X is not set
+# CONFIG_REGULATOR_WM8350 is not set
+CONFIG_REGULATOR_WM8994=y
+# CONFIG_REGULATOR_QCOM_LABIBB is not set
+# CONFIG_RC_CORE is not set
+CONFIG_CEC_CORE=y
+CONFIG_CEC_NOTIFIER=y
+CONFIG_MEDIA_CEC_SUPPORT=y
+# CONFIG_CEC_CH7322 is not set
+# CONFIG_CEC_SECO is not set
+# CONFIG_USB_PULSE8_CEC is not set
+# CONFIG_USB_RAINSHADOW_CEC is not set
+# CONFIG_MEDIA_SUPPORT is not set
 
 #
 # Graphics support
 #
-CONFIG_APERTURE_HELPERS=y
 # CONFIG_AGP is not set
-CONFIG_INTEL_GTT=m
-CONFIG_VGA_SWITCHEROO=y
-CONFIG_DRM=m
-CONFIG_DRM_MIPI_DSI=y
-CONFIG_DRM_USE_DYNAMIC_DEBUG=y
-CONFIG_DRM_KMS_HELPER=m
+CONFIG_VGA_ARB=y
+CONFIG_VGA_ARB_MAX_GPUS=16
+# CONFIG_VGA_SWITCHEROO is not set
+CONFIG_DRM=y
+CONFIG_DRM_DP_AUX_CHARDEV=y
+CONFIG_DRM_DEBUG_MM=y
+# CONFIG_DRM_DEBUG_SELFTEST is not set
+CONFIG_DRM_KMS_HELPER=y
+CONFIG_DRM_KMS_FB_HELPER=y
+CONFIG_DRM_DEBUG_DP_MST_TOPOLOGY_REFS=y
 CONFIG_DRM_FBDEV_EMULATION=y
 CONFIG_DRM_FBDEV_OVERALLOC=100
-CONFIG_DRM_LOAD_EDID_FIRMWARE=y
-CONFIG_DRM_DISPLAY_HELPER=m
-CONFIG_DRM_DISPLAY_DP_HELPER=y
-CONFIG_DRM_DISPLAY_HDCP_HELPER=y
-CONFIG_DRM_DISPLAY_HDMI_HELPER=y
-CONFIG_DRM_DP_AUX_CHARDEV=y
+# CONFIG_DRM_FBDEV_LEAK_PHYS_SMEM is not set
+# CONFIG_DRM_LOAD_EDID_FIRMWARE is not set
 # CONFIG_DRM_DP_CEC is not set
-CONFIG_DRM_TTM=m
-CONFIG_DRM_BUDDY=m
-CONFIG_DRM_VRAM_HELPER=m
-CONFIG_DRM_TTM_HELPER=m
-CONFIG_DRM_GEM_SHMEM_HELPER=m
+CONFIG_DRM_GEM_SHMEM_HELPER=y
+CONFIG_DRM_SCHED=y
 
 #
 # I2C encoder or helper chips
 #
-CONFIG_DRM_I2C_CH7006=m
-CONFIG_DRM_I2C_SIL164=m
-# CONFIG_DRM_I2C_NXP_TDA998X is not set
-# CONFIG_DRM_I2C_NXP_TDA9950 is not set
+CONFIG_DRM_I2C_CH7006=y
+CONFIG_DRM_I2C_SIL164=y
+CONFIG_DRM_I2C_NXP_TDA998X=y
+CONFIG_DRM_I2C_NXP_TDA9950=y
 # end of I2C encoder or helper chips
 
 #
@@ -4248,36 +2936,20 @@ CONFIG_DRM_I2C_SIL164=m
 # CONFIG_DRM_RADEON is not set
 # CONFIG_DRM_AMDGPU is not set
 # CONFIG_DRM_NOUVEAU is not set
-CONFIG_DRM_I915=m
-CONFIG_DRM_I915_FORCE_PROBE=""
-CONFIG_DRM_I915_CAPTURE_ERROR=y
-CONFIG_DRM_I915_COMPRESS_ERROR=y
-CONFIG_DRM_I915_USERPTR=y
-# CONFIG_DRM_I915_GVT_KVMGT is not set
-CONFIG_DRM_I915_REQUEST_TIMEOUT=20000
-CONFIG_DRM_I915_FENCE_TIMEOUT=10000
-CONFIG_DRM_I915_USERFAULT_AUTOSUSPEND=250
-CONFIG_DRM_I915_HEARTBEAT_INTERVAL=2500
-CONFIG_DRM_I915_PREEMPT_TIMEOUT=640
-CONFIG_DRM_I915_MAX_REQUEST_BUSYWAIT=8000
-CONFIG_DRM_I915_STOP_TIMEOUT=100
-CONFIG_DRM_I915_TIMESLICE_DURATION=1
+# CONFIG_DRM_I915 is not set
 # CONFIG_DRM_VGEM is not set
-# CONFIG_DRM_VKMS is not set
+CONFIG_DRM_VKMS=y
 # CONFIG_DRM_VMWGFX is not set
-CONFIG_DRM_GMA500=m
-# CONFIG_DRM_UDL is not set
-CONFIG_DRM_AST=m
+# CONFIG_DRM_GMA500 is not set
+# CONFIG_DRM_AST is not set
 # CONFIG_DRM_MGAG200 is not set
-CONFIG_DRM_QXL=m
-CONFIG_DRM_VIRTIO_GPU=m
+# CONFIG_DRM_QXL is not set
+# CONFIG_DRM_BOCHS is not set
 CONFIG_DRM_PANEL=y
 
 #
 # Display Panels
 #
-# CONFIG_DRM_PANEL_RASPBERRYPI_TOUCHSCREEN is not set
-# CONFIG_DRM_PANEL_WIDECHIPS_WS2401 is not set
 # end of Display Panels
 
 CONFIG_DRM_BRIDGE=y
@@ -4286,31 +2958,21 @@ CONFIG_DRM_PANEL_BRIDGE=y
 #
 # Display Interface Bridges
 #
-# CONFIG_DRM_ANALOGIX_ANX78XX is not set
+CONFIG_DRM_ANALOGIX_ANX78XX=y
+CONFIG_DRM_ANALOGIX_DP=y
 # end of Display Interface Bridges
 
-# CONFIG_DRM_ETNAVIV is not set
-CONFIG_DRM_BOCHS=m
-CONFIG_DRM_CIRRUS_QEMU=m
-# CONFIG_DRM_GM12U320 is not set
-# CONFIG_DRM_PANEL_MIPI_DBI is not set
-# CONFIG_DRM_SIMPLEDRM is not set
-# CONFIG_TINYDRM_HX8357D is not set
-# CONFIG_TINYDRM_ILI9163 is not set
-# CONFIG_TINYDRM_ILI9225 is not set
-# CONFIG_TINYDRM_ILI9341 is not set
-# CONFIG_TINYDRM_ILI9486 is not set
-# CONFIG_TINYDRM_MI0283QT is not set
-# CONFIG_TINYDRM_REPAPER is not set
-# CONFIG_TINYDRM_ST7586 is not set
-# CONFIG_TINYDRM_ST7735R is not set
+CONFIG_DRM_ETNAVIV=y
+CONFIG_DRM_ETNAVIV_THERMAL=y
+# CONFIG_DRM_CIRRUS_QEMU is not set
 # CONFIG_DRM_VBOXVIDEO is not set
-# CONFIG_DRM_GUD is not set
-# CONFIG_DRM_SSD130X is not set
-# CONFIG_DRM_LEGACY is not set
+CONFIG_DRM_LEGACY=y
+# CONFIG_DRM_TDFX is not set
+# CONFIG_DRM_R128 is not set
+# CONFIG_DRM_MGA is not set
+# CONFIG_DRM_VIA is not set
+# CONFIG_DRM_SAVAGE is not set
 CONFIG_DRM_PANEL_ORIENTATION_QUIRKS=y
-CONFIG_DRM_NOMODESET=y
-CONFIG_DRM_PRIVACY_SCREEN=y
 
 #
 # Frame buffer Devices
@@ -4318,17 +2980,21 @@ CONFIG_DRM_PRIVACY_SCREEN=y
 CONFIG_FB_CMDLINE=y
 CONFIG_FB_NOTIFY=y
 CONFIG_FB=y
-# CONFIG_FIRMWARE_EDID is not set
+CONFIG_FIRMWARE_EDID=y
 CONFIG_FB_CFB_FILLRECT=y
 CONFIG_FB_CFB_COPYAREA=y
 CONFIG_FB_CFB_IMAGEBLIT=y
-CONFIG_FB_SYS_FILLRECT=m
-CONFIG_FB_SYS_COPYAREA=m
-CONFIG_FB_SYS_IMAGEBLIT=m
-# CONFIG_FB_FOREIGN_ENDIAN is not set
-CONFIG_FB_SYS_FOPS=m
+CONFIG_FB_SYS_FILLRECT=y
+CONFIG_FB_SYS_COPYAREA=y
+CONFIG_FB_SYS_IMAGEBLIT=y
+CONFIG_FB_FOREIGN_ENDIAN=y
+# CONFIG_FB_BOTH_ENDIAN is not set
+# CONFIG_FB_BIG_ENDIAN is not set
+CONFIG_FB_LITTLE_ENDIAN=y
+CONFIG_FB_SYS_FOPS=y
 CONFIG_FB_DEFERRED_IO=y
-# CONFIG_FB_MODE_HELPERS is not set
+CONFIG_FB_HECUBA=y
+CONFIG_FB_MODE_HELPERS=y
 CONFIG_FB_TILEBLITTING=y
 
 #
@@ -4337,17 +3003,16 @@ CONFIG_FB_TILEBLITTING=y
 # CONFIG_FB_CIRRUS is not set
 # CONFIG_FB_PM2 is not set
 # CONFIG_FB_CYBER2000 is not set
-# CONFIG_FB_ARC is not set
+CONFIG_FB_ARC=y
 # CONFIG_FB_ASILIANT is not set
 # CONFIG_FB_IMSTT is not set
 # CONFIG_FB_VGA16 is not set
-# CONFIG_FB_UVESA is not set
-CONFIG_FB_VESA=y
-CONFIG_FB_EFI=y
-# CONFIG_FB_N411 is not set
+# CONFIG_FB_VESA is not set
+# CONFIG_FB_EFI is not set
+CONFIG_FB_N411=y
 # CONFIG_FB_HGA is not set
-# CONFIG_FB_OPENCORES is not set
-# CONFIG_FB_S1D13XXX is not set
+CONFIG_FB_OPENCORES=y
+CONFIG_FB_S1D13XXX=y
 # CONFIG_FB_NVIDIA is not set
 # CONFIG_FB_RIVA is not set
 # CONFIG_FB_I740 is not set
@@ -4369,71 +3034,51 @@ CONFIG_FB_EFI=y
 # CONFIG_FB_ARK is not set
 # CONFIG_FB_PM3 is not set
 # CONFIG_FB_CARMINE is not set
-# CONFIG_FB_SM501 is not set
-# CONFIG_FB_SMSCUFX is not set
-# CONFIG_FB_UDL is not set
-# CONFIG_FB_IBM_GXT4500 is not set
-# CONFIG_FB_VIRTUAL is not set
+CONFIG_FB_SM501=y
+CONFIG_FB_IBM_GXT4500=y
+CONFIG_FB_GOLDFISH=y
+CONFIG_FB_VIRTUAL=y
 # CONFIG_FB_METRONOME is not set
 # CONFIG_FB_MB862XX is not set
 # CONFIG_FB_SIMPLE is not set
-# CONFIG_FB_SSD1307 is not set
 # CONFIG_FB_SM712 is not set
 # end of Frame buffer Devices
 
 #
 # Backlight & LCD device support
 #
-CONFIG_LCD_CLASS_DEVICE=m
-# CONFIG_LCD_L4F00242T03 is not set
-# CONFIG_LCD_LMS283GF05 is not set
-# CONFIG_LCD_LTV350QV is not set
-# CONFIG_LCD_ILI922X is not set
-# CONFIG_LCD_ILI9320 is not set
-# CONFIG_LCD_TDO24M is not set
-# CONFIG_LCD_VGG2432A4 is not set
-CONFIG_LCD_PLATFORM=m
-# CONFIG_LCD_AMS369FG06 is not set
-# CONFIG_LCD_LMS501KF03 is not set
-# CONFIG_LCD_HX8357 is not set
-# CONFIG_LCD_OTM3225A is not set
+CONFIG_LCD_CLASS_DEVICE=y
+CONFIG_LCD_PLATFORM=y
 CONFIG_BACKLIGHT_CLASS_DEVICE=y
-# CONFIG_BACKLIGHT_KTD253 is not set
+CONFIG_BACKLIGHT_KTD253=y
+CONFIG_BACKLIGHT_LM3533=y
 # CONFIG_BACKLIGHT_PWM is not set
-CONFIG_BACKLIGHT_APPLE=m
-# CONFIG_BACKLIGHT_QCOM_WLED is not set
+CONFIG_BACKLIGHT_DA903X=y
+CONFIG_BACKLIGHT_DA9052=y
+CONFIG_BACKLIGHT_APPLE=y
+CONFIG_BACKLIGHT_QCOM_WLED=y
 # CONFIG_BACKLIGHT_SAHARA is not set
+# CONFIG_BACKLIGHT_WM831X is not set
 # CONFIG_BACKLIGHT_ADP8860 is not set
-# CONFIG_BACKLIGHT_ADP8870 is not set
+CONFIG_BACKLIGHT_ADP8870=y
+CONFIG_BACKLIGHT_88PM860X=y
+# CONFIG_BACKLIGHT_PCF50633 is not set
+# CONFIG_BACKLIGHT_AAT2870 is not set
 # CONFIG_BACKLIGHT_LM3630A is not set
-# CONFIG_BACKLIGHT_LM3639 is not set
-CONFIG_BACKLIGHT_LP855X=m
-# CONFIG_BACKLIGHT_GPIO is not set
-# CONFIG_BACKLIGHT_LV5207LP is not set
-# CONFIG_BACKLIGHT_BD6107 is not set
-# CONFIG_BACKLIGHT_ARCXCNN is not set
+CONFIG_BACKLIGHT_LM3639=y
+CONFIG_BACKLIGHT_LP855X=y
+CONFIG_BACKLIGHT_PANDORA=y
+CONFIG_BACKLIGHT_GPIO=y
+CONFIG_BACKLIGHT_LV5207LP=y
+CONFIG_BACKLIGHT_BD6107=y
+CONFIG_BACKLIGHT_ARCXCNN=y
 # end of Backlight & LCD device support
 
 CONFIG_HDMI=y
-
-#
-# Console display driver support
-#
-CONFIG_VGA_CONSOLE=y
-CONFIG_DUMMY_CONSOLE=y
-CONFIG_DUMMY_CONSOLE_COLUMNS=80
-CONFIG_DUMMY_CONSOLE_ROWS=25
-CONFIG_FRAMEBUFFER_CONSOLE=y
-# CONFIG_FRAMEBUFFER_CONSOLE_LEGACY_ACCELERATION is not set
-CONFIG_FRAMEBUFFER_CONSOLE_DETECT_PRIMARY=y
-CONFIG_FRAMEBUFFER_CONSOLE_ROTATION=y
-# CONFIG_FRAMEBUFFER_CONSOLE_DEFERRED_TAKEOVER is not set
-# end of Console display driver support
-
 CONFIG_LOGO=y
-# CONFIG_LOGO_LINUX_MONO is not set
-# CONFIG_LOGO_LINUX_VGA16 is not set
-CONFIG_LOGO_LINUX_CLUT224=y
+CONFIG_LOGO_LINUX_MONO=y
+CONFIG_LOGO_LINUX_VGA16=y
+# CONFIG_LOGO_LINUX_CLUT224 is not set
 # end of Graphics support
 
 # CONFIG_SOUND is not set
@@ -4442,141 +3087,82 @@ CONFIG_LOGO_LINUX_CLUT224=y
 # HID support
 #
 CONFIG_HID=y
-CONFIG_HID_BATTERY_STRENGTH=y
-CONFIG_HIDRAW=y
-CONFIG_UHID=m
+# CONFIG_HID_BATTERY_STRENGTH is not set
+# CONFIG_HIDRAW is not set
+# CONFIG_UHID is not set
 CONFIG_HID_GENERIC=y
 
 #
 # Special HID drivers
 #
-CONFIG_HID_A4TECH=m
-# CONFIG_HID_ACCUTOUCH is not set
-CONFIG_HID_ACRUX=m
-# CONFIG_HID_ACRUX_FF is not set
-CONFIG_HID_APPLE=m
-# CONFIG_HID_APPLEIR is not set
-CONFIG_HID_ASUS=m
-CONFIG_HID_AUREAL=m
-CONFIG_HID_BELKIN=m
-# CONFIG_HID_BETOP_FF is not set
-# CONFIG_HID_BIGBEN_FF is not set
-CONFIG_HID_CHERRY=m
+# CONFIG_HID_A4TECH is not set
+# CONFIG_HID_ACRUX is not set
+# CONFIG_HID_APPLE is not set
+# CONFIG_HID_AUREAL is not set
+# CONFIG_HID_BELKIN is not set
+# CONFIG_HID_CHERRY is not set
 # CONFIG_HID_CHICONY is not set
-# CONFIG_HID_CORSAIR is not set
 # CONFIG_HID_COUGAR is not set
 # CONFIG_HID_MACALLY is not set
-CONFIG_HID_CMEDIA=m
-# CONFIG_HID_CP2112 is not set
-# CONFIG_HID_CREATIVE_SB0540 is not set
-CONFIG_HID_CYPRESS=m
-CONFIG_HID_DRAGONRISE=m
-# CONFIG_DRAGONRISE_FF is not set
+# CONFIG_HID_CMEDIA is not set
+# CONFIG_HID_CYPRESS is not set
+# CONFIG_HID_DRAGONRISE is not set
 # CONFIG_HID_EMS_FF is not set
-# CONFIG_HID_ELAN is not set
-CONFIG_HID_ELECOM=m
-# CONFIG_HID_ELO is not set
-CONFIG_HID_EZKEY=m
-# CONFIG_HID_FT260 is not set
-CONFIG_HID_GEMBIRD=m
-CONFIG_HID_GFRM=m
+# CONFIG_HID_ELECOM is not set
+# CONFIG_HID_EZKEY is not set
+# CONFIG_HID_GEMBIRD is not set
+# CONFIG_HID_GFRM is not set
 # CONFIG_HID_GLORIOUS is not set
-# CONFIG_HID_HOLTEK is not set
 # CONFIG_HID_VIVALDI is not set
-# CONFIG_HID_GT683R is not set
-CONFIG_HID_KEYTOUCH=m
-CONFIG_HID_KYE=m
-# CONFIG_HID_UCLOGIC is not set
-CONFIG_HID_WALTOP=m
+# CONFIG_HID_KEYTOUCH is not set
+# CONFIG_HID_KYE is not set
+# CONFIG_HID_WALTOP is not set
 # CONFIG_HID_VIEWSONIC is not set
-# CONFIG_HID_VRC2 is not set
-# CONFIG_HID_XIAOMI is not set
-CONFIG_HID_GYRATION=m
-CONFIG_HID_ICADE=m
-CONFIG_HID_ITE=m
-CONFIG_HID_JABRA=m
-CONFIG_HID_TWINHAN=m
-CONFIG_HID_KENSINGTON=m
-CONFIG_HID_LCPOWER=m
-CONFIG_HID_LED=m
-CONFIG_HID_LENOVO=m
-# CONFIG_HID_LETSKETCH is not set
-CONFIG_HID_LOGITECH=m
-CONFIG_HID_LOGITECH_DJ=m
-CONFIG_HID_LOGITECH_HIDPP=m
-# CONFIG_LOGITECH_FF is not set
-# CONFIG_LOGIRUMBLEPAD2_FF is not set
-# CONFIG_LOGIG940_FF is not set
-# CONFIG_LOGIWHEELS_FF is not set
-CONFIG_HID_MAGICMOUSE=y
+# CONFIG_HID_GYRATION is not set
+# CONFIG_HID_ICADE is not set
+# CONFIG_HID_ITE is not set
+# CONFIG_HID_JABRA is not set
+# CONFIG_HID_TWINHAN is not set
+# CONFIG_HID_KENSINGTON is not set
+# CONFIG_HID_LCPOWER is not set
+# CONFIG_HID_LED is not set
+# CONFIG_HID_LENOVO is not set
+# CONFIG_HID_LOGITECH is not set
+# CONFIG_HID_MAGICMOUSE is not set
 # CONFIG_HID_MALTRON is not set
 # CONFIG_HID_MAYFLASH is not set
-# CONFIG_HID_MEGAWORLD_FF is not set
 # CONFIG_HID_REDRAGON is not set
-CONFIG_HID_MICROSOFT=m
-CONFIG_HID_MONTEREY=m
-CONFIG_HID_MULTITOUCH=m
-# CONFIG_HID_NINTENDO is not set
-CONFIG_HID_NTI=m
-# CONFIG_HID_NTRIG is not set
-CONFIG_HID_ORTEK=m
-CONFIG_HID_PANTHERLORD=m
-# CONFIG_PANTHERLORD_FF is not set
-# CONFIG_HID_PENMOUNT is not set
-CONFIG_HID_PETALYNX=m
-CONFIG_HID_PICOLCD=m
-CONFIG_HID_PICOLCD_FB=y
-CONFIG_HID_PICOLCD_BACKLIGHT=y
-CONFIG_HID_PICOLCD_LCD=y
-CONFIG_HID_PICOLCD_LEDS=y
-CONFIG_HID_PICOLCD_CIR=y
-CONFIG_HID_PLANTRONICS=m
-# CONFIG_HID_PXRC is not set
-# CONFIG_HID_RAZER is not set
-CONFIG_HID_PRIMAX=m
-# CONFIG_HID_RETRODE is not set
-# CONFIG_HID_ROCCAT is not set
-CONFIG_HID_SAITEK=m
-CONFIG_HID_SAMSUNG=m
-# CONFIG_HID_SEMITEK is not set
-# CONFIG_HID_SIGMAMICRO is not set
-# CONFIG_HID_SONY is not set
-CONFIG_HID_SPEEDLINK=m
+# CONFIG_HID_MICROSOFT is not set
+# CONFIG_HID_MONTEREY is not set
+# CONFIG_HID_MULTITOUCH is not set
+# CONFIG_HID_NTI is not set
+# CONFIG_HID_ORTEK is not set
+# CONFIG_HID_PANTHERLORD is not set
+# CONFIG_HID_PETALYNX is not set
+# CONFIG_HID_PICOLCD is not set
+# CONFIG_HID_PLANTRONICS is not set
+# CONFIG_HID_PLAYSTATION is not set
+# CONFIG_HID_PRIMAX is not set
+# CONFIG_HID_SAITEK is not set
+# CONFIG_HID_SAMSUNG is not set
+# CONFIG_HID_SPEEDLINK is not set
 # CONFIG_HID_STEAM is not set
-CONFIG_HID_STEELSERIES=m
-CONFIG_HID_SUNPLUS=m
-CONFIG_HID_RMI=m
-CONFIG_HID_GREENASIA=m
-# CONFIG_GREENASIA_FF is not set
-CONFIG_HID_SMARTJOYPLUS=m
-# CONFIG_SMARTJOYPLUS_FF is not set
-CONFIG_HID_TIVO=m
-CONFIG_HID_TOPSEED=m
-# CONFIG_HID_TOPRE is not set
-CONFIG_HID_THINGM=m
-CONFIG_HID_THRUSTMASTER=m
-# CONFIG_THRUSTMASTER_FF is not set
+# CONFIG_HID_STEELSERIES is not set
+# CONFIG_HID_SUNPLUS is not set
+# CONFIG_HID_RMI is not set
+# CONFIG_HID_GREENASIA is not set
+# CONFIG_HID_SMARTJOYPLUS is not set
+# CONFIG_HID_TIVO is not set
+# CONFIG_HID_TOPSEED is not set
+# CONFIG_HID_THINGM is not set
 # CONFIG_HID_UDRAW_PS3 is not set
-# CONFIG_HID_U2FZERO is not set
-# CONFIG_HID_WACOM is not set
-CONFIG_HID_WIIMOTE=m
-CONFIG_HID_XINMO=m
-CONFIG_HID_ZEROPLUS=m
-# CONFIG_ZEROPLUS_FF is not set
-CONFIG_HID_ZYDACRON=m
-CONFIG_HID_SENSOR_HUB=y
-CONFIG_HID_SENSOR_CUSTOM_SENSOR=m
-CONFIG_HID_ALPS=m
-# CONFIG_HID_MCP2221 is not set
+# CONFIG_HID_WIIMOTE is not set
+# CONFIG_HID_XINMO is not set
+# CONFIG_HID_ZEROPLUS is not set
+# CONFIG_HID_ZYDACRON is not set
+# CONFIG_HID_SENSOR_HUB is not set
+# CONFIG_HID_ALPS is not set
 # end of Special HID drivers
-
-#
-# USB HID support
-#
-CONFIG_USB_HID=y
-# CONFIG_HID_PID is not set
-# CONFIG_USB_HIDDEV is not set
-# end of USB HID support
 
 #
 # I2C HID support
@@ -4587,8 +3173,7 @@ CONFIG_USB_HID=y
 #
 # Intel ISH HID support
 #
-CONFIG_INTEL_ISH_HID=m
-# CONFIG_INTEL_ISH_FIRMWARE_DOWNLOADER is not set
+# CONFIG_INTEL_ISH_HID is not set
 # end of Intel ISH HID support
 
 #
@@ -4600,461 +3185,253 @@ CONFIG_INTEL_ISH_HID=m
 
 CONFIG_USB_OHCI_LITTLE_ENDIAN=y
 CONFIG_USB_SUPPORT=y
-CONFIG_USB_COMMON=y
 # CONFIG_USB_LED_TRIG is not set
 # CONFIG_USB_ULPI_BUS is not set
 # CONFIG_USB_CONN_GPIO is not set
 CONFIG_USB_ARCH_HAS_HCD=y
-CONFIG_USB=y
+# CONFIG_USB is not set
 CONFIG_USB_PCI=y
-CONFIG_USB_ANNOUNCE_NEW_DEVICES=y
-
-#
-# Miscellaneous USB options
-#
-CONFIG_USB_DEFAULT_PERSIST=y
-# CONFIG_USB_FEW_INIT_RETRIES is not set
-# CONFIG_USB_DYNAMIC_MINORS is not set
-# CONFIG_USB_OTG is not set
-# CONFIG_USB_OTG_PRODUCTLIST is not set
-CONFIG_USB_LEDS_TRIGGER_USBPORT=y
-CONFIG_USB_AUTOSUSPEND_DELAY=2
-CONFIG_USB_MON=y
-
-#
-# USB Host Controller Drivers
-#
-# CONFIG_USB_C67X00_HCD is not set
-CONFIG_USB_XHCI_HCD=y
-# CONFIG_USB_XHCI_DBGCAP is not set
-CONFIG_USB_XHCI_PCI=y
-# CONFIG_USB_XHCI_PCI_RENESAS is not set
-# CONFIG_USB_XHCI_PLATFORM is not set
-CONFIG_USB_EHCI_HCD=y
-CONFIG_USB_EHCI_ROOT_HUB_TT=y
-CONFIG_USB_EHCI_TT_NEWSCHED=y
-CONFIG_USB_EHCI_PCI=y
-# CONFIG_USB_EHCI_FSL is not set
-# CONFIG_USB_EHCI_HCD_PLATFORM is not set
-# CONFIG_USB_OXU210HP_HCD is not set
-# CONFIG_USB_ISP116X_HCD is not set
-# CONFIG_USB_FOTG210_HCD is not set
-# CONFIG_USB_MAX3421_HCD is not set
-CONFIG_USB_OHCI_HCD=y
-CONFIG_USB_OHCI_HCD_PCI=y
-# CONFIG_USB_OHCI_HCD_PLATFORM is not set
-CONFIG_USB_UHCI_HCD=y
-# CONFIG_USB_SL811_HCD is not set
-# CONFIG_USB_R8A66597_HCD is not set
-# CONFIG_USB_HCD_BCMA is not set
-# CONFIG_USB_HCD_TEST_MODE is not set
-
-#
-# USB Device Class drivers
-#
-# CONFIG_USB_ACM is not set
-# CONFIG_USB_PRINTER is not set
-# CONFIG_USB_WDM is not set
-# CONFIG_USB_TMC is not set
-
-#
-# NOTE: USB_STORAGE depends on SCSI but BLK_DEV_SD may
-#
-
-#
-# also be needed; see USB_STORAGE Help for more info
-#
-CONFIG_USB_STORAGE=m
-# CONFIG_USB_STORAGE_DEBUG is not set
-# CONFIG_USB_STORAGE_REALTEK is not set
-# CONFIG_USB_STORAGE_DATAFAB is not set
-# CONFIG_USB_STORAGE_FREECOM is not set
-# CONFIG_USB_STORAGE_ISD200 is not set
-# CONFIG_USB_STORAGE_USBAT is not set
-# CONFIG_USB_STORAGE_SDDR09 is not set
-# CONFIG_USB_STORAGE_SDDR55 is not set
-# CONFIG_USB_STORAGE_JUMPSHOT is not set
-# CONFIG_USB_STORAGE_ALAUDA is not set
-# CONFIG_USB_STORAGE_ONETOUCH is not set
-# CONFIG_USB_STORAGE_KARMA is not set
-# CONFIG_USB_STORAGE_CYPRESS_ATACB is not set
-# CONFIG_USB_STORAGE_ENE_UB6250 is not set
-# CONFIG_USB_UAS is not set
-
-#
-# USB Imaging devices
-#
-# CONFIG_USB_MDC800 is not set
-# CONFIG_USB_MICROTEK is not set
-# CONFIG_USBIP_CORE is not set
-# CONFIG_USB_CDNS_SUPPORT is not set
-# CONFIG_USB_MUSB_HDRC is not set
-# CONFIG_USB_DWC3 is not set
-# CONFIG_USB_DWC2 is not set
-# CONFIG_USB_CHIPIDEA is not set
-# CONFIG_USB_ISP1760 is not set
 
 #
 # USB port drivers
 #
-# CONFIG_USB_USS720 is not set
-CONFIG_USB_SERIAL=m
-CONFIG_USB_SERIAL_GENERIC=y
-# CONFIG_USB_SERIAL_SIMPLE is not set
-# CONFIG_USB_SERIAL_AIRCABLE is not set
-# CONFIG_USB_SERIAL_ARK3116 is not set
-# CONFIG_USB_SERIAL_BELKIN is not set
-# CONFIG_USB_SERIAL_CH341 is not set
-# CONFIG_USB_SERIAL_WHITEHEAT is not set
-# CONFIG_USB_SERIAL_DIGI_ACCELEPORT is not set
-# CONFIG_USB_SERIAL_CP210X is not set
-# CONFIG_USB_SERIAL_CYPRESS_M8 is not set
-# CONFIG_USB_SERIAL_EMPEG is not set
-# CONFIG_USB_SERIAL_FTDI_SIO is not set
-# CONFIG_USB_SERIAL_VISOR is not set
-# CONFIG_USB_SERIAL_IPAQ is not set
-# CONFIG_USB_SERIAL_IR is not set
-# CONFIG_USB_SERIAL_EDGEPORT is not set
-# CONFIG_USB_SERIAL_EDGEPORT_TI is not set
-# CONFIG_USB_SERIAL_F81232 is not set
-# CONFIG_USB_SERIAL_F8153X is not set
-# CONFIG_USB_SERIAL_GARMIN is not set
-# CONFIG_USB_SERIAL_IPW is not set
-# CONFIG_USB_SERIAL_IUU is not set
-# CONFIG_USB_SERIAL_KEYSPAN_PDA is not set
-# CONFIG_USB_SERIAL_KEYSPAN is not set
-# CONFIG_USB_SERIAL_KLSI is not set
-# CONFIG_USB_SERIAL_KOBIL_SCT is not set
-# CONFIG_USB_SERIAL_MCT_U232 is not set
-# CONFIG_USB_SERIAL_METRO is not set
-# CONFIG_USB_SERIAL_MOS7720 is not set
-# CONFIG_USB_SERIAL_MOS7840 is not set
-# CONFIG_USB_SERIAL_MXUPORT is not set
-# CONFIG_USB_SERIAL_NAVMAN is not set
-# CONFIG_USB_SERIAL_PL2303 is not set
-# CONFIG_USB_SERIAL_OTI6858 is not set
-# CONFIG_USB_SERIAL_QCAUX is not set
-# CONFIG_USB_SERIAL_QUALCOMM is not set
-# CONFIG_USB_SERIAL_SPCP8X5 is not set
-# CONFIG_USB_SERIAL_SAFE is not set
-# CONFIG_USB_SERIAL_SIERRAWIRELESS is not set
-# CONFIG_USB_SERIAL_SYMBOL is not set
-# CONFIG_USB_SERIAL_TI is not set
-# CONFIG_USB_SERIAL_CYBERJACK is not set
-# CONFIG_USB_SERIAL_OPTION is not set
-# CONFIG_USB_SERIAL_OMNINET is not set
-# CONFIG_USB_SERIAL_OPTICON is not set
-# CONFIG_USB_SERIAL_XSENS_MT is not set
-# CONFIG_USB_SERIAL_WISHBONE is not set
-# CONFIG_USB_SERIAL_SSU100 is not set
-# CONFIG_USB_SERIAL_QT2 is not set
-# CONFIG_USB_SERIAL_UPD78F0730 is not set
-# CONFIG_USB_SERIAL_XR is not set
-CONFIG_USB_SERIAL_DEBUG=m
-
-#
-# USB Miscellaneous drivers
-#
-# CONFIG_USB_EMI62 is not set
-# CONFIG_USB_EMI26 is not set
-# CONFIG_USB_ADUTUX is not set
-# CONFIG_USB_SEVSEG is not set
-# CONFIG_USB_LEGOTOWER is not set
-# CONFIG_USB_LCD is not set
-# CONFIG_USB_CYPRESS_CY7C63 is not set
-# CONFIG_USB_CYTHERM is not set
-# CONFIG_USB_IDMOUSE is not set
-# CONFIG_USB_FTDI_ELAN is not set
-# CONFIG_USB_APPLEDISPLAY is not set
-# CONFIG_APPLE_MFI_FASTCHARGE is not set
-# CONFIG_USB_SISUSBVGA is not set
-# CONFIG_USB_LD is not set
-# CONFIG_USB_TRANCEVIBRATOR is not set
-# CONFIG_USB_IOWARRIOR is not set
-# CONFIG_USB_TEST is not set
-# CONFIG_USB_EHSET_TEST_FIXTURE is not set
-# CONFIG_USB_ISIGHTFW is not set
-# CONFIG_USB_YUREX is not set
-# CONFIG_USB_EZUSB_FX2 is not set
-# CONFIG_USB_HUB_USB251XB is not set
-# CONFIG_USB_HSIC_USB3503 is not set
-# CONFIG_USB_HSIC_USB4604 is not set
-# CONFIG_USB_LINK_LAYER_TEST is not set
-# CONFIG_USB_CHAOSKEY is not set
-# CONFIG_USB_ATM is not set
 
 #
 # USB Physical Layer drivers
 #
 # CONFIG_NOP_USB_XCEIV is not set
 # CONFIG_USB_GPIO_VBUS is not set
-# CONFIG_USB_ISP1301 is not set
+# CONFIG_TAHVO_USB is not set
 # end of USB Physical Layer drivers
 
 # CONFIG_USB_GADGET is not set
-CONFIG_TYPEC=y
-# CONFIG_TYPEC_TCPM is not set
-CONFIG_TYPEC_UCSI=y
-# CONFIG_UCSI_CCG is not set
-CONFIG_UCSI_ACPI=y
-# CONFIG_UCSI_STM32G0 is not set
-# CONFIG_TYPEC_TPS6598X is not set
-# CONFIG_TYPEC_RT1719 is not set
-# CONFIG_TYPEC_STUSB160X is not set
-# CONFIG_TYPEC_WUSB3801 is not set
-
-#
-# USB Type-C Multiplexer/DeMultiplexer Switch support
-#
-# CONFIG_TYPEC_MUX_FSA4480 is not set
-# CONFIG_TYPEC_MUX_PI3USB30532 is not set
-# end of USB Type-C Multiplexer/DeMultiplexer Switch support
-
-#
-# USB Type-C Alternate Mode drivers
-#
-# CONFIG_TYPEC_DP_ALTMODE is not set
-# end of USB Type-C Alternate Mode drivers
-
+# CONFIG_TYPEC is not set
 # CONFIG_USB_ROLE_SWITCH is not set
-CONFIG_MMC=m
-CONFIG_MMC_BLOCK=m
-CONFIG_MMC_BLOCK_MINORS=8
-CONFIG_SDIO_UART=m
+CONFIG_MMC=y
+CONFIG_SDIO_UART=y
 # CONFIG_MMC_TEST is not set
 
 #
 # MMC/SD/SDIO Host Controller Drivers
 #
-# CONFIG_MMC_DEBUG is not set
-CONFIG_MMC_SDHCI=m
-CONFIG_MMC_SDHCI_IO_ACCESSORS=y
-CONFIG_MMC_SDHCI_PCI=m
-CONFIG_MMC_RICOH_MMC=y
-CONFIG_MMC_SDHCI_ACPI=m
-CONFIG_MMC_SDHCI_PLTFM=m
-# CONFIG_MMC_SDHCI_F_SDH30 is not set
-# CONFIG_MMC_WBSD is not set
+CONFIG_MMC_DEBUG=y
+CONFIG_MMC_SDHCI=y
+# CONFIG_MMC_SDHCI_PCI is not set
+# CONFIG_MMC_SDHCI_ACPI is not set
+CONFIG_MMC_SDHCI_PLTFM=y
+CONFIG_MMC_SDHCI_F_SDH30=y
 # CONFIG_MMC_TIFM_SD is not set
-# CONFIG_MMC_SPI is not set
 # CONFIG_MMC_CB710 is not set
 # CONFIG_MMC_VIA_SDMMC is not set
-# CONFIG_MMC_VUB300 is not set
-# CONFIG_MMC_USHC is not set
 # CONFIG_MMC_USDHI6ROL0 is not set
-# CONFIG_MMC_REALTEK_PCI is not set
-CONFIG_MMC_CQHCI=m
-# CONFIG_MMC_HSQ is not set
+CONFIG_MMC_CQHCI=y
+CONFIG_MMC_HSQ=y
 # CONFIG_MMC_TOSHIBA_PCI is not set
-# CONFIG_MMC_MTK is not set
-# CONFIG_MMC_SDHCI_XENON is not set
-# CONFIG_SCSI_UFSHCD is not set
-# CONFIG_MEMSTICK is not set
+CONFIG_MMC_MTK=y
+CONFIG_MMC_SDHCI_XENON=y
+CONFIG_MEMSTICK=y
+CONFIG_MEMSTICK_DEBUG=y
+
+#
+# MemoryStick drivers
+#
+CONFIG_MEMSTICK_UNSAFE_RESUME=y
+
+#
+# MemoryStick Host Controller Drivers
+#
+# CONFIG_MEMSTICK_TIFM_MS is not set
+# CONFIG_MEMSTICK_JMICRON_38X is not set
+# CONFIG_MEMSTICK_R592 is not set
 CONFIG_NEW_LEDS=y
 CONFIG_LEDS_CLASS=y
-# CONFIG_LEDS_CLASS_FLASH is not set
+CONFIG_LEDS_CLASS_FLASH=y
 # CONFIG_LEDS_CLASS_MULTICOLOR is not set
 # CONFIG_LEDS_BRIGHTNESS_HW_CHANGED is not set
 
 #
 # LED drivers
 #
+CONFIG_LEDS_88PM860X=y
 # CONFIG_LEDS_APU is not set
-CONFIG_LEDS_LM3530=m
+CONFIG_LEDS_AS3645A=y
+CONFIG_LEDS_LM3530=y
 # CONFIG_LEDS_LM3532 is not set
+CONFIG_LEDS_LM3533=y
 # CONFIG_LEDS_LM3642 is not set
+CONFIG_LEDS_LM3601X=y
+CONFIG_LEDS_MT6323=y
 # CONFIG_LEDS_PCA9532 is not set
-# CONFIG_LEDS_GPIO is not set
-CONFIG_LEDS_LP3944=m
+CONFIG_LEDS_GPIO=y
+CONFIG_LEDS_LP3944=y
 # CONFIG_LEDS_LP3952 is not set
-# CONFIG_LEDS_LP50XX is not set
-# CONFIG_LEDS_PCA955X is not set
+CONFIG_LEDS_LP50XX=y
+# CONFIG_LEDS_CLEVO_MAIL is not set
+CONFIG_LEDS_PCA955X=y
+CONFIG_LEDS_PCA955X_GPIO=y
 # CONFIG_LEDS_PCA963X is not set
-# CONFIG_LEDS_DAC124S085 is not set
-# CONFIG_LEDS_PWM is not set
-# CONFIG_LEDS_BD2802 is not set
-CONFIG_LEDS_INTEL_SS4200=m
-CONFIG_LEDS_LT3593=m
-# CONFIG_LEDS_TCA6507 is not set
-# CONFIG_LEDS_TLC591XX is not set
+# CONFIG_LEDS_WM831X_STATUS is not set
+# CONFIG_LEDS_WM8350 is not set
+# CONFIG_LEDS_DA903X is not set
+CONFIG_LEDS_DA9052=y
+CONFIG_LEDS_PWM=y
+CONFIG_LEDS_REGULATOR=y
+CONFIG_LEDS_BD2802=y
+# CONFIG_LEDS_INTEL_SS4200 is not set
+CONFIG_LEDS_TCA6507=y
+CONFIG_LEDS_TLC591XX=y
 # CONFIG_LEDS_LM355x is not set
-# CONFIG_LEDS_IS31FL319X is not set
 
 #
 # LED driver for blink(1) USB RGB LED is under Special HID drivers (HID_THINGM)
 #
-CONFIG_LEDS_BLINKM=m
-CONFIG_LEDS_MLXCPLD=m
+CONFIG_LEDS_BLINKM=y
+# CONFIG_LEDS_MLXCPLD is not set
 # CONFIG_LEDS_MLXREG is not set
 # CONFIG_LEDS_USER is not set
 # CONFIG_LEDS_NIC78BX is not set
 # CONFIG_LEDS_TI_LMU_COMMON is not set
+CONFIG_LEDS_TPS6105X=y
+# CONFIG_LEDS_SGM3140 is not set
 
 #
 # Flash and Torch LED drivers
 #
-
-#
-# RGB LED drivers
-#
+# CONFIG_LEDS_RT8515 is not set
 
 #
 # LED Triggers
 #
 CONFIG_LEDS_TRIGGERS=y
-CONFIG_LEDS_TRIGGER_TIMER=m
-CONFIG_LEDS_TRIGGER_ONESHOT=m
-# CONFIG_LEDS_TRIGGER_DISK is not set
-CONFIG_LEDS_TRIGGER_HEARTBEAT=m
-CONFIG_LEDS_TRIGGER_BACKLIGHT=m
+CONFIG_LEDS_TRIGGER_TIMER=y
+CONFIG_LEDS_TRIGGER_ONESHOT=y
+# CONFIG_LEDS_TRIGGER_MTD is not set
+CONFIG_LEDS_TRIGGER_HEARTBEAT=y
+CONFIG_LEDS_TRIGGER_BACKLIGHT=y
 # CONFIG_LEDS_TRIGGER_CPU is not set
-# CONFIG_LEDS_TRIGGER_ACTIVITY is not set
-CONFIG_LEDS_TRIGGER_GPIO=m
-CONFIG_LEDS_TRIGGER_DEFAULT_ON=m
+CONFIG_LEDS_TRIGGER_ACTIVITY=y
+# CONFIG_LEDS_TRIGGER_GPIO is not set
+# CONFIG_LEDS_TRIGGER_DEFAULT_ON is not set
 
 #
 # iptables trigger is under Netfilter config (LED target)
 #
-CONFIG_LEDS_TRIGGER_TRANSIENT=m
-CONFIG_LEDS_TRIGGER_CAMERA=m
+# CONFIG_LEDS_TRIGGER_TRANSIENT is not set
+CONFIG_LEDS_TRIGGER_CAMERA=y
 # CONFIG_LEDS_TRIGGER_PANIC is not set
-# CONFIG_LEDS_TRIGGER_NETDEV is not set
+CONFIG_LEDS_TRIGGER_NETDEV=y
 # CONFIG_LEDS_TRIGGER_PATTERN is not set
-CONFIG_LEDS_TRIGGER_AUDIO=m
+CONFIG_LEDS_TRIGGER_AUDIO=y
 # CONFIG_LEDS_TRIGGER_TTY is not set
-
-#
-# Simple LED drivers
-#
 # CONFIG_ACCESSIBILITY is not set
 # CONFIG_INFINIBAND is not set
 CONFIG_EDAC_ATOMIC_SCRUB=y
 CONFIG_EDAC_SUPPORT=y
-CONFIG_EDAC=y
-CONFIG_EDAC_LEGACY_SYSFS=y
-# CONFIG_EDAC_DEBUG is not set
-CONFIG_EDAC_GHES=y
-CONFIG_EDAC_E752X=m
-CONFIG_EDAC_I82975X=m
-CONFIG_EDAC_I3000=m
-CONFIG_EDAC_I3200=m
-CONFIG_EDAC_IE31200=m
-CONFIG_EDAC_X38=m
-CONFIG_EDAC_I5400=m
-CONFIG_EDAC_I7CORE=m
-CONFIG_EDAC_I5000=m
-CONFIG_EDAC_I5100=m
-CONFIG_EDAC_I7300=m
-CONFIG_EDAC_SBRIDGE=m
-CONFIG_EDAC_SKX=m
-# CONFIG_EDAC_I10NM is not set
-CONFIG_EDAC_PND2=m
-# CONFIG_EDAC_IGEN6 is not set
+# CONFIG_EDAC is not set
 CONFIG_RTC_LIB=y
 CONFIG_RTC_MC146818_LIB=y
 CONFIG_RTC_CLASS=y
-CONFIG_RTC_HCTOSYS=y
-CONFIG_RTC_HCTOSYS_DEVICE="rtc0"
+# CONFIG_RTC_HCTOSYS is not set
 # CONFIG_RTC_SYSTOHC is not set
-# CONFIG_RTC_DEBUG is not set
+CONFIG_RTC_DEBUG=y
 CONFIG_RTC_NVMEM=y
 
 #
 # RTC interfaces
 #
-CONFIG_RTC_INTF_SYSFS=y
+# CONFIG_RTC_INTF_SYSFS is not set
 CONFIG_RTC_INTF_PROC=y
 CONFIG_RTC_INTF_DEV=y
-# CONFIG_RTC_INTF_DEV_UIE_EMUL is not set
+CONFIG_RTC_INTF_DEV_UIE_EMUL=y
 # CONFIG_RTC_DRV_TEST is not set
 
 #
 # I2C RTC drivers
 #
+# CONFIG_RTC_DRV_88PM860X is not set
+CONFIG_RTC_DRV_88PM80X=y
 # CONFIG_RTC_DRV_ABB5ZES3 is not set
 # CONFIG_RTC_DRV_ABEOZ9 is not set
-# CONFIG_RTC_DRV_ABX80X is not set
-CONFIG_RTC_DRV_DS1307=m
-# CONFIG_RTC_DRV_DS1307_CENTURY is not set
-CONFIG_RTC_DRV_DS1374=m
-# CONFIG_RTC_DRV_DS1374_WDT is not set
-CONFIG_RTC_DRV_DS1672=m
-CONFIG_RTC_DRV_MAX6900=m
-CONFIG_RTC_DRV_RS5C372=m
-CONFIG_RTC_DRV_ISL1208=m
-CONFIG_RTC_DRV_ISL12022=m
-CONFIG_RTC_DRV_X1205=m
-CONFIG_RTC_DRV_PCF8523=m
+CONFIG_RTC_DRV_ABX80X=y
+# CONFIG_RTC_DRV_DS1307 is not set
+# CONFIG_RTC_DRV_DS1374 is not set
+CONFIG_RTC_DRV_DS1672=y
+CONFIG_RTC_DRV_MAX6900=y
+CONFIG_RTC_DRV_MAX8998=y
+CONFIG_RTC_DRV_RS5C372=y
+# CONFIG_RTC_DRV_ISL1208 is not set
+# CONFIG_RTC_DRV_ISL12022 is not set
+# CONFIG_RTC_DRV_X1205 is not set
+CONFIG_RTC_DRV_PCF8523=y
 # CONFIG_RTC_DRV_PCF85063 is not set
-# CONFIG_RTC_DRV_PCF85363 is not set
-CONFIG_RTC_DRV_PCF8563=m
-CONFIG_RTC_DRV_PCF8583=m
-CONFIG_RTC_DRV_M41T80=m
+CONFIG_RTC_DRV_PCF85363=y
+# CONFIG_RTC_DRV_PCF8563 is not set
+# CONFIG_RTC_DRV_PCF8583 is not set
+CONFIG_RTC_DRV_M41T80=y
 CONFIG_RTC_DRV_M41T80_WDT=y
-CONFIG_RTC_DRV_BQ32K=m
-# CONFIG_RTC_DRV_S35390A is not set
-CONFIG_RTC_DRV_FM3130=m
-# CONFIG_RTC_DRV_RX8010 is not set
-CONFIG_RTC_DRV_RX8581=m
-CONFIG_RTC_DRV_RX8025=m
-CONFIG_RTC_DRV_EM3027=m
+# CONFIG_RTC_DRV_BQ32K is not set
+CONFIG_RTC_DRV_PALMAS=y
+CONFIG_RTC_DRV_TPS6586X=y
+CONFIG_RTC_DRV_TPS65910=y
+CONFIG_RTC_DRV_S35390A=y
+# CONFIG_RTC_DRV_FM3130 is not set
+CONFIG_RTC_DRV_RX8010=y
+# CONFIG_RTC_DRV_RX8581 is not set
+# CONFIG_RTC_DRV_RX8025 is not set
+# CONFIG_RTC_DRV_EM3027 is not set
 # CONFIG_RTC_DRV_RV3028 is not set
-# CONFIG_RTC_DRV_RV3032 is not set
+CONFIG_RTC_DRV_RV3032=y
 # CONFIG_RTC_DRV_RV8803 is not set
-# CONFIG_RTC_DRV_SD3078 is not set
+CONFIG_RTC_DRV_S5M=y
+CONFIG_RTC_DRV_SD3078=y
 
 #
 # SPI RTC drivers
 #
-# CONFIG_RTC_DRV_M41T93 is not set
-# CONFIG_RTC_DRV_M41T94 is not set
-# CONFIG_RTC_DRV_DS1302 is not set
-# CONFIG_RTC_DRV_DS1305 is not set
-# CONFIG_RTC_DRV_DS1343 is not set
-# CONFIG_RTC_DRV_DS1347 is not set
-# CONFIG_RTC_DRV_DS1390 is not set
-# CONFIG_RTC_DRV_MAX6916 is not set
-# CONFIG_RTC_DRV_R9701 is not set
-CONFIG_RTC_DRV_RX4581=m
-# CONFIG_RTC_DRV_RS5C348 is not set
-# CONFIG_RTC_DRV_MAX6902 is not set
-# CONFIG_RTC_DRV_PCF2123 is not set
-# CONFIG_RTC_DRV_MCP795 is not set
 CONFIG_RTC_I2C_AND_SPI=y
 
 #
 # SPI and I2C RTC drivers
 #
-CONFIG_RTC_DRV_DS3232=m
-CONFIG_RTC_DRV_DS3232_HWMON=y
-# CONFIG_RTC_DRV_PCF2127 is not set
-CONFIG_RTC_DRV_RV3029C2=m
-# CONFIG_RTC_DRV_RV3029_HWMON is not set
+# CONFIG_RTC_DRV_DS3232 is not set
+CONFIG_RTC_DRV_PCF2127=y
+CONFIG_RTC_DRV_RV3029C2=y
 # CONFIG_RTC_DRV_RX6110 is not set
 
 #
 # Platform RTC drivers
 #
-CONFIG_RTC_DRV_CMOS=y
-CONFIG_RTC_DRV_DS1286=m
-CONFIG_RTC_DRV_DS1511=m
-CONFIG_RTC_DRV_DS1553=m
-# CONFIG_RTC_DRV_DS1685_FAMILY is not set
-CONFIG_RTC_DRV_DS1742=m
-CONFIG_RTC_DRV_DS2404=m
-CONFIG_RTC_DRV_STK17TA8=m
+# CONFIG_RTC_DRV_CMOS is not set
+# CONFIG_RTC_DRV_DS1286 is not set
+CONFIG_RTC_DRV_DS1511=y
+# CONFIG_RTC_DRV_DS1553 is not set
+CONFIG_RTC_DRV_DS1685_FAMILY=y
+CONFIG_RTC_DRV_DS1685=y
+# CONFIG_RTC_DRV_DS1689 is not set
+# CONFIG_RTC_DRV_DS17285 is not set
+# CONFIG_RTC_DRV_DS17485 is not set
+# CONFIG_RTC_DRV_DS17885 is not set
+# CONFIG_RTC_DRV_DS1742 is not set
+CONFIG_RTC_DRV_DS2404=y
+CONFIG_RTC_DRV_DA9052=y
+CONFIG_RTC_DRV_DA9063=y
+CONFIG_RTC_DRV_STK17TA8=y
 # CONFIG_RTC_DRV_M48T86 is not set
-CONFIG_RTC_DRV_M48T35=m
-CONFIG_RTC_DRV_M48T59=m
-CONFIG_RTC_DRV_MSM6242=m
-CONFIG_RTC_DRV_BQ4802=m
-CONFIG_RTC_DRV_RP5C01=m
-CONFIG_RTC_DRV_V3020=m
+CONFIG_RTC_DRV_M48T35=y
+CONFIG_RTC_DRV_M48T59=y
+CONFIG_RTC_DRV_MSM6242=y
+CONFIG_RTC_DRV_BQ4802=y
+# CONFIG_RTC_DRV_RP5C01 is not set
+CONFIG_RTC_DRV_V3020=y
+CONFIG_RTC_DRV_WM831X=y
+CONFIG_RTC_DRV_WM8350=y
+CONFIG_RTC_DRV_PCF50633=y
 
 #
 # on-CPU RTC drivers
 #
 # CONFIG_RTC_DRV_FTRTC010 is not set
+# CONFIG_RTC_DRV_MT6397 is not set
 
 #
 # HID Sensor RTC drivers
@@ -5069,30 +3446,24 @@ CONFIG_DMADEVICES=y
 CONFIG_DMA_ENGINE=y
 CONFIG_DMA_VIRTUAL_CHANNELS=y
 CONFIG_DMA_ACPI=y
-# CONFIG_ALTERA_MSGDMA is not set
-CONFIG_INTEL_IDMA64=m
-# CONFIG_INTEL_IDXD is not set
-# CONFIG_INTEL_IDXD_COMPAT is not set
-CONFIG_INTEL_IOATDMA=m
+CONFIG_ALTERA_MSGDMA=y
+CONFIG_INTEL_IDMA64=y
+# CONFIG_INTEL_IOATDMA is not set
 # CONFIG_PLX_DMA is not set
-# CONFIG_AMD_PTDMA is not set
-# CONFIG_QCOM_HIDMA_MGMT is not set
-# CONFIG_QCOM_HIDMA is not set
+# CONFIG_XILINX_ZYNQMP_DPDMA is not set
+CONFIG_QCOM_HIDMA_MGMT=y
+CONFIG_QCOM_HIDMA=y
 CONFIG_DW_DMAC_CORE=y
-CONFIG_DW_DMAC=m
-CONFIG_DW_DMAC_PCI=y
-# CONFIG_DW_EDMA is not set
-# CONFIG_DW_EDMA_PCIE is not set
-CONFIG_HSU_DMA=y
+CONFIG_DW_DMAC=y
+# CONFIG_DW_DMAC_PCI is not set
 # CONFIG_SF_PDMA is not set
 # CONFIG_INTEL_LDMA is not set
 
 #
 # DMA Clients
 #
-CONFIG_ASYNC_TX_DMA=y
-CONFIG_DMATEST=m
-CONFIG_DMA_ENGINE_RAID=y
+# CONFIG_ASYNC_TX_DMA is not set
+# CONFIG_DMATEST is not set
 
 #
 # DMABUF options
@@ -5100,59 +3471,56 @@ CONFIG_DMA_ENGINE_RAID=y
 CONFIG_SYNC_FILE=y
 # CONFIG_SW_SYNC is not set
 # CONFIG_UDMABUF is not set
-# CONFIG_DMABUF_MOVE_NOTIFY is not set
+CONFIG_DMABUF_MOVE_NOTIFY=y
 # CONFIG_DMABUF_DEBUG is not set
 # CONFIG_DMABUF_SELFTESTS is not set
-# CONFIG_DMABUF_HEAPS is not set
-# CONFIG_DMABUF_SYSFS_STATS is not set
+CONFIG_DMABUF_HEAPS=y
+# CONFIG_DMABUF_HEAPS_SYSTEM is not set
+# CONFIG_DMABUF_HEAPS_CMA is not set
 # end of DMABUF options
 
-CONFIG_DCA=m
-# CONFIG_AUXDISPLAY is not set
-# CONFIG_PANEL is not set
-CONFIG_UIO=m
-CONFIG_UIO_CIF=m
-CONFIG_UIO_PDRV_GENIRQ=m
-# CONFIG_UIO_DMEM_GENIRQ is not set
-CONFIG_UIO_AEC=m
-CONFIG_UIO_SERCOS3=m
-CONFIG_UIO_PCI_GENERIC=m
-# CONFIG_UIO_NETX is not set
-# CONFIG_UIO_PRUSS is not set
-# CONFIG_UIO_MF624 is not set
-CONFIG_VFIO=m
-CONFIG_VFIO_IOMMU_TYPE1=m
-CONFIG_VFIO_VIRQFD=m
+CONFIG_AUXDISPLAY=y
+CONFIG_CHARLCD=y
+CONFIG_HD44780_COMMON=y
+CONFIG_HD44780=y
+CONFIG_KS0108=y
+CONFIG_KS0108_PORT=0x378
+CONFIG_KS0108_DELAY=2
+CONFIG_CFAG12864B=y
+CONFIG_CFAG12864B_RATE=20
+# CONFIG_IMG_ASCII_LCD is not set
+# CONFIG_LCD2S is not set
+CONFIG_PARPORT_PANEL=y
+CONFIG_PANEL_PARPORT=0
+CONFIG_PANEL_PROFILE=5
+CONFIG_PANEL_CHANGE_MESSAGE=y
+CONFIG_PANEL_BOOT_MESSAGE=""
+CONFIG_CHARLCD_BL_OFF=y
+# CONFIG_CHARLCD_BL_ON is not set
+# CONFIG_CHARLCD_BL_FLASH is not set
+CONFIG_PANEL=y
+# CONFIG_UIO is not set
+CONFIG_VFIO_IOMMU_TYPE1=y
+CONFIG_VFIO=y
 CONFIG_VFIO_NOIOMMU=y
-CONFIG_VFIO_PCI_CORE=m
-CONFIG_VFIO_PCI_MMAP=y
-CONFIG_VFIO_PCI_INTX=y
-CONFIG_VFIO_PCI=m
-# CONFIG_VFIO_PCI_VGA is not set
-# CONFIG_VFIO_PCI_IGD is not set
-CONFIG_VFIO_MDEV=m
-CONFIG_IRQ_BYPASS_MANAGER=m
+# CONFIG_VFIO_PCI is not set
+CONFIG_VFIO_MDEV=y
+CONFIG_VFIO_MDEV_DEVICE=y
+CONFIG_IRQ_BYPASS_MANAGER=y
 # CONFIG_VIRT_DRIVERS is not set
-CONFIG_VIRTIO_ANCHOR=y
 CONFIG_VIRTIO=y
-CONFIG_VIRTIO_PCI_LIB=y
-CONFIG_VIRTIO_PCI_LIB_LEGACY=y
-CONFIG_VIRTIO_MENU=y
-CONFIG_VIRTIO_PCI=y
-CONFIG_VIRTIO_PCI_LEGACY=y
-# CONFIG_VIRTIO_PMEM is not set
-CONFIG_VIRTIO_BALLOON=m
-# CONFIG_VIRTIO_MEM is not set
-CONFIG_VIRTIO_INPUT=m
-# CONFIG_VIRTIO_MMIO is not set
-CONFIG_VIRTIO_DMA_SHARED_BUFFER=m
-# CONFIG_VDPA is not set
-CONFIG_VHOST_IOTLB=m
-CONFIG_VHOST=m
+# CONFIG_VIRTIO_MENU is not set
+CONFIG_VDPA=y
+CONFIG_VDPA_SIM=y
+# CONFIG_VDPA_SIM_NET is not set
+# CONFIG_VDPA_SIM_BLOCK is not set
+CONFIG_VHOST_IOTLB=y
+CONFIG_VHOST_RING=y
+CONFIG_VHOST=y
 CONFIG_VHOST_MENU=y
-CONFIG_VHOST_NET=m
-# CONFIG_VHOST_SCSI is not set
-CONFIG_VHOST_VSOCK=m
+CONFIG_VHOST_NET=y
+CONFIG_VHOST_VSOCK=y
+CONFIG_VHOST_VDPA=y
 # CONFIG_VHOST_CROSS_ENDIAN_LEGACY is not set
 
 #
@@ -5164,66 +3532,48 @@ CONFIG_VHOST_VSOCK=m
 # CONFIG_GREYBUS is not set
 # CONFIG_COMEDI is not set
 # CONFIG_STAGING is not set
-# CONFIG_CHROME_PLATFORMS is not set
-CONFIG_MELLANOX_PLATFORM=y
-CONFIG_MLXREG_HOTPLUG=m
-# CONFIG_MLXREG_IO is not set
-# CONFIG_MLXREG_LC is not set
-# CONFIG_NVSW_SN2201 is not set
-CONFIG_SURFACE_PLATFORMS=y
-# CONFIG_SURFACE3_WMI is not set
-# CONFIG_SURFACE_3_POWER_OPREGION is not set
-# CONFIG_SURFACE_GPE is not set
-# CONFIG_SURFACE_HOTPLUG is not set
-# CONFIG_SURFACE_PRO3_BUTTON is not set
 CONFIG_X86_PLATFORM_DEVICES=y
-CONFIG_ACPI_WMI=m
-CONFIG_WMI_BMOF=m
-# CONFIG_HUAWEI_WMI is not set
-# CONFIG_UV_SYSFS is not set
-CONFIG_MXM_WMI=m
-# CONFIG_PEAQ_WMI is not set
-# CONFIG_NVIDIA_WMI_EC_BACKLIGHT is not set
-# CONFIG_XIAOMI_WMI is not set
-# CONFIG_GIGABYTE_WMI is not set
-# CONFIG_YOGABOOK_WMI is not set
-CONFIG_ACERHDF=m
+# CONFIG_ACPI_WMI is not set
+# CONFIG_ACERHDF is not set
 # CONFIG_ACER_WIRELESS is not set
-CONFIG_ACER_WMI=m
-# CONFIG_AMD_PMF is not set
 # CONFIG_AMD_PMC is not set
-# CONFIG_AMD_HSMP is not set
 # CONFIG_ADV_SWBUTTON is not set
-CONFIG_APPLE_GMUX=m
-CONFIG_ASUS_LAPTOP=m
+# CONFIG_APPLE_GMUX is not set
+# CONFIG_ASUS_LAPTOP is not set
 # CONFIG_ASUS_WIRELESS is not set
-CONFIG_ASUS_WMI=m
-CONFIG_ASUS_NB_WMI=m
-# CONFIG_ASUS_TF103C_DOCK is not set
-# CONFIG_MERAKI_MX100 is not set
-CONFIG_EEEPC_LAPTOP=m
-CONFIG_EEEPC_WMI=m
 # CONFIG_X86_PLATFORM_DRIVERS_DELL is not set
-CONFIG_AMILO_RFKILL=m
-CONFIG_FUJITSU_LAPTOP=m
-CONFIG_FUJITSU_TABLET=m
-# CONFIG_GPD_POCKET_FAN is not set
-CONFIG_HP_ACCEL=m
-# CONFIG_WIRELESS_HOTKEY is not set
-CONFIG_HP_WMI=m
+# CONFIG_AMILO_RFKILL is not set
+# CONFIG_FUJITSU_LAPTOP is not set
+# CONFIG_FUJITSU_TABLET is not set
+CONFIG_GPD_POCKET_FAN=y
+# CONFIG_HP_ACCEL is not set
+# CONFIG_HP_WIRELESS is not set
 # CONFIG_IBM_RTL is not set
-CONFIG_IDEAPAD_LAPTOP=m
-CONFIG_SENSORS_HDAPS=m
-CONFIG_THINKPAD_ACPI=m
-# CONFIG_THINKPAD_ACPI_DEBUGFACILITIES is not set
-# CONFIG_THINKPAD_ACPI_DEBUG is not set
-# CONFIG_THINKPAD_ACPI_UNSAFE_LEDS is not set
-CONFIG_THINKPAD_ACPI_VIDEO=y
-CONFIG_THINKPAD_ACPI_HOTKEY_POLL=y
-# CONFIG_THINKPAD_LMI is not set
-# CONFIG_INTEL_ATOMISP2_PM is not set
-# CONFIG_INTEL_SAR_INT1092 is not set
-CONFIG_INTEL_PMC_CORE=m
+# CONFIG_IDEAPAD_LAPTOP is not set
+# CONFIG_SENSORS_HDAPS is not set
+# CONFIG_THINKPAD_ACPI is not set
+CONFIG_INTEL_ATOMISP2_LED=y
+# CONFIG_INTEL_HID_EVENT is not set
+# CONFIG_INTEL_INT0002_VGPIO is not set
+CONFIG_INTEL_MENLOW=y
+CONFIG_INTEL_OAKTRAIL=y
+# CONFIG_INTEL_VBTN is not set
+# CONFIG_MSI_LAPTOP is not set
+# CONFIG_PCENGINES_APU2 is not set
+CONFIG_SAMSUNG_LAPTOP=y
+CONFIG_SAMSUNG_Q10=y
+CONFIG_TOSHIBA_BT_RFKILL=y
+# CONFIG_TOSHIBA_HAPS is not set
+# CONFIG_ACPI_CMPC is not set
+# CONFIG_PANASONIC_LAPTOP is not set
+# CONFIG_SONY_LAPTOP is not set
+# CONFIG_SYSTEM76_ACPI is not set
+# CONFIG_TOPSTAR_LAPTOP is not set
+CONFIG_I2C_MULTI_INSTANTIATE=y
+CONFIG_MLX_PLATFORM=y
+# CONFIG_INTEL_IPS is not set
+# CONFIG_INTEL_RST is not set
+CONFIG_INTEL_SMARTCONNECT=y
 
 #
 # Intel Speed Select Technology interface support
@@ -5231,64 +3581,41 @@ CONFIG_INTEL_PMC_CORE=m
 # CONFIG_INTEL_SPEED_SELECT_INTERFACE is not set
 # end of Intel Speed Select Technology interface support
 
-CONFIG_INTEL_WMI=y
-# CONFIG_INTEL_WMI_SBL_FW_UPDATE is not set
-CONFIG_INTEL_WMI_THUNDERBOLT=m
-
-#
-# Intel Uncore Frequency Control
-#
-# CONFIG_INTEL_UNCORE_FREQ_CONTROL is not set
-# end of Intel Uncore Frequency Control
-
-CONFIG_INTEL_HID_EVENT=m
-CONFIG_INTEL_VBTN=m
-# CONFIG_INTEL_INT0002_VGPIO is not set
-CONFIG_INTEL_OAKTRAIL=m
-# CONFIG_INTEL_ISHTP_ECLITE is not set
-# CONFIG_INTEL_PUNIT_IPC is not set
-CONFIG_INTEL_RST=m
-# CONFIG_INTEL_SMARTCONNECT is not set
 CONFIG_INTEL_TURBO_MAX_3=y
-# CONFIG_INTEL_VSEC is not set
-CONFIG_MSI_LAPTOP=m
-CONFIG_MSI_WMI=m
-# CONFIG_PCENGINES_APU2 is not set
-# CONFIG_BARCO_P50_GPIO is not set
-CONFIG_SAMSUNG_LAPTOP=m
-CONFIG_SAMSUNG_Q10=m
-CONFIG_TOSHIBA_BT_RFKILL=m
-# CONFIG_TOSHIBA_HAPS is not set
-# CONFIG_TOSHIBA_WMI is not set
-CONFIG_ACPI_CMPC=m
-CONFIG_COMPAL_LAPTOP=m
-# CONFIG_LG_LAPTOP is not set
-CONFIG_PANASONIC_LAPTOP=m
-CONFIG_SONY_LAPTOP=m
-CONFIG_SONYPI_COMPAT=y
-# CONFIG_SYSTEM76_ACPI is not set
-CONFIG_TOPSTAR_LAPTOP=m
-# CONFIG_SERIAL_MULTI_INSTANTIATE is not set
-CONFIG_MLX_PLATFORM=m
-CONFIG_INTEL_IPS=m
+# CONFIG_INTEL_UNCORE_FREQ_CONTROL is not set
+# CONFIG_INTEL_BXTWC_PMIC_TMU is not set
+# CONFIG_INTEL_CHTDC_TI_PWRBTN is not set
+# CONFIG_INTEL_PMC_CORE is not set
+CONFIG_INTEL_PUNIT_IPC=y
+CONFIG_INTEL_SCU_IPC=y
 # CONFIG_INTEL_SCU_PCI is not set
 # CONFIG_INTEL_SCU_PLATFORM is not set
-# CONFIG_SIEMENS_SIMATIC_IPC is not set
-# CONFIG_WINMATE_FM07_KEYS is not set
-CONFIG_P2SB=y
+CONFIG_INTEL_TELEMETRY=y
+CONFIG_PMC_ATOM=y
+# CONFIG_GOLDFISH_PIPE is not set
+# CONFIG_CHROME_PLATFORMS is not set
+CONFIG_MELLANOX_PLATFORM=y
+CONFIG_SURFACE_PLATFORMS=y
+# CONFIG_SURFACE_3_POWER_OPREGION is not set
+# CONFIG_SURFACE_GPE is not set
+# CONFIG_SURFACE_HOTPLUG is not set
+# CONFIG_SURFACE_PRO3_BUTTON is not set
 CONFIG_HAVE_CLK=y
+CONFIG_CLKDEV_LOOKUP=y
 CONFIG_HAVE_CLK_PREPARE=y
 CONFIG_COMMON_CLK=y
-# CONFIG_LMK04832 is not set
-# CONFIG_COMMON_CLK_MAX9485 is not set
+CONFIG_COMMON_CLK_WM831X=y
+CONFIG_COMMON_CLK_MAX9485=y
 # CONFIG_COMMON_CLK_SI5341 is not set
-# CONFIG_COMMON_CLK_SI5351 is not set
+CONFIG_COMMON_CLK_SI5351=y
 # CONFIG_COMMON_CLK_SI544 is not set
 # CONFIG_COMMON_CLK_CDCE706 is not set
-# CONFIG_COMMON_CLK_CS2000_CP is not set
+CONFIG_COMMON_CLK_CS2000_CP=y
+CONFIG_COMMON_CLK_S2MPS11=y
+# CONFIG_COMMON_CLK_PALMAS is not set
 # CONFIG_COMMON_CLK_PWM is not set
-# CONFIG_XILINX_VCU is not set
-CONFIG_HWSPINLOCK=y
+CONFIG_XILINX_VCU=y
+# CONFIG_HWSPINLOCK is not set
 
 #
 # Clock Source drivers
@@ -5300,47 +3627,34 @@ CONFIG_CLKBLD_I8253=y
 
 CONFIG_MAILBOX=y
 CONFIG_PCC=y
-# CONFIG_ALTERA_MBOX is not set
+CONFIG_ALTERA_MBOX=y
 CONFIG_IOMMU_IOVA=y
-CONFIG_IOASID=y
 CONFIG_IOMMU_API=y
-CONFIG_IOMMU_SUPPORT=y
-
-#
-# Generic IOMMU Pagetable Support
-#
-# end of Generic IOMMU Pagetable Support
-
-# CONFIG_IOMMU_DEBUGFS is not set
-# CONFIG_IOMMU_DEFAULT_DMA_STRICT is not set
-CONFIG_IOMMU_DEFAULT_DMA_LAZY=y
-# CONFIG_IOMMU_DEFAULT_PASSTHROUGH is not set
-CONFIG_IOMMU_DMA=y
-CONFIG_IOMMU_SVA=y
-# CONFIG_AMD_IOMMU is not set
-CONFIG_DMAR_TABLE=y
-CONFIG_INTEL_IOMMU=y
-CONFIG_INTEL_IOMMU_SVM=y
-# CONFIG_INTEL_IOMMU_DEFAULT_ON is not set
-CONFIG_INTEL_IOMMU_FLOPPY_WA=y
-CONFIG_INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON=y
-CONFIG_IRQ_REMAP=y
-# CONFIG_VIRTIO_IOMMU is not set
+# CONFIG_IOMMU_SUPPORT is not set
 
 #
 # Remoteproc drivers
 #
-# CONFIG_REMOTEPROC is not set
+CONFIG_REMOTEPROC=y
+# CONFIG_REMOTEPROC_CDEV is not set
 # end of Remoteproc drivers
 
 #
 # Rpmsg drivers
 #
-# CONFIG_RPMSG_QCOM_GLINK_RPM is not set
-# CONFIG_RPMSG_VIRTIO is not set
+CONFIG_RPMSG=y
+CONFIG_RPMSG_CHAR=y
+CONFIG_RPMSG_NS=y
+CONFIG_RPMSG_QCOM_GLINK=y
+CONFIG_RPMSG_QCOM_GLINK_RPM=y
+CONFIG_RPMSG_VIRTIO=y
 # end of Rpmsg drivers
 
-# CONFIG_SOUNDWIRE is not set
+CONFIG_SOUNDWIRE=y
+
+#
+# SoundWire Devices
+#
 
 #
 # SOC (System On Chip) specific Drivers
@@ -5362,11 +3676,6 @@ CONFIG_IRQ_REMAP=y
 # end of NXP/Freescale QorIQ SoC drivers
 
 #
-# fujitsu SoC drivers
-#
-# end of fujitsu SoC drivers
-
-#
 # i.MX SoC drivers
 #
 # end of i.MX SoC drivers
@@ -5381,7 +3690,7 @@ CONFIG_IRQ_REMAP=y
 #
 # end of Qualcomm SoC drivers
 
-# CONFIG_SOC_TI is not set
+CONFIG_SOC_TI=y
 
 #
 # Xilinx SoC drivers
@@ -5389,61 +3698,471 @@ CONFIG_IRQ_REMAP=y
 # end of Xilinx SoC drivers
 # end of SOC (System On Chip) specific Drivers
 
-# CONFIG_PM_DEVFREQ is not set
-# CONFIG_EXTCON is not set
-# CONFIG_MEMORY is not set
-# CONFIG_IIO is not set
-CONFIG_NTB=m
-# CONFIG_NTB_MSI is not set
-# CONFIG_NTB_AMD is not set
-# CONFIG_NTB_IDT is not set
-# CONFIG_NTB_INTEL is not set
-# CONFIG_NTB_EPF is not set
-# CONFIG_NTB_SWITCHTEC is not set
-# CONFIG_NTB_PINGPONG is not set
-# CONFIG_NTB_TOOL is not set
-# CONFIG_NTB_PERF is not set
-# CONFIG_NTB_TRANSPORT is not set
+CONFIG_PM_DEVFREQ=y
+
+#
+# DEVFREQ Governors
+#
+# CONFIG_DEVFREQ_GOV_SIMPLE_ONDEMAND is not set
+CONFIG_DEVFREQ_GOV_PERFORMANCE=y
+CONFIG_DEVFREQ_GOV_POWERSAVE=y
+CONFIG_DEVFREQ_GOV_USERSPACE=y
+# CONFIG_DEVFREQ_GOV_PASSIVE is not set
+
+#
+# DEVFREQ Drivers
+#
+CONFIG_PM_DEVFREQ_EVENT=y
+CONFIG_EXTCON=y
+
+#
+# Extcon Device Drivers
+#
+# CONFIG_EXTCON_ADC_JACK is not set
+# CONFIG_EXTCON_FSA9480 is not set
+CONFIG_EXTCON_GPIO=y
+CONFIG_EXTCON_INTEL_INT3496=y
+CONFIG_EXTCON_MAX14577=y
+# CONFIG_EXTCON_MAX3355 is not set
+# CONFIG_EXTCON_MAX77693 is not set
+CONFIG_EXTCON_PALMAS=y
+CONFIG_EXTCON_PTN5150=y
+CONFIG_EXTCON_RT8973A=y
+CONFIG_EXTCON_SM5502=y
+CONFIG_EXTCON_USB_GPIO=y
+# CONFIG_EXTCON_USBC_TUSB320 is not set
+CONFIG_MEMORY=y
+CONFIG_IIO=y
+CONFIG_IIO_BUFFER=y
+CONFIG_IIO_BUFFER_CB=y
+CONFIG_IIO_BUFFER_DMA=y
+# CONFIG_IIO_BUFFER_DMAENGINE is not set
+CONFIG_IIO_BUFFER_HW_CONSUMER=y
+CONFIG_IIO_KFIFO_BUF=y
+CONFIG_IIO_TRIGGERED_BUFFER=y
+CONFIG_IIO_CONFIGFS=y
+CONFIG_IIO_TRIGGER=y
+CONFIG_IIO_CONSUMERS_PER_TRIGGER=2
+# CONFIG_IIO_SW_DEVICE is not set
+CONFIG_IIO_SW_TRIGGER=y
+CONFIG_IIO_TRIGGERED_EVENT=y
+
+#
+# Accelerometers
+#
+# CONFIG_ADXL345_I2C is not set
+CONFIG_ADXL372=y
+CONFIG_ADXL372_I2C=y
+CONFIG_BMA180=y
+CONFIG_BMA400=y
+CONFIG_BMA400_I2C=y
+# CONFIG_BMC150_ACCEL is not set
+CONFIG_DA280=y
+CONFIG_DA311=y
+# CONFIG_DMARD09 is not set
+CONFIG_DMARD10=y
+CONFIG_IIO_ST_ACCEL_3AXIS=y
+CONFIG_IIO_ST_ACCEL_I2C_3AXIS=y
+CONFIG_KXSD9=y
+CONFIG_KXSD9_I2C=y
+CONFIG_KXCJK1013=y
+CONFIG_MC3230=y
+CONFIG_MMA7455=y
+CONFIG_MMA7455_I2C=y
+CONFIG_MMA7660=y
+CONFIG_MMA8452=y
+# CONFIG_MMA9551 is not set
+# CONFIG_MMA9553 is not set
+# CONFIG_MXC4005 is not set
+# CONFIG_MXC6255 is not set
+CONFIG_STK8312=y
+CONFIG_STK8BA50=y
+# end of Accelerometers
+
+#
+# Analog to digital converters
+#
+CONFIG_AD7091R5=y
+CONFIG_AD7291=y
+CONFIG_AD7606=y
+CONFIG_AD7606_IFACE_PARALLEL=y
+CONFIG_AD799X=y
+CONFIG_CC10001_ADC=y
+CONFIG_DA9150_GPADC=y
+CONFIG_HX711=y
+# CONFIG_INA2XX_ADC is not set
+CONFIG_LTC2471=y
+CONFIG_LTC2485=y
+CONFIG_LTC2497=y
+# CONFIG_MAX1363 is not set
+CONFIG_MAX9611=y
+# CONFIG_MCP3422 is not set
+CONFIG_MP2629_ADC=y
+# CONFIG_NAU7802 is not set
+# CONFIG_PALMAS_GPADC is not set
+CONFIG_QCOM_VADC_COMMON=y
+# CONFIG_QCOM_SPMI_IADC is not set
+CONFIG_QCOM_SPMI_VADC=y
+# CONFIG_QCOM_SPMI_ADC5 is not set
+# CONFIG_TI_ADC081C is not set
+# CONFIG_TI_ADS1015 is not set
+CONFIG_TWL4030_MADC=y
+CONFIG_TWL6030_GPADC=y
+# CONFIG_XILINX_XADC is not set
+# end of Analog to digital converters
+
+#
+# Analog Front Ends
+#
+# end of Analog Front Ends
+
+#
+# Amplifiers
+#
+CONFIG_HMC425=y
+# end of Amplifiers
+
+#
+# Capacitance to digital converters
+#
+# CONFIG_AD7150 is not set
+# end of Capacitance to digital converters
+
+#
+# Chemical Sensors
+#
+# CONFIG_ATLAS_PH_SENSOR is not set
+CONFIG_ATLAS_EZO_SENSOR=y
+# CONFIG_BME680 is not set
+CONFIG_CCS811=y
+# CONFIG_IAQCORE is not set
+CONFIG_SCD30_CORE=y
+CONFIG_SCD30_I2C=y
+# CONFIG_SENSIRION_SGP30 is not set
+# CONFIG_SPS30 is not set
+CONFIG_VZ89X=y
+# end of Chemical Sensors
+
+#
+# Hid Sensor IIO Common
+#
+# end of Hid Sensor IIO Common
+
+CONFIG_IIO_MS_SENSORS_I2C=y
+
+#
+# IIO SCMI Sensors
+#
+# end of IIO SCMI Sensors
+
+#
+# SSP Sensor Common
+#
+# end of SSP Sensor Common
+
+CONFIG_IIO_ST_SENSORS_I2C=y
+CONFIG_IIO_ST_SENSORS_CORE=y
+
+#
+# Digital to analog converters
+#
+CONFIG_AD5064=y
+CONFIG_AD5380=y
+# CONFIG_AD5446 is not set
+# CONFIG_AD5593R is not set
+CONFIG_AD5686=y
+CONFIG_AD5696_I2C=y
+CONFIG_CIO_DAC=y
+CONFIG_DS4424=y
+CONFIG_M62332=y
+CONFIG_MAX517=y
+# CONFIG_MCP4725 is not set
+CONFIG_TI_DAC5571=y
+# end of Digital to analog converters
+
+#
+# IIO dummy driver
+#
+# end of IIO dummy driver
+
+#
+# Frequency Synthesizers DDS/PLL
+#
+
+#
+# Clock Generator/Distribution
+#
+# end of Clock Generator/Distribution
+
+#
+# Phase-Locked Loop (PLL) frequency synthesizers
+#
+# end of Phase-Locked Loop (PLL) frequency synthesizers
+# end of Frequency Synthesizers DDS/PLL
+
+#
+# Digital gyroscope sensors
+#
+CONFIG_BMG160=y
+CONFIG_BMG160_I2C=y
+CONFIG_FXAS21002C=y
+CONFIG_FXAS21002C_I2C=y
+CONFIG_MPU3050=y
+CONFIG_MPU3050_I2C=y
+# CONFIG_IIO_ST_GYRO_3AXIS is not set
+# CONFIG_ITG3200 is not set
+# end of Digital gyroscope sensors
+
+#
+# Health Sensors
+#
+
+#
+# Heart Rate Monitors
+#
+# CONFIG_AFE4404 is not set
+CONFIG_MAX30100=y
+# CONFIG_MAX30102 is not set
+# end of Heart Rate Monitors
+# end of Health Sensors
+
+#
+# Humidity sensors
+#
+CONFIG_AM2315=y
+CONFIG_DHT11=y
+CONFIG_HDC100X=y
+# CONFIG_HDC2010 is not set
+CONFIG_HTS221=y
+CONFIG_HTS221_I2C=y
+# CONFIG_HTU21 is not set
+# CONFIG_SI7005 is not set
+CONFIG_SI7020=y
+# end of Humidity sensors
+
+#
+# Inertial measurement units
+#
+CONFIG_BMI160=y
+CONFIG_BMI160_I2C=y
+CONFIG_FXOS8700=y
+CONFIG_FXOS8700_I2C=y
+# CONFIG_KMX61 is not set
+# CONFIG_INV_ICM42600_I2C is not set
+CONFIG_INV_MPU6050_IIO=y
+CONFIG_INV_MPU6050_I2C=y
+CONFIG_IIO_ST_LSM6DSX=y
+CONFIG_IIO_ST_LSM6DSX_I2C=y
+CONFIG_IIO_ST_LSM6DSX_I3C=y
+# end of Inertial measurement units
+
+#
+# Light sensors
+#
+# CONFIG_ACPI_ALS is not set
+# CONFIG_ADJD_S311 is not set
+CONFIG_ADUX1020=y
+CONFIG_AL3010=y
+# CONFIG_AL3320A is not set
+# CONFIG_APDS9300 is not set
+CONFIG_APDS9960=y
+# CONFIG_AS73211 is not set
+# CONFIG_BH1750 is not set
+CONFIG_BH1780=y
+CONFIG_CM32181=y
+# CONFIG_CM3232 is not set
+CONFIG_CM3323=y
+CONFIG_CM36651=y
+CONFIG_GP2AP002=y
+CONFIG_GP2AP020A00F=y
+CONFIG_SENSORS_ISL29018=y
+CONFIG_SENSORS_ISL29028=y
+# CONFIG_ISL29125 is not set
+CONFIG_JSA1212=y
+# CONFIG_RPR0521 is not set
+CONFIG_SENSORS_LM3533=y
+CONFIG_LTR501=y
+CONFIG_LV0104CS=y
+CONFIG_MAX44000=y
+CONFIG_MAX44009=y
+CONFIG_NOA1305=y
+CONFIG_OPT3001=y
+CONFIG_PA12203001=y
+# CONFIG_SI1133 is not set
+# CONFIG_SI1145 is not set
+# CONFIG_STK3310 is not set
+# CONFIG_ST_UVIS25 is not set
+CONFIG_TCS3414=y
+CONFIG_TCS3472=y
+CONFIG_SENSORS_TSL2563=y
+CONFIG_TSL2583=y
+CONFIG_TSL2772=y
+# CONFIG_TSL4531 is not set
+# CONFIG_US5182D is not set
+CONFIG_VCNL4000=y
+CONFIG_VCNL4035=y
+CONFIG_VEML6030=y
+CONFIG_VEML6070=y
+CONFIG_VL6180=y
+CONFIG_ZOPT2201=y
+# end of Light sensors
+
+#
+# Magnetometer sensors
+#
+# CONFIG_AK8975 is not set
+# CONFIG_AK09911 is not set
+CONFIG_BMC150_MAGN=y
+CONFIG_BMC150_MAGN_I2C=y
+CONFIG_MAG3110=y
+# CONFIG_MMC35240 is not set
+# CONFIG_IIO_ST_MAGN_3AXIS is not set
+# CONFIG_SENSORS_HMC5843_I2C is not set
+CONFIG_SENSORS_RM3100=y
+CONFIG_SENSORS_RM3100_I2C=y
+# CONFIG_YAMAHA_YAS530 is not set
+# end of Magnetometer sensors
+
+#
+# Multiplexers
+#
+# end of Multiplexers
+
+#
+# Inclinometer sensors
+#
+# end of Inclinometer sensors
+
+#
+# Triggers - standalone
+#
+CONFIG_IIO_HRTIMER_TRIGGER=y
+CONFIG_IIO_INTERRUPT_TRIGGER=y
+CONFIG_IIO_TIGHTLOOP_TRIGGER=y
+CONFIG_IIO_SYSFS_TRIGGER=y
+# end of Triggers - standalone
+
+#
+# Linear and angular position sensors
+#
+# end of Linear and angular position sensors
+
+#
+# Digital potentiometers
+#
+CONFIG_AD5272=y
+CONFIG_DS1803=y
+# CONFIG_MAX5432 is not set
+# CONFIG_MCP4018 is not set
+# CONFIG_MCP4531 is not set
+CONFIG_TPL0102=y
+# end of Digital potentiometers
+
+#
+# Digital potentiostats
+#
+# CONFIG_LMP91000 is not set
+# end of Digital potentiostats
+
+#
+# Pressure sensors
+#
+CONFIG_ABP060MG=y
+CONFIG_BMP280=y
+CONFIG_BMP280_I2C=y
+# CONFIG_DLHL60D is not set
+CONFIG_DPS310=y
+CONFIG_HP03=y
+CONFIG_ICP10100=y
+CONFIG_MPL115=y
+CONFIG_MPL115_I2C=y
+CONFIG_MPL3115=y
+# CONFIG_MS5611 is not set
+CONFIG_MS5637=y
+# CONFIG_IIO_ST_PRESS is not set
+CONFIG_T5403=y
+CONFIG_HP206C=y
+CONFIG_ZPA2326=y
+CONFIG_ZPA2326_I2C=y
+# end of Pressure sensors
+
+#
+# Lightning sensors
+#
+# end of Lightning sensors
+
+#
+# Proximity and distance sensors
+#
+CONFIG_ISL29501=y
+# CONFIG_LIDAR_LITE_V2 is not set
+CONFIG_MB1232=y
+CONFIG_PING=y
+# CONFIG_RFD77402 is not set
+# CONFIG_SRF04 is not set
+CONFIG_SX9310=y
+CONFIG_SX9500=y
+CONFIG_SRF08=y
+# CONFIG_VCNL3020 is not set
+CONFIG_VL53L0X_I2C=y
+# end of Proximity and distance sensors
+
+#
+# Resolver to digital converters
+#
+# end of Resolver to digital converters
+
+#
+# Temperature sensors
+#
+CONFIG_MLX90614=y
+CONFIG_MLX90632=y
+CONFIG_TMP006=y
+CONFIG_TMP007=y
+CONFIG_TSYS01=y
+# CONFIG_TSYS02D is not set
+# end of Temperature sensors
+
+# CONFIG_NTB is not set
+# CONFIG_VME_BUS is not set
 CONFIG_PWM=y
 CONFIG_PWM_SYSFS=y
 # CONFIG_PWM_DEBUG is not set
-# CONFIG_PWM_CLK is not set
+CONFIG_PWM_CRC=y
 # CONFIG_PWM_DWC is not set
-CONFIG_PWM_LPSS=m
-CONFIG_PWM_LPSS_PCI=m
-CONFIG_PWM_LPSS_PLATFORM=m
+# CONFIG_PWM_LP3943 is not set
+# CONFIG_PWM_LPSS_PCI is not set
+# CONFIG_PWM_LPSS_PLATFORM is not set
 # CONFIG_PWM_PCA9685 is not set
+CONFIG_PWM_TWL=y
+# CONFIG_PWM_TWL_LED is not set
 
 #
 # IRQ chip support
 #
+CONFIG_MADERA_IRQ=y
 # end of IRQ chip support
 
-# CONFIG_IPACK_BUS is not set
-# CONFIG_RESET_CONTROLLER is not set
+CONFIG_IPACK_BUS=y
+# CONFIG_BOARD_TPCI200 is not set
+CONFIG_SERIAL_IPOCTAL=y
+CONFIG_RESET_CONTROLLER=y
+# CONFIG_RESET_BRCMSTB_RESCAL is not set
+# CONFIG_RESET_TI_SYSCON is not set
 
 #
 # PHY Subsystem
 #
-# CONFIG_GENERIC_PHY is not set
+CONFIG_GENERIC_PHY=y
 # CONFIG_USB_LGM_PHY is not set
-# CONFIG_PHY_CAN_TRANSCEIVER is not set
-
-#
-# PHY drivers for Broadcom platforms
-#
-# CONFIG_BCM_KONA_USB2_PHY is not set
-# end of PHY drivers for Broadcom platforms
-
+CONFIG_BCM_KONA_USB2_PHY=y
 # CONFIG_PHY_PXA_28NM_HSIC is not set
-# CONFIG_PHY_PXA_28NM_USB2 is not set
+CONFIG_PHY_PXA_28NM_USB2=y
+# CONFIG_PHY_CPCAP_USB is not set
 # CONFIG_PHY_INTEL_LGM_EMMC is not set
 # end of PHY Subsystem
 
-CONFIG_POWERCAP=y
-CONFIG_INTEL_RAPL_CORE=m
-CONFIG_INTEL_RAPL=m
-# CONFIG_IDLE_INJECT is not set
+# CONFIG_POWERCAP is not set
 # CONFIG_MCB is not set
 
 #
@@ -5452,61 +4171,42 @@ CONFIG_INTEL_RAPL=m
 # end of Performance monitor support
 
 CONFIG_RAS=y
-# CONFIG_RAS_CEC is not set
 # CONFIG_USB4 is not set
 
 #
 # Android
 #
-# CONFIG_ANDROID_BINDER_IPC is not set
+# CONFIG_ANDROID is not set
 # end of Android
 
-CONFIG_LIBNVDIMM=m
-CONFIG_BLK_DEV_PMEM=m
-CONFIG_ND_CLAIM=y
-CONFIG_ND_BTT=m
-CONFIG_BTT=y
-CONFIG_ND_PFN=m
-CONFIG_NVDIMM_PFN=y
-CONFIG_NVDIMM_DAX=y
-CONFIG_NVDIMM_KEYS=y
 CONFIG_DAX=y
-CONFIG_DEV_DAX=m
-CONFIG_DEV_DAX_PMEM=m
-CONFIG_DEV_DAX_KMEM=m
 CONFIG_NVMEM=y
 CONFIG_NVMEM_SYSFS=y
+CONFIG_NVMEM_SPMI_SDAM=y
 # CONFIG_NVMEM_RMEM is not set
 
 #
 # HW tracing support
 #
-CONFIG_STM=m
-# CONFIG_STM_PROTO_BASIC is not set
-# CONFIG_STM_PROTO_SYS_T is not set
-CONFIG_STM_DUMMY=m
-CONFIG_STM_SOURCE_CONSOLE=m
-CONFIG_STM_SOURCE_HEARTBEAT=m
-CONFIG_STM_SOURCE_FTRACE=m
-CONFIG_INTEL_TH=m
-CONFIG_INTEL_TH_PCI=m
-CONFIG_INTEL_TH_ACPI=m
-CONFIG_INTEL_TH_GTH=m
-CONFIG_INTEL_TH_STH=m
-CONFIG_INTEL_TH_MSU=m
-CONFIG_INTEL_TH_PTI=m
-# CONFIG_INTEL_TH_DEBUG is not set
+CONFIG_STM=y
+CONFIG_STM_PROTO_BASIC=y
+CONFIG_STM_PROTO_SYS_T=y
+CONFIG_STM_DUMMY=y
+# CONFIG_STM_SOURCE_CONSOLE is not set
+CONFIG_STM_SOURCE_HEARTBEAT=y
+# CONFIG_STM_SOURCE_FTRACE is not set
+# CONFIG_INTEL_TH is not set
 # end of HW tracing support
 
 # CONFIG_FPGA is not set
-# CONFIG_TEE is not set
-# CONFIG_SIOX is not set
+CONFIG_PM_OPP=y
+# CONFIG_UNISYS_VISORBUS is not set
+CONFIG_SIOX=y
+# CONFIG_SIOX_BUS_GPIO is not set
 # CONFIG_SLIMBUS is not set
 # CONFIG_INTERCONNECT is not set
 # CONFIG_COUNTER is not set
 # CONFIG_MOST is not set
-# CONFIG_PECI is not set
-# CONFIG_HTE is not set
 # end of Device Drivers
 
 #
@@ -5514,132 +4214,54 @@ CONFIG_INTEL_TH_PTI=m
 #
 CONFIG_DCACHE_WORD_ACCESS=y
 # CONFIG_VALIDATE_FS_PARSER is not set
-CONFIG_FS_IOMAP=y
-# CONFIG_EXT2_FS is not set
-# CONFIG_EXT3_FS is not set
-CONFIG_EXT4_FS=y
-CONFIG_EXT4_USE_FOR_EXT2=y
-CONFIG_EXT4_FS_POSIX_ACL=y
-CONFIG_EXT4_FS_SECURITY=y
-# CONFIG_EXT4_DEBUG is not set
-CONFIG_JBD2=y
-# CONFIG_JBD2_DEBUG is not set
-CONFIG_FS_MBCACHE=y
-# CONFIG_REISERFS_FS is not set
-# CONFIG_JFS_FS is not set
-CONFIG_XFS_FS=m
-CONFIG_XFS_SUPPORT_V4=y
-CONFIG_XFS_QUOTA=y
-CONFIG_XFS_POSIX_ACL=y
-CONFIG_XFS_RT=y
-CONFIG_XFS_ONLINE_SCRUB=y
-# CONFIG_XFS_ONLINE_REPAIR is not set
-CONFIG_XFS_DEBUG=y
-CONFIG_XFS_ASSERT_FATAL=y
-CONFIG_GFS2_FS=m
-CONFIG_GFS2_FS_LOCKING_DLM=y
-CONFIG_OCFS2_FS=m
-CONFIG_OCFS2_FS_O2CB=m
-CONFIG_OCFS2_FS_USERSPACE_CLUSTER=m
-CONFIG_OCFS2_FS_STATS=y
-CONFIG_OCFS2_DEBUG_MASKLOG=y
-# CONFIG_OCFS2_DEBUG_FS is not set
-CONFIG_BTRFS_FS=m
-CONFIG_BTRFS_FS_POSIX_ACL=y
-# CONFIG_BTRFS_FS_CHECK_INTEGRITY is not set
-# CONFIG_BTRFS_FS_RUN_SANITY_TESTS is not set
-# CONFIG_BTRFS_DEBUG is not set
-# CONFIG_BTRFS_ASSERT is not set
-# CONFIG_BTRFS_FS_REF_VERIFY is not set
-# CONFIG_NILFS2_FS is not set
-CONFIG_F2FS_FS=m
-CONFIG_F2FS_STAT_FS=y
-CONFIG_F2FS_FS_XATTR=y
-CONFIG_F2FS_FS_POSIX_ACL=y
-# CONFIG_F2FS_FS_SECURITY is not set
-# CONFIG_F2FS_CHECK_FS is not set
-# CONFIG_F2FS_FAULT_INJECTION is not set
-# CONFIG_F2FS_FS_COMPRESSION is not set
-CONFIG_F2FS_IOSTAT=y
-# CONFIG_F2FS_UNFAIR_RWSEM is not set
-CONFIG_FS_DAX=y
-CONFIG_FS_DAX_PMD=y
 CONFIG_FS_POSIX_ACL=y
 CONFIG_EXPORTFS=y
 CONFIG_EXPORTFS_BLOCK_OPS=y
 CONFIG_FILE_LOCKING=y
-CONFIG_FS_ENCRYPTION=y
-CONFIG_FS_ENCRYPTION_ALGS=y
+CONFIG_MANDATORY_FILE_LOCKING=y
+# CONFIG_FS_ENCRYPTION is not set
 # CONFIG_FS_VERITY is not set
 CONFIG_FSNOTIFY=y
-CONFIG_DNOTIFY=y
+# CONFIG_DNOTIFY is not set
 CONFIG_INOTIFY_USER=y
 CONFIG_FANOTIFY=y
-CONFIG_FANOTIFY_ACCESS_PERMISSIONS=y
+# CONFIG_FANOTIFY_ACCESS_PERMISSIONS is not set
 CONFIG_QUOTA=y
-CONFIG_QUOTA_NETLINK_INTERFACE=y
-CONFIG_PRINT_QUOTA_WARNING=y
+# CONFIG_QUOTA_NETLINK_INTERFACE is not set
+# CONFIG_PRINT_QUOTA_WARNING is not set
 # CONFIG_QUOTA_DEBUG is not set
-CONFIG_QUOTA_TREE=y
-# CONFIG_QFMT_V1 is not set
-CONFIG_QFMT_V2=y
+CONFIG_QFMT_V1=y
+# CONFIG_QFMT_V2 is not set
 CONFIG_QUOTACTL=y
 CONFIG_AUTOFS4_FS=y
 CONFIG_AUTOFS_FS=y
-CONFIG_FUSE_FS=m
-CONFIG_CUSE=m
-# CONFIG_VIRTIO_FS is not set
-CONFIG_OVERLAY_FS=m
-# CONFIG_OVERLAY_FS_REDIRECT_DIR is not set
-# CONFIG_OVERLAY_FS_REDIRECT_ALWAYS_FOLLOW is not set
+# CONFIG_FUSE_FS is not set
+CONFIG_OVERLAY_FS=y
+CONFIG_OVERLAY_FS_REDIRECT_DIR=y
+CONFIG_OVERLAY_FS_REDIRECT_ALWAYS_FOLLOW=y
 # CONFIG_OVERLAY_FS_INDEX is not set
-# CONFIG_OVERLAY_FS_XINO_AUTO is not set
-# CONFIG_OVERLAY_FS_METACOPY is not set
+CONFIG_OVERLAY_FS_XINO_AUTO=y
+CONFIG_OVERLAY_FS_METACOPY=y
 
 #
 # Caches
 #
-CONFIG_NETFS_SUPPORT=m
-CONFIG_NETFS_STATS=y
-CONFIG_FSCACHE=m
-CONFIG_FSCACHE_STATS=y
-# CONFIG_FSCACHE_DEBUG is not set
-CONFIG_CACHEFILES=m
-# CONFIG_CACHEFILES_DEBUG is not set
-# CONFIG_CACHEFILES_ERROR_INJECTION is not set
-# CONFIG_CACHEFILES_ONDEMAND is not set
+CONFIG_NETFS_SUPPORT=y
+# CONFIG_NETFS_STATS is not set
+CONFIG_FSCACHE=y
+# CONFIG_FSCACHE_STATS is not set
+# CONFIG_FSCACHE_HISTOGRAM is not set
+CONFIG_FSCACHE_DEBUG=y
+# CONFIG_FSCACHE_OBJECT_LIST is not set
 # end of Caches
-
-#
-# CD-ROM/DVD Filesystems
-#
-CONFIG_ISO9660_FS=m
-CONFIG_JOLIET=y
-CONFIG_ZISOFS=y
-CONFIG_UDF_FS=m
-# end of CD-ROM/DVD Filesystems
-
-#
-# DOS/FAT/EXFAT/NT Filesystems
-#
-CONFIG_FAT_FS=m
-CONFIG_MSDOS_FS=m
-CONFIG_VFAT_FS=m
-CONFIG_FAT_DEFAULT_CODEPAGE=437
-CONFIG_FAT_DEFAULT_IOCHARSET="ascii"
-# CONFIG_FAT_DEFAULT_UTF8 is not set
-# CONFIG_EXFAT_FS is not set
-# CONFIG_NTFS_FS is not set
-# CONFIG_NTFS3_FS is not set
-# end of DOS/FAT/EXFAT/NT Filesystems
 
 #
 # Pseudo filesystems
 #
 CONFIG_PROC_FS=y
-CONFIG_PROC_KCORE=y
+# CONFIG_PROC_KCORE is not set
 CONFIG_PROC_VMCORE=y
-CONFIG_PROC_VMCORE_DEVICE_DUMP=y
+# CONFIG_PROC_VMCORE_DEVICE_DUMP is not set
 CONFIG_PROC_SYSCTL=y
 CONFIG_PROC_PAGE_MONITOR=y
 CONFIG_PROC_CHILDREN=y
@@ -5650,11 +4272,7 @@ CONFIG_TMPFS=y
 CONFIG_TMPFS_POSIX_ACL=y
 CONFIG_TMPFS_XATTR=y
 # CONFIG_TMPFS_INODE64 is not set
-CONFIG_HUGETLBFS=y
-CONFIG_HUGETLB_PAGE=y
-CONFIG_ARCH_WANT_HUGETLB_PAGE_OPTIMIZE_VMEMMAP=y
-CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP=y
-# CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON is not set
+# CONFIG_HUGETLBFS is not set
 CONFIG_MEMFD_CREATE=y
 CONFIG_ARCH_HAS_GIGANTIC_PAGE=y
 CONFIG_CONFIGFS_FS=y
@@ -5662,178 +4280,135 @@ CONFIG_EFIVAR_FS=y
 # end of Pseudo filesystems
 
 CONFIG_MISC_FILESYSTEMS=y
-# CONFIG_ORANGEFS_FS is not set
-# CONFIG_ADFS_FS is not set
-# CONFIG_AFFS_FS is not set
-# CONFIG_ECRYPT_FS is not set
-# CONFIG_HFS_FS is not set
-# CONFIG_HFSPLUS_FS is not set
-# CONFIG_BEFS_FS is not set
-# CONFIG_BFS_FS is not set
-# CONFIG_EFS_FS is not set
-CONFIG_CRAMFS=m
-CONFIG_CRAMFS_BLOCKDEV=y
-CONFIG_SQUASHFS=m
-# CONFIG_SQUASHFS_FILE_CACHE is not set
-CONFIG_SQUASHFS_FILE_DIRECT=y
-# CONFIG_SQUASHFS_DECOMP_SINGLE is not set
-# CONFIG_SQUASHFS_DECOMP_MULTI is not set
-CONFIG_SQUASHFS_DECOMP_MULTI_PERCPU=y
-CONFIG_SQUASHFS_XATTR=y
-CONFIG_SQUASHFS_ZLIB=y
-# CONFIG_SQUASHFS_LZ4 is not set
-CONFIG_SQUASHFS_LZO=y
-CONFIG_SQUASHFS_XZ=y
-# CONFIG_SQUASHFS_ZSTD is not set
-# CONFIG_SQUASHFS_4K_DEVBLK_SIZE is not set
-# CONFIG_SQUASHFS_EMBEDDED is not set
-CONFIG_SQUASHFS_FRAGMENT_CACHE_SIZE=3
-# CONFIG_VXFS_FS is not set
-# CONFIG_MINIX_FS is not set
-# CONFIG_OMFS_FS is not set
-# CONFIG_HPFS_FS is not set
-# CONFIG_QNX4FS_FS is not set
-# CONFIG_QNX6FS_FS is not set
+CONFIG_ORANGEFS_FS=y
+CONFIG_ECRYPT_FS=y
+# CONFIG_ECRYPT_FS_MESSAGING is not set
+CONFIG_JFFS2_FS=y
+CONFIG_JFFS2_FS_DEBUG=0
+CONFIG_JFFS2_FS_WRITEBUFFER=y
+CONFIG_JFFS2_FS_WBUF_VERIFY=y
+# CONFIG_JFFS2_SUMMARY is not set
+# CONFIG_JFFS2_FS_XATTR is not set
+CONFIG_JFFS2_COMPRESSION_OPTIONS=y
+CONFIG_JFFS2_ZLIB=y
+# CONFIG_JFFS2_LZO is not set
+# CONFIG_JFFS2_RTIME is not set
+# CONFIG_JFFS2_RUBIN is not set
+# CONFIG_JFFS2_CMODE_NONE is not set
+CONFIG_JFFS2_CMODE_PRIORITY=y
+# CONFIG_JFFS2_CMODE_SIZE is not set
+# CONFIG_JFFS2_CMODE_FAVOURLZO is not set
+CONFIG_CRAMFS=y
+CONFIG_CRAMFS_MTD=y
 # CONFIG_ROMFS_FS is not set
 CONFIG_PSTORE=y
 CONFIG_PSTORE_DEFAULT_KMSG_BYTES=10240
 CONFIG_PSTORE_DEFLATE_COMPRESS=y
-# CONFIG_PSTORE_LZO_COMPRESS is not set
-# CONFIG_PSTORE_LZ4_COMPRESS is not set
-# CONFIG_PSTORE_LZ4HC_COMPRESS is not set
-# CONFIG_PSTORE_842_COMPRESS is not set
-# CONFIG_PSTORE_ZSTD_COMPRESS is not set
+CONFIG_PSTORE_LZO_COMPRESS=y
+CONFIG_PSTORE_LZ4_COMPRESS=y
+CONFIG_PSTORE_LZ4HC_COMPRESS=y
+CONFIG_PSTORE_842_COMPRESS=y
+CONFIG_PSTORE_ZSTD_COMPRESS=y
 CONFIG_PSTORE_COMPRESS=y
-CONFIG_PSTORE_DEFLATE_COMPRESS_DEFAULT=y
-CONFIG_PSTORE_COMPRESS_DEFAULT="deflate"
+# CONFIG_PSTORE_DEFLATE_COMPRESS_DEFAULT is not set
+# CONFIG_PSTORE_LZO_COMPRESS_DEFAULT is not set
+# CONFIG_PSTORE_LZ4_COMPRESS_DEFAULT is not set
+CONFIG_PSTORE_LZ4HC_COMPRESS_DEFAULT=y
+# CONFIG_PSTORE_842_COMPRESS_DEFAULT is not set
+# CONFIG_PSTORE_ZSTD_COMPRESS_DEFAULT is not set
+CONFIG_PSTORE_COMPRESS_DEFAULT="lz4hc"
 # CONFIG_PSTORE_CONSOLE is not set
 # CONFIG_PSTORE_PMSG is not set
-# CONFIG_PSTORE_FTRACE is not set
-CONFIG_PSTORE_RAM=m
-# CONFIG_PSTORE_BLK is not set
-# CONFIG_SYSV_FS is not set
-# CONFIG_UFS_FS is not set
-# CONFIG_EROFS_FS is not set
+CONFIG_PSTORE_RAM=y
 CONFIG_NETWORK_FILESYSTEMS=y
 CONFIG_NFS_FS=y
-# CONFIG_NFS_V2 is not set
+CONFIG_NFS_V2=y
 CONFIG_NFS_V3=y
-CONFIG_NFS_V3_ACL=y
+# CONFIG_NFS_V3_ACL is not set
 CONFIG_NFS_V4=m
-# CONFIG_NFS_SWAP is not set
-CONFIG_NFS_V4_1=y
-CONFIG_NFS_V4_2=y
-CONFIG_PNFS_FILE_LAYOUT=m
-CONFIG_PNFS_BLOCK=m
-CONFIG_PNFS_FLEXFILE_LAYOUT=m
-CONFIG_NFS_V4_1_IMPLEMENTATION_ID_DOMAIN="kernel.org"
-# CONFIG_NFS_V4_1_MIGRATION is not set
-CONFIG_NFS_V4_SECURITY_LABEL=y
-CONFIG_ROOT_NFS=y
+# CONFIG_NFS_V4_1 is not set
+# CONFIG_ROOT_NFS is not set
+# CONFIG_NFS_FSCACHE is not set
 # CONFIG_NFS_USE_LEGACY_DNS is not set
 CONFIG_NFS_USE_KERNEL_DNS=y
-CONFIG_NFS_DEBUG=y
 CONFIG_NFS_DISABLE_UDP_SUPPORT=y
-# CONFIG_NFS_V4_2_READ_PLUS is not set
-CONFIG_NFSD=m
-CONFIG_NFSD_V2_ACL=y
-CONFIG_NFSD_V3_ACL=y
-CONFIG_NFSD_V4=y
-CONFIG_NFSD_PNFS=y
-# CONFIG_NFSD_BLOCKLAYOUT is not set
-CONFIG_NFSD_SCSILAYOUT=y
-# CONFIG_NFSD_FLEXFILELAYOUT is not set
-# CONFIG_NFSD_V4_2_INTER_SSC is not set
-CONFIG_NFSD_V4_SECURITY_LABEL=y
+# CONFIG_NFSD is not set
 CONFIG_GRACE_PERIOD=y
 CONFIG_LOCKD=y
 CONFIG_LOCKD_V4=y
-CONFIG_NFS_ACL_SUPPORT=y
 CONFIG_NFS_COMMON=y
-CONFIG_NFS_V4_2_SSC_HELPER=y
 CONFIG_SUNRPC=y
 CONFIG_SUNRPC_GSS=m
-CONFIG_SUNRPC_BACKCHANNEL=y
-CONFIG_RPCSEC_GSS_KRB5=m
-# CONFIG_SUNRPC_DISABLE_INSECURE_ENCTYPES is not set
-CONFIG_SUNRPC_DEBUG=y
-CONFIG_CEPH_FS=m
-# CONFIG_CEPH_FSCACHE is not set
-CONFIG_CEPH_FS_POSIX_ACL=y
-# CONFIG_CEPH_FS_SECURITY_LABEL is not set
+# CONFIG_SUNRPC_DEBUG is not set
+# CONFIG_CEPH_FS is not set
 CONFIG_CIFS=m
-CONFIG_CIFS_STATS2=y
+# CONFIG_CIFS_STATS2 is not set
 CONFIG_CIFS_ALLOW_INSECURE_LEGACY=y
-CONFIG_CIFS_UPCALL=y
-CONFIG_CIFS_XATTR=y
-CONFIG_CIFS_POSIX=y
+# CONFIG_CIFS_WEAK_PW_HASH is not set
+# CONFIG_CIFS_UPCALL is not set
+# CONFIG_CIFS_XATTR is not set
 CONFIG_CIFS_DEBUG=y
 # CONFIG_CIFS_DEBUG2 is not set
 # CONFIG_CIFS_DEBUG_DUMP_KEYS is not set
-CONFIG_CIFS_DFS_UPCALL=y
+# CONFIG_CIFS_DFS_UPCALL is not set
 # CONFIG_CIFS_SWN_UPCALL is not set
 # CONFIG_CIFS_FSCACHE is not set
-# CONFIG_SMB_SERVER is not set
-CONFIG_SMBFS_COMMON=m
 # CONFIG_CODA_FS is not set
 # CONFIG_AFS_FS is not set
 # CONFIG_9P_FS is not set
 CONFIG_NLS=y
-CONFIG_NLS_DEFAULT="utf8"
+CONFIG_NLS_DEFAULT="iso8859-1"
 CONFIG_NLS_CODEPAGE_437=y
-CONFIG_NLS_CODEPAGE_737=m
-CONFIG_NLS_CODEPAGE_775=m
-CONFIG_NLS_CODEPAGE_850=m
-CONFIG_NLS_CODEPAGE_852=m
-CONFIG_NLS_CODEPAGE_855=m
-CONFIG_NLS_CODEPAGE_857=m
-CONFIG_NLS_CODEPAGE_860=m
-CONFIG_NLS_CODEPAGE_861=m
-CONFIG_NLS_CODEPAGE_862=m
-CONFIG_NLS_CODEPAGE_863=m
-CONFIG_NLS_CODEPAGE_864=m
-CONFIG_NLS_CODEPAGE_865=m
-CONFIG_NLS_CODEPAGE_866=m
-CONFIG_NLS_CODEPAGE_869=m
-CONFIG_NLS_CODEPAGE_936=m
-CONFIG_NLS_CODEPAGE_950=m
-CONFIG_NLS_CODEPAGE_932=m
-CONFIG_NLS_CODEPAGE_949=m
-CONFIG_NLS_CODEPAGE_874=m
-CONFIG_NLS_ISO8859_8=m
-CONFIG_NLS_CODEPAGE_1250=m
-CONFIG_NLS_CODEPAGE_1251=m
+# CONFIG_NLS_CODEPAGE_737 is not set
+CONFIG_NLS_CODEPAGE_775=y
+CONFIG_NLS_CODEPAGE_850=y
+# CONFIG_NLS_CODEPAGE_852 is not set
+CONFIG_NLS_CODEPAGE_855=y
+CONFIG_NLS_CODEPAGE_857=y
+CONFIG_NLS_CODEPAGE_860=y
+CONFIG_NLS_CODEPAGE_861=y
+CONFIG_NLS_CODEPAGE_862=y
+# CONFIG_NLS_CODEPAGE_863 is not set
+CONFIG_NLS_CODEPAGE_864=y
+CONFIG_NLS_CODEPAGE_865=y
+# CONFIG_NLS_CODEPAGE_866 is not set
+CONFIG_NLS_CODEPAGE_869=y
+CONFIG_NLS_CODEPAGE_936=y
+# CONFIG_NLS_CODEPAGE_950 is not set
+CONFIG_NLS_CODEPAGE_932=y
+CONFIG_NLS_CODEPAGE_949=y
+CONFIG_NLS_CODEPAGE_874=y
+# CONFIG_NLS_ISO8859_8 is not set
+CONFIG_NLS_CODEPAGE_1250=y
+CONFIG_NLS_CODEPAGE_1251=y
 CONFIG_NLS_ASCII=y
-CONFIG_NLS_ISO8859_1=m
-CONFIG_NLS_ISO8859_2=m
-CONFIG_NLS_ISO8859_3=m
-CONFIG_NLS_ISO8859_4=m
-CONFIG_NLS_ISO8859_5=m
-CONFIG_NLS_ISO8859_6=m
-CONFIG_NLS_ISO8859_7=m
-CONFIG_NLS_ISO8859_9=m
-CONFIG_NLS_ISO8859_13=m
-CONFIG_NLS_ISO8859_14=m
-CONFIG_NLS_ISO8859_15=m
-CONFIG_NLS_KOI8_R=m
-CONFIG_NLS_KOI8_U=m
-CONFIG_NLS_MAC_ROMAN=m
-CONFIG_NLS_MAC_CELTIC=m
-CONFIG_NLS_MAC_CENTEURO=m
-CONFIG_NLS_MAC_CROATIAN=m
-CONFIG_NLS_MAC_CYRILLIC=m
-CONFIG_NLS_MAC_GAELIC=m
-CONFIG_NLS_MAC_GREEK=m
-CONFIG_NLS_MAC_ICELAND=m
-CONFIG_NLS_MAC_INUIT=m
-CONFIG_NLS_MAC_ROMANIAN=m
-CONFIG_NLS_MAC_TURKISH=m
-CONFIG_NLS_UTF8=m
-CONFIG_DLM=m
-# CONFIG_DLM_DEPRECATED_API is not set
-CONFIG_DLM_DEBUG=y
+# CONFIG_NLS_ISO8859_1 is not set
+CONFIG_NLS_ISO8859_2=y
+CONFIG_NLS_ISO8859_3=y
+CONFIG_NLS_ISO8859_4=y
+CONFIG_NLS_ISO8859_5=y
+CONFIG_NLS_ISO8859_6=y
+CONFIG_NLS_ISO8859_7=y
+# CONFIG_NLS_ISO8859_9 is not set
+CONFIG_NLS_ISO8859_13=y
+# CONFIG_NLS_ISO8859_14 is not set
+CONFIG_NLS_ISO8859_15=y
+CONFIG_NLS_KOI8_R=y
+CONFIG_NLS_KOI8_U=y
+# CONFIG_NLS_MAC_ROMAN is not set
+CONFIG_NLS_MAC_CELTIC=y
+CONFIG_NLS_MAC_CENTEURO=y
+CONFIG_NLS_MAC_CROATIAN=y
+CONFIG_NLS_MAC_CYRILLIC=y
+CONFIG_NLS_MAC_GAELIC=y
+CONFIG_NLS_MAC_GREEK=y
+CONFIG_NLS_MAC_ICELAND=y
+# CONFIG_NLS_MAC_INUIT is not set
+# CONFIG_NLS_MAC_ROMANIAN is not set
+# CONFIG_NLS_MAC_TURKISH is not set
+# CONFIG_NLS_UTF8 is not set
+# CONFIG_DLM is not set
 # CONFIG_UNICODE is not set
-CONFIG_IO_WQ=y
 # end of File systems
 
 #
@@ -5842,42 +4417,30 @@ CONFIG_IO_WQ=y
 CONFIG_KEYS=y
 # CONFIG_KEYS_REQUEST_CACHE is not set
 CONFIG_PERSISTENT_KEYRINGS=y
-CONFIG_TRUSTED_KEYS=y
-CONFIG_TRUSTED_KEYS_TPM=y
-CONFIG_ENCRYPTED_KEYS=y
-# CONFIG_USER_DECRYPTED_DATA is not set
+# CONFIG_ENCRYPTED_KEYS is not set
 # CONFIG_KEY_DH_OPERATIONS is not set
-# CONFIG_SECURITY_DMESG_RESTRICT is not set
+# CONFIG_KEY_NOTIFICATIONS is not set
+CONFIG_SECURITY_DMESG_RESTRICT=y
 CONFIG_SECURITY=y
-CONFIG_SECURITYFS=y
+# CONFIG_SECURITYFS is not set
 CONFIG_SECURITY_NETWORK=y
-CONFIG_SECURITY_NETWORK_XFRM=y
-# CONFIG_SECURITY_PATH is not set
-CONFIG_INTEL_TXT=y
+CONFIG_PAGE_TABLE_ISOLATION=y
+CONFIG_SECURITY_PATH=y
 CONFIG_HAVE_HARDENED_USERCOPY_ALLOCATOR=y
-CONFIG_HARDENED_USERCOPY=y
+# CONFIG_HARDENED_USERCOPY is not set
 CONFIG_FORTIFY_SOURCE=y
 # CONFIG_STATIC_USERMODEHELPER is not set
-# CONFIG_SECURITY_SELINUX is not set
 # CONFIG_SECURITY_SMACK is not set
 # CONFIG_SECURITY_TOMOYO is not set
 # CONFIG_SECURITY_APPARMOR is not set
-# CONFIG_SECURITY_LOADPIN is not set
-CONFIG_SECURITY_YAMA=y
+# CONFIG_SECURITY_YAMA is not set
 # CONFIG_SECURITY_SAFESETID is not set
 # CONFIG_SECURITY_LOCKDOWN_LSM is not set
 # CONFIG_SECURITY_LANDLOCK is not set
-CONFIG_INTEGRITY=y
-CONFIG_INTEGRITY_SIGNATURE=y
-CONFIG_INTEGRITY_ASYMMETRIC_KEYS=y
-CONFIG_INTEGRITY_TRUSTED_KEYRING=y
-# CONFIG_INTEGRITY_PLATFORM_KEYRING is not set
-CONFIG_INTEGRITY_AUDIT=y
-# CONFIG_IMA is not set
+# CONFIG_INTEGRITY is not set
 # CONFIG_IMA_SECURE_AND_OR_TRUSTED_BOOT is not set
-# CONFIG_EVM is not set
 CONFIG_DEFAULT_SECURITY_DAC=y
-CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,integrity,bpf"
+CONFIG_LSM="lockdown,yama,loadpin,safesetid,integrity,bpf"
 
 #
 # Kernel hardening options
@@ -5888,25 +4451,16 @@ CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,integrity,bpf"
 #
 CONFIG_INIT_STACK_NONE=y
 # CONFIG_GCC_PLUGIN_STRUCTLEAK_USER is not set
-# CONFIG_GCC_PLUGIN_STACKLEAK is not set
+CONFIG_GCC_PLUGIN_STACKLEAK=y
+CONFIG_STACKLEAK_TRACK_MIN_SIZE=100
+# CONFIG_STACKLEAK_METRICS is not set
+# CONFIG_STACKLEAK_RUNTIME_DISABLE is not set
 # CONFIG_INIT_ON_ALLOC_DEFAULT_ON is not set
 # CONFIG_INIT_ON_FREE_DEFAULT_ON is not set
-CONFIG_CC_HAS_ZERO_CALL_USED_REGS=y
-# CONFIG_ZERO_CALL_USED_REGS is not set
 # end of Memory initialization
-
-CONFIG_RANDSTRUCT_NONE=y
-# CONFIG_RANDSTRUCT_FULL is not set
-# CONFIG_RANDSTRUCT_PERFORMANCE is not set
 # end of Kernel hardening options
 # end of Security options
 
-CONFIG_XOR_BLOCKS=m
-CONFIG_ASYNC_CORE=m
-CONFIG_ASYNC_MEMCPY=m
-CONFIG_ASYNC_XOR=m
-CONFIG_ASYNC_PQ=m
-CONFIG_ASYNC_RAID6_RECOV=m
 CONFIG_CRYPTO=y
 
 #
@@ -5926,248 +4480,193 @@ CONFIG_CRYPTO_RNG_DEFAULT=y
 CONFIG_CRYPTO_AKCIPHER2=y
 CONFIG_CRYPTO_AKCIPHER=y
 CONFIG_CRYPTO_KPP2=y
-CONFIG_CRYPTO_KPP=m
+CONFIG_CRYPTO_KPP=y
 CONFIG_CRYPTO_ACOMP2=y
 CONFIG_CRYPTO_MANAGER=y
 CONFIG_CRYPTO_MANAGER2=y
-CONFIG_CRYPTO_USER=m
+CONFIG_CRYPTO_USER=y
 CONFIG_CRYPTO_MANAGER_DISABLE_TESTS=y
 CONFIG_CRYPTO_GF128MUL=y
 CONFIG_CRYPTO_NULL=y
 CONFIG_CRYPTO_NULL2=y
-CONFIG_CRYPTO_PCRYPT=m
+# CONFIG_CRYPTO_PCRYPT is not set
 CONFIG_CRYPTO_CRYPTD=y
-CONFIG_CRYPTO_AUTHENC=m
+CONFIG_CRYPTO_AUTHENC=y
 # CONFIG_CRYPTO_TEST is not set
 CONFIG_CRYPTO_SIMD=y
-# end of Crypto core or helper
 
 #
 # Public-key cryptography
 #
 CONFIG_CRYPTO_RSA=y
-CONFIG_CRYPTO_DH=m
-# CONFIG_CRYPTO_DH_RFC7919_GROUPS is not set
-CONFIG_CRYPTO_ECC=m
-CONFIG_CRYPTO_ECDH=m
+CONFIG_CRYPTO_DH=y
+CONFIG_CRYPTO_ECC=y
+CONFIG_CRYPTO_ECDH=y
 # CONFIG_CRYPTO_ECDSA is not set
-# CONFIG_CRYPTO_ECRDSA is not set
-# CONFIG_CRYPTO_SM2 is not set
-# CONFIG_CRYPTO_CURVE25519 is not set
-# end of Public-key cryptography
+CONFIG_CRYPTO_ECRDSA=y
+CONFIG_CRYPTO_SM2=y
+CONFIG_CRYPTO_CURVE25519=y
+CONFIG_CRYPTO_CURVE25519_X86=y
 
 #
-# Block ciphers
+# Authenticated Encryption with Associated Data
 #
-CONFIG_CRYPTO_AES=y
-# CONFIG_CRYPTO_AES_TI is not set
-CONFIG_CRYPTO_ANUBIS=m
-# CONFIG_CRYPTO_ARIA is not set
-CONFIG_CRYPTO_BLOWFISH=m
-CONFIG_CRYPTO_BLOWFISH_COMMON=m
-CONFIG_CRYPTO_CAMELLIA=m
-CONFIG_CRYPTO_CAST_COMMON=m
-CONFIG_CRYPTO_CAST5=m
-CONFIG_CRYPTO_CAST6=m
-CONFIG_CRYPTO_DES=m
-CONFIG_CRYPTO_FCRYPT=m
-CONFIG_CRYPTO_KHAZAD=m
-CONFIG_CRYPTO_SEED=m
-CONFIG_CRYPTO_SERPENT=m
-# CONFIG_CRYPTO_SM4_GENERIC is not set
-CONFIG_CRYPTO_TEA=m
-CONFIG_CRYPTO_TWOFISH=m
-CONFIG_CRYPTO_TWOFISH_COMMON=m
-# end of Block ciphers
+CONFIG_CRYPTO_CCM=y
+CONFIG_CRYPTO_GCM=y
+# CONFIG_CRYPTO_CHACHA20POLY1305 is not set
+# CONFIG_CRYPTO_AEGIS128 is not set
+# CONFIG_CRYPTO_AEGIS128_AESNI_SSE2 is not set
+CONFIG_CRYPTO_SEQIV=y
+CONFIG_CRYPTO_ECHAINIV=y
 
 #
-# Length-preserving ciphers and modes
+# Block modes
 #
-# CONFIG_CRYPTO_ADIANTUM is not set
-CONFIG_CRYPTO_ARC4=m
-CONFIG_CRYPTO_CHACHA20=m
 CONFIG_CRYPTO_CBC=y
 CONFIG_CRYPTO_CFB=y
 CONFIG_CRYPTO_CTR=y
-CONFIG_CRYPTO_CTS=m
+# CONFIG_CRYPTO_CTS is not set
 CONFIG_CRYPTO_ECB=y
-# CONFIG_CRYPTO_HCTR2 is not set
-# CONFIG_CRYPTO_KEYWRAP is not set
-CONFIG_CRYPTO_LRW=m
+# CONFIG_CRYPTO_LRW is not set
 # CONFIG_CRYPTO_OFB is not set
-CONFIG_CRYPTO_PCBC=m
-CONFIG_CRYPTO_XTS=m
-# end of Length-preserving ciphers and modes
+CONFIG_CRYPTO_PCBC=y
+CONFIG_CRYPTO_XTS=y
+CONFIG_CRYPTO_KEYWRAP=y
+CONFIG_CRYPTO_NHPOLY1305=y
+CONFIG_CRYPTO_NHPOLY1305_SSE2=y
+# CONFIG_CRYPTO_NHPOLY1305_AVX2 is not set
+# CONFIG_CRYPTO_ADIANTUM is not set
+CONFIG_CRYPTO_ESSIV=y
 
 #
-# AEAD (authenticated encryption with associated data) ciphers
+# Hash modes
 #
-# CONFIG_CRYPTO_AEGIS128 is not set
-# CONFIG_CRYPTO_CHACHA20POLY1305 is not set
-CONFIG_CRYPTO_CCM=m
-CONFIG_CRYPTO_GCM=y
-CONFIG_CRYPTO_SEQIV=y
-CONFIG_CRYPTO_ECHAINIV=m
-CONFIG_CRYPTO_ESSIV=m
-# end of AEAD (authenticated encryption with associated data) ciphers
-
-#
-# Hashes, digests, and MACs
-#
-CONFIG_CRYPTO_BLAKE2B=m
-CONFIG_CRYPTO_CMAC=m
-CONFIG_CRYPTO_GHASH=y
+CONFIG_CRYPTO_CMAC=y
 CONFIG_CRYPTO_HMAC=y
-CONFIG_CRYPTO_MD4=m
-CONFIG_CRYPTO_MD5=y
-CONFIG_CRYPTO_MICHAEL_MIC=m
-# CONFIG_CRYPTO_POLY1305 is not set
-CONFIG_CRYPTO_RMD160=m
-CONFIG_CRYPTO_SHA1=y
-CONFIG_CRYPTO_SHA256=y
-CONFIG_CRYPTO_SHA512=y
-CONFIG_CRYPTO_SHA3=m
-# CONFIG_CRYPTO_SM3_GENERIC is not set
-# CONFIG_CRYPTO_STREEBOG is not set
-CONFIG_CRYPTO_VMAC=m
-CONFIG_CRYPTO_WP512=m
-CONFIG_CRYPTO_XCBC=m
-CONFIG_CRYPTO_XXHASH=m
-# end of Hashes, digests, and MACs
+CONFIG_CRYPTO_XCBC=y
+CONFIG_CRYPTO_VMAC=y
 
 #
-# CRCs (cyclic redundancy checks)
+# Digest
 #
 CONFIG_CRYPTO_CRC32C=y
-CONFIG_CRYPTO_CRC32=m
-CONFIG_CRYPTO_CRCT10DIF=y
-CONFIG_CRYPTO_CRC64_ROCKSOFT=m
-# end of CRCs (cyclic redundancy checks)
+CONFIG_CRYPTO_CRC32C_INTEL=y
+CONFIG_CRYPTO_CRC32=y
+CONFIG_CRYPTO_CRC32_PCLMUL=y
+CONFIG_CRYPTO_XXHASH=y
+# CONFIG_CRYPTO_BLAKE2B is not set
+# CONFIG_CRYPTO_BLAKE2S is not set
+CONFIG_CRYPTO_BLAKE2S_X86=y
+# CONFIG_CRYPTO_CRCT10DIF is not set
+CONFIG_CRYPTO_GHASH=y
+# CONFIG_CRYPTO_POLY1305 is not set
+# CONFIG_CRYPTO_POLY1305_X86_64 is not set
+CONFIG_CRYPTO_MD4=y
+CONFIG_CRYPTO_MD5=y
+# CONFIG_CRYPTO_MICHAEL_MIC is not set
+CONFIG_CRYPTO_RMD160=y
+CONFIG_CRYPTO_SHA1=y
+CONFIG_CRYPTO_SHA1_SSSE3=y
+# CONFIG_CRYPTO_SHA256_SSSE3 is not set
+CONFIG_CRYPTO_SHA512_SSSE3=y
+CONFIG_CRYPTO_SHA256=y
+CONFIG_CRYPTO_SHA512=y
+CONFIG_CRYPTO_SHA3=y
+CONFIG_CRYPTO_SM3=y
+CONFIG_CRYPTO_STREEBOG=y
+CONFIG_CRYPTO_WP512=y
+CONFIG_CRYPTO_GHASH_CLMUL_NI_INTEL=y
+
+#
+# Ciphers
+#
+CONFIG_CRYPTO_AES=y
+CONFIG_CRYPTO_AES_TI=y
+# CONFIG_CRYPTO_AES_NI_INTEL is not set
+CONFIG_CRYPTO_BLOWFISH=y
+CONFIG_CRYPTO_BLOWFISH_COMMON=y
+CONFIG_CRYPTO_BLOWFISH_X86_64=y
+# CONFIG_CRYPTO_CAMELLIA is not set
+CONFIG_CRYPTO_CAMELLIA_X86_64=y
+CONFIG_CRYPTO_CAMELLIA_AESNI_AVX_X86_64=y
+CONFIG_CRYPTO_CAMELLIA_AESNI_AVX2_X86_64=y
+CONFIG_CRYPTO_CAST_COMMON=y
+CONFIG_CRYPTO_CAST5=y
+CONFIG_CRYPTO_CAST5_AVX_X86_64=y
+CONFIG_CRYPTO_CAST6=y
+CONFIG_CRYPTO_CAST6_AVX_X86_64=y
+CONFIG_CRYPTO_DES=y
+CONFIG_CRYPTO_DES3_EDE_X86_64=y
+CONFIG_CRYPTO_FCRYPT=y
+CONFIG_CRYPTO_CHACHA20=y
+# CONFIG_CRYPTO_CHACHA20_X86_64 is not set
+CONFIG_CRYPTO_SERPENT=y
+CONFIG_CRYPTO_SERPENT_SSE2_X86_64=y
+# CONFIG_CRYPTO_SERPENT_AVX_X86_64 is not set
+# CONFIG_CRYPTO_SERPENT_AVX2_X86_64 is not set
+CONFIG_CRYPTO_SM4=y
+# CONFIG_CRYPTO_TWOFISH is not set
+CONFIG_CRYPTO_TWOFISH_COMMON=y
+CONFIG_CRYPTO_TWOFISH_X86_64=y
+CONFIG_CRYPTO_TWOFISH_X86_64_3WAY=y
+# CONFIG_CRYPTO_TWOFISH_AVX_X86_64 is not set
 
 #
 # Compression
 #
 CONFIG_CRYPTO_DEFLATE=y
 CONFIG_CRYPTO_LZO=y
-# CONFIG_CRYPTO_842 is not set
-# CONFIG_CRYPTO_LZ4 is not set
-# CONFIG_CRYPTO_LZ4HC is not set
-# CONFIG_CRYPTO_ZSTD is not set
-# end of Compression
+CONFIG_CRYPTO_842=y
+CONFIG_CRYPTO_LZ4=y
+CONFIG_CRYPTO_LZ4HC=y
+CONFIG_CRYPTO_ZSTD=y
 
 #
-# Random number generation
+# Random Number Generation
 #
-CONFIG_CRYPTO_ANSI_CPRNG=m
+CONFIG_CRYPTO_ANSI_CPRNG=y
 CONFIG_CRYPTO_DRBG_MENU=y
 CONFIG_CRYPTO_DRBG_HMAC=y
-CONFIG_CRYPTO_DRBG_HASH=y
+# CONFIG_CRYPTO_DRBG_HASH is not set
 CONFIG_CRYPTO_DRBG_CTR=y
 CONFIG_CRYPTO_DRBG=y
 CONFIG_CRYPTO_JITTERENTROPY=y
-# end of Random number generation
-
-#
-# Userspace interface
-#
 CONFIG_CRYPTO_USER_API=y
 CONFIG_CRYPTO_USER_API_HASH=y
-CONFIG_CRYPTO_USER_API_SKCIPHER=y
+# CONFIG_CRYPTO_USER_API_SKCIPHER is not set
 CONFIG_CRYPTO_USER_API_RNG=y
-# CONFIG_CRYPTO_USER_API_RNG_CAVP is not set
-CONFIG_CRYPTO_USER_API_AEAD=y
-CONFIG_CRYPTO_USER_API_ENABLE_OBSOLETE=y
+CONFIG_CRYPTO_USER_API_RNG_CAVP=y
+# CONFIG_CRYPTO_USER_API_AEAD is not set
+# CONFIG_CRYPTO_USER_API_ENABLE_OBSOLETE is not set
 # CONFIG_CRYPTO_STATS is not set
-# end of Userspace interface
-
-CONFIG_CRYPTO_HASH_INFO=y
 
 #
-# Accelerated Cryptographic Algorithms for CPU (x86)
+# Crypto library routines
 #
-# CONFIG_CRYPTO_CURVE25519_X86 is not set
-CONFIG_CRYPTO_AES_NI_INTEL=y
-CONFIG_CRYPTO_BLOWFISH_X86_64=m
-CONFIG_CRYPTO_CAMELLIA_X86_64=m
-CONFIG_CRYPTO_CAMELLIA_AESNI_AVX_X86_64=m
-CONFIG_CRYPTO_CAMELLIA_AESNI_AVX2_X86_64=m
-CONFIG_CRYPTO_CAST5_AVX_X86_64=m
-CONFIG_CRYPTO_CAST6_AVX_X86_64=m
-# CONFIG_CRYPTO_DES3_EDE_X86_64 is not set
-CONFIG_CRYPTO_SERPENT_SSE2_X86_64=m
-CONFIG_CRYPTO_SERPENT_AVX_X86_64=m
-CONFIG_CRYPTO_SERPENT_AVX2_X86_64=m
-# CONFIG_CRYPTO_SM4_AESNI_AVX_X86_64 is not set
-# CONFIG_CRYPTO_SM4_AESNI_AVX2_X86_64 is not set
-CONFIG_CRYPTO_TWOFISH_X86_64=m
-CONFIG_CRYPTO_TWOFISH_X86_64_3WAY=m
-CONFIG_CRYPTO_TWOFISH_AVX_X86_64=m
-# CONFIG_CRYPTO_ARIA_AESNI_AVX_X86_64 is not set
-CONFIG_CRYPTO_CHACHA20_X86_64=m
-# CONFIG_CRYPTO_AEGIS128_AESNI_SSE2 is not set
-# CONFIG_CRYPTO_NHPOLY1305_SSE2 is not set
-# CONFIG_CRYPTO_NHPOLY1305_AVX2 is not set
-# CONFIG_CRYPTO_BLAKE2S_X86 is not set
-# CONFIG_CRYPTO_POLYVAL_CLMUL_NI is not set
-# CONFIG_CRYPTO_POLY1305_X86_64 is not set
-CONFIG_CRYPTO_SHA1_SSSE3=y
-CONFIG_CRYPTO_SHA256_SSSE3=y
-CONFIG_CRYPTO_SHA512_SSSE3=m
-# CONFIG_CRYPTO_SM3_AVX_X86_64 is not set
-CONFIG_CRYPTO_GHASH_CLMUL_NI_INTEL=m
-CONFIG_CRYPTO_CRC32C_INTEL=m
-CONFIG_CRYPTO_CRC32_PCLMUL=m
-CONFIG_CRYPTO_CRCT10DIF_PCLMUL=m
-# end of Accelerated Cryptographic Algorithms for CPU (x86)
-
-CONFIG_CRYPTO_HW=y
-CONFIG_CRYPTO_DEV_PADLOCK=m
-CONFIG_CRYPTO_DEV_PADLOCK_AES=m
-CONFIG_CRYPTO_DEV_PADLOCK_SHA=m
-# CONFIG_CRYPTO_DEV_ATMEL_ECC is not set
-# CONFIG_CRYPTO_DEV_ATMEL_SHA204A is not set
-CONFIG_CRYPTO_DEV_CCP=y
-CONFIG_CRYPTO_DEV_CCP_DD=m
-CONFIG_CRYPTO_DEV_SP_CCP=y
-CONFIG_CRYPTO_DEV_CCP_CRYPTO=m
-CONFIG_CRYPTO_DEV_SP_PSP=y
-# CONFIG_CRYPTO_DEV_CCP_DEBUGFS is not set
-CONFIG_CRYPTO_DEV_QAT=m
-CONFIG_CRYPTO_DEV_QAT_DH895xCC=m
-CONFIG_CRYPTO_DEV_QAT_C3XXX=m
-CONFIG_CRYPTO_DEV_QAT_C62X=m
-# CONFIG_CRYPTO_DEV_QAT_4XXX is not set
-CONFIG_CRYPTO_DEV_QAT_DH895xCCVF=m
-CONFIG_CRYPTO_DEV_QAT_C3XXXVF=m
-CONFIG_CRYPTO_DEV_QAT_C62XVF=m
-CONFIG_CRYPTO_DEV_NITROX=m
-CONFIG_CRYPTO_DEV_NITROX_CNN55XX=m
-# CONFIG_CRYPTO_DEV_VIRTIO is not set
-# CONFIG_CRYPTO_DEV_SAFEXCEL is not set
-# CONFIG_CRYPTO_DEV_AMLOGIC_GXL is not set
-CONFIG_ASYMMETRIC_KEY_TYPE=y
-CONFIG_ASYMMETRIC_PUBLIC_KEY_SUBTYPE=y
-CONFIG_X509_CERTIFICATE_PARSER=y
-# CONFIG_PKCS8_PRIVATE_KEY_PARSER is not set
-CONFIG_PKCS7_MESSAGE_PARSER=y
-# CONFIG_PKCS7_TEST_KEY is not set
-CONFIG_SIGNED_PE_FILE_VERIFICATION=y
-# CONFIG_FIPS_SIGNATURE_SELFTEST is not set
+CONFIG_CRYPTO_LIB_AES=y
+CONFIG_CRYPTO_LIB_ARC4=m
+CONFIG_CRYPTO_ARCH_HAVE_LIB_BLAKE2S=y
+CONFIG_CRYPTO_LIB_BLAKE2S_GENERIC=y
+# CONFIG_CRYPTO_LIB_BLAKE2S is not set
+CONFIG_CRYPTO_LIB_CHACHA_GENERIC=y
+CONFIG_CRYPTO_LIB_CHACHA=y
+CONFIG_CRYPTO_ARCH_HAVE_LIB_CURVE25519=y
+CONFIG_CRYPTO_LIB_CURVE25519_GENERIC=y
+CONFIG_CRYPTO_LIB_CURVE25519=y
+CONFIG_CRYPTO_LIB_DES=y
+CONFIG_CRYPTO_LIB_POLY1305_RSIZE=11
+CONFIG_CRYPTO_LIB_POLY1305_GENERIC=y
+CONFIG_CRYPTO_LIB_POLY1305=y
+# CONFIG_CRYPTO_LIB_CHACHA20POLY1305 is not set
+CONFIG_CRYPTO_LIB_SHA256=y
+# CONFIG_CRYPTO_HW is not set
+# CONFIG_ASYMMETRIC_KEY_TYPE is not set
 
 #
 # Certificates for signature checking
 #
-CONFIG_MODULE_SIG_KEY="certs/signing_key.pem"
-CONFIG_MODULE_SIG_KEY_TYPE_RSA=y
-# CONFIG_MODULE_SIG_KEY_TYPE_ECDSA is not set
-CONFIG_SYSTEM_TRUSTED_KEYRING=y
-CONFIG_SYSTEM_TRUSTED_KEYS=""
-# CONFIG_SYSTEM_EXTRA_CERTIFICATE is not set
-# CONFIG_SECONDARY_TRUSTED_KEYRING is not set
 CONFIG_SYSTEM_BLACKLIST_KEYRING=y
 CONFIG_SYSTEM_BLACKLIST_HASH_LIST=""
-# CONFIG_SYSTEM_REVOCATION_LIST is not set
-# CONFIG_SYSTEM_BLACKLIST_AUTH_UPDATE is not set
 # end of Certificates for signature checking
 
 CONFIG_BINARY_PRINTF=y
@@ -6175,14 +4674,14 @@ CONFIG_BINARY_PRINTF=y
 #
 # Library routines
 #
-CONFIG_RAID6_PQ=m
-CONFIG_RAID6_PQ_BENCHMARK=y
-# CONFIG_PACKING is not set
+CONFIG_LINEAR_RANGES=y
+CONFIG_PACKING=y
 CONFIG_BITREVERSE=y
 CONFIG_GENERIC_STRNCPY_FROM_USER=y
 CONFIG_GENERIC_STRNLEN_USER=y
 CONFIG_GENERIC_NET_UTILS=y
-CONFIG_CORDIC=m
+CONFIG_GENERIC_FIND_FIRST_BIT=y
+CONFIG_CORDIC=y
 # CONFIG_PRIME_NUMBERS is not set
 CONFIG_RATIONAL=y
 CONFIG_GENERIC_PCI_IOMAP=y
@@ -6190,79 +4689,56 @@ CONFIG_GENERIC_IOMAP=y
 CONFIG_ARCH_USE_CMPXCHG_LOCKREF=y
 CONFIG_ARCH_HAS_FAST_MULTIPLIER=y
 CONFIG_ARCH_USE_SYM_ANNOTATIONS=y
-
-#
-# Crypto library routines
-#
-CONFIG_CRYPTO_LIB_UTILS=y
-CONFIG_CRYPTO_LIB_AES=y
-CONFIG_CRYPTO_LIB_ARC4=m
-CONFIG_CRYPTO_LIB_BLAKE2S_GENERIC=y
-CONFIG_CRYPTO_ARCH_HAVE_LIB_CHACHA=m
-CONFIG_CRYPTO_LIB_CHACHA_GENERIC=m
-# CONFIG_CRYPTO_LIB_CHACHA is not set
-# CONFIG_CRYPTO_LIB_CURVE25519 is not set
-CONFIG_CRYPTO_LIB_DES=m
-CONFIG_CRYPTO_LIB_POLY1305_RSIZE=11
-# CONFIG_CRYPTO_LIB_POLY1305 is not set
-# CONFIG_CRYPTO_LIB_CHACHA20POLY1305 is not set
-CONFIG_CRYPTO_LIB_SHA1=y
-CONFIG_CRYPTO_LIB_SHA256=y
-# end of Crypto library routines
-
 CONFIG_CRC_CCITT=y
 CONFIG_CRC16=y
-CONFIG_CRC_T10DIF=y
-CONFIG_CRC64_ROCKSOFT=m
-CONFIG_CRC_ITU_T=m
+# CONFIG_CRC_T10DIF is not set
+# CONFIG_CRC_ITU_T is not set
 CONFIG_CRC32=y
 # CONFIG_CRC32_SELFTEST is not set
-CONFIG_CRC32_SLICEBY8=y
+# CONFIG_CRC32_SLICEBY8 is not set
 # CONFIG_CRC32_SLICEBY4 is not set
-# CONFIG_CRC32_SARWATE is not set
+CONFIG_CRC32_SARWATE=y
 # CONFIG_CRC32_BIT is not set
-CONFIG_CRC64=m
-# CONFIG_CRC4 is not set
-CONFIG_CRC7=m
-CONFIG_LIBCRC32C=m
-CONFIG_CRC8=m
+CONFIG_CRC64=y
+CONFIG_CRC4=y
+CONFIG_CRC7=y
+CONFIG_LIBCRC32C=y
+CONFIG_CRC8=y
 CONFIG_XXHASH=y
 # CONFIG_RANDOM32_SELFTEST is not set
+CONFIG_842_COMPRESS=y
+CONFIG_842_DECOMPRESS=y
 CONFIG_ZLIB_INFLATE=y
 CONFIG_ZLIB_DEFLATE=y
 CONFIG_LZO_COMPRESS=y
 CONFIG_LZO_DECOMPRESS=y
+CONFIG_LZ4_COMPRESS=y
+CONFIG_LZ4HC_COMPRESS=y
 CONFIG_LZ4_DECOMPRESS=y
-CONFIG_ZSTD_COMMON=y
-CONFIG_ZSTD_COMPRESS=m
+CONFIG_ZSTD_COMPRESS=y
 CONFIG_ZSTD_DECOMPRESS=y
 CONFIG_XZ_DEC=y
 CONFIG_XZ_DEC_X86=y
 CONFIG_XZ_DEC_POWERPC=y
 CONFIG_XZ_DEC_IA64=y
-CONFIG_XZ_DEC_ARM=y
-CONFIG_XZ_DEC_ARMTHUMB=y
+# CONFIG_XZ_DEC_ARM is not set
+# CONFIG_XZ_DEC_ARMTHUMB is not set
 CONFIG_XZ_DEC_SPARC=y
-# CONFIG_XZ_DEC_MICROLZMA is not set
 CONFIG_XZ_DEC_BCJ=y
 # CONFIG_XZ_DEC_TEST is not set
 CONFIG_DECOMPRESS_GZIP=y
 CONFIG_DECOMPRESS_BZIP2=y
-CONFIG_DECOMPRESS_LZMA=y
 CONFIG_DECOMPRESS_XZ=y
 CONFIG_DECOMPRESS_LZO=y
 CONFIG_DECOMPRESS_LZ4=y
 CONFIG_DECOMPRESS_ZSTD=y
 CONFIG_GENERIC_ALLOCATOR=y
-CONFIG_REED_SOLOMON=m
+CONFIG_REED_SOLOMON=y
 CONFIG_REED_SOLOMON_ENC8=y
 CONFIG_REED_SOLOMON_DEC8=y
-CONFIG_TEXTSEARCH=y
-CONFIG_TEXTSEARCH_KMP=m
-CONFIG_TEXTSEARCH_BM=m
-CONFIG_TEXTSEARCH_FSM=m
+CONFIG_REED_SOLOMON_DEC16=y
+CONFIG_BCH=y
 CONFIG_INTERVAL_TREE=y
-CONFIG_XARRAY_MULTI=y
 CONFIG_ASSOCIATIVE_ARRAY=y
 CONFIG_HAS_IOMEM=y
 CONFIG_HAS_IOPORT_MAP=y
@@ -6271,44 +4747,47 @@ CONFIG_DMA_OPS=y
 CONFIG_NEED_SG_DMA_LENGTH=y
 CONFIG_NEED_DMA_MAP_STATE=y
 CONFIG_ARCH_DMA_ADDR_T_64BIT=y
-CONFIG_ARCH_HAS_FORCE_DMA_UNENCRYPTED=y
 CONFIG_SWIOTLB=y
+CONFIG_DMA_CMA=y
+CONFIG_DMA_PERNUMA_CMA=y
+
+#
+# Default contiguous memory area size:
+#
+CONFIG_CMA_SIZE_MBYTES=0
+CONFIG_CMA_SIZE_SEL_MBYTES=y
+# CONFIG_CMA_SIZE_SEL_PERCENTAGE is not set
+# CONFIG_CMA_SIZE_SEL_MIN is not set
+# CONFIG_CMA_SIZE_SEL_MAX is not set
+CONFIG_CMA_ALIGNMENT=8
 # CONFIG_DMA_API_DEBUG is not set
 # CONFIG_DMA_MAP_BENCHMARK is not set
 CONFIG_SGL_ALLOC=y
-CONFIG_CHECK_SIGNATURE=y
-CONFIG_CPUMASK_OFFSTACK=y
-# CONFIG_FORCE_NR_CPUS is not set
+# CONFIG_CPUMASK_OFFSTACK is not set
 CONFIG_CPU_RMAP=y
 CONFIG_DQL=y
 CONFIG_GLOB=y
 # CONFIG_GLOB_SELFTEST is not set
 CONFIG_NLATTR=y
 CONFIG_CLZ_TAB=y
-CONFIG_IRQ_POLL=y
+# CONFIG_IRQ_POLL is not set
 CONFIG_MPILIB=y
-CONFIG_SIGNATURE=y
 CONFIG_OID_REGISTRY=y
 CONFIG_UCS2_STRING=y
 CONFIG_HAVE_GENERIC_VDSO=y
 CONFIG_GENERIC_GETTIMEOFDAY=y
 CONFIG_GENERIC_VDSO_TIME_NS=y
 CONFIG_FONT_SUPPORT=y
-# CONFIG_FONTS is not set
-CONFIG_FONT_8x8=y
 CONFIG_FONT_8x16=y
-CONFIG_SG_POOL=y
+CONFIG_FONT_AUTOSELECT=y
 CONFIG_ARCH_HAS_PMEM_API=y
-CONFIG_MEMREGION=y
 CONFIG_ARCH_HAS_UACCESS_FLUSHCACHE=y
 CONFIG_ARCH_HAS_COPY_MC=y
 CONFIG_ARCH_STACKWALK=y
 CONFIG_STACKDEPOT=y
-CONFIG_STACKDEPOT_ALWAYS_INIT=y
-CONFIG_SBITMAP=y
+CONFIG_STACK_HASH_ORDER=20
+# CONFIG_STRING_SELFTEST is not set
 # end of Library routines
-
-CONFIG_ASN1_ENCODER=y
 
 #
 # Kernel hacking
@@ -6319,44 +4798,38 @@ CONFIG_ASN1_ENCODER=y
 #
 CONFIG_PRINTK_TIME=y
 CONFIG_PRINTK_CALLER=y
-# CONFIG_STACKTRACE_BUILD_ID is not set
 CONFIG_CONSOLE_LOGLEVEL_DEFAULT=7
 CONFIG_CONSOLE_LOGLEVEL_QUIET=4
 CONFIG_MESSAGE_LOGLEVEL_DEFAULT=4
-CONFIG_BOOT_PRINTK_DELAY=y
+# CONFIG_BOOT_PRINTK_DELAY is not set
 CONFIG_DYNAMIC_DEBUG=y
 CONFIG_DYNAMIC_DEBUG_CORE=y
 CONFIG_SYMBOLIC_ERRNAME=y
 CONFIG_DEBUG_BUGVERBOSE=y
 # end of printk and dmesg options
 
-CONFIG_DEBUG_KERNEL=y
-CONFIG_DEBUG_MISC=y
-
 #
 # Compile-time checks and compiler options
 #
 CONFIG_DEBUG_INFO=y
-CONFIG_AS_HAS_NON_CONST_LEB128=y
-# CONFIG_DEBUG_INFO_NONE is not set
-# CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT is not set
-CONFIG_DEBUG_INFO_DWARF4=y
-# CONFIG_DEBUG_INFO_DWARF5 is not set
 # CONFIG_DEBUG_INFO_REDUCED is not set
 # CONFIG_DEBUG_INFO_COMPRESSED is not set
 # CONFIG_DEBUG_INFO_SPLIT is not set
+CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y
+# CONFIG_DEBUG_INFO_DWARF4 is not set
 CONFIG_DEBUG_INFO_BTF=y
 CONFIG_PAHOLE_HAS_SPLIT_BTF=y
 CONFIG_DEBUG_INFO_BTF_MODULES=y
-# CONFIG_MODULE_ALLOW_BTF_MISMATCH is not set
 # CONFIG_GDB_SCRIPTS is not set
 CONFIG_FRAME_WARN=8192
-CONFIG_STRIP_ASM_SYMS=y
-# CONFIG_READABLE_ASM is not set
+# CONFIG_STRIP_ASM_SYMS is not set
+CONFIG_READABLE_ASM=y
 # CONFIG_HEADERS_INSTALL is not set
 CONFIG_DEBUG_SECTION_MISMATCH=y
 CONFIG_SECTION_MISMATCH_WARN_ONLY=y
-CONFIG_OBJTOOL=y
+# CONFIG_DEBUG_FORCE_FUNCTION_ALIGN_32B is not set
+CONFIG_STACK_VALIDATION=y
+# CONFIG_VMLINUX_MAP is not set
 # CONFIG_DEBUG_FORCE_WEAK_PER_CPU is not set
 # end of Compile-time checks and compiler options
 
@@ -6368,9 +4841,9 @@ CONFIG_MAGIC_SYSRQ_DEFAULT_ENABLE=0x1
 CONFIG_MAGIC_SYSRQ_SERIAL=y
 CONFIG_MAGIC_SYSRQ_SERIAL_SEQUENCE=""
 CONFIG_DEBUG_FS=y
-CONFIG_DEBUG_FS_ALLOW_ALL=y
+# CONFIG_DEBUG_FS_ALLOW_ALL is not set
 # CONFIG_DEBUG_FS_DISALLOW_MOUNT is not set
-# CONFIG_DEBUG_FS_ALLOW_NONE is not set
+CONFIG_DEBUG_FS_ALLOW_NONE=y
 CONFIG_HAVE_ARCH_KGDB=y
 # CONFIG_KGDB is not set
 CONFIG_ARCH_HAS_UBSAN_SANITIZE_ALL=y
@@ -6390,43 +4863,39 @@ CONFIG_HAVE_ARCH_KCSAN=y
 CONFIG_HAVE_KCSAN_COMPILER=y
 # end of Generic Kernel Debugging Instruments
 
-#
-# Networking Debugging
-#
-# CONFIG_NET_DEV_REFCNT_TRACKER is not set
-# CONFIG_NET_NS_REFCNT_TRACKER is not set
-# CONFIG_DEBUG_NET is not set
-# end of Networking Debugging
+CONFIG_DEBUG_KERNEL=y
+# CONFIG_DEBUG_MISC is not set
 
 #
 # Memory Debugging
 #
 CONFIG_PAGE_EXTENSION=y
 # CONFIG_DEBUG_PAGEALLOC is not set
-CONFIG_SLUB_DEBUG=y
-# CONFIG_SLUB_DEBUG_ON is not set
 CONFIG_PAGE_OWNER=y
-# CONFIG_PAGE_TABLE_CHECK is not set
-# CONFIG_PAGE_POISONING is not set
-# CONFIG_DEBUG_PAGE_REF is not set
+CONFIG_PAGE_POISONING=y
+CONFIG_DEBUG_PAGE_REF=y
 # CONFIG_DEBUG_RODATA_TEST is not set
 CONFIG_ARCH_HAS_DEBUG_WX=y
-# CONFIG_DEBUG_WX is not set
+CONFIG_DEBUG_WX=y
 CONFIG_GENERIC_PTDUMP=y
+CONFIG_PTDUMP_CORE=y
 # CONFIG_PTDUMP_DEBUGFS is not set
 # CONFIG_DEBUG_OBJECTS is not set
-# CONFIG_SHRINKER_DEBUG is not set
+# CONFIG_SLUB_DEBUG_ON is not set
+# CONFIG_SLUB_STATS is not set
 CONFIG_HAVE_DEBUG_KMEMLEAK=y
 # CONFIG_DEBUG_KMEMLEAK is not set
 # CONFIG_DEBUG_STACK_USAGE is not set
 # CONFIG_SCHED_STACK_END_CHECK is not set
 CONFIG_ARCH_HAS_DEBUG_VM_PGTABLE=y
 # CONFIG_DEBUG_VM is not set
-# CONFIG_DEBUG_VM_PGTABLE is not set
+CONFIG_DEBUG_VM_PGTABLE=y
 CONFIG_ARCH_HAS_DEBUG_VIRTUAL=y
-# CONFIG_DEBUG_VIRTUAL is not set
+CONFIG_DEBUG_VIRTUAL=y
 CONFIG_DEBUG_MEMORY_INIT=y
-# CONFIG_DEBUG_PER_CPU_MAPS is not set
+CONFIG_DEBUG_PER_CPU_MAPS=y
+CONFIG_ARCH_SUPPORTS_KMAP_LOCAL_FORCE_MAP=y
+# CONFIG_DEBUG_KMAP_LOCAL_FORCE_MAP is not set
 CONFIG_HAVE_ARCH_KASAN=y
 CONFIG_HAVE_ARCH_KASAN_VMALLOC=y
 CONFIG_CC_HAS_KASAN_GENERIC=y
@@ -6440,10 +4909,9 @@ CONFIG_KASAN_VMALLOC=y
 # CONFIG_KASAN_MODULE_TEST is not set
 CONFIG_HAVE_ARCH_KFENCE=y
 # CONFIG_KFENCE is not set
-CONFIG_HAVE_ARCH_KMSAN=y
 # end of Memory Debugging
 
-CONFIG_DEBUG_SHIRQ=y
+# CONFIG_DEBUG_SHIRQ is not set
 
 #
 # Debug Oops, Lockups and Hangs
@@ -6453,14 +4921,14 @@ CONFIG_PANIC_ON_OOPS_VALUE=1
 CONFIG_PANIC_TIMEOUT=0
 CONFIG_LOCKUP_DETECTOR=y
 CONFIG_SOFTLOCKUP_DETECTOR=y
-# CONFIG_BOOTPARAM_SOFTLOCKUP_PANIC is not set
-CONFIG_HARDLOCKUP_DETECTOR_PERF=y
+CONFIG_BOOTPARAM_SOFTLOCKUP_PANIC=y
+CONFIG_BOOTPARAM_SOFTLOCKUP_PANIC_VALUE=1
 CONFIG_HARDLOCKUP_CHECK_TIMESTAMP=y
-CONFIG_HARDLOCKUP_DETECTOR=y
-CONFIG_BOOTPARAM_HARDLOCKUP_PANIC=y
+# CONFIG_HARDLOCKUP_DETECTOR is not set
 CONFIG_DETECT_HUNG_TASK=y
 CONFIG_DEFAULT_HUNG_TASK_TIMEOUT=480
 # CONFIG_BOOTPARAM_HUNG_TASK_PANIC is not set
+CONFIG_BOOTPARAM_HUNG_TASK_PANIC_VALUE=0
 CONFIG_WQ_WATCHDOG=y
 # CONFIG_TEST_LOCKUP is not set
 # end of Debug Oops, Lockups and Hangs
@@ -6473,28 +4941,38 @@ CONFIG_SCHED_INFO=y
 CONFIG_SCHEDSTATS=y
 # end of Scheduler Debugging
 
-# CONFIG_DEBUG_TIMEKEEPING is not set
+CONFIG_DEBUG_TIMEKEEPING=y
 
 #
 # Lock Debugging (spinlocks, mutexes, etc...)
 #
 CONFIG_LOCK_DEBUGGING_SUPPORT=y
-# CONFIG_PROVE_LOCKING is not set
-# CONFIG_LOCK_STAT is not set
-# CONFIG_DEBUG_RT_MUTEXES is not set
-# CONFIG_DEBUG_SPINLOCK is not set
-# CONFIG_DEBUG_MUTEXES is not set
-# CONFIG_DEBUG_WW_MUTEX_SLOWPATH is not set
-# CONFIG_DEBUG_RWSEMS is not set
-# CONFIG_DEBUG_LOCK_ALLOC is not set
+CONFIG_PROVE_LOCKING=y
+# CONFIG_PROVE_RAW_LOCK_NESTING is not set
+CONFIG_LOCK_STAT=y
+CONFIG_DEBUG_RT_MUTEXES=y
+CONFIG_DEBUG_SPINLOCK=y
+CONFIG_DEBUG_MUTEXES=y
+CONFIG_DEBUG_WW_MUTEX_SLOWPATH=y
+CONFIG_DEBUG_RWSEMS=y
+CONFIG_DEBUG_LOCK_ALLOC=y
+CONFIG_LOCKDEP=y
+CONFIG_LOCKDEP_BITS=15
+CONFIG_LOCKDEP_CHAINS_BITS=16
+CONFIG_LOCKDEP_STACK_TRACE_BITS=19
+CONFIG_LOCKDEP_STACK_TRACE_HASH_BITS=14
+CONFIG_LOCKDEP_CIRCULAR_QUEUE_BITS=12
+# CONFIG_DEBUG_LOCKDEP is not set
 CONFIG_DEBUG_ATOMIC_SLEEP=y
 # CONFIG_DEBUG_LOCKING_API_SELFTESTS is not set
-# CONFIG_LOCK_TORTURE_TEST is not set
+CONFIG_LOCK_TORTURE_TEST=m
 # CONFIG_WW_MUTEX_SELFTEST is not set
 # CONFIG_SCF_TORTURE_TEST is not set
-# CONFIG_CSD_LOCK_WAIT_DEBUG is not set
+CONFIG_CSD_LOCK_WAIT_DEBUG=y
 # end of Lock Debugging (spinlocks, mutexes, etc...)
 
+CONFIG_TRACE_IRQFLAGS=y
+CONFIG_TRACE_IRQFLAGS_NMI=y
 # CONFIG_DEBUG_IRQFLAGS is not set
 CONFIG_STACKTRACE=y
 # CONFIG_WARN_ALL_UNSEEDED_RANDOM is not set
@@ -6503,135 +4981,125 @@ CONFIG_STACKTRACE=y
 #
 # Debug kernel data structures
 #
-CONFIG_DEBUG_LIST=y
-# CONFIG_DEBUG_PLIST is not set
-# CONFIG_DEBUG_SG is not set
-# CONFIG_DEBUG_NOTIFIERS is not set
-CONFIG_BUG_ON_DATA_CORRUPTION=y
-# CONFIG_DEBUG_MAPLE_TREE is not set
+# CONFIG_DEBUG_LIST is not set
+CONFIG_DEBUG_PLIST=y
+CONFIG_DEBUG_SG=y
+CONFIG_DEBUG_NOTIFIERS=y
+# CONFIG_BUG_ON_DATA_CORRUPTION is not set
 # end of Debug kernel data structures
 
-# CONFIG_DEBUG_CREDENTIALS is not set
+CONFIG_DEBUG_CREDENTIALS=y
 
 #
 # RCU Debugging
 #
-# CONFIG_RCU_SCALE_TEST is not set
-# CONFIG_RCU_TORTURE_TEST is not set
-# CONFIG_RCU_REF_SCALE_TEST is not set
-CONFIG_RCU_CPU_STALL_TIMEOUT=60
-CONFIG_RCU_EXP_CPU_STALL_TIMEOUT=0
-# CONFIG_RCU_TRACE is not set
+CONFIG_PROVE_RCU=y
+# CONFIG_PROVE_RCU_LIST is not set
+CONFIG_TORTURE_TEST=m
+CONFIG_RCU_SCALE_TEST=m
+CONFIG_RCU_TORTURE_TEST=m
+CONFIG_RCU_REF_SCALE_TEST=m
+CONFIG_RCU_CPU_STALL_TIMEOUT=21
+CONFIG_RCU_TRACE=y
 # CONFIG_RCU_EQS_DEBUG is not set
+# CONFIG_RCU_STRICT_GRACE_PERIOD is not set
 # end of RCU Debugging
 
-# CONFIG_DEBUG_WQ_FORCE_RR_CPU is not set
-# CONFIG_CPU_HOTPLUG_STATE_CONTROL is not set
+CONFIG_DEBUG_WQ_FORCE_RR_CPU=y
+CONFIG_CPU_HOTPLUG_STATE_CONTROL=y
 CONFIG_LATENCYTOP=y
 CONFIG_USER_STACKTRACE_SUPPORT=y
 CONFIG_NOP_TRACER=y
-CONFIG_HAVE_RETHOOK=y
-CONFIG_RETHOOK=y
 CONFIG_HAVE_FUNCTION_TRACER=y
 CONFIG_HAVE_FUNCTION_GRAPH_TRACER=y
 CONFIG_HAVE_DYNAMIC_FTRACE=y
 CONFIG_HAVE_DYNAMIC_FTRACE_WITH_REGS=y
 CONFIG_HAVE_DYNAMIC_FTRACE_WITH_DIRECT_CALLS=y
 CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS=y
-CONFIG_HAVE_DYNAMIC_FTRACE_NO_PATCHABLE=y
 CONFIG_HAVE_FTRACE_MCOUNT_RECORD=y
 CONFIG_HAVE_SYSCALL_TRACEPOINTS=y
 CONFIG_HAVE_FENTRY=y
 CONFIG_HAVE_OBJTOOL_MCOUNT=y
 CONFIG_HAVE_C_RECORDMCOUNT=y
-CONFIG_HAVE_BUILDTIME_MCOUNT_SORT=y
-CONFIG_BUILDTIME_MCOUNT_SORT=y
-CONFIG_TRACER_MAX_TRACE=y
 CONFIG_TRACE_CLOCK=y
 CONFIG_RING_BUFFER=y
 CONFIG_EVENT_TRACING=y
 CONFIG_CONTEXT_SWITCH_TRACER=y
+CONFIG_PREEMPTIRQ_TRACEPOINTS=y
 CONFIG_TRACING=y
-CONFIG_GENERIC_TRACER=y
 CONFIG_TRACING_SUPPORT=y
 CONFIG_FTRACE=y
 # CONFIG_BOOTTIME_TRACING is not set
-CONFIG_FUNCTION_TRACER=y
-CONFIG_FUNCTION_GRAPH_TRACER=y
-CONFIG_DYNAMIC_FTRACE=y
-CONFIG_DYNAMIC_FTRACE_WITH_REGS=y
-CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS=y
-CONFIG_DYNAMIC_FTRACE_WITH_ARGS=y
-# CONFIG_FPROBE is not set
-CONFIG_FUNCTION_PROFILER=y
-CONFIG_STACK_TRACER=y
+# CONFIG_FUNCTION_TRACER is not set
+# CONFIG_STACK_TRACER is not set
 # CONFIG_IRQSOFF_TRACER is not set
-CONFIG_SCHED_TRACER=y
-CONFIG_HWLAT_TRACER=y
-# CONFIG_OSNOISE_TRACER is not set
-# CONFIG_TIMERLAT_TRACER is not set
+# CONFIG_SCHED_TRACER is not set
+# CONFIG_HWLAT_TRACER is not set
 # CONFIG_MMIOTRACE is not set
-CONFIG_FTRACE_SYSCALLS=y
-CONFIG_TRACER_SNAPSHOT=y
-# CONFIG_TRACER_SNAPSHOT_PER_CPU_SWAP is not set
+# CONFIG_ENABLE_DEFAULT_TRACERS is not set
+# CONFIG_FTRACE_SYSCALLS is not set
+# CONFIG_TRACER_SNAPSHOT is not set
 CONFIG_BRANCH_PROFILE_NONE=y
 # CONFIG_PROFILE_ANNOTATED_BRANCHES is not set
-# CONFIG_BLK_DEV_IO_TRACE is not set
 CONFIG_KPROBE_EVENTS=y
-# CONFIG_KPROBE_EVENTS_ON_NOTRACE is not set
 CONFIG_UPROBE_EVENTS=y
 CONFIG_BPF_EVENTS=y
 CONFIG_DYNAMIC_EVENTS=y
 CONFIG_PROBE_EVENTS=y
 CONFIG_BPF_KPROBE_OVERRIDE=y
-CONFIG_FTRACE_MCOUNT_RECORD=y
-CONFIG_FTRACE_MCOUNT_USE_CC=y
-CONFIG_TRACING_MAP=y
-CONFIG_SYNTH_EVENTS=y
-CONFIG_HIST_TRIGGERS=y
+# CONFIG_SYNTH_EVENTS is not set
+# CONFIG_HIST_TRIGGERS is not set
 # CONFIG_TRACE_EVENT_INJECT is not set
 # CONFIG_TRACEPOINT_BENCHMARK is not set
-CONFIG_RING_BUFFER_BENCHMARK=m
+# CONFIG_RING_BUFFER_BENCHMARK is not set
 # CONFIG_TRACE_EVAL_MAP_FILE is not set
-# CONFIG_FTRACE_RECORD_RECURSION is not set
-# CONFIG_FTRACE_STARTUP_TEST is not set
-# CONFIG_FTRACE_SORT_STARTUP_TEST is not set
+# CONFIG_GCOV_PROFILE_FTRACE is not set
 # CONFIG_RING_BUFFER_STARTUP_TEST is not set
 # CONFIG_RING_BUFFER_VALIDATE_TIME_DELTAS is not set
 # CONFIG_PREEMPTIRQ_DELAY_TEST is not set
-# CONFIG_SYNTH_EVENT_GEN_TEST is not set
 # CONFIG_KPROBE_EVENT_GEN_TEST is not set
-# CONFIG_HIST_TRIGGERS_DEBUG is not set
-# CONFIG_RV is not set
-CONFIG_PROVIDE_OHCI1394_DMA_INIT=y
-# CONFIG_SAMPLES is not set
-CONFIG_HAVE_SAMPLE_FTRACE_DIRECT=y
-CONFIG_HAVE_SAMPLE_FTRACE_DIRECT_MULTI=y
+# CONFIG_PROVIDE_OHCI1394_DMA_INIT is not set
+CONFIG_SAMPLES=y
+# CONFIG_SAMPLE_AUXDISPLAY is not set
+# CONFIG_SAMPLE_TRACE_EVENTS is not set
+# CONFIG_SAMPLE_TRACE_PRINTK is not set
+# CONFIG_SAMPLE_TRACE_ARRAY is not set
+CONFIG_SAMPLE_KOBJECT=y
+# CONFIG_SAMPLE_KPROBES is not set
+# CONFIG_SAMPLE_HW_BREAKPOINT is not set
+# CONFIG_SAMPLE_KFIFO is not set
+# CONFIG_SAMPLE_RPMSG_CLIENT is not set
+# CONFIG_SAMPLE_CONFIGFS is not set
+# CONFIG_SAMPLE_VFIO_MDEV_MTTY is not set
+# CONFIG_SAMPLE_VFIO_MDEV_MDPY is not set
+# CONFIG_SAMPLE_VFIO_MDEV_MDPY_FB is not set
+# CONFIG_SAMPLE_VFIO_MDEV_MBOCHS is not set
+CONFIG_SAMPLE_WATCHDOG=y
 CONFIG_ARCH_HAS_DEVMEM_IS_ALLOWED=y
-CONFIG_STRICT_DEVMEM=y
-# CONFIG_IO_STRICT_DEVMEM is not set
 
 #
 # x86 Debugging
 #
+CONFIG_TRACE_IRQFLAGS_SUPPORT=y
+CONFIG_TRACE_IRQFLAGS_NMI_SUPPORT=y
 CONFIG_EARLY_PRINTK_USB=y
 CONFIG_X86_VERBOSE_BOOTUP=y
 CONFIG_EARLY_PRINTK=y
 CONFIG_EARLY_PRINTK_DBGP=y
 CONFIG_EARLY_PRINTK_USB_XDBC=y
-# CONFIG_EFI_PGT_DUMP is not set
-# CONFIG_DEBUG_TLBFLUSH is not set
+CONFIG_EFI_PGT_DUMP=y
+CONFIG_DEBUG_TLBFLUSH=y
 CONFIG_HAVE_MMIOTRACE_SUPPORT=y
 # CONFIG_X86_DECODER_SELFTEST is not set
-CONFIG_IO_DELAY_0X80=y
+# CONFIG_IO_DELAY_0X80 is not set
 # CONFIG_IO_DELAY_0XED is not set
-# CONFIG_IO_DELAY_UDELAY is not set
+CONFIG_IO_DELAY_UDELAY=y
 # CONFIG_IO_DELAY_NONE is not set
 CONFIG_DEBUG_BOOT_PARAMS=y
 # CONFIG_CPA_DEBUG is not set
-# CONFIG_DEBUG_ENTRY is not set
+CONFIG_DEBUG_ENTRY=y
 # CONFIG_DEBUG_NMI_SELFTEST is not set
-# CONFIG_X86_DEBUG_FPU is not set
+CONFIG_X86_DEBUG_FPU=y
 # CONFIG_PUNIT_ATOM_DEBUG is not set
 CONFIG_UNWINDER_ORC=y
 # CONFIG_UNWINDER_FRAME_POINTER is not set
@@ -6641,36 +5109,41 @@ CONFIG_UNWINDER_ORC=y
 # Kernel Testing and Coverage
 #
 # CONFIG_KUNIT is not set
-# CONFIG_NOTIFIER_ERROR_INJECTION is not set
+CONFIG_NOTIFIER_ERROR_INJECTION=y
+# CONFIG_PM_NOTIFIER_ERROR_INJECT is not set
+CONFIG_NETDEV_NOTIFIER_ERROR_INJECT=y
 CONFIG_FUNCTION_ERROR_INJECTION=y
 # CONFIG_FAULT_INJECTION is not set
 CONFIG_ARCH_HAS_KCOV=y
 CONFIG_CC_HAS_SANCOV_TRACE_PC=y
-# CONFIG_KCOV is not set
+CONFIG_KCOV=y
+CONFIG_KCOV_ENABLE_COMPARISONS=y
+# CONFIG_KCOV_INSTRUMENT_ALL is not set
+CONFIG_KCOV_IRQ_AREA_SIZE=0x40000
 CONFIG_RUNTIME_TESTING_MENU=y
 # CONFIG_LKDTM is not set
+# CONFIG_TEST_LIST_SORT is not set
 # CONFIG_TEST_MIN_HEAP is not set
+# CONFIG_TEST_SORT is not set
 # CONFIG_TEST_DIV64 is not set
+# CONFIG_KPROBES_SANITY_TEST is not set
 # CONFIG_BACKTRACE_SELF_TEST is not set
-# CONFIG_TEST_REF_TRACKER is not set
 # CONFIG_RBTREE_TEST is not set
 # CONFIG_REED_SOLOMON_TEST is not set
 # CONFIG_INTERVAL_TREE_TEST is not set
 # CONFIG_PERCPU_TEST is not set
 # CONFIG_ATOMIC64_SELFTEST is not set
-# CONFIG_ASYNC_RAID6_TEST is not set
 # CONFIG_TEST_HEXDUMP is not set
-# CONFIG_STRING_SELFTEST is not set
 # CONFIG_TEST_STRING_HELPERS is not set
 # CONFIG_TEST_STRSCPY is not set
 # CONFIG_TEST_KSTRTOX is not set
 # CONFIG_TEST_PRINTF is not set
-# CONFIG_TEST_SCANF is not set
 # CONFIG_TEST_BITMAP is not set
 # CONFIG_TEST_UUID is not set
 # CONFIG_TEST_XARRAY is not set
+# CONFIG_TEST_OVERFLOW is not set
 # CONFIG_TEST_RHASHTABLE is not set
-# CONFIG_TEST_SIPHASH is not set
+# CONFIG_TEST_HASH is not set
 # CONFIG_TEST_IDA is not set
 # CONFIG_TEST_LKM is not set
 # CONFIG_TEST_BITOPS is not set
@@ -6683,26 +5156,18 @@ CONFIG_RUNTIME_TESTING_MENU=y
 # CONFIG_TEST_SYSCTL is not set
 # CONFIG_TEST_UDELAY is not set
 # CONFIG_TEST_STATIC_KEYS is not set
-# CONFIG_TEST_DYNAMIC_DEBUG is not set
-# CONFIG_TEST_KMOD is not set
+# CONFIG_TEST_DEBUG_VIRTUAL is not set
 # CONFIG_TEST_MEMCAT_P is not set
-# CONFIG_TEST_LIVEPATCH is not set
+# CONFIG_TEST_STACKINIT is not set
 # CONFIG_TEST_MEMINIT is not set
-# CONFIG_TEST_HMM is not set
 # CONFIG_TEST_FREE_PAGES is not set
 # CONFIG_TEST_FPU is not set
-# CONFIG_TEST_CLOCKSOURCE_WATCHDOG is not set
 CONFIG_ARCH_USE_MEMTEST=y
 # CONFIG_MEMTEST is not set
 # end of Kernel Testing and Coverage
-
-#
-# Rust hacking
-#
-# end of Rust hacking
 # end of Kernel hacking
 
---8nAerbALHNP9BH49
+--4SmVSleSRHaDVft5
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: attachment; filename="job-script"
 
@@ -6710,67 +5175,71 @@ Content-Disposition: attachment; filename="job-script"
 
 export_top_env()
 {
-	export suite='kernel-selftests'
-	export testcase='kernel-selftests'
+	export suite='rcutorture'
+	export testcase='rcutorture'
 	export category='functional'
-	export need_memory='12G'
-	export kernel_cmdline='kvm-intel.unrestricted_guest=0'
-	export job_origin='kernel-selftests-kvm.yaml'
+	export need_memory='300MB'
+	export runtime=300
+	export job_origin='rcutorture.yaml'
+	export queue_cmdline_keys='branch
+commit
+kbuild_queue_analysis'
 	export queue='validate'
-	export testbox='lkp-icl-2sp4'
-	export commit='92e7d5c83aff124f49082585e57939ed24b59c5c'
+	export testbox='vm-snb'
+	export tbox_group='vm-snb'
 	export branch='linus/master'
-	export kconfig='x86_64-rhel-8.3-kvm'
-	export name='/cephfs/tmp/d20221128-2603173-14exzbq/kernel-selftests-kvm.yaml'
-	export tbox_group='lkp-icl-2sp4'
-	export submit_id='6389a6fae49fde90fe8aa54b'
-	export job_file='/lkp/jobs/scheduled/lkp-icl-2sp4/kernel-selftests-kvm-debian-12-x86_64-20220629.cgz-92e7d5c83aff124f49082585e57939ed24b59c5c-20221202-37118-1lmc1cn-5.yaml'
-	export id='4eea0416b6167d9384de03f01b0c34ba52f7ac91'
+	export commit='a5c095e0e9b6fedcffd0907c84f77751128e2a34'
+	export kconfig='x86_64-randconfig-a004-20221128'
+	export repeat_to=6
+	export nr_vm=300
+	export submit_id='6387bd7b6683d599626d4f1d'
+	export job_file='/lkp/jobs/scheduled/vm-meta-230/rcutorture-300s-default-busted_srcud-debian-11.1-x86_64-20220510.cgz-a5c095e0e9b6fedcffd0907c84f77751128e2a34-20221201-39266-15hsjje-5.yaml'
+	export id='ada8314479ba1460eb93eead2e1f899f2a14ebd1'
 	export queuer_version='/zday/lkp'
-	export model='Ice Lake'
-	export nr_node=2
-	export nr_cpu=128
-	export memory='128G'
-	export nr_ssd_partitions=3
-	export nr_hdd_partitions=6
-	export hdd_partitions='/dev/disk/by-id/ata-WDC_WD20SPZX-08UA7_WD-WXE2EA0ECVAS-part*'
-	export ssd_partitions='/dev/disk/by-id/ata-INTEL_SSDSC2BA800G3_BTTV34510181800JGN-part*'
-	export rootfs_partition='/dev/disk/by-id/ata-INTEL_SSDSC2BB240G4_CVWL422602EB240NGN-part1'
-	export kernel_cmdline_hw='acpi_rsdp=0x69ffd014'
-	export brand='Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz'
-	export ucode='0xd000363'
-	export bisect_dmesg=true
-	export need_kconfig='KVM
-KVM_INTEL'
-	export rootfs='debian-12-x86_64-20220629.cgz'
-	export initrds='linux_headers
-linux_selftests'
-	export enqueue_time='2022-12-02 15:19:23 +0800'
+	export model='qemu-system-x86_64 -enable-kvm -cpu SandyBridge'
+	export nr_cpu=2
+	export memory='16G'
+	export need_kernel_version='>= v4.17, gcc
+>= v5.12, clang'
+	export need_kconfig=\{\"RCU_TORTURE_TEST\"\=\>\"m\"\}'
+'\{\"SECURITY_LOADPIN_ENABLED\"\=\>\"n,\ \<\=\ v4.19\"\}'
+'\{\"SECURITY_LOADPIN_ENFORCE\"\=\>\"n,\ v4.20-rc1\"\}'
+'\{\"MODULE_UNLOAD\"\=\>\"y\"\}'
+'\{\"RCU_EXPERT\"\=\>\"y\"\}'
+'\{\"FORCE_TASKS_RCU\"\=\>\"y,\ v5.19-rc1\"\}'
+'\{\"TASKS_RCU\"\=\>\"y\"\}'
+'\{\"FORCE_TASKS_TRACE_RCU\"\=\>\"y,\ v5.19-rc1\"\}'
+'\{\"TASKS_TRACE_RCU\"\=\>\"y,\ v5.8-rc1\"\}'
+'\{\"FORCE_TASKS_RUDE_RCU\"\=\>\"y,\ v5.19-rc1\"\}'
+'\{\"TASKS_RUDE_RCU\"\=\>\"y,\ v5.8-rc1\"\}'
+'\{\"KVM_GUEST\"\=\>\"y\"\}
+	export ssh_base_port=23032
+	export kernel_cmdline='vmalloc=256M initramfs_async=0 page_owner=on'
+	export rootfs='debian-11.1-x86_64-20220510.cgz'
 	export compiler='gcc-11'
-	export _id='6389a712e49fde90fe8aa54d'
-	export _rt='/result/kernel-selftests/kvm/lkp-icl-2sp4/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kvm/gcc-11/92e7d5c83aff124f49082585e57939ed24b59c5c'
+	export enqueue_time='2022-12-01 04:30:51 +0800'
+	export _id='6387bd926683d599626d4f1f'
+	export _rt='/result/rcutorture/300s-default-busted_srcud/vm-snb/debian-11.1-x86_64-20220510.cgz/x86_64-randconfig-a004-20221128/gcc-11/a5c095e0e9b6fedcffd0907c84f77751128e2a34'
 	export user='lkp'
 	export LKP_SERVER='internal-lkp-server'
-	export result_root='/result/kernel-selftests/kvm/lkp-icl-2sp4/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kvm/gcc-11/92e7d5c83aff124f49082585e57939ed24b59c5c/3'
-	export scheduler_version='/lkp/lkp/.src-20221201-200718'
+	export result_root='/result/rcutorture/300s-default-busted_srcud/vm-snb/debian-11.1-x86_64-20220510.cgz/x86_64-randconfig-a004-20221128/gcc-11/a5c095e0e9b6fedcffd0907c84f77751128e2a34/3'
+	export scheduler_version='/lkp/lkp/.src-20221130-171506'
 	export arch='x86_64'
 	export max_uptime=1200
-	export initrd='/osimage/debian/debian-12-x86_64-20220629.cgz'
+	export initrd='/osimage/debian/debian-11.1-x86_64-20220510.cgz'
 	export bootloader_append='root=/dev/ram0
-RESULT_ROOT=/result/kernel-selftests/kvm/lkp-icl-2sp4/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kvm/gcc-11/92e7d5c83aff124f49082585e57939ed24b59c5c/3
-BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3-kvm/gcc-11/92e7d5c83aff124f49082585e57939ed24b59c5c/vmlinuz-6.1.0-rc4-00027-g92e7d5c83aff
+RESULT_ROOT=/result/rcutorture/300s-default-busted_srcud/vm-snb/debian-11.1-x86_64-20220510.cgz/x86_64-randconfig-a004-20221128/gcc-11/a5c095e0e9b6fedcffd0907c84f77751128e2a34/3
+BOOT_IMAGE=/pkg/linux/x86_64-randconfig-a004-20221128/gcc-11/a5c095e0e9b6fedcffd0907c84f77751128e2a34/vmlinuz-5.13.0-rc1-00008-ga5c095e0e9b6
 branch=linus/master
-job=/lkp/jobs/scheduled/lkp-icl-2sp4/kernel-selftests-kvm-debian-12-x86_64-20220629.cgz-92e7d5c83aff124f49082585e57939ed24b59c5c-20221202-37118-1lmc1cn-5.yaml
+job=/lkp/jobs/scheduled/vm-meta-230/rcutorture-300s-default-busted_srcud-debian-11.1-x86_64-20220510.cgz-a5c095e0e9b6fedcffd0907c84f77751128e2a34-20221201-39266-15hsjje-5.yaml
 user=lkp
 ARCH=x86_64
-kconfig=x86_64-rhel-8.3-kvm
-commit=92e7d5c83aff124f49082585e57939ed24b59c5c
-kvm-intel.unrestricted_guest=0
+kconfig=x86_64-randconfig-a004-20221128
+commit=a5c095e0e9b6fedcffd0907c84f77751128e2a34
+vmalloc=256M initramfs_async=0 page_owner=on
 initcall_debug
-acpi_rsdp=0x69ffd014
 max_uptime=1200
 LKP_SERVER=internal-lkp-server
-nokaslr
 selinux=0
 debug
 apic=debug
@@ -6792,26 +5261,19 @@ earlyprintk=ttyS0,115200
 console=ttyS0,115200
 vga=normal
 rw'
-	export modules_initrd='/pkg/linux/x86_64-rhel-8.3-kvm/gcc-11/92e7d5c83aff124f49082585e57939ed24b59c5c/modules.cgz'
-	export linux_headers_initrd='/pkg/linux/x86_64-rhel-8.3-kvm/gcc-11/92e7d5c83aff124f49082585e57939ed24b59c5c/linux-headers.cgz'
-	export linux_selftests_initrd='/pkg/linux/x86_64-rhel-8.3-kvm/gcc-11/92e7d5c83aff124f49082585e57939ed24b59c5c/linux-selftests.cgz'
-	export bm_initrd='/osimage/deps/debian-12-x86_64-20220629.cgz/run-ipconfig_20221125.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/lkp_20221125.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/rsync-rootfs_20221125.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/kernel-selftests_20221128.cgz,/osimage/pkg/debian-12-x86_64-20220629.cgz/kernel-selftests-x86_64-2ed09c3b-1_20221128.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/hw_20221125.cgz'
-	export ucode_initrd='/osimage/ucode/intel-ucode-20220804.cgz'
+	export modules_initrd='/pkg/linux/x86_64-randconfig-a004-20221128/gcc-11/a5c095e0e9b6fedcffd0907c84f77751128e2a34/modules.cgz'
+	export bm_initrd='/osimage/deps/debian-11.1-x86_64-20220510.cgz/run-ipconfig_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/lkp_20220513.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/rsync-rootfs_20220515.cgz'
 	export lkp_initrd='/osimage/user/lkp/lkp-x86_64.cgz'
 	export site='inn'
 	export LKP_CGI_PORT=80
 	export LKP_CIFS_PORT=139
-	export last_kernel='6.1.0-rc7'
-	export repeat_to=6
-	export queue_cmdline_keys='branch
-commit
-kbuild_queue_analysis'
 	export schedule_notify_address=
-	export stop_repeat_if_found='kernel-selftests.kvm.triple_fault_event_test.fail'
+	export stop_repeat_if_found='dmesg.kernel/rcu/rcutorture.c:#suspicious_rcu_dereference_check()usage'
 	export kbuild_queue_analysis=1
-	export kernel='/pkg/linux/x86_64-rhel-8.3-kvm/gcc-11/92e7d5c83aff124f49082585e57939ed24b59c5c/vmlinuz-6.1.0-rc4-00027-g92e7d5c83aff'
-	export dequeue_time='2022-12-02 15:24:47 +0800'
-	export job_initrd='/lkp/jobs/scheduled/lkp-icl-2sp4/kernel-selftests-kvm-debian-12-x86_64-20220629.cgz-92e7d5c83aff124f49082585e57939ed24b59c5c-20221202-37118-1lmc1cn-5.cgz'
+	export meta_host='vm-meta-230'
+	export kernel='/pkg/linux/x86_64-randconfig-a004-20221128/gcc-11/a5c095e0e9b6fedcffd0907c84f77751128e2a34/vmlinuz-5.13.0-rc1-00008-ga5c095e0e9b6'
+	export dequeue_time='2022-12-01 04:31:33 +0800'
+	export job_initrd='/lkp/jobs/scheduled/vm-meta-230/rcutorture-300s-default-busted_srcud-debian-11.1-x86_64-20220510.cgz-a5c095e0e9b6fedcffd0907c84f77751128e2a34-20221201-39266-15hsjje-5.cgz'
 
 	[ -n "$LKP_SRC" ] ||
 	export LKP_SRC=/lkp/${user:-lkp}/src
@@ -6833,7 +5295,7 @@ run_job()
 	run_monitor $LKP_SRC/monitors/wrapper oom-killer
 	run_monitor $LKP_SRC/monitors/plain/watchdog
 
-	run_test group='kvm' $LKP_SRC/tests/wrapper kernel-selftests
+	run_test test='default' torture_type='busted_srcud' $LKP_SRC/tests/wrapper rcutorture
 }
 
 extract_stats()
@@ -6841,11 +5303,11 @@ extract_stats()
 	export stats_part_begin=
 	export stats_part_end=
 
-	env group='kvm' $LKP_SRC/stats/wrapper kernel-selftests
+	env test='default' torture_type='busted_srcud' $LKP_SRC/stats/wrapper rcutorture
 	$LKP_SRC/stats/wrapper kmsg
 	$LKP_SRC/stats/wrapper meminfo
 
-	$LKP_SRC/stats/wrapper time kernel-selftests.time
+	$LKP_SRC/stats/wrapper time rcutorture.time
 	$LKP_SRC/stats/wrapper dmesg
 	$LKP_SRC/stats/wrapper kmsg
 	$LKP_SRC/stats/wrapper last_state
@@ -6855,5182 +5317,903 @@ extract_stats()
 
 "$@"
 
---8nAerbALHNP9BH49
+--4SmVSleSRHaDVft5
 Content-Type: application/x-xz
 Content-Disposition: attachment; filename="dmesg.xz"
 Content-Transfer-Encoding: base64
 
-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
+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
+xGf7AgAAAAAEWVo=
 
---8nAerbALHNP9BH49
+--4SmVSleSRHaDVft5
 Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: attachment; filename="kernel-selftests"
-Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment; filename="rcutorture"
 
-KERNEL SELFTESTS: linux_headers_dir is /usr/src/linux-headers-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c
-2022-12-02 16:21:58 ln -sf /usr/bin/clang
-2022-12-02 16:21:58 ln -sf /usr/sbin/iptables-nft /usr/bin/iptables
-2022-12-02 16:21:58 ln -sf /usr/sbin/ip6tables-nft /usr/bin/ip6tables
-2022-12-02 16:21:58 sed -i s/default_timeout=3D45/default_timeout=3D300/ ks=
-elftest/runner.sh
-LKP WARN miss config CONFIG_KVM_AMD=3D of kvm/config
-2022-12-02 16:21:59 make -C kvm
-make: Entering directory '/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d=
-5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm'
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ilib -Ii=
-nclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/.=
-./../../usr/include   -c lib/assert.c -o /usr/src/perf_selftests-x86_64-rhe=
-l-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/=
-kvm/lib/assert.o
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ilib -Ii=
-nclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/.=
-./../../usr/include   -c lib/elf.c -o /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm=
-/lib/elf.o
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ilib -Ii=
-nclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/.=
-./../../usr/include   -c lib/guest_modes.c -o /usr/src/perf_selftests-x86_6=
-4-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selft=
-ests/kvm/lib/guest_modes.o
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ilib -Ii=
-nclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/.=
-./../../usr/include   -c lib/io.c -o /usr/src/perf_selftests-x86_64-rhel-8.=
-3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/=
-lib/io.o
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ilib -Ii=
-nclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/.=
-./../../usr/include   -c lib/kvm_util.c -o /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/kvm/lib/kvm_util.o
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ilib -Ii=
-nclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/.=
-./../../usr/include   -c lib/perf_test_util.c -o /usr/src/perf_selftests-x8=
-6_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/se=
-lftests/kvm/lib/perf_test_util.o
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ilib -Ii=
-nclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/.=
-./../../usr/include   -c lib/rbtree.c -o /usr/src/perf_selftests-x86_64-rhe=
-l-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/=
-kvm/lib/rbtree.o
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ilib -Ii=
-nclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/.=
-./../../usr/include   -c lib/sparsebit.c -o /usr/src/perf_selftests-x86_64-=
-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftes=
-ts/kvm/lib/sparsebit.o
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ilib -Ii=
-nclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/.=
-./../../usr/include   -c lib/test_util.c -o /usr/src/perf_selftests-x86_64-=
-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftes=
-ts/kvm/lib/test_util.o
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ilib/x86=
-_64 -Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_=
-64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/self=
-tests/../../../usr/include   -c lib/x86_64/apic.c -o /usr/src/perf_selftest=
-s-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testin=
-g/selftests/kvm/lib/x86_64/apic.o
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ilib/x86=
-_64 -Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_=
-64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/self=
-tests/../../../usr/include   -c lib/x86_64/perf_test_util.c -o /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/to=
-ols/testing/selftests/kvm/lib/x86_64/perf_test_util.o
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ilib/x86=
-_64 -Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_=
-64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/self=
-tests/../../../usr/include   -c lib/x86_64/processor.c -o /usr/src/perf_sel=
-ftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/t=
-esting/selftests/kvm/lib/x86_64/processor.o
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ilib/x86=
-_64 -Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_=
-64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/self=
-tests/../../../usr/include   -c lib/x86_64/svm.c -o /usr/src/perf_selftests=
--x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing=
-/selftests/kvm/lib/x86_64/svm.o
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ilib/x86=
-_64 -Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_=
-64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/self=
-tests/../../../usr/include   -c lib/x86_64/ucall.c -o /usr/src/perf_selftes=
-ts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testi=
-ng/selftests/kvm/lib/x86_64/ucall.o
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ilib/x86=
-_64 -Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_=
-64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/self=
-tests/../../../usr/include   -c lib/x86_64/vmx.c -o /usr/src/perf_selftests=
--x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing=
-/selftests/kvm/lib/x86_64/vmx.o
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ilib/x86=
-_64 -Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_=
-64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/self=
-tests/../../../usr/include   -c lib/x86_64/handlers.S -o /usr/src/perf_self=
-tests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/te=
-sting/selftests/kvm/lib/x86_64/handlers.o
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ilib -Ii=
-nclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/.=
-./../../usr/include   -c -ffreestanding lib/string_override.c -o /usr/src/p=
-erf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/=
-tools/testing/selftests/kvm/lib/string_override.o
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/cpuid_test.c /usr/src/pe=
-rf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/t=
-ools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/k=
-vm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49=
-082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /usr/s=
-rc/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59=
-c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64-rhe=
-l-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/=
-kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff=
-124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test_util=
-.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e579=
-39ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_selftes=
-ts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testi=
-ng/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8.3-kv=
-m-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/=
-test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490=
-82585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /usr/sr=
-c/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c=
-5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/perf_se=
-lftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/=
-testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x86_64=
--rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selfte=
-sts/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5=
-c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/u=
-call.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src/perf=
-_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/too=
-ls/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests-x86_=
-64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/self=
-tests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/k=
-vm/x86_64/cpuid_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/cr4_cpuid_sync_test.c /u=
-sr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed2=
-4b59c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x8=
-6_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/se=
-lftests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83=
-aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes=
-.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e579=
-39ed24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x=
-86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/s=
-elftests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e=
-7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_=
-test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490=
-82585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/to=
-ols/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rh=
-el-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests=
-/kvm/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83a=
-ff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.=
-o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e5793=
-9ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/sr=
-c/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c=
-5c/tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftes=
-ts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testi=
-ng/selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-k=
-vm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib=
-/x86_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124=
-f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr=
-/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b=
-59c5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selft=
-ests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/tes=
-ting/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x8=
-6_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/se=
-lftests/kvm/x86_64/cr4_cpuid_sync_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/get_msr_index_features.c=
- /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939=
-ed24b59c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests=
--x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing=
-/selftests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5=
-c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_mo=
-des.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e=
-57939ed24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftest=
-s-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testin=
-g/selftests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-=
-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/pe=
-rf_test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f=
-49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c=
-/tools/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64=
--rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selfte=
-sts/kvm/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c=
-83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/ap=
-ic.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e5=
-7939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr=
-/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b=
-59c5c/tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_self=
-tests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/te=
-sting/selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.=
-3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/=
-lib/x86_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff=
-124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /=
-usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed=
-24b59c5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_se=
-lftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/=
-testing/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests=
--x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing=
-/selftests/kvm/x86_64/get_msr_index_features
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/evmcs_test.c /usr/src/pe=
-rf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/t=
-ools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/k=
-vm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49=
-082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /usr/s=
-rc/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59=
-c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64-rhe=
-l-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/=
-kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff=
-124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test_util=
-.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e579=
-39ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_selftes=
-ts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testi=
-ng/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8.3-kv=
-m-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/=
-test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490=
-82585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /usr/sr=
-c/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c=
-5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/perf_se=
-lftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/=
-testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x86_64=
--rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selfte=
-sts/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5=
-c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/u=
-call.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src/perf=
-_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/too=
-ls/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests-x86_=
-64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/self=
-tests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/k=
-vm/x86_64/evmcs_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/emulator_error_test.c /u=
-sr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed2=
-4b59c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x8=
-6_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/se=
-lftests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83=
-aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes=
-.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e579=
-39ed24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x=
-86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/s=
-elftests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e=
-7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_=
-test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490=
-82585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/to=
-ols/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rh=
-el-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests=
-/kvm/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83a=
-ff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.=
-o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e5793=
-9ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/sr=
-c/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c=
-5c/tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftes=
-ts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testi=
-ng/selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-k=
-vm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib=
-/x86_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124=
-f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr=
-/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b=
-59c5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selft=
-ests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/tes=
-ting/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x8=
-6_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/se=
-lftests/kvm/x86_64/emulator_error_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/fix_hypercall_test.c /us=
-r/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24=
-b59c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86=
-_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/sel=
-ftests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83a=
-ff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.=
-o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e5793=
-9ed24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x8=
-6_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/se=
-lftests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7=
-d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_t=
-est_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908=
-2585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf=
-_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/too=
-ls/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhe=
-l-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/=
-kvm/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83af=
-f124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o=
- /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939=
-ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src=
-/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5=
-c/tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftest=
-s-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testin=
-g/selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kv=
-m-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/=
-x86_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f=
-49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/=
-src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b5=
-9c5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selfte=
-sts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/test=
-ing/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86=
-_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/sel=
-ftests/kvm/x86_64/fix_hypercall_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/hyperv_clock.c /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c=
-/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-rh=
-el-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests=
-/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f=
-49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /usr=
-/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b=
-59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83a=
-ff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test_ut=
-il.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e5=
-7939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_selft=
-ests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/tes=
-ting/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8.3-=
-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/li=
-b/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4=
-9082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /usr/=
-src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b5=
-9c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/perf_=
-selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tool=
-s/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x86_=
-64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/self=
-tests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7=
-d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64=
-/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490825=
-85e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src/pe=
-rf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/t=
-ools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests-x8=
-6_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/se=
-lftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64-rh=
-el-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests=
-/kvm/x86_64/hyperv_clock
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/hyperv_cpuid.c /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c=
-/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-rh=
-el-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests=
-/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f=
-49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /usr=
-/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b=
-59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83a=
-ff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test_ut=
-il.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e5=
-7939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_selft=
-ests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/tes=
-ting/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8.3-=
-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/li=
-b/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4=
-9082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /usr/=
-src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b5=
-9c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/perf_=
-selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tool=
-s/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x86_=
-64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/self=
-tests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7=
-d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64=
-/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490825=
-85e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src/pe=
-rf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/t=
-ools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests-x8=
-6_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/se=
-lftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64-rh=
-el-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests=
-/kvm/x86_64/hyperv_cpuid
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/hyperv_features.c /usr/s=
-rc/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59=
-c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64=
--rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selfte=
-sts/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff1=
-24f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /=
-usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed=
-24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_6=
-4-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selft=
-ests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c=
-83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test=
-_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908258=
-5e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_se=
-lftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/=
-testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm=
-/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff12=
-4f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /u=
-sr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed2=
-4b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/pe=
-rf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/t=
-ools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x=
-86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/s=
-elftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-9=
-2e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86=
-_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490=
-82585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src=
-/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5=
-c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests=
--x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing=
-/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64=
--rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selfte=
-sts/kvm/x86_64/hyperv_features
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/hyperv_svm_test.c /usr/s=
-rc/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59=
-c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64=
--rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selfte=
-sts/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff1=
-24f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /=
-usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed=
-24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_6=
-4-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selft=
-ests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c=
-83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test=
-_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908258=
-5e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_se=
-lftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/=
-testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm=
-/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff12=
-4f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /u=
-sr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed2=
-4b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/pe=
-rf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/t=
-ools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x=
-86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/s=
-elftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-9=
-2e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86=
-_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490=
-82585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src=
-/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5=
-c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests=
--x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing=
-/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64=
--rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selfte=
-sts/kvm/x86_64/hyperv_svm_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/kvm_clock_test.c /usr/sr=
-c/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c=
-5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-=
-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftes=
-ts/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff12=
-4f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /u=
-sr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed2=
-4b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64=
--rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selfte=
-sts/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test_=
-util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_sel=
-ftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/t=
-esting/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8.=
-3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/=
-lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124=
-f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /us=
-r/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24=
-b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/to=
-ols/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x8=
-6_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/se=
-lftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92=
-e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_=
-64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908=
-2585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c=
-/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests-=
-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/=
-selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64-=
-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftes=
-ts/kvm/x86_64/kvm_clock_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/kvm_pv_test.c /usr/src/p=
-erf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/=
-tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-rhe=
-l-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/=
-kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4=
-9082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /usr/=
-src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b5=
-9c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64-rh=
-el-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests=
-/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83af=
-f124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test_uti=
-l.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57=
-939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_selfte=
-sts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/test=
-ing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8.3-k=
-vm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib=
-/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49=
-082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /usr/s=
-rc/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59=
-c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/perf_s=
-elftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools=
-/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x86_6=
-4-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selft=
-ests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d=
-5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/=
-ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908258=
-5e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/to=
-ols/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests-x86=
-_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/sel=
-ftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64-rhe=
-l-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/=
-kvm/x86_64/kvm_pv_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/mmio_warning_test.c /usr=
-/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b=
-59c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_=
-64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/self=
-tests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83af=
-f124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o=
- /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939=
-ed24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86=
-_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/sel=
-ftests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d=
-5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_te=
-st_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082=
-585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_=
-selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tool=
-s/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/k=
-vm/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff=
-124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o =
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c=
-/tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests=
--x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing=
-/selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm=
--92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x=
-86_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4=
-9082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/s=
-rc/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59=
-c5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftes=
-ts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testi=
-ng/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_=
-64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/self=
-tests/kvm/x86_64/mmio_warning_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/monitor_mwait_test.c /us=
-r/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24=
-b59c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86=
-_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/sel=
-ftests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83a=
-ff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.=
-o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e5793=
-9ed24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x8=
-6_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/se=
-lftests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7=
-d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_t=
-est_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908=
-2585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf=
-_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/too=
-ls/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhe=
-l-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/=
-kvm/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83af=
-f124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o=
- /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939=
-ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src=
-/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5=
-c/tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftest=
-s-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testin=
-g/selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kv=
-m-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/=
-x86_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f=
-49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/=
-src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b5=
-9c5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selfte=
-sts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/test=
-ing/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86=
-_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/sel=
-ftests/kvm/x86_64/monitor_mwait_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/nested_exceptions_test.c=
- /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939=
-ed24b59c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests=
--x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing=
-/selftests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5=
-c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_mo=
-des.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e=
-57939ed24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftest=
-s-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testin=
-g/selftests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-=
-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/pe=
-rf_test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f=
-49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c=
-/tools/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64=
--rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selfte=
-sts/kvm/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c=
-83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/ap=
-ic.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e5=
-7939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr=
-/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b=
-59c5c/tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_self=
-tests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/te=
-sting/selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.=
-3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/=
-lib/x86_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff=
-124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /=
-usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed=
-24b59c5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_se=
-lftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/=
-testing/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests=
--x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing=
-/selftests/kvm/x86_64/nested_exceptions_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/platform_info_test.c /us=
-r/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24=
-b59c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86=
-_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/sel=
-ftests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83a=
-ff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.=
-o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e5793=
-9ed24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x8=
-6_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/se=
-lftests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7=
-d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_t=
-est_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908=
-2585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf=
-_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/too=
-ls/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhe=
-l-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/=
-kvm/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83af=
-f124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o=
- /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939=
-ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src=
-/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5=
-c/tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftest=
-s-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testin=
-g/selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kv=
-m-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/=
-x86_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f=
-49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/=
-src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b5=
-9c5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selfte=
-sts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/test=
-ing/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86=
-_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/sel=
-ftests/kvm/x86_64/platform_info_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/pmu_event_filter_test.c =
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-=
-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/=
-selftests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c=
-83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_mod=
-es.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e5=
-7939ed24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests=
--x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing=
-/selftests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-9=
-2e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/per=
-f_test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4=
-9082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/p=
-erf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/=
-tools/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-=
-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftes=
-ts/kvm/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/api=
-c.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57=
-939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/=
-src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b5=
-9c5c/tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selft=
-ests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/tes=
-ting/selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3=
--kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/l=
-ib/x86_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff1=
-24f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /u=
-sr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed2=
-4b59c5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_sel=
-ftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/t=
-esting/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-=
-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/=
-selftests/kvm/x86_64/pmu_event_filter_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/set_boot_cpu_id.c /usr/s=
-rc/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59=
-c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64=
--rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selfte=
-sts/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff1=
-24f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /=
-usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed=
-24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_6=
-4-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selft=
-ests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c=
-83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test=
-_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908258=
-5e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_se=
-lftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/=
-testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm=
-/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff12=
-4f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /u=
-sr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed2=
-4b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/pe=
-rf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/t=
-ools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x=
-86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/s=
-elftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-9=
-2e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86=
-_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490=
-82585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src=
-/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5=
-c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests=
--x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing=
-/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64=
--rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selfte=
-sts/kvm/x86_64/set_boot_cpu_id
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/set_sregs_test.c /usr/sr=
-c/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c=
-5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-=
-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftes=
-ts/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff12=
-4f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /u=
-sr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed2=
-4b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64=
--rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selfte=
-sts/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test_=
-util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_sel=
-ftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/t=
-esting/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8.=
-3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/=
-lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124=
-f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /us=
-r/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24=
-b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/to=
-ols/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x8=
-6_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/se=
-lftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92=
-e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_=
-64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908=
-2585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c=
-/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests-=
-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/=
-selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64-=
-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftes=
-ts/kvm/x86_64/set_sregs_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/smm_test.c /usr/src/perf=
-_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/too=
-ls/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm=
-/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908=
-2585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /usr/src=
-/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5=
-c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64-rhel-=
-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kv=
-m/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff12=
-4f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test_util.o=
- /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939=
-ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_selftests=
--x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing=
-/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-=
-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/te=
-st_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082=
-585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c=
-/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/perf_self=
-tests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/te=
-sting/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/uca=
-ll.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e5=
-7939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src/perf_s=
-elftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools=
-/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests-x86_64=
--rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selfte=
-sts/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm=
-/x86_64/smm_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/state_test.c /usr/src/pe=
-rf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/t=
-ools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/k=
-vm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49=
-082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /usr/s=
-rc/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59=
-c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64-rhe=
-l-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/=
-kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff=
-124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test_util=
-.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e579=
-39ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_selftes=
-ts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testi=
-ng/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8.3-kv=
-m-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/=
-test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490=
-82585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /usr/sr=
-c/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c=
-5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/perf_se=
-lftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/=
-testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x86_64=
--rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selfte=
-sts/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5=
-c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/u=
-call.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src/perf=
-_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/too=
-ls/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests-x86_=
-64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/self=
-tests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/k=
-vm/x86_64/state_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/vmx_preemption_timer_tes=
-t.c /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57=
-939ed24b59c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selfte=
-sts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/test=
-ing/selftests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e=
-7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest=
-_modes.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490825=
-85e57939ed24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selft=
-ests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/tes=
-ting/selftests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-k=
-vm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib=
-/perf_test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff1=
-24f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/s=
-rc/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59=
-c5c/tools/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86=
-_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/sel=
-ftests/kvm/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7=
-d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64=
-/apic.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908258=
-5e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /=
-usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed=
-24b59c5c/tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_s=
-elftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools=
-/testing/selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/k=
-vm/lib/x86_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83=
-aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.=
-o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e5793=
-9ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf=
-_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/too=
-ls/testing/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selfte=
-sts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/test=
-ing/selftests/kvm/x86_64/vmx_preemption_timer_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/svm_vmcall_test.c /usr/s=
-rc/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59=
-c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64=
--rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selfte=
-sts/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff1=
-24f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /=
-usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed=
-24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_6=
-4-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selft=
-ests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c=
-83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test=
-_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908258=
-5e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_se=
-lftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/=
-testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm=
-/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff12=
-4f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /u=
-sr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed2=
-4b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/pe=
-rf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/t=
-ools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x=
-86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/s=
-elftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-9=
-2e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86=
-_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490=
-82585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src=
-/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5=
-c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests=
--x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing=
-/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64=
--rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selfte=
-sts/kvm/x86_64/svm_vmcall_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/svm_int_ctl_test.c /usr/=
-src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b5=
-9c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_6=
-4-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selft=
-ests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff=
-124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o =
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_=
-64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/self=
-tests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5=
-c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_tes=
-t_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490825=
-85e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_s=
-elftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools=
-/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-=
-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kv=
-m/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff1=
-24f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /=
-usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed=
-24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/p=
-erf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/=
-tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-=
-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/=
-selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-=
-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x8=
-6_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49=
-082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/sr=
-c/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c=
-5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftest=
-s-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testin=
-g/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_6=
-4-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selft=
-ests/kvm/x86_64/svm_int_ctl_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/svm_nested_shutdown_test=
-.c /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e579=
-39ed24b59c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftes=
-ts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testi=
-ng/selftests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7=
-d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_=
-modes.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908258=
-5e57939ed24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selfte=
-sts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/test=
-ing/selftests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kv=
-m-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/=
-perf_test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff12=
-4f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/sr=
-c/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c=
-5c/tools/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_=
-64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/self=
-tests/kvm/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d=
-5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/=
-apic.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /u=
-sr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed2=
-4b59c5c/tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_se=
-lftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/=
-testing/selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-=
-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kv=
-m/lib/x86_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83a=
-ff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o=
- /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939=
-ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_=
-selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tool=
-s/testing/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftes=
-ts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testi=
-ng/selftests/kvm/x86_64/svm_nested_shutdown_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/svm_nested_soft_inject_t=
-est.c /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e=
-57939ed24b59c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_self=
-tests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/te=
-sting/selftests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-9=
-2e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/gue=
-st_modes.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908=
-2585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_sel=
-ftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/t=
-esting/selftests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3=
--kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/l=
-ib/perf_test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83af=
-f124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr=
-/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b=
-59c5c/tools/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x=
-86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/s=
-elftests/kvm/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92=
-e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_=
-64/apic.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082=
-585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o=
- /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939=
-ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf=
-_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/too=
-ls/testing/selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rh=
-el-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests=
-/kvm/lib/x86_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c=
-83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vm=
-x.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57=
-939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/pe=
-rf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/t=
-ools/testing/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_self=
-tests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/te=
-sting/selftests/kvm/x86_64/svm_nested_soft_inject_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/tsc_scaling_sync.c /usr/=
-src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b5=
-9c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_6=
-4-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selft=
-ests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff=
-124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o =
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_=
-64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/self=
-tests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5=
-c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_tes=
-t_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490825=
-85e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_s=
-elftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools=
-/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-=
-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kv=
-m/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff1=
-24f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /=
-usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed=
-24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/p=
-erf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/=
-tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-=
-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/=
-selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-=
-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x8=
-6_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49=
-082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/sr=
-c/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c=
-5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftest=
-s-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testin=
-g/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_6=
-4-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selft=
-ests/kvm/x86_64/tsc_scaling_sync
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/sync_regs_test.c /usr/sr=
-c/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c=
-5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-=
-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftes=
-ts/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff12=
-4f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /u=
-sr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed2=
-4b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64=
--rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selfte=
-sts/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test_=
-util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_sel=
-ftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/t=
-esting/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8.=
-3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/=
-lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124=
-f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /us=
-r/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24=
-b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/to=
-ols/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x8=
-6_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/se=
-lftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92=
-e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_=
-64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908=
-2585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c=
-/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests-=
-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/=
-selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64-=
-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftes=
-ts/kvm/x86_64/sync_regs_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/ucna_injection_test.c /u=
-sr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed2=
-4b59c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x8=
-6_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/se=
-lftests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83=
-aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes=
-.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e579=
-39ed24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x=
-86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/s=
-elftests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e=
-7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_=
-test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490=
-82585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/to=
-ols/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rh=
-el-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests=
-/kvm/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83a=
-ff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.=
-o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e5793=
-9ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/sr=
-c/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c=
-5c/tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftes=
-ts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testi=
-ng/selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-k=
-vm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib=
-/x86_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124=
-f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr=
-/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b=
-59c5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selft=
-ests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/tes=
-ting/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x8=
-6_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/se=
-lftests/kvm/x86_64/ucna_injection_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/userspace_io_test.c /usr=
-/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b=
-59c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_=
-64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/self=
-tests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83af=
-f124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o=
- /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939=
-ed24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86=
-_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/sel=
-ftests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d=
-5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_te=
-st_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082=
-585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_=
-selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tool=
-s/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/k=
-vm/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff=
-124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o =
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c=
-/tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests=
--x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing=
-/selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm=
--92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x=
-86_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4=
-9082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/s=
-rc/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59=
-c5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftes=
-ts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testi=
-ng/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_=
-64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/self=
-tests/kvm/x86_64/userspace_io_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/userspace_msr_exit_test.=
-c /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e5793=
-9ed24b59c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftest=
-s-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testin=
-g/selftests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d=
-5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_m=
-odes.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftes=
-ts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testi=
-ng/selftests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm=
--92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/p=
-erf_test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124=
-f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src=
-/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5=
-c/tools/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_6=
-4-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selft=
-ests/kvm/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5=
-c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/a=
-pic.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e=
-57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /us=
-r/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24=
-b59c5c/tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_sel=
-ftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/t=
-esting/selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm=
-/lib/x86_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83af=
-f124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o =
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_s=
-elftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools=
-/testing/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftest=
-s-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testin=
-g/selftests/kvm/x86_64/userspace_msr_exit_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/vmx_apic_access_test.c /=
-usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed=
-24b59c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x=
-86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/s=
-elftests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_mode=
-s.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57=
-939ed24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-=
-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/=
-selftests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92=
-e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf=
-_test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49=
-082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/pe=
-rf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/t=
-ools/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/kvm/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83=
-aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic=
-.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e579=
-39ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/s=
-rc/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59=
-c5c/tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selfte=
-sts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/test=
-ing/selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-=
-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/li=
-b/x86_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff12=
-4f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /us=
-r/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24=
-b59c5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_self=
-tests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/te=
-sting/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x=
-86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/s=
-elftests/kvm/x86_64/vmx_apic_access_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/vmx_close_while_nested_t=
-est.c /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e=
-57939ed24b59c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_self=
-tests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/te=
-sting/selftests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-9=
-2e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/gue=
-st_modes.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908=
-2585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_sel=
-ftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/t=
-esting/selftests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3=
--kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/l=
-ib/perf_test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83af=
-f124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr=
-/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b=
-59c5c/tools/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x=
-86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/s=
-elftests/kvm/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92=
-e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_=
-64/apic.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082=
-585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o=
- /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939=
-ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf=
-_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/too=
-ls/testing/selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rh=
-el-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests=
-/kvm/lib/x86_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c=
-83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vm=
-x.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57=
-939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/pe=
-rf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/t=
-ools/testing/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_self=
-tests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/te=
-sting/selftests/kvm/x86_64/vmx_close_while_nested_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/vmx_dirty_log_test.c /us=
-r/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24=
-b59c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86=
-_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/sel=
-ftests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83a=
-ff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.=
-o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e5793=
-9ed24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x8=
-6_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/se=
-lftests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7=
-d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_t=
-est_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908=
-2585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf=
-_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/too=
-ls/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhe=
-l-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/=
-kvm/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83af=
-f124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o=
- /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939=
-ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src=
-/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5=
-c/tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftest=
-s-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testin=
-g/selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kv=
-m-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/=
-x86_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f=
-49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/=
-src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b5=
-9c5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selfte=
-sts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/test=
-ing/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86=
-_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/sel=
-ftests/kvm/x86_64/vmx_dirty_log_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/vmx_exception_with_inval=
-id_guest_state.c /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff12=
-4f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/assert.o /usr/sr=
-c/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c=
-5c/tools/testing/selftests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhe=
-l-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/=
-kvm/lib/guest_modes.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83=
-aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/s=
-rc/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59=
-c5c/tools/testing/selftests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_=
-64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/self=
-tests/kvm/lib/perf_test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-=
-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rb=
-tree.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_=
-selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tool=
-s/testing/selftests/kvm/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/k=
-vm/lib/x86_64/apic.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83a=
-ff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_=
-test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490=
-82585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/processor.o /u=
-sr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed2=
-4b59c5c/tools/testing/selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftest=
-s-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testin=
-g/selftests/kvm/lib/x86_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-=
-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/li=
-b/x86_64/vmx.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f=
-49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o =
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/kvm/lib/string_override.o -ldl -o /usr/sr=
-c/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c=
-5c/tools/testing/selftests/kvm/x86_64/vmx_exception_with_invalid_guest_stat=
-e
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/vmx_msrs_test.c /usr/src=
-/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5=
-c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124=
-f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /us=
-r/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24=
-b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64-=
-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftes=
-ts/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83=
-aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test_u=
-til.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e=
-57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_self=
-tests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/te=
-sting/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8.3=
--kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/l=
-ib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f=
-49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /usr=
-/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b=
-59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/perf=
-_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/too=
-ls/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x86=
-_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/sel=
-ftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e=
-7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_6=
-4/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082=
-585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src/p=
-erf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/=
-tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests-x=
-86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/s=
-elftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/kvm/x86_64/vmx_msrs_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/vmx_invalid_nested_guest=
-_state.c /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490825=
-85e57939ed24b59c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_s=
-elftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools=
-/testing/selftests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kv=
-m-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/=
-guest_modes.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4=
-9082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_=
-selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tool=
-s/testing/selftests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-=
-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kv=
-m/lib/perf_test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /=
-usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed=
-24b59c5c/tools/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftest=
-s-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testin=
-g/selftests/kvm/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm=
--92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x=
-86_64/apic.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49=
-082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_uti=
-l.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57=
-939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/p=
-erf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/=
-tools/testing/selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64=
--rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selfte=
-sts/kvm/lib/x86_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7=
-d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64=
-/vmx.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src=
-/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5=
-c/tools/testing/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_s=
-elftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools=
-/testing/selftests/kvm/x86_64/vmx_invalid_nested_guest_state
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/vmx_set_nested_state_tes=
-t.c /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57=
-939ed24b59c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selfte=
-sts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/test=
-ing/selftests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e=
-7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest=
-_modes.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490825=
-85e57939ed24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selft=
-ests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/tes=
-ting/selftests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-k=
-vm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib=
-/perf_test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff1=
-24f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/s=
-rc/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59=
-c5c/tools/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86=
-_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/sel=
-ftests/kvm/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7=
-d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64=
-/apic.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908258=
-5e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /=
-usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed=
-24b59c5c/tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_s=
-elftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools=
-/testing/selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/k=
-vm/lib/x86_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83=
-aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.=
-o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e5793=
-9ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf=
-_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/too=
-ls/testing/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selfte=
-sts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/test=
-ing/selftests/kvm/x86_64/vmx_set_nested_state_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/vmx_tsc_adjust_test.c /u=
-sr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed2=
-4b59c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x8=
-6_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/se=
-lftests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83=
-aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes=
-.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e579=
-39ed24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x=
-86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/s=
-elftests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e=
-7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_=
-test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490=
-82585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/to=
-ols/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rh=
-el-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests=
-/kvm/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83a=
-ff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.=
-o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e5793=
-9ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/sr=
-c/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c=
-5c/tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftes=
-ts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testi=
-ng/selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-k=
-vm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib=
-/x86_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124=
-f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr=
-/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b=
-59c5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selft=
-ests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/tes=
-ting/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x8=
-6_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/se=
-lftests/kvm/x86_64/vmx_tsc_adjust_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/vmx_nested_tsc_scaling_t=
-est.c /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e=
-57939ed24b59c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_self=
-tests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/te=
-sting/selftests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-9=
-2e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/gue=
-st_modes.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908=
-2585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_sel=
-ftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/t=
-esting/selftests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3=
--kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/l=
-ib/perf_test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83af=
-f124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr=
-/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b=
-59c5c/tools/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x=
-86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/s=
-elftests/kvm/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92=
-e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_=
-64/apic.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082=
-585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o=
- /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939=
-ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf=
-_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/too=
-ls/testing/selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rh=
-el-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests=
-/kvm/lib/x86_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c=
-83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vm=
-x.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57=
-939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/pe=
-rf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/t=
-ools/testing/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_self=
-tests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/te=
-sting/selftests/kvm/x86_64/vmx_nested_tsc_scaling_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/xapic_ipi_test.c /usr/sr=
-c/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c=
-5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-=
-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftes=
-ts/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff12=
-4f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /u=
-sr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed2=
-4b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64=
--rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selfte=
-sts/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test_=
-util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_sel=
-ftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/t=
-esting/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8.=
-3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/=
-lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124=
-f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /us=
-r/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24=
-b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/to=
-ols/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x8=
-6_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/se=
-lftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92=
-e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_=
-64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908=
-2585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c=
-/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests-=
-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/=
-selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64-=
-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftes=
-ts/kvm/x86_64/xapic_ipi_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/xapic_state_test.c /usr/=
-src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b5=
-9c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_6=
-4-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selft=
-ests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff=
-124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o =
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_=
-64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/self=
-tests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5=
-c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_tes=
-t_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490825=
-85e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_s=
-elftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools=
-/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-=
-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kv=
-m/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff1=
-24f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /=
-usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed=
-24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/p=
-erf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/=
-tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-=
-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/=
-selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-=
-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x8=
-6_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49=
-082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/sr=
-c/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c=
-5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftest=
-s-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testin=
-g/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_6=
-4-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selft=
-ests/kvm/x86_64/xapic_state_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/xss_msr_test.c /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c=
-/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-rh=
-el-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests=
-/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f=
-49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /usr=
-/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b=
-59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83a=
-ff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test_ut=
-il.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e5=
-7939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_selft=
-ests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/tes=
-ting/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8.3-=
-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/li=
-b/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4=
-9082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /usr/=
-src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b5=
-9c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/perf_=
-selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tool=
-s/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x86_=
-64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/self=
-tests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7=
-d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64=
-/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490825=
-85e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src/pe=
-rf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/t=
-ools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests-x8=
-6_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/se=
-lftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64-rh=
-el-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests=
-/kvm/x86_64/xss_msr_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/debug_regs.c /usr/src/pe=
-rf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/t=
-ools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/k=
-vm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49=
-082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /usr/s=
-rc/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59=
-c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64-rhe=
-l-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/=
-kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff=
-124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test_util=
-.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e579=
-39ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_selftes=
-ts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testi=
-ng/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8.3-kv=
-m-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/=
-test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490=
-82585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /usr/sr=
-c/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c=
-5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/perf_se=
-lftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/=
-testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x86_64=
--rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selfte=
-sts/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5=
-c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/u=
-call.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src/perf=
-_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/too=
-ls/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests-x86_=
-64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/self=
-tests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/k=
-vm/x86_64/debug_regs
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/tsc_msrs_test.c /usr/src=
-/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5=
-c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124=
-f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /us=
-r/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24=
-b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64-=
-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftes=
-ts/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83=
-aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test_u=
-til.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e=
-57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_self=
-tests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/te=
-sting/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8.3=
--kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/l=
-ib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f=
-49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /usr=
-/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b=
-59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/perf=
-_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/too=
-ls/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x86=
-_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/sel=
-ftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e=
-7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_6=
-4/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082=
-585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src/p=
-erf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/=
-tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests-x=
-86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/s=
-elftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/kvm/x86_64/tsc_msrs_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/vmx_pmu_caps_test.c /usr=
-/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b=
-59c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_=
-64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/self=
-tests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83af=
-f124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o=
- /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939=
-ed24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86=
-_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/sel=
-ftests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d=
-5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_te=
-st_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082=
-585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_=
-selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tool=
-s/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/k=
-vm/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff=
-124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o =
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c=
-/tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests=
--x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing=
-/selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm=
--92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x=
-86_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4=
-9082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/s=
-rc/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59=
-c5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftes=
-ts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testi=
-ng/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_=
-64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/self=
-tests/kvm/x86_64/vmx_pmu_caps_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/xen_shinfo_test.c /usr/s=
-rc/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59=
-c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64=
--rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selfte=
-sts/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff1=
-24f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /=
-usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed=
-24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_6=
-4-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selft=
-ests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c=
-83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test=
-_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908258=
-5e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_se=
-lftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/=
-testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm=
-/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff12=
-4f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /u=
-sr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed2=
-4b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/pe=
-rf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/t=
-ools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x=
-86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/s=
-elftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-9=
-2e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86=
-_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490=
-82585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src=
-/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5=
-c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests=
--x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing=
-/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64=
--rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selfte=
-sts/kvm/x86_64/xen_shinfo_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/xen_vmcall_test.c /usr/s=
-rc/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59=
-c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64=
--rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selfte=
-sts/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff1=
-24f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /=
-usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed=
-24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_6=
-4-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selft=
-ests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c=
-83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test=
-_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908258=
-5e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_se=
-lftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/=
-testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm=
-/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff12=
-4f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /u=
-sr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed2=
-4b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/pe=
-rf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/t=
-ools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x=
-86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/s=
-elftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-9=
-2e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86=
-_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490=
-82585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src=
-/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5=
-c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests=
--x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing=
-/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64=
--rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selfte=
-sts/kvm/x86_64/xen_vmcall_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/sev_migrate_tests.c /usr=
-/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b=
-59c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_=
-64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/self=
-tests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83af=
-f124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o=
- /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939=
-ed24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86=
-_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/sel=
-ftests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d=
-5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_te=
-st_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082=
-585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_=
-selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tool=
-s/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/k=
-vm/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff=
-124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o =
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c=
-/tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests=
--x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing=
-/selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm=
--92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x=
-86_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4=
-9082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/s=
-rc/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59=
-c5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftes=
-ts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testi=
-ng/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_=
-64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/self=
-tests/kvm/x86_64/sev_migrate_tests
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/amx_test.c /usr/src/perf=
-_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/too=
-ls/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm=
-/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908=
-2585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /usr/src=
-/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5=
-c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64-rhel-=
-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kv=
-m/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff12=
-4f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test_util.o=
- /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939=
-ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_selftests=
--x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing=
-/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-=
-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/te=
-st_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082=
-585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c=
-/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/perf_self=
-tests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/te=
-sting/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/uca=
-ll.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e5=
-7939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src/perf_s=
-elftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools=
-/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests-x86_64=
--rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selfte=
-sts/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm=
-/x86_64/amx_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/max_vcpuid_cap_test.c /u=
-sr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed2=
-4b59c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x8=
-6_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/se=
-lftests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83=
-aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes=
-.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e579=
-39ed24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x=
-86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/s=
-elftests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e=
-7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_=
-test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490=
-82585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/to=
-ols/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rh=
-el-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests=
-/kvm/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83a=
-ff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.=
-o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e5793=
-9ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/sr=
-c/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c=
-5c/tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftes=
-ts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testi=
-ng/selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-k=
-vm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib=
-/x86_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124=
-f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr=
-/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b=
-59c5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selft=
-ests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/tes=
-ting/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x8=
-6_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/se=
-lftests/kvm/x86_64/max_vcpuid_cap_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/triple_fault_event_test.=
-c /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e5793=
-9ed24b59c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftest=
-s-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testin=
-g/selftests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d=
-5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_m=
-odes.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftes=
-ts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testi=
-ng/selftests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm=
--92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/p=
-erf_test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124=
-f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src=
-/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5=
-c/tools/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_6=
-4-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selft=
-ests/kvm/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5=
-c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/a=
-pic.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e=
-57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /us=
-r/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24=
-b59c5c/tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_sel=
-ftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/t=
-esting/selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm=
-/lib/x86_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83af=
-f124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o =
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_s=
-elftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools=
-/testing/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftest=
-s-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testin=
-g/selftests/kvm/x86_64/triple_fault_event_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -I. -Iinc=
-lude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../=
-../../usr/include  -pthread  -no-pie   access_tracking_perf_test.c /usr/src=
-/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5=
-c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124=
-f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /us=
-r/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24=
-b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64-=
-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftes=
-ts/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83=
-aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test_u=
-til.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e=
-57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_self=
-tests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/te=
-sting/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8.3=
--kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/l=
-ib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f=
-49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /usr=
-/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b=
-59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/perf=
-_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/too=
-ls/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x86=
-_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/sel=
-ftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e=
-7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_6=
-4/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082=
-585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src/p=
-erf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/=
-tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests-x=
-86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/s=
-elftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/kvm/access_tracking_perf_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -I. -Iinc=
-lude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../=
-../../usr/include  -pthread  -no-pie   demand_paging_test.c /usr/src/perf_s=
-elftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools=
-/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-rhel-8.3=
--kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/l=
-ib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490825=
-85e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /usr/src/p=
-erf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/=
-tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64-rhel-8.=
-3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/=
-lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f=
-49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test_util.o /=
-usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed=
-24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_selftests-x=
-86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/s=
-elftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92=
-e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/test=
-_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908258=
-5e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /usr/src/pe=
-rf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/t=
-ools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/perf_selfte=
-sts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/test=
-ing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x86_64-rhe=
-l-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/=
-kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83a=
-ff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/ucall=
-.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e579=
-39ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src/perf_sel=
-ftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/t=
-esting/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64-rhel-8.3=
--kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/d=
-emand_paging_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -I. -Iinc=
-lude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../=
-../../usr/include  -pthread  -no-pie   dirty_log_test.c /usr/src/perf_selft=
-ests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/tes=
-ting/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm=
--92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/e=
-lf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e5=
-7939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /usr/src/perf_=
-selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tool=
-s/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64-rhel-8.3-kv=
-m-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/=
-kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908=
-2585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test_util.o /usr/=
-src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b5=
-9c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_selftests-x86_6=
-4-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selft=
-ests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5=
-c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/test_uti=
-l.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57=
-939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /usr/src/perf_s=
-elftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools=
-/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/perf_selftests-=
-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/=
-selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x86_64-rhel-8.=
-3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/=
-lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff12=
-4f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/ucall.o /=
-usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed=
-24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src/perf_selftes=
-ts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testi=
-ng/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests-x86_64-rhel-=
-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kv=
-m/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm=
--92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/dirty=
-_log_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -I. -Iinc=
-lude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../=
-../../usr/include  -pthread  -no-pie   dirty_log_perf_test.c /usr/src/perf_=
-selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tool=
-s/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-rhel-8.=
-3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/=
-lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082=
-585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c=
-/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm=
-/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124=
-f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test_util.o =
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_selftests-=
-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/=
-selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-9=
-2e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/tes=
-t_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490825=
-85e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /usr/src/p=
-erf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/=
-tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/perf_selft=
-ests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/tes=
-ting/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x86_64-rh=
-el-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests=
-/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83=
-aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/ucal=
-l.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57=
-939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src/perf_se=
-lftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/=
-testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests-x86_64-=
-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftes=
-ts/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64-rhel-8.=
-3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/=
-dirty_log_perf_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -I. -Iinc=
-lude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../=
-../../usr/include  -pthread  -no-pie   hardware_disable_test.c /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/to=
-ols/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-rhel-=
-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kv=
-m/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490=
-82585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /usr/sr=
-c/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c=
-5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/k=
-vm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff1=
-24f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test_util.=
-o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e5793=
-9ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_selftest=
-s-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testin=
-g/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm=
--92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/t=
-est_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908=
-2585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /usr/src=
-/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5=
-c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/perf_sel=
-ftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/t=
-esting/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x86_64-=
-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftes=
-ts/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c=
-83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/uc=
-all.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e=
-57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src/perf_=
-selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tool=
-s/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests-x86_6=
-4-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selft=
-ests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64-rhel-=
-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kv=
-m/hardware_disable_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -I. -Iinc=
-lude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../=
-../../usr/include  -pthread  -no-pie   kvm_create_max_vcpus.c /usr/src/perf=
-_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/too=
-ls/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm=
-/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908=
-2585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /usr/src=
-/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5=
-c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64-rhel-=
-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kv=
-m/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff12=
-4f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test_util.o=
- /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939=
-ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_selftests=
--x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing=
-/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-=
-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/te=
-st_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082=
-585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c=
-/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/perf_self=
-tests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/te=
-sting/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/uca=
-ll.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e5=
-7939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src/perf_s=
-elftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools=
-/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests-x86_64=
--rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selfte=
-sts/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm=
-/kvm_create_max_vcpus
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -I. -Iinc=
-lude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../=
-../../usr/include  -pthread  -no-pie   kvm_page_table_test.c /usr/src/perf_=
-selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tool=
-s/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-rhel-8.=
-3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/=
-lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082=
-585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c=
-/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm=
-/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124=
-f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test_util.o =
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_selftests-=
-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/=
-selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-9=
-2e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/tes=
-t_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490825=
-85e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /usr/src/p=
-erf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/=
-tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/perf_selft=
-ests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/tes=
-ting/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x86_64-rh=
-el-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests=
-/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83=
-aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/ucal=
-l.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57=
-939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src/perf_se=
-lftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/=
-testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests-x86_64-=
-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftes=
-ts/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64-rhel-8.=
-3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/=
-kvm_page_table_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -I. -Iinc=
-lude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../=
-../../usr/include  -pthread  -no-pie   max_guest_memory_test.c /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/to=
-ols/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-rhel-=
-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kv=
-m/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490=
-82585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /usr/sr=
-c/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c=
-5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/k=
-vm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff1=
-24f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test_util.=
-o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e5793=
-9ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_selftest=
-s-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testin=
-g/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm=
--92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/t=
-est_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908=
-2585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /usr/src=
-/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5=
-c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/perf_sel=
-ftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/t=
-esting/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x86_64-=
-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftes=
-ts/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c=
-83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/uc=
-all.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e=
-57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src/perf_=
-selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tool=
-s/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests-x86_6=
-4-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selft=
-ests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64-rhel-=
-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kv=
-m/max_guest_memory_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -I. -Iinc=
-lude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../=
-../../usr/include  -pthread  -no-pie   memslot_modification_stress_test.c /=
-usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed=
-24b59c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x=
-86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/s=
-elftests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_mode=
-s.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57=
-939ed24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-=
-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/=
-selftests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92=
-e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf=
-_test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49=
-082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/pe=
-rf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/t=
-ools/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/kvm/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83=
-aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic=
-.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e579=
-39ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/s=
-rc/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59=
-c5c/tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selfte=
-sts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/test=
-ing/selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-=
-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/li=
-b/x86_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff12=
-4f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /us=
-r/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24=
-b59c5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_self=
-tests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/te=
-sting/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x=
-86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/s=
-elftests/kvm/memslot_modification_stress_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -I. -Iinc=
-lude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../=
-../../usr/include  -pthread  -no-pie   memslot_perf_test.c /usr/src/perf_se=
-lftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/=
-testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-rhel-8.3-=
-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/li=
-b/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908258=
-5e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /usr/src/pe=
-rf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/t=
-ools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64-rhel-8.3=
--kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/l=
-ib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4=
-9082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test_util.o /u=
-sr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed2=
-4b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_selftests-x8=
-6_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/se=
-lftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e=
-7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/test_=
-util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/to=
-ols/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/perf_selftes=
-ts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testi=
-ng/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/k=
-vm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83af=
-f124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/ucall.=
-o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e5793=
-9ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src/perf_self=
-tests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/te=
-sting/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests-x86_64-rh=
-el-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests=
-/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64-rhel-8.3-=
-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/me=
-mslot_perf_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -I. -Iinc=
-lude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../=
-../../usr/include  -pthread  -no-pie   rseq_test.c /usr/src/perf_selftests-=
-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/=
-selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7=
-d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/elf.o =
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /usr/src/perf_selft=
-ests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/tes=
-ting/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e=
-7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/kvm_u=
-til.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e=
-57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test_util.o /usr/src/p=
-erf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/=
-tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_selftests-x86_64-rhe=
-l-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/=
-kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83af=
-f124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/test_util.o /=
-usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed=
-24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /usr/src/perf_selfte=
-sts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/test=
-ing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/perf_selftests-x86_6=
-4-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selft=
-ests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm=
--92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x=
-86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490=
-82585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/ucall.o /usr/s=
-rc/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59=
-c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src/perf_selftests-x8=
-6_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/se=
-lftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests-x86_64-rhel-8.3-k=
-vm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib=
-/string_override.o -ldl -o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7=
-d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/rseq_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -I. -Iinc=
-lude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../=
-../../usr/include  -pthread  -no-pie   set_memory_region_test.c /usr/src/pe=
-rf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/t=
-ools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/k=
-vm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49=
-082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /usr/s=
-rc/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59=
-c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64-rhe=
-l-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/=
-kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff=
-124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test_util=
-.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e579=
-39ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_selftes=
-ts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testi=
-ng/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8.3-kv=
-m-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/=
-test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490=
-82585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /usr/sr=
-c/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c=
-5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/perf_se=
-lftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/=
-testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x86_64=
--rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selfte=
-sts/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5=
-c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/u=
-call.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src/perf=
-_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/too=
-ls/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests-x86_=
-64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/self=
-tests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/k=
-vm/set_memory_region_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -I. -Iinc=
-lude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../=
-../../usr/include  -pthread  -no-pie   steal_time.c /usr/src/perf_selftests=
--x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing=
-/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e=
-7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/elf.o=
- /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939=
-ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /usr/src/perf_self=
-tests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/te=
-sting/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92=
-e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/kvm_=
-util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test_util.o /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c=
-/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_selftests-x86_64-rh=
-el-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests=
-/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83a=
-ff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/test_util.o =
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /usr/src/perf_selft=
-ests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/tes=
-ting/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/perf_selftests-x86_=
-64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/self=
-tests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x86_64-rhel-8.3-kv=
-m-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/=
-x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49=
-082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/ucall.o /usr/=
-src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b5=
-9c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src/perf_selftests-x=
-86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/s=
-elftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests-x86_64-rhel-8.3-=
-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/li=
-b/string_override.o -ldl -o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e=
-7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/steal_tim=
-e
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -I. -Iinc=
-lude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../=
-../../usr/include  -pthread  -no-pie   kvm_binary_stats_test.c /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/to=
-ols/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-rhel-=
-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kv=
-m/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f490=
-82585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /usr/sr=
-c/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c=
-5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64-rhel=
--8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/k=
-vm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff1=
-24f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test_util.=
-o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e5793=
-9ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_selftest=
-s-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testin=
-g/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm=
--92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/t=
-est_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908=
-2585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /usr/src=
-/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5=
-c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/perf_sel=
-ftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/t=
-esting/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x86_64-=
-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftes=
-ts/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c=
-83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/uc=
-all.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e=
-57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src/perf_=
-selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tool=
-s/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests-x86_6=
-4-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selft=
-ests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64-rhel-=
-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kv=
-m/kvm_binary_stats_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -I. -Iinc=
-lude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-rhel-8=
-.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../=
-../../usr/include  -pthread  -no-pie   system_counter_offset_test.c /usr/sr=
-c/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c=
-5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86_64-=
-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftes=
-ts/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff12=
-4f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.o /u=
-sr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed2=
-4b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x86_64=
--rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selfte=
-sts/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_test_=
-util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf_sel=
-ftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/t=
-esting/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhel-8.=
-3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/=
-lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124=
-f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o /us=
-r/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24=
-b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src/per=
-f_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/to=
-ols/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftests-x8=
-6_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/se=
-lftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92=
-e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_=
-64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908=
-2585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/src/=
-perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c=
-/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selftests-=
-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/=
-selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86_64-=
-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftes=
-ts/kvm/system_counter_offset_test
-gcc -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -fno-stac=
-k-protector -fno-PIE -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c8=
-3aff124f49082585e57939ed24b59c5c/tools/testing/selftests/../../../tools/inc=
-lude -I/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585=
-e57939ed24b59c5c/tools/testing/selftests/../../../tools/arch/x86/include -I=
-/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939e=
-d24b59c5c/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 =
--Iinclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-r=
-hel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftest=
-s/../../../usr/include  -pthread  -no-pie   x86_64/nx_huge_pages_test.c /us=
-r/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24=
-b59c5c/tools/testing/selftests/kvm/lib/assert.o /usr/src/perf_selftests-x86=
-_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/sel=
-ftests/kvm/lib/elf.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83a=
-ff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/guest_modes.=
-o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e5793=
-9ed24b59c5c/tools/testing/selftests/kvm/lib/io.o /usr/src/perf_selftests-x8=
-6_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/se=
-lftests/kvm/lib/kvm_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7=
-d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/perf_t=
-est_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f4908=
-2585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/rbtree.o /usr/src/perf=
-_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/too=
-ls/testing/selftests/kvm/lib/sparsebit.o /usr/src/perf_selftests-x86_64-rhe=
-l-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/=
-kvm/lib/test_util.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83af=
-f124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/apic.o=
- /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939=
-ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/perf_test_util.o /usr/src=
-/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5=
-c/tools/testing/selftests/kvm/lib/x86_64/processor.o /usr/src/perf_selftest=
-s-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testin=
-g/selftests/kvm/lib/x86_64/svm.o /usr/src/perf_selftests-x86_64-rhel-8.3-kv=
-m-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/=
-x86_64/ucall.o /usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f=
-49082585e57939ed24b59c5c/tools/testing/selftests/kvm/lib/x86_64/vmx.o /usr/=
-src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b5=
-9c5c/tools/testing/selftests/kvm/lib/x86_64/handlers.o /usr/src/perf_selfte=
-sts-x86_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/test=
-ing/selftests/kvm/lib/string_override.o -ldl -o /usr/src/perf_selftests-x86=
-_64-rhel-8.3-kvm-92e7d5c83aff124f49082585e57939ed24b59c5c/tools/testing/sel=
-ftests/kvm/x86_64/nx_huge_pages_test
-make: Leaving directory '/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5=
-c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm'
-2022-12-02 16:22:17 make quicktest=3D1 run_tests -C kvm
-make: Entering directory '/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d=
-5c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm'
-TAP version 13
-1..68
-# selftests: kvm: cpuid_test
-ok 1 selftests: kvm: cpuid_test
-# selftests: kvm: cr4_cpuid_sync_test
-ok 2 selftests: kvm: cr4_cpuid_sync_test
-# selftests: kvm: get_msr_index_features
-ok 3 selftests: kvm: get_msr_index_features
-# selftests: kvm: evmcs_test
-# Running L1 which uses EVMCS to run L2
-# Injecting NMI into L1 before L2 had a chance to run after restore
-# Trying extra KVM_GET_NESTED_STATE/KVM_SET_NESTED_STATE cycle
-ok 4 selftests: kvm: evmcs_test
-# selftests: kvm: emulator_error_test
-# 1..0 # SKIP - Requirement not met: kvm_has_cap(KVM_CAP_SMALLER_MAXPHYADDR=
-)
-ok 5 selftests: kvm: emulator_error_test # SKIP
-# selftests: kvm: fix_hypercall_test
-ok 6 selftests: kvm: fix_hypercall_test
-# selftests: kvm: hyperv_clock
-ok 7 selftests: kvm: hyperv_clock
-# selftests: kvm: hyperv_cpuid
-ok 8 selftests: kvm: hyperv_cpuid
-# selftests: kvm: hyperv_features
-# Testing access to Hyper-V specific MSRs
-# Testing access to Hyper-V hypercalls
-ok 9 selftests: kvm: hyperv_features
-# selftests: kvm: hyperv_svm_test
-# 1..0 # SKIP - Requirement not met: kvm_cpu_has(X86_FEATURE_SVM)
-ok 10 selftests: kvm: hyperv_svm_test # SKIP
-# selftests: kvm: kvm_clock_test
-# kvm-clock value: 702697 expected range [1381, 736712]
-# kvm-clock value: 180000005645 expected range [180000001218, 180000018171]
-# kvm-clock value: 180000006827 expected range [180000002417, 180000019350]
-# kvm-clock value: 5409 expected range [1106, 17844]
-ok 11 selftests: kvm: kvm_clock_test
-# selftests: kvm: kvm_pv_test
-# testing msr: MSR_KVM_SYSTEM_TIME (0x12)
-# testing msr: MSR_KVM_SYSTEM_TIME_NEW (0x4b564d01)
-# testing msr: MSR_KVM_WALL_CLOCK (0x11)
-# testing msr: MSR_KVM_WALL_CLOCK_NEW (0x4b564d00)
-# testing msr: MSR_KVM_ASYNC_PF_EN (0x4b564d02)
-# testing msr: MSR_KVM_STEAL_TIME (0x4b564d03)
-# testing msr: MSR_KVM_PV_EOI_EN (0x4b564d04)
-# testing msr: MSR_KVM_POLL_CONTROL (0x4b564d05)
-# testing msr: MSR_KVM_ASYNC_PF_INT (0x4b564d06)
-# testing msr: MSR_KVM_ASYNC_PF_ACK (0x4b564d07)
-# testing hcall: KVM_HC_KICK_CPU (5)
-# testing hcall: KVM_HC_SEND_IPI (10)
-# testing hcall: KVM_HC_SCHED_YIELD (11)
-ok 12 selftests: kvm: kvm_pv_test
-# selftests: kvm: mmio_warning_test
-# ret1=3D0 exit_reason=3D17 suberror=3D1
-# ret1=3D0 exit_reason=3D8 suberror=3D65530
-# ret1=3D0 exit_reason=3D17 suberror=3D1
-# ret1=3D0 exit_reason=3D8 suberror=3D65530
-# ret1=3D0 exit_reason=3D17 suberror=3D1
-# ret1=3D0 exit_reason=3D8 suberror=3D65530
-# ret1=3D0 exit_reason=3D17 suberror=3D1
-# ret1=3D0 exit_reason=3D8 suberror=3D65530
-# ret1=3D0 exit_reason=3D17 suberror=3D1
-# ret1=3D0 exit_reason=3D8 suberror=3D65530
-# ret1=3D0 exit_reason=3D17 suberror=3D1
-# ret1=3D0 exit_reason=3D8 suberror=3D65530
-# ret1=3D0 exit_reason=3D17 suberror=3D1
-# ret1=3D0 exit_reason=3D8 suberror=3D65530
-# ret1=3D0 exit_reason=3D17 suberror=3D1
-# ret1=3D0 exit_reason=3D8 suberror=3D65530
-# ret1=3D0 exit_reason=3D17 suberror=3D1
-# ret1=3D0 exit_reason=3D8 suberror=3D65530
-# ret1=3D0 exit_reason=3D17 suberror=3D1
-# ret1=3D0 exit_reason=3D8 suberror=3D65530
-ok 13 selftests: kvm: mmio_warning_test
-# selftests: kvm: monitor_mwait_test
-ok 14 selftests: kvm: monitor_mwait_test
-# selftests: kvm: nested_exceptions_test
-ok 15 selftests: kvm: nested_exceptions_test
-# selftests: kvm: platform_info_test
-ok 16 selftests: kvm: platform_info_test
-# selftests: kvm: pmu_event_filter_test
-ok 17 selftests: kvm: pmu_event_filter_test
-# selftests: kvm: set_boot_cpu_id
-ok 18 selftests: kvm: set_boot_cpu_id
-# selftests: kvm: set_sregs_test
-ok 19 selftests: kvm: set_sregs_test
-# selftests: kvm: smm_test
-ok 20 selftests: kvm: smm_test
-# selftests: kvm: state_test
-ok 21 selftests: kvm: state_test
-# selftests: kvm: vmx_preemption_timer_test
-# Stage 2: L1 PT expiry TSC (3205943030) , L1 TSC deadline (3205746336)
-# Stage 2: L2 PT expiry TSC (3205796122) , L2 TSC deadline (3205804160)
-ok 22 selftests: kvm: vmx_preemption_timer_test
-# selftests: kvm: svm_vmcall_test
-# 1..0 # SKIP - Requirement not met: kvm_cpu_has(X86_FEATURE_SVM)
-ok 23 selftests: kvm: svm_vmcall_test # SKIP
-# selftests: kvm: svm_int_ctl_test
-# 1..0 # SKIP - Requirement not met: kvm_cpu_has(X86_FEATURE_SVM)
-ok 24 selftests: kvm: svm_int_ctl_test # SKIP
-# selftests: kvm: svm_nested_shutdown_test
-# 1..0 # SKIP - Requirement not met: kvm_cpu_has(X86_FEATURE_SVM)
-ok 25 selftests: kvm: svm_nested_shutdown_test # SKIP
-# selftests: kvm: svm_nested_soft_inject_test
-# 1..0 # SKIP - Requirement not met: kvm_cpu_has(X86_FEATURE_SVM)
-ok 26 selftests: kvm: svm_nested_soft_inject_test # SKIP
-# selftests: kvm: tsc_scaling_sync
-ok 27 selftests: kvm: tsc_scaling_sync
-# selftests: kvm: sync_regs_test
-ok 28 selftests: kvm: sync_regs_test
-# selftests: kvm: ucna_injection_test
-# Injecting first UCNA at 0xdeadbeef.
-# Injecting second UCNA at 0xcafeb0ba.
-# Test successful.
-# UCNA CMCI interrupts received: 1
-# Last UCNA address received via CMCI: deadbeef
-# First UCNA address in vCPU thread: deadbeef
-# Second UCNA address in vCPU thread: cafeb0ba
-# vCPU received GP in guest.
-# vCPU received GP in guest.
-ok 29 selftests: kvm: ucna_injection_test
-# selftests: kvm: userspace_io_test
-ok 30 selftests: kvm: userspace_io_test
-# selftests: kvm: userspace_msr_exit_test
-# To run the instruction emulated tests set the module parameter 'kvm.force=
-_emulation_prefix=3D1'
-ok 31 selftests: kvm: userspace_msr_exit_test
-# selftests: kvm: vmx_apic_access_test
-ok 32 selftests: kvm: vmx_apic_access_test
-# selftests: kvm: vmx_close_while_nested_test
-ok 33 selftests: kvm: vmx_close_while_nested_test
-# selftests: kvm: vmx_dirty_log_test
-ok 34 selftests: kvm: vmx_dirty_log_test
-# selftests: kvm: vmx_exception_with_invalid_guest_state
-ok 35 selftests: kvm: vmx_exception_with_invalid_guest_state
-# selftests: kvm: vmx_msrs_test
-ok 36 selftests: kvm: vmx_msrs_test
-# selftests: kvm: vmx_invalid_nested_guest_state
-ok 37 selftests: kvm: vmx_invalid_nested_guest_state
-# selftests: kvm: vmx_set_nested_state_test
-ok 38 selftests: kvm: vmx_set_nested_state_test
-# selftests: kvm: vmx_tsc_adjust_test
-# IA32_TSC_ADJUST is -4294972840 (-1 * TSC_ADJUST_VALUE + -5544).
-# IA32_TSC_ADJUST is -4294972840 (-1 * TSC_ADJUST_VALUE + -5544).
-# IA32_TSC_ADJUST is -8589945060 (-2 * TSC_ADJUST_VALUE + -10468).
-# IA32_TSC_ADJUST is -8589945060 (-2 * TSC_ADJUST_VALUE + -10468).
-ok 39 selftests: kvm: vmx_tsc_adjust_test
-# selftests: kvm: vmx_nested_tsc_scaling_test
-# L1's scale down factor is: 4
-# L2's scale up factor is: 4
-# real TSC frequency is around: 2594151616
-# L1's TSC frequency is around: 648561687
-# L2's TSC frequency is around: 2594213442
-# L1's TSC frequency is around: 648553934
-ok 40 selftests: kvm: vmx_nested_tsc_scaling_test
-# selftests: kvm: xapic_ipi_test
-# Halter vCPU thread started
-# vCPU thread running vCPU 0
-# Halter vCPU thread reported its APIC ID: 0 after 1 seconds.
-# IPI sender vCPU thread started. Letting vCPUs run for 3 seconds.
-# vCPU thread running vCPU 1
-# Test successful after running for 3 seconds.
-# Sending vCPU sent 506697 IPIs to halting vCPU
-# Halting vCPU halted 506697 times, woke 506697 times, received 506697 IPIs=
-.
-# Halter APIC ID=3D0
-# Sender ICR value=3D0xa5 ICR2 value=3D0
-# Halter TPR=3D0 PPR=3D0 LVR=3D0x50014
-# Migrations attempted: 0
-# Migrations completed: 0
-ok 41 selftests: kvm: xapic_ipi_test
-# selftests: kvm: xapic_state_test
-ok 42 selftests: kvm: xapic_state_test
-# selftests: kvm: xss_msr_test
-ok 43 selftests: kvm: xss_msr_test
-# selftests: kvm: debug_regs
-ok 44 selftests: kvm: debug_regs
-# selftests: kvm: tsc_msrs_test
-ok 45 selftests: kvm: tsc_msrs_test
-# selftests: kvm: vmx_pmu_caps_test
-# Completed perf capability tests.
-ok 46 selftests: kvm: vmx_pmu_caps_test
-# selftests: kvm: xen_shinfo_test
-# 1..0 # SKIP - Requirement not met: xen_caps & KVM_XEN_HVM_CONFIG_SHARED_I=
-NFO
-ok 47 selftests: kvm: xen_shinfo_test # SKIP
-# selftests: kvm: xen_vmcall_test
-# 1..0 # SKIP - Requirement not met: xen_caps & KVM_XEN_HVM_CONFIG_INTERCEP=
-T_HCALL
-ok 48 selftests: kvm: xen_vmcall_test # SKIP
-# selftests: kvm: sev_migrate_tests
-# 1..0 # SKIP - Requirement not met: kvm_cpu_has(X86_FEATURE_SEV)
-ok 49 selftests: kvm: sev_migrate_tests # SKIP
-# selftests: kvm: amx_test
-# 1..0 # SKIP - Requirement not met: kvm_cpu_has(X86_FEATURE_XFD)
-ok 50 selftests: kvm: amx_test # SKIP
-# selftests: kvm: max_vcpuid_cap_test
-ok 51 selftests: kvm: max_vcpuid_cap_test
-# selftests: kvm: triple_fault_event_test
-# =3D=3D=3D=3D Test Assertion Failure =3D=3D=3D=3D
-#   x86_64/triple_fault_event_test.c:87: false
-#   pid=3D5484 tid=3D5484 errno=3D4 - Interrupted system call
-#      1	0x0000000000402647: main at triple_fault_event_test.c:87
-#      2	0x00007fcc3e4b6189: ?? ??:0
-#      3	0x00007fcc3e4b6244: ?? ??:0
-#      4	0x0000000000402690: _start at ??:?
-#   Unexpected ucall: 0
-not ok 52 selftests: kvm: triple_fault_event_test # exit=3D254
-# selftests: kvm: access_tracking_perf_test
-# Testing guest mode: PA-bits:ANY, VA-bits:48,  4K pages
-# guest physical test memory: [0xfffffbffff000, 0xffffffffff000)
-#=20
-# Populating memory             : 1.001297725s
-# Writing to populated memory   : 0.013983722s
-# Reading from populated memory : 0.180354568s
-# WARNING: vCPU0: Too many pages still idle (0out of 262144), this will aff=
-ect performance results.
-# Mark memory idle              : 7.977842456s
-# Writing to idle memory        : 0.684382717s
-# WARNING: vCPU0: Too many pages still idle (0out of 262144), this will aff=
-ect performance results.
-# Mark memory idle              : 7.937423167s
-# Reading from idle memory      : 0.728274175s
-ok 53 selftests: kvm: access_tracking_perf_test
-# selftests: kvm: demand_paging_test
-# Testing guest mode: PA-bits:ANY, VA-bits:48,  4K pages
-# guest physical test memory: [0xfffffbffff000, 0xffffffffff000)
-# Finished creating vCPUs and starting uffd threads
-# Started all vCPUs
-# All vCPU threads joined
-# Total guest execution time: 1.014055123s
-# Overall demand paging rate: 229839.741613 pgs/sec
-ok 54 selftests: kvm: demand_paging_test
-# selftests: kvm: dirty_log_test
-# Test iterations: 32, interval: 10 (ms)
-# Testing Log Mode 'dirty-log'
-# Testing guest mode: PA-bits:ANY, VA-bits:48,  4K pages
-# guest physical test memory offset: 0xfffffbfffc000
-# Dirtied 783360 pages
-# Total bits checked: dirty (804193), clear (7322364), track_next (274676)
-# Testing Log Mode 'clear-log'
-# Testing guest mode: PA-bits:ANY, VA-bits:48,  4K pages
-# guest physical test memory offset: 0xfffffbfffc000
-# Dirtied 764928 pages
-# Total bits checked: dirty (1048547), clear (7078010), track_next (14849)
-# Testing Log Mode 'dirty-ring'
-# Testing guest mode: PA-bits:ANY, VA-bits:48,  4K pages
-# guest physical test memory offset: 0xfffffbfffc000
-# vcpu stops because vcpu is kicked out...
-# Notifying vcpu to continue
-# vcpu continues now.
-# Iteration 1 collected 2466 pages
-# vcpu stops because dirty ring is full...
-# vcpu continues now.
-# vcpu stops because dirty ring is full...
-# Notifying vcpu to continue
-# Iteration 2 collected 64960 pages
-# vcpu continues now.
-# vcpu stops because vcpu is kicked out...
-# vcpu continues now.
-# vcpu stops because vcpu is kicked out...
-# Notifying vcpu to continue
-# vcpu continues now.
-# Iteration 3 collected 1490 pages
-# vcpu stops because dirty ring is full...
-# vcpu continues now.
-# vcpu stops because dirty ring is full...
-# Notifying vcpu to continue
-# Iteration 4 collected 64960 pages
-# vcpu continues now.
-# vcpu stops because vcpu is kicked out...
-# vcpu continues now.
-# vcpu stops because vcpu is kicked out...
-# Notifying vcpu to continue
-# vcpu continues now.
-# Iteration 5 collected 1520 pages
-# vcpu stops because dirty ring is full...
-# vcpu continues now.
-# vcpu stops because dirty ring is full...
-# Notifying vcpu to continue
-# Iteration 6 collected 64960 pages
-# vcpu continues now.
-# vcpu stops because vcpu is kicked out...
-# vcpu continues now.
-# vcpu stops because vcpu is kicked out...
-# Notifying vcpu to continue
-# vcpu continues now.
-# Iteration 7 collected 1516 pages
-# vcpu stops because dirty ring is full...
-# vcpu continues now.
-# vcpu stops because dirty ring is full...
-# Notifying vcpu to continue
-# Iteration 8 collected 64961 pages
-# vcpu continues now.
-# vcpu stops because vcpu is kicked out...
-# vcpu continues now.
-# vcpu stops because vcpu is kicked out...
-# Notifying vcpu to continue
-# vcpu continues now.
-# Iteration 9 collected 13117 pages
-# vcpu stops because dirty ring is full...
-# vcpu continues now.
-# vcpu stops because dirty ring is full...
-# Notifying vcpu to continue
-# Iteration 10 collected 64960 pages
-# vcpu continues now.
-# vcpu stops because vcpu is kicked out...
-# vcpu continues now.
-# vcpu stops because vcpu is kicked out...
-# Notifying vcpu to continue
-# vcpu continues now.
-# Iteration 11 collected 15687 pages
-# vcpu stops because dirty ring is full...
-# vcpu continues now.
-# vcpu stops because dirty ring is full...
-# Notifying vcpu to continue
-# Iteration 12 collected 64962 pages
-# vcpu continues now.
-# vcpu stops because vcpu is kicked out...
-# vcpu continues now.
-# vcpu stops because vcpu is kicked out...
-# Notifying vcpu to continue
-# vcpu continues now.
-# Iteration 13 collected 17901 pages
-# vcpu stops because dirty ring is full...
-# vcpu continues now.
-# vcpu stops because dirty ring is full...
-# Notifying vcpu to continue
-# Iteration 14 collected 64971 pages
-# vcpu continues now.
-# vcpu stops because vcpu is kicked out...
-# vcpu continues now.
-# vcpu stops because vcpu is kicked out...
-# Notifying vcpu to continue
-# vcpu continues now.
-# Iteration 15 collected 19886 pages
-# vcpu stops because dirty ring is full...
-# vcpu continues now.
-# vcpu stops because dirty ring is full...
-# Notifying vcpu to continue
-# Iteration 16 collected 64972 pages
-# vcpu continues now.
-# vcpu stops because vcpu is kicked out...
-# vcpu continues now.
-# vcpu stops because vcpu is kicked out...
-# Notifying vcpu to continue
-# vcpu continues now.
-# Iteration 17 collected 22091 pages
-# vcpu stops because dirty ring is full...
-# vcpu continues now.
-# vcpu stops because dirty ring is full...
-# Notifying vcpu to continue
-# Iteration 18 collected 64998 pages
-# vcpu continues now.
-# vcpu stops because vcpu is kicked out...
-# vcpu continues now.
-# vcpu stops because vcpu is kicked out...
-# Notifying vcpu to continue
-# vcpu continues now.
-# Iteration 19 collected 11139 pages
-# vcpu stops because dirty ring is full...
-# vcpu continues now.
-# vcpu stops because dirty ring is full...
-# Notifying vcpu to continue
-# Iteration 20 collected 64964 pages
-# vcpu continues now.
-# vcpu stops because vcpu is kicked out...
-# vcpu continues now.
-# vcpu stops because vcpu is kicked out...
-# Notifying vcpu to continue
-# vcpu continues now.
-# Iteration 21 collected 13376 pages
-# vcpu stops because dirty ring is full...
-# vcpu continues now.
-# vcpu stops because dirty ring is full...
-# Notifying vcpu to continue
-# Iteration 22 collected 64963 pages
-# vcpu continues now.
-# vcpu stops because vcpu is kicked out...
-# vcpu continues now.
-# vcpu stops because vcpu is kicked out...
-# Notifying vcpu to continue
-# vcpu continues now.
-# Iteration 23 collected 15594 pages
-# vcpu stops because dirty ring is full...
-# vcpu continues now.
-# vcpu stops because dirty ring is full...
-# Notifying vcpu to continue
-# Iteration 24 collected 64977 pages
-# vcpu continues now.
-# vcpu stops because vcpu is kicked out...
-# vcpu continues now.
-# vcpu stops because vcpu is kicked out...
-# Notifying vcpu to continue
-# vcpu continues now.
-# Iteration 25 collected 17684 pages
-# vcpu stops because dirty ring is full...
-# vcpu continues now.
-# vcpu stops because dirty ring is full...
-# Notifying vcpu to continue
-# Iteration 26 collected 64983 pages
-# vcpu continues now.
-# vcpu stops because vcpu is kicked out...
-# vcpu continues now.
-# vcpu stops because vcpu is kicked out...
-# Notifying vcpu to continue
-# vcpu continues now.
-# Iteration 27 collected 19861 pages
-# vcpu stops because dirty ring is full...
-# vcpu continues now.
-# vcpu stops because dirty ring is full...
-# Notifying vcpu to continue
-# Iteration 28 collected 64965 pages
-# vcpu continues now.
-# vcpu stops because vcpu is kicked out...
-# vcpu continues now.
-# vcpu stops because vcpu is kicked out...
-# Notifying vcpu to continue
-# vcpu continues now.
-# Iteration 29 collected 21740 pages
-# vcpu stops because dirty ring is full...
-# vcpu continues now.
-# vcpu stops because dirty ring is full...
-# Notifying vcpu to continue
-# Iteration 30 collected 64990 pages
-# vcpu continues now.
-# vcpu stops because vcpu is kicked out...
-# vcpu continues now.
-# vcpu stops because vcpu is kicked out...
-# Notifying vcpu to continue
-# vcpu continues now.
-# Iteration 31 collected 23213 pages
-# vcpu stops because dirty ring is full...
-# vcpu continues now.
-# Dirtied 1186816 pages
-# Total bits checked: dirty (1192826), clear (6933731), track_next (929881)
-ok 55 selftests: kvm: dirty_log_test
-# selftests: kvm: dirty_log_perf_test
-# Test iterations: 2
-# Testing guest mode: PA-bits:ANY, VA-bits:48,  4K pages
-# guest physical test memory: [0xfffffbffff000, 0xffffffffff000)
-# Populate memory time: 1.014240646s
-# Enabling dirty logging time: 0.000077099s
-#=20
-# Iteration 1 dirty memory time: 0.171134280s
-# Iteration 1 get dirty log time: 0.000044371s
-# Iteration 1 clear dirty log time: 0.013957310s
-# Iteration 2 dirty memory time: 0.068726128s
-# Iteration 2 get dirty log time: 0.000007277s
-# Iteration 2 clear dirty log time: 0.013421396s
-# Disabling dirty logging time: 0.000061168s
-# Get dirty log over 2 iterations took 0.000051648s. (Avg 0.000025824s/iter=
-ation)
-# Clear dirty log over 2 iterations took 0.027378706s. (Avg 0.013689353s/it=
-eration)
-ok 56 selftests: kvm: dirty_log_perf_test
-# selftests: kvm: hardware_disable_test
-ok 57 selftests: kvm: hardware_disable_test
-# selftests: kvm: kvm_create_max_vcpus
-# KVM_CAP_MAX_VCPU_ID: 4096
-# KVM_CAP_MAX_VCPUS: 1024
-# Testing creating 1024 vCPUs, with IDs 0...1023.
-# Testing creating 1024 vCPUs, with IDs 3072...4095.
-ok 58 selftests: kvm: kvm_create_max_vcpus
-# selftests: kvm: kvm_page_table_test
-# Testing guest mode: PA-bits:ANY, VA-bits:48,  4K pages
-# Testing memory backing src type: anonymous
-# Testing memory backing src granularity: 0x1000
-# Testing memory size(aligned): 0x40000000
-# Guest physical test memory offset: 0xfffffbffff000
-# Host  virtual  test memory offset: 0x7f0746200000
-# Number of testing vCPUs: 1
-# Started all vCPUs successfully
-# KVM_CREATE_MAPPINGS: total execution time: 5.264561048s
-#=20
-# KVM_UPDATE_MAPPINGS: total execution time: 4.390056513s
-#=20
-# KVM_ADJUST_MAPPINGS: total execution time: 4.395255415s
-#=20
-ok 59 selftests: kvm: kvm_page_table_test
-# selftests: kvm: max_guest_memory_test
-# Running with 128gb of guest memory and 96 vCPUs
-# Waiting for vCPUs to finish spawning...
-# =0D1 vCPUs haven't rendezvoused...=0DAll vCPUs finished spawning, releasi=
-ng...
-# Waiting for vCPUs to finish run 1...
-# =0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D82 vCPUs haven'=
-t rendezvoused...=0D82 vCPUs haven't rendezvoused...=0D81 vCPUs haven't ren=
-dezvoused...=0D81 vCPUs haven't rendezvoused...=0D81 vCPUs haven't rendezvo=
-used...=0D81 vCPUs haven't rendezvoused...=0D81 vCPUs haven't rendezvoused.=
-..=0D81 vCPUs haven't rendezvoused...=0D81 vCPUs haven't rendezvoused...=0D=
-81 vCPUs haven't rendezvoused...=0D81 vCPUs haven't rendezvoused...=0D81 vC=
-PUs haven't rendezvoused...=0D81 vCPUs haven't rendezvoused...=0D81 vCPUs h=
-aven't rendezvoused...=0D81 vCPUs haven't rendezvoused...=0D81 vCPUs haven'=
-t rendezvoused...=0D81 vCPUs haven't rendezvoused...=0D81 vCPUs haven't ren=
-dezvoused...=0D81 vCPUs haven't rendezvoused...=0D81 vCPUs haven't rendezvo=
-used...=0D80 vCPUs haven't rendezvoused...=0D80 vCPUs haven't rendezvoused.=
-..=0D80 vCPUs haven't rendezvoused...=0D80 vCPUs haven't rendezvoused...=0D=
-80 vCPUs haven't rendezvoused...=0D80 vCPUs haven't rendezvoused...=0D80 vC=
-PUs haven't rendezvoused...=0D80 vCPUs haven't rendezvoused...=0D80 vCPUs h=
-aven't rendezvoused...=0D80 vCPUs haven't rendezvoused...=0D80 vCPUs haven'=
-t rendezvoused...=0D77 vCPUs haven't rendezvoused...=0D72 vCPUs haven't ren=
-dezvoused...=0D59 vCPUs haven't rendezvoused...=0D44 vCPUs haven't rendezvo=
-used...=0D36 vCPUs haven't rendezvoused...=0D35 vCPUs haven't rendezvoused.=
-..=0D35 vCPUs haven't rendezvoused...=0D35 vCPUs haven't rendezvoused...=0D=
-34 vCPUs haven't rendezvoused...=0D34 vCPUs haven't rendezvoused...=0D33 vC=
-PUs haven't rendezvoused...=0D33 vCPUs haven't rendezvoused...=0D33 vCPUs h=
-aven't rendezvoused...=0D33 vCPUs haven't rendezvoused...=0D33 vCPUs haven'=
-t rendezvoused...=0D33 vCPUs haven't rendezvoused...=0D33 vCPUs haven't ren=
-dezvoused...=0D33 vCPUs haven't rendezvoused...=0D33 vCPUs haven't rendezvo=
-used...=0D32 vCPUs haven't rendezvoused...=0D32 vCPUs haven't rendezvoused.=
-..=0D31 vCPUs haven't rendezvoused...=0D28 vCPUs haven't rendezvoused...=0D=
-22 vCPUs haven't rendezvoused...=0D10 vCPUs haven't rendezvoused...=0D5 vCP=
-Us haven't rendezvoused...=0DAll vCPUs finished run 1, releasing...
-# Waiting for vCPUs to finish reset...
-# =0D96 vCPUs haven't rendezvoused...=0DAll vCPUs finished reset, releasing=
-...
-# Waiting for vCPUs to finish run 2...
-# =0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs h=
-aven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven'=
-t rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't ren=
-dezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvo=
-used...=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused.=
-..=0D96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D=
-96 vCPUs haven't rendezvoused...=0D96 vCPUs haven't rendezvoused...=0D96 vC=
-PUs haven't rendezvoused...=0D88 vCPUs haven't rendezvoused...=0D88 vCPUs h=
-aven't rendezvoused...=0D88 vCPUs haven't rendezvoused...=0D88 vCPUs haven'=
-t rendezvoused...=0D88 vCPUs haven't rendezvoused...=0D88 vCPUs haven't ren=
-dezvoused...=0D88 vCPUs haven't rendezvoused...=0D87 vCPUs haven't rendezvo=
-used...=0D87 vCPUs haven't rendezvoused...=0D86 vCPUs haven't rendezvoused.=
-..=0D86 vCPUs haven't rendezvoused...=0D85 vCPUs haven't rendezvoused...=0D=
-84 vCPUs haven't rendezvoused...=0D84 vCPUs haven't rendezvoused...=0D84 vC=
-PUs haven't rendezvoused...=0D84 vCPUs haven't rendezvoused...=0D84 vCPUs h=
-aven't rendezvoused...=0D84 vCPUs haven't rendezvoused...=0D84 vCPUs haven'=
-t rendezvoused...=0D84 vCPUs haven't rendezvoused...=0D84 vCPUs haven't ren=
-dezvoused...=0D84 vCPUs haven't rendezvoused...=0D84 vCPUs haven't rendezvo=
-used...=0D84 vCPUs haven't rendezvoused...=0D83 vCPUs haven't rendezvoused.=
-..=0D83 vCPUs haven't rendezvoused...=0D83 vCPUs haven't rendezvoused...=0D=
-82 vCPUs haven't rendezvoused...=0D80 vCPUs haven't rendezvoused...=0D78 vC=
-PUs haven't rendezvoused...=0D78 vCPUs haven't rendezvoused...=0D78 vCPUs h=
-aven't rendezvoused...=0D78 vCPUs haven't rendezvoused...=0D78 vCPUs haven'=
-t rendezvoused...=0D78 vCPUs haven't rendezvoused...=0D78 vCPUs haven't ren=
-dezvoused...=0D78 vCPUs haven't rendezvoused...=0D78 vCPUs haven't rendezvo=
-used...=0D78 vCPUs haven't rendezvoused...=0D78 vCPUs haven't rendezvoused.=
-..=0D78 vCPUs haven't rendezvoused...=0D76 vCPUs haven't rendezvoused...=0D=
-76 vCPUs haven't rendezvoused...=0D76 vCPUs haven't rendezvoused...=0D76 vC=
-PUs haven't rendezvoused...=0D76 vCPUs haven't rendezvoused...=0D76 vCPUs h=
-aven't rendezvoused...=0D75 vCPUs haven't rendezvoused...=0D74 vCPUs haven'=
-t rendezvoused...=0D64 vCPUs haven't rendezvoused...=0D48 vCPUs haven't ren=
-dezvoused...=0D46 vCPUs haven't rendezvoused...=0D44 vCPUs haven't rendezvo=
-used...=0D44 vCPUs haven't rendezvoused...=0D43 vCPUs haven't rendezvoused.=
-..=0D40 vCPUs haven't rendezvoused...=0D40 vCPUs haven't rendezvoused...=0D=
-37 vCPUs haven't rendezvoused...=0D35 vCPUs haven't rendezvoused...=0D33 vC=
-PUs haven't rendezvoused...=0D33 vCPUs haven't rendezvoused...=0D33 vCPUs h=
-aven't rendezvoused...=0D32 vCPUs haven't rendezvoused...=0D30 vCPUs haven'=
-t rendezvoused...=0D29 vCPUs haven't rendezvoused...=0D29 vCPUs haven't ren=
-dezvoused...=0D29 vCPUs haven't rendezvoused...=0D27 vCPUs haven't rendezvo=
-used...=0D26 vCPUs haven't rendezvoused...=0D24 vCPUs haven't rendezvoused.=
-..=0D21 vCPUs haven't rendezvoused...=0D20 vCPUs haven't rendezvoused...=0D=
-15 vCPUs haven't rendezvoused...=0D5 vCPUs haven't rendezvoused...=0D2 vCPU=
-s haven't rendezvoused...=0DAll vCPUs finished run 2, releasing...
-# run1 =3D 3.088902948s, reset =3D 0.000309862s, run2 =3D  6.176383082s
-ok 60 selftests: kvm: max_guest_memory_test
-# selftests: kvm: memslot_modification_stress_test
-# Testing guest mode: PA-bits:ANY, VA-bits:48,  4K pages
-# guest physical test memory: [0xfffffbffff000, 0xffffffffff000)
-# Finished creating vCPUs
-# Started all vCPUs
-# All vCPU threads joined
-ok 61 selftests: kvm: memslot_modification_stress_test
-# selftests: kvm: memslot_perf_test
-# Testing map performance with 1 runs, 5 seconds each
-# Memslot count too high for this test, decrease the cap (max is 8194)
-#=20
-# Testing unmap performance with 1 runs, 5 seconds each
-# Test took 2.694160377s for slot setup + 5.026081700s all iterations
-# Done 142 iterations, avg 0.035394941s each
-# Best runtime result was 0.035394941s per iteration (with 142 iterations)
-#=20
-# Testing unmap chunked performance with 1 runs, 5 seconds each
-# Test took 2.345654461s for slot setup + 5.007446304s all iterations
-# Done 138 iterations, avg 0.036285842s each
-# Best runtime result was 0.036285842s per iteration (with 138 iterations)
-#=20
-# Testing move active area performance with 1 runs, 5 seconds each
-# Test took 3.004516194s for slot setup + 5.000015870s all iterations
-# Done 15598 iterations, avg 0.000320554s each
-# Best runtime result was 0.000320554s per iteration (with 15598 iterations=
-)
-#=20
-# Testing move inactive area performance with 1 runs, 5 seconds each
-# Test took 2.489113895s for slot setup + 5.000099376s all iterations
-# Done 14705 iterations, avg 0.000340027s each
-# Best runtime result was 0.000340027s per iteration (with 14705 iterations=
-)
-#=20
-# Testing RW performance with 1 runs, 5 seconds each
-# Test took 2.860678295s for slot setup + 5.005282209s all iterations
-# Done 408 iterations, avg 0.012267848s each
-# Best runtime result was 0.012267848s per iteration (with 408 iterations)
-# Best slot setup time for the whole test area was 2.489113895s
-ok 62 selftests: kvm: memslot_perf_test
-# selftests: kvm: rseq_test
-# =3D=3D=3D=3D Test Assertion Failure =3D=3D=3D=3D
-#   rseq_test.c:272: i > (NR_TASK_MIGRATIONS / 2)
-#   pid=3D42824 tid=3D42824 errno=3D4 - Interrupted system call
-#      1	0x00000000004027bd: main at rseq_test.c:272
-#      2	0x00007f8d2aa49189: ?? ??:0
-#      3	0x00007f8d2aa49244: ?? ??:0
-#      4	0x0000000000402830: _start at ??:?
-#   Only performed 21064 KVM_RUNs, task stalled too much?
-#=20
-not ok 63 selftests: kvm: rseq_test # exit=3D254
-# selftests: kvm: set_memory_region_test
-# Testing KVM_RUN with zero added memory regions
-# Allowed number of memory slots: 32764
-# Adding slots 0..32763, each memory region with 2048K size
-# Testing MOVE of in-use region, 10 loops
-# Testing DELETE of in-use region, 10 loops
-ok 64 selftests: kvm: set_memory_region_test
-# selftests: kvm: steal_time
-ok 65 selftests: kvm: steal_time
-# selftests: kvm: kvm_binary_stats_test
-ok 66 selftests: kvm: kvm_binary_stats_test
-# selftests: kvm: system_counter_offset_test
-# system counter value: 503391688395075 expected range [503391687806695, 50=
-3391688431163]
-# system counter value: 503571688496475 expected range [503571688489287, 50=
-3571688510619]
-# system counter value: 503211688525365 expected range [503211688520789, 50=
-3211688538319]
-ok 67 selftests: kvm: system_counter_offset_test
-# selftests: kvm: nx_huge_pages_test.sh
-# Running test with CAP_SYS_BOOT enabled
-# Running as root, skipping nx_huge_pages_test with CAP_SYS_BOOT disabled
-ok 68 selftests: kvm: nx_huge_pages_test.sh
-make: Leaving directory '/usr/src/perf_selftests-x86_64-rhel-8.3-kvm-92e7d5=
-c83aff124f49082585e57939ed24b59c5c/tools/testing/selftests/kvm'
+2022-11-30 20:34:50 sleep 300
+2022-11-30 20:39:50 rmmod rcutorture
+[  154.216364] busted_srcud-torture:--- Start of test: nreaders=1 nfakewriters=4 stat_interval=60 verbose=1 test_no_idle_hz=1 shuffle_interval=3 stutter=5 irqreader=1 fqs_duration=0 fqs_holdoff=0 fqs_stutter=3 test_boost=1/0 test_boost_interval=7 test_boost_duration=4 shutdown_secs=0 stall_cpu=0 stall_cpu_holdoff=10 stall_cpu_irqsoff=0 stall_cpu_block=0 n_barrier_cbs=0 onoff_interval=0 onoff_holdoff=0 read_exit_delay=13 read_exit_burst=16 nocbs_nthreads=0 nocbs_toggle=1000
+[  154.226257] busted_srcud-torture: Creating rcu_torture_writer task
+[  154.344440] busted_srcud-torture: Creating rcu_torture_fakewriter task
+[  154.346006] busted_srcud-torture: rcu_torture_writer task started
+[  154.374010] busted_srcud-torture: Creating rcu_torture_fakewriter task
+[  154.375392] busted_srcud-torture: rcu_torture_fakewriter task started
+[  154.381611] busted_srcud-torture: Creating rcu_torture_fakewriter task
+[  154.383793] busted_srcud-torture: rcu_torture_fakewriter task started
+[  154.397473] busted_srcud-torture: Creating rcu_torture_fakewriter task
+[  154.399262] busted_srcud-torture: rcu_torture_fakewriter task started
+[  154.416216] busted_srcud-torture: Creating rcu_torture_reader task
+[  154.417697] busted_srcud-torture: rcu_torture_fakewriter task started
+[  154.589778] busted_srcud-torture: Creating rcu_torture_stats task
+[  154.591270] busted_srcud-torture: rcu_torture_reader task started
+[  154.627467] busted_srcud-torture: Creating torture_shuffle task
+[  154.629419] busted_srcud-torture: rcu_torture_stats task started
+[  154.640374] busted_srcud-torture: Creating torture_stutter task
+[  154.644728] busted_srcud-torture: torture_shuffle task started
+[  154.645963] busted_srcud-torture: rcu_torture_fwd_prog_init: Disabled, unsupported by RCU flavor under test
+[  154.647399] busted_srcud-torture: Creating rcu_torture_read_exit task
+[  154.649698] busted_srcud-torture: torture_stutter task started
+[  154.679808] busted_srcud-torture: rcu_torture_read_exit: Start of test
+[  160.204160] busted_srcud-torture: rcu_torture_read_exit: End of episode
+[  173.852307] busted_srcud-torture: rcu_torture_read_exit: Start of episode
+[  179.931980] busted_srcud-torture: rcu_torture_read_exit: End of episode
+[  193.408396] busted_srcud-torture: rcu_torture_read_exit: Start of episode
+[  193.764406] busted_srcud-torture: rcu_torture_read_exit: End of episode
+[  207.172665] busted_srcud-torture: rcu_torture_read_exit: Start of episode
+[  209.945106] busted_srcud-torture: rcu_torture_read_exit: End of episode
+[  215.420183] busted_srcud-torture: rtc: 000000000279428e ver: 5235 tfle: 0 rta: 5235 rtaf: 0 rtf: 5226 rtmbe: 0 rtmbkf: 0/0 rtbe: 0 rtbke: 0 rtbre: 0 rtbf: 0 rtb: 0 nt: 671 onoff: 0/0:0/0 -1,0:-1,0 0:0 (HZ=250) barrier: 0/0:0 read-exits: 67 nocb-toggles: 0:0
+[  215.423271] busted_srcud-torture: Reader Pipe:  275424 0 0 0 0 0 0 0 0 0 0
+[  215.424601] busted_srcud-torture: Reader Batch:  275424 0 0 0 0 0 0 0 0 0 0
+[  215.425634] busted_srcud-torture: Free-Block Circulation:  5234 5234 5233 5232 5231 5230 5229 5228 5227 5226 0
+[  215.427157] rcu: busted_srcud-torture: Tree SRCU g38892 per-CPU(idx=1): 0(0,0 .) 1(0,0 .) T(0,0)
+[  223.452091] busted_srcud-torture: rcu_torture_read_exit: Start of episode
+[  223.475518] busted_srcud-torture: rcu_torture_read_exit: End of episode
+[  236.924198] busted_srcud-torture: rcu_torture_read_exit: Start of episode
+[  239.654990] busted_srcud-torture: rcu_torture_read_exit: End of episode
+[  252.956114] busted_srcud-torture: rcu_torture_read_exit: Start of episode
+[  252.976863] busted_srcud-torture: rcu_torture_read_exit: End of episode
+[  266.300134] busted_srcud-torture: rcu_torture_read_exit: Start of episode
+[  269.644187] busted_srcud-torture: rcu_torture_read_exit: End of episode
+[  276.860219] busted_srcud-torture: rtc: 0000000050c8ad34 ver: 10408 tfle: 0 rta: 10408 rtaf: 0 rtf: 10399 rtmbe: 0 rtmbkf: 0/0 rtbe: 0 rtbke: 0 rtbre: 0 rtbf: 0 rtb: 0 nt: 3829 onoff: 0/0:0/0 -1,0:-1,0 0:0 (HZ=250) barrier: 0/0:0 read-exits: 135 nocb-toggles: 0:0
+[  276.864118] busted_srcud-torture: Reader Pipe:  1990957 0 0 0 0 0 0 0 0 0 0
+[  276.865301] busted_srcud-torture: Reader Batch:  1990957 0 0 0 0 0 0 0 0 0 0
+[  276.866565] busted_srcud-torture: Free-Block Circulation:  10407 10407 10406 10405 10404 10403 10402 10401 10400 10399 0
+[  276.868435] rcu: busted_srcud-torture: Tree SRCU g75952 per-CPU(idx=0): 0(0,0 .) 1(0,0 .) T(0,0)
+[  283.296070] busted_srcud-torture: rcu_torture_read_exit: Start of episode
+[  283.312402] busted_srcud-torture: rcu_torture_read_exit: End of episode
+[  296.636499] busted_srcud-torture: rcu_torture_read_exit: Start of episode
+[  299.980847] busted_srcud-torture: rcu_torture_read_exit: End of episode
+[  313.468762] busted_srcud-torture: rcu_torture_read_exit: Start of episode
+[  313.654465] busted_srcud-torture: rcu_torture_read_exit: End of episode
+[  326.972176] busted_srcud-torture: rcu_torture_read_exit: Start of episode
+[  329.976207] busted_srcud-torture: rcu_torture_read_exit: End of episode
+[  338.300394] busted_srcud-torture: rtc: 00000000665cbc83 ver: 15387 tfle: 0 rta: 15387 rtaf: 0 rtf: 15378 rtmbe: 0 rtmbkf: 0/0 rtbe: 0 rtbke: 0 rtbre: 0 rtbf: 0 rtb: 0 nt: 6759 onoff: 0/0:0/0 -1,0:-1,0 0:0 (HZ=250) barrier: 0/0:0 read-exits: 203 nocb-toggles: 0:0
+[  338.305490] busted_srcud-torture: Reader Pipe:  3526635 0 0 0 0 0 0 0 0 0 0
+[  338.307024] busted_srcud-torture: Reader Batch:  3526635 0 0 0 0 0 0 0 0 0 0
+[  338.308924] busted_srcud-torture: Free-Block Circulation:  15386 15386 15385 15384 15383 15382 15381 15380 15379 15378 0
+[  338.310776] rcu: busted_srcud-torture: Tree SRCU g111892 per-CPU(idx=1): 0(0,0 .) 1(0,0 .) T(0,0)
+[  343.325592] busted_srcud-torture: rcu_torture_read_exit: Start of episode
+[  343.452572] busted_srcud-torture: rcu_torture_read_exit: End of episode
+[  356.924031] busted_srcud-torture: rcu_torture_read_exit: Start of episode
+[  359.952452] busted_srcud-torture: rcu_torture_read_exit: End of episode
+[  373.536562] busted_srcud-torture: rcu_torture_read_exit: Start of episode
+[  373.592630] busted_srcud-torture: rcu_torture_read_exit: End of episode
+[  386.940136] busted_srcud-torture: rcu_torture_read_exit: Start of episode
+[  389.950676] busted_srcud-torture: rcu_torture_read_exit: End of episode
+[  399.740209] busted_srcud-torture: rtc: 000000005b42e880 ver: 20353 tfle: 0 rta: 20353 rtaf: 0 rtf: 20344 rtmbe: 0 rtmbkf: 0/0 rtbe: 0 rtbke: 0 rtbre: 0 rtbf: 0 rtb: 0 nt: 9726 onoff: 0/0:0/0 -1,0:-1,0 0:0 (HZ=250) barrier: 0/0:0 read-exits: 271 nocb-toggles: 0:0
+[  399.744204] busted_srcud-torture: Reader Pipe:  5120749 0 0 0 0 0 0 0 0 0 0
+[  399.745488] busted_srcud-torture: Reader Batch:  5120749 0 0 0 0 0 0 0 0 0 0
+[  399.746857] busted_srcud-torture: Free-Block Circulation:  20352 20352 20351 20350 20349 20348 20347 20346 20345 20344 0
+[  399.748802] rcu: busted_srcud-torture: Tree SRCU g148400 per-CPU(idx=0): 0(0,0 .) 1(0,0 .) T(0,0)
+[  403.420578] busted_srcud-torture: rcu_torture_read_exit: Start of episode
+[  403.447681] busted_srcud-torture: rcu_torture_read_exit: End of episode
+[  416.956033] busted_srcud-torture: rcu_torture_read_exit: Start of episode
+[  419.949289] busted_srcud-torture: rcu_torture_read_exit: End of episode
+[  433.275965] busted_srcud-torture: rcu_torture_read_exit: Start of episode
+[  433.297436] busted_srcud-torture: rcu_torture_read_exit: End of episode
+[  446.684113] busted_srcud-torture: rcu_torture_read_exit: Start of episode
+[  449.937832] busted_srcud-torture: rcu_torture_read_exit: End of episode
+[  455.106164] busted_srcud-torture: Stopping torture_shuffle task
+[  455.107201] busted_srcud-torture: Stopping torture_shuffle
+[  455.112573] busted_srcud-torture: Stopping torture_stutter task
+[  455.121737] busted_srcud-torture: Stopping torture_stutter
+[  455.123193] busted_srcud-torture: Stopping rcu_torture_reader
+[  455.124469] busted_srcud-torture: Stopping rcu_torture_fakewriter
+[  455.125614] busted_srcud-torture: Stopping rcu_torture_writer
+[  455.126599] busted_srcud-torture: Stopping rcu_torture_fakewriter
+[  455.127610] busted_srcud-torture: Stopping rcu_torture_fakewriter
+[  455.128807] busted_srcud-torture: Stopping rcu_torture_fakewriter
+[  455.292283] busted_srcud-torture: Stopping rcu_torture_read_exit
+[  455.293356] busted_srcud-torture: Stopping rcutorture_read_exit task
+[  455.294730] busted_srcud-torture: Stopping rcu_torture_writer task
+[  455.301449] busted_srcud-torture: Stopping rcu_torture_reader task
+[  455.302724] busted_srcud-torture: Stopping rcu_torture_fakewriter task
+[  455.306797] busted_srcud-torture: Stopping rcu_torture_fakewriter task
+[  455.308602] busted_srcud-torture: Stopping rcu_torture_fakewriter task
+[  455.310258] busted_srcud-torture: Stopping rcu_torture_fakewriter task
+[  455.313033] busted_srcud-torture: Stopping rcu_torture_stats task
+[  455.320243] busted_srcud-torture: rtc: 0000000000000000 VER: 25518 tfle: 0 rta: 25518 rtaf: 0 rtf: 25509 rtmbe: 0 rtmbkf: 0/0 rtbe: 0 rtbke: 0 rtbre: 0 rtbf: 0 rtb: 0 nt: 12865 onoff: 0/0:0/0 -1,0:-1,0 0:0 (HZ=250) barrier: 0/0:0 read-exits: 339 nocb-toggles: 0:0
+[  455.323572] busted_srcud-torture: Reader Pipe:  6804945 0 0 0 0 0 0 0 0 0 0
+[  455.325017] busted_srcud-torture: Reader Batch:  6804945 0 0 0 0 0 0 0 0 0 0
+[  455.326199] busted_srcud-torture: Free-Block Circulation:  25517 25517 25516 25515 25514 25513 25512 25511 25510 25509 0
+[  455.328066] rcu: busted_srcud-torture: Tree SRCU g185400 per-CPU(idx=0): 0(0,0 .) 1(0,0 .) T(0,0)
+[  455.329526] busted_srcud-torture: Stopping rcu_torture_stats
+[  455.781336] busted_srcud-torture: rtc: 0000000000000000 VER: 25518 tfle: 0 rta: 25518 rtaf: 0 rtf: 25509 rtmbe: 0 rtmbkf: 0/0 rtbe: 0 rtbke: 0 rtbre: 0 rtbf: 0 rtb: 0 nt: 12865 onoff: 0/0:0/0 -1,0:-1,0 0:0 (HZ=250) barrier: 0/0:0 read-exits: 339 nocb-toggles: 0:0
+[  455.784843] busted_srcud-torture: Reader Pipe:  6804945 0 0 0 0 0 0 0 0 0 0
+[  455.785941] busted_srcud-torture: Reader Batch:  6804945 0 0 0 0 0 0 0 0 0 0
+[  455.787032] busted_srcud-torture: Free-Block Circulation:  25517 25517 25516 25515 25514 25513 25512 25511 25510 25509 0
+[  455.788792] rcu: busted_srcud-torture: Tree SRCU g0 per-CPU(idx=0): 0(0,0 .) 1(0,0 .) T(0,0)
+[  455.790081] busted_srcud-torture:--- End of test: SUCCESS: nreaders=1 nfakewriters=4 stat_interval=60 verbose=1 test_no_idle_hz=1 shuffle_interval=3 stutter=5 irqreader=1 fqs_duration=0 fqs_holdoff=0 fqs_stutter=3 test_boost=1/0 test_boost_interval=7 test_boost_duration=4 shutdown_secs=0 stall_cpu=0 stall_cpu_holdoff=10 stall_cpu_irqsoff=0 stall_cpu_block=0 n_barrier_cbs=0 onoff_interval=0 onoff_holdoff=0 read_exit_delay=13 read_exit_burst=16 nocbs_nthreads=0 nocbs_toggle=1000
 
---8nAerbALHNP9BH49
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: attachment; filename="job.yaml"
-
----
-
-#! /cephfs/tmp/d20221125-3961081-137swp3/kernel-selftests-kvm.yaml
-suite: kernel-selftests
-testcase: kernel-selftests
-category: functional
-need_memory: 12G
-kernel-selftests:
-  group: kvm
-kernel_cmdline: kvm-intel.unrestricted_guest=0
-job_origin: kernel-selftests-kvm.yaml
-queue: bisect
-testbox: lkp-icl-2sp4
-commit: 92e7d5c83aff124f49082585e57939ed24b59c5c
-branch: kvm/master
-kconfig: x86_64-rhel-8.3-kvm
-name: "/cephfs/tmp/d20221125-3961081-137swp3/kernel-selftests-kvm.yaml"
-tbox_group: lkp-icl-2sp4
-submit_id: 6387aa70afe60247f515c8fd
-job_file: "/lkp/jobs/scheduled/lkp-icl-2sp4/kernel-selftests-kvm-debian-12-x86_64-20220629.cgz-92e7d5c83aff124f49082585e57939ed24b59c5c-20221201-18421-1stbpo8-0.yaml"
-id: 75baf3d177179e5113d2ce03c450efb475f6a4d7
-queuer_version: "/zday/lkp"
-
-#! hosts/lkp-icl-2sp4
-model: Ice Lake
-nr_node: 2
-nr_cpu: 128
-memory: 128G
-nr_ssd_partitions: 3
-nr_hdd_partitions: 6
-hdd_partitions: "/dev/disk/by-id/ata-WDC_WD20SPZX-08UA7_WD-WXE2EA0ECVAS-part*"
-ssd_partitions: "/dev/disk/by-id/ata-INTEL_SSDSC2BA800G3_BTTV34510181800JGN-part*"
-rootfs_partition: "/dev/disk/by-id/ata-INTEL_SSDSC2BB240G4_CVWL422602EB240NGN-part1"
-kernel_cmdline_hw: acpi_rsdp=0x69ffd014
-brand: Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz
-
-#! include/category/functional
-kmsg:
-heartbeat:
-meminfo:
-
-#! include/testbox/lkp-icl-2sp4
-ucode: '0xd000363'
-bisect_dmesg: true
-
-#! include/kernel-selftests
-need_kconfig:
-- KVM
-- KVM_INTEL
-rootfs: debian-12-x86_64-20220629.cgz
-initrds:
-- linux_headers
-- linux_selftests
-enqueue_time: 2022-12-01 03:09:36.819913615 +08:00
-compiler: gcc-11
-_id: 6387aa70afe60247f515c8fd
-_rt: "/result/kernel-selftests/kvm/lkp-icl-2sp4/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kvm/gcc-11/92e7d5c83aff124f49082585e57939ed24b59c5c"
-
-#! schedule options
-user: lkp
-LKP_SERVER: internal-lkp-server
-result_root: "/result/kernel-selftests/kvm/lkp-icl-2sp4/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kvm/gcc-11/92e7d5c83aff124f49082585e57939ed24b59c5c/0"
-scheduler_version: "/lkp/lkp/.src-20221130-171506"
-arch: x86_64
-max_uptime: 1200
-initrd: "/osimage/debian/debian-12-x86_64-20220629.cgz"
-bootloader_append:
-- root=/dev/ram0
-- RESULT_ROOT=/result/kernel-selftests/kvm/lkp-icl-2sp4/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kvm/gcc-11/92e7d5c83aff124f49082585e57939ed24b59c5c/0
-- BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3-kvm/gcc-11/92e7d5c83aff124f49082585e57939ed24b59c5c/vmlinuz-6.1.0-rc4-00027-g92e7d5c83aff
-- branch=kvm/master
-- job=/lkp/jobs/scheduled/lkp-icl-2sp4/kernel-selftests-kvm-debian-12-x86_64-20220629.cgz-92e7d5c83aff124f49082585e57939ed24b59c5c-20221201-18421-1stbpo8-0.yaml
-- user=lkp
-- ARCH=x86_64
-- kconfig=x86_64-rhel-8.3-kvm
-- commit=92e7d5c83aff124f49082585e57939ed24b59c5c
-- kvm-intel.unrestricted_guest=0
-- initcall_debug
-- acpi_rsdp=0x69ffd014
-- max_uptime=1200
-- LKP_SERVER=internal-lkp-server
-- nokaslr
-- selinux=0
-- debug
-- apic=debug
-- sysrq_always_enabled
-- rcupdate.rcu_cpu_stall_timeout=100
-- net.ifnames=0
-- printk.devkmsg=on
-- panic=-1
-- softlockup_panic=1
-- nmi_watchdog=panic
-- oops=panic
-- load_ramdisk=2
-- prompt_ramdisk=0
-- drbd.minor_count=8
-- systemd.log_level=err
-- ignore_loglevel
-- console=tty0
-- earlyprintk=ttyS0,115200
-- console=ttyS0,115200
-- vga=normal
-- rw
-
-#! runtime status
-modules_initrd: "/pkg/linux/x86_64-rhel-8.3-kvm/gcc-11/92e7d5c83aff124f49082585e57939ed24b59c5c/modules.cgz"
-linux_headers_initrd: "/pkg/linux/x86_64-rhel-8.3-kvm/gcc-11/92e7d5c83aff124f49082585e57939ed24b59c5c/linux-headers.cgz"
-linux_selftests_initrd: "/pkg/linux/x86_64-rhel-8.3-kvm/gcc-11/92e7d5c83aff124f49082585e57939ed24b59c5c/linux-selftests.cgz"
-bm_initrd: "/osimage/deps/debian-12-x86_64-20220629.cgz/run-ipconfig_20221125.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/lkp_20221125.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/rsync-rootfs_20221125.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/kernel-selftests_20221128.cgz,/osimage/pkg/debian-12-x86_64-20220629.cgz/kernel-selftests-x86_64-2ed09c3b-1_20221128.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/hw_20221125.cgz"
-ucode_initrd: "/osimage/ucode/intel-ucode-20220804.cgz"
-lkp_initrd: "/osimage/user/lkp/lkp-x86_64.cgz"
-site: inn
-
-#! /cephfs/db/releases/20221124213727/lkp-src/include/site/inn
-LKP_CGI_PORT: 80
-LKP_CIFS_PORT: 139
-oom-killer:
-watchdog:
-last_kernel: 6.0.0-06223-gab2962215797
-
-#! queue options
-queue_cmdline_keys:
-- branch
-- commit
-
-#! /cephfs/db/releases/20221127161702/lkp-src/include/site/inn
-schedule_notify_address:
-
-#! user overrides
-kernel: "/pkg/linux/x86_64-rhel-8.3-kvm/gcc-11/92e7d5c83aff124f49082585e57939ed24b59c5c/vmlinuz-6.1.0-rc4-00027-g92e7d5c83aff"
-dequeue_time: 2022-12-01 03:40:18.670312852 +08:00
-
-#! /cephfs/db/releases/20221130170907/lkp-src/include/site/inn
-job_state: finished
-loadavg: 8.74 9.54 4.29 2/1091 43220
-start_time: '1669869505'
-end_time: '1669869744'
-version: "/lkp/lkp/.src-20221130-171545:517033a4b:2129248ed"
-
---8nAerbALHNP9BH49
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: attachment; filename="reproduce"
-
-ln -sf /usr/bin/clang
-ln -sf /usr/sbin/iptables-nft /usr/bin/iptables
-ln -sf /usr/sbin/ip6tables-nft /usr/bin/ip6tables
-sed -i s/default_timeout=45/default_timeout=300/ kselftest/runner.sh
-make -C kvm
-make quicktest=1 run_tests -C kvm
-
---8nAerbALHNP9BH49--
+--4SmVSleSRHaDVft5--
