@@ -1,95 +1,87 @@
-Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com [209.85.219.182])
+Received: from mail-pg1-f177.google.com (mail-pg1-f177.google.com [209.85.215.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E3696125
-	for <oe-lkp@lists.linux.dev>; Mon,  5 Dec 2022 17:18:40 +0000 (UTC)
-Received: by mail-yb1-f182.google.com with SMTP id 7so15310072ybp.13
-        for <oe-lkp@lists.linux.dev>; Mon, 05 Dec 2022 09:18:40 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D91E6125
+	for <oe-lkp@lists.linux.dev>; Mon,  5 Dec 2022 17:32:19 +0000 (UTC)
+Received: by mail-pg1-f177.google.com with SMTP id h33so11067109pgm.9
+        for <oe-lkp@lists.linux.dev>; Mon, 05 Dec 2022 09:32:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=1/Nonq3ctTs1UWfb6KWW7MIlmF7kFHhRG27VQydMtVk=;
-        b=lFSZfm4kDAFsl8Bae1pr7+oePLNotDcRIIDlIY5J8R4O0WC0aEVF0wcgS5RWNmniso
-         txXy+BNgs9f8iTbaG5ahYH79+AdjemxKo5xKnqmnLh/vAsqi92wfqhVk6KgKrnzEu200
-         sK66uLMEezea15MPVJg+y47XZbPzcLTme3ywb/HGqTxWuSEGIkt1Zw7oH2FAEygSQRbY
-         ZJXPCPxAh3Ed+nxSir+x09p8Pejz+1SKW5K92Qp6RIKYNbqwUgjD9GYeXcOLD2VcHEFG
-         nwcHRySs2889m4rg93crVDccyBkbNyEq2BPvpkIRhEEmi6rRN7crHILQjVKnK0MvgLeM
-         ejTA==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=wHyd9pKlC9WFHVrwobxVNYq4HVzMFaCc5ME41Vf/DS4=;
+        b=tXcuoR9V6zHapsF2k42um/JNMg5G/jsVRshX0CWC9OKMH0uUifRsHiZ+sKnK1ucz6w
+         DAr33L1RJNKC7+e0+y/DbbLxBAecH8KqhIcv5cUZQYBwSS+ccmEIQf4CuAa1kXy2DMw3
+         SGtsVwaJLyUqmpYhTVg7S8pNptpBQgXO0oYo7ewY847llU0O9xki8GgL+GJmrOJ9+qy3
+         Y67t3ex8vH4gDG+Oy4Jrwld+9WhaqXTPbka9JVSf9t3cA98+MEDa3rQZUrBeHq6C8nre
+         1V8Q2UZ7oS3aHfTjlFWNv3n4KMWIKpCO9X2SpCm/g780PnpERu52pGZA4g0nhuklu4ig
+         oRBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=1/Nonq3ctTs1UWfb6KWW7MIlmF7kFHhRG27VQydMtVk=;
-        b=GWP5SKu8qoSQuxnf/I7KZ/60kAWSeLV2IjvjoSqXdi2ppV6f22/xZHXIh6u/Qp0mJF
-         1fDlw/2/JbCT2pzApxyuy+uWraM+d29TMXCzudTT8PfrYe0+lCtBsq87CTNLfA+xuHcX
-         SWyyvj8qG7zT5N3LFuZ2EkSf+Ti6sJC3H6Gnd1du6Qt/bKtfJhjU0upN/4EhC3/HT+z7
-         /5yqqSiby4cZMj/+Vqfdd0rfeSFpEaQkXwqZNkTJGAzdPbYKrOkIIK4jsT9Jl3VWDilV
-         4tzxO2A49rxTJh4Gz7hv1HOEFw6Su8cKfCjRJ4pJZpHJPQfky/wN7Tfuh/p5quDypPy7
-         WGIQ==
-X-Gm-Message-State: ANoB5pkrHVc05/lJnjC5mO5ATXfEA6EUXW9kWAbZWVTVWUD6togdWPK1
-	HXz86cFiOU7qHTP12HNi/X1V9tixbfsShRf3erBoTA==
-X-Google-Smtp-Source: AA0mqf4WwhfDj4SfV0gayow9/xNOHxtZYvzoJMotYVfsb0rBXTMBhrwctNTPhYy7zkevJoo6TTUBFkTVlmi+HMGTjjc=
-X-Received: by 2002:a5b:841:0:b0:6e5:92af:5731 with SMTP id
- v1-20020a5b0841000000b006e592af5731mr59525430ybq.228.1670260719051; Mon, 05
- Dec 2022 09:18:39 -0800 (PST)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=wHyd9pKlC9WFHVrwobxVNYq4HVzMFaCc5ME41Vf/DS4=;
+        b=Z2xzqTOfQVIjguVyFg7Oxcx3rHkxNxDe1RLwaYoAay/qJ+8OYMVWHg/AwUd2VslEyY
+         lvWLNT1sFifZ+kXbj6ouhRbPeqlOptrYx0akDSqqVwHgg5yJEioInYIXfEdALcUGv3NC
+         5xNJAqt5Gar5BOA9FZGArnlufXC3Isc5+6K+HFFC2FnPPS1EaoFRKfVgVYWyYXIisWUz
+         haO5jkjmpZ6cXtUG/Di/ftxU8tpUsmokMDjfTsR9yoOZRrpMTdKGT9wD5lFANNT/UXhd
+         rmjDdoRzsq1pHuPnBRz8pM4xiQRypAF6yqxiBS340Rx/1X/+QQOFulLBfPhwliyEZZ/1
+         57jQ==
+X-Gm-Message-State: ANoB5pljFV6Ii0JU/d+LjCD9WTVUopt2FPKMXj3kSOoRbnNey4S1rybh
+	AlD8P3v4Hf6nFcAO7YHEI1tOGA==
+X-Google-Smtp-Source: AA0mqf5H6RmfXNSGuyQNg+3Xbnn5UEmDXz9z1UaDNDohTKkpmd3glPZwK/n7+3IkNQFbXk6SVJX+RQ==
+X-Received: by 2002:a63:1747:0:b0:478:1391:fd14 with SMTP id 7-20020a631747000000b004781391fd14mr35684881pgx.112.1670261539381;
+        Mon, 05 Dec 2022 09:32:19 -0800 (PST)
+Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
+        by smtp.gmail.com with ESMTPSA id s4-20020a17090a764400b0020087d7e778sm11218083pjl.37.2022.12.05.09.32.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Dec 2022 09:32:18 -0800 (PST)
+Date: Mon, 5 Dec 2022 17:32:14 +0000
+From: Sean Christopherson <seanjc@google.com>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: Maxim Levitsky <mlevitsk@redhat.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, Paolo Bonzini <pbonzini@redhat.com>,
+	linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+	xudong.hao@intel.com
+Subject: Re: [linus:master] [KVM]  92e7d5c83a:
+ kernel-selftests.kvm.triple_fault_event_test.fail
+Message-ID: <Y44rHsJU9OdkxCHA@google.com>
+References: <202212032146.b0347c81-oliver.sang@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202212051324.182a6363-yujie.liu@intel.com>
-In-Reply-To: <202212051324.182a6363-yujie.liu@intel.com>
-From: Shakeel Butt <shakeelb@google.com>
-Date: Mon, 5 Dec 2022 09:18:28 -0800
-Message-ID: <CALvZod4CD+O7-ynGAHU-6vxE6CbSmuQei1=SVJsx0zFfQdmV2g@mail.gmail.com>
-Subject: Re: [linux-next:master] [mm] f1a7941243: unixbench.score -5.1% regression
-To: kernel test robot <yujie.liu@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, 
-	Andrew Morton <akpm@linux-foundation.org>, Marek Szyprowski <m.szyprowski@samsung.com>, 
-	Linux Memory Management List <linux-mm@kvack.org>, linux-kernel@vger.kernel.org, ying.huang@intel.com, 
-	feng.tang@intel.com, zhengjun.xing@linux.intel.com, fengwei.yin@intel.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202212032146.b0347c81-oliver.sang@intel.com>
 
-On Sun, Dec 4, 2022 at 9:56 PM kernel test robot <yujie.liu@intel.com> wrot=
-e:
->
+On Sat, Dec 03, 2022, kernel test robot wrote:
+> 
 > Greeting,
->
-> FYI, we noticed a -5.1% regression of unixbench.score due to commit:
->
-[...]
-> 9cd6ffa60256e931 f1a7941243c102a44e8847e3b94
-> ---------------- ---------------------------
->          %stddev     %change         %stddev
->              \          |                \
->       7917            -5.1%       7509        unixbench.score
+> 
+> FYI, we noticed kernel-selftests.kvm.triple_fault_event_test.fail due to commit (built with gcc-11):
+> 
+> commit: 92e7d5c83aff124f49082585e57939ed24b59c5c ("KVM: x86: allow L1 to not intercept triple fault")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-What is unixbench.score?
+Should already be fixed.  Thanks!
 
->      10485           -12.1%       9216        unixbench.time.maximum_resi=
-dent_set_size
->   37236706            -5.1%   35324104        unixbench.time.minor_page_f=
-aults
+commit df0bb47baa95aad133820b149851d5b94cbc6790
+Author: Paolo Bonzini <pbonzini@redhat.com>
+Date:   Wed Nov 30 11:14:35 2022 -0500
 
-For above two, is negative change good or bad?
-
->       0.98 =C4=85 20%      +0.7        1.64 =C4=85 38%  perf-profile.call=
-trace.cycles-pp.link_path_walk.path_openat.do_filp_open.do_sys_openat2.__x6=
-4_sys_openat
->       2.12 =C4=85 19%      +0.8        2.96 =C4=85 13%  perf-profile.call=
-trace.cycles-pp.handle_mm_fault.do_user_addr_fault.exc_page_fault.asm_exc_p=
-age_fault
->       2.35 =C4=85 13%      +0.9        3.28 =C4=85 13%  perf-profile.call=
-trace.cycles-pp.__handle_mm_fault.handle_mm_fault.do_user_addr_fault.exc_pa=
-ge_fault.asm_exc_page_fault
->       0.14 =C4=85 74%      +0.4        0.55 =C4=85 32%  perf-profile.chil=
-dren.cycles-pp.do_task_dead
->       0.04 =C4=85223%      +0.4        0.47 =C4=85 49%  perf-profile.chil=
-dren.cycles-pp.__mmdrop
-
-Also how should I interpret the above perf-profiles?
+    KVM: x86: fix uninitialized variable use on KVM_REQ_TRIPLE_FAULT
+    
+    If a triple fault was fixed by kvm_x86_ops.nested_ops->triple_fault (by
+    turning it into a vmexit), there is no need to leave vcpu_enter_guest().
+    Any vcpu->requests will be caught later before the actual vmentry,
+    and in fact vcpu_enter_guest() was not initializing the "r" variable.
+    Depending on the compiler's whims, this could cause the
+    x86_64/triple_fault_event_test test to fail.
+    
+    Cc: Maxim Levitsky <mlevitsk@redhat.com>
+    Fixes: 92e7d5c83aff ("KVM: x86: allow L1 to not intercept triple fault")
+    Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
