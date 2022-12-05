@@ -1,87 +1,135 @@
-Received: from mail-pg1-f177.google.com (mail-pg1-f177.google.com [209.85.215.177])
+Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D91E6125
-	for <oe-lkp@lists.linux.dev>; Mon,  5 Dec 2022 17:32:19 +0000 (UTC)
-Received: by mail-pg1-f177.google.com with SMTP id h33so11067109pgm.9
-        for <oe-lkp@lists.linux.dev>; Mon, 05 Dec 2022 09:32:19 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C3857C
+	for <oe-lkp@lists.linux.dev>; Mon,  5 Dec 2022 20:43:58 +0000 (UTC)
+Received: by mail-qt1-f175.google.com with SMTP id h24so12310549qta.9
+        for <oe-lkp@lists.linux.dev>; Mon, 05 Dec 2022 12:43:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=wHyd9pKlC9WFHVrwobxVNYq4HVzMFaCc5ME41Vf/DS4=;
-        b=tXcuoR9V6zHapsF2k42um/JNMg5G/jsVRshX0CWC9OKMH0uUifRsHiZ+sKnK1ucz6w
-         DAr33L1RJNKC7+e0+y/DbbLxBAecH8KqhIcv5cUZQYBwSS+ccmEIQf4CuAa1kXy2DMw3
-         SGtsVwaJLyUqmpYhTVg7S8pNptpBQgXO0oYo7ewY847llU0O9xki8GgL+GJmrOJ9+qy3
-         Y67t3ex8vH4gDG+Oy4Jrwld+9WhaqXTPbka9JVSf9t3cA98+MEDa3rQZUrBeHq6C8nre
-         1V8Q2UZ7oS3aHfTjlFWNv3n4KMWIKpCO9X2SpCm/g780PnpERu52pGZA4g0nhuklu4ig
-         oRBA==
+        d=linux-foundation.org; s=google;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=lBWIRVS47RUmDEcOvPdmfWIVH4IaWi6W1xGhZ6HUIpg=;
+        b=VlITxXm5biYw6uI6PPXe3docWzenLdY3/Q/s8bcI84Qeqr5ssGWJZkQFxotM28q3kG
+         jidIiH1cGwtjd9ELQ0YAZHqHlktIkQiMXrrnKeMpoCut3nnXF18SB3FqANyHMxvQJoZ2
+         pp/50ejXAqt+zzjVTkW2LcaWDW6j/KCOcQPT0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=wHyd9pKlC9WFHVrwobxVNYq4HVzMFaCc5ME41Vf/DS4=;
-        b=Z2xzqTOfQVIjguVyFg7Oxcx3rHkxNxDe1RLwaYoAay/qJ+8OYMVWHg/AwUd2VslEyY
-         lvWLNT1sFifZ+kXbj6ouhRbPeqlOptrYx0akDSqqVwHgg5yJEioInYIXfEdALcUGv3NC
-         5xNJAqt5Gar5BOA9FZGArnlufXC3Isc5+6K+HFFC2FnPPS1EaoFRKfVgVYWyYXIisWUz
-         haO5jkjmpZ6cXtUG/Di/ftxU8tpUsmokMDjfTsR9yoOZRrpMTdKGT9wD5lFANNT/UXhd
-         rmjDdoRzsq1pHuPnBRz8pM4xiQRypAF6yqxiBS340Rx/1X/+QQOFulLBfPhwliyEZZ/1
-         57jQ==
-X-Gm-Message-State: ANoB5pljFV6Ii0JU/d+LjCD9WTVUopt2FPKMXj3kSOoRbnNey4S1rybh
-	AlD8P3v4Hf6nFcAO7YHEI1tOGA==
-X-Google-Smtp-Source: AA0mqf5H6RmfXNSGuyQNg+3Xbnn5UEmDXz9z1UaDNDohTKkpmd3glPZwK/n7+3IkNQFbXk6SVJX+RQ==
-X-Received: by 2002:a63:1747:0:b0:478:1391:fd14 with SMTP id 7-20020a631747000000b004781391fd14mr35684881pgx.112.1670261539381;
-        Mon, 05 Dec 2022 09:32:19 -0800 (PST)
-Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
-        by smtp.gmail.com with ESMTPSA id s4-20020a17090a764400b0020087d7e778sm11218083pjl.37.2022.12.05.09.32.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Dec 2022 09:32:18 -0800 (PST)
-Date: Mon, 5 Dec 2022 17:32:14 +0000
-From: Sean Christopherson <seanjc@google.com>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: Maxim Levitsky <mlevitsk@redhat.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, Paolo Bonzini <pbonzini@redhat.com>,
-	linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-	xudong.hao@intel.com
-Subject: Re: [linus:master] [KVM]  92e7d5c83a:
- kernel-selftests.kvm.triple_fault_event_test.fail
-Message-ID: <Y44rHsJU9OdkxCHA@google.com>
-References: <202212032146.b0347c81-oliver.sang@intel.com>
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=lBWIRVS47RUmDEcOvPdmfWIVH4IaWi6W1xGhZ6HUIpg=;
+        b=8HhxqCMLIQ07uBtAtc6cYbtdoehk0YCHIJMWokJ0eT0FIAmX7ts2ml/45Di/eUvik+
+         28SJ18N/bjng48iKWzC169xx50DecxxgVihMldv+M016hdkRjGIWfX/JJ6QMIUUUl572
+         7aIClq1Jt0cHNGccDl6TWKet/Z3mlu0cD3+V1NFxzeGEABkJKjOmfAHVVO+/T/EQlC8q
+         5RL+rhheda7EPQAGNev3W0bThL9qe3jo71na/QzJ+k7XZVPLr9hPziQ+g6qvFXZXk3Ai
+         1DzZCk4DRquyzKihSDRZwgNSvhkkLdD8cWo0tLmY18Vx1euun0kbEFuj/MQVDNHtXbV9
+         /Pig==
+X-Gm-Message-State: ANoB5plAor44pUgPdKZ9Xex+41lnPEZ8Qq2+nKLeG0qiQRlZQyUzDPjX
+	hVuz4jDWCdB/TTrglYxd9I+h7jIfsTBbWT4J
+X-Google-Smtp-Source: AA0mqf4+VQJeHep061GrZ5ThIsW7+8Uq9rj1L+OcjQhZN4GrmTq3dSqhAwJe4qBvLFLyEhAVr0nFHw==
+X-Received: by 2002:ac8:7652:0:b0:39c:c436:1ea8 with SMTP id i18-20020ac87652000000b0039cc4361ea8mr79526735qtr.384.1670273037078;
+        Mon, 05 Dec 2022 12:43:57 -0800 (PST)
+Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com. [209.85.160.176])
+        by smtp.gmail.com with ESMTPSA id r16-20020ae9d610000000b006e42a8e9f9bsm5137437qkk.121.2022.12.05.12.43.53
+        for <oe-lkp@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 05 Dec 2022 12:43:54 -0800 (PST)
+Received: by mail-qt1-f176.google.com with SMTP id g7so1011395qts.1
+        for <oe-lkp@lists.linux.dev>; Mon, 05 Dec 2022 12:43:53 -0800 (PST)
+X-Received: by 2002:ac8:688:0:b0:3a5:122:fb79 with SMTP id f8-20020ac80688000000b003a50122fb79mr67106155qth.452.1670273033472;
+ Mon, 05 Dec 2022 12:43:53 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202212032146.b0347c81-oliver.sang@intel.com>
+References: <202212051534.852804af-yujie.liu@intel.com>
+In-Reply-To: <202212051534.852804af-yujie.liu@intel.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Mon, 5 Dec 2022 12:43:37 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wg330wAAxwSaJBPUtL5Rrn7PoQK3ksJw2OLvBxA0NGg+g@mail.gmail.com>
+Message-ID: <CAHk-=wg330wAAxwSaJBPUtL5Rrn7PoQK3ksJw2OLvBxA0NGg+g@mail.gmail.com>
+Subject: Re: [linux-next:master] [mm] 5df397dec7: will-it-scale.per_thread_ops
+ -53.3% regression
+To: kernel test robot <yujie.liu@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, 
+	Andrew Morton <akpm@linux-foundation.org>, Johannes Weiner <hannes@cmpxchg.org>, 
+	Hugh Dickins <hughd@google.com>, Nadav Amit <nadav.amit@gmail.com>, 
+	Linux Memory Management List <linux-mm@kvack.org>, linux-arch@vger.kernel.org, ying.huang@intel.com, 
+	feng.tang@intel.com, zhengjun.xing@linux.intel.com, fengwei.yin@intel.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Sat, Dec 03, 2022, kernel test robot wrote:
-> 
-> Greeting,
-> 
-> FYI, we noticed kernel-selftests.kvm.triple_fault_event_test.fail due to commit (built with gcc-11):
-> 
-> commit: 92e7d5c83aff124f49082585e57939ed24b59c5c ("KVM: x86: allow L1 to not intercept triple fault")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+On Mon, Dec 5, 2022 at 1:02 AM kernel test robot <yujie.liu@intel.com> wrot=
+e:
+>
+> FYI, we noticed a -53.3% regression of will-it-scale.per_thread_ops due t=
+o commit:
+> 5df397dec7c4 ("mm: delay page_remove_rmap() until after the TLB has been =
+flushed")
 
-Should already be fixed.  Thanks!
+Sadly, I think this may be at least partially expected.
 
-commit df0bb47baa95aad133820b149851d5b94cbc6790
-Author: Paolo Bonzini <pbonzini@redhat.com>
-Date:   Wed Nov 30 11:14:35 2022 -0500
+The code fundamentally moves one "loop over pages" and splits it up
+(with the TLB flush in between).
 
-    KVM: x86: fix uninitialized variable use on KVM_REQ_TRIPLE_FAULT
-    
-    If a triple fault was fixed by kvm_x86_ops.nested_ops->triple_fault (by
-    turning it into a vmexit), there is no need to leave vcpu_enter_guest().
-    Any vcpu->requests will be caught later before the actual vmentry,
-    and in fact vcpu_enter_guest() was not initializing the "r" variable.
-    Depending on the compiler's whims, this could cause the
-    x86_64/triple_fault_event_test test to fail.
-    
-    Cc: Maxim Levitsky <mlevitsk@redhat.com>
-    Fixes: 92e7d5c83aff ("KVM: x86: allow L1 to not intercept triple fault")
-    Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Which can't be great for locality, but it's kind of fundamental for
+the fix - but some of it might be due to the batch limit logic.
+
+I wouldn't have expected it to actually show up in any real loads, but:
+
+> in testcase: will-it-scale
+>         test: page_fault3
+
+I assume that this test is doing a lot of mmap/munmap on dirty shared
+memory regions (both because of the regression, and because of the
+name of that test ;)
+
+So this is hopefully an extreme case.
+
+Now, it's likely that this particular case probably also triggers that
+
+        /* No more batching if we have delayed rmaps pending */
+
+which means that the loops in between the TLB flushes will be smaller,
+since we don't batch up as many pages as we used to before we force a
+TLB (and rmap) flush and free them.
+
+If it's due to that batching issue it may be fixable - I'll think
+about this some more, but
+
+> Details are as below:
+
+The bug it fixes ends up meaning that we run that rmap removal code
+_after_ the TLB flush, and it looks like this (probably combined with
+the batching limit) then causes some nasty iTLB load issues:
+
+>    2291312 =C4=85  2%   +1452.8%   35580378 =C4=85  4%  perf-stat.i.iTLB-=
+loads
+
+although it also does look like it's at least partly due to some irq
+timing issue (and/or bad NUMA/CPU migration luck):
+
+>    388169          +267.4%    1426305 =C4=85  6%  vmstat.system.in
+>     161.37           +84.9%     298.43 =C4=85  6%  perf-stat.ps.cpu-migra=
+tions
+>    172442 =C4=85  4%     +26.9%     218745 =C4=85  8%  perf-stat.ps.node-=
+load-misses
+
+so it might be that some of the regression comes down to "bad luck" -
+it happened to run really nicely on that particular machine, and then
+the timing changes caused some random "phase change" to the load.
+
+The profile doesn't actually seem to show all that much more IPI
+overhead, so maybe these incidental issues are what then causes that
+big regression.
+
+It would be lovely to hear if you see this on other machines and/or loads.
+
+Because if it's a one-off, it's probably best ignored. If it shows up
+elsewhere, I think that batching logic might need looking at.
+
+               Linus
