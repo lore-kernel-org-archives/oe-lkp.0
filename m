@@ -1,135 +1,141 @@
-Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C3857C
-	for <oe-lkp@lists.linux.dev>; Mon,  5 Dec 2022 20:43:58 +0000 (UTC)
-Received: by mail-qt1-f175.google.com with SMTP id h24so12310549qta.9
-        for <oe-lkp@lists.linux.dev>; Mon, 05 Dec 2022 12:43:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=lBWIRVS47RUmDEcOvPdmfWIVH4IaWi6W1xGhZ6HUIpg=;
-        b=VlITxXm5biYw6uI6PPXe3docWzenLdY3/Q/s8bcI84Qeqr5ssGWJZkQFxotM28q3kG
-         jidIiH1cGwtjd9ELQ0YAZHqHlktIkQiMXrrnKeMpoCut3nnXF18SB3FqANyHMxvQJoZ2
-         pp/50ejXAqt+zzjVTkW2LcaWDW6j/KCOcQPT0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=lBWIRVS47RUmDEcOvPdmfWIVH4IaWi6W1xGhZ6HUIpg=;
-        b=8HhxqCMLIQ07uBtAtc6cYbtdoehk0YCHIJMWokJ0eT0FIAmX7ts2ml/45Di/eUvik+
-         28SJ18N/bjng48iKWzC169xx50DecxxgVihMldv+M016hdkRjGIWfX/JJ6QMIUUUl572
-         7aIClq1Jt0cHNGccDl6TWKet/Z3mlu0cD3+V1NFxzeGEABkJKjOmfAHVVO+/T/EQlC8q
-         5RL+rhheda7EPQAGNev3W0bThL9qe3jo71na/QzJ+k7XZVPLr9hPziQ+g6qvFXZXk3Ai
-         1DzZCk4DRquyzKihSDRZwgNSvhkkLdD8cWo0tLmY18Vx1euun0kbEFuj/MQVDNHtXbV9
-         /Pig==
-X-Gm-Message-State: ANoB5plAor44pUgPdKZ9Xex+41lnPEZ8Qq2+nKLeG0qiQRlZQyUzDPjX
-	hVuz4jDWCdB/TTrglYxd9I+h7jIfsTBbWT4J
-X-Google-Smtp-Source: AA0mqf4+VQJeHep061GrZ5ThIsW7+8Uq9rj1L+OcjQhZN4GrmTq3dSqhAwJe4qBvLFLyEhAVr0nFHw==
-X-Received: by 2002:ac8:7652:0:b0:39c:c436:1ea8 with SMTP id i18-20020ac87652000000b0039cc4361ea8mr79526735qtr.384.1670273037078;
-        Mon, 05 Dec 2022 12:43:57 -0800 (PST)
-Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com. [209.85.160.176])
-        by smtp.gmail.com with ESMTPSA id r16-20020ae9d610000000b006e42a8e9f9bsm5137437qkk.121.2022.12.05.12.43.53
-        for <oe-lkp@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 05 Dec 2022 12:43:54 -0800 (PST)
-Received: by mail-qt1-f176.google.com with SMTP id g7so1011395qts.1
-        for <oe-lkp@lists.linux.dev>; Mon, 05 Dec 2022 12:43:53 -0800 (PST)
-X-Received: by 2002:ac8:688:0:b0:3a5:122:fb79 with SMTP id f8-20020ac80688000000b003a50122fb79mr67106155qth.452.1670273033472;
- Mon, 05 Dec 2022 12:43:53 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA21EEB3C
+	for <oe-lkp@lists.linux.dev>; Tue,  6 Dec 2022 02:03:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1670292214; x=1701828214;
+  h=from:to:cc:subject:references:date:in-reply-to:
+   message-id:mime-version:content-transfer-encoding;
+  bh=8c7UdCeE5P2gBTMsb1MwQl5B3qvTaC1WOOt1HdlBGyY=;
+  b=D32ivsinvSGuTezrINsfk+hVMMfCGYtCIVUA3dRbXwoqxnesEh0P1k0/
+   KRN0y04D5p9C8M7kwiBdVMMY/syw7rhwpkKE/5Qz5KE/TyBYkVTLbG2m7
+   MlVLmyMsfvujlzaseb46eJ+2SxoHi7XIYFa2o39gfkevZdqnF7U0GTvr5
+   gVopJ8NUQkwb5wUIGu3VvuHyiyC880enpEsu1ZmtuZgTssHuRpSwuwUyO
+   B/BPXPc9+TwI1Iq1X+vprKdfUiBXxrVedIi1KyOhM1rQ8R6U6KrF5+S1/
+   riE1qYQWck+TGIIdibODce8LyKYkaVYhc9xiDbXHd8lZ+ojyzpMiZk6Ql
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10552"; a="299939465"
+X-IronPort-AV: E=Sophos;i="5.96,220,1665471600"; 
+   d="scan'208";a="299939465"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Dec 2022 18:03:34 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10552"; a="709474338"
+X-IronPort-AV: E=Sophos;i="5.96,220,1665471600"; 
+   d="scan'208";a="709474338"
+Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.238.208.55])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Dec 2022 18:03:31 -0800
+From: "Huang, Ying" <ying.huang@intel.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: kernel test robot <yujie.liu@intel.com>,  oe-lkp@lists.linux.dev,
+  lkp@intel.com,  Andrew Morton <akpm@linux-foundation.org>,  Johannes
+ Weiner <hannes@cmpxchg.org>,  Hugh Dickins <hughd@google.com>,  Nadav Amit
+ <nadav.amit@gmail.com>,  Linux Memory Management List
+ <linux-mm@kvack.org>,  linux-arch@vger.kernel.org,  feng.tang@intel.com,
+  zhengjun.xing@linux.intel.com,  fengwei.yin@intel.com
+Subject: Re: [linux-next:master] [mm] 5df397dec7:
+ will-it-scale.per_thread_ops -53.3% regression
+References: <202212051534.852804af-yujie.liu@intel.com>
+	<CAHk-=wg330wAAxwSaJBPUtL5Rrn7PoQK3ksJw2OLvBxA0NGg+g@mail.gmail.com>
+Date: Tue, 06 Dec 2022 10:02:27 +0800
+In-Reply-To: <CAHk-=wg330wAAxwSaJBPUtL5Rrn7PoQK3ksJw2OLvBxA0NGg+g@mail.gmail.com>
+	(Linus Torvalds's message of "Mon, 5 Dec 2022 12:43:37 -0800")
+Message-ID: <87ilipffws.fsf@yhuang6-desk2.ccr.corp.intel.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202212051534.852804af-yujie.liu@intel.com>
-In-Reply-To: <202212051534.852804af-yujie.liu@intel.com>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Mon, 5 Dec 2022 12:43:37 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wg330wAAxwSaJBPUtL5Rrn7PoQK3ksJw2OLvBxA0NGg+g@mail.gmail.com>
-Message-ID: <CAHk-=wg330wAAxwSaJBPUtL5Rrn7PoQK3ksJw2OLvBxA0NGg+g@mail.gmail.com>
-Subject: Re: [linux-next:master] [mm] 5df397dec7: will-it-scale.per_thread_ops
- -53.3% regression
-To: kernel test robot <yujie.liu@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, 
-	Andrew Morton <akpm@linux-foundation.org>, Johannes Weiner <hannes@cmpxchg.org>, 
-	Hugh Dickins <hughd@google.com>, Nadav Amit <nadav.amit@gmail.com>, 
-	Linux Memory Management List <linux-mm@kvack.org>, linux-arch@vger.kernel.org, ying.huang@intel.com, 
-	feng.tang@intel.com, zhengjun.xing@linux.intel.com, fengwei.yin@intel.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Dec 5, 2022 at 1:02 AM kernel test robot <yujie.liu@intel.com> wrot=
-e:
+Linus Torvalds <torvalds@linux-foundation.org> writes:
+
+> On Mon, Dec 5, 2022 at 1:02 AM kernel test robot <yujie.liu@intel.com> wr=
+ote:
+>>
+>> FYI, we noticed a -53.3% regression of will-it-scale.per_thread_ops due =
+to commit:
+>> 5df397dec7c4 ("mm: delay page_remove_rmap() until after the TLB has been=
+ flushed")
 >
-> FYI, we noticed a -53.3% regression of will-it-scale.per_thread_ops due t=
-o commit:
-> 5df397dec7c4 ("mm: delay page_remove_rmap() until after the TLB has been =
-flushed")
+> Sadly, I think this may be at least partially expected.
+>
+> The code fundamentally moves one "loop over pages" and splits it up
+> (with the TLB flush in between).
+>
+> Which can't be great for locality, but it's kind of fundamental for
+> the fix - but some of it might be due to the batch limit logic.
+>
+> I wouldn't have expected it to actually show up in any real loads, but:
+>
+>> in testcase: will-it-scale
+>>         test: page_fault3
+>
+> I assume that this test is doing a lot of mmap/munmap on dirty shared
+> memory regions (both because of the regression, and because of the
+> name of that test ;)
 
-Sadly, I think this may be at least partially expected.
+I have checked the source code of will-it-scale/page_fault3.  Yes, it
+exactly does that.
 
-The code fundamentally moves one "loop over pages" and splits it up
-(with the TLB flush in between).
+> So this is hopefully an extreme case.
+>
+> Now, it's likely that this particular case probably also triggers that
+>
+>         /* No more batching if we have delayed rmaps pending */
+>
+> which means that the loops in between the TLB flushes will be smaller,
+> since we don't batch up as many pages as we used to before we force a
+> TLB (and rmap) flush and free them.
+>
+> If it's due to that batching issue it may be fixable - I'll think
+> about this some more, but
+>
+>> Details are as below:
+>
+> The bug it fixes ends up meaning that we run that rmap removal code
+> _after_ the TLB flush, and it looks like this (probably combined with
+> the batching limit) then causes some nasty iTLB load issues:
+>
+>>    2291312 =C4=85  2%   +1452.8%   35580378 =C4=85  4%  perf-stat.i.iTLB=
+-loads
+>
+> although it also does look like it's at least partly due to some irq
+> timing issue (and/or bad NUMA/CPU migration luck):
+>
+>>    388169          +267.4%    1426305 =C4=85  6%  vmstat.system.in
+>>     161.37           +84.9%     298.43 =C4=85  6%  perf-stat.ps.cpu-migr=
+ations
+>>    172442 =C4=85  4%     +26.9%     218745 =C4=85  8%  perf-stat.ps.node=
+-load-misses
+>
+> so it might be that some of the regression comes down to "bad luck" -
+> it happened to run really nicely on that particular machine, and then
+> the timing changes caused some random "phase change" to the load.
+>
+> The profile doesn't actually seem to show all that much more IPI
+> overhead, so maybe these incidental issues are what then causes that
+> big regression.
 
-Which can't be great for locality, but it's kind of fundamental for
-the fix - but some of it might be due to the batch limit logic.
+      0.00            +8.5        8.49   5%  perf-profile.calltrace.cycles-=
+pp.flush_tlb_func.__flush_smp_call_function_queue.__sysvec_call_function.sy=
+svec_call_function.asm_sysvec_call_function
 
-I wouldn't have expected it to actually show up in any real loads, but:
+From perf profiling, the cycles for TLB flushing increases much.  So I
+guess it may be related?
 
-> in testcase: will-it-scale
->         test: page_fault3
+> It would be lovely to hear if you see this on other machines and/or loads.
 
-I assume that this test is doing a lot of mmap/munmap on dirty shared
-memory regions (both because of the regression, and because of the
-name of that test ;)
+Will ask 0-Day guys to check this.
 
-So this is hopefully an extreme case.
+Best Regards,
+Huang, Ying
 
-Now, it's likely that this particular case probably also triggers that
-
-        /* No more batching if we have delayed rmaps pending */
-
-which means that the loops in between the TLB flushes will be smaller,
-since we don't batch up as many pages as we used to before we force a
-TLB (and rmap) flush and free them.
-
-If it's due to that batching issue it may be fixable - I'll think
-about this some more, but
-
-> Details are as below:
-
-The bug it fixes ends up meaning that we run that rmap removal code
-_after_ the TLB flush, and it looks like this (probably combined with
-the batching limit) then causes some nasty iTLB load issues:
-
->    2291312 =C4=85  2%   +1452.8%   35580378 =C4=85  4%  perf-stat.i.iTLB-=
-loads
-
-although it also does look like it's at least partly due to some irq
-timing issue (and/or bad NUMA/CPU migration luck):
-
->    388169          +267.4%    1426305 =C4=85  6%  vmstat.system.in
->     161.37           +84.9%     298.43 =C4=85  6%  perf-stat.ps.cpu-migra=
-tions
->    172442 =C4=85  4%     +26.9%     218745 =C4=85  8%  perf-stat.ps.node-=
-load-misses
-
-so it might be that some of the regression comes down to "bad luck" -
-it happened to run really nicely on that particular machine, and then
-the timing changes caused some random "phase change" to the load.
-
-The profile doesn't actually seem to show all that much more IPI
-overhead, so maybe these incidental issues are what then causes that
-big regression.
-
-It would be lovely to hear if you see this on other machines and/or loads.
-
-Because if it's a one-off, it's probably best ignored. If it shows up
-elsewhere, I think that batching logic might need looking at.
-
-               Linus
+> Because if it's a one-off, it's probably best ignored. If it shows up
+> elsewhere, I think that batching logic might need looking at.
+>
+>                Linus
