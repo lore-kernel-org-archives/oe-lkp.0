@@ -1,47 +1,46 @@
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA21EEB3C
-	for <oe-lkp@lists.linux.dev>; Tue,  6 Dec 2022 02:03:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0191EB1B
+	for <oe-lkp@lists.linux.dev>; Tue,  6 Dec 2022 02:41:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1670292214; x=1701828214;
+  t=1670294513; x=1701830513;
   h=from:to:cc:subject:references:date:in-reply-to:
    message-id:mime-version:content-transfer-encoding;
-  bh=8c7UdCeE5P2gBTMsb1MwQl5B3qvTaC1WOOt1HdlBGyY=;
-  b=D32ivsinvSGuTezrINsfk+hVMMfCGYtCIVUA3dRbXwoqxnesEh0P1k0/
-   KRN0y04D5p9C8M7kwiBdVMMY/syw7rhwpkKE/5Qz5KE/TyBYkVTLbG2m7
-   MlVLmyMsfvujlzaseb46eJ+2SxoHi7XIYFa2o39gfkevZdqnF7U0GTvr5
-   gVopJ8NUQkwb5wUIGu3VvuHyiyC880enpEsu1ZmtuZgTssHuRpSwuwUyO
-   B/BPXPc9+TwI1Iq1X+vprKdfUiBXxrVedIi1KyOhM1rQ8R6U6KrF5+S1/
-   riE1qYQWck+TGIIdibODce8LyKYkaVYhc9xiDbXHd8lZ+ojyzpMiZk6Ql
+  bh=FZAHxGmeLgTvz+h4faOmVd/+icSg6LznsgsEN+s6FS8=;
+  b=WJW0gxQWUcDRerYlFGQyUBoYTt3l2tLIqogogbScLI4l4/8Vbd6xqJxn
+   ftzCTxJQk+m8/euyzcM0PDRkilg8FK8unIEs90ieKZIL8zZYOB5Mqj73j
+   khezfIWa9cGO9Pe/CwdbBFcGoXFHYK1MzgRgHg6nLaocAQJh00r34azTI
+   qvqPyKFU9C5KCqrTbEEtJqCp2/eIZpWeModDYGWgvGLi3fM7MpEO6lNov
+   QNYF9J4lxVy2e6dlFsNU8d2b505AGoFVQwihxVMojy9dXztV6bcNbICXM
+   tFSrXiIhoUm1MQYis2yMfmNEwpZGdHVp6eNwHfcIqgdMaQRMBr4bwKYJV
    A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10552"; a="299939465"
+X-IronPort-AV: E=McAfee;i="6500,9779,10552"; a="315226077"
 X-IronPort-AV: E=Sophos;i="5.96,220,1665471600"; 
-   d="scan'208";a="299939465"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Dec 2022 18:03:34 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10552"; a="709474338"
+   d="scan'208";a="315226077"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Dec 2022 18:41:53 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10552"; a="974910264"
 X-IronPort-AV: E=Sophos;i="5.96,220,1665471600"; 
-   d="scan'208";a="709474338"
+   d="scan'208";a="974910264"
 Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.238.208.55])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Dec 2022 18:03:31 -0800
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Dec 2022 18:41:50 -0800
 From: "Huang, Ying" <ying.huang@intel.com>
-To: Linus Torvalds <torvalds@linux-foundation.org>
+To: Shakeel Butt <shakeelb@google.com>
 Cc: kernel test robot <yujie.liu@intel.com>,  oe-lkp@lists.linux.dev,
-  lkp@intel.com,  Andrew Morton <akpm@linux-foundation.org>,  Johannes
- Weiner <hannes@cmpxchg.org>,  Hugh Dickins <hughd@google.com>,  Nadav Amit
- <nadav.amit@gmail.com>,  Linux Memory Management List
- <linux-mm@kvack.org>,  linux-arch@vger.kernel.org,  feng.tang@intel.com,
+  lkp@intel.com,  Andrew Morton <akpm@linux-foundation.org>,  Marek
+ Szyprowski <m.szyprowski@samsung.com>,  Linux Memory Management List
+ <linux-mm@kvack.org>,  linux-kernel@vger.kernel.org,  feng.tang@intel.com,
   zhengjun.xing@linux.intel.com,  fengwei.yin@intel.com
-Subject: Re: [linux-next:master] [mm] 5df397dec7:
- will-it-scale.per_thread_ops -53.3% regression
-References: <202212051534.852804af-yujie.liu@intel.com>
-	<CAHk-=wg330wAAxwSaJBPUtL5Rrn7PoQK3ksJw2OLvBxA0NGg+g@mail.gmail.com>
-Date: Tue, 06 Dec 2022 10:02:27 +0800
-In-Reply-To: <CAHk-=wg330wAAxwSaJBPUtL5Rrn7PoQK3ksJw2OLvBxA0NGg+g@mail.gmail.com>
-	(Linus Torvalds's message of "Mon, 5 Dec 2022 12:43:37 -0800")
-Message-ID: <87ilipffws.fsf@yhuang6-desk2.ccr.corp.intel.com>
+Subject: Re: [linux-next:master] [mm] f1a7941243: unixbench.score -5.1%
+ regression
+References: <202212051324.182a6363-yujie.liu@intel.com>
+	<CALvZod4CD+O7-ynGAHU-6vxE6CbSmuQei1=SVJsx0zFfQdmV2g@mail.gmail.com>
+Date: Tue, 06 Dec 2022 10:41:00 +0800
+In-Reply-To: <CALvZod4CD+O7-ynGAHU-6vxE6CbSmuQei1=SVJsx0zFfQdmV2g@mail.gmail.com>
+	(Shakeel Butt's message of "Mon, 5 Dec 2022 09:18:28 -0800")
+Message-ID: <875yepfe4j.fsf@yhuang6-desk2.ccr.corp.intel.com>
 User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -52,90 +51,58 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 
-Linus Torvalds <torvalds@linux-foundation.org> writes:
+Shakeel Butt <shakeelb@google.com> writes:
 
-> On Mon, Dec 5, 2022 at 1:02 AM kernel test robot <yujie.liu@intel.com> wr=
+> On Sun, Dec 4, 2022 at 9:56 PM kernel test robot <yujie.liu@intel.com> wr=
 ote:
 >>
->> FYI, we noticed a -53.3% regression of will-it-scale.per_thread_ops due =
-to commit:
->> 5df397dec7c4 ("mm: delay page_remove_rmap() until after the TLB has been=
- flushed")
+>> Greeting,
+>>
+>> FYI, we noticed a -5.1% regression of unixbench.score due to commit:
+>>
+> [...]
+>> 9cd6ffa60256e931 f1a7941243c102a44e8847e3b94
+>> ---------------- ---------------------------
+>>          %stddev     %change         %stddev
+>>              \          |                \
+>>       7917            -5.1%       7509        unixbench.score
 >
-> Sadly, I think this may be at least partially expected.
->
-> The code fundamentally moves one "loop over pages" and splits it up
-> (with the TLB flush in between).
->
-> Which can't be great for locality, but it's kind of fundamental for
-> the fix - but some of it might be due to the batch limit logic.
->
-> I wouldn't have expected it to actually show up in any real loads, but:
->
->> in testcase: will-it-scale
->>         test: page_fault3
->
-> I assume that this test is doing a lot of mmap/munmap on dirty shared
-> memory regions (both because of the regression, and because of the
-> name of that test ;)
+> What is unixbench.score?
 
-I have checked the source code of will-it-scale/page_fault3.  Yes, it
-exactly does that.
+Should be benchmark throughput.
 
-> So this is hopefully an extreme case.
->
-> Now, it's likely that this particular case probably also triggers that
->
->         /* No more batching if we have delayed rmaps pending */
->
-> which means that the loops in between the TLB flushes will be smaller,
-> since we don't batch up as many pages as we used to before we force a
-> TLB (and rmap) flush and free them.
->
-> If it's due to that batching issue it may be fixable - I'll think
-> about this some more, but
->
->> Details are as below:
->
-> The bug it fixes ends up meaning that we run that rmap removal code
-> _after_ the TLB flush, and it looks like this (probably combined with
-> the batching limit) then causes some nasty iTLB load issues:
->
->>    2291312 =C4=85  2%   +1452.8%   35580378 =C4=85  4%  perf-stat.i.iTLB=
--loads
->
-> although it also does look like it's at least partly due to some irq
-> timing issue (and/or bad NUMA/CPU migration luck):
->
->>    388169          +267.4%    1426305 =C4=85  6%  vmstat.system.in
->>     161.37           +84.9%     298.43 =C4=85  6%  perf-stat.ps.cpu-migr=
-ations
->>    172442 =C4=85  4%     +26.9%     218745 =C4=85  8%  perf-stat.ps.node=
--load-misses
->
-> so it might be that some of the regression comes down to "bad luck" -
-> it happened to run really nicely on that particular machine, and then
-> the timing changes caused some random "phase change" to the load.
->
-> The profile doesn't actually seem to show all that much more IPI
-> overhead, so maybe these incidental issues are what then causes that
-> big regression.
+>>      10485           -12.1%       9216        unixbench.time.maximum_res=
+ident_set_size
 
-      0.00            +8.5        8.49   5%  perf-profile.calltrace.cycles-=
-pp.flush_tlb_func.__flush_smp_call_function_queue.__sysvec_call_function.sy=
-svec_call_function.asm_sysvec_call_function
+This should reflect accuracy change of per_cpu_counter.
 
-From perf profiling, the cycles for TLB flushing increases much.  So I
-guess it may be related?
+>>   37236706            -5.1%   35324104        unixbench.time.minor_page_=
+faults
 
-> It would be lovely to hear if you see this on other machines and/or loads.
+The reduction is same as benchmark score.  So I think this reflect the
+nature of time-bound testing (instead of workload-bound).
 
-Will ask 0-Day guys to check this.
+> For above two, is negative change good or bad?
+>
+>>       0.98 =C4=85 20%      +0.7        1.64 =C4=85 38%  perf-profile.cal=
+ltrace.cycles-pp.link_path_walk.path_openat.do_filp_open.do_sys_openat2.__x=
+64_sys_openat
+>>       2.12 =C4=85 19%      +0.8        2.96 =C4=85 13%  perf-profile.cal=
+ltrace.cycles-pp.handle_mm_fault.do_user_addr_fault.exc_page_fault.asm_exc_=
+page_fault
+>>       2.35 =C4=85 13%      +0.9        3.28 =C4=85 13%  perf-profile.cal=
+ltrace.cycles-pp.__handle_mm_fault.handle_mm_fault.do_user_addr_fault.exc_p=
+age_fault.asm_exc_page_fault
+>>       0.14 =C4=85 74%      +0.4        0.55 =C4=85 32%  perf-profile.chi=
+ldren.cycles-pp.do_task_dead
+>>       0.04 =C4=85223%      +0.4        0.47 =C4=85 49%  perf-profile.chi=
+ldren.cycles-pp.__mmdrop
+>
+> Also how should I interpret the above perf-profiles?
+
+It appears that the changes of handle_mm_fault() and __mmdrop() are
+related to the code of the commit?  That is, for this specific workloads
+(not so unpractical), the operations become slower?
 
 Best Regards,
 Huang, Ying
-
-> Because if it's a one-off, it's probably best ignored. If it shows up
-> elsewhere, I think that batching logic might need looking at.
->
->                Linus
