@@ -1,177 +1,170 @@
-Received: from mail-vs1-f51.google.com (mail-vs1-f51.google.com [209.85.217.51])
+Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B647D136D
-	for <oe-lkp@lists.linux.dev>; Wed,  7 Dec 2022 09:05:40 +0000 (UTC)
-Received: by mail-vs1-f51.google.com with SMTP id 128so16587546vsz.12
-        for <oe-lkp@lists.linux.dev>; Wed, 07 Dec 2022 01:05:40 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AB318BF1
+	for <oe-lkp@lists.linux.dev>; Wed,  7 Dec 2022 20:18:09 +0000 (UTC)
+Received: by mail-qt1-f182.google.com with SMTP id fu10so8644875qtb.0
+        for <oe-lkp@lists.linux.dev>; Wed, 07 Dec 2022 12:18:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=JrauTsBYLclVGA1sgfFDe7vh1Luh92YV6d3aHoD3bz0=;
-        b=h4hMzRq/5+1Hpo/prUblXMKL/LYU0SzhRpfY8qnMB8tOkA1+USH4CDiApHOpzyHumw
-         oXWiyzlaJsCe1RzgS4jByGzcIEIG+L7FNjNoJuTtSeJJzs+AVcqBBrlpdkcwRXWtutiM
-         xcPnVmK8NGxiax9VpF0Mlvk/0sT4ojw5sI0nxbUb2ciQNe1UqHIPk5dTi2iAlKFJgTuM
-         F0lQ/waT6+oubMj2w4j5NWWu4Yd4EA15GmMXMHTzt51Rpmu7XzXVwSJ4A4CdS0/OyYTN
-         KGrLArJ1myWPTMUIfy9J9RH9TO9eLZnkGwD2aV9ZiskmLppmd6W64krgLiwUfn5JDTC9
-         rLxw==
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=R6C5DcFpFc2RC/VN4Pp8i/xOJBHO01e8lvht5r7K61c=;
+        b=FVHzc1Nzcubhpitnmdjp31Lnub/ZhDvqu9e/uatKzf2uR4QTQImhxX19EuI9u12moV
+         SnND9+i/xO3Qs9svwwOYGev/SiK9WlLtlv/fDmvMgO/bb4HlkDg395wk4qtdCI8kt3No
+         9SaHu15MEcqNpryN1CLzU0EmFES2C5ah8pCWo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=JrauTsBYLclVGA1sgfFDe7vh1Luh92YV6d3aHoD3bz0=;
-        b=kQy5zttFH91VJ8XczC95J1eyaoyK+K56NzllQMlvqRdlZVi07AwnMF/BGWrRAQ7Z2M
-         KMGFq1ZZrgFesRut8RbtBK2OySLzXct/wFylaCoaqV2xbPbjfLYAtoz5fXJdQxBy9vfj
-         yDn9bsiRqilOfzPuqrFs7S17Rn6aFlCiX0lefixfGJF09qQBRxR7ohTjOpiosEraXFAu
-         oc/rYF+92mHqtrM5SA9RFnV9eaDn7nwFbl1sQoFY/+hfv7XXembOY+IN+HO9kMsMhj7v
-         8QYarg70oZJSjUuZs/oL39clEM9PN7l5YXcJ+owUzDUfzVzqhVRSYz9Ex0/anguwf1sJ
-         a8jQ==
-X-Gm-Message-State: ANoB5plbzFmtTLHZUy6TgndGS6FZdnNSzbgB9ZBRUeZDDM7kD1gWqTuN
-	znknr3JdaEomTDX3FFou//Hxd4QEgv/P2zjMV0s=
-X-Google-Smtp-Source: AA0mqf6uy/nSPCvughgy2S4wI0ifbXllDQZft6g/k6qkoXxM4uxC3sf1dKpHuN2fv6N1SI3P92KVjLwcx729mstdVV0=
-X-Received: by 2002:a67:fc51:0:b0:3b1:48c:8218 with SMTP id
- p17-20020a67fc51000000b003b1048c8218mr12963351vsq.71.1670403939487; Wed, 07
- Dec 2022 01:05:39 -0800 (PST)
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=R6C5DcFpFc2RC/VN4Pp8i/xOJBHO01e8lvht5r7K61c=;
+        b=XXFxdrzJ3JE2pGFUNktM6DlhuEj7aOQ6cNBQ3aWdgdmjG1quxonxcjE+xVLASG4X66
+         gvetetT2SyVaDqAffXtfy0cC7sipX3SsEKXETNpEMWQboCFuyd8L+gM7FbL9jYzXizhA
+         k57VvahzjDa3JxnxuiDd4aGAKFhAGYiT/I7gtNJmO8gE9qBQ3ZmmvHYtjYzo1Hvae53Q
+         h8U+iorwOzGIIG+bAFkhmY3JwcSdXhw1TCTralt50aj3BhhCfvVk5mpluyD2/ni5rF6K
+         dRK5EXhj/2u1OK1JmW7WUfLmeVVBc6EQ9sjc+3xkicC0vvFc3ITmTLD8py7ase5cYzPz
+         xgow==
+X-Gm-Message-State: ANoB5pkEuoQQNoMqJjLSO+m0xrwXyMIHNWT46tSCnUAuAXFmE5nVRQb5
+	IonPtRdmbZEuYGR+W+q8vWcChMusEdV0n+2X
+X-Google-Smtp-Source: AA0mqf6YmT86UYeva2qHDHZYgBG0A1Br95iQ/t7R245/lAACTVCDOlrz4keY+6aELNg4xYvnsrEj2Q==
+X-Received: by 2002:a05:622a:22a9:b0:394:a30:b606 with SMTP id ay41-20020a05622a22a900b003940a30b606mr84746850qtb.159.1670444287802;
+        Wed, 07 Dec 2022 12:18:07 -0800 (PST)
+Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com. [209.85.160.173])
+        by smtp.gmail.com with ESMTPSA id s11-20020a05620a0bcb00b006fcab4da037sm14862620qki.39.2022.12.07.12.18.04
+        for <oe-lkp@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 07 Dec 2022 12:18:05 -0800 (PST)
+Received: by mail-qt1-f173.google.com with SMTP id a16so1948682qtw.10
+        for <oe-lkp@lists.linux.dev>; Wed, 07 Dec 2022 12:18:04 -0800 (PST)
+X-Received: by 2002:ac8:4992:0:b0:3a7:648d:23d4 with SMTP id
+ f18-20020ac84992000000b003a7648d23d4mr15651002qtq.180.1670444283686; Wed, 07
+ Dec 2022 12:18:03 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202212032038.a5aa4002-oliver.sang@intel.com> <CAOQ4uxj317GyWPbHQiw2-45+xjMvAjEHstEHcJmr_Fmv29xFUw@mail.gmail.com>
- <Y5BKYEF4pB+gIU+l@xsang-OptiPlex-9020>
-In-Reply-To: <Y5BKYEF4pB+gIU+l@xsang-OptiPlex-9020>
-From: Amir Goldstein <amir73il@gmail.com>
-Date: Wed, 7 Dec 2022 11:05:28 +0200
-Message-ID: <CAOQ4uxhbmWbKGMPxXA7cwGmt=93XJ9baCNtJM_JJJLsqgKjUVQ@mail.gmail.com>
-Subject: Re: [amir73il:sb_write_barrier] [vfs] 95586ea7c5: unixbench.score
- -4.9% regression
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, kbuild test robot <lkp@intel.com>, Jan Kara <jack@suse.cz>
+References: <202212051534.852804af-yujie.liu@intel.com> <CAHk-=wg330wAAxwSaJBPUtL5Rrn7PoQK3ksJw2OLvBxA0NGg+g@mail.gmail.com>
+ <87ilipffws.fsf@yhuang6-desk2.ccr.corp.intel.com> <CAHk-=wjDzVL+r6NmnU--tyEfDYhUB-5m=PQBZTQ2Es8bx7Mz+w@mail.gmail.com>
+ <CAHk-=whjis-wTZKH20xoBW3=1qyygYoxJORxXx8ZpJbc6KtROw@mail.gmail.com> <878rjj22mz.fsf@yhuang6-desk2.ccr.corp.intel.com>
+In-Reply-To: <878rjj22mz.fsf@yhuang6-desk2.ccr.corp.intel.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Wed, 7 Dec 2022 12:17:47 -0800
+X-Gmail-Original-Message-ID: <CAHk-=whkL5aM1fR7kYUmhHQHBcMUc-bDoFP7EwYjTxy64DGtvw@mail.gmail.com>
+Message-ID: <CAHk-=whkL5aM1fR7kYUmhHQHBcMUc-bDoFP7EwYjTxy64DGtvw@mail.gmail.com>
+Subject: Re: [linux-next:master] [mm] 5df397dec7: will-it-scale.per_thread_ops
+ -53.3% regression
+To: "Huang, Ying" <ying.huang@intel.com>, Andrew Morton <akpm@linux-foundation.org>
+Cc: kernel test robot <yujie.liu@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	Johannes Weiner <hannes@cmpxchg.org>, Hugh Dickins <hughd@google.com>, Nadav Amit <nadav.amit@gmail.com>, 
+	Linux Memory Management List <linux-mm@kvack.org>, linux-arch@vger.kernel.org, feng.tang@intel.com, 
+	zhengjun.xing@linux.intel.com, fengwei.yin@intel.com
+Content-Type: multipart/mixed; boundary="00000000000025d1ff05ef429ef6"
+
+--00000000000025d1ff05ef429ef6
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Wed, Dec 7, 2022 at 10:10 AM Oliver Sang <oliver.sang@intel.com> wrote:
+On Tue, Dec 6, 2022 at 9:41 PM Huang, Ying <ying.huang@intel.com> wrote:
 >
-> hi Amir,
->
-> On Mon, Dec 05, 2022 at 06:30:12PM +0200, Amir Goldstein wrote:
-> > On Sat, Dec 3, 2022, 3:06 PM kernel test robot <oliver.sang@intel.com>
-> > wrote:
-> >
-> > >
-> > > Greeting,
-> > >
-> > > FYI, we noticed a -4.9% regression of unixbench.score due to commit:
-> > >
-> > >
-> > > commit: 95586ea7c597ef4e9712ceb101d03438c1ccde20 ("vfs: prepare for
-> > > pre-modify permission events on write")
-> > > https://github.com/amir73il/linux sb_write_barrier
-> > >
-> >
-> > Hi Oliver,
-> >
-> > I pushed a fixed version for this branch
-> > Can you please re-test?
->
-> we tested on new branch, found the new commit
->   91d26357ebf0 ("vfs: prepare for pre-modify permission events on write")
-> doesn't cause regression any longer, comparing to its parent.
+> I have tested the patch, it does fix the regression
 
-Great! thanks for the re-test!
+Thanks.
 
-> but the branch HEAD
->   0f7a8c0b37ad ("syncfs: wait for in-progress write operations")
-> seems still introduce a small regression
->
-> e8a2a30b4b2edf99 91d26357ebf095c16183cdc5c77 0f7a8c0b37adcdf306f5aa3a778
-> ---------------- --------------------------- ---------------------------
->          %stddev     %change         %stddev     %change         %stddev
->              \          |                \          |                \
->       3538            -0.1%       3534            -1.9%       3469       =
- unixbench.score
->
-> BTW, the score for v6.1-rc6 in our tests is about 3505
->
-> not sure if the small regression on HEAD is still a concern?
+Andrew, here's the patch with a proper commit message. Note that my
+commit message contains the SHA1 of the original patch both in the
+explanation and in a "Fixes:" line, which I think is fine for the
+"mm-stable" branch that the original patch is in.
 
-The HEAD commit is just for testing so it is not a concern:
+But if you end up rebasing that mm-stable branch, then I'd ask you to
+either remove/update those commit hashes, or just fold this fix into
+the original one. Ok?
 
-    syncfs: wait for in-progress write operations
+             Linus
 
-    DO NOT MERGE!!!
+--00000000000025d1ff05ef429ef6
+Content-Type: text/x-patch; charset="US-ASCII"; 
+	name="0001-mm-mmu_gather-allow-more-than-one-batch-of-delayed-r.patch"
+Content-Disposition: attachment; 
+	filename="0001-mm-mmu_gather-allow-more-than-one-batch-of-delayed-r.patch"
+Content-Transfer-Encoding: base64
+Content-ID: <f_lbe3dmb70>
+X-Attachment-Id: f_lbe3dmb70
 
-    For testing of sb_write_barrier(), wait for started write operations
-    before issueing syncfs() and fsfreeze.
-
->
-> below is detail comparison FYI.
->
->
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> compiler/cpufreq_governor/kconfig/nr_task/rootfs/runtime/tbox_group/test/=
-testcase:
->   gcc-11/performance/x86_64-rhel-8.3/1/debian-11.1-x86_64-20220510.cgz/30=
-0s/lkp-icl-2sp2/fstime/unixbench
->
-> commit:
->   e8a2a30b4b2e ("vfs: implement 'vfs write barriers'")
->   91d26357ebf0 ("vfs: prepare for pre-modify permission events on write")
->   0f7a8c0b37ad ("syncfs: wait for in-progress write operations")
->
-> e8a2a30b4b2edf99 91d26357ebf095c16183cdc5c77 0f7a8c0b37adcdf306f5aa3a778
-> ---------------- --------------------------- ---------------------------
->          %stddev     %change         %stddev     %change         %stddev
->              \          |                \          |                \
->       3538            -0.1%       3534            -1.9%       3469       =
- unixbench.score
->     480.50            -0.0%     480.33            -0.0%     480.28       =
- unixbench.time.elapsed_time
->     480.50            -0.0%     480.33            -0.0%     480.28       =
- unixbench.time.elapsed_time.max
->     184.00 =C4=85101%     -23.9%     140.00 =C4=85133%     -17.4%     152=
-.00 =C4=85132%  unixbench.time.file_system_inputs
->       2332 =C4=85110%     -17.2%       1932 =C4=85137%      -0.2%       2=
-328 =C4=85129%  unixbench.time.file_system_outputs
->     221.25 =C4=85  7%      -9.1%     201.12 =C4=85  9%      -6.4%     207=
-.12 =C4=85 11%  unixbench.time.involuntary_context_switches
->      10534            -0.8%      10449            -0.7%      10460       =
- unixbench.time.maximum_resident_set_size
->      20681            +0.3%      20749            -0.0%      20678       =
- unixbench.time.minor_page_faults
->       4096            +0.0%       4096            +0.0%       4096       =
- unixbench.time.page_size
->      70.00            +0.0%      70.00            +0.0%      70.00       =
- unixbench.time.percent_of_cpu_this_job_got
->     305.51            +0.1%     305.76            +0.4%     306.76       =
- unixbench.time.system_time
->      34.03            -0.7%      33.80            -3.7%      32.78       =
- unixbench.time.user_time
->     543.00 =C4=85  8%      -2.2%     530.88 =C4=85  7%      +1.3%     550=
-.25 =C4=85 10%  unixbench.time.voluntary_context_switches
->  6.728e+08            -0.1%  6.719e+08            -2.0%  6.596e+08       =
- unixbench.workload
->  6.153e+10            -0.0%  6.151e+10            +0.0%  6.153e+10       =
- cpuidle..time
->    1189251            +2.1%    1214078 =C4=85  2%      +1.2%    1203611 =
-=C4=85  2%  cpuidle..usage
->       3.75 =C4=85129%     -33.3%       2.50 =C4=85173%     +33.3%       5=
-.00 =C4=85100%  dmesg.bootstage:last
->     215.78 =C4=85108%     +62.0%     349.65 =C4=85 76%      -0.1%     215=
-.48 =C4=85106%  dmesg.timestamp:last
-
-I am not familiar of how the unixbench.score is calculated, but an
-increase in cpuidle time and overall test wall time makes sense considering
-that the test commit adds an unsolicited sb_write_barrier(), that is not go=
-ing
-to be in the final patch submission.
-
-Thanks again!
-Amir.
+RnJvbSBkNjYwNWUyN2M5ZDlmZDU3ZjY3NzJkZTEyZjU0MDY1NTlmY2VkNmI3IE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBMaW51cyBUb3J2YWxkcyA8dG9ydmFsZHNAbGludXgtZm91bmRh
+dGlvbi5vcmc+CkRhdGU6IFR1ZSwgNiBEZWMgMjAyMiAxMToxNTowOSAtMDgwMApTdWJqZWN0OiBb
+UEFUQ0hdIG1tOiBtbXVfZ2F0aGVyOiBhbGxvdyBtb3JlIHRoYW4gb25lIGJhdGNoIG9mIGRlbGF5
+ZWQgcm1hcHMKCkNvbW1pdCA1ZGYzOTdkZWM3YzQgKCJtbTogZGVsYXkgcGFnZV9yZW1vdmVfcm1h
+cCgpIHVudGlsIGFmdGVyIHRoZSBUTEIKaGFzIGJlZW4gZmx1c2hlZCIpIGxpbWl0ZWQgdGhlIHBh
+Z2UgYmF0Y2hpbmcgZm9yIHRoZSBtbXUgZ2F0aGVyCm9wZXJhdGlvbiB3aGVuIGEgZGlydHkgc2hh
+cmVkIHBhZ2UgbmVlZGVkIHRvIGRlbGF5IHJtYXAgcmVtb3ZhbCB1bnRpbAphZnRlciB0aGUgVExC
+IGhhZCBiZWVuIGZsdXNoZWQuCgpJdCBkaWQgc28gYmVjYXVzZSBpdCBuZWVkcyB0byB3YWxrIHRo
+YXQgYXJyYXkgb2YgcGFnZXMgd2hpbGUgc3RpbGwKaG9sZGluZyB0aGUgcGFnZSB0YWJsZSBsb2Nr
+LCBhbmQgb3VyIG1tdV9nYXRoZXIgaW5mcmFzdHJ1Y3R1cmUgYWxsb3dzCmZvciBiYXRjaGluZyBx
+dWl0ZSBhIGxvdCBvZiBwYWdlcy4gIFdlIG1heSBoYXZlIHRob3VzYW5kcyBvbiBwYWdlcwpxdWV1
+ZWQgdXAgZm9yIGZyZWVpbmcsIGFuZCB3ZSB3YW50ZWQgdG8gd2FsayBvbmx5IHRoZSBsYXN0IGJh
+dGNoIGlmIHdlCnRoZW4gYWRkZWQgYSBkaXJ0eSBwYWdlIHRvIHRoZSBxdWV1ZS4KCkhvd2V2ZXIs
+IHdoZW4gSSBsaW1pdGVkIGl0IHRvIG9uZSBiYXRjaCwgSSBkaWRuJ3QgdGhpbmsgb2YgdGhlCmRl
+Z2VuZXJhdGUgY2FzZSBvZiB0aGUgc3BlY2lhbCBmaXJzdCBiYXRjaCB0aGF0IGlzIGVtYmVkZGVk
+IG9uLXN0YWNrIGluCnRoZSBtbXVfZ2F0aGVyIHN0cnVjdHVyZSAoY2FsbGVkICJsb2NhbCIpIGFu
+ZCB0aGF0IG9ubHkgaGFzIGVpZ2h0CmVudHJpZXMuCgpTbyB3aXRoIHRoZSByaWdodCBwYXR0ZXJu
+LCB0aGF0ICJsaW1pdCBkZWxheWVkIHJtYXAgdG8ganVzdCBvbmUgYmF0Y2giCndpbGwgdHJpZ2dl
+ciBvdmVyIGFuZCBvdmVyIGluIHRoYXQgZmlyc3Qgc21hbGwgYmF0Y2gsIGFuZCB3ZSdsbCB3YXN0
+ZSBhCmxvdCBvZiB0aW1lIGZsdXNoaW5nIFRMQidzIGV2ZXJ5IGVpZ2h0IHBhZ2VzLgoKQW5kIHRo
+b3NlIHJpZ2h0IHBhdHRlcm5zIGFyZSB0cml2aWFsbHkgdHJpZ2dlcmVkIGJ5IGp1c3QgaGF2aW5n
+IGEgc2hhcmVkCm1hcHBpbmdzIHdpdGggbG90cyBvZiBhZGphY2VudCBkaXJ0eSBwYWdlcy4gIExp
+a2UgdGhlICdwYWdlX2ZhdWx0MycKc3VidGVzdCBvZiB0aGUgJ3dpbGwtaXQtc2NhbGUnIGJlbmNo
+bWFyaywgdGhhdCBqdXN0IG1hcHMgYSBzaGFyZWQgYXJlYSwKZGlydGllcyBhbGwgcGFnZXMsIGFu
+ZCB1bm1hcHMgaXQuICBSaW5zZSBhbmQgcmVwZWF0LgoKV2Ugc3RpbGwgd2FudCB0byBsaW1pdCB0
+aGUgYmF0Y2hpbmcsIGJ1dCB0byBmaXggdGhpcyAoZWFzaWx5IHRyaWdnZXJlZCkKZGVnZW5lcmF0
+ZSBjYXNlLCBqdXN0IGV4cGFuZCB0aGUgIm9ubHkgb25lIGJhdGNoIiBsb2dpYyB0byBpbnN0ZWFk
+IGJlCiJvbmx5IG9uZSBiYXRjaCB0aGF0IGlzbid0IHRoZSBzcGVjaWFsIGZpcnN0IG9uLXN0YWNr
+ICgnbG9jYWwnKSBiYXRjaCIuCgpUaGF0IHdheSwgd2hlbiB3ZSBuZWVkIHRvIGZsdXNoIHRoZSBk
+ZWxheWVkIHJtYXBzLCB3ZSBjYW4gc3RpbGwgbGltaXQKb3VyIHdhbGsgdG8ganVzdCB0aGUgbGFz
+dCBiYXRjaCAtIGFuZCB0aGF0IGZpcnN0IHNtYWxsIG9uZS4KCkZpeGVzOiA1ZGYzOTdkZWM3YzQg
+KCJtbTogZGVsYXkgcGFnZV9yZW1vdmVfcm1hcCgpIHVudGlsIGFmdGVyIHRoZSBUTEIgaGFzIGJl
+ZW4gZmx1c2hlZCIpClJlcG9ydGVkLWJ5OiBrZXJuZWwgdGVzdCByb2JvdCA8eXVqaWUubGl1QGlu
+dGVsLmNvbT4KTGluazogaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvb2UtbGtwLzIwMjIxMjA1MTUz
+NC44NTI4MDRhZi15dWppZS5saXVAaW50ZWwuY29tClRlc3RlZC1ieTogSHVhbmcsIFlpbmcgPHlp
+bmcuaHVhbmdAaW50ZWwuY29tPgpUZXN0ZWQtYnk6IEh1Z2ggRGlja2lucyA8aHVnaGRAZ29vZ2xl
+LmNvbT4KU2lnbmVkLW9mZi1ieTogTGludXMgVG9ydmFsZHMgPHRvcnZhbGRzQGxpbnV4LWZvdW5k
+YXRpb24ub3JnPgotLS0KIG1tL21tdV9nYXRoZXIuYyB8IDM2ICsrKysrKysrKysrKysrKysrKysr
+LS0tLS0tLS0tLS0tLS0tLQogMSBmaWxlIGNoYW5nZWQsIDIwIGluc2VydGlvbnMoKyksIDE2IGRl
+bGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL21tL21tdV9nYXRoZXIuYyBiL21tL21tdV9nYXRoZXIu
+YwppbmRleCA4MjQ3NTUzYTY5YzIuLjJiOTNjZjZhYzlhZSAxMDA2NDQKLS0tIGEvbW0vbW11X2dh
+dGhlci5jCisrKyBiL21tL21tdV9nYXRoZXIuYwpAQCAtMTksOCArMTksOCBAQCBzdGF0aWMgYm9v
+bCB0bGJfbmV4dF9iYXRjaChzdHJ1Y3QgbW11X2dhdGhlciAqdGxiKQogewogCXN0cnVjdCBtbXVf
+Z2F0aGVyX2JhdGNoICpiYXRjaDsKIAotCS8qIE5vIG1vcmUgYmF0Y2hpbmcgaWYgd2UgaGF2ZSBk
+ZWxheWVkIHJtYXBzIHBlbmRpbmcgKi8KLQlpZiAodGxiLT5kZWxheWVkX3JtYXApCisJLyogTGlt
+aXQgYmF0Y2hpbmcgaWYgd2UgaGF2ZSBkZWxheWVkIHJtYXBzIHBlbmRpbmcgKi8KKwlpZiAodGxi
+LT5kZWxheWVkX3JtYXAgJiYgdGxiLT5hY3RpdmUgIT0gJnRsYi0+bG9jYWwpCiAJCXJldHVybiBm
+YWxzZTsKIAogCWJhdGNoID0gdGxiLT5hY3RpdmU7CkBAIC00OCwzMSArNDgsMzUgQEAgc3RhdGlj
+IGJvb2wgdGxiX25leHRfYmF0Y2goc3RydWN0IG1tdV9nYXRoZXIgKnRsYikKIH0KIAogI2lmZGVm
+IENPTkZJR19TTVAKK3N0YXRpYyB2b2lkIHRsYl9mbHVzaF9ybWFwX2JhdGNoKHN0cnVjdCBtbXVf
+Z2F0aGVyX2JhdGNoICpiYXRjaCwgc3RydWN0IHZtX2FyZWFfc3RydWN0ICp2bWEpCit7CisJZm9y
+IChpbnQgaSA9IDA7IGkgPCBiYXRjaC0+bnI7IGkrKykgeworCQlzdHJ1Y3QgZW5jb2RlZF9wYWdl
+ICplbmMgPSBiYXRjaC0+ZW5jb2RlZF9wYWdlc1tpXTsKKworCQlpZiAoZW5jb2RlZF9wYWdlX2Zs
+YWdzKGVuYykpIHsKKwkJCXN0cnVjdCBwYWdlICpwYWdlID0gZW5jb2RlZF9wYWdlX3B0cihlbmMp
+OworCQkJcGFnZV9yZW1vdmVfcm1hcChwYWdlLCB2bWEsIGZhbHNlKTsKKwkJfQorCX0KK30KKwog
+LyoqCiAgKiB0bGJfZmx1c2hfcm1hcHMgLSBkbyBwZW5kaW5nIHJtYXAgcmVtb3ZhbHMgYWZ0ZXIg
+d2UgaGF2ZSBmbHVzaGVkIHRoZSBUTEIKICAqIEB0bGI6IHRoZSBjdXJyZW50IG1tdV9nYXRoZXIK
+ICAqCiAgKiBOb3RlIHRoYXQgYmVjYXVzZSBvZiBob3cgdGxiX25leHRfYmF0Y2goKSBhYm92ZSB3
+b3Jrcywgd2Ugd2lsbAotICogbmV2ZXIgc3RhcnQgbmV3IGJhdGNoZXMgd2l0aCBwZW5kaW5nIGRl
+bGF5ZWQgcm1hcHMsIHNvIHdlIG9ubHkKLSAqIG5lZWQgdG8gd2FsayB0aHJvdWdoIHRoZSBjdXJy
+ZW50IGFjdGl2ZSBiYXRjaC4KKyAqIG5ldmVyIHN0YXJ0IG11bHRpcGxlIG5ldyBiYXRjaGVzIHdp
+dGggcGVuZGluZyBkZWxheWVkIHJtYXBzLCBzbworICogd2Ugb25seSBuZWVkIHRvIHdhbGsgdGhy
+b3VnaCB0aGUgY3VycmVudCBhY3RpdmUgYmF0Y2ggYW5kIHRoZQorICogb3JpZ2luYWwgbG9jYWwg
+b25lLgogICovCiB2b2lkIHRsYl9mbHVzaF9ybWFwcyhzdHJ1Y3QgbW11X2dhdGhlciAqdGxiLCBz
+dHJ1Y3Qgdm1fYXJlYV9zdHJ1Y3QgKnZtYSkKIHsKLQlzdHJ1Y3QgbW11X2dhdGhlcl9iYXRjaCAq
+YmF0Y2g7Ci0KIAlpZiAoIXRsYi0+ZGVsYXllZF9ybWFwKQogCQlyZXR1cm47CiAKLQliYXRjaCA9
+IHRsYi0+YWN0aXZlOwotCWZvciAoaW50IGkgPSAwOyBpIDwgYmF0Y2gtPm5yOyBpKyspIHsKLQkJ
+c3RydWN0IGVuY29kZWRfcGFnZSAqZW5jID0gYmF0Y2gtPmVuY29kZWRfcGFnZXNbaV07Ci0KLQkJ
+aWYgKGVuY29kZWRfcGFnZV9mbGFncyhlbmMpKSB7Ci0JCQlzdHJ1Y3QgcGFnZSAqcGFnZSA9IGVu
+Y29kZWRfcGFnZV9wdHIoZW5jKTsKLQkJCXBhZ2VfcmVtb3ZlX3JtYXAocGFnZSwgdm1hLCBmYWxz
+ZSk7Ci0JCX0KLQl9Ci0KKwl0bGJfZmx1c2hfcm1hcF9iYXRjaCgmdGxiLT5sb2NhbCwgdm1hKTsK
+KwlpZiAodGxiLT5hY3RpdmUgIT0gJnRsYi0+bG9jYWwpCisJCXRsYl9mbHVzaF9ybWFwX2JhdGNo
+KHRsYi0+YWN0aXZlLCB2bWEpOwogCXRsYi0+ZGVsYXllZF9ybWFwID0gMDsKIH0KICNlbmRpZgot
+LSAKMi4zOC4xLjI4NC5nZmQ5NDY4ZDc4NwoK
+--00000000000025d1ff05ef429ef6--
