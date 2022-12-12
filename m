@@ -1,128 +1,117 @@
-Received: from mail-vs1-f49.google.com (mail-vs1-f49.google.com [209.85.217.49])
+Received: from mail-vs1-f47.google.com (mail-vs1-f47.google.com [209.85.217.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EC2B3236
-	for <oe-lkp@lists.linux.dev>; Sun, 11 Dec 2022 22:16:02 +0000 (UTC)
-Received: by mail-vs1-f49.google.com with SMTP id c184so9544030vsc.3
-        for <oe-lkp@lists.linux.dev>; Sun, 11 Dec 2022 14:16:02 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 614CA2585
+	for <oe-lkp@lists.linux.dev>; Mon, 12 Dec 2022 13:09:45 +0000 (UTC)
+Received: by mail-vs1-f47.google.com with SMTP id j26so4572020vsp.9
+        for <oe-lkp@lists.linux.dev>; Mon, 12 Dec 2022 05:09:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=/oPelsZlxvcKeNmCPYjKoM1n9vle+Nzh62mwwTeuK5I=;
-        b=hz61PjA7mTIGXJVnKBaLmB7Mm1K2L4l7KlwIAybBR2FkXTThCHXXUmAOo5rvbuu0Yh
-         TUNj30fws2ihsl5JxmJl8FeLNIb35nPZs1Nh57EBVcSfKJP9DqsD5YTgXiBNb1DpQd4J
-         QL9O0H/BtHhFTKkViUpry2Uuigv2Tk1ab+YbBxydh7bptCZw8VGhgWZB/D0JRsPYmiGP
-         Rom3wQz1XGenTPQcKEbwSHHjehOkOKtwkwg9OoxYaB1ZpkZeDH0nTBU6+B9f4s9XVSm4
-         E5Mf/G2118Gmhv9SL+KECc3Qi+p+CKKMTAIp4f0Jn9ugKDWYT7TvesKQSZodFysK72/V
-         asPw==
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=MfSNgM+0twrLLGfHzA5jy5Kw8VIHD18ejk8+Mb6CtJ0=;
+        b=rYO3dJiJZOs+iJnATRiTkZhoadeFr62QwF4jBPS+moNgk1+RvtCFy/duXZHHE+6KKl
+         yJQWuFALXyAszzU3rFHaN+rQKQVVUXYj/Zr4MPAj86J+leVP78vM32l1KgpDxYeAzQUB
+         f79Arx8T1FezwmX73lqCtsSEYF6SWlvPTloTcstnTWRv4v4wOL8sOA1gpjbu+rWan4zv
+         BzpIe5cQBSN5pxvUQr8wHpqVLSYVG3T3Ii1i2wY07LEKRm0uL17JVt6iGCxyUyqhJmCo
+         Z1NaWIfgI5pwS6LS6XzgXFari/y0gNDOPeh5LqweLqZrc9UZ8DbmrllmS7dLWRLrEMoZ
+         JGFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=/oPelsZlxvcKeNmCPYjKoM1n9vle+Nzh62mwwTeuK5I=;
-        b=Z8TK5xSnOH6J+LuZ9ELCwLGHclGsngySOvxO4YjAPrSW9xuKzeHP+cESE5vIBPSyEL
-         TShSAvQ29dGpJno2V5ycSsbJ2wk9npV5J6c6hKSciy1qOZb9hJLRsdqSqiMvYlRPckRg
-         xTqbDwBjsxhJScMRBWgWoOtOo92QOVUhmP+eCxcW3mMcrC6LUQyYUv/cw8bAU8R9kfb0
-         r6B1lg6s6gHakMSMbdUu2Gf5RQsw24+nHGXRRxghUe5+i08RpsHu0X0vjEFrMsHTYM6A
-         27RjzPE/IB5ykVSJm3pmGtt6uGd5ioT74Usi8S8CPJS9EHwq2JVqwXdkVlRRfUgr358u
-         gJZw==
-X-Gm-Message-State: ANoB5pnX+unX8iuIp69KZQkyXTUk+6ijRww2kX9Pa+bzlmpBq/dOsY0h
-	MD/i4vSRJOO5pl6Lmoeh4C5QNNXPcoxh1S2elmDBfA==
-X-Google-Smtp-Source: AA0mqf7g/O+iW/9EW9dQoVnIkGIpzP0TvNOx/GXaFHvkp3t/nfPDesug1gJdE7XcEdSHd3NqnHZUnO9cTZ5fM0VcLeo=
-X-Received: by 2002:a67:1c85:0:b0:3b0:92e2:37b0 with SMTP id
- c127-20020a671c85000000b003b092e237b0mr29969600vsc.9.1670796961279; Sun, 11
- Dec 2022 14:16:01 -0800 (PST)
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=MfSNgM+0twrLLGfHzA5jy5Kw8VIHD18ejk8+Mb6CtJ0=;
+        b=VRl0VnhYU8KqQloC8oWoNXVCgBJLOehPOmE4QF+vGLq39SCBIuSCXs6/fTr8PIhZis
+         cp35VsHxqlUV2RXIYTWhwy25GYkezyxP7tU+ieBqKB30MU1rQQXnBBxcgCrlAYEckLnW
+         YHepu73MEAoqzsa/5ElX/WrQAH9kAb3HldMWZ4uHxXaKETct+65NuzdRiOYhz2qCOJa5
+         ujRIC2Wl4U8z2kNovuY+je4uZyyZOyXxWrp7rrpPmySe0c3VuufazSjOuuAhAXtkIBBk
+         agDRYpIO6fqt1IsQ3IEG+k2bUFaztCoJE5+Xwt/8wosA40PzNwbDy4JftFhtnVfgCcTd
+         jQ0g==
+X-Gm-Message-State: ANoB5pm9IB6906WzqcI89aDKqVs/fLMrTZUw+L/fofReUINTcOD83CQH
+	vqFSEH5akO7R4Rcf9MK9Xs4zOi71XUQozUoRd6JYHA==
+X-Google-Smtp-Source: AA0mqf4K403z6dN136I2BMaYSifIt4AdRVsBbWxuNKvguf08JE8WKXwBSQ934w1A60y7X2W/uPzbLP6YgZQyH/KWFgs=
+X-Received: by 2002:a67:fc4b:0:b0:3b1:298c:45f9 with SMTP id
+ p11-20020a67fc4b000000b003b1298c45f9mr12621504vsq.61.1670850584104; Mon, 12
+ Dec 2022 05:09:44 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20221208182142.250084-3-brgl@bgdev.pl> <202212120010.6de17419-yujie.liu@intel.com>
-In-Reply-To: <202212120010.6de17419-yujie.liu@intel.com>
+References: <202212112236.756f5db9-oliver.sang@intel.com>
+In-Reply-To: <202212112236.756f5db9-oliver.sang@intel.com>
 From: Bartosz Golaszewski <brgl@bgdev.pl>
-Date: Sun, 11 Dec 2022 23:15:50 +0100
-Message-ID: <CAMRc=Mcg-fYd18Nm_eU8-GLS0g3-Pdy50-7kpLFWyP1mazdVyg@mail.gmail.com>
-Subject: Re: [PATCH 2/2] i2c: dev: don't allow user-space to deadlock the kernel
-To: kernel test robot <yujie.liu@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-i2c@vger.kernel.org, 
-	Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org, 
-	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Date: Mon, 12 Dec 2022 14:09:33 +0100
+Message-ID: <CAMRc=Meh-u3ZoMksKs8Hf89gJ=wRaFNdCaeWfXNS13Fu6fs9bA@mail.gmail.com>
+Subject: Re: [linux-next:master] [gpiolib] 7b61212f2a: kernel-selftests.gpio.gpio-sim.sh.fail
+To: kernel test robot <oliver.sang@intel.com>
+Cc: Christophe Leroy <christophe.leroy@csgroup.eu>, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>, 
+	Andy Shevchenko <andy.shevchenko@gmail.com>, 
+	Linux Memory Management List <linux-mm@kvack.org>, linux-arm-kernel@lists.infradead.org, 
+	linux-gpio@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Sun, Dec 11, 2022 at 5:32 PM kernel test robot <yujie.liu@intel.com> wro=
-te:
+On Sun, Dec 11, 2022 at 4:08 PM kernel test robot <oliver.sang@intel.com> wrote:
+>
 >
 > Greeting,
 >
-> FYI, we noticed WARNING:at_drivers/base/core.c:#device_release due to com=
-mit (built with gcc-11):
+> FYI, we noticed kernel-selftests.gpio.gpio-sim.sh.fail due to commit (built with gcc-11):
 >
-> commit: 22f82cbe7636f59cc21f6837c500d704e3b412a5 ("[PATCH 2/2] i2c: dev: =
-don't allow user-space to deadlock the kernel")
-> url: https://github.com/intel-lab-lkp/linux/commits/Bartosz-Golaszewski/i=
-2c-fortify-the-subsystem-against-user-space-induced-deadlocks/20221209-0224=
-50
-> base: https://git.kernel.org/cgit/linux/kernel/git/wsa/linux.git i2c/for-=
-next
-> patch link: https://lore.kernel.org/all/20221208182142.250084-3-brgl@bgde=
-v.pl/
-> patch subject: [PATCH 2/2] i2c: dev: don't allow user-space to deadlock t=
-he kernel
+> commit: 7b61212f2a07a5afd213c8876e52b5c9946441e2 ("gpiolib: Get rid of ARCH_NR_GPIOS")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
 >
-> in testcase: xfstests
-> version: xfstests-x86_64-5a5e419-1_20221128
+> [test failed on linux-next/master f925116b24c0c42dc6d5ab5111c55fd7f74e8dc7]
+>
+> in testcase: kernel-selftests
+> version: kernel-selftests-x86_64-2ed09c3b-1_20221128
 > with following parameters:
 >
->         disk: 4HDD
->         fs: xfs
->         test: xfs-group-07
+>         group: group-01
 >
-> test-description: xfstests is a regression test suite for xfs and other f=
-iles ystems.
-> test-url: git://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git
->
-> on test machine: 4 threads 1 sockets Intel(R) Core(TM) i3-3220 CPU @ 3.30=
-GHz (Ivy Bridge) with 8G memory
->
-> caused below changes (please refer to attached dmesg/kmsg for entire log/=
-backtrace):
+> test-description: The kernel contains a set of "self tests" under the tools/testing/selftests/ directory. These are intended to be small unit tests to exercise individual code paths in the kernel.
+> test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
 >
 >
-> kern  :warn  : [   35.378637] ------------[ cut here ]------------
-> kern  :err   : [   35.388198] Device 'i2c-7' does not have a release() fu=
-nction, it is broken and must be fixed. See Documentation/core-api/kobject.=
-rst.
-> kern :warn : [   35.401052] WARNING: CPU: 1 PID: 195 at drivers/base/core=
-.c:2332 device_release (drivers/base/core.c:2332)
-> kern  :warn  : [   35.410178] Modules linked in: x86_pkg_temp_thermal int=
-el_powerclamp i915(+) sd_mod t10_pi crc64_rocksoft_generic crc64_rocksoft i=
-pmi_devintf crc64 coretemp ipmi_msghandler sg kvm_intel drm_buddy intel_gtt=
- kvm irqbypass crct10dif_pclmul drm_display_helper crc32_pclmul ttm crc32c_=
-intel ghash_clmulni_intel drm_kms_helper sha512_ssse3 syscopyarea ahci mei_=
-me rapl intel_cstate libahci sysfillrect wmi_bmof sysimgblt i2c_i801 mei in=
-tel_uncore libata i2c_smbus lpc_ich fb_sys_fops video wmi drm fuse ip_table=
-s
-> kern  :warn  : [   35.455372] CPU: 1 PID: 195 Comm: systemd-udevd Not tai=
-nted 6.1.0-rc8-00063-g22f82cbe7636 #1
-> kern  :warn  : [   35.464544] Hardware name: Hewlett-Packard HP Pro 3340 =
-MT/17A1, BIOS 8.07 01/24/2013
-> kern :warn : [   35.473036] RIP: 0010:device_release (drivers/base/core.c=
-:2332)
-> kern :warn : [ 35.478405] Code: 48 8d 7d 50 48 89 fa 48 c1 ea 03 80 3c 02=
- 00 0f 85 89 00 00 00 48 8b 75 50 48 85 f6 74 13 48 c7 c7 60 f0 ce 83 e8 6c=
- 1c f2 00 <0f> 0b e9 0f ff ff ff 48 b8 00 00 00 00 00 fc ff df 48 89 ea 48 =
-c1
-> All code
+> on test machine: 4 threads Intel(R) Xeon(R) CPU E3-1225 v5 @ 3.30GHz (Skylake) with 16G memory
+>
+> caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
+>
+>
+>
+>
+> If you fix the issue, kindly add following tag
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Link: https://lore.kernel.org/oe-lkp/202212112236.756f5db9-oliver.sang@intel.com
+>
+>
+> # selftests: gpio: gpio-sim.sh
+> # trap: SIGTERM: bad trap
+> # 1. chip_name and dev_name attributes
+> # 1.1. Chip name is communicated to user
+> # 1.2. chip_name returns 'none' if the chip is still pending
+> # 1.3. Device name is communicated to user
+> # 2. Creating and configuring simulated chips
+> # 2.1. Default number of lines is 1
+> # 2.2. Number of lines can be specified
+> # 2.3. Label can be set
+> # 2.4. Label can be left empty
+> # 2.5. Line names can be configured
+> # 2.6. Line config can remain unused if offset is greater than number of lines
+> # 2.7. Line configfs directory names are sanitized
+> # 2.8. Multiple chips can be created
+> # 2.9. Can't modify settings when chip is live
+> # 2.10. Can't create line items when chip is live
+> # 2.11. Probe errors are propagated to user-space
+> # Probe error was not propagated
+> # GPIO gpio-sim test FAIL
+> not ok 2 selftests: gpio: gpio-sim.sh # exit=1
+>
+>
 
-Ah yes, the .release() callback must stay and while the adapter
-resources are handled by the bus driver, we still need to free the idr
-at device release time.
-
-I'll fix that in v2 but I also want to wait for some comments.
+Just sent out a fix.
 
 Bart
