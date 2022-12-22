@@ -1,147 +1,205 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66EB02F22
-	for <oe-lkp@lists.linux.dev>; Wed, 21 Dec 2022 19:33:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A89BC433F0;
-	Wed, 21 Dec 2022 19:33:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1671651206;
-	bh=mxWtR5AF/2xVb9DefIyiwGIDf+QeDervBvCWP8vw7JI=;
-	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-	b=Wn2r36BqERhoFIIQg3Y73p5/T2ytRIXLoPumUoZCvBdFcKnR8ur4MZMHJ2NE3kK99
-	 fRUKtmFI/qLzAbpNCot7j0DqOuKIM/EqPZo860GCcY6oSjAaSjBVhyD3OxtZ+m2IOH
-	 kPm28gYvLa+e9hZxgp3j4IdUHLrvIYBOAlCaud9T/DLmAy/+ucA472Zu5sxuJtpEie
-	 EEyTQySL4WZash6J0nEpbZIcQhGUQluA2THhEwf+OAahzCJyB44svZboVjUMYx9VvR
-	 s0lMPYmMDGqErvo6VjgRSDJTzC3GGwE/rIpVl3HppgDCxoTE1xNfjt3xExttJXPh7D
-	 7BiRCN73L81/g==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-	id 9DF6F5C0989; Wed, 21 Dec 2022 11:33:25 -0800 (PST)
-Date: Wed, 21 Dec 2022 11:33:25 -0800
-From: "Paul E. McKenney" <paulmck@kernel.org>
-To: "Zhang, Qiang1" <qiang1.zhang@intel.com>
-Cc: "Liu, Yujie" <yujie.liu@intel.com>,
-	"oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>,
-	lkp <lkp@intel.com>, "rcu@vger.kernel.org" <rcu@vger.kernel.org>,
-	"frederic@kernel.org" <frederic@kernel.org>,
-	"quic_neeraju@quicinc.com" <quic_neeraju@quicinc.com>,
-	"joel@joelfernandes.org" <joel@joelfernandes.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4] rcu-tasks: Make rude RCU-Tasks work well with CPU
- hotplug
-Message-ID: <20221221193325.GE4001@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20221130234533.1983769-1-qiang1.zhang@intel.com>
- <202212181914.f5a305f3-yujie.liu@intel.com>
- <PH0PR11MB5880EB31D9AFD82EFA3073A6DAE59@PH0PR11MB5880.namprd11.prod.outlook.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D04A015A9
+	for <oe-lkp@lists.linux.dev>; Thu, 22 Dec 2022 01:19:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1671671966; x=1703207966;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=inp4HSSP+t+Ulm+uznWg8Uh/Sek94pzJlXCZkCB8pTE=;
+  b=Ox01lsz8BWV0hGrmPr11LJ8f7tzApBAhsTFJedJ0utHxIJjqW2KZWxv1
+   w0rc47IkgxC1BncUyboXyp/gxsOHC3TF/X2KbAMOci/gnr73BcOKV6aiQ
+   RzOHvTTZpvWXomuYzb/ePd2G+A1hU2NtOnZf8/aaTzC7Oqdasp2Ph6Nu1
+   SP4hILG61KKD76ogJw3EJrhMifeOBRi6xPF+En5kF5dXT/1TCq5+c6smg
+   T3p6JoWGyZqTUIU0de9Kxs/vxt999DTyXh4o9C50BpaVYJt4gwBJ6pPQD
+   fk0HOLISfBYZEJIvWUBPwap5DArDqIND69yNdsrcBbmYAe7KfuEvza/1n
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10568"; a="317652673"
+X-IronPort-AV: E=Sophos;i="5.96,264,1665471600"; 
+   d="scan'208";a="317652673"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Dec 2022 17:19:25 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10568"; a="651596584"
+X-IronPort-AV: E=Sophos;i="5.96,264,1665471600"; 
+   d="scan'208";a="651596584"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orsmga002.jf.intel.com with ESMTP; 21 Dec 2022 17:19:25 -0800
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Wed, 21 Dec 2022 17:19:24 -0800
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Wed, 21 Dec 2022 17:19:24 -0800
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.102)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Wed, 21 Dec 2022 17:19:24 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BXFtPYcBtKYRQf9mPp4e4oFPOJeUXm+vhU71LWxc6lDsaV0OVYr9AzYoyFGZIlj+YcSlT8ZQXGrb5b+4CMNY5oajQCAFL6GEcscou7W9j5M4pbWlYdaKOqHcrUc11UA8U33BhavjY0439ML5TD5ObKJy3uKJqEE/5MMxSNRbvzleFY8hQYoIY6AzRWLY4Aisss9+pht6gdI24ubVES7cmK4v7Vo6qR5V5u41vOgzn1vqd/kgHEf2KMCiAhz4tiRdzKNPeiCx1Mvq3fjsulKz0ePnb5Pob6UyOpKWPv8v97pYd3SsoGHbVytM5bIwYPcuYLQFr5+Qx62koJ8sG4UanQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=DP6SvNKUWnBYr5VBqJIj3M4VWYomfMyDyIwHopXQNjs=;
+ b=ENNTkdS3BdgX9AU+2sJzCjyTwr5wt54MNSptlPlb7XxekkRcqNoqk+JvvWgEDVYRJ3YHuKGvVVEah9w6EDdte/wpoyyzB0Ywb8iRffI9adzPZzoHzMnXbRKJlPaPq+RM8L4w8jPmZQopWavsz8+0XdNn0am0XYl+F+3LTbBPwdBvQMo9EhKkAEisdAXIY3QuJFJc/JiIiG+qLOlRFTiyx1N8t2Cht0K0KaUpbKjI9uiOJcVSAdtyT+3x8jNJKBnqQ7Lm0TSy+d+lV+aQQB0Gi2fAE7MAYI3z8W/f8ODbOK6hNb+ggJZuQzufrtS1ykTdpXLeHJVlj6p0H6sVVhCC8Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from CO1PR11MB4820.namprd11.prod.outlook.com (2603:10b6:303:6f::8)
+ by DM4PR11MB7303.namprd11.prod.outlook.com (2603:10b6:8:108::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5924.16; Thu, 22 Dec
+ 2022 01:18:46 +0000
+Received: from CO1PR11MB4820.namprd11.prod.outlook.com
+ ([fe80::505b:18be:f1dd:104e]) by CO1PR11MB4820.namprd11.prod.outlook.com
+ ([fe80::505b:18be:f1dd:104e%7]) with mapi id 15.20.5924.016; Thu, 22 Dec 2022
+ 01:18:46 +0000
+Message-ID: <ed6c9173-dbbd-6275-a285-04b21de26f13@intel.com>
+Date: Thu, 22 Dec 2022 09:18:35 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.6.1
+Subject: Re: [linus:master] [mm] 0ba09b1733: will-it-scale.per_thread_ops
+ -21.1% regression in mmap1 benchmark
+Content-Language: en-US
+To: Yang Shi <shy828301@gmail.com>, Yujie Liu <yujie.liu@intel.com>
+CC: Liam Howlett <liam.howlett@oracle.com>, Linus Torvalds
+	<torvalds@linux-foundation.org>, "oe-lkp@lists.linux.dev"
+	<oe-lkp@lists.linux.dev>, "lkp@intel.com" <lkp@intel.com>, Nathan Chancellor
+	<nathan@kernel.org>, "Huang, Ying" <ying.huang@intel.com>, Rik van Riel
+	<riel@surriel.com>, Andrew Morton <akpm@linux-foundation.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-mm@kvack.org" <linux-mm@kvack.org>, "feng.tang@intel.com"
+	<feng.tang@intel.com>, "zhengjun.xing@linux.intel.com"
+	<zhengjun.xing@linux.intel.com>
+References: <202212151657.5d11a672-yujie.liu@intel.com>
+ <CAHbLzkpVr62M4dWCb9J+eMErDvxx0hiTF6DD6bp2qEivzZYXCg@mail.gmail.com>
+ <20221220204845.ul2wf4bj75dl5gbc@revolver> <Y6JwkEraN79acHP0@yujie-X299>
+ <CAHbLzkpF4tuuukmhqC1soeVUaS4D5XtDjNDugy9t9D77s_xG8g@mail.gmail.com>
+From: "Yin, Fengwei" <fengwei.yin@intel.com>
+In-Reply-To: <CAHbLzkpF4tuuukmhqC1soeVUaS4D5XtDjNDugy9t9D77s_xG8g@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SGAP274CA0016.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b6::28)
+ To CO1PR11MB4820.namprd11.prod.outlook.com (2603:10b6:303:6f::8)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <PH0PR11MB5880EB31D9AFD82EFA3073A6DAE59@PH0PR11MB5880.namprd11.prod.outlook.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1PR11MB4820:EE_|DM4PR11MB7303:EE_
+X-MS-Office365-Filtering-Correlation-Id: d4385fd4-119e-4e84-aca8-08dae3ba7954
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: CmnPCGU/fsurDbzJZHJ5J93rT+qfX0EnJd0D9pPbUssmHsKgdgYDVM0eebOxbjlq2ba443Xv5rJwb8LzwI6Cmq7VKwI5iElb30GNK8JBQMYvY0TM6xV6Rzd/zN2khrar7WWSzI9cew5KB9cB1Xp1dgqW7uNY0ETFmh3CzFHMwPU06itff7bkq8SBgr0x7jdKAxblxwxhNh8lIJhzcQvj0aw8xAy3RQcLa+aYtrZ3QIBBm7VWDeCXYryfz6m3RHca1KCbn0e3S77qt0M0YaOiEK2VzBWploi11+DsQ0f6KEobakZJmeFxaiH6EDeBSQyewd4BFbFzPsdjIaW7grqVKYLgkKUUhxCNiuYo5Xqkk275S2YlhxpDCdyReA9yqidAwNXzR1CT648bAu5Hhko3ai0JeR7Jc2KEv7XyWqnEZhDIcvxvjhbKdHTfs+O/p3/2ta+iJQzIsWrhAwNVLv4NEmPN4IeD3J9otAZ/y3PP3leL2uNF3HWSMZ/JYiyE2jKqA0FB8rR2CIwgLomFIpQkyvxPA3maN060BSWPn1xhQ1VRNtlh5oMwfkvCXoXDM3pw8pVQDElkU9MkHpINPgKmmOvTTEXyKkqVTUWFb+w0jQCxSfPyPrx2YlfeAb2XfctQVB38/dzZHVEZHiclmPwnPdpvbovdk+aqTIz/yVtzoKdQXyJcUxwbVbIt/4KQQM4wOYq7WHR489ZqJnqdDDhV2c7srXinDU25L6pq1fxotHe42/BhBMY3dZyesGRS292qz2WS8PjDpT9BQ5ubiiU0G6h3fDaD7Sk8Uc6dCXx20ha9qqBOoWtzdEOVsTi8pQ11
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4820.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(376002)(366004)(396003)(39860400002)(346002)(136003)(451199015)(36756003)(2906002)(38100700002)(82960400001)(7416002)(5660300002)(8936002)(41300700001)(83380400001)(86362001)(31696002)(316002)(54906003)(66476007)(6636002)(110136005)(31686004)(8676002)(66556008)(6666004)(6486002)(6506007)(4326008)(6512007)(186003)(66946007)(26005)(2616005)(478600001)(966005)(53546011)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?anFZU0NzTG1RVVhTZ1FrVTZVNHZHcDRqNm9uTGxVczdYbS81U0wxeEN6aGh5?=
+ =?utf-8?B?SDNzbGNmb0JkS3ZMYkd0L0R4Zng2UUhqVE5WRm42c2NRQ3luN082eGthZFFR?=
+ =?utf-8?B?TnkxNkhkMTNVdkgyS2hHWWpVRGwzM0UzU3RORGtWWDF4ZWlOdDhZcld1eWVS?=
+ =?utf-8?B?ekdvdGFsY1NmOTg4K1NIMXVvLzd6dXFOa3p2aDJURnptODJhemw2ZW1uVncw?=
+ =?utf-8?B?S3N4b2ozU2d1Q0FtanBYYjVUM2dza1dtV256cjBhNGNlaTJzeE4vZmZpUW10?=
+ =?utf-8?B?ZWJyc0lIdmkwbVZDaE9tcmN0YXFMVW1LNGFKbHY4RDloaWVuUS9xTzJ4S0dL?=
+ =?utf-8?B?YzZ0dGtvWUw2RGg0cFN5K0tCVzEzQmR6U2M4SWtMQVNPTk1sZXNTdzNCWmZJ?=
+ =?utf-8?B?TkQweUExWVh0b3N6WHA3NEdQOVBGZ0pFREN6MXZoWUJadTJCS3p5Y1gra3pz?=
+ =?utf-8?B?TUl6ZVM0aEw5WVJiYUUyS052bk8yTDVQWkFSbENSS1o2WnZnbDVsbStqY1Q0?=
+ =?utf-8?B?RjZ4VkE3YzN3VHRDSG1vbGRnckpNUWRhamRrVC9KVjZxaUhVYjRHNlpKSmJR?=
+ =?utf-8?B?eXkvWWNKTExpQzhmZHFCNDlkckViYjBvUXFyRmdiZFY3V2xaZFQ0Mm5GNmhI?=
+ =?utf-8?B?d3ZxcGxTUThocVAybU9EZ3NITDMwWUNZK3lXdjEzSnpsTWZTMndsR1Nnckh4?=
+ =?utf-8?B?VWFVRHhSa3Bpd1BYSWJ4QzNvZEl5OUh0eE9IWnY3MDg2aFk3VU9NREw4M1Uw?=
+ =?utf-8?B?WW5KbjFJbDNCMFVpelllcjVXRVU0UDg5SC9XbElZY0VzbjBob0NreFhQTzBJ?=
+ =?utf-8?B?Rk04WSs5NVFIVEl0VmRMbkpGUkdiUXhWcWJhVHByWEI0L1ZkNndUTnNobURQ?=
+ =?utf-8?B?YThSb3c0T0FLaFEyM2w3b3dxK1I2aUQzZVlRdzZITE5zTTlyakN5a2Z1b2Nm?=
+ =?utf-8?B?cEpaenFRbitIeDRMZmtFaDdFUHM5ZjRER0FBL1JBSzZZd0IzckEyQlBHTTVF?=
+ =?utf-8?B?TkduenUxMWFtTjRDUlRqSnprT1J5MkNKVlB1SGowWFVEcG5aZzZDbWVwWjE3?=
+ =?utf-8?B?bk9xeEViUkMvZ0tWUEpBUWgwemswVzlDVmtEUnR1Vjk2Zzl4NmthYjVKdU9L?=
+ =?utf-8?B?Yi9SR3VCZzNueVlydXQxZHBmWnh6b3dIaURwVGE2VEsycDV4bWMyTnNLbHZx?=
+ =?utf-8?B?YUhGYkpPQk5MS0FwYVk4cGhxSldLSlBXQ2NNWG8xbkQ1cHV4NWpVVFBWd0ZF?=
+ =?utf-8?B?ZWw4WlZ5RkU4eVFHcDFpU0hNWm9jcmhITTRTUVhkUDJST1gwN0hLZUVlMWM1?=
+ =?utf-8?B?bVM4SmZieXRNRzJrRDE3WHIxK0FOSU5qdHJ5TytlODlPcUVLT2pLNmJ3Qksw?=
+ =?utf-8?B?N0xPWjRWVE9hMldxNHpFbHFXK2FhVTR6YVFmeHVTOVVBd2UrOGpwRi9STU5n?=
+ =?utf-8?B?aUsxZFg4REZDKzVaY0VQaVNYT0NnSmRGUDFSUWI2ZnlnWFhybk1WcUU2SFZE?=
+ =?utf-8?B?N3VvdGlCTm9xMzEyd0VaREpZUW0yTm9WYjhWZCttUWxiWEFWVjNpSXhyTTkx?=
+ =?utf-8?B?M0NTMFU2NU50eERDSnd0UmNJajRWWDFpOHUramJJdFplc20remZSeVVUcEg2?=
+ =?utf-8?B?Q2hMNFlHYWM3aXE4RDZRdE0zTE1XQWxtMnhpSVpuQ0pCcTJ4Ti96TzF2bTVo?=
+ =?utf-8?B?K2JubFAvdWZ1QnFxanp4cjdpRE5jSFlwNi80a21zcmRxM1lveHBEbnBLWXov?=
+ =?utf-8?B?cFk4dk1BRU1BTXNvMW1aUGhLbWRBTFFzSm5hazBRdjdSNHZiZUExODRKNzBw?=
+ =?utf-8?B?MytlMlVWR0k5em8xdmZkbmxOM3ZWa0d5NTREaVZnZkJxaVdzd05VaXVsQ2Nu?=
+ =?utf-8?B?dlhRRWgySW9WaFJkRGNQVjk3WW5QbW5kaDZ3K2NOMmlRR2hBeGxmc2FwcXdZ?=
+ =?utf-8?B?ZE9NVHAzUytIbjJSdWtqS1pzS3BPY0g2cmlQODFYUXdlVUcyQ01ieHBJRWt0?=
+ =?utf-8?B?MVJzU0p5dmtUclB4VXp4Y3hhOE45Q3dpWkhDMkpHNkI5T2QrdVRZUmZZM2ho?=
+ =?utf-8?B?WWN4U216clpiUWsrNzN1TlAvWnJGMmQrTER5SU5uaW53cGtYY0RhMjhPSGhY?=
+ =?utf-8?Q?3fEaZTNBe8RFuSGcamoPhLtMG?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: d4385fd4-119e-4e84-aca8-08dae3ba7954
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4820.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Dec 2022 01:18:46.8173
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: X1hHdaguRhhT+Di4XNyKDSHGX3cTeFmphCLuutUiXu2Wz05vbb20Vh/oZYh/Sqwf6hj/3vs3BDTGIc3nvmxJJg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB7303
+X-OriginatorOrg: intel.com
 
-On Mon, Dec 19, 2022 at 02:21:01AM +0000, Zhang, Qiang1 wrote:
-> >Greeting,
-> >FYI, we noticed WARNING:at_kernel/rcu/rcutorture.c:#rcu_torture_fwd_prog_cr[rcutorture] due to commit (built with gcc-11):
-> >
-> >commit: 572a17843591d3c03ad891492939a06833fdd17d ("[PATCH v4] rcu-tasks: Make rude RCU-Tasks work well with CPU hotplug")
-> >url: https://github.com/intel-lab-lkp/linux/commits/Zqiang/rcu-tasks-Make-rude-RCU-Tasks-work-well-with-CPU-hotplug/20221201-074127
-> >base: https://git.kernel.org/cgit/linux/kernel/git/paulmck/linux-rcu.git dev
-> >patch link: https://lore.kernel.org/all/20221130234533.1983769-1-qiang1.zhang@intel.com/
-> >patch subject: [PATCH v4] rcu-tasks: Make rude RCU-Tasks work well with CPU hotplug
-> >
-> >in testcase: rcutorture
-> >version: 
-> >with following parameters:
-> >
-> >	runtime: 300s
-> >	test: cpuhotplug
-> >	torture_type: tasks-rude
-> >
-> >test-description: rcutorture is rcutorture kernel module load/unload test.
-> >test-url: https://www.kernel.org/doc/Documentation/RCU/torture.txt
-> >
-> >on test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m 8G
-> >
-> >caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
-> >
-> >
-> >[  106.051532][  T583] rcu_torture_fwd_prog: Starting forward-progress test 0
-> >[  106.052085][  T583] rcu_torture_fwd_prog_cr: Starting forward-progress test 0
-> >[  133.611262][  T583] rcu_torture_fwd_prog_cr: Waiting for CBs: rcu_barrier_tasks_rude+0x0/0x10() 0
-> >[  146.800051][  T583] ------------[ cut here ]------------
-> >[  146.800411][  T583] WARNING: CPU: 1 PID: 583 at kernel/rcu/rcutorture.c:2806 rcu_torture_fwd_prog_cr+0x22c/0x2a7 [rcutorture]
-> >[  146.801075][  T583] Modules linked in: rcutorture torture ipmi_msghandler crc32c_intel serio_raw processor fuse
-> >[  146.801894][  T583] CPU: 1 PID: 583 Comm: rcu_torture_fwd Not tainted 6.1.0-rc1-00180-g572a17843591 #1 0cc09f902db70bae111a0c12c137296733dde4a9
-> >[  146.802916][  T583] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.0-debian-1.16.0-5 04/01/2014
-> >[  146.803693][  T583] EIP: rcu_torture_fwd_prog_cr+0x22c/0x2a7 [rcutorture]
-> >[  146.804177][  T583] Code: 89 d8 e8 fc c5 ff ff e8 67 49 03 00 83 c4 10 84 c0 75 79 a0 96 c6 10 ef 84 c0 75 70 e8 c8 ee ff ff 84 c0 75 67 83 fe 63 7f 02 <0f> 0b 8b 45 f0 8b 15 40 25 8a c2 ff 75 e8 ff 75 e0 01 f8 2b 45 dc
-> >[  146.805599][  T583] EAX: 00000000 EBX: ecee3800 ECX: 00000000 EDX: 00000000
-> >[  146.805992][  T583] ESI: 00000000 EDI: 0000c350 EBP: ed9d5f64 ESP: ed9d5f40
-> >[  146.806491][  T583] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068 EFLAGS: 00010293
-> >[  146.807010][  T583] CR0: 80050033 CR2: 08082ff0 CR3: 2daaf000 CR4: 000406d0
-> >[  146.807484][  T583] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 00000000
-> >[  146.808031][  T583] DR6: fffe0ff0 DR7: 00000400
-> >[  146.808384][  T583] Call Trace:
-> >[  146.808634][  T583]  rcu_torture_fwd_prog.cold+0x3b/0xee [rcutorture 6754ed9afe4685f50ef7fade6309181c73794538]
-> >[  146.809348][  T583]  kthread+0xc8/0xf0
-> >[  146.809635][  T583]  ? rcu_torture_fwd_prog_cbfree+0x80/0x80 [rcutorture 6754ed9afe4685f50ef7fade6309181c73794538]
-> >[  146.810347][  T583]  ? kthread_complete_and_exit+0x20/0x20
-> >[  146.810734][  T583]  ret_from_fork+0x1c/0x28
-> >[  146.811075][  T583] irq event stamp: 205883
-> >[  146.811400][  T583] hardirqs last  enabled at (205891): [<c114bb06>] __up_console_sem+0x66/0x80
-> >[  146.811960][  T583] hardirqs last disabled at (205898): [<c114baed>] __up_console_sem+0x4d/0x80
-> >[  146.812583][  T583] softirqs last  enabled at (205880): [<c1ecb40b>] __do_softirq+0x2bb/0x440
-> >[  146.813079][  T583] softirqs last disabled at (205871): [<c10845f0>] call_on_stack+0x40/0x50
-> >[  146.813567][  T583] ---[ end trace 0000000000000000 ]---
-> >[  146.813926][  T583] rcu_torture_fwd_prog_cr Duration 2411 barrier: 3960 pending 50000 n_launders: 0 n_launders_sa: 0 n_max_gps: 0 n_max_cbs: 50000 cver 1 gps 0
-> >[  147.914266][  T583] rcu_torture_fwd_cb_hist: Callback-invocation histogram 0 (duration 6702 jiffies): 1s/10: 0:0 2s/10: 
-> >[  149.453780][  T557] ------------[ cut here ]------------
-> >[  149.454322][  T557] rcu_torture_writer: rtort_pipe_count: 4
-> >[  149.454817][  T557] WARNING: CPU: 1 PID: 557 at kernel/rcu/rcutorture.c:1583 rcu_torture_writer+0x71d/0xc80 [rcutorture]
-> 
-> 
-> This is not a bug.  this is caused by grace period taking too long time, the previous callback
-> has not been completed.  from the dmesg, can be found that the cpuhotplug test is being
-> performed periodically, this may cause the rude RCU-Tasks  grace period to take more time,
-> due to we need to acquire the cpus_read_lock, and the CPU0 always bootup failed, that is to
-> say, only one CPU of your system is online at this time.
 
-Onlining of a CPU failing with EIO is a new one on me.  Especially
-persistent failure.
 
-							Thanx, Paul
+On 12/22/2022 12:45 AM, Yang Shi wrote:
+>> We caught two mmap1 regressions on mailine, please see the data below:
+>>
+>> 830b3c68c1fb1 Linux 6.1                                                              2085 2355 2088
+>> 76dcd734eca23 Linux 6.1-rc8                                                          2093 2082 2094 2073 2304 2088
+>> 0ba09b1733878 Revert "mm: align larger anonymous mappings on THP boundaries"         2124 2286 2086 2114 2065 2081
+>> 23393c6461422 char: tpm: Protect tpm_pm_suspend with locks                           2756 2711 2689 2696 2660 2665
+>> b7b275e60bcd5 Linux 6.1-rc7                                                          2670 2656 2720 2691 2667
+>> ...
+>> 9abf2313adc1c Linux 6.1-rc1                                                          2725 2717 2690 2691 2710
+>> 3b0e81a1cdc9a mmap: change zeroing of maple tree in __vma_adjust()                   2736 2781 2748
+>> 524e00b36e8c5 mm: remove rb tree.                                                    2747 2744 2747
+>> 0c563f1480435 proc: remove VMA rbtree use from nommu
+>> d0cf3dd47f0d5 damon: convert __damon_va_three_regions to use the VMA iterator
+>> 3499a13168da6 mm/mmap: use maple tree for unmapped_area{_topdown}
+>> 7fdbd37da5c6f mm/mmap: use the maple tree for find_vma_prev() instead of the rbtree
+>> f39af05949a42 mm: add VMA iterator
+>> d4af56c5c7c67 mm: start tracking VMAs with maple tree
+>> e15e06a839232 lib/test_maple_tree: add testing for maple tree                        4638 4628 4502
+>> 9832fb87834e2 mm/demotion: expose memory tier details via sysfs                      4625 4509 4548
+>> 4fe89d07dcc28 Linux 6.0                                                              4385 4205 4348 4228 4504
+>>
+>>
+>> The first regression was between v6.0 and v6.1-rc1. The score dropped
+>> from 4600 to 2700, and bisected to the patches switching from rb tree to
+>> maple tree. This was reported at
+>> https://lore.kernel.org/oe-lkp/202212191714.524e00b3-yujie.liu@intel.com/
+>> Thanks for the explanation that it is an expected regression as a trade
+>> off to benefit read performance.
+>>
+>> The second regression was between v6.1-rc7 and v6.1-rc8. The score
+>> dropped from 2700 to 2100, and bisected to this "Revert "mm: align larger
+>> anonymous mappings on THP boundaries"" commit.
+> So it means "mm: align larger anonymous mappings on THP boundaries"
+> actually improved the mmap1 benchmark? But it caused regression for
+> other usecase, for example, building kernel with clang, which is a
+> regression for a real life usecase.
+Yes. The patch "mm: align larger anonymous mappings on THP boundaries"
+can improve the mmap1 benchmark.
 
-> Thanks
-> Zqiang
-> 
-> >[  149.455687][  T557] Modules linked in: rcutorture torture ipmi_msghandler crc32c_intel serio_raw processor fuse
-> >[  149.456490][  T557] CPU: 1 PID: 557 Comm: rcu_torture_wri Tainted: G        W          6.1.0-rc1-00180-g572a17843591 #1 0cc09f902db70bae111a0c12c137296733dde4a9
-> >[  149.457660][  T557] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.0-debian-1.16.0-5 04/01/2014
-> >[  149.458484][  T557] EIP: rcu_torture_writer+0x71d/0xc80 [rcutorture]
-> >[  149.458990][  T557] Code: 05 00 00 8d 43 f4 39 c6 74 c3 e8 0e a0 0b d2 83 ff 63 0f 87 3d 05 00 00 ff 73 fc 68 88 a0 10 ef 68 f4 9a 10 ef e8 10 01 d2 d2 <0f> 0b a1 30 c6 10 ef 83 c4 0c 85 c0 75 95 b8 01 00 00 00 87 05 30
-> >[  149.460472][  T557] EAX: 00000027 EBX: ef10d630 ECX: e49c0f28 EDX: e49c0f24
-> >[  149.461022][  T557] ESI: ef10d694 EDI: 0000004f EBP: ece35f8c ESP: ece35f18
-> >[  149.461539][  T557] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068 EFLAGS: 00010292
-> >[  149.462101][  T557] CR0: 80050033 CR2: 08082ff0 CR3: 2daaf000 CR4: 000406d0
-> >[  149.462642][  T557] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 00000000
-> >[  149.463172][  T557] DR6: fffe0ff0 DR7: 00000400
-> >[  149.463526][  T557] Call Trace:
-> >[  149.463795][  T557]  ? lockdep_hardirqs_on_prepare+0xa4/0x160
-> >[  149.464333][  T557]  ? _raw_spin_unlock_irqrestore+0x45/0x60
-> >[  149.464795][  T557]  ? trace_hardirqs_on+0x35/0xe0
-> >[  149.465191][  T557]  kthread+0xc8/0xf0
-> >[  149.465506][  T557]  ? rcu_torture_pipe_update+0x130/0x130 [rcutorture 6754ed9afe4685f50ef7fade6309181c73794538]
-> >[  149.466327][  T557]  ? kthread_complete_and_exit+0x20/0x20
-> >[  149.466771][  T557]  ret_from_fork+0x1c/0x28
-> >[  149.467136][  T557] irq event stamp: 45753
-> >[  149.467457][  T557] hardirqs last  enabled at (45761): [<c114bb06>] __up_console_sem+0x66/0x80
-> >[  149.468145][  T557] hardirqs last disabled at (45770): [<c114baed>] __up_console_sem+0x4d/0x80
-> >[  149.468803][  T557] softirqs last  enabled at (41056): [<ef1037a0>] rcu_torture_pipe_update+0xe0/0x130 [rcutorture]
-> >[  149.469602][  T557] softirqs last disabled at (41054): [<ef10377c>] rcu_torture_pipe_update+0xbc/0x130 [rcutorture]
-> >[  149.470401][  T557] ---[ end trace 0000000000000000 ]---
+For building kernel regression, looks like it's not related with the
+patch "mm: align larger anonymous mappings on THP boundaries" directly.
+It's another existing behavior more visible with the patch.
+https://lore.kernel.org/all/a4bcddad-e56f-cedc-891a-916e86d9a02c@intel.com/
+
+
+Regards
+Yin, Fengwei
+
 > 
