@@ -1,85 +1,122 @@
-Received: from smtpout.efficios.com (smtpout.efficios.com [167.114.26.122])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EF68256D
-	for <oe-lkp@lists.linux.dev>; Fri, 30 Dec 2022 13:52:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=efficios.com;
-	s=smtpout1; t=1672407959;
-	bh=ksN4+yXcEZh786ZHkB2irPN5To2fNnhab+DGw9fAu3s=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=wLc4LQP54paJbC0kQ/j9785marUxFgd1EGqWEKgkdrNAExaEnmIIzaA0XTfuJIQ2D
-	 g9KmKy8zGocFLZujAFVb+zd/CRaYBqeRRGQ3JlN1RsKZOzIUTc5iOqhDJ/w3zlrFKu
-	 rNX/p2DXnCmotQ86e0gCZKjLh6KvaVUAGP+ngqNDMkt/oYPxNSdfDVVMP8IdaYf6pO
-	 rKY/xyAR3bSUoxaaQUSaHn3jd9s5ouNKcSH+gpPrlrnAz4Q55U66NZswZNAGZYnAGC
-	 4u5Fq4xsH9mENNRomL2yC8rBXQdOI73nicxfD0EgxQ+7Kb7RO/WzqPoyCAjuDsnJNF
-	 iiW68p6hFgW0Q==
-Received: from [10.1.0.205] (192-222-188-97.qc.cable.ebox.net [192.222.188.97])
-	by smtpout.efficios.com (Postfix) with ESMTPSA id 4Nk63V66mxzcp5;
-	Fri, 30 Dec 2022 08:45:58 -0500 (EST)
-Message-ID: <fb7343a9-dc48-52f6-e899-d0283046a011@efficios.com>
-Date: Fri, 30 Dec 2022 08:46:25 -0500
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89F8A259C
+	for <oe-lkp@lists.linux.dev>; Fri, 30 Dec 2022 15:36:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF6F4C433EF;
+	Fri, 30 Dec 2022 15:36:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1672414586;
+	bh=XE8ifSxGfXq/BFysAeNhRttsfdgdwDk0kodQg7Og6jM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=cjMPoHfU3+7aBFL/0XLFhmvT0RSC175bUbdlNZhNo14EO1phL9KOvNtQsUJ5RLCZN
+	 OEGso1R4DwwVGCqBy+fTcceh64gSEccbzbYCzQLD7VHNCiXi6bpWu3jyXBIBsRnrfJ
+	 B2owNiM3jiQwUfi6ZW65ZeWiuCOeJQyHjALrKMsLLO9/BEMgMXIIzlSApjPt1dEW3q
+	 aIqvu5rhG8yJQuXHuM0Whui4kzXuJtKolZ81n6bhrQi9OHIa9rnuGhmwqPPZQr4TE1
+	 HNTvGGFikKIRvS3cHBR8cWW+pjqCd6p+nu94bzMLmbrwEmBPZOABToOC1Yzubj9s6d
+	 SRKrpUN7BMUjg==
+Date: Fri, 30 Dec 2022 16:36:19 +0100
+From: Christian Brauner <brauner@kernel.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: kernel test robot <oliver.sang@intel.com>,
+	"Jason A. Donenfeld" <Jason@zx2c4.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, Masahiro Yamada <masahiroy@kernel.org>,
+	Kees Cook <keescook@chromium.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
+	Theodore Ts'o <tytso@mit.edu>
+Subject: Re: [linus:master] [kbuild] 3bc753c06d: xfstests.generic.454.fail
+Message-ID: <20221230153619.itewmvrtoxqkugx2@wittgenstein>
+References: <202212291509.704a11c9-oliver.sang@intel.com>
+ <CAHk-=wieOBgQ-7aoihBzywKqxiO7o7hc6gd_csn69ChcxR1FuQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [tip:sched/core] [sched] af7f588d8f:
- WARNING:at_kernel/sched/core.c:#sched_mm_cid_after_execve
-Content-Language: en-US
-To: kernel test robot <yujie.liu@intel.com>,
- Peter Zijlstra <peterz@infradead.org>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
- x86@kernel.org, linux-mm@kvack.org
-References: <202212301353.5c959d72-yujie.liu@intel.com>
-From: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-In-Reply-To: <202212301353.5c959d72-yujie.liu@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wieOBgQ-7aoihBzywKqxiO7o7hc6gd_csn69ChcxR1FuQ@mail.gmail.com>
 
-On 2022-12-30 01:48, kernel test robot wrote:
-> Greeting,
+On Thu, Dec 29, 2022 at 10:55:05AM -0800, Linus Torvalds wrote:
+> On Thu, Dec 29, 2022 at 12:49 AM kernel test robot
+> <oliver.sang@intel.com> wrote:
+> >
+> > generic/454       _check_generic_filesystem: filesystem on /dev/sda4 is inconsistent
 > 
-> FYI, we noticed WARNING:at_kernel/sched/core.c:#sched_mm_cid_after_execve due to commit (built with gcc-11):
+> The commentary on that test is:
 > 
-[...]
+>   Create xattrs with multiple keys that all appear the same
+>   (in unicode, anyway) but point to different values.  In theory all
+>   Linux filesystems should allow this (filenames are a sequence of
+>   arbitrary bytes) even if the user implications are horrifying.
+> 
+> and looking at the script it seems to indeed just do setfattr and
+> getfattr with some unusual data (ie high bit set).
+> 
+> Adding Ted, since this is apparently all on ext4. I guess it could be
+> the vfs layer too, but it really doesn't tend to look very much at the
+> xattr data, so.. Adding Christian Brauner anyway, since he's been
+> working in this area for other reasons.
 
-> [ 17.747520][ T48] bprm_execve (exec.c:?)
-> [ 17.748358][ T48] ? call_usermodehelper_exec_work (umh.c:?)
-> [ 17.749462][ T48] kernel_execve (??:?)
-> [ 17.750332][ T48] call_usermodehelper_exec_async (umh.c:?)
-> [ 17.751363][ T48] ? call_usermodehelper_exec_work (umh.c:?)
-> [ 17.752163][ T48] ret_from_fork (??:?)
+The test uses the user.* xattr namespace which should be unaffected by
+the xattr changes we did the last few cycles.
 
-I suspect this check:
+> 
+> Ted, Christian - I cut down the report mercilessly. It's not really
+> all that interesting, apart from the basic information of "xfstest
+> generic/454 started failing consistently on ext4 at commit
+> 3bc753c06dd0 ('kbuild: treat char as always unsigned')".
+> 
+> If you think you need more, see
+> 
+>     https://lore.kernel.org/all/202212291509.704a11c9-oliver.sang@intel.com/
+> 
+> Also, I'm surprised this hasn't been an issue earlier - 'char' has
+> always been unsigned on arm (among other architectures), so if this
+> test started failing now on x86-64 due to -funsigned-char, it has
+> presumably been failing on arm the whole time.
+> 
+> I assume it's something that compares a 'char *name' by value, but the
+> ones I looked at (eg xattr_find_entry() used strlen()/memcmp() which
+> should be all good).
+> 
+> Oh, I think I see one potential problem in ext4:
+> 
+> ext4_xattr_hash_entry() is hot garbage. Lookie here:
+> 
+>         while (name_len--) {
+>                 hash = (hash << NAME_HASH_SHIFT) ^
+>                        (hash >> (8*sizeof(hash) - NAME_HASH_SHIFT)) ^
+>                        *name++;
+>         }
+> 
+> so that hash will now depend on the sign of that 'char *name' pointer.
+> 
+> If that hash ever has any long-term meaning (ie saved on disk or
+> exposed some other way), that would be problematic.
 
-void sched_mm_cid_after_execve(struct task_struct *t)
-{
-         struct mm_struct *mm = t->mm;
-         unsigned long flags;
+If the xattrs aren't storable in the inode then they are stored in a
+separate block. The consist of a header and after that is an array of
+struct ext4_xattr_entry entries.
 
-         WARN_ON_ONCE((t->flags & PF_KTHREAD) || !t->mm);
+Each of the entries store a hash value e_hash which is a hash of the
+xattr name and xattr value.
 
-is too strict. AFAIU the usermodehelper thread is a kernel thread, which 
-happens to have a non-NULL mm after execve. We want to allow 
-usermodehelper threads to use rseq, so I think the appropriate approach 
-here would be to just warn if !t->mm:
+The aforementioned header contains another h_hash field which seems to
+be a hash of all e_hash fields of all xattrs.
 
-         WARN_ON_ONCE(!t->mm);
+For in-inode/ea-inode xattrs a hash for xattr name and value is stored
+on disk as well but there's no header. The i_atime field contains a
+checksum of only the value that is stored in the inode.
 
-We should probably apply a similar change to the warning in 
-sched_mm_cid_fork() as well.
-
-Thoughts ?
-
-Thanks,
-
-Mathieu
-
--- 
-Mathieu Desnoyers
-EfficiOS Inc.
-https://www.efficios.com
-
+IOW, the bug might also depend on how the xattrs are stored. For
+example, what xattrs might be stored in the inode depends on the inode
+size that is chosen when the filesystem is created. But if I'm not
+mistaken, it also depends on the block size.
+So if the block size chosen for x86 differs from arm that might have an
+impact on how the xattrs are stored and thus make the bug more or less
+likely to appear?...
