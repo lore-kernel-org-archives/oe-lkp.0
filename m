@@ -1,185 +1,77 @@
-Received: from mail-pf1-f174.google.com (mail-pf1-f174.google.com [209.85.210.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CE6B7EA
-	for <oe-lkp@lists.linux.dev>; Wed,  4 Jan 2023 09:04:27 +0000 (UTC)
-Received: by mail-pf1-f174.google.com with SMTP id b145so18282914pfb.2
-        for <oe-lkp@lists.linux.dev>; Wed, 04 Jan 2023 01:04:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=GyVonFdq1D5RaXkFiX42EcuJDHeckoqo7WuA+2smW1s=;
-        b=pdvpIH8QH3GhkjA295FTbvxp7p/g7EyaJKuHK/Ux16kdPo6TibWulHGmSHV1hSBxxX
-         2sUQg5mXo1ahuAEhTsBH4DbuaF8V8sR5BNwWt97GYgA3GvLj1Il0uJWA2fq5lQRnMXlJ
-         v8WU7Y8Sxu8vTL++Upd1ivSsJ1J+4PbqXgPqvllcN6gpwXD+LoZkbK75nH1XYngF1zbA
-         nnFn4yivRpS1YQDyHrBQauXjPxH8mwuEm3Kbp70AW2c3WA16GSj5/777QkKvagd5rXnG
-         mj4XSqaBSY90xrsoJEVKCn4FiGRziL5Ab70+cvzYm0oK9ibiqoQZTWBkEFqvUeKdzRAA
-         8Opw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=GyVonFdq1D5RaXkFiX42EcuJDHeckoqo7WuA+2smW1s=;
-        b=xr5Xwx9YJzqvRyLq7/UZtU1DdHdWuM5hy9QsM/uYiB5VL2j4f2+4dWbODoCDnHZl6a
-         qs35CjqNdtKWMrC1Np0tKAzLhgTdRhJgfbftE7Q5Ws6M1VhNRGDFsKPlf2IhAvS+j4rs
-         H2QTC2GYXsUrCN27PoiNxTUJV0uAHdB6vnxqu5KOwi5TUZQfhu4CVMN3oN+oY7lt0H5Y
-         tMoNENHN3CRDcs+vllcQ1oMpBkVqOwPmZDgsIVB6gCDU0C0z9kvAkfvgoFUWpriJupbc
-         R54QRMEM+7kk4RGBE1SWMyZCNGOH8x6AcGskXQYddqCfZwEm6AWBfh90VHAwQ0TAWkct
-         Q0Dw==
-X-Gm-Message-State: AFqh2kpJkYTj9+5GarCAW+6FgQfI8ZB3bAFt0u/J3EqHcatDPRBS4wB3
-	p+4vABRAwr14Zj4UHeYL6w0=
-X-Google-Smtp-Source: AMrXdXsscESY+mRJy0Er+58Hze9HXrS770z1Tij7zCuZMK5NKEyqVTY1ZhgFZFH3IawCe59WTE9kzA==
-X-Received: by 2002:a62:1887:0:b0:582:5886:e1b7 with SMTP id 129-20020a621887000000b005825886e1b7mr10329895pfy.14.1672823066370;
-        Wed, 04 Jan 2023 01:04:26 -0800 (PST)
-Received: from hyeyoo ([114.29.91.56])
-        by smtp.gmail.com with ESMTPSA id v27-20020aa799db000000b00577c5915138sm556861pfi.128.2023.01.04.01.04.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Jan 2023 01:04:25 -0800 (PST)
-Date: Wed, 4 Jan 2023 18:04:20 +0900
-From: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>, oe-lkp@lists.linux.dev, lkp@intel.com,
-	Mike Rapoport <rppt@linux.ibm.com>,
-	Christoph Lameter <cl@linux.com>, linux-kernel@vger.kernel.org,
-	linux-mm@kvack.org, Matthew Wilcox <willy@infradead.org>
-Subject: Re: [linus:master] [mm, slub] 0af8489b02:
- kernel_BUG_at_include/linux/mm.h
-Message-ID: <Y7VBFLHY/PMbb4XS@hyeyoo>
-References: <202212312021.bc1efe86-oliver.sang@intel.com>
- <41276905-b8a5-76ae-8a17-a8ec6558e988@suse.cz>
- <Y7Qxucg5le7WOzr7@xsang-OptiPlex-9020>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D21E53FEC;
+	Wed,  4 Jan 2023 18:35:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDA33C433F0;
+	Wed,  4 Jan 2023 18:35:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1672857345;
+	bh=GHoH25BDojkBu8zk+In6e6fb+FOzetOV9W36hZoxaC4=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=gvsvtpHt0gDjsnijtLvAuSIUYHj8CxhsusxzYQ5zbTGgLLUvS65MT5K7aknJ4OZjK
+	 FQdoQBkVjqrfGt/j4wJuNLE1u19IdyPXtdO9cwIiv7qURj9kBiHT/3bkUDIgVflH2t
+	 Hfpx7MFzFL0kO7Zf3jUnkVj7yCXjKKpNsXTN4WecmFfDBS6O6qnAMtZpGSAyNl3hh5
+	 24ktlzd3m8AhYnFNj1mpZOyIJxMtOo5ifLsYSrIHLqnQJYNI1fPso+aejLeaKX9XUr
+	 QXTi/t9SzRJsv/m0m8rgMbe7EkWPKmhGUjarzvxAKXkBcxCqEFUnkZduw/bMh0y0ZF
+	 ddSMtbhpzff/A==
+From: SeongJae Park <sj@kernel.org>
+To: kernel test robot <oliver.sang@intel.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: oe-lkp@lists.linux.dev,
+	lkp@intel.com,
+	SeongJae Park <sj@kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	stable <stable@kernel.org>,
+	devel@driverdev.osuosl.org,
+	damon@lists.linux.dev,
+	linux-mm@kvack.org
+Subject: Re: [driver-core:debugfs_lookup_fix] [mm/damon/dbgfs]  ff25f87cfc: kernel_BUG_at_lib/list_debug.c
+Date: Wed,  4 Jan 2023 18:35:39 +0000
+Message-Id: <20230104183539.1509-1-sj@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <202301031611.c49a0c74-oliver.sang@intel.com>
+References: 
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y7Qxucg5le7WOzr7@xsang-OptiPlex-9020>
+Content-Transfer-Encoding: 8bit
 
-On Tue, Jan 03, 2023 at 09:46:33PM +0800, Oliver Sang wrote:
-> On Tue, Jan 03, 2023 at 11:42:11AM +0100, Vlastimil Babka wrote:
-> > So the events leading up to this could be something like:
-> > 
-> > - 0x2daee is order-1 slab folio of the inode cache, sitting on the partial list
-> > - despite being on partial list, it's freed ???
-> > - somebody else allocates order-2 page 0x2daec and uses it for whatever,
-> > then frees it
-> > - 0x2daec is reallocated as order-1 slab from names_cache, then freed
-> > - we try to allocate from the slab page 0x2daee and trip on the PageTail
-> > 
-> > Except, the freeing of order-2 page would have reset the PageTail and
-> > compound_head in 0x2daec, so this is even more complicated or involves some
-> > extra race?
-> 
-> FYI, we ran tests more up to 500 times, then saw different issues but rate is
-> actually low
-> 
-> 56d5a2b9ba85a390 0af8489b0216fa1dd83e264bef8
-> ---------------- ---------------------------
->        fail:runs  %reproduction    fail:runs
->            |             |             |
->            :500         12%          61:500   dmesg.invalid_opcode:#[##]
->            :500          3%          14:500   dmesg.kernel_BUG_at_include/linux/mm.h
->            :500          3%          17:500   dmesg.kernel_BUG_at_include/linux/page-flags.h
->            :500          5%          26:500   dmesg.kernel_BUG_at_lib/list_debug.c
->            :500          0%           2:500   dmesg.kernel_BUG_at_mm/page_alloc.c
->            :500          0%           2:500   dmesg.kernel_BUG_at_mm/usercopy.c
-> 
-> > 
-> > In any case, this is something a debug_pagealloc kernel could have a chance
-> > of catching earlier. Would it be possible to enable CONFIG_DEBUG_PAGEALLOC
-> > and DEBUG_PAGEALLOC_ENABLE_DEFAULT additionally to the rest of the
-> > configuration, and repeat the test?
-> 
-> ok, we are starting to test by these 2 additional configs now.
+Hello,
 
-BTW it seems to be totally unrelated to rcutorture tests.
-Are there similar reports in boot tests with the same config?
+On Tue, 3 Jan 2023 21:16:09 +0800 kernel test robot <oliver.sang@intel.com> wrote:
 
-> > 
-> > Separately we should also make the __dump_page() more resilient.
-> > 
-> > Thanks,
-> > Vlastimil
-> > 
-> > > [   25.804432][  T214] ------------[ cut here ]------------
-> > > [   25.804917][  T214] kernel BUG at include/linux/mm.h:825!
-> > > [   25.805402][  T214] invalid opcode: 0000 [#1] SMP
-> > > [   25.805820][  T214] CPU: 0 PID: 214 Comm: udevadm Tainted: G S                 6.1.0-rc2-00014-g0af8489b0216 #2 1c4d7707ec0ce574ed62a77e82a8580202758048
-> > > [   25.806944][  T214] EIP: __dump_page.cold+0x282/0x369
-> > > [   25.807376][  T214] Code: ff ff 83 05 e8 5d bb c5 01 ba 4c c4 2f c4 89 f8 83 15 ec 5d bb c5 00 e8 f2 92 ed fd 83 05 f8 5d bb c5 01 83 15 fc 5d bb c5 00 <0f> 0b 83 05 00 5e bb c5 01 b8 ac 85 a3 c4 83 15 04 5e bb c5 00 e8
-> > > [   25.808960][  T214] EAX: 00000000 EBX: e764d530 ECX: 00000003 EDX: 4108888f
-> > > [   25.809578][  T214] ESI: e764d4e0 EDI: e764d4e0 EBP: ed89db3c ESP: ed89db00
-> > > [   25.810168][  T214] DS: 007b ES: 007b FS: 00d8 GS: 0033 SS: 0068 EFLAGS: 00210046
-> > > [   25.810803][  T214] CR0: 80050033 CR2: 00616abc CR3: 2d878000 CR4: 000406d0
-> > > [   25.811407][  T214] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 00000000
-> > > [   25.811999][  T214] DR6: fffe0ff0 DR7: 00000400
-> > > [   25.812390][  T214] Call Trace:
-> > > [   25.812675][  T214]  dump_page+0x2a/0xc0
-> > > [   25.813025][  T214]  ? _raw_spin_lock_irqsave+0x16/0x30
-> > > [   25.813492][  T214]  folio_flags+0x23/0x70
-> > > [   25.813945][  T214]  get_partial_node+0x89/0x290
-> > > [   25.814357][  T214]  __slab_alloc_node+0xbb/0x270
-> > > [   25.814860][  T214]  kmem_cache_alloc_lru+0x8d/0x4e0
-> > > [   25.815289][  T214]  ? __lock_release+0x3ec/0x410
-> > > [   25.815697][  T214]  ? iget_locked+0x78/0x310
-> > > [   25.816096][  T214]  alloc_inode+0x93/0x150
-> > > [   25.816469][  T214]  iget_locked+0xdd/0x310
-> > > [   25.816829][  T214]  ? lock_is_held_type+0x80/0xf0
-> > > [   25.817264][  T214]  kernfs_get_inode+0x24/0xb0
-> > > [   25.817670][  T214]  kernfs_iop_lookup+0xb5/0x1a0
-> > > [   25.818087][  T214]  __lookup_slow+0xd9/0x2a0
-> > > [   25.818479][  T214]  lookup_slow+0x50/0x90
-> > > [   25.818847][  T214]  walk_component+0x19c/0x2c0
-> > > [   25.819244][  T214]  path_lookupat+0xa3/0x270
-> > > [   25.819627][  T214]  path_openat+0x307/0x3e0
-> > > [   25.820007][  T214]  do_filp_open+0x7c/0x130
-> > > [   25.820409][  T214]  do_sys_openat2+0x113/0x1f0
-> > > [   25.820807][  T214]  do_sys_open+0x8e/0xe0
-> > > [   25.821211][  T214]  __ia32_sys_openat+0x2b/0x40
-> > > [   25.821622][  T214]  __do_fast_syscall_32+0x72/0xd0
-> > > [   25.822057][  T214]  ? trace_hardirqs_on+0xa2/0x110
-> > > [   25.822480][  T214]  ? __fput+0x19f/0x390
-> > > [   25.822842][  T214]  ? lockdep_hardirqs_on_prepare+0x242/0x400
-> > > [   25.823346][  T214]  ? syscall_exit_to_user_mode+0x5f/0x90
-> > > [   25.823823][  T214]  ? __do_fast_syscall_32+0x7c/0xd0
-> > > [   25.824259][  T214]  ? lockdep_hardirqs_on_prepare+0x242/0x400
-> > > [   25.824767][  T214]  ? syscall_exit_to_user_mode+0x5f/0x90
-> > > [   25.825254][  T214]  ? __do_fast_syscall_32+0x7c/0xd0
-> > > [   25.825696][  T214]  ? __do_fast_syscall_32+0x7c/0xd0
-> > > [   25.826155][  T214]  ? syscall_exit_to_user_mode+0x5f/0x90
-> > > [   25.826627][  T214]  ? __do_fast_syscall_32+0x7c/0xd0
-> > > [   25.827056][  T214]  ? __do_fast_syscall_32+0x7c/0xd0
-> > > [   25.827486][  T214]  ? __do_fast_syscall_32+0x7c/0xd0
-> > > [   25.827929][  T214]  ? irqentry_exit_to_user_mode+0x23/0x30
-> > > [   25.828423][  T214]  ? irqentry_exit+0x7f/0xc0
-> > > [   25.828812][  T214]  do_fast_syscall_32+0x32/0x70
-> > > [   25.829223][  T214]  do_SYSENTER_32+0x15/0x20
-> > > [   25.829589][  T214]  entry_SYSENTER_32+0xa2/0xfb
-> > > [   25.830003][  T214] EIP: 0xb7f8c549
-> > > [   25.830330][  T214] Code: 03 74 c0 01 10 05 03 74 b8 01 10 06 03 74 b4 01 10 07 03 74 b0 01 10 08 03 74 d8 01 00 00 00 00 00 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 8d 76 00 58 b8 77 00 00 00 cd 80 90 8d 76
-> > > [   25.831929][  T214] EAX: ffffffda EBX: 00000006 ECX: 006142a1 EDX: 002a8000
-> > > [   25.832522][  T214] ESI: 00000000 EDI: 00000001 EBP: 00614024 ESP: bff3c4a0
-> > > [   25.833123][  T214] DS: 007b ES: 007b FS: 0000 GS: 0033 SS: 007b EFLAGS: 00200246
-> > > [   25.833738][  T214] Modules linked in:
-> > > [   25.834062][  T214] ---[ end trace 0000000000000000 ]---
-> > > [   25.834522][  T214] EIP: __dump_page.cold+0x282/0x369
-> > > [   25.834960][  T214] Code: ff ff 83 05 e8 5d bb c5 01 ba 4c c4 2f c4 89 f8 83 15 ec 5d bb c5 00 e8 f2 92 ed fd 83 05 f8 5d bb c5 01 83 15 fc 5d bb c5 00 <0f> 0b 83 05 00 5e bb c5 01 b8 ac 85 a3 c4 83 15 04 5e bb c5 00 e8
-> > > [   25.836574][  T214] EAX: 00000000 EBX: e764d530 ECX: 00000003 EDX: 4108888f
-> > > [   25.837183][  T214] ESI: e764d4e0 EDI: e764d4e0 EBP: ed89db3c ESP: ed89db00
-> > > [   25.837772][  T214] DS: 007b ES: 007b FS: 00d8 GS: 0033 SS: 0068 EFLAGS: 00210046
-> > > [   25.838414][  T214] CR0: 80050033 CR2: 00616abc CR3: 2d878000 CR4: 000406d0
-> > > [   25.839011][  T214] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 00000000
-> > > [   25.839597][  T214] DR6: fffe0ff0 DR7: 00000400
-> > > [   25.839995][  T214] Kernel panic - not syncing: Fatal exception
-> > > [   25.840554][  T214] Kernel Offset: disabled
-> > 
-> > 
+> [-- Attachment #1: Type: text/plain, Size: 7528 bytes --]
+> 
+> 
+> Greeting,
+> 
+> FYI, we noticed kernel_BUG_at_lib/list_debug.c due to commit (built with gcc-11):
 
--- 
+Thank you for the report!
+
+> 
+> commit: ff25f87cfcfc34ebe652987f2a7beb184762785b ("mm/damon/dbgfs: fix memory leak when using debugfs_lookup()")
+> https://git.kernel.org/cgit/linux/kernel/git/gregkh/driver-core.git debugfs_lookup_fix
+
+The commit is for fixing a memory leak due to missed dput() call.  The patch
+has posted originally by Greg and revised my I[1].  The revised version has
+merged in mainline during v6.0 stabilization period (1552fd3ef7db).
+
+The problematic tree (driver-core/debugfs_lookup_fix) is based on v6.2-rc2, so
+the revised patch is already applied.  But the first version of the patch is
+applied again on the tree[2], probably by mistake, and caused double 'dput()'.
+
+So I think the commit seems needs to be reverted.
+
+If there is anything I missed or wrong, please let me know.
+
+[1] https://lore.kernel.org/damon/20220902191149.112434-1-sj@kernel.org/
+[2] https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git/commit/?h=debugfs_lookup_fix&id=5167d3e8149e332204274910da1057e8f907d7d2
+
+
 Thanks,
-Hyeonggon
+SJ
