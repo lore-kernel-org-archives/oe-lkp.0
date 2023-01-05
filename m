@@ -1,72 +1,120 @@
-Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE0522F27
-	for <oe-lkp@lists.linux.dev>; Thu,  5 Jan 2023 14:47:29 +0000 (UTC)
-Received: by mail-pl1-f173.google.com with SMTP id 17so39599078pll.0
-        for <oe-lkp@lists.linux.dev>; Thu, 05 Jan 2023 06:47:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=uW5/0Xy5zahrkQgqdMY2BKgM//oxkezjC3Vpdg59WdU=;
-        b=hn+H7TefgeYaXEnhb2fgrjPcF4N/UL+fxwpDi5Zyg4qLS2ayKIchBIGdIgxNKAM6y4
-         mssN/3tYOmPirqlwsFuTDyZoq2Ax2xSIQ6kcRkTY9TSf9+HgdbhhtsbiHwSNk0rZCUcJ
-         Ikc/vzsTrC48vzr5TXWIW2pGheX3K9pSjbjT4wLqHA/W4ckBGs3NTNUruAIZwqBpaJC+
-         LX5Ds7hrGu6OKKrZfDyOFW5DIZh4GjW+xQuoCii+YEfQGQUP2ZxdEs3A5KkDWfadTYJ0
-         b8+aFTXYn6I2jxv432nP+czU3YrZNR2aznXTN1MpuCcRg6GrxGPP9zU3DeOZEXHw6YSk
-         kJLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=uW5/0Xy5zahrkQgqdMY2BKgM//oxkezjC3Vpdg59WdU=;
-        b=cPfhRiJzLFJJDCuaN4j2nLryNEbLEHPwQFLsxgsG84O+3R6cSA3Ul83u7F2NJkXZwV
-         3ALaUDscyLllTD55igoBk1e5H49WuvOkDKGQX/zPGfve+Xw5LDDwli5rvULd5V4Bxzog
-         W8PYkzW0FmbCqSpnMc/iD8CWvihfYb9ZqLgvV05YbuGqv3zl1TdfkYqz6o2imHfo/gJ8
-         0cNhg4RmXY+0uvlnPTzNlUUFCOu0yKrDoSdAS1ElW0EwuHfwIraPY/cTC8FhKQfxyhba
-         3Qf8C7L6Cm2JGr/T0x19uJVqYloXLUKSK4Gw4EKMF4w2dnvJNRz7U4UwAgu2SsOPY2eA
-         Hq+g==
-X-Gm-Message-State: AFqh2kpeFHrhUUhsoDxm7U1CkSraHq+HugkjjfELzL6235f3NTxdU2Ds
-	1skU5LelJP4QGqxRYrwF/6Q=
-X-Google-Smtp-Source: AMrXdXsSPNPB6c83FlYsfpPDbUIYRVOAEwabbDYDFz7NTMAp/QZN7zX8kJ/WC9Fzyo20J3ievNftyg==
-X-Received: by 2002:a17:90a:d246:b0:226:1020:3460 with SMTP id o6-20020a17090ad24600b0022610203460mr32230548pjw.34.1672930049320;
-        Thu, 05 Jan 2023 06:47:29 -0800 (PST)
-Received: from hyeyoo ([114.29.91.56])
-        by smtp.gmail.com with ESMTPSA id e22-20020a63f556000000b00499a90cce5bsm17145067pgk.50.2023.01.05.06.47.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Jan 2023 06:47:28 -0800 (PST)
-Date: Thu, 5 Jan 2023 23:47:22 +0900
-From: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>, oe-lkp@lists.linux.dev, lkp@intel.com,
-	Mike Rapoport <rppt@linux.ibm.com>,
-	Christoph Lameter <cl@linux.com>, linux-kernel@vger.kernel.org,
-	linux-mm@kvack.org, Matthew Wilcox <willy@infradead.org>
-Subject: Re: [linus:master] [mm, slub] 0af8489b02:
- kernel_BUG_at_include/linux/mm.h
-Message-ID: <Y7bi+mjxEJb/pkVZ@hyeyoo>
-References: <202212312021.bc1efe86-oliver.sang@intel.com>
- <41276905-b8a5-76ae-8a17-a8ec6558e988@suse.cz>
- <Y7Qxucg5le7WOzr7@xsang-OptiPlex-9020>
- <Y7VBFLHY/PMbb4XS@hyeyoo>
- <Y7Yr3kEkDEd51xns@xsang-OptiPlex-9020>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DC472F27
+	for <oe-lkp@lists.linux.dev>; Thu,  5 Jan 2023 15:19:20 +0000 (UTC)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 3ADFB174BD;
+	Thu,  5 Jan 2023 15:19:07 +0000 (UTC)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	(No client certificate requested)
+	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 157F5138DF;
+	Thu,  5 Jan 2023 15:19:07 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+	by imap2.suse-dmz.suse.de with ESMTPSA
+	id MsyLBGvqtmO1JQAAMHmgww
+	(envelope-from <vbabka@suse.cz>); Thu, 05 Jan 2023 15:19:07 +0000
+Message-ID: <a1d98577-6037-4712-7573-a8a3daa486e6@suse.cz>
+Date: Thu, 5 Jan 2023 16:19:06 +0100
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y7Yr3kEkDEd51xns@xsang-OptiPlex-9020>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: A better dump_page()
+Content-Language: en-US
+To: Matthew Wilcox <willy@infradead.org>, David Rientjes <rientjes@google.com>
+Cc: kernel test robot <oliver.sang@intel.com>,
+ Hyeonggon Yoo <42.hyeyoo@gmail.com>, oe-lkp@lists.linux.dev, lkp@intel.com,
+ Mike Rapoport <rppt@linux.ibm.com>, Christoph Lameter <cl@linux.com>,
+ linux-kernel@vger.kernel.org, linux-mm@kvack.org
+References: <202212312021.bc1efe86-oliver.sang@intel.com>
+ <41276905-b8a5-76ae-8a17-a8ec6558e988@suse.cz>
+ <Y7RKX45mvwkbiMbo@casper.infradead.org>
+ <c022ddc3-1cbd-8291-68a3-f90ffb93af84@google.com>
+ <Y7S6ZPUKi07h5uZO@casper.infradead.org>
+From: Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <Y7S6ZPUKi07h5uZO@casper.infradead.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Authentication-Results: smtp-out1.suse.de;
+	none
+X-Spam-Level: *
+X-Spam-Score: 1.40
+X-Spamd-Result: default: False [1.40 / 50.00];
+	 ARC_NA(0.00)[];
+	 RCVD_VIA_SMTP_AUTH(0.00)[];
+	 FREEMAIL_CC(0.00)[intel.com,gmail.com,lists.linux.dev,linux.ibm.com,linux.com,vger.kernel.org,kvack.org];
+	 FROM_HAS_DN(0.00)[];
+	 TO_DN_SOME(0.00)[];
+	 TO_MATCH_ENVRCPT_ALL(0.00)[];
+	 FREEMAIL_ENVRCPT(0.00)[gmail.com];
+	 TAGGED_RCPT(0.00)[];
+	 MIME_GOOD(-0.10)[text/plain];
+	 RCPT_COUNT_SEVEN(0.00)[10];
+	 FROM_EQ_ENVFROM(0.00)[];
+	 MIME_TRACE(0.00)[0:+];
+	 RCVD_COUNT_TWO(0.00)[2];
+	 RCVD_TLS_ALL(0.00)[];
+	 MID_RHS_MATCH_FROM(0.00)[];
+	 SUSPICIOUS_RECIPS(1.50)[]
+X-Spam-Flag: NO
 
-On Thu, Jan 05, 2023 at 09:46:06AM +0800, Oliver Sang wrote:
-> If you need more information, please let us know. Thanks
+On 1/4/23 00:29, Matthew Wilcox wrote:
+> On Tue, Jan 03, 2023 at 03:07:12PM -0800, David Rientjes wrote:
+>> On Tue, 3 Jan 2023, Matthew Wilcox wrote:
+>> 
+>> > On Tue, Jan 03, 2023 at 11:42:11AM +0100, Vlastimil Babka wrote:
+>> > > Separately we should also make the __dump_page() more resilient.
+>> > 
+>> > Right.  It's not ideal when one of our best debugging tools obfuscates
+>> > the problem we're trying to debug.  I've seen probems like this before,
+>> > and the problem is that somebody calls dump_page() on a page that they
+>> > don't own a refcount on.  That lets the page mutate under us in some
+>> > fairly awkward ways (as you've seen here, it seems to be part of several
+>> > different compound allocations at various points during the dump
+>> > process).
+>> > 
+>> > One possibility I thought about was taking our own refcount on the
+>> > page at the start of dump_page().  That would kill off the possibility
+>> > of ever passing in a const struct page, and it would confuse people.
+>> > Also, what if somebody passes in a pointer to something that's not a
+>> > struct page?  Then we've (tried to) modify memory that's not a refcount.
+>> > 
+>> > I think the best we can do is to snapshot the struct page and the folio
+>> > it appears to belong to at the start of dump_page().  It'll take a
+>> > little care (for example, folio_pfn() must be passed the original
+>> > folio, and not the snapshot), but I think it's doable.
+>> > 
+>> 
+>> By snapshot do you mean memcpy() of the metadata to the stack?  I assume 
+>> this still leaves the opportunity for the underlying mutation of the page 
+>> but makes the window more narrow.
+> 
+> Right.  We'd need to memcpy() both the page and the folio, so around 192
+> bytes.  It doesn't make it consistent since it could be mutated during
+> the memcpy(), but it will be consistent throughout the execution of the
+> function, so we won't get calls like folio_entire_mapcount() aborting
+> due to the folio having become a tail page halfway through.
 
-Can we get a vmcore dump using kdump functionality?
+I'm afraid this problem can still happen if the snapshot is inconsistent in
+the first place and you e.g. snapshot the tail page as tail page, and the
+supposed folio head page as not head page. I'm afraid the only way to
+prevent this is to make sure any helpers __dump_page() uses simply must not
+contain any VM_BUG/WARN_ON sanity checks, and anything treated as a pointer
+must be checked before dereferencing.
 
--- 
-Thanks,
-Hyeonggon
+The local copying still makes a lot of sense though, as anything checked on
+the copy that determines its further evaluation can be trusted to remain
+consistent without complicated piecemeal READ_ONCE()'s etc. And as you
+mentioned it will allow us to proceed with constification, where the
+possibility of dump_page() through VM_BUG_ON_PAGE() is IIRC a big blocker
+for constifying the various flags checking helpers etc.
