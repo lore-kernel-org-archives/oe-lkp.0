@@ -1,113 +1,75 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2AD180F
-	for <oe-lkp@lists.linux.dev>; Thu,  5 Jan 2023 08:04:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22FF8C433F0;
-	Thu,  5 Jan 2023 08:04:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1672905842;
-	bh=TiGbJNGqjLKu/tb0EDrx8mcDvF/zOSNik1+/AM8N3aM=;
-	h=In-Reply-To:References:Date:From:To:Cc:Subject:From;
-	b=jeQ3apWwiFubrh9Fe7Y8RwV0r3fwT98bC4QAIQshndA6AoG8Omr6rJ6G0v8WB6NEn
-	 P9o1xooBi8ou8goSDK7AreFAA3/6/Pb95m0iaSWo2925QqwzSx8nJwU3VgDJpG2pRl
-	 +eaIo8Tw9aQTgoL10MxiSapB8PnYo8okyk1sxSHL6HGHUqeNWgJBsTcwVnrB60C9lj
-	 mPF9OAR61hwgosq2kO1LyOpyDApoUXrFM8Cdh3R1Z/DapEeMelLc8zxSwbCegvuiOh
-	 kwFvlDaQ3IietB6SivDGk5V7bOe2BRF/tqgcI++8X3zj7XwKiApBjpfJHXslaaywkO
-	 l5n/DNrusHpfQ==
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
-	by mailauth.nyi.internal (Postfix) with ESMTP id 0248827C0054;
-	Thu,  5 Jan 2023 03:04:00 -0500 (EST)
-Received: from imap51 ([10.202.2.101])
-  by compute6.internal (MEProxy); Thu, 05 Jan 2023 03:04:01 -0500
-X-ME-Sender: <xms:cIS2YwROwwvu8D_Illtuiz5Apy6YWuZfnB2KdQIDWR3ZypcTh-Rd1w>
-    <xme:cIS2Y9zr5SWJUjd3BG7HpINJK43xvBm_gzYKguvhRxuQkPBJIrt0OCYEN5dBQ2fIA
-    CxodiWpkaS1XaexIg4>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrjeejgdduudekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehr
-    nhguuceuvghrghhmrghnnhdfuceorghrnhgusehkvghrnhgvlhdrohhrgheqnecuggftrf
-    grthhtvghrnhepleevgfduieehfeeltdettdfhfffgkedugeeklefftdeivdfgveeiteet
-    keehffevnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiii
-    gvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrrhhnugdomhgvshhmthhprghuthhh
-    phgvrhhsohhnrghlihhthidquddvkeehudejtddvgedqvdekjedttddvieegqdgrrhhnug
-    eppehkvghrnhgvlhdrohhrghesrghrnhgusgdruggv
-X-ME-Proxy: <xmx:cIS2Y91s_eJLjTfXOl8nZMG6CGzsH7tqhJaL_LetJg8hVF9kRPx4Ag>
-    <xmx:cIS2Y0BUVZyHpRbWw169o7Yrf59zUFr7DzrqYjNBQAxdfaOzKfK95Q>
-    <xmx:cIS2Y5gjSqHA1lAiOkTKNABKPKsiqs3cej_E1rjJZPAUQkLgfwLyuA>
-    <xmx:cIS2Y-twKb_x0ktnxT87k_MyiULbXHgXbgUCGEHg887yAIxFGWeuLQ>
-Feedback-ID: i36794607:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-	id 7ACD7B60086; Thu,  5 Jan 2023 03:04:00 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-1185-g841157300a-fm-20221208.002-g84115730
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8092EC5;
+	Thu,  5 Jan 2023 09:54:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE69CC433D2;
+	Thu,  5 Jan 2023 09:53:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1672912440;
+	bh=FH2IdRVONYmJaCpZAfwCyvQ6r1cU3bykTJdrFIkIfbw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=YnV5FLFl6ciYvICDm9NbRpvqmPxYg9RRS8ODqfaTxKFCTfAZNfo7G2CQX7gbaBvwO
+	 A3MHZ2vwr+HXExWDeMXWsnBoNnun3D5JeR6DwX9o80qiVznpZLUUGDN2v1e6AGHTaO
+	 K4Y5ouqJbmgj1+wVsRVjmnCxlfCF7N5PcIzDgFfM=
+Date: Thu, 5 Jan 2023 10:53:57 +0100
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: SeongJae Park <sj@kernel.org>
+Cc: kernel test robot <oliver.sang@intel.com>, devel@driverdev.osuosl.org,
+	damon@lists.linux.dev, linux-mm@kvack.org, oe-lkp@lists.linux.dev,
+	Andrew Morton <akpm@linux-foundation.org>,
+	stable <stable@kernel.org>
+Subject: Re: [driver-core:debugfs_lookup_fix] [mm/damon/dbgfs] ff25f87cfc:
+ kernel_BUG_at_lib/list_debug.c
+Message-ID: <Y7aeNRf3TyTufC8L@kroah.com>
+References: <202301031611.c49a0c74-oliver.sang@intel.com>
+ <20230104183539.1509-1-sj@kernel.org>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Message-Id: <e211f932-77c3-427a-859a-d846598524ed@app.fastmail.com>
-In-Reply-To: <202301051008.a8468257-yujie.liu@intel.com>
-References: <202301051008.a8468257-yujie.liu@intel.com>
-Date: Thu, 05 Jan 2023 09:03:40 +0100
-From: "Arnd Bergmann" <arnd@kernel.org>
-To: "kernel test robot" <yujie.liu@intel.com>,
- "Niklas Schnelle" <schnelle@linux.ibm.com>
-Cc: oe-lkp@lists.linux.dev, "kernel test robot" <lkp@intel.com>,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [niks:has_ioport_v3] [tty] aa0652d7f1:
- BUG:kernel_NULL_pointer_dereference,address
-Content-Type: text/plain
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230104183539.1509-1-sj@kernel.org>
 
-On Thu, Jan 5, 2023, at 06:54, kernel test robot wrote:
-> Greeting,
->
-> FYI, we noticed BUG:kernel_NULL_pointer_dereference,address due to 
-> commit (built with clang-14):
->
-> commit: aa0652d7f1b311e55232a8153522fdaaba0f197a ("tty: serial: handle 
-> HAS_IOPORT dependencies")
-> https://git.kernel.org/cgit/linux/kernel/git/niks/linux.git 
-> has_ioport_v3
->
-> in testcase: boot
->
-> on test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m 4G
->
-> caused below changes (please refer to attached dmesg/kmsg for entire 
-> log/backtrace):
->
->
-> [    2.166733][    T0] calling  univ8250_console_init+0x0/0x30 @ 0
-> [    2.167555][    T0] BUG: kernel NULL pointer dereference, address: 
-> 00000000
+On Wed, Jan 04, 2023 at 06:35:39PM +0000, SeongJae Park wrote:
+> Hello,
+> 
+> On Tue, 3 Jan 2023 21:16:09 +0800 kernel test robot <oliver.sang@intel.com> wrote:
+> 
+> > [-- Attachment #1: Type: text/plain, Size: 7528 bytes --]
+> > 
+> > 
+> > Greeting,
+> > 
+> > FYI, we noticed kernel_BUG_at_lib/list_debug.c due to commit (built with gcc-11):
+> 
+> Thank you for the report!
+> 
+> > 
+> > commit: ff25f87cfcfc34ebe652987f2a7beb184762785b ("mm/damon/dbgfs: fix memory leak when using debugfs_lookup()")
+> > https://git.kernel.org/cgit/linux/kernel/git/gregkh/driver-core.git debugfs_lookup_fix
+> 
+> The commit is for fixing a memory leak due to missed dput() call.  The patch
+> has posted originally by Greg and revised my I[1].  The revised version has
+> merged in mainline during v6.0 stabilization period (1552fd3ef7db).
+> 
+> The problematic tree (driver-core/debugfs_lookup_fix) is based on v6.2-rc2, so
+> the revised patch is already applied.  But the first version of the patch is
+> applied again on the tree[2], probably by mistake, and caused double 'dput()'.
+> 
+> So I think the commit seems needs to be reverted.
+> 
+> If there is anything I missed or wrong, please let me know.
+> 
+> [1] https://lore.kernel.org/damon/20220902191149.112434-1-sj@kernel.org/
+> [2] https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git/commit/?h=debugfs_lookup_fix&id=5167d3e8149e332204274910da1057e8f907d7d2
 
-I think it's this bit:
+Yeah, this is my fault, sorry.  That branch/tree has not been looked at
+carefully in a while, I need to refresh it properly and verify it all is
+correct.  I'll drop this change as part of that work as well, sorry for
+the noise.
 
-@@ -508,12 +523,13 @@ static void set_io_from_upio(struct uart_port *p)
-                up->dl_read = au_serial_dl_read;
-                up->dl_write = au_serial_dl_write;
-                break;
--#endif
--
-+#ifdef CONFIG_HAS_IOPORT
-        default:
-                p->serial_in = io_serial_in;
-                p->serial_out = io_serial_out;
-                break;
-+#endif
-+#endif
-        }
-        /* Remember loaded iotype */
-        up->cur_iotype = p->iotype;
-
-
-which puts the 'default' case inside of '#ifdef
-CONFIG_SERIAL_8250_RT288X'. x86 does not use the
-RT288x variant but relies on the default, so any
-call to io_serial_{in,out} will cause a NULL
-pointer dereference.
-
-       Arnd
+greg k-h
