@@ -1,155 +1,236 @@
-Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179])
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51CFE17EF
-	for <oe-lkp@lists.linux.dev>; Wed, 11 Jan 2023 09:44:12 +0000 (UTC)
-Received: by mail-pf1-f179.google.com with SMTP id y5so10980010pfe.2
-        for <oe-lkp@lists.linux.dev>; Wed, 11 Jan 2023 01:44:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=vL0wvIF2RqhmSNfyYokdjrls3ezSq7et5Rg7ifpCeJ8=;
-        b=qwFg0DxgLKLDVLEwDYfmm0kiiz2eYQDNtmXbVupZ+VvYu2tCBUnOzKwd+rmS6ZMvGG
-         iDHUc5hZBF/fTFzQ/cYH8jdqs+TimStkoLTlpuzBPpITw0juYDix2PREiRYjPzfPy+4O
-         o19zG34ietQD5LzuHcB4MUUDHOhxZXPqbzG2odFSzUhCGXBrynuGBzXciFwr6bBvRpNW
-         71m2pgDO80zxDCIdQdxdHmQb/qBPiJuhfxY1goAlD7MXDlTrSN6fIuIV0kwtatL8vFnN
-         36IHGfaUDzNYY6Zs68myHRG+3nvi0mvg3MehfVtt9y6OpRefgWunPTFvVPvhixUkRIby
-         JLtQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=vL0wvIF2RqhmSNfyYokdjrls3ezSq7et5Rg7ifpCeJ8=;
-        b=dLgryToznO/zFBI8zOWnGx+eY49tiNZ6jiLpLcPiidoenk4QlkfKz4s72ep1tO+3Bx
-         E34ZGUmoJTi1isMIsjagqdWRRR9lcQvThOXf2uNhZLH5JcE8PcCjTfAJJSXIFktNvykY
-         Q7ubd6r7RP555u4XNUsd5VU/JF7ove2oXaA/VGFlN9SrlB1pwQf68YD9hsEp75C2GauO
-         S7c19IdUuDaIUPVAvntZ5I1g8hzU4kt5BSyFYjD6fL0J0r/zSqtuxvYvtb5NWu/JkdMI
-         LsGzTt3EeJmSuzXZ7LOpvlsfFZSbvJOmYKmW6QIZ4z9zBEf+tdL7mPpkr+Wu1ao5unlS
-         aa2A==
-X-Gm-Message-State: AFqh2koKeeGpyQQBHuerdO2KOA3DQpLZYFz/zZo6gMrJ+n+TbNXL2UAO
-	2MuOu1KJ2+ADcdy30c7pC1M=
-X-Google-Smtp-Source: AMrXdXtiF3aD39sMHqdVVfJz89IV5IgRWbG1Hz4FccFuOxItSosS9Ad4uDHKhJDeUL74WlHk4HmG1g==
-X-Received: by 2002:aa7:9703:0:b0:589:d850:7ea5 with SMTP id a3-20020aa79703000000b00589d8507ea5mr6986750pfg.6.1673430251727;
-        Wed, 11 Jan 2023 01:44:11 -0800 (PST)
-Received: from localhost ([2400:8902::f03c:93ff:fe27:642a])
-        by smtp.gmail.com with ESMTPSA id z5-20020aa79905000000b00574ee8cfdabsm9864379pff.148.2023.01.11.01.44.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Jan 2023 01:44:09 -0800 (PST)
-Date: Wed, 11 Jan 2023 09:44:05 +0000
-From: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>, oe-lkp@lists.linux.dev, lkp@intel.com,
-	Mike Rapoport <rppt@linux.ibm.com>,
-	Christoph Lameter <cl@linux.com>, linux-kernel@vger.kernel.org,
-	linux-mm@kvack.org
-Subject: BUG: unable to handle page fault for address: f6ffe000
-Message-ID: <Y76E5WPTP86nUezT@localhost>
-References: <202212312021.bc1efe86-oliver.sang@intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 825DF20FF
+	for <oe-lkp@lists.linux.dev>; Wed, 11 Jan 2023 10:52:50 +0000 (UTC)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 6ADDE174D7;
+	Wed, 11 Jan 2023 10:52:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1673434368; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=tX3w237Fe0EtKS+kDpTx3rxaui4HbkknVgwOhcx+Sq4=;
+	b=mOhUTrrU4Zhwbupx+LzWk1Lu3zKajz9L60ryC3qyil9Kw0zeitc8g/hp29SL5DNGCz1z2m
+	OrkShYbNpuQ2IKEEu9x9cFRju0G93oXbVblOJk0wwgeKKMRxKcf9ueuKkywoeTAXvhROGX
+	jQN5NRjeFoSbX5ICM64zi1pDvb1ItAU=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1673434368;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=tX3w237Fe0EtKS+kDpTx3rxaui4HbkknVgwOhcx+Sq4=;
+	b=x5acz98V/0tWbyiXor69iaT+ukW4jUbMfAHb1k1N4rPxTdB/Yms66j3rvraUNczDX4CaR1
+	UszE23wz/n4kQ7Cg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	(No client certificate requested)
+	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3DC7B13591;
+	Wed, 11 Jan 2023 10:52:48 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+	by imap2.suse-dmz.suse.de with ESMTPSA
+	id 9rBZDgCVvmPiEwAAMHmgww
+	(envelope-from <vbabka@suse.cz>); Wed, 11 Jan 2023 10:52:48 +0000
+Message-ID: <53fc9fde-6132-9f2d-55e3-7119d11dc261@suse.cz>
+Date: Wed, 11 Jan 2023 11:52:47 +0100
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202212312021.bc1efe86-oliver.sang@intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [linus:master] [mm, slub] 0af8489b02:
+ kernel_BUG_at_include/linux/mm.h
+Content-Language: en-US
+To: Feng Tang <feng.tang@intel.com>
+Cc: "Sang, Oliver" <oliver.sang@intel.com>,
+ Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+ "oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>, lkp <lkp@intel.com>,
+ Mike Rapoport <rppt@linux.ibm.com>, Christoph Lameter <cl@linux.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-mm@kvack.org" <linux-mm@kvack.org>,
+ Matthew Wilcox <willy@infradead.org>
+References: <202212312021.bc1efe86-oliver.sang@intel.com>
+ <41276905-b8a5-76ae-8a17-a8ec6558e988@suse.cz>
+ <Y7Qxucg5le7WOzr7@xsang-OptiPlex-9020> <Y7VBFLHY/PMbb4XS@hyeyoo>
+ <Y7Yr3kEkDEd51xns@xsang-OptiPlex-9020>
+ <3f7fa3b3-9623-5c4c-94b1-a41dea6eaaf2@suse.cz>
+ <Y7weKyxIY+QFYq6j@xsang-OptiPlex-9020> <Y71t89JMgtRoNHM/@xsang-OptiPlex-9020>
+ <d024b846-9282-4ecd-eafd-2e5571932a72@suse.cz> <Y74eYCOBkRKlQN+H@feng-clx>
+From: Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <Y74eYCOBkRKlQN+H@feng-clx>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Sat, Dec 31, 2022 at 11:26:25PM +0800, kernel test robot wrote:
+On 1/11/23 03:26, Feng Tang wrote:
+> On Tue, Jan 10, 2023 at 10:09:36PM +0800, Vlastimil Babka wrote:
+>> On 1/10/23 14:53, Oliver Sang wrote:
+>> > hi all,
+>> > 
+>> > On Mon, Jan 09, 2023 at 10:01:15PM +0800, Oliver Sang wrote:
+>> >> 
+>> >> On Fri, Jan 06, 2023 at 11:13:15AM +0100, Vlastimil Babka wrote:
+>> >> 
+>> >> > And if the rate at the parent (has it increased thanks to the
+>> >> > DEBUG_PAGEALLOC?) is sufficient to bisect to the truly first bad commit. Thanks!
+>> >> 
+>> >> got it. Thanks for suggestion!
+>> >> 
+>> >> since 0af8489b02 is based on v6.1-rc2, we will test (both rectorture and boot)
+>> >> with same config upon v6.1-rc2 to see if it's really clean there.
+>> >> if so we will use dmesg.invalid_opcode:#[##] to trigger new bisect.
+>> >> 
+>> >> will keep you updated. Thanks
+>> > 
+>> > by more tests, we cannot make sure the v6.1-rc2 is clean, so we also checked
+>> > v6.1-rc1 and v6.0. from results, we have low confidence that we can make a
+>> > successful bisection based on them [1][2]. could you suggest?
+>> 
+>> So am I reading it right, that the probleam appears to be introduced between
+>> v6.0 (0 failures) and v6.1-rc1 (>0 failures)? But agree that with such low
+>> incidence, it's hard to bisect.
 > 
-> Greeting,
+> Yes, it's hard for bisection, as it happens at a higher reproduce rate
+> on several commits, hope it could be bisected soon.
 > 
-> FYI, we noticed kernel_BUG_at_include/linux/mm.h due to commit (built with gcc-11):
+> Before Oliver found the parent commit also trigger the problem, I did
+> some debug, and I think related factors could be compound_page, folio,
+> slub and i386(struct page size and layout), which cause some compound
+> page structures corrupted. 
 > 
-> commit: 0af8489b0216fa1dd83e264bef8063f2632633d7 ("mm, slub: remove percpu slabs with CONFIG_SLUB_TINY")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> * I tried change the slub_max_order to 0 for SLUB_TINY (much less
+>   compound-page operations), and no issue is found for 350 runs.
 > 
-> [test failed on linux-next/master c76083fac3bae1a87ae3d005b5cb1cbc761e31d5]
+> * Disable order>=1 in pcp list, the issue's reproduce rate keeps
+>   similar, which means the pcp operation is not related.
 > 
-> in testcase: rcutorture
-> version: 
-> with following parameters:
+> * Tried add some debug info in unused members of struct page of tail
+>   pages (not first tail page), or add one more member at the end of
+>   'struct page', can't reproduce it. 
 > 
-> 	runtime: 300s
-> 	test: default
-> 	torture_type: tasks-tracing
+> From Oliver's reports, there are several kinds of errors: list
+> operation failure (list_head structure corruption), compound page
+> check failure (PageTail warning) etc, which seem to indicate the
+> struct pages are randomly corrupted. In dump_page(), I tired to dump
+> more pages befor and after 'raw' and 'head' pages
 > 
-> test-description: rcutorture is rcutorture kernel module load/unload test.
-> test-url: https://www.kernel.org/doc/Documentation/RCU/torture.txt
-> 
-> 
-> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-> 
-> caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
-> 
-> 
-> If you fix the issue, kindly add following tag
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Link: https://lore.kernel.org/oe-lkp/202212312021.bc1efe86-oliver.sang@intel.com
-> 
-> 
-> [   25.804432][  T214] ------------[ cut here ]------------
-> [   25.804917][  T214] kernel BUG at include/linux/mm.h:825!
-> [   25.805402][  T214] invalid opcode: 0000 [#1] SMP
-> [   25.805820][  T214] CPU: 0 PID: 214 Comm: udevadm Tainted: G S                 6.1.0-rc2-00014-g0af8489b0216 #2 1c4d7707ec0ce574ed62a77e82a8580202758048
-> [ 25.806944][ T214] EIP: __dump_page.cold (include/linux/mm.h:825 mm/debug.c:97) 
-> [ 25.807376][ T214] Code: ff ff 83 05 e8 5d bb c5 01 ba 4c c4 2f c4 89 f8 83 15 ec 5d bb c5 00 e8 f2 92 ed fd 83 05 f8 5d bb c5 01 83 15 fc 5d bb c5 00 <0f> 0b 83 05 00 5e bb c5 01 b8 ac 85 a3 c4 83 15 04 5e bb c5 00 e8
+> [   18.265162][  T186] page:43caddc9 refcount:1 mapcount:0 mapping:00000000 index:0xedece900 pfn:0x2dece
+> [   18.266205][  T186] head:5e92e8e2 order:1 compound_mapcount:0 compound_pincount:0
+> [   18.266928][  T186] flags: 0x10200(slab|head|zone=0)
+> [   18.267339][  T186] raw-2: 00010200 c0100b70 c0100b70 c01a0680 edecd000 00020001 ffffffff 00000001
+> [   18.268055][  T186] raw-2: 00000000 00000000
+> [   18.268419][  T186] raw-1: 00000000 e7652fe1 00000101 ffffffff 00000000 00000000 ffffffff 00000000
+> [   18.269124][  T186] raw-1: 00000000 00000000
+> [   18.269488][  T186] raw: 00010200 e7652fe1 c0100bf0 00000400 edece900 000a0003 ffffffff 00000001
+> [   18.270187][  T186] raw: edce5f81 00000000
 
+Yeah this just doesn't make sense at all, it looks like prep_compound_tail()
+was called on two pages instead of one when creating the raw-2 order-1
+compound page, corrupting the folowing slab order-1 page's head.
+Even if we assumed the compound_head "e7652fe1" was wrongly copied or
+something, we have mapping == 00000400 which his very specifically done by
+prep_compound_tail() "p->mapping = TAIL_MAPPING;"
+In the raw-1 (first tail page) it's then rewritten to ffffffff by
+prep_compound_head()'s atomic_set(compound_mapcount_ptr(page), -1)". but in
+'raw' it remains 00000400, so this means the operation
+prep_compound_tail("raw-2", 2); had to happen, but not
+prep_compound_tail("raw-2", 3); as we don't have the same kind of corruption
+in raw1 below.
+Hey maybe the CPU speculated wrongly on the number of iterations in
+prep_compound_page() and accidently written the result of one extra
+prep_compound_tail() to memory...
 
-FYI, I found a panic from trying to read non-present page,
-on the same commit.
+> [   18.270534][  T186] raw1: 00000000 e7653031 00000101 ffffffff 00000000 00000000 ffffffff 00000000
+> [   18.271257][  T186] raw1: 00000000 00000000
+> [   18.271617][  T186] raw2: 00010200 00000100 00000122 c01a0780 00000000 000a000a ffffffff 00000001
+> [   18.272330][  T186] raw2: edd5bf01 00000000
+> [   18.272690][  T186] raw3: 00000000 e7653081 00000101 ffffffff 00000000 00000000 ffffffff 00000000
+> [   18.273424][  T186] raw3: 00000000 00000000
+> 
+> [   18.273793][  T186] head: 00010200 c0100b70 c0100b70 c01a0680 edecd000 00020001 ffffffff 00000001
+> [   18.274534][  T186] head: 00000000 00000000
+> [   18.274909][  T186] head1: 00000000 e7652fe1 00000101 ffffffff 00000000 00000000 ffffffff 00000000
+> [   18.275633][  T186] head1: 00000000 00000000
+> [   18.275996][  T186] head2: 00010200 e7652fe1 c0100bf0 00000400 edece900 000a0003 ffffffff 00000001
+> [   18.276725][  T186] head2: edce5f81 00000000
+> [   18.277093][  T186] head3: 00000000 e7653031 00000101 ffffffff 00000000 00000000 ffffffff 00000000
+> [   18.277820][  T186] head3: 00000000 00000000
+> [   18.278182][  T186] page dumped because: VM_BUG_ON_PAGE(PageTail(page))
+> [   18.278747][  T186] page_owner tracks the page as allocated
+> [   18.279447][  T186] page last allocated via order 1, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 186, tgid 186 (udevadm), ts 18262675212, free_ts 18262044539
+> ...
+> 
+> The page 'head' is actually 'raw' - 2, while page 'raw' seems
+> corrupted as it has PG_head bit set, while PageTail() is also true. 
+> 
+> Another problem is 'raw-1' and 'raw' both points to 'raw-2', and
+> if it is an order-2 compound page, the 'raw+1' should also points
+> to 'raw-2' as 3 tail pages point to one head page. Or there is some
+> switch(corrupted) between order-1 and order-2, as Vlastimil
+> supsected in earlier reply?
+> 
+> Thanks,
+> Feng
+> 
+>> > a further information not sure if it's helpful, [1][2] are both i386 based.
+>> > we also tried to run boot tests on x86_64 upon commit 0af8489b02, whatever
+>> > with or without CONFIG_DEBUG_PAGEALLOC/CONFIG_DEBUG_PAGEALLOC_ENABLE_DEFAULT,
+>> > we never obseve similar issues (also run 999 times).
+>> 
+>> Yeah it looks very much like something that manifests only on i386 (perhaps
+>> only in QEMU as well?) and never x86_64.
+>> 
+>> What might be interesting then is v6.1-rc1 with further modified config to
+>> enabled CONFIG_SLUB_DEBUG and CONFIG_SLUB_DEBUG_ON. Maybe it will catch the
+>> culprit sooner. Or maybe it will obscure the bug instead, unfortunately.
+>> 
+>> Thanks for all your effort!
+>> 
+>> > [1]
+>> > boot results:
+>> > =========================================================================================
+>> > compiler/kconfig/rootfs/sleep/tbox_group/testcase:
+>> >   gcc-11/i386-randconfig-a012-20221226+CONFIG_DEBUG_PAGEALLOC+CONFIG_DEBUG_PAGEALLOC_ENABLE_DEFAULT/debian-11.1-i386-20220923.cgz/1/vm-snb/boot
+>> > 
+>> >             v6.0                    v6.1-rc1                    v6.1-rc2 56d5a2b9ba85a390473e86b4fe4 0af8489b0216fa1dd83e264bef8
+>> > ---------------- --------------------------- --------------------------- --------------------------- ---------------------------
+>> >        fail:runs  %reproduction    fail:runs  %reproduction    fail:runs  %reproduction    fail:runs  %reproduction    fail:runs
+>> >            |             |             |             |             |             |             |             |             |
+>> >            :999          0%           2:999          0%           1:999          1%          11:999         21%         208:999   dmesg.invalid_opcode:#[##]
+>> >            :999          0%            :999          0%            :999          0%           2:999          5%          51:999   dmesg.kernel_BUG_at_include/linux/mm.h
+>> >            :999          0%           1:999          0%            :999          0%           4:999          4%          40:999   dmesg.kernel_BUG_at_include/linux/page-flags.h
+>> >            :999          0%           1:999          0%           1:999          0%           4:999         11%         111:999   dmesg.kernel_BUG_at_lib/list_debug.c
+>> >            :999          0%            :999          0%            :999          0%            :999          0%           2:999   dmesg.kernel_BUG_at_mm/page_alloc.c
+>> >            :999          0%            :999          0%            :999          0%           1:999          0%           3:999   dmesg.kernel_BUG_at_mm/usercopy.c
+>> > 
+>> > [2]
+>> > rcutorture results:
+>> > =========================================================================================
+>> > compiler/kconfig/rootfs/runtime/tbox_group/test/testcase/torture_type:
+>> >   gcc-11/i386-randconfig-a012-20221226+CONFIG_DEBUG_PAGEALLOC+CONFIG_DEBUG_PAGEALLOC_ENABLE_DEFAULT/debian-11.1-i386-20220923.cgz/300s/vm-snb/default/rcutorture/tasks-tracing
+>> > 
+>> >             v6.0                    v6.1-rc1                    v6.1-rc2 56d5a2b9ba85a390473e86b4fe4 0af8489b0216fa1dd83e264bef8
+>> > ---------------- --------------------------- --------------------------- --------------------------- ---------------------------
+>> >        fail:runs  %reproduction    fail:runs  %reproduction    fail:runs  %reproduction    fail:runs  %reproduction    fail:runs
+>> >            |             |             |             |             |             |             |             |             |
+>> >            :999          0%           3:999          0%            :999          1%           8:998         20%         200:999   dmesg.invalid_opcode:#[##]
+>> >            :999          0%            :999          0%            :999          0%            :998          5%          51:999   dmesg.kernel_BUG_at_include/linux/mm.h
+>> >            :999          0%            :999          0%            :999          0%           3:998          4%          42:999   dmesg.kernel_BUG_at_include/linux/page-flags.h
+>> >            :999          0%           3:999          0%            :999          0%           4:998         10%         102:999   dmesg.kernel_BUG_at_lib/list_debug.c
+>> >            :999          0%            :999          0%            :999          0%            :998          0%           2:999   dmesg.kernel_BUG_at_mm/page_alloc.c
+>> >            :999          0%            :999          0%            :999          0%           1:998          0%           3:999   dmesg.kernel_BUG_at_mm/usercopy.c
+>> > 
+>> >> 
+>> >> > 
+>> >> > 
+>> 
+>> 
 
-I'm not sure if this BUG is related to what we're looking at.
-
-[   26.970492][  T180] systemd-journald[180]: Received request to flush runtime journal from PID 1
-[   28.117157][  T187] BUG: unable to handle page fault for address: f6ffe000
-[   28.117686][  T187] #PF: supervisor read access in kernel mode
-[   28.117686][  T187] #PF: error_code(0x0000) - not-present page
-[   28.117686][  T187] *pde = 065b9067 *pte = 00000000 
-[   28.117686][  T187] Oops: 0000 [#1] SMP
-[   28.117686][  T187] CPU: 0 PID: 187 Comm: udevadm Tainted: G S                 6.1.0-rc2-00014-g0af8489b0216 #13 6ab653106aca2d29fecfea6da29eac9984fd4186
-[   28.117686][  T187] EIP: kernfs_name_hash+0x60/0xe0
-[   28.117686][  T187] Code: c6 01 83 d7 00 31 d2 01 c6 89 c8 89 75 ec 11 d7 8b 35 f0 9e c1 c5 89 7d f0 8b 3d f4 9e c1 c5 29 f0 8d b4 26 00 00 00 00 66 90 <0f> be 0c 30 89 ca c1 e2 04 c1 e9 04 01 d1 01 cb 8b 4d f0 83 c6 01
-[   28.117686][  T187] EAX: f0eadd57 EBX: ec9ced85 ECX: 05c29e82 EDX: 05c29e82
-[   28.117686][  T187] ESI: 061502a9 EDI: 00000000 EBP: f5fe1c88 ESP: f5fe1c70
-[   28.117686][  T187] DS: 007b ES: 007b FS: 00d8 GS: 0033 SS: 0068 EFLAGS: 00010206
-[   28.117686][  T187] CR0: 80050033 CR2: f6ffe000 CR3: 35f29000 CR4: 000406d0
-[   28.117686][  T187] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 00000000
-[   28.117686][  T187] DR6: fffe0ff0 DR7: 00000400
-[   28.117686][  T187] Call Trace:
-[   28.117686][  T187]  kernfs_find_ns+0xb3/0x200
-[   28.117686][  T187]  ? kernfs_iop_lookup+0x3c/0x1a0
-[   28.117686][  T187]  kernfs_iop_lookup+0x76/0x1a0
-[   28.117686][  T187]  lookup_open+0x308/0x970
-[   28.117686][  T187]  open_last_lookups+0xa4/0x680
-[   28.117686][  T187]  path_openat+0xa9/0x410
-[   28.117686][  T187]  do_filp_open+0x99/0x180
-[   28.117686][  T187]  ? lock_release+0xe8/0x350
-[   28.117686][  T187]  ? _raw_spin_unlock+0x50/0x90
-[   28.117686][  T187]  ? alloc_fd+0x252/0x3e0
-[   28.117686][  T187]  do_sys_openat2+0xf3/0x2e0
-[   28.117686][  T187]  ? find_held_lock+0x37/0x110
-[   28.117686][  T187]  do_sys_open+0x8e/0xe0
-[   28.117686][  T187]  __ia32_sys_open+0x2a/0x40
-[   28.117686][  T187]  __do_fast_syscall_32+0x72/0xd0
-[   28.117686][  T187]  ? lockdep_hardirqs_on_prepare+0x232/0x3f0
-[   28.117686][  T187]  ? syscall_exit_to_user_mode+0x35/0x50
-[   28.117686][  T187]  ? __do_fast_syscall_32+0x7c/0xd0
-[   28.117686][  T187]  ? lockdep_hardirqs_on_prepare+0x232/0x3f0
-[   28.117686][  T187]  ? irqentry_exit_to_user_mode+0x23/0x30
-[   28.117686][  T187]  ? irqentry_exit+0x7d/0xc0
-[   28.117686][  T187]  do_fast_syscall_32+0x32/0x70
-[   28.117686][  T187]  do_SYSENTER_32+0x15/0x20
-[   28.117686][  T187]  entry_SYSENTER_32+0xa2/0xfb
-[   28.117686][  T187] EIP: 0xb7f26549
-[   28.117686][  T187] Code: b8 01 10 06 03 74 b4 01 10 07 03 74 b0 01 10 08 03 74 d8 01 00 00 00 00 00 00 00 00 00 00 00 00 00 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 8d 76 00 58 b8 77 00 00 00 cd 80 90 8d 76
-[   28.117686][  T187] EAX: ffffffda EBX: bf83a680 ECX: 00088000 EDX: 000001b6
-[   28.117686][  T187] ESI: 00ab30b0 EDI: 00000008 EBP: b7e31000 ESP: bf83a4c8
-[   28.117686][  T187] DS: 007b ES: 007b FS: 0000 GS: 0033 SS: 007b EFLAGS: 00000246
-[   28.117686][  T187] Modules linked in:
-[   28.117686][  T187] CR2: 00000000f6ffe000
-[   28.117686][  T187] ---[ end trace 0000000000000000 ]---
-[   28.117686][  T187] EIP: kernfs_name_hash+0x60/0xe0
-[   28.117686][  T187] Code: c6 01 83 d7 00 31 d2 01 c6 89 c8 89 75 ec 11 d7 8b 35 f0 9e c1 c5 89 7d f0 8b 3d f4 9e c1 c5 29 f0 8d b4 26 00 00 00 00 66 90 <0f> be 0c 30 89 ca c1 e2 04 c1 e9 04 01 d1 01 cb 8b 4d f0 83 c6 01
