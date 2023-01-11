@@ -1,289 +1,423 @@
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CCF5B434
-	for <oe-lkp@lists.linux.dev>; Wed, 11 Jan 2023 02:29:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6173B453
+	for <oe-lkp@lists.linux.dev>; Wed, 11 Jan 2023 05:21:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673404175; x=1704940175;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=PFHTfHjeoIXPv/P0Z1wA1Qnho44eD9MSLiNH2/pY4Lk=;
-  b=ZNXftcQtbj5uVlI7jD334W6+2RFWnHcnxiLM/KLBqji+HUoj7xOYIgJN
-   7dcpdVwDcxnSGiIT8vLui1mxQtDTscXllhJufjhFgXHysIt15RImCfjnu
-   g5A0SofHeFIXA4LXRxsiGqgFAYvyvxG0FKcxl2WWGlVLp+IJ60VH/FiyB
-   mwE53Ze//CYhbYAsdVAPnp/jhLTRnl4niwcf9PIis+tIy6d4qGAcnKt6h
-   jw4nTeONUo/UZANANfmS9XU+JdPy9AhDS5HVThx+y/89wMqj3jxmm8I+K
-   TKZlKRgcb6MSor4EqawxY+D1HGSHBNoNdYPr9+PskQN8ErD3A1xPtrUle
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="306828244"
+  t=1673414499; x=1704950499;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=KiuXpC3FO9aNwxgFAFaTP4IwYzhZ97gCT4geeiVD3N4=;
+  b=aSw8GjQUneV7ubmW+MjoxQd43ljvn7kYKJdaDSeO+Up+KhmNKpaJ2Acg
+   qRbJ0WwstyK2dFAgq7fA89NKZ0BntYUlW/X7ct8BvQ59RkEaqsoAo8T2X
+   1fSfIvqhbrdRAdsdBNesfglg2AwKbAIdh6o++48zL623EzmTZ2qBF1K6u
+   Ov9IMeVDgOuvJFtXxDa41vCsUXbyUCZIYOWCsdmAZeB4ucxws2BL1/6tO
+   lbf3Z+2RojUiUOm892+K0dnh1z9uKUQgmTGB2dtSsRVhb6JQsGyFYe/kQ
+   uwFtO079m4iMfYkTkdXu7wCpmy9gFUy3qp5cuWiq483npIF60qeF/tFfo
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="303030817"
 X-IronPort-AV: E=Sophos;i="5.96,315,1665471600"; 
-   d="scan'208";a="306828244"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2023 18:29:28 -0800
+   d="scan'208";a="303030817"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2023 21:21:38 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="607194193"
+X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="831231368"
 X-IronPort-AV: E=Sophos;i="5.96,315,1665471600"; 
-   d="scan'208";a="607194193"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orsmga003.jf.intel.com with ESMTP; 10 Jan 2023 18:29:28 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+   d="scan'208";a="831231368"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by orsmga005.jf.intel.com with ESMTP; 10 Jan 2023 21:21:38 -0800
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Tue, 10 Jan 2023 18:29:27 -0800
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ 15.1.2507.16; Tue, 10 Jan 2023 21:21:38 -0800
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Tue, 10 Jan 2023 18:29:27 -0800
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (104.47.73.176)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ 15.1.2507.16 via Frontend Transport; Tue, 10 Jan 2023 21:21:38 -0800
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.42) by
+ edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Tue, 10 Jan 2023 18:29:27 -0800
+ 15.1.2507.16; Tue, 10 Jan 2023 21:21:37 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BWoxuA1I/gsc/gizKWRNS/LJfeeBPyRguXKkNmiommQgUu9Vxe3kD/EGhRIHptZSfvmHD6cYZH1t+So1J8vHHdVUbExYFFf23WADAMOmg70g3K+jBuP6p88D//6AH5pY0paAVCToDk2CrkDOHVMwiTSPLHA/6fH8dAtIWrJ0QDSlnH8t16yXDyTuskHmyTpFAZ5zaj2iTLy3fXHVG/hXOT5vLvXYYjwl0tDLQXdQAiyFGAhwwJ3BaabNQFwpSQ1IlCmEXhkNpXRzc9ct7KnVlKXIJGhRkKWn7rKIrLiGAljMa3D0VkM7i5MrNPUChbfzVW7A07ZxtTwcEJmEoN9Nkw==
+ b=U+cMGgrqy6vwOBOhe3zNUYGbgacDIbRUqHBS0ZvKP92fgbhNMRM8Aa1Vp1qm3DsivgGFJ9DA9g1ZNAmqGq/b3MciU15JyusIp9Xg1eRBvx4vwYayKAsdAEMDHbi8gUPphOsovluJAtwYG/MYCgloPtk4qmpYDcWH4ZOGNKYSyoIR4+uyYdh2Ptgi0ouH5b3WPJZw30slqBS4UW+XILag8kDKCmXzl4jarOhUZsNYzUbklNZg3IWaZdG552WVkso+fadaOHlltX/lPLHptsc+chFGH9aSLG9h9RhxrBHJYHFQB4SZbc6z+RQLSjGYYoB1YDU5Ttp96iw/pfnMLS5jtg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mpzCd6FgsNNwcshRKYG7VtA2FxnpBMvxFIkJQoprIek=;
- b=OzIBDJrkpB2XoYkPB072fmK5mH//U4v4NeCCyByOQnTmSISzb331pXkB0T8L84qOSiMIMe8iPddFbN0lr0wpMDRtVCn+mo/S1H8ij69xxtJkSQV/XcIlUEMnqiwABZ7T91FiK3yoL5mXOa4JIlYizprq3J0ppd5v4C6j02gu1mmVITGMJ5hXrjwbh1W04mZ04Xju9WAvy+9YtmUMpP8SjvGHXKpbaQGigrPl2f0pwsojwInpOmOxt5gPQR7uFFY0kXu65QX8LQCG7TOt8ambikTHDtGUBuzuQzvB+gbMkSdkhyN8M19Z2MlE6MqpKsZUOfyW59Ie3ciWQGkudaDDdA==
+ bh=5jew1BjVETQGBhz8gcnAyQ1Cxx59VXXAXJaW4Pten0Q=;
+ b=aFFnc1V7hjvjSCSWf6h9yksEWMZiPDYlMDU2keC4KjiIvgR7nqkxPxDH5yR7y0Yiv7wlZ9DJMIuijS0yFjKTFdHT4l7kAgCGLCgJcXyl9QYqmdNy5fjUnYPxOvyfEetTa+vgimqrDRa4xdDhc+OC9MLMWxTm+W4AcYsYZlvoSsybFusoZYZTegHH8ETxUBhM+pfw+0V2TVk3+1LxKtYqRyZk7204j4TBg4M9NhQk0Az/s7exTYa7+jf0DuNxX8U1MCCC/X+ObVpi4DKtLtDQwJExSDjU0oo524deSHM2L9kjwFbKQBZJpK4G7KKB24EtGjGsVrjE6OkLwLXWLqkWGw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from MN0PR11MB6304.namprd11.prod.outlook.com (2603:10b6:208:3c0::7)
- by CH3PR11MB8137.namprd11.prod.outlook.com (2603:10b6:610:15c::8) with
+Received: from PH0PR11MB5880.namprd11.prod.outlook.com (2603:10b6:510:143::14)
+ by SN7PR11MB7510.namprd11.prod.outlook.com (2603:10b6:806:349::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.18; Wed, 11 Jan
- 2023 02:29:24 +0000
-Received: from MN0PR11MB6304.namprd11.prod.outlook.com
- ([fe80::868b:ff1f:d827:188d]) by MN0PR11MB6304.namprd11.prod.outlook.com
- ([fe80::868b:ff1f:d827:188d%3]) with mapi id 15.20.5986.018; Wed, 11 Jan 2023
- 02:29:24 +0000
-Date: Wed, 11 Jan 2023 10:26:40 +0800
-From: Feng Tang <feng.tang@intel.com>
-To: Vlastimil Babka <vbabka@suse.cz>
-CC: "Sang, Oliver" <oliver.sang@intel.com>, Hyeonggon Yoo
-	<42.hyeyoo@gmail.com>, "oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>, lkp
-	<lkp@intel.com>, Mike Rapoport <rppt@linux.ibm.com>, Christoph Lameter
-	<cl@linux.com>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>,
-	Matthew Wilcox <willy@infradead.org>
-Subject: Re: [linus:master] [mm, slub] 0af8489b02:
- kernel_BUG_at_include/linux/mm.h
-Message-ID: <Y74eYCOBkRKlQN+H@feng-clx>
-References: <202212312021.bc1efe86-oliver.sang@intel.com>
- <41276905-b8a5-76ae-8a17-a8ec6558e988@suse.cz>
- <Y7Qxucg5le7WOzr7@xsang-OptiPlex-9020>
- <Y7VBFLHY/PMbb4XS@hyeyoo>
- <Y7Yr3kEkDEd51xns@xsang-OptiPlex-9020>
- <3f7fa3b3-9623-5c4c-94b1-a41dea6eaaf2@suse.cz>
- <Y7weKyxIY+QFYq6j@xsang-OptiPlex-9020>
- <Y71t89JMgtRoNHM/@xsang-OptiPlex-9020>
- <d024b846-9282-4ecd-eafd-2e5571932a72@suse.cz>
+ 2023 05:21:35 +0000
+Received: from PH0PR11MB5880.namprd11.prod.outlook.com
+ ([fe80::114c:5805:e63f:6018]) by PH0PR11MB5880.namprd11.prod.outlook.com
+ ([fe80::114c:5805:e63f:6018%4]) with mapi id 15.20.5986.018; Wed, 11 Jan 2023
+ 05:21:35 +0000
+From: "Zhang, Qiang1" <qiang1.zhang@intel.com>
+To: "paulmck@kernel.org" <paulmck@kernel.org>
+CC: "Liu, Yujie" <yujie.liu@intel.com>, "oe-lkp@lists.linux.dev"
+	<oe-lkp@lists.linux.dev>, lkp <lkp@intel.com>, "rcu@vger.kernel.org"
+	<rcu@vger.kernel.org>, "frederic@kernel.org" <frederic@kernel.org>,
+	"quic_neeraju@quicinc.com" <quic_neeraju@quicinc.com>,
+	"joel@joelfernandes.org" <joel@joelfernandes.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v4] rcu-tasks: Make rude RCU-Tasks work well with CPU
+ hotplug
+Thread-Topic: [PATCH v4] rcu-tasks: Make rude RCU-Tasks work well with CPU
+ hotplug
+Thread-Index: AQHZBRUNYM7gGe8KaECV+8uqpx3Q8a50ePYAgAAL4hCABFctgIAA5ZxAgBaZgACAAIwEcIAGQAgAgAAwP4CAADGRwIAAdMeAgAAyxICAAJQWUA==
+Date: Wed, 11 Jan 2023 05:21:35 +0000
+Message-ID: <PH0PR11MB588072CF2417F6F1D66A620ADAFC9@PH0PR11MB5880.namprd11.prod.outlook.com>
+References: <202212181914.f5a305f3-yujie.liu@intel.com>
+ <PH0PR11MB5880EB31D9AFD82EFA3073A6DAE59@PH0PR11MB5880.namprd11.prod.outlook.com>
+ <20221221193325.GE4001@paulmck-ThinkPad-P17-Gen-1>
+ <PH0PR11MB588092AB6A014F30420D697CDAE89@PH0PR11MB5880.namprd11.prod.outlook.com>
+ <20230105182220.GF4028633@paulmck-ThinkPad-P17-Gen-1>
+ <PH0PR11MB5880273B1F5A6FF2CB782051DAFB9@PH0PR11MB5880.namprd11.prod.outlook.com>
+ <20230110021012.GI4028633@paulmck-ThinkPad-P17-Gen-1>
+ <20230110050253.GA3798705@paulmck-ThinkPad-P17-Gen-1>
+ <PH0PR11MB58808C49B2BFA8F4D6D9E0FEDAFF9@PH0PR11MB5880.namprd11.prod.outlook.com>
+ <20230110145815.GM4028633@paulmck-ThinkPad-P17-Gen-1>
+ <20230110175957.GA3836063@paulmck-ThinkPad-P17-Gen-1>
+In-Reply-To: <20230110175957.GA3836063@paulmck-ThinkPad-P17-Gen-1>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR11MB5880:EE_|SN7PR11MB7510:EE_
+x-ms-office365-filtering-correlation-id: ef4d9c95-0050-4c12-4f73-08daf393b53a
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: yFC57KiZvGqKeJXh/ap/mVABqGQq6NbjT3dhStZF5oYQrc6gDwIZcrq0JuaRTQSlg6UicRmz2/CNTfRoju/EEnIYx2USPMS02N8okrTlLfs4Pye3cJKkCgJOhdev1ofmQ+2BWQYOMqSjeys22+1NLWHS6ORSUgck0A45eEv356kYVs+AcM2FGP3q71cAcAPlhGJqac1e1s9/TAXVe03dxNLG8kJs2HHZufOHrgO8AD5d4cfNU2bidUr6UDySlo+wsBqpYuLGT7XWV5QcUpL1HZ27C9KIhBvNCkCMjYIocRLVIZ47onl730LafAq/chPxzuur81yWzzt+C/cOb5U7nNTD5AT7zVic8lY/tAJxaoo1FsZP7IFGjgmNxlQ7YGmgZPShoZVuDv71oPHsCFvtktc+FSzoJXBrx9NBDKjwZs0kVTMapozDzB/tFYLoG2vf7BVOpWr975Rmv3IOOrPKd0tCSzRUnr6I5piU7ZKlppLwZZzNMzaP37+GkHVpVhw9PpfeNz3BvFJMSD0a7gjE6ATJgBbjJ3GfPBXGVpEXW8mJ6Sa5JWwoK7Pv4FMJka7TNCkqzMZETbW9/WRuWiZGR1n4PbNaWdBedZHocAj1qqpnXa1LDHvO8+AIceNK6FAlqngH/nlEJ9sbB2ee9mKhLqXASJPvCe6f4gdUMDNOLkR7KulXz/oc+xQ02iCdhBnUnJgAOllFRjIphbnc4vNijtrMdRXkewEtdntFkTJUc9X4nPEzdOfYtjDQYubYfUMkLqMHvitLPOreWJ5Gpfs8Tg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5880.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(366004)(39860400002)(346002)(136003)(376002)(396003)(451199015)(9686003)(54906003)(6506007)(186003)(55016003)(76116006)(86362001)(4326008)(30864003)(66446008)(38100700002)(66946007)(38070700005)(66476007)(64756008)(5660300002)(122000001)(66556008)(478600001)(8676002)(6916009)(2906002)(26005)(82960400001)(71200400001)(33656002)(316002)(52536014)(41300700001)(8936002)(966005)(45080400002)(7696005)(83380400001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?kT7gmD4+t2AIGmkdz5XHugyxk8Ql/XDIDYf+e8DlC9XLRqfJkQrkl5a03hS/?=
+ =?us-ascii?Q?DsPQ92AyAzXiUwLFMUeutHL6bN1ecXqMtOYjlqRg3D4k24uhnqMxsRk0YRde?=
+ =?us-ascii?Q?/3r6lI6Q/651XHaz50aSbWFD8MiAS+aY7HH6ZNxbkYcOLYDax0N0yXQ+dPEg?=
+ =?us-ascii?Q?FgfadVQQB7OL1DJhy9TKAnAKQk05+be9TQbIBC6+1INhOI7nt5FhkwjMF/Ix?=
+ =?us-ascii?Q?cviRouVLnTh1se1FiM/nSFF688Fma0VkhhkhCXoTJmCT1sg5K1B7nAOT6uzU?=
+ =?us-ascii?Q?7IZbtfrAosCdBQrTNte0tjePJPebnJCMB6a30PHURMBOHwZEWde2+tlwPb+e?=
+ =?us-ascii?Q?cDGhNwJBHow2xUf/IA4LLsPZ5jCz1lFuXAcEdHV+1mMbDia6I2zM60zAdMTc?=
+ =?us-ascii?Q?JhDRKC+hqD6zcytwrwCZpZQAP0g2dEuN8rml2yyhJccrSnLXIw04cwmlA3VZ?=
+ =?us-ascii?Q?Quo0EXMx+uOt6x4qoPHPZn25HH6W6i8qnzJa9tTA5nB0xjM98zDLfsKYwqhE?=
+ =?us-ascii?Q?YbLPAg/0hiZDpENvyyREnqVlxr3wiDlk0ZlsRKO1G6cxN67kO1r6mOHPNjMg?=
+ =?us-ascii?Q?t51JCxK6t8TxKrLpuDXqO/+6ttzgRquA45P1OnD9jpqp9WBtsvmYNldSWkxH?=
+ =?us-ascii?Q?r4A1R7+CkK4Wyxmw0i7v5EGN7QiqWruT0v7AQprxGQ4k29JgXVZSkm0Rf0mv?=
+ =?us-ascii?Q?nzE0v76OZvGgq5dDC+VuRpcMNZwFhgoeQGQxcuv3SEWxLQRuoUPHp5D3Npc0?=
+ =?us-ascii?Q?iiX0hIyHEYLSNUkVyvZ/Epn8FlPf1C+ukC6SZQzYOeHPKbOaJjyWZ/+7U236?=
+ =?us-ascii?Q?LGLkd+nXR/MCOrwPgmgI4i8Bzfhf0C8wP3N0NzYMGtpLM42jk/RGXdn82xZU?=
+ =?us-ascii?Q?PshsA34OSLpS5K/h7sSN879HfyxHSWv0oyTrPBAzpjKShpNO2Jltf4LrCTdG?=
+ =?us-ascii?Q?+shSYfL1VV5uMpufI+kvwEEgF3xXGwFPtD3UA/cBgeXXL4UxCSbI+U1VK4RO?=
+ =?us-ascii?Q?oShjuLpTHpYT/a7W0tOOSVtThOdygRJD0+ePqXXJhwaY5uujySA1LnLwzWwk?=
+ =?us-ascii?Q?xyf9a6uHLYXo0YRdtO0Bwet2NsvsQfHTljhoV+9iZWKP3LxYZ+djjAjtQ985?=
+ =?us-ascii?Q?8mL6HLwVaUYRjZaUt90oNKDgq2o5P7g/BiJA2MdazuRrSSNIa9BJXkO2LUAz?=
+ =?us-ascii?Q?YTv/uLVK6DabTGO2PUYO04L7PjkawiECQStoh6wHfjGjADoIVbaeHngA0ma2?=
+ =?us-ascii?Q?I8KuFXcRccjIE5BGBQ0pp1obnf0Q9lNQh/LaZSXcQicpAvuwYiZvxCnY7Mm2?=
+ =?us-ascii?Q?S0ZVvnsdUOjwEwhCEEoho4rGa+AD/An3zdo3/ubEofRLwRxk0lEPsILGOWcg?=
+ =?us-ascii?Q?f+en+7Hdvfe1NqQIVQQfx6+1t+LC+Feg2u/x8bcxlc8N5WaLC9XDRW3KmO5q?=
+ =?us-ascii?Q?ysuN3ct5cb3WIcnYjOVH7/GS3ZMdT3tywa+HLJv+1OBx/TdlRO2jIjP91GIW?=
+ =?us-ascii?Q?jwdlLmGEya5huEiipcO9zl4Y5v2tdgSTX1TsSRQx9Jjt9HKzxjyLWiEBC9ap?=
+ =?us-ascii?Q?GuEcchiy3McY+KlrKFtweucIGXsElsNRLEOYw+v5?=
 Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <d024b846-9282-4ecd-eafd-2e5571932a72@suse.cz>
-X-ClientProxiedBy: SI2PR01CA0040.apcprd01.prod.exchangelabs.com
- (2603:1096:4:193::14) To MN0PR11MB6304.namprd11.prod.outlook.com
- (2603:10b6:208:3c0::7)
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MN0PR11MB6304:EE_|CH3PR11MB8137:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7bdc37c0-a345-42a3-e9c1-08daf37ba787
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: tFEoASoFUcPIZDUNgQuSPB7oDtjCTI+QECXq8RTxQFT5QjrlbzaBtedy5jBhLbRJaNxTvhPphANfX+ue6yamAhSL6nEPTSE09svvZDWeMXRx51BgdfIWg5l1Xjm4ykGbbQj4FAbjyXUbMBx49BsOp6rvhmG01ptXprJhW82TCjOvDJu55Uq/rjwJg0G7CVq8QB45sjIqelJYzhJTAMODu1OcQ8x7EJ83m8d+1MBjhNLCcTn+WcMQtrll0g61ZKnebs8r8bpP5G8DDIXBxmruOHSU7/1J43ELiFnvApSSqwBaRFJStSJvOssbHdPg9O5LNJ6W0K+6zNywaJyF82F+ZbMCzbLqSmBZ9wog4BGuKTqikJklDWOP9bPrwBe/Y5WUSMNn6NCK1i0AyO5pctVKrPbT9tkfN5KZd8IgSPI8mfLGQBT/P3u5Yt6ITBSI/EEpwtRvdkNrUkOf3JQm5+xd1ngaahbLAsBBsZCeQ80DyCYvym3p4Ho9oyhm3kIfsJ+GsyoK42DFYoUSWOtOFZSO88otQMxpw5Ga+B4q607nyWIH9yEzSdnqDUxD+Fe7rUfbr0anMINJE3nr1PXPWi8v8Eq7S4/Jw3/KnZeNjzmVARbo+IqXxrXC8OfopE9NVUAowBu5/oIn0Xq2Pc8ugVZAzsN/0KFVHbs1jHjwvPSS9+k4F18yuyLP+ffw3WBBHsrL
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR11MB6304.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(39860400002)(376002)(366004)(136003)(346002)(396003)(451199015)(6916009)(8676002)(66946007)(66476007)(66556008)(44832011)(316002)(4326008)(54906003)(2906002)(5660300002)(8936002)(41300700001)(83380400001)(478600001)(6666004)(82960400001)(53546011)(6486002)(6506007)(38100700002)(9686003)(26005)(6512007)(86362001)(186003)(33716001)(67856001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hZGgG2B5DZSDkbWbV8hN1N4nLuQQw5+rDTyv+g15y5s1wvlS39exV545JwdN?=
- =?us-ascii?Q?Rjy+l0s9CxyqTb9EFytCmXS5Zhv5rm6UvfqVouzUP4NuDeLHdGSSUHUDfPq0?=
- =?us-ascii?Q?98pvyBZqgtBGq7VTNsBp6r63rgCvwl0+FmhkxLqk32eKiAMqB69qvjQ7lzY+?=
- =?us-ascii?Q?HXu8H1PiWB7sEGVTSdWDWqjEmLI42ty2/OIfRaJZo05IWez2PG1hZ0GjEB8Q?=
- =?us-ascii?Q?CpxThVFpBCWVuqzMB1Z7fzQVqOV4VSkhoJc0AZIHNobdTRFhaU8tKqpK6Xl3?=
- =?us-ascii?Q?UzZocS4XiImNFFnNVWBAHDpD54ZGjazRGgvY/QQkZoJG+mvrTiqivKoxjtbD?=
- =?us-ascii?Q?m5WssclBP48S468ONlMN5f9S8iekd0kbHKg/l702RH92KBwptl8QE4qbkcrQ?=
- =?us-ascii?Q?oMW/wVLRkWYK8+fweFJyPuvl3CV8iNbstFtGSq3ECbvXEblCDlRsPOch0drP?=
- =?us-ascii?Q?c14arHimbnAlPyJBF1dzLsMS8etUuGssqLQxHtAemJZJQHtIUtx1pOfy+K0/?=
- =?us-ascii?Q?JT2NKDESmxlVPI5ohpUpcC7ZU/xIkaIpdxge5BME6U3lsz+91Lif3mvnKj6t?=
- =?us-ascii?Q?J4df6iajUxiGbHUmUYbu5Ez0oM8kOtPa8poX3R1g7VRMWyxFOYywcJ7RYCww?=
- =?us-ascii?Q?h3dd571hDqus0Xoiw93/yOCoAshZ7d8tBQxnazTbPjslhJ58wDm/KwDL7Wj8?=
- =?us-ascii?Q?zJLCH+8lCux4g/RtaRHBcX2k6Q6v6bj3mL4TPZXKEr/f4Q5PqeCcKCuFPA+O?=
- =?us-ascii?Q?j1b4wTzu+xrNkcjJQFJvTn9jMSAedL51kJWBo3c+iVPJEpmHLeQX3GqfRAIV?=
- =?us-ascii?Q?OQHN5p42vi7BnZDKTtGBEc4QrgXBn4N+GSBED+eCVQ8QpJtgKHAMKOA+wMRi?=
- =?us-ascii?Q?biK69x6VzVmaqsjZsPk7mbUKrQKoxBGbK8Hme8IvjM/n6Sn1yzhTcjNjmTJK?=
- =?us-ascii?Q?mlUmbvNwo/9w4cyTRtybg525XpzepMDC4hVXVkNp58QRd633a1TTyALWMPGx?=
- =?us-ascii?Q?SaJA10JbNo3xszcv9PBH1vcId3TIho/BBeZn9He/vkT+tjXnmjV6Jk6zSI5V?=
- =?us-ascii?Q?YxiVvxkHn8/vty8D2ANxlz0DLbfgjTLkQLalMnJ1X2OM4p1pMR2SGUv3wZN6?=
- =?us-ascii?Q?f1TK1QGfrN17xzxXRvjNF2JGjtEayVW/7GEGZGlY8a2fQCu1UqcROeKr2+aN?=
- =?us-ascii?Q?grhGWTBuIDGcjvrITsJqKy4KwAVc+43saBnCbP4no/mAChr43E2xvN9DxBM0?=
- =?us-ascii?Q?xBC3m9e3HQy6slDjD9hm03q/axfweU45cpBCwo05J20YwXOQrxDsv4XCovQl?=
- =?us-ascii?Q?R6cGUH+9ve8OS8EkDSMbPAdsZP0cxX6Q53MVbNWWYXVPwEUK3JnpWnJ9WIsP?=
- =?us-ascii?Q?7DJE/VC+jBi5gSNfgwylFFYK8+2nClOs1rhM/kylRBgQpK32O8371OMpp6n3?=
- =?us-ascii?Q?Iwbh7rDbMF+oSj4htPh7zpT+8+vLUPZVC+heuVUH7G3OLeHYJVw1YNZKVUEV?=
- =?us-ascii?Q?HOj7zdz79DvF3ou19LffSu41d14diIO/BjnHyWHddC0qmm5EHKXS7cSI3WOV?=
- =?us-ascii?Q?AVBVESmO6hBsevxiYexsts6Ret0xlXpIeIwIlQQ7?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7bdc37c0-a345-42a3-e9c1-08daf37ba787
-X-MS-Exchange-CrossTenant-AuthSource: MN0PR11MB6304.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jan 2023 02:29:24.6543
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5880.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ef4d9c95-0050-4c12-4f73-08daf393b53a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Jan 2023 05:21:35.2117
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: AesML0dDXsOiUnQuEJ7GpWGPt+ObhgZ18UuqdqM5st/eAHjvHJgP9sE3w+decfKHDjPN7AfZKHkp9RrTObh8uQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR11MB8137
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: rq3SrHJO/pEoh6HDr1O/NfuPyGdFR5XOlcOpapJt3Enu6F+8YaTQce163XMUh/R1I/ZlofTAG8BUCxPEAn9yxQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB7510
 X-OriginatorOrg: intel.com
 
-On Tue, Jan 10, 2023 at 10:09:36PM +0800, Vlastimil Babka wrote:
-> On 1/10/23 14:53, Oliver Sang wrote:
-> > hi all,
-> > 
-> > On Mon, Jan 09, 2023 at 10:01:15PM +0800, Oliver Sang wrote:
-> >> 
-> >> On Fri, Jan 06, 2023 at 11:13:15AM +0100, Vlastimil Babka wrote:
-> >> 
-> >> > And if the rate at the parent (has it increased thanks to the
-> >> > DEBUG_PAGEALLOC?) is sufficient to bisect to the truly first bad commit. Thanks!
-> >> 
-> >> got it. Thanks for suggestion!
-> >> 
-> >> since 0af8489b02 is based on v6.1-rc2, we will test (both rectorture and boot)
-> >> with same config upon v6.1-rc2 to see if it's really clean there.
-> >> if so we will use dmesg.invalid_opcode:#[##] to trigger new bisect.
-> >> 
-> >> will keep you updated. Thanks
-> > 
-> > by more tests, we cannot make sure the v6.1-rc2 is clean, so we also checked
-> > v6.1-rc1 and v6.0. from results, we have low confidence that we can make a
-> > successful bisection based on them [1][2]. could you suggest?
-> 
-> So am I reading it right, that the probleam appears to be introduced between
-> v6.0 (0 failures) and v6.1-rc1 (>0 failures)? But agree that with such low
-> incidence, it's hard to bisect.
 
-Yes, it's hard for bisection, as it happens at a higher reproduce rate
-on several commits, hope it could be bisected soon.
+On Tue, Jan 10, 2023 at 06:58:15AM -0800, Paul E. McKenney wrote:
+> On Tue, Jan 10, 2023 at 08:12:49AM +0000, Zhang, Qiang1 wrote:
+> >=20
+> > On Mon, Jan 09, 2023 at 06:10:12PM -0800, Paul E. McKenney wrote:
+> > > On Fri, Jan 06, 2023 at 02:48:56AM +0000, Zhang, Qiang1 wrote:
+> > > >=20
+> > > > On Thu, Dec 22, 2022 at 09:35:06AM +0000, Zhang, Qiang1 wrote:
+> > > > > >On Mon, Dec 19, 2022 at 02:21:01AM +0000, Zhang, Qiang1 wrote:
+> > > > > > >Greeting,
+> > > > > > >FYI, we noticed WARNING:at_kernel/rcu/rcutorture.c:#rcu_tortur=
+e_fwd_prog_cr[rcutorture] due to commit (built with gcc-11):
+> > > > > > >
+> > > > > > >commit: 572a17843591d3c03ad891492939a06833fdd17d ("[PATCH v4] =
+rcu-tasks: Make rude RCU-Tasks work well with CPU hotplug")
+> > > > > > >url: https://github.com/intel-lab-lkp/linux/commits/Zqiang/rcu=
+-tasks-Make-rude-RCU-Tasks-work-well-with-CPU-hotplug/20221201-074127
+> > > > > > >base: https://git.kernel.org/cgit/linux/kernel/git/paulmck/lin=
+ux-rcu.git dev
+> > > > > > >patch link: https://lore.kernel.org/all/20221130234533.1983769=
+-1-qiang1.zhang@intel.com/
+> > > > > > >patch subject: [PATCH v4] rcu-tasks: Make rude RCU-Tasks work =
+well with CPU hotplug
+> > > > > > >
+> > > > > > >in testcase: rcutorture
+> > > > > > >version:=20
+> > > > > > >with following parameters:
+> > > > > > >
+> > > > > > >	runtime: 300s
+> > > > > > >	test: cpuhotplug
+> > > > > > >	torture_type: tasks-rude
+> > > > > > >
+> > > > > > >test-description: rcutorture is rcutorture kernel module load/=
+unload test.
+> > > > > > >test-url: https://www.kernel.org/doc/Documentation/RCU/torture=
+.txt
+> > > > > > >
+> > > > > > >on test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge=
+ -smp 2 -m 8G
+> > > > > > >
+> > > > > > >caused below changes (please refer to attached dmesg/kmsg for =
+entire log/backtrace):
+> > > > > > >
+> > > > > > >
+> > > > > > >[  106.051532][  T583] rcu_torture_fwd_prog: Starting forward-=
+progress test 0
+> > > > > > >[  106.052085][  T583] rcu_torture_fwd_prog_cr: Starting forwa=
+rd-progress test 0
+> > > > > > >[  133.611262][  T583] rcu_torture_fwd_prog_cr: Waiting for CB=
+s: rcu_barrier_tasks_rude+0x0/0x10() 0
+> > > > > > >[  146.800051][  T583] ------------[ cut here ]------------
+> > > > > > >[  146.800411][  T583] WARNING: CPU: 1 PID: 583 at kernel/rcu/=
+rcutorture.c:2806 rcu_torture_fwd_prog_cr+0x22c/0x2a7 [rcutorture]
+> > > > > > >[  146.801075][  T583] Modules linked in: rcutorture torture i=
+pmi_msghandler crc32c_intel serio_raw processor fuse
+> > > > > > >[  146.801894][  T583] CPU: 1 PID: 583 Comm: rcu_torture_fwd N=
+ot tainted 6.1.0-rc1-00180-g572a17843591 #1 0cc09f902db70bae111a0c12c137296=
+733dde4a9
+> > > > > > >[  146.802916][  T583] Hardware name: QEMU Standard PC (i440FX=
+ + PIIX, 1996), BIOS 1.16.0-debian-1.16.0-5 04/01/2014
+> > > > > > >[  146.803693][  T583] EIP: rcu_torture_fwd_prog_cr+0x22c/0x2a=
+7 [rcutorture]
+> > > > > > >[  146.804177][  T583] Code: 89 d8 e8 fc c5 ff ff e8 67 49 03 =
+00 83 c4 10 84 c0 75 79 a0 96 c6 10 ef 84 c0 75 70 e8 c8 ee ff ff 84 c0 75 =
+67 83 fe 63 7f 02 <0f> 0b 8b 45 f0 8b 15 40 25 8a c2 ff 75 e8 ff 75 e0 01 f=
+8 2b 45 dc
+> > > > > > >[  146.805599][  T583] EAX: 00000000 EBX: ecee3800 ECX: 000000=
+00 EDX: 00000000
+> > > > > > >[  146.805992][  T583] ESI: 00000000 EDI: 0000c350 EBP: ed9d5f=
+64 ESP: ed9d5f40
+> > > > > > >[  146.806491][  T583] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS:=
+ 0068 EFLAGS: 00010293
+> > > > > > >[  146.807010][  T583] CR0: 80050033 CR2: 08082ff0 CR3: 2daaf0=
+00 CR4: 000406d0
+> > > > > > >[  146.807484][  T583] DR0: 00000000 DR1: 00000000 DR2: 000000=
+00 DR3: 00000000
+> > > > > > >[  146.808031][  T583] DR6: fffe0ff0 DR7: 00000400
+> > > > > > >[  146.808384][  T583] Call Trace:
+> > > > > > >[  146.808634][  T583]  rcu_torture_fwd_prog.cold+0x3b/0xee [r=
+cutorture 6754ed9afe4685f50ef7fade6309181c73794538]
+> > > > > > >[  146.809348][  T583]  kthread+0xc8/0xf0
+> > > > > > >[  146.809635][  T583]  ? rcu_torture_fwd_prog_cbfree+0x80/0x8=
+0 [rcutorture 6754ed9afe4685f50ef7fade6309181c73794538]
+> > > > > > >[  146.810347][  T583]  ? kthread_complete_and_exit+0x20/0x20
+> > > > > > >[  146.810734][  T583]  ret_from_fork+0x1c/0x28
+> > > > > > >[  146.811075][  T583] irq event stamp: 205883
+> > > > > > >[  146.811400][  T583] hardirqs last  enabled at (205891): [<c=
+114bb06>] __up_console_sem+0x66/0x80
+> > > > > > >[  146.811960][  T583] hardirqs last disabled at (205898): [<c=
+114baed>] __up_console_sem+0x4d/0x80
+> > > > > > >[  146.812583][  T583] softirqs last  enabled at (205880): [<c=
+1ecb40b>] __do_softirq+0x2bb/0x440
+> > > > > > >[  146.813079][  T583] softirqs last disabled at (205871): [<c=
+10845f0>] call_on_stack+0x40/0x50
+> > > > > > >[  146.813567][  T583] ---[ end trace 0000000000000000 ]---
+> > > > > > >[  146.813926][  T583] rcu_torture_fwd_prog_cr Duration 2411 b=
+arrier: 3960 pending 50000 n_launders: 0 n_launders_sa: 0 n_max_gps: 0 n_ma=
+x_cbs: 50000 cver 1 gps 0
+> > > > > > >[  147.914266][  T583] rcu_torture_fwd_cb_hist: Callback-invoc=
+ation histogram 0 (duration 6702 jiffies): 1s/10: 0:0 2s/10:=20
+> > > > > > >[  149.453780][  T557] ------------[ cut here ]------------
+> > > > > > >[  149.454322][  T557] rcu_torture_writer: rtort_pipe_count: 4
+> > > > > > >[  149.454817][  T557] WARNING: CPU: 1 PID: 557 at kernel/rcu/=
+rcutorture.c:1583 rcu_torture_writer+0x71d/0xc80 [rcutorture]
+> > > > > >=20
+> > > > > >=20
+> > > > > > This is not a bug.  this is caused by grace period taking too l=
+ong time, the previous callback
+> > > > > > has not been completed.  from the dmesg, can be found that the =
+cpuhotplug test is being
+> > > > > > performed periodically, this may cause the rude RCU-Tasks  grac=
+e period to take more time,
+> > > > > > due to we need to acquire the cpus_read_lock, and the CPU0 alwa=
+ys bootup failed, that is to
+> > > > > > say, only one CPU of your system is online at this time.
+> > > > > >
+> > > > > >Onlining of a CPU failing with EIO is a new one on me.  Especial=
+ly
+> > > > > >persistent failure.
+> > > > >=20
+> > > > > I use the kernel configuration file in the attachment and  base o=
+n:
+> > > > > https://git.kernel.org/cgit/linux/kernel/git/paulmck/linux-rcu.gi=
+t dev
+> > > > >=20
+> > > > > use "echo 1 > /sys/devices/system/cpu/cpu0/online" can reproduce =
+this problem,
+> > > > > the CPU0 always fails to go online. =20
+> > > > >=20
+> > > > > Debug found CPU0 is always not set in cpu_initialized_mask.
+> > > > > causes the do_boot_cpu() to return -1.
+> > > > >=20
+> > > > > do_boot_cpu()
+> > > > >      wakeup_cpu_via_init_nmi();
+> > > > >      if (!boot_error) {
+> > > > >                 /*
+> > > > >                  * Wait 10s total for first sign of life from AP
+> > > > >                  */
+> > > > >                 boot_error =3D -1;
+> > > > >                 timeout =3D jiffies + 10*HZ;
+> > > > >                 while (time_before(jiffies, timeout)) {
+> > > > >                         if (cpumask_test_cpu(cpu, cpu_initialized=
+_mask)) {
+> > > > >                                 /*
+> > > > >                                  * Tell AP to proceed with initia=
+lization
+> > > > >                                  */
+> > > > >                                 cpumask_set_cpu(cpu, cpu_callout_=
+mask);
+> > > > >                                 boot_error =3D 0;
+> > > > >                                 break;
+> > > > >                         }
+> > > > >                         schedule();
+> > > > >                 }
+> > > > >         }
+> > > > >=20
+> > > > > This looks related to this modification e1c467e69040c("x86, hotpl=
+ug:=20
+> > > > > Wake up CPU0 via NMI instead of INIT, SIPI, SIPI ").
+> > > > >=20
+> > > > >=20
+> > > > > The following modification can make CPU0 go online successfully(T=
+his
+> > > > > is just a test, not sure if there are other effects).
+> > > > >
+> > > > >
+> > > > >Thank you for tracking this down!!!
+> > > > >
+> > > > >Huh.  CPU 0 is normally the boot CPU.  Back in the day, it could n=
+ot
+> > > > >be offlined.  Given that your testing indicates that CPU 0 can now=
+ be
+> > > > >taken offline, maybe this "if" statement is a holdover that someon=
+e
+> > > > >forgot to remove?
+> > > > >
+> > > > >But I must defer to those who know a lot more about this level of
+> > > > >x86 code than I do.
+> > > >=20
+> > > > I found relevant modification information, maybe it will be of some=
+ help
+> > > >=20
+> > > > commit e1c467e69040c3be68959332959c07fb3d818e87
+> > > > Author: Fenghua Yu <fenghua.yu@intel.com>
+> > > > Date:   Wed Nov 14 04:36:53 2012 -0800
+> > > >=20
+> > > >     x86, hotplug: Wake up CPU0 via NMI instead of INIT, SIPI, SIPI
+> > > >=20
+> > > >     Instead of waiting for STARTUP after INITs, BSP will execute th=
+e BIOS boot-strap
+> > > >     code which is not a desired behavior for waking up BSP. To avoi=
+d the boot-strap
+> > > >     code, wake up CPU0 by NMI instead.
+> > > >=20
+> > > >     This works to wake up soft offlined CPU0 only. If CPU0 is hard =
+offlined (i.e.
+> > > >     physically hot removed and then hot added), NMI won't wake it u=
+p. We'll change
+> > > >     this code in the future to wake up hard offlined CPU0 if real p=
+latform and
+> > > >     request are available.
+> > > >=20
+> > > >     AP is still waken up as before by INIT, SIPI, SIPI sequence.
+> > > >=20
+> > > >     Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
+> > > >     Link: http://lkml.kernel.org/r/1352896613-25957-1-git-send-emai=
+l-fenghua.yu@intel.com
+> > > >     Signed-off-by: H. Peter Anvin <hpa@linux.intel.com>
+> > >=20
+> > > Interesting!
+> > >=20
+> > > When I run rcutorture on x86 (under qemu/KVM), it refuses to attempt =
+to
+> > > offline CPU 0.  The reason is that cpu_is_hotpluggable(0) returns fal=
+se.
+> > >=20
+> > > If I comment out that check, I get this:
+> > >=20
+> > > 	rcu-torture:torture_onoff task: offline 0 failed: errno -1
+> > >=20
+> > > A bit of digging turned up the CONFIG_BOOTPARAM_HOTPLUG_CPU0 Kconfig
+> > > option.  Setting that causes CPU 0 to be offlined.
+> > >=20
+> > > I clearly need to add this to one of the scenarios.  I arbitrarily
+> > > chose TREE01, but please let me know if some other scenario or
+> > > group of scenarios would be better.
+> > >
+> > >For example, like this.
+> >=20
+> > This looks good, whether all TREE* can be added ?=20
+> > (after all, this just makes CPU0 support offline, but the actual CPU go=
+ing=20
+> > offline/online also depends on "onoff_interval").
+>=20
+> You can use the kvm.sh --kconfig parameter to make this happen in your
+> own testing.  Or you can hand-edit the TREE* files.  The kvm.sh script
+> sets onoff_interval for you, so that should be OK.  If you are testing
+> using modprobe, then yes, you need to set up this in your kernel build
+> and using the modprobe arguments.
+>=20
+> It looks like x86 kernels build with CONFIG_BOOTPARAM_HOTPLUG_CPU0=3Dn,
+> mostly, anyway, so most of the by-default rcutorture testing should also
+> build this way.
+>=20
+> But again, you have a couple of ways to override this in your own testing=
+.
+>
+>And I cannot reproduce the CPU-hotplug online error under qemu/KVM.
+>Which might be expected behavior, given that you ran your tests using
+>specific qemu arguments that kvm.sh does not provide.
 
-Before Oliver found the parent commit also trigger the problem, I did
-some debug, and I think related factors could be compound_page, folio,
-slub and i386(struct page size and layout), which cause some compound
-page structures corrupted. 
+Hi Paul
 
-* I tried change the slub_max_order to 0 for SLUB_TINY (much less
-  compound-page operations), and no issue is found for 350 runs.
+After I enable the following options, CPU0 goes online successfully.
+if the following options are disabled, CPU0 fails to go online.
+(CONFIG_BOOTPARAM_HOTPLUG_CPU0 always enabled)
 
-* Disable order>=1 in pcp list, the issue's reproduce rate keeps
-  similar, which means the pcp operation is not related.
+CONFIG_X86_X2APIC =3D y
+CONFIG_X86_NUMACHIP =3D y
+CONFIG_X86_UV =3D y
 
-* Tried add some debug info in unused members of struct page of tail
-  pages (not first tail page), or add one more member at the end of
-  'struct page', can't reproduce it. 
+Thanks
+Zqiang
 
-From Oliver's reports, there are several kinds of errors: list
-operation failure (list_head structure corruption), compound page
-check failure (PageTail warning) etc, which seem to indicate the
-struct pages are randomly corrupted. In dump_page(), I tired to dump
-more pages befor and after 'raw' and 'head' pages
-
-[   18.265162][  T186] page:43caddc9 refcount:1 mapcount:0 mapping:00000000 index:0xedece900 pfn:0x2dece
-[   18.266205][  T186] head:5e92e8e2 order:1 compound_mapcount:0 compound_pincount:0
-[   18.266928][  T186] flags: 0x10200(slab|head|zone=0)
-[   18.267339][  T186] raw-2: 00010200 c0100b70 c0100b70 c01a0680 edecd000 00020001 ffffffff 00000001
-[   18.268055][  T186] raw-2: 00000000 00000000
-[   18.268419][  T186] raw-1: 00000000 e7652fe1 00000101 ffffffff 00000000 00000000 ffffffff 00000000
-[   18.269124][  T186] raw-1: 00000000 00000000
-[   18.269488][  T186] raw: 00010200 e7652fe1 c0100bf0 00000400 edece900 000a0003 ffffffff 00000001
-[   18.270187][  T186] raw: edce5f81 00000000
-[   18.270534][  T186] raw1: 00000000 e7653031 00000101 ffffffff 00000000 00000000 ffffffff 00000000
-[   18.271257][  T186] raw1: 00000000 00000000
-[   18.271617][  T186] raw2: 00010200 00000100 00000122 c01a0780 00000000 000a000a ffffffff 00000001
-[   18.272330][  T186] raw2: edd5bf01 00000000
-[   18.272690][  T186] raw3: 00000000 e7653081 00000101 ffffffff 00000000 00000000 ffffffff 00000000
-[   18.273424][  T186] raw3: 00000000 00000000
-
-[   18.273793][  T186] head: 00010200 c0100b70 c0100b70 c01a0680 edecd000 00020001 ffffffff 00000001
-[   18.274534][  T186] head: 00000000 00000000
-[   18.274909][  T186] head1: 00000000 e7652fe1 00000101 ffffffff 00000000 00000000 ffffffff 00000000
-[   18.275633][  T186] head1: 00000000 00000000
-[   18.275996][  T186] head2: 00010200 e7652fe1 c0100bf0 00000400 edece900 000a0003 ffffffff 00000001
-[   18.276725][  T186] head2: edce5f81 00000000
-[   18.277093][  T186] head3: 00000000 e7653031 00000101 ffffffff 00000000 00000000 ffffffff 00000000
-[   18.277820][  T186] head3: 00000000 00000000
-[   18.278182][  T186] page dumped because: VM_BUG_ON_PAGE(PageTail(page))
-[   18.278747][  T186] page_owner tracks the page as allocated
-[   18.279447][  T186] page last allocated via order 1, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 186, tgid 186 (udevadm), ts 18262675212, free_ts 18262044539
-...
-
-The page 'head' is actually 'raw' - 2, while page 'raw' seems
-corrupted as it has PG_head bit set, while PageTail() is also true. 
-
-Another problem is 'raw-1' and 'raw' both points to 'raw-2', and
-if it is an order-2 compound page, the 'raw+1' should also points
-to 'raw-2' as 3 tail pages point to one head page. Or there is some
-switch(corrupted) between order-1 and order-2, as Vlastimil
-supsected in earlier reply?
-
-Thanks,
-Feng
-
-> > a further information not sure if it's helpful, [1][2] are both i386 based.
-> > we also tried to run boot tests on x86_64 upon commit 0af8489b02, whatever
-> > with or without CONFIG_DEBUG_PAGEALLOC/CONFIG_DEBUG_PAGEALLOC_ENABLE_DEFAULT,
-> > we never obseve similar issues (also run 999 times).
-> 
-> Yeah it looks very much like something that manifests only on i386 (perhaps
-> only in QEMU as well?) and never x86_64.
-> 
-> What might be interesting then is v6.1-rc1 with further modified config to
-> enabled CONFIG_SLUB_DEBUG and CONFIG_SLUB_DEBUG_ON. Maybe it will catch the
-> culprit sooner. Or maybe it will obscure the bug instead, unfortunately.
-> 
-> Thanks for all your effort!
-> 
-> > [1]
-> > boot results:
-> > =========================================================================================
-> > compiler/kconfig/rootfs/sleep/tbox_group/testcase:
-> >   gcc-11/i386-randconfig-a012-20221226+CONFIG_DEBUG_PAGEALLOC+CONFIG_DEBUG_PAGEALLOC_ENABLE_DEFAULT/debian-11.1-i386-20220923.cgz/1/vm-snb/boot
-> > 
-> >             v6.0                    v6.1-rc1                    v6.1-rc2 56d5a2b9ba85a390473e86b4fe4 0af8489b0216fa1dd83e264bef8
-> > ---------------- --------------------------- --------------------------- --------------------------- ---------------------------
-> >        fail:runs  %reproduction    fail:runs  %reproduction    fail:runs  %reproduction    fail:runs  %reproduction    fail:runs
-> >            |             |             |             |             |             |             |             |             |
-> >            :999          0%           2:999          0%           1:999          1%          11:999         21%         208:999   dmesg.invalid_opcode:#[##]
-> >            :999          0%            :999          0%            :999          0%           2:999          5%          51:999   dmesg.kernel_BUG_at_include/linux/mm.h
-> >            :999          0%           1:999          0%            :999          0%           4:999          4%          40:999   dmesg.kernel_BUG_at_include/linux/page-flags.h
-> >            :999          0%           1:999          0%           1:999          0%           4:999         11%         111:999   dmesg.kernel_BUG_at_lib/list_debug.c
-> >            :999          0%            :999          0%            :999          0%            :999          0%           2:999   dmesg.kernel_BUG_at_mm/page_alloc.c
-> >            :999          0%            :999          0%            :999          0%           1:999          0%           3:999   dmesg.kernel_BUG_at_mm/usercopy.c
-> > 
-> > [2]
-> > rcutorture results:
-> > =========================================================================================
-> > compiler/kconfig/rootfs/runtime/tbox_group/test/testcase/torture_type:
-> >   gcc-11/i386-randconfig-a012-20221226+CONFIG_DEBUG_PAGEALLOC+CONFIG_DEBUG_PAGEALLOC_ENABLE_DEFAULT/debian-11.1-i386-20220923.cgz/300s/vm-snb/default/rcutorture/tasks-tracing
-> > 
-> >             v6.0                    v6.1-rc1                    v6.1-rc2 56d5a2b9ba85a390473e86b4fe4 0af8489b0216fa1dd83e264bef8
-> > ---------------- --------------------------- --------------------------- --------------------------- ---------------------------
-> >        fail:runs  %reproduction    fail:runs  %reproduction    fail:runs  %reproduction    fail:runs  %reproduction    fail:runs
-> >            |             |             |             |             |             |             |             |             |
-> >            :999          0%           3:999          0%            :999          1%           8:998         20%         200:999   dmesg.invalid_opcode:#[##]
-> >            :999          0%            :999          0%            :999          0%            :998          5%          51:999   dmesg.kernel_BUG_at_include/linux/mm.h
-> >            :999          0%            :999          0%            :999          0%           3:998          4%          42:999   dmesg.kernel_BUG_at_include/linux/page-flags.h
-> >            :999          0%           3:999          0%            :999          0%           4:998         10%         102:999   dmesg.kernel_BUG_at_lib/list_debug.c
-> >            :999          0%            :999          0%            :999          0%            :998          0%           2:999   dmesg.kernel_BUG_at_mm/page_alloc.c
-> >            :999          0%            :999          0%            :999          0%           1:998          0%           3:999   dmesg.kernel_BUG_at_mm/usercopy.c
-> > 
-> >> 
-> >> > 
-> >> > 
-> 
-> 
+>
+>Nevertheless, CPU 0 really does go through the "Wake up BSP by nmi"
+>portion of wakeup_cpu_via_init_nmi() at runtime, and this works fine.
+>On the other hand, it also works fine if I comment out that "if (cpu)"
+>check.
+>
+>This sounds like a question for your colleagues at Intel.  ;-)
+>
+>							Thanx, Paul
