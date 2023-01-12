@@ -1,261 +1,278 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B7AE137A
-	for <oe-lkp@lists.linux.dev>; Thu, 12 Jan 2023 09:23:30 +0000 (UTC)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id A34C33F8E4;
-	Thu, 12 Jan 2023 08:49:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1673513374; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=awrr/2eQN8kHkx6Ll5v8jHUAG0dqkLvR+E0A3pmoohk=;
-	b=jWeR+7UIObZEbVO/mD4onmOCHgzhSCgnWorYu/Z3N13Rw2r9MAm9wdc8vQ7aQoQMPyjC3v
-	XwW2tS8N0MiVEBy+AM8A31ZeP2aY05b9S+U6aGAz983scZgzxtCFDG3RHrS9fhDFIMblVv
-	LbP6XWtAlH8WOM1coB28++bWCMnXmJw=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1673513374;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=awrr/2eQN8kHkx6Ll5v8jHUAG0dqkLvR+E0A3pmoohk=;
-	b=YoSB7387XvbuoFauipzh5bfoYxDHT6Mh8BCnZI6nvW2pPTLRBGHcmcfXC5K4NNqVva7y0Q
-	7prG70yQy4+E3DDg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-	(No client certificate requested)
-	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 78D2013776;
-	Thu, 12 Jan 2023 08:49:34 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-	by imap2.suse-dmz.suse.de with ESMTPSA
-	id QlC0HJ7Jv2PJDAAAMHmgww
-	(envelope-from <vbabka@suse.cz>); Thu, 12 Jan 2023 08:49:34 +0000
-Message-ID: <e443af8a-6fde-bd5a-3e5b-e30f7d5ac578@suse.cz>
-Date: Thu, 12 Jan 2023 09:49:34 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C32779F8
+	for <oe-lkp@lists.linux.dev>; Thu, 12 Jan 2023 17:47:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11AFBC433D2;
+	Thu, 12 Jan 2023 17:47:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1673545637;
+	bh=//RuJPt2rEHGAh+iD6nTCrHygYfn3VeW1Xj5uYvxmak=;
+	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+	b=SulRYXxj1o1xSg1lLDIo5ofW2HMMkM4jVAj7lV06O7MPa+kfxxsEFiRbz2vtY/Csy
+	 vlsTiqS8CzmKiXuR58fPQ2gwiS9qYy9aioZ+ef+O2n/JHYHx3SSgwHdQoHdMraReeC
+	 IQMBgUGReBvkD8aJCksuwknQ+RytjtUE1r0jAdw1VFgHzRh2iZZPzF5J55PWFTFyNY
+	 fOBUA292WjUSp+bVdB4nDY3YXIMCmY+SzgAMRAaQZjOZF4F6+u6nNH6rdMslOmGmZF
+	 bbL8nP0vU+v+EFdLR6kdmGDh5yqwhap9CA2SJx10r84PxZt6aQ+9PxwcjrzE4UKinL
+	 vswqTPwI3I+KQ==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+	id A4B4E5C0AF8; Thu, 12 Jan 2023 09:47:16 -0800 (PST)
+Date: Thu, 12 Jan 2023 09:47:16 -0800
+From: "Paul E. McKenney" <paulmck@kernel.org>
+To: "Zhang, Qiang1" <qiang1.zhang@intel.com>
+Cc: "Liu, Yujie" <yujie.liu@intel.com>,
+	"oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>,
+	lkp <lkp@intel.com>, "rcu@vger.kernel.org" <rcu@vger.kernel.org>,
+	"frederic@kernel.org" <frederic@kernel.org>,
+	"quic_neeraju@quicinc.com" <quic_neeraju@quicinc.com>,
+	"joel@joelfernandes.org" <joel@joelfernandes.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4] rcu-tasks: Make rude RCU-Tasks work well with CPU
+ hotplug
+Message-ID: <20230112174716.GP4028633@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20221221193325.GE4001@paulmck-ThinkPad-P17-Gen-1>
+ <PH0PR11MB588092AB6A014F30420D697CDAE89@PH0PR11MB5880.namprd11.prod.outlook.com>
+ <20230105182220.GF4028633@paulmck-ThinkPad-P17-Gen-1>
+ <PH0PR11MB5880273B1F5A6FF2CB782051DAFB9@PH0PR11MB5880.namprd11.prod.outlook.com>
+ <20230110021012.GI4028633@paulmck-ThinkPad-P17-Gen-1>
+ <20230110050253.GA3798705@paulmck-ThinkPad-P17-Gen-1>
+ <PH0PR11MB58808C49B2BFA8F4D6D9E0FEDAFF9@PH0PR11MB5880.namprd11.prod.outlook.com>
+ <20230110145815.GM4028633@paulmck-ThinkPad-P17-Gen-1>
+ <20230110175957.GA3836063@paulmck-ThinkPad-P17-Gen-1>
+ <PH0PR11MB588072CF2417F6F1D66A620ADAFC9@PH0PR11MB5880.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [linus:master] [mm, slub] 0af8489b02:
- kernel_BUG_at_include/linux/mm.h
-Content-Language: en-US
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: Hyeonggon Yoo <42.hyeyoo@gmail.com>, oe-lkp@lists.linux.dev,
- lkp@intel.com, Mike Rapoport <rppt@linux.ibm.com>,
- Christoph Lameter <cl@linux.com>, linux-kernel@vger.kernel.org,
- linux-mm@kvack.org, Matthew Wilcox <willy@infradead.org>
-References: <202212312021.bc1efe86-oliver.sang@intel.com>
- <41276905-b8a5-76ae-8a17-a8ec6558e988@suse.cz>
- <Y7Qxucg5le7WOzr7@xsang-OptiPlex-9020> <Y7VBFLHY/PMbb4XS@hyeyoo>
- <Y7Yr3kEkDEd51xns@xsang-OptiPlex-9020>
- <3f7fa3b3-9623-5c4c-94b1-a41dea6eaaf2@suse.cz>
- <Y7weKyxIY+QFYq6j@xsang-OptiPlex-9020> <Y71t89JMgtRoNHM/@xsang-OptiPlex-9020>
- <d024b846-9282-4ecd-eafd-2e5571932a72@suse.cz>
- <Y7+7KUyuo/9HeCF2@xsang-OptiPlex-9020>
-From: Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <Y7+7KUyuo/9HeCF2@xsang-OptiPlex-9020>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <PH0PR11MB588072CF2417F6F1D66A620ADAFC9@PH0PR11MB5880.namprd11.prod.outlook.com>
 
-On 1/12/23 08:47, Oliver Sang wrote:
-> hi, Vlastimil,
+On Wed, Jan 11, 2023 at 05:21:35AM +0000, Zhang, Qiang1 wrote:
 > 
-> On Tue, Jan 10, 2023 at 03:09:36PM +0100, Vlastimil Babka wrote:
->> On 1/10/23 14:53, Oliver Sang wrote:
->> > hi all,
->> > 
->> > On Mon, Jan 09, 2023 at 10:01:15PM +0800, Oliver Sang wrote:
->> >> 
->> >> On Fri, Jan 06, 2023 at 11:13:15AM +0100, Vlastimil Babka wrote:
->> >> 
->> >> > And if the rate at the parent (has it increased thanks to the
->> >> > DEBUG_PAGEALLOC?) is sufficient to bisect to the truly first bad commit. Thanks!
->> >> 
->> >> got it. Thanks for suggestion!
->> >> 
->> >> since 0af8489b02 is based on v6.1-rc2, we will test (both rectorture and boot)
->> >> with same config upon v6.1-rc2 to see if it's really clean there.
->> >> if so we will use dmesg.invalid_opcode:#[##] to trigger new bisect.
->> >> 
->> >> will keep you updated. Thanks
->> > 
->> > by more tests, we cannot make sure the v6.1-rc2 is clean, so we also checked
->> > v6.1-rc1 and v6.0. from results, we have low confidence that we can make a
->> > successful bisection based on them [1][2]. could you suggest?
->> 
->> So am I reading it right, that the probleam appears to be introduced between
->> v6.0 (0 failures) and v6.1-rc1 (>0 failures)? But agree that with such low
->> incidence, it's hard to bisect.
+> On Tue, Jan 10, 2023 at 06:58:15AM -0800, Paul E. McKenney wrote:
+> > On Tue, Jan 10, 2023 at 08:12:49AM +0000, Zhang, Qiang1 wrote:
+> > > 
+> > > On Mon, Jan 09, 2023 at 06:10:12PM -0800, Paul E. McKenney wrote:
+> > > > On Fri, Jan 06, 2023 at 02:48:56AM +0000, Zhang, Qiang1 wrote:
+> > > > > 
+> > > > > On Thu, Dec 22, 2022 at 09:35:06AM +0000, Zhang, Qiang1 wrote:
+> > > > > > >On Mon, Dec 19, 2022 at 02:21:01AM +0000, Zhang, Qiang1 wrote:
+> > > > > > > >Greeting,
+> > > > > > > >FYI, we noticed WARNING:at_kernel/rcu/rcutorture.c:#rcu_torture_fwd_prog_cr[rcutorture] due to commit (built with gcc-11):
+> > > > > > > >
+> > > > > > > >commit: 572a17843591d3c03ad891492939a06833fdd17d ("[PATCH v4] rcu-tasks: Make rude RCU-Tasks work well with CPU hotplug")
+> > > > > > > >url: https://github.com/intel-lab-lkp/linux/commits/Zqiang/rcu-tasks-Make-rude-RCU-Tasks-work-well-with-CPU-hotplug/20221201-074127
+> > > > > > > >base: https://git.kernel.org/cgit/linux/kernel/git/paulmck/linux-rcu.git dev
+> > > > > > > >patch link: https://lore.kernel.org/all/20221130234533.1983769-1-qiang1.zhang@intel.com/
+> > > > > > > >patch subject: [PATCH v4] rcu-tasks: Make rude RCU-Tasks work well with CPU hotplug
+> > > > > > > >
+> > > > > > > >in testcase: rcutorture
+> > > > > > > >version: 
+> > > > > > > >with following parameters:
+> > > > > > > >
+> > > > > > > >	runtime: 300s
+> > > > > > > >	test: cpuhotplug
+> > > > > > > >	torture_type: tasks-rude
+> > > > > > > >
+> > > > > > > >test-description: rcutorture is rcutorture kernel module load/unload test.
+> > > > > > > >test-url: https://www.kernel.org/doc/Documentation/RCU/torture.txt
+> > > > > > > >
+> > > > > > > >on test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m 8G
+> > > > > > > >
+> > > > > > > >caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
+> > > > > > > >
+> > > > > > > >
+> > > > > > > >[  106.051532][  T583] rcu_torture_fwd_prog: Starting forward-progress test 0
+> > > > > > > >[  106.052085][  T583] rcu_torture_fwd_prog_cr: Starting forward-progress test 0
+> > > > > > > >[  133.611262][  T583] rcu_torture_fwd_prog_cr: Waiting for CBs: rcu_barrier_tasks_rude+0x0/0x10() 0
+> > > > > > > >[  146.800051][  T583] ------------[ cut here ]------------
+> > > > > > > >[  146.800411][  T583] WARNING: CPU: 1 PID: 583 at kernel/rcu/rcutorture.c:2806 rcu_torture_fwd_prog_cr+0x22c/0x2a7 [rcutorture]
+> > > > > > > >[  146.801075][  T583] Modules linked in: rcutorture torture ipmi_msghandler crc32c_intel serio_raw processor fuse
+> > > > > > > >[  146.801894][  T583] CPU: 1 PID: 583 Comm: rcu_torture_fwd Not tainted 6.1.0-rc1-00180-g572a17843591 #1 0cc09f902db70bae111a0c12c137296733dde4a9
+> > > > > > > >[  146.802916][  T583] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.0-debian-1.16.0-5 04/01/2014
+> > > > > > > >[  146.803693][  T583] EIP: rcu_torture_fwd_prog_cr+0x22c/0x2a7 [rcutorture]
+> > > > > > > >[  146.804177][  T583] Code: 89 d8 e8 fc c5 ff ff e8 67 49 03 00 83 c4 10 84 c0 75 79 a0 96 c6 10 ef 84 c0 75 70 e8 c8 ee ff ff 84 c0 75 67 83 fe 63 7f 02 <0f> 0b 8b 45 f0 8b 15 40 25 8a c2 ff 75 e8 ff 75 e0 01 f8 2b 45 dc
+> > > > > > > >[  146.805599][  T583] EAX: 00000000 EBX: ecee3800 ECX: 00000000 EDX: 00000000
+> > > > > > > >[  146.805992][  T583] ESI: 00000000 EDI: 0000c350 EBP: ed9d5f64 ESP: ed9d5f40
+> > > > > > > >[  146.806491][  T583] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068 EFLAGS: 00010293
+> > > > > > > >[  146.807010][  T583] CR0: 80050033 CR2: 08082ff0 CR3: 2daaf000 CR4: 000406d0
+> > > > > > > >[  146.807484][  T583] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 00000000
+> > > > > > > >[  146.808031][  T583] DR6: fffe0ff0 DR7: 00000400
+> > > > > > > >[  146.808384][  T583] Call Trace:
+> > > > > > > >[  146.808634][  T583]  rcu_torture_fwd_prog.cold+0x3b/0xee [rcutorture 6754ed9afe4685f50ef7fade6309181c73794538]
+> > > > > > > >[  146.809348][  T583]  kthread+0xc8/0xf0
+> > > > > > > >[  146.809635][  T583]  ? rcu_torture_fwd_prog_cbfree+0x80/0x80 [rcutorture 6754ed9afe4685f50ef7fade6309181c73794538]
+> > > > > > > >[  146.810347][  T583]  ? kthread_complete_and_exit+0x20/0x20
+> > > > > > > >[  146.810734][  T583]  ret_from_fork+0x1c/0x28
+> > > > > > > >[  146.811075][  T583] irq event stamp: 205883
+> > > > > > > >[  146.811400][  T583] hardirqs last  enabled at (205891): [<c114bb06>] __up_console_sem+0x66/0x80
+> > > > > > > >[  146.811960][  T583] hardirqs last disabled at (205898): [<c114baed>] __up_console_sem+0x4d/0x80
+> > > > > > > >[  146.812583][  T583] softirqs last  enabled at (205880): [<c1ecb40b>] __do_softirq+0x2bb/0x440
+> > > > > > > >[  146.813079][  T583] softirqs last disabled at (205871): [<c10845f0>] call_on_stack+0x40/0x50
+> > > > > > > >[  146.813567][  T583] ---[ end trace 0000000000000000 ]---
+> > > > > > > >[  146.813926][  T583] rcu_torture_fwd_prog_cr Duration 2411 barrier: 3960 pending 50000 n_launders: 0 n_launders_sa: 0 n_max_gps: 0 n_max_cbs: 50000 cver 1 gps 0
+> > > > > > > >[  147.914266][  T583] rcu_torture_fwd_cb_hist: Callback-invocation histogram 0 (duration 6702 jiffies): 1s/10: 0:0 2s/10: 
+> > > > > > > >[  149.453780][  T557] ------------[ cut here ]------------
+> > > > > > > >[  149.454322][  T557] rcu_torture_writer: rtort_pipe_count: 4
+> > > > > > > >[  149.454817][  T557] WARNING: CPU: 1 PID: 557 at kernel/rcu/rcutorture.c:1583 rcu_torture_writer+0x71d/0xc80 [rcutorture]
+> > > > > > > 
+> > > > > > > 
+> > > > > > > This is not a bug.  this is caused by grace period taking too long time, the previous callback
+> > > > > > > has not been completed.  from the dmesg, can be found that the cpuhotplug test is being
+> > > > > > > performed periodically, this may cause the rude RCU-Tasks  grace period to take more time,
+> > > > > > > due to we need to acquire the cpus_read_lock, and the CPU0 always bootup failed, that is to
+> > > > > > > say, only one CPU of your system is online at this time.
+> > > > > > >
+> > > > > > >Onlining of a CPU failing with EIO is a new one on me.  Especially
+> > > > > > >persistent failure.
+> > > > > > 
+> > > > > > I use the kernel configuration file in the attachment and  base on:
+> > > > > > https://git.kernel.org/cgit/linux/kernel/git/paulmck/linux-rcu.git dev
+> > > > > > 
+> > > > > > use "echo 1 > /sys/devices/system/cpu/cpu0/online" can reproduce this problem,
+> > > > > > the CPU0 always fails to go online.  
+> > > > > > 
+> > > > > > Debug found CPU0 is always not set in cpu_initialized_mask.
+> > > > > > causes the do_boot_cpu() to return -1.
+> > > > > > 
+> > > > > > do_boot_cpu()
+> > > > > >      wakeup_cpu_via_init_nmi();
+> > > > > >      if (!boot_error) {
+> > > > > >                 /*
+> > > > > >                  * Wait 10s total for first sign of life from AP
+> > > > > >                  */
+> > > > > >                 boot_error = -1;
+> > > > > >                 timeout = jiffies + 10*HZ;
+> > > > > >                 while (time_before(jiffies, timeout)) {
+> > > > > >                         if (cpumask_test_cpu(cpu, cpu_initialized_mask)) {
+> > > > > >                                 /*
+> > > > > >                                  * Tell AP to proceed with initialization
+> > > > > >                                  */
+> > > > > >                                 cpumask_set_cpu(cpu, cpu_callout_mask);
+> > > > > >                                 boot_error = 0;
+> > > > > >                                 break;
+> > > > > >                         }
+> > > > > >                         schedule();
+> > > > > >                 }
+> > > > > >         }
+> > > > > > 
+> > > > > > This looks related to this modification e1c467e69040c("x86, hotplug: 
+> > > > > > Wake up CPU0 via NMI instead of INIT, SIPI, SIPI ").
+> > > > > > 
+> > > > > > 
+> > > > > > The following modification can make CPU0 go online successfully(This
+> > > > > > is just a test, not sure if there are other effects).
+> > > > > >
+> > > > > >
+> > > > > >Thank you for tracking this down!!!
+> > > > > >
+> > > > > >Huh.  CPU 0 is normally the boot CPU.  Back in the day, it could not
+> > > > > >be offlined.  Given that your testing indicates that CPU 0 can now be
+> > > > > >taken offline, maybe this "if" statement is a holdover that someone
+> > > > > >forgot to remove?
+> > > > > >
+> > > > > >But I must defer to those who know a lot more about this level of
+> > > > > >x86 code than I do.
+> > > > > 
+> > > > > I found relevant modification information, maybe it will be of some help
+> > > > > 
+> > > > > commit e1c467e69040c3be68959332959c07fb3d818e87
+> > > > > Author: Fenghua Yu <fenghua.yu@intel.com>
+> > > > > Date:   Wed Nov 14 04:36:53 2012 -0800
+> > > > > 
+> > > > >     x86, hotplug: Wake up CPU0 via NMI instead of INIT, SIPI, SIPI
+> > > > > 
+> > > > >     Instead of waiting for STARTUP after INITs, BSP will execute the BIOS boot-strap
+> > > > >     code which is not a desired behavior for waking up BSP. To avoid the boot-strap
+> > > > >     code, wake up CPU0 by NMI instead.
+> > > > > 
+> > > > >     This works to wake up soft offlined CPU0 only. If CPU0 is hard offlined (i.e.
+> > > > >     physically hot removed and then hot added), NMI won't wake it up. We'll change
+> > > > >     this code in the future to wake up hard offlined CPU0 if real platform and
+> > > > >     request are available.
+> > > > > 
+> > > > >     AP is still waken up as before by INIT, SIPI, SIPI sequence.
+> > > > > 
+> > > > >     Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
+> > > > >     Link: http://lkml.kernel.org/r/1352896613-25957-1-git-send-email-fenghua.yu@intel.com
+> > > > >     Signed-off-by: H. Peter Anvin <hpa@linux.intel.com>
+> > > > 
+> > > > Interesting!
+> > > > 
+> > > > When I run rcutorture on x86 (under qemu/KVM), it refuses to attempt to
+> > > > offline CPU 0.  The reason is that cpu_is_hotpluggable(0) returns false.
+> > > > 
+> > > > If I comment out that check, I get this:
+> > > > 
+> > > > 	rcu-torture:torture_onoff task: offline 0 failed: errno -1
+> > > > 
+> > > > A bit of digging turned up the CONFIG_BOOTPARAM_HOTPLUG_CPU0 Kconfig
+> > > > option.  Setting that causes CPU 0 to be offlined.
+> > > > 
+> > > > I clearly need to add this to one of the scenarios.  I arbitrarily
+> > > > chose TREE01, but please let me know if some other scenario or
+> > > > group of scenarios would be better.
+> > > >
+> > > >For example, like this.
+> > > 
+> > > This looks good, whether all TREE* can be added ? 
+> > > (after all, this just makes CPU0 support offline, but the actual CPU going 
+> > > offline/online also depends on "onoff_interval").
+> > 
+> > You can use the kvm.sh --kconfig parameter to make this happen in your
+> > own testing.  Or you can hand-edit the TREE* files.  The kvm.sh script
+> > sets onoff_interval for you, so that should be OK.  If you are testing
+> > using modprobe, then yes, you need to set up this in your kernel build
+> > and using the modprobe arguments.
+> > 
+> > It looks like x86 kernels build with CONFIG_BOOTPARAM_HOTPLUG_CPU0=n,
+> > mostly, anyway, so most of the by-default rcutorture testing should also
+> > build this way.
+> > 
+> > But again, you have a couple of ways to override this in your own testing.
+> >
+> >And I cannot reproduce the CPU-hotplug online error under qemu/KVM.
+> >Which might be expected behavior, given that you ran your tests using
+> >specific qemu arguments that kvm.sh does not provide.
 > 
-> yeah, you are reading it right :)
+> Hi Paul
 > 
->> 
->> > a further information not sure if it's helpful, [1][2] are both i386 based.
->> > we also tried to run boot tests on x86_64 upon commit 0af8489b02, whatever
->> > with or without CONFIG_DEBUG_PAGEALLOC/CONFIG_DEBUG_PAGEALLOC_ENABLE_DEFAULT,
->> > we never obseve similar issues (also run 999 times).
->> 
->> Yeah it looks very much like something that manifests only on i386 (perhaps
->> only in QEMU as well?) and never x86_64.
->> 
->> What might be interesting then is v6.1-rc1 with further modified config to
->> enabled CONFIG_SLUB_DEBUG and CONFIG_SLUB_DEBUG_ON. Maybe it will catch the
->> culprit sooner. Or maybe it will obscure the bug instead, unfortunately.
+> After I enable the following options, CPU0 goes online successfully.
+> if the following options are disabled, CPU0 fails to go online.
+> (CONFIG_BOOTPARAM_HOTPLUG_CPU0 always enabled)
 > 
-> oh, seems, unfortunalately, 'obscure' happen :(
+> CONFIG_X86_X2APIC = y
+> CONFIG_X86_NUMACHIP = y
+> CONFIG_X86_UV = y
+
+Again, I must defer to people who know more about x86 than do I,
+but should the BOOTPARAM_HOTPLUG_CPU0 Kconfig option select these?
+The help text of some of them gives me pause, though.
+
+For example, on CONFIG_X86_NUMACHIP, were you running a system with more
+than 168 cores?  For its part, CONFIG_X86_UV is supposed to be only for
+the SGI Ultraviolet systems.  I am not sure what conclusion to draw from
+the CONFIG_X86_X2APIC help text.  ;-)
+
+Plus my runs don't have any of these three Kconfig options set.  On the
+other hand, I am running TREE01 on qemu/KVM with maxcpus=8 and nr_cpus=43,
+so not a big system.
+
+							Thanx, Paul
+
+> Thanks
+> Zqiang
 > 
-> we enabled CONFIG_SLUB_DEBUG and CONFIG_SLUB_DEBUG_ON, along with
-> CONFIG_DEBUG_PAGEALLOC and CONFIG_DEBUG_PAGEALLOC_ENABLE_DEFAULT
-> 
-> boot (we also add the test for v6.2-rc3):
-> =========================================================================================
-> compiler/kconfig/rootfs/sleep/tbox_group/testcase:
->   gcc-11/i386-randconfig-a012-20221226+CONFIG_DEBUG_PAGEALLOC+CONFIG_DEBUG_PAGEALLOC_ENABLE_DEFAULT+CONFIG_SLUB_DEBUG_ON/debian-11.1-i386-20220923.cgz/1/vm-snb/boot
-> 
->             v6.0                    v6.1-rc1                    v6.1-rc2 56d5a2b9ba85a390473e86b4fe4 0af8489b0216fa1dd83e264bef8                    v6.2-rc3
-> ---------------- --------------------------- --------------------------- --------------------------- --------------------------- ---------------------------
->        fail:runs  %reproduction    fail:runs  %reproduction    fail:runs  %reproduction    fail:runs  %reproduction    fail:runs  %reproduction    fail:runs
->            |             |             |             |             |             |             |             |             |             |             |
->          43:999          3%          68:999          4%          84:999          6%          99:999          5%          94:999          4%          86:999   dmesg.invalid_opcode:#[##]
->           4:999         -0%           2:999          0%           7:999          0%           8:999          0%           4:999         -0%            :999   dmesg.kernel_BUG_at_include/linux/mm.h
->           3:999          0%           4:999          0%           3:999          0%           7:999          0%           5:999          1%           9:999   dmesg.kernel_BUG_at_include/linux/page-flags.h
->          34:999          3%          61:999          4%          73:999          5%          81:999          5%          85:999          4%          74:999   dmesg.kernel_BUG_at_lib/list_debug.c
->            :999          0%            :999          0%            :999          0%           1:999          0%            :999          0%            :999   dmesg.kernel_BUG_at_mm/internal.h
->           3:999         -0%           1:999         -0%            :999         -0%           2:999         -0%            :999         -0%           2:999   dmesg.kernel_BUG_at_mm/page_alloc.c
->            :999          0%            :999          0%           2:999          0%            :999          0%            :999          0%           2:999   dmesg.kernel_BUG_at_mm/usercopy.c
-> 
-> 
-> since now even the v6.0 is not clean, attached one dmesg FYI
-
-Interesting one, btw.
-
-> [   38.392164][  T193] page:e6c3e400 refcount:1 mapcount:0 mapping:00000000 index:0x0 pfn:0x9e80
-> [   38.393441][  T193] head:e6c3e2c0 order:3 compound_mapcount:0 compound_pincount:0
-
-Yay, struct page pointers no longer hashed for printing, thanks to slub_debug.
-Head page is order-3 (8 pages), yet e6c3e400 would be 9th page, nonsense.
-
-> [   38.394491][  T193] flags: 0x10200(slab|head|zone=0)
-> [   38.395181][  T193] raw: 00010000 e6c3e2c1 00000122 00000400 00000000 00000000 ffffffff 00000001
-
-We have head flag, compound_head is e6c3e2c0+PageTail, there's again
-00000400 in mapping that's specifically set by prep_compound_tail().
-
-> [   38.396386][  T193] raw: 00000000 00000000
-> [   38.396956][  T193] head: 00010200 e6ac7904 c01007f0 c0101a40 c9e79a00 00150004 ffffffff 00000001
-
-00150004 are slub's counters suggesting it's been used for a while, we
-should not be racing with e6c3e2c0's allocation here!
-
-> [   38.398161][  T193] head: 00000000 00000000
-> [   38.398775][  T193] page dumped because: VM_BUG_ON_PAGE(PageTail(page))
-> [   38.399724][  T193] page_owner tracks the page as allocated
-> [   38.400525][  T193] page last allocated via order 3, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 193, tgid 193 (systemd-udevd), ts 38392157598, free_ts 0
-
-This is a dump of e6c3e400, not the "head".
-
-> [   38.403183][  T193]  post_alloc_hook+0x29a/0x320
-> [   38.403891][  T193]  get_page_from_freelist+0x226/0x310
-> [   38.404644][  T193]  __alloc_pages+0xdd/0x360
-> [   38.405256][  T193]  alloc_slab_page+0x12d/0x200
-> [   38.405936][  T193]  allocate_slab+0x6a/0x670
-> [   38.406586][  T193]  new_slab+0x48/0xc0
-> [   38.407127][  T193]  ___slab_alloc+0x9ba/0x1610
-> [   38.407942][  T193]  __slab_alloc+0x41/0x70
-> [   38.408776][  T193]  __kmalloc_track_caller+0x57b/0x710
-> [   38.409538][  T193]  kmalloc_reserve+0x3f/0x100
-> [   38.410339][  T193]  __alloc_skb+0xad/0x310
-> [   38.410925][  T193]  netlink_sendmsg+0x384/0x6f0
-> [   38.411602][  T193]  sock_sendmsg+0x79/0xe0
-> [   38.420425][  T193]  ____sys_sendmsg+0x1ef/0x390
-> [   38.421069][  T193]  ___sys_sendmsg+0xb0/0x120
-> [   38.421726][  T193]  __sys_sendmsg+0x84/0x100
-> [   38.422372][  T193] page_owner free stack trace missing
-> [   38.423113][  T193] ------------[ cut here ]------------
-> [   38.423899][  T193] kernel BUG at include/linux/page-flags.h:319!
-> [   38.424778][  T193] invalid opcode: 0000 [#1] SMP DEBUG_PAGEALLOC
-> [   38.425610][  T193] CPU: 1 PID: 193 Comm: systemd-udevd Tainted: G S                 6.0.0 #1 b46e496fab9f0be3d12299e0bf71444aabf1c433
-> [   38.427187][  T193] EIP: folio_flags+0x31/0x70
-> [   38.427951][  T193] Code: 48 83 05 e8 89 bd c5 01 ba a4 c0 2b c4 55 89 e5 83 15 ec 89 bd c5 00 e8 8d 3f f6 ff 83 05 f8 89 bd c5 01 83 15 fc 89 bd c5 00 <0f> 0b 83 05 00 8a bd c5 01 b8 38 1e a6 c4 83 15 04 8a bd c5 00 e8
-> [   38.430464][  T193] EAX: 00000000 EBX: e6c3e400 ECX: 00000000 EDX: ee7ead00
-> [   38.431382][  T193] ESI: 00000000 EDI: 000c2cc0 EBP: c995fb30 ESP: c995fb30
-> [   38.432350][  T193] DS: 007b ES: 007b FS: 00d8 GS: 0033 SS: 0068 EFLAGS: 00210246
-> [   38.433348][  T193] CR0: 80050033 CR2: b5c4f018 CR3: 09cab000 CR4: 000006d0
-> [   38.434288][  T193] Call Trace:
-> [   38.434737][  T193]  alloc_slab_page+0x7f/0x200
-
-Aha, we have crashed while allocating a fresh new slab page, probably at
-__folio_set_slab(folio), the page doesn't have het PageSlab() flag set.
-
-So we have just took the page from a freelist (that modifies lru.next
-overlapping compound_head, we can still see the poison in lru.prev),
-verified that it's page->mapping is 0 (in page_expected_state()). Few
-moments later there's a compound_head set and mapping set in a way that only
-prep_compound_tail() does.
-But the head that would be connected seems to have done its
-prep_compound_tail()'s a while ago (nevermind that it would have to be an
-off-by-one). So that just makes no sense.
-
-> [   38.435361][  T193]  allocate_slab+0x6a/0x670
-> [   38.436007][  T193]  new_slab+0x48/0xc0
-> [   38.436536][  T193]  ___slab_alloc+0x9ba/0x1610
-> [   38.437293][  T193]  ? __might_sleep+0x5a/0x100
-> [   38.437912][  T193]  ? __alloc_skb+0xad/0x310
-> [   38.438513][  T193]  ? lock_release+0xa1/0x190
-> [   38.439127][  T193]  __slab_alloc+0x41/0x70
-> [   38.439845][  T193]  __kmalloc_track_caller+0x57b/0x710
-> [   38.440557][  T193]  ? kmem_cache_alloc+0x2d6/0x690
-> [   38.441217][  T193]  ? __alloc_skb+0xad/0x310
-> [   38.441821][  T193]  kmalloc_reserve+0x3f/0x100
-> [   38.442569][  T193]  ? security_capable+0x40/0xd0
-> [   38.443214][  T193]  __alloc_skb+0xad/0x310
-> [   38.443801][  T193]  ? ns_capable_common+0x41/0x80
-> [   38.444452][  T193]  netlink_sendmsg+0x384/0x6f0
-> [   38.445089][  T193]  ? iovec_from_user+0xea/0x1b0
-> [   38.445737][  T193]  sock_sendmsg+0x79/0xe0
-> [   38.446313][  T193]  ____sys_sendmsg+0x1ef/0x390
-> [   38.446955][  T193]  ___sys_sendmsg+0xb0/0x120
-> [   38.447586][  T193]  __sys_sendmsg+0x84/0x100
-> [   38.448225][  T193]  __do_sys_socketcall+0x20d/0x5e0
-> [   38.448908][  T193]  __ia32_sys_socketcall+0x1b/0x30
-> [   38.449593][  T193]  __do_fast_syscall_32+0x72/0xd0
-> [   38.450264][  T193]  ? syscall_exit_to_user_mode+0x5f/0x90
-> [   38.451001][  T193]  ? __do_fast_syscall_32+0x7c/0xd0
-> [   38.451702][  T193]  ? __do_fast_syscall_32+0x7c/0xd0
-> [   38.452388][  T193]  ? lockdep_hardirqs_on_prepare+0x242/0x400
-> [   38.453184][  T193]  ? syscall_exit_to_user_mode+0x5f/0x90
-> [   38.453922][  T193]  ? __do_fast_syscall_32+0x7c/0xd0
-> [   38.454609][  T193]  ? lockdep_hardirqs_on_prepare+0x242/0x400
-> [   38.455390][  T193]  ? syscall_exit_to_user_mode+0x5f/0x90
-> [   38.460224][  T193]  ? __do_fast_syscall_32+0x7c/0xd0
-> [   38.460922][  T193]  ? irqentry_exit_to_user_mode+0x23/0x30
-> [   38.461675][  T193]  do_fast_syscall_32+0x32/0x70
-> [   38.462327][  T193]  do_SYSENTER_32+0x15/0x20
-> [   38.462936][  T193]  entry_SYSENTER_32+0xa2/0xfb
-> [   38.463567][  T193] EIP: 0xb7ed4549
-> [   38.464077][  T193] Code: 03 74 c0 01 10 05 03 74 b8 01 10 06 03 74 b4 01 10 07 03 74 b0 01 10 08 03 74 d8 01 00 00 00 00 00 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 8d 76 00 58 b8 77 00 00 00 cd 80 90 8d 76
-> [   38.466578][  T193] EAX: ffffffda EBX: 00000010 ECX: bfc1aa40 EDX: 00000000
-> [   38.467499][  T193] ESI: b7e0f000 EDI: 00000000 EBP: 00534540 ESP: bfc1aa30
-> [   38.468437][  T193] DS: 007b ES: 007b FS: 0000 GS: 0033 SS: 007b EFLAGS: 00200282
-> [   38.469442][  T193] Modules linked in:
-> [   38.470183][  T193] ---[ end trace 0000000000000000 ]---
-> [   38.470910][  T193] EIP: folio_flags+0x31/0x70
-> [   38.471704][  T193] Code: 48 83 05 e8 89 bd c5 01 ba a4 c0 2b c4 55 89 e5 83 15 ec 89 bd c5 00 e8 8d 3f f6 ff 83 05 f8 89 bd c5 01 83 15 fc 89 bd c5 00 <0f> 0b 83 05 00 8a bd c5 01 b8 38 1e a6 c4 83 15 04 8a bd c5 00 e8
-> [   38.474274][  T193] EAX: 00000000 EBX: e6c3e400 ECX: 00000000 EDX: ee7ead00
-> [   38.475233][  T193] ESI: 00000000 EDI: 000c2cc0 EBP: c995fb30 ESP: c995fb30
-> [   38.476218][  T193] DS: 007b ES: 007b FS: 00d8 GS: 0033 SS: 0068 EFLAGS: 00210246
-> [   38.477246][  T193] CR0: 80050033 CR2: b5c4f018 CR3: 09cab000 CR4: 000006d0
-> [   38.478206][  T193] Kernel panic - not syncing: Fatal exception
-> [   38.479153][  T193] Kernel Offset: disabled
-
+> >
+> >Nevertheless, CPU 0 really does go through the "Wake up BSP by nmi"
+> >portion of wakeup_cpu_via_init_nmi() at runtime, and this works fine.
+> >On the other hand, it also works fine if I comment out that "if (cpu)"
+> >check.
+> >
+> >This sounds like a question for your colleagues at Intel.  ;-)
+> >
+> >							Thanx, Paul
