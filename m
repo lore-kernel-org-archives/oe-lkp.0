@@ -1,154 +1,204 @@
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4DB4D52D
-	for <oe-lkp@lists.linux.dev>; Tue, 17 Jan 2023 18:25:36 +0000 (UTC)
-Received: by mail-qt1-f182.google.com with SMTP id r15so4698312qtx.6
-        for <oe-lkp@lists.linux.dev>; Tue, 17 Jan 2023 10:25:36 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C762AD532
+	for <oe-lkp@lists.linux.dev>; Tue, 17 Jan 2023 18:50:56 +0000 (UTC)
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30HGSauO017790;
+	Tue, 17 Jan 2023 18:50:29 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2022-7-12;
+ bh=ifJcNwYb4UZk93UHiR0wdTTd7BBbNmaJNUFcSyWS2xk=;
+ b=pNeAeZc0eyzF/0fZPClk1F4wYpCI6xTKVkp+Em4DJ6W3ogo6qJ2oABxlC6gdVITSgMh7
+ ++Jku5Di6lsadudt+VKtxNMYFXYfmwDNDIjt/BzDJPTLbHbUyRhPAYO1TRYxEjPefOf6
+ YbYJ93l3x/+d7dBAAsE86KnE3E5HCmMGBxdQZotYrAQJId0URi5RFU2b632l1NXso6If
+ rSj3pDtJp2vqaGN2aSFUs1yfZImF18GW43hGylvwxmlrdI29zzOeYgoiK/AXmP9tIHC+
+ LOWyLPaBIs2/f0IOaF6Tg4pCi/Mc3C5/crjKdqgiFfbaZ8GYxXdNPqtXWf9orR6++xPA 6w== 
+Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3n3k6c5mc5-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 17 Jan 2023 18:50:29 +0000
+Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 30HIAGgh015251;
+	Tue, 17 Jan 2023 18:50:28 GMT
+Received: from nam04-bn8-obe.outbound.protection.outlook.com (mail-bn8nam04lp2040.outbound.protection.outlook.com [104.47.74.40])
+	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3n4rq4qku7-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 17 Jan 2023 18:50:28 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PgpQyn8Hep6ZL29xPX26NRqT0ufbqZIDxIT4l/HoE1kZO2J+X+0iZ0Vwx+GEubwewuX0T8hZ1zfozYIzQf5q+n7LMpdqvq0GZSAUXLqfkak2sW2iB5kvWuwQKif6O3bkFZqsLP4k6LoQKkTfZjMnUoDB/03Z/iIq2RACSSouWCEu+njis+bzENvgi3pKc/Q+/jDA/dkDnwL1Q5sxGW0qdZIcsBftRrosSmkhLNRU4HqVqACIVsV+usSrqXb1SsZ0omGBuFcV0+BKKW5i3ECPuFksWkiTMSkdAuZJ5wjR8fK35Isy6ujQf/bf10rjJ8Fwgsy8kY6T0DQGYff+1oPl0w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ifJcNwYb4UZk93UHiR0wdTTd7BBbNmaJNUFcSyWS2xk=;
+ b=YeWf6gadaUxqdURre++p2pOpE5Nz7nRxHyh+2npVDEbWNQ+TgjrsVRLc8mxhYTwSRanS96T/liCRo42ybnbm3+8A3hHh/oZDRpuGzuHN7F5FoXrzjS1abdMCxRP+YzuStFW+y9F3QO0sd40G4165sLApE6j43rtw4Z1e+djTB7bPO8exovyQP0O7OVLrSGdK7YzUwbAFm05x7WIetiawKOGkJaaV04IbyYuDzOeY47I/WIKReU8zIebteygPBHeB7v2GXshj2sxXD6SZFuEUbP2/Xz5eUhrbv+zbIbI9PLLxiZrOy4inqHSl8eRCj8afh3m8JAIDfsUNFvNENOgVSA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=t/Yj1dkETHJ3x/vd9B2cSXc0BtF92b0sf7AI+rPbVN0=;
-        b=XCLE/+dWnhPFHp0Rjc45XkkaJtd/3aeBb1T0m6KOH6FOQ3duqOHkSne6Erdt0xqRvR
-         LQe+kifp9lcJdtA03kTU5SGMsqQugmGdSLpd2Q2WTVkHIhWK7chONEMxksCRtnlBR/+e
-         GyV+R9HcOZ5gfXDs6DPbyI/iCP1P/BakruKyk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=t/Yj1dkETHJ3x/vd9B2cSXc0BtF92b0sf7AI+rPbVN0=;
-        b=FrnFUn5Z4FI3ubmW9p9LaEyoicL+pLWakvW23hhiBixub0OeMVCgekzxqIwVX6apev
-         JcaqRCA3WMpuqMQDIIcbFf7+OsYPQkjWGZIVuyqDI3EXXq3qK2hbxtM7lYp+fV6V2tQH
-         Mk4BJq4xdpKF+OzJKWtLyM98AYEvzAaKj7pshomDx50D9uvQaV16gHZjTHDFY4eYb75g
-         UnTpX7lnb/zuOQaaauf863mM4i39ULhIfmXHTjhiVdWvtAinLS1i4M0vUtYNjT7V+kva
-         EqQeDKjvxi/0sn4oN8TNaxq/wq03toGBarmIb7xoq94adfGM6ksRU3XnK4clJmbhhiIG
-         AC3w==
-X-Gm-Message-State: AFqh2kqVkIi/qx7N1jdHLnuu6ZzQdIQP5Uoi0HM5BWY7DCpiaAWqDloH
-	TgfIfU47G5YddnJzZjLlQGOZGqXP9jRguWuJ
-X-Google-Smtp-Source: AMrXdXutxwM1NYoMLuOd8drjc5wu7MyzLhjIvyXITmCMOP9/UQs61S+HqWmB3+NMLkYPfA5y53ozBA==
-X-Received: by 2002:ac8:70d5:0:b0:3ad:903d:3ed4 with SMTP id g21-20020ac870d5000000b003ad903d3ed4mr4176298qtp.59.1673979935057;
-        Tue, 17 Jan 2023 10:25:35 -0800 (PST)
-Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com. [209.85.222.181])
-        by smtp.gmail.com with ESMTPSA id fg13-20020a05622a580d00b003a6a92a202esm16400324qtb.83.2023.01.17.10.25.33
-        for <oe-lkp@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Jan 2023 10:25:34 -0800 (PST)
-Received: by mail-qk1-f181.google.com with SMTP id s19so3115646qkg.7
-        for <oe-lkp@lists.linux.dev>; Tue, 17 Jan 2023 10:25:33 -0800 (PST)
-X-Received: by 2002:a37:4651:0:b0:705:b232:4ed9 with SMTP id
- t78-20020a374651000000b00705b2324ed9mr143177qka.216.1673979933694; Tue, 17
- Jan 2023 10:25:33 -0800 (PST)
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ifJcNwYb4UZk93UHiR0wdTTd7BBbNmaJNUFcSyWS2xk=;
+ b=ikQrlfQFRxCgeiehIBP7tsvpUh62L8gv3N4wmi7WuazGNwwiKgO/vYc392uMtdULqnrimgYx310+PNVEmZTpgAdHrwVfLHIilbtDqLJxRwzXdYRztplX44PI8UobA5KJfydSHiQ4UNGav3eRV7DRurJlUU7sO80OR+nOl/AiIVU=
+Received: from BY5PR10MB4196.namprd10.prod.outlook.com (2603:10b6:a03:20d::23)
+ by CY8PR10MB7121.namprd10.prod.outlook.com (2603:10b6:930:73::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.13; Tue, 17 Jan
+ 2023 18:50:25 +0000
+Received: from BY5PR10MB4196.namprd10.prod.outlook.com
+ ([fe80::3a1:b634:7903:9d14]) by BY5PR10MB4196.namprd10.prod.outlook.com
+ ([fe80::3a1:b634:7903:9d14%8]) with mapi id 15.20.6002.012; Tue, 17 Jan 2023
+ 18:50:25 +0000
+Date: Tue, 17 Jan 2023 10:50:21 -0800
+From: Mike Kravetz <mike.kravetz@oracle.com>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Jann Horn <jannh@google.com>, Youquan Song <youquan.song@intel.com>,
+        Andrea Arcangeli <aarcange@redhat.com>, Jan Kara <jack@suse.cz>,
+        John Hubbard <jhubbard@nvidia.com>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Matthew Wilcox <willy@infradead.org>, Michal Hocko <mhocko@kernel.org>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        Vlastimil Babka <vbabka@suse.cz>, Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Feng Tang <feng.tang@intel.com>, Fengwei Yin <fengwei.yin@intel.com>
+Subject: Re: [linus:master] [hugetlb]  7118fc2906:
+ kernel_BUG_at_lib/list_debug.c
+Message-ID: <Y8bt7VE1IYGkOU3B@monkey>
+References: <202301170941.49728982-oliver.sang@intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202301170941.49728982-oliver.sang@intel.com>
+X-ClientProxiedBy: MW4PR04CA0167.namprd04.prod.outlook.com
+ (2603:10b6:303:85::22) To BY5PR10MB4196.namprd10.prod.outlook.com
+ (2603:10b6:a03:20d::23)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202301170941.49728982-oliver.sang@intel.com> <2f483247-da76-9ec9-3e51-f690939f4585@suse.cz>
- <Y8ZVxJSZdtEk8Nco@feng-clx> <Y8aSc5xGO+rW2pyo@feng-clx>
-In-Reply-To: <Y8aSc5xGO+rW2pyo@feng-clx>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Tue, 17 Jan 2023 10:25:17 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wiS84nS9apjs_Vt=jjZ_+j+F8HQ3B+ABSvbzcqtW9x5Kg@mail.gmail.com>
-Message-ID: <CAHk-=wiS84nS9apjs_Vt=jjZ_+j+F8HQ3B+ABSvbzcqtW9x5Kg@mail.gmail.com>
-Subject: Re: [linus:master] [hugetlb] 7118fc2906: kernel_BUG_at_lib/list_debug.c
-To: Feng Tang <feng.tang@intel.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>, "Sang, Oliver" <oliver.sang@intel.com>, 
-	Mike Kravetz <mike.kravetz@oracle.com>, "oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>, lkp <lkp@intel.com>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Jann Horn <jannh@google.com>, 
-	"Song, Youquan" <youquan.song@intel.com>, Andrea Arcangeli <aarcange@redhat.com>, Jan Kara <jack@suse.cz>, 
-	John Hubbard <jhubbard@nvidia.com>, "Kirill A . Shutemov" <kirill@shutemov.name>, 
-	Matthew Wilcox <willy@infradead.org>, Michal Hocko <mhocko@kernel.org>, 
-	Muchun Song <songmuchun@bytedance.com>, Andrew Morton <akpm@linux-foundation.org>, 
-	"linux-mm@kvack.org" <linux-mm@kvack.org>, Hyeonggon Yoo <42.hyeyoo@gmail.com>, 
-	"Yin, Fengwei" <fengwei.yin@intel.com>, hongjiu.lu@intel.com
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BY5PR10MB4196:EE_|CY8PR10MB7121:EE_
+X-MS-Office365-Filtering-Correlation-Id: 97e1289f-06c0-46cc-9691-08daf8bbb1d3
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 
+	mCt+ctaxmOHu+xt3vRsbZoL+H64v5qeqzm0UwjUPEuFK3pHos+I+9uqTP2bmcrE9ydrDjjCuzZB8dlE92Sn/twoCo0w2gorYjARhgbSMTWRFD9fsqEOc94XBdzNx5lv33oRM5fOD04oUKwL0bP7rFsYQYO5Ym0DDYrQg2KIs5IkBkmTE+a79rln1QGhTWuba8MmXaxjP93UjO8dGj2I2y6pFY1nGQz1CWJBo9wyMvGu6cDh7nnqKr9bVi48qteny3LjwZBsYI5jdDKr97+1Chy1XkC98mdBfhWcDMDOVsKVxU5EyFoAwkifirR6AoJXLfyzpNv1GdppS4SKfAmXakfb4dovNy1eNyuvWbkehLDhb8poIt0SS5Pa9lU1Vxi1iBsqW9Dxzys9UfU7lVzxucnjGSsC8wlPGVj/DF2lrsvFsIJZPHATKmhvT34MAvTDhTR1lZ1HQv8ttNShWmY47HH9/m/bENJnWWKmXEL3+KHtHdfga59LetPxW83JwtCj0u7PPZBa2IFyvEcFc3tL2+HWMKDRAxL9MZBFL5NoFC9E0nXy13iDNu70vwsVVbw77FjHNtVX0GM+sItK0gd0Z72j1nwTTvKy7DO5KjhPw7HsLGM3ZtnatsJRb0gpFIwum
+X-Forefront-Antispam-Report: 
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR10MB4196.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(346002)(136003)(396003)(376002)(366004)(39860400002)(451199015)(86362001)(8676002)(53546011)(4326008)(9686003)(186003)(6916009)(6512007)(66556008)(66946007)(41300700001)(66476007)(26005)(316002)(6666004)(54906003)(6506007)(2906002)(478600001)(6486002)(7416002)(44832011)(38100700002)(5660300002)(83380400001)(8936002)(33716001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: 
+	=?us-ascii?Q?mtkZmAc5lgrvw9qIlEvhPv4TTPiU3XTDpEiacwvvn0RPzDL+7mDhAY1CriZH?=
+ =?us-ascii?Q?8SujMFWI68jxoVcUboQ6hNkzD28lcfTq0ZB0gEW8V0+lwX4Uz240aT2xg1/8?=
+ =?us-ascii?Q?NwZCp4yrvtcRUZfBHAIFP1ckhdBQwJCXlqdkQOcdKEHjdO+6YfxPCT5hHYgu?=
+ =?us-ascii?Q?4notn9hCHQez+/w6FTXaPf3uHAc54b8HxsLiN45nNB9sJi3QkXqzfvfOhLWR?=
+ =?us-ascii?Q?aOK7+AaW5GkAaHSsn7+QwH/lnD9u2ANZX6inD4fNR5xQyEWMq1F5oTI8ibUf?=
+ =?us-ascii?Q?BLhuoEigzrm+y9Rum9F1KlVpY8olgDXCJtCEkNsvhDZpYPCSxt/VP/61zXmF?=
+ =?us-ascii?Q?VNxBeBoP74gDI+U7CiCeunOzLkBIFadJf/p+YnEXgVrV5wIsb3uSdpm2OJul?=
+ =?us-ascii?Q?KvUyBYwGgbylCNpnchtzJAiDl5NmR+x3vWMquczBStgS5Uf0YwdIRSepPVlD?=
+ =?us-ascii?Q?CnCnL4w0ysSqL0iAjksQsda7fZfpd0r4RktBETa3dQeuKB7d5316XHPUcnMn?=
+ =?us-ascii?Q?ndDuAeseC616AR9HmubbY3n8Y3y48urQgxhbeQ3aG3ZdM1t6ySVgrafN/otm?=
+ =?us-ascii?Q?mCDylDTB3tJisPAJ2hQYiPBi/fRfuVH6yvgqdmehQ0W26fG705GKqlP6evfW?=
+ =?us-ascii?Q?R+M2B0XiDBRY6ZMREVXH9kxrdLu0xjiGJttAP8f0wmIAbZTutn9T+lae1L4u?=
+ =?us-ascii?Q?7jZg7EkqvkDPLiIpUR5EwqwUv+w3nsk+WV8oxp8dyc6G0YaUh+i26HAMZ2o7?=
+ =?us-ascii?Q?fxnJCQt4+t4m7llg35ogw1k8EJkGl4nf6oEArR0JrGXS0gVvktcswOh5tA3j?=
+ =?us-ascii?Q?1GAIwFlxVHdH9RKtfzyBGoWeptbk74ltT7oyvgd8O1wbLqkhVR5g3LRJtq6G?=
+ =?us-ascii?Q?1GGT3MsFQjWxrYBdi6AzuiUS9rsg0d3fg4jmz8nfTs4G/kaO+wpiKwEpJQYf?=
+ =?us-ascii?Q?XQhy8AIwkFKmEHC+QEOIvhRLX9GQk4NA0Z8Rifu42bxDrVXm2B+1xowakzIV?=
+ =?us-ascii?Q?3QiGEfXh0Xxn5JY6QDm5n1IQkDvx+tuIw3ByErqd5o8wI2y/ej8args0Njeb?=
+ =?us-ascii?Q?pR3Y8I9tdogKQJ20Lcqy3HDQpMlNaAk//RCCb85dn/F8cmsGheIe2JU0vOVk?=
+ =?us-ascii?Q?h0eCsKelHiMNmXep/kVD9sMKLmg7HaFrXJmC5/uXUysX1JPlINGRr/AMh9jT?=
+ =?us-ascii?Q?uYC/39r/jsgsWSTbkbzK2Q3RUFbjywHbS/2n0glwaG++i8Z68OrWiVmogA2M?=
+ =?us-ascii?Q?Pr8FMlTWSsbjNC+gb4ZhE3WcmvMj2WCKN1ZsYP0NKFlcI9nks4haZvMv31Di?=
+ =?us-ascii?Q?Fo3c7P9bARTQ1a557JnKskXi7k1zOYsIdnxsQ4Pu8B2eovgJauxi6DNhHduk?=
+ =?us-ascii?Q?41/K10G9BaLrfAXqnjNDTJLkwpKu6A8veTrRNr4575CpJVpXUseTZ6hQQ9h+?=
+ =?us-ascii?Q?Pkvcaeov/9LTHfJrs8p4nHof192opradXgRRphbvtm602wEJfvZfeWGxJI85?=
+ =?us-ascii?Q?JzAmOko3XeqOsBZ5I107vVSSzpQx/reafq1wxiNkhniRQ2NWO0gGL3HEzvPS?=
+ =?us-ascii?Q?YhtIswVYWrQWEUWhl4heuCLPC+5Bl4DmQ6GLn6Y82whNuILA+yclY4UTE1KF?=
+ =?us-ascii?Q?EA=3D=3D?=
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
+	=?us-ascii?Q?4vsiNjxHltcFp9n72qAeQ6m64Z27uFEohmQZclgInDOydg2fR16uoFVrDTOV?=
+ =?us-ascii?Q?PenjpAcXBbD86IcEeMnc2482V1f9NSreDnBfkLxVukKZKVNCsIjSh7unJ9WC?=
+ =?us-ascii?Q?kuVyJNkefifzgBN0i8pW89fQZNTT8n7GxKtUmfx3ruDpDQ57LMyZN+iTqQM0?=
+ =?us-ascii?Q?imNSZIrm/O/qqE7EGN06Xh6YEdHxtday9UBcMa9JAkQq+GfqNaxpDoPfgZzv?=
+ =?us-ascii?Q?UnQnzggq0Tck0DAYRb/G7SjAH0l0modteC7OZg3j8bk9TftRp2qv0/KC62Sm?=
+ =?us-ascii?Q?k9P0lD3phwjgUU+0TqYDuZE5t28wUWKgaegGZWRK/nviq01u13jTMFbz30Yz?=
+ =?us-ascii?Q?vRpsIdjjFTKDy1UyTZw+LM3I49n9OqJmGVq6ZVgGrTvu0c5BS3mTVKcaFjKh?=
+ =?us-ascii?Q?XD2NOZTVXFZNk4ANg1hZP9DtUt+E/SGnMrfDpzAxxPhpx1NdkG3LRHlkcLS7?=
+ =?us-ascii?Q?MegOBFJq/zXZeb3BucyvGADrY0MtEVUaEYSmrOeBuCspBwcZPkE3VJlm54Hb?=
+ =?us-ascii?Q?XIU7mBBFhstuSPn3Ui+oDc6OrZj05h7wo8KLgZ+sqkcmTLas9U8UYNPChQGH?=
+ =?us-ascii?Q?6yyIHQXsnv9aUQG+QCqVc89RkG6jYpCVJatl2h2moIhKKOEho/19lHtUmHfu?=
+ =?us-ascii?Q?L9CFjCXAasnSD4oLFBTok41GsDHuT435jXe1NxzEHZ7N/Tw9cOIt82SNyCRW?=
+ =?us-ascii?Q?losQffjefC2iv18riMtqIv206yE2MF7m0ogs23AYkQX95KATRWXjYr1V6cPn?=
+ =?us-ascii?Q?Ct1xRDHNkWGnLKU4Sl66I663GaY6f5SbR7j2eDAxQ4xoFapAT5rZk7V6JAUn?=
+ =?us-ascii?Q?zCHiMRX3DMX9fhc/qrrnTgelGPwljSj+Ju0KVRNpbFZ2SwZjB3neHm4CZcaF?=
+ =?us-ascii?Q?/6hvKWQ0Trjhl0FPg+ijvIoW6t+ATPh1hbQthWoRGMwtkr3cfHzQIzVZ8LwH?=
+ =?us-ascii?Q?NlvPDOLdCFV+StvshFFst5hnU6O967ydqcM5ZqBGngRjBPk7qm9tK5ywIuDl?=
+ =?us-ascii?Q?dA15+Q+YAucuZ//SMmkrB0qHhoRFj/wZyRm2mq7VM0IjIH6SBoy6NSzKC17O?=
+ =?us-ascii?Q?JEfcmmJmM9a+hoxqkuiBytBIL047ACOXa1oE5LTlpuG/gKsaQHz6nEv/hf92?=
+ =?us-ascii?Q?mSj+YZGLnMYbxMKAznBFfk631Y3bfjVKb5OMajrxhLH96lCIS1moTSAXl9qv?=
+ =?us-ascii?Q?PQ/6w28AzfTO9SXd?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 97e1289f-06c0-46cc-9691-08daf8bbb1d3
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR10MB4196.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jan 2023 18:50:25.4071
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: bjts9Rz4PcRef0YVYVV10PvGNwCNEIPiiLkhlxM3NvePRSO/VWUYCEoP1UfhVrQySPdvPHxe6gl+1015CTCMkA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR10MB7121
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.923,Hydra:6.0.562,FMLib:17.11.122.1
+ definitions=2023-01-17_10,2023-01-17_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 spamscore=0 mlxscore=0
+ bulkscore=0 suspectscore=0 malwarescore=0 phishscore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2212070000
+ definitions=main-2301170150
+X-Proofpoint-GUID: 8co0J2wpdDFmK2f3FqNekn-bE5abF7Hy
+X-Proofpoint-ORIG-GUID: 8co0J2wpdDFmK2f3FqNekn-bE5abF7Hy
 
-On Tue, Jan 17, 2023 at 4:22 AM Feng Tang <feng.tang@intel.com> wrote:
->
-> With the following patch to use 'O1' instead 'O2' gcc optoin for
-> page_alloc.c, the list corruption issue can't be reproduced for
-> commit 7118fc2906 in 1000 runs.
+On 01/17/23 15:10, kernel test robot wrote:
+> 
+> +Vlastimil Babka, Hyeonggon Yoo, Feng Tang and Fengwei Yin
+> 
+> Hi, Mike Kravetz,
+> 
+> we reported
+> "[linus:master] [mm, slub] 0af8489b02: kernel_BUG_at_include/linux/mm.h" [1]
+> 
+> Vlastimil, Hyeonggon, Feng and Fengwei gave us a lot of great guidances based on
+> it, and, perticularly, after enabling below config per Vlastimil's suggestion
+>   CONFIG_DEBUG_PAGEALLOC
+>   CONFIG_DEBUG_PAGEALLOC_ENABLE_DEFAULT
+>   CONFIG_SLUB_DEBUG
+>   CONFIG_SLUB_DEBUG_ON
+> by more tests, we realized the "0af8489b02" is not the real culprit.
+> 
+> the new bisection was triggered and finally it pointed to this "7118fc2906".
+> 
+> though reporting for different issues
+> ("kernel_BUG_at_include/linux/mm.h" for 0af8489b02 vs.
+> "kernel_BUG_at_lib/list_debug.c" for this commit),
+> Feng and Fengwei helped further to confirm they are similar.
+> They will supply more technical wise analysis later.
+> 
+> please be noted the issues are not always happening
+> (~10% on this commit or 0af8489b02)
 
-Ugh.
+Nice work!
 
-It would be lovely if you could just narrow it down with
+From other replies in this thread, it does not appear the actual code change
+made by this commit is the root cause.  Rather, the change is triggering some
+other bug ... perhaps in the compiler?
 
-  #pragma GCC optimize ("O1")
- ...
-  #pragma GCC optimize ("O2")
-
-around just that prep_compound_page(), but when I tried it myself I
-get some function attribute mismatch errors.
-
-
-> As is can't be reproduced with X86_64 build, it could be i386
-> compiling related.
-
-Your particular config causes a huge amount of nasty 64-bit arithmetic
-according to the objdump code, with sequences like
-
-  c13b3cbb:       83 05 d0 28 6c c5 01    addl   $0x1,0xc56c28d0
-  c13b3cc2:       83 15 d4 28 6c c5 00    adcl   $0x0,0xc56c28d4
-
-which seems to be just from some coverage profiling being on
-(CONFIG_GCOV?), or something. It makes it very hard to read the code.
-
-You also have UBSAN enabled, which - again - makes for some really
-grotty asm that hides any actual logic.
-
-Finally, your objdump version also does some horrendous decoding, like
-
-  c13b3e29:       8d b4 26 00 00 00 00    lea    0x0(%esi,%eiz,1),%esi
-
-which is just a 7-byte 'nop' instruction, but again, it makes it
-rather hard to actually read the code.
-
-With the i386 defconfig, gcc generates a function that is just ~30
-instructions for me, so this makes a huge difference in the legibility
-of the code.
-
-I wonder if you can recreate the issue with a much more
-straightforward config. By all means, leave DEBUG_PAGEALLOC and SLUB
-debugging on, but without the things like UBSAN and GCOV.
-
-> I also objdumped 'prep_compound_page' for vmlinux of 7118fc2906 and
-> its parent commit 48b8d744ea84, which have big difference than the
-> simple 'set_page_count()' change, but I can't tell which part is
-> abnormal, so attach them for further check.
-
-Yeah, I can't make heads or tails of them either, see above on how
-illegible the objdump files are. And that's despite not even having
-all of prep_compound_page() in them (it's missing
-prep_compound_page.cold, which is probably just UBSAN fixup code, but
-who knows..)
-
-That said, with the i386 defconfig, the only change from adding
-set_page_count() to the loop seems to be exactly that:
-
- .L589:
--       movl    $1024, 12(%eax)
-+       movl    $0, 28(%eax)
-        addl    $32, %eax
-+       movl    $1024, -20(%eax)
-        movl    %esi, -28(%eax)
-        movl    $0, -12(%eax)
-        cmpl    %edx, %eax
-
-(don't ask me why gcc does *one* access using the pre-incremented
-pointer, and then the rest to the post-incremented ones, but whatever
-- it means that it's not just "add a mov $0", it's also changing how
-the
-
-        p->mapping = TAIL_MAPPING;
-
-instruction is done, which is that
-
--       movl    $1024, 12(%eax)
-+       movl    $1024, -20(%eax)
-
-part of the change)
-
-             Linus
+I will start looking at this.  However, I suspect others have more skill and
+experience in this type of debug.
+-- 
+Mike Kravetz
