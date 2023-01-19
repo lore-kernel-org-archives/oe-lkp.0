@@ -1,90 +1,78 @@
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 934C27471
-	for <oe-lkp@lists.linux.dev>; Thu, 19 Jan 2023 14:01:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BFCE7471
+	for <oe-lkp@lists.linux.dev>; Thu, 19 Jan 2023 14:06:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674136881; x=1705672881;
-  h=date:from:to:cc:subject:message-id:
-   content-transfer-encoding:mime-version;
-  bh=1SVN0O7bmBMQTF0r2YTpaCmoKjV50rA5pPf4wc2SfJk=;
-  b=g3+yVgdBP+mGbLUbexjkhJRxpNDZTuh2y7l+iVObbqtb6fLwujKkRbZr
-   dnP4VmnDf8QgIVnq0BMU4WLp+c9bp8rgobteVeuH44lNoVQDme3tKG1ee
-   5gwdgoIXEl2lJjdon7C8QcK10UnIC6tcnBXsF+g2ITqLswZIhvk4ULQPi
-   x43Q3qLZB5cS5FDy3nmRft1sugVwwwsWZBb53M6wY0JAwPu1/0Vb6wcTH
-   EbM9m92OfbffHMJXtYghcPLPcILwRgVqgp18t+9oqmu/SkQUv+DOuM4ld
-   oplqu3kPNI5534twScfjlLvsXEBAN58OdtGHhJC1aqrJKpjz+MoHl6HAP
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10594"; a="304968265"
+  t=1674137210; x=1705673210;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=9CO79Dt3SpGze5n1rLabTDVRLOYS7VzEZiWcpNV7fdo=;
+  b=fS7hMPanhRG07Z5h/z1QiD/htx309XnjEwho6wgfWld+YRfWMuIf+7hQ
+   9zQ2+qM6vx17tyohSak1GJVi2kxN8iSznVXWjEppyqZ3CRqZNi7s1IA9/
+   Xm6fBswfWLIcSmFpsLBxbhiWQJ2xilpghu9Qn2JGnVxCI2ahTYhgunMgK
+   toKolPS6ehG3CYXIgmFPjETJOHUGdvBKdJKTv6L6KuUgOeRcUY1gx6cnX
+   IORACsoeT42vWjMBIKDDjYjKgsn9HTLIVav7x6gMvM6IWh93caRB2KaDk
+   y9kbK6DBqGMGRy48sXk6dAvK1Bv65Waos2Yt4BzV0+m4mVNfPo/8OD8Em
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10594"; a="325335004"
 X-IronPort-AV: E=Sophos;i="5.97,229,1669104000"; 
-   d="yaml'?scan'208";a="304968265"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2023 06:01:16 -0800
+   d="xz'341?yaml'341?scan'341,208,341";a="325335004"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2023 06:06:45 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10594"; a="660196641"
+X-IronPort-AV: E=McAfee;i="6500,9779,10594"; a="692432343"
 X-IronPort-AV: E=Sophos;i="5.97,229,1669104000"; 
-   d="yaml'?scan'208";a="660196641"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orsmga002.jf.intel.com with ESMTP; 19 Jan 2023 06:01:15 -0800
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+   d="xz'341?yaml'341?scan'341,208,341";a="692432343"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orsmga001.jf.intel.com with ESMTP; 19 Jan 2023 06:06:44 -0800
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Thu, 19 Jan 2023 06:01:14 -0800
+ 15.1.2507.16; Thu, 19 Jan 2023 06:06:44 -0800
 Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Thu, 19 Jan 2023 06:01:14 -0800
+ 15.1.2507.16 via Frontend Transport; Thu, 19 Jan 2023 06:06:44 -0800
 Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.171)
  by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Thu, 19 Jan 2023 06:01:13 -0800
+ 15.1.2507.16; Thu, 19 Jan 2023 06:06:42 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ScXulsc2bYzqFNYEX+54oujAzjYytXCwcmDCxqjFya2bVFCapMTkELZ+X0yxZM5jR8jkDKXR9TTow/0r60Esio7ucQlrGPo9RBROvyHtaFWpztSDIFIfQq/znLJujeGsfvYlilaBb2gwicFqlZCCYCAde8mcoNgLoYl1KD3XUx6flR+UEagA4VeDjCoi2V0CuYmoAcOy1utzK+oeNWErw9dBInu6SfReAbqYINHjXQpKhQXzPi7xGEOo7qnpXhNrupiIaDHlqJ1+HLGD7f0Id5Y3CJ90WD5Qhs/++i1ddHJlS8MCpnD7fm7kSEMdcKo3HL64YB6hzd/onilGJtDmIQ==
+ b=gXUiLtL4ymknp40HQ4Us+tFXau1419APufD96KmHdC0pZgRwNE7jggYMXx0DcjwfPJL74AYc76op+kYsL+JE5xBCmyNjXNsNUJlY+QlurpAhwK4nICbZGpng/v24IsmSnk/0XLJXzgLH/AC0EpXALB+HKuxMeXtoS50WyuOEtxh79K52yCoK8I6Ag9yVcGUQFwaDVSM99vcdDB6D+D5JNQAdbf59ZZrj2owV5F3gey4OnD6jyx6ITEnUCDvYiUwCPJpIoqeZMlN5oA31hiUwOB+K5zT/uPx3VnmOpzipcFhEFbJ6PThLEIjcFvGV9eXDjKYEc4ItEHLuGDeqRcoZtg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PeHuUIuNC/Lx0mNEaqANZDc4WevTQrCwMdW+6NM25Yk=;
- b=blujzcV0r5LP9ceFcTSWnlM5St30uDU0nSFOI9GpPyRbAUyGf6Wt7EfIM6sa8OMEwVnDIPlaa5DRSUREAspmra4YBe+qmacyFbFYGxWRnwWlfT7jbB25Fy+o6lMbAlHMLsboqjaG88s4+SF1nwSyQVaL39AxBzb/OKeeYLyBNmP6cD0q2IMFpEokdq0LAaIM3lZfUwPyLNwbi+LqjvUHNPs/6mFFoJR8wAUSL1B2p0hjyzsdwfTGIAHp67dfnRPk4Q00sfFmIeTe9SokKiDoAx5wPshJzU+TXyXyzLEVBwDYNPD+TA7r/zjp2QL+zpKh9t33e4D/tiDxos36+kj/MA==
+ bh=a1dUp9lvrZ4uHYAcSZ4h2m33330MI9WTsIDI40Au/vA=;
+ b=W7SX2xiiv39ig5Yf68LHwUG86V9L+WVlGzn9VgY6X526RUg8GNNXfEu2JKH8rKKHdOSIrLf6/0izz1kuuc4FhPoXAoyXR376ZJv9JUNzujcBRfKf3qEE6+7UnIF9svlZPiTqhusv4hBwapXKRfz1pbmMLZ2JWV2Q3Cf7f1VDROwEU2CeIH37GbYmc8TG1lVYt7VLKcCyS175FIriOlIISQrsQ3fbAhuXeYdMKllY1OfDE9JTiEmG7VawkcZukttc5+g3sb4ejyfO4Z/rtftpAzY3oIs8oAwULNrwStZfaZj6K+G7IT1zmtUVef4s4Q+NHK9Nh3wbzesAi44weJgi0g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
- by CO1PR11MB5009.namprd11.prod.outlook.com (2603:10b6:303:9e::11) with
+ by PH8PR11MB8014.namprd11.prod.outlook.com (2603:10b6:510:23a::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.26; Thu, 19 Jan
- 2023 14:01:07 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.24; Thu, 19 Jan
+ 2023 14:06:32 +0000
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com
  ([fe80::878d:c56c:28fd:e1cd]) by PH8PR11MB6779.namprd11.prod.outlook.com
  ([fe80::878d:c56c:28fd:e1cd%5]) with mapi id 15.20.5986.023; Thu, 19 Jan 2023
- 14:01:07 +0000
-Date: Thu, 19 Jan 2023 22:00:52 +0800
+ 14:06:32 +0000
+Date: Thu, 19 Jan 2023 22:06:21 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Hugh Dickins <hughd@google.com>
+To: Peter Zijlstra <peterz@infradead.org>
 CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
-	Andrew Morton <akpm@linux-foundation.org>, "Kirill A. Shutemov"
-	<kirill.shutemov@linux.intel.com>, David Hildenbrand <david@redhat.com>,
-	James Houghton <jthoughton@google.com>, John Hubbard <jhubbard@nvidia.com>,
-	Matthew Wilcox <willy@infradead.org>, Miaohe Lin <linmiaohe@huawei.com>,
-	"Mike Kravetz" <mike.kravetz@oracle.com>, Mina Almasry
-	<almasrymina@google.com>, Muchun Song <songmuchun@bytedance.com>, Naoya
- Horiguchi <naoya.horiguchi@linux.dev>, Peter Xu <peterx@redhat.com>,
-	Sidhartha Kumar <sidhartha.kumar@oracle.com>, Vlastimil Babka
-	<vbabka@suse.cz>, Yang Shi <shy828301@gmail.com>, Zach O'Keefe
-	<zokeefe@google.com>, <linux-doc@vger.kernel.org>, <linux-mm@kvack.org>,
-	<ying.huang@intel.com>, <feng.tang@intel.com>,
-	<zhengjun.xing@linux.intel.com>, <fengwei.yin@intel.com>
-Subject: [linus:master] [mm,thp,rmap]  cb67f4282b:  vm-scalability.throughput
- 34.5% improvement
-Message-ID: <202301192158.78fda163-oliver.sang@intel.com>
-Content-Type: multipart/mixed; boundary="hGGYP/AM6hHKorlI"
+	<x86@kernel.org>, Ingo Molnar <mingo@kernel.org>,
+	<linux-trace-kernel@vger.kernel.org>
+Subject: [tip:sched/core] [tracing, hardirq]  9aedeaed6f:
+ WARNING:suspicious_RCU_usage
+Message-ID: <202301192148.58ece903-oliver.sang@intel.com>
+Content-Type: multipart/mixed; boundary="xzgWY3NTp4GxXFlv"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
 User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: SG2PR02CA0028.apcprd02.prod.outlook.com
- (2603:1096:3:18::16) To PH8PR11MB6779.namprd11.prod.outlook.com
+X-ClientProxiedBy: SG2PR01CA0149.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:8f::29) To PH8PR11MB6779.namprd11.prod.outlook.com
  (2603:10b6:510:1ca::17)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -93,88 +81,299 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|CO1PR11MB5009:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7968a663-de2d-4e84-4c78-08dafa259bd3
+X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|PH8PR11MB8014:EE_
+X-MS-Office365-Filtering-Correlation-Id: 29e71189-36b8-41d9-d1fa-08dafa265dac
 X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: XeY1aaIiopPzUaU/pROEeTK1oBoF3CWLlx7p41NzsEcvpEKD16ElCcrj04BlTAme0rucmdYBL8sIWwG1IUaMBiyeGPYcyNEnhae20ZlQXvIMO2DAfZ6Cl7YdSIsNQ6FgsxVO6WQg1fwfRcV7lGqNIUUoMH5mTigbQtxtvvvIlYSLPaDv3Q1aV/6q7q2z4iQU5+I/w89gGPZqhOr8bXR7gv3FYMVXNJs7wEM5BUnXY17mlQMevIxcJoRX0YeHXEksNDlzL+JGlst1XXmtEEideQnoDYC3F+Lf9GG0q7/HdC3oqmg+GMscdDJytSYVO9gEG94cu/KqukwgtDf0I8vjQ5qyLwvSVBbg3aJJi9cmT1TxqsrSxeS8ou2ftW2FcDLPPBHDpdlitQ9DSauobeB/JAwEo5Fg4OQx6tSM0PDjs0PtYV1boKezRWautkhDNsU/voYwyE8H5w91hV+7X2WA1WJpOsArV/9kXKHFSY15VuHPdmtSjhiCev6/z2Rtu4QjCQLnENU+NYlSE8UKHEBwZOq9Bljegu7HkYR0j/2vI+bmHhacem00zXsYfBBbaYFnkS7Vmli+MmmZda9eEBCl4PNp0XUoftACISESeT7/5czHi5KLLXtcNxaxkKebk2A/cyclmmG170lM+JDn2n4SEly1CXF/qBF/3OFR94a+nLSVmIRzWdB+XTUjyhk5+hN9SzcGfIiM+BYbJ5aU3kNqXVwWgLNi1kaJvqjoI/gI3M3v0Qx9cXJGdNeQdTWbf7Z2bD84WMMFMrNZxEv0mCWyCQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(136003)(396003)(39860400002)(376002)(346002)(366004)(451199015)(6666004)(966005)(6506007)(6486002)(44144004)(478600001)(86362001)(2906002)(54906003)(21490400003)(4326008)(7416002)(235185007)(1076003)(5660300002)(2616005)(82960400001)(316002)(66946007)(66556008)(66476007)(8676002)(83380400001)(41300700001)(8936002)(38100700002)(186003)(6512007)(6916009)(26005)(36756003)(2700100001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: QFRxbsjQlHKCqa3nI5RdNrHnUCSP1L5uu2YNAMuDKLJ6e72voPL10CM/IMkijWUpEStVbEhIoLzQLKxERnzpOFtXs4yA1NG2VLbuu6Lkrw04I4sYtjD9HXrSgViraoLAWzu/E+wVB8FzXOAHkfbpUVddqkPhkrKONFTLQXTX7xzRM1MgZmRWQOCdpbh+V5GVXrEDGCSuxdFuq8HczEtamBFE7GUaR9FnDVlT3p3KL5imDL/zhcnO4halV/bdrcUqfgt2ZZUXS45v5eZ+mh7vDzSPuka1pRYmgp6WWy5v5yvBu1dofiEQCXoTxV8rAlqUspqhsfnhKVGpR2kqT7VX/l9n76OjgbuHQYxiFb0hNmnxF1xwEFsqoI4fnokOBczBKtbg2H3+5getzZlGmsRzqdwyzXx6fnc0lfdTJxBr9FuEDuOCdfHLJR42R/TZFkfvPFoC/DoFUqzx/Mxk/JRCDwQvYOv6y5Sgwd/PNXQH+4c/oVeoGNwtu6RGile92qVq7Y6Ks67DEy0Mn/TttTmsTMTIZ7/9CgoUTaQ+zElDlPK/xNiBly3wM4hIWKzSJMoYxAn3YBSGlkVynNRCJJeDampJad/B4hZfehSUX1w6KlKYqn7Vr4p81FRCekIU2f1Ji37BjhIlXI/cQ+xjlu1zj7F1/hfNu+W6x2/0BfYSdn1v9HHslZxrvWr6QDt4kYv+nP2NrZZGlFp2r/kOHurdqUWX6J9Yv4cluF0rghx2w6vZ6vNW0en6hkPMFsOHtGaKclWsZkbF5psxlIqlSEN2zw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(136003)(39860400002)(376002)(346002)(366004)(396003)(451199015)(6506007)(235185007)(86362001)(66946007)(66476007)(30864003)(66556008)(5660300002)(2906002)(8936002)(82960400001)(38100700002)(316002)(6666004)(44144004)(45080400002)(36756003)(4326008)(6486002)(478600001)(966005)(21490400003)(6916009)(8676002)(41300700001)(26005)(1076003)(6512007)(186003)(83380400001)(2616005)(2700100001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?6NdZxjWzmY9mEKJTyjuRCZYVEJsLDuLoEdXVQbDwrVibToGPKNWVbZMTGS?=
- =?iso-8859-1?Q?bP05GSe+qRhVxvX5rRj0JqBIDW66vcYuqBUL6c353x0Vyiyb5THDKKkix9?=
- =?iso-8859-1?Q?b1bU7fkPQwNhp48qW9Ahu8GquXpSer63vvoTePcoTTqcTCtSJk+umIqADt?=
- =?iso-8859-1?Q?kiEUn5X5KFB2VKK9vupUQz6OclrdbGpu4qJNLqTiGf/tR/jem3+pWc1yhT?=
- =?iso-8859-1?Q?nb5x+yT3OTb/dRD8X+LhRs2GBS2UvSDcKLYm56biqtOWV8yESA5Dqpzu1j?=
- =?iso-8859-1?Q?rx1x5VN+B0uaKFV46Maguk3VRFeCkrmy9/Q7K8uQNdK8/SYpMZ17fsr6KI?=
- =?iso-8859-1?Q?6fV11Ba2YLMz4rerevDgb3JwnsO2ow9pl8MrgKWnGwEochu18UMGreLqKv?=
- =?iso-8859-1?Q?7zKyJEDZWptq1gCn1cCpcBaJypMXTdOCt8FTxYoI/lRA76Gvu3KBvObusO?=
- =?iso-8859-1?Q?tzyO5bvcObOHK+d9nXFoyZKBhCAplYd+egPpIRHnObFQxChIkBCQPFoWpq?=
- =?iso-8859-1?Q?usTGx0Dkx/omNdih16Ie0bUJsxSFsb6+ePcZbWZ4WlMbz0gILP080fZbsp?=
- =?iso-8859-1?Q?x2IAnBSKPFNisojhproJPAs/A7irLifVM2QOvfoiSCUpmCZIId0dNPd2QH?=
- =?iso-8859-1?Q?TTYUlIJTEjDkH0aSc3Joi+AZlzAbMU2GDvBJdZW8MzHKchJbBnUFgAmDHF?=
- =?iso-8859-1?Q?9XKKdF3mqYNpgnRMK2+6cNnRwK4yKQA4dixfrj5Fy6JgZ+ikhG1WdrYT8u?=
- =?iso-8859-1?Q?9e4pUrECiO+T6qstlMQbJ+QdzSNkJZ6CBKYELzpM1C3vQsr5UaEcji2FtU?=
- =?iso-8859-1?Q?iUj7TfskEX1tC/ahR4Ek+5BKMN3CL3+YIwU+crXe/2wbMOlJbr8n3wAG9V?=
- =?iso-8859-1?Q?l+p1YtdD+uGWkX9GuZVe6z6oo9u1RtyGnP1oe5dISXPwwS4raeAgX9i9Cg?=
- =?iso-8859-1?Q?qsJkkRQSQbyRw1B4WFu9MyO8dobuBkCV1pmEJP8MkLIm6HNq61PGqqHbyl?=
- =?iso-8859-1?Q?3KuINSwHWFoion2B63Dsshh/+gnLA8Lkj5vwNuiM2lz2d//tIie7hFlKJ9?=
- =?iso-8859-1?Q?YgpV1h9QSQhHCBO2YqoDc9K4Y0Y+xF9mkccikIZsxQ8z9waB9ZmcQKjxul?=
- =?iso-8859-1?Q?QrZEkR9vVq/8Y0ZS5bbKc0Ury4cD1gWMaS/XjHtdzyp7zeZxITEvoTVdUJ?=
- =?iso-8859-1?Q?w8BvqLZRpHUh19Dffsx3J9FVSLVF0q1bX/Z5fdEN1p++F6cOvMLqSvgWMN?=
- =?iso-8859-1?Q?Nxy01dtpXHIm7dcy73yFpU3dSGJPZ6COXpzZ/wnQK9egFhV5CmG64ih1I7?=
- =?iso-8859-1?Q?eaYi479i6LIOU3Ja8iSCPf+rXtJVzSEMnSfoUhMD4skY6T15ysXCLAgSLR?=
- =?iso-8859-1?Q?8rCmXysrvgQOQ1aAE2rF1EPwn0uG62HFMggHjL7NEWyc5JBgJ7sGxQu4RU?=
- =?iso-8859-1?Q?vB7rQNrTmnkHi2VcIV5dDF5LlQw8KBfqE1DD4lTlWpH7/X0mN0KjOqbo04?=
- =?iso-8859-1?Q?sv/Lmhj6Yj56oEP5heyLx+Y+xA3oyUQfLZWt7CunBAaH5cVxHnUBL5bC6M?=
- =?iso-8859-1?Q?SlSAgOhTj27c4j0QkSuiwqh2tS/aDFp5CZTNla66kO8pM09jc4jr0R6uyE?=
- =?iso-8859-1?Q?1Mp73IsfAongDxOl890wTYui23MzQDKcfDUrbqZAjPT0l0sdRQvqd1ZA?=
- =?iso-8859-1?Q?=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7968a663-de2d-4e84-4c78-08dafa259bd3
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?G1x6sbEF5hMVJmFSCxyzwbyXGlKCvA2sID1iXFsIbZE5hBw3ojRRbIYxp369?=
+ =?us-ascii?Q?POif2wKPnhPveWwrvwPkakKDHgx6xb+aBpvXU8YMFFXF4W7FKIuinZsMIwB5?=
+ =?us-ascii?Q?wX/d/uDZlIgMp1kR+5pruY25Mv/4dD+HJo2/uJv+9HIF46sPC1jGvNyCMMtX?=
+ =?us-ascii?Q?OJ0DK7uZ+EQQYzG4AbO8u2U8SDBab+Df9b4FgezY/wxb0PCI8t+s2ZDikYXJ?=
+ =?us-ascii?Q?rl/EmdAnhJWJFBh2uKogAJRUCqTjdhWQCChUxAYbc38EtECK9iQygwfDgCOq?=
+ =?us-ascii?Q?lpSdhhJWWVGxVdYogRBiLbtMfaY/Jh5tneOCG2Kj33N6LKMpxDZRqSI3bpw9?=
+ =?us-ascii?Q?EifPeyqHuZrHl6qFK9l0fc4bEJ2aR7Tqo5Vy4NPPMd74V9/Uxqd9/juO+d+H?=
+ =?us-ascii?Q?2cuNLbeUrK3BG5f93peyt/oRTXw5az4GhSEMKwTm7wqq8ckr4rDktk3XuasQ?=
+ =?us-ascii?Q?btKqnyvPgW/O/+fllnCmm61TNNT4JVIjKmUNpLpuQkKXnxwhpkr4QtxKuhLx?=
+ =?us-ascii?Q?nUrxc5tEmwnKgEl3ZLx5BUcfeogexk5vyxKELcmiDGbZZscfTWi2VzY38r7L?=
+ =?us-ascii?Q?NvNYG3KnZa5rQUfwPodL+VPtyDiiav9Ugrc7C9n5+KfEKOlBjVuAp5UkGUry?=
+ =?us-ascii?Q?H0FZG3VJzqnrQdW3AtTc9gMe4uaQ3yw1K7N6mY3SNEmFdTZ4oMX5wSxBsP4m?=
+ =?us-ascii?Q?5Os//NbAI/BaGKUPKDZcJbipIAntkwzqinv/0hdAK5N2cFjAIEc+jcVCS7TE?=
+ =?us-ascii?Q?Uuk2JCfYBT8GqkPziJ8DUcnEwarrdGN4bwWiLt57toOW91u4Z/CePPpKbcP8?=
+ =?us-ascii?Q?KPBZGGpZz1lEUVPFI55cIo5XOCD+1eegL9CsB+XhnTHCVw9xd1dsz9C4yViS?=
+ =?us-ascii?Q?WzYUevf/XAYMPiOuQH4mfYH2yRLfXjr0VVwCmy6/ks2v8oDnjZBQPe/pQCJX?=
+ =?us-ascii?Q?uFvslhpvGHKtv2r89AP0Ks2VKPbT3l+I9w8WIJ7MCMkklDVI32QQiHT5tWTj?=
+ =?us-ascii?Q?+QOPwwed2epNlOaW+7OqQv6lar5ty4ffIb5voVqgMsv7vBvUzBW3QPpaI1os?=
+ =?us-ascii?Q?keFMvPRHpZbdWdjMG22twgfgnJ/y7WYl06uoyn3bYQI9181Sp43gCzuCh4uU?=
+ =?us-ascii?Q?ZEZBiwS6eyyBMidnUWdpkFeVZkDPyhZbDlLai5qYkyW+d2QoTEgyIZ6HfG+w?=
+ =?us-ascii?Q?5RaTr11kmZQMfwiW3NWWlQV906JL5DCrMpd2zGGLBn1ORoS7JGqyHiYS6cfz?=
+ =?us-ascii?Q?fnT7XPDuUPsL8oY0G6/Kq+6G3ToUkOX8FmILvrJ79KTAHLWS+xAbkhx8FaWQ?=
+ =?us-ascii?Q?9OzQQrWUGWmZCID/7mBzDBjUx9Ts5pG3o0sTuLEVBHUnbQhyq2XnqGwu6fb0?=
+ =?us-ascii?Q?9J6aO2uXQMzEo9U62QwB2ahhYuuHR2aw7BPv8hgKQGYo8KMdVUixP3DMJugM?=
+ =?us-ascii?Q?6RpBNt8EBvtUkNCHh+uGCsx9PXT3BmkOdBGxirExvEJa1b6SCCEXXzoTYbuf?=
+ =?us-ascii?Q?5GquvJgq57Fi4zOI0aScb8jLELcdKTiTq6SEzPxDKKpI0mc9PGn13tT4HHGu?=
+ =?us-ascii?Q?18GMiop6WBgNTsSgRNZZXxlCQuRaqqhFMr+2TLBMj/cmJan5dsP10NYUux9x?=
+ =?us-ascii?Q?YA=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 29e71189-36b8-41d9-d1fa-08dafa265dac
 X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB6779.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2023 14:01:06.8752
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2023 14:06:32.3821
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +l6a96VCi/0d5Nb2E4lXY3cKMl2WRV83lZcgt4iYHYQw4Ey1dYI73yjSAE7j6Za3yhA8EVvADrb2DqM7IrpXmA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR11MB5009
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0NGpiGXuOzU5NhAzhKGmcnpGTtrJeFw9Mvo4XC+cKIvjz9xnbNCwnNTvEv6Qhwz9EuswbpXDeIRm/yhyFqCDDQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR11MB8014
 X-OriginatorOrg: intel.com
 
---hGGYP/AM6hHKorlI
-Content-Type: text/plain; charset="iso-8859-1"
+--xzgWY3NTp4GxXFlv
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
 
 
 Greeting,
 
-FYI, we noticed a 34.5% improvement of vm-scalability.throughput due to commit:
+FYI, we noticed WARNING:suspicious_RCU_usage due to commit (built with gcc-11):
 
+commit: 9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91 ("tracing, hardirq: No moar _rcuidle() tracing")
+https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git sched/core
 
-commit: cb67f4282bf9693658dbda934a441ddbbb1446df ("mm,thp,rmap: simplify compound page mapcount handling")
-https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+[test failed on linux-next/master f3381a7baf5ccbd091eb2c4fd2afd84266fcef24]
 
-in testcase: vm-scalability
-on test machine: 96 threads 2 sockets Intel(R) Xeon(R) Platinum 8260L CPU @ 2.40GHz (Cascade Lake) with 128G memory
+in testcase: kernel-selftests
+version: kernel-selftests-x86_64-d4cf28ee-1_20230110
 with following parameters:
 
-	runtime: 300s
-	size: 128G
-	test: truncate-seq
-	cpufreq_governor: performance
+	group: ftrace
 
-test-description: The motivation behind this suite is to exercise functions and regions of the mm/ of the Linux kernel which are of interest to us.
-test-url: https://git.kernel.org/cgit/linux/kernel/git/wfg/vm-scalability.git/
+test-description: The kernel contains a set of "self tests" under the tools/testing/selftests/ directory. These are intended to be small unit tests to exercise individual code paths in the kernel.
+test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
 
 
+on test machine: 4 threads Intel(R) Xeon(R) CPU E3-1225 v5 @ 3.30GHz (Skylake) with 16G memory
+
+caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
 
 
+If you fix the issue, kindly add following tag
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Link: https://lore.kernel.org/oe-lkp/202301192148.58ece903-oliver.sang@intel.com
 
-Details are as below:
--------------------------------------------------------------------------------------------------->
+
+[  137.120136][    T0] WARNING: suspicious RCU usage
+[  137.120151][    T0] 6.2.0-rc1-00074-g9aedeaed6fc6 #1 Not tainted
+[  137.120168][    T0] -----------------------------
+[  137.120182][    T0] include/trace/events/lock.h:24 suspicious rcu_dereference_check() usage!
+[  137.120198][    T0]
+[  137.120198][    T0] other info that might help us debug this:
+[  137.120198][    T0]
+[  137.120213][    T0]
+[  137.120213][    T0] rcu_scheduler_active = 2, debug_locks = 1
+[  137.120228][    T0] RCU used illegally from extended quiescent state!
+[  137.120242][    T0] no locks held by swapper/0/0.
+[  137.120256][    T0]
+[  137.120256][    T0] stack backtrace:
+[  137.120273][    T0] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 6.2.0-rc1-00074-g9aedeaed6fc6 #1
+[  137.120289][    T0] Hardware name: HP HP Z238 Microtower Workstation/8183, BIOS N51 Ver. 01.63 10/05/2017
+[  137.120306][    T0] Call Trace:
+[  137.120333][    T0]  <TASK>
+[ 137.120420][ T0] ? ftrace_regs_caller_end (arch/x86/kernel/ftrace_64.S:345) 
+[ 137.120448][ T0] dump_stack_lvl (lib/dump_stack.c:107 (discriminator 4)) 
+[ 137.120517][ T0] lock_acquire.cold (include/trace/events/lock.h:24 kernel/locking/lockdep.c:5639) 
+[ 137.120620][ T0] ? rcu_read_unlock (include/linux/rcupdate.h:793 (discriminator 5)) 
+[  137.120734][    T0] ------------[ cut here ]------------
+[ 137.120749][ T0] WARNING: CPU: 0 PID: 0 at kernel/module/internal.h:115 __module_address (kernel/module/main.c:3100 kernel/module/main.c:3081) 
+[  137.120778][    T0] Modules linked in: openvswitch nf_conncount nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 btrfs intel_rapl_msr blake2b_generic xor intel_rapl_common raid6_pq zstd_compress libcrc32c x86_pkg_temp_thermal intel_powerclamp coretemp sd_mod t10_pi kvm_intel crc64_rocksoft_generic crc64_rocksoft crc64 kvm sg irqbypass crct10dif_pclmul crc32_pclmul crc32c_intel ghash_clmulni_intel sha512_ssse3 mei_wdt ipmi_devintf wmi_bmof i915 rapl ipmi_msghandler intel_cstate drm_buddy intel_gtt drm_display_helper i2c_i801 ttm ahci intel_uncore drm_kms_helper libahci mei_me serio_raw i2c_smbus syscopyarea sysfillrect libata ie31200_edac mei sysimgblt intel_pch_thermal video wmi intel_pmc_core acpi_pad tpm_infineon binfmt_misc drm fuse ip_tables [last unloaded: ftrace_direct]
+[  137.121813][    T0] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 6.2.0-rc1-00074-g9aedeaed6fc6 #1
+[  137.121830][    T0] Hardware name: HP HP Z238 Microtower Workstation/8183, BIOS N51 Ver. 01.63 10/05/2017
+[ 137.121848][ T0] RIP: 0010:__module_address (kernel/module/main.c:3100 kernel/module/main.c:3081) 
+[ 137.121877][ T0] Code: 01 00 00 48 01 da 48 39 d5 0f 82 69 ff ff ff 0f 0b be ff ff ff ff 48 c7 c7 48 56 9f 84 e8 e6 88 3b 02 85 c0 0f 85 d1 fe ff ff <0f> 0b e9 ca fe ff ff 48 83 c4 08 31 c0 5b 5d c3 48 c7 c7 cc 15 29
+All code
+========
+   0:	01 00                	add    %eax,(%rax)
+   2:	00 48 01             	add    %cl,0x1(%rax)
+   5:	da 48 39             	fimull 0x39(%rax)
+   8:	d5                   	(bad)  
+   9:	0f 82 69 ff ff ff    	jb     0xffffffffffffff78
+   f:	0f 0b                	ud2    
+  11:	be ff ff ff ff       	mov    $0xffffffff,%esi
+  16:	48 c7 c7 48 56 9f 84 	mov    $0xffffffff849f5648,%rdi
+  1d:	e8 e6 88 3b 02       	callq  0x23b8908
+  22:	85 c0                	test   %eax,%eax
+  24:	0f 85 d1 fe ff ff    	jne    0xfffffffffffffefb
+  2a:*	0f 0b                	ud2    		<-- trapping instruction
+  2c:	e9 ca fe ff ff       	jmpq   0xfffffffffffffefb
+  31:	48 83 c4 08          	add    $0x8,%rsp
+  35:	31 c0                	xor    %eax,%eax
+  37:	5b                   	pop    %rbx
+  38:	5d                   	pop    %rbp
+  39:	c3                   	retq   
+  3a:	48                   	rex.W
+  3b:	c7                   	.byte 0xc7
+  3c:	c7                   	(bad)  
+  3d:	cc                   	int3   
+  3e:	15                   	.byte 0x15
+  3f:	29                   	.byte 0x29
+
+Code starting with the faulting instruction
+===========================================
+   0:	0f 0b                	ud2    
+   2:	e9 ca fe ff ff       	jmpq   0xfffffffffffffed1
+   7:	48 83 c4 08          	add    $0x8,%rsp
+   b:	31 c0                	xor    %eax,%eax
+   d:	5b                   	pop    %rbx
+   e:	5d                   	pop    %rbp
+   f:	c3                   	retq   
+  10:	48                   	rex.W
+  11:	c7                   	.byte 0xc7
+  12:	c7                   	(bad)  
+  13:	cc                   	int3   
+  14:	15                   	.byte 0x15
+  15:	29                   	.byte 0x29
+[  137.121895][    T0] RSP: 0018:ffffffff84406b40 EFLAGS: 00010046
+[  137.121924][    T0] RAX: 0000000000000000 RBX: ffffffff84406d38 RCX: 0000000000000001
+[  137.121939][    T0] RDX: 0000000000000000 RSI: 00000000ffffffff RDI: ffffffff849f5648
+[  137.121954][    T0] RBP: ffffffffa03e6086 R08: 0000000000000000 R09: ffff88837f43f943
+[  137.121969][    T0] R10: ffffed106fe87f28 R11: 0000000000000001 R12: ffffffff84406c30
+[  137.121984][    T0] R13: ffffffff84406c10 R14: ffffffffa03e6086 R15: ffffffff84406c70
+[  137.121999][    T0] FS:  0000000000000000(0000) GS:ffff88837f400000(0000) knlGS:0000000000000000
+[  137.122014][    T0] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  137.122030][    T0] CR2: 0000000000451c00 CR3: 000000043ce2a003 CR4: 00000000003706f0
+[  137.122046][    T0] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  137.122061][    T0] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  137.122078][    T0] Call Trace:
+[  137.122100][    T0]  <TASK>
+[  137.122173][    T0]
+[  137.122187][    T0] =============================
+[  137.122202][    T0] WARNING: suspicious RCU usage
+[  137.122217][    T0] 6.2.0-rc1-00074-g9aedeaed6fc6 #1 Not tainted
+[  137.122231][    T0] -----------------------------
+[  137.122245][    T0] include/linux/rcupdate.h:765 rcu_read_lock() used illegally while idle!
+[  137.122260][    T0]
+[  137.122260][    T0] other info that might help us debug this:
+[  137.122260][    T0]
+[  137.122275][    T0]
+[  137.122275][    T0] rcu_scheduler_active = 2, debug_locks = 1
+[  137.122290][    T0] RCU used illegally from extended quiescent state!
+[  137.122304][    T0] 1 lock held by swapper/0/0:
+[ 137.122319][ T0] #0: ffffffff84925b40 (rcu_read_lock){....}-{1:2}, at: __bpf_address_lookup (kernel/bpf/core.c:690) 
+[  137.122417][    T0]
+[  137.122417][    T0] stack backtrace:
+[  137.122433][    T0] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 6.2.0-rc1-00074-g9aedeaed6fc6 #1
+[  137.122449][    T0] Hardware name: HP HP Z238 Microtower Workstation/8183, BIOS N51 Ver. 01.63 10/05/2017
+[  137.122466][    T0] Call Trace:
+[  137.122491][    T0]  <TASK>
+[ 137.122577][ T0] ? ftrace_regs_caller_end (arch/x86/kernel/ftrace_64.S:345) 
+[ 137.122598][ T0] dump_stack_lvl (lib/dump_stack.c:107 (discriminator 4)) 
+[  137.122630][    T0]  ? 0xffffffffa03e6085
+[ 137.127567][ T0] __bpf_address_lookup (include/linux/rcupdate.h:765 kernel/bpf/core.c:694) 
+[  137.127635][    T0]  ? 0xffffffffa03e6085
+[ 137.127738][ T0] ? ftrace_regs_caller_end (arch/x86/kernel/ftrace_64.S:345) 
+[ 137.127759][ T0] kallsyms_lookup_buildid (include/linux/filter.h:1145 kernel/kallsyms.c:434) 
+[  137.127883][    T0]  ? 0xffffffffa03e6086
+[ 137.127932][ T0] ? ftrace_regs_caller_end (arch/x86/kernel/ftrace_64.S:345) 
+[ 137.127953][ T0] __sprint_symbol+0xaf/0x1c0 
+[ 137.127981][ T0] ? prepare_ftrace_return (arch/x86/kernel/ftrace.c:653) 
+[ 137.128042][ T0] ? kallsyms_lookup_buildid (kernel/kallsyms.c:517) 
+[  137.128144][    T0]  ? 0xffffffffa03e6087
+[ 137.128193][ T0] ? ftrace_return_to_handler (arch/x86/include/asm/current.h:41 kernel/trace/fgraph.c:257) 
+[  137.128421][    T0]  ? 0xffffffffa03e6086
+[ 137.128596][ T0] ? ftrace_regs_caller_end (arch/x86/kernel/ftrace_64.S:345) 
+[ 137.128617][ T0] symbol_string (lib/vsprintf.c:994) 
+[ 137.128664][ T0] ? rb_handle_head_page (kernel/trace/ring_buffer.c:1411 kernel/trace/ring_buffer.c:1444 kernel/trace/ring_buffer.c:2650) 
+[ 137.128724][ T0] ? ip6_addr_string (lib/vsprintf.c:982) 
+[ 137.128855][ T0] ? __rb_reserve_next (arch/x86/include/asm/atomic64_64.h:22 include/linux/atomic/atomic-long.h:29 include/linux/atomic/atomic-instrumented.h:1266 kernel/trace/ring_buffer.c:2952 kernel/trace/ring_buffer.c:3709) 
+[ 137.129239][ T0] ? __rb_reserve_next (arch/x86/include/asm/atomic64_64.h:22 include/linux/atomic/atomic-long.h:29 include/linux/atomic/atomic-instrumented.h:1266 kernel/trace/ring_buffer.c:2952 kernel/trace/ring_buffer.c:3709) 
+[ 137.129575][ T0] ? ring_buffer_lock_reserve (kernel/trace/ring_buffer.c:3781 kernel/trace/ring_buffer.c:3838) 
+[ 137.129861][ T0] ? __rb_reserve_next (arch/x86/include/asm/atomic64_64.h:22 include/linux/atomic/atomic-long.h:29 include/linux/atomic/atomic-instrumented.h:1266 kernel/trace/ring_buffer.c:2952 kernel/trace/ring_buffer.c:3709) 
+[ 137.130068][ T0] ? __rb_reserve_next (arch/x86/include/asm/atomic64_64.h:22 include/linux/atomic/atomic-long.h:29 include/linux/atomic/atomic-instrumented.h:1266 kernel/trace/ring_buffer.c:2952 kernel/trace/ring_buffer.c:3709) 
+[ 137.130331][ T0] ? __rb_reserve_next (arch/x86/include/asm/atomic64_64.h:22 include/linux/atomic/atomic-long.h:29 include/linux/atomic/atomic-instrumented.h:1266 kernel/trace/ring_buffer.c:2952 kernel/trace/ring_buffer.c:3709) 
+[ 137.130625][ T0] ? move_right (lib/vsprintf.c:617) 
+[  137.130855][    T0]  ? 0xffffffffa03e6086
+[ 137.130905][ T0] pointer (lib/vsprintf.c:2394) 
+[ 137.131025][ T0] ? resource_string+0x1590/0x1590 
+[ 137.131106][ T0] ? rb_commit (arch/x86/include/asm/atomic64_64.h:22 include/linux/atomic/atomic-long.h:29 include/linux/atomic/atomic-instrumented.h:1266 kernel/trace/ring_buffer.c:3181 kernel/trace/ring_buffer.c:3204) 
+[ 137.131331][ T0] vsnprintf (lib/vsprintf.c:2802) 
+[ 137.131521][ T0] ? pointer (lib/vsprintf.c:2727) 
+[ 137.131617][ T0] ? __trace_graph_entry (kernel/trace/trace_functions_graph.c:113) 
+[ 137.131820][ T0] vprintk_store (kernel/printk/printk.c:2241) 
+[ 137.131956][ T0] ? ftrace_graph_stop (kernel/trace/fgraph.c:124) 
+[ 137.132016][ T0] ? printk_sprint (kernel/printk/printk.c:2206) 
+[ 137.132040][ T0] ? vprintk (kernel/printk/printk_safe.c:30) 
+[ 137.132188][ T0] ? vprintk_store (kernel/printk/printk.c:2206) 
+[ 137.132266][ T0] ? prepare_ftrace_return (arch/x86/kernel/ftrace.c:653) 
+[  137.132384][    T0]  ? 0xffffffffa03e6086
+[  137.132438][    T0]  ? 0xffffffffa03e6087
+[  137.132853][    T0]  ? 0xffffffffa03e6086
+[ 137.132884][ T0] ? ftrace_regs_caller_end (arch/x86/kernel/ftrace_64.S:345) 
+[ 137.132905][ T0] vprintk (kernel/printk/printk_safe.c:44 kernel/printk/printk_safe.c:29) 
+[ 137.132950][ T0] ? ftrace_regs_caller_end (arch/x86/kernel/ftrace_64.S:345) 
+[ 137.132971][ T0] _printk (kernel/printk/printk.c:2373) 
+[ 137.133034][ T0] ? record_print_text.cold (kernel/printk/printk.c:2373) 
+[  137.133242][    T0]  ? 0xffffffffa03e6086
+[  137.133368][    T0]  ? 0xffffffffa03e6086
+[ 137.133471][ T0] ? ftrace_regs_caller_end (arch/x86/kernel/ftrace_64.S:345) 
+[ 137.133492][ T0] show_trace_log_lvl (arch/x86/kernel/dumpstack.c:284) 
+[  137.133561][    T0]  ? 0xffffffffa03e6086
+[  137.133886][    T0]  ? 0xffffffffa03e6086
+[ 137.133916][ T0] ? module_address_lookup (kernel/module/kallsyms.c:339) 
+[ 137.134048][ T0] ? __module_address (kernel/module/main.c:3100 kernel/module/main.c:3081) 
+[ 137.134107][ T0] ? ftrace_regs_caller_end (arch/x86/kernel/ftrace_64.S:345) 
+[ 137.134128][ T0] __warn (kernel/panic.c:664) 
+[ 137.134210][ T0] ? __module_address (kernel/module/main.c:3100 kernel/module/main.c:3081) 
+[ 137.134287][ T0] ? ftrace_regs_caller_end (arch/x86/kernel/ftrace_64.S:345) 
+[ 137.134308][ T0] report_bug (lib/bug.c:200) 
+[ 137.134480][ T0] handle_bug (arch/x86/kernel/traps.c:324) 
+[ 137.134525][ T0] exc_invalid_op (arch/x86/kernel/traps.c:345 (discriminator 1)) 
+[ 137.134589][ T0] asm_exc_invalid_op (arch/x86/include/asm/idtentry.h:568) 
+[ 137.134615][ T0] RIP: 0010:__module_address (kernel/module/main.c:3100 kernel/module/main.c:3081) 
+[ 137.134622][ T0] Code: 01 00 00 48 01 da 48 39 d5 0f 82 69 ff ff ff 0f 0b be ff ff ff ff 48 c7 c7 48 56 9f 84 e8 e6 88 3b 02 85 c0 0f 85 d1 fe ff ff <0f> 0b e9 ca fe ff ff 48 83 c4 08 31 c0 5b 5d c3 48 c7 c7 cc 15 29
+All code
+========
+   0:	01 00                	add    %eax,(%rax)
+   2:	00 48 01             	add    %cl,0x1(%rax)
+   5:	da 48 39             	fimull 0x39(%rax)
+   8:	d5                   	(bad)  
+   9:	0f 82 69 ff ff ff    	jb     0xffffffffffffff78
+   f:	0f 0b                	ud2    
+  11:	be ff ff ff ff       	mov    $0xffffffff,%esi
+  16:	48 c7 c7 48 56 9f 84 	mov    $0xffffffff849f5648,%rdi
+  1d:	e8 e6 88 3b 02       	callq  0x23b8908
+  22:	85 c0                	test   %eax,%eax
+  24:	0f 85 d1 fe ff ff    	jne    0xfffffffffffffefb
+  2a:*	0f 0b                	ud2    		<-- trapping instruction
+  2c:	e9 ca fe ff ff       	jmpq   0xfffffffffffffefb
+  31:	48 83 c4 08          	add    $0x8,%rsp
+  35:	31 c0                	xor    %eax,%eax
+  37:	5b                   	pop    %rbx
+  38:	5d                   	pop    %rbp
+  39:	c3                   	retq   
+  3a:	48                   	rex.W
+  3b:	c7                   	.byte 0xc7
+  3c:	c7                   	(bad)  
+  3d:	cc                   	int3   
+  3e:	15                   	.byte 0x15
+  3f:	29                   	.byte 0x29
+
+Code starting with the faulting instruction
+===========================================
+   0:	0f 0b                	ud2    
+   2:	e9 ca fe ff ff       	jmpq   0xfffffffffffffed1
+   7:	48 83 c4 08          	add    $0x8,%rsp
+   b:	31 c0                	xor    %eax,%eax
+   d:	5b                   	pop    %rbx
+   e:	5d                   	pop    %rbp
+   f:	c3                   	retq   
+  10:	48                   	rex.W
+  11:	c7                   	.byte 0xc7
+  12:	c7                   	(bad)  
+  13:	cc                   	int3   
+  14:	15                   	.byte 0x15
+  15:	29                   	.byte 0x29
 
 
 To reproduce:
@@ -188,44 +387,6 @@ To reproduce:
         # if come across any failure that blocks the test,
         # please remove ~/.lkp and /lkp dir to run from a clean state.
 
-=========================================================================================
-compiler/cpufreq_governor/kconfig/rootfs/runtime/size/tbox_group/test/testcase:
-  gcc-11/performance/x86_64-rhel-8.3/debian-11.1-x86_64-20220510.cgz/300s/128G/lkp-csl-2sp3/truncate-seq/vm-scalability
-
-commit: 
-  dad6a5eb55 ("mm,hugetlb: use folio fields in second tail page")
-  cb67f4282b ("mm,thp,rmap: simplify compound page mapcount handling")
-
-dad6a5eb55564845 cb67f4282bf9693658dbda934a4 
----------------- --------------------------- 
-         %stddev     %change         %stddev
-             \          |                \  
- 2.352e+08           +34.5%  3.164e+08        vm-scalability.median
- 2.352e+08           +34.5%  3.164e+08        vm-scalability.throughput
-   1132841 ± 37%     +90.2%    2154205 ± 22%  proc-vmstat.compact_free_scanned
-      2.40 ±107%      +5.3        7.74 ± 47%  perf-profile.children.cycles-pp.do_filp_open
-      2.40 ±107%      +5.3        7.74 ± 47%  perf-profile.children.cycles-pp.path_openat
-    105.57            +1.5%     107.20        perf-stat.i.cpu-migrations
-     31.13 ±  4%      +4.8       35.91 ±  4%  perf-stat.i.iTLB-load-miss-rate%
-    821423 ±  5%     +17.4%     963953 ±  2%  perf-stat.i.iTLB-load-misses
-      1724 ±  5%     -15.5%       1456 ±  4%  perf-stat.i.instructions-per-iTLB-miss
-    727.93           -11.3%     645.86 ± 18%  perf-stat.i.metric.K/sec
-    572194 ±  3%     -29.0%     406083 ±  4%  perf-stat.i.node-load-misses
-    603100 ±  3%     -29.9%     422840 ±  3%  perf-stat.i.node-loads
-     31.13 ±  4%      +4.8       35.88 ±  4%  perf-stat.overall.iTLB-load-miss-rate%
-      1769 ±  5%     -15.7%       1490 ±  4%  perf-stat.overall.instructions-per-iTLB-miss
-    104.86            +1.5%     106.46        perf-stat.ps.cpu-migrations
-    815914 ±  5%     +17.3%     957385 ±  2%  perf-stat.ps.iTLB-load-misses
-    568201 ±  3%     -29.0%     403248 ±  4%  perf-stat.ps.node-load-misses
-    598933 ±  3%     -29.9%     420034 ±  3%  perf-stat.ps.node-loads
-
-
-
-
-Disclaimer:
-Results have been estimated based on internal Intel analysis and are provided
-for informational purposes only. Any difference in system hardware or software
-design or configuration may affect actual performance.
 
 
 -- 
@@ -234,14 +395,14 @@ https://github.com/intel/lkp-tests
 
 
 
---hGGYP/AM6hHKorlI
+--xzgWY3NTp4GxXFlv
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: attachment;
-	filename="config-6.1.0-rc4-00186-gcb67f4282bf9"
+	filename="config-6.2.0-rc1-00074-g9aedeaed6fc6"
 
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86_64 6.1.0-rc4 Kernel Configuration
+# Linux/x86_64 6.2.0-rc1 Kernel Configuration
 #
 CONFIG_CC_VERSION_TEXT="gcc-11 (Debian 11.3.0-8) 11.3.0"
 CONFIG_CC_IS_GCC=y
@@ -255,9 +416,11 @@ CONFIG_LLD_VERSION=0
 CONFIG_CC_CAN_LINK=y
 CONFIG_CC_CAN_LINK_STATIC=y
 CONFIG_CC_HAS_ASM_GOTO_OUTPUT=y
+CONFIG_CC_HAS_ASM_GOTO_TIED_OUTPUT=y
 CONFIG_CC_HAS_ASM_INLINE=y
 CONFIG_CC_HAS_NO_PROFILE_FN_ATTR=y
 CONFIG_PAHOLE_VERSION=123
+CONFIG_CONSTRUCTORS=y
 CONFIG_IRQ_WORK=y
 CONFIG_BUILDTIME_TABLE_SORT=y
 CONFIG_THREAD_INFO_IN_TASK=y
@@ -310,9 +473,9 @@ CONFIG_GENERIC_IRQ_MIGRATION=y
 CONFIG_GENERIC_IRQ_INJECTION=y
 CONFIG_HARDIRQS_SW_RESEND=y
 CONFIG_IRQ_DOMAIN=y
+CONFIG_IRQ_SIM=y
 CONFIG_IRQ_DOMAIN_HIERARCHY=y
 CONFIG_GENERIC_MSI_IRQ=y
-CONFIG_GENERIC_MSI_IRQ_DOMAIN=y
 CONFIG_IRQ_MSI_IOMMU=y
 CONFIG_GENERIC_IRQ_MATRIX_ALLOCATOR=y
 CONFIG_GENERIC_IRQ_RESERVATION_MODE=y
@@ -405,6 +568,7 @@ CONFIG_RCU_STALL_COMMON=y
 CONFIG_RCU_NEED_SEGCBLIST=y
 CONFIG_RCU_NOCB_CPU=y
 # CONFIG_RCU_NOCB_CPU_DEFAULT_ALL is not set
+# CONFIG_RCU_LAZY is not set
 # end of RCU Subsystem
 
 CONFIG_IKCONFIG=y
@@ -440,7 +604,8 @@ CONFIG_CGROUP_WRITEBACK=y
 CONFIG_CGROUP_SCHED=y
 CONFIG_FAIR_GROUP_SCHED=y
 CONFIG_CFS_BANDWIDTH=y
-# CONFIG_RT_GROUP_SCHED is not set
+CONFIG_RT_GROUP_SCHED=y
+CONFIG_SCHED_MM_CID=y
 CONFIG_CGROUP_PIDS=y
 CONFIG_CGROUP_RDMA=y
 CONFIG_CGROUP_FREEZER=y
@@ -461,7 +626,7 @@ CONFIG_IPC_NS=y
 CONFIG_USER_NS=y
 CONFIG_PID_NS=y
 CONFIG_NET_NS=y
-# CONFIG_CHECKPOINT_RESTORE is not set
+CONFIG_CHECKPOINT_RESTORE=y
 CONFIG_SCHED_AUTOGROUP=y
 # CONFIG_SYSFS_DEPRECATED is not set
 CONFIG_RELAY=y
@@ -479,11 +644,12 @@ CONFIG_INITRAMFS_PRESERVE_MTIME=y
 CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y
 # CONFIG_CC_OPTIMIZE_FOR_SIZE is not set
 CONFIG_LD_ORPHAN_WARN=y
+CONFIG_LD_ORPHAN_WARN_LEVEL="warn"
 CONFIG_SYSCTL=y
 CONFIG_HAVE_UID16=y
 CONFIG_SYSCTL_EXCEPTION_TRACE=y
 CONFIG_HAVE_PCSPKR_PLATFORM=y
-# CONFIG_EXPERT is not set
+CONFIG_EXPERT=y
 CONFIG_UID16=y
 CONFIG_MULTIUSER=y
 CONFIG_SGETMASK_SYSCALL=y
@@ -507,15 +673,18 @@ CONFIG_IO_URING=y
 CONFIG_ADVISE_SYSCALLS=y
 CONFIG_MEMBARRIER=y
 CONFIG_KALLSYMS=y
+# CONFIG_KALLSYMS_SELFTEST is not set
 CONFIG_KALLSYMS_ALL=y
 CONFIG_KALLSYMS_ABSOLUTE_PERCPU=y
 CONFIG_KALLSYMS_BASE_RELATIVE=y
 CONFIG_ARCH_HAS_MEMBARRIER_SYNC_CORE=y
 CONFIG_KCMP=y
 CONFIG_RSEQ=y
-# CONFIG_EMBEDDED is not set
+# CONFIG_DEBUG_RSEQ is not set
+CONFIG_EMBEDDED=y
 CONFIG_HAVE_PERF_EVENTS=y
 CONFIG_GUEST_PERF_EVENTS=y
+# CONFIG_PC104 is not set
 
 #
 # Kernel Performance Events And Counters
@@ -542,15 +711,16 @@ CONFIG_ARCH_MMAP_RND_BITS_MAX=32
 CONFIG_ARCH_MMAP_RND_COMPAT_BITS_MIN=8
 CONFIG_ARCH_MMAP_RND_COMPAT_BITS_MAX=16
 CONFIG_GENERIC_ISA_DMA=y
+CONFIG_GENERIC_CSUM=y
 CONFIG_GENERIC_BUG=y
 CONFIG_GENERIC_BUG_RELATIVE_POINTERS=y
 CONFIG_ARCH_MAY_HAVE_PC_FDC=y
 CONFIG_GENERIC_CALIBRATE_DELAY=y
 CONFIG_ARCH_HAS_CPU_RELAX=y
 CONFIG_ARCH_HIBERNATION_POSSIBLE=y
-CONFIG_ARCH_NR_GPIO=1024
 CONFIG_ARCH_SUSPEND_POSSIBLE=y
 CONFIG_AUDIT_ARCH=y
+CONFIG_KASAN_SHADOW_OFFSET=0xdffffc0000000000
 CONFIG_HAVE_INTEL_TXT=y
 CONFIG_X86_64_SMP=y
 CONFIG_ARCH_SUPPORTS_UPROBES=y
@@ -567,7 +737,7 @@ CONFIG_X86_FEATURE_NAMES=y
 CONFIG_X86_X2APIC=y
 CONFIG_X86_MPPARSE=y
 # CONFIG_GOLDFISH is not set
-# CONFIG_X86_CPU_RESCTRL is not set
+CONFIG_X86_CPU_RESCTRL=y
 CONFIG_X86_EXTENDED_PLATFORM=y
 # CONFIG_X86_NUMACHIP is not set
 # CONFIG_X86_VSMP is not set
@@ -608,15 +778,15 @@ CONFIG_X86_MINIMUM_CPU_FAMILY=64
 CONFIG_X86_DEBUGCTLMSR=y
 CONFIG_IA32_FEAT_CTL=y
 CONFIG_X86_VMX_FEATURE_NAMES=y
+CONFIG_PROCESSOR_SELECT=y
 CONFIG_CPU_SUP_INTEL=y
-CONFIG_CPU_SUP_AMD=y
-CONFIG_CPU_SUP_HYGON=y
-CONFIG_CPU_SUP_CENTAUR=y
-CONFIG_CPU_SUP_ZHAOXIN=y
+# CONFIG_CPU_SUP_AMD is not set
+# CONFIG_CPU_SUP_HYGON is not set
+# CONFIG_CPU_SUP_CENTAUR is not set
+# CONFIG_CPU_SUP_ZHAOXIN is not set
 CONFIG_HPET_TIMER=y
 CONFIG_HPET_EMULATE_RTC=y
 CONFIG_DMI=y
-# CONFIG_GART_IOMMU is not set
 CONFIG_BOOT_VESA_SUPPORT=y
 CONFIG_MAXSMP=y
 CONFIG_NR_CPUS_RANGE_BEGIN=8192
@@ -633,7 +803,6 @@ CONFIG_X86_REROUTE_FOR_BROKEN_BOOT_IRQS=y
 CONFIG_X86_MCE=y
 CONFIG_X86_MCELOG_LEGACY=y
 CONFIG_X86_MCE_INTEL=y
-# CONFIG_X86_MCE_AMD is not set
 CONFIG_X86_MCE_THRESHOLD=y
 CONFIG_X86_MCE_INJECT=m
 
@@ -643,9 +812,6 @@ CONFIG_X86_MCE_INJECT=m
 CONFIG_PERF_EVENTS_INTEL_UNCORE=m
 CONFIG_PERF_EVENTS_INTEL_RAPL=m
 CONFIG_PERF_EVENTS_INTEL_CSTATE=m
-# CONFIG_PERF_EVENTS_AMD_POWER is not set
-# CONFIG_PERF_EVENTS_AMD_UNCORE is not set
-# CONFIG_PERF_EVENTS_AMD_BRS is not set
 # end of Performance monitoring
 
 CONFIG_X86_16BIT=y
@@ -654,7 +820,6 @@ CONFIG_X86_VSYSCALL_EMULATION=y
 CONFIG_X86_IOPL_IOPERM=y
 CONFIG_MICROCODE=y
 CONFIG_MICROCODE_INTEL=y
-# CONFIG_MICROCODE_AMD is not set
 CONFIG_MICROCODE_LATE_LOADING=y
 CONFIG_X86_MSR=y
 CONFIG_X86_CPUID=y
@@ -662,7 +827,6 @@ CONFIG_X86_5LEVEL=y
 CONFIG_X86_DIRECT_GBPAGES=y
 # CONFIG_X86_CPA_STATISTICS is not set
 CONFIG_X86_MEM_ENCRYPT=y
-# CONFIG_AMD_MEM_ENCRYPT is not set
 CONFIG_NUMA=y
 # CONFIG_AMD_NUMA is not set
 CONFIG_X86_64_ACPI_NUMA=y
@@ -685,15 +849,18 @@ CONFIG_X86_PAT=y
 CONFIG_ARCH_USES_PG_UNCACHED=y
 CONFIG_X86_UMIP=y
 CONFIG_CC_HAS_IBT=y
-# CONFIG_X86_KERNEL_IBT is not set
+CONFIG_X86_KERNEL_IBT=y
 CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS=y
 CONFIG_X86_INTEL_TSX_MODE_OFF=y
 # CONFIG_X86_INTEL_TSX_MODE_ON is not set
 # CONFIG_X86_INTEL_TSX_MODE_AUTO is not set
-# CONFIG_X86_SGX is not set
+CONFIG_X86_SGX=y
 CONFIG_EFI=y
 CONFIG_EFI_STUB=y
+CONFIG_EFI_HANDOVER_PROTOCOL=y
 CONFIG_EFI_MIXED=y
+# CONFIG_EFI_FAKE_MEMMAP is not set
+CONFIG_EFI_RUNTIME_MAP=y
 # CONFIG_HZ_100 is not set
 # CONFIG_HZ_250 is not set
 # CONFIG_HZ_300 is not set
@@ -726,12 +893,12 @@ CONFIG_LIVEPATCH=y
 
 CONFIG_CC_HAS_SLS=y
 CONFIG_CC_HAS_RETURN_THUNK=y
+CONFIG_CC_HAS_ENTRY_PADDING=y
+CONFIG_FUNCTION_PADDING_CFI=11
+CONFIG_FUNCTION_PADDING_BYTES=16
 CONFIG_SPECULATION_MITIGATIONS=y
 CONFIG_PAGE_TABLE_ISOLATION=y
-CONFIG_RETPOLINE=y
-CONFIG_RETHUNK=y
-CONFIG_CPU_UNRET_ENTRY=y
-CONFIG_CPU_IBPB_ENTRY=y
+# CONFIG_RETPOLINE is not set
 CONFIG_CPU_IBRS_ENTRY=y
 # CONFIG_SLS is not set
 CONFIG_ARCH_HAS_ADD_PAGES=y
@@ -743,6 +910,7 @@ CONFIG_ARCH_MHP_MEMMAP_ON_MEMORY_ENABLE=y
 CONFIG_ARCH_HIBERNATION_HEADER=y
 CONFIG_SUSPEND=y
 CONFIG_SUSPEND_FREEZER=y
+# CONFIG_SUSPEND_SKIP_SYNC is not set
 CONFIG_HIBERNATE_CALLBACKS=y
 CONFIG_HIBERNATION=y
 CONFIG_HIBERNATION_SNAPSHOT_DEV=y
@@ -757,6 +925,7 @@ CONFIG_PM_DEBUG=y
 # CONFIG_PM_ADVANCED_DEBUG is not set
 # CONFIG_PM_TEST_SUSPEND is not set
 CONFIG_PM_SLEEP_DEBUG=y
+# CONFIG_DPM_WATCHDOG is not set
 # CONFIG_PM_TRACE_RTC is not set
 CONFIG_PM_CLK=y
 # CONFIG_WQ_POWER_EFFICIENT_DEFAULT is not set
@@ -801,6 +970,7 @@ CONFIG_ACPI_SBS=m
 CONFIG_ACPI_HED=y
 # CONFIG_ACPI_CUSTOM_METHOD is not set
 CONFIG_ACPI_BGRT=y
+# CONFIG_ACPI_REDUCED_HARDWARE_ONLY is not set
 CONFIG_ACPI_NFIT=m
 # CONFIG_NFIT_SECURITY_DEBUG is not set
 CONFIG_ACPI_NUMA=y
@@ -820,6 +990,7 @@ CONFIG_ACPI_ADXL=y
 # CONFIG_ACPI_CONFIGFS is not set
 # CONFIG_ACPI_PFRUT is not set
 CONFIG_ACPI_PCC=y
+# CONFIG_ACPI_FFH is not set
 CONFIG_PMIC_OPREGION=y
 CONFIG_ACPI_PRMT=y
 CONFIG_X86_PM_TIMER=y
@@ -850,9 +1021,7 @@ CONFIG_X86_INTEL_PSTATE=y
 # CONFIG_X86_AMD_PSTATE is not set
 # CONFIG_X86_AMD_PSTATE_UT is not set
 CONFIG_X86_ACPI_CPUFREQ=m
-CONFIG_X86_ACPI_CPUFREQ_CPB=y
 # CONFIG_X86_POWERNOW_K8 is not set
-# CONFIG_X86_AMD_FREQ_SENSITIVITY is not set
 # CONFIG_X86_SPEEDSTEP_CENTRINO is not set
 CONFIG_X86_P4_CLOCKMOD=m
 
@@ -882,8 +1051,9 @@ CONFIG_INTEL_IDLE=y
 CONFIG_PCI_DIRECT=y
 CONFIG_PCI_MMCONFIG=y
 CONFIG_MMCONF_FAM10H=y
+# CONFIG_PCI_CNB20LE_QUIRK is not set
+# CONFIG_ISA_BUS is not set
 CONFIG_ISA_DMA_API=y
-CONFIG_AMD_NB=y
 # end of Bus options (PCI etc.)
 
 #
@@ -918,8 +1088,11 @@ CONFIG_KVM_XFER_TO_GUEST_WORK=y
 CONFIG_HAVE_KVM_PM_NOTIFIER=y
 CONFIG_VIRTUALIZATION=y
 CONFIG_KVM=m
+# CONFIG_KVM_WERROR is not set
 CONFIG_KVM_INTEL=m
+# CONFIG_X86_SGX_KVM is not set
 # CONFIG_KVM_AMD is not set
+CONFIG_KVM_SMM=y
 # CONFIG_KVM_XEN is not set
 CONFIG_AS_AVX512=y
 CONFIG_AS_SHA1_NI=y
@@ -982,6 +1155,7 @@ CONFIG_MMU_GATHER_TABLE_FREE=y
 CONFIG_MMU_GATHER_RCU_TABLE_FREE=y
 CONFIG_MMU_GATHER_MERGE_VMAS=y
 CONFIG_ARCH_HAVE_NMI_SAFE_CMPXCHG=y
+CONFIG_ARCH_HAS_NMI_SAFE_THIS_CPU_OPS=y
 CONFIG_HAVE_ALIGNED_STRUCT_PAGE=y
 CONFIG_HAVE_CMPXCHG_LOCAL=y
 CONFIG_HAVE_CMPXCHG_DOUBLE=y
@@ -1041,7 +1215,7 @@ CONFIG_HAVE_ARCH_VMAP_STACK=y
 CONFIG_VMAP_STACK=y
 CONFIG_HAVE_ARCH_RANDOMIZE_KSTACK_OFFSET=y
 CONFIG_RANDOMIZE_KSTACK_OFFSET=y
-# CONFIG_RANDOMIZE_KSTACK_OFFSET_DEFAULT is not set
+CONFIG_RANDOMIZE_KSTACK_OFFSET_DEFAULT=y
 CONFIG_ARCH_HAS_STRICT_KERNEL_RWX=y
 CONFIG_STRICT_KERNEL_RWX=y
 CONFIG_ARCH_HAS_STRICT_MODULE_RWX=y
@@ -1061,6 +1235,7 @@ CONFIG_ARCH_SUPPORTS_PAGE_TABLE_CHECK=y
 CONFIG_ARCH_HAS_ELFCORE_COMPAT=y
 CONFIG_ARCH_HAS_PARANOID_L1D_FLUSH=y
 CONFIG_DYNAMIC_SIGFRAME=y
+CONFIG_HAVE_ARCH_NODE_DEV_GROUP=y
 CONFIG_ARCH_HAS_NONLEAF_PMD_YOUNG=y
 
 #
@@ -1073,6 +1248,9 @@ CONFIG_ARCH_HAS_GCOV_PROFILE_ALL=y
 CONFIG_HAVE_GCC_PLUGINS=y
 CONFIG_GCC_PLUGINS=y
 # CONFIG_GCC_PLUGIN_LATENT_ENTROPY is not set
+CONFIG_FUNCTION_ALIGNMENT_4B=y
+CONFIG_FUNCTION_ALIGNMENT_16B=y
+CONFIG_FUNCTION_ALIGNMENT=16
 # end of General architecture-dependent options
 
 CONFIG_RT_MUTEXES=y
@@ -1100,6 +1278,7 @@ CONFIG_MODULE_COMPRESS_NONE=y
 # CONFIG_MODULE_COMPRESS_ZSTD is not set
 # CONFIG_MODULE_ALLOW_MISSING_NAMESPACE_IMPORTS is not set
 CONFIG_MODPROBE_PATH="/sbin/modprobe"
+# CONFIG_TRIM_UNUSED_KSYMS is not set
 CONFIG_MODULES_TREE_LOOKUP=y
 CONFIG_BLOCK=y
 CONFIG_BLOCK_LEGACY_AUTOLOAD=y
@@ -1149,11 +1328,7 @@ CONFIG_BFQ_GROUP_IOSCHED=y
 CONFIG_PREEMPT_NOTIFIERS=y
 CONFIG_PADATA=y
 CONFIG_ASN1=y
-CONFIG_INLINE_SPIN_UNLOCK_IRQ=y
-CONFIG_INLINE_READ_UNLOCK=y
-CONFIG_INLINE_READ_UNLOCK_IRQ=y
-CONFIG_INLINE_WRITE_UNLOCK=y
-CONFIG_INLINE_WRITE_UNLOCK_IRQ=y
+CONFIG_UNINLINE_SPIN_UNLOCK=y
 CONFIG_ARCH_SUPPORTS_ATOMIC_RMW=y
 CONFIG_MUTEX_SPIN_ON_OWNER=y
 CONFIG_RWSEM_SPIN_ON_OWNER=y
@@ -1207,9 +1382,11 @@ CONFIG_ZSMALLOC_STAT=y
 #
 # CONFIG_SLAB is not set
 CONFIG_SLUB=y
+# CONFIG_SLOB_DEPRECATED is not set
+# CONFIG_SLUB_TINY is not set
 CONFIG_SLAB_MERGE_DEFAULT=y
 CONFIG_SLAB_FREELIST_RANDOM=y
-# CONFIG_SLAB_FREELIST_HARDENED is not set
+CONFIG_SLAB_FREELIST_HARDENED=y
 # CONFIG_SLUB_STATS is not set
 CONFIG_SLUB_CPU_PARTIAL=y
 # end of SLAB allocator options
@@ -1263,6 +1440,7 @@ CONFIG_USE_PERCPU_NUMA_NODE_ID=y
 CONFIG_HAVE_SETUP_PER_CPU_AREA=y
 CONFIG_FRONTSWAP=y
 # CONFIG_CMA is not set
+CONFIG_MEM_SOFT_DIRTY=y
 CONFIG_GENERIC_EARLY_IOREMAP=y
 CONFIG_DEFERRED_STRUCT_PAGE_INIT=y
 CONFIG_PAGE_IDLE_FLAG=y
@@ -1270,9 +1448,11 @@ CONFIG_IDLE_PAGE_TRACKING=y
 CONFIG_ARCH_HAS_CACHE_LINE_SIZE=y
 CONFIG_ARCH_HAS_CURRENT_STACK_POINTER=y
 CONFIG_ARCH_HAS_PTE_DEVMAP=y
+CONFIG_ARCH_HAS_ZONE_DMA_SET=y
 CONFIG_ZONE_DMA=y
 CONFIG_ZONE_DMA32=y
 CONFIG_ZONE_DEVICE=y
+CONFIG_HMM_MIRROR=y
 CONFIG_GET_FREE_REGION=y
 CONFIG_DEVICE_PRIVATE=y
 CONFIG_VMAP_PFN=y
@@ -1280,23 +1460,33 @@ CONFIG_ARCH_USES_HIGH_VMA_FLAGS=y
 CONFIG_ARCH_HAS_PKEYS=y
 CONFIG_VM_EVENT_COUNTERS=y
 # CONFIG_PERCPU_STATS is not set
-# CONFIG_GUP_TEST is not set
+CONFIG_GUP_TEST=y
 CONFIG_ARCH_HAS_PTE_SPECIAL=y
 CONFIG_SECRETMEM=y
 # CONFIG_ANON_VMA_NAME is not set
-# CONFIG_USERFAULTFD is not set
+CONFIG_USERFAULTFD=y
+CONFIG_HAVE_ARCH_USERFAULTFD_WP=y
+CONFIG_HAVE_ARCH_USERFAULTFD_MINOR=y
+CONFIG_PTE_MARKER_UFFD_WP=y
 # CONFIG_LRU_GEN is not set
 
 #
 # Data Access Monitoring
 #
-# CONFIG_DAMON is not set
+CONFIG_DAMON=y
+CONFIG_DAMON_VADDR=y
+CONFIG_DAMON_PADDR=y
+# CONFIG_DAMON_SYSFS is not set
+CONFIG_DAMON_DBGFS=y
+# CONFIG_DAMON_RECLAIM is not set
+# CONFIG_DAMON_LRU_SORT is not set
 # end of Data Access Monitoring
 # end of Memory Management options
 
 CONFIG_NET=y
 CONFIG_NET_INGRESS=y
 CONFIG_NET_EGRESS=y
+CONFIG_NET_REDIRECT=y
 CONFIG_SKB_EXTENSIONS=y
 
 #
@@ -1352,13 +1542,14 @@ CONFIG_IP_PIMSM_V2=y
 CONFIG_SYN_COOKIES=y
 CONFIG_NET_IPVTI=m
 CONFIG_NET_UDP_TUNNEL=m
-# CONFIG_NET_FOU is not set
-# CONFIG_NET_FOU_IP_TUNNELS is not set
+CONFIG_NET_FOU=m
+CONFIG_NET_FOU_IP_TUNNELS=y
 CONFIG_INET_AH=m
 CONFIG_INET_ESP=m
 CONFIG_INET_ESP_OFFLOAD=m
 # CONFIG_INET_ESPINTCP is not set
 CONFIG_INET_IPCOMP=m
+CONFIG_INET_TABLE_PERTURB_ORDER=16
 CONFIG_INET_XFRM_TUNNEL=m
 CONFIG_INET_TUNNEL=m
 CONFIG_INET_DIAG=m
@@ -1406,6 +1597,8 @@ CONFIG_IPV6_SIT_6RD=y
 CONFIG_IPV6_NDISC_NODETYPE=y
 CONFIG_IPV6_TUNNEL=m
 CONFIG_IPV6_GRE=m
+CONFIG_IPV6_FOU=m
+CONFIG_IPV6_FOU_TUNNEL=m
 CONFIG_IPV6_MULTIPLE_TABLES=y
 # CONFIG_IPV6_SUBTREES is not set
 CONFIG_IPV6_MROUTE=y
@@ -1414,9 +1607,11 @@ CONFIG_IPV6_PIMSM_V2=y
 # CONFIG_IPV6_SEG6_LWTUNNEL is not set
 # CONFIG_IPV6_SEG6_HMAC is not set
 # CONFIG_IPV6_RPL_LWTUNNEL is not set
-# CONFIG_IPV6_IOAM6_LWTUNNEL is not set
+CONFIG_IPV6_IOAM6_LWTUNNEL=y
 CONFIG_NETLABEL=y
-# CONFIG_MPTCP is not set
+CONFIG_MPTCP=y
+CONFIG_INET_MPTCP_DIAG=m
+CONFIG_MPTCP_IPV6=y
 CONFIG_NETWORK_SECMARK=y
 CONFIG_NET_PTP_CLASSIFY=y
 CONFIG_NETWORK_PHY_TIMESTAMPING=y
@@ -1476,12 +1671,14 @@ CONFIG_NF_NAT_SIP=m
 CONFIG_NF_NAT_TFTP=m
 CONFIG_NF_NAT_REDIRECT=y
 CONFIG_NF_NAT_MASQUERADE=y
+CONFIG_NF_NAT_OVS=y
 CONFIG_NETFILTER_SYNPROXY=m
 CONFIG_NF_TABLES=m
 CONFIG_NF_TABLES_INET=y
 CONFIG_NF_TABLES_NETDEV=y
 CONFIG_NFT_NUMGEN=m
 CONFIG_NFT_CT=m
+CONFIG_NFT_FLOW_OFFLOAD=m
 CONFIG_NFT_CONNLIMIT=m
 CONFIG_NFT_LOG=m
 CONFIG_NFT_LIMIT=m
@@ -1489,7 +1686,6 @@ CONFIG_NFT_MASQ=m
 CONFIG_NFT_REDIR=m
 CONFIG_NFT_NAT=m
 # CONFIG_NFT_TUNNEL is not set
-CONFIG_NFT_OBJREF=m
 CONFIG_NFT_QUEUE=m
 CONFIG_NFT_QUOTA=m
 CONFIG_NFT_REJECT=m
@@ -1501,14 +1697,16 @@ CONFIG_NFT_FIB_INET=m
 # CONFIG_NFT_XFRM is not set
 CONFIG_NFT_SOCKET=m
 # CONFIG_NFT_OSF is not set
-# CONFIG_NFT_TPROXY is not set
-# CONFIG_NFT_SYNPROXY is not set
+CONFIG_NFT_TPROXY=m
+CONFIG_NFT_SYNPROXY=m
 CONFIG_NF_DUP_NETDEV=m
 CONFIG_NFT_DUP_NETDEV=m
 CONFIG_NFT_FWD_NETDEV=m
 CONFIG_NFT_FIB_NETDEV=m
 # CONFIG_NFT_REJECT_NETDEV is not set
-# CONFIG_NF_FLOW_TABLE is not set
+CONFIG_NF_FLOW_TABLE_INET=m
+CONFIG_NF_FLOW_TABLE=m
+# CONFIG_NF_FLOW_TABLE_PROCFS is not set
 CONFIG_NETFILTER_XTABLES=y
 CONFIG_NETFILTER_XTABLES_COMPAT=y
 
@@ -1772,24 +1970,7 @@ CONFIG_BRIDGE_EBT_SNAT=m
 CONFIG_BRIDGE_EBT_LOG=m
 CONFIG_BRIDGE_EBT_NFLOG=m
 # CONFIG_BPFILTER is not set
-CONFIG_IP_DCCP=y
-CONFIG_INET_DCCP_DIAG=m
-
-#
-# DCCP CCIDs Configuration
-#
-# CONFIG_IP_DCCP_CCID2_DEBUG is not set
-CONFIG_IP_DCCP_CCID3=y
-# CONFIG_IP_DCCP_CCID3_DEBUG is not set
-CONFIG_IP_DCCP_TFRC_LIB=y
-# end of DCCP CCIDs Configuration
-
-#
-# DCCP Kernel Hacking
-#
-# CONFIG_IP_DCCP_DEBUG is not set
-# end of DCCP Kernel Hacking
-
+# CONFIG_IP_DCCP is not set
 CONFIG_IP_SCTP=m
 # CONFIG_SCTP_DBG_OBJCNT is not set
 # CONFIG_SCTP_DEFAULT_COOKIE_HMAC_MD5 is not set
@@ -1815,19 +1996,19 @@ CONFIG_L2TP_DEBUGFS=m
 CONFIG_L2TP_V3=y
 CONFIG_L2TP_IP=m
 CONFIG_L2TP_ETH=m
-CONFIG_STP=m
-CONFIG_GARP=m
-CONFIG_MRP=m
+CONFIG_STP=y
+CONFIG_GARP=y
+CONFIG_MRP=y
 CONFIG_BRIDGE=m
 CONFIG_BRIDGE_IGMP_SNOOPING=y
 CONFIG_BRIDGE_VLAN_FILTERING=y
 # CONFIG_BRIDGE_MRP is not set
 # CONFIG_BRIDGE_CFM is not set
 # CONFIG_NET_DSA is not set
-CONFIG_VLAN_8021Q=m
+CONFIG_VLAN_8021Q=y
 CONFIG_VLAN_8021Q_GVRP=y
 CONFIG_VLAN_8021Q_MVRP=y
-CONFIG_LLC=m
+CONFIG_LLC=y
 # CONFIG_LLC2 is not set
 # CONFIG_ATALK is not set
 # CONFIG_X25 is not set
@@ -1853,31 +2034,32 @@ CONFIG_NET_SCH_SFB=m
 CONFIG_NET_SCH_SFQ=m
 CONFIG_NET_SCH_TEQL=m
 CONFIG_NET_SCH_TBF=m
-# CONFIG_NET_SCH_CBS is not set
-# CONFIG_NET_SCH_ETF is not set
-# CONFIG_NET_SCH_TAPRIO is not set
+CONFIG_NET_SCH_CBS=m
+CONFIG_NET_SCH_ETF=m
+CONFIG_NET_SCH_TAPRIO=m
 CONFIG_NET_SCH_GRED=m
 CONFIG_NET_SCH_DSMARK=m
-CONFIG_NET_SCH_NETEM=m
+CONFIG_NET_SCH_NETEM=y
 CONFIG_NET_SCH_DRR=m
 CONFIG_NET_SCH_MQPRIO=m
-# CONFIG_NET_SCH_SKBPRIO is not set
+CONFIG_NET_SCH_SKBPRIO=m
 CONFIG_NET_SCH_CHOKE=m
 CONFIG_NET_SCH_QFQ=m
 CONFIG_NET_SCH_CODEL=m
 CONFIG_NET_SCH_FQ_CODEL=y
-# CONFIG_NET_SCH_CAKE is not set
+CONFIG_NET_SCH_CAKE=m
 CONFIG_NET_SCH_FQ=m
 CONFIG_NET_SCH_HHF=m
 CONFIG_NET_SCH_PIE=m
-# CONFIG_NET_SCH_FQ_PIE is not set
-CONFIG_NET_SCH_INGRESS=m
+CONFIG_NET_SCH_FQ_PIE=m
+CONFIG_NET_SCH_INGRESS=y
 CONFIG_NET_SCH_PLUG=m
-# CONFIG_NET_SCH_ETS is not set
+CONFIG_NET_SCH_ETS=m
 CONFIG_NET_SCH_DEFAULT=y
 # CONFIG_DEFAULT_FQ is not set
 # CONFIG_DEFAULT_CODEL is not set
 CONFIG_DEFAULT_FQ_CODEL=y
+# CONFIG_DEFAULT_FQ_PIE is not set
 # CONFIG_DEFAULT_SFQ is not set
 # CONFIG_DEFAULT_PFIFO_FAST is not set
 CONFIG_DEFAULT_NET_SCH="fq_codel"
@@ -1907,30 +2089,34 @@ CONFIG_NET_EMATCH_NBYTE=m
 CONFIG_NET_EMATCH_U32=m
 CONFIG_NET_EMATCH_META=m
 CONFIG_NET_EMATCH_TEXT=m
-# CONFIG_NET_EMATCH_CANID is not set
+CONFIG_NET_EMATCH_CANID=m
 CONFIG_NET_EMATCH_IPSET=m
-# CONFIG_NET_EMATCH_IPT is not set
+CONFIG_NET_EMATCH_IPT=m
 CONFIG_NET_CLS_ACT=y
 CONFIG_NET_ACT_POLICE=m
 CONFIG_NET_ACT_GACT=m
 CONFIG_GACT_PROB=y
 CONFIG_NET_ACT_MIRRED=m
 CONFIG_NET_ACT_SAMPLE=m
-# CONFIG_NET_ACT_IPT is not set
+CONFIG_NET_ACT_IPT=m
 CONFIG_NET_ACT_NAT=m
 CONFIG_NET_ACT_PEDIT=m
 CONFIG_NET_ACT_SIMP=m
 CONFIG_NET_ACT_SKBEDIT=m
 CONFIG_NET_ACT_CSUM=m
-# CONFIG_NET_ACT_MPLS is not set
+CONFIG_NET_ACT_MPLS=m
 CONFIG_NET_ACT_VLAN=m
 CONFIG_NET_ACT_BPF=m
-# CONFIG_NET_ACT_CONNMARK is not set
-# CONFIG_NET_ACT_CTINFO is not set
+CONFIG_NET_ACT_CONNMARK=m
+CONFIG_NET_ACT_CTINFO=m
 CONFIG_NET_ACT_SKBMOD=m
-# CONFIG_NET_ACT_IFE is not set
+CONFIG_NET_ACT_IFE=m
 CONFIG_NET_ACT_TUNNEL_KEY=m
-# CONFIG_NET_ACT_GATE is not set
+CONFIG_NET_ACT_CT=m
+CONFIG_NET_ACT_GATE=m
+CONFIG_NET_IFE_SKBMARK=m
+CONFIG_NET_IFE_SKBPRIO=m
+CONFIG_NET_IFE_SKBTCINDEX=m
 # CONFIG_NET_TC_SKB_EXT is not set
 CONFIG_NET_SCH_FIFO=y
 CONFIG_DCB=y
@@ -1991,6 +2177,7 @@ CONFIG_WIRELESS=y
 CONFIG_CFG80211=m
 # CONFIG_NL80211_TESTMODE is not set
 # CONFIG_CFG80211_DEVELOPER_WARNINGS is not set
+# CONFIG_CFG80211_CERTIFICATION_ONUS is not set
 CONFIG_CFG80211_REQUIRE_SIGNED_REGDB=y
 CONFIG_CFG80211_USE_KERNEL_REGDB_KEYS=y
 CONFIG_CFG80211_DEFAULT_PS=y
@@ -2020,9 +2207,29 @@ CONFIG_NET_9P_VIRTIO=y
 CONFIG_CEPH_LIB=m
 # CONFIG_CEPH_LIB_PRETTYDEBUG is not set
 CONFIG_CEPH_LIB_USE_DNS_RESOLVER=y
-# CONFIG_NFC is not set
+CONFIG_NFC=m
+# CONFIG_NFC_DIGITAL is not set
+CONFIG_NFC_NCI=m
+# CONFIG_NFC_NCI_SPI is not set
+# CONFIG_NFC_NCI_UART is not set
+# CONFIG_NFC_HCI is not set
+
+#
+# Near Field Communication (NFC) devices
+#
+CONFIG_NFC_VIRTUAL_NCI=m
+# CONFIG_NFC_FDP is not set
+# CONFIG_NFC_PN533_USB is not set
+# CONFIG_NFC_PN533_I2C is not set
+# CONFIG_NFC_MRVL_USB is not set
+# CONFIG_NFC_ST_NCI_I2C is not set
+# CONFIG_NFC_ST_NCI_SPI is not set
+# CONFIG_NFC_NXP_NCI is not set
+# CONFIG_NFC_S3FWRN5_I2C is not set
+# end of Near Field Communication (NFC) devices
+
 CONFIG_PSAMPLE=m
-# CONFIG_NET_IFE is not set
+CONFIG_NET_IFE=m
 CONFIG_LWTUNNEL=y
 CONFIG_LWTUNNEL_BPF=y
 CONFIG_DST_CACHE=y
@@ -2058,7 +2265,6 @@ CONFIG_PCIE_DPC=y
 # CONFIG_PCIE_PTM is not set
 # CONFIG_PCIE_EDR is not set
 CONFIG_PCI_MSI=y
-CONFIG_PCI_MSI_IRQ_DOMAIN=y
 CONFIG_PCI_QUIRKS=y
 # CONFIG_PCI_DEBUG is not set
 # CONFIG_PCI_REALLOC_ENABLE_AUTO is not set
@@ -2071,6 +2277,11 @@ CONFIG_PCI_PRI=y
 CONFIG_PCI_PASID=y
 # CONFIG_PCI_P2PDMA is not set
 CONFIG_PCI_LABEL=y
+# CONFIG_PCIE_BUS_TUNE_OFF is not set
+CONFIG_PCIE_BUS_DEFAULT=y
+# CONFIG_PCIE_BUS_SAFE is not set
+# CONFIG_PCIE_BUS_PERFORMANCE is not set
+# CONFIG_PCIE_BUS_PEER2PEER is not set
 CONFIG_VGA_ARB=y
 CONFIG_VGA_ARB_MAX_GPUS=64
 CONFIG_HOTPLUG_PCI=y
@@ -2140,7 +2351,7 @@ CONFIG_FW_LOADER_USER_HELPER=y
 # CONFIG_FW_LOADER_USER_HELPER_FALLBACK is not set
 # CONFIG_FW_LOADER_COMPRESS is not set
 CONFIG_FW_CACHE=y
-# CONFIG_FW_UPLOAD is not set
+CONFIG_FW_UPLOAD=y
 # end of Firmware loader
 
 CONFIG_ALLOW_DEV_COREDUMP=y
@@ -2195,11 +2406,8 @@ CONFIG_SYSFB=y
 CONFIG_EFI_ESRT=y
 CONFIG_EFI_VARS_PSTORE=y
 CONFIG_EFI_VARS_PSTORE_DEFAULT_DISABLE=y
-CONFIG_EFI_RUNTIME_MAP=y
-# CONFIG_EFI_FAKE_MEMMAP is not set
 CONFIG_EFI_DXE_MEM_ATTRIBUTES=y
 CONFIG_EFI_RUNTIME_WRAPPERS=y
-CONFIG_EFI_GENERIC_STUB_INITRD_CMDLINE_LOADER=y
 # CONFIG_EFI_BOOTLOADER_CONTROL is not set
 # CONFIG_EFI_CAPSULE_LOADER is not set
 # CONFIG_EFI_TEST is not set
@@ -2246,7 +2454,13 @@ CONFIG_BLK_DEV_NULL_BLK=m
 CONFIG_CDROM=m
 # CONFIG_PARIDE is not set
 # CONFIG_BLK_DEV_PCIESSD_MTIP32XX is not set
-# CONFIG_ZRAM is not set
+CONFIG_ZRAM=m
+CONFIG_ZRAM_DEF_COMP_LZORLE=y
+# CONFIG_ZRAM_DEF_COMP_LZO is not set
+CONFIG_ZRAM_DEF_COMP="lzo-rle"
+CONFIG_ZRAM_WRITEBACK=y
+# CONFIG_ZRAM_MEMORY_TRACKING is not set
+# CONFIG_ZRAM_MULTI_COMP is not set
 CONFIG_BLK_DEV_LOOP=m
 CONFIG_BLK_DEV_LOOP_MIN_COUNT=0
 # CONFIG_BLK_DEV_DRBD is not set
@@ -2254,9 +2468,6 @@ CONFIG_BLK_DEV_NBD=m
 CONFIG_BLK_DEV_RAM=m
 CONFIG_BLK_DEV_RAM_COUNT=16
 CONFIG_BLK_DEV_RAM_SIZE=16384
-CONFIG_CDROM_PKTCDVD=m
-CONFIG_CDROM_PKTCDVD_BUFFERS=8
-# CONFIG_CDROM_PKTCDVD_WCACHE is not set
 # CONFIG_ATA_OVER_ETH is not set
 CONFIG_VIRTIO_BLK=m
 CONFIG_BLK_DEV_RBD=m
@@ -2639,30 +2850,30 @@ CONFIG_NETDEVICES=y
 CONFIG_MII=y
 CONFIG_NET_CORE=y
 # CONFIG_BONDING is not set
-# CONFIG_DUMMY is not set
+CONFIG_DUMMY=m
 # CONFIG_WIREGUARD is not set
 # CONFIG_EQUALIZER is not set
 # CONFIG_NET_FC is not set
-# CONFIG_IFB is not set
+CONFIG_IFB=m
 # CONFIG_NET_TEAM is not set
 # CONFIG_MACVLAN is not set
 # CONFIG_IPVLAN is not set
 # CONFIG_VXLAN is not set
 # CONFIG_GENEVE is not set
-# CONFIG_BAREUDP is not set
+CONFIG_BAREUDP=m
 # CONFIG_GTP is not set
-# CONFIG_AMT is not set
-# CONFIG_MACSEC is not set
+CONFIG_AMT=m
+CONFIG_MACSEC=y
 CONFIG_NETCONSOLE=m
 CONFIG_NETCONSOLE_DYNAMIC=y
 CONFIG_NETPOLL=y
 CONFIG_NET_POLL_CONTROLLER=y
 CONFIG_TUN=m
 # CONFIG_TUN_VNET_CROSS_LE is not set
-# CONFIG_VETH is not set
+CONFIG_VETH=m
 CONFIG_VIRTIO_NET=m
 # CONFIG_NLMON is not set
-# CONFIG_NET_VRF is not set
+CONFIG_NET_VRF=y
 # CONFIG_VSOCKMON is not set
 # CONFIG_ARCNET is not set
 CONFIG_ATM_DRIVERS=y
@@ -2797,11 +3008,11 @@ CONFIG_NET_VENDOR_MICROCHIP=y
 # CONFIG_ENC28J60 is not set
 # CONFIG_ENCX24J600 is not set
 # CONFIG_LAN743X is not set
+# CONFIG_VCAP is not set
 CONFIG_NET_VENDOR_MICROSEMI=y
 CONFIG_NET_VENDOR_MICROSOFT=y
 CONFIG_NET_VENDOR_MYRI=y
 # CONFIG_MYRI10GE is not set
-# CONFIG_FEALNX is not set
 CONFIG_NET_VENDOR_NI=y
 # CONFIG_NI_XGE_MANAGEMENT_ENET is not set
 CONFIG_NET_VENDOR_NATSEMI=y
@@ -3284,6 +3495,7 @@ CONFIG_HW_CONSOLE=y
 CONFIG_VT_HW_CONSOLE_BINDING=y
 CONFIG_UNIX98_PTYS=y
 # CONFIG_LEGACY_PTYS is not set
+CONFIG_LEGACY_TIOCSTI=y
 CONFIG_LDISC_AUTOLOAD=y
 
 #
@@ -3346,6 +3558,7 @@ CONFIG_NOZOMI=m
 # CONFIG_NULL_TTY is not set
 CONFIG_HVC_DRIVER=y
 # CONFIG_SERIAL_DEV_BUS is not set
+# CONFIG_TTY_PRINTK is not set
 CONFIG_PRINTER=m
 # CONFIG_LP_CONSOLE is not set
 CONFIG_PPDEV=m
@@ -3399,8 +3612,6 @@ CONFIG_TCG_TIS_ST33ZP24_I2C=m
 CONFIG_TELCLOCK=m
 # CONFIG_XILLYBUS is not set
 # CONFIG_XILLYUSB is not set
-CONFIG_RANDOM_TRUST_CPU=y
-CONFIG_RANDOM_TRUST_BOOTLOADER=y
 # end of Character devices
 
 #
@@ -3425,7 +3636,7 @@ CONFIG_I2C_MUX_MLXCPLD=m
 # end of Multiplexer I2C Chip support
 
 CONFIG_I2C_HELPER_AUTO=y
-CONFIG_I2C_SMBUS=y
+CONFIG_I2C_SMBUS=m
 CONFIG_I2C_ALGOBIT=y
 CONFIG_I2C_ALGOPCA=m
 
@@ -3442,7 +3653,7 @@ CONFIG_I2C_ALGOPCA=m
 # CONFIG_I2C_AMD756 is not set
 # CONFIG_I2C_AMD8111 is not set
 # CONFIG_I2C_AMD_MP2 is not set
-CONFIG_I2C_I801=y
+CONFIG_I2C_I801=m
 CONFIG_I2C_ISCH=m
 CONFIG_I2C_ISMT=m
 CONFIG_I2C_PIIX4=m
@@ -3524,6 +3735,7 @@ CONFIG_SPI_MASTER=y
 # CONFIG_SPI_MICROCHIP_CORE_QSPI is not set
 # CONFIG_SPI_LANTIQ_SSC is not set
 # CONFIG_SPI_OC_TINY is not set
+# CONFIG_SPI_PCI1XXXX is not set
 # CONFIG_SPI_PXA2XX is not set
 # CONFIG_SPI_ROCKCHIP is not set
 # CONFIG_SPI_SC18IS602 is not set
@@ -3616,6 +3828,7 @@ CONFIG_GPIOLIB=y
 CONFIG_GPIOLIB_FASTPATH_LIMIT=512
 CONFIG_GPIO_ACPI=y
 # CONFIG_DEBUG_GPIO is not set
+CONFIG_GPIO_SYSFS=y
 CONFIG_GPIO_CDEV=y
 CONFIG_GPIO_CDEV_V1=y
 
@@ -3689,9 +3902,10 @@ CONFIG_GPIO_ICH=m
 # Virtual GPIO drivers
 #
 # CONFIG_GPIO_AGGREGATOR is not set
-# CONFIG_GPIO_MOCKUP is not set
+# CONFIG_GPIO_LATCH is not set
+CONFIG_GPIO_MOCKUP=m
 # CONFIG_GPIO_VIRTIO is not set
-# CONFIG_GPIO_SIM is not set
+CONFIG_GPIO_SIM=m
 # end of Virtual GPIO drivers
 
 # CONFIG_W1 is not set
@@ -3765,8 +3979,6 @@ CONFIG_SENSORS_ADT7475=m
 CONFIG_SENSORS_ASC7621=m
 # CONFIG_SENSORS_AXI_FAN_CONTROL is not set
 CONFIG_SENSORS_K8TEMP=m
-CONFIG_SENSORS_K10TEMP=m
-CONFIG_SENSORS_FAM15H_POWER=m
 CONFIG_SENSORS_APPLESMC=m
 CONFIG_SENSORS_ASB100=m
 CONFIG_SENSORS_ATXP1=m
@@ -3854,6 +4066,8 @@ CONFIG_SENSORS_NCT6775=m
 # CONFIG_SENSORS_NPCM7XX is not set
 # CONFIG_SENSORS_NZXT_KRAKEN2 is not set
 # CONFIG_SENSORS_NZXT_SMART2 is not set
+# CONFIG_SENSORS_OCC_P8_I2C is not set
+# CONFIG_SENSORS_OXP is not set
 CONFIG_SENSORS_PCF8591=m
 CONFIG_PMBUS=m
 CONFIG_SENSORS_PMBUS=m
@@ -4023,6 +4237,7 @@ CONFIG_WDAT_WDT=m
 # CONFIG_MAX63XX_WATCHDOG is not set
 # CONFIG_ACQUIRE_WDT is not set
 # CONFIG_ADVANTECH_WDT is not set
+# CONFIG_ADVANTECH_EC_WDT is not set
 CONFIG_ALIM1535_WDT=m
 CONFIG_ALIM7101_WDT=m
 # CONFIG_EBC_C384_WDT is not set
@@ -4088,6 +4303,7 @@ CONFIG_BCMA_DRIVER_GPIO=y
 #
 CONFIG_MFD_CORE=y
 # CONFIG_MFD_AS3711 is not set
+# CONFIG_MFD_SMPRO is not set
 # CONFIG_PMIC_ADP5520 is not set
 # CONFIG_MFD_AAT2870_CORE is not set
 # CONFIG_MFD_BCM590XX is not set
@@ -4106,9 +4322,8 @@ CONFIG_MFD_CORE=y
 # CONFIG_MFD_MC13XXX_I2C is not set
 # CONFIG_MFD_MP2629 is not set
 # CONFIG_HTC_PASIC3 is not set
-# CONFIG_HTC_I2CPLD is not set
 # CONFIG_MFD_INTEL_QUARK_I2C_GPIO is not set
-CONFIG_LPC_ICH=y
+CONFIG_LPC_ICH=m
 CONFIG_LPC_SCH=m
 CONFIG_MFD_INTEL_LPSS=y
 CONFIG_MFD_INTEL_LPSS_ACPI=y
@@ -4180,7 +4395,8 @@ CONFIG_MFD_VX855=m
 # end of Multifunction device drivers
 
 # CONFIG_REGULATOR is not set
-CONFIG_RC_CORE=m
+CONFIG_RC_CORE=y
+# CONFIG_BPF_LIRC_MODE2 is not set
 CONFIG_LIRC=y
 CONFIG_RC_MAP=m
 CONFIG_RC_DECODERS=y
@@ -4192,7 +4408,7 @@ CONFIG_IR_RC5_DECODER=m
 CONFIG_IR_RC6_DECODER=m
 # CONFIG_IR_RCMM_DECODER is not set
 CONFIG_IR_SANYO_DECODER=m
-# CONFIG_IR_SHARP_DECODER is not set
+CONFIG_IR_SHARP_DECODER=m
 CONFIG_IR_SONY_DECODER=m
 # CONFIG_IR_XMP_DECODER is not set
 CONFIG_RC_DEVICES=y
@@ -4253,8 +4469,6 @@ CONFIG_MEDIA_SUBDRV_AUTOSELECT=y
 # CONFIG_MEDIA_PCI_SUPPORT is not set
 # end of Media drivers
 
-CONFIG_MEDIA_HIDE_ANCILLARY_SUBDRV=y
-
 #
 # Media ancillary drivers
 #
@@ -4264,6 +4478,7 @@ CONFIG_MEDIA_HIDE_ANCILLARY_SUBDRV=y
 # Graphics support
 #
 CONFIG_APERTURE_HELPERS=y
+CONFIG_VIDEO_NOMODESET=y
 # CONFIG_AGP is not set
 CONFIG_INTEL_GTT=m
 CONFIG_VGA_SWITCHEROO=y
@@ -4271,8 +4486,11 @@ CONFIG_DRM=m
 CONFIG_DRM_MIPI_DSI=y
 CONFIG_DRM_USE_DYNAMIC_DEBUG=y
 CONFIG_DRM_KMS_HELPER=m
+# CONFIG_DRM_DEBUG_DP_MST_TOPOLOGY_REFS is not set
+CONFIG_DRM_DEBUG_MODESET_LOCK=y
 CONFIG_DRM_FBDEV_EMULATION=y
 CONFIG_DRM_FBDEV_OVERALLOC=100
+# CONFIG_DRM_FBDEV_LEAK_PHYS_SMEM is not set
 CONFIG_DRM_LOAD_EDID_FIRMWARE=y
 CONFIG_DRM_DISPLAY_HELPER=m
 CONFIG_DRM_DISPLAY_DP_HELPER=y
@@ -4309,15 +4527,37 @@ CONFIG_DRM_I915_CAPTURE_ERROR=y
 CONFIG_DRM_I915_COMPRESS_ERROR=y
 CONFIG_DRM_I915_USERPTR=y
 # CONFIG_DRM_I915_GVT_KVMGT is not set
+
+#
+# drm/i915 Debugging
+#
+# CONFIG_DRM_I915_WERROR is not set
+# CONFIG_DRM_I915_DEBUG is not set
+# CONFIG_DRM_I915_DEBUG_MMIO is not set
+# CONFIG_DRM_I915_SW_FENCE_DEBUG_OBJECTS is not set
+# CONFIG_DRM_I915_SW_FENCE_CHECK_DAG is not set
+# CONFIG_DRM_I915_DEBUG_GUC is not set
+# CONFIG_DRM_I915_SELFTEST is not set
+# CONFIG_DRM_I915_LOW_LEVEL_TRACEPOINTS is not set
+# CONFIG_DRM_I915_DEBUG_VBLANK_EVADE is not set
+# CONFIG_DRM_I915_DEBUG_RUNTIME_PM is not set
+# end of drm/i915 Debugging
+
+#
+# drm/i915 Profile Guided Optimisation
+#
 CONFIG_DRM_I915_REQUEST_TIMEOUT=20000
 CONFIG_DRM_I915_FENCE_TIMEOUT=10000
 CONFIG_DRM_I915_USERFAULT_AUTOSUSPEND=250
 CONFIG_DRM_I915_HEARTBEAT_INTERVAL=2500
 CONFIG_DRM_I915_PREEMPT_TIMEOUT=640
+CONFIG_DRM_I915_PREEMPT_TIMEOUT_COMPUTE=7500
 CONFIG_DRM_I915_MAX_REQUEST_BUSYWAIT=8000
 CONFIG_DRM_I915_STOP_TIMEOUT=100
 CONFIG_DRM_I915_TIMESLICE_DURATION=1
-# CONFIG_DRM_VGEM is not set
+# end of drm/i915 Profile Guided Optimisation
+
+CONFIG_DRM_VGEM=m
 # CONFIG_DRM_VKMS is not set
 # CONFIG_DRM_VMWGFX is not set
 CONFIG_DRM_GMA500=m
@@ -4364,7 +4604,6 @@ CONFIG_DRM_CIRRUS_QEMU=m
 # CONFIG_DRM_SSD130X is not set
 # CONFIG_DRM_LEGACY is not set
 CONFIG_DRM_PANEL_ORIENTATION_QUIRKS=y
-CONFIG_DRM_NOMODESET=y
 CONFIG_DRM_PRIVACY_SCREEN=y
 
 #
@@ -4491,6 +4730,7 @@ CONFIG_LOGO=y
 CONFIG_LOGO_LINUX_CLUT224=y
 # end of Graphics support
 
+# CONFIG_DRM_ACCEL is not set
 # CONFIG_SOUND is not set
 
 #
@@ -4672,6 +4912,7 @@ CONFIG_USB_DEFAULT_PERSIST=y
 # CONFIG_USB_DYNAMIC_MINORS is not set
 # CONFIG_USB_OTG is not set
 # CONFIG_USB_OTG_PRODUCTLIST is not set
+# CONFIG_USB_OTG_DISABLE_EXTERNAL_HUB is not set
 CONFIG_USB_LEDS_TRIGGER_USBPORT=y
 CONFIG_USB_AUTOSUSPEND_DELAY=2
 CONFIG_USB_MON=y
@@ -4693,7 +4934,6 @@ CONFIG_USB_EHCI_PCI=y
 # CONFIG_USB_EHCI_HCD_PLATFORM is not set
 # CONFIG_USB_OXU210HP_HCD is not set
 # CONFIG_USB_ISP116X_HCD is not set
-# CONFIG_USB_FOTG210_HCD is not set
 # CONFIG_USB_MAX3421_HCD is not set
 CONFIG_USB_OHCI_HCD=y
 CONFIG_USB_OHCI_HCD_PCI=y
@@ -4742,6 +4982,10 @@ CONFIG_USB_STORAGE=m
 # CONFIG_USB_MDC800 is not set
 # CONFIG_USB_MICROTEK is not set
 # CONFIG_USBIP_CORE is not set
+
+#
+# USB dual-mode controller drivers
+#
 # CONFIG_USB_CDNS_SUPPORT is not set
 # CONFIG_USB_MUSB_HDRC is not set
 # CONFIG_USB_DWC3 is not set
@@ -4997,7 +5241,6 @@ CONFIG_EDAC_IE31200=m
 CONFIG_EDAC_X38=m
 CONFIG_EDAC_I5400=m
 CONFIG_EDAC_I7CORE=m
-CONFIG_EDAC_I5000=m
 CONFIG_EDAC_I5100=m
 CONFIG_EDAC_I7300=m
 CONFIG_EDAC_SBRIDGE=m
@@ -5153,13 +5396,14 @@ CONFIG_DMA_ENGINE_RAID=y
 # DMABUF options
 #
 CONFIG_SYNC_FILE=y
-# CONFIG_SW_SYNC is not set
-# CONFIG_UDMABUF is not set
+CONFIG_SW_SYNC=y
+CONFIG_UDMABUF=y
 # CONFIG_DMABUF_MOVE_NOTIFY is not set
 # CONFIG_DMABUF_DEBUG is not set
 # CONFIG_DMABUF_SELFTESTS is not set
-# CONFIG_DMABUF_HEAPS is not set
+CONFIG_DMABUF_HEAPS=y
 # CONFIG_DMABUF_SYSFS_STATS is not set
+CONFIG_DMABUF_HEAPS_SYSTEM=y
 # end of DMABUF options
 
 CONFIG_DCA=m
@@ -5176,9 +5420,10 @@ CONFIG_UIO_PCI_GENERIC=m
 # CONFIG_UIO_PRUSS is not set
 # CONFIG_UIO_MF624 is not set
 CONFIG_VFIO=m
+CONFIG_VFIO_CONTAINER=y
 CONFIG_VFIO_IOMMU_TYPE1=m
-CONFIG_VFIO_VIRQFD=m
 CONFIG_VFIO_NOIOMMU=y
+CONFIG_VFIO_VIRQFD=y
 CONFIG_VFIO_PCI_CORE=m
 CONFIG_VFIO_PCI_MMAP=y
 CONFIG_VFIO_PCI_INTX=y
@@ -5218,7 +5463,25 @@ CONFIG_VHOST_VSOCK=m
 
 # CONFIG_GREYBUS is not set
 # CONFIG_COMEDI is not set
-# CONFIG_STAGING is not set
+CONFIG_STAGING=y
+# CONFIG_PRISM2_USB is not set
+# CONFIG_RTL8192U is not set
+# CONFIG_RTLLIB is not set
+# CONFIG_RTL8723BS is not set
+# CONFIG_R8712U is not set
+# CONFIG_R8188EU is not set
+# CONFIG_RTS5208 is not set
+# CONFIG_VT6655 is not set
+# CONFIG_VT6656 is not set
+# CONFIG_FB_SM750 is not set
+# CONFIG_STAGING_MEDIA is not set
+# CONFIG_LTE_GDM724X is not set
+# CONFIG_FB_TFT is not set
+# CONFIG_KS7010 is not set
+# CONFIG_PI433 is not set
+# CONFIG_FIELDBUS_DEV is not set
+# CONFIG_QLGE is not set
+# CONFIG_VME_BUS is not set
 # CONFIG_CHROME_PLATFORMS is not set
 CONFIG_MELLANOX_PLATFORM=y
 CONFIG_MLXREG_HOTPLUG=m
@@ -5247,7 +5510,6 @@ CONFIG_ACERHDF=m
 CONFIG_ACER_WMI=m
 # CONFIG_AMD_PMF is not set
 # CONFIG_AMD_PMC is not set
-# CONFIG_AMD_HSMP is not set
 # CONFIG_ADV_SWBUTTON is not set
 CONFIG_APPLE_GMUX=m
 CONFIG_ASUS_LAPTOP=m
@@ -5263,9 +5525,8 @@ CONFIG_AMILO_RFKILL=m
 CONFIG_FUJITSU_LAPTOP=m
 CONFIG_FUJITSU_TABLET=m
 # CONFIG_GPD_POCKET_FAN is not set
-CONFIG_HP_ACCEL=m
+# CONFIG_X86_PLATFORM_DRIVERS_HP is not set
 # CONFIG_WIRELESS_HOTKEY is not set
-CONFIG_HP_WMI=m
 # CONFIG_IBM_RTL is not set
 CONFIG_IDEAPAD_LAPTOP=m
 CONFIG_SENSORS_HDAPS=m
@@ -5277,6 +5538,7 @@ CONFIG_THINKPAD_ACPI_VIDEO=y
 CONFIG_THINKPAD_ACPI_HOTKEY_POLL=y
 # CONFIG_THINKPAD_LMI is not set
 # CONFIG_INTEL_ATOMISP2_PM is not set
+# CONFIG_INTEL_IFS is not set
 # CONFIG_INTEL_SAR_INT1092 is not set
 CONFIG_INTEL_PMC_CORE=m
 
@@ -5379,6 +5641,7 @@ CONFIG_INTEL_IOMMU_SVM=y
 # CONFIG_INTEL_IOMMU_DEFAULT_ON is not set
 CONFIG_INTEL_IOMMU_FLOPPY_WA=y
 CONFIG_INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON=y
+# CONFIG_IOMMUFD is not set
 CONFIG_IRQ_REMAP=y
 # CONFIG_VIRTIO_IOMMU is not set
 
@@ -5525,6 +5788,7 @@ CONFIG_ND_PFN=m
 CONFIG_NVDIMM_PFN=y
 CONFIG_NVDIMM_DAX=y
 CONFIG_NVDIMM_KEYS=y
+# CONFIG_NVDIMM_SECURITY_TEST is not set
 CONFIG_DAX=y
 CONFIG_DEV_DAX=m
 CONFIG_DEV_DAX_PMEM=m
@@ -5554,7 +5818,6 @@ CONFIG_INTEL_TH_PTI=m
 # end of HW tracing support
 
 # CONFIG_FPGA is not set
-# CONFIG_TEE is not set
 # CONFIG_SIOX is not set
 # CONFIG_SLIMBUS is not set
 # CONFIG_INTERCONNECT is not set
@@ -5699,6 +5962,7 @@ CONFIG_PROC_SYSCTL=y
 CONFIG_PROC_PAGE_MONITOR=y
 CONFIG_PROC_CHILDREN=y
 CONFIG_PROC_PID_ARCH_STATUS=y
+CONFIG_PROC_CPU_RESCTRL=y
 CONFIG_KERNFS=y
 CONFIG_SYSFS=y
 CONFIG_TMPFS=y
@@ -5731,9 +5995,11 @@ CONFIG_CRAMFS_BLOCKDEV=y
 CONFIG_SQUASHFS=m
 # CONFIG_SQUASHFS_FILE_CACHE is not set
 CONFIG_SQUASHFS_FILE_DIRECT=y
-# CONFIG_SQUASHFS_DECOMP_SINGLE is not set
-# CONFIG_SQUASHFS_DECOMP_MULTI is not set
-CONFIG_SQUASHFS_DECOMP_MULTI_PERCPU=y
+CONFIG_SQUASHFS_DECOMP_SINGLE=y
+# CONFIG_SQUASHFS_CHOICE_DECOMP_BY_MOUNT is not set
+CONFIG_SQUASHFS_COMPILE_DECOMP_SINGLE=y
+# CONFIG_SQUASHFS_COMPILE_DECOMP_MULTI is not set
+# CONFIG_SQUASHFS_COMPILE_DECOMP_MULTI_PERCPU is not set
 CONFIG_SQUASHFS_XATTR=y
 CONFIG_SQUASHFS_ZLIB=y
 # CONFIG_SQUASHFS_LZ4 is not set
@@ -5761,8 +6027,8 @@ CONFIG_PSTORE_DEFLATE_COMPRESS=y
 CONFIG_PSTORE_COMPRESS=y
 CONFIG_PSTORE_DEFLATE_COMPRESS_DEFAULT=y
 CONFIG_PSTORE_COMPRESS_DEFAULT="deflate"
-# CONFIG_PSTORE_CONSOLE is not set
-# CONFIG_PSTORE_PMSG is not set
+CONFIG_PSTORE_CONSOLE=y
+CONFIG_PSTORE_PMSG=y
 # CONFIG_PSTORE_FTRACE is not set
 CONFIG_PSTORE_RAM=m
 # CONFIG_PSTORE_BLK is not set
@@ -5789,9 +6055,9 @@ CONFIG_ROOT_NFS=y
 CONFIG_NFS_USE_KERNEL_DNS=y
 CONFIG_NFS_DEBUG=y
 CONFIG_NFS_DISABLE_UDP_SUPPORT=y
-# CONFIG_NFS_V4_2_READ_PLUS is not set
+CONFIG_NFS_V4_2_READ_PLUS=y
 CONFIG_NFSD=m
-CONFIG_NFSD_V2_ACL=y
+# CONFIG_NFSD_V2 is not set
 CONFIG_NFSD_V3_ACL=y
 CONFIG_NFSD_V4=y
 CONFIG_NFSD_PNFS=y
@@ -5916,18 +6182,12 @@ CONFIG_FORTIFY_SOURCE=y
 # CONFIG_SECURITY_SELINUX is not set
 # CONFIG_SECURITY_SMACK is not set
 # CONFIG_SECURITY_TOMOYO is not set
-CONFIG_SECURITY_APPARMOR=y
-# CONFIG_SECURITY_APPARMOR_DEBUG is not set
-CONFIG_SECURITY_APPARMOR_INTROSPECT_POLICY=y
-CONFIG_SECURITY_APPARMOR_HASH=y
-CONFIG_SECURITY_APPARMOR_HASH_DEFAULT=y
-CONFIG_SECURITY_APPARMOR_EXPORT_BINARY=y
-CONFIG_SECURITY_APPARMOR_PARANOID_LOAD=y
+# CONFIG_SECURITY_APPARMOR is not set
 # CONFIG_SECURITY_LOADPIN is not set
 CONFIG_SECURITY_YAMA=y
 # CONFIG_SECURITY_SAFESETID is not set
 # CONFIG_SECURITY_LOCKDOWN_LSM is not set
-# CONFIG_SECURITY_LANDLOCK is not set
+CONFIG_SECURITY_LANDLOCK=y
 CONFIG_INTEGRITY=y
 CONFIG_INTEGRITY_SIGNATURE=y
 CONFIG_INTEGRITY_ASYMMETRIC_KEYS=y
@@ -5937,9 +6197,8 @@ CONFIG_INTEGRITY_AUDIT=y
 # CONFIG_IMA is not set
 # CONFIG_IMA_SECURE_AND_OR_TRUSTED_BOOT is not set
 # CONFIG_EVM is not set
-CONFIG_DEFAULT_SECURITY_APPARMOR=y
-# CONFIG_DEFAULT_SECURITY_DAC is not set
-CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,integrity,apparmor,selinux,smack,tomoyo,bpf"
+CONFIG_DEFAULT_SECURITY_DAC=y
+CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,integrity,bpf"
 
 #
 # Kernel hardening options
@@ -5950,10 +6209,8 @@ CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,integrity,apparmor,selinux,
 #
 CONFIG_INIT_STACK_NONE=y
 # CONFIG_GCC_PLUGIN_STRUCTLEAK_USER is not set
-# CONFIG_GCC_PLUGIN_STRUCTLEAK_BYREF is not set
-# CONFIG_GCC_PLUGIN_STRUCTLEAK_BYREF_ALL is not set
 # CONFIG_GCC_PLUGIN_STACKLEAK is not set
-# CONFIG_INIT_ON_ALLOC_DEFAULT_ON is not set
+CONFIG_INIT_ON_ALLOC_DEFAULT_ON=y
 # CONFIG_INIT_ON_FREE_DEFAULT_ON is not set
 CONFIG_CC_HAS_ZERO_CALL_USED_REGS=y
 # CONFIG_ZERO_CALL_USED_REGS is not set
@@ -5996,7 +6253,6 @@ CONFIG_CRYPTO_MANAGER=y
 CONFIG_CRYPTO_MANAGER2=y
 CONFIG_CRYPTO_USER=m
 CONFIG_CRYPTO_MANAGER_DISABLE_TESTS=y
-CONFIG_CRYPTO_GF128MUL=y
 CONFIG_CRYPTO_NULL=y
 CONFIG_CRYPTO_NULL2=y
 CONFIG_CRYPTO_PCRYPT=m
@@ -6038,7 +6294,8 @@ CONFIG_CRYPTO_FCRYPT=m
 CONFIG_CRYPTO_KHAZAD=m
 CONFIG_CRYPTO_SEED=m
 CONFIG_CRYPTO_SERPENT=m
-# CONFIG_CRYPTO_SM4_GENERIC is not set
+CONFIG_CRYPTO_SM4=y
+CONFIG_CRYPTO_SM4_GENERIC=y
 CONFIG_CRYPTO_TEA=m
 CONFIG_CRYPTO_TWOFISH=m
 CONFIG_CRYPTO_TWOFISH_COMMON=m
@@ -6058,7 +6315,7 @@ CONFIG_CRYPTO_ECB=y
 # CONFIG_CRYPTO_HCTR2 is not set
 # CONFIG_CRYPTO_KEYWRAP is not set
 CONFIG_CRYPTO_LRW=m
-CONFIG_CRYPTO_OFB=m
+# CONFIG_CRYPTO_OFB is not set
 CONFIG_CRYPTO_PCBC=m
 CONFIG_CRYPTO_XTS=m
 # end of Length-preserving ciphers and modes
@@ -6191,11 +6448,6 @@ CONFIG_CRYPTO_DEV_PADLOCK_SHA=m
 # CONFIG_CRYPTO_DEV_ATMEL_ECC is not set
 # CONFIG_CRYPTO_DEV_ATMEL_SHA204A is not set
 CONFIG_CRYPTO_DEV_CCP=y
-CONFIG_CRYPTO_DEV_CCP_DD=m
-CONFIG_CRYPTO_DEV_SP_CCP=y
-CONFIG_CRYPTO_DEV_CCP_CRYPTO=m
-CONFIG_CRYPTO_DEV_SP_PSP=y
-# CONFIG_CRYPTO_DEV_CCP_DEBUGFS is not set
 CONFIG_CRYPTO_DEV_QAT=m
 CONFIG_CRYPTO_DEV_QAT_DH895xCC=m
 CONFIG_CRYPTO_DEV_QAT_C3XXX=m
@@ -6247,7 +6499,7 @@ CONFIG_GENERIC_STRNCPY_FROM_USER=y
 CONFIG_GENERIC_STRNLEN_USER=y
 CONFIG_GENERIC_NET_UTILS=y
 CONFIG_CORDIC=m
-# CONFIG_PRIME_NUMBERS is not set
+CONFIG_PRIME_NUMBERS=m
 CONFIG_RATIONAL=y
 CONFIG_GENERIC_PCI_IOMAP=y
 CONFIG_GENERIC_IOMAP=y
@@ -6261,6 +6513,7 @@ CONFIG_ARCH_USE_SYM_ANNOTATIONS=y
 CONFIG_CRYPTO_LIB_UTILS=y
 CONFIG_CRYPTO_LIB_AES=y
 CONFIG_CRYPTO_LIB_ARC4=m
+CONFIG_CRYPTO_LIB_GF128MUL=y
 CONFIG_CRYPTO_LIB_BLAKE2S_GENERIC=y
 CONFIG_CRYPTO_ARCH_HAVE_LIB_CHACHA=m
 CONFIG_CRYPTO_LIB_CHACHA_GENERIC=m
@@ -6338,7 +6591,7 @@ CONFIG_ARCH_DMA_ADDR_T_64BIT=y
 CONFIG_ARCH_HAS_FORCE_DMA_UNENCRYPTED=y
 CONFIG_SWIOTLB=y
 # CONFIG_DMA_API_DEBUG is not set
-# CONFIG_DMA_MAP_BENCHMARK is not set
+CONFIG_DMA_MAP_BENCHMARK=y
 CONFIG_SGL_ALLOC=y
 CONFIG_CHECK_SIGNATURE=y
 CONFIG_CPUMASK_OFFSTACK=y
@@ -6364,10 +6617,12 @@ CONFIG_FONT_8x16=y
 CONFIG_SG_POOL=y
 CONFIG_ARCH_HAS_PMEM_API=y
 CONFIG_MEMREGION=y
+CONFIG_ARCH_HAS_CPU_CACHE_INVALIDATE_MEMREGION=y
 CONFIG_ARCH_HAS_UACCESS_FLUSHCACHE=y
 CONFIG_ARCH_HAS_COPY_MC=y
 CONFIG_ARCH_STACKWALK=y
 CONFIG_STACKDEPOT=y
+CONFIG_STACKDEPOT_ALWAYS_INIT=y
 CONFIG_SBITMAP=y
 # end of Library routines
 
@@ -6406,17 +6661,20 @@ CONFIG_AS_HAS_NON_CONST_LEB128=y
 CONFIG_DEBUG_INFO_DWARF4=y
 # CONFIG_DEBUG_INFO_DWARF5 is not set
 CONFIG_DEBUG_INFO_REDUCED=y
-# CONFIG_DEBUG_INFO_COMPRESSED is not set
+CONFIG_DEBUG_INFO_COMPRESSED_NONE=y
+# CONFIG_DEBUG_INFO_COMPRESSED_ZLIB is not set
 # CONFIG_DEBUG_INFO_SPLIT is not set
 CONFIG_PAHOLE_HAS_SPLIT_BTF=y
 # CONFIG_GDB_SCRIPTS is not set
-CONFIG_FRAME_WARN=2048
+CONFIG_FRAME_WARN=8192
 CONFIG_STRIP_ASM_SYMS=y
 # CONFIG_READABLE_ASM is not set
 # CONFIG_HEADERS_INSTALL is not set
 CONFIG_DEBUG_SECTION_MISMATCH=y
 CONFIG_SECTION_MISMATCH_WARN_ONLY=y
+# CONFIG_DEBUG_FORCE_FUNCTION_ALIGN_64B is not set
 CONFIG_OBJTOOL=y
+# CONFIG_VMLINUX_MAP is not set
 # CONFIG_DEBUG_FORCE_WEAK_PER_CPU is not set
 # end of Compile-time checks and compiler options
 
@@ -6434,10 +6692,20 @@ CONFIG_DEBUG_FS_ALLOW_ALL=y
 CONFIG_HAVE_ARCH_KGDB=y
 # CONFIG_KGDB is not set
 CONFIG_ARCH_HAS_UBSAN_SANITIZE_ALL=y
-# CONFIG_UBSAN is not set
+CONFIG_UBSAN=y
+# CONFIG_UBSAN_TRAP is not set
+CONFIG_CC_HAS_UBSAN_BOUNDS=y
+CONFIG_UBSAN_BOUNDS=y
+CONFIG_UBSAN_ONLY_BOUNDS=y
+CONFIG_UBSAN_SHIFT=y
+# CONFIG_UBSAN_DIV_ZERO is not set
+# CONFIG_UBSAN_BOOL is not set
+# CONFIG_UBSAN_ENUM is not set
+# CONFIG_UBSAN_ALIGNMENT is not set
+CONFIG_UBSAN_SANITIZE_ALL=y
+# CONFIG_TEST_UBSAN is not set
 CONFIG_HAVE_ARCH_KCSAN=y
 CONFIG_HAVE_KCSAN_COMPILER=y
-# CONFIG_KCSAN is not set
 # end of Generic Kernel Debugging Instruments
 
 #
@@ -6451,11 +6719,11 @@ CONFIG_HAVE_KCSAN_COMPILER=y
 #
 # Memory Debugging
 #
-# CONFIG_PAGE_EXTENSION is not set
+CONFIG_PAGE_EXTENSION=y
 # CONFIG_DEBUG_PAGEALLOC is not set
 CONFIG_SLUB_DEBUG=y
 # CONFIG_SLUB_DEBUG_ON is not set
-# CONFIG_PAGE_OWNER is not set
+CONFIG_PAGE_OWNER=y
 # CONFIG_PAGE_TABLE_CHECK is not set
 # CONFIG_PAGE_POISONING is not set
 # CONFIG_DEBUG_PAGE_REF is not set
@@ -6476,12 +6744,19 @@ CONFIG_ARCH_HAS_DEBUG_VM_PGTABLE=y
 CONFIG_ARCH_HAS_DEBUG_VIRTUAL=y
 # CONFIG_DEBUG_VIRTUAL is not set
 CONFIG_DEBUG_MEMORY_INIT=y
+CONFIG_MEMORY_NOTIFIER_ERROR_INJECT=m
 # CONFIG_DEBUG_PER_CPU_MAPS is not set
 CONFIG_HAVE_ARCH_KASAN=y
 CONFIG_HAVE_ARCH_KASAN_VMALLOC=y
 CONFIG_CC_HAS_KASAN_GENERIC=y
 CONFIG_CC_HAS_WORKING_NOSANITIZE_ADDRESS=y
-# CONFIG_KASAN is not set
+CONFIG_KASAN=y
+CONFIG_KASAN_GENERIC=y
+# CONFIG_KASAN_OUTLINE is not set
+CONFIG_KASAN_INLINE=y
+CONFIG_KASAN_STACK=y
+CONFIG_KASAN_VMALLOC=y
+# CONFIG_KASAN_MODULE_TEST is not set
 CONFIG_HAVE_ARCH_KFENCE=y
 # CONFIG_KFENCE is not set
 CONFIG_HAVE_ARCH_KMSAN=y
@@ -6523,22 +6798,32 @@ CONFIG_SCHEDSTATS=y
 # Lock Debugging (spinlocks, mutexes, etc...)
 #
 CONFIG_LOCK_DEBUGGING_SUPPORT=y
-# CONFIG_PROVE_LOCKING is not set
+CONFIG_PROVE_LOCKING=y
+# CONFIG_PROVE_RAW_LOCK_NESTING is not set
 # CONFIG_LOCK_STAT is not set
-# CONFIG_DEBUG_RT_MUTEXES is not set
-# CONFIG_DEBUG_SPINLOCK is not set
-# CONFIG_DEBUG_MUTEXES is not set
-# CONFIG_DEBUG_WW_MUTEX_SLOWPATH is not set
-# CONFIG_DEBUG_RWSEMS is not set
-# CONFIG_DEBUG_LOCK_ALLOC is not set
+CONFIG_DEBUG_RT_MUTEXES=y
+CONFIG_DEBUG_SPINLOCK=y
+CONFIG_DEBUG_MUTEXES=y
+CONFIG_DEBUG_WW_MUTEX_SLOWPATH=y
+CONFIG_DEBUG_RWSEMS=y
+CONFIG_DEBUG_LOCK_ALLOC=y
+CONFIG_LOCKDEP=y
+CONFIG_LOCKDEP_BITS=15
+CONFIG_LOCKDEP_CHAINS_BITS=16
+CONFIG_LOCKDEP_STACK_TRACE_BITS=19
+CONFIG_LOCKDEP_STACK_TRACE_HASH_BITS=14
+CONFIG_LOCKDEP_CIRCULAR_QUEUE_BITS=12
+# CONFIG_DEBUG_LOCKDEP is not set
 CONFIG_DEBUG_ATOMIC_SLEEP=y
 # CONFIG_DEBUG_LOCKING_API_SELFTESTS is not set
 # CONFIG_LOCK_TORTURE_TEST is not set
-# CONFIG_WW_MUTEX_SELFTEST is not set
+CONFIG_WW_MUTEX_SELFTEST=m
 # CONFIG_SCF_TORTURE_TEST is not set
 # CONFIG_CSD_LOCK_WAIT_DEBUG is not set
 # end of Lock Debugging (spinlocks, mutexes, etc...)
 
+CONFIG_TRACE_IRQFLAGS=y
+CONFIG_TRACE_IRQFLAGS_NMI=y
 # CONFIG_DEBUG_IRQFLAGS is not set
 CONFIG_STACKTRACE=y
 # CONFIG_WARN_ALL_UNSEEDED_RANDOM is not set
@@ -6548,7 +6833,7 @@ CONFIG_STACKTRACE=y
 # Debug kernel data structures
 #
 CONFIG_DEBUG_LIST=y
-# CONFIG_DEBUG_PLIST is not set
+CONFIG_DEBUG_PLIST=y
 # CONFIG_DEBUG_SG is not set
 # CONFIG_DEBUG_NOTIFIERS is not set
 CONFIG_BUG_ON_DATA_CORRUPTION=y
@@ -6560,6 +6845,7 @@ CONFIG_BUG_ON_DATA_CORRUPTION=y
 #
 # RCU Debugging
 #
+CONFIG_PROVE_RCU=y
 # CONFIG_RCU_SCALE_TEST is not set
 # CONFIG_RCU_TORTURE_TEST is not set
 # CONFIG_RCU_REF_SCALE_TEST is not set
@@ -6572,6 +6858,7 @@ CONFIG_RCU_EXP_CPU_STALL_TIMEOUT=0
 # CONFIG_DEBUG_WQ_FORCE_RR_CPU is not set
 # CONFIG_CPU_HOTPLUG_STATE_CONTROL is not set
 CONFIG_LATENCYTOP=y
+# CONFIG_DEBUG_CGROUP_REF is not set
 CONFIG_USER_STACKTRACE_SUPPORT=y
 CONFIG_NOP_TRACER=y
 CONFIG_HAVE_RETHOOK=y
@@ -6587,6 +6874,7 @@ CONFIG_HAVE_FTRACE_MCOUNT_RECORD=y
 CONFIG_HAVE_SYSCALL_TRACEPOINTS=y
 CONFIG_HAVE_FENTRY=y
 CONFIG_HAVE_OBJTOOL_MCOUNT=y
+CONFIG_HAVE_OBJTOOL_NOP_MCOUNT=y
 CONFIG_HAVE_C_RECORDMCOUNT=y
 CONFIG_HAVE_BUILDTIME_MCOUNT_SORT=y
 CONFIG_BUILDTIME_MCOUNT_SORT=y
@@ -6595,6 +6883,8 @@ CONFIG_TRACE_CLOCK=y
 CONFIG_RING_BUFFER=y
 CONFIG_EVENT_TRACING=y
 CONFIG_CONTEXT_SWITCH_TRACER=y
+CONFIG_RING_BUFFER_ALLOW_SWAP=y
+CONFIG_PREEMPTIRQ_TRACEPOINTS=y
 CONFIG_TRACING=y
 CONFIG_GENERIC_TRACER=y
 CONFIG_TRACING_SUPPORT=y
@@ -6609,7 +6899,7 @@ CONFIG_DYNAMIC_FTRACE_WITH_ARGS=y
 # CONFIG_FPROBE is not set
 CONFIG_FUNCTION_PROFILER=y
 CONFIG_STACK_TRACER=y
-# CONFIG_IRQSOFF_TRACER is not set
+CONFIG_IRQSOFF_TRACER=y
 CONFIG_SCHED_TRACER=y
 CONFIG_HWLAT_TRACER=y
 # CONFIG_OSNOISE_TRACER is not set
@@ -6617,7 +6907,7 @@ CONFIG_HWLAT_TRACER=y
 # CONFIG_MMIOTRACE is not set
 CONFIG_FTRACE_SYSCALLS=y
 CONFIG_TRACER_SNAPSHOT=y
-# CONFIG_TRACER_SNAPSHOT_PER_CPU_SWAP is not set
+CONFIG_TRACER_SNAPSHOT_PER_CPU_SWAP=y
 CONFIG_BRANCH_PROFILE_NONE=y
 # CONFIG_PROFILE_ANNOTATED_BRANCHES is not set
 # CONFIG_BLK_DEV_IO_TRACE is not set
@@ -6642,13 +6932,31 @@ CONFIG_RING_BUFFER_BENCHMARK=m
 # CONFIG_FTRACE_SORT_STARTUP_TEST is not set
 # CONFIG_RING_BUFFER_STARTUP_TEST is not set
 # CONFIG_RING_BUFFER_VALIDATE_TIME_DELTAS is not set
-# CONFIG_PREEMPTIRQ_DELAY_TEST is not set
+CONFIG_PREEMPTIRQ_DELAY_TEST=m
 # CONFIG_SYNTH_EVENT_GEN_TEST is not set
 # CONFIG_KPROBE_EVENT_GEN_TEST is not set
 # CONFIG_HIST_TRIGGERS_DEBUG is not set
 # CONFIG_RV is not set
 CONFIG_PROVIDE_OHCI1394_DMA_INIT=y
-# CONFIG_SAMPLES is not set
+CONFIG_SAMPLES=y
+# CONFIG_SAMPLE_AUXDISPLAY is not set
+# CONFIG_SAMPLE_TRACE_EVENTS is not set
+# CONFIG_SAMPLE_TRACE_CUSTOM_EVENTS is not set
+CONFIG_SAMPLE_TRACE_PRINTK=m
+CONFIG_SAMPLE_FTRACE_DIRECT=m
+# CONFIG_SAMPLE_FTRACE_DIRECT_MULTI is not set
+# CONFIG_SAMPLE_TRACE_ARRAY is not set
+# CONFIG_SAMPLE_KOBJECT is not set
+# CONFIG_SAMPLE_KPROBES is not set
+# CONFIG_SAMPLE_HW_BREAKPOINT is not set
+# CONFIG_SAMPLE_KFIFO is not set
+# CONFIG_SAMPLE_LIVEPATCH is not set
+# CONFIG_SAMPLE_CONFIGFS is not set
+# CONFIG_SAMPLE_VFIO_MDEV_MTTY is not set
+# CONFIG_SAMPLE_VFIO_MDEV_MDPY is not set
+# CONFIG_SAMPLE_VFIO_MDEV_MDPY_FB is not set
+# CONFIG_SAMPLE_VFIO_MDEV_MBOCHS is not set
+# CONFIG_SAMPLE_WATCHDOG is not set
 CONFIG_HAVE_SAMPLE_FTRACE_DIRECT=y
 CONFIG_HAVE_SAMPLE_FTRACE_DIRECT_MULTI=y
 CONFIG_ARCH_HAS_DEVMEM_IS_ALLOWED=y
@@ -6685,14 +6993,16 @@ CONFIG_UNWINDER_ORC=y
 # Kernel Testing and Coverage
 #
 # CONFIG_KUNIT is not set
-# CONFIG_NOTIFIER_ERROR_INJECTION is not set
+CONFIG_NOTIFIER_ERROR_INJECTION=m
+CONFIG_PM_NOTIFIER_ERROR_INJECT=m
+# CONFIG_NETDEV_NOTIFIER_ERROR_INJECT is not set
 CONFIG_FUNCTION_ERROR_INJECTION=y
 # CONFIG_FAULT_INJECTION is not set
 CONFIG_ARCH_HAS_KCOV=y
 CONFIG_CC_HAS_SANCOV_TRACE_PC=y
 # CONFIG_KCOV is not set
 CONFIG_RUNTIME_TESTING_MENU=y
-# CONFIG_LKDTM is not set
+CONFIG_LKDTM=y
 # CONFIG_TEST_MIN_HEAP is not set
 # CONFIG_TEST_DIV64 is not set
 # CONFIG_BACKTRACE_SELF_TEST is not set
@@ -6706,36 +7016,34 @@ CONFIG_RUNTIME_TESTING_MENU=y
 # CONFIG_TEST_HEXDUMP is not set
 # CONFIG_STRING_SELFTEST is not set
 # CONFIG_TEST_STRING_HELPERS is not set
-# CONFIG_TEST_STRSCPY is not set
 # CONFIG_TEST_KSTRTOX is not set
-# CONFIG_TEST_PRINTF is not set
-# CONFIG_TEST_SCANF is not set
-# CONFIG_TEST_BITMAP is not set
+CONFIG_TEST_PRINTF=m
+CONFIG_TEST_SCANF=m
+CONFIG_TEST_BITMAP=m
 # CONFIG_TEST_UUID is not set
 # CONFIG_TEST_XARRAY is not set
 # CONFIG_TEST_MAPLE_TREE is not set
 # CONFIG_TEST_RHASHTABLE is not set
-# CONFIG_TEST_SIPHASH is not set
 # CONFIG_TEST_IDA is not set
-# CONFIG_TEST_LKM is not set
-# CONFIG_TEST_BITOPS is not set
-# CONFIG_TEST_VMALLOC is not set
-# CONFIG_TEST_USER_COPY is not set
-# CONFIG_TEST_BPF is not set
-# CONFIG_TEST_BLACKHOLE_DEV is not set
+CONFIG_TEST_LKM=m
+CONFIG_TEST_BITOPS=m
+CONFIG_TEST_VMALLOC=m
+CONFIG_TEST_USER_COPY=m
+CONFIG_TEST_BPF=m
+CONFIG_TEST_BLACKHOLE_DEV=m
 # CONFIG_FIND_BIT_BENCHMARK is not set
-# CONFIG_TEST_FIRMWARE is not set
-# CONFIG_TEST_SYSCTL is not set
+CONFIG_TEST_FIRMWARE=y
+CONFIG_TEST_SYSCTL=y
 # CONFIG_TEST_UDELAY is not set
-# CONFIG_TEST_STATIC_KEYS is not set
+CONFIG_TEST_STATIC_KEYS=m
 # CONFIG_TEST_DYNAMIC_DEBUG is not set
-# CONFIG_TEST_KMOD is not set
+CONFIG_TEST_KMOD=m
 # CONFIG_TEST_MEMCAT_P is not set
-# CONFIG_TEST_LIVEPATCH is not set
+CONFIG_TEST_LIVEPATCH=m
 # CONFIG_TEST_MEMINIT is not set
-# CONFIG_TEST_HMM is not set
+CONFIG_TEST_HMM=m
 # CONFIG_TEST_FREE_PAGES is not set
-# CONFIG_TEST_FPU is not set
+CONFIG_TEST_FPU=m
 # CONFIG_TEST_CLOCKSOURCE_WATCHDOG is not set
 CONFIG_ARCH_USE_MEMTEST=y
 # CONFIG_MEMTEST is not set
@@ -6747,7 +7055,7 @@ CONFIG_ARCH_USE_MEMTEST=y
 # end of Rust hacking
 # end of Kernel hacking
 
---hGGYP/AM6hHKorlI
+--xzgWY3NTp4GxXFlv
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: attachment; filename="job-script"
 
@@ -6755,70 +7063,83 @@ Content-Disposition: attachment; filename="job-script"
 
 export_top_env()
 {
-	export suite='vm-scalability'
-	export testcase='vm-scalability'
-	export category='benchmark'
-	export runtime=300
-	export size=137438953472
-	export job_origin='vm-scalability.yaml'
-	export queue_cmdline_keys='branch
-commit
-kbuild_queue_analysis'
-	export queue='validate'
-	export testbox='lkp-csl-2sp3'
-	export tbox_group='lkp-csl-2sp3'
-	export submit_id='63c88725319e82a546c078e5'
-	export job_file='/lkp/jobs/scheduled/lkp-csl-2sp3/vm-scalability-performance-300s-128G-truncate-seq-debian-11.1-x86_64-20220510.cgz-cb67f4282bf9693658dbda934a441ddbbb1446df-20230119-42310-1lsq85i-5.yaml'
-	export id='f181ae70a79987d581444660bfb10929e78461ec'
-	export queuer_version='/zday/lkp'
-	export model='Cascade Lake'
-	export nr_node=2
-	export nr_cpu=96
-	export memory='128G'
-	export nr_hdd_partitions=1
-	export nr_ssd_partitions=2
-	export hdd_partitions='/dev/disk/by-id/ata-WDC_WD2500BEKT-00PVMT0_WD-WX11A23L4840-part1'
-	export ssd_partitions='/dev/nvme1n1p1 /dev/nvme0n1p1'
-	export rootfs_partition='/dev/disk/by-id/ata-INTEL_SSDSC2CW240A3_CVCV204303WP240CGN-part1'
-	export kernel_cmdline_hw='acpi_rsdp=0x68b85014'
-	export brand='Intel(R) Xeon(R) Platinum 8260L CPU @ 2.40GHz'
-	export belongs_to='performance'
-	export need_kconfig='BLK_DEV_LOOP'
-	export commit='cb67f4282bf9693658dbda934a441ddbbb1446df'
+	export suite='kernel-selftests'
+	export testcase='kernel-selftests'
+	export category='functional'
+	export need_memory='2G'
+	export need_cpu=2
+	export kernel_cmdline='kvm-intel.unrestricted_guest=0'
+	export job_origin='kernel-selftests.yaml'
+	export queue_cmdline_keys=
+	export queue='vip'
+	export testbox='lkp-skl-d06'
+	export tbox_group='lkp-skl-d06'
+	export submit_id='63c8a20d0b9a933bc34d1bf2'
+	export job_file='/lkp/jobs/scheduled/lkp-skl-d06/kernel-selftests-ftrace-debian-12-x86_64-20220629.cgz-9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91-20230119-15299-c5hfhi-1.yaml'
+	export id='6f2b137910a5ff75d61a14f37c48de4e2bbcbea6'
+	export queuer_version='/lkp/xsang/.src-20230119-093835'
+	export model='Skylake'
+	export nr_cpu=4
+	export memory='16G'
+	export nr_ssd_partitions=1
+	export nr_hdd_partitions=4
+	export hdd_partitions='/dev/disk/by-id/ata-WDC_WD10EARS-00Y5B1_WD-WCAV5F059074-part*'
+	export ssd_partitions='/dev/disk/by-id/ata-INTEL_SSDSC2BB012T4_BTWD422402M81P2GGN-part2'
+	export rootfs_partition='/dev/disk/by-id/ata-INTEL_SSDSC2BB012T4_BTWD422402M81P2GGN-part1'
+	export brand='Intel(R) Xeon(R) CPU E3-1225 v5 @ 3.30GHz'
+	export commit='9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91'
 	export need_kconfig_hw='{"PTP_1588_CLOCK"=>"y"}
-{"IGB"=>"y"}
+{"E1000E"=>"y"}
 SATA_AHCI
-BLK_DEV_NVME'
-	export ucode='0x4003302'
-	export kconfig='x86_64-rhel-8.3'
-	export enqueue_time='2023-01-19 07:56:21 +0800'
-	export _id='63c8873c319e82a546c078e7'
-	export _rt='/result/vm-scalability/performance-300s-128G-truncate-seq/lkp-csl-2sp3/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/cb67f4282bf9693658dbda934a441ddbbb1446df'
+DRM_I915'
+	export ucode='0xf0'
+	export bisect_dmesg=true
+	export need_kconfig=\{\"FTRACE\"\=\>\"y\"\}'
+'\{\"KPROBES\"\=\>\"y\"\}'
+'\{\"FUNCTION_PROFILER\"\=\>\"y\"\}'
+'\{\"TRACER_SNAPSHOT\"\=\>\"y\"\}'
+'\{\"STACK_TRACER\"\=\>\"y\"\}'
+'\{\"HIST_TRIGGERS\"\=\>\"y\"\}'
+'\{\"SCHED_TRACER\"\=\>\"y\"\}'
+'\{\"IRQSOFF_TRACER\"\=\>\"y\"\}'
+'\{\"PREEMPTIRQ_DELAY_TEST\"\=\>\"m\"\}'
+'\{\"MODULES\"\=\>\"y\"\}'
+'\{\"MODULE_UNLOAD\"\=\>\"y\"\}'
+'\{\"SAMPLES\"\=\>\"y\"\}'
+'\{\"SAMPLE_FTRACE_DIRECT\"\=\>\"m\"\}'
+'\{\"SAMPLE_TRACE_PRINTK\"\=\>\"m\"\}'
+'\{\"KALLSYMS_ALL\"\=\>\"y\"\}
+	export rootfs='debian-12-x86_64-20220629.cgz'
+	export initrds='linux_headers
+linux_selftests'
+	export kconfig='x86_64-rhel-8.3-kselftests'
+	export enqueue_time='2023-01-19 09:51:10 +0800'
+	export _id='63c8a2100b9a933bc34d1bf3'
+	export _rt='/result/kernel-selftests/ftrace/lkp-skl-d06/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kselftests/gcc-11/9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91'
 	export user='lkp'
 	export compiler='gcc-11'
 	export LKP_SERVER='internal-lkp-server'
-	export head_commit='9b134165fe9bd6132aaac8c467554381df2745d4'
+	export head_commit='2cbef8bbf45812df036885934eb6e2782a37181c'
 	export base_commit='5dc4c995db9eb45f6373a956eb1f69460e69e6d4'
-	export branch='linus/master'
-	export rootfs='debian-11.1-x86_64-20220510.cgz'
-	export result_root='/result/vm-scalability/performance-300s-128G-truncate-seq/lkp-csl-2sp3/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/cb67f4282bf9693658dbda934a441ddbbb1446df/3'
+	export branch='tip/sched/core'
+	export result_root='/result/kernel-selftests/ftrace/lkp-skl-d06/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kselftests/gcc-11/9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91/8'
 	export scheduler_version='/lkp/lkp/src'
 	export arch='x86_64'
-	export max_uptime=2100
-	export initrd='/osimage/debian/debian-11.1-x86_64-20220510.cgz'
+	export max_uptime=1200
+	export initrd='/osimage/debian/debian-12-x86_64-20220629.cgz'
 	export bootloader_append='root=/dev/ram0
-RESULT_ROOT=/result/vm-scalability/performance-300s-128G-truncate-seq/lkp-csl-2sp3/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/cb67f4282bf9693658dbda934a441ddbbb1446df/3
-BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3/gcc-11/cb67f4282bf9693658dbda934a441ddbbb1446df/vmlinuz-6.1.0-rc4-00186-gcb67f4282bf9
-branch=linus/master
-job=/lkp/jobs/scheduled/lkp-csl-2sp3/vm-scalability-performance-300s-128G-truncate-seq-debian-11.1-x86_64-20220510.cgz-cb67f4282bf9693658dbda934a441ddbbb1446df-20230119-42310-1lsq85i-5.yaml
+RESULT_ROOT=/result/kernel-selftests/ftrace/lkp-skl-d06/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kselftests/gcc-11/9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91/8
+BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91/vmlinuz-6.2.0-rc1-00074-g9aedeaed6fc6
+branch=tip/sched/core
+job=/lkp/jobs/scheduled/lkp-skl-d06/kernel-selftests-ftrace-debian-12-x86_64-20220629.cgz-9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91-20230119-15299-c5hfhi-1.yaml
 user=lkp
 ARCH=x86_64
-kconfig=x86_64-rhel-8.3
-commit=cb67f4282bf9693658dbda934a441ddbbb1446df
+kconfig=x86_64-rhel-8.3-kselftests
+commit=9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91
+kvm-intel.unrestricted_guest=0
 initcall_debug
 nmi_watchdog=0
-acpi_rsdp=0x68b85014
-max_uptime=2100
+max_uptime=1200
 LKP_SERVER=internal-lkp-server
 nokaslr
 selinux=0
@@ -6842,20 +7163,20 @@ earlyprintk=ttyS0,115200
 console=ttyS0,115200
 vga=normal
 rw'
-	export modules_initrd='/pkg/linux/x86_64-rhel-8.3/gcc-11/cb67f4282bf9693658dbda934a441ddbbb1446df/modules.cgz'
-	export bm_initrd='/osimage/deps/debian-11.1-x86_64-20220510.cgz/lkp_20220513.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/run-ipconfig_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/rsync-rootfs_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/perf_20230116.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/perf-x86_64-5dc4c995db9e-1_20230116.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/vm-scalability_20220514.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/vm-scalability-x86_64-1.0-0_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/mpstat_20220516.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/turbostat_20220514.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/turbostat-x86_64-210e04ff7681-1_20220518.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/sar-x86_64-c5bb321-1_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/hw_20220526.cgz'
+	export modules_initrd='/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91/modules.cgz'
+	export linux_headers_initrd='/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91/linux-headers.cgz'
+	export linux_selftests_initrd='/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91/linux-selftests.cgz'
+	export bm_initrd='/osimage/deps/debian-12-x86_64-20220629.cgz/run-ipconfig_20221125.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/lkp_20221125.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/rsync-rootfs_20221125.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/kernel-selftests_20230110.cgz,/osimage/pkg/debian-12-x86_64-20220629.cgz/kernel-selftests-x86_64-d4cf28ee-1_20230110.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/hw_20221125.cgz'
 	export ucode_initrd='/osimage/ucode/intel-ucode-20220804.cgz'
 	export lkp_initrd='/osimage/user/lkp/lkp-x86_64.cgz'
 	export site='lkp-wsx01'
 	export LKP_CGI_PORT=80
 	export LKP_CIFS_PORT=139
-	export last_kernel='6.1.0'
-	export repeat_to=6
+	export last_kernel='6.2.0-rc4'
 	export schedule_notify_address=
-	export kbuild_queue_analysis=1
-	export kernel='/pkg/linux/x86_64-rhel-8.3/gcc-11/cb67f4282bf9693658dbda934a441ddbbb1446df/vmlinuz-6.1.0-rc4-00186-gcb67f4282bf9'
-	export dequeue_time='2023-01-19 07:58:39 +0800'
-	export job_initrd='/lkp/jobs/scheduled/lkp-csl-2sp3/vm-scalability-performance-300s-128G-truncate-seq-debian-11.1-x86_64-20220510.cgz-cb67f4282bf9693658dbda934a441ddbbb1446df-20230119-42310-1lsq85i-5.cgz'
+	export kernel='/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91/vmlinuz-6.2.0-rc1-00074-g9aedeaed6fc6'
+	export dequeue_time='2023-01-19 11:21:41 +0800'
+	export job_initrd='/lkp/jobs/scheduled/lkp-skl-d06/kernel-selftests-ftrace-debian-12-x86_64-20220629.cgz-9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91-20230119-15299-c5hfhi-1.cgz'
 
 	[ -n "$LKP_SRC" ] ||
 	export LKP_SRC=/lkp/${user:-lkp}/src
@@ -6871,39 +7192,13 @@ run_job()
 
 	export_top_env
 
-	run_setup $LKP_SRC/setup/cpufreq_governor 'performance'
-
-	run_monitor $LKP_SRC/monitors/no-stdout/wrapper perf-profile
 	run_monitor $LKP_SRC/monitors/wrapper kmsg
-	run_monitor $LKP_SRC/monitors/no-stdout/wrapper boot-time
-	run_monitor $LKP_SRC/monitors/wrapper uptime
-	run_monitor $LKP_SRC/monitors/wrapper iostat
 	run_monitor $LKP_SRC/monitors/wrapper heartbeat
-	run_monitor $LKP_SRC/monitors/wrapper vmstat
-	run_monitor $LKP_SRC/monitors/wrapper numa-numastat
-	run_monitor $LKP_SRC/monitors/wrapper numa-vmstat
-	run_monitor $LKP_SRC/monitors/wrapper numa-meminfo
-	run_monitor $LKP_SRC/monitors/wrapper proc-vmstat
-	run_monitor $LKP_SRC/monitors/wrapper proc-stat
 	run_monitor $LKP_SRC/monitors/wrapper meminfo
-	run_monitor $LKP_SRC/monitors/wrapper slabinfo
-	run_monitor $LKP_SRC/monitors/wrapper interrupts
-	run_monitor $LKP_SRC/monitors/wrapper lock_stat
-	run_monitor lite_mode=1 $LKP_SRC/monitors/wrapper perf-sched
-	run_monitor $LKP_SRC/monitors/wrapper softirqs
-	run_monitor $LKP_SRC/monitors/one-shot/wrapper bdi_dev_mapping
-	run_monitor $LKP_SRC/monitors/wrapper diskstats
-	run_monitor $LKP_SRC/monitors/wrapper nfsstat
-	run_monitor $LKP_SRC/monitors/wrapper cpuidle
-	run_monitor $LKP_SRC/monitors/wrapper cpufreq-stats
-	run_monitor $LKP_SRC/monitors/wrapper turbostat
-	run_monitor $LKP_SRC/monitors/wrapper sched_debug
-	run_monitor $LKP_SRC/monitors/wrapper perf-stat
-	run_monitor $LKP_SRC/monitors/wrapper mpstat
 	run_monitor $LKP_SRC/monitors/wrapper oom-killer
 	run_monitor $LKP_SRC/monitors/plain/watchdog
 
-	run_test test='truncate-seq' $LKP_SRC/tests/wrapper vm-scalability
+	run_test group='ftrace' $LKP_SRC/tests/wrapper kernel-selftests
 }
 
 extract_stats()
@@ -6911,32 +7206,11 @@ extract_stats()
 	export stats_part_begin=
 	export stats_part_end=
 
-	$LKP_SRC/stats/wrapper perf-profile
-	env test='truncate-seq' $LKP_SRC/stats/wrapper vm-scalability
+	env group='ftrace' $LKP_SRC/stats/wrapper kernel-selftests
 	$LKP_SRC/stats/wrapper kmsg
-	$LKP_SRC/stats/wrapper boot-time
-	$LKP_SRC/stats/wrapper uptime
-	$LKP_SRC/stats/wrapper iostat
-	$LKP_SRC/stats/wrapper vmstat
-	$LKP_SRC/stats/wrapper numa-numastat
-	$LKP_SRC/stats/wrapper numa-vmstat
-	$LKP_SRC/stats/wrapper numa-meminfo
-	$LKP_SRC/stats/wrapper proc-vmstat
 	$LKP_SRC/stats/wrapper meminfo
-	$LKP_SRC/stats/wrapper slabinfo
-	$LKP_SRC/stats/wrapper interrupts
-	$LKP_SRC/stats/wrapper lock_stat
-	env lite_mode=1 $LKP_SRC/stats/wrapper perf-sched
-	$LKP_SRC/stats/wrapper softirqs
-	$LKP_SRC/stats/wrapper diskstats
-	$LKP_SRC/stats/wrapper nfsstat
-	$LKP_SRC/stats/wrapper cpuidle
-	$LKP_SRC/stats/wrapper turbostat
-	$LKP_SRC/stats/wrapper sched_debug
-	$LKP_SRC/stats/wrapper perf-stat
-	$LKP_SRC/stats/wrapper mpstat
 
-	$LKP_SRC/stats/wrapper time vm-scalability.time
+	$LKP_SRC/stats/wrapper time kernel-selftests.time
 	$LKP_SRC/stats/wrapper dmesg
 	$LKP_SRC/stats/wrapper kmsg
 	$LKP_SRC/stats/wrapper last_state
@@ -6946,127 +7220,6188 @@ extract_stats()
 
 "$@"
 
---hGGYP/AM6hHKorlI
+--xzgWY3NTp4GxXFlv
+Content-Type: application/x-xz
+Content-Disposition: attachment; filename="dmesg.xz"
+Content-Transfer-Encoding: base64
+
+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
+AAAEWVo=
+
+--xzgWY3NTp4GxXFlv
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: attachment; filename="kernel-selftests"
+
+Decompressing Linux... Parsing ELF... done.
+Booting the kernel.
+Linux version 6.2.0-rc1-00074-g9aedeaed6fc6 (kbuild@89f585d3a0a5) (gcc-11 (Debian 11.3.0-8) 11.3.0, GNU ld (GNU Binutils for Debian) 2.39.90.20221231) #1 SMP Wed Jan 18 19:47:08 CST 2023
+Command line: ip=::::lkp-skl-d06::dhcp root=/dev/ram0 RESULT_ROOT=/result/kernel-selftests/ftrace/lkp-skl-d06/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kselftests/gcc-11/9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91/8 BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91/vmlinuz-6.2.0-rc1-00074-g9aedeaed6fc6 branch=tip/sched/core job=/lkp/jobs/scheduled/lkp-skl-d06/kernel-selftests-ftrace-debian-12-x86_64-20220629.cgz-9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91-20230119-15299-c5hfhi-1.yaml user=lkp ARCH=x86_64 kconfig=x86_64-rhel-8.3-kselftests commit=9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91 kvm-intel.unrestricted_guest=0 initcall_debug nmi_watchdog=0 max_uptime=1200 LKP_SERVER=internal-lkp-server nokaslr selinux=0 debug apic=debug sysrq_always_enabled rcupdate.rcu_cpu_stall_timeout=100 net.ifnames=0 printk.devkmsg=on panic=-1 softlockup_panic=1 nmi_watchdog=panic oops=panic load_ramdisk=2 prompt_ramdisk=0 drbd.minor_cou
+KERNEL supported cpus:
+Intel GenuineIntel
+x86/fpu: Supporting XSAVE feature 0x001: 'x87 floating point registers'
+x86/fpu: Supporting XSAVE feature 0x002: 'SSE registers'
+x86/fpu: Supporting XSAVE feature 0x004: 'AVX registers'
+x86/fpu: Supporting XSAVE feature 0x008: 'MPX bounds registers'
+x86/fpu: Supporting XSAVE feature 0x010: 'MPX CSR'
+x86/fpu: xstate_offset[2]:  576, xstate_sizes[2]:  256
+x86/fpu: xstate_offset[3]:  832, xstate_sizes[3]:   64
+x86/fpu: xstate_offset[4]:  896, xstate_sizes[4]:   64
+x86/fpu: Enabled xstate features 0x1f, context size is 960 bytes, using 'compacted' format.
+signal: max sigframe size: 2032
+BIOS-provided physical RAM map:
+BIOS-e820: [mem 0x0000000000000400-0x0000000000091bff] usable
+BIOS-e820: [mem 0x0000000000091c00-0x000000000009ffff] reserved
+BIOS-e820: [mem 0x00000000000e0000-0x00000000000fffff] reserved
+BIOS-e820: [mem 0x0000000000100000-0x00000000b30fafff] usable
+BIOS-e820: [mem 0x00000000b30fb000-0x00000000b3c7efff] reserved
+BIOS-e820: [mem 0x00000000b3c7f000-0x00000000b3e7efff] ACPI NVS
+BIOS-e820: [mem 0x00000000b3e7f000-0x00000000b3efefff] ACPI data
+BIOS-e820: [mem 0x00000000b3eff000-0x00000000b3efffff] usable
+BIOS-e820: [mem 0x00000000b3f00000-0x00000000be7fffff] reserved
+BIOS-e820: [mem 0x00000000e0000000-0x00000000efffffff] reserved
+BIOS-e820: [mem 0x00000000fd000000-0x00000000fe7fffff] reserved
+BIOS-e820: [mem 0x00000000fec00000-0x00000000fec00fff] reserved
+BIOS-e820: [mem 0x00000000fed00000-0x00000000fed00fff] reserved
+BIOS-e820: [mem 0x00000000fed10000-0x00000000fed19fff] reserved
+BIOS-e820: [mem 0x00000000fed84000-0x00000000fed84fff] reserved
+BIOS-e820: [mem 0x00000000fedb0000-0x00000000fedbffff] reserved
+BIOS-e820: [mem 0x00000000fee00000-0x00000000fee00fff] reserved
+BIOS-e820: [mem 0x00000000ff700000-0x00000000ffffffff] reserved
+BIOS-e820: [mem 0x0000000100000000-0x000000043f7fffff] usable
+printk: debug: ignoring loglevel setting.
+printk: bootconsole [earlyser0] enabled
+NX (Execute Disable) protection: active
+SMBIOS 2.7 present.
+DMI: HP HP Z238 Microtower Workstation/8183, BIOS N51 Ver. 01.63 10/05/2017
+tsc: Detected 3300.000 MHz processor
+tsc: Detected 3299.994 MHz TSC
+e820: update [mem 0x00000000-0x00000fff] usable ==> reserved
+e820: remove [mem 0x000a0000-0x000fffff] usable
+last_pfn = 0x43f800 max_arch_pfn = 0x400000000
+x86/PAT: Configuration [0-7]: WB  WC  UC- UC  WB  WP  UC- WT  
+last_pfn = 0xb3f00 max_arch_pfn = 0x400000000
+Scan for SMP in [mem 0x00000000-0x000003ff]
+Scan for SMP in [mem 0x0009fc00-0x0009ffff]
+Scan for SMP in [mem 0x000f0000-0x000fffff]
+Scan for SMP in [mem 0x00091c00-0x00091fff]
+Using GB pages for direct mapping
+RAMDISK: [mem 0x40e3fe000-0x4399fffff]
+ACPI: Early table checksum verification disabled
+ACPI: RSDP 0x00000000000FBE30 000024 (v02 HPQOEM)
+ACPI: XSDT 0x00000000B3EFD0E8 0000AC (v01 HPQOEM SLIC-WKS 00000000      01000013)
+ACPI: FACP 0x00000000B3EF1000 0000F4 (v05 HPQOEM SLIC-WKS 00000000 HP   00000001)
+ACPI: DSDT 0x00000000B3ECD000 0209E1 (v02 HPQOEM 8183     00000000 INTL 20121018)
+ACPI: FACS 0x00000000B3E5A000 000040
+ACPI: SSDT 0x00000000B3EFC000 000108 (v02 HP     ShmTable 00000001 INTL 20121018)
+ACPI: TCPA 0x00000000B3EFB000 000032 (v02 HPQOEM EDK2     00000002      01000013)
+ACPI: SSDT 0x00000000B3EFA000 0003B8 (v02 HPQOEM TcgTable 00001000 INTL 20121018)
+ACPI: UEFI 0x00000000B3E6A000 000042 (v01 HPQOEM EDK2     00000002      01000013)
+ACPI: SSDT 0x00000000B3EF4000 0051FA (v02 SaSsdt SaSsdt   00003000 INTL 20121018)
+ACPI: SSDT 0x00000000B3EF3000 0005B1 (v01 Intel  PerfTune 00001000 INTL 20121018)
+ACPI: WSMT 0x00000000B3EF2000 000028 (v01 HPQOEM 8183     00000001 HP   00000001)
+ACPI: HPET 0x00000000B3EF0000 000038 (v01 HPQOEM 8183     00000001 HP   00000001)
+ACPI: APIC 0x00000000B3EEF000 0000BC (v01 HPQOEM 8183     00000001 HP   00000001)
+ACPI: MCFG 0x00000000B3EEE000 00003C (v01 HPQOEM 8183     00000001 HP   00000001)
+ACPI: SSDT 0x00000000B3ECC000 00019A (v02 HPQOEM Sata0Ide 00001000 INTL 20121018)
+ACPI: SSDT 0x00000000B3ECB000 000729 (v01 HPQOEM PtidDevc 00001000 INTL 20121018)
+ACPI: SSDT 0x00000000B3ECA000 000E73 (v02 CpuRef CpuSsdt  00003000 INTL 20121018)
+ACPI: ASF! 0x00000000B3EC9000 0000A5 (v32 HPQOEM  UYA     00000001 TFSM 000F4240)
+ACPI: FPDT 0x00000000B3EC8000 000044 (v01 HPQOEM EDK2     00000002      01000013)
+ACPI: BGRT 0x00000000B3EC7000 000038 (v01 HPQOEM EDK2     00000002      01000013)
+ACPI: Reserving FACP table memory at [mem 0xb3ef1000-0xb3ef10f3]
+ACPI: Reserving DSDT table memory at [mem 0xb3ecd000-0xb3eed9e0]
+ACPI: Reserving FACS table memory at [mem 0xb3e5a000-0xb3e5a03f]
+ACPI: Reserving SSDT table memory at [mem 0xb3efc000-0xb3efc107]
+ACPI: Reserving TCPA table memory at [mem 0xb3efb000-0xb3efb031]
+ACPI: Reserving SSDT table memory at [mem 0xb3efa000-0xb3efa3b7]
+ACPI: Reserving UEFI table memory at [mem 0xb3e6a000-0xb3e6a041]
+ACPI: Reserving SSDT table memory at [mem 0xb3ef4000-0xb3ef91f9]
+ACPI: Reserving SSDT table memory at [mem 0xb3ef3000-0xb3ef35b0]
+ACPI: Reserving WSMT table memory at [mem 0xb3ef2000-0xb3ef2027]
+ACPI: Reserving HPET table memory at [mem 0xb3ef0000-0xb3ef0037]
+ACPI: Reserving APIC table memory at [mem 0xb3eef000-0xb3eef0bb]
+ACPI: Reserving MCFG table memory at [mem 0xb3eee000-0xb3eee03b]
+ACPI: Reserving SSDT table memory at [mem 0xb3ecc000-0xb3ecc199]
+ACPI: Reserving SSDT table memory at [mem 0xb3ecb000-0xb3ecb728]
+ACPI: Reserving SSDT table memory at [mem 0xb3eca000-0xb3ecae72]
+ACPI: Reserving ASF! table memory at [mem 0xb3ec9000-0xb3ec90a4]
+ACPI: Reserving FPDT table memory at [mem 0xb3ec8000-0xb3ec8043]
+ACPI: Reserving BGRT table memory at [mem 0xb3ec7000-0xb3ec7037]
+mapped APIC to ffffffffff5fc000 (        fee00000)
+No NUMA configuration found
+Faking a node at [mem 0x0000000000000000-0x000000043f7fffff]
+NODE_DATA(0) allocated [mem 0x43f7d5000-0x43f7fffff]
+Zone ranges:
+DMA      [mem 0x0000000000001000-0x0000000000ffffff]
+DMA32    [mem 0x0000000001000000-0x00000000ffffffff]
+Normal   [mem 0x0000000100000000-0x000000043f7fffff]
+Device   empty
+Movable zone start for each node
+Early memory node ranges
+node   0: [mem 0x0000000000001000-0x0000000000090fff]
+node   0: [mem 0x0000000000100000-0x00000000b30fafff]
+node   0: [mem 0x00000000b3eff000-0x00000000b3efffff]
+node   0: [mem 0x0000000100000000-0x000000043f7fffff]
+Initmem setup node 0 [mem 0x0000000000001000-0x000000043f7fffff]
+On node 0, zone DMA: 1 pages in unavailable ranges
+On node 0, zone DMA: 111 pages in unavailable ranges
+On node 0, zone DMA32: 3588 pages in unavailable ranges
+On node 0, zone Normal: 16640 pages in unavailable ranges
+On node 0, zone Normal: 2048 pages in unavailable ranges
+kasan: KernelAddressSanitizer initialized
+Reserving Intel graphics memory at [mem 0xb6800000-0xbe7fffff]
+ACPI: PM-Timer IO Port: 0x1808
+ACPI: LAPIC_NMI (acpi_id[0x01] high edge lint[0x1])
+ACPI: LAPIC_NMI (acpi_id[0x02] high edge lint[0x1])
+ACPI: LAPIC_NMI (acpi_id[0x03] high edge lint[0x1])
+ACPI: LAPIC_NMI (acpi_id[0x04] high edge lint[0x1])
+ACPI: LAPIC_NMI (acpi_id[0x05] high edge lint[0x1])
+ACPI: LAPIC_NMI (acpi_id[0x06] high edge lint[0x1])
+ACPI: LAPIC_NMI (acpi_id[0x07] high edge lint[0x1])
+ACPI: LAPIC_NMI (acpi_id[0x08] high edge lint[0x1])
+IOAPIC[0]: apic_id 2, version 32, address 0xfec00000, GSI 0-119
+ACPI: INT_SRC_OVR (bus 0 bus_irq 0 global_irq 2 dfl dfl)
+Int: type 0, pol 0, trig 0, bus 00, IRQ 00, APIC ID 2, APIC INT 02
+ACPI: INT_SRC_OVR (bus 0 bus_irq 9 global_irq 9 high level)
+Int: type 0, pol 1, trig 3, bus 00, IRQ 09, APIC ID 2, APIC INT 09
+Int: type 0, pol 0, trig 0, bus 00, IRQ 01, APIC ID 2, APIC INT 01
+Int: type 0, pol 0, trig 0, bus 00, IRQ 03, APIC ID 2, APIC INT 03
+Int: type 0, pol 0, trig 0, bus 00, IRQ 04, APIC ID 2, APIC INT 04
+Int: type 0, pol 0, trig 0, bus 00, IRQ 05, APIC ID 2, APIC INT 05
+Int: type 0, pol 0, trig 0, bus 00, IRQ 06, APIC ID 2, APIC INT 06
+Int: type 0, pol 0, trig 0, bus 00, IRQ 07, APIC ID 2, APIC INT 07
+Int: type 0, pol 0, trig 0, bus 00, IRQ 08, APIC ID 2, APIC INT 08
+Int: type 0, pol 0, trig 0, bus 00, IRQ 0a, APIC ID 2, APIC INT 0a
+Int: type 0, pol 0, trig 0, bus 00, IRQ 0b, APIC ID 2, APIC INT 0b
+Int: type 0, pol 0, trig 0, bus 00, IRQ 0c, APIC ID 2, APIC INT 0c
+Int: type 0, pol 0, trig 0, bus 00, IRQ 0d, APIC ID 2, APIC INT 0d
+Int: type 0, pol 0, trig 0, bus 00, IRQ 0e, APIC ID 2, APIC INT 0e
+Int: type 0, pol 0, trig 0, bus 00, IRQ 0f, APIC ID 2, APIC INT 0f
+ACPI: Using ACPI (MADT) for SMP configuration information
+ACPI: HPET id: 0x8086a201 base: 0xfed00000
+TSC deadline timer available
+smpboot: Allowing 4 CPUs, 0 hotplug CPUs
+mapped IOAPIC to ffffffffff5fb000 (fec00000)
+PM: hibernation: Registered nosave memory: [mem 0x00000000-0x00000fff]
+PM: hibernation: Registered nosave memory: [mem 0x00091000-0x00091fff]
+PM: hibernation: Registered nosave memory: [mem 0x00092000-0x0009ffff]
+PM: hibernation: Registered nosave memory: [mem 0x000a0000-0x000dffff]
+PM: hibernation: Registered nosave memory: [mem 0x000e0000-0x000fffff]
+PM: hibernation: Registered nosave memory: [mem 0xb30fb000-0xb3c7efff]
+PM: hibernation: Registered nosave memory: [mem 0xb3c7f000-0xb3e7efff]
+PM: hibernation: Registered nosave memory: [mem 0xb3e7f000-0xb3efefff]
+PM: hibernation: Registered nosave memory: [mem 0xb3f00000-0xbe7fffff]
+PM: hibernation: Registered nosave memory: [mem 0xbe800000-0xdfffffff]
+PM: hibernation: Registered nosave memory: [mem 0xe0000000-0xefffffff]
+PM: hibernation: Registered nosave memory: [mem 0xf0000000-0xfcffffff]
+PM: hibernation: Registered nosave memory: [mem 0xfd000000-0xfe7fffff]
+PM: hibernation: Registered nosave memory: [mem 0xfe800000-0xfebfffff]
+PM: hibernation: Registered nosave memory: [mem 0xfec00000-0xfec00fff]
+PM: hibernation: Registered nosave memory: [mem 0xfec01000-0xfecfffff]
+PM: hibernation: Registered nosave memory: [mem 0xfed00000-0xfed00fff]
+PM: hibernation: Registered nosave memory: [mem 0xfed01000-0xfed0ffff]
+PM: hibernation: Registered nosave memory: [mem 0xfed10000-0xfed19fff]
+PM: hibernation: Registered nosave memory: [mem 0xfed1a000-0xfed83fff]
+PM: hibernation: Registered nosave memory: [mem 0xfed84000-0xfed84fff]
+PM: hibernation: Registered nosave memory: [mem 0xfed85000-0xfedaffff]
+PM: hibernation: Registered nosave memory: [mem 0xfedb0000-0xfedbffff]
+PM: hibernation: Registered nosave memory: [mem 0xfedc0000-0xfedfffff]
+PM: hibernation: Registered nosave memory: [mem 0xfee00000-0xfee00fff]
+PM: hibernation: Registered nosave memory: [mem 0xfee01000-0xff6fffff]
+PM: hibernation: Registered nosave memory: [mem 0xff700000-0xffffffff]
+[mem 0xbe800000-0xdfffffff] available for PCI devices
+Booting paravirtualized kernel on bare hardware
+clocksource: refined-jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 1910969940391419 ns
+setup_percpu: NR_CPUS:8192 nr_cpumask_bits:4 nr_cpu_ids:4 nr_node_ids:1
+percpu: Embedded 70 pages/cpu s247648 r8192 d30880 u524288
+pcpu-alloc: s247648 r8192 d30880 u524288 alloc=1*2097152
+pcpu-alloc: [0] 0 1 2 3 
+Fallback order for Node 0: 0 
+Built 1 zonelists, mobility grouping on.  Total pages: 4074328
+Policy zone: Normal
+Kernel command line: ip=::::lkp-skl-d06::dhcp root=/dev/ram0 RESULT_ROOT=/result/kernel-selftests/ftrace/lkp-skl-d06/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kselftests/gcc-11/9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91/8 BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91/vmlinuz-6.2.0-rc1-00074-g9aedeaed6fc6 branch=tip/sched/core job=/lkp/jobs/scheduled/lkp-skl-d06/kernel-selftests-ftrace-debian-12-x86_64-20220629.cgz-9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91-20230119-15299-c5hfhi-1.yaml user=lkp ARCH=x86_64 kconfig=x86_64-rhel-8.3-kselftests commit=9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91 kvm-intel.unrestricted_guest=0 initcall_debug nmi_watchdog=0 max_uptime=1200 LKP_SERVER=internal-lkp-server nokaslr selinux=0 debug apic=debug sysrq_always_enabled rcupdate.rcu_cpu_stall_timeout=100 net.ifnames=0 printk.devkmsg=on panic=-1 softlockup_panic=1 nmi_watchdog=panic oops=panic load_ramdisk=2 prompt_ramdisk=0 drbd.mi
+sysrq: sysrq always enabled.
+ignoring the deprecated load_ramdisk= option
+Unknown kernel command line parameters "nokaslr RESULT_ROOT=/result/kernel-selftests/ftrace/lkp-skl-d06/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kselftests/gcc-11/9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91/8 BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91/vmlinuz-6.2.0-rc1-00074-g9aedeaed6fc6 branch=tip/sched/core job=/lkp/jobs/scheduled/lkp-skl-d06/kernel-selftests-ftrace-debian-12-x86_64-20220629.cgz-9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91-20230119-15299-c5hfhi-1.yaml user=lkp ARCH=x86_64 kconfig=x86_64-rhel-8.3-kselftests commit=9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91 max_uptime=1200 LKP_SERVER=internal-lkp-server selinux=0 softlockup_panic=1 prompt_ramdisk=0 vga=normal", will be passed to user space.
+random: crng init done
+Dentry cache hash table entries: 2097152 (order: 12, 16777216 bytes, linear)
+Inode-cache hash table entries: 1048576 (order: 11, 8388608 bytes, linear)
+mem auto-init: stack:off, heap alloc:on, heap free:off
+stackdepot hash table entries: 1048576 (order: 11, 8388608 bytes, linear)
+software IO TLB: area num 4.
+Memory: 2998000K/16556592K available (43008K kernel code, 14943K rwdata, 9424K rodata, 3076K init, 15120K bss, 3247744K reserved, 0K cma-reserved)
+SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=4, Nodes=1
+Kernel/User page tables isolation: enabled
+ftrace: allocating 48452 entries in 190 pages
+ftrace: allocated 190 pages with 6 groups
+Running RCU self tests
+rcu: Hierarchical RCU implementation.
+rcu: 	RCU lockdep checking is enabled.
+rcu: 	RCU restricting CPUs from NR_CPUS=8192 to nr_cpu_ids=4.
+	RCU CPU stall warnings timeout set to 100 (rcu_cpu_stall_timeout).
+	Rude variant of Tasks RCU enabled.
+	Tracing variant of Tasks RCU enabled.
+rcu: RCU calculated value of scheduler-enlistment delay is 100 jiffies.
+rcu: Adjusting geometry for rcu_fanout_leaf=16, nr_cpu_ids=4
+NR_IRQS: 524544, nr_irqs: 1024, preallocated irqs: 16
+rcu: srcu_init: Setting srcu_struct sizes based on contention.
+calling  con_init+0x0/0x5a2 @ 0
+Console: colour VGA+ 80x25
+printk: console [tty0] enabled
+initcall con_init+0x0/0x5a2 returned 0 after 0 usecs
+calling  hvc_console_init+0x0/0x18 @ 0
+initcall hvc_console_init+0x0/0x18 returned 0 after 0 usecs
+calling  univ8250_console_init+0x0/0x2b @ 0
+printk: console [ttyS0] enabled
+printk: console [ttyS0] enabled
+printk: bootconsole [earlyser0] disabled
+printk: bootconsole [earlyser0] disabled
+initcall univ8250_console_init+0x0/0x2b returned 0 after 0 usecs
+Lock dependency validator: Copyright (c) 2006 Red Hat, Inc., Ingo Molnar
+... MAX_LOCKDEP_SUBCLASSES:  8
+... MAX_LOCK_DEPTH:          48
+... MAX_LOCKDEP_KEYS:        8192
+... CLASSHASH_SIZE:          4096
+... MAX_LOCKDEP_ENTRIES:     32768
+... MAX_LOCKDEP_CHAINS:      65536
+... CHAINHASH_SIZE:          32768
+memory used by lock dependency info: 6365 kB
+memory used for stack traces: 4224 kB
+per task-struct memory footprint: 1920 bytes
+ACPI: Core revision 20221020
+clocksource: hpet: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 79635855245 ns
+APIC: Switch to symmetric I/O mode setup
+x2apic: IRQ remapping doesn't support X2APIC mode
+masked ExtINT on CPU#0
+ENABLING IO-APIC IRQs
+init IO_APIC IRQs
+apic 2 pin 0 not connected
+IOAPIC[0]: Preconfigured routing entry (2-1 -> IRQ 1 Level:0 ActiveLow:0)
+IOAPIC[0]: Preconfigured routing entry (2-2 -> IRQ 0 Level:0 ActiveLow:0)
+IOAPIC[0]: Preconfigured routing entry (2-3 -> IRQ 3 Level:0 ActiveLow:0)
+IOAPIC[0]: Preconfigured routing entry (2-4 -> IRQ 4 Level:0 ActiveLow:0)
+IOAPIC[0]: Preconfigured routing entry (2-5 -> IRQ 5 Level:0 ActiveLow:0)
+IOAPIC[0]: Preconfigured routing entry (2-6 -> IRQ 6 Level:0 ActiveLow:0)
+IOAPIC[0]: Preconfigured routing entry (2-7 -> IRQ 7 Level:0 ActiveLow:0)
+IOAPIC[0]: Preconfigured routing entry (2-8 -> IRQ 8 Level:0 ActiveLow:0)
+IOAPIC[0]: Preconfigured routing entry (2-9 -> IRQ 9 Level:1 ActiveLow:0)
+IOAPIC[0]: Preconfigured routing entry (2-10 -> IRQ 10 Level:0 ActiveLow:0)
+IOAPIC[0]: Preconfigured routing entry (2-11 -> IRQ 11 Level:0 ActiveLow:0)
+IOAPIC[0]: Preconfigured routing entry (2-12 -> IRQ 12 Level:0 ActiveLow:0)
+IOAPIC[0]: Preconfigured routing entry (2-13 -> IRQ 13 Level:0 ActiveLow:0)
+IOAPIC[0]: Preconfigured routing entry (2-14 -> IRQ 14 Level:0 ActiveLow:0)
+IOAPIC[0]: Preconfigured routing entry (2-15 -> IRQ 15 Level:0 ActiveLow:0)
+apic 2 pin 16 not connected
+apic 2 pin 17 not connected
+apic 2 pin 18 not connected
+apic 2 pin 19 not connected
+apic 2 pin 20 not connected
+apic 2 pin 21 not connected
+apic 2 pin 22 not connected
+apic 2 pin 23 not connected
+apic 2 pin 24 not connected
+apic 2 pin 25 not connected
+apic 2 pin 26 not connected
+apic 2 pin 27 not connected
+apic 2 pin 28 not connected
+apic 2 pin 29 not connected
+apic 2 pin 30 not connected
+apic 2 pin 31 not connected
+apic 2 pin 32 not connected
+apic 2 pin 33 not connected
+apic 2 pin 34 not connected
+apic 2 pin 35 not connected
+apic 2 pin 36 not connected
+apic 2 pin 37 not connected
+apic 2 pin 38 not connected
+apic 2 pin 39 not connected
+apic 2 pin 40 not connected
+apic 2 pin 41 not connected
+apic 2 pin 42 not connected
+apic 2 pin 43 not connected
+apic 2 pin 44 not connected
+apic 2 pin 45 not connected
+apic 2 pin 46 not connected
+apic 2 pin 47 not connected
+apic 2 pin 48 not connected
+apic 2 pin 49 not connected
+apic 2 pin 50 not connected
+apic 2 pin 51 not connected
+apic 2 pin 52 not connected
+apic 2 pin 53 not connected
+apic 2 pin 54 not connected
+apic 2 pin 55 not connected
+apic 2 pin 56 not connected
+apic 2 pin 57 not connected
+apic 2 pin 58 not connected
+apic 2 pin 59 not connected
+apic 2 pin 60 not connected
+apic 2 pin 61 not connected
+apic 2 pin 62 not connected
+apic 2 pin 63 not connected
+apic 2 pin 64 not connected
+apic 2 pin 65 not connected
+apic 2 pin 66 not connected
+apic 2 pin 67 not connected
+apic 2 pin 68 not connected
+apic 2 pin 69 not connected
+apic 2 pin 70 not connected
+apic 2 pin 71 not connected
+apic 2 pin 72 not connected
+apic 2 pin 73 not connected
+apic 2 pin 74 not connected
+apic 2 pin 75 not connected
+apic 2 pin 76 not connected
+apic 2 pin 77 not connected
+apic 2 pin 78 not connected
+apic 2 pin 79 not connected
+apic 2 pin 80 not connected
+apic 2 pin 81 not connected
+apic 2 pin 82 not connected
+apic 2 pin 83 not connected
+apic 2 pin 84 not connected
+apic 2 pin 85 not connected
+apic 2 pin 86 not connected
+apic 2 pin 87 not connected
+apic 2 pin 88 not connected
+apic 2 pin 89 not connected
+apic 2 pin 90 not connected
+apic 2 pin 91 not connected
+apic 2 pin 92 not connected
+apic 2 pin 93 not connected
+apic 2 pin 94 not connected
+apic 2 pin 95 not connected
+apic 2 pin 96 not connected
+apic 2 pin 97 not connected
+apic 2 pin 98 not connected
+apic 2 pin 99 not connected
+apic 2 pin 100 not connected
+apic 2 pin 101 not connected
+apic 2 pin 102 not connected
+apic 2 pin 103 not connected
+apic 2 pin 104 not connected
+apic 2 pin 105 not connected
+apic 2 pin 106 not connected
+apic 2 pin 107 not connected
+apic 2 pin 108 not connected
+apic 2 pin 109 not connected
+apic 2 pin 110 not connected
+apic 2 pin 111 not connected
+apic 2 pin 112 not connected
+apic 2 pin 113 not connected
+apic 2 pin 114 not connected
+apic 2 pin 115 not connected
+apic 2 pin 116 not connected
+apic 2 pin 117 not connected
+apic 2 pin 118 not connected
+apic 2 pin 119 not connected
+..TIMER: vector=0x30 apic1=0 pin1=2 apic2=-1 pin2=-1
+clocksource: tsc-early: mask: 0xffffffffffffffff max_cycles: 0x2f9146cb80a, max_idle_ns: 440795296911 ns
+Calibrating delay loop (skipped), value calculated using timer frequency.. 6599.98 BogoMIPS (lpj=3299994)
+pid_max: default: 32768 minimum: 301
+LSM: initializing lsm=capability,landlock,yama,integrity
+landlock: Up and running.
+Yama: becoming mindful.
+Mount-cache hash table entries: 32768 (order: 6, 262144 bytes, linear)
+Mountpoint-cache hash table entries: 32768 (order: 6, 262144 bytes, linear)
+CPU0: Thermal monitoring enabled (TM1)
+process: using mwait in idle threads
+Last level iTLB entries: 4KB 128, 2MB 8, 4MB 8
+Last level dTLB entries: 4KB 64, 2MB 0, 4MB 0, 1GB 4
+Spectre V1 : Mitigation: usercopy/swapgs barriers and __user pointer sanitization
+Spectre V2 : Mitigation: IBRS
+Spectre V2 : Spectre v2 / SpectreRSB mitigation: Filling RSB on context switch
+Spectre V2 : Spectre v2 / SpectreRSB : Filling RSB on VMEXIT
+RETBleed: Mitigation: IBRS
+Spectre V2 : mitigation: Enabling conditional Indirect Branch Prediction Barrier
+Speculative Store Bypass: Mitigation: Speculative Store Bypass disabled via prctl
+MDS: Mitigation: Clear CPU buffers
+TAA: Mitigation: TSX disabled
+MMIO Stale Data: Mitigation: Clear CPU buffers
+SRBDS: Mitigation: Microcode
+Freeing SMP alternatives memory: 40K
+smpboot: CPU0: Intel(R) Xeon(R) CPU E3-1225 v5 @ 3.30GHz (family: 0x6, model: 0x5e, stepping: 0x3)
+cblist_init_generic: Setting adjustable number of callback queues.
+cblist_init_generic: Setting shift to 2 and lim to 1.
+cblist_init_generic: Setting shift to 2 and lim to 1.
+Running RCU-tasks wait API self tests
+calling  init_hw_perf_events+0x0/0x595 @ 1
+Performance Events: PEBS fmt3+, Skylake events, 32-deep LBR, full-width counters, Intel PMU driver.
+... version:                4
+... bit width:              48
+... generic registers:      8
+... value mask:             0000ffffffffffff
+... max period:             00007fffffffffff
+... fixed-purpose events:   3
+... event mask:             00000007000000ff
+Callback from call_rcu_tasks_trace() invoked.
+initcall init_hw_perf_events+0x0/0x595 returned 0 after 9000 usecs
+calling  do_init_real_mode+0x0/0x12 @ 1
+initcall do_init_real_mode+0x0/0x12 returned 0 after 0 usecs
+calling  trace_init_perf_perm_irq_work_exit+0x0/0x17 @ 1
+initcall trace_init_perf_perm_irq_work_exit+0x0/0x17 returned 0 after 0 usecs
+calling  bp_init_aperfmperf+0x0/0x5e @ 1
+Estimated ratio of average max frequency by base frequency (times 1024): 1055
+initcall bp_init_aperfmperf+0x0/0x5e returned 0 after 1000 usecs
+calling  register_nmi_cpu_backtrace_handler+0x0/0x1a @ 1
+initcall register_nmi_cpu_backtrace_handler+0x0/0x1a returned 0 after 0 usecs
+calling  kvm_setup_vsyscall_timeinfo+0x0/0xe1 @ 1
+initcall kvm_setup_vsyscall_timeinfo+0x0/0xe1 returned 0 after 0 usecs
+calling  spawn_ksoftirqd+0x0/0x3d @ 1
+initcall spawn_ksoftirqd+0x0/0x3d returned 0 after 0 usecs
+calling  migration_init+0x0/0xd5 @ 1
+initcall migration_init+0x0/0xd5 returned 0 after 0 usecs
+calling  srcu_bootup_announce+0x0/0x7c @ 1
+rcu: Hierarchical SRCU implementation.
+rcu: 	Max phase no-delay instances is 400.
+initcall srcu_bootup_announce+0x0/0x7c returned 0 after 2000 usecs
+calling  rcu_spawn_gp_kthread+0x0/0x35d @ 1
+initcall rcu_spawn_gp_kthread+0x0/0x35d returned 0 after 0 usecs
+calling  check_cpu_stall_init+0x0/0x1f @ 1
+initcall check_cpu_stall_init+0x0/0x1f returned 0 after 0 usecs
+calling  rcu_sysrq_init+0x0/0x26 @ 1
+initcall rcu_sysrq_init+0x0/0x26 returned 0 after 0 usecs
+calling  trace_init_flags_sys_enter+0x0/0x13 @ 1
+initcall trace_init_flags_sys_enter+0x0/0x13 returned 0 after 0 usecs
+calling  trace_init_flags_sys_exit+0x0/0x13 @ 1
+initcall trace_init_flags_sys_exit+0x0/0x13 returned 0 after 0 usecs
+calling  cpu_stop_init+0x0/0x166 @ 1
+initcall cpu_stop_init+0x0/0x166 returned 0 after 0 usecs
+calling  init_kprobes+0x0/0x25d @ 1
+initcall init_kprobes+0x0/0x25d returned 0 after 1000 usecs
+calling  init_events+0x0/0xc6 @ 1
+initcall init_events+0x0/0xc6 returned 0 after 0 usecs
+calling  init_trace_printk+0x0/0x10 @ 1
+initcall init_trace_printk+0x0/0x10 returned 0 after 0 usecs
+calling  event_trace_enable_again+0x0/0x23 @ 1
+initcall event_trace_enable_again+0x0/0x23 returned 0 after 0 usecs
+calling  irq_work_init_threads+0x0/0x7 @ 1
+initcall irq_work_init_threads+0x0/0x7 returned 0 after 0 usecs
+calling  static_call_init+0x0/0x93 @ 1
+initcall static_call_init+0x0/0x93 returned 0 after 0 usecs
+calling  jump_label_init_module+0x0/0x15 @ 1
+initcall jump_label_init_module+0x0/0x15 returned 0 after 0 usecs
+calling  init_zero_pfn+0x0/0xbf @ 1
+initcall init_zero_pfn+0x0/0xbf returned 0 after 0 usecs
+calling  init_fs_inode_sysctls+0x0/0x26 @ 1
+initcall init_fs_inode_sysctls+0x0/0x26 returned 0 after 0 usecs
+calling  init_fs_locks_sysctls+0x0/0x26 @ 1
+initcall init_fs_locks_sysctls+0x0/0x26 returned 0 after 0 usecs
+calling  dynamic_debug_init+0x0/0x3bf @ 1
+initcall dynamic_debug_init+0x0/0x3bf returned 0 after 0 usecs
+calling  efi_memreserve_root_init+0x0/0x2a @ 1
+initcall efi_memreserve_root_init+0x0/0x2a returned 0 after 0 usecs
+calling  efi_earlycon_remap_fb+0x0/0xf8 @ 1
+initcall efi_earlycon_remap_fb+0x0/0xf8 returned 0 after 0 usecs
+smp: Bringing up secondary CPUs ...
+x86: Booting SMP configuration:
+.... node  #0, CPUs:      #1
+masked ExtINT on CPU#1
+#2
+masked ExtINT on CPU#2
+#3
+masked ExtINT on CPU#3
+smp: Brought up 1 node, 4 CPUs
+smpboot: Max logical packages: 1
+smpboot: Total of 4 processors activated (26399.95 BogoMIPS)
+Callback from call_rcu_tasks_rude() invoked.
+node 0 deferred pages initialised in 54ms
+devtmpfs: initialized
+x86/mm: Memory block size: 128MB
+calling  bpf_jit_charge_init+0x0/0x40 @ 1
+initcall bpf_jit_charge_init+0x0/0x40 returned 0 after 0 usecs
+calling  ipc_ns_init+0x0/0x11e @ 1
+initcall ipc_ns_init+0x0/0x11e returned 0 after 0 usecs
+calling  init_mmap_min_addr+0x0/0x1a @ 1
+initcall init_mmap_min_addr+0x0/0x1a returned 0 after 0 usecs
+calling  pci_realloc_setup_params+0x0/0x49 @ 1
+initcall pci_realloc_setup_params+0x0/0x49 returned 0 after 0 usecs
+calling  inet_frag_wq_init+0x0/0x46 @ 1
+initcall inet_frag_wq_init+0x0/0x46 returned 0 after 0 usecs
+calling  e820__register_nvs_regions+0x0/0x150 @ 1
+ACPI: PM: Registering ACPI NVS region [mem 0xb3c7f000-0xb3e7efff] (2097152 bytes)
+initcall e820__register_nvs_regions+0x0/0x150 returned 0 after 2000 usecs
+calling  cpufreq_register_tsc_scaling+0x0/0x7a @ 1
+initcall cpufreq_register_tsc_scaling+0x0/0x7a returned 0 after 0 usecs
+calling  cache_ap_register+0x0/0x2c @ 1
+initcall cache_ap_register+0x0/0x2c returned 0 after 0 usecs
+calling  reboot_init+0x0/0xa9 @ 1
+initcall reboot_init+0x0/0xa9 returned 0 after 0 usecs
+calling  init_lapic_sysfs+0x0/0x4b @ 1
+initcall init_lapic_sysfs+0x0/0x4b returned 0 after 0 usecs
+calling  alloc_frozen_cpus+0x0/0x25 @ 1
+initcall alloc_frozen_cpus+0x0/0x25 returned 0 after 0 usecs
+calling  cpu_hotplug_pm_sync_init+0x0/0x18 @ 1
+initcall cpu_hotplug_pm_sync_init+0x0/0x18 returned 0 after 0 usecs
+calling  wq_sysfs_init+0x0/0x2f @ 1
+initcall wq_sysfs_init+0x0/0x2f returned 0 after 0 usecs
+calling  ksysfs_init+0x0/0x9d @ 1
+initcall ksysfs_init+0x0/0x9d returned 0 after 0 usecs
+calling  schedutil_gov_init+0x0/0x15 @ 1
+initcall schedutil_gov_init+0x0/0x15 returned 0 after 0 usecs
+calling  pm_init+0x0/0xb4 @ 1
+initcall pm_init+0x0/0xb4 returned 0 after 0 usecs
+calling  pm_disk_init+0x0/0x42 @ 1
+initcall pm_disk_init+0x0/0x42 returned 0 after 0 usecs
+calling  swsusp_header_init+0x0/0x35 @ 1
+initcall swsusp_header_init+0x0/0x35 returned 0 after 0 usecs
+calling  rcu_set_runtime_mode+0x0/0x63 @ 1
+initcall rcu_set_runtime_mode+0x0/0x63 returned 0 after 0 usecs
+calling  init_jiffies_clocksource+0x0/0x1c @ 1
+clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 1911260446275000 ns
+initcall init_jiffies_clocksource+0x0/0x1c returned 0 after 1000 usecs
+calling  futex_init+0x0/0x1f9 @ 1
+futex hash table entries: 1024 (order: 5, 131072 bytes, linear)
+initcall futex_init+0x0/0x1f9 returned 0 after 1000 usecs
+calling  cgroup_wq_init+0x0/0x2d @ 1
+initcall cgroup_wq_init+0x0/0x2d returned 0 after 0 usecs
+calling  cgroup1_wq_init+0x0/0x2d @ 1
+initcall cgroup1_wq_init+0x0/0x2d returned 0 after 0 usecs
+calling  ftrace_mod_cmd_init+0x0/0x10 @ 1
+initcall ftrace_mod_cmd_init+0x0/0x10 returned 0 after 0 usecs
+calling  init_irqsoff_tracer+0x0/0x13 @ 1
+initcall init_irqsoff_tracer+0x0/0x13 returned 0 after 0 usecs
+calling  init_wakeup_tracer+0x0/0x31 @ 1
+initcall init_wakeup_tracer+0x0/0x31 returned 0 after 0 usecs
+calling  init_graph_trace+0x0/0x95 @ 1
+initcall init_graph_trace+0x0/0x95 returned 0 after 0 usecs
+calling  trace_events_eprobe_init_early+0x0/0x2b @ 1
+initcall trace_events_eprobe_init_early+0x0/0x2b returned 0 after 0 usecs
+calling  trace_events_synth_init_early+0x0/0x2b @ 1
+initcall trace_events_synth_init_early+0x0/0x2b returned 0 after 0 usecs
+calling  init_kprobe_trace_early+0x0/0x2a @ 1
+initcall init_kprobe_trace_early+0x0/0x2a returned 0 after 0 usecs
+calling  kasan_memhotplug_init+0x0/0x13 @ 1
+initcall kasan_memhotplug_init+0x0/0x13 returned 0 after 0 usecs
+calling  memory_failure_init+0x0/0x273 @ 1
+initcall memory_failure_init+0x0/0x273 returned 0 after 0 usecs
+calling  fsnotify_init+0x0/0x8b @ 1
+initcall fsnotify_init+0x0/0x8b returned 0 after 0 usecs
+calling  filelock_init+0x0/0x174 @ 1
+initcall filelock_init+0x0/0x174 returned 0 after 0 usecs
+calling  init_script_binfmt+0x0/0x1a @ 1
+initcall init_script_binfmt+0x0/0x1a returned 0 after 0 usecs
+calling  init_elf_binfmt+0x0/0x1a @ 1
+initcall init_elf_binfmt+0x0/0x1a returned 0 after 0 usecs
+calling  init_compat_elf_binfmt+0x0/0x1a @ 1
+initcall init_compat_elf_binfmt+0x0/0x1a returned 0 after 0 usecs
+calling  configfs_init+0x0/0xee @ 1
+initcall configfs_init+0x0/0xee returned 0 after 0 usecs
+calling  debugfs_init+0x0/0xb7 @ 1
+initcall debugfs_init+0x0/0xb7 returned 0 after 0 usecs
+calling  tracefs_init+0x0/0x67 @ 1
+initcall tracefs_init+0x0/0x67 returned 0 after 0 usecs
+calling  securityfs_init+0x0/0xbe @ 1
+initcall securityfs_init+0x0/0xbe returned 0 after 0 usecs
+calling  pinctrl_init+0x0/0xb2 @ 1
+pinctrl core: initialized pinctrl subsystem
+initcall pinctrl_init+0x0/0xb2 returned 0 after 6000 usecs
+calling  gpiolib_dev_init+0x0/0x124 @ 1
+initcall gpiolib_dev_init+0x0/0x124 returned 0 after 0 usecs
+calling  virtio_init+0x0/0x20 @ 1
+initcall virtio_init+0x0/0x20 returned 0 after 0 usecs
+calling  iommu_init+0x0/0x55 @ 1
+initcall iommu_init+0x0/0x55 returned 0 after 0 usecs
+calling  component_debug_init+0x0/0x21 @ 1
+initcall component_debug_init+0x0/0x21 returned 0 after 0 usecs
+calling  cpufreq_core_init+0x0/0xce @ 1
+initcall cpufreq_core_init+0x0/0xce returned 0 after 0 usecs
+calling  cpufreq_gov_performance_init+0x0/0x15 @ 1
+initcall cpufreq_gov_performance_init+0x0/0x15 returned 0 after 0 usecs
+calling  cpufreq_gov_powersave_init+0x0/0x15 @ 1
+initcall cpufreq_gov_powersave_init+0x0/0x15 returned 0 after 0 usecs
+calling  cpufreq_gov_userspace_init+0x0/0x15 @ 1
+initcall cpufreq_gov_userspace_init+0x0/0x15 returned 0 after 0 usecs
+calling  CPU_FREQ_GOV_ONDEMAND_init+0x0/0x15 @ 1
+initcall CPU_FREQ_GOV_ONDEMAND_init+0x0/0x15 returned 0 after 0 usecs
+calling  CPU_FREQ_GOV_CONSERVATIVE_init+0x0/0x15 @ 1
+initcall CPU_FREQ_GOV_CONSERVATIVE_init+0x0/0x15 returned 0 after 0 usecs
+calling  cpuidle_init+0x0/0x4a @ 1
+initcall cpuidle_init+0x0/0x4a returned 0 after 0 usecs
+calling  sock_init+0x0/0xa3 @ 1
+initcall sock_init+0x0/0xa3 returned 0 after 2000 usecs
+calling  net_inuse_init+0x0/0x2d @ 1
+initcall net_inuse_init+0x0/0x2d returned 0 after 0 usecs
+calling  net_defaults_init+0x0/0x2d @ 1
+initcall net_defaults_init+0x0/0x2d returned 0 after 0 usecs
+calling  init_default_flow_dissectors+0x0/0x54 @ 1
+initcall init_default_flow_dissectors+0x0/0x54 returned 0 after 0 usecs
+calling  netpoll_init+0x0/0x18 @ 1
+initcall netpoll_init+0x0/0x18 returned 0 after 0 usecs
+calling  netlink_proto_init+0x0/0x269 @ 1
+NET: Registered PF_NETLINK/PF_ROUTE protocol family
+initcall netlink_proto_init+0x0/0x269 returned 0 after 7000 usecs
+calling  genl_init+0x0/0x47 @ 1
+initcall genl_init+0x0/0x47 returned 0 after 1000 usecs
+calling  bsp_pm_check_init+0x0/0x18 @ 1
+initcall bsp_pm_check_init+0x0/0x18 returned 0 after 0 usecs
+calling  irq_sysfs_init+0x0/0xbe @ 1
+initcall irq_sysfs_init+0x0/0xbe returned 0 after 1000 usecs
+calling  audit_init+0x0/0x18e @ 1
+audit: initializing netlink subsys (disabled)
+initcall audit_init+0x0/0x18e returned 0 after 7000 usecs
+audit: type=2000 audit(1674098476.673:1): state=initialized audit_enabled=0 res=1
+calling  release_early_probes+0x0/0x5d @ 1
+initcall release_early_probes+0x0/0x5d returned 0 after 0 usecs
+calling  bdi_class_init+0x0/0x71 @ 1
+initcall bdi_class_init+0x0/0x71 returned 0 after 0 usecs
+calling  mm_sysfs_init+0x0/0x53 @ 1
+initcall mm_sysfs_init+0x0/0x53 returned 0 after 0 usecs
+calling  init_per_zone_wmark_min+0x0/0x2a @ 1
+initcall init_per_zone_wmark_min+0x0/0x2a returned 0 after 0 usecs
+calling  mpi_init+0x0/0xea @ 1
+initcall mpi_init+0x0/0xea returned 0 after 0 usecs
+calling  gpiolib_sysfs_init+0x0/0x11d @ 1
+initcall gpiolib_sysfs_init+0x0/0x11d returned 0 after 0 usecs
+calling  acpi_gpio_setup_params+0x0/0x11a @ 1
+initcall acpi_gpio_setup_params+0x0/0x11a returned 0 after 0 usecs
+calling  pcibus_class_init+0x0/0x1c @ 1
+initcall pcibus_class_init+0x0/0x1c returned 0 after 0 usecs
+calling  pci_driver_init+0x0/0x26 @ 1
+initcall pci_driver_init+0x0/0x26 returned 0 after 0 usecs
+calling  backlight_class_init+0x0/0xf2 @ 1
+initcall backlight_class_init+0x0/0xf2 returned 0 after 0 usecs
+calling  tty_class_init+0x0/0x5c @ 1
+initcall tty_class_init+0x0/0x5c returned 0 after 0 usecs
+calling  vtconsole_class_init+0x0/0x1a4 @ 1
+initcall vtconsole_class_init+0x0/0x1a4 returned 0 after 0 usecs
+calling  iommu_dev_init+0x0/0x1c @ 1
+initcall iommu_dev_init+0x0/0x1c returned 0 after 0 usecs
+calling  mipi_dsi_bus_init+0x0/0x15 @ 1
+initcall mipi_dsi_bus_init+0x0/0x15 returned 0 after 0 usecs
+calling  devlink_class_init+0x0/0x4a @ 1
+initcall devlink_class_init+0x0/0x4a returned 0 after 0 usecs
+calling  software_node_init+0x0/0x55 @ 1
+initcall software_node_init+0x0/0x55 returned 0 after 0 usecs
+calling  wakeup_sources_debugfs_init+0x0/0x28 @ 1
+initcall wakeup_sources_debugfs_init+0x0/0x28 returned 0 after 0 usecs
+calling  wakeup_sources_sysfs_init+0x0/0x31 @ 1
+initcall wakeup_sources_sysfs_init+0x0/0x31 returned 0 after 0 usecs
+calling  regmap_initcall+0x0/0x11 @ 1
+initcall regmap_initcall+0x0/0x11 returned 0 after 0 usecs
+calling  spi_init+0x0/0xcb @ 1
+initcall spi_init+0x0/0xcb returned 0 after 0 usecs
+calling  i2c_init+0x0/0xec @ 1
+initcall i2c_init+0x0/0xec returned 0 after 0 usecs
+calling  thermal_init+0x0/0x1ae @ 1
+thermal_sys: Registered thermal governor 'fair_share'
+thermal_sys: Registered thermal governor 'bang_bang'
+thermal_sys: Registered thermal governor 'step_wise'
+thermal_sys: Registered thermal governor 'user_space'
+initcall thermal_init+0x0/0x1ae returned 0 after 21000 usecs
+calling  init_menu+0x0/0x15 @ 1
+cpuidle: using governor menu
+initcall init_menu+0x0/0x15 returned 0 after 5000 usecs
+calling  pcc_init+0x0/0xcb @ 1
+initcall pcc_init+0x0/0xcb returned -19 after 0 usecs
+calling  kobject_uevent_init+0x0/0x10 @ 1
+initcall kobject_uevent_init+0x0/0x10 returned 0 after 0 usecs
+calling  bts_init+0x0/0x134 @ 1
+initcall bts_init+0x0/0x134 returned -19 after 0 usecs
+calling  pt_init+0x0/0x2c1 @ 1
+initcall pt_init+0x0/0x2c1 returned 0 after 0 usecs
+calling  boot_params_ksysfs_init+0x0/0x96 @ 1
+initcall boot_params_ksysfs_init+0x0/0x96 returned 0 after 0 usecs
+calling  sbf_init+0x0/0xd3 @ 1
+initcall sbf_init+0x0/0xd3 returned 0 after 0 usecs
+calling  arch_kdebugfs_init+0x0/0x4d9 @ 1
+initcall arch_kdebugfs_init+0x0/0x4d9 returned 0 after 0 usecs
+calling  xfd_update_static_branch+0x0/0x48 @ 1
+initcall xfd_update_static_branch+0x0/0x48 returned 0 after 0 usecs
+calling  intel_pconfig_init+0x0/0xa9 @ 1
+initcall intel_pconfig_init+0x0/0xa9 returned 0 after 0 usecs
+calling  mtrr_if_init+0x0/0xaf @ 1
+initcall mtrr_if_init+0x0/0xaf returned 0 after 0 usecs
+calling  activate_jump_labels+0x0/0x36 @ 1
+initcall activate_jump_labels+0x0/0x36 returned 0 after 0 usecs
+calling  init_s4_sigcheck+0x0/0x90 @ 1
+initcall init_s4_sigcheck+0x0/0x90 returned 0 after 0 usecs
+calling  ffh_cstate_init+0x0/0x66 @ 1
+initcall ffh_cstate_init+0x0/0x66 returned 0 after 0 usecs
+calling  kvm_alloc_cpumask+0x0/0x1ca @ 1
+initcall kvm_alloc_cpumask+0x0/0x1ca returned 0 after 0 usecs
+calling  activate_jump_labels+0x0/0x36 @ 1
+initcall activate_jump_labels+0x0/0x36 returned 0 after 0 usecs
+calling  gigantic_pages_init+0x0/0x4a @ 1
+initcall gigantic_pages_init+0x0/0x4a returned 0 after 0 usecs
+calling  uv_rtc_setup_clock+0x0/0x27a @ 1
+initcall uv_rtc_setup_clock+0x0/0x27a returned -19 after 0 usecs
+calling  kcmp_cookies_init+0x0/0xa6 @ 1
+initcall kcmp_cookies_init+0x0/0xa6 returned 0 after 0 usecs
+calling  cryptomgr_init+0x0/0x15 @ 1
+initcall cryptomgr_init+0x0/0x15 returned 0 after 0 usecs
+calling  acpi_pci_init+0x0/0x14d @ 1
+ACPI FADT declares the system doesn't support PCIe ASPM, so disable it
+acpiphp: ACPI Hot Plug PCI Controller Driver version: 0.5
+initcall acpi_pci_init+0x0/0x14d returned 0 after 16000 usecs
+calling  dma_channel_table_init+0x0/0x17c @ 1
+initcall dma_channel_table_init+0x0/0x17c returned 0 after 0 usecs
+calling  dma_bus_init+0x0/0x20f @ 1
+initcall dma_bus_init+0x0/0x20f returned 0 after 0 usecs
+calling  iommu_dma_init+0x0/0x50 @ 1
+initcall iommu_dma_init+0x0/0x50 returned 0 after 0 usecs
+calling  dmi_id_init+0x0/0x16c @ 1
+initcall dmi_id_init+0x0/0x16c returned 0 after 0 usecs
+calling  pci_arch_init+0x0/0x11c @ 1
+PCI: MMCONFIG for domain 0000 [bus 00-ff] at [mem 0xe0000000-0xefffffff] (base 0xe0000000)
+PCI: MMCONFIG at [mem 0xe0000000-0xefffffff] reserved in E820
+PCI: Using configuration type 1 for base access
+initcall pci_arch_init+0x0/0x11c returned 0 after 42000 usecs
+calling  init_vdso+0x0/0x18 @ 1
+initcall init_vdso+0x0/0x18 returned 0 after 0 usecs
+calling  sysenter_setup+0x0/0x18 @ 1
+initcall sysenter_setup+0x0/0x18 returned 0 after 0 usecs
+calling  fixup_ht_bug+0x0/0x257 @ 1
+initcall fixup_ht_bug+0x0/0x257 returned 0 after 0 usecs
+calling  topology_init+0x0/0x9e @ 1
+initcall topology_init+0x0/0x9e returned 0 after 1000 usecs
+calling  intel_epb_init+0x0/0xd8 @ 1
+initcall intel_epb_init+0x0/0xd8 returned 0 after 0 usecs
+calling  mtrr_init_finialize+0x0/0x6f @ 1
+initcall mtrr_init_finialize+0x0/0x6f returned 0 after 0 usecs
+calling  uid_cache_init+0x0/0x102 @ 1
+initcall uid_cache_init+0x0/0x102 returned 0 after 0 usecs
+calling  param_sysfs_init+0x0/0x4f @ 1
+initcall param_sysfs_init+0x0/0x4f returned 0 after 0 usecs
+calling  user_namespace_sysctl_init+0x0/0x11e @ 1
+initcall user_namespace_sysctl_init+0x0/0x11e returned 0 after 0 usecs
+calling  proc_schedstat_init+0x0/0x29 @ 1
+initcall proc_schedstat_init+0x0/0x29 returned 0 after 0 usecs
+calling  pm_sysrq_init+0x0/0x1d @ 1
+initcall pm_sysrq_init+0x0/0x1d returned 0 after 0 usecs
+calling  create_proc_profile+0x0/0xe0 @ 1
+initcall create_proc_profile+0x0/0xe0 returned 0 after 0 usecs
+calling  crash_save_vmcoreinfo_init+0x0/0x742 @ 1
+initcall crash_save_vmcoreinfo_init+0x0/0x742 returned 0 after 0 usecs
+calling  crash_notes_memory_init+0x0/0x3d @ 1
+initcall crash_notes_memory_init+0x0/0x3d returned 0 after 1000 usecs
+calling  cgroup_sysfs_init+0x0/0x42 @ 1
+initcall cgroup_sysfs_init+0x0/0x42 returned 0 after 0 usecs
+calling  cgroup_namespaces_init+0x0/0xc @ 1
+initcall cgroup_namespaces_init+0x0/0xc returned 0 after 0 usecs
+calling  user_namespaces_init+0x0/0x31 @ 1
+initcall user_namespaces_init+0x0/0x31 returned 0 after 0 usecs
+calling  init_optprobes+0x0/0x1d @ 1
+kprobes: kprobe jump-optimization is enabled. All kprobes are optimized if possible.
+initcall init_optprobes+0x0/0x1d returned 0 after 10000 usecs
+calling  hung_task_init+0x0/0x79 @ 1
+initcall hung_task_init+0x0/0x79 returned 0 after 0 usecs
+calling  ftrace_check_for_weak_functions+0x0/0x8b @ 1
+initcall ftrace_check_for_weak_functions+0x0/0x8b returned 0 after 0 usecs
+calling  trace_eval_init+0x0/0xae @ 1
+initcall trace_eval_init+0x0/0xae returned 0 after 1000 usecs
+calling  send_signal_irq_work_init+0x0/0x154 @ 1
+initcall send_signal_irq_work_init+0x0/0x154 returned 0 after 0 usecs
+calling  dev_map_init+0x0/0x123 @ 1
+initcall dev_map_init+0x0/0x123 returned 0 after 0 usecs
+calling  cpu_map_init+0x0/0x117 @ 1
+initcall cpu_map_init+0x0/0x117 returned 0 after 0 usecs
+calling  netns_bpf_init+0x0/0x15 @ 1
+initcall netns_bpf_init+0x0/0x15 returned 0 after 0 usecs
+calling  oom_init+0x0/0x4e @ 1
+initcall oom_init+0x0/0x4e returned 0 after 1000 usecs
+calling  default_bdi_init+0x0/0x2d @ 1
+initcall default_bdi_init+0x0/0x2d returned 0 after 1000 usecs
+calling  cgwb_init+0x0/0x2d @ 1
+initcall cgwb_init+0x0/0x2d returned 0 after 0 usecs
+calling  percpu_enable_async+0x0/0x13 @ 1
+initcall percpu_enable_async+0x0/0x13 returned 0 after 0 usecs
+calling  kcompactd_init+0x0/0x9c @ 1
+initcall kcompactd_init+0x0/0x9c returned 0 after 0 usecs
+calling  init_user_reserve+0x0/0xa0 @ 1
+initcall init_user_reserve+0x0/0xa0 returned 0 after 0 usecs
+calling  init_admin_reserve+0x0/0xa0 @ 1
+initcall init_admin_reserve+0x0/0xa0 returned 0 after 0 usecs
+calling  init_reserve_notifier+0x0/0x23 @ 1
+initcall init_reserve_notifier+0x0/0x23 returned 0 after 0 usecs
+calling  swap_init_sysfs+0x0/0x92 @ 1
+initcall swap_init_sysfs+0x0/0x92 returned 0 after 0 usecs
+calling  swapfile_init+0x0/0x14b @ 1
+initcall swapfile_init+0x0/0x14b returned 0 after 0 usecs
+calling  hugetlb_init+0x0/0xb07 @ 1
+HugeTLB: registered 1.00 GiB page size, pre-allocated 0 pages
+HugeTLB: 16380 KiB vmemmap can be freed for a 1.00 GiB page
+HugeTLB: registered 2.00 MiB page size, pre-allocated 0 pages
+HugeTLB: 28 KiB vmemmap can be freed for a 2.00 MiB page
+initcall hugetlb_init+0x0/0xb07 returned 0 after 30000 usecs
+calling  ksm_init+0x0/0x246 @ 1
+initcall ksm_init+0x0/0x246 returned 0 after 1000 usecs
+calling  memory_tier_init+0x0/0x143 @ 1
+initcall memory_tier_init+0x0/0x143 returned 0 after 1000 usecs
+calling  numa_init_sysfs+0x0/0x92 @ 1
+initcall numa_init_sysfs+0x0/0x92 returned 0 after 0 usecs
+calling  hugepage_init+0x0/0x1b4 @ 1
+initcall hugepage_init+0x0/0x1b4 returned 0 after 0 usecs
+calling  mem_cgroup_init+0x0/0x3d0 @ 1
+initcall mem_cgroup_init+0x0/0x3d0 returned 0 after 0 usecs
+calling  mem_cgroup_swap_init+0x0/0x60 @ 1
+initcall mem_cgroup_swap_init+0x0/0x60 returned 0 after 0 usecs
+calling  page_idle_init+0x0/0x5d @ 1
+initcall page_idle_init+0x0/0x5d returned 0 after 0 usecs
+calling  damon_init+0x0/0x49 @ 1
+initcall damon_init+0x0/0x49 returned 0 after 0 usecs
+calling  damon_va_initcall+0x0/0x15c @ 1
+initcall damon_va_initcall+0x0/0x15c returned 0 after 0 usecs
+calling  damon_pa_initcall+0x0/0xf7 @ 1
+initcall damon_pa_initcall+0x0/0xf7 returned 0 after 0 usecs
+calling  seqiv_module_init+0x0/0x15 @ 1
+initcall seqiv_module_init+0x0/0x15 returned 0 after 0 usecs
+calling  rsa_init+0x0/0x43 @ 1
+initcall rsa_init+0x0/0x43 returned 0 after 0 usecs
+calling  hmac_module_init+0x0/0x15 @ 1
+initcall hmac_module_init+0x0/0x15 returned 0 after 0 usecs
+calling  crypto_null_mod_init+0x0/0x71 @ 1
+initcall crypto_null_mod_init+0x0/0x71 returned 0 after 0 usecs
+calling  md5_mod_init+0x0/0x15 @ 1
+initcall md5_mod_init+0x0/0x15 returned 0 after 0 usecs
+calling  sha1_generic_mod_init+0x0/0x15 @ 1
+initcall sha1_generic_mod_init+0x0/0x15 returned 0 after 0 usecs
+calling  sha256_generic_mod_init+0x0/0x1a @ 1
+initcall sha256_generic_mod_init+0x0/0x1a returned 0 after 0 usecs
+calling  sha512_generic_mod_init+0x0/0x1a @ 1
+initcall sha512_generic_mod_init+0x0/0x1a returned 0 after 0 usecs
+calling  crypto_ecb_module_init+0x0/0x15 @ 1
+initcall crypto_ecb_module_init+0x0/0x15 returned 0 after 0 usecs
+calling  crypto_cbc_module_init+0x0/0x15 @ 1
+initcall crypto_cbc_module_init+0x0/0x15 returned 0 after 0 usecs
+calling  crypto_cfb_module_init+0x0/0x15 @ 1
+initcall crypto_cfb_module_init+0x0/0x15 returned 0 after 0 usecs
+calling  crypto_ctr_module_init+0x0/0x1a @ 1
+initcall crypto_ctr_module_init+0x0/0x1a returned 0 after 0 usecs
+calling  crypto_gcm_module_init+0x0/0x67 @ 1
+initcall crypto_gcm_module_init+0x0/0x67 returned 0 after 0 usecs
+calling  cryptd_init+0x0/0x21d @ 1
+cryptd: max_cpu_qlen set to 1000
+initcall cryptd_init+0x0/0x21d returned 0 after 6000 usecs
+calling  aes_init+0x0/0x15 @ 1
+initcall aes_init+0x0/0x15 returned 0 after 0 usecs
+calling  sm4_init+0x0/0x15 @ 1
+initcall sm4_init+0x0/0x15 returned 0 after 0 usecs
+calling  deflate_mod_init+0x0/0x48 @ 1
+initcall deflate_mod_init+0x0/0x48 returned 0 after 0 usecs
+calling  crc32c_mod_init+0x0/0x15 @ 1
+initcall crc32c_mod_init+0x0/0x15 returned 0 after 0 usecs
+calling  crct10dif_mod_init+0x0/0x15 @ 1
+initcall crct10dif_mod_init+0x0/0x15 returned 0 after 0 usecs
+calling  lzo_mod_init+0x0/0x43 @ 1
+initcall lzo_mod_init+0x0/0x43 returned 0 after 0 usecs
+calling  lzorle_mod_init+0x0/0x43 @ 1
+initcall lzorle_mod_init+0x0/0x43 returned 0 after 0 usecs
+calling  drbg_init+0x0/0xe8 @ 1
+initcall drbg_init+0x0/0xe8 returned 0 after 0 usecs
+calling  ghash_mod_init+0x0/0x15 @ 1
+initcall ghash_mod_init+0x0/0x15 returned 0 after 0 usecs
+calling  init_bio+0x0/0x115 @ 1
+initcall init_bio+0x0/0x115 returned 0 after 1000 usecs
+calling  blk_ioc_init+0x0/0x2e @ 1
+initcall blk_ioc_init+0x0/0x2e returned 0 after 0 usecs
+calling  blk_mq_init+0x0/0x17b @ 1
+initcall blk_mq_init+0x0/0x17b returned 0 after 0 usecs
+calling  genhd_device_init+0x0/0x8c @ 1
+initcall genhd_device_init+0x0/0x8c returned 0 after 0 usecs
+calling  blkcg_init+0x0/0x2d @ 1
+initcall blkcg_init+0x0/0x2d returned 0 after 0 usecs
+calling  io_wq_init+0x0/0x3d @ 1
+initcall io_wq_init+0x0/0x3d returned 0 after 0 usecs
+calling  sg_pool_init+0x0/0x1a9 @ 1
+initcall sg_pool_init+0x0/0x1a9 returned 0 after 1000 usecs
+calling  irq_poll_setup+0x0/0x149 @ 1
+initcall irq_poll_setup+0x0/0x149 returned 0 after 0 usecs
+calling  gpiolib_debugfs_init+0x0/0x28 @ 1
+initcall gpiolib_debugfs_init+0x0/0x28 returned 0 after 0 usecs
+calling  pwm_debugfs_init+0x0/0x28 @ 1
+initcall pwm_debugfs_init+0x0/0x28 returned 0 after 0 usecs
+calling  pwm_sysfs_init+0x0/0x1c @ 1
+initcall pwm_sysfs_init+0x0/0x1c returned 0 after 0 usecs
+calling  pci_slot_init+0x0/0x40 @ 1
+initcall pci_slot_init+0x0/0x40 returned 0 after 0 usecs
+calling  fbmem_init+0x0/0xe5 @ 1
+initcall fbmem_init+0x0/0xe5 returned 0 after 0 usecs
+calling  scan_for_dmi_ipmi+0x0/0x56 @ 1
+initcall scan_for_dmi_ipmi+0x0/0x56 returned 0 after 0 usecs
+calling  acpi_init+0x0/0x271 @ 1
+ACPI: Added _OSI(Module Device)
+ACPI: Added _OSI(Processor Device)
+ACPI: Added _OSI(3.0 _SCP Extensions)
+ACPI: Added _OSI(Processor Aggregator Device)
+ACPI: 8 ACPI AML tables successfully acquired and loaded
+ACPI: [Firmware Bug]: BIOS _OSI(Linux) query ignored
+ACPI: Dynamic OEM Table Load:
+ACPI: SSDT 0xFFFF888103DFD000 0006C3 (v02 PmRef  Cpu0Ist  00003000 INTL 20121018)
+ACPI: \_PR_.CPU0: _OSC native thermal LVT Acked
+ACPI: Dynamic OEM Table Load:
+ACPI: SSDT 0xFFFF888103E96800 00037F (v02 PmRef  Cpu0Cst  00003001 INTL 20121018)
+ACPI: Dynamic OEM Table Load:
+ACPI: SSDT 0xFFFF888103EAE000 0005AA (v02 PmRef  ApIst    00003000 INTL 20121018)
+ACPI: Dynamic OEM Table Load:
+ACPI: SSDT 0xFFFF888100F69C00 000119 (v02 PmRef  ApCst    00003000 INTL 20121018)
+ACPI: EC: EC started
+ACPI: EC: interrupt blocked
+ACPI: EC: EC_CMD/EC_SC=0x66, EC_DATA=0x62
+ACPI: \_SB_.PCI0.LPCB.EC0_: Boot DSDT EC used to handle transactions
+ACPI: Interpreter enabled
+ACPI: PM: (supports S0 S3 S4 S5)
+ACPI: Using IOAPIC for interrupt routing
+PCI: Using host bridge windows from ACPI; if necessary, use "pci=nocrs" and report a bug
+PCI: Using E820 reservations for host bridge windows
+ACPI: Enabled 5 GPEs in block 00 to 7F
+ACPI: \_SB_.PCI0.PEG1.PG01: New power resource
+ACPI: \_SB_.PCI0.PEG2.PG02: New power resource
+ACPI: \_SB_.PCI0.PEG0.PG00: New power resource
+ACPI: \_SB_.PCI0.PEG0.PEGP.WRST: New power resource
+ACPI: \_SB_.PCI0.RP01.PXSX.WRST: New power resource
+ACPI: \_SB_.PCI0.RP02.PXSX.WRST: New power resource
+ACPI: \_SB_.PCI0.RP03.PXSX.WRST: New power resource
+ACPI: \_SB_.PCI0.RP04.PXSX.WRST: New power resource
+ACPI: \_SB_.PCI0.RP05.PXSX.WRST: New power resource
+ACPI: \_SB_.PCI0.RP06.PXSX.WRST: New power resource
+ACPI: \_SB_.PCI0.RP07.PXSX.WRST: New power resource
+ACPI: \_SB_.PCI0.RP08.PXSX.WRST: New power resource
+ACPI: \_SB_.PCI0.RP09.PXSX.WRST: New power resource
+ACPI: \_SB_.PCI0.RP10.PXSX.WRST: New power resource
+ACPI: \_SB_.PCI0.RP11.PXSX.WRST: New power resource
+ACPI: \_SB_.PCI0.RP12.PXSX.WRST: New power resource
+ACPI: \_SB_.PCI0.RP13.PXSX.WRST: New power resource
+ACPI: \_SB_.PCI0.RP14.PXSX.WRST: New power resource
+ACPI: \_SB_.PCI0.RP15.PXSX.WRST: New power resource
+ACPI: \_SB_.PCI0.RP16.PXSX.WRST: New power resource
+ACPI: \_SB_.PCI0.RP17.PXSX.WRST: New power resource
+ACPI: \_SB_.PCI0.RP18.PXSX.WRST: New power resource
+ACPI: \_SB_.PCI0.RP19.PXSX.WRST: New power resource
+ACPI: \_SB_.PCI0.RP20.PXSX.WRST: New power resource
+ACPI: PCI Root Bridge [PCI0] (domain 0000 [bus 00-fe])
+acpi PNP0A08:00: _OSC: OS supports [ExtendedConfig ASPM ClockPM Segments MSI HPX-Type3]
+acpi PNP0A08:00: _OSC: platform does not support [PCIeHotplug SHPCHotplug PME LTR]
+acpi PNP0A08:00: _OSC: OS now controls [AER PCIeCapability]
+acpi PNP0A08:00: FADT indicates ASPM is unsupported, using BIOS configuration
+PCI host bridge to bus 0000:00
+pci_bus 0000:00: root bus resource [io  0x0000-0x0cf7 window]
+pci_bus 0000:00: root bus resource [io  0x0d00-0xffff window]
+pci_bus 0000:00: root bus resource [mem 0x000a0000-0x000bffff window]
+pci_bus 0000:00: root bus resource [mem 0xbe800000-0xdfffffff window]
+pci_bus 0000:00: root bus resource [mem 0x1c00000000-0x1fffffffff window]
+pci_bus 0000:00: root bus resource [mem 0xfd000000-0xfe7fffff window]
+pci_bus 0000:00: root bus resource [bus 00-fe]
+pci 0000:00:00.0: calling  quirk_mmio_always_on+0x0/0x80 @ 1
+pci 0000:00:00.0: quirk_mmio_always_on+0x0/0x80 took 0 usecs
+pci 0000:00:00.0: [8086:1918] type 00 class 0x060000
+pci 0000:00:00.0: calling  quirk_igfx_skip_te_disable+0x0/0x120 @ 1
+pci 0000:00:00.0: quirk_igfx_skip_te_disable+0x0/0x120 took 0 usecs
+pci 0000:00:02.0: [8086:191d] type 00 class 0x030000
+pci 0000:00:02.0: reg 0x10: [mem 0xd0000000-0xd0ffffff 64bit]
+pci 0000:00:02.0: reg 0x18: [mem 0xc0000000-0xcfffffff 64bit pref]
+pci 0000:00:02.0: reg 0x20: [io  0x3000-0x303f]
+pci 0000:00:02.0: calling  efifb_fixup_resources+0x0/0x490 @ 1
+pci 0000:00:02.0: efifb_fixup_resources+0x0/0x490 took 0 usecs
+pci 0000:00:02.0: calling  quirk_igfx_skip_te_disable+0x0/0x120 @ 1
+pci 0000:00:02.0: quirk_igfx_skip_te_disable+0x0/0x120 took 0 usecs
+pci 0000:00:02.0: calling  pci_fixup_video+0x0/0x200 @ 1
+pci 0000:00:02.0: Video device with shadowed ROM at [mem 0x000c0000-0x000dffff]
+pci 0000:00:02.0: pci_fixup_video+0x0/0x200 took 8789 usecs
+pci 0000:00:14.0: [8086:a12f] type 00 class 0x0c0330
+pci 0000:00:14.0: reg 0x10: [mem 0xd1020000-0xd102ffff 64bit]
+pci 0000:00:14.0: calling  quirk_igfx_skip_te_disable+0x0/0x120 @ 1
+pci 0000:00:14.0: quirk_igfx_skip_te_disable+0x0/0x120 took 0 usecs
+pci 0000:00:14.0: PME# supported from D3hot D3cold
+pci 0000:00:14.2: [8086:a131] type 00 class 0x118000
+pci 0000:00:14.2: reg 0x10: [mem 0xd104a000-0xd104afff 64bit]
+pci 0000:00:14.2: calling  quirk_igfx_skip_te_disable+0x0/0x120 @ 1
+pci 0000:00:14.2: quirk_igfx_skip_te_disable+0x0/0x120 took 0 usecs
+pci 0000:00:16.0: [8086:a13a] type 00 class 0x078000
+pci 0000:00:16.0: reg 0x10: [mem 0xd104b000-0xd104bfff 64bit]
+pci 0000:00:16.0: calling  quirk_igfx_skip_te_disable+0x0/0x120 @ 1
+pci 0000:00:16.0: quirk_igfx_skip_te_disable+0x0/0x120 took 0 usecs
+pci 0000:00:16.0: PME# supported from D3hot
+pci 0000:00:16.3: [8086:a13d] type 00 class 0x070002
+pci 0000:00:16.3: reg 0x10: [io  0x3080-0x3087]
+pci 0000:00:16.3: reg 0x14: [mem 0xd104f000-0xd104ffff]
+pci 0000:00:16.3: calling  quirk_igfx_skip_te_disable+0x0/0x120 @ 1
+pci 0000:00:16.3: quirk_igfx_skip_te_disable+0x0/0x120 took 0 usecs
+pci 0000:00:17.0: [8086:2822] type 00 class 0x010400
+pci 0000:00:17.0: reg 0x10: [mem 0xd1048000-0xd1049fff]
+pci 0000:00:17.0: reg 0x14: [mem 0xd104e000-0xd104e0ff]
+pci 0000:00:17.0: reg 0x18: [io  0x3088-0x308f]
+pci 0000:00:17.0: reg 0x1c: [io  0x3090-0x3093]
+pci 0000:00:17.0: reg 0x20: [io  0x3060-0x307f]
+pci 0000:00:17.0: reg 0x24: [mem 0xd104c000-0xd104c7ff]
+pci 0000:00:17.0: calling  quirk_igfx_skip_te_disable+0x0/0x120 @ 1
+pci 0000:00:17.0: quirk_igfx_skip_te_disable+0x0/0x120 took 0 usecs
+pci 0000:00:17.0: PME# supported from D3hot
+pci 0000:00:1f.0: [8086:a149] type 00 class 0x060100
+pci 0000:00:1f.0: calling  quirk_igfx_skip_te_disable+0x0/0x120 @ 1
+pci 0000:00:1f.0: quirk_igfx_skip_te_disable+0x0/0x120 took 0 usecs
+pci 0000:00:1f.2: [8086:a121] type 00 class 0x058000
+pci 0000:00:1f.2: reg 0x10: [mem 0xd1044000-0xd1047fff]
+pci 0000:00:1f.2: calling  quirk_igfx_skip_te_disable+0x0/0x120 @ 1
+pci 0000:00:1f.2: quirk_igfx_skip_te_disable+0x0/0x120 took 0 usecs
+pci 0000:00:1f.3: [8086:a170] type 00 class 0x040300
+pci 0000:00:1f.3: reg 0x10: [mem 0xd1040000-0xd1043fff 64bit]
+pci 0000:00:1f.3: reg 0x20: [mem 0xd1030000-0xd103ffff 64bit]
+pci 0000:00:1f.3: calling  quirk_igfx_skip_te_disable+0x0/0x120 @ 1
+pci 0000:00:1f.3: quirk_igfx_skip_te_disable+0x0/0x120 took 0 usecs
+pci 0000:00:1f.3: PME# supported from D3hot D3cold
+pci 0000:00:1f.4: [8086:a123] type 00 class 0x0c0500
+pci 0000:00:1f.4: reg 0x10: [mem 0xd104d000-0xd104d0ff 64bit]
+pci 0000:00:1f.4: reg 0x20: [io  0xefa0-0xefbf]
+pci 0000:00:1f.4: calling  quirk_igfx_skip_te_disable+0x0/0x120 @ 1
+pci 0000:00:1f.4: quirk_igfx_skip_te_disable+0x0/0x120 took 0 usecs
+pci 0000:00:1f.6: calling  quirk_f0_vpd_link+0x0/0x220 @ 1
+pci 0000:00:1f.6: quirk_f0_vpd_link+0x0/0x220 took 0 usecs
+pci 0000:00:1f.6: [8086:15b7] type 00 class 0x020000
+pci 0000:00:1f.6: reg 0x10: [mem 0xd1000000-0xd101ffff]
+pci 0000:00:1f.6: calling  quirk_igfx_skip_te_disable+0x0/0x120 @ 1
+pci 0000:00:1f.6: quirk_igfx_skip_te_disable+0x0/0x120 took 0 usecs
+pci 0000:00:1f.6: PME# supported from D0 D3hot D3cold
+ACPI: PCI: Interrupt link LNKA configured for IRQ 11
+ACPI: PCI: Interrupt link LNKA disabled
+ACPI: PCI: Interrupt link LNKB configured for IRQ 10
+ACPI: PCI: Interrupt link LNKB disabled
+ACPI: PCI: Interrupt link LNKC configured for IRQ 11
+ACPI: PCI: Interrupt link LNKC disabled
+ACPI: PCI: Interrupt link LNKD configured for IRQ 11
+ACPI: PCI: Interrupt link LNKD disabled
+ACPI: PCI: Interrupt link LNKE configured for IRQ 11
+ACPI: PCI: Interrupt link LNKE disabled
+ACPI: PCI: Interrupt link LNKF configured for IRQ 11
+ACPI: PCI: Interrupt link LNKF disabled
+ACPI: PCI: Interrupt link LNKG configured for IRQ 11
+ACPI: PCI: Interrupt link LNKG disabled
+ACPI: PCI: Interrupt link LNKH configured for IRQ 11
+ACPI: PCI: Interrupt link LNKH disabled
+ACPI: EC: interrupt unblocked
+ACPI: EC: event unblocked
+ACPI: EC: EC_CMD/EC_SC=0x66, EC_DATA=0x62
+ACPI: EC: GPE=0x6e
+ACPI: \_SB_.PCI0.LPCB.EC0_: Boot DSDT EC initialization complete
+ACPI: \_SB_.PCI0.LPCB.EC0_: EC: Used to handle transactions and events
+initcall acpi_init+0x0/0x271 returned 0 after 2334000 usecs
+calling  adxl_init+0x0/0x250 @ 1
+initcall adxl_init+0x0/0x250 returned -19 after 0 usecs
+calling  pnp_init+0x0/0x15 @ 1
+initcall pnp_init+0x0/0x15 returned 0 after 1000 usecs
+calling  misc_init+0x0/0xe8 @ 1
+initcall misc_init+0x0/0xe8 returned 0 after 1000 usecs
+calling  tpm_init+0x0/0x21c @ 1
+initcall tpm_init+0x0/0x21c returned 0 after 0 usecs
+calling  iommu_subsys_init+0x0/0x1a9 @ 1
+iommu: Default domain type: Translated 
+iommu: DMA domain TLB invalidation policy: lazy mode 
+initcall iommu_subsys_init+0x0/0x1a9 returned 0 after 13000 usecs
+calling  cn_init+0x0/0x180 @ 1
+initcall cn_init+0x0/0x180 returned 0 after 0 usecs
+calling  dax_core_init+0x0/0xe7 @ 1
+initcall dax_core_init+0x0/0xe7 returned 0 after 0 usecs
+calling  dma_buf_init+0x0/0xcb @ 1
+initcall dma_buf_init+0x0/0xcb returned 0 after 0 usecs
+calling  dma_resv_lockdep+0x0/0x45a @ 1
+initcall dma_resv_lockdep+0x0/0x45a returned 0 after 0 usecs
+calling  dma_heap_init+0x0/0xc0 @ 1
+initcall dma_heap_init+0x0/0xc0 returned 0 after 0 usecs
+calling  init_scsi+0x0/0x8c @ 1
+SCSI subsystem initialized
+initcall init_scsi+0x0/0x8c returned 0 after 5000 usecs
+calling  phy_init+0x0/0x69 @ 1
+initcall phy_init+0x0/0x69 returned 0 after 0 usecs
+calling  usb_common_init+0x0/0x21 @ 1
+initcall usb_common_init+0x0/0x21 returned 0 after 0 usecs
+calling  usb_init+0x0/0x154 @ 1
+ACPI: bus type USB registered
+usbcore: registered new interface driver usbfs
+usbcore: registered new interface driver hub
+usbcore: registered new device driver usb
+initcall usb_init+0x0/0x154 returned 0 after 23000 usecs
+calling  xdbc_init+0x0/0x155 @ 1
+initcall xdbc_init+0x0/0x155 returned 0 after 0 usecs
+calling  typec_init+0x0/0xb2 @ 1
+initcall typec_init+0x0/0xb2 returned 0 after 0 usecs
+calling  serio_init+0x0/0x32 @ 1
+initcall serio_init+0x0/0x32 returned 0 after 1000 usecs
+calling  input_init+0x0/0x108 @ 1
+initcall input_init+0x0/0x108 returned 0 after 0 usecs
+calling  rtc_init+0x0/0x75 @ 1
+initcall rtc_init+0x0/0x75 returned 0 after 0 usecs
+calling  rc_core_init+0x0/0x7e @ 1
+initcall rc_core_init+0x0/0x7e returned 0 after 0 usecs
+calling  pps_init+0x0/0xda @ 1
+pps_core: LinuxPPS API ver. 1 registered
+pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+initcall pps_init+0x0/0xda returned 0 after 16000 usecs
+calling  ptp_init+0x0/0xc4 @ 1
+PTP clock support registered
+initcall ptp_init+0x0/0xc4 returned 0 after 4000 usecs
+calling  power_supply_class_init+0x0/0x68 @ 1
+initcall power_supply_class_init+0x0/0x68 returned 0 after 1000 usecs
+calling  hwmon_init+0x0/0x17c @ 1
+initcall hwmon_init+0x0/0x17c returned 0 after 0 usecs
+calling  md_init+0x0/0x160 @ 1
+initcall md_init+0x0/0x160 returned 0 after 0 usecs
+calling  edac_init+0x0/0x7a @ 1
+EDAC MC: Ver: 3.0.0
+initcall edac_init+0x0/0x7a returned 0 after 4000 usecs
+calling  leds_init+0x0/0x83 @ 1
+initcall leds_init+0x0/0x83 returned 0 after 0 usecs
+calling  dmi_init+0x0/0x146 @ 1
+initcall dmi_init+0x0/0x146 returned 0 after 0 usecs
+calling  efisubsys_init+0x0/0x27f @ 1
+initcall efisubsys_init+0x0/0x27f returned 0 after 0 usecs
+calling  ras_init+0x0/0x13 @ 1
+initcall ras_init+0x0/0x13 returned 0 after 0 usecs
+calling  nvmem_init+0x0/0x15 @ 1
+initcall nvmem_init+0x0/0x15 returned 0 after 1000 usecs
+calling  proto_init+0x0/0x15 @ 1
+initcall proto_init+0x0/0x15 returned 0 after 0 usecs
+calling  net_dev_init+0x0/0x620 @ 1
+initcall net_dev_init+0x0/0x620 returned 0 after 1000 usecs
+calling  neigh_init+0x0/0x89 @ 1
+initcall neigh_init+0x0/0x89 returned 0 after 0 usecs
+calling  fib_notifier_init+0x0/0x15 @ 1
+initcall fib_notifier_init+0x0/0x15 returned 0 after 0 usecs
+calling  fib_rules_init+0x0/0xb6 @ 1
+initcall fib_rules_init+0x0/0xb6 returned 0 after 0 usecs
+calling  init_cgroup_netprio+0x0/0x18 @ 1
+initcall init_cgroup_netprio+0x0/0x18 returned 0 after 0 usecs
+calling  bpf_lwt_init+0x0/0x1a @ 1
+initcall bpf_lwt_init+0x0/0x1a returned 0 after 0 usecs
+calling  pktsched_init+0x0/0x117 @ 1
+initcall pktsched_init+0x0/0x117 returned 0 after 0 usecs
+calling  tc_filter_init+0x0/0x104 @ 1
+initcall tc_filter_init+0x0/0x104 returned 0 after 0 usecs
+calling  tc_action_init+0x0/0x59 @ 1
+initcall tc_action_init+0x0/0x59 returned 0 after 0 usecs
+calling  ethnl_init+0x0/0x5c @ 1
+initcall ethnl_init+0x0/0x5c returned 0 after 0 usecs
+calling  nexthop_init+0x0/0xfa @ 1
+initcall nexthop_init+0x0/0xfa returned 0 after 0 usecs
+calling  cipso_v4_init+0x0/0xee @ 1
+initcall cipso_v4_init+0x0/0xee returned 0 after 0 usecs
+calling  netlbl_init+0x0/0x8c @ 1
+NetLabel: Initializing
+NetLabel:  domain hash size = 128
+NetLabel:  protocols = UNLABELED CIPSOv4 CALIPSO
+NetLabel:  unlabeled traffic allowed by default
+initcall netlbl_init+0x0/0x8c returned 0 after 22000 usecs
+calling  pci_subsys_init+0x0/0x122 @ 1
+PCI: Using ACPI for IRQ routing
+PCI: pci_cache_line_size set to 64 bytes
+e820: reserve RAM buffer [mem 0x00091c00-0x0009ffff]
+e820: reserve RAM buffer [mem 0xb30fb000-0xb3ffffff]
+e820: reserve RAM buffer [mem 0xb3f00000-0xb3ffffff]
+e820: reserve RAM buffer [mem 0x43f800000-0x43fffffff]
+initcall pci_subsys_init+0x0/0x122 returned 0 after 67000 usecs
+calling  vsprintf_init_hashval+0x0/0x13 @ 1
+initcall vsprintf_init_hashval+0x0/0x13 returned 0 after 0 usecs
+calling  efi_runtime_map_init+0x0/0x1dc @ 1
+initcall efi_runtime_map_init+0x0/0x1dc returned 0 after 0 usecs
+calling  vga_arb_device_init+0x0/0x7b @ 1
+pci 0000:00:02.0: vgaarb: setting as boot VGA device
+pci 0000:00:02.0: vgaarb: bridge control possible
+pci 0000:00:02.0: vgaarb: VGA device added: decodes=io+mem,owns=io+mem,locks=none
+vgaarb: loaded
+initcall vga_arb_device_init+0x0/0x7b returned 0 after 27000 usecs
+calling  watchdog_init+0x0/0x13d @ 1
+initcall watchdog_init+0x0/0x13d returned 0 after 0 usecs
+calling  nmi_warning_debugfs+0x0/0x51 @ 1
+initcall nmi_warning_debugfs+0x0/0x51 returned 0 after 0 usecs
+calling  save_microcode_in_initrd+0x0/0xc7 @ 1
+initcall save_microcode_in_initrd+0x0/0xc7 returned 0 after 0 usecs
+calling  hpet_late_init+0x0/0x173 @ 1
+hpet0: at MMIO 0xfed00000, IRQs 2, 8, 0, 0, 0, 0, 0, 0
+hpet0: 8 comparators, 64-bit 24.000000 MHz counter
+initcall hpet_late_init+0x0/0x173 returned 0 after 16000 usecs
+calling  iomem_init_inode+0x0/0xab @ 1
+initcall iomem_init_inode+0x0/0xab returned 0 after 1000 usecs
+calling  clocksource_done_booting+0x0/0x48 @ 1
+clocksource: Switched to clocksource tsc-early
+initcall clocksource_done_booting+0x0/0x48 returned 0 after 6352 usecs
+calling  tracer_init_tracefs+0x0/0x183 @ 1
+initcall tracer_init_tracefs+0x0/0x183 returned 0 after 30 usecs
+calling  init_trace_printk_function_export+0x0/0x2c @ 1
+initcall init_trace_printk_function_export+0x0/0x2c returned 0 after 50 usecs
+calling  init_graph_tracefs+0x0/0x2c @ 1
+initcall init_graph_tracefs+0x0/0x2c returned 0 after 21 usecs
+calling  trace_events_synth_init+0x0/0x4b @ 1
+initcall trace_events_synth_init+0x0/0x4b returned 0 after 21 usecs
+calling  bpf_event_init+0x0/0x13 @ 1
+initcall bpf_event_init+0x0/0x13 returned 0 after 1 usecs
+calling  init_kprobe_trace+0x0/0x312 @ 1
+initcall init_kprobe_trace+0x0/0x312 returned 0 after 194151 usecs
+calling  init_dynamic_event+0x0/0x2c @ 1
+initcall init_dynamic_event+0x0/0x2c returned 0 after 32 usecs
+calling  init_uprobe_trace+0x0/0x60 @ 1
+initcall init_uprobe_trace+0x0/0x60 returned 0 after 41 usecs
+calling  bpf_init+0x0/0x9d @ 1
+initcall bpf_init+0x0/0x9d returned 0 after 13 usecs
+calling  secretmem_init+0x0/0x60 @ 1
+initcall secretmem_init+0x0/0x60 returned 0 after 0 usecs
+calling  init_fs_stat_sysctls+0x0/0x32 @ 1
+initcall init_fs_stat_sysctls+0x0/0x32 returned 0 after 27 usecs
+calling  init_fs_exec_sysctls+0x0/0x26 @ 1
+initcall init_fs_exec_sysctls+0x0/0x26 returned 0 after 10 usecs
+calling  init_pipe_fs+0x0/0x68 @ 1
+initcall init_pipe_fs+0x0/0x68 returned 0 after 202 usecs
+calling  init_fs_namei_sysctls+0x0/0x26 @ 1
+initcall init_fs_namei_sysctls+0x0/0x26 returned 0 after 11 usecs
+calling  init_fs_dcache_sysctls+0x0/0x26 @ 1
+initcall init_fs_dcache_sysctls+0x0/0x26 returned 0 after 6 usecs
+calling  init_fs_namespace_sysctls+0x0/0x26 @ 1
+initcall init_fs_namespace_sysctls+0x0/0x26 returned 0 after 6 usecs
+calling  cgroup_writeback_init+0x0/0x2a @ 1
+initcall cgroup_writeback_init+0x0/0x2a returned 0 after 21 usecs
+calling  inotify_user_setup+0x0/0x18e @ 1
+initcall inotify_user_setup+0x0/0x18e returned 0 after 41 usecs
+calling  eventpoll_init+0x0/0x145 @ 1
+initcall eventpoll_init+0x0/0x145 returned 0 after 63 usecs
+calling  anon_inode_init+0x0/0x8e @ 1
+initcall anon_inode_init+0x0/0x8e returned 0 after 192 usecs
+calling  init_dax_wait_table+0x0/0x38 @ 1
+initcall init_dax_wait_table+0x0/0x38 returned 0 after 270 usecs
+calling  proc_locks_init+0x0/0x2c @ 1
+initcall proc_locks_init+0x0/0x2c returned 0 after 9 usecs
+calling  init_fs_coredump_sysctls+0x0/0x26 @ 1
+initcall init_fs_coredump_sysctls+0x0/0x26 returned 0 after 9 usecs
+calling  iomap_init+0x0/0x24 @ 1
+initcall iomap_init+0x0/0x24 returned 0 after 253 usecs
+calling  dquot_init+0x0/0x167 @ 1
+VFS: Disk quotas dquot_6.6.0
+VFS: Dquot-cache hash table entries: 512 (order 0, 4096 bytes)
+initcall dquot_init+0x0/0x167 returned 0 after 12555 usecs
+calling  quota_init+0x0/0x28 @ 1
+initcall quota_init+0x0/0x28 returned 0 after 62 usecs
+calling  proc_cmdline_init+0x0/0x93 @ 1
+initcall proc_cmdline_init+0x0/0x93 returned 0 after 7 usecs
+calling  proc_consoles_init+0x0/0x29 @ 1
+initcall proc_consoles_init+0x0/0x29 returned 0 after 6 usecs
+calling  proc_cpuinfo_init+0x0/0x23 @ 1
+initcall proc_cpuinfo_init+0x0/0x23 returned 0 after 24 usecs
+calling  proc_devices_init+0x0/0x62 @ 1
+initcall proc_devices_init+0x0/0x62 returned 0 after 14 usecs
+calling  proc_interrupts_init+0x0/0x29 @ 1
+initcall proc_interrupts_init+0x0/0x29 returned 0 after 6 usecs
+calling  proc_loadavg_init+0x0/0x5f @ 1
+initcall proc_loadavg_init+0x0/0x5f returned 0 after 6 usecs
+calling  proc_meminfo_init+0x0/0x5f @ 1
+initcall proc_meminfo_init+0x0/0x5f returned 0 after 6 usecs
+calling  proc_stat_init+0x0/0x23 @ 1
+initcall proc_stat_init+0x0/0x23 returned 0 after 6 usecs
+calling  proc_uptime_init+0x0/0x5f @ 1
+initcall proc_uptime_init+0x0/0x5f returned 0 after 6 usecs
+calling  proc_version_init+0x0/0x5f @ 1
+initcall proc_version_init+0x0/0x5f returned 0 after 6 usecs
+calling  proc_softirqs_init+0x0/0x5f @ 1
+initcall proc_softirqs_init+0x0/0x5f returned 0 after 6 usecs
+calling  proc_kcore_init+0x0/0x146 @ 1
+initcall proc_kcore_init+0x0/0x146 returned 0 after 72 usecs
+calling  vmcore_init+0x0/0x2f5 @ 1
+initcall vmcore_init+0x0/0x2f5 returned 0 after 0 usecs
+calling  proc_kmsg_init+0x0/0x26 @ 1
+initcall proc_kmsg_init+0x0/0x26 returned 0 after 6 usecs
+calling  proc_page_init+0x0/0x5a @ 1
+initcall proc_page_init+0x0/0x5a returned 0 after 23 usecs
+calling  init_ramfs_fs+0x0/0x15 @ 1
+initcall init_ramfs_fs+0x0/0x15 returned 0 after 1 usecs
+calling  init_hugetlbfs_fs+0x0/0x2a4 @ 1
+initcall init_hugetlbfs_fs+0x0/0x2a4 returned 0 after 303 usecs
+calling  dynamic_debug_init_control+0x0/0x80 @ 1
+initcall dynamic_debug_init_control+0x0/0x80 returned 0 after 57 usecs
+calling  acpi_event_init+0x0/0x65 @ 1
+initcall acpi_event_init+0x0/0x65 returned 0 after 62 usecs
+calling  pnp_system_init+0x0/0x15 @ 1
+initcall pnp_system_init+0x0/0x15 returned 0 after 56 usecs
+calling  pnpacpi_init+0x0/0xd6 @ 1
+pnp: PnP ACPI init
+system 00:00: [mem 0xfd000000-0xfdabffff] has been reserved
+system 00:00: [mem 0xfdad0000-0xfdadffff] has been reserved
+system 00:00: [mem 0xfdb00000-0xfdffffff] has been reserved
+system 00:00: [mem 0xfe000000-0xfe01ffff] has been reserved
+system 00:00: [mem 0xfe03d000-0xfe3fffff] has been reserved
+system 00:01: [io  0x0680-0x069f] has been reserved
+system 00:01: [io  0xffff] has been reserved
+system 00:01: [io  0xffff] has been reserved
+system 00:01: [io  0xffff] has been reserved
+system 00:01: [io  0x1800-0x18fe] has been reserved
+system 00:01: [io  0x164e-0x164f] has been reserved
+system 00:02: [io  0x0800-0x087f] has been reserved
+system 00:04: [io  0x1854-0x1857] has been reserved
+system 00:08: [io  0x0200-0x023f] has been reserved
+system 00:08: [mem 0xfedb0000-0xfedbffff] has been reserved
+system 00:09: [mem 0xfed10000-0xfed17fff] has been reserved
+system 00:09: [mem 0xfed18000-0xfed18fff] has been reserved
+system 00:09: [mem 0xfed19000-0xfed19fff] has been reserved
+system 00:09: [mem 0xe0000000-0xefffffff] has been reserved
+system 00:09: [mem 0xfed20000-0xfed3ffff] has been reserved
+system 00:09: [mem 0xfed90000-0xfed93fff] has been reserved
+system 00:09: [mem 0xfed45000-0xfed8ffff] could not be reserved
+system 00:09: [mem 0xff000000-0xffffffff] could not be reserved
+system 00:09: [mem 0xfee00000-0xfeefffff] could not be reserved
+system 00:09: [mem 0xfedc0000-0xfeddffff] has been reserved
+pnp: PnP ACPI: found 11 devices
+initcall pnpacpi_init+0x0/0xd6 returned 0 after 224484 usecs
+calling  chr_dev_init+0x0/0x135 @ 1
+initcall chr_dev_init+0x0/0x135 returned 0 after 14458 usecs
+calling  hwrng_modinit+0x0/0xea @ 1
+initcall hwrng_modinit+0x0/0xea returned 0 after 248 usecs
+calling  firmware_class_init+0x0/0x15f @ 1
+initcall firmware_class_init+0x0/0x15f returned 0 after 51 usecs
+calling  init_acpi_pm_clocksource+0x0/0xd6 @ 1
+clocksource: acpi_pm: mask: 0xffffff max_cycles: 0xffffff, max_idle_ns: 2085701024 ns
+initcall init_acpi_pm_clocksource+0x0/0xd6 returned 0 after 14292 usecs
+calling  powercap_init+0x0/0x26 @ 1
+initcall powercap_init+0x0/0x26 returned 0 after 266 usecs
+calling  sysctl_core_init+0x0/0x2f @ 1
+initcall sysctl_core_init+0x0/0x2f returned 0 after 43 usecs
+calling  eth_offload_init+0x0/0x18 @ 1
+initcall eth_offload_init+0x0/0x18 returned 0 after 15 usecs
+calling  ipv4_offload_init+0x0/0x78 @ 1
+initcall ipv4_offload_init+0x0/0x78 returned 0 after 1 usecs
+calling  inet_init+0x0/0x32f @ 1
+NET: Registered PF_INET protocol family
+IP idents hash table entries: 262144 (order: 9, 2097152 bytes, linear)
+tcp_listen_portaddr_hash hash table entries: 8192 (order: 7, 589824 bytes, linear)
+Table-perturb hash table entries: 65536 (order: 6, 262144 bytes, linear)
+TCP established hash table entries: 131072 (order: 8, 1048576 bytes, linear)
+TCP bind hash table entries: 65536 (order: 11, 9437184 bytes, vmalloc hugepage)
+TCP: Hash tables configured (established 131072 bind 65536)
+MPTCP token hash table entries: 16384 (order: 8, 1441792 bytes, linear)
+UDP hash table entries: 8192 (order: 8, 1310720 bytes, linear)
+UDP-Lite hash table entries: 8192 (order: 8, 1310720 bytes, linear)
+initcall inet_init+0x0/0x32f returned 0 after 98283 usecs
+calling  af_unix_init+0x0/0x19e @ 1
+NET: Registered PF_UNIX/PF_LOCAL protocol family
+initcall af_unix_init+0x0/0x19e returned 0 after 6622 usecs
+calling  ipv6_offload_init+0x0/0x83 @ 1
+initcall ipv6_offload_init+0x0/0x83 returned 0 after 1 usecs
+calling  init_sunrpc+0x0/0x8c @ 1
+RPC: Registered named UNIX socket transport module.
+RPC: Registered udp transport module.
+RPC: Registered tcp transport module.
+RPC: Registered tcp NFSv4.1 backchannel transport module.
+initcall init_sunrpc+0x0/0x8c returned 0 after 26150 usecs
+calling  vlan_offload_init+0x0/0x24 @ 1
+initcall vlan_offload_init+0x0/0x24 returned 0 after 1 usecs
+calling  xsk_init+0x0/0x1bc @ 1
+NET: Registered PF_XDP protocol family
+initcall xsk_init+0x0/0x1bc returned 0 after 5653 usecs
+calling  pcibios_assign_resources+0x0/0x23a @ 1
+pci_bus 0000:00: resource 4 [io  0x0000-0x0cf7 window]
+pci_bus 0000:00: resource 5 [io  0x0d00-0xffff window]
+pci_bus 0000:00: resource 6 [mem 0x000a0000-0x000bffff window]
+pci_bus 0000:00: resource 7 [mem 0xbe800000-0xdfffffff window]
+pci_bus 0000:00: resource 8 [mem 0x1c00000000-0x1fffffffff window]
+pci_bus 0000:00: resource 9 [mem 0xfd000000-0xfe7fffff window]
+initcall pcibios_assign_resources+0x0/0x23a returned 0 after 46887 usecs
+calling  pci_apply_final_quirks+0x0/0x330 @ 1
+pci 0000:00:14.0: calling  quirk_usb_early_handoff+0x0/0x2d0 @ 1
+IOAPIC[0]: Preconfigured routing entry (2-16 -> IRQ 16 Level:1 ActiveLow:1)
+pci 0000:00:14.0: quirk_usb_early_handoff+0x0/0x2d0 took 13985 usecs
+pci 0000:00:1f.6: calling  quirk_e100_interrupt+0x0/0x290 @ 1
+pci 0000:00:1f.6: quirk_e100_interrupt+0x0/0x290 took 0 usecs
+PCI: CLS 0 bytes, default 64
+initcall pci_apply_final_quirks+0x0/0x330 returned 0 after 50634 usecs
+calling  acpi_reserve_resources+0x0/0x277 @ 1
+initcall acpi_reserve_resources+0x0/0x277 returned 0 after 21 usecs
+calling  populate_rootfs+0x0/0x40 @ 1
+initcall populate_rootfs+0x0/0x40 returned 0 after 86 usecs
+Trying to unpack rootfs image as initramfs...
+calling  pci_iommu_init+0x0/0x59 @ 1
+PCI-DMA: Using software bounce buffering for IO (SWIOTLB)
+software IO TLB: mapped [mem 0x00000000af0fb000-0x00000000b30fb000] (64MB)
+initcall pci_iommu_init+0x0/0x59 returned 0 after 16086 usecs
+calling  ir_dev_scope_init+0x0/0x71 @ 1
+initcall ir_dev_scope_init+0x0/0x71 returned 0 after 0 usecs
+calling  ia32_binfmt_init+0x0/0x18 @ 1
+initcall ia32_binfmt_init+0x0/0x18 returned 0 after 23 usecs
+calling  amd_ibs_init+0x0/0xfa @ 1
+initcall amd_ibs_init+0x0/0xfa returned -19 after 0 usecs
+calling  msr_init+0x0/0x80 @ 1
+initcall msr_init+0x0/0x80 returned 0 after 30 usecs
+calling  register_kernel_offset_dumper+0x0/0x1f @ 1
+initcall register_kernel_offset_dumper+0x0/0x1f returned 0 after 1 usecs
+calling  i8259A_init_ops+0x0/0x25 @ 1
+initcall i8259A_init_ops+0x0/0x25 returned 0 after 1 usecs
+calling  init_tsc_clocksource+0x0/0xe6 @ 1
+initcall init_tsc_clocksource+0x0/0xe6 returned 0 after 6 usecs
+calling  add_rtc_cmos+0x0/0x1f4 @ 1
+initcall add_rtc_cmos+0x0/0x1f4 returned 0 after 2 usecs
+calling  i8237A_init_ops+0x0/0x3b @ 1
+initcall i8237A_init_ops+0x0/0x3b returned -19 after 2 usecs
+calling  umwait_init+0x0/0xe1 @ 1
+initcall umwait_init+0x0/0xe1 returned -19 after 0 usecs
+calling  sgx_init+0x0/0x15d @ 1
+initcall sgx_init+0x0/0x15d returned -19 after 0 usecs
+calling  msr_init+0x0/0x101 @ 1
+initcall msr_init+0x0/0x101 returned 0 after 1645 usecs
+calling  cpuid_init+0x0/0x101 @ 1
+initcall cpuid_init+0x0/0x101 returned 0 after 978 usecs
+calling  ioapic_init_ops+0x0/0x18 @ 1
+initcall ioapic_init_ops+0x0/0x18 returned 0 after 1 usecs
+calling  register_e820_pmem+0x0/0x62 @ 1
+initcall register_e820_pmem+0x0/0x62 returned 0 after 4 usecs
+calling  add_pcspkr+0x0/0xd3 @ 1
+initcall add_pcspkr+0x0/0xd3 returned 0 after 140 usecs
+calling  start_periodic_check_for_corruption+0x0/0x40 @ 1
+initcall start_periodic_check_for_corruption+0x0/0x40 returned 0 after 0 usecs
+calling  audit_classes_init+0x0/0xb3 @ 1
+initcall audit_classes_init+0x0/0xb3 returned 0 after 48 usecs
+calling  sha1_ssse3_mod_init+0x0/0xeb @ 1
+initcall sha1_ssse3_mod_init+0x0/0xeb returned 0 after 13 usecs
+calling  sha256_ssse3_mod_init+0x0/0xff @ 1
+initcall sha256_ssse3_mod_init+0x0/0xff returned 0 after 18 usecs
+calling  iosf_mbi_init+0x0/0x2d @ 1
+initcall iosf_mbi_init+0x0/0x2d returned 0 after 129 usecs
+calling  proc_execdomains_init+0x0/0x26 @ 1
+initcall proc_execdomains_init+0x0/0x26 returned 0 after 10 usecs
+calling  register_warn_debugfs+0x0/0x28 @ 1
+initcall register_warn_debugfs+0x0/0x28 returned 0 after 42 usecs
+calling  cpuhp_sysfs_init+0x0/0x144 @ 1
+initcall cpuhp_sysfs_init+0x0/0x144 returned 0 after 138 usecs
+calling  ioresources_init+0x0/0x4e @ 1
+initcall ioresources_init+0x0/0x4e returned 0 after 15 usecs
+calling  lockdep_proc_init+0x0/0x64 @ 1
+initcall lockdep_proc_init+0x0/0x64 returned 0 after 17 usecs
+calling  snapshot_device_init+0x0/0x15 @ 1
+initcall snapshot_device_init+0x0/0x15 returned 0 after 208 usecs
+calling  irq_pm_init_ops+0x0/0x18 @ 1
+initcall irq_pm_init_ops+0x0/0x18 returned 0 after 1 usecs
+calling  klp_init+0x0/0x53 @ 1
+initcall klp_init+0x0/0x53 returned 0 after 28 usecs
+calling  map_benchmark_init+0x0/0x4e @ 1
+initcall map_benchmark_init+0x0/0x4e returned 0 after 144 usecs
+calling  proc_modules_init+0x0/0x23 @ 1
+initcall proc_modules_init+0x0/0x23 returned 0 after 9 usecs
+calling  timer_sysctl_init+0x0/0x1f @ 1
+initcall timer_sysctl_init+0x0/0x1f returned 0 after 23 usecs
+calling  timekeeping_init_ops+0x0/0x18 @ 1
+initcall timekeeping_init_ops+0x0/0x18 returned 0 after 1 usecs
+calling  init_clocksource_sysfs+0x0/0x28 @ 1
+initcall init_clocksource_sysfs+0x0/0x28 returned 0 after 308 usecs
+calling  init_timer_list_procfs+0x0/0x36 @ 1
+initcall init_timer_list_procfs+0x0/0x36 returned 0 after 9 usecs
+calling  alarmtimer_init+0x0/0x133 @ 1
+initcall alarmtimer_init+0x0/0x133 returned 0 after 93 usecs
+calling  init_posix_timers+0x0/0x2e @ 1
+initcall init_posix_timers+0x0/0x2e returned 0 after 48 usecs
+calling  clockevents_init_sysfs+0x0/0x19e @ 1
+initcall clockevents_init_sysfs+0x0/0x19e returned 0 after 698 usecs
+calling  proc_dma_init+0x0/0x26 @ 1
+initcall proc_dma_init+0x0/0x26 returned 0 after 8 usecs
+calling  kallsyms_init+0x0/0x26 @ 1
+initcall kallsyms_init+0x0/0x26 returned 0 after 7 usecs
+calling  pid_namespaces_init+0x0/0x44 @ 1
+initcall pid_namespaces_init+0x0/0x44 returned 0 after 51 usecs
+calling  ikconfig_init+0x0/0x46 @ 1
+initcall ikconfig_init+0x0/0x46 returned 0 after 7 usecs
+calling  audit_watch_init+0x0/0x40 @ 1
+initcall audit_watch_init+0x0/0x40 returned 0 after 5 usecs
+calling  audit_fsnotify_init+0x0/0x43 @ 1
+initcall audit_fsnotify_init+0x0/0x43 returned 0 after 4 usecs
+calling  audit_tree_init+0x0/0xcf @ 1
+initcall audit_tree_init+0x0/0xcf returned 0 after 32 usecs
+calling  seccomp_sysctl_init+0x0/0x30 @ 1
+initcall seccomp_sysctl_init+0x0/0x30 returned 0 after 24 usecs
+calling  utsname_sysctl_init+0x0/0x18 @ 1
+initcall utsname_sysctl_init+0x0/0x18 returned 0 after 20 usecs
+calling  init_tracepoints+0x0/0x30 @ 1
+initcall init_tracepoints+0x0/0x30 returned 0 after 16 usecs
+calling  init_lstats_procfs+0x0/0x40 @ 1
+initcall init_lstats_procfs+0x0/0x40 returned 0 after 18 usecs
+calling  stack_trace_init+0x0/0xa8 @ 1
+initcall stack_trace_init+0x0/0xa8 returned 0 after 67 usecs
+calling  perf_event_sysfs_init+0x0/0x10c @ 1
+initcall perf_event_sysfs_init+0x0/0x10c returned 0 after 1696 usecs
+calling  system_trusted_keyring_init+0x0/0x8e @ 1
+Initialise system trusted keyrings
+initcall system_trusted_keyring_init+0x0/0x8e returned 0 after 5332 usecs
+calling  blacklist_init+0x0/0x166 @ 1
+Key type blacklist registered
+initcall blacklist_init+0x0/0x166 returned 0 after 4881 usecs
+calling  kswapd_init+0x0/0x64 @ 1
+initcall kswapd_init+0x0/0x64 returned 0 after 179 usecs
+calling  extfrag_debug_init+0x0/0x5b @ 1
+initcall extfrag_debug_init+0x0/0x5b returned 0 after 74 usecs
+calling  mm_compute_batch_init+0x0/0x57 @ 1
+initcall mm_compute_batch_init+0x0/0x57 returned 0 after 2 usecs
+calling  slab_proc_init+0x0/0x26 @ 1
+initcall slab_proc_init+0x0/0x26 returned 0 after 25 usecs
+calling  workingset_init+0x0/0xd4 @ 1
+workingset: timestamp_bits=36 max_order=22 bucket_order=0
+initcall workingset_init+0x0/0xd4 returned 0 after 7290 usecs
+calling  proc_vmalloc_init+0x0/0x68 @ 1
+initcall proc_vmalloc_init+0x0/0x68 returned 0 after 7 usecs
+calling  procswaps_init+0x0/0x23 @ 1
+initcall procswaps_init+0x0/0x23 returned 0 after 7 usecs
+calling  init_frontswap+0x0/0x97 @ 1
+initcall init_frontswap+0x0/0x97 returned 0 after 109 usecs
+calling  slab_debugfs_init+0x0/0x52 @ 1
+initcall slab_debugfs_init+0x0/0x52 returned 0 after 53 usecs
+calling  init_zbud+0x0/0x24 @ 1
+zbud: loaded
+initcall init_zbud+0x0/0x24 returned 0 after 3363 usecs
+calling  zs_init+0x0/0x77 @ 1
+initcall zs_init+0x0/0x77 returned 0 after 63 usecs
+calling  damon_dbgfs_init+0x0/0x389 @ 1
+initcall damon_dbgfs_init+0x0/0x389 returned 0 after 279 usecs
+calling  fcntl_init+0x0/0x2e @ 1
+initcall fcntl_init+0x0/0x2e returned 0 after 31 usecs
+calling  proc_filesystems_init+0x0/0x26 @ 1
+initcall proc_filesystems_init+0x0/0x26 returned 0 after 25 usecs
+calling  start_dirtytime_writeback+0x0/0x1b @ 1
+initcall start_dirtytime_writeback+0x0/0x1b returned 0 after 2 usecs
+calling  dio_init+0x0/0x31 @ 1
+initcall dio_init+0x0/0x31 returned 0 after 34 usecs
+calling  dnotify_init+0x0/0xa1 @ 1
+initcall dnotify_init+0x0/0xa1 returned 0 after 55 usecs
+calling  fanotify_user_setup+0x0/0x1fb @ 1
+initcall fanotify_user_setup+0x0/0x1fb returned 0 after 84 usecs
+calling  userfaultfd_init+0x0/0x4a @ 1
+initcall userfaultfd_init+0x0/0x4a returned 0 after 256 usecs
+calling  aio_setup+0x0/0x9c @ 1
+initcall aio_setup+0x0/0x9c returned 0 after 291 usecs
+calling  mbcache_init+0x0/0x35 @ 1
+initcall mbcache_init+0x0/0x35 returned 0 after 20 usecs
+calling  init_grace+0x0/0x15 @ 1
+initcall init_grace+0x0/0x15 returned 0 after 28 usecs
+calling  init_v2_quota_format+0x0/0x26 @ 1
+initcall init_v2_quota_format+0x0/0x26 returned 0 after 26 usecs
+calling  init_devpts_fs+0x0/0x30 @ 1
+initcall init_devpts_fs+0x0/0x30 returned 0 after 1034 usecs
+calling  ext4_init_fs+0x0/0x1a3 @ 1
+initcall ext4_init_fs+0x0/0x1a3 returned 0 after 704 usecs
+calling  journal_init+0x0/0x132 @ 1
+initcall journal_init+0x0/0x132 returned 0 after 112 usecs
+calling  init_nfs_fs+0x0/0x195 @ 1
+initcall init_nfs_fs+0x0/0x195 returned 0 after 720 usecs
+calling  init_nfs_v3+0x0/0x18 @ 1
+initcall init_nfs_v3+0x0/0x18 returned 0 after 29 usecs
+calling  init_nlm+0x0/0x66 @ 1
+initcall init_nlm+0x0/0x66 returned 0 after 60 usecs
+calling  init_nls_cp437+0x0/0x17 @ 1
+initcall init_nls_cp437+0x0/0x17 returned 0 after 26 usecs
+calling  init_nls_ascii+0x0/0x17 @ 1
+initcall init_nls_ascii+0x0/0x17 returned 0 after 1 usecs
+calling  init_autofs_fs+0x0/0x2e @ 1
+initcall init_autofs_fs+0x0/0x2e returned 0 after 247 usecs
+calling  efivarfs_init+0x0/0x25 @ 1
+initcall efivarfs_init+0x0/0x25 returned -19 after 0 usecs
+calling  ipc_init+0x0/0x29 @ 1
+initcall ipc_init+0x0/0x29 returned 0 after 71 usecs
+calling  ipc_sysctl_init+0x0/0x31 @ 1
+initcall ipc_sysctl_init+0x0/0x31 returned 0 after 36 usecs
+calling  init_mqueue_fs+0x0/0xcd @ 1
+initcall init_mqueue_fs+0x0/0xcd returned 0 after 281 usecs
+calling  key_proc_init+0x0/0x72 @ 1
+tsc: Refined TSC clocksource calibration: 3312.000 MHz
+initcall key_proc_init+0x0/0x72 returned 0 after 13 usecs
+clocksource: tsc: mask: 0xffffffffffffffff max_cycles: 0x2fbd93f9e57, max_idle_ns: 440795263784 ns
+calling  jent_mod_init+0x0/0x32 @ 1
+clocksource: Switched to clocksource tsc
+initcall jent_mod_init+0x0/0x32 returned 0 after 6745 usecs
+calling  af_alg_init+0x0/0x45 @ 1
+NET: Registered PF_ALG protocol family
+initcall af_alg_init+0x0/0x45 returned 0 after 5623 usecs
+calling  algif_hash_init+0x0/0x15 @ 1
+initcall algif_hash_init+0x0/0x15 returned 0 after 55 usecs
+calling  algif_skcipher_init+0x0/0x15 @ 1
+initcall algif_skcipher_init+0x0/0x15 returned 0 after 4 usecs
+calling  rng_init+0x0/0x15 @ 1
+initcall rng_init+0x0/0x15 returned 0 after 3 usecs
+calling  algif_aead_init+0x0/0x15 @ 1
+initcall algif_aead_init+0x0/0x15 returned 0 after 4 usecs
+calling  asymmetric_key_init+0x0/0x15 @ 1
+Key type asymmetric registered
+initcall asymmetric_key_init+0x0/0x15 returned 0 after 4930 usecs
+calling  x509_key_init+0x0/0x1d @ 1
+Asymmetric key parser 'x509' registered
+initcall x509_key_init+0x0/0x1d returned 0 after 5740 usecs
+calling  blkdev_init+0x0/0x24 @ 1
+initcall blkdev_init+0x0/0x24 returned 0 after 49 usecs
+calling  proc_genhd_init+0x0/0x46 @ 1
+initcall proc_genhd_init+0x0/0x46 returned 0 after 16 usecs
+calling  bsg_init+0x0/0x11b @ 1
+Block layer SCSI generic (bsg) driver version 0.4 loaded (major 245)
+initcall bsg_init+0x0/0x11b returned 0 after 8286 usecs
+calling  throtl_init+0x0/0x45 @ 1
+initcall throtl_init+0x0/0x45 returned 0 after 234 usecs
+calling  deadline_init+0x0/0x15 @ 1
+io scheduler mq-deadline registered
+initcall deadline_init+0x0/0x15 returned 0 after 5351 usecs
+calling  kyber_init+0x0/0x15 @ 1
+io scheduler kyber registered
+initcall kyber_init+0x0/0x15 returned 0 after 4802 usecs
+calling  bfq_init+0x0/0x8f @ 1
+io scheduler bfq registered
+initcall bfq_init+0x0/0x8f returned 0 after 4745 usecs
+calling  io_uring_init+0x0/0x36 @ 1
+initcall io_uring_init+0x0/0x36 returned 0 after 40 usecs
+calling  test_firmware_init+0x0/0x97 @ 1
+test_firmware: interface ready
+initcall test_firmware_init+0x0/0x97 returned 0 after 5296 usecs
+calling  test_sysctl_init+0x0/0x516 @ 1
+initcall test_sysctl_init+0x0/0x516 returned 0 after 24 usecs
+calling  blake2s_mod_init+0x0/0xc @ 1
+initcall blake2s_mod_init+0x0/0xc returned 0 after 0 usecs
+calling  crc_t10dif_mod_init+0x0/0x75 @ 1
+initcall crc_t10dif_mod_init+0x0/0x75 returned 0 after 110 usecs
+calling  percpu_counter_startup+0x0/0x55 @ 1
+initcall percpu_counter_startup+0x0/0x55 returned 0 after 87 usecs
+calling  digsig_init+0x0/0x3d @ 1
+initcall digsig_init+0x0/0x3d returned 0 after 12 usecs
+calling  pcie_portdrv_init+0x0/0x4d @ 1
+initcall pcie_portdrv_init+0x0/0x4d returned 0 after 315 usecs
+calling  pci_proc_init+0x0/0x70 @ 1
+initcall pci_proc_init+0x0/0x70 returned 0 after 102 usecs
+calling  pci_hotplug_init+0x0/0xc @ 1
+initcall pci_hotplug_init+0x0/0xc returned 0 after 0 usecs
+calling  shpcd_init+0x0/0x61 @ 1
+shpchp: Standard Hot Plug PCI Controller Driver version: 0.4
+initcall shpcd_init+0x0/0x61 returned 0 after 7614 usecs
+calling  pci_stub_init+0x0/0x1ff @ 1
+initcall pci_stub_init+0x0/0x1ff returned 0 after 79 usecs
+calling  vmd_drv_init+0x0/0x1e @ 1
+initcall vmd_drv_init+0x0/0x1e returned 0 after 87 usecs
+calling  vesafb_driver_init+0x0/0x17 @ 1
+initcall vesafb_driver_init+0x0/0x17 returned 0 after 53 usecs
+calling  efifb_driver_init+0x0/0x17 @ 1
+initcall efifb_driver_init+0x0/0x17 returned 0 after 58 usecs
+calling  intel_idle_init+0x0/0x507 @ 1
+initcall intel_idle_init+0x0/0x507 returned 0 after 3721 usecs
+calling  ged_driver_init+0x0/0x17 @ 1
+initcall ged_driver_init+0x0/0x17 returned 0 after 133 usecs
+calling  acpi_ac_init+0x0/0x7c @ 1
+initcall acpi_ac_init+0x0/0x7c returned 0 after 505 usecs
+calling  acpi_button_driver_init+0x0/0xb3 @ 1
+input: Sleep Button as /devices/LNXSYSTM:00/LNXSYBUS:00/PNP0C0E:00/input/input0
+ACPI: button: Sleep Button [SLPB]
+input: Power Button as /devices/LNXSYSTM:00/LNXSYBUS:00/PNP0C0C:00/input/input1
+ACPI: button: Power Button [PWRB]
+input: Power Button as /devices/LNXSYSTM:00/LNXPWRBN:00/input/input2
+ACPI: button: Power Button [PWRF]
+initcall acpi_button_driver_init+0x0/0xb3 returned 0 after 45209 usecs
+calling  acpi_fan_driver_init+0x0/0x17 @ 1
+initcall acpi_fan_driver_init+0x0/0x17 returned 0 after 61 usecs
+calling  acpi_processor_driver_init+0x0/0xef @ 1
+initcall acpi_processor_driver_init+0x0/0xef returned 0 after 2063 usecs
+calling  acpi_thermal_init+0x0/0x86 @ 1
+initcall acpi_thermal_init+0x0/0x86 returned 0 after 612 usecs
+calling  acpi_battery_init+0x0/0x71 @ 1
+initcall acpi_battery_init+0x0/0x71 returned 0 after 12 usecs
+calling  acpi_hed_driver_init+0x0/0x15 @ 1
+initcall acpi_hed_driver_init+0x0/0x15 returned 0 after 159 usecs
+calling  bgrt_init+0x0/0x19f @ 1
+initcall bgrt_init+0x0/0x19f returned -19 after 0 usecs
+calling  erst_init+0x0/0x4c7 @ 1
+initcall erst_init+0x0/0x4c7 returned 0 after 66 usecs
+calling  gpio_clk_driver_init+0x0/0x17 @ 1
+initcall gpio_clk_driver_init+0x0/0x17 returned 0 after 67 usecs
+calling  plt_clk_driver_init+0x0/0x17 @ 1
+initcall plt_clk_driver_init+0x0/0x17 returned 0 after 52 usecs
+calling  dw_pci_driver_init+0x0/0x1e @ 1
+initcall dw_pci_driver_init+0x0/0x1e returned 0 after 71 usecs
+calling  virtio_pci_driver_init+0x0/0x1e @ 1
+initcall virtio_pci_driver_init+0x0/0x1e returned 0 after 63 usecs
+calling  n_null_init+0x0/0x1e @ 1
+initcall n_null_init+0x0/0x1e returned 0 after 1 usecs
+calling  pty_init+0x0/0x11 @ 1
+initcall pty_init+0x0/0x11 returned 0 after 460 usecs
+calling  sysrq_init+0x0/0x4e @ 1
+initcall sysrq_init+0x0/0x4e returned 0 after 12 usecs
+calling  serial8250_init+0x0/0x320 @ 1
+Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
+00:07: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
+initcall serial8250_init+0x0/0x320 returned 0 after 18635 usecs
+calling  serial_pci_driver_init+0x0/0x1e @ 1
+IOAPIC[0]: Preconfigured routing entry (2-19 -> IRQ 19 Level:1 ActiveLow:1)
+0000:00:16.3: ttyS1 at I/O 0x3080 (irq = 19, base_baud = 115200) is a 16550A
+initcall serial_pci_driver_init+0x0/0x1e returned 0 after 22923 usecs
+calling  exar_pci_driver_init+0x0/0x1e @ 1
+initcall exar_pci_driver_init+0x0/0x1e returned 0 after 70 usecs
+calling  dw8250_platform_driver_init+0x0/0x17 @ 1
+initcall dw8250_platform_driver_init+0x0/0x17 returned 0 after 62 usecs
+calling  lpss8250_pci_driver_init+0x0/0x1e @ 1
+initcall lpss8250_pci_driver_init+0x0/0x1e returned 0 after 69 usecs
+calling  mid8250_pci_driver_init+0x0/0x1e @ 1
+initcall mid8250_pci_driver_init+0x0/0x1e returned 0 after 121 usecs
+calling  pericom8250_pci_driver_init+0x0/0x1e @ 1
+initcall pericom8250_pci_driver_init+0x0/0x1e returned 0 after 74 usecs
+calling  random_sysctls_init+0x0/0x26 @ 1
+initcall random_sysctls_init+0x0/0x26 returned 0 after 17 usecs
+calling  hpet_init+0x0/0x76 @ 1
+initcall hpet_init+0x0/0x76 returned 0 after 1330 usecs
+calling  nvram_module_init+0x0/0x8d @ 1
+Non-volatile memory driver v1.3
+initcall nvram_module_init+0x0/0x8d returned 0 after 5310 usecs
+calling  virtio_rng_driver_init+0x0/0x15 @ 1
+initcall virtio_rng_driver_init+0x0/0x15 returned 0 after 112 usecs
+calling  init_tis+0x0/0x14e @ 1
+tpm_tis 00:0a: 1.2 TPM (device-id 0x1B, rev-id 16)
+tpm tpm0: TPM is disabled/deactivated (0x7)
+initcall init_tis+0x0/0x14e returned 0 after 35889 usecs
+calling  crb_acpi_driver_init+0x0/0x15 @ 1
+initcall crb_acpi_driver_init+0x0/0x15 returned 0 after 266 usecs
+calling  cn_proc_init+0x0/0x3e @ 1
+initcall cn_proc_init+0x0/0x3e returned 0 after 100 usecs
+calling  topology_sysfs_init+0x0/0x30 @ 1
+initcall topology_sysfs_init+0x0/0x30 returned 0 after 482 usecs
+calling  cacheinfo_sysfs_init+0x0/0x30 @ 1
+initcall cacheinfo_sysfs_init+0x0/0x30 returned 0 after 2299 usecs
+calling  lkdtm_module_init+0x0/0x2a8 @ 1
+lkdtm: No crash points registered, enable through debugfs
+initcall lkdtm_module_init+0x0/0x2a8 returned 0 after 7590 usecs
+calling  intel_lpss_init+0x0/0x21 @ 1
+initcall intel_lpss_init+0x0/0x21 returned 0 after 28 usecs
+calling  intel_lpss_pci_driver_init+0x0/0x1e @ 1
+initcall intel_lpss_pci_driver_init+0x0/0x1e returned 0 after 93 usecs
+calling  intel_lpss_acpi_driver_init+0x0/0x17 @ 1
+initcall intel_lpss_acpi_driver_init+0x0/0x17 returned 0 after 71 usecs
+calling  system_heap_create+0x0/0xc0 @ 1
+initcall system_heap_create+0x0/0xc0 returned 0 after 498 usecs
+calling  udmabuf_dev_init+0x0/0xab @ 1
+initcall udmabuf_dev_init+0x0/0xab returned 0 after 411 usecs
+calling  mac_hid_init+0x0/0x2d @ 1
+initcall mac_hid_init+0x0/0x2d returned 0 after 47 usecs
+calling  rdac_init+0x0/0x79 @ 1
+rdac: device handler registered
+initcall rdac_init+0x0/0x79 returned 0 after 5388 usecs
+calling  hp_sw_init+0x0/0x15 @ 1
+hp_sw: device handler registered
+initcall hp_sw_init+0x0/0x15 returned 0 after 5093 usecs
+calling  clariion_init+0x0/0x37 @ 1
+emc: device handler registered
+initcall clariion_init+0x0/0x37 returned 0 after 4894 usecs
+calling  alua_init+0x0/0x68 @ 1
+alua: device handler registered
+initcall alua_init+0x0/0x68 returned 0 after 5350 usecs
+calling  macsec_init+0x0/0x6e @ 1
+MACsec IEEE 802.1AE
+initcall macsec_init+0x0/0x6e returned 0 after 4040 usecs
+calling  blackhole_netdev_init+0x0/0xcf @ 1
+initcall blackhole_netdev_init+0x0/0xcf returned 0 after 699 usecs
+calling  phylink_init+0x0/0xaf @ 1
+initcall phylink_init+0x0/0xaf returned 0 after 0 usecs
+calling  phy_module_init+0x0/0x1c @ 1
+initcall phy_module_init+0x0/0x1c returned 0 after 164 usecs
+calling  fixed_mdio_bus_init+0x0/0x245 @ 1
+initcall fixed_mdio_bus_init+0x0/0x245 returned 0 after 1147 usecs
+calling  phy_module_init+0x0/0x1c @ 1
+initcall phy_module_init+0x0/0x1c returned 0 after 919 usecs
+calling  vrf_init_module+0x0/0x8b @ 1
+initcall vrf_init_module+0x0/0x8b returned 0 after 82 usecs
+calling  cavium_ptp_driver_init+0x0/0x1e @ 1
+initcall cavium_ptp_driver_init+0x0/0x1e returned 0 after 69 usecs
+calling  e1000_init_module+0x0/0x7b @ 1
+e1000: Intel(R) PRO/1000 Network Driver
+e1000: Copyright (c) 1999-2006 Intel Corporation.
+initcall e1000_init_module+0x0/0x7b returned 0 after 12336 usecs
+calling  e1000_init_module+0x0/0x36 @ 1
+e1000e: Intel(R) PRO/1000 Network Driver
+e1000e: Copyright(c) 1999 - 2015 Intel Corporation.
+IOAPIC[0]: Preconfigured routing entry (2-16 -> IRQ 16 Level:1 ActiveLow:1)
+e1000e 0000:00:1f.6: Interrupt Throttling Rate (ints/sec) set to dynamic conservative mode
+e1000e 0000:00:1f.6 0000:00:1f.6 (uninitialized): registered PHC clock
+e1000e 0000:00:1f.6 eth0: (PCI Express:2.5GT/s:Width x1) 3c:52:82:5d:1e:ba
+e1000e 0000:00:1f.6 eth0: Intel(R) PRO/1000 Network Connection
+e1000e 0000:00:1f.6 eth0: MAC: 12, PHY: 12, PBA No: FFFFFF-0FF
+initcall e1000_init_module+0x0/0x36 returned 0 after 204287 usecs
+calling  igb_init_module+0x0/0x44 @ 1
+igb: Intel(R) Gigabit Ethernet Network Driver
+igb: Copyright (c) 2007-2014 Intel Corporation.
+initcall igb_init_module+0x0/0x44 returned 0 after 12750 usecs
+calling  igc_init_module+0x0/0x44 @ 1
+Intel(R) 2.5G Ethernet Linux Driver
+Copyright(c) 2018 Intel Corporation.
+initcall igc_init_module+0x0/0x44 returned 0 after 10884 usecs
+calling  ixgbe_init_module+0x0/0xad @ 1
+ixgbe: Intel(R) 10 Gigabit PCI Express Network Driver
+ixgbe: Copyright (c) 1999-2016 Intel Corporation.
+initcall ixgbe_init_module+0x0/0xad returned 0 after 14187 usecs
+calling  i40e_init_module+0x0/0xb8 @ 1
+i40e: Intel(R) Ethernet Connection XL710 Network Driver
+i40e: Copyright (c) 2013 - 2019 Intel Corporation.
+initcall i40e_init_module+0x0/0xb8 returned 0 after 14262 usecs
+calling  rtl8169_pci_driver_init+0x0/0x1e @ 1
+initcall rtl8169_pci_driver_init+0x0/0x1e returned 0 after 75 usecs
+calling  rtl8152_driver_init+0x0/0x1e @ 1
+usbcore: registered new interface driver r8152
+initcall rtl8152_driver_init+0x0/0x1e returned 0 after 6374 usecs
+calling  asix_driver_init+0x0/0x1e @ 1
+usbcore: registered new interface driver asix
+initcall asix_driver_init+0x0/0x1e returned 0 after 6304 usecs
+calling  ax88179_178a_driver_init+0x0/0x1e @ 1
+usbcore: registered new interface driver ax88179_178a
+initcall ax88179_178a_driver_init+0x0/0x1e returned 0 after 6982 usecs
+calling  usbnet_init+0x0/0x2f @ 1
+initcall usbnet_init+0x0/0x2f returned 0 after 1 usecs
+calling  usbport_trig_init+0x0/0x15 @ 1
+initcall usbport_trig_init+0x0/0x15 returned 0 after 63 usecs
+calling  mon_init+0x0/0x1af @ 1
+initcall mon_init+0x0/0x1af returned 0 after 571 usecs
+calling  ehci_hcd_init+0x0/0x1a0 @ 1
+initcall ehci_hcd_init+0x0/0x1a0 returned 0 after 24 usecs
+calling  ehci_pci_init+0x0/0x56 @ 1
+initcall ehci_pci_init+0x0/0x56 returned 0 after 80 usecs
+calling  ohci_hcd_mod_init+0x0/0xa9 @ 1
+initcall ohci_hcd_mod_init+0x0/0xa9 returned 0 after 21 usecs
+calling  ohci_pci_init+0x0/0x56 @ 1
+initcall ohci_pci_init+0x0/0x56 returned 0 after 75 usecs
+calling  uhci_hcd_init+0x0/0x12f @ 1
+initcall uhci_hcd_init+0x0/0x12f returned 0 after 216 usecs
+calling  xhci_hcd_init+0x0/0x28 @ 1
+initcall xhci_hcd_init+0x0/0x28 returned 0 after 23 usecs
+calling  xhci_pci_init+0x0/0x5d @ 1
+initcall xhci_pci_init+0x0/0x5d returned 0 after 119 usecs
+xhci_hcd 0000:00:14.0: xHCI Host Controller
+calling  ucsi_acpi_platform_driver_init+0x0/0x17 @ 1
+initcall ucsi_acpi_platform_driver_init+0x0/0x17 returned 0 after 68 usecs
+xhci_hcd 0000:00:14.0: new USB bus registered, assigned bus number 1
+calling  i8042_init+0x0/0x139 @ 1
+i8042: PNP: PS/2 Controller [PNP0303:PS2K,PNP0f13:PS2M] at 0x60,0x64 irq 1,12
+xhci_hcd 0000:00:14.0: hcc params 0x200077c1 hci version 0x100 quirks 0x0000000001109810
+serio: i8042 KBD port at 0x60,0x64 irq 1
+xhci_hcd 0000:00:14.0: xHCI Host Controller
+serio: i8042 AUX port at 0x60,0x64 irq 12
+xhci_hcd 0000:00:14.0: new USB bus registered, assigned bus number 2
+initcall i8042_init+0x0/0x139 returned 0 after 47142 usecs
+xhci_hcd 0000:00:14.0: Host supports USB 3.0 SuperSpeed
+calling  serport_init+0x0/0x30 @ 1
+usb usb1: New USB device found, idVendor=1d6b, idProduct=0002, bcdDevice= 6.02
+initcall serport_init+0x0/0x30 returned 0 after 1 usecs
+calling  input_leds_init+0x0/0x15 @ 1
+initcall input_leds_init+0x0/0x15 returned 0 after 3 usecs
+usb usb1: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+calling  mousedev_init+0x0/0x63 @ 1
+mousedev: PS/2 mouse device common for all mice
+usb usb1: Product: xHCI Host Controller
+initcall mousedev_init+0x0/0x63 returned 0 after 15965 usecs
+usb usb1: Manufacturer: Linux 6.2.0-rc1-00074-g9aedeaed6fc6 xhci-hcd
+calling  evdev_init+0x0/0x15 @ 1
+initcall evdev_init+0x0/0x15 returned 0 after 1119 usecs
+usb usb1: SerialNumber: 0000:00:14.0
+hub 1-0:1.0: USB hub found
+calling  atkbd_init+0x0/0x2a @ 1
+hub 1-0:1.0: 16 ports detected
+initcall atkbd_init+0x0/0x2a returned 0 after 164 usecs
+calling  psmouse_init+0x0/0x8a @ 1
+initcall psmouse_init+0x0/0x8a returned 0 after 622 usecs
+calling  cmos_init+0x0/0x74 @ 1
+rtc_cmos 00:03: RTC can wake from S4
+rtc_cmos 00:03: registered as rtc0
+rtc_cmos 00:03: setting system clock to 2023-01-19T03:21:29 UTC (1674098489)
+rtc_cmos 00:03: alarms up to one month, y3k, 242 bytes nvram
+initcall cmos_init+0x0/0x74 returned 0 after 30320 usecs
+calling  thermal_throttle_init_device+0x0/0x53 @ 1
+initcall thermal_throttle_init_device+0x0/0x53 returned 0 after 1164 usecs
+calling  esb_driver_init+0x0/0x1e @ 1
+initcall esb_driver_init+0x0/0x1e returned 0 after 124 usecs
+calling  iTCO_wdt_driver_init+0x0/0x17 @ 1
+initcall iTCO_wdt_driver_init+0x0/0x17 returned 0 after 63 usecs
+calling  iTCO_vendor_init_module+0x0/0x35 @ 1
+usb usb2: New USB device found, idVendor=1d6b, idProduct=0003, bcdDevice= 6.02
+iTCO_vendor_support: vendor-support=0
+initcall iTCO_vendor_init_module+0x0/0x35 returned 0 after 3 usecs
+usb usb2: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+calling  ghes_edac_init+0x0/0xf4 @ 1
+usb usb2: Product: xHCI Host Controller
+initcall ghes_edac_init+0x0/0xf4 returned -19 after 1 usecs
+usb usb2: Manufacturer: Linux 6.2.0-rc1-00074-g9aedeaed6fc6 xhci-hcd
+usb usb2: SerialNumber: 0000:00:14.0
+calling  intel_pstate_init+0x0/0x4bc @ 1
+hub 2-0:1.0: USB hub found
+intel_pstate: HWP enabled by BIOS
+intel_pstate: Intel P-state driver initializing
+intel_pstate: HWP enabled
+hub 2-0:1.0: 10 ports detected
+initcall intel_pstate_init+0x0/0x4bc returned 0 after 20836 usecs
+calling  haltpoll_init+0x0/0xf3 @ 1
+initcall haltpoll_init+0x0/0xf3 returned -19 after 0 usecs
+calling  dmi_sysfs_init+0x0/0x14c @ 1
+initcall dmi_sysfs_init+0x0/0x14c returned 0 after 5563 usecs
+calling  fw_cfg_sysfs_init+0x0/0x8a @ 1
+initcall fw_cfg_sysfs_init+0x0/0x8a returned 0 after 934 usecs
+calling  sysfb_init+0x0/0x124 @ 1
+initcall sysfb_init+0x0/0x124 returned 0 after 1139 usecs
+calling  esrt_sysfs_init+0x0/0x446 @ 1
+initcall esrt_sysfs_init+0x0/0x446 returned -38 after 0 usecs
+calling  efivars_pstore_init+0x0/0x9d @ 1
+initcall efivars_pstore_init+0x0/0x9d returned 0 after 0 usecs
+calling  hid_init+0x0/0x66 @ 1
+hid: raw HID events driver (C) Jiri Kosina
+initcall hid_init+0x0/0x66 returned 0 after 6818 usecs
+calling  hid_generic_init+0x0/0x1e @ 1
+initcall hid_generic_init+0x0/0x1e returned 0 after 60 usecs
+calling  magicmouse_driver_init+0x0/0x1e @ 1
+initcall magicmouse_driver_init+0x0/0x1e returned 0 after 56 usecs
+calling  sensor_hub_driver_init+0x0/0x1e @ 1
+initcall sensor_hub_driver_init+0x0/0x1e returned 0 after 48 usecs
+calling  hid_init+0x0/0x62 @ 1
+usbcore: registered new interface driver usbhid
+usbhid: USB HID core driver
+initcall hid_init+0x0/0x62 returned 0 after 11078 usecs
+calling  pmc_atom_init+0x0/0x73 @ 1
+initcall pmc_atom_init+0x0/0x73 returned -19 after 15 usecs
+calling  sock_diag_init+0x0/0x33 @ 1
+initcall sock_diag_init+0x0/0x33 returned 0 after 127 usecs
+calling  init_net_drop_monitor+0x0/0x1cd @ 1
+drop_monitor: Initializing network drop monitor service
+initcall init_net_drop_monitor+0x0/0x1cd returned 0 after 7181 usecs
+calling  llc_init+0x0/0x24 @ 1
+initcall llc_init+0x0/0x24 returned 0 after 2 usecs
+calling  snap_init+0x0/0x3f @ 1
+initcall snap_init+0x0/0x3f returned 0 after 51 usecs
+calling  blackhole_init+0x0/0x15 @ 1
+initcall blackhole_init+0x0/0x15 returned 0 after 1 usecs
+calling  ingress_module_init+0x0/0x43 @ 1
+initcall ingress_module_init+0x0/0x43 returned 0 after 1 usecs
+calling  netem_module_init+0x0/0x21 @ 1
+netem: version 1.3
+initcall netem_module_init+0x0/0x21 returned 0 after 3885 usecs
+calling  fq_codel_module_init+0x0/0x15 @ 1
+initcall fq_codel_module_init+0x0/0x15 returned 0 after 1 usecs
+calling  init_cgroup_cls+0x0/0x15 @ 1
+initcall init_cgroup_cls+0x0/0x15 returned 0 after 18 usecs
+calling  xt_init+0x0/0x2df @ 1
+initcall xt_init+0x0/0x2df returned 0 after 137 usecs
+calling  tcpudp_mt_init+0x0/0x1a @ 1
+initcall tcpudp_mt_init+0x0/0x1a returned 0 after 119 usecs
+calling  gre_offload_init+0x0/0x52 @ 1
+initcall gre_offload_init+0x0/0x52 returned 0 after 0 usecs
+calling  sysctl_ipv4_init+0x0/0x50 @ 1
+initcall sysctl_ipv4_init+0x0/0x50 returned 0 after 108 usecs
+calling  cubictcp_register+0x0/0x72 @ 1
+initcall cubictcp_register+0x0/0x72 returned 0 after 1 usecs
+calling  xfrm_user_init+0x0/0x34 @ 1
+Initializing XFRM netlink socket
+initcall xfrm_user_init+0x0/0x34 returned 0 after 5135 usecs
+calling  inet6_init+0x0/0x4a8 @ 1
+NET: Registered PF_INET6 protocol family
+Segment Routing with IPv6
+In-situ OAM (IOAM) with IPv6
+initcall inet6_init+0x0/0x4a8 returned 0 after 17818 usecs
+calling  packet_init+0x0/0x83 @ 1
+NET: Registered PF_PACKET protocol family
+initcall packet_init+0x0/0x83 returned 0 after 5895 usecs
+calling  strp_dev_init+0x0/0x37 @ 1
+initcall strp_dev_init+0x0/0x37 returned 0 after 433 usecs
+calling  vlan_proto_init+0x0/0xaa @ 1
+8021q: 802.1Q VLAN Support v1.8
+initcall vlan_proto_init+0x0/0xaa returned 0 after 5265 usecs
+calling  init_p9+0x0/0x2e @ 1
+9pnet: Installing 9P2000 support
+initcall init_p9+0x0/0x2e returned 0 after 5251 usecs
+calling  p9_trans_fd_init+0x0/0x30 @ 1
+initcall p9_trans_fd_init+0x0/0x30 returned 0 after 27 usecs
+calling  p9_virtio_init+0x0/0x52 @ 1
+initcall p9_virtio_init+0x0/0x52 returned 0 after 174 usecs
+calling  dcbnl_init+0x0/0x54 @ 1
+initcall dcbnl_init+0x0/0x54 returned 0 after 14 usecs
+calling  mpls_gso_init+0x0/0x30 @ 1
+mpls_gso: MPLS GSO support
+initcall mpls_gso_init+0x0/0x30 returned 0 after 4538 usecs
+calling  nsh_init_module+0x0/0x18 @ 1
+initcall nsh_init_module+0x0/0x18 returned 0 after 1 usecs
+calling  pm_check_save_msr+0x0/0x70 @ 1
+initcall pm_check_save_msr+0x0/0x70 returned 0 after 27 usecs
+calling  plist_test+0x0/0x34b @ 1
+start plist test
+end plist test
+initcall plist_test+0x0/0x34b returned 0 after 8681 usecs
+calling  mcheck_init_device+0x0/0x20c @ 1
+initcall mcheck_init_device+0x0/0x20c returned 0 after 1746 usecs
+calling  dev_mcelog_init_device+0x0/0x160 @ 1
+initcall dev_mcelog_init_device+0x0/0x160 returned 0 after 343 usecs
+calling  kernel_do_mounts_initrd_sysctls_init+0x0/0x26 @ 1
+initcall kernel_do_mounts_initrd_sysctls_init+0x0/0x26 returned 0 after 10 usecs
+calling  tboot_late_init+0x0/0x22f @ 1
+initcall tboot_late_init+0x0/0x22f returned 0 after 0 usecs
+calling  sld_mitigate_sysctl_init+0x0/0x26 @ 1
+initcall sld_mitigate_sysctl_init+0x0/0x26 returned 0 after 7 usecs
+calling  mcheck_late_init+0x0/0x41 @ 1
+initcall mcheck_late_init+0x0/0x41 returned 0 after 107 usecs
+calling  severities_debugfs_init+0x0/0x2e @ 1
+initcall severities_debugfs_init+0x0/0x2e returned 0 after 27 usecs
+calling  microcode_init+0x0/0x246 @ 1
+microcode: Microcode Update Driver: v2.2.
+initcall microcode_init+0x0/0x246 returned 0 after 556 usecs
+calling  resctrl_late_init+0x0/0x6e0 @ 1
+initcall resctrl_late_init+0x0/0x6e0 returned -19 after 1 usecs
+calling  hpet_insert_resource+0x0/0x27 @ 1
+initcall hpet_insert_resource+0x0/0x27 returned 0 after 2 usecs
+calling  start_sync_check_timer+0x0/0xb7 @ 1
+initcall start_sync_check_timer+0x0/0xb7 returned 0 after 1 usecs
+calling  update_mp_table+0x0/0x575 @ 1
+initcall update_mp_table+0x0/0x575 returned 0 after 0 usecs
+calling  lapic_insert_resource+0x0/0x47 @ 1
+initcall lapic_insert_resource+0x0/0x47 returned 0 after 2 usecs
+calling  print_ipi_mode+0x0/0x31 @ 1
+IPI shorthand broadcast: enabled
+initcall print_ipi_mode+0x0/0x31 returned 0 after 5067 usecs
+calling  print_ICs+0x0/0x1d7 @ 1
+... APIC ID:      00000000 (0)
+... APIC VERSION: 01060015
+0000000000000000000000000000000000000000000000000000000000000000
+000000000000000c000000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000000000000000000008001000
+
+number of MP IRQ sources: 15.
+number of IO-APIC #2 registers: 120.
+testing the IO APIC.......................
+IO APIC #2......
+.... register #00: 02000000
+.......    : physical APIC id: 02
+.......    : Delivery Type: 0
+.......    : LTS          : 0
+.... register #01: 00770020
+.......     : max redirection entries: 77
+.......     : PRQ implemented: 0
+.......     : IO APIC version: 20
+.... register #02: 00000000
+.......     : arbitration: 00
+.... IRQ redirection table:
+IOAPIC 0:
+pin00, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin01, enabled , edge , high, V(21), IRR(0), S(0), logical , D(0001), M(0)
+pin02, enabled , edge , high, V(30), IRR(0), S(0), logical , D(0001), M(0)
+pin03, disabled, edge , high, V(60), IRR(0), S(0), physical, D(0001), M(2)
+pin04, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin05, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin06, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin07, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin08, enabled , edge , high, V(22), IRR(0), S(0), logical , D(0004), M(0)
+pin09, enabled , level, high, V(21), IRR(0), S(0), logical , D(0002), M(0)
+pin0a, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin0b, disabled, edge , high, V(23), IRR(0), S(0), physical, D(0052), M(2)
+pin0c, enabled , edge , high, V(21), IRR(0), S(0), logical , D(0008), M(0)
+pin0d, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin0e, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin0f, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin10, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin11, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0418), M(2)
+pin12, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin13, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin14, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin15, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin16, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin17, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin18, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin19, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin1a, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin1b, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin1c, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin1d, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin1e, disabled, edge , high, V(00), IRR(0), S(0), physical, D(4000), M(2)
+pin1f, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin20, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin21, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin22, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin23, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin24, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin25, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin26, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin27, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin28, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin29, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin2a, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin2b, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin2c, disabled, edge , high, V(02), IRR(0), S(0), physical, D(2083), M(2)
+pin2d, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin2e, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin2f, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin30, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin31, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin32, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin33, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin34, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin35, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(2)
+pin36, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin37, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin38, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin39, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin3a, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin3b, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin3c, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin3d, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin3e, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin3f, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin40, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin41, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin42, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin43, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin44, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin45, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin46, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin47, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin48, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin49, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin4a, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0800), M(2)
+pin4b, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin4c, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin4d, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin4e, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin4f, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin50, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin51, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin52, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin53, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin54, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin55, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin56, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin57, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin58, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin59, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin5a, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin5b, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin5c, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin5d, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin5e, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin5f, disabled, edge , high, V(00), IRR(0), S(0), physical, D(1508), M(2)
+pin60, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin61, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin62, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin63, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin64, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin65, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin66, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin67, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin68, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin69, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin6a, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin6b, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin6c, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin6d, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin6e, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin6f, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin70, disabled, edge , high, V(00), IRR(0), S(0), physical, D(1100), M(2)
+pin71, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin72, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin73, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0082), M(2)
+pin74, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin75, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
+pin76, disabled, edge , high, V(00), IRR(0), S(0), remapped, I(0100),  Z(2)
+pin77, disabled, edge , high, V(02), IRR(0), S(0), remapped, I(1040),  Z(2)
+IRQ to pin mappings:
+IRQ0 -> 0:2
+IRQ1 -> 0:1
+IRQ3 -> 0:3
+IRQ4 -> 0:4
+IRQ5 -> 0:5
+IRQ6 -> 0:6
+IRQ7 -> 0:7
+IRQ8 -> 0:8
+IRQ9 -> 0:9
+IRQ10 -> 0:10
+IRQ11 -> 0:11
+IRQ12 -> 0:12
+IRQ13 -> 0:13
+IRQ14 -> 0:14
+IRQ15 -> 0:15
+IRQ16 -> 0:16
+IRQ19 -> 0:19
+.................................... done.
+initcall print_ICs+0x0/0x1d7 returned 0 after 1246009 usecs
+calling  setup_efi_kvm_sev_migration+0x0/0x28c @ 1
+initcall setup_efi_kvm_sev_migration+0x0/0x28c returned 0 after 0 usecs
+calling  create_tlb_single_page_flush_ceiling+0x0/0x53 @ 1
+initcall create_tlb_single_page_flush_ceiling+0x0/0x53 returned 0 after 93 usecs
+calling  pat_memtype_list_init+0x0/0x5c @ 1
+initcall pat_memtype_list_init+0x0/0x5c returned 0 after 26 usecs
+calling  create_init_pkru_value+0x0/0x58 @ 1
+initcall create_init_pkru_value+0x0/0x58 returned 0 after 0 usecs
+calling  aesni_init+0x0/0x223 @ 1
+AVX2 version of gcm_enc/dec engaged.
+AES CTR mode by8 optimization enabled
+initcall aesni_init+0x0/0x223 returned 0 after 11467 usecs
+calling  kernel_panic_sysctls_init+0x0/0x26 @ 1
+initcall kernel_panic_sysctls_init+0x0/0x26 returned 0 after 12 usecs
+calling  kernel_panic_sysfs_init+0x0/0x47 @ 1
+initcall kernel_panic_sysfs_init+0x0/0x47 returned 0 after 61 usecs
+calling  kernel_exit_sysctls_init+0x0/0x26 @ 1
+initcall kernel_exit_sysctls_init+0x0/0x26 returned 0 after 10 usecs
+calling  kernel_exit_sysfs_init+0x0/0x47 @ 1
+initcall kernel_exit_sysfs_init+0x0/0x47 returned 0 after 9 usecs
+calling  param_sysfs_builtin_init+0x0/0x96 @ 1
+initcall param_sysfs_builtin_init+0x0/0x96 returned 0 after 30957 usecs
+calling  reboot_ksysfs_init+0x0/0x94 @ 1
+initcall reboot_ksysfs_init+0x0/0x94 returned 0 after 94 usecs
+calling  sched_core_sysctl_init+0x0/0x2b @ 1
+initcall sched_core_sysctl_init+0x0/0x2b returned 0 after 9 usecs
+calling  sched_fair_sysctl_init+0x0/0x26 @ 1
+initcall sched_fair_sysctl_init+0x0/0x26 returned 0 after 9 usecs
+calling  sched_rt_sysctl_init+0x0/0x26 @ 1
+initcall sched_rt_sysctl_init+0x0/0x26 returned 0 after 9 usecs
+calling  sched_dl_sysctl_init+0x0/0x26 @ 1
+initcall sched_dl_sysctl_init+0x0/0x26 returned 0 after 8 usecs
+calling  sched_clock_init_late+0x0/0x138 @ 1
+sched_clock: Marking stable (15536415996, 841992986)->(17462938192, -1084529210)
+initcall sched_clock_init_late+0x0/0x138 returned 0 after 9460 usecs
+calling  sched_init_debug+0x0/0x257 @ 1
+initcall sched_init_debug+0x0/0x257 returned 0 after 1414 usecs
+calling  kernel_lockdep_sysctls_init+0x0/0x21 @ 1
+initcall kernel_lockdep_sysctls_init+0x0/0x21 returned 0 after 10 usecs
+calling  cpu_latency_qos_init+0x0/0x3e @ 1
+initcall cpu_latency_qos_init+0x0/0x3e returned 0 after 311 usecs
+calling  pm_debugfs_init+0x0/0x28 @ 1
+initcall pm_debugfs_init+0x0/0x28 returned 0 after 38 usecs
+calling  printk_late_init+0x0/0x226 @ 1
+initcall printk_late_init+0x0/0x226 returned 0 after 20 usecs
+calling  rcu_verify_early_boot_tests+0x0/0x70 @ 1
+initcall rcu_verify_early_boot_tests+0x0/0x70 returned 0 after 0 usecs
+calling  rcu_tasks_verify_schedule_work+0x0/0x90 @ 1
+initcall rcu_tasks_verify_schedule_work+0x0/0x90 returned 0 after 1 usecs
+calling  init_srcu_module_notifier+0x0/0x30 @ 1
+initcall init_srcu_module_notifier+0x0/0x30 returned 0 after 2 usecs
+calling  swiotlb_create_default_debugfs+0x0/0x6c @ 1
+initcall swiotlb_create_default_debugfs+0x0/0x6c returned 0 after 62 usecs
+calling  tk_debug_sleep_time_init+0x0/0x28 @ 1
+initcall tk_debug_sleep_time_init+0x0/0x28 returned 0 after 20 usecs
+calling  bpf_ksym_iter_register+0x0/0x1f @ 1
+initcall bpf_ksym_iter_register+0x0/0x1f returned 0 after 7 usecs
+calling  kernel_acct_sysctls_init+0x0/0x26 @ 1
+initcall kernel_acct_sysctls_init+0x0/0x26 returned 0 after 11 usecs
+calling  kexec_core_sysctl_init+0x0/0x26 @ 1
+initcall kexec_core_sysctl_init+0x0/0x26 returned 0 after 8 usecs
+calling  bpf_rstat_kfunc_init+0x0/0x1a @ 1
+initcall bpf_rstat_kfunc_init+0x0/0x1a returned 0 after 0 usecs
+calling  debugfs_kprobe_init+0x0/0x78 @ 1
+initcall debugfs_kprobe_init+0x0/0x78 returned 0 after 79 usecs
+calling  kernel_delayacct_sysctls_init+0x0/0x26 @ 1
+initcall kernel_delayacct_sysctls_init+0x0/0x26 returned 0 after 9 usecs
+calling  taskstats_init+0x0/0x3f @ 1
+registered taskstats version 1
+initcall taskstats_init+0x0/0x3f returned 0 after 4978 usecs
+calling  ftrace_sysctl_init+0x0/0x21 @ 1
+initcall ftrace_sysctl_init+0x0/0x21 returned 0 after 9 usecs
+calling  init_hwlat_tracer+0x0/0x116 @ 1
+initcall init_hwlat_tracer+0x0/0x116 returned 0 after 533 usecs
+calling  bpf_key_sig_kfuncs_init+0x0/0x15 @ 1
+initcall bpf_key_sig_kfuncs_init+0x0/0x15 returned 0 after 0 usecs
+calling  bpf_global_ma_init+0x0/0x23 @ 1
+initcall bpf_global_ma_init+0x0/0x23 returned 0 after 318 usecs
+calling  bpf_syscall_sysctl_init+0x0/0x26 @ 1
+initcall bpf_syscall_sysctl_init+0x0/0x26 returned 0 after 57 usecs
+calling  kfunc_init+0x0/0xf8 @ 1
+initcall kfunc_init+0x0/0xf8 returned 0 after 1 usecs
+calling  bpf_map_iter_init+0x0/0x30 @ 1
+initcall bpf_map_iter_init+0x0/0x30 returned 0 after 199 usecs
+calling  task_iter_init+0x0/0x2d5 @ 1
+initcall task_iter_init+0x0/0x2d5 returned 0 after 12 usecs
+calling  bpf_prog_iter_init+0x0/0x1f @ 1
+initcall bpf_prog_iter_init+0x0/0x1f returned 0 after 3 usecs
+calling  bpf_link_iter_init+0x0/0x1f @ 1
+initcall bpf_link_iter_init+0x0/0x1f returned 0 after 4 usecs
+calling  init_trampolines+0x0/0x6a @ 1
+initcall init_trampolines+0x0/0x6a returned 0 after 1 usecs
+calling  bpf_cgroup_iter_init+0x0/0x21 @ 1
+initcall bpf_cgroup_iter_init+0x0/0x21 returned 0 after 4 usecs
+calling  load_system_certificate_list+0x0/0x55 @ 1
+Loading compiled-in X.509 certificates
+Loaded X.509 cert 'Build time autogenerated kernel key: 3718f447b7bcb2f6a7cbf49796e22ef8fb07b12f'
+initcall load_system_certificate_list+0x0/0x55 returned 0 after 17984 usecs
+calling  fault_around_debugfs+0x0/0x28 @ 1
+initcall fault_around_debugfs+0x0/0x28 returned 0 after 27 usecs
+calling  max_swapfiles_check+0x0/0xc @ 1
+initcall max_swapfiles_check+0x0/0xc returned 0 after 0 usecs
+calling  init_zswap+0x0/0x3ad @ 1
+zswap: loaded using pool lzo/zbud
+initcall init_zswap+0x0/0x3ad returned 0 after 6616 usecs
+calling  hugetlb_vmemmap_init+0x0/0x130 @ 1
+initcall hugetlb_vmemmap_init+0x0/0x130 returned 0 after 10 usecs
+calling  slab_sysfs_init+0x0/0xf4 @ 1
+initcall slab_sysfs_init+0x0/0xf4 returned 0 after 41808 usecs
+calling  kasan_cpu_quarantine_init+0x0/0x48 @ 1
+initcall kasan_cpu_quarantine_init+0x0/0x48 returned 219 after 197 usecs
+calling  split_huge_pages_debugfs+0x0/0x28 @ 1
+initcall split_huge_pages_debugfs+0x0/0x28 returned 0 after 67 usecs
+calling  gup_test_init+0x0/0x28 @ 1
+initcall gup_test_init+0x0/0x28 returned 0 after 21 usecs
+calling  pageowner_init+0x0/0x38 @ 1
+page_owner is disabled
+initcall pageowner_init+0x0/0x38 returned 0 after 4219 usecs
+calling  check_early_ioremap_leak+0x0/0x89 @ 1
+initcall check_early_ioremap_leak+0x0/0x89 returned 0 after 0 usecs
+calling  set_hardened_usercopy+0x0/0x24 @ 1
+initcall set_hardened_usercopy+0x0/0x24 returned 1 after 0 usecs
+calling  fscrypt_init+0x0/0xbc @ 1
+Key type .fscrypt registered
+Key type fscrypt-provisioning registered
+initcall fscrypt_init+0x0/0xbc returned 0 after 11267 usecs
+calling  pstore_init+0x0/0x81 @ 1
+initcall pstore_init+0x0/0x81 returned 0 after 12 usecs
+calling  init_root_keyring+0x0/0x12 @ 1
+initcall init_root_keyring+0x0/0x12 returned 0 after 258 usecs
+calling  init_trusted+0x0/0x256 @ 1
+Freeing initrd memory: 710664K
+Key type trusted registered
+initcall init_trusted+0x0/0x256 returned 0 after 18734325 usecs
+calling  init_encrypted+0x0/0x151 @ 1
+Key type encrypted registered
+initcall init_encrypted+0x0/0x151 returned 0 after 31946 usecs
+calling  integrity_fs_init+0x0/0x52 @ 1
+initcall integrity_fs_init+0x0/0x52 returned 0 after 26 usecs
+calling  crypto_algapi_init+0x0/0x11 @ 1
+initcall crypto_algapi_init+0x0/0x11 returned 0 after 9 usecs
+calling  blk_timeout_init+0x0/0x17 @ 1
+initcall blk_timeout_init+0x0/0x17 returned 0 after 0 usecs
+calling  init_error_injection+0x0/0x6e @ 1
+initcall init_error_injection+0x0/0x6e returned 0 after 2702 usecs
+calling  pci_resource_alignment_sysfs_init+0x0/0x1c @ 1
+initcall pci_resource_alignment_sysfs_init+0x0/0x1c returned 0 after 11 usecs
+calling  pci_sysfs_init+0x0/0x72 @ 1
+initcall pci_sysfs_init+0x0/0x72 returned 0 after 307 usecs
+calling  bert_init+0x0/0x653 @ 1
+initcall bert_init+0x0/0x653 returned 0 after 4 usecs
+calling  clk_debug_init+0x0/0x13b @ 1
+initcall clk_debug_init+0x0/0x13b returned 0 after 110 usecs
+calling  dmar_free_unused_resources+0x0/0x194 @ 1
+initcall dmar_free_unused_resources+0x0/0x194 returned 0 after 6 usecs
+calling  sync_state_resume_initcall+0x0/0x20 @ 1
+initcall sync_state_resume_initcall+0x0/0x20 returned 0 after 1 usecs
+calling  deferred_probe_initcall+0x0/0xd0 @ 1
+initcall deferred_probe_initcall+0x0/0xd0 returned 0 after 278 usecs
+calling  sync_debugfs_init+0x0/0x5f @ 1
+initcall sync_debugfs_init+0x0/0x5f returned 0 after 128 usecs
+calling  firmware_memmap_init+0x0/0x5e @ 1
+initcall firmware_memmap_init+0x0/0x5e returned 0 after 636 usecs
+calling  register_update_efi_random_seed+0x0/0x22 @ 1
+initcall register_update_efi_random_seed+0x0/0x22 returned 0 after 0 usecs
+calling  efi_shutdown_init+0x0/0x78 @ 1
+initcall efi_shutdown_init+0x0/0x78 returned -19 after 12 usecs
+calling  efi_earlycon_unmap_fb+0x0/0x65 @ 1
+initcall efi_earlycon_unmap_fb+0x0/0x65 returned 0 after 12 usecs
+calling  itmt_legacy_init+0x0/0x4d @ 1
+initcall itmt_legacy_init+0x0/0x4d returned -19 after 0 usecs
+calling  bpf_sockmap_iter_init+0x0/0x55 @ 1
+initcall bpf_sockmap_iter_init+0x0/0x55 returned 0 after 4 usecs
+calling  bpf_sk_storage_map_iter_init+0x0/0x55 @ 1
+initcall bpf_sk_storage_map_iter_init+0x0/0x55 returned 0 after 6 usecs
+calling  sch_default_qdisc+0x0/0x15 @ 1
+initcall sch_default_qdisc+0x0/0x15 returned 0 after 2 usecs
+calling  bpf_prog_test_run_init+0x0/0xf6 @ 1
+initcall bpf_prog_test_run_init+0x0/0xf6 returned 0 after 0 usecs
+calling  tcp_congestion_default+0x0/0x1c @ 1
+initcall tcp_congestion_default+0x0/0x1c returned 0 after 1 usecs
+calling  ip_auto_config+0x0/0x816 @ 1
+e1000e 0000:00:1f.6 eth0: NIC Link is Up 100 Mbps Full Duplex, Flow Control: Rx/Tx
+e1000e 0000:00:1f.6 eth0: 10/100 speed: disabling TSO
+IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+Sending DHCP requests ., OK
+IP-Config: Got DHCP answer from 192.168.3.1, my address is 192.168.3.101
+IP-Config: Complete:
+device=eth0, hwaddr=3c:52:82:5d:1e:ba, ipaddr=192.168.3.101, mask=255.255.255.0, gw=192.168.3.200
+host=lkp-skl-d06, domain=lkp.intel.com, nis-domain=(none)
+bootserver=192.168.3.200, rootserver=192.168.3.200, rootpath=
+nameserver0=192.168.3.200
+initcall ip_auto_config+0x0/0x816 returned 0 after 1821594 usecs
+calling  tcp_bpf_v4_build_proto+0x0/0xef @ 1
+initcall tcp_bpf_v4_build_proto+0x0/0xef returned 0 after 0 usecs
+calling  udp_bpf_v4_build_proto+0x0/0x9d @ 1
+initcall udp_bpf_v4_build_proto+0x0/0x9d returned 0 after 0 usecs
+calling  bpf_tcp_ca_kfunc_init+0x0/0x1a @ 1
+initcall bpf_tcp_ca_kfunc_init+0x0/0x1a returned 0 after 0 usecs
+calling  pci_mmcfg_late_insert_resources+0x0/0xb9 @ 1
+initcall pci_mmcfg_late_insert_resources+0x0/0xb9 returned 0 after 2 usecs
+calling  software_resume+0x0/0x40 @ 1
+initcall software_resume+0x0/0x40 returned -2 after 21 usecs
+calling  ftrace_check_sync+0x0/0x18 @ 1
+initcall ftrace_check_sync+0x0/0x18 returned 0 after 101 usecs
+calling  latency_fsnotify_init+0x0/0x3c @ 1
+initcall latency_fsnotify_init+0x0/0x3c returned 0 after 548 usecs
+calling  trace_eval_sync+0x0/0x18 @ 1
+initcall trace_eval_sync+0x0/0x18 returned 0 after 55 usecs
+calling  late_trace_init+0x0/0xa0 @ 1
+initcall late_trace_init+0x0/0xa0 returned 0 after 0 usecs
+calling  acpi_gpio_handle_deferred_request_irqs+0x0/0xb9 @ 1
+initcall acpi_gpio_handle_deferred_request_irqs+0x0/0xb9 returned 0 after 337 usecs
+calling  fb_logo_late_init+0x0/0x13 @ 1
+initcall fb_logo_late_init+0x0/0x13 returned 0 after 0 usecs
+calling  clk_disable_unused+0x0/0x190 @ 1
+initcall clk_disable_unused+0x0/0x190 returned 0 after 17 usecs
+Freeing unused kernel image (initmem) memory: 3076K
+Write protecting the kernel read-only data: 53248k
+Freeing unused kernel image (rodata/data gap) memory: 816K
+Run /init as init process
+with arguments:
+/init
+nokaslr
+with environment:
+HOME=/
+TERM=linux
+RESULT_ROOT=/result/kernel-selftests/ftrace/lkp-skl-d06/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kselftests/gcc-11/9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91/8
+BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91/vmlinuz-6.2.0-rc1-00074-g9aedeaed6fc6
+branch=tip/sched/core
+job=/lkp/jobs/scheduled/lkp-skl-d06/kernel-selftests-ftrace-debian-12-x86_64-20220629.cgz-9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91-20230119-15299-c5hfhi-1.yaml
+user=lkp
+ARCH=x86_64
+kconfig=x86_64-rhel-8.3-kselftests
+commit=9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91
+max_uptime=1200
+LKP_SERVER=internal-lkp-server
+selinux=0
+softlockup_panic=1
+prompt_ramdisk=0
+vga=normal
+systemd[1]: RTC configured in localtime, applying delta of 0 minutes to system time.
+calling  ip_tables_init+0x0/0x1000 [ip_tables] @ 1
+initcall ip_tables_init+0x0/0x1000 [ip_tables] returned 0 after 47 usecs
+
+
+Star[   39.016592][  T109] fuse: init (API version 7.38)
+d Kernel Module [   39.046897][  T107] ACPI: bus type drm_connector registered
+[   39.048729][  T107] initcall drm_core_init+0x0/0xe3 [drm] returned 0 after 1965 usecs
+calling  init_misc_binfmt+0x0/0x1000 [binfmt_misc] @ 141
+initcall init_misc_binfmt+0x0/0x1000 [binfmt_misc] returned 0 after 6 usecs
+calling  tpm_inf_pnp_driver_init+0x0/0x1000 [tpm_infineon] @ 145
+0m] Reached targ[   40.310755][  T165] calling  acpi_cpufreq_init+0x0/0x1000 [acpi_cpufreq] @ 165
+initcall acpi_pad_init+0x0/0x1000 [acpi_pad] returned 0 after 16722 usecs
+initcall acpi_cpufreq_init+0x0/0x1000 [acpi_cpufreq] returned -17 after 1 usecs
+calling  pmc_core_driver_init+0x0/0x1000 [intel_pmc_core] @ 156
+calling  acpi_wmi_init+0x0/0x1000 [wmi] @ 163
+intel_pmc_core INT33A1:00:  initialized
+calling  acpi_cpufreq_init+0x0/0x1000 [acpi_cpufreq] @ 154
+initcall acpi_cpufreq_init+0x0/0x1000 [acpi_cpufreq] returned -17 after 1 usecs
+acpi PNP0C14:02: duplicate WMI GUID 2B814318-4BE8-4707-9D84-A190A859B5D0 (first instance was on PNP0C14:00)
+acpi PNP0C14:02: duplicate WMI GUID 41227C2D-80E1-423F-8B8E-87E32755A0EB (first instance was on PNP0C14:00)
+wmi_bus wmi_bus-PNP0C14:02: WQZZ data block query control method not found
+initcall acpi_wmi_init+0x0/0x1000 [wmi] returned 0 after 57474 usecs
+calling  acpi_cpufreq_init+0x0/0x1000 [acpi_cpufreq] @ 130
+initcall acpi_cpufreq_init+0x0/0x1000 [acpi_cpufreq] returned -17 after 1 usecs
+calling  intel_pch_thermal_driver_init+0x0/0x1000 [intel_pch_thermal] @ 165
+calling  acpi_video_init+0x0/0x1000 [video] @ 163
+initcall acpi_video_init+0x0/0x1000 [video] returned 0 after 18 usecs
+IOAPIC[0]: Preconfigured routing entry (2-18 -> IRQ 18 Level:1 ActiveLow:1)
+initcall mei_init+0x0/0xb7 [mei] returned 0 after 18225 usecs
+calling  ata_init+0x0/0x8a [libata] @ 145
+initcall intel_pch_thermal_driver_init+0x0/0x1000 [intel_pch_thermal] returned 0 after 26911 usecs
+libata version 3.00 loaded.
+initcall ata_init+0x0/0x8a [libata] returned 0 after 17488 usecs
+calling  ie31200_init+0x0/0x1000 [ie31200_edac] @ 156
+calling  acpi_cpufreq_init+0x0/0x1000 [acpi_cpufreq] @ 160
+initcall acpi_cpufreq_init+0x0/0x1000 [acpi_cpufreq] returned -17 after 1 usecs
+calling  smbalert_driver_init+0x0/0x1000 [i2c_smbus] @ 159
+initcall serio_raw_drv_init+0x0/0x1000 [serio_raw] returned 0 after 17230 usecs
+EDAC MC0: Giving out device to module ie31200_edac controller IE31200: DEV 0000:00:00.0 (POLLED)
+initcall ie31200_init+0x0/0x1000 [ie31200_edac] returned 0 after 21590 usecs
+initcall mei_me_driver_init+0x0/0x1000 [mei_me] returned 0 after 39139 usecs
+calling  ahci_pci_driver_init+0x0/0x1000 [ahci] @ 145
+initcall smbalert_driver_init+0x0/0x1000 [i2c_smbus] returned 0 after 62621 usecs
+calling  intel_uncore_init+0x0/0x39e [intel_uncore] @ 163
+ahci 0000:00:17.0: SSS flag set, parallel bus scan disabled
+etadata Check Sn[   40.828156][  T161] initcall acpi_cpufreq_init+0x0/0x1000 [acpi_cpufreq] returned -17 after 1 usecs
+ahci 0000:00:17.0: AHCI 0001.0301 32 slots 4 ports 6 Gbps 0xf impl RAID mode
+ahci 0000:00:17.0: flags: 64bit ncq stag pm led clo only pio slum part ems deso sadm sds apst 
+initcall intel_uncore_init+0x0/0x39e [intel_uncore] returned 0 after 33261 usecs
+initcall drm_display_helper_module_init+0x0/0x1000 [drm_display_helper] returned 0 after 33723 usecs
+calling  i2c_i801_init+0x0/0x1000 [i2c_i801] @ 159
+calling  drm_buddy_module_init+0x0/0x1000 [drm_buddy] @ 129
+initcall drm_buddy_module_init+0x0/0x1000 [drm_buddy] returned 0 after 372 usecs
+calling  cstate_pmu_init+0x0/0x1000 [intel_cstate] @ 163
+i801_smbus 0000:00:1f.4: SPD Write Disable is set
+i801_smbus 0000:00:1f.4: SMBus using PCI interrupt
+pci 0000:00:1f.1: [8086:a120] type 00 class 0x058000
+pci 0000:00:1f.1: reg 0x10: [mem 0xfd000000-0xfdffffff 64bit]
+pci 0000:00:1f.1: calling  quirk_igfx_skip_te_disable+0x0/0x120 @ 34
+pci 0000:00:1f.1: quirk_igfx_skip_te_disable+0x0/0x120 took 0 usecs
+initcall i2c_i801_init+0x0/0x1000 [i2c_i801] returned 0 after 50608 usecs
+iTCO_wdt iTCO_wdt: Found a Intel PCH TCO device (Version=4, TCOBASE=0x0400)
+iTCO_wdt iTCO_wdt: initialized. heartbeat=30 sec (nowayout=0)
+calling  ipmi_init_msghandler_mod+0x0/0x1000 [ipmi_msghandler] @ 194
+i2c i2c-0: 3/4 memory slots populated (from DMI)
+initcall cstate_pmu_init+0x0/0x1000 [intel_cstate] returned 0 after 74605 usecs
+IPMI message handler: version 39.2
+i2c i2c-0: Successfully instantiated SPD at 0x51
+initcall ipmi_init_msghandler_mod+0x0/0x1000 [ipmi_msghandler] returned 0 after 14569 usecs
+i2c i2c-0: Successfully instantiated SPD at 0x52
+scsi host0: ahci
+calling  rapl_pmu_init+0x0/0xf0a [rapl] @ 153
+initcall init_ipmi_devintf+0x0/0x1000 [ipmi_devintf] returned 0 after 19389 usecs
+calling  wmi_bmof_driver_init+0x0/0x1000 [wmi_bmof] @ 144
+calling  acpi_cpufreq_init+0x0/0x1000 [acpi_cpufreq] @ 162
+initcall acpi_cpufreq_init+0x0/0x1000 [acpi_cpufreq] returned -17 after 1 usecs
+RAPL PMU: API unit is 2^-32 Joules, 4 fixed counters, 655360 ms ovfl timer
+calling  mei_wdt_driver_init+0x0/0x1000 [mei_wdt] @ 130
+RAPL PMU: hw unit of domain pp0-core 2^-14 Joules
+RAPL PMU: hw unit of domain package 2^-14 Joules
+RAPL PMU: hw unit of domain dram 2^-14 Joules
+RAPL PMU: hw unit of domain pp1-gpu 2^-14 Joules
+initcall rapl_pmu_init+0x0/0xf0a [rapl] returned 0 after 25947 usecs
+...
+Startin[   41.287054][  T145] scsi host2: ahci
+initcall mei_wdt_driver_init+0x0/0x1000 [mei_wdt] returned 0 after 100089 usecs
+ernel image with[   41.340711][  T145] ata1: SATA max UDMA/133 abar m2048@0xd104c000 port 0xd104c100 irq 123
+ata2: SATA max UDMA/133 abar m2048@0xd104c000 port 0xd104c180 irq 123
+ata3: SATA max UDMA/133 abar m2048@0xd104c000 port 0xd104c200 irq 123
+ata4: SATA max UDMA/133 abar m2048@0xd104c000 port 0xd104c280 irq 123
+initcall ahci_pci_driver_init+0x0/0x1000 [ahci] returned 0 after 153800 usecs
+calling  init_ipmi_si+0x0/0x296 [ipmi_si] @ 209
+ipmi_si: IPMI System Interface driver
+ipmi_si: Unable to find any System Interface(s)
+initcall init_ipmi_si+0x0/0x296 [ipmi_si] returned -19 after 12684 usecs
+calling  sha512_ssse3_mod_init+0x0/0x1000 [sha512_ssse3] @ 153
+initcall sha512_ssse3_mod_init+0x0/0x1000 [sha512_ssse3] returned 0 after 29 usecs
+calling  acpi_cpufreq_init+0x0/0x1000 [acpi_cpufreq] @ 167
+initcall acpi_cpufreq_init+0x0/0x1000 [acpi_cpufreq] returned -17 after 1 usecs
+LKP: ttyS0: 256: current_version: f0, target_ve[   41.760355][  T129] calling  i915_init+0x0/0x161 [i915] @ 129
+rsion: f0
+calling  ghash_pclmulqdqni_mod_init+0x0/0x1000 [ghash_clmulni_intel] @ 168
+LKP: ttyS0: 256: skip deploy intel ucode as ucod[   41.782263][  T168] initcall ghash_pclmulqdqni_mod_init+0x0/0x1000 [ghash_clmulni_intel] returned 0 after 4878 usecs
+e is same
+Console: switching to colour dummy device 80x25
+[0m.
+i915 0000:00:02.0: [drm] Failed to load DMC firmware i915/skl_dmc_ver1_27.bin. Disabling runtime power management.
+i915 0000:00:02.0: [drm] DMC firmware homepage: https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/tree/i915
+See 'systemctl status openipmi.service' for deta[   41.893183][  T163] calling  crc32c_intel_mod_init+0x0/0x1000 [crc32c_intel] @ 163
+ils.
+initcall crc32c_intel_mod_init+0x0/0x1000 [crc32c_intel] returned 0 after 22 usecs
+calling  crc32_pclmul_mod_init+0x0/0x1000 [crc32_pclmul] @ 166
+initcall crc32_pclmul_mod_init+0x0/0x1000 [crc32_pclmul] returned 0 after 11 usecs
+LKP: ttyS0: 256: Kernel tests: Boot OK!
+LKP: ttyS0: 256: HOSTNAME lkp-skl-d06, MAC 3c:52:82:5d:1e:ba, kernel 6.2.0-rc1-00074-g9aedeaed6fc6 1
+ata1: SATA link up 3.0 Gbps (SStatus 123 SControl 300)
+ata1.00: ACPI cmd f5/00:00:00:00:00:e0(SECURITY FREEZE LOCK) filtered out
+ata1.00: ACPI cmd b1/c1:00:00:00:00:e0(DEVICE CONFIGURATION OVERLAY) filtered out
+i915 0000:00:02.0: [drm] [ENCODER:94:DDI A/PHY A] failed to retrieve link info, disabling eDP
+ata1.00: ATA-8: WDC WD10EARS-00Y5B1, 80.00A80, max UDMA/133
+ata1.00: 1953525168 sectors, multi 0: LBA48 NCQ (depth 32), AA
+ata1.00: ACPI cmd f5/00:00:00:00:00:e0(SECURITY FREEZE LOCK) filtered out
+ata1.00: ACPI cmd b1/c1:00:00:00:00:e0(DEVICE CONFIGURATION OVERLAY) filtered out
+[drm] Initialized i915 1.6.0 20201103 for 0000:00:02.0 on minor 0
+ata1.00: configured for UDMA/133
+scsi 0:0:0:0: Direct-Access     ATA      WDC WD10EARS-00Y 0A80 PQ: 0 ANSI: 5
+ACPI: video: Video Device [GFX0] (multi-head: yes  rom: no  post: no)
+input: Video Bus as /devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A08:00/LNXVIDEO:00/input/input6
+initcall i915_init+0x0/0x161 [i915] returned 0 after 586381 usecs
+i915 0000:00:02.0: [drm] Cannot find any crtc or sizes
+ata2: SATA link up 6.0 Gbps (SStatus 133 SControl 300)
+ata2.00: ACPI cmd f5/00:00:00:00:00:e0(SECURITY FREEZE LOCK) filtered out
+ata2.00: ATA-9: INTEL SSDSC2BB012T4, G2010036, max UDMA/133
+ata2.00: 2344225968 sectors, multi 1: LBA48 NCQ (depth 32)
+ata2.00: ACPI cmd f5/00:00:00:00:00:e0(SECURITY FREEZE LOCK) filtered out
+ata2.00: configured for UDMA/133
+scsi 1:0:0:0: Direct-Access     ATA      INTEL SSDSC2BB01 0036 PQ: 0 ANSI: 5
+ata3: SATA link down (SStatus 4 SControl 300)
+ata4: SATA link down (SStatus 4 SControl 300)
+i915 0000:00:02.0: [drm] Cannot find any crtc or sizes
+calling  crct10dif_intel_mod_init+0x0/0x1000 [crct10dif_pclmul] @ 168
+initcall crct10dif_intel_mod_init+0x0/0x1000 [crct10dif_pclmul] returned 0 after 1697 usecs
+i915 0000:00:02.0: [drm] Cannot find any crtc or sizes
+calling  init_sg+0x0/0x1000 [sg] @ 162
+scsi 0:0:0:0: Attached scsi generic sg0 type 0
+scsi 1:0:0:0: Attached scsi generic sg1 type 0
+initcall init_sg+0x0/0x1000 [sg] returned 0 after 103813 usecs
+calling  crc64_rocksoft_mod_init+0x0/0x1000 [crc64_rocksoft] @ 159
+calling  kvm_x86_init+0x0/0x11 [kvm] @ 168
+initcall kvm_x86_init+0x0/0x11 [kvm] returned 0 after 1 usecs
+calling  crc64_rocksoft_init+0x0/0x1000 [crc64_rocksoft_generic] @ 397
+initcall crc64_rocksoft_init+0x0/0x1000 [crc64_rocksoft_generic] returned 0 after 23 usecs
+calling  vmx_init+0x0/0x26f [kvm_intel] @ 168
+initcall crc64_rocksoft_mod_init+0x0/0x1000 [crc64_rocksoft] returned 0 after 13762 usecs
+calling  init_sd+0x0/0x1000 [sd_mod] @ 159
+initcall vmx_init+0x0/0x26f [kvm_intel] returned 0 after 8792 usecs
+initcall init_sd+0x0/0x1000 [sd_mod] returned 0 after 18597 usecs
+ata2.00: Enabling discard_zeroes_data
+sd 0:0:0:0: [sda] 1953525168 512-byte logical blocks: (1.00 TB/932 GiB)
+sd 1:0:0:0: [sdb] 2344225968 512-byte logical blocks: (1.20 TB/1.09 TiB)
+sd 0:0:0:0: [sda] Write Protect is off
+sd 1:0:0:0: [sdb] 4096-byte physical blocks
+sd 0:0:0:0: [sda] Mode Sense: 00 3a 00 00
+sd 1:0:0:0: [sdb] Write Protect is off
+sd 0:0:0:0: [sda] Write cache: enabled, read cache: enabled, doesn't support DPO or FUA
+sd 1:0:0:0: [sdb] Mode Sense: 00 3a 00 00
+sd 0:0:0:0: [sda] Preferred minimum I/O size 512 bytes
+sd 1:0:0:0: [sdb] Write cache: enabled, read cache: enabled, doesn't support DPO or FUA
+calling  coretemp_init+0x0/0x1000 [coretemp] @ 168
+sd 1:0:0:0: [sdb] Preferred minimum I/O size 4096 bytes
+initcall coretemp_init+0x0/0x1000 [coretemp] returned 0 after 22561 usecs
+ata2.00: Enabling discard_zeroes_data
+calling  powerclamp_init+0x0/0x1000 [intel_powerclamp] @ 163
+sdb: sdb1 sdb2
+initcall powerclamp_init+0x0/0x1000 [intel_powerclamp] returned 0 after 4366 usecs
+sd 1:0:0:0: [sdb] Attached SCSI disk
+sda: sda1 sda2 sda3 sda4
+sd 0:0:0:0: [sda] Attached SCSI disk
+calling  pkg_temp_thermal_init+0x0/0x1000 [x86_pkg_temp_thermal] @ 166
+initcall pkg_temp_thermal_init+0x0/0x1000 [x86_pkg_temp_thermal] returned 0 after 41511 usecs
+calling  acpi_cpufreq_init+0x0/0x1000 [acpi_cpufreq] @ 166
+initcall acpi_cpufreq_init+0x0/0x1000 [acpi_cpufreq] returned -17 after 1 usecs
+calling  acpi_cpufreq_init+0x0/0x1000 [acpi_cpufreq] @ 163
+initcall acpi_cpufreq_init+0x0/0x1000 [acpi_cpufreq] returned -17 after 2 usecs
+calling  pmc_core_platform_init+0x0/0x1000 [intel_pmc_core_pltdrv] @ 166
+initcall pmc_core_platform_init+0x0/0x1000 [intel_pmc_core_pltdrv] returned -19 after 181 usecs
+calling  libcrc32c_mod_init+0x0/0x1000 [libcrc32c] @ 419
+initcall libcrc32c_mod_init+0x0/0x1000 [libcrc32c] returned 0 after 776 usecs
+calling  acpi_cpufreq_init+0x0/0x1000 [acpi_cpufreq] @ 168
+calling  pmc_core_platform_init+0x0/0x1000 [intel_pmc_core_pltdrv] @ 163
+initcall acpi_cpufreq_init+0x0/0x1000 [acpi_cpufreq] returned -17 after 1 usecs
+initcall pmc_core_platform_init+0x0/0x1000 [intel_pmc_core_pltdrv] returned -19 after 138 usecs
+calling  init_module+0x0/0x1000 [raid6_pq] @ 419
+raid6: avx2x4   gen() 30647 MB/s
+raid6: avx2x2   gen() 29540 MB/s
+raid6: avx2x1   gen() 23286 MB/s
+raid6: using algorithm avx2x4 gen() 30647 MB/s
+raid6: .... xor() 11143 MB/s, rmw enabled
+raid6: using avx2x2 recovery algorithm
+initcall init_module+0x0/0x1000 [raid6_pq] returned 0 after 99976 usecs
+calling  acpi_cpufreq_init+0x0/0x1000 [acpi_cpufreq] @ 153
+initcall acpi_cpufreq_init+0x0/0x1000 [acpi_cpufreq] returned -17 after 2 usecs
+calling  rapl_init+0x0/0x1000 [intel_rapl_common] @ 166
+calling  calibrate_xor_blocks+0x0/0xeae [xor] @ 420
+initcall rapl_init+0x0/0x1000 [intel_rapl_common] returned 0 after 4369 usecs
+xor: automatically using best checksumming function   avx       
+initcall calibrate_xor_blocks+0x0/0xeae [xor] returned 0 after 4 usecs
+calling  pmc_core_platform_init+0x0/0x1000 [intel_pmc_core_pltdrv] @ 168
+initcall pmc_core_platform_init+0x0/0x1000 [intel_pmc_core_pltdrv] returned -19 after 153 usecs
+calling  blake2b_mod_init+0x0/0x1000 [blake2b_generic] @ 420
+initcall blake2b_mod_init+0x0/0x1000 [blake2b_generic] returned 0 after 331 usecs
+calling  pmc_core_platform_init+0x0/0x1000 [intel_pmc_core_pltdrv] @ 153
+initcall pmc_core_platform_init+0x0/0x1000 [intel_pmc_core_pltdrv] returned -19 after 143 usecs
+calling  intel_rapl_msr_driver_init+0x0/0x1000 [intel_rapl_msr] @ 159
+intel_rapl_common: Found RAPL domain package
+calling  init_btrfs_fs+0x0/0x1e2 [btrfs] @ 419
+intel_rapl_common: Found RAPL domain core
+Btrfs loaded, crc32c=crc32c-intel, zoned=no, fsverity=no
+intel_rapl_common: Found RAPL domain uncore
+initcall init_btrfs_fs+0x0/0x1e2 [btrfs] returned 0 after 13503 usecs
+intel_rapl_common: Found RAPL domain dram
+initcall intel_rapl_msr_driver_init+0x0/0x1000 [intel_rapl_msr] returned 0 after 42041 usecs
+BTRFS: device fsid d55d7a8b-1de5-425d-a4f4-c20d78b40a6b devid 1 transid 18465 /dev/sdb1 scanned by systemd-udevd (143)
+BTRFS: device fsid 620c5088-9233-44b5-b8f3-c0b6df2acb29 devid 1 transid 91 /dev/sdb2 scanned by systemd-udevd (162)
+BTRFS: device fsid 5386c76c-c4d1-423d-84f3-6165e2069a30 devid 1 transid 83 /dev/sda1 scanned by systemd-udevd (157)
+BTRFS: device fsid 4feffc13-1a32-4f06-9d95-cce44c499ac2 devid 1 transid 8 /dev/sda2 scanned by systemd-udevd (128)
+lkp: kernel tainted state: 0
+
+LKP: stdout: 256: Kernel tests: Boot OK!
+
+LKP: stdout: 256: HOSTNAME lkp-skl-d06, MAC 3c:52:82:5d:1e:ba, kernel 6.2.0-rc1-00074-g9aedeaed6fc6 1
+
+install debs round one: dpkg -i --force-confdef --force-depends /opt/deb/gcc-12-base_12.2.0-13_amd64.deb
+
+/opt/deb/libgcc-s1_12.2.0-13_amd64.deb
+
+/opt/deb/python3-minimal_3.10.6-3+b1_amd64.deb
+
+/opt/deb/python3_3.10.6-3+b1_amd64.deb
+
+/opt/deb/python3.10_3.10.9-1_amd64.deb
+
+/opt/deb/libpython3.10-stdlib_3.10.9-1_amd64.deb
+
+/opt/deb/python3.10-minimal_3.10.9-1_amd64.deb
+
+/opt/deb/libpython3.10-minimal_3.10.9-1_amd64.deb
+
+/opt/deb/libpython3-stdlib_3.10.6-3+b1_amd64.deb
+
+/opt/deb/openvswitch-common_3.1.0~git20221212.739bcf2-3_amd64.deb
+
+/opt/deb/python3-netifaces_0.11.0-2_amd64.deb
+
+/opt/deb/python3-sortedcontainers_2.4.0-2_all.deb
+
+/opt/deb/python3-openvswitch_3.1.0~git20221212.739bcf2-3_amd64.deb
+
+/opt/deb/uuid-runtime_2.38.1-4_amd64.deb
+
+/opt/deb/openvswitch-switch_3.1.0~git20221212.739bcf2-3_amd64.deb
+
+/opt/deb/libattr1_1%3a2.5.1-3_amd64.deb
+
+/opt/deb/traceroute_1%3a2.1.1-1_amd64.deb
+
+/opt/deb/attr_1%3a2.5.1-3_amd64.deb
+
+/opt/deb/ebtables_2.0.11-5_amd64.deb
+
+/opt/deb/libatomic1_12.2.0-13_amd64.deb
+
+/opt/deb/libquadmath0_12.2.0-13_amd64.deb
+
+/opt/deb/libgcc-12-dev_12.2.0-13_amd64.deb
+
+/opt/deb/gcc-12_12.2.0-13_amd64.deb
+
+/opt/deb/gcc_4%3a12.2.0-2+b1_amd64.deb
+
+/opt/deb/g++-12_12.2.0-13_amd64.deb
+
+/opt/deb/g++_4%3a12.2.0-2+b1_amd64.deb
+
+/opt/deb/gcc-11-base_11.3.0-8_amd64.deb
+
+/opt/deb/lib32gcc-s1_12.2.0-13_amd64.deb
+
+/opt/deb/libx32gcc-s1_12.2.0-13_amd64.deb
+
+/opt/deb/lib32atomic1_12.2.0-13_amd64.deb
+
+/opt/deb/libx32atomic1_12.2.0-13_amd64.deb
+
+/opt/deb/lib32quadmath0_12.2.0-13_amd64.deb
+
+/opt/deb/libx32quadmath0_12.2.0-13_amd64.deb
+
+/opt/deb/lib32gcc-12-dev_12.2.0-13_amd64.deb
+
+/opt/deb/libx32gcc-12-dev_12.2.0-13_amd64.deb
+
+/opt/deb/gcc-12-multilib_12.2.0-13_amd64.deb
+
+/opt/deb/gcc-multilib_4%3a12.2.0-2+b1_amd64.deb
+
+/opt/deb/libasound2-data_1.2.8-1_all.deb
+
+/opt/deb/libdeflate0_1.14-1_amd64.deb
+
+/opt/deb/libpython3.10_3.10.9-1_amd64.deb
+
+/opt/deb/libwireshark-data_4.0.2-1_all.deb
+
+/opt/deb/python3-pkg-resources_65.5.0-1.1_all.deb
+
+/opt/deb/python3-pygments_2.13.0+dfsg-1_all.deb
+
+/opt/deb/python3-yaml_6.0-3+b1_amd64.deb
+
+/opt/deb/netcat-openbsd_1.219-1_amd64.deb
+
+/opt/deb/python3-roman_3.3-3_all.deb
+
+/opt/deb/python3-docutils_0.17.1+dfsg-3_all.deb
+
+/opt/deb/python3-scapy_2.4.5+g9420c22-2_all.deb
+
+/opt/deb/socat_1.7.4.4-2_amd64.deb
+
+/opt/deb/tcpdump_4.99.2-1_amd64.deb
+
+(Reading database ... 16792 files and directories currently installed.)
+
+Preparing to unpack .../gcc-12-base_12.2.0-13_amd64.deb ...
+
+Unpacking gcc-12-base:amd64 (12.2.0-13) over (12.2.0-9) ...
+
+Preparing to unpack .../libgcc-s1_12.2.0-13_amd64.deb ...
+
+Unpacking libgcc-s1:amd64 (12.2.0-13) over (12.2.0-9) ...
+
+Preparing to unpack .../python3-minimal_3.10.6-3+b1_amd64.deb ...
+
+Unpacking python3-minimal (3.10.6-3+b1) over (3.10.6-1) ...
+
+Preparing to unpack .../python3_3.10.6-3+b1_amd64.deb ...
+
+running python pre-rtupdate hooks for python3.10...
+
+Unpacking python3 (3.10.6-3+b1) over (3.10.6-1) ...
+
+Preparing to unpack .../python3.10_3.10.9-1_amd64.deb ...
+
+Unpacking python3.10 (3.10.9-1) over (3.10.8-3) ...
+
+Preparing to unpack .../libpython3.10-stdlib_3.10.9-1_amd64.deb ...
+
+Unpacking libpython3.10-stdlib:amd64 (3.10.9-1) over (3.10.8-3) ...
+
+Preparing to unpack .../python3.10-minimal_3.10.9-1_amd64.deb ...
+
+Unpacking python3.10-minimal (3.10.9-1) over (3.10.8-3) ...
+
+Preparing to unpack .../libpython3.10-minimal_3.10.9-1_amd64.deb ...
+
+Unpacking libpython3.10-minimal:amd64 (3.10.9-1) over (3.10.8-3) ...
+
+Preparing to unpack .../libpython3-stdlib_3.10.6-3+b1_amd64.deb ...
+
+Unpacking libpython3-stdlib:amd64 (3.10.6-3+b1) over (3.10.6-1) ...
+
+Selecting previously unselected package openvswitch-common.
+
+Preparing to unpack .../openvswitch-common_3.1.0~git20221212.739bcf2-3_amd64.deb ...
+
+Unpacking openvswitch-common (3.1.0~git20221212.739bcf2-3) ...
+
+Selecting previously unselected package python3-netifaces:amd64.
+
+Preparing to unpack .../python3-netifaces_0.11.0-2_amd64.deb ...
+
+0m] Listening on[   62.418203][  T286] 
+
+Preparing to unpack .../python3-sortedcontainers_2.4.0-2_all.deb ...
+
+Unpacking python3-sortedcontainers (2.4.0-2) ...
+
+Selecting previously unselected package python3-openvswitch.
+
+Preparing to unpack .../python3-openvswitch_3.1.0~git20221212.739bcf2-3_amd64.deb ...
+
+Unpacking python3-openvswitch (3.1.0~git20221212.739bcf2-3) ...
+
+Selecting previously unselected package uuid-runtime.
+
+Preparing to unpack .../uuid-runtime_2.38.1-4_amd64.deb ...
+
+Unpacking uuid-runtime (2.38.1-4) ...
+
+Selecting previously unselected package openvswitch-switch.
+
+Preparing to unpack .../openvswitch-switch_3.1.0~git20221212.739bcf2-3_amd64.deb ...
+
+Unpacking openvswitch-switch (3.1.0~git20221212.739bcf2-3) ...
+
+Preparing to unpack .../libattr1_1%3a2.5.1-3_amd64.deb ...
+
+Unpacking libattr1:amd64 (1:2.5.1-3) over (1:2.5.1-1) ...
+
+Selecting previously unselected package traceroute.
+
+Preparing to unpack .../traceroute_1%3a2.1.1-1_amd64.deb ...
+
+Unpacking traceroute (1:2.1.1-1) ...
+
+Selecting previously unselected package attr.
+
+Preparing to unpack .../deb/attr_1%3a2.5.1-3_amd64.deb ...
+
+Unpacking attr (1:2.5.1-3) ...
+
+Selecting previously unselected package ebtables.
+
+Preparing to unpack .../ebtables_2.0.11-5_amd64.deb ...
+
+Unpacking ebtables (2.0.11-5) ...
+
+Selecting previously unselected package libatomic1:amd64.
+
+Preparing to unpack .../libatomic1_12.2.0-13_amd64.deb ...
+
+Unpacking libatomic1:amd64 (12.2.0-13) ...
+
+Selecting previously unselected package libquadmath0:amd64.
+
+Preparing to unpack .../libquadmath0_12.2.0-13_amd64.deb ...
+
+Unpacking libquadmath0:amd64 (12.2.0-13) ...
+
+Selecting previously unselected package libgcc-12-dev:amd64.
+
+Preparing to unpack .../libgcc-12-dev_12.2.0-13_amd64.deb ...
+
+Unpacking libgcc-12-dev:amd64 (12.2.0-13) ...
+
+Selecting previously unselected package gcc-12.
+
+Preparing to unpack .../deb/gcc-12_12.2.0-13_amd64.deb ...
+
+Unpacking gcc-12 (12.2.0-13) ...
+
+Selecting previously unselected package gcc.
+
+Preparing to unpack .../gcc_4%3a12.2.0-2+b1_amd64.deb ...
+
+Unpacking gcc (4:12.2.0-2+b1) ...
+
+Selecting previously unselected package g++-12.
+
+Preparing to unpack .../deb/g++-12_12.2.0-13_amd64.deb ...
+
+Unpacking g++-12 (12.2.0-13) ...
+
+Selecting previously unselected package g++.
+
+Preparing to unpack .../g++_4%3a12.2.0-2+b1_amd64.deb ...
+
+Unpacking g++ (4:12.2.0-2+b1) ...
+
+Selecting previously unselected package gcc-11-base:amd64.
+
+Preparing to unpack .../gcc-11-base_11.3.0-8_amd64.deb ...
+
+Unpacking gcc-11-base:amd64 (11.3.0-8) ...
+
+Selecting previously unselected package lib32gcc-s1.
+
+Preparing to unpack .../lib32gcc-s1_12.2.0-13_amd64.deb ...
+
+Unpacking lib32gcc-s1 (12.2.0-13) ...
+
+Selecting previously unselected package libx32gcc-s1.
+
+Preparing to unpack .../libx32gcc-s1_12.2.0-13_amd64.deb ...
+
+Unpacking libx32gcc-s1 (12.2.0-13) ...
+
+Selecting previously unselected package lib32atomic1.
+
+Preparing to unpack .../lib32atomic1_12.2.0-13_amd64.deb ...
+
+Unpacking lib32atomic1 (12.2.0-13) ...
+
+Selecting previously unselected package libx32atomic1.
+
+Preparing to unpack .../libx32atomic1_12.2.0-13_amd64.deb ...
+
+Unpacking libx32atomic1 (12.2.0-13) ...
+
+Selecting previously unselected package lib32quadmath0.
+
+Preparing to unpack .../lib32quadmath0_12.2.0-13_amd64.deb ...
+
+Unpacking lib32quadmath0 (12.2.0-13) ...
+
+Selecting previously unselected package libx32quadmath0.
+
+Preparing to unpack .../libx32quadmath0_12.2.0-13_amd64.deb ...
+
+Unpacking libx32quadmath0 (12.2.0-13) ...
+
+Selecting previously unselected package lib32gcc-12-dev.
+
+Preparing to unpack .../lib32gcc-12-dev_12.2.0-13_amd64.deb ...
+
+Unpacking lib32gcc-12-dev (12.2.0-13) ...
+
+Selecting previously unselected package libx32gcc-12-dev.
+
+Preparing to unpack .../libx32gcc-12-dev_12.2.0-13_amd64.deb ...
+
+Unpacking libx32gcc-12-dev (12.2.0-13) ...
+
+Selecting previously unselected package gcc-12-multilib.
+
+Preparing to unpack .../gcc-12-multilib_12.2.0-13_amd64.deb ...
+
+Unpacking gcc-12-multilib (12.2.0-13) ...
+
+Selecting previously unselected package gcc-multilib.
+
+Preparing to unpack .../gcc-multilib_4%3a12.2.0-2+b1_amd64.deb ...
+
+Unpacking gcc-multilib (4:12.2.0-2+b1) ...
+
+Selecting previously unselected package libasound2-data.
+
+Preparing to unpack .../libasound2-data_1.2.8-1_all.deb ...
+
+Unpacking libasound2-data (1.2.8-1) ...
+
+Selecting previously unselected package libdeflate0:amd64.
+
+Preparing to unpack .../libdeflate0_1.14-1_amd64.deb ...
+
+Unpacking libdeflate0:amd64 (1.14-1) ...
+
+Selecting previously unselected package libpython3.10:amd64.
+
+Preparing to unpack .../libpython3.10_3.10.9-1_amd64.deb ...
+
+Unpacking libpython3.10:amd64 (3.10.9-1) ...
+
+Selecting previously unselected package libwireshark-data.
+
+Preparing to unpack .../libwireshark-data_4.0.2-1_all.deb ...
+
+Unpacking libwireshark-data (4.0.2-1) ...
+
+Selecting previously unselected package python3-pkg-resources.
+
+Preparing to unpack .../python3-pkg-resources_65.5.0-1.1_all.deb ...
+
+Unpacking python3-pkg-resources (65.5.0-1.1) ...
+
+Selecting previously unselected package python3-pygments.
+
+Preparing to unpack .../python3-pygments_2.13.0+dfsg-1_all.deb ...
+
+Unpacking python3-pygments (2.13.0+dfsg-1) ...
+
+Selecting previously unselected package python3-yaml.
+
+Preparing to unpack .../python3-yaml_6.0-3+b1_amd64.deb ...
+
+Unpacking python3-yaml (6.0-3+b1) ...
+
+Selecting previously unselected package netcat-openbsd.
+
+Preparing to unpack .../netcat-openbsd_1.219-1_amd64.deb ...
+
+Unpacking netcat-openbsd (1.219-1) ...
+
+Selecting previously unselected package python3-roman.
+
+Preparing to unpack .../python3-roman_3.3-3_all.deb ...
+
+Unpacking python3-roman (3.3-3) ...
+
+Selecting previously unselected package python3-docutils.
+
+Preparing to unpack .../python3-docutils_0.17.1+dfsg-3_all.deb ...
+
+Unpacking python3-docutils (0.17.1+dfsg-3) ...
+
+Selecting previously unselected package python3-scapy.
+
+Preparing to unpack .../python3-scapy_2.4.5+g9420c22-2_all.deb ...
+
+Unpacking python3-scapy (2.4.5+g9420c22-2) ...
+
+Selecting previously unselected package socat.
+
+Preparing to unpack .../deb/socat_1.7.4.4-2_amd64.deb ...
+
+Unpacking socat (1.7.4.4-2) ...
+
+Selecting previously unselected package tcpdump.
+
+Preparing to unpack .../deb/tcpdump_4.99.2-1_amd64.deb ...
+
+Unpacking tcpdump (4.99.2-1) ...
+
+Setting up gcc-12-base:amd64 (12.2.0-13) ...
+
+Setting up libgcc-s1:amd64 (12.2.0-13) ...
+
+Setting up libpython3.10-minimal:amd64 (3.10.9-1) ...
+
+Setting up libattr1:amd64 (1:2.5.1-3) ...
+
+Setting up traceroute (1:2.1.1-1) ...
+
+update-alternatives: using /usr/bin/traceroute.db to provide /usr/bin/traceroute (traceroute) in auto mode
+
+update-alternatives: using /usr/bin/traceroute6.db to provide /usr/bin/traceroute6 (traceroute6) in auto mode
+
+update-alternatives: using /usr/bin/lft.db to provide /usr/bin/lft (lft) in auto mode
+
+update-alternatives: using /usr/bin/traceproto.db to provide /usr/bin/traceproto (traceproto) in auto mode
+
+update-alternatives: using /usr/sbin/tcptraceroute.db to provide /usr/sbin/tcptraceroute (tcptraceroute) in auto mode
+
+Setting up attr (1:2.5.1-3) ...
+
+Setting up ebtables (2.0.11-5) ...
+
+update-alternatives: using /usr/sbin/ebtables-legacy to provide /usr/sbin/ebtables (ebtables) in auto mode
+
+Setting up libatomic1:amd64 (12.2.0-13) ...
+
+Setting up libquadmath0:amd64 (12.2.0-13) ...
+
+Setting up gcc-11-base:amd64 (11.3.0-8) ...
+
+Setting up libasound2-data (1.2.8-1) ...
+
+Setting up libdeflate0:amd64 (1.14-1) ...
+
+Setting up libwireshark-data (4.0.2-1) ...
+
+Setting up netcat-openbsd (1.219-1) ...
+
+update-alternatives: using /bin/nc.openbsd to provide /bin/nc (nc) in auto mode
+
+Setting up socat (1.7.4.4-2) ...
+
+Setting up libpython3.10-stdlib:amd64 (3.10.9-1) ...
+
+Setting up python3.10-minimal (3.10.9-1) ...
+
+Setting up libpython3-stdlib:amd64 (3.10.6-3+b1) ...
+
+Setting up libpython3.10:amd64 (3.10.9-1) ...
+
+Setting up python3-minimal (3.10.6-3+b1) ...
+
+Setting up python3.10 (3.10.9-1) ...
+
+Setting up python3 (3.10.6-3+b1) ...
+
+running python rtupdate hooks for python3.10...
+
+Setting up uuid-runtime (2.38.1-4) ...
+
+Adding group `uuidd' (GID 109) ...
+
+Done.
+
+Setting up openvswitch-switch (3.1.0~git20221212.739bcf2-3) ...
+
+update-alternatives: using /usr/lib/openvswitch-switch/ovs-vswitchd to provide /usr/sbin/ovs-vswitchd (ovs-vswitchd) in auto mode
+
+calling  nf_defrag_init+0x0/0x1000 [nf_defrag_ipv4] @ 1150
+initcall nf_defrag_init+0x0/0x1000 [nf_defrag_ipv4] returned 0 after 2 usecs
+calling  nf_defrag_init+0x0/0x1000 [nf_defrag_ipv6] @ 1150
+initcall nf_defrag_init+0x0/0x1000 [nf_defrag_ipv6] returned 0 after 521 usecs
+calling  nf_conntrack_standalone_init+0x0/0x1000 [nf_conntrack] @ 1150
+initcall nf_conntrack_standalone_init+0x0/0x1000 [nf_conntrack] returned 0 after 1276 usecs
+calling  nf_nat_init+0x0/0x1000 [nf_nat] @ 1150
+initcall nf_nat_init+0x0/0x1000 [nf_nat] returned 0 after 324 usecs
+calling  nf_conncount_modinit+0x0/0x1000 [nf_conncount] @ 1150
+initcall nf_conncount_modinit+0x0/0x1000 [nf_conncount] returned 0 after 649 usecs
+calling  dp_init+0x0/0x192 [openvswitch] @ 1150
+openvswitch: Open vSwitch switching datapath
+initcall dp_init+0x0/0x192 [openvswitch] returned 0 after 8599 usecs
+Setting up libgcc-12-dev:amd64 (12.2.0-13) ...
+
+Setting up gcc-12 (12.2.0-13) ...
+
+Setting up gcc (4:12.2.0-2+b1) ...
+
+Setting up g++-12 (12.2.0-13) ...
+
+Setting up g++ (4:12.2.0-2+b1) ...
+
+update-alternatives: using /usr/bin/g++ to provide /usr/bin/c++ (c++) in auto mode
+
+Setting up lib32gcc-s1 (12.2.0-13) ...
+
+Setting up libx32gcc-s1 (12.2.0-13) ...
+
+Setting up lib32atomic1 (12.2.0-13) ...
+
+Setting up libx32atomic1 (12.2.0-13) ...
+
+Setting up lib32quadmath0 (12.2.0-13) ...
+
+Setting up libx32quadmath0 (12.2.0-13) ...
+
+Setting up lib32gcc-12-dev (12.2.0-13) ...
+
+Setting up libx32gcc-12-dev (12.2.0-13) ...
+
+Setting up gcc-12-multilib (12.2.0-13) ...
+
+Setting up gcc-multilib (4:12.2.0-2+b1) ...
+
+Setting up python3-pkg-resources (65.5.0-1.1) ...
+
+Setting up python3-pygments (2.13.0+dfsg-1) ...
+
+Setting up python3-yaml (6.0-3+b1) ...
+
+Setting up python3-roman (3.3-3) ...
+
+Setting up python3-docutils (0.17.1+dfsg-3) ...
+
+Setting up python3-scapy (2.4.5+g9420c22-2) ...
+
+Setting up tcpdump (4.99.2-1) ...
+
+Setting up openvswitch-common (3.1.0~git20221212.739bcf2-3) ...
+
+Setting up python3-netifaces:amd64 (0.11.0-2) ...
+
+Setting up python3-sortedcontainers (2.4.0-2) ...
+
+Setting up python3-openvswitch (3.1.0~git20221212.739bcf2-3) ...
+
+Processing triggers for libc-bin (2.36-5) ...
+
+Processing triggers for systemd (252.1-1) ...
+
+dpkg: regarding .../python3_3.10.6-3+b1_amd64.deb containing python3, pre-dependency problem:
+
+python3 pre-depends on python3-minimal (= 3.10.6-3+b1)
+
+python3-minimal latest configured version is 3.10.6-1.
+
+
+
+dpkg: warning: ignoring pre-dependency problem!
+
+dpkg-query: package 'linux-perf' is not installed
+
+Use dpkg --contents (= dpkg-deb --contents) to list archive files contents.
+
+Traceback (most recent call last):
+
+File "/usr/bin/py3clean", line 210, in <module>
+
+main()
+
+File "/usr/bin/py3clean", line 196, in main
+
+pfiles = set(dpf.from_package(options.package))
+
+File "/usr/share/python3/debpython/files.py", line 53, in from_package
+
+raise Exception("cannot get content of %s" % package_name)
+
+Exception: cannot get content of linux-perf
+
+error running python rtupdate hook linux-perf
+
+dpkg: error processing package python3 (--install):
+
+installed python3 package post-installation script subprocess returned error exit status 4
+
+dpkg: uuid-runtime: dependency problems, but configuring anyway as you requested:
+
+uuid-runtime depends on libuuid1 (>= 2.38.1-2~); however:
+
+Version of libuuid1:amd64 on system is 2.38.1-1.1+b1.
+
+
+
+
+uuidd.service is a disabled or a static unit, not starting it.
+
+dpkg: openvswitch-switch: dependency problems, but configuring anyway as you requested:
+
+openvswitch-switch depends on openvswitch-common (= 3.1.0~git20221212.739bcf2-3).
+
+openvswitch-switch depends on python3-netifaces.
+
+openvswitch-switch depends on python3-openvswitch (>= 3.1.0~git20221212.739bcf2-3).
+
+openvswitch-switch depends on python3:any; however:
+
+Package python3 is not configured yet.
+
+openvswitch-switch depends on libnuma1 (>= 2.0.11); however:
+
+Package libnuma1 is not installed.
+
+openvswitch-switch depends on libunbound8 (>= 1.8.0); however:
+
+Package libunbound8 is not installed.
+
+openvswitch-switch depends on libxdp1 (>= 1.2.9~); however:
+
+Package libxdp1 is not installed.
+
+
+
+BTRFS info (device sdb1): using crc32c (crc32c-intel) checksum algorithm
+BTRFS info (device sdb1): using free space tree
+BTRFS info (device sdb1): enabling ssd optimizations
+BTRFS info (device sdb1): auto enabling async discard
+LKP: ttyS0: 256:  /lkp/lkp/src/bin/run-lkp /lkp/jobs/scheduled/lkp-skl-d06/kernel-selftests-ftrace-debian-12-x86_64-20220629.cgz-9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91-20230119-15299-c5hfhi-1.yaml
+
+
+dpkg: libgcc-12-dev:amd64: dependency problems, but configuring anyway as you requested:
+
+libgcc-12-dev:amd64 depends on libgomp1 (>= 12.2.0-13); however:
+
+Package libgomp1 is not installed.
+
+libgcc-12-dev:amd64 depends on libitm1 (>= 12.2.0-13); however:
+
+Package libitm1 is not installed.
+
+libgcc-12-dev:amd64 depends on libasan8 (>= 12.2.0-13); however:
+
+Package libasan8 is not installed.
+
+libgcc-12-dev:amd64 depends on liblsan0 (>= 12.2.0-13); however:
+
+Package liblsan0 is not installed.
+
+libgcc-12-dev:amd64 depends on libtsan2 (>= 12.2.0-13); however:
+
+Package libtsan2 is not installed.
+
+libgcc-12-dev:amd64 depends on libubsan1 (>= 12.2.0-13); however:
+
+Package libubsan1 is not installed.
+
+
+
+dpkg: gcc-12: dependency problems, but configuring anyway as you requested:
+
+gcc-12 depends on cpp-12 (= 12.2.0-13); however:
+
+Package cpp-12 is not installed.
+
+gcc-12 depends on libcc1-0 (>= 12.2.0-13); however:
+
+Package libcc1-0 is not installed.
+
+gcc-12 depends on binutils (>= 2.39.90.20221231); however:
+
+Package binutils is not installed.
+
+gcc-12 depends on libisl23 (>= 0.15); however:
+
+Package libisl23 is not installed.
+
+gcc-12 depends on libmpc3 (>= 1.1.0); however:
+
+Package libmpc3 is not installed.
+
+gcc-12 depends on libmpfr6 (>= 3.1.3); however:
+
+Package libmpfr6 is not installed.
+
+
+
+dpkg: gcc: dependency problems, but configuring anyway as you requested:
+
+gcc depends on cpp (= 4:12.2.0-2+b1); however:
+
+Package cpp is not installed.
+
+
+
+dpkg: g++-12: dependency problems, but configuring anyway as you requested:
+
+g++-12 depends on libstdc++-12-dev (= 12.2.0-13); however:
+
+Package libstdc++-12-dev is not installed.
+
+g++-12 depends on libisl23 (>= 0.15); however:
+
+Package libisl23 is not installed.
+
+g++-12 depends on libmpc3 (>= 1.1.0); however:
+
+Package libmpc3 is not installed.
+
+g++-12 depends on libmpfr6 (>= 3.1.3); however:
+
+Package libmpfr6 is not installed.
+
+
+
+dpkg: g++: dependency problems, but configuring anyway as you requested:
+
+g++ depends on cpp (= 4:12.2.0-2+b1); however:
+
+Package cpp is not installed.
+
+
+
+dpkg: lib32gcc-s1: dependency problems, but configuring anyway as you requested:
+
+lib32gcc-s1 depends on libc6-i386 (>= 2.35); however:
+
+Package libc6-i386 is not installed.
+
+
+
+dpkg: libx32gcc-s1: dependency problems, but configuring anyway as you requested:
+
+libx32gcc-s1 depends on libc6-x32 (>= 2.35); however:
+
+Package libc6-x32 is not installed.
+
+
+
+dpkg: lib32atomic1: dependency problems, but configuring anyway as you requested:
+
+lib32atomic1 depends on libc6-i386 (>= 2.1.3); however:
+
+Package libc6-i386 is not installed.
+
+
+
+dpkg: libx32atomic1: dependency problems, but configuring anyway as you requested:
+
+libx32atomic1 depends on libc6-x32 (>= 2.16); however:
+
+Package libc6-x32 is not installed.
+
+
+
+dpkg: lib32quadmath0: dependency problems, but configuring anyway as you requested:
+
+lib32quadmath0 depends on libc6-i386 (>= 2.23); however:
+
+Package libc6-i386 is not installed.
+
+
+
+dpkg: libx32quadmath0: dependency problems, but configuring anyway as you requested:
+
+libx32quadmath0 depends on libc6-x32 (>= 2.23); however:
+
+Package libc6-x32 is not installed.
+
+
+
+dpkg: lib32gcc-12-dev: dependency problems, but configuring anyway as you requested:
+
+lib32gcc-12-dev depends on lib32gomp1 (>= 12.2.0-13); however:
+
+Package lib32gomp1 is not installed.
+
+lib32gcc-12-dev depends on libx32gomp1 (>= 12.2.0-13); however:
+
+Package libx32gomp1 is not installed.
+
+lib32gcc-12-dev depends on lib32itm1 (>= 12.2.0-13); however:
+
+Package lib32itm1 is not installed.
+
+lib32gcc-12-dev depends on libx32itm1 (>= 12.2.0-13); however:
+
+Package libx32itm1 is not installed.
+
+lib32gcc-12-dev depends on lib32asan8 (>= 12.2.0-13); however:
+
+Package lib32asan8 is not installed.
+
+lib32gcc-12-dev depends on libx32asan8 (>= 12.2.0-13); however:
+
+Package libx32asan8 is not installed.
+
+lib32gcc-12-dev depends on lib32ubsan1 (>= 12.2.0-13); however:
+
+Package lib32ubsan1 is not installed.
+
+lib32gcc-12-dev depends on libx32ubsan1 (>= 12.2.0-13); however:
+
+Package libx32ubsan1 is not installed.
+
+
+
+dpkg: libx32gcc-12-dev: dependency problems, but configuring anyway as you requested:
+
+libx32gcc-12-dev depends on lib32gomp1 (>= 12.2.0-13); however:
+
+Package lib32gomp1 is not installed.
+
+libx32gcc-12-dev depends on libx32gomp1 (>= 12.2.0-13); however:
+
+Package libx32gomp1 is not installed.
+
+libx32gcc-12-dev depends on lib32itm1 (>= 12.2.0-13); however:
+
+Package lib32itm1 is not installed.
+
+libx32gcc-12-dev depends on libx32itm1 (>= 12.2.0-13); however:
+
+Package libx32itm1 is not installed.
+
+libx32gcc-12-dev depends on lib32asan8 (>= 12.2.0-13); however:
+
+Package lib32asan8 is not installed.
+
+libx32gcc-12-dev depends on libx32asan8 (>= 12.2.0-13); however:
+
+Package libx32asan8 is not installed.
+
+libx32gcc-12-dev depends on lib32ubsan1 (>= 12.2.0-13); however:
+
+Package lib32ubsan1 is not installed.
+
+libx32gcc-12-dev depends on libx32ubsan1 (>= 12.2.0-13); however:
+
+Package libx32ubsan1 is not installed.
+
+
+
+dpkg: gcc-12-multilib: dependency problems, but configuring anyway as you requested:
+
+gcc-12-multilib depends on libc6-dev-i386 (>= 2.23-1~); however:
+
+Package libc6-dev-i386 is not installed.
+
+gcc-12-multilib depends on libc6-dev-x32 (>= 2.23-1~); however:
+
+Package libc6-dev-x32 is not installed.
+
+
+
+dpkg: gcc-multilib: dependency problems, but configuring anyway as you requested:
+
+gcc-multilib depends on cpp (= 4:12.2.0-2+b1); however:
+
+Package cpp is not installed.
+
+gcc-multilib depends on linux-libc-dev (>= 3.0.0-2); however:
+
+Package linux-libc-dev is not installed.
+
+
+
+dpkg: python3-pkg-resources: dependency problems, but configuring anyway as you requested:
+
+python3-pkg-resources depends on python3:any; however:
+
+Package python3 is not configured yet.
+
+
+
+dpkg: python3-pygments: dependency problems, but configuring anyway as you requested:
+
+python3-pygments depends on python3:any; however:
+
+Package python3 is not configured yet.
+
+
+
+dpkg: python3-yaml: dependency problems, but configuring anyway as you requested:
+
+python3-yaml depends on python3 (<< 3.12); however:
+
+Package python3 is not configured yet.
+
+python3-yaml depends on python3 (>= 3.10~); however:
+
+Package python3 is not configured yet.
+
+python3-yaml depends on python3:any; however:
+
+Package python3 is not configured yet.
+
+python3-yaml depends on libyaml-0-2 (>= 0.2.2~); however:
+
+Package libyaml-0-2 is not installed.
+
+
+
+dpkg: python3-roman: dependency problems, but configuring anyway as you requested:
+
+python3-roman depends on python3:any; however:
+
+Package python3 is not configured yet.
+
+
+
+dpkg: python3-docutils: dependency problems, but configuring anyway as you requested:
+
+python3-docutils depends on docutils-common (= 0.17.1+dfsg-3); however:
+
+Package docutils-common is not installed.
+
+python3-docutils depends on python3:any; however:
+
+Package python3 is not configured yet.
+
+
+
+dpkg: python3-scapy: dependency problems, but configuring anyway as you requested:
+
+python3-scapy depends on python3:any; however:
+
+Package python3 is not configured yet.
+
+
+
+dpkg: tcpdump: dependency problems, but configuring anyway as you requested:
+
+tcpdump depends on libpcap0.8 (>= 1.9.0); however:
+
+Package libpcap0.8 is not installed.
+
+
+
+dpkg: openvswitch-common: dependency problems, but configuring anyway as you requested:
+
+openvswitch-common depends on python3:any; however:
+
+Package python3 is not configured yet.
+
+openvswitch-common depends on libnuma1 (>= 2.0.11); however:
+
+Package libnuma1 is not installed.
+
+LKP: ttyS0: 1397: current_versio[   76.702110][  T286]  openvswitch-common depends on libunbound8 (>= 1.8.0); however:
+n: f0, target_ve[   76.702122][  T286] 
+rsion: f0
+Package libunbound8 is not installed.
+
+openvswitch-common depends on libxdp1 (>= 1.2.9~); however:
+
+Package libxdp1 is not installed.
+
+
+
+dpkg: python3-netifaces:amd64: dependency problems, but configuring anyway as you requested:
+
+python3-netifaces:amd64 depends on python3 (<< 3.12); however:
+
+Package python3 is not configured yet.
+
+python3-netifaces:amd64 depends on python3 (>= 3.10~); however:
+
+Package python3 is not configured yet.
+
+
+
+dpkg: python3-sortedcontainers: dependency problems, but configuring anyway as you requested:
+
+python3-sortedcontainers depends on python3:any; however:
+
+Package python3 is not configured yet.
+
+
+
+dpkg: python3-openvswitch: dependency problems, but configuring anyway as you requested:
+
+python3-openvswitch depends on python3 (<< 3.12); however:
+
+Package python3 is not configured yet.
+
+python3-openvswitch depends on python3 (>= 3.10~); however:
+
+Package python3 is not configured yet.
+
+python3-openvswitch depends on python3:any; however:
+
+Package python3 is not configured yet.
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3a22000-0xb3a22fff], got write-back
+python3-openvswitch depends on libnuma1 (>= 2.0.11); however:
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef1000-0xb3ef1fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efc000-0xb3efcfff], got write-back
+Package libnuma1 is not installed.
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efb000-0xb3efbfff], got write-back
+python3-openvswitch depends on libunbound8 (>= 1.8.0); however:
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efa000-0xb3efafff], got write-back
+Package libunbound8 is not installed.
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3e6a000-0xb3e6afff], got write-back
+
+python3-openvswitch depends on libxdp1 (>= 1.2.9~); however:
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef4000-0xb3ef4fff], got write-back
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef3000-0xb3ef3fff], got write-back
+Package libxdp1 is not installed.
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef2000-0xb3ef2fff], got write-back
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef0000-0xb3ef0fff], got write-back
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef1000-0xb3ef1fff], got write-back
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efc000-0xb3efcfff], got write-back
+Errors were encountered while processing:
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efb000-0xb3efbfff], got write-back
+
+python3
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efa000-0xb3efafff], got write-back
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3e6a000-0xb3e6afff], got write-back
+handle /opt/deb/keep-deb.kernel-selftests...
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef4000-0xb3ef4fff], got write-back
+
+install debs round two: dpkg -i --force-confdef --force-depends /opt/deb/gcc-12-base_12.2.0-13_amd64.deb
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef3000-0xb3ef3fff], got write-back
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef2000-0xb3ef2fff], got write-back
+(Reading database ... 18838 files and directories currently installed.)
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef0000-0xb3ef0fff], got write-back
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef1000-0xb3ef1fff], got write-back
+Preparing to unpack .../gcc-12-base_12.2.0-13_amd64.deb ...
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efc000-0xb3efcfff], got write-back
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efb000-0xb3efbfff], got write-back
+Unpacking gcc-12-base:amd64 (12.2.0-13) over (12.2.0-13) ...
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efa000-0xb3efafff], got write-back
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3e6a000-0xb3e6afff], got write-back
+Setting up gcc-12-base:amd64 (12.2.0-13) ...
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef4000-0xb3ef4fff], got write-back
+
+install debs round two: dpkg -i --force-confdef --force-depends /opt/deb/libgcc-s1_12.2.0-13_amd64.deb
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef3000-0xb3ef3fff], got write-back
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef2000-0xb3ef2fff], got write-back
+(Reading database ... 18838 files and directories currently installed.)
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef0000-0xb3ef0fff], got write-back
+
+Preparing to unpack .../libgcc-s1_12.2.0-13_amd64.deb ...
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef1000-0xb3ef1fff], got write-back
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efc000-0xb3efcfff], got write-back
+Unpacking libgcc-s1:amd64 (12.2.0-13) over (12.2.0-13) ...
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efb000-0xb3efbfff], got write-back
+
+Setting up libgcc-s1:amd64 (12.2.0-13) ...
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efa000-0xb3efafff], got write-back
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3e6a000-0xb3e6afff], got write-back
+Processing triggers for libc-bin (2.36-5) ...
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef4000-0xb3ef4fff], got write-back
+
+install debs round two: dpkg -i --force-confdef --force-depends /opt/deb/python3-minimal_3.10.6-3+b1_amd64.deb
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef3000-0xb3ef3fff], got write-back
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef2000-0xb3ef2fff], got write-back
+(Reading database ... 18838 files and directories currently installed.)
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef0000-0xb3ef0fff], got write-back
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef1000-0xb3ef1fff], got write-back
+Preparing to unpack .../python3-minimal_3.10.6-3+b1_amd64.deb ...
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efc000-0xb3efcfff], got write-back
+
+Unpacking python3-minimal (3.10.6-3+b1) over (3.10.6-3+b1) ...
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efb000-0xb3efbfff], got write-back
+
+Setting up python3-minimal (3.10.6-3+b1) ...
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efa000-0xb3efafff], got write-back
+
+install debs round two: dpkg -i --force-confdef --force-depends /opt/deb/python3_3.10.6-3+b1_amd64.deb
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3e6a000-0xb3e6afff], got write-back
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef4000-0xb3ef4fff], got write-back
+(Reading database ... 18838 files and directories currently installed.)
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef3000-0xb3ef3fff], got write-back
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef2000-0xb3ef2fff], got write-back
+Preparing to unpack .../python3_3.10.6-3+b1_amd64.deb ...
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef0000-0xb3ef0fff], got write-back
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3a22000-0xb3a22fff], got write-back
+running python pre-rtupdate hooks for python3.10...
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef1000-0xb3ef1fff], got write-back
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efc000-0xb3efcfff], got write-back
+Unpacking python3 (3.10.6-3+b1) over (3.10.6-3+b1) ...
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efb000-0xb3efbfff], got write-back
+
+Setting up python3 (3.10.6-3+b1) ...
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efa000-0xb3efafff], got write-back
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3e6a000-0xb3e6afff], got write-back
+running python rtupdate hooks for python3.10...
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef4000-0xb3ef4fff], got write-back
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef3000-0xb3ef3fff], got write-back
+dpkg-query: package 'linux-perf' is not installed
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef2000-0xb3ef2fff], got write-back
+
+Use dpkg --contents (= dpkg-deb --contents) to list archive files contents.
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef0000-0xb3ef0fff], got write-back
+
+Traceback (most recent call last):
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef1000-0xb3ef1fff], got write-back
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efc000-0xb3efcfff], got write-back
+File "/usr/bin/py3clean", line 210, in <module>
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efb000-0xb3efbfff], got write-back
+
+main()
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efa000-0xb3efafff], got write-back
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3e6a000-0xb3e6afff], got write-back
+File "/usr/bin/py3clean", line 196, in main
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef4000-0xb3ef4fff], got write-back
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef3000-0xb3ef3fff], got write-back
+pfiles = set(dpf.from_package(options.package))
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef2000-0xb3ef2fff], got write-back
+
+File "/usr/share/python3/debpython/files.py", line 53, in from_package
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef0000-0xb3ef0fff], got write-back
+
+raise Exception("cannot get content of %s" % package_name)
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef1000-0xb3ef1fff], got write-back
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efc000-0xb3efcfff], got write-back
+Exception: cannot get content of linux-perf
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efb000-0xb3efbfff], got write-back
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efa000-0xb3efafff], got write-back
+error running python rtupdate hook linux-perf
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3e6a000-0xb3e6afff], got write-back
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef4000-0xb3ef4fff], got write-back
+dpkg: error processing package python3 (--install):
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef3000-0xb3ef3fff], got write-back
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef2000-0xb3ef2fff], got write-back
+installed python3 package post-installation script subprocess returned error exit status 4
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef0000-0xb3ef0fff], got write-back
+
+Errors were encountered while processing:
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef1000-0xb3ef1fff], got write-back
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efc000-0xb3efcfff], got write-back
+python3
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efb000-0xb3efbfff], got write-back
+
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efa000-0xb3efafff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3e6a000-0xb3e6afff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef4000-0xb3ef4fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef3000-0xb3ef3fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef2000-0xb3ef2fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef0000-0xb3ef0fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef1000-0xb3ef1fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efc000-0xb3efcfff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efb000-0xb3efbfff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efa000-0xb3efafff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3e6a000-0xb3e6afff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef4000-0xb3ef4fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef3000-0xb3ef3fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef2000-0xb3ef2fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef0000-0xb3ef0fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3a22000-0xb3a22fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef1000-0xb3ef1fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efc000-0xb3efcfff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efb000-0xb3efbfff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efa000-0xb3efafff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3e6a000-0xb3e6afff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef4000-0xb3ef4fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef3000-0xb3ef3fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef2000-0xb3ef2fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef0000-0xb3ef0fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef1000-0xb3ef1fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efc000-0xb3efcfff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efb000-0xb3efbfff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efa000-0xb3efafff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3e6a000-0xb3e6afff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef4000-0xb3ef4fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef3000-0xb3ef3fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef2000-0xb3ef2fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef0000-0xb3ef0fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef1000-0xb3ef1fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efc000-0xb3efcfff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efb000-0xb3efbfff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efa000-0xb3efafff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3e6a000-0xb3e6afff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef4000-0xb3ef4fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef3000-0xb3ef3fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef2000-0xb3ef2fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef0000-0xb3ef0fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef1000-0xb3ef1fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efc000-0xb3efcfff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efb000-0xb3efbfff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efa000-0xb3efafff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3e6a000-0xb3e6afff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef4000-0xb3ef4fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef3000-0xb3ef3fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef2000-0xb3ef2fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef0000-0xb3ef0fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef1000-0xb3ef1fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efc000-0xb3efcfff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efb000-0xb3efbfff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3efa000-0xb3efafff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3e6a000-0xb3e6afff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef4000-0xb3ef4fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef3000-0xb3ef3fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef2000-0xb3ef2fff], got write-back
+x86/PAT: bmc-watchdog:1466 map pfn expected mapping type uncached-minus for [mem 0xb3ef0000-0xb3ef0fff], got write-back
+error: dpkg -i /opt/deb/python3_3.10.6-3+b1_amd64.deb failed.
+
+LKP: stdout: 256:  /lkp/lkp/src/bin/run-lkp /lkp/jobs/scheduled/lkp-skl-d06/kernel-selftests-ftrace-debian-12-x86_64-20220629.cgz-9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91-20230119-15299-c5hfhi-1.yaml
+
+RESULT_ROOT=/result/kernel-selftests/ftrace/lkp-skl-d06/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kselftests/gcc-11/9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91/8
+
+job=/lkp/jobs/scheduled/lkp-skl-d06/kernel-selftests-ftrace-debian-12-x86_64-20220629.cgz-9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91-20230119-15299-c5hfhi-1.yaml
+
+result_service: raw_upload, RESULT_MNT: /internal-lkp-server/result, RESULT_ROOT: /internal-lkp-server/result/kernel-selftests/ftrace/lkp-skl-d06/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kselftests/gcc-11/9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91/8, TMP_RESULT_ROOT: /tmp/lkp/result
+
+run-job /lkp/jobs/scheduled/lkp-skl-d06/kernel-selftests-ftrace-debian-12-x86_64-20220629.cgz-9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91-20230119-15299-c5hfhi-1.yaml
+
+/usr/bin/wget -q --timeout=1800 --tries=1 --local-encoding=UTF-8 http://internal-lkp-server:80/~lkp/cgi-bin/lkp-jobfile-append-var?job_file=/lkp/jobs/scheduled/lkp-skl-d06/kernel-selftests-ftrace-debian-12-x86_64-20220629.cgz-9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91-20230119-15299-c5hfhi-1.yaml&job_state=running -O /dev/null
+
+target ucode: 0xf0
+
+LKP: stdout: 1397: current_version: f0, target_version: f0
+
+KERNEL SELFTESTS: linux_headers_dir is /usr/src/linux-headers-x86_64-rhel-8.3-kselftests-9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91
+
+2023-01-19 03:22:33 ln -sf /usr/bin/clang
+
+2023-01-19 03:22:33 ln -sf /usr/sbin/iptables-nft /usr/bin/iptables
+
+2023-01-19 03:22:33 ln -sf /usr/sbin/ip6tables-nft /usr/bin/ip6tables
+
+2023-01-19 03:22:33 sed -i s/default_timeout=45/default_timeout=300/ kselftest/runner.sh
+
+LKP WARN miss config CONFIG_PREEMPT_TRACER= of ftrace/config
+
+2023-01-19 03:22:34 make -C ftrace
+
+make: Entering directory '/usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91/tools/testing/selftests/ftrace'
+
+make: Nothing to be done for 'all'.
+
+make: Leaving directory '/usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91/tools/testing/selftests/ftrace'
+
+2023-01-19 03:22:34 make quicktest=1 run_tests -C ftrace
+
+make: Entering directory '/usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91/tools/testing/selftests/ftrace'
+
+TAP version 13
+
+1..1
+
+# selftests: ftrace: ftracetest
+
+# === Ftrace unit tests ===
+
+# [1] Basic trace file check	[PASS]
+
+# [2] Basic test for tracersIPMI BMC is not supported on this machine, skip bmc-watchdog setup!
+
+	[PASS]
+
+# [3] Basic trace clock test	[PASS]
+
+# [4] Basic event tracing check	[PASS]
+
+# [5] Change the ringbuffer size	[PASS]
+
+# [6] Snapshot and tracing setting	[PASS]
+
+# [7] trace_pipe and trace_marker	[PASS]
+
+
+**********************************************************
+**   NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE   **
+**                                                      **
+** trace_printk() being used. Allocating extra memory.  **
+**                                                      **
+** This means that this is a DEBUG kernel and it is     **
+** unsafe for production use.                           **
+**                                                      **
+** If you see this message and you are not debugging    **
+** the kernel, report this immediately to your vendor!  **
+**                                                      **
+**   NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE   **
+**********************************************************
+calling  ftrace_direct_init+0x0/0x1000 [ftrace_direct] @ 1938
+initcall ftrace_direct_init+0x0/0x1000 [ftrace_direct] returned 0 after 11110 usecs
+calling  ftrace_direct_init+0x0/0x1000 [ftrace_direct] @ 1951
+initcall ftrace_direct_init+0x0/0x1000 [ftrace_direct] returned 0 after 10576 usecs
+calling  ftrace_direct_init+0x0/0x1000 [ftrace_direct] @ 1954
+initcall ftrace_direct_init+0x0/0x1000 [ftrace_direct] returned 0 after 11729 usecs
+calling  ftrace_direct_init+0x0/0x1000 [ftrace_direct] @ 1959
+initcall ftrace_direct_init+0x0/0x1000 [ftrace_direct] returned 0 after 10007 usecs
+calling  ftrace_direct_init+0x0/0x1000 [ftrace_direct] @ 1962
+initcall ftrace_direct_init+0x0/0x1000 [ftrace_direct] returned 0 after 10047 usecs
+
+
+
+=============================
+WARNING: suspicious RCU usage
+6.2.0-rc1-00074-g9aedeaed6fc6 #1 Not tainted
+-----------------------------
+include/trace/events/lock.h:24 suspicious rcu_dereference_check() usage!
+
+other info that might help us debug this:
+
+
+rcu_scheduler_active = 2, debug_locks = 1
+RCU used illegally from extended quiescent state!
+no locks held by swapper/0/0.
+
+stack backtrace:
+CPU: 0 PID: 0 Comm: swapper/0 Not tainted 6.2.0-rc1-00074-g9aedeaed6fc6 #1
+Hardware name: HP HP Z238 Microtower Workstation/8183, BIOS N51 Ver. 01.63 10/05/2017
+Call Trace:
+<TASK>
+? ftrace_regs_caller_end+0x55/0x55
+dump_stack_lvl+0x49/0x5d
+lock_acquire.cold+0x1f/0x40
+? rcu_read_unlock+0x40/0x40
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 0 at kernel/module/internal.h:115 __module_address+0x182/0x200
+Modules linked in: openvswitch nf_conncount nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 btrfs intel_rapl_msr blake2b_generic xor intel_rapl_common raid6_pq zstd_compress libcrc32c x86_pkg_temp_thermal intel_powerclamp coretemp sd_mod t10_pi kvm_intel crc64_rocksoft_generic crc64_rocksoft crc64 kvm sg irqbypass crct10dif_pclmul crc32_pclmul crc32c_intel ghash_clmulni_intel sha512_ssse3 mei_wdt ipmi_devintf wmi_bmof i915 rapl ipmi_msghandler intel_cstate drm_buddy intel_gtt drm_display_helper i2c_i801 ttm ahci intel_uncore drm_kms_helper libahci mei_me serio_raw i2c_smbus syscopyarea sysfillrect libata ie31200_edac mei sysimgblt intel_pch_thermal video wmi intel_pmc_core acpi_pad tpm_infineon binfmt_misc drm fuse ip_tables [last unloaded: ftrace_direct]
+CPU: 0 PID: 0 Comm: swapper/0 Not tainted 6.2.0-rc1-00074-g9aedeaed6fc6 #1
+Hardware name: HP HP Z238 Microtower Workstation/8183, BIOS N51 Ver. 01.63 10/05/2017
+RIP: 0010:__module_address+0x182/0x200
+Code: 01 00 00 48 01 da 48 39 d5 0f 82 69 ff ff ff 0f 0b be ff ff ff ff 48 c7 c7 48 56 9f 84 e8 e6 88 3b 02 85 c0 0f 85 d1 fe ff ff <0f> 0b e9 ca fe ff ff 48 83 c4 08 31 c0 5b 5d c3 48 c7 c7 cc 15 29
+RSP: 0018:ffffffff84406b40 EFLAGS: 00010046
+RAX: 0000000000000000 RBX: ffffffff84406d38 RCX: 0000000000000001
+RDX: 0000000000000000 RSI: 00000000ffffffff RDI: ffffffff849f5648
+RBP: ffffffffa03e6086 R08: 0000000000000000 R09: ffff88837f43f943
+R10: ffffed106fe87f28 R11: 0000000000000001 R12: ffffffff84406c30
+R13: ffffffff84406c10 R14: ffffffffa03e6086 R15: ffffffff84406c70
+FS:  0000000000000000(0000) GS:ffff88837f400000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000451c00 CR3: 000000043ce2a003 CR4: 00000000003706f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+<TASK>
+
+=============================
+WARNING: suspicious RCU usage
+6.2.0-rc1-00074-g9aedeaed6fc6 #1 Not tainted
+-----------------------------
+include/linux/rcupdate.h:765 rcu_read_lock() used illegally while idle!
+
+other info that might help us debug this:
+
+
+rcu_scheduler_active = 2, debug_locks = 1
+RCU used illegally from extended quiescent state!
+1 lock held by swapper/0/0:
+#0: ffffffff84925b40 (rcu_read_lock){....}-{1:2}, at: __bpf_address_lookup+0x9/0x200
+
+stack backtrace:
+CPU: 0 PID: 0 Comm: swapper/0 Not tainted 6.2.0-rc1-00074-g9aedeaed6fc6 #1
+Hardware name: HP HP Z238 Microtower Workstation/8183, BIOS N51 Ver. 01.63 10/05/2017
+Call Trace:
+<TASK>
+? ftrace_regs_caller_end+0x55/0x55
+dump_stack_lvl+0x49/0x5d
+? 0xffffffffa03e6085
+__bpf_address_lookup+0x177/0x200
+? 0xffffffffa03e6085
+? ftrace_regs_caller_end+0x55/0x55
+kallsyms_lookup_buildid+0x187/0x220
+? 0xffffffffa03e6086
+? ftrace_regs_caller_end+0x55/0x55
+__sprint_symbol+0xaf/0x1c0
+? prepare_ftrace_return+0x162/0x230
+? kallsyms_lookup_buildid+0x220/0x220
+? 0xffffffffa03e6087
+? ftrace_return_to_handler+0x260/0x390
+? 0xffffffffa03e6086
+? ftrace_regs_caller_end+0x55/0x55
+symbol_string+0x2e1/0x390
+? rb_handle_head_page+0x1b0/0x2d0
+? ip6_addr_string+0x2e0/0x2e0
+? __rb_reserve_next+0x488/0x14c0
+? __rb_reserve_next+0x488/0x14c0
+? ring_buffer_lock_reserve+0x392/0xd80
+? __rb_reserve_next+0x488/0x14c0
+? __rb_reserve_next+0x488/0x14c0
+? __rb_reserve_next+0x488/0x14c0
+? move_right+0x60/0x60
+? 0xffffffffa03e6086
+pointer+0x444/0x9c0
+? resource_string+0x1590/0x1590
+? rb_commit+0xe7/0x850
+vsnprintf+0x44f/0x15e0
+? pointer+0x9c0/0x9c0
+? __trace_graph_entry+0x155/0x1a0
+vprintk_store+0x21f/0x820
+? ftrace_graph_stop+0x10/0x10
+? printk_sprint+0x230/0x230
+? vprintk+0x4/0x50
+? vprintk_store+0x4/0x820
+? prepare_ftrace_return+0x162/0x230
+? 0xffffffffa03e6086
+? 0xffffffffa03e6087
+? 0xffffffffa03e6086
+? ftrace_regs_caller_end+0x55/0x55
+vprintk+0x38/0x50
+? ftrace_regs_caller_end+0x55/0x55
+_printk+0xb6/0xe7
+? record_print_text.cold+0x11/0x11
+? 0xffffffffa03e6086
+? 0xffffffffa03e6086
+? ftrace_regs_caller_end+0x55/0x55
+show_trace_log_lvl+0x22f/0x2c9
+? 0xffffffffa03e6086
+? 0xffffffffa03e6086
+? module_address_lookup+0x36/0x110
+? __module_address+0x182/0x200
+? ftrace_regs_caller_end+0x55/0x55
+__warn+0xcd/0x180
+? __module_address+0x182/0x200
+? ftrace_regs_caller_end+0x55/0x55
+report_bug+0x15e/0x1c0
+handle_bug+0x3c/0x70
+exc_invalid_op+0x18/0x50
+asm_exc_invalid_op+0x1a/0x20
+RIP: 0010:__module_address+0x182/0x200
+Code: 01 00 00 48 01 da 48 39 d5 0f 82 69 ff ff ff 0f 0b be ff ff ff ff 48 c7 c7 48 56 9f 84 e8 e6 88 3b 02 85 c0 0f 85 d1 fe ff ff <0f> 0b e9 ca fe ff ff 48 83 c4 08 31 c0 5b 5d c3 48 c7 c7 cc 15 29
+RSP: 0018:ffffffff84406b40 EFLAGS: 00010046
+RAX: 0000000000000000 RBX: ffffffff84406d38 RCX: 0000000000000001
+RDX: 0000000000000000 RSI: 00000000ffffffff RDI: ffffffff849f5648
+RBP: ffffffffa03e6086 R08: 0000000000000000 R09: ffff88837f43f943
+R10: ffffed106fe87f28 R11: 0000000000000001 R12: ffffffff84406c30
+R13: ffffffff84406c10 R14: ffffffffa03e6086 R15: ffffffff84406c70
+? 0xffffffffa03e6086
+? 0xffffffffa03e6086
+? 0xffffffffa03e6086
+? ftrace_regs_caller_end+0x55/0x55
+module_address_lookup+0x36/0x110
+? 0xffffffffa03e6086
+? ftrace_regs_caller_end+0x55/0x55
+kallsyms_lookup_buildid+0x153/0x220
+? 0xffffffffa03e6087
+? ftrace_regs_caller_end+0x55/0x55
+__sprint_symbol+0xaf/0x1c0
+? prepare_ftrace_return+0x162/0x230
+? kallsyms_lookup_buildid+0x220/0x220
+? 0xffffffffa03e6087
+? 0xffffffffa03e6087
+? ftrace_regs_caller_end+0x55/0x55
+symbol_string+0x2e1/0x390
+? ip6_addr_string+0x2e0/0x2e0
+? ring_buffer_lock_reserve+0x392/0xd80
+? __rb_reserve_next+0x488/0x14c0
+? __rb_reserve_next+0x488/0x14c0
+? ring_buffer_lock_reserve+0x392/0xd80
+? __rb_reserve_next+0x488/0x14c0
+? __rb_reserve_next+0x488/0x14c0
+? __rb_reserve_next+0x488/0x14c0
+? move_right+0x60/0x60
+? 0xffffffffa03e6087
+pointer+0x444/0x9c0
+? resource_string+0x1590/0x1590
+? rb_commit+0xe7/0x850
+vsnprintf+0x44f/0x15e0
+? pointer+0x9c0/0x9c0
+? __trace_graph_entry+0x155/0x1a0
+vprintk_store+0x21f/0x820
+? ftrace_graph_stop+0x10/0x10
+? printk_sprint+0x230/0x230
+? vprintk+0x4/0x50
+? vprintk_store+0x4/0x820
+? prepare_ftrace_return+0x162/0x230
+? 0xffffffffa03e6087
+? 0xffffffffa03e6087
+? 0xffffffffa03e6087
+? ftrace_regs_caller_end+0x55/0x55
+vprintk+0x38/0x50
+? ftrace_regs_caller_end+0x55/0x55
+_printk+0xb6/0xe7
+? record_print_text.cold+0x11/0x11
+? 0xffffffffa03e6087
+? 0xffffffffa03e6087
+? ftrace_regs_caller_end+0x55/0x55
+show_trace_log_lvl+0x22f/0x2c9
+? 0xffffffffa03e6087
+? _raw_spin_lock_irqsave+0x3f/0x60
+? ftrace_regs_caller_end+0x55/0x55
+dump_stack_lvl+0x49/0x5d
+lock_acquire.cold+0x1f/0x40
+? rcu_read_unlock+0x40/0x40
+? 0xffffffffa03e6087
+? 0xffffffffa03e6087
+? function_graph_enter+0x490/0x490
+? ftrace_regs_caller_end+0x55/0x55
+_raw_spin_lock_irqsave+0x3f/0x60
+? ftrace_regs_caller_end+0x55/0x55
+? ftrace_regs_caller_end+0x55/0x55
+down_trylock+0x17/0x70
+? ftrace_regs_caller_end+0x55/0x55
+? ftrace_regs_caller_end+0x55/0x55
+__down_trylock_console_sem+0x24/0x90
+? ftrace_regs_caller_end+0x55/0x55
+console_trylock_spinning+0x13/0x220
+? ftrace_regs_caller_end+0x55/0x55
+vprintk_emit+0x193/0x280
+? ftrace_regs_caller_end+0x55/0x55
+_printk+0xb6/0xe7
+? record_print_text.cold+0x11/0x11
+? printk_sprint+0x177/0x230
+? ftrace_return_to_handler+0x260/0x390
+? ftrace_regs_caller_end+0x55/0x55
+lockdep_rcu_suspicious+0x66/0x165
+printk_sprint+0x1f7/0x230
+? printk_sprint+0x5/0x230
+? ftrace_regs_caller_end+0x55/0x55
+vprintk_store+0x2e3/0x820
+? printk_sprint+0x230/0x230
+? vprintk_emit+0x4/0x280
+? function_graph_enter+0x2f7/0x490
+? vprintk_store+0x4/0x820
+? prepare_ftrace_return+0x162/0x230
+? 0xffffffffa03e6087
+? ftrace_regs_caller_end+0x55/0x55
+vprintk_emit+0x157/0x280
+? ftrace_regs_caller_end+0x55/0x55
+_printk+0xb6/0xe7
+? record_print_text.cold+0x11/0x11
+? trace_hardirqs_off+0xd6/0x120
+? ftrace_return_to_handler+0x260/0x390
+? ftrace_regs_caller_end+0x55/0x55
+lockdep_rcu_suspicious+0x66/0x165
+? trace_graph_entry+0x500/0x7f0
+trace_hardirqs_off+0x115/0x120
+trace_graph_entry+0x500/0x7f0
+? cpuidle_poll_time+0x4/0x1a0
+function_graph_enter+0x2f7/0x490
+? ftrace_return_to_handler+0x260/0x390
+? ftrace_graph_stop+0x10/0x10
+? cpuidle_poll_time+0x4/0x1a0
+? trace_irq_enable+0x26/0x110
+? cpuidle_poll_time+0x4/0x1a0
+prepare_ftrace_return+0x162/0x230
+0xffffffffa03e6087
+? asm_sysvec_apic_timer_interrupt+0x1a/0x20
+? cpuidle_poll_time+0x9/0x1a0
+cpuidle_poll_time+0x9/0x1a0
+poll_idle+0x43/0x9e
+cpuidle_enter_state+0x1e3/0xd30
+? ftrace_regs_caller_end+0x55/0x55
+cpuidle_enter+0x4e/0xa0
+? ftrace_regs_caller_end+0x55/0x55
+cpuidle_idle_call+0x1ab/0x270
+? arch_cpu_idle_exit+0x40/0x40
+? trace_graph_return+0x1de/0x2f0
+? do_idle+0xa8/0x1a0
+? ftrace_regs_caller_end+0x55/0x55
+do_idle+0xf3/0x1a0
+? ftrace_regs_caller_end+0x55/0x55
+cpu_startup_entry+0x1d/0x20
+rest_init+0x15a/0x220
+arch_call_rest_init+0x13/0x1d
+start_kernel+0x386/0x3a4
+secondary_startup_64_no_verify+0xe0/0xeb
+</TASK>
+? 0xffffffffa03e6086
+? ftrace_regs_caller_end+0x55/0x55
+module_address_lookup+0x36/0x110
+? 0xffffffffa03e6086
+? ftrace_regs_caller_end+0x55/0x55
+kallsyms_lookup_buildid+0x153/0x220
+? 0xffffffffa03e6087
+? ftrace_regs_caller_end+0x55/0x55
+__sprint_symbol+0xaf/0x1c0
+? prepare_ftrace_return+0x162/0x230
+? kallsyms_lookup_buildid+0x220/0x220
+? 0xffffffffa03e6087
+? 0xffffffffa03e6087
+? ftrace_regs_caller_end+0x55/0x55
+symbol_string+0x2e1/0x390
+? ip6_addr_string+0x2e0/0x2e0
+? ring_buffer_lock_reserve+0x392/0xd80
+? __rb_reserve_next+0x488/0x14c0
+? __rb_reserve_next+0x488/0x14c0
+? ring_buffer_lock_reserve+0x392/0xd80
+? __rb_reserve_next+0x488/0x14c0
+? __rb_reserve_next+0x488/0x14c0
+? __rb_reserve_next+0x488/0x14c0
+? move_right+0x60/0x60
+? 0xffffffffa03e6087
+pointer+0x444/0x9c0
+? resource_string+0x1590/0x1590
+? rb_commit+0xe7/0x850
+vsnprintf+0x44f/0x15e0
+? pointer+0x9c0/0x9c0
+? __trace_graph_entry+0x155/0x1a0
+vprintk_store+0x21f/0x820
+? ftrace_graph_stop+0x10/0x10
+? printk_sprint+0x230/0x230
+? vprintk+0x4/0x50
+? vprintk_store+0x4/0x820
+? prepare_ftrace_return+0x162/0x230
+? 0xffffffffa03e6087
+? 0xffffffffa03e6087
+? 0xffffffffa03e6087
+? ftrace_regs_caller_end+0x55/0x55
+vprintk+0x38/0x50
+? ftrace_regs_caller_end+0x55/0x55
+_printk+0xb6/0xe7
+? record_print_text.cold+0x11/0x11
+? 0xffffffffa03e6087
+? 0xffffffffa03e6087
+? ftrace_regs_caller_end+0x55/0x55
+show_trace_log_lvl+0x22f/0x2c9
+? 0xffffffffa03e6087
+? _raw_spin_lock_irqsave+0x3f/0x60
+? ftrace_regs_caller_end+0x55/0x55
+dump_stack_lvl+0x49/0x5d
+lock_acquire.cold+0x1f/0x40
+? rcu_read_unlock+0x40/0x40
+? 0xffffffffa03e6087
+? 0xffffffffa03e6087
+? function_graph_enter+0x490/0x490
+? ftrace_regs_caller_end+0x55/0x55
+_raw_spin_lock_irqsave+0x3f/0x60
+? ftrace_regs_caller_end+0x55/0x55
+? ftrace_regs_caller_end+0x55/0x55
+down_trylock+0x17/0x70
+? ftrace_regs_caller_end+0x55/0x55
+? ftrace_regs_caller_end+0x55/0x55
+__down_trylock_console_sem+0x24/0x90
+? ftrace_regs_caller_end+0x55/0x55
+console_trylock_spinning+0x13/0x220
+? ftrace_regs_caller_end+0x55/0x55
+vprintk_emit+0x193/0x280
+? ftrace_regs_caller_end+0x55/0x55
+_printk+0xb6/0xe7
+? record_print_text.cold+0x11/0x11
+? printk_sprint+0x177/0x230
+? ftrace_return_to_handler+0x260/0x390
+? ftrace_regs_caller_end+0x55/0x55
+lockdep_rcu_suspicious+0x66/0x165
+printk_sprint+0x1f7/0x230
+? printk_sprint+0x5/0x230
+? ftrace_regs_caller_end+0x55/0x55
+vprintk_store+0x2e3/0x820
+? printk_sprint+0x230/0x230
+? vprintk_emit+0x4/0x280
+? function_graph_enter+0x2f7/0x490
+? vprintk_store+0x4/0x820
+? prepare_ftrace_return+0x162/0x230
+? 0xffffffffa03e6087
+? ftrace_regs_caller_end+0x55/0x55
+vprintk_emit+0x157/0x280
+? ftrace_regs_caller_end+0x55/0x55
+_printk+0xb6/0xe7
+? record_print_text.cold+0x11/0x11
+? trace_hardirqs_off+0xd6/0x120
+? ftrace_return_to_handler+0x260/0x390
+? ftrace_regs_caller_end+0x55/0x55
+lockdep_rcu_suspicious+0x66/0x165
+? trace_graph_entry+0x500/0x7f0
+trace_hardirqs_off+0x115/0x120
+trace_graph_entry+0x500/0x7f0
+? cpuidle_poll_time+0x4/0x1a0
+function_graph_enter+0x2f7/0x490
+? ftrace_return_to_handler+0x260/0x390
+? ftrace_graph_stop+0x10/0x10
+? cpuidle_poll_time+0x4/0x1a0
+? trace_irq_enable+0x26/0x110
+? cpuidle_poll_time+0x4/0x1a0
+prepare_ftrace_return+0x162/0x230
+0xffffffffa03e6087
+? asm_sysvec_apic_timer_interrupt+0x1a/0x20
+? cpuidle_poll_time+0x9/0x1a0
+cpuidle_poll_time+0x9/0x1a0
+poll_idle+0x43/0x9e
+cpuidle_enter_state+0x1e3/0xd30
+? ftrace_regs_caller_end+0x55/0x55
+cpuidle_enter+0x4e/0xa0
+? ftrace_regs_caller_end+0x55/0x55
+cpuidle_idle_call+0x1ab/0x270
+? arch_cpu_idle_exit+0x40/0x40
+? trace_graph_return+0x1de/0x2f0
+? do_idle+0xa8/0x1a0
+? ftrace_regs_caller_end+0x55/0x55
+do_idle+0xf3/0x1a0
+? ftrace_regs_caller_end+0x55/0x55
+cpu_startup_entry+0x1d/0x20
+rest_init+0x15a/0x220
+arch_call_rest_init+0x13/0x1d
+start_kernel+0x386/0x3a4
+secondary_startup_64_no_verify+0xe0/0xeb
+</TASK>
+irq event stamp: 1692312
+hardirqs last  enabled at (1692311): [<ffffffff8380148a>] asm_sysvec_apic_timer_interrupt+0x1a/0x20
+hardirqs last disabled at (1692312): [<ffffffff81564600>] trace_graph_entry+0x500/0x7f0
+softirqs last  enabled at (1692250): [<ffffffff810f6810>] return_to_handler+0x0/0x40
+softirqs last disabled at (1692157): [<ffffffff810f6810>] return_to_handler+0x0/0x40
+---[ end trace 0000000000000000 ]---
+
+=============================
+WARNING: suspicious RCU usage
+6.2.0-rc1-00074-g9aedeaed6fc6 #1 Not tainted
+-----------------------------
+include/trace/events/error_report.h:69 suspicious rcu_dereference_check() usage!
+
+other info that might help us debug this:
+
+
+rcu_scheduler_active = 2, debug_locks = 1
+RCU used illegally from extended quiescent state!
+no locks held by swapper/0/0.
+
+stack backtrace:
+CPU: 0 PID: 0 Comm: swapper/0 Not tainted 6.2.0-rc1-00074-g9aedeaed6fc6 #1
+Hardware name: HP HP Z238 Microtower Workstation/8183, BIOS N51 Ver. 01.63 10/05/2017
+Call Trace:
+<TASK>
+? __module_address+0x182/0x200
+? ftrace_regs_caller_end+0x55/0x55
+dump_stack_lvl+0x49/0x5d
+__warn.cold+0x17e/0x180
+? __module_address+0x182/0x200
+? ftrace_regs_caller_end+0x55/0x55
+report_bug+0x15e/0x1c0
+handle_bug+0x3c/0x70
+exc_invalid_op+0x18/0x50
+asm_exc_invalid_op+0x1a/0x20
+RIP: 0010:__module_address+0x182/0x200
+Code: 01 00 00 48 01 da 48 39 d5 0f 82 69 ff ff ff 0f 0b be ff ff ff ff 48 c7 c7 48 56 9f 84 e8 e6 88 3b 02 85 c0 0f 85 d1 fe ff ff <0f> 0b e9 ca fe ff ff 48 83 c4 08 31 c0 5b 5d c3 48 c7 c7 cc 15 29
+RSP: 0018:ffffffff84406b40 EFLAGS: 00010046
+RAX: 0000000000000000 RBX: ffffffff84406d38 RCX: 0000000000000001
+RDX: 0000000000000000 RSI: 00000000ffffffff RDI: ffffffff849f5648
+RBP: ffffffffa03e6086 R08: 0000000000000000 R09: ffff88837f43f943
+R10: ffffed106fe87f28 R11: 0000000000000001 R12: ffffffff84406c30
+R13: ffffffff84406c10 R14: ffffffffa03e6086 R15: ffffffff84406c70
+? 0xffffffffa03e6086
+? 0xffffffffa03e6086
+? 0xffffffffa03e6086
+? ftrace_regs_caller_end+0x55/0x55
+module_address_lookup+0x36/0x110
+? 0xffffffffa03e6086
+? ftrace_regs_caller_end+0x55/0x55
+kallsyms_lookup_buildid+0x153/0x220
+? 0xffffffffa03e6087
+? ftrace_regs_caller_end+0x55/0x55
+__sprint_symbol+0xaf/0x1c0
+? prepare_ftrace_return+0x162/0x230
+? kallsyms_lookup_buildid+0x220/0x220
+? 0xffffffffa03e6087
+? 0xffffffffa03e6087
+? ftrace_regs_caller_end+0x55/0x55
+symbol_string+0x2e1/0x390
+? ip6_addr_string+0x2e0/0x2e0
+? ring_buffer_lock_reserve+0x392/0xd80
+? __rb_reserve_next+0x488/0x14c0
+? __rb_reserve_next+0x488/0x14c0
+? ring_buffer_lock_reserve+0x392/0xd80
+? __rb_reserve_next+0x488/0x14c0
+? __rb_reserve_next+0x488/0x14c0
+? __rb_reserve_next+0x488/0x14c0
+? move_right+0x60/0x60
+? 0xffffffffa03e6087
+pointer+0x444/0x9c0
+? resource_string+0x1590/0x1590
+? rb_commit+0xe7/0x850
+vsnprintf+0x44f/0x15e0
+? pointer+0x9c0/0x9c0
+? __trace_graph_entry+0x155/0x1a0
+vprintk_store+0x21f/0x820
+? ftrace_graph_stop+0x10/0x10
+? printk_sprint+0x230/0x230
+? vprintk+0x4/0x50
+? vprintk_store+0x4/0x820
+? prepare_ftrace_return+0x162/0x230
+? 0xffffffffa03e6087
+? 0xffffffffa03e6087
+? 0xffffffffa03e6087
+? ftrace_regs_caller_end+0x55/0x55
+vprintk+0x38/0x50
+? ftrace_regs_caller_end+0x55/0x55
+_printk+0xb6/0xe7
+? record_print_text.cold+0x11/0x11
+? 0xffffffffa03e6087
+? 0xffffffffa03e6087
+? ftrace_regs_caller_end+0x55/0x55
+show_trace_log_lvl+0x22f/0x2c9
+? 0xffffffffa03e6087
+? _raw_spin_lock_irqsave+0x3f/0x60
+? ftrace_regs_caller_end+0x55/0x55
+dump_stack_lvl+0x49/0x5d
+lock_acquire.cold+0x1f/0x40
+? rcu_read_unlock+0x40/0x40
+? 0xffffffffa03e6087
+? 0xffffffffa03e6087
+? function_graph_enter+0x490/0x490
+? ftrace_regs_caller_end+0x55/0x55
+_raw_spin_lock_irqsave+0x3f/0x60
+? ftrace_regs_caller_end+0x55/0x55
+? ftrace_regs_caller_end+0x55/0x55
+down_trylock+0x17/0x70
+? ftrace_regs_caller_end+0x55/0x55
+? ftrace_regs_caller_end+0x55/0x55
+__down_trylock_console_sem+0x24/0x90
+? ftrace_regs_caller_end+0x55/0x55
+console_trylock_spinning+0x13/0x220
+? ftrace_regs_caller_end+0x55/0x55
+vprintk_emit+0x193/0x280
+? ftrace_regs_caller_end+0x55/0x55
+_printk+0xb6/0xe7
+? record_print_text.cold+0x11/0x11
+? printk_sprint+0x177/0x230
+? ftrace_return_to_handler+0x260/0x390
+? ftrace_regs_caller_end+0x55/0x55
+lockdep_rcu_suspicious+0x66/0x165
+printk_sprint+0x1f7/0x230
+? printk_sprint+0x5/0x230
+? ftrace_regs_caller_end+0x55/0x55
+vprintk_store+0x2e3/0x820
+? printk_sprint+0x230/0x230
+? vprintk_emit+0x4/0x280
+? function_graph_enter+0x2f7/0x490
+? vprintk_store+0x4/0x820
+? prepare_ftrace_return+0x162/0x230
+? 0xffffffffa03e6087
+? ftrace_regs_caller_end+0x55/0x55
+vprintk_emit+0x157/0x280
+? ftrace_regs_caller_end+0x55/0x55
+_printk+0xb6/0xe7
+? record_print_text.cold+0x11/0x11
+? trace_hardirqs_off+0xd6/0x120
+? ftrace_return_to_handler+0x260/0x390
+? ftrace_regs_caller_end+0x55/0x55
+lockdep_rcu_suspicious+0x66/0x165
+? trace_graph_entry+0x500/0x7f0
+trace_hardirqs_off+0x115/0x120
+trace_graph_entry+0x500/0x7f0
+? cpuidle_poll_time+0x4/0x1a0
+function_graph_enter+0x2f7/0x490
+? ftrace_return_to_handler+0x260/0x390
+? ftrace_graph_stop+0x10/0x10
+? cpuidle_poll_time+0x4/0x1a0
+? trace_irq_enable+0x26/0x110
+? cpuidle_poll_time+0x4/0x1a0
+prepare_ftrace_return+0x162/0x230
+0xffffffffa03e6087
+? asm_sysvec_apic_timer_interrupt+0x1a/0x20
+? cpuidle_poll_time+0x9/0x1a0
+cpuidle_poll_time+0x9/0x1a0
+poll_idle+0x43/0x9e
+cpuidle_enter_state+0x1e3/0xd30
+? ftrace_regs_caller_end+0x55/0x55
+cpuidle_enter+0x4e/0xa0
+? ftrace_regs_caller_end+0x55/0x55
+cpuidle_idle_call+0x1ab/0x270
+? arch_cpu_idle_exit+0x40/0x40
+? trace_graph_return+0x1de/0x2f0
+? do_idle+0xa8/0x1a0
+? ftrace_regs_caller_end+0x55/0x55
+do_idle+0xf3/0x1a0
+? ftrace_regs_caller_end+0x55/0x55
+cpu_startup_entry+0x1d/0x20
+rest_init+0x15a/0x220
+arch_call_rest_init+0x13/0x1d
+start_kernel+0x386/0x3a4
+secondary_startup_64_no_verify+0xe0/0xeb
+</TASK>
+? 0xffffffffa03e6087
+? 0xffffffffa03e6087
+? function_graph_enter+0x490/0x490
+? ftrace_regs_caller_end+0x55/0x55
+_raw_spin_lock_irqsave+0x3f/0x60
+? ftrace_regs_caller_end+0x55/0x55
+? ftrace_regs_caller_end+0x55/0x55
+down_trylock+0x17/0x70
+? ftrace_regs_caller_end+0x55/0x55
+? ftrace_regs_caller_end+0x55/0x55
+__down_trylock_console_sem+0x24/0x90
+? ftrace_regs_caller_end+0x55/0x55
+console_trylock_spinning+0x13/0x220
+? ftrace_regs_caller_end+0x55/0x55
+vprintk_emit+0x193/0x280
+? ftrace_regs_caller_end+0x55/0x55
+_printk+0xb6/0xe7
+? record_print_text.cold+0x11/0x11
+? printk_sprint+0x177/0x230
+? ftrace_return_to_handler+0x260/0x390
+? ftrace_regs_caller_end+0x55/0x55
+lockdep_rcu_suspicious+0x66/0x165
+printk_sprint+0x1f7/0x230
+? printk_sprint+0x5/0x230
+? ftrace_regs_caller_end+0x55/0x55
+vprintk_store+0x2e3/0x820
+? printk_sprint+0x230/0x230
+? vprintk_emit+0x4/0x280
+? function_graph_enter+0x2f7/0x490
+? vprintk_store+0x4/0x820
+? prepare_ftrace_return+0x162/0x230
+? 0xffffffffa03e6087
+? ftrace_regs_caller_end+0x55/0x55
+vprintk_emit+0x157/0x280
+? ftrace_regs_caller_end+0x55/0x55
+_printk+0xb6/0xe7
+? record_print_text.cold+0x11/0x11
+? trace_hardirqs_off+0xd6/0x120
+? ftrace_return_to_handler+0x260/0x390
+? ftrace_regs_caller_end+0x55/0x55
+lockdep_rcu_suspicious+0x66/0x165
+? trace_graph_entry+0x500/0x7f0
+trace_hardirqs_off+0x115/0x120
+trace_graph_entry+0x500/0x7f0
+? cpuidle_poll_time+0x4/0x1a0
+function_graph_enter+0x2f7/0x490
+? ftrace_return_to_handler+0x260/0x390
+? ftrace_graph_stop+0x10/0x10
+? cpuidle_poll_time+0x4/0x1a0
+? trace_irq_enable+0x26/0x110
+? cpuidle_poll_time+0x4/0x1a0
+prepare_ftrace_return+0x162/0x230
+0xffffffffa03e6087
+? asm_sysvec_apic_timer_interrupt+0x1a/0x20
+? cpuidle_poll_time+0x9/0x1a0
+cpuidle_poll_time+0x9/0x1a0
+poll_idle+0x43/0x9e
+cpuidle_enter_state+0x1e3/0xd30
+? ftrace_regs_caller_end+0x55/0x55
+cpuidle_enter+0x4e/0xa0
+? ftrace_regs_caller_end+0x55/0x55
+cpuidle_idle_call+0x1ab/0x270
+? arch_cpu_idle_exit+0x40/0x40
+? trace_graph_return+0x1de/0x2f0
+? do_idle+0xa8/0x1a0
+? ftrace_regs_caller_end+0x55/0x55
+do_idle+0xf3/0x1a0
+? ftrace_regs_caller_end+0x55/0x55
+cpu_startup_entry+0x1d/0x20
+rest_init+0x15a/0x220
+arch_call_rest_init+0x13/0x1d
+start_kernel+0x386/0x3a4
+secondary_startup_64_no_verify+0xe0/0xeb
+</TASK>
+=============================
+WARNING: suspicious RCU usage
+6.2.0-rc1-00074-g9aedeaed6fc6 #1 Tainted: G        W         
+-----------------------------
+include/trace/events/printk.h:10 suspicious rcu_dereference_check() usage!
+
+other info that might help us debug this:
+
+
+rcu_scheduler_active = 2, debug_locks = 1
+RCU used illegally from extended quiescent state!
+no locks held by swapper/0/0.
+
+stack backtrace:
+CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W          6.2.0-rc1-00074-g9aedeaed6fc6 #1
+Hardware name: HP HP Z238 Microtower Workstation/8183, BIOS N51 Ver. 01.63 10/05/2017
+Call Trace:
+<TASK>
+? ftrace_regs_caller_end+0x55/0x55
+dump_stack_lvl+0x49/0x5d
+printk_sprint+0x1f7/0x230
+? printk_sprint+0x5/0x230
+? ftrace_regs_caller_end+0x55/0x55
+vprintk_store+0x2e3/0x820
+? printk_sprint+0x230/0x230
+? vprintk_emit+0x4/0x280
+? function_graph_enter+0x2f7/0x490
+? vprintk_store+0x4/0x820
+? prepare_ftrace_return+0x162/0x230
+? 0xffffffffa03e6087
+? ftrace_regs_caller_end+0x55/0x55
+vprintk_emit+0x157/0x280
+? ftrace_regs_caller_end+0x55/0x55
+_printk+0xb6/0xe7
+? record_print_text.cold+0x11/0x11
+? trace_hardirqs_off+0xd6/0x120
+? ftrace_return_to_handler+0x260/0x390
+? ftrace_regs_caller_end+0x55/0x55
+lockdep_rcu_suspicious+0x66/0x165
+? trace_graph_entry+0x500/0x7f0
+trace_hardirqs_off+0x115/0x120
+trace_graph_entry+0x500/0x7f0
+? cpuidle_poll_time+0x4/0x1a0
+function_graph_enter+0x2f7/0x490
+? ftrace_return_to_handler+0x260/0x390
+? ftrace_graph_stop+0x10/0x10
+? cpuidle_poll_time+0x4/0x1a0
+? trace_irq_enable+0x26/0x110
+? cpuidle_poll_time+0x4/0x1a0
+prepare_ftrace_return+0x162/0x230
+0xffffffffa03e6087
+? asm_sysvec_apic_timer_interrupt+0x1a/0x20
+? cpuidle_poll_time+0x9/0x1a0
+cpuidle_poll_time+0x9/0x1a0
+poll_idle+0x43/0x9e
+cpuidle_enter_state+0x1e3/0xd30
+? ftrace_regs_caller_end+0x55/0x55
+cpuidle_enter+0x4e/0xa0
+? ftrace_regs_caller_end+0x55/0x55
+cpuidle_idle_call+0x1ab/0x270
+? arch_cpu_idle_exit+0x40/0x40
+? trace_graph_return+0x1de/0x2f0
+? do_idle+0xa8/0x1a0
+? ftrace_regs_caller_end+0x55/0x55
+do_idle+0xf3/0x1a0
+? ftrace_regs_caller_end+0x55/0x55
+cpu_startup_entry+0x1d/0x20
+rest_init+0x15a/0x220
+arch_call_rest_init+0x13/0x1d
+start_kernel+0x386/0x3a4
+secondary_startup_64_no_verify+0xe0/0xeb
+</TASK>
+
+=============================
+WARNING: suspicious RCU usage
+6.2.0-rc1-00074-g9aedeaed6fc6 #1 Tainted: G        W         
+-----------------------------
+include/linux/rcupdate.h:765 rcu_read_lock() used illegally while idle!
+
+other info that might help us debug this:
+
+
+rcu_scheduler_active = 2, debug_locks = 1
+RCU used illegally from extended quiescent state!
+5 locks held by swapper/0/0:
+#0: ffffffff84913e20 (console_lock){+.+.}-{0:0}, at: return_to_handler+0x0/0x40
+#1: ffffffff84914218 (console_srcu){....}-{0:0}, at: console_flush_all+0x88/0x500
+#2: ffffffff845937c0 (console_owner){....}-{0:0}, at: console_emit_next_record+0x22a/0x780
+#3: ffffffff84e44c58 (printing_lock){....}-{2:2}, at: return_to_handler+0x0/0x40
+#4: ffffffff84925b40 (rcu_read_lock){....}-{1:2}, at: atomic_notifier_call_chain+0x9/0x1c0
+
+stack backtrace:
+CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W          6.2.0-rc1-00074-g9aedeaed6fc6 #1
+Hardware name: HP HP Z238 Microtower Workstation/8183, BIOS N51 Ver. 01.63 10/05/2017
+Call Trace:
+<TASK>
+? ftrace_regs_caller_end+0x55/0x55
+dump_stack_lvl+0x49/0x5d
+atomic_notifier_call_chain+0x150/0x1c0
+? ftrace_regs_caller_end+0x55/0x55
+vt_console_print+0x4ef/0xda0
+? function_graph_enter+0x490/0x490
+? unblank_screen+0x10/0x10
+? ftrace_regs_caller_end+0x55/0x55
+console_emit_next_record+0x2e5/0x780
+? devkmsg_read+0x680/0x680
+? devkmsg_read+0x680/0x680
+? prepare_ftrace_return+0x162/0x230
+? trace_graph_return+0x1de/0x2f0
+? ftrace_regs_caller_end+0x55/0x55
+console_flush_all+0x3a8/0x500
+? ftrace_regs_caller_end+0x55/0x55
+console_unlock+0x9a/0x150
+? console_flush_all+0x500/0x500
+? vprintk_emit+0x193/0x280
+? console_unlock+0x9/0x150
+? ftrace_regs_caller_end+0x55/0x55
+vprintk_emit+0x1b4/0x280
+? ftrace_regs_caller_end+0x55/0x55
+_printk+0xb6/0xe7
+? record_print_text.cold+0x11/0x11
+? trace_hardirqs_off+0xd6/0x120
+? ftrace_return_to_handler+0x260/0x390
+? ftrace_regs_caller_end+0x55/0x55
+lockdep_rcu_suspicious+0x66/0x165
+? trace_graph_entry+0x500/0x7f0
+trace_hardirqs_off+0x115/0x120
+trace_graph_entry+0x500/0x7f0
+? cpuidle_poll_time+0x4/0x1a0
+function_graph_enter+0x2f7/0x490
+? ftrace_return_to_handler+0x260/0x390
+? ftrace_graph_stop+0x10/0x10
+? cpuidle_poll_time+0x4/0x1a0
+? trace_irq_enable+0x26/0x110
+? cpuidle_poll_time+0x4/0x1a0
+prepare_ftrace_return+0x162/0x230
+0xffffffffa03e6087
+? asm_sysvec_apic_timer_interrupt+0x1a/0x20
+? cpuidle_poll_time+0x9/0x1a0
+cpuidle_poll_time+0x9/0x1a0
+poll_idle+0x43/0x9e
+cpuidle_enter_state+0x1e3/0xd30
+? ftrace_regs_caller_end+0x55/0x55
+cpuidle_enter+0x4e/0xa0
+? ftrace_regs_caller_end+0x55/0x55
+cpuidle_idle_call+0x1ab/0x270
+? arch_cpu_idle_exit+0x40/0x40
+? trace_graph_return+0x1de/0x2f0
+? do_idle+0xa8/0x1a0
+? ftrace_regs_caller_end+0x55/0x55
+do_idle+0xf3/0x1a0
+? ftrace_regs_caller_end+0x55/0x55
+cpu_startup_entry+0x1d/0x20
+rest_init+0x15a/0x220
+arch_call_rest_init+0x13/0x1d
+start_kernel+0x386/0x3a4
+secondary_startup_64_no_verify+0xe0/0xeb
+</TASK>
+
+=============================
+WARNING: suspicious RCU usage
+6.2.0-rc1-00074-g9aedeaed6fc6 #1 Tainted: G        W         
+-----------------------------
+include/linux/rcupdate.h:793 rcu_read_unlock() used illegally while idle!
+
+other info that might help us debug this:
+
+
+rcu_scheduler_active = 2, debug_locks = 1
+RCU used illegally from extended quiescent state!
+5 locks held by swapper/0/0:
+#0: ffffffff84913e20 (console_lock){+.+.}-{0:0}, at: return_to_handler+0x0/0x40
+#1: ffffffff84914218 (console_srcu){....}-{0:0}, at: console_flush_all+0x88/0x500
+#2: ffffffff845937c0 (console_owner){....}-{0:0}, at: console_emit_next_record+0x22a/0x780
+#3: ffffffff84e44c58 (printing_lock){....}-{2:2}, at: return_to_handler+0x0/0x40
+#4: ffffffff84925b40 (rcu_read_lock){....}-{1:2}, at: atomic_notifier_call_chain+0x9/0x1c0
+
+stack backtrace:
+CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W          6.2.0-rc1-00074-g9aedeaed6fc6 #1
+Hardware name: HP HP Z238 Microtower Workstation/8183, BIOS N51 Ver. 01.63 10/05/2017
+Call Trace:
+<TASK>
+? ftrace_regs_caller_end+0x55/0x55
+dump_stack_lvl+0x49/0x5d
+atomic_notifier_call_chain+0x186/0x1c0
+? ftrace_regs_caller_end+0x55/0x55
+vt_console_print+0x4ef/0xda0
+? function_graph_enter+0x490/0x490
+? unblank_screen+0x10/0x10
+? ftrace_regs_caller_end+0x55/0x55
+console_emit_next_record+0x2e5/0x780
+? devkmsg_read+0x680/0x680
+? devkmsg_read+0x680/0x680
+? prepare_ftrace_return+0x162/0x230
+? trace_graph_return+0x1de/0x2f0
+? ftrace_regs_caller_end+0x55/0x55
+console_flush_all+0x3a8/0x500
+? ftrace_regs_caller_end+0x55/0x55
+console_unlock+0x9a/0x150
+? console_flush_all+0x500/0x500
+? vprintk_emit+0x193/0x280
+? console_unlock+0x9/0x150
+? ftrace_regs_caller_end+0x55/0x55
+vprintk_emit+0x1b4/0x280
+? ftrace_regs_caller_end+0x55/0x55
+_printk+0xb6/0xe7
+? record_print_text.cold+0x11/0x11
+? trace_hardirqs_off+0xd6/0x120
+? ftrace_return_to_handler+0x260/0x390
+? ftrace_regs_caller_end+0x55/0x55
+lockdep_rcu_suspicious+0x66/0x165
+? trace_graph_entry+0x500/0x7f0
+trace_hardirqs_off+0x115/0x120
+trace_graph_entry+0x500/0x7f0
+? cpuidle_poll_time+0x4/0x1a0
+function_graph_enter+0x2f7/0x490
+? ftrace_return_to_handler+0x260/0x390
+? ftrace_graph_stop+0x10/0x10
+? cpuidle_poll_time+0x4/0x1a0
+? trace_irq_enable+0x26/0x110
+? cpuidle_poll_time+0x4/0x1a0
+prepare_ftrace_return+0x162/0x230
+0xffffffffa03e6087
+? asm_sysvec_apic_timer_interrupt+0x1a/0x20
+? cpuidle_poll_time+0x9/0x1a0
+cpuidle_poll_time+0x9/0x1a0
+poll_idle+0x43/0x9e
+cpuidle_enter_state+0x1e3/0xd30
+? ftrace_regs_caller_end+0x55/0x55
+cpuidle_enter+0x4e/0xa0
+? ftrace_regs_caller_end+0x55/0x55
+cpuidle_idle_call+0x1ab/0x270
+? arch_cpu_idle_exit+0x40/0x40
+? trace_graph_return+0x1de/0x2f0
+? do_idle+0xa8/0x1a0
+? ftrace_regs_caller_end+0x55/0x55
+do_idle+0xf3/0x1a0
+? ftrace_regs_caller_end+0x55/0x55
+cpu_startup_entry+0x1d/0x20
+rest_init+0x15a/0x220
+arch_call_rest_init+0x13/0x1d
+start_kernel+0x386/0x3a4
+secondary_startup_64_no_verify+0xe0/0xeb
+</TASK>
+=============================
+WARNING: suspicious RCU usage
+6.2.0-rc1-00074-g9aedeaed6fc6 #1 Tainted: G        W         
+-----------------------------
+include/trace/events/preemptirq.h:36 suspicious rcu_dereference_check() usage!
+
+other info that might help us debug this:
+
+
+rcu_scheduler_active = 2, debug_locks = 1
+RCU used illegally from extended quiescent state!
+no locks held by swapper/0/0.
+
+stack backtrace:
+CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W          6.2.0-rc1-00074-g9aedeaed6fc6 #1
+Hardware name: HP HP Z238 Microtower Workstation/8183, BIOS N51 Ver. 01.63 10/05/2017
+Call Trace:
+<TASK>
+? ftrace_regs_caller_end+0x55/0x55
+dump_stack_lvl+0x49/0x5d
+trace_hardirqs_off+0x115/0x120
+trace_graph_entry+0x500/0x7f0
+? cpuidle_poll_time+0x4/0x1a0
+function_graph_enter+0x2f7/0x490
+? ftrace_return_to_handler+0x260/0x390
+? ftrace_graph_stop+0x10/0x10
+? cpuidle_poll_time+0x4/0x1a0
+? trace_irq_enable+0x26/0x110
+? cpuidle_poll_time+0x4/0x1a0
+prepare_ftrace_return+0x162/0x230
+0xffffffffa03e6087
+? asm_sysvec_apic_timer_interrupt+0x1a/0x20
+? cpuidle_poll_time+0x9/0x1a0
+cpuidle_poll_time+0x9/0x1a0
+poll_idle+0x43/0x9e
+cpuidle_enter_state+0x1e3/0xd30
+? ftrace_regs_caller_end+0x55/0x55
+cpuidle_enter+0x4e/0xa0
+? ftrace_regs_caller_end+0x55/0x55
+cpuidle_idle_call+0x1ab/0x270
+? arch_cpu_idle_exit+0x40/0x40
+? trace_graph_return+0x1de/0x2f0
+? do_idle+0xa8/0x1a0
+? ftrace_regs_caller_end+0x55/0x55
+do_idle+0xf3/0x1a0
+? ftrace_regs_caller_end+0x55/0x55
+cpu_startup_entry+0x1d/0x20
+rest_init+0x15a/0x220
+arch_call_rest_init+0x13/0x1d
+start_kernel+0x386/0x3a4
+secondary_startup_64_no_verify+0xe0/0xeb
+</TASK>
+
+=============================
+WARNING: suspicious RCU usage
+6.2.0-rc1-00074-g9aedeaed6fc6 #1 Tainted: G        W         
+-----------------------------
+include/trace/events/preemptirq.h:40 suspicious rcu_dereference_check() usage!
+
+other info that might help us debug this:
+
+
+rcu_scheduler_active = 2, debug_locks = 1
+RCU used illegally from extended quiescent state!
+no locks held by swapper/0/0.
+
+stack backtrace:
+CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W          6.2.0-rc1-00074-g9aedeaed6fc6 #1
+Hardware name: HP HP Z238 Microtower Workstation/8183, BIOS N51 Ver. 01.63 10/05/2017
+Call Trace:
+<TASK>
+? ftrace_regs_caller_end+0x55/0x55
+dump_stack_lvl+0x49/0x5d
+trace_irq_enable+0xfc/0x110
+trace_hardirqs_on+0x26/0x50
+trace_graph_entry+0x38a/0x7f0
+? cpuidle_poll_time+0x4/0x1a0
+function_graph_enter+0x2f7/0x490
+? ftrace_return_to_handler+0x260/0x390
+? ftrace_graph_stop+0x10/0x10
+? cpuidle_poll_time+0x4/0x1a0
+? trace_irq_enable+0x26/0x110
+? cpuidle_poll_time+0x4/0x1a0
+prepare_ftrace_return+0x162/0x230
+0xffffffffa03e6087
+? asm_sysvec_apic_timer_interrupt+0x1a/0x20
+? cpuidle_poll_time+0x9/0x1a0
+cpuidle_poll_time+0x9/0x1a0
+poll_idle+0x43/0x9e
+cpuidle_enter_state+0x1e3/0xd30
+? ftrace_regs_caller_end+0x55/0x55
+cpuidle_enter+0x4e/0xa0
+? ftrace_regs_caller_end+0x55/0x55
+cpuidle_idle_call+0x1ab/0x270
+? arch_cpu_idle_exit+0x40/0x40
+? trace_graph_return+0x1de/0x2f0
+? do_idle+0xa8/0x1a0
+? ftrace_regs_caller_end+0x55/0x55
+do_idle+0xf3/0x1a0
+? ftrace_regs_caller_end+0x55/0x55
+cpu_startup_entry+0x1d/0x20
+rest_init+0x15a/0x220
+arch_call_rest_init+0x13/0x1d
+start_kernel+0x386/0x3a4
+secondary_startup_64_no_verify+0xe0/0xeb
+</TASK>
+watchdog: BUG: soft lockup - CPU#3 stuck for 26s! [ftracetest:1918]
+Modules linked in: openvswitch nf_conncount nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 btrfs intel_rapl_msr blake2b_generic xor intel_rapl_common raid6_pq zstd_compress libcrc32c x86_pkg_temp_thermal intel_powerclamp coretemp sd_mod t10_pi kvm_intel crc64_rocksoft_generic crc64_rocksoft crc64 kvm sg irqbypass crct10dif_pclmul crc32_pclmul crc32c_intel ghash_clmulni_intel sha512_ssse3 mei_wdt ipmi_devintf wmi_bmof i915 rapl ipmi_msghandler intel_cstate drm_buddy intel_gtt drm_display_helper i2c_i801 ttm ahci intel_uncore drm_kms_helper libahci mei_me serio_raw i2c_smbus syscopyarea sysfillrect libata ie31200_edac mei sysimgblt intel_pch_thermal video wmi intel_pmc_core acpi_pad tpm_infineon binfmt_misc drm fuse ip_tables [last unloaded: ftrace_direct]
+irq event stamp: 8257722
+hardirqs last  enabled at (8257721): [<ffffffff8156448a>] trace_graph_entry+0x38a/0x7f0
+hardirqs last disabled at (8257722): [<ffffffff8377d35f>] sysvec_apic_timer_interrupt+0xf/0x90
+softirqs last  enabled at (8250334): [<ffffffff810f6810>] return_to_handler+0x0/0x40
+softirqs last disabled at (8250205): [<ffffffff810f6810>] return_to_handler+0x0/0x40
+CPU: 3 PID: 1918 Comm: ftracetest Tainted: G        W          6.2.0-rc1-00074-g9aedeaed6fc6 #1
+Hardware name: HP HP Z238 Microtower Workstation/8183, BIOS N51 Ver. 01.63 10/05/2017
+RIP: 0010:trace_graph_entry+0x53/0x7f0
+Code: 00 00 48 89 fa 48 83 ec 08 4c 8b 2d 47 f1 3f 05 48 c1 ea 03 80 3c 02 00 0f 85 59 06 00 00 f6 83 41 2c 00 00 80 74 15 45 31 e4 <48> 83 c4 08 44 89 e0 5b 5d 41 5c 41 5d 41 5e 41 5f c3 48 8d 5d 07
+RSP: 0018:ffffc900028bf5c0 EFLAGS: 00000202
+RAX: 00000000007e00b9 RBX: ffff88837f5bf940 RCX: 1ffffffff0c9b386
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffffff8156448a
+RBP: ffffc900028bf628 R08: 0000000000000001 R09: ffffffff864d9287
+R10: fffffbfff0c9b250 R11: 0000000000000001 R12: 0000000000000001
+R13: ffffffff84a5cc80 R14: 0000000000000200 R15: 0000000000000003
+FS:  00007f0605246740(0000) GS:ffff88837f580000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000555ba219f608 CR3: 000000019d7be005 CR4: 00000000003706e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+<TASK>
+? _raw_spin_lock+0x4/0x40
+function_graph_enter+0x2f7/0x490
+? ftrace_graph_stop+0x10/0x10
+? _raw_spin_lock+0x4/0x40
+? mark_held_locks+0x9e/0xe0
+? _raw_spin_lock+0x4/0x40
+prepare_ftrace_return+0x162/0x230
+? trace_graph_return+0x1f6/0x2f0
+0xffffffffa03e6087
+? function_graph_enter+0x490/0x490
+? _raw_spin_lock+0x9/0x40
+? return_to_handler+0x15/0x40
+_raw_spin_lock+0x9/0x40
+__get_locked_pte+0x173/0x320
+? scrub_missing_raid56_pages+0x890/0x890 [btrfs]
+? ftrace_regs_caller_end+0x55/0x55
+__text_poke+0x1ed/0x9a0
+? setup_data_read+0x210/0x210
+? function_graph_enter+0x490/0x490
+? text_poke_memset+0x70/0x70
+? scrub_missing_raid56_pages+0x890/0x890 [btrfs]
+? scrub_missing_raid56_pages+0x890/0x890 [btrfs]
+? setup_data_read+0x210/0x210
+? ftrace_regs_caller_end+0x55/0x55
+text_poke_bp_batch+0x44e/0x6d0
+? scrub_missing_raid56_pages+0x890/0x890 [btrfs]
+? do_sync_core+0x30/0x30
+? 0xffffffffa03e6087
+? ftrace_regs_caller_end+0x55/0x55
+text_poke_flush+0x88/0xb0
+? btrfs_ref_to_path+0x4/0x360 [btrfs]
+? ftrace_regs_caller_end+0x55/0x55
+text_poke_queue+0x22/0x70
+? ftrace_regs_caller_end+0x55/0x55
+ftrace_replace_code+0x254/0x4b0
+ftrace_modify_all_code+0xbd/0x170
+? ftrace_graph_func+0x50/0x50
+ftrace_startup+0x17f/0x300
+? __trace_graph_entry+0x1a0/0x1a0
+register_ftrace_graph+0x147/0x190
+graph_trace_init+0x63/0x80
+tracing_set_tracer+0x592/0x840
+? lock_is_held_type+0x9c/0x110
+? trace_printk_init_buffers+0x30/0x30
+? __might_fault+0xc0/0x160
+? lock_release+0xe3/0x250
+tracing_set_trace_write+0x128/0x1e0
+? tracing_set_tracer+0x840/0x840
+? rcu_read_unlock+0x40/0x40
+? mark_lock+0xca/0xac0
+? check_prev_add+0x20d0/0x20d0
+? lock_is_held_type+0x9c/0x110
+vfs_write+0x211/0xc00
+? kernel_write+0x500/0x500
+? do_dup2+0x21a/0x500
+? find_held_lock+0x2c/0x110
+? __fget_light+0x51/0x220
+ksys_write+0xf7/0x1d0
+? __ia32_sys_read+0xb0/0xb0
+do_syscall_64+0x5a/0x80
+? lockdep_hardirqs_on_prepare+0x19a/0x350
+? do_syscall_64+0x67/0x80
+? do_syscall_64+0x67/0x80
+? do_syscall_64+0x67/0x80
+? lockdep_hardirqs_on_prepare+0x19a/0x350
+? do_syscall_64+0x67/0x80
+? lockdep_hardirqs_on_prepare+0x19a/0x350
+entry_SYSCALL_64_after_hwframe+0x5e/0xc8
+RIP: 0033:0x7f0605341190
+Code: 40 00 48 8b 15 71 9c 0d 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b7 0f 1f 00 80 3d 51 24 0e 00 00 74 17 b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 58 c3 0f 1f 80 00 00 00 00 48 83 ec 28 48 89
+RSP: 002b:00007ffcae73e178 EFLAGS: 00000202 ORIG_RAX: 0000000000000001
+RAX: ffffffffffffffda RBX: 000000000000000f RCX: 00007f0605341190
+RDX: 000000000000000f RSI: 0000555ba2128440 RDI: 0000000000000001
+RBP: 0000555ba2128440 R08: 0000000000000007 R09: 0000000000000073
+R10: 0000000000000000 R11: 0000000000000202 R12: 000000000000000f
+R13: 00007f060541c760 R14: 000000000000000f R15: 00007f06054179e0
+</TASK>
+Kernel panic - not syncing: softlockup: hung tasks
+CPU: 3 PID: 1918 Comm: ftracetest Tainted: G        W    L     6.2.0-rc1-00074-g9aedeaed6fc6 #1
+Hardware name: HP HP Z238 Microtower Workstation/8183, BIOS N51 Ver. 01.63 10/05/2017
+Call Trace:
+<IRQ>
+? ftrace_regs_caller_end+0x55/0x55
+dump_stack_lvl+0x49/0x5d
+panic+0x222/0x45c
+? panic_print_sys_info+0x73/0x73
+? function_graph_enter+0x490/0x490
+? trace_graph_return+0x1de/0x2f0
+? trace_graph_return+0x1de/0x2f0
+? ftrace_regs_caller_end+0x55/0x55
+watchdog_timer_fn.cold+0x11/0x1b
+? lockup_detector_update_enable+0x50/0x50
+? ftrace_regs_caller_end+0x55/0x55
+__hrtimer_run_queues+0x18f/0x8e0
+? trace_hrtimer_cancel+0x170/0x170
+? ftrace_regs_caller_end+0x55/0x55
+hrtimer_interrupt+0x2c3/0x740
+? ftrace_regs_caller_end+0x55/0x55
+__sysvec_apic_timer_interrupt+0xf5/0x3f0
+? ftrace_regs_caller_end+0x55/0x55
+sysvec_apic_timer_interrupt+0x6e/0x90
+</IRQ>
+<TASK>
+asm_sysvec_apic_timer_interrupt+0x1a/0x20
+RIP: 0010:trace_graph_entry+0x53/0x7f0
+Code: 00 00 48 89 fa 48 83 ec 08 4c 8b 2d 47 f1 3f 05 48 c1 ea 03 80 3c 02 00 0f 85 59 06 00 00 f6 83 41 2c 00 00 80 74 15 45 31 e4 <48> 83 c4 08 44 89 e0 5b 5d 41 5c 41 5d 41 5e 41 5f c3 48 8d 5d 07
+RSP: 0018:ffffc900028bf5c0 EFLAGS: 00000202
+RAX: 00000000007e00b9 RBX: ffff88837f5bf940 RCX: 1ffffffff0c9b386
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffffff8156448a
+RBP: ffffc900028bf628 R08: 0000000000000001 R09: ffffffff864d9287
+R10: fffffbfff0c9b250 R11: 0000000000000001 R12: 0000000000000001
+R13: ffffffff84a5cc80 R14: 0000000000000200 R15: 0000000000000003
+? trace_graph_entry+0x38a/0x7f0
+? _raw_spin_lock+0x4/0x40
+function_graph_enter+0x2f7/0x490
+? ftrace_graph_stop+0x10/0x10
+? _raw_spin_lock+0x4/0x40
+? mark_held_locks+0x9e/0xe0
+? _raw_spin_lock+0x4/0x40
+prepare_ftrace_return+0x162/0x230
+? trace_graph_return+0x1f6/0x2f0
+0xffffffffa03e6087
+? function_graph_enter+0x490/0x490
+? _raw_spin_lock+0x9/0x40
+? return_to_handler+0x15/0x40
+_raw_spin_lock+0x9/0x40
+__get_locked_pte+0x173/0x320
+? scrub_missing_raid56_pages+0x890/0x890 [btrfs]
+? ftrace_regs_caller_end+0x55/0x55
+__text_poke+0x1ed/0x9a0
+? setup_data_read+0x210/0x210
+? function_graph_enter+0x490/0x490
+? text_poke_memset+0x70/0x70
+? scrub_missing_raid56_pages+0x890/0x890 [btrfs]
+? scrub_missing_raid56_pages+0x890/0x890 [btrfs]
+? setup_data_read+0x210/0x210
+? ftrace_regs_caller_end+0x55/0x55
+text_poke_bp_batch+0x44e/0x6d0
+? scrub_missing_raid56_pages+0x890/0x890 [btrfs]
+? do_sync_core+0x30/0x30
+? 0xffffffffa03e6087
+? ftrace_regs_caller_end+0x55/0x55
+text_poke_flush+0x88/0xb0
+? btrfs_ref_to_path+0x4/0x360 [btrfs]
+? ftrace_regs_caller_end+0x55/0x55
+text_poke_queue+0x22/0x70
+? ftrace_regs_caller_end+0x55/0x55
+ftrace_replace_code+0x254/0x4b0
+ftrace_modify_all_code+0xbd/0x170
+? ftrace_graph_func+0x50/0x50
+ftrace_startup+0x17f/0x300
+? __trace_graph_entry+0x1a0/0x1a0
+register_ftrace_graph+0x147/0x190
+graph_trace_init+0x63/0x80
+tracing_set_tracer+0x592/0x840
+? lock_is_held_type+0x9c/0x110
+? trace_printk_init_buffers+0x30/0x30
+? __might_fault+0xc0/0x160
+? lock_release+0xe3/0x250
+tracing_set_trace_write+0x128/0x1e0
+? tracing_set_tracer+0x840/0x840
+? rcu_read_unlock+0x40/0x40
+? mark_lock+0xca/0xac0
+? check_prev_add+0x20d0/0x20d0
+? lock_is_held_type+0x9c/0x110
+vfs_write+0x211/0xc00
+? kernel_write+0x500/0x500
+? do_dup2+0x21a/0x500
+? find_held_lock+0x2c/0x110
+? __fget_light+0x51/0x220
+ksys_write+0xf7/0x1d0
+? __ia32_sys_read+0xb0/0xb0
+do_syscall_64+0x5a/0x80
+? lockdep_hardirqs_on_prepare+0x19a/0x350
+? do_syscall_64+0x67/0x80
+? do_syscall_64+0x67/0x80
+? do_syscall_64+0x67/0x80
+? lockdep_hardirqs_on_prepare+0x19a/0x350
+? do_syscall_64+0x67/0x80
+? lockdep_hardirqs_on_prepare+0x19a/0x350
+entry_SYSCALL_64_after_hwframe+0x5e/0xc8
+RIP: 0033:0x7f0605341190
+Code: 40 00 48 8b 15 71 9c 0d 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b7 0f 1f 00 80 3d 51 24 0e 00 00 74 17 b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 58 c3 0f 1f 80 00 00 00 00 48 83 ec 28 48 89
+RSP: 002b:00007ffcae73e178 EFLAGS: 00000202 ORIG_RAX: 0000000000000001
+RAX: ffffffffffffffda RBX: 000000000000000f RCX: 00007f0605341190
+RDX: 000000000000000f RSI: 0000555ba2128440 RDI: 0000000000000001
+RBP: 0000555ba2128440 R08: 0000000000000007 R09: 0000000000000073
+R10: 0000000000000000 R11: 0000000000000202 R12: 000000000000000f
+R13: 00007f060541c760 R14: 000000000000000f R15: 00007f06054179e0
+</TASK>
+Kernel Offset: disabled
+early console in extract_kernel
+input_data: 0x000000043dfed3a8
+input_len: 0x00000000016058bc
+output: 0x0000000439a00000
+output_len: 0x000000000513c9f8
+kernel_total_size: 0x0000000005c28000
+needed_size: 0x0000000005e00000
+trampoline_32bit: 0x000000000008f000
+
+
+--xzgWY3NTp4GxXFlv
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: attachment; filename="job.yaml"
 
 ---
 
-#! jobs/vm-scalability.yaml
-suite: vm-scalability
-testcase: vm-scalability
-category: benchmark
-perf-profile:
-runtime: 300s
-size: 128G
-vm-scalability:
-  test: truncate-seq
-job_origin: vm-scalability.yaml
+#! jobs/kernel-selftests.yaml
+suite: kernel-selftests
+testcase: kernel-selftests
+category: functional
+need_memory: 2G
+need_cpu: 2
+kernel-selftests:
+  group: ftrace
+kernel_cmdline: kvm-intel.unrestricted_guest=0
+job_origin: kernel-selftests.yaml
 
 #! queue options
 queue_cmdline_keys:
 - branch
 - commit
-- kbuild_queue_analysis
 queue: bisect
-testbox: lkp-csl-2sp3
-tbox_group: lkp-csl-2sp3
-submit_id: 63c86f0e319e8262d3d30b3f
-job_file: "/lkp/jobs/scheduled/lkp-csl-2sp3/vm-scalability-performance-300s-128G-truncate-seq-debian-11.1-x86_64-20220510.cgz-cb67f4282bf9693658dbda934a441ddbbb1446df-20230119-25299-1vvh8v0-1.yaml"
-id: 922eccfab97ccc6dd1ea9d1fb3bada60fefaa87c
+testbox: lkp-skl-d06
+tbox_group: lkp-skl-d06
+submit_id: 63c7d6c9471e0f9c9d818bd4
+job_file: "/lkp/jobs/scheduled/lkp-skl-d06/kernel-selftests-ftrace-debian-12-x86_64-20220629.cgz-9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91-20230118-40093-12wz893-0.yaml"
+id: d50e8ee9b5b8d5a75b5497a0442ef3d6ae10de4f
 queuer_version: "/zday/lkp"
 
-#! hosts/lkp-csl-2sp3
-model: Cascade Lake
-nr_node: 2
-nr_cpu: 96
-memory: 128G
-nr_hdd_partitions: 1
-nr_ssd_partitions: 2
-hdd_partitions: "/dev/disk/by-id/ata-WDC_WD2500BEKT-00PVMT0_WD-WX11A23L4840-part1"
-ssd_partitions: "/dev/nvme1n1p1 /dev/nvme0n1p1"
-rootfs_partition: "/dev/disk/by-id/ata-INTEL_SSDSC2CW240A3_CVCV204303WP240CGN-part1"
-kernel_cmdline_hw: acpi_rsdp=0x68b85014
-brand: Intel(R) Xeon(R) Platinum 8260L CPU @ 2.40GHz
-belongs_to: performance
+#! hosts/lkp-skl-d06
+model: Skylake
+nr_cpu: 4
+memory: 16G
+nr_ssd_partitions: 1
+nr_hdd_partitions: 4
+hdd_partitions: "/dev/disk/by-id/ata-WDC_WD10EARS-00Y5B1_WD-WCAV5F059074-part*"
+ssd_partitions: "/dev/disk/by-id/ata-INTEL_SSDSC2BB012T4_BTWD422402M81P2GGN-part2"
+rootfs_partition: "/dev/disk/by-id/ata-INTEL_SSDSC2BB012T4_BTWD422402M81P2GGN-part1"
+brand: Intel(R) Xeon(R) CPU E3-1225 v5 @ 3.30GHz
 
-#! include/category/benchmark
+#! include/category/functional
 kmsg:
-boot-time:
-uptime:
-iostat:
 heartbeat:
-vmstat:
-numa-numastat:
-numa-vmstat:
-numa-meminfo:
-proc-vmstat:
-proc-stat:
 meminfo:
-slabinfo:
-interrupts:
-lock_stat:
-perf-sched:
-  lite_mode: 1
-softirqs:
-bdi_dev_mapping:
-diskstats:
-nfsstat:
-cpuidle:
-cpufreq-stats:
-turbostat:
-sched_debug:
-perf-stat:
-mpstat:
-
-#! include/category/ALL
-cpufreq_governor: performance
-
-#! include/vm-scalability
-need_kconfig: BLK_DEV_LOOP
 
 #! include/queue/cyclic
-commit: cb67f4282bf9693658dbda934a441ddbbb1446df
+commit: 9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91
 
-#! include/testbox/lkp-csl-2sp3
+#! include/testbox/lkp-skl-d06
 need_kconfig_hw:
 - PTP_1588_CLOCK: y
-- IGB: y
+- E1000E: y
 - SATA_AHCI
-- BLK_DEV_NVME
-ucode: '0x4003302'
-kconfig: x86_64-rhel-8.3
-enqueue_time: 2023-01-19 06:13:34.703612475 +08:00
-_id: 63c8798d319e8262d3d30b40
-_rt: "/result/vm-scalability/performance-300s-128G-truncate-seq/lkp-csl-2sp3/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/cb67f4282bf9693658dbda934a441ddbbb1446df"
+- DRM_I915
+ucode: '0xf0'
+bisect_dmesg: true
+
+#! include/kernel-selftests
+need_kconfig:
+- FTRACE: y
+- KPROBES: y
+- FUNCTION_PROFILER: y
+- TRACER_SNAPSHOT: y
+- STACK_TRACER: y
+- HIST_TRIGGERS: y
+- SCHED_TRACER: y
+- IRQSOFF_TRACER: y
+- PREEMPTIRQ_DELAY_TEST: m
+- MODULES: y
+- MODULE_UNLOAD: y
+- SAMPLES: y
+- SAMPLE_FTRACE_DIRECT: m
+- SAMPLE_TRACE_PRINTK: m
+- KALLSYMS_ALL: y
+rootfs: debian-12-x86_64-20220629.cgz
+initrds:
+- linux_headers
+- linux_selftests
+kconfig: x86_64-rhel-8.3-kselftests
+enqueue_time: 2023-01-18 19:23:54.343053603 +08:00
+_id: 63c7d6c9471e0f9c9d818bd4
+_rt: "/result/kernel-selftests/ftrace/lkp-skl-d06/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kselftests/gcc-11/9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91"
 
 #! schedule options
 user: lkp
 compiler: gcc-11
 LKP_SERVER: internal-lkp-server
-head_commit: 9b134165fe9bd6132aaac8c467554381df2745d4
+head_commit: 160bb02a598f1f5b1bc814e1f008dbc1fe7a0130
 base_commit: 5dc4c995db9eb45f6373a956eb1f69460e69e6d4
-branch: linus/master
-rootfs: debian-11.1-x86_64-20220510.cgz
-result_root: "/result/vm-scalability/performance-300s-128G-truncate-seq/lkp-csl-2sp3/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/cb67f4282bf9693658dbda934a441ddbbb1446df/0"
+branch: linux-devel/devel-hourly-20230117-072835
+result_root: "/result/kernel-selftests/ftrace/lkp-skl-d06/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kselftests/gcc-11/9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91/0"
 scheduler_version: "/lkp/lkp/src"
 arch: x86_64
-max_uptime: 2100
-initrd: "/osimage/debian/debian-11.1-x86_64-20220510.cgz"
+max_uptime: 1200
+initrd: "/osimage/debian/debian-12-x86_64-20220629.cgz"
 bootloader_append:
 - root=/dev/ram0
-- RESULT_ROOT=/result/vm-scalability/performance-300s-128G-truncate-seq/lkp-csl-2sp3/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/cb67f4282bf9693658dbda934a441ddbbb1446df/0
-- BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3/gcc-11/cb67f4282bf9693658dbda934a441ddbbb1446df/vmlinuz-6.1.0-rc4-00186-gcb67f4282bf9
-- branch=linus/master
-- job=/lkp/jobs/scheduled/lkp-csl-2sp3/vm-scalability-performance-300s-128G-truncate-seq-debian-11.1-x86_64-20220510.cgz-cb67f4282bf9693658dbda934a441ddbbb1446df-20230119-25299-1vvh8v0-1.yaml
+- RESULT_ROOT=/result/kernel-selftests/ftrace/lkp-skl-d06/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kselftests/gcc-11/9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91/0
+- BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91/vmlinuz-6.2.0-rc1-00074-g9aedeaed6fc6
+- branch=linux-devel/devel-hourly-20230117-072835
+- job=/lkp/jobs/scheduled/lkp-skl-d06/kernel-selftests-ftrace-debian-12-x86_64-20220629.cgz-9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91-20230118-40093-12wz893-0.yaml
 - user=lkp
 - ARCH=x86_64
-- kconfig=x86_64-rhel-8.3
-- commit=cb67f4282bf9693658dbda934a441ddbbb1446df
+- kconfig=x86_64-rhel-8.3-kselftests
+- commit=9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91
+- kvm-intel.unrestricted_guest=0
 - initcall_debug
 - nmi_watchdog=0
-- acpi_rsdp=0x68b85014
-- max_uptime=2100
+- max_uptime=1200
 - LKP_SERVER=internal-lkp-server
 - nokaslr
 - selinux=0
@@ -7092,444 +13427,38 @@ bootloader_append:
 - rw
 
 #! runtime status
-modules_initrd: "/pkg/linux/x86_64-rhel-8.3/gcc-11/cb67f4282bf9693658dbda934a441ddbbb1446df/modules.cgz"
-bm_initrd: "/osimage/deps/debian-11.1-x86_64-20220510.cgz/lkp_20220513.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/run-ipconfig_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/rsync-rootfs_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/perf_20230116.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/perf-x86_64-5dc4c995db9e-1_20230116.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/vm-scalability_20220514.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/vm-scalability-x86_64-1.0-0_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/mpstat_20220516.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/turbostat_20220514.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/turbostat-x86_64-210e04ff7681-1_20220518.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/sar-x86_64-c5bb321-1_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/hw_20220526.cgz"
+modules_initrd: "/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91/modules.cgz"
+linux_headers_initrd: "/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91/linux-headers.cgz"
+linux_selftests_initrd: "/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91/linux-selftests.cgz"
+bm_initrd: "/osimage/deps/debian-12-x86_64-20220629.cgz/lkp_20221125.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/run-ipconfig_20221125.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/rsync-rootfs_20221125.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/kernel-selftests_20230110.cgz,/osimage/pkg/debian-12-x86_64-20220629.cgz/kernel-selftests-x86_64-d4cf28ee-1_20230110.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/hw_20221125.cgz"
 ucode_initrd: "/osimage/ucode/intel-ucode-20220804.cgz"
 lkp_initrd: "/osimage/user/lkp/lkp-x86_64.cgz"
 site: lkp-wsx01
 
-#! /db/releases/20230116185025/lkp-src/include/site/lkp-wsx01
+#! /db/releases/20230117110146/lkp-src/include/site/lkp-wsx01
 LKP_CGI_PORT: 80
 LKP_CIFS_PORT: 139
 oom-killer:
 watchdog:
-last_kernel: 6.1.0
-
-#! /db/releases/20230117110146/lkp-src/include/site/lkp-wsx01
-repeat_to: 3
+last_kernel: 6.2.0-rc4-00775-g9aac31600ae2
 schedule_notify_address:
 
 #! user overrides
-kbuild_queue_analysis: 1
-kernel: "/pkg/linux/x86_64-rhel-8.3/gcc-11/cb67f4282bf9693658dbda934a441ddbbb1446df/vmlinuz-6.1.0-rc4-00186-gcb67f4282bf9"
-dequeue_time: 2023-01-19 07:13:41.600748830 +08:00
+kernel: "/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91/vmlinuz-6.2.0-rc1-00074-g9aedeaed6fc6"
+dequeue_time: 2023-01-18 19:55:46.850097775 +08:00
 
-#! /db/releases/20230119000137/lkp-src/include/site/lkp-wsx01
-job_state: finished
-loadavg: 1.12 0.96 0.42 1/861 11330
-start_time: '1674083787'
-end_time: '1674083933'
-version: "/lkp/lkp/.src-20230118-153634:876254c6d:1068a6dc3"
+#! /db/releases/20230118165850/lkp-src/include/site/lkp-wsx01
+job_state: running
 
---hGGYP/AM6hHKorlI
+--xzgWY3NTp4GxXFlv
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: attachment; filename="reproduce"
 
+ln -sf /usr/bin/clang
+ln -sf /usr/sbin/iptables-nft /usr/bin/iptables
+ln -sf /usr/sbin/ip6tables-nft /usr/bin/ip6tables
+sed -i s/default_timeout=45/default_timeout=300/ kselftest/runner.sh
+make -C ftrace
+make quicktest=1 run_tests -C ftrace
 
-for cpu_dir in /sys/devices/system/cpu/cpu[0-9]*
-do
-	online_file="$cpu_dir"/online
-	[ -f "$online_file" ] && [ "$(cat "$online_file")" -eq 0 ] && continue
-
-	file="$cpu_dir"/cpufreq/scaling_governor
-	[ -f "$file" ] && echo "performance" > "$file"
-done
-
-cd /lkp/benchmarks/vm-scalability
- mount -t tmpfs -o size=100% vm-scalability-tmp /tmp/vm-scalability-tmp
- truncate -s 134850101248 /tmp/vm-scalability-tmp/vm-scalability.img
- mkfs.xfs -q /tmp/vm-scalability-tmp/vm-scalability.img
- mount -o loop /tmp/vm-scalability-tmp/vm-scalability.img /tmp/vm-scalability-tmp/vm-scalability
- ./case-truncate-seq
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-1 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-2 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-3 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-4 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-5 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-6 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-7 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-8 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-9 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-10 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-11 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-12 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-13 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-14 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-15 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-16 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-17 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-18 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-19 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-20 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-21 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-22 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-23 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-24 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-25 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-26 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-27 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-28 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-29 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-30 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-31 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-32 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-33 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-34 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-35 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-36 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-37 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-38 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-39 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-40 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-41 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-42 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-43 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-44 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-45 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-46 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-47 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-48 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-49 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-50 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-51 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-52 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-53 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-54 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-55 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-56 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-57 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-58 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-59 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-60 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-61 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-62 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-63 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-64 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-65 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-66 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-67 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-68 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-69 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-70 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-71 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-72 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-73 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-74 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-75 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-76 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-77 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-78 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-79 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-80 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-81 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-82 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-83 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-84 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-85 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-86 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-87 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-88 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-89 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-90 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-91 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-92 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-93 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-94 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-95 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-96 -s 1404688554
- ./case-truncate-seq
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-1 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-2 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-3 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-4 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-5 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-6 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-7 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-8 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-9 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-10 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-11 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-12 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-13 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-14 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-15 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-16 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-17 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-18 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-19 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-20 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-21 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-22 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-23 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-24 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-25 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-26 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-27 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-28 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-29 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-30 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-31 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-32 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-33 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-34 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-35 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-36 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-37 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-38 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-39 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-40 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-41 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-42 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-43 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-44 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-45 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-46 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-47 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-48 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-49 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-50 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-51 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-52 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-53 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-54 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-55 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-56 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-57 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-58 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-59 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-60 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-61 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-62 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-63 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-64 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-65 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-66 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-67 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-68 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-69 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-70 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-71 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-72 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-73 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-74 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-75 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-76 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-77 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-78 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-79 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-80 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-81 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-82 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-83 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-84 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-85 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-86 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-87 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-88 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-89 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-90 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-91 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-92 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-93 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-94 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-95 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-96 -s 1404688554
- ./case-truncate-seq
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-1 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-2 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-3 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-4 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-5 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-6 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-7 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-8 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-9 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-10 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-11 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-12 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-13 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-14 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-15 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-16 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-17 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-18 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-19 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-20 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-21 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-22 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-23 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-24 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-25 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-26 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-27 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-28 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-29 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-30 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-31 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-32 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-33 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-34 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-35 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-36 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-37 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-38 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-39 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-40 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-41 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-42 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-43 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-44 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-45 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-46 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-47 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-48 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-49 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-50 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-51 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-52 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-53 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-54 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-55 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-56 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-57 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-58 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-59 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-60 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-61 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-62 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-63 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-64 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-65 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-66 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-67 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-68 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-69 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-70 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-71 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-72 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-73 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-74 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-75 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-76 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-77 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-78 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-79 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-80 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-81 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-82 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-83 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-84 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-85 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-86 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-87 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-88 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-89 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-90 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-91 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-92 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-93 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-94 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-95 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-96 -s 1404688554
- ./case-truncate-seq
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-1 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-2 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-3 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-4 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-5 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-6 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-7 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-8 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-9 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-10 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-11 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-12 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-13 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-14 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-15 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-16 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-17 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-18 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-19 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-20 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-21 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-22 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-23 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-24 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-25 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-26 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-27 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-28 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-29 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-30 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-31 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-32 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-33 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-34 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-35 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-36 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-37 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-38 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-39 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-40 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-41 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-42 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-43 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-44 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-45 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-46 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-47 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-48 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-49 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-50 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-51 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-52 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-53 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-54 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-55 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-56 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-57 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-58 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-59 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-60 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-61 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-62 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-63 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-64 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-65 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-66 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-67 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-68 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-69 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-70 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-71 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-72 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-73 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-74 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-75 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-76 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-77 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-78 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-79 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-80 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-81 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-82 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-83 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-84 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-85 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-86 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-87 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-88 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-89 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-90 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-91 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-92 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-93 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-94 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-95 -s 1404688554
- truncate /tmp/vm-scalability-tmp/vm-scalability/sparse-truncate-seq-96 -s 1404688554
- umount /tmp/vm-scalability-tmp/vm-scalability
- rm /tmp/vm-scalability-tmp/vm-scalability.img
- umount /tmp/vm-scalability-tmp
-
---hGGYP/AM6hHKorlI--
+--xzgWY3NTp4GxXFlv--
