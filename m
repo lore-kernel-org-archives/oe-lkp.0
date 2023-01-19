@@ -1,18 +1,40 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 411807485
-	for <oe-lkp@lists.linux.dev>; Thu, 19 Jan 2023 15:10:50 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id EE56A68D08; Thu, 19 Jan 2023 16:10:44 +0100 (CET)
-Date: Thu, 19 Jan 2023 16:10:44 +0100
-From: Christoph Hellwig <hch@lst.de>
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: Christoph Hellwig <hch@lst.de>, oe-lkp@lists.linux.dev, lkp@intel.com
-Subject: Re: [hch-misc:btrfs-bio-split] [btrfs]  b7c9bcdc17:
- BUG:KASAN:use-after-free_in__blk_bios_map_sg
-Message-ID: <20230119151044.GA28290@lst.de>
-References: <202301171441.da2e9d11-oliver.sang@intel.com> <20230117082042.GA19116@lst.de> <Y8adDdqXX6ptkU7X@xsang-OptiPlex-9020>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AA827485
+	for <oe-lkp@lists.linux.dev>; Thu, 19 Jan 2023 15:46:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=jhvtngKBeAgm0UEGoU0G2NmyFhttBS3hhRWFEdNmOPE=; b=rbPSIr6h2eeFKrbPmtUCev05v1
+	njPF7zxdL7Y8WQWKrTNEIWwJV+7j5abZ1RhVfIFF4hhGFVSWunsAUGl1oX6JInadEbtHktJCMtzyE
+	KeaSQtL8Z1v0lMMe+dO+Cwbd6GTA3SLfhManQxk7INRkf5rtPkWvvP+c5zwtXlQjE8FYDfBR2jyAv
+	AyEMbhPCvDXJgGIvpoRaTxY59b1vt59hpFx0Ifwbf84js48TGws6hdvrsCzw2Cr5f3DC9Xh8t/HUL
+	4eXSjjfGfwEZEHNp8vBfU3aOOMIY/I9prXp0sgfF2Vs+eZvEdopl2CQ/KSNL6czH1IAMzgmEwlGg+
+	uYl83/qw==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
+	by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+	id 1pIX6s-0016EM-SW; Thu, 19 Jan 2023 15:45:51 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
+	(Client did not present a certificate)
+	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 85FC0300348;
+	Thu, 19 Jan 2023 16:45:49 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+	id D564D20DC0EA0; Thu, 19 Jan 2023 16:45:49 +0100 (CET)
+Date: Thu, 19 Jan 2023 16:45:49 +0100
+From: Peter Zijlstra <peterz@infradead.org>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+	x86@kernel.org, Ingo Molnar <mingo@kernel.org>,
+	linux-trace-kernel@vger.kernel.org,
+	Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [tip:sched/core] [tracing, hardirq]  9aedeaed6f:
+ WARNING:suspicious_RCU_usage
+Message-ID: <Y8llrdNT6RD/0dbq@hirez.programming.kicks-ass.net>
+References: <202301192148.58ece903-oliver.sang@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -21,49 +43,62 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y8adDdqXX6ptkU7X@xsang-OptiPlex-9020>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+In-Reply-To: <202301192148.58ece903-oliver.sang@intel.com>
 
-Hi Oliver,
+On Thu, Jan 19, 2023 at 10:06:21PM +0800, kernel test robot wrote:
+> 
+> Greeting,
+> 
+> FYI, we noticed WARNING:suspicious_RCU_usage due to commit (built with gcc-11):
+> 
+> commit: 9aedeaed6fc6fe8452b9b8225e95cc2b8631ff91 ("tracing, hardirq: No moar _rcuidle() tracing")
+> https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git sched/core
+> 
+> [test failed on linux-next/master f3381a7baf5ccbd091eb2c4fd2afd84266fcef24]
+> 
+> in testcase: kernel-selftests
+> version: kernel-selftests-x86_64-d4cf28ee-1_20230110
+> with following parameters:
+> 
+> 	group: ftrace
 
-I've still not been able to reproduce the issue locally, but identified
-a potential issue.  Any chance you could force a re-run of this test
-group in the current hch-misc:btrfs-bio-split branch?
+Moo, so I've had these patches in my git tree for months :/
 
-On Tue, Jan 17, 2023 at 09:05:17PM +0800, Oliver Sang wrote:
-> hi, Christoph Hellwig,
-> 
-> On Tue, Jan 17, 2023 at 09:20:42AM +0100, Christoph Hellwig wrote:
-> > On Tue, Jan 17, 2023 at 03:57:20PM +0800, kernel test robot wrote:
-> > > 
-> > > Greeting,
-> > > 
-> > > FYI, we noticed BUG:KASAN:use-after-free_in__blk_bios_map_sg due to commit (built with gcc-11):
-> > > 
-> > > commit: b7c9bcdc17f3d9a546470cca6dbf717254ca5291 ("btrfs: remove stripe boundary calculation for buffered I/O")
-> > 
-> > This seems like a really odd commit to hit such a bug.  How reliably
-> > was the bisection?
-> > 
-> 
-> the issue doesn't always happen, but with a relatively high rate.
-> and the parent doesn't show this issue.
-> 
-> b45951da8e8f13e6 b7c9bcdc17f3d9a546470cca6db
-> ---------------- ---------------------------
->        fail:runs  %reproduction    fail:runs
->            |             |             |
->            :20          80%          16:20    dmesg.BUG:KASAN:use-after-free_in__blk_bios_map_sg
-> 
-> BTW,
-> we noticed the commit date is just recent, not sure if a porting commit?
-> so just sent out the report FYI
-> 
-> commit b7c9bcdc17f3d9a546470cca6dbf717254ca5291
-> Author:     Qu Wenruo <wqu@suse.com>
-> AuthorDate: Tue Nov 30 17:21:58 2021 +0800
-> Commit:     Christoph Hellwig <hch@lst.de>
-> CommitDate: Thu Jan 12 15:01:55 2023 +0100
-> 
->     btrfs: remove stripe boundary calculation for buffered I/O
----end quoted text---
+The thing that seems to shut it up is the below, but I'm not entirely
+sure how we get there, all the code should be cpuidle/noinstr, which
+implies notrace.
+
+Steve, what's the easiest way to figure out what triggers this? Put a
+printk() in prepare_ftrace_return() or so?
+
+---
+
+diff --git a/include/linux/cpuidle.h b/include/linux/cpuidle.h
+index 3183aeb7f5b4..fecdf0bb3bc4 100644
+--- a/include/linux/cpuidle.h
++++ b/include/linux/cpuidle.h
+@@ -15,6 +15,7 @@
+ #include <linux/list.h>
+ #include <linux/hrtimer.h>
+ #include <linux/context_tracking.h>
++#include <linux/ftrace.h>
+ 
+ #define CPUIDLE_STATE_MAX	10
+ #define CPUIDLE_NAME_LEN	16
+@@ -119,6 +120,7 @@ DECLARE_PER_CPU(struct cpuidle_device, cpuidle_dev);
+ static __always_inline void ct_cpuidle_enter(void)
+ {
+ 	lockdep_assert_irqs_disabled();
++	pause_graph_tracing();
+ 	/*
+ 	 * Idle is allowed to (temporary) enable IRQs. It
+ 	 * will return with IRQs disabled.
+@@ -143,6 +145,7 @@ static __always_inline void ct_cpuidle_exit(void)
+ 	lockdep_hardirqs_off(_RET_IP_);
+ 	ct_idle_exit();
+ 	instrumentation_begin();
++	unpause_graph_tracing();
+ }
+ 
+ /****************************
+
