@@ -1,91 +1,155 @@
-Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com [209.85.219.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27692A922
-	for <oe-lkp@lists.linux.dev>; Tue, 31 Jan 2023 18:27:04 +0000 (UTC)
-Received: by mail-yb1-f174.google.com with SMTP id h5so19254969ybj.8
-        for <oe-lkp@lists.linux.dev>; Tue, 31 Jan 2023 10:27:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=HkHNPqnVxAIY/tqIt7qZnRTR4WfHWVZtazfgEEVLA1k=;
-        b=tQEMNZ1+yeDZEj71B07fcjB50jM1i6aOuywWS/FEjrOnp3EcR69hAad3lu7vZn711m
-         rWFCK+MRQGo98+OX7Z5YJLQhXxWxcbseEzjAKbTV3mnOpdwwmNbpFwvbdi+eNLV/KuMk
-         sNXJc8FHml2fwt05JkbGF5OXq5QschNyjjqDrAvpuG6zFZbmRhPSLQnUptA+sed4s+4u
-         /ShnkTt4PmvgX5jmo1mCcs2pWa08grni3e3ApLv3uhCKCxfacTcGLbncAhJRnWaiVYSm
-         tdI+8rQTbvf6cG+WE0yUEx2Rdr8MDao7T3rRNVqVLCHHtQydcDhp9f9RmGWkoukyc4Oq
-         rcuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=HkHNPqnVxAIY/tqIt7qZnRTR4WfHWVZtazfgEEVLA1k=;
-        b=hFC7i+pQAsDmezxHiM+sfceeI6wWTXdssrl3V7IWkrxlUwu12oF3m5AH3SUIW5rKYL
-         RBKE7dTYAqZEU1I/Aku29wrA772oweKTg64UvZHlxP+U4MjhVRDVig2rpGvAdpW0r3RB
-         uRzDKKN62D3rktBHbgc1BsSoRDFU1pYwPandP0Kngt4m00wAgw1R8hsGRTvFn7jDdv2B
-         kFbfuKelK5eKIg9pURbZh+TSfo57Iy4mIkS00jn++/CQbN7jH0b8VhBWER6Gl8sv5kNi
-         GTFDXJfGrQDqRYdaoycdHaMygzXIuo2vq2AiSDiqdYCHaBvRSJeaYYJ4QpzcBt2Ouclm
-         RK6w==
-X-Gm-Message-State: AO0yUKV0P6wrbB2kJx7X6XZwRO28jTHIS5MWmz3Z+xjmvVrW8u+R2BKt
-	thJoSppdahRyQQ0hDO8DdAqCVmmedQ6OLOCzJqCAgg==
-X-Google-Smtp-Source: AK7set9Wi/SxOYBU/ud8H+po+UJzdx1g7/5fVkPjA4w3dbgGjnozI/UIgrAp4ux9zJMjoCX+yuiExNDq7TyEEr9b0cI=
-X-Received: by 2002:a25:bfc4:0:b0:80b:877c:7a56 with SMTP id
- q4-20020a25bfc4000000b0080b877c7a56mr2044611ybm.368.1675189622981; Tue, 31
- Jan 2023 10:27:02 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14407A93D
+	for <oe-lkp@lists.linux.dev>; Tue, 31 Jan 2023 20:26:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCA80C433D2;
+	Tue, 31 Jan 2023 20:26:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1675196795;
+	bh=gq2zoV3fgp96Ze7JcC1BY/MySF5tsWqOBisbKmRgfYI=;
+	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+	b=ccZC3G6ntKeYo84IV6BMZL2L9iGDG+TyMIuIQ3HPttMWnSXSvip7Dlm0dgHSkR2Km
+	 Rc8yFFmi2Oas8Ql5d75DKnxSFhyuGaT3u344pexGbv94pg1zh5pIpCgdQnmTPPujRP
+	 mTedh3xYPk/OncYTa5PvyZXiae6KchaFvPyMUnE8Pp++ciLfZc1HYT1rl1v6UQyxfV
+	 y2Rlw77fSNPo4pbAq/eeeQ+6L11X2TTfYJh0EZn63fDji0+pzNrSR0bFECmQvfwcty
+	 1Z1n1fB2f4qG0cC8XA1NyQkAt2tAOX4J+SMvE9NS6uIknVhX+59e9HXlH2Usm7FhA9
+	 RZxz60x/7NLAg==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+	id 511B75C0510; Tue, 31 Jan 2023 12:26:35 -0800 (PST)
+Date: Tue, 31 Jan 2023 12:26:35 -0800
+From: "Paul E. McKenney" <paulmck@kernel.org>
+To: kernel test robot <yujie.liu@intel.com>
+Cc: Liam Howlett <liam.howlett@oracle.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, linux-kernel@vger.kernel.org,
+	Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+	linux-fsdevel@vger.kernel.org
+Subject: Re: [linus:master] [maple_tree] 120b116208:
+ INFO:task_blocked_for_more_than#seconds
+Message-ID: <20230131202635.GA3019407@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <202301310940.4a37c7af-yujie.liu@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202301301057.e55dad5b-oliver.sang@intel.com> <Y9dETROtv9Bld9TI@casper.infradead.org>
- <20230131052352.5qnqegzwmt7akk7t@google.com> <Y9iq8fRT4sDgIwQN@casper.infradead.org>
- <20230131055743.tsilxx5vfl6gx4dj@google.com>
-In-Reply-To: <20230131055743.tsilxx5vfl6gx4dj@google.com>
-From: Shakeel Butt <shakeelb@google.com>
-Date: Tue, 31 Jan 2023 10:26:52 -0800
-Message-ID: <CALvZod7TuaJ7pCc2nJKehwGkcuvsvjdL+4hs6qC3bZsOmGzXzg@mail.gmail.com>
-Subject: Re: [linus:master] [mm] f1a7941243: unixbench.score -19.2% regression
-To: Matthew Wilcox <willy@infradead.org>, Tejun Heo <tj@kernel.org>, Dennis Zhou <dennis@kernel.org>
-Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
-	linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, linux-mm@kvack.org, 
-	linux-trace-kernel@vger.kernel.org, ying.huang@intel.com, feng.tang@intel.com, 
-	zhengjun.xing@linux.intel.com, fengwei.yin@intel.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202301310940.4a37c7af-yujie.liu@intel.com>
 
-+per-cpu memory maintainers for FYI.
+On Tue, Jan 31, 2023 at 03:18:22PM +0800, kernel test robot wrote:
+> Hi Liam,
+> 
+> We caught a "task blocked" dmesg in maple tree test. Not sure if this
+> is expected for maple tree test, so we are sending this report for
+> your information. Thanks.
+> 
+> Greeting,
+> 
+> FYI, we noticed INFO:task_blocked_for_more_than#seconds due to commit (built with clang-14):
+> 
+> commit: 120b116208a0877227fc82e3f0df81e7a3ed4ab1 ("maple_tree: reorganize testing to restore module testing")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> 
+> in testcase: boot
+> 
+> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+> 
+> caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
+> 
+> 
+> [   17.318428][    T1] calling  maple_tree_seed+0x0/0x15d0 @ 1
+> [   17.319219][    T1] 
+> [   17.319219][    T1] TEST STARTING
+> [   17.319219][    T1] 
+> [  999.249871][   T23] INFO: task rcu_scale_shutd:59 blocked for more than 491 seconds.
+> [  999.253363][   T23]       Not tainted 6.1.0-rc4-00003-g120b116208a0 #1
+> [  999.254249][   T23] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+> [  999.255390][   T23] task:rcu_scale_shutd state:D stack:30968 pid:59    ppid:2      flags:0x00004000
+> [  999.256934][   T23] Call Trace:
+> [  999.257418][   T23]  <TASK>
+> [  999.257900][   T23]  __schedule+0x169b/0x1f90
+> [  999.261677][   T23]  schedule+0x151/0x300
+> [  999.262281][   T23]  ? compute_real+0xe0/0xe0
+> [  999.263364][   T23]  rcu_scale_shutdown+0xdd/0x130
+> [  999.264093][   T23]  ? wake_bit_function+0x2c0/0x2c0
+> [  999.268985][   T23]  kthread+0x309/0x3a0
+> [  999.269958][   T23]  ? compute_real+0xe0/0xe0
+> [  999.270552][   T23]  ? kthread_unuse_mm+0x200/0x200
+> [  999.271281][   T23]  ret_from_fork+0x1f/0x30
+> [  999.272385][   T23]  </TASK>
+> [  999.272865][   T23] 
+> [  999.272865][   T23] Showing all locks held in the system:
+> [  999.273988][   T23] 2 locks held by swapper/0/1:
+> [  999.274684][   T23] 1 lock held by khungtaskd/23:
+> [  999.275400][   T23]  #0: ffffffff88346e00 (rcu_read_lock){....}-{1:2}, at: rcu_lock_acquire+0x8/0x30
+> [  999.277171][   T23] 
+> [  999.277525][   T23] =============================================
+> [  999.277525][   T23] 
+> [ 1049.050884][    T1] maple_tree: 12610686 of 12610686 tests passed
+> 
+> 
+> If you fix the issue, kindly add following tag
+> | Reported-by: kernel test robot <yujie.liu@intel.com>
+> | Link: https://lore.kernel.org/oe-lkp/202301310940.4a37c7af-yujie.liu@intel.com
 
-Thread started at
-https://lore.kernel.org/linux-mm/202301301057.e55dad5b-oliver.sang@intel.com/
+Liam brought this to my attention on IRC, and it looks like the root
+cause is that the rcuscale code does not deal gracefully with grace
+periods that are in much excess of a second in duration.
 
-On Mon, Jan 30, 2023 at 9:57 PM Shakeel Butt <shakeelb@google.com> wrote:
->
-[...]
-> >
-> > We could cut down the number of calls to pcpu_alloc() by a factor of 4
-> > by having a pcpu_alloc_bulk() that would allocate all four RSS counters
-> > at once.
-> >
-> > Just throwing out ideas ...
->
-> Thanks, I will take a stab at pcpu_alloc_bulk() and will share the
-> result tomorrow.
->
+Now, it might well be worth looking into why the grace periods were taking
+that long, but if you were running Maple Tree stress tests concurrently
+with rcuscale, this might well be expected behavior.
 
-OK, not a one day effort.
+So, does the patch below clear this up for you?
 
-Andrew, which option do you prefer?
+							Thanx, Paul
 
-1. Keep the patches as the test workload (fork ping pong) is not a
-representative of real world workload and work on improving
-pcpu_alloc() for 6.4+.
+------------------------------------------------------------------------
 
-2. Revert the patches for now, improve pcpu_alloc() and re-introduce
-the patches once we confirm that fork-ping-pong is not regressed
-anymore.
+commit 8e44d51e3411994091f7c7c136286d82c5757a4a
+Author: Paul E. McKenney <paulmck@kernel.org>
+Date:   Tue Jan 31 12:08:54 2023 -0800
 
-thanks,
-Shakeel
+    rcuscale: Move shutdown from wait_event() to wait_event_idle()
+    
+    The rcu_scale_shutdown() and kfree_scale_shutdown() kthreads/functions
+    use wait_event() to wait for the rcuscale test to complete.  However,
+    each updater thread in such a test waits for at least 100 grace periods.
+    If each grace period takes more than 1.2 seconds, which is long, but
+    not insanely so, this can trigger the hung-task timeout.
+    
+    This commit therefore replaces those wait_event() calls with calls to
+    wait_event_idle(), which do not trigger the hung-task timeout.
+    
+    Reported-by: kernel test robot <yujie.liu@intel.com>
+    Reported-by: Liam Howlett <liam.howlett@oracle.com>
+    Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+
+diff --git a/kernel/rcu/rcuscale.c b/kernel/rcu/rcuscale.c
+index 91fb5905a008f..4120f94030c3c 100644
+--- a/kernel/rcu/rcuscale.c
++++ b/kernel/rcu/rcuscale.c
+@@ -631,8 +631,7 @@ static int compute_real(int n)
+ static int
+ rcu_scale_shutdown(void *arg)
+ {
+-	wait_event(shutdown_wq,
+-		   atomic_read(&n_rcu_scale_writer_finished) >= nrealwriters);
++	wait_event_idle(shutdown_wq, atomic_read(&n_rcu_scale_writer_finished) >= nrealwriters);
+ 	smp_mb(); /* Wake before output. */
+ 	rcu_scale_cleanup();
+ 	kernel_power_off();
+@@ -771,8 +770,8 @@ kfree_scale_cleanup(void)
+ static int
+ kfree_scale_shutdown(void *arg)
+ {
+-	wait_event(shutdown_wq,
+-		   atomic_read(&n_kfree_scale_thread_ended) >= kfree_nrealthreads);
++	wait_event_idle(shutdown_wq,
++			atomic_read(&n_kfree_scale_thread_ended) >= kfree_nrealthreads);
+ 
+ 	smp_mb(); /* Wake before output. */
+ 
