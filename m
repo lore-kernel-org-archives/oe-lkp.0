@@ -1,79 +1,104 @@
-Received: from mail-il1-f176.google.com (mail-il1-f176.google.com [209.85.166.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F84F3D75
-	for <oe-lkp@lists.linux.dev>; Mon,  6 Feb 2023 15:25:28 +0000 (UTC)
-Received: by mail-il1-f176.google.com with SMTP id o13so976911ilt.4
-        for <oe-lkp@lists.linux.dev>; Mon, 06 Feb 2023 07:25:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=2AHshO7tL5g++yp1aZ2oXZ/XmXe6IfT5xoJU8UHEGqA=;
-        b=T+WgJ8grO9mCDK5EghbmMyWnXbWIOoMZkf0RXGqbl/CRYUcND/G0eVg3nLDwx2vMg7
-         cvA8jc0E7LWURFOcom7zk3i8oSwvTbaqYI7dyRo9JprGMz7XjK9xFKuDZiQ96N4UNt8w
-         +Z6RPjeLWuw9pWwGP7gOxFB0z90YN0UkGw0PdkgrxuMJLsMP2sG0OBs6fMRZf0i5e+Gs
-         EG+bm5WWCS7Q3O19U2LFQ8KKkNvp/OUmy/aWmyZbad66vwiLNJ5iktpxgDE1lKep766c
-         VrlCgB3tDBzz1TxY7GKQso73QC8+zIo9Q6aP13A3bBof+AXkWkX8Qy4MtdT5yQmdJlZr
-         9uJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=2AHshO7tL5g++yp1aZ2oXZ/XmXe6IfT5xoJU8UHEGqA=;
-        b=f1XWsdLxIkDqIHeRrHlKiZl0cE2zzH/VmqzH+pc1I4kYZdcAcll4pP1xl23QohiAe3
-         y9CHTKCDDNSL4CYaXdeZI4QXVytRDc/wM2yqcOezhYHbaJAEh3+y4jxn+m+qYtJBIwAw
-         iPvV5JEoZshC5ZzRyZhK4XV1rrHyv1rwmdRVUT477kfuYO4WbdyxjQLu/naLYUd2CwUZ
-         8v32Pj65msIqMMT6yeRL7YJ9Abijy9SHdZ7pQ8/WM3e8TTNxiPVZC8ovzu3qLFnFQvzZ
-         AILlTUyw63zeA/jyrjNE+BnRnHMCc2zHty5fhwOmpQhwDy+DEc9WEbrqlbQvZTrkxVRL
-         eryQ==
-X-Gm-Message-State: AO0yUKVR+0ACqhORCFHLpVbkiWdmy8mEMvYTQUX9d4ogGxH6/dp55Teq
-	mPhDNdI3JrWbA2/VCleA+RvfUQ==
-X-Google-Smtp-Source: AK7set8El1ISHVD0wWuRfONY/Pgg8qw9HyPfzK0rjMWhlgiI226sJ/YrDjftbT86pKmBTm0BsqUHug==
-X-Received: by 2002:a92:330c:0:b0:313:d6b8:dc30 with SMTP id a12-20020a92330c000000b00313d6b8dc30mr641110ilf.0.1675697127825;
-        Mon, 06 Feb 2023 07:25:27 -0800 (PST)
-Received: from [192.168.1.94] ([96.43.243.2])
-        by smtp.gmail.com with ESMTPSA id x2-20020a056e021ca200b003129e9480ebsm3331936ill.47.2023.02.06.07.25.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Feb 2023 07:25:27 -0800 (PST)
-Message-ID: <bb47bbcd-7708-cefa-86aa-8ecd0b466ac3@kernel.dk>
-Date: Mon, 6 Feb 2023 08:25:25 -0700
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0F567B
+	for <oe-lkp@lists.linux.dev>; Mon,  6 Feb 2023 18:10:10 +0000 (UTC)
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1675707002;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=pnsD8O7AGv/ghgX6NFYa+KhfEm1cKVXyeecAuGcrGc8=;
+	b=LCDwQx6rF0S2wMbs06qsNSIV4PMAkOB0SpBJVrqteSNNl07N6FwgDkuRqLWd7BSNEJeFtz
+	jCF4wUQHomXrDBAYxj3i3GkJTPOe6nJ+l4vjkq4O0ukdsXZNyAEeWwJ9I1j7apBrwBE2xa
+	ByS0kIH6UgWjoBkTSQVVF6CrlNjHYEgYdfL2dmsgFDMJKT77W9SN5E6qDVtM3lM9Ps67UO
+	F1oc/bij8jbkXvFzYJpWMdMLUROkOg444nXbwSQl1iuONGjSKUuSCturmYAXwgKyAs8fGL
+	ay8xfQ0jccYiqLArCDrpE/wWtiJPAehxzUN76X6ngkm6cx0vx9Zqtb8Ly5gQtQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1675707002;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=pnsD8O7AGv/ghgX6NFYa+KhfEm1cKVXyeecAuGcrGc8=;
+	b=v854839Ja9qHeAUoo9A55MaeyPfSfr0iCQhaDj0DVimhoIEUpf0w9aY3/4tsed5i7CZoVQ
+	XedNHdH6dBvFe2Aw==
+To: Vlastimil Babka <vbabka@suse.cz>, kernel test robot
+ <oliver.sang@intel.com>, Shanker Donthineni <sdonthineni@nvidia.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+ Marc Zyngier <maz@kernel.org>, Michael Walle <michael@walle.cc>, Sebastian
+ Andrzej Siewior <bigeasy@linutronix.de>, Hans de Goede
+ <hdegoede@redhat.com>, Wolfram Sang <wsa+renesas@sang-engineering.com>,
+ linux-mm@kvack.org, "Liam R. Howlett" <Liam.Howlett@oracle.com>, Matthew
+ Wilcox <willy@infradead.org>
+Subject: Re: [PATCH 5/5] genirq: Use the maple tree for IRQ descriptors
+ management
+In-Reply-To: <9a682773-df56-f36c-f582-e8eeef55d7f8@suse.cz>
+References: <202302011308.f53123d2-oliver.sang@intel.com>
+ <87o7qdzfay.ffs@tglx> <9a682773-df56-f36c-f582-e8eeef55d7f8@suse.cz>
+Date: Mon, 06 Feb 2023 19:10:02 +0100
+Message-ID: <87lelay8at.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [linux-next:master] [io_uring] b5d3ae202f:
- WARNING:at_kernel/sched/core.c:#__might_sleep
-Content-Language: en-US
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
- Linux Memory Management List <linux-mm@kvack.org>, io-uring@vger.kernel.org
-References: <202302062208.24d3e563-oliver.sang@intel.com>
-From: Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <202302062208.24d3e563-oliver.sang@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
-On 2/6/23 7:38 AM, kernel test robot wrote:
-> 
-> Greeting,
-> 
-> FYI, we noticed WARNING:at_kernel/sched/core.c:#__might_sleep due to commit (built with gcc-11):
-> 
-> commit: b5d3ae202fbfe055aa2a8ae8524531ee1dcab717 ("io_uring: handle TIF_NOTIFY_RESUME when checking for task_work")
-> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
-> 
-> [test failed on linux-next/master 4fafd96910add124586b549ad005dcd179de8a18]
+On Mon, Feb 06 2023 at 15:24, Vlastimil Babka wrote:
+> On 2/1/23 14:27, Thomas Gleixner wrote:
+>> This triggers because __kmem_cache_alloc_bulk() uses
+>> lock_irq()/unlock_irq(). Seems nobody used it during early boot stage
+>> yet. Though the maple tree conversion of the interrupt descriptor
+>> storage which is the purpose of the patch in question makes that happen.
+>> 
+>> Fix below.
+>
+> Looks like it should work. But I think we also need to adjust SLAB's
+> mm/slab.c kmem_cache_alloc_bulk() which does local_irq_disable(); /
+> local_irq_enable(); right?
 
-Sent out and queued up a fix for this, thanks for the report.
+Yup.
 
--- 
-Jens Axboe
+> Also if we enter this with IRQ's disabled, then we should take care about
+> the proper gfp flags. Looking at the patch [1] I see
+>
+> WARN_ON(mas_store_gfp(&mas, desc, GFP_KERNEL) != 0);
+>
+> so GFP_KERNEL would be wrong with irqs disabled, looks like a case for
+> GFP_ATOMIC.
+> OTOH I can see the thing it replaces was:
+>
+> static RADIX_TREE(irq_desc_tree, GFP_KERNEL);
+>
+> so that's also a GFP_KERNEL and we haven't seen debug splats from
+> might_alloc() checks before in this code?. That's weird, or maybe the
+> case
 
+might_alloc()
+  might_sleep_if()
+    __might_sleep()
+      WARN_ON(task->state != RUNNING);  <- Does not trigger
+      __might_resched()
+        if (.... || system_state == SYSTEM_BOOTING || ...)
+           return;
+
+As system_state is SYSTEM_BOOTING at this point the splats are not
+happening.
+
+> of "we didn't enable irqs yet on this cpu being bootstrapped" is handled
+> differently than "we have temporarily disabled irqs"? Sure, during early
+> boot we should have all the memory and no need to reclaim...
+
+The point is that interrupts are fully disabled during early boot and
+there is no scheduler so there is no scheduling possible.
+
+Quite some code in the kernel relies on GFP_KERNEL being functional
+during that early boot stage. If the kernel runs out of memory that
+early, then the chance of recovery is exactly 0.
+
+Thanks,
+
+        tglx
 
