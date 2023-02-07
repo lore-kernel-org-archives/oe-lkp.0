@@ -1,44 +1,44 @@
 Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 686AB3D63
-	for <oe-lkp@lists.linux.dev>; Tue,  7 Feb 2023 14:45:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FF68BD33
+	for <oe-lkp@lists.linux.dev>; Tue,  7 Feb 2023 14:47:10 +0000 (UTC)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
 	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 3D9EA3F8A8;
-	Tue,  7 Feb 2023 14:45:44 +0000 (UTC)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 94C213FA0D;
+	Tue,  7 Feb 2023 14:47:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1675781144; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	t=1675781228; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=Ak0zPlnrhcJqHoBUK8MEzahKJtWUsuuiq7etwv8Xy7U=;
-	b=Wg9V7+NKAEdQU7v0+NeTI3v1Cu+GWJ4fXyMdAQACEaLsor4mMhNoP4Gr5HoNBchMywqvXD
-	O9KarzgHadHPPOQdq/Lcs4X0wChm6aVLZHKOjmc9t9nDM321c4i2N9iGpv1RuJ8gpCQ/uC
-	gT6YHCLXKt2zjsc3oLWF/bucsNcVyAo=
+	bh=F1euP+5g3F8dmaNFSkEY7841ge/tRXwdJuU/Jmr7LVE=;
+	b=eiINbXN15J5Isq2zx4nrwklAKQFKf8+anD5bWhkebxn6IaVsdPsXMEw9hRNPTUnBkkLxuV
+	hohaG1Gh26MLhiarvm6wD6e8RGbWGrJvOaQjL2etshHYx7MljcDqkBxYZutPtHoTk410C3
+	/Srv/Twmx6vuB0jEOUkeBeS+bRAlyMc=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1675781144;
+	s=susede2_ed25519; t=1675781228;
 	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=Ak0zPlnrhcJqHoBUK8MEzahKJtWUsuuiq7etwv8Xy7U=;
-	b=PQGfsGAEYgd7yfR/RmFJiaFsyWnHU06b3o+mvLCldCoGGhGo8AxIPQp4amwb2Cl14RcURJ
-	TU8FQQ+GNQ9B13AA==
+	bh=F1euP+5g3F8dmaNFSkEY7841ge/tRXwdJuU/Jmr7LVE=;
+	b=blR7tP0V4qEsqmauw75NEbGVD4W9KrmhFvSLeq/F3KeMKGpAPdxyOtOED4UdFmB7qATL5Y
+	96a1LXdhg8jr1CDw==
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
 	(No client certificate requested)
-	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id E4CA913467;
-	Tue,  7 Feb 2023 14:45:43 +0000 (UTC)
+	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4BE2B13467;
+	Tue,  7 Feb 2023 14:47:08 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
 	by imap2.suse-dmz.suse.de with ESMTPSA
-	id /somNxdk4mMDFwAAMHmgww
-	(envelope-from <vbabka@suse.cz>); Tue, 07 Feb 2023 14:45:43 +0000
-Message-ID: <6c0b681e-97bc-d975-a8b9-500abdaaf0bc@suse.cz>
-Date: Tue, 7 Feb 2023 15:45:43 +0100
+	id WiHBEWxk4mPaFwAAMHmgww
+	(envelope-from <vbabka@suse.cz>); Tue, 07 Feb 2023 14:47:08 +0000
+Message-ID: <8b7762c3-02be-a5c9-1c4d-507cfb51a15c@suse.cz>
+Date: Tue, 7 Feb 2023 15:47:07 +0100
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -49,6 +49,7 @@ User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.7.1
 Subject: Re: mm, slab/slub: Ensure kmem_cache_alloc_bulk() is available early
 Content-Language: en-US
+From: Vlastimil Babka <vbabka@suse.cz>
 To: Thomas Gleixner <tglx@linutronix.de>,
  kernel test robot <oliver.sang@intel.com>,
  Shanker Donthineni <sdonthineni@nvidia.com>
@@ -65,165 +66,105 @@ Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
 References: <202302011308.f53123d2-oliver.sang@intel.com>
  <87o7qdzfay.ffs@tglx> <9a682773-df56-f36c-f582-e8eeef55d7f8@suse.cz>
  <875ycdwyx6.ffs@tglx> <871qn1wofe.ffs@tglx>
-From: Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <871qn1wofe.ffs@tglx>
+ <6c0b681e-97bc-d975-a8b9-500abdaaf0bc@suse.cz>
+In-Reply-To: <6c0b681e-97bc-d975-a8b9-500abdaaf0bc@suse.cz>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 2/7/23 15:16, Thomas Gleixner wrote:
-> The memory allocators are available during early boot even in the phase
-> where interrupts are disabled and scheduling is not yet possible.
+On 2/7/23 15:45, Vlastimil Babka wrote:
+> On 2/7/23 15:16, Thomas Gleixner wrote:
+>> The memory allocators are available during early boot even in the phase
+>> where interrupts are disabled and scheduling is not yet possible.
+>> 
+>> The setup is so that GFP_KERNEL allocations work in this phase without
+>> causing might_alloc() splats to be emitted because the system state is
+>> SYSTEM_BOOTING at that point which prevents the warnings to trigger.
+>> 
+>> Most allocation/free functions use local_irq_save()/restore() or a lock
+>> variant of that. But kmem_cache_alloc_bulk() and kmem_cache_free_bulk() use
+>> local_[lock]_irq_disable()/enable(), which leads to a lockdep warning when
+>> interrupts are enabled during the early boot phase.
+>> 
+>> This went unnoticed so far as there are no early users of these
+>> interfaces. The upcoming conversion of the interrupt descriptor store from
+>> radix_tree to maple_tree triggered this warning as maple_tree uses the bulk
+>> interface.
+>> 
+>> Cure this by moving the kmem_cache_alloc/free() bulk variants of SLUB and
+>> SLAB to local[_lock]_irq_save()/restore().
+>> 
+>> There is obviously no reclaim possible and required at this point so there
+>> is no need to expand this coverage further.
+>> 
+>> No functional change.
+>> 
+>> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 > 
-> The setup is so that GFP_KERNEL allocations work in this phase without
-> causing might_alloc() splats to be emitted because the system state is
-> SYSTEM_BOOTING at that point which prevents the warnings to trigger.
+> +Cc rest of slab folks
 > 
-> Most allocation/free functions use local_irq_save()/restore() or a lock
-> variant of that. But kmem_cache_alloc_bulk() and kmem_cache_free_bulk() use
-> local_[lock]_irq_disable()/enable(), which leads to a lockdep warning when
-> interrupts are enabled during the early boot phase.
-> 
-> This went unnoticed so far as there are no early users of these
-> interfaces. The upcoming conversion of the interrupt descriptor store from
-> radix_tree to maple_tree triggered this warning as maple_tree uses the bulk
-> interface.
-> 
-> Cure this by moving the kmem_cache_alloc/free() bulk variants of SLUB and
-> SLAB to local[_lock]_irq_save()/restore().
-> 
-> There is obviously no reclaim possible and required at this point so there
-> is no need to expand this coverage further.
-> 
-> No functional change.
-> 
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> Thanks, added to slab/for-6.3/fixes
 
-+Cc rest of slab folks
+After your patch, I think it also makes sense to do the following:
+----8<----
+From 340d7c7b99f3e67780f6dec480ed1d27e6f325eb Mon Sep 17 00:00:00 2001
+From: Vlastimil Babka <vbabka@suse.cz>
+Date: Tue, 7 Feb 2023 15:34:53 +0100
+Subject: [PATCH] mm, slab/slub: remove notes that bulk alloc/free needs
+ interrupts enabled
 
-Thanks, added to slab/for-6.3/fixes
+The slab functions kmem_cache_[alloc|free]_bulk() have been documented
+as requiring interrupts to be enabled, since their addition in 2015.
+It's unclear whether that was a fundamental restriction, or an attempt
+to save some cpu cycles by not having to save and restore the irq flags.
 
-> ---
-> Initial version: https://lore.kernel.org/r/87o7qdzfay.ffs@tglx
-> Changes: Update SLAB as well and add changelog
-> ---
->  mm/slab.c |   18 ++++++++++--------
->  mm/slub.c |    9 +++++----
->  2 files changed, 15 insertions(+), 12 deletions(-)
-> 
-> --- a/mm/slab.c
-> +++ b/mm/slab.c
-> @@ -3479,14 +3479,15 @@ cache_alloc_debugcheck_after_bulk(struct
->  int kmem_cache_alloc_bulk(struct kmem_cache *s, gfp_t flags, size_t size,
->  			  void **p)
->  {
-> -	size_t i;
->  	struct obj_cgroup *objcg = NULL;
-> +	unsigned long irqflags;
-> +	size_t i;
->  
->  	s = slab_pre_alloc_hook(s, NULL, &objcg, size, flags);
->  	if (!s)
->  		return 0;
->  
-> -	local_irq_disable();
-> +	local_irq_save(irqflags);
->  	for (i = 0; i < size; i++) {
->  		void *objp = kfence_alloc(s, s->object_size, flags) ?:
->  			     __do_cache_alloc(s, flags, NUMA_NO_NODE);
-> @@ -3495,7 +3496,7 @@ int kmem_cache_alloc_bulk(struct kmem_ca
->  			goto error;
->  		p[i] = objp;
->  	}
-> -	local_irq_enable();
-> +	local_irq_restore(irqflags);
->  
->  	cache_alloc_debugcheck_after_bulk(s, flags, size, p, _RET_IP_);
->  
-> @@ -3508,7 +3509,7 @@ int kmem_cache_alloc_bulk(struct kmem_ca
->  	/* FIXME: Trace call missing. Christoph would like a bulk variant */
->  	return size;
->  error:
-> -	local_irq_enable();
-> +	local_irq_restore(irqflags);
->  	cache_alloc_debugcheck_after_bulk(s, flags, i, p, _RET_IP_);
->  	slab_post_alloc_hook(s, objcg, flags, i, p, false, s->object_size);
->  	kmem_cache_free_bulk(s, i, p);
-> @@ -3610,8 +3611,9 @@ EXPORT_SYMBOL(kmem_cache_free);
->  
->  void kmem_cache_free_bulk(struct kmem_cache *orig_s, size_t size, void **p)
->  {
-> +	unsigned long flags;
->  
-> -	local_irq_disable();
-> +	local_irq_save(flags);
->  	for (int i = 0; i < size; i++) {
->  		void *objp = p[i];
->  		struct kmem_cache *s;
-> @@ -3621,9 +3623,9 @@ void kmem_cache_free_bulk(struct kmem_ca
->  
->  			/* called via kfree_bulk */
->  			if (!folio_test_slab(folio)) {
-> -				local_irq_enable();
-> +				local_irq_restore(flags);
->  				free_large_kmalloc(folio, objp);
-> -				local_irq_disable();
-> +				local_irq_save(flags);
->  				continue;
->  			}
->  			s = folio_slab(folio)->slab_cache;
-> @@ -3640,7 +3642,7 @@ void kmem_cache_free_bulk(struct kmem_ca
->  
->  		__cache_free(s, objp, _RET_IP_);
->  	}
-> -	local_irq_enable();
-> +	local_irq_restore(flags);
->  
->  	/* FIXME: add tracing */
->  }
-> --- a/mm/slub.c
-> +++ b/mm/slub.c
-> @@ -3913,6 +3913,7 @@ static inline int __kmem_cache_alloc_bul
->  			size_t size, void **p, struct obj_cgroup *objcg)
->  {
->  	struct kmem_cache_cpu *c;
-> +	unsigned long irqflags;
->  	int i;
->  
->  	/*
-> @@ -3921,7 +3922,7 @@ static inline int __kmem_cache_alloc_bul
->  	 * handlers invoking normal fastpath.
->  	 */
->  	c = slub_get_cpu_ptr(s->cpu_slab);
-> -	local_lock_irq(&s->cpu_slab->lock);
-> +	local_lock_irqsave(&s->cpu_slab->lock, irqflags);
->  
->  	for (i = 0; i < size; i++) {
->  		void *object = kfence_alloc(s, s->object_size, flags);
-> @@ -3942,7 +3943,7 @@ static inline int __kmem_cache_alloc_bul
->  			 */
->  			c->tid = next_tid(c->tid);
->  
-> -			local_unlock_irq(&s->cpu_slab->lock);
-> +			local_unlock_irqrestore(&s->cpu_slab->lock, irqflags);
->  
->  			/*
->  			 * Invoking slow path likely have side-effect
-> @@ -3956,7 +3957,7 @@ static inline int __kmem_cache_alloc_bul
->  			c = this_cpu_ptr(s->cpu_slab);
->  			maybe_wipe_obj_freeptr(s, p[i]);
->  
-> -			local_lock_irq(&s->cpu_slab->lock);
-> +			local_lock_irqsave(&s->cpu_slab->lock, irqflags);
->  
->  			continue; /* goto for-loop */
->  		}
-> @@ -3965,7 +3966,7 @@ static inline int __kmem_cache_alloc_bul
->  		maybe_wipe_obj_freeptr(s, p[i]);
->  	}
->  	c->tid = next_tid(c->tid);
-> -	local_unlock_irq(&s->cpu_slab->lock);
-> +	local_unlock_irqrestore(&s->cpu_slab->lock, irqflags);
->  	slub_put_cpu_ptr(s->cpu_slab);
->  
->  	return i;
+However, it appears that most of the code involved was/became safe to be
+called with interrupts disabled, and the remaining bits were fixed by
+commit f244b0182b8e ("mm, slab/slub: Ensure kmem_cache_alloc_bulk() is
+available early"). While the commit was aimed at early boot scenario, we
+can now also remove the documented restrictions for any interrupt
+disabled scenarios.
+
+Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
+---
+ include/linux/slab.h | 2 --
+ mm/slub.c            | 2 --
+ 2 files changed, 4 deletions(-)
+
+diff --git a/include/linux/slab.h b/include/linux/slab.h
+index 45af70315a94..ea439b4e2b34 100644
+--- a/include/linux/slab.h
++++ b/include/linux/slab.h
+@@ -481,8 +481,6 @@ void kmem_cache_free(struct kmem_cache *s, void *objp);
+  * Bulk allocation and freeing operations. These are accelerated in an
+  * allocator specific way to avoid taking locks repeatedly or building
+  * metadata structures unnecessarily.
+- *
+- * Note that interrupts must be enabled when calling these functions.
+  */
+ void kmem_cache_free_bulk(struct kmem_cache *s, size_t size, void **p);
+ int kmem_cache_alloc_bulk(struct kmem_cache *s, gfp_t flags, size_t size, void **p);
+diff --git a/mm/slub.c b/mm/slub.c
+index c16d78698e3f..23b3fb86045d 100644
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -3889,7 +3889,6 @@ int build_detached_freelist(struct kmem_cache *s, size_t size,
+ 	return same;
+ }
+ 
+-/* Note that interrupts must be enabled when calling this function. */
+ void kmem_cache_free_bulk(struct kmem_cache *s, size_t size, void **p)
+ {
+ 	if (!size)
+@@ -4009,7 +4008,6 @@ static int __kmem_cache_alloc_bulk(struct kmem_cache *s, gfp_t flags,
+ }
+ #endif /* CONFIG_SLUB_TINY */
+ 
+-/* Note that interrupts must be enabled when calling this function. */
+ int kmem_cache_alloc_bulk(struct kmem_cache *s, gfp_t flags, size_t size,
+ 			  void **p)
+ {
+-- 
+2.39.1
+
+
 
