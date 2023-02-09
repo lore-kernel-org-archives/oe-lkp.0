@@ -1,107 +1,89 @@
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E257A92C
-	for <oe-lkp@lists.linux.dev>; Thu,  9 Feb 2023 20:28:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=he0ClzuWWKJzCwIDzxuxkjez/oJOJsB8LaLOV9MDX8g=; b=pXAQMb3eM2KB72Ll+o1pJFiOT+
-	5l7DJ5zlqfvYdBpLXaEn4tSw+Oc36zvu/FTCiclOPl/74yiXGVPgXk5Ynwibn1vOveLazir4+YdPW
-	9uoR18LdCFL2QmRwWEb582w+IcyTUsqISt7hk2pB3/ug25HYAYbvcjoQuySUicX9kM8fFxSAsG5Nv
-	Bu5X4oACwSiiRkjiw7bWUv4Aydu1vfJkTho3THjR4HeyfgpqK9NIGoGPfOWuZ1BLZLyFVzjAFQgfV
-	60ObkCVPRr7PQA4rq4R6O5SK0iQDsCzZTkzIybt2c94dEjJTAuDLVz5QqKVq/J+XpH92rcZN9cvYu
-	Jxbg4pFQ==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-	id 1pQDWs-002UZk-L0; Thu, 09 Feb 2023 20:28:26 +0000
-Date: Thu, 9 Feb 2023 20:28:26 +0000
-From: Matthew Wilcox <willy@infradead.org>
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: Vlastimil Babka <vbabka@suse.cz>,
-	kernel test robot <oliver.sang@intel.com>,
-	Shanker Donthineni <sdonthineni@nvidia.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, linux-kernel@vger.kernel.org,
-	Marc Zyngier <maz@kernel.org>, Michael Walle <michael@walle.cc>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Hans de Goede <hdegoede@redhat.com>,
-	Wolfram Sang <wsa+renesas@sang-engineering.com>, linux-mm@kvack.org,
-	"Liam R. Howlett" <Liam.Howlett@oracle.com>,
-	David Rientjes <rientjes@google.com>,
-	Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>,
-	Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-	Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-	Roman Gushchin <roman.gushchin@linux.dev>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99E4B28E1
+	for <oe-lkp@lists.linux.dev>; Thu,  9 Feb 2023 23:19:48 +0000 (UTC)
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1675984778;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=KNBAizjZNrVbj6pu64DG8DfhaakV1VisWaDQqQ90zu4=;
+	b=lmDhAP1PQMG2F0l6M/QJaBtsmc9DkUkHKzdMPAZ5U/UHcjh8SOqbIBGFq9gBkxmGtxZcPv
+	rVd/IabCM5zxTh5bsnS8+W1Q1c5S9OmKcHv0ioCw4AXrtBfGPDhYXjqoydMJZQVisjLuxK
+	VGb1rXri4AhIfKr4qd8ToCPOwcX3ehu8r8v+/VyXHtOZbzKSVgmhyw3Z9qnEWyaB07f6uZ
+	2hDhcCoGpibZdMS0xqDzlxCjqN32sJ6omeybEyENes49sCcDZK8BSgWNwnMGPyFyjyAgl0
+	9wHTKSr94+ytBY6/cEjfZMM7ZAMx0InU5JSWvQ1Ddyv1dCRParVEyhJv90t1Ig==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1675984778;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=KNBAizjZNrVbj6pu64DG8DfhaakV1VisWaDQqQ90zu4=;
+	b=S+GJCt6IlD44szHumRK564PyKeEcwcKJMXnI8vs0nAARVs0FVWrqyh74z/i8zQ4GvuSniE
+	Z3WMNSsvckHj1oCQ==
+To: Matthew Wilcox <willy@infradead.org>
+Cc: Vlastimil Babka <vbabka@suse.cz>, kernel test robot
+ <oliver.sang@intel.com>, Shanker Donthineni <sdonthineni@nvidia.com>,
+ oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org, Marc
+ Zyngier <maz@kernel.org>, Michael Walle <michael@walle.cc>, Sebastian
+ Andrzej Siewior <bigeasy@linutronix.de>, Hans de Goede
+ <hdegoede@redhat.com>, Wolfram Sang <wsa+renesas@sang-engineering.com>,
+ linux-mm@kvack.org, "Liam R. Howlett" <Liam.Howlett@oracle.com>, David
+ Rientjes <rientjes@google.com>, Christoph Lameter <cl@linux.com>, Pekka
+ Enberg <penberg@kernel.org>, Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+ Hyeonggon Yoo <42.hyeyoo@gmail.com>, Roman Gushchin
+ <roman.gushchin@linux.dev>
 Subject: Re: mm, slab/slub: Ensure kmem_cache_alloc_bulk() is available early
-Message-ID: <Y+VXamju0ECWYR5y@casper.infradead.org>
+In-Reply-To: <Y+VXamju0ECWYR5y@casper.infradead.org>
 References: <202302011308.f53123d2-oliver.sang@intel.com>
- <87o7qdzfay.ffs@tglx>
- <9a682773-df56-f36c-f582-e8eeef55d7f8@suse.cz>
- <875ycdwyx6.ffs@tglx>
- <871qn1wofe.ffs@tglx>
+ <87o7qdzfay.ffs@tglx> <9a682773-df56-f36c-f582-e8eeef55d7f8@suse.cz>
+ <875ycdwyx6.ffs@tglx> <871qn1wofe.ffs@tglx>
  <6c0b681e-97bc-d975-a8b9-500abdaaf0bc@suse.cz>
- <8b7762c3-02be-a5c9-1c4d-507cfb51a15c@suse.cz>
- <87edr1uykw.ffs@tglx>
- <e3a8f265-ea15-35ba-e46e-89024e83db47@suse.cz>
- <878rh73mxl.ffs@tglx>
+ <8b7762c3-02be-a5c9-1c4d-507cfb51a15c@suse.cz> <87edr1uykw.ffs@tglx>
+ <e3a8f265-ea15-35ba-e46e-89024e83db47@suse.cz> <878rh73mxl.ffs@tglx>
+ <Y+VXamju0ECWYR5y@casper.infradead.org>
+Date: Fri, 10 Feb 2023 00:19:38 +0100
+Message-ID: <87h6vu1l6d.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <878rh73mxl.ffs@tglx>
+Content-Type: text/plain
 
-On Wed, Feb 08, 2023 at 09:46:30PM +0100, Thomas Gleixner wrote:
-> On Wed, Feb 08 2023 at 10:15, Vlastimil Babka wrote:
-> 
-> Cc+ Willy
-> 
-> > On 2/7/23 19:20, Thomas Gleixner wrote:
-> >> On Tue, Feb 07 2023 at 15:47, Vlastimil Babka wrote:
-> >>> From 340d7c7b99f3e67780f6dec480ed1d27e6f325eb Mon Sep 17 00:00:00 2001
-> >>> From: Vlastimil Babka <vbabka@suse.cz>
-> >>> Date: Tue, 7 Feb 2023 15:34:53 +0100
-> >>> Subject: [PATCH] mm, slab/slub: remove notes that bulk alloc/free needs
-> >>>  interrupts enabled
-> >>>
-> >>> The slab functions kmem_cache_[alloc|free]_bulk() have been documented
-> >>> as requiring interrupts to be enabled, since their addition in 2015.
-> >>> It's unclear whether that was a fundamental restriction, or an attempt
-> >>> to save some cpu cycles by not having to save and restore the irq
-> >>> flags.
-> >> 
-> >> I don't think so. The restriction is rather meant to avoid huge
-> >> allocations in atomic context which causes latencies and also might
-> >> deplete the atomic reserves.
-> >
-> > Fair enough.
-> >
-> >> So I rather avoid that and enforce !ATOMIC mode despite the
-> >> local_irq_save/restore() change which is really only to accomodate with
-> >> early boot.
-> >
-> > We could add some warning then? People might use the bulk alloc unknowingly
-> > again e.g. via maple tree. GFP_KERNEL would warn through the existing
-> > warning, but e.g. GFP_ATOMIC currently not.
-> 
-> Correct.
-> 
-> > Some maple tree users could use its preallocation instead outside of the
-> > atomic context, when possible.
-> 
-> Right.
-> 
-> The issue is that there might be maple_tree users which depend on
-> GFP_ATOMIC, but call in from interrupt enabled context, which is
-> legitimate today.
-> 
-> Willy might have some insight on that.
+On Thu, Feb 09 2023 at 20:28, Matthew Wilcox wrote:
+> On Wed, Feb 08, 2023 at 09:46:30PM +0100, Thomas Gleixner wrote:
+>> The issue is that there might be maple_tree users which depend on
+>> GFP_ATOMIC, but call in from interrupt enabled context, which is
+>> legitimate today.
+>> 
+>> Willy might have some insight on that.
+>
+> Not today, but eventually.  There are XArray users which modify the tree
+> in interrupt context or under some other spinlock that we can't drop
+> for them in order to do an allocation.  And I want to replace the radix
+> tree underpinnings of the XArray with the maple tree.  In my copious
+> spare time.
 
-Not today, but eventually.  There are XArray users which modify the tree
-in interrupt context or under some other spinlock that we can't drop
-for them in order to do an allocation.  And I want to replace the radix
-tree underpinnings of the XArray with the maple tree.  In my copious
-spare time.
+If any usage which you described, i.e. interrupt context or with a
+spinlock held, where interrupts were disabled on acquisition of the
+lock, ends up calling into kmem_cache_alloc_bulk() today, then that's
+broken because kmem_cache_alloc_bulk() reenables interrupts
+unconditionally.
+
+So either such code does not exist as of today or it just gets lucky to
+not run into the code path leading up to kmem_cache_alloc_bulk().
+
+We have to clarify what the valid calling convention of
+kmem_cache_alloc_bulk() is in the regular kernel context, i.e. outside
+of early boot.
+
+Thanks,
+
+        tglx
+
+
+
