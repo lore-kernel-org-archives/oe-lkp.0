@@ -1,80 +1,84 @@
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFB0E7E6
-	for <oe-lkp@lists.linux.dev>; Fri, 10 Mar 2023 02:07:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9427C96B
+	for <oe-lkp@lists.linux.dev>; Fri, 10 Mar 2023 09:25:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678414073; x=1709950073;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=P6tZ3MZVrHnx2a1c+ZP/oB4nVVlI+lDBKU/94GG+JNQ=;
-  b=jCwcet0Rgu2IL5xFvFx+tTgaPFkYimygkSqEZzRGUZCZv0IG64XmtRhy
-   oj8K/TIZGrtx4k3N7rBIZz8O/8o1OX6Ruljzb96uF8j9uKa+ISBYPCweN
-   Yjix6V5vDAAqD++oajYCRV5vs40N6+mIIIhomIPAdCZBTc/cyzvDnH9XQ
-   7ZbR4oRgUjZjUIorcmeYD5VdvyOV6NDMd+wtScfjFbYk+42jMaPGKSGNj
-   ceP6GSxneBcCmO0wSoSIanQwMAlDx2uoWTfjmSsKwKpnQ4XmyjQ8afHzH
-   zG7FSVxjX1YgPZXqZW27RT5ou+29s3zIY8AB1HEv/ImlU9Ug3RZHA5uq2
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10644"; a="422892552"
-X-IronPort-AV: E=Sophos;i="5.98,248,1673942400"; 
-   d="xz'341?yaml'341?scan'341,208,341";a="422892552"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2023 18:07:35 -0800
+  t=1678440354; x=1709976354;
+  h=date:from:to:cc:subject:message-id:
+   content-transfer-encoding:mime-version;
+  bh=AKVGXzmdWEyLRIbv0WJ7ZoSBRGrAAX6ugYlkLZmVllw=;
+  b=JlBV0BjUfxwyvbbTbqfGG+1o5AGTJU/WXwBeCTq7H9tD5Ny9mAVkZSlS
+   vt3V1xC8MWzNS9xTx2y9VBeAL8xkt8/rvGg4yuIizLAL/WiyWhAYFIKuT
+   RKZKm8/0KKa/raawtBhtxEiMHcco/DZB/uHyGOzrjRCggjgvs2pqoO+Jz
+   6a6pjc6vJXi/dM0Zlw1MCfwgcors4Zi0IZRXkCiIujdo058J1b+ixsTJ+
+   Wt0ruId0xtd5Cd3XcEHgXn/1cHVQc+R3tZflUpTBS19i1UoDYHGLV9Zka
+   Iv+FpNgHL8JTAroZGRgTMyi9+KensTc6DMmD7g9va2KzA6oFYb6GLRX0P
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10644"; a="325039853"
+X-IronPort-AV: E=Sophos;i="5.98,249,1673942400"; 
+   d="yaml'?scan'208";a="325039853"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2023 01:25:52 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10644"; a="746538110"
-X-IronPort-AV: E=Sophos;i="5.98,248,1673942400"; 
-   d="xz'341?yaml'341?scan'341,208,341";a="746538110"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmsmga004.fm.intel.com with ESMTP; 09 Mar 2023 18:07:34 -0800
-Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Thu, 9 Mar 2023 18:07:34 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10644"; a="923590267"
+X-IronPort-AV: E=Sophos;i="5.98,249,1673942400"; 
+   d="yaml'?scan'208";a="923590267"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by fmsmga006.fm.intel.com with ESMTP; 10 Mar 2023 01:25:51 -0800
 Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Thu, 9 Mar 2023 18:07:33 -0800
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ 15.1.2507.21; Fri, 10 Mar 2023 01:25:50 -0800
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
  orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21 via Frontend Transport; Thu, 9 Mar 2023 18:07:33 -0800
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.169)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ 15.1.2507.21 via Frontend Transport; Fri, 10 Mar 2023 01:25:50 -0800
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.168)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.21; Thu, 9 Mar 2023 18:07:32 -0800
+ 15.1.2507.21; Fri, 10 Mar 2023 01:25:49 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HU7GdMTcwEYRgr1xWd9pMuQFHZB4Vuq9BUgiybUvxX76SnRyK2EqFSf9VHnBCkLlDSLV0atISD5bQXjzBpdtU9ro4zi30iePn0SOcXxbE9nGzuV8ntN9hEvPt4uPInbmjdEa35N+8rjJdzp/T9Ho8MhiiVqxQYIetY9++oML/sE65wQIyi6GU227uFik+R8PLewD+unPyz79+RKbOfFVWPvzJrmP1LRX5Ddw/+DTY4aIy2f3HAuhFFEEAHo+xdmzfY+QsYAUGh1/M8dcNfXTIniBECcF8O5JyjAVcO5Fjfkt04NxV19/yVIZtnhhpOvdGZHb+45oClc6sOpvTPw+iQ==
+ b=FnUqpKGcbIclvcaI/10Um0LBksThXATMWt6Jrz3n+JVgml6vMD27brFRSpv3IB6GF0jFZO0TDO0xMRdogiE0fXT5XkQAYdwJPA5K9DHVhYmSVrkYj/hhDg2UIdW3Oy6Qv7mHB5NpeY8Pnkj8dJrZ1uXDuzUqRx0+4jsSlvi65Jx7qcMP7vaJpkZlsO7AsS6O1oTuaAdLn0mVO9w7Q0mRxQI2g7EtSdcEX/31k/2mmIDULnhAuTI7Bm9nOei7iEMF5sD2Wa8etjwC8oicV7BSGmzke/sz86K4MNKWoJc5iIuWG3jetQcD/zdGYM/Ksq1rf6d4oPOCOUDdhxEwCrTQhg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MYGwdz4TSbAT/aP4W8Xoz3ljlDCKLQrtwKhAds7sPfg=;
- b=hnqVvEjjR6Dk301LcUjgirsxsYd2MdIGwop6Vwqqkx1ofdnPckfRpB0FCLZmzR3dL/PYgYNoNcD9bJE3r9ytWMEqnvWKEEZwluCIjDPOm1VpGmmVCr0zE1FUNau2e7BckZcnn4rV/7yBAMBgpaQGCetBH5/FH+Fz+pSuCQV58wHm3HuyUx3vYM8RYRE04xFPvUEZIkuvN3PQptBIi+kuaLNK7hxVws8A+FAvZtn6Q6dzNnvpRhUu5lSkT+usQ7vJnJRs/6mao/h6Z1UQ73hyEdMWTG+HBJOzzbZiuRp+rSYDEWMAa/vw9O9P90idsKWNzTT2azDo20QuhH/MYz7SoQ==
+ bh=QH3j3FFkl/LG5Y68gCxpexUf+mLTFqF6Qd2WCumpgMA=;
+ b=RJB9ps9SUtukBQfNRdQTizXfnox5wcDEN4pDkRdR7FmcMrr+fV0DXTXJr8RdZyzyKtKFzQ47ScnqXm7BikvHfCcjx3BvV9Jpkpp0mMTIzz15yqIrel65dzAuv4ZPOpXaw60EQxvL6SXSD87FPDcI2tCy/lcqcFNCyIdnb0QM9hQCu4foayA/5Htg1lNqx5Bwpo5AUifYl4P/xD6cZiQWyFlYhv8WLySwFqwnqMZju/VqPYboS/tNRufcR6HwpxMr4/B3aVAB4y0vJYp6N0Xo8jaUVA0d0gGL5Y9J3Uq1NmhE+baDW8seJ28YerAy/AxLjpZLbUrM46QjWU9VI3KR/A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from CY5PR11MB6392.namprd11.prod.outlook.com (2603:10b6:930:37::15)
- by BN9PR11MB5467.namprd11.prod.outlook.com (2603:10b6:408:100::24) with
+ by SA1PR11MB6688.namprd11.prod.outlook.com (2603:10b6:806:25b::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.19; Fri, 10 Mar
- 2023 02:07:22 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6156.29; Fri, 10 Mar
+ 2023 09:25:44 +0000
 Received: from CY5PR11MB6392.namprd11.prod.outlook.com
  ([fe80::66b:243c:7f3d:db9e]) by CY5PR11MB6392.namprd11.prod.outlook.com
  ([fe80::66b:243c:7f3d:db9e%3]) with mapi id 15.20.6156.028; Fri, 10 Mar 2023
- 02:07:22 +0000
-Date: Fri, 10 Mar 2023 10:04:33 +0800
+ 09:25:44 +0000
+Date: Fri, 10 Mar 2023 17:22:51 +0800
 From: kernel test robot <yujie.liu@intel.com>
 To: Christoph Hellwig <hch@lst.de>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Christoph Hellwig <hch@lst.de>
-Subject: [hch-misc:filemap_get_folio] [mm] ef2f3f98fc:
- BUG:KASAN:null-ptr-deref_in_mincore_page
-Message-ID: <202303100947.9b421b1c-yujie.liu@intel.com>
-Content-Type: multipart/mixed; boundary="MuXUmVDMr7gP5Pe2"
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>, Dan Williams
+	<dan.j.williams@intel.com>, Keith Busch <kbusch@kernel.org>, Dave Jiang
+	<dave.jiang@intel.com>, Ira Weiny <ira.weiny@intel.com>, Jens Axboe
+	<axboe@kernel.dk>, Minchan Kim <minchan@kernel.org>, Sergey Senozhatsky
+	<senozhatsky@chromium.org>, Vishal Verma <vishal.l.verma@intel.com>,
+	<linux-fsdevel@vger.kernel.org>, <ying.huang@intel.com>,
+	<feng.tang@intel.com>, <zhengjun.xing@linux.intel.com>,
+	<fengwei.yin@intel.com>
+Subject: [linus:master] [mpage] 7d28631786: fio.write_iops 27.8% improvement
+Message-ID: <202303101630.ef282023-yujie.liu@intel.com>
+Content-Type: multipart/mixed; boundary="trzHMlASx1H69zAx"
 Content-Disposition: inline
-X-ClientProxiedBy: SG2PR01CA0129.apcprd01.prod.exchangelabs.com
- (2603:1096:4:40::33) To CY5PR11MB6392.namprd11.prod.outlook.com
- (2603:10b6:930:37::15)
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: SG2PR06CA0195.apcprd06.prod.outlook.com (2603:1096:4:1::27)
+ To CY5PR11MB6392.namprd11.prod.outlook.com (2603:10b6:930:37::15)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -82,227 +86,377 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY5PR11MB6392:EE_|BN9PR11MB5467:EE_
-X-MS-Office365-Filtering-Correlation-Id: e4622a53-6008-4664-a647-08db210c2eeb
+X-MS-TrafficTypeDiagnostic: CY5PR11MB6392:EE_|SA1PR11MB6688:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3aef0f5a-299e-43ac-5590-08db21496c12
 X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Py7snc/l1jVLDuPZE1ghhd5gBmMHKqZUgaXx5UlFWEh14wDoc5ostLpX0QmN1cKl01N8wq9kOYbwcq8IAfpvKWNQN7laiAMcBvrKf4MV9eaYZ7n+UnY3B4p4Z+/avyi++TOoifKoQcrv+b3Fxyi0hwFAB0mPRAe+o8Iggut1HyJsCIyquqbmiiE4y9AvB5JlcIF+BX1c2vOlZvMj93TSe/0X9lbCN9Iwdiqz8V5TsPPtQnhZqxvzgBJfNFrrI2umtULK3EfQmuIUN63THCGY4wq8XEEcpJD5d1Bh/LiOhA6KWufyUgeS0RLhXS6CVNQ2zuX1wN+d+vgG9zUnVflUTI0s/n57GWF/3Ill+a+2xxKhvd4i8r6/EZYYw/YJk1bc9uDzf1Gp3TyunuTokyjKu/fDdebfZpFuicsXmpxI3XonREh23vt1PTE2IVoI50b7XUMDzpVDKFHZGA+r9zqUwk3VNlKYuQBrefZxGqBV4NoR+xia5bbvy8Kmw4wvDdaNRAcmxjF9595+oNGcjofgu2uv+qHKQ+zbygdpvC1qxS4sedpaINmKlbqOCJFIPYXyO7gHTOBos6qW77zJbfuNs8N7lk5WvYVCXn/mXo1MExXzXtX+FWGPkbMwLzvqk4MgjRFA13okPGeNJbjLV/jg0odz/JXgBp078XUbjpFwtaPl+dmIeZKvSpaCVTetnOhk8BUu56fL07bX0uPN842XHcUZolcfJTyu3Aa9aku/9y4=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR11MB6392.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(136003)(346002)(39860400002)(376002)(366004)(396003)(451199018)(66946007)(2906002)(5660300002)(235185007)(26005)(1076003)(8676002)(36756003)(8936002)(4326008)(66476007)(66556008)(6916009)(316002)(86362001)(478600001)(966005)(6486002)(38100700002)(6666004)(82960400001)(44144004)(6506007)(41300700001)(6512007)(21490400003)(2616005)(186003)(83380400001)(2700100001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: jsNE7sUl6fhhG5fpYEaw7RMNoBG1Issu5zNyEkDly6qlDjdLZtdkZU1pG1k/xgtrVQ1dMBXdvpOsivY4l0IrUFbNuoNJKPIHqXDJjl3nFNIvRMmKslCNhjfVnER8avgoDWK0ssgakQB4gBzZCwVljPzYzO4ksMhcD956khzxYVh96NsQBxtE39yhfhWwet0z98swBZeScFs6Ra0iaZPLE9K5n6pD5D3ChQRWXnN6s+gCla1vZ2fruP58WwDjEIcHnv+y4DVYb/58Xz98yDBjHxwlWYW/+BTqQ+MG43LD7qLAkLsxDBx6u5YiQV8FrjOAtHz7K8SIdBwSLV6AtCJjIeeyry3pPhuKH8wX23QCagHlxPfvOXoIsMs3iE67zME/XTnK6WO6U7VijrSEL+MWLS78tKxgsH8nvuejdyAx3sNXx/APrqqkPV2fwwPS4j0aN5Y8tx5i4LLzugqQyPALjMhIs2mdwhm9YpyfSkMKLWLKqhbJatX4y46qmCRndk1mMR75j4bAbX6aXSNtoEkgamVDt0pLd/oCtJllvtghQ/YfzzzYzbq/iTV/mS3xl5X7aWnDkPkyCF/WHHlf79FG7/QaAoAX6OcZLGV11keZUf2/EGOd+RbeXSxaegor52b+uX3WMNVyeAObi91kWyAuNjTmkcRaDxhLw2qxGJoI5k8OjE/cNgbCxuq0C6atJ1TBYZPK6jDkNYOpcntqJVvqn3aih7LYYlcSjAXpbAknwHM=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR11MB6392.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(136003)(376002)(39860400002)(366004)(346002)(396003)(451199018)(186003)(54906003)(316002)(6506007)(6512007)(6666004)(82960400001)(86362001)(44144004)(1076003)(2616005)(83380400001)(21490400003)(36756003)(478600001)(26005)(6486002)(38100700002)(966005)(41300700001)(7416002)(8936002)(30864003)(235185007)(66556008)(66946007)(66476007)(4326008)(6916009)(2906002)(5660300002)(8676002)(2700100001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?FIkmlK4nI+S48Ahaw0rtTEIQ8By3p2AvShLNKG24zoV2cE/fe3OEh9g4K+ld?=
- =?us-ascii?Q?ZnxRHBHgJe197xrD2FUKm+WxbUnOmf0a8NozwEYGJzcB9qepNbWlE6weIPvT?=
- =?us-ascii?Q?dwYAFuk6IfCYKRHTw5IsfK03ZKIKHJF0h3UGOKjVWJ7AvNQiUgPD1f9HAZpA?=
- =?us-ascii?Q?e8aN7wKSCtRfAvAIVbBzyDkz3CFrK3eoJZ8kgnbfFW+F72uaQD7MRPc86Q7T?=
- =?us-ascii?Q?NvOgkDg9utlgs3tiDqBmjO4IA/M0esvHQnG6hm4LlYVkw8pj189hoTEErPll?=
- =?us-ascii?Q?0whedn38gqhvpL3N5UmcB/RRdEnyOihLeFwj5Xkj4ddQRBj7bE1ctGwxsNB3?=
- =?us-ascii?Q?EOeT8q/D4CikqE5rCL+sHuaHPKeAQybGP3z0EskNTufCewEotcvZ/iEdy2vr?=
- =?us-ascii?Q?wcWWM2RdIPu3bPk8wtY3ebECKr/Ext9FR5ev2+wzJQBl9vBcEtb7bQEilPe4?=
- =?us-ascii?Q?P0muLGtURCX3wzqSIyB6472wfNP9carY8ibqRTfYyS5LSfg+FCXK3EP8WLp6?=
- =?us-ascii?Q?TZoiaV/u1WCry/PiOioC+e6xCs7xLln16hl0P9yiTYp8wgP0DK6Mp+luFVd6?=
- =?us-ascii?Q?gmAsNAndM5vqI8bDOliT2QDyAfl98eehZGWEZn2Duk+nPGX8Ff70w6DhxyDg?=
- =?us-ascii?Q?yhJbrNA+3vRlrQNNcnut3qG9zbbdeoGe37/jyT4mCkL4y7lg87lqXI7hL8er?=
- =?us-ascii?Q?Ef7vp+SRacD9UdwYLj7KRYlNeKe8qmrRmK0c1U6SH9eZ8b7wLIUYu7f6SpCM?=
- =?us-ascii?Q?NHrBiJvs+ZhhumP6ivseDZNL7ZLHIvpflotMYHqE8rkzXa+Sv8WNwZH4bRAZ?=
- =?us-ascii?Q?Fr53oYLs6AkprIHMdiPV2SdZ3em08rH3EIu2JszviR4htM6+D2AjBf7yuUvQ?=
- =?us-ascii?Q?dPcAl0eMTXcHTj0uhlZA4ciS9OSLwbXB9h1b2WPtqWK6Qz0PmffLqk3qKHHT?=
- =?us-ascii?Q?gdkBP8lNHu64eg45w9vYFW9RhlG92n5pUsxuPq43IsDHhX+6dft89iTrOhXy?=
- =?us-ascii?Q?kxh6vvPhiPwlv0KEwkG+h7dftK1gsaLJMyuUqohM12Wuvn50wVWCa/K+f6K6?=
- =?us-ascii?Q?t8zGOcfc7uXc+DQOATCo1m5MhwIuBcr6n6Vq7jlY03EnnSHdmug/ZgL00uMW?=
- =?us-ascii?Q?9ayD2f98h9ny+IhqpUbx+hx+1/RXWpzIaheP5dNi5uBioz0eFBH1tct87CpM?=
- =?us-ascii?Q?p4eaBDqg/btZSxqQQRML7+68o3WvPYhlOvAPxm+5VNUyV1tgbazXK3z/NtZg?=
- =?us-ascii?Q?1PgMHm7BUIrcF34mI2bkJDVeoFuPmk7Ai4PoUSPFiDyPDzSwE/1wpip0NpNY?=
- =?us-ascii?Q?BwUWOH4jKTPHRSvmtoRsQeZpX8oUNtcw9XG0RWuMEKY7BnMb+su55Kz3nnwN?=
- =?us-ascii?Q?Lw/xE6/XOlTf9jg+cO2YjiI6MKWn1F2WeldJ/U8xGK1+fJUewcLbUyJenBNN?=
- =?us-ascii?Q?8kYTVLfjQpqP61ThmEjlIvP8ocuPeA7BuGg1RvdF3INMqgGhLnUZn9WRyy1A?=
- =?us-ascii?Q?8QHaCQFSfQhgzxQe6mMEo7vJjPNN3jX6hzQ9xuF5J4R9EFj5Vu206ECxNM05?=
- =?us-ascii?Q?vqfCweCTEIgTZLjQ08r4h05T/hUDqT0YTsWEuSL8nHxvz39Vu6bbPg7iA7YU?=
- =?us-ascii?Q?3g=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: e4622a53-6008-4664-a647-08db210c2eeb
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?7nYnc36/hHywG2pYmQCSJjcBML9auAPaVWPwyhPGNYRSyOji0ib28OIEsu?=
+ =?iso-8859-1?Q?r8srbQhsg4mpbBPH/3iRV9iQbYlAUYvFWzvxjiNxnXSLsOrRZFB24wYVO9?=
+ =?iso-8859-1?Q?bEBudZeVX+AbdqGVjB5qVcOAdKsmPylqxbAA4iBpBjq+euMy4B8x6oBm7x?=
+ =?iso-8859-1?Q?X6eXZ2I2JV+I57ZkEkSrFcITpQViG9PybC39oZUYkJNvm69DLQzO82LeoH?=
+ =?iso-8859-1?Q?aUJ9UIkLRWpYL7sMTC+7C0utG1MAlwY9vAXlJ5QO3wLA9IGkYEynQ2HeyC?=
+ =?iso-8859-1?Q?Nc9Y+VtSXQXQYLxLVMrmVaMmQmRKxtfbuT71rVZM08lL3jN0ZZGm70OcjO?=
+ =?iso-8859-1?Q?hdb4R5tnn3n+ELsWt1dstXAE3OGsmPhu2n20CqYB5z0jC+bUOnBPmbPCou?=
+ =?iso-8859-1?Q?gqj+XOEHcPGvkLhWxfMJdBesUQ1llUtIDLkErf6VI8DRN0SzIltU5No4od?=
+ =?iso-8859-1?Q?BKQi8xqRQYgNNG666sjWa8wPLnpmTsQhhsWphmpa0dmoNMsY4Ed/hU0Z5w?=
+ =?iso-8859-1?Q?5zKrkOda26Ldi3+B5Z1nd+Yl4qLzOK4t0xiCrcGvabtUGmn7rS+rNqjsFC?=
+ =?iso-8859-1?Q?sfd46nmfnHL8ihUWKk8KF0t9CJuHBizdDY7iSSOh0DJQKzNgG4tdMmCv4n?=
+ =?iso-8859-1?Q?/gSQE/nwmdtq8cEExGC0bJg6eJRZbHAB+is09xCZH8R2FLdyClUusgOEpv?=
+ =?iso-8859-1?Q?1LS5TL1oJ7FB4FiTXwfbEMYfENq89Ph5bWOLZJPpp95CK7RwaEpyF84k9I?=
+ =?iso-8859-1?Q?9nUYVhHa/kJI+mU4x+H1sdaoNkGq1+sGtV0I02QFImgbacYv6S/8b0qTjh?=
+ =?iso-8859-1?Q?xKd7lhAQvnR1GK4yNWR3BHZx524e3j86vaobpDtzy0gDgAIcqHu5M5QmI+?=
+ =?iso-8859-1?Q?H6VJqnJlJdcjXepnSNQ2FFtZqR2EU9TFj3VbNuxDljp3unByXgiP6pyfKv?=
+ =?iso-8859-1?Q?ICDzcxIQo+v8s51iIGGGJ8LJQXr/FVhNxpqIotKk2sCijgiegMzvADBOB5?=
+ =?iso-8859-1?Q?5wfMlgiC5Prxs75/z30XQwqW4O3y/VlvxyxKhS/5VUZ13MEoF62kJQr65O?=
+ =?iso-8859-1?Q?tx3CN8h9BZRZtjtZ47xBAYmr+QcKTP2y4Df1GaoARil1p0qbw3o+xKHYUV?=
+ =?iso-8859-1?Q?1eAuKqyULWg+pKHGK6k0lgOM+0vKxd5U25XlrLZUYrtoME5KX/0NZRFOBB?=
+ =?iso-8859-1?Q?NZ5fsZMsR2Ww2FRv20r5ScgoHKCromYD7sh/BRgt2xqUrgHhxeNwFBFFXV?=
+ =?iso-8859-1?Q?Cocfxh2gDI5GJi8jDP/2ioJkgRCbjlV9DURti0/pvEKGUen/4WtKhHlcJs?=
+ =?iso-8859-1?Q?1NRd48MBJ5LOVPyUgJAFa15ey0qqU0L9lIg3blH8kEN2c0TH0YmhDHrKAA?=
+ =?iso-8859-1?Q?Ucrv84u4nGlm7ugsbVZy7DCXhgD3dAkXkvdN4D+xQSUQlzV917S7J7RRBg?=
+ =?iso-8859-1?Q?Q8VxOwD6aL+aX1nuLyM9AfMOqMKewhus4znTsMwR2G5MLvZha74H3d2dFk?=
+ =?iso-8859-1?Q?aQo98rx1V5DB9kK+TjZWFKLOghyXqLkAe9NAlM8c9ALKak/GO5IPH+qmBh?=
+ =?iso-8859-1?Q?TYBmOG/CmEN1Y+5G1gdUZ5yxdsZ++1t/kwCiId8cB29vz2iNnqegX7rLIS?=
+ =?iso-8859-1?Q?+k1VIsv9qxuLfnLLZ2rVa77R2yEnmMHHBefpkbPYQo4rILguFXYPYIjw?=
+ =?iso-8859-1?Q?=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3aef0f5a-299e-43ac-5590-08db21496c12
 X-MS-Exchange-CrossTenant-AuthSource: CY5PR11MB6392.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2023 02:07:22.3755
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2023 09:25:44.2227
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: VmNDr8Q5ZFFtRVeusMjRtipS6WfBQiFVwme5NzaqgUmfOouOt2ksPKs1iwSUDetde57sJ6k5Bn8J3TkIc78LVw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR11MB5467
+X-MS-Exchange-CrossTenant-UserPrincipalName: PLpWisq4Piv4epuaiRQnW8dibhSG+cSXwGbgRzWUPvNswPG3LF/tnwoSmT4AeCjGKBGgWvSi4QnaWqMaZyzFXQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR11MB6688
 X-OriginatorOrg: intel.com
 
---MuXUmVDMr7gP5Pe2
-Content-Type: text/plain; charset="us-ascii"
+--trzHMlASx1H69zAx
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
 Greeting,
 
-FYI, we noticed BUG:KASAN:null-ptr-deref_in_mincore_page due to commit (built with gcc-11):
+FYI, we noticed a 27.8% improvement of fio.write_iops due to commit:
 
-commit: ef2f3f98fcf4521aa00fd217089e303b7d9b62ba ("mm: return an ERR_PTR from __filemap_get_folio")
-git://git.infradead.org/users/hch/misc.git filemap_get_folio
+commit: 7d28631786b2333c5d48ad25172eb159aaa2945f ("mpage: stop using bdev_{read,write}_page")
+https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-in testcase: kernel-selftests
-version: kernel-selftests-x86_64-d4cf28ee-1_20230110
+in testcase: fio-basic
+on test machine: 96 threads 2 sockets Intel(R) Xeon(R) Gold 6252 CPU @ 2.10GHz (Cascade Lake) with 512G memory
 with following parameters:
 
-	group: group-02
+	disk: 2pmem
+	fs: ext2
+	runtime: 200s
+	nr_task: 50%
+	time_based: tb
+	rw: randwrite
+	bs: 2M
+	ioengine: io_uring
+	test_size: 200G
+	cpufreq_governor: performance
 
-test-description: The kernel contains a set of "self tests" under the tools/testing/selftests/ directory. These are intended to be small unit tests to exercise individual code paths in the kernel.
-test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
-
-on test machine: 4 threads Intel(R) Xeon(R) CPU E3-1225 v5 @ 3.30GHz (Skylake) with 16G memory
-
-caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
+test-description: Fio is a tool that will spawn a number of threads or processes doing a particular type of I/O action as specified by the user.
+test-url: https://github.com/axboe/fio
 
 
-If you fix the issue, kindly add following tag
-| Reported-by: kernel test robot <yujie.liu@intel.com>
-| Link: https://lore.kernel.org/oe-lkp/202303100947.9b421b1c-yujie.liu@intel.com
+Details are as below:
 
+=========================================================================================
+bs/compiler/cpufreq_governor/disk/fs/ioengine/kconfig/nr_task/rootfs/runtime/rw/tbox_group/test_size/testcase/time_based:
+  2M/gcc-11/performance/2pmem/ext2/io_uring/x86_64-rhel-8.3/50%/debian-11.1-x86_64-20220510.cgz/200s/randwrite/lkp-csl-2sp7/200G/fio-basic/tb
 
-[ 125.329893][ T1810] BUG: KASAN: null-ptr-deref in mincore_page (arch/x86/include/asm/bitops.h:207 arch/x86/include/asm/bitops.h:239 include/asm-generic/bitops/instrumented-non-atomic.h:142 include/linux/page-flags.h:712 mm/mincore.c:65) 
-[  125.336589][ T1810] Read of size 8 at addr 0000000000000000 by task mincore_selftes/1810
-[  125.344683][ T1810]
-[  125.346874][ T1810] CPU: 2 PID: 1810 Comm: mincore_selftes Not tainted 6.3.0-rc1-00007-gef2f3f98fcf4 #1
-[  125.356256][ T1810] Hardware name: HP HP Z238 Microtower Workstation/8183, BIOS N51 Ver. 01.63 10/05/2017
-[  125.365828][ T1810] Call Trace:
-[  125.368971][ T1810]  <TASK>
-[ 125.371773][ T1810] dump_stack_lvl (lib/dump_stack.c:108) 
-[ 125.376135][ T1810] kasan_report (mm/kasan/report.c:538) 
-[ 125.380324][ T1810] ? mincore_page (arch/x86/include/asm/bitops.h:207 arch/x86/include/asm/bitops.h:239 include/asm-generic/bitops/instrumented-non-atomic.h:142 include/linux/page-flags.h:712 mm/mincore.c:65) 
-[ 125.384684][ T1810] ? kasan_check_range (mm/kasan/generic.c:188) 
-[ 125.389562][ T1810] ? mincore_page (arch/x86/include/asm/bitops.h:207 arch/x86/include/asm/bitops.h:239 include/asm-generic/bitops/instrumented-non-atomic.h:142 include/linux/page-flags.h:712 mm/mincore.c:65) 
-[ 125.393925][ T1810] ? __mincore_unmapped_range (mm/mincore.c:83 (discriminator 3)) 
-[ 125.399506][ T1810] ? mincore_pte_range (mm/mincore.c:150) 
-[ 125.404474][ T1810] ? walk_pmd_range+0x276/0x760 
-[ 125.409805][ T1810] ? lock_downgrade (kernel/locking/lockdep.c:5321) 
-[ 125.414511][ T1810] ? walk_pte_range+0x4d0/0x4d0 
-[ 125.419831][ T1810] ? lock_is_held_type (kernel/locking/lockdep.c:5410 kernel/locking/lockdep.c:5712) 
-[ 125.424722][ T1810] ? walk_pud_range+0x27d/0x5d0 
-[ 125.430043][ T1810] ? mas_find (lib/maple_tree.c:6446) 
-[ 125.434228][ T1810] ? walk_p4d_range (mm/pagewalk.c:241) 
-[ 125.438970][ T1810] ? __lock_release (kernel/locking/lockdep.c:5345) 
-[ 125.443676][ T1810] ? walk_pgd_range (mm/pagewalk.c:278) 
-[ 125.448385][ T1810] ? find_vma (mm/mmap.c:1784) 
-[ 125.452488][ T1810] ? __walk_page_range (mm/pagewalk.c:379) 
-[ 125.457462][ T1810] ? walk_page_range (mm/pagewalk.c:477) 
-[ 125.462253][ T1810] ? __walk_page_range (mm/pagewalk.c:430) 
-[ 125.467233][ T1810] ? __down_read_common (arch/x86/include/asm/atomic64_64.h:34 include/linux/atomic/atomic-long.h:41 include/linux/atomic/atomic-instrumented.h:1280 kernel/locking/rwsem.c:176 kernel/locking/rwsem.c:181 kernel/locking/rwsem.c:249 kernel/locking/rwsem.c:1249) 
-[ 125.472304][ T1810] ? do_mincore (mm/mincore.c:202) 
-[ 125.476676][ T1810] ? __do_sys_mincore (mm/mincore.c:268) 
-[ 125.481558][ T1810] ? do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80) 
-[ 125.486004][ T1810] ? entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120) 
-[  125.491926][ T1810]  </TASK>
-[  125.494820][ T1810] ==================================================================
-[  125.502849][ T1810] Disabling lock debugging due to kernel taint
-[  125.508863][ T1810] general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] SMP KASAN PTI
-[  125.520066][ T1810] KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-[  125.528325][ T1810] CPU: 2 PID: 1810 Comm: mincore_selftes Tainted: G    B              6.3.0-rc1-00007-gef2f3f98fcf4 #1
-[  125.539178][ T1810] Hardware name: HP HP Z238 Microtower Workstation/8183, BIOS N51 Ver. 01.63 10/05/2017
-[ 125.548731][ T1810] RIP: 0010:mincore_page (arch/x86/include/asm/bitops.h:207 arch/x86/include/asm/bitops.h:239 include/asm-generic/bitops/instrumented-non-atomic.h:142 include/linux/page-flags.h:712 mm/mincore.c:65) 
-[ 125.553692][ T1810] Code: 00 48 3d 00 f0 ff ff 77 63 48 89 c5 be 08 00 00 00 48 89 c7 e8 1b bb 0f 00 48 89 ea 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 <80> 3c 02 00 75 46 48 8b 45 00 48 c1 e8 02 83 e0 01 75 1e 48 8d 7d
-All code
-========
-   0:	00 48 3d             	add    %cl,0x3d(%rax)
-   3:	00 f0                	add    %dh,%al
-   5:	ff                   	(bad)  
-   6:	ff 77 63             	pushq  0x63(%rdi)
-   9:	48 89 c5             	mov    %rax,%rbp
-   c:	be 08 00 00 00       	mov    $0x8,%esi
-  11:	48 89 c7             	mov    %rax,%rdi
-  14:	e8 1b bb 0f 00       	callq  0xfbb34
-  19:	48 89 ea             	mov    %rbp,%rdx
-  1c:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
-  23:	fc ff df 
-  26:	48 c1 ea 03          	shr    $0x3,%rdx
-  2a:*	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1)		<-- trapping instruction
-  2e:	75 46                	jne    0x76
-  30:	48 8b 45 00          	mov    0x0(%rbp),%rax
-  34:	48 c1 e8 02          	shr    $0x2,%rax
-  38:	83 e0 01             	and    $0x1,%eax
-  3b:	75 1e                	jne    0x5b
-  3d:	48                   	rex.W
-  3e:	8d                   	.byte 0x8d
-  3f:	7d                   	.byte 0x7d
+commit: 
+  9e5fa0ae52 ("mm: refactor va_remove_mappings")
+  7d28631786 ("mpage: stop using bdev_{read,write}_page")
 
-Code starting with the faulting instruction
-===========================================
-   0:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1)
-   4:	75 46                	jne    0x4c
-   6:	48 8b 45 00          	mov    0x0(%rbp),%rax
-   a:	48 c1 e8 02          	shr    $0x2,%rax
-   e:	83 e0 01             	and    $0x1,%eax
-  11:	75 1e                	jne    0x31
-  13:	48                   	rex.W
-  14:	8d                   	.byte 0x8d
-  15:	7d                   	.byte 0x7d
-[  125.573120][ T1810] RSP: 0018:ffffc90002e7fa10 EFLAGS: 00010246
-[  125.579037][ T1810] RAX: dffffc0000000000 RBX: ffff888144acd000 RCX: fffffbfff0c13951
-[  125.586858][ T1810] RDX: 0000000000000000 RSI: 0000000000000008 RDI: ffffffff8609ca80
-[  125.594679][ T1810] RBP: 0000000000000000 R08: ffffffff811cd48a R09: ffffffff8609ca87
-[  125.602502][ T1810] R10: fffffbfff0c13950 R11: 0000000000000000 R12: ffff88810b508320
-[  125.610323][ T1810] R13: dffffc0000000000 R14: 0000000000000000 R15: 0000000000000001
-[  125.618146][ T1810] FS:  00007f5833e23740(0000) GS:ffff88837f100000(0000) knlGS:0000000000000000
-[  125.626921][ T1810] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  125.633365][ T1810] CR2: 00007f5833e4d5a0 CR3: 0000000147118003 CR4: 00000000003706e0
-[  125.641188][ T1810] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[  125.649019][ T1810] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[  125.656841][ T1810] Call Trace:
-[  125.659985][ T1810]  <TASK>
-[ 125.662777][ T1810] __mincore_unmapped_range (mm/mincore.c:83 (discriminator 3)) 
-[ 125.668171][ T1810] mincore_pte_range (mm/mincore.c:150) 
-[ 125.672973][ T1810] walk_pmd_range+0x276/0x760 
-[ 125.678118][ T1810] ? lock_downgrade (kernel/locking/lockdep.c:5321) 
-[ 125.682819][ T1810] ? walk_pte_range+0x4d0/0x4d0 
-[ 125.688136][ T1810] ? lock_is_held_type (kernel/locking/lockdep.c:5410 kernel/locking/lockdep.c:5712) 
-[ 125.693020][ T1810] walk_pud_range+0x27d/0x5d0 
-[ 125.698172][ T1810] ? mas_find (lib/maple_tree.c:6446) 
-[ 125.702359][ T1810] walk_p4d_range (mm/pagewalk.c:241) 
-[ 125.706916][ T1810] ? __lock_release (kernel/locking/lockdep.c:5345) 
-[ 125.711632][ T1810] walk_pgd_range (mm/pagewalk.c:278) 
-[ 125.716162][ T1810] ? find_vma (mm/mmap.c:1784) 
-[ 125.720263][ T1810] __walk_page_range (mm/pagewalk.c:379) 
-[ 125.725061][ T1810] walk_page_range (mm/pagewalk.c:477) 
-[ 125.729680][ T1810] ? __walk_page_range (mm/pagewalk.c:430) 
-[ 125.734647][ T1810] ? __down_read_common (arch/x86/include/asm/atomic64_64.h:34 include/linux/atomic/atomic-long.h:41 include/linux/atomic/atomic-instrumented.h:1280 kernel/locking/rwsem.c:176 kernel/locking/rwsem.c:181 kernel/locking/rwsem.c:249 kernel/locking/rwsem.c:1249) 
-[ 125.739702][ T1810] do_mincore (mm/mincore.c:202) 
-[ 125.743907][ T1810] __do_sys_mincore (mm/mincore.c:268) 
-[ 125.748610][ T1810] do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80) 
-[ 125.752912][ T1810] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120) 
-[  125.758655][ T1810] RIP: 0033:0x7f5833f278b7
-[ 125.762942][ T1810] Code: 73 01 c3 48 8b 0d 49 05 0d 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 b8 1b 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 19 05 0d 00 f7 d8 64 89 01 48
-All code
-========
-   0:	73 01                	jae    0x3
-   2:	c3                   	retq   
-   3:	48 8b 0d 49 05 0d 00 	mov    0xd0549(%rip),%rcx        # 0xd0553
-   a:	f7 d8                	neg    %eax
-   c:	64 89 01             	mov    %eax,%fs:(%rcx)
-   f:	48 83 c8 ff          	or     $0xffffffffffffffff,%rax
-  13:	c3                   	retq   
-  14:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
-  1b:	00 00 00 
-  1e:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
-  23:	b8 1b 00 00 00       	mov    $0x1b,%eax
-  28:	0f 05                	syscall 
-  2a:*	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax		<-- trapping instruction
-  30:	73 01                	jae    0x33
-  32:	c3                   	retq   
-  33:	48 8b 0d 19 05 0d 00 	mov    0xd0519(%rip),%rcx        # 0xd0553
-  3a:	f7 d8                	neg    %eax
-  3c:	64 89 01             	mov    %eax,%fs:(%rcx)
-  3f:	48                   	rex.W
-
-Code starting with the faulting instruction
-===========================================
-   0:	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax
-   6:	73 01                	jae    0x9
-   8:	c3                   	retq   
-   9:	48 8b 0d 19 05 0d 00 	mov    0xd0519(%rip),%rcx        # 0xd0529
-  10:	f7 d8                	neg    %eax
-  12:	64 89 01             	mov    %eax,%fs:(%rcx)
-  15:	48                   	rex.W
+9e5fa0ae52fc67de 7d28631786b2333c5d48ad25172 
+---------------- --------------------------- 
+         %stddev     %change         %stddev
+             \          |                \  
+     14.89 ± 10%     -10.8        4.13 ± 14%  fio.latency_1000ms%
+      0.09 ±  9%      +0.0        0.13 ±  8%  fio.latency_10ms%
+      7.55 ± 12%      -4.0        3.56 ± 25%  fio.latency_2000ms%
+     10.25 ± 11%      +3.9       14.13 ± 17%  fio.latency_250ms%
+     13.67 ± 17%     +19.5       33.22 ± 27%  fio.latency_500ms%
+      0.33 ± 31%      +0.3        0.61 ± 31%  fio.latency_50ms%
+      1.14 ±  3%      -0.4        0.71 ± 17%  fio.latency_>=2000ms%
+ 2.053e+09           +27.5%  2.618e+09 ±  3%  fio.time.file_system_outputs
+      8052 ±  5%     +53.4%      12353 ± 12%  fio.time.involuntary_context_switches
+    296137 ±  3%     +14.2%     338218 ±  5%  fio.time.minor_page_faults
+      1041 ±  4%     +23.9%       1289 ± 13%  fio.time.percent_of_cpu_this_job_got
+      1978 ±  4%     +22.3%       2419 ± 14%  fio.time.system_time
+    125.49 ±  8%     +45.3%     182.35 ± 10%  fio.time.user_time
+   4440324 ±  8%     -46.7%    2366863 ± 11%  fio.time.voluntary_context_switches
+    501829           +27.6%     640275 ±  3%  fio.workload
+      4986           +27.8%       6371 ±  3%  fio.write_bw_MBps
+ 9.731e+08           -28.7%  6.935e+08 ±  5%  fio.write_clat_90%_us
+ 1.075e+09           -12.9%  9.367e+08 ±  8%  fio.write_clat_95%_us
+ 2.266e+09 ±  4%     -24.4%  1.714e+09 ±  7%  fio.write_clat_99%_us
+ 6.123e+08           -21.6%  4.802e+08 ±  4%  fio.write_clat_mean_us
+      2493           +27.8%       3185 ±  3%  fio.write_iops
+    232414 ±  7%     +15.7%     268867 ±  7%  fio.write_slat_mean_us
+  41428534           -13.3%   35901780        cpuidle..usage
+      1137 ±  4%     -21.9%     888.17 ± 16%  meminfo.Mlocked
+    297.67 ±122%     -83.0%      50.67 ±141%  numa-meminfo.node1.Mlocked
+     11.50 ±  4%      +2.3       13.82 ± 12%  mpstat.cpu.all.sys%
+      0.67 ±  8%      +0.3        0.96 ±  9%  mpstat.cpu.all.usr%
+     49.17 ± 27%  +1.3e+07%    6178756 ±  4%  vmstat.io.bo
+     78001 ±  9%     -56.3%      34101 ± 14%  vmstat.system.cs
+     37.37            -6.3%      35.01 ±  3%  iostat.cpu.iowait
+     12.25 ±  4%     +18.8%      14.55 ± 11%  iostat.cpu.system
+      0.66 ±  8%     +42.9%       0.95 ±  9%  iostat.cpu.user
+      2931 ± 18%     +55.5%       4558 ± 23%  sched_debug.cpu.avg_idle.min
+     51959 ± 15%     -55.0%      23376 ± 13%  sched_debug.cpu.nr_switches.avg
+    591108 ± 22%     -75.2%     146571 ± 30%  sched_debug.cpu.nr_switches.max
+     90813 ± 17%     -75.3%      22412 ± 18%  sched_debug.cpu.nr_switches.stddev
+    401.00 ±  3%     +18.0%     473.17 ± 10%  turbostat.Avg_MHz
+     14.51 ±  3%      +2.5       16.98 ± 10%  turbostat.Busy%
+   6339607 ± 12%     -75.7%    1541772 ± 22%  turbostat.POLL
+    195.79            +5.1%     205.76 ±  2%  turbostat.PkgWatt
+     45.88            +5.0%      48.19        turbostat.RAMWatt
+  39919870 ±  4%     +30.5%   52080482 ±  3%  numa-numastat.node0.local_node
+  93131711 ±  3%     +22.7%  1.143e+08 ±  8%  numa-numastat.node0.numa_foreign
+  39955233 ±  4%     +30.5%   52138480 ±  3%  numa-numastat.node0.numa_hit
+ 1.284e+08 ±  2%     +29.2%  1.658e+08 ±  4%  numa-numastat.node1.local_node
+ 1.284e+08 ±  2%     +29.2%  1.658e+08 ±  4%  numa-numastat.node1.numa_hit
+  93183098 ±  3%     +22.6%  1.143e+08 ±  8%  numa-numastat.node1.numa_miss
+  93196371 ±  3%     +22.7%  1.143e+08 ±  8%  numa-numastat.node1.other_node
+  37631959 ±  4%     +31.9%   49655093 ±  3%  numa-vmstat.node0.nr_dirtied
+  35783356 ±  4%     +33.8%   47880969 ±  3%  numa-vmstat.node0.nr_written
+  93131711 ±  3%     +22.7%  1.143e+08 ±  8%  numa-vmstat.node0.numa_foreign
+  39955168 ±  4%     +30.5%   52138531 ±  3%  numa-vmstat.node0.numa_hit
+  39919805 ±  4%     +30.5%   52080533 ±  3%  numa-vmstat.node0.numa_local
+  2.19e+08           +26.7%  2.776e+08 ±  4%  numa-vmstat.node1.nr_dirtied
+ 2.081e+08           +28.4%  2.673e+08 ±  4%  numa-vmstat.node1.nr_written
+ 1.284e+08 ±  2%     +29.2%  1.658e+08 ±  4%  numa-vmstat.node1.numa_hit
+ 1.284e+08 ±  2%     +29.2%  1.658e+08 ±  4%  numa-vmstat.node1.numa_local
+  93183098 ±  3%     +22.6%  1.143e+08 ±  8%  numa-vmstat.node1.numa_miss
+  93196371 ±  3%     +22.7%  1.143e+08 ±  8%  numa-vmstat.node1.numa_other
+ 2.567e+08           +27.5%  3.272e+08 ±  3%  proc-vmstat.nr_dirtied
+  13024849            -3.1%   12619595        proc-vmstat.nr_dirty
+  28301145            -2.1%   27702967        proc-vmstat.nr_file_pages
+  47040923            +1.3%   47658720        proc-vmstat.nr_free_pages
+  27529221            -2.2%   26931136        proc-vmstat.nr_inactive_file
+    810128            -1.9%     795051        proc-vmstat.nr_slab_reclaimable
+ 2.441e+08           +29.1%  3.151e+08 ±  4%  proc-vmstat.nr_written
+  27529221            -2.2%   26931135        proc-vmstat.nr_zone_inactive_file
+  13024848            -3.1%   12621112        proc-vmstat.nr_zone_write_pending
+  93131711 ±  3%     +22.7%  1.143e+08 ±  8%  proc-vmstat.numa_foreign
+    251090 ±  3%     +14.8%     288318 ±  6%  proc-vmstat.numa_hint_faults
+    232531 ±  3%     +14.7%     266672 ±  7%  proc-vmstat.numa_hint_faults_local
+ 1.684e+08           +29.5%   2.18e+08 ±  4%  proc-vmstat.numa_hit
+     13951 ±  3%     +15.9%      16170 ±  6%  proc-vmstat.numa_huge_pte_updates
+ 1.683e+08           +29.5%  2.179e+08 ±  4%  proc-vmstat.numa_local
+  93183098 ±  3%     +22.6%  1.143e+08 ±  8%  proc-vmstat.numa_miss
+  93241897 ±  3%     +22.6%  1.144e+08 ±  8%  proc-vmstat.numa_other
+   7429923 ±  3%     +16.1%    8622634 ±  6%  proc-vmstat.numa_pte_updates
+ 2.629e+08           +26.9%  3.336e+08 ±  3%  proc-vmstat.pgalloc_normal
+    975147            +5.0%    1024241        proc-vmstat.pgfault
+ 2.367e+08           +29.9%  3.075e+08 ±  4%  proc-vmstat.pgfree
+     10020 ± 28%  +1.3e+07%   1.26e+09 ±  4%  proc-vmstat.pgpgout
+     93.33 ± 20%  +1.3e+06%    1198216 ± 10%  proc-vmstat.pgrotated
+     21.90            -9.9%      19.74        perf-stat.i.MPKI
+ 3.348e+09           +21.5%  4.068e+09 ±  5%  perf-stat.i.branch-instructions
+      0.36            -0.0        0.35        perf-stat.i.branch-miss-rate%
+  12061197           +12.4%   13558900 ±  4%  perf-stat.i.branch-misses
+     74.33            +5.2       79.58        perf-stat.i.cache-miss-rate%
+ 2.787e+08           +18.8%  3.312e+08 ±  4%  perf-stat.i.cache-misses
+ 3.866e+08            +8.5%  4.194e+08 ±  5%  perf-stat.i.cache-references
+     79217 ±  9%     -56.7%      34320 ± 14%  perf-stat.i.context-switches
+ 3.787e+10 ±  3%     +18.1%  4.472e+10 ± 10%  perf-stat.i.cpu-cycles
+    211.78           +23.5%     261.65 ±  8%  perf-stat.i.cpu-migrations
+ 4.812e+09           +22.2%  5.879e+09 ±  4%  perf-stat.i.dTLB-loads
+  2.91e+09           +21.9%  3.547e+09 ±  4%  perf-stat.i.dTLB-stores
+  1.77e+10           +22.5%  2.168e+10 ±  4%  perf-stat.i.instructions
+     15015           +24.9%      18748 ±  4%  perf-stat.i.instructions-per-iTLB-miss
+      0.39 ±  3%     +18.1%       0.47 ± 10%  perf-stat.i.metric.GHz
+    869.18           +25.6%       1091 ±  6%  perf-stat.i.metric.K/sec
+    119.36           +21.4%     144.94 ±  4%  perf-stat.i.metric.M/sec
+      3926            +6.2%       4169 ±  2%  perf-stat.i.minor-faults
+     35.58            -6.1       29.50 ± 13%  perf-stat.i.node-load-miss-rate%
+  27642154           +46.7%   40562253 ± 12%  perf-stat.i.node-loads
+     47.43            -6.3       41.18 ±  7%  perf-stat.i.node-store-miss-rate%
+  19442397           +36.2%   26480148 ±  9%  perf-stat.i.node-stores
+      3927            +6.2%       4170 ±  2%  perf-stat.i.page-faults
+     21.85           -11.5%      19.35        perf-stat.overall.MPKI
+      0.36            -0.0        0.33        perf-stat.overall.branch-miss-rate%
+     72.09            +6.9       78.95        perf-stat.overall.cache-miss-rate%
+     15115 ±  2%     +24.8%      18861 ±  4%  perf-stat.overall.instructions-per-iTLB-miss
+     36.17            -6.9       29.29 ± 12%  perf-stat.overall.node-load-miss-rate%
+     48.39            -6.8       41.56 ±  7%  perf-stat.overall.node-store-miss-rate%
+   7111992            -4.1%    6818682        perf-stat.overall.path-length
+ 3.334e+09           +21.5%  4.051e+09 ±  5%  perf-stat.ps.branch-instructions
+  12009193           +12.4%   13497817 ±  4%  perf-stat.ps.branch-misses
+ 2.776e+08           +18.8%  3.297e+08 ±  4%  perf-stat.ps.cache-misses
+  3.85e+08            +8.5%  4.177e+08 ±  5%  perf-stat.ps.cache-references
+     78798 ±  9%     -56.6%      34220 ± 14%  perf-stat.ps.context-switches
+ 3.782e+10 ±  3%     +18.2%   4.47e+10 ± 10%  perf-stat.ps.cpu-cycles
+    211.41           +23.5%     261.13 ±  8%  perf-stat.ps.cpu-migrations
+ 4.791e+09           +22.2%  5.853e+09 ±  4%  perf-stat.ps.dTLB-loads
+ 2.897e+09           +21.9%  3.531e+09 ±  4%  perf-stat.ps.dTLB-stores
+ 1.762e+10           +22.5%  2.159e+10 ±  4%  perf-stat.ps.instructions
+      3921            +6.2%       4164 ±  2%  perf-stat.ps.minor-faults
+  27527246           +46.7%   40382491 ± 12%  perf-stat.ps.node-loads
+  19376729           +36.1%   26378339 ±  9%  perf-stat.ps.node-stores
+      3922            +6.2%       4165 ±  2%  perf-stat.ps.page-faults
+ 3.569e+12           +22.4%  4.367e+12 ±  4%  perf-stat.total.instructions
+     19.48 ± 13%     -19.5        0.00        perf-profile.calltrace.cycles-pp.bdev_write_page.__mpage_writepage.write_cache_pages.mpage_writepages.do_writepages
+     16.17 ± 13%     -16.2        0.00        perf-profile.calltrace.cycles-pp.pmem_rw_page.bdev_write_page.__mpage_writepage.write_cache_pages.mpage_writepages
+      8.50 ± 14%      -8.5        0.00        perf-profile.calltrace.cycles-pp.folio_end_writeback.pmem_rw_page.bdev_write_page.__mpage_writepage.write_cache_pages
+      7.60 ± 18%      -7.6        0.00        perf-profile.calltrace.cycles-pp.pmem_do_write.pmem_rw_page.bdev_write_page.__mpage_writepage.write_cache_pages
+      7.52 ± 18%      -7.5        0.00        perf-profile.calltrace.cycles-pp.__memcpy_flushcache.pmem_do_write.pmem_rw_page.bdev_write_page.__mpage_writepage
+      5.79 ± 19%      -5.8        0.00        perf-profile.calltrace.cycles-pp.__folio_end_writeback.folio_end_writeback.pmem_rw_page.bdev_write_page.__mpage_writepage
+      4.38 ± 13%      -1.1        3.32 ±  9%  perf-profile.calltrace.cycles-pp.balance_dirty_pages_ratelimited_flags.generic_perform_write.__generic_file_write_iter.generic_file_write_iter.io_write
+      0.76 ± 12%      +0.2        0.98 ±  8%  perf-profile.calltrace.cycles-pp.__mod_lruvec_page_state.folio_account_dirtied.__folio_mark_dirty.mark_buffer_dirty.__block_commit_write
+      1.34 ± 14%      +0.3        1.67 ±  8%  perf-profile.calltrace.cycles-pp.fault_in_readable.fault_in_iov_iter_readable.generic_perform_write.__generic_file_write_iter.generic_file_write_iter
+      0.27 ±100%      +0.4        0.64 ±  9%  perf-profile.calltrace.cycles-pp.__mod_memcg_lruvec_state.__mod_lruvec_page_state.folio_account_dirtied.__folio_mark_dirty.mark_buffer_dirty
+      0.39 ± 71%      +0.5        0.88 ± 14%  perf-profile.calltrace.cycles-pp.free_buffer_head.try_to_free_buffers.mapping_evict_folio.invalidate_mapping_pagevec.generic_fadvise
+      0.50 ± 46%      +0.5        0.99 ± 11%  perf-profile.calltrace.cycles-pp.drop_buffers.try_to_free_buffers.mapping_evict_folio.invalidate_mapping_pagevec.generic_fadvise
+      0.39 ± 71%      +0.5        0.88 ± 17%  perf-profile.calltrace.cycles-pp.find_lock_entries.invalidate_mapping_pagevec.generic_fadvise.ksys_fadvise64_64.__x64_sys_fadvise64
+      0.26 ±100%      +0.5        0.79 ± 17%  perf-profile.calltrace.cycles-pp.__free_one_page.free_pcppages_bulk.free_unref_page_list.release_pages.__pagevec_release
+      0.09 ±223%      +0.6        0.69 ± 14%  perf-profile.calltrace.cycles-pp.__mod_lruvec_page_state.filemap_unaccount_folio.__filemap_remove_folio.__remove_mapping.remove_mapping
+      0.10 ±223%      +0.6        0.72 ± 15%  perf-profile.calltrace.cycles-pp.filemap_unaccount_folio.__filemap_remove_folio.__remove_mapping.remove_mapping.invalidate_mapping_pagevec
+      0.46 ± 71%      +0.6        1.09 ± 18%  perf-profile.calltrace.cycles-pp.free_pcppages_bulk.free_unref_page_list.release_pages.__pagevec_release.invalidate_mapping_pagevec
+      0.78 ± 46%      +0.7        1.44 ± 13%  perf-profile.calltrace.cycles-pp.__filemap_remove_folio.__remove_mapping.remove_mapping.invalidate_mapping_pagevec.generic_fadvise
+      0.76 ± 46%      +0.7        1.46 ± 17%  perf-profile.calltrace.cycles-pp.free_unref_page_list.release_pages.__pagevec_release.invalidate_mapping_pagevec.generic_fadvise
+      2.19 ± 12%      +0.8        3.02 ± 13%  perf-profile.calltrace.cycles-pp.get_io_u
+      1.01 ± 46%      +0.8        1.84 ± 13%  perf-profile.calltrace.cycles-pp.__remove_mapping.remove_mapping.invalidate_mapping_pagevec.generic_fadvise.ksys_fadvise64_64
+      1.03 ± 46%      +0.8        1.86 ± 13%  perf-profile.calltrace.cycles-pp.remove_mapping.invalidate_mapping_pagevec.generic_fadvise.ksys_fadvise64_64.__x64_sys_fadvise64
+      1.16 ± 25%      +0.9        2.02 ± 12%  perf-profile.calltrace.cycles-pp.try_to_free_buffers.mapping_evict_folio.invalidate_mapping_pagevec.generic_fadvise.ksys_fadvise64_64
+      1.19 ± 25%      +0.9        2.06 ± 12%  perf-profile.calltrace.cycles-pp.mapping_evict_folio.invalidate_mapping_pagevec.generic_fadvise.ksys_fadvise64_64.__x64_sys_fadvise64
+      0.16 ±223%      +1.1        1.22 ± 52%  perf-profile.calltrace.cycles-pp._raw_spin_lock_irqsave.folio_lruvec_lock_irqsave.release_pages.__pagevec_release.invalidate_mapping_pagevec
+      0.16 ±223%      +1.1        1.23 ± 52%  perf-profile.calltrace.cycles-pp.folio_lruvec_lock_irqsave.release_pages.__pagevec_release.invalidate_mapping_pagevec.generic_fadvise
+      1.66 ± 29%      +1.2        2.87 ± 17%  perf-profile.calltrace.cycles-pp.rmqueue_bulk.rmqueue.get_page_from_freelist.__alloc_pages.folio_alloc
+      0.89 ± 61%      +1.2        2.11 ± 24%  perf-profile.calltrace.cycles-pp.native_queued_spin_lock_slowpath._raw_spin_lock_irqsave.rmqueue_bulk.rmqueue.get_page_from_freelist
+      2.03 ± 25%      +1.2        3.26 ± 15%  perf-profile.calltrace.cycles-pp.rmqueue.get_page_from_freelist.__alloc_pages.folio_alloc.__filemap_get_folio
+      0.90 ± 61%      +1.2        2.13 ± 23%  perf-profile.calltrace.cycles-pp._raw_spin_lock_irqsave.rmqueue_bulk.rmqueue.get_page_from_freelist.__alloc_pages
+      3.04 ± 19%      +1.3        4.33 ± 11%  perf-profile.calltrace.cycles-pp.folio_alloc.__filemap_get_folio.pagecache_get_page.block_write_begin.ext2_write_begin
+      2.92 ± 20%      +1.3        4.22 ± 11%  perf-profile.calltrace.cycles-pp.__alloc_pages.folio_alloc.__filemap_get_folio.pagecache_get_page.block_write_begin
+      2.73 ± 21%      +1.3        4.03 ± 12%  perf-profile.calltrace.cycles-pp.get_page_from_freelist.__alloc_pages.folio_alloc.__filemap_get_folio.pagecache_get_page
+      0.00            +1.4        1.38 ± 24%  perf-profile.calltrace.cycles-pp.__folio_start_writeback.__mpage_writepage.write_cache_pages.mpage_writepages.do_writepages
+      7.60 ± 16%      +1.9        9.53 ±  9%  perf-profile.calltrace.cycles-pp.pagecache_get_page.block_write_begin.ext2_write_begin.generic_perform_write.__generic_file_write_iter
+      7.57 ± 16%      +1.9        9.50 ± 10%  perf-profile.calltrace.cycles-pp.__filemap_get_folio.pagecache_get_page.block_write_begin.ext2_write_begin.generic_perform_write
+      1.89 ± 36%      +2.1        3.94 ± 22%  perf-profile.calltrace.cycles-pp.release_pages.__pagevec_release.invalidate_mapping_pagevec.generic_fadvise.ksys_fadvise64_64
+      1.90 ± 36%      +2.1        3.95 ± 22%  perf-profile.calltrace.cycles-pp.__pagevec_release.invalidate_mapping_pagevec.generic_fadvise.ksys_fadvise64_64.__x64_sys_fadvise64
+      0.00            +2.2        2.20 ± 17%  perf-profile.calltrace.cycles-pp.__folio_end_writeback.folio_end_writeback.mpage_end_io.__submit_bio.__submit_bio_noacct
+      0.00            +2.5        2.50 ± 18%  perf-profile.calltrace.cycles-pp.folio_end_writeback.mpage_end_io.__submit_bio.__submit_bio_noacct.__mpage_writepage
+      0.00            +2.9        2.94 ± 18%  perf-profile.calltrace.cycles-pp.mpage_end_io.__submit_bio.__submit_bio_noacct.__mpage_writepage.write_cache_pages
+      4.79 ± 30%      +4.2        8.94 ± 16%  perf-profile.calltrace.cycles-pp.invalidate_mapping_pagevec.generic_fadvise.ksys_fadvise64_64.__x64_sys_fadvise64.do_syscall_64
+      0.00            +9.7        9.74 ± 13%  perf-profile.calltrace.cycles-pp.__memcpy_flushcache.pmem_do_write.pmem_submit_bio.__submit_bio.__submit_bio_noacct
+      0.00            +9.8        9.84 ± 13%  perf-profile.calltrace.cycles-pp.pmem_do_write.pmem_submit_bio.__submit_bio.__submit_bio_noacct.__mpage_writepage
+      0.00            +9.9        9.94 ± 13%  perf-profile.calltrace.cycles-pp.pmem_submit_bio.__submit_bio.__submit_bio_noacct.__mpage_writepage.write_cache_pages
+      0.00           +12.9       12.90 ± 14%  perf-profile.calltrace.cycles-pp.__submit_bio_noacct.__mpage_writepage.write_cache_pages.mpage_writepages.do_writepages
+      0.00           +12.9       12.90 ± 14%  perf-profile.calltrace.cycles-pp.__submit_bio.__submit_bio_noacct.__mpage_writepage.write_cache_pages.mpage_writepages
+     19.50 ± 13%     -19.5        0.00        perf-profile.children.cycles-pp.bdev_write_page
+     16.17 ± 13%     -16.2        0.00        perf-profile.children.cycles-pp.pmem_rw_page
+      8.51 ± 14%      -6.0        2.51 ± 17%  perf-profile.children.cycles-pp.folio_end_writeback
+      5.82 ± 19%      -3.6        2.24 ± 18%  perf-profile.children.cycles-pp.__folio_end_writeback
+      2.97 ± 26%      -1.4        1.55 ± 18%  perf-profile.children.cycles-pp.__folio_start_writeback
+      4.40 ± 13%      -1.1        3.33 ±  9%  perf-profile.children.cycles-pp.balance_dirty_pages_ratelimited_flags
+      0.31 ± 19%      -0.3        0.04 ± 72%  perf-profile.children.cycles-pp.fprop_reflect_period_percpu
+      0.42 ± 19%      -0.2        0.22 ± 23%  perf-profile.children.cycles-pp.__fprop_add_percpu
+      0.32 ± 23%      -0.2        0.15 ± 17%  perf-profile.children.cycles-pp.__list_add_valid
+      0.41 ± 16%      -0.1        0.32 ±  9%  perf-profile.children.cycles-pp.__irq_exit_rcu
+      0.30 ± 12%      -0.1        0.22 ± 20%  perf-profile.children.cycles-pp._raw_spin_unlock_irqrestore
+      0.06 ± 49%      +0.0        0.10 ± 16%  perf-profile.children.cycles-pp.uncharge_folio
+      0.10 ± 14%      +0.0        0.15 ± 20%  perf-profile.children.cycles-pp.xas_find_marked
+      0.05 ± 71%      +0.1        0.10 ± 18%  perf-profile.children.cycles-pp.xas_find
+      0.00            +0.1        0.06 ± 17%  perf-profile.children.cycles-pp.folio_mapping
+      0.13 ± 19%      +0.1        0.20 ±  7%  perf-profile.children.cycles-pp.node_page_state
+      0.00            +0.1        0.07 ± 16%  perf-profile.children.cycles-pp.__bio_try_merge_page
+      0.08 ± 51%      +0.1        0.16 ± 17%  perf-profile.children.cycles-pp.page_counter_uncharge
+      0.16 ± 27%      +0.1        0.25 ±  9%  perf-profile.children.cycles-pp.__slab_free
+      0.37 ± 17%      +0.1        0.46 ± 12%  perf-profile.children.cycles-pp.__count_memcg_events
+      0.12 ± 53%      +0.1        0.22 ± 16%  perf-profile.children.cycles-pp.uncharge_batch
+      0.00            +0.1        0.12 ± 17%  perf-profile.children.cycles-pp.bio_add_page
+      0.24 ± 15%      +0.1        0.36 ± 18%  perf-profile.children.cycles-pp.__xa_clear_mark
+      0.20 ± 36%      +0.1        0.34 ± 15%  perf-profile.children.cycles-pp.__mem_cgroup_uncharge_list
+      0.53 ±  8%      +0.2        0.72 ±  8%  perf-profile.children.cycles-pp.__mod_node_page_state
+      0.63 ±  9%      +0.2        0.85 ±  8%  perf-profile.children.cycles-pp.__mod_lruvec_state
+      0.33 ± 25%      +0.2        0.57 ± 12%  perf-profile.children.cycles-pp.kmem_cache_free
+      0.64 ± 18%      +0.3        0.90 ± 21%  perf-profile.children.cycles-pp.filemap_get_folios_tag
+      1.36 ± 15%      +0.3        1.69 ±  7%  perf-profile.children.cycles-pp.fault_in_readable
+      0.46 ± 24%      +0.3        0.81 ± 17%  perf-profile.children.cycles-pp.__free_one_page
+      0.38 ± 36%      +0.3        0.73 ± 14%  perf-profile.children.cycles-pp.filemap_unaccount_folio
+      0.51 ± 27%      +0.4        0.88 ± 14%  perf-profile.children.cycles-pp.free_buffer_head
+      0.50 ± 27%      +0.4        0.89 ± 17%  perf-profile.children.cycles-pp.find_lock_entries
+      0.01 ±223%      +0.4        0.40 ± 23%  perf-profile.children.cycles-pp.page_endio
+      0.55 ± 25%      +0.4        1.00 ± 11%  perf-profile.children.cycles-pp.drop_buffers
+      1.53 ± 14%      +0.5        1.99 ±  9%  perf-profile.children.cycles-pp.cgroup_rstat_updated
+      0.59 ± 27%      +0.5        1.11 ± 18%  perf-profile.children.cycles-pp.free_pcppages_bulk
+      1.98 ± 14%      +0.6        2.56 ±  9%  perf-profile.children.cycles-pp.__mod_memcg_lruvec_state
+      0.84 ± 28%      +0.6        1.45 ± 13%  perf-profile.children.cycles-pp.__filemap_remove_folio
+      1.52 ± 23%      +0.6        2.14 ± 21%  perf-profile.children.cycles-pp.folio_batch_move_lru
+      0.83 ± 27%      +0.6        1.47 ± 17%  perf-profile.children.cycles-pp.free_unref_page_list
+      1.10 ± 27%      +0.8        1.85 ± 13%  perf-profile.children.cycles-pp.__remove_mapping
+      1.11 ± 27%      +0.8        1.87 ± 13%  perf-profile.children.cycles-pp.remove_mapping
+      2.20 ± 12%      +0.8        3.03 ± 13%  perf-profile.children.cycles-pp.get_io_u
+      1.16 ± 26%      +0.9        2.02 ± 12%  perf-profile.children.cycles-pp.try_to_free_buffers
+      1.19 ± 25%      +0.9        2.06 ± 12%  perf-profile.children.cycles-pp.mapping_evict_folio
+      2.87 ± 12%      +0.9        3.77 ±  9%  perf-profile.children.cycles-pp.__mod_lruvec_page_state
+      1.69 ± 28%      +1.2        2.90 ± 17%  perf-profile.children.cycles-pp.rmqueue_bulk
+      2.08 ± 24%      +1.2        3.30 ± 15%  perf-profile.children.cycles-pp.rmqueue
+      2.98 ± 20%      +1.3        4.27 ± 11%  perf-profile.children.cycles-pp.__alloc_pages
+      2.78 ± 21%      +1.3        4.08 ± 12%  perf-profile.children.cycles-pp.get_page_from_freelist
+      3.04 ± 19%      +1.3        4.34 ± 11%  perf-profile.children.cycles-pp.folio_alloc
+      0.92 ± 63%      +1.4        2.30 ± 46%  perf-profile.children.cycles-pp.folio_lruvec_lock_irqsave
+      7.62 ± 16%      +1.9        9.56 ±  9%  perf-profile.children.cycles-pp.__filemap_get_folio
+      7.64 ± 16%      +1.9        9.58 ±  9%  perf-profile.children.cycles-pp.pagecache_get_page
+      1.99 ± 34%      +2.1        4.06 ± 22%  perf-profile.children.cycles-pp.__pagevec_release
+      2.09 ± 32%      +2.1        4.17 ± 21%  perf-profile.children.cycles-pp.release_pages
+      7.53 ± 18%      +2.2        9.77 ± 13%  perf-profile.children.cycles-pp.__memcpy_flushcache
+      7.60 ± 18%      +2.3        9.86 ± 13%  perf-profile.children.cycles-pp.pmem_do_write
+      0.00            +2.9        2.94 ± 18%  perf-profile.children.cycles-pp.mpage_end_io
+      4.79 ± 30%      +4.2        8.94 ± 16%  perf-profile.children.cycles-pp.invalidate_mapping_pagevec
+      0.00           +10.0        9.96 ± 13%  perf-profile.children.cycles-pp.pmem_submit_bio
+      0.00           +12.9       12.92 ± 14%  perf-profile.children.cycles-pp.__submit_bio_noacct
+      0.00           +12.9       12.92 ± 14%  perf-profile.children.cycles-pp.__submit_bio
+      2.63 ± 12%      -2.4        0.26 ± 17%  perf-profile.self.cycles-pp.folio_end_writeback
+      3.43 ±  6%      -1.4        2.01 ± 12%  perf-profile.self.cycles-pp._raw_spin_lock_irqsave
+      1.53 ± 24%      -1.1        0.42 ± 11%  perf-profile.self.cycles-pp.balance_dirty_pages_ratelimited_flags
+      1.34 ± 17%      -0.9        0.41 ± 19%  perf-profile.self.cycles-pp.__folio_end_writeback
+      0.81 ± 13%      -0.5        0.35 ± 19%  perf-profile.self.cycles-pp.__folio_start_writeback
+      0.30 ± 19%      -0.3        0.03 ±102%  perf-profile.self.cycles-pp.fprop_reflect_period_percpu
+      0.30 ± 25%      -0.2        0.14 ± 17%  perf-profile.self.cycles-pp.__list_add_valid
+      0.24 ± 18%      -0.1        0.13 ±  6%  perf-profile.self.cycles-pp.folio_account_dirtied
+      0.12 ± 13%      -0.0        0.09 ± 15%  perf-profile.self.cycles-pp._raw_spin_unlock_irqrestore
+      0.11 ± 14%      +0.0        0.14 ± 11%  perf-profile.self.cycles-pp.__mod_zone_page_state
+      0.06 ± 46%      +0.0        0.10 ± 12%  perf-profile.self.cycles-pp.free_unref_page_commit
+      0.06 ± 46%      +0.0        0.09 ± 15%  perf-profile.self.cycles-pp.__filemap_remove_folio
+      0.06 ± 50%      +0.0        0.10 ± 18%  perf-profile.self.cycles-pp.uncharge_folio
+      0.01 ±223%      +0.1        0.06 ± 15%  perf-profile.self.cycles-pp.try_to_free_buffers
+      0.10 ± 18%      +0.1        0.15 ± 21%  perf-profile.self.cycles-pp.xas_find_marked
+      0.12 ± 31%      +0.1        0.18 ± 16%  perf-profile.self.cycles-pp.free_unref_page_list
+      0.12 ± 19%      +0.1        0.18 ±  6%  perf-profile.self.cycles-pp.node_page_state
+      0.00            +0.1        0.07 ± 13%  perf-profile.self.cycles-pp.__bio_try_merge_page
+      0.10 ± 45%      +0.1        0.16 ± 13%  perf-profile.self.cycles-pp.__remove_mapping
+      0.07 ± 51%      +0.1        0.14 ± 20%  perf-profile.self.cycles-pp.page_counter_uncharge
+      0.16 ± 27%      +0.1        0.24 ± 11%  perf-profile.self.cycles-pp.__slab_free
+      0.00            +0.1        0.10 ± 27%  perf-profile.self.cycles-pp.pmem_submit_bio
+      0.16 ± 28%      +0.1        0.29 ± 10%  perf-profile.self.cycles-pp.kmem_cache_free
+      0.38 ± 13%      +0.2        0.54 ± 12%  perf-profile.self.cycles-pp.release_pages
+      0.52 ±  9%      +0.2        0.70 ±  8%  perf-profile.self.cycles-pp.__mod_node_page_state
+      0.77 ± 13%      +0.2        0.98 ±  9%  perf-profile.self.cycles-pp.__mod_memcg_lruvec_state
+      0.53 ± 18%      +0.2        0.74 ± 21%  perf-profile.self.cycles-pp.filemap_get_folios_tag
+      0.73 ± 14%      +0.3        1.00 ± 11%  perf-profile.self.cycles-pp.__mod_lruvec_page_state
+      0.41 ± 24%      +0.3        0.72 ± 17%  perf-profile.self.cycles-pp.__free_one_page
+      1.33 ± 14%      +0.3        1.66 ±  7%  perf-profile.self.cycles-pp.fault_in_readable
+      0.45 ± 26%      +0.3        0.79 ± 17%  perf-profile.self.cycles-pp.find_lock_entries
+      0.92 ± 16%      +0.4        1.28 ± 13%  perf-profile.self.cycles-pp.cgroup_rstat_updated
+      0.94 ± 11%      +0.4        1.31 ± 11%  perf-profile.self.cycles-pp.xas_load
+      0.01 ±223%      +0.4        0.39 ± 24%  perf-profile.self.cycles-pp.page_endio
+      0.54 ± 25%      +0.4        0.99 ± 11%  perf-profile.self.cycles-pp.drop_buffers
+      0.50 ± 19%      +0.5        1.02 ± 19%  perf-profile.self.cycles-pp.__mpage_writepage
+      2.18 ± 12%      +0.8        3.00 ± 14%  perf-profile.self.cycles-pp.get_io_u
+      7.47 ± 18%      +2.2        9.66 ± 13%  perf-profile.self.cycles-pp.__memcpy_flushcache
 
 
 To reproduce:
@@ -317,18 +471,24 @@ To reproduce:
         # please remove ~/.lkp and /lkp dir to run from a clean state.
 
 
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provided
+for informational purposes only. Any difference in system hardware or software
+design or configuration may affect actual performance.
+
+
 -- 
 0-DAY CI Kernel Test Service
 https://github.com/intel/lkp-tests
 
---MuXUmVDMr7gP5Pe2
+--trzHMlASx1H69zAx
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: attachment;
-	filename="config-6.3.0-rc1-00007-gef2f3f98fcf4"
+	filename="config-6.2.0-rc4-00383-g7d28631786b2"
 
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86_64 6.3.0-rc1 Kernel Configuration
+# Linux/x86_64 6.2.0-rc4 Kernel Configuration
 #
 CONFIG_CC_VERSION_TEXT="gcc-11 (Debian 11.3.0-8) 11.3.0"
 CONFIG_CC_IS_GCC=y
@@ -346,7 +506,6 @@ CONFIG_CC_HAS_ASM_GOTO_TIED_OUTPUT=y
 CONFIG_CC_HAS_ASM_INLINE=y
 CONFIG_CC_HAS_NO_PROFILE_FN_ATTR=y
 CONFIG_PAHOLE_VERSION=125
-CONFIG_CONSTRUCTORS=y
 CONFIG_IRQ_WORK=y
 CONFIG_BUILDTIME_TABLE_SORT=y
 CONFIG_THREAD_INFO_IN_TASK=y
@@ -399,7 +558,6 @@ CONFIG_GENERIC_IRQ_MIGRATION=y
 CONFIG_GENERIC_IRQ_INJECTION=y
 CONFIG_HARDIRQS_SW_RESEND=y
 CONFIG_IRQ_DOMAIN=y
-CONFIG_IRQ_SIM=y
 CONFIG_IRQ_DOMAIN_HIERARCHY=y
 CONFIG_GENERIC_MSI_IRQ=y
 CONFIG_IRQ_MSI_IOMMU=y
@@ -435,7 +593,7 @@ CONFIG_CONTEXT_TRACKING_USER=y
 # CONFIG_CONTEXT_TRACKING_USER_FORCE is not set
 CONFIG_NO_HZ=y
 CONFIG_HIGH_RES_TIMERS=y
-CONFIG_CLOCKSOURCE_WATCHDOG_MAX_SKEW_US=125
+CONFIG_CLOCKSOURCE_WATCHDOG_MAX_SKEW_US=100
 # end of Timers subsystem
 
 CONFIG_BPF=y
@@ -532,8 +690,7 @@ CONFIG_CGROUP_WRITEBACK=y
 CONFIG_CGROUP_SCHED=y
 CONFIG_FAIR_GROUP_SCHED=y
 CONFIG_CFS_BANDWIDTH=y
-CONFIG_RT_GROUP_SCHED=y
-CONFIG_SCHED_MM_CID=y
+# CONFIG_RT_GROUP_SCHED is not set
 CONFIG_CGROUP_PIDS=y
 CONFIG_CGROUP_RDMA=y
 CONFIG_CGROUP_FREEZER=y
@@ -554,7 +711,7 @@ CONFIG_IPC_NS=y
 CONFIG_USER_NS=y
 CONFIG_PID_NS=y
 CONFIG_NET_NS=y
-CONFIG_CHECKPOINT_RESTORE=y
+# CONFIG_CHECKPOINT_RESTORE is not set
 CONFIG_SCHED_AUTOGROUP=y
 # CONFIG_SYSFS_DEPRECATED is not set
 CONFIG_RELAY=y
@@ -577,7 +734,7 @@ CONFIG_SYSCTL=y
 CONFIG_HAVE_UID16=y
 CONFIG_SYSCTL_EXCEPTION_TRACE=y
 CONFIG_HAVE_PCSPKR_PLATFORM=y
-CONFIG_EXPERT=y
+# CONFIG_EXPERT is not set
 CONFIG_UID16=y
 CONFIG_MULTIUSER=y
 CONFIG_SGETMASK_SYSCALL=y
@@ -608,11 +765,9 @@ CONFIG_KALLSYMS_BASE_RELATIVE=y
 CONFIG_ARCH_HAS_MEMBARRIER_SYNC_CORE=y
 CONFIG_KCMP=y
 CONFIG_RSEQ=y
-# CONFIG_DEBUG_RSEQ is not set
-CONFIG_EMBEDDED=y
+# CONFIG_EMBEDDED is not set
 CONFIG_HAVE_PERF_EVENTS=y
 CONFIG_GUEST_PERF_EVENTS=y
-# CONFIG_PC104 is not set
 
 #
 # Kernel Performance Events And Counters
@@ -639,7 +794,6 @@ CONFIG_ARCH_MMAP_RND_BITS_MAX=32
 CONFIG_ARCH_MMAP_RND_COMPAT_BITS_MIN=8
 CONFIG_ARCH_MMAP_RND_COMPAT_BITS_MAX=16
 CONFIG_GENERIC_ISA_DMA=y
-CONFIG_GENERIC_CSUM=y
 CONFIG_GENERIC_BUG=y
 CONFIG_GENERIC_BUG_RELATIVE_POINTERS=y
 CONFIG_ARCH_MAY_HAVE_PC_FDC=y
@@ -648,7 +802,6 @@ CONFIG_ARCH_HAS_CPU_RELAX=y
 CONFIG_ARCH_HIBERNATION_POSSIBLE=y
 CONFIG_ARCH_SUSPEND_POSSIBLE=y
 CONFIG_AUDIT_ARCH=y
-CONFIG_KASAN_SHADOW_OFFSET=0xdffffc0000000000
 CONFIG_HAVE_INTEL_TXT=y
 CONFIG_X86_64_SMP=y
 CONFIG_ARCH_SUPPORTS_UPROBES=y
@@ -665,7 +818,7 @@ CONFIG_X86_FEATURE_NAMES=y
 CONFIG_X86_X2APIC=y
 CONFIG_X86_MPPARSE=y
 # CONFIG_GOLDFISH is not set
-CONFIG_X86_CPU_RESCTRL=y
+# CONFIG_X86_CPU_RESCTRL is not set
 CONFIG_X86_EXTENDED_PLATFORM=y
 # CONFIG_X86_NUMACHIP is not set
 # CONFIG_X86_VSMP is not set
@@ -706,15 +859,15 @@ CONFIG_X86_MINIMUM_CPU_FAMILY=64
 CONFIG_X86_DEBUGCTLMSR=y
 CONFIG_IA32_FEAT_CTL=y
 CONFIG_X86_VMX_FEATURE_NAMES=y
-CONFIG_PROCESSOR_SELECT=y
 CONFIG_CPU_SUP_INTEL=y
-# CONFIG_CPU_SUP_AMD is not set
-# CONFIG_CPU_SUP_HYGON is not set
-# CONFIG_CPU_SUP_CENTAUR is not set
-# CONFIG_CPU_SUP_ZHAOXIN is not set
+CONFIG_CPU_SUP_AMD=y
+CONFIG_CPU_SUP_HYGON=y
+CONFIG_CPU_SUP_CENTAUR=y
+CONFIG_CPU_SUP_ZHAOXIN=y
 CONFIG_HPET_TIMER=y
 CONFIG_HPET_EMULATE_RTC=y
 CONFIG_DMI=y
+# CONFIG_GART_IOMMU is not set
 CONFIG_BOOT_VESA_SUPPORT=y
 CONFIG_MAXSMP=y
 CONFIG_NR_CPUS_RANGE_BEGIN=8192
@@ -731,6 +884,7 @@ CONFIG_X86_REROUTE_FOR_BROKEN_BOOT_IRQS=y
 CONFIG_X86_MCE=y
 CONFIG_X86_MCELOG_LEGACY=y
 CONFIG_X86_MCE_INTEL=y
+# CONFIG_X86_MCE_AMD is not set
 CONFIG_X86_MCE_THRESHOLD=y
 CONFIG_X86_MCE_INJECT=m
 
@@ -740,6 +894,9 @@ CONFIG_X86_MCE_INJECT=m
 CONFIG_PERF_EVENTS_INTEL_UNCORE=m
 CONFIG_PERF_EVENTS_INTEL_RAPL=m
 CONFIG_PERF_EVENTS_INTEL_CSTATE=m
+# CONFIG_PERF_EVENTS_AMD_POWER is not set
+# CONFIG_PERF_EVENTS_AMD_UNCORE is not set
+# CONFIG_PERF_EVENTS_AMD_BRS is not set
 # end of Performance monitoring
 
 CONFIG_X86_16BIT=y
@@ -748,6 +905,7 @@ CONFIG_X86_VSYSCALL_EMULATION=y
 CONFIG_X86_IOPL_IOPERM=y
 CONFIG_MICROCODE=y
 CONFIG_MICROCODE_INTEL=y
+# CONFIG_MICROCODE_AMD is not set
 CONFIG_MICROCODE_LATE_LOADING=y
 CONFIG_X86_MSR=y
 CONFIG_X86_CPUID=y
@@ -755,6 +913,7 @@ CONFIG_X86_5LEVEL=y
 CONFIG_X86_DIRECT_GBPAGES=y
 # CONFIG_X86_CPA_STATISTICS is not set
 CONFIG_X86_MEM_ENCRYPT=y
+# CONFIG_AMD_MEM_ENCRYPT is not set
 CONFIG_NUMA=y
 # CONFIG_AMD_NUMA is not set
 CONFIG_X86_64_ACPI_NUMA=y
@@ -782,7 +941,7 @@ CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS=y
 CONFIG_X86_INTEL_TSX_MODE_OFF=y
 # CONFIG_X86_INTEL_TSX_MODE_ON is not set
 # CONFIG_X86_INTEL_TSX_MODE_AUTO is not set
-CONFIG_X86_SGX=y
+# CONFIG_X86_SGX is not set
 CONFIG_EFI=y
 CONFIG_EFI_STUB=y
 CONFIG_EFI_HANDOVER_PROTOCOL=y
@@ -824,9 +983,18 @@ CONFIG_CC_HAS_RETURN_THUNK=y
 CONFIG_CC_HAS_ENTRY_PADDING=y
 CONFIG_FUNCTION_PADDING_CFI=11
 CONFIG_FUNCTION_PADDING_BYTES=16
+CONFIG_CALL_PADDING=y
+CONFIG_HAVE_CALL_THUNKS=y
+CONFIG_CALL_THUNKS=y
+CONFIG_PREFIX_SYMBOLS=y
 CONFIG_SPECULATION_MITIGATIONS=y
 CONFIG_PAGE_TABLE_ISOLATION=y
-# CONFIG_RETPOLINE is not set
+CONFIG_RETPOLINE=y
+CONFIG_RETHUNK=y
+CONFIG_CPU_UNRET_ENTRY=y
+CONFIG_CALL_DEPTH_TRACKING=y
+# CONFIG_CALL_THUNKS_DEBUG is not set
+CONFIG_CPU_IBPB_ENTRY=y
 CONFIG_CPU_IBRS_ENTRY=y
 # CONFIG_SLS is not set
 CONFIG_ARCH_HAS_ADD_PAGES=y
@@ -838,7 +1006,6 @@ CONFIG_ARCH_MHP_MEMMAP_ON_MEMORY_ENABLE=y
 CONFIG_ARCH_HIBERNATION_HEADER=y
 CONFIG_SUSPEND=y
 CONFIG_SUSPEND_FREEZER=y
-# CONFIG_SUSPEND_SKIP_SYNC is not set
 CONFIG_HIBERNATE_CALLBACKS=y
 CONFIG_HIBERNATION=y
 CONFIG_HIBERNATION_SNAPSHOT_DEV=y
@@ -853,7 +1020,6 @@ CONFIG_PM_DEBUG=y
 # CONFIG_PM_ADVANCED_DEBUG is not set
 # CONFIG_PM_TEST_SUSPEND is not set
 CONFIG_PM_SLEEP_DEBUG=y
-# CONFIG_DPM_WATCHDOG is not set
 # CONFIG_PM_TRACE_RTC is not set
 CONFIG_PM_CLK=y
 # CONFIG_WQ_POWER_EFFICIENT_DEFAULT is not set
@@ -898,7 +1064,6 @@ CONFIG_ACPI_SBS=m
 CONFIG_ACPI_HED=y
 # CONFIG_ACPI_CUSTOM_METHOD is not set
 CONFIG_ACPI_BGRT=y
-# CONFIG_ACPI_REDUCED_HARDWARE_ONLY is not set
 CONFIG_ACPI_NFIT=m
 # CONFIG_NFIT_SECURITY_DEBUG is not set
 CONFIG_ACPI_NUMA=y
@@ -949,7 +1114,9 @@ CONFIG_X86_INTEL_PSTATE=y
 # CONFIG_X86_AMD_PSTATE is not set
 # CONFIG_X86_AMD_PSTATE_UT is not set
 CONFIG_X86_ACPI_CPUFREQ=m
+CONFIG_X86_ACPI_CPUFREQ_CPB=y
 # CONFIG_X86_POWERNOW_K8 is not set
+# CONFIG_X86_AMD_FREQ_SENSITIVITY is not set
 # CONFIG_X86_SPEEDSTEP_CENTRINO is not set
 CONFIG_X86_P4_CLOCKMOD=m
 
@@ -966,7 +1133,7 @@ CONFIG_CPU_IDLE=y
 # CONFIG_CPU_IDLE_GOV_LADDER is not set
 CONFIG_CPU_IDLE_GOV_MENU=y
 # CONFIG_CPU_IDLE_GOV_TEO is not set
-CONFIG_CPU_IDLE_GOV_HALTPOLL=y
+# CONFIG_CPU_IDLE_GOV_HALTPOLL is not set
 CONFIG_HALTPOLL_CPUIDLE=y
 # end of CPU Idle
 
@@ -979,9 +1146,8 @@ CONFIG_INTEL_IDLE=y
 CONFIG_PCI_DIRECT=y
 CONFIG_PCI_MMCONFIG=y
 CONFIG_MMCONF_FAM10H=y
-# CONFIG_PCI_CNB20LE_QUIRK is not set
-# CONFIG_ISA_BUS is not set
 CONFIG_ISA_DMA_API=y
+CONFIG_AMD_NB=y
 # end of Bus options (PCI etc.)
 
 #
@@ -1014,12 +1180,9 @@ CONFIG_HAVE_KVM_IRQ_BYPASS=y
 CONFIG_HAVE_KVM_NO_POLL=y
 CONFIG_KVM_XFER_TO_GUEST_WORK=y
 CONFIG_HAVE_KVM_PM_NOTIFIER=y
-CONFIG_KVM_GENERIC_HARDWARE_ENABLING=y
 CONFIG_VIRTUALIZATION=y
 CONFIG_KVM=m
-# CONFIG_KVM_WERROR is not set
 CONFIG_KVM_INTEL=m
-# CONFIG_X86_SGX_KVM is not set
 # CONFIG_KVM_AMD is not set
 CONFIG_KVM_SMM=y
 # CONFIG_KVM_XEN is not set
@@ -1027,14 +1190,12 @@ CONFIG_AS_AVX512=y
 CONFIG_AS_SHA1_NI=y
 CONFIG_AS_SHA256_NI=y
 CONFIG_AS_TPAUSE=y
-CONFIG_AS_GFNI=y
 
 #
 # General architecture-dependent options
 #
 CONFIG_CRASH_CORE=y
 CONFIG_KEXEC_CORE=y
-CONFIG_HAVE_IMA_KEXEC=y
 CONFIG_HOTPLUG_SMT=y
 CONFIG_GENERIC_ENTRY=y
 CONFIG_KPROBES=y
@@ -1146,7 +1307,7 @@ CONFIG_HAVE_ARCH_VMAP_STACK=y
 CONFIG_VMAP_STACK=y
 CONFIG_HAVE_ARCH_RANDOMIZE_KSTACK_OFFSET=y
 CONFIG_RANDOMIZE_KSTACK_OFFSET=y
-CONFIG_RANDOMIZE_KSTACK_OFFSET_DEFAULT=y
+# CONFIG_RANDOMIZE_KSTACK_OFFSET_DEFAULT is not set
 CONFIG_ARCH_HAS_STRICT_KERNEL_RWX=y
 CONFIG_STRICT_KERNEL_RWX=y
 CONFIG_ARCH_HAS_STRICT_MODULE_RWX=y
@@ -1166,7 +1327,6 @@ CONFIG_ARCH_SUPPORTS_PAGE_TABLE_CHECK=y
 CONFIG_ARCH_HAS_ELFCORE_COMPAT=y
 CONFIG_ARCH_HAS_PARANOID_L1D_FLUSH=y
 CONFIG_DYNAMIC_SIGFRAME=y
-CONFIG_HAVE_ARCH_NODE_DEV_GROUP=y
 CONFIG_ARCH_HAS_NONLEAF_PMD_YOUNG=y
 
 #
@@ -1209,7 +1369,6 @@ CONFIG_MODULE_COMPRESS_NONE=y
 # CONFIG_MODULE_COMPRESS_ZSTD is not set
 # CONFIG_MODULE_ALLOW_MISSING_NAMESPACE_IMPORTS is not set
 CONFIG_MODPROBE_PATH="/sbin/modprobe"
-# CONFIG_TRIM_UNUSED_KSYMS is not set
 CONFIG_MODULES_TREE_LOOKUP=y
 CONFIG_BLOCK=y
 CONFIG_BLOCK_LEGACY_AUTOLOAD=y
@@ -1259,7 +1418,11 @@ CONFIG_BFQ_GROUP_IOSCHED=y
 CONFIG_PREEMPT_NOTIFIERS=y
 CONFIG_PADATA=y
 CONFIG_ASN1=y
-CONFIG_UNINLINE_SPIN_UNLOCK=y
+CONFIG_INLINE_SPIN_UNLOCK_IRQ=y
+CONFIG_INLINE_READ_UNLOCK=y
+CONFIG_INLINE_READ_UNLOCK_IRQ=y
+CONFIG_INLINE_WRITE_UNLOCK=y
+CONFIG_INLINE_WRITE_UNLOCK_IRQ=y
 CONFIG_ARCH_SUPPORTS_ATOMIC_RMW=y
 CONFIG_MUTEX_SPIN_ON_OWNER=y
 CONFIG_RWSEM_SPIN_ON_OWNER=y
@@ -1314,11 +1477,9 @@ CONFIG_ZSMALLOC_CHAIN_SIZE=8
 #
 # CONFIG_SLAB is not set
 CONFIG_SLUB=y
-# CONFIG_SLOB_DEPRECATED is not set
-# CONFIG_SLUB_TINY is not set
 CONFIG_SLAB_MERGE_DEFAULT=y
 CONFIG_SLAB_FREELIST_RANDOM=y
-CONFIG_SLAB_FREELIST_HARDENED=y
+# CONFIG_SLAB_FREELIST_HARDENED is not set
 # CONFIG_SLUB_STATS is not set
 CONFIG_SLUB_CPU_PARTIAL=y
 # end of SLAB allocator options
@@ -1372,7 +1533,6 @@ CONFIG_USE_PERCPU_NUMA_NODE_ID=y
 CONFIG_HAVE_SETUP_PER_CPU_AREA=y
 CONFIG_FRONTSWAP=y
 # CONFIG_CMA is not set
-CONFIG_MEM_SOFT_DIRTY=y
 CONFIG_GENERIC_EARLY_IOREMAP=y
 CONFIG_DEFERRED_STRUCT_PAGE_INIT=y
 CONFIG_PAGE_IDLE_FLAG=y
@@ -1380,11 +1540,9 @@ CONFIG_IDLE_PAGE_TRACKING=y
 CONFIG_ARCH_HAS_CACHE_LINE_SIZE=y
 CONFIG_ARCH_HAS_CURRENT_STACK_POINTER=y
 CONFIG_ARCH_HAS_PTE_DEVMAP=y
-CONFIG_ARCH_HAS_ZONE_DMA_SET=y
 CONFIG_ZONE_DMA=y
 CONFIG_ZONE_DMA32=y
 CONFIG_ZONE_DEVICE=y
-CONFIG_HMM_MIRROR=y
 CONFIG_GET_FREE_REGION=y
 CONFIG_DEVICE_PRIVATE=y
 CONFIG_VMAP_PFN=y
@@ -1392,7 +1550,7 @@ CONFIG_ARCH_USES_HIGH_VMA_FLAGS=y
 CONFIG_ARCH_HAS_PKEYS=y
 CONFIG_VM_EVENT_COUNTERS=y
 # CONFIG_PERCPU_STATS is not set
-CONFIG_GUP_TEST=y
+# CONFIG_GUP_TEST is not set
 CONFIG_ARCH_HAS_PTE_SPECIAL=y
 CONFIG_SECRETMEM=y
 # CONFIG_ANON_VMA_NAME is not set
@@ -1405,20 +1563,13 @@ CONFIG_PTE_MARKER_UFFD_WP=y
 #
 # Data Access Monitoring
 #
-CONFIG_DAMON=y
-CONFIG_DAMON_VADDR=y
-CONFIG_DAMON_PADDR=y
-CONFIG_DAMON_SYSFS=y
-CONFIG_DAMON_DBGFS=y
-# CONFIG_DAMON_RECLAIM is not set
-# CONFIG_DAMON_LRU_SORT is not set
+# CONFIG_DAMON is not set
 # end of Data Access Monitoring
 # end of Memory Management options
 
 CONFIG_NET=y
 CONFIG_NET_INGRESS=y
 CONFIG_NET_EGRESS=y
-CONFIG_NET_REDIRECT=y
 CONFIG_SKB_EXTENSIONS=y
 
 #
@@ -1474,8 +1625,8 @@ CONFIG_IP_PIMSM_V2=y
 CONFIG_SYN_COOKIES=y
 CONFIG_NET_IPVTI=m
 CONFIG_NET_UDP_TUNNEL=m
-CONFIG_NET_FOU=m
-CONFIG_NET_FOU_IP_TUNNELS=y
+# CONFIG_NET_FOU is not set
+# CONFIG_NET_FOU_IP_TUNNELS is not set
 CONFIG_INET_AH=m
 CONFIG_INET_ESP=m
 CONFIG_INET_ESP_OFFLOAD=m
@@ -1529,8 +1680,6 @@ CONFIG_IPV6_SIT_6RD=y
 CONFIG_IPV6_NDISC_NODETYPE=y
 CONFIG_IPV6_TUNNEL=m
 CONFIG_IPV6_GRE=m
-CONFIG_IPV6_FOU=m
-CONFIG_IPV6_FOU_TUNNEL=m
 CONFIG_IPV6_MULTIPLE_TABLES=y
 # CONFIG_IPV6_SUBTREES is not set
 CONFIG_IPV6_MROUTE=y
@@ -1539,11 +1688,9 @@ CONFIG_IPV6_PIMSM_V2=y
 # CONFIG_IPV6_SEG6_LWTUNNEL is not set
 # CONFIG_IPV6_SEG6_HMAC is not set
 # CONFIG_IPV6_RPL_LWTUNNEL is not set
-CONFIG_IPV6_IOAM6_LWTUNNEL=y
+# CONFIG_IPV6_IOAM6_LWTUNNEL is not set
 CONFIG_NETLABEL=y
-CONFIG_MPTCP=y
-CONFIG_INET_MPTCP_DIAG=m
-CONFIG_MPTCP_IPV6=y
+# CONFIG_MPTCP is not set
 CONFIG_NETWORK_SECMARK=y
 CONFIG_NET_PTP_CLASSIFY=y
 CONFIG_NETWORK_PHY_TIMESTAMPING=y
@@ -1576,7 +1723,6 @@ CONFIG_NF_CONNTRACK_EVENTS=y
 CONFIG_NF_CONNTRACK_TIMEOUT=y
 CONFIG_NF_CONNTRACK_TIMESTAMP=y
 CONFIG_NF_CONNTRACK_LABELS=y
-CONFIG_NF_CONNTRACK_OVS=y
 CONFIG_NF_CT_PROTO_DCCP=y
 CONFIG_NF_CT_PROTO_GRE=y
 CONFIG_NF_CT_PROTO_SCTP=y
@@ -1611,7 +1757,6 @@ CONFIG_NF_TABLES_INET=y
 CONFIG_NF_TABLES_NETDEV=y
 CONFIG_NFT_NUMGEN=m
 CONFIG_NFT_CT=m
-CONFIG_NFT_FLOW_OFFLOAD=m
 CONFIG_NFT_CONNLIMIT=m
 CONFIG_NFT_LOG=m
 CONFIG_NFT_LIMIT=m
@@ -1630,16 +1775,14 @@ CONFIG_NFT_FIB_INET=m
 # CONFIG_NFT_XFRM is not set
 CONFIG_NFT_SOCKET=m
 # CONFIG_NFT_OSF is not set
-CONFIG_NFT_TPROXY=m
-CONFIG_NFT_SYNPROXY=m
+# CONFIG_NFT_TPROXY is not set
+# CONFIG_NFT_SYNPROXY is not set
 CONFIG_NF_DUP_NETDEV=m
 CONFIG_NFT_DUP_NETDEV=m
 CONFIG_NFT_FWD_NETDEV=m
 CONFIG_NFT_FIB_NETDEV=m
 # CONFIG_NFT_REJECT_NETDEV is not set
-CONFIG_NF_FLOW_TABLE_INET=m
-CONFIG_NF_FLOW_TABLE=m
-# CONFIG_NF_FLOW_TABLE_PROCFS is not set
+# CONFIG_NF_FLOW_TABLE is not set
 CONFIG_NETFILTER_XTABLES=y
 CONFIG_NETFILTER_XTABLES_COMPAT=y
 
@@ -1831,6 +1974,7 @@ CONFIG_IP_NF_TARGET_MASQUERADE=m
 CONFIG_IP_NF_TARGET_NETMAP=m
 CONFIG_IP_NF_TARGET_REDIRECT=m
 CONFIG_IP_NF_MANGLE=m
+# CONFIG_IP_NF_TARGET_CLUSTERIP is not set
 CONFIG_IP_NF_TARGET_ECN=m
 CONFIG_IP_NF_TARGET_TTL=m
 CONFIG_IP_NF_RAW=m
@@ -1902,7 +2046,24 @@ CONFIG_BRIDGE_EBT_SNAT=m
 CONFIG_BRIDGE_EBT_LOG=m
 CONFIG_BRIDGE_EBT_NFLOG=m
 # CONFIG_BPFILTER is not set
-# CONFIG_IP_DCCP is not set
+CONFIG_IP_DCCP=y
+CONFIG_INET_DCCP_DIAG=m
+
+#
+# DCCP CCIDs Configuration
+#
+# CONFIG_IP_DCCP_CCID2_DEBUG is not set
+CONFIG_IP_DCCP_CCID3=y
+# CONFIG_IP_DCCP_CCID3_DEBUG is not set
+CONFIG_IP_DCCP_TFRC_LIB=y
+# end of DCCP CCIDs Configuration
+
+#
+# DCCP Kernel Hacking
+#
+# CONFIG_IP_DCCP_DEBUG is not set
+# end of DCCP Kernel Hacking
+
 CONFIG_IP_SCTP=m
 # CONFIG_SCTP_DBG_OBJCNT is not set
 # CONFIG_SCTP_DEFAULT_COOKIE_HMAC_MD5 is not set
@@ -1928,19 +2089,19 @@ CONFIG_L2TP_DEBUGFS=m
 CONFIG_L2TP_V3=y
 CONFIG_L2TP_IP=m
 CONFIG_L2TP_ETH=m
-CONFIG_STP=y
-CONFIG_GARP=y
-CONFIG_MRP=y
+CONFIG_STP=m
+CONFIG_GARP=m
+CONFIG_MRP=m
 CONFIG_BRIDGE=m
 CONFIG_BRIDGE_IGMP_SNOOPING=y
 CONFIG_BRIDGE_VLAN_FILTERING=y
 # CONFIG_BRIDGE_MRP is not set
 # CONFIG_BRIDGE_CFM is not set
 # CONFIG_NET_DSA is not set
-CONFIG_VLAN_8021Q=y
+CONFIG_VLAN_8021Q=m
 CONFIG_VLAN_8021Q_GVRP=y
 CONFIG_VLAN_8021Q_MVRP=y
-CONFIG_LLC=y
+CONFIG_LLC=m
 # CONFIG_LLC2 is not set
 # CONFIG_ATALK is not set
 # CONFIG_X25 is not set
@@ -1955,8 +2116,10 @@ CONFIG_NET_SCHED=y
 #
 # Queueing/Scheduling
 #
+CONFIG_NET_SCH_CBQ=m
 CONFIG_NET_SCH_HTB=m
 CONFIG_NET_SCH_HFSC=m
+CONFIG_NET_SCH_ATM=m
 CONFIG_NET_SCH_PRIO=m
 CONFIG_NET_SCH_MULTIQ=m
 CONFIG_NET_SCH_RED=m
@@ -1964,32 +2127,31 @@ CONFIG_NET_SCH_SFB=m
 CONFIG_NET_SCH_SFQ=m
 CONFIG_NET_SCH_TEQL=m
 CONFIG_NET_SCH_TBF=m
-CONFIG_NET_SCH_CBS=m
-CONFIG_NET_SCH_ETF=m
-CONFIG_NET_SCH_MQPRIO_LIB=m
-CONFIG_NET_SCH_TAPRIO=m
+# CONFIG_NET_SCH_CBS is not set
+# CONFIG_NET_SCH_ETF is not set
+# CONFIG_NET_SCH_TAPRIO is not set
 CONFIG_NET_SCH_GRED=m
-CONFIG_NET_SCH_NETEM=y
+CONFIG_NET_SCH_DSMARK=m
+CONFIG_NET_SCH_NETEM=m
 CONFIG_NET_SCH_DRR=m
 CONFIG_NET_SCH_MQPRIO=m
-CONFIG_NET_SCH_SKBPRIO=m
+# CONFIG_NET_SCH_SKBPRIO is not set
 CONFIG_NET_SCH_CHOKE=m
 CONFIG_NET_SCH_QFQ=m
 CONFIG_NET_SCH_CODEL=m
 CONFIG_NET_SCH_FQ_CODEL=y
-CONFIG_NET_SCH_CAKE=m
+# CONFIG_NET_SCH_CAKE is not set
 CONFIG_NET_SCH_FQ=m
 CONFIG_NET_SCH_HHF=m
 CONFIG_NET_SCH_PIE=m
-CONFIG_NET_SCH_FQ_PIE=m
-CONFIG_NET_SCH_INGRESS=y
+# CONFIG_NET_SCH_FQ_PIE is not set
+CONFIG_NET_SCH_INGRESS=m
 CONFIG_NET_SCH_PLUG=m
-CONFIG_NET_SCH_ETS=m
+# CONFIG_NET_SCH_ETS is not set
 CONFIG_NET_SCH_DEFAULT=y
 # CONFIG_DEFAULT_FQ is not set
 # CONFIG_DEFAULT_CODEL is not set
 CONFIG_DEFAULT_FQ_CODEL=y
-# CONFIG_DEFAULT_FQ_PIE is not set
 # CONFIG_DEFAULT_SFQ is not set
 # CONFIG_DEFAULT_PFIFO_FAST is not set
 CONFIG_DEFAULT_NET_SCH="fq_codel"
@@ -1999,11 +2161,14 @@ CONFIG_DEFAULT_NET_SCH="fq_codel"
 #
 CONFIG_NET_CLS=y
 CONFIG_NET_CLS_BASIC=m
+CONFIG_NET_CLS_TCINDEX=m
 CONFIG_NET_CLS_ROUTE4=m
 CONFIG_NET_CLS_FW=m
 CONFIG_NET_CLS_U32=m
 CONFIG_CLS_U32_PERF=y
 CONFIG_CLS_U32_MARK=y
+CONFIG_NET_CLS_RSVP=m
+CONFIG_NET_CLS_RSVP6=m
 CONFIG_NET_CLS_FLOW=m
 CONFIG_NET_CLS_CGROUP=y
 CONFIG_NET_CLS_BPF=m
@@ -2016,34 +2181,30 @@ CONFIG_NET_EMATCH_NBYTE=m
 CONFIG_NET_EMATCH_U32=m
 CONFIG_NET_EMATCH_META=m
 CONFIG_NET_EMATCH_TEXT=m
-CONFIG_NET_EMATCH_CANID=m
+# CONFIG_NET_EMATCH_CANID is not set
 CONFIG_NET_EMATCH_IPSET=m
-CONFIG_NET_EMATCH_IPT=m
+# CONFIG_NET_EMATCH_IPT is not set
 CONFIG_NET_CLS_ACT=y
 CONFIG_NET_ACT_POLICE=m
 CONFIG_NET_ACT_GACT=m
 CONFIG_GACT_PROB=y
 CONFIG_NET_ACT_MIRRED=m
 CONFIG_NET_ACT_SAMPLE=m
-CONFIG_NET_ACT_IPT=m
+# CONFIG_NET_ACT_IPT is not set
 CONFIG_NET_ACT_NAT=m
 CONFIG_NET_ACT_PEDIT=m
 CONFIG_NET_ACT_SIMP=m
 CONFIG_NET_ACT_SKBEDIT=m
 CONFIG_NET_ACT_CSUM=m
-CONFIG_NET_ACT_MPLS=m
+# CONFIG_NET_ACT_MPLS is not set
 CONFIG_NET_ACT_VLAN=m
 CONFIG_NET_ACT_BPF=m
-CONFIG_NET_ACT_CONNMARK=m
-CONFIG_NET_ACT_CTINFO=m
+# CONFIG_NET_ACT_CONNMARK is not set
+# CONFIG_NET_ACT_CTINFO is not set
 CONFIG_NET_ACT_SKBMOD=m
-CONFIG_NET_ACT_IFE=m
+# CONFIG_NET_ACT_IFE is not set
 CONFIG_NET_ACT_TUNNEL_KEY=m
-CONFIG_NET_ACT_CT=m
-CONFIG_NET_ACT_GATE=m
-CONFIG_NET_IFE_SKBMARK=m
-CONFIG_NET_IFE_SKBPRIO=m
-CONFIG_NET_IFE_SKBTCINDEX=m
+# CONFIG_NET_ACT_GATE is not set
 # CONFIG_NET_TC_SKB_EXT is not set
 CONFIG_NET_SCH_FIFO=y
 CONFIG_DCB=y
@@ -2105,7 +2266,6 @@ CONFIG_WIRELESS=y
 CONFIG_CFG80211=m
 # CONFIG_NL80211_TESTMODE is not set
 # CONFIG_CFG80211_DEVELOPER_WARNINGS is not set
-# CONFIG_CFG80211_CERTIFICATION_ONUS is not set
 CONFIG_CFG80211_REQUIRE_SIGNED_REGDB=y
 CONFIG_CFG80211_USE_KERNEL_REGDB_KEYS=y
 CONFIG_CFG80211_DEFAULT_PS=y
@@ -2135,29 +2295,9 @@ CONFIG_NET_9P_VIRTIO=y
 CONFIG_CEPH_LIB=m
 # CONFIG_CEPH_LIB_PRETTYDEBUG is not set
 CONFIG_CEPH_LIB_USE_DNS_RESOLVER=y
-CONFIG_NFC=m
-# CONFIG_NFC_DIGITAL is not set
-CONFIG_NFC_NCI=m
-# CONFIG_NFC_NCI_SPI is not set
-# CONFIG_NFC_NCI_UART is not set
-# CONFIG_NFC_HCI is not set
-
-#
-# Near Field Communication (NFC) devices
-#
-CONFIG_NFC_VIRTUAL_NCI=m
-# CONFIG_NFC_FDP is not set
-# CONFIG_NFC_PN533_USB is not set
-# CONFIG_NFC_PN533_I2C is not set
-# CONFIG_NFC_MRVL_USB is not set
-# CONFIG_NFC_ST_NCI_I2C is not set
-# CONFIG_NFC_ST_NCI_SPI is not set
-# CONFIG_NFC_NXP_NCI is not set
-# CONFIG_NFC_S3FWRN5_I2C is not set
-# end of Near Field Communication (NFC) devices
-
+# CONFIG_NFC is not set
 CONFIG_PSAMPLE=m
-CONFIG_NET_IFE=m
+# CONFIG_NET_IFE is not set
 CONFIG_LWTUNNEL=y
 CONFIG_LWTUNNEL_BPF=y
 CONFIG_DST_CACHE=y
@@ -2165,7 +2305,6 @@ CONFIG_GRO_CELLS=y
 CONFIG_SOCK_VALIDATE_XMIT=y
 CONFIG_NET_SELFTESTS=y
 CONFIG_NET_SOCK_MSG=y
-CONFIG_NET_DEVLINK=y
 CONFIG_PAGE_POOL=y
 # CONFIG_PAGE_POOL_STATS is not set
 CONFIG_FAILOVER=m
@@ -2207,11 +2346,6 @@ CONFIG_PCI_PASID=y
 # CONFIG_PCI_P2PDMA is not set
 CONFIG_PCI_LABEL=y
 CONFIG_PCI_HYPERV=m
-# CONFIG_PCIE_BUS_TUNE_OFF is not set
-CONFIG_PCIE_BUS_DEFAULT=y
-# CONFIG_PCIE_BUS_SAFE is not set
-# CONFIG_PCIE_BUS_PERFORMANCE is not set
-# CONFIG_PCIE_BUS_PEER2PEER is not set
 CONFIG_VGA_ARB=y
 CONFIG_VGA_ARB_MAX_GPUS=64
 CONFIG_HOTPLUG_PCI=y
@@ -2282,7 +2416,7 @@ CONFIG_FW_LOADER_USER_HELPER=y
 # CONFIG_FW_LOADER_USER_HELPER_FALLBACK is not set
 # CONFIG_FW_LOADER_COMPRESS is not set
 CONFIG_FW_CACHE=y
-CONFIG_FW_UPLOAD=y
+# CONFIG_FW_UPLOAD is not set
 # end of Firmware loader
 
 CONFIG_ALLOW_DEV_COREDUMP=y
@@ -2370,6 +2504,7 @@ CONFIG_PARPORT_PC=m
 CONFIG_PARPORT_SERIAL=m
 # CONFIG_PARPORT_PC_FIFO is not set
 # CONFIG_PARPORT_PC_SUPERIO is not set
+# CONFIG_PARPORT_AX88796 is not set
 CONFIG_PARPORT_1284=y
 CONFIG_PNP=y
 # CONFIG_PNP_DEBUG_MESSAGES is not set
@@ -2380,17 +2515,11 @@ CONFIG_PNP=y
 CONFIG_PNPACPI=y
 CONFIG_BLK_DEV=y
 CONFIG_BLK_DEV_NULL_BLK=m
-# CONFIG_BLK_DEV_NULL_BLK_FAULT_INJECTION is not set
 # CONFIG_BLK_DEV_FD is not set
 CONFIG_CDROM=m
+# CONFIG_PARIDE is not set
 # CONFIG_BLK_DEV_PCIESSD_MTIP32XX is not set
-CONFIG_ZRAM=m
-CONFIG_ZRAM_DEF_COMP_LZORLE=y
-# CONFIG_ZRAM_DEF_COMP_LZO is not set
-CONFIG_ZRAM_DEF_COMP="lzo-rle"
-CONFIG_ZRAM_WRITEBACK=y
-# CONFIG_ZRAM_MEMORY_TRACKING is not set
-# CONFIG_ZRAM_MULTI_COMP is not set
+# CONFIG_ZRAM is not set
 CONFIG_BLK_DEV_LOOP=m
 CONFIG_BLK_DEV_LOOP_MIN_COUNT=0
 # CONFIG_BLK_DEV_DRBD is not set
@@ -2497,6 +2626,7 @@ CONFIG_VMWARE_VMCI=m
 # CONFIG_MISC_ALCOR_PCI is not set
 CONFIG_MISC_RTSX_PCI=m
 # CONFIG_MISC_RTSX_USB is not set
+# CONFIG_HABANA_AI is not set
 # CONFIG_UACCE is not set
 CONFIG_PVPANIC=y
 # CONFIG_PVPANIC_MMIO is not set
@@ -2701,7 +2831,6 @@ CONFIG_ATA_PIIX=m
 # CONFIG_PATA_NS87410 is not set
 # CONFIG_PATA_OPTI is not set
 # CONFIG_PATA_RZ1000 is not set
-# CONFIG_PATA_PARPORT is not set
 
 #
 # Generic fallback / legacy drivers
@@ -2784,30 +2913,30 @@ CONFIG_NETDEVICES=y
 CONFIG_MII=y
 CONFIG_NET_CORE=y
 # CONFIG_BONDING is not set
-CONFIG_DUMMY=m
+# CONFIG_DUMMY is not set
 # CONFIG_WIREGUARD is not set
 # CONFIG_EQUALIZER is not set
 # CONFIG_NET_FC is not set
-CONFIG_IFB=m
+# CONFIG_IFB is not set
 # CONFIG_NET_TEAM is not set
 # CONFIG_MACVLAN is not set
 # CONFIG_IPVLAN is not set
 # CONFIG_VXLAN is not set
 # CONFIG_GENEVE is not set
-CONFIG_BAREUDP=m
+# CONFIG_BAREUDP is not set
 # CONFIG_GTP is not set
-CONFIG_AMT=m
-CONFIG_MACSEC=y
+# CONFIG_AMT is not set
+# CONFIG_MACSEC is not set
 CONFIG_NETCONSOLE=m
 CONFIG_NETCONSOLE_DYNAMIC=y
 CONFIG_NETPOLL=y
 CONFIG_NET_POLL_CONTROLLER=y
 CONFIG_TUN=m
 # CONFIG_TUN_VNET_CROSS_LE is not set
-CONFIG_VETH=m
+# CONFIG_VETH is not set
 CONFIG_VIRTIO_NET=m
 # CONFIG_NLMON is not set
-CONFIG_NET_VRF=y
+# CONFIG_NET_VRF is not set
 # CONFIG_VSOCKMON is not set
 # CONFIG_ARCNET is not set
 CONFIG_ATM_DRIVERS=y
@@ -3074,7 +3203,6 @@ CONFIG_AX88796B_PHY=y
 # CONFIG_NATIONAL_PHY is not set
 # CONFIG_NXP_C45_TJA11XX_PHY is not set
 # CONFIG_NXP_TJA11XX_PHY is not set
-# CONFIG_NCN26000_PHY is not set
 # CONFIG_QSEMI_PHY is not set
 CONFIG_REALTEK_PHY=y
 # CONFIG_RENESAS_PHY is not set
@@ -3218,7 +3346,6 @@ CONFIG_WLAN_VENDOR_ATH=y
 # CONFIG_ATH10K is not set
 # CONFIG_WCN36XX is not set
 # CONFIG_ATH11K is not set
-# CONFIG_ATH12K is not set
 CONFIG_WLAN_VENDOR_ATMEL=y
 # CONFIG_ATMEL is not set
 # CONFIG_AT76C50X_USB is not set
@@ -3298,7 +3425,7 @@ CONFIG_WLAN_VENDOR_QUANTENNA=y
 # CONFIG_VMXNET3 is not set
 # CONFIG_FUJITSU_ES is not set
 CONFIG_HYPERV_NET=m
-CONFIG_NETDEVSIM=m
+# CONFIG_NETDEVSIM is not set
 CONFIG_NET_FAILOVER=m
 # CONFIG_ISDN is not set
 
@@ -3448,14 +3575,12 @@ CONFIG_SERIAL_8250_PNP=y
 # CONFIG_SERIAL_8250_FINTEK is not set
 CONFIG_SERIAL_8250_CONSOLE=y
 CONFIG_SERIAL_8250_DMA=y
-CONFIG_SERIAL_8250_PCILIB=y
 CONFIG_SERIAL_8250_PCI=y
 CONFIG_SERIAL_8250_EXAR=y
 CONFIG_SERIAL_8250_NR_UARTS=64
 CONFIG_SERIAL_8250_RUNTIME_UARTS=4
 CONFIG_SERIAL_8250_EXTENDED=y
 CONFIG_SERIAL_8250_MANY_PORTS=y
-CONFIG_SERIAL_8250_PCI1XXXX=y
 CONFIG_SERIAL_8250_SHARE_IRQ=y
 # CONFIG_SERIAL_8250_DETECT_IRQ is not set
 CONFIG_SERIAL_8250_RSA=y
@@ -3499,7 +3624,6 @@ CONFIG_NOZOMI=m
 # CONFIG_NULL_TTY is not set
 CONFIG_HVC_DRIVER=y
 # CONFIG_SERIAL_DEV_BUS is not set
-# CONFIG_TTY_PRINTK is not set
 CONFIG_PRINTER=m
 # CONFIG_LP_CONSOLE is not set
 CONFIG_PPDEV=m
@@ -3577,7 +3701,7 @@ CONFIG_I2C_MUX_MLXCPLD=m
 # end of Multiplexer I2C Chip support
 
 CONFIG_I2C_HELPER_AUTO=y
-CONFIG_I2C_SMBUS=m
+CONFIG_I2C_SMBUS=y
 CONFIG_I2C_ALGOBIT=y
 CONFIG_I2C_ALGOPCA=m
 
@@ -3594,7 +3718,7 @@ CONFIG_I2C_ALGOPCA=m
 # CONFIG_I2C_AMD756 is not set
 # CONFIG_I2C_AMD8111 is not set
 # CONFIG_I2C_AMD_MP2 is not set
-CONFIG_I2C_I801=m
+CONFIG_I2C_I801=y
 CONFIG_I2C_ISCH=m
 CONFIG_I2C_ISMT=m
 CONFIG_I2C_PIIX4=m
@@ -3769,7 +3893,6 @@ CONFIG_GPIOLIB=y
 CONFIG_GPIOLIB_FASTPATH_LIMIT=512
 CONFIG_GPIO_ACPI=y
 # CONFIG_DEBUG_GPIO is not set
-CONFIG_GPIO_SYSFS=y
 CONFIG_GPIO_CDEV=y
 CONFIG_GPIO_CDEV_V1=y
 
@@ -3844,9 +3967,9 @@ CONFIG_GPIO_ICH=m
 #
 # CONFIG_GPIO_AGGREGATOR is not set
 # CONFIG_GPIO_LATCH is not set
-CONFIG_GPIO_MOCKUP=m
+# CONFIG_GPIO_MOCKUP is not set
 # CONFIG_GPIO_VIRTIO is not set
-CONFIG_GPIO_SIM=m
+# CONFIG_GPIO_SIM is not set
 # end of Virtual GPIO drivers
 
 # CONFIG_W1 is not set
@@ -3855,6 +3978,7 @@ CONFIG_POWER_RESET=y
 CONFIG_POWER_SUPPLY=y
 # CONFIG_POWER_SUPPLY_DEBUG is not set
 CONFIG_POWER_SUPPLY_HWMON=y
+# CONFIG_PDA_POWER is not set
 # CONFIG_IP5XXX_POWER is not set
 # CONFIG_TEST_POWER is not set
 # CONFIG_CHARGER_ADP5061 is not set
@@ -3919,6 +4043,8 @@ CONFIG_SENSORS_ADT7475=m
 CONFIG_SENSORS_ASC7621=m
 # CONFIG_SENSORS_AXI_FAN_CONTROL is not set
 CONFIG_SENSORS_K8TEMP=m
+CONFIG_SENSORS_K10TEMP=m
+CONFIG_SENSORS_FAM15H_POWER=m
 CONFIG_SENSORS_APPLESMC=m
 CONFIG_SENSORS_ASB100=m
 CONFIG_SENSORS_ATXP1=m
@@ -3973,7 +4099,6 @@ CONFIG_SENSORS_MAX6639=m
 CONFIG_SENSORS_MAX6650=m
 CONFIG_SENSORS_MAX6697=m
 # CONFIG_SENSORS_MAX31790 is not set
-# CONFIG_SENSORS_MC34VR500 is not set
 CONFIG_SENSORS_MCP3021=m
 # CONFIG_SENSORS_MLXREG_FAN is not set
 # CONFIG_SENSORS_TC654 is not set
@@ -4041,14 +4166,12 @@ CONFIG_SENSORS_MAX8688=m
 # CONFIG_SENSORS_MP2888 is not set
 # CONFIG_SENSORS_MP2975 is not set
 # CONFIG_SENSORS_MP5023 is not set
-# CONFIG_SENSORS_MPQ7932 is not set
 # CONFIG_SENSORS_PIM4328 is not set
 # CONFIG_SENSORS_PLI1209BC is not set
 # CONFIG_SENSORS_PM6764TR is not set
 # CONFIG_SENSORS_PXE1610 is not set
 # CONFIG_SENSORS_Q54SJ108A2 is not set
 # CONFIG_SENSORS_STPDDC60 is not set
-# CONFIG_SENSORS_TDA38640 is not set
 # CONFIG_SENSORS_TPS40422 is not set
 # CONFIG_SENSORS_TPS53679 is not set
 # CONFIG_SENSORS_TPS546D24 is not set
@@ -4124,7 +4247,6 @@ CONFIG_THERMAL=y
 # CONFIG_THERMAL_STATISTICS is not set
 CONFIG_THERMAL_EMERGENCY_POWEROFF_DELAY_MS=0
 CONFIG_THERMAL_HWMON=y
-CONFIG_THERMAL_ACPI=y
 CONFIG_THERMAL_WRITABLE_TRIPS=y
 CONFIG_THERMAL_DEFAULT_GOV_STEP_WISE=y
 # CONFIG_THERMAL_DEFAULT_GOV_FAIR_SHARE is not set
@@ -4140,7 +4262,6 @@ CONFIG_THERMAL_GOV_USER_SPACE=y
 #
 CONFIG_INTEL_POWERCLAMP=m
 CONFIG_X86_THERMAL_VECTOR=y
-CONFIG_INTEL_TCC=y
 CONFIG_X86_PKG_TEMP_THERMAL=m
 # CONFIG_INTEL_SOC_DTS_THERMAL is not set
 
@@ -4266,8 +4387,9 @@ CONFIG_MFD_CORE=y
 # CONFIG_MFD_MC13XXX_SPI is not set
 # CONFIG_MFD_MC13XXX_I2C is not set
 # CONFIG_MFD_MP2629 is not set
+# CONFIG_HTC_PASIC3 is not set
 # CONFIG_MFD_INTEL_QUARK_I2C_GPIO is not set
-CONFIG_LPC_ICH=m
+CONFIG_LPC_ICH=y
 CONFIG_LPC_SCH=m
 CONFIG_MFD_INTEL_LPSS=y
 CONFIG_MFD_INTEL_LPSS_ACPI=y
@@ -4335,7 +4457,7 @@ CONFIG_MFD_VX855=m
 # CONFIG_MFD_WM8350_I2C is not set
 # CONFIG_MFD_WM8994 is not set
 # CONFIG_MFD_ATC260X_I2C is not set
-# CONFIG_MFD_INTEL_M10_BMC_SPI is not set
+# CONFIG_MFD_INTEL_M10_BMC is not set
 # end of Multifunction device drivers
 
 # CONFIG_REGULATOR is not set
@@ -4351,7 +4473,7 @@ CONFIG_IR_RC5_DECODER=m
 CONFIG_IR_RC6_DECODER=m
 # CONFIG_IR_RCMM_DECODER is not set
 CONFIG_IR_SANYO_DECODER=m
-CONFIG_IR_SHARP_DECODER=m
+# CONFIG_IR_SHARP_DECODER is not set
 CONFIG_IR_SONY_DECODER=m
 # CONFIG_IR_XMP_DECODER is not set
 CONFIG_RC_DEVICES=y
@@ -4372,7 +4494,7 @@ CONFIG_IR_SERIAL_TRANSMITTER=y
 # CONFIG_IR_TTUSBIR is not set
 CONFIG_IR_WINBOND_CIR=m
 # CONFIG_RC_ATI_REMOTE is not set
-CONFIG_RC_LOOPBACK=m
+# CONFIG_RC_LOOPBACK is not set
 # CONFIG_RC_XBOX_DVD is not set
 
 #
@@ -4412,6 +4534,8 @@ CONFIG_MEDIA_SUBDRV_AUTOSELECT=y
 # CONFIG_MEDIA_PCI_SUPPORT is not set
 # end of Media drivers
 
+CONFIG_MEDIA_HIDE_ANCILLARY_SUBDRV=y
+
 #
 # Media ancillary drivers
 #
@@ -4427,12 +4551,10 @@ CONFIG_INTEL_GTT=m
 CONFIG_VGA_SWITCHEROO=y
 CONFIG_DRM=m
 CONFIG_DRM_MIPI_DSI=y
+CONFIG_DRM_USE_DYNAMIC_DEBUG=y
 CONFIG_DRM_KMS_HELPER=m
-# CONFIG_DRM_DEBUG_DP_MST_TOPOLOGY_REFS is not set
-CONFIG_DRM_DEBUG_MODESET_LOCK=y
 CONFIG_DRM_FBDEV_EMULATION=y
 CONFIG_DRM_FBDEV_OVERALLOC=100
-# CONFIG_DRM_FBDEV_LEAK_PHYS_SMEM is not set
 CONFIG_DRM_LOAD_EDID_FIRMWARE=y
 CONFIG_DRM_DISPLAY_HELPER=m
 CONFIG_DRM_DISPLAY_DP_HELPER=y
@@ -4469,25 +4591,6 @@ CONFIG_DRM_I915_CAPTURE_ERROR=y
 CONFIG_DRM_I915_COMPRESS_ERROR=y
 CONFIG_DRM_I915_USERPTR=y
 # CONFIG_DRM_I915_GVT_KVMGT is not set
-
-#
-# drm/i915 Debugging
-#
-# CONFIG_DRM_I915_WERROR is not set
-# CONFIG_DRM_I915_DEBUG is not set
-# CONFIG_DRM_I915_DEBUG_MMIO is not set
-# CONFIG_DRM_I915_SW_FENCE_DEBUG_OBJECTS is not set
-# CONFIG_DRM_I915_SW_FENCE_CHECK_DAG is not set
-# CONFIG_DRM_I915_DEBUG_GUC is not set
-# CONFIG_DRM_I915_SELFTEST is not set
-# CONFIG_DRM_I915_LOW_LEVEL_TRACEPOINTS is not set
-# CONFIG_DRM_I915_DEBUG_VBLANK_EVADE is not set
-# CONFIG_DRM_I915_DEBUG_RUNTIME_PM is not set
-# end of drm/i915 Debugging
-
-#
-# drm/i915 Profile Guided Optimisation
-#
 CONFIG_DRM_I915_REQUEST_TIMEOUT=20000
 CONFIG_DRM_I915_FENCE_TIMEOUT=10000
 CONFIG_DRM_I915_USERFAULT_AUTOSUSPEND=250
@@ -4497,9 +4600,7 @@ CONFIG_DRM_I915_PREEMPT_TIMEOUT_COMPUTE=7500
 CONFIG_DRM_I915_MAX_REQUEST_BUSYWAIT=8000
 CONFIG_DRM_I915_STOP_TIMEOUT=100
 CONFIG_DRM_I915_TIMESLICE_DURATION=1
-# end of drm/i915 Profile Guided Optimisation
-
-CONFIG_DRM_VGEM=m
+# CONFIG_DRM_VGEM is not set
 # CONFIG_DRM_VKMS is not set
 # CONFIG_DRM_VMWGFX is not set
 CONFIG_DRM_GMA500=m
@@ -4513,8 +4614,6 @@ CONFIG_DRM_PANEL=y
 #
 # Display Panels
 #
-# CONFIG_DRM_PANEL_AUO_A030JTN01 is not set
-# CONFIG_DRM_PANEL_ORISETECH_OTA5601A is not set
 # CONFIG_DRM_PANEL_RASPBERRYPI_TOUCHSCREEN is not set
 # CONFIG_DRM_PANEL_WIDECHIPS_WS2401 is not set
 # end of Display Panels
@@ -4639,7 +4738,6 @@ CONFIG_LCD_PLATFORM=m
 # CONFIG_LCD_OTM3225A is not set
 CONFIG_BACKLIGHT_CLASS_DEVICE=y
 # CONFIG_BACKLIGHT_KTD253 is not set
-# CONFIG_BACKLIGHT_KTZ8866 is not set
 # CONFIG_BACKLIGHT_PWM is not set
 CONFIG_BACKLIGHT_APPLE=m
 # CONFIG_BACKLIGHT_QCOM_WLED is not set
@@ -4679,7 +4777,10 @@ CONFIG_LOGO_LINUX_CLUT224=y
 
 # CONFIG_DRM_ACCEL is not set
 # CONFIG_SOUND is not set
-CONFIG_HID_SUPPORT=y
+
+#
+# HID support
+#
 CONFIG_HID=y
 CONFIG_HID_BATTERY_STRENGTH=y
 CONFIG_HIDRAW=y
@@ -4715,7 +4816,6 @@ CONFIG_HID_DRAGONRISE=m
 # CONFIG_HID_ELAN is not set
 CONFIG_HID_ELECOM=m
 # CONFIG_HID_ELO is not set
-# CONFIG_HID_EVISION is not set
 CONFIG_HID_EZKEY=m
 # CONFIG_HID_FT260 is not set
 CONFIG_HID_GEMBIRD=m
@@ -4812,12 +4912,6 @@ CONFIG_HID_ALPS=m
 # end of Special HID drivers
 
 #
-# HID-BPF support
-#
-# CONFIG_HID_BPF is not set
-# end of HID-BPF support
-
-#
 # USB HID support
 #
 CONFIG_USB_HID=y
@@ -4825,8 +4919,11 @@ CONFIG_USB_HID=y
 # CONFIG_USB_HIDDEV is not set
 # end of USB HID support
 
-CONFIG_I2C_HID=m
+#
+# I2C HID support
+#
 # CONFIG_I2C_HID_ACPI is not set
+# end of I2C HID support
 
 #
 # Intel ISH HID support
@@ -4840,6 +4937,7 @@ CONFIG_INTEL_ISH_HID=m
 #
 # CONFIG_AMD_SFH_HID is not set
 # end of AMD SFH HID Support
+# end of HID support
 
 CONFIG_USB_OHCI_LITTLE_ENDIAN=y
 CONFIG_USB_SUPPORT=y
@@ -4860,7 +4958,6 @@ CONFIG_USB_DEFAULT_PERSIST=y
 # CONFIG_USB_DYNAMIC_MINORS is not set
 # CONFIG_USB_OTG is not set
 # CONFIG_USB_OTG_PRODUCTLIST is not set
-# CONFIG_USB_OTG_DISABLE_EXTERNAL_HUB is not set
 CONFIG_USB_LEDS_TRIGGER_USBPORT=y
 CONFIG_USB_AUTOSUSPEND_DELAY=2
 CONFIG_USB_MON=y
@@ -5054,7 +5151,6 @@ CONFIG_UCSI_ACPI=y
 # USB Type-C Multiplexer/DeMultiplexer Switch support
 #
 # CONFIG_TYPEC_MUX_FSA4480 is not set
-# CONFIG_TYPEC_MUX_GPIO_SBU is not set
 # CONFIG_TYPEC_MUX_PI3USB30532 is not set
 # end of USB Type-C Multiplexer/DeMultiplexer Switch support
 
@@ -5296,6 +5392,7 @@ CONFIG_RTC_DRV_M48T59=m
 CONFIG_RTC_DRV_MSM6242=m
 CONFIG_RTC_DRV_BQ4802=m
 CONFIG_RTC_DRV_RP5C01=m
+CONFIG_RTC_DRV_V3020=m
 
 #
 # on-CPU RTC drivers
@@ -5321,7 +5418,6 @@ CONFIG_INTEL_IDMA64=m
 # CONFIG_INTEL_IDXD_COMPAT is not set
 CONFIG_INTEL_IOATDMA=m
 # CONFIG_PLX_DMA is not set
-# CONFIG_XILINX_XDMA is not set
 # CONFIG_AMD_PTDMA is not set
 # CONFIG_QCOM_HIDMA_MGMT is not set
 # CONFIG_QCOM_HIDMA is not set
@@ -5329,6 +5425,7 @@ CONFIG_DW_DMAC_CORE=y
 CONFIG_DW_DMAC=m
 CONFIG_DW_DMAC_PCI=y
 # CONFIG_DW_EDMA is not set
+# CONFIG_DW_EDMA_PCIE is not set
 CONFIG_HSU_DMA=y
 # CONFIG_SF_PDMA is not set
 # CONFIG_INTEL_LDMA is not set
@@ -5344,14 +5441,13 @@ CONFIG_DMA_ENGINE_RAID=y
 # DMABUF options
 #
 CONFIG_SYNC_FILE=y
-CONFIG_SW_SYNC=y
-CONFIG_UDMABUF=y
+# CONFIG_SW_SYNC is not set
+# CONFIG_UDMABUF is not set
 # CONFIG_DMABUF_MOVE_NOTIFY is not set
 # CONFIG_DMABUF_DEBUG is not set
 # CONFIG_DMABUF_SELFTESTS is not set
-CONFIG_DMABUF_HEAPS=y
+# CONFIG_DMABUF_HEAPS is not set
 # CONFIG_DMABUF_SYSFS_STATS is not set
-CONFIG_DMABUF_HEAPS_SYSTEM=y
 # end of DMABUF options
 
 CONFIG_DCA=m
@@ -5379,13 +5475,9 @@ CONFIG_VFIO_PCI_INTX=y
 CONFIG_VFIO_PCI=m
 # CONFIG_VFIO_PCI_VGA is not set
 # CONFIG_VFIO_PCI_IGD is not set
+CONFIG_VFIO_MDEV=m
 CONFIG_IRQ_BYPASS_MANAGER=m
-CONFIG_VIRT_DRIVERS=y
-CONFIG_VMGENID=y
-# CONFIG_VBOXGUEST is not set
-# CONFIG_NITRO_ENCLAVES is not set
-# CONFIG_EFI_SECRET is not set
-CONFIG_TDX_GUEST_DRIVER=m
+# CONFIG_VIRT_DRIVERS is not set
 CONFIG_VIRTIO_ANCHOR=y
 CONFIG_VIRTIO=y
 CONFIG_VIRTIO_PCI_LIB=y
@@ -5419,25 +5511,7 @@ CONFIG_HYPERV_BALLOON=m
 
 # CONFIG_GREYBUS is not set
 # CONFIG_COMEDI is not set
-CONFIG_STAGING=y
-# CONFIG_PRISM2_USB is not set
-# CONFIG_RTL8192U is not set
-# CONFIG_RTLLIB is not set
-# CONFIG_RTL8723BS is not set
-# CONFIG_R8712U is not set
-# CONFIG_R8188EU is not set
-# CONFIG_RTS5208 is not set
-# CONFIG_VT6655 is not set
-# CONFIG_VT6656 is not set
-# CONFIG_FB_SM750 is not set
-# CONFIG_STAGING_MEDIA is not set
-# CONFIG_LTE_GDM724X is not set
-# CONFIG_FB_TFT is not set
-# CONFIG_KS7010 is not set
-# CONFIG_PI433 is not set
-# CONFIG_FIELDBUS_DEV is not set
-# CONFIG_QLGE is not set
-# CONFIG_VME_BUS is not set
+# CONFIG_STAGING is not set
 # CONFIG_CHROME_PLATFORMS is not set
 CONFIG_MELLANOX_PLATFORM=y
 CONFIG_MLXREG_HOTPLUG=m
@@ -5466,6 +5540,7 @@ CONFIG_ACERHDF=m
 CONFIG_ACER_WMI=m
 # CONFIG_AMD_PMF is not set
 # CONFIG_AMD_PMC is not set
+# CONFIG_AMD_HSMP is not set
 # CONFIG_ADV_SWBUTTON is not set
 CONFIG_APPLE_GMUX=m
 CONFIG_ASUS_LAPTOP=m
@@ -5597,9 +5672,7 @@ CONFIG_INTEL_IOMMU_SVM=y
 # CONFIG_INTEL_IOMMU_DEFAULT_ON is not set
 CONFIG_INTEL_IOMMU_FLOPPY_WA=y
 CONFIG_INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON=y
-CONFIG_INTEL_IOMMU_PERF_EVENTS=y
-CONFIG_IOMMUFD=m
-CONFIG_IOMMUFD_TEST=y
+# CONFIG_IOMMUFD is not set
 CONFIG_IRQ_REMAP=y
 CONFIG_HYPERV_IOMMU=y
 # CONFIG_VIRTIO_IOMMU is not set
@@ -5652,8 +5725,6 @@ CONFIG_HYPERV_IOMMU=y
 # Enable LiteX SoC Builder specific drivers
 #
 # end of Enable LiteX SoC Builder specific drivers
-
-# CONFIG_WPCM450_SOC is not set
 
 #
 # Qualcomm SoC drivers
@@ -5722,7 +5793,7 @@ CONFIG_PWM_LPSS_PLATFORM=m
 CONFIG_POWERCAP=y
 CONFIG_INTEL_RAPL_CORE=m
 CONFIG_INTEL_RAPL=m
-CONFIG_IDLE_INJECT=y
+# CONFIG_IDLE_INJECT is not set
 # CONFIG_MCB is not set
 
 #
@@ -5779,6 +5850,7 @@ CONFIG_INTEL_TH_PTI=m
 # end of HW tracing support
 
 # CONFIG_FPGA is not set
+# CONFIG_TEE is not set
 # CONFIG_SIOX is not set
 # CONFIG_SLIMBUS is not set
 # CONFIG_INTERCONNECT is not set
@@ -5794,7 +5866,6 @@ CONFIG_INTEL_TH_PTI=m
 CONFIG_DCACHE_WORD_ACCESS=y
 # CONFIG_VALIDATE_FS_PARSER is not set
 CONFIG_FS_IOMAP=y
-CONFIG_LEGACY_DIRECT_IO=y
 CONFIG_EXT2_FS=m
 # CONFIG_EXT2_FS_XATTR is not set
 # CONFIG_EXT3_FS is not set
@@ -5924,7 +5995,6 @@ CONFIG_PROC_SYSCTL=y
 CONFIG_PROC_PAGE_MONITOR=y
 CONFIG_PROC_CHILDREN=y
 CONFIG_PROC_PID_ARCH_STATUS=y
-CONFIG_PROC_CPU_RESCTRL=y
 CONFIG_KERNFS=y
 CONFIG_SYSFS=y
 CONFIG_TMPFS=y
@@ -5989,8 +6059,8 @@ CONFIG_PSTORE_DEFLATE_COMPRESS=y
 CONFIG_PSTORE_COMPRESS=y
 CONFIG_PSTORE_DEFLATE_COMPRESS_DEFAULT=y
 CONFIG_PSTORE_COMPRESS_DEFAULT="deflate"
-CONFIG_PSTORE_CONSOLE=y
-CONFIG_PSTORE_PMSG=y
+# CONFIG_PSTORE_CONSOLE is not set
+# CONFIG_PSTORE_PMSG is not set
 # CONFIG_PSTORE_FTRACE is not set
 CONFIG_PSTORE_RAM=m
 # CONFIG_PSTORE_BLK is not set
@@ -6017,7 +6087,7 @@ CONFIG_ROOT_NFS=y
 CONFIG_NFS_USE_KERNEL_DNS=y
 CONFIG_NFS_DEBUG=y
 CONFIG_NFS_DISABLE_UDP_SUPPORT=y
-# CONFIG_NFS_V4_2_READ_PLUS is not set
+CONFIG_NFS_V4_2_READ_PLUS=y
 CONFIG_NFSD=m
 # CONFIG_NFSD_V2 is not set
 CONFIG_NFSD_V3_ACL=y
@@ -6038,11 +6108,7 @@ CONFIG_SUNRPC=y
 CONFIG_SUNRPC_GSS=m
 CONFIG_SUNRPC_BACKCHANNEL=y
 CONFIG_RPCSEC_GSS_KRB5=m
-CONFIG_RPCSEC_GSS_KRB5_CRYPTOSYSTEM=y
-# CONFIG_RPCSEC_GSS_KRB5_ENCTYPES_DES is not set
-CONFIG_RPCSEC_GSS_KRB5_ENCTYPES_AES_SHA1=y
-# CONFIG_RPCSEC_GSS_KRB5_ENCTYPES_CAMELLIA is not set
-# CONFIG_RPCSEC_GSS_KRB5_ENCTYPES_AES_SHA2 is not set
+# CONFIG_SUNRPC_DISABLE_INSECURE_ENCTYPES is not set
 CONFIG_SUNRPC_DEBUG=y
 CONFIG_CEPH_FS=m
 # CONFIG_CEPH_FSCACHE is not set
@@ -6148,45 +6214,30 @@ CONFIG_FORTIFY_SOURCE=y
 # CONFIG_SECURITY_SELINUX is not set
 # CONFIG_SECURITY_SMACK is not set
 # CONFIG_SECURITY_TOMOYO is not set
-# CONFIG_SECURITY_APPARMOR is not set
+CONFIG_SECURITY_APPARMOR=y
+# CONFIG_SECURITY_APPARMOR_DEBUG is not set
+CONFIG_SECURITY_APPARMOR_INTROSPECT_POLICY=y
+CONFIG_SECURITY_APPARMOR_HASH=y
+CONFIG_SECURITY_APPARMOR_HASH_DEFAULT=y
+CONFIG_SECURITY_APPARMOR_EXPORT_BINARY=y
+CONFIG_SECURITY_APPARMOR_PARANOID_LOAD=y
 # CONFIG_SECURITY_LOADPIN is not set
 CONFIG_SECURITY_YAMA=y
 # CONFIG_SECURITY_SAFESETID is not set
 # CONFIG_SECURITY_LOCKDOWN_LSM is not set
-CONFIG_SECURITY_LANDLOCK=y
+# CONFIG_SECURITY_LANDLOCK is not set
 CONFIG_INTEGRITY=y
 CONFIG_INTEGRITY_SIGNATURE=y
 CONFIG_INTEGRITY_ASYMMETRIC_KEYS=y
 CONFIG_INTEGRITY_TRUSTED_KEYRING=y
 # CONFIG_INTEGRITY_PLATFORM_KEYRING is not set
 CONFIG_INTEGRITY_AUDIT=y
-CONFIG_IMA=y
-# CONFIG_IMA_KEXEC is not set
-CONFIG_IMA_MEASURE_PCR_IDX=10
-CONFIG_IMA_NG_TEMPLATE=y
-# CONFIG_IMA_SIG_TEMPLATE is not set
-CONFIG_IMA_DEFAULT_TEMPLATE="ima-ng"
-CONFIG_IMA_DEFAULT_HASH_SHA1=y
-# CONFIG_IMA_DEFAULT_HASH_SHA256 is not set
-# CONFIG_IMA_DEFAULT_HASH_SHA512 is not set
-CONFIG_IMA_DEFAULT_HASH="sha1"
-# CONFIG_IMA_WRITE_POLICY is not set
-# CONFIG_IMA_READ_POLICY is not set
-CONFIG_IMA_APPRAISE=y
-CONFIG_IMA_ARCH_POLICY=y
-# CONFIG_IMA_APPRAISE_BUILD_POLICY is not set
-CONFIG_IMA_APPRAISE_BOOTPARAM=y
-# CONFIG_IMA_APPRAISE_MODSIG is not set
-CONFIG_IMA_TRUSTED_KEYRING=y
-# CONFIG_IMA_BLACKLIST_KEYRING is not set
-# CONFIG_IMA_LOAD_X509 is not set
-CONFIG_IMA_MEASURE_ASYMMETRIC_KEYS=y
-CONFIG_IMA_QUEUE_EARLY_BOOT_KEYS=y
-CONFIG_IMA_SECURE_AND_OR_TRUSTED_BOOT=y
-# CONFIG_IMA_DISABLE_HTABLE is not set
+# CONFIG_IMA is not set
+# CONFIG_IMA_SECURE_AND_OR_TRUSTED_BOOT is not set
 # CONFIG_EVM is not set
-CONFIG_DEFAULT_SECURITY_DAC=y
-CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,integrity,bpf"
+CONFIG_DEFAULT_SECURITY_APPARMOR=y
+# CONFIG_DEFAULT_SECURITY_DAC is not set
+CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,integrity,apparmor,selinux,smack,tomoyo,bpf"
 
 #
 # Kernel hardening options
@@ -6197,13 +6248,11 @@ CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,integrity,bpf"
 #
 CONFIG_INIT_STACK_NONE=y
 # CONFIG_GCC_PLUGIN_STRUCTLEAK_USER is not set
-CONFIG_GCC_PLUGIN_STACKLEAK=y
-# CONFIG_GCC_PLUGIN_STACKLEAK_VERBOSE is not set
-CONFIG_STACKLEAK_TRACK_MIN_SIZE=100
-# CONFIG_STACKLEAK_METRICS is not set
-# CONFIG_STACKLEAK_RUNTIME_DISABLE is not set
-CONFIG_INIT_ON_ALLOC_DEFAULT_ON=y
-CONFIG_INIT_ON_FREE_DEFAULT_ON=y
+# CONFIG_GCC_PLUGIN_STRUCTLEAK_BYREF is not set
+# CONFIG_GCC_PLUGIN_STRUCTLEAK_BYREF_ALL is not set
+# CONFIG_GCC_PLUGIN_STACKLEAK is not set
+# CONFIG_INIT_ON_ALLOC_DEFAULT_ON is not set
+# CONFIG_INIT_ON_FREE_DEFAULT_ON is not set
 CONFIG_CC_HAS_ZERO_CALL_USED_REGS=y
 # CONFIG_ZERO_CALL_USED_REGS is not set
 # end of Memory initialization
@@ -6286,8 +6335,7 @@ CONFIG_CRYPTO_FCRYPT=m
 CONFIG_CRYPTO_KHAZAD=m
 CONFIG_CRYPTO_SEED=m
 CONFIG_CRYPTO_SERPENT=m
-CONFIG_CRYPTO_SM4=y
-CONFIG_CRYPTO_SM4_GENERIC=y
+# CONFIG_CRYPTO_SM4_GENERIC is not set
 CONFIG_CRYPTO_TEA=m
 CONFIG_CRYPTO_TWOFISH=m
 CONFIG_CRYPTO_TWOFISH_COMMON=m
@@ -6307,7 +6355,7 @@ CONFIG_CRYPTO_ECB=y
 # CONFIG_CRYPTO_HCTR2 is not set
 # CONFIG_CRYPTO_KEYWRAP is not set
 CONFIG_CRYPTO_LRW=m
-# CONFIG_CRYPTO_OFB is not set
+CONFIG_CRYPTO_OFB=m
 CONFIG_CRYPTO_PCBC=m
 CONFIG_CRYPTO_XTS=m
 # end of Length-preserving ciphers and modes
@@ -6416,8 +6464,6 @@ CONFIG_CRYPTO_TWOFISH_X86_64=m
 CONFIG_CRYPTO_TWOFISH_X86_64_3WAY=m
 CONFIG_CRYPTO_TWOFISH_AVX_X86_64=m
 # CONFIG_CRYPTO_ARIA_AESNI_AVX_X86_64 is not set
-# CONFIG_CRYPTO_ARIA_AESNI_AVX2_X86_64 is not set
-# CONFIG_CRYPTO_ARIA_GFNI_AVX512_X86_64 is not set
 CONFIG_CRYPTO_CHACHA20_X86_64=m
 # CONFIG_CRYPTO_AEGIS128_AESNI_SSE2 is not set
 # CONFIG_CRYPTO_NHPOLY1305_SSE2 is not set
@@ -6442,6 +6488,11 @@ CONFIG_CRYPTO_DEV_PADLOCK_SHA=m
 # CONFIG_CRYPTO_DEV_ATMEL_ECC is not set
 # CONFIG_CRYPTO_DEV_ATMEL_SHA204A is not set
 CONFIG_CRYPTO_DEV_CCP=y
+CONFIG_CRYPTO_DEV_CCP_DD=m
+CONFIG_CRYPTO_DEV_SP_CCP=y
+CONFIG_CRYPTO_DEV_CCP_CRYPTO=m
+CONFIG_CRYPTO_DEV_SP_PSP=y
+# CONFIG_CRYPTO_DEV_CCP_DEBUGFS is not set
 CONFIG_CRYPTO_DEV_QAT=m
 CONFIG_CRYPTO_DEV_QAT_DH895xCC=m
 CONFIG_CRYPTO_DEV_QAT_C3XXX=m
@@ -6493,7 +6544,7 @@ CONFIG_GENERIC_STRNCPY_FROM_USER=y
 CONFIG_GENERIC_STRNLEN_USER=y
 CONFIG_GENERIC_NET_UTILS=y
 CONFIG_CORDIC=m
-CONFIG_PRIME_NUMBERS=m
+# CONFIG_PRIME_NUMBERS is not set
 CONFIG_RATIONAL=y
 CONFIG_GENERIC_PCI_IOMAP=y
 CONFIG_GENERIC_IOMAP=y
@@ -6545,7 +6596,7 @@ CONFIG_LZO_COMPRESS=y
 CONFIG_LZO_DECOMPRESS=y
 CONFIG_LZ4_DECOMPRESS=y
 CONFIG_ZSTD_COMMON=y
-CONFIG_ZSTD_COMPRESS=m
+CONFIG_ZSTD_COMPRESS=y
 CONFIG_ZSTD_DECOMPRESS=y
 CONFIG_XZ_DEC=y
 CONFIG_XZ_DEC_X86=y
@@ -6573,7 +6624,6 @@ CONFIG_TEXTSEARCH_KMP=m
 CONFIG_TEXTSEARCH_BM=m
 CONFIG_TEXTSEARCH_FSM=m
 CONFIG_INTERVAL_TREE=y
-CONFIG_INTERVAL_TREE_SPAN_ITER=y
 CONFIG_XARRAY_MULTI=y
 CONFIG_ASSOCIATIVE_ARRAY=y
 CONFIG_HAS_IOMEM=y
@@ -6586,11 +6636,10 @@ CONFIG_ARCH_DMA_ADDR_T_64BIT=y
 CONFIG_ARCH_HAS_FORCE_DMA_UNENCRYPTED=y
 CONFIG_SWIOTLB=y
 # CONFIG_DMA_API_DEBUG is not set
-CONFIG_DMA_MAP_BENCHMARK=y
+# CONFIG_DMA_MAP_BENCHMARK is not set
 CONFIG_SGL_ALLOC=y
 CONFIG_CHECK_SIGNATURE=y
 CONFIG_CPUMASK_OFFSTACK=y
-# CONFIG_FORCE_NR_CPUS is not set
 CONFIG_CPU_RMAP=y
 CONFIG_DQL=y
 CONFIG_GLOB=y
@@ -6617,7 +6666,6 @@ CONFIG_ARCH_HAS_UACCESS_FLUSHCACHE=y
 CONFIG_ARCH_HAS_COPY_MC=y
 CONFIG_ARCH_STACKWALK=y
 CONFIG_STACKDEPOT=y
-CONFIG_STACKDEPOT_ALWAYS_INIT=y
 CONFIG_SBITMAP=y
 # end of Library routines
 
@@ -6660,17 +6708,14 @@ CONFIG_DEBUG_INFO_COMPRESSED_NONE=y
 # CONFIG_DEBUG_INFO_COMPRESSED_ZLIB is not set
 # CONFIG_DEBUG_INFO_SPLIT is not set
 CONFIG_PAHOLE_HAS_SPLIT_BTF=y
-CONFIG_PAHOLE_HAS_LANG_EXCLUDE=y
 # CONFIG_GDB_SCRIPTS is not set
-CONFIG_FRAME_WARN=8192
+CONFIG_FRAME_WARN=2048
 CONFIG_STRIP_ASM_SYMS=y
 # CONFIG_READABLE_ASM is not set
 # CONFIG_HEADERS_INSTALL is not set
 CONFIG_DEBUG_SECTION_MISMATCH=y
 CONFIG_SECTION_MISMATCH_WARN_ONLY=y
-# CONFIG_DEBUG_FORCE_FUNCTION_ALIGN_64B is not set
 CONFIG_OBJTOOL=y
-# CONFIG_VMLINUX_MAP is not set
 # CONFIG_DEBUG_FORCE_WEAK_PER_CPU is not set
 # end of Compile-time checks and compiler options
 
@@ -6688,20 +6733,10 @@ CONFIG_DEBUG_FS_ALLOW_ALL=y
 CONFIG_HAVE_ARCH_KGDB=y
 # CONFIG_KGDB is not set
 CONFIG_ARCH_HAS_UBSAN_SANITIZE_ALL=y
-CONFIG_UBSAN=y
-# CONFIG_UBSAN_TRAP is not set
-CONFIG_CC_HAS_UBSAN_BOUNDS=y
-CONFIG_UBSAN_BOUNDS=y
-CONFIG_UBSAN_ONLY_BOUNDS=y
-CONFIG_UBSAN_SHIFT=y
-# CONFIG_UBSAN_DIV_ZERO is not set
-# CONFIG_UBSAN_BOOL is not set
-# CONFIG_UBSAN_ENUM is not set
-# CONFIG_UBSAN_ALIGNMENT is not set
-CONFIG_UBSAN_SANITIZE_ALL=y
-# CONFIG_TEST_UBSAN is not set
+# CONFIG_UBSAN is not set
 CONFIG_HAVE_ARCH_KCSAN=y
 CONFIG_HAVE_KCSAN_COMPILER=y
+# CONFIG_KCSAN is not set
 # end of Generic Kernel Debugging Instruments
 
 #
@@ -6715,11 +6750,11 @@ CONFIG_HAVE_KCSAN_COMPILER=y
 #
 # Memory Debugging
 #
-CONFIG_PAGE_EXTENSION=y
+# CONFIG_PAGE_EXTENSION is not set
 # CONFIG_DEBUG_PAGEALLOC is not set
 CONFIG_SLUB_DEBUG=y
-CONFIG_SLUB_DEBUG_ON=y
-CONFIG_PAGE_OWNER=y
+# CONFIG_SLUB_DEBUG_ON is not set
+# CONFIG_PAGE_OWNER is not set
 # CONFIG_PAGE_TABLE_CHECK is not set
 # CONFIG_PAGE_POISONING is not set
 # CONFIG_DEBUG_PAGE_REF is not set
@@ -6740,19 +6775,12 @@ CONFIG_ARCH_HAS_DEBUG_VM_PGTABLE=y
 CONFIG_ARCH_HAS_DEBUG_VIRTUAL=y
 # CONFIG_DEBUG_VIRTUAL is not set
 CONFIG_DEBUG_MEMORY_INIT=y
-CONFIG_MEMORY_NOTIFIER_ERROR_INJECT=m
 # CONFIG_DEBUG_PER_CPU_MAPS is not set
 CONFIG_HAVE_ARCH_KASAN=y
 CONFIG_HAVE_ARCH_KASAN_VMALLOC=y
 CONFIG_CC_HAS_KASAN_GENERIC=y
 CONFIG_CC_HAS_WORKING_NOSANITIZE_ADDRESS=y
-CONFIG_KASAN=y
-CONFIG_KASAN_GENERIC=y
-# CONFIG_KASAN_OUTLINE is not set
-CONFIG_KASAN_INLINE=y
-CONFIG_KASAN_STACK=y
-CONFIG_KASAN_VMALLOC=y
-# CONFIG_KASAN_MODULE_TEST is not set
+# CONFIG_KASAN is not set
 CONFIG_HAVE_ARCH_KFENCE=y
 # CONFIG_KFENCE is not set
 CONFIG_HAVE_ARCH_KMSAN=y
@@ -6794,33 +6822,22 @@ CONFIG_SCHEDSTATS=y
 # Lock Debugging (spinlocks, mutexes, etc...)
 #
 CONFIG_LOCK_DEBUGGING_SUPPORT=y
-CONFIG_PROVE_LOCKING=y
-# CONFIG_PROVE_RAW_LOCK_NESTING is not set
+# CONFIG_PROVE_LOCKING is not set
 # CONFIG_LOCK_STAT is not set
-CONFIG_DEBUG_RT_MUTEXES=y
-CONFIG_DEBUG_SPINLOCK=y
-CONFIG_DEBUG_MUTEXES=y
-CONFIG_DEBUG_WW_MUTEX_SLOWPATH=y
-CONFIG_DEBUG_RWSEMS=y
-CONFIG_DEBUG_LOCK_ALLOC=y
-CONFIG_LOCKDEP=y
-CONFIG_LOCKDEP_BITS=15
-CONFIG_LOCKDEP_CHAINS_BITS=16
-CONFIG_LOCKDEP_STACK_TRACE_BITS=19
-CONFIG_LOCKDEP_STACK_TRACE_HASH_BITS=14
-CONFIG_LOCKDEP_CIRCULAR_QUEUE_BITS=12
-# CONFIG_DEBUG_LOCKDEP is not set
+# CONFIG_DEBUG_RT_MUTEXES is not set
+# CONFIG_DEBUG_SPINLOCK is not set
+# CONFIG_DEBUG_MUTEXES is not set
+# CONFIG_DEBUG_WW_MUTEX_SLOWPATH is not set
+# CONFIG_DEBUG_RWSEMS is not set
+# CONFIG_DEBUG_LOCK_ALLOC is not set
 CONFIG_DEBUG_ATOMIC_SLEEP=y
 # CONFIG_DEBUG_LOCKING_API_SELFTESTS is not set
 # CONFIG_LOCK_TORTURE_TEST is not set
-CONFIG_WW_MUTEX_SELFTEST=m
+# CONFIG_WW_MUTEX_SELFTEST is not set
 # CONFIG_SCF_TORTURE_TEST is not set
 # CONFIG_CSD_LOCK_WAIT_DEBUG is not set
 # end of Lock Debugging (spinlocks, mutexes, etc...)
 
-CONFIG_TRACE_IRQFLAGS=y
-CONFIG_TRACE_IRQFLAGS_NMI=y
-# CONFIG_NMI_CHECK_CPU is not set
 # CONFIG_DEBUG_IRQFLAGS is not set
 CONFIG_STACKTRACE=y
 # CONFIG_WARN_ALL_UNSEEDED_RANDOM is not set
@@ -6830,7 +6847,7 @@ CONFIG_STACKTRACE=y
 # Debug kernel data structures
 #
 CONFIG_DEBUG_LIST=y
-CONFIG_DEBUG_PLIST=y
+# CONFIG_DEBUG_PLIST is not set
 # CONFIG_DEBUG_SG is not set
 # CONFIG_DEBUG_NOTIFIERS is not set
 CONFIG_BUG_ON_DATA_CORRUPTION=y
@@ -6842,13 +6859,11 @@ CONFIG_BUG_ON_DATA_CORRUPTION=y
 #
 # RCU Debugging
 #
-CONFIG_PROVE_RCU=y
 # CONFIG_RCU_SCALE_TEST is not set
 # CONFIG_RCU_TORTURE_TEST is not set
 # CONFIG_RCU_REF_SCALE_TEST is not set
 CONFIG_RCU_CPU_STALL_TIMEOUT=60
 CONFIG_RCU_EXP_CPU_STALL_TIMEOUT=0
-# CONFIG_RCU_CPU_STALL_CPUTIME is not set
 # CONFIG_RCU_TRACE is not set
 # CONFIG_RCU_EQS_DEBUG is not set
 # end of RCU Debugging
@@ -6881,8 +6896,6 @@ CONFIG_TRACE_CLOCK=y
 CONFIG_RING_BUFFER=y
 CONFIG_EVENT_TRACING=y
 CONFIG_CONTEXT_SWITCH_TRACER=y
-CONFIG_RING_BUFFER_ALLOW_SWAP=y
-CONFIG_PREEMPTIRQ_TRACEPOINTS=y
 CONFIG_TRACING=y
 CONFIG_GENERIC_TRACER=y
 CONFIG_TRACING_SUPPORT=y
@@ -6897,7 +6910,7 @@ CONFIG_DYNAMIC_FTRACE_WITH_ARGS=y
 # CONFIG_FPROBE is not set
 CONFIG_FUNCTION_PROFILER=y
 CONFIG_STACK_TRACER=y
-CONFIG_IRQSOFF_TRACER=y
+# CONFIG_IRQSOFF_TRACER is not set
 CONFIG_SCHED_TRACER=y
 CONFIG_HWLAT_TRACER=y
 # CONFIG_OSNOISE_TRACER is not set
@@ -6905,7 +6918,7 @@ CONFIG_HWLAT_TRACER=y
 # CONFIG_MMIOTRACE is not set
 CONFIG_FTRACE_SYSCALLS=y
 CONFIG_TRACER_SNAPSHOT=y
-CONFIG_TRACER_SNAPSHOT_PER_CPU_SWAP=y
+# CONFIG_TRACER_SNAPSHOT_PER_CPU_SWAP is not set
 CONFIG_BRANCH_PROFILE_NONE=y
 # CONFIG_PROFILE_ANNOTATED_BRANCHES is not set
 # CONFIG_BLK_DEV_IO_TRACE is not set
@@ -6930,32 +6943,13 @@ CONFIG_RING_BUFFER_BENCHMARK=m
 # CONFIG_FTRACE_SORT_STARTUP_TEST is not set
 # CONFIG_RING_BUFFER_STARTUP_TEST is not set
 # CONFIG_RING_BUFFER_VALIDATE_TIME_DELTAS is not set
-CONFIG_PREEMPTIRQ_DELAY_TEST=m
+# CONFIG_PREEMPTIRQ_DELAY_TEST is not set
 # CONFIG_SYNTH_EVENT_GEN_TEST is not set
 # CONFIG_KPROBE_EVENT_GEN_TEST is not set
 # CONFIG_HIST_TRIGGERS_DEBUG is not set
 # CONFIG_RV is not set
 CONFIG_PROVIDE_OHCI1394_DMA_INIT=y
-CONFIG_SAMPLES=y
-# CONFIG_SAMPLE_AUXDISPLAY is not set
-# CONFIG_SAMPLE_TRACE_EVENTS is not set
-# CONFIG_SAMPLE_TRACE_CUSTOM_EVENTS is not set
-CONFIG_SAMPLE_TRACE_PRINTK=m
-CONFIG_SAMPLE_FTRACE_DIRECT=m
-# CONFIG_SAMPLE_FTRACE_DIRECT_MULTI is not set
-# CONFIG_SAMPLE_FTRACE_OPS is not set
-# CONFIG_SAMPLE_TRACE_ARRAY is not set
-# CONFIG_SAMPLE_KOBJECT is not set
-# CONFIG_SAMPLE_KPROBES is not set
-# CONFIG_SAMPLE_HW_BREAKPOINT is not set
-# CONFIG_SAMPLE_KFIFO is not set
-# CONFIG_SAMPLE_LIVEPATCH is not set
-# CONFIG_SAMPLE_CONFIGFS is not set
-# CONFIG_SAMPLE_VFIO_MDEV_MTTY is not set
-# CONFIG_SAMPLE_VFIO_MDEV_MDPY is not set
-# CONFIG_SAMPLE_VFIO_MDEV_MDPY_FB is not set
-# CONFIG_SAMPLE_VFIO_MDEV_MBOCHS is not set
-# CONFIG_SAMPLE_WATCHDOG is not set
+# CONFIG_SAMPLES is not set
 CONFIG_HAVE_SAMPLE_FTRACE_DIRECT=y
 CONFIG_HAVE_SAMPLE_FTRACE_DIRECT_MULTI=y
 CONFIG_ARCH_HAS_DEVMEM_IS_ALLOWED=y
@@ -6992,24 +6986,14 @@ CONFIG_UNWINDER_ORC=y
 # Kernel Testing and Coverage
 #
 # CONFIG_KUNIT is not set
-CONFIG_NOTIFIER_ERROR_INJECTION=m
-CONFIG_PM_NOTIFIER_ERROR_INJECT=m
-# CONFIG_NETDEV_NOTIFIER_ERROR_INJECT is not set
+# CONFIG_NOTIFIER_ERROR_INJECTION is not set
 CONFIG_FUNCTION_ERROR_INJECTION=y
-CONFIG_FAULT_INJECTION=y
-# CONFIG_FAILSLAB is not set
-# CONFIG_FAIL_PAGE_ALLOC is not set
-# CONFIG_FAULT_INJECTION_USERCOPY is not set
-# CONFIG_FAIL_MAKE_REQUEST is not set
-# CONFIG_FAIL_IO_TIMEOUT is not set
-# CONFIG_FAIL_FUTEX is not set
-# CONFIG_FAULT_INJECTION_DEBUG_FS is not set
+# CONFIG_FAULT_INJECTION is not set
 CONFIG_ARCH_HAS_KCOV=y
 CONFIG_CC_HAS_SANCOV_TRACE_PC=y
 # CONFIG_KCOV is not set
 CONFIG_RUNTIME_TESTING_MENU=y
-# CONFIG_TEST_DHRY is not set
-CONFIG_LKDTM=y
+# CONFIG_LKDTM is not set
 # CONFIG_TEST_MIN_HEAP is not set
 # CONFIG_TEST_DIV64 is not set
 # CONFIG_BACKTRACE_SELF_TEST is not set
@@ -7024,33 +7008,33 @@ CONFIG_LKDTM=y
 # CONFIG_STRING_SELFTEST is not set
 # CONFIG_TEST_STRING_HELPERS is not set
 # CONFIG_TEST_KSTRTOX is not set
-CONFIG_TEST_PRINTF=m
-CONFIG_TEST_SCANF=m
-CONFIG_TEST_BITMAP=m
+# CONFIG_TEST_PRINTF is not set
+# CONFIG_TEST_SCANF is not set
+# CONFIG_TEST_BITMAP is not set
 # CONFIG_TEST_UUID is not set
 # CONFIG_TEST_XARRAY is not set
 # CONFIG_TEST_MAPLE_TREE is not set
 # CONFIG_TEST_RHASHTABLE is not set
 # CONFIG_TEST_IDA is not set
-CONFIG_TEST_LKM=m
-CONFIG_TEST_BITOPS=m
-CONFIG_TEST_VMALLOC=m
-CONFIG_TEST_USER_COPY=m
-CONFIG_TEST_BPF=m
-CONFIG_TEST_BLACKHOLE_DEV=m
+# CONFIG_TEST_LKM is not set
+# CONFIG_TEST_BITOPS is not set
+# CONFIG_TEST_VMALLOC is not set
+# CONFIG_TEST_USER_COPY is not set
+# CONFIG_TEST_BPF is not set
+# CONFIG_TEST_BLACKHOLE_DEV is not set
 # CONFIG_FIND_BIT_BENCHMARK is not set
-CONFIG_TEST_FIRMWARE=y
-CONFIG_TEST_SYSCTL=y
+# CONFIG_TEST_FIRMWARE is not set
+# CONFIG_TEST_SYSCTL is not set
 # CONFIG_TEST_UDELAY is not set
-CONFIG_TEST_STATIC_KEYS=m
+# CONFIG_TEST_STATIC_KEYS is not set
 # CONFIG_TEST_DYNAMIC_DEBUG is not set
-CONFIG_TEST_KMOD=m
+# CONFIG_TEST_KMOD is not set
 # CONFIG_TEST_MEMCAT_P is not set
-CONFIG_TEST_LIVEPATCH=m
+# CONFIG_TEST_LIVEPATCH is not set
 # CONFIG_TEST_MEMINIT is not set
-CONFIG_TEST_HMM=m
+# CONFIG_TEST_HMM is not set
 # CONFIG_TEST_FREE_PAGES is not set
-CONFIG_TEST_FPU=m
+# CONFIG_TEST_FPU is not set
 # CONFIG_TEST_CLOCKSOURCE_WATCHDOG is not set
 CONFIG_ARCH_USE_MEMTEST=y
 # CONFIG_MEMTEST is not set
@@ -7063,7 +7047,7 @@ CONFIG_ARCH_USE_MEMTEST=y
 # end of Rust hacking
 # end of Kernel hacking
 
---MuXUmVDMr7gP5Pe2
+--trzHMlASx1H69zAx
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: attachment; filename="job-script"
 
@@ -7071,100 +7055,75 @@ Content-Disposition: attachment; filename="job-script"
 
 export_top_env()
 {
-	export suite='kernel-selftests'
-	export testcase='kernel-selftests'
-	export category='functional'
-	export need_memory='3G'
-	export need_cpu=2
-	export kernel_cmdline='sysctl.debug.test_sysctl.boot_int=1'
-	export job_origin='kernel-selftests.yaml'
+	export suite='fio-basic'
+	export testcase='fio-basic'
+	export category='benchmark'
+	export runtime=200
+	export nr_task=48
+	export time_based='tb'
+	export job_origin='fio-basic-2pmem-256G.yaml'
 	export queue_cmdline_keys='branch
 commit
 kbuild_queue_analysis'
 	export queue='validate'
-	export testbox='lkp-skl-d06'
-	export tbox_group='lkp-skl-d06'
-	export submit_id='640a71b102edc5eb25340cb0'
-	export job_file='/lkp/jobs/scheduled/lkp-skl-d06/kernel-selftests-group-02-debian-12-x86_64-20220629.cgz-ef2f3f98fcf4521aa00fd217089e303b7d9b62ba-20230310-60197-szh7vk-4.yaml'
-	export id='0a74e43c273ef8fa7604cab5ed70d840d17dce67'
+	export testbox='lkp-csl-2sp7'
+	export tbox_group='lkp-csl-2sp7'
+	export submit_id='640a5caf7980b7fb264f3074'
+	export job_file='/lkp/jobs/scheduled/lkp-csl-2sp7/fio-basic-2M-performance-2pmem-ext2-io_uring-50%-200s-randwrite-200G-tb-debian-11.1-x86_64-20220510.cgz-7d28631786b2333c5d48ad25-20230310-64294-1r81ucr-5.yaml'
+	export id='04318d49fe295309341c84d3ca52376015b484d3'
 	export queuer_version='/zday/lkp'
-	export model='Skylake'
-	export nr_cpu=4
-	export memory='16G'
+	export model='Cascade Lake'
+	export nr_node=2
+	export nr_cpu=96
+	export memory='512G'
+	export nr_hdd_partitions=1
 	export nr_ssd_partitions=1
-	export nr_hdd_partitions=4
-	export hdd_partitions='/dev/disk/by-id/wwn-0x50014ee25a160161-part*'
-	export ssd_partitions='/dev/disk/by-id/wwn-0x55cd2e404b653ca4-part2'
-	export rootfs_partition='/dev/disk/by-id/wwn-0x55cd2e404b653ca4-part1'
-	export brand='Intel(R) Xeon(R) CPU E3-1225 v5 @ 3.30GHz'
-	export commit='ef2f3f98fcf4521aa00fd217089e303b7d9b62ba'
-	export need_kconfig_hw='{"PTP_1588_CLOCK"=>"y"}
-{"E1000E"=>"y"}
-SATA_AHCI
-DRM_I915'
-	export ucode='0xf0'
+	export hdd_partitions='/dev/disk/by-id/ata-ST1000NM0055-1V410C_ZBS1K5E0-part1'
+	export ssd_partitions='/dev/disk/by-id/ata-INTEL_SSDSC2BB800G4_PHWL4204000G800RGN-part1'
+	export swap_partitions=
+	export rootfs_partition='/dev/disk/by-id/ata-ST1000NM0055-1V410C_ZBS1K5E0-part2'
+	export brand='Intel(R) Xeon(R) Gold 6252 CPU @ 2.10GHz'
+	export need_kconfig='LIBNVDIMM
+{"BTT"=>"y"}
+BLK_DEV_PMEM
+X86_PMEM_LEGACY
+{"FS_DAX"=>"y"}
+EXT2_FS'
+	export commit='7d28631786b2333c5d48ad25172eb159aaa2945f'
+	export ucode='0x5003302'
+	export need_kconfig_hw='{"I40E"=>"y"}
+SATA_AHCI'
 	export bisect_dmesg=true
-	export need_kconfig='{"FUSE_FS"=>"m"}
-{"IPV6_MULTIPLE_TABLES"=>"y"}
-{"MACSEC"=>"y"}
-{"MISC_FILESYSTEMS"=>"y"}
-{"MPTCP"=>"y"}
-{"MPTCP_IPV6"=>"y"}
-NET_FOU
-{"NET_FOU_IP_TUNNELS"=>"y"}
-{"NET_L3_MASTER_DEV"=>"y"}
-NET_SCH_NETEM
-{"NET_VRF"=>"y"}
-{"NF_FLOW_TABLE"=>"m"}
-{"NF_FLOW_TABLE_INET"=>"m"}
-{"NF_FLOW_TABLE_IPV4"=>"m"}
-{"NF_FLOW_TABLE_IPV6"=>"m"}
-{"NF_TABLES_NETDEV"=>"y"}
-{"PROC_FS"=>"y"}
-{"PSTORE"=>"y"}
-{"PSTORE_CONSOLE"=>"y"}
-{"PSTORE_PMSG"=>"y"}
-{"PSTORE_RAM"=>"m"}
-{"SECCOMP"=>"y"}
-{"SECCOMP_FILTER"=>"y"}
-{"TEST_BLACKHOLE_DEV"=>"m"}
-{"UTS_NS"=>"y"}
-VETH
-{"X86_CPU_RESCTRL"=>"y"}
-{"NFC"=>"m"}
-{"NFC_NCI"=>"m"}
-{"NFC_VIRTUAL_NCI"=>"m"}'
-	export rootfs='debian-12-x86_64-20220629.cgz'
-	export initrds='linux_headers
-linux_selftests'
-	export kconfig='x86_64-rhel-8.3-kselftests'
-	export enqueue_time='2023-03-10 07:54:26 +0800'
-	export _id='640a71c702edc5eb25340cb1'
-	export _rt='/result/kernel-selftests/group-02/lkp-skl-d06/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kselftests/gcc-11/ef2f3f98fcf4521aa00fd217089e303b7d9b62ba'
+	export kconfig='x86_64-rhel-8.3'
+	export enqueue_time='2023-03-10 06:24:47 +0800'
+	export _id='640a5cc87980b7fb264f3076'
+	export _rt='/result/fio-basic/2M-performance-2pmem-ext2-io_uring-50%-200s-randwrite-200G-tb/lkp-csl-2sp7/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/7d28631786b2333c5d48ad25172eb159aaa2945f'
 	export user='lkp'
 	export compiler='gcc-11'
 	export LKP_SERVER='internal-lkp-server'
-	export head_commit='3f72112815381618e23d99c590013e409bef66d8'
+	export head_commit='80a7c13e4d968be6b01f92c4e00fc165f6741d09'
 	export base_commit='fe15c26ee26efa11741a7b632e9f23b01aca4cc6'
-	export branch='hch-misc/filemap_get_folio'
-	export result_root='/result/kernel-selftests/group-02/lkp-skl-d06/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kselftests/gcc-11/ef2f3f98fcf4521aa00fd217089e303b7d9b62ba/3'
-	export scheduler_version='/lkp/lkp/src'
+	export branch='linus/master'
+	export rootfs='debian-11.1-x86_64-20220510.cgz'
+	export result_root='/result/fio-basic/2M-performance-2pmem-ext2-io_uring-50%-200s-randwrite-200G-tb/lkp-csl-2sp7/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/7d28631786b2333c5d48ad25172eb159aaa2945f/3'
+	export scheduler_version='/lkp/lkp/.src-20230307-105906'
 	export arch='x86_64'
-	export max_uptime=1200
-	export initrd='/osimage/debian/debian-12-x86_64-20220629.cgz'
+	export max_uptime=2100
+	export initrd='/osimage/debian/debian-11.1-x86_64-20220510.cgz'
 	export bootloader_append='root=/dev/ram0
-RESULT_ROOT=/result/kernel-selftests/group-02/lkp-skl-d06/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kselftests/gcc-11/ef2f3f98fcf4521aa00fd217089e303b7d9b62ba/3
-BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/ef2f3f98fcf4521aa00fd217089e303b7d9b62ba/vmlinuz-6.3.0-rc1-00007-gef2f3f98fcf4
-branch=hch-misc/filemap_get_folio
-job=/lkp/jobs/scheduled/lkp-skl-d06/kernel-selftests-group-02-debian-12-x86_64-20220629.cgz-ef2f3f98fcf4521aa00fd217089e303b7d9b62ba-20230310-60197-szh7vk-4.yaml
+RESULT_ROOT=/result/fio-basic/2M-performance-2pmem-ext2-io_uring-50%-200s-randwrite-200G-tb/lkp-csl-2sp7/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/7d28631786b2333c5d48ad25172eb159aaa2945f/3
+BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3/gcc-11/7d28631786b2333c5d48ad25172eb159aaa2945f/vmlinuz-6.2.0-rc4-00383-g7d28631786b2
+branch=linus/master
+job=/lkp/jobs/scheduled/lkp-csl-2sp7/fio-basic-2M-performance-2pmem-ext2-io_uring-50%-200s-randwrite-200G-tb-debian-11.1-x86_64-20220510.cgz-7d28631786b2333c5d48ad25-20230310-64294-1r81ucr-5.yaml
 user=lkp
 ARCH=x86_64
-kconfig=x86_64-rhel-8.3-kselftests
-commit=ef2f3f98fcf4521aa00fd217089e303b7d9b62ba
-sysctl.debug.test_sysctl.boot_int=1
+kconfig=x86_64-rhel-8.3
+commit=7d28631786b2333c5d48ad25172eb159aaa2945f
 initcall_debug
 nmi_watchdog=0
-max_uptime=1200
+memmap=104G!8G
+memmap=104G!132G
+max_uptime=2100
 LKP_SERVER=internal-lkp-server
 nokaslr
 selinux=0
@@ -7188,23 +7147,20 @@ earlyprintk=ttyS0,115200
 console=ttyS0,115200
 vga=normal
 rw'
-	export modules_initrd='/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/ef2f3f98fcf4521aa00fd217089e303b7d9b62ba/modules.cgz'
-	export linux_headers_initrd='/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/ef2f3f98fcf4521aa00fd217089e303b7d9b62ba/linux-headers.cgz'
-	export linux_selftests_initrd='/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/ef2f3f98fcf4521aa00fd217089e303b7d9b62ba/linux-selftests.cgz'
-	export bm_initrd='/osimage/deps/debian-12-x86_64-20220629.cgz/run-ipconfig_20221125.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/lkp_20221125.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/rsync-rootfs_20221125.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/kernel-selftests_20230110.cgz,/osimage/pkg/debian-12-x86_64-20220629.cgz/kernel-selftests-x86_64-d4cf28ee-1_20230110.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/hw_20221125.cgz'
+	export modules_initrd='/pkg/linux/x86_64-rhel-8.3/gcc-11/7d28631786b2333c5d48ad25172eb159aaa2945f/modules.cgz'
+	export bm_initrd='/osimage/deps/debian-11.1-x86_64-20220510.cgz/run-ipconfig_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/lkp_20220513.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/rsync-rootfs_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/fs_20220526.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/fio_20230218.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/fio-x86_64-3.15-1_20230218.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/mpstat_20220516.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/turbostat_20220514.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/turbostat-x86_64-210e04ff7681-1_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/perf_20230226.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/perf-x86_64-2fcd07b7ccd5-1_20230226.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/sar-x86_64-c5bb321-1_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/hw_20220526.cgz'
 	export ucode_initrd='/osimage/ucode/intel-ucode-20220804.cgz'
 	export lkp_initrd='/osimage/user/lkp/lkp-x86_64.cgz'
 	export site='inn'
 	export LKP_CGI_PORT=80
 	export LKP_CIFS_PORT=139
-	export last_kernel='6.3.0-rc1-wt-05743-g7a8ce875e97e'
+	export last_kernel='6.3.0-rc1'
 	export repeat_to=6
-	export stop_repeat_if_found='dmesg.RIP:mincore_page'
 	export kbuild_queue_analysis=1
 	export schedule_notify_address=
-	export kernel='/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/ef2f3f98fcf4521aa00fd217089e303b7d9b62ba/vmlinuz-6.3.0-rc1-00007-gef2f3f98fcf4'
-	export dequeue_time='2023-03-10 07:58:32 +0800'
-	export job_initrd='/lkp/jobs/scheduled/lkp-skl-d06/kernel-selftests-group-02-debian-12-x86_64-20220629.cgz-ef2f3f98fcf4521aa00fd217089e303b7d9b62ba-20230310-60197-szh7vk-4.cgz'
+	export kernel='/pkg/linux/x86_64-rhel-8.3/gcc-11/7d28631786b2333c5d48ad25172eb159aaa2945f/vmlinuz-6.2.0-rc4-00383-g7d28631786b2'
+	export dequeue_time='2023-03-10 06:47:50 +0800'
+	export job_initrd='/lkp/jobs/scheduled/lkp-csl-2sp7/fio-basic-2M-performance-2pmem-ext2-io_uring-50%-200s-randwrite-200G-tb-debian-11.1-x86_64-20220510.cgz-7d28631786b2333c5d48ad25-20230310-64294-1r81ucr-5.cgz'
 
 	[ -n "$LKP_SRC" ] ||
 	export LKP_SRC=/lkp/${user:-lkp}/src
@@ -7220,13 +7176,48 @@ run_job()
 
 	export_top_env
 
+	run_setup bp1_memmap='104G!8G' bp2_memmap='104G!132G' $LKP_SRC/setup/boot_params
+
+	run_setup nr_pmem=2 $LKP_SRC/setup/disk
+
+	run_setup fs='ext2' $LKP_SRC/setup/fs
+
+	run_setup rw='randwrite' bs='2M' ioengine='io_uring' test_size='200G' $LKP_SRC/setup/fio-setup-basic
+
+	run_setup $LKP_SRC/setup/cpufreq_governor 'performance'
+
 	run_monitor $LKP_SRC/monitors/wrapper kmsg
+	run_monitor $LKP_SRC/monitors/no-stdout/wrapper boot-time
+	run_monitor $LKP_SRC/monitors/wrapper uptime
+	run_monitor $LKP_SRC/monitors/wrapper iostat
 	run_monitor $LKP_SRC/monitors/wrapper heartbeat
+	run_monitor $LKP_SRC/monitors/wrapper vmstat
+	run_monitor $LKP_SRC/monitors/wrapper numa-numastat
+	run_monitor $LKP_SRC/monitors/wrapper numa-vmstat
+	run_monitor $LKP_SRC/monitors/wrapper numa-meminfo
+	run_monitor $LKP_SRC/monitors/wrapper proc-vmstat
+	run_monitor $LKP_SRC/monitors/wrapper proc-stat
 	run_monitor $LKP_SRC/monitors/wrapper meminfo
+	run_monitor $LKP_SRC/monitors/wrapper slabinfo
+	run_monitor $LKP_SRC/monitors/wrapper interrupts
+	run_monitor $LKP_SRC/monitors/wrapper lock_stat
+	run_monitor lite_mode=1 $LKP_SRC/monitors/wrapper perf-sched
+	run_monitor $LKP_SRC/monitors/wrapper softirqs
+	run_monitor $LKP_SRC/monitors/one-shot/wrapper bdi_dev_mapping
+	run_monitor $LKP_SRC/monitors/wrapper diskstats
+	run_monitor $LKP_SRC/monitors/wrapper nfsstat
+	run_monitor $LKP_SRC/monitors/wrapper cpuidle
+	run_monitor $LKP_SRC/monitors/wrapper cpufreq-stats
+	run_monitor $LKP_SRC/monitors/wrapper turbostat
+	run_monitor $LKP_SRC/monitors/wrapper sched_debug
+	run_monitor $LKP_SRC/monitors/wrapper perf-stat
+	run_monitor $LKP_SRC/monitors/wrapper mpstat
+	run_monitor debug_mode=0 $LKP_SRC/monitors/no-stdout/wrapper perf-profile
+	run_monitor pmeter_server='lkp-serial03' pmeter_device='yokogawa-wt310' $LKP_SRC/monitors/wrapper pmeter
 	run_monitor $LKP_SRC/monitors/wrapper oom-killer
 	run_monitor $LKP_SRC/monitors/plain/watchdog
 
-	run_test group='group-02' $LKP_SRC/tests/wrapper kernel-selftests
+	run_test $LKP_SRC/tests/wrapper fio
 }
 
 extract_stats()
@@ -7234,11 +7225,33 @@ extract_stats()
 	export stats_part_begin=
 	export stats_part_end=
 
-	env group='group-02' $LKP_SRC/stats/wrapper kernel-selftests
+	$LKP_SRC/stats/wrapper fio
 	$LKP_SRC/stats/wrapper kmsg
+	$LKP_SRC/stats/wrapper boot-time
+	$LKP_SRC/stats/wrapper uptime
+	$LKP_SRC/stats/wrapper iostat
+	$LKP_SRC/stats/wrapper vmstat
+	$LKP_SRC/stats/wrapper numa-numastat
+	$LKP_SRC/stats/wrapper numa-vmstat
+	$LKP_SRC/stats/wrapper numa-meminfo
+	$LKP_SRC/stats/wrapper proc-vmstat
 	$LKP_SRC/stats/wrapper meminfo
+	$LKP_SRC/stats/wrapper slabinfo
+	$LKP_SRC/stats/wrapper interrupts
+	$LKP_SRC/stats/wrapper lock_stat
+	env lite_mode=1 $LKP_SRC/stats/wrapper perf-sched
+	$LKP_SRC/stats/wrapper softirqs
+	$LKP_SRC/stats/wrapper diskstats
+	$LKP_SRC/stats/wrapper nfsstat
+	$LKP_SRC/stats/wrapper cpuidle
+	$LKP_SRC/stats/wrapper turbostat
+	$LKP_SRC/stats/wrapper sched_debug
+	$LKP_SRC/stats/wrapper perf-stat
+	$LKP_SRC/stats/wrapper mpstat
+	env debug_mode=0 $LKP_SRC/stats/wrapper perf-profile
+	env pmeter_server='lkp-serial03' pmeter_device='yokogawa-wt310' $LKP_SRC/stats/wrapper pmeter
 
-	$LKP_SRC/stats/wrapper time kernel-selftests.time
+	$LKP_SRC/stats/wrapper time fio.time
 	$LKP_SRC/stats/wrapper dmesg
 	$LKP_SRC/stats/wrapper kmsg
 	$LKP_SRC/stats/wrapper last_state
@@ -7248,5351 +7261,148 @@ extract_stats()
 
 "$@"
 
---MuXUmVDMr7gP5Pe2
-Content-Type: application/x-xz
-Content-Disposition: attachment; filename="dmesg.xz"
-Content-Transfer-Encoding: base64
-
-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
-
---MuXUmVDMr7gP5Pe2
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: attachment; filename="kernel-selftests"
-Content-Transfer-Encoding: quoted-printable
-
-Decompressing Linux... Parsing ELF... done.
-Booting the kernel (entry_offset: 0x0000000000000000).
-Linux version 6.3.0-rc1-00007-gef2f3f98fcf4 (kbuild@17c57649b3e0) (gcc-11 (=
-Debian 11.3.0-8) 11.3.0, GNU ld (GNU Binutils for Debian) 2.39.90.20221231)=
- #1 SMP Thu Mar  9 17:51:08 CST 2023
-Command line: ip=3D::::lkp-skl-d06::dhcp root=3D/dev/ram0 RESULT_ROOT=3D/re=
-sult/kernel-selftests/group-02/lkp-skl-d06/debian-12-x86_64-20220629.cgz/x8=
-6_64-rhel-8.3-kselftests/gcc-11/ef2f3f98fcf4521aa00fd217089e303b7d9b62ba/3 =
-BOOT_IMAGE=3D/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/ef2f3f98fcf4521aa=
-00fd217089e303b7d9b62ba/vmlinuz-6.3.0-rc1-00007-gef2f3f98fcf4 branch=3Dhch-=
-misc/filemap_get_folio job=3D/lkp/jobs/scheduled/lkp-skl-d06/kernel-selftes=
-ts-group-02-debian-12-x86_64-20220629.cgz-ef2f3f98fcf4521aa00fd217089e303b7=
-d9b62ba-20230310-60197-szh7vk-4.yaml user=3Dlkp ARCH=3Dx86_64 kconfig=3Dx86=
-_64-rhel-8.3-kselftests commit=3Def2f3f98fcf4521aa00fd217089e303b7d9b62ba s=
-ysctl.debug.test_sysctl.boot_int=3D1 initcall_debug nmi_watchdog=3D0 max_up=
-time=3D1200 LKP_SERVER=3Dinternal-lkp-server nokaslr selinux=3D0 debug apic=
-=3Ddebug sysrq_always_enabled rcupdate.rcu_cpu_stall_timeout=3D100 net.ifna=
-mes=3D0 printk.devkmsg=3Don panic=3D-1 softlockup_panic=3D1 nmi_watchdog=3D=
-panic oops=3Dpanic load_ramdisk=3D2 prompt_ramdisk=3D0 drbd.minor_count=3D8=
- systemd.log_level=3Derr=20
-KERNEL supported cpus:
-Intel GenuineIntel
-x86/fpu: Supporting XSAVE feature 0x001: 'x87 floating point registers'
-x86/fpu: Supporting XSAVE feature 0x002: 'SSE registers'
-x86/fpu: Supporting XSAVE feature 0x004: 'AVX registers'
-x86/fpu: Supporting XSAVE feature 0x008: 'MPX bounds registers'
-x86/fpu: Supporting XSAVE feature 0x010: 'MPX CSR'
-x86/fpu: xstate_offset[2]:  576, xstate_sizes[2]:  256
-x86/fpu: xstate_offset[3]:  832, xstate_sizes[3]:   64
-x86/fpu: xstate_offset[4]:  896, xstate_sizes[4]:   64
-x86/fpu: Enabled xstate features 0x1f, context size is 960 bytes, using 'co=
-mpacted' format.
-signal: max sigframe size: 2032
-BIOS-provided physical RAM map:
-BIOS-e820: [mem 0x0000000000000400-0x0000000000091bff] usable
-BIOS-e820: [mem 0x0000000000091c00-0x000000000009ffff] reserved
-BIOS-e820: [mem 0x00000000000e0000-0x00000000000fffff] reserved
-BIOS-e820: [mem 0x0000000000100000-0x00000000b30fafff] usable
-BIOS-e820: [mem 0x00000000b30fb000-0x00000000b3c7efff] reserved
-BIOS-e820: [mem 0x00000000b3c7f000-0x00000000b3e7efff] ACPI NVS
-BIOS-e820: [mem 0x00000000b3e7f000-0x00000000b3efefff] ACPI data
-BIOS-e820: [mem 0x00000000b3eff000-0x00000000b3efffff] usable
-BIOS-e820: [mem 0x00000000b3f00000-0x00000000be7fffff] reserved
-BIOS-e820: [mem 0x00000000e0000000-0x00000000efffffff] reserved
-BIOS-e820: [mem 0x00000000fd000000-0x00000000fe7fffff] reserved
-BIOS-e820: [mem 0x00000000fec00000-0x00000000fec00fff] reserved
-BIOS-e820: [mem 0x00000000fed00000-0x00000000fed00fff] reserved
-BIOS-e820: [mem 0x00000000fed10000-0x00000000fed19fff] reserved
-BIOS-e820: [mem 0x00000000fed84000-0x00000000fed84fff] reserved
-BIOS-e820: [mem 0x00000000fedb0000-0x00000000fedbffff] reserved
-BIOS-e820: [mem 0x00000000fee00000-0x00000000fee00fff] reserved
-BIOS-e820: [mem 0x00000000ff700000-0x00000000ffffffff] reserved
-BIOS-e820: [mem 0x0000000100000000-0x000000043f7fffff] usable
-printk: debug: ignoring loglevel setting.
-printk: bootconsole [earlyser0] enabled
-NX (Execute Disable) protection: active
-SMBIOS 2.7 present.
-DMI: HP HP Z238 Microtower Workstation/8183, BIOS N51 Ver. 01.63 10/05/2017
-tsc: Detected 3300.000 MHz processor
-tsc: Detected 3299.994 MHz TSC
-e820: update [mem 0x00000000-0x00000fff] usable =3D=3D> reserved
-e820: remove [mem 0x000a0000-0x000fffff] usable
-last_pfn =3D 0x43f800 max_arch_pfn =3D 0x400000000
-x86/PAT: Configuration [0-7]: WB  WC  UC- UC  WB  WP  UC- WT =20
-last_pfn =3D 0xb3f00 max_arch_pfn =3D 0x400000000
-Scan for SMP in [mem 0x00000000-0x000003ff]
-Scan for SMP in [mem 0x0009fc00-0x0009ffff]
-Scan for SMP in [mem 0x000f0000-0x000fffff]
-Scan for SMP in [mem 0x00091c00-0x00091fff]
-Using GB pages for direct mapping
-RAMDISK: [mem 0x40e010000-0x4395fffff]
-ACPI: Early table checksum verification disabled
-ACPI: RSDP 0x00000000000FBE30 000024 (v02 HPQOEM)
-ACPI: XSDT 0x00000000B3EFD0E8 0000AC (v01 HPQOEM SLIC-WKS 00000000      010=
-00013)
-ACPI: FACP 0x00000000B3EF1000 0000F4 (v05 HPQOEM SLIC-WKS 00000000 HP   000=
-00001)
-ACPI: DSDT 0x00000000B3ECD000 0209E1 (v02 HPQOEM 8183     00000000 INTL 201=
-21018)
-ACPI: FACS 0x00000000B3E5A000 000040
-ACPI: SSDT 0x00000000B3EFC000 000108 (v02 HP     ShmTable 00000001 INTL 201=
-21018)
-ACPI: TCPA 0x00000000B3EFB000 000032 (v02 HPQOEM EDK2     00000002      010=
-00013)
-ACPI: SSDT 0x00000000B3EFA000 0003B8 (v02 HPQOEM TcgTable 00001000 INTL 201=
-21018)
-ACPI: UEFI 0x00000000B3E6A000 000042 (v01 HPQOEM EDK2     00000002      010=
-00013)
-ACPI: SSDT 0x00000000B3EF4000 0051FA (v02 SaSsdt SaSsdt   00003000 INTL 201=
-21018)
-ACPI: SSDT 0x00000000B3EF3000 0005B1 (v01 Intel  PerfTune 00001000 INTL 201=
-21018)
-ACPI: WSMT 0x00000000B3EF2000 000028 (v01 HPQOEM 8183     00000001 HP   000=
-00001)
-ACPI: HPET 0x00000000B3EF0000 000038 (v01 HPQOEM 8183     00000001 HP   000=
-00001)
-ACPI: APIC 0x00000000B3EEF000 0000BC (v01 HPQOEM 8183     00000001 HP   000=
-00001)
-ACPI: MCFG 0x00000000B3EEE000 00003C (v01 HPQOEM 8183     00000001 HP   000=
-00001)
-ACPI: SSDT 0x00000000B3ECC000 00019A (v02 HPQOEM Sata0Ide 00001000 INTL 201=
-21018)
-ACPI: SSDT 0x00000000B3ECB000 000729 (v01 HPQOEM PtidDevc 00001000 INTL 201=
-21018)
-ACPI: SSDT 0x00000000B3ECA000 000E73 (v02 CpuRef CpuSsdt  00003000 INTL 201=
-21018)
-ACPI: ASF! 0x00000000B3EC9000 0000A5 (v32 HPQOEM  UYA     00000001 TFSM 000=
-F4240)
-ACPI: FPDT 0x00000000B3EC8000 000044 (v01 HPQOEM EDK2     00000002      010=
-00013)
-ACPI: BGRT 0x00000000B3EC7000 000038 (v01 HPQOEM EDK2     00000002      010=
-00013)
-ACPI: Reserving FACP table memory at [mem 0xb3ef1000-0xb3ef10f3]
-ACPI: Reserving DSDT table memory at [mem 0xb3ecd000-0xb3eed9e0]
-ACPI: Reserving FACS table memory at [mem 0xb3e5a000-0xb3e5a03f]
-ACPI: Reserving SSDT table memory at [mem 0xb3efc000-0xb3efc107]
-ACPI: Reserving TCPA table memory at [mem 0xb3efb000-0xb3efb031]
-ACPI: Reserving SSDT table memory at [mem 0xb3efa000-0xb3efa3b7]
-ACPI: Reserving UEFI table memory at [mem 0xb3e6a000-0xb3e6a041]
-ACPI: Reserving SSDT table memory at [mem 0xb3ef4000-0xb3ef91f9]
-ACPI: Reserving SSDT table memory at [mem 0xb3ef3000-0xb3ef35b0]
-ACPI: Reserving WSMT table memory at [mem 0xb3ef2000-0xb3ef2027]
-ACPI: Reserving HPET table memory at [mem 0xb3ef0000-0xb3ef0037]
-ACPI: Reserving APIC table memory at [mem 0xb3eef000-0xb3eef0bb]
-ACPI: Reserving MCFG table memory at [mem 0xb3eee000-0xb3eee03b]
-ACPI: Reserving SSDT table memory at [mem 0xb3ecc000-0xb3ecc199]
-ACPI: Reserving SSDT table memory at [mem 0xb3ecb000-0xb3ecb728]
-ACPI: Reserving SSDT table memory at [mem 0xb3eca000-0xb3ecae72]
-ACPI: Reserving ASF! table memory at [mem 0xb3ec9000-0xb3ec90a4]
-ACPI: Reserving FPDT table memory at [mem 0xb3ec8000-0xb3ec8043]
-ACPI: Reserving BGRT table memory at [mem 0xb3ec7000-0xb3ec7037]
-mapped APIC to ffffffffff5fc000 (        fee00000)
-No NUMA configuration found
-Faking a node at [mem 0x0000000000000000-0x000000043f7fffff]
-NODE_DATA(0) allocated [mem 0x43f7d5000-0x43f7fffff]
-Zone ranges:
-DMA      [mem 0x0000000000001000-0x0000000000ffffff]
-DMA32    [mem 0x0000000001000000-0x00000000ffffffff]
-Normal   [mem 0x0000000100000000-0x000000043f7fffff]
-Device   empty
-Movable zone start for each node
-Early memory node ranges
-node   0: [mem 0x0000000000001000-0x0000000000090fff]
-node   0: [mem 0x0000000000100000-0x00000000b30fafff]
-node   0: [mem 0x00000000b3eff000-0x00000000b3efffff]
-node   0: [mem 0x0000000100000000-0x000000043f7fffff]
-Initmem setup node 0 [mem 0x0000000000001000-0x000000043f7fffff]
-On node 0, zone DMA: 1 pages in unavailable ranges
-On node 0, zone DMA: 111 pages in unavailable ranges
-On node 0, zone DMA32: 3588 pages in unavailable ranges
-On node 0, zone Normal: 16640 pages in unavailable ranges
-On node 0, zone Normal: 2048 pages in unavailable ranges
-kasan: KernelAddressSanitizer initialized
-Reserving Intel graphics memory at [mem 0xb6800000-0xbe7fffff]
-ACPI: PM-Timer IO Port: 0x1808
-ACPI: LAPIC_NMI (acpi_id[0x01] high edge lint[0x1])
-ACPI: LAPIC_NMI (acpi_id[0x02] high edge lint[0x1])
-ACPI: LAPIC_NMI (acpi_id[0x03] high edge lint[0x1])
-ACPI: LAPIC_NMI (acpi_id[0x04] high edge lint[0x1])
-ACPI: LAPIC_NMI (acpi_id[0x05] high edge lint[0x1])
-ACPI: LAPIC_NMI (acpi_id[0x06] high edge lint[0x1])
-ACPI: LAPIC_NMI (acpi_id[0x07] high edge lint[0x1])
-ACPI: LAPIC_NMI (acpi_id[0x08] high edge lint[0x1])
-IOAPIC[0]: apic_id 2, version 32, address 0xfec00000, GSI 0-119
-ACPI: INT_SRC_OVR (bus 0 bus_irq 0 global_irq 2 dfl dfl)
-Int: type 0, pol 0, trig 0, bus 00, IRQ 00, APIC ID 2, APIC INT 02
-ACPI: INT_SRC_OVR (bus 0 bus_irq 9 global_irq 9 high level)
-Int: type 0, pol 1, trig 3, bus 00, IRQ 09, APIC ID 2, APIC INT 09
-Int: type 0, pol 0, trig 0, bus 00, IRQ 01, APIC ID 2, APIC INT 01
-Int: type 0, pol 0, trig 0, bus 00, IRQ 03, APIC ID 2, APIC INT 03
-Int: type 0, pol 0, trig 0, bus 00, IRQ 04, APIC ID 2, APIC INT 04
-Int: type 0, pol 0, trig 0, bus 00, IRQ 05, APIC ID 2, APIC INT 05
-Int: type 0, pol 0, trig 0, bus 00, IRQ 06, APIC ID 2, APIC INT 06
-Int: type 0, pol 0, trig 0, bus 00, IRQ 07, APIC ID 2, APIC INT 07
-Int: type 0, pol 0, trig 0, bus 00, IRQ 08, APIC ID 2, APIC INT 08
-Int: type 0, pol 0, trig 0, bus 00, IRQ 0a, APIC ID 2, APIC INT 0a
-Int: type 0, pol 0, trig 0, bus 00, IRQ 0b, APIC ID 2, APIC INT 0b
-Int: type 0, pol 0, trig 0, bus 00, IRQ 0c, APIC ID 2, APIC INT 0c
-Int: type 0, pol 0, trig 0, bus 00, IRQ 0d, APIC ID 2, APIC INT 0d
-Int: type 0, pol 0, trig 0, bus 00, IRQ 0e, APIC ID 2, APIC INT 0e
-Int: type 0, pol 0, trig 0, bus 00, IRQ 0f, APIC ID 2, APIC INT 0f
-ACPI: Using ACPI (MADT) for SMP configuration information
-ACPI: HPET id: 0x8086a201 base: 0xfed00000
-TSC deadline timer available
-smpboot: Allowing 4 CPUs, 0 hotplug CPUs
-mapped IOAPIC to ffffffffff5fb000 (fec00000)
-PM: hibernation: Registered nosave memory: [mem 0x00000000-0x00000fff]
-PM: hibernation: Registered nosave memory: [mem 0x00091000-0x00091fff]
-PM: hibernation: Registered nosave memory: [mem 0x00092000-0x0009ffff]
-PM: hibernation: Registered nosave memory: [mem 0x000a0000-0x000dffff]
-PM: hibernation: Registered nosave memory: [mem 0x000e0000-0x000fffff]
-PM: hibernation: Registered nosave memory: [mem 0xb30fb000-0xb3c7efff]
-PM: hibernation: Registered nosave memory: [mem 0xb3c7f000-0xb3e7efff]
-PM: hibernation: Registered nosave memory: [mem 0xb3e7f000-0xb3efefff]
-PM: hibernation: Registered nosave memory: [mem 0xb3f00000-0xbe7fffff]
-PM: hibernation: Registered nosave memory: [mem 0xbe800000-0xdfffffff]
-PM: hibernation: Registered nosave memory: [mem 0xe0000000-0xefffffff]
-PM: hibernation: Registered nosave memory: [mem 0xf0000000-0xfcffffff]
-PM: hibernation: Registered nosave memory: [mem 0xfd000000-0xfe7fffff]
-PM: hibernation: Registered nosave memory: [mem 0xfe800000-0xfebfffff]
-PM: hibernation: Registered nosave memory: [mem 0xfec00000-0xfec00fff]
-PM: hibernation: Registered nosave memory: [mem 0xfec01000-0xfecfffff]
-PM: hibernation: Registered nosave memory: [mem 0xfed00000-0xfed00fff]
-PM: hibernation: Registered nosave memory: [mem 0xfed01000-0xfed0ffff]
-PM: hibernation: Registered nosave memory: [mem 0xfed10000-0xfed19fff]
-PM: hibernation: Registered nosave memory: [mem 0xfed1a000-0xfed83fff]
-PM: hibernation: Registered nosave memory: [mem 0xfed84000-0xfed84fff]
-PM: hibernation: Registered nosave memory: [mem 0xfed85000-0xfedaffff]
-PM: hibernation: Registered nosave memory: [mem 0xfedb0000-0xfedbffff]
-PM: hibernation: Registered nosave memory: [mem 0xfedc0000-0xfedfffff]
-PM: hibernation: Registered nosave memory: [mem 0xfee00000-0xfee00fff]
-PM: hibernation: Registered nosave memory: [mem 0xfee01000-0xff6fffff]
-PM: hibernation: Registered nosave memory: [mem 0xff700000-0xffffffff]
-[mem 0xbe800000-0xdfffffff] available for PCI devices
-Booting paravirtualized kernel on bare hardware
-clocksource: refined-jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_=
-idle_ns: 1910969940391419 ns
-setup_percpu: NR_CPUS:8192 nr_cpumask_bits:4 nr_cpu_ids:4 nr_node_ids:1
-percpu: Embedded 71 pages/cpu s251680 r8192 d30944 u524288
-pcpu-alloc: s251680 r8192 d30944 u524288 alloc=3D1*2097152
-pcpu-alloc: [0] 0 1 2 3=20
-Fallback order for Node 0: 0=20
-Built 1 zonelists, mobility grouping on.  Total pages: 4074328
-Policy zone: Normal
-Kernel command line: ip=3D::::lkp-skl-d06::dhcp root=3D/dev/ram0 RESULT_ROO=
-T=3D/result/kernel-selftests/group-02/lkp-skl-d06/debian-12-x86_64-20220629=
-.cgz/x86_64-rhel-8.3-kselftests/gcc-11/ef2f3f98fcf4521aa00fd217089e303b7d9b=
-62ba/3 BOOT_IMAGE=3D/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/ef2f3f98fc=
-f4521aa00fd217089e303b7d9b62ba/vmlinuz-6.3.0-rc1-00007-gef2f3f98fcf4 branch=
-=3Dhch-misc/filemap_get_folio job=3D/lkp/jobs/scheduled/lkp-skl-d06/kernel-=
-selftests-group-02-debian-12-x86_64-20220629.cgz-ef2f3f98fcf4521aa00fd21708=
-9e303b7d9b62ba-20230310-60197-szh7vk-4.yaml user=3Dlkp ARCH=3Dx86_64 kconfi=
-g=3Dx86_64-rhel-8.3-kselftests commit=3Def2f3f98fcf4521aa00fd217089e303b7d9=
-b62ba sysctl.debug.test_sysctl.boot_int=3D1 initcall_debug nmi_watchdog=3D0=
- max_uptime=3D1200 LKP_SERVER=3Dinternal-lkp-server nokaslr selinux=3D0 deb=
-ug apic=3Ddebug sysrq_always_enabled rcupdate.rcu_cpu_stall_timeout=3D100 n=
-et.ifnames=3D0 printk.devkmsg=3Don panic=3D-1 softlockup_panic=3D1 nmi_watc=
-hdog=3Dpanic oops=3Dpanic load_ramdisk=3D2 prompt_ramdisk=3D0 drbd.minor_co=
-unt=3D8 systemd.log_lev
-sysrq: sysrq always enabled.
-ignoring the deprecated load_ramdisk=3D option
-Unknown kernel command line parameters "nokaslr RESULT_ROOT=3D/result/kerne=
-l-selftests/group-02/lkp-skl-d06/debian-12-x86_64-20220629.cgz/x86_64-rhel-=
-8.3-kselftests/gcc-11/ef2f3f98fcf4521aa00fd217089e303b7d9b62ba/3 BOOT_IMAGE=
-=3D/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/ef2f3f98fcf4521aa00fd217089=
-e303b7d9b62ba/vmlinuz-6.3.0-rc1-00007-gef2f3f98fcf4 branch=3Dhch-misc/filem=
-ap_get_folio job=3D/lkp/jobs/scheduled/lkp-skl-d06/kernel-selftests-group-0=
-2-debian-12-x86_64-20220629.cgz-ef2f3f98fcf4521aa00fd217089e303b7d9b62ba-20=
-230310-60197-szh7vk-4.yaml user=3Dlkp ARCH=3Dx86_64 kconfig=3Dx86_64-rhel-8=
-.3-kselftests commit=3Def2f3f98fcf4521aa00fd217089e303b7d9b62ba max_uptime=
-=3D1200 LKP_SERVER=3Dinternal-lkp-server selinux=3D0 softlockup_panic=3D1 p=
-rompt_ramdisk=3D0 vga=3Dnormal", will be passed to user space.
-random: crng init done
-Dentry cache hash table entries: 2097152 (order: 12, 16777216 bytes, linear=
-)
-Inode-cache hash table entries: 1048576 (order: 11, 8388608 bytes, linear)
-mem auto-init: stack:off, heap alloc:on, heap free:on
-mem auto-init: clearing system memory may take some time...
-stackdepot: allocating hash table via alloc_large_system_hash
-stackdepot hash table entries: 1048576 (order: 11, 8388608 bytes, linear)
-software IO TLB: area num 4.
-Memory: 2998000K/16556592K available (45056K kernel code, 15178K rwdata, 95=
-56K rodata, 3432K init, 16268K bss, 3252304K reserved, 0K cma-reserved)
-**********************************************************
-**   NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE   **
-**                                                      **
-** This system shows unhashed kernel memory addresses   **
-** via the console, logs, and other interfaces. This    **
-** might reduce the security of your system.            **
-**                                                      **
-** If you see this message and you are not debugging    **
-** the kernel, report this immediately to your system   **
-** administrator!                                       **
-**                                                      **
-**   NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE   **
-**********************************************************
-SLUB: HWalign=3D64, Order=3D0-3, MinObjects=3D0, CPUs=3D4, Nodes=3D1
-Kernel/User page tables isolation: enabled
-ftrace: allocating 49377 entries in 193 pages
-ftrace: allocated 193 pages with 3 groups
-Running RCU self tests
-Running RCU synchronous self tests
-rcu: Hierarchical RCU implementation.
-rcu: 	RCU lockdep checking is enabled.
-rcu: 	RCU restricting CPUs from NR_CPUS=3D8192 to nr_cpu_ids=3D4.
-	RCU CPU stall warnings timeout set to 100 (rcu_cpu_stall_timeout).
-	Rude variant of Tasks RCU enabled.
-	Tracing variant of Tasks RCU enabled.
-rcu: RCU calculated value of scheduler-enlistment delay is 100 jiffies.
-rcu: Adjusting geometry for rcu_fanout_leaf=3D16, nr_cpu_ids=3D4
-Running RCU synchronous self tests
-NR_IRQS: 524544, nr_irqs: 1024, preallocated irqs: 16
-rcu: srcu_init: Setting srcu_struct sizes based on contention.
-calling  con_init+0x0/0x710 @ 0
-Console: colour VGA+ 80x25
-printk: console [tty0] enabled
-initcall con_init+0x0/0x710 returned 0 after 0 usecs
-calling  hvc_console_init+0x0/0x20 @ 0
-initcall hvc_console_init+0x0/0x20 returned 0 after 0 usecs
-calling  univ8250_console_init+0x0/0x30 @ 0
-printk: console [ttyS0] enabled
-printk: console [ttyS0] enabled
-printk: bootconsole [earlyser0] disabled
-printk: bootconsole [earlyser0] disabled
-initcall univ8250_console_init+0x0/0x30 returned 0 after 0 usecs
-Lock dependency validator: Copyright (c) 2006 Red Hat, Inc., Ingo Molnar
-... MAX_LOCKDEP_SUBCLASSES:  8
-... MAX_LOCK_DEPTH:          48
-... MAX_LOCKDEP_KEYS:        8192
-... CLASSHASH_SIZE:          4096
-... MAX_LOCKDEP_ENTRIES:     32768
-... MAX_LOCKDEP_CHAINS:      65536
-... CHAINHASH_SIZE:          32768
-memory used by lock dependency info: 6365 kB
-memory used for stack traces: 4224 kB
-per task-struct memory footprint: 1920 bytes
-ACPI: Core revision 20221020
-clocksource: hpet: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 79=
-635855245 ns
-APIC: Switch to symmetric I/O mode setup
-x2apic: IRQ remapping doesn't support X2APIC mode
-masked ExtINT on CPU#0
-ENABLING IO-APIC IRQs
-init IO_APIC IRQs
-apic 2 pin 0 not connected
-IOAPIC[0]: Preconfigured routing entry (2-1 -> IRQ 1 Level:0 ActiveLow:0)
-IOAPIC[0]: Preconfigured routing entry (2-2 -> IRQ 0 Level:0 ActiveLow:0)
-IOAPIC[0]: Preconfigured routing entry (2-3 -> IRQ 3 Level:0 ActiveLow:0)
-IOAPIC[0]: Preconfigured routing entry (2-4 -> IRQ 4 Level:0 ActiveLow:0)
-IOAPIC[0]: Preconfigured routing entry (2-5 -> IRQ 5 Level:0 ActiveLow:0)
-IOAPIC[0]: Preconfigured routing entry (2-6 -> IRQ 6 Level:0 ActiveLow:0)
-IOAPIC[0]: Preconfigured routing entry (2-7 -> IRQ 7 Level:0 ActiveLow:0)
-IOAPIC[0]: Preconfigured routing entry (2-8 -> IRQ 8 Level:0 ActiveLow:0)
-IOAPIC[0]: Preconfigured routing entry (2-9 -> IRQ 9 Level:1 ActiveLow:0)
-IOAPIC[0]: Preconfigured routing entry (2-10 -> IRQ 10 Level:0 ActiveLow:0)
-IOAPIC[0]: Preconfigured routing entry (2-11 -> IRQ 11 Level:0 ActiveLow:0)
-IOAPIC[0]: Preconfigured routing entry (2-12 -> IRQ 12 Level:0 ActiveLow:0)
-IOAPIC[0]: Preconfigured routing entry (2-13 -> IRQ 13 Level:0 ActiveLow:0)
-IOAPIC[0]: Preconfigured routing entry (2-14 -> IRQ 14 Level:0 ActiveLow:0)
-IOAPIC[0]: Preconfigured routing entry (2-15 -> IRQ 15 Level:0 ActiveLow:0)
-apic 2 pin 16 not connected
-apic 2 pin 17 not connected
-apic 2 pin 18 not connected
-apic 2 pin 19 not connected
-apic 2 pin 20 not connected
-apic 2 pin 21 not connected
-apic 2 pin 22 not connected
-apic 2 pin 23 not connected
-apic 2 pin 24 not connected
-apic 2 pin 25 not connected
-apic 2 pin 26 not connected
-apic 2 pin 27 not connected
-apic 2 pin 28 not connected
-apic 2 pin 29 not connected
-apic 2 pin 30 not connected
-apic 2 pin 31 not connected
-apic 2 pin 32 not connected
-apic 2 pin 33 not connected
-apic 2 pin 34 not connected
-apic 2 pin 35 not connected
-apic 2 pin 36 not connected
-apic 2 pin 37 not connected
-apic 2 pin 38 not connected
-apic 2 pin 39 not connected
-apic 2 pin 40 not connected
-apic 2 pin 41 not connected
-apic 2 pin 42 not connected
-apic 2 pin 43 not connected
-apic 2 pin 44 not connected
-apic 2 pin 45 not connected
-apic 2 pin 46 not connected
-apic 2 pin 47 not connected
-apic 2 pin 48 not connected
-apic 2 pin 49 not connected
-apic 2 pin 50 not connected
-apic 2 pin 51 not connected
-apic 2 pin 52 not connected
-apic 2 pin 53 not connected
-apic 2 pin 54 not connected
-apic 2 pin 55 not connected
-apic 2 pin 56 not connected
-apic 2 pin 57 not connected
-apic 2 pin 58 not connected
-apic 2 pin 59 not connected
-apic 2 pin 60 not connected
-apic 2 pin 61 not connected
-apic 2 pin 62 not connected
-apic 2 pin 63 not connected
-apic 2 pin 64 not connected
-apic 2 pin 65 not connected
-apic 2 pin 66 not connected
-apic 2 pin 67 not connected
-apic 2 pin 68 not connected
-apic 2 pin 69 not connected
-apic 2 pin 70 not connected
-apic 2 pin 71 not connected
-apic 2 pin 72 not connected
-apic 2 pin 73 not connected
-apic 2 pin 74 not connected
-apic 2 pin 75 not connected
-apic 2 pin 76 not connected
-apic 2 pin 77 not connected
-apic 2 pin 78 not connected
-apic 2 pin 79 not connected
-apic 2 pin 80 not connected
-apic 2 pin 81 not connected
-apic 2 pin 82 not connected
-apic 2 pin 83 not connected
-apic 2 pin 84 not connected
-apic 2 pin 85 not connected
-apic 2 pin 86 not connected
-apic 2 pin 87 not connected
-apic 2 pin 88 not connected
-apic 2 pin 89 not connected
-apic 2 pin 90 not connected
-apic 2 pin 91 not connected
-apic 2 pin 92 not connected
-apic 2 pin 93 not connected
-apic 2 pin 94 not connected
-apic 2 pin 95 not connected
-apic 2 pin 96 not connected
-apic 2 pin 97 not connected
-apic 2 pin 98 not connected
-apic 2 pin 99 not connected
-apic 2 pin 100 not connected
-apic 2 pin 101 not connected
-apic 2 pin 102 not connected
-apic 2 pin 103 not connected
-apic 2 pin 104 not connected
-apic 2 pin 105 not connected
-apic 2 pin 106 not connected
-apic 2 pin 107 not connected
-apic 2 pin 108 not connected
-apic 2 pin 109 not connected
-apic 2 pin 110 not connected
-apic 2 pin 111 not connected
-apic 2 pin 112 not connected
-apic 2 pin 113 not connected
-apic 2 pin 114 not connected
-apic 2 pin 115 not connected
-apic 2 pin 116 not connected
-apic 2 pin 117 not connected
-apic 2 pin 118 not connected
-apic 2 pin 119 not connected
-..TIMER: vector=3D0x30 apic1=3D0 pin1=3D2 apic2=3D-1 pin2=3D-1
-clocksource: tsc-early: mask: 0xffffffffffffffff max_cycles: 0x2f9146cb80a,=
- max_idle_ns: 440795296911 ns
-Calibrating delay loop (skipped), value calculated using timer frequency.. =
-6599.98 BogoMIPS (lpj=3D3299994)
-pid_max: default: 32768 minimum: 301
-LSM: initializing lsm=3Dcapability,landlock,yama,integrity
-landlock: Up and running.
-Yama: becoming mindful.
-Mount-cache hash table entries: 32768 (order: 6, 262144 bytes, linear)
-Mountpoint-cache hash table entries: 32768 (order: 6, 262144 bytes, linear)
-CPU0: Thermal monitoring enabled (TM1)
-process: using mwait in idle threads
-Last level iTLB entries: 4KB 128, 2MB 8, 4MB 8
-Last level dTLB entries: 4KB 64, 2MB 0, 4MB 0, 1GB 4
-Spectre V1 : Mitigation: usercopy/swapgs barriers and __user pointer saniti=
-zation
-Spectre V2 : Mitigation: IBRS
-Spectre V2 : Spectre v2 / SpectreRSB mitigation: Filling RSB on context swi=
-tch
-Spectre V2 : Spectre v2 / SpectreRSB : Filling RSB on VMEXIT
-RETBleed: Mitigation: IBRS
-Spectre V2 : mitigation: Enabling conditional Indirect Branch Prediction Ba=
-rrier
-Speculative Store Bypass: Mitigation: Speculative Store Bypass disabled via=
- prctl
-MDS: Mitigation: Clear CPU buffers
-MMIO Stale Data: Mitigation: Clear CPU buffers
-SRBDS: Mitigation: Microcode
-Freeing SMP alternatives memory: 40K
-Running RCU synchronous self tests
-Running RCU synchronous self tests
-smpboot: CPU0: Intel(R) Xeon(R) CPU E3-1225 v5 @ 3.30GHz (family: 0x6, mode=
-l: 0x5e, stepping: 0x3)
-cblist_init_generic: Setting adjustable number of callback queues.
-cblist_init_generic: Setting shift to 2 and lim to 1.
-cblist_init_generic: Setting shift to 2 and lim to 1.
-Running RCU-tasks wait API self tests
-calling  init_hw_perf_events+0x0/0x710 @ 1
-Performance Events: PEBS fmt3+, Skylake events, 32-deep LBR, full-width cou=
-nters, Intel PMU driver.
-... version:                4
-... bit width:              48
-... generic registers:      8
-... value mask:             0000ffffffffffff
-... max period:             00007fffffffffff
-... fixed-purpose events:   3
-... event mask:             00000007000000ff
-initcall init_hw_perf_events+0x0/0x710 returned 0 after 8000 usecs
-calling  do_init_real_mode+0x0/0x20 @ 1
-initcall do_init_real_mode+0x0/0x20 returned 0 after 0 usecs
-calling  trace_init_perf_perm_irq_work_exit+0x0/0x20 @ 1
-initcall trace_init_perf_perm_irq_work_exit+0x0/0x20 returned 0 after 0 use=
-cs
-calling  bp_init_aperfmperf+0x0/0xc0 @ 1
-Callback from call_rcu_tasks_trace() invoked.
-Estimated ratio of average max frequency by base frequency (times 1024): 10=
-55
-initcall bp_init_aperfmperf+0x0/0xc0 returned 0 after 2000 usecs
-calling  register_nmi_cpu_backtrace_handler+0x0/0x20 @ 1
-initcall register_nmi_cpu_backtrace_handler+0x0/0x20 returned 0 after 0 use=
-cs
-calling  kvm_setup_vsyscall_timeinfo+0x0/0xf0 @ 1
-initcall kvm_setup_vsyscall_timeinfo+0x0/0xf0 returned 0 after 0 usecs
-calling  spawn_ksoftirqd+0x0/0x40 @ 1
-initcall spawn_ksoftirqd+0x0/0x40 returned 0 after 0 usecs
-calling  migration_init+0x0/0xf0 @ 1
-initcall migration_init+0x0/0xf0 returned 0 after 0 usecs
-calling  srcu_bootup_announce+0x0/0x80 @ 1
-rcu: Hierarchical SRCU implementation.
-rcu: 	Max phase no-delay instances is 400.
-initcall srcu_bootup_announce+0x0/0x80 returned 0 after 2000 usecs
-calling  rcu_spawn_gp_kthread+0x0/0x400 @ 1
-initcall rcu_spawn_gp_kthread+0x0/0x400 returned 0 after 0 usecs
-calling  check_cpu_stall_init+0x0/0x20 @ 1
-initcall check_cpu_stall_init+0x0/0x20 returned 0 after 0 usecs
-calling  rcu_sysrq_init+0x0/0x30 @ 1
-initcall rcu_sysrq_init+0x0/0x30 returned 0 after 0 usecs
-calling  trace_init_flags_sys_enter+0x0/0x20 @ 1
-initcall trace_init_flags_sys_enter+0x0/0x20 returned 0 after 0 usecs
-calling  trace_init_flags_sys_exit+0x0/0x20 @ 1
-initcall trace_init_flags_sys_exit+0x0/0x20 returned 0 after 0 usecs
-calling  cpu_stop_init+0x0/0x290 @ 1
-initcall cpu_stop_init+0x0/0x290 returned 0 after 0 usecs
-calling  init_kprobes+0x0/0x340 @ 1
-initcall init_kprobes+0x0/0x340 returned 0 after 2000 usecs
-calling  init_trace_printk+0x0/0x10 @ 1
-initcall init_trace_printk+0x0/0x10 returned 0 after 0 usecs
-calling  event_trace_enable_again+0x0/0xe0 @ 1
-initcall event_trace_enable_again+0x0/0xe0 returned 0 after 0 usecs
-calling  irq_work_init_threads+0x0/0x10 @ 1
-initcall irq_work_init_threads+0x0/0x10 returned 0 after 0 usecs
-calling  static_call_init+0x0/0xd0 @ 1
-initcall static_call_init+0x0/0xd0 returned 0 after 0 usecs
-calling  jump_label_init_module+0x0/0x20 @ 1
-initcall jump_label_init_module+0x0/0x20 returned 0 after 0 usecs
-calling  init_zero_pfn+0x0/0xf0 @ 1
-initcall init_zero_pfn+0x0/0xf0 returned 0 after 0 usecs
-calling  init_fs_inode_sysctls+0x0/0x30 @ 1
-initcall init_fs_inode_sysctls+0x0/0x30 returned 0 after 0 usecs
-calling  init_fs_locks_sysctls+0x0/0x30 @ 1
-initcall init_fs_locks_sysctls+0x0/0x30 returned 0 after 0 usecs
-calling  dynamic_debug_init+0x0/0x4b0 @ 1
-initcall dynamic_debug_init+0x0/0x4b0 returned 0 after 1000 usecs
-calling  efi_memreserve_root_init+0x0/0x50 @ 1
-initcall efi_memreserve_root_init+0x0/0x50 returned 0 after 0 usecs
-calling  efi_earlycon_remap_fb+0x0/0x120 @ 1
-initcall efi_earlycon_remap_fb+0x0/0x120 returned 0 after 0 usecs
-calling  idle_inject_init+0x0/0x20 @ 1
-initcall idle_inject_init+0x0/0x20 returned 0 after 0 usecs
-smp: Bringing up secondary CPUs ...
-x86: Booting SMP configuration:
-.... node  #0, CPUs:      #1
-masked ExtINT on CPU#1
-#2
-masked ExtINT on CPU#2
-#3
-masked ExtINT on CPU#3
-smp: Brought up 1 node, 4 CPUs
-smpboot: Max logical packages: 1
-smpboot: Total of 4 processors activated (26399.95 BogoMIPS)
-Callback from call_rcu_tasks_rude() invoked.
-node 0 deferred pages initialised in 660ms
-devtmpfs: initialized
-x86/mm: Memory block size: 128MB
-calling  bpf_jit_charge_init+0x0/0x50 @ 1
-initcall bpf_jit_charge_init+0x0/0x50 returned 0 after 0 usecs
-calling  ipc_ns_init+0x0/0x150 @ 1
-initcall ipc_ns_init+0x0/0x150 returned 0 after 0 usecs
-calling  init_mmap_min_addr+0x0/0x20 @ 1
-initcall init_mmap_min_addr+0x0/0x20 returned 0 after 0 usecs
-calling  pci_realloc_setup_params+0x0/0x50 @ 1
-initcall pci_realloc_setup_params+0x0/0x50 returned 0 after 0 usecs
-calling  inet_frag_wq_init+0x0/0x50 @ 1
-initcall inet_frag_wq_init+0x0/0x50 returned 0 after 0 usecs
-calling  e820__register_nvs_regions+0x0/0x1d0 @ 1
-ACPI: PM: Registering ACPI NVS region [mem 0xb3c7f000-0xb3e7efff] (2097152 =
-bytes)
-initcall e820__register_nvs_regions+0x0/0x1d0 returned 0 after 12000 usecs
-calling  cpufreq_register_tsc_scaling+0x0/0x90 @ 1
-initcall cpufreq_register_tsc_scaling+0x0/0x90 returned 0 after 0 usecs
-calling  cache_ap_register+0x0/0x30 @ 1
-initcall cache_ap_register+0x0/0x30 returned 0 after 0 usecs
-calling  reboot_init+0x0/0xc0 @ 1
-initcall reboot_init+0x0/0xc0 returned 0 after 0 usecs
-calling  init_lapic_sysfs+0x0/0x50 @ 1
-initcall init_lapic_sysfs+0x0/0x50 returned 0 after 0 usecs
-calling  alloc_frozen_cpus+0x0/0x30 @ 1
-initcall alloc_frozen_cpus+0x0/0x30 returned 0 after 0 usecs
-calling  cpu_hotplug_pm_sync_init+0x0/0x20 @ 1
-initcall cpu_hotplug_pm_sync_init+0x0/0x20 returned 0 after 0 usecs
-calling  wq_sysfs_init+0x0/0x30 @ 1
-initcall wq_sysfs_init+0x0/0x30 returned 0 after 0 usecs
-calling  ksysfs_init+0x0/0xb0 @ 1
-initcall ksysfs_init+0x0/0xb0 returned 0 after 0 usecs
-calling  schedutil_gov_init+0x0/0x20 @ 1
-initcall schedutil_gov_init+0x0/0x20 returned 0 after 0 usecs
-calling  pm_init+0x0/0xd0 @ 1
-initcall pm_init+0x0/0xd0 returned 0 after 0 usecs
-calling  pm_disk_init+0x0/0x50 @ 1
-initcall pm_disk_init+0x0/0x50 returned 0 after 0 usecs
-calling  swsusp_header_init+0x0/0x40 @ 1
-initcall swsusp_header_init+0x0/0x40 returned 0 after 0 usecs
-calling  rcu_set_runtime_mode+0x0/0x80 @ 1
-Running RCU synchronous self tests
-Running RCU synchronous self tests
-initcall rcu_set_runtime_mode+0x0/0x80 returned 0 after 11000 usecs
-calling  init_jiffies_clocksource+0x0/0x20 @ 1
-clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns:=
- 1911260446275000 ns
-initcall init_jiffies_clocksource+0x0/0x20 returned 0 after 11000 usecs
-calling  futex_init+0x0/0x240 @ 1
-futex hash table entries: 1024 (order: 5, 131072 bytes, linear)
-initcall futex_init+0x0/0x240 returned 0 after 7000 usecs
-calling  cgroup_wq_init+0x0/0x30 @ 1
-initcall cgroup_wq_init+0x0/0x30 returned 0 after 0 usecs
-calling  cgroup1_wq_init+0x0/0x30 @ 1
-initcall cgroup1_wq_init+0x0/0x30 returned 0 after 0 usecs
-calling  ftrace_mod_cmd_init+0x0/0x10 @ 1
-initcall ftrace_mod_cmd_init+0x0/0x10 returned 0 after 0 usecs
-calling  init_irqsoff_tracer+0x0/0x20 @ 1
-initcall init_irqsoff_tracer+0x0/0x20 returned 0 after 0 usecs
-calling  init_wakeup_tracer+0x0/0x40 @ 1
-initcall init_wakeup_tracer+0x0/0x40 returned 0 after 0 usecs
-calling  init_graph_trace+0x0/0xa0 @ 1
-initcall init_graph_trace+0x0/0xa0 returned 0 after 0 usecs
-calling  trace_events_eprobe_init_early+0x0/0x40 @ 1
-initcall trace_events_eprobe_init_early+0x0/0x40 returned 0 after 0 usecs
-calling  trace_events_synth_init_early+0x0/0x40 @ 1
-initcall trace_events_synth_init_early+0x0/0x40 returned 0 after 0 usecs
-calling  init_kprobe_trace_early+0x0/0x30 @ 1
-initcall init_kprobe_trace_early+0x0/0x30 returned 0 after 0 usecs
-calling  kasan_memhotplug_init+0x0/0x20 @ 1
-initcall kasan_memhotplug_init+0x0/0x20 returned 0 after 0 usecs
-calling  memory_failure_init+0x0/0x320 @ 1
-initcall memory_failure_init+0x0/0x320 returned 0 after 0 usecs
-calling  fsnotify_init+0x0/0xa0 @ 1
-initcall fsnotify_init+0x0/0xa0 returned 0 after 0 usecs
-calling  filelock_init+0x0/0x1b0 @ 1
-initcall filelock_init+0x0/0x1b0 returned 0 after 1000 usecs
-calling  init_script_binfmt+0x0/0x20 @ 1
-initcall init_script_binfmt+0x0/0x20 returned 0 after 0 usecs
-calling  init_elf_binfmt+0x0/0x20 @ 1
-initcall init_elf_binfmt+0x0/0x20 returned 0 after 0 usecs
-calling  init_compat_elf_binfmt+0x0/0x20 @ 1
-initcall init_compat_elf_binfmt+0x0/0x20 returned 0 after 0 usecs
-calling  configfs_init+0x0/0x100 @ 1
-initcall configfs_init+0x0/0x100 returned 0 after 0 usecs
-calling  debugfs_init+0x0/0xd0 @ 1
-initcall debugfs_init+0x0/0xd0 returned 0 after 0 usecs
-calling  tracefs_init+0x0/0x70 @ 1
-initcall tracefs_init+0x0/0x70 returned 0 after 0 usecs
-calling  securityfs_init+0x0/0xe0 @ 1
-initcall securityfs_init+0x0/0xe0 returned 0 after 1000 usecs
-calling  pinctrl_init+0x0/0xc0 @ 1
-pinctrl core: initialized pinctrl subsystem
-initcall pinctrl_init+0x0/0xc0 returned 0 after 7000 usecs
-calling  gpiolib_dev_init+0x0/0x140 @ 1
-initcall gpiolib_dev_init+0x0/0x140 returned 0 after 0 usecs
-calling  virtio_init+0x0/0x30 @ 1
-initcall virtio_init+0x0/0x30 returned 0 after 0 usecs
-calling  iommu_init+0x0/0x60 @ 1
-initcall iommu_init+0x0/0x60 returned 0 after 0 usecs
-calling  component_debug_init+0x0/0x30 @ 1
-initcall component_debug_init+0x0/0x30 returned 0 after 0 usecs
-calling  cpufreq_core_init+0x0/0xe0 @ 1
-initcall cpufreq_core_init+0x0/0xe0 returned 0 after 0 usecs
-calling  cpufreq_gov_performance_init+0x0/0x20 @ 1
-initcall cpufreq_gov_performance_init+0x0/0x20 returned 0 after 0 usecs
-calling  cpufreq_gov_powersave_init+0x0/0x20 @ 1
-initcall cpufreq_gov_powersave_init+0x0/0x20 returned 0 after 0 usecs
-calling  cpufreq_gov_userspace_init+0x0/0x20 @ 1
-initcall cpufreq_gov_userspace_init+0x0/0x20 returned 0 after 0 usecs
-calling  CPU_FREQ_GOV_ONDEMAND_init+0x0/0x20 @ 1
-initcall CPU_FREQ_GOV_ONDEMAND_init+0x0/0x20 returned 0 after 0 usecs
-calling  CPU_FREQ_GOV_CONSERVATIVE_init+0x0/0x20 @ 1
-initcall CPU_FREQ_GOV_CONSERVATIVE_init+0x0/0x20 returned 0 after 0 usecs
-calling  cpuidle_init+0x0/0x50 @ 1
-initcall cpuidle_init+0x0/0x50 returned 0 after 0 usecs
-calling  sock_init+0x0/0xb0 @ 1
-initcall sock_init+0x0/0xb0 returned 0 after 3000 usecs
-calling  net_inuse_init+0x0/0x30 @ 1
-initcall net_inuse_init+0x0/0x30 returned 0 after 0 usecs
-calling  net_defaults_init+0x0/0x50 @ 1
-initcall net_defaults_init+0x0/0x50 returned 0 after 0 usecs
-calling  init_default_flow_dissectors+0x0/0x60 @ 1
-initcall init_default_flow_dissectors+0x0/0x60 returned 0 after 0 usecs
-calling  netpoll_init+0x0/0x50 @ 1
-initcall netpoll_init+0x0/0x50 returned 0 after 0 usecs
-calling  netlink_proto_init+0x0/0x2f0 @ 1
-NET: Registered PF_NETLINK/PF_ROUTE protocol family
-initcall netlink_proto_init+0x0/0x2f0 returned 0 after 8000 usecs
-calling  genl_init+0x0/0x50 @ 1
-initcall genl_init+0x0/0x50 returned 0 after 0 usecs
-calling  bsp_pm_check_init+0x0/0x20 @ 1
-initcall bsp_pm_check_init+0x0/0x20 returned 0 after 0 usecs
-calling  irq_sysfs_init+0x0/0x150 @ 1
-initcall irq_sysfs_init+0x0/0x150 returned 0 after 2000 usecs
-calling  audit_init+0x0/0x260 @ 1
-audit: initializing netlink subsys (disabled)
-initcall audit_init+0x0/0x260 returned 0 after 6000 usecs
-audit: type=3D2000 audit(1678406273.802:1): state=3Dinitialized audit_enabl=
-ed=3D0 res=3D1
-calling  release_early_probes+0x0/0x80 @ 1
-initcall release_early_probes+0x0/0x80 returned 0 after 0 usecs
-calling  bdi_class_init+0x0/0x80 @ 1
-initcall bdi_class_init+0x0/0x80 returned 0 after 0 usecs
-calling  mm_sysfs_init+0x0/0x60 @ 1
-initcall mm_sysfs_init+0x0/0x60 returned 0 after 0 usecs
-calling  init_per_zone_wmark_min+0x0/0x30 @ 1
-initcall init_per_zone_wmark_min+0x0/0x30 returned 0 after 0 usecs
-calling  mpi_init+0x0/0x1c0 @ 1
-initcall mpi_init+0x0/0x1c0 returned 0 after 0 usecs
-calling  gpiolib_sysfs_init+0x0/0x150 @ 1
-initcall gpiolib_sysfs_init+0x0/0x150 returned 0 after 0 usecs
-calling  acpi_gpio_setup_params+0x0/0x1c0 @ 1
-initcall acpi_gpio_setup_params+0x0/0x1c0 returned 0 after 0 usecs
-calling  pcibus_class_init+0x0/0x20 @ 1
-initcall pcibus_class_init+0x0/0x20 returned 0 after 0 usecs
-calling  pci_driver_init+0x0/0x30 @ 1
-initcall pci_driver_init+0x0/0x30 returned 0 after 0 usecs
-calling  backlight_class_init+0x0/0x120 @ 1
-initcall backlight_class_init+0x0/0x120 returned 0 after 0 usecs
-calling  tty_class_init+0x0/0x70 @ 1
-initcall tty_class_init+0x0/0x70 returned 0 after 0 usecs
-calling  vtconsole_class_init+0x0/0x230 @ 1
-initcall vtconsole_class_init+0x0/0x230 returned 0 after 1000 usecs
-calling  iommu_dev_init+0x0/0x20 @ 1
-initcall iommu_dev_init+0x0/0x20 returned 0 after 0 usecs
-calling  mipi_dsi_bus_init+0x0/0x20 @ 1
-initcall mipi_dsi_bus_init+0x0/0x20 returned 0 after 0 usecs
-calling  devlink_class_init+0x0/0x60 @ 1
-initcall devlink_class_init+0x0/0x60 returned 0 after 0 usecs
-calling  software_node_init+0x0/0x60 @ 1
-initcall software_node_init+0x0/0x60 returned 0 after 0 usecs
-calling  wakeup_sources_debugfs_init+0x0/0x30 @ 1
-initcall wakeup_sources_debugfs_init+0x0/0x30 returned 0 after 0 usecs
-calling  wakeup_sources_sysfs_init+0x0/0x40 @ 1
-initcall wakeup_sources_sysfs_init+0x0/0x40 returned 0 after 0 usecs
-calling  regmap_initcall+0x0/0x20 @ 1
-initcall regmap_initcall+0x0/0x20 returned 0 after 0 usecs
-calling  spi_init+0x0/0xe0 @ 1
-initcall spi_init+0x0/0xe0 returned 0 after 0 usecs
-calling  i2c_init+0x0/0x110 @ 1
-initcall i2c_init+0x0/0x110 returned 0 after 0 usecs
-calling  thermal_init+0x0/0x2d0 @ 1
-thermal_sys: Registered thermal governor 'fair_share'
-thermal_sys: Registered thermal governor 'bang_bang'
-thermal_sys: Registered thermal governor 'step_wise'
-thermal_sys: Registered thermal governor 'user_space'
-initcall thermal_init+0x0/0x2d0 returned 0 after 21000 usecs
-calling  init_menu+0x0/0x20 @ 1
-cpuidle: using governor menu
-initcall init_menu+0x0/0x20 returned 0 after 5000 usecs
-calling  init_haltpoll+0x0/0x30 @ 1
-initcall init_haltpoll+0x0/0x30 returned 0 after 0 usecs
-calling  pcc_init+0x0/0xe0 @ 1
-initcall pcc_init+0x0/0xe0 returned -19 after 0 usecs
-calling  kobject_uevent_init+0x0/0x10 @ 1
-initcall kobject_uevent_init+0x0/0x10 returned 0 after 0 usecs
-calling  bts_init+0x0/0x160 @ 1
-initcall bts_init+0x0/0x160 returned -19 after 0 usecs
-calling  pt_init+0x0/0x310 @ 1
-initcall pt_init+0x0/0x310 returned 0 after 0 usecs
-calling  boot_params_ksysfs_init+0x0/0xa0 @ 1
-initcall boot_params_ksysfs_init+0x0/0xa0 returned 0 after 0 usecs
-calling  sbf_init+0x0/0xe0 @ 1
-initcall sbf_init+0x0/0xe0 returned 0 after 0 usecs
-calling  arch_kdebugfs_init+0x0/0xa0 @ 1
-initcall arch_kdebugfs_init+0x0/0xa0 returned 0 after 0 usecs
-calling  xfd_update_static_branch+0x0/0x50 @ 1
-initcall xfd_update_static_branch+0x0/0x50 returned 0 after 0 usecs
-calling  intel_pconfig_init+0x0/0xc0 @ 1
-initcall intel_pconfig_init+0x0/0xc0 returned 0 after 0 usecs
-calling  mtrr_if_init+0x0/0xc0 @ 1
-initcall mtrr_if_init+0x0/0xc0 returned 0 after 0 usecs
-calling  activate_jump_labels+0x0/0x40 @ 1
-initcall activate_jump_labels+0x0/0x40 returned 0 after 0 usecs
-calling  init_s4_sigcheck+0x0/0xa0 @ 1
-initcall init_s4_sigcheck+0x0/0xa0 returned 0 after 0 usecs
-calling  ffh_cstate_init+0x0/0x70 @ 1
-initcall ffh_cstate_init+0x0/0x70 returned 0 after 0 usecs
-calling  kvm_alloc_cpumask+0x0/0x270 @ 1
-initcall kvm_alloc_cpumask+0x0/0x270 returned 0 after 0 usecs
-calling  activate_jump_labels+0x0/0x40 @ 1
-initcall activate_jump_labels+0x0/0x40 returned 0 after 0 usecs
-calling  gigantic_pages_init+0x0/0x50 @ 1
-initcall gigantic_pages_init+0x0/0x50 returned 0 after 0 usecs
-calling  uv_rtc_setup_clock+0x0/0x3d0 @ 1
-initcall uv_rtc_setup_clock+0x0/0x3d0 returned -19 after 0 usecs
-calling  kcmp_cookies_init+0x0/0xb0 @ 1
-initcall kcmp_cookies_init+0x0/0xb0 returned 0 after 0 usecs
-calling  cryptomgr_init+0x0/0x20 @ 1
-initcall cryptomgr_init+0x0/0x20 returned 0 after 0 usecs
-calling  acpi_pci_init+0x0/0x170 @ 1
-ACPI FADT declares the system doesn't support PCIe ASPM, so disable it
-acpiphp: ACPI Hot Plug PCI Controller Driver version: 0.5
-initcall acpi_pci_init+0x0/0x170 returned 0 after 16000 usecs
-calling  dma_channel_table_init+0x0/0x220 @ 1
-initcall dma_channel_table_init+0x0/0x220 returned 0 after 0 usecs
-calling  dma_bus_init+0x0/0x290 @ 1
-initcall dma_bus_init+0x0/0x290 returned 0 after 0 usecs
-calling  iommu_dma_init+0x0/0x50 @ 1
-initcall iommu_dma_init+0x0/0x50 returned 0 after 0 usecs
-calling  dmi_id_init+0x0/0x1b0 @ 1
-initcall dmi_id_init+0x0/0x1b0 returned 0 after 1000 usecs
-calling  pci_arch_init+0x0/0x150 @ 1
-PCI: MMCONFIG for domain 0000 [bus 00-ff] at [mem 0xe0000000-0xefffffff] (b=
-ase 0xe0000000)
-PCI: MMCONFIG at [mem 0xe0000000-0xefffffff] reserved as E820 entry
-PCI: Using configuration type 1 for base access
-initcall pci_arch_init+0x0/0x150 returned 0 after 44000 usecs
-calling  init_vdso_image_64+0x0/0x20 @ 1
-initcall init_vdso_image_64+0x0/0x20 returned 0 after 0 usecs
-calling  init_vdso_image_32+0x0/0x20 @ 1
-initcall init_vdso_image_32+0x0/0x20 returned 0 after 0 usecs
-calling  fixup_ht_bug+0x0/0x420 @ 1
-initcall fixup_ht_bug+0x0/0x420 returned 0 after 0 usecs
-calling  topology_init+0x0/0xc0 @ 1
-initcall topology_init+0x0/0xc0 returned 0 after 2000 usecs
-calling  intel_epb_init+0x0/0x110 @ 1
-initcall intel_epb_init+0x0/0x110 returned 0 after 0 usecs
-calling  mtrr_init_finialize+0x0/0x80 @ 1
-initcall mtrr_init_finialize+0x0/0x80 returned 0 after 0 usecs
-calling  uid_cache_init+0x0/0x110 @ 1
-initcall uid_cache_init+0x0/0x110 returned 0 after 0 usecs
-calling  param_sysfs_init+0x0/0x50 @ 1
-initcall param_sysfs_init+0x0/0x50 returned 0 after 0 usecs
-calling  user_namespace_sysctl_init+0x0/0x140 @ 1
-initcall user_namespace_sysctl_init+0x0/0x140 returned 0 after 0 usecs
-calling  proc_schedstat_init+0x0/0x30 @ 1
-initcall proc_schedstat_init+0x0/0x30 returned 0 after 0 usecs
-calling  pm_sysrq_init+0x0/0x20 @ 1
-initcall pm_sysrq_init+0x0/0x20 returned 0 after 0 usecs
-calling  create_proc_profile+0x0/0xe0 @ 1
-initcall create_proc_profile+0x0/0xe0 returned 0 after 0 usecs
-calling  crash_save_vmcoreinfo_init+0x0/0x780 @ 1
-initcall crash_save_vmcoreinfo_init+0x0/0x780 returned 0 after 1000 usecs
-calling  crash_notes_memory_init+0x0/0x40 @ 1
-initcall crash_notes_memory_init+0x0/0x40 returned 0 after 0 usecs
-calling  cgroup_sysfs_init+0x0/0x50 @ 1
-initcall cgroup_sysfs_init+0x0/0x50 returned 0 after 0 usecs
-calling  cgroup_namespaces_init+0x0/0x10 @ 1
-initcall cgroup_namespaces_init+0x0/0x10 returned 0 after 0 usecs
-calling  user_namespaces_init+0x0/0x40 @ 1
-initcall user_namespaces_init+0x0/0x40 returned 0 after 0 usecs
-calling  init_optprobes+0x0/0x30 @ 1
-kprobes: kprobe jump-optimization is enabled. All kprobes are optimized if =
-possible.
-initcall init_optprobes+0x0/0x30 returned 0 after 10000 usecs
-calling  hung_task_init+0x0/0x80 @ 1
-initcall hung_task_init+0x0/0x80 returned 0 after 0 usecs
-calling  ftrace_check_for_weak_functions+0x0/0x90 @ 1
-initcall ftrace_check_for_weak_functions+0x0/0x90 returned 0 after 0 usecs
-calling  trace_eval_init+0x0/0xe0 @ 1
-initcall trace_eval_init+0x0/0xe0 returned 0 after 1000 usecs
-calling  send_signal_irq_work_init+0x0/0x1d0 @ 1
-initcall send_signal_irq_work_init+0x0/0x1d0 returned 0 after 0 usecs
-calling  dev_map_init+0x0/0x190 @ 1
-initcall dev_map_init+0x0/0x190 returned 0 after 0 usecs
-calling  cpu_map_init+0x0/0x180 @ 1
-initcall cpu_map_init+0x0/0x180 returned 0 after 0 usecs
-calling  netns_bpf_init+0x0/0x20 @ 1
-initcall netns_bpf_init+0x0/0x20 returned 0 after 0 usecs
-calling  oom_init+0x0/0x50 @ 1
-initcall oom_init+0x0/0x50 returned 0 after 0 usecs
-calling  default_bdi_init+0x0/0x30 @ 1
-initcall default_bdi_init+0x0/0x30 returned 0 after 1000 usecs
-calling  cgwb_init+0x0/0x30 @ 1
-initcall cgwb_init+0x0/0x30 returned 0 after 0 usecs
-calling  percpu_enable_async+0x0/0x20 @ 1
-initcall percpu_enable_async+0x0/0x20 returned 0 after 0 usecs
-calling  kcompactd_init+0x0/0xa0 @ 1
-initcall kcompactd_init+0x0/0xa0 returned 0 after 1000 usecs
-calling  init_user_reserve+0x0/0xa0 @ 1
-initcall init_user_reserve+0x0/0xa0 returned 0 after 0 usecs
-calling  init_admin_reserve+0x0/0xa0 @ 1
-initcall init_admin_reserve+0x0/0xa0 returned 0 after 0 usecs
-calling  init_reserve_notifier+0x0/0x30 @ 1
-initcall init_reserve_notifier+0x0/0x30 returned 0 after 0 usecs
-calling  swap_init_sysfs+0x0/0xa0 @ 1
-initcall swap_init_sysfs+0x0/0xa0 returned 0 after 0 usecs
-calling  swapfile_init+0x0/0x180 @ 1
-initcall swapfile_init+0x0/0x180 returned 0 after 0 usecs
-calling  hugetlb_init+0x0/0xcb0 @ 1
-HugeTLB: registered 1.00 GiB page size, pre-allocated 0 pages
-HugeTLB: 16380 KiB vmemmap can be freed for a 1.00 GiB page
-HugeTLB: registered 2.00 MiB page size, pre-allocated 0 pages
-HugeTLB: 28 KiB vmemmap can be freed for a 2.00 MiB page
-initcall hugetlb_init+0x0/0xcb0 returned 0 after 31000 usecs
-calling  ksm_init+0x0/0x2a0 @ 1
-initcall ksm_init+0x0/0x2a0 returned 0 after 2000 usecs
-calling  memory_tier_init+0x0/0x150 @ 1
-initcall memory_tier_init+0x0/0x150 returned 0 after 1000 usecs
-calling  numa_init_sysfs+0x0/0xa0 @ 1
-initcall numa_init_sysfs+0x0/0xa0 returned 0 after 0 usecs
-calling  hugepage_init+0x0/0x1e0 @ 1
-initcall hugepage_init+0x0/0x1e0 returned 0 after 1000 usecs
-calling  mem_cgroup_init+0x0/0x4d0 @ 1
-initcall mem_cgroup_init+0x0/0x4d0 returned 0 after 0 usecs
-calling  mem_cgroup_swap_init+0x0/0x60 @ 1
-initcall mem_cgroup_swap_init+0x0/0x60 returned 0 after 0 usecs
-calling  page_idle_init+0x0/0x70 @ 1
-initcall page_idle_init+0x0/0x70 returned 0 after 0 usecs
-calling  damon_init+0x0/0x50 @ 1
-initcall damon_init+0x0/0x50 returned 0 after 0 usecs
-calling  damon_va_initcall+0x0/0x1b0 @ 1
-initcall damon_va_initcall+0x0/0x1b0 returned 0 after 0 usecs
-calling  damon_pa_initcall+0x0/0x100 @ 1
-initcall damon_pa_initcall+0x0/0x100 returned 0 after 0 usecs
-calling  damon_sysfs_init+0x0/0x1c0 @ 1
-initcall damon_sysfs_init+0x0/0x1c0 returned 0 after 0 usecs
-calling  seqiv_module_init+0x0/0x20 @ 1
-initcall seqiv_module_init+0x0/0x20 returned 0 after 0 usecs
-calling  rsa_init+0x0/0x50 @ 1
-initcall rsa_init+0x0/0x50 returned 0 after 0 usecs
-calling  hmac_module_init+0x0/0x20 @ 1
-initcall hmac_module_init+0x0/0x20 returned 0 after 0 usecs
-calling  crypto_null_mod_init+0x0/0x80 @ 1
-initcall crypto_null_mod_init+0x0/0x80 returned 0 after 0 usecs
-calling  md5_mod_init+0x0/0x20 @ 1
-initcall md5_mod_init+0x0/0x20 returned 0 after 0 usecs
-calling  sha1_generic_mod_init+0x0/0x20 @ 1
-initcall sha1_generic_mod_init+0x0/0x20 returned 0 after 0 usecs
-calling  sha256_generic_mod_init+0x0/0x20 @ 1
-initcall sha256_generic_mod_init+0x0/0x20 returned 0 after 0 usecs
-calling  sha512_generic_mod_init+0x0/0x20 @ 1
-initcall sha512_generic_mod_init+0x0/0x20 returned 0 after 0 usecs
-calling  crypto_ecb_module_init+0x0/0x20 @ 1
-initcall crypto_ecb_module_init+0x0/0x20 returned 0 after 0 usecs
-calling  crypto_cbc_module_init+0x0/0x20 @ 1
-initcall crypto_cbc_module_init+0x0/0x20 returned 0 after 0 usecs
-calling  crypto_cfb_module_init+0x0/0x20 @ 1
-initcall crypto_cfb_module_init+0x0/0x20 returned 0 after 0 usecs
-calling  crypto_ctr_module_init+0x0/0x20 @ 1
-initcall crypto_ctr_module_init+0x0/0x20 returned 0 after 0 usecs
-calling  crypto_gcm_module_init+0x0/0xb0 @ 1
-initcall crypto_gcm_module_init+0x0/0xb0 returned 0 after 0 usecs
-calling  cryptd_init+0x0/0x2a0 @ 1
-cryptd: max_cpu_qlen set to 1000
-initcall cryptd_init+0x0/0x2a0 returned 0 after 5000 usecs
-calling  aes_init+0x0/0x20 @ 1
-initcall aes_init+0x0/0x20 returned 0 after 0 usecs
-calling  sm4_init+0x0/0x20 @ 1
-initcall sm4_init+0x0/0x20 returned 0 after 0 usecs
-calling  deflate_mod_init+0x0/0x50 @ 1
-initcall deflate_mod_init+0x0/0x50 returned 0 after 0 usecs
-calling  crc32c_mod_init+0x0/0x20 @ 1
-initcall crc32c_mod_init+0x0/0x20 returned 0 after 0 usecs
-calling  crct10dif_mod_init+0x0/0x20 @ 1
-initcall crct10dif_mod_init+0x0/0x20 returned 0 after 0 usecs
-calling  lzo_mod_init+0x0/0x50 @ 1
-initcall lzo_mod_init+0x0/0x50 returned 0 after 0 usecs
-calling  lzorle_mod_init+0x0/0x50 @ 1
-initcall lzorle_mod_init+0x0/0x50 returned 0 after 0 usecs
-calling  drbg_init+0x0/0x100 @ 1
-initcall drbg_init+0x0/0x100 returned 0 after 0 usecs
-calling  ghash_mod_init+0x0/0x20 @ 1
-initcall ghash_mod_init+0x0/0x20 returned 0 after 0 usecs
-calling  init_bio+0x0/0x140 @ 1
-initcall init_bio+0x0/0x140 returned 0 after 1000 usecs
-calling  blk_ioc_init+0x0/0x30 @ 1
-initcall blk_ioc_init+0x0/0x30 returned 0 after 0 usecs
-calling  blk_mq_init+0x0/0x1e0 @ 1
-initcall blk_mq_init+0x0/0x1e0 returned 0 after 0 usecs
-calling  genhd_device_init+0x0/0x90 @ 1
-initcall genhd_device_init+0x0/0x90 returned 0 after 0 usecs
-calling  blkcg_init+0x0/0x30 @ 1
-initcall blkcg_init+0x0/0x30 returned 0 after 1000 usecs
-calling  io_wq_init+0x0/0x40 @ 1
-initcall io_wq_init+0x0/0x40 returned 0 after 0 usecs
-calling  sg_pool_init+0x0/0x210 @ 1
-initcall sg_pool_init+0x0/0x210 returned 0 after 0 usecs
-calling  irq_poll_setup+0x0/0x1b0 @ 1
-initcall irq_poll_setup+0x0/0x1b0 returned 0 after 0 usecs
-calling  gpiolib_debugfs_init+0x0/0x30 @ 1
-initcall gpiolib_debugfs_init+0x0/0x30 returned 0 after 0 usecs
-calling  pwm_debugfs_init+0x0/0x30 @ 1
-initcall pwm_debugfs_init+0x0/0x30 returned 0 after 0 usecs
-calling  pwm_sysfs_init+0x0/0x20 @ 1
-initcall pwm_sysfs_init+0x0/0x20 returned 0 after 0 usecs
-calling  pci_slot_init+0x0/0x50 @ 1
-initcall pci_slot_init+0x0/0x50 returned 0 after 0 usecs
-calling  fbmem_init+0x0/0xf0 @ 1
-initcall fbmem_init+0x0/0xf0 returned 0 after 1000 usecs
-calling  scan_for_dmi_ipmi+0x0/0x60 @ 1
-initcall scan_for_dmi_ipmi+0x0/0x60 returned 0 after 0 usecs
-calling  acpi_init+0x0/0x2c0 @ 1
-ACPI: Added _OSI(Module Device)
-ACPI: Added _OSI(Processor Device)
-ACPI: Added _OSI(3.0 _SCP Extensions)
-ACPI: Added _OSI(Processor Aggregator Device)
-ACPI: 8 ACPI AML tables successfully acquired and loaded
-ACPI: [Firmware Bug]: BIOS _OSI(Linux) query ignored
-ACPI: Dynamic OEM Table Load:
-ACPI: SSDT 0xFFFF8881034C0800 0006C3 (v02 PmRef  Cpu0Ist  00003000 INTL 201=
-21018)
-ACPI: \_PR_.CPU0: _OSC native thermal LVT Acked
-ACPI: Dynamic OEM Table Load:
-ACPI: SSDT 0xFFFF8881034AD800 00037F (v02 PmRef  Cpu0Cst  00003001 INTL 201=
-21018)
-ACPI: Dynamic OEM Table Load:
-ACPI: SSDT 0xFFFF8881048D2000 0005AA (v02 PmRef  ApIst    00003000 INTL 201=
-21018)
-ACPI: Dynamic OEM Table Load:
-ACPI: SSDT 0xFFFF888103799400 000119 (v02 PmRef  ApCst    00003000 INTL 201=
-21018)
-ACPI: EC: EC started
-ACPI: EC: interrupt blocked
-ACPI: EC: EC_CMD/EC_SC=3D0x66, EC_DATA=3D0x62
-ACPI: \_SB_.PCI0.LPCB.EC0_: Boot DSDT EC used to handle transactions
-ACPI: Interpreter enabled
-ACPI: PM: (supports S0 S3 S4 S5)
-ACPI: Using IOAPIC for interrupt routing
-PCI: Using host bridge windows from ACPI; if necessary, use "pci=3Dnocrs" a=
-nd report a bug
-PCI: Using E820 reservations for host bridge windows
-ACPI: Enabled 5 GPEs in block 00 to 7F
-ACPI: \_SB_.PCI0.PEG1.PG01: New power resource
-ACPI: \_SB_.PCI0.PEG2.PG02: New power resource
-ACPI: \_SB_.PCI0.PEG0.PG00: New power resource
-ACPI: \_SB_.PCI0.PEG0.PEGP.WRST: New power resource
-ACPI: \_SB_.PCI0.RP01.PXSX.WRST: New power resource
-ACPI: \_SB_.PCI0.RP02.PXSX.WRST: New power resource
-ACPI: \_SB_.PCI0.RP03.PXSX.WRST: New power resource
-ACPI: \_SB_.PCI0.RP04.PXSX.WRST: New power resource
-ACPI: \_SB_.PCI0.RP05.PXSX.WRST: New power resource
-ACPI: \_SB_.PCI0.RP06.PXSX.WRST: New power resource
-ACPI: \_SB_.PCI0.RP07.PXSX.WRST: New power resource
-ACPI: \_SB_.PCI0.RP08.PXSX.WRST: New power resource
-ACPI: \_SB_.PCI0.RP09.PXSX.WRST: New power resource
-ACPI: \_SB_.PCI0.RP10.PXSX.WRST: New power resource
-ACPI: \_SB_.PCI0.RP11.PXSX.WRST: New power resource
-ACPI: \_SB_.PCI0.RP12.PXSX.WRST: New power resource
-ACPI: \_SB_.PCI0.RP13.PXSX.WRST: New power resource
-ACPI: \_SB_.PCI0.RP14.PXSX.WRST: New power resource
-ACPI: \_SB_.PCI0.RP15.PXSX.WRST: New power resource
-ACPI: \_SB_.PCI0.RP16.PXSX.WRST: New power resource
-ACPI: \_SB_.PCI0.RP17.PXSX.WRST: New power resource
-ACPI: \_SB_.PCI0.RP18.PXSX.WRST: New power resource
-ACPI: \_SB_.PCI0.RP19.PXSX.WRST: New power resource
-ACPI: \_SB_.PCI0.RP20.PXSX.WRST: New power resource
-ACPI: PCI Root Bridge [PCI0] (domain 0000 [bus 00-fe])
-acpi PNP0A08:00: _OSC: OS supports [ExtendedConfig ASPM ClockPM Segments MS=
-I HPX-Type3]
-acpi PNP0A08:00: _OSC: platform does not support [PCIeHotplug SHPCHotplug P=
-ME LTR]
-acpi PNP0A08:00: _OSC: OS now controls [AER PCIeCapability]
-acpi PNP0A08:00: FADT indicates ASPM is unsupported, using BIOS configurati=
-on
-PCI host bridge to bus 0000:00
-pci_bus 0000:00: root bus resource [io  0x0000-0x0cf7 window]
-pci_bus 0000:00: root bus resource [io  0x0d00-0xffff window]
-pci_bus 0000:00: root bus resource [mem 0x000a0000-0x000bffff window]
-pci_bus 0000:00: root bus resource [mem 0xbe800000-0xdfffffff window]
-pci_bus 0000:00: root bus resource [mem 0x1c00000000-0x1fffffffff window]
-pci_bus 0000:00: root bus resource [mem 0xfd000000-0xfe7fffff window]
-pci_bus 0000:00: root bus resource [bus 00-fe]
-pci 0000:00:00.0: calling  quirk_mmio_always_on+0x0/0x80 @ 1
-pci 0000:00:00.0: quirk_mmio_always_on+0x0/0x80 took 0 usecs
-pci 0000:00:00.0: [8086:1918] type 00 class 0x060000
-pci 0000:00:00.0: calling  quirk_igfx_skip_te_disable+0x0/0x1a0 @ 1
-pci 0000:00:00.0: quirk_igfx_skip_te_disable+0x0/0x1a0 took 0 usecs
-pci 0000:00:02.0: [8086:191d] type 00 class 0x030000
-pci 0000:00:02.0: reg 0x10: [mem 0xd0000000-0xd0ffffff 64bit]
-pci 0000:00:02.0: reg 0x18: [mem 0xc0000000-0xcfffffff 64bit pref]
-pci 0000:00:02.0: reg 0x20: [io  0x3000-0x303f]
-pci 0000:00:02.0: calling  efifb_fixup_resources+0x0/0x4e0 @ 1
-pci 0000:00:02.0: efifb_fixup_resources+0x0/0x4e0 took 0 usecs
-pci 0000:00:02.0: calling  quirk_igfx_skip_te_disable+0x0/0x1a0 @ 1
-pci 0000:00:02.0: quirk_igfx_skip_te_disable+0x0/0x1a0 took 0 usecs
-pci 0000:00:02.0: calling  pci_fixup_video+0x0/0x2b0 @ 1
-pci 0000:00:02.0: Video device with shadowed ROM at [mem 0x000c0000-0x000df=
-fff]
-pci 0000:00:02.0: pci_fixup_video+0x0/0x2b0 took 9765 usecs
-pci 0000:00:14.0: [8086:a12f] type 00 class 0x0c0330
-pci 0000:00:14.0: reg 0x10: [mem 0xd1020000-0xd102ffff 64bit]
-pci 0000:00:14.0: calling  quirk_igfx_skip_te_disable+0x0/0x1a0 @ 1
-pci 0000:00:14.0: quirk_igfx_skip_te_disable+0x0/0x1a0 took 0 usecs
-pci 0000:00:14.0: PME# supported from D3hot D3cold
-pci 0000:00:14.2: [8086:a131] type 00 class 0x118000
-pci 0000:00:14.2: reg 0x10: [mem 0xd104a000-0xd104afff 64bit]
-pci 0000:00:14.2: calling  quirk_igfx_skip_te_disable+0x0/0x1a0 @ 1
-pci 0000:00:14.2: quirk_igfx_skip_te_disable+0x0/0x1a0 took 0 usecs
-pci 0000:00:16.0: [8086:a13a] type 00 class 0x078000
-pci 0000:00:16.0: reg 0x10: [mem 0xd104b000-0xd104bfff 64bit]
-pci 0000:00:16.0: calling  quirk_igfx_skip_te_disable+0x0/0x1a0 @ 1
-pci 0000:00:16.0: quirk_igfx_skip_te_disable+0x0/0x1a0 took 0 usecs
-pci 0000:00:16.0: PME# supported from D3hot
-pci 0000:00:16.3: [8086:a13d] type 00 class 0x070002
-pci 0000:00:16.3: reg 0x10: [io  0x3080-0x3087]
-pci 0000:00:16.3: reg 0x14: [mem 0xd104f000-0xd104ffff]
-pci 0000:00:16.3: calling  quirk_igfx_skip_te_disable+0x0/0x1a0 @ 1
-pci 0000:00:16.3: quirk_igfx_skip_te_disable+0x0/0x1a0 took 0 usecs
-pci 0000:00:17.0: [8086:2822] type 00 class 0x010400
-pci 0000:00:17.0: reg 0x10: [mem 0xd1048000-0xd1049fff]
-pci 0000:00:17.0: reg 0x14: [mem 0xd104e000-0xd104e0ff]
-pci 0000:00:17.0: reg 0x18: [io  0x3088-0x308f]
-pci 0000:00:17.0: reg 0x1c: [io  0x3090-0x3093]
-pci 0000:00:17.0: reg 0x20: [io  0x3060-0x307f]
-pci 0000:00:17.0: reg 0x24: [mem 0xd104c000-0xd104c7ff]
-pci 0000:00:17.0: calling  quirk_igfx_skip_te_disable+0x0/0x1a0 @ 1
-pci 0000:00:17.0: quirk_igfx_skip_te_disable+0x0/0x1a0 took 0 usecs
-pci 0000:00:17.0: PME# supported from D3hot
-pci 0000:00:1f.0: [8086:a149] type 00 class 0x060100
-pci 0000:00:1f.0: calling  quirk_igfx_skip_te_disable+0x0/0x1a0 @ 1
-pci 0000:00:1f.0: quirk_igfx_skip_te_disable+0x0/0x1a0 took 0 usecs
-pci 0000:00:1f.2: [8086:a121] type 00 class 0x058000
-pci 0000:00:1f.2: reg 0x10: [mem 0xd1044000-0xd1047fff]
-pci 0000:00:1f.2: calling  quirk_igfx_skip_te_disable+0x0/0x1a0 @ 1
-pci 0000:00:1f.2: quirk_igfx_skip_te_disable+0x0/0x1a0 took 0 usecs
-pci 0000:00:1f.3: [8086:a170] type 00 class 0x040300
-pci 0000:00:1f.3: reg 0x10: [mem 0xd1040000-0xd1043fff 64bit]
-pci 0000:00:1f.3: reg 0x20: [mem 0xd1030000-0xd103ffff 64bit]
-pci 0000:00:1f.3: calling  quirk_igfx_skip_te_disable+0x0/0x1a0 @ 1
-pci 0000:00:1f.3: quirk_igfx_skip_te_disable+0x0/0x1a0 took 0 usecs
-pci 0000:00:1f.3: PME# supported from D3hot D3cold
-pci 0000:00:1f.4: [8086:a123] type 00 class 0x0c0500
-pci 0000:00:1f.4: reg 0x10: [mem 0xd104d000-0xd104d0ff 64bit]
-pci 0000:00:1f.4: reg 0x20: [io  0xefa0-0xefbf]
-pci 0000:00:1f.4: calling  quirk_igfx_skip_te_disable+0x0/0x1a0 @ 1
-pci 0000:00:1f.4: quirk_igfx_skip_te_disable+0x0/0x1a0 took 0 usecs
-pci 0000:00:1f.6: calling  quirk_f0_vpd_link+0x0/0x220 @ 1
-pci 0000:00:1f.6: quirk_f0_vpd_link+0x0/0x220 took 0 usecs
-pci 0000:00:1f.6: [8086:15b7] type 00 class 0x020000
-pci 0000:00:1f.6: reg 0x10: [mem 0xd1000000-0xd101ffff]
-pci 0000:00:1f.6: calling  quirk_igfx_skip_te_disable+0x0/0x1a0 @ 1
-pci 0000:00:1f.6: quirk_igfx_skip_te_disable+0x0/0x1a0 took 0 usecs
-pci 0000:00:1f.6: PME# supported from D0 D3hot D3cold
-ACPI: PCI: Interrupt link LNKA configured for IRQ 11
-ACPI: PCI: Interrupt link LNKA disabled
-ACPI: PCI: Interrupt link LNKB configured for IRQ 10
-ACPI: PCI: Interrupt link LNKB disabled
-ACPI: PCI: Interrupt link LNKC configured for IRQ 11
-ACPI: PCI: Interrupt link LNKC disabled
-ACPI: PCI: Interrupt link LNKD configured for IRQ 11
-ACPI: PCI: Interrupt link LNKD disabled
-ACPI: PCI: Interrupt link LNKE configured for IRQ 11
-ACPI: PCI: Interrupt link LNKE disabled
-ACPI: PCI: Interrupt link LNKF configured for IRQ 11
-ACPI: PCI: Interrupt link LNKF disabled
-ACPI: PCI: Interrupt link LNKG configured for IRQ 11
-ACPI: PCI: Interrupt link LNKG disabled
-ACPI: PCI: Interrupt link LNKH configured for IRQ 11
-ACPI: PCI: Interrupt link LNKH disabled
-ACPI: EC: interrupt unblocked
-ACPI: EC: event unblocked
-ACPI: EC: EC_CMD/EC_SC=3D0x66, EC_DATA=3D0x62
-ACPI: EC: GPE=3D0x6e
-ACPI: \_SB_.PCI0.LPCB.EC0_: Boot DSDT EC initialization complete
-ACPI: \_SB_.PCI0.LPCB.EC0_: EC: Used to handle transactions and events
-initcall acpi_init+0x0/0x2c0 returned 0 after 3277000 usecs
-calling  adxl_init+0x0/0x2b0 @ 1
-initcall adxl_init+0x0/0x2b0 returned -19 after 0 usecs
-calling  pnp_init+0x0/0x20 @ 1
-initcall pnp_init+0x0/0x20 returned 0 after 0 usecs
-calling  misc_init+0x0/0x100 @ 1
-initcall misc_init+0x0/0x100 returned 0 after 0 usecs
-calling  tpm_init+0x0/0x280 @ 1
-initcall tpm_init+0x0/0x280 returned 0 after 1000 usecs
-calling  iommu_subsys_init+0x0/0x260 @ 1
-iommu: Default domain type: Translated=20
-iommu: DMA domain TLB invalidation policy: lazy mode=20
-initcall iommu_subsys_init+0x0/0x260 returned 0 after 12000 usecs
-calling  cn_init+0x0/0x180 @ 1
-initcall cn_init+0x0/0x180 returned 0 after 0 usecs
-calling  dax_core_init+0x0/0x120 @ 1
-initcall dax_core_init+0x0/0x120 returned 0 after 1000 usecs
-calling  dma_buf_init+0x0/0xd0 @ 1
-initcall dma_buf_init+0x0/0xd0 returned 0 after 0 usecs
-calling  dma_resv_lockdep+0x0/0x510 @ 1
-initcall dma_resv_lockdep+0x0/0x510 returned 0 after 0 usecs
-calling  dma_heap_init+0x0/0xc0 @ 1
-initcall dma_heap_init+0x0/0xc0 returned 0 after 0 usecs
-calling  init_scsi+0x0/0x90 @ 1
-SCSI subsystem initialized
-initcall init_scsi+0x0/0x90 returned 0 after 6000 usecs
-calling  phy_init+0x0/0x80 @ 1
-initcall phy_init+0x0/0x80 returned 0 after 1000 usecs
-calling  usb_common_init+0x0/0x30 @ 1
-initcall usb_common_init+0x0/0x30 returned 0 after 0 usecs
-calling  usb_init+0x0/0x1b0 @ 1
-ACPI: bus type USB registered
-usbcore: registered new interface driver usbfs
-usbcore: registered new interface driver hub
-usbcore: registered new device driver usb
-initcall usb_init+0x0/0x1b0 returned 0 after 23000 usecs
-calling  xdbc_init+0x0/0x250 @ 1
-initcall xdbc_init+0x0/0x250 returned 0 after 0 usecs
-calling  typec_init+0x0/0xc0 @ 1
-initcall typec_init+0x0/0xc0 returned 0 after 0 usecs
-calling  serio_init+0x0/0x40 @ 1
-initcall serio_init+0x0/0x40 returned 0 after 0 usecs
-calling  input_init+0x0/0x150 @ 1
-initcall input_init+0x0/0x150 returned 0 after 0 usecs
-calling  rtc_init+0x0/0x90 @ 1
-initcall rtc_init+0x0/0x90 returned 0 after 0 usecs
-calling  pps_init+0x0/0x110 @ 1
-pps_core: LinuxPPS API ver. 1 registered
-pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giome=
-tti@linux.it>
-initcall pps_init+0x0/0x110 returned 0 after 16000 usecs
-calling  ptp_init+0x0/0xe0 @ 1
-PTP clock support registered
-initcall ptp_init+0x0/0xe0 returned 0 after 5000 usecs
-calling  power_supply_class_init+0x0/0x80 @ 1
-initcall power_supply_class_init+0x0/0x80 returned 0 after 0 usecs
-calling  hwmon_init+0x0/0x1a0 @ 1
-initcall hwmon_init+0x0/0x1a0 returned 0 after 0 usecs
-calling  md_init+0x0/0x170 @ 1
-initcall md_init+0x0/0x170 returned 0 after 0 usecs
-calling  edac_init+0x0/0x80 @ 1
-EDAC MC: Ver: 3.0.0
-initcall edac_init+0x0/0x80 returned 0 after 5000 usecs
-calling  leds_init+0x0/0xa0 @ 1
-initcall leds_init+0x0/0xa0 returned 0 after 0 usecs
-calling  dmi_init+0x0/0x160 @ 1
-initcall dmi_init+0x0/0x160 returned 0 after 0 usecs
-calling  efisubsys_init+0x0/0x460 @ 1
-initcall efisubsys_init+0x0/0x460 returned 0 after 0 usecs
-calling  ras_init+0x0/0x20 @ 1
-initcall ras_init+0x0/0x20 returned 0 after 1000 usecs
-calling  nvmem_init+0x0/0x20 @ 1
-initcall nvmem_init+0x0/0x20 returned 0 after 0 usecs
-calling  proto_init+0x0/0x20 @ 1
-initcall proto_init+0x0/0x20 returned 0 after 0 usecs
-calling  net_dev_init+0x0/0x9a0 @ 1
-initcall net_dev_init+0x0/0x9a0 returned 0 after 2000 usecs
-calling  neigh_init+0x0/0x90 @ 1
-initcall neigh_init+0x0/0x90 returned 0 after 0 usecs
-calling  fib_notifier_init+0x0/0x20 @ 1
-initcall fib_notifier_init+0x0/0x20 returned 0 after 0 usecs
-calling  netdev_genl_init+0x0/0x50 @ 1
-initcall netdev_genl_init+0x0/0x50 returned 0 after 0 usecs
-calling  fib_rules_init+0x0/0xc0 @ 1
-initcall fib_rules_init+0x0/0xc0 returned 0 after 0 usecs
-calling  init_cgroup_netprio+0x0/0x20 @ 1
-initcall init_cgroup_netprio+0x0/0x20 returned 0 after 0 usecs
-calling  bpf_lwt_init+0x0/0x20 @ 1
-initcall bpf_lwt_init+0x0/0x20 returned 0 after 0 usecs
-calling  pktsched_init+0x0/0x120 @ 1
-initcall pktsched_init+0x0/0x120 returned 0 after 0 usecs
-calling  tc_filter_init+0x0/0x140 @ 1
-initcall tc_filter_init+0x0/0x140 returned 0 after 0 usecs
-calling  tc_action_init+0x0/0x60 @ 1
-initcall tc_action_init+0x0/0x60 returned 0 after 0 usecs
-calling  ethnl_init+0x0/0x70 @ 1
-initcall ethnl_init+0x0/0x70 returned 0 after 1000 usecs
-calling  nexthop_init+0x0/0x100 @ 1
-initcall nexthop_init+0x0/0x100 returned 0 after 0 usecs
-calling  cipso_v4_init+0x0/0x100 @ 1
-initcall cipso_v4_init+0x0/0x100 returned 0 after 0 usecs
-calling  devlink_init+0x0/0x30 @ 1
-initcall devlink_init+0x0/0x30 returned 0 after 1000 usecs
-calling  netlbl_init+0x0/0x90 @ 1
-NetLabel: Initializing
-NetLabel:  domain hash size =3D 128
-NetLabel:  protocols =3D UNLABELED CIPSOv4 CALIPSO
-NetLabel:  unlabeled traffic allowed by default
-initcall netlbl_init+0x0/0x90 returned 0 after 23000 usecs
-calling  pci_subsys_init+0x0/0x190 @ 1
-PCI: Using ACPI for IRQ routing
-PCI: pci_cache_line_size set to 64 bytes
-e820: reserve RAM buffer [mem 0x00091c00-0x0009ffff]
-e820: reserve RAM buffer [mem 0xb30fb000-0xb3ffffff]
-e820: reserve RAM buffer [mem 0xb3f00000-0xb3ffffff]
-e820: reserve RAM buffer [mem 0x43f800000-0x43fffffff]
-initcall pci_subsys_init+0x0/0x190 returned 0 after 67000 usecs
-calling  vsprintf_init_hashval+0x0/0x20 @ 1
-initcall vsprintf_init_hashval+0x0/0x20 returned 0 after 0 usecs
-calling  efi_runtime_map_init+0x0/0x230 @ 1
-initcall efi_runtime_map_init+0x0/0x230 returned 0 after 0 usecs
-calling  vga_arb_device_init+0x0/0xf0 @ 1
-pci 0000:00:02.0: vgaarb: setting as boot VGA device
-pci 0000:00:02.0: vgaarb: bridge control possible
-pci 0000:00:02.0: vgaarb: VGA device added: decodes=3Dio+mem,owns=3Dio+mem,=
-locks=3Dnone
-vgaarb: loaded
-initcall vga_arb_device_init+0x0/0xf0 returned 0 after 27000 usecs
-calling  watchdog_init+0x0/0x1a0 @ 1
-initcall watchdog_init+0x0/0x1a0 returned 0 after 0 usecs
-calling  nmi_warning_debugfs+0x0/0x60 @ 1
-initcall nmi_warning_debugfs+0x0/0x60 returned 0 after 0 usecs
-calling  save_microcode_in_initrd+0x0/0xe0 @ 1
-initcall save_microcode_in_initrd+0x0/0xe0 returned 0 after 0 usecs
-calling  hpet_late_init+0x0/0x1a0 @ 1
-hpet0: at MMIO 0xfed00000, IRQs 2, 8, 0, 0, 0, 0, 0, 0
-hpet0: 8 comparators, 64-bit 24.000000 MHz counter
-initcall hpet_late_init+0x0/0x1a0 returned 0 after 16000 usecs
-calling  iomem_init_inode+0x0/0xc0 @ 1
-initcall iomem_init_inode+0x0/0xc0 returned 0 after 1000 usecs
-calling  clocksource_done_booting+0x0/0x50 @ 1
-clocksource: Switched to clocksource tsc-early
-initcall clocksource_done_booting+0x0/0x50 returned 0 after 6369 usecs
-calling  tracer_init_tracefs+0x0/0x1d0 @ 1
-initcall tracer_init_tracefs+0x0/0x1d0 returned 0 after 57 usecs
-calling  init_trace_printk_function_export+0x0/0x30 @ 1
-initcall init_trace_printk_function_export+0x0/0x30 returned 0 after 79 use=
-cs
-calling  init_graph_tracefs+0x0/0x30 @ 1
-initcall init_graph_tracefs+0x0/0x30 returned 0 after 40 usecs
-calling  trace_events_synth_init+0x0/0x50 @ 1
-initcall trace_events_synth_init+0x0/0x50 returned 0 after 50 usecs
-calling  bpf_event_init+0x0/0x20 @ 1
-initcall bpf_event_init+0x0/0x20 returned 0 after 2 usecs
-calling  init_kprobe_trace+0x0/0x410 @ 1
-initcall init_kprobe_trace+0x0/0x410 returned 0 after 421432 usecs
-calling  init_dynamic_event+0x0/0x30 @ 1
-initcall init_dynamic_event+0x0/0x30 returned 0 after 57 usecs
-calling  init_uprobe_trace+0x0/0x70 @ 1
-initcall init_uprobe_trace+0x0/0x70 returned 0 after 90 usecs
-calling  bpf_init+0x0/0xb0 @ 1
-initcall bpf_init+0x0/0xb0 returned 0 after 19 usecs
-calling  secretmem_init+0x0/0x70 @ 1
-initcall secretmem_init+0x0/0x70 returned 0 after 0 usecs
-calling  init_fs_stat_sysctls+0x0/0x40 @ 1
-initcall init_fs_stat_sysctls+0x0/0x40 returned 0 after 43 usecs
-calling  init_fs_exec_sysctls+0x0/0x30 @ 1
-initcall init_fs_exec_sysctls+0x0/0x30 returned 0 after 12 usecs
-calling  init_pipe_fs+0x0/0x70 @ 1
-initcall init_pipe_fs+0x0/0x70 returned 0 after 357 usecs
-calling  init_fs_namei_sysctls+0x0/0x30 @ 1
-initcall init_fs_namei_sysctls+0x0/0x30 returned 0 after 15 usecs
-calling  init_fs_dcache_sysctls+0x0/0x30 @ 1
-initcall init_fs_dcache_sysctls+0x0/0x30 returned 0 after 12 usecs
-calling  init_fs_namespace_sysctls+0x0/0x30 @ 1
-initcall init_fs_namespace_sysctls+0x0/0x30 returned 0 after 12 usecs
-calling  cgroup_writeback_init+0x0/0x30 @ 1
-initcall cgroup_writeback_init+0x0/0x30 returned 0 after 43 usecs
-calling  inotify_user_setup+0x0/0x1c0 @ 1
-initcall inotify_user_setup+0x0/0x1c0 returned 0 after 64 usecs
-calling  eventpoll_init+0x0/0x170 @ 1
-initcall eventpoll_init+0x0/0x170 returned 0 after 141 usecs
-calling  anon_inode_init+0x0/0xa0 @ 1
-initcall anon_inode_init+0x0/0xa0 returned 0 after 334 usecs
-calling  init_dax_wait_table+0x0/0x40 @ 1
-initcall init_dax_wait_table+0x0/0x40 returned 0 after 269 usecs
-calling  proc_locks_init+0x0/0x30 @ 1
-initcall proc_locks_init+0x0/0x30 returned 0 after 15 usecs
-calling  init_fs_coredump_sysctls+0x0/0x30 @ 1
-initcall init_fs_coredump_sysctls+0x0/0x30 returned 0 after 14 usecs
-calling  iomap_init+0x0/0x30 @ 1
-initcall iomap_init+0x0/0x30 returned 0 after 1030 usecs
-calling  dquot_init+0x0/0x180 @ 1
-VFS: Disk quotas dquot_6.6.0
-VFS: Dquot-cache hash table entries: 512 (order 0, 4096 bytes)
-initcall dquot_init+0x0/0x180 returned 0 after 12661 usecs
-calling  quota_init+0x0/0x30 @ 1
-initcall quota_init+0x0/0x30 returned 0 after 212 usecs
-calling  proc_cmdline_init+0x0/0xe0 @ 1
-initcall proc_cmdline_init+0x0/0xe0 returned 0 after 13 usecs
-calling  proc_consoles_init+0x0/0x30 @ 1
-initcall proc_consoles_init+0x0/0x30 returned 0 after 12 usecs
-calling  proc_cpuinfo_init+0x0/0x30 @ 1
-initcall proc_cpuinfo_init+0x0/0x30 returned 0 after 35 usecs
-calling  proc_devices_init+0x0/0x80 @ 1
-initcall proc_devices_init+0x0/0x80 returned 0 after 32 usecs
-calling  proc_interrupts_init+0x0/0x30 @ 1
-initcall proc_interrupts_init+0x0/0x30 returned 0 after 24 usecs
-calling  proc_loadavg_init+0x0/0x70 @ 1
-initcall proc_loadavg_init+0x0/0x70 returned 0 after 12 usecs
-calling  proc_meminfo_init+0x0/0x70 @ 1
-initcall proc_meminfo_init+0x0/0x70 returned 0 after 11 usecs
-calling  proc_stat_init+0x0/0x30 @ 1
-initcall proc_stat_init+0x0/0x30 returned 0 after 12 usecs
-calling  proc_uptime_init+0x0/0x70 @ 1
-initcall proc_uptime_init+0x0/0x70 returned 0 after 12 usecs
-calling  proc_version_init+0x0/0x70 @ 1
-initcall proc_version_init+0x0/0x70 returned 0 after 11 usecs
-calling  proc_softirqs_init+0x0/0x70 @ 1
-initcall proc_softirqs_init+0x0/0x70 returned 0 after 11 usecs
-calling  proc_kcore_init+0x0/0x2c0 @ 1
-initcall proc_kcore_init+0x0/0x2c0 returned 0 after 122 usecs
-calling  vmcore_init+0x0/0x360 @ 1
-initcall vmcore_init+0x0/0x360 returned 0 after 0 usecs
-calling  proc_kmsg_init+0x0/0x30 @ 1
-initcall proc_kmsg_init+0x0/0x30 returned 0 after 12 usecs
-calling  proc_page_init+0x0/0x60 @ 1
-initcall proc_page_init+0x0/0x60 returned 0 after 32 usecs
-calling  init_ramfs_fs+0x0/0x20 @ 1
-initcall init_ramfs_fs+0x0/0x20 returned 0 after 1 usecs
-calling  init_hugetlbfs_fs+0x0/0x360 @ 1
-initcall init_hugetlbfs_fs+0x0/0x360 returned 0 after 587 usecs
-calling  dynamic_debug_init_control+0x0/0x90 @ 1
-initcall dynamic_debug_init_control+0x0/0x90 returned 0 after 103 usecs
-calling  acpi_event_init+0x0/0x70 @ 1
-initcall acpi_event_init+0x0/0x70 returned 0 after 209 usecs
-calling  pnp_system_init+0x0/0x20 @ 1
-initcall pnp_system_init+0x0/0x20 returned 0 after 161 usecs
-calling  pnpacpi_init+0x0/0xf0 @ 1
-pnp: PnP ACPI init
-system 00:00: [mem 0xfd000000-0xfdabffff] has been reserved
-system 00:00: [mem 0xfdad0000-0xfdadffff] has been reserved
-system 00:00: [mem 0xfdb00000-0xfdffffff] has been reserved
-system 00:00: [mem 0xfe000000-0xfe01ffff] has been reserved
-system 00:00: [mem 0xfe03d000-0xfe3fffff] has been reserved
-system 00:01: [io  0x0680-0x069f] has been reserved
-system 00:01: [io  0xffff] has been reserved
-system 00:01: [io  0xffff] has been reserved
-system 00:01: [io  0xffff] has been reserved
-system 00:01: [io  0x1800-0x18fe] has been reserved
-system 00:01: [io  0x164e-0x164f] has been reserved
-system 00:02: [io  0x0800-0x087f] has been reserved
-system 00:04: [io  0x1854-0x1857] has been reserved
-system 00:08: [io  0x0200-0x023f] has been reserved
-system 00:08: [mem 0xfedb0000-0xfedbffff] has been reserved
-system 00:09: [mem 0xfed10000-0xfed17fff] has been reserved
-system 00:09: [mem 0xfed18000-0xfed18fff] has been reserved
-system 00:09: [mem 0xfed19000-0xfed19fff] has been reserved
-system 00:09: [mem 0xe0000000-0xefffffff] has been reserved
-system 00:09: [mem 0xfed20000-0xfed3ffff] has been reserved
-system 00:09: [mem 0xfed90000-0xfed93fff] has been reserved
-system 00:09: [mem 0xfed45000-0xfed8ffff] could not be reserved
-system 00:09: [mem 0xff000000-0xffffffff] could not be reserved
-system 00:09: [mem 0xfee00000-0xfeefffff] could not be reserved
-system 00:09: [mem 0xfedc0000-0xfeddffff] has been reserved
-pnp: PnP ACPI: found 11 devices
-initcall pnpacpi_init+0x0/0xf0 returned 0 after 249770 usecs
-calling  chr_dev_init+0x0/0x170 @ 1
-initcall chr_dev_init+0x0/0x170 returned 0 after 33619 usecs
-calling  hwrng_modinit+0x0/0x110 @ 1
-initcall hwrng_modinit+0x0/0x110 returned 0 after 513 usecs
-calling  firmware_class_init+0x0/0x170 @ 1
-initcall firmware_class_init+0x0/0x170 returned 0 after 176 usecs
-calling  init_acpi_pm_clocksource+0x0/0xf0 @ 1
-clocksource: acpi_pm: mask: 0xffffff max_cycles: 0xffffff, max_idle_ns: 208=
-5701024 ns
-initcall init_acpi_pm_clocksource+0x0/0xf0 returned 0 after 14295 usecs
-calling  powercap_init+0x0/0x30 @ 1
-initcall powercap_init+0x0/0x30 returned 0 after 644 usecs
-calling  sysctl_core_init+0x0/0x30 @ 1
-initcall sysctl_core_init+0x0/0x30 returned 0 after 88 usecs
-calling  eth_offload_init+0x0/0x20 @ 1
-initcall eth_offload_init+0x0/0x20 returned 0 after 16 usecs
-calling  ipv4_offload_init+0x0/0xa0 @ 1
-initcall ipv4_offload_init+0x0/0xa0 returned 0 after 1 usecs
-calling  inet_init+0x0/0x3a0 @ 1
-NET: Registered PF_INET protocol family
-IP idents hash table entries: 262144 (order: 9, 2097152 bytes, linear)
-tcp_listen_portaddr_hash hash table entries: 8192 (order: 7, 589824 bytes, =
-linear)
-Table-perturb hash table entries: 65536 (order: 6, 262144 bytes, linear)
-TCP established hash table entries: 131072 (order: 8, 1048576 bytes, linear=
-)
-TCP bind hash table entries: 65536 (order: 11, 9437184 bytes, vmalloc hugep=
-age)
-TCP: Hash tables configured (established 131072 bind 65536)
-MPTCP token hash table entries: 16384 (order: 8, 1441792 bytes, linear)
-UDP hash table entries: 8192 (order: 8, 1310720 bytes, linear)
-UDP-Lite hash table entries: 8192 (order: 8, 1310720 bytes, linear)
-initcall inet_init+0x0/0x3a0 returned 0 after 99889 usecs
-calling  af_unix_init+0x0/0x1e0 @ 1
-NET: Registered PF_UNIX/PF_LOCAL protocol family
-initcall af_unix_init+0x0/0x1e0 returned 0 after 6754 usecs
-calling  ipv6_offload_init+0x0/0x90 @ 1
-initcall ipv6_offload_init+0x0/0x90 returned 0 after 1 usecs
-calling  init_sunrpc+0x0/0xa0 @ 1
-RPC: Registered named UNIX socket transport module.
-RPC: Registered udp transport module.
-RPC: Registered tcp transport module.
-RPC: Registered tcp NFSv4.1 backchannel transport module.
-initcall init_sunrpc+0x0/0xa0 returned 0 after 27236 usecs
-calling  vlan_offload_init+0x0/0x30 @ 1
-initcall vlan_offload_init+0x0/0x30 returned 0 after 1 usecs
-calling  xsk_init+0x0/0x210 @ 1
-NET: Registered PF_XDP protocol family
-initcall xsk_init+0x0/0x210 returned 0 after 5646 usecs
-calling  pcibios_assign_resources+0x0/0x320 @ 1
-pci_bus 0000:00: resource 4 [io  0x0000-0x0cf7 window]
-pci_bus 0000:00: resource 5 [io  0x0d00-0xffff window]
-pci_bus 0000:00: resource 6 [mem 0x000a0000-0x000bffff window]
-pci_bus 0000:00: resource 7 [mem 0xbe800000-0xdfffffff window]
-pci_bus 0000:00: resource 8 [mem 0x1c00000000-0x1fffffffff window]
-pci_bus 0000:00: resource 9 [mem 0xfd000000-0xfe7fffff window]
-initcall pcibios_assign_resources+0x0/0x320 returned 0 after 47673 usecs
-calling  pci_apply_final_quirks+0x0/0x3c0 @ 1
-pci 0000:00:14.0: calling  quirk_usb_early_handoff+0x0/0x2f0 @ 1
-IOAPIC[0]: Preconfigured routing entry (2-16 -> IRQ 16 Level:1 ActiveLow:1)
-pci 0000:00:14.0: quirk_usb_early_handoff+0x0/0x2f0 took 16461 usecs
-pci 0000:00:1f.6: calling  quirk_e100_interrupt+0x0/0x2d0 @ 1
-pci 0000:00:1f.6: quirk_e100_interrupt+0x0/0x2d0 took 0 usecs
-PCI: CLS 0 bytes, default 64
-initcall pci_apply_final_quirks+0x0/0x3c0 returned 0 after 53194 usecs
-calling  acpi_reserve_resources+0x0/0x2d0 @ 1
-initcall acpi_reserve_resources+0x0/0x2d0 returned 0 after 49 usecs
-calling  populate_rootfs+0x0/0x50 @ 1
-initcall populate_rootfs+0x0/0x50 returned 0 after 93 usecs
-Trying to unpack rootfs image as initramfs...
-calling  pci_iommu_init+0x0/0x60 @ 1
-PCI-DMA: Using software bounce buffering for IO (SWIOTLB)
-software IO TLB: mapped [mem 0x00000000af0fb000-0x00000000b30fb000] (64MB)
-initcall pci_iommu_init+0x0/0x60 returned 0 after 16084 usecs
-calling  ir_dev_scope_init+0x0/0x80 @ 1
-initcall ir_dev_scope_init+0x0/0x80 returned 0 after 0 usecs
-calling  ia32_binfmt_init+0x0/0x20 @ 1
-initcall ia32_binfmt_init+0x0/0x20 returned 0 after 99 usecs
-calling  amd_ibs_init+0x0/0x200 @ 1
-initcall amd_ibs_init+0x0/0x200 returned -19 after 0 usecs
-calling  msr_init+0x0/0x90 @ 1
-initcall msr_init+0x0/0x90 returned 0 after 30 usecs
-calling  register_kernel_offset_dumper+0x0/0x20 @ 1
-initcall register_kernel_offset_dumper+0x0/0x20 returned 0 after 1 usecs
-calling  i8259A_init_ops+0x0/0x30 @ 1
-initcall i8259A_init_ops+0x0/0x30 returned 0 after 1 usecs
-calling  init_tsc_clocksource+0x0/0x170 @ 1
-initcall init_tsc_clocksource+0x0/0x170 returned 0 after 6 usecs
-calling  add_rtc_cmos+0x0/0x1d0 @ 1
-initcall add_rtc_cmos+0x0/0x1d0 returned 0 after 2 usecs
-calling  i8237A_init_ops+0x0/0x40 @ 1
-initcall i8237A_init_ops+0x0/0x40 returned -19 after 2 usecs
-calling  umwait_init+0x0/0xf0 @ 1
-initcall umwait_init+0x0/0xf0 returned -19 after 0 usecs
-calling  sgx_init+0x0/0x190 @ 1
-initcall sgx_init+0x0/0x190 returned -19 after 0 usecs
-calling  msr_init+0x0/0x130 @ 1
-initcall msr_init+0x0/0x130 returned 0 after 3122 usecs
-calling  cpuid_init+0x0/0x130 @ 1
-initcall cpuid_init+0x0/0x130 returned 0 after 2248 usecs
-calling  ioapic_init_ops+0x0/0x20 @ 1
-initcall ioapic_init_ops+0x0/0x20 returned 0 after 14 usecs
-calling  register_e820_pmem+0x0/0x80 @ 1
-initcall register_e820_pmem+0x0/0x80 returned 0 after 4 usecs
-calling  add_pcspkr+0x0/0xe0 @ 1
-initcall add_pcspkr+0x0/0xe0 returned 0 after 328 usecs
-calling  start_periodic_check_for_corruption+0x0/0x80 @ 1
-initcall start_periodic_check_for_corruption+0x0/0x80 returned 0 after 0 us=
-ecs
-calling  audit_classes_init+0x0/0xc0 @ 1
-initcall audit_classes_init+0x0/0xc0 returned 0 after 100 usecs
-calling  sha1_ssse3_mod_init+0x0/0x200 @ 1
-initcall sha1_ssse3_mod_init+0x0/0x200 returned 0 after 30 usecs
-calling  sha256_ssse3_mod_init+0x0/0x380 @ 1
-initcall sha256_ssse3_mod_init+0x0/0x380 returned 0 after 18 usecs
-calling  iosf_mbi_init+0x0/0x30 @ 1
-initcall iosf_mbi_init+0x0/0x30 returned 0 after 231 usecs
-calling  proc_execdomains_init+0x0/0x30 @ 1
-initcall proc_execdomains_init+0x0/0x30 returned 0 after 31 usecs
-calling  register_warn_debugfs+0x0/0x30 @ 1
-initcall register_warn_debugfs+0x0/0x30 returned 0 after 45 usecs
-calling  cpuhp_sysfs_init+0x0/0x180 @ 1
-initcall cpuhp_sysfs_init+0x0/0x180 returned 0 after 222 usecs
-calling  ioresources_init+0x0/0x50 @ 1
-initcall ioresources_init+0x0/0x50 returned 0 after 25 usecs
-calling  lockdep_proc_init+0x0/0x70 @ 1
-initcall lockdep_proc_init+0x0/0x70 returned 0 after 34 usecs
-calling  snapshot_device_init+0x0/0x20 @ 1
-initcall snapshot_device_init+0x0/0x20 returned 0 after 467 usecs
-calling  irq_pm_init_ops+0x0/0x20 @ 1
-initcall irq_pm_init_ops+0x0/0x20 returned 0 after 1 usecs
-calling  klp_init+0x0/0x60 @ 1
-initcall klp_init+0x0/0x60 returned 0 after 24 usecs
-calling  map_benchmark_init+0x0/0x60 @ 1
-initcall map_benchmark_init+0x0/0x60 returned 0 after 368 usecs
-calling  proc_modules_init+0x0/0x30 @ 1
-initcall proc_modules_init+0x0/0x30 returned 0 after 14 usecs
-calling  timer_sysctl_init+0x0/0x20 @ 1
-initcall timer_sysctl_init+0x0/0x20 returned 0 after 14 usecs
-calling  timekeeping_init_ops+0x0/0x20 @ 1
-initcall timekeeping_init_ops+0x0/0x20 returned 0 after 1 usecs
-calling  init_clocksource_sysfs+0x0/0x30 @ 1
-initcall init_clocksource_sysfs+0x0/0x30 returned 0 after 679 usecs
-calling  init_timer_list_procfs+0x0/0x40 @ 1
-initcall init_timer_list_procfs+0x0/0x40 returned 0 after 16 usecs
-calling  alarmtimer_init+0x0/0x140 @ 1
-initcall alarmtimer_init+0x0/0x140 returned 0 after 201 usecs
-calling  init_posix_timers+0x0/0x30 @ 1
-initcall init_posix_timers+0x0/0x30 returned 0 after 60 usecs
-calling  clockevents_init_sysfs+0x0/0x1f0 @ 1
-initcall clockevents_init_sysfs+0x0/0x1f0 returned 0 after 1681 usecs
-calling  proc_dma_init+0x0/0x30 @ 1
-initcall proc_dma_init+0x0/0x30 returned 0 after 14 usecs
-calling  kallsyms_init+0x0/0x30 @ 1
-initcall kallsyms_init+0x0/0x30 returned 0 after 13 usecs
-calling  pid_namespaces_init+0x0/0x60 @ 1
-initcall pid_namespaces_init+0x0/0x60 returned 0 after 218 usecs
-calling  ikconfig_init+0x0/0x50 @ 1
-initcall ikconfig_init+0x0/0x50 returned 0 after 29 usecs
-calling  audit_watch_init+0x0/0x50 @ 1
-initcall audit_watch_init+0x0/0x50 returned 0 after 38 usecs
-calling  audit_fsnotify_init+0x0/0x50 @ 1
-initcall audit_fsnotify_init+0x0/0x50 returned 0 after 23 usecs
-calling  audit_tree_init+0x0/0xe0 @ 1
-initcall audit_tree_init+0x0/0xe0 returned 0 after 62 usecs
-calling  seccomp_sysctl_init+0x0/0x40 @ 1
-initcall seccomp_sysctl_init+0x0/0x40 returned 0 after 96 usecs
-calling  utsname_sysctl_init+0x0/0x20 @ 1
-initcall utsname_sysctl_init+0x0/0x20 returned 0 after 93 usecs
-calling  init_tracepoints+0x0/0x40 @ 1
-initcall init_tracepoints+0x0/0x40 returned 0 after 8 usecs
-calling  init_lstats_procfs+0x0/0x40 @ 1
-initcall init_lstats_procfs+0x0/0x40 returned 0 after 44 usecs
-calling  stack_trace_init+0x0/0xb0 @ 1
-initcall stack_trace_init+0x0/0xb0 returned 0 after 123 usecs
-calling  perf_event_sysfs_init+0x0/0x130 @ 1
-initcall perf_event_sysfs_init+0x0/0x130 returned 0 after 3662 usecs
-calling  system_trusted_keyring_init+0x0/0xa0 @ 1
-Initialise system trusted keyrings
-initcall system_trusted_keyring_init+0x0/0xa0 returned 0 after 5338 usecs
-calling  blacklist_init+0x0/0x1d0 @ 1
-Key type blacklist registered
-initcall blacklist_init+0x0/0x1d0 returned 0 after 4897 usecs
-calling  kswapd_init+0x0/0x60 @ 1
-initcall kswapd_init+0x0/0x60 returned 0 after 327 usecs
-calling  extfrag_debug_init+0x0/0x60 @ 1
-initcall extfrag_debug_init+0x0/0x60 returned 0 after 120 usecs
-calling  mm_compute_batch_init+0x0/0x60 @ 1
-initcall mm_compute_batch_init+0x0/0x60 returned 0 after 2 usecs
-calling  slab_proc_init+0x0/0x30 @ 1
-initcall slab_proc_init+0x0/0x30 returned 0 after 16 usecs
-calling  workingset_init+0x0/0x100 @ 1
-workingset: timestamp_bits=3D36 max_order=3D22 bucket_order=3D0
-initcall workingset_init+0x0/0x100 returned 0 after 7310 usecs
-calling  proc_vmalloc_init+0x0/0x70 @ 1
-initcall proc_vmalloc_init+0x0/0x70 returned 0 after 14 usecs
-calling  procswaps_init+0x0/0x30 @ 1
-initcall procswaps_init+0x0/0x30 returned 0 after 13 usecs
-calling  init_frontswap+0x0/0xa0 @ 1
-initcall init_frontswap+0x0/0xa0 returned 0 after 220 usecs
-calling  slab_debugfs_init+0x0/0x70 @ 1
-initcall slab_debugfs_init+0x0/0x70 returned 0 after 17952 usecs
-calling  init_zbud+0x0/0x30 @ 1
-zbud: loaded
-initcall init_zbud+0x0/0x30 returned 0 after 3353 usecs
-calling  zs_init+0x0/0x90 @ 1
-initcall zs_init+0x0/0x90 returned 0 after 339 usecs
-calling  damon_dbgfs_init+0x0/0x450 @ 1
-initcall damon_dbgfs_init+0x0/0x450 returned 0 after 491 usecs
-calling  fcntl_init+0x0/0x30 @ 1
-initcall fcntl_init+0x0/0x30 returned 0 after 42 usecs
-calling  proc_filesystems_init+0x0/0x30 @ 1
-initcall proc_filesystems_init+0x0/0x30 returned 0 after 16 usecs
-calling  start_dirtytime_writeback+0x0/0x70 @ 1
-initcall start_dirtytime_writeback+0x0/0x70 returned 0 after 2 usecs
-calling  dio_init+0x0/0x40 @ 1
-initcall dio_init+0x0/0x40 returned 0 after 54 usecs
-calling  dnotify_init+0x0/0xb0 @ 1
-initcall dnotify_init+0x0/0xb0 returned 0 after 128 usecs
-calling  fanotify_user_setup+0x0/0x220 @ 1
-initcall fanotify_user_setup+0x0/0x220 returned 0 after 166 usecs
-calling  userfaultfd_init+0x0/0x50 @ 1
-initcall userfaultfd_init+0x0/0x50 returned 0 after 513 usecs
-calling  aio_setup+0x0/0xa0 @ 1
-initcall aio_setup+0x0/0xa0 returned 0 after 443 usecs
-calling  mbcache_init+0x0/0x40 @ 1
-initcall mbcache_init+0x0/0x40 returned 0 after 37 usecs
-calling  init_grace+0x0/0x20 @ 1
-initcall init_grace+0x0/0x20 returned 0 after 13 usecs
-calling  init_v2_quota_format+0x0/0x30 @ 1
-initcall init_v2_quota_format+0x0/0x30 returned 0 after 22 usecs
-calling  init_devpts_fs+0x0/0x40 @ 1
-initcall init_devpts_fs+0x0/0x40 returned 0 after 103 usecs
-calling  ext4_init_fs+0x0/0x1e0 @ 1
-initcall ext4_init_fs+0x0/0x1e0 returned 0 after 1500 usecs
-calling  journal_init+0x0/0x150 @ 1
-initcall journal_init+0x0/0x150 returned 0 after 217 usecs
-calling  init_nfs_fs+0x0/0x1d0 @ 1
-initcall init_nfs_fs+0x0/0x1d0 returned 0 after 1607 usecs
-calling  init_nfs_v3+0x0/0x20 @ 1
-initcall init_nfs_v3+0x0/0x20 returned 0 after 27 usecs
-calling  init_nlm+0x0/0x70 @ 1
-initcall init_nlm+0x0/0x70 returned 0 after 126 usecs
-calling  init_nls_cp437+0x0/0x20 @ 1
-initcall init_nls_cp437+0x0/0x20 returned 0 after 20 usecs
-calling  init_nls_ascii+0x0/0x20 @ 1
-initcall init_nls_ascii+0x0/0x20 returned 0 after 1 usecs
-calling  init_autofs_fs+0x0/0x40 @ 1
-tsc: Refined TSC clocksource calibration: 3312.000 MHz
-initcall init_autofs_fs+0x0/0x40 returned 0 after 1643 usecs
-clocksource: tsc: mask: 0xffffffffffffffff max_cycles: 0x2fbd93f9e57, max_i=
-dle_ns: 440795263784 ns
-calling  efivarfs_init+0x0/0x20 @ 1
-initcall efivarfs_init+0x0/0x20 returned 0 after 2 usecs
-calling  ipc_init+0x0/0x30 @ 1
-clocksource: Switched to clocksource tsc
-initcall ipc_init+0x0/0x30 returned 0 after 174 usecs
-calling  ipc_sysctl_init+0x0/0x30 @ 1
-initcall ipc_sysctl_init+0x0/0x30 returned 0 after 110 usecs
-calling  init_mqueue_fs+0x0/0xe0 @ 1
-initcall init_mqueue_fs+0x0/0xe0 returned 0 after 452 usecs
-calling  key_proc_init+0x0/0x80 @ 1
-initcall key_proc_init+0x0/0x80 returned 0 after 24 usecs
-calling  jent_mod_init+0x0/0x40 @ 1
-initcall jent_mod_init+0x0/0x40 returned 0 after 6648 usecs
-calling  af_alg_init+0x0/0x50 @ 1
-NET: Registered PF_ALG protocol family
-initcall af_alg_init+0x0/0x50 returned 0 after 5585 usecs
-calling  algif_hash_init+0x0/0x20 @ 1
-initcall algif_hash_init+0x0/0x20 returned 0 after 67 usecs
-calling  algif_skcipher_init+0x0/0x20 @ 1
-initcall algif_skcipher_init+0x0/0x20 returned 0 after 8 usecs
-calling  rng_init+0x0/0x20 @ 1
-initcall rng_init+0x0/0x20 returned 0 after 7 usecs
-calling  algif_aead_init+0x0/0x20 @ 1
-initcall algif_aead_init+0x0/0x20 returned 0 after 24 usecs
-calling  asymmetric_key_init+0x0/0x20 @ 1
-Key type asymmetric registered
-initcall asymmetric_key_init+0x0/0x20 returned 0 after 4897 usecs
-calling  x509_key_init+0x0/0x20 @ 1
-Asymmetric key parser 'x509' registered
-initcall x509_key_init+0x0/0x20 returned 0 after 5742 usecs
-calling  blkdev_init+0x0/0x30 @ 1
-initcall blkdev_init+0x0/0x30 returned 0 after 141 usecs
-calling  proc_genhd_init+0x0/0x50 @ 1
-initcall proc_genhd_init+0x0/0x50 returned 0 after 27 usecs
-calling  bsg_init+0x0/0x140 @ 1
-Block layer SCSI generic (bsg) driver version 0.4 loaded (major 246)
-initcall bsg_init+0x0/0x140 returned 0 after 8370 usecs
-calling  throtl_init+0x0/0x50 @ 1
-initcall throtl_init+0x0/0x50 returned 0 after 373 usecs
-calling  deadline_init+0x0/0x20 @ 1
-io scheduler mq-deadline registered
-initcall deadline_init+0x0/0x20 returned 0 after 5344 usecs
-calling  kyber_init+0x0/0x20 @ 1
-io scheduler kyber registered
-initcall kyber_init+0x0/0x20 returned 0 after 4793 usecs
-calling  bfq_init+0x0/0xa0 @ 1
-io scheduler bfq registered
-initcall bfq_init+0x0/0xa0 returned 0 after 4812 usecs
-calling  io_uring_init+0x0/0x40 @ 1
-initcall io_uring_init+0x0/0x40 returned 0 after 36 usecs
-calling  test_firmware_init+0x0/0x1a0 @ 1
-test_firmware: interface ready
-initcall test_firmware_init+0x0/0x1a0 returned 0 after 5625 usecs
-calling  test_sysctl_init+0x0/0x5e0 @ 1
-initcall test_sysctl_init+0x0/0x5e0 returned 0 after 137 usecs
-calling  blake2s_mod_init+0x0/0x10 @ 1
-initcall blake2s_mod_init+0x0/0x10 returned 0 after 0 usecs
-calling  crc_t10dif_mod_init+0x0/0x80 @ 1
-initcall crc_t10dif_mod_init+0x0/0x80 returned 0 after 124 usecs
-calling  percpu_counter_startup+0x0/0x60 @ 1
-initcall percpu_counter_startup+0x0/0x60 returned 0 after 165 usecs
-calling  digsig_init+0x0/0x50 @ 1
-initcall digsig_init+0x0/0x50 returned 0 after 29 usecs
-calling  pcie_portdrv_init+0x0/0x50 @ 1
-initcall pcie_portdrv_init+0x0/0x50 returned 0 after 803 usecs
-calling  pci_proc_init+0x0/0x80 @ 1
-initcall pci_proc_init+0x0/0x80 returned 0 after 178 usecs
-calling  pci_hotplug_init+0x0/0x10 @ 1
-initcall pci_hotplug_init+0x0/0x10 returned 0 after 0 usecs
-calling  shpcd_init+0x0/0x70 @ 1
-shpchp: Standard Hot Plug PCI Controller Driver version: 0.4
-initcall shpcd_init+0x0/0x70 returned 0 after 7730 usecs
-calling  pci_stub_init+0x0/0x210 @ 1
-initcall pci_stub_init+0x0/0x210 returned 0 after 188 usecs
-calling  vmd_drv_init+0x0/0x20 @ 1
-initcall vmd_drv_init+0x0/0x20 returned 0 after 173 usecs
-calling  vesafb_driver_init+0x0/0x20 @ 1
-initcall vesafb_driver_init+0x0/0x20 returned 0 after 148 usecs
-calling  efifb_driver_init+0x0/0x20 @ 1
-initcall efifb_driver_init+0x0/0x20 returned 0 after 140 usecs
-calling  intel_idle_init+0x0/0x610 @ 1
-initcall intel_idle_init+0x0/0x610 returned 0 after 7122 usecs
-calling  ged_driver_init+0x0/0x20 @ 1
-initcall ged_driver_init+0x0/0x20 returned 0 after 231 usecs
-calling  acpi_ac_init+0x0/0x90 @ 1
-initcall acpi_ac_init+0x0/0x90 returned 0 after 546 usecs
-calling  acpi_button_driver_init+0x0/0xe0 @ 1
-input: Sleep Button as /devices/LNXSYSTM:00/LNXSYBUS:00/PNP0C0E:00/input/in=
-put0
-ACPI: button: Sleep Button [SLPB]
-input: Power Button as /devices/LNXSYSTM:00/LNXSYBUS:00/PNP0C0C:00/input/in=
-put1
-ACPI: button: Power Button [PWRB]
-input: Power Button as /devices/LNXSYSTM:00/LNXPWRBN:00/input/input2
-ACPI: button: Power Button [PWRF]
-initcall acpi_button_driver_init+0x0/0xe0 returned 0 after 47571 usecs
-calling  acpi_fan_driver_init+0x0/0x20 @ 1
-initcall acpi_fan_driver_init+0x0/0x20 returned 0 after 219 usecs
-calling  acpi_processor_driver_init+0x0/0x100 @ 1
-initcall acpi_processor_driver_init+0x0/0x100 returned 0 after 3745 usecs
-calling  acpi_thermal_init+0x0/0x90 @ 1
-initcall acpi_thermal_init+0x0/0x90 returned 0 after 828 usecs
-calling  acpi_battery_init+0x0/0x80 @ 1
-initcall acpi_battery_init+0x0/0x80 returned 0 after 17 usecs
-calling  acpi_hed_driver_init+0x0/0x20 @ 1
-initcall acpi_hed_driver_init+0x0/0x20 returned 0 after 261 usecs
-calling  bgrt_init+0x0/0x1d0 @ 1
-initcall bgrt_init+0x0/0x1d0 returned -19 after 0 usecs
-calling  erst_init+0x0/0x550 @ 1
-initcall erst_init+0x0/0x550 returned 0 after 50 usecs
-calling  gpio_clk_driver_init+0x0/0x20 @ 1
-initcall gpio_clk_driver_init+0x0/0x20 returned 0 after 161 usecs
-calling  plt_clk_driver_init+0x0/0x20 @ 1
-initcall plt_clk_driver_init+0x0/0x20 returned 0 after 137 usecs
-calling  dw_pci_driver_init+0x0/0x20 @ 1
-initcall dw_pci_driver_init+0x0/0x20 returned 0 after 170 usecs
-calling  virtio_pci_driver_init+0x0/0x20 @ 1
-initcall virtio_pci_driver_init+0x0/0x20 returned 0 after 174 usecs
-calling  n_null_init+0x0/0x20 @ 1
-initcall n_null_init+0x0/0x20 returned 0 after 1 usecs
-calling  pty_init+0x0/0x20 @ 1
-initcall pty_init+0x0/0x20 returned 0 after 724 usecs
-calling  sysrq_init+0x0/0x80 @ 1
-initcall sysrq_init+0x0/0x80 returned 0 after 31 usecs
-calling  serial8250_init+0x0/0x3c0 @ 1
-Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
-00:07: ttyS0 at I/O 0x3f8 (irq =3D 4, base_baud =3D 115200) is a 16550A
-initcall serial8250_init+0x0/0x3c0 returned 0 after 21211 usecs
-calling  serial_pci_driver_init+0x0/0x20 @ 1
-IOAPIC[0]: Preconfigured routing entry (2-19 -> IRQ 19 Level:1 ActiveLow:1)
-0000:00:16.3: ttyS1 at I/O 0x3080 (irq =3D 19, base_baud =3D 115200) is a 1=
-6550A
-initcall serial_pci_driver_init+0x0/0x20 returned 0 after 25424 usecs
-calling  exar_pci_driver_init+0x0/0x20 @ 1
-initcall exar_pci_driver_init+0x0/0x20 returned 0 after 168 usecs
-calling  pci1xxxx_pci_driver_init+0x0/0x20 @ 1
-initcall pci1xxxx_pci_driver_init+0x0/0x20 returned 0 after 162 usecs
-calling  dw8250_platform_driver_init+0x0/0x20 @ 1
-initcall dw8250_platform_driver_init+0x0/0x20 returned 0 after 152 usecs
-calling  lpss8250_pci_driver_init+0x0/0x20 @ 1
-initcall lpss8250_pci_driver_init+0x0/0x20 returned 0 after 177 usecs
-calling  mid8250_pci_driver_init+0x0/0x20 @ 1
-initcall mid8250_pci_driver_init+0x0/0x20 returned 0 after 230 usecs
-calling  pericom8250_pci_driver_init+0x0/0x20 @ 1
-initcall pericom8250_pci_driver_init+0x0/0x20 returned 0 after 165 usecs
-calling  random_sysctls_init+0x0/0x30 @ 1
-initcall random_sysctls_init+0x0/0x30 returned 0 after 62 usecs
-calling  hpet_init+0x0/0x90 @ 1
-initcall hpet_init+0x0/0x90 returned 0 after 2068 usecs
-calling  nvram_module_init+0x0/0xa0 @ 1
-Non-volatile memory driver v1.3
-initcall nvram_module_init+0x0/0xa0 returned 0 after 5653 usecs
-calling  virtio_rng_driver_init+0x0/0x20 @ 1
-initcall virtio_rng_driver_init+0x0/0x20 returned 0 after 195 usecs
-calling  init_tis+0x0/0x170 @ 1
-tpm_tis 00:0a: 1.2 TPM (device-id 0x1B, rev-id 16)
-tpm tpm0: TPM is disabled/deactivated (0x7)
-initcall init_tis+0x0/0x170 returned 0 after 38054 usecs
-calling  crb_acpi_driver_init+0x0/0x20 @ 1
-initcall crb_acpi_driver_init+0x0/0x20 returned 0 after 349 usecs
-calling  cn_proc_init+0x0/0x50 @ 1
-initcall cn_proc_init+0x0/0x50 returned 0 after 29 usecs
-calling  topology_sysfs_init+0x0/0x30 @ 1
-initcall topology_sysfs_init+0x0/0x30 returned 0 after 886 usecs
-calling  cacheinfo_sysfs_init+0x0/0x30 @ 1
-initcall cacheinfo_sysfs_init+0x0/0x30 returned 0 after 4472 usecs
-calling  lkdtm_module_init+0x0/0x330 @ 1
-lkdtm: No crash points registered, enable through debugfs
-initcall lkdtm_module_init+0x0/0x330 returned 0 after 7850 usecs
-calling  intel_lpss_init+0x0/0x30 @ 1
-initcall intel_lpss_init+0x0/0x30 returned 0 after 53 usecs
-calling  intel_lpss_pci_driver_init+0x0/0x20 @ 1
-initcall intel_lpss_pci_driver_init+0x0/0x20 returned 0 after 205 usecs
-calling  intel_lpss_acpi_driver_init+0x0/0x20 @ 1
-initcall intel_lpss_acpi_driver_init+0x0/0x20 returned 0 after 161 usecs
-calling  system_heap_create+0x0/0xc0 @ 1
-initcall system_heap_create+0x0/0xc0 returned 0 after 753 usecs
-calling  udmabuf_dev_init+0x0/0xd0 @ 1
-initcall udmabuf_dev_init+0x0/0xd0 returned 0 after 581 usecs
-calling  mac_hid_init+0x0/0x30 @ 1
-initcall mac_hid_init+0x0/0x30 returned 0 after 26 usecs
-calling  rdac_init+0x0/0x80 @ 1
-rdac: device handler registered
-initcall rdac_init+0x0/0x80 returned 0 after 5563 usecs
-calling  hp_sw_init+0x0/0x20 @ 1
-hp_sw: device handler registered
-initcall hp_sw_init+0x0/0x20 returned 0 after 5050 usecs
-calling  clariion_init+0x0/0x40 @ 1
-emc: device handler registered
-initcall clariion_init+0x0/0x40 returned 0 after 4898 usecs
-calling  alua_init+0x0/0x70 @ 1
-alua: device handler registered
-initcall alua_init+0x0/0x70 returned 0 after 5664 usecs
-calling  macsec_init+0x0/0x80 @ 1
-MACsec IEEE 802.1AE
-initcall macsec_init+0x0/0x80 returned 0 after 4092 usecs
-calling  blackhole_netdev_init+0x0/0xe0 @ 1
-initcall blackhole_netdev_init+0x0/0xe0 returned 0 after 126 usecs
-calling  phylink_init+0x0/0xc0 @ 1
-initcall phylink_init+0x0/0xc0 returned 0 after 0 usecs
-calling  phy_module_init+0x0/0x20 @ 1
-initcall phy_module_init+0x0/0x20 returned 0 after 426 usecs
-calling  fixed_mdio_bus_init+0x0/0x290 @ 1
-initcall fixed_mdio_bus_init+0x0/0x290 returned 0 after 2318 usecs
-calling  phy_module_init+0x0/0x20 @ 1
-initcall phy_module_init+0x0/0x20 returned 0 after 2675 usecs
-calling  vrf_init_module+0x0/0x90 @ 1
-initcall vrf_init_module+0x0/0x90 returned 0 after 260 usecs
-calling  cavium_ptp_driver_init+0x0/0x20 @ 1
-initcall cavium_ptp_driver_init+0x0/0x20 returned 0 after 296 usecs
-calling  e1000_init_module+0x0/0x80 @ 1
-e1000: Intel(R) PRO/1000 Network Driver
-e1000: Copyright (c) 1999-2006 Intel Corporation.
-initcall e1000_init_module+0x0/0x80 returned 0 after 12490 usecs
-calling  e1000_init_module+0x0/0x40 @ 1
-e1000e: Intel(R) PRO/1000 Network Driver
-e1000e: Copyright(c) 1999 - 2015 Intel Corporation.
-IOAPIC[0]: Preconfigured routing entry (2-16 -> IRQ 16 Level:1 ActiveLow:1)
-e1000e 0000:00:1f.6: Interrupt Throttling Rate (ints/sec) set to dynamic co=
-nservative mode
-e1000e 0000:00:1f.6 0000:00:1f.6 (uninitialized): registered PHC clock
-e1000e 0000:00:1f.6 eth0: (PCI Express:2.5GT/s:Width x1) 3c:52:82:5d:1e:ba
-e1000e 0000:00:1f.6 eth0: Intel(R) PRO/1000 Network Connection
-e1000e 0000:00:1f.6 eth0: MAC: 12, PHY: 12, PBA No: FFFFFF-0FF
-initcall e1000_init_module+0x0/0x40 returned 0 after 207566 usecs
-calling  igb_init_module+0x0/0x50 @ 1
-igb: Intel(R) Gigabit Ethernet Network Driver
-igb: Copyright (c) 2007-2014 Intel Corporation.
-initcall igb_init_module+0x0/0x50 returned 0 after 12781 usecs
-calling  igc_init_module+0x0/0x50 @ 1
-Intel(R) 2.5G Ethernet Linux Driver
-Copyright(c) 2018 Intel Corporation.
-initcall igc_init_module+0x0/0x50 returned 0 after 11012 usecs
-calling  ixgbe_init_module+0x0/0xc0 @ 1
-ixgbe: Intel(R) 10 Gigabit PCI Express Network Driver
-ixgbe: Copyright (c) 1999-2016 Intel Corporation.
-initcall ixgbe_init_module+0x0/0xc0 returned 0 after 14373 usecs
-calling  i40e_init_module+0x0/0xd0 @ 1
-i40e: Intel(R) Ethernet Connection XL710 Network Driver
-i40e: Copyright (c) 2013 - 2019 Intel Corporation.
-initcall i40e_init_module+0x0/0xd0 returned 0 after 14640 usecs
-calling  rtl8169_pci_driver_init+0x0/0x20 @ 1
-initcall rtl8169_pci_driver_init+0x0/0x20 returned 0 after 1146 usecs
-calling  rtl8152_driver_init+0x0/0x40 @ 1
-usbcore: registered new device driver r8152-cfgselector
-usbcore: registered new interface driver r8152
-initcall rtl8152_driver_init+0x0/0x40 returned 0 after 13805 usecs
-calling  asix_driver_init+0x0/0x20 @ 1
-usbcore: registered new interface driver asix
-initcall asix_driver_init+0x0/0x20 returned 0 after 6415 usecs
-calling  ax88179_178a_driver_init+0x0/0x20 @ 1
-usbcore: registered new interface driver ax88179_178a
-initcall ax88179_178a_driver_init+0x0/0x20 returned 0 after 7428 usecs
-calling  usbnet_init+0x0/0x30 @ 1
-initcall usbnet_init+0x0/0x30 returned 0 after 1 usecs
-calling  usbport_trig_init+0x0/0x20 @ 1
-initcall usbport_trig_init+0x0/0x20 returned 0 after 3 usecs
-calling  mon_init+0x0/0x1c0 @ 1
-initcall mon_init+0x0/0x1c0 returned 0 after 933 usecs
-calling  ehci_hcd_init+0x0/0x1c0 @ 1
-initcall ehci_hcd_init+0x0/0x1c0 returned 0 after 42 usecs
-calling  ehci_pci_init+0x0/0x60 @ 1
-initcall ehci_pci_init+0x0/0x60 returned 0 after 233 usecs
-calling  ohci_hcd_mod_init+0x0/0xb0 @ 1
-initcall ohci_hcd_mod_init+0x0/0xb0 returned 0 after 102 usecs
-calling  ohci_pci_init+0x0/0x60 @ 1
-initcall ohci_pci_init+0x0/0x60 returned 0 after 168 usecs
-calling  uhci_hcd_init+0x0/0x150 @ 1
-initcall uhci_hcd_init+0x0/0x150 returned 0 after 261 usecs
-calling  xhci_hcd_init+0x0/0x30 @ 1
-initcall xhci_hcd_init+0x0/0x30 returned 0 after 39 usecs
-calling  xhci_pci_init+0x0/0x60 @ 1
-initcall xhci_pci_init+0x0/0x60 returned 0 after 215 usecs
-xhci_hcd 0000:00:14.0: xHCI Host Controller
-calling  ucsi_acpi_platform_driver_init+0x0/0x20 @ 1
-initcall ucsi_acpi_platform_driver_init+0x0/0x20 returned 0 after 206 usecs
-xhci_hcd 0000:00:14.0: new USB bus registered, assigned bus number 1
-calling  i8042_init+0x0/0x190 @ 1
-i8042: PNP: PS/2 Controller [PNP0303:PS2K,PNP0f13:PS2M] at 0x60,0x64 irq 1,=
-12
-xhci_hcd 0000:00:14.0: hcc params 0x200077c1 hci version 0x100 quirks 0x000=
-0000001109810
-serio: i8042 KBD port at 0x60,0x64 irq 1
-xhci_hcd 0000:00:14.0: xHCI Host Controller
-serio: i8042 AUX port at 0x60,0x64 irq 12
-xhci_hcd 0000:00:14.0: new USB bus registered, assigned bus number 2
-initcall i8042_init+0x0/0x190 returned 0 after 59832 usecs
-xhci_hcd 0000:00:14.0: Host supports USB 3.0 SuperSpeed
-calling  serport_init+0x0/0x40 @ 1
-usb usb1: New USB device found, idVendor=3D1d6b, idProduct=3D0002, bcdDevic=
-e=3D 6.03
-initcall serport_init+0x0/0x40 returned 0 after 1 usecs
-usb usb1: New USB device strings: Mfr=3D3, Product=3D2, SerialNumber=3D1
-calling  input_leds_init+0x0/0x20 @ 1
-usb usb1: Product: xHCI Host Controller
-initcall input_leds_init+0x0/0x20 returned 0 after 3 usecs
-usb usb1: Manufacturer: Linux 6.3.0-rc1-00007-gef2f3f98fcf4 xhci-hcd
-calling  mousedev_init+0x0/0xf0 @ 1
-usb usb1: SerialNumber: 0000:00:14.0
-mousedev: PS/2 mouse device common for all mice
-initcall mousedev_init+0x0/0xf0 returned 0 after 14386 usecs
-hub 1-0:1.0: USB hub found
-calling  evdev_init+0x0/0x20 @ 1
-initcall evdev_init+0x0/0x20 returned 0 after 2196 usecs
-hub 1-0:1.0: 16 ports detected
-calling  atkbd_init+0x0/0x30 @ 1
-initcall atkbd_init+0x0/0x30 returned 0 after 264 usecs
-calling  psmouse_init+0x0/0xa0 @ 1
-initcall psmouse_init+0x0/0xa0 returned 0 after 411 usecs
-calling  cmos_init+0x0/0x80 @ 1
-rtc_cmos 00:03: RTC can wake from S4
-rtc_cmos 00:03: registered as rtc0
-rtc_cmos 00:03: setting system clock to 2023-03-09T23:58:07 UTC (1678406287=
-)
-rtc_cmos 00:03: alarms up to one month, y3k, 242 bytes nvram
-initcall cmos_init+0x0/0x80 returned 0 after 32110 usecs
-calling  thermal_throttle_init_device+0x0/0x60 @ 1
-initcall thermal_throttle_init_device+0x0/0x60 returned 0 after 660 usecs
-calling  esb_driver_init+0x0/0x20 @ 1
-initcall esb_driver_init+0x0/0x20 returned 0 after 260 usecs
-calling  iTCO_wdt_driver_init+0x0/0x20 @ 1
-initcall iTCO_wdt_driver_init+0x0/0x20 returned 0 after 244 usecs
-calling  iTCO_vendor_init_module+0x0/0x40 @ 1
-iTCO_vendor_support: vendor-support=3D0
-initcall iTCO_vendor_init_module+0x0/0x40 returned 0 after 5507 usecs
-calling  ghes_edac_init+0x0/0x140 @ 1
-initcall ghes_edac_init+0x0/0x140 returned -19 after 1 usecs
-calling  intel_pstate_init+0x0/0xb80 @ 1
-intel_pstate: HWP enabled by BIOS
-intel_pstate: Intel P-state driver initializing
-intel_pstate: HWP enabled
-initcall intel_pstate_init+0x0/0xb80 returned 0 after 18348 usecs
-calling  haltpoll_init+0x0/0x150 @ 1
-initcall haltpoll_init+0x0/0x150 returned -19 after 0 usecs
-calling  dmi_sysfs_init+0x0/0x230 @ 1
-initcall dmi_sysfs_init+0x0/0x230 returned 0 after 8885 usecs
-usb usb2: New USB device found, idVendor=3D1d6b, idProduct=3D0003, bcdDevic=
-e=3D 6.03
-calling  fw_cfg_sysfs_init+0x0/0xa0 @ 1
-initcall fw_cfg_sysfs_init+0x0/0xa0 returned 0 after 243 usecs
-usb usb2: New USB device strings: Mfr=3D3, Product=3D2, SerialNumber=3D1
-calling  sysfb_init+0x0/0x150 @ 1
-initcall sysfb_init+0x0/0x150 returned 0 after 534 usecs
-usb usb2: Product: xHCI Host Controller
-calling  esrt_sysfs_init+0x0/0x280 @ 1
-usb usb2: Manufacturer: Linux 6.3.0-rc1-00007-gef2f3f98fcf4 xhci-hcd
-initcall esrt_sysfs_init+0x0/0x280 returned -38 after 0 usecs
-usb usb2: SerialNumber: 0000:00:14.0
-calling  efivars_pstore_init+0x0/0xa0 @ 1
-hub 2-0:1.0: USB hub found
-initcall efivars_pstore_init+0x0/0xa0 returned 0 after 1 usecs
-calling  hid_init+0x0/0x60 @ 1
-hub 2-0:1.0: 10 ports detected
-hid: raw HID events driver (C) Jiri Kosina
-initcall hid_init+0x0/0x60 returned 0 after 29695 usecs
-calling  hid_generic_init+0x0/0x20 @ 1
-initcall hid_generic_init+0x0/0x20 returned 0 after 994 usecs
-calling  magicmouse_driver_init+0x0/0x20 @ 1
-initcall magicmouse_driver_init+0x0/0x20 returned 0 after 187 usecs
-calling  sensor_hub_driver_init+0x0/0x20 @ 1
-initcall sensor_hub_driver_init+0x0/0x20 returned 0 after 219 usecs
-calling  hid_init+0x0/0x70 @ 1
-usbcore: registered new interface driver usbhid
-usbhid: USB HID core driver
-initcall hid_init+0x0/0x70 returned 0 after 12403 usecs
-calling  pmc_atom_init+0x0/0x90 @ 1
-initcall pmc_atom_init+0x0/0x90 returned -19 after 23 usecs
-calling  vmgenid_driver_init+0x0/0x20 @ 1
-initcall vmgenid_driver_init+0x0/0x20 returned 0 after 404 usecs
-calling  sock_diag_init+0x0/0x40 @ 1
-initcall sock_diag_init+0x0/0x40 returned 0 after 164 usecs
-calling  init_net_drop_monitor+0x0/0x360 @ 1
-drop_monitor: Initializing network drop monitor service
-initcall init_net_drop_monitor+0x0/0x360 returned 0 after 7390 usecs
-calling  llc_init+0x0/0x30 @ 1
-initcall llc_init+0x0/0x30 returned 0 after 2 usecs
-calling  snap_init+0x0/0x40 @ 1
-initcall snap_init+0x0/0x40 returned 0 after 66 usecs
-calling  blackhole_init+0x0/0x20 @ 1
-initcall blackhole_init+0x0/0x20 returned 0 after 1 usecs
-calling  ingress_module_init+0x0/0x50 @ 1
-initcall ingress_module_init+0x0/0x50 returned 0 after 2 usecs
-calling  netem_module_init+0x0/0x30 @ 1
-netem: version 1.3
-initcall netem_module_init+0x0/0x30 returned 0 after 3912 usecs
-calling  fq_codel_module_init+0x0/0x20 @ 1
-initcall fq_codel_module_init+0x0/0x20 returned 0 after 1 usecs
-calling  init_cgroup_cls+0x0/0x20 @ 1
-initcall init_cgroup_cls+0x0/0x20 returned 0 after 48 usecs
-calling  xt_init+0x0/0x3e0 @ 1
-initcall xt_init+0x0/0x3e0 returned 0 after 179 usecs
-calling  tcpudp_mt_init+0x0/0x20 @ 1
-initcall tcpudp_mt_init+0x0/0x20 returned 0 after 98 usecs
-calling  gre_offload_init+0x0/0x60 @ 1
-initcall gre_offload_init+0x0/0x60 returned 0 after 1 usecs
-calling  sysctl_ipv4_init+0x0/0x60 @ 1
-initcall sysctl_ipv4_init+0x0/0x60 returned 0 after 299 usecs
-calling  cubictcp_register+0x0/0x90 @ 1
-initcall cubictcp_register+0x0/0x90 returned 0 after 1 usecs
-calling  xfrm_user_init+0x0/0x40 @ 1
-Initializing XFRM netlink socket
-initcall xfrm_user_init+0x0/0x40 returned 0 after 5168 usecs
-calling  inet6_init+0x0/0x4e0 @ 1
-NET: Registered PF_INET6 protocol family
-Segment Routing with IPv6
-In-situ OAM (IOAM) with IPv6
-initcall inet6_init+0x0/0x4e0 returned 0 after 20420 usecs
-calling  packet_init+0x0/0x90 @ 1
-NET: Registered PF_PACKET protocol family
-initcall packet_init+0x0/0x90 returned 0 after 5884 usecs
-calling  strp_dev_init+0x0/0x40 @ 1
-initcall strp_dev_init+0x0/0x40 returned 0 after 583 usecs
-calling  vlan_proto_init+0x0/0xb0 @ 1
-8021q: 802.1Q VLAN Support v1.8
-initcall vlan_proto_init+0x0/0xb0 returned 0 after 5205 usecs
-calling  init_p9+0x0/0x30 @ 1
-9pnet: Installing 9P2000 support
-initcall init_p9+0x0/0x30 returned 0 after 5242 usecs
-calling  p9_trans_fd_init+0x0/0x30 @ 1
-initcall p9_trans_fd_init+0x0/0x30 returned 0 after 22 usecs
-calling  p9_virtio_init+0x0/0x60 @ 1
-initcall p9_virtio_init+0x0/0x60 returned 0 after 168 usecs
-calling  dcbnl_init+0x0/0x60 @ 1
-initcall dcbnl_init+0x0/0x60 returned 0 after 36 usecs
-calling  mpls_gso_init+0x0/0x30 @ 1
-mpls_gso: MPLS GSO support
-initcall mpls_gso_init+0x0/0x30 returned 0 after 4577 usecs
-calling  nsh_init_module+0x0/0x20 @ 1
-initcall nsh_init_module+0x0/0x20 returned 0 after 1 usecs
-calling  pm_check_save_msr+0x0/0x70 @ 1
-initcall pm_check_save_msr+0x0/0x70 returned 0 after 111 usecs
-calling  plist_test+0x0/0x430 @ 1
-start plist test
-end plist test
-initcall plist_test+0x0/0x430 returned 0 after 7993 usecs
-calling  mcheck_init_device+0x0/0x2a0 @ 1
-initcall mcheck_init_device+0x0/0x2a0 returned 0 after 3157 usecs
-calling  dev_mcelog_init_device+0x0/0x1a0 @ 1
-initcall dev_mcelog_init_device+0x0/0x1a0 returned 0 after 695 usecs
-calling  kernel_do_mounts_initrd_sysctls_init+0x0/0x30 @ 1
-initcall kernel_do_mounts_initrd_sysctls_init+0x0/0x30 returned 0 after 16 =
-usecs
-calling  tboot_late_init+0x0/0x260 @ 1
-initcall tboot_late_init+0x0/0x260 returned 0 after 0 usecs
-calling  sld_mitigate_sysctl_init+0x0/0x30 @ 1
-initcall sld_mitigate_sysctl_init+0x0/0x30 returned 0 after 13 usecs
-calling  mcheck_late_init+0x0/0xc0 @ 1
-initcall mcheck_late_init+0x0/0xc0 returned 0 after 81 usecs
-calling  severities_debugfs_init+0x0/0x30 @ 1
-initcall severities_debugfs_init+0x0/0x30 returned 0 after 113 usecs
-calling  microcode_init+0x0/0x280 @ 1
-microcode: Microcode Update Driver: v2.2.
-initcall microcode_init+0x0/0x280 returned 0 after 884 usecs
-calling  resctrl_late_init+0x0/0x8b0 @ 1
-initcall resctrl_late_init+0x0/0x8b0 returned -19 after 1 usecs
-calling  hpet_insert_resource+0x0/0x30 @ 1
-initcall hpet_insert_resource+0x0/0x30 returned 0 after 2 usecs
-calling  start_sync_check_timer+0x0/0xd0 @ 1
-initcall start_sync_check_timer+0x0/0xd0 returned 0 after 1 usecs
-calling  update_mp_table+0x0/0x7d0 @ 1
-initcall update_mp_table+0x0/0x7d0 returned 0 after 0 usecs
-calling  lapic_insert_resource+0x0/0x50 @ 1
-initcall lapic_insert_resource+0x0/0x50 returned 0 after 2 usecs
-calling  print_ipi_mode+0x0/0x40 @ 1
-IPI shorthand broadcast: enabled
-initcall print_ipi_mode+0x0/0x40 returned 0 after 5069 usecs
-calling  print_ICs+0x0/0x220 @ 1
-... APIC ID:      00000000 (0)
-... APIC VERSION: 01060015
-0000000000000000000000000000000000000000000000000000000000000000
-000000000000000c000000000000000000000000000000000000000000000000
-0000000000000000000000000000000000000000000000000000000000001000
-
-number of MP IRQ sources: 15.
-number of IO-APIC #2 registers: 120.
-testing the IO APIC.......................
-IO APIC #2......
-.... register #00: 02000000
-.......    : physical APIC id: 02
-.......    : Delivery Type: 0
-.......    : LTS          : 0
-.... register #01: 00770020
-.......     : max redirection entries: 77
-.......     : PRQ implemented: 0
-.......     : IO APIC version: 20
-.... register #02: 00000000
-.......     : arbitration: 00
-.... IRQ redirection table:
-IOAPIC 0:
-pin00, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin01, enabled , edge , high, V(21), IRR(0), S(0), logical , D(0001), M(0)
-pin02, enabled , edge , high, V(30), IRR(0), S(0), logical , D(0001), M(0)
-pin03, disabled, edge , high, V(E0), IRR(0), S(0), physical, D(0201), M(2)
-pin04, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin05, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin06, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin07, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin08, enabled , edge , high, V(22), IRR(0), S(0), logical , D(0004), M(0)
-pin09, enabled , level, high, V(21), IRR(0), S(0), logical , D(0002), M(0)
-pin0a, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin0b, disabled, edge , high, V(2B), IRR(0), S(0), physical, D(0052), M(2)
-pin0c, enabled , edge , high, V(21), IRR(0), S(0), logical , D(0008), M(0)
-pin0d, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin0e, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin0f, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin10, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin11, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin12, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin13, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin14, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin15, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin16, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin17, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin18, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin19, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin1a, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin1b, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin1c, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin1d, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin1e, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin1f, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin20, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin21, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin22, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0020), M(2)
-pin23, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin24, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin25, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin26, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin27, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin28, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin29, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin2a, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin2b, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin2c, disabled, edge , high, V(02), IRR(0), S(0), physical, D(2183), M(2)
-pin2d, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin2e, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin2f, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin30, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin31, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin32, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin33, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin34, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin35, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0200), M(2)
-pin36, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin37, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin38, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin39, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin3a, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin3b, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin3c, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin3d, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin3e, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin3f, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin40, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin41, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin42, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin43, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin44, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin45, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin46, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin47, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin48, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin49, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin4a, disabled, edge , high, V(08), IRR(0), S(0), physical, D(0800), M(2)
-pin4b, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin4c, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin4d, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin4e, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin4f, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin50, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin51, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin52, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin53, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin54, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin55, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin56, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin57, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin58, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin59, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin5a, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin5b, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin5c, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin5d, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin5e, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin5f, disabled, edge , high, V(40), IRR(0), S(0), logical , D(1508), M(2)
-pin60, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin61, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin62, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin63, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin64, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin65, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin66, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin67, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin68, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin69, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin6a, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin6b, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin6c, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin6d, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin6e, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin6f, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin70, disabled, edge , high, V(00), IRR(0), S(0), remapped, I(0011),  Z(2)
-pin71, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin72, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin73, disabled, edge , high, V(00), IRR(0), S(0), physical, D(00C3), M(2)
-pin74, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin75, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-pin76, disabled, edge , high, V(00), IRR(0), S(0), remapped, I(0100),  Z(2)
-pin77, disabled, edge , high, V(00), IRR(0), S(0), physical, D(0000), M(0)
-IRQ to pin mappings:
-IRQ0 -> 0:2
-IRQ1 -> 0:1
-IRQ3 -> 0:3
-IRQ4 -> 0:4
-IRQ5 -> 0:5
-IRQ6 -> 0:6
-IRQ7 -> 0:7
-IRQ8 -> 0:8
-IRQ9 -> 0:9
-IRQ10 -> 0:10
-IRQ11 -> 0:11
-IRQ12 -> 0:12
-IRQ13 -> 0:13
-IRQ14 -> 0:14
-IRQ15 -> 0:15
-IRQ16 -> 0:16
-IRQ19 -> 0:19
-.................................... done.
-initcall print_ICs+0x0/0x220 returned 0 after 1247828 usecs
-calling  setup_efi_kvm_sev_migration+0x0/0x340 @ 1
-initcall setup_efi_kvm_sev_migration+0x0/0x340 returned 0 after 0 usecs
-calling  create_tlb_single_page_flush_ceiling+0x0/0x60 @ 1
-initcall create_tlb_single_page_flush_ceiling+0x0/0x60 returned 0 after 113=
- usecs
-calling  pat_memtype_list_init+0x0/0x70 @ 1
-initcall pat_memtype_list_init+0x0/0x70 returned 0 after 39 usecs
-calling  create_init_pkru_value+0x0/0x60 @ 1
-initcall create_init_pkru_value+0x0/0x60 returned 0 after 0 usecs
-calling  aesni_init+0x0/0x270 @ 1
-AVX2 version of gcm_enc/dec engaged.
-AES CTR mode by8 optimization enabled
-initcall aesni_init+0x0/0x270 returned 0 after 11817 usecs
-calling  kernel_panic_sysctls_init+0x0/0x30 @ 1
-initcall kernel_panic_sysctls_init+0x0/0x30 returned 0 after 83 usecs
-calling  kernel_panic_sysfs_init+0x0/0x50 @ 1
-initcall kernel_panic_sysfs_init+0x0/0x50 returned 0 after 19 usecs
-calling  kernel_exit_sysctls_init+0x0/0x30 @ 1
-initcall kernel_exit_sysctls_init+0x0/0x30 returned 0 after 13 usecs
-calling  kernel_exit_sysfs_init+0x0/0x50 @ 1
-initcall kernel_exit_sysfs_init+0x0/0x50 returned 0 after 14 usecs
-calling  param_sysfs_builtin_init+0x0/0xb0 @ 1
-initcall param_sysfs_builtin_init+0x0/0xb0 returned 0 after 65277 usecs
-calling  reboot_ksysfs_init+0x0/0xa0 @ 1
-initcall reboot_ksysfs_init+0x0/0xa0 returned 0 after 78 usecs
-calling  sched_core_sysctl_init+0x0/0x30 @ 1
-initcall sched_core_sysctl_init+0x0/0x30 returned 0 after 14 usecs
-calling  sched_fair_sysctl_init+0x0/0x30 @ 1
-initcall sched_fair_sysctl_init+0x0/0x30 returned 0 after 27 usecs
-calling  sched_rt_sysctl_init+0x0/0x30 @ 1
-initcall sched_rt_sysctl_init+0x0/0x30 returned 0 after 14 usecs
-calling  sched_dl_sysctl_init+0x0/0x30 @ 1
-initcall sched_dl_sysctl_init+0x0/0x30 returned 0 after 258 usecs
-calling  sched_clock_init_late+0x0/0x1e0 @ 1
-sched_clock: Marking stable (15848633865, 3708880484)->(20224869232, -66735=
-4883)
-initcall sched_clock_init_late+0x0/0x1e0 returned 0 after 9683 usecs
-calling  sched_init_debug+0x0/0x260 @ 1
-initcall sched_init_debug+0x0/0x260 returned 0 after 2461 usecs
-calling  kernel_lockdep_sysctls_init+0x0/0x30 @ 1
-initcall kernel_lockdep_sysctls_init+0x0/0x30 returned 0 after 28 usecs
-calling  cpu_latency_qos_init+0x0/0x50 @ 1
-initcall cpu_latency_qos_init+0x0/0x50 returned 0 after 685 usecs
-calling  pm_debugfs_init+0x0/0x30 @ 1
-initcall pm_debugfs_init+0x0/0x30 returned 0 after 149 usecs
-calling  printk_late_init+0x0/0x280 @ 1
-initcall printk_late_init+0x0/0x280 returned 0 after 30 usecs
-calling  rcu_verify_early_boot_tests+0x0/0x70 @ 1
-initcall rcu_verify_early_boot_tests+0x0/0x70 returned 0 after 0 usecs
-calling  rcu_tasks_verify_schedule_work+0x0/0x90 @ 1
-initcall rcu_tasks_verify_schedule_work+0x0/0x90 returned 0 after 0 usecs
-calling  init_srcu_module_notifier+0x0/0x40 @ 1
-initcall init_srcu_module_notifier+0x0/0x40 returned 0 after 2 usecs
-calling  swiotlb_create_default_debugfs+0x0/0x70 @ 1
-initcall swiotlb_create_default_debugfs+0x0/0x70 returned 0 after 112 usecs
-calling  tk_debug_sleep_time_init+0x0/0x30 @ 1
-initcall tk_debug_sleep_time_init+0x0/0x30 returned 0 after 43 usecs
-calling  bpf_ksym_iter_register+0x0/0x20 @ 1
-initcall bpf_ksym_iter_register+0x0/0x20 returned 0 after 11 usecs
-calling  kernel_acct_sysctls_init+0x0/0x30 @ 1
-initcall kernel_acct_sysctls_init+0x0/0x30 returned 0 after 16 usecs
-calling  kexec_core_sysctl_init+0x0/0x30 @ 1
-initcall kexec_core_sysctl_init+0x0/0x30 returned 0 after 16 usecs
-calling  bpf_rstat_kfunc_init+0x0/0x20 @ 1
-initcall bpf_rstat_kfunc_init+0x0/0x20 returned 0 after 0 usecs
-calling  debugfs_kprobe_init+0x0/0x80 @ 1
-initcall debugfs_kprobe_init+0x0/0x80 returned 0 after 173 usecs
-calling  kernel_delayacct_sysctls_init+0x0/0x30 @ 1
-initcall kernel_delayacct_sysctls_init+0x0/0x30 returned 0 after 14 usecs
-calling  taskstats_init+0x0/0x40 @ 1
-registered taskstats version 1
-initcall taskstats_init+0x0/0x40 returned 0 after 5039 usecs
-calling  ftrace_sysctl_init+0x0/0x30 @ 1
-initcall ftrace_sysctl_init+0x0/0x30 returned 0 after 13 usecs
-calling  init_hwlat_tracer+0x0/0x120 @ 1
-initcall init_hwlat_tracer+0x0/0x120 returned 0 after 644 usecs
-calling  bpf_key_sig_kfuncs_init+0x0/0x20 @ 1
-initcall bpf_key_sig_kfuncs_init+0x0/0x20 returned 0 after 0 usecs
-calling  bpf_global_ma_init+0x0/0x30 @ 1
-initcall bpf_global_ma_init+0x0/0x30 returned 0 after 1254 usecs
-calling  bpf_syscall_sysctl_init+0x0/0x30 @ 1
-initcall bpf_syscall_sysctl_init+0x0/0x30 returned 0 after 61 usecs
-calling  kfunc_init+0x0/0x100 @ 1
-initcall kfunc_init+0x0/0x100 returned 0 after 0 usecs
-calling  bpf_map_iter_init+0x0/0x30 @ 1
-initcall bpf_map_iter_init+0x0/0x30 returned 0 after 17 usecs
-calling  task_iter_init+0x0/0x390 @ 1
-initcall task_iter_init+0x0/0x390 returned 0 after 22 usecs
-calling  bpf_prog_iter_init+0x0/0x20 @ 1
-initcall bpf_prog_iter_init+0x0/0x20 returned 0 after 7 usecs
-calling  bpf_link_iter_init+0x0/0x20 @ 1
-initcall bpf_link_iter_init+0x0/0x20 returned 0 after 7 usecs
-calling  init_trampolines+0x0/0x70 @ 1
-initcall init_trampolines+0x0/0x70 returned 0 after 1 usecs
-calling  bpf_offload_init+0x0/0x20 @ 1
-initcall bpf_offload_init+0x0/0x20 returned 0 after 11 usecs
-calling  bpf_cgroup_iter_init+0x0/0x30 @ 1
-initcall bpf_cgroup_iter_init+0x0/0x30 returned 0 after 7 usecs
-calling  cpumask_kfunc_init+0x0/0xe0 @ 1
-initcall cpumask_kfunc_init+0x0/0xe0 returned 0 after 1267 usecs
-calling  load_system_certificate_list+0x0/0x60 @ 1
-Loading compiled-in X.509 certificates
-Loaded X.509 cert 'Build time autogenerated kernel key: 9fc21cd2183f56b6fe0=
-87a3166a12f0d71a11690'
-initcall load_system_certificate_list+0x0/0x60 returned 0 after 18616 usecs
-calling  fault_around_debugfs+0x0/0x30 @ 1
-initcall fault_around_debugfs+0x0/0x30 returned 0 after 45 usecs
-calling  max_swapfiles_check+0x0/0x10 @ 1
-initcall max_swapfiles_check+0x0/0x10 returned 0 after 0 usecs
-calling  init_zswap+0x0/0x430 @ 1
-zswap: loaded using pool lzo/zbud
-initcall init_zswap+0x0/0x430 returned 0 after 7492 usecs
-calling  hugetlb_vmemmap_init+0x0/0x1d0 @ 1
-initcall hugetlb_vmemmap_init+0x0/0x1d0 returned 0 after 20 usecs
-calling  slab_sysfs_init+0x0/0x100 @ 1
-initcall slab_sysfs_init+0x0/0x100 returned 0 after 78335 usecs
-calling  kasan_cpu_quarantine_init+0x0/0x50 @ 1
-initcall kasan_cpu_quarantine_init+0x0/0x50 returned 217 after 224 usecs
-calling  split_huge_pages_debugfs+0x0/0x30 @ 1
-initcall split_huge_pages_debugfs+0x0/0x30 returned 0 after 47 usecs
-calling  gup_test_init+0x0/0x30 @ 1
-initcall gup_test_init+0x0/0x30 returned 0 after 37 usecs
-calling  pageowner_init+0x0/0x40 @ 1
-page_owner is disabled
-initcall pageowner_init+0x0/0x40 returned 0 after 4185 usecs
-calling  check_early_ioremap_leak+0x0/0xb0 @ 1
-initcall check_early_ioremap_leak+0x0/0xb0 returned 0 after 0 usecs
-calling  set_hardened_usercopy+0x0/0x30 @ 1
-initcall set_hardened_usercopy+0x0/0x30 returned 1 after 0 usecs
-calling  fscrypt_init+0x0/0xe0 @ 1
-Key type .fscrypt registered
-Key type fscrypt-provisioning registered
-initcall fscrypt_init+0x0/0xe0 returned 0 after 11811 usecs
-calling  pstore_init+0x0/0x90 @ 1
-initcall pstore_init+0x0/0x90 returned 0 after 18 usecs
-calling  init_root_keyring+0x0/0x20 @ 1
-initcall init_root_keyring+0x0/0x20 returned 0 after 326 usecs
-calling  init_trusted+0x0/0x2c0 @ 1
-Freeing initrd memory: 710592K
-Key type trusted registered
-initcall init_trusted+0x0/0x2c0 returned 0 after 28281845 usecs
-calling  init_encrypted+0x0/0x180 @ 1
-Key type encrypted registered
-initcall init_encrypted+0x0/0x180 returned 0 after 39852 usecs
-calling  integrity_fs_init+0x0/0x60 @ 1
-initcall integrity_fs_init+0x0/0x60 returned 0 after 43 usecs
-calling  init_ima+0x0/0x140 @ 1
-ima: Allocated hash algorithm: sha1
-ima: Error Communicating to TPM chip
-ima: Error Communicating to TPM chip
-ima: Error Communicating to TPM chip
-ima: Error Communicating to TPM chip
-ima: Error Communicating to TPM chip
-ima: Error Communicating to TPM chip
-ima: Error Communicating to TPM chip
-ima: Error Communicating to TPM chip
-ima: No architecture policies found
-initcall init_ima+0x0/0x140 returned 0 after 80628 usecs
-calling  crypto_algapi_init+0x0/0x20 @ 1
-initcall crypto_algapi_init+0x0/0x20 returned 0 after 15 usecs
-calling  blk_timeout_init+0x0/0x20 @ 1
-initcall blk_timeout_init+0x0/0x20 returned 0 after 0 usecs
-calling  init_error_injection+0x0/0x70 @ 1
-initcall init_error_injection+0x0/0x70 returned 0 after 6004 usecs
-calling  pci_resource_alignment_sysfs_init+0x0/0x20 @ 1
-initcall pci_resource_alignment_sysfs_init+0x0/0x20 returned 0 after 17 use=
-cs
-calling  pci_sysfs_init+0x0/0x90 @ 1
-initcall pci_sysfs_init+0x0/0x90 returned 0 after 557 usecs
-calling  bert_init+0x0/0x7c0 @ 1
-initcall bert_init+0x0/0x7c0 returned 0 after 3 usecs
-calling  clk_debug_init+0x0/0x150 @ 1
-initcall clk_debug_init+0x0/0x150 returned 0 after 233 usecs
-calling  dmar_free_unused_resources+0x0/0x2a0 @ 1
-initcall dmar_free_unused_resources+0x0/0x2a0 returned 0 after 6 usecs
-calling  sync_state_resume_initcall+0x0/0x20 @ 1
-initcall sync_state_resume_initcall+0x0/0x20 returned 0 after 2 usecs
-calling  deferred_probe_initcall+0x0/0xd0 @ 1
-initcall deferred_probe_initcall+0x0/0xd0 returned 0 after 354 usecs
-calling  sync_debugfs_init+0x0/0x60 @ 1
-initcall sync_debugfs_init+0x0/0x60 returned 0 after 152 usecs
-calling  firmware_memmap_init+0x0/0x60 @ 1
-initcall firmware_memmap_init+0x0/0x60 returned 0 after 1158 usecs
-calling  register_update_efi_random_seed+0x0/0x30 @ 1
-initcall register_update_efi_random_seed+0x0/0x30 returned 0 after 0 usecs
-calling  efi_shutdown_init+0x0/0x80 @ 1
-initcall efi_shutdown_init+0x0/0x80 returned -19 after 0 usecs
-calling  efi_earlycon_unmap_fb+0x0/0x70 @ 1
-initcall efi_earlycon_unmap_fb+0x0/0x70 returned 0 after 0 usecs
-calling  itmt_legacy_init+0x0/0x50 @ 1
-initcall itmt_legacy_init+0x0/0x50 returned -19 after 0 usecs
-calling  xdp_metadata_init+0x0/0x20 @ 1
-initcall xdp_metadata_init+0x0/0x20 returned 0 after 0 usecs
-calling  bpf_sockmap_iter_init+0x0/0x60 @ 1
-initcall bpf_sockmap_iter_init+0x0/0x60 returned 0 after 8 usecs
-calling  bpf_sk_storage_map_iter_init+0x0/0x60 @ 1
-initcall bpf_sk_storage_map_iter_init+0x0/0x60 returned 0 after 6 usecs
-calling  sch_default_qdisc+0x0/0x20 @ 1
-initcall sch_default_qdisc+0x0/0x20 returned 0 after 2 usecs
-calling  bpf_prog_test_run_init+0x0/0x100 @ 1
-initcall bpf_prog_test_run_init+0x0/0x100 returned 0 after 0 usecs
-calling  tcp_congestion_default+0x0/0x20 @ 1
-initcall tcp_congestion_default+0x0/0x20 returned 0 after 1 usecs
-calling  ip_auto_config+0x0/0xa10 @ 1
-e1000e 0000:00:1f.6 eth0: NIC Link is Up 100 Mbps Full Duplex, Flow Control=
-: Rx/Tx
-e1000e 0000:00:1f.6 eth0: 10/100 speed: disabling TSO
-IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
-Sending DHCP requests ., OK
-IP-Config: Got DHCP answer from 192.168.3.1, my address is 192.168.3.101
-IP-Config: Complete:
-device=3Deth0, hwaddr=3D3c:52:82:5d:1e:ba, ipaddr=3D192.168.3.101, mask=3D2=
-55.255.255.0, gw=3D192.168.3.200
-host=3Dlkp-skl-d06, domain=3Dlkp.intel.com, nis-domain=3D(none)
-bootserver=3D192.168.3.200, rootserver=3D192.168.3.200, rootpath=3D
-nameserver0=3D192.168.3.200
-initcall ip_auto_config+0x0/0xa10 returned 0 after 1807847 usecs
-calling  tcp_bpf_v4_build_proto+0x0/0x110 @ 1
-initcall tcp_bpf_v4_build_proto+0x0/0x110 returned 0 after 0 usecs
-calling  udp_bpf_v4_build_proto+0x0/0xb0 @ 1
-initcall udp_bpf_v4_build_proto+0x0/0xb0 returned 0 after 0 usecs
-calling  bpf_tcp_ca_kfunc_init+0x0/0x20 @ 1
-initcall bpf_tcp_ca_kfunc_init+0x0/0x20 returned 0 after 0 usecs
-calling  pci_mmcfg_late_insert_resources+0x0/0xd0 @ 1
-initcall pci_mmcfg_late_insert_resources+0x0/0xd0 returned 0 after 2 usecs
-calling  software_resume+0x0/0x40 @ 1
-initcall software_resume+0x0/0x40 returned -2 after 22 usecs
-calling  ftrace_check_sync+0x0/0x20 @ 1
-initcall ftrace_check_sync+0x0/0x20 returned 0 after 88 usecs
-calling  latency_fsnotify_init+0x0/0x40 @ 1
-initcall latency_fsnotify_init+0x0/0x40 returned 0 after 602 usecs
-calling  trace_eval_sync+0x0/0x20 @ 1
-initcall trace_eval_sync+0x0/0x20 returned 0 after 158 usecs
-calling  late_trace_init+0x0/0xb0 @ 1
-initcall late_trace_init+0x0/0xb0 returned 0 after 0 usecs
-calling  acpi_gpio_handle_deferred_request_irqs+0x0/0x170 @ 1
-initcall acpi_gpio_handle_deferred_request_irqs+0x0/0x170 returned 0 after =
-324 usecs
-calling  fb_logo_late_init+0x0/0x20 @ 1
-initcall fb_logo_late_init+0x0/0x20 returned 0 after 0 usecs
-calling  clk_disable_unused+0x0/0x220 @ 1
-initcall clk_disable_unused+0x0/0x220 returned 0 after 31 usecs
-Freeing unused kernel image (initmem) memory: 3432K
-Write protecting the kernel read-only data: 55296k
-Freeing unused kernel image (rodata/data gap) memory: 684K
-Run /init as init process
-with arguments:
-/init
-nokaslr
-with environment:
-HOME=3D/
-TERM=3Dlinux
-RESULT_ROOT=3D/result/kernel-selftests/group-02/lkp-skl-d06/debian-12-x86_6=
-4-20220629.cgz/x86_64-rhel-8.3-kselftests/gcc-11/ef2f3f98fcf4521aa00fd21708=
-9e303b7d9b62ba/3
-BOOT_IMAGE=3D/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/ef2f3f98fcf4521aa=
-00fd217089e303b7d9b62ba/vmlinuz-6.3.0-rc1-00007-gef2f3f98fcf4
-branch=3Dhch-misc/filemap_get_folio
-job=3D/lkp/jobs/scheduled/lkp-skl-d06/kernel-selftests-group-02-debian-12-x=
-86_64-20220629.cgz-ef2f3f98fcf4521aa00fd217089e303b7d9b62ba-20230310-60197-=
-szh7vk-4.yaml
-user=3Dlkp
-ARCH=3Dx86_64
-kconfig=3Dx86_64-rhel-8.3-kselftests
-commit=3Def2f3f98fcf4521aa00fd217089e303b7d9b62ba
-max_uptime=3D1200
-LKP_SERVER=3Dinternal-lkp-server
-selinux=3D0
-softlockup_panic=3D1
-prompt_ramdisk=3D0
-vga=3Dnormal
-systemd[1]: RTC configured in localtime, applying delta of 0 minutes to sys=
-tem time.
-calling  ip_tables_init+0x0/0x1000 [ip_tables] @ 1
-initcall ip_tables_init+0x0/0x1000 [ip_tables] returned 0 after 70 usecs
-
-
-calling  drm_core_init+0x0/0x120 [drm] @ 112
-ACPI: bus type drm_connector registered
-Startin[   52.630189][  T114] calling  fuse_init+0x0/0x2d0 [fuse] @ 114
-nt Root and Kern[   52.637153][  T114] fuse: init (API version 7.38)
-[0m...
-calling  init_misc_binfmt+0x0/0x1000 [binfmt_misc] @ 135
-initcall init_misc_binfmt+0x0/0x1000 [binfmt_misc] returned 0 after 5 usecs
-calling  acpi_cpufreq_init+0x0/0xd80 [acpi_cpufreq] @ 171
-calling  acpi_pad_init+0x0/0x1000 [acpi_pad] @ 154
-initcall acpi_cpufreq_init+0x0/0xd80 [acpi_cpufreq] returned -17 after 1 us=
-ecs
-calling  tpm_inf_pnp_driver_init+0x0/0x1000 [tpm_infineon] @ 174
-initcall tpm_inf_pnp_driver_init+0x0/0x1000 [tpm_infineon] returned 0 after=
- 3883 usecs
-calling  acpi_wmi_init+0x0/0x1000 [wmi] @ 173
-acpi PNP0C14:02: duplicate WMI GUID 2B814318-4BE8-4707-9D84-A190A859B5D0 (f=
-irst instance was on PNP0C14:00)
-acpi PNP0C14:02: duplicate WMI GUID 41227C2D-80E1-423F-8B8E-87E32755A0EB (f=
-irst instance was on PNP0C14:00)
-calling  acpi_video_init+0x0/0x1000 [video] @ 173
-initcall acpi_video_init+0x0/0x1000 [video] returned 0 after 27 usecs
-calling  acpi_cpufreq_init+0x0/0xd80 [acpi_cpufreq] @ 165
-initcall acpi_cpufreq_init+0x0/0xd80 [acpi_cpufreq] returned -17 after 1 us=
-ecs
-1;39mRegular bac[   56.207952][  T169] initcall pmc_core_driver_init+0x0/0x=
-1000 [intel_pmc_core] returned 0 after 10455 usecs
-calling  smbalert_driver_init+0x0/0x1000 [i2c_smbus] @ 166
-IOAPIC[0]: Preconfigured routing entry (2-18 -> IRQ 18 Level:1 ActiveLow:1)
-initcall intel_pch_thermal_driver_init+0x0/0x1000 [intel_pch_thermal] retur=
-ned 0 after 28116 usecs
-initcall smbalert_driver_init+0x0/0x1000 [i2c_smbus] returned 0 after 28176=
- usecs
-calling  i2c_i801_init+0x0/0x1000 [i2c_i801] @ 166
-OpenIPMI Driver [   56.475497][  T166] initcall i2c_i801_init+0x0/0x1000 [i=
-2c_i801] returned 0 after 18553 usecs
-..
-pci 0000:00:1f.1: [8086:a120] type 00 class 0x058000
-pci 0000:00:1f.1: reg 0x10: [mem 0xfd000000-0xfdffffff 64bit]
-pci 0000:00:1f.1: calling  quirk_igfx_skip_te_disable+0x0/0x1a0 @ 42
-pci 0000:00:1f.1: quirk_igfx_skip_te_disable+0x0/0x1a0 took 0 usecs
-iTCO_wdt iTCO_wdt: Found a Intel PCH TCO device (Version=3D4, TCOBASE=3D0x0=
-400)
-iTCO_wdt iTCO_wdt: initialized. heartbeat=3D30 sec (nowayout=3D0)
-calling  serio_raw_drv_init+0x0/0x1000 [serio_raw] @ 173
-i2c i2c-0: 3/4 memory slots populated (from DMI)
-i2c i2c-0: Successfully instantiated SPD at 0x51
-initcall serio_raw_drv_init+0x0/0x1000 [serio_raw] returned 0 after 82483 u=
-secs
-calling  ie31200_init+0x0/0x1000 [ie31200_edac] @ 172
-calling  ata_init+0x0/0xa0 [libata] @ 152
-calling  intel_uncore_init+0x0/0xdb0 [intel_uncore] @ 151
-EDAC MC0: Giving out device to module ie31200_edac controller IE31200: DEV =
-0000:00:00.0 (POLLED)
-calling  mei_init+0x0/0xc0 [mei] @ 160
-initcall ie31200_init+0x0/0x1000 [ie31200_edac] returned 0 after 19910 usec=
-s
-initcall mei_init+0x0/0xc0 [mei] returned 0 after 9707 usecs
-libata version 3.00 loaded.
-initcall ata_init+0x0/0xa0 [libata] returned 0 after 22658 usecs
-initcall intel_uncore_init+0x0/0xdb0 [intel_uncore] returned 0 after 30561 =
-usecs
-calling  mei_me_driver_init+0x0/0x1000 [mei_me] @ 160
-calling  cstate_pmu_init+0x0/0x1000 [intel_cstate] @ 151
-calling  ahci_pci_driver_init+0x0/0x1000 [ahci] @ 152
-ahci 0000:00:17.0: version 3.0
-initcall cstate_pmu_init+0x0/0x1000 [intel_cstate] returned 0 after 34378 u=
-secs
-initcall mei_me_driver_init+0x0/0x1000 [mei_me] returned 0 after 40217 usec=
-s
-ommand to reboot[   56.873342][  T152] ahci 0000:00:17.0: AHCI 0001.0301 32=
- slots 4 ports 6 Gbps 0xf impl RAID mode
-ahci 0000:00:17.0: flags: 64bit ncq stag pm led clo only pio slum part ems =
-deso sadm sds apst=20
-
-scsi host0: ahci
-RAPL PMU: API unit is 2^-32 Joules, 4 fixed counters, 655360 ms ovfl timer
-RAPL PMU: hw unit of domain pp0-core 2^-14 Joules
-RAPL PMU: hw unit of domain package 2^-14 Joules
-RAPL PMU: hw unit of domain dram 2^-14 Joules
-calling  ipmi_init_msghandler_mod+0x0/0x1000 [ipmi_msghandler] @ 207
-RAPL PMU: hw unit of domain pp1-gpu 2^-14 Joules
-IPMI message handler: version 39.2
-initcall ipmi_init_msghandler_mod+0x0/0x1000 [ipmi_msghandler] returned 0 a=
-fter 2324 usecs
-initcall rapl_pmu_init+0x0/0xef0 [rapl] returned 0 after 6364 usecs
-calling  init_ipmi_devintf+0x0/0x1000 [ipmi_devintf] @ 207
-ipmi device interface
-scsi host1: ahci
-calling  sha512_ssse3_mod_init+0x0/0x1000 [sha512_ssse3] @ 150
-initcall init_ipmi_devintf+0x0/0x1000 [ipmi_devintf] returned 0 after 162 u=
-secs
-initcall sha512_ssse3_mod_init+0x0/0x1000 [sha512_ssse3] returned 0 after 3=
-7615 usecs
-calling  ghash_pclmulqdqni_mod_init+0x0/0x1000 [ghash_clmulni_intel] @ 150
-initcall ghash_pclmulqdqni_mod_init+0x0/0x1000 [ghash_clmulni_intel] return=
-ed 0 after 12 usecs
-scsi host2: ahci
-initcall crc32c_intel_mod_init+0x0/0x1000 [crc32c_intel] returned 0 after 7=
-85 usecs
-scsi host3: ahci
-calling  crc32_pclmul_mod_init+0x0/0x1000 [crc32_pclmul] @ 151
-ata1: SATA max UDMA/133 abar m2048@0xd104c000 port 0xd104c100 irq 123
-ata2: SATA max UDMA/133 abar m2048@0xd104c000 port 0xd104c180 irq 123
-initcall crc32_pclmul_mod_init+0x0/0x1000 [crc32_pclmul] returned 0 after 9=
-424 usecs
-ata3: SATA max UDMA/133 abar m2048@0xd104c000 port 0xd104c200 irq 123
-ata4: SATA max UDMA/133 abar m2048@0xd104c000 port 0xd104c280 irq 123
-initcall ahci_pci_driver_init+0x0/0x1000 [ahci] returned 0 after 70905 usec=
-s
-calling  drm_display_helper_module_init+0x0/0x1000 [drm_display_helper] @ 1=
-71
-initcall drm_display_helper_module_init+0x0/0x1000 [drm_display_helper] ret=
-urned 0 after 6387 usecs
-calling  crct10dif_intel_mod_init+0x0/0x1000 [crct10dif_pclmul] @ 170
-initcall crct10dif_intel_mod_init+0x0/0x1000 [crct10dif_pclmul] returned 0 =
-after 129 usecs
-calling  init_ipmi_si+0x0/0x320 [ipmi_si] @ 231
-ipmi_si: IPMI System Interface driver
-ata1: SATA link up 3.0 Gbps (SStatus 123 SControl 300)
-calling  mei_wdt_driver_init+0x0/0x1000 [mei_wdt] @ 156
-calling  wmi_bmof_driver_init+0x0/0x1000 [wmi_bmof] @ 153
-initcall wmi_bmof_driver_init+0x0/0x1000 [wmi_bmof] returned 0 after 1826 u=
-secs
-initcall mei_wdt_driver_init+0x0/0x1000 [mei_wdt] returned 0 after 5045 use=
-cs
-See 'systemctl status openipmi.service' for details.
-ata1.00: ACPI cmd f5/00:00:00:00:00:e0(SECURITY FREEZE LOCK) filtered out
-ata1.00: ACPI cmd b1/c1:00:00:00:00:e0(DEVICE CONFIGURATION OVERLAY) filter=
-ed out
-ata1.00: ATA-8: WDC WD10EARS-00Y5B1, 80.00A80, max UDMA/133
-ata1.00: 1953525168 sectors, multi 0: LBA48 NCQ (depth 32), AA
-ata1.00: ACPI cmd b1/c1:00:00:00:00:e0(DEVICE CONFIGURATION OVERLAY) filter=
-ed out
-ata1.00: configured for UDMA/133
-scsi 0:0:0:0: Direct-Access     ATA      WDC WD10EARS-00Y 0A80 PQ: 0 ANSI: =
-5
-calling  kvm_x86_init+0x0/0x70 [kvm] @ 150
-initcall kvm_x86_init+0x0/0x70 [kvm] returned 0 after 1 usecs
-LKP: ttyS0: 262: current_version: f0, target_version: f0
-LKP: ttyS0: 262: skip deploy intel ucode as ucode is same
-ata2: SATA link up 6.0 Gbps (SStatus 133 SControl 300)
-ata2.00: ACPI cmd f5/00:00:00:00:00:e0(SECURITY FREEZE LOCK) filtered out
-ata2.00: ATA-9: INTEL SSDSC2BB012T4, G2010036, max UDMA/133
-ata2.00: 2344225968 sectors, multi 1: LBA48 NCQ (depth 32)
-ata2.00: ACPI cmd f5/00:00:00:00:00:e0(SECURITY FREEZE LOCK) filtered out
-ata2.00: configured for UDMA/133
-scsi 1:0:0:0: Direct-Access     ATA      INTEL SSDSC2BB01 0036 PQ: 0 ANSI: =
-5
-LKP: ttyS0: 262: Kernel tests: Boot OK!
-LKP: ttyS0: 262: HOSTNAME lkp-skl-d06, MAC 3c:52:82:5d:1e:ba, kernel 6.3.0-=
-rc1-00007-gef2f3f98fcf4 1
-ata3: SATA link down (SStatus 4 SControl 300)
-ata4: SATA link down (SStatus 4 SControl 300)
-calling  drm_buddy_module_init+0x0/0x1000 [drm_buddy] @ 171
-initcall drm_buddy_module_init+0x0/0x1000 [drm_buddy] returned 0 after 9659=
- usecs
-calling  vmx_init+0x0/0x6a0 [kvm_intel] @ 170
-calling  init_sg+0x0/0x1000 [sg] @ 166
-initcall vmx_init+0x0/0x6a0 [kvm_intel] returned 0 after 4867 usecs
-scsi 0:0:0:0: Attached scsi generic sg0 type 0
-calling  coretemp_init+0x0/0x1000 [coretemp] @ 170
-calling  crc64_rocksoft_mod_init+0x0/0x1000 [crc64_rocksoft] @ 138
-calling  crc64_rocksoft_init+0x0/0x1000 [crc64_rocksoft_generic] @ 338
-initcall crc64_rocksoft_init+0x0/0x1000 [crc64_rocksoft_generic] returned 0=
- after 20 usecs
-scsi 1:0:0:0: Attached scsi generic sg1 type 0
-initcall init_sg+0x0/0x1000 [sg] returned 0 after 27200 usecs
-initcall crc64_rocksoft_mod_init+0x0/0x1000 [crc64_rocksoft] returned 0 aft=
-er 48659 usecs
-initcall coretemp_init+0x0/0x1000 [coretemp] returned 0 after 107075 usecs
-calling  powerclamp_init+0x0/0x1000 [intel_powerclamp] @ 170
-initcall powerclamp_init+0x0/0x1000 [intel_powerclamp] returned 0 after 100=
-37 usecs
-calling  pkg_temp_thermal_init+0x0/0x1000 [x86_pkg_temp_thermal] @ 151
-calling  init_sd+0x0/0x1000 [sd_mod] @ 166
-calling  i915_init+0x0/0x190 [i915] @ 171
-initcall pkg_temp_thermal_init+0x0/0x1000 [x86_pkg_temp_thermal] returned 0=
- after 3894 usecs
-ata2.00: Enabling discard_zeroes_data
-sd 0:0:0:0: [sda] 1953525168 512-byte logical blocks: (1.00 TB/932 GiB)
-sd 1:0:0:0: [sdb] 2344225968 512-byte logical blocks: (1.20 TB/1.09 TiB)
-sd 0:0:0:0: [sda] Write Protect is off
-sd 1:0:0:0: [sdb] 4096-byte physical blocks
-sd 0:0:0:0: [sda] Mode Sense: 00 3a 00 00
-initcall init_sd+0x0/0x1000 [sd_mod] returned 0 after 60078 usecs
-sd 1:0:0:0: [sdb] Write Protect is off
-i915 0000:00:02.0: vgaarb: deactivate vga console
-sd 0:0:0:0: [sda] Write cache: enabled, read cache: enabled, doesn't suppor=
-t DPO or FUA
-sd 0:0:0:0: [sda] Preferred minimum I/O size 512 bytes
-sd 1:0:0:0: [sdb] Mode Sense: 00 3a 00 00
-sd 1:0:0:0: [sdb] Write cache: enabled, read cache: enabled, doesn't suppor=
-t DPO or FUA
-sd 1:0:0:0: [sdb] Preferred minimum I/O size 4096 bytes
-Console: switching to colour dummy device 80x25
-ata2.00: Enabling discard_zeroes_data
-sdb: sdb1 sdb2
-sd 1:0:0:0: [sdb] Attached SCSI disk
-i915 0000:00:02.0: vgaarb: changed VGA decodes: olddecodes=3Dio+mem,decodes=
-=3Dio+mem:owns=3Dio+mem
-i915 0000:00:02.0: Direct firmware load for i915/skl_dmc_ver1_27.bin failed=
- with error -2
-i915 0000:00:02.0: [drm] Failed to load DMC firmware i915/skl_dmc_ver1_27.b=
-in. Disabling runtime power management.
-i915 0000:00:02.0: [drm] DMC firmware homepage: https://git.kernel.org/pub/=
-scm/linux/kernel/git/firmware/linux-firmware.git/tree/i915
-sda: sda1 sda2 sda3 sda4
-sd 0:0:0:0: [sda] Attached SCSI disk
-calling  acpi_cpufreq_init+0x0/0xd80 [acpi_cpufreq] @ 170
-initcall acpi_cpufreq_init+0x0/0xd80 [acpi_cpufreq] returned -17 after 1 us=
-ecs
-calling  pmc_core_platform_init+0x0/0x1000 [intel_pmc_core_pltdrv] @ 170
-initcall pmc_core_platform_init+0x0/0x1000 [intel_pmc_core_pltdrv] returned=
- -19 after 176 usecs
-calling  rapl_init+0x0/0x1000 [intel_rapl_common] @ 150
-initcall rapl_init+0x0/0x1000 [intel_rapl_common] returned 0 after 3843 use=
-cs
-calling  intel_rapl_msr_driver_init+0x0/0x1000 [intel_rapl_msr] @ 172
-intel_rapl_common: Found RAPL domain package
-intel_rapl_common: Found RAPL domain core
-intel_rapl_common: Found RAPL domain uncore
-intel_rapl_common: Found RAPL domain dram
-initcall intel_rapl_msr_driver_init+0x0/0x1000 [intel_rapl_msr] returned 0 =
-after 52342 usecs
-calling  libcrc32c_mod_init+0x0/0x1000 [libcrc32c] @ 384
-initcall libcrc32c_mod_init+0x0/0x1000 [libcrc32c] returned 0 after 33 usec=
-s
-calling  init_module+0x0/0x1000 [raid6_pq] @ 384
-raid6: avx2x4   gen() 30889 MB/s
-raid6: avx2x2   gen() 30235 MB/s
-raid6: avx2x1   gen() 23484 MB/s
-raid6: using algorithm avx2x4 gen() 30889 MB/s
-raid6: .... xor() 9536 MB/s, rmw enabled
-raid6: using avx2x2 recovery algorithm
-initcall init_module+0x0/0x1000 [raid6_pq] returned 0 after 99800 usecs
-calling  calibrate_xor_blocks+0x0/0xe90 [xor] @ 384
-xor: automatically using best checksumming function   avx      =20
-initcall calibrate_xor_blocks+0x0/0xe90 [xor] returned 0 after 7816 usecs
-i915 0000:00:02.0: [drm] [ENCODER:94:DDI A/PHY A] failed to retrieve link i=
-nfo, disabling eDP
-calling  blake2b_mod_init+0x0/0x1000 [blake2b_generic] @ 384
-initcall blake2b_mod_init+0x0/0x1000 [blake2b_generic] returned 0 after 22 =
-usecs
-[drm] Initialized i915 1.6.0 20201103 for 0000:00:02.0 on minor 0
-ACPI: video: Video Device [GFX0] (multi-head: yes  rom: no  post: no)
-input: Video Bus as /devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A08:00/LNXVIDEO:00=
-/input/input6
-initcall i915_init+0x0/0x190 [i915] returned 0 after 245887 usecs
-calling  init_btrfs_fs+0x0/0x250 [btrfs] @ 384
-i915 0000:00:02.0: [drm] Cannot find any crtc or sizes
-i915 0000:00:02.0: [drm] Cannot find any crtc or sizes
-Btrfs loaded, crc32c=3Dcrc32c-intel, zoned=3Dno, fsverity=3Dno
-initcall init_btrfs_fs+0x0/0x250 [btrfs] returned 0 after 47667 usecs
-i915 0000:00:02.0: [drm] Cannot find any crtc or sizes
-BTRFS: device fsid afb6a7a3-c7ce-4d7b-b52a-1bfe0ec9af9a devid 1 transid 350=
-6 /dev/sdb1 scanned by systemd-udevd (138)
-BTRFS: device fsid 4feffc13-1a32-4f06-9d95-cce44c499ac2 devid 1 transid 8 /=
-dev/sda2 scanned by systemd-udevd (172)
-is_virt=3Dfalse
-
-lkp: kernel tainted state: 0
-
-LKP: stdout: 262: Kernel tests: Boot OK!
-
-LKP: stdout: 262: HOSTNAME lkp-skl-d06, MAC 3c:52:82:5d:1e:ba, kernel 6.3.0=
--rc1-00007-gef2f3f98fcf4 1
-
-install debs round one: dpkg -i --force-confdef --force-depends /opt/deb/gc=
-c-12-base_12.2.0-13_amd64.deb
-
-/opt/deb/libgcc-s1_12.2.0-13_amd64.deb
-
-/opt/deb/python3-minimal_3.10.6-3+b1_amd64.deb
-
-/opt/deb/python3_3.10.6-3+b1_amd64.deb
-
-/opt/deb/python3.10_3.10.9-1_amd64.deb
-
-/opt/deb/libpython3.10-stdlib_3.10.9-1_amd64.deb
-
-/opt/deb/python3.10-minimal_3.10.9-1_amd64.deb
-
-/opt/deb/libpython3.10-minimal_3.10.9-1_amd64.deb
-
-/opt/deb/libpython3-stdlib_3.10.6-3+b1_amd64.deb
-
-/opt/deb/openvswitch-common_3.1.0~git20221212.739bcf2-3_amd64.deb
-
-/opt/deb/python3-netifaces_0.11.0-2_amd64.deb
-
-/opt/deb/python3-sortedcontainers_2.4.0-2_all.deb
-
-/opt/deb/python3-openvswitch_3.1.0~git20221212.739bcf2-3_amd64.deb
-
-/opt/deb/uuid-runtime_2.38.1-4_amd64.deb
-
-/opt/deb/openvswitch-switch_3.1.0~git20221212.739bcf2-3_amd64.deb
-
-/opt/deb/libattr1_1%3a2.5.1-3_amd64.deb
-
-/opt/deb/traceroute_1%3a2.1.1-1_amd64.deb
-
-/opt/deb/attr_1%3a2.5.1-3_amd64.deb
-
-/opt/deb/ebtables_2.0.11-5_amd64.deb
-
-/opt/deb/libatomic1_12.2.0-13_amd64.deb
-
-/opt/deb/libquadmath0_12.2.0-13_amd64.deb
-
-/opt/deb/libgcc-12-dev_12.2.0-13_amd64.deb
-
-/opt/deb/gcc-12_12.2.0-13_amd64.deb
-
-/opt/deb/gcc_4%3a12.2.0-2+b1_amd64.deb
-
-/opt/deb/g++-12_12.2.0-13_amd64.deb
-
-/opt/deb/g++_4%3a12.2.0-2+b1_amd64.deb
-
-/opt/deb/gcc-11-base_11.3.0-8_amd64.deb
-
-/opt/deb/lib32gcc-s1_12.2.0-13_amd64.deb
-
-/opt/deb/libx32gcc-s1_12.2.0-13_amd64.deb
-
-/opt/deb/lib32atomic1_12.2.0-13_amd64.deb
-
-/opt/deb/libx32atomic1_12.2.0-13_amd64.deb
-
-/opt/deb/lib32quadmath0_12.2.0-13_amd64.deb
-
-/opt/deb/libx32quadmath0_12.2.0-13_amd64.deb
-
-/opt/deb/lib32gcc-12-dev_12.2.0-13_amd64.deb
-
-/opt/deb/libx32gcc-12-dev_12.2.0-13_amd64.deb
-
-/opt/deb/gcc-12-multilib_12.2.0-13_amd64.deb
-
-/opt/deb/gcc-multilib_4%3a12.2.0-2+b1_amd64.deb
-
-/opt/deb/libasound2-data_1.2.8-1_all.deb
-
-/opt/deb/libdeflate0_1.14-1_amd64.deb
-
-/opt/deb/libpython3.10_3.10.9-1_amd64.deb
-
-/opt/deb/libwireshark-data_4.0.2-1_all.deb
-
-/opt/deb/python3-pkg-resources_65.5.0-1.1_all.deb
-
-/opt/deb/python3-pygments_2.13.0+dfsg-1_all.deb
-
-/opt/deb/python3-yaml_6.0-3+b1_amd64.deb
-
-/opt/deb/netcat-openbsd_1.219-1_amd64.deb
-
-/opt/deb/python3-roman_3.3-3_all.deb
-
-/opt/deb/python3-docutils_0.17.1+dfsg-3_all.deb
-
-/opt/deb/python3-scapy_2.4.5+g9420c22-2_all.deb
-
-/opt/deb/socat_1.7.4.4-2_amd64.deb
-
-/opt/deb/tcpdump_4.99.2-1_amd64.deb
-
-(Reading database ... 16792 files and directories currently installed.)
-
-Preparing to unpack .../gcc-12-base_12.2.0-13_amd64.deb ...
-
-Unpacking gcc-12-base:amd64 (12.2.0-13) over (12.2.0-9) ...
-
-Preparing to unpack .../libgcc-s1_12.2.0-13_amd64.deb ...
-
-Unpacking libgcc-s1:amd64 (12.2.0-13) over (12.2.0-9) ...
-
-Preparing to unpack .../python3-minimal_3.10.6-3+b1_amd64.deb ...
-
-Unpacking python3-minimal (3.10.6-3+b1) over (3.10.6-1) ...
-
-Preparing to unpack .../python3_3.10.6-3+b1_amd64.deb ...
-
-running python pre-rtupdate hooks for python3.10...
-
-Unpacking python3 (3.10.6-3+b1) over (3.10.6-1) ...
-
-Preparing to unpack .../python3.10_3.10.9-1_amd64.deb ...
-
-Unpacking python3.10 (3.10.9-1) over (3.10.8-3) ...
-
-Preparing to unpack .../libpython3.10-stdlib_3.10.9-1_amd64.deb ...
-
-Unpacking libpython3.10-stdlib:amd64 (3.10.9-1) over (3.10.8-3) ...
-
-Preparing to unpack .../python3.10-minimal_3.10.9-1_amd64.deb ...
-
-Unpacking python3.10-minimal (3.10.9-1) over (3.10.8-3) ...
-
-Preparing to unpack .../libpython3.10-minimal_3.10.9-1_amd64.deb ...
-
-Unpacking libpython3.10-minimal:amd64 (3.10.9-1) over (3.10.8-3) ...
-
-Preparing to unpack .../libpython3-stdlib_3.10.6-3+b1_amd64.deb ...
-
-Unpacking libpython3-stdlib:amd64 (3.10.6-3+b1) over (3.10.6-1) ...
-
-Selecting previously unselected package openvswitch-common.
-
-Preparing to unpack .../openvswitch-common_3.1.0~git20221212.739bcf2-3_amd6=
-4.deb ...
-
-Unpacking openvswitch-common (3.1.0~git20221212.739bcf2-3) ...
-
-Selecting previously unselected package python3-netifaces:amd64.
-
-Preparing to unpack .../python3-netifaces_0.11.0-2_amd64.deb ...
-
-Unpacking python3-netifaces:amd64 (0.11.0-2) ...
-
-Selecting previously unselected package python3-sortedcontainers.
-
-Preparing to unpack .../python3-sortedcontainers_2.4.0-2_all.deb ...
-
-Unpacking python3-sortedcontainers (2.4.0-2) ...
-
-Selecting previously unselected package python3-openvswitch.
-
-Preparing to unpack .../python3-openvswitch_3.1.0~git20221212.739bcf2-3_amd=
-64.deb ...
-
-Unpacking python3-openvswitch (3.1.0~git20221212.739bcf2-3) ...
-
-Selecting previously unselected package uuid-runtime.
-
-Preparing to unpack .../uuid-runtime_2.38.1-4_amd64.deb ...
-
-Unpacking uuid-runtime (2.38.1-4) ...
-
-Selecting previously unselected package openvswitch-switch.
-
-Preparing to unpack .../openvswitch-switch_3.1.0~git20221212.739bcf2-3_amd6=
-4.deb ...
-
-Unpacking openvswitch-switch (3.1.0~git20221212.739bcf2-3) ...
-
-Preparing to unpack .../libattr1_1%3a2.5.1-3_amd64.deb ...
-
-Unpacking libattr1:amd64 (1:2.5.1-3) over (1:2.5.1-1) ...
-
-Selecting previously unselected package traceroute.
-
-Preparing to unpack .../traceroute_1%3a2.1.1-1_amd64.deb ...
-
-Unpacking traceroute (1:2.1.1-1) ...
-
-Selecting previously unselected package attr.
-
-Preparing to unpack .../deb/attr_1%3a2.5.1-3_amd64.deb ...
-
-Unpacking attr (1:2.5.1-3) ...
-
-Selecting previously unselected package ebtables.
-
-Preparing to unpack .../ebtables_2.0.11-5_amd64.deb ...
-
-Unpacking ebtables (2.0.11-5) ...
-
-Selecting previously unselected package libatomic1:amd64.
-
-Preparing to unpack .../libatomic1_12.2.0-13_amd64.deb ...
-
-Unpacking libatomic1:amd64 (12.2.0-13) ...
-
-Selecting previously unselected package libquadmath0:amd64.
-
-Preparing to unpack .../libquadmath0_12.2.0-13_amd64.deb ...
-
-Unpacking libquadmath0:amd64 (12.2.0-13) ...
-
-Selecting previously unselected package libgcc-12-dev:amd64.
-
-Preparing to unpack .../libgcc-12-dev_12.2.0-13_amd64.deb ...
-
-Unpacking libgcc-12-dev:amd64 (12.2.0-13) ...
-
-Selecting previously unselected package gcc-12.
-
-Preparing to unpack .../deb/gcc-12_12.2.0-13_amd64.deb ...
-
-Unpacking gcc-12 (12.2.0-13) ...
-
-Selecting previously unselected package gcc.
-
-Preparing to unpack .../gcc_4%3a12.2.0-2+b1_amd64.deb ...
-
-Unpacking gcc (4:12.2.0-2+b1) ...
-
-Selecting previously unselected package g++-12.
-
-Preparing to unpack .../deb/g++-12_12.2.0-13_amd64.deb ...
-
-Unpacking g++-12 (12.2.0-13) ...
-
-Selecting previously unselected package g++.
-
-Preparing to unpack .../g++_4%3a12.2.0-2+b1_amd64.deb ...
-
-Unpacking g++ (4:12.2.0-2+b1) ...
-
-Selecting previously unselected package gcc-11-base:amd64.
-
-Preparing to unpack .../gcc-11-base_11.3.0-8_amd64.deb ...
-
-Unpacking gcc-11-base:amd64 (11.3.0-8) ...
-
-Selecting previously unselected package lib32gcc-s1.
-
-Preparing to unpack .../lib32gcc-s1_12.2.0-13_amd64.deb ...
-
-Unpacking lib32gcc-s1 (12.2.0-13) ...
-
-Selecting previously unselected package libx32gcc-s1.
-
-Preparing to unpack .../libx32gcc-s1_12.2.0-13_amd64.deb ...
-
-Unpacking libx32gcc-s1 (12.2.0-13) ...
-
-Selecting previously unselected package lib32atomic1.
-
-Preparing to unpack .../lib32atomic1_12.2.0-13_amd64.deb ...
-
-Unpacking lib32atomic1 (12.2.0-13) ...
-
-Selecting previously unselected package libx32atomic1.
-
-Preparing to unpack .../libx32atomic1_12.2.0-13_amd64.deb ...
-
-Unpacking libx32atomic1 (12.2.0-13) ...
-
-Selecting previously unselected package lib32quadmath0.
-
-Preparing to unpack .../lib32quadmath0_12.2.0-13_amd64.deb ...
-
-Unpacking lib32quadmath0 (12.2.0-13) ...
-
-Selecting previously unselected package libx32quadmath0.
-
-Preparing to unpack .../libx32quadmath0_12.2.0-13_amd64.deb ...
-
-Unpacking libx32quadmath0 (12.2.0-13) ...
-
-Selecting previously unselected package lib32gcc-12-dev.
-
-Preparing to unpack .../lib32gcc-12-dev_12.2.0-13_amd64.deb ...
-
-Unpacking lib32gcc-12-dev (12.2.0-13) ...
-
-Selecting previously unselected package libx32gcc-12-dev.
-
-Preparing to unpack .../libx32gcc-12-dev_12.2.0-13_amd64.deb ...
-
-Unpacking libx32gcc-12-dev (12.2.0-13) ...
-
-Selecting previously unselected package gcc-12-multilib.
-
-Preparing to unpack .../gcc-12-multilib_12.2.0-13_amd64.deb ...
-
-Unpacking gcc-12-multilib (12.2.0-13) ...
-
-Selecting previously unselected package gcc-multilib.
-
-Preparing to unpack .../gcc-multilib_4%3a12.2.0-2+b1_amd64.deb ...
-
-Unpacking gcc-multilib (4:12.2.0-2+b1) ...
-
-Selecting previously unselected package libasound2-data.
-
-Preparing to unpack .../libasound2-data_1.2.8-1_all.deb ...
-
-Unpacking libasound2-data (1.2.8-1) ...
-
-Selecting previously unselected package libdeflate0:amd64.
-
-Preparing to unpack .../libdeflate0_1.14-1_amd64.deb ...
-
-Unpacking libdeflate0:amd64 (1.14-1) ...
-
-Selecting previously unselected package libpython3.10:amd64.
-
-Preparing to unpack .../libpython3.10_3.10.9-1_amd64.deb ...
-
-Unpacking libpython3.10:amd64 (3.10.9-1) ...
-
-Selecting previously unselected package libwireshark-data.
-
-Preparing to unpack .../libwireshark-data_4.0.2-1_all.deb ...
-
-Unpacking libwireshark-data (4.0.2-1) ...
-
-Selecting previously unselected package python3-pkg-resources.
-
-Preparing to unpack .../python3-pkg-resources_65.5.0-1.1_all.deb ...
-
-Unpacking python3-pkg-resources (65.5.0-1.1) ...
-
-Selecting previously unselected package python3-pygments.
-
-Preparing to unpack .../python3-pygments_2.13.0+dfsg-1_all.deb ...
-
-Unpacking python3-pygments (2.13.0+dfsg-1) ...
-
-Selecting previously unselected package python3-yaml.
-
-Preparing to unpack .../python3-yaml_6.0-3+b1_amd64.deb ...
-
-Unpacking python3-yaml (6.0-3+b1) ...
-
-Selecting previously unselected package netcat-openbsd.
-
-Preparing to unpack .../netcat-openbsd_1.219-1_amd64.deb ...
-
-Unpacking netcat-openbsd (1.219-1) ...
-
-Selecting previously unselected package python3-roman.
-
-Preparing to unpack .../python3-roman_3.3-3_all.deb ...
-
-Unpacking python3-roman (3.3-3) ...
-
-Selecting previously unselected package python3-docutils.
-
-Preparing to unpack .../python3-docutils_0.17.1+dfsg-3_all.deb ...
-
-Unpacking python3-docutils (0.17.1+dfsg-3) ...
-
-Selecting previously unselected package python3-scapy.
-
-Preparing to unpack .../python3-scapy_2.4.5+g9420c22-2_all.deb ...
-
-Unpacking python3-scapy (2.4.5+g9420c22-2) ...
-
-Selecting previously unselected package socat.
-
-Preparing to unpack .../deb/socat_1.7.4.4-2_amd64.deb ...
-
-Unpacking socat (1.7.4.4-2) ...
-
-Selecting previously unselected package tcpdump.
-
-Preparing to unpack .../deb/tcpdump_4.99.2-1_amd64.deb ...
-
-Unpacking tcpdump (4.99.2-1) ...
-
-Setting up gcc-12-base:amd64 (12.2.0-13) ...
-
-Setting up libgcc-s1:amd64 (12.2.0-13) ...
-
-Setting up libpython3.10-minimal:amd64 (3.10.9-1) ...
-
-Setting up libattr1:amd64 (1:2.5.1-3) ...
-
-Setting up traceroute (1:2.1.1-1) ...
-
-update-alternatives: using /usr/bin/traceroute.db to provide /usr/bin/trace=
-route (traceroute) in auto mode
-
-memfd_create() without MFD_EXEC nor MFD_NOEXEC_SEAL, pid=3D1 'systemd'
-update-alternatives: using /usr/bin/traceroute6.db to provide /usr/bin/trac=
-eroute6 (traceroute6) in auto mode
-
-update-alternatives: using /usr/bin/lft.db to provide /usr/bin/lft (lft) in=
- auto mode
-
-update-alternatives: using /usr/bin/traceproto.db to provide /usr/bin/trace=
-proto (traceproto) in auto mode
-
-update-alternatives: using /usr/sbin/tcptraceroute.db to provide /usr/sbin/=
-tcptraceroute (tcptraceroute) in auto mode
-
-Setting up attr (1:2.5.1-3) ...
-
-Setting up ebtables (2.0.11-5) ...
-
-update-alternatives: using /usr/sbin/ebtables-legacy to provide /usr/sbin/e=
-btables (ebtables) in auto mode
-
-Setting up libatomic1:amd64 (12.2.0-13) ...
-
-Setting up libquadmath0:amd64 (12.2.0-13) ...
-
-Setting up gcc-11-base:amd64 (11.3.0-8) ...
-
-Setting up libasound2-data (1.2.8-1) ...
-
-Setting up libdeflate0:amd64 (1.14-1) ...
-
-Setting up libwireshark-data (4.0.2-1) ...
-
-Setting up netcat-openbsd (1.219-1) ...
-
-update-alternatives: using /bin/nc.openbsd to provide /bin/nc (nc) in auto =
-mode
-
-Setting up socat (1.7.4.4-2) ...
-
-Setting up libpython3.10-stdlib:amd64 (3.10.9-1) ...
-
-Setting up python3.10-minimal (3.10.9-1) ...
-
-Setting up libpython3-stdlib:amd64 (3.10.6-3+b1) ...
-
-Setting up libpython3.10:amd64 (3.10.9-1) ...
-
-Setting up python3-minimal (3.10.6-3+b1) ...
-
-Setting up python3.10 (3.10.9-1) ...
-
-Setting up python3 (3.10.6-3+b1) ...
-
-running python rtupdate hooks for python3.10...
-
-Setting up uuid-runtime (2.38.1-4) ...
-
-Adding group `uuidd' (GID 109) ...
-
-Done.
-
-Setting up openvswitch-switch (3.1.0~git20221212.739bcf2-3) ...
-
-update-alternatives: using /usr/lib/openvswitch-switch/ovs-vswitchd to prov=
-ide /usr/sbin/ovs-vswitchd (ovs-vswitchd) in auto mode
-
-calling  nf_defrag_init+0x0/0x1000 [nf_defrag_ipv4] @ 1153
-initcall nf_defrag_init+0x0/0x1000 [nf_defrag_ipv4] returned 0 after 2 usec=
-s
-calling  nf_defrag_init+0x0/0x1000 [nf_defrag_ipv6] @ 1153
-initcall nf_defrag_init+0x0/0x1000 [nf_defrag_ipv6] returned 0 after 940 us=
-ecs
-calling  nf_conntrack_standalone_init+0x0/0x1000 [nf_conntrack] @ 1153
-initcall nf_conntrack_standalone_init+0x0/0x1000 [nf_conntrack] returned 0 =
-after 2313 usecs
-calling  nf_nat_init+0x0/0x1000 [nf_nat] @ 1153
-initcall nf_nat_init+0x0/0x1000 [nf_nat] returned 0 after 255 usecs
-calling  nf_conncount_modinit+0x0/0x1000 [nf_conncount] @ 1153
-initcall nf_conncount_modinit+0x0/0x1000 [nf_conncount] returned 0 after 13=
-62 usecs
-calling  dp_init+0x0/0x1b0 [openvswitch] @ 1153
-openvswitch: Open vSwitch switching datapath
-initcall dp_init+0x0/0x1b0 [openvswitch] returned 0 after 11393 usecs
-Setting up libgcc-12-dev:amd64 (12.2.0-13) ...
-
-Setting up gcc-12 (12.2.0-13) ...
-
-Setting up gcc (4:12.2.0-2+b1) ...
-
-Setting up g++-12 (12.2.0-13) ...
-
-Setting up g++ (4:12.2.0-2+b1) ...
-
-update-alternatives: using /usr/bin/g++ to provide /usr/bin/c++ (c++) in au=
-to mode
-
-Setting up lib32gcc-s1 (12.2.0-13) ...
-
-Setting up libx32gcc-s1 (12.2.0-13) ...
-
-Setting up lib32atomic1 (12.2.0-13) ...
-
-Setting up libx32atomic1 (12.2.0-13) ...
-
-Setting up lib32quadmath0 (12.2.0-13) ...
-
-Setting up libx32quadmath0 (12.2.0-13) ...
-
-Setting up lib32gcc-12-dev (12.2.0-13) ...
-
-Setting up libx32gcc-12-dev (12.2.0-13) ...
-
-Setting up gcc-12-multilib (12.2.0-13) ...
-
-Setting up gcc-multilib (4:12.2.0-2+b1) ...
-
-Setting up python3-pkg-resources (65.5.0-1.1) ...
-
-Setting up python3-pygments (2.13.0+dfsg-1) ...
-
-Setting up python3-yaml (6.0-3+b1) ...
-
-Setting up python3-roman (3.3-3) ...
-
-Setting up python3-docutils (0.17.1+dfsg-3) ...
-
-Setting up python3-scapy (2.4.5+g9420c22-2) ...
-
-Setting up tcpdump (4.99.2-1) ...
-
-Setting up openvswitch-common (3.1.0~git20221212.739bcf2-3) ...
-
-Setting up python3-netifaces:amd64 (0.11.0-2) ...
-
-Setting up python3-sortedcontainers (2.4.0-2) ...
-
-Setting up python3-openvswitch (3.1.0~git20221212.739bcf2-3) ...
-
-Processing triggers for libc-bin (2.36-5) ...
-
-Processing triggers for systemd (252.1-1) ...
-
-dpkg: regarding .../python3_3.10.6-3+b1_amd64.deb containing python3, pre-d=
-ependency problem:
-
-python3 pre-depends on python3-minimal (=3D 3.10.6-3+b1)
-
-python3-minimal latest configured version is 3.10.6-1.
-
-
-
-dpkg: warning: ignoring pre-dependency problem!
-
-dpkg-query: package 'linux-perf' is not installed
-
-Use dpkg --contents (=3D dpkg-deb --contents) to list archive files content=
-s.
-
-Traceback (most recent call last):
-
-File "/usr/bin/py3clean", line 210, in <module>
-
-main()
-
-File "/usr/bin/py3clean", line 196, in main
-
-pfiles =3D set(dpf.from_package(options.package))
-
-File "/usr/share/python3/debpython/files.py", line 53, in from_package
-
-raise Exception("cannot get content of %s" % package_name)
-
-Exception: cannot get content of linux-perf
-
-error running python rtupdate hook linux-perf
-
-dpkg: error processing package python3 (--install):
-
-installed python3 package post-installation script subprocess returned erro=
-r exit status 4
-
-dpkg: uuid-runtime: dependency problems, but configuring anyway as you requ=
-ested:
-
-uuid-runtime depends on libuuid1 (>=3D 2.38.1-2~); however:
-
-Version of libuuid1:amd64 on system is 2.38.1-1.1+b1.
-
-
-
-
-uuidd.service is a disabled or a static unit, not starting it.
-
-dpkg: openvswitch-switch: dependency problems, but configuring anyway as yo=
-u requested:
-
-openvswitch-switch depends on openvswitch-common (=3D 3.1.0~git20221212.739=
-bcf2-3).
-
-openvswitch-switch depends on python3-netifaces.
-
-openvswitch-switch depends on python3-openvswitch (>=3D 3.1.0~git20221212.7=
-39bcf2-3).
-
-openvswitch-switch depends on python3:any; however:
-
-Package python3 is not configured yet.
-
-openvswitch-switch depends on libnuma1 (>=3D 2.0.11); however:
-
-Package libnuma1 is not installed.
-
-openvswitch-switch depends on libunbound8 (>=3D 1.8.0); however:
-
-Package libunbound8 is not installed.
-
-openvswitch-switch depends on libxdp1 (>=3D 1.2.9~); however:
-
-Package libxdp1 is not installed.
-
-
-
-
-
-dpkg: libgcc-12-dev:amd64: dependency problems, but configuring anyway as y=
-ou requested:
-
-libgcc-12-dev:amd64 depends on libgomp1 (>=3D 12.2.0-13); however:
-
-Package libgomp1 is not installed.
-
-libgcc-12-dev:amd64 depends on libitm1 (>=3D 12.2.0-13); however:
-
-Package libitm1 is not installed.
-
-libgcc-12-dev:amd64 depends on libasan8 (>=3D 12.2.0-13); however:
-
-Package libasan8 is not installed.
-
-libgcc-12-dev:amd64 depends on liblsan0 (>=3D 12.2.0-13); however:
-
-Package liblsan0 is not installed.
-
-libgcc-12-dev:amd64 depends on libtsan2 (>=3D 12.2.0-13); however:
-
-Package libtsan2 is not installed.
-
-libgcc-12-dev:amd64 depends on libubsan1 (>=3D 12.2.0-13); however:
-
-Package libubsan1 is not installed.
-
-
-
-dpkg: gcc-12: dependency problems, but configuring anyway as you requested:
-
-gcc-12 depends on cpp-12 (=3D 12.2.0-13); however:
-
-Package cpp-12 is not installed.
-
-gcc-12 depends on libcc1-0 (>=3D 12.2.0-13); however:
-
-Package libcc1-0 is not installed.
-
-gcc-12 depends on binutils (>=3D 2.39.90.20221231); however:
-
-Package binutils is not installed.
-
-gcc-12 depends on libisl23 (>=3D 0.15); however:
-
-Package libisl23 is not installed.
-
-gcc-12 depends on libmpc3 (>=3D 1.1.0); however:
-
-Package libmpc3 is not installed.
-
-gcc-12 depends on libmpfr6 (>=3D 3.1.3); however:
-
-Package libmpfr6 is not installed.
-
-
-
-dpkg: gcc: dependency problems, but configuring anyway as you requested:
-
-gcc depends on cpp (=3D 4:12.2.0-2+b1); however:
-
-Package cpp is not installed.
-
-
-
-dpkg: g++-12: dependency problems, but configuring anyway as you requested:
-
-g++-12 depends on libstdc++-12-dev (=3D 12.2.0-13); however:
-
-Package libstdc++-12-dev is not installed.
-
-g++-12 depends on libisl23 (>=3D 0.15); however:
-
-Package libisl23 is not installed.
-
-g++-12 depends on libmpc3 (>=3D 1.1.0); however:
-
-Package libmpc3 is not installed.
-
-g++-12 depends on libmpfr6 (>=3D 3.1.3); however:
-
-Package libmpfr6 is not installed.
-
-
-
-dpkg: g++: dependency problems, but configuring anyway as you requested:
-
-g++ depends on cpp (=3D 4:12.2.0-2+b1); however:
-
-Package cpp is not installed.
-
-
-
-BTRFS info (device sdb1): using crc32c (crc32c-intel) checksum algorithm
-dpkg: lib32gcc-s1: dependency problems, but configuring anyway as you reque=
-sted:
-BTRFS info (device sdb1): using free space tree
-
-lib32gcc-s1 depends on libc6-i386 (>=3D 2.35); however:
-
-Package libc6-i386 is not installed.
-
-
-
-dpkg: libx32gcc-s1: dependency problems, but configuring anyway as you requ=
-ested:
-
-libx32gcc-s1 depends on libc6-x32 (>=3D 2.35); however:
-
-BTRFS info (device sdb1): enabling ssd optimizations
-Package libc6-x32 is not installed.
-BTRFS info (device sdb1): auto enabling async discard
-
-
-
-dpkg: lib32atomic1: dependency problems, but configuring anyway as you requ=
-ested:
-
-lib32atomic1 depends on libc6-i386 (>=3D 2.1.3); however:
-
-Package libc6-i386 is not installed.
-
-
-
-dpkg: libx32atomic1: dependency problems, but configuring anyway as you req=
-uested:
-
-LKP: ttyS0: 262:[  111.233062][  T288]  libx32atomic1 depends on libc6-x32 =
-(>=3D 2.16); however:
-/lkp/lkp/src/b[  111.233080][  T288]=20
-in/run-lkp /lkp/[  111.245058][  T288]   Package libc6-x32 is not installed=
-.
-jobs/scheduled/l[  111.245075][  T288]=20
-kp-skl-d06/kerne[  111.254680][  T288]=20
-l-selftests-grou[  111.254696][  T288]=20
-p-02-debian-12-x86_64-20220629.c[  111.263768][  T288] dpkg: lib32quadmath0=
-: dependency problems, but configuring anyway as you requested:
-gz-ef2f3f98fcf45[  111.263785][  T288]=20
-21aa00fd217089e303b7d9b62ba-2023[  111.278954][  T288]  lib32quadmath0 depe=
-nds on libc6-i386 (>=3D 2.23); however:
-0310-60197-szh7v[  111.279000][  T288]=20
-k-4.yaml
-Package libc6-i386 is not installed.
-
-
-
-dpkg: libx32quadmath0: dependency problems, but configuring anyway as you r=
-equested:
-
-libx32quadmath0 depends on libc6-x32 (>=3D 2.23); however:
-
-Package libc6-x32 is not installed.
-
-
-
-dpkg: lib32gcc-12-dev: dependency problems, but configuring anyway as you r=
-equested:
-
-lib32gcc-12-dev depends on lib32gomp1 (>=3D 12.2.0-13); however:
-
-Package lib32gomp1 is not installed.
-
-lib32gcc-12-dev depends on libx32gomp1 (>=3D 12.2.0-13); however:
-
-Package libx32gomp1 is not installed.
-
-lib32gcc-12-dev depends on lib32itm1 (>=3D 12.2.0-13); however:
-
-Package lib32itm1 is not installed.
-
-lib32gcc-12-dev depends on libx32itm1 (>=3D 12.2.0-13); however:
-
-Package libx32itm1 is not installed.
-
-lib32gcc-12-dev depends on lib32asan8 (>=3D 12.2.0-13); however:
-
-Package lib32asan8 is not installed.
-
-lib32gcc-12-dev depends on libx32asan8 (>=3D 12.2.0-13); however:
-
-Package libx32asan8 is not installed.
-
-lib32gcc-12-dev depends on lib32ubsan1 (>=3D 12.2.0-13); however:
-
-Package lib32ubsan1 is not installed.
-
-lib32gcc-12-dev depends on libx32ubsan1 (>=3D 12.2.0-13); however:
-
-Package libx32ubsan1 is not installed.
-
-
-
-dpkg: libx32gcc-12-dev: dependency problems, but configuring anyway as you =
-requested:
-
-libx32gcc-12-dev depends on lib32gomp1 (>=3D 12.2.0-13); however:
-
-Package lib32gomp1 is not installed.
-
-libx32gcc-12-dev depends on libx32gomp1 (>=3D 12.2.0-13); however:
-
-Package libx32gomp1 is not installed.
-
-libx32gcc-12-dev depends on lib32itm1 (>=3D 12.2.0-13); however:
-
-Package lib32itm1 is not installed.
-
-libx32gcc-12-dev depends on libx32itm1 (>=3D 12.2.0-13); however:
-
-Package libx32itm1 is not installed.
-
-libx32gcc-12-dev depends on lib32asan8 (>=3D 12.2.0-13); however:
-
-Package lib32asan8 is not installed.
-
-libx32gcc-12-dev depends on libx32asan8 (>=3D 12.2.0-13); however:
-
-Package libx32asan8 is not installed.
-
-libx32gcc-12-dev depends on lib32ubsan1 (>=3D 12.2.0-13); however:
-
-Package lib32ubsan1 is not installed.
-
-libx32gcc-12-dev depends on libx32ubsan1 (>=3D 12.2.0-13); however:
-
-Package libx32ubsan1 is not installed.
-
-
-
-dpkg: gcc-12-multilib: dependency problems, but configuring anyway as you r=
-equested:
-
-gcc-12-multilib depends on libc6-dev-i386 (>=3D 2.23-1~); however:
-
-Package libc6-dev-i386 is not installed.
-
-gcc-12-multilib depends on libc6-dev-x32 (>=3D 2.23-1~); however:
-
-Package libc6-dev-x32 is not installed.
-
-
-
-dpkg: gcc-multilib: dependency problems, but configuring anyway as you requ=
-ested:
-
-gcc-multilib depends on cpp (=3D 4:12.2.0-2+b1); however:
-
-Package cpp is not installed.
-
-gcc-multilib depends on linux-libc-dev (>=3D 3.0.0-2); however:
-
-Package linux-libc-dev is not installed.
-
-
-
-dpkg: python3-pkg-resources: dependency problems, but configuring anyway as=
- you requested:
-
-python3-pkg-resources depends on python3:any; however:
-
-Package python3 is not configured yet.
-
-
-
-dpkg: python3-pygments: dependency problems, but configuring anyway as you =
-requested:
-
-python3-pygments depends on python3:any; however:
-
-Package python3 is not configured yet.
-
-
-
-dpkg: python3-yaml: dependency problems, but configuring anyway as you requ=
-ested:
-
-python3-yaml depends on python3 (<< 3.12); however:
-
-Package python3 is not configured yet.
-
-python3-yaml depends on python3 (>=3D 3.10~); however:
-
-Package python3 is not configured yet.
-
-python3-yaml depends on python3:any; however:
-
-Package python3 is not configured yet.
-
-python3-yaml depends on libyaml-0-2 (>=3D 0.2.2~); however:
-
-Package libyaml-0-2 is not installed.
-
-
-
-dpkg: python3-roman: dependency problems, but configuring anyway as you req=
-uested:
-
-python3-roman depends on python3:any; however:
-
-Package python3 is not configured yet.
-
-
-
-dpkg: python3-docutils: dependency problems, but configuring anyway as you =
-requested:
-
-python3-docutils depends on docutils-common (=3D 0.17.1+dfsg-3); however:
-
-Package docutils-common is not installed.
-
-python3-docutils depends on python3:any; however:
-
-Package python3 is not configured yet.
-
-
-
-dpkg: python3-scapy: dependency problems, but configuring anyway as you req=
-uested:
-
-python3-scapy depends on python3:any; however:
-
-Package python3 is not configured yet.
-
-
-
-dpkg: tcpdump: dependency problems, but configuring anyway as you requested=
-:
-
-tcpdump depends on libpcap0.8 (>=3D 1.9.0); however:
-
-Package libpcap0.8 is not installed.
-
-
-
-dpkg: openvswitch-common: dependency problems, but configuring anyway as yo=
-u requested:
-
-openvswitch-common depends on python3:any; however:
-
-Package python3 is not configured yet.
-
-openvswitch-common depends on libnuma1 (>=3D 2.0.11); however:
-
-Package libnuma1 is not installed.
-
-openvswitch-common depends on libunbound8 (>=3D 1.8.0); however:
-
-Package libunbound8 is not installed.
-
-openvswitch-common depends on libxdp1 (>=3D 1.2.9~); however:
-
-Package libxdp1 is not installed.
-
-
-
-dpkg: python3-netifaces:amd64: dependency problems, but configuring anyway =
-as you requested:
-
-python3-netifaces:amd64 depends on python3 (<< 3.12); however:
-
-Package python3 is not configured yet.
-
-python3-netifaces:amd64 depends on python3 (>=3D 3.10~); however:
-
-Package python3 is not configured yet.
-
-
-
-dpkg: python3-sortedcontainers: dependency problems, but configuring anyway=
- as you requested:
-
-python3-sortedcontainers depends on python3:any; however:
-
-Package python3 is not configured yet.
-
-
-
-dpkg: python3-openvswitch: dependency problems, but configuring anyway as y=
-ou requested:
-
-python3-openvswitch depends on python3 (<< 3.12); however:
-
-Package python3 is not configured yet.
-
-python3-openvswitch depends on python3 (>=3D 3.10~); however:
-
-Package python3 is not configured yet.
-
-python3-openvswitch depends on python3:any; however:
-
-Package python3 is not configured yet.
-
-python3-openvswitch depends on libnuma1 (>=3D 2.0.11); however:
-
-Package libnuma1 is not installed.
-
-python3-openvswitch depends on libunbound8 (>=3D 1.8.0); however:
-
-Package libunbound8 is not installed.
-
-python3-openvswitch depends on libxdp1 (>=3D 1.2.9~); however:
-
-Package libxdp1 is not installed.
-
-
-
-Errors were encountered while processing:
-
-python3
-
-handle /opt/deb/keep-deb.kernel-selftests...
-
-install debs round two: dpkg -i --force-confdef --force-depends /opt/deb/gc=
-c-12-base_12.2.0-13_amd64.deb
-
-(Reading database ... 18838 files and directories currently installed.)
-
-Preparing to unpack .../gcc-12-base_12.2.0-13_amd64.deb ...
-
-Unpacking gcc-12-base:amd64 (12.2.0-13) over (12.2.0-13) ...
-
-Setting up gcc-12-base:amd64 (12.2.0-13) ...
-
-install debs round two: dpkg -i --force-confdef --force-depends /opt/deb/li=
-bgcc-s1_12.2.0-13_amd64.deb
-
-(Reading database ... 18838 files and directories currently installed.)
-
-Preparing to unpack .../libgcc-s1_12.2.0-13_amd64.deb ...
-
-Unpacking libgcc-s1:amd64 (12.2.0-13) over (12.2.0-13) ...
-
-Setting up libgcc-s1:amd64 (12.2.0-13) ...
-
-Processing triggers for libc-bin (2.36-5) ...
-
-install debs round two: dpkg -i --force-confdef --force-depends /opt/deb/py=
-thon3-minimal_3.10.6-3+b1_amd64.deb
-
-(Reading database ... 18838 files and directories currently installed.)
-
-Preparing to unpack .../python3-minimal_3.10.6-3+b1_amd64.deb ...
-
-Unpacking python3-minimal (3.10.6-3+b1) over (3.10.6-3+b1) ...
-
-Setting up python3-minimal (3.10.6-3+b1) ...
-
-install debs round two: dpkg -i --force-confdef --force-depends /opt/deb/py=
-thon3_3.10.6-3+b1_amd64.deb
-
-(Reading database ... 18838 files and directories currently installed.)
-
-Preparing to unpack .../python3_3.10.6-3+b1_amd64.deb ...
-
-running python pre-rtupdate hooks for python3.10...
-
-Unpacking python3 (3.10.6-3+b1) over (3.10.6-3+b1) ...
-
-Setting up python3 (3.10.6-3+b1) ...
-
-running python rtupdate hooks for python3.10...
-
-dpkg-query: package 'linux-perf' is not installed
-
-Use dpkg --contents (=3D dpkg-deb --contents) to list archive files content=
-s.
-
-Traceback (most recent call last):
-
-File "/usr/bin/py3clean", line 210, in <module>
-
-main()
-
-File "/usr/bin/py3clean", line 196, in main
-
-pfiles =3D set(dpf.from_package(options.package))
-
-File "/usr/share/python3/debpython/files.py", line 53, in from_package
-
-raise Exception("cannot get content of %s" % package_name)
-
-LKP: ttyS0: 1401[  112.874282][  T288] Exception: cannot get content of lin=
-ux-perf
-: current_versio[  112.874299][  T288]=20
-n: f0, target_ve[  112.885247][  T288] error running python rtupdate hook l=
-inux-perf
-rsion: f0
-
-dpkg: error processing package python3 (--install):
-
-installed python3 package post-installation script subprocess returned erro=
-r exit status 4
-
-Errors were encountered while processing:
-
-python3
-
-NO_NETWORK=3D
-
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3a22000-0xb3a22fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef1000-0xb3ef1fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efc000-0xb3efcfff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efb000-0xb3efbfff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efa000-0xb3efafff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3e6a000-0xb3e6afff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef4000-0xb3ef4fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef3000-0xb3ef3fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef2000-0xb3ef2fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef0000-0xb3ef0fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef1000-0xb3ef1fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efc000-0xb3efcfff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efb000-0xb3efbfff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efa000-0xb3efafff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3e6a000-0xb3e6afff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef4000-0xb3ef4fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef3000-0xb3ef3fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef2000-0xb3ef2fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef0000-0xb3ef0fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef1000-0xb3ef1fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efc000-0xb3efcfff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efb000-0xb3efbfff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efa000-0xb3efafff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3e6a000-0xb3e6afff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef4000-0xb3ef4fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef3000-0xb3ef3fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef2000-0xb3ef2fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef0000-0xb3ef0fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef1000-0xb3ef1fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efc000-0xb3efcfff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efb000-0xb3efbfff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efa000-0xb3efafff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3e6a000-0xb3e6afff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef4000-0xb3ef4fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef3000-0xb3ef3fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef2000-0xb3ef2fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef0000-0xb3ef0fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef1000-0xb3ef1fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efc000-0xb3efcfff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efb000-0xb3efbfff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efa000-0xb3efafff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3e6a000-0xb3e6afff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef4000-0xb3ef4fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef3000-0xb3ef3fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef2000-0xb3ef2fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef0000-0xb3ef0fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3a22000-0xb3a22fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef1000-0xb3ef1fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efc000-0xb3efcfff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efb000-0xb3efbfff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efa000-0xb3efafff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3e6a000-0xb3e6afff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef4000-0xb3ef4fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef3000-0xb3ef3fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef2000-0xb3ef2fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef0000-0xb3ef0fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef1000-0xb3ef1fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efc000-0xb3efcfff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efb000-0xb3efbfff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efa000-0xb3efafff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3e6a000-0xb3e6afff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef4000-0xb3ef4fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef3000-0xb3ef3fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef2000-0xb3ef2fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef0000-0xb3ef0fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef1000-0xb3ef1fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efc000-0xb3efcfff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efb000-0xb3efbfff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efa000-0xb3efafff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3e6a000-0xb3e6afff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef4000-0xb3ef4fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef3000-0xb3ef3fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef2000-0xb3ef2fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef0000-0xb3ef0fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef1000-0xb3ef1fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efc000-0xb3efcfff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efb000-0xb3efbfff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efa000-0xb3efafff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3e6a000-0xb3e6afff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef4000-0xb3ef4fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef3000-0xb3ef3fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef2000-0xb3ef2fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef0000-0xb3ef0fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef1000-0xb3ef1fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efc000-0xb3efcfff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efb000-0xb3efbfff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efa000-0xb3efafff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3e6a000-0xb3e6afff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef4000-0xb3ef4fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef3000-0xb3ef3fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef2000-0xb3ef2fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef0000-0xb3ef0fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3a22000-0xb3a22fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef1000-0xb3ef1fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efc000-0xb3efcfff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efb000-0xb3efbfff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efa000-0xb3efafff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3e6a000-0xb3e6afff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef4000-0xb3ef4fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef3000-0xb3ef3fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef2000-0xb3ef2fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef0000-0xb3ef0fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef1000-0xb3ef1fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efc000-0xb3efcfff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efb000-0xb3efbfff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efa000-0xb3efafff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3e6a000-0xb3e6afff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef4000-0xb3ef4fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef3000-0xb3ef3fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef2000-0xb3ef2fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef0000-0xb3ef0fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef1000-0xb3ef1fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efc000-0xb3efcfff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efb000-0xb3efbfff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efa000-0xb3efafff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3e6a000-0xb3e6afff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef4000-0xb3ef4fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef3000-0xb3ef3fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef2000-0xb3ef2fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef0000-0xb3ef0fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef1000-0xb3ef1fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efc000-0xb3efcfff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efb000-0xb3efbfff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efa000-0xb3efafff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3e6a000-0xb3e6afff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef4000-0xb3ef4fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef3000-0xb3ef3fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef2000-0xb3ef2fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef0000-0xb3ef0fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef1000-0xb3ef1fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efc000-0xb3efcfff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efb000-0xb3efbfff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3efa000-0xb3efafff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3e6a000-0xb3e6afff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef4000-0xb3ef4fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef3000-0xb3ef3fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef2000-0xb3ef2fff], got write-back
-x86/PAT: bmc-watchdog:1462 map pfn expected mapping type uncached-minus for=
- [mem 0xb3ef0000-0xb3ef0fff], got write-back
-LKP: stdout: 262:  /lkp/lkp/src/bin/run-lkp /lkp/jobs/scheduled/lkp-skl-d06=
-/kernel-selftests-group-02-debian-12-x86_64-20220629.cgz-ef2f3f98fcf4521aa0=
-0fd217089e303b7d9b62ba-20230310-60197-szh7vk-4.yaml
-
-RESULT_ROOT=3D/result/kernel-selftests/group-02/lkp-skl-d06/debian-12-x86_6=
-4-20220629.cgz/x86_64-rhel-8.3-kselftests/gcc-11/ef2f3f98fcf4521aa00fd21708=
-9e303b7d9b62ba/3
-
-job=3D/lkp/jobs/scheduled/lkp-skl-d06/kernel-selftests-group-02-debian-12-x=
-86_64-20220629.cgz-ef2f3f98fcf4521aa00fd217089e303b7d9b62ba-20230310-60197-=
-szh7vk-4.yaml
-
-error: dpkg -i /opt/deb/python3_3.10.6-3+b1_amd64.deb failed.
-
-memfd_create(): MFD_NOEXEC_SEAL is enforced, pid=3D1691 'memfd_test'
-result_service: raw_upload, RESULT_MNT: /internal-lkp-server/result, RESULT=
-_ROOT: /internal-lkp-server/result/kernel-selftests/group-02/lkp-skl-d06/de=
-bian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kselftests/gcc-11/ef2f3f98fcf45=
-21aa00fd217089e303b7d9b62ba/3, TMP_RESULT_ROOT: /tmp/lkp/result
-
-run-job /lkp/jobs/scheduled/lkp-skl-d06/kernel-selftests-group-02-debian-12=
--x86_64-20220629.cgz-ef2f3f98fcf4521aa00fd217089e303b7d9b62ba-20230310-6019=
-7-szh7vk-4.yaml
-
-run_hugetlbfs_t (1742): drop_caches: 3
-/usr/bin/wget -q --timeout=3D1800 --tries=3D1 --local-encoding=3DUTF-8 http=
-://internal-lkp-server:80/~lkp/cgi-bin/lkp-jobfile-append-var?job_file=3D/l=
-kp/jobs/scheduled/lkp-skl-d06/kernel-selftests-group-02-debian-12-x86_64-20=
-220629.cgz-ef2f3f98fcf4521aa00fd217089e303b7d9b62ba-20230310-60197-szh7vk-4=
-.yaml&job_state=3Drunning -O /dev/null
-
-target ucode: 0xf0
-
-LKP: stdout: 1401: current_version: f0, target_version: f0
-
-KERNEL SELFTESTS: linux_headers_dir is /usr/src/linux-headers-x86_64-rhel-8=
-.3-kselftests-ef2f3f98fcf4521aa00fd217089e303b7d9b62ba
-
-2023-03-09 23:59:45 ln -sf /usr/bin/clang
-
-2023-03-09 23:59:45 ln -sf /usr/sbin/iptables-nft /usr/bin/iptables
-
-2023-03-09 23:59:45 ln -sf /usr/sbin/ip6tables-nft /usr/bin/ip6tables
-
-2023-03-09 23:59:45 sed -i s/default_timeout=3D45/default_timeout=3D300/ ks=
-elftest/runner.sh
-
-LKP SKIP media_tests
-
-2023-03-09 23:59:45 make -C membarrier
-
-make: Entering directory '/usr/src/perf_selftests-x86_64-rhel-8.3-kselftest=
-s-ef2f3f98fcf4521aa00fd217089e303b7d9b62ba/tools/testing/selftests/membarri=
-er'
-
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-BUG: KASAN: null-ptr-deref in mincore_page+0x25/0x90
-Read of size 8 at addr 0000000000000000 by task mincore_selftes/1810
-
-CPU: 2 PID: 1810 Comm: mincore_selftes Not tainted 6.3.0-rc1-00007-gef2f3f9=
-8fcf4 #1
-Hardware name: HP HP Z238 Microtower Workstation/8183, BIOS N51 Ver. 01.63 =
-10/05/2017
-Call Trace:
-<TASK>
-dump_stack_lvl+0x4b/0x80
-kasan_report+0xc5/0xf0
-? mincore_page+0x25/0x90
-? kasan_check_range+0x3b/0x1b0
-? mincore_page+0x25/0x90
-? __mincore_unmapped_range+0x13b/0x2a0
-? mincore_pte_range+0x3b2/0x810
-? walk_pmd_range+0x276/0x760
-? lock_downgrade+0x100/0x100
-? walk_pte_range+0x4d0/0x4d0
-? lock_is_held_type+0x9c/0x110
-? walk_pud_range+0x27d/0x5d0
-? mas_find+0x1d0/0x1d0
-? walk_p4d_range+0x229/0x410
-? __lock_release+0x109/0x450
-? walk_pgd_range+0x22f/0x490
-? find_vma+0xa1/0x100
-? __walk_page_range+0x13d/0x180
-? walk_page_range+0x2a3/0x330
-? __walk_page_range+0x180/0x180
-? __down_read_common+0x17c/0x450
-? do_mincore+0x15d/0x2e0
-? __do_sys_mincore+0x1e5/0x300
-? do_syscall_64+0x5a/0x80
-? entry_SYSCALL_64_after_hwframe+0x5e/0xc8
-</TASK>
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-Disabling lock debugging due to kernel taint
-general protection fault, probably for non-canonical address 0xdffffc000000=
-0000: 0000 [#1] SMP KASAN PTI
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-CPU: 2 PID: 1810 Comm: mincore_selftes Tainted: G    B              6.3.0-r=
-c1-00007-gef2f3f98fcf4 #1
-Hardware name: HP HP Z238 Microtower Workstation/8183, BIOS N51 Ver. 01.63 =
-10/05/2017
-RIP: 0010:mincore_page+0x36/0x90
-Code: 00 48 3d 00 f0 ff ff 77 63 48 89 c5 be 08 00 00 00 48 89 c7 e8 1b bb =
-0f 00 48 89 ea 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 <80> 3c 02 00 75 4=
-6 48 8b 45 00 48 c1 e8 02 83 e0 01 75 1e 48 8d 7d
-RSP: 0018:ffffc90002e7fa10 EFLAGS: 00010246
-RAX: dffffc0000000000 RBX: ffff888144acd000 RCX: fffffbfff0c13951
-RDX: 0000000000000000 RSI: 0000000000000008 RDI: ffffffff8609ca80
-RBP: 0000000000000000 R08: ffffffff811cd48a R09: ffffffff8609ca87
-R10: fffffbfff0c13950 R11: 0000000000000000 R12: ffff88810b508320
-R13: dffffc0000000000 R14: 0000000000000000 R15: 0000000000000001
-FS:  00007f5833e23740(0000) GS:ffff88837f100000(0000) knlGS:000000000000000=
-0
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f5833e4d5a0 CR3: 0000000147118003 CR4: 00000000003706e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
-<TASK>
-__mincore_unmapped_range+0x13b/0x2a0
-mincore_pte_range+0x3b2/0x810
-walk_pmd_range+0x276/0x760
-? lock_downgrade+0x100/0x100
-? walk_pte_range+0x4d0/0x4d0
-? lock_is_held_type+0x9c/0x110
-walk_pud_range+0x27d/0x5d0
-? mas_find+0x1d0/0x1d0
-walk_p4d_range+0x229/0x410
-? __lock_release+0x109/0x450
-walk_pgd_range+0x22f/0x490
-? find_vma+0xa1/0x100
-__walk_page_range+0x13d/0x180
-walk_page_range+0x2a3/0x330
-? __walk_page_range+0x180/0x180
-? __down_read_common+0x17c/0x450
-do_mincore+0x15d/0x2e0
-__do_sys_mincore+0x1e5/0x300
-do_syscall_64+0x5a/0x80
-entry_SYSCALL_64_after_hwframe+0x5e/0xc8
-RIP: 0033:0x7f5833f278b7
-Code: 73 01 c3 48 8b 0d 49 05 0d 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f =
-1f 84 00 00 00 00 00 0f 1f 44 00 00 b8 1b 00 00 00 0f 05 <48> 3d 01 f0 ff f=
-f 73 01 c3 48 8b 0d 19 05 0d 00 f7 d8 64 89 01 48
-RSP: 002b:00007ffc6d1c8e88 EFLAGS: 00000207 ORIG_RAX: 000000000000001b
-RAX: ffffffffffffffda RBX: 00007ffc6d1c91d8 RCX: 00007f5833f278b7
-RDX: 0000000000000000 RSI: 0000000000001000 RDI: 00007f583400d000
-RBP: 00007ffc6d1c8fd0 R08: 00000000ffffffff R09: 0000000000000000
-R10: 0000000000000021 R11: 0000000000000207 R12: 0000000000000000
-R13: 00007ffc6d1c91e8 R14: 000055a1d10a0dd8 R15: 00007f5834043020
-</TASK>
-Modules linked in: openvswitch nf_conncount nf_nat nf_conntrack nf_defrag_i=
-pv6 nf_defrag_ipv4 btrfs blake2b_generic xor raid6_pq zstd_compress libcrc3=
-2c intel_rapl_msr intel_rapl_common x86_pkg_temp_thermal sd_mod intel_power=
-clamp t10_pi i915 crc64_rocksoft_generic crc64_rocksoft crc64 coretemp sg d=
-rm_buddy kvm_intel intel_gtt kvm irqbypass mei_wdt wmi_bmof crct10dif_pclmu=
-l crc32_pclmul crc32c_intel drm_display_helper ghash_clmulni_intel sha512_s=
-sse3 ipmi_devintf ttm ipmi_msghandler rapl drm_kms_helper ahci libahci inte=
-l_cstate syscopyarea mei_me sysfillrect sysimgblt ie31200_edac intel_uncore=
- mei serio_raw i2c_i801 libata i2c_smbus intel_pch_thermal video wmi intel_=
-pmc_core tpm_infineon acpi_pad binfmt_misc fuse drm ip_tables
----[ end trace 0000000000000000 ]---
-RIP: 0010:mincore_page+0x36/0x90
-Code: 00 48 3d 00 f0 ff ff 77 63 48 89 c5 be 08 00 00 00 48 89 c7 e8 1b bb =
-0f 00 48 89 ea 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 <80> 3c 02 00 75 4=
-6 48 8b 45 00 48 c1 e8 02 83 e0 01 75 1e 48 8d 7d
-RSP: 0018:ffffc90002e7fa10 EFLAGS: 00010246
-RAX: dffffc0000000000 RBX: ffff888144acd000 RCX: fffffbfff0c13951
-RDX: 0000000000000000 RSI: 0000000000000008 RDI: ffffffff8609ca80
-RBP: 0000000000000000 R08: ffffffff811cd48a R09: ffffffff8609ca87
-R10: fffffbfff0c13950 R11: 0000000000000000 R12: ffff88810b508320
-R13: dffffc0000000000 R14: 0000000000000000 R15: 0000000000000001
-FS:  00007f5833e23740(0000) GS:ffff88837f100000(0000) knlGS:000000000000000=
-0
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f5833e4d5a0 CR3: 0000000147118003 CR4: 00000000003706e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Kernel panic - not syncing: Fatal exception
-Kernel Offset: disabled
-
---MuXUmVDMr7gP5Pe2
+--trzHMlASx1H69zAx
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: attachment; filename="job.yaml"
 
 ---
 
-#! jobs/kernel-selftests.yaml
-suite: kernel-selftests
-testcase: kernel-selftests
-category: functional
-need_memory: 3G
-need_cpu: 2
-kernel-selftests:
-  group: group-02
-kernel_cmdline: sysctl.debug.test_sysctl.boot_int=1
-job_origin: kernel-selftests.yaml
+#! jobs/fio-basic-2pmem-256G.yaml
+suite: fio-basic
+testcase: fio-basic
+category: benchmark
+boot_params:
+  bp1_memmap: 104G!8G
+  bp2_memmap: 104G!132G
+disk: 2pmem
+fs: ext2
+runtime: 200s
+nr_task: 50%
+time_based: tb
+fio-setup-basic:
+  rw: randwrite
+  bs: 2M
+  ioengine: io_uring
+  test_size: 200G
+fio:
+job_origin: fio-basic-2pmem-256G.yaml
 
 #! queue options
 queue_cmdline_keys:
 - branch
 - commit
+- kbuild_queue_analysis
 queue: bisect
-testbox: lkp-skl-d06
-tbox_group: lkp-skl-d06
-submit_id: 6409a89e2d7a86432fafa79f
-job_file: "/lkp/jobs/scheduled/lkp-skl-d06/kernel-selftests-group-02-debian-12-x86_64-20220629.cgz-ef2f3f98fcf4521aa00fd217089e303b7d9b62ba-20230309-82735-nixgyx-0.yaml"
-id: d4ca1e01c5ddef9c2cd7bf64f51f8a5e9e01f539
+testbox: lkp-csl-2sp7
+tbox_group: lkp-csl-2sp7
+submit_id: 640a2f117980b7f40ad4f45f
+job_file: "/lkp/jobs/scheduled/lkp-csl-2sp7/fio-basic-2M-performance-2pmem-ext2-io_uring-50%-200s-randwrite-200G-tb-debian-11.1-x86_64-20220510.cgz-7d28631786b2333c5d48ad25-20230310-62474-1w3g729-0.yaml"
+id: 786574a70c793310fe2cf8f4f6dc6329129c8931
 queuer_version: "/zday/lkp"
 
-#! /db/releases/20230306211357/lkp-src/hosts/lkp-skl-d06
-model: Skylake
-nr_cpu: 4
-memory: 16G
+#! /db/releases/20230207165824/lkp-src/hosts/lkp-csl-2sp7
+model: Cascade Lake
+nr_node: 2
+nr_cpu: 96
+memory: 512G
+nr_hdd_partitions: 1
 nr_ssd_partitions: 1
-nr_hdd_partitions: 4
-hdd_partitions: "/dev/disk/by-id/wwn-0x50014ee25a160161-part*"
-ssd_partitions: "/dev/disk/by-id/wwn-0x55cd2e404b653ca4-part2"
-rootfs_partition: "/dev/disk/by-id/wwn-0x55cd2e404b653ca4-part1"
-brand: Intel(R) Xeon(R) CPU E3-1225 v5 @ 3.30GHz
+hdd_partitions: "/dev/disk/by-id/ata-ST1000NM0055-1V410C_ZBS1K5E0-part1"
+ssd_partitions: "/dev/disk/by-id/ata-INTEL_SSDSC2BB800G4_PHWL4204000G800RGN-part1"
+swap_partitions:
+rootfs_partition: "/dev/disk/by-id/ata-ST1000NM0055-1V410C_ZBS1K5E0-part2"
+brand: Intel(R) Xeon(R) Gold 6252 CPU @ 2.10GHz
 
-#! /db/releases/20230306211357/lkp-src/include/category/functional
+#! /db/releases/20230207165824/lkp-src/include/category/benchmark
 kmsg:
+boot-time:
+uptime:
+iostat:
 heartbeat:
+vmstat:
+numa-numastat:
+numa-vmstat:
+numa-meminfo:
+proc-vmstat:
+proc-stat:
 meminfo:
+slabinfo:
+interrupts:
+lock_stat:
+perf-sched:
+  lite_mode: 1
+softirqs:
+bdi_dev_mapping:
+diskstats:
+nfsstat:
+cpuidle:
+cpufreq-stats:
+turbostat:
+sched_debug:
+perf-stat:
+mpstat:
+perf-profile:
+  debug_mode: 0
 
-#! /db/releases/20230306211357/lkp-src/include/queue/cyclic
-commit: ef2f3f98fcf4521aa00fd217089e303b7d9b62ba
+#! /db/releases/20230207165824/lkp-src/include/category/ALL
+cpufreq_governor: performance
 
-#! /db/releases/20230306211357/lkp-src/include/testbox/lkp-skl-d06
-need_kconfig_hw:
-- PTP_1588_CLOCK: y
-- E1000E: y
-- SATA_AHCI
-- DRM_I915
-ucode: '0xf0'
-bisect_dmesg: true
-
-# for sysctl
-
-#! /db/releases/20230306211357/lkp-src/include/kernel-selftests
+#! /db/releases/20230207165824/lkp-src/include/disk/nr_pmem
 need_kconfig:
-- FUSE_FS: m
-- IPV6_MULTIPLE_TABLES: y
-- MACSEC: y
-- MISC_FILESYSTEMS: y
-- MPTCP: y
-- MPTCP_IPV6: y
-- NET_FOU
-- NET_FOU_IP_TUNNELS: y
-- NET_L3_MASTER_DEV: y
-- NET_SCH_NETEM
-- NET_VRF: y
-- NF_FLOW_TABLE: m
-- NF_FLOW_TABLE_INET: m
-- NF_FLOW_TABLE_IPV4: m
-- NF_FLOW_TABLE_IPV6: m
-- NF_TABLES_NETDEV: y
-- PROC_FS: y
-- PSTORE: y
-- PSTORE_CONSOLE: y
-- PSTORE_PMSG: y
-- PSTORE_RAM: m
-- SECCOMP: y
-- SECCOMP_FILTER: y
-- TEST_BLACKHOLE_DEV: m
-- UTS_NS: y
-- VETH
-- X86_CPU_RESCTRL: y
-- NFC: m
-- NFC_NCI: m
-- NFC_VIRTUAL_NCI: m
-rootfs: debian-12-x86_64-20220629.cgz
-initrds:
-- linux_headers
-- linux_selftests
-kconfig: x86_64-rhel-8.3-kselftests
-enqueue_time: 2023-03-09 17:36:30.835176259 +08:00
-_id: 6409a89e2d7a86432fafa79f
-_rt: "/result/kernel-selftests/group-02/lkp-skl-d06/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kselftests/gcc-11/ef2f3f98fcf4521aa00fd217089e303b7d9b62ba"
+- LIBNVDIMM
+- BTT: y
+- BLK_DEV_PMEM
+- X86_PMEM_LEGACY
+- FS_DAX: y
+- EXT2_FS
+
+#! /db/releases/20230207165824/lkp-src/include/fs/OTHERS
+
+#! /db/releases/20230207165824/lkp-src/include/queue/cyclic
+commit: 7d28631786b2333c5d48ad25172eb159aaa2945f
+
+#! /db/releases/20230207165824/lkp-src/include/testbox/lkp-csl-2sp7
+ucode: '0x5003302'
+need_kconfig_hw:
+- I40E: y
+- SATA_AHCI
+pmeter:
+  pmeter_server: lkp-serial03
+  pmeter_device: yokogawa-wt310
+bisect_dmesg: true
+kconfig: x86_64-rhel-8.3
+enqueue_time: 2023-03-10 03:10:09.630608713 +08:00
+_id: 640a2f117980b7f40ad4f45f
+_rt: "/result/fio-basic/2M-performance-2pmem-ext2-io_uring-50%-200s-randwrite-200G-tb/lkp-csl-2sp7/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/7d28631786b2333c5d48ad25172eb159aaa2945f"
 
 #! schedule options
 user: lkp
 compiler: gcc-11
 LKP_SERVER: internal-lkp-server
-head_commit: 3f72112815381618e23d99c590013e409bef66d8
+head_commit: 80a7c13e4d968be6b01f92c4e00fc165f6741d09
 base_commit: fe15c26ee26efa11741a7b632e9f23b01aca4cc6
-branch: linux-devel/devel-hourly-20230306-065736
-result_root: "/result/kernel-selftests/group-02/lkp-skl-d06/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kselftests/gcc-11/ef2f3f98fcf4521aa00fd217089e303b7d9b62ba/0"
-scheduler_version: "/lkp/lkp/src"
+branch: linus/master
+rootfs: debian-11.1-x86_64-20220510.cgz
+result_root: "/result/fio-basic/2M-performance-2pmem-ext2-io_uring-50%-200s-randwrite-200G-tb/lkp-csl-2sp7/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/7d28631786b2333c5d48ad25172eb159aaa2945f/0"
+scheduler_version: "/lkp/lkp/.src-20230307-105906"
 arch: x86_64
-max_uptime: 1200
-initrd: "/osimage/debian/debian-12-x86_64-20220629.cgz"
+max_uptime: 2100
+initrd: "/osimage/debian/debian-11.1-x86_64-20220510.cgz"
 bootloader_append:
 - root=/dev/ram0
-- RESULT_ROOT=/result/kernel-selftests/group-02/lkp-skl-d06/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-kselftests/gcc-11/ef2f3f98fcf4521aa00fd217089e303b7d9b62ba/0
-- BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/ef2f3f98fcf4521aa00fd217089e303b7d9b62ba/vmlinuz-6.3.0-rc1-00007-gef2f3f98fcf4
-- branch=linux-devel/devel-hourly-20230306-065736
-- job=/lkp/jobs/scheduled/lkp-skl-d06/kernel-selftests-group-02-debian-12-x86_64-20220629.cgz-ef2f3f98fcf4521aa00fd217089e303b7d9b62ba-20230309-82735-nixgyx-0.yaml
+- RESULT_ROOT=/result/fio-basic/2M-performance-2pmem-ext2-io_uring-50%-200s-randwrite-200G-tb/lkp-csl-2sp7/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/7d28631786b2333c5d48ad25172eb159aaa2945f/0
+- BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3/gcc-11/7d28631786b2333c5d48ad25172eb159aaa2945f/vmlinuz-6.2.0-rc4-00383-g7d28631786b2
+- branch=linus/master
+- job=/lkp/jobs/scheduled/lkp-csl-2sp7/fio-basic-2M-performance-2pmem-ext2-io_uring-50%-200s-randwrite-200G-tb-debian-11.1-x86_64-20220510.cgz-7d28631786b2333c5d48ad25-20230310-62474-1w3g729-0.yaml
 - user=lkp
 - ARCH=x86_64
-- kconfig=x86_64-rhel-8.3-kselftests
-- commit=ef2f3f98fcf4521aa00fd217089e303b7d9b62ba
-- sysctl.debug.test_sysctl.boot_int=1
+- kconfig=x86_64-rhel-8.3
+- commit=7d28631786b2333c5d48ad25172eb159aaa2945f
 - initcall_debug
 - nmi_watchdog=0
-- max_uptime=1200
+- memmap=104G!8G
+- memmap=104G!132G
+- max_uptime=2100
 - LKP_SERVER=internal-lkp-server
 - nokaslr
 - selinux=0
@@ -12618,27 +7428,91 @@ bootloader_append:
 - rw
 
 #! runtime status
-modules_initrd: "/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/ef2f3f98fcf4521aa00fd217089e303b7d9b62ba/modules.cgz"
-linux_headers_initrd: "/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/ef2f3f98fcf4521aa00fd217089e303b7d9b62ba/linux-headers.cgz"
-linux_selftests_initrd: "/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/ef2f3f98fcf4521aa00fd217089e303b7d9b62ba/linux-selftests.cgz"
-bm_initrd: "/osimage/deps/debian-12-x86_64-20220629.cgz/lkp_20221125.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/run-ipconfig_20221125.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/rsync-rootfs_20221125.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/kernel-selftests_20230110.cgz,/osimage/pkg/debian-12-x86_64-20220629.cgz/kernel-selftests-x86_64-d4cf28ee-1_20230110.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/hw_20221125.cgz"
+modules_initrd: "/pkg/linux/x86_64-rhel-8.3/gcc-11/7d28631786b2333c5d48ad25172eb159aaa2945f/modules.cgz"
+bm_initrd: "/osimage/deps/debian-11.1-x86_64-20220510.cgz/run-ipconfig_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/lkp_20220513.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/rsync-rootfs_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/fs_20220526.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/fio_20230218.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/fio-x86_64-3.15-1_20230218.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/mpstat_20220516.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/turbostat_20220514.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/turbostat-x86_64-210e04ff7681-1_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/perf_20230226.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/perf-x86_64-2fcd07b7ccd5-1_20230226.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/sar-x86_64-c5bb321-1_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/hw_20220526.cgz"
 ucode_initrd: "/osimage/ucode/intel-ucode-20220804.cgz"
 lkp_initrd: "/osimage/user/lkp/lkp-x86_64.cgz"
 site: inn
 
-#! /cephfs/db/releases/20230307153904/lkp-src/include/site/inn
+#! /cephfs/db/releases/20230308093806/lkp-src/include/site/inn
 LKP_CGI_PORT: 80
 LKP_CIFS_PORT: 139
 oom-killer:
 watchdog:
-last_kernel: 6.2.0-09238-gd2980d8d8265
+last_kernel: 4.20.0
+repeat_to: 3
+kbuild_queue_analysis: 1
+
+#! /db/releases/20230308093806/lkp-src/include/site/inn
 schedule_notify_address:
 
 #! user overrides
-kernel: "/pkg/linux/x86_64-rhel-8.3-kselftests/gcc-11/ef2f3f98fcf4521aa00fd217089e303b7d9b62ba/vmlinuz-6.3.0-rc1-00007-gef2f3f98fcf4"
-dequeue_time: 2023-03-09 18:00:33.752019306 +08:00
+kernel: "/pkg/linux/x86_64-rhel-8.3/gcc-11/7d28631786b2333c5d48ad25172eb159aaa2945f/vmlinuz-6.2.0-rc4-00383-g7d28631786b2"
+dequeue_time: 2023-03-10 04:05:05.116921510 +08:00
 
-#! /db/releases/20230309164242/lkp-src/include/site/inn
-job_state: running
+#! /cephfs/db/releases/20230309164242/lkp-src/include/site/inn
+job_state: finished
+loadavg: 33.26 23.64 10.04 1/874 12621
+start_time: '1678392566'
+end_time: '1678392769'
+version: "/lkp/lkp/.src-20230307-105945:2f08db196552:8de1da411787"
 
---MuXUmVDMr7gP5Pe2--
+--trzHMlASx1H69zAx
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: attachment; filename="reproduce"
+
+ "modprobe" "nd_e820"
+dmsetup remove_all
+wipefs -a --force /dev/pmem0
+wipefs -a --force /dev/pmem1
+mkfs -t ext2 -q -F /dev/pmem0
+mkfs -t ext2 -q -F /dev/pmem1
+mkdir -p /fs/pmem0
+modprobe ext2
+mount -t ext2 /dev/pmem0 /fs/pmem0
+mkdir -p /fs/pmem1
+mount -t ext2 /dev/pmem1 /fs/pmem1
+
+for cpu_dir in /sys/devices/system/cpu/cpu[0-9]*
+do
+	online_file="$cpu_dir"/online
+	[ -f "$online_file" ] && [ "$(cat "$online_file")" -eq 0 ] && continue
+
+	file="$cpu_dir"/cpufreq/scaling_governor
+	[ -f "$file" ] && echo "performance" > "$file"
+done
+
+echo '
+[global]
+bs=2M
+ioengine=io_uring
+iodepth=32
+size=4473924266
+nr_files=1
+filesize=4473924266
+direct=0
+runtime=200
+invalidate=1
+fallocate=posix
+io_size=4473924266
+file_service_type=roundrobin
+random_distribution=random
+group_reporting
+pre_read=0
+
+time_based
+
+[task_0]
+rw=randwrite
+directory=/fs/pmem0
+numjobs=24
+
+
+
+
+[task_1]
+rw=randwrite
+directory=/fs/pmem1
+numjobs=24' | fio --output-format=json -
+
+--trzHMlASx1H69zAx--
