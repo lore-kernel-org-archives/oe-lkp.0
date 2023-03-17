@@ -1,165 +1,242 @@
-Received: from dggsgout11.his.huawei.com (unknown [45.249.212.51])
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADF5762D
-	for <oe-lkp@lists.linux.dev>; Fri, 17 Mar 2023 03:30:38 +0000 (UTC)
-Received: from mail02.huawei.com (unknown [172.30.67.169])
-	by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4Pd8ll2zyMz4f42rV
-	for <oe-lkp@lists.linux.dev>; Fri, 17 Mar 2023 11:30:27 +0800 (CST)
-Received: from [10.174.176.73] (unknown [10.174.176.73])
-	by APP3 (Coremail) with SMTP id _Ch0CgA35CHQ3hNkwFg8FA--.47950S3;
-	Fri, 17 Mar 2023 11:30:26 +0800 (CST)
-Subject: Re: [PATCH v2 3/5] md: use md_thread api to wake up sync_thread
-To: kernel test robot <oliver.sang@intel.com>,
- Yu Kuai <yukuai1@huaweicloud.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-raid@vger.kernel.org,
- agk@redhat.com, snitzer@kernel.org, song@kernel.org,
- linux-kernel@vger.kernel.org, yi.zhang@huawei.com, yangerkun@huawei.com,
- logang@deltatee.com, guoqing.jiang@linux.dev, pmenzel@molgen.mpg.de,
- "yukuai (C)" <yukuai3@huawei.com>
-References: <202303170904.640a8ece-oliver.sang@intel.com>
-From: Yu Kuai <yukuai1@huaweicloud.com>
-Message-ID: <3e171048-060f-af7c-35ec-76fad4fb6f08@huaweicloud.com>
-Date: Fri, 17 Mar 2023 11:30:24 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D80FE62D
+	for <oe-lkp@lists.linux.dev>; Fri, 17 Mar 2023 04:14:40 +0000 (UTC)
+Received: from pps.filterd (m0333520.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32H1tscB016566;
+	Fri, 17 Mar 2023 04:14:35 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2022-7-12;
+ bh=24mIcWvrxrGsAxsB2euqWtmzrMAKuqC3fLKFjd6N2/g=;
+ b=QOJKasKpKKT7MXl5BuFvChtGIyflMg1cEC8rYKhbg60J6DbDPXmin0n4lwFUEBCbQEU3
+ UN76ayAAXiow3aSqSwD7GGytxdkrQvV8WUSMiSNiMizOI9kjsvptjFOdZAPDmjgo3Em2
+ 0iTLR51FkQekkh4ngvUSuVdNdABAKbZnldOYRFaRohCtZBSoE6LcWTk7n+pfGAtLgLke
+ DtSDNT07DS8Eavkuvh07HDxbyh+76zYvBJqV1naiwaddCtkXN8o6gvlOW62RkB2HU44x
+ dILuLKXk4ztyVR175CGlMPAotpz09PEfWvACaoTr6yAIGbeYTJdDUtV7WX4TWw7nE9// Bg== 
+Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3pbs262y6s-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 17 Mar 2023 04:14:35 +0000
+Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 32H4DguB026680;
+	Fri, 17 Mar 2023 04:14:34 GMT
+Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2170.outbound.protection.outlook.com [104.47.55.170])
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3pch07g0fb-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 17 Mar 2023 04:14:32 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AyzpVauLl3riPZExUX4+T4Co1EDk98hKf/VuZbtzGfbzrtGIqvIq/NUkPw9gavwBQzkxD+e0/yuQJRjr+pAeM6HkZjNj2HRhyue2RpvaQLN5vcaAYO6n/I+rNVsCTrQ08K0GWWm4VKj7dn+r8Jgyu8EF2YW1/jUbPqpsw8tR3sPZJo4MLzGJxPVnFG4yreb1+5UN6GtVcaNn6HKIoQk4XKS1V8woRjyB+jrE5hS+JNr/ePjSfcTCzMQC0fxvQfVNOTyyiucHrfOOf6S3nTX1FI0f2BSGaIDkUzhHP9LaE8fMqHn8JrclIlkRRXWsYB4e+gSr1H8U+qbPRA/78sGsWA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=24mIcWvrxrGsAxsB2euqWtmzrMAKuqC3fLKFjd6N2/g=;
+ b=WzG4k6suXNBL6x2JCpMjbQE0G4sOzJpET8KJt/s9oQEhmus2KhL9jaqc5bgN7d0gGXQ9AM4ZWsdbqdXtZ/szgV0YnAkC/dK1ZktRH5YUAh/DW5byT8n8g6y9WJQN9P+ZJVD1nZvaa4IhBLRi0QBkoykCyntlHhUvwlkHgTBIE8jMYq+gWyxumGL27AfXxH5/p4802IwGSuAlmGGImEDvg10Q5JrbzRVrcRqPyLMzGZdNbJIWT/t6WpoGLSQaEvvETn05rRsJRzTJug/OaTEnFFh+Tg6ynIm9yGFcFWYKOqf4LB1d8Z89HZSv+1912HkG14AIky+ZZUpp64q3joJuAg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=24mIcWvrxrGsAxsB2euqWtmzrMAKuqC3fLKFjd6N2/g=;
+ b=pnwuJycFGdgoQLEikbE5SyhdUEoJRdM08gmb/UXpIqGmiXjusykOubmD/WDm++noe1ClxqpgfzzuH7RAA+CfhLPymcXWbbosIjjtTCnh6rFdMTKOQQrbuuhi3poBiykv4YgHpfeVb8oNKX345aaoNo1YWLGTWqS5Nrs2PKS+qYg=
+Received: from PH0PR10MB5706.namprd10.prod.outlook.com (2603:10b6:510:148::10)
+ by IA1PR10MB5995.namprd10.prod.outlook.com (2603:10b6:208:3ed::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.35; Fri, 17 Mar
+ 2023 04:14:29 +0000
+Received: from PH0PR10MB5706.namprd10.prod.outlook.com
+ ([fe80::3eb1:c999:6a64:205c]) by PH0PR10MB5706.namprd10.prod.outlook.com
+ ([fe80::3eb1:c999:6a64:205c%5]) with mapi id 15.20.6178.029; Fri, 17 Mar 2023
+ 04:14:29 +0000
+Message-ID: <1c807f47-70d4-14b3-7a20-8f595edbd99e@oracle.com>
+Date: Fri, 17 Mar 2023 12:14:20 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:95.0)
+ Gecko/20100101 Thunderbird/95.0
+Subject: Re: [linus:master] [btrfs] 5f58d783fd: xfstests.btrfs.172.fail
+To: kernel test rboot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+        David Sterba <dsterba@suse.com>, Daan De Meyer <daandemeyer@fb.com>,
+        Josef Bacik <josef@toxicpanda.com>, linux-btrfs@vger.kernel.org
+References: <202303170839.fdf23068-oliver.sang@intel.com>
+From: Anand Jain <anand.jain@oracle.com>
+In-Reply-To: <202303170839.fdf23068-oliver.sang@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SI2PR02CA0020.apcprd02.prod.outlook.com
+ (2603:1096:4:195::7) To PH0PR10MB5706.namprd10.prod.outlook.com
+ (2603:10b6:510:148::10)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <202303170904.640a8ece-oliver.sang@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_Ch0CgA35CHQ3hNkwFg8FA--.47950S3
-X-Coremail-Antispam: 1UD129KBjvJXoW3Wry8Gw4UJFyUWryrurWfZrb_yoW3XF47pF
-	yq9Fn7GF48W3srJFyUG3WUCa4fXw47Aay7Kry7Grn3J345Kw12qF1v9r12vF1DtF4akFyS
-	qwnrXrW09r48Jw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUU9F14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-	1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
-	JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-	CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-	2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-	W8JwACjcxG0xvEwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2Y2ka
-	0xkIwI1lc7I2V7IY0VAS07AlzVAYIcxG8wCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7x
-	kEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E
-	67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCw
-	CI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E
-	3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcS
-	sGvfC2KfnxnUUI43ZEXa7VUbXdbUUUUUU==
-X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
-X-CFilter-Loop: Reflected
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR10MB5706:EE_|IA1PR10MB5995:EE_
+X-MS-Office365-Filtering-Correlation-Id: d418646c-ff31-464e-fd36-08db269e1a70
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 
+	G3PHY7lDRmCYDf25gtTJ5PgG7Nf1P+iApQ1Ru7F0lBZunVZzw4rFaE0YpUxt2O1WzIpV88BuojSdk/Bg9kN5G/K9cyzmZmd9rFGLAYrm9fArs5e+LTgC8XmC1/mrZSaSrFvJ8Cv0Aweo7UmsS6mLpTEKYQtkGAhkOJ+dGtQPddKBnu1j4Q/NvpEYqerhHzlwSxAoGQgOJMkiXm5LraZh20ZvLkkU7la3gXyeJWilSDeuln6QEz/qQoZIYX/kx3Fo28xVHorxOPDYK7Tlod4XGvbzirJhiwtuEjCyslrPtMsne9rMrjub2MuhKzTv3s4jQ0uKg6YeN2fqFBOtJrkci1HfIMYGAhdnipBuFPQdm6EDkTcjai7bZUQCxr8/ex5nL4Fq4Xa2aPDyRIQmq9oUJ8+ThMd16XQSjvOx4Wcw4OUQW6JQEGxXv0gElZ6JS1huUueDCfzi9h3NsjWx8ZmWw/hnWx+7M/U9fRLglVBwvN4FhWNTWvsJZLlZQOlZdzy+kErnB7Q1Ec31iB8gSe/mr9/RWUyhC0mFKAwaEITIqqP+/Wo8khNffhFa14HTZwAlykey3hRs22gW5nKruDD8+6UVyCweqoOvcMlsoAbznkxk4Xv5rZGrOJ3sasPpxhpFWau1+U5GgvDPQcErtFCCZBJJ9x1bN0zUdaLsFB3B06bPrLX+Qro1QxiqWaZyOvoJXYPyOToOZsjAK4lmJ8aC6u60hZ0/xwDO27C/WBPClliknmEFKg9NPpTDMn4S20wTcJtjSlqfukuuqP1Becowm6Q3sfeVW3eJbcip+0u8hDA=
+X-Forefront-Antispam-Report: 
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR10MB5706.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(396003)(366004)(136003)(346002)(376002)(39860400002)(451199018)(2906002)(2616005)(5660300002)(44832011)(36756003)(31696002)(86362001)(38100700002)(83380400001)(54906003)(316002)(6486002)(6916009)(4326008)(66946007)(66556008)(66476007)(8676002)(6666004)(478600001)(966005)(31686004)(8936002)(53546011)(6506007)(6512007)(26005)(41300700001)(186003)(21314003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: 
+	=?utf-8?B?MFpsSTlNSTdGdzRQVlNrakcxcVE2OFVnR2Z6YjFUVFlkZTBUNjI2SGlCbkZj?=
+ =?utf-8?B?WjBtYVl6MFM1WjgydUVKK1pjYnJkZzZOYUhHSC9uWXFHVWtHSDVWWGVuRDEx?=
+ =?utf-8?B?NVRmbnhwTXJDR1RQZXcwUHM1TnlBU0l3NWhHdzdVYkNoTWxCYXZRMFBJUGlV?=
+ =?utf-8?B?WDFTTE9qY3pPZmdPSHRid3VYSURMb3F2K0NtdWp2aStDTXRsS0dMM3VDWjFs?=
+ =?utf-8?B?YzUwKzlmcHU0QkVwSE1WbTN5Z1FCN2w2Tk1NS0ZRTnczVVJvWkFnTElCcitv?=
+ =?utf-8?B?Q0JSOUxRSGV0UmsvZ1h5d1l6K0lGSHZjamRRNzZmM2NrMUlYYkJwVFFuSzBi?=
+ =?utf-8?B?UGhWM1kxVk5uWUJMZ2RDVnJwMm1GZmhJay90dFpXNllIdlkwNDl4eXVhSGha?=
+ =?utf-8?B?V0tTT2wyVHQ3SXVZNWJmOUVGRWg1emJ3WjdwbHlLT0R1R0ViVTY2ZER2cEN6?=
+ =?utf-8?B?N2FNV0hCRlIrOUxlVzBoZGRqNkhFQWgxNDJDbGROTm5ZN0p4NjZVTlZmaDUx?=
+ =?utf-8?B?dHFyWU4wWm5DZTFMVzI1MjIzZGJ4MWQrazk0NzNNZFlHREovaW9OL1ArK0w0?=
+ =?utf-8?B?aFVXWWZUY0RaSURuckV2UDF0TkpocXJKK1ZFU0wrTTVpZE4yTTRRSFNXWkcy?=
+ =?utf-8?B?RXkvdXdGVDhLZTVKc3hDYmRMYzQraG8yM2g3WUc1MlREYmc4VGhhdFY0TzhY?=
+ =?utf-8?B?RjRKYW91elpVQVJXb2ZNZE9STXpuK0pSckhsSVFDdUw3K2dGRlluMXFlYkRj?=
+ =?utf-8?B?dXhXT20vaEU2eW9YVWFVb0lhVnJIakcwaVpjM0FOQ1ZsUTVTOGRUUzNnNWo3?=
+ =?utf-8?B?VFdIUE9RK0wwRFljSU9MNFhQejE1NkRtbkhxVjMveHhKK2tQd3M3am96byt3?=
+ =?utf-8?B?aW5xKzFYa0U0RzM4a2lqWkkvYlRsMmpacXJibFI4c0FnQmU3MXA5S2FEa1Av?=
+ =?utf-8?B?RzhteVAxbXA0Q3QwUUZPeFNMTC9Xc1VlNmhYTVpkWGxmQk1ka2NiaUFuNEhG?=
+ =?utf-8?B?RkdTM21BNHExa2JVRzFISmMxZ2JPdXZPNDdacGpKOFQ3dUk2b0xnL25RK0NR?=
+ =?utf-8?B?d3UwcUQxSExjRGwyLzR2eUx6SmxLQUJienBtUlFoMGt6QVlWMnNpcXZvdG5I?=
+ =?utf-8?B?dGpPVW5keGdtMEVSaVB6SU0zWjNjWEsvMnRrdUhFTTFxN2NkV0ZzSlAvYXVP?=
+ =?utf-8?B?Uml1cEMyb0FmbTVZNEQzTXRrSlF6eDdWUmNJckdrWnVMVFBxOUV0T3d1UFky?=
+ =?utf-8?B?cGhoSDg5V2lhcitianJ5dUVaT3lqcVIwVFVzcVM1NG4rc2dxSk1ySEdTOXpK?=
+ =?utf-8?B?OHJkSTRVd3F2ZFZEQXhyNGI0Nkd3Qk9DeW9OUFZXWEJmcWQ0Ni80SGtjY1Zl?=
+ =?utf-8?B?YmhTOWVXNk5lY1VXVjhOdWpZdUw2UExvUzZBTUxXd01aak13RHFGTElZRlRG?=
+ =?utf-8?B?KzNhaGova3ltOW0vN1ZiTUdmSzIzazdnNzJ5YUUrbGR4WW5GYlBYT0duK2l5?=
+ =?utf-8?B?YzNBNGo5aVpaNXJhMDNEeTRhQ29MRXF3Mk9lZ0pJTWVFU2JjNjFEQStsQkNt?=
+ =?utf-8?B?TngvK0lTSzdOZXhCZ2l5ZXhjQ1VEOEhacDJQakdBdjE0b0N0bERjNUVRcDFp?=
+ =?utf-8?B?bEJ0MVFIMG5kTzVlckxwak1wZHF3cmVWMTdvU1ZXcDhScFQ5R01ySnUxaFF4?=
+ =?utf-8?B?UWt4b1hlZjhObTZBaVZLbVlDRTFiK2tEbkNWL3FBd0FSSmFHdmhoUXhCYXFx?=
+ =?utf-8?B?allHS3JaQWZ6NFdRNXhoa1FKZERQUXBPTVpDRHNWTG9sNWRlcHZ4S3dLOFZp?=
+ =?utf-8?B?clF2Y0xZbEsrZllSR2FqdVJxV2pwdTVtK3FtWThnRFRBRXBVd3RnNDFDQTQw?=
+ =?utf-8?B?WStrejMzL0IwUWd6WmFzWkdqUTRhcmtad2NXRVQyVWVzSFE2UXJtUmNRRXZ0?=
+ =?utf-8?B?Q1hNOXJhNGR1UjY4em5QSEw0YTUxOGlPOVhVemh0WlNiMzVyTGpLUmJQN3ls?=
+ =?utf-8?B?V0R2UjZoN1R5VXRacXcwOWtqOTNJVEhvRWl6M050TkxOVm1kQTJqS2lZZGpK?=
+ =?utf-8?B?NEdycG81NFBKcHJvTktsYVNTZE5zcVd5NjZsMHkyNW0rbE4vMGRFUDdDakF2?=
+ =?utf-8?Q?a1a0n4rVXHLGfpRQtMio2Zpex?=
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
+	NQC4NMttRVCRpNFKF7z/p4aRsovxVdg7iNpiKB0T2W8dOt6t3r1gucEW5szjNL4WnP0t/0DbTL0nlG4DSdYbr0lBTIAGzJgy30eNVAVBnI7qjVJWS/mLoFqiG5HjdqYcNQU0IL9lFHKBk4Hizsr1Be2nkINJXJsLl9UalEA4pFME6w0cqYTOwJ3bDtskni2wEvbfd3Xh13GaSEhAQU7HHZsgnxnd/bq1P5cgkPu55NMzSwhFouWAxXY6LK6uRz2H8H3DuR/zt4xBpWX3Kt70dw1BWqvQINiSk8JVgih4FodUF1/z8uQaM60rP0ABWk1od8mKSmLuH0oy018DpolAHbIZyD0WkgprriPyxydGgxrxWxjr2j+HSqZixudRyWiCkaBRbeq4e2j35tynTsynCbbdA46RsZCD+zI6fhhZbJWwaLbTxxI+7Awqap0uNy+lwkoyBOKpTOIrwj7T8JjWuKnI9d/dYdWVtR6aA51UmZNVelEV0hZxMlh7M+F3fksk9m0drBrJbp+vX7Z0KQM6KZzB1ZW7VTaSJCholUKXbvs+SvLUUnSwLskJbWZpG50/XsvBAytqhpGN1d3TnFQwHEUSMY/PKZFs9uPdCFHnMkxi0m1HbTMBk8J0OyFpsKwI2wK+efq9QNQzNLHgRzZw3SfV198rxnjUpFA7+TkAvhkGXkWcSANmDKM2TGvMG4kVtJx6h+AMAhLl30k+jmoJcUm2symjm95iSHQsmjPXlZF9Vkyoj5TojRJNH3ndWpDu19xd4WNa6Jk4q5DMUQ97sgTyqPVgpCH07lS1bJuS3/O5yVfMHBTlsC+soh+2Ig5GLDces0fWOzvY+en4o73zzZuczXwzkcXALpBt/dkv4z8iqoph8/2OhCftImv0rICabtpThw14Tj9wZGKTiqXQIsD5KLomTbh8tF6jgO2cTKE=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d418646c-ff31-464e-fd36-08db269e1a70
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR10MB5706.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2023 04:14:29.7901
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: JTszzKnhmZcuHWzKaBqXfgd8qKH5i3JloOkMpw+SvNgrUCcUtRlcdmfKsOqo/Ml358Qpi+7UlOvAfllbs7tFOg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR10MB5995
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-03-17_01,2023-03-16_02,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 malwarescore=0 bulkscore=0
+ adultscore=0 phishscore=0 mlxscore=0 suspectscore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2303150002
+ definitions=main-2303170025
+X-Proofpoint-ORIG-GUID: 572MLLtFbcLEGNV9-uMeLxerKlN_HdAi
+X-Proofpoint-GUID: 572MLLtFbcLEGNV9-uMeLxerKlN_HdAi
 
-Hi,
 
-在 2023/03/17 10:30, kernel test robot 写道:
+
+On 3/17/23 09:17, kernel test rboot wrote:
 > 
 > Greeting,
 > 
-> FYI, we noticed INFO:task_blocked_for_more_than#seconds due to commit (built with gcc-11):
+> FYI, we noticed xfstests.btrfs.172.fail due to commit (built with gcc-11):
 > 
-> commit: af2203c7e88c00d3ce072f18c18a36e2936372fd ("[PATCH v2 3/5] md: use md_thread api to wake up sync_thread")
-> url: https://github.com/intel-lab-lkp/linux/commits/Yu-Kuai/md-pass-a-md_thread-pointer-to-md_register_thread/20230315-142018
-> base: git://git.kernel.org/cgit/linux/kernel/git/song/md.git md-next
-> patch link: https://lore.kernel.org/all/20230315061810.653263-4-yukuai1@huaweicloud.com/
-> patch subject: [PATCH v2 3/5] md: use md_thread api to wake up sync_thread
+> commit: 5f58d783fd7823b2c2d5954d1126e702f94bfc4c ("btrfs: free device in btrfs_close_devices for a single device filesystem")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 > 
-
-I don't expect there is any difference between:
-
-if (mddev->sync_thread)
-	wake_up_process(mddev->sync_thread->tsk);
-
-and:
-
-md_wakeup_thread(mddev->sync_thread);
-
-I still don't understand the problem.. I'll try to reporduce this,
-untill them, I guess I'll just drop this patch.
-
-Thanks,
-Kuai
-> in testcase: mdadm-selftests
-> version: mdadm-selftests-x86_64-5f41845-1_20220826
+> in testcase: xfstests
+> version: xfstests-i386-5a5e419-1_20220926
 > with following parameters:
 > 
-> 	disk: 1HDD
-> 	test_prefix: 07revert
+> 	disk: 6HDD
+> 	fs: btrfs
+> 	test: btrfs-logwrites
+> 
+> test-description: xfstests is a regression test suite for xfs and other files ystems.
+> test-url: git://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git
 > 
 > 
-> 
-> on test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4790T CPU @ 2.70GHz (Haswell) with 16G memory
+> on test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (Haswell) with 8G memory
 > 
 > caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
+> 
+> 
+> we did this test on i386 and we found the issue doesn't always happen,
+> on both this commit and v6.3-rc2, it failed in about half of tests.
+> however, always clean on parent commit 519b7e13b5ae8dd3.
+> 
+> 519b7e13b5ae8dd3 5f58d783fd7823b2c2d5954d112                    v6.3-rc2
+> ---------------- --------------------------- ---------------------------
+>         fail:runs  %reproduction    fail:runs  %reproduction    fail:runs
+>             |             |             |             |             |
+>             :14          23%           7:13          33%          10:19    xfstests.btrfs.172.fail
+>           14:14         -27%           6:13         -17%           9:19    xfstests.btrfs.172.pass
 > 
 > 
 > 
 > If you fix the issue, kindly add following tag
 > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Link: https://lore.kernel.org/oe-lkp/202303170904.640a8ece-oliver.sang@intel.com
+> | Link: https://lore.kernel.org/oe-lkp/202303170839.fdf23068-oliver.sang@intel.com
 > 
+> 2023-03-08 04:47:50 export TEST_DIR=/fs/sdb1
+> 2023-03-08 04:47:50 export TEST_DEV=/dev/sdb1
+> 2023-03-08 04:47:50 export FSTYP=btrfs
+> 2023-03-08 04:47:50 export SCRATCH_MNT=/fs/scratch
+> 2023-03-08 04:47:50 mkdir /fs/scratch -p
+> 2023-03-08 04:47:50 export SCRATCH_DEV_POOL="/dev/sdb2 /dev/sdb3 /dev/sdb4 /dev/sdb5 /dev/sdb6"
+> 2023-03-08 04:47:50 export LOGWRITES_DEV=/dev/sdb2
+> 2023-03-08 04:47:50 export SCRATCH_DEV=/dev/sdb6
+> 2023-03-08 04:47:50 unset SCRATCH_DEV_POOL
+> 2023-03-08 04:47:50 sed "s:^:btrfs/:" //lkp/benchmarks/xfstests/tests/btrfs-logwrites
+> 2023-03-08 04:47:50 ./check btrfs/291 btrfs/206 btrfs/196 btrfs/192 btrfs/190 btrfs/172
+> FSTYP         -- btrfs
+> PLATFORM      -- Linux/i686 lkp-hsw-d01 6.1.0-rc8-00284-g5f58d783fd78 #1 SMP Wed Mar  8 11:05:36 CST 2023
+> MKFS_OPTIONS  -- /dev/sdb6
+> MOUNT_OPTIONS -- /dev/sdb6 /fs/scratch
 > 
-> kern  :err   : [  990.133727] INFO: task mdadm:1040 blocked for more than 491 seconds.
-> kern  :err   : [  990.140824]       Tainted: G S                 6.3.0-rc1-00019-gaf2203c7e88c #1
-> kern  :err   : [  990.148856] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-> kern  :info  : [  990.157410] task:mdadm           state:D stack:0     pid:1040  ppid:963    flags:0x00000000
-> kern  :info  : [  990.166483] Call Trace:
-> kern  :info  : [  990.169666]  <TASK>
-> kern :info : [  990.172504] __schedule (kernel/sched/core.c:5304 kernel/sched/core.c:6622)
-> kern :info : [  990.176810] ? io_schedule_timeout (kernel/sched/core.c:6504)
-> kern :info : [  990.181994] ? _raw_spin_lock_irqsave (arch/x86/include/asm/atomic.h:202 include/linux/atomic/atomic-instrumented.h:543 include/asm-generic/qspinlock.h:111 include/linux/spinlock.h:186 include/linux/spinlock_api_smp.h:111 kernel/locking/spinlock.c:162)
-> kern :info : [  990.187250] ? _raw_write_lock_irq (kernel/locking/spinlock.c:153)
-> kern :info : [  990.192255] schedule (arch/x86/include/asm/preempt.h:85 (discriminator 1) kernel/sched/core.c:6699 (discriminator 1))
-> kern :info : [  990.196291] do_md_stop (drivers/md/md.c:6364 (discriminator 29))
-> kern :info : [  990.200603] ? md_kick_rdev_from_array (drivers/md/md.c:6344)
-> kern :info : [  990.206111] ? add_ptr_to_bulk_krc_lock (arch/x86/include/asm/atomic.h:95 include/linux/atomic/atomic-instrumented.h:191 kernel/rcu/tree.c:3273)
-> kern :info : [  990.211711] ? cpuacct_stats_show (kernel/sched/wait.c:418)
-> kern :info : [  990.216787] ? schedule_delayed_monitor_work (arch/x86/include/asm/bitops.h:207 arch/x86/include/asm/bitops.h:239 include/asm-generic/bitops/instrumented-non-atomic.h:142 kernel/rcu/tree.c:3044)
-> kern :info : [  990.222736] ? __cond_resched (kernel/sched/core.c:8486)
-> kern :info : [  990.227292] ? mutex_lock_interruptible (arch/x86/include/asm/atomic64_64.h:190 include/linux/atomic/atomic-long.h:443 include/linux/atomic/atomic-instrumented.h:1781 kernel/locking/mutex.c:171 kernel/locking/mutex.c:981)
-> kern :info : [  990.232725] ? __mutex_lock_interruptible_slowpath (kernel/locking/mutex.c:978)
-> kern :info : [  990.239095] ? __mutex_unlock_slowpath+0x2a0/0x2a0
-> kern :info : [  990.245668] md_ioctl (drivers/md/md.c:7642)
-> kern :info : [  990.249809] ? hot_add_disk (drivers/md/md.c:7513)
-> kern :info : [  990.254360] ? __call_rcu_common+0x363/0x900
-> kern :info : [  990.260389] ? blkdev_bszset (block/ioctl.c:473)
-> kern :info : [  990.265047] ? rcu_nocb_gp_kthread (kernel/rcu/tree.c:2596)
-> kern :info : [  990.270224] ? __fput (include/linux/fs.h:2554 fs/internal.h:110 fs/file_table.c:328)
-> kern :info : [  990.274269] ? __cond_resched (kernel/sched/core.c:8486)
-> kern :info : [  990.278826] blkdev_ioctl (block/ioctl.c:615)
-> kern :info : [  990.283223] ? blkdev_common_ioctl (block/ioctl.c:560)
-> kern :info : [  990.288568] ? _raw_spin_lock (arch/x86/include/asm/atomic.h:202 include/linux/atomic/atomic-instrumented.h:543 include/asm-generic/qspinlock.h:111 include/linux/spinlock.h:186 include/linux/spinlock_api_smp.h:134 kernel/locking/spinlock.c:154)
-> kern :info : [  990.293139] ? _raw_write_lock_irq (kernel/locking/spinlock.c:153)
-> kern :info : [  990.298137] __x64_sys_ioctl (fs/ioctl.c:52 fs/ioctl.c:870 fs/ioctl.c:856 fs/ioctl.c:856)
-> kern :info : [  990.302800] do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
-> kern :info : [  990.307108] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120)
-> kern  :info  : [  990.312889] RIP: 0033:0x7f00b07c8cc7
-> kern  :info  : [  990.317187] RSP: 002b:00007ffc27cbbc88 EFLAGS: 00000206 ORIG_RAX: 0000000000000010
-> kern  :info  : [  990.325483] RAX: ffffffffffffffda RBX: 0000000000000019 RCX: 00007f00b07c8cc7
-> kern  :info  : [  990.333342] RDX: 0000000000000000 RSI: 0000000000000932 RDI: 0000000000000004
-> kern  :info  : [  990.341195] RBP: 0000000000000004 R08: 0000000000000002 R09: 0000000000000000
-> kern  :info  : [  990.349044] R10: fffffffffffff28e R11: 0000000000000206 R12: 00007ffc27cbe994
-> kern  :info  : [  990.356888] R13: 0000000000000005 R14: 00007ffc27cbbd30 R15: 0000557160bdec10
-> kern  :info  : [  990.364750]  </TASK>
-> user  :err   : [ 1006.832241] Terminated
+> btrfs/172       [failed, exit status 1]- output mismatch (see /lkp/benchmarks/xfstests/results//btrfs/172.out.bad)
+>      --- tests/btrfs/172.out	2022-09-26 09:38:15.000000000 +0000
+>      +++ /lkp/benchmarks/xfstests/results//btrfs/172.out.bad	2023-03-08 04:47:54.134026209 +0000
+>      @@ -1,3 +1,5 @@
+>       QA output created by 172
+>       wrote 5242880/5242880 bytes at offset 0
+>       XXX Bytes, X ops; XX:XX:XX.X (XXX YYY/sec and XXX ops/sec)
+
+>      +_check_btrfs_filesystem: filesystem on /dev/sdb6 is inconsistent
+
+
+Thank you for reporting it. I am currently looking into it. It appears
+that the device is being freed after it's closed, which could indicate
+that we overlooked something at close, just a hypothesis at this point.
+
+-Anand
+
+
+>      +(see /lkp/benchmarks/xfstests/results//btrfs/172.full for details)
+>      ...
+>      (Run 'diff -u /lkp/benchmarks/xfstests/tests/btrfs/172.out /lkp/benchmarks/xfstests/results//btrfs/172.out.bad'  to see the entire diff)
+> btrfs/190        15s
+> btrfs/192        101s
+> btrfs/196        163s
+> btrfs/206        4s
+> btrfs/291       [not run] kernel btrfs isn't configured with verity support
+> Ran: btrfs/172 btrfs/190 btrfs/192 btrfs/196 btrfs/206 btrfs/291
+> Not run: btrfs/291
+> Failures: btrfs/172
+> Failed 1 of 6 tests
 > 
-> user  :notice: [ 1006.968217] /lkp/benchmarks/mdadm-selftests/tests/07revert-grow... FAILED - see /var/tmp/07revert-grow.log and /var/tmp/fail07revert-grow.log for details
-> 
-> user  :notice: [ 1007.123127] 07revert-grow TIMEOUT
-> 
-> user  :err   : [ 1008.444219] mdadm: cannot open /dev/md0: No such device
-> 
-> user  :notice: [ 1012.202178] test: please run test suite without running RAIDs environment.
-> 
-> user  :notice: [ 1017.437744] test: please run test suite without running RAIDs environment.
-> 
-> user  :notice: [ 1017.836121] /usr/bin/wget -q --timeout=1800 --tries=1 --local-encoding=UTF-8 http://internal-lkp-server:80/~lkp/cgi-bin/lkp-jobfile-append-var?job_file=/lkp/jobs/scheduled/lkp-hsw-d05/mdadm-selftests-1HDD-07revert-debian-11.1-x86_64-20220510.cgz-af2203c7e88c00d3ce072f18c18a36e2936372fd-20230317-32283-1997139-5.yaml&job_state=post_run -O /dev/null
-> 
-> user  :notice: [ 1019.573946] kill 528 vmstat --timestamp -n 10
-> 
-> user  :notice: [ 1019.588893] kill 526 dmesg --follow --decode
 > 
 > 
 > 
@@ -176,4 +253,3 @@ Kuai
 > 
 > 
 > 
-
