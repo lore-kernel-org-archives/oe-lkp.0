@@ -1,26 +1,23 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CDA7372
-	for <oe-lkp@lists.linux.dev>; Fri, 17 Mar 2023 06:32:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66077C433EF;
-	Fri, 17 Mar 2023 06:32:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1679034735;
-	bh=YNPSDKsw9r0SYT8/ewQEeYA2cICUD/9xBMbfh07ni2w=;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DD1C65A
+	for <oe-lkp@lists.linux.dev>; Fri, 17 Mar 2023 06:50:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41ADFC433EF;
+	Fri, 17 Mar 2023 06:50:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1679035844;
+	bh=FwNORm2z7EgotVkf6Y6iCjILfepzSXKUVVB30xpOWFs=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=M0qTkDQ3kAaNrFWblWU5jd+aEggNw/beWg3cGRDcIYBb9291XP5fnq5JjxbNVVvCZ
-	 fXOj1RDMmeC0ntpjAgsBZt4ihVj01JXhqw5fuv3J8qMZBWZhZUz3xcRVtlD1pWWYQu
-	 1/cprjIo7eGn+S51zhvOT01ULQSHd1bdkNXeei9sko1X8QWAiMiCQxPBenhUY68p3q
-	 aWRnWUf5ZjzRXDA7ICyKLv3qHM5kO/3NYVg7pnnxpq1mq9Oa/an2x4vQS3Iotsl8KV
-	 zC1n7/DxI55Ej0+bNpVL0c1WkVrhM0VlUUrhSGdiOyQfSjwMalGRT85Scz0vzDcCf4
-	 3QXwxLT2z0Cig==
-Date: Thu, 16 Mar 2023 23:32:13 -0700
-From: Eric Biggers <ebiggers@kernel.org>
-To: kernel test robot <yujie.liu@intel.com>
-Cc: Kees Cook <keescook@chromium.org>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Petr Mladek <pmladek@suse.com>,
+	b=HLZdzPRXFXKD6/L+Z5oU9Ss/XhzLlu15+WyhKn90xVDNWjEX0GUOdTinEt+NEOHUw
+	 bTIW+50OY9iqdpCJAqzeCZKgbvm0ch+T3PG4Z1MNrmLg46U2PuReOiSvHzACd7prUU
+	 MHHDS3mYIY6C2PdSMxaAdGzl1Om54yf+TOgeHxP8=
+Date: Fri, 17 Mar 2023 07:50:41 +0100
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Eric Biggers <ebiggers@kernel.org>
+Cc: kernel test robot <yujie.liu@intel.com>,
+	Kees Cook <keescook@chromium.org>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, Petr Mladek <pmladek@suse.com>,
 	Andrew Morton <akpm@linux-foundation.org>,
 	tangmeng <tangmeng@uniontech.com>,
 	"Guilherme G. Piccoli" <gpiccoli@igalia.com>,
@@ -31,8 +28,9 @@ Cc: Kees Cook <keescook@chromium.org>, oe-lkp@lists.linux.dev,
 	aliyunlinux2-dev@linux.alibaba.com, jane.lv@intel.com
 Subject: Re: [linux-stable-rc:linux-4.19.y] [panic] 4d00e68cfc:
  WARNING:at_fs/sysfs/file.c:#sysfs_emit_at
-Message-ID: <20230317063213.GC882@sol.localdomain>
+Message-ID: <ZBQNwcVBKwe1WU3h@kroah.com>
 References: <202303141634.1e64fd76-yujie.liu@intel.com>
+ <20230317063213.GC882@sol.localdomain>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -41,21 +39,24 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202303141634.1e64fd76-yujie.liu@intel.com>
+In-Reply-To: <20230317063213.GC882@sol.localdomain>
 
-On Tue, Mar 14, 2023 at 04:34:22PM +0800, kernel test robot wrote:
-> Greeting,
+On Thu, Mar 16, 2023 at 11:32:13PM -0700, Eric Biggers wrote:
+> On Tue, Mar 14, 2023 at 04:34:22PM +0800, kernel test robot wrote:
+> > Greeting,
+> > 
+> > FYI, we noticed WARNING:at_fs/sysfs/file.c:#sysfs_emit_at due to commit (built with gcc-11):
+> > 
+> > commit: 4d00e68cfcfd91d3a8c794d47617429a96d623ed ("panic: Expose "warn_count" to sysfs")
+> > https://git.kernel.org/cgit/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
 > 
-> FYI, we noticed WARNING:at_fs/sysfs/file.c:#sysfs_emit_at due to commit (built with gcc-11):
+> It turns out this is a longstanding bug in 4.19.y and 4.14.y caused by a bad
+> backport, which is not actually related to the above commit (or the patch series
+> that contained it) at all.  I've sent out fixes:
 > 
-> commit: 4d00e68cfcfd91d3a8c794d47617429a96d623ed ("panic: Expose "warn_count" to sysfs")
-> https://git.kernel.org/cgit/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
+> 4.19: https://lore.kernel.org/r/20230317062743.313169-1-ebiggers@kernel.org
+> 4.14: https://lore.kernel.org/r/20230317062801.313217-1-ebiggers@kernel.org
 
-It turns out this is a longstanding bug in 4.19.y and 4.14.y caused by a bad
-backport, which is not actually related to the above commit (or the patch series
-that contained it) at all.  I've sent out fixes:
+Thanks for these, I'll queue it up the next round.
 
-4.19: https://lore.kernel.org/r/20230317062743.313169-1-ebiggers@kernel.org
-4.14: https://lore.kernel.org/r/20230317062801.313217-1-ebiggers@kernel.org
-
-- Eric
+greg k-h
