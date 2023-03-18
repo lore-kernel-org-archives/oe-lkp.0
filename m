@@ -1,62 +1,99 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from dggsgout12.his.huawei.com (dggsgout12.his.huawei.com [45.249.212.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DD1C65A
-	for <oe-lkp@lists.linux.dev>; Fri, 17 Mar 2023 06:50:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41ADFC433EF;
-	Fri, 17 Mar 2023 06:50:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1679035844;
-	bh=FwNORm2z7EgotVkf6Y6iCjILfepzSXKUVVB30xpOWFs=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=HLZdzPRXFXKD6/L+Z5oU9Ss/XhzLlu15+WyhKn90xVDNWjEX0GUOdTinEt+NEOHUw
-	 bTIW+50OY9iqdpCJAqzeCZKgbvm0ch+T3PG4Z1MNrmLg46U2PuReOiSvHzACd7prUU
-	 MHHDS3mYIY6C2PdSMxaAdGzl1Om54yf+TOgeHxP8=
-Date: Fri, 17 Mar 2023 07:50:41 +0100
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Eric Biggers <ebiggers@kernel.org>
-Cc: kernel test robot <yujie.liu@intel.com>,
-	Kees Cook <keescook@chromium.org>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, Petr Mladek <pmladek@suse.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	tangmeng <tangmeng@uniontech.com>,
-	"Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Tiezhu Yang <yangtiezhu@loongson.cn>,
-	Luis Chamberlain <mcgrof@kernel.org>,
-	linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org,
-	aliyunlinux2-dev@linux.alibaba.com, jane.lv@intel.com
-Subject: Re: [linux-stable-rc:linux-4.19.y] [panic] 4d00e68cfc:
- WARNING:at_fs/sysfs/file.c:#sysfs_emit_at
-Message-ID: <ZBQNwcVBKwe1WU3h@kroah.com>
-References: <202303141634.1e64fd76-yujie.liu@intel.com>
- <20230317063213.GC882@sol.localdomain>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C74F377
+	for <oe-lkp@lists.linux.dev>; Sat, 18 Mar 2023 02:51:51 +0000 (UTC)
+Received: from mail02.huawei.com (unknown [172.30.67.169])
+	by dggsgout12.his.huawei.com (SkyGuard) with ESMTP id 4PdlPk5V87z4f3npg
+	for <oe-lkp@lists.linux.dev>; Sat, 18 Mar 2023 10:31:54 +0800 (CST)
+Received: from [10.174.176.73] (unknown [10.174.176.73])
+	by APP3 (Coremail) with SMTP id _Ch0CgDn4R+YIhVkDZF0FA--.28358S3;
+	Sat, 18 Mar 2023 10:31:54 +0800 (CST)
+Subject: Re: [PATCH v2 3/5] md: use md_thread api to wake up sync_thread
+To: Yu Kuai <yukuai1@huaweicloud.com>,
+ kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-raid@vger.kernel.org,
+ agk@redhat.com, snitzer@kernel.org, song@kernel.org,
+ linux-kernel@vger.kernel.org, yi.zhang@huawei.com, yangerkun@huawei.com,
+ logang@deltatee.com, guoqing.jiang@linux.dev, pmenzel@molgen.mpg.de,
+ "yukuai (C)" <yukuai3@huawei.com>
+References: <202303170904.640a8ece-oliver.sang@intel.com>
+ <3e171048-060f-af7c-35ec-76fad4fb6f08@huaweicloud.com>
+From: Yu Kuai <yukuai1@huaweicloud.com>
+Message-ID: <89b8377c-e953-f5c5-0ad9-d7b426f1a371@huaweicloud.com>
+Date: Sat, 18 Mar 2023 10:31:52 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230317063213.GC882@sol.localdomain>
+In-Reply-To: <3e171048-060f-af7c-35ec-76fad4fb6f08@huaweicloud.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:_Ch0CgDn4R+YIhVkDZF0FA--.28358S3
+X-Coremail-Antispam: 1UD129KBjvdXoWruw4kKr17GF1Duw1rtr4xZwb_yoWkuFcEgr
+	45uryfWFy3Cw13Kr1vy34avrsxtw15AFy8XrWxJFW7tr12gF98WFs3Zr90y3Z3Z3ykCryj
+	yryrZrZruws8ujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+	9fnUUIcSsGvfJTRUUUb3kFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+	6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+	A2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
+	Gr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
+	0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
+	jxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr
+	1lF7xvr2IY64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8cxan2IY
+	04v7Mxk0xIA0c2IEe2xFo4CEbIxvr21l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7
+	v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF
+	1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIx
+	AIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0D
+	MIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIda
+	VFxhVjvjDU0xZFpf9x0JUdHUDUUUUU=
+X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
+X-CFilter-Loop: Reflected
 
-On Thu, Mar 16, 2023 at 11:32:13PM -0700, Eric Biggers wrote:
-> On Tue, Mar 14, 2023 at 04:34:22PM +0800, kernel test robot wrote:
-> > Greeting,
-> > 
-> > FYI, we noticed WARNING:at_fs/sysfs/file.c:#sysfs_emit_at due to commit (built with gcc-11):
-> > 
-> > commit: 4d00e68cfcfd91d3a8c794d47617429a96d623ed ("panic: Expose "warn_count" to sysfs")
-> > https://git.kernel.org/cgit/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
+Hi,
+
+在 2023/03/17 11:30, Yu Kuai 写道:
+> Hi,
 > 
-> It turns out this is a longstanding bug in 4.19.y and 4.14.y caused by a bad
-> backport, which is not actually related to the above commit (or the patch series
-> that contained it) at all.  I've sent out fixes:
+> 在 2023/03/17 10:30, kernel test robot 写道:
+>>
+>> Greeting,
+>>
+>> FYI, we noticed INFO:task_blocked_for_more_than#seconds due to commit 
+>> (built with gcc-11):
+>>
+>> commit: af2203c7e88c00d3ce072f18c18a36e2936372fd ("[PATCH v2 3/5] md: 
+>> use md_thread api to wake up sync_thread")
+>> url: 
+>> https://github.com/intel-lab-lkp/linux/commits/Yu-Kuai/md-pass-a-md_thread-pointer-to-md_register_thread/20230315-142018 
+>>
+>> base: git://git.kernel.org/cgit/linux/kernel/git/song/md.git md-next
+>> patch link: 
+>> https://lore.kernel.org/all/20230315061810.653263-4-yukuai1@huaweicloud.com/ 
+>>
+>> patch subject: [PATCH v2 3/5] md: use md_thread api to wake up 
+>> sync_thread
+>>
 > 
-> 4.19: https://lore.kernel.org/r/20230317062743.313169-1-ebiggers@kernel.org
-> 4.14: https://lore.kernel.org/r/20230317062801.313217-1-ebiggers@kernel.org
+> I don't expect there is any difference between:
+> 
+> if (mddev->sync_thread)
+>      wake_up_process(mddev->sync_thread->tsk);
+> 
+> and:
+> 
+> md_wakeup_thread(mddev->sync_thread);
 
-Thanks for these, I'll queue it up the next round.
+I understand that they are different now.
 
-greg k-h
+md_wakeup_thread() only wakeup wait_event() from md_thread(), it will
+not wake up 'md_thread->tsk' if it's runing.
+
+Hence this patch is wrong.
+
+Thanks,
+Kuai
+
