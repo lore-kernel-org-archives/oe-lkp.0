@@ -1,61 +1,130 @@
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1ACFF1104
-	for <oe-lkp@lists.linux.dev>; Mon, 20 Mar 2023 07:58:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=B9tXBqcBhbdXo5EaDZWDo2ItCKJ0ITyMtl1FbqhFWEM=; b=Ug0wYU0HyjTEV4SGY43v9Tkb0w
-	YAKMSQ/Uk6Mwlz01JMlFCoEIMLj2QILHOHxsVMPlmzGuX5kof/FEEQ4+Njh6Pk5hL0nqHCGeET6Cq
-	Csr9zXAriK9Jzf45bH9eUuDLHLYw2hgoGjAnhebSQnkr3CfUmQN2hcpusvwrSBjPfXz7MjDpq3yM0
-	h3oR1T/fUW5OJh2RI4KPc/x/D9W62Y00du17uQGsdo8khOrX8US/cANVVSdFDaq8282ZXtEW0y2se
-	0xwLND+piThOktSIwWKPfrUKtKJFFIeaAzvmiZvs+EU7GdAuEwTj9nqw9jDI37As60amICGxW0dH/
-	9/lTjbfw==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-	by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-	id 1peAPs-000p0V-2P; Mon, 20 Mar 2023 07:58:52 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(Client did not present a certificate)
-	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 9D2F0300652;
-	Mon, 20 Mar 2023 08:58:50 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-	id 74DD92024966D; Mon, 20 Mar 2023 08:58:50 +0100 (CET)
-Date: Mon, 20 Mar 2023 08:58:50 +0100
-From: Peter Zijlstra <peterz@infradead.org>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com
-Subject: Re: [peterz-queue:sched/eevdf] [sched/fair]  23669fce72:
- aim7.jobs-per-min -18.6% regression
-Message-ID: <20230320075850.GA2194297@hirez.programming.kicks-ass.net>
-References: <202303201517.399a9b16-oliver.sang@intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A791B1104
+	for <oe-lkp@lists.linux.dev>; Mon, 20 Mar 2023 07:59:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1679299195; x=1710835195;
+  h=from:to:cc:subject:references:date:in-reply-to:
+   message-id:mime-version;
+  bh=YVw9SzaqPt5R2Jh/Y/jSV9pqtQ0IhNlz8O+4tLs+q/8=;
+  b=cBwN769AcZm4EZr1GGuTqVfp/L+ckimfOU/CV2/pV03YMCyi0SSFW9zd
+   ekjIozyLJTNMDxBm6fSfj/7I8vHO2AsT7bE9BvbYvWsk5bABMCplCn4yN
+   i/4vOtepL3dIT7zuQcAP00iedYyhzQ4Repjqc4/b1dC9fJ1Gr8bkEVwKB
+   iBCQAE2i634qf/kdAyu2vkjA1GBB2mv6EYQjodIjtBx47ug/vS++mNGyD
+   y3fK3DE2h4Mb5jZnc/2C8b2IX9FKUt0W7qrqfpzvBJVQ6f5vErk6huRVX
+   T08kxj2rGMY47vrmcUs0vbMSpwlIsAeKDBS9qYyWJUYvmJPvXoAVKzEpr
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10654"; a="424875553"
+X-IronPort-AV: E=Sophos;i="5.98,274,1673942400"; 
+   d="scan'208";a="424875553"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 00:59:54 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10654"; a="1010375162"
+X-IronPort-AV: E=Sophos;i="5.98,274,1673942400"; 
+   d="scan'208";a="1010375162"
+Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.238.208.55])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 00:59:50 -0700
+From: "Huang, Ying" <ying.huang@intel.com>
+To: kernel test robot <yujie.liu@intel.com>
+Cc: <oe-lkp@lists.linux.dev>,  <lkp@intel.com>,
+  <linux-kernel@vger.kernel.org>,  Andrew Morton
+ <akpm@linux-foundation.org>,  Xin Hao <xhao@linux.alibaba.com>,  Zi Yan
+ <ziy@nvidia.com>,  Yang Shi <shy828301@gmail.com>,  Baolin Wang
+ <baolin.wang@linux.alibaba.com>,  Oscar Salvador <osalvador@suse.de>,
+  "Matthew Wilcox" <willy@infradead.org>,  Bharata B Rao <bharata@amd.com>,
+  "Alistair Popple" <apopple@nvidia.com>,  Minchan Kim
+ <minchan@kernel.org>,  Mike Kravetz <mike.kravetz@oracle.com>,  Hyeonggon
+ Yoo <42.hyeyoo@gmail.com>,  <linux-mm@kvack.org>,  <feng.tang@intel.com>,
+  <zhengjun.xing@linux.intel.com>,  <fengwei.yin@intel.com>
+Subject: Re: [linus:master] [migrate_pages] 7e12beb8ca:
+ vm-scalability.throughput -3.4% regression
+References: <202303192325.ecbaf968-yujie.liu@intel.com>
+Date: Mon, 20 Mar 2023 15:58:42 +0800
+In-Reply-To: <202303192325.ecbaf968-yujie.liu@intel.com> (kernel test robot's
+	message of "Mon, 20 Mar 2023 09:12:16 +0800")
+Message-ID: <87o7onua4t.fsf@yhuang6-desk2.ccr.corp.intel.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202303201517.399a9b16-oliver.sang@intel.com>
+Content-Type: text/plain; charset=ascii
 
-On Mon, Mar 20, 2023 at 03:46:57PM +0800, kernel test robot wrote:
-> 
-> Greeting,
-> 
-> FYI, we noticed a -18.6% regression of aim7.jobs-per-min due to commit:
-> 
-> 
+Hi, Yujie,
 
-Hi Oliver,
+kernel test robot <yujie.liu@intel.com> writes:
 
-Could you do a full performance run on the current sched/eevdf
-04c54aa28eed ("sched/eevdf: Tuning...") branch?
+> Hello,
+>
+> FYI, we noticed a -3.4% regression of vm-scalability.throughput due to commit:
+>
+> commit: 7e12beb8ca2ac98b2ec42e0ea4b76cdc93b58654 ("migrate_pages: batch flushing TLB")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>
+> in testcase: vm-scalability
+> on test machine: 96 threads 2 sockets Intel(R) Xeon(R) Platinum 8260L CPU @ 2.40GHz (Cascade Lake) with 128G memory
+> with following parameters:
+>
+> 	runtime: 300s
+> 	size: 512G
+> 	test: anon-cow-rand-mt
+> 	cpufreq_governor: performance
+>
+> test-description: The motivation behind this suite is to exercise functions and regions of the mm/ of the Linux kernel which are of interest to us.
+> test-url: https://git.kernel.org/cgit/linux/kernel/git/wfg/vm-scalability.git/
+>
+>
+> If you fix the issue, kindly add following tag
+> | Reported-by: kernel test robot <yujie.liu@intel.com>
+> | Link: https://lore.kernel.org/oe-lkp/202303192325.ecbaf968-yujie.liu@intel.com
+>
 
-I'm expecting wins and losses (inevitable when you rip up the whole
-scheduler), but I'm hoping for nothing too drastic.
+Thanks a lot for report!  Can you try whether the debug patch as
+below can restore the regression?
 
+Best Regards,
+Huang, Ying
+
+-------------------------------------8<------------------------------------
+From 1ac61967b54bbdc1ca20af16f9dfb2507a4d4811 Mon Sep 17 00:00:00 2001
+From: Huang Ying <ying.huang@intel.com>
+Date: Mon, 20 Mar 2023 15:48:39 +0800
+Subject: [PATCH] dbg, rmap: avoid flushing TLB in batch if PTE is inaccessible
+
+Signed-off-by: "Huang, Ying" <ying.huang@intel.com>
+---
+ mm/rmap.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/mm/rmap.c b/mm/rmap.c
+index 8632e02661ac..3c7c43642d7c 100644
+--- a/mm/rmap.c
++++ b/mm/rmap.c
+@@ -1582,7 +1582,8 @@ static bool try_to_unmap_one(struct folio *folio, struct vm_area_struct *vma,
+ 				 */
+ 				pteval = ptep_get_and_clear(mm, address, pvmw.pte);
+ 
+-				set_tlb_ubc_flush_pending(mm, pte_dirty(pteval));
++				if (pte_accessible(mm, pteval))
++					set_tlb_ubc_flush_pending(mm, pte_dirty(pteval));
+ 			} else {
+ 				pteval = ptep_clear_flush(vma, address, pvmw.pte);
+ 			}
+@@ -1963,7 +1964,8 @@ static bool try_to_migrate_one(struct folio *folio, struct vm_area_struct *vma,
+ 				 */
+ 				pteval = ptep_get_and_clear(mm, address, pvmw.pte);
+ 
+-				set_tlb_ubc_flush_pending(mm, pte_dirty(pteval));
++				if (pte_accessible(mm, pteval))
++					set_tlb_ubc_flush_pending(mm, pte_dirty(pteval));
+ 			} else {
+ 				pteval = ptep_clear_flush(vma, address, pvmw.pte);
+ 			}
+-- 
+2.30.2
 
