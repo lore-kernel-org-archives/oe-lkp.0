@@ -1,76 +1,87 @@
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 664AF137A
-	for <oe-lkp@lists.linux.dev>; Mon,  3 Apr 2023 06:33:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B6E920F2
+	for <oe-lkp@lists.linux.dev>; Mon,  3 Apr 2023 08:43:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680503580; x=1712039580;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=bzuLV51UVBrWNiOV4Se3Kfox2PTSfjdqq1ghwTV7+Y8=;
-  b=bNmhoy1MJjkrf8Wcyt/HUEINpWH/0QQ8/Q69P1dWgf5X7N6WakV+wB0r
-   xbuHy1c4abk8nhJdgj94vv2JPygn1ZePx2PXxwecEbvbTu7utYH+jIkUu
-   Yfeihy43F3lKYkeTO3OUaSuKvKATxx4i8D0vKOyjlohm7Oi+8VRnRAd9R
-   u/rd02Qwy1ZNu02Ob4bH3/fpd2yYo+pu1erYwvWCyx4kbG1PyJxMUAtc8
-   iatMViIuI8h2O5XpStl4X8kl2vq4Sn5g2SmXm9uvT1iuUV3hYzClcnh5H
-   /80THO1+VPFJUh6rhvaGyU0i6Hrjgyhm01JWFtsxQ9z78QXwb3kVZFrlN
+  t=1680511403; x=1712047403;
+  h=date:from:to:cc:subject:message-id:
+   content-transfer-encoding:mime-version;
+  bh=S9Nxp05Hz4inVOW7CMB/MyTT02ncQxgfjLe3MLZDWNY=;
+  b=m1jXM2pmE0crGLRRTGiUG6qItPAq79aG0275Affh8Fh7R8ZaE3/1lmwf
+   3wUgBa/DS6q3PVNgNNFUr730C6Tlg179UNXNeIvBZpA9izQxxqVgTd4Rx
+   bmfu2E6b5PIyLSLiCtM61r8S2CgEjBbVXXw6c6G1azpPg0VULmPZyHdOa
+   TE53ctrD9gMkSTvq12xIKaKyVpxvnijUYe0S6NB343FBZoBl1mj3BXLVP
+   C+AkrvyK9/vKCzNaAA3aZyjSIl2l6ytFszuKn2BvO0h3W0lYDbeEBPBMo
+   kXDVf+z3AqzCVnA7fYuZPdfh8j3sqdVBPLmEpMJ5ynmxzq+Lp7aPGnEON
    A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10668"; a="369630001"
+X-IronPort-AV: E=McAfee;i="6600,9927,10668"; a="341870136"
 X-IronPort-AV: E=Sophos;i="5.98,314,1673942400"; 
-   d="xz'341?yaml'341?scan'341,208,341";a="369630001"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2023 23:32:58 -0700
+   d="yaml'?scan'208";a="341870136"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2023 01:43:20 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10668"; a="750387133"
+X-IronPort-AV: E=McAfee;i="6600,9927,10668"; a="718467145"
 X-IronPort-AV: E=Sophos;i="5.98,314,1673942400"; 
-   d="xz'341?yaml'341?scan'341,208,341";a="750387133"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by fmsmga008.fm.intel.com with ESMTP; 02 Apr 2023 23:32:58 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+   d="yaml'?scan'208";a="718467145"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by orsmga001.jf.intel.com with ESMTP; 03 Apr 2023 01:43:19 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Sun, 2 Apr 2023 23:32:57 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ 15.1.2507.21; Mon, 3 Apr 2023 01:43:19 -0700
+Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21 via Frontend Transport; Sun, 2 Apr 2023 23:32:57 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.176)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ 15.1.2507.21; Mon, 3 Apr 2023 01:43:18 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21 via Frontend Transport; Mon, 3 Apr 2023 01:43:18 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.168)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.21; Sun, 2 Apr 2023 23:32:56 -0700
+ 15.1.2507.21; Mon, 3 Apr 2023 01:43:18 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FA/0xa5SrlOgTOIDibYN2sJOL2NTk+XlP/LLbiSO3FnSGnb3TLX3CeYPYs2qFI4PzzjjwUEfRa7O9lRclb5xoElGQICV088XHjZkhSdiFwRBbp/OefXa7cKefpgaaZMXGJr5ExFRUQNndaFq/vKDojWJODvHvTWow7NrpibMvO8DH6zslP0NlbO30EWb6oN0UJdfs5HxPQm/RHUNMqxJD0BPjD2qQojel3K4uc+eNzHCyS4a179jg4hVfD3J+2/ct88R+Zs2V3Aoi2M4lqTR5ogyep7agV6zq5PzsNok+1I9jUpdrPcFFmPnd416B0ffZJ6/xpNqPcCGUTlcEzZUiA==
+ b=OqeWKXXyiK989lMh2rw4tN6/ao6rbCKAtAy1M6ssj1rdxXhHfcxmLiPrF33sgU7HceKqdQYhAW/tKRs1vK/nBXNLRRgq7JbnXzVin3pMRpGdiYjP04QLxEQVPedUz4r1u5XQYXfP3Lws1HAm+71Hn3nZdKumy6u7+sEx3Ro0SzGyOzhM8Po3vsp7x5MpblpFnubhdVKrT7teijl0HoBOHcmLY+O+1BW4IwCj8tZg1vnlpzLO0v60YUIAsMfcdO+uFZ8+3PBRH43NHltYHMaYcxNLd8erDFCGQ4KvAuroLHMhuPlOhIwoYJt1Ka/R9CRa2RRhYBEG7c28ZPmq7QE8uA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sZDHPlLNrPTnQ441j531BYoJyihgBykz2mc9F+ZqqF4=;
- b=DYuZ4hNgA+ER7QvkWKPMjBBU16C8CTgjZBnwdPxf5RhA54cxhxyz2rZtagfG+W5yxQN3CGowRMSOrPBb2A8M/ZXN/pDf5smrcdPQy/3IzAvkMIK3yqlX8NbApKLYDWHtNz/5fPiFdQP7/e14pQyqWo9nQdQAuNdNYb9wi/sgTZKGGaNKUlSTnhpfrAwbBbcc5MD1k9CvURrNwtds+yAVUgPOy1OpggcoaPXfEexxJ3eiEf4pLIhQEL/QAffnLlz02g4HzAELWiIn4LrO15wI3wAYxCsLPPvgiNFF8IMMJj0HRPrqS8+f2IoOlrexV9NTaBg5ez+57Z7Nr2J4J2RcRA==
+ bh=c5+X18sd23F1/9JPzdAwEa8H93AaPb6E5QBgaXlIpms=;
+ b=VVPRIGXYgskLqMCnwVR7PCmX1fohTxkA85q+gxANo2+1UM7FEi7M5Nw5d9ZkhylH8/VkdGIoC1lHrAFBQ5VSjVYuwA+ZJeHfp7QUhuJKejEbNnusEqVtedd4h7QTm3aFpPZqMb3c4azcvF+lHL2duuYjDShp3rxUPzBXFN2J95CXXlY7iwhMJt76aCxEmDgp4rqm9bH6RFmuWc1e0dpEMuNCU3b+aIwSxGoUdTXTu4l1wm5JrXgjSEsPI1g3FExloCI3AIxJZ/yR/lpD6MN9hs3wCxbsgt0ShlrJYIWTktlcUt7pclPgbW6mrqUKFUd2z5zBh7KI7vH4iYI6UxEToQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
- by PH7PR11MB6030.namprd11.prod.outlook.com (2603:10b6:510:1d1::19) with
+ by IA1PR11MB6443.namprd11.prod.outlook.com (2603:10b6:208:3a8::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.24; Mon, 3 Apr
- 2023 06:32:46 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6222.30; Mon, 3 Apr
+ 2023 08:43:13 +0000
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com
  ([fe80::e073:f89a:39f9:bbf]) by PH8PR11MB6779.namprd11.prod.outlook.com
  ([fe80::e073:f89a:39f9:bbf%6]) with mapi id 15.20.6254.033; Mon, 3 Apr 2023
- 06:32:46 +0000
-Date: Mon, 3 Apr 2023 14:32:35 +0800
+ 08:43:13 +0000
+Date: Mon, 3 Apr 2023 16:43:00 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Christian Brauner <brauner@kernel.org>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>
-Subject: [brauner:pidfd.file.api] [fork]  761ce43fda: ltp.clone302.fail
-Message-ID: <202304031418.52466529-oliver.sang@intel.com>
-Content-Type: multipart/mixed; boundary="O5JI0LRs+fmlOVNl"
+To: David Howells <dhowells@redhat.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Linux Memory Management List
+	<linux-mm@kvack.org>, Jens Axboe <axboe@kernel.dk>, Christoph Hellwig
+	<hch@lst.de>, Steve French <smfrench@gmail.com>, Al Viro
+	<viro@zeniv.linux.org.uk>, David Hildenbrand <david@redhat.com>, John Hubbard
+	<jhubbard@nvidia.com>, <linux-fsdevel@vger.kernel.org>,
+	<ying.huang@intel.com>, <feng.tang@intel.com>, <fengwei.yin@intel.com>
+Subject: [linux-next:master] [splice]  3eb3c59b12:
+ stress-ng.sendfile.ops_per_sec 8.4% improvement
+Message-ID: <202304031630.6502f0db-oliver.sang@intel.com>
+Content-Type: multipart/mixed; boundary="qSm7Wl+FUVQR91mZ"
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: SG2PR01CA0156.apcprd01.prod.exchangelabs.com
- (2603:1096:4:8f::36) To PH8PR11MB6779.namprd11.prod.outlook.com
- (2603:10b6:510:1ca::17)
+X-ClientProxiedBy: SGAP274CA0023.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b6::35)
+ To PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -78,123 +89,99 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|PH7PR11MB6030:EE_
-X-MS-Office365-Filtering-Correlation-Id: 18fe8c91-124f-4a07-a15a-08db340d3bfd
+X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|IA1PR11MB6443:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6552bba0-1d99-4358-e5d6-08db341f753f
 X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: yeckTxsxKVnEQ+t9a8pdtb+c9MdFu1Zr/KGY76sW9/SgpUQPSG/J4jwRTXE57bLzEMNge2Da1b8U8pOt7tnbHFTEexT6tgBzGwNdI8PNPTu7lJRks3w1ByksCZ5agXft0WfA6WdyvbDmenENbjAXDsmMbfnnf4PPFvHxYpv9C9TDeEyhZGHGXcZdi8i32dLRA/7e6d0ZTum/GgDjqPE5zW4l1Y53qfueYghQAn4m0DFgagSeKqr1oo13djg8jNSd6K73EkuXvQRL9d78wtGUkKLN4aObU8eWq5mRYGuDzdGJzduC8pHY08miDVagzxHkTu6bjsTLiFhGEeOwal66DBKB5NJQImb2Sw2D3vPkF7NsA5sinSMISLyG6NeVOBm4o7c3k5MOLgunAiUWOJdP6yfEczCfuFsmcJtzdOEef5WQu6oPt14ExX/Gng6eelmv67U8L1bHQXce0MF9hzGbrtoyb8QX8h7cQJYuY8RcPs788OucFCbRF6q4vuNHbCFqomAD0gF8PEaCQbp6GCDf/DGCCXuDeKKTSmluAFKSUwNCnqn7s37bpLbgBacLLiwGYHLFMZ9cKITkGKPMaoU3lrCHrqRoKUNpEj1E9+pKiqYg+7Ieejzlo/okQOHXqXmmkw/SOs5adQRtRAdqGvKVWw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(396003)(366004)(376002)(346002)(39860400002)(136003)(451199021)(8676002)(8936002)(66946007)(66556008)(66476007)(6916009)(5660300002)(235185007)(41300700001)(6486002)(4326008)(2906002)(478600001)(83380400001)(6666004)(966005)(316002)(44144004)(6506007)(26005)(6512007)(1076003)(21490400003)(38100700002)(186003)(2616005)(107886003)(36756003)(82960400001)(86362001)(2700100001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: vwxQB1aC49z0gB/FU9FDcxh8RJjZiPx86MVDK1GS2aC0JlG55a3TpzJaaroL8OOipsPqc0LZhRfRFGsQicc6Uqg24WtvW1ck0kFsFF64tFBX1t4AwK7+lChS1Zkm43DeaNTTvPPK12rDVnGbQiHu+T8xtuuZEhqdCRysiJSc2bjeBoI2HO7pet6VE6sm+eW4ItHDB3RzG+8XKAX9BYXMrkKTx9kyYmNHSjlwIP0cwCrfLfy+qaOfyOMqC3/C4gKR1WaFsimKIFAiL1e39FgAkk27NTpqODUilbFk3rGMrmmwWKTVxGB0AZ29Adp++SsFLkSxT4M2iM6+SSOGW3dqhNC/esdPEtqy0mdFpZxkmxNrA+LCRVjcUg8VdqCUPYF+TQqBOzOVebmqfN7/6zfWb6vEpWHBBPhuS8gzIh0R4rUgFfQZIgLWzsi/Kdt2oiC/isSSDaeCaF1Woy6WoxofinjoJbW1k/FBPSQGx7v1/EAT4MgoHxJCuEFWP+0FaScmzVqNBw0enh2toQP6ad6XtuhvaUZU0Rr4CDO5VJ88rzr1GufixZyD2/wiX+UYaRZ10lhkoACRXrkWrHh982W+VI9tsyvmlKOH/TeWlBNpJ7tSR1f592iRHXmHQHiISpjCdgGQSTY7B3p4+bWdBm3DfQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(376002)(396003)(136003)(366004)(346002)(39860400002)(451199021)(2906002)(38100700002)(36756003)(86362001)(5660300002)(478600001)(107886003)(6666004)(6486002)(966005)(2616005)(83380400001)(8676002)(30864003)(6512007)(316002)(6506007)(66556008)(44144004)(4326008)(21490400003)(6916009)(19627235002)(66946007)(1076003)(66476007)(54906003)(186003)(8936002)(82960400001)(235185007)(26005)(41300700001)(7416002)(2700100001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?T6O9kHiiT3CHYGxAel4nphYtNfJBBI1EoukR9IqjBK8Tj5MLOLwvAhHytDFg?=
- =?us-ascii?Q?F4GXLNEOU+YYtk4upyT1lnQTLudKW/tuBIrA3PSK3lBFScfh7lsRiPZ9nXfy?=
- =?us-ascii?Q?9wxzbdlXG1/+7kKDa8dfOv3ytKgUo21WahVAuoBIvO0Ng0lgMFwyFcTsh+W3?=
- =?us-ascii?Q?bqwKgF5VFVSYaQV4eVYkZj7P5JMYulUNurUsfQyzHwFFOABLKe4Wn81QwKgJ?=
- =?us-ascii?Q?LzuWGkMf8JSDzqRTilluqjsBXGTF00VrjMOQquBej1mt/wflquZ+Sr7rNNyu?=
- =?us-ascii?Q?O8RIYd5C2vLre91eQCM42Lr8jVccTJjCVCZbq9jL7X5ATDOIp+EKYDwL+emE?=
- =?us-ascii?Q?V848l5GIOky/sQc2Ieh1E8MANn5K3PQQrFngzuMh+BdLE4az5YmAngpSypL6?=
- =?us-ascii?Q?kmUekRYAZt8p7RKRrnTYwFgDczmf0IoAxIGmQ1eQJgN12mVyDPy0zEyqduEi?=
- =?us-ascii?Q?ybmexTkLv1zw7SPjtSqakeheX5VWMrCNf+JJxuSblU4yNKMnGvpGlFinFX1q?=
- =?us-ascii?Q?RThts35TboNn36pkzSZiZ8LPyix9y4giNcwuTvb+udgRULibTxrXsNHPBrIV?=
- =?us-ascii?Q?SvfWqniRdMuFrVHIFxt0mb1SgziSlQ8/LpkTW93Q56W3dAJh6iDOR3Dv0zaS?=
- =?us-ascii?Q?wTe1y6TuzIK6KEXzzqTUKcCQx12o1r18dAJlDtzIVX+GKQzy3qFXjzzPiAwt?=
- =?us-ascii?Q?jZrORWm5PEhk77GuNkWINF0uFf3NQzpGLTGApBA7n/YL76hpYUYRCnx9h8+1?=
- =?us-ascii?Q?XIP90swXV8fKx/mzvvSOAUMzru+HCPl2LNBB4RoMyUL4voA+gmfn/AEG9fqk?=
- =?us-ascii?Q?yYyftY7PEi1M6BDFXymkpFGWWOxEkeRdnw7UaE1SR8R0q5AhlF6e+CJiwfRA?=
- =?us-ascii?Q?1QXTg0k/WudH1zeFKNJFviLg21eRk7oYpSD6uH+M8ExfKcXrdD5w4VEBIp+g?=
- =?us-ascii?Q?J4pQSRO8YEwQc/Dgg83hHZKuTXyJMn0VFrqI/qMzGpmO6bb4pk0dbGqlLWzN?=
- =?us-ascii?Q?ORxn2yzPpPm0UdOmj8LKG+9k6c7gJY5TDRjfDBTXsCLpw7DK9RzTA0E17I+2?=
- =?us-ascii?Q?gQK0RjF8wqQ0uE0CQhDrOus+rgBp30bROApUTyOqkfkuxMqlsmpFf0mWsAAa?=
- =?us-ascii?Q?v6WI1fvWGahKueikbwhP9iS8Uho/olOvZsGKMbz0uh3MRXenq4fOlJySVKHR?=
- =?us-ascii?Q?+WgmCig5cPdqtuoQVaR2RGB2g9QbtLOkJxy9wX36yqTQGsWq5uA6BfP+xhIb?=
- =?us-ascii?Q?DRpoh9rhF4sQlqIYqemLBqn5v/8x79/WEGpKkehcaqXROJRoHq3vFUYc5P4A?=
- =?us-ascii?Q?+L4YYOms/EwcDTGxOcu/kKiSSqtuGGwN14jy4IKeVJHaR+c1JS+JrI4jbiG+?=
- =?us-ascii?Q?ykQxg8H0SBc0qPP6egReY5ScFxc0i9HPDwC4vIT4TfdN7z4zC4bta0g68ZIW?=
- =?us-ascii?Q?7XtM42wtzqs/WG2/8RrSYkmoe8SX1kGLC1/d3Fm0rANxx2VK9SCusq/ucSIY?=
- =?us-ascii?Q?crcfxpW0811AS4U/ri9XS0jAACsYNFWnpwel2i0wWCl5U3en1ZVDN7eUMycC?=
- =?us-ascii?Q?wliYcqTdT0iEei4bT1/cuaXDfSmEk66Lcbv0AQg9m8xEcqD+/WJmmArpTiBj?=
- =?us-ascii?Q?Gg=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 18fe8c91-124f-4a07-a15a-08db340d3bfd
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?HcSnhcK9jnO8hfiyCYjveJEaIVOF4GYYTdl67vbjBa6NawUVUVOB6NIk+X?=
+ =?iso-8859-1?Q?nCOgvrzvNi0Q8O+jzzWNyqAKIsJbmRXjcDzPXl41xaHXcX+1tUQyHtwNO9?=
+ =?iso-8859-1?Q?wn1tlKAWdvxZAIRIFthOQ9JVKBYSYcAPfZyAX/S/tCVhDVU8P0qFnURYAK?=
+ =?iso-8859-1?Q?aZkCIooPP8InF0hWmt5zVKkcFq2fe9p24/xgx75srIYk8/kGdWkzN6mZXn?=
+ =?iso-8859-1?Q?NohTqVoRwQySPouaDiRZ6DgN+/L2KT+3I5I06LO7fQtgvf68s7gMVrgdy4?=
+ =?iso-8859-1?Q?dBwkrPB0KJUzn/t20Z7BY4FdxAdANR6Zsuq0T2mmztWxIFCkmseNdXbuIm?=
+ =?iso-8859-1?Q?wRhl3N6ahX3iwI0TPBnkm+kDFovmAxrk0ss2NGTl00CZH0gqowNAoUGwme?=
+ =?iso-8859-1?Q?I46oxCBaTlM+iJgmBtmHR3MCxKfRpgJcCrHwV6g1gBhc2KfjhPFr7Ij4lQ?=
+ =?iso-8859-1?Q?7H3kfJCzfDOa1Qi4d8+A/Usf3E7BNW6/M1K6gGwYf5JBMOPBdA9tg1v6IZ?=
+ =?iso-8859-1?Q?kGiw9dlH/rHkirTBn+r1Cgii698V4gAYO2VrEIj0a29YZpFiqvUxQLv47p?=
+ =?iso-8859-1?Q?OgwDg7shDZ40VeuP6eHtL5BrFNvA9uLhE6IxNGMlLd5VcBoZNOHAiPrpkM?=
+ =?iso-8859-1?Q?+TngmxPnWWSQZQ/ISFZZM8ZIwutu4EUTp0b9cUiMakrdNLhJNq8Otm2l+N?=
+ =?iso-8859-1?Q?C3hkjM4Jq2w7qQSOd78KBpRPvrNPAbPh0wGA93vCaXGHvyBuKQArGQW1UN?=
+ =?iso-8859-1?Q?/rQQAeZfZrVPM05+Sz4bzpNX7iAYkCa6I+S9zFl6eLl0CfCuUAvIWC+AX+?=
+ =?iso-8859-1?Q?iGlJ6cWgD8dSABsWcDUHRiRUCahbfnfbY8EYVHBrxtv593tZabMkYpr93v?=
+ =?iso-8859-1?Q?d/WeSENkZU5BLLoAEtJAEaRfPVDO6vbyjp7myqGGm6EXRHPFkvZuMODIAw?=
+ =?iso-8859-1?Q?OGPNpmfSrO/X+AQBM0H/z6tCfpk5Ujn+4Gxmk75cldITmNh0/LhQq3LjQC?=
+ =?iso-8859-1?Q?uU/RYcGaWsNsP2WwhJzUi1jake+DlIHQmc03dseyWH5Q8ro9XrZ6Tqgxwr?=
+ =?iso-8859-1?Q?WxFP4oiFixsOZMcO4kGPF/7TtEbuWf6sF8otultf/0GKa8yXT3DaETC9Q5?=
+ =?iso-8859-1?Q?8YVyS0JC23o0jAnxN8fZDilCULFYE6TI/zS+D2ZR94my2DPu4gT2KNZPnj?=
+ =?iso-8859-1?Q?x4oWGl5Nb2yMobXXVWtBLLoB4togV+4++e6fJEN6QX7Kk89sPwTdsj7sfG?=
+ =?iso-8859-1?Q?6ZAFRoV5ooNZ+ORDvFN6sBMRtXpi2Fze8xOUEgNCytCHonrZy4zycsiWIY?=
+ =?iso-8859-1?Q?Z4O6VpdvCLN3dBWB1hwY4OQ/xsm4PgmGI7MDunb/NON7QKVqWh58L1EiX+?=
+ =?iso-8859-1?Q?JtnMcun5hkPsI8mrh15ptmWpbRK+IQpKZD3o6m5fP8VCjbJWXayJW5FERO?=
+ =?iso-8859-1?Q?u2kfc14pHEwwVwfQuIo0xdvpEA6zEBqEFwQoj3k0d5xTv/56e0ZssDQNqJ?=
+ =?iso-8859-1?Q?rI458/bEUxeh66eoVxosXyKZTI/uugD6Bjjinsl/DeiBX2V8I1TyA6vtO6?=
+ =?iso-8859-1?Q?lTmrPXzdyH9E3gfN6GImfn1bOJU/nXcXHGMf5IpGQo+iHvroHF411DJCHL?=
+ =?iso-8859-1?Q?8i9916ifUGyuu8FviluC4KXN/3EFOtqkbpmEeO5gf/oGDhtdYVYR72Ew?=
+ =?iso-8859-1?Q?=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6552bba0-1d99-4358-e5d6-08db341f753f
 X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB6779.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Apr 2023 06:32:45.8179
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Apr 2023 08:43:12.9802
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: oz8wkjpHmn1r7At9bPqvOKaLuDfiVJgIms90L5znQfhpX5JjP2FhoZ+4PB47J2LLb3wbyZpDACeDThDL4EWZcQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB6030
+X-MS-Exchange-CrossTenant-UserPrincipalName: EVX9E6bf9ax+rnhFZTsvcYeNZpXPD90CgB+KQSY7JXT0GefzsB2jFSB9nRT5cHPqqLIZcwNCpI7zrQndzUuSVg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB6443
 X-OriginatorOrg: intel.com
 
---O5JI0LRs+fmlOVNl
-Content-Type: text/plain; charset="us-ascii"
+--qSm7Wl+FUVQR91mZ
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+
 
 
 Greeting,
 
-FYI, we noticed ltp.clone302.fail due to commit (built with gcc-11):
+FYI, we noticed a 8.4% improvement of stress-ng.sendfile.ops_per_sec due to commit:
 
-commit: 761ce43fda7ebcdf1b1aa8e797ec83fae0e34c47 ("fork: use pidfd_prepare()")
-https://git.kernel.org/cgit/linux/kernel/git/brauner/linux.git pidfd.file.api
 
-in testcase: ltp
-version: ltp-x86_64-14c1f76-1_20221128
+commit: 3eb3c59b128509a5e8a8349dafced64b9769438e ("splice: Do splice read from a file without using ITER_PIPE")
+https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+
+in testcase: stress-ng
+on test machine: 128 threads 2 sockets Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz (Ice Lake) with 128G memory
 with following parameters:
 
-	disk: 1HDD
-	fs: xfs
-	test: syscalls-05
-
-test-description: The LTP testsuite contains a collection of tools for testing the Linux kernel and related features.
-test-url: http://linux-test-project.github.io/
-
-
-on test machine: 4 threads Intel(R) Core(TM) i5-6500 CPU @ 3.20GHz (Skylake) with 32G memory
-
-caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
+	nr_threads: 100%
+	testtime: 60s
+	class: pipe
+	test: sendfile
+	cpufreq_governor: performance
 
 
+In addition to that, the commit also has significant impact on the following tests:
+
++------------------+------------------------------------------------------------------------------------------+
+| testcase: change | stress-ng: stress-ng.sendfile.ops_per_sec 11.2% improvement                              |
+| test machine     | 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480+ (Sapphire Rapids) with 256G memory |
+| test parameters  | class=pipe                                                                               |
+|                  | cpufreq_governor=performance                                                             |
+|                  | nr_threads=100%                                                                          |
+|                  | test=sendfile                                                                            |
+|                  | testtime=60s                                                                             |
++------------------+------------------------------------------------------------------------------------------+
 
 
-If you fix the issue, kindly add following tag
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Link: https://lore.kernel.org/oe-lkp/202304031418.52466529-oliver.sang@intel.com
 
 
-<<<test_start>>>
-tag=clone302 stime=1680367813
-cmdline="clone302"
-contacts=""
-analysis=exit
-<<<test_output>>>
-tst_buffers.c:55: TINFO: Test is using guarded buffers
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-clone302.c:101: TPASS: invalid args: clone3() failed as expected: EFAULT (14)
-clone302.c:101: TPASS: zero size: clone3() failed as expected: EINVAL (22)
-clone302.c:101: TPASS: short size: clone3() failed as expected: EINVAL (22)
-clone302.c:101: TPASS: extra size: clone3() failed as expected: EFAULT (14)
-clone302.c:101: TPASS: sighand-no-VM: clone3() failed as expected: EINVAL (22)
-clone302.c:101: TPASS: thread-no-sighand: clone3() failed as expected: EINVAL (22)
-clone302.c:101: TPASS: fs-newns: clone3() failed as expected: EINVAL (22)
-clone302.c:96: TFAIL: invalid pidfd: clone3() should fail with EFAULT: EINVAL (22)
-clone302.c:101: TPASS: invalid signal: clone3() failed as expected: EINVAL (22)
-clone302.c:101: TPASS: zero-stack-size: clone3() failed as expected: EINVAL (22)
-clone302.c:101: TPASS: invalid-stack: clone3() failed as expected: EINVAL (22)
-
-Summary:
-passed   10
-failed   1
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status="ok"
-duration=0 termination_type=exited termination_id=1 corefile=no
-cutime=0 cstime=1
-<<<test_end>>>
-
+Details are as below:
+-------------------------------------------------------------------------------------------------->
 
 
 To reproduce:
@@ -208,6 +195,323 @@ To reproduce:
         # if come across any failure that blocks the test,
         # please remove ~/.lkp and /lkp dir to run from a clean state.
 
+=========================================================================================
+class/compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
+  pipe/gcc-11/performance/x86_64-rhel-8.3/100%/debian-11.1-x86_64-20220510.cgz/lkp-icl-2sp6/sendfile/stress-ng/60s
+
+commit: 
+  82ab8404c9 ("tty, proc, kernfs, random: Use direct_splice_read()")
+  3eb3c59b12 ("splice: Do splice read from a file without using ITER_PIPE")
+
+82ab8404c910d4ab 3eb3c59b128509a5e8a8349dafc 
+---------------- --------------------------- 
+         %stddev     %change         %stddev
+             \          |                \  
+     36216            +8.4%      39262        stress-ng.sendfile.MB_per_sec_sent_to_/dev/null
+  68875003            +9.2%   75213668        stress-ng.sendfile.ops
+   1156844            +8.4%    1253553        stress-ng.sendfile.ops_per_sec
+ 1.015e+11            -2.2%  9.931e+10        perf-stat.i.branch-instructions
+      0.22            -0.1        0.13        perf-stat.i.branch-miss-rate%
+   1.3e+08           -78.2%   28315322        perf-stat.i.branch-misses
+      0.76            +3.3%       0.78        perf-stat.i.cpi
+  1.47e+11            -7.9%  1.353e+11        perf-stat.i.dTLB-loads
+      0.00 ±  5%      -0.0        0.00        perf-stat.i.dTLB-store-miss-rate%
+    223138 ± 34%     -77.1%      51179 ±  4%  perf-stat.i.dTLB-store-misses
+ 7.976e+10           -12.6%  6.967e+10        perf-stat.i.dTLB-stores
+      1.33            -3.8%       1.28        perf-stat.i.ipc
+      1.13            -8.0%       1.04        perf-stat.i.metric.G/sec
+      1433            -6.7%       1337        perf-stat.i.metric.M/sec
+      0.13            -0.1        0.02 ± 70%  perf-stat.overall.branch-miss-rate%
+      0.00 ± 35%      -0.0        0.00 ± 70%  perf-stat.overall.dTLB-store-miss-rate%
+      1.33           -35.6%       0.86 ± 70%  perf-stat.overall.ipc
+ 9.991e+10           -34.9%  6.505e+10 ± 70%  perf-stat.ps.branch-instructions
+ 1.279e+08           -85.5%   18523463 ± 70%  perf-stat.ps.branch-misses
+ 1.447e+11           -38.7%  8.866e+10 ± 70%  perf-stat.ps.dTLB-loads
+    220282 ± 33%     -84.3%      34605 ± 70%  perf-stat.ps.dTLB-store-misses
+  7.85e+10           -41.9%  4.564e+10 ± 70%  perf-stat.ps.dTLB-stores
+ 3.136e+13           -34.9%  2.041e+13 ± 70%  perf-stat.total.instructions
+     73.35           -73.4        0.00        perf-profile.calltrace.cycles-pp.generic_file_splice_read.splice_direct_to_actor.do_splice_direct.do_sendfile.__x64_sys_sendfile64
+     69.91           -69.9        0.00        perf-profile.calltrace.cycles-pp.filemap_read.generic_file_splice_read.splice_direct_to_actor.do_splice_direct.do_sendfile
+     26.95           -27.0        0.00        perf-profile.calltrace.cycles-pp.filemap_get_pages.filemap_read.generic_file_splice_read.splice_direct_to_actor.do_splice_direct
+     25.81 ±  2%     -25.8        0.00        perf-profile.calltrace.cycles-pp.filemap_get_read_batch.filemap_get_pages.filemap_read.generic_file_splice_read.splice_direct_to_actor
+     23.20           -23.2        0.00        perf-profile.calltrace.cycles-pp.copy_page_to_iter.filemap_read.generic_file_splice_read.splice_direct_to_actor.do_splice_direct
+      5.56            -5.6        0.00        perf-profile.calltrace.cycles-pp.sanity.copy_page_to_iter.filemap_read.generic_file_splice_read.splice_direct_to_actor
+     99.21            -0.1       99.15        perf-profile.calltrace.cycles-pp.splice_direct_to_actor.do_splice_direct.do_sendfile.__x64_sys_sendfile64.do_syscall_64
+     99.33            -0.1       99.27        perf-profile.calltrace.cycles-pp.do_splice_direct.do_sendfile.__x64_sys_sendfile64.do_syscall_64.entry_SYSCALL_64_after_hwframe
+     99.44            -0.0       99.40        perf-profile.calltrace.cycles-pp.do_sendfile.__x64_sys_sendfile64.do_syscall_64.entry_SYSCALL_64_after_hwframe.sendfile
+     99.53            -0.0       99.49        perf-profile.calltrace.cycles-pp.__x64_sys_sendfile64.do_syscall_64.entry_SYSCALL_64_after_hwframe.sendfile
+     99.55            -0.0       99.52        perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.sendfile
+      1.80            +0.1        1.86        perf-profile.calltrace.cycles-pp.page_cache_pipe_buf_confirm.__splice_from_pipe.splice_from_pipe.direct_splice_actor.splice_direct_to_actor
+      0.60            +0.1        0.67        perf-profile.calltrace.cycles-pp.apparmor_file_permission.security_file_permission.vfs_splice_read.splice_direct_to_actor.do_splice_direct
+      0.82            +0.1        0.92        perf-profile.calltrace.cycles-pp.security_file_permission.vfs_splice_read.splice_direct_to_actor.do_splice_direct.do_sendfile
+      2.12            +0.2        2.28        perf-profile.calltrace.cycles-pp.vfs_splice_read.splice_direct_to_actor.do_splice_direct.do_sendfile.__x64_sys_sendfile64
+      0.00            +0.5        0.51        perf-profile.calltrace.cycles-pp.current_time.atime_needs_update.touch_atime.filemap_splice_read.splice_direct_to_actor
+      0.00            +0.6        0.63        perf-profile.calltrace.cycles-pp.__might_resched.filemap_splice_read.splice_direct_to_actor.do_splice_direct.do_sendfile
+     10.48            +1.0       11.52        perf-profile.calltrace.cycles-pp.page_cache_pipe_buf_release.__splice_from_pipe.splice_from_pipe.direct_splice_actor.splice_direct_to_actor
+      0.00            +1.2        1.20        perf-profile.calltrace.cycles-pp.atime_needs_update.touch_atime.filemap_splice_read.splice_direct_to_actor.do_splice_direct
+      0.00            +1.3        1.34        perf-profile.calltrace.cycles-pp.xas_load.filemap_get_read_batch.filemap_get_pages.filemap_splice_read.splice_direct_to_actor
+     23.28            +1.6       24.84        perf-profile.calltrace.cycles-pp.direct_splice_actor.splice_direct_to_actor.do_splice_direct.do_sendfile.__x64_sys_sendfile64
+      0.00            +1.6        1.56        perf-profile.calltrace.cycles-pp.touch_atime.filemap_splice_read.splice_direct_to_actor.do_splice_direct.do_sendfile
+     22.93            +1.6       24.52        perf-profile.calltrace.cycles-pp.splice_from_pipe.direct_splice_actor.splice_direct_to_actor.do_splice_direct.do_sendfile
+     20.74            +1.9       22.66        perf-profile.calltrace.cycles-pp.__splice_from_pipe.splice_from_pipe.direct_splice_actor.splice_direct_to_actor.do_splice_direct
+      0.00            +2.2        2.15        perf-profile.calltrace.cycles-pp.folio_mark_accessed.filemap_splice_read.splice_direct_to_actor.do_splice_direct.do_sendfile
+      0.00           +13.8       13.84        perf-profile.calltrace.cycles-pp.release_pages.__pagevec_release.filemap_splice_read.splice_direct_to_actor.do_splice_direct
+      0.00           +14.6       14.58        perf-profile.calltrace.cycles-pp.__pagevec_release.filemap_splice_read.splice_direct_to_actor.do_splice_direct.do_sendfile
+      0.00           +18.2       18.20        perf-profile.calltrace.cycles-pp.splice_folio_into_pipe.filemap_splice_read.splice_direct_to_actor.do_splice_direct.do_sendfile
+      0.00           +27.5       27.51        perf-profile.calltrace.cycles-pp.filemap_get_read_batch.filemap_get_pages.filemap_splice_read.splice_direct_to_actor.do_splice_direct
+      0.00           +28.8       28.78        perf-profile.calltrace.cycles-pp.filemap_get_pages.filemap_splice_read.splice_direct_to_actor.do_splice_direct.do_sendfile
+      0.00           +70.1       70.08        perf-profile.calltrace.cycles-pp.filemap_splice_read.splice_direct_to_actor.do_splice_direct.do_sendfile.__x64_sys_sendfile64
+     73.51           -73.4        0.15 ±  3%  perf-profile.children.cycles-pp.generic_file_splice_read
+     70.87           -70.9        0.00        perf-profile.children.cycles-pp.filemap_read
+     23.73           -23.7        0.00        perf-profile.children.cycles-pp.copy_page_to_iter
+      5.09            -5.1        0.00        perf-profile.children.cycles-pp.sanity
+      3.00            -1.3        1.66        perf-profile.children.cycles-pp.touch_atime
+      2.48 ±  2%      -1.1        1.36        perf-profile.children.cycles-pp.atime_needs_update
+      1.11 ±  2%      -0.5        0.59        perf-profile.children.cycles-pp.current_time
+      1.32            -0.2        1.08        perf-profile.children.cycles-pp.__might_resched
+      2.75            -0.2        2.58        perf-profile.children.cycles-pp.folio_mark_accessed
+      0.34 ±  7%      -0.2        0.19        perf-profile.children.cycles-pp.ktime_get_coarse_real_ts64
+      0.26            -0.1        0.15 ±  2%  perf-profile.children.cycles-pp.make_vfsgid
+      0.24 ±  2%      -0.1        0.15        perf-profile.children.cycles-pp.make_vfsuid
+     99.33            -0.1       99.27        perf-profile.children.cycles-pp.do_splice_direct
+     99.30            -0.1       99.25        perf-profile.children.cycles-pp.splice_direct_to_actor
+      1.58            -0.0        1.53        perf-profile.children.cycles-pp.xas_load
+      0.50            -0.0        0.45        perf-profile.children.cycles-pp.xas_start
+     99.45            -0.0       99.41        perf-profile.children.cycles-pp.do_sendfile
+     99.60            -0.0       99.56        perf-profile.children.cycles-pp.do_syscall_64
+     99.53            -0.0       99.50        perf-profile.children.cycles-pp.__x64_sys_sendfile64
+     99.69            -0.0       99.66        perf-profile.children.cycles-pp.entry_SYSCALL_64_after_hwframe
+      0.25            +0.0        0.26        perf-profile.children.cycles-pp.splice_from_pipe_next
+      0.21 ±  3%      +0.0        0.23 ±  3%  perf-profile.children.cycles-pp.stress_sendfile
+      0.17 ±  2%      +0.0        0.19 ±  2%  perf-profile.children.cycles-pp.rw_verify_area
+      0.32 ±  2%      +0.0        0.34        perf-profile.children.cycles-pp.rcu_all_qs
+      0.32            +0.0        0.36 ±  2%  perf-profile.children.cycles-pp.aa_file_perm
+      0.25            +0.0        0.29        perf-profile.children.cycles-pp.__get_task_ioprio
+      0.94            +0.1        1.01        perf-profile.children.cycles-pp.pipe_to_null
+      2.22            +0.1        2.30        perf-profile.children.cycles-pp.page_cache_pipe_buf_confirm
+      0.70            +0.1        0.78        perf-profile.children.cycles-pp.apparmor_file_permission
+      0.78            +0.1        0.87        perf-profile.children.cycles-pp.__cond_resched
+      0.93            +0.1        1.04        perf-profile.children.cycles-pp.security_file_permission
+      2.19            +0.2        2.36        perf-profile.children.cycles-pp.vfs_splice_read
+      0.00            +0.2        0.22 ±  2%  perf-profile.children.cycles-pp.mlock_drain_local
+      0.00            +0.2        0.23        perf-profile.children.cycles-pp.free_unref_page_list
+      0.00            +0.3        0.26        perf-profile.children.cycles-pp.lru_add_drain_cpu
+      0.00            +0.4        0.45        perf-profile.children.cycles-pp.__mem_cgroup_uncharge_list
+     10.45            +1.0       11.46        perf-profile.children.cycles-pp.page_cache_pipe_buf_release
+     21.90            +1.5       23.40        perf-profile.children.cycles-pp.__splice_from_pipe
+     23.34            +1.6       24.90        perf-profile.children.cycles-pp.direct_splice_actor
+     23.10            +1.6       24.70        perf-profile.children.cycles-pp.splice_from_pipe
+     25.98            +1.7       27.66        perf-profile.children.cycles-pp.filemap_get_read_batch
+     27.08            +1.8       28.91        perf-profile.children.cycles-pp.filemap_get_pages
+      0.00           +14.0       14.03        perf-profile.children.cycles-pp.release_pages
+      0.00           +14.8       14.80        perf-profile.children.cycles-pp.__pagevec_release
+      0.00           +18.0       18.00        perf-profile.children.cycles-pp.splice_folio_into_pipe
+      0.00           +71.6       71.62        perf-profile.children.cycles-pp.filemap_splice_read
+     19.07           -19.1        0.00        perf-profile.self.cycles-pp.copy_page_to_iter
+     15.48           -15.5        0.00        perf-profile.self.cycles-pp.filemap_read
+      1.00            -0.4        0.55        perf-profile.self.cycles-pp.atime_needs_update
+      0.55            -0.4        0.11        perf-profile.self.cycles-pp.generic_file_splice_read
+      0.76            -0.4        0.40        perf-profile.self.cycles-pp.current_time
+      0.52            -0.2        0.27        perf-profile.self.cycles-pp.touch_atime
+      1.19            -0.2        0.94        perf-profile.self.cycles-pp.__might_resched
+      2.31            -0.2        2.14        perf-profile.self.cycles-pp.folio_mark_accessed
+      0.27 ±  9%      -0.1        0.15        perf-profile.self.cycles-pp.ktime_get_coarse_real_ts64
+      0.19 ±  2%      -0.1        0.11        perf-profile.self.cycles-pp.make_vfsgid
+      0.18 ±  3%      -0.1        0.11 ±  3%  perf-profile.self.cycles-pp.make_vfsuid
+      0.21            -0.0        0.17        perf-profile.self.cycles-pp.direct_splice_actor
+      0.36            -0.0        0.33        perf-profile.self.cycles-pp.xas_start
+      0.14 ±  2%      +0.0        0.16 ±  3%  perf-profile.self.cycles-pp.rw_verify_area
+      0.22            +0.0        0.24        perf-profile.self.cycles-pp.__get_task_ioprio
+      0.20 ±  3%      +0.0        0.22        perf-profile.self.cycles-pp.rcu_all_qs
+      0.20            +0.0        0.22 ±  3%  perf-profile.self.cycles-pp.stress_sendfile
+      0.24 ±  2%      +0.0        0.26 ±  2%  perf-profile.self.cycles-pp.security_file_permission
+      0.29            +0.0        0.32        perf-profile.self.cycles-pp.aa_file_perm
+      0.48            +0.0        0.51        perf-profile.self.cycles-pp.pipe_to_null
+      0.37            +0.0        0.42        perf-profile.self.cycles-pp.apparmor_file_permission
+      0.49            +0.1        0.54        perf-profile.self.cycles-pp.__cond_resched
+      1.76            +0.1        1.83        perf-profile.self.cycles-pp.page_cache_pipe_buf_confirm
+      1.11            +0.1        1.20        perf-profile.self.cycles-pp.splice_from_pipe
+      1.10            +0.1        1.24        perf-profile.self.cycles-pp.filemap_get_pages
+      0.00            +0.1        0.15 ±  2%  perf-profile.self.cycles-pp.mlock_drain_local
+      0.00            +0.2        0.17        perf-profile.self.cycles-pp.free_unref_page_list
+      0.00            +0.2        0.24 ±  2%  perf-profile.self.cycles-pp.lru_add_drain_cpu
+      8.88            +0.4        9.25        perf-profile.self.cycles-pp.__splice_from_pipe
+      0.00            +0.4        0.38        perf-profile.self.cycles-pp.__mem_cgroup_uncharge_list
+      0.00            +0.4        0.39        perf-profile.self.cycles-pp.__pagevec_release
+      9.87            +1.0       10.85        perf-profile.self.cycles-pp.page_cache_pipe_buf_release
+     24.08 ±  2%      +1.7       25.80        perf-profile.self.cycles-pp.filemap_get_read_batch
+      0.00            +5.6        5.58        perf-profile.self.cycles-pp.filemap_splice_read
+      0.00           +13.4       13.36        perf-profile.self.cycles-pp.release_pages
+      0.00           +17.3       17.26        perf-profile.self.cycles-pp.splice_folio_into_pipe
+
+
+***************************************************************************************************
+lkp-spr-2sp1: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480+ (Sapphire Rapids) with 256G memory
+=========================================================================================
+class/compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
+  pipe/gcc-11/performance/x86_64-rhel-8.3/100%/debian-11.1-x86_64-20220510.cgz/lkp-spr-2sp1/sendfile/stress-ng/60s
+
+commit: 
+  82ab8404c9 ("tty, proc, kernfs, random: Use direct_splice_read()")
+  3eb3c59b12 ("splice: Do splice read from a file without using ITER_PIPE")
+
+82ab8404c910d4ab 3eb3c59b128509a5e8a8349dafc 
+---------------- --------------------------- 
+         %stddev     %change         %stddev
+             \          |                \  
+     33210 ±  5%     +11.5%      37023 ±  5%  stress-ng.sendfile.MB_per_sec_sent_to_/dev/null
+ 1.122e+08 ±  4%     +11.2%  1.247e+08 ±  4%  stress-ng.sendfile.ops
+   1870141 ±  4%     +11.2%    2078774 ±  4%  stress-ng.sendfile.ops_per_sec
+     47.80 ± 12%     +12.3%      53.69 ± 10%  stress-ng.time.user_time
+     52.98            -0.6%      52.65        boot-time.boot
+     10781            -0.8%      10698        boot-time.idle
+     60353 ±  5%     -19.9%      48332 ±  7%  meminfo.Active
+     60295 ±  5%     -19.9%      48268 ±  7%  meminfo.Active(anon)
+    489.67 ± 64%     -89.9%      49.33 ±  5%  turbostat.C1
+      0.88 ±  4%      -6.0%       0.83 ±  4%  turbostat.IPC
+    667.43            +1.6%     678.03        turbostat.PkgWatt
+      1183 ±  2%      -5.0%       1123 ±  2%  proc-vmstat.direct_map_level2_splits
+     15019 ±  6%     -19.7%      12064 ±  7%  proc-vmstat.nr_active_anon
+     15019 ±  6%     -19.7%      12064 ±  7%  proc-vmstat.nr_zone_active_anon
+      8704 ± 12%     -87.0%       1127 ± 93%  proc-vmstat.numa_hint_faults
+      4349 ± 71%     -81.9%     788.00 ±141%  proc-vmstat.numa_hint_faults_local
+      2625 ±  5%     -15.4%       2221 ±  5%  proc-vmstat.pgactivate
+    520605            -0.8%     516293        proc-vmstat.pgfault
+    483584 ± 14%     +11.4%     538624        proc-vmstat.unevictable_pgs_scanned
+     38.60 ± 19%     -31.4%      26.47 ± 31%  sched_debug.cfs_rq:/.removed.runnable_avg.stddev
+     38.60 ± 19%     -31.5%      26.46 ± 31%  sched_debug.cfs_rq:/.removed.util_avg.stddev
+   1203822 ±  5%      +8.8%    1310010 ±  2%  sched_debug.cpu.avg_idle.max
+    212000 ±  8%     -19.8%     170034 ± 16%  sched_debug.cpu.avg_idle.min
+    118019 ±  4%     +13.4%     133830 ±  3%  sched_debug.cpu.avg_idle.stddev
+      7280            -6.7%       6792 ±  4%  sched_debug.cpu.curr->pid.max
+      7017 ±  7%     +35.4%       9500 ± 19%  sched_debug.cpu.max_idle_balance_cost.stddev
+     48116 ± 26%     +47.4%      70902 ±  2%  sched_debug.cpu.nr_switches.max
+      3889 ± 11%     +27.3%       4949 ±  2%  sched_debug.cpu.nr_switches.stddev
+     20951 ±  7%     -12.6%      18321        numa-vmstat.node0.nr_kernel_stack
+      2045 ± 21%     -33.2%       1365 ±  6%  numa-vmstat.node0.nr_shmem
+     24416 ±  7%     -12.3%      21410 ±  3%  numa-vmstat.node0.nr_slab_reclaimable
+     14788 ±  5%     -20.6%      11736 ±  7%  numa-vmstat.node1.nr_active_anon
+     72983 ±  9%     +22.0%      89035 ± 10%  numa-vmstat.node1.nr_inactive_anon
+     18553 ±  8%     +13.6%      21078        numa-vmstat.node1.nr_kernel_stack
+      1966 ± 67%     +96.7%       3867 ±  7%  numa-vmstat.node1.nr_page_table_pages
+     13840 ± 13%     +21.1%      16757 ±  4%  numa-vmstat.node1.nr_slab_reclaimable
+     14788 ±  5%     -20.6%      11736 ±  7%  numa-vmstat.node1.nr_zone_active_anon
+     72983 ±  9%     +22.0%      89035 ± 10%  numa-vmstat.node1.nr_zone_inactive_anon
+     97667 ±  7%     -12.3%      85641 ±  3%  numa-meminfo.node0.KReclaimable
+     20951 ±  7%     -12.5%      18321        numa-meminfo.node0.KernelStack
+     97667 ±  7%     -12.3%      85641 ±  3%  numa-meminfo.node0.SReclaimable
+      8182 ± 21%     -33.2%       5463 ±  6%  numa-meminfo.node0.Shmem
+     59122 ±  5%     -20.6%      46961 ±  7%  numa-meminfo.node1.Active
+     59122 ±  5%     -20.6%      46924 ±  7%  numa-meminfo.node1.Active(anon)
+    291808 ±  9%     +21.8%     355513 ± 10%  numa-meminfo.node1.Inactive
+    291796 ±  9%     +21.8%     355404 ± 10%  numa-meminfo.node1.Inactive(anon)
+     55356 ± 13%     +21.1%      67024 ±  4%  numa-meminfo.node1.KReclaimable
+     18552 ±  8%     +13.6%      21078        numa-meminfo.node1.KernelStack
+      7866 ± 67%     +96.7%      15473 ±  7%  numa-meminfo.node1.PageTables
+     55356 ± 13%     +21.1%      67024 ±  4%  numa-meminfo.node1.SReclaimable
+      0.20            -0.1        0.11 ±  2%  perf-stat.i.branch-miss-rate%
+ 2.049e+08 ±  3%     -79.2%   42614103 ±  3%  perf-stat.i.branch-misses
+      1.80 ±  5%      +0.5        2.29 ± 13%  perf-stat.i.cache-miss-rate%
+   8357009 ± 20%     +63.8%   13689961 ± 18%  perf-stat.i.cache-misses
+      0.68 ±  4%      +6.1%       0.72 ±  3%  perf-stat.i.cpi
+    277.36 ±  2%      +4.9%     290.87        perf-stat.i.cpu-migrations
+     79850 ± 27%     -40.5%      47537 ± 25%  perf-stat.i.cycles-between-cache-misses
+   1724783 ±  7%     +30.1%    2244259 ±  7%  perf-stat.i.dTLB-load-misses
+ 2.399e+11 ±  3%      -6.7%  2.238e+11 ±  3%  perf-stat.i.dTLB-loads
+    190678 ±  2%     +76.5%     336608 ±  2%  perf-stat.i.dTLB-store-misses
+ 1.301e+11 ±  3%     -11.5%  1.151e+11 ±  3%  perf-stat.i.dTLB-stores
+      1.49 ±  4%      -6.1%       1.40 ±  4%  perf-stat.i.ipc
+      0.11 ± 11%     +78.6%       0.19 ± 20%  perf-stat.i.major-faults
+     20.02           +12.1%      22.44        perf-stat.i.metric.K/sec
+      1532 ±  6%     -12.1%       1347 ±  6%  perf-stat.i.metric.M/sec
+   1776926 ±  9%     +18.9%    2113532 ±  4%  perf-stat.i.node-load-misses
+      1.31            +3.6%       1.35 ±  3%  perf-stat.overall.MPKI
+      0.12            -0.1        0.03        perf-stat.overall.branch-miss-rate%
+      0.75 ± 19%      +0.5        1.23 ± 23%  perf-stat.overall.cache-miss-rate%
+      0.68 ±  4%      +6.4%       0.72 ±  4%  perf-stat.overall.cpi
+     71742 ± 21%     -35.9%      46019 ± 24%  perf-stat.overall.cycles-between-cache-misses
+      0.00 ±  9%      +0.0        0.00 ±  3%  perf-stat.overall.dTLB-load-miss-rate%
+      0.00            +0.0        0.00        perf-stat.overall.dTLB-store-miss-rate%
+      1.48 ±  4%      -6.0%       1.39 ±  4%  perf-stat.overall.ipc
+ 1.972e+08 ±  4%     -79.2%   41095397 ±  4%  perf-stat.ps.branch-misses
+   7895746 ± 21%     +66.4%   13139497 ± 18%  perf-stat.ps.cache-misses
+    257.74 ±  2%      +5.8%     272.63        perf-stat.ps.cpu-migrations
+   1747228 ±  5%     +28.3%    2242162 ±  8%  perf-stat.ps.dTLB-load-misses
+    180288 ±  3%     +79.3%     323194 ±  4%  perf-stat.ps.dTLB-store-misses
+ 1.254e+11 ±  4%     -10.9%  1.117e+11 ±  4%  perf-stat.ps.dTLB-stores
+      0.10 ± 14%     +74.4%       0.17 ± 20%  perf-stat.ps.major-faults
+   1686094 ± 10%     +20.5%    2031440 ±  5%  perf-stat.ps.node-load-misses
+     76.50           -76.5        0.00        perf-profile.calltrace.cycles-pp.generic_file_splice_read.splice_direct_to_actor.do_splice_direct.do_sendfile.__x64_sys_sendfile64
+     73.71 ±  2%     -73.7        0.00        perf-profile.calltrace.cycles-pp.filemap_read.generic_file_splice_read.splice_direct_to_actor.do_splice_direct.do_sendfile
+     35.69 ± 11%     -35.7        0.00        perf-profile.calltrace.cycles-pp.filemap_get_pages.filemap_read.generic_file_splice_read.splice_direct_to_actor.do_splice_direct
+     34.71 ± 12%     -34.7        0.00        perf-profile.calltrace.cycles-pp.filemap_get_read_batch.filemap_get_pages.filemap_read.generic_file_splice_read.splice_direct_to_actor
+     17.39 ±  5%     -17.4        0.00        perf-profile.calltrace.cycles-pp.copy_page_to_iter.filemap_read.generic_file_splice_read.splice_direct_to_actor.do_splice_direct
+      1.38 ±  8%      -0.1        1.26 ±  9%  perf-profile.calltrace.cycles-pp.page_cache_pipe_buf_confirm.__splice_from_pipe.splice_from_pipe.direct_splice_actor.splice_direct_to_actor
+     99.20            -0.1       99.09        perf-profile.calltrace.cycles-pp.splice_direct_to_actor.do_splice_direct.do_sendfile.__x64_sys_sendfile64.do_syscall_64
+      0.00            +1.0        0.98 ± 11%  perf-profile.calltrace.cycles-pp.atime_needs_update.touch_atime.filemap_splice_read.splice_direct_to_actor.do_splice_direct
+      0.00            +1.1        1.14 ± 11%  perf-profile.calltrace.cycles-pp.xas_load.filemap_get_read_batch.filemap_get_pages.filemap_splice_read.splice_direct_to_actor
+      0.00            +1.2        1.23 ± 10%  perf-profile.calltrace.cycles-pp.touch_atime.filemap_splice_read.splice_direct_to_actor.do_splice_direct.do_sendfile
+      0.00            +1.4        1.35 ±  7%  perf-profile.calltrace.cycles-pp.folio_mark_accessed.filemap_splice_read.splice_direct_to_actor.do_splice_direct.do_sendfile
+      0.00           +13.6       13.57 ±  7%  perf-profile.calltrace.cycles-pp.release_pages.__pagevec_release.filemap_splice_read.splice_direct_to_actor.do_splice_direct
+      0.00           +14.1       14.12 ±  7%  perf-profile.calltrace.cycles-pp.__pagevec_release.filemap_splice_read.splice_direct_to_actor.do_splice_direct.do_sendfile
+      0.00           +16.0       15.95 ±  7%  perf-profile.calltrace.cycles-pp.splice_folio_into_pipe.filemap_splice_read.splice_direct_to_actor.do_splice_direct.do_sendfile
+      0.00           +38.4       38.42 ± 11%  perf-profile.calltrace.cycles-pp.filemap_get_read_batch.filemap_get_pages.filemap_splice_read.splice_direct_to_actor.do_splice_direct
+      0.00           +39.4       39.37 ± 10%  perf-profile.calltrace.cycles-pp.filemap_get_pages.filemap_splice_read.splice_direct_to_actor.do_splice_direct.do_sendfile
+      0.00           +74.9       74.88 ±  2%  perf-profile.calltrace.cycles-pp.filemap_splice_read.splice_direct_to_actor.do_splice_direct.do_sendfile.__x64_sys_sendfile64
+     76.66           -76.6        0.10 ±  9%  perf-profile.children.cycles-pp.generic_file_splice_read
+     74.75           -74.8        0.00        perf-profile.children.cycles-pp.filemap_read
+     18.22 ±  5%     -18.2        0.00        perf-profile.children.cycles-pp.copy_page_to_iter
+      2.36 ±  8%      -1.1        1.30 ± 10%  perf-profile.children.cycles-pp.touch_atime
+      2.01 ±  8%      -0.9        1.12 ± 10%  perf-profile.children.cycles-pp.atime_needs_update
+      2.52 ± 10%      -0.8        1.67 ±  7%  perf-profile.children.cycles-pp.folio_mark_accessed
+      0.88 ±  9%      -0.4        0.47 ± 11%  perf-profile.children.cycles-pp.current_time
+      1.17 ±  8%      -0.3        0.87 ±  9%  perf-profile.children.cycles-pp.__might_resched
+      0.29 ± 10%      -0.2        0.14 ±  8%  perf-profile.children.cycles-pp.ktime_get_coarse_real_ts64
+      0.22 ±  7%      -0.1        0.12 ± 11%  perf-profile.children.cycles-pp.make_vfsgid
+      0.20 ±  9%      -0.1        0.13 ± 13%  perf-profile.children.cycles-pp.make_vfsuid
+      0.22 ±  7%      +0.0        0.26 ±  9%  perf-profile.children.cycles-pp.__xas_next
+      0.00            +0.1        0.07 ± 14%  perf-profile.children.cycles-pp.splice_write_null
+      0.00            +0.2        0.16 ± 11%  perf-profile.children.cycles-pp.free_unref_page_list
+      0.00            +0.2        0.19 ±  9%  perf-profile.children.cycles-pp.lru_add_drain_cpu
+      0.00            +0.2        0.20 ± 10%  perf-profile.children.cycles-pp.mlock_drain_local
+      0.00            +0.3        0.28 ±  8%  perf-profile.children.cycles-pp.__mem_cgroup_uncharge_list
+      0.00           +13.7       13.71 ±  7%  perf-profile.children.cycles-pp.release_pages
+      0.00           +14.3       14.31 ±  8%  perf-profile.children.cycles-pp.__pagevec_release
+      0.00           +15.6       15.58 ±  6%  perf-profile.children.cycles-pp.splice_folio_into_pipe
+      0.00           +76.1       76.07        perf-profile.children.cycles-pp.filemap_splice_read
+     16.46 ±  7%     -16.5        0.00        perf-profile.self.cycles-pp.filemap_read
+     15.06 ±  4%     -15.1        0.00        perf-profile.self.cycles-pp.copy_page_to_iter
+      2.18 ± 10%      -0.8        1.41 ±  7%  perf-profile.self.cycles-pp.folio_mark_accessed
+      0.81 ±  8%      -0.3        0.48 ± 10%  perf-profile.self.cycles-pp.atime_needs_update
+      0.38 ±  8%      -0.3        0.07 ±  6%  perf-profile.self.cycles-pp.generic_file_splice_read
+      1.03 ±  8%      -0.3        0.72 ±  9%  perf-profile.self.cycles-pp.__might_resched
+      0.58 ±  8%      -0.3        0.32 ± 11%  perf-profile.self.cycles-pp.current_time
+      0.30 ±  7%      -0.1        0.16 ±  8%  perf-profile.self.cycles-pp.touch_atime
+      0.23 ± 10%      -0.1        0.12 ±  8%  perf-profile.self.cycles-pp.ktime_get_coarse_real_ts64
+      1.37 ±  7%      -0.1        1.27 ±  8%  perf-profile.self.cycles-pp.page_cache_pipe_buf_confirm
+      1.03 ±  9%      -0.1        0.94 ± 10%  perf-profile.self.cycles-pp.xas_load
+      0.17 ±  7%      -0.1        0.09 ± 15%  perf-profile.self.cycles-pp.make_vfsgid
+      0.16 ±  7%      -0.1        0.09 ± 10%  perf-profile.self.cycles-pp.make_vfsuid
+      0.08            +0.1        0.13 ± 10%  perf-profile.self.cycles-pp.direct_splice_actor
+      0.18 ±  7%      +0.1        0.25 ±  8%  perf-profile.self.cycles-pp.splice_direct_to_actor
+      0.53 ±  7%      +0.1        0.64 ± 10%  perf-profile.self.cycles-pp.splice_from_pipe
+      0.00            +0.1        0.12 ±  8%  perf-profile.self.cycles-pp.free_unref_page_list
+      0.00            +0.1        0.12 ± 10%  perf-profile.self.cycles-pp.mlock_drain_local
+      0.00            +0.2        0.18 ±  7%  perf-profile.self.cycles-pp.lru_add_drain_cpu
+      0.00            +0.2        0.24 ±  7%  perf-profile.self.cycles-pp.__mem_cgroup_uncharge_list
+      0.00            +0.3        0.31 ±  9%  perf-profile.self.cycles-pp.__pagevec_release
+      0.00            +3.6        3.63 ±  7%  perf-profile.self.cycles-pp.filemap_splice_read
+      0.00           +13.2       13.20 ±  7%  perf-profile.self.cycles-pp.release_pages
+      0.00           +14.9       14.86 ±  6%  perf-profile.self.cycles-pp.splice_folio_into_pipe
+
+
+
+
+
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provided
+for informational purposes only. Any difference in system hardware or software
+design or configuration may affect actual performance.
 
 
 -- 
@@ -216,14 +520,14 @@ https://github.com/intel/lkp-tests
 
 
 
---O5JI0LRs+fmlOVNl
+--qSm7Wl+FUVQR91mZ
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: attachment;
-	filename="config-6.3.0-rc4-00002-g761ce43fda7e"
+	filename="config-6.3.0-rc2-00007-g3eb3c59b1285"
 
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86_64 6.3.0-rc4 Kernel Configuration
+# Linux/x86_64 6.3.0-rc2 Kernel Configuration
 #
 CONFIG_CC_VERSION_TEXT="gcc-11 (Debian 11.3.0-8) 11.3.0"
 CONFIG_CC_IS_GCC=y
@@ -241,7 +545,6 @@ CONFIG_CC_HAS_ASM_GOTO_TIED_OUTPUT=y
 CONFIG_CC_HAS_ASM_INLINE=y
 CONFIG_CC_HAS_NO_PROFILE_FN_ATTR=y
 CONFIG_PAHOLE_VERSION=125
-CONFIG_CONSTRUCTORS=y
 CONFIG_IRQ_WORK=y
 CONFIG_BUILDTIME_TABLE_SORT=y
 CONFIG_THREAD_INFO_IN_TASK=y
@@ -276,7 +579,7 @@ CONFIG_SYSVIPC_SYSCTL=y
 CONFIG_SYSVIPC_COMPAT=y
 CONFIG_POSIX_MQUEUE=y
 CONFIG_POSIX_MQUEUE_SYSCTL=y
-CONFIG_WATCH_QUEUE=y
+# CONFIG_WATCH_QUEUE is not set
 CONFIG_CROSS_MEMORY_ATTACH=y
 # CONFIG_USELIB is not set
 CONFIG_AUDIT=y
@@ -426,7 +729,7 @@ CONFIG_CGROUP_WRITEBACK=y
 CONFIG_CGROUP_SCHED=y
 CONFIG_FAIR_GROUP_SCHED=y
 CONFIG_CFS_BANDWIDTH=y
-CONFIG_RT_GROUP_SCHED=y
+# CONFIG_RT_GROUP_SCHED is not set
 CONFIG_SCHED_MM_CID=y
 CONFIG_CGROUP_PIDS=y
 CONFIG_CGROUP_RDMA=y
@@ -448,7 +751,7 @@ CONFIG_IPC_NS=y
 CONFIG_USER_NS=y
 CONFIG_PID_NS=y
 CONFIG_NET_NS=y
-CONFIG_CHECKPOINT_RESTORE=y
+# CONFIG_CHECKPOINT_RESTORE is not set
 CONFIG_SCHED_AUTOGROUP=y
 # CONFIG_SYSFS_DEPRECATED is not set
 CONFIG_RELAY=y
@@ -471,7 +774,7 @@ CONFIG_SYSCTL=y
 CONFIG_HAVE_UID16=y
 CONFIG_SYSCTL_EXCEPTION_TRACE=y
 CONFIG_HAVE_PCSPKR_PLATFORM=y
-CONFIG_EXPERT=y
+# CONFIG_EXPERT is not set
 CONFIG_UID16=y
 CONFIG_MULTIUSER=y
 CONFIG_SGETMASK_SYSCALL=y
@@ -502,11 +805,9 @@ CONFIG_KALLSYMS_BASE_RELATIVE=y
 CONFIG_ARCH_HAS_MEMBARRIER_SYNC_CORE=y
 CONFIG_KCMP=y
 CONFIG_RSEQ=y
-# CONFIG_DEBUG_RSEQ is not set
 # CONFIG_EMBEDDED is not set
 CONFIG_HAVE_PERF_EVENTS=y
 CONFIG_GUEST_PERF_EVENTS=y
-# CONFIG_PC104 is not set
 
 #
 # Kernel Performance Events And Counters
@@ -533,7 +834,6 @@ CONFIG_ARCH_MMAP_RND_BITS_MAX=32
 CONFIG_ARCH_MMAP_RND_COMPAT_BITS_MIN=8
 CONFIG_ARCH_MMAP_RND_COMPAT_BITS_MAX=16
 CONFIG_GENERIC_ISA_DMA=y
-CONFIG_GENERIC_CSUM=y
 CONFIG_GENERIC_BUG=y
 CONFIG_GENERIC_BUG_RELATIVE_POINTERS=y
 CONFIG_ARCH_MAY_HAVE_PC_FDC=y
@@ -542,7 +842,6 @@ CONFIG_ARCH_HAS_CPU_RELAX=y
 CONFIG_ARCH_HIBERNATION_POSSIBLE=y
 CONFIG_ARCH_SUSPEND_POSSIBLE=y
 CONFIG_AUDIT_ARCH=y
-CONFIG_KASAN_SHADOW_OFFSET=0xdffffc0000000000
 CONFIG_HAVE_INTEL_TXT=y
 CONFIG_X86_64_SMP=y
 CONFIG_ARCH_SUPPORTS_UPROBES=y
@@ -600,15 +899,15 @@ CONFIG_X86_MINIMUM_CPU_FAMILY=64
 CONFIG_X86_DEBUGCTLMSR=y
 CONFIG_IA32_FEAT_CTL=y
 CONFIG_X86_VMX_FEATURE_NAMES=y
-CONFIG_PROCESSOR_SELECT=y
 CONFIG_CPU_SUP_INTEL=y
-# CONFIG_CPU_SUP_AMD is not set
-# CONFIG_CPU_SUP_HYGON is not set
-# CONFIG_CPU_SUP_CENTAUR is not set
-# CONFIG_CPU_SUP_ZHAOXIN is not set
+CONFIG_CPU_SUP_AMD=y
+CONFIG_CPU_SUP_HYGON=y
+CONFIG_CPU_SUP_CENTAUR=y
+CONFIG_CPU_SUP_ZHAOXIN=y
 CONFIG_HPET_TIMER=y
 CONFIG_HPET_EMULATE_RTC=y
 CONFIG_DMI=y
+# CONFIG_GART_IOMMU is not set
 CONFIG_BOOT_VESA_SUPPORT=y
 CONFIG_MAXSMP=y
 CONFIG_NR_CPUS_RANGE_BEGIN=8192
@@ -625,6 +924,7 @@ CONFIG_X86_REROUTE_FOR_BROKEN_BOOT_IRQS=y
 CONFIG_X86_MCE=y
 CONFIG_X86_MCELOG_LEGACY=y
 CONFIG_X86_MCE_INTEL=y
+# CONFIG_X86_MCE_AMD is not set
 CONFIG_X86_MCE_THRESHOLD=y
 CONFIG_X86_MCE_INJECT=m
 
@@ -634,6 +934,9 @@ CONFIG_X86_MCE_INJECT=m
 CONFIG_PERF_EVENTS_INTEL_UNCORE=m
 CONFIG_PERF_EVENTS_INTEL_RAPL=m
 CONFIG_PERF_EVENTS_INTEL_CSTATE=m
+# CONFIG_PERF_EVENTS_AMD_POWER is not set
+# CONFIG_PERF_EVENTS_AMD_UNCORE is not set
+# CONFIG_PERF_EVENTS_AMD_BRS is not set
 # end of Performance monitoring
 
 CONFIG_X86_16BIT=y
@@ -642,6 +945,7 @@ CONFIG_X86_VSYSCALL_EMULATION=y
 CONFIG_X86_IOPL_IOPERM=y
 CONFIG_MICROCODE=y
 CONFIG_MICROCODE_INTEL=y
+# CONFIG_MICROCODE_AMD is not set
 CONFIG_MICROCODE_LATE_LOADING=y
 CONFIG_X86_MSR=y
 CONFIG_X86_CPUID=y
@@ -649,6 +953,7 @@ CONFIG_X86_5LEVEL=y
 CONFIG_X86_DIRECT_GBPAGES=y
 # CONFIG_X86_CPA_STATISTICS is not set
 CONFIG_X86_MEM_ENCRYPT=y
+# CONFIG_AMD_MEM_ENCRYPT is not set
 CONFIG_NUMA=y
 # CONFIG_AMD_NUMA is not set
 CONFIG_X86_64_ACPI_NUMA=y
@@ -718,9 +1023,18 @@ CONFIG_CC_HAS_RETURN_THUNK=y
 CONFIG_CC_HAS_ENTRY_PADDING=y
 CONFIG_FUNCTION_PADDING_CFI=11
 CONFIG_FUNCTION_PADDING_BYTES=16
+CONFIG_CALL_PADDING=y
+CONFIG_HAVE_CALL_THUNKS=y
+CONFIG_CALL_THUNKS=y
+CONFIG_PREFIX_SYMBOLS=y
 CONFIG_SPECULATION_MITIGATIONS=y
 CONFIG_PAGE_TABLE_ISOLATION=y
-# CONFIG_RETPOLINE is not set
+CONFIG_RETPOLINE=y
+CONFIG_RETHUNK=y
+CONFIG_CPU_UNRET_ENTRY=y
+CONFIG_CALL_DEPTH_TRACKING=y
+# CONFIG_CALL_THUNKS_DEBUG is not set
+CONFIG_CPU_IBPB_ENTRY=y
 CONFIG_CPU_IBRS_ENTRY=y
 # CONFIG_SLS is not set
 CONFIG_ARCH_HAS_ADD_PAGES=y
@@ -732,7 +1046,6 @@ CONFIG_ARCH_MHP_MEMMAP_ON_MEMORY_ENABLE=y
 CONFIG_ARCH_HIBERNATION_HEADER=y
 CONFIG_SUSPEND=y
 CONFIG_SUSPEND_FREEZER=y
-# CONFIG_SUSPEND_SKIP_SYNC is not set
 CONFIG_HIBERNATE_CALLBACKS=y
 CONFIG_HIBERNATION=y
 CONFIG_HIBERNATION_SNAPSHOT_DEV=y
@@ -747,7 +1060,6 @@ CONFIG_PM_DEBUG=y
 # CONFIG_PM_ADVANCED_DEBUG is not set
 # CONFIG_PM_TEST_SUSPEND is not set
 CONFIG_PM_SLEEP_DEBUG=y
-# CONFIG_DPM_WATCHDOG is not set
 # CONFIG_PM_TRACE_RTC is not set
 CONFIG_PM_CLK=y
 # CONFIG_WQ_POWER_EFFICIENT_DEFAULT is not set
@@ -792,7 +1104,6 @@ CONFIG_ACPI_SBS=m
 CONFIG_ACPI_HED=y
 # CONFIG_ACPI_CUSTOM_METHOD is not set
 CONFIG_ACPI_BGRT=y
-# CONFIG_ACPI_REDUCED_HARDWARE_ONLY is not set
 CONFIG_ACPI_NFIT=m
 # CONFIG_NFIT_SECURITY_DEBUG is not set
 CONFIG_ACPI_NUMA=y
@@ -843,7 +1154,9 @@ CONFIG_X86_INTEL_PSTATE=y
 # CONFIG_X86_AMD_PSTATE is not set
 # CONFIG_X86_AMD_PSTATE_UT is not set
 CONFIG_X86_ACPI_CPUFREQ=m
+CONFIG_X86_ACPI_CPUFREQ_CPB=y
 # CONFIG_X86_POWERNOW_K8 is not set
+# CONFIG_X86_AMD_FREQ_SENSITIVITY is not set
 # CONFIG_X86_SPEEDSTEP_CENTRINO is not set
 CONFIG_X86_P4_CLOCKMOD=m
 
@@ -873,9 +1186,8 @@ CONFIG_INTEL_IDLE=y
 CONFIG_PCI_DIRECT=y
 CONFIG_PCI_MMCONFIG=y
 CONFIG_MMCONF_FAM10H=y
-# CONFIG_PCI_CNB20LE_QUIRK is not set
-# CONFIG_ISA_BUS is not set
 CONFIG_ISA_DMA_API=y
+CONFIG_AMD_NB=y
 # end of Bus options (PCI etc.)
 
 #
@@ -911,7 +1223,6 @@ CONFIG_HAVE_KVM_PM_NOTIFIER=y
 CONFIG_KVM_GENERIC_HARDWARE_ENABLING=y
 CONFIG_VIRTUALIZATION=y
 CONFIG_KVM=m
-# CONFIG_KVM_WERROR is not set
 CONFIG_KVM_INTEL=m
 # CONFIG_KVM_AMD is not set
 CONFIG_KVM_SMM=y
@@ -927,7 +1238,6 @@ CONFIG_AS_GFNI=y
 #
 CONFIG_CRASH_CORE=y
 CONFIG_KEXEC_CORE=y
-CONFIG_HAVE_IMA_KEXEC=y
 CONFIG_HOTPLUG_SMT=y
 CONFIG_GENERIC_ENTRY=y
 CONFIG_KPROBES=y
@@ -1101,7 +1411,6 @@ CONFIG_MODULE_COMPRESS_NONE=y
 # CONFIG_MODULE_COMPRESS_ZSTD is not set
 # CONFIG_MODULE_ALLOW_MISSING_NAMESPACE_IMPORTS is not set
 CONFIG_MODPROBE_PATH="/sbin/modprobe"
-# CONFIG_TRIM_UNUSED_KSYMS is not set
 CONFIG_MODULES_TREE_LOOKUP=y
 CONFIG_BLOCK=y
 CONFIG_BLOCK_LEGACY_AUTOLOAD=y
@@ -1131,6 +1440,7 @@ CONFIG_MSDOS_PARTITION=y
 CONFIG_EFI_PARTITION=y
 # end of Partition Types
 
+CONFIG_BLOCK_COMPAT=y
 CONFIG_BLK_MQ_PCI=y
 CONFIG_BLK_MQ_VIRTIO=y
 CONFIG_BLK_PM=y
@@ -1209,8 +1519,6 @@ CONFIG_ZSMALLOC_CHAIN_SIZE=8
 #
 # CONFIG_SLAB is not set
 CONFIG_SLUB=y
-# CONFIG_SLOB_DEPRECATED is not set
-# CONFIG_SLUB_TINY is not set
 CONFIG_SLAB_MERGE_DEFAULT=y
 CONFIG_SLAB_FREELIST_RANDOM=y
 # CONFIG_SLAB_FREELIST_HARDENED is not set
@@ -1267,7 +1575,6 @@ CONFIG_USE_PERCPU_NUMA_NODE_ID=y
 CONFIG_HAVE_SETUP_PER_CPU_AREA=y
 CONFIG_FRONTSWAP=y
 # CONFIG_CMA is not set
-# CONFIG_MEM_SOFT_DIRTY is not set
 CONFIG_GENERIC_EARLY_IOREMAP=y
 CONFIG_DEFERRED_STRUCT_PAGE_INIT=y
 CONFIG_PAGE_IDLE_FLAG=y
@@ -1275,7 +1582,6 @@ CONFIG_IDLE_PAGE_TRACKING=y
 CONFIG_ARCH_HAS_CACHE_LINE_SIZE=y
 CONFIG_ARCH_HAS_CURRENT_STACK_POINTER=y
 CONFIG_ARCH_HAS_PTE_DEVMAP=y
-CONFIG_ARCH_HAS_ZONE_DMA_SET=y
 CONFIG_ZONE_DMA=y
 CONFIG_ZONE_DMA32=y
 CONFIG_ZONE_DEVICE=y
@@ -1290,7 +1596,10 @@ CONFIG_VM_EVENT_COUNTERS=y
 CONFIG_ARCH_HAS_PTE_SPECIAL=y
 CONFIG_SECRETMEM=y
 # CONFIG_ANON_VMA_NAME is not set
-# CONFIG_USERFAULTFD is not set
+CONFIG_USERFAULTFD=y
+CONFIG_HAVE_ARCH_USERFAULTFD_WP=y
+CONFIG_HAVE_ARCH_USERFAULTFD_MINOR=y
+CONFIG_PTE_MARKER_UFFD_WP=y
 # CONFIG_LRU_GEN is not set
 
 #
@@ -1779,7 +2088,24 @@ CONFIG_BRIDGE_EBT_SNAT=m
 CONFIG_BRIDGE_EBT_LOG=m
 CONFIG_BRIDGE_EBT_NFLOG=m
 # CONFIG_BPFILTER is not set
-# CONFIG_IP_DCCP is not set
+CONFIG_IP_DCCP=y
+CONFIG_INET_DCCP_DIAG=m
+
+#
+# DCCP CCIDs Configuration
+#
+# CONFIG_IP_DCCP_CCID2_DEBUG is not set
+CONFIG_IP_DCCP_CCID3=y
+# CONFIG_IP_DCCP_CCID3_DEBUG is not set
+CONFIG_IP_DCCP_TFRC_LIB=y
+# end of DCCP CCIDs Configuration
+
+#
+# DCCP Kernel Hacking
+#
+# CONFIG_IP_DCCP_DEBUG is not set
+# end of DCCP Kernel Hacking
+
 CONFIG_IP_SCTP=m
 # CONFIG_SCTP_DBG_OBJCNT is not set
 # CONFIG_SCTP_DEFAULT_COOKIE_HMAC_MD5 is not set
@@ -1977,7 +2303,6 @@ CONFIG_WIRELESS=y
 CONFIG_CFG80211=m
 # CONFIG_NL80211_TESTMODE is not set
 # CONFIG_CFG80211_DEVELOPER_WARNINGS is not set
-# CONFIG_CFG80211_CERTIFICATION_ONUS is not set
 CONFIG_CFG80211_REQUIRE_SIGNED_REGDB=y
 CONFIG_CFG80211_USE_KERNEL_REGDB_KEYS=y
 CONFIG_CFG80211_DEFAULT_PS=y
@@ -2058,11 +2383,6 @@ CONFIG_PCI_PASID=y
 # CONFIG_PCI_P2PDMA is not set
 CONFIG_PCI_LABEL=y
 CONFIG_PCI_HYPERV=m
-# CONFIG_PCIE_BUS_TUNE_OFF is not set
-CONFIG_PCIE_BUS_DEFAULT=y
-# CONFIG_PCIE_BUS_SAFE is not set
-# CONFIG_PCIE_BUS_PERFORMANCE is not set
-# CONFIG_PCIE_BUS_PEER2PEER is not set
 CONFIG_VGA_ARB=y
 CONFIG_VGA_ARB_MAX_GPUS=64
 CONFIG_HOTPLUG_PCI=y
@@ -2234,13 +2554,7 @@ CONFIG_BLK_DEV_NULL_BLK=m
 # CONFIG_BLK_DEV_FD is not set
 CONFIG_CDROM=m
 # CONFIG_BLK_DEV_PCIESSD_MTIP32XX is not set
-CONFIG_ZRAM=m
-CONFIG_ZRAM_DEF_COMP_LZORLE=y
-# CONFIG_ZRAM_DEF_COMP_LZO is not set
-CONFIG_ZRAM_DEF_COMP="lzo-rle"
-CONFIG_ZRAM_WRITEBACK=y
-# CONFIG_ZRAM_MEMORY_TRACKING is not set
-# CONFIG_ZRAM_MULTI_COMP is not set
+# CONFIG_ZRAM is not set
 CONFIG_BLK_DEV_LOOP=m
 CONFIG_BLK_DEV_LOOP_MIN_COUNT=0
 # CONFIG_BLK_DEV_DRBD is not set
@@ -2634,7 +2948,7 @@ CONFIG_NETDEVICES=y
 CONFIG_MII=y
 CONFIG_NET_CORE=y
 # CONFIG_BONDING is not set
-CONFIG_DUMMY=m
+# CONFIG_DUMMY is not set
 # CONFIG_WIREGUARD is not set
 # CONFIG_EQUALIZER is not set
 # CONFIG_NET_FC is not set
@@ -2654,7 +2968,7 @@ CONFIG_NETPOLL=y
 CONFIG_NET_POLL_CONTROLLER=y
 CONFIG_TUN=m
 # CONFIG_TUN_VNET_CROSS_LE is not set
-CONFIG_VETH=m
+# CONFIG_VETH is not set
 CONFIG_VIRTIO_NET=m
 # CONFIG_NLMON is not set
 # CONFIG_NET_VRF is not set
@@ -3236,39 +3550,7 @@ CONFIG_MOUSE_SYNAPTICS_I2C=m
 # CONFIG_INPUT_JOYSTICK is not set
 # CONFIG_INPUT_TABLET is not set
 # CONFIG_INPUT_TOUCHSCREEN is not set
-CONFIG_INPUT_MISC=y
-# CONFIG_INPUT_AD714X is not set
-# CONFIG_INPUT_BMA150 is not set
-# CONFIG_INPUT_E3X0_BUTTON is not set
-# CONFIG_INPUT_PCSPKR is not set
-# CONFIG_INPUT_MMA8450 is not set
-# CONFIG_INPUT_APANEL is not set
-# CONFIG_INPUT_GPIO_BEEPER is not set
-# CONFIG_INPUT_GPIO_DECODER is not set
-# CONFIG_INPUT_GPIO_VIBRA is not set
-# CONFIG_INPUT_ATLAS_BTNS is not set
-# CONFIG_INPUT_ATI_REMOTE2 is not set
-# CONFIG_INPUT_KEYSPAN_REMOTE is not set
-# CONFIG_INPUT_KXTJ9 is not set
-# CONFIG_INPUT_POWERMATE is not set
-# CONFIG_INPUT_YEALINK is not set
-# CONFIG_INPUT_CM109 is not set
-CONFIG_INPUT_UINPUT=y
-# CONFIG_INPUT_PCF8574 is not set
-# CONFIG_INPUT_PWM_BEEPER is not set
-# CONFIG_INPUT_PWM_VIBRA is not set
-# CONFIG_INPUT_GPIO_ROTARY_ENCODER is not set
-# CONFIG_INPUT_DA7280_HAPTICS is not set
-# CONFIG_INPUT_ADXL34X is not set
-# CONFIG_INPUT_IMS_PCU is not set
-# CONFIG_INPUT_IQS269A is not set
-# CONFIG_INPUT_IQS626A is not set
-# CONFIG_INPUT_IQS7222 is not set
-# CONFIG_INPUT_CMA3000 is not set
-# CONFIG_INPUT_IDEAPAD_SLIDEBAR is not set
-# CONFIG_INPUT_DRV260X_HAPTICS is not set
-# CONFIG_INPUT_DRV2665_HAPTICS is not set
-# CONFIG_INPUT_DRV2667_HAPTICS is not set
+# CONFIG_INPUT_MISC is not set
 CONFIG_RMI4_CORE=m
 CONFIG_RMI4_I2C=m
 CONFIG_RMI4_SPI=m
@@ -3338,7 +3620,7 @@ CONFIG_SERIAL_8250_NR_UARTS=64
 CONFIG_SERIAL_8250_RUNTIME_UARTS=4
 CONFIG_SERIAL_8250_EXTENDED=y
 CONFIG_SERIAL_8250_MANY_PORTS=y
-# CONFIG_SERIAL_8250_PCI1XXXX is not set
+CONFIG_SERIAL_8250_PCI1XXXX=y
 CONFIG_SERIAL_8250_SHARE_IRQ=y
 # CONFIG_SERIAL_8250_DETECT_IRQ is not set
 CONFIG_SERIAL_8250_RSA=y
@@ -3382,7 +3664,6 @@ CONFIG_NOZOMI=m
 # CONFIG_NULL_TTY is not set
 CONFIG_HVC_DRIVER=y
 # CONFIG_SERIAL_DEV_BUS is not set
-# CONFIG_TTY_PRINTK is not set
 CONFIG_PRINTER=m
 # CONFIG_LP_CONSOLE is not set
 CONFIG_PPDEV=m
@@ -3460,7 +3741,7 @@ CONFIG_I2C_MUX_MLXCPLD=m
 # end of Multiplexer I2C Chip support
 
 CONFIG_I2C_HELPER_AUTO=y
-CONFIG_I2C_SMBUS=m
+CONFIG_I2C_SMBUS=y
 CONFIG_I2C_ALGOBIT=y
 CONFIG_I2C_ALGOPCA=m
 
@@ -3477,7 +3758,7 @@ CONFIG_I2C_ALGOPCA=m
 # CONFIG_I2C_AMD756 is not set
 # CONFIG_I2C_AMD8111 is not set
 # CONFIG_I2C_AMD_MP2 is not set
-CONFIG_I2C_I801=m
+CONFIG_I2C_I801=y
 CONFIG_I2C_ISCH=m
 CONFIG_I2C_ISMT=m
 CONFIG_I2C_PIIX4=m
@@ -3652,7 +3933,6 @@ CONFIG_GPIOLIB=y
 CONFIG_GPIOLIB_FASTPATH_LIMIT=512
 CONFIG_GPIO_ACPI=y
 # CONFIG_DEBUG_GPIO is not set
-CONFIG_GPIO_SYSFS=y
 CONFIG_GPIO_CDEV=y
 CONFIG_GPIO_CDEV_V1=y
 
@@ -3802,6 +4082,8 @@ CONFIG_SENSORS_ADT7475=m
 CONFIG_SENSORS_ASC7621=m
 # CONFIG_SENSORS_AXI_FAN_CONTROL is not set
 CONFIG_SENSORS_K8TEMP=m
+CONFIG_SENSORS_K10TEMP=m
+CONFIG_SENSORS_FAM15H_POWER=m
 CONFIG_SENSORS_APPLESMC=m
 CONFIG_SENSORS_ASB100=m
 CONFIG_SENSORS_ATXP1=m
@@ -4150,7 +4432,7 @@ CONFIG_MFD_CORE=y
 # CONFIG_MFD_MC13XXX_I2C is not set
 # CONFIG_MFD_MP2629 is not set
 # CONFIG_MFD_INTEL_QUARK_I2C_GPIO is not set
-CONFIG_LPC_ICH=m
+CONFIG_LPC_ICH=y
 CONFIG_LPC_SCH=m
 CONFIG_MFD_INTEL_LPSS=y
 CONFIG_MFD_INTEL_LPSS_ACPI=y
@@ -4295,6 +4577,8 @@ CONFIG_MEDIA_SUBDRV_AUTOSELECT=y
 # CONFIG_MEDIA_PCI_SUPPORT is not set
 # end of Media drivers
 
+CONFIG_MEDIA_HIDE_ANCILLARY_SUBDRV=y
+
 #
 # Media ancillary drivers
 #
@@ -4311,11 +4595,8 @@ CONFIG_VGA_SWITCHEROO=y
 CONFIG_DRM=m
 CONFIG_DRM_MIPI_DSI=y
 CONFIG_DRM_KMS_HELPER=m
-# CONFIG_DRM_DEBUG_DP_MST_TOPOLOGY_REFS is not set
-# CONFIG_DRM_DEBUG_MODESET_LOCK is not set
 CONFIG_DRM_FBDEV_EMULATION=y
 CONFIG_DRM_FBDEV_OVERALLOC=100
-# CONFIG_DRM_FBDEV_LEAK_PHYS_SMEM is not set
 CONFIG_DRM_LOAD_EDID_FIRMWARE=y
 CONFIG_DRM_DISPLAY_HELPER=m
 CONFIG_DRM_DISPLAY_DP_HELPER=y
@@ -4352,25 +4633,6 @@ CONFIG_DRM_I915_CAPTURE_ERROR=y
 CONFIG_DRM_I915_COMPRESS_ERROR=y
 CONFIG_DRM_I915_USERPTR=y
 # CONFIG_DRM_I915_GVT_KVMGT is not set
-
-#
-# drm/i915 Debugging
-#
-# CONFIG_DRM_I915_WERROR is not set
-# CONFIG_DRM_I915_DEBUG is not set
-# CONFIG_DRM_I915_DEBUG_MMIO is not set
-# CONFIG_DRM_I915_SW_FENCE_DEBUG_OBJECTS is not set
-# CONFIG_DRM_I915_SW_FENCE_CHECK_DAG is not set
-# CONFIG_DRM_I915_DEBUG_GUC is not set
-# CONFIG_DRM_I915_SELFTEST is not set
-# CONFIG_DRM_I915_LOW_LEVEL_TRACEPOINTS is not set
-# CONFIG_DRM_I915_DEBUG_VBLANK_EVADE is not set
-# CONFIG_DRM_I915_DEBUG_RUNTIME_PM is not set
-# end of drm/i915 Debugging
-
-#
-# drm/i915 Profile Guided Optimisation
-#
 CONFIG_DRM_I915_REQUEST_TIMEOUT=20000
 CONFIG_DRM_I915_FENCE_TIMEOUT=10000
 CONFIG_DRM_I915_USERFAULT_AUTOSUSPEND=250
@@ -4380,8 +4642,6 @@ CONFIG_DRM_I915_PREEMPT_TIMEOUT_COMPUTE=7500
 CONFIG_DRM_I915_MAX_REQUEST_BUSYWAIT=8000
 CONFIG_DRM_I915_STOP_TIMEOUT=100
 CONFIG_DRM_I915_TIMESLICE_DURATION=1
-# end of drm/i915 Profile Guided Optimisation
-
 # CONFIG_DRM_VGEM is not set
 # CONFIG_DRM_VKMS is not set
 # CONFIG_DRM_VMWGFX is not set
@@ -4743,7 +5003,6 @@ CONFIG_USB_DEFAULT_PERSIST=y
 # CONFIG_USB_DYNAMIC_MINORS is not set
 # CONFIG_USB_OTG is not set
 # CONFIG_USB_OTG_PRODUCTLIST is not set
-# CONFIG_USB_OTG_DISABLE_EXTERNAL_HUB is not set
 CONFIG_USB_LEDS_TRIGGER_USBPORT=y
 CONFIG_USB_AUTOSUSPEND_DELAY=2
 CONFIG_USB_MON=y
@@ -5325,6 +5584,7 @@ CONFIG_ACERHDF=m
 CONFIG_ACER_WMI=m
 # CONFIG_AMD_PMF is not set
 # CONFIG_AMD_PMC is not set
+# CONFIG_AMD_HSMP is not set
 # CONFIG_ADV_SWBUTTON is not set
 CONFIG_APPLE_GMUX=m
 CONFIG_ASUS_LAPTOP=m
@@ -5637,6 +5897,7 @@ CONFIG_INTEL_TH_PTI=m
 # end of HW tracing support
 
 # CONFIG_FPGA is not set
+# CONFIG_TEE is not set
 # CONFIG_SIOX is not set
 # CONFIG_SLIMBUS is not set
 # CONFIG_INTERCONNECT is not set
@@ -5829,7 +6090,7 @@ CONFIG_SQUASHFS_XZ=y
 # CONFIG_SQUASHFS_EMBEDDED is not set
 CONFIG_SQUASHFS_FRAGMENT_CACHE_SIZE=3
 # CONFIG_VXFS_FS is not set
-CONFIG_MINIX_FS=m
+# CONFIG_MINIX_FS is not set
 # CONFIG_OMFS_FS is not set
 # CONFIG_HPFS_FS is not set
 # CONFIG_QNX4FS_FS is not set
@@ -5991,13 +6252,12 @@ CONFIG_TRUSTED_KEYS_TPM=y
 CONFIG_ENCRYPTED_KEYS=y
 # CONFIG_USER_DECRYPTED_DATA is not set
 # CONFIG_KEY_DH_OPERATIONS is not set
-# CONFIG_KEY_NOTIFICATIONS is not set
 # CONFIG_SECURITY_DMESG_RESTRICT is not set
 CONFIG_SECURITY=y
 CONFIG_SECURITYFS=y
 CONFIG_SECURITY_NETWORK=y
 CONFIG_SECURITY_NETWORK_XFRM=y
-# CONFIG_SECURITY_PATH is not set
+CONFIG_SECURITY_PATH=y
 CONFIG_INTEL_TXT=y
 CONFIG_HAVE_HARDENED_USERCOPY_ALLOCATOR=y
 CONFIG_HARDENED_USERCOPY=y
@@ -6006,7 +6266,13 @@ CONFIG_FORTIFY_SOURCE=y
 # CONFIG_SECURITY_SELINUX is not set
 # CONFIG_SECURITY_SMACK is not set
 # CONFIG_SECURITY_TOMOYO is not set
-# CONFIG_SECURITY_APPARMOR is not set
+CONFIG_SECURITY_APPARMOR=y
+# CONFIG_SECURITY_APPARMOR_DEBUG is not set
+CONFIG_SECURITY_APPARMOR_INTROSPECT_POLICY=y
+CONFIG_SECURITY_APPARMOR_HASH=y
+CONFIG_SECURITY_APPARMOR_HASH_DEFAULT=y
+CONFIG_SECURITY_APPARMOR_EXPORT_BINARY=y
+CONFIG_SECURITY_APPARMOR_PARANOID_LOAD=y
 # CONFIG_SECURITY_LOADPIN is not set
 CONFIG_SECURITY_YAMA=y
 # CONFIG_SECURITY_SAFESETID is not set
@@ -6018,33 +6284,12 @@ CONFIG_INTEGRITY_ASYMMETRIC_KEYS=y
 CONFIG_INTEGRITY_TRUSTED_KEYRING=y
 # CONFIG_INTEGRITY_PLATFORM_KEYRING is not set
 CONFIG_INTEGRITY_AUDIT=y
-CONFIG_IMA=y
-# CONFIG_IMA_KEXEC is not set
-CONFIG_IMA_MEASURE_PCR_IDX=10
-CONFIG_IMA_NG_TEMPLATE=y
-# CONFIG_IMA_SIG_TEMPLATE is not set
-CONFIG_IMA_DEFAULT_TEMPLATE="ima-ng"
-CONFIG_IMA_DEFAULT_HASH_SHA1=y
-# CONFIG_IMA_DEFAULT_HASH_SHA256 is not set
-# CONFIG_IMA_DEFAULT_HASH_SHA512 is not set
-CONFIG_IMA_DEFAULT_HASH="sha1"
-CONFIG_IMA_WRITE_POLICY=y
-CONFIG_IMA_READ_POLICY=y
-CONFIG_IMA_APPRAISE=y
-# CONFIG_IMA_ARCH_POLICY is not set
-# CONFIG_IMA_APPRAISE_BUILD_POLICY is not set
-CONFIG_IMA_APPRAISE_BOOTPARAM=y
-# CONFIG_IMA_APPRAISE_MODSIG is not set
-CONFIG_IMA_TRUSTED_KEYRING=y
-# CONFIG_IMA_BLACKLIST_KEYRING is not set
-# CONFIG_IMA_LOAD_X509 is not set
-CONFIG_IMA_MEASURE_ASYMMETRIC_KEYS=y
-CONFIG_IMA_QUEUE_EARLY_BOOT_KEYS=y
+# CONFIG_IMA is not set
 # CONFIG_IMA_SECURE_AND_OR_TRUSTED_BOOT is not set
-# CONFIG_IMA_DISABLE_HTABLE is not set
 # CONFIG_EVM is not set
-CONFIG_DEFAULT_SECURITY_DAC=y
-CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,integrity,bpf"
+CONFIG_DEFAULT_SECURITY_APPARMOR=y
+# CONFIG_DEFAULT_SECURITY_DAC is not set
+CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,integrity,apparmor,selinux,smack,tomoyo,bpf"
 
 #
 # Kernel hardening options
@@ -6055,6 +6300,8 @@ CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,integrity,bpf"
 #
 CONFIG_INIT_STACK_NONE=y
 # CONFIG_GCC_PLUGIN_STRUCTLEAK_USER is not set
+# CONFIG_GCC_PLUGIN_STRUCTLEAK_BYREF is not set
+# CONFIG_GCC_PLUGIN_STRUCTLEAK_BYREF_ALL is not set
 # CONFIG_GCC_PLUGIN_STACKLEAK is not set
 # CONFIG_INIT_ON_ALLOC_DEFAULT_ON is not set
 # CONFIG_INIT_ON_FREE_DEFAULT_ON is not set
@@ -6140,8 +6387,7 @@ CONFIG_CRYPTO_FCRYPT=m
 CONFIG_CRYPTO_KHAZAD=m
 CONFIG_CRYPTO_SEED=m
 CONFIG_CRYPTO_SERPENT=m
-CONFIG_CRYPTO_SM4=m
-CONFIG_CRYPTO_SM4_GENERIC=m
+# CONFIG_CRYPTO_SM4_GENERIC is not set
 CONFIG_CRYPTO_TEA=m
 CONFIG_CRYPTO_TWOFISH=m
 CONFIG_CRYPTO_TWOFISH_COMMON=m
@@ -6161,7 +6407,7 @@ CONFIG_CRYPTO_ECB=y
 # CONFIG_CRYPTO_HCTR2 is not set
 # CONFIG_CRYPTO_KEYWRAP is not set
 CONFIG_CRYPTO_LRW=m
-# CONFIG_CRYPTO_OFB is not set
+CONFIG_CRYPTO_OFB=m
 CONFIG_CRYPTO_PCBC=m
 CONFIG_CRYPTO_XTS=m
 # end of Length-preserving ciphers and modes
@@ -6194,8 +6440,7 @@ CONFIG_CRYPTO_SHA1=y
 CONFIG_CRYPTO_SHA256=y
 CONFIG_CRYPTO_SHA512=y
 CONFIG_CRYPTO_SHA3=m
-CONFIG_CRYPTO_SM3=m
-CONFIG_CRYPTO_SM3_GENERIC=m
+# CONFIG_CRYPTO_SM3_GENERIC is not set
 # CONFIG_CRYPTO_STREEBOG is not set
 CONFIG_CRYPTO_VMAC=m
 CONFIG_CRYPTO_WP512=m
@@ -6297,6 +6542,11 @@ CONFIG_CRYPTO_DEV_PADLOCK_SHA=m
 # CONFIG_CRYPTO_DEV_ATMEL_ECC is not set
 # CONFIG_CRYPTO_DEV_ATMEL_SHA204A is not set
 CONFIG_CRYPTO_DEV_CCP=y
+CONFIG_CRYPTO_DEV_CCP_DD=m
+CONFIG_CRYPTO_DEV_SP_CCP=y
+CONFIG_CRYPTO_DEV_CCP_CRYPTO=m
+CONFIG_CRYPTO_DEV_SP_PSP=y
+# CONFIG_CRYPTO_DEV_CCP_DEBUGFS is not set
 CONFIG_CRYPTO_DEV_QAT=m
 CONFIG_CRYPTO_DEV_QAT_DH895xCC=m
 CONFIG_CRYPTO_DEV_QAT_C3XXX=m
@@ -6400,7 +6650,7 @@ CONFIG_LZO_COMPRESS=y
 CONFIG_LZO_DECOMPRESS=y
 CONFIG_LZ4_DECOMPRESS=y
 CONFIG_ZSTD_COMMON=y
-CONFIG_ZSTD_COMPRESS=m
+CONFIG_ZSTD_COMPRESS=y
 CONFIG_ZSTD_DECOMPRESS=y
 CONFIG_XZ_DEC=y
 CONFIG_XZ_DEC_X86=y
@@ -6444,7 +6694,6 @@ CONFIG_SWIOTLB=y
 CONFIG_SGL_ALLOC=y
 CONFIG_CHECK_SIGNATURE=y
 CONFIG_CPUMASK_OFFSTACK=y
-# CONFIG_FORCE_NR_CPUS is not set
 CONFIG_CPU_RMAP=y
 CONFIG_DQL=y
 CONFIG_GLOB=y
@@ -6471,7 +6720,6 @@ CONFIG_ARCH_HAS_UACCESS_FLUSHCACHE=y
 CONFIG_ARCH_HAS_COPY_MC=y
 CONFIG_ARCH_STACKWALK=y
 CONFIG_STACKDEPOT=y
-CONFIG_STACKDEPOT_ALWAYS_INIT=y
 CONFIG_SBITMAP=y
 # end of Library routines
 
@@ -6516,15 +6764,13 @@ CONFIG_DEBUG_INFO_COMPRESSED_NONE=y
 CONFIG_PAHOLE_HAS_SPLIT_BTF=y
 CONFIG_PAHOLE_HAS_LANG_EXCLUDE=y
 # CONFIG_GDB_SCRIPTS is not set
-CONFIG_FRAME_WARN=8192
+CONFIG_FRAME_WARN=2048
 CONFIG_STRIP_ASM_SYMS=y
 # CONFIG_READABLE_ASM is not set
 # CONFIG_HEADERS_INSTALL is not set
 CONFIG_DEBUG_SECTION_MISMATCH=y
 CONFIG_SECTION_MISMATCH_WARN_ONLY=y
-# CONFIG_DEBUG_FORCE_FUNCTION_ALIGN_64B is not set
 CONFIG_OBJTOOL=y
-# CONFIG_VMLINUX_MAP is not set
 # CONFIG_DEBUG_FORCE_WEAK_PER_CPU is not set
 # end of Compile-time checks and compiler options
 
@@ -6542,20 +6788,10 @@ CONFIG_DEBUG_FS_ALLOW_ALL=y
 CONFIG_HAVE_ARCH_KGDB=y
 # CONFIG_KGDB is not set
 CONFIG_ARCH_HAS_UBSAN_SANITIZE_ALL=y
-CONFIG_UBSAN=y
-# CONFIG_UBSAN_TRAP is not set
-CONFIG_CC_HAS_UBSAN_BOUNDS=y
-CONFIG_UBSAN_BOUNDS=y
-CONFIG_UBSAN_ONLY_BOUNDS=y
-CONFIG_UBSAN_SHIFT=y
-# CONFIG_UBSAN_DIV_ZERO is not set
-# CONFIG_UBSAN_BOOL is not set
-# CONFIG_UBSAN_ENUM is not set
-# CONFIG_UBSAN_ALIGNMENT is not set
-CONFIG_UBSAN_SANITIZE_ALL=y
-# CONFIG_TEST_UBSAN is not set
+# CONFIG_UBSAN is not set
 CONFIG_HAVE_ARCH_KCSAN=y
 CONFIG_HAVE_KCSAN_COMPILER=y
+# CONFIG_KCSAN is not set
 # end of Generic Kernel Debugging Instruments
 
 #
@@ -6569,11 +6805,11 @@ CONFIG_HAVE_KCSAN_COMPILER=y
 #
 # Memory Debugging
 #
-CONFIG_PAGE_EXTENSION=y
+# CONFIG_PAGE_EXTENSION is not set
 # CONFIG_DEBUG_PAGEALLOC is not set
 CONFIG_SLUB_DEBUG=y
 # CONFIG_SLUB_DEBUG_ON is not set
-CONFIG_PAGE_OWNER=y
+# CONFIG_PAGE_OWNER is not set
 # CONFIG_PAGE_TABLE_CHECK is not set
 # CONFIG_PAGE_POISONING is not set
 # CONFIG_DEBUG_PAGE_REF is not set
@@ -6599,13 +6835,7 @@ CONFIG_HAVE_ARCH_KASAN=y
 CONFIG_HAVE_ARCH_KASAN_VMALLOC=y
 CONFIG_CC_HAS_KASAN_GENERIC=y
 CONFIG_CC_HAS_WORKING_NOSANITIZE_ADDRESS=y
-CONFIG_KASAN=y
-CONFIG_KASAN_GENERIC=y
-# CONFIG_KASAN_OUTLINE is not set
-CONFIG_KASAN_INLINE=y
-CONFIG_KASAN_STACK=y
-CONFIG_KASAN_VMALLOC=y
-# CONFIG_KASAN_MODULE_TEST is not set
+# CONFIG_KASAN is not set
 CONFIG_HAVE_ARCH_KFENCE=y
 # CONFIG_KFENCE is not set
 CONFIG_HAVE_ARCH_KMSAN=y
@@ -6657,7 +6887,7 @@ CONFIG_LOCK_DEBUGGING_SUPPORT=y
 # CONFIG_DEBUG_LOCK_ALLOC is not set
 CONFIG_DEBUG_ATOMIC_SLEEP=y
 # CONFIG_DEBUG_LOCKING_API_SELFTESTS is not set
-CONFIG_LOCK_TORTURE_TEST=m
+# CONFIG_LOCK_TORTURE_TEST is not set
 # CONFIG_WW_MUTEX_SELFTEST is not set
 # CONFIG_SCF_TORTURE_TEST is not set
 # CONFIG_CSD_LOCK_WAIT_DEBUG is not set
@@ -6685,9 +6915,8 @@ CONFIG_BUG_ON_DATA_CORRUPTION=y
 #
 # RCU Debugging
 #
-CONFIG_TORTURE_TEST=m
 # CONFIG_RCU_SCALE_TEST is not set
-CONFIG_RCU_TORTURE_TEST=m
+# CONFIG_RCU_TORTURE_TEST is not set
 # CONFIG_RCU_REF_SCALE_TEST is not set
 CONFIG_RCU_CPU_STALL_TIMEOUT=60
 CONFIG_RCU_EXP_CPU_STALL_TIMEOUT=0
@@ -6876,7 +7105,7 @@ CONFIG_ARCH_USE_MEMTEST=y
 # end of Rust hacking
 # end of Kernel hacking
 
---O5JI0LRs+fmlOVNl
+--qSm7Wl+FUVQR91mZ
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: attachment; filename="job-script"
 
@@ -6884,80 +7113,66 @@ Content-Disposition: attachment; filename="job-script"
 
 export_top_env()
 {
-	export suite='ltp'
-	export testcase='ltp'
-	export category='functional'
-	export need_memory='4G'
-	export job_origin='ltp-syscalls.yaml'
+	export suite='stress-ng'
+	export testcase='stress-ng'
+	export category='benchmark'
+	export nr_threads=128
+	export testtime=60
+	export job_origin='stress-ng-class-pipe.yaml'
 	export queue_cmdline_keys='branch
 commit
 kbuild_queue_analysis'
 	export queue='validate'
-	export testbox='lkp-skl-d02'
-	export tbox_group='lkp-skl-d02'
-	export submit_id='64285f2299de5b026998be53'
-	export job_file='/lkp/jobs/scheduled/lkp-skl-d02/ltp-1HDD-xfs-syscalls-05-debian-12-x86_64-20220629.cgz-761ce43fda7ebcdf1b1aa8e797ec83fae0e34c47-20230402-66153-1bgds37-4.yaml'
-	export id='dc7487a5a25447e56d823ed39b1e9121449cb56b'
+	export testbox='lkp-icl-2sp6'
+	export tbox_group='lkp-icl-2sp6'
+	export submit_id='6429ceed2b56b414e5f98583'
+	export job_file='/lkp/jobs/scheduled/lkp-icl-2sp6/stress-ng-pipe-performance-100%-sendfile-60s-debian-11.1-x86_64-20220510.cgz-3eb3c59b128509a5e8a8349dafced64b9769438e-20230403-5349-1uzpq6s-3.yaml'
+	export id='3b396e5f9d45e94f0cf90b512b0e7b4510452110'
 	export queuer_version='/zday/lkp'
-	export model='Skylake'
-	export nr_cpu=4
-	export memory='32G'
-	export nr_ssd_partitions=1
-	export nr_hdd_partitions=4
-	export hdd_partitions='/dev/disk/by-id/wwn-0x5000c500746fa0cc-part*'
-	export ssd_partitions='/dev/disk/by-id/wwn-0x55cd2e41514d5105-part2'
-	export rootfs_partition='/dev/disk/by-id/wwn-0x55cd2e41514d5105-part1'
-	export brand='Intel(R) Core(TM) i5-6500 CPU @ 3.20GHz'
-	export need_kconfig='BLK_DEV_SD
-SCSI
-{"BLOCK"=>"y"}
-SATA_AHCI
-SATA_AHCI_PLATFORM
-ATA
-{"PCI"=>"y"}
-XFS_FS
-BLK_DEV_LOOP
-{"CAN"=>"m"}
-{"CAN_RAW"=>"m"}
-{"CAN_VCAN"=>"m"}
-{"MINIX_FS"=>"m"}
-{"EXPERT"=>"y"}
-{"CHECKPOINT_RESTORE"=>"y"}'
-	export commit='761ce43fda7ebcdf1b1aa8e797ec83fae0e34c47'
-	export need_kconfig_hw='{"PTP_1588_CLOCK"=>"y"}
-{"E1000E"=>"y"}
-SATA_AHCI
-DRM_I915'
-	export ucode='0xf0'
-	export rootfs='debian-12-x86_64-20220629.cgz'
-	export initrds='linux_headers'
-	export kconfig='x86_64-rhel-8.3-ltp'
-	export enqueue_time='2023-04-02 00:43:14 +0800'
-	export _id='64285f3799de5b026998be54'
-	export _rt='/result/ltp/1HDD-xfs-syscalls-05/lkp-skl-d02/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-ltp/gcc-11/761ce43fda7ebcdf1b1aa8e797ec83fae0e34c47'
+	export model='Ice Lake'
+	export nr_node=2
+	export nr_cpu=128
+	export memory='128G'
+	export nr_ssd_partitions=3
+	export nr_hdd_partitions=6
+	export hdd_partitions='/dev/disk/by-id/ata-WDC_WD20SPZX-08UA7_WD-WXE2EA06X8DA-part*'
+	export ssd_partitions='/dev/disk/by-id/ata-INTEL_SSDSC2BB800G4_PHWL4204002V800RGN-part*'
+	export rootfs_partition='/dev/disk/by-id/ata-INTEL_SSDSC2BA400G4_BTHV634503K8400NGN-part1'
+	export kernel_cmdline_hw='acpi_rsdp=0x69ffd014'
+	export brand='Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz'
+	export need_kconfig=
+	export commit='3eb3c59b128509a5e8a8349dafced64b9769438e'
+	export ucode='0xd000363'
+	export bisect_dmesg=true
+	export kconfig='x86_64-rhel-8.3'
+	export enqueue_time='2023-04-03 02:52:29 +0800'
+	export _id='6429ceed2b56b414e5f98583'
+	export _rt='/result/stress-ng/pipe-performance-100%-sendfile-60s/lkp-icl-2sp6/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/3eb3c59b128509a5e8a8349dafced64b9769438e'
 	export user='lkp'
 	export compiler='gcc-11'
 	export LKP_SERVER='internal-lkp-server'
-	export head_commit='26b1c3709ddc924461221ffd397771b709658963'
-	export base_commit='197b6b60ae7bc51dd0814953c562833143b292aa'
-	export branch='brauner/pidfd.file.api'
-	export result_root='/result/ltp/1HDD-xfs-syscalls-05/lkp-skl-d02/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-ltp/gcc-11/761ce43fda7ebcdf1b1aa8e797ec83fae0e34c47/3'
+	export head_commit='a71a2e03bb7c8e8a2518159eb806e340495ee5d9'
+	export base_commit='e8d018dd0257f744ca50a729e3d042cf2ec9da65'
+	export branch='linux-next/master'
+	export rootfs='debian-11.1-x86_64-20220510.cgz'
+	export result_root='/result/stress-ng/pipe-performance-100%-sendfile-60s/lkp-icl-2sp6/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/3eb3c59b128509a5e8a8349dafced64b9769438e/3'
 	export scheduler_version='/lkp/lkp/src'
 	export arch='x86_64'
-	export max_uptime=1200
-	export initrd='/osimage/debian/debian-12-x86_64-20220629.cgz'
+	export max_uptime=2100
+	export initrd='/osimage/debian/debian-11.1-x86_64-20220510.cgz'
 	export bootloader_append='root=/dev/ram0
-RESULT_ROOT=/result/ltp/1HDD-xfs-syscalls-05/lkp-skl-d02/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-ltp/gcc-11/761ce43fda7ebcdf1b1aa8e797ec83fae0e34c47/3
-BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3-ltp/gcc-11/761ce43fda7ebcdf1b1aa8e797ec83fae0e34c47/vmlinuz-6.3.0-rc4-00002-g761ce43fda7e
-branch=brauner/pidfd.file.api
-job=/lkp/jobs/scheduled/lkp-skl-d02/ltp-1HDD-xfs-syscalls-05-debian-12-x86_64-20220629.cgz-761ce43fda7ebcdf1b1aa8e797ec83fae0e34c47-20230402-66153-1bgds37-4.yaml
+RESULT_ROOT=/result/stress-ng/pipe-performance-100%-sendfile-60s/lkp-icl-2sp6/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/3eb3c59b128509a5e8a8349dafced64b9769438e/3
+BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3/gcc-11/3eb3c59b128509a5e8a8349dafced64b9769438e/vmlinuz-6.3.0-rc2-00007-g3eb3c59b1285
+branch=linux-next/master
+job=/lkp/jobs/scheduled/lkp-icl-2sp6/stress-ng-pipe-performance-100%-sendfile-60s-debian-11.1-x86_64-20220510.cgz-3eb3c59b128509a5e8a8349dafced64b9769438e-20230403-5349-1uzpq6s-3.yaml
 user=lkp
 ARCH=x86_64
-kconfig=x86_64-rhel-8.3-ltp
-commit=761ce43fda7ebcdf1b1aa8e797ec83fae0e34c47
+kconfig=x86_64-rhel-8.3
+commit=3eb3c59b128509a5e8a8349dafced64b9769438e
 initcall_debug
 nmi_watchdog=0
-max_uptime=1200
+acpi_rsdp=0x69ffd014
+max_uptime=2100
 LKP_SERVER=internal-lkp-server
 nokaslr
 selinux=0
@@ -6981,22 +7196,20 @@ earlyprintk=ttyS0,115200
 console=ttyS0,115200
 vga=normal
 rw'
-	export modules_initrd='/pkg/linux/x86_64-rhel-8.3-ltp/gcc-11/761ce43fda7ebcdf1b1aa8e797ec83fae0e34c47/modules.cgz'
-	export linux_headers_initrd='/pkg/linux/x86_64-rhel-8.3-ltp/gcc-11/761ce43fda7ebcdf1b1aa8e797ec83fae0e34c47/linux-headers.cgz'
-	export bm_initrd='/osimage/deps/debian-12-x86_64-20220629.cgz/run-ipconfig_20221125.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/lkp_20221125.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/rsync-rootfs_20221125.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/fs_20221125.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/ltp_20221125.cgz,/osimage/pkg/debian-12-x86_64-20220629.cgz/ltp-x86_64-14c1f76-1_20221128.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/hw_20230326.cgz'
+	export modules_initrd='/pkg/linux/x86_64-rhel-8.3/gcc-11/3eb3c59b128509a5e8a8349dafced64b9769438e/modules.cgz'
+	export bm_initrd='/osimage/deps/debian-11.1-x86_64-20220510.cgz/run-ipconfig_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/lkp_20220513.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/rsync-rootfs_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/stress-ng_20230218.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/stress-ng-x86_64-0.15-04_20230220.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/mpstat_20220516.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/turbostat_20220514.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/turbostat-x86_64-210e04ff7681-1_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/perf_20230402.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/perf-x86_64-00c7b5f4ddc5-1_20230402.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/sar-x86_64-c5bb321-1_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/hw_20220526.cgz'
 	export ucode_initrd='/osimage/ucode/intel-ucode-20220804.cgz'
 	export lkp_initrd='/osimage/user/lkp/lkp-x86_64.cgz'
 	export site='inn'
 	export LKP_CGI_PORT=80
 	export LKP_CIFS_PORT=139
-	export last_kernel='6.3.0-rc4-wt-ath-11634-gdccd4dcc25e2'
+	export last_kernel='6.3.0-rc3'
 	export repeat_to=6
-	export stop_repeat_if_found='ltp.clone302.fail'
-	export kbuild_queue_analysis=1
 	export schedule_notify_address=
-	export kernel='/pkg/linux/x86_64-rhel-8.3-ltp/gcc-11/761ce43fda7ebcdf1b1aa8e797ec83fae0e34c47/vmlinuz-6.3.0-rc4-00002-g761ce43fda7e'
-	export dequeue_time='2023-04-02 00:46:35 +0800'
-	export job_initrd='/lkp/jobs/scheduled/lkp-skl-d02/ltp-1HDD-xfs-syscalls-05-debian-12-x86_64-20220629.cgz-761ce43fda7ebcdf1b1aa8e797ec83fae0e34c47-20230402-66153-1bgds37-4.cgz'
+	export kbuild_queue_analysis=1
+	export kernel='/pkg/linux/x86_64-rhel-8.3/gcc-11/3eb3c59b128509a5e8a8349dafced64b9769438e/vmlinuz-6.3.0-rc2-00007-g3eb3c59b1285'
+	export dequeue_time='2023-04-03 03:07:20 +0800'
+	export job_initrd='/lkp/jobs/scheduled/lkp-icl-2sp6/stress-ng-pipe-performance-100%-sendfile-60s-debian-11.1-x86_64-20220510.cgz-3eb3c59b128509a5e8a8349dafced64b9769438e-20230403-5349-1uzpq6s-3.cgz'
 
 	[ -n "$LKP_SRC" ] ||
 	export LKP_SRC=/lkp/${user:-lkp}/src
@@ -7012,17 +7225,39 @@ run_job()
 
 	export_top_env
 
-	run_setup nr_hdd=1 $LKP_SRC/setup/disk
-
-	run_setup fs='xfs' $LKP_SRC/setup/fs
+	run_setup $LKP_SRC/setup/cpufreq_governor 'performance'
 
 	run_monitor $LKP_SRC/monitors/wrapper kmsg
+	run_monitor $LKP_SRC/monitors/no-stdout/wrapper boot-time
+	run_monitor $LKP_SRC/monitors/wrapper uptime
+	run_monitor $LKP_SRC/monitors/wrapper iostat
 	run_monitor $LKP_SRC/monitors/wrapper heartbeat
+	run_monitor $LKP_SRC/monitors/wrapper vmstat
+	run_monitor $LKP_SRC/monitors/wrapper numa-numastat
+	run_monitor $LKP_SRC/monitors/wrapper numa-vmstat
+	run_monitor $LKP_SRC/monitors/wrapper numa-meminfo
+	run_monitor $LKP_SRC/monitors/wrapper proc-vmstat
+	run_monitor $LKP_SRC/monitors/wrapper proc-stat
 	run_monitor $LKP_SRC/monitors/wrapper meminfo
+	run_monitor $LKP_SRC/monitors/wrapper slabinfo
+	run_monitor $LKP_SRC/monitors/wrapper interrupts
+	run_monitor $LKP_SRC/monitors/wrapper lock_stat
+	run_monitor lite_mode=1 $LKP_SRC/monitors/wrapper perf-sched
+	run_monitor $LKP_SRC/monitors/wrapper softirqs
+	run_monitor $LKP_SRC/monitors/one-shot/wrapper bdi_dev_mapping
+	run_monitor $LKP_SRC/monitors/wrapper diskstats
+	run_monitor $LKP_SRC/monitors/wrapper nfsstat
+	run_monitor $LKP_SRC/monitors/wrapper cpuidle
+	run_monitor $LKP_SRC/monitors/wrapper cpufreq-stats
+	run_monitor $LKP_SRC/monitors/wrapper turbostat
+	run_monitor $LKP_SRC/monitors/wrapper sched_debug
+	run_monitor $LKP_SRC/monitors/wrapper perf-stat
+	run_monitor $LKP_SRC/monitors/wrapper mpstat
+	run_monitor debug_mode=0 $LKP_SRC/monitors/no-stdout/wrapper perf-profile
 	run_monitor $LKP_SRC/monitors/wrapper oom-killer
 	run_monitor $LKP_SRC/monitors/plain/watchdog
 
-	run_test test='syscalls-05' $LKP_SRC/tests/wrapper ltp
+	run_test class='pipe' test='sendfile' $LKP_SRC/tests/wrapper stress-ng
 }
 
 extract_stats()
@@ -7030,11 +7265,32 @@ extract_stats()
 	export stats_part_begin=
 	export stats_part_end=
 
-	env test='syscalls-05' $LKP_SRC/stats/wrapper ltp
+	env class='pipe' test='sendfile' $LKP_SRC/stats/wrapper stress-ng
 	$LKP_SRC/stats/wrapper kmsg
+	$LKP_SRC/stats/wrapper boot-time
+	$LKP_SRC/stats/wrapper uptime
+	$LKP_SRC/stats/wrapper iostat
+	$LKP_SRC/stats/wrapper vmstat
+	$LKP_SRC/stats/wrapper numa-numastat
+	$LKP_SRC/stats/wrapper numa-vmstat
+	$LKP_SRC/stats/wrapper numa-meminfo
+	$LKP_SRC/stats/wrapper proc-vmstat
 	$LKP_SRC/stats/wrapper meminfo
+	$LKP_SRC/stats/wrapper slabinfo
+	$LKP_SRC/stats/wrapper interrupts
+	$LKP_SRC/stats/wrapper lock_stat
+	env lite_mode=1 $LKP_SRC/stats/wrapper perf-sched
+	$LKP_SRC/stats/wrapper softirqs
+	$LKP_SRC/stats/wrapper diskstats
+	$LKP_SRC/stats/wrapper nfsstat
+	$LKP_SRC/stats/wrapper cpuidle
+	$LKP_SRC/stats/wrapper turbostat
+	$LKP_SRC/stats/wrapper sched_debug
+	$LKP_SRC/stats/wrapper perf-stat
+	$LKP_SRC/stats/wrapper mpstat
+	env debug_mode=0 $LKP_SRC/stats/wrapper perf-profile
 
-	$LKP_SRC/stats/wrapper time ltp.time
+	$LKP_SRC/stats/wrapper time stress-ng.time
 	$LKP_SRC/stats/wrapper dmesg
 	$LKP_SRC/stats/wrapper kmsg
 	$LKP_SRC/stats/wrapper last_state
@@ -7044,7025 +7300,124 @@ extract_stats()
 
 "$@"
 
---O5JI0LRs+fmlOVNl
-Content-Type: application/x-xz
-Content-Disposition: attachment; filename="dmesg.xz"
-Content-Transfer-Encoding: base64
-
-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
-Z/sCAAAAAARZWg==
-
---O5JI0LRs+fmlOVNl
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: attachment; filename="ltp"
-Content-Transfer-Encoding: quoted-printable
-
-/usr/bin/mkisofs
-2023-04-01 16:50:07 ln -sf /usr/sbin/iptables-nft /usr/bin/iptables
-2023-04-01 16:50:07 ln -sf /usr/sbin/ip6tables-nft /usr/bin/ip6tables
-make: Entering directory '/usr/src/linux-headers-x86_64-rhel-8.3-ltp-761ce4=
-3fda7ebcdf1b1aa8e797ec83fae0e34c47-bpf'
-  CC [M]  /lkp/benchmarks/ltp/testcases/kernel/syscalls/delete_module/dummy=
-_del_mod.o
-  CC [M]  /lkp/benchmarks/ltp/testcases/kernel/syscalls/delete_module/dummy=
-_del_mod_dep.o
-  MODPOST /lkp/benchmarks/ltp/testcases/kernel/syscalls/delete_module/Modul=
-e.symvers
-  CC [M]  /lkp/benchmarks/ltp/testcases/kernel/syscalls/delete_module/dummy=
-_del_mod.mod.o
-  LD [M]  /lkp/benchmarks/ltp/testcases/kernel/syscalls/delete_module/dummy=
-_del_mod.ko
-  CC [M]  /lkp/benchmarks/ltp/testcases/kernel/syscalls/delete_module/dummy=
-_del_mod_dep.mod.o
-  LD [M]  /lkp/benchmarks/ltp/testcases/kernel/syscalls/delete_module/dummy=
-_del_mod_dep.ko
-make: Leaving directory '/usr/src/linux-headers-x86_64-rhel-8.3-ltp-761ce43=
-fda7ebcdf1b1aa8e797ec83fae0e34c47-bpf'
-2023-04-01 16:50:10 export LTP_RUNTIME_MUL=3D2
-2023-04-01 16:50:10 ./runltp -f syscalls-05 -d /fs/sda1/tmpdir
-INFO: creating /lkp/benchmarks/ltp/output directory
-INFO: creating /lkp/benchmarks/ltp/results directory
-Checking for required user/group ids
-
-'root' user id and group found.
-'nobody' user id and group found.
-'bin' user id and group found.
-'daemon' user id and group found.
-Users group found.
-Sys group found.
-Required users/groups exist.
-If some fields are empty or look unusual you may have an old version.
-Compare to the current minimal requirements in Documentation/Changes.
-
-/etc/os-release
-PRETTY_NAME=3D"Debian GNU/Linux bookworm/sid"
-NAME=3D"Debian GNU/Linux"
-VERSION_CODENAME=3Dbookworm
-ID=3Ddebian
-HOME_URL=3D"https://www.debian.org/"
-SUPPORT_URL=3D"https://www.debian.org/support"
-BUG_REPORT_URL=3D"https://bugs.debian.org/"
-
-uname:
-Linux lkp-skl-d02 6.3.0-rc4-00002-g761ce43fda7e #1 SMP Sat Apr  1 18:00:06 =
-CST 2023 x86_64 GNU/Linux
-
-/proc/cmdline
-ip=3D::::lkp-skl-d02::dhcp root=3D/dev/ram0 RESULT_ROOT=3D/result/ltp/1HDD-=
-xfs-syscalls-05/lkp-skl-d02/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-l=
-tp/gcc-11/761ce43fda7ebcdf1b1aa8e797ec83fae0e34c47/3 BOOT_IMAGE=3D/pkg/linu=
-x/x86_64-rhel-8.3-ltp/gcc-11/761ce43fda7ebcdf1b1aa8e797ec83fae0e34c47/vmlin=
-uz-6.3.0-rc4-00002-g761ce43fda7e branch=3Dbrauner/pidfd.file.api job=3D/lkp=
-/jobs/scheduled/lkp-skl-d02/ltp-1HDD-xfs-syscalls-05-debian-12-x86_64-20220=
-629.cgz-761ce43fda7ebcdf1b1aa8e797ec83fae0e34c47-20230402-66153-1bgds37-4.y=
-aml user=3Dlkp ARCH=3Dx86_64 kconfig=3Dx86_64-rhel-8.3-ltp commit=3D761ce43=
-fda7ebcdf1b1aa8e797ec83fae0e34c47 initcall_debug nmi_watchdog=3D0 max_uptim=
-e=3D1200 LKP_SERVER=3Dinternal-lkp-server nokaslr selinux=3D0 debug apic=3D=
-debug sysrq_always_enabled rcupdate.rcu_cpu_stall_timeout=3D100 net.ifnames=
-=3D0 printk.devkmsg=3Don panic=3D-1 softlockup_panic=3D1 nmi_watchdog=3Dpan=
-ic oops=3Dpanic load_ramdisk=3D2 prompt_ramdisk=3D0 drbd.minor_count=3D8 sy=
-stemd.log_level=3Derr ignore_loglevel console=3Dtty0 earlyprintk=3DttyS0,11=
-5200 console=3DttyS0,115200 vga=3Dnormal rw
-
-Gnu C                  gcc (Debian 12.2.0-9) 12.2.0
-Clang                =20
-Gnu make               4.3
-util-linux             2.38.1
-mount                  linux 2.38.1 (libmount 2.38.1: selinux, smack, btrfs=
-, verity, namespaces, assert, debug)
-modutils               30
-e2fsprogs              1.46.6-rc1
-Linux C Library        gnu/libc.so.6
-Dynamic linker (ldd)   2.36
-Procps                 3.3.17
-Net-tools              2.10-alpha
-iproute2               1.0.1
-iputils                20211215
-ethtool                6.0
-Kbd                    loadkeys:
-Sh-utils               9.1
-Modules Loaded         xfs dm_mod btrfs blake2b_generic xor raid6_pq zstd_c=
-ompress libcrc32c intel_rapl_msr intel_rapl_common sd_mod t10_pi x86_pkg_te=
-mp_thermal crc64_rocksoft_generic crc64_rocksoft intel_powerclamp crc64 cor=
-etemp kvm_intel ipmi_devintf sg ipmi_msghandler kvm irqbypass crct10dif_pcl=
-mul crc32_pclmul crc32c_intel i915 ghash_clmulni_intel sha512_ssse3 drm_bud=
-dy intel_gtt drm_display_helper mei_wdt ttm ahci drm_kms_helper libahci rap=
-l wmi_bmof intel_cstate mei_me syscopyarea i2c_i801 intel_uncore video sysf=
-illrect mei libata sysimgblt i2c_smbus intel_pch_thermal wmi intel_pmc_core=
- acpi_pad binfmt_misc drm fuse ip_tables
-
-free reports:
-               total        used        free      shared  buff/cache   avai=
-lable
-Mem:        28511768     1585620    23823348        5700     3102800    236=
-44932
-Swap:              0           0           0
-
-cpuinfo:
-Architecture:                    x86_64
-CPU op-mode(s):                  32-bit, 64-bit
-Address sizes:                   39 bits physical, 48 bits virtual
-Byte Order:                      Little Endian
-CPU(s):                          4
-On-line CPU(s) list:             0-3
-Vendor ID:                       GenuineIntel
-BIOS Vendor ID:                  Intel(R) Corporation
-Model name:                      Intel(R) Core(TM) i5-6500 CPU @ 3.20GHz
-BIOS Model name:                 Intel(R) Core(TM) i5-6500 CPU @ 3.20GHz  C=
-PU @ 3.3GHz
-BIOS CPU family:                 205
-CPU family:                      6
-Model:                           94
-Thread(s) per core:              1
-Core(s) per socket:              4
-Socket(s):                       1
-Stepping:                        3
-CPU(s) scaling MHz:              95%
-CPU max MHz:                     3600.0000
-CPU min MHz:                     800.0000
-BogoMIPS:                        6399.96
-Flags:                           fpu vme de pse tsc msr pae mce cx8 apic se=
-p mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm p=
-be syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_=
-good nopl xtopology nonstop_tsc cpuid aperfmperf pni pclmulqdq dtes64 monit=
-or ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 =
-x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm ab=
-m 3dnowprefetch cpuid_fault epb invpcid_single pti ssbd ibrs ibpb stibp tpr=
-_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 sme=
-p bmi2 erms invpcid mpx rdseed adx smap clflushopt intel_pt xsaveopt xsavec=
- xgetbv1 xsaves dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_e=
-pp md_clear flush_l1d arch_capabilities
-Virtualization:                  VT-x
-L1d cache:                       128 KiB (4 instances)
-L1i cache:                       128 KiB (4 instances)
-L2 cache:                        1 MiB (4 instances)
-L3 cache:                        6 MiB (1 instance)
-NUMA node(s):                    1
-NUMA node0 CPU(s):               0-3
-Vulnerability Itlb multihit:     KVM: Mitigation: VMX disabled
-Vulnerability L1tf:              Mitigation; PTE Inversion; VMX conditional=
- cache flushes, SMT disabled
-Vulnerability Mds:               Mitigation; Clear CPU buffers; SMT disable=
-d
-Vulnerability Meltdown:          Mitigation; PTI
-Vulnerability Mmio stale data:   Mitigation; Clear CPU buffers; SMT disable=
-d
-Vulnerability Retbleed:          Mitigation; IBRS
-Vulnerability Spec store bypass: Mitigation; Speculative Store Bypass disab=
-led via prctl
-Vulnerability Spectre v1:        Mitigation; usercopy/swapgs barriers and _=
-_user pointer sanitization
-Vulnerability Spectre v2:        Mitigation; IBRS, IBPB conditional, STIBP =
-disabled, RSB filling, PBRSB-eIBRS Not affected
-Vulnerability Srbds:             Mitigation; Microcode
-Vulnerability Tsx async abort:   Not affected
-
-available filesystems:
-autofs bdev binfmt_misc bpf btrfs cgroup cgroup2 configfs cpuset debugfs de=
-vpts devtmpfs efivarfs ext3 ext4 fuse fuseblk fusectl hugetlbfs mqueue nfs =
-nfs4 pipefs proc pstore ramfs rpc_pipefs securityfs sockfs sysfs tmpfs trac=
-efs xfs
-
-mounted filesystems (/proc/mounts):
-rootfs / rootfs rw 0 0
-proc /proc proc rw,nosuid,nodev,noexec,relatime 0 0
-sysfs /sys sysfs rw,nosuid,nodev,noexec,relatime 0 0
-devtmpfs /dev devtmpfs rw,nosuid,size=3D4096k,nr_inodes=3D3431806,mode=3D75=
-5 0 0
-securityfs /sys/kernel/security securityfs rw,nosuid,nodev,noexec,relatime =
-0 0
-tmpfs /dev/shm tmpfs rw,nosuid,nodev 0 0
-devpts /dev/pts devpts rw,nosuid,noexec,relatime,gid=3D5,mode=3D620,ptmxmod=
-e=3D000 0 0
-tmpfs /run tmpfs rw,nosuid,nodev,size=3D5702356k,nr_inodes=3D819200,mode=3D=
-755 0 0
-tmpfs /run/lock tmpfs rw,nosuid,nodev,noexec,relatime,size=3D5120k 0 0
-cgroup2 /sys/fs/cgroup cgroup2 rw,nosuid,nodev,noexec,relatime,nsdelegate,m=
-emory_recursiveprot 0 0
-pstore /sys/fs/pstore pstore rw,nosuid,nodev,noexec,relatime 0 0
-bpf /sys/fs/bpf bpf rw,nosuid,nodev,noexec,relatime,mode=3D700 0 0
-systemd-1 /proc/sys/fs/binfmt_misc autofs rw,relatime,fd=3D30,pgrp=3D1,time=
-out=3D0,minproto=3D5,maxproto=3D5,direct,pipe_ino=3D39798 0 0
-hugetlbfs /dev/hugepages hugetlbfs rw,relatime,pagesize=3D2M 0 0
-mqueue /dev/mqueue mqueue rw,nosuid,nodev,noexec,relatime 0 0
-debugfs /sys/kernel/debug debugfs rw,nosuid,nodev,noexec,relatime 0 0
-tracefs /sys/kernel/tracing tracefs rw,nosuid,nodev,noexec,relatime 0 0
-ramfs /run/credentials/systemd-sysctl.service ramfs ro,nosuid,nodev,noexec,=
-relatime,mode=3D700 0 0
-fusectl /sys/fs/fuse/connections fusectl rw,nosuid,nodev,noexec,relatime 0 =
-0
-ramfs /run/credentials/systemd-sysusers.service ramfs ro,nosuid,nodev,noexe=
-c,relatime,mode=3D700 0 0
-configfs /sys/kernel/config configfs rw,nosuid,nodev,noexec,relatime 0 0
-ramfs /run/credentials/systemd-tmpfiles-setup-dev.service ramfs ro,nosuid,n=
-odev,noexec,relatime,mode=3D700 0 0
-binfmt_misc /proc/sys/fs/binfmt_misc binfmt_misc rw,nosuid,nodev,noexec,rel=
-atime 0 0
-ramfs /run/credentials/systemd-tmpfiles-setup.service ramfs ro,nosuid,nodev=
-,noexec,relatime,mode=3D700 0 0
-sunrpc /run/rpc_pipefs rpc_pipefs rw,relatime 0 0
-tmp /tmp tmpfs rw 0 0
-/dev/sdb1 /opt/rootfs btrfs rw,relatime,ssd,discard=3Dasync,space_cache,sub=
-volid=3D5,subvol=3D/ 0 0
-/dev/sda1 /fs/sda1 xfs rw,relatime,attr2,inode64,logbufs=3D8,logbsize=3D32k=
-,noquota 0 0
-
-mounted filesystems (df):
-Filesystem     Type      Size  Used Avail Use% Mounted on
-devtmpfs       devtmpfs  4.0M     0  4.0M   0% /dev
-tmpfs          tmpfs      14G     0   14G   0% /dev/shm
-tmpfs          tmpfs     5.5G  640K  5.5G   1% /run
-tmpfs          tmpfs     5.0M     0  5.0M   0% /run/lock
-tmp            tmpfs      14G  480K   14G   1% /tmp
-/dev/sdb1      btrfs     300G   13G  287G   5% /opt/rootfs
-/dev/sda1      xfs       400G  441M  400G   1% /fs/sda1
-
-AppArmor disabled
-
-SELinux mode: unknown
-no big block device was specified on commandline.
-Tests which require a big block device are disabled.
-You can specify it with option -z
-COMMAND:    /lkp/benchmarks/ltp/bin/ltp-pan   -e -S   -a 3532     -n 3532 -=
-p -f /fs/sda1/tmpdir/ltp-xDoEJoVMiG/alltests -l /lkp/benchmarks/ltp/results=
-/LTP_RUN_ON-2023_04_01-16h_50m_10s.log  -C /lkp/benchmarks/ltp/output/LTP_R=
-UN_ON-2023_04_01-16h_50m_10s.failed -T /lkp/benchmarks/ltp/output/LTP_RUN_O=
-N-2023_04_01-16h_50m_10s.tconf
-LOG File: /lkp/benchmarks/ltp/results/LTP_RUN_ON-2023_04_01-16h_50m_10s.log
-FAILED COMMAND File: /lkp/benchmarks/ltp/output/LTP_RUN_ON-2023_04_01-16h_5=
-0m_10s.failed
-TCONF COMMAND File: /lkp/benchmarks/ltp/output/LTP_RUN_ON-2023_04_01-16h_50=
-m_10s.tconf
-Running tests.......
-<<<test_start>>>
-tag=3Dbpf_prog03 stime=3D1680367811
-cmdline=3D"bpf_prog03"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_buffers.c:55: TINFO: Test is using guarded buffers
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-bpf_common.c:16: TINFO: Raising RLIMIT_MEMLOCK to 10485760
-tst_capability.c:29: TINFO: Dropping CAP_SYS_ADMIN(21)
-bpf_prog03.c:105: TPASS: Failed verification: EACCES (13)
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dchdir01A stime=3D1680367811
-cmdline=3D"symlink01 -T chdir01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-chdir01     1  TPASS  :  chdir(2) to object file location through symbolic =
-link file is ok
-chdir01     2  TPASS  :  chdir(2) to non-existent object file location thro=
-ugh symbolic link file failed as expected
-chdir01     3  TPASS  :  Nested symbolic link access condition caught.  ELO=
-OP is returned
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dclock_adjtime02 stime=3D1680367811
-cmdline=3D"clock_adjtime02"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-clock_adjtime02.c:197: TINFO: Testing variant: syscall with old kernel spec
-clock_adjtime.h:160: TINFO: GET
-             mode: 0
-           offset: 0
-        frequency: 0
-         maxerror: 16000000
-         esterror: 16000000
-           status: 64 (0x40)
-    time_constant: 2
-        precision: 1
-        tolerance: 32768000
-             tick: 10000
-         raw time: 1680367811(s) 433137(us)
-clock_adjtime.h:160: TINFO: TEST
-             mode: 0
-           offset: 0
-        frequency: 0
-         maxerror: 16000000
-         esterror: 16000000
-           status: 64 (0x40)
-    time_constant: 2
-        precision: 1
-        tolerance: 32768000
-             tick: 10000
-         raw time: 1680367811(s) 433137(us)
-clock_adjtime02.c:184: TPASS: clock_adjtime(): failed as expected (mode=3D0=
-x0, uid=3D0)
-clock_adjtime.h:160: TINFO: GET
-             mode: 0
-           offset: 0
-        frequency: 0
-         maxerror: 16000000
-         esterror: 16000000
-           status: 64 (0x40)
-    time_constant: 2
-        precision: 1
-        tolerance: 32768000
-             tick: 10000
-         raw time: 1680367811(s) 433172(us)
-clock_adjtime.h:160: TINFO: TEST
-             mode: 0
-           offset: 0
-        frequency: 0
-         maxerror: 16000000
-         esterror: 16000000
-           status: 64 (0x40)
-    time_constant: 2
-        precision: 1
-        tolerance: 32768000
-             tick: 10000
-         raw time: 1680367811(s) 433172(us)
-clock_adjtime02.c:184: TPASS: clock_adjtime(): failed as expected (mode=3D0=
-x0, uid=3D0)
-clock_adjtime.h:160: TINFO: GET
-             mode: 0
-           offset: 0
-        frequency: 0
-         maxerror: 16000000
-         esterror: 16000000
-           status: 64 (0x40)
-    time_constant: 2
-        precision: 1
-        tolerance: 32768000
-             tick: 10000
-         raw time: 1680367811(s) 433191(us)
-clock_adjtime02.c:184: TPASS: clock_adjtime(): failed as expected (mode=3D0=
-x403f, uid=3D0)
-clock_adjtime.h:160: TINFO: GET
-             mode: 0
-           offset: 0
-        frequency: 0
-         maxerror: 16000000
-         esterror: 16000000
-           status: 64 (0x40)
-    time_constant: 2
-        precision: 1
-        tolerance: 32768000
-             tick: 10000
-         raw time: 1680367811(s) 433212(us)
-clock_adjtime.h:160: TINFO: TEST
-             mode: 16384
-           offset: 0
-        frequency: 0
-         maxerror: 16000000
-         esterror: 16000000
-           status: 64 (0x40)
-    time_constant: 2
-        precision: 1
-        tolerance: 32768000
-             tick: 8999
-         raw time: 1680367811(s) 433212(us)
-clock_adjtime02.c:184: TPASS: clock_adjtime(): failed as expected (mode=3D0=
-x4000, uid=3D0)
-clock_adjtime.h:160: TINFO: GET
-             mode: 0
-           offset: 0
-        frequency: 0
-         maxerror: 16000000
-         esterror: 16000000
-           status: 64 (0x40)
-    time_constant: 2
-        precision: 1
-        tolerance: 32768000
-             tick: 10000
-         raw time: 1680367811(s) 433228(us)
-clock_adjtime.h:160: TINFO: TEST
-             mode: 16384
-           offset: 0
-        frequency: 0
-         maxerror: 16000000
-         esterror: 16000000
-           status: 64 (0x40)
-    time_constant: 2
-        precision: 1
-        tolerance: 32768000
-             tick: 11001
-         raw time: 1680367811(s) 433228(us)
-clock_adjtime02.c:184: TPASS: clock_adjtime(): failed as expected (mode=3D0=
-x4000, uid=3D0)
-clock_adjtime.h:160: TINFO: GET
-             mode: 0
-           offset: 0
-        frequency: 0
-         maxerror: 16000000
-         esterror: 16000000
-           status: 64 (0x40)
-    time_constant: 2
-        precision: 1
-        tolerance: 32768000
-             tick: 10000
-         raw time: 1680367811(s) 433244(us)
-clock_adjtime.h:160: TINFO: TEST
-             mode: 16447
-           offset: 0
-        frequency: 0
-         maxerror: 16000000
-         esterror: 16000000
-           status: 64 (0x40)
-    time_constant: 2
-        precision: 1
-        tolerance: 32768000
-             tick: 10000
-         raw time: 1680367811(s) 433244(us)
-clock_adjtime02.c:184: TPASS: clock_adjtime(): failed as expected (mode=3D0=
-x403f, uid=3D65534)
-
-Summary:
-passed   6
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dclock_getres01 stime=3D1680367811
-cmdline=3D"clock_getres01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_buffers.c:55: TINFO: Test is using guarded buffers
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-clock_getres01.c:62: TINFO: Testing variant: vDSO or syscall with libc spec
-clock_getres01.c:88: TPASS: clock_getres(REALTIME, ...) succeeded
-clock_getres01.c:88: TPASS: clock_getres(MONOTONIC, ...) succeeded
-clock_getres01.c:88: TPASS: clock_getres(PROCESS_CPUTIME_ID, ...) succeeded
-clock_getres01.c:88: TPASS: clock_getres(THREAD_CPUTIME_ID, ...) succeeded
-clock_getres01.c:88: TPASS: clock_getres(CLOCK_MONOTONIC_RAW, ...) succeede=
-d
-clock_getres01.c:88: TPASS: clock_getres(CLOCK_REALTIME_COARSE, ...) succee=
-ded
-clock_getres01.c:88: TPASS: clock_getres(CLOCK_MONOTONIC_COARSE, ...) succe=
-eded
-clock_getres01.c:88: TPASS: clock_getres(CLOCK_BOOTTIME, ...) succeeded
-clock_getres01.c:88: TPASS: clock_getres(CLOCK_REALTIME_ALARM, ...) succeed=
-ed
-clock_getres01.c:88: TPASS: clock_getres(CLOCK_BOOTTIME_ALARM, ...) succeed=
-ed
-clock_getres01.c:88: TPASS: clock_getres(-1, ...) succeeded
-clock_getres01.c:62: TINFO: Testing variant: vDSO or syscall with libc spec=
- with NULL res
-clock_getres01.c:88: TPASS: clock_getres(REALTIME, ...) succeeded
-clock_getres01.c:88: TPASS: clock_getres(MONOTONIC, ...) succeeded
-clock_getres01.c:88: TPASS: clock_getres(PROCESS_CPUTIME_ID, ...) succeeded
-clock_getres01.c:88: TPASS: clock_getres(THREAD_CPUTIME_ID, ...) succeeded
-clock_getres01.c:88: TPASS: clock_getres(CLOCK_MONOTONIC_RAW, ...) succeede=
-d
-clock_getres01.c:88: TPASS: clock_getres(CLOCK_REALTIME_COARSE, ...) succee=
-ded
-clock_getres01.c:88: TPASS: clock_getres(CLOCK_MONOTONIC_COARSE, ...) succe=
-eded
-clock_getres01.c:88: TPASS: clock_getres(CLOCK_BOOTTIME, ...) succeeded
-clock_getres01.c:88: TPASS: clock_getres(CLOCK_REALTIME_ALARM, ...) succeed=
-ed
-clock_getres01.c:88: TPASS: clock_getres(CLOCK_BOOTTIME_ALARM, ...) succeed=
-ed
-clock_getres01.c:88: TPASS: clock_getres(-1, ...) succeeded
-clock_getres01.c:62: TINFO: Testing variant: syscall with old kernel spec
-clock_getres01.c:88: TPASS: clock_getres(REALTIME, ...) succeeded
-clock_getres01.c:88: TPASS: clock_getres(MONOTONIC, ...) succeeded
-clock_getres01.c:88: TPASS: clock_getres(PROCESS_CPUTIME_ID, ...) succeeded
-clock_getres01.c:88: TPASS: clock_getres(THREAD_CPUTIME_ID, ...) succeeded
-clock_getres01.c:88: TPASS: clock_getres(CLOCK_MONOTONIC_RAW, ...) succeede=
-d
-clock_getres01.c:88: TPASS: clock_getres(CLOCK_REALTIME_COARSE, ...) succee=
-ded
-clock_getres01.c:88: TPASS: clock_getres(CLOCK_MONOTONIC_COARSE, ...) succe=
-eded
-clock_getres01.c:88: TPASS: clock_getres(CLOCK_BOOTTIME, ...) succeeded
-clock_getres01.c:88: TPASS: clock_getres(CLOCK_REALTIME_ALARM, ...) succeed=
-ed
-clock_getres01.c:88: TPASS: clock_getres(CLOCK_BOOTTIME_ALARM, ...) succeed=
-ed
-clock_getres01.c:88: TPASS: clock_getres(-1, ...) succeeded
-clock_getres01.c:62: TINFO: Testing variant: syscall with old kernel spec w=
-ith NULL res
-clock_getres01.c:88: TPASS: clock_getres(REALTIME, ...) succeeded
-clock_getres01.c:88: TPASS: clock_getres(MONOTONIC, ...) succeeded
-clock_getres01.c:88: TPASS: clock_getres(PROCESS_CPUTIME_ID, ...) succeeded
-clock_getres01.c:88: TPASS: clock_getres(THREAD_CPUTIME_ID, ...) succeeded
-clock_getres01.c:88: TPASS: clock_getres(CLOCK_MONOTONIC_RAW, ...) succeede=
-d
-clock_getres01.c:88: TPASS: clock_getres(CLOCK_REALTIME_COARSE, ...) succee=
-ded
-clock_getres01.c:88: TPASS: clock_getres(CLOCK_MONOTONIC_COARSE, ...) succe=
-eded
-clock_getres01.c:88: TPASS: clock_getres(CLOCK_BOOTTIME, ...) succeeded
-clock_getres01.c:88: TPASS: clock_getres(CLOCK_REALTIME_ALARM, ...) succeed=
-ed
-clock_getres01.c:88: TPASS: clock_getres(CLOCK_BOOTTIME_ALARM, ...) succeed=
-ed
-clock_getres01.c:88: TPASS: clock_getres(-1, ...) succeeded
-
-Summary:
-passed   44
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dclock_nanosleep01 stime=3D1680367811
-cmdline=3D"clock_nanosleep01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_buffers.c:55: TINFO: Test is using guarded buffers
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-clock_nanosleep01.c:124: TINFO: Testing variant: vDSO or syscall with libc =
-spec
-clock_nanosleep01.c:139: TINFO: case NORMAL
-clock_nanosleep01.c:218: TPASS: clock_nanosleep() failed with: EINVAL (22)
-clock_nanosleep01.c:139: TINFO: case NORMAL
-clock_nanosleep01.c:218: TPASS: clock_nanosleep() failed with: EINVAL (22)
-clock_nanosleep01.c:139: TINFO: case NORMAL
-clock_nanosleep01.c:218: TPASS: clock_nanosleep() failed with: EINVAL (22)
-clock_nanosleep01.c:139: TINFO: case SEND_SIGINT
-clock_nanosleep01.c:208: TPASS: Timespec updated correctly
-clock_nanosleep01.c:218: TPASS: clock_nanosleep() failed with: EINTR (4)
-clock_nanosleep01.c:139: TINFO: case BAD_TS_ADDR_REQ
-clock_nanosleep01.c:143: TCONF: The libc wrapper may dereference req or rem
-clock_nanosleep01.c:139: TINFO: case BAD_TS_ADDR_REM
-clock_nanosleep01.c:143: TCONF: The libc wrapper may dereference req or rem
-clock_nanosleep01.c:124: TINFO: Testing variant: syscall with old kernel sp=
-ec
-clock_nanosleep01.c:139: TINFO: case NORMAL
-clock_nanosleep01.c:218: TPASS: clock_nanosleep() failed with: EINVAL (22)
-clock_nanosleep01.c:139: TINFO: case NORMAL
-clock_nanosleep01.c:218: TPASS: clock_nanosleep() failed with: EINVAL (22)
-clock_nanosleep01.c:139: TINFO: case NORMAL
-clock_nanosleep01.c:218: TPASS: clock_nanosleep() failed with: EOPNOTSUPP (=
-95)
-clock_nanosleep01.c:139: TINFO: case SEND_SIGINT
-clock_nanosleep01.c:208: TPASS: Timespec updated correctly
-clock_nanosleep01.c:218: TPASS: clock_nanosleep() failed with: EINTR (4)
-clock_nanosleep01.c:139: TINFO: case BAD_TS_ADDR_REQ
-clock_nanosleep01.c:218: TPASS: clock_nanosleep() failed with: EFAULT (14)
-clock_nanosleep01.c:139: TINFO: case BAD_TS_ADDR_REM
-clock_nanosleep01.c:218: TPASS: clock_nanosleep() failed with: EFAULT (14)
-
-Summary:
-passed   12
-failed   0
-broken   0
-skipped  2
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D1 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dclone03 stime=3D1680367812
-cmdline=3D"clone03"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_buffers.c:55: TINFO: Test is using guarded buffers
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-clone03.c:38: TPASS: pid(3694) passed
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dclone05 stime=3D1680367812
-cmdline=3D"clone05"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_buffers.c:55: TINFO: Test is using guarded buffers
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-clone05.c:48: TPASS: child_exited passed
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D1 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dclone09 stime=3D1680367813
-cmdline=3D"clone09"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-clone09.c:60: TINFO: create clone in a new netns with 'CLONE_NEWNET' flag
-clone09.c:83: TPASS: sysctl params differ in new netns
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dclone302 stime=3D1680367813
-cmdline=3D"clone302"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_buffers.c:55: TINFO: Test is using guarded buffers
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-clone302.c:101: TPASS: invalid args: clone3() failed as expected: EFAULT (1=
-4)
-clone302.c:101: TPASS: zero size: clone3() failed as expected: EINVAL (22)
-clone302.c:101: TPASS: short size: clone3() failed as expected: EINVAL (22)
-clone302.c:101: TPASS: extra size: clone3() failed as expected: EFAULT (14)
-clone302.c:101: TPASS: sighand-no-VM: clone3() failed as expected: EINVAL (=
-22)
-clone302.c:101: TPASS: thread-no-sighand: clone3() failed as expected: EINV=
-AL (22)
-clone302.c:101: TPASS: fs-newns: clone3() failed as expected: EINVAL (22)
-clone302.c:96: TFAIL: invalid pidfd: clone3() should fail with EFAULT: EINV=
-AL (22)
-clone302.c:101: TPASS: invalid signal: clone3() failed as expected: EINVAL =
-(22)
-clone302.c:101: TPASS: zero-stack-size: clone3() failed as expected: EINVAL=
- (22)
-clone302.c:101: TPASS: invalid-stack: clone3() failed as expected: EINVAL (=
-22)
-
-Summary:
-passed   10
-failed   1
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D1 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dconnect01 stime=3D1680367813
-cmdline=3D"connect01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-connect01    1  TPASS  :  bad file descriptor successful
-connect01    2  TPASS  :  invalid socket buffer successful
-connect01    3  TPASS  :  invalid salen successful
-connect01    4  TPASS  :  invalid socket successful
-connect01    5  TPASS  :  already connected successful
-connect01    6  TPASS  :  connection refused successful
-connect01    7  TPASS  :  invalid address family successful
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Ddup06 stime=3D1680367813
-cmdline=3D"dup06"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-dup06       1  TPASS  :  Test passed.
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Depoll01 stime=3D1680367813
-cmdline=3D"epoll-ltp"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-epoll01     0  TINFO  :  testing if epoll() system call works
-epoll01     0  TINFO  :  gettimeofday() works
-epoll01     0  TINFO  :  random number seeded with gettimeofday() [seed =3D=
- 154634] works
-epoll01     0  TINFO  :  Testing epoll_create
-epoll01     1  TPASS  :  epoll_create with negative set size
-epoll01     2  TPASS  :  epoll_create with large set size (size =3D 2147483=
-647)
-epoll01     3  TPASS  :  epoll_create with large set size (size =3D 2147483=
-646)
-epoll01     4  TPASS  :  epoll_create with large set size (size =3D 2147483=
-645)
-epoll01     5  TPASS  :  epoll_create with large set size (size =3D 2147483=
-644)
-epoll01     6  TPASS  :  epoll_create with large set size (size =3D 2147483=
-643)
-epoll01     7  TPASS  :  epoll_create with large set size (size =3D 2147483=
-642)
-epoll01     8  TPASS  :  epoll_create with large set size (size =3D 2147483=
-641)
-epoll01     9  TPASS  :  epoll_create with large set size (size =3D 2147483=
-640)
-epoll01    10  TPASS  :  epoll_create with large set size (size =3D 2147483=
-639)
-epoll01    11  TPASS  :  epoll_create with large set size (size =3D 2147483=
-638)
-epoll01    12  TPASS  :  epoll_create with large set size (size =3D 2147483=
-637)
-epoll01    13  TPASS  :  epoll_create with large set size (size =3D 2147483=
-636)
-epoll01    14  TPASS  :  epoll_create with large set size (size =3D 2147483=
-635)
-epoll01    15  TPASS  :  epoll_create with large set size (size =3D 2147483=
-634)
-epoll01    16  TPASS  :  epoll_create with large set size (size =3D 2147483=
-633)
-epoll01    17  TPASS  :  epoll_create with large set size (size =3D 2147483=
-632)
-epoll01    18  TPASS  :  epoll_create with random large set size (size =3D =
-1437498135)
-epoll01    19  TPASS  :  epoll_create with random large set size (size =3D =
-1139470951)
-epoll01    20  TPASS  :  epoll_create with random large set size (size =3D =
-296112285)
-epoll01    21  TPASS  :  epoll_create with random large set size (size =3D =
-171664655)
-epoll01    22  TPASS  :  epoll_create with random large set size (size =3D =
-1265685575)
-epoll01    23  TPASS  :  epoll_create with random large set size (size =3D =
-2092919897)
-epoll01    24  TPASS  :  epoll_create with random large set size (size =3D =
-170598495)
-epoll01    25  TPASS  :  epoll_create with random large set size (size =3D =
-590392881)
-epoll01    26  TPASS  :  epoll_create with random large set size (size =3D =
-193735620)
-epoll01    27  TPASS  :  epoll_create with random large set size (size =3D =
-1093637697)
-epoll01    28  TPASS  :  epoll_create with random large set size (size =3D =
-605043126)
-epoll01    29  TPASS  :  epoll_create with random large set size (size =3D =
-1099235519)
-epoll01    30  TPASS  :  epoll_create with random large set size (size =3D =
-473193488)
-epoll01    31  TPASS  :  epoll_create with random large set size (size =3D =
-1364260644)
-epoll01    32  TPASS  :  epoll_create with random large set size (size =3D =
-254365907)
-epoll01    33  TPASS  :  epoll_create with random large set size (size =3D =
-249744932)
-epoll01     0  TINFO  :  Summary: Of 33 tests, epoll_create failed 0 (100% =
-passed).
-epoll01     0  TINFO  :  Testing epoll_ctl
-epoll01     0  TINFO  :  Summary: Of 13824 tests, epoll_ctl failed 0 (100% =
-passed).
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D10 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D343 cstime=3D679
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dexecle01 stime=3D1680367823
-cmdline=3D"execle01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-execle01_child.c:34: TPASS: execle01_child executed
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D1 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dexecve04 stime=3D1680367823
-cmdline=3D"execve04"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-execve04.c:50: TPASS: execve failed as expected: ETXTBSY (26)
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D2
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dexecveat02 stime=3D1680367823
-cmdline=3D"execveat02"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-execveat02.c:63: TPASS: execveat() fails as expected: EBADF (9)
-execveat02.c:63: TPASS: execveat() fails as expected: EINVAL (22)
-execveat02.c:63: TPASS: execveat() fails as expected: ELOOP (40)
-execveat02.c:63: TPASS: execveat() fails as expected: ENOTDIR (20)
-
-Summary:
-passed   4
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D4
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dposix_fadvise01 stime=3D1680367823
-cmdline=3D"posix_fadvise01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-posix_fadvise01.c:54: TPASS: call succeeded expectedly
-posix_fadvise01.c:54: TPASS: call succeeded expectedly
-posix_fadvise01.c:54: TPASS: call succeeded expectedly
-posix_fadvise01.c:54: TPASS: call succeeded expectedly
-posix_fadvise01.c:54: TPASS: call succeeded expectedly
-posix_fadvise01.c:54: TPASS: call succeeded expectedly
-
-Summary:
-passed   6
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dfchmod06 stime=3D1680367823
-cmdline=3D"fchmod06"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-fchmod06.c:48: TPASS: fchmod() failed expectedly: EPERM (1)
-fchmod06.c:48: TPASS: fchmod() failed expectedly: EBADF (9)
-fchmod06.c:48: TPASS: fchmod() failed expectedly: EROFS (30)
-
-Summary:
-passed   3
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dfcntl05_64 stime=3D1680367823
-cmdline=3D"fcntl05_64"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-fcntl05.c:42: TPASS: fcntl(4, F_GETLK, &flocks) passed
-fcntl05.c:43: TPASS: flocks.l_type =3D=3D F_UNLCK (2)
-fcntl05.c:44: TPASS: flocks.l_whence =3D=3D SEEK_CUR (1)
-fcntl05.c:45: TPASS: flocks.l_start =3D=3D 0 (0)
-fcntl05.c:46: TPASS: flocks.l_len =3D=3D 0 (0)
-fcntl05.c:47: TPASS: flocks.l_pid =3D=3D pid (17593)
-
-Summary:
-passed   6
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D1 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dfcntl11_64 stime=3D1680367824
-cmdline=3D"fcntl11_64"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-fcntl11     0  TINFO  :  Enter block 1
-fcntl11     0  TINFO  :  Exit block 1
-fcntl11     0  TINFO  :  Enter block 2
-fcntl11     0  TINFO  :  Exit block 2
-fcntl11     0  TINFO  :  Enter block 3
-fcntl11     0  TINFO  :  Exit block 3
-fcntl11     0  TINFO  :  Enter block 4
-fcntl11     0  TINFO  :  Exit block 4
-fcntl11     0  TINFO  :  Enter block 5
-fcntl11     0  TINFO  :  Exit block 5
-fcntl11     0  TINFO  :  Enter block 6
-fcntl11     0  TINFO  :  Exit block 6
-fcntl11     0  TINFO  :  Enter block 7
-fcntl11     0  TINFO  :  Exit block 7
-fcntl11     0  TINFO  :  Enter block 8
-fcntl11     0  TINFO  :  Exit block 8
-fcntl11     0  TINFO  :  Enter block 9
-fcntl11     0  TINFO  :  Exit block 9
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dfcntl19_64 stime=3D1680367824
-cmdline=3D"fcntl19_64"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-fcntl19     0  TINFO  :  Enter block 1
-fcntl19     0  TINFO  :  Test block 1: PASSED
-fcntl19     0  TINFO  :  Exit block 1
-fcntl19     0  TINFO  :  Enter block 2
-fcntl19     0  TINFO  :  Test block 2: PASSED
-fcntl19     0  TINFO  :  Exit block 2
-fcntl19     0  TINFO  :  Enter block 3
-fcntl19     0  TINFO  :  Test block 3: PASSED
-fcntl19     0  TINFO  :  Exit block 3
-fcntl19     0  TINFO  :  Enter blcok 4
-fcntl19     0  TINFO  :  Test block 4: PASSED
-fcntl19     0  TINFO  :  Exit block 4
-fcntl19     0  TINFO  :  Enter block 5
-fcntl19     0  TINFO  :  Test block 5: PASSED
-fcntl19     0  TINFO  :  Exit block 5
-fcntl19     0  TINFO  :  Enter block 6
-fcntl19     0  TINFO  :  Test block 6: PASSED
-fcntl19     0  TINFO  :  Exit block 6
-fcntl19     0  TINFO  :  Enter block 7
-fcntl19     0  TINFO  :  Test block 7: PASSED
-fcntl19     0  TINFO  :  Exit block 7
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dfcntl26_64 stime=3D1680367824
-cmdline=3D"fcntl26_64"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-fcntl26     1  TPASS  :  fcntl(tfile_17598, F_SETLEASE, F_WRLCK)
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dfcntl32_64 stime=3D1680367824
-cmdline=3D"fcntl32_64"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-fcntl32     1  TPASS  :  fcntl(F_SETLEASE, F_WRLCK) failed as expected: TES=
-T_ERRNO=3DEAGAIN/EWOULDBLOCK(11): Resource temporarily unavailable
-fcntl32     2  TPASS  :  fcntl(F_SETLEASE, F_WRLCK) failed as expected: TES=
-T_ERRNO=3DEAGAIN/EWOULDBLOCK(11): Resource temporarily unavailable
-fcntl32     3  TPASS  :  fcntl(F_SETLEASE, F_WRLCK) failed as expected: TES=
-T_ERRNO=3DEAGAIN/EWOULDBLOCK(11): Resource temporarily unavailable
-fcntl32     4  TPASS  :  fcntl(F_SETLEASE, F_WRLCK) failed as expected: TES=
-T_ERRNO=3DEAGAIN/EWOULDBLOCK(11): Resource temporarily unavailable
-fcntl32     5  TPASS  :  fcntl(F_SETLEASE, F_WRLCK) failed as expected: TES=
-T_ERRNO=3DEAGAIN/EWOULDBLOCK(11): Resource temporarily unavailable
-fcntl32     6  TPASS  :  fcntl(F_SETLEASE, F_WRLCK) failed as expected: TES=
-T_ERRNO=3DEAGAIN/EWOULDBLOCK(11): Resource temporarily unavailable
-fcntl32     7  TPASS  :  fcntl(F_SETLEASE, F_WRLCK) failed as expected: TES=
-T_ERRNO=3DEAGAIN/EWOULDBLOCK(11): Resource temporarily unavailable
-fcntl32     8  TPASS  :  fcntl(F_SETLEASE, F_WRLCK) failed as expected: TES=
-T_ERRNO=3DEAGAIN/EWOULDBLOCK(11): Resource temporarily unavailable
-fcntl32     9  TPASS  :  fcntl(F_SETLEASE, F_WRLCK) failed as expected: TES=
-T_ERRNO=3DEAGAIN/EWOULDBLOCK(11): Resource temporarily unavailable
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dflistxattr02 stime=3D1680367824
-cmdline=3D"flistxattr02"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-flistxattr02.c:66: TPASS: flistxattr() failed as expected: ERANGE (34)
-flistxattr02.c:66: TPASS: flistxattr() failed as expected: EBADF (9)
-
-Summary:
-passed   2
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dflock03 stime=3D1680367824
-cmdline=3D"flock03"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-flock03.c:73: TPASS: Parent: Initial attempt to flock() passed
-flock03.c:39: TPASS: CHILD: File locked by parent unlocked
-flock03.c:48: TPASS: Locking after unlock passed
-
-Summary:
-passed   3
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dfork06 stime=3D1680367824
-cmdline=3D"fork06"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-fork06      0  TINFO  :  tries 1000
-fork06      0  TINFO  :  successes 1000
-fork06      0  TINFO  :  failures 0
-fork06      0  TINFO  :  There were no children to wait for
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D22 cstime=3D39
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dfork07 stime=3D1680367824
-cmdline=3D"fork07"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-fork07.c:48: TPASS: read the end of file correctly
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D2 cstime=3D5
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dfork10 stime=3D1680367824
-cmdline=3D"fork10"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-fork10      0  TINFO  :  fork child A
-fork10      1  TPASS  :  test 1 PASSED
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D1 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dfork11 stime=3D1680367824
-cmdline=3D"fork11"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-fork11      1  TPASS  :  fork test passed, 100 processes
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D2 cstime=3D4
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dfstatfs01_64 stime=3D1680367824
-cmdline=3D"fstatfs01_64"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-fstatfs01    1  TPASS  :  fstatfs() on a file - f_type=3D58465342
-fstatfs01    2  TPASS  :  fstatfs() on a pipe - f_type=3D50495045
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dfsync03 stime=3D1680367824
-cmdline=3D"fsync03"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-fsync03.c:71: TPASS: fsync() failed as expected: EINVAL (22)
-fsync03.c:71: TPASS: fsync() failed as expected: EINVAL (22)
-fsync03.c:71: TPASS: fsync() failed as expected: EBADF (9)
-fsync03.c:71: TPASS: fsync() failed as expected: EBADF (9)
-fsync03.c:71: TPASS: fsync() failed as expected: EINVAL (22)
-
-Summary:
-passed   5
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dftruncate03_64 stime=3D1680367824
-cmdline=3D"ftruncate03_64"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-ftruncate03.c:58: TPASS: ftruncate() failed expectedly: EINVAL (22)
-ftruncate03.c:58: TPASS: ftruncate() failed expectedly: EINVAL (22)
-ftruncate03.c:58: TPASS: ftruncate() failed expectedly: EINVAL (22)
-ftruncate03.c:58: TPASS: ftruncate() failed expectedly: EBADF (9)
-
-Summary:
-passed   4
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dfutimesat01 stime=3D1680367824
-cmdline=3D"futimesat01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-futimesat01    1  TPASS  :  futimesat() returned expected errno: TEST_ERRNO=
-=3DSUCCESS(0): Success
-futimesat01    2  TPASS  :  futimesat() returned expected errno: TEST_ERRNO=
-=3DSUCCESS(0): Success
-futimesat01    3  TPASS  :  futimesat() returned expected errno: TEST_ERRNO=
-=3DENOTDIR(20): Not a directory
-futimesat01    4  TPASS  :  futimesat() returned expected errno: TEST_ERRNO=
-=3DEBADF(9): Bad file descriptor
-futimesat01    5  TPASS  :  futimesat() returned expected errno: TEST_ERRNO=
-=3DSUCCESS(0): Success
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dgetegid01_16 stime=3D1680367824
-cmdline=3D"getegid01_16"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-getegid01_16    1  TCONF  :  /tmp/lkp/ltp/src/ltp/testcases/kernel/syscalls=
-/getegid/../utils/compat_16.h:112: 16-bit version of getegid() is not suppo=
-rted on your platform
-getegid01_16    2  TCONF  :  /tmp/lkp/ltp/src/ltp/testcases/kernel/syscalls=
-/getegid/../utils/compat_16.h:112: Remaining cases not appropriate for conf=
-iguration
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D32 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dgetgid01 stime=3D1680367824
-cmdline=3D"getgid01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-getgid01.c:26: TPASS: getgid returned as expectedly
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dgetgroups01 stime=3D1680367824
-cmdline=3D"getgroups01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-getgroups01    1  TPASS  :  getgroups failed as expected with EINVAL
-getgroups01    2  TPASS  :  getgroups did not modify the gidset array
-getgroups01    3  TPASS  :  getgroups failed as expected with EINVAL
-getgroups01    4  TPASS  :  getgroups(NGROUPS,gidset) returned 3 contains g=
-id 0 (from getgid)
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dgetgroups03_16 stime=3D1680367824
-cmdline=3D"getgroups03_16"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-getgroups03_16    1  TCONF  :  /tmp/lkp/ltp/src/ltp/testcases/kernel/syscal=
-ls/getgroups/../utils/compat_16.h:77: 16-bit version of setgroups() is not =
-supported on your platform
-getgroups03_16    2  TCONF  :  /tmp/lkp/ltp/src/ltp/testcases/kernel/syscal=
-ls/getgroups/../utils/compat_16.h:77: Remaining cases not appropriate for c=
-onfiguration
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D32 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dgetpagesize01 stime=3D1680367824
-cmdline=3D"getpagesize01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-getpagesize01.c:26: TPASS: getpagesize() passed
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dgetpriority02 stime=3D1680367824
-cmdline=3D"getpriority02"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-getpriority02.c:57: TPASS: getpriority(-1, 0) fails as expected: EINVAL (22=
-)
-getpriority02.c:57: TPASS: getpriority(0, -1) fails as expected: ESRCH (3)
-getpriority02.c:57: TPASS: getpriority(1, -1) fails as expected: ESRCH (3)
-getpriority02.c:57: TPASS: getpriority(2, -1) fails as expected: ESRCH (3)
-
-Summary:
-passed   4
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dgetrlimit03 stime=3D1680367824
-cmdline=3D"getrlimit03"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-getrlimit03.c:174: TPASS: __NR_prlimit64(0) and __NR_getrlimit(0) gave cons=
-istent results
-getrlimit03.c:174: TPASS: __NR_prlimit64(1) and __NR_getrlimit(1) gave cons=
-istent results
-getrlimit03.c:174: TPASS: __NR_prlimit64(2) and __NR_getrlimit(2) gave cons=
-istent results
-getrlimit03.c:174: TPASS: __NR_prlimit64(3) and __NR_getrlimit(3) gave cons=
-istent results
-getrlimit03.c:174: TPASS: __NR_prlimit64(4) and __NR_getrlimit(4) gave cons=
-istent results
-getrlimit03.c:174: TPASS: __NR_prlimit64(5) and __NR_getrlimit(5) gave cons=
-istent results
-getrlimit03.c:174: TPASS: __NR_prlimit64(6) and __NR_getrlimit(6) gave cons=
-istent results
-getrlimit03.c:174: TPASS: __NR_prlimit64(7) and __NR_getrlimit(7) gave cons=
-istent results
-getrlimit03.c:174: TPASS: __NR_prlimit64(8) and __NR_getrlimit(8) gave cons=
-istent results
-getrlimit03.c:174: TPASS: __NR_prlimit64(9) and __NR_getrlimit(9) gave cons=
-istent results
-getrlimit03.c:174: TPASS: __NR_prlimit64(10) and __NR_getrlimit(10) gave co=
-nsistent results
-getrlimit03.c:174: TPASS: __NR_prlimit64(11) and __NR_getrlimit(11) gave co=
-nsistent results
-getrlimit03.c:174: TPASS: __NR_prlimit64(12) and __NR_getrlimit(12) gave co=
-nsistent results
-getrlimit03.c:174: TPASS: __NR_prlimit64(13) and __NR_getrlimit(13) gave co=
-nsistent results
-getrlimit03.c:174: TPASS: __NR_prlimit64(14) and __NR_getrlimit(14) gave co=
-nsistent results
-getrlimit03.c:174: TPASS: __NR_prlimit64(15) and __NR_getrlimit(15) gave co=
-nsistent results
-
-Summary:
-passed   16
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dgetuid03_16 stime=3D1680367824
-cmdline=3D"getuid03_16"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-/tmp/lkp/ltp/src/ltp/testcases/kernel/syscalls/getuid/../utils/compat_tst_1=
-6.h:89: TCONF: 16-bit version of getuid() is not supported on your platform
-
-Summary:
-passed   0
-failed   0
-broken   0
-skipped  1
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D32 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dioctl_loop02 stime=3D1680367824
-cmdline=3D"ioctl_loop02"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-tst_device.c:93: TINFO: Found free device 0 '/dev/loop0'
-ioctl_loop02.c:54: TINFO: Using LOOP_SET_FD to setup loopdevice
-ioctl_loop02.c:65: TPASS: /sys/block/loop0/ro =3D 1
-ioctl_loop02.c:66: TPASS: /sys/block/loop0/loop/backing_file =3D '/fs/sda1/=
-tmpdir/ltp-xDoEJoVMiG/ioc5zd99c/test.img'
-ioctl_loop02.c:75: TPASS: lo_flags only has default LO_FLAGS_READ_ONLY flag
-ioctl_loop02.c:81: TPASS: Can not write data in RO mode: EPERM (1)
-ioctl_loop02.c:87: TPASS: LOOP_CHANGE_FD succeeded
-ioctl_loop02.c:88: TPASS: /sys/block/loop0/ro =3D 1
-ioctl_loop02.c:89: TPASS: /sys/block/loop0/loop/backing_file =3D '/fs/sda1/=
-tmpdir/ltp-xDoEJoVMiG/ioc5zd99c/test1.img'
-ioctl_loop02.c:95: TPASS: LOOP_CHANGE_FD failed as expected: EINVAL (22)
-ioctl_loop02.c:54: TINFO: Using LOOP_CONFIGURE with read_only flag
-ioctl_loop02.c:65: TPASS: /sys/block/loop0/ro =3D 1
-ioctl_loop02.c:66: TPASS: /sys/block/loop0/loop/backing_file =3D '/fs/sda1/=
-tmpdir/ltp-xDoEJoVMiG/ioc5zd99c/test.img'
-ioctl_loop02.c:75: TPASS: lo_flags only has default LO_FLAGS_READ_ONLY flag
-ioctl_loop02.c:81: TPASS: Can not write data in RO mode: EPERM (1)
-ioctl_loop02.c:87: TPASS: LOOP_CHANGE_FD succeeded
-ioctl_loop02.c:88: TPASS: /sys/block/loop0/ro =3D 1
-ioctl_loop02.c:89: TPASS: /sys/block/loop0/loop/backing_file =3D '/fs/sda1/=
-tmpdir/ltp-xDoEJoVMiG/ioc5zd99c/test1.img'
-ioctl_loop02.c:95: TPASS: LOOP_CHANGE_FD failed as expected: EINVAL (22)
-
-Summary:
-passed   16
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D1 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D2
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dioctl_ns06 stime=3D1680367825
-cmdline=3D"ioctl_ns06"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-ioctl_ns06.c:90: TPASS: child and parent are consistent
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dinotify_init1_02 stime=3D1680367825
-cmdline=3D"inotify_init1_02"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-inotify_init1_02.c:26: TPASS: tst_syscall(__NR_inotify_init1, 0) returned f=
-d 4
-inotify_init1_02.c:29: TPASS: flags & O_NONBLOCK =3D=3D 0 (0)
-inotify_init1_02.c:32: TPASS: tst_syscall(__NR_inotify_init1, IN_NONBLOCK) =
-returned fd 4
-inotify_init1_02.c:35: TPASS: flags & O_NONBLOCK =3D=3D O_NONBLOCK (2048)
-
-Summary:
-passed   4
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dinotify08 stime=3D1680367825
-cmdline=3D"inotify08"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_device.c:93: TINFO: Found free device 0 '/dev/loop0'
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with ext2 opts=3D'' extra opt=
-s=3D''
-mke2fs 1.46.6-rc1 (12-Sep-2022)
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-inotify08.c:148: TINFO: mntpoint/ovl/test_file ino=3D64770, dev=3D0:43
-inotify08.c:159: TINFO: mntpoint/ovl/test_file ino=3D64770, dev=3D0:43
-inotify08.c:107: TPASS: get event: wd=3D1 mask=3D00000004 cookie=3D0     le=
-n=3D0=20
-inotify08.c:107: TPASS: get event: wd=3D1 mask=3D00000020 cookie=3D0     le=
-n=3D0=20
-inotify08.c:107: TPASS: get event: wd=3D1 mask=3D00000008 cookie=3D0     le=
-n=3D0=20
-
-Summary:
-passed   3
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D1 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D1 cstime=3D12
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dinotify12 stime=3D1680367826
-cmdline=3D"inotify12"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 50s
-inotify12.c:72: TINFO: Test #0: Watch for multi events
-inotify12.c:88: TPASS: Correct mask in inotify fdinfo
-inotify12.c:102: TPASS: Got 1st event as expected
-inotify12.c:133: TPASS: Got 2nd event as expected
-inotify12.c:72: TINFO: Test #1: Watch for single event
-inotify12.c:88: TPASS: Correct mask in inotify fdinfo
-inotify12.c:102: TPASS: Got 1st event as expected
-inotify12.c:138: TPASS: Got no more events as expected
-inotify12.c:72: TINFO: Test #2: Watch for events on linked file
-inotify12.c:88: TPASS: Correct mask in inotify fdinfo
-inotify12.c:102: TPASS: Got 1st event as expected
-inotify12.c:138: TPASS: Got no more events as expected
-
-Summary:
-passed   9
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dfanotify05 stime=3D1680367826
-cmdline=3D"fanotify05"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_device.c:93: TINFO: Found free device 0 '/dev/loop0'
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with ext2 opts=3D'' extra opt=
-s=3D''
-mke2fs 1.46.6-rc1 (12-Sep-2022)
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-fanotify05.c:201: TINFO: max_queued_events=3D16384
-fanotify05.c:114: TINFO: Test #0: Limited queue
-fanotify05.c:103: TINFO: Created 16385 files in 6593ms
-fanotify05.c:103: TINFO: Opened 16385 files in 341ms
-fanotify05.c:83: TINFO: Got event #0 filename=3Dfname_0
-fanotify05.c:178: TPASS: Got an overflow event: pid=3D0 fd=3D-1
-fanotify05.c:184: TINFO: Got 16385 events
-fanotify05.c:114: TINFO: Test #1: Unlimited queue
-fanotify05.c:103: TINFO: Created 16385 files in 364ms
-fanotify05.c:103: TINFO: Opened 16385 files in 381ms
-fanotify05.c:83: TINFO: Got event #0 filename=3Dfname_0
-fanotify05.c:142: TPASS: Overflow event not generated!
-
-fanotify05.c:184: TINFO: Got 24586 events
-
-Summary:
-passed   2
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D9 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D17 cstime=3D800
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dfanotify12 stime=3D1680367835
-cmdline=3D"fanotify12"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-fanotify12.c:139: TINFO: Test #0: inode mark, FAN_OPEN events
-fanotify12.c:204: TPASS: Received event: mask=3D20, pid=3D18902, fd=3D5
-fanotify12.c:204: TPASS: Received event: mask=3D20, pid=3D18902, fd=3D6
-fanotify12.c:139: TINFO: Test #1: inode mark, FAN_OPEN_EXEC events
-fanotify12.c:204: TPASS: Received event: mask=3D1000, pid=3D18903, fd=3D5
-fanotify12.c:139: TINFO: Test #2: inode mark, FAN_OPEN | FAN_OPEN_EXEC even=
-ts
-fanotify12.c:204: TPASS: Received event: mask=3D20, pid=3D18904, fd=3D5
-fanotify12.c:204: TPASS: Received event: mask=3D1020, pid=3D18904, fd=3D6
-fanotify12.c:139: TINFO: Test #3: inode mark, FAN_OPEN events, ignore FAN_O=
-PEN_EXEC
-fanotify12.c:204: TPASS: Received event: mask=3D20, pid=3D18905, fd=3D5
-fanotify12.c:204: TPASS: Received event: mask=3D20, pid=3D18905, fd=3D6
-fanotify12.c:139: TINFO: Test #4: inode mark, FAN_OPEN_EXEC events, ignore =
-FAN_OPEN
-fanotify12.c:204: TPASS: Received event: mask=3D1000, pid=3D18906, fd=3D5
-fanotify12.c:139: TINFO: Test #5: inode mark, FAN_OPEN | FAN_OPEN_EXEC even=
-ts, ignore FAN_OPEN_EXEC
-fanotify12.c:204: TPASS: Received event: mask=3D20, pid=3D18907, fd=3D5
-fanotify12.c:204: TPASS: Received event: mask=3D20, pid=3D18907, fd=3D6
-
-Summary:
-passed   10
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D4
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dioperm01 stime=3D1680367835
-cmdline=3D"ioperm01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_kconfig.c:87: TINFO: Parsing kernel config '/proc/config.gz'
-tst_lockdown.c:60: TINFO: Unable to determine system lockdown state
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-ioperm01.c:37: TPASS: ioperm() passed for port address 1021, returned 0
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D1 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Diopl02 stime=3D1680367835
-cmdline=3D"iopl02"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_kconfig.c:87: TINFO: Parsing kernel config '/proc/config.gz'
-tst_lockdown.c:60: TINFO: Unable to determine system lockdown state
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-iopl02.c:42: TPASS: Expected failure for Invalid privilege level, errno: 22=
-: EINVAL (22)
-iopl02.c:42: TPASS: Expected failure for Non super-user, errno: 1: EPERM (1=
-)
-
-Summary:
-passed   2
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dioprio_set03 stime=3D1680367835
-cmdline=3D"ioprio_set03"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-ioprio.h:89: TPASS: ioprio_set new class BEST-EFFORT, new prio 4
-ioprio_set03.c:34: TPASS: returned correct error for wrong prio: EINVAL (22=
-)
-ioprio_set03.c:47: TINFO: tested illegal priority with class NONE
-ioprio_set03.c:50: TPASS: returned correct error for wrong prio: EINVAL (22=
-)
-
-Summary:
-passed   3
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dio_destroy02 stime=3D1680367835
-cmdline=3D"io_destroy02"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_kconfig.c:87: TINFO: Parsing kernel config '/proc/config.gz'
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-io_destroy02.c:28: TPASS: io_destroy() with an invalid ctx : EINVAL (22)
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dio_pgetevents01 stime=3D1680367835
-cmdline=3D"io_pgetevents01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-io_pgetevents01.c:28: TINFO: Testing variant: syscall with old kernel spec
-io_pgetevents01.c:62: TPASS: io_pgetevents() works as expected
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dio_submit03 stime=3D1680367835
-cmdline=3D"io_submit03"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_kconfig.c:87: TINFO: Parsing kernel config '/proc/config.gz'
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-io_submit03.c:106: TPASS: io_submit() with invalid ctx : EINVAL (22)
-io_submit03.c:106: TPASS: io_submit() with invalid nr : EINVAL (22)
-io_submit03.c:106: TPASS: io_submit() with invalid iocbpp pointer : EFAULT =
-(14)
-io_submit03.c:106: TPASS: io_submit() with NULL iocb pointers : EFAULT (14)
-io_submit03.c:106: TPASS: io_submit() with invalid fd : EBADF (9)
-io_submit03.c:106: TPASS: io_submit() with readonly fd for write : EBADF (9=
-)
-io_submit03.c:106: TPASS: io_submit() with writeonly fd for read : EBADF (9=
-)
-
-Summary:
-passed   7
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dkeyctl07 stime=3D1680367835
-cmdline=3D"keyctl07"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-keyctl07.c:62: TINFO: trying to read from the negative key...
-keyctl07.c:72: TPASS: KEYCTL_READ on negative key expectedly failed with EN=
-OKEY
-keyctl07.c:88: TPASS: didn't crash while reading from negative key
-
-Summary:
-passed   2
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D1 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dlchown01 stime=3D1680367835
-cmdline=3D"lchown01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-lchown01    1  TPASS  :  lchown() succeeds to Change Owner/Group ids of sli=
-nk_file
-lchown01    2  TPASS  :  lchown() succeeds to Change Owner id only of slink=
-_file
-lchown01    3  TPASS  :  lchown() succeeds to Change Owner/Group ids of sli=
-nk_file
-lchown01    4  TPASS  :  lchown() succeeds to Change Group id only of slink=
-_file
-lchown01    5  TPASS  :  lchown() succeeds to Change Group/Group ids of sli=
-nk_file
-lchown01    6  TPASS  :  lchown() succeeds to Change none of slink_file
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dlink02 stime=3D1680367835
-cmdline=3D"link02"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-link02.c:26: TPASS: link(OLDPATH, NEWPATH) passed
-link02.c:35: TPASS: link(oldpath,newpath) returned 0 and stat link counts m=
-atch
-
-Summary:
-passed   2
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dlink03 stime=3D1680367835
-cmdline=3D"link03"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-link03      1  TPASS  :  link() passed and linkcounts=3D10 match
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dllseek01 stime=3D1680367835
-cmdline=3D"llseek01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-llseek01.c:32: TPASS: lseek64() can set file pointer position larger than f=
-ile size limit
-llseek01.c:37: TPASS: write failed after file size limit
-llseek01.c:43: TPASS: lseek64() can set file pointer position under filer s=
-ize limit
-llseek01.c:48: TPASS: write succcessfully under file size limit
-llseek01.c:53: TPASS: write failed after file size limit
-
-Summary:
-passed   5
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dmallinfo2_01 stime=3D1680367835
-cmdline=3D"mallinfo2_01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-mallinfo2_01.c:39: TPASS: hblkhd member of struct mallinfo2 doesn't overflo=
-w
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dmemset01 stime=3D1680367835
-cmdline=3D"memset01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-memset01.c:69: TPASS: Test passed
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dmemcmp01 stime=3D1680367835
-cmdline=3D"memcmp01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-memcmp01.c:100: TPASS: Test passed
-memcmp01.c:100: TPASS: Test passed
-
-Summary:
-passed   2
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dmlockall03 stime=3D1680367835
-cmdline=3D"mlockall03"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-mlockall03    1  TPASS  :  expected failure - errno =3D 12 : Cannot allocat=
-e memory
-mlockall03    2  TPASS  :  expected failure - errno =3D 1 : Operation not p=
-ermitted
-mlockall03    3  TPASS  :  expected failure - errno =3D 22 : Invalid argume=
-nt
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dmknod06 stime=3D1680367835
-cmdline=3D"mknod06"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-mknod06     1  TPASS  :  mknod() fails, Specified node already exists, errn=
-o:17
-mknod06     2  TPASS  :  mknod() fails, Invalid address, errno:14
-mknod06     3  TPASS  :  mknod() fails, Non-existent file, errno:2
-mknod06     4  TPASS  :  mknod() fails, Pathname is empty, errno:2
-mknod06     5  TPASS  :  mknod() fails, Pathname too long, errno:36
-mknod06     6  TPASS  :  mknod() fails, Path contains regular file, errno:2=
-0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dmmap01 stime=3D1680367835
-cmdline=3D"mmap01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-mmap01      1  TPASS  :  Functionality of mmap() successful
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dmmap16 stime=3D1680367835
-cmdline=3D"mmap16"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_device.c:93: TINFO: Found free device 0 '/dev/loop0'
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with ext4 opts=3D'-b 1024' ex=
-tra opts=3D'10240'
-mke2fs 1.46.6-rc1 (12-Sep-2022)
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-mmap16.c:151: TPASS: bug is not reproduced
-mmap16.c:151: TPASS: bug is not reproduced
-mmap16.c:151: TPASS: bug is not reproduced
-mmap16.c:151: TPASS: bug is not reproduced
-mmap16.c:151: TPASS: bug is not reproduced
-mmap16.c:151: TPASS: bug is not reproduced
-mmap16.c:151: TPASS: bug is not reproduced
-mmap16.c:151: TPASS: bug is not reproduced
-mmap16.c:151: TPASS: bug is not reproduced
-mmap16.c:151: TPASS: bug is not reproduced
-
-Summary:
-passed   10
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D3 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D5 cstime=3D131
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dmmap17 stime=3D1680367838
-cmdline=3D"mmap17"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-mmap17.c:73: TPASS: mmap set errno to EEXIST as expected
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dmount01 stime=3D1680367838
-cmdline=3D"mount01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-mke2fs 1.46.6-rc1 (12-Sep-2022)
-mount01     0  TINFO  :  Found free device 0 '/dev/loop0'
-mount01     0  TINFO  :  Formatting /dev/loop0 with ext2 opts=3D'' extra op=
-ts=3D''
-mount01     1  TPASS  :  mount(2) passed=20
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D1 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D3
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dmove_mount01 stime=3D1680367839
-cmdline=3D"move_mount01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_device.c:93: TINFO: Found free device 0 '/dev/loop0'
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-tst_supported_fs_types.c:90: TINFO: Kernel supports ext2
-tst_supported_fs_types.c:55: TINFO: mkfs.ext2 does exist
-tst_supported_fs_types.c:90: TINFO: Kernel supports ext3
-tst_supported_fs_types.c:55: TINFO: mkfs.ext3 does exist
-tst_supported_fs_types.c:90: TINFO: Kernel supports ext4
-tst_supported_fs_types.c:55: TINFO: mkfs.ext4 does exist
-tst_supported_fs_types.c:90: TINFO: Kernel supports xfs
-tst_supported_fs_types.c:55: TINFO: mkfs.xfs does exist
-tst_supported_fs_types.c:90: TINFO: Kernel supports btrfs
-tst_supported_fs_types.c:55: TINFO: mkfs.btrfs does exist
-tst_supported_fs_types.c:90: TINFO: Kernel supports vfat
-tst_supported_fs_types.c:55: TINFO: mkfs.vfat does exist
-tst_supported_fs_types.c:116: TINFO: Filesystem exfat is not supported
-tst_supported_fs_types.c:120: TINFO: FUSE does support ntfs
-tst_supported_fs_types.c:55: TINFO: mkfs.ntfs does exist
-tst_supported_fs_types.c:165: TINFO: Skipping FUSE based ntfs as requested =
-by the test
-tst_supported_fs_types.c:90: TINFO: Kernel supports tmpfs
-tst_supported_fs_types.c:42: TINFO: mkfs is not needed for tmpfs
-tst_test.c:1635: TINFO: =3D=3D=3D Testing on ext2 =3D=3D=3D
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with ext2 opts=3D'' extra opt=
-s=3D''
-mke2fs 1.46.6-rc1 (12-Sep-2022)
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_F_SYMLINKS: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_F_AUTOMOUNTS: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_F_EMPTY_PATH: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_T_SYMLINKS: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_T_AUTOMOUNTS: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_T_EMPTY_PATH: move_mount() passed
-tst_test.c:1635: TINFO: =3D=3D=3D Testing on ext3 =3D=3D=3D
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with ext3 opts=3D'' extra opt=
-s=3D''
-mke2fs 1.46.6-rc1 (12-Sep-2022)
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_F_SYMLINKS: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_F_AUTOMOUNTS: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_F_EMPTY_PATH: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_T_SYMLINKS: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_T_AUTOMOUNTS: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_T_EMPTY_PATH: move_mount() passed
-tst_test.c:1635: TINFO: =3D=3D=3D Testing on ext4 =3D=3D=3D
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with ext4 opts=3D'' extra opt=
-s=3D''
-mke2fs 1.46.6-rc1 (12-Sep-2022)
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_F_SYMLINKS: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_F_AUTOMOUNTS: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_F_EMPTY_PATH: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_T_SYMLINKS: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_T_AUTOMOUNTS: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_T_EMPTY_PATH: move_mount() passed
-tst_test.c:1635: TINFO: =3D=3D=3D Testing on xfs =3D=3D=3D
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with xfs opts=3D'' extra opts=
-=3D''
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_F_SYMLINKS: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_F_AUTOMOUNTS: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_F_EMPTY_PATH: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_T_SYMLINKS: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_T_AUTOMOUNTS: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_T_EMPTY_PATH: move_mount() passed
-tst_test.c:1635: TINFO: =3D=3D=3D Testing on btrfs =3D=3D=3D
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with btrfs opts=3D'' extra op=
-ts=3D''
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_F_SYMLINKS: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_F_AUTOMOUNTS: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_F_EMPTY_PATH: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_T_SYMLINKS: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_T_AUTOMOUNTS: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_T_EMPTY_PATH: move_mount() passed
-tst_test.c:1635: TINFO: =3D=3D=3D Testing on vfat =3D=3D=3D
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with vfat opts=3D'' extra opt=
-s=3D''
-Cannot initialize conversion from codepage 850 to UTF-8: Invalid argument
-Cannot initialize conversion from UTF-8 to codepage 850: Invalid argument
-Using internal CP850 conversion table
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_F_SYMLINKS: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_F_AUTOMOUNTS: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_F_EMPTY_PATH: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_T_SYMLINKS: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_T_AUTOMOUNTS: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_T_EMPTY_PATH: move_mount() passed
-tst_test.c:1635: TINFO: =3D=3D=3D Testing on tmpfs =3D=3D=3D
-tst_test.c:1094: TINFO: Skipping mkfs for TMPFS filesystem
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_F_SYMLINKS: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_F_AUTOMOUNTS: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_F_EMPTY_PATH: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_T_SYMLINKS: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_T_AUTOMOUNTS: move_mount() passed
-move_mount01.c:70: TPASS: Flag MOVE_MOUNT_T_EMPTY_PATH: move_mount() passed
-
-Summary:
-passed   42
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D3 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D4 cstime=3D108
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dmq_open01 stime=3D1680367842
-cmdline=3D"mq_open01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-mq_open01.c:226: TINFO: queue name "/test_mqueue"
-mq_open01.c:255: TPASS: NORMAL returned: 5: SUCCESS (0)
-mq_open01.c:226: TINFO: queue name "/test_mqueue"
-mq_open01.c:255: TPASS: NORMAL returned: 5: SUCCESS (0)
-mq_open01.c:226: TINFO: queue name "/caaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa=
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa=
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa=
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-mq_open01.c:255: TPASS: NORMAL returned: 5: SUCCESS (0)
-mq_open01.c:226: TINFO: queue name "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa=
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa=
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa=
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-mq_open01.c:272: TPASS: NORMAL returned: -1: ENAMETOOLONG (36)
-mq_open01.c:226: TINFO: queue name ""
-mq_open01.c:272: TPASS: NORMAL returned: -1: EINVAL (22)
-mq_open01.c:226: TINFO: queue name "/test_mqueue"
-mq_open01.c:272: TPASS: NORMAL returned: -1: EACCES (13)
-mq_open01.c:226: TINFO: queue name "/test_mqueue"
-mq_open01.c:272: TPASS: NORMAL returned: -1: EEXIST (17)
-mq_open01.c:226: TINFO: queue name "/test_mqueue"
-mq_open01.c:272: TPASS: NO_FILE returned: -1: EMFILE (24)
-mq_open01.c:226: TINFO: queue name "/notexist"
-mq_open01.c:272: TPASS: NORMAL returned: -1: ENOENT (2)
-mq_open01.c:226: TINFO: queue name "/test_mqueue"
-mq_open01.c:272: TPASS: NO_SPACE returned: -1: ENOSPC (28)
-
-Summary:
-passed   10
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dmremap03 stime=3D1680367842
-cmdline=3D"mremap03"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-mremap03    1  TPASS  :  mremap() Fails, 'old region not mapped', errno 14
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dmsgctl05 stime=3D1680367842
-cmdline=3D"msgctl05"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1138: TCONF: test requires struct msqid64_ds to have the time_hi=
-gh fields
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D32 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dmsgstress03 stime=3D1680367842
-cmdline=3D"msgstress03"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-msgstress03    0  TINFO  :  Cannot read session user limits from '/sys/fs/c=
-group/user.slice/user-0.slice/pids.max'
-msgstress03    0  TINFO  :  Cannot read session user limits from '/sys/fs/c=
-group/pids/user.slice/user-0.slice/pids.max'
-msgstress03    1  TPASS  :  Test ran successfully!
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D167 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D12570 cstime=3D53180
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dmsgrcv08 stime=3D1680368009
-cmdline=3D"msgrcv08"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-msgrcv08.c:60: TPASS: No regression found.
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dmsgsnd02 stime=3D1680368009
-cmdline=3D"msgsnd02"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-msgsnd02.c:64: TPASS: msgsnd(1769495, 0x5599698db6c0, 1024, 0) : EACCES (13=
-)
-msgsnd02.c:64: TPASS: msgsnd(1769495, (nil), 1024, 0) : EFAULT (14)
-msgsnd02.c:64: TPASS: msgsnd(-1, 0x5599698db6c0, 1024, 0) : EINVAL (22)
-msgsnd02.c:64: TPASS: msgsnd(1769495, 0x5599698dbac8, 1024, 0) : EINVAL (22=
-)
-msgsnd02.c:64: TPASS: msgsnd(1769495, 0x5599698dbed0, 1024, 0) : EINVAL (22=
-)
-msgsnd02.c:64: TPASS: msgsnd(1769495, 0x5599698db6c0, -1, 0) : EINVAL (22)
-
-Summary:
-passed   6
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dmunmap02 stime=3D1680368009
-cmdline=3D"munmap02"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-munmap02    1  TPASS  :  Functionality of munmap() successful
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dnanosleep02 stime=3D1680368009
-cmdline=3D"nanosleep02"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-nanosleep02.c:57: TPASS: nanosleep() returned -1, set errno to EINTR
-nanosleep02.c:70: TPASS: nanosleep() slept for 1000099us, remaining time di=
-fference 91us
-
-Summary:
-passed   2
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D1 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dnanosleep04 stime=3D1680368010
-cmdline=3D"nanosleep04"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-nanosleep04.c:45: TPASS: nanosleep() failed with EINVAL
-nanosleep04.c:45: TPASS: nanosleep() failed with EINVAL
-nanosleep04.c:45: TPASS: nanosleep() failed with EINVAL
-
-Summary:
-passed   3
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dnice04 stime=3D1680368010
-cmdline=3D"nice04"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-nice04.c:37: TPASS: nice(-10) failed with EPERM
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dnice05 stime=3D1680368010
-cmdline=3D"nice05"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 36s
-nice05.c:132: TINFO: Nice low thread CPU time: 3.319125757 s
-nice05.c:134: TINFO: Nice high thread CPU time: 2.669797686 s
-nice05.c:142: TPASS: executes more cycles than the high nice thread, delta:=
- 649328071 ns
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D6 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D599 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dopenat03 stime=3D1680368016
-cmdline=3D"openat03"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-openat03    0  TINFO  :  creating a file with O_TMPFILE flag
-openat03    0  TINFO  :  writing data to the file
-openat03    0  TINFO  :  file size is '4096'
-openat03    0  TINFO  :  looking for the file in '.'
-openat03    0  TINFO  :  file not found, OK
-openat03    0  TINFO  :  renaming '/fs/sda1/tmpdir/ltp-xDoEJoVMiG/opeRthdSW=
-/#268435588 (deleted)' -> 'tmpfile'
-openat03    0  TINFO  :  found a file: tmpfile
-openat03    1  TPASS  :  single file tests passed
-openat03    0  TINFO  :  create files in multiple directories
-openat03    0  TINFO  :  removing test directories
-openat03    0  TINFO  :  writing/reading temporary files
-openat03    0  TINFO  :  closing temporary files
-openat03    2  TPASS  :  multiple files tests passed
-openat03    0  TINFO  :  create multiple directories, link files into them
-openat03    0  TINFO  :  and check file permissions
-openat03    0  TINFO  :  remove files, directories
-openat03    3  TPASS  :  file permission tests passed
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D7
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dopenat201 stime=3D1680368016
-cmdline=3D"openat201"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_buffers.c:55: TINFO: Test is using guarded buffers
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-openat201.c:80: TPASS: openat2() passed (0)
-openat201.c:80: TPASS: openat2() passed (1)
-openat201.c:80: TPASS: openat2() passed (2)
-openat201.c:80: TPASS: openat2() passed (3)
-openat201.c:80: TPASS: openat2() passed (4)
-openat201.c:80: TPASS: openat2() passed (5)
-openat201.c:80: TPASS: openat2() passed (6)
-openat201.c:80: TPASS: openat2() passed (7)
-openat201.c:80: TPASS: openat2() passed (8)
-openat201.c:80: TPASS: openat2() passed (9)
-openat201.c:80: TPASS: openat2() passed (10)
-openat201.c:80: TPASS: openat2() passed (11)
-openat201.c:80: TPASS: openat2() passed (12)
-openat201.c:80: TPASS: openat2() passed (13)
-openat201.c:80: TPASS: openat2() passed (14)
-openat201.c:80: TPASS: openat2() passed (15)
-
-Summary:
-passed   16
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dopen_by_handle_at01 stime=3D1680368016
-cmdline=3D"open_by_handle_at01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-tst_buffers.c:55: TINFO: Test is using guarded buffers
-open_by_handle_at01.c:101: TPASS: open_by_handle_at() passed (0)
-open_by_handle_at01.c:101: TPASS: open_by_handle_at() passed (1)
-open_by_handle_at01.c:101: TPASS: open_by_handle_at() passed (2)
-open_by_handle_at01.c:101: TPASS: open_by_handle_at() passed (3)
-open_by_handle_at01.c:101: TPASS: open_by_handle_at() passed (4)
-open_by_handle_at01.c:101: TPASS: open_by_handle_at() passed (5)
-open_by_handle_at01.c:101: TPASS: open_by_handle_at() passed (6)
-open_by_handle_at01.c:101: TPASS: open_by_handle_at() passed (7)
-open_by_handle_at01.c:101: TPASS: open_by_handle_at() passed (8)
-
-Summary:
-passed   9
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D1 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dmincore02 stime=3D1680368016
-cmdline=3D"mincore02"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-mincore02    1  TPASS  :  4 pages locked, 4 pages in-core
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dmadvise07 stime=3D1680368016
-cmdline=3D"madvise07"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-madvise07.c:43: TINFO: mmap(0, 4096, PROT_READ | PROT_WRITE, MAP_ANONYMOUS =
-| MAP_PRIVATE, -1, 0)
-madvise07.c:54: TINFO: madvise(0x7f39f8da7000, 4096, MADV_HWPOISON)
-madvise07.c:83: TPASS: Received SIGBUS after accessing poisoned page
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D3
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dpersonality02 stime=3D1680368016
-cmdline=3D"personality02"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-personality02    1  TPASS  :  Timeout wasn't modified
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dpipe04 stime=3D1680368016
-cmdline=3D"pipe04"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-pipe04      1  TPASS  :  Child 1 killed while writing to a pipe
-pipe04      2  TPASS  :  Child 2 killed while writing to a pipe
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dpipe05 stime=3D1680368016
-cmdline=3D"pipe05"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-pipe05      1  TPASS  :  expected failure - errno =3D 14 : Bad address
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dpipe12 stime=3D1680368016
-cmdline=3D"pipe12"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-pipe12.c:45: TINFO: Write to full pipe
-pipe12.c:54: TPASS: write failed as expected: EAGAIN/EWOULDBLOCK (11)
-pipe12.c:69: TPASS: write 65536 bytes
-pipe12.c:45: TINFO: Write to non-empty pipe
-pipe12.c:64: TPASS: write succeeded as expectedly
-pipe12.c:74: TPASS: write 61441 bytes
-pipe12.c:45: TINFO: Write to empty pipe
-pipe12.c:64: TPASS: write succeeded as expectedly
-pipe12.c:69: TPASS: write 65536 bytes
-
-Summary:
-passed   6
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dpipe13 stime=3D1680368016
-cmdline=3D"pipe13"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-pipe13.c:50: TINFO: Creating 2 child processes
-pipe13.c:91: TPASS: Closed pipe waked up everyone
-pipe13.c:50: TINFO: Creating 10 child processes
-pipe13.c:91: TPASS: Closed pipe waked up everyone
-pipe13.c:50: TINFO: Creating 27 child processes
-pipe13.c:91: TPASS: Closed pipe waked up everyone
-pipe13.c:50: TINFO: Creating 100 child processes
-pipe13.c:91: TPASS: Closed pipe waked up everyone
-
-Summary:
-passed   4
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D4 cstime=3D8
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dprctl02 stime=3D1680368016
-cmdline=3D"prctl02"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-tst_capability.c:29: TINFO: Dropping CAP_SYS_ADMIN(21)
-tst_capability.c:29: TINFO: Dropping CAP_SETPCAP(8)
-prctl02.c:116: TINFO: Test #0: invalid option
-prctl02.c:162: TPASS: prctl() failed as expected: EINVAL (22)
-prctl02.c:116: TINFO: Test #1: PR_SET_PDEATHSIG
-prctl02.c:162: TPASS: prctl() failed as expected: EINVAL (22)
-prctl02.c:116: TINFO: Test #2: PR_SET_DUMPABLE
-prctl02.c:162: TPASS: prctl() failed as expected: EINVAL (22)
-prctl02.c:116: TINFO: Test #3: PR_SET_NAME
-prctl02.c:162: TPASS: prctl() failed as expected: EFAULT (14)
-prctl02.c:116: TINFO: Test #4: PR_SET_SECCOMP
-prctl02.c:162: TPASS: prctl() failed as expected: EFAULT (14)
-prctl02.c:116: TINFO: Test #5: PR_SET_SECCOMP
-prctl02.c:162: TPASS: prctl() failed as expected: EACCES (13)
-prctl02.c:116: TINFO: Test #6: PR_SET_TIMING
-prctl02.c:162: TPASS: prctl() failed as expected: EINVAL (22)
-prctl02.c:116: TINFO: Test #7: PR_SET_NO_NEW_PRIVS
-prctl02.c:162: TPASS: prctl() failed as expected: EINVAL (22)
-prctl02.c:116: TINFO: Test #8: PR_SET_NO_NEW_PRIVS
-prctl02.c:162: TPASS: prctl() failed as expected: EINVAL (22)
-prctl02.c:116: TINFO: Test #9: PR_GET_NO_NEW_PRIVS
-prctl02.c:162: TPASS: prctl() failed as expected: EINVAL (22)
-prctl02.c:116: TINFO: Test #10: PR_SET_THP_DISABLE
-prctl02.c:162: TPASS: prctl() failed as expected: EINVAL (22)
-prctl02.c:116: TINFO: Test #11: PR_GET_THP_DISABLE
-prctl02.c:162: TPASS: prctl() failed as expected: EINVAL (22)
-prctl02.c:116: TINFO: Test #12: PR_CAP_AMBIENT
-prctl02.c:162: TPASS: prctl() failed as expected: EINVAL (22)
-prctl02.c:116: TINFO: Test #13: PR_CAP_AMBIENT
-prctl02.c:162: TPASS: prctl() failed as expected: EINVAL (22)
-prctl02.c:116: TINFO: Test #14: PR_CAP_AMBIENT
-prctl02.c:162: TPASS: prctl() failed as expected: EINVAL (22)
-prctl02.c:116: TINFO: Test #15: PR_GET_SPECULATION_CTRL
-prctl02.c:162: TPASS: prctl() failed as expected: EINVAL (22)
-prctl02.c:116: TINFO: Test #16: PR_SET_SECUREBITS
-prctl02.c:162: TPASS: prctl() failed as expected: EPERM (1)
-prctl02.c:116: TINFO: Test #17: PR_CAPBSET_DROP
-prctl02.c:162: TPASS: prctl() failed as expected: EPERM (1)
-
-Summary:
-passed   18
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dprctl04 stime=3D1680368016
-cmdline=3D"prctl04"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-prctl04.c:225: TINFO: kernel supports PR_GET/SET_SECCOMP
-prctl04.c:233: TINFO: kernel supports SECCOMP_MODE_FILTER
-prctl04.c:135: TPASS: prctl(PR_SET_SECCOMP) sets SECCOMP_MODE_STRICT succee=
-d
-prctl04.c:209: TPASS: SECCOMP_MODE_STRICT doesn't permit GET_SECCOMP call
-prctl04.c:143: TPASS: SECCOMP_MODE_STRICT permits read(2) write(2) and _exi=
-t(2)
-prctl04.c:209: TPASS: SECCOMP_MODE_STRICT doesn't permit close(2)
-prctl04.c:176: TPASS: prctl(PR_SET_SECCOMP) sets SECCOMP_MODE_FILTER succee=
-d
-prctl04.c:209: TPASS: SECCOMP_MODE_FILTER doestn't permit GET_SECCOMP call
-prctl04.c:183: TPASS: SECCOMP_MODE_FILTER permits close(2)
-prctl04.c:209: TPASS: SECCOMP_MODE_FILTER doesn't permit exit()
-prctl04.c:112: TPASS: SECCOMP_MODE_FILTER has been inherited by child
-
-Summary:
-passed   9
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D1 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dprctl08 stime=3D1680368016
-cmdline=3D"prctl08"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-prctl08.c:125: TINFO: current timerslack value is 50000
-prctl08.c:112: TPASS: prctl(PR_SET_TIMERSLACK, 0) succeed
-prctl08.c:68: TPASS: Reset prctl(PR_GET_TIMERSLACK) got 50000 expectedly
-prctl08.c:75: TPASS: /proc/self/timerslack_ns =3D 50000
-prctl08.c:112: TPASS: prctl(PR_SET_TIMERSLACK, 1) succeed
-prctl08.c:68: TPASS: Min prctl(PR_GET_TIMERSLACK) got 1 expectedly
-prctl08.c:75: TPASS: /proc/self/timerslack_ns =3D 1
-prctl08.c:112: TPASS: prctl(PR_SET_TIMERSLACK, 70000) succeed
-prctl08.c:68: TPASS: Middle prctl(PR_GET_TIMERSLACK) got 70000 expectedly
-prctl08.c:75: TPASS: /proc/self/timerslack_ns =3D 70000
-prctl08.c:112: TPASS: prctl(PR_SET_TIMERSLACK, 2147483647) succeed
-prctl08.c:68: TPASS: Max prctl(PR_GET_TIMERSLACK) got 2147483647 expectedly
-prctl08.c:75: TPASS: /proc/self/timerslack_ns =3D 2147483647
-prctl08.c:112: TPASS: prctl(PR_SET_TIMERSLACK, 70000) succeed
-prctl08.c:90: TPASS: Child process two timer slack values are made the same=
- as the current value(70000) of the creating thread.
-
-Summary:
-passed   14
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dpreadv203 stime=3D1680368016
-cmdline=3D"preadv203"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_device.c:93: TINFO: Found free device 0 '/dev/loop0'
-tst_test.c:1559: TINFO: Timeout per run is 0h 04m 30s
-tst_supported_fs_types.c:90: TINFO: Kernel supports ext2
-tst_supported_fs_types.c:55: TINFO: mkfs.ext2 does exist
-tst_supported_fs_types.c:90: TINFO: Kernel supports ext3
-tst_supported_fs_types.c:55: TINFO: mkfs.ext3 does exist
-tst_supported_fs_types.c:90: TINFO: Kernel supports ext4
-tst_supported_fs_types.c:55: TINFO: mkfs.ext4 does exist
-tst_supported_fs_types.c:90: TINFO: Kernel supports xfs
-tst_supported_fs_types.c:55: TINFO: mkfs.xfs does exist
-tst_supported_fs_types.c:90: TINFO: Kernel supports btrfs
-tst_supported_fs_types.c:55: TINFO: mkfs.btrfs does exist
-tst_supported_fs_types.c:90: TINFO: Kernel supports vfat
-tst_supported_fs_types.c:55: TINFO: mkfs.vfat does exist
-tst_supported_fs_types.c:116: TINFO: Filesystem exfat is not supported
-tst_supported_fs_types.c:120: TINFO: FUSE does support ntfs
-tst_supported_fs_types.c:55: TINFO: mkfs.ntfs does exist
-tst_supported_fs_types.c:90: TINFO: Kernel supports tmpfs
-tst_supported_fs_types.c:42: TINFO: mkfs is not needed for tmpfs
-tst_test.c:1635: TINFO: =3D=3D=3D Testing on ext2 =3D=3D=3D
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with ext2 opts=3D'' extra opt=
-s=3D''
-mke2fs 1.46.6-rc1 (12-Sep-2022)
-preadv203.c:237: TCONF: preadv2(): EOPNOTSUPP (95)
-tst_test.c:1635: TINFO: =3D=3D=3D Testing on ext3 =3D=3D=3D
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with ext3 opts=3D'' extra opt=
-s=3D''
-mke2fs 1.46.6-rc1 (12-Sep-2022)
-preadv203.c:143: TINFO: Number of full_reads 12446, short reads 10, zero le=
-n reads 0, EAGAIN(s) 1861410
-preadv203.c:194: TINFO: Cache dropped 19 times
-preadv203.c:180: TINFO: Number of writes 190740
-preadv203.c:222: TPASS: Got some EAGAIN
-tst_test.c:1635: TINFO: =3D=3D=3D Testing on ext4 =3D=3D=3D
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with ext4 opts=3D'' extra opt=
-s=3D''
-mke2fs 1.46.6-rc1 (12-Sep-2022)
-preadv203.c:143: TINFO: Number of full_reads 70910, short reads 10, zero le=
-n reads 0, EAGAIN(s) 20973169
-preadv203.c:180: TINFO: Number of writes 9185160
-preadv203.c:194: TINFO: Cache dropped 225 times
-preadv203.c:222: TPASS: Got some EAGAIN
-tst_test.c:1635: TINFO: =3D=3D=3D Testing on xfs =3D=3D=3D
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with xfs opts=3D'' extra opts=
-=3D''
-preadv203.c:143: TINFO: Number of full_reads 22987, short reads 10, zero le=
-n reads 0, EAGAIN(s) 251288
-preadv203.c:180: TINFO: Number of writes 25620
-preadv203.c:194: TINFO: Cache dropped 4 times
-preadv203.c:222: TPASS: Got some EAGAIN
-tst_test.c:1635: TINFO: =3D=3D=3D Testing on btrfs =3D=3D=3D
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with btrfs opts=3D'' extra op=
-ts=3D''
-preadv203.c:143: TINFO: Number of full_reads 3352, short reads 10, zero len=
- reads 0, EAGAIN(s) 81589
-preadv203.c:194: TINFO: Cache dropped 1 times
-preadv203.c:180: TINFO: Number of writes 240
-preadv203.c:222: TPASS: Got some EAGAIN
-tst_test.c:1635: TINFO: =3D=3D=3D Testing on vfat =3D=3D=3D
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with vfat opts=3D'' extra opt=
-s=3D''
-Cannot initialize conversion from codepage 850 to UTF-8: Invalid argument
-Cannot initialize conversion from UTF-8 to codepage 850: Invalid argument
-Using internal CP850 conversion table
-preadv203.c:237: TCONF: preadv2(): EOPNOTSUPP (95)
-tst_test.c:1635: TINFO: =3D=3D=3D Testing on ntfs =3D=3D=3D
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with ntfs opts=3D'' extra opt=
-s=3D''
-The partition start sector was not specified for /dev/loop0 and it could no=
-t be obtained automatically.  It has been set to 0.
-The number of sectors per track was not specified for /dev/loop0 and it cou=
-ld not be obtained automatically.  It has been set to 0.
-The number of heads was not specified for /dev/loop0 and it could not be ob=
-tained automatically.  It has been set to 0.
-To boot from a device, Windows needs the 'partition start sector', the 'sec=
-tors per track' and the 'number of heads' to be set.
-Windows will not be able to boot from this device.
-tst_test.c:1108: TINFO: Trying FUSE...
-preadv203.c:237: TCONF: preadv2(): EOPNOTSUPP (95)
-tst_test.c:1635: TINFO: =3D=3D=3D Testing on tmpfs =3D=3D=3D
-tst_test.c:1094: TINFO: Skipping mkfs for TMPFS filesystem
-tst_test.c:1075: TINFO: Limiting tmpfs size to 32MB
-preadv203.c:237: TCONF: preadv2(): EOPNOTSUPP (95)
-
-Summary:
-passed   4
-failed   0
-broken   0
-skipped  4
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D76 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D2088 cstime=3D11002
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dprofil01 stime=3D1680368092
-cmdline=3D"profil01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-profil01    0  TINFO  :  buf[0x4048]=3D45
-profil01    0  TINFO  :  buf[0x4058]=3D40
-profil01    0  TINFO  :  buf[0x4162]=3D55
-profil01    0  TINFO  :  buf[0x4170]=3D39
-profil01    0  TINFO  :  buf[0x417a]=3D38
-profil01    0  TINFO  :  buf[0x4186]=3D44
-profil01    0  TINFO  :  buf[0x418a]=3D98
-profil01    0  TINFO  :  buf[0x4192]=3D51
-profil01    0  TINFO  :  buf[0x41a0]=3D44
-profil01    0  TINFO  :  buf[0x41b2]=3D44
-profil01    1  TPASS  :  profil recorded some data
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D5 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D499 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dprocess_vm_readv03 stime=3D1680368097
-cmdline=3D"process_vm_readv03"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-process_vm_readv03.c:164: TINFO: bufsize=3D1024, remote_iovecs=3D1024, loca=
-l_iovecs=3D8
-process_vm_readv03.c:83: TINFO: child_alloc: memory allocated and initializ=
-ed
-process_vm_readv03.c:110: TINFO: child_read: reading string from same memor=
-y location
-process_vm_readv03.c:112: TPASS: process_vm_read() returned 1024
-process_vm_readv03.c:137: TPASS: child_read: all bytes are correctly receiv=
-ed
-process_vm_readv03.c:164: TINFO: bufsize=3D1024, remote_iovecs=3D512, local=
-_iovecs=3D16
-process_vm_readv03.c:83: TINFO: child_alloc: memory allocated and initializ=
-ed
-process_vm_readv03.c:110: TINFO: child_read: reading string from same memor=
-y location
-process_vm_readv03.c:112: TPASS: process_vm_read() returned 1024
-process_vm_readv03.c:137: TPASS: child_read: all bytes are correctly receiv=
-ed
-process_vm_readv03.c:164: TINFO: bufsize=3D1024, remote_iovecs=3D256, local=
-_iovecs=3D32
-process_vm_readv03.c:83: TINFO: child_alloc: memory allocated and initializ=
-ed
-process_vm_readv03.c:110: TINFO: child_read: reading string from same memor=
-y location
-process_vm_readv03.c:112: TPASS: process_vm_read() returned 1024
-process_vm_readv03.c:137: TPASS: child_read: all bytes are correctly receiv=
-ed
-process_vm_readv03.c:164: TINFO: bufsize=3D1024, remote_iovecs=3D128, local=
-_iovecs=3D64
-process_vm_readv03.c:83: TINFO: child_alloc: memory allocated and initializ=
-ed
-process_vm_readv03.c:110: TINFO: child_read: reading string from same memor=
-y location
-process_vm_readv03.c:112: TPASS: process_vm_read() returned 1024
-process_vm_readv03.c:137: TPASS: child_read: all bytes are correctly receiv=
-ed
-process_vm_readv03.c:164: TINFO: bufsize=3D1024, remote_iovecs=3D64, local_=
-iovecs=3D128
-process_vm_readv03.c:83: TINFO: child_alloc: memory allocated and initializ=
-ed
-process_vm_readv03.c:110: TINFO: child_read: reading string from same memor=
-y location
-process_vm_readv03.c:112: TPASS: process_vm_read() returned 1024
-process_vm_readv03.c:137: TPASS: child_read: all bytes are correctly receiv=
-ed
-process_vm_readv03.c:164: TINFO: bufsize=3D1024, remote_iovecs=3D32, local_=
-iovecs=3D256
-process_vm_readv03.c:83: TINFO: child_alloc: memory allocated and initializ=
-ed
-process_vm_readv03.c:110: TINFO: child_read: reading string from same memor=
-y location
-process_vm_readv03.c:112: TPASS: process_vm_read() returned 1024
-process_vm_readv03.c:137: TPASS: child_read: all bytes are correctly receiv=
-ed
-process_vm_readv03.c:164: TINFO: bufsize=3D1024, remote_iovecs=3D16, local_=
-iovecs=3D512
-process_vm_readv03.c:83: TINFO: child_alloc: memory allocated and initializ=
-ed
-process_vm_readv03.c:110: TINFO: child_read: reading string from same memor=
-y location
-process_vm_readv03.c:112: TPASS: process_vm_read() returned 1024
-process_vm_readv03.c:137: TPASS: child_read: all bytes are correctly receiv=
-ed
-process_vm_readv03.c:164: TINFO: bufsize=3D1024, remote_iovecs=3D8, local_i=
-ovecs=3D1024
-process_vm_readv03.c:83: TINFO: child_alloc: memory allocated and initializ=
-ed
-process_vm_readv03.c:110: TINFO: child_read: reading string from same memor=
-y location
-process_vm_readv03.c:112: TPASS: process_vm_read() returned 1024
-process_vm_readv03.c:137: TPASS: child_read: all bytes are correctly receiv=
-ed
-process_vm_readv03.c:164: TINFO: bufsize=3D131072, remote_iovecs=3D1024, lo=
-cal_iovecs=3D8
-process_vm_readv03.c:83: TINFO: child_alloc: memory allocated and initializ=
-ed
-process_vm_readv03.c:110: TINFO: child_read: reading string from same memor=
-y location
-process_vm_readv03.c:112: TPASS: process_vm_read() returned 131072
-process_vm_readv03.c:137: TPASS: child_read: all bytes are correctly receiv=
-ed
-process_vm_readv03.c:164: TINFO: bufsize=3D131072, remote_iovecs=3D512, loc=
-al_iovecs=3D16
-process_vm_readv03.c:83: TINFO: child_alloc: memory allocated and initializ=
-ed
-process_vm_readv03.c:110: TINFO: child_read: reading string from same memor=
-y location
-process_vm_readv03.c:112: TPASS: process_vm_read() returned 131072
-process_vm_readv03.c:137: TPASS: child_read: all bytes are correctly receiv=
-ed
-process_vm_readv03.c:164: TINFO: bufsize=3D131072, remote_iovecs=3D256, loc=
-al_iovecs=3D32
-process_vm_readv03.c:83: TINFO: child_alloc: memory allocated and initializ=
-ed
-process_vm_readv03.c:110: TINFO: child_read: reading string from same memor=
-y location
-process_vm_readv03.c:112: TPASS: process_vm_read() returned 131072
-process_vm_readv03.c:137: TPASS: child_read: all bytes are correctly receiv=
-ed
-process_vm_readv03.c:164: TINFO: bufsize=3D131072, remote_iovecs=3D128, loc=
-al_iovecs=3D64
-process_vm_readv03.c:83: TINFO: child_alloc: memory allocated and initializ=
-ed
-process_vm_readv03.c:110: TINFO: child_read: reading string from same memor=
-y location
-process_vm_readv03.c:112: TPASS: process_vm_read() returned 131072
-process_vm_readv03.c:137: TPASS: child_read: all bytes are correctly receiv=
-ed
-process_vm_readv03.c:164: TINFO: bufsize=3D131072, remote_iovecs=3D64, loca=
-l_iovecs=3D128
-process_vm_readv03.c:83: TINFO: child_alloc: memory allocated and initializ=
-ed
-process_vm_readv03.c:110: TINFO: child_read: reading string from same memor=
-y location
-process_vm_readv03.c:112: TPASS: process_vm_read() returned 131072
-process_vm_readv03.c:137: TPASS: child_read: all bytes are correctly receiv=
-ed
-process_vm_readv03.c:164: TINFO: bufsize=3D131072, remote_iovecs=3D32, loca=
-l_iovecs=3D256
-process_vm_readv03.c:83: TINFO: child_alloc: memory allocated and initializ=
-ed
-process_vm_readv03.c:110: TINFO: child_read: reading string from same memor=
-y location
-process_vm_readv03.c:112: TPASS: process_vm_read() returned 131072
-process_vm_readv03.c:137: TPASS: child_read: all bytes are correctly receiv=
-ed
-process_vm_readv03.c:164: TINFO: bufsize=3D131072, remote_iovecs=3D16, loca=
-l_iovecs=3D512
-process_vm_readv03.c:83: TINFO: child_alloc: memory allocated and initializ=
-ed
-process_vm_readv03.c:110: TINFO: child_read: reading string from same memor=
-y location
-process_vm_readv03.c:112: TPASS: process_vm_read() returned 131072
-process_vm_readv03.c:137: TPASS: child_read: all bytes are correctly receiv=
-ed
-process_vm_readv03.c:164: TINFO: bufsize=3D131072, remote_iovecs=3D8, local=
-_iovecs=3D1024
-process_vm_readv03.c:83: TINFO: child_alloc: memory allocated and initializ=
-ed
-process_vm_readv03.c:110: TINFO: child_read: reading string from same memor=
-y location
-process_vm_readv03.c:112: TPASS: process_vm_read() returned 131072
-process_vm_readv03.c:137: TPASS: child_read: all bytes are correctly receiv=
-ed
-
-Summary:
-passed   32
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D3
-<<<test_end>>>
-<<<test_start>>>
-tag=3Ddirtyc0w_shmem stime=3D1680368097
-cmdline=3D"dirtyc0w_shmem"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 06m 30s
-dirtyc0w_shmem_child.c:140: TCONF: syscall(323) __NR_userfaultfd not suppor=
-ted on your arch
-dirtyc0w_shmem.c:95: TINFO: Early child process exit
-
-Summary:
-passed   0
-failed   0
-broken   0
-skipped  1
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D32 corefile=3Dno
-cutime=3D1 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Ddirtypipe stime=3D1680368097
-cmdline=3D"dirtypipe"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_buffers.c:55: TINFO: Test is using guarded buffers
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-dirtypipe.c:62: TPASS: read buff data match, bug doesn't exist
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dptrace01 stime=3D1680368097
-cmdline=3D"ptrace01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-ptrace01.c:89: TINFO: Testing PTRACE_KILL without child handler
-ptrace01.c:118: TPASS: Child killed by SIGKILL as expected
-ptrace01.c:89: TINFO: Testing PTRACE_KILL with child handler
-ptrace01.c:118: TPASS: Child killed by SIGKILL as expected
-ptrace01.c:89: TINFO: Testing PTRACE_CONT without child handler
-ptrace01.c:118: TPASS: Child exited with 1 as expected
-ptrace01.c:89: TINFO: Testing PTRACE_CONT with child handler
-ptrace01.c:118: TPASS: Child exited with 1 as expected
-
-Summary:
-passed   4
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dptrace09 stime=3D1680368097
-cmdline=3D"ptrace09"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-ptrace09.c:82: TPASS: We're still here. Nothing bad happened, probably.
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dpwrite01 stime=3D1680368097
-cmdline=3D"pwrite01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-pwrite01.c:60: TPASS: Functionality of pwrite() successful
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dpwrite03_64 stime=3D1680368097
-cmdline=3D"pwrite03_64"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-pwrite03.c:20: TPASS: pwrite(4, NULL, 0) =3D=3D 0 passed
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dpwritev02 stime=3D1680368097
-cmdline=3D"pwritev02"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-pwritev02.c:84: TPASS: pwritev() failed as expected: EINVAL (22)
-pwritev02.c:84: TPASS: pwritev() failed as expected: EINVAL (22)
-pwritev02.c:84: TPASS: pwritev() failed as expected: EINVAL (22)
-pwritev02.c:84: TPASS: pwritev() failed as expected: EFAULT (14)
-pwritev02.c:84: TPASS: pwritev() failed as expected: EBADF (9)
-pwritev02.c:84: TPASS: pwritev() failed as expected: EBADF (9)
-pwritev02.c:84: TPASS: pwritev() failed as expected: ESPIPE (29)
-
-Summary:
-passed   7
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dpwritev201 stime=3D1680368097
-cmdline=3D"pwritev201"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-pwritev201.c:95: TPASS: pwritev2() wrote 64 bytes successfully with content=
- 'a' expectedly=20
-pwritev201.c:95: TPASS: pwritev2() wrote 64 bytes successfully with content=
- 'a' expectedly=20
-pwritev201.c:95: TPASS: pwritev2() wrote 64 bytes successfully with content=
- 'a' expectedly=20
-pwritev201.c:95: TPASS: pwritev2() wrote 64 bytes successfully with content=
- 'a' expectedly=20
-pwritev201.c:95: TPASS: pwritev2() wrote 64 bytes successfully with content=
- 'a' expectedly=20
-pwritev201.c:95: TPASS: pwritev2() wrote 64 bytes successfully with content=
- 'a' expectedly=20
-
-Summary:
-passed   6
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dpwritev202_64 stime=3D1680368097
-cmdline=3D"pwritev202_64"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-pwritev202.c:78: TPASS: pwritev2() failed as expected: EINVAL (22)
-pwritev202.c:78: TPASS: pwritev2() failed as expected: EINVAL (22)
-pwritev202.c:78: TPASS: pwritev2() failed as expected: EOPNOTSUPP (95)
-pwritev202.c:78: TPASS: pwritev2() failed as expected: EFAULT (14)
-pwritev202.c:78: TPASS: pwritev2() failed as expected: EBADF (9)
-pwritev202.c:78: TPASS: pwritev2() failed as expected: EBADF (9)
-pwritev202.c:78: TPASS: pwritev2() failed as expected: ESPIPE (29)
-
-Summary:
-passed   7
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dquotactl06 stime=3D1680368097
-cmdline=3D"quotactl06"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_device.c:93: TINFO: Found free device 0 '/dev/loop0'
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with ext4 opts=3D'' extra opt=
-s=3D''
-mke2fs 1.46.6-rc1 (12-Sep-2022)
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-quotactl06.c:183: TINFO: quotactl() with vfsv0 format
-quotactl06.c:132: TINFO: Testing EACCES when cmd is Q_QUOTAON and addr exis=
-ted but not a regular file
-quotactl06.c:158: TPASS: quotactl() : EACCES (13)
-quotactl06.c:132: TINFO: Testing ENOENT when the file specified by special =
-or addr does not exist
-quotactl06.c:158: TPASS: quotactl() : ENOENT (2)
-quotactl06.c:132: TINFO: Testing EBUSY when cmd is Q_QUOTAON and another Q_=
-QUOTAON had already been performed
-quotactl06.c:158: TPASS: quotactl() : EBUSY (16)
-quotactl06.c:132: TINFO: Testing EFAULT when addr or special is invalid
-quotactl06.c:158: TPASS: quotactl() : EFAULT (14)
-quotactl06.c:132: TINFO: Testing EINVAL when cmd or type is invalid
-quotactl06.c:158: TPASS: quotactl() : EINVAL (22)
-quotactl06.c:132: TINFO: Testing ENOTBLK when special is not a block device
-quotactl06.c:155: TPASS: quotactl() : ENOTBLK (15)
-quotactl06.c:132: TINFO: Testing ESRCH is for Q_SETQUOTA but no quota found=
- for the user or quotas are off
-quotactl06.c:158: TPASS: quotactl() : ESRCH (3)
-quotactl06.c:132: TINFO: Testing ESRCH when cmd is Q_QUOTAON, but the quota=
- format was not found
-quotactl06.c:158: TPASS: quotactl() : ESRCH (3)
-quotactl06.c:132: TINFO: Testing ESRCH for Q_GETNEXTQUOTA, but the id was l=
-ast one
-quotactl06.c:158: TPASS: quotactl() : ESRCH (3)
-quotactl06.c:132: TINFO: Testing ERANGE for Q_SETQUOTA, but the specified l=
-imits are out of range
-quotactl06.c:158: TPASS: quotactl() : ERANGE (34)
-quotactl06.c:132: TINFO: Testing EPERM when the caller lacks the required p=
-rivilege (CAP_SYS_ADMIN)
-tst_capability.c:29: TINFO: Dropping CAP_SYS_ADMIN(21)
-quotactl06.c:158: TPASS: quotactl() : EPERM (1)
-tst_capability.c:41: TINFO: Permitting CAP_SYS_ADMIN(21)
-quotactl06.c:183: TINFO: quotactl() with vfsv1 format
-quotactl06.c:132: TINFO: Testing EACCES when cmd is Q_QUOTAON and addr exis=
-ted but not a regular file
-quotactl06.c:158: TPASS: quotactl() : EACCES (13)
-quotactl06.c:132: TINFO: Testing ENOENT when the file specified by special =
-or addr does not exist
-quotactl06.c:158: TPASS: quotactl() : ENOENT (2)
-quotactl06.c:132: TINFO: Testing EBUSY when cmd is Q_QUOTAON and another Q_=
-QUOTAON had already been performed
-quotactl06.c:158: TPASS: quotactl() : EBUSY (16)
-quotactl06.c:132: TINFO: Testing EFAULT when addr or special is invalid
-quotactl06.c:158: TPASS: quotactl() : EFAULT (14)
-quotactl06.c:132: TINFO: Testing EINVAL when cmd or type is invalid
-quotactl06.c:158: TPASS: quotactl() : EINVAL (22)
-quotactl06.c:132: TINFO: Testing ENOTBLK when special is not a block device
-quotactl06.c:155: TPASS: quotactl() : ENOTBLK (15)
-quotactl06.c:132: TINFO: Testing ESRCH is for Q_SETQUOTA but no quota found=
- for the user or quotas are off
-quotactl06.c:158: TPASS: quotactl() : ESRCH (3)
-quotactl06.c:132: TINFO: Testing ESRCH when cmd is Q_QUOTAON, but the quota=
- format was not found
-quotactl06.c:158: TPASS: quotactl() : ESRCH (3)
-quotactl06.c:132: TINFO: Testing ESRCH for Q_GETNEXTQUOTA, but the id was l=
-ast one
-quotactl06.c:158: TPASS: quotactl() : ESRCH (3)
-quotactl06.c:132: TINFO: Testing ERANGE for Q_SETQUOTA, but the specified l=
-imits are out of range
-quotactl06.c:158: TPASS: quotactl() : ERANGE (34)
-quotactl06.c:132: TINFO: Testing EPERM when the caller lacks the required p=
-rivilege (CAP_SYS_ADMIN)
-tst_capability.c:29: TINFO: Dropping CAP_SYS_ADMIN(21)
-quotactl06.c:158: TPASS: quotactl() : EPERM (1)
-tst_capability.c:41: TINFO: Permitting CAP_SYS_ADMIN(21)
-
-Summary:
-passed   22
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D2 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D1 cstime=3D14
-<<<test_end>>>
-<<<test_start>>>
-tag=3Drename05 stime=3D1680368099
-cmdline=3D"rename05"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_device.c:93: TINFO: Found free device 0 '/dev/loop0'
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-tst_supported_fs_types.c:90: TINFO: Kernel supports ext2
-tst_supported_fs_types.c:55: TINFO: mkfs.ext2 does exist
-tst_supported_fs_types.c:90: TINFO: Kernel supports ext3
-tst_supported_fs_types.c:55: TINFO: mkfs.ext3 does exist
-tst_supported_fs_types.c:90: TINFO: Kernel supports ext4
-tst_supported_fs_types.c:55: TINFO: mkfs.ext4 does exist
-tst_supported_fs_types.c:90: TINFO: Kernel supports xfs
-tst_supported_fs_types.c:55: TINFO: mkfs.xfs does exist
-tst_supported_fs_types.c:90: TINFO: Kernel supports btrfs
-tst_supported_fs_types.c:55: TINFO: mkfs.btrfs does exist
-tst_supported_fs_types.c:90: TINFO: Kernel supports vfat
-tst_supported_fs_types.c:55: TINFO: mkfs.vfat does exist
-tst_supported_fs_types.c:116: TINFO: Filesystem exfat is not supported
-tst_supported_fs_types.c:120: TINFO: FUSE does support ntfs
-tst_supported_fs_types.c:55: TINFO: mkfs.ntfs does exist
-tst_supported_fs_types.c:90: TINFO: Kernel supports tmpfs
-tst_supported_fs_types.c:42: TINFO: mkfs is not needed for tmpfs
-tst_test.c:1635: TINFO: =3D=3D=3D Testing on ext2 =3D=3D=3D
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with ext2 opts=3D'' extra opt=
-s=3D''
-mke2fs 1.46.6-rc1 (12-Sep-2022)
-rename05.c:31: TPASS: rename(TEMP_FILE, TEMP_DIR) : EISDIR (21)
-tst_test.c:1635: TINFO: =3D=3D=3D Testing on ext3 =3D=3D=3D
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with ext3 opts=3D'' extra opt=
-s=3D''
-mke2fs 1.46.6-rc1 (12-Sep-2022)
-rename05.c:31: TPASS: rename(TEMP_FILE, TEMP_DIR) : EISDIR (21)
-tst_test.c:1635: TINFO: =3D=3D=3D Testing on ext4 =3D=3D=3D
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with ext4 opts=3D'' extra opt=
-s=3D''
-mke2fs 1.46.6-rc1 (12-Sep-2022)
-rename05.c:31: TPASS: rename(TEMP_FILE, TEMP_DIR) : EISDIR (21)
-tst_test.c:1635: TINFO: =3D=3D=3D Testing on xfs =3D=3D=3D
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with xfs opts=3D'' extra opts=
-=3D''
-rename05.c:31: TPASS: rename(TEMP_FILE, TEMP_DIR) : EISDIR (21)
-tst_test.c:1635: TINFO: =3D=3D=3D Testing on btrfs =3D=3D=3D
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with btrfs opts=3D'' extra op=
-ts=3D''
-rename05.c:31: TPASS: rename(TEMP_FILE, TEMP_DIR) : EISDIR (21)
-tst_test.c:1635: TINFO: =3D=3D=3D Testing on vfat =3D=3D=3D
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with vfat opts=3D'' extra opt=
-s=3D''
-Cannot initialize conversion from codepage 850 to UTF-8: Invalid argument
-Cannot initialize conversion from UTF-8 to codepage 850: Invalid argument
-Using internal CP850 conversion table
-rename05.c:31: TPASS: rename(TEMP_FILE, TEMP_DIR) : EISDIR (21)
-tst_test.c:1635: TINFO: =3D=3D=3D Testing on ntfs =3D=3D=3D
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with ntfs opts=3D'' extra opt=
-s=3D''
-The partition start sector was not specified for /dev/loop0 and it could no=
-t be obtained automatically.  It has been set to 0.
-The number of sectors per track was not specified for /dev/loop0 and it cou=
-ld not be obtained automatically.  It has been set to 0.
-The number of heads was not specified for /dev/loop0 and it could not be ob=
-tained automatically.  It has been set to 0.
-To boot from a device, Windows needs the 'partition start sector', the 'sec=
-tors per track' and the 'number of heads' to be set.
-Windows will not be able to boot from this device.
-tst_test.c:1108: TINFO: Trying FUSE...
-rename05.c:31: TPASS: rename(TEMP_FILE, TEMP_DIR) : EISDIR (21)
-tst_test.c:1635: TINFO: =3D=3D=3D Testing on tmpfs =3D=3D=3D
-tst_test.c:1094: TINFO: Skipping mkfs for TMPFS filesystem
-tst_test.c:1075: TINFO: Limiting tmpfs size to 32MB
-rename05.c:31: TPASS: rename(TEMP_FILE, TEMP_DIR) : EISDIR (21)
-
-Summary:
-passed   8
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D13 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D9 cstime=3D747
-<<<test_end>>>
-<<<test_start>>>
-tag=3Drenameat01 stime=3D1680368112
-cmdline=3D"renameat01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-mke2fs 1.46.6-rc1 (12-Sep-2022)
-renameat01    0  TINFO  :  Found free device 0 '/dev/loop0'
-renameat01    0  TINFO  :  Formatting /dev/loop0 with ext2 opts=3D'' extra =
-opts=3D''
-renameat01    0  TINFO  :  subdir limit is not availiable for xfs filesyste=
-m
-renameat01    1  TPASS  :  renameat() returned the expected value: TEST_ERR=
-NO=3DSUCCESS(0): Success
-renameat01    2  TPASS  :  renameat() returned the expected value: TEST_ERR=
-NO=3DSUCCESS(0): Success
-renameat01    3  TPASS  :  renameat() returned the expected value: TEST_ERR=
-NO=3DSUCCESS(0): Success
-renameat01    4  TPASS  :  renameat() returned the expected value: TEST_ERR=
-NO=3DEBADF(9): Bad file descriptor
-renameat01    5  TPASS  :  renameat() returned the expected value: TEST_ERR=
-NO=3DENOTDIR(20): Not a directory
-renameat01    6  TPASS  :  renameat() returned the expected value: TEST_ERR=
-NO=3DELOOP(40): Too many levels of symbolic links
-renameat01    7  TPASS  :  renameat() returned the expected value: TEST_ERR=
-NO=3DEROFS(30): Read-only file system
-renameat01    8  TCONF  :  renameat01.c:199: EMLINK test is not appropriate
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D4
-<<<test_end>>>
-<<<test_start>>>
-tag=3Drequest_key03 stime=3D1680368112
-cmdline=3D"request_key03"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 03m 10s
-request_key03.c:185: TPASS: didn't crash while updating key of type 'encryp=
-ted'
-request_key03.c:199: TPASS: didn't crash while requesting key of type 'encr=
-ypted'
-request_key03.c:149: TCONF: kernel doesn't support key type 'trusted'
-request_key03.c:185: TPASS: didn't crash while updating key of type 'user'
-request_key03.c:199: TPASS: didn't crash while requesting key of type 'user=
-'
-
-Summary:
-passed   4
-failed   0
-broken   0
-skipped  1
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D8 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D17 cstime=3D127
-<<<test_end>>>
-<<<test_start>>>
-tag=3Drmdir03 stime=3D1680368120
-cmdline=3D"rmdir03"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-rmdir03.c:55: TPASS: rmdir() got expected errno: EPERM (1)
-rmdir03.c:61: TPASS: rmdir() got expected errno: EACCES (13)
-
-Summary:
-passed   2
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Drmdir03A stime=3D1680368120
-cmdline=3D"symlink01 -T rmdir03"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-rmdir03     1  TPASS  :  rmdir(2) of object file through symbolic link file=
- failed as expected
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsbrk02 stime=3D1680368120
-cmdline=3D"sbrk02"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-sbrk02      0  TINFO  :  setup() bailing inc: 29225910272, ret: 0xfffffffff=
-fffffff, sbrk: 0x6c7de252d000: errno=3DENOMEM(12): Cannot allocate memory
-sbrk02      1  TPASS  :  sbrk(29225910272) failed as expected: TEST_ERRNO=
-=3DENOMEM(12): Cannot allocate memory
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D7
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsbrk03 stime=3D1680368120
-cmdline=3D"sbrk03"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-sbrk03.c:63: TCONF: Only works in 32bit on s390 series system
-
-Summary:
-passed   0
-failed   0
-broken   0
-skipped  1
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D32 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsched_setparam03 stime=3D1680368120
-cmdline=3D"sched_setparam03"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-sched_setparam03.c:49: TINFO: Testing libc variant
-sched_setparam03.c:39: TPASS: got expected priority 5
-sched_setparam03.c:49: TINFO: Testing syscall variant
-sched_setparam03.c:39: TPASS: got expected priority 5
-
-Summary:
-passed   2
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D1 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsched_getscheduler01 stime=3D1680368120
-cmdline=3D"sched_getscheduler01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-sched_getscheduler01.c:58: TINFO: Testing libc variant
-sched_getscheduler01.c:51: TPASS: got expected policy 2
-sched_getscheduler01.c:51: TPASS: got expected policy 0
-sched_getscheduler01.c:51: TPASS: got expected policy 1
-sched_getscheduler01.c:58: TINFO: Testing syscall variant
-sched_getscheduler01.c:51: TPASS: got expected policy 2
-sched_getscheduler01.c:51: TPASS: got expected policy 0
-sched_getscheduler01.c:51: TPASS: got expected policy 1
-
-Summary:
-passed   6
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsched_setattr01 stime=3D1680368120
-cmdline=3D"sched_setattr01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-sched_setattr01    1  TPASS  :  sched_setattr() works as expected: TEST_ERR=
-NO=3DSUCCESS(0): Success
-sched_setattr01    2  TPASS  :  sched_setattr() works as expected: TEST_ERR=
-NO=3DESRCH(3): No such process
-sched_setattr01    3  TPASS  :  sched_setattr() works as expected: TEST_ERR=
-NO=3DEINVAL(22): Invalid argument
-sched_setattr01    4  TPASS  :  sched_setattr() works as expected: TEST_ERR=
-NO=3DEINVAL(22): Invalid argument
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsched_getattr02 stime=3D1680368120
-cmdline=3D"sched_getattr02"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-sched_getattr02    1  TPASS  :  sched_getattr() failed expectedly: TEST_ERR=
-NO=3DESRCH(3): No such process
-sched_getattr02    2  TPASS  :  sched_getattr() failed expectedly: TEST_ERR=
-NO=3DEINVAL(22): Invalid argument
-sched_getattr02    3  TPASS  :  sched_getattr() failed expectedly: TEST_ERR=
-NO=3DEINVAL(22): Invalid argument
-sched_getattr02    4  TPASS  :  sched_getattr() failed expectedly: TEST_ERR=
-NO=3DEINVAL(22): Invalid argument
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsemctl04 stime=3D1680368120
-cmdline=3D"semctl04"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-semctl04.c:44: TPASS: semctl() with nobody user in child : EPERM (1)
-semctl04.c:44: TPASS: semctl() with nobody user in child : EPERM (1)
-
-Summary:
-passed   2
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsemget01 stime=3D1680368120
-cmdline=3D"semget01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-semget01    1  TPASS  :  basic semaphore values are okay
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsendfile04_64 stime=3D1680368120
-cmdline=3D"sendfile04_64"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-sendfile04.c:61: TPASS: sendfile(..) with pass_mapped_buffer, protection=3D=
-0 : EFAULT (14)
-sendfile04.c:61: TPASS: sendfile(..) with pass_mapped_buffer, protection=3D=
-1 : EFAULT (14)
-sendfile04.c:61: TPASS: sendfile(..) with pass_mapped_buffer, protection=3D=
-4 : EFAULT (14)
-sendfile04.c:61: TPASS: sendfile(..) with pass_mapped_buffer, protection=3D=
-5 : EFAULT (14)
-sendfile04.c:61: TPASS: sendfile(..) with pass_unmapped_buffer, protection=
-=3D3 : EFAULT (14)
-
-Summary:
-passed   5
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsendfile07 stime=3D1680368120
-cmdline=3D"sendfile07"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-sendfile07.c:59: TPASS: sendfile(out_fd, in_fd, NULL, 1) with blocked out_f=
-d : EAGAIN/EWOULDBLOCK (11)
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsetdomainname02 stime=3D1680368120
-cmdline=3D"setdomainname02"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-setdomainname.h:36: TINFO: Testing libc setdomainname()
-setdomainname02.c:32: TINFO: testing len =3D=3D -1
-setdomainname02.c:44: TPASS: expected failure: EINVAL (22)
-setdomainname02.c:32: TINFO: testing len > allowed maximum
-setdomainname02.c:44: TPASS: expected failure: EINVAL (22)
-setdomainname02.c:32: TINFO: testing name =3D=3D NULL
-setdomainname02.c:44: TPASS: expected failure: EFAULT (14)
-setdomainname.h:39: TINFO: Testing __NR_setdomainname syscall
-setdomainname02.c:32: TINFO: testing len =3D=3D -1
-setdomainname02.c:44: TPASS: expected failure: EINVAL (22)
-setdomainname02.c:32: TINFO: testing len > allowed maximum
-setdomainname02.c:44: TPASS: expected failure: EINVAL (22)
-setdomainname02.c:32: TINFO: testing name =3D=3D NULL
-setdomainname02.c:44: TPASS: expected failure: EFAULT (14)
-
-Summary:
-passed   6
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsetfsuid02 stime=3D1680368120
-cmdline=3D"setfsuid02"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-setfsuid02.c:29: TPASS: setfsuid(invalid_fsuid) test for expected failure: =
-passed
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D1 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsetgroups03_16 stime=3D1680368120
-cmdline=3D"setgroups03_16"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-setgroups03_16    1  TCONF  :  /tmp/lkp/ltp/src/ltp/testcases/kernel/syscal=
-ls/setgroups/../utils/compat_16.h:77: 16-bit version of setgroups() is not =
-supported on your platform
-setgroups03_16    2  TCONF  :  /tmp/lkp/ltp/src/ltp/testcases/kernel/syscal=
-ls/setgroups/../utils/compat_16.h:77: Remaining cases not appropriate for c=
-onfiguration
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D32 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsethostname01 stime=3D1680368120
-cmdline=3D"sethostname01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-/tmp/lkp/ltp/src/ltp/testcases/kernel/syscalls/sethostname/../setdomainname=
-/setdomainname.h:36: TINFO: Testing libc sethostname()
-/tmp/lkp/ltp/src/ltp/testcases/kernel/syscalls/sethostname/../setdomainname=
-/setdomainname01.c:26: TPASS: sethostname() succeed
-/tmp/lkp/ltp/src/ltp/testcases/kernel/syscalls/sethostname/../setdomainname=
-/setdomainname.h:39: TINFO: Testing __NR_sethostname syscall
-/tmp/lkp/ltp/src/ltp/testcases/kernel/syscalls/sethostname/../setdomainname=
-/setdomainname01.c:26: TPASS: sethostname() succeed
-
-Summary:
-passed   2
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsetns01 stime=3D1680368120
-cmdline=3D"setns01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-setns.h:38: TINFO: ns_name=3Dipc, ns_fds[0]=3D4, ns_types[0]=3D0x8000000
-setns.h:38: TINFO: ns_name=3Dmnt, ns_fds[1]=3D5, ns_types[1]=3D0x20000
-setns.h:38: TINFO: ns_name=3Dnet, ns_fds[2]=3D6, ns_types[2]=3D0x40000000
-setns.h:38: TINFO: ns_name=3Dpid, ns_fds[3]=3D7, ns_types[3]=3D0x20000000
-setns.h:38: TINFO: ns_name=3Duts, ns_fds[4]=3D8, ns_types[4]=3D0x4000000
-setns01.c:124: TINFO: setns(-1, 0x8000000)
-setns01.c:128: TPASS: invalid fd exp_errno=3D9 (EBADF)
-setns01.c:124: TINFO: setns(-1, 0x20000)
-setns01.c:128: TPASS: invalid fd exp_errno=3D9 (EBADF)
-setns01.c:124: TINFO: setns(-1, 0x40000000)
-setns01.c:128: TPASS: invalid fd exp_errno=3D9 (EBADF)
-setns01.c:124: TINFO: setns(-1, 0x20000000)
-setns01.c:128: TPASS: invalid fd exp_errno=3D9 (EBADF)
-setns01.c:124: TINFO: setns(-1, 0x4000000)
-setns01.c:128: TPASS: invalid fd exp_errno=3D9 (EBADF)
-setns01.c:124: TINFO: setns(9, 0x8000000)
-setns01.c:128: TPASS: regular file fd exp_errno=3D22 (EINVAL)
-setns01.c:124: TINFO: setns(9, 0x20000)
-setns01.c:128: TPASS: regular file fd exp_errno=3D22 (EINVAL)
-setns01.c:124: TINFO: setns(9, 0x40000000)
-setns01.c:128: TPASS: regular file fd exp_errno=3D22 (EINVAL)
-setns01.c:124: TINFO: setns(9, 0x20000000)
-setns01.c:128: TPASS: regular file fd exp_errno=3D22 (EINVAL)
-setns01.c:124: TINFO: setns(9, 0x4000000)
-setns01.c:128: TPASS: regular file fd exp_errno=3D22 (EINVAL)
-setns01.c:124: TINFO: setns(4, 0xffffffff)
-setns01.c:128: TPASS: invalid ns_type exp_errno=3D22 (EINVAL)
-setns01.c:124: TINFO: setns(5, 0xffffffff)
-setns01.c:128: TPASS: invalid ns_type exp_errno=3D22 (EINVAL)
-setns01.c:124: TINFO: setns(6, 0xffffffff)
-setns01.c:128: TPASS: invalid ns_type exp_errno=3D22 (EINVAL)
-setns01.c:124: TINFO: setns(7, 0xffffffff)
-setns01.c:128: TPASS: invalid ns_type exp_errno=3D22 (EINVAL)
-setns01.c:124: TINFO: setns(8, 0xffffffff)
-setns01.c:128: TPASS: invalid ns_type exp_errno=3D22 (EINVAL)
-setns01.c:124: TINFO: setns(4, 0x20000)
-setns01.c:128: TPASS: mismatch ns_type/fd exp_errno=3D22 (EINVAL)
-setns01.c:124: TINFO: setns(5, 0x40000000)
-setns01.c:128: TPASS: mismatch ns_type/fd exp_errno=3D22 (EINVAL)
-setns01.c:124: TINFO: setns(6, 0x20000000)
-setns01.c:128: TPASS: mismatch ns_type/fd exp_errno=3D22 (EINVAL)
-setns01.c:124: TINFO: setns(7, 0x4000000)
-setns01.c:128: TPASS: mismatch ns_type/fd exp_errno=3D22 (EINVAL)
-setns01.c:124: TINFO: setns(8, 0x8000000)
-setns01.c:128: TPASS: mismatch ns_type/fd exp_errno=3D22 (EINVAL)
-setns01.c:124: TINFO: setns(4, 0x8000000)
-setns01.c:128: TPASS: without CAP_SYS_ADMIN exp_errno=3D1 (EPERM)
-setns01.c:124: TINFO: setns(5, 0x20000)
-setns01.c:128: TPASS: without CAP_SYS_ADMIN exp_errno=3D1 (EPERM)
-setns01.c:124: TINFO: setns(6, 0x40000000)
-setns01.c:128: TPASS: without CAP_SYS_ADMIN exp_errno=3D1 (EPERM)
-setns01.c:124: TINFO: setns(7, 0x20000000)
-setns01.c:128: TPASS: without CAP_SYS_ADMIN exp_errno=3D1 (EPERM)
-setns01.c:124: TINFO: setns(8, 0x4000000)
-setns01.c:128: TPASS: without CAP_SYS_ADMIN exp_errno=3D1 (EPERM)
-
-Summary:
-passed   25
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsetregid02 stime=3D1680368120
-cmdline=3D"setregid02"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-setregid02.c:77: TPASS: setregid(-1, 0) failed as expected: EPERM (1)
-setregid02.c:65: TPASS: real or effective gid wasn't modified as expected
-setregid02.c:77: TPASS: setregid(-1, 1) failed as expected: EPERM (1)
-setregid02.c:65: TPASS: real or effective gid wasn't modified as expected
-setregid02.c:77: TPASS: setregid(0, -1) failed as expected: EPERM (1)
-setregid02.c:65: TPASS: real or effective gid wasn't modified as expected
-setregid02.c:77: TPASS: setregid(1, -1) failed as expected: EPERM (1)
-setregid02.c:65: TPASS: real or effective gid wasn't modified as expected
-setregid02.c:77: TPASS: setregid(0, 1) failed as expected: EPERM (1)
-setregid02.c:65: TPASS: real or effective gid wasn't modified as expected
-setregid02.c:77: TPASS: setregid(1, 0) failed as expected: EPERM (1)
-setregid02.c:65: TPASS: real or effective gid wasn't modified as expected
-
-Summary:
-passed   12
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsetresgid01 stime=3D1680368120
-cmdline=3D"setresgid01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-setresgid01    1  TPASS  :  Test for setresgid(-1, -1, -1) successful
-setresgid01    2  TPASS  :  Test for setresgid(-1, -1, nobody) successful
-setresgid01    3  TPASS  :  Test for setresgid(-1, nobody, -1) successful
-setresgid01    4  TPASS  :  Test for setresgid(nobody, -1, -1) successful
-setresgid01    5  TPASS  :  Test for setresgid(root, root, root) successful
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsetresgid02 stime=3D1680368120
-cmdline=3D"setresgid02"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-setresgid02.c:82: TPASS: setresgid(-1, -1, -1) works as expected
-setresgid02.c:82: TPASS: setresgid(-1, -1, other) works as expected
-setresgid02.c:82: TPASS: setresgid(-1, other, -1) works as expected
-setresgid02.c:82: TPASS: setresgid(other, -1, -1) works as expected
-setresgid02.c:82: TPASS: setresgid(root, root, root) works as expected
-setresgid02.c:82: TPASS: setresgid(root, main, main) works as expected
-
-Summary:
-passed   6
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsetresgid04 stime=3D1680368120
-cmdline=3D"setresgid04"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-setresgid04    1  TPASS  :  setresgid succeeded as expected
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsetreuid04 stime=3D1680368120
-cmdline=3D"setreuid04"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-setreuid04    1  TPASS  :  setreuid(-1, -1) succeeded as expected.
-setreuid04    2  TPASS  :  setreuid(65534, 65534) succeeded as expected.
-setreuid04    0  TINFO  :  Child process returned TPASS
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsetsockopt02 stime=3D1680368120
-cmdline=3D"setsockopt02"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-setsockopt02.c:69: TPASS: Can create ring buffer with good settinegs
-setsockopt02.c:78: TPASS: Refused bad tp_sizeof_priv value: EINVAL (22)
-
-Summary:
-passed   2
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D1 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsetsockopt09 stime=3D1680368121
-cmdline=3D"setsockopt09"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_kconfig.c:87: TINFO: Parsing kernel config '/proc/config.gz'
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-setsockopt09.c:96: TPASS: Nothing bad happened, probably
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D1 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D2
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsetuid03 stime=3D1680368122
-cmdline=3D"setuid03"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-setuid03.c:25: TPASS: SETUID(ROOT_USER) : EPERM (1)
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dshmctl05 stime=3D1680368122
-cmdline=3D"shmctl05"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 50s
-../../../../../include/tst_fuzzy_sync.h:484: TINFO: Minimum sampling period=
- ended
-../../../../../include/tst_fuzzy_sync.h:307: TINFO: loop =3D 1024, delay_bi=
-as =3D 0
-../../../../../include/tst_fuzzy_sync.h:295: TINFO: start_a - start_b: { av=
-g =3D   -46ns, avg_dev =3D     9ns, dev_ratio =3D 0.18 }
-../../../../../include/tst_fuzzy_sync.h:295: TINFO: end_a - start_a  : { av=
-g =3D 42850ns, avg_dev =3D  4252ns, dev_ratio =3D 0.10 }
-../../../../../include/tst_fuzzy_sync.h:295: TINFO: end_b - start_b  : { av=
-g =3D 13743ns, avg_dev =3D  1304ns, dev_ratio =3D 0.09 }
-../../../../../include/tst_fuzzy_sync.h:295: TINFO: end_a - end_b    : { av=
-g =3D 29061ns, avg_dev =3D  3945ns, dev_ratio =3D 0.14 }
-../../../../../include/tst_fuzzy_sync.h:295: TINFO: spins            : { av=
-g =3D 17805  , avg_dev =3D   341  , dev_ratio =3D 0.02 }
-../../../../../include/tst_fuzzy_sync.h:494: TINFO: Reached deviation ratio=
-s < 0.10, introducing randomness
-../../../../../include/tst_fuzzy_sync.h:497: TINFO: Delay range is [-8653, =
-26632]
-../../../../../include/tst_fuzzy_sync.h:307: TINFO: loop =3D 1043, delay_bi=
-as =3D 0
-../../../../../include/tst_fuzzy_sync.h:295: TINFO: start_a - start_b: { av=
-g =3D   -52ns, avg_dev =3D     5ns, dev_ratio =3D 0.10 }
-../../../../../include/tst_fuzzy_sync.h:295: TINFO: end_a - start_a  : { av=
-g =3D 41826ns, avg_dev =3D  2186ns, dev_ratio =3D 0.05 }
-../../../../../include/tst_fuzzy_sync.h:295: TINFO: end_b - start_b  : { av=
-g =3D 13590ns, avg_dev =3D   762ns, dev_ratio =3D 0.06 }
-../../../../../include/tst_fuzzy_sync.h:295: TINFO: end_a - end_b    : { av=
-g =3D 28185ns, avg_dev =3D  1547ns, dev_ratio =3D 0.05 }
-../../../../../include/tst_fuzzy_sync.h:295: TINFO: spins            : { av=
-g =3D 17946  , avg_dev =3D   230  , dev_ratio =3D 0.01 }
-../../../../../include/tst_fuzzy_sync.h:648: TINFO: Exceeded execution time=
-, requesting exit
-shmctl05.c:89: TPASS: didn't crash
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D20 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D1842 cstime=3D2053
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsignalfd4_02 stime=3D1680368142
-cmdline=3D"signalfd4_02"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-signalfd4_02    1  TPASS  :  signalfd4(SFD_NONBLOCK) PASSED
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsigpending02 stime=3D1680368142
-cmdline=3D"sigpending02"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-sigpending02.c:25: TINFO: Testing libc sigpending()
-sigpending02.c:118: TPASS: basic sigpending test successful
-sigpending02.c:148: TPASS: expected failure: EFAULT (14)
-sigpending02.c:28: TINFO: Testing __NR_sigpending syscall
-sigpending02.c:47: TCONF: syscall(-1) __NR_sigpending not supported on your=
- arch
-sigpending02.c:31: TINFO: Testing __NR_rt_sigpending syscall
-sigpending02.c:118: TPASS: basic sigpending test successful
-sigpending02.c:148: TPASS: expected failure: EFAULT (14)
-
-Summary:
-passed   4
-failed   0
-broken   0
-skipped  1
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsockioctl01 stime=3D1680368142
-cmdline=3D"sockioctl01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-sockioctl01    1  TPASS  :  bad file descriptor successful
-sockioctl01    2  TPASS  :  not a socket successful
-sockioctl01    3  TPASS  :  invalid option buffer successful
-sockioctl01    4  TPASS  :  ATMARK on UDP successful
-sockioctl01    5  TPASS  :  SIOCGIFCONF successful
-sockioctl01    6  TPASS  :  SIOCGIFFLAGS successful
-sockioctl01    7  TPASS  :  SIOCGIFFLAGS with invalid ifr successful
-sockioctl01    8  TPASS  :  SIOCSIFFLAGS with invalid ifr successful
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsplice01 stime=3D1680368142
-cmdline=3D"splice01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-splice01.c:48: TPASS: Written data has been read back correctly
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dtee01 stime=3D1680368142
-cmdline=3D"tee01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-tee01.c:44: TPASS: Written data has been read back correctly
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dstat04 stime=3D1680368142
-cmdline=3D"symlink01 -T stat04"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-stat04      1  TPASS  :  Getting stat info about object file through symbol=
-ic link file is ok
-stat04      2  TPASS  :  Stat(2) error when accessing non-existent object t=
-hrough symbolic link is caught
-stat04      3  TPASS  :  Nested symbolic link access condition caught.  ELO=
-OP is returned
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dstatvfs01 stime=3D1680368142
-cmdline=3D"statvfs01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-statvfs01    1  TPASS  :  statvfs(/, ...) passed
-statvfs01    0  TINFO  :  This call is similar to statfs
-statvfs01    0  TINFO  :  Extracting info about the '/' file system
-statvfs01    0  TINFO  :  file system block size =3D 4096 bytes
-statvfs01    0  TINFO  :  file system fragment size =3D 4096 bytes
-statvfs01    0  TINFO  :  file system free blocks =3D 0
-statvfs01    0  TINFO  :  file system total inodes =3D 0
-statvfs01    0  TINFO  :  file system free inodes =3D 0
-statvfs01    0  TINFO  :  file system id =3D 0
-statvfs01    0  TINFO  :  file system max filename length =3D 255
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dswapon02 stime=3D1680368142
-cmdline=3D"swapon02"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-tst_ioctl.c:30: TINFO: FIBMAP ioctl is supported
-swapon02.c:91: TPASS: swapon(2) expected failure; Got errno - ENOENT : Path=
- does not exist
-swapon02.c:91: TPASS: swapon(2) expected failure; Got errno - EINVAL : Inva=
-lid path
-swapon02.c:91: TPASS: swapon(2) expected failure; Got errno - EPERM : Permi=
-ssion denied
-swapon02.c:91: TPASS: swapon(2) expected failure; Got errno - EBUSY : File =
-already used
-
-Summary:
-passed   4
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D1 cstime=3D5
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsymlink03 stime=3D1680368142
-cmdline=3D"symlink03"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-symlink03    1  TPASS  :  symlink() Fails, No Search permissions to process=
-, errno=3D13
-symlink03    2  TPASS  :  symlink() Fails, Specified symlink already exists=
-, errno=3D17
-symlink03    3  TPASS  :  symlink() Fails, Invalid address, errno=3D14
-symlink03    4  TPASS  :  symlink() Fails, Symlink path too long, errno=3D3=
-6
-symlink03    5  TPASS  :  symlink() Fails, Symlink Pathname is empty, errno=
-=3D2
-symlink03    6  TPASS  :  symlink() Fails, Symlink Path contains regular fi=
-le, errno=3D20
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsymlink04 stime=3D1680368142
-cmdline=3D"symlink04"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-symlink04    1  TPASS  :  symlink(testfile, slink_file) functionality succe=
-ssful
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsymlinkat01 stime=3D1680368142
-cmdline=3D"symlinkat01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-symlinkat01    1  TPASS  :  Test passed
-symlinkat01    2  TPASS  :  Test passed
-symlinkat01    3  TPASS  :  Test passed
-symlinkat01    4  TPASS  :  Test passed
-symlinkat01    5  TPASS  :  symlinkat() returned the expected  errno 20: No=
-t a directory
-symlinkat01    6  TPASS  :  Test passed
-symlinkat01    7  TPASS  :  symlinkat() returned the expected  errno 9: Bad=
- file descriptor
-symlinkat01    8  TPASS  :  Test passed
-symlinkat01    9  TPASS  :  symlinkat() returned the expected  errno 2: No =
-such file or directory
-symlinkat01   10  TPASS  :  Test passed
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsyncfs01 stime=3D1680368142
-cmdline=3D"syncfs01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_device.c:93: TINFO: Found free device 0 '/dev/loop0'
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-tst_supported_fs_types.c:90: TINFO: Kernel supports ext2
-tst_supported_fs_types.c:55: TINFO: mkfs.ext2 does exist
-tst_supported_fs_types.c:90: TINFO: Kernel supports ext3
-tst_supported_fs_types.c:55: TINFO: mkfs.ext3 does exist
-tst_supported_fs_types.c:90: TINFO: Kernel supports ext4
-tst_supported_fs_types.c:55: TINFO: mkfs.ext4 does exist
-tst_supported_fs_types.c:90: TINFO: Kernel supports xfs
-tst_supported_fs_types.c:55: TINFO: mkfs.xfs does exist
-tst_supported_fs_types.c:90: TINFO: Kernel supports btrfs
-tst_supported_fs_types.c:55: TINFO: mkfs.btrfs does exist
-tst_supported_fs_types.c:90: TINFO: Kernel supports vfat
-tst_supported_fs_types.c:55: TINFO: mkfs.vfat does exist
-tst_supported_fs_types.c:116: TINFO: Filesystem exfat is not supported
-tst_supported_fs_types.c:120: TINFO: FUSE does support ntfs
-tst_supported_fs_types.c:55: TINFO: mkfs.ntfs does exist
-tst_supported_fs_types.c:157: TINFO: Skipping tmpfs as requested by the tes=
-t
-tst_test.c:1635: TINFO: =3D=3D=3D Testing on ext2 =3D=3D=3D
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with ext2 opts=3D'' extra opt=
-s=3D''
-mke2fs 1.46.6-rc1 (12-Sep-2022)
-syncfs01.c:51: TPASS: Test filesystem synced to device
-tst_test.c:1635: TINFO: =3D=3D=3D Testing on ext3 =3D=3D=3D
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with ext3 opts=3D'' extra opt=
-s=3D''
-mke2fs 1.46.6-rc1 (12-Sep-2022)
-syncfs01.c:51: TPASS: Test filesystem synced to device
-tst_test.c:1635: TINFO: =3D=3D=3D Testing on ext4 =3D=3D=3D
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with ext4 opts=3D'' extra opt=
-s=3D''
-mke2fs 1.46.6-rc1 (12-Sep-2022)
-syncfs01.c:51: TPASS: Test filesystem synced to device
-tst_test.c:1635: TINFO: =3D=3D=3D Testing on xfs =3D=3D=3D
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with xfs opts=3D'' extra opts=
-=3D''
-syncfs01.c:51: TPASS: Test filesystem synced to device
-tst_test.c:1635: TINFO: =3D=3D=3D Testing on btrfs =3D=3D=3D
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with btrfs opts=3D'' extra op=
-ts=3D''
-syncfs01.c:51: TPASS: Test filesystem synced to device
-tst_test.c:1635: TINFO: =3D=3D=3D Testing on vfat =3D=3D=3D
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with vfat opts=3D'' extra opt=
-s=3D''
-Cannot initialize conversion from codepage 850 to UTF-8: Invalid argument
-Cannot initialize conversion from UTF-8 to codepage 850: Invalid argument
-Using internal CP850 conversion table
-syncfs01.c:51: TPASS: Test filesystem synced to device
-tst_test.c:1635: TINFO: =3D=3D=3D Testing on ntfs =3D=3D=3D
-tst_test.c:1094: TINFO: Formatting /dev/loop0 with ntfs opts=3D'' extra opt=
-s=3D''
-The partition start sector was not specified for /dev/loop0 and it could no=
-t be obtained automatically.  It has been set to 0.
-The number of sectors per track was not specified for /dev/loop0 and it cou=
-ld not be obtained automatically.  It has been set to 0.
-The number of heads was not specified for /dev/loop0 and it could not be ob=
-tained automatically.  It has been set to 0.
-To boot from a device, Windows needs the 'partition start sector', the 'sec=
-tors per track' and the 'number of heads' to be set.
-Windows will not be able to boot from this device.
-tst_test.c:1108: TINFO: Trying FUSE...
-syncfs01.c:51: TPASS: Test filesystem synced to device
-
-Summary:
-passed   7
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D17 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D9 cstime=3D933
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsyscall01 stime=3D1680368159
-cmdline=3D"syscall01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-syscall01.c:28: TPASS: getpid() =3D=3D syscall(SYS_getpid)
-syscall01.c:43: TPASS: getuid() =3D=3D syscall(SYS_getuid)
-syscall01.c:58: TPASS: getgid() =3D=3D syscall(SYS_getgid)
-
-Summary:
-passed   3
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsysconf01 stime=3D1680368159
-cmdline=3D"sysconf01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-sysconf01    1  TPASS  :  _SC_CLK_TCK =3D 100
-sysconf01    2  TPASS  :  _SC_ARG_MAX =3D 2097152
-sysconf01    3  TPASS  :  _SC_CHILD_MAX =3D 53621
-sysconf01    4  TPASS  :  _SC_OPEN_MAX =3D 1024
-sysconf01    5  TPASS  :  _SC_JOB_CONTROL =3D 1
-sysconf01    6  TPASS  :  _SC_SAVED_IDS =3D 1
-sysconf01    7  TPASS  :  _SC_VERSION =3D 200809
-sysconf01    8  TPASS  :  _SC_PASS_MAX =3D 8192
-sysconf01    9  TPASS  :  _SC_LOGIN_NAME_MAX =3D 256
-sysconf01   10  TPASS  :  _SC_XOPEN_VERSION =3D 700
-sysconf01   11  TCONF  :  sysconf01.c:65: Not supported sysconf resource: _=
-SC_TZNAME_MAX
-sysconf01   12  TPASS  :  _SC_STREAM_MAX =3D 16
-sysconf01   13  TCONF  :  sysconf01.c:65: Not supported sysconf resource: _=
-SC_XOPEN_CRYPT
-sysconf01   14  TPASS  :  _SC_XOPEN_ENH_I18N =3D 1
-sysconf01   15  TPASS  :  _SC_XOPEN_SHM =3D 1
-sysconf01   16  TPASS  :  _SC_XOPEN_XCU_VERSION =3D 4
-sysconf01   17  TPASS  :  _SC_ATEXIT_MAX =3D 2147483647
-sysconf01   18  TPASS  :  _SC_2_C_BIND =3D 200809
-sysconf01   19  TPASS  :  _SC_2_C_DEV =3D 200809
-sysconf01   20  TPASS  :  _SC_2_C_VERSION =3D 200809
-sysconf01   21  TPASS  :  _SC_2_CHAR_TERM =3D 200809
-sysconf01   22  TCONF  :  sysconf01.c:65: Not supported sysconf resource: _=
-SC_2_FORT_DEV
-sysconf01   23  TCONF  :  sysconf01.c:65: Not supported sysconf resource: _=
-SC_2_FORT_RUN
-sysconf01   24  TPASS  :  _SC_2_LOCALEDEF =3D 200809
-sysconf01   25  TPASS  :  _SC_2_SW_DEV =3D 200809
-sysconf01   26  TCONF  :  sysconf01.c:65: Not supported sysconf resource: _=
-SC_2_UPE
-sysconf01   27  TPASS  :  _SC_2_VERSION =3D 200809
-sysconf01   28  TPASS  :  _SC_BC_BASE_MAX =3D 99
-sysconf01   29  TPASS  :  _SC_BC_DIM_MAX =3D 2048
-sysconf01   30  TPASS  :  _SC_BC_SCALE_MAX =3D 99
-sysconf01   31  TPASS  :  _SC_BC_STRING_MAX =3D 1000
-sysconf01   32  TPASS  :  _SC_COLL_WEIGHTS_MAX =3D 255
-sysconf01   33  TPASS  :  _SC_EXPR_NEST_MAX =3D 32
-sysconf01   34  TPASS  :  _SC_LINE_MAX =3D 2048
-sysconf01   35  TPASS  :  _SC_RE_DUP_MAX =3D 32767
-sysconf01   36  TPASS  :  _SC_XOPEN_UNIX =3D 1
-sysconf01   37  TPASS  :  _SC_PAGESIZE =3D 4096
-sysconf01   38  TPASS  :  _SC_PHYS_PAGES =3D 7127942
-sysconf01   39  TPASS  :  _SC_AVPHYS_PAGES =3D 5944616
-sysconf01   40  TCONF  :  sysconf01.c:65: Not supported sysconf resource: _=
-SC_AIO_MAX
-sysconf01   41  TPASS  :  _SC_AIO_PRIO_DELTA_MAX =3D 20
-sysconf01   42  TPASS  :  _SC_SEMAPHORES =3D 200809
-sysconf01   43  TCONF  :  sysconf01.c:65: Not supported sysconf resource: _=
-SC_SEM_NSEMS_MAX
-sysconf01   44  TPASS  :  _SC_SEM_VALUE_MAX =3D 2147483647
-sysconf01   45  TPASS  :  _SC_MEMORY_PROTECTION =3D 200809
-sysconf01   46  TPASS  :  _SC_FSYNC =3D 200809
-sysconf01   47  TPASS  :  _SC_MEMORY_PROTECTION =3D 200809
-sysconf01   48  TPASS  :  _SC_TIMERS =3D 200809
-sysconf01   49  TCONF  :  sysconf01.c:65: Not supported sysconf resource: _=
-SC_TIMER_MAX
-sysconf01   50  TPASS  :  _SC_MAPPED_FILES =3D 200809
-sysconf01   51  TPASS  :  _SC_THREAD_PRIORITY_SCHEDULING =3D 200809
-sysconf01   52  TPASS  :  _SC_XOPEN_LEGACY =3D 1
-sysconf01   53  TPASS  :  _SC_MEMLOCK =3D 200809
-sysconf01   54  TCONF  :  sysconf01.c:65: Not supported sysconf resource: _=
-SC_XBS5_ILP32_OFF32
-sysconf01   55  TCONF  :  sysconf01.c:65: Not supported sysconf resource: _=
-SC_XBS5_ILP32_OFFBIG
-sysconf01   56  TPASS  :  The invalid sysconf key was trapped appropriately
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsysctl04 stime=3D1680368159
-cmdline=3D"sysctl04"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-sysctl04.c:52: TCONF: syscall(156) __NR__sysctl not supported on your arch
-
-Summary:
-passed   0
-failed   0
-broken   0
-skipped  1
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D32 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsysfs03 stime=3D1680368159
-cmdline=3D"sysfs03"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-sysfs03.c:21: TPASS: sysfs(3) returned 36
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsysfs05 stime=3D1680368159
-cmdline=3D"sysfs05"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-sysfs05.c:35: TPASS: Invalid filesystem name : EINVAL (22)
-sysfs05.c:38: TPASS: Invalid option : EINVAL (22)
-sysfs05.c:35: TPASS: Address is out of your address space : EFAULT (14)
-sysfs05.c:38: TPASS: fs_index is out of bounds : EINVAL (22)
-
-Summary:
-passed   4
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsysinfo03 stime=3D1680368159
-cmdline=3D"sysinfo03"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_kconfig.c:87: TINFO: Parsing kernel config '/proc/config.gz'
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-sysinfo03.c:60: TPASS: Correct sysinfo uptime offset 10
-sysinfo03.c:66: TPASS: /proc/uptime is consistent with sysinfo
-sysinfo03.c:60: TPASS: Correct sysinfo uptime offset -10
-sysinfo03.c:66: TPASS: /proc/uptime is consistent with sysinfo
-sysinfo03.c:60: TPASS: Correct sysinfo uptime offset 3600
-sysinfo03.c:66: TPASS: /proc/uptime is consistent with sysinfo
-
-Summary:
-passed   6
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D2
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dsyslog12 stime=3D1680368159
-cmdline=3D"syslog12"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-syslog12.c:72: TPASS: syslog() with invalid type/command : EINVAL (22)
-syslog12.c:72: TPASS: syslog() with NULL buffer argument : EINVAL (22)
-syslog12.c:72: TPASS: syslog() with negative length argument : EINVAL (22)
-syslog12.c:72: TPASS: syslog() with console level less than 0 : EINVAL (22)
-syslog12.c:72: TPASS: syslog() with console level greater than 8 : EINVAL (=
-22)
-syslog12.c:72: TPASS: syslog() with non-root user : EPERM (1)
-
-Summary:
-passed   6
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dtime01 stime=3D1680368159
-cmdline=3D"time01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-time01.c:36: TPASS: time() returned value 1680368159
-time01.c:38: TPASS: time() returned value 1680368159, stored value 16803681=
-59 are same
-
-Summary:
-passed   2
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dtimerfd_gettime01 stime=3D1680368159
-cmdline=3D"timerfd_gettime01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-timerfd_gettime01.c:48: TINFO: Testing variant: syscall with old kernel spe=
-c
-timerfd_gettime01.c:88: TPASS: timerfd_gettime() failed as expected: EBADF =
-(9)
-timerfd_gettime01.c:88: TPASS: timerfd_gettime() failed as expected: EFAULT=
- (14)
-timerfd_gettime01.c:88: TPASS: timerfd_gettime() failed as expected: EINVAL=
- (22)
-
-Summary:
-passed   3
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dtimerfd_settime02 stime=3D1680368159
-cmdline=3D"timerfd_settime02"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 07m 30s
-timerfd_settime02.c:47: TINFO: Testing variant: syscall with old kernel spe=
-c
-../../../../include/tst_fuzzy_sync.h:484: TINFO: Minimum sampling period en=
-ded
-../../../../include/tst_fuzzy_sync.h:307: TINFO: loop =3D 1024, delay_bias =
-=3D 0
-../../../../include/tst_fuzzy_sync.h:295: TINFO: start_a - start_b: { avg =
-=3D     8ns, avg_dev =3D    10ns, dev_ratio =3D 1.17 }
-../../../../include/tst_fuzzy_sync.h:295: TINFO: end_a - start_a  : { avg =
-=3D  1420ns, avg_dev =3D    23ns, dev_ratio =3D 0.02 }
-../../../../include/tst_fuzzy_sync.h:295: TINFO: end_b - start_b  : { avg =
-=3D  1673ns, avg_dev =3D    16ns, dev_ratio =3D 0.01 }
-../../../../include/tst_fuzzy_sync.h:295: TINFO: end_a - end_b    : { avg =
-=3D  -244ns, avg_dev =3D    18ns, dev_ratio =3D 0.07 }
-../../../../include/tst_fuzzy_sync.h:295: TINFO: spins            : { avg =
-=3D   150  , avg_dev =3D    10  , dev_ratio =3D 0.07 }
-../../../../include/tst_fuzzy_sync.h:494: TINFO: Reached deviation ratios <=
- 0.10, introducing randomness
-../../../../include/tst_fuzzy_sync.h:497: TINFO: Delay range is [-1040, 871=
-]
-../../../../include/tst_fuzzy_sync.h:307: TINFO: loop =3D 1051, delay_bias =
-=3D 0
-../../../../include/tst_fuzzy_sync.h:295: TINFO: start_a - start_b: { avg =
-=3D   -37ns, avg_dev =3D     3ns, dev_ratio =3D 0.08 }
-../../../../include/tst_fuzzy_sync.h:295: TINFO: end_a - start_a  : { avg =
-=3D  1384ns, avg_dev =3D    11ns, dev_ratio =3D 0.01 }
-../../../../include/tst_fuzzy_sync.h:295: TINFO: end_b - start_b  : { avg =
-=3D  1652ns, avg_dev =3D    15ns, dev_ratio =3D 0.01 }
-../../../../include/tst_fuzzy_sync.h:295: TINFO: end_a - end_b    : { avg =
-=3D  -305ns, avg_dev =3D    21ns, dev_ratio =3D 0.07 }
-../../../../include/tst_fuzzy_sync.h:295: TINFO: spins            : { avg =
-=3D   192  , avg_dev =3D    18  , dev_ratio =3D 0.10 }
-../../../../include/tst_fuzzy_sync.h:654: TINFO: Exceeded execution loops, =
-requesting exit
-timerfd_settime02.c:105: TPASS: Nothing bad happened, probably
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D34 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D3881 cstime=3D2719
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dtruncate03_64 stime=3D1680368193
-cmdline=3D"truncate03_64"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-truncate03.c:120: TPASS: truncate(tc->pathname, tc->length) : EACCES (13)
-truncate03.c:120: TPASS: truncate(tc->pathname, tc->length) : ENOTDIR (20)
-truncate03.c:120: TPASS: truncate(tc->pathname, tc->length) : EFAULT (14)
-truncate03.c:120: TPASS: truncate(tc->pathname, tc->length) : ENAMETOOLONG =
-(36)
-truncate03.c:120: TPASS: truncate(tc->pathname, tc->length) : ENOENT (2)
-truncate03.c:120: TPASS: truncate(tc->pathname, tc->length) : EISDIR (21)
-truncate03.c:120: TPASS: truncate(tc->pathname, tc->length) : EFBIG (27)
-truncate03.c:120: TPASS: truncate(tc->pathname, tc->length) : ELOOP (40)
-
-Summary:
-passed   8
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dulimit01 stime=3D1680368193
-cmdline=3D"ulimit01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-ulimit01    1  TPASS  :  ulimit(1, -1) returned 9223372036854775807
-ulimit01    2  TPASS  :  ulimit(2, 9223372036854775807) returned 9223372036=
-854775807
-ulimit01    3  TPASS  :  ulimit(2, 9223372036854775806) returned 9223372036=
-854775807
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Duserfaultfd01 stime=3D1680368193
-cmdline=3D"userfaultfd01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-userfaultfd01.c:30: TCONF: syscall(323) __NR_userfaultfd not supported on y=
-our arch
-
-Summary:
-passed   0
-failed   0
-broken   0
-skipped  1
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D32 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dvfork02 stime=3D1680368193
-cmdline=3D"vfork02"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-vfork02     1  TPASS  :  Call to vfork() successful
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dvmsplice04 stime=3D1680368193
-cmdline=3D"vmsplice04"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-tst_buffers.c:55: TINFO: Test is using guarded buffers
-vmsplice04.c:32: TPASS: vmsplice(..., SPLICE_F_NONBLOCK) failed as expected=
-: EAGAIN/EWOULDBLOCK (11)
-vmsplice04.c:56: TPASS: vmsplice(..., 0) blocked
-
-Summary:
-passed   2
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dwaitpid07 stime=3D1680368193
-cmdline=3D"waitpid07"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-waitpid07.c:59: TPASS: Test PASSED
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D1 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dwaitid03 stime=3D1680368193
-cmdline=3D"waitid03"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_buffers.c:55: TINFO: Test is using guarded buffers
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-waitid03.c:22: TPASS: waitid(P_ALL, 0, infop, WNOHANG | WEXITED) : ECHILD (=
-10)
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dwaitid11 stime=3D1680368193
-cmdline=3D"waitid11"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_buffers.c:55: TINFO: Test is using guarded buffers
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-waitid11.c:33: TPASS: waitid(P_ALL, 0, infop, WEXITED) passed
-waitid11.c:34: TPASS: infop->si_pid =3D=3D pidchild (43091)
-waitid11.c:35: TPASS: infop->si_status =3D=3D SIGKILL (9)
-waitid11.c:36: TPASS: infop->si_signo =3D=3D SIGCHLD (17)
-waitid11.c:37: TPASS: infop->si_code =3D=3D CLD_KILLED (2)
-
-Summary:
-passed   5
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dwrite03 stime=3D1680368193
-cmdline=3D"write03"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-write03.c:49: TPASS: failure of write() did not corrupt the file
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dwrite05 stime=3D1680368193
-cmdline=3D"write05"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-write05.c:78: TPASS: write() failed expectedly: EBADF (9)
-write05.c:78: TPASS: write() failed expectedly: EFAULT (14)
-write05.c:78: TPASS: write() failed expectedly: EPIPE (32)
-
-Summary:
-passed   3
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dfutex_cmp_requeue01 stime=3D1680368193
-cmdline=3D"futex_cmp_requeue01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-futex_cmp_requeue01.c:194: TINFO: Testing variant: syscall with old kernel =
-spec
-futex_cmp_requeue01.c:103: TINFO: Test 0: waiters: 10, wakes: 3, requeues: =
-7
-futex_cmp_requeue01.c:126: TINFO: futex_cmp_requeue() returned 10
-futex_cmp_requeue01.c:140: TINFO: children woken, futex0: 0, futex1: 7, spu=
-rious wakeups: 0
-futex_cmp_requeue01.c:187: TPASS: futex_cmp_requeue()
-futex_cmp_requeue01.c:103: TINFO: Test 1: waiters: 10, wakes: 0, requeues: =
-10
-futex_cmp_requeue01.c:126: TINFO: futex_cmp_requeue() returned 10
-futex_cmp_requeue01.c:140: TINFO: children woken, futex0: 0, futex1: 10, sp=
-urious wakeups: 0
-futex_cmp_requeue01.c:187: TPASS: futex_cmp_requeue()
-futex_cmp_requeue01.c:103: TINFO: Test 2: waiters: 10, wakes: 2, requeues: =
-6
-futex_cmp_requeue01.c:126: TINFO: futex_cmp_requeue() returned 8
-futex_cmp_requeue01.c:140: TINFO: children woken, futex0: 2, futex1: 6, spu=
-rious wakeups: 0
-futex_cmp_requeue01.c:187: TPASS: futex_cmp_requeue()
-futex_cmp_requeue01.c:103: TINFO: Test 3: waiters: 100, wakes: 50, requeues=
-: 50
-futex_cmp_requeue01.c:126: TINFO: futex_cmp_requeue() returned 100
-futex_cmp_requeue01.c:140: TINFO: children woken, futex0: 0, futex1: 50, sp=
-urious wakeups: 0
-futex_cmp_requeue01.c:187: TPASS: futex_cmp_requeue()
-futex_cmp_requeue01.c:103: TINFO: Test 4: waiters: 100, wakes: 0, requeues:=
- 70
-futex_cmp_requeue01.c:126: TINFO: futex_cmp_requeue() returned 70
-futex_cmp_requeue01.c:140: TINFO: children woken, futex0: 30, futex1: 70, s=
-purious wakeups: 0
-futex_cmp_requeue01.c:187: TPASS: futex_cmp_requeue()
-futex_cmp_requeue01.c:103: TINFO: Test 5: waiters: 1000, wakes: 100, requeu=
-es: 900
-futex_cmp_requeue01.c:126: TINFO: futex_cmp_requeue() returned 1000
-futex_cmp_requeue01.c:140: TINFO: children woken, futex0: 0, futex1: 900, s=
-purious wakeups: 0
-futex_cmp_requeue01.c:187: TPASS: futex_cmp_requeue()
-futex_cmp_requeue01.c:103: TINFO: Test 6: waiters: 1000, wakes: 300, requeu=
-es: 500
-futex_cmp_requeue01.c:126: TINFO: futex_cmp_requeue() returned 800
-futex_cmp_requeue01.c:140: TINFO: children woken, futex0: 200, futex1: 500,=
- spurious wakeups: 0
-futex_cmp_requeue01.c:187: TPASS: futex_cmp_requeue()
-
-Summary:
-passed   7
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D2 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D68 cstime=3D121
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dfutex_wait03 stime=3D1680368195
-cmdline=3D"futex_wait03"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-futex_wait03.c:63: TINFO: Testing variant: syscall with old kernel spec
-futex_wait03.c:56: TPASS: futex_wait() woken up
-
-Summary:
-passed   1
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dfutex_waitv01 stime=3D1680368195
-cmdline=3D"futex_waitv01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_buffers.c:55: TINFO: Test is using guarded buffers
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-futex_waitv01.c:51: TPASS: futex_waitv with invalid flags : EINVAL (22)
-futex_waitv01.c:64: TPASS: futex_waitv with unligned address : EINVAL (22)
-futex_waitv01.c:77: TPASS: futex_waitv address is NULL : EFAULT (14)
-futex_waitv01.c:87: TPASS: futex_waitv waiters are NULL : EINVAL (22)
-futex_waitv01.c:98: TPASS: futex_waitv invalid clockid : EINVAL (22)
-futex_waitv01.c:110: TPASS: futex_waitv invalid nr_futexes : EINVAL (22)
-futex_waitv01.c:112: TPASS: futex_waitv invalid nr_futexes : EINVAL (22)
-futex_waitv01.c:126: TPASS: futex_waitv mismatch between value of uaddr and=
- val : EAGAIN/EWOULDBLOCK (11)
-futex_waitv01.c:141: TPASS: futex_waitv timeout : ETIMEDOUT (110)
-
-Summary:
-passed   9
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dstatx01 stime=3D1680368195
-cmdline=3D"statx01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-statx01.c:98: TPASS: statx(AT_FDCWD, test_file, 0, 0, &buff)
-statx01.c:105: TPASS: stx_uid(0) is correct
-statx01.c:111: TPASS: stx_gid(0) is correct
-statx01.c:117: TPASS: stx_size(256) is correct
-statx01.c:125: TPASS: stx_mode(33188) is correct
-statx01.c:131: TPASS: stx_blocks(8) is valid
-statx01.c:138: TPASS: stx_nlink(1) is correct
-statx01.c:78: TPASS: statx.stx_mnt_id equals to mount_id(217) in /proc/self=
-/mountinfo
-statx01.c:88: TPASS: /proc/45341/fdinfo/4 mnt_id: =3D 217
-statx01.c:156: TPASS: statx(AT_FDCWD, mntpoint/blk_dev, 0, 0, &buff)
-statx01.c:163: TPASS: stx_rdev_major(8) is correct
-statx01.c:171: TPASS: stx_rdev_minor(1) is correct
-
-Summary:
-passed   12
-failed   0
-broken   0
-skipped  0
-warnings 0
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dstatx07 stime=3D1680368195
-cmdline=3D"statx07"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_cmd.c:257: TCONF: Couldn't find 'exportfs' in $PATH
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D32 corefile=3Dno
-cutime=3D0 cstime=3D1
-<<<test_end>>>
-<<<test_start>>>
-tag=3Dio_uring01 stime=3D1680368195
-cmdline=3D"io_uring01"
-contacts=3D""
-analysis=3Dexit
-<<<test_output>>>
-tst_buffers.c:55: TINFO: Test is using guarded buffers
-tst_test.c:1559: TINFO: Timeout per run is 0h 02m 30s
-io_uring01.c:80: TPASS: io_uring_setup() passed
-io_uring01.c:190: TPASS: io_uring_register() passed
-io_uring01.c:219: TPASS: io_uring_enter() waited for 1 event
-io_uring01.c:159: TPASS: CQE result 1024
-io_uring01.c:139: TPASS: Buffer filled in correctly
-io_uring01.c:170: TPASS: Got 1 completion events
-
-Summary:
-passed   6
-failed   0
-broken   0
-skipped  0
-warnings 0
-incrementing stop
-<<<execution_status>>>
-initiation_status=3D"ok"
-duration=3D0 termination_type=3Dexited termination_id=3D0 corefile=3Dno
-cutime=3D0 cstime=3D0
-<<<test_end>>>
-INFO: ltp-pan reported some tests FAIL
-LTP Version: 20220930-145-g498247917
-
-       ###############################################################
-
-            Done executing testcases.
-            LTP Version:  20220930-145-g498247917
-       ###############################################################
-
-
---O5JI0LRs+fmlOVNl
+--qSm7Wl+FUVQR91mZ
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: attachment; filename="job.yaml"
 
 ---
 
-#! jobs/ltp-syscalls.yaml
-suite: ltp
-testcase: ltp
-category: functional
-need_memory: 4G
-disk: 1HDD
-fs: xfs
-ltp:
-  test: syscalls-05
-job_origin: ltp-syscalls.yaml
+#! jobs/stress-ng-class-pipe.yaml
+suite: stress-ng
+testcase: stress-ng
+category: benchmark
+nr_threads: 100%
+testtime: 60s
+stress-ng:
+  class: pipe
+  test: sendfile
+job_origin: stress-ng-class-pipe.yaml
 
 #! queue options
 queue_cmdline_keys:
 - branch
 - commit
+- kbuild_queue_analysis
 queue: bisect
-testbox: lkp-skl-d02
-tbox_group: lkp-skl-d02
-submit_id: 6427ff2b4a2b5c950c5a2e64
-job_file: "/lkp/jobs/scheduled/lkp-skl-d02/ltp-1HDD-xfs-syscalls-05-debian-12-x86_64-20220629.cgz-761ce43fda7ebcdf1b1aa8e797ec83fae0e34c47-20230401-38156-16dfj7v-0.yaml"
-id: 36ef132995feb82c08ef7c59c29cafb62d129739
+testbox: lkp-icl-2sp6
+tbox_group: lkp-icl-2sp6
+submit_id: 642992742b56b404eaabb7aa
+job_file: "/lkp/jobs/scheduled/lkp-icl-2sp6/stress-ng-pipe-performance-100%-sendfile-60s-debian-11.1-x86_64-20220510.cgz-3eb3c59b128509a5e8a8349dafced64b9769438e-20230402-1258-9t3628-0.yaml"
+id: 4325e7be57c53972ede00aa8a3eed27a0b255b5c
 queuer_version: "/zday/lkp"
 
-#! /db/releases/20230328210908/lkp-src/hosts/lkp-skl-d02
-model: Skylake
-nr_cpu: 4
-memory: 32G
-nr_ssd_partitions: 1
-nr_hdd_partitions: 4
-hdd_partitions: "/dev/disk/by-id/wwn-0x5000c500746fa0cc-part*"
-ssd_partitions: "/dev/disk/by-id/wwn-0x55cd2e41514d5105-part2"
-rootfs_partition: "/dev/disk/by-id/wwn-0x55cd2e41514d5105-part1"
-brand: Intel(R) Core(TM) i5-6500 CPU @ 3.20GHz
+#! /db/releases/20230319113320/lkp-src/hosts/lkp-icl-2sp6
+model: Ice Lake
+nr_node: 2
+nr_cpu: 128
+memory: 128G
+nr_ssd_partitions: 3
+nr_hdd_partitions: 6
+hdd_partitions: "/dev/disk/by-id/ata-WDC_WD20SPZX-08UA7_WD-WXE2EA06X8DA-part*"
+ssd_partitions: "/dev/disk/by-id/ata-INTEL_SSDSC2BB800G4_PHWL4204002V800RGN-part*"
+rootfs_partition: "/dev/disk/by-id/ata-INTEL_SSDSC2BA400G4_BTHV634503K8400NGN-part1"
+kernel_cmdline_hw: acpi_rsdp=0x69ffd014
+brand: Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz
 
-#! /db/releases/20230328210908/lkp-src/include/category/functional
+#! /db/releases/20230319113320/lkp-src/include/category/benchmark
 kmsg:
+boot-time:
+uptime:
+iostat:
 heartbeat:
+vmstat:
+numa-numastat:
+numa-vmstat:
+numa-meminfo:
+proc-vmstat:
+proc-stat:
 meminfo:
+slabinfo:
+interrupts:
+lock_stat:
+perf-sched:
+  lite_mode: 1
+softirqs:
+bdi_dev_mapping:
+diskstats:
+nfsstat:
+cpuidle:
+cpufreq-stats:
+turbostat:
+sched_debug:
+perf-stat:
+mpstat:
+perf-profile:
+  debug_mode: 0
 
-#! /db/releases/20230328210908/lkp-src/include/disk/nr_hdd
+#! /db/releases/20230319113320/lkp-src/include/category/ALL
+cpufreq_governor: performance
+
+#! /db/releases/20230319113320/lkp-src/include/stress-ng
 need_kconfig:
-- BLK_DEV_SD
-- SCSI
-- BLOCK: y
-- SATA_AHCI
-- SATA_AHCI_PLATFORM
-- ATA
-- PCI: y
-- XFS_FS
-- BLK_DEV_LOOP
-- CAN: m
-- CAN_RAW: m
-- CAN_VCAN: m
-- MINIX_FS: m
-- EXPERT: y
-- CHECKPOINT_RESTORE: y
 
-#! /db/releases/20230328210908/lkp-src/include/queue/cyclic
-commit: 761ce43fda7ebcdf1b1aa8e797ec83fae0e34c47
+#! /db/releases/20230319113320/lkp-src/include/queue/cyclic
+commit: 3eb3c59b128509a5e8a8349dafced64b9769438e
 
-#! /db/releases/20230328210908/lkp-src/include/testbox/lkp-skl-d02
-need_kconfig_hw:
-- PTP_1588_CLOCK: y
-- E1000E: y
-- SATA_AHCI
-- DRM_I915
-ucode: '0xf0'
-
-#! /db/releases/20230328210908/lkp-src/include/fs/OTHERS
-
-#! /db/releases/20230328210908/lkp-src/include/ltp
-rootfs: debian-12-x86_64-20220629.cgz
-initrds:
-- linux_headers
-kconfig: x86_64-rhel-8.3-ltp
-enqueue_time: 2023-04-01 17:53:47.879863635 +08:00
-_id: 6427ff2b4a2b5c950c5a2e64
-_rt: "/result/ltp/1HDD-xfs-syscalls-05/lkp-skl-d02/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-ltp/gcc-11/761ce43fda7ebcdf1b1aa8e797ec83fae0e34c47"
+#! /db/releases/20230319113320/lkp-src/include/testbox/lkp-icl-2sp6
+ucode: '0xd000363'
+bisect_dmesg: true
+kconfig: x86_64-rhel-8.3
+enqueue_time: 2023-04-02 22:34:28.169507706 +08:00
+_id: 642992742b56b404eaabb7aa
+_rt: "/result/stress-ng/pipe-performance-100%-sendfile-60s/lkp-icl-2sp6/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/3eb3c59b128509a5e8a8349dafced64b9769438e"
 
 #! schedule options
 user: lkp
 compiler: gcc-11
 LKP_SERVER: internal-lkp-server
-head_commit: 26b1c3709ddc924461221ffd397771b709658963
-base_commit: 197b6b60ae7bc51dd0814953c562833143b292aa
-branch: linux-devel/devel-hourly-20230331-025033
-result_root: "/result/ltp/1HDD-xfs-syscalls-05/lkp-skl-d02/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-ltp/gcc-11/761ce43fda7ebcdf1b1aa8e797ec83fae0e34c47/0"
+head_commit: a71a2e03bb7c8e8a2518159eb806e340495ee5d9
+base_commit: e8d018dd0257f744ca50a729e3d042cf2ec9da65
+branch: linux-devel/devel-hourly-20230320-191128
+rootfs: debian-11.1-x86_64-20220510.cgz
+result_root: "/result/stress-ng/pipe-performance-100%-sendfile-60s/lkp-icl-2sp6/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/3eb3c59b128509a5e8a8349dafced64b9769438e/1"
 scheduler_version: "/lkp/lkp/src"
 arch: x86_64
-max_uptime: 1200
-initrd: "/osimage/debian/debian-12-x86_64-20220629.cgz"
+max_uptime: 2100
+initrd: "/osimage/debian/debian-11.1-x86_64-20220510.cgz"
 bootloader_append:
 - root=/dev/ram0
-- RESULT_ROOT=/result/ltp/1HDD-xfs-syscalls-05/lkp-skl-d02/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-ltp/gcc-11/761ce43fda7ebcdf1b1aa8e797ec83fae0e34c47/0
-- BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3-ltp/gcc-11/761ce43fda7ebcdf1b1aa8e797ec83fae0e34c47/vmlinuz-6.3.0-rc4-00002-g761ce43fda7e
-- branch=linux-devel/devel-hourly-20230331-025033
-- job=/lkp/jobs/scheduled/lkp-skl-d02/ltp-1HDD-xfs-syscalls-05-debian-12-x86_64-20220629.cgz-761ce43fda7ebcdf1b1aa8e797ec83fae0e34c47-20230401-38156-16dfj7v-0.yaml
+- RESULT_ROOT=/result/stress-ng/pipe-performance-100%-sendfile-60s/lkp-icl-2sp6/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/3eb3c59b128509a5e8a8349dafced64b9769438e/1
+- BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3/gcc-11/3eb3c59b128509a5e8a8349dafced64b9769438e/vmlinuz-6.3.0-rc2-00007-g3eb3c59b1285
+- branch=linux-devel/devel-hourly-20230320-191128
+- job=/lkp/jobs/scheduled/lkp-icl-2sp6/stress-ng-pipe-performance-100%-sendfile-60s-debian-11.1-x86_64-20220510.cgz-3eb3c59b128509a5e8a8349dafced64b9769438e-20230402-1258-9t3628-0.yaml
 - user=lkp
 - ARCH=x86_64
-- kconfig=x86_64-rhel-8.3-ltp
-- commit=761ce43fda7ebcdf1b1aa8e797ec83fae0e34c47
+- kconfig=x86_64-rhel-8.3
+- commit=3eb3c59b128509a5e8a8349dafced64b9769438e
 - initcall_debug
 - nmi_watchdog=0
-- max_uptime=1200
+- acpi_rsdp=0x69ffd014
+- max_uptime=2100
 - LKP_SERVER=internal-lkp-server
 - nokaslr
 - selinux=0
@@ -14088,45 +7443,47 @@ bootloader_append:
 - rw
 
 #! runtime status
-modules_initrd: "/pkg/linux/x86_64-rhel-8.3-ltp/gcc-11/761ce43fda7ebcdf1b1aa8e797ec83fae0e34c47/modules.cgz"
-linux_headers_initrd: "/pkg/linux/x86_64-rhel-8.3-ltp/gcc-11/761ce43fda7ebcdf1b1aa8e797ec83fae0e34c47/linux-headers.cgz"
-bm_initrd: "/osimage/deps/debian-12-x86_64-20220629.cgz/run-ipconfig_20221125.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/lkp_20221125.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/rsync-rootfs_20221125.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/fs_20221125.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/ltp_20221125.cgz,/osimage/pkg/debian-12-x86_64-20220629.cgz/ltp-x86_64-14c1f76-1_20221128.cgz,/osimage/deps/debian-12-x86_64-20220629.cgz/hw_20230326.cgz"
+modules_initrd: "/pkg/linux/x86_64-rhel-8.3/gcc-11/3eb3c59b128509a5e8a8349dafced64b9769438e/modules.cgz"
+bm_initrd: "/osimage/deps/debian-11.1-x86_64-20220510.cgz/run-ipconfig_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/lkp_20220513.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/rsync-rootfs_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/stress-ng_20230218.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/stress-ng-x86_64-0.15-04_20230220.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/mpstat_20220516.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/turbostat_20220514.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/turbostat-x86_64-210e04ff7681-1_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/perf_20230402.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/perf-x86_64-00c7b5f4ddc5-1_20230402.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/sar-x86_64-c5bb321-1_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/hw_20220526.cgz"
 ucode_initrd: "/osimage/ucode/intel-ucode-20220804.cgz"
 lkp_initrd: "/osimage/user/lkp/lkp-x86_64.cgz"
 site: inn
 
-#! /db/releases/20230331165204/lkp-src/include/site/inn
+#! /db/releases/20230325010019/lkp-src/include/site/inn
 LKP_CGI_PORT: 80
 LKP_CIFS_PORT: 139
 oom-killer:
 watchdog:
-last_kernel: 6.3.0-rc4-wt-ath-11634-gdccd4dcc25e2
+last_kernel: 6.3.0-rc2-00007-g3eb3c59b1285
+repeat_to: 3
 schedule_notify_address:
 
 #! user overrides
-kernel: "/pkg/linux/x86_64-rhel-8.3-ltp/gcc-11/761ce43fda7ebcdf1b1aa8e797ec83fae0e34c47/vmlinuz-6.3.0-rc4-00002-g761ce43fda7e"
-dequeue_time: 2023-04-01 18:06:51.457515422 +08:00
+kbuild_queue_analysis: 1
+kernel: "/pkg/linux/x86_64-rhel-8.3/gcc-11/3eb3c59b128509a5e8a8349dafced64b9769438e/vmlinuz-6.3.0-rc2-00007-g3eb3c59b1285"
+dequeue_time: 2023-04-02 23:52:39.868232141 +08:00
 
-#! /db/releases/20230331202338/lkp-src/include/site/inn
+#! /db/releases/20230402141334/lkp-src/include/site/inn
 job_state: finished
-loadavg: 6.33 31.80 19.26 1/225 45473
-start_time: '1680343784'
-end_time: '1680344186'
-version: "/lkp/lkp/.src-20230331-174219:2a3772b171d5:4e62bbf19cf3"
+loadavg: 58.78 22.16 7.98 1/1209 9119
+start_time: '1680450877'
+end_time: '1680450939'
+version: "/lkp/lkp/.src-20230402-112345:7604a29ce591:890fe4ffa0df"
 
---O5JI0LRs+fmlOVNl
+--qSm7Wl+FUVQR91mZ
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: attachment; filename="reproduce"
 
-dmsetup remove_all
-wipefs -a --force /dev/sda1
-mkfs -t xfs -f -mreflink=0 /dev/sda1
-mkdir -p /fs/sda1
-modprobe xfs
-mount -t xfs -o inode64 /dev/sda1 /fs/sda1
-ln -sf /usr/sbin/iptables-nft /usr/bin/iptables
-ln -sf /usr/sbin/ip6tables-nft /usr/bin/ip6tables
-export LTP_RUNTIME_MUL=2
-./runltp -f syscalls-05 -d /fs/sda1/tmpdir
 
---O5JI0LRs+fmlOVNl--
+for cpu_dir in /sys/devices/system/cpu/cpu[0-9]*
+do
+	online_file="$cpu_dir"/online
+	[ -f "$online_file" ] && [ "$(cat "$online_file")" -eq 0 ] && continue
+
+	file="$cpu_dir"/cpufreq/scaling_governor
+	[ -f "$file" ] && echo "performance" > "$file"
+done
+
+ "stress-ng" "--timeout" "60" "--times" "--verify" "--metrics-brief" "--sendfile" "128"
+
+--qSm7Wl+FUVQR91mZ--
