@@ -1,90 +1,200 @@
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4EC11C04
-	for <oe-lkp@lists.linux.dev>; Tue,  9 May 2023 06:54:37 +0000 (UTC)
-Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-1ab14cb3aaeso38543075ad.2
-        for <oe-lkp@lists.linux.dev>; Mon, 08 May 2023 23:54:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fromorbit-com.20221208.gappssmtp.com; s=20221208; t=1683615277; x=1686207277;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=8f7AFFRkXXKxkzsTH7JfwHgWYybfOeRANzMf6aB4GvY=;
-        b=oS/3s1VQfCdROM7w06UUy1feQDAkekR15S+W+Lck1hb5ImBoiw9PTJrGHvLGdhTWxX
-         YIO5QVFOI+XUkjxUqxVV3Jqo2HpFqpr0K5ZFfmXsTsaGMWK05+dMdJyyfOOjAoqu9k0M
-         GO33YahzUNlU+1+5U7niPyeqwzkzx/fVZs7IEsHtO22XI+sIS4ZGG2JF9rogkh2/8Q64
-         pJ2AA1fb4Lyq/cQl6LGsYw5vjhO7zc7/9CxueqbTm5gm8Zrb451c4H1g7aVDJKy5LfpF
-         yP8zbgyeQlqJ/c47Q/1Woo4pxbo+jHEAqO2sNJGFYpVV8etIY3Of/UPdn8K3elJmevyL
-         ZXVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683615277; x=1686207277;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8f7AFFRkXXKxkzsTH7JfwHgWYybfOeRANzMf6aB4GvY=;
-        b=ATbwGd2kZH6A9sGTY+67D7SUdG792EIQpEKWTWuBs1uhWRS50Q+EJTMJayDWxzwZZk
-         bQjZs+FzEm/5pCjgG8yEqSiz7ZE9EWVbYzYa83R8fUqHCbPUQ/7PYOyi7BlWs2nO7sFs
-         aDlHm85vH7abja/0JlFudJMzv02X1Nu1lLHfDz/RBHsx0m5uAFYBhyJBZGY8MJvNlfM0
-         /H5SgJwbClaKO6ydHlPxkofSKHKfXqBlMwEfsODEu5svp2sAdeAs4ccW+4vcv7O9Vxho
-         L5/c4qIHju1VjublxxlV0vMQcz/XTy0Emck5dmNUBgtFVHle5an7E5kSUg0m0SUcLXvw
-         jpgA==
-X-Gm-Message-State: AC+VfDxXdMQZGdYGPXr8juhPRrAlwhESUPc2khWEZA1KTaPRdeTn3icm
-	bkIsD66Ph25xpwSpd7FmqD2VXw==
-X-Google-Smtp-Source: ACHHUZ7LdOHTKLDLgTu5Mf4elrCAwM8dbTu05hZuRJn2cRPKqYLnO0y9skDG4YG19caNlHilV8oKBA==
-X-Received: by 2002:a17:902:eb46:b0:1a6:5487:3f97 with SMTP id i6-20020a170902eb4600b001a654873f97mr12176228pli.64.1683615277073;
-        Mon, 08 May 2023 23:54:37 -0700 (PDT)
-Received: from dread.disaster.area (pa49-181-88-204.pa.nsw.optusnet.com.au. [49.181.88.204])
-        by smtp.gmail.com with ESMTPSA id g7-20020a170902868700b001aad4be4503sm719394plo.2.2023.05.08.23.54.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 May 2023 23:54:36 -0700 (PDT)
-Received: from dave by dread.disaster.area with local (Exim 4.92.3)
-	(envelope-from <david@fromorbit.com>)
-	id 1pwHF3-00D7ut-QH; Tue, 09 May 2023 16:54:33 +1000
-Date: Tue, 9 May 2023 16:54:33 +1000
-From: Dave Chinner <david@fromorbit.com>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: Dave Chinner <dchinner@redhat.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, linux-kernel@vger.kernel.org,
-	"Darrick J. Wong" <djwong@kernel.org>, linux-xfs@vger.kernel.org,
-	ying.huang@intel.com, feng.tang@intel.com, fengwei.yin@intel.com
-Subject: Re: [linus:master] [xfs]  2edf06a50f:  fsmark.files_per_sec -5.7%
- regression
-Message-ID: <20230509065433.GT3223426@dread.disaster.area>
-References: <202305090905.aff4e0e6-oliver.sang@intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E981383
+	for <oe-lkp@lists.linux.dev>; Tue,  9 May 2023 06:56:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1683615362; x=1715151362;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=FTpw8i8WzY19esPBXIN9TcafXUPqQ0xRwZEIHmLPY9w=;
+  b=n8m/9G5VMeW5tq5JWadqKHnQMup5ji+N3QHUsOw6E0MhmPWU0hvdfzV7
+   9uueSToFpSrOHvO5H7wM7BrBiu36Vvuuaoqc6CvwgKJElbQQHAFQymNvL
+   eSSH0GPgSHvyzmxR8Ytf5zy4rd3X7gI8kNdBnUsDKwWEW2iFoOhJgcnKM
+   /zqq2y/7lGR1dgHEUpBpRBu12LnXFvSLjpy0f/zt3vjY3K1vIDgP7kWTr
+   S0q0F/zgfsm+0Qynycidj0boAZYgpe6wg+NL/Tdb7IjepN68hvScVFyAA
+   DCGI3BQj1MNMzL16HFLWIZQf/4HUc8mdY8U3EJ1L4gcAPQbsZZHpfWFIG
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10704"; a="347284375"
+X-IronPort-AV: E=Sophos;i="5.99,261,1677571200"; 
+   d="scan'208";a="347284375"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2023 23:56:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10704"; a="945153336"
+X-IronPort-AV: E=Sophos;i="5.99,261,1677571200"; 
+   d="scan'208";a="945153336"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by fmsmga006.fm.intel.com with ESMTP; 08 May 2023 23:56:00 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Mon, 8 May 2023 23:56:00 -0700
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Mon, 8 May 2023 23:55:59 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23 via Frontend Transport; Mon, 8 May 2023 23:55:59 -0700
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.40) by
+ edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.23; Mon, 8 May 2023 23:55:58 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=C14Zd8cyk1NSFxO46YbRXS+UdoXppRWcZhyXFyLk53TRqgTlFueOq/pTQeb7Pp2y8PzhQ4OWT/a59W2670d3SrT4hMDLHsEH0yKzEOOmpzGvZG0zYxc1yjuMJYH0/ZW7voX6KWmKaV1xOdNNarU0jRJBO57hiYCmGN/vLU+ZdNHnU2whSlxr26SmF1CmXRzLvxgugZDRZwRp0VCw4ZH2Suowx14YydbDKrEivaOrQFHV19TaMOJieHgj5k+nDtwOhzsydoq1uRXY5Rpb03fTsmWs5jjwPYYl4OQ9pM02uTp+leAVGZGoK2EWGgC2U4D/qoXRfJwuy9A4gFu01Ug05w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=+jnrYXMuMqYHmeEeGi6bkCYD7MSnzz82xX/iiv0YpwI=;
+ b=TSO0/vILrpPVHZYGA6bgs5Mnm2Ts2kN+JXIRY5p/W3pthOawWrnSn2oq4UEFl2Ar3ciIfI3JFj67XIyq452WUhJ6A1xPE8xS+I/RtJTD554xkWySP7xNiAsIHVYacOM9E0jt/G7u036lqGf0MDyqgcRNnM0kbNp5jZZg3UjcvlJ+xkvyzN3ZwtIxIPPt37+5Q06yVjWoICM+3SQduTrz52ctTBcTR8eanVc36gMa3ByTTDLx9WxPTFoWmBK9tC6c7OV/We920rcwlmtyo+jC0mFapobzaamCVSgk3wHANPQiCkJYI/vd0GEoDuiQvvJmRO0EWsLiFf0/GNxV5miSOA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from CO1PR11MB4820.namprd11.prod.outlook.com (2603:10b6:303:6f::8)
+ by IA1PR11MB6268.namprd11.prod.outlook.com (2603:10b6:208:3e4::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.32; Tue, 9 May
+ 2023 06:55:57 +0000
+Received: from CO1PR11MB4820.namprd11.prod.outlook.com
+ ([fe80::d1a0:743b:4659:b72]) by CO1PR11MB4820.namprd11.prod.outlook.com
+ ([fe80::d1a0:743b:4659:b72%7]) with mapi id 15.20.6363.033; Tue, 9 May 2023
+ 06:55:56 +0000
+Message-ID: <57453f01-ac47-b683-7296-2e6b7275edd1@intel.com>
+Date: Tue, 9 May 2023 14:56:57 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.10.0
+Subject: Re: [linus:master] [mm/mmap] 28c5609fb2: aim9.page_test.ops_per_sec
+ -10.8% regression
+Content-Language: en-US
+To: kernel test robot <yujie.liu@intel.com>, Liam Howlett
+	<liam.howlett@oracle.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>, Yu Zhao <yuzhao@google.com>,
+	<linux-mm@kvack.org>, <ying.huang@intel.com>, <feng.tang@intel.com>
+References: <202305061457.ac15990c-yujie.liu@intel.com>
+From: Yin Fengwei <fengwei.yin@intel.com>
+In-Reply-To: <202305061457.ac15990c-yujie.liu@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SG2PR06CA0210.apcprd06.prod.outlook.com
+ (2603:1096:4:68::18) To CO1PR11MB4820.namprd11.prod.outlook.com
+ (2603:10b6:303:6f::8)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202305090905.aff4e0e6-oliver.sang@intel.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1PR11MB4820:EE_|IA1PR11MB6268:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2ded1066-e76b-45ac-921a-08db505a6fc5
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: CmaoZt1WLWP5jyJdUx2tz9KjBC5RNTPJDbVP4JlGCnCD4gZepSGyiZqAWI5nU+6MmmfcSt7kDmn5JJp/XpU+5o9tWecRoXXgTf0jxhu18iwV55e8nmPVsfc1ZbaVfqmk1+Sv2vhmZ6TlnDOQPYzhGWb9WO6LgsjXDA5CCtaunlSaLkKNJFZvtWGwjSuiNfxB2h816V6bxEqRVYVFrlNPHCcAdcMy8lHdsY/IADBhr1ZSc//WLmyiMHFUd/ysizK6xw6327n7wv1zn1lV41ksk7GvbNhAf8h6kaiAZa67STYVg+4Qg3VSO3mKIOmpVs4C51eyaLmPExqPFpT/7klHg9bIQrILHAcWv0hHhKw9yAXKYp2QeZVU+hD9CcPcZh6AJAQEJIwE7O/gdxQxvvv1J2x9fcTSAXUtfGfIxabuptrB0qvksX4utb7+JT/Xx/yYM5c9SdXbaVF6EARB6Xbqfldx2gKai+zYPyJDmZxU5fq48lGs5erleB333BysG/Z2FK9gKrmXnSIShpbwnVFUXVmqIWq/n5uKYUfHHDbVuMmlnWkd8qVAHZaofRur0uvahKONIb9ksa7bPdVQrmEwWG7cVKrtqQ4s6dmzzuZd9X83HyyKu5ZvCdoXZbfXsoe/CpJ8KVZzD2SPHrlGEjP05o0VSHeBHrJi1suL4jXB8R4=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4820.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(136003)(366004)(376002)(396003)(39860400002)(346002)(451199021)(31686004)(54906003)(4326008)(2906002)(8936002)(478600001)(316002)(66476007)(5660300002)(66556008)(8676002)(41300700001)(110136005)(66899021)(66946007)(6486002)(966005)(6506007)(6512007)(53546011)(26005)(107886003)(186003)(82960400001)(2616005)(36756003)(83380400001)(38100700002)(31696002)(86362001)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?d2o5SWhpbFZaSG9aQU9VRllDNjIxcXpmK1gzZVY1NGtDMlBmNkNVQk1lWWtT?=
+ =?utf-8?B?dzNXVGpmZ0QrSGRSc0lqUkIySXBQZkVHL0RZTHloL29Ub0gxMEw1Rmd6Nkt2?=
+ =?utf-8?B?aWd0cnRJYzQ3NEttM2RuZG1LVDZ6ZENOL1cwOFZ3VDdhM2FjWDZEenZSYU95?=
+ =?utf-8?B?V2lVUHNYcmRpK202aml4UWwwbkxwUkxBK2ZldTdWdEFMcTJkVXErZ2gwNjFh?=
+ =?utf-8?B?bTdhanhMazNBRXhCa3BqUFVPdDZuUlR1ZjRsSTl1WXZiYUtnRnBkbnc0WEhw?=
+ =?utf-8?B?eTVGZmd4M1V6M1VFMTdnR3h5TEJ1ZmxlTlZxb0RjdTNoek1WeXFoeFJOUHJv?=
+ =?utf-8?B?YjFLM08wUGZMbXdQL1ZLYUpBVzQ3SG5iK2pKSndKZDFFeEZjdVhERC9OUFhl?=
+ =?utf-8?B?WDk3a0UzZ1hsVFZmSDEzbEwyaUUyVjVndEFpY2RYeXdZQ1haU1RlSVdORkox?=
+ =?utf-8?B?UXdLSW1iQXYyR1FlcWtYb1VJeXZqdUlaQ3Y1TTM4YmdKbmRsWk90eWlaREV2?=
+ =?utf-8?B?cWF0ZFlHT2NSeTgzcDgrMWZQOXZmZ1U0WlR5ZkxtYzlyeUFxQXdpbmxTVWJR?=
+ =?utf-8?B?ZTV2M2JYMndHK0cvN1ByUU91Q1h1SStIcU5COGhvRlE2NWxCbERjbTBSdUlv?=
+ =?utf-8?B?M0tPMEJxUzc2SkVrTmJlUFl1ZUh0TjY2T1F6dURXN245M3lwbEdPZG1mc2g2?=
+ =?utf-8?B?Y0F5MnFCbURNVDRXbENSazY1Z0ZaZjYrendxbU9aSEo3a2M1R0U5Vk5tZDZw?=
+ =?utf-8?B?T3RhNW8vMDMyTTg3RkJVVmJ2VGRyUnV5RktTNnEvNVdHWWsrR0hpbkxqSXkx?=
+ =?utf-8?B?RisxcWs2VXR0Y25sTUhhZ3FadXl1eUJua0N1QTJtNkRSMzV4c0xDek5yenlu?=
+ =?utf-8?B?eVltbWc5OE1Ca01kUGF0UFlOUEpVSDNWanNDb2U0RWcrQXQvN1hZZFJFWSto?=
+ =?utf-8?B?aXZOcWR6cUVPODJJUkRsMWdIak84NkpQSUcwZWdMLzRDeWxRWXJxazY4V2Zy?=
+ =?utf-8?B?R1dlK0pRcmxtbnFkeG1MMUlrSHV4UDdtQ0VBczV5OU1KTzZqL2Yzdzg5UFFi?=
+ =?utf-8?B?L0VBUG9nUHFsMDV0eGw5NVp5R0lVTXQ4M2xTR3ducU5QWFh1RW55SUJFS2hi?=
+ =?utf-8?B?UzRvVVNSYXgwZER3bzdadTJKT25PbnRPc2ZzMGNPd0s1MmJISlpyUUN5TDJZ?=
+ =?utf-8?B?NTlGaDJaTTgrZ21aZHJ0M2Ywc0xoa3duNXhKZVd0NmlmaDhUbHlPRm5aRWJI?=
+ =?utf-8?B?VU1LUDN1MUtTNlUzZEhOMmlpalhtaHJFZ0NnMklrWUo5TkNoVUcvY1UvRjdu?=
+ =?utf-8?B?UmQzWUttaVJiWFJYMy9EVXVucjQ4UkRxNGF3NXVxVzJMVkxXWmd2UlZkcnBQ?=
+ =?utf-8?B?RVpSS1hubG5IRU53cUJEMXJCcndRc3FyWENJMXljRU9Helo2Vy9GWEp0eEtq?=
+ =?utf-8?B?RjBTVUhzdVY4RnNZck1WRmtNNzZKVkNpcktEWHlqb1ZMYzROOTRSdUxtYjF5?=
+ =?utf-8?B?NlZWVHRWMlQzQ05rOTJQTkVvNzUwTnhRTEdBMklEd3lMWXVEbHJuV2sybER1?=
+ =?utf-8?B?eUtoOTd1V1huSjM0ZFJIVytZR2J5dnZmeW9MZkJQVU94eVdMQ21TcWZHSDRp?=
+ =?utf-8?B?YlJqYjBMZDY4QzExTjM0aFpKblltcGV2N0htZFhkUEgweFN2cU1mUjZ4Njk4?=
+ =?utf-8?B?enJnc1pkYVBUaFB2TTZFUjhYWi9VajBHakpKbGhKODBkL3J3VFFUcEloM0Fo?=
+ =?utf-8?B?K09yVFVmRHMyRnZkbjQvK0hHZEFVMC9CZkRPZ000VUFBeUhnNlp1MjlLM04x?=
+ =?utf-8?B?TjZ6MnEyTkJjWG9XTVMxeitpS25xdkpteDFjdENMYWNTVmdtY0NGNkptNW80?=
+ =?utf-8?B?eDlMQ0dZWUJvcGtIUG5JQm9UZVhINVRMd0FNOFdqYU80eXVEWUtTNktMZmwv?=
+ =?utf-8?B?ZlZib0NpSFRjRTBDT1hUbTJMUTlrVFdOSnFIMm1mVVh0V0tGU05RUEh6QzhI?=
+ =?utf-8?B?ZnB4L1NJQkUvcEwzS1ZBaWwyQ2lBSnlmMEEzMDg5cGVxRlVoRkdnKzd0VTA0?=
+ =?utf-8?B?NnNtb05vRXU0ejdDeis1M3ZoZlhuRGhaeUxFbEVTOExQOUF6Qkkyc2ZueEQ2?=
+ =?utf-8?Q?ogSevF7DbWw4fGVUAWJggbBsA?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2ded1066-e76b-45ac-921a-08db505a6fc5
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4820.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2023 06:55:55.8875
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7X3wvg0v3rMiWBm7sydUc1NlXEpFMz8ycVmgkvsmfU5vpMI40U1qdOmVVy2wJPvayufQ4ulJ90NmFhw1Q8149w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB6268
+X-OriginatorOrg: intel.com
 
-On Tue, May 09, 2023 at 10:13:19AM +0800, kernel test robot wrote:
-> 
-> 
+Hi Liam,
+
+On 5/6/23 14:20, kernel test robot wrote:
 > Hello,
 > 
-> kernel test robot noticed a -5.7% regression of fsmark.files_per_sec on:
+> kernel test robot noticed a -10.8% regression of aim9.page_test.ops_per_sec on:
 > 
-> 
-> commit: 2edf06a50f5bbe664283f3c55c480fc013221d70 ("xfs: factor xfs_alloc_vextent_this_ag() for  _iterate_ags()")
+> commit: 28c5609fb236807910ca347ad3e26c4567998526 ("mm/mmap: preallocate maple nodes for brk vma expansion")
 > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> 
+> testcase: aim9
+> test machine: 48 threads 2 sockets Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GHz (Ivy Bridge-EP) with 112G memory
+> parameters:
+> 
+> 	testtime: 5s
+> 	test: all
+> 	cpufreq_governor: performance
+> 
+> If you fix the issue, kindly add following tag
+> | Reported-by: kernel test robot <yujie.liu@intel.com>
+> | Link: https://lore.kernel.org/oe-lkp/202305061457.ac15990c-yujie.liu@intel.com
+> 
 
-This is just a refactoring patch and doesn't change any logic.
-Hence I'm sceptical that it actually resulted in a performance
-regression. Indeed, the profile indicates a significant change of
-behaviour in the allocator and I can't see how the commit above
-would cause anything like that.
+Some finding related:
+   eBPF funclatency tool says the latency of function do_brk_flags() doubles
+   with the patch 28c5609fb2.
 
-Was this a result of a bisect? If so, what were the original kernel
-versions where the regression was detected?
+   With the patch 28c5609fb2, the mas_alloc_nodes() is called much more than
+   without the patch.
 
-Cheers,
+   In my local debugging env, I can see around 17009999 times call to 
+   mas_alloc_nodes(). The number is zero without the patch 28c5609fb2.
+So we are kind of sure the regression is connected to the patch.
 
-Dave.
 
--- 
-Dave Chinner
-david@fromorbit.com
+The page_test of AIM9 is doing following work with single thread:
+        newbrk = sbrk(1024 * 1024);     /* move up 1 megabyte */                
+        while (true) {                   /* while not done */                    
+                newbrk = sbrk(-4096 * 16);      /* deallocate some space */     
+                for (i = 0; i < 16; i++) {      /* now get it back in pieces */
+                        newbrk = sbrk(4096);    /* Get pointer to new space */ 
+		}
+	}
+
+Is it possible that the sbrk pattern triggers the corner case? Thanks.
+
+
+Regards
+Yin, Fengwei
+
