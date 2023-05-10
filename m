@@ -1,157 +1,117 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2089.outbound.protection.outlook.com [40.107.92.89])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA82314A81
-	for <oe-lkp@lists.linux.dev>; Wed, 10 May 2023 17:15:35 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=k3IGKIjvkokETzhPiaKfptK1W0p2/ceRH62B6TmKpdIM5aTHqHb7YUpKmCH7g9lKhw8p+a1Hd7nYzMoJNkaedLuCO0ajQy7UobgBZEl+8cwRmh//JWoTpg6HljbwxnD9m5F6v9mn5nlICqHk/oCsfYI5TC58wy5/jl/mMlmmc/ubsutGM+475KSZpTuTwQ3wKJfCgB0nGZ2tOSj1AUGEr8rfro1mDTv/WOg4kGY1kuHyZcrNHUXXbzP5//sv/bZC+6aOafGbFBV4UaBOfxQY2EjPrgfIZj4XMVp1Gp4rtK+8xNwaLEvMJE9Wi6fIRHlnfsi/gH8LZ2WKTH5lto8n9g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=oMnD4I3WP7dMMQrfnmclAkVIpn14O7lIw1NcWQS2zjU=;
- b=j/cyUE9CzlMWYJOzZ/RRN25bOGb2iCP/B/nx45bRpxKHM/fwSlfGJz3eUR/AjqkDg2Mw6tP7p5fnHBLw5tIfBARjGpaMfSjwn+bMFogXYEEOOiYIDgFEPUn9bdkk8A+0xOa+uW/LFQ3RZc6WNlubJudX2AOQXekSuq5bueNAGNo2yOW5uBjfCND09YGH3z9y9bjoUkhCFfY6QdGQ8e5eRDOJ95Gf5JSRl98UjWVnPLNTnSAqBP0/I8VsOPdkTvaft+mT2ly5UdZ+AD2eBPfSYo6Ibs5r8z+HecKPpxcNJyC8SiMdmtmFUuALfY3s+boC1kT1HXTSqZwsYEcDpslZvA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oMnD4I3WP7dMMQrfnmclAkVIpn14O7lIw1NcWQS2zjU=;
- b=cYPK9EeYKNJ06jPrQDJ1xV4ldVnCQAPdNO6iKgQV6a79ve5sksCWjN6Wrt9+AC8L+uGMr9tlcl5wdo7ytiIvUEDvD6SM/2QATQsUpelFrUN9ZqDh+4UqkQdnersL2g7quzrT11X2hn3rnIzFGXDZRTPV4jbPT3nMiXMGlkFfkKD7xwnE+TixO/EymCFquTyNJ0NmYWqiuQ6pZGWPtoTFazjykngU8xgMsYI0y90sVLurxcMJAcsT9Az8eF9QCmE6LUFDz6Jwaw5918dPacGWO+HoMeSmbgKpjI4ndXMhhjE84eFLU0WrEqrNHpVX3K+sihu7sxiuV4p66Z7ZZXY87A==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN0PR12MB5762.namprd12.prod.outlook.com (2603:10b6:208:375::12)
- by DS7PR12MB5840.namprd12.prod.outlook.com (2603:10b6:8:7b::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.19; Wed, 10 May
- 2023 17:15:33 +0000
-Received: from MN0PR12MB5762.namprd12.prod.outlook.com
- ([fe80::df7e:720:b6c9:df7a]) by MN0PR12MB5762.namprd12.prod.outlook.com
- ([fe80::df7e:720:b6c9:df7a%5]) with mapi id 15.20.6363.032; Wed, 10 May 2023
- 17:15:33 +0000
-Message-ID: <6daa1fbc-0d13-8f09-6f30-d11c899c038f@nvidia.com>
-Date: Wed, 10 May 2023 12:15:30 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DF9E14A81
+	for <oe-lkp@lists.linux.dev>; Wed, 10 May 2023 19:12:06 +0000 (UTC)
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1683745923;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=/MECbkgCGOoBuvWtbOq2MxOu4fITVWEjEY+BBqAF9ns=;
+	b=ffQ9fl3MaMTDG2AfJn3s0Hg+wrzUBDxCiJhn7ptHhlD3kBqhQNZ+u8taPzbQz/MBMGvWc9
+	mYIczIfyPbP1YPZoHjbqNLPHGm7v88AWqvHoAmon3XZhtiLE9knDAj+y14BOeza7RPOmN/
+	7elzRdT/aZLaluD1zGDW2M1/CiRs7H5Hm/cabxFX+esVHLVI+WnsRRmeEYGmu1pvUXShJh
+	ExDfLZjWaGY68GPIC6zaUUX1f699sEYhdBKX7KS/kKhTuIjWiHpH93jgCzDBpI4ll7x9PB
+	UmofVWYNcwDeY6GiZmxJN2JODggkR7hQ4aQNTFbNGZv3Knlr3QfHdkE7UKbb8g==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1683745923;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=/MECbkgCGOoBuvWtbOq2MxOu4fITVWEjEY+BBqAF9ns=;
+	b=X4nOfMSYbZJkbpGd2m7OBEYGn2P8QP4+/B1iFgR2q7AgEF+4m0+jXgpEnhqFVTGaKYgqzZ
+	cfTAyfqD2ZApXaCQ==
+To: Shanker Donthineni <sdonthineni@nvidia.com>
+Cc: Yujie Liu <yujie.liu@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com,
+ linux-kernel@vger.kernel.org, Marc Zyngier <maz@kernel.org>, Sebastian
+ Andrzej Siewior <bigeasy@linutronix.de>, Michael Walle <michael@walle.cc>,
+ Vikram Sethi <vsethi@nvidia.com>
 Subject: Re: [PATCH v3 3/3] genirq: Use the maple tree for IRQ descriptors
  management
-Content-Language: en-US
-From: Shanker Donthineni <sdonthineni@nvidia.com>
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: Yujie Liu <yujie.liu@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com,
- linux-kernel@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
- Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
- Michael Walle <michael@walle.cc>, Vikram Sethi <vsethi@nvidia.com>
-References: <202304251035.19367560-yujie.liu@intel.com> <87a5yuzvzd.ffs@tglx>
- <ZEsiYbi8dorXTI5t@yujie-X299> <877ctw5mdp.ffs@tglx>
+In-Reply-To: <e1c50a59-f85a-02bc-6b48-fceaa390b2ad@nvidia.com>
+References: <202304251035.19367560-yujie.liu@intel.com>
+ <87a5yuzvzd.ffs@tglx> <ZEsiYbi8dorXTI5t@yujie-X299> <877ctw5mdp.ffs@tglx>
  <ZFdbtipfTsIF0u6z@yujie-X299> <87mt2f2mhm.ffs@tglx>
  <ZFtGvfDFLyHeFVFH@yujie-X299> <87ttwkxn96.ffs@tglx> <87r0roxmvu.ffs@tglx>
  <e1c50a59-f85a-02bc-6b48-fceaa390b2ad@nvidia.com>
-In-Reply-To: <e1c50a59-f85a-02bc-6b48-fceaa390b2ad@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SA9PR13CA0177.namprd13.prod.outlook.com
- (2603:10b6:806:28::32) To MN0PR12MB5762.namprd12.prod.outlook.com
- (2603:10b6:208:375::12)
+Date: Wed, 10 May 2023 21:12:02 +0200
+Message-ID: <87lehwxapp.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MN0PR12MB5762:EE_|DS7PR12MB5840:EE_
-X-MS-Office365-Filtering-Correlation-Id: f6b55c23-f07d-496b-07ee-08db517a29a4
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	AxtwB76KmPyewMVC2jHOZcFj59jMNcO9CkkolZnEMqsNFHMNf4V2yAH6JqV5hx7l79b9ScCl722uoMdKoIPeIobw3DH19zVK/iYpCeKxp8MkAMdX27wvoaflYAuqXRfUdm19LJAhSf/ImuAgSmLJpIAaAVH5kzStm7Jhf83QjwcNEp69EHKC31IHh23jdFPlYMX4q+05cLPWOF7NbSHeXImqKSwNR8AkSZZcccF6Ez3U5IENs+W1Payc8CrL8itdEcWAmnnorpXs3sOBLK/EzqzQZOBqochr7+R2dk2KQKsg+kZEVISMHaXDzb0n2etrQWIlWbbaz9pbMJel1/MCR8AYzQjSuvp1xSH3aYxriM3i1kJy2c7J98T2eNEIF3goM4s76ObYQr2VQvjOXszabvn3DF7IEMvm+9/GSSh8HXCxGG30CK6eA/Q27u6jxaxKbPeHwlG8RfNWGUpjuJorM6SYOqxfFfLb4pBeyzuDIQEI4EpdUyDxBwShHhSufz/lZINT3zuwfFsozM2AJw/GuoX/3XdXjInnSbQKR6PrQO7l9mVZRY0mXP4sU/SX3X2sNlecF/oQlYG5HyDYujDGGuvhtRBjUkC423yJA5gCXm3Zh7dU/9pKUxIIQN1vd0cuTCW0otF2ab71qYnj7r341kh/QiVM1WIFparAt0baNp/+BWa2ugnxvPYFzxcDRIXOPSzFu907O5t4usuGRcB7SVJnVtsPRdod+zIqEPA0ihc=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR12MB5762.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(39860400002)(376002)(346002)(136003)(366004)(451199021)(38100700002)(966005)(53546011)(26005)(6506007)(186003)(107886003)(6512007)(2616005)(83380400001)(36756003)(6486002)(66946007)(66556008)(66476007)(316002)(6916009)(2906002)(4326008)(31696002)(5660300002)(41300700001)(8936002)(8676002)(31686004)(86362001)(54906003)(478600001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?QnBrZ2hGSVZ1TmMxNUdVUzFvZHB5T2lFMldZVHJ0TXArbFBpbW5DY3BaMWVL?=
- =?utf-8?B?NVVIS3NmdGNRSEo1RzBlQllVWVNoLy9ZMnZydStaeWQxLzhUektXWEo0d0pQ?=
- =?utf-8?B?TWErZk8yU0pPbVo4RjVqTFB2T2dnR1JzZU1wV2JlSzlsVGpYM2JjY0NlNzNl?=
- =?utf-8?B?YnMzN2F1R1BNbGFEUDBXaW1wOWRRSHM3clNCNmRpa0V0Zk5iVHhQMDNWSEVy?=
- =?utf-8?B?bjlZZmRXN1ZGcDRweXVXa0VQQ2tuQm04cVJaUy9JY1VKeUx2Q3QzRGUzMlNM?=
- =?utf-8?B?TVlwQ0xQYkp1OWFNamxnelI3aUN4WlQwU1dyZ05TdFZHZldXK1M1V0VTdDc3?=
- =?utf-8?B?U2dCOTlEVGJEMWxGUnNoajBRdzdERjFDTDJ2S01jTmtmTkk1Z0U1WU5WcFhE?=
- =?utf-8?B?dCsxaDFwR2xBclVqU2JXenFsQ1lsWnE3NG5ybC9zMEFHakhMcy9BY0FtcjI0?=
- =?utf-8?B?YWRsaCtBYkwvZ3FRRFFwcjB4M3VjeWRuT1E5Snl6UFI4K3hqa1NxbzViRTBl?=
- =?utf-8?B?ZTB4ZWhESG1MaTJqZC8vaWZ0OWQ5S3NxWDVvaXlxc08veTlkZk1QMHl4S2Zu?=
- =?utf-8?B?WXh6eVRlZGZKYURrRC8xYUIwK1llSzdFaklYL2gvUWZNKzM5SlcrdUlZMVpB?=
- =?utf-8?B?SjE1RmRxYTNRbytRdHNnR0dBbmI5NlFRc1ZiUlRPZUlzbHhJMlJ2d0Zza1RM?=
- =?utf-8?B?ekZIbW1wamlxRmoyOGxiU3I5QTY2VXhtUGhkbjJxd2FJeWRUZVN5czRMUDJx?=
- =?utf-8?B?Um8vUmpwV2pyQ01ndHp5ZFY3SHdVbnJuOGc4NXdET1ZYaU9saGxubVNkbHZO?=
- =?utf-8?B?Q0ZvRkRreVRzQXE4M3NyWllrSmoyNWdvNFNIbGwyT1FsNDN4NTNiT2JjMDJi?=
- =?utf-8?B?V1RJOTdrcG1TRVg2ZndYNjNpM0Y0eERCSW11NXZyYzMxZEJjQ0piWnIrSUNH?=
- =?utf-8?B?NTRZU2dDclhiUTA5SUVzSXJCY05iNnlxMlVTQVgxQURtbEcyTlpWZmlBS3d3?=
- =?utf-8?B?aDhCWTdGS1N4QWpSOXkxOEJTcmQvUlY2WlU2MXZ5TXBiT2hMajZXMEI4OTlu?=
- =?utf-8?B?aDN5NFhZeUFKNWduMUtrbEVFVkFVbEZFaTl1bThVSmlyaDlYVmhjTHh3Wnh1?=
- =?utf-8?B?bmNqaFZSK01pS3dVelZ6bFJvZ1RlOWtNVVNGT2pBaUw5MzhRbFlDTG8zZEFy?=
- =?utf-8?B?M3dJa0d1dDA1ZTA1M3Jha2tWZWF4R1BzSVM3Mmp0L0ZwelU3Tk9MTDVHTkV5?=
- =?utf-8?B?WUFVNzV5TXFvRkF0T2NOZWxTN0JDNktNTTM0M2dBMFRPeXA2c21Qeko2dDdX?=
- =?utf-8?B?RnUyKzk0a3c0Q2NPeFBQS0hNSXZmelVZMFBVMGVZNkkzUllYekplNWlTZzQx?=
- =?utf-8?B?UFlnMkpmZFZKSGVnY1FOVlFNWWJOWU1uTkVNQmcxNFdHWHp0ckdhSHc0Z3lN?=
- =?utf-8?B?SU1ZV0ZuSVNDWFFQbUJrTGlKR0NHZkMrUy8rTnU3UjJzdnlKQmMvcXpBS0xR?=
- =?utf-8?B?UlBIa1BEajh6cnVveXNieWtCNSttcnMyS0k0VTZWbnpyUFVYT005Uzhlc1Vm?=
- =?utf-8?B?a3h5R1hYZlppeEpCM0Q3UVd6RnV0dW0zdk5uSzZSSnR3U1pFKzF1YnFaUUEw?=
- =?utf-8?B?YWNPK2RDckJydXhYUTJiUzNOR0dhYThvUHFKRUcxMEJqMDEyYVk2WENpNFdp?=
- =?utf-8?B?ZGhuYWUxMEFJUmdCcjVaeDB6SWpBaSt0ZnhadmhDZFpTNUxPSll2QmtIUW92?=
- =?utf-8?B?cVB5N2xKTStmNUJvTjhlY1lpMUQ1OE1vWGFBZXNmQ24wOCs4U01EWHB5bm40?=
- =?utf-8?B?RXlhVXZrUU1Qcy9lb21VaFZhMjhyeE1FWm84SDFvL1c4VUJVN25nblJkUFJu?=
- =?utf-8?B?RTArTlQ2Rkpza0lmUnNJYWdsVDZOSlQ1VUpYOFZBams5WWl4OThadmo4T01J?=
- =?utf-8?B?YlI4a2lhNjhlL0czSkRhbFlTNlZSSWM2T1U4T01WVFZXOTExQXB4WndENTlJ?=
- =?utf-8?B?Mjkvb0l3RWN2YkFucUcyVzF3WHV3NWw4ZjVyR1A3bW0rUTZnbjMyaHVVSHhX?=
- =?utf-8?B?RGFBM01NMStQRE42UXB5UmdzbEg4ZkkrK0NuMGtFd2tNQXBVRVRQVEtScFlI?=
- =?utf-8?Q?Zn6jVTg7dAEc7W+sJwuyHloUo?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f6b55c23-f07d-496b-07ee-08db517a29a4
-X-MS-Exchange-CrossTenant-AuthSource: MN0PR12MB5762.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2023 17:15:33.2393
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Rah7WECMYURHGPmkSmw86LESskckEhvGj3NQtTzqGh34O9opzH2a/79UzJ+PllFHamY5D2UfUhJ48ZzJr9ZuUg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5840
+Content-Type: text/plain
 
-Hi Thomas,
+Shanker!
 
-On 5/10/23 10:19, Shanker Donthineni wrote:
-> 
+On Wed, May 10 2023 at 10:19, Shanker Donthineni wrote:
 > Apologies for my lack of familiarity with the maple tree data structure and
 > not testing all functions. I received advice from the review comments below
-> regarding the iterator. I am looking for your guidance to address the issue
-> with the iterator if not possible can we increase NR_IRQS for ARM64 arch.
-> 
-> 
+> regarding the iterator.
+>
 > https://lore.kernel.org/linux-arm-kernel/875ydej9ur.ffs@tglx/
-> 
+>
 > static unsigned int irq_find_next_irq(unsigned int offset)
 > {
->          MA_STATE(mas, &sparse_irqs, offset, nr_irqs);
->          struct irq_desc *desc = mas_next(&mas, nr_irqs);
-> 
->          return desc ? irq_desc_get_irq(desc) : nr_irqs;
+>          MA_STATE(mas, &sparse_irqs, offset, nr_irqs);
+>          struct irq_desc *desc = mas_next(&mas, nr_irqs);
+>
+>          return desc ? irq_desc_get_irq(desc) : nr_irqs;
 > }
 
-The problem has been resolved, and I have confirmed the functionality of
-CPU hot-unplug on ARM64 systems. I have posted v4 to fix the issue.
+You gracefully omitted what I wrote below this:
 
-https://lore.kernel.org/lkml/20230510170033.3303076-4-sdonthineni@nvidia.com/T/#mfa8e2a5490f275cfecb2e93473c24f35db7adcaf
+    "or something like that."
 
-I have made the change of replacing mt_next() with mt_find() in irq_find_next_irq() function.
-  
-static unsigned int irq_find_next_irq(unsigned int offset)
-{
-         unsigned long index = offset;
-         struct irq_desc *desc = mt_find(&sparse_irqs, &index, nr_irqs);
+which means that it's a suggestion and not claiming that it is in any
+way correct.
 
-         return desc ? irq_desc_get_irq(desc) : nr_irqs;
-}
+It does not mean that you should copy it verbatim and assume that it is
+correct. It means that if you pick that suggestion up it's your
+responsibility to thoroughly understand and test the code you submit,
+no?
 
--Shanker
+That has nothing to do with familiarity vs. the maple tree. I'm neither
+familiar with the maple tree and all I did was reading through the
+documentation, which is pretty well done, except for that tiny
+documentation error vs. the return value of mt_next().
+
+It's a simple question of engineering principles:
+
+     "correctness first" vs. "works for me".
+
+> I am looking for your guidance to address the issue with the iterator
+
+You must be kidding.
+
+  1) You got 90% of the solution on a silber tablet
+
+  2) You failed to understand and test the stuff you submitted
+
+  3) You ignored the bug report. Someone else debugged the fallout and
+     explained where and what the problem is.
+
+  4) Now you ask that someone else goes and reads the maple tree
+     documentation for you to find the proper function to use.  So that
+     you can go and blindly apply the change and then go back to #2.
+
+I'm really happy to help and guide people, but what you are asking for
+is that I do your homework completely. Seriously?
+
+> if not possible can we increase NR_IRQS for ARM64 arch.
+
+Definitely not. The maple tree conversion is the right thing to do and
+fixing the issue at hand is definitely not rocket science.
+
+I'm pretty sure that it is about 3 lines of change to make it work. Plus
+some polishing afterwards to make it palatable.
+
+Thanks,
+
+        tglx
+
+
