@@ -1,43 +1,42 @@
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D48CC8F43
-	for <oe-lkp@lists.linux.dev>; Wed, 10 May 2023 14:41:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D17CC8C1B
+	for <oe-lkp@lists.linux.dev>; Wed, 10 May 2023 14:49:12 +0000 (UTC)
 From: Thomas Gleixner <tglx@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1683729670;
+	s=2020; t=1683730150;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=x2Qh6i4Y+AB0pDG6u/iYkTlhIK7xQT7b36qrwW0oarA=;
-	b=3uewY1C7KOXhSuvl1De6gi9NZzV1cOm2flGjELQem0gRhXBtDrycninQeL2Hb5GoZqUghu
-	Q3oIOJ7LuWlrUZNJb49WBmLVqxGGRRjwEdJqXXKyJwISvxUY15uqXaksugkuxxtHJ6zMkN
-	qB3Kw9vI9J5XN4gkEkMuH8o6dC7z32+ZO14zUMnO7GzPFU30ia2QjdVLbRcAcdCSNvOpf6
-	RHBxQDn2l3AhPhbwQgsCaQDWTN6dFl0OvydSLDvQ31SB+gUn32Bn72ZPdvrSUEOAtng7Nw
-	vdDW5yBX+VyAiaqI1rT2Zuas5x/ecR2IGvrAWtEjjMrtc5fCjrNoOer2NdkeJA==
+	bh=t4PYrEGEMOXxEV1AQsfzfB+2VLVGomw+1pc/feFlh8k=;
+	b=I58W9uwEUu+oijCma024t84oIIWSBKw+u1WidIGL+32fFMRJ9FuTX91aLf1APgNOZAk61G
+	xYlXRSEjM88VmlrFrl6deXwDoliC83OY8iOOaxB466V4LtkSNBuLoEi1CiuZKThtxqWFeo
+	HPn7qy76FP63mrcv9Ju58gHyIbl6rIlmXyzo17ZRGy+nTdewOsuYgZ9P61IlowH/RWdJmh
+	B4Ma+SzcYh+H2cvj9eHjzkVXMbIOLp0gR8ZG4ZWPJAn7YOyBV+7lnbutuRV5bzHSY/526/
+	J0WspvheJfugFVOqMb5ERXRzehSHELup2U/ZBhHH5qol9t3ca340aEbDYV03yQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1683729670;
+	s=2020e; t=1683730150;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=x2Qh6i4Y+AB0pDG6u/iYkTlhIK7xQT7b36qrwW0oarA=;
-	b=trce9v7ndgkCG97sqWC7ONvp59REw9dhfEULHP6zIDcTMl2qCslDv1Sgd1Z9B61gH70GKw
-	U2qDk7+OkSfqxbAw==
-To: Yujie Liu <yujie.liu@intel.com>
-Cc: Shanker Donthineni <sdonthineni@nvidia.com>, oe-lkp@lists.linux.dev,
- lkp@intel.com, linux-kernel@vger.kernel.org, Marc Zyngier
- <maz@kernel.org>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
- Michael
- Walle <michael@walle.cc>, Vikram Sethi <vsethi@nvidia.com>
+	bh=t4PYrEGEMOXxEV1AQsfzfB+2VLVGomw+1pc/feFlh8k=;
+	b=rJeZ6FMWzGCVxkB5c5jXVdpdLSCmGVDQ4Zx/cp4cgm0YiJ57TzaoRD237GTvkoKxGwi8ll
+	RytN5awKpztnwhDg==
+To: Shanker Donthineni <sdonthineni@nvidia.com>
+Cc: Yujie Liu <yujie.liu@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com,
+ linux-kernel@vger.kernel.org, Marc Zyngier <maz@kernel.org>, Sebastian
+ Andrzej Siewior <bigeasy@linutronix.de>, Michael Walle <michael@walle.cc>,
+ Vikram Sethi <vsethi@nvidia.com>
 Subject: Re: [PATCH v3 3/3] genirq: Use the maple tree for IRQ descriptors
  management
-In-Reply-To: <ZFtGvfDFLyHeFVFH@yujie-X299>
+In-Reply-To: <87ttwkxn96.ffs@tglx>
 References: <202304251035.19367560-yujie.liu@intel.com>
  <87a5yuzvzd.ffs@tglx> <ZEsiYbi8dorXTI5t@yujie-X299> <877ctw5mdp.ffs@tglx>
  <ZFdbtipfTsIF0u6z@yujie-X299> <87mt2f2mhm.ffs@tglx>
- <ZFtGvfDFLyHeFVFH@yujie-X299>
-Date: Wed, 10 May 2023 16:41:09 +0200
-Message-ID: <87ttwkxn96.ffs@tglx>
+ <ZFtGvfDFLyHeFVFH@yujie-X299> <87ttwkxn96.ffs@tglx>
+Date: Wed, 10 May 2023 16:49:09 +0200
+Message-ID: <87r0roxmvu.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -46,30 +45,32 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain
 
-Yujie!
+Shanker!
 
-On Wed, May 10 2023 at 15:24, Yujie Liu wrote:
-> On Mon, May 08, 2023 at 11:36:37AM +0200, Thomas Gleixner wrote:
->> Ok. So one difference might be that a 64 bit kernel enables interrupt
->> rempping. Can you add 'intremap=off' to the kernel command line please?
->
-> Sorry, my previous info was incorrect.
->
-> The block/008 (do IO while hotplugging CPUs) failure also happens on a
-> 64-bit kernel no matter having 'intremap=off' or not, and persists when
-> tested against v6.3, but the warning in default_send_IPI_mask_logical
-> function is not triggered on a 64-bit kernel. Not sure if that function
-> is 32-bit specific since it is set in arch/x86/kernel/apic/probe_32.c.
+On Wed, May 10 2023 at 16:41, Thomas Gleixner wrote:
+> On Wed, May 10 2023 at 15:24, Yujie Liu wrote:
+> I decoded it by now and that maple_tree conversion is the culprit. It
+> broke irq_get_next_irq() which is used during hotplug. It misses every
+> other interrupt, so affinities are not fixed up.
 
-Ok. That makes more sense as the issue is clearly independent of 32 or
-64 bit.
+I'm seriously grumpy. You throw that untested stuff over the fence,
+pester me about merging it and then ignore the fallout.
 
-I decoded it by now and that maple_tree conversion is the culprit. It
-broke irq_get_next_irq() which is used during hotplug. It misses every
-other interrupt, so affinities are not fixed up.
+This breaks cpuhotplug, debugfs, /proc/stat, x86/IOAPIC and some more.
 
-Please ignore that series.
+It's not asked too much that if you change an iterator implementation to
+validate that the outcome is still the same on the usage sites.
 
-Thanks a lot for your help!
+That change has never seen CPU hotplug testing. It reproduces
+instantaneously in a VM even without running blktest.
 
-       tglx
+I grant you that the documentation of mt_next() is incorrect, but that's
+absolutely no excuse for not testing such a fundamental change at
+all. It's neither an excuse for ignoring the fallout and wasting other
+peoples time.
+
+I'm dropping this from my to-merge list.
+
+Yours grumpy
+
+      Thomas
