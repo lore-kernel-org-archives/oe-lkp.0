@@ -1,117 +1,207 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DF9E14A81
-	for <oe-lkp@lists.linux.dev>; Wed, 10 May 2023 19:12:06 +0000 (UTC)
-From: Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1683745923;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=/MECbkgCGOoBuvWtbOq2MxOu4fITVWEjEY+BBqAF9ns=;
-	b=ffQ9fl3MaMTDG2AfJn3s0Hg+wrzUBDxCiJhn7ptHhlD3kBqhQNZ+u8taPzbQz/MBMGvWc9
-	mYIczIfyPbP1YPZoHjbqNLPHGm7v88AWqvHoAmon3XZhtiLE9knDAj+y14BOeza7RPOmN/
-	7elzRdT/aZLaluD1zGDW2M1/CiRs7H5Hm/cabxFX+esVHLVI+WnsRRmeEYGmu1pvUXShJh
-	ExDfLZjWaGY68GPIC6zaUUX1f699sEYhdBKX7KS/kKhTuIjWiHpH93jgCzDBpI4ll7x9PB
-	UmofVWYNcwDeY6GiZmxJN2JODggkR7hQ4aQNTFbNGZv3Knlr3QfHdkE7UKbb8g==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1683745923;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=/MECbkgCGOoBuvWtbOq2MxOu4fITVWEjEY+BBqAF9ns=;
-	b=X4nOfMSYbZJkbpGd2m7OBEYGn2P8QP4+/B1iFgR2q7AgEF+4m0+jXgpEnhqFVTGaKYgqzZ
-	cfTAyfqD2ZApXaCQ==
-To: Shanker Donthineni <sdonthineni@nvidia.com>
-Cc: Yujie Liu <yujie.liu@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com,
- linux-kernel@vger.kernel.org, Marc Zyngier <maz@kernel.org>, Sebastian
- Andrzej Siewior <bigeasy@linutronix.de>, Michael Walle <michael@walle.cc>,
- Vikram Sethi <vsethi@nvidia.com>
-Subject: Re: [PATCH v3 3/3] genirq: Use the maple tree for IRQ descriptors
- management
-In-Reply-To: <e1c50a59-f85a-02bc-6b48-fceaa390b2ad@nvidia.com>
-References: <202304251035.19367560-yujie.liu@intel.com>
- <87a5yuzvzd.ffs@tglx> <ZEsiYbi8dorXTI5t@yujie-X299> <877ctw5mdp.ffs@tglx>
- <ZFdbtipfTsIF0u6z@yujie-X299> <87mt2f2mhm.ffs@tglx>
- <ZFtGvfDFLyHeFVFH@yujie-X299> <87ttwkxn96.ffs@tglx> <87r0roxmvu.ffs@tglx>
- <e1c50a59-f85a-02bc-6b48-fceaa390b2ad@nvidia.com>
-Date: Wed, 10 May 2023 21:12:02 +0200
-Message-ID: <87lehwxapp.ffs@tglx>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3A0B21CC1
+	for <oe-lkp@lists.linux.dev>; Wed, 10 May 2023 22:00:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F02CC4339B;
+	Wed, 10 May 2023 22:00:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1683756017;
+	bh=1MHQpmGZcXSSS+kzDgHs6bDhpvIk3cK9wU4y4fA2vZs=;
+	h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+	b=qWYQ47Io/qPOgqN0ky0IoAjCzxsZcxPsr2qwlvGki94ljhao3wyplrff79ifW9EOO
+	 M4+KLnnKzFOmUQhseAMwH1gM26TyPd+h3Ougvw+q9SCEJQDYk/7sLsez3xqDF6emn2
+	 yBmEot/WhP3qPjYINHvqX4u61WBYUm1oTIx2Ybpqrb8g/1CoQsySGlip8WF6Pii4MT
+	 Z9gttlwrnMWqSIXsKOMkFNskF4AJAQqz+PV7btH39P109jfFDIb4M8TE+tNBkLMRYF
+	 tQuc1yZ04wXMDuDmPjUDiuBpVb8OQTNAzmR46pHMyX2NMG+LHf3fg+5oacwnVv0FXS
+	 OwFlMuVVD8ieg==
+Message-ID: <d80b180a569a9f068d3a2614f062cfa3a78af5a6.camel@kernel.org>
+Subject: Re: [linus:master] [tpm, tpm_tis] e644b2f498: RIP:acpi_safe_halt
+From: Jarkko Sakkinen <jarkko@kernel.org>
+To: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org, 
+	Michael =?ISO-8859-1?Q?Niew=F6hner?=
+	 <linux@mniewoehner.de>, linux-integrity@vger.kernel.org
+Date: Thu, 11 May 2023 01:00:13 +0300
+In-Reply-To: <202305041325.ae8b0c43-yujie.liu@intel.com>
+References: <202305041325.ae8b0c43-yujie.liu@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.48.0-1 
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
 
-Shanker!
+Hi Lino,
 
-On Wed, May 10 2023 at 10:19, Shanker Donthineni wrote:
-> Apologies for my lack of familiarity with the maple tree data structure and
-> not testing all functions. I received advice from the review comments below
-> regarding the iterator.
->
-> https://lore.kernel.org/linux-arm-kernel/875ydej9ur.ffs@tglx/
->
-> static unsigned int irq_find_next_irq(unsigned int offset)
-> {
->          MA_STATE(mas, &sparse_irqs, offset, nr_irqs);
->          struct irq_desc *desc = mas_next(&mas, nr_irqs);
->
->          return desc ? irq_desc_get_irq(desc) : nr_irqs;
-> }
+Have you had time to peek into this? I just noticed the email, just
+asking if some findings have been already made or not.
 
-You gracefully omitted what I wrote below this:
+BR, Jarkko
 
-    "or something like that."
-
-which means that it's a suggestion and not claiming that it is in any
-way correct.
-
-It does not mean that you should copy it verbatim and assume that it is
-correct. It means that if you pick that suggestion up it's your
-responsibility to thoroughly understand and test the code you submit,
-no?
-
-That has nothing to do with familiarity vs. the maple tree. I'm neither
-familiar with the maple tree and all I did was reading through the
-documentation, which is pretty well done, except for that tiny
-documentation error vs. the return value of mt_next().
-
-It's a simple question of engineering principles:
-
-     "correctness first" vs. "works for me".
-
-> I am looking for your guidance to address the issue with the iterator
-
-You must be kidding.
-
-  1) You got 90% of the solution on a silber tablet
-
-  2) You failed to understand and test the stuff you submitted
-
-  3) You ignored the bug report. Someone else debugged the fallout and
-     explained where and what the problem is.
-
-  4) Now you ask that someone else goes and reads the maple tree
-     documentation for you to find the proper function to use.  So that
-     you can go and blindly apply the change and then go back to #2.
-
-I'm really happy to help and guide people, but what you are asking for
-is that I do your homework completely. Seriously?
-
-> if not possible can we increase NR_IRQS for ARM64 arch.
-
-Definitely not. The maple tree conversion is the right thing to do and
-fixing the issue at hand is definitely not rocket science.
-
-I'm pretty sure that it is about 3 lines of change to make it work. Plus
-some polishing afterwards to make it palatable.
-
-Thanks,
-
-        tglx
-
+On Thu, 2023-05-04 at 14:12 +0800, kernel test robot wrote:
+> Hello,
+>=20
+> kernel test robot noticed "RIP:acpi_safe_halt" on:
+>=20
+> commit: e644b2f498d297a928efcb7ff6f900c27f8b788e ("tpm, tpm_tis: Enable i=
+nterrupt test")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>=20
+> [test failed on linux-next/master 84e2893b4573da3bc0c9f24e2005442e420e383=
+1]
+>=20
+> in testcase: stress-ng
+> version: stress-ng-x86_64-0.15.04-1_20230427
+> with following parameters:
+>=20
+> 	nr_threads: 100%
+> 	disk: 1HDD
+> 	testtime: 60s
+> 	class: interrupt
+> 	test: signest
+> 	cpufreq_governor: performance
+>=20
+> compiler: gcc-11
+> test machine: 64 threads 2 sockets Intel(R) Xeon(R) Gold 6346 CPU @ 3.10G=
+Hz (Ice Lake) with 256G memory
+>=20
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+>=20
+>=20
+> If you fix the issue, kindly add following tag
+> > Reported-by: kernel test robot <yujie.liu@intel.com>
+> > Link: https://lore.kernel.org/oe-lkp/202305041325.ae8b0c43-yujie.liu@in=
+tel.com
+>=20
+>=20
+> kern  :warn  : [   26.609994] CPU: 21 PID: 0 Comm: swapper/21 Not tainted=
+ 6.3.0-00022-ge644b2f498d2 #1
+> kern  :warn  : [   26.609994] Hardware name: Inspur NF5180M6/NF5180M6, BI=
+OS 06.00.04 04/12/2022
+> kern  :warn  : [   26.609994] Call Trace:
+> kern  :warn  : [   26.609994]  <IRQ>
+> kern :warn : [   26.609994] dump_stack_lvl (lib/dump_stack.c:107 (discrim=
+inator 1))
+> kern :warn : [   26.609994] __report_bad_irq (kernel/irq/spurious.c:214)
+> kern :warn : [   26.609994] note_interrupt (kernel/irq/spurious.c:423)
+> kern :warn : [   26.609994] handle_irq_event (kernel/irq/handle.c:198 ker=
+nel/irq/handle.c:210)
+> kern :warn : [   26.609994] handle_fasteoi_irq (kernel/irq/chip.c:661 ker=
+nel/irq/chip.c:716)
+> kern :warn : [   26.609994] __common_interrupt (include/linux/irqdesc.h:1=
+58 arch/x86/kernel/irq.c:231 arch/x86/kernel/irq.c:250)
+> kern :warn : [   26.609994] common_interrupt (arch/x86/kernel/irq.c:240 (=
+discriminator 14))
+> kern  :warn  : [   26.609994]  </IRQ>
+> kern  :warn  : [   26.713811]  <TASK>
+> kern :warn : [   26.713811] asm_common_interrupt (arch/x86/include/asm/id=
+tentry.h:636)
+> kern :warn : [   26.713811] RIP: 0010:acpi_safe_halt (arch/x86/include/as=
+m/irqflags.h:37 arch/x86/include/asm/irqflags.h:72 drivers/acpi/processor_i=
+dle.c:113)
+> kern :warn : [ 26.713811] Code: 90 90 90 90 90 90 90 90 90 90 90 90 90 90=
+ 90 65 48 8b 04 25 80 ce 02 00 48 8b 00 a8 08 75 0c 66 90 0f 00 2d f1 dc 38=
+ 00 fb f4 <fa> c3 cc cc cc cc 66 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 =
+90
+> All code
+> =3D=3D=3D=3D=3D=3D=3D=3D
+>    0:   90                      nop
+>    1:   90                      nop
+>    2:   90                      nop
+>    3:   90                      nop
+>    4:   90                      nop
+>    5:   90                      nop
+>    6:   90                      nop
+>    7:   90                      nop
+>    8:   90                      nop
+>    9:   90                      nop
+>    a:   90                      nop
+>    b:   90                      nop
+>    c:   90                      nop
+>    d:   90                      nop
+>    e:   90                      nop
+>    f:   65 48 8b 04 25 80 ce    mov    %gs:0x2ce80,%rax
+>   16:   02 00
+>   18:   48 8b 00                mov    (%rax),%rax
+>   1b:   a8 08                   test   $0x8,%al
+>   1d:   75 0c                   jne    0x2b
+>   1f:   66 90                   xchg   %ax,%ax
+>   21:   0f 00 2d f1 dc 38 00    verw   0x38dcf1(%rip)        # 0x38dd19
+>   28:   fb                      sti
+>   29:   f4                      hlt
+>   2a:*  fa                      cli             <-- trapping instruction
+>   2b:   c3                      ret
+>   2c:   cc                      int3
+>   2d:   cc                      int3
+>   2e:   cc                      int3
+>   2f:   cc                      int3
+>   30:   66 66 2e 0f 1f 84 00    data16 cs nopw 0x0(%rax,%rax,1)
+>   37:   00 00 00 00
+>   3b:   0f 1f 40 00             nopl   0x0(%rax)
+>   3f:   90                      nop
+>=20
+> Code starting with the faulting instruction
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>    0:   fa                      cli
+>    1:   c3                      ret
+>    2:   cc                      int3
+>    3:   cc                      int3
+>    4:   cc                      int3
+>    5:   cc                      int3
+>    6:   66 66 2e 0f 1f 84 00    data16 cs nopw 0x0(%rax,%rax,1)
+>    d:   00 00 00 00
+>   11:   0f 1f 40 00             nopl   0x0(%rax)
+>   15:   90                      nop
+> kern  :warn  : [   26.713811] RSP: 0000:ffa00000003cfe68 EFLAGS: 00000246
+> kern  :warn  : [   26.713811] RAX: 0000000000004000 RBX: ff11002088776400=
+ RCX: 00000000000000a0
+> kern  :warn  : [   26.713811] RDX: ff11003fc2d40000 RSI: ff110020896fbc00=
+ RDI: ff110020896fbc64
+> kern  :warn  : [   26.713811] RBP: 0000000000000001 R08: ffffffff82cc6620=
+ R09: 0000000000000008
+> kern  :warn  : [   26.713811] R10: 0000000000000006 R11: 0000000000000006=
+ R12: 0000000000000001
+> kern  :warn  : [   26.713811] R13: ffffffff82cc66a0 R14: 0000000000000001=
+ R15: 0000000000000000
+> kern  :warn  : [   26.713811] ? ct_kernel_exit+0x6b/0xb0
+> kern :warn : [   26.713811] acpi_idle_enter (drivers/acpi/processor_idle.=
+c:713 (discriminator 3))
+> kern :warn : [   26.713811] cpuidle_enter_state (drivers/cpuidle/cpuidle.=
+c:267)
+> kern :warn : [   26.713811] cpuidle_enter (drivers/cpuidle/cpuidle.c:390)
+> kern :warn : [   26.713811] cpuidle_idle_call (kernel/sched/idle.c:219)
+> kern :warn : [   26.713811] do_idle (kernel/sched/idle.c:284)
+> kern :warn : [   26.713811] cpu_startup_entry (kernel/sched/idle.c:378 (d=
+iscriminator 1))
+> kern :warn : [   26.713811] start_secondary (arch/x86/kernel/smpboot.c:19=
+8 arch/x86/kernel/smpboot.c:232)
+> kern :warn : [   26.713811] secondary_startup_64_no_verify (arch/x86/kern=
+el/head_64.S:358)
+> kern  :warn  : [   26.713811]  </TASK>
+> kern  :err   : [   26.713811] handlers:
+> kern :err : [   26.713811] irq_default_primary_handler (kernel/irq/manage=
+.c:1027)
+> kern :warn : [   26.713811] threaded tis_int_handler (drivers/char/tpm/tp=
+m_tis_core.c:756)
+>=20
+>=20
+> To reproduce:
+>=20
+>         git clone https://github.com/intel/lkp-tests.git
+>         cd lkp-tests
+>         sudo bin/lkp install job.yaml           # job file is attached in=
+ this email
+>         bin/lkp split-job --compatible job.yaml # generate the yaml file =
+for lkp run
+>         sudo bin/lkp run generated-yaml-file
+>=20
+>         # if come across any failure that blocks the test,
+>         # please remove ~/.lkp and /lkp dir to run from a clean state.
+>=20
+>=20
 
