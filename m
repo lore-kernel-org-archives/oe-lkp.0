@@ -1,207 +1,199 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2062.outbound.protection.outlook.com [40.107.244.62])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3A0B21CC1
-	for <oe-lkp@lists.linux.dev>; Wed, 10 May 2023 22:00:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F02CC4339B;
-	Wed, 10 May 2023 22:00:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1683756017;
-	bh=1MHQpmGZcXSSS+kzDgHs6bDhpvIk3cK9wU4y4fA2vZs=;
-	h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-	b=qWYQ47Io/qPOgqN0ky0IoAjCzxsZcxPsr2qwlvGki94ljhao3wyplrff79ifW9EOO
-	 M4+KLnnKzFOmUQhseAMwH1gM26TyPd+h3Ougvw+q9SCEJQDYk/7sLsez3xqDF6emn2
-	 yBmEot/WhP3qPjYINHvqX4u61WBYUm1oTIx2Ybpqrb8g/1CoQsySGlip8WF6Pii4MT
-	 Z9gttlwrnMWqSIXsKOMkFNskF4AJAQqz+PV7btH39P109jfFDIb4M8TE+tNBkLMRYF
-	 tQuc1yZ04wXMDuDmPjUDiuBpVb8OQTNAzmR46pHMyX2NMG+LHf3fg+5oacwnVv0FXS
-	 OwFlMuVVD8ieg==
-Message-ID: <d80b180a569a9f068d3a2614f062cfa3a78af5a6.camel@kernel.org>
-Subject: Re: [linus:master] [tpm, tpm_tis] e644b2f498: RIP:acpi_safe_halt
-From: Jarkko Sakkinen <jarkko@kernel.org>
-To: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org, 
-	Michael =?ISO-8859-1?Q?Niew=F6hner?=
-	 <linux@mniewoehner.de>, linux-integrity@vger.kernel.org
-Date: Thu, 11 May 2023 01:00:13 +0300
-In-Reply-To: <202305041325.ae8b0c43-yujie.liu@intel.com>
-References: <202305041325.ae8b0c43-yujie.liu@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.48.0-1 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C534371
+	for <oe-lkp@lists.linux.dev>; Thu, 11 May 2023 06:45:03 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AfBirSseJJbIKG1Qv5lapTyhJRdztmW49EScd7yWXwuVRItR+/Qk75QbT1HS5cJAaYWT14+l/i+FeAPsZcfnKgSGz0pWuRoLI9eXLhZiEEmmUwQT+w+TvcUzDQaSIlIX8DFzu3gigHABF9NWyNUaoIq+BoRLtFzC18zoR/J6FqEJ52dhDeL/5ro84GIaezVpmpQjwkeNnIroibDBKLBz0peLYvQPM75LXIVqbEK1WDHRD4dcYcPbZGi+c7wMT9kh5mcSs5Xot9c+GnJ2lTOw8gYoEAD6Lig1bvTh0vHtoDU8/aJpZVwUIqswzsbPLxTsOnvmcXO/XUHhWkZLgXkE6A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=rckVjdimZg4WdPtDOQrQYZPpJIeTUUo9G0aFEZEr9NQ=;
+ b=jA7mBNwwZOLWAT1FJWsON10DZCfmx4sea+KOKyuE1YAagGI1ft+wbfVWGDjWWedPoW/IVxsSpH+MHfiOPA7MyR2ups3cGxeQLCLMUxAYca/gIvfhIlRdzwfiEfUYtDyNhR0gMCddsvVAIwQwOIJZrzFRrBJtrwn2zrzH08hniDYNtbSaeSC1PZMdo+QCo5WX93oMvEhxmVTF3Sx96TZ7AUukEaaZtUcyV8mZFAiXLw93LPYwOSrh8YkTIhtSeFTcxXx7d16Vzng5N9Y1dQZLj5mjZU0E+nzZPpYI+Ase8lUavKGIWKkLcoP2Rvp/gftbXpOShS+vE7Fgk85YngjeNw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rckVjdimZg4WdPtDOQrQYZPpJIeTUUo9G0aFEZEr9NQ=;
+ b=Qo1/6j8Fd7p876rTGqd+jUXN8RmXXwctMBODYz1BUvT7rx0zV7d92OLJ5tEK8XqUofQ3cvnmY5NNrTtCmTSi17tRYYen9R1/uFnIwwj6uOI3zwYs/psSkfxxIEaXc1h+J0k6VhZrftT90aP6EiGGDCexEBfa0Q880I+rFvfKdS4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from MN2PR12MB3008.namprd12.prod.outlook.com (2603:10b6:208:c8::17)
+ by BN9PR12MB5177.namprd12.prod.outlook.com (2603:10b6:408:11a::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.21; Thu, 11 May
+ 2023 06:44:59 +0000
+Received: from MN2PR12MB3008.namprd12.prod.outlook.com
+ ([fe80::13fd:6611:29cf:a351]) by MN2PR12MB3008.namprd12.prod.outlook.com
+ ([fe80::13fd:6611:29cf:a351%4]) with mapi id 15.20.6363.032; Thu, 11 May 2023
+ 06:44:59 +0000
+Message-ID: <db995c11-08ba-9abf-812f-01407f70a5d4@amd.com>
+Date: Thu, 11 May 2023 12:14:46 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.1
+Subject: Re: [linus:master] [sched/numa] fc137c0dda:
+ autonuma-benchmark.numa01.seconds 118.9% regression
+Content-Language: en-US
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Mel Gorman <mgorman@techsingularity.net>,
+ David Hildenbrand <david@redhat.com>, Disha Talreja
+ <dishaa.talreja@amd.com>, Ingo Molnar <mingo@redhat.com>,
+ Mike Rapoport <rppt@kernel.org>, linux-mm@kvack.org, ying.huang@intel.com,
+ feng.tang@intel.com, fengwei.yin@intel.com, yu.c.chen@intel.com
+References: <202305101547.20f4c32a-oliver.sang@intel.com>
+From: Raghavendra K T <raghavendra.kt@amd.com>
+In-Reply-To: <202305101547.20f4c32a-oliver.sang@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BMXPR01CA0088.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:b00:54::28) To MN2PR12MB3008.namprd12.prod.outlook.com
+ (2603:10b6:208:c8::17)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MN2PR12MB3008:EE_|BN9PR12MB5177:EE_
+X-MS-Office365-Filtering-Correlation-Id: c933b0f8-12ba-438d-a5e8-08db51eb3d59
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	eE5/iVnGIBnLWilOvIcA/FNSeVXZOSvVPRqExY4t8MxGk90pa0wWkLyIyeKx6NaZ58G2UlW3u5+M0dlFBTmL2kD1giSsVrTePzvcNeQJ2ggxrZ4fMcY2kXgZrpqhl7eaUy54yEZm4eQRBloYIM17ZZ+J+VBBT5AWeLIngLBVIbgKdJoApYtwXWyPRDA5Iox4a/QboXQ8GduePC9AbFx8X71naB0IgIdzLpGIjhviyRyijZ/HfpzmEwUV67HKuFGn2di4XvQ8vgf+LP9CdtQfBRqw8PfsXasduwgpcuzTb5j52FQmh3XmRa4v5WSOoMkN0Z5HWH5RwlAg7Qw/UbhtjcHqiRDlWjhIja8MRKGPF5FKz1oI7Pno1UAQU0ADkbIjdSVWLYthpUac8Bfs4QILiQGeqatGzn9kp/WCKMckvgcwR1j4KnamtVaZfZ9mzXCVacqNHbIBmjiezY0SVm5zQxIqo7ndvYVnJXEjz/y6UMuri3+uXgpn59uuMz5CKdEMgyGiScu/0bfj01b6rvta5dLTzKCcD5zxKE5cLy3mwB4ecOEXnsfOSS0kuzaa+SC4+NeJggwnGd/JDTMl5od4VXGFkXA1NFkFVLpHf2+dkKD18pzLTrifjpuYWbeggeafVGxUlQgUIcJ8576QHPVyrO6ihryPZWU/1T0x+lav1p7AagA0Rxzk4MnKsU0/CM8L
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB3008.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(136003)(376002)(346002)(396003)(39860400002)(451199021)(31686004)(478600001)(6916009)(4326008)(66946007)(66556008)(6486002)(66476007)(966005)(316002)(54906003)(36756003)(31696002)(6666004)(2616005)(26005)(6512007)(53546011)(6506007)(186003)(83380400001)(7416002)(2906002)(8676002)(5660300002)(8936002)(41300700001)(38100700002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?L1NYSmp3K0FKbW42TXpHMExyOG83SWdHY0JjektwcFpNZ0hPdmdkaytlVm5X?=
+ =?utf-8?B?bk0rWXJ1SEZmcE8vZEVMYmRrQlNmRGhtaWN3K0ExNGNsYW5lWnd6UEI0dGMr?=
+ =?utf-8?B?NG1vV0NIUGJlRWF4aTVubDdraldkKzcxL3I3NVlmcU9vU0lXK2tnMXd4YmFL?=
+ =?utf-8?B?VmxVM2ZuV3RSMDhySXpYTm9HMzQzdE1KcmVLaXk5SExjY1k2MXhFMnA4UzdP?=
+ =?utf-8?B?UldveVV6bzA1YkpQeEVUWkYxN2F2aitncUZGK1k5cmtaL1JnK1BvbFFiTTVW?=
+ =?utf-8?B?aGVHSENqeXVBMEFoalVGNFEwOFZBVmpQOG9idWxDKzIrc2svbElnaVVYVjFk?=
+ =?utf-8?B?Mmk1bURxSXp3eE5mWlNnRHZwNGJFckZvOFlMNWhHdnIzWWYrY0lMdUhqTVlj?=
+ =?utf-8?B?WkFaZ2RCOVpJYU96WThHbTlROC9PeVJVaXh0a3N6aGdwekN0OWQwSGJrWGt4?=
+ =?utf-8?B?a01FU2FvMDRRK09zbDZ3dmhtTzFhQjA5T2ljWGRTTEhxS2Jybm1RSXhCbDlF?=
+ =?utf-8?B?YjM1aUdiVkFCRTh1RzNkTCtZR09mMkxUVzZNUVRtaW9wa0JYdHVJaXdBaHNK?=
+ =?utf-8?B?R2h2QVJrYWdaY2RzTG5KNEI3dkR4Kzc4RFlTczNjY1RzTm5Rd1U4REF4NWF0?=
+ =?utf-8?B?Ujc3K0JuaEdnR3VHMHJSa3phVTUzTnJaSkdrM0gzekpOQkhVY0dZT1Jic0Vj?=
+ =?utf-8?B?eHg1LzZ0V01BK0gvQWRuTDMrUG9hODJJS0VteGJJWUN0YkhkN1hzQVRTdFF6?=
+ =?utf-8?B?YVRzTW8vU3c5TC9rNldhYzFzcjgxR2FnWDcrQ0NDdmJjcTBaQzU1YXc2QjFH?=
+ =?utf-8?B?RlpQdDZ0UUpBd2VZOTljTDZzZlhXWmJwcmMyZTNuQitxRVdZRzdiVmFrQUJ0?=
+ =?utf-8?B?MndYZE5WMDJsaTZSb1dsT3lWMGhJQndGZU1Cd0xPMHIzaDV3OHF0Z29CMFJa?=
+ =?utf-8?B?Sk9CRWtBZjRDa2JneUh4UlkyVldBR3dYakpiczBzT2habWdvZFUvZ1kyTG8x?=
+ =?utf-8?B?ZjFzYUZTNnpka2VwUFR5RjN3MjdFMUhONXl1VXk4QmczM254VDkwYS9ieWor?=
+ =?utf-8?B?Q1hkczJCYVNWbmlvRlhPdXhtNmczSEVNcXlhNVRIWENXaW9WQ0FQQWtUUVEx?=
+ =?utf-8?B?cDl1STZmSXpVU0pQTDVqNmZncTJkS0NyY1FFSjhXZVplcEFGdWdwUDZuSmVH?=
+ =?utf-8?B?N1Z1d3haUzVZY3h1cm1nc3FKWjdodUxMZWgyRC9IQUJjRXhtR2tPSVFkcm55?=
+ =?utf-8?B?alg0TGg1OVhBWExtcGFlSTE0VVdtekV5WEMxNGMzalJtSGE3N3A4N29naFpM?=
+ =?utf-8?B?WFYremxLL2xZSzRzVXR6Y1lFM2VzWGU5U01tME55R0U1K3lhbWdjNEhqMkNS?=
+ =?utf-8?B?ZDFBZGs1R0FIYkFUTStXVkJvMVJFaVJyQWxkMEs4dEp6cTZJVlNyMnhPZjFo?=
+ =?utf-8?B?cnYwL0syTDMrdm5LU2RSV2hxNVVVSzQvbkFOVzBpL3NrSUlHODJhYWNKcDBK?=
+ =?utf-8?B?dFVoZHhzOXBmcVZUYmFrUGNtM3p4NUc2VGhGZWJMdUdDcEZud3VEZ250cTR3?=
+ =?utf-8?B?M1pJL1M5Qlg1UjhXRXB3NThld3Uvb2hKaUQyL2Z4bjVhSk10Y2krUk1HeTRn?=
+ =?utf-8?B?aXI4WnV3WDFEQUJNNnBVaWFqZGRkSUlwdGlKbGNPR2diSC81S2JsREMzVWZV?=
+ =?utf-8?B?QXpHOHRXK1huMVpzS3hWQlArMU5DSTk4Z1dsY29FMWFRMzJscFlOelZzdWhK?=
+ =?utf-8?B?OEZFajhPaFdNSUlNamFOTjhJT3kvcGxQNEtuanRsNWY0UTdDT2h1OVp6ejU0?=
+ =?utf-8?B?L1J4TWJRZHl5NWFPOFF2cjlBZDRMdlZmWEcwc08yZHNMaUtGNXFvUVdnaitJ?=
+ =?utf-8?B?cC9KY2lBMmJZSU9XRitTUDVIeTkzbmRNSVpZTjl4ZFZmNTVFaVpyZEF5dlNh?=
+ =?utf-8?B?TTc2aW5DRXFHanBLQkZncGZjbXlPcG01NWxNRVY2cWdiam5QZlR6WnByYzRS?=
+ =?utf-8?B?QzhNb1JRUmp5OVBjbXg0aDdPMFpwTWhqQzJqb2VNd0JudXNhMDU4dFRWOGtU?=
+ =?utf-8?B?MWhReUtGdEUxOFZaaHlvVEE1NE5wVmdoODhLUHRpVm04U0RPamp2VTFsQkp1?=
+ =?utf-8?Q?1OPl89v+2/JAeHBlsTbgY9EsR?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c933b0f8-12ba-438d-a5e8-08db51eb3d59
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB3008.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2023 06:44:59.4771
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Yr17QRAmEB0Jg06fgMsVX8QqmZwfnis9kNRUOIIkZiKsin6NbXvejYRIu0EeGEy4huoNIYN4JYtquo54X0o1ng==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5177
 
-Hi Lino,
-
-Have you had time to peek into this? I just noticed the email, just
-asking if some findings have been already made or not.
-
-BR, Jarkko
-
-On Thu, 2023-05-04 at 14:12 +0800, kernel test robot wrote:
+On 5/10/2023 1:25 PM, kernel test robot wrote:
+> 
+> 
 > Hello,
->=20
-> kernel test robot noticed "RIP:acpi_safe_halt" on:
->=20
-> commit: e644b2f498d297a928efcb7ff6f900c27f8b788e ("tpm, tpm_tis: Enable i=
-nterrupt test")
+> 
+> kernel test robot noticed a 118.9% regression of autonuma-benchmark.numa01.seconds on:
+> 
+> 
+> commit: fc137c0ddab29b591db6a091dc6d7ce20ccb73f2 ("sched/numa: enhance vma scanning logic")
 > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
->=20
-> [test failed on linux-next/master 84e2893b4573da3bc0c9f24e2005442e420e383=
-1]
->=20
-> in testcase: stress-ng
-> version: stress-ng-x86_64-0.15.04-1_20230427
-> with following parameters:
->=20
-> 	nr_threads: 100%
-> 	disk: 1HDD
-> 	testtime: 60s
-> 	class: interrupt
-> 	test: signest
+> 
+> testcase: autonuma-benchmark
+> test machine: 88 threads 2 sockets Intel(R) Xeon(R) Gold 6238M CPU @ 2.10GHz (Cascade Lake) with 128G memory
+> parameters:
+> 
+> 	iterations: 4x
+> 	test: numa02_SMT
 > 	cpufreq_governor: performance
->=20
-> compiler: gcc-11
-> test machine: 64 threads 2 sockets Intel(R) Xeon(R) Gold 6346 CPU @ 3.10G=
-Hz (Ice Lake) with 256G memory
->=20
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
->=20
->=20
-> If you fix the issue, kindly add following tag
-> > Reported-by: kernel test robot <yujie.liu@intel.com>
-> > Link: https://lore.kernel.org/oe-lkp/202305041325.ae8b0c43-yujie.liu@in=
-tel.com
->=20
->=20
-> kern  :warn  : [   26.609994] CPU: 21 PID: 0 Comm: swapper/21 Not tainted=
- 6.3.0-00022-ge644b2f498d2 #1
-> kern  :warn  : [   26.609994] Hardware name: Inspur NF5180M6/NF5180M6, BI=
-OS 06.00.04 04/12/2022
-> kern  :warn  : [   26.609994] Call Trace:
-> kern  :warn  : [   26.609994]  <IRQ>
-> kern :warn : [   26.609994] dump_stack_lvl (lib/dump_stack.c:107 (discrim=
-inator 1))
-> kern :warn : [   26.609994] __report_bad_irq (kernel/irq/spurious.c:214)
-> kern :warn : [   26.609994] note_interrupt (kernel/irq/spurious.c:423)
-> kern :warn : [   26.609994] handle_irq_event (kernel/irq/handle.c:198 ker=
-nel/irq/handle.c:210)
-> kern :warn : [   26.609994] handle_fasteoi_irq (kernel/irq/chip.c:661 ker=
-nel/irq/chip.c:716)
-> kern :warn : [   26.609994] __common_interrupt (include/linux/irqdesc.h:1=
-58 arch/x86/kernel/irq.c:231 arch/x86/kernel/irq.c:250)
-> kern :warn : [   26.609994] common_interrupt (arch/x86/kernel/irq.c:240 (=
-discriminator 14))
-> kern  :warn  : [   26.609994]  </IRQ>
-> kern  :warn  : [   26.713811]  <TASK>
-> kern :warn : [   26.713811] asm_common_interrupt (arch/x86/include/asm/id=
-tentry.h:636)
-> kern :warn : [   26.713811] RIP: 0010:acpi_safe_halt (arch/x86/include/as=
-m/irqflags.h:37 arch/x86/include/asm/irqflags.h:72 drivers/acpi/processor_i=
-dle.c:113)
-> kern :warn : [ 26.713811] Code: 90 90 90 90 90 90 90 90 90 90 90 90 90 90=
- 90 65 48 8b 04 25 80 ce 02 00 48 8b 00 a8 08 75 0c 66 90 0f 00 2d f1 dc 38=
- 00 fb f4 <fa> c3 cc cc cc cc 66 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 =
-90
-> All code
-> =3D=3D=3D=3D=3D=3D=3D=3D
->    0:   90                      nop
->    1:   90                      nop
->    2:   90                      nop
->    3:   90                      nop
->    4:   90                      nop
->    5:   90                      nop
->    6:   90                      nop
->    7:   90                      nop
->    8:   90                      nop
->    9:   90                      nop
->    a:   90                      nop
->    b:   90                      nop
->    c:   90                      nop
->    d:   90                      nop
->    e:   90                      nop
->    f:   65 48 8b 04 25 80 ce    mov    %gs:0x2ce80,%rax
->   16:   02 00
->   18:   48 8b 00                mov    (%rax),%rax
->   1b:   a8 08                   test   $0x8,%al
->   1d:   75 0c                   jne    0x2b
->   1f:   66 90                   xchg   %ax,%ax
->   21:   0f 00 2d f1 dc 38 00    verw   0x38dcf1(%rip)        # 0x38dd19
->   28:   fb                      sti
->   29:   f4                      hlt
->   2a:*  fa                      cli             <-- trapping instruction
->   2b:   c3                      ret
->   2c:   cc                      int3
->   2d:   cc                      int3
->   2e:   cc                      int3
->   2f:   cc                      int3
->   30:   66 66 2e 0f 1f 84 00    data16 cs nopw 0x0(%rax,%rax,1)
->   37:   00 00 00 00
->   3b:   0f 1f 40 00             nopl   0x0(%rax)
->   3f:   90                      nop
->=20
-> Code starting with the faulting instruction
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->    0:   fa                      cli
->    1:   c3                      ret
->    2:   cc                      int3
->    3:   cc                      int3
->    4:   cc                      int3
->    5:   cc                      int3
->    6:   66 66 2e 0f 1f 84 00    data16 cs nopw 0x0(%rax,%rax,1)
->    d:   00 00 00 00
->   11:   0f 1f 40 00             nopl   0x0(%rax)
->   15:   90                      nop
-> kern  :warn  : [   26.713811] RSP: 0000:ffa00000003cfe68 EFLAGS: 00000246
-> kern  :warn  : [   26.713811] RAX: 0000000000004000 RBX: ff11002088776400=
- RCX: 00000000000000a0
-> kern  :warn  : [   26.713811] RDX: ff11003fc2d40000 RSI: ff110020896fbc00=
- RDI: ff110020896fbc64
-> kern  :warn  : [   26.713811] RBP: 0000000000000001 R08: ffffffff82cc6620=
- R09: 0000000000000008
-> kern  :warn  : [   26.713811] R10: 0000000000000006 R11: 0000000000000006=
- R12: 0000000000000001
-> kern  :warn  : [   26.713811] R13: ffffffff82cc66a0 R14: 0000000000000001=
- R15: 0000000000000000
-> kern  :warn  : [   26.713811] ? ct_kernel_exit+0x6b/0xb0
-> kern :warn : [   26.713811] acpi_idle_enter (drivers/acpi/processor_idle.=
-c:713 (discriminator 3))
-> kern :warn : [   26.713811] cpuidle_enter_state (drivers/cpuidle/cpuidle.=
-c:267)
-> kern :warn : [   26.713811] cpuidle_enter (drivers/cpuidle/cpuidle.c:390)
-> kern :warn : [   26.713811] cpuidle_idle_call (kernel/sched/idle.c:219)
-> kern :warn : [   26.713811] do_idle (kernel/sched/idle.c:284)
-> kern :warn : [   26.713811] cpu_startup_entry (kernel/sched/idle.c:378 (d=
-iscriminator 1))
-> kern :warn : [   26.713811] start_secondary (arch/x86/kernel/smpboot.c:19=
-8 arch/x86/kernel/smpboot.c:232)
-> kern :warn : [   26.713811] secondary_startup_64_no_verify (arch/x86/kern=
-el/head_64.S:358)
-> kern  :warn  : [   26.713811]  </TASK>
-> kern  :err   : [   26.713811] handlers:
-> kern :err : [   26.713811] irq_default_primary_handler (kernel/irq/manage=
-.c:1027)
-> kern :warn : [   26.713811] threaded tis_int_handler (drivers/char/tpm/tp=
-m_tis_core.c:756)
->=20
->=20
-> To reproduce:
->=20
->         git clone https://github.com/intel/lkp-tests.git
->         cd lkp-tests
->         sudo bin/lkp install job.yaml           # job file is attached in=
- this email
->         bin/lkp split-job --compatible job.yaml # generate the yaml file =
-for lkp run
->         sudo bin/lkp run generated-yaml-file
->=20
->         # if come across any failure that blocks the test,
->         # please remove ~/.lkp and /lkp dir to run from a clean state.
->=20
->=20
+> 
+> 
+> In addition to that, the commit also has significant impact on the following tests:
+> 
+> +------------------+------------------------------------------------------------------------------------------------+
+> | testcase: change | autonuma-benchmark: autonuma-benchmark.numa01.seconds 39.3% regression                         |
+> | test machine     | 224 threads 2 sockets (Sapphire Rapids) with 256G memory                                       |
+> | test parameters  | cpufreq_governor=performance                                                                   |
+> |                  | iterations=4x                                                                                  |
+> |                  | test=numa02_SMT                                                                                |
+> +------------------+------------------------------------------------------------------------------------------------+
+> | testcase: change | autonuma-benchmark: autonuma-benchmark.numa01.seconds 48.9% regression                         |
+> | test machine     | 88 threads 2 sockets Intel(R) Xeon(R) Gold 6238M CPU @ 2.10GHz (Cascade Lake) with 128G memory |
+> | test parameters  | cpufreq_governor=performance                                                                   |
+> |                  | debug-setup=no-monitor                                                                         |
+> |                  | iterations=4x                                                                                  |
+> |                  | test=numa02_SMT                                                                                |
+> +------------------+------------------------------------------------------------------------------------------------+
+> 
+[...]
 
+Hello,
+
+Thanks for the detailed analysis. I have posted a RFC patch to address
+this issue [1]. (that patch needs windows = 0 initialized FYI if needs
+to be applied).  will be posting RFC V2 soon. Will add your reported-by
+to that patchset. But one thing to note is [1] will be bringing back
+*some* of the system overhead of vma scanning.
+
+Here are some observations/Clarifications on numa01 test:
+
+- numa01 benchmark improvements I got for numascan improvement patchset
+[2] were based on mmtests' numa01, lets call  mmtest_numa01.
+(some how this is not run in LKP ?)
+
+- lkp_numa01 = mmtests' numa01_THREAD_ALLOC case mentioned in the
+patch[1]
+
+With numa scan enhancement patches there is a huge improvement regarding
+system time overhead of vma scanning since we filter out scanning by
+tasks which have not accessed VMA. This has benefited mmtest_numa01
+
+However in case of lkp_numa01 we are observing that less PTE updates
+happening because of filtering. (we can say a corner case of disjoint
+set vma). This has caused regression you have reported.
+
+backup:
+----------
+lkp_numa01:
+3GB allocated memory that is distributed evenly to threads (24MB chunk).
+24MB is then bzeroed by each thread 1000 times
+mmtest_numa01:
+entire 3GB bzeroed by all threads 50 times
+
+[1]. 
+https://lore.kernel.org/lkml/cover.1683033105.git.raghavendra.kt@amd.com/
+
+[2] 
+https://lore.kernel.org/lkml/cover.1677672277.git.raghavendra.kt@amd.com/T/#t
+
+Thanks and Regards
+- Raghu
