@@ -1,114 +1,160 @@
-Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D60EB29A0
-	for <oe-lkp@lists.linux.dev>; Mon, 15 May 2023 08:40:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=RD5vUeFE3A5d4FsldbQHnKJtFa6t2QWFhZv+yAemSbs=; b=ehBz+j3ahy4u5PW4uxa2uyGNJo
-	EBFe6Q34nuEaAcRCI+tbeXc7I14zzi5e0u0+qZG7aqXj1MNfOu4KRMISLXOGqwnA5hH2j2eNrTkHu
-	uQvvK793POjWSxg49Bbe9Huea69FbJY6OWwQVhEIhB0v3ZFTua6hfvAi2N1O7XtMkMCq+hB7KHr6a
-	zLmj5NVEqXqcruefol8Zh/0kdINTJ9d0alQEcO5jwfieZwAbmNJOHWUD/XWacF58y3JIL6BVpFfeF
-	KdBkyA4si0Bd8nM250rxBdgOPlkLy7SXTJXCnNvdpv+s8tyg9C137AV50ShsToAwqJmtGHX2cwYVL
-	kPUWVCgg==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-	by desiato.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-	id 1pyTkW-00BQwB-2q;
-	Mon, 15 May 2023 08:40:09 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
-	(Client did not present a certificate)
-	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 9F4963001E4;
-	Mon, 15 May 2023 10:40:07 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-	id 69766202FCE90; Mon, 15 May 2023 10:40:07 +0200 (CEST)
-Date: Mon, 15 May 2023 10:40:07 +0200
-From: Peter Zijlstra <peterz@infradead.org>
-To: kernel test robot <yujie.liu@intel.com>
-Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-	oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-	linux-mm@kvack.org, ying.huang@intel.com, feng.tang@intel.com,
-	fengwei.yin@intel.com, aubrey.li@linux.intel.com,
-	yu.c.chen@intel.com, Aaron Lu <aaron.lu@intel.com>
-Subject: Re: [linus:master] [sched] af7f588d8f: will-it-scale.per_thread_ops
- -13.9% regression
-Message-ID: <20230515084007.GF4253@hirez.programming.kicks-ass.net>
-References: <202305151017.27581d75-yujie.liu@intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66B531C13
+	for <oe-lkp@lists.linux.dev>; Mon, 15 May 2023 11:14:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14982C4339E
+	for <oe-lkp@lists.linux.dev>; Mon, 15 May 2023 11:14:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1684149245;
+	bh=zNdkTUZ+kuUxeHz0Jq4U2DJqxokT3IfiMdz4GCtqNiM=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=bypUEPhMZa+QHaAo1MLjJgFV/xSj0LR23jDNBB1Pf1LgtjeoV1yD4fZ84RcRAEjw4
+	 LFk5qNnIiDIAODGL4+iGqsHqHQ5cpUhh9+qhEiZzr4N9/22ts1ad+i+KKDsOhhI5H6
+	 D2lrTiuHC4P0UXUI1mmj2j+nzI9qQofIGK6F5SANEvogLTw1bzuidsbbmftp3kTc+6
+	 nOMg51iFE5os/Bfddl06oRTnWShzUZK3JUI5Aavm4Voy0YvwWh1lLZ05murz4fD24a
+	 ZJ3TU5V8J1X3kJJxeGKgQvlSCfZ2eCocrtXQYmuGw7n6NBuD1oSOro+dUos+Cn0jpS
+	 1xJ2lgrJv8e5w==
+Received: by mail-oa1-f50.google.com with SMTP id 586e51a60fabf-192c2569c72so5403507fac.2
+        for <oe-lkp@lists.linux.dev>; Mon, 15 May 2023 04:14:05 -0700 (PDT)
+X-Gm-Message-State: AC+VfDzH+Ivug656sp6H4hmXrg3aI54o0P10OrgtQpSqg7kd5s8XgSPq
+	eQm2k9tHIA2dQ69wSlzM+HQKvySkcYG5jMQBRTk=
+X-Google-Smtp-Source: ACHHUZ5I4rV1BE71yFvHt0OEIMEPosbg7bHc8sbO8898v03H2p1+AHkOB4lwS9SgQ8A7Ubb01XPW4tpCrXFHVLL5+JA=
+X-Received: by 2002:a05:6870:76a5:b0:17e:9798:6e34 with SMTP id
+ dx37-20020a05687076a500b0017e97986e34mr16043085oab.32.1684149244170; Mon, 15
+ May 2023 04:14:04 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202305151017.27581d75-yujie.liu@intel.com>
+References: <202305151446.364f9707-oliver.sang@intel.com>
+In-Reply-To: <202305151446.364f9707-oliver.sang@intel.com>
+From: Filipe Manana <fdmanana@kernel.org>
+Date: Mon, 15 May 2023 12:13:28 +0100
+X-Gmail-Original-Message-ID: <CAL3q7H53mD=ZrxSK7M6RMcJFE88md9Rd9cHq0c8VXAC6CA3aog@mail.gmail.com>
+Message-ID: <CAL3q7H53mD=ZrxSK7M6RMcJFE88md9Rd9cHq0c8VXAC6CA3aog@mail.gmail.com>
+Subject: Re: [kdave-btrfs-devel:misc-next] [btrfs] 99635ae5e8: xfstests.btrfs.228.fail
+To: kernel test robot <oliver.sang@intel.com>
+Cc: Sweet Tea Dorminy <sweettea-kernel@dorminy.me>, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	David Sterba <dsterba@suse.com>, Qu Wenruo <wqu@suse.com>, Josef Bacik <josef@toxicpanda.com>, 
+	Neal Gompa <neal@gompa.dev>, linux-btrfs@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, May 15, 2023 at 03:00:44PM +0800, kernel test robot wrote:
+On Mon, May 15, 2023 at 7:26=E2=80=AFAM kernel test robot <oliver.sang@inte=
+l.com> wrote:
+>
+>
+>
 > Hello,
-> 
-> kernel test robot noticed a -13.9% regression of will-it-scale.per_thread_ops on:
-> 
-> commit: af7f588d8f7355bc4298dd1962d7826358fc95f0 ("sched: Introduce per-memory-map concurrency ID")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> 
-> testcase: will-it-scale
-> test machine: 224 threads 2 sockets (Sapphire Rapids) with 256G memory
-> parameters:
-> 
-> 	test: context_switch1
-> 	cpufreq_governor: performance
-> 
-> test-description: Will It Scale takes a testcase and runs it from 1 through to n parallel copies to see if the testcase will scale. It builds both a process and threads based test in order to see any differences between the two.
-> test-url: https://github.com/antonblanchard/will-it-scale
-> 
-> In addition to that, the commit also has significant impact on the following tests:
-> 
-> +------------------+----------------------------------------------------------------------------------------------------+
-> | testcase: change | will-it-scale: will-it-scale.per_thread_ops -73.8% regression                                      |
-> | test machine     | 224 threads 2 sockets (Sapphire Rapids) with 256G memory                                           |
-> | test parameters  | cpufreq_governor=performance                                                                       |
-> |                  | mode=thread                                                                                        |
-> |                  | nr_task=16                                                                                         |
-> |                  | test=context_switch1                                                                               |
-> +------------------+----------------------------------------------------------------------------------------------------+
-> | testcase: change | will-it-scale: will-it-scale.per_thread_ops -57.9% regression                                      |
-> | test machine     | 104 threads 2 sockets (Skylake) with 192G memory                                                   |
-> | test parameters  | cpufreq_governor=performance                                                                       |
-> |                  | mode=thread                                                                                        |
-> |                  | nr_task=16                                                                                         |
-> |                  | test=context_switch1                                                                               |
-> +------------------+----------------------------------------------------------------------------------------------------+
-> | testcase: change | will-it-scale: will-it-scale.per_thread_ops -85.0% regression                                      |
-> | test machine     | 104 threads 2 sockets (Skylake) with 192G memory                                                   |
-> | test parameters  | cpufreq_governor=performance                                                                       |
-> |                  | mode=thread                                                                                        |
-> |                  | nr_task=50%                                                                                        |
-> |                  | test=context_switch1                                                                               |
-> +------------------+----------------------------------------------------------------------------------------------------+
-> | testcase: change | vm-scalability: vm-scalability.throughput -9.0% regression                                         |
-> | test machine     | 96 threads 2 sockets Intel(R) Xeon(R) Platinum 8260L CPU @ 2.40GHz (Cascade Lake) with 128G memory |
-> | test parameters  | cpufreq_governor=performance                                                                       |
-> |                  | runtime=300s                                                                                       |
-> |                  | size=2T                                                                                            |
-> |                  | test=shm-xread-seq-mt                                                                              |
-> +------------------+----------------------------------------------------------------------------------------------------+
-> 
-> FYI, we noticed that commit 223baf9d17f2 (sched: Fix performance
-> regression introduced by mm_cid) fixed a sysbench regression, but
-> will-it-scale context_switch1 benchmark still saw a regression on this
-> fix commit.
-> 
-> Furthermore, we applied the code diff in below link [1] on mainline, and
-> the will-it-scale score was restored to the original level before this
-> patch.
-> 
-> [1] https://lore.kernel.org/lkml/d96164a6-c522-1bfc-8b37-333726cdc573@efficios.com/
-> 
+>
+> kernel test robot noticed "xfstests.btrfs.228.fail" on:
+>
+> commit: 99635ae5e80e4696458d671bdff286346b02b1be ("btrfs: don't commit tr=
+ansaction for every subvol create")
+> https://github.com/kdave/btrfs-devel.git misc-next
+>
+> [test failed on linux-next/master e922ba281a8d84f640d8c8e18a385d032c19e18=
+5]
+>
+> in testcase: xfstests
+> version: xfstests-x86_64-06c027a-1_20230501
+> with following parameters:
+>
+>         disk: 6HDD
+>         fs: btrfs
+>         test: btrfs-group-22
+>
+>
+>
+> compiler: gcc-11
+> test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz=
+ (Haswell) with 8G memory
+>
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+>
+>
+>
+>
+> If you fix the issue, kindly add following tag
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Link: https://lore.kernel.org/oe-lkp/202305151446.364f9707-oliver.sang@=
+intel.com
+>
+> 2023-05-14 22:04:42 export TEST_DIR=3D/fs/sdb1
+> 2023-05-14 22:04:42 export TEST_DEV=3D/dev/sdb1
+> 2023-05-14 22:04:42 export FSTYP=3Dbtrfs
+> 2023-05-14 22:04:42 export SCRATCH_MNT=3D/fs/scratch
+> 2023-05-14 22:04:42 mkdir /fs/scratch -p
+> 2023-05-14 22:04:42 export SCRATCH_DEV_POOL=3D"/dev/sdb2 /dev/sdb3 /dev/s=
+db4 /dev/sdb5 /dev/sdb6"
+> 2023-05-14 22:04:42 sed "s:^:btrfs/:" //lkp/benchmarks/xfstests/tests/btr=
+fs-group-22
+> 2023-05-14 22:04:42 ./check btrfs/220 btrfs/221 btrfs/222 btrfs/223 btrfs=
+/224 btrfs/225 btrfs/226 btrfs/227 btrfs/228 btrfs/229
+> FSTYP         -- btrfs
+> PLATFORM      -- Linux/x86_64 lkp-hsw-d01 6.4.0-rc1-00014-g99635ae5e80e #=
+1 SMP Mon May 15 05:41:11 CST 2023
+> MKFS_OPTIONS  -- /dev/sdb2
+> MOUNT_OPTIONS -- /dev/sdb2 /fs/scratch
+>
+> btrfs/220        15s
+> btrfs/221        3s
+> btrfs/222        2s
+> btrfs/223       [not run] FITRIM not supported on /fs/scratch
+> btrfs/224        2s
+> btrfs/225        4s
+> btrfs/226        5s
+> btrfs/227        2s
+> btrfs/228       [failed, exit status 1]- output mismatch (see /lkp/benchm=
+arks/xfstests/results//btrfs/228.out.bad)
+>     --- tests/btrfs/228.out     2023-05-01 18:50:21.000000000 +0000
+>     +++ /lkp/benchmarks/xfstests/results//btrfs/228.out.bad     2023-05-1=
+4 22:05:18.648983306 +0000
+>     @@ -1,2 +1,3 @@
+>      QA output created by 228
+>     -Silence is golden
+>     +First subvol with id 256 doesn't exist
+>     +(see /lkp/benchmarks/xfstests/results//btrfs/228.full for details)
 
-Right; so I'm thinking we can do that patch -- I'll try and get the
-whole lazy TLB thing sorted, but I'm not sure I can find the piece and
-quiet to think that over in a hurry :/
+Know problem and it was very recently fixed in fstests' for-next branch:
+
+https://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git/commit/?h=3Dfor-next=
+&id=3De35817daa103d6c8dd670fc0acef7f2247e10a9f
+
+
+>     ...
+>     (Run 'diff -u /lkp/benchmarks/xfstests/tests/btrfs/228.out /lkp/bench=
+marks/xfstests/results//btrfs/228.out.bad'  to see the entire diff)
+> btrfs/229        3s
+> Ran: btrfs/220 btrfs/221 btrfs/222 btrfs/223 btrfs/224 btrfs/225 btrfs/22=
+6 btrfs/227 btrfs/228 btrfs/229
+> Not run: btrfs/223
+> Failures: btrfs/228
+> Failed 1 of 10 tests
+>
+>
+>
+>
+> To reproduce:
+>
+>         git clone https://github.com/intel/lkp-tests.git
+>         cd lkp-tests
+>         sudo bin/lkp install job.yaml           # job file is attached in=
+ this email
+>         bin/lkp split-job --compatible job.yaml # generate the yaml file =
+for lkp run
+>         sudo bin/lkp run generated-yaml-file
+>
+>         # if come across any failure that blocks the test,
+>         # please remove ~/.lkp and /lkp dir to run from a clean state.
+>
+>
+>
+> --
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests
+>
+>
