@@ -1,160 +1,172 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66B531C13
-	for <oe-lkp@lists.linux.dev>; Mon, 15 May 2023 11:14:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14982C4339E
-	for <oe-lkp@lists.linux.dev>; Mon, 15 May 2023 11:14:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BBD8FBF3
+	for <oe-lkp@lists.linux.dev>; Mon, 15 May 2023 16:57:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EBBAC433EF;
+	Mon, 15 May 2023 16:57:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684149245;
-	bh=zNdkTUZ+kuUxeHz0Jq4U2DJqxokT3IfiMdz4GCtqNiM=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=bypUEPhMZa+QHaAo1MLjJgFV/xSj0LR23jDNBB1Pf1LgtjeoV1yD4fZ84RcRAEjw4
-	 LFk5qNnIiDIAODGL4+iGqsHqHQ5cpUhh9+qhEiZzr4N9/22ts1ad+i+KKDsOhhI5H6
-	 D2lrTiuHC4P0UXUI1mmj2j+nzI9qQofIGK6F5SANEvogLTw1bzuidsbbmftp3kTc+6
-	 nOMg51iFE5os/Bfddl06oRTnWShzUZK3JUI5Aavm4Voy0YvwWh1lLZ05murz4fD24a
-	 ZJ3TU5V8J1X3kJJxeGKgQvlSCfZ2eCocrtXQYmuGw7n6NBuD1oSOro+dUos+Cn0jpS
-	 1xJ2lgrJv8e5w==
-Received: by mail-oa1-f50.google.com with SMTP id 586e51a60fabf-192c2569c72so5403507fac.2
-        for <oe-lkp@lists.linux.dev>; Mon, 15 May 2023 04:14:05 -0700 (PDT)
-X-Gm-Message-State: AC+VfDzH+Ivug656sp6H4hmXrg3aI54o0P10OrgtQpSqg7kd5s8XgSPq
-	eQm2k9tHIA2dQ69wSlzM+HQKvySkcYG5jMQBRTk=
-X-Google-Smtp-Source: ACHHUZ5I4rV1BE71yFvHt0OEIMEPosbg7bHc8sbO8898v03H2p1+AHkOB4lwS9SgQ8A7Ubb01XPW4tpCrXFHVLL5+JA=
-X-Received: by 2002:a05:6870:76a5:b0:17e:9798:6e34 with SMTP id
- dx37-20020a05687076a500b0017e97986e34mr16043085oab.32.1684149244170; Mon, 15
- May 2023 04:14:04 -0700 (PDT)
+	s=k20201202; t=1684169875;
+	bh=Jmopy33ZoS1la9R1avtjotbLsHWcwBpRSQv67QLaEP0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=GUNA2ZCd3vS2KC5EHQUxiJ7DKlU1qI411RsEupq19AMctcTLmJce2hIaRXHVwxbDQ
+	 UlAgtPA1xY2E2g27GQgQImrb4cHCa7lomnNbBuS9ZF9cCypkZje1ROc3PIQJdgjGH/
+	 s7/F2YBz/sSicUWNwbXVcEz0J1EoTH/+9ev4F4XMM8MCIyeqiwjCW6cVd8UAZfxkiD
+	 VebvJWVgXDAMsP/igFigPZJ74qdmDoGNDCDkvMimM9YSjt5cNODrsixTURbcH6jDnE
+	 9XbGLfmlFEmBH7Qx7x96RsIwLNsdQc7a3Yji2gPt3s6k4UsWMMWaDADQxZIlVXpLJ1
+	 zJStYGHX4X+vA==
+Date: Mon, 15 May 2023 09:57:54 -0700
+From: "Darrick J. Wong" <djwong@kernel.org>
+To: Feng Tang <feng.tang@intel.com>
+Cc: Dave Chinner <david@fromorbit.com>, Oliver Sang <oliver.sang@intel.com>,
+	Dave Chinner <dchinner@redhat.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, linux-kernel@vger.kernel.org,
+	linux-xfs@vger.kernel.org, ying.huang@intel.com,
+	fengwei.yin@intel.com
+Subject: Re: [linus:master] [xfs]  2edf06a50f:  fsmark.files_per_sec -5.7%
+ regression
+Message-ID: <20230515165754.GL858799@frogsfrogsfrogs>
+References: <202305090905.aff4e0e6-oliver.sang@intel.com>
+ <20230509065433.GT3223426@dread.disaster.area>
+ <20230509071053.GE2651828@dread.disaster.area>
+ <ZF3uXe+cjAsfCLic@xsang-OptiPlex-9020>
+ <20230512230504.GF3223426@dread.disaster.area>
+ <ZGDyAOewWqjY5xvJ@feng-clx>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202305151446.364f9707-oliver.sang@intel.com>
-In-Reply-To: <202305151446.364f9707-oliver.sang@intel.com>
-From: Filipe Manana <fdmanana@kernel.org>
-Date: Mon, 15 May 2023 12:13:28 +0100
-X-Gmail-Original-Message-ID: <CAL3q7H53mD=ZrxSK7M6RMcJFE88md9Rd9cHq0c8VXAC6CA3aog@mail.gmail.com>
-Message-ID: <CAL3q7H53mD=ZrxSK7M6RMcJFE88md9Rd9cHq0c8VXAC6CA3aog@mail.gmail.com>
-Subject: Re: [kdave-btrfs-devel:misc-next] [btrfs] 99635ae5e8: xfstests.btrfs.228.fail
-To: kernel test robot <oliver.sang@intel.com>
-Cc: Sweet Tea Dorminy <sweettea-kernel@dorminy.me>, oe-lkp@lists.linux.dev, lkp@intel.com, 
-	David Sterba <dsterba@suse.com>, Qu Wenruo <wqu@suse.com>, Josef Bacik <josef@toxicpanda.com>, 
-	Neal Gompa <neal@gompa.dev>, linux-btrfs@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ZGDyAOewWqjY5xvJ@feng-clx>
 
-On Mon, May 15, 2023 at 7:26=E2=80=AFAM kernel test robot <oliver.sang@inte=
-l.com> wrote:
->
->
->
-> Hello,
->
-> kernel test robot noticed "xfstests.btrfs.228.fail" on:
->
-> commit: 99635ae5e80e4696458d671bdff286346b02b1be ("btrfs: don't commit tr=
-ansaction for every subvol create")
-> https://github.com/kdave/btrfs-devel.git misc-next
->
-> [test failed on linux-next/master e922ba281a8d84f640d8c8e18a385d032c19e18=
-5]
->
-> in testcase: xfstests
-> version: xfstests-x86_64-06c027a-1_20230501
-> with following parameters:
->
->         disk: 6HDD
->         fs: btrfs
->         test: btrfs-group-22
->
->
->
-> compiler: gcc-11
-> test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz=
- (Haswell) with 8G memory
->
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
->
->
->
->
-> If you fix the issue, kindly add following tag
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Link: https://lore.kernel.org/oe-lkp/202305151446.364f9707-oliver.sang@=
-intel.com
->
-> 2023-05-14 22:04:42 export TEST_DIR=3D/fs/sdb1
-> 2023-05-14 22:04:42 export TEST_DEV=3D/dev/sdb1
-> 2023-05-14 22:04:42 export FSTYP=3Dbtrfs
-> 2023-05-14 22:04:42 export SCRATCH_MNT=3D/fs/scratch
-> 2023-05-14 22:04:42 mkdir /fs/scratch -p
-> 2023-05-14 22:04:42 export SCRATCH_DEV_POOL=3D"/dev/sdb2 /dev/sdb3 /dev/s=
-db4 /dev/sdb5 /dev/sdb6"
-> 2023-05-14 22:04:42 sed "s:^:btrfs/:" //lkp/benchmarks/xfstests/tests/btr=
-fs-group-22
-> 2023-05-14 22:04:42 ./check btrfs/220 btrfs/221 btrfs/222 btrfs/223 btrfs=
-/224 btrfs/225 btrfs/226 btrfs/227 btrfs/228 btrfs/229
-> FSTYP         -- btrfs
-> PLATFORM      -- Linux/x86_64 lkp-hsw-d01 6.4.0-rc1-00014-g99635ae5e80e #=
-1 SMP Mon May 15 05:41:11 CST 2023
-> MKFS_OPTIONS  -- /dev/sdb2
-> MOUNT_OPTIONS -- /dev/sdb2 /fs/scratch
->
-> btrfs/220        15s
-> btrfs/221        3s
-> btrfs/222        2s
-> btrfs/223       [not run] FITRIM not supported on /fs/scratch
-> btrfs/224        2s
-> btrfs/225        4s
-> btrfs/226        5s
-> btrfs/227        2s
-> btrfs/228       [failed, exit status 1]- output mismatch (see /lkp/benchm=
-arks/xfstests/results//btrfs/228.out.bad)
->     --- tests/btrfs/228.out     2023-05-01 18:50:21.000000000 +0000
->     +++ /lkp/benchmarks/xfstests/results//btrfs/228.out.bad     2023-05-1=
-4 22:05:18.648983306 +0000
->     @@ -1,2 +1,3 @@
->      QA output created by 228
->     -Silence is golden
->     +First subvol with id 256 doesn't exist
->     +(see /lkp/benchmarks/xfstests/results//btrfs/228.full for details)
+On Sun, May 14, 2023 at 10:36:48PM +0800, Feng Tang wrote:
+> Hi Dave,
+> 
+> On Sat, May 13, 2023 at 09:05:04AM +1000, Dave Chinner wrote:
+> > On Fri, May 12, 2023 at 03:44:29PM +0800, Oliver Sang wrote:
+> [...]
+> > > Thanks a lot for guidance!
+> > > 
+> > > we plan to disable XFS_DEBUG (as well as XFS_WARN) in our performance tests.
+> > > want to consult with you if this is the correct thing to do?
+> > 
+> > You can use XFS_WARN=y with performance tests - that elides all the
+> > debug specific code that changes behaviour but leaves all the
+> > ASSERT-based correctness checks in the code.
+> > 
+> > > and I guess we should still keep them in functional tests, am I right?
+> > 
+> > Yes.
+> > 
+> > > BTW, regarding this case, we tested again with disabling XFS_DEBUG (as well as
+> > > XFS_WARN), kconfig is attached, only diff with last time is:
+> > > -CONFIG_XFS_DEBUG=y
+> > > -CONFIG_XFS_ASSERT_FATAL=y
+> > > +# CONFIG_XFS_WARN is not set
+> > > +# CONFIG_XFS_DEBUG is not set
+> > > 
+> > > but we still observed similar regression:
+> > > 
+> > > ecd788a92460eef4 2edf06a50f5bbe664283f3c55c4
+> > > ---------------- ---------------------------
+> > >          %stddev     %change         %stddev
+> > >              \          |                \
+> > >    8176057 ± 15%      +4.7%    8558110        fsmark.app_overhead
+> > >      14484            -6.3%      13568        fsmark.files_per_sec
+> > 
+> > So the application spent 5% more CPU time in userspace, and the rate
+> > the kernel processed IO went down by 6%. Seems to me like
+> > everything is running slower, not just the kernel code....
+> > 
+> > >     100.50 ±  5%      +0.3%     100.83        turbostat.Avg_MHz
+> > >       5.54 ± 11%      +0.3        5.82        turbostat.Busy%
+> > >       1863 ± 19%      -6.9%       1733        turbostat.Bzy_MHz
+> > 
+> > Evidence that the CPU is running at a 7% lower clock rate when the
+> > results are 6% slower is a bit suspicious to me. Shouldn't the CPU
+> > clock rate be fixed to the same value for A-B performance regression
+> > testing?
+> 
+> For commit 2edf06a50f5, it seems to change the semantics a little
+> about handling of 'flags' for xfs_alloc_fix_freelist(). With the debug
+> below, the performance is restored.
+> 
+> 
+> ecd788a92460eef4 2edf06a50f5bbe664283f3c55c4 68721405630744da1c07c9c1c3c 
+> ---------------- --------------------------- --------------------------- 
+> 
+>      14349            -5.7%      13527            +0.6%      14437        fsmark.files_per_sec
+>     486.29            +5.8%     514.28            -0.5%     483.70        fsmark.time.elapsed_time
+> 
+> Please help to review if the debug patch miss anything as I don't
+> know the internals of xfs, thanks.
+> 
+> ---
+> diff --git a/fs/xfs/libxfs/xfs_alloc.c b/fs/xfs/libxfs/xfs_alloc.c
+> index 98defd19e09e..8c85cc68c5f4 100644
+> --- a/fs/xfs/libxfs/xfs_alloc.c
+> +++ b/fs/xfs/libxfs/xfs_alloc.c
+> @@ -3246,12 +3246,12 @@ xfs_alloc_vextent_set_fsbno(
+>   */
+>  static int
+>  __xfs_alloc_vextent_this_ag(
 
-Know problem and it was very recently fixed in fstests' for-next branch:
+Patches against upstream head only, please.  This does not apply to
+6.4-rc2 without modification, and we cannot go backwards in time.  Do
+you mean to pass XFS_ALLOC_FLAG_TRYLOCK from
+xfs_alloc_vextent_iterate_ags into xfs_alloc_fix_freelist by way of
+adding an alloc_flags argument to xfs_alloc_vextent_prepare_ag?
 
-https://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git/commit/?h=3Dfor-next=
-&id=3De35817daa103d6c8dd670fc0acef7f2247e10a9f
+--D
 
-
->     ...
->     (Run 'diff -u /lkp/benchmarks/xfstests/tests/btrfs/228.out /lkp/bench=
-marks/xfstests/results//btrfs/228.out.bad'  to see the entire diff)
-> btrfs/229        3s
-> Ran: btrfs/220 btrfs/221 btrfs/222 btrfs/223 btrfs/224 btrfs/225 btrfs/22=
-6 btrfs/227 btrfs/228 btrfs/229
-> Not run: btrfs/223
-> Failures: btrfs/228
-> Failed 1 of 10 tests
->
->
->
->
-> To reproduce:
->
->         git clone https://github.com/intel/lkp-tests.git
->         cd lkp-tests
->         sudo bin/lkp install job.yaml           # job file is attached in=
- this email
->         bin/lkp split-job --compatible job.yaml # generate the yaml file =
-for lkp run
->         sudo bin/lkp run generated-yaml-file
->
->         # if come across any failure that blocks the test,
->         # please remove ~/.lkp and /lkp dir to run from a clean state.
->
->
->
-> --
-> 0-DAY CI Kernel Test Service
-> https://github.com/intel/lkp-tests
->
->
+> -	struct xfs_alloc_arg	*args)
+> +	struct xfs_alloc_arg	*args, int flag)
+>  {
+>  	struct xfs_mount	*mp = args->mp;
+>  	int			error;
+>  
+> -	error = xfs_alloc_fix_freelist(args, 0);
+> +	error = xfs_alloc_fix_freelist(args, flag);
+>  	if (error) {
+>  		trace_xfs_alloc_vextent_nofix(args);
+>  		return error;
+> @@ -3289,7 +3289,7 @@ xfs_alloc_vextent_this_ag(
+>  	}
+>  
+>  	args->pag = xfs_perag_get(mp, args->agno);
+> -	error = __xfs_alloc_vextent_this_ag(args);
+> +	error = __xfs_alloc_vextent_this_ag(args, 0);
+>  
+>  	xfs_alloc_vextent_set_fsbno(args, minimum_agno);
+>  	xfs_perag_put(args->pag);
+> @@ -3329,7 +3329,7 @@ xfs_alloc_vextent_iterate_ags(
+>  	args->agno = start_agno;
+>  	for (;;) {
+>  		args->pag = xfs_perag_get(mp, args->agno);
+> -		error = __xfs_alloc_vextent_this_ag(args);
+> +		error = __xfs_alloc_vextent_this_ag(args, flags);
+>  		if (error) {
+>  			args->agbno = NULLAGBLOCK;
+>  			break;
+> 
+> 
+> Also for the turbostat.Bzy_MHz diff, IIUC, 0Day always uses
+> 'performance' cpufreq governor. And as the test case is running
+> 32 thread in a platform with 96 CPUs, there are many CPUs in idle
+> state in average, and I suspect the Bzy_MHz may be calculated 
+> considering those cpufreq and cpuidle factors.
+> 
+> Thanks,
+> Feng
+> 
+> > 
+> > Cheers,
+> > 
+> > Dave.
+> > -- 
+> > Dave Chinner
+> > david@fromorbit.com
