@@ -1,89 +1,96 @@
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14B9B107B2
-	for <oe-lkp@lists.linux.dev>; Tue, 16 May 2023 05:55:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01F3423C3
+	for <oe-lkp@lists.linux.dev>; Tue, 16 May 2023 06:52:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1684216554; x=1715752554;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   mime-version;
-  bh=SAizndJ9KdOu5dWscbkVaO6dObNb6KEpLriyQUtDORY=;
-  b=YWZBj4KPexPQBwh3+jjav7WdAEMLN52UUowViAvNjBfZZFI3dmFX/W7+
-   2ixkITIECayonwUiCvR5iGwjS5YWiNRrf2sZzt9O5nMCzDhVQzZyJcxrL
-   258CBCMoOs4mCPCutxTNH+2gzGVGTJAfHNCkMbMhp8qGVmUS3RaRAygSz
-   on/UcQaCaTkvvLvCEhyoeAvy2FfJxGgJrzEbLhzgk9ZjkxZrPSui0Npv4
-   /4I/KXRaWusQFwrxB9W1s8Dsy0fuxet7a0Z+ulz/AZHO24RvAvrX2beJL
-   BBIW2XoKGxvl5dYJvLhq8AbYy/8wDsMBAoFRacW4hHVz1HXqIQLNgvOX8
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10711"; a="348889644"
-X-IronPort-AV: E=Sophos;i="5.99,277,1677571200"; 
-   d="xz'341?yaml'341?scan'341,208,341";a="348889644"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2023 22:55:48 -0700
+  t=1684219947; x=1715755947;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=ThSA81apsiXzPt/TJm93MV3zRTE/BtQ8WferUSqtmrs=;
+  b=ZJQPaKBVYDTk8tUSDEgcxNsO5DkimMbu5z61KByEk8jN68Hrt3wnmIHE
+   6A6mE7+arrVrZA2DiT6HPwl7s3d54j3rCQ48+nwtbkdEQON+6HT4kzK6C
+   t27yNfVOvn1j90Qr+GJ8NOMoPyX4uKHziRDAYUP91PrTfeSOJDqhlzt8O
+   9m+hhENfruQdnTRb6WJQyJ0SkT5Xeg7JupFWFD59mf5+OSdVgaFX6YehN
+   V7abJwpbxnd2+QZZV80aI0MWUskqa6IUAG/fK1uIZlAzMQhhDxH6m2Lwf
+   l3i0XUBxzDTRqtKPC7K/x3fv/FZ4ye063yJjAuIQx3mvO2yXOSDtmYu0/
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10711"; a="437740267"
+X-IronPort-AV: E=Sophos;i="5.99,278,1677571200"; 
+   d="xz'341?yaml'341?scan'341,208,341";a="437740267"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2023 23:52:19 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10711"; a="813272743"
-X-IronPort-AV: E=Sophos;i="5.99,277,1677571200"; 
-   d="xz'341?yaml'341?scan'341,208,341";a="813272743"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmsmga002.fm.intel.com with ESMTP; 15 May 2023 22:55:47 -0700
+X-IronPort-AV: E=McAfee;i="6600,9927,10711"; a="770922200"
+X-IronPort-AV: E=Sophos;i="5.99,278,1677571200"; 
+   d="xz'341?yaml'341?scan'341,208,341";a="770922200"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by fmsmga004.fm.intel.com with ESMTP; 15 May 2023 23:52:13 -0700
 Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Mon, 15 May 2023 22:55:47 -0700
+ 15.1.2507.23; Mon, 15 May 2023 23:52:13 -0700
 Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
  ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Mon, 15 May 2023 22:55:46 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ 15.1.2507.23; Mon, 15 May 2023 23:52:12 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
  orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Mon, 15 May 2023 22:55:46 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.105)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ 15.1.2507.23 via Frontend Transport; Mon, 15 May 2023 23:52:12 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.104)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Mon, 15 May 2023 22:55:46 -0700
+ 15.1.2507.23; Mon, 15 May 2023 23:52:12 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CFE+z55gJcfVsDp9QPeGgcEuq1D72BHOhvj3i5EVmzbirHYUWCDbIdum9n7ZCvIqn6hdpmFseBVbjkbawuehr0nQc6imod6XG8bwqRQDzEkoaDqAIflc8gV0VopFrof80buZz8CE4u7uPiUc3i15bOjN144eDmH2RKWsfWskGI5Z92yU2emSPuJdG/vOKfoiMHdKGR5WZtGV4Dl0yyhAywK+HbahqjylPmu+nHcy5A57aTupZ7MTNdO2Kox2hjh3p521Cwd7zFKNp15FUXnIEJMCMmc5dnonax3y+ygz2+3GTOGSIQenFryjzr0bsjCYVqwcrl92S4bYM0TNZWKOWg==
+ b=FhfDDhRhQB441uL354fbk7M43hTDibuEmyfoiFoNBP3tRXeaXk1XO7uX+SY5p2r5Czo/AwiebuwzCFazrvW7rcMqIHr6SFHHg7YJzko8bK+Hrva5qa4Lt6x2DE55FAV/SkY8lkVDYSKxyvHeJqI1R7y7HVBeQZHEun17C8KGrfm9Wb0UIX6Dt3MHaSVpMrgyQNcJKU9Zuz7soAmhLZVMfED4mRteUJWm+Gi1DwFUM5ml5WI+KXEE+/HD9f+/mcG/VQ6/q8zPhLSslpE8nH1W1UZXFJ2/rFIL/7mm9GPYCEReh2xxQhqX8vWSjAz7w4yrs0hn6WP4mdaLQlK7tFmxZA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Vs+3k9DGT2NJQ0nhQyua9YbPkRkho0FAHG4Et3hGcMY=;
- b=GRPxD8sEgCPj6WGXmzB2uORc5tCtXKBKfi69L0iMUK9evi9F1JSm2Zv0/WUloxjZ/FFIdNPk8l4JDVtX90w/Ee+BUDYFuE/M1vRh4nDizJpwq5dxFjzZ4U2qJdYBO3oo2J+o1qZew5uZ9n2UIGQSVHawhVqv3nR3T1V9uKz0e8VtCnqogDc9Fhjhc2X7FUdmvwViBOho8kujJBZHhxeK8YKR99UG9QLENRQipfiYSgIRoJF/0NRwrkNmQG+fSP5mzVgChM7yln48gkTcpS7RUEIg/w2fFY0oBckqsjx80waqT1n7DQTWAbpN5eRkW3mhPq7dzKr5bXr+kT5maBXVLQ==
+ bh=fXgmY0Pys0f3cEbwKzCalURnJBfuaxMX85iEZjzaVG4=;
+ b=fdR2reYQdi1Dzi8lrlIMO1AT/GQGEwW9RiMBuT+2KeDIYybTzjLTZyoz9pRjeDAxZtGekrZSXAIWIkAiv9ybd8ZtuoRh1TH5vTlaY8g7cIbT4C0vUfR0oQSOd7tg7HoRM2zanhcQQDgpLE7p/3uIp1nU4b8AE7Ocbvbjgva0GSCWeknXKdoDoIt68MZwJnqeK5JPn99vB0AfBfTYPgG5DBJ11TFgVTFcZnmBDJ7ah0J3mN+JC319Zbe03pi98zAx/XwHGIRD9/+PWptavYqeLd650epYdDH+1vbgkCCsMZH6yGpGTDs4ssO3CKYjfi5+6YS8dOskmFtGtkbV5e943w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from CY5PR11MB6392.namprd11.prod.outlook.com (2603:10b6:930:37::15)
- by PH7PR11MB6029.namprd11.prod.outlook.com (2603:10b6:510:1d0::7) with
+ by BL1PR11MB5494.namprd11.prod.outlook.com (2603:10b6:208:31d::19) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.30; Tue, 16 May
- 2023 05:55:29 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6387.32; Tue, 16 May
+ 2023 06:52:08 +0000
 Received: from CY5PR11MB6392.namprd11.prod.outlook.com
  ([fe80::b14b:5c9c:fa0e:8e7c]) by CY5PR11MB6392.namprd11.prod.outlook.com
  ([fe80::b14b:5c9c:fa0e:8e7c%7]) with mapi id 15.20.6387.030; Tue, 16 May 2023
- 05:55:29 +0000
-Date: Tue, 16 May 2023 13:52:06 +0800
+ 06:52:08 +0000
+Date: Tue, 16 May 2023 14:48:40 +0800
 From: kernel test robot <yujie.liu@intel.com>
-To: Lorenzo Stoakes <lstoakes@gmail.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-mm@kvack.org>,
-	<linux-kernel@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>,
-	Matthew Wilcox <willy@infradead.org>, Mike Kravetz <mike.kravetz@oracle.com>,
-	Muchun Song <muchun.song@linux.dev>, Alexander Viro
-	<viro@zeniv.linux.org.uk>, Christian Brauner <brauner@kernel.org>, "Andy
- Lutomirski" <luto@amacapital.net>, <linux-fsdevel@vger.kernel.org>, Jan Kara
-	<jack@suse.cz>, Hugh Dickins <hughd@google.com>, Lorenzo Stoakes
-	<lstoakes@gmail.com>
-Subject: Re: [PATCH v2 3/3] mm: perform the mapping_map_writable() check
- after call_mmap()
-Message-ID: <202305161044.bba89e76-yujie.liu@intel.com>
-Content-Type: multipart/mixed; boundary="vcDeFZ/32v9hGKdR"
+To: Ian Rogers <irogers@google.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	Arnaldo Carvalho de Melo <acme@redhat.com>, Adrian Hunter
+	<adrian.hunter@intel.com>, Alexander Shishkin
+	<alexander.shishkin@linux.intel.com>, Alexandre Torgue
+	<alexandre.torgue@foss.st.com>, Andrii Nakryiko <andrii@kernel.org>, "Athira
+ Rajeev" <atrajeev@linux.vnet.ibm.com>, Caleb Biggers
+	<caleb.biggers@intel.com>, Eduard Zingerman <eddyz87@gmail.com>, "Florian
+ Fischer" <florian.fischer@muhq.space>, Ingo Molnar <mingo@redhat.com>, "James
+ Clark" <james.clark@arm.com>, Jing Zhang <renyu.zj@linux.alibaba.com>, "Jiri
+ Olsa" <jolsa@kernel.org>, John Garry <john.g.garry@oracle.com>, Kajol Jain
+	<kjain@linux.ibm.com>, Kan Liang <kan.liang@linux.intel.com>, Leo Yan
+	<leo.yan@linaro.org>, Mark Rutland <mark.rutland@arm.com>, Maxime Coquelin
+	<mcoquelin.stm32@gmail.com>, Namhyung Kim <namhyung@kernel.org>, Perry Taylor
+	<perry.taylor@intel.com>, Peter Zijlstra <peterz@infradead.org>, "Ravi
+ Bangoria" <ravi.bangoria@amd.com>, Sandipan Das <sandipan.das@amd.com>, "Sean
+ Christopherson" <seanjc@google.com>, Stephane Eranian <eranian@google.com>,
+	Suzuki Poulouse <suzuki.poulose@arm.com>, Xing Zhengjun
+	<zhengjun.xing@linux.intel.com>, <linux-perf-users@vger.kernel.org>
+Subject: [linus:master] [perf vendor events intel] aa2050030d:
+ perf-sanity-tests.perf_all_metricgroups_test.fail
+Message-ID: <202305161412.9fb7dc07-yujie.liu@intel.com>
+Content-Type: multipart/mixed; boundary="PSbc1JmETRt9H6EQ"
 Content-Disposition: inline
-In-Reply-To: <6f3aea05c9cc46094b029cbd1138d163c1ae7f9d.1682890156.git.lstoakes@gmail.com>
-X-ClientProxiedBy: SG2PR06CA0215.apcprd06.prod.outlook.com
- (2603:1096:4:68::23) To CY5PR11MB6392.namprd11.prod.outlook.com
- (2603:10b6:930:37::15)
+X-ClientProxiedBy: SG2PR04CA0171.apcprd04.prod.outlook.com (2603:1096:4::33)
+ To CY5PR11MB6392.namprd11.prod.outlook.com (2603:10b6:930:37::15)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -91,140 +98,295 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY5PR11MB6392:EE_|PH7PR11MB6029:EE_
-X-MS-Office365-Filtering-Correlation-Id: 58dcaddb-0768-427b-2629-08db55d2264c
+X-MS-TrafficTypeDiagnostic: CY5PR11MB6392:EE_|BL1PR11MB5494:EE_
+X-MS-Office365-Filtering-Correlation-Id: 12e247d5-50ac-4dd3-4142-08db55da1080
 X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ZR1PYlvQK9DMXNLnabBOyd/0A6xf5YKleCPVSCHZEkC2F829z2sgTezXjLRSt6kZ3PWtz7SIpii/SrHQzuUxtMifRk5QwwrIJ4Hz2tfsEHB5ZiTPdAr1t5zOFrwuNNLTkiY6jKat7+vCewdUfayxXnjimKfb4olDY4Ch7S9w+tuS+hTmBozoAcQa4Tl6QxfjqDeJ0P/749sBgQDDf3rsOe/0iYSLvgo5ihuEo54HKXeX6rYxu3iwjeOYghoGqC6lCcPCoYZnd0jusYCMU9pDt4NRMtnaYwhnklZqY+ycmMPblip6reYkrh47S3YPkzrzHtzBagCm9D5deOBEJVAHuk/zKLVuUWJ7Zk9grEG80/wrX7ASowR+/fSMmj/CHKDSF94mOBmng/MVJGVh0ivid3AA+YuEebSwDAg8f7/tzR9SL1JhkmhcACfyCR53W5CmmeO6c6chrVkYOqZggvAI+7id+bzhmVzVmVrtqncDRr0DIeYUjXDXKpdyRRTEJHkyC3HuugsBSkKxD5p5kFdePLYMr3Yqq0QIQxk2Nt1wKuPgRvlyq6zKYdcpEhuAqtta8/AlwHMbWOes2IoO7Qwzp00sHl6xNIQYyGxMDKYa8eg770eJwKSCfMHHw6XtmGXFgpFHVympx4F4/LMUyuFvoA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR11MB6392.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(136003)(366004)(346002)(396003)(376002)(39860400002)(451199021)(66946007)(66476007)(66556008)(41300700001)(82960400001)(6916009)(4326008)(7416002)(6666004)(6486002)(6512007)(1076003)(26005)(6506007)(38100700002)(316002)(8676002)(2616005)(235185007)(5660300002)(83380400001)(2906002)(8936002)(44144004)(478600001)(54906003)(86362001)(21490400003)(186003)(36756003)(966005)(2700100001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: zas8mUFlmElbfBJehhBjtzaXBIHgXg/fp4O0eufdoD3dOdo1+DM1Hg+mvkUmkh6pqSJTqRxYcn0QKOgge/tu16vcTp3vYsOnSO0xFlGcYdhIMOgsrmgGut3GCyBd0te562TVipQ/BipTgdFdmPn+EtrfF1ZGAAgcmtxiHlrnlqlWJ8ddJYryMMyVzHZvRqxIUdI6jCniqVq5au8FCzX6cJSgXzTIzOMSD0QgYLElckX5VHYn5GXo6NoIT4ag/3e7wkFpPh8wGnO5QSIeLwh7EWIU0qGs+scBQWMxnXMN9R2a4i67bGmXhHU4oepbuvriusMyiCCxhOygcgULNnQehhMyx0JJy/Mh3ZR0NHyp9DK+LSL2948NSqZlPQiCu0jKrfxNNh4w/1a0j7C13WwLuKPP+MQ83OgtbNdJasWQ+cSmcPUkLp1fjgSk5RFA52CkrxxFrqnAomGu1SDUrxc8UZYbA0VqbGLDS99+njaoJVOpuxsNK1PWz5YCoyIuBPm9cm5L0rXE93qNTfytoD9IuWsqABtVFC+iDCGg4UI2oUhSj/3obLzaJOpaipiSjosSw5ZiSj9+3pbS1eV2ltZOP0gwvyWwP7BiZZtfOie3ADdcPYxvjRo6dLdQ/oVxc4SyE26OMlhdF5xprwc5ZUSF2w==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR11MB6392.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(346002)(39860400002)(376002)(136003)(396003)(366004)(451199021)(8676002)(235185007)(5660300002)(8936002)(7416002)(21490400003)(2616005)(83380400001)(966005)(1076003)(6506007)(186003)(26005)(82960400001)(6512007)(38100700002)(86362001)(478600001)(54906003)(6486002)(6666004)(44144004)(66946007)(66556008)(66476007)(316002)(41300700001)(6916009)(4326008)(36756003)(30864003)(2906002)(2700100001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?dhLwmDqKKi1nmEROxhkjJDCJ/GnFG9xZyPOQOW+MAmDgvDpNHOJBtNst+ueB?=
- =?us-ascii?Q?KT8CDsY57Vkm1++finTWbxwSvokFdw6g3QLJFTFbwUGqTJQc5/82xeE8viE0?=
- =?us-ascii?Q?P4ZAT8foYX+RcPcJWp/LA/M3ZfCngr9wEuxXGN8BicMJ/GJfPBVWGfdCKdyM?=
- =?us-ascii?Q?S4BTJIOVNBoHqmEZF77M2BHZqgOtXCFVrNx1lRcZ2KTdCKGn2Ok3ooMVhVZ1?=
- =?us-ascii?Q?j20C22q+M0w7z8pRa49L9Cq0ixZ2Fb/PDCY2a1QBqsFE2VwpXfk3FJb/aFQ9?=
- =?us-ascii?Q?Z01SU6VkmFvMquWCeRBnJS6l40dYM8YIuP9Qd4FKOfj1bRTY0iJo/5uKtzdV?=
- =?us-ascii?Q?9DB/EWt0EWFSkrTrXRqMj/GX2XEjz2lfLiBLAckCWSsDAaEYEoa4Sd5z7zro?=
- =?us-ascii?Q?Prr7sh50DIs0sV9Ke56dK5DVemEsTnpMSayuw5EGrylhPDjBGGXhNfitKZ0t?=
- =?us-ascii?Q?0pqTI91nOap8iS1+1nq5tKwQ3jyOsbgS+qcQ7HQ5A+D6XdJPCK3mhNuU7ApL?=
- =?us-ascii?Q?EtIL0rRz6qPOAbUpRt9AlXEWCsJciWGDJyOBC+AoDQcn+QHRyeTqdC0aLxov?=
- =?us-ascii?Q?4agx60gpSVU2SAIuWppW5vtLZmy9A7y3WuakbGONFKNkXzS4zx9tnB1yEEGE?=
- =?us-ascii?Q?3VkwMl7rEpGzW4sez8fesCQ6UBErLw0pHFjkz0Ow5463Lpr4IzEB9c8/Rcgr?=
- =?us-ascii?Q?REWQXxrTCG0M5K6mq21ZEHsMpLMgdTT6kS+qdoRlRRb/lyIYnLuugwnmbVjW?=
- =?us-ascii?Q?/QGltiphMvaT9M5fAivibqZEviZG9eSPPl0dIA+ZWqWXoBdWEJhEQkVZmymP?=
- =?us-ascii?Q?w28zGsBWcwE+IAY4tm2ENSGrqJpb9RwjFB9GvjZLxaJRQmpc4U50rT8E7DJV?=
- =?us-ascii?Q?VvwuKz1DHJHcrmZ8z3Sd9+Fotc6eFxs6HSyBYGRi7NtbONb6hzqs1f1TiqU0?=
- =?us-ascii?Q?58tntpBM7WuErqRUF6cW52OTVBN1LV6CPxIYeRraax4SOYUmxqJGezPFrZIR?=
- =?us-ascii?Q?W5idXcnfS/alWQZdtz2Qh+S16LlnlJgZGGOgmpzOzgLoUftGy4kyxZEXx8gp?=
- =?us-ascii?Q?d+ikQd+rFkT4Sw2Uli0C2kEoXhSNdkZE8PohlBso8wmsjnwrJ9AAsw+s3r8R?=
- =?us-ascii?Q?VlL8KzePEm06mDjH0xA7bC31YMIRaQaCQOWelrJQNm0X0QFI60FdpuNCFtI0?=
- =?us-ascii?Q?GQ5vkimI8ikciG+Q9qY3X8Pydhz0a3QlSpm8V6xLBUdaBfKnSIFJPNrQPxAR?=
- =?us-ascii?Q?YG4PcHpLH7xn6oylhTG34pWZjgj5JahW6PonlI6CtVnOrFnE8q3mrdFM9Y/s?=
- =?us-ascii?Q?wuTS3AcXNLl+gmfY3voRHoCo5VvS5FUSCMPrqnvD2t9DvQwt94UjTvfLeD3y?=
- =?us-ascii?Q?occPPPxYUHHgeQ95wj7+RfHXXVEwdLQxlwSNDnudh2Q6w2xdnL181Ki4UsxR?=
- =?us-ascii?Q?paQNg08W4YYrNqcpoHV+jHRqkLm/2keU2OS4LUmHK1cyS8/wvFbw6QmTOHgv?=
- =?us-ascii?Q?cH9NQG3qXF7erb3r/RnmCdJ5MNadzWMVmbBcSoU12PxvtjNRgKxwEd5dr4O7?=
- =?us-ascii?Q?Xhm9aq/WEh7UBSWA46Ll3JUgDVcFMubjjEz2q/04?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 58dcaddb-0768-427b-2629-08db55d2264c
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?1QKU2omXLtxcHBswwG066lXvO1A7qxmeUNRno2NCnKydagy7AnmbMEw5aMHD?=
+ =?us-ascii?Q?PYcA7tCaVPuS34kVcICEXX+sCKqsKDfO6P19ra+CduTbuoasYJBWknDERVDX?=
+ =?us-ascii?Q?LnvPRks41PkoGtRo5fjwfkMQ1DWb23JA2RrBETcWR7vYxSl4qoNkEgQ/9xed?=
+ =?us-ascii?Q?NuEE8rUQ2tpeQcMUM48esiWGC5w5EtW3dY4DqMXFwHxQJ6iHkXGOLwsOIu0b?=
+ =?us-ascii?Q?fX5eEOQLi5z1/HUHTtyoUSeEqtTiXlSg2li4tZqQvCdayVbH21qskVX7Ac0J?=
+ =?us-ascii?Q?eKfPO111XjI96rRkzzy7i8TtF0vvf6oB87is5AGG0NfRFaMcx+MhiGKdRE/b?=
+ =?us-ascii?Q?ZTsbg7xhujNsht62+QXIurQOlsdHiu5xtBju+jw8XmDmzKpDCfbtMctJLiZc?=
+ =?us-ascii?Q?nxZQbuUa3WOAPCy2vJQL9+StMzf3D4tnx2eA97LAX+OlK9PH/zKbDXi6GXwi?=
+ =?us-ascii?Q?YRhp6KGVXOlXETb9Z7JhSsqHzZDHaQv5SF6VBD53dZPV17vgmPbqnvkuzm2R?=
+ =?us-ascii?Q?mkZqs107d05HranoFOKtSInCmC/f7SJJK4vMXRCi6M/auXt9LVx4PndYb/O9?=
+ =?us-ascii?Q?qktB/QUuDGnSXSaUAM97o8J8YkVYB6OmjuMN27OT6tvZCFdidFY5jEeMl1sy?=
+ =?us-ascii?Q?rZ6FrX/2VY0O1edafbxHLQJnq0o+WjEgnyxK9Pskn9cx9Po7+st5TuO+EFDG?=
+ =?us-ascii?Q?vdQVisf+aPi4o/Nky9FCoDkfAXjhPNU5cvoq5YGACDKMa2K2qYdQeZ7eM5TF?=
+ =?us-ascii?Q?O2MPSBIpoAitOHV8aLdjifjdcqugKila8Dqy+/9XwD5MqiEINtniksCZpnLC?=
+ =?us-ascii?Q?vegWPRrigPexjq8kpiNOSgPtaWkzvTqB1VILGX2V33Eyu3tffjd1ftD7W+iz?=
+ =?us-ascii?Q?BJA64kEJIf62lXeRmml/IQvHkQ1EsqRYiKE5r+8ZYZVxCOAyLpq13voP/raM?=
+ =?us-ascii?Q?r/qcnSsU0SBFo6S0Ap+0RN4CX/7tqbz4OADAmhFjON97YCHHQEMuS1ha4mTW?=
+ =?us-ascii?Q?rh87zGlG6SpFo6mPXpqRx9si5YX5T9HdWLCQh4fAhKPVn+w7iqtQDNWNJpos?=
+ =?us-ascii?Q?35BN5xy7IVVTPu+Q24fvkk0wPUtYR9myCbSqC6z3Yol3IZuFdY9C1kSA+KMv?=
+ =?us-ascii?Q?esbhvGNN7Bkoa7n6yCqGSy9ynupjDhtXPX+6Qnk37ClobO0c+WeqpIpt/SsX?=
+ =?us-ascii?Q?lshm0sRYBoapok0oqe1FdMkVeELZJrU1nQ2JnzthHPVhEALjagHLUEKG8zTU?=
+ =?us-ascii?Q?ISpR6UDUrKOiHaZjFU8HLpU3aypRKbCxiUjdbrD9KcgtOqVIM+zBdIjGmP4A?=
+ =?us-ascii?Q?Owcl3owlAl/21RmlKBH/L0Cjp0XmWu1B8zf1RS3XBH07acne8mM6Pf11d1Xn?=
+ =?us-ascii?Q?K4NKTMM5tEZcaqpF4EYXavm6cejIN175UDQXA4pR0ropALX3Fe6+vOYi1kOW?=
+ =?us-ascii?Q?91LbmLKMkqzJmYQLwDy1hlzuMS2tqbqQrraxHs/WTXXHEQ3rb7QrhPXUJAGF?=
+ =?us-ascii?Q?U4VdAJm5RcVJMvt6D/f7ouFHx9gsczEXy99Nfisq2+9VmC5Cwe1TkfwOX409?=
+ =?us-ascii?Q?JKsNFD11zXA+EpaQrpgmU4NTgJ/Ljr6tGv0nS2zl?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 12e247d5-50ac-4dd3-4142-08db55da1080
 X-MS-Exchange-CrossTenant-AuthSource: CY5PR11MB6392.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 May 2023 05:55:28.7549
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 May 2023 06:52:07.9461
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: usLikG+FEIjfUzl4ljy50GYJa+Il+WoF8ZHtirF3g5qrBQ/zijdM0IqA8Yuvc9Ct5lmFyzUEi15U0OzNPz2riw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB6029
+X-MS-Exchange-CrossTenant-UserPrincipalName: JFjDEeXvEclcxCUmpIWx4YWg9GTjTcbkU7H77xLeGvq/j2MvdQCwJj0uLm5z1uk4HSGK0APTznCEVCMDxSAJWA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR11MB5494
 X-OriginatorOrg: intel.com
 
---vcDeFZ/32v9hGKdR
+--PSbc1JmETRt9H6EQ
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
 
 Hello,
 
-kernel test robot noticed "assertion_failure" on:
+kernel test robot noticed "perf-sanity-tests.perf_all_metricgroups_test.fail" on:
 
-commit: a0e22a91f487957346732c6613eb6bd1b7c72ab1 ("[PATCH v2 3/3] mm: perform the mapping_map_writable() check after call_mmap()")
-url: https://github.com/intel-lab-lkp/linux/commits/Lorenzo-Stoakes/mm-drop-the-assumption-that-VM_SHARED-always-implies-writable/20230501-062815
-base: https://git.kernel.org/cgit/linux/kernel/git/akpm/mm.git mm-everything
-patch link: https://lore.kernel.org/all/6f3aea05c9cc46094b029cbd1138d163c1ae7f9d.1682890156.git.lstoakes@gmail.com/
-patch subject: [PATCH v2 3/3] mm: perform the mapping_map_writable() check after call_mmap()
+commit: aa2050030d65777596498256acd5f1584421e33a ("perf vendor events intel: Refresh sapphirerapids events")
+https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-in testcase: igt
-version: igt-x86_64-9e9cd7e6-1_20230506
-with following parameters:
+[test failed on linux-next/master aabe491169befbe5481144acf575a0260939764a]
 
-	group: group-11
+in testcase: perf-sanity-tests
 
-compiler: gcc-11
-test machine: 20 threads 1 sockets (Commet Lake) with 16G memory
+test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480+ (Sapphire Rapids) with 256G memory
 
 (please refer to attached dmesg/kmsg for entire log/backtrace)
 
 
 If you fix the issue, kindly add following tag
 | Reported-by: kernel test robot <yujie.liu@intel.com>
-| Link: https://lore.kernel.org/oe-lkp/202305161044.bba89e76-yujie.liu@intel.com
+| Link: https://lore.kernel.org/oe-lkp/202305161412.9fb7dc07-yujie.liu@intel.com
 
 
-2023-05-11 12:29:38 build/tests/gem_mmap_gtt --run-subtest basic-copy
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: basic-copy
-(gem_mmap_gtt:1138) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1138) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1138) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Subtest basic-copy failed.
-**** DEBUG ****
-(gem_mmap_gtt:1138) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1138) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1138) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:1138) igt_core-INFO: Stack trace:
-(gem_mmap_gtt:1138) igt_core-INFO:   #0 [__igt_fail_assert+0x106]
-(gem_mmap_gtt:1138) igt_core-INFO:   #1 [gem_mmap__gtt+0x3c]
-(gem_mmap_gtt:1138) igt_core-INFO:   #2 ../tests/i915/gem_mmap_gtt.c:89 create_pointer_size()
-(gem_mmap_gtt:1138) igt_core-INFO:   #3 ../tests/i915/gem_mmap_gtt.c:97 __igt_unique____real_main1261()
-(gem_mmap_gtt:1138) igt_core-INFO:   #4 ../tests/i915/gem_mmap_gtt.c:1261 main()
-(gem_mmap_gtt:1138) igt_core-INFO:   #5 ../csu/libc-start.c:308 __libc_start_main()
-(gem_mmap_gtt:1138) igt_core-INFO:   #6 [_start+0x2a]
-****  END  ****
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:89 create_pointer_size()
-  #3 ../tests/i915/gem_mmap_gtt.c:97 __igt_unique____real_main1261()
-  #4 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #5 ../csu/libc-start.c:308 __libc_start_main()
-  #6 [_start+0x2a]
-Subtest basic-copy: FAIL (0.039s)
+2023-05-11 16:00:41 sudo tools/perf/perf test 101
+101: perf all metricgroups test                                      : FAILED!
+
+$ make -j224 WERROR=0 LIBCLANGLLVM=1 CXXFLAGS+=-Wno-class-memaccess EXTRA_CXXFLAGS+=-Wno-class-memaccess ARCH= EXTRA_CFLAGS='-fno-omit-frame-pointer -fsanitize=undefined -fsanitize=address -Wno-array-bounds'
+
+$ ./perf test -v 101
+101: perf all metricgroups test
 ...
+=================================================================
+==37235==ERROR: LeakSanitizer: detected memory leaks
 
+Indirect leak of 2744 byte(s) in 1 object(s) allocated from:
+    #0 0x7f0110d45037 in __interceptor_calloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:154
+    #1 0x564efd406cf4 in zalloc (tools/perf/perf+0x221ecf4)
+    #2 0x564efcd28894 in evlist__new util/evlist.c:83
+    #3 0x564efce2116c in parse_ids util/metricgroup.c:1404
+    #4 0x564efce26c4a in parse_groups util/metricgroup.c:1463
+    #5 0x564efce2b3f4 in metricgroup__parse_groups util/metricgroup.c:1589
+    #6 0x564efca11a70 in cmd_stat tools/perf/builtin-stat.c:2519
+    #7 0x564efccb1ea7 in run_builtin tools/perf/perf.c:330
+    #8 0x564efccb2a89 in handle_internal_command tools/perf/perf.c:384
+    #9 0x564efc985809 in run_argv tools/perf/perf.c:428
+    #10 0x564efc985809 in main tools/perf/perf.c:562
+    #11 0x7f010feecd09 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x23d09)
 
-To reproduce:
+Indirect leak of 2368 byte(s) in 4 object(s) allocated from:
+    #0 0x7f0110d45037 in __interceptor_calloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:154
+    #1 0x564efd406cf4 in zalloc (tools/perf/perf+0x221ecf4)
+    #2 0x564efcd4faad in evsel__new_idx util/evsel.c:296
+    #3 0x564efcd8c8ce in __add_event util/parse-events.c:258
+    #4 0x564efcdb02e8 in parse_events_add_pmu util/parse-events.c:1551
+    #5 0x564efcdb36a3 in parse_events_multi_pmu_add util/parse-events.c:1622
+    #6 0x564efcf61ff3 in parse_events_parse util/parse-events.y:368
+    #7 0x564efcd9f39f in parse_events__scanner util/parse-events.c:2188
+    #8 0x564efcd9f39f in __parse_events util/parse-events.c:2260
+    #9 0x564efce21254 in parse_ids util/metricgroup.c:1411
+    #10 0x564efce26c4a in parse_groups util/metricgroup.c:1463
+    #11 0x564efce2b3f4 in metricgroup__parse_groups util/metricgroup.c:1589
+    #12 0x564efca11a70 in cmd_stat tools/perf/builtin-stat.c:2519
+    #13 0x564efccb1ea7 in run_builtin tools/perf/perf.c:330
+    #14 0x564efccb2a89 in handle_internal_command tools/perf/perf.c:384
+    #15 0x564efc985809 in run_argv tools/perf/perf.c:428
+    #16 0x564efc985809 in main tools/perf/perf.c:562
+    #17 0x7f010feecd09 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x23d09)
 
-        git clone https://github.com/intel/lkp-tests.git
-        cd lkp-tests
-        sudo bin/lkp install job.yaml           # job file is attached in this email
-        bin/lkp split-job --compatible job.yaml # generate the yaml file for lkp run
-        sudo bin/lkp run generated-yaml-file
+Indirect leak of 592 byte(s) in 1 object(s) allocated from:
+    #0 0x7f0110d45037 in __interceptor_calloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:154
+    #1 0x564efd406cf4 in zalloc (tools/perf/perf+0x221ecf4)
+    #2 0x564efcd4faad in evsel__new_idx util/evsel.c:296
+    #3 0x564efcd97faf in __add_event util/parse-events.c:258
+    #4 0x564efcd97faf in add_event_tool util/parse-events.c:313
+    #5 0x564efcd97faf in parse_events_add_tool util/parse-events.c:1402
+    #6 0x564efcf60c2b in parse_events_parse util/parse-events.y:480
+    #7 0x564efcd9f39f in parse_events__scanner util/parse-events.c:2188
+    #8 0x564efcd9f39f in __parse_events util/parse-events.c:2260
+    #9 0x564efce21254 in parse_ids util/metricgroup.c:1411
+    #10 0x564efce26c4a in parse_groups util/metricgroup.c:1463
+    #11 0x564efce2b3f4 in metricgroup__parse_groups util/metricgroup.c:1589
+    #12 0x564efca11a70 in cmd_stat tools/perf/builtin-stat.c:2519
+    #13 0x564efccb1ea7 in run_builtin tools/perf/perf.c:330
+    #14 0x564efccb2a89 in handle_internal_command tools/perf/perf.c:384
+    #15 0x564efc985809 in run_argv tools/perf/perf.c:428
+    #16 0x564efc985809 in main tools/perf/perf.c:562
+    #17 0x7f010feecd09 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x23d09)
 
-        # if come across any failure that blocks the test,
-        # please remove ~/.lkp and /lkp dir to run from a clean state.
+Indirect leak of 160 byte(s) in 4 object(s) allocated from:
+    #0 0x7f0110d45037 in __interceptor_calloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:154
+    #1 0x564efd406cf4 in zalloc (tools/perf/perf+0x221ecf4)
+    #2 0x564efcd8ff51 in get_config_terms util/parse-events.c:1229
+    #3 0x564efcdaf91e in parse_events_add_pmu util/parse-events.c:1531
+    #4 0x564efcdb36a3 in parse_events_multi_pmu_add util/parse-events.c:1622
+    #5 0x564efcf61ff3 in parse_events_parse util/parse-events.y:368
+    #6 0x564efcd9f39f in parse_events__scanner util/parse-events.c:2188
+    #7 0x564efcd9f39f in __parse_events util/parse-events.c:2260
+    #8 0x564efce21254 in parse_ids util/metricgroup.c:1411
+    #9 0x564efce26c4a in parse_groups util/metricgroup.c:1463
+    #10 0x564efce2b3f4 in metricgroup__parse_groups util/metricgroup.c:1589
+    #11 0x564efca11a70 in cmd_stat tools/perf/builtin-stat.c:2519
+    #12 0x564efccb1ea7 in run_builtin tools/perf/perf.c:330
+    #13 0x564efccb2a89 in handle_internal_command tools/perf/perf.c:384
+    #14 0x564efc985809 in run_argv tools/perf/perf.c:428
+    #15 0x564efc985809 in main tools/perf/perf.c:562
+    #16 0x7f010feecd09 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x23d09)
+
+Indirect leak of 110 byte(s) in 4 object(s) allocated from:
+    #0 0x7f0110cf2817 in __interceptor_strdup ../../../../src/libsanitizer/asan/asan_interceptors.cpp:452
+    #1 0x564efce21772 in decode_all_metric_ids util/metricgroup.c:602
+    #2 0x564efce21772 in parse_ids util/metricgroup.c:1416
+    #3 0x564efce26c4a in parse_groups util/metricgroup.c:1463
+    #4 0x564efce2b3f4 in metricgroup__parse_groups util/metricgroup.c:1589
+    #5 0x564efca11a70 in cmd_stat tools/perf/builtin-stat.c:2519
+    #6 0x564efccb1ea7 in run_builtin tools/perf/perf.c:330
+    #7 0x564efccb2a89 in handle_internal_command tools/perf/perf.c:384
+    #8 0x564efc985809 in run_argv tools/perf/perf.c:428
+    #9 0x564efc985809 in main tools/perf/perf.c:562
+    #10 0x7f010feecd09 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x23d09)
+
+Indirect leak of 110 byte(s) in 4 object(s) allocated from:
+    #0 0x7f0110cf2817 in __interceptor_strdup ../../../../src/libsanitizer/asan/asan_interceptors.cpp:452
+    #1 0x564efce21924 in decode_all_metric_ids util/metricgroup.c:630
+    #2 0x564efce21924 in parse_ids util/metricgroup.c:1416
+    #3 0x564efce26c4a in parse_groups util/metricgroup.c:1463
+    #4 0x564efce2b3f4 in metricgroup__parse_groups util/metricgroup.c:1589
+    #5 0x564efca11a70 in cmd_stat tools/perf/builtin-stat.c:2519
+    #6 0x564efccb1ea7 in run_builtin tools/perf/perf.c:330
+    #7 0x564efccb2a89 in handle_internal_command tools/perf/perf.c:384
+    #8 0x564efc985809 in run_argv tools/perf/perf.c:428
+    #9 0x564efc985809 in main tools/perf/perf.c:562
+    #10 0x7f010feecd09 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x23d09)
+
+Indirect leak of 16 byte(s) in 4 object(s) allocated from:
+    #0 0x7f0110cf2817 in __interceptor_strdup ../../../../src/libsanitizer/asan/asan_interceptors.cpp:452
+    #1 0x564efcdb0395 in parse_events_add_pmu util/parse-events.c:1561
+    #2 0x564efcdb36a3 in parse_events_multi_pmu_add util/parse-events.c:1622
+    #3 0x564efcf61ff3 in parse_events_parse util/parse-events.y:368
+    #4 0x564efcd9f39f in parse_events__scanner util/parse-events.c:2188
+    #5 0x564efcd9f39f in __parse_events util/parse-events.c:2260
+    #6 0x564efce21254 in parse_ids util/metricgroup.c:1411
+    #7 0x564efce26c4a in parse_groups util/metricgroup.c:1463
+    #8 0x564efce2b3f4 in metricgroup__parse_groups util/metricgroup.c:1589
+    #9 0x564efca11a70 in cmd_stat tools/perf/builtin-stat.c:2519
+    #10 0x564efccb1ea7 in run_builtin tools/perf/perf.c:330
+    #11 0x564efccb2a89 in handle_internal_command tools/perf/perf.c:384
+    #12 0x564efc985809 in run_argv tools/perf/perf.c:428
+    #13 0x564efc985809 in main tools/perf/perf.c:562
+    #14 0x7f010feecd09 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x23d09)
+
+Indirect leak of 14 byte(s) in 1 object(s) allocated from:
+    #0 0x7f0110cf2817 in __interceptor_strdup ../../../../src/libsanitizer/asan/asan_interceptors.cpp:452
+    #1 0x564efcd9c0a9 in parse_events_name util/parse-events.c:1991
+    #2 0x564efcf61307 in parse_events_parse util/parse-events.y:266
+    #3 0x564efcd9f39f in parse_events__scanner util/parse-events.c:2188
+    #4 0x564efcd9f39f in __parse_events util/parse-events.c:2260
+    #5 0x564efce21254 in parse_ids util/metricgroup.c:1411
+    #6 0x564efce26c4a in parse_groups util/metricgroup.c:1463
+    #7 0x564efce2b3f4 in metricgroup__parse_groups util/metricgroup.c:1589
+    #8 0x564efca11a70 in cmd_stat tools/perf/builtin-stat.c:2519
+    #9 0x564efccb1ea7 in run_builtin tools/perf/perf.c:330
+    #10 0x564efccb2a89 in handle_internal_command tools/perf/perf.c:384
+    #11 0x564efc985809 in run_argv tools/perf/perf.c:428
+    #12 0x564efc985809 in main tools/perf/perf.c:562
+    #13 0x7f010feecd09 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x23d09)
+
+Indirect leak of 12 byte(s) in 1 object(s) allocated from:
+    #0 0x7f0110d44e8f in __interceptor_malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:145
+    #1 0x564efd3eadad in perf_cpu_map__alloc (tools/perf/perf+0x2202dad)
+    #2 0x564efd3eb378 in cpu_map__trim_new (tools/perf/perf+0x2203378)
+    #3 0x564efd3ecc5e in perf_cpu_map__new (tools/perf/perf+0x2204c5e)
+    #4 0x564efcd97f46 in __add_event util/parse-events.c:247
+    #5 0x564efcd97f46 in add_event_tool util/parse-events.c:313
+    #6 0x564efcd97f46 in parse_events_add_tool util/parse-events.c:1402
+    #7 0x564efcf60c2b in parse_events_parse util/parse-events.y:480
+    #8 0x564efcd9f39f in parse_events__scanner util/parse-events.c:2188
+    #9 0x564efcd9f39f in __parse_events util/parse-events.c:2260
+    #10 0x564efce21254 in parse_ids util/metricgroup.c:1411
+    #11 0x564efce26c4a in parse_groups util/metricgroup.c:1463
+    #12 0x564efce2b3f4 in metricgroup__parse_groups util/metricgroup.c:1589
+    #13 0x564efca11a70 in cmd_stat tools/perf/builtin-stat.c:2519
+    #14 0x564efccb1ea7 in run_builtin tools/perf/perf.c:330
+    #15 0x564efccb2a89 in handle_internal_command tools/perf/perf.c:384
+    #16 0x564efc985809 in run_argv tools/perf/perf.c:428
+    #17 0x564efc985809 in main tools/perf/perf.c:562
+    #18 0x7f010feecd09 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x23d09)
+
+Indirect leak of 4 byte(s) in 4 object(s) allocated from:
+    #0 0x7f0110cf2817 in __interceptor_strdup ../../../../src/libsanitizer/asan/asan_interceptors.cpp:452
+    #1 0x564efcdb0688 in parse_events_add_pmu util/parse-events.c:1569
+    #2 0x564efcdb36a3 in parse_events_multi_pmu_add util/parse-events.c:1622
+    #3 0x564efcf61ff3 in parse_events_parse util/parse-events.y:368
+    #4 0x564efcd9f39f in parse_events__scanner util/parse-events.c:2188
+    #5 0x564efcd9f39f in __parse_events util/parse-events.c:2260
+    #6 0x564efce21254 in parse_ids util/metricgroup.c:1411
+    #7 0x564efce26c4a in parse_groups util/metricgroup.c:1463
+    #8 0x564efce2b3f4 in metricgroup__parse_groups util/metricgroup.c:1589
+    #9 0x564efca11a70 in cmd_stat tools/perf/builtin-stat.c:2519
+    #10 0x564efccb1ea7 in run_builtin tools/perf/perf.c:330
+    #11 0x564efccb2a89 in handle_internal_command tools/perf/perf.c:384
+    #12 0x564efc985809 in run_argv tools/perf/perf.c:428
+    #13 0x564efc985809 in main tools/perf/perf.c:562
+    #14 0x7f010feecd09 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x23d09)
+
+Indirect leak of 3 byte(s) in 1 object(s) allocated from:
+    #0 0x7f0110cf2817 in __interceptor_strdup ../../../../src/libsanitizer/asan/asan_interceptors.cpp:452
+    #1 0x564efcd98377 in add_event_tool util/parse-events.c:324
+    #2 0x564efcd98377 in parse_events_add_tool util/parse-events.c:1402
+    #3 0x564efcf60c2b in parse_events_parse util/parse-events.y:480
+    #4 0x564efcd9f39f in parse_events__scanner util/parse-events.c:2188
+    #5 0x564efcd9f39f in __parse_events util/parse-events.c:2260
+    #6 0x564efce21254 in parse_ids util/metricgroup.c:1411
+    #7 0x564efce26c4a in parse_groups util/metricgroup.c:1463
+    #8 0x564efce2b3f4 in metricgroup__parse_groups util/metricgroup.c:1589
+    #9 0x564efca11a70 in cmd_stat tools/perf/builtin-stat.c:2519
+    #10 0x564efccb1ea7 in run_builtin tools/perf/perf.c:330
+    #11 0x564efccb2a89 in handle_internal_command tools/perf/perf.c:384
+    #12 0x564efc985809 in run_argv tools/perf/perf.c:428
+    #13 0x564efc985809 in main tools/perf/perf.c:562
+    #14 0x7f010feecd09 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x23d09)
+
+SUMMARY: AddressSanitizer: 6133 byte(s) leaked in 29 allocation(s).
+test child finished with -1
+---- end ----
+perf all metricgroups test: FAILED!
 
 
 -- 
 0-DAY CI Kernel Test Service
 https://github.com/intel/lkp-tests
 
---vcDeFZ/32v9hGKdR
+--PSbc1JmETRt9H6EQ
 Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: attachment; filename="config-6.3.0-10673-ga0e22a91f487"
+Content-Disposition: attachment;
+	filename="config-6.2.0-rc7-00145-gaa2050030d65"
 
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86_64 6.3.0 Kernel Configuration
+# Linux/x86_64 6.2.0-rc7 Kernel Configuration
 #
 CONFIG_CC_VERSION_TEXT="gcc-11 (Debian 11.3.0-12) 11.3.0"
 CONFIG_CC_IS_GCC=y
@@ -242,7 +404,6 @@ CONFIG_CC_HAS_ASM_GOTO_TIED_OUTPUT=y
 CONFIG_CC_HAS_ASM_INLINE=y
 CONFIG_CC_HAS_NO_PROFILE_FN_ATTR=y
 CONFIG_PAHOLE_VERSION=125
-CONFIG_CONSTRUCTORS=y
 CONFIG_IRQ_WORK=y
 CONFIG_BUILDTIME_TABLE_SORT=y
 CONFIG_THREAD_INFO_IN_TASK=y
@@ -295,6 +456,7 @@ CONFIG_GENERIC_IRQ_MIGRATION=y
 CONFIG_GENERIC_IRQ_INJECTION=y
 CONFIG_HARDIRQS_SW_RESEND=y
 CONFIG_IRQ_DOMAIN=y
+CONFIG_IRQ_SIM=y
 CONFIG_IRQ_DOMAIN_HIERARCHY=y
 CONFIG_GENERIC_MSI_IRQ=y
 CONFIG_IRQ_MSI_IOMMU=y
@@ -330,7 +492,7 @@ CONFIG_CONTEXT_TRACKING_USER=y
 # CONFIG_CONTEXT_TRACKING_USER_FORCE is not set
 CONFIG_NO_HZ=y
 CONFIG_HIGH_RES_TIMERS=y
-CONFIG_CLOCKSOURCE_WATCHDOG_MAX_SKEW_US=125
+CONFIG_CLOCKSOURCE_WATCHDOG_MAX_SKEW_US=100
 # end of Timers subsystem
 
 CONFIG_BPF=y
@@ -345,8 +507,10 @@ CONFIG_BPF_JIT=y
 CONFIG_BPF_JIT_ALWAYS_ON=y
 CONFIG_BPF_JIT_DEFAULT_ON=y
 CONFIG_BPF_UNPRIV_DEFAULT_OFF=y
-# CONFIG_BPF_PRELOAD is not set
-# CONFIG_BPF_LSM is not set
+CONFIG_USERMODE_DRIVER=y
+CONFIG_BPF_PRELOAD=y
+CONFIG_BPF_PRELOAD_UMD=y
+CONFIG_BPF_LSM=y
 # end of BPF subsystem
 
 CONFIG_PREEMPT_VOLUNTARY_BUILD=y
@@ -379,22 +543,16 @@ CONFIG_CPU_ISOLATION=y
 # RCU Subsystem
 #
 CONFIG_TREE_RCU=y
-CONFIG_RCU_EXPERT=y
+# CONFIG_RCU_EXPERT is not set
+CONFIG_SRCU=y
 CONFIG_TREE_SRCU=y
 CONFIG_TASKS_RCU_GENERIC=y
-CONFIG_FORCE_TASKS_RCU=y
-CONFIG_TASKS_RCU=y
-# CONFIG_FORCE_TASKS_RUDE_RCU is not set
 CONFIG_TASKS_RUDE_RCU=y
-CONFIG_FORCE_TASKS_TRACE_RCU=y
 CONFIG_TASKS_TRACE_RCU=y
 CONFIG_RCU_STALL_COMMON=y
 CONFIG_RCU_NEED_SEGCBLIST=y
-CONFIG_RCU_FANOUT=64
-CONFIG_RCU_FANOUT_LEAF=16
 CONFIG_RCU_NOCB_CPU=y
 # CONFIG_RCU_NOCB_CPU_DEFAULT_ALL is not set
-# CONFIG_TASKS_TRACE_RCU_READ_MB is not set
 # CONFIG_RCU_LAZY is not set
 # end of RCU Subsystem
 
@@ -403,6 +561,7 @@ CONFIG_IKCONFIG_PROC=y
 # CONFIG_IKHEADERS is not set
 CONFIG_LOG_BUF_SHIFT=20
 CONFIG_LOG_CPU_MAX_BUF_SHIFT=12
+CONFIG_PRINTK_SAFE_LOG_BUF_SHIFT=13
 # CONFIG_PRINTK_INDEX is not set
 CONFIG_HAVE_UNSTABLE_SCHED_CLOCK=y
 
@@ -417,6 +576,7 @@ CONFIG_ARCH_WANT_BATCHED_UNMAP_TLB_FLUSH=y
 CONFIG_CC_HAS_INT128=y
 CONFIG_CC_IMPLICIT_FALLTHROUGH="-Wimplicit-fallthrough=5"
 CONFIG_GCC11_NO_ARRAY_BOUNDS=y
+CONFIG_GCC12_NO_ARRAY_BOUNDS=y
 CONFIG_CC_NO_ARRAY_BOUNDS=y
 CONFIG_ARCH_SUPPORTS_INT128=y
 CONFIG_NUMA_BALANCING=y
@@ -432,7 +592,6 @@ CONFIG_CGROUP_SCHED=y
 CONFIG_FAIR_GROUP_SCHED=y
 CONFIG_CFS_BANDWIDTH=y
 CONFIG_RT_GROUP_SCHED=y
-CONFIG_SCHED_MM_CID=y
 CONFIG_CGROUP_PIDS=y
 CONFIG_CGROUP_RDMA=y
 CONFIG_CGROUP_FREEZER=y
@@ -442,7 +601,7 @@ CONFIG_PROC_PID_CPUSET=y
 CONFIG_CGROUP_DEVICE=y
 CONFIG_CGROUP_CPUACCT=y
 CONFIG_CGROUP_PERF=y
-# CONFIG_CGROUP_BPF is not set
+CONFIG_CGROUP_BPF=y
 # CONFIG_CGROUP_MISC is not set
 # CONFIG_CGROUP_DEBUG is not set
 CONFIG_SOCK_CGROUP_DATA=y
@@ -453,8 +612,9 @@ CONFIG_IPC_NS=y
 CONFIG_USER_NS=y
 CONFIG_PID_NS=y
 CONFIG_NET_NS=y
-# CONFIG_CHECKPOINT_RESTORE is not set
+CONFIG_CHECKPOINT_RESTORE=y
 CONFIG_SCHED_AUTOGROUP=y
+# CONFIG_SYSFS_DEPRECATED is not set
 CONFIG_RELAY=y
 CONFIG_BLK_DEV_INITRD=y
 CONFIG_INITRAMFS_SOURCE=""
@@ -465,7 +625,8 @@ CONFIG_RD_XZ=y
 CONFIG_RD_LZO=y
 CONFIG_RD_LZ4=y
 CONFIG_RD_ZSTD=y
-# CONFIG_BOOT_CONFIG is not set
+CONFIG_BOOT_CONFIG=y
+# CONFIG_BOOT_CONFIG_EMBED is not set
 CONFIG_INITRAMFS_PRESERVE_MTIME=y
 CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y
 # CONFIG_CC_OPTIMIZE_FOR_SIZE is not set
@@ -475,7 +636,7 @@ CONFIG_SYSCTL=y
 CONFIG_HAVE_UID16=y
 CONFIG_SYSCTL_EXCEPTION_TRACE=y
 CONFIG_HAVE_PCSPKR_PLATFORM=y
-# CONFIG_EXPERT is not set
+CONFIG_EXPERT=y
 CONFIG_UID16=y
 CONFIG_MULTIUSER=y
 CONFIG_SGETMASK_SYSCALL=y
@@ -506,9 +667,11 @@ CONFIG_KALLSYMS_BASE_RELATIVE=y
 CONFIG_ARCH_HAS_MEMBARRIER_SYNC_CORE=y
 CONFIG_KCMP=y
 CONFIG_RSEQ=y
-# CONFIG_EMBEDDED is not set
+# CONFIG_DEBUG_RSEQ is not set
+CONFIG_EMBEDDED=y
 CONFIG_HAVE_PERF_EVENTS=y
 CONFIG_GUEST_PERF_EVENTS=y
+# CONFIG_PC104 is not set
 
 #
 # Kernel Performance Events And Counters
@@ -535,7 +698,6 @@ CONFIG_ARCH_MMAP_RND_BITS_MAX=32
 CONFIG_ARCH_MMAP_RND_COMPAT_BITS_MIN=8
 CONFIG_ARCH_MMAP_RND_COMPAT_BITS_MAX=16
 CONFIG_GENERIC_ISA_DMA=y
-CONFIG_GENERIC_CSUM=y
 CONFIG_GENERIC_BUG=y
 CONFIG_GENERIC_BUG_RELATIVE_POINTERS=y
 CONFIG_ARCH_MAY_HAVE_PC_FDC=y
@@ -544,7 +706,6 @@ CONFIG_ARCH_HAS_CPU_RELAX=y
 CONFIG_ARCH_HIBERNATION_POSSIBLE=y
 CONFIG_ARCH_SUSPEND_POSSIBLE=y
 CONFIG_AUDIT_ARCH=y
-CONFIG_KASAN_SHADOW_OFFSET=0xdffffc0000000000
 CONFIG_HAVE_INTEL_TXT=y
 CONFIG_X86_64_SMP=y
 CONFIG_ARCH_SUPPORTS_UPROBES=y
@@ -561,7 +722,7 @@ CONFIG_X86_FEATURE_NAMES=y
 CONFIG_X86_X2APIC=y
 CONFIG_X86_MPPARSE=y
 # CONFIG_GOLDFISH is not set
-# CONFIG_X86_CPU_RESCTRL is not set
+CONFIG_X86_CPU_RESCTRL=y
 CONFIG_X86_EXTENDED_PLATFORM=y
 # CONFIG_X86_NUMACHIP is not set
 # CONFIG_X86_VSMP is not set
@@ -590,11 +751,14 @@ CONFIG_PARAVIRT_CLOCK=y
 CONFIG_INTEL_TDX_GUEST=y
 # CONFIG_MK8 is not set
 # CONFIG_MPSC is not set
-# CONFIG_MCORE2 is not set
+CONFIG_MCORE2=y
 # CONFIG_MATOM is not set
-CONFIG_GENERIC_CPU=y
+# CONFIG_GENERIC_CPU is not set
 CONFIG_X86_INTERNODE_CACHE_SHIFT=6
 CONFIG_X86_L1_CACHE_SHIFT=6
+CONFIG_X86_INTEL_USERCOPY=y
+CONFIG_X86_USE_PPRO_CHECKSUM=y
+CONFIG_X86_P6_NOP=y
 CONFIG_X86_TSC=y
 CONFIG_X86_CMPXCHG64=y
 CONFIG_X86_CMOV=y
@@ -602,15 +766,15 @@ CONFIG_X86_MINIMUM_CPU_FAMILY=64
 CONFIG_X86_DEBUGCTLMSR=y
 CONFIG_IA32_FEAT_CTL=y
 CONFIG_X86_VMX_FEATURE_NAMES=y
+CONFIG_PROCESSOR_SELECT=y
 CONFIG_CPU_SUP_INTEL=y
-CONFIG_CPU_SUP_AMD=y
-CONFIG_CPU_SUP_HYGON=y
-CONFIG_CPU_SUP_CENTAUR=y
-CONFIG_CPU_SUP_ZHAOXIN=y
+# CONFIG_CPU_SUP_AMD is not set
+# CONFIG_CPU_SUP_HYGON is not set
+# CONFIG_CPU_SUP_CENTAUR is not set
+# CONFIG_CPU_SUP_ZHAOXIN is not set
 CONFIG_HPET_TIMER=y
 CONFIG_HPET_EMULATE_RTC=y
 CONFIG_DMI=y
-# CONFIG_GART_IOMMU is not set
 CONFIG_BOOT_VESA_SUPPORT=y
 CONFIG_MAXSMP=y
 CONFIG_NR_CPUS_RANGE_BEGIN=8192
@@ -627,7 +791,6 @@ CONFIG_X86_REROUTE_FOR_BROKEN_BOOT_IRQS=y
 CONFIG_X86_MCE=y
 CONFIG_X86_MCELOG_LEGACY=y
 CONFIG_X86_MCE_INTEL=y
-# CONFIG_X86_MCE_AMD is not set
 CONFIG_X86_MCE_THRESHOLD=y
 CONFIG_X86_MCE_INJECT=m
 
@@ -637,9 +800,6 @@ CONFIG_X86_MCE_INJECT=m
 CONFIG_PERF_EVENTS_INTEL_UNCORE=m
 CONFIG_PERF_EVENTS_INTEL_RAPL=m
 CONFIG_PERF_EVENTS_INTEL_CSTATE=m
-# CONFIG_PERF_EVENTS_AMD_POWER is not set
-# CONFIG_PERF_EVENTS_AMD_UNCORE is not set
-# CONFIG_PERF_EVENTS_AMD_BRS is not set
 # end of Performance monitoring
 
 CONFIG_X86_16BIT=y
@@ -648,15 +808,13 @@ CONFIG_X86_VSYSCALL_EMULATION=y
 CONFIG_X86_IOPL_IOPERM=y
 CONFIG_MICROCODE=y
 CONFIG_MICROCODE_INTEL=y
-# CONFIG_MICROCODE_AMD is not set
 CONFIG_MICROCODE_LATE_LOADING=y
-CONFIG_X86_MSR=m
+CONFIG_X86_MSR=y
 CONFIG_X86_CPUID=y
 CONFIG_X86_5LEVEL=y
 CONFIG_X86_DIRECT_GBPAGES=y
 # CONFIG_X86_CPA_STATISTICS is not set
 CONFIG_X86_MEM_ENCRYPT=y
-# CONFIG_AMD_MEM_ENCRYPT is not set
 CONFIG_NUMA=y
 # CONFIG_AMD_NUMA is not set
 CONFIG_X86_64_ACPI_NUMA=y
@@ -681,10 +839,10 @@ CONFIG_X86_UMIP=y
 CONFIG_CC_HAS_IBT=y
 CONFIG_X86_KERNEL_IBT=y
 CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS=y
-# CONFIG_X86_INTEL_TSX_MODE_OFF is not set
+CONFIG_X86_INTEL_TSX_MODE_OFF=y
 # CONFIG_X86_INTEL_TSX_MODE_ON is not set
-CONFIG_X86_INTEL_TSX_MODE_AUTO=y
-# CONFIG_X86_SGX is not set
+# CONFIG_X86_INTEL_TSX_MODE_AUTO is not set
+CONFIG_X86_SGX=y
 CONFIG_EFI=y
 CONFIG_EFI_STUB=y
 CONFIG_EFI_HANDOVER_PROTOCOL=y
@@ -706,9 +864,8 @@ CONFIG_KEXEC_JUMP=y
 CONFIG_PHYSICAL_START=0x1000000
 CONFIG_RELOCATABLE=y
 # CONFIG_RANDOMIZE_BASE is not set
-CONFIG_PHYSICAL_ALIGN=0x200000
+CONFIG_PHYSICAL_ALIGN=0x1000000
 CONFIG_DYNAMIC_MEMORY_LAYOUT=y
-# CONFIG_ADDRESS_MASKING is not set
 CONFIG_HOTPLUG_CPU=y
 CONFIG_BOOTPARAM_HOTPLUG_CPU0=y
 # CONFIG_DEBUG_HOTPLUG_CPU0 is not set
@@ -730,7 +887,6 @@ CONFIG_FUNCTION_PADDING_BYTES=16
 CONFIG_SPECULATION_MITIGATIONS=y
 CONFIG_PAGE_TABLE_ISOLATION=y
 # CONFIG_RETPOLINE is not set
-CONFIG_CPU_IBPB_ENTRY=y
 CONFIG_CPU_IBRS_ENTRY=y
 # CONFIG_SLS is not set
 CONFIG_ARCH_HAS_ADD_PAGES=y
@@ -742,6 +898,7 @@ CONFIG_ARCH_MHP_MEMMAP_ON_MEMORY_ENABLE=y
 CONFIG_ARCH_HIBERNATION_HEADER=y
 CONFIG_SUSPEND=y
 CONFIG_SUSPEND_FREEZER=y
+# CONFIG_SUSPEND_SKIP_SYNC is not set
 CONFIG_HIBERNATE_CALLBACKS=y
 CONFIG_HIBERNATION=y
 CONFIG_HIBERNATION_SNAPSHOT_DEV=y
@@ -756,6 +913,7 @@ CONFIG_PM_DEBUG=y
 # CONFIG_PM_ADVANCED_DEBUG is not set
 # CONFIG_PM_TEST_SUSPEND is not set
 CONFIG_PM_SLEEP_DEBUG=y
+# CONFIG_DPM_WATCHDOG is not set
 # CONFIG_PM_TRACE_RTC is not set
 CONFIG_PM_CLK=y
 # CONFIG_WQ_POWER_EFFICIENT_DEFAULT is not set
@@ -800,6 +958,7 @@ CONFIG_ACPI_SBS=m
 CONFIG_ACPI_HED=y
 # CONFIG_ACPI_CUSTOM_METHOD is not set
 CONFIG_ACPI_BGRT=y
+# CONFIG_ACPI_REDUCED_HARDWARE_ONLY is not set
 CONFIG_ACPI_NFIT=m
 # CONFIG_NFIT_SECURITY_DEBUG is not set
 CONFIG_ACPI_NUMA=y
@@ -850,9 +1009,7 @@ CONFIG_X86_INTEL_PSTATE=y
 # CONFIG_X86_AMD_PSTATE is not set
 # CONFIG_X86_AMD_PSTATE_UT is not set
 CONFIG_X86_ACPI_CPUFREQ=m
-CONFIG_X86_ACPI_CPUFREQ_CPB=y
 # CONFIG_X86_POWERNOW_K8 is not set
-# CONFIG_X86_AMD_FREQ_SENSITIVITY is not set
 # CONFIG_X86_SPEEDSTEP_CENTRINO is not set
 CONFIG_X86_P4_CLOCKMOD=m
 
@@ -866,10 +1023,10 @@ CONFIG_X86_SPEEDSTEP_LIB=m
 # CPU Idle
 #
 CONFIG_CPU_IDLE=y
-# CONFIG_CPU_IDLE_GOV_LADDER is not set
+CONFIG_CPU_IDLE_GOV_LADDER=y
 CONFIG_CPU_IDLE_GOV_MENU=y
 # CONFIG_CPU_IDLE_GOV_TEO is not set
-CONFIG_CPU_IDLE_GOV_HALTPOLL=y
+# CONFIG_CPU_IDLE_GOV_HALTPOLL is not set
 CONFIG_HALTPOLL_CPUIDLE=y
 # end of CPU Idle
 
@@ -882,8 +1039,9 @@ CONFIG_INTEL_IDLE=y
 CONFIG_PCI_DIRECT=y
 CONFIG_PCI_MMCONFIG=y
 CONFIG_MMCONF_FAM10H=y
+# CONFIG_PCI_CNB20LE_QUIRK is not set
+# CONFIG_ISA_BUS is not set
 CONFIG_ISA_DMA_API=y
-CONFIG_AMD_NB=y
 # end of Bus options (PCI etc.)
 
 #
@@ -916,10 +1074,11 @@ CONFIG_HAVE_KVM_IRQ_BYPASS=y
 CONFIG_HAVE_KVM_NO_POLL=y
 CONFIG_KVM_XFER_TO_GUEST_WORK=y
 CONFIG_HAVE_KVM_PM_NOTIFIER=y
-CONFIG_KVM_GENERIC_HARDWARE_ENABLING=y
 CONFIG_VIRTUALIZATION=y
 CONFIG_KVM=m
+# CONFIG_KVM_WERROR is not set
 CONFIG_KVM_INTEL=m
+# CONFIG_X86_SGX_KVM is not set
 # CONFIG_KVM_AMD is not set
 CONFIG_KVM_SMM=y
 # CONFIG_KVM_XEN is not set
@@ -927,13 +1086,13 @@ CONFIG_AS_AVX512=y
 CONFIG_AS_SHA1_NI=y
 CONFIG_AS_SHA256_NI=y
 CONFIG_AS_TPAUSE=y
-CONFIG_AS_GFNI=y
 
 #
 # General architecture-dependent options
 #
 CONFIG_CRASH_CORE=y
 CONFIG_KEXEC_CORE=y
+CONFIG_HAVE_IMA_KEXEC=y
 CONFIG_HOTPLUG_SMT=y
 CONFIG_GENERIC_ENTRY=y
 CONFIG_KPROBES=y
@@ -984,7 +1143,6 @@ CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE=y
 CONFIG_MMU_GATHER_TABLE_FREE=y
 CONFIG_MMU_GATHER_RCU_TABLE_FREE=y
 CONFIG_MMU_GATHER_MERGE_VMAS=y
-CONFIG_MMU_LAZY_TLB_REFCOUNT=y
 CONFIG_ARCH_HAVE_NMI_SAFE_CMPXCHG=y
 CONFIG_ARCH_HAS_NMI_SAFE_THIS_CPU_OPS=y
 CONFIG_HAVE_ALIGNED_STRUCT_PAGE=y
@@ -1046,7 +1204,7 @@ CONFIG_HAVE_ARCH_VMAP_STACK=y
 CONFIG_VMAP_STACK=y
 CONFIG_HAVE_ARCH_RANDOMIZE_KSTACK_OFFSET=y
 CONFIG_RANDOMIZE_KSTACK_OFFSET=y
-# CONFIG_RANDOMIZE_KSTACK_OFFSET_DEFAULT is not set
+CONFIG_RANDOMIZE_KSTACK_OFFSET_DEFAULT=y
 CONFIG_ARCH_HAS_STRICT_KERNEL_RWX=y
 CONFIG_STRICT_KERNEL_RWX=y
 CONFIG_ARCH_HAS_STRICT_MODULE_RWX=y
@@ -1066,6 +1224,7 @@ CONFIG_ARCH_SUPPORTS_PAGE_TABLE_CHECK=y
 CONFIG_ARCH_HAS_ELFCORE_COMPAT=y
 CONFIG_ARCH_HAS_PARANOID_L1D_FLUSH=y
 CONFIG_DYNAMIC_SIGFRAME=y
+CONFIG_HAVE_ARCH_NODE_DEV_GROUP=y
 CONFIG_ARCH_HAS_NONLEAF_PMD_YOUNG=y
 
 #
@@ -1087,13 +1246,13 @@ CONFIG_RT_MUTEXES=y
 CONFIG_BASE_SMALL=0
 CONFIG_MODULE_SIG_FORMAT=y
 CONFIG_MODULES=y
-# CONFIG_MODULE_DEBUG is not set
 CONFIG_MODULE_FORCE_LOAD=y
 CONFIG_MODULE_UNLOAD=y
 # CONFIG_MODULE_FORCE_UNLOAD is not set
 # CONFIG_MODULE_UNLOAD_TAINT_TRACKING is not set
-# CONFIG_MODVERSIONS is not set
-# CONFIG_MODULE_SRCVERSION_ALL is not set
+CONFIG_MODVERSIONS=y
+CONFIG_ASM_MODVERSIONS=y
+CONFIG_MODULE_SRCVERSION_ALL=y
 CONFIG_MODULE_SIG=y
 # CONFIG_MODULE_SIG_FORCE is not set
 CONFIG_MODULE_SIG_ALL=y
@@ -1109,26 +1268,25 @@ CONFIG_MODULE_COMPRESS_NONE=y
 # CONFIG_MODULE_COMPRESS_ZSTD is not set
 # CONFIG_MODULE_ALLOW_MISSING_NAMESPACE_IMPORTS is not set
 CONFIG_MODPROBE_PATH="/sbin/modprobe"
+# CONFIG_TRIM_UNUSED_KSYMS is not set
 CONFIG_MODULES_TREE_LOOKUP=y
 CONFIG_BLOCK=y
 CONFIG_BLOCK_LEGACY_AUTOLOAD=y
 CONFIG_BLK_CGROUP_RWSTAT=y
-CONFIG_BLK_CGROUP_PUNT_BIO=y
 CONFIG_BLK_DEV_BSG_COMMON=y
 CONFIG_BLK_ICQ=y
 CONFIG_BLK_DEV_BSGLIB=y
 CONFIG_BLK_DEV_INTEGRITY=y
 CONFIG_BLK_DEV_INTEGRITY_T10=m
-CONFIG_BLK_DEV_ZONED=y
+# CONFIG_BLK_DEV_ZONED is not set
 CONFIG_BLK_DEV_THROTTLING=y
 # CONFIG_BLK_DEV_THROTTLING_LOW is not set
 CONFIG_BLK_WBT=y
 CONFIG_BLK_WBT_MQ=y
-# CONFIG_BLK_CGROUP_IOLATENCY is not set
+CONFIG_BLK_CGROUP_IOLATENCY=y
 # CONFIG_BLK_CGROUP_IOCOST is not set
 # CONFIG_BLK_CGROUP_IOPRIO is not set
 CONFIG_BLK_DEBUG_FS=y
-CONFIG_BLK_DEBUG_FS_ZONED=y
 # CONFIG_BLK_SED_OPAL is not set
 # CONFIG_BLK_INLINE_ENCRYPTION is not set
 
@@ -1140,6 +1298,7 @@ CONFIG_MSDOS_PARTITION=y
 CONFIG_EFI_PARTITION=y
 # end of Partition Types
 
+CONFIG_BLOCK_COMPAT=y
 CONFIG_BLK_MQ_PCI=y
 CONFIG_BLK_MQ_VIRTIO=y
 CONFIG_BLK_PM=y
@@ -1159,11 +1318,7 @@ CONFIG_BFQ_GROUP_IOSCHED=y
 CONFIG_PREEMPT_NOTIFIERS=y
 CONFIG_PADATA=y
 CONFIG_ASN1=y
-CONFIG_INLINE_SPIN_UNLOCK_IRQ=y
-CONFIG_INLINE_READ_UNLOCK=y
-CONFIG_INLINE_READ_UNLOCK_IRQ=y
-CONFIG_INLINE_WRITE_UNLOCK=y
-CONFIG_INLINE_WRITE_UNLOCK_IRQ=y
+CONFIG_UNINLINE_SPIN_UNLOCK=y
 CONFIG_ARCH_SUPPORTS_ATOMIC_RMW=y
 CONFIG_MUTEX_SPIN_ON_OWNER=y
 CONFIG_RWSEM_SPIN_ON_OWNER=y
@@ -1211,16 +1366,17 @@ CONFIG_ZBUD=y
 # CONFIG_Z3FOLD is not set
 CONFIG_ZSMALLOC=y
 CONFIG_ZSMALLOC_STAT=y
-CONFIG_ZSMALLOC_CHAIN_SIZE=8
 
 #
 # SLAB allocator options
 #
 # CONFIG_SLAB is not set
 CONFIG_SLUB=y
+# CONFIG_SLOB_DEPRECATED is not set
+# CONFIG_SLUB_TINY is not set
 CONFIG_SLAB_MERGE_DEFAULT=y
 CONFIG_SLAB_FREELIST_RANDOM=y
-# CONFIG_SLAB_FREELIST_HARDENED is not set
+CONFIG_SLAB_FREELIST_HARDENED=y
 # CONFIG_SLUB_STATS is not set
 CONFIG_SLUB_CPU_PARTIAL=y
 # end of SLAB allocator options
@@ -1231,7 +1387,6 @@ CONFIG_SPARSEMEM=y
 CONFIG_SPARSEMEM_EXTREME=y
 CONFIG_SPARSEMEM_VMEMMAP_ENABLE=y
 CONFIG_SPARSEMEM_VMEMMAP=y
-CONFIG_ARCH_WANT_OPTIMIZE_VMEMMAP=y
 CONFIG_HAVE_FAST_GUP=y
 CONFIG_NUMA_KEEP_MEMINFO=y
 CONFIG_MEMORY_ISOLATION=y
@@ -1265,8 +1420,8 @@ CONFIG_HWPOISON_INJECT=m
 CONFIG_ARCH_WANT_GENERAL_HUGETLB=y
 CONFIG_ARCH_WANTS_THP_SWAP=y
 CONFIG_TRANSPARENT_HUGEPAGE=y
-CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS=y
-# CONFIG_TRANSPARENT_HUGEPAGE_MADVISE is not set
+# CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS is not set
+CONFIG_TRANSPARENT_HUGEPAGE_MADVISE=y
 CONFIG_THP_SWAP=y
 # CONFIG_READ_ONLY_THP_FOR_FS is not set
 CONFIG_NEED_PER_CPU_EMBED_FIRST_CHUNK=y
@@ -1278,7 +1433,8 @@ CONFIG_CMA=y
 # CONFIG_CMA_DEBUG is not set
 # CONFIG_CMA_DEBUGFS is not set
 # CONFIG_CMA_SYSFS is not set
-CONFIG_CMA_AREAS=19
+CONFIG_CMA_AREAS=7
+CONFIG_MEM_SOFT_DIRTY=y
 CONFIG_GENERIC_EARLY_IOREMAP=y
 CONFIG_DEFERRED_STRUCT_PAGE_INIT=y
 CONFIG_PAGE_IDLE_FLAG=y
@@ -1286,6 +1442,7 @@ CONFIG_IDLE_PAGE_TRACKING=y
 CONFIG_ARCH_HAS_CACHE_LINE_SIZE=y
 CONFIG_ARCH_HAS_CURRENT_STACK_POINTER=y
 CONFIG_ARCH_HAS_PTE_DEVMAP=y
+CONFIG_ARCH_HAS_ZONE_DMA_SET=y
 CONFIG_ZONE_DMA=y
 CONFIG_ZONE_DMA32=y
 CONFIG_ZONE_DEVICE=y
@@ -1297,27 +1454,33 @@ CONFIG_ARCH_USES_HIGH_VMA_FLAGS=y
 CONFIG_ARCH_HAS_PKEYS=y
 CONFIG_VM_EVENT_COUNTERS=y
 # CONFIG_PERCPU_STATS is not set
-# CONFIG_GUP_TEST is not set
-# CONFIG_DMAPOOL_TEST is not set
+CONFIG_GUP_TEST=y
 CONFIG_ARCH_HAS_PTE_SPECIAL=y
 CONFIG_SECRETMEM=y
 # CONFIG_ANON_VMA_NAME is not set
-# CONFIG_USERFAULTFD is not set
+CONFIG_USERFAULTFD=y
+CONFIG_HAVE_ARCH_USERFAULTFD_WP=y
+CONFIG_HAVE_ARCH_USERFAULTFD_MINOR=y
+CONFIG_PTE_MARKER_UFFD_WP=y
 # CONFIG_LRU_GEN is not set
-CONFIG_ARCH_SUPPORTS_PER_VMA_LOCK=y
-CONFIG_PER_VMA_LOCK=y
 
 #
 # Data Access Monitoring
 #
-# CONFIG_DAMON is not set
+CONFIG_DAMON=y
+CONFIG_DAMON_VADDR=y
+CONFIG_DAMON_PADDR=y
+CONFIG_DAMON_SYSFS=y
+CONFIG_DAMON_DBGFS=y
+# CONFIG_DAMON_RECLAIM is not set
+# CONFIG_DAMON_LRU_SORT is not set
 # end of Data Access Monitoring
 # end of Memory Management options
 
 CONFIG_NET=y
-CONFIG_COMPAT_NETLINK_MESSAGES=y
 CONFIG_NET_INGRESS=y
 CONFIG_NET_EGRESS=y
+CONFIG_NET_REDIRECT=y
 CONFIG_SKB_EXTENSIONS=y
 
 #
@@ -1345,10 +1508,8 @@ CONFIG_XFRM_AH=m
 CONFIG_XFRM_ESP=m
 CONFIG_XFRM_IPCOMP=m
 # CONFIG_NET_KEY is not set
-# CONFIG_SMC is not set
 CONFIG_XDP_SOCKETS=y
-# CONFIG_XDP_SOCKETS_DIAG is not set
-CONFIG_NET_HANDSHAKE=y
+CONFIG_XDP_SOCKETS_DIAG=y
 CONFIG_INET=y
 CONFIG_IP_MULTICAST=y
 CONFIG_IP_ADVANCED_ROUTER=y
@@ -1361,10 +1522,10 @@ CONFIG_IP_PNP=y
 CONFIG_IP_PNP_DHCP=y
 # CONFIG_IP_PNP_BOOTP is not set
 # CONFIG_IP_PNP_RARP is not set
-CONFIG_NET_IPIP=m
-CONFIG_NET_IPGRE_DEMUX=m
-CONFIG_NET_IP_TUNNEL=m
-CONFIG_NET_IPGRE=m
+CONFIG_NET_IPIP=y
+CONFIG_NET_IPGRE_DEMUX=y
+CONFIG_NET_IP_TUNNEL=y
+CONFIG_NET_IPGRE=y
 CONFIG_NET_IPGRE_BROADCAST=y
 CONFIG_IP_MROUTE_COMMON=y
 CONFIG_IP_MROUTE=y
@@ -1373,9 +1534,9 @@ CONFIG_IP_PIMSM_V1=y
 CONFIG_IP_PIMSM_V2=y
 CONFIG_SYN_COOKIES=y
 CONFIG_NET_IPVTI=m
-CONFIG_NET_UDP_TUNNEL=m
-# CONFIG_NET_FOU is not set
-# CONFIG_NET_FOU_IP_TUNNELS is not set
+CONFIG_NET_UDP_TUNNEL=y
+CONFIG_NET_FOU=y
+CONFIG_NET_FOU_IP_TUNNELS=y
 CONFIG_INET_AH=m
 CONFIG_INET_ESP=m
 CONFIG_INET_ESP_OFFLOAD=m
@@ -1383,7 +1544,7 @@ CONFIG_INET_ESP_OFFLOAD=m
 CONFIG_INET_IPCOMP=m
 CONFIG_INET_TABLE_PERTURB_ORDER=16
 CONFIG_INET_XFRM_TUNNEL=m
-CONFIG_INET_TUNNEL=m
+CONFIG_INET_TUNNEL=y
 CONFIG_INET_DIAG=m
 CONFIG_INET_TCP_DIAG=m
 CONFIG_INET_UDP_DIAG=m
@@ -1406,9 +1567,9 @@ CONFIG_TCP_CONG_ILLINOIS=m
 CONFIG_TCP_CONG_DCTCP=m
 # CONFIG_TCP_CONG_CDG is not set
 CONFIG_TCP_CONG_BBR=m
-CONFIG_DEFAULT_CUBIC=y
-# CONFIG_DEFAULT_RENO is not set
-CONFIG_DEFAULT_TCP_CONG="cubic"
+# CONFIG_DEFAULT_CUBIC is not set
+CONFIG_DEFAULT_RENO=y
+CONFIG_DEFAULT_TCP_CONG="reno"
 CONFIG_TCP_MD5SIG=y
 CONFIG_IPV6=y
 CONFIG_IPV6_ROUTER_PREF=y
@@ -1422,24 +1583,29 @@ CONFIG_INET6_IPCOMP=m
 CONFIG_IPV6_MIP6=m
 # CONFIG_IPV6_ILA is not set
 CONFIG_INET6_XFRM_TUNNEL=m
-CONFIG_INET6_TUNNEL=m
+CONFIG_INET6_TUNNEL=y
 CONFIG_IPV6_VTI=m
 CONFIG_IPV6_SIT=m
 CONFIG_IPV6_SIT_6RD=y
 CONFIG_IPV6_NDISC_NODETYPE=y
-CONFIG_IPV6_TUNNEL=m
-CONFIG_IPV6_GRE=m
+CONFIG_IPV6_TUNNEL=y
+CONFIG_IPV6_GRE=y
+CONFIG_IPV6_FOU=y
+CONFIG_IPV6_FOU_TUNNEL=y
 CONFIG_IPV6_MULTIPLE_TABLES=y
-# CONFIG_IPV6_SUBTREES is not set
+CONFIG_IPV6_SUBTREES=y
 CONFIG_IPV6_MROUTE=y
 CONFIG_IPV6_MROUTE_MULTIPLE_TABLES=y
 CONFIG_IPV6_PIMSM_V2=y
-# CONFIG_IPV6_SEG6_LWTUNNEL is not set
+CONFIG_IPV6_SEG6_LWTUNNEL=y
 # CONFIG_IPV6_SEG6_HMAC is not set
+CONFIG_IPV6_SEG6_BPF=y
 # CONFIG_IPV6_RPL_LWTUNNEL is not set
-# CONFIG_IPV6_IOAM6_LWTUNNEL is not set
+CONFIG_IPV6_IOAM6_LWTUNNEL=y
 CONFIG_NETLABEL=y
-# CONFIG_MPTCP is not set
+CONFIG_MPTCP=y
+CONFIG_INET_MPTCP_DIAG=m
+CONFIG_MPTCP_IPV6=y
 CONFIG_NETWORK_SECMARK=y
 CONFIG_NET_PTP_CLASSIFY=y
 CONFIG_NETWORK_PHY_TIMESTAMPING=y
@@ -1456,7 +1622,6 @@ CONFIG_NETFILTER_SKIP_EGRESS=y
 CONFIG_NETFILTER_NETLINK=m
 CONFIG_NETFILTER_FAMILY_BRIDGE=y
 CONFIG_NETFILTER_FAMILY_ARP=y
-CONFIG_NETFILTER_BPF_LINK=y
 # CONFIG_NETFILTER_NETLINK_HOOK is not set
 # CONFIG_NETFILTER_NETLINK_ACCT is not set
 CONFIG_NETFILTER_NETLINK_QUEUE=m
@@ -1473,7 +1638,6 @@ CONFIG_NF_CONNTRACK_EVENTS=y
 CONFIG_NF_CONNTRACK_TIMEOUT=y
 CONFIG_NF_CONNTRACK_TIMESTAMP=y
 CONFIG_NF_CONNTRACK_LABELS=y
-CONFIG_NF_CONNTRACK_OVS=y
 CONFIG_NF_CT_PROTO_DCCP=y
 CONFIG_NF_CT_PROTO_GRE=y
 CONFIG_NF_CT_PROTO_SCTP=y
@@ -1508,6 +1672,7 @@ CONFIG_NF_TABLES_INET=y
 CONFIG_NF_TABLES_NETDEV=y
 CONFIG_NFT_NUMGEN=m
 CONFIG_NFT_CT=m
+CONFIG_NFT_FLOW_OFFLOAD=m
 CONFIG_NFT_CONNLIMIT=m
 CONFIG_NFT_LOG=m
 CONFIG_NFT_LIMIT=m
@@ -1526,22 +1691,25 @@ CONFIG_NFT_FIB_INET=m
 # CONFIG_NFT_XFRM is not set
 CONFIG_NFT_SOCKET=m
 # CONFIG_NFT_OSF is not set
-# CONFIG_NFT_TPROXY is not set
-# CONFIG_NFT_SYNPROXY is not set
+CONFIG_NFT_TPROXY=m
+CONFIG_NFT_SYNPROXY=m
 CONFIG_NF_DUP_NETDEV=m
 CONFIG_NFT_DUP_NETDEV=m
 CONFIG_NFT_FWD_NETDEV=m
 CONFIG_NFT_FIB_NETDEV=m
 # CONFIG_NFT_REJECT_NETDEV is not set
-# CONFIG_NF_FLOW_TABLE is not set
+CONFIG_NF_FLOW_TABLE_INET=m
+CONFIG_NF_FLOW_TABLE=m
+# CONFIG_NF_FLOW_TABLE_PROCFS is not set
 CONFIG_NETFILTER_XTABLES=y
-# CONFIG_NETFILTER_XTABLES_COMPAT is not set
+CONFIG_NETFILTER_XTABLES_COMPAT=y
 
 #
 # Xtables combined modules
 #
 CONFIG_NETFILTER_XT_MARK=m
 CONFIG_NETFILTER_XT_CONNMARK=m
+CONFIG_NETFILTER_XT_SET=m
 
 #
 # Xtables targets
@@ -1625,7 +1793,24 @@ CONFIG_NETFILTER_XT_MATCH_TCPMSS=m
 # CONFIG_NETFILTER_XT_MATCH_U32 is not set
 # end of Core Netfilter Configuration
 
-# CONFIG_IP_SET is not set
+CONFIG_IP_SET=m
+CONFIG_IP_SET_MAX=256
+CONFIG_IP_SET_BITMAP_IP=m
+CONFIG_IP_SET_BITMAP_IPMAC=m
+CONFIG_IP_SET_BITMAP_PORT=m
+CONFIG_IP_SET_HASH_IP=m
+CONFIG_IP_SET_HASH_IPMARK=m
+CONFIG_IP_SET_HASH_IPPORT=m
+CONFIG_IP_SET_HASH_IPPORTIP=m
+CONFIG_IP_SET_HASH_IPPORTNET=m
+CONFIG_IP_SET_HASH_IPMAC=m
+CONFIG_IP_SET_HASH_MAC=m
+CONFIG_IP_SET_HASH_NETPORTNET=m
+CONFIG_IP_SET_HASH_NET=m
+CONFIG_IP_SET_HASH_NETNET=m
+CONFIG_IP_SET_HASH_NETPORT=m
+CONFIG_IP_SET_HASH_NETIFACE=m
+CONFIG_IP_SET_LIST_SET=m
 CONFIG_IP_VS=m
 CONFIG_IP_VS_IPV6=y
 # CONFIG_IP_VS_DEBUG is not set
@@ -1707,6 +1892,7 @@ CONFIG_IP_NF_TARGET_MASQUERADE=m
 CONFIG_IP_NF_TARGET_NETMAP=m
 CONFIG_IP_NF_TARGET_REDIRECT=m
 CONFIG_IP_NF_MANGLE=m
+# CONFIG_IP_NF_TARGET_CLUSTERIP is not set
 CONFIG_IP_NF_TARGET_ECN=m
 CONFIG_IP_NF_TARGET_TTL=m
 CONFIG_IP_NF_RAW=m
@@ -1777,7 +1963,8 @@ CONFIG_BRIDGE_EBT_REDIRECT=m
 CONFIG_BRIDGE_EBT_SNAT=m
 CONFIG_BRIDGE_EBT_LOG=m
 CONFIG_BRIDGE_EBT_NFLOG=m
-# CONFIG_BPFILTER is not set
+CONFIG_BPFILTER=y
+CONFIG_BPFILTER_UMH=m
 # CONFIG_IP_DCCP is not set
 CONFIG_IP_SCTP=m
 # CONFIG_SCTP_DBG_OBJCNT is not set
@@ -1791,19 +1978,19 @@ CONFIG_INET_SCTP_DIAG=m
 # CONFIG_TIPC is not set
 # CONFIG_ATM is not set
 # CONFIG_L2TP is not set
-CONFIG_STP=m
-CONFIG_GARP=m
-CONFIG_MRP=m
+CONFIG_STP=y
+CONFIG_GARP=y
+CONFIG_MRP=y
 CONFIG_BRIDGE=m
 CONFIG_BRIDGE_IGMP_SNOOPING=y
 CONFIG_BRIDGE_VLAN_FILTERING=y
 # CONFIG_BRIDGE_MRP is not set
 # CONFIG_BRIDGE_CFM is not set
 # CONFIG_NET_DSA is not set
-CONFIG_VLAN_8021Q=m
+CONFIG_VLAN_8021Q=y
 CONFIG_VLAN_8021Q_GVRP=y
 CONFIG_VLAN_8021Q_MVRP=y
-CONFIG_LLC=m
+CONFIG_LLC=y
 # CONFIG_LLC2 is not set
 # CONFIG_ATALK is not set
 # CONFIG_X25 is not set
@@ -1816,6 +2003,7 @@ CONFIG_NET_SCHED=y
 #
 # Queueing/Scheduling
 #
+CONFIG_NET_SCH_CBQ=m
 CONFIG_NET_SCH_HTB=m
 CONFIG_NET_SCH_HFSC=m
 CONFIG_NET_SCH_PRIO=m
@@ -1825,31 +2013,32 @@ CONFIG_NET_SCH_SFB=m
 CONFIG_NET_SCH_SFQ=m
 CONFIG_NET_SCH_TEQL=m
 CONFIG_NET_SCH_TBF=m
-# CONFIG_NET_SCH_CBS is not set
-# CONFIG_NET_SCH_ETF is not set
-CONFIG_NET_SCH_MQPRIO_LIB=m
-# CONFIG_NET_SCH_TAPRIO is not set
+CONFIG_NET_SCH_CBS=m
+CONFIG_NET_SCH_ETF=m
+CONFIG_NET_SCH_TAPRIO=m
 CONFIG_NET_SCH_GRED=m
-CONFIG_NET_SCH_NETEM=m
+CONFIG_NET_SCH_DSMARK=m
+CONFIG_NET_SCH_NETEM=y
 CONFIG_NET_SCH_DRR=m
 CONFIG_NET_SCH_MQPRIO=m
-# CONFIG_NET_SCH_SKBPRIO is not set
+CONFIG_NET_SCH_SKBPRIO=m
 CONFIG_NET_SCH_CHOKE=m
 CONFIG_NET_SCH_QFQ=m
 CONFIG_NET_SCH_CODEL=m
 CONFIG_NET_SCH_FQ_CODEL=y
-# CONFIG_NET_SCH_CAKE is not set
+CONFIG_NET_SCH_CAKE=m
 CONFIG_NET_SCH_FQ=m
 CONFIG_NET_SCH_HHF=m
 CONFIG_NET_SCH_PIE=m
-# CONFIG_NET_SCH_FQ_PIE is not set
-CONFIG_NET_SCH_INGRESS=m
+CONFIG_NET_SCH_FQ_PIE=m
+CONFIG_NET_SCH_INGRESS=y
 CONFIG_NET_SCH_PLUG=m
-# CONFIG_NET_SCH_ETS is not set
+CONFIG_NET_SCH_ETS=m
 CONFIG_NET_SCH_DEFAULT=y
 # CONFIG_DEFAULT_FQ is not set
 # CONFIG_DEFAULT_CODEL is not set
 CONFIG_DEFAULT_FQ_CODEL=y
+# CONFIG_DEFAULT_FQ_PIE is not set
 # CONFIG_DEFAULT_SFQ is not set
 # CONFIG_DEFAULT_PFIFO_FAST is not set
 CONFIG_DEFAULT_NET_SCH="fq_codel"
@@ -1859,11 +2048,14 @@ CONFIG_DEFAULT_NET_SCH="fq_codel"
 #
 CONFIG_NET_CLS=y
 CONFIG_NET_CLS_BASIC=m
+CONFIG_NET_CLS_TCINDEX=m
 CONFIG_NET_CLS_ROUTE4=m
 CONFIG_NET_CLS_FW=m
 CONFIG_NET_CLS_U32=m
 CONFIG_CLS_U32_PERF=y
 CONFIG_CLS_U32_MARK=y
+CONFIG_NET_CLS_RSVP=m
+CONFIG_NET_CLS_RSVP6=m
 CONFIG_NET_CLS_FLOW=m
 CONFIG_NET_CLS_CGROUP=y
 CONFIG_NET_CLS_BPF=m
@@ -1876,36 +2068,43 @@ CONFIG_NET_EMATCH_NBYTE=m
 CONFIG_NET_EMATCH_U32=m
 CONFIG_NET_EMATCH_META=m
 CONFIG_NET_EMATCH_TEXT=m
-# CONFIG_NET_EMATCH_CANID is not set
-# CONFIG_NET_EMATCH_IPT is not set
+CONFIG_NET_EMATCH_CANID=m
+CONFIG_NET_EMATCH_IPSET=m
+CONFIG_NET_EMATCH_IPT=m
 CONFIG_NET_CLS_ACT=y
 CONFIG_NET_ACT_POLICE=m
 CONFIG_NET_ACT_GACT=m
 CONFIG_GACT_PROB=y
 CONFIG_NET_ACT_MIRRED=m
 CONFIG_NET_ACT_SAMPLE=m
-# CONFIG_NET_ACT_IPT is not set
+CONFIG_NET_ACT_IPT=m
 CONFIG_NET_ACT_NAT=m
 CONFIG_NET_ACT_PEDIT=m
 CONFIG_NET_ACT_SIMP=m
 CONFIG_NET_ACT_SKBEDIT=m
 CONFIG_NET_ACT_CSUM=m
-# CONFIG_NET_ACT_MPLS is not set
+CONFIG_NET_ACT_MPLS=m
 CONFIG_NET_ACT_VLAN=m
 CONFIG_NET_ACT_BPF=m
-# CONFIG_NET_ACT_CONNMARK is not set
-# CONFIG_NET_ACT_CTINFO is not set
+CONFIG_NET_ACT_CONNMARK=m
+CONFIG_NET_ACT_CTINFO=m
 CONFIG_NET_ACT_SKBMOD=m
-# CONFIG_NET_ACT_IFE is not set
+CONFIG_NET_ACT_IFE=m
 CONFIG_NET_ACT_TUNNEL_KEY=m
-# CONFIG_NET_ACT_GATE is not set
-# CONFIG_NET_TC_SKB_EXT is not set
+CONFIG_NET_ACT_CT=m
+CONFIG_NET_ACT_GATE=m
+CONFIG_NET_IFE_SKBMARK=m
+CONFIG_NET_IFE_SKBPRIO=m
+CONFIG_NET_IFE_SKBTCINDEX=m
+CONFIG_NET_TC_SKB_EXT=y
 CONFIG_NET_SCH_FIFO=y
 CONFIG_DCB=y
 CONFIG_DNS_RESOLVER=m
 # CONFIG_BATMAN_ADV is not set
 CONFIG_OPENVSWITCH=m
 CONFIG_OPENVSWITCH_GRE=m
+CONFIG_OPENVSWITCH_VXLAN=m
+CONFIG_OPENVSWITCH_GENEVE=m
 CONFIG_VSOCKETS=m
 CONFIG_VSOCKETS_DIAG=m
 CONFIG_VSOCKETS_LOOPBACK=m
@@ -1914,7 +2113,7 @@ CONFIG_VIRTIO_VSOCKETS_COMMON=m
 CONFIG_HYPERV_VSOCKETS=m
 CONFIG_NETLINK_DIAG=m
 CONFIG_MPLS=y
-CONFIG_NET_MPLS_GSO=y
+CONFIG_NET_MPLS_GSO=m
 CONFIG_MPLS_ROUTING=m
 CONFIG_MPLS_IPTUNNEL=m
 CONFIG_NET_NSH=y
@@ -1924,7 +2123,6 @@ CONFIG_NET_L3_MASTER_DEV=y
 # CONFIG_QRTR is not set
 # CONFIG_NET_NCSI is not set
 CONFIG_PCPU_DEV_REFCNT=y
-CONFIG_MAX_SKB_FRAGS=17
 CONFIG_RPS=y
 CONFIG_RFS_ACCEL=y
 CONFIG_SOCK_RX_QUEUE_MAPPING=y
@@ -1933,6 +2131,7 @@ CONFIG_CGROUP_NET_PRIO=y
 CONFIG_CGROUP_NET_CLASSID=y
 CONFIG_NET_RX_BUSY_POLL=y
 CONFIG_BQL=y
+CONFIG_BPF_STREAM_PARSER=y
 CONFIG_NET_FLOW_LIMIT=y
 
 #
@@ -1957,23 +2156,22 @@ CONFIG_STREAM_PARSER=y
 # CONFIG_MCTP is not set
 CONFIG_FIB_RULES=y
 CONFIG_WIRELESS=y
-CONFIG_WEXT_CORE=y
-CONFIG_WEXT_PROC=y
 CONFIG_CFG80211=m
 # CONFIG_NL80211_TESTMODE is not set
 # CONFIG_CFG80211_DEVELOPER_WARNINGS is not set
+# CONFIG_CFG80211_CERTIFICATION_ONUS is not set
 CONFIG_CFG80211_REQUIRE_SIGNED_REGDB=y
 CONFIG_CFG80211_USE_KERNEL_REGDB_KEYS=y
 CONFIG_CFG80211_DEFAULT_PS=y
 # CONFIG_CFG80211_DEBUGFS is not set
 CONFIG_CFG80211_CRDA_SUPPORT=y
-CONFIG_CFG80211_WEXT=y
+# CONFIG_CFG80211_WEXT is not set
 CONFIG_MAC80211=m
 CONFIG_MAC80211_HAS_RC=y
 CONFIG_MAC80211_RC_MINSTREL=y
 CONFIG_MAC80211_RC_DEFAULT_MINSTREL=y
 CONFIG_MAC80211_RC_DEFAULT="minstrel_ht"
-CONFIG_MAC80211_MESH=y
+# CONFIG_MAC80211_MESH is not set
 CONFIG_MAC80211_LEDS=y
 CONFIG_MAC80211_DEBUGFS=y
 # CONFIG_MAC80211_MESSAGE_TRACING is not set
@@ -1986,15 +2184,34 @@ CONFIG_RFKILL_INPUT=y
 CONFIG_NET_9P=y
 CONFIG_NET_9P_FD=y
 CONFIG_NET_9P_VIRTIO=y
-# CONFIG_NET_9P_RDMA is not set
 # CONFIG_NET_9P_DEBUG is not set
 # CONFIG_CAIF is not set
 CONFIG_CEPH_LIB=m
 # CONFIG_CEPH_LIB_PRETTYDEBUG is not set
 CONFIG_CEPH_LIB_USE_DNS_RESOLVER=y
-# CONFIG_NFC is not set
+CONFIG_NFC=m
+# CONFIG_NFC_DIGITAL is not set
+CONFIG_NFC_NCI=m
+# CONFIG_NFC_NCI_SPI is not set
+# CONFIG_NFC_NCI_UART is not set
+# CONFIG_NFC_HCI is not set
+
+#
+# Near Field Communication (NFC) devices
+#
+CONFIG_NFC_VIRTUAL_NCI=m
+# CONFIG_NFC_FDP is not set
+# CONFIG_NFC_PN533_USB is not set
+# CONFIG_NFC_PN533_I2C is not set
+# CONFIG_NFC_MRVL_USB is not set
+# CONFIG_NFC_ST_NCI_I2C is not set
+# CONFIG_NFC_ST_NCI_SPI is not set
+# CONFIG_NFC_NXP_NCI is not set
+# CONFIG_NFC_S3FWRN5_I2C is not set
+# end of Near Field Communication (NFC) devices
+
 CONFIG_PSAMPLE=m
-# CONFIG_NET_IFE is not set
+CONFIG_NET_IFE=m
 CONFIG_LWTUNNEL=y
 CONFIG_LWTUNNEL_BPF=y
 CONFIG_DST_CACHE=y
@@ -2002,8 +2219,9 @@ CONFIG_GRO_CELLS=y
 CONFIG_SOCK_VALIDATE_XMIT=y
 CONFIG_NET_SELFTESTS=y
 CONFIG_NET_SOCK_MSG=y
+CONFIG_NET_DEVLINK=y
 CONFIG_PAGE_POOL=y
-CONFIG_PAGE_POOL_STATS=y
+# CONFIG_PAGE_POOL_STATS is not set
 CONFIG_FAILOVER=m
 CONFIG_ETHTOOL_NETLINK=y
 
@@ -2043,6 +2261,11 @@ CONFIG_PCI_PASID=y
 # CONFIG_PCI_P2PDMA is not set
 CONFIG_PCI_LABEL=y
 CONFIG_PCI_HYPERV=m
+# CONFIG_PCIE_BUS_TUNE_OFF is not set
+CONFIG_PCIE_BUS_DEFAULT=y
+# CONFIG_PCIE_BUS_SAFE is not set
+# CONFIG_PCIE_BUS_PERFORMANCE is not set
+# CONFIG_PCIE_BUS_PEER2PEER is not set
 CONFIG_VGA_ARB=y
 CONFIG_VGA_ARB_MAX_GPUS=64
 CONFIG_HOTPLUG_PCI=y
@@ -2058,21 +2281,21 @@ CONFIG_VMD=y
 CONFIG_PCI_HYPERV_INTERFACE=m
 
 #
-# Cadence-based PCIe controllers
+# DesignWare PCI Core Support
 #
-# end of Cadence-based PCIe controllers
-
-#
-# DesignWare-based PCIe controllers
-#
-# CONFIG_PCI_MESON is not set
 # CONFIG_PCIE_DW_PLAT_HOST is not set
-# end of DesignWare-based PCIe controllers
+# CONFIG_PCI_MESON is not set
+# end of DesignWare PCI Core Support
 
 #
-# Mobiveil-based PCIe controllers
+# Mobiveil PCIe Core Support
 #
-# end of Mobiveil-based PCIe controllers
+# end of Mobiveil PCIe Core Support
+
+#
+# Cadence PCIe controllers support
+#
+# end of Cadence PCIe controllers support
 # end of PCI controller drivers
 
 #
@@ -2106,7 +2329,6 @@ CONFIG_PREVENT_FIRMWARE_BUILD=y
 # Firmware loader
 #
 CONFIG_FW_LOADER=y
-CONFIG_FW_LOADER_DEBUG=y
 CONFIG_FW_LOADER_PAGED_BUF=y
 CONFIG_FW_LOADER_SYSFS=y
 CONFIG_EXTRA_FIRMWARE=""
@@ -2114,7 +2336,7 @@ CONFIG_FW_LOADER_USER_HELPER=y
 # CONFIG_FW_LOADER_USER_HELPER_FALLBACK is not set
 # CONFIG_FW_LOADER_COMPRESS is not set
 CONFIG_FW_CACHE=y
-# CONFIG_FW_UPLOAD is not set
+CONFIG_FW_UPLOAD=y
 # end of Firmware loader
 
 CONFIG_ALLOW_DEV_COREDUMP=y
@@ -2129,7 +2351,6 @@ CONFIG_REGMAP_I2C=m
 CONFIG_REGMAP_SPI=m
 CONFIG_DMA_SHARED_BUFFER=y
 # CONFIG_DMA_FENCE_TRACE is not set
-# CONFIG_FW_DEVLINK_SYNC_STATE_TIMEOUT is not set
 # end of Generic Driver Options
 
 #
@@ -2203,6 +2424,7 @@ CONFIG_PARPORT_PC=m
 CONFIG_PARPORT_SERIAL=m
 # CONFIG_PARPORT_PC_FIFO is not set
 # CONFIG_PARPORT_PC_SUPERIO is not set
+# CONFIG_PARPORT_AX88796 is not set
 CONFIG_PARPORT_1284=y
 CONFIG_PNP=y
 # CONFIG_PNP_DEBUG_MESSAGES is not set
@@ -2213,11 +2435,18 @@ CONFIG_PNP=y
 CONFIG_PNPACPI=y
 CONFIG_BLK_DEV=y
 CONFIG_BLK_DEV_NULL_BLK=m
-CONFIG_BLK_DEV_NULL_BLK_FAULT_INJECTION=y
+# CONFIG_BLK_DEV_NULL_BLK_FAULT_INJECTION is not set
 # CONFIG_BLK_DEV_FD is not set
 CONFIG_CDROM=m
+# CONFIG_PARIDE is not set
 # CONFIG_BLK_DEV_PCIESSD_MTIP32XX is not set
-# CONFIG_ZRAM is not set
+CONFIG_ZRAM=m
+CONFIG_ZRAM_DEF_COMP_LZORLE=y
+# CONFIG_ZRAM_DEF_COMP_LZO is not set
+CONFIG_ZRAM_DEF_COMP="lzo-rle"
+CONFIG_ZRAM_WRITEBACK=y
+# CONFIG_ZRAM_MEMORY_TRACKING is not set
+# CONFIG_ZRAM_MULTI_COMP is not set
 CONFIG_BLK_DEV_LOOP=m
 CONFIG_BLK_DEV_LOOP_MIN_COUNT=0
 # CONFIG_BLK_DEV_DRBD is not set
@@ -2241,18 +2470,10 @@ CONFIG_BLK_DEV_NVME=m
 CONFIG_NVME_MULTIPATH=y
 # CONFIG_NVME_VERBOSE_ERRORS is not set
 # CONFIG_NVME_HWMON is not set
-CONFIG_NVME_FABRICS=m
-# CONFIG_NVME_RDMA is not set
 # CONFIG_NVME_FC is not set
 # CONFIG_NVME_TCP is not set
 # CONFIG_NVME_AUTH is not set
-CONFIG_NVME_TARGET=m
-# CONFIG_NVME_TARGET_PASSTHRU is not set
-CONFIG_NVME_TARGET_LOOP=m
-# CONFIG_NVME_TARGET_RDMA is not set
-CONFIG_NVME_TARGET_FC=m
-# CONFIG_NVME_TARGET_TCP is not set
-# CONFIG_NVME_TARGET_AUTH is not set
+# CONFIG_NVME_TARGET is not set
 # end of NVME Support
 
 #
@@ -2320,6 +2541,7 @@ CONFIG_INTEL_MEI_ME=m
 # CONFIG_MISC_ALCOR_PCI is not set
 # CONFIG_MISC_RTSX_PCI is not set
 # CONFIG_MISC_RTSX_USB is not set
+# CONFIG_HABANA_AI is not set
 # CONFIG_UACCE is not set
 CONFIG_PVPANIC=y
 # CONFIG_PVPANIC_MMIO is not set
@@ -2523,7 +2745,6 @@ CONFIG_ATA_PIIX=m
 # CONFIG_PATA_NS87410 is not set
 # CONFIG_PATA_OPTI is not set
 # CONFIG_PATA_RZ1000 is not set
-# CONFIG_PATA_PARPORT is not set
 
 #
 # Generic fallback / legacy drivers
@@ -2539,7 +2760,7 @@ CONFIG_MD_RAID0=m
 CONFIG_MD_RAID1=m
 CONFIG_MD_RAID10=m
 CONFIG_MD_RAID456=m
-CONFIG_MD_MULTIPATH=m
+# CONFIG_MD_MULTIPATH is not set
 CONFIG_MD_FAULTY=m
 # CONFIG_BCACHE is not set
 CONFIG_BLK_DEV_DM_BUILTIN=y
@@ -2578,7 +2799,6 @@ CONFIG_DM_VERITY=m
 CONFIG_DM_SWITCH=m
 CONFIG_DM_LOG_WRITES=m
 CONFIG_DM_INTEGRITY=m
-# CONFIG_DM_ZONED is not set
 CONFIG_DM_AUDIT=y
 # CONFIG_TARGET_CORE is not set
 # CONFIG_FUSION is not set
@@ -2598,21 +2818,21 @@ CONFIG_MAC_EMUMOUSEBTN=y
 CONFIG_NETDEVICES=y
 CONFIG_MII=y
 CONFIG_NET_CORE=y
-# CONFIG_BONDING is not set
-# CONFIG_DUMMY is not set
+CONFIG_BONDING=m
+CONFIG_DUMMY=m
 # CONFIG_WIREGUARD is not set
 # CONFIG_EQUALIZER is not set
 # CONFIG_NET_FC is not set
-# CONFIG_IFB is not set
+CONFIG_IFB=m
 # CONFIG_NET_TEAM is not set
 # CONFIG_MACVLAN is not set
 # CONFIG_IPVLAN is not set
-# CONFIG_VXLAN is not set
-# CONFIG_GENEVE is not set
-# CONFIG_BAREUDP is not set
+CONFIG_VXLAN=y
+CONFIG_GENEVE=y
+CONFIG_BAREUDP=m
 # CONFIG_GTP is not set
-# CONFIG_AMT is not set
-CONFIG_MACSEC=m
+CONFIG_AMT=m
+CONFIG_MACSEC=y
 CONFIG_NETCONSOLE=m
 CONFIG_NETCONSOLE_DYNAMIC=y
 CONFIG_NETPOLL=y
@@ -2622,7 +2842,7 @@ CONFIG_TUN=m
 CONFIG_VETH=m
 CONFIG_VIRTIO_NET=m
 # CONFIG_NLMON is not set
-# CONFIG_NET_VRF is not set
+CONFIG_NET_VRF=y
 # CONFIG_VSOCKMON is not set
 # CONFIG_ARCNET is not set
 CONFIG_ETHERNET=y
@@ -2707,6 +2927,7 @@ CONFIG_E1000E_HWTS=y
 CONFIG_IGB=y
 CONFIG_IGB_HWMON=y
 # CONFIG_IGBVF is not set
+# CONFIG_IXGB is not set
 CONFIG_IXGBE=y
 CONFIG_IXGBE_HWMON=y
 # CONFIG_IXGBE_DCB is not set
@@ -2718,6 +2939,9 @@ CONFIG_I40E=y
 # CONFIG_ICE is not set
 # CONFIG_FM10K is not set
 CONFIG_IGC=y
+CONFIG_NET_VENDOR_WANGXUN=y
+# CONFIG_NGBE is not set
+# CONFIG_TXGBE is not set
 # CONFIG_JME is not set
 CONFIG_NET_VENDOR_ADI=y
 # CONFIG_ADIN1110 is not set
@@ -2748,7 +2972,6 @@ CONFIG_NET_VENDOR_MICROSOFT=y
 # CONFIG_MICROSOFT_MANA is not set
 CONFIG_NET_VENDOR_MYRI=y
 # CONFIG_MYRI10GE is not set
-# CONFIG_FEALNX is not set
 CONFIG_NET_VENDOR_NI=y
 # CONFIG_NI_XGE_MANAGEMENT_ENET is not set
 CONFIG_NET_VENDOR_NATSEMI=y
@@ -2825,9 +3048,6 @@ CONFIG_NET_VENDOR_VERTEXCOM=y
 CONFIG_NET_VENDOR_VIA=y
 # CONFIG_VIA_RHINE is not set
 # CONFIG_VIA_VELOCITY is not set
-CONFIG_NET_VENDOR_WANGXUN=y
-# CONFIG_NGBE is not set
-# CONFIG_TXGBE is not set
 CONFIG_NET_VENDOR_WIZNET=y
 # CONFIG_WIZNET_W5100 is not set
 # CONFIG_WIZNET_W5300 is not set
@@ -2871,16 +3091,13 @@ CONFIG_AX88796B_PHY=y
 # CONFIG_MAXLINEAR_GPHY is not set
 # CONFIG_MEDIATEK_GE_PHY is not set
 # CONFIG_MICREL_PHY is not set
-# CONFIG_MICROCHIP_T1S_PHY is not set
 # CONFIG_MICROCHIP_PHY is not set
 # CONFIG_MICROCHIP_T1_PHY is not set
 # CONFIG_MICROSEMI_PHY is not set
 # CONFIG_MOTORCOMM_PHY is not set
 # CONFIG_NATIONAL_PHY is not set
-# CONFIG_NXP_CBTX_PHY is not set
 # CONFIG_NXP_C45_TJA11XX_PHY is not set
 # CONFIG_NXP_TJA11XX_PHY is not set
-# CONFIG_NCN26000_PHY is not set
 # CONFIG_QSEMI_PHY is not set
 CONFIG_REALTEK_PHY=y
 # CONFIG_RENESAS_PHY is not set
@@ -2957,91 +3174,7 @@ CONFIG_USB_NET_AX88179_178A=y
 # CONFIG_USB_SIERRA_NET is not set
 # CONFIG_USB_NET_CH9200 is not set
 # CONFIG_USB_NET_AQC111 is not set
-CONFIG_WLAN=y
-CONFIG_WLAN_VENDOR_ADMTEK=y
-# CONFIG_ADM8211 is not set
-CONFIG_WLAN_VENDOR_ATH=y
-# CONFIG_ATH_DEBUG is not set
-# CONFIG_ATH5K is not set
-# CONFIG_ATH5K_PCI is not set
-# CONFIG_ATH9K is not set
-# CONFIG_ATH9K_HTC is not set
-# CONFIG_CARL9170 is not set
-# CONFIG_ATH6KL is not set
-# CONFIG_AR5523 is not set
-# CONFIG_WIL6210 is not set
-# CONFIG_ATH10K is not set
-# CONFIG_WCN36XX is not set
-# CONFIG_ATH11K is not set
-# CONFIG_ATH12K is not set
-CONFIG_WLAN_VENDOR_ATMEL=y
-# CONFIG_ATMEL is not set
-# CONFIG_AT76C50X_USB is not set
-CONFIG_WLAN_VENDOR_BROADCOM=y
-# CONFIG_B43 is not set
-# CONFIG_B43LEGACY is not set
-# CONFIG_BRCMSMAC is not set
-# CONFIG_BRCMFMAC is not set
-CONFIG_WLAN_VENDOR_CISCO=y
-# CONFIG_AIRO is not set
-CONFIG_WLAN_VENDOR_INTEL=y
-# CONFIG_IPW2100 is not set
-# CONFIG_IPW2200 is not set
-# CONFIG_IWL4965 is not set
-# CONFIG_IWL3945 is not set
-# CONFIG_IWLWIFI is not set
-CONFIG_WLAN_VENDOR_INTERSIL=y
-# CONFIG_HOSTAP is not set
-# CONFIG_HERMES is not set
-# CONFIG_P54_COMMON is not set
-CONFIG_WLAN_VENDOR_MARVELL=y
-# CONFIG_LIBERTAS is not set
-# CONFIG_LIBERTAS_THINFIRM is not set
-# CONFIG_MWIFIEX is not set
-# CONFIG_MWL8K is not set
-# CONFIG_WLAN_VENDOR_MEDIATEK is not set
-CONFIG_WLAN_VENDOR_MICROCHIP=y
-# CONFIG_WILC1000_SDIO is not set
-# CONFIG_WILC1000_SPI is not set
-CONFIG_WLAN_VENDOR_PURELIFI=y
-# CONFIG_PLFXLC is not set
-CONFIG_WLAN_VENDOR_RALINK=y
-# CONFIG_RT2X00 is not set
-CONFIG_WLAN_VENDOR_REALTEK=y
-# CONFIG_RTL8180 is not set
-# CONFIG_RTL8187 is not set
-CONFIG_RTL_CARDS=m
-# CONFIG_RTL8192CE is not set
-# CONFIG_RTL8192SE is not set
-# CONFIG_RTL8192DE is not set
-# CONFIG_RTL8723AE is not set
-# CONFIG_RTL8723BE is not set
-# CONFIG_RTL8188EE is not set
-# CONFIG_RTL8192EE is not set
-# CONFIG_RTL8821AE is not set
-# CONFIG_RTL8192CU is not set
-# CONFIG_RTL8XXXU is not set
-# CONFIG_RTW88 is not set
-# CONFIG_RTW89 is not set
-CONFIG_WLAN_VENDOR_RSI=y
-# CONFIG_RSI_91X is not set
-CONFIG_WLAN_VENDOR_SILABS=y
-# CONFIG_WFX is not set
-CONFIG_WLAN_VENDOR_ST=y
-# CONFIG_CW1200 is not set
-CONFIG_WLAN_VENDOR_TI=y
-# CONFIG_WL1251 is not set
-# CONFIG_WL12XX is not set
-# CONFIG_WL18XX is not set
-# CONFIG_WLCORE is not set
-CONFIG_WLAN_VENDOR_ZYDAS=y
-# CONFIG_USB_ZD1201 is not set
-# CONFIG_ZD1211RW is not set
-CONFIG_WLAN_VENDOR_QUANTENNA=y
-# CONFIG_QTNFMAC_PCIE is not set
-# CONFIG_USB_NET_RNDIS_WLAN is not set
-CONFIG_MAC80211_HWSIM=m
-# CONFIG_VIRT_WIFI is not set
+# CONFIG_WLAN is not set
 # CONFIG_WAN is not set
 
 #
@@ -3053,7 +3186,7 @@ CONFIG_MAC80211_HWSIM=m
 # CONFIG_VMXNET3 is not set
 # CONFIG_FUJITSU_ES is not set
 CONFIG_HYPERV_NET=y
-# CONFIG_NETDEVSIM is not set
+CONFIG_NETDEVSIM=m
 CONFIG_NET_FAILOVER=m
 # CONFIG_ISDN is not set
 
@@ -3203,16 +3336,14 @@ CONFIG_SERIAL_8250_PNP=y
 # CONFIG_SERIAL_8250_FINTEK is not set
 CONFIG_SERIAL_8250_CONSOLE=y
 CONFIG_SERIAL_8250_DMA=y
-CONFIG_SERIAL_8250_PCILIB=y
 CONFIG_SERIAL_8250_PCI=y
 CONFIG_SERIAL_8250_EXAR=y
-CONFIG_SERIAL_8250_NR_UARTS=64
+CONFIG_SERIAL_8250_NR_UARTS=32
 CONFIG_SERIAL_8250_RUNTIME_UARTS=4
 CONFIG_SERIAL_8250_EXTENDED=y
 CONFIG_SERIAL_8250_MANY_PORTS=y
-# CONFIG_SERIAL_8250_PCI1XXXX is not set
 CONFIG_SERIAL_8250_SHARE_IRQ=y
-# CONFIG_SERIAL_8250_DETECT_IRQ is not set
+CONFIG_SERIAL_8250_DETECT_IRQ=y
 CONFIG_SERIAL_8250_RSA=y
 CONFIG_SERIAL_8250_DWLIB=y
 CONFIG_SERIAL_8250_DW=y
@@ -3254,6 +3385,7 @@ CONFIG_NOZOMI=m
 # CONFIG_NULL_TTY is not set
 CONFIG_HVC_DRIVER=y
 # CONFIG_SERIAL_DEV_BUS is not set
+# CONFIG_TTY_PRINTK is not set
 CONFIG_PRINTER=m
 # CONFIG_LP_CONSOLE is not set
 CONFIG_PPDEV=m
@@ -3330,7 +3462,7 @@ CONFIG_I2C_MUX_MLXCPLD=m
 # end of Multiplexer I2C Chip support
 
 CONFIG_I2C_HELPER_AUTO=y
-CONFIG_I2C_SMBUS=y
+CONFIG_I2C_SMBUS=m
 CONFIG_I2C_ALGOBIT=y
 CONFIG_I2C_ALGOPCA=m
 
@@ -3347,7 +3479,7 @@ CONFIG_I2C_ALGOPCA=m
 # CONFIG_I2C_AMD756 is not set
 # CONFIG_I2C_AMD8111 is not set
 # CONFIG_I2C_AMD_MP2 is not set
-CONFIG_I2C_I801=y
+CONFIG_I2C_I801=m
 CONFIG_I2C_ISCH=m
 CONFIG_I2C_ISMT=m
 CONFIG_I2C_PIIX4=m
@@ -3372,6 +3504,7 @@ CONFIG_I2C_SCMI=m
 CONFIG_I2C_DESIGNWARE_CORE=m
 # CONFIG_I2C_DESIGNWARE_SLAVE is not set
 CONFIG_I2C_DESIGNWARE_PLATFORM=m
+# CONFIG_I2C_DESIGNWARE_AMDPSP is not set
 CONFIG_I2C_DESIGNWARE_BAYTRAIL=y
 # CONFIG_I2C_DESIGNWARE_PCI is not set
 # CONFIG_I2C_EMEV2 is not set
@@ -3421,6 +3554,7 @@ CONFIG_SPI_MASTER=y
 # CONFIG_SPI_BUTTERFLY is not set
 # CONFIG_SPI_CADENCE is not set
 # CONFIG_SPI_DESIGNWARE is not set
+# CONFIG_SPI_NXP_FLEXSPI is not set
 # CONFIG_SPI_GPIO is not set
 # CONFIG_SPI_LM70_LLP is not set
 # CONFIG_SPI_MICROCHIP_CORE is not set
@@ -3429,6 +3563,7 @@ CONFIG_SPI_MASTER=y
 # CONFIG_SPI_OC_TINY is not set
 # CONFIG_SPI_PCI1XXXX is not set
 # CONFIG_SPI_PXA2XX is not set
+# CONFIG_SPI_ROCKCHIP is not set
 # CONFIG_SPI_SC18IS602 is not set
 # CONFIG_SPI_SIFIVE is not set
 # CONFIG_SPI_MXIC is not set
@@ -3519,6 +3654,7 @@ CONFIG_GPIOLIB=y
 CONFIG_GPIOLIB_FASTPATH_LIMIT=512
 CONFIG_GPIO_ACPI=y
 # CONFIG_DEBUG_GPIO is not set
+CONFIG_GPIO_SYSFS=y
 CONFIG_GPIO_CDEV=y
 CONFIG_GPIO_CDEV_V1=y
 
@@ -3549,7 +3685,6 @@ CONFIG_GPIO_ICH=m
 #
 # I2C GPIO expanders
 #
-# CONFIG_GPIO_FXL6408 is not set
 # CONFIG_GPIO_MAX7300 is not set
 # CONFIG_GPIO_MAX732X is not set
 # CONFIG_GPIO_PCA953X is not set
@@ -3561,7 +3696,6 @@ CONFIG_GPIO_ICH=m
 #
 # MFD GPIO expanders
 #
-# CONFIG_GPIO_ELKHARTLAKE is not set
 # end of MFD GPIO expanders
 
 #
@@ -3595,9 +3729,9 @@ CONFIG_GPIO_ICH=m
 #
 # CONFIG_GPIO_AGGREGATOR is not set
 # CONFIG_GPIO_LATCH is not set
-# CONFIG_GPIO_MOCKUP is not set
+CONFIG_GPIO_MOCKUP=m
 # CONFIG_GPIO_VIRTIO is not set
-# CONFIG_GPIO_SIM is not set
+CONFIG_GPIO_SIM=m
 # end of Virtual GPIO drivers
 
 # CONFIG_W1 is not set
@@ -3606,6 +3740,7 @@ CONFIG_POWER_RESET=y
 CONFIG_POWER_SUPPLY=y
 # CONFIG_POWER_SUPPLY_DEBUG is not set
 CONFIG_POWER_SUPPLY_HWMON=y
+# CONFIG_PDA_POWER is not set
 # CONFIG_IP5XXX_POWER is not set
 # CONFIG_TEST_POWER is not set
 # CONFIG_CHARGER_ADP5061 is not set
@@ -3670,8 +3805,6 @@ CONFIG_SENSORS_ADT7475=m
 CONFIG_SENSORS_ASC7621=m
 # CONFIG_SENSORS_AXI_FAN_CONTROL is not set
 CONFIG_SENSORS_K8TEMP=m
-CONFIG_SENSORS_K10TEMP=m
-CONFIG_SENSORS_FAM15H_POWER=m
 CONFIG_SENSORS_APPLESMC=m
 CONFIG_SENSORS_ASB100=m
 CONFIG_SENSORS_ATXP1=m
@@ -3726,7 +3859,6 @@ CONFIG_SENSORS_MAX6639=m
 CONFIG_SENSORS_MAX6650=m
 CONFIG_SENSORS_MAX6697=m
 # CONFIG_SENSORS_MAX31790 is not set
-# CONFIG_SENSORS_MC34VR500 is not set
 CONFIG_SENSORS_MCP3021=m
 # CONFIG_SENSORS_TC654 is not set
 # CONFIG_SENSORS_TPS23861 is not set
@@ -3830,7 +3962,6 @@ CONFIG_THERMAL=y
 # CONFIG_THERMAL_STATISTICS is not set
 CONFIG_THERMAL_EMERGENCY_POWEROFF_DELAY_MS=0
 CONFIG_THERMAL_HWMON=y
-CONFIG_THERMAL_ACPI=y
 CONFIG_THERMAL_WRITABLE_TRIPS=y
 CONFIG_THERMAL_DEFAULT_GOV_STEP_WISE=y
 # CONFIG_THERMAL_DEFAULT_GOV_FAIR_SHARE is not set
@@ -3846,7 +3977,6 @@ CONFIG_THERMAL_GOV_USER_SPACE=y
 #
 CONFIG_INTEL_POWERCLAMP=m
 CONFIG_X86_THERMAL_VECTOR=y
-CONFIG_INTEL_TCC=y
 CONFIG_X86_PKG_TEMP_THERMAL=m
 # CONFIG_INTEL_SOC_DTS_THERMAL is not set
 
@@ -3964,8 +4094,9 @@ CONFIG_MFD_CORE=y
 # CONFIG_MFD_MC13XXX_SPI is not set
 # CONFIG_MFD_MC13XXX_I2C is not set
 # CONFIG_MFD_MP2629 is not set
+# CONFIG_HTC_PASIC3 is not set
 # CONFIG_MFD_INTEL_QUARK_I2C_GPIO is not set
-CONFIG_LPC_ICH=y
+CONFIG_LPC_ICH=m
 CONFIG_LPC_SCH=m
 CONFIG_MFD_INTEL_LPSS=y
 CONFIG_MFD_INTEL_LPSS_ACPI=y
@@ -4033,11 +4164,12 @@ CONFIG_MFD_VX855=m
 # CONFIG_MFD_WM8350_I2C is not set
 # CONFIG_MFD_WM8994 is not set
 # CONFIG_MFD_ATC260X_I2C is not set
-# CONFIG_MFD_INTEL_M10_BMC_SPI is not set
+# CONFIG_MFD_INTEL_M10_BMC is not set
 # end of Multifunction device drivers
 
 # CONFIG_REGULATOR is not set
-CONFIG_RC_CORE=m
+CONFIG_RC_CORE=y
+CONFIG_BPF_LIRC_MODE2=y
 CONFIG_LIRC=y
 CONFIG_RC_MAP=m
 CONFIG_RC_DECODERS=y
@@ -4049,7 +4181,7 @@ CONFIG_IR_RC5_DECODER=m
 CONFIG_IR_RC6_DECODER=m
 # CONFIG_IR_RCMM_DECODER is not set
 CONFIG_IR_SANYO_DECODER=m
-# CONFIG_IR_SHARP_DECODER is not set
+CONFIG_IR_SHARP_DECODER=m
 CONFIG_IR_SONY_DECODER=m
 # CONFIG_IR_XMP_DECODER is not set
 CONFIG_RC_DEVICES=y
@@ -4070,7 +4202,7 @@ CONFIG_IR_SERIAL_TRANSMITTER=y
 # CONFIG_IR_TTUSBIR is not set
 CONFIG_IR_WINBOND_CIR=m
 # CONFIG_RC_ATI_REMOTE is not set
-# CONFIG_RC_LOOPBACK is not set
+CONFIG_RC_LOOPBACK=m
 # CONFIG_RC_XBOX_DVD is not set
 
 #
@@ -4110,8 +4242,6 @@ CONFIG_MEDIA_SUBDRV_AUTOSELECT=y
 # CONFIG_MEDIA_PCI_SUPPORT is not set
 # end of Media drivers
 
-CONFIG_MEDIA_HIDE_ANCILLARY_SUBDRV=y
-
 #
 # Media ancillary drivers
 #
@@ -4121,16 +4251,22 @@ CONFIG_MEDIA_HIDE_ANCILLARY_SUBDRV=y
 # Graphics support
 #
 CONFIG_APERTURE_HELPERS=y
-CONFIG_VIDEO_CMDLINE=y
 CONFIG_VIDEO_NOMODESET=y
-# CONFIG_AGP is not set
+CONFIG_AGP=m
+CONFIG_AGP_INTEL=m
+# CONFIG_AGP_SIS is not set
+# CONFIG_AGP_VIA is not set
 CONFIG_INTEL_GTT=m
 CONFIG_VGA_SWITCHEROO=y
 CONFIG_DRM=m
 CONFIG_DRM_MIPI_DSI=y
+CONFIG_DRM_USE_DYNAMIC_DEBUG=y
 CONFIG_DRM_KMS_HELPER=m
+# CONFIG_DRM_DEBUG_DP_MST_TOPOLOGY_REFS is not set
+# CONFIG_DRM_DEBUG_MODESET_LOCK is not set
 CONFIG_DRM_FBDEV_EMULATION=y
 CONFIG_DRM_FBDEV_OVERALLOC=100
+# CONFIG_DRM_FBDEV_LEAK_PHYS_SMEM is not set
 CONFIG_DRM_LOAD_EDID_FIRMWARE=y
 CONFIG_DRM_DISPLAY_HELPER=m
 CONFIG_DRM_DISPLAY_DP_HELPER=y
@@ -4167,6 +4303,25 @@ CONFIG_DRM_I915_CAPTURE_ERROR=y
 CONFIG_DRM_I915_COMPRESS_ERROR=y
 CONFIG_DRM_I915_USERPTR=y
 # CONFIG_DRM_I915_GVT_KVMGT is not set
+
+#
+# drm/i915 Debugging
+#
+# CONFIG_DRM_I915_WERROR is not set
+# CONFIG_DRM_I915_DEBUG is not set
+# CONFIG_DRM_I915_DEBUG_MMIO is not set
+# CONFIG_DRM_I915_SW_FENCE_DEBUG_OBJECTS is not set
+# CONFIG_DRM_I915_SW_FENCE_CHECK_DAG is not set
+# CONFIG_DRM_I915_DEBUG_GUC is not set
+# CONFIG_DRM_I915_SELFTEST is not set
+# CONFIG_DRM_I915_LOW_LEVEL_TRACEPOINTS is not set
+# CONFIG_DRM_I915_DEBUG_VBLANK_EVADE is not set
+# CONFIG_DRM_I915_DEBUG_RUNTIME_PM is not set
+# end of drm/i915 Debugging
+
+#
+# drm/i915 Profile Guided Optimisation
+#
 CONFIG_DRM_I915_REQUEST_TIMEOUT=20000
 CONFIG_DRM_I915_FENCE_TIMEOUT=10000
 CONFIG_DRM_I915_USERFAULT_AUTOSUSPEND=250
@@ -4176,7 +4331,9 @@ CONFIG_DRM_I915_PREEMPT_TIMEOUT_COMPUTE=7500
 CONFIG_DRM_I915_MAX_REQUEST_BUSYWAIT=8000
 CONFIG_DRM_I915_STOP_TIMEOUT=100
 CONFIG_DRM_I915_TIMESLICE_DURATION=1
-# CONFIG_DRM_VGEM is not set
+# end of drm/i915 Profile Guided Optimisation
+
+CONFIG_DRM_VGEM=m
 # CONFIG_DRM_VKMS is not set
 # CONFIG_DRM_VMWGFX is not set
 # CONFIG_DRM_GMA500 is not set
@@ -4185,14 +4342,11 @@ CONFIG_DRM_AST=m
 # CONFIG_DRM_MGAG200 is not set
 CONFIG_DRM_QXL=m
 CONFIG_DRM_VIRTIO_GPU=m
-CONFIG_DRM_VIRTIO_GPU_KMS=y
 CONFIG_DRM_PANEL=y
 
 #
 # Display Panels
 #
-# CONFIG_DRM_PANEL_AUO_A030JTN01 is not set
-# CONFIG_DRM_PANEL_ORISETECH_OTA5601A is not set
 # CONFIG_DRM_PANEL_RASPBERRYPI_TOUCHSCREEN is not set
 # CONFIG_DRM_PANEL_WIDECHIPS_WS2401 is not set
 # end of Display Panels
@@ -4231,6 +4385,7 @@ CONFIG_DRM_PANEL_ORIENTATION_QUIRKS=y
 #
 # Frame buffer Devices
 #
+CONFIG_FB_CMDLINE=y
 CONFIG_FB_NOTIFY=y
 CONFIG_FB=y
 # CONFIG_FIRMWARE_EDID is not set
@@ -4243,7 +4398,7 @@ CONFIG_FB_SYS_IMAGEBLIT=m
 # CONFIG_FB_FOREIGN_ENDIAN is not set
 CONFIG_FB_SYS_FOPS=m
 CONFIG_FB_DEFERRED_IO=y
-# CONFIG_FB_MODE_HELPERS is not set
+CONFIG_FB_MODE_HELPERS=y
 CONFIG_FB_TILEBLITTING=y
 
 #
@@ -4267,6 +4422,7 @@ CONFIG_FB_EFI=y
 # CONFIG_FB_RIVA is not set
 # CONFIG_FB_I740 is not set
 # CONFIG_FB_LE80578 is not set
+# CONFIG_FB_INTEL is not set
 # CONFIG_FB_MATROX is not set
 # CONFIG_FB_RADEON is not set
 # CONFIG_FB_ATY128 is not set
@@ -4315,7 +4471,6 @@ CONFIG_LCD_PLATFORM=m
 # CONFIG_LCD_OTM3225A is not set
 CONFIG_BACKLIGHT_CLASS_DEVICE=y
 # CONFIG_BACKLIGHT_KTD253 is not set
-# CONFIG_BACKLIGHT_KTZ8866 is not set
 # CONFIG_BACKLIGHT_PWM is not set
 CONFIG_BACKLIGHT_APPLE=m
 # CONFIG_BACKLIGHT_QCOM_WLED is not set
@@ -4355,7 +4510,10 @@ CONFIG_LOGO_LINUX_CLUT224=y
 
 # CONFIG_DRM_ACCEL is not set
 # CONFIG_SOUND is not set
-CONFIG_HID_SUPPORT=y
+
+#
+# HID support
+#
 CONFIG_HID=y
 CONFIG_HID_BATTERY_STRENGTH=y
 CONFIG_HIDRAW=y
@@ -4391,7 +4549,6 @@ CONFIG_HID_DRAGONRISE=m
 # CONFIG_HID_ELAN is not set
 CONFIG_HID_ELECOM=m
 # CONFIG_HID_ELO is not set
-# CONFIG_HID_EVISION is not set
 CONFIG_HID_EZKEY=m
 # CONFIG_HID_FT260 is not set
 CONFIG_HID_GEMBIRD=m
@@ -4479,19 +4636,13 @@ CONFIG_HID_THRUSTMASTER=m
 CONFIG_HID_WIIMOTE=m
 CONFIG_HID_XINMO=m
 CONFIG_HID_ZEROPLUS=m
-# CONFIG_ZEROPLUS_FF is not set
+CONFIG_ZEROPLUS_FF=y
 CONFIG_HID_ZYDACRON=m
 CONFIG_HID_SENSOR_HUB=y
 CONFIG_HID_SENSOR_CUSTOM_SENSOR=m
 CONFIG_HID_ALPS=m
 # CONFIG_HID_MCP2221 is not set
 # end of Special HID drivers
-
-#
-# HID-BPF support
-#
-# CONFIG_HID_BPF is not set
-# end of HID-BPF support
 
 #
 # USB HID support
@@ -4501,9 +4652,11 @@ CONFIG_USB_HID=y
 # CONFIG_USB_HIDDEV is not set
 # end of USB HID support
 
-CONFIG_I2C_HID=m
+#
+# I2C HID support
+#
 # CONFIG_I2C_HID_ACPI is not set
-# CONFIG_I2C_HID_OF is not set
+# end of I2C HID support
 
 #
 # Intel ISH HID support
@@ -4516,6 +4669,7 @@ CONFIG_I2C_HID=m
 #
 # CONFIG_AMD_SFH_HID is not set
 # end of AMD SFH HID Support
+# end of HID support
 
 CONFIG_USB_OHCI_LITTLE_ENDIAN=y
 CONFIG_USB_SUPPORT=y
@@ -4536,6 +4690,7 @@ CONFIG_USB_DEFAULT_PERSIST=y
 # CONFIG_USB_DYNAMIC_MINORS is not set
 # CONFIG_USB_OTG is not set
 # CONFIG_USB_OTG_PRODUCTLIST is not set
+# CONFIG_USB_OTG_DISABLE_EXTERNAL_HUB is not set
 CONFIG_USB_LEDS_TRIGGER_USBPORT=y
 CONFIG_USB_AUTOSUSPEND_DELAY=2
 CONFIG_USB_MON=y
@@ -4618,12 +4773,12 @@ CONFIG_USB_STORAGE=m
 #
 # USB port drivers
 #
+# CONFIG_USB_USS720 is not set
 # CONFIG_USB_SERIAL is not set
 
 #
 # USB Miscellaneous drivers
 #
-# CONFIG_USB_USS720 is not set
 # CONFIG_USB_EMI62 is not set
 # CONFIG_USB_EMI26 is not set
 # CONFIG_USB_ADUTUX is not set
@@ -4633,6 +4788,7 @@ CONFIG_USB_STORAGE=m
 # CONFIG_USB_CYPRESS_CY7C63 is not set
 # CONFIG_USB_CYTHERM is not set
 # CONFIG_USB_IDMOUSE is not set
+# CONFIG_USB_FTDI_ELAN is not set
 # CONFIG_USB_APPLEDISPLAY is not set
 # CONFIG_APPLE_MFI_FASTCHARGE is not set
 # CONFIG_USB_SISUSBVGA is not set
@@ -4674,7 +4830,6 @@ CONFIG_UCSI_ACPI=y
 # USB Type-C Multiplexer/DeMultiplexer Switch support
 #
 # CONFIG_TYPEC_MUX_FSA4480 is not set
-# CONFIG_TYPEC_MUX_GPIO_SBU is not set
 # CONFIG_TYPEC_MUX_PI3USB30532 is not set
 # end of USB Type-C Multiplexer/DeMultiplexer Switch support
 
@@ -4794,32 +4949,7 @@ CONFIG_LEDS_TRIGGER_CAMERA=m
 # Simple LED drivers
 #
 # CONFIG_ACCESSIBILITY is not set
-CONFIG_INFINIBAND=m
-CONFIG_INFINIBAND_USER_MAD=m
-CONFIG_INFINIBAND_USER_ACCESS=m
-CONFIG_INFINIBAND_USER_MEM=y
-CONFIG_INFINIBAND_ON_DEMAND_PAGING=y
-CONFIG_INFINIBAND_ADDR_TRANS=y
-CONFIG_INFINIBAND_ADDR_TRANS_CONFIGFS=y
-CONFIG_INFINIBAND_VIRT_DMA=y
-# CONFIG_INFINIBAND_EFA is not set
-# CONFIG_INFINIBAND_ERDMA is not set
-# CONFIG_MLX4_INFINIBAND is not set
-# CONFIG_INFINIBAND_MTHCA is not set
-# CONFIG_INFINIBAND_OCRDMA is not set
-# CONFIG_INFINIBAND_USNIC is not set
-# CONFIG_INFINIBAND_RDMAVT is not set
-CONFIG_RDMA_RXE=m
-CONFIG_RDMA_SIW=m
-CONFIG_INFINIBAND_IPOIB=m
-# CONFIG_INFINIBAND_IPOIB_CM is not set
-CONFIG_INFINIBAND_IPOIB_DEBUG=y
-# CONFIG_INFINIBAND_IPOIB_DEBUG_DATA is not set
-CONFIG_INFINIBAND_SRP=m
-# CONFIG_INFINIBAND_ISER is not set
-# CONFIG_INFINIBAND_RTRS_CLIENT is not set
-# CONFIG_INFINIBAND_RTRS_SERVER is not set
-# CONFIG_INFINIBAND_OPA_VNIC is not set
+# CONFIG_INFINIBAND is not set
 CONFIG_EDAC_ATOMIC_SCRUB=y
 CONFIG_EDAC_SUPPORT=y
 CONFIG_EDAC=y
@@ -4940,6 +5070,7 @@ CONFIG_RTC_DRV_M48T59=m
 CONFIG_RTC_DRV_MSM6242=m
 CONFIG_RTC_DRV_BQ4802=m
 CONFIG_RTC_DRV_RP5C01=m
+CONFIG_RTC_DRV_V3020=m
 
 #
 # on-CPU RTC drivers
@@ -4961,14 +5092,10 @@ CONFIG_DMA_VIRTUAL_CHANNELS=y
 CONFIG_DMA_ACPI=y
 # CONFIG_ALTERA_MSGDMA is not set
 CONFIG_INTEL_IDMA64=m
-CONFIG_INTEL_IDXD_BUS=m
-CONFIG_INTEL_IDXD=m
+# CONFIG_INTEL_IDXD is not set
 # CONFIG_INTEL_IDXD_COMPAT is not set
-# CONFIG_INTEL_IDXD_SVM is not set
-# CONFIG_INTEL_IDXD_PERFMON is not set
 CONFIG_INTEL_IOATDMA=m
 # CONFIG_PLX_DMA is not set
-# CONFIG_XILINX_XDMA is not set
 # CONFIG_AMD_PTDMA is not set
 # CONFIG_QCOM_HIDMA_MGMT is not set
 # CONFIG_QCOM_HIDMA is not set
@@ -4976,6 +5103,7 @@ CONFIG_DW_DMAC_CORE=y
 CONFIG_DW_DMAC=m
 CONFIG_DW_DMAC_PCI=y
 # CONFIG_DW_EDMA is not set
+# CONFIG_DW_EDMA_PCIE is not set
 CONFIG_HSU_DMA=y
 # CONFIG_SF_PDMA is not set
 # CONFIG_INTEL_LDMA is not set
@@ -4991,13 +5119,15 @@ CONFIG_DMA_ENGINE_RAID=y
 # DMABUF options
 #
 CONFIG_SYNC_FILE=y
-# CONFIG_SW_SYNC is not set
-# CONFIG_UDMABUF is not set
+CONFIG_SW_SYNC=y
+CONFIG_UDMABUF=y
 # CONFIG_DMABUF_MOVE_NOTIFY is not set
 # CONFIG_DMABUF_DEBUG is not set
 # CONFIG_DMABUF_SELFTESTS is not set
-# CONFIG_DMABUF_HEAPS is not set
+CONFIG_DMABUF_HEAPS=y
 # CONFIG_DMABUF_SYSFS_STATS is not set
+CONFIG_DMABUF_HEAPS_SYSTEM=y
+# CONFIG_DMABUF_HEAPS_CMA is not set
 # end of DMABUF options
 
 CONFIG_DCA=m
@@ -5015,8 +5145,14 @@ CONFIG_VFIO_PCI_INTX=y
 CONFIG_VFIO_PCI=m
 # CONFIG_VFIO_PCI_VGA is not set
 # CONFIG_VFIO_PCI_IGD is not set
+CONFIG_VFIO_MDEV=m
 CONFIG_IRQ_BYPASS_MANAGER=m
-# CONFIG_VIRT_DRIVERS is not set
+CONFIG_VIRT_DRIVERS=y
+CONFIG_VMGENID=y
+# CONFIG_VBOXGUEST is not set
+# CONFIG_NITRO_ENCLAVES is not set
+# CONFIG_EFI_SECRET is not set
+CONFIG_TDX_GUEST_DRIVER=m
 CONFIG_VIRTIO_ANCHOR=y
 CONFIG_VIRTIO=y
 CONFIG_VIRTIO_PCI_LIB=y
@@ -5032,7 +5168,6 @@ CONFIG_VIRTIO_INPUT=m
 CONFIG_VIRTIO_DMA_SHARED_BUFFER=m
 # CONFIG_VDPA is not set
 CONFIG_VHOST_IOTLB=m
-CONFIG_VHOST_TASK=y
 CONFIG_VHOST=m
 CONFIG_VHOST_MENU=y
 CONFIG_VHOST_NET=m
@@ -5043,7 +5178,6 @@ CONFIG_VHOST_VSOCK=m
 # Microsoft Hyper-V guest support
 #
 CONFIG_HYPERV=y
-# CONFIG_HYPERV_VTL_MODE is not set
 CONFIG_HYPERV_TIMER=y
 CONFIG_HYPERV_UTILS=m
 CONFIG_HYPERV_BALLOON=m
@@ -5051,7 +5185,18 @@ CONFIG_HYPERV_BALLOON=m
 
 # CONFIG_GREYBUS is not set
 # CONFIG_COMEDI is not set
-# CONFIG_STAGING is not set
+CONFIG_STAGING=y
+# CONFIG_RTS5208 is not set
+# CONFIG_VT6655 is not set
+# CONFIG_FB_SM750 is not set
+# CONFIG_STAGING_MEDIA is not set
+# CONFIG_LTE_GDM724X is not set
+# CONFIG_FB_TFT is not set
+# CONFIG_KS7010 is not set
+# CONFIG_PI433 is not set
+# CONFIG_FIELDBUS_DEV is not set
+# CONFIG_QLGE is not set
+# CONFIG_VME_BUS is not set
 # CONFIG_CHROME_PLATFORMS is not set
 # CONFIG_MELLANOX_PLATFORM is not set
 CONFIG_SURFACE_PLATFORMS=y
@@ -5066,6 +5211,7 @@ CONFIG_WMI_BMOF=m
 # CONFIG_HUAWEI_WMI is not set
 # CONFIG_UV_SYSFS is not set
 CONFIG_MXM_WMI=m
+# CONFIG_PEAQ_WMI is not set
 # CONFIG_NVIDIA_WMI_EC_BACKLIGHT is not set
 # CONFIG_XIAOMI_WMI is not set
 # CONFIG_GIGABYTE_WMI is not set
@@ -5075,7 +5221,6 @@ CONFIG_ACERHDF=m
 CONFIG_ACER_WMI=m
 # CONFIG_AMD_PMF is not set
 # CONFIG_AMD_PMC is not set
-# CONFIG_AMD_HSMP is not set
 # CONFIG_ADV_SWBUTTON is not set
 CONFIG_APPLE_GMUX=m
 CONFIG_ASUS_LAPTOP=m
@@ -5093,7 +5238,6 @@ CONFIG_FUJITSU_TABLET=m
 # CONFIG_WIRELESS_HOTKEY is not set
 # CONFIG_IBM_RTL is not set
 CONFIG_IDEAPAD_LAPTOP=m
-# CONFIG_LENOVO_YMC is not set
 CONFIG_SENSORS_HDAPS=m
 # CONFIG_THINKPAD_ACPI is not set
 # CONFIG_THINKPAD_LMI is not set
@@ -5127,7 +5271,6 @@ CONFIG_INTEL_RST=m
 # CONFIG_INTEL_SMARTCONNECT is not set
 CONFIG_INTEL_TURBO_MAX_3=y
 # CONFIG_INTEL_VSEC is not set
-# CONFIG_MSI_EC is not set
 CONFIG_MSI_LAPTOP=m
 CONFIG_MSI_WMI=m
 # CONFIG_PCENGINES_APU2 is not set
@@ -5201,8 +5344,8 @@ CONFIG_INTEL_IOMMU_SVM=y
 # CONFIG_INTEL_IOMMU_DEFAULT_ON is not set
 CONFIG_INTEL_IOMMU_FLOPPY_WA=y
 CONFIG_INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON=y
-CONFIG_INTEL_IOMMU_PERF_EVENTS=y
-# CONFIG_IOMMUFD is not set
+CONFIG_IOMMUFD=m
+CONFIG_IOMMUFD_TEST=y
 CONFIG_IRQ_REMAP=y
 CONFIG_HYPERV_IOMMU=y
 # CONFIG_VIRTIO_IOMMU is not set
@@ -5256,8 +5399,6 @@ CONFIG_HYPERV_IOMMU=y
 #
 # end of Enable LiteX SoC Builder specific drivers
 
-# CONFIG_WPCM450_SOC is not set
-
 #
 # Qualcomm SoC drivers
 #
@@ -5307,7 +5448,7 @@ CONFIG_PWM_LPSS_PLATFORM=m
 #
 # PHY Subsystem
 #
-# CONFIG_GENERIC_PHY is not set
+CONFIG_GENERIC_PHY=y
 # CONFIG_USB_LGM_PHY is not set
 # CONFIG_PHY_CAN_TRANSCEIVER is not set
 
@@ -5325,7 +5466,7 @@ CONFIG_PWM_LPSS_PLATFORM=m
 CONFIG_POWERCAP=y
 CONFIG_INTEL_RAPL_CORE=m
 CONFIG_INTEL_RAPL=m
-CONFIG_IDLE_INJECT=y
+# CONFIG_IDLE_INJECT is not set
 # CONFIG_MCB is not set
 
 #
@@ -5359,14 +5500,6 @@ CONFIG_DEV_DAX_PMEM=m
 CONFIG_DEV_DAX_KMEM=m
 CONFIG_NVMEM=y
 CONFIG_NVMEM_SYSFS=y
-
-#
-# Layout Types
-#
-# CONFIG_NVMEM_LAYOUT_SL28_VPD is not set
-# CONFIG_NVMEM_LAYOUT_ONIE_TLV is not set
-# end of Layout Types
-
 # CONFIG_NVMEM_RMEM is not set
 
 #
@@ -5383,7 +5516,6 @@ CONFIG_INTEL_TH_PTI=m
 # end of HW tracing support
 
 # CONFIG_FPGA is not set
-# CONFIG_TEE is not set
 # CONFIG_SIOX is not set
 # CONFIG_SLIMBUS is not set
 # CONFIG_INTERCONNECT is not set
@@ -5397,13 +5529,10 @@ CONFIG_INTEL_TH_PTI=m
 # File systems
 #
 CONFIG_DCACHE_WORD_ACCESS=y
-# CONFIG_VALIDATE_FS_PARSER is not set
+CONFIG_VALIDATE_FS_PARSER=y
 CONFIG_FS_IOMAP=y
-CONFIG_LEGACY_DIRECT_IO=y
 CONFIG_EXT2_FS=m
-CONFIG_EXT2_FS_XATTR=y
-CONFIG_EXT2_FS_POSIX_ACL=y
-CONFIG_EXT2_FS_SECURITY=y
+# CONFIG_EXT2_FS_XATTR is not set
 # CONFIG_EXT3_FS is not set
 CONFIG_EXT4_FS=y
 CONFIG_EXT4_FS_POSIX_ACL=y
@@ -5420,7 +5549,7 @@ CONFIG_XFS_QUOTA=y
 CONFIG_XFS_POSIX_ACL=y
 CONFIG_XFS_RT=y
 CONFIG_XFS_ONLINE_SCRUB=y
-CONFIG_XFS_ONLINE_REPAIR=y
+# CONFIG_XFS_ONLINE_REPAIR is not set
 CONFIG_XFS_DEBUG=y
 CONFIG_XFS_ASSERT_FATAL=y
 # CONFIG_GFS2_FS is not set
@@ -5441,13 +5570,12 @@ CONFIG_F2FS_FS=m
 CONFIG_F2FS_STAT_FS=y
 CONFIG_F2FS_FS_XATTR=y
 CONFIG_F2FS_FS_POSIX_ACL=y
-CONFIG_F2FS_FS_SECURITY=y
+# CONFIG_F2FS_FS_SECURITY is not set
 # CONFIG_F2FS_CHECK_FS is not set
 # CONFIG_F2FS_FAULT_INJECTION is not set
 # CONFIG_F2FS_FS_COMPRESSION is not set
 CONFIG_F2FS_IOSTAT=y
 # CONFIG_F2FS_UNFAIR_RWSEM is not set
-# CONFIG_ZONEFS_FS is not set
 CONFIG_FS_DAX=y
 CONFIG_FS_DAX_PMD=y
 CONFIG_FS_POSIX_ACL=y
@@ -5464,6 +5592,7 @@ CONFIG_FANOTIFY=y
 CONFIG_FANOTIFY_ACCESS_PERMISSIONS=y
 CONFIG_QUOTA=y
 CONFIG_QUOTA_NETLINK_INTERFACE=y
+CONFIG_PRINT_QUOTA_WARNING=y
 # CONFIG_QUOTA_DEBUG is not set
 CONFIG_QUOTA_TREE=y
 # CONFIG_QFMT_V1 is not set
@@ -5521,6 +5650,7 @@ CONFIG_PROC_SYSCTL=y
 CONFIG_PROC_PAGE_MONITOR=y
 CONFIG_PROC_CHILDREN=y
 CONFIG_PROC_PID_ARCH_STATUS=y
+CONFIG_PROC_CPU_RESCTRL=y
 CONFIG_KERNFS=y
 CONFIG_SYSFS=y
 CONFIG_TMPFS=y
@@ -5529,6 +5659,7 @@ CONFIG_TMPFS_XATTR=y
 # CONFIG_TMPFS_INODE64 is not set
 CONFIG_HUGETLBFS=y
 CONFIG_HUGETLB_PAGE=y
+CONFIG_ARCH_WANT_HUGETLB_PAGE_OPTIMIZE_VMEMMAP=y
 CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP=y
 # CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON is not set
 CONFIG_MEMFD_CREATE=y
@@ -5584,8 +5715,8 @@ CONFIG_PSTORE_DEFLATE_COMPRESS=y
 CONFIG_PSTORE_COMPRESS=y
 CONFIG_PSTORE_DEFLATE_COMPRESS_DEFAULT=y
 CONFIG_PSTORE_COMPRESS_DEFAULT="deflate"
-# CONFIG_PSTORE_CONSOLE is not set
-# CONFIG_PSTORE_PMSG is not set
+CONFIG_PSTORE_CONSOLE=y
+CONFIG_PSTORE_PMSG=y
 # CONFIG_PSTORE_FTRACE is not set
 CONFIG_PSTORE_RAM=m
 # CONFIG_PSTORE_BLK is not set
@@ -5612,7 +5743,7 @@ CONFIG_ROOT_NFS=y
 CONFIG_NFS_USE_KERNEL_DNS=y
 CONFIG_NFS_DEBUG=y
 CONFIG_NFS_DISABLE_UDP_SUPPORT=y
-# CONFIG_NFS_V4_2_READ_PLUS is not set
+CONFIG_NFS_V4_2_READ_PLUS=y
 CONFIG_NFSD=m
 # CONFIG_NFSD_V2 is not set
 CONFIG_NFSD_V3_ACL=y
@@ -5633,13 +5764,8 @@ CONFIG_SUNRPC=y
 CONFIG_SUNRPC_GSS=m
 CONFIG_SUNRPC_BACKCHANNEL=y
 CONFIG_RPCSEC_GSS_KRB5=m
-CONFIG_RPCSEC_GSS_KRB5_CRYPTOSYSTEM=y
-# CONFIG_RPCSEC_GSS_KRB5_ENCTYPES_DES is not set
-CONFIG_RPCSEC_GSS_KRB5_ENCTYPES_AES_SHA1=y
-# CONFIG_RPCSEC_GSS_KRB5_ENCTYPES_CAMELLIA is not set
-# CONFIG_RPCSEC_GSS_KRB5_ENCTYPES_AES_SHA2 is not set
+# CONFIG_SUNRPC_DISABLE_INSECURE_ENCTYPES is not set
 CONFIG_SUNRPC_DEBUG=y
-# CONFIG_SUNRPC_XPRT_RDMA is not set
 # CONFIG_CEPH_FS is not set
 CONFIG_CIFS=m
 CONFIG_CIFS_STATS2=y
@@ -5652,14 +5778,13 @@ CONFIG_CIFS_DEBUG=y
 # CONFIG_CIFS_DEBUG_DUMP_KEYS is not set
 CONFIG_CIFS_DFS_UPCALL=y
 # CONFIG_CIFS_SWN_UPCALL is not set
-# CONFIG_CIFS_SMB_DIRECT is not set
 # CONFIG_SMB_SERVER is not set
 CONFIG_SMBFS_COMMON=m
 # CONFIG_CODA_FS is not set
 # CONFIG_AFS_FS is not set
 CONFIG_9P_FS=y
 CONFIG_9P_FS_POSIX_ACL=y
-# CONFIG_9P_FS_SECURITY is not set
+CONFIG_9P_FS_SECURITY=y
 CONFIG_NLS=y
 CONFIG_NLS_DEFAULT="utf8"
 CONFIG_NLS_CODEPAGE_437=y
@@ -5731,9 +5856,8 @@ CONFIG_ENCRYPTED_KEYS=y
 CONFIG_SECURITY=y
 CONFIG_SECURITYFS=y
 CONFIG_SECURITY_NETWORK=y
-# CONFIG_SECURITY_INFINIBAND is not set
 CONFIG_SECURITY_NETWORK_XFRM=y
-# CONFIG_SECURITY_PATH is not set
+CONFIG_SECURITY_PATH=y
 CONFIG_INTEL_TXT=y
 CONFIG_HAVE_HARDENED_USERCOPY_ALLOCATOR=y
 CONFIG_HARDENED_USERCOPY=y
@@ -5747,18 +5871,40 @@ CONFIG_FORTIFY_SOURCE=y
 CONFIG_SECURITY_YAMA=y
 # CONFIG_SECURITY_SAFESETID is not set
 # CONFIG_SECURITY_LOCKDOWN_LSM is not set
-# CONFIG_SECURITY_LANDLOCK is not set
+CONFIG_SECURITY_LANDLOCK=y
 CONFIG_INTEGRITY=y
 CONFIG_INTEGRITY_SIGNATURE=y
 CONFIG_INTEGRITY_ASYMMETRIC_KEYS=y
 CONFIG_INTEGRITY_TRUSTED_KEYRING=y
 # CONFIG_INTEGRITY_PLATFORM_KEYRING is not set
 CONFIG_INTEGRITY_AUDIT=y
-# CONFIG_IMA is not set
-# CONFIG_IMA_SECURE_AND_OR_TRUSTED_BOOT is not set
+CONFIG_IMA=y
+# CONFIG_IMA_KEXEC is not set
+CONFIG_IMA_MEASURE_PCR_IDX=10
+CONFIG_IMA_NG_TEMPLATE=y
+# CONFIG_IMA_SIG_TEMPLATE is not set
+CONFIG_IMA_DEFAULT_TEMPLATE="ima-ng"
+CONFIG_IMA_DEFAULT_HASH_SHA1=y
+# CONFIG_IMA_DEFAULT_HASH_SHA256 is not set
+# CONFIG_IMA_DEFAULT_HASH_SHA512 is not set
+CONFIG_IMA_DEFAULT_HASH="sha1"
+CONFIG_IMA_WRITE_POLICY=y
+CONFIG_IMA_READ_POLICY=y
+CONFIG_IMA_APPRAISE=y
+CONFIG_IMA_ARCH_POLICY=y
+# CONFIG_IMA_APPRAISE_BUILD_POLICY is not set
+CONFIG_IMA_APPRAISE_BOOTPARAM=y
+# CONFIG_IMA_APPRAISE_MODSIG is not set
+CONFIG_IMA_TRUSTED_KEYRING=y
+# CONFIG_IMA_BLACKLIST_KEYRING is not set
+# CONFIG_IMA_LOAD_X509 is not set
+CONFIG_IMA_MEASURE_ASYMMETRIC_KEYS=y
+CONFIG_IMA_QUEUE_EARLY_BOOT_KEYS=y
+CONFIG_IMA_SECURE_AND_OR_TRUSTED_BOOT=y
+# CONFIG_IMA_DISABLE_HTABLE is not set
 # CONFIG_EVM is not set
 CONFIG_DEFAULT_SECURITY_DAC=y
-CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,bpf"
+CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,integrity,bpf"
 
 #
 # Kernel hardening options
@@ -5769,9 +5915,15 @@ CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,bpf"
 #
 CONFIG_INIT_STACK_NONE=y
 # CONFIG_GCC_PLUGIN_STRUCTLEAK_USER is not set
-# CONFIG_GCC_PLUGIN_STACKLEAK is not set
-# CONFIG_INIT_ON_ALLOC_DEFAULT_ON is not set
-# CONFIG_INIT_ON_FREE_DEFAULT_ON is not set
+# CONFIG_GCC_PLUGIN_STRUCTLEAK_BYREF is not set
+# CONFIG_GCC_PLUGIN_STRUCTLEAK_BYREF_ALL is not set
+CONFIG_GCC_PLUGIN_STACKLEAK=y
+# CONFIG_GCC_PLUGIN_STACKLEAK_VERBOSE is not set
+CONFIG_STACKLEAK_TRACK_MIN_SIZE=100
+# CONFIG_STACKLEAK_METRICS is not set
+# CONFIG_STACKLEAK_RUNTIME_DISABLE is not set
+CONFIG_INIT_ON_ALLOC_DEFAULT_ON=y
+CONFIG_INIT_ON_FREE_DEFAULT_ON=y
 CONFIG_CC_HAS_ZERO_CALL_USED_REGS=y
 # CONFIG_ZERO_CALL_USED_REGS is not set
 # end of Memory initialization
@@ -5820,6 +5972,7 @@ CONFIG_CRYPTO_CRYPTD=y
 CONFIG_CRYPTO_AUTHENC=m
 # CONFIG_CRYPTO_TEST is not set
 CONFIG_CRYPTO_SIMD=y
+CONFIG_CRYPTO_ENGINE=m
 # end of Crypto core or helper
 
 #
@@ -5854,7 +6007,8 @@ CONFIG_CRYPTO_FCRYPT=m
 CONFIG_CRYPTO_KHAZAD=m
 CONFIG_CRYPTO_SEED=m
 CONFIG_CRYPTO_SERPENT=m
-# CONFIG_CRYPTO_SM4_GENERIC is not set
+CONFIG_CRYPTO_SM4=y
+CONFIG_CRYPTO_SM4_GENERIC=y
 CONFIG_CRYPTO_TEA=m
 CONFIG_CRYPTO_TWOFISH=m
 CONFIG_CRYPTO_TWOFISH_COMMON=m
@@ -5951,7 +6105,7 @@ CONFIG_CRYPTO_JITTERENTROPY=y
 # Userspace interface
 #
 CONFIG_CRYPTO_USER_API=y
-# CONFIG_CRYPTO_USER_API_HASH is not set
+CONFIG_CRYPTO_USER_API_HASH=m
 CONFIG_CRYPTO_USER_API_SKCIPHER=y
 CONFIG_CRYPTO_USER_API_RNG=y
 # CONFIG_CRYPTO_USER_API_RNG_CAVP is not set
@@ -5983,8 +6137,6 @@ CONFIG_CRYPTO_TWOFISH_X86_64=m
 CONFIG_CRYPTO_TWOFISH_X86_64_3WAY=m
 CONFIG_CRYPTO_TWOFISH_AVX_X86_64=m
 # CONFIG_CRYPTO_ARIA_AESNI_AVX_X86_64 is not set
-# CONFIG_CRYPTO_ARIA_AESNI_AVX2_X86_64 is not set
-# CONFIG_CRYPTO_ARIA_GFNI_AVX512_X86_64 is not set
 CONFIG_CRYPTO_CHACHA20_X86_64=m
 # CONFIG_CRYPTO_AEGIS128_AESNI_SSE2 is not set
 # CONFIG_CRYPTO_NHPOLY1305_SSE2 is not set
@@ -6002,7 +6154,24 @@ CONFIG_CRYPTO_CRC32_PCLMUL=m
 CONFIG_CRYPTO_CRCT10DIF_PCLMUL=m
 # end of Accelerated Cryptographic Algorithms for CPU (x86)
 
-# CONFIG_CRYPTO_HW is not set
+CONFIG_CRYPTO_HW=y
+CONFIG_CRYPTO_DEV_PADLOCK=m
+CONFIG_CRYPTO_DEV_PADLOCK_AES=m
+CONFIG_CRYPTO_DEV_PADLOCK_SHA=m
+# CONFIG_CRYPTO_DEV_ATMEL_ECC is not set
+# CONFIG_CRYPTO_DEV_ATMEL_SHA204A is not set
+# CONFIG_CRYPTO_DEV_CCP is not set
+# CONFIG_CRYPTO_DEV_QAT_DH895xCC is not set
+# CONFIG_CRYPTO_DEV_QAT_C3XXX is not set
+# CONFIG_CRYPTO_DEV_QAT_C62X is not set
+# CONFIG_CRYPTO_DEV_QAT_4XXX is not set
+# CONFIG_CRYPTO_DEV_QAT_DH895xCCVF is not set
+# CONFIG_CRYPTO_DEV_QAT_C3XXXVF is not set
+# CONFIG_CRYPTO_DEV_QAT_C62XVF is not set
+# CONFIG_CRYPTO_DEV_NITROX_CNN55XX is not set
+CONFIG_CRYPTO_DEV_VIRTIO=m
+# CONFIG_CRYPTO_DEV_SAFEXCEL is not set
+# CONFIG_CRYPTO_DEV_AMLOGIC_GXL is not set
 CONFIG_ASYMMETRIC_KEY_TYPE=y
 CONFIG_ASYMMETRIC_PUBLIC_KEY_SUBTYPE=y
 CONFIG_X509_CERTIFICATE_PARSER=y
@@ -6041,7 +6210,7 @@ CONFIG_GENERIC_STRNCPY_FROM_USER=y
 CONFIG_GENERIC_STRNLEN_USER=y
 CONFIG_GENERIC_NET_UTILS=y
 CONFIG_CORDIC=m
-# CONFIG_PRIME_NUMBERS is not set
+CONFIG_PRIME_NUMBERS=m
 CONFIG_RATIONAL=y
 CONFIG_GENERIC_PCI_IOMAP=y
 CONFIG_GENERIC_IOMAP=y
@@ -6121,10 +6290,10 @@ CONFIG_TEXTSEARCH_KMP=m
 CONFIG_TEXTSEARCH_BM=m
 CONFIG_TEXTSEARCH_FSM=m
 CONFIG_INTERVAL_TREE=y
+CONFIG_INTERVAL_TREE_SPAN_ITER=y
 CONFIG_XARRAY_MULTI=y
 CONFIG_ASSOCIATIVE_ARRAY=y
 CONFIG_HAS_IOMEM=y
-CONFIG_HAS_IOPORT=y
 CONFIG_HAS_IOPORT_MAP=y
 CONFIG_HAS_DMA=y
 CONFIG_DMA_OPS=y
@@ -6139,17 +6308,18 @@ CONFIG_DMA_CMA=y
 #
 # Default contiguous memory area size:
 #
-CONFIG_CMA_SIZE_MBYTES=200
+CONFIG_CMA_SIZE_MBYTES=0
 CONFIG_CMA_SIZE_SEL_MBYTES=y
 # CONFIG_CMA_SIZE_SEL_PERCENTAGE is not set
 # CONFIG_CMA_SIZE_SEL_MIN is not set
 # CONFIG_CMA_SIZE_SEL_MAX is not set
 CONFIG_CMA_ALIGNMENT=8
 # CONFIG_DMA_API_DEBUG is not set
-# CONFIG_DMA_MAP_BENCHMARK is not set
+CONFIG_DMA_MAP_BENCHMARK=y
 CONFIG_SGL_ALLOC=y
 CONFIG_CHECK_SIGNATURE=y
 CONFIG_CPUMASK_OFFSTACK=y
+# CONFIG_FORCE_NR_CPUS is not set
 CONFIG_CPU_RMAP=y
 CONFIG_DQL=y
 CONFIG_GLOB=y
@@ -6159,16 +6329,26 @@ CONFIG_CLZ_TAB=y
 CONFIG_IRQ_POLL=y
 CONFIG_MPILIB=y
 CONFIG_SIGNATURE=y
-CONFIG_DIMLIB=y
 CONFIG_OID_REGISTRY=y
 CONFIG_UCS2_STRING=y
 CONFIG_HAVE_GENERIC_VDSO=y
 CONFIG_GENERIC_GETTIMEOFDAY=y
 CONFIG_GENERIC_VDSO_TIME_NS=y
 CONFIG_FONT_SUPPORT=y
-# CONFIG_FONTS is not set
+CONFIG_FONTS=y
 CONFIG_FONT_8x8=y
 CONFIG_FONT_8x16=y
+# CONFIG_FONT_6x11 is not set
+# CONFIG_FONT_7x14 is not set
+# CONFIG_FONT_PEARL_8x8 is not set
+# CONFIG_FONT_ACORN_8x8 is not set
+CONFIG_FONT_MINI_4x6=y
+# CONFIG_FONT_6x10 is not set
+# CONFIG_FONT_10x18 is not set
+# CONFIG_FONT_SUN8x16 is not set
+# CONFIG_FONT_SUN12x22 is not set
+# CONFIG_FONT_TER16x32 is not set
+# CONFIG_FONT_6x8 is not set
 CONFIG_SG_POOL=y
 CONFIG_ARCH_HAS_PMEM_API=y
 CONFIG_MEMREGION=y
@@ -6212,23 +6392,27 @@ CONFIG_DEBUG_MISC=y
 CONFIG_DEBUG_INFO=y
 CONFIG_AS_HAS_NON_CONST_LEB128=y
 # CONFIG_DEBUG_INFO_NONE is not set
-# CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT is not set
-CONFIG_DEBUG_INFO_DWARF4=y
+CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y
+# CONFIG_DEBUG_INFO_DWARF4 is not set
 # CONFIG_DEBUG_INFO_DWARF5 is not set
-CONFIG_DEBUG_INFO_REDUCED=y
+# CONFIG_DEBUG_INFO_REDUCED is not set
 CONFIG_DEBUG_INFO_COMPRESSED_NONE=y
 # CONFIG_DEBUG_INFO_COMPRESSED_ZLIB is not set
 # CONFIG_DEBUG_INFO_SPLIT is not set
+CONFIG_DEBUG_INFO_BTF=y
 CONFIG_PAHOLE_HAS_SPLIT_BTF=y
-CONFIG_PAHOLE_HAS_LANG_EXCLUDE=y
+CONFIG_DEBUG_INFO_BTF_MODULES=y
+# CONFIG_MODULE_ALLOW_BTF_MISMATCH is not set
 # CONFIG_GDB_SCRIPTS is not set
-CONFIG_FRAME_WARN=8192
+CONFIG_FRAME_WARN=2048
 CONFIG_STRIP_ASM_SYMS=y
 # CONFIG_READABLE_ASM is not set
 # CONFIG_HEADERS_INSTALL is not set
 CONFIG_DEBUG_SECTION_MISMATCH=y
 CONFIG_SECTION_MISMATCH_WARN_ONLY=y
+# CONFIG_DEBUG_FORCE_FUNCTION_ALIGN_64B is not set
 CONFIG_OBJTOOL=y
+# CONFIG_VMLINUX_MAP is not set
 # CONFIG_DEBUG_FORCE_WEAK_PER_CPU is not set
 # end of Compile-time checks and compiler options
 
@@ -6246,20 +6430,10 @@ CONFIG_DEBUG_FS_ALLOW_ALL=y
 CONFIG_HAVE_ARCH_KGDB=y
 # CONFIG_KGDB is not set
 CONFIG_ARCH_HAS_UBSAN_SANITIZE_ALL=y
-CONFIG_UBSAN=y
-# CONFIG_UBSAN_TRAP is not set
-CONFIG_CC_HAS_UBSAN_BOUNDS=y
-CONFIG_UBSAN_BOUNDS=y
-CONFIG_UBSAN_ONLY_BOUNDS=y
-CONFIG_UBSAN_SHIFT=y
-# CONFIG_UBSAN_DIV_ZERO is not set
-# CONFIG_UBSAN_BOOL is not set
-# CONFIG_UBSAN_ENUM is not set
-# CONFIG_UBSAN_ALIGNMENT is not set
-CONFIG_UBSAN_SANITIZE_ALL=y
-# CONFIG_TEST_UBSAN is not set
+# CONFIG_UBSAN is not set
 CONFIG_HAVE_ARCH_KCSAN=y
 CONFIG_HAVE_KCSAN_COMPILER=y
+# CONFIG_KCSAN is not set
 # end of Generic Kernel Debugging Instruments
 
 #
@@ -6273,11 +6447,11 @@ CONFIG_HAVE_KCSAN_COMPILER=y
 #
 # Memory Debugging
 #
-CONFIG_PAGE_EXTENSION=y
+# CONFIG_PAGE_EXTENSION is not set
 # CONFIG_DEBUG_PAGEALLOC is not set
 CONFIG_SLUB_DEBUG=y
-# CONFIG_SLUB_DEBUG_ON is not set
-CONFIG_PAGE_OWNER=y
+CONFIG_SLUB_DEBUG_ON=y
+# CONFIG_PAGE_OWNER is not set
 # CONFIG_PAGE_TABLE_CHECK is not set
 # CONFIG_PAGE_POISONING is not set
 # CONFIG_DEBUG_PAGE_REF is not set
@@ -6286,31 +6460,25 @@ CONFIG_ARCH_HAS_DEBUG_WX=y
 # CONFIG_DEBUG_WX is not set
 CONFIG_GENERIC_PTDUMP=y
 # CONFIG_PTDUMP_DEBUGFS is not set
-CONFIG_HAVE_DEBUG_KMEMLEAK=y
-# CONFIG_DEBUG_KMEMLEAK is not set
-CONFIG_PER_VMA_LOCK_STATS=y
 # CONFIG_DEBUG_OBJECTS is not set
 # CONFIG_SHRINKER_DEBUG is not set
+CONFIG_HAVE_DEBUG_KMEMLEAK=y
+# CONFIG_DEBUG_KMEMLEAK is not set
 # CONFIG_DEBUG_STACK_USAGE is not set
-# CONFIG_SCHED_STACK_END_CHECK is not set
+CONFIG_SCHED_STACK_END_CHECK=y
 CONFIG_ARCH_HAS_DEBUG_VM_PGTABLE=y
 # CONFIG_DEBUG_VM is not set
 # CONFIG_DEBUG_VM_PGTABLE is not set
 CONFIG_ARCH_HAS_DEBUG_VIRTUAL=y
 # CONFIG_DEBUG_VIRTUAL is not set
 CONFIG_DEBUG_MEMORY_INIT=y
+CONFIG_MEMORY_NOTIFIER_ERROR_INJECT=m
 # CONFIG_DEBUG_PER_CPU_MAPS is not set
 CONFIG_HAVE_ARCH_KASAN=y
 CONFIG_HAVE_ARCH_KASAN_VMALLOC=y
 CONFIG_CC_HAS_KASAN_GENERIC=y
 CONFIG_CC_HAS_WORKING_NOSANITIZE_ADDRESS=y
-CONFIG_KASAN=y
-CONFIG_KASAN_GENERIC=y
-# CONFIG_KASAN_OUTLINE is not set
-CONFIG_KASAN_INLINE=y
-CONFIG_KASAN_STACK=y
-CONFIG_KASAN_VMALLOC=y
-# CONFIG_KASAN_MODULE_TEST is not set
+# CONFIG_KASAN is not set
 CONFIG_HAVE_ARCH_KFENCE=y
 # CONFIG_KFENCE is not set
 CONFIG_HAVE_ARCH_KMSAN=y
@@ -6354,21 +6522,20 @@ CONFIG_SCHEDSTATS=y
 CONFIG_LOCK_DEBUGGING_SUPPORT=y
 # CONFIG_PROVE_LOCKING is not set
 # CONFIG_LOCK_STAT is not set
-# CONFIG_DEBUG_RT_MUTEXES is not set
-# CONFIG_DEBUG_SPINLOCK is not set
-# CONFIG_DEBUG_MUTEXES is not set
+CONFIG_DEBUG_RT_MUTEXES=y
+CONFIG_DEBUG_SPINLOCK=y
+CONFIG_DEBUG_MUTEXES=y
 # CONFIG_DEBUG_WW_MUTEX_SLOWPATH is not set
 # CONFIG_DEBUG_RWSEMS is not set
 # CONFIG_DEBUG_LOCK_ALLOC is not set
 CONFIG_DEBUG_ATOMIC_SLEEP=y
 # CONFIG_DEBUG_LOCKING_API_SELFTESTS is not set
 # CONFIG_LOCK_TORTURE_TEST is not set
-# CONFIG_WW_MUTEX_SELFTEST is not set
+CONFIG_WW_MUTEX_SELFTEST=m
 # CONFIG_SCF_TORTURE_TEST is not set
 # CONFIG_CSD_LOCK_WAIT_DEBUG is not set
 # end of Lock Debugging (spinlocks, mutexes, etc...)
 
-# CONFIG_NMI_CHECK_CPU is not set
 # CONFIG_DEBUG_IRQFLAGS is not set
 CONFIG_STACKTRACE=y
 # CONFIG_WARN_ALL_UNSEEDED_RANDOM is not set
@@ -6378,25 +6545,23 @@ CONFIG_STACKTRACE=y
 # Debug kernel data structures
 #
 CONFIG_DEBUG_LIST=y
-# CONFIG_DEBUG_PLIST is not set
+CONFIG_DEBUG_PLIST=y
 # CONFIG_DEBUG_SG is not set
 # CONFIG_DEBUG_NOTIFIERS is not set
 CONFIG_BUG_ON_DATA_CORRUPTION=y
 # CONFIG_DEBUG_MAPLE_TREE is not set
 # end of Debug kernel data structures
 
-# CONFIG_DEBUG_CREDENTIALS is not set
+CONFIG_DEBUG_CREDENTIALS=y
 
 #
 # RCU Debugging
 #
-CONFIG_TORTURE_TEST=m
 # CONFIG_RCU_SCALE_TEST is not set
 # CONFIG_RCU_TORTURE_TEST is not set
-CONFIG_RCU_REF_SCALE_TEST=m
+# CONFIG_RCU_REF_SCALE_TEST is not set
 CONFIG_RCU_CPU_STALL_TIMEOUT=60
 CONFIG_RCU_EXP_CPU_STALL_TIMEOUT=0
-# CONFIG_RCU_CPU_STALL_CPUTIME is not set
 # CONFIG_RCU_TRACE is not set
 # CONFIG_RCU_EQS_DEBUG is not set
 # end of RCU Debugging
@@ -6433,14 +6598,14 @@ CONFIG_TRACING=y
 CONFIG_GENERIC_TRACER=y
 CONFIG_TRACING_SUPPORT=y
 CONFIG_FTRACE=y
-# CONFIG_BOOTTIME_TRACING is not set
+CONFIG_BOOTTIME_TRACING=y
 CONFIG_FUNCTION_TRACER=y
 CONFIG_FUNCTION_GRAPH_TRACER=y
 CONFIG_DYNAMIC_FTRACE=y
 CONFIG_DYNAMIC_FTRACE_WITH_REGS=y
 CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS=y
 CONFIG_DYNAMIC_FTRACE_WITH_ARGS=y
-# CONFIG_FPROBE is not set
+CONFIG_FPROBE=y
 CONFIG_FUNCTION_PROFILER=y
 CONFIG_STACK_TRACER=y
 # CONFIG_IRQSOFF_TRACER is not set
@@ -6476,13 +6641,32 @@ CONFIG_RING_BUFFER_BENCHMARK=m
 # CONFIG_FTRACE_SORT_STARTUP_TEST is not set
 # CONFIG_RING_BUFFER_STARTUP_TEST is not set
 # CONFIG_RING_BUFFER_VALIDATE_TIME_DELTAS is not set
-# CONFIG_PREEMPTIRQ_DELAY_TEST is not set
+CONFIG_PREEMPTIRQ_DELAY_TEST=m
 # CONFIG_SYNTH_EVENT_GEN_TEST is not set
 # CONFIG_KPROBE_EVENT_GEN_TEST is not set
 # CONFIG_HIST_TRIGGERS_DEBUG is not set
 # CONFIG_RV is not set
 CONFIG_PROVIDE_OHCI1394_DMA_INIT=y
-# CONFIG_SAMPLES is not set
+CONFIG_SAMPLES=y
+# CONFIG_SAMPLE_AUXDISPLAY is not set
+# CONFIG_SAMPLE_TRACE_EVENTS is not set
+# CONFIG_SAMPLE_TRACE_CUSTOM_EVENTS is not set
+CONFIG_SAMPLE_TRACE_PRINTK=m
+CONFIG_SAMPLE_FTRACE_DIRECT=m
+# CONFIG_SAMPLE_FTRACE_DIRECT_MULTI is not set
+# CONFIG_SAMPLE_TRACE_ARRAY is not set
+# CONFIG_SAMPLE_KOBJECT is not set
+# CONFIG_SAMPLE_KPROBES is not set
+# CONFIG_SAMPLE_HW_BREAKPOINT is not set
+# CONFIG_SAMPLE_FPROBE is not set
+# CONFIG_SAMPLE_KFIFO is not set
+# CONFIG_SAMPLE_LIVEPATCH is not set
+# CONFIG_SAMPLE_CONFIGFS is not set
+# CONFIG_SAMPLE_VFIO_MDEV_MTTY is not set
+# CONFIG_SAMPLE_VFIO_MDEV_MDPY is not set
+# CONFIG_SAMPLE_VFIO_MDEV_MDPY_FB is not set
+# CONFIG_SAMPLE_VFIO_MDEV_MBOCHS is not set
+# CONFIG_SAMPLE_WATCHDOG is not set
 CONFIG_HAVE_SAMPLE_FTRACE_DIRECT=y
 CONFIG_HAVE_SAMPLE_FTRACE_DIRECT_MULTI=y
 CONFIG_ARCH_HAS_DEVMEM_IS_ALLOWED=y
@@ -6519,27 +6703,27 @@ CONFIG_UNWINDER_ORC=y
 # Kernel Testing and Coverage
 #
 # CONFIG_KUNIT is not set
-# CONFIG_NOTIFIER_ERROR_INJECTION is not set
+CONFIG_NOTIFIER_ERROR_INJECTION=m
+CONFIG_PM_NOTIFIER_ERROR_INJECT=m
+# CONFIG_NETDEV_NOTIFIER_ERROR_INJECT is not set
 CONFIG_FUNCTION_ERROR_INJECTION=y
 CONFIG_FAULT_INJECTION=y
 # CONFIG_FAILSLAB is not set
 # CONFIG_FAIL_PAGE_ALLOC is not set
 # CONFIG_FAULT_INJECTION_USERCOPY is not set
-CONFIG_FAIL_MAKE_REQUEST=y
+# CONFIG_FAIL_MAKE_REQUEST is not set
 # CONFIG_FAIL_IO_TIMEOUT is not set
 # CONFIG_FAIL_FUTEX is not set
 CONFIG_FAULT_INJECTION_DEBUG_FS=y
-# CONFIG_FAIL_FUNCTION is not set
+CONFIG_FAIL_FUNCTION=y
 # CONFIG_FAIL_MMC_REQUEST is not set
 # CONFIG_FAIL_SUNRPC is not set
-CONFIG_FAULT_INJECTION_CONFIGFS=y
 # CONFIG_FAULT_INJECTION_STACKTRACE_FILTER is not set
 CONFIG_ARCH_HAS_KCOV=y
 CONFIG_CC_HAS_SANCOV_TRACE_PC=y
 # CONFIG_KCOV is not set
 CONFIG_RUNTIME_TESTING_MENU=y
-# CONFIG_TEST_DHRY is not set
-# CONFIG_LKDTM is not set
+CONFIG_LKDTM=y
 # CONFIG_TEST_MIN_HEAP is not set
 # CONFIG_TEST_DIV64 is not set
 # CONFIG_BACKTRACE_SELF_TEST is not set
@@ -6554,33 +6738,33 @@ CONFIG_RUNTIME_TESTING_MENU=y
 # CONFIG_STRING_SELFTEST is not set
 # CONFIG_TEST_STRING_HELPERS is not set
 # CONFIG_TEST_KSTRTOX is not set
-# CONFIG_TEST_PRINTF is not set
-# CONFIG_TEST_SCANF is not set
-# CONFIG_TEST_BITMAP is not set
+CONFIG_TEST_PRINTF=m
+CONFIG_TEST_SCANF=m
+CONFIG_TEST_BITMAP=m
 # CONFIG_TEST_UUID is not set
 # CONFIG_TEST_XARRAY is not set
 # CONFIG_TEST_MAPLE_TREE is not set
 # CONFIG_TEST_RHASHTABLE is not set
 # CONFIG_TEST_IDA is not set
-# CONFIG_TEST_LKM is not set
-# CONFIG_TEST_BITOPS is not set
-# CONFIG_TEST_VMALLOC is not set
-# CONFIG_TEST_USER_COPY is not set
+CONFIG_TEST_LKM=m
+CONFIG_TEST_BITOPS=m
+CONFIG_TEST_VMALLOC=m
+CONFIG_TEST_USER_COPY=m
 CONFIG_TEST_BPF=m
-# CONFIG_TEST_BLACKHOLE_DEV is not set
+CONFIG_TEST_BLACKHOLE_DEV=m
 # CONFIG_FIND_BIT_BENCHMARK is not set
-# CONFIG_TEST_FIRMWARE is not set
-# CONFIG_TEST_SYSCTL is not set
+CONFIG_TEST_FIRMWARE=y
+CONFIG_TEST_SYSCTL=y
 # CONFIG_TEST_UDELAY is not set
-# CONFIG_TEST_STATIC_KEYS is not set
+CONFIG_TEST_STATIC_KEYS=m
 # CONFIG_TEST_DYNAMIC_DEBUG is not set
-# CONFIG_TEST_KMOD is not set
+CONFIG_TEST_KMOD=m
 # CONFIG_TEST_MEMCAT_P is not set
-# CONFIG_TEST_LIVEPATCH is not set
+CONFIG_TEST_LIVEPATCH=m
 # CONFIG_TEST_MEMINIT is not set
-# CONFIG_TEST_HMM is not set
+CONFIG_TEST_HMM=m
 # CONFIG_TEST_FREE_PAGES is not set
-# CONFIG_TEST_FPU is not set
+CONFIG_TEST_FPU=m
 # CONFIG_TEST_CLOCKSOURCE_WATCHDOG is not set
 CONFIG_ARCH_USE_MEMTEST=y
 # CONFIG_MEMTEST is not set
@@ -6593,7 +6777,7 @@ CONFIG_ARCH_USE_MEMTEST=y
 # end of Rust hacking
 # end of Kernel hacking
 
---vcDeFZ/32v9hGKdR
+--PSbc1JmETRt9H6EQ
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: attachment; filename="job-script"
 
@@ -6601,63 +6785,60 @@ Content-Disposition: attachment; filename="job-script"
 
 export_top_env()
 {
-	export suite='igt'
-	export testcase='igt'
+	export suite='perf-sanity-tests'
+	export testcase='perf-sanity-tests'
 	export category='functional'
-	export job_origin='igt-part2.yaml'
+	export need_memory='2G'
+	export job_origin='perf-sanity-tests.yaml'
 	export queue_cmdline_keys='branch
 commit'
 	export queue='bisect'
-	export testbox='lkp-cml-d02'
-	export tbox_group='lkp-cml-d02'
-	export submit_id='645c767e83cdb4a13b96af22'
-	export job_file='/lkp/jobs/scheduled/lkp-cml-d02/igt-group-11-debian-11.1-x86_64-20220510.cgz-a0e22a91f487957346732c6613eb6bd1b7c72ab1-20230511-41275-qcpzwt-0.yaml'
-	export id='1bd075ab73f2062115ffa0b305fed770ec0bbe0d'
+	export testbox='lkp-spr-2sp1'
+	export tbox_group='lkp-spr-2sp1'
+	export submit_id='645d025866c23265db3a7313'
+	export job_file='/lkp/jobs/scheduled/lkp-spr-2sp1/perf-sanity-tests-clang-debian-11.1-x86_64-20220510.cgz-aa2050030d65777596498256acd5f1584421e33a-20230511-26075-1f9ry8g-0.yaml'
+	export id='1a854cfd1848f3c668862285d0589ff02f6290db'
 	export queuer_version='/zday/lkp'
-	export model='Commet Lake'
-	export nr_node=1
-	export nr_cpu=20
-	export memory='16G'
-	export ssd_partitions='/dev/disk/by-id/ata-INTEL_SSDSC2BA800G4_BTHV61840945800OGN-part4'
-	export rootfs_partition='/dev/disk/by-id/ata-INTEL_SSDSC2BA800G4_BTHV61840945800OGN-part3'
-	export kernel_cmdline_hw='acpi_rsdp=0x9b0fe014'
-	export commit='a0e22a91f487957346732c6613eb6bd1b7c72ab1'
-	export netconsole_port=6683
-	export ucode='0xc2'
-	export need_kconfig_hw='{"PTP_1588_CLOCK"=>"y"}
-{"IGB"=>"y"}
-{"E1000E"=>"y"}
-SATA_AHCI
-DRM_I915
-{"IGC"=>"y"}'
-	export kconfig='x86_64-rhel-8.3-func'
-	export enqueue_time='2023-05-11 13:00:47 +0800'
-	export _id='645c767e83cdb4a13b96af22'
-	export _rt='/result/igt/group-11/lkp-cml-d02/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3-func/gcc-11/a0e22a91f487957346732c6613eb6bd1b7c72ab1'
+	export model='Sapphire Rapids'
+	export nr_node=2
+	export nr_cpu=224
+	export memory='256G'
+	export nr_ssd_partitions=6
+	export ssd_partitions='/dev/disk/by-id/nvme-INTEL_SSDPE2KX040T7_PHLF741401J94P0IGN-part*'
+	export rootfs_partition='/dev/disk/by-id/nvme-INTEL_SSDPE2KX010T8_BTLJ207201DG1P0FGN-part4'
+	export kernel_cmdline_hw='acpi_rsdp=0x777fe014'
+	export brand='Intel(R) Xeon(R) Platinum 8480+'
+	export initrds='linux_perf'
+	export commit='aa2050030d65777596498256acd5f1584421e33a'
+	export ucode='0x2b000181'
+	export kconfig='x86_64-rhel-8.3-bpf'
+	export enqueue_time='2023-05-11 22:57:30 +0800'
+	export _id='645d025866c23265db3a7313'
+	export _rt='/result/perf-sanity-tests/clang/lkp-spr-2sp1/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3-bpf/gcc-11/aa2050030d65777596498256acd5f1584421e33a'
 	export user='lkp'
 	export compiler='gcc-11'
 	export LKP_SERVER='internal-lkp-server'
-	export head_commit='a071029f337f80d4a8f24d0fe7d440534a2065a7'
+	export head_commit='6242c02bd1883e42ab204b175ea2562d7c646180'
 	export base_commit='ac9a78681b921877518763ba0e89202254349d1b'
-	export branch='linux-devel/devel-hourly-20230510-093712'
+	export branch='internal-devel/devel-hourly-20230509-140013'
 	export rootfs='debian-11.1-x86_64-20220510.cgz'
-	export result_root='/result/igt/group-11/lkp-cml-d02/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3-func/gcc-11/a0e22a91f487957346732c6613eb6bd1b7c72ab1/0'
+	export result_root='/result/perf-sanity-tests/clang/lkp-spr-2sp1/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3-bpf/gcc-11/aa2050030d65777596498256acd5f1584421e33a/0'
 	export scheduler_version='/lkp/lkp/.src-20230511-163851'
 	export arch='x86_64'
 	export max_uptime=1200
 	export initrd='/osimage/debian/debian-11.1-x86_64-20220510.cgz'
 	export bootloader_append='root=/dev/ram0
-RESULT_ROOT=/result/igt/group-11/lkp-cml-d02/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3-func/gcc-11/a0e22a91f487957346732c6613eb6bd1b7c72ab1/0
-BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3-func/gcc-11/a0e22a91f487957346732c6613eb6bd1b7c72ab1/vmlinuz-6.3.0-10673-ga0e22a91f487
-branch=linux-devel/devel-hourly-20230510-093712
-job=/lkp/jobs/scheduled/lkp-cml-d02/igt-group-11-debian-11.1-x86_64-20220510.cgz-a0e22a91f487957346732c6613eb6bd1b7c72ab1-20230511-41275-qcpzwt-0.yaml
+RESULT_ROOT=/result/perf-sanity-tests/clang/lkp-spr-2sp1/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3-bpf/gcc-11/aa2050030d65777596498256acd5f1584421e33a/0
+BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3-bpf/gcc-11/aa2050030d65777596498256acd5f1584421e33a/vmlinuz-6.2.0-rc7-00145-gaa2050030d65
+branch=internal-devel/devel-hourly-20230509-140013
+job=/lkp/jobs/scheduled/lkp-spr-2sp1/perf-sanity-tests-clang-debian-11.1-x86_64-20220510.cgz-aa2050030d65777596498256acd5f1584421e33a-20230511-26075-1f9ry8g-0.yaml
 user=lkp
 ARCH=x86_64
-kconfig=x86_64-rhel-8.3-func
-commit=a0e22a91f487957346732c6613eb6bd1b7c72ab1
+kconfig=x86_64-rhel-8.3-bpf
+commit=aa2050030d65777596498256acd5f1584421e33a
 initcall_debug
 nmi_watchdog=0
-acpi_rsdp=0x9b0fe014
+acpi_rsdp=0x777fe014
 max_uptime=1200
 LKP_SERVER=internal-lkp-server
 nokaslr
@@ -6682,17 +6863,18 @@ earlyprintk=ttyS0,115200
 console=ttyS0,115200
 vga=normal
 rw'
-	export modules_initrd='/pkg/linux/x86_64-rhel-8.3-func/gcc-11/a0e22a91f487957346732c6613eb6bd1b7c72ab1/modules.cgz'
-	export bm_initrd='/osimage/deps/debian-11.1-x86_64-20220510.cgz/run-ipconfig_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/lkp_20220513.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/rsync-rootfs_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/igt_20230506.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/igt-x86_64-9e9cd7e6-1_20230506.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/hw_20220526.cgz'
+	export modules_initrd='/pkg/linux/x86_64-rhel-8.3-bpf/gcc-11/aa2050030d65777596498256acd5f1584421e33a/modules.cgz'
+	export linux_perf_initrd='/pkg/linux/x86_64-rhel-8.3-bpf/gcc-11/aa2050030d65777596498256acd5f1584421e33a/linux-perf.cgz'
+	export bm_initrd='/osimage/deps/debian-11.1-x86_64-20220510.cgz/run-ipconfig_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/lkp_20220513.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/rsync-rootfs_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/perf_20230402.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/perf-x86_64-00c7b5f4ddc5-1_20230402.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/hw_20220526.cgz'
 	export ucode_initrd='/osimage/ucode/intel-ucode-20230406.cgz'
 	export lkp_initrd='/osimage/user/lkp/lkp-x86_64.cgz'
 	export site='lkp-wsx01'
 	export LKP_CGI_PORT=80
 	export LKP_CIFS_PORT=139
-	export last_kernel='6.4.0-rc1-wt-ath-05159-ga071029f337f'
-	export kernel='/pkg/linux/x86_64-rhel-8.3-func/gcc-11/a0e22a91f487957346732c6613eb6bd1b7c72ab1/vmlinuz-6.3.0-10673-ga0e22a91f487'
-	export dequeue_time='2023-05-11 20:28:27 +0800'
-	export job_initrd='/lkp/jobs/scheduled/lkp-cml-d02/igt-group-11-debian-11.1-x86_64-20220510.cgz-a0e22a91f487957346732c6613eb6bd1b7c72ab1-20230511-41275-qcpzwt-0.cgz'
+	export last_kernel='6.4.0-rc1-00668-g6242c02bd188'
+	export kernel='/pkg/linux/x86_64-rhel-8.3-bpf/gcc-11/aa2050030d65777596498256acd5f1584421e33a/vmlinuz-6.2.0-rc7-00145-gaa2050030d65'
+	export dequeue_time='2023-05-11 23:55:12 +0800'
+	export job_initrd='/lkp/jobs/scheduled/lkp-spr-2sp1/perf-sanity-tests-clang-debian-11.1-x86_64-20220510.cgz-aa2050030d65777596498256acd5f1584421e33a-20230511-26075-1f9ry8g-0.cgz'
 
 	[ -n "$LKP_SRC" ] ||
 	export LKP_SRC=/lkp/${user:-lkp}/src
@@ -6714,7 +6896,7 @@ run_job()
 	run_monitor $LKP_SRC/monitors/wrapper oom-killer
 	run_monitor $LKP_SRC/monitors/plain/watchdog
 
-	run_test group='group-11' $LKP_SRC/tests/wrapper igt
+	run_test perf_compiler='clang' $LKP_SRC/tests/wrapper perf-sanity-tests
 }
 
 extract_stats()
@@ -6722,11 +6904,11 @@ extract_stats()
 	export stats_part_begin=
 	export stats_part_end=
 
-	env group='group-11' $LKP_SRC/stats/wrapper igt
+	env perf_compiler='clang' $LKP_SRC/stats/wrapper perf-sanity-tests
 	$LKP_SRC/stats/wrapper kmsg
 	$LKP_SRC/stats/wrapper meminfo
 
-	$LKP_SRC/stats/wrapper time igt.time
+	$LKP_SRC/stats/wrapper time perf-sanity-tests.time
 	$LKP_SRC/stats/wrapper dmesg
 	$LKP_SRC/stats/wrapper kmsg
 	$LKP_SRC/stats/wrapper last_state
@@ -6736,3210 +6918,1665 @@ extract_stats()
 
 "$@"
 
---vcDeFZ/32v9hGKdR
+--PSbc1JmETRt9H6EQ
 Content-Type: application/x-xz
-Content-Disposition: attachment; filename="kmsg.xz"
+Content-Disposition: attachment; filename="dmesg.xz"
 Content-Transfer-Encoding: base64
 
-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
+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
+AbbbAeHxC3u+CnuxxGf7AgAAAAAEWVo=
 
---vcDeFZ/32v9hGKdR
+--PSbc1JmETRt9H6EQ
 Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: attachment; filename="igt"
+Content-Disposition: attachment; filename="perf-sanity-tests"
+Content-Transfer-Encoding: quoted-printable
 
-2023-05-11 12:29:30 build/tests/core_auth --run-subtest basic-auth
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: basic-auth
-Subtest basic-auth: SUCCESS (0.000s)
-2023-05-11 12:29:30 build/tests/core_auth --run-subtest getclient-master-drop
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: getclient-master-drop
-Subtest getclient-master-drop: SUCCESS (0.000s)
-2023-05-11 12:29:30 build/tests/core_auth --run-subtest getclient-simple
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: getclient-simple
-Subtest getclient-simple: SUCCESS (0.000s)
-2023-05-11 12:29:30 build/tests/core_auth --run-subtest many-magics
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: many-magics
-Reopening device failed after 1018 opens
-Subtest many-magics: SUCCESS (0.071s)
-2023-05-11 12:29:30 build/tests/gem_caching --run-subtest read-writes
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: read-writes
-checking partial writes after partial reads
-Subtest read-writes: SUCCESS (3.320s)
-2023-05-11 12:29:34 build/tests/gem_caching --run-subtest reads
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: reads
-checking partial reads
-Subtest reads: SUCCESS (0.547s)
-2023-05-11 12:29:34 build/tests/gem_caching --run-subtest writes
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: writes
-checking partial writes
-Subtest writes: SUCCESS (2.736s)
-2023-05-11 12:29:37 build/tests/gem_madvise --run-subtest dontneed-after-mmap
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: dontneed-after-mmap
-Subtest dontneed-after-mmap: SUCCESS (0.001s)
-2023-05-11 12:29:37 build/tests/gem_madvise --run-subtest dontneed-before-exec
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: dontneed-before-exec
-Subtest dontneed-before-exec: SUCCESS (0.001s)
-2023-05-11 12:29:37 build/tests/gem_madvise --run-subtest dontneed-before-mmap
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: dontneed-before-mmap
-Subtest dontneed-before-mmap: SUCCESS (0.001s)
-2023-05-11 12:29:38 build/tests/gem_madvise --run-subtest dontneed-before-pwrite
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: dontneed-before-pwrite
-Subtest dontneed-before-pwrite: SUCCESS (0.000s)
-2023-05-11 12:29:38 build/tests/gem_mmap_gtt --run-subtest bad-object
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: bad-object
-Subtest bad-object: SUCCESS (0.000s)
-2023-05-11 12:29:38 build/tests/gem_mmap_gtt --run-subtest basic
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: basic
-Subtest basic: SUCCESS (0.000s)
-2023-05-11 12:29:38 build/tests/gem_mmap_gtt --run-subtest basic-copy
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: basic-copy
-(gem_mmap_gtt:1138) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1138) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1138) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Subtest basic-copy failed.
-**** DEBUG ****
-(gem_mmap_gtt:1138) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1138) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1138) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:1138) igt_core-INFO: Stack trace:
-(gem_mmap_gtt:1138) igt_core-INFO:   #0 [__igt_fail_assert+0x106]
-(gem_mmap_gtt:1138) igt_core-INFO:   #1 [gem_mmap__gtt+0x3c]
-(gem_mmap_gtt:1138) igt_core-INFO:   #2 ../tests/i915/gem_mmap_gtt.c:89 create_pointer_size()
-(gem_mmap_gtt:1138) igt_core-INFO:   #3 ../tests/i915/gem_mmap_gtt.c:97 __igt_unique____real_main1261()
-(gem_mmap_gtt:1138) igt_core-INFO:   #4 ../tests/i915/gem_mmap_gtt.c:1261 main()
-(gem_mmap_gtt:1138) igt_core-INFO:   #5 ../csu/libc-start.c:308 __libc_start_main()
-(gem_mmap_gtt:1138) igt_core-INFO:   #6 [_start+0x2a]
-****  END  ****
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:89 create_pointer_size()
-  #3 ../tests/i915/gem_mmap_gtt.c:97 __igt_unique____real_main1261()
-  #4 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #5 ../csu/libc-start.c:308 __libc_start_main()
-  #6 [_start+0x2a]
-Subtest basic-copy: FAIL (0.039s)
-2023-05-11 12:29:38 build/tests/gem_mmap_gtt --run-subtest basic-read
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: basic-read
-(gem_mmap_gtt:1160) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1160) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1160) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Subtest basic-read failed.
-**** DEBUG ****
-(gem_mmap_gtt:1160) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1160) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1160) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:1160) igt_core-INFO: Stack trace:
-(gem_mmap_gtt:1160) igt_core-INFO:   #0 [__igt_fail_assert+0x106]
-(gem_mmap_gtt:1160) igt_core-INFO:   #1 [gem_mmap__gtt+0x3c]
-(gem_mmap_gtt:1160) igt_core-INFO:   #2 ../tests/i915/gem_mmap_gtt.c:89 create_pointer_size()
-(gem_mmap_gtt:1160) igt_core-INFO:   #3 ../tests/i915/gem_mmap_gtt.c:1142 __igt_unique____real_main1261()
-(gem_mmap_gtt:1160) igt_core-INFO:   #4 ../tests/i915/gem_mmap_gtt.c:1261 main()
-(gem_mmap_gtt:1160) igt_core-INFO:   #5 ../csu/libc-start.c:308 __libc_start_main()
-(gem_mmap_gtt:1160) igt_core-INFO:   #6 [_start+0x2a]
-****  END  ****
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:89 create_pointer_size()
-  #3 ../tests/i915/gem_mmap_gtt.c:1142 __igt_unique____real_main1261()
-  #4 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #5 ../csu/libc-start.c:308 __libc_start_main()
-  #6 [_start+0x2a]
-Subtest basic-read: FAIL (0.042s)
-2023-05-11 12:29:38 build/tests/gem_mmap_gtt --run-subtest basic-read-write
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: basic-read-write
-(gem_mmap_gtt:1182) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1182) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1182) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Subtest basic-read-write failed.
-**** DEBUG ****
-(gem_mmap_gtt:1182) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1182) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1182) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:1182) igt_core-INFO: Stack trace:
-(gem_mmap_gtt:1182) igt_core-INFO:   #0 [__igt_fail_assert+0x106]
-(gem_mmap_gtt:1182) igt_core-INFO:   #1 [gem_mmap__gtt+0x3c]
-(gem_mmap_gtt:1182) igt_core-INFO:   #2 ../tests/i915/gem_mmap_gtt.c:213 test_read_write()
-(gem_mmap_gtt:1182) igt_core-INFO:   #3 ../tests/i915/gem_mmap_gtt.c:1337 __igt_unique____real_main1261()
-(gem_mmap_gtt:1182) igt_core-INFO:   #4 ../tests/i915/gem_mmap_gtt.c:1261 main()
-(gem_mmap_gtt:1182) igt_core-INFO:   #5 ../csu/libc-start.c:308 __libc_start_main()
-(gem_mmap_gtt:1182) igt_core-INFO:   #6 [_start+0x2a]
-****  END  ****
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:213 test_read_write()
-  #3 ../tests/i915/gem_mmap_gtt.c:1337 __igt_unique____real_main1261()
-  #4 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #5 ../csu/libc-start.c:308 __libc_start_main()
-  #6 [_start+0x2a]
-Subtest basic-read-write: FAIL (0.039s)
-2023-05-11 12:29:39 build/tests/gem_mmap_gtt --run-subtest basic-read-write-distinct
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: basic-read-write-distinct
-(gem_mmap_gtt:1207) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1207) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1207) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Subtest basic-read-write-distinct failed.
-**** DEBUG ****
-(gem_mmap_gtt:1207) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1207) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1207) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:1207) igt_core-INFO: Stack trace:
-(gem_mmap_gtt:1207) igt_core-INFO:   #0 [__igt_fail_assert+0x106]
-(gem_mmap_gtt:1207) igt_core-INFO:   #1 [gem_mmap__gtt+0x3c]
-(gem_mmap_gtt:1207) igt_core-INFO:   #2 ../tests/i915/gem_mmap_gtt.c:237 test_read_write2()
-(gem_mmap_gtt:1207) igt_core-INFO:   #3 ../tests/i915/gem_mmap_gtt.c:1343 __igt_unique____real_main1261()
-(gem_mmap_gtt:1207) igt_core-INFO:   #4 ../tests/i915/gem_mmap_gtt.c:1261 main()
-(gem_mmap_gtt:1207) igt_core-INFO:   #5 ../csu/libc-start.c:308 __libc_start_main()
-(gem_mmap_gtt:1207) igt_core-INFO:   #6 [_start+0x2a]
-****  END  ****
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:237 test_read_write2()
-  #3 ../tests/i915/gem_mmap_gtt.c:1343 __igt_unique____real_main1261()
-  #4 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #5 ../csu/libc-start.c:308 __libc_start_main()
-  #6 [_start+0x2a]
-Subtest basic-read-write-distinct: FAIL (0.041s)
-2023-05-11 12:29:39 build/tests/gem_mmap_gtt --run-subtest basic-short
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: basic-short
-(gem_mmap_gtt:1229) CRITICAL: Test assertion failure function test_short, file ../tests/i915/gem_mmap_gtt.c:164:
-(gem_mmap_gtt:1229) CRITICAL: Failed assertion: w != MAP_FAILED
-(gem_mmap_gtt:1229) CRITICAL: Last errno: 1, Operation not permitted
-Subtest basic-short failed.
-**** DEBUG ****
-(gem_mmap_gtt:1229) CRITICAL: Test assertion failure function test_short, file ../tests/i915/gem_mmap_gtt.c:164:
-(gem_mmap_gtt:1229) CRITICAL: Failed assertion: w != MAP_FAILED
-(gem_mmap_gtt:1229) CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:1229) igt_core-INFO: Stack trace:
-(gem_mmap_gtt:1229) igt_core-INFO:   #0 [__igt_fail_assert+0x106]
-(gem_mmap_gtt:1229) igt_core-INFO:   #1 ../tests/i915/gem_mmap_gtt.c:158 __igt_unique____real_main1261()
-(gem_mmap_gtt:1229) igt_core-INFO:   #2 ../tests/i915/gem_mmap_gtt.c:1261 main()
-(gem_mmap_gtt:1229) igt_core-INFO:   #3 ../csu/libc-start.c:308 __libc_start_main()
-(gem_mmap_gtt:1229) igt_core-INFO:   #4 [_start+0x2a]
-****  END  ****
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 ../tests/i915/gem_mmap_gtt.c:158 __igt_unique____real_main1261()
-  #2 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #3 ../csu/libc-start.c:308 __libc_start_main()
-  #4 [_start+0x2a]
-Subtest basic-short: FAIL (0.038s)
-2023-05-11 12:29:39 build/tests/gem_mmap_gtt --run-subtest basic-small-bo
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: basic-small-bo
-(gem_mmap_gtt:1251) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1251) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1251) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Subtest basic-small-bo failed.
-**** DEBUG ****
-(gem_mmap_gtt:1251) igt_device-DEBUG: Test requirement passed: pci_dev
-(gem_mmap_gtt:1251) igt_os-DEBUG: Checking 1 surfaces of size 134217728 bytes (total 134225920) against RAM
-(gem_mmap_gtt:1251) drmtest-DEBUG: Test requirement passed: !(fd<0)
-(gem_mmap_gtt:1251) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1251) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1251) igt_os-DEBUG: Test requirement passed: sufficient_memory
-(gem_mmap_gtt:1251) DEBUG: Test requirement passed: known_swizzling(fd, bo)
-(gem_mmap_gtt:1251) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1251) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1251) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:1251) igt_core-INFO: Stack trace:
-(gem_mmap_gtt:1251) igt_core-INFO:   #0 [__igt_fail_assert+0x106]
-(gem_mmap_gtt:1251) igt_core-INFO:   #1 [gem_mmap__gtt+0x3c]
-(gem_mmap_gtt:1251) igt_core-INFO:   #2 ../tests/i915/gem_mmap_gtt.c:961 test_huge_bo()
-(gem_mmap_gtt:1251) igt_core-INFO:   #3 ../tests/i915/gem_mmap_gtt.c:1385 __igt_unique____real_main1261()
-(gem_mmap_gtt:1251) igt_core-INFO:   #4 ../tests/i915/gem_mmap_gtt.c:1261 main()
-(gem_mmap_gtt:1251) igt_core-INFO:   #5 ../csu/libc-start.c:308 __libc_start_main()
-(gem_mmap_gtt:1251) igt_core-INFO:   #6 [_start+0x2a]
-****  END  ****
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:961 test_huge_bo()
-  #3 ../tests/i915/gem_mmap_gtt.c:1385 __igt_unique____real_main1261()
-  #4 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #5 ../csu/libc-start.c:308 __libc_start_main()
-  #6 [_start+0x2a]
-Subtest basic-small-bo: FAIL (0.171s)
-2023-05-11 12:29:39 build/tests/gem_mmap_gtt --run-subtest basic-small-bo-tiledX
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: basic-small-bo-tiledX
-(gem_mmap_gtt:1274) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1274) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1274) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Subtest basic-small-bo-tiledX failed.
-**** DEBUG ****
-(gem_mmap_gtt:1274) igt_device-DEBUG: Test requirement passed: pci_dev
-(gem_mmap_gtt:1274) igt_os-DEBUG: Checking 1 surfaces of size 134217728 bytes (total 134225920) against RAM
-(gem_mmap_gtt:1274) drmtest-DEBUG: Test requirement passed: !(fd<0)
-(gem_mmap_gtt:1274) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1274) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1274) igt_os-DEBUG: Test requirement passed: sufficient_memory
-(gem_mmap_gtt:1274) DEBUG: Test requirement passed: __gem_set_tiling(fd, bo, tiling, pitch) == 0
-(gem_mmap_gtt:1274) DEBUG: Test requirement passed: known_swizzling(fd, bo)
-(gem_mmap_gtt:1274) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1274) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1274) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:1274) igt_core-INFO: Stack trace:
-(gem_mmap_gtt:1274) igt_core-INFO:   #0 [__igt_fail_assert+0x106]
-(gem_mmap_gtt:1274) igt_core-INFO:   #1 [gem_mmap__gtt+0x3c]
-(gem_mmap_gtt:1274) igt_core-INFO:   #2 ../tests/i915/gem_mmap_gtt.c:961 test_huge_bo()
-(gem_mmap_gtt:1274) igt_core-INFO:   #3 ../tests/i915/gem_mmap_gtt.c:1389 __igt_unique____real_main1261()
-(gem_mmap_gtt:1274) igt_core-INFO:   #4 ../tests/i915/gem_mmap_gtt.c:1261 main()
-(gem_mmap_gtt:1274) igt_core-INFO:   #5 ../csu/libc-start.c:308 __libc_start_main()
-(gem_mmap_gtt:1274) igt_core-INFO:   #6 [_start+0x2a]
-****  END  ****
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:961 test_huge_bo()
-  #3 ../tests/i915/gem_mmap_gtt.c:1389 __igt_unique____real_main1261()
-  #4 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #5 ../csu/libc-start.c:308 __libc_start_main()
-  #6 [_start+0x2a]
-Subtest basic-small-bo-tiledX: FAIL (0.130s)
-2023-05-11 12:29:40 build/tests/gem_mmap_gtt --run-subtest basic-small-bo-tiledY
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: basic-small-bo-tiledY
-(gem_mmap_gtt:1302) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1302) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1302) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Subtest basic-small-bo-tiledY failed.
-**** DEBUG ****
-(gem_mmap_gtt:1302) igt_device-DEBUG: Test requirement passed: pci_dev
-(gem_mmap_gtt:1302) igt_os-DEBUG: Checking 1 surfaces of size 134217728 bytes (total 134225920) against RAM
-(gem_mmap_gtt:1302) drmtest-DEBUG: Test requirement passed: !(fd<0)
-(gem_mmap_gtt:1302) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1302) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1302) igt_os-DEBUG: Test requirement passed: sufficient_memory
-(gem_mmap_gtt:1302) DEBUG: Test requirement passed: __gem_set_tiling(fd, bo, tiling, pitch) == 0
-(gem_mmap_gtt:1302) DEBUG: Test requirement passed: known_swizzling(fd, bo)
-(gem_mmap_gtt:1302) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1302) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1302) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:1302) igt_core-INFO: Stack trace:
-(gem_mmap_gtt:1302) igt_core-INFO:   #0 [__igt_fail_assert+0x106]
-(gem_mmap_gtt:1302) igt_core-INFO:   #1 [gem_mmap__gtt+0x3c]
-(gem_mmap_gtt:1302) igt_core-INFO:   #2 ../tests/i915/gem_mmap_gtt.c:961 test_huge_bo()
-(gem_mmap_gtt:1302) igt_core-INFO:   #3 ../tests/i915/gem_mmap_gtt.c:1393 __igt_unique____real_main1261()
-(gem_mmap_gtt:1302) igt_core-INFO:   #4 ../tests/i915/gem_mmap_gtt.c:1261 main()
-(gem_mmap_gtt:1302) igt_core-INFO:   #5 ../csu/libc-start.c:308 __libc_start_main()
-(gem_mmap_gtt:1302) igt_core-INFO:   #6 [_start+0x2a]
-****  END  ****
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:961 test_huge_bo()
-  #3 ../tests/i915/gem_mmap_gtt.c:1393 __igt_unique____real_main1261()
-  #4 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #5 ../csu/libc-start.c:308 __libc_start_main()
-  #6 [_start+0x2a]
-Subtest basic-small-bo-tiledY: FAIL (0.130s)
-2023-05-11 12:29:40 build/tests/gem_mmap_gtt --run-subtest basic-small-copy
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: basic-small-copy
-skips are not allowed in forks
-please refer to lib/igt_core documentation
-gem_mmap_gtt: ../lib/igt_core.c:437: internal_assert: Assertion `0' failed.
-Received signal SIGABRT.
-Stack trace: 
- #0 [igt_nsec_elapsed+0x3b5]
- #1 [killpg+0x40]
- #2 [gsignal+0x141]
- #3 [abort+0x123]
- #4 [<unknown>+0x123]
- #5 [__assert_fail+0x42]
- #6 [igt_nsec_elapsed+0x796]
- #7 [igt_skip+0x99]
- #8 [__igt_skip_check+0x1d3]
- #9 [test_huge_copy+0x84f]
- #10 [__igt_unique____real_main1261+0x2715]
- #11 [main+0x27]
- #12 [__libc_start_main+0xea]
- #13 [_start+0x2a]
-Subtest basic-small-copy failed.
-**** DEBUG ****
-(gem_mmap_gtt:1324) igt_device-DEBUG: Test requirement passed: pci_dev
-(gem_mmap_gtt:1324) igt_os-DEBUG: Checking 2 surfaces of size 67108864 bytes (total 134234112) against RAM
-(gem_mmap_gtt:1324) drmtest-DEBUG: Test requirement passed: !(fd<0)
-(gem_mmap_gtt:1324) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1324) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1324) igt_os-DEBUG: Test requirement passed: sufficient_memory
-****  END  ****
-child 0 died with signal 6, Aborted
-Subtest basic-small-copy: FAIL (0.145s)
-2023-05-11 12:29:40 build/tests/gem_mmap_gtt --run-subtest basic-small-copy-XY
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: basic-small-copy-XY
-skips are not allowed in forks
-please refer to lib/igt_core documentation
-gem_mmap_gtt: ../lib/igt_core.c:437: internal_assert: Assertion `0' failed.
-Received signal SIGABRT.
-Stack trace: 
- #0 [igt_nsec_elapsed+0x3b5]
- #1 [killpg+0x40]
- #2 [gsignal+0x141]
- #3 [abort+0x123]
- #4 [<unknown>+0x123]
- #5 [__assert_fail+0x42]
- #6 [igt_nsec_elapsed+0x796]
- #7 [igt_skip+0x99]
- #8 [__igt_skip_check+0x1d3]
- #9 [test_huge_copy+0x84f]
- #10 [__igt_unique____real_main1261+0x2715]
- #11 [main+0x27]
- #12 [__libc_start_main+0xea]
- #13 [_start+0x2a]
-Subtest basic-small-copy-XY failed.
-**** DEBUG ****
-(gem_mmap_gtt:1347) igt_device-DEBUG: Test requirement passed: pci_dev
-(gem_mmap_gtt:1347) igt_os-DEBUG: Checking 2 surfaces of size 67108864 bytes (total 134234112) against RAM
-(gem_mmap_gtt:1347) drmtest-DEBUG: Test requirement passed: !(fd<0)
-(gem_mmap_gtt:1347) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1347) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1347) igt_os-DEBUG: Test requirement passed: sufficient_memory
-****  END  ****
-child 0 died with signal 6, Aborted
-Subtest basic-small-copy-XY: FAIL (0.146s)
-2023-05-11 12:29:41 build/tests/gem_mmap_gtt --run-subtest basic-small-copy-odd
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: basic-small-copy-odd
-skips are not allowed in forks
-please refer to lib/igt_core documentation
-gem_mmap_gtt: ../lib/igt_core.c:437: internal_assert: Assertion `0' failed.
-Received signal SIGABRT.
-Stack trace: 
- #0 [igt_nsec_elapsed+0x3b5]
- #1 [killpg+0x40]
- #2 [gsignal+0x141]
- #3 [abort+0x123]
- #4 [<unknown>+0x123]
- #5 [__assert_fail+0x42]
- #6 [igt_nsec_elapsed+0x796]
- #7 [igt_skip+0x99]
- #8 [__igt_skip_check+0x1d3]
- #9 [test_huge_copy+0x84f]
- #10 [__igt_unique____real_main1261+0x2715]
- #11 [main+0x27]
- #12 [__libc_start_main+0xea]
- #13 [_start+0x2a]
-Subtest basic-small-copy-odd failed.
-**** DEBUG ****
-(gem_mmap_gtt:1373) igt_device-DEBUG: Test requirement passed: pci_dev
-(gem_mmap_gtt:1373) igt_os-DEBUG: Checking 2 surfaces of size 67108864 bytes (total 134234112) against RAM
-(gem_mmap_gtt:1373) drmtest-DEBUG: Test requirement passed: !(fd<0)
-(gem_mmap_gtt:1373) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1373) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1373) igt_os-DEBUG: Test requirement passed: sufficient_memory
-****  END  ****
-child 0 died with signal 6, Aborted
-Subtest basic-small-copy-odd: FAIL (0.145s)
-2023-05-11 12:29:41 build/tests/gem_mmap_gtt --run-subtest basic-wc
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: basic-wc
-(gem_mmap_gtt:1396) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1396) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1396) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Subtest basic-wc failed.
-**** DEBUG ****
-(gem_mmap_gtt:1396) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1396) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1396) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:1396) igt_core-INFO: Stack trace:
-(gem_mmap_gtt:1396) igt_core-INFO:   #0 [__igt_fail_assert+0x106]
-(gem_mmap_gtt:1396) igt_core-INFO:   #1 [gem_mmap__gtt+0x3c]
-(gem_mmap_gtt:1396) igt_core-INFO:   #2 ../tests/i915/gem_mmap_gtt.c:284 test_wc()
-(gem_mmap_gtt:1396) igt_core-INFO:   #3 ../tests/i915/gem_mmap_gtt.c:1362 __igt_unique____real_main1261()
-(gem_mmap_gtt:1396) igt_core-INFO:   #4 ../tests/i915/gem_mmap_gtt.c:1261 main()
-(gem_mmap_gtt:1396) igt_core-INFO:   #5 ../csu/libc-start.c:308 __libc_start_main()
-(gem_mmap_gtt:1396) igt_core-INFO:   #6 [_start+0x2a]
-****  END  ****
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:284 test_wc()
-  #3 ../tests/i915/gem_mmap_gtt.c:1362 __igt_unique____real_main1261()
-  #4 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #5 ../csu/libc-start.c:308 __libc_start_main()
-  #6 [_start+0x2a]
-Subtest basic-wc: FAIL (0.041s)
-2023-05-11 12:29:41 build/tests/gem_mmap_gtt --run-subtest basic-write
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: basic-write
-(gem_mmap_gtt:1418) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1418) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1418) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Subtest basic-write failed.
-**** DEBUG ****
-(gem_mmap_gtt:1418) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1418) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1418) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:1418) igt_core-INFO: Stack trace:
-(gem_mmap_gtt:1418) igt_core-INFO:   #0 [__igt_fail_assert+0x106]
-(gem_mmap_gtt:1418) igt_core-INFO:   #1 [gem_mmap__gtt+0x3c]
-(gem_mmap_gtt:1418) igt_core-INFO:   #2 ../tests/i915/gem_mmap_gtt.c:89 create_pointer_size()
-(gem_mmap_gtt:1418) igt_core-INFO:   #3 ../tests/i915/gem_mmap_gtt.c:262 __igt_unique____real_main1261()
-(gem_mmap_gtt:1418) igt_core-INFO:   #4 ../tests/i915/gem_mmap_gtt.c:1261 main()
-(gem_mmap_gtt:1418) igt_core-INFO:   #5 ../csu/libc-start.c:308 __libc_start_main()
-(gem_mmap_gtt:1418) igt_core-INFO:   #6 [_start+0x2a]
-****  END  ****
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:89 create_pointer_size()
-  #3 ../tests/i915/gem_mmap_gtt.c:262 __igt_unique____real_main1261()
-  #4 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #5 ../csu/libc-start.c:308 __libc_start_main()
-  #6 [_start+0x2a]
-Subtest basic-write: FAIL (0.040s)
-2023-05-11 12:29:41 build/tests/gem_mmap_gtt --run-subtest basic-write-cpu-read-gtt
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: basic-write-cpu-read-gtt
-(gem_mmap_gtt:1440) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1440) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1440) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Subtest basic-write-cpu-read-gtt failed.
-**** DEBUG ****
-(gem_mmap_gtt:1440) DEBUG: Test requirement passed: gem_has_llc(fd)
-(gem_mmap_gtt:1440) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1440) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1440) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:1440) igt_core-INFO: Stack trace:
-(gem_mmap_gtt:1440) igt_core-INFO:   #0 [__igt_fail_assert+0x106]
-(gem_mmap_gtt:1440) igt_core-INFO:   #1 [gem_mmap__gtt+0x3c]
-(gem_mmap_gtt:1440) igt_core-INFO:   #2 ../tests/i915/gem_mmap_gtt.c:1162 __igt_unique____real_main1261()
-(gem_mmap_gtt:1440) igt_core-INFO:   #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-(gem_mmap_gtt:1440) igt_core-INFO:   #4 ../csu/libc-start.c:308 __libc_start_main()
-(gem_mmap_gtt:1440) igt_core-INFO:   #5 [_start+0x2a]
-****  END  ****
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:1162 __igt_unique____real_main1261()
-  #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #4 ../csu/libc-start.c:308 __libc_start_main()
-  #5 [_start+0x2a]
-Subtest basic-write-cpu-read-gtt: FAIL (0.038s)
-2023-05-11 12:29:41 build/tests/gem_mmap_gtt --run-subtest basic-write-gtt
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: basic-write-gtt
-(gem_mmap_gtt:1462) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1462) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1462) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Subtest basic-write-gtt failed.
-**** DEBUG ****
-(gem_mmap_gtt:1462) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1462) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1462) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:1462) igt_core-INFO: Stack trace:
-(gem_mmap_gtt:1462) igt_core-INFO:   #0 [__igt_fail_assert+0x106]
-(gem_mmap_gtt:1462) igt_core-INFO:   #1 [gem_mmap__gtt+0x3c]
-(gem_mmap_gtt:1462) igt_core-INFO:   #2 ../tests/i915/gem_mmap_gtt.c:64 __igt_unique____real_main1261()
-(gem_mmap_gtt:1462) igt_core-INFO:   #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-(gem_mmap_gtt:1462) igt_core-INFO:   #4 ../csu/libc-start.c:308 __libc_start_main()
-(gem_mmap_gtt:1462) igt_core-INFO:   #5 [_start+0x2a]
-****  END  ****
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:64 __igt_unique____real_main1261()
-  #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #4 ../csu/libc-start.c:308 __libc_start_main()
-  #5 [_start+0x2a]
-Subtest basic-write-gtt: FAIL (0.040s)
-2023-05-11 12:29:42 build/tests/gem_mmap_gtt --run-subtest basic-write-read
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: basic-write-read
-(gem_mmap_gtt:1487) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1487) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1487) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Subtest basic-write-read failed.
-**** DEBUG ****
-(gem_mmap_gtt:1487) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1487) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1487) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:1487) igt_core-INFO: Stack trace:
-(gem_mmap_gtt:1487) igt_core-INFO:   #0 [__igt_fail_assert+0x106]
-(gem_mmap_gtt:1487) igt_core-INFO:   #1 [gem_mmap__gtt+0x3c]
-(gem_mmap_gtt:1487) igt_core-INFO:   #2 ../tests/i915/gem_mmap_gtt.c:213 test_read_write()
-(gem_mmap_gtt:1487) igt_core-INFO:   #3 ../tests/i915/gem_mmap_gtt.c:1340 __igt_unique____real_main1261()
-(gem_mmap_gtt:1487) igt_core-INFO:   #4 ../tests/i915/gem_mmap_gtt.c:1261 main()
-(gem_mmap_gtt:1487) igt_core-INFO:   #5 ../csu/libc-start.c:308 __libc_start_main()
-(gem_mmap_gtt:1487) igt_core-INFO:   #6 [_start+0x2a]
-****  END  ****
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:213 test_read_write()
-  #3 ../tests/i915/gem_mmap_gtt.c:1340 __igt_unique____real_main1261()
-  #4 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #5 ../csu/libc-start.c:308 __libc_start_main()
-  #6 [_start+0x2a]
-Subtest basic-write-read: FAIL (0.041s)
-2023-05-11 12:29:42 build/tests/gem_mmap_gtt --run-subtest basic-write-read-distinct
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: basic-write-read-distinct
-(gem_mmap_gtt:1509) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1509) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1509) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Subtest basic-write-read-distinct failed.
-**** DEBUG ****
-(gem_mmap_gtt:1509) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1509) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1509) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:1509) igt_core-INFO: Stack trace:
-(gem_mmap_gtt:1509) igt_core-INFO:   #0 [__igt_fail_assert+0x106]
-(gem_mmap_gtt:1509) igt_core-INFO:   #1 [gem_mmap__gtt+0x3c]
-(gem_mmap_gtt:1509) igt_core-INFO:   #2 ../tests/i915/gem_mmap_gtt.c:237 test_read_write2()
-(gem_mmap_gtt:1509) igt_core-INFO:   #3 ../tests/i915/gem_mmap_gtt.c:1346 __igt_unique____real_main1261()
-(gem_mmap_gtt:1509) igt_core-INFO:   #4 ../tests/i915/gem_mmap_gtt.c:1261 main()
-(gem_mmap_gtt:1509) igt_core-INFO:   #5 ../csu/libc-start.c:308 __libc_start_main()
-(gem_mmap_gtt:1509) igt_core-INFO:   #6 [_start+0x2a]
-****  END  ****
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:237 test_read_write2()
-  #3 ../tests/i915/gem_mmap_gtt.c:1346 __igt_unique____real_main1261()
-  #4 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #5 ../csu/libc-start.c:308 __libc_start_main()
-  #6 [_start+0x2a]
-Subtest basic-write-read-distinct: FAIL (0.039s)
-2023-05-11 12:29:42 build/tests/gem_mmap_gtt --run-subtest big-bo
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: big-bo
-(gem_mmap_gtt:1531) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1531) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1531) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Subtest big-bo failed.
-**** DEBUG ****
-(gem_mmap_gtt:1531) igt_device-DEBUG: Test requirement passed: pci_dev
-(gem_mmap_gtt:1531) igt_os-DEBUG: Checking 1 surfaces of size 268439552 bytes (total 268447744) against RAM
-(gem_mmap_gtt:1531) drmtest-DEBUG: Test requirement passed: !(fd<0)
-(gem_mmap_gtt:1531) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1531) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1531) igt_os-DEBUG: Test requirement passed: sufficient_memory
-(gem_mmap_gtt:1531) DEBUG: Test requirement passed: known_swizzling(fd, bo)
-(gem_mmap_gtt:1531) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1531) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1531) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:1531) igt_core-INFO: Stack trace:
-(gem_mmap_gtt:1531) igt_core-INFO:   #0 [__igt_fail_assert+0x106]
-(gem_mmap_gtt:1531) igt_core-INFO:   #1 [gem_mmap__gtt+0x3c]
-(gem_mmap_gtt:1531) igt_core-INFO:   #2 ../tests/i915/gem_mmap_gtt.c:961 test_huge_bo()
-(gem_mmap_gtt:1531) igt_core-INFO:   #3 ../tests/i915/gem_mmap_gtt.c:1398 __igt_unique____real_main1261()
-(gem_mmap_gtt:1531) igt_core-INFO:   #4 ../tests/i915/gem_mmap_gtt.c:1261 main()
-(gem_mmap_gtt:1531) igt_core-INFO:   #5 ../csu/libc-start.c:308 __libc_start_main()
-(gem_mmap_gtt:1531) igt_core-INFO:   #6 [_start+0x2a]
-****  END  ****
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:961 test_huge_bo()
-  #3 ../tests/i915/gem_mmap_gtt.c:1398 __igt_unique____real_main1261()
-  #4 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #5 ../csu/libc-start.c:308 __libc_start_main()
-  #6 [_start+0x2a]
-Subtest big-bo: FAIL (0.128s)
-2023-05-11 12:29:42 build/tests/gem_mmap_gtt --run-subtest big-bo-tiledX
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: big-bo-tiledX
-(gem_mmap_gtt:1553) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1553) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1553) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Subtest big-bo-tiledX failed.
-**** DEBUG ****
-(gem_mmap_gtt:1553) igt_device-DEBUG: Test requirement passed: pci_dev
-(gem_mmap_gtt:1553) igt_os-DEBUG: Checking 1 surfaces of size 268439552 bytes (total 268447744) against RAM
-(gem_mmap_gtt:1553) drmtest-DEBUG: Test requirement passed: !(fd<0)
-(gem_mmap_gtt:1553) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1553) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1553) igt_os-DEBUG: Test requirement passed: sufficient_memory
-(gem_mmap_gtt:1553) DEBUG: Test requirement passed: __gem_set_tiling(fd, bo, tiling, pitch) == 0
-(gem_mmap_gtt:1553) DEBUG: Test requirement passed: known_swizzling(fd, bo)
-(gem_mmap_gtt:1553) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1553) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1553) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:1553) igt_core-INFO: Stack trace:
-(gem_mmap_gtt:1553) igt_core-INFO:   #0 [__igt_fail_assert+0x106]
-(gem_mmap_gtt:1553) igt_core-INFO:   #1 [gem_mmap__gtt+0x3c]
-(gem_mmap_gtt:1553) igt_core-INFO:   #2 ../tests/i915/gem_mmap_gtt.c:961 test_huge_bo()
-(gem_mmap_gtt:1553) igt_core-INFO:   #3 ../tests/i915/gem_mmap_gtt.c:1402 __igt_unique____real_main1261()
-(gem_mmap_gtt:1553) igt_core-INFO:   #4 ../tests/i915/gem_mmap_gtt.c:1261 main()
-(gem_mmap_gtt:1553) igt_core-INFO:   #5 ../csu/libc-start.c:308 __libc_start_main()
-(gem_mmap_gtt:1553) igt_core-INFO:   #6 [_start+0x2a]
-****  END  ****
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:961 test_huge_bo()
-  #3 ../tests/i915/gem_mmap_gtt.c:1402 __igt_unique____real_main1261()
-  #4 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #5 ../csu/libc-start.c:308 __libc_start_main()
-  #6 [_start+0x2a]
-Subtest big-bo-tiledX: FAIL (0.136s)
-2023-05-11 12:29:43 build/tests/gem_mmap_gtt --run-subtest big-bo-tiledY
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: big-bo-tiledY
-(gem_mmap_gtt:1578) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1578) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1578) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Subtest big-bo-tiledY failed.
-**** DEBUG ****
-(gem_mmap_gtt:1578) igt_device-DEBUG: Test requirement passed: pci_dev
-(gem_mmap_gtt:1578) igt_os-DEBUG: Checking 1 surfaces of size 268439552 bytes (total 268447744) against RAM
-(gem_mmap_gtt:1578) drmtest-DEBUG: Test requirement passed: !(fd<0)
-(gem_mmap_gtt:1578) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1578) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1578) igt_os-DEBUG: Test requirement passed: sufficient_memory
-(gem_mmap_gtt:1578) DEBUG: Test requirement passed: __gem_set_tiling(fd, bo, tiling, pitch) == 0
-(gem_mmap_gtt:1578) DEBUG: Test requirement passed: known_swizzling(fd, bo)
-(gem_mmap_gtt:1578) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1578) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1578) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:1578) igt_core-INFO: Stack trace:
-(gem_mmap_gtt:1578) igt_core-INFO:   #0 [__igt_fail_assert+0x106]
-(gem_mmap_gtt:1578) igt_core-INFO:   #1 [gem_mmap__gtt+0x3c]
-(gem_mmap_gtt:1578) igt_core-INFO:   #2 ../tests/i915/gem_mmap_gtt.c:961 test_huge_bo()
-(gem_mmap_gtt:1578) igt_core-INFO:   #3 ../tests/i915/gem_mmap_gtt.c:1406 __igt_unique____real_main1261()
-(gem_mmap_gtt:1578) igt_core-INFO:   #4 ../tests/i915/gem_mmap_gtt.c:1261 main()
-(gem_mmap_gtt:1578) igt_core-INFO:   #5 ../csu/libc-start.c:308 __libc_start_main()
-(gem_mmap_gtt:1578) igt_core-INFO:   #6 [_start+0x2a]
-****  END  ****
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:961 test_huge_bo()
-  #3 ../tests/i915/gem_mmap_gtt.c:1406 __igt_unique____real_main1261()
-  #4 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #5 ../csu/libc-start.c:308 __libc_start_main()
-  #6 [_start+0x2a]
-Subtest big-bo-tiledY: FAIL (0.129s)
-2023-05-11 12:29:43 build/tests/gem_mmap_gtt --run-subtest big-copy
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: big-copy
-skips are not allowed in forks
-please refer to lib/igt_core documentation
-gem_mmap_gtt: ../lib/igt_core.c:437: internal_assert: Assertion `0' failed.
-Received signal SIGABRT.
-Stack trace: 
- #0 [igt_nsec_elapsed+0x3b5]
- #1 [killpg+0x40]
- #2 [gsignal+0x141]
- #3 [abort+0x123]
- #4 [<unknown>+0x123]
- #5 [__assert_fail+0x42]
- #6 [igt_nsec_elapsed+0x796]
- #7 [igt_skip+0x99]
- #8 [__igt_skip_check+0x1d3]
- #9 [test_huge_copy+0x84f]
- #10 [__igt_unique____real_main1261+0x2715]
- #11 [main+0x27]
- #12 [__libc_start_main+0xea]
- #13 [_start+0x2a]
-Subtest big-copy failed.
-**** DEBUG ****
-(gem_mmap_gtt:1600) igt_device-DEBUG: Test requirement passed: pci_dev
-(gem_mmap_gtt:1600) igt_os-DEBUG: Checking 2 surfaces of size 268439552 bytes (total 536895488) against RAM
-(gem_mmap_gtt:1600) drmtest-DEBUG: Test requirement passed: !(fd<0)
-(gem_mmap_gtt:1600) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1600) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1600) igt_os-DEBUG: Test requirement passed: sufficient_memory
-****  END  ****
-child 0 died with signal 6, Aborted
-Subtest big-copy: FAIL (0.142s)
-2023-05-11 12:29:43 build/tests/gem_mmap_gtt --run-subtest big-copy-XY
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: big-copy-XY
-skips are not allowed in forks
-please refer to lib/igt_core documentation
-gem_mmap_gtt: ../lib/igt_core.c:437: internal_assert: Assertion `0' failed.
-Received signal SIGABRT.
-Stack trace: 
- #0 [igt_nsec_elapsed+0x3b5]
- #1 [killpg+0x40]
- #2 [gsignal+0x141]
- #3 [abort+0x123]
- #4 [<unknown>+0x123]
- #5 [__assert_fail+0x42]
- #6 [igt_nsec_elapsed+0x796]
- #7 [igt_skip+0x99]
- #8 [__igt_skip_check+0x1d3]
- #9 [test_huge_copy+0x84f]
- #10 [__igt_unique____real_main1261+0x2715]
- #11 [main+0x27]
- #12 [__libc_start_main+0xea]
- #13 [_start+0x2a]
-Subtest big-copy-XY failed.
-**** DEBUG ****
-(gem_mmap_gtt:1623) igt_device-DEBUG: Test requirement passed: pci_dev
-(gem_mmap_gtt:1623) igt_os-DEBUG: Checking 2 surfaces of size 268439552 bytes (total 536895488) against RAM
-(gem_mmap_gtt:1623) drmtest-DEBUG: Test requirement passed: !(fd<0)
-(gem_mmap_gtt:1623) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1623) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1623) igt_os-DEBUG: Test requirement passed: sufficient_memory
-****  END  ****
-child 0 died with signal 6, Aborted
-Subtest big-copy-XY: FAIL (0.143s)
-2023-05-11 12:29:44 build/tests/gem_mmap_gtt --run-subtest big-copy-odd
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: big-copy-odd
-skips are not allowed in forks
-please refer to lib/igt_core documentation
-gem_mmap_gtt: ../lib/igt_core.c:437: internal_assert: Assertion `0' failed.
-Received signal SIGABRT.
-Stack trace: 
- #0 [igt_nsec_elapsed+0x3b5]
- #1 [killpg+0x40]
- #2 [gsignal+0x141]
- #3 [abort+0x123]
- #4 [<unknown>+0x123]
- #5 [__assert_fail+0x42]
- #6 [igt_nsec_elapsed+0x796]
- #7 [igt_skip+0x99]
- #8 [__igt_skip_check+0x1d3]
- #9 [test_huge_copy+0x84f]
- #10 [__igt_unique____real_main1261+0x2715]
- #11 [main+0x27]
- #12 [__libc_start_main+0xea]
- #13 [_start+0x2a]
-Subtest big-copy-odd failed.
-**** DEBUG ****
-(gem_mmap_gtt:1649) igt_device-DEBUG: Test requirement passed: pci_dev
-(gem_mmap_gtt:1649) igt_os-DEBUG: Checking 2 surfaces of size 268439552 bytes (total 536895488) against RAM
-(gem_mmap_gtt:1649) drmtest-DEBUG: Test requirement passed: !(fd<0)
-(gem_mmap_gtt:1649) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1649) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1649) igt_os-DEBUG: Test requirement passed: sufficient_memory
-****  END  ****
-child 0 died with signal 6, Aborted
-Subtest big-copy-odd: FAIL (0.141s)
-LKP SKIP igt@gem_mmap_gtt@clflush
-2023-05-11 12:29:44 build/tests/gem_mmap_gtt --run-subtest close-race
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: close-race
-Subtest close-race: SUCCESS (20.089s)
-2023-05-11 12:30:04 build/tests/gem_mmap_gtt --run-subtest coherency
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: coherency
-(gem_mmap_gtt:1783) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1783) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1783) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Subtest coherency failed.
-**** DEBUG ****
-(gem_mmap_gtt:1783) DEBUG: Test requirement passed: is_coherent(fd)
-(gem_mmap_gtt:1783) DEBUG: Test requirement passed: igt_setup_clflush()
-(gem_mmap_gtt:1783) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:1783) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:1783) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:1783) igt_core-INFO: Stack trace:
-(gem_mmap_gtt:1783) igt_core-INFO:   #0 [__igt_fail_assert+0x106]
-(gem_mmap_gtt:1783) igt_core-INFO:   #1 [gem_mmap__gtt+0x3c]
-(gem_mmap_gtt:1783) igt_core-INFO:   #2 ../tests/i915/gem_mmap_gtt.c:615 __igt_unique____real_main1261()
-(gem_mmap_gtt:1783) igt_core-INFO:   #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-(gem_mmap_gtt:1783) igt_core-INFO:   #4 ../csu/libc-start.c:308 __libc_start_main()
-(gem_mmap_gtt:1783) igt_core-INFO:   #5 [_start+0x2a]
-****  END  ****
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:615 __igt_unique____real_main1261()
-  #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #4 ../csu/libc-start.c:308 __libc_start_main()
-  #5 [_start+0x2a]
-Subtest coherency: FAIL (0.060s)
-2023-05-11 12:30:04 build/tests/gem_mmap_gtt --run-subtest cpuset-basic-small-copy
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: cpuset-basic-small-copy
-skips are not allowed in forks
-please refer to lib/igt_core documentation
-skips are not allowed in forks
-please refer to lib/igt_core documentation
-gem_mmap_gtt: ../lib/igt_core.c:437: internal_assert: Assertion `0' failed.
-Received signal SIGABRT.
-Stack trace: 
- #0 [igt_nsec_elapsed+0x3b5]
- #1 [killpg+0x40]
- #2 [gsignal+0x141]
- #3 [abort+0x123]
- #4 [<unknown>+0x123]
-gem_mmap_gtt: ../lib/igt_core.c:437: internal_assert: Assertion `0' failed.
-Received signal SIGABRT.
-Stack trace: 
- #0 [igt_nsec_elapsed+0x3b5]
- #1 [killpg+0x40]
- #2 [gsignal+0x141]
- #3 [abort+0x123]
- #4 [<unknown>+0x123]
- #5 [__assert_fail+0x42]
- #6 [igt_nsec_elapsed+0x796]
- #7 [igt_skip+0x99]
- #8 [__igt_skip_check+0x1d3]
- #9 [test_huge_copy+0x84f]
- #10 [__igt_unique____real_main1261+0x26bb]
- #11 [main+0x27]
- #12 [__libc_start_main+0xea]
- #13 [_start+0x2a]
-Subtest cpuset-basic-small-copy failed.
-**** DEBUG ****
-(gem_mmap_gtt:1805) igt_device-DEBUG: Test requirement passed: pci_dev
-(gem_mmap_gtt:1805) igt_os-DEBUG: Checking 4 surfaces of size 67108864 bytes (total 268468224) against RAM
-(gem_mmap_gtt:1805) drmtest-DEBUG: Test requirement passed: !(fd<0)
-(gem_mmap_gtt:1805) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1805) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1805) igt_os-DEBUG: Test requirement passed: sufficient_memory
-****  END  ****
-child 1 died with signal 6, Aborted
-Subtest cpuset-basic-small-copy: FAIL (0.189s)
-2023-05-11 12:30:05 build/tests/gem_mmap_gtt --run-subtest cpuset-basic-small-copy-XY
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: cpuset-basic-small-copy-XY
-skips are not allowed in forks
-please refer to lib/igt_core documentation
-skips are not allowed in forks
-please refer to lib/igt_core documentation
-gem_mmap_gtt: ../lib/igt_core.c:437: internal_assert: Assertion `0' failed.
-Received signal SIGABRT.
-Stack trace: 
- #0 [igt_nsec_elapsed+0x3b5]
- #1 [killpg+0x40]
- #2 [gsignal+0x141]
- #3 [abort+0x123]
- #4 [<unknown>+0x123]
- #5 [__assert_fail+0x42]
- #6 [igt_nsec_elapsed+0x796]
- #7 [igt_skip+0x99]
- #8 [__igt_skip_check+0x1d3]
- #9 [test_huge_copy+0x84f]
- #10 [__igt_unique____real_main1261+0x26bb]
- #11 [main+0x27]
- #12 [__libc_start_main+0xea]
- #13 [_start+0x2a]
-Subtest cpuset-basic-small-copy-XY failed.
-**** DEBUG ****
-(gem_mmap_gtt:1832) igt_device-DEBUG: Test requirement passed: pci_dev
-(gem_mmap_gtt:1832) igt_os-DEBUG: Checking 4 surfaces of size 67108864 bytes (total 268468224) against RAM
-(gem_mmap_gtt:1832) drmtest-DEBUG: Test requirement passed: !(fd<0)
-(gem_mmap_gtt:1832) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1832) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1832) igt_os-DEBUG: Test requirement passed: sufficient_memory
-****  END  ****
-child 1 died with signal 6, Aborted
-Subtest cpuset-basic-small-copy-XY: FAIL (0.186s)
-2023-05-11 12:30:05 build/tests/gem_mmap_gtt --run-subtest cpuset-basic-small-copy-odd
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: cpuset-basic-small-copy-odd
-skips are not allowed in forks
-please refer to lib/igt_core documentation
-skips are not allowed in forks
-please refer to lib/igt_core documentation
-gem_mmap_gtt: ../lib/igt_core.c:437: internal_assert: Assertion `0' failed.
-Received signal SIGABRT.
-Stack trace: 
- #0 [igt_nsec_elapsed+0x3b5]
- #1 [killpg+0x40]
- #2 [gsignal+0x141]
-gem_mmap_gtt: ../lib/igt_core.c:437: internal_assert: Assertion `0' failed.
-Received signal SIGABRT.
-Stack trace: 
- #0 [igt_nsec_elapsed+0x3b5]
- #1 [killpg+0x40]
- #2 [gsignal+0x141]
- #3 [abort+0x123]
- #4 [<unknown>+0x123]
- #5 [__assert_fail+0x42]
- #6 [igt_nsec_elapsed+0x796]
- #7 [igt_skip+0x99]
- #8 [__igt_skip_check+0x1d3]
- #9 [test_huge_copy+0x84f]
- #10 [__igt_unique____real_main1261+0x26bb]
- #11 [main+0x27]
- #12 [__libc_start_main+0xea]
- #13 [_start+0x2a]
-Subtest cpuset-basic-small-copy-odd failed.
-**** DEBUG ****
-(gem_mmap_gtt:1856) igt_device-DEBUG: Test requirement passed: pci_dev
-(gem_mmap_gtt:1856) igt_os-DEBUG: Checking 4 surfaces of size 67108864 bytes (total 268468224) against RAM
-(gem_mmap_gtt:1856) drmtest-DEBUG: Test requirement passed: !(fd<0)
-(gem_mmap_gtt:1856) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1856) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1856) igt_os-DEBUG: Test requirement passed: sufficient_memory
-****  END  ****
-child 0 died with signal 6, Aborted
-Subtest cpuset-basic-small-copy-odd: FAIL (0.187s)
-2023-05-11 12:30:05 build/tests/gem_mmap_gtt --run-subtest cpuset-big-copy
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: cpuset-big-copy
-skips are not allowed in forks
-please refer to lib/igt_core documentation
-skips are not allowed in forks
-please refer to lib/igt_core documentation
-gem_mmap_gtt: ../lib/igt_core.c:437: internal_assert: Assertion `0' failed.
-Received signal SIGABRT.
-Stack trace: 
- #0 [igt_nsec_elapsed+0x3b5]
- #1 [killpg+0x40]
- #2 [gsignal+0x141]
- #3 [abort+0x123]
- #4 [<unknown>+0x123]
- #5 [__assert_fail+0x42]
- #6 [igt_nsec_elapsed+0x796]
- #7 [igt_skip+0x99]
- #8 [__igt_skip_check+0x1d3]
- #9 [test_huge_copy+0x84f]
- #10 [__igt_unique____real_main1261+0x26bb]
- #11 [main+0x27]
- #12 [__libc_start_main+0xea]
- #13 [_start+0x2a]
-gem_mmap_gtt: ../lib/igt_core.c:437: internal_assert: Assertion `0' failed.
-Received signal SIGABRT.
-Stack trace: 
- #0 [igt_nsec_elapsed+0x3b5]
- #1 [killpg+0x40]
- #2 [gsignal+0x141]
- #3 [abort+0x123]
- #4 [<unknown>+0x123]
- #5 [__assert_fail+0x42]
- #6 [igt_nsec_elapsed+0x796]
- #7 [igt_skip+0x99]
- #8 [__igt_skip_check+0x1d3]
- #9 [test_huge_copy+0x84f]
- #10 [__igt_unique____real_main1261+0x26bb]
- #11 [main+0x27]
- #12 [__libc_start_main+0xea]
- #13 [_start+0x2a]
-Subtest cpuset-big-copy failed.
-**** DEBUG ****
-(gem_mmap_gtt:1880) igt_device-DEBUG: Test requirement passed: pci_dev
-(gem_mmap_gtt:1880) igt_os-DEBUG: Checking 4 surfaces of size 268439552 bytes (total 1073790976) against RAM
-(gem_mmap_gtt:1880) drmtest-DEBUG: Test requirement passed: !(fd<0)
-(gem_mmap_gtt:1880) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1880) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1880) igt_os-DEBUG: Test requirement passed: sufficient_memory
-****  END  ****
-child 0 died with signal 6, Aborted
-Subtest cpuset-big-copy: FAIL (0.198s)
-2023-05-11 12:30:06 build/tests/gem_mmap_gtt --run-subtest cpuset-big-copy-XY
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: cpuset-big-copy-XY
-skips are not allowed in forks
-please refer to lib/igt_core documentation
-skips are not allowed in forks
-please refer to lib/igt_core documentation
-gem_mmap_gtt: ../lib/igt_core.c:437: internal_assert: Assertion `0' failed.
-Received signal SIGABRT.
-Stack trace: 
- #0 [igt_nsec_elapsed+0x3b5]
- #1 [killpg+0x40]
- #2 [gsignal+0x141]
- #3 [abort+0x123]
- #4 [<unknown>+0x123]
- #5 [__assert_fail+0x42]
- #6 [igt_nsec_elapsed+0x796]
- #7 [igt_skip+0x99]
- #8 [__igt_skip_check+0x1d3]
- #9 [test_huge_copy+0x84f]
- #10 [__igt_unique____real_main1261+0x26bb]
- #11 [main+0x27]
- #12 [__libc_start_main+0xea]
- #13 [_start+0x2a]
-Subtest cpuset-big-copy-XY failed.
-**** DEBUG ****
-(gem_mmap_gtt:1907) igt_device-DEBUG: Test requirement passed: pci_dev
-(gem_mmap_gtt:1907) igt_os-DEBUG: Checking 4 surfaces of size 268439552 bytes (total 1073790976) against RAM
-(gem_mmap_gtt:1907) drmtest-DEBUG: Test requirement passed: !(fd<0)
-(gem_mmap_gtt:1907) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1907) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1907) igt_os-DEBUG: Test requirement passed: sufficient_memory
-****  END  ****
-child 1 died with signal 6, Aborted
-Subtest cpuset-big-copy-XY: FAIL (0.185s)
-2023-05-11 12:30:06 build/tests/gem_mmap_gtt --run-subtest cpuset-big-copy-odd
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: cpuset-big-copy-odd
-skips are not allowed in forks
-please refer to lib/igt_core documentation
-skips are not allowed in forks
-please refer to lib/igt_core documentation
-gem_mmap_gtt: ../lib/igt_core.c:437: internal_assert: Assertion `0' failed.
-Received signal SIGABRT.
-Stack trace: 
- #0 [igt_nsec_elapsed+0x3b5]
- #1 [killpg+0x40]
- #2 [gsignal+0x141]
- #3 [abort+0x123]
-gem_mmap_gtt: ../lib/igt_core.c:437: internal_assert: Assertion `0' failed.
-Received signal SIGABRT.
-Stack trace: 
- #0 [igt_nsec_elapsed+0x3b5]
- #1 [killpg+0x40]
- #2 [gsignal+0x141]
- #3 [abort+0x123]
- #4 [<unknown>+0x123]
- #5 [__assert_fail+0x42]
- #6 [igt_nsec_elapsed+0x796]
- #7 [igt_skip+0x99]
- #8 [__igt_skip_check+0x1d3]
- #9 [test_huge_copy+0x84f]
- #10 [__igt_unique____real_main1261+0x26bb]
- #11 [main+0x27]
- #12 [__libc_start_main+0xea]
- #13 [_start+0x2a]
- #4 [<unknown>+0x123]
- #5 [__assert_fail+0x42]
- #6 [igt_nsec_elapsed+0x796]
- #7 [igt_skip+0x99]
- #8 [__igt_skip_check+0x1d3]
- #9 [test_huge_copy+0x84f]
- #10 [__igt_unique____real_main1261+0x26bb]
- #11 [main+0x27]
- #12 [__libc_start_main+0xea]
- #13 [_start+0x2a]
-Subtest cpuset-big-copy-odd failed.
-**** DEBUG ****
-(gem_mmap_gtt:1931) igt_device-DEBUG: Test requirement passed: pci_dev
-(gem_mmap_gtt:1931) igt_os-DEBUG: Checking 4 surfaces of size 268439552 bytes (total 1073790976) against RAM
-(gem_mmap_gtt:1931) drmtest-DEBUG: Test requirement passed: !(fd<0)
-(gem_mmap_gtt:1931) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1931) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1931) igt_os-DEBUG: Test requirement passed: sufficient_memory
-****  END  ****
-child 1 died with signal 6, Aborted
-Subtest cpuset-big-copy-odd: FAIL (0.197s)
-LKP SKIP igt@gem_mmap_gtt@cpuset-huge-copy
-LKP SKIP igt@gem_mmap_gtt@cpuset-huge-copy-XY
-LKP SKIP igt@gem_mmap_gtt@cpuset-huge-copy-odd
-2023-05-11 12:30:07 build/tests/gem_mmap_gtt --run-subtest cpuset-medium-copy
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: cpuset-medium-copy
-skips are not allowed in forks
-please refer to lib/igt_core documentation
-skips are not allowed in forks
-please refer to lib/igt_core documentation
-gem_mmap_gtt: ../lib/igt_core.c:437: internal_assert: Assertion `0' failed.
-Received signal SIGABRT.
-Stack trace: 
- #0 [igt_nsec_elapsed+0x3b5]
- #1 [killpg+0x40]
- #2 [gsignal+0x141]
- #3 [abort+0x123]
- #4 [<unknown>+0x123]
- #5 [__assert_fail+0x42]
-gem_mmap_gtt: ../lib/igt_core.c:437: internal_assert: Assertion `0' failed.
-Received signal SIGABRT.
-Stack trace: 
- #0 [igt_nsec_elapsed+0x3b5]
- #1 [killpg+0x40]
- #2 [gsignal+0x141]
- #3 [abort+0x123]
- #4 [<unknown>+0x123]
- #5 [__assert_fail+0x42]
- #6 [igt_nsec_elapsed+0x796]
- #7 [igt_skip+0x99]
- #8 [__igt_skip_check+0x1d3]
- #9 [test_huge_copy+0x84f]
- #10 [__igt_unique____real_main1261+0x26bb]
- #11 [main+0x27]
- #12 [__libc_start_main+0xea]
- #13 [_start+0x2a]
-Subtest cpuset-medium-copy failed.
-**** DEBUG ****
-(gem_mmap_gtt:1967) igt_device-DEBUG: Test requirement passed: pci_dev
-(gem_mmap_gtt:1967) igt_os-DEBUG: Checking 4 surfaces of size 134217728 bytes (total 536903680) against RAM
-(gem_mmap_gtt:1967) drmtest-DEBUG: Test requirement passed: !(fd<0)
-(gem_mmap_gtt:1967) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1967) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1967) igt_os-DEBUG: Test requirement passed: sufficient_memory
-****  END  ****
-child 1 died with signal 6, Aborted
-Subtest cpuset-medium-copy: FAIL (0.191s)
-2023-05-11 12:30:07 build/tests/gem_mmap_gtt --run-subtest cpuset-medium-copy-XY
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: cpuset-medium-copy-XY
-skips are not allowed in forks
-please refer to lib/igt_core documentation
-skips are not allowed in forks
-please refer to lib/igt_core documentation
-gem_mmap_gtt: ../lib/igt_core.c:437: internal_assert: Assertion `0' failed.
-Received signal SIGABRT.
-Stack trace: 
- #0 [igt_nsec_elapsed+0x3b5]
- #1 [killpg+0x40]
- #2 [gsignal+0x141]
- #3 [abort+0x123]
-gem_mmap_gtt: ../lib/igt_core.c:437: internal_assert: Assertion `0' failed.
-Received signal SIGABRT.
-Stack trace: 
- #0 [igt_nsec_elapsed+0x3b5]
- #1 [killpg+0x40]
- #2 [gsignal+0x141]
- #3 [abort+0x123]
- #4 [<unknown>+0x123]
- #5 [__assert_fail+0x42]
- #6 [igt_nsec_elapsed+0x796]
- #4 [<unknown>+0x123]
- #5 [__assert_fail+0x42]
- #6 [igt_nsec_elapsed+0x796]
- #7 [igt_skip+0x99]
- #8 [__igt_skip_check+0x1d3]
- #9 [test_huge_copy+0x84f]
- #10 [__igt_unique____real_main1261+0x26bb]
- #11 [main+0x27]
- #12 [__libc_start_main+0xea]
- #13 [_start+0x2a]
-Subtest cpuset-medium-copy-XY failed.
-**** DEBUG ****
-(gem_mmap_gtt:1994) igt_device-DEBUG: Test requirement passed: pci_dev
-(gem_mmap_gtt:1994) igt_os-DEBUG: Checking 4 surfaces of size 134217728 bytes (total 536903680) against RAM
-(gem_mmap_gtt:1994) drmtest-DEBUG: Test requirement passed: !(fd<0)
-(gem_mmap_gtt:1994) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1994) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:1994) igt_os-DEBUG: Test requirement passed: sufficient_memory
-****  END  ****
-child 0 died with signal 6, Aborted
-Subtest cpuset-medium-copy-XY: FAIL (0.189s)
-2023-05-11 12:30:07 build/tests/gem_mmap_gtt --run-subtest cpuset-medium-copy-odd
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: cpuset-medium-copy-odd
-skips are not allowed in forks
-please refer to lib/igt_core documentation
-skips are not allowed in forks
-please refer to lib/igt_core documentation
-gem_mmap_gtt: ../lib/igt_core.c:437: internal_assert: Assertion `0' failed.
-Received signal SIGABRT.
-Stack trace: 
- #0 [igt_nsec_elapsed+0x3b5]
- #1 [killpg+0x40]
- #2 [gsignal+0x141]
- #3 [abort+0x123]
- #4 [<unknown>+0x123]
- #5 [__assert_fail+0x42]
- #6 [igt_nsec_elapsed+0x796]
- #7 [igt_skip+0x99]
- #8 [__igt_skip_check+0x1d3]
- #9 [test_huge_copy+0x84f]
-gem_mmap_gtt: ../lib/igt_core.c:437: internal_assert: Assertion `0' failed.
-Received signal SIGABRT.
-Stack trace: 
- #0 [igt_nsec_elapsed+0x3b5]
- #1 [killpg+0x40]
- #2 [gsignal+0x141]
- #3 [abort+0x123]
- #4 [<unknown>+0x123]
- #5 [__assert_fail+0x42]
- #6 [igt_nsec_elapsed+0x796]
- #10 [__igt_unique____real_main1261+0x26bb]
- #11 [main+0x27]
- #12 [__libc_start_main+0xea]
- #13 [_start+0x2a]
-Subtest cpuset-medium-copy-odd failed.
-**** DEBUG ****
-(gem_mmap_gtt:2018) igt_device-DEBUG: Test requirement passed: pci_dev
-(gem_mmap_gtt:2018) igt_os-DEBUG: Checking 4 surfaces of size 134217728 bytes (total 536903680) against RAM
-(gem_mmap_gtt:2018) drmtest-DEBUG: Test requirement passed: !(fd<0)
-(gem_mmap_gtt:2018) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:2018) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:2018) igt_os-DEBUG: Test requirement passed: sufficient_memory
-****  END  ****
-child 1 died with signal 6, Aborted
-Subtest cpuset-medium-copy-odd: FAIL (0.193s)
-LKP SKIP igt@gem_mmap_gtt@cpuset-swap-copy
-LKP SKIP igt@gem_mmap_gtt@cpuset-swap-copy-XY
-LKP SKIP igt@gem_mmap_gtt@cpuset-swap-copy-odd
-2023-05-11 12:30:08 build/tests/gem_mmap_gtt --run-subtest fault-concurrent
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: fault-concurrent
-(gem_mmap_gtt:2058) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2058) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2058) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Subtest fault-concurrent failed.
-**** DEBUG ****
-(gem_mmap_gtt:2058) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2058) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2058) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:2058) igt_core-INFO: Stack trace:
-(gem_mmap_gtt:2058) igt_core-INFO:   #0 [__igt_fail_assert+0x106]
-(gem_mmap_gtt:2058) igt_core-INFO:   #1 [gem_mmap__gtt+0x3c]
-(gem_mmap_gtt:2058) igt_core-INFO:   #2 ../tests/i915/gem_mmap_gtt.c:89 create_pointer_size()
-(gem_mmap_gtt:2058) igt_core-INFO:   #3 ../tests/i915/gem_mmap_gtt.c:1217 test_fault_concurrent()
-(gem_mmap_gtt:2058) igt_core-INFO:   #4 ../tests/i915/gem_mmap_gtt.c:1349 __igt_unique____real_main1261()
-(gem_mmap_gtt:2058) igt_core-INFO:   #5 ../tests/i915/gem_mmap_gtt.c:1261 main()
-(gem_mmap_gtt:2058) igt_core-INFO:   #6 ../csu/libc-start.c:308 __libc_start_main()
-(gem_mmap_gtt:2058) igt_core-INFO:   #7 [_start+0x2a]
-****  END  ****
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:89 create_pointer_size()
-  #3 ../tests/i915/gem_mmap_gtt.c:1217 test_fault_concurrent()
-  #4 ../tests/i915/gem_mmap_gtt.c:1349 __igt_unique____real_main1261()
-  #5 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #6 ../csu/libc-start.c:308 __libc_start_main()
-  #7 [_start+0x2a]
-Subtest fault-concurrent: FAIL (0.040s)
-2023-05-11 12:30:08 build/tests/gem_mmap_gtt --run-subtest fault-concurrent-X
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: fault-concurrent-X
-(gem_mmap_gtt:2080) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2080) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2080) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Subtest fault-concurrent-X failed.
-**** DEBUG ****
-(gem_mmap_gtt:2080) DEBUG: Test requirement passed: gem_available_fences(fd) > 0
-(gem_mmap_gtt:2080) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2080) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2080) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:2080) igt_core-INFO: Stack trace:
-(gem_mmap_gtt:2080) igt_core-INFO:   #0 [__igt_fail_assert+0x106]
-(gem_mmap_gtt:2080) igt_core-INFO:   #1 [gem_mmap__gtt+0x3c]
-(gem_mmap_gtt:2080) igt_core-INFO:   #2 ../tests/i915/gem_mmap_gtt.c:89 create_pointer_size()
-(gem_mmap_gtt:2080) igt_core-INFO:   #3 ../tests/i915/gem_mmap_gtt.c:1217 test_fault_concurrent()
-(gem_mmap_gtt:2080) igt_core-INFO:   #4 ../tests/i915/gem_mmap_gtt.c:1352 __igt_unique____real_main1261()
-(gem_mmap_gtt:2080) igt_core-INFO:   #5 ../tests/i915/gem_mmap_gtt.c:1261 main()
-(gem_mmap_gtt:2080) igt_core-INFO:   #6 ../csu/libc-start.c:308 __libc_start_main()
-(gem_mmap_gtt:2080) igt_core-INFO:   #7 [_start+0x2a]
-****  END  ****
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:89 create_pointer_size()
-  #3 ../tests/i915/gem_mmap_gtt.c:1217 test_fault_concurrent()
-  #4 ../tests/i915/gem_mmap_gtt.c:1352 __igt_unique____real_main1261()
-  #5 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #6 ../csu/libc-start.c:308 __libc_start_main()
-  #7 [_start+0x2a]
-Subtest fault-concurrent-X: FAIL (0.040s)
-2023-05-11 12:30:08 build/tests/gem_mmap_gtt --run-subtest fault-concurrent-Y
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: fault-concurrent-Y
-(gem_mmap_gtt:2102) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2102) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2102) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Subtest fault-concurrent-Y failed.
-**** DEBUG ****
-(gem_mmap_gtt:2102) DEBUG: Test requirement passed: gem_available_fences(fd) > 0
-(gem_mmap_gtt:2102) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2102) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2102) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:2102) igt_core-INFO: Stack trace:
-(gem_mmap_gtt:2102) igt_core-INFO:   #0 [__igt_fail_assert+0x106]
-(gem_mmap_gtt:2102) igt_core-INFO:   #1 [gem_mmap__gtt+0x3c]
-(gem_mmap_gtt:2102) igt_core-INFO:   #2 ../tests/i915/gem_mmap_gtt.c:89 create_pointer_size()
-(gem_mmap_gtt:2102) igt_core-INFO:   #3 ../tests/i915/gem_mmap_gtt.c:1217 test_fault_concurrent()
-(gem_mmap_gtt:2102) igt_core-INFO:   #4 ../tests/i915/gem_mmap_gtt.c:1355 __igt_unique____real_main1261()
-(gem_mmap_gtt:2102) igt_core-INFO:   #5 ../tests/i915/gem_mmap_gtt.c:1261 main()
-(gem_mmap_gtt:2102) igt_core-INFO:   #6 ../csu/libc-start.c:308 __libc_start_main()
-(gem_mmap_gtt:2102) igt_core-INFO:   #7 [_start+0x2a]
-****  END  ****
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:89 create_pointer_size()
-  #3 ../tests/i915/gem_mmap_gtt.c:1217 test_fault_concurrent()
-  #4 ../tests/i915/gem_mmap_gtt.c:1355 __igt_unique____real_main1261()
-  #5 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #6 ../csu/libc-start.c:308 __libc_start_main()
-  #7 [_start+0x2a]
-Subtest fault-concurrent-Y: FAIL (0.040s)
-2023-05-11 12:30:08 build/tests/gem_mmap_gtt --run-subtest flink-race
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: flink-race
-Subtest flink-race: SUCCESS (20.084s)
-LKP SKIP igt@gem_mmap_gtt@forked-basic-small-copy
-LKP SKIP igt@gem_mmap_gtt@forked-basic-small-copy-XY
-LKP SKIP igt@gem_mmap_gtt@forked-basic-small-copy-odd
-LKP SKIP igt@gem_mmap_gtt@forked-big-copy
-LKP SKIP igt@gem_mmap_gtt@forked-big-copy-XY
-LKP SKIP igt@gem_mmap_gtt@forked-big-copy-odd
-LKP SKIP igt@gem_mmap_gtt@forked-huge-copy
-LKP SKIP igt@gem_mmap_gtt@forked-huge-copy-XY
-LKP SKIP igt@gem_mmap_gtt@forked-huge-copy-odd
-LKP SKIP igt@gem_mmap_gtt@forked-medium-copy
-LKP SKIP igt@gem_mmap_gtt@forked-medium-copy-XY
-LKP SKIP igt@gem_mmap_gtt@forked-medium-copy-odd
-LKP SKIP igt@gem_mmap_gtt@forked-swap-copy
-LKP SKIP igt@gem_mmap_gtt@forked-swap-copy-XY
-LKP SKIP igt@gem_mmap_gtt@forked-swap-copy-odd
-2023-05-11 12:30:29 build/tests/gem_mmap_gtt --run-subtest hang
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: hang
-(gem_mmap_gtt:2297) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2297) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2297) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:2298) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2298) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2298) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:2299) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2299) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2299) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:2300) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2300) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2300) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:2301) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2301) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2301) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:2302) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2302) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2302) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:2303) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2303) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2303) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:2304) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2304) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2304) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:2305) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2305) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2305) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:2306) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2306) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2306) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:2307) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2307) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2307) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:2308) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2308) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2308) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:2309) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2309) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2309) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:64 __igt_unique____real_main1261()
-  #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #4 ../csu/libc-start.c:308 __libc_start_main()
-  #5 [_start+0x2a]
-(gem_mmap_gtt:2310) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2310) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2310) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:64 __igt_unique____real_main1261()
-  #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #4 ../csu/libc-start.c:308 __libc_start_main()
-  #5 [_start+0x2a]
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:64 __igt_unique____real_main1261()
-  #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #4 ../csu/libc-start.c:308 __libc_start_main()
-  #5 [_start+0x2a]
-(gem_mmap_gtt:2311) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2311) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2311) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:2312) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2312) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2312) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:64 __igt_unique____real_main1261()
-  #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #4 ../csu/libc-start.c:308 __libc_start_main()
-  #5 [_start+0x2a]
-(gem_mmap_gtt:2313) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2313) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2313) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:64 __igt_unique____real_main1261()
-  #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #4 ../csu/libc-start.c:308 __libc_start_main()
-  #5 [_start+0x2a]
-(gem_mmap_gtt:2314) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2314) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2314) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:64 __igt_unique____real_main1261()
-  #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #4 ../csu/libc-start.c:308 __libc_start_main()
-  #5 [_start+0x2a]
-(gem_mmap_gtt:2315) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2315) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2315) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:64 __igt_unique____real_main1261()
-  #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #4 ../csu/libc-start.c:308 __libc_start_main()
-  #5 [_start+0x2a]
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:64 __igt_unique____real_main1261()
-  #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #4 ../csu/libc-start.c:308 __libc_start_main()
-  #5 [_start+0x2a]
-(gem_mmap_gtt:2316) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2316) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2316) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:64 __igt_unique____real_main1261()
-  #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #4 ../csu/libc-start.c:308 __libc_start_main()
-  #5 [_start+0x2a]
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:64 __igt_unique____real_main1261()
-  #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #4 ../csu/libc-start.c:308 __libc_start_main()
-  #5 [_start+0x2a]
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:64 __igt_unique____real_main1261()
-  #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #4 ../csu/libc-start.c:308 __libc_start_main()
-  #5 [_start+0x2a]
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:64 __igt_unique____real_main1261()
-  #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #4 ../csu/libc-start.c:308 __libc_start_main()
-  #5 [_start+0x2a]
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:64 __igt_unique____real_main1261()
-  #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #4 ../csu/libc-start.c:308 __libc_start_main()
-  #5 [_start+0x2a]
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:64 __igt_unique____real_main1261()
-  #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #4 ../csu/libc-start.c:308 __libc_start_main()
-  #5 [_start+0x2a]
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:64 __igt_unique____real_main1261()
-  #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #4 ../csu/libc-start.c:308 __libc_start_main()
-  #5 [_start+0x2a]
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:64 __igt_unique____real_main1261()
-  #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #4 ../csu/libc-start.c:308 __libc_start_main()
-  #5 [_start+0x2a]
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:64 __igt_unique____real_main1261()
-  #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #4 ../csu/libc-start.c:308 __libc_start_main()
-  #5 [_start+0x2a]
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:64 __igt_unique____real_main1261()
-  #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #4 ../csu/libc-start.c:308 __libc_start_main()
-  #5 [_start+0x2a]
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:64 __igt_unique____real_main1261()
-  #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #4 ../csu/libc-start.c:308 __libc_start_main()
-  #5 [_start+0x2a]
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:64 __igt_unique____real_main1261()
-  #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #4 ../csu/libc-start.c:308 __libc_start_main()
-  #5 [_start+0x2a]
-Subtest hang failed.
-**** DEBUG ****
-(gem_mmap_gtt:2296) i915/gem_context-DEBUG: Test requirement passed: has_ban_period || has_bannable
-(gem_mmap_gtt:2296) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:2296) igt_gt-DEBUG: Test requirement passed: igt_params_set(fd, "reset", "%d", allow_reset)
-(gem_mmap_gtt:2296) igt_gt-DEBUG: Test requirement passed: has_gpu_reset(fd)
-(gem_mmap_gtt:2296) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:2296) DEBUG: Test requirement passed: igt_params_set(fd, "reset", "1")
-(gem_mmap_gtt:2296) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:2296) INFO: 212 resets
-****  END  ****
-212 resets
-child 0 failed with exit status 98
-Subtest hang: FAIL (5.453s)
-2023-05-11 12:30:34 build/tests/gem_mmap_gtt --run-subtest hang-busy
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: hang-busy
-(gem_mmap_gtt:2361) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2361) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2361) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Subtest hang-busy failed.
-**** DEBUG ****
-(gem_mmap_gtt:2361) i915/gem_context-DEBUG: Test requirement passed: has_ban_period || has_bannable
-(gem_mmap_gtt:2361) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:2361) igt_gt-DEBUG: Test requirement passed: igt_params_set(fd, "reset", "%d", allow_reset)
-(gem_mmap_gtt:2361) igt_gt-DEBUG: Test requirement passed: has_gpu_reset(fd)
-(gem_mmap_gtt:2361) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:2361) DEBUG: Test requirement passed: igt_params_set(i915, "reset", "1")
-(gem_mmap_gtt:2361) igt_dummyload-DEBUG: Test requirement passed: gem_class_can_store_dword(fd, class)
-(gem_mmap_gtt:2361) igt_dummyload-DEBUG: Test requirement passed: nengine
-(gem_mmap_gtt:2361) DEBUG: Faulting in busy batch
-(gem_mmap_gtt:2361) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2361) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2361) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:2361) igt_core-INFO: Stack trace:
-(gem_mmap_gtt:2361) igt_core-INFO:   #0 [__igt_fail_assert+0x106]
-(gem_mmap_gtt:2361) igt_core-INFO:   #1 [gem_mmap__gtt+0x3c]
-(gem_mmap_gtt:2361) igt_core-INFO:   #2 ../tests/i915/gem_mmap_gtt.c:773 __igt_unique____real_main1261()
-(gem_mmap_gtt:2361) igt_core-INFO:   #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-(gem_mmap_gtt:2361) igt_core-INFO:   #4 ../csu/libc-start.c:308 __libc_start_main()
-(gem_mmap_gtt:2361) igt_core-INFO:   #5 [_start+0x2a]
-****  END  ****
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:773 __igt_unique____real_main1261()
-  #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #4 ../csu/libc-start.c:308 __libc_start_main()
-  #5 [_start+0x2a]
-Subtest hang-busy: FAIL (0.063s)
-2023-05-11 12:30:35 build/tests/gem_mmap_gtt --run-subtest hang-user
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: hang-user
-(gem_mmap_gtt:2383) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2383) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2383) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Subtest hang-user failed.
-**** DEBUG ****
-(gem_mmap_gtt:2383) i915/gem_context-DEBUG: Test requirement passed: has_ban_period || has_bannable
-(gem_mmap_gtt:2383) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:2383) igt_gt-DEBUG: Test requirement passed: igt_params_set(fd, "reset", "%d", allow_reset)
-(gem_mmap_gtt:2383) igt_gt-DEBUG: Test requirement passed: has_gpu_reset(fd)
-(gem_mmap_gtt:2383) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:2383) DEBUG: Test requirement passed: igt_params_set(i915, "reset", "1")
-(gem_mmap_gtt:2383) igt_dummyload-DEBUG: Test requirement passed: gem_class_can_store_dword(fd, class)
-(gem_mmap_gtt:2383) igt_dummyload-DEBUG: Test requirement passed: nengine
-(gem_mmap_gtt:2383) DEBUG: Faulting in busy batch
-(gem_mmap_gtt:2383) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2383) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2383) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:2383) igt_core-INFO: Stack trace:
-(gem_mmap_gtt:2383) igt_core-INFO:   #0 [__igt_fail_assert+0x106]
-(gem_mmap_gtt:2383) igt_core-INFO:   #1 [gem_mmap__gtt+0x3c]
-(gem_mmap_gtt:2383) igt_core-INFO:   #2 ../tests/i915/gem_mmap_gtt.c:835 __igt_unique____real_main1261()
-(gem_mmap_gtt:2383) igt_core-INFO:   #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-(gem_mmap_gtt:2383) igt_core-INFO:   #4 ../csu/libc-start.c:308 __libc_start_main()
-(gem_mmap_gtt:2383) igt_core-INFO:   #5 [_start+0x2a]
-****  END  ****
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:835 __igt_unique____real_main1261()
-  #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #4 ../csu/libc-start.c:308 __libc_start_main()
-  #5 [_start+0x2a]
-Subtest hang-user: FAIL (0.044s)
-LKP SKIP igt@gem_mmap_gtt@huge-bo
-LKP SKIP igt@gem_mmap_gtt@huge-bo-tiledX
-LKP SKIP igt@gem_mmap_gtt@huge-bo-tiledY
-LKP SKIP igt@gem_mmap_gtt@huge-copy
-LKP SKIP igt@gem_mmap_gtt@huge-copy-XY
-LKP SKIP igt@gem_mmap_gtt@huge-copy-odd
-2023-05-11 12:30:35 build/tests/gem_mmap_gtt --run-subtest isolation
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: isolation
-A: {fd:6, handle:1, offset:100000000}
-B: {fd:7, handle:1, offset:100000000}
-(gem_mmap_gtt:2435) CRITICAL: Test assertion failure function test_isolation, file ../tests/i915/gem_mmap_gtt.c:388:
-(gem_mmap_gtt:2435) CRITICAL: Failed assertion: ptr != MAP_FAILED
-(gem_mmap_gtt:2435) CRITICAL: Last errno: 1, Operation not permitted
-Subtest isolation failed.
-**** DEBUG ****
-(gem_mmap_gtt:2435) INFO: A: {fd:6, handle:1, offset:100000000}
-(gem_mmap_gtt:2435) INFO: B: {fd:7, handle:1, offset:100000000}
-(gem_mmap_gtt:2435) CRITICAL: Test assertion failure function test_isolation, file ../tests/i915/gem_mmap_gtt.c:388:
-(gem_mmap_gtt:2435) CRITICAL: Failed assertion: ptr != MAP_FAILED
-(gem_mmap_gtt:2435) CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:2435) igt_core-INFO: Stack trace:
-(gem_mmap_gtt:2435) igt_core-INFO:   #0 [__igt_fail_assert+0x106]
-(gem_mmap_gtt:2435) igt_core-INFO:   #1 ../tests/i915/gem_mmap_gtt.c:377 __igt_unique____real_main1261()
-(gem_mmap_gtt:2435) igt_core-INFO:   #2 ../tests/i915/gem_mmap_gtt.c:1261 main()
-(gem_mmap_gtt:2435) igt_core-INFO:   #3 ../csu/libc-start.c:308 __libc_start_main()
-(gem_mmap_gtt:2435) igt_core-INFO:   #4 [_start+0x2a]
-****  END  ****
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 ../tests/i915/gem_mmap_gtt.c:377 __igt_unique____real_main1261()
-  #2 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #3 ../csu/libc-start.c:308 __libc_start_main()
-  #4 [_start+0x2a]
-Subtest isolation: FAIL (0.040s)
-2023-05-11 12:30:35 build/tests/gem_mmap_gtt --run-subtest medium-copy
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: medium-copy
-skips are not allowed in forks
-please refer to lib/igt_core documentation
-gem_mmap_gtt: ../lib/igt_core.c:437: internal_assert: Assertion `0' failed.
-Received signal SIGABRT.
-Stack trace: 
- #0 [igt_nsec_elapsed+0x3b5]
- #1 [killpg+0x40]
- #2 [gsignal+0x141]
- #3 [abort+0x123]
- #4 [<unknown>+0x123]
- #5 [__assert_fail+0x42]
- #6 [igt_nsec_elapsed+0x796]
- #7 [igt_skip+0x99]
- #8 [__igt_skip_check+0x1d3]
- #9 [test_huge_copy+0x84f]
- #10 [__igt_unique____real_main1261+0x2715]
- #11 [main+0x27]
- #12 [__libc_start_main+0xea]
- #13 [_start+0x2a]
-Subtest medium-copy failed.
-**** DEBUG ****
-(gem_mmap_gtt:2457) igt_device-DEBUG: Test requirement passed: pci_dev
-(gem_mmap_gtt:2457) igt_os-DEBUG: Checking 2 surfaces of size 134217728 bytes (total 268451840) against RAM
-(gem_mmap_gtt:2457) drmtest-DEBUG: Test requirement passed: !(fd<0)
-(gem_mmap_gtt:2457) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:2457) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:2457) igt_os-DEBUG: Test requirement passed: sufficient_memory
-****  END  ****
-child 0 died with signal 6, Aborted
-Subtest medium-copy: FAIL (0.142s)
-2023-05-11 12:30:35 build/tests/gem_mmap_gtt --run-subtest medium-copy-XY
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: medium-copy-XY
-skips are not allowed in forks
-please refer to lib/igt_core documentation
-gem_mmap_gtt: ../lib/igt_core.c:437: internal_assert: Assertion `0' failed.
-Received signal SIGABRT.
-Stack trace: 
- #0 [igt_nsec_elapsed+0x3b5]
- #1 [killpg+0x40]
- #2 [gsignal+0x141]
- #3 [abort+0x123]
- #4 [<unknown>+0x123]
- #5 [__assert_fail+0x42]
- #6 [igt_nsec_elapsed+0x796]
- #7 [igt_skip+0x99]
- #8 [__igt_skip_check+0x1d3]
- #9 [test_huge_copy+0x84f]
- #10 [__igt_unique____real_main1261+0x2715]
- #11 [main+0x27]
- #12 [__libc_start_main+0xea]
- #13 [_start+0x2a]
-Subtest medium-copy-XY failed.
-**** DEBUG ****
-(gem_mmap_gtt:2480) igt_device-DEBUG: Test requirement passed: pci_dev
-(gem_mmap_gtt:2480) igt_os-DEBUG: Checking 2 surfaces of size 134217728 bytes (total 268451840) against RAM
-(gem_mmap_gtt:2480) drmtest-DEBUG: Test requirement passed: !(fd<0)
-(gem_mmap_gtt:2480) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:2480) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:2480) igt_os-DEBUG: Test requirement passed: sufficient_memory
-****  END  ****
-child 0 died with signal 6, Aborted
-Subtest medium-copy-XY: FAIL (0.148s)
-2023-05-11 12:30:36 build/tests/gem_mmap_gtt --run-subtest medium-copy-odd
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: medium-copy-odd
-skips are not allowed in forks
-please refer to lib/igt_core documentation
-gem_mmap_gtt: ../lib/igt_core.c:437: internal_assert: Assertion `0' failed.
-Received signal SIGABRT.
-Stack trace: 
- #0 [igt_nsec_elapsed+0x3b5]
- #1 [killpg+0x40]
- #2 [gsignal+0x141]
- #3 [abort+0x123]
- #4 [<unknown>+0x123]
- #5 [__assert_fail+0x42]
- #6 [igt_nsec_elapsed+0x796]
- #7 [igt_skip+0x99]
- #8 [__igt_skip_check+0x1d3]
- #9 [test_huge_copy+0x84f]
- #10 [__igt_unique____real_main1261+0x2715]
- #11 [main+0x27]
- #12 [__libc_start_main+0xea]
- #13 [_start+0x2a]
-Subtest medium-copy-odd failed.
-**** DEBUG ****
-(gem_mmap_gtt:2503) igt_device-DEBUG: Test requirement passed: pci_dev
-(gem_mmap_gtt:2503) igt_os-DEBUG: Checking 2 surfaces of size 134217728 bytes (total 268451840) against RAM
-(gem_mmap_gtt:2503) drmtest-DEBUG: Test requirement passed: !(fd<0)
-(gem_mmap_gtt:2503) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:2503) igt_debugfs-DEBUG: Opening debugfs directory '/sys/kernel/debug/dri/0'
-(gem_mmap_gtt:2503) igt_os-DEBUG: Test requirement passed: sufficient_memory
-****  END  ****
-child 0 died with signal 6, Aborted
-Subtest medium-copy-odd: FAIL (0.140s)
-2023-05-11 12:30:36 build/tests/gem_mmap_gtt --run-subtest pf-nonblock
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: pf-nonblock
-(gem_mmap_gtt:2529) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2529) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2529) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Subtest pf-nonblock failed.
-**** DEBUG ****
-(gem_mmap_gtt:2529) DEBUG: Test requirement passed: mmap_gtt_version(i915) >= 3
-(gem_mmap_gtt:2529) igt_dummyload-DEBUG: Test requirement passed: nengine
-(gem_mmap_gtt:2529) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2529) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2529) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:2529) igt_core-INFO: Stack trace:
-(gem_mmap_gtt:2529) igt_core-INFO:   #0 [__igt_fail_assert+0x106]
-(gem_mmap_gtt:2529) igt_core-INFO:   #1 [gem_mmap__gtt+0x3c]
-(gem_mmap_gtt:2529) igt_core-INFO:   #2 ../tests/i915/gem_mmap_gtt.c:351 __igt_unique____real_main1261()
-(gem_mmap_gtt:2529) igt_core-INFO:   #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-(gem_mmap_gtt:2529) igt_core-INFO:   #4 ../csu/libc-start.c:308 __libc_start_main()
-(gem_mmap_gtt:2529) igt_core-INFO:   #5 [_start+0x2a]
-****  END  ****
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 ../tests/i915/gem_mmap_gtt.c:351 __igt_unique____real_main1261()
-  #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #4 ../csu/libc-start.c:308 __libc_start_main()
-  #5 [_start+0x2a]
-Subtest pf-nonblock: FAIL (0.042s)
-2023-05-11 12:30:36 build/tests/gem_mmap_gtt --run-subtest ptrace
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: ptrace
-(gem_mmap_gtt:2551) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2551) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2551) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-Subtest ptrace failed.
-**** DEBUG ****
-(gem_mmap_gtt:2551) i915/gem_mman-CRITICAL: Test assertion failure function gem_mmap__gtt, file ../lib/i915/gem_mman.c:146:
-(gem_mmap_gtt:2551) i915/gem_mman-CRITICAL: Failed assertion: ptr
-(gem_mmap_gtt:2551) i915/gem_mman-CRITICAL: Last errno: 1, Operation not permitted
-(gem_mmap_gtt:2551) igt_core-INFO: Stack trace:
-(gem_mmap_gtt:2551) igt_core-INFO:   #0 [__igt_fail_assert+0x106]
-(gem_mmap_gtt:2551) igt_core-INFO:   #1 [gem_mmap__gtt+0x3c]
-(gem_mmap_gtt:2551) igt_core-INFO:   #2 /usr/include/x86_64-linux-gnu/bits/string_fortified.h:71 __igt_unique____real_main1261()
-(gem_mmap_gtt:2551) igt_core-INFO:   #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-(gem_mmap_gtt:2551) igt_core-INFO:   #4 ../csu/libc-start.c:308 __libc_start_main()
-(gem_mmap_gtt:2551) igt_core-INFO:   #5 [_start+0x2a]
-****  END  ****
-Stack trace:
-  #0 [__igt_fail_assert+0x106]
-  #1 [gem_mmap__gtt+0x3c]
-  #2 /usr/include/x86_64-linux-gnu/bits/string_fortified.h:71 __igt_unique____real_main1261()
-  #3 ../tests/i915/gem_mmap_gtt.c:1261 main()
-  #4 ../csu/libc-start.c:308 __libc_start_main()
-  #5 [_start+0x2a]
-Subtest ptrace: FAIL (0.042s)
-LKP SKIP igt@gem_mmap_gtt@swap-copy
-LKP SKIP igt@gem_mmap_gtt@swap-copy-XY
-LKP SKIP igt@gem_mmap_gtt@swap-copy-odd
-2023-05-11 12:30:37 build/tests/gem_mmap_gtt --run-subtest zero-extend
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: zero-extend
-Subtest zero-extend: SUCCESS (0.000s)
-LKP SKIP igt@gem_pread_after_blit@default-hang
-LKP SKIP igt@gem_pread_after_blit@default-interruptible
-LKP SKIP igt@gem_pread_after_blit@default-normal
-LKP SKIP igt@gem_pread_after_blit@display-hang
-LKP SKIP igt@gem_pread_after_blit@display-interruptible
-LKP SKIP igt@gem_pread_after_blit@display-normal
-LKP SKIP igt@gem_pread_after_blit@snooped-hang
-LKP SKIP igt@gem_pread_after_blit@snooped-interruptible
-LKP SKIP igt@gem_pread_after_blit@snooped-normal
-LKP SKIP igt@gem_pread_after_blit@uncached-hang
-LKP SKIP igt@gem_pread_after_blit@uncached-interruptible
-LKP SKIP igt@gem_pread_after_blit@uncached-normal
-LKP SKIP igt@gem_reset_stats@ban-blt
-LKP SKIP igt@gem_reset_stats@ban-bsd
-LKP SKIP igt@gem_reset_stats@ban-bsd1
-LKP SKIP igt@gem_reset_stats@ban-bsd2
-LKP SKIP igt@gem_reset_stats@ban-ctx-blt
-LKP SKIP igt@gem_reset_stats@ban-ctx-bsd
-LKP SKIP igt@gem_reset_stats@ban-ctx-bsd1
-LKP SKIP igt@gem_reset_stats@ban-ctx-bsd2
-LKP SKIP igt@gem_reset_stats@ban-ctx-default
-LKP SKIP igt@gem_reset_stats@ban-ctx-render
-LKP SKIP igt@gem_reset_stats@ban-ctx-vebox
-LKP SKIP igt@gem_reset_stats@ban-default
-LKP SKIP igt@gem_reset_stats@ban-render
-LKP SKIP igt@gem_reset_stats@ban-vebox
-LKP SKIP igt@gem_reset_stats@close-pending-blt
-LKP SKIP igt@gem_reset_stats@close-pending-bsd
-LKP SKIP igt@gem_reset_stats@close-pending-bsd1
-LKP SKIP igt@gem_reset_stats@close-pending-bsd2
-LKP SKIP igt@gem_reset_stats@close-pending-ctx-blt
-LKP SKIP igt@gem_reset_stats@close-pending-ctx-bsd
-LKP SKIP igt@gem_reset_stats@close-pending-ctx-bsd1
-LKP SKIP igt@gem_reset_stats@close-pending-ctx-bsd2
-LKP SKIP igt@gem_reset_stats@close-pending-ctx-default
-LKP SKIP igt@gem_reset_stats@close-pending-ctx-render
-LKP SKIP igt@gem_reset_stats@close-pending-ctx-vebox
-LKP SKIP igt@gem_reset_stats@close-pending-default
-LKP SKIP igt@gem_reset_stats@close-pending-fork-blt
-LKP SKIP igt@gem_reset_stats@close-pending-fork-bsd
-LKP SKIP igt@gem_reset_stats@close-pending-fork-bsd1
-LKP SKIP igt@gem_reset_stats@close-pending-fork-bsd2
-LKP SKIP igt@gem_reset_stats@close-pending-fork-default
-LKP SKIP igt@gem_reset_stats@close-pending-fork-render
-LKP SKIP igt@gem_reset_stats@close-pending-fork-reverse-blt
-LKP SKIP igt@gem_reset_stats@close-pending-fork-reverse-bsd
-LKP SKIP igt@gem_reset_stats@close-pending-fork-reverse-bsd1
-LKP SKIP igt@gem_reset_stats@close-pending-fork-reverse-bsd2
-LKP SKIP igt@gem_reset_stats@close-pending-fork-reverse-default
-LKP SKIP igt@gem_reset_stats@close-pending-fork-reverse-render
-LKP SKIP igt@gem_reset_stats@close-pending-fork-reverse-vebox
-LKP SKIP igt@gem_reset_stats@close-pending-fork-vebox
-LKP SKIP igt@gem_reset_stats@close-pending-render
-LKP SKIP igt@gem_reset_stats@close-pending-vebox
-LKP SKIP igt@gem_reset_stats@defer-hangcheck-blt
-LKP SKIP igt@gem_reset_stats@defer-hangcheck-bsd
-LKP SKIP igt@gem_reset_stats@defer-hangcheck-bsd1
-LKP SKIP igt@gem_reset_stats@defer-hangcheck-bsd2
-LKP SKIP igt@gem_reset_stats@defer-hangcheck-default
-LKP SKIP igt@gem_reset_stats@defer-hangcheck-render
-LKP SKIP igt@gem_reset_stats@defer-hangcheck-vebox
-LKP SKIP igt@gem_reset_stats@params
-LKP SKIP igt@gem_reset_stats@params-ctx
-LKP SKIP igt@gem_reset_stats@reset-count-blt
-LKP SKIP igt@gem_reset_stats@reset-count-bsd
-LKP SKIP igt@gem_reset_stats@reset-count-bsd1
-LKP SKIP igt@gem_reset_stats@reset-count-bsd2
-LKP SKIP igt@gem_reset_stats@reset-count-ctx-blt
-LKP SKIP igt@gem_reset_stats@reset-count-ctx-bsd
-LKP SKIP igt@gem_reset_stats@reset-count-ctx-bsd1
-LKP SKIP igt@gem_reset_stats@reset-count-ctx-bsd2
-LKP SKIP igt@gem_reset_stats@reset-count-ctx-default
-LKP SKIP igt@gem_reset_stats@reset-count-ctx-render
-LKP SKIP igt@gem_reset_stats@reset-count-ctx-vebox
-LKP SKIP igt@gem_reset_stats@reset-count-default
-LKP SKIP igt@gem_reset_stats@reset-count-render
-LKP SKIP igt@gem_reset_stats@reset-count-vebox
-LKP SKIP igt@gem_reset_stats@reset-stats-blt
-LKP SKIP igt@gem_reset_stats@reset-stats-bsd
-LKP SKIP igt@gem_reset_stats@reset-stats-bsd1
-LKP SKIP igt@gem_reset_stats@reset-stats-bsd2
-LKP SKIP igt@gem_reset_stats@reset-stats-ctx-blt
-LKP SKIP igt@gem_reset_stats@reset-stats-ctx-bsd
-LKP SKIP igt@gem_reset_stats@reset-stats-ctx-bsd1
-LKP SKIP igt@gem_reset_stats@reset-stats-ctx-bsd2
-LKP SKIP igt@gem_reset_stats@reset-stats-ctx-default
-LKP SKIP igt@gem_reset_stats@reset-stats-ctx-render
-LKP SKIP igt@gem_reset_stats@reset-stats-ctx-vebox
-LKP SKIP igt@gem_reset_stats@reset-stats-default
-LKP SKIP igt@gem_reset_stats@reset-stats-render
-LKP SKIP igt@gem_reset_stats@reset-stats-vebox
-LKP SKIP igt@gem_reset_stats@shared-reset-domain
-LKP SKIP igt@gem_reset_stats@unrelated-ctx-blt
-LKP SKIP igt@gem_reset_stats@unrelated-ctx-bsd
-LKP SKIP igt@gem_reset_stats@unrelated-ctx-bsd1
-LKP SKIP igt@gem_reset_stats@unrelated-ctx-bsd2
-LKP SKIP igt@gem_reset_stats@unrelated-ctx-default
-LKP SKIP igt@gem_reset_stats@unrelated-ctx-render
-LKP SKIP igt@gem_reset_stats@unrelated-ctx-vebox
-2023-05-11 12:30:38 build/tests/gem_workarounds --run-subtest basic-read
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: basic-read
-Subtest basic-read: SUCCESS (0.004s)
-2023-05-11 12:30:38 build/tests/gem_workarounds --run-subtest basic-read-context
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: basic-read-context
-Subtest basic-read-context: SUCCESS (0.004s)
-2023-05-11 12:30:38 build/tests/gem_workarounds --run-subtest basic-read-fd
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: basic-read-fd
-Subtest basic-read-fd: SUCCESS (0.004s)
-LKP SKIP igt@gem_workarounds@hibernate-resume
-LKP SKIP igt@gem_workarounds@hibernate-resume-context
-LKP SKIP igt@gem_workarounds@hibernate-resume-fd
-2023-05-11 12:30:39 build/tests/gem_workarounds --run-subtest reset
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: reset
-Subtest reset: SUCCESS (0.025s)
-2023-05-11 12:30:39 build/tests/gem_workarounds --run-subtest reset-context
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: reset-context
-Subtest reset-context: SUCCESS (0.026s)
-2023-05-11 12:30:39 build/tests/gem_workarounds --run-subtest reset-fd
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Starting subtest: reset-fd
-Subtest reset-fd: SUCCESS (0.026s)
-LKP SKIP igt@gem_workarounds@suspend-resume
-LKP SKIP igt@gem_workarounds@suspend-resume-context
-LKP SKIP igt@gem_workarounds@suspend-resume-fd
-2023-05-11 12:30:39 build/tests/kms_chamelium_color --run-subtest ctm-0-25
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Test requirement not met in function __igt_unique____real_main677, file ../tests/chamelium/kms_chamelium_color.c:693:
-Test requirement: data.chamelium
-Last errno: 2, No such file or directory
-Subtest ctm-0-25: SKIP (0.000s)
-2023-05-11 12:30:39 build/tests/kms_chamelium_color --run-subtest ctm-0-50
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Test requirement not met in function __igt_unique____real_main677, file ../tests/chamelium/kms_chamelium_color.c:693:
-Test requirement: data.chamelium
-Last errno: 2, No such file or directory
-Subtest ctm-0-50: SKIP (0.000s)
-2023-05-11 12:30:39 build/tests/kms_chamelium_color --run-subtest ctm-0-75
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Test requirement not met in function __igt_unique____real_main677, file ../tests/chamelium/kms_chamelium_color.c:693:
-Test requirement: data.chamelium
-Last errno: 2, No such file or directory
-Subtest ctm-0-75: SKIP (0.000s)
-2023-05-11 12:30:40 build/tests/kms_chamelium_color --run-subtest ctm-blue-to-red
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Test requirement not met in function __igt_unique____real_main677, file ../tests/chamelium/kms_chamelium_color.c:693:
-Test requirement: data.chamelium
-Last errno: 2, No such file or directory
-Subtest ctm-blue-to-red: SKIP (0.000s)
-2023-05-11 12:30:40 build/tests/kms_chamelium_color --run-subtest ctm-green-to-red
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Test requirement not met in function __igt_unique____real_main677, file ../tests/chamelium/kms_chamelium_color.c:693:
-Test requirement: data.chamelium
-Last errno: 2, No such file or directory
-Subtest ctm-green-to-red: SKIP (0.000s)
-2023-05-11 12:30:40 build/tests/kms_chamelium_color --run-subtest ctm-limited-range
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Test requirement not met in function __igt_unique____real_main677, file ../tests/chamelium/kms_chamelium_color.c:693:
-Test requirement: data.chamelium
-Last errno: 2, No such file or directory
-Subtest ctm-limited-range: SKIP (0.000s)
-2023-05-11 12:30:40 build/tests/kms_chamelium_color --run-subtest ctm-max
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Test requirement not met in function __igt_unique____real_main677, file ../tests/chamelium/kms_chamelium_color.c:693:
-Test requirement: data.chamelium
-Last errno: 2, No such file or directory
-Subtest ctm-max: SKIP (0.000s)
-2023-05-11 12:30:40 build/tests/kms_chamelium_color --run-subtest ctm-negative
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Test requirement not met in function __igt_unique____real_main677, file ../tests/chamelium/kms_chamelium_color.c:693:
-Test requirement: data.chamelium
-Last errno: 2, No such file or directory
-Subtest ctm-negative: SKIP (0.000s)
-2023-05-11 12:30:40 build/tests/kms_chamelium_color --run-subtest ctm-red-to-blue
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Test requirement not met in function __igt_unique____real_main677, file ../tests/chamelium/kms_chamelium_color.c:693:
-Test requirement: data.chamelium
-Last errno: 2, No such file or directory
-Subtest ctm-red-to-blue: SKIP (0.000s)
-2023-05-11 12:30:40 build/tests/kms_chamelium_color --run-subtest degamma
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Test requirement not met in function __igt_unique____real_main677, file ../tests/chamelium/kms_chamelium_color.c:693:
-Test requirement: data.chamelium
-Last errno: 2, No such file or directory
-Subtest degamma: SKIP (0.000s)
-2023-05-11 12:30:40 build/tests/kms_chamelium_color --run-subtest gamma
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Test requirement not met in function __igt_unique____real_main677, file ../tests/chamelium/kms_chamelium_color.c:693:
-Test requirement: data.chamelium
-Last errno: 2, No such file or directory
-Subtest gamma: SKIP (0.000s)
-2023-05-11 12:30:41 build/tests/vc4/vc4_perfmon --run-subtest create-perfmon-0
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Test requirement not met in function drm_open_driver, file ../lib/drmtest.c:588:
-Test requirement: !(fd<0)
-No known gpu found for chipset flags 0x2 (vc4)
-Last errno: 2, No such file or directory
-Subtest create-perfmon-0: SKIP (0.000s)
-2023-05-11 12:30:41 build/tests/vc4/vc4_perfmon --run-subtest create-perfmon-exceed
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Test requirement not met in function drm_open_driver, file ../lib/drmtest.c:588:
-Test requirement: !(fd<0)
-No known gpu found for chipset flags 0x2 (vc4)
-Last errno: 2, No such file or directory
-Subtest create-perfmon-exceed: SKIP (0.000s)
-2023-05-11 12:30:41 build/tests/vc4/vc4_perfmon --run-subtest create-perfmon-invalid-events
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Test requirement not met in function drm_open_driver, file ../lib/drmtest.c:588:
-Test requirement: !(fd<0)
-No known gpu found for chipset flags 0x2 (vc4)
-Last errno: 2, No such file or directory
-Subtest create-perfmon-invalid-events: SKIP (0.000s)
-2023-05-11 12:30:41 build/tests/vc4/vc4_perfmon --run-subtest create-single-perfmon
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Test requirement not met in function drm_open_driver, file ../lib/drmtest.c:588:
-Test requirement: !(fd<0)
-No known gpu found for chipset flags 0x2 (vc4)
-Last errno: 2, No such file or directory
-Subtest create-single-perfmon: SKIP (0.000s)
-2023-05-11 12:30:41 build/tests/vc4/vc4_perfmon --run-subtest create-two-perfmon
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Test requirement not met in function drm_open_driver, file ../lib/drmtest.c:588:
-Test requirement: !(fd<0)
-No known gpu found for chipset flags 0x2 (vc4)
-Last errno: 2, No such file or directory
-Subtest create-two-perfmon: SKIP (0.000s)
-2023-05-11 12:30:41 build/tests/vc4/vc4_perfmon --run-subtest destroy-invalid-perfmon
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Test requirement not met in function drm_open_driver, file ../lib/drmtest.c:588:
-Test requirement: !(fd<0)
-No known gpu found for chipset flags 0x2 (vc4)
-Last errno: 2, No such file or directory
-Subtest destroy-invalid-perfmon: SKIP (0.000s)
-2023-05-11 12:30:41 build/tests/vc4/vc4_perfmon --run-subtest destroy-valid-perfmon
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Test requirement not met in function drm_open_driver, file ../lib/drmtest.c:588:
-Test requirement: !(fd<0)
-No known gpu found for chipset flags 0x2 (vc4)
-Last errno: 2, No such file or directory
-Subtest destroy-valid-perfmon: SKIP (0.000s)
-2023-05-11 12:30:41 build/tests/vc4/vc4_perfmon --run-subtest get-values-invalid-perfmon
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Test requirement not met in function drm_open_driver, file ../lib/drmtest.c:588:
-Test requirement: !(fd<0)
-No known gpu found for chipset flags 0x2 (vc4)
-Last errno: 2, No such file or directory
-Subtest get-values-invalid-perfmon: SKIP (0.000s)
-2023-05-11 12:30:42 build/tests/vc4/vc4_perfmon --run-subtest get-values-invalid-pointer
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Test requirement not met in function drm_open_driver, file ../lib/drmtest.c:588:
-Test requirement: !(fd<0)
-No known gpu found for chipset flags 0x2 (vc4)
-Last errno: 2, No such file or directory
-Subtest get-values-invalid-pointer: SKIP (0.000s)
-2023-05-11 12:30:42 build/tests/vc4/vc4_perfmon --run-subtest get-values-valid-perfmon
-IGT-Version: 1.27.1-g9e9cd7e6 (x86_64) (Linux: 6.3.0-10673-ga0e22a91f487 x86_64)
-Test requirement not met in function drm_open_driver, file ../lib/drmtest.c:588:
-Test requirement: !(fd<0)
-No known gpu found for chipset flags 0x2 (vc4)
-Last errno: 2, No such file or directory
-Subtest get-values-valid-perfmon: SKIP (0.000s)
-LKP SKIP igt@vmwgfx/vmw_surface_copy@test_invalid_copies
-LKP SKIP igt@vmwgfx/vmw_surface_copy@test_invalid_copies_3d
-LKP SKIP igt@xe_guc_pc@freq_basic_api
-LKP SKIP igt@xe_guc_pc@freq_fixed_exec
-LKP SKIP igt@xe_guc_pc@freq_fixed_idle
-LKP SKIP igt@xe_guc_pc@freq_low_max
-LKP SKIP igt@xe_guc_pc@freq_range_exec
-LKP SKIP igt@xe_guc_pc@freq_range_idle
-LKP SKIP igt@xe_guc_pc@freq_reset
-LKP SKIP igt@xe_guc_pc@freq_reset_multiple
-LKP SKIP igt@xe_guc_pc@freq_suspend
-LKP SKIP igt@xe_guc_pc@rc0_on_exec
-LKP SKIP igt@xe_guc_pc@rc6_on_idle
+2023-05-11 15:57:16 make -j224 WERROR=3D0 LIBCLANGLLVM=3D1 CXXFLAGS+=3D-Wno=
+-class-memaccess EXTRA_CXXFLAGS+=3D-Wno-class-memaccess ARCH=3D EXTRA_CFLAG=
+S=3D-fno-omit-frame-pointer -fsanitize=3Dundefined -fsanitize=3Daddress -Wn=
+o-array-bounds -C /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d657=
+77596498256acd5f1584421e33a/tools/perf
+make: Entering directory '/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa205=
+0030d65777596498256acd5f1584421e33a/tools/perf'
+  BUILD:   Doing 'make =1B[33m-j224=1B[m' parallel build
+  HOSTCC  fixdep.o
+  HOSTLD  fixdep-in.o
+  LINK    fixdep
+diff -u tools/arch/x86/include/asm/msr-index.h arch/x86/include/asm/msr-ind=
+ex.h
+diff -u tools/arch/x86/include/uapi/asm/svm.h arch/x86/include/uapi/asm/svm=
+.h
 
---vcDeFZ/32v9hGKdR
+Auto-detecting system features:
+...                                   dwarf: [ =1B[32mon=1B[m  ]
+...                      dwarf_getlocations: [ =1B[32mon=1B[m  ]
+...                                   glibc: [ =1B[32mon=1B[m  ]
+...                                  libbfd: [ =1B[32mon=1B[m  ]
+...                          libbfd-buildid: [ =1B[32mon=1B[m  ]
+...                                  libcap: [ =1B[32mon=1B[m  ]
+...                                  libelf: [ =1B[32mon=1B[m  ]
+...                                 libnuma: [ =1B[32mon=1B[m  ]
+...                  numa_num_possible_cpus: [ =1B[32mon=1B[m  ]
+...                                 libperl: [ =1B[32mon=1B[m  ]
+...                               libpython: [ =1B[32mon=1B[m  ]
+...                               libcrypto: [ =1B[32mon=1B[m  ]
+...                               libunwind: [ =1B[32mon=1B[m  ]
+...                      libdw-dwarf-unwind: [ =1B[32mon=1B[m  ]
+...                                    zlib: [ =1B[32mon=1B[m  ]
+...                                    lzma: [ =1B[32mon=1B[m  ]
+...                               get_cpuid: [ =1B[32mon=1B[m  ]
+...                                     bpf: [ =1B[32mon=1B[m  ]
+...                                  libaio: [ =1B[32mon=1B[m  ]
+...                                 libzstd: [ =1B[32mon=1B[m  ]
+
+  GEN     common-cmds.h
+  CC      jvmti/libjvmti.o
+  CC      jvmti/jvmti_agent.o
+  CC      jvmti/libstring.o
+  CC      jvmti/libctype.o
+  GEN     perf-archive
+  GEN     perf-iostat
+  CC      dlfilters/dlfilter-test-api-v0.o
+  CC      dlfilters/dlfilter-show-cycles.o
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libapi/include/api/cpu.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libapi/include/api/debug.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libapi/include/api/io.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libapi/include/api/fd/array.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libapi/include/api/fs/fs.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libapi/include/api/fs/tracing_path.h
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libapi/cpu.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libapi/debug.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libapi/str_error_r.o
+  MKDIR   /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libapi/fd/
+  MKDIR   /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libapi/fs/
+  MKDIR   /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libapi/fs/
+  MKDIR   /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libapi/fs/
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libapi/fd/array.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libapi/fs/tracing_path.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libapi/fs/cgroup.o
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libsubcmd/include/subcmd/exec-cmd.h
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libapi/fs/fs.o
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libsubcmd/include/subcmd/help.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libsubcmd/include/subcmd/pager.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libsubcmd/include/subcmd/parse-options.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libsubcmd/include/subcmd/run-command.h
+  INSTALL libapi_headers
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libsubcmd/exec-cmd.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libsubcmd/help.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libsubcmd/parse-options.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libsubcmd/pager.o
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libperf/include/perf/bpf_perf.h
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libsubcmd/sigchain.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libsubcmd/run-command.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libsubcmd/subcmd-config.o
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libperf/include/perf/core.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libperf/include/perf/cpumap.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libperf/include/perf/threadmap.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libperf/include/perf/evlist.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libperf/include/perf/mmap.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libperf/include/perf/evsel.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libperf/include/perf/event.h
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libperf/core.o
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libperf/include/internal/cpumap.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libperf/include/internal/evlist.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libperf/include/internal/mmap.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libperf/include/internal/evsel.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libperf/include/internal/threadmap.h
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libperf/threadmap.o
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libperf/include/internal/lib.h
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libperf/cpumap.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libperf/evlist.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libperf/evsel.o
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libperf/include/internal/xyarray.h
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libperf/zalloc.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libperf/mmap.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libperf/xyarray.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libperf/lib.o
+  LINK    dlfilters/dlfilter-test-api-v0.so
+  INSTALL libsubcmd_headers
+  INSTALL libperf_headers
+  LINK    dlfilters/dlfilter-show-cycles.so
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libsymbol/include/symbol/kallsyms.h
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libsymbol/kallsyms.o
+  LD      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libapi/fd/libapi-in.o
+  INSTALL libsymbol_headers
+  LD      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libapi/fs/libapi-in.o
+  GEN     /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/bpf_helper_defs.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/include/bpf/bpf.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/include/bpf/libbpf.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/include/bpf/btf.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/include/bpf/libbpf_common.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/include/bpf/libbpf_legacy.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/include/bpf/bpf_tracing.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/include/bpf/bpf_helpers.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/include/bpf/bpf_endian.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/include/bpf/bpf_core_read.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/include/bpf/skel_internal.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/include/bpf/usdt.bpf.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/include/bpf/libbpf_version.h
+  LD      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libapi/libapi-in.o
+  AR      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libapi/libapi.a
+  LD      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libsymbol/libsymbol-in.o
+  AR      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libsymbol/libsymbol.a
+  LD      jvmti/jvmti-in.o
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/include/bpf/bpf_helper_defs.h
+  MKDIR   /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/staticobjs/
+  MKDIR   /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/staticobjs/
+  MKDIR   /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/staticobjs/
+  MKDIR   /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/staticobjs/
+  MKDIR   /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/staticobjs/
+  MKDIR   /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/staticobjs/
+  MKDIR   /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/staticobjs/
+  INSTALL libbpf_headers
+  MKDIR   /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/staticobjs/
+  MKDIR   /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/staticobjs/
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/staticobjs/hashmap.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/staticobjs/bpf.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/staticobjs/libbpf.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/staticobjs/btf_dump.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/staticobjs/ringbuf.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/staticobjs/btf.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/staticobjs/nlattr.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/staticobjs/libbpf_errno.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/staticobjs/strset.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/staticobjs/str_error.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/staticobjs/linker.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/staticobjs/netlink.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/staticobjs/bpf_prog_linfo.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/staticobjs/gen_loader.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/staticobjs/libbpf_probes.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/staticobjs/relo_core.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/staticobjs/usdt.o
+  LINK    libperf-jvmti.so
+  LD      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libperf/libperf-in.o
+  AR      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libperf/libperf.a
+  GEN     python/perf.cpython-39-x86_64-linux-gnu.so
+  LD      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libsubcmd/libsubcmd-in.o
+  AR      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libsubcmd/libsubcmd.a
+  LD      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/staticobjs/libbpf-in.o
+  LINK    /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498=
+256acd5f1584421e33a/tools/perf/libbpf/libbpf.a
+  CC      builtin-bench.o
+  CC      builtin-annotate.o
+  CC      builtin-config.o
+  CC      builtin-diff.o
+  CC      builtin-evlist.o
+  CC      builtin-ftrace.o
+  CC      builtin-help.o
+  CC      builtin-buildid-list.o
+  CC      builtin-buildid-cache.o
+  CC      builtin-kallsyms.o
+  CC      builtin-list.o
+  CC      builtin-record.o
+  CC      builtin-report.o
+  CC      builtin-stat.o
+  CC      builtin-top.o
+  CC      builtin-script.o
+  CC      builtin-kvm.o
+  CC      builtin-inject.o
+  CC      builtin-mem.o
+  CC      builtin-data.o
+  CC      builtin-version.o
+  CC      builtin-c2c.o
+  CC      builtin-daemon.o
+  CC      builtin-kmem.o
+  CC      builtin-kwork.o
+  CC      builtin-lock.o
+  CC      builtin-sched.o
+  CC      builtin-timechart.o
+  CC      builtin-trace.o
+  CC      builtin-probe.o
+  CC      trace/beauty/clone.o
+  CC      perf.o
+  CC      trace/beauty/flock.o
+  CC      trace/beauty/fcntl.o
+  CC      trace/beauty/fsmount.o
+  CC      bench/sched-messaging.o
+  CC      arch/common.o
+  CC      tests/builtin-test.o
+  CC      trace/beauty/fspick.o
+  CC      trace/beauty/ioctl.o
+  CC      bench/sched-pipe.o
+  CC      bench/syscall.o
+  CC      ui/setup.o
+  CC      tests/parse-events.o
+  CC      tests/builtin-test-list.o
+  CC      ui/helpline.o
+  CC      trace/beauty/kcmp.o
+  CC      bench/futex-hash.o
+  CC      ui/progress.o
+  CC      bench/mem-functions.o
+  CC      tests/dso-data.o
+  CC      trace/beauty/mount_flags.o
+  CC      trace/beauty/move_mount.o
+  CC      tests/attr.o
+  CC      trace/beauty/pkey_alloc.o
+  CC      bench/futex-wake.o
+  CC      bench/futex-wake-parallel.o
+  CC      ui/hist.o
+  CC      ui/util.o
+  CC      tests/vmlinux-kallsyms.o
+  CC      ui/stdio/hist.o
+  CC      bench/futex-requeue.o
+  CC      trace/beauty/arch_prctl.o
+  CC      ui/browser.o
+  CC      tests/openat-syscall.o
+  CC      trace/beauty/prctl.o
+  CC      tests/openat-syscall-all-cpus.o
+  CC      trace/beauty/renameat.o
+  CC      tests/openat-syscall-tp-fields.o
+  CC      bench/epoll-wait.o
+  CC      tests/mmap-basic.o
+  CC      trace/beauty/sockaddr.o
+  CC      bench/futex-lock-pi.o
+  CC      bench/epoll-ctl.o
+  CC      tests/perf-record.o
+  CC      trace/beauty/socket.o
+  CC      bench/synthesize.o
+  CC      tests/evsel-roundtrip-name.o
+  CC      trace/beauty/statx.o
+  CC      bench/kallsyms-parse.o
+  CC      bench/find-bit-bench.o
+  CC      scripts/perl/Perf-Trace-Util/Context.o
+  CC      trace/beauty/sync_file_range.o
+  CC      tests/evsel-tp-sched.o
+  CC      bench/inject-buildid.o
+  CC      trace/beauty/timespec.o
+  CC      tests/fdarray.o
+  CC      bench/evlist-open-close.o
+  CC      bench/breakpoint.o
+  CC      tests/pmu.o
+  CC      scripts/python/Perf-Trace-Util/Context.o
+  CC      tests/pmu-events.o
+  CC      bench/mem-memset-x86-64-asm.o
+  CC      bench/mem-memcpy-x86-64-asm.o
+  CC      tests/hists_common.o
+  CC      tests/hists_link.o
+  CC      bench/numa.o
+  CC      tests/hists_filter.o
+  CC      tests/hists_output.o
+  CC      tests/hists_cumulate.o
+  CC      ui/browsers/annotate.o
+  CC      ui/tui/setup.o
+  CC      ui/tui/util.o
+  CC      tests/python-use.o
+  CC      tests/bp_signal.o
+  CC      ui/browsers/hists.o
+  CC      ui/tui/helpline.o
+  CC      tests/wp.o
+  CC      ui/browsers/map.o
+  CC      tests/bp_signal_overflow.o
+  CC      ui/tui/progress.o
+  CC      ui/browsers/scripts.o
+  CC      tests/bp_account.o
+  CC      ui/browsers/header.o
+  CC      ui/browsers/res_sample.o
+  CC      tests/task-exit.o
+  CC      tests/sw-clock.o
+  CC      tests/mmap-thread-lookup.o
+  CC      trace/beauty/tracepoints/x86_irq_vectors.o
+  CC      tests/switch-tracking.o
+  CC      tests/thread-maps-share.o
+  CC      trace/beauty/tracepoints/x86_msr.o
+  CC      tests/keep-tracking.o
+  CC      arch/x86/util/tsc.o
+  CC      arch/x86/tests/regs_load.o
+  CC      arch/x86/util/pmu.o
+  CC      tests/code-reading.o
+  CC      arch/x86/util/header.o
+  CC      arch/x86/tests/dwarf-unwind.o
+  TEST    pmu-events/metric_test.log
+  CC      tests/sample-parsing.o
+  CC      arch/x86/tests/arch-tests.o
+  CC      arch/x86/util/perf_regs.o
+  CC      arch/x86/tests/insn-x86.o
+  CC      arch/x86/util/topdown.o
+  CC      arch/x86/tests/sample-parsing.o
+  CC      tests/kmod-path.o
+  CC      arch/x86/util/kvm-stat.o
+  CC      tests/thread-map.o
+  CC      arch/x86/util/machine.o
+  CC      arch/x86/tests/intel-pt-test.o
+  CC      tests/parse-no-sample-id-all.o
+  CC      arch/x86/tests/bp-modify.o
+  CC      tests/llvm.o
+  CC      arch/x86/util/event.o
+  CC      arch/x86/util/evlist.o
+  CC      arch/x86/util/mem-events.o
+  CC      arch/x86/util/evsel.o
+  CC      arch/x86/util/iostat.o
+  CC      tests/bpf.o
+  CC      arch/x86/util/dwarf-regs.o
+  CC      tests/mem.o
+  CC      arch/x86/util/unwind-libunwind.o
+  CC      tests/topology.o
+  CC      tests/cpumap.o
+  CC      arch/x86/util/auxtrace.o
+  CC      arch/x86/util/archinsn.o
+  CC      tests/stat.o
+  CC      tests/event-times.o
+  CC      tests/event_update.o
+  CC      arch/x86/util/intel-pt.o
+  CC      arch/x86/util/intel-bts.o
+  CC      tests/expr.o
+  CC      tests/backward-ring-buffer.o
+  CC      tests/sdt.o
+  CC      tests/is_printable_array.o
+  CC      tests/bitmap.o
+  CC      tests/perf-hooks.o
+  CC      tests/clang.o
+  CC      tests/unit_number__scnprintf.o
+  CC      tests/mem2node.o
+  CC      tests/maps.o
+  CC      tests/time-utils-test.o
+  CC      tests/genelf.o
+  CC      tests/api-io.o
+  CC      tests/demangle-java-test.o
+  CC      tests/demangle-ocaml-test.o
+  CC      tests/pfm.o
+  CC      tests/parse-metric.o
+  CC      tests/expand-cgroup.o
+  CC      tests/perf-time-to-tsc.o
+  CC      tests/pe-file-parsing.o
+  CC      tests/dlfilter-test.o
+  CC      tests/sigtrap.o
+  CC      tests/event_groups.o
+  CC      tests/symbols.o
+  CC      tests/dwarf-unwind.o
+  CC      tests/workloads/noploop.o
+  CC      tests/workloads/thloop.o
+  CC      tests/workloads/leafloop.o
+  CC      tests/workloads/sqrtloop.o
+  CC      tests/workloads/brstack.o
+  CC      tests/workloads/datasym.o
+  CC      tests/llvm-src-kbuild.o
+  CC      tests/llvm-src-prologue.o
+  CC      tests/llvm-src-base.o
+  CC      tests/llvm-src-relocation.o
+  CC      util/arm64-frame-pointer-unwind-support.o
+  CC      util/annotate.o
+  CC      util/block-info.o
+  CC      util/block-range.o
+  CC      util/build-id.o
+  GEN     pmu-events/pmu-events.c
+  CC      util/cacheline.o
+  CC      util/config.o
+  CC      util/copyfile.o
+  CC      util/ctype.o
+  CC      util/db-export.o
+  CC      util/env.o
+  CC      util/event.o
+  CC      util/evlist.o
+  CC      util/evlist-hybrid.o
+  CC      util/sideband_evlist.o
+  CC      util/evsel.o
+  CC      util/perf_event_attr_fprintf.o
+  CC      util/find_bit.o
+  CC      util/evsel_fprintf.o
+  CC      util/get_current_dir_name.o
+  CC      util/evswitch.o
+  CC      util/levenshtein.o
+  CC      util/llvm-utils.o
+  CC      util/mmap.o
+  CC      util/memswap.o
+  BISON   util/parse-events-bison.c
+  CC      util/parse-events-hybrid.o
+  CC      util/print-events.o
+  CC      util/tracepoint.o
+  CC      util/perf_regs.o
+  CC      util/path.o
+  CC      util/print_binary.o
+  CC      util/rlimit.o
+  CC      util/argv_split.o
+  CC      util/rbtree.o
+  CC      util/libstring.o
+  CC      util/bitmap.o
+  CC      util/hweight.o
+  CC      util/smt.o
+  CC      util/strbuf.o
+  CC      util/string.o
+  CC      util/strlist.o
+  CC      util/strfilter.o
+  CC      util/top.o
+  CC      util/usage.o
+  CC      util/dso.o
+  CC      util/dsos.o
+  CC      util/symbol.o
+  CC      util/symbol_fprintf.o
+  CC      util/color.o
+  CC      util/color_config.o
+  CC      util/metricgroup.o
+  CC      util/header.o
+  CC      util/callchain.o
+  CC      util/debug.o
+  CC      util/values.o
+  CC      util/fncache.o
+  CC      util/machine.o
+  CC      util/map.o
+  CC      util/maps.o
+  CC      util/pstack.o
+  CC      util/sample-raw.o
+  CC      util/session.o
+  CC      util/s390-sample-raw.o
+  CC      util/amd-sample-raw.o
+  LD      trace/beauty/tracepoints/perf-in.o
+  CC      util/syscalltbl.o
+  CC      util/ordered-events.o
+  CC      util/namespaces.o
+  CC      util/comm.o
+  CC      util/thread.o
+  CC      util/thread_map.o
+  CC      util/parse-events-bison.o
+  CC      util/pmus.o
+  BISON   util/pmu-bison.c
+  CC      util/pmu-hybrid.o
+  CC      util/svghelper.o
+  LD      trace/beauty/perf-in.o
+  CC      util/trace-event-info.o
+  CC      util/trace-event-scripting.o
+  CC      util/trace-event-parse.o
+  CC      util/trace-event.o
+  CC      util/trace-event-read.o
+  CC      util/hist.o
+  CC      util/util.o
+  CC      util/sort.o
+  CC      util/cpumap.o
+  CC      util/affinity.o
+  CC      util/cputopo.o
+  CC      util/cgroup.o
+  CC      util/target.o
+  CC      util/rblist.o
+  CC      util/intlist.o
+  CC      util/vdso.o
+  CC      util/counts.o
+  CC      util/stat.o
+  CC      util/stat-shadow.o
+  CC      util/stat-display.o
+  CC      util/perf_api_probe.o
+  CC      util/record.o
+  CC      util/srcline.o
+  CC      util/srccode.o
+  CC      util/synthetic-events.o
+  CC      util/data.o
+  CC      util/tsc.o
+  CC      util/cloexec.o
+  CC      util/call-path.o
+  CC      util/rwsem.o
+  CC      util/thread-stack.o
+  CC      util/spark.o
+  CC      util/topdown.o
+  CC      util/iostat.o
+  CC      util/stream.o
+  CC      util/auxtrace.o
+  LD      tests/workloads/perf-in.o
+  CC      util/intel-pt.o
+  CC      util/intel-bts.o
+  CC      util/arm-spe.o
+  CC      util/intel-pt-decoder/intel-pt-pkt-decoder.o
+  CC      util/arm-spe-decoder/arm-spe-pkt-decoder.o
+  GEN     util/intel-pt-decoder/inat-tables.c
+  CC      util/hisi-ptt.o
+  CC      util/hisi-ptt-decoder/hisi-ptt-pkt-decoder.o
+  CC      util/s390-cpumsf.o
+  CC      util/scripting-engines/trace-event-perl.o
+  CXX     util/c++/clang.o
+  CC      util/cs-etm-base.o
+  CXX     util/c++/clang-test.o
+  CC      util/arm-spe-decoder/arm-spe-decoder.o
+  CC      util/scripting-engines/trace-event-python.o
+  CC      util/parse-branch-options.o
+  CC      util/intel-pt-decoder/intel-pt-log.o
+  CC      util/intel-pt-decoder/intel-pt-decoder.o
+  CC      util/dump-insn.o
+  CC      util/parse-regs-options.o
+  CC      util/parse-sublevel-options.o
+  CC      util/term.o
+  CC      util/help-unknown-cmd.o
+  CC      util/mem-events.o
+  CC      util/vsprintf.o
+  CC      util/units.o
+  CC      util/dlfilter.o
+  CC      util/time-utils.o
+  BISON   util/expr-bison.c
+  CC      util/branch.o
+  CC      util/clockid.o
+  CC      util/mem2node.o
+  LD      ui/tui/perf-in.o
+  CC      util/list_sort.o
+  LD      arch/x86/tests/perf-in.o
+  CC      util/mutex.o
+  CC      util/bpf-loader.o
+  CC      util/bpf_map.o
+  CC      util/symbol-elf.o
+  CC      util/probe-file.o
+  CC      util/bpf-prologue.o
+  CC      util/probe-event.o
+  CC      util/probe-finder.o
+  CC      util/dwarf-aux.o
+  CC      util/dwarf-regs.o
+  CC      util/unwind-libunwind-local.o
+  CC      util/unwind-libunwind.o
+  CC      util/data-convert-bt.o
+  CC      util/data-convert-json.o
+  CC      util/zlib.o
+  CC      util/lzma.o
+  CC      util/demangle-ocaml.o
+  CC      util/cap.o
+  CC      util/zstd.o
+  CC      util/demangle-java.o
+  CC      util/demangle-rust.o
+  CC      util/jitdump.o
+  CC      util/genelf.o
+  CC      util/genelf_debug.o
+  CC      util/perf-hooks.o
+  CC      util/bpf-event.o
+  CC      util/bpf-utils.o
+  FLEX    util/parse-events-flex.c
+  FLEX    util/pmu-flex.c
+  FLEX    util/expr-flex.c
+  CC      util/pmu-bison.o
+  CC      util/expr-bison.o
+  CC      util/pmu.o
+  CC      util/pmu-flex.o
+  CC      util/expr-flex.o
+  CC      util/expr.o
+  CC      util/parse-events.o
+  CC      util/parse-events-flex.o
+  LD      scripts/python/Perf-Trace-Util/perf-in.o
+  LD      util/hisi-ptt-decoder/perf-in.o
+  CC      util/intel-pt-decoder/intel-pt-insn-decoder.o
+  LD      util/arm-spe-decoder/perf-in.o
+  LD      scripts/perl/Perf-Trace-Util/perf-in.o
+  LD      scripts/perf-in.o
+  LD      arch/x86/util/perf-in.o
+  LD      arch/x86/perf-in.o
+  LD      arch/perf-in.o
+  CC      pmu-events/pmu-events.o
+  LD      bench/perf-in.o
+  LD      tests/perf-in.o
+  LD      util/scripting-engines/perf-in.o
+  LD      pmu-events/pmu-events-in.o
+  LD      ui/browsers/perf-in.o
+  LD      ui/perf-in.o
+  LD      util/c++/perf-in.o
+  LD      util/intel-pt-decoder/perf-in.o
+  LD      util/perf-in.o
+  LD      perf-in.o
+  LINK    perf
+make: Leaving directory '/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf'
+2023-05-11 15:57:36 cd /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa205003=
+0d65777596498256acd5f1584421e33a/tools/perf
+2023-05-11 15:57:36 mkdir -p /pkg
+2023-05-11 15:57:36 mkdir -p /kbuild/obj/consumer/x86_64-rhel-8.3-bpf
+2023-05-11 15:57:37 cp /pkg/linux/x86_64-rhel-8.3-bpf/gcc-11/aa2050030d6577=
+7596498256acd5f1584421e33a/vmlinux.xz /tmp
+2023-05-11 15:57:39 unxz -k /tmp/vmlinux.xz
+2023-05-11 15:57:44 cp /tmp/vmlinux /kbuild/obj/consumer/x86_64-rhel-8.3-bp=
+f
+ignored_by_lkp: BPF filter
+ignored_by_lkp: LLVM search and compile
+ignored_by_lkp: Add vfs_getname probe to get syscall args filenames
+ignored_by_lkp: Use vfs_getname probe to get syscall args filenames
+ignored_by_lkp: Check open filename arg using perf trace + vfs_getname
+2023-05-11 15:57:44 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 1
+  1: vmlinux symtab matches kallsyms                                 : Ok
+2023-05-11 15:57:45 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 2
+  2: Detect openat syscall event                                     : Ok
+2023-05-11 15:57:45 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 3
+  3: Detect openat syscall event on all cpus                         : Ok
+2023-05-11 15:57:45 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 4
+  4: mmap interface tests                                            :
+  4.1: Read samples using the mmap interface                         : Ok
+  4.2: User space counter reading of instructions                    : Ok
+  4.3: User space counter reading of cycles                          : Ok
+2023-05-11 15:57:46 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 5
+  5: Test data source output                                         : Ok
+2023-05-11 15:57:46 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 6
+  6: Parse event definition strings                                  :
+  6.1: Test event parsing                                            : FAIL=
+ED!
+  6.2: Test parsing of "hybrid" CPU events                           : Skip=
+ (not hybrid)
+  6.3: Parsing of all PMU events from sysfs                          : Ok
+  6.4: Parsing of given PMU events from sysfs                        : Ok
+  6.5: Parsing of aliased events from sysfs                          : Skip=
+ (no aliases in sysfs)
+  6.6: Parsing of aliased events                                     : Ok
+  6.7: Parsing of terms (event modifiers)                            : Ok
+2023-05-11 15:57:47 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 7
+  7: Simple expression parser                                        : Ok
+2023-05-11 15:57:47 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 8
+  8: PERF_RECORD_* events & perf_sample fields                       : Ok
+2023-05-11 15:57:50 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 9
+  9: Parse perf pmu format                                           : Ok
+2023-05-11 15:57:50 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 10
+ 10: PMU events                                                      :
+ 10.1: PMU event table sanity                                        : Ok
+ 10.2: PMU event map aliases                                         : Ok
+ 10.3: Parsing of PMU event table metrics                            : Ok
+ 10.4: Parsing of PMU event table metrics with fake PMUs             : Ok
+2023-05-11 15:57:56 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 11
+ 11: DSO data read                                                   : Ok
+2023-05-11 15:57:56 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 12
+ 12: DSO data cache                                                  : Ok
+2023-05-11 15:57:56 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 13
+ 13: DSO data reopen                                                 : Ok
+2023-05-11 15:57:56 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 14
+ 14: Roundtrip evsel->name                                           : Ok
+2023-05-11 15:57:56 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 15
+ 15: Parse sched tracepoints fields                                  : Ok
+2023-05-11 15:57:57 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 16
+ 16: syscalls:sys_enter_openat event fields                          : Ok
+2023-05-11 15:57:57 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 17
+ 17: Setup struct perf_event_attr                                    : Ok
+2023-05-11 15:58:19 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 18
+ 18: Match and link multiple hists                                   : Ok
+2023-05-11 15:58:19 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 19
+ 19: 'import perf' in python                                         : FAIL=
+ED!
+2023-05-11 15:58:19 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 20
+ 20: Breakpoint overflow signal handler                              : Ok
+2023-05-11 15:58:19 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 21
+ 21: Breakpoint overflow sampling                                    : Ok
+2023-05-11 15:58:19 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 22
+ 22: Breakpoint accounting                                           : Ok
+2023-05-11 15:58:20 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 23
+ 23: Watchpoint                                                      :
+ 23.1: Read Only Watchpoint                                          : Skip=
+ (missing hardware support)
+ 23.2: Write Only Watchpoint                                         : Ok
+ 23.3: Read / Write Watchpoint                                       : Ok
+ 23.4: Modify Watchpoint                                             : Ok
+2023-05-11 15:58:20 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 24
+ 24: Number of exit events of a simple workload                      : Ok
+2023-05-11 15:58:20 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 25
+ 25: Software clock events period values                             : Ok
+2023-05-11 15:58:20 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 26
+ 26: Object code reading                                             : Ok
+2023-05-11 15:58:45 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 27
+ 27: Sample parsing                                                  : Ok
+2023-05-11 15:58:45 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 28
+ 28: Use a dummy software event to keep tracking                     : Ok
+2023-05-11 15:58:45 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 29
+ 29: Parse with no sample_id_all bit set                             : Ok
+2023-05-11 15:58:46 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 30
+ 30: Filter hist entries                                             : Ok
+2023-05-11 15:58:46 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 31
+ 31: Lookup mmap thread                                              : Ok
+2023-05-11 15:58:46 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 32
+ 32: Share thread maps                                               : Ok
+2023-05-11 15:58:46 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 33
+ 33: Sort output of hist entries                                     : Ok
+2023-05-11 15:58:46 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 34
+ 34: Cumulate child hist entries                                     : Ok
+2023-05-11 15:58:47 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 35
+ 35: Track with sched_switch                                         : Ok
+2023-05-11 15:58:47 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 36
+ 36: Filter fds with revents mask in a fdarray                       : Ok
+2023-05-11 15:58:48 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 37
+ 37: Add fd to a fdarray, making it autogrow                         : Ok
+2023-05-11 15:58:48 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 38
+ 38: kmod_path__parse                                                : Ok
+2023-05-11 15:58:48 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 39
+ 39: Thread map                                                      : Ok
+2023-05-11 15:58:48 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 41
+ 41: Session topology                                                : Ok
+2023-05-11 15:58:48 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 43
+ 43: Synthesize thread map                                           : Ok
+2023-05-11 15:58:48 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 44
+ 44: Remove thread map                                               : Ok
+2023-05-11 15:58:48 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 45
+ 45: Synthesize cpu map                                              : Ok
+2023-05-11 15:58:49 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 46
+ 46: Synthesize stat config                                          : Ok
+2023-05-11 15:58:49 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 47
+ 47: Synthesize stat                                                 : Ok
+2023-05-11 15:58:49 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 48
+ 48: Synthesize stat round                                           : Ok
+2023-05-11 15:58:49 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 49
+ 49: Synthesize attr update                                          : Ok
+2023-05-11 15:58:49 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 50
+ 50: Event times                                                     : Ok
+2023-05-11 15:58:49 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 51
+ 51: Read backward ring buffer                                       : Ok
+2023-05-11 15:58:49 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 52
+ 52: Print cpu map                                                   : Ok
+2023-05-11 15:58:49 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 53
+ 53: Merge cpu map                                                   : Ok
+2023-05-11 15:58:50 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 54
+ 54: Probe SDT events                                                : Ok
+2023-05-11 15:58:50 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 55
+ 55: is_printable_array                                              : Ok
+2023-05-11 15:58:50 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 56
+ 56: Print bitmap                                                    : Ok
+2023-05-11 15:58:50 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 57
+ 57: perf hooks                                                      : Ok
+2023-05-11 15:58:50 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 58
+ 58: builtin clang support                                           :
+ 58.1: builtin clang compile C source to IR                          : Ok
+ 58.2: builtin clang compile C source to ELF object                  : FAIL=
+ED!
+2023-05-11 15:58:50 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 59
+ 59: unit_number__scnprintf                                          : Ok
+2023-05-11 15:58:50 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 60
+ 60: mem2node                                                        : Ok
+2023-05-11 15:58:50 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 61
+ 61: time utils                                                      : Ok
+2023-05-11 15:58:50 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 62
+ 62: Test jit_write_elf                                              : Ok
+2023-05-11 15:58:51 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 63
+ 63: Test libpfm4 support                                            :
+ 63.1: test of individual --pfm-events                               : Skip=
+ (not compiled in)
+ 63.2: test groups of --pfm-events                                   : Skip=
+ (not compiled in)
+2023-05-11 15:58:51 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 64
+ 64: Test api io                                                     : Ok
+2023-05-11 15:58:51 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 65
+ 65: maps__merge_in                                                  : Ok
+2023-05-11 15:58:51 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 66
+ 66: Demangle Java                                                   : Ok
+2023-05-11 15:58:51 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 67
+ 67: Demangle OCaml                                                  : Ok
+2023-05-11 15:58:51 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 68
+ 68: Parse and process metrics                                       : Ok
+2023-05-11 15:58:51 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 69
+ 69: PE file support                                                 : Ok
+2023-05-11 15:58:51 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 70
+ 70: Event expansion for cgroups                                     : Ok
+2023-05-11 15:58:52 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 71
+ 71: Convert perf time to TSC                                        :
+ 71.1: TSC support                                                   : Ok
+ 71.2: Perf time to TSC                                              : Ok
+2023-05-11 15:58:52 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 72
+ 72: dlfilter C API                                                  : FAIL=
+ED!
+2023-05-11 15:58:52 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 73
+ 73: Sigtrap                                                         : Ok
+2023-05-11 15:58:53 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 74
+ 74: Event groups                                                    : Skip
+2023-05-11 15:58:53 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 75
+ 75: Symbols                                                         : FAIL=
+ED!
+2023-05-11 15:58:53 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 76
+ 76: Test dwarf unwind                                               : Ok
+2023-05-11 15:58:54 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 77
+ 77: x86 instruction decoder - new instructions                      : Ok
+2023-05-11 15:58:54 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 78
+ 78: Intel PT                                                        :
+ 78.1: Intel PT packet decoder                                       : Ok
+ 78.2: Intel PT hybrid CPU compatibility                             : Skip
+2023-05-11 15:58:54 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 79
+ 79: x86 bp modify                                                   : Ok
+2023-05-11 15:58:54 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 80
+ 80: x86 Sample parsing                                              : Ok
+2023-05-11 15:58:54 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 81
+ 81: build id cache operations                                       : FAIL=
+ED!
+2023-05-11 15:58:55 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 82
+ 82: CoreSight / ASM Pure Loop                                       : Skip
+2023-05-11 15:58:55 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 83
+ 83: CoreSight / Memcpy 16k 10 Threads                               : Skip
+2023-05-11 15:58:55 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 84
+ 84: CoreSight / Thread Loop 10 Threads - Check TID                  : Skip
+2023-05-11 15:58:55 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 85
+ 85: CoreSight / Thread Loop 2 Threads - Check TID                   : Skip
+2023-05-11 15:58:55 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 86
+ 86: CoreSight / Unroll Loop Thread 10                               : Skip
+2023-05-11 15:58:55 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 87
+ 87: daemon operations                                               : Ok
+2023-05-11 15:59:10 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 88
+ 88: kernel lock contention analysis test                            : Ok
+2023-05-11 16:00:06 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 89
+ 89: perf pipe recording and injection test                          : FAIL=
+ED!
+2023-05-11 16:00:08 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 91
+ 91: probe libc's inet_pton & backtrace it with ping                 : Ok
+2023-05-11 16:00:11 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 93
+ 93: Zstd perf.data compression/decompression                        : Ok
+2023-05-11 16:00:13 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 94
+ 94: perf record tests                                               : FAIL=
+ED!
+2023-05-11 16:00:27 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 95
+ 95: perf record offcpu profiling tests                              : Skip
+2023-05-11 16:00:29 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 96
+ 96: perf stat CSV output linter                                     : FAIL=
+ED!
+2023-05-11 16:00:29 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 97
+ 97: perf stat csv summary test                                      : Ok
+2023-05-11 16:00:32 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 98
+ 98: perf stat JSON output linter                                    : FAIL=
+ED!
+2023-05-11 16:00:32 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 99
+ 99: perf stat metrics (shadow stat) test                            : Ok
+2023-05-11 16:00:39 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 100
+100: perf stat tests                                                 : Ok
+2023-05-11 16:00:41 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 101
+101: perf all metricgroups test                                      : FAIL=
+ED!
+2023-05-11 16:00:50 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 102
+102: perf all metrics test                                           : FAIL=
+ED!
+2023-05-11 16:03:29 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 103
+103: perf all PMU test                                               : Ok
+2023-05-11 16:04:38 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 104
+104: perf stat --bpf-counters test                                   : Skip
+2023-05-11 16:04:38 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 105
+105: perf stat --bpf-counters --for-each-cgroup test                 : Skip
+2023-05-11 16:04:38 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 106
+106: Check Arm64 callgraphs are complete in fp mode                  : Skip
+2023-05-11 16:04:38 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 107
+107: Check Arm CoreSight trace data recording and synthesized samples: Skip
+2023-05-11 16:04:39 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 108
+108: Check Arm SPE trace data recording and synthesized samples      : Skip
+2023-05-11 16:04:39 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 109
+109: Check Arm SPE doesn't hang when there are forks                 : Skip
+2023-05-11 16:04:39 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 110
+110: Check branch stack sampling                                     : FAIL=
+ED!
+2023-05-11 16:04:48 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 111
+111: Test data symbol                                                : FAIL=
+ED!
+2023-05-11 16:04:50 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 112
+112: Miscellaneous Intel PT testing                                  : FAIL=
+ED!
+2023-05-11 16:05:06 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 113
+113: Test java symbol                                                : Skip
+2023-05-11 16:05:06 sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050=
+030d65777596498256acd5f1584421e33a/tools/perf/perf test 114
+114: perf script task-analyzer tests                                 : Ok
+
+--PSbc1JmETRt9H6EQ
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: attachment; filename="job.yaml"
 
 ---
 
-#! jobs/igt-part2.yaml
-suite: igt
-testcase: igt
+#! jobs/perf-sanity-tests.yaml
+suite: perf-sanity-tests
+testcase: perf-sanity-tests
 category: functional
-igt:
-  group: group-11
-job_origin: igt-part2.yaml
+need_memory: 2G
+perf-sanity-tests:
+  perf_compiler: clang
+job_origin: perf-sanity-tests.yaml
 
 #! queue options
 queue_cmdline_keys:
 - branch
 - commit
 queue: bisect
-testbox: lkp-cml-d02
-tbox_group: lkp-cml-d02
-submit_id: 645c767e83cdb4a13b96af22
-job_file: "/lkp/jobs/scheduled/lkp-cml-d02/igt-group-11-debian-11.1-x86_64-20220510.cgz-a0e22a91f487957346732c6613eb6bd1b7c72ab1-20230511-41275-qcpzwt-0.yaml"
-id: 1bd075ab73f2062115ffa0b305fed770ec0bbe0d
+testbox: lkp-spr-2sp1
+tbox_group: lkp-spr-2sp1
+submit_id: 645d025866c23265db3a7313
+job_file: "/lkp/jobs/scheduled/lkp-spr-2sp1/perf-sanity-tests-clang-debian-11.1-x86_64-20220510.cgz-aa2050030d65777596498256acd5f1584421e33a-20230511-26075-1f9ry8g-0.yaml"
+id: 1a854cfd1848f3c668862285d0589ff02f6290db
 queuer_version: "/zday/lkp"
 
-#! /db/releases/20230510192734/lkp-src/hosts/lkp-cml-d02
-model: Commet Lake
-nr_node: 1
-nr_cpu: 20
-memory: 16G
-ssd_partitions: "/dev/disk/by-id/ata-INTEL_SSDSC2BA800G4_BTHV61840945800OGN-part4"
-rootfs_partition: "/dev/disk/by-id/ata-INTEL_SSDSC2BA800G4_BTHV61840945800OGN-part3"
-kernel_cmdline_hw: acpi_rsdp=0x9b0fe014
+#! /db/releases/20230509145422/lkp-src/hosts/lkp-spr-2sp1
+model: Sapphire Rapids
+nr_node: 2
+nr_cpu: 224
+memory: 256G
+nr_ssd_partitions: 6
+ssd_partitions: "/dev/disk/by-id/nvme-INTEL_SSDPE2KX040T7_PHLF741401J94P0IGN-part*"
+rootfs_partition: "/dev/disk/by-id/nvme-INTEL_SSDPE2KX010T8_BTLJ207201DG1P0FGN-part4"
+kernel_cmdline_hw: acpi_rsdp=0x777fe014
+brand: Intel(R) Xeon(R) Platinum 8480+
 
-#! /db/releases/20230510192734/lkp-src/include/category/functional
+#! /db/releases/20230509145422/lkp-src/include/category/functional
 kmsg:
 heartbeat:
 meminfo:
 
-#! /db/releases/20230510192734/lkp-src/include/queue/cyclic
-commit: a0e22a91f487957346732c6613eb6bd1b7c72ab1
+#! /db/releases/20230509145422/lkp-src/include/perf-sanity-tests
+initrds:
+- linux_perf
 
-#! /db/releases/20230510192734/lkp-src/include/testbox/lkp-cml-d02
-netconsole_port: 6683
-ucode: '0xc2'
-need_kconfig_hw:
-- PTP_1588_CLOCK: y
-- IGB: y
-- E1000E: y
-- SATA_AHCI
-- DRM_I915
-- IGC: y
-kconfig: x86_64-rhel-8.3-func
-enqueue_time: 2023-05-11 13:00:47.056647080 +08:00
-_id: 645c767e83cdb4a13b96af22
-_rt: "/result/igt/group-11/lkp-cml-d02/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3-func/gcc-11/a0e22a91f487957346732c6613eb6bd1b7c72ab1"
+#! /db/releases/20230509145422/lkp-src/include/queue/cyclic
+commit: aa2050030d65777596498256acd5f1584421e33a
+
+#! /db/releases/20230509145422/lkp-src/include/testbox/lkp-spr-2sp1
+ucode: '0x2b000181'
+kconfig: x86_64-rhel-8.3-bpf
+enqueue_time: 2023-05-11 22:57:30.034761388 +08:00
+_id: 645d025866c23265db3a7313
+_rt: "/result/perf-sanity-tests/clang/lkp-spr-2sp1/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3-bpf/gcc-11/aa2050030d65777596498256acd5f1584421e33a"
 
 #! schedule options
 user: lkp
 compiler: gcc-11
 LKP_SERVER: internal-lkp-server
-head_commit: a071029f337f80d4a8f24d0fe7d440534a2065a7
+head_commit: 6242c02bd1883e42ab204b175ea2562d7c646180
 base_commit: ac9a78681b921877518763ba0e89202254349d1b
-branch: linux-devel/devel-hourly-20230510-093712
+branch: internal-devel/devel-hourly-20230509-140013
 rootfs: debian-11.1-x86_64-20220510.cgz
-result_root: "/result/igt/group-11/lkp-cml-d02/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3-func/gcc-11/a0e22a91f487957346732c6613eb6bd1b7c72ab1/0"
+result_root: "/result/perf-sanity-tests/clang/lkp-spr-2sp1/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3-bpf/gcc-11/aa2050030d65777596498256acd5f1584421e33a/0"
 scheduler_version: "/lkp/lkp/.src-20230511-163851"
 arch: x86_64
 max_uptime: 1200
 initrd: "/osimage/debian/debian-11.1-x86_64-20220510.cgz"
 bootloader_append:
 - root=/dev/ram0
-- RESULT_ROOT=/result/igt/group-11/lkp-cml-d02/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3-func/gcc-11/a0e22a91f487957346732c6613eb6bd1b7c72ab1/0
-- BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3-func/gcc-11/a0e22a91f487957346732c6613eb6bd1b7c72ab1/vmlinuz-6.3.0-10673-ga0e22a91f487
-- branch=linux-devel/devel-hourly-20230510-093712
-- job=/lkp/jobs/scheduled/lkp-cml-d02/igt-group-11-debian-11.1-x86_64-20220510.cgz-a0e22a91f487957346732c6613eb6bd1b7c72ab1-20230511-41275-qcpzwt-0.yaml
+- RESULT_ROOT=/result/perf-sanity-tests/clang/lkp-spr-2sp1/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3-bpf/gcc-11/aa2050030d65777596498256acd5f1584421e33a/0
+- BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3-bpf/gcc-11/aa2050030d65777596498256acd5f1584421e33a/vmlinuz-6.2.0-rc7-00145-gaa2050030d65
+- branch=internal-devel/devel-hourly-20230509-140013
+- job=/lkp/jobs/scheduled/lkp-spr-2sp1/perf-sanity-tests-clang-debian-11.1-x86_64-20220510.cgz-aa2050030d65777596498256acd5f1584421e33a-20230511-26075-1f9ry8g-0.yaml
 - user=lkp
 - ARCH=x86_64
-- kconfig=x86_64-rhel-8.3-func
-- commit=a0e22a91f487957346732c6613eb6bd1b7c72ab1
+- kconfig=x86_64-rhel-8.3-bpf
+- commit=aa2050030d65777596498256acd5f1584421e33a
 - initcall_debug
 - nmi_watchdog=0
-- acpi_rsdp=0x9b0fe014
+- acpi_rsdp=0x777fe014
 - max_uptime=1200
 - LKP_SERVER=internal-lkp-server
 - nokaslr
@@ -9966,121 +8603,151 @@ bootloader_append:
 - rw
 
 #! runtime status
-modules_initrd: "/pkg/linux/x86_64-rhel-8.3-func/gcc-11/a0e22a91f487957346732c6613eb6bd1b7c72ab1/modules.cgz"
-bm_initrd: "/osimage/deps/debian-11.1-x86_64-20220510.cgz/run-ipconfig_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/lkp_20220513.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/rsync-rootfs_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/igt_20230506.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/igt-x86_64-9e9cd7e6-1_20230506.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/hw_20220526.cgz"
+modules_initrd: "/pkg/linux/x86_64-rhel-8.3-bpf/gcc-11/aa2050030d65777596498256acd5f1584421e33a/modules.cgz"
+linux_perf_initrd: "/pkg/linux/x86_64-rhel-8.3-bpf/gcc-11/aa2050030d65777596498256acd5f1584421e33a/linux-perf.cgz"
+bm_initrd: "/osimage/deps/debian-11.1-x86_64-20220510.cgz/run-ipconfig_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/lkp_20220513.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/rsync-rootfs_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/perf_20230402.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/perf-x86_64-00c7b5f4ddc5-1_20230402.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/hw_20220526.cgz"
 ucode_initrd: "/osimage/ucode/intel-ucode-20230406.cgz"
 lkp_initrd: "/osimage/user/lkp/lkp-x86_64.cgz"
 site: lkp-wsx01
 
-#! /db/releases/20230510202634/lkp-src/include/site/lkp-wsx01
+#! /db/releases/20230509145422/lkp-src/include/site/lkp-wsx01
 LKP_CGI_PORT: 80
 LKP_CIFS_PORT: 139
 oom-killer:
 watchdog:
-last_kernel: 5.9.0-0.bpo.5-amd64
+last_kernel: 5.9.0-2-amd64
 
 #! user overrides
-kernel: "/pkg/linux/x86_64-rhel-8.3-func/gcc-11/a0e22a91f487957346732c6613eb6bd1b7c72ab1/vmlinuz-6.3.0-10673-ga0e22a91f487"
-dequeue_time: 2023-05-11 20:28:27.241200606 +08:00
+kernel: "/pkg/linux/x86_64-rhel-8.3-bpf/gcc-11/aa2050030d65777596498256acd5f1584421e33a/vmlinuz-6.2.0-rc7-00145-gaa2050030d65"
+dequeue_time: 2023-05-11 23:55:12.387108167 +08:00
 
 #! /cephfs/db/releases/20230511154539/lkp-src/include/site/lkp-wsx01
 job_state: finished
-loadavg: 10.49 3.75 1.34 1/309 3751
-start_time: '1683808169'
-end_time: '1683808242'
+loadavg: 1.15 6.42 4.55 1/1674 25164
+start_time: '1683820635'
+end_time: '1683821110'
 version: "/lkp/lkp/.src-20230511-163933:28317e211bd2:0ec390c3f5d2"
 
---vcDeFZ/32v9hGKdR
+--PSbc1JmETRt9H6EQ
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: attachment; filename="reproduce"
 
- "build/tests/core_auth" "--run-subtest" "basic-auth"
- "build/tests/core_auth" "--run-subtest" "getclient-master-drop"
- "build/tests/core_auth" "--run-subtest" "getclient-simple"
- "build/tests/core_auth" "--run-subtest" "many-magics"
- "build/tests/gem_caching" "--run-subtest" "read-writes"
- "build/tests/gem_caching" "--run-subtest" "reads"
- "build/tests/gem_caching" "--run-subtest" "writes"
- "build/tests/gem_madvise" "--run-subtest" "dontneed-after-mmap"
- "build/tests/gem_madvise" "--run-subtest" "dontneed-before-exec"
- "build/tests/gem_madvise" "--run-subtest" "dontneed-before-mmap"
- "build/tests/gem_madvise" "--run-subtest" "dontneed-before-pwrite"
- "build/tests/gem_mmap_gtt" "--run-subtest" "bad-object"
- "build/tests/gem_mmap_gtt" "--run-subtest" "basic"
- "build/tests/gem_mmap_gtt" "--run-subtest" "basic-copy"
- "build/tests/gem_mmap_gtt" "--run-subtest" "basic-read"
- "build/tests/gem_mmap_gtt" "--run-subtest" "basic-read-write"
- "build/tests/gem_mmap_gtt" "--run-subtest" "basic-read-write-distinct"
- "build/tests/gem_mmap_gtt" "--run-subtest" "basic-short"
- "build/tests/gem_mmap_gtt" "--run-subtest" "basic-small-bo"
- "build/tests/gem_mmap_gtt" "--run-subtest" "basic-small-bo-tiledX"
- "build/tests/gem_mmap_gtt" "--run-subtest" "basic-small-bo-tiledY"
- "build/tests/gem_mmap_gtt" "--run-subtest" "basic-small-copy"
- "build/tests/gem_mmap_gtt" "--run-subtest" "basic-small-copy-XY"
- "build/tests/gem_mmap_gtt" "--run-subtest" "basic-small-copy-odd"
- "build/tests/gem_mmap_gtt" "--run-subtest" "basic-wc"
- "build/tests/gem_mmap_gtt" "--run-subtest" "basic-write"
- "build/tests/gem_mmap_gtt" "--run-subtest" "basic-write-cpu-read-gtt"
- "build/tests/gem_mmap_gtt" "--run-subtest" "basic-write-gtt"
- "build/tests/gem_mmap_gtt" "--run-subtest" "basic-write-read"
- "build/tests/gem_mmap_gtt" "--run-subtest" "basic-write-read-distinct"
- "build/tests/gem_mmap_gtt" "--run-subtest" "big-bo"
- "build/tests/gem_mmap_gtt" "--run-subtest" "big-bo-tiledX"
- "build/tests/gem_mmap_gtt" "--run-subtest" "big-bo-tiledY"
- "build/tests/gem_mmap_gtt" "--run-subtest" "big-copy"
- "build/tests/gem_mmap_gtt" "--run-subtest" "big-copy-XY"
- "build/tests/gem_mmap_gtt" "--run-subtest" "big-copy-odd"
- "build/tests/gem_mmap_gtt" "--run-subtest" "close-race"
- "build/tests/gem_mmap_gtt" "--run-subtest" "coherency"
- "build/tests/gem_mmap_gtt" "--run-subtest" "cpuset-basic-small-copy"
- "build/tests/gem_mmap_gtt" "--run-subtest" "cpuset-basic-small-copy-XY"
- "build/tests/gem_mmap_gtt" "--run-subtest" "cpuset-basic-small-copy-odd"
- "build/tests/gem_mmap_gtt" "--run-subtest" "cpuset-big-copy"
- "build/tests/gem_mmap_gtt" "--run-subtest" "cpuset-big-copy-XY"
- "build/tests/gem_mmap_gtt" "--run-subtest" "cpuset-big-copy-odd"
- "build/tests/gem_mmap_gtt" "--run-subtest" "cpuset-medium-copy"
- "build/tests/gem_mmap_gtt" "--run-subtest" "cpuset-medium-copy-XY"
- "build/tests/gem_mmap_gtt" "--run-subtest" "cpuset-medium-copy-odd"
- "build/tests/gem_mmap_gtt" "--run-subtest" "fault-concurrent"
- "build/tests/gem_mmap_gtt" "--run-subtest" "fault-concurrent-X"
- "build/tests/gem_mmap_gtt" "--run-subtest" "fault-concurrent-Y"
- "build/tests/gem_mmap_gtt" "--run-subtest" "flink-race"
- "build/tests/gem_mmap_gtt" "--run-subtest" "hang"
- "build/tests/gem_mmap_gtt" "--run-subtest" "hang-busy"
- "build/tests/gem_mmap_gtt" "--run-subtest" "hang-user"
- "build/tests/gem_mmap_gtt" "--run-subtest" "isolation"
- "build/tests/gem_mmap_gtt" "--run-subtest" "medium-copy"
- "build/tests/gem_mmap_gtt" "--run-subtest" "medium-copy-XY"
- "build/tests/gem_mmap_gtt" "--run-subtest" "medium-copy-odd"
- "build/tests/gem_mmap_gtt" "--run-subtest" "pf-nonblock"
- "build/tests/gem_mmap_gtt" "--run-subtest" "ptrace"
- "build/tests/gem_mmap_gtt" "--run-subtest" "zero-extend"
- "build/tests/gem_workarounds" "--run-subtest" "basic-read"
- "build/tests/gem_workarounds" "--run-subtest" "basic-read-context"
- "build/tests/gem_workarounds" "--run-subtest" "basic-read-fd"
- "build/tests/gem_workarounds" "--run-subtest" "reset"
- "build/tests/gem_workarounds" "--run-subtest" "reset-context"
- "build/tests/gem_workarounds" "--run-subtest" "reset-fd"
- "build/tests/kms_chamelium_color" "--run-subtest" "ctm-0-25"
- "build/tests/kms_chamelium_color" "--run-subtest" "ctm-0-50"
- "build/tests/kms_chamelium_color" "--run-subtest" "ctm-0-75"
- "build/tests/kms_chamelium_color" "--run-subtest" "ctm-blue-to-red"
- "build/tests/kms_chamelium_color" "--run-subtest" "ctm-green-to-red"
- "build/tests/kms_chamelium_color" "--run-subtest" "ctm-limited-range"
- "build/tests/kms_chamelium_color" "--run-subtest" "ctm-max"
- "build/tests/kms_chamelium_color" "--run-subtest" "ctm-negative"
- "build/tests/kms_chamelium_color" "--run-subtest" "ctm-red-to-blue"
- "build/tests/kms_chamelium_color" "--run-subtest" "degamma"
- "build/tests/kms_chamelium_color" "--run-subtest" "gamma"
- "build/tests/vc4/vc4_perfmon" "--run-subtest" "create-perfmon-0"
- "build/tests/vc4/vc4_perfmon" "--run-subtest" "create-perfmon-exceed"
- "build/tests/vc4/vc4_perfmon" "--run-subtest" "create-perfmon-invalid-events"
- "build/tests/vc4/vc4_perfmon" "--run-subtest" "create-single-perfmon"
- "build/tests/vc4/vc4_perfmon" "--run-subtest" "create-two-perfmon"
- "build/tests/vc4/vc4_perfmon" "--run-subtest" "destroy-invalid-perfmon"
- "build/tests/vc4/vc4_perfmon" "--run-subtest" "destroy-valid-perfmon"
- "build/tests/vc4/vc4_perfmon" "--run-subtest" "get-values-invalid-perfmon"
- "build/tests/vc4/vc4_perfmon" "--run-subtest" "get-values-invalid-pointer"
- "build/tests/vc4/vc4_perfmon" "--run-subtest" "get-values-valid-perfmon"
+make -j224 WERROR=0 LIBCLANGLLVM=1 CXXFLAGS+=-Wno-class-memaccess EXTRA_CXXFLAGS+=-Wno-class-memaccess ARCH= EXTRA_CFLAGS=-fno-omit-frame-pointer -fsanitize=undefined -fsanitize=address -Wno-array-bounds -C /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf
+cd /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf
+mkdir -p /pkg
+mkdir -p /kbuild/obj/consumer/x86_64-rhel-8.3-bpf
+cp /pkg/linux/x86_64-rhel-8.3-bpf/gcc-11/aa2050030d65777596498256acd5f1584421e33a/vmlinux.xz /tmp
+unxz -k /tmp/vmlinux.xz
+cp /tmp/vmlinux /kbuild/obj/consumer/x86_64-rhel-8.3-bpf
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 1
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 2
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 3
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 4
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 5
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 6
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 7
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 8
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 9
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 10
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 11
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 12
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 13
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 14
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 15
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 16
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 17
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 18
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 19
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 20
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 21
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 22
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 23
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 24
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 25
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 26
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 27
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 28
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 29
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 30
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 31
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 32
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 33
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 34
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 35
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 36
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 37
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 38
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 39
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 41
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 43
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 44
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 45
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 46
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 47
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 48
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 49
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 50
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 51
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 52
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 53
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 54
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 55
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 56
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 57
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 58
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 59
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 60
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 61
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 62
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 63
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 64
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 65
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 66
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 67
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 68
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 69
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 70
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 71
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 72
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 73
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 74
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 75
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 76
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 77
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 78
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 79
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 80
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 81
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 82
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 83
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 84
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 85
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 86
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 87
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 88
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 89
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 91
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 93
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 94
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 95
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 96
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 97
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 98
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 99
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 100
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 101
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 102
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 103
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 104
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 105
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 106
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 107
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 108
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 109
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 110
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 111
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 112
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 113
+sudo /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-aa2050030d65777596498256acd5f1584421e33a/tools/perf/perf test 114
 
---vcDeFZ/32v9hGKdR--
+--PSbc1JmETRt9H6EQ--
