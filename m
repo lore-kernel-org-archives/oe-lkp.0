@@ -1,20 +1,20 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCD8C1F934
-	for <oe-lkp@lists.linux.dev>; Tue, 23 May 2023 19:12:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 734AFC433D2;
-	Tue, 23 May 2023 19:12:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C0F71F934
+	for <oe-lkp@lists.linux.dev>; Tue, 23 May 2023 19:35:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A7A3C433D2;
+	Tue, 23 May 2023 19:35:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1684869174;
-	bh=e2+88Fpdes7sDNr1lFo4AJXADvwOPDkDtwtQu+Fn7KI=;
-	h=Date:Cc:Subject:From:To:References:In-Reply-To:From;
-	b=b2QDMZT75fspvpIHJtMwx9QUeWemKM9oXLhFLuLu1clAf4QyCX3qnBEKSPNynYSkm
-	 Qr1B67ra1/wIb7+VxQpSPCHwkBD36PQ0cohLrYjUKdI/4CMh7W7RHnJh/egaFhJd8Z
-	 4RHyIsIzuLStIRJC4yK/26NewusGaRaIO+ZTR9LoU24VEoiKhfW5PMjg6DqklUls49
-	 5GK1fDtWjST3rRfTPbI13po7WIPuncvE/I5dy0oNVhqe89gwRITeNtt5aCHJMfUVDJ
-	 0qyoXbed7BFafxuZk5FARJ2xN8wZIMiiK5lylPCpdTcorusPpk7Bq8pY/7g+txatVb
-	 3TAc3gJrnO9PQ==
+	s=k20201202; t=1684870543;
+	bh=8UAWbMOvWVlLXA/9nZRNOtM83fge0RgtLqk1AKszgiM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Eox9NlFKpx9DQ9qZDiOfGD014YFndCguOTBgs14k7GKu4oV60R34IIZLhS47P1Ck6
+	 gENWYYFrAp3kSW2ANucrEt3EDJoqMOVt+JvP+E6rTzSWmnMa3kTSMoPYCnv3M9xDmx
+	 9nub8BSbW4ee6aFGxCnv5c0GS80dtWlzhJowqG3pJv2FeZkt+fXC+g6RyQufhJnqwD
+	 lxi8AGG3Isbjgkg7jfZ4ytABoFZiNB42a4MoD6uPWiBNA0EiZIZQKXka3WwWAfFRIW
+	 +RoEZO+KUvfspc8Vq18h+ZmqNY1D1BQteFRt1VumM6RY7/wbiJ8w/6kZk0WgFNxjdb
+	 qpIXkAhnOLJWA==
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -23,79 +23,59 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain; charset=UTF-8
-Date: Tue, 23 May 2023 22:12:49 +0300
-Message-Id: <CSTW9UX4ERDZ.VBD1QIWLBM75@suppilovahvero>
-Cc: <jsnitsel@redhat.com>, <hdegoede@redhat.com>, <oe-lkp@lists.linux.dev>,
- <lkp@intel.com>, <peter.ujfalusi@linux.intel.com>, <peterz@infradead.org>,
- <linux@mniewoehner.de>, <linux-integrity@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, <l.sanfilippo@kunbus.com>,
- <lukas@wunner.de>, <p.rosenberger@kunbus.com>
-Subject: Re: [PATCH 1/2] tpm, tpm_tis: Handle interrupt storm
+Date: Tue, 23 May 2023 22:35:38 +0300
+Message-Id: <CSTWRBU7DGSV.3490IUZBBV5P7@suppilovahvero>
 From: "Jarkko Sakkinen" <jarkko@kernel.org>
-To: "Jarkko Sakkinen" <jarkko@kernel.org>, "Lino Sanfilippo"
- <LinoSanfilippo@gmx.de>, <peterhuewe@gmx.de>, <jgg@ziepe.ca>
+To: =?utf-8?q?P=C3=A9ter_Ujfalusi?= <peter.ujfalusi@linux.intel.com>, "Lino
+ Sanfilippo" <LinoSanfilippo@gmx.de>, <peterhuewe@gmx.de>, <jgg@ziepe.ca>
+Cc: <jsnitsel@redhat.com>, <hdegoede@redhat.com>, <oe-lkp@lists.linux.dev>,
+ <lkp@intel.com>, <peterz@infradead.org>, <linux@mniewoehner.de>,
+ <linux-integrity@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+ <l.sanfilippo@kunbus.com>, <lukas@wunner.de>, <p.rosenberger@kunbus.com>
+Subject: Re: [PATCH 1/2] tpm, tpm_tis: Handle interrupt storm
 X-Mailer: aerc 0.14.0
 References: <20230522143105.8617-1-LinoSanfilippo@gmx.de>
- <CSTVVFNKUVJW.P69FKI6IF3ZN@suppilovahvero>
-In-Reply-To: <CSTVVFNKUVJW.P69FKI6IF3ZN@suppilovahvero>
+ <c772bcdf-8256-2682-857c-9a6d344606d0@linux.intel.com>
+In-Reply-To: <c772bcdf-8256-2682-857c-9a6d344606d0@linux.intel.com>
 
-On Tue May 23, 2023 at 9:53 PM EEST, Jarkko Sakkinen wrote:
-> On Mon May 22, 2023 at 5:31 PM EEST, Lino Sanfilippo wrote:
+On Tue May 23, 2023 at 9:48 AM EEST, P=C3=A9ter Ujfalusi wrote:
+>
+>
+> On 22/05/2023 17:31, Lino Sanfilippo wrote:
 > > From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> >
+> >=20
 > > Commit e644b2f498d2 ("tpm, tpm_tis: Enable interrupt test") enabled
 > > interrupts instead of polling on all capable TPMs. Unfortunately, on so=
 me
 > > products the interrupt line is either never asserted or never deasserte=
 d.
-> >
+> >=20
 > > The former causes interrupt timeouts and is detected by
 > > tpm_tis_core_init(). The latter results in interrupt storms.
-> >
+> >=20
 > > Recent reports concern the Lenovo ThinkStation P360 Tiny, Lenovo ThinkP=
 ad
 > > L490 and Inspur NF5180M6:
-> >
+> >=20
 > > https://lore.kernel.org/linux-integrity/20230511005403.24689-1-jsnitsel=
 @redhat.com/
 > > https://lore.kernel.org/linux-integrity/d80b180a569a9f068d3a2614f062cfa=
 3a78af5a6.camel@kernel.org/
-> >
+> >=20
 > > The current approach to avoid those storms is to disable interrupts by
 > > adding a DMI quirk for the concerned device.
-> >
-> > However this is a maintenance burden in the long run, so use a generic
-> > approach:
 >
-> I'm trying to comprehend how you evaluate, how big maintenance burden
-> this would be. Adding even a few dozen table entries is not a
-> maintenance burden.
->
-> On the other hand any new functionality is objectively a maintanance
-> burden of some measure (applies to any functionality). So how do we know
-> that taking this change is less of a maintenance burden than just add
-> new table entries, as they come up?
->
-> > Detect an interrupt storm by counting the number of unhandled interrupt=
-s
-> > within a 10 ms time interval. In case that more than 1000 were unhandle=
-d
-> > deactivate interrupts, deregister the handler and fall back to polling.
->
-> I know it can be sometimes hard to evaluate but can you try to explain
-> how you came up to the 10 ms sampling period and 1000 interrupt
-> threshold? I just don't like abritrary numbers.
+> This looked promising, however it looks like the UPX-i11 needs the DMI
+> quirk.
 
-Also here I wonder how you came up with this computational model. This
-is not same as saying it is wrong. There's just whole stack of options.
+My take is this:
 
-Out of top of my head you could e.g. window average the duration between
-IRQs. When the average goes beyond threshold, then you shutdown
-interrupts.
+1. Keep calmd and add DMI quirks (for some time).
+2. Let's reconsider if this becomes a too pressuring issue.
+3. If there is need for IRQ detection, let's pick a parameter that
+   would be also *intuitive* tuning parameter [1].
 
-The pro I would see in this that it is much easier intuitively discuss
-how much there should be time in-between interrupts that the kernel
-handles it, than how many IRQs you can stack into time interval, which
-blows my head tbh.
+[1] https://lore.kernel.org/linux-integrity/CSTW9UX4ERDZ.VBD1QIWLBM75@suppi=
+lovahvero/
 
 BR, Jarkko
