@@ -1,18 +1,18 @@
-Received: from bmailout2.hostsharing.net (bmailout2.hostsharing.net [83.223.78.240])
+Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [176.9.242.62])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCA141F922
-	for <oe-lkp@lists.linux.dev>; Tue, 23 May 2023 15:19:58 +0000 (UTC)
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A28931F922
+	for <oe-lkp@lists.linux.dev>; Tue, 23 May 2023 15:24:39 +0000 (UTC)
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
 	 client-signature RSA-PSS (4096 bits) client-digest SHA256)
 	(Client CN "*.hostsharing.net", Issuer "RapidSSL Global TLS RSA4096 SHA256 2022 CA1" (verified OK))
-	by bmailout2.hostsharing.net (Postfix) with ESMTPS id 59E1E280138CF;
-	Tue, 23 May 2023 17:19:56 +0200 (CEST)
+	by bmailout3.hostsharing.net (Postfix) with ESMTPS id 4471A100D585B;
+	Tue, 23 May 2023 17:16:42 +0200 (CEST)
 Received: by h08.hostsharing.net (Postfix, from userid 100393)
-	id 4A91127FF31; Tue, 23 May 2023 17:19:56 +0200 (CEST)
-Date: Tue, 23 May 2023 17:19:56 +0200
+	id 157B3261AB8; Tue, 23 May 2023 17:16:42 +0200 (CEST)
+Date: Tue, 23 May 2023 17:16:42 +0200
 From: Lukas Wunner <lukas@wunner.de>
 To: =?iso-8859-1?Q?P=E9ter?= Ujfalusi <peter.ujfalusi@linux.intel.com>
 Cc: Lino Sanfilippo <LinoSanfilippo@gmx.de>, peterhuewe@gmx.de,
@@ -22,12 +22,11 @@ Cc: Lino Sanfilippo <LinoSanfilippo@gmx.de>, peterhuewe@gmx.de,
 	linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
 	l.sanfilippo@kunbus.com, p.rosenberger@kunbus.com
 Subject: Re: [PATCH 1/2] tpm, tpm_tis: Handle interrupt storm
-Message-ID: <20230523151956.GB31298@wunner.de>
+Message-ID: <20230523151642.GA31298@wunner.de>
 References: <20230522143105.8617-1-LinoSanfilippo@gmx.de>
  <c772bcdf-8256-2682-857c-9a6d344606d0@linux.intel.com>
  <20230523074443.GA21236@wunner.de>
  <98f7dc1a-6bed-a66f-650e-10caeb7d0bca@linux.intel.com>
- <4a94b44d-1b51-2656-786e-07bf97063c3f@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -37,25 +36,86 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <4a94b44d-1b51-2656-786e-07bf97063c3f@linux.intel.com>
+In-Reply-To: <98f7dc1a-6bed-a66f-650e-10caeb7d0bca@linux.intel.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Tue, May 23, 2023 at 12:35:09PM +0300, Péter Ujfalusi wrote:
-> In some boot I don't get a print at all and reboot takes
-> 2 minutes (tpm timeout), or as it happened now:
+On Tue, May 23, 2023 at 12:14:28PM +0300, Péter Ujfalusi wrote:
+> On 23/05/2023 10:44, Lukas Wunner wrote:
+> > On Tue, May 23, 2023 at 09:48:23AM +0300, Péter Ujfalusi wrote:
+> >> On 22/05/2023 17:31, Lino Sanfilippo wrote:
+> > [...]
+> >> This looked promising, however it looks like the UPX-i11 needs the DMI
+> >> quirk.
+> > 
+> > Why is that?  Is there a fundamental problem with the patch or is it
+> > a specific issue with that device?
 > 
-> # dmesg | grep tpm
-> [    4.306999] tpm_tis MSFT0101:00: 2.0 TPM (device-id 0x1B, rev-id 22)
-> [    4.325868] [PETER] tpm_tis_process_unhandled_interrupt: unhandled_irqs: 1
-> [    4.325908] [PETER] tpm_tis_process_unhandled_interrupt: unhandled_irqs: 2
-> ...
-> [    4.329579] [PETER] tpm_tis_process_unhandled_interrupt: unhandled_irqs: 91
-> [    5.129056] [PETER] tpm_tis_process_unhandled_interrupt: unhandled_irqs: 1
-> ...
-> [    5.129561] [PETER] tpm_tis_process_unhandled_interrupt: unhandled_irqs: 10
+> The flood is not detected (if there is a flood at all), interrupt stops
+> working after about 200 interrupts - in the latest boot at 118th.
 
-This looks like the interrupt line may be floating and any interrupts
-you get are probably caused by induced static or something.
+You've got a variant of the "never asserted interrupt".
+
+That condition is currently tested only once on probe in tpm_tis_core_init().
+The solution would be to disable interrupts whenever they're not (or no
+longer asserted).  
+
+However, that's a distinct issue from the one addressed by the present
+patch, which deals with a "never *de*asserted interrupt".
+
+
+> >>> +	dev_err(&chip->dev, HW_ERR
+> >>> +		"TPM interrupt storm detected, polling instead\n");
+> >>
+> >> Should this be dev_warn or even dev_info level?
+> > 
+> > The corresponding message emitted in tpm_tis_core_init() for
+> > an interrupt that's *never* asserted uses dev_err(), so using
+> > dev_err() here as well serves consistency:
+> > 
+> > 	dev_err(&chip->dev, FW_BUG
+> > 		"TPM interrupt not working, polling instead\n");
+> > 
+> > That way the same severity is used both for the never asserted and
+> > the never deasserted interrupt case.
+> 
+> Oh, OK.
+> Is there anything the user can do to have a ERROR less boot?
+
+You're right that the user can't do anything about it and that
+toning the message down to KERN_WARN or even KERN_NOTICE severity
+may be appropriate.
+
+However the above-quoted message for the never asserted interrupt
+in tpm_tis_core_init() should then likewise be toned down to the
+same severity.
+
+I'm wondering why that message uses FW_BUG.  That doesn't make any
+sense to me.  It's typically not a firmware bug, but a hardware issue,
+e.g. an interrupt pin may erroneously not be connected or may be
+connected to ground.  Lino used HW_ERR, which seems more appropriate
+to me.
+
+
+> >>>  	rc = tpm_tis_write32(priv, TPM_INT_STATUS(priv->locality), interrupt);
+> >>>  	tpm_tis_relinquish_locality(chip, 0);
+> >>>  	if (rc < 0)
+> >>> -		return IRQ_NONE;
+> >>> +		goto unhandled;
+> >>
+> >> This is more like an error than just unhandled IRQ. Yes, it was ignored,
+> >> probably because it is common?
+> > 
+> > The interrupt may be shared and then it's not an error.
+> 
+> but this is tpm_tis_write32() failing, no? If it is shared interrupt and
+> we return IRQ_HANDLED unconditionally then I think the core will think
+> that the interrupt was for this device and it was handled.
+
+No.  The IRQ_HANDLED versus IRQ_NONE return values are merely used
+for book-keeping of spurious interrupts.  If IRQ_HANDLED is returned,
+the other handlers will still be invoked.  It is not discernible whether
+a shared interrupt was asserted by a single device or by multiple devices,
+so all handlers need to be called.
 
 Thanks,
 
