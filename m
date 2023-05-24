@@ -1,152 +1,78 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60FBFED5
-	for <oe-lkp@lists.linux.dev>; Tue, 23 May 2023 22:32:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1684881175;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=CfRD3GZSe/po2Yvx+fZzXZZZfdk+kXJVJcq8DZsV4Kg=;
-	b=SWeMM9uIZ87+OfcHXjxLW3sTk0Oivf6NwKwZuiayZLoQsCsZjWErIBrBgyFpc3x3LULjKf
-	SFcoe5Y/tlGP1geVYsU5+wMZgX9QcN5mzmxwniXyGmkHYAi8srjxcgbs6EELuQHRvimoSV
-	De+WNDMnCGrpWVomR/lvV8u5dES4RXY=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-269-mSY-E4UePbSCudRsYnUVtA-1; Tue, 23 May 2023 18:32:53 -0400
-X-MC-Unique: mSY-E4UePbSCudRsYnUVtA-1
-Received: by mail-qv1-f69.google.com with SMTP id 6a1803df08f44-624b4176bf7so1191386d6.1
-        for <oe-lkp@lists.linux.dev>; Tue, 23 May 2023 15:32:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1684881172; x=1687473172;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=CfRD3GZSe/po2Yvx+fZzXZZZfdk+kXJVJcq8DZsV4Kg=;
-        b=a0y+8DwzeNtvWiz45/THhRabzCyX5xbzCfUB7qbDbJ855P0OAB7A0bcSg39CP0MupM
-         bN5ul+ZK4MdB4pHdexzGT8a4Xk/oMmfRd/G8+CYtXmJL14hck4nw4HE3XUb/2+4I8oFf
-         4WMyciNoJzBrp75LWGHmZf79o3Pr5k7uXlD8ddO8rqqRZ7eTdNR5CMQ4KF0wlNc9VLpf
-         WpI9IZcJ9gvi5WS0yDQOkEJN67sKtHFtS2WOrL4jc8ANSbyv4DjdTIfXzBCeB8lcV0AP
-         rH1nCbwEfmB0XKLnADHUM1tHbX8i0DBb04gzDXtZNETGFHj/BV43Bu5hkdX4T+QGhO1q
-         LBpQ==
-X-Gm-Message-State: AC+VfDxxaB6fDF/TQQ2QRBMFdctme5oQBHd+5EaiGMrDcrWrKEe90Q6b
-	5KxmLFYTcncVs3vmxMezQ2zcO5Tr5MWDGQx9ify4KI8rGx5dr8IuKvzhos/74U6vPpypZ1/J8tW
-	BWxSUmsQT2Wrj7sAg
-X-Received: by 2002:a05:6214:1251:b0:623:690c:3cd7 with SMTP id r17-20020a056214125100b00623690c3cd7mr26478324qvv.47.1684881172544;
-        Tue, 23 May 2023 15:32:52 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ6pYBvrUPTIq4QFiKkKAkrD+OA0TF1qdjuEuroSHzONcos03Kg+SYc3DmzKyVVjvCUN1HrLag==
-X-Received: by 2002:a05:6214:1251:b0:623:690c:3cd7 with SMTP id r17-20020a056214125100b00623690c3cd7mr26478302qvv.47.1684881172259;
-        Tue, 23 May 2023 15:32:52 -0700 (PDT)
-Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
-        by smtp.gmail.com with ESMTPSA id v16-20020a0ccd90000000b00604ee171d99sm3043919qvm.106.2023.05.23.15.32.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 May 2023 15:32:51 -0700 (PDT)
-Date: Tue, 23 May 2023 15:32:50 -0700
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: Jarkko Sakkinen <jarkko@kernel.org>
-Cc: Lino Sanfilippo <LinoSanfilippo@gmx.de>, peterhuewe@gmx.de, 
-	jgg@ziepe.ca, hdegoede@redhat.com, oe-lkp@lists.linux.dev, lkp@intel.com, 
-	peter.ujfalusi@linux.intel.com, peterz@infradead.org, linux@mniewoehner.de, 
-	linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org, l.sanfilippo@kunbus.com, 
-	lukas@wunner.de, p.rosenberger@kunbus.com
-Subject: Re: [PATCH 1/2] tpm, tpm_tis: Handle interrupt storm
-Message-ID: <kxb36qqgtnyqed4cgd5fpvmwway2v4watcfg3vdj3okm76scsy@prcbk5pjv4gk>
-References: <20230522143105.8617-1-LinoSanfilippo@gmx.de>
- <CSTVVFNKUVJW.P69FKI6IF3ZN@suppilovahvero>
- <CSTW9UX4ERDZ.VBD1QIWLBM75@suppilovahvero>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B403ED5
+	for <oe-lkp@lists.linux.dev>; Wed, 24 May 2023 01:21:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08409C433EF;
+	Wed, 24 May 2023 01:21:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1684891266;
+	bh=AVTc4E3Ttt3nT4KFEok8KBW7NMbqTnBLOY9relIrJKo=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=M4i5M1VwI4Lgjzwfp5Y1UbSlOb9usXVqUWfMQa651Xa2LhUcbjQiuIlt3ZMGAXLSe
+	 qTean5+w4TP/GU9s0zi8FJABCj9Cqn2EC75B3b5kAN5zvTeIM+E0zMijKypSu5r/5y
+	 9pHxXdHrvPuCGStuzpqD8wSkW/Qwf6/lrPasISai/pvKUBIdN7I9B2QkbLqeWaVM2h
+	 rONOh6CFR446n3se9ODacUXPV2uwYgWuoobGKYrkMcygpBbBA/DGDjwmgz0PHddpPf
+	 fdxVBDJ/AJJ15oH07qbns+o4acujOU9HEZUEEodJg75tOHNfU/p/NhA7PGPrOlh888
+	 PSWUSHl8t9nFw==
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-In-Reply-To: <CSTW9UX4ERDZ.VBD1QIWLBM75@suppilovahvero>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Wed, 24 May 2023 04:21:01 +0300
+Message-Id: <CSU43S5BY69V.23N6V1T28OEBY@suppilovahvero>
+From: "Jarkko Sakkinen" <jarkko@kernel.org>
+To: "Jerry Snitselaar" <jsnitsel@redhat.com>
+Cc: "Lino Sanfilippo" <LinoSanfilippo@gmx.de>, <peterhuewe@gmx.de>,
+ <jgg@ziepe.ca>, <hdegoede@redhat.com>, <oe-lkp@lists.linux.dev>,
+ <lkp@intel.com>, <peter.ujfalusi@linux.intel.com>, <peterz@infradead.org>,
+ <linux@mniewoehner.de>, <linux-integrity@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>, <l.sanfilippo@kunbus.com>,
+ <lukas@wunner.de>, <p.rosenberger@kunbus.com>
+Subject: Re: [PATCH 1/2] tpm, tpm_tis: Handle interrupt storm
+X-Mailer: aerc 0.14.0
+References: <20230522143105.8617-1-LinoSanfilippo@gmx.de>
+ <CSTVVFNKUVJW.P69FKI6IF3ZN@suppilovahvero>
+ <CSTW9UX4ERDZ.VBD1QIWLBM75@suppilovahvero>
+ <kxb36qqgtnyqed4cgd5fpvmwway2v4watcfg3vdj3okm76scsy@prcbk5pjv4gk>
+In-Reply-To: <kxb36qqgtnyqed4cgd5fpvmwway2v4watcfg3vdj3okm76scsy@prcbk5pjv4gk>
 
-On Tue, May 23, 2023 at 10:12:49PM +0300, Jarkko Sakkinen wrote:
-> On Tue May 23, 2023 at 9:53 PM EEST, Jarkko Sakkinen wrote:
-> > On Mon May 22, 2023 at 5:31 PM EEST, Lino Sanfilippo wrote:
-> > > From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> > >
-> > > Commit e644b2f498d2 ("tpm, tpm_tis: Enable interrupt test") enabled
-> > > interrupts instead of polling on all capable TPMs. Unfortunately, on some
-> > > products the interrupt line is either never asserted or never deasserted.
-> > >
-> > > The former causes interrupt timeouts and is detected by
-> > > tpm_tis_core_init(). The latter results in interrupt storms.
-> > >
-> > > Recent reports concern the Lenovo ThinkStation P360 Tiny, Lenovo ThinkPad
-> > > L490 and Inspur NF5180M6:
-> > >
-> > > https://lore.kernel.org/linux-integrity/20230511005403.24689-1-jsnitsel@redhat.com/
-> > > https://lore.kernel.org/linux-integrity/d80b180a569a9f068d3a2614f062cfa3a78af5a6.camel@kernel.org/
-> > >
-> > > The current approach to avoid those storms is to disable interrupts by
-> > > adding a DMI quirk for the concerned device.
-> > >
-> > > However this is a maintenance burden in the long run, so use a generic
-> > > approach:
-> >
-> > I'm trying to comprehend how you evaluate, how big maintenance burden
-> > this would be. Adding even a few dozen table entries is not a
-> > maintenance burden.
+On Wed May 24, 2023 at 1:32 AM EEST, Jerry Snitselaar wrote:
+> I do worry about how many cases will be reported once 6.4 is released,
+> and this eventually makes its way into distributions. In either case
+> the dmi table will need to be maintained. The UPX-11i case is a
+> different issue, and IIRC the L490 it needed a DMI entry, because
+> trying to catch the irq storm wasn't solving the issue there. I
+> imagine other odd cases will be popping up as well.
+>
+> So far we have 2 irq storm reports with peterz's P360 Tiny, and I
+> guess that Inspur system reported by the kernel test robot. Then there
+> is whatever is going on with Peter Ujfalusi's UPX-11i.
 
-I do worry about how many cases will be reported once 6.4 is released,
-and this eventually makes its way into distributions. In either case
-the dmi table will need to be maintained. The UPX-11i case is a
-different issue, and IIRC the L490 it needed a DMI entry, because
-trying to catch the irq storm wasn't solving the issue there. I
-imagine other odd cases will be popping up as well.
+Yeah, I agree that we need both in order to reach stability.
 
-So far we have 2 irq storm reports with peterz's P360 Tiny, and I
-guess that Inspur system reported by the kernel test robot. Then there
-is whatever is going on with Peter Ujfalusi's UPX-11i.
+> > Out of top of my head you could e.g. window average the duration betwee=
+n
+> > IRQs. When the average goes beyond threshold, then you shutdown
+> > interrupts.
+>
+> Just to make sure I have it clear in my head, you mean when the
+> average is shorter than the threshold duration between interrupts,
+> yes? My brain wants to read 'When the average goes beyond threshold'
+> as 'threshold < average'.
+>
+> Does the check need to be a rolling window like 1/2 currently has? I
+> expect that if the problem exists it will be noticed in the first
+> window checked. I think what I originally tried was to check over some
+> interval from when the handler first ran, disable interrupts if
+> needed, and then skip the check from then on when the handler ran.
 
-> >
-> > On the other hand any new functionality is objectively a maintanance
-> > burden of some measure (applies to any functionality). So how do we know
-> > that taking this change is less of a maintenance burden than just add
-> > new table entries, as they come up?
-> >
-> > > Detect an interrupt storm by counting the number of unhandled interrupts
-> > > within a 10 ms time interval. In case that more than 1000 were unhandled
-> > > deactivate interrupts, deregister the handler and fall back to polling.
-> >
-> > I know it can be sometimes hard to evaluate but can you try to explain
-> > how you came up to the 10 ms sampling period and 1000 interrupt
-> > threshold? I just don't like abritrary numbers.
-> 
-> Also here I wonder how you came up with this computational model. This
-> is not same as saying it is wrong. There's just whole stack of options.
-> 
-> Out of top of my head you could e.g. window average the duration between
-> IRQs. When the average goes beyond threshold, then you shutdown
-> interrupts.
+How about just: average' =3D (average / (then - now)) /2
 
-Just to make sure I have it clear in my head, you mean when the
-average is shorter than the threshold duration between interrupts,
-yes? My brain wants to read 'When the average goes beyond threshold'
-as 'threshold < average'.
+And if average' > thershold, disable interrupts.
 
-Does the check need to be a rolling window like 1/2 currently has? I
-expect that if the problem exists it will be noticed in the first
-window checked. I think what I originally tried was to check over some
-interval from when the handler first ran, disable interrupts if
-needed, and then skip the check from then on when the handler ran.
-
-Regards,
-Jerry
-
-> 
-> The pro I would see in this that it is much easier intuitively discuss
-> how much there should be time in-between interrupts that the kernel
-> handles it, than how many IRQs you can stack into time interval, which
-> blows my head tbh.
-> 
-> BR, Jarkko
-
+BR, Jarkko
