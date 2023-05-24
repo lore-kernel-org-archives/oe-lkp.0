@@ -1,200 +1,93 @@
-Received: from out-14.mta1.migadu.com (out-14.mta1.migadu.com [95.215.58.14])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C5E217ABB
-	for <oe-lkp@lists.linux.dev>; Wed, 24 May 2023 11:56:42 +0000 (UTC)
-Message-ID: <bfb36563-fac9-4c84-96db-87dd28892088@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1684929400;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=uMsexn7FypO2MxTw7kOkZKMP6/q4BmJjDQCpRviZwTk=;
-	b=WiHpg5RNA4GTwK2SDkHLvlaHzfo3/HpO34N4XoPdsW0f4IrTrk2Utap9fkZOHfoZnzWEUM
-	0CNPosbjasx5hfvCkRzmQcfaYfYXeLk2MywMuAOKAjaRsOv+4Vn4L3rjgUgWuewCVawufe
-	gIoLMAnY89tKHEm9SxQWeeC/G6kpSrM=
-Date: Wed, 24 May 2023 19:56:30 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3531C19504
+	for <oe-lkp@lists.linux.dev>; Wed, 24 May 2023 15:30:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2A74C433D2;
+	Wed, 24 May 2023 15:30:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1684942232;
+	bh=apv7fp2JStfK/1O9ZPoYlUJJmLzvR6yZ/dFs2Sq5Cl8=;
+	h=Date:Cc:Subject:From:To:References:In-Reply-To:From;
+	b=bKSS11QXhFSdLKI+N5lXBXvtHnz5/ib84JrDNKJoClE//sLm1NMoXl9VeucC2+OAX
+	 2kVfV8zfWHHSlkz4qvziDZfUkYJqEVrA7Gr5AXz61O56wvgepoA+ban1Du68+koiae
+	 wF4C0/UTAuxlnKVwSZ5l77Y7T8lu6uQir1aMtRy592pW8k9NsbFljp7/52ZXedO+F2
+	 IV0aBm4u1muOXGf+D27FD1n2USc7u4pkr6whlm4SgmlG4SpshaiwSf5dIBxNaRBNhy
+	 fvj7vB9OpEuybJ9J+FnkoKBDITr0CavIEXUVDYEMFa+O96GB7LaXiI2dVNxfOJr+Ai
+	 9STys3pU031dw==
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Subject: Re: [linus:master] [mm] f95bdb700b: stress-ng.ramfs.ops_per_sec
- -88.8% regression
-Content-Language: en-US
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Qi Zheng <qi.zheng@linux.dev>
-To: RCU <rcu@vger.kernel.org>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
- Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>,
- Kirill Tkhai <tkhai@ya.ru>, Roman Gushchin <roman.gushchin@linux.dev>,
- =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
- David Hildenbrand <david@redhat.com>, Davidlohr Bueso <dave@stgolabs.net>,
- Johannes Weiner <hannes@cmpxchg.org>, Michal Hocko <mhocko@kernel.org>,
- Muchun Song <muchun.song@linux.dev>, "Paul E. McKenney"
- <paulmck@kernel.org>, Shakeel Butt <shakeelb@google.com>,
- Yang Shi <shy828301@gmail.com>, linux-mm@kvack.org, ying.huang@intel.com,
- feng.tang@intel.com, fengwei.yin@intel.com, Yujie Liu <yujie.liu@intel.com>
-References: <202305230837.db2c233f-yujie.liu@intel.com>
- <eba38fce-2454-d7a4-10ef-240b4686f23d@linux.dev>
- <ZG29ULGNJdErnatI@yujie-X299>
- <896bbb09-d400-ec73-ba3a-b64c6e9bbe46@linux.dev>
- <e5fb8b34-c1ad-92e0-e7e5-f7ed1605dbc6@linux.dev>
-In-Reply-To: <e5fb8b34-c1ad-92e0-e7e5-f7ed1605dbc6@linux.dev>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Wed, 24 May 2023 18:30:27 +0300
+Message-Id: <CSUM65JDEX5D.8GL20PUI2XDV@suppilovahvero>
+Cc: <jsnitsel@redhat.com>, <hdegoede@redhat.com>, <oe-lkp@lists.linux.dev>,
+ <lkp@intel.com>, <peter.ujfalusi@linux.intel.com>, <peterz@infradead.org>,
+ <linux@mniewoehner.de>, <linux-integrity@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>, <l.sanfilippo@kunbus.com>,
+ <lukas@wunner.de>, <p.rosenberger@kunbus.com>
+Subject: Re: [PATCH 1/2] tpm, tpm_tis: Handle interrupt storm
+From: "Jarkko Sakkinen" <jarkko@kernel.org>
+To: "Jarkko Sakkinen" <jarkko@kernel.org>, "Lino Sanfilippo"
+ <LinoSanfilippo@gmx.de>, <peterhuewe@gmx.de>, <jgg@ziepe.ca>
+X-Mailer: aerc 0.14.0
+References: <20230522143105.8617-1-LinoSanfilippo@gmx.de>
+ <CSU7G2UZSZ8K.22EGXU5CJTZBB@suppilovahvero>
+In-Reply-To: <CSU7G2UZSZ8K.22EGXU5CJTZBB@suppilovahvero>
 
+On Wed May 24, 2023 at 6:58 AM EEST, Jarkko Sakkinen wrote:
+> >  	rc =3D tpm_tis_read32(priv, TPM_INT_STATUS(priv->locality), &interrup=
+t);
+> >  	if (rc < 0)
+> > -		return IRQ_NONE;
+> > +		goto unhandled;
+> > =20
+> >  	if (interrupt =3D=3D 0)
+> > -		return IRQ_NONE;
+> > +		goto unhandled;
+> > =20
+> >  	set_bit(TPM_TIS_IRQ_TESTED, &priv->flags);
+> >  	if (interrupt & TPM_INTF_DATA_AVAIL_INT)
+> > @@ -780,10 +829,14 @@ static irqreturn_t tis_int_handler(int dummy, voi=
+d *dev_id)
+> >  	rc =3D tpm_tis_write32(priv, TPM_INT_STATUS(priv->locality), interrup=
+t);
+> >  	tpm_tis_relinquish_locality(chip, 0);
+> >  	if (rc < 0)
+> > -		return IRQ_NONE;
+> > +		goto unhandled;
+> > =20
+> >  	tpm_tis_read32(priv, TPM_INT_STATUS(priv->locality), &interrupt);
+> >  	return IRQ_HANDLED;
+> > +
+> > +unhandled:
+> > +	tpm_tis_process_unhandled_interrupt(chip);
+> > +	return IRQ_HANDLED;
+> >  }
 
+Some minor glitches I noticed.
 
-On 2023/5/24 19:08, Qi Zheng wrote:
+You could simplify the flow by making the helper to return IRQ_NONE.
 
-[...]
+E.g.=20
 
-> 
-> Well, I just ran the following command and reproduced the result:
-> 
-> stress-ng --timeout 60 --times --verify --metrics-brief --ramfs 9 &
-> 
-> 1) with commit 42c9db3970483:
-> 
-> stress-ng: info:  [11023] setting to a 60 second run per stressor
-> stress-ng: info:  [11023] dispatching hogs: 9 ramfs
-> stress-ng: info:  [11023] stressor       bogo ops real time  usr time 
-> sys time   bogo ops/s     bogo ops/s
-> stress-ng: info:  [11023]                           (secs)    (secs) 
-> (secs)   (real time) (usr+sys time)
-> stress-ng: info:  [11023] ramfs            774966     60.00     10.18 
-> 169.45     12915.89        4314.26
-> stress-ng: info:  [11023] for a 60.00s run time:
-> stress-ng: info:  [11023]    1920.11s available CPU time
-> stress-ng: info:  [11023]      10.18s user time   (  0.53%)
-> stress-ng: info:  [11023]     169.44s system time (  8.82%)
-> stress-ng: info:  [11023]     179.62s total time  (  9.35%)
-> stress-ng: info:  [11023] load average: 8.99 2.69 0.93
-> stress-ng: info:  [11023] successful run completed in 60.00s (1 min, 
-> 0.00 secs)
-> 
-> 2) with commit f95bdb700bc6b:
-> 
-> stress-ng: info:  [37676] dispatching hogs: 9 ramfs
-> stress-ng: info:  [37676] stressor       bogo ops real time  usr time 
-> sys time   bogo ops/s     bogo ops/s
-> stress-ng: info:  [37676]                           (secs)    (secs) 
-> (secs)   (real time) (usr+sys time)
-> stress-ng: info:  [37676] ramfs            168673     60.00      1.61 
->   39.66      2811.08        4087.47
-> stress-ng: info:  [37676] for a 60.10s run time:
-> stress-ng: info:  [37676]    1923.36s available CPU time
-> stress-ng: info:  [37676]       1.60s user time   (  0.08%)
-> stress-ng: info:  [37676]      39.66s system time (  2.06%)
-> stress-ng: info:  [37676]      41.26s total time  (  2.15%)
-> stress-ng: info:  [37676] load average: 7.69 3.63 2.36
-> stress-ng: info:  [37676] successful run completed in 60.10s (1 min, 
-> 0.10 secs)
-> 
-> The bogo ops/s (real time) did drop significantly.
-> 
-> And the memory reclaimation was not triggered in the whole process. so
-> theoretically no one is in the read critical section of shrinker_srcu.
-> 
-> Then I found that some stress-ng-ramfs processes were in
-> TASK_UNINTERRUPTIBLE state for a long time:
-> 
-> root       42313  0.0  0.0  69592  2068 pts/0    S    19:00   0:00 
-> stress-ng-ramfs [run]
-> root       42314  0.0  0.0  69592  2068 pts/0    S    19:00   0:00 
-> stress-ng-ramfs [run]
-> root       42315  0.0  0.0  69592  2068 pts/0    S    19:00   0:00 
-> stress-ng-ramfs [run]
-> root       42316  0.0  0.0  69592  2068 pts/0    S    19:00   0:00 
-> stress-ng-ramfs [run]
-> root       42317  7.8  0.0  69592  1812 pts/0    D    19:00   0:02 
-> stress-ng-ramfs [run]
-> root       42318  0.0  0.0  69592  2068 pts/0    S    19:00   0:00 
-> stress-ng-ramfs [run]
-> root       42319  7.8  0.0  69592  1812 pts/0    D    19:00   0:02 
-> stress-ng-ramfs [run]
-> root       42320  0.0  0.0  69592  2068 pts/0    S    19:00   0:00 
-> stress-ng-ramfs [run]
-> root       42321  7.8  0.0  69592  1812 pts/0    D    19:00   0:02 
-> stress-ng-ramfs [run]
-> root       42322  0.0  0.0  69592  2068 pts/0    S    19:00   0:00 
-> stress-ng-ramfs [run]
-> root       42323  7.8  0.0  69592  1812 pts/0    D    19:00   0:02 
-> stress-ng-ramfs [run]
-> root       42324  0.0  0.0  69592  2068 pts/0    S    19:00   0:00 
-> stress-ng-ramfs [run]
-> root       42325  7.8  0.0  69592  1812 pts/0    D    19:00   0:02 
-> stress-ng-ramfs [run]
-> root       42326  0.0  0.0  69592  2068 pts/0    S    19:00   0:00 
-> stress-ng-ramfs [run]
-> root       42327  7.9  0.0  69592  1812 pts/0    D    19:00   0:02 
-> stress-ng-ramfs [run]
-> root       42328  7.9  0.0  69592  1812 pts/0    D    19:00   0:02 
-> stress-ng-ramfs [run]
-> root       42329  7.9  0.0  69592  1812 pts/0    D    19:00   0:02 
-> stress-ng-ramfs [run]
-> root       42330  7.9  0.0  69592  1556 pts/0    D    19:00   0:02 
-> stress-ng-ramfs [run]
-> 
-> Their call stack is as follows:
-> 
-> cat /proc/42330/stack
-> 
-> [<0>] __synchronize_srcu.part.21+0x83/0xb0
-> [<0>] unregister_shrinker+0x85/0xb0
-> [<0>] deactivate_locked_super+0x27/0x70
-> [<0>] cleanup_mnt+0xb8/0x140
-> [<0>] task_work_run+0x65/0x90
-> [<0>] exit_to_user_mode_prepare+0x1ba/0x1c0
-> [<0>] syscall_exit_to_user_mode+0x1b/0x40
-> [<0>] do_syscall_64+0x44/0x80
-> [<0>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> 
-> + RCU folks, Is this result as expected? I would have thought that
-> synchronize_srcu() should return quickly if no one is in the read
-> critical section. :(
-> 
+	tpm_tis_relinquish_locality(chip, 0);
+	if (rc < 0)
+		return tpm_tis_process_unhandled_interrupt(chip);
 
-With the following changes, ops/s can return to previous levels:
+I'd recommend changing the function name simply tpm_tis_rollback_interrupt(=
+).
 
-diff --git a/mm/vmscan.c b/mm/vmscan.c
-index db2ed6e08f67..90f541b07cd1 100644
---- a/mm/vmscan.c
-+++ b/mm/vmscan.c
-@@ -763,7 +763,7 @@ void unregister_shrinker(struct shrinker *shrinker)
-         debugfs_entry = shrinker_debugfs_remove(shrinker);
-         up_write(&shrinker_rwsem);
+Also tpm_tis_handle_irq_storm() is a pretty bad function name=20
+because handle also can mean anything. You are resetting to the
+polling mode, right?
 
--       synchronize_srcu(&shrinker_srcu);
-+       synchronize_srcu_expedited(&shrinker_srcu);
+So perhaps that could be e.g. tpm_tis_reenable_polling? I'm open
+for any other name but it really needs to give a hint what the
+function does.
 
-         debugfs_remove_recursive(debugfs_entry);
-
-stress-ng: info:  [13159] dispatching hogs: 9 ramfs
-stress-ng: info:  [13159] stressor       bogo ops real time  usr time 
-sys time   bogo ops/s     bogo ops/s
-stress-ng: info:  [13159]                           (secs)    (secs) 
-(secs)   (real time) (usr+sys time)
-stress-ng: info:  [13159] ramfs            710062     60.00      9.63 
-157.26     11834.18        4254.75
-stress-ng: info:  [13159] for a 60.00s run time:
-stress-ng: info:  [13159]    1920.14s available CPU time
-stress-ng: info:  [13159]       9.62s user time   (  0.50%)
-stress-ng: info:  [13159]     157.26s system time (  8.19%)
-stress-ng: info:  [13159]     166.88s total time  (  8.69%)
-stress-ng: info:  [13159] load average: 9.49 4.02 1.65
-stress-ng: info:  [13159] successful run completed in 60.00s (1 min, 
-0.00 secs)
-
-Can we make synchronize_srcu() call synchronize_srcu_expedited() when no
-one is in the read critical section?
-
-> 
-
--- 
-Thanks,
-Qi
+BR, Jarkko
