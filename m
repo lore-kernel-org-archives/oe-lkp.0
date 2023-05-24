@@ -1,20 +1,20 @@
-Received: from out-50.mta0.migadu.com (out-50.mta0.migadu.com [91.218.175.50])
+Received: from out-14.mta1.migadu.com (out-14.mta1.migadu.com [95.215.58.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E37A1FB1
-	for <oe-lkp@lists.linux.dev>; Wed, 24 May 2023 11:23:08 +0000 (UTC)
-Message-ID: <2c5df9e0-9b1f-89eb-4d64-c5091ead9cf0@linux.dev>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C5E217ABB
+	for <oe-lkp@lists.linux.dev>; Wed, 24 May 2023 11:56:42 +0000 (UTC)
+Message-ID: <bfb36563-fac9-4c84-96db-87dd28892088@linux.dev>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1684927386;
+	t=1684929400;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=r7uIYMMBsG2+gFwRyUinbXHkYOIikxEdGr36MvRUJ8c=;
-	b=UDiOa/81mudJk0eXr2RQY2l6PUDl6gutYQUUOBdWfw4+15hm55V38MmdVeo8ZBbuswPAFY
-	1iSSHBTD3py36UxZcDvDq/qD2DEAJoyPeXpgy5NsEneGuN2zjBbbI9o1IVf8kR2YwibCRo
-	20qMn8Ci3rj0h3HJsM6Kqt1Dhq1pZaM=
-Date: Wed, 24 May 2023 19:22:55 +0800
+	bh=uMsexn7FypO2MxTw7kOkZKMP6/q4BmJjDQCpRviZwTk=;
+	b=WiHpg5RNA4GTwK2SDkHLvlaHzfo3/HpO34N4XoPdsW0f4IrTrk2Utap9fkZOHfoZnzWEUM
+	0CNPosbjasx5hfvCkRzmQcfaYfYXeLk2MywMuAOKAjaRsOv+4Vn4L3rjgUgWuewCVawufe
+	gIoLMAnY89tKHEm9SxQWeeC/G6kpSrM=
+Date: Wed, 24 May 2023 19:56:30 +0800
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -50,7 +50,6 @@ X-Migadu-Flow: FLOW_OUT
 
 
 On 2023/5/24 19:08, Qi Zheng wrote:
-> 
 
 [...]
 
@@ -160,10 +159,41 @@ On 2023/5/24 19:08, Qi Zheng wrote:
 > critical section. :(
 > 
 
-I received the message:
-	BOUNCE rcu@vger.kernel.org: Message too long (>100000 chars)
+With the following changes, ops/s can return to previous levels:
 
-So add RCU folks again.
+diff --git a/mm/vmscan.c b/mm/vmscan.c
+index db2ed6e08f67..90f541b07cd1 100644
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -763,7 +763,7 @@ void unregister_shrinker(struct shrinker *shrinker)
+         debugfs_entry = shrinker_debugfs_remove(shrinker);
+         up_write(&shrinker_rwsem);
+
+-       synchronize_srcu(&shrinker_srcu);
++       synchronize_srcu_expedited(&shrinker_srcu);
+
+         debugfs_remove_recursive(debugfs_entry);
+
+stress-ng: info:  [13159] dispatching hogs: 9 ramfs
+stress-ng: info:  [13159] stressor       bogo ops real time  usr time 
+sys time   bogo ops/s     bogo ops/s
+stress-ng: info:  [13159]                           (secs)    (secs) 
+(secs)   (real time) (usr+sys time)
+stress-ng: info:  [13159] ramfs            710062     60.00      9.63 
+157.26     11834.18        4254.75
+stress-ng: info:  [13159] for a 60.00s run time:
+stress-ng: info:  [13159]    1920.14s available CPU time
+stress-ng: info:  [13159]       9.62s user time   (  0.50%)
+stress-ng: info:  [13159]     157.26s system time (  8.19%)
+stress-ng: info:  [13159]     166.88s total time  (  8.69%)
+stress-ng: info:  [13159] load average: 9.49 4.02 1.65
+stress-ng: info:  [13159] successful run completed in 60.00s (1 min, 
+0.00 secs)
+
+Can we make synchronize_srcu() call synchronize_srcu_expedited() when no
+one is in the read critical section?
+
+> 
 
 -- 
 Thanks,
