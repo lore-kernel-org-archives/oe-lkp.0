@@ -1,209 +1,319 @@
-Received: from out-22.mta0.migadu.com (out-22.mta0.migadu.com [91.218.175.22])
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB5671FB0
-	for <oe-lkp@lists.linux.dev>; Thu, 25 May 2023 04:03:29 +0000 (UTC)
-Message-ID: <be04dc3e-a671-ec70-6cf6-70dc702f4184@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1684987407;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=bY9F6XP9W54uyc2pLmcaqEZDVFiSzX+vgdndjumDa+0=;
-	b=URhEF9BtgHMdP6CTiwSydQ5X3SqJqaxism3G2uIkjvsQNNUQdnSjW2Q12/a2aIYKCborlO
-	acEtf+ig27oLn7m2/l3t9q6xkKgEnUVEOAE9JhYIRZT1QlXOSOj0ceIFQuYeI5qJPqs517
-	n2n/ra5YTs0UUkjyzJb051zxPljx8JA=
-Date: Thu, 25 May 2023 12:03:16 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CD3C5240
+	for <oe-lkp@lists.linux.dev>; Thu, 25 May 2023 06:44:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1684997073; x=1716533073;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=+4/r9oF6dU0Hy6oZ7Gzueuky1SFLNFY9hvkQuvTUbz4=;
+  b=ZLvjJdDE6dPTHYSLBasSmFskygu3IeXs7zIBvHXR4irEHtyFVOladVFy
+   p5cuU4hqcyxzNys3RsacVOMkB+rLgJHIV5j10wDriLXFoW49aGBg+a0xN
+   HTVM+PLLupYVTOXbPub9Rn5XIg41+rgmMTEixoY9Y8jGwD+xdgTEn2dhJ
+   2EMhz1EXJLI+FQVe+7Jmdz++hl3aHOSD3qEkTQ2LuCubXC4wLvoFfSNx7
+   IJw/XBnz41w2Kqoltp9K7ZQsHTdxXxaPgYE86vRCqesCQVIw0PO8zQjIU
+   vGJg7fK8PPcaIn9gEQaFQs7/Va9lLSxGxL4cZec1YgzQ5+E7AQ25l7F9n
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10720"; a="352644115"
+X-IronPort-AV: E=Sophos;i="6.00,190,1681196400"; 
+   d="scan'208";a="352644115"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2023 23:44:31 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10720"; a="698864440"
+X-IronPort-AV: E=Sophos;i="6.00,190,1681196400"; 
+   d="scan'208";a="698864440"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orsmga007.jf.intel.com with ESMTP; 24 May 2023 23:44:28 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Wed, 24 May 2023 23:44:27 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Wed, 24 May 2023 23:44:27 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23 via Frontend Transport; Wed, 24 May 2023 23:44:27 -0700
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.173)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.23; Wed, 24 May 2023 23:44:27 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kOLJ5c8tin6JbcDilbYsVNw/f85G5H91dGR5hpG/DrKbYxrdyDubHP6yK23bDVR0V1Qp3kORkm+nxw5ruG55+ZEeCkZg9qH3wsAiBq+WODSKqL74MaPF243E1bLJ6t4PoilR12N7DqiFAkhnszbFxu9zdOfcmp+Kv6UwuBdjVKi+tprx//buC5c1TNsjWYSutSnBJgWotFKmQCI7o0WAZmU3U6CulySeYF6VjjZMAqAd6o8JA3P4iSrX0Y2Jg6HDtOzTmWdVHd9xdfJ4NoZdetksLy5/Zd6/gEj503NWxkNuzsISZISByXaT/6TMXcvUrP4DUpEfeo2cKlbX0bwffg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=F0RhA1m690ALkUa/nFoAZvXyHl/KVGvg91fwMJ4AYL4=;
+ b=hu0glDxkvQbFk10RQFRjnPVt0973OeCo0Kl2hd+DC/Nt2SYmXaTa4ckLle2aG4UdqxIAozRtERaKT6hQPfW2UHaTlP3tFQ8RBEqGuuQM82SLxhF9t5vN9Nj8KCDJVwTxo8La67sz/rUULqRRodc73oaYM6OTm0wss114p3QssnVGhscaGDE9Q5PIpHNxnpOVRfbllFL6hGMnmxbq5WBaOsUIFs6lwg3meB//Oism2TJPKcS+WmbEczudDvtafftaenpevCK++yPBEv37sRLCh8GBCmvI388/OaWEzWxDVJcxyDe6AOMzlquF6AAWiFYIMoVHobxICoNyWh/qcmIjYQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from CY5PR11MB6392.namprd11.prod.outlook.com (2603:10b6:930:37::15)
+ by MW3PR11MB4522.namprd11.prod.outlook.com (2603:10b6:303:2d::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.15; Thu, 25 May
+ 2023 06:44:25 +0000
+Received: from CY5PR11MB6392.namprd11.prod.outlook.com
+ ([fe80::b14b:5c9c:fa0e:8e7c]) by CY5PR11MB6392.namprd11.prod.outlook.com
+ ([fe80::b14b:5c9c:fa0e:8e7c%7]) with mapi id 15.20.6411.028; Thu, 25 May 2023
+ 06:44:24 +0000
+Date: Thu, 25 May 2023 14:41:09 +0800
+From: Yujie Liu <yujie.liu@intel.com>
+To: Luis Chamberlain <mcgrof@kernel.org>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	<linux-doc@vger.kernel.org>, <linux-modules@vger.kernel.org>
+Subject: Re: [linus:master] [module] 8660484ed1:
+ WARNING:at_kernel/module/dups.c:#kmod_dup_request_exists_wait
+Message-ID: <ZG8DBbIuNNe5muY6@yujie-X299>
+References: <202305221508.753c7b78-yujie.liu@intel.com>
+ <ZG2doZJrCK7Nlrqf@bombadil.infradead.org>
+ <ZG3Ho7eK+KqoAdda@yujie-X299>
+ <ZG5OGRDfIbMs6sxz@bombadil.infradead.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <ZG5OGRDfIbMs6sxz@bombadil.infradead.org>
+X-ClientProxiedBy: SG2P153CA0026.APCP153.PROD.OUTLOOK.COM (2603:1096:4:c7::13)
+ To CY5PR11MB6392.namprd11.prod.outlook.com (2603:10b6:930:37::15)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Subject: Re: [linus:master] [mm] f95bdb700b: stress-ng.ramfs.ops_per_sec
- -88.8% regression
-Content-Language: en-US
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Qi Zheng <qi.zheng@linux.dev>
-To: RCU <rcu@vger.kernel.org>, Yujie Liu <yujie.liu@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
- Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>,
- Kirill Tkhai <tkhai@ya.ru>, Roman Gushchin <roman.gushchin@linux.dev>,
- =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
- David Hildenbrand <david@redhat.com>, Davidlohr Bueso <dave@stgolabs.net>,
- Johannes Weiner <hannes@cmpxchg.org>, Michal Hocko <mhocko@kernel.org>,
- Muchun Song <muchun.song@linux.dev>, "Paul E. McKenney"
- <paulmck@kernel.org>, Shakeel Butt <shakeelb@google.com>,
- Yang Shi <shy828301@gmail.com>, linux-mm@kvack.org, ying.huang@intel.com,
- feng.tang@intel.com, fengwei.yin@intel.com
-References: <202305230837.db2c233f-yujie.liu@intel.com>
- <eba38fce-2454-d7a4-10ef-240b4686f23d@linux.dev>
- <ZG29ULGNJdErnatI@yujie-X299>
- <896bbb09-d400-ec73-ba3a-b64c6e9bbe46@linux.dev>
- <e5fb8b34-c1ad-92e0-e7e5-f7ed1605dbc6@linux.dev>
- <bfb36563-fac9-4c84-96db-87dd28892088@linux.dev>
-In-Reply-To: <bfb36563-fac9-4c84-96db-87dd28892088@linux.dev>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY5PR11MB6392:EE_|MW3PR11MB4522:EE_
+X-MS-Office365-Filtering-Correlation-Id: d4282c25-ffa9-4259-c340-08db5ceb7a3e
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: f430uoNHvzhNgRJcK31VeaBqliTXy5BPbgRn0rPQgRJlYCP7rck8Rl27a2lpOF8z0+z+7iD2iLbOwVWDWrM2uNstjN44IK9YD2GW2cX0SlrNEzxUMtm+rezZOdi9QvU7W+hnTAbZnNdYCQXFZBOXcuWkgxbRx1zb3kJ6TTACQ2pdhuSTQb5OcS3ZSM/NaWnDjL8/TbwMkPf/ot5RMxzsPj0qU/udmB8OHA7CZo/kqiMB84pwI5GfOlmxLDzS6Ubv1cJOEuDsL9GJUaaqf1WUvFORB/ECGU4UWiJEmZCXiulXCbCWH7YtDDAvNemxFH41ovOnac25ptI+A6rd1dqKi/njA27Dgtpvv3Y9nEuS+uxO/i450XWX8Hm57h9WkTmflzfMQpz0scKtZcxq79nXRGMjCR5oc/0puP+KerLZQ75JP5JJ2eEj/7B0tm1gdPWHkpUsXCOl5e+uRR6vp1nhvZBqX1Pz6K4lGcvrzlW1UdgO2D8CgMyCU4h6vBShTd3AdDPYSgiNNGW3lL+AOA2ty9v25OQ8TOuZzV6KOBbmYWpIl9C2ik9mk0i558LeJdsWMa3t5Ggf+lAwiuI/bhahrQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR11MB6392.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(346002)(396003)(366004)(376002)(39860400002)(136003)(451199021)(38100700002)(82960400001)(33716001)(66946007)(66476007)(66556008)(478600001)(86362001)(6916009)(4326008)(6666004)(83380400001)(6486002)(66899021)(41300700001)(316002)(186003)(44832011)(966005)(2906002)(9686003)(6512007)(26005)(6506007)(5660300002)(8936002)(8676002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?W24fIr1FjIS11UHL6+BBno54rRN303dLxZrovOM/uqxMA3iL0BZUWHc9btNS?=
+ =?us-ascii?Q?kPNAEfeifS2AaBq7Do3/4W0e4gZC3TNHwXE2Y4RL451tK/d3lw/8pYGN3tAK?=
+ =?us-ascii?Q?i3trQQQCVnhO/PL3woV59l+MgpRMk584zbE8uiyXNmReI/nT4R5Wv4tUYUbN?=
+ =?us-ascii?Q?hKzeVzEedLgWBnx1dv4SqUY76IAY5aoL1llXwvNXAnh6ciLLO9pVYGtbYeGi?=
+ =?us-ascii?Q?iYFchYm+WDrNuEYuia2CbMd5QdiHGXcs/is0mHcpvSQ3lf1ajZuTV3a49D7W?=
+ =?us-ascii?Q?2/SHXw4uJOMbM1mH4TLFCImV5T5A08RQw5vHygNFhMKlwNslNY6KIOzLBajM?=
+ =?us-ascii?Q?zYol1bLuAKt8z5MpJ0fA6V4nd/gP1VUBdyQIHc42Jmi75/kkihida0fAoWUX?=
+ =?us-ascii?Q?y43QoWeqzo/ABVDeGleXp6IM86WH0Cj9ByA6RgQEYtPjXHNwarHtLHTDDeHJ?=
+ =?us-ascii?Q?/zbZGU3a7iuUHTax/5nL0fBsGo62ZsLJ+9qYIrXiRuoSWISLVoZHZpNBNlel?=
+ =?us-ascii?Q?z7kVjcLXynYJ54Th+dqZ7X/ESA5ZlSNYTybwv46/1zR1+yE5NXjmsbAt3tFt?=
+ =?us-ascii?Q?fxqfufiL3u+DBXTY8r8apyd5yJ8pQ4979A3dpB+SGEDIJpwDejQX90TFEMET?=
+ =?us-ascii?Q?idEUjjW6HlN6BgUG6AbQjgZmuu/F4QAHl1u40XDKYNo/VUowzX7iBavYDe6o?=
+ =?us-ascii?Q?1YG1WwfS+0IBCXPocnfTWIheQZblA4/tps8NVpoFiPxV6ieXJyZBgWAenDJr?=
+ =?us-ascii?Q?YrAs6Zy2+bocBhpsjPNWNCv36k7w2H/SucqfVXKjmibNYbrpUrMOUItDSCk1?=
+ =?us-ascii?Q?0QIp2jwu36/x2wplMmCsGNEYmN6Ybi4MF0laf/dI13W6dJIqHNQrayQ4/DuJ?=
+ =?us-ascii?Q?rHZaq0c+RdYYHpgF12jrXd4ITeUniB29ExVhBAGyvKRiuAC6E3PpsaB/369x?=
+ =?us-ascii?Q?J5V/JgbNNob9uPuyqd0wcUJjOQdIsJDnsi9flEcbCdh+Poph8z4+5Fw/Qojo?=
+ =?us-ascii?Q?tcNNyFPjWHKbOS6+A+l2Un01e/ufvyCHRUv0nBHS0Jm0Gf8xYjwvucXsVlFI?=
+ =?us-ascii?Q?0JeLGKIzoUDyP9Is7zMwQKtkp1c/U3O31Os3xts0F9HkeMkSYUvswyfX0XhL?=
+ =?us-ascii?Q?Y6csoPOoiDoGrYX4dFYAmf9C6updzIM2U8nnaDDun7G7v8xALWxhSoE90464?=
+ =?us-ascii?Q?odEpfEdAwzjpbvq8d0Ewwe7aObhmJnh1dgVTF94qumdP3qqw0njNrY5jb8fP?=
+ =?us-ascii?Q?5S2y88pAK5jcNGMUg7KwDDZw/FJuiT7r13YrDY463F37I7Tvr+3YcATWFDjr?=
+ =?us-ascii?Q?7H9chS5+Q4dJZBGm9G5D6S47GPqbdMt05gsrHHS+YssCgbL3fCs2wqzB5YvV?=
+ =?us-ascii?Q?vhd2lJ2/EnakkOhcLu8qREnY96DG7vcrfvt0cOfhOhN1KGzNp3HGHLQwrI2f?=
+ =?us-ascii?Q?Q0JVHNMxENcMH2NMmDUgaT7L+e9s7llcBOqA4A7VvHJOjNXBx+IyIs/ishYj?=
+ =?us-ascii?Q?B17Yi6N6fTkg6gFtOJMDIzSQtVJpYiTlh9n8X6t8SnmOXQ27WTkK+NUU56Uh?=
+ =?us-ascii?Q?YE/1s/crnEbcmPVuAWnQXGgYaRgTjGJVgDyKLIPv?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: d4282c25-ffa9-4259-c340-08db5ceb7a3e
+X-MS-Exchange-CrossTenant-AuthSource: CY5PR11MB6392.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 May 2023 06:44:24.3972
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: hkSo6LxhCRHpL2g4ndI44/H+kA4tliWNu70GIrWE+nXeLhCHsylcy3UyILNp5kgaN6ecn+EpxXoTkRn2OhFicQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR11MB4522
+X-OriginatorOrg: intel.com
 
+On Wed, May 24, 2023 at 10:49:13AM -0700, Luis Chamberlain wrote:
+> On Wed, May 24, 2023 at 04:15:31PM +0800, Yujie Liu wrote:
+> > Hi Luis,
+> > 
+> > On Tue, May 23, 2023 at 10:16:17PM -0700, Luis Chamberlain wrote:
+> > > On Mon, May 22, 2023 at 03:51:59PM +0800, kernel test robot wrote:
+> > > > Hello,
+> > > > 
+> > > > kernel test robot noticed "WARNING:at_kernel/module/dups.c:#kmod_dup_request_exists_wait" on:
+> > > > 
+> > > > commit: 8660484ed1cf3261e89e0bad94c6395597e87599 ("module: add debugging auto-load duplicate module support")
+> > > > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> > > > 
+> > > > [test failed on linux-next/master 798d276b39e984345d52b933a900a71fa0815928]
+> > > > 
+> > > > in testcase: boot
+> > > > 
+> > > > compiler: gcc-11
+> > > > test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+> > > > 
+> > > > (please refer to attached dmesg/kmsg for entire log/backtrace)
+> > > > 
+> > > > 
+> > > > We are not sure if this is expected as this patch is for debugging
+> > > > duplicate module requests issues, so we are sending this report for
+> > > > your information. Thanks.
+> > > > 
+> > > > 
+> > > > If you fix the issue, kindly add following tag
+> > > > | Reported-by: kernel test robot <yujie.liu@intel.com>
+> > > > | Closes: https://lore.kernel.org/oe-lkp/202305221508.753c7b78-yujie.liu@intel.com
+> > > > 
+> > > > 
+> > > > [   48.705567][    T1] ------------[ cut here ]------------
+> > > > [   48.706519][    T1] module-autoload: duplicate request for module intel_qat
+> > > > [ 48.707866][ T1] WARNING: CPU: 0 PID: 1 at kernel/module/dups.c:183 kmod_dup_request_exists_wait (kernel/module/dups.c:183 (discriminator 1)) 
+> > > 
+> > > This is a real issue since CONFIG_MODULE_DEBUG_AUTOLOAD_DUPS_TRACE was enabled.
+> > > If you enable CONFIG_MODULE_DEBUG_AUTOLOAD_DUPS_TRACE and these warnings
+> > > come up a bette detailed report would be better. In this case the goal
+> > > was to capture races of request_module() and so the idea for developers
+> > > is to identify the module that caused this, in this case intel_qat, and
+> > > then see who called the request_module() for it. They could try things
+> > > like try_module_get(), but could also ensure that multiple requests
+> > > won't be done in the code by using locking schemes or whatever. Only
+> > > one request should be issued.
+> > > 
+> > > The trace below would show possible users but I don't even see
+> > > drivers/crypto/qat/qat_c3xxx/adf_drv.c in my kernel tree.
+> > > 
+> > > If you don't to deal with this reporting you can just disable this
+> > > config option.
+> > 
+> > Thanks a lot for the information. Does this indicate that there is
+> > indeed a multiple requests issue in that crypto driver and we could
+> > report to its author/owner? Thanks.
+> 
+> Not for the crypto driver, there are multiple requests for
+> something like:
+> 
+>   request_module("intel_qat")
+> 
+> the trace shows who it could be. A git grep shows:
+> 
+> git grep request_module | grep intel_qat
+> drivers/crypto/intel/qat/qat_c3xxx/adf_drv.c: request_module("intel_qat");
+> drivers/crypto/intel/qat/qat_c3xxxvf/adf_drv.c: request_module("intel_qat");
+> drivers/crypto/intel/qat/qat_c62x/adf_drv.c: request_module("intel_qat");
+> drivers/crypto/intel/qat/qat_c62xvf/adf_drv.c: request_module("intel_qat");
+> drivers/crypto/intel/qat/qat_dh895xcc/adf_drv.c: request_module("intel_qat");
+> drivers/crypto/intel/qat/qat_dh895xccvf/adf_drv.c: request_module("intel_qat");
+> 
+> And so there should be one request issued, ideally.
+> 
+> Nothing bad happens of multiple request are sent, however duplicate
+> requests means that you can end up userspace trying to load multiple
+> requests just for one to be freed.
+> 
+> This is not a serious bug.
+> 
+> Soon, I'll implement a solution so that even if duplicate requests get
+> to userspace it won't trigger a duplicate load in-kernel, and therefore
+> duplicate module loads won't have to free the extra ones. At that point
+> this becomes less of an issue.
+> 
+> request_module() just calls to modprobe, and modprobe is supposed to
+> check if a module is already loaded before trying finit_module(). If
+> two duplicate requests end up calling modprobe though there is a small
+> race that two concurrent finit_module() calls will happen as userspace
+> would not have seen one load request going in before. The issue is that
+> finit_module() uses vmalloc space multiple times for the size of the
+> module, even if the module is a duplicate. One vmalloc space is for
+> kernel_read*() call, the other is for the copy we want to keep around
+> in kernel, the final copy. If module deeecompression is used another
+> vmalloc is used. So in the worst case 3 vmallocs.
+> 
+> A duplicate request could end up being failed only to find out a module
+> is already loaded, and so about 2-3 times the size of vmalloc space of
+> a module size could be free'd just due to a duplicate.
+> 
+> We could avoid memory pressure proactively by trying to issue only one
+> request out.
+> 
+> CONFIG_MODULE_DEBUG_AUTOLOAD_DUPS was added to detect these possible
+> duplicates when they were triggered by module-autoloading, through the
+> request_module() API, directly from the kernel. It turns out that there
+> aren't many of these duplicates. That was the point to the exercise.
+> To proove the kernel likely wasn't the one causing tons of duplicates.
+> 
+> Because if you enable CONFIG_MODULE_STATS and then cat /sys/kernel/debug/modules/stats
+> you will see tons of duplicates. This gets worse  by the number of CPUs
+> you have. Seeing little reports of CONFIG_MODULE_DEBUG_AUTOLOAD_DUPS
+> proves the issue is elsewhere and at this point I'm certain this is
+> coming from udev kmod library usage and it forking and not being able
+> to detect the same context for the kmod library for loading modules,
+> and so duplicate module request go out for tons of modules for each CPU.
+> 
+> See commit 064f4536d13939 ("module: avoid allocation if module is
+> already present and ready") for a graph of this.
+> 
+> That commit also prevents having to do one vmalloc allocation if the
+> module is already present. I'm going to work now on one which prevents
+> the first, and so duplicates requests coming from either userspace or
+> the module-autoloader should be harmless. But that is not merged yet,
+> and I still have to post the patch.
+> 
+> So in the meantime CONFIG_MODULE_DEBUG_AUTOLOAD_DUPS_TRACE should only
+> be enabled so to try to help those who wish to be proactive and want
+> to enhance the kernel module auto-loader so to only issue one
+> request_module() for a module needed by the kernel.
+> 
+> Technically CONFIG_MODULE_DEBUG_AUTOLOAD_DUPS also implements a
+> way to unify requests for the same module into one, and they all
+> share the same result, but this works only for non-async calls to
+> request_module(). That config option is a debug mechanism right now,
+> but we could make it default later.
+> 
+> > Not sure if I undertand this correctly: enabling
+> > CONFIG_MODULE_DEBUG_AUTOLOAD_DUPS_TRACE can help detect multiple
+> > requests issues in existing code, so we should report to the original
+> > author of the modules that have this issue,
+> 
+> It would be an optimization that they could make. It is not a serious
+> bug. It would be a more serious bug if we had tons of these reports
+> all over. But a few, no.
+> 
+> Come to think of it, at this point in time CONFIG_MODULE_DEBUG_AUTOLOAD_DUPS_TRACE
+> should just be considered informational and debugging, no need to report
+> anything to anyone becuase I do think I can get the vmalloc wasted
+> space issue figured out for userspace and kernel module-autoloader,
+> and so this becomes a non-issue at all. Yes, it would still be nice
+> to reduce latencies by having duplicate requests not be issued, but
+> the developers keen on that would enable CONFIG_MODULE_DEBUG_AUTOLOAD_DUPS_TRACE.
+> 
+> So I'd say enable CONFIG_MODULE_DEBUG_AUTOLOAD_DUPS_TRACE only if
+> you want to avoid help avoid duplicates yourself. The kconfig language
+> already is a bit clear about that, but we could enhance it to explain
+> the gains for developers who may want this. Since we can't talk about
+> the future though in kconfig, I think the language now is OK.
+> 
+> The bigger source of duplicates has been determined to come from
+> userspace, I'll Cc you on a patch to fix the last vmalloc wasted
+> space, so that this would never incur tons of wasted vmalloc space.
+> 
+> I'd recommend for now to just disable CONFIG_MODULE_DEBUG_AUTOLOAD_DUPS_TRACE
+> unless you want to make the reports informational and describe the
+> situation as I just did.
+> 
+> Actually, could we talk soon about testing? Because I want to automate
+> some more tests for modules with kdevops.
 
+Thanks a lot for the detailed explanation and guidance! We will disable
+CONFIG_MODULE_DEBUG_AUTOLOAD_DUPS_TRACE in the regular tests of kernel
+test robot, and will keep an eye on the latest updates in the thread of
+"module: avoid all memory pressure due to duplicates" patch series [1].
 
-On 2023/5/24 19:56, Qi Zheng wrote:
-> 
-> 
-> On 2023/5/24 19:08, Qi Zheng wrote:
-> 
-> [...]
-> 
->>
->> Well, I just ran the following command and reproduced the result:
->>
->> stress-ng --timeout 60 --times --verify --metrics-brief --ramfs 9 &
->>
->> 1) with commit 42c9db3970483:
->>
->> stress-ng: info:  [11023] setting to a 60 second run per stressor
->> stress-ng: info:  [11023] dispatching hogs: 9 ramfs
->> stress-ng: info:  [11023] stressor       bogo ops real time  usr time 
->> sys time   bogo ops/s     bogo ops/s
->> stress-ng: info:  [11023]                           (secs)    (secs) 
->> (secs)   (real time) (usr+sys time)
->> stress-ng: info:  [11023] ramfs            774966     60.00     10.18 
->> 169.45     12915.89        4314.26
->> stress-ng: info:  [11023] for a 60.00s run time:
->> stress-ng: info:  [11023]    1920.11s available CPU time
->> stress-ng: info:  [11023]      10.18s user time   (  0.53%)
->> stress-ng: info:  [11023]     169.44s system time (  8.82%)
->> stress-ng: info:  [11023]     179.62s total time  (  9.35%)
->> stress-ng: info:  [11023] load average: 8.99 2.69 0.93
->> stress-ng: info:  [11023] successful run completed in 60.00s (1 min, 
->> 0.00 secs)
->>
->> 2) with commit f95bdb700bc6b:
->>
->> stress-ng: info:  [37676] dispatching hogs: 9 ramfs
->> stress-ng: info:  [37676] stressor       bogo ops real time  usr time 
->> sys time   bogo ops/s     bogo ops/s
->> stress-ng: info:  [37676]                           (secs)    (secs) 
->> (secs)   (real time) (usr+sys time)
->> stress-ng: info:  [37676] ramfs            168673     60.00      1.61 
->>   39.66      2811.08        4087.47
->> stress-ng: info:  [37676] for a 60.10s run time:
->> stress-ng: info:  [37676]    1923.36s available CPU time
->> stress-ng: info:  [37676]       1.60s user time   (  0.08%)
->> stress-ng: info:  [37676]      39.66s system time (  2.06%)
->> stress-ng: info:  [37676]      41.26s total time  (  2.15%)
->> stress-ng: info:  [37676] load average: 7.69 3.63 2.36
->> stress-ng: info:  [37676] successful run completed in 60.10s (1 min, 
->> 0.10 secs)
->>
->> The bogo ops/s (real time) did drop significantly.
->>
->> And the memory reclaimation was not triggered in the whole process. so
->> theoretically no one is in the read critical section of shrinker_srcu.
->>
->> Then I found that some stress-ng-ramfs processes were in
->> TASK_UNINTERRUPTIBLE state for a long time:
->>
->> root       42313  0.0  0.0  69592  2068 pts/0    S    19:00   0:00 
->> stress-ng-ramfs [run]
->> root       42314  0.0  0.0  69592  2068 pts/0    S    19:00   0:00 
->> stress-ng-ramfs [run]
->> root       42315  0.0  0.0  69592  2068 pts/0    S    19:00   0:00 
->> stress-ng-ramfs [run]
->> root       42316  0.0  0.0  69592  2068 pts/0    S    19:00   0:00 
->> stress-ng-ramfs [run]
->> root       42317  7.8  0.0  69592  1812 pts/0    D    19:00   0:02 
->> stress-ng-ramfs [run]
->> root       42318  0.0  0.0  69592  2068 pts/0    S    19:00   0:00 
->> stress-ng-ramfs [run]
->> root       42319  7.8  0.0  69592  1812 pts/0    D    19:00   0:02 
->> stress-ng-ramfs [run]
->> root       42320  0.0  0.0  69592  2068 pts/0    S    19:00   0:00 
->> stress-ng-ramfs [run]
->> root       42321  7.8  0.0  69592  1812 pts/0    D    19:00   0:02 
->> stress-ng-ramfs [run]
->> root       42322  0.0  0.0  69592  2068 pts/0    S    19:00   0:00 
->> stress-ng-ramfs [run]
->> root       42323  7.8  0.0  69592  1812 pts/0    D    19:00   0:02 
->> stress-ng-ramfs [run]
->> root       42324  0.0  0.0  69592  2068 pts/0    S    19:00   0:00 
->> stress-ng-ramfs [run]
->> root       42325  7.8  0.0  69592  1812 pts/0    D    19:00   0:02 
->> stress-ng-ramfs [run]
->> root       42326  0.0  0.0  69592  2068 pts/0    S    19:00   0:00 
->> stress-ng-ramfs [run]
->> root       42327  7.9  0.0  69592  1812 pts/0    D    19:00   0:02 
->> stress-ng-ramfs [run]
->> root       42328  7.9  0.0  69592  1812 pts/0    D    19:00   0:02 
->> stress-ng-ramfs [run]
->> root       42329  7.9  0.0  69592  1812 pts/0    D    19:00   0:02 
->> stress-ng-ramfs [run]
->> root       42330  7.9  0.0  69592  1556 pts/0    D    19:00   0:02 
->> stress-ng-ramfs [run]
->>
->> Their call stack is as follows:
->>
->> cat /proc/42330/stack
->>
->> [<0>] __synchronize_srcu.part.21+0x83/0xb0
->> [<0>] unregister_shrinker+0x85/0xb0
->> [<0>] deactivate_locked_super+0x27/0x70
->> [<0>] cleanup_mnt+0xb8/0x140
->> [<0>] task_work_run+0x65/0x90
->> [<0>] exit_to_user_mode_prepare+0x1ba/0x1c0
->> [<0>] syscall_exit_to_user_mode+0x1b/0x40
->> [<0>] do_syscall_64+0x44/0x80
->> [<0>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
->>
->> + RCU folks, Is this result as expected? I would have thought that
->> synchronize_srcu() should return quickly if no one is in the read
->> critical section. :(
->>
-> 
-> With the following changes, ops/s can return to previous levels:
+[1] https://lore.kernel.org/all/20230524213620.3509138-1-mcgrof@kernel.org/
 
-Or just set rcu_expedited to 1:
-	echo 1 > /sys/kernel/rcu_expedited
-
-> 
-> diff --git a/mm/vmscan.c b/mm/vmscan.c
-> index db2ed6e08f67..90f541b07cd1 100644
-> --- a/mm/vmscan.c
-> +++ b/mm/vmscan.c
-> @@ -763,7 +763,7 @@ void unregister_shrinker(struct shrinker *shrinker)
->          debugfs_entry = shrinker_debugfs_remove(shrinker);
->          up_write(&shrinker_rwsem);
-> 
-> -       synchronize_srcu(&shrinker_srcu);
-> +       synchronize_srcu_expedited(&shrinker_srcu);
-> 
->          debugfs_remove_recursive(debugfs_entry);
-> 
-> stress-ng: info:  [13159] dispatching hogs: 9 ramfs
-> stress-ng: info:  [13159] stressor       bogo ops real time  usr time 
-> sys time   bogo ops/s     bogo ops/s
-> stress-ng: info:  [13159]                           (secs)    (secs) 
-> (secs)   (real time) (usr+sys time)
-> stress-ng: info:  [13159] ramfs            710062     60.00      9.63 
-> 157.26     11834.18        4254.75
-> stress-ng: info:  [13159] for a 60.00s run time:
-> stress-ng: info:  [13159]    1920.14s available CPU time
-> stress-ng: info:  [13159]       9.62s user time   (  0.50%)
-> stress-ng: info:  [13159]     157.26s system time (  8.19%)
-> stress-ng: info:  [13159]     166.88s total time  (  8.69%)
-> stress-ng: info:  [13159] load average: 9.49 4.02 1.65
-> stress-ng: info:  [13159] successful run completed in 60.00s (1 min, 
-> 0.00 secs)
-> 
-> Can we make synchronize_srcu() call synchronize_srcu_expedited() when no
-> one is in the read critical section?
-> 
->>
-> 
-
--- 
-Thanks,
-Qi
+--
+Best Regards,
+Yujie
