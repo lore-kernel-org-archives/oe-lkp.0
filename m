@@ -1,91 +1,84 @@
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2A2617C9
-	for <oe-lkp@lists.linux.dev>; Fri, 26 May 2023 01:45:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31186136A
+	for <oe-lkp@lists.linux.dev>; Fri, 26 May 2023 02:31:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1685065535; x=1716601535;
+  t=1685068294; x=1716604294;
   h=date:from:to:cc:subject:message-id:
-   content-transfer-encoding:in-reply-to:mime-version;
-  bh=YKR/RPOH3ZhRHz/8mo/QmTHPlQunZU9sodOBobTDcO8=;
-  b=j5dSFuOd/mVesF4UkREYOP85DM5GN/dTfJKkCnMs6FFDtaVUwqFZMAFn
-   aDKePTcNUBCORLmYTxU5nbwBKXDWWpN0+KTU7nmdPlCx9w0/EJMQ40/wS
-   Q8eLX9flMmI5jPXehOuqi1eTczHSRRT5l6Tl1IjWwQSRoOx7e/PgtdJD8
-   nUGPVWYV0OD7p9u/H+7uAU09DBt5RwtjDyHSEPMLOCoXzy8ndM/sIUZzA
-   2wGqfWRIOJE0W5Nf2Z36Z6IaGx0ebalUHwttKsewMkAYeiOiBum05zjTm
-   eN0mIRINMvGpihEyqAOkLho22D1eI4sYCcYadUF8a/di7RFMzJBOx4S7Q
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10721"; a="440437630"
+   content-transfer-encoding:mime-version;
+  bh=LOIe8oTTBxmuOXP1ABCIoFep0AufgEk8LI3hEJoNwNI=;
+  b=OsL846Fv5ldBBto7V0Sw30eZjt/GBxq7BYbF8D5HPv7oF7wC2qdVWf7O
+   gG72To6XlDih1aQz34RZdEwVPrnNZi55pGucK1HNYWjno2VkiiHe/+0no
+   MAQ1UYdn/En+PxpeiUyMeweZ6n3We05kRepzLOv0ZTWS7obdAU8fEt3WH
+   XLHMja+/Vcs6JK/QMEnI0SKDdClxP6W1gaJiADyuK5SIIWpi+v/BKiuzb
+   ZmG4hHiYp4kETvvyus2RyjKQTjbEicnHzHkoSuyKjwOedIz/+lOiTp2mZ
+   5R/ELZA2gDuCg5aHW13UFadzd2WilrSbaRhCUMCEV1yOE+OLDc6I8s0tf
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10721"; a="343588996"
 X-IronPort-AV: E=Sophos;i="6.00,192,1681196400"; 
-   d="yaml'?scan'208";a="440437630"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2023 18:45:32 -0700
+   d="yaml'?scan'208";a="343588996"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2023 19:31:31 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10721"; a="774910024"
+X-IronPort-AV: E=McAfee;i="6600,9927,10721"; a="735809775"
 X-IronPort-AV: E=Sophos;i="6.00,192,1681196400"; 
-   d="yaml'?scan'208";a="774910024"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by fmsmga004.fm.intel.com with ESMTP; 25 May 2023 18:45:32 -0700
+   d="yaml'?scan'208";a="735809775"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orsmga008.jf.intel.com with ESMTP; 25 May 2023 19:31:28 -0700
 Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Thu, 25 May 2023 18:45:31 -0700
-Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
+ 15.1.2507.23; Thu, 25 May 2023 19:31:27 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
  fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Thu, 25 May 2023 18:45:31 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Thu, 25 May 2023 18:45:31 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.171)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ 15.1.2507.23 via Frontend Transport; Thu, 25 May 2023 19:31:27 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.105)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Thu, 25 May 2023 18:45:30 -0700
+ 15.1.2507.23; Thu, 25 May 2023 19:31:26 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=n23pBXEdcTG9t+hBHPi9kyXhIJyBfLVCa993aAcLiQzOSzBcQc0oNJ6xc+TW8ceVJYA21vHtkM2nQxG8hezu1HTo5GE3Hb5vJRkxUqYGnfECp4CSoWrZtRhrRSXGNkyg2Edler486VZL/bcHR1WPUhq6pS9eOqozRAJvkfLLSMAg/I6xX+Xno8qBBIXD2bcA6I8tMiWmKV0h///S/Rj+hnb/vqCfALLMCr4KTca9fDuOS7sDIsXxyevaJsAKef6RYQXpvazdRmriCI8rrLyzTOuczYDnUblmyLnC6eBACxq5YRCtOBTv6EEOqMlQx3+Nm25AnbOarEKnMrrq/oaaDQ==
+ b=h0RN283VGoL/umSJhJ31gs5VuIdLm6M+4wwQyjRkPvQcwk7Xxs3BbpBCECKrL6L6atqMAlkTB5qComsLQc5BXpzol6jjf1pnD7Ffwgnd4rxYLcC4zZ8T81dhwXLVhUYbO6gvqirM3q1vKhmsm5b/TdyQ+Qo2TPQfJymjpDzuahTjE+U00vt8kFEG1HJzZdaLlhzOEpXZttqdKK2lAvGVdUnA4bhvUbIjm3BBRDIJqcxK0f0Lvo7nriIG7aoJafmpFEgK783WZjn9IidU9PInVTWLXwu+1/WG5GfNFGr7O3rPDKU2gxRiP7cW9wofJOxwTiKgFFleb/mvzWHaMINdpQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hDJRuYl8A6fVMmpVIHpeZ5CzGdkpMdZCR2U/DqmAPHk=;
- b=gdE8xJPDZjDknkTSMGq/RuHtvmHLqhcgg7sdCHWk5EW1JonTUQwH+evQizYIr73hJoWNhGm1FFxabxjbC/dFQP5Ylj/HccN0v2rxOa83jArLnDK0N4ePkPCcImp/ommktJrt91NKW7VRY4G5xaapSL2PpZoBbLE8vQWunZGNqD3cw/9zGmjAnLUUksd4DLkyPYuy/y4OVXarud1N63uXvaSzQ/0PAyKLIdNPCnYL8ThPL5K/Gol156sWZqOfeyOFMQDtTKAhefWXfS/zv6zkiQo7B25FLkPFsgzqzKyn1M6M7Esw+qpwCTpAUo5DjIuYzsNZEqMUqejOGinIDE3eXA==
+ bh=Mnnu/PbFc825wy1rkUcGnsVeEGtxrmacMOgGEF8NTds=;
+ b=V05cuQ/7q6AkELOiBEy/ZzMFJtJfhLlNzOn+xumhilrHT6VtFtbqFrty672vQU2p36jY9Gtg9bOXV5WxmL3xC81A2sW2ZV8lNC4VtsydNNRjgFJGqcL8IP1N1UOi4/xVhde44nd7PKtMalOhUPwfs7VZLg9X+MUXFD1bg+GrZku6YOAR6lpXxV6dta5HeHvMY4yUCr6Dr6k8AouXyGIzsRM+/NMU1P9yvbwc/doKPq5It47sd0QfXRTsZb9Vu67WImiBwB0B/0TPW4fYJfwYZ1VOKOBpV3p51oKn7A9Bs76i9dFq+MoJ4YfU7I5s4TOnfbDR3AQ8dODtJDw3hVso+Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
- by DM8PR11MB5703.namprd11.prod.outlook.com (2603:10b6:8:22::5) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6433.15; Fri, 26 May 2023 01:45:27 +0000
+ by SA0PR11MB7158.namprd11.prod.outlook.com (2603:10b6:806:24b::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6433.17; Fri, 26 May
+ 2023 02:31:22 +0000
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com
  ([fe80::e073:f89a:39f9:bbf]) by PH8PR11MB6779.namprd11.prod.outlook.com
  ([fe80::e073:f89a:39f9:bbf%6]) with mapi id 15.20.6411.028; Fri, 26 May 2023
- 01:45:27 +0000
-Date: Fri, 26 May 2023 09:45:13 +0800
+ 02:31:22 +0000
+Date: Fri, 26 May 2023 10:31:08 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Raghavendra K T <raghavendra.kt@amd.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Aithal Srikanth
-	<sraithal@amd.com>, kernel test robot <oliver.sang@intel.com>,
-	<linux-kernel@vger.kernel.org>, <ying.huang@intel.com>,
-	<feng.tang@intel.com>, <fengwei.yin@intel.com>, <aubrey.li@linux.intel.com>,
-	<yu.c.chen@intel.com>, <linux-mm@kvack.org>, Ingo Molnar <mingo@redhat.com>,
-	Peter Zijlstra <peterz@infradead.org>, Mel Gorman <mgorman@suse.de>, "Andrew
- Morton" <akpm@linux-foundation.org>, David Hildenbrand <david@redhat.com>,
-	<rppt@kernel.org>, Juri Lelli <juri.lelli@redhat.com>, Vincent Guittot
-	<vincent.guittot@linaro.org>, Bharata B Rao <bharata@amd.com>, "Raghavendra K
- T" <raghavendra.kt@amd.com>
-Subject: Re: [RFC PATCH V2 1/1] sched/numa: Fix disjoint set vma scan
- regression
-Message-ID: <202305260951.42e8b39c-oliver.sang@intel.com>
-Content-Type: multipart/mixed; boundary="/64j8yPH+ASbT7kY"
+To: David Howells <dhowells@redhat.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Eric Dumazet
+	<edumazet@google.com>, "David S. Miller" <davem@davemloft.net>, David Ahern
+	<dsahern@kernel.org>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
+	<pabeni@redhat.com>, Jens Axboe <axboe@kernel.dk>, Matthew Wilcox
+	<willy@infradead.org>, <netdev@vger.kernel.org>, <ying.huang@intel.com>,
+	<feng.tang@intel.com>, <fengwei.yin@intel.com>, <oliver.sang@intel.com>
+Subject: [dhowells-fs:sendpage-1] [tcp]  77f5a42b2d:  netperf.Throughput_Mbps
+ -14.6% regression
+Message-ID: <202305260951.338c3bfe-oliver.sang@intel.com>
+Content-Type: multipart/mixed; boundary="Rke8sLYKeoOfF9kv"
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <b0a8f3490b491d4fd003c3e0493e940afaea5f2c.1684228065.git.raghavendra.kt@amd.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: SG2PR06CA0192.apcprd06.prod.outlook.com (2603:1096:4:1::24)
- To PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
+X-ClientProxiedBy: SG2PR01CA0114.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:40::18) To PH8PR11MB6779.namprd11.prod.outlook.com
+ (2603:10b6:510:1ca::17)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -93,95 +86,90 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|DM8PR11MB5703:EE_
-X-MS-Office365-Filtering-Correlation-Id: 256fc477-8881-42e8-f11c-08db5d8ae0b5
+X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|SA0PR11MB7158:EE_
+X-MS-Office365-Filtering-Correlation-Id: eb98f961-6f3a-41dd-3e85-08db5d914b11
 X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: KPBpPsaRkfkieO2kMcXJV8oaELWa7ywSQRzUTDU06fCXhw2QY8SOmzvC7+5w4fls1KRZ/OxcmD/TMyZ1Ek9mgiRSqqwkGECSOISkzuSi1o8zUGDZvxk+ArZZdYhu8LhM4FzutnqZ/eZwg6oWi9Je3USod/srt2OY3UAY2xd4D1cO0pRiAdtqSzYDuvyLtp/bKDAgI72krJdgWNoAl2FE0fO5X6BbAbrKJVM+yKlb3mz8GPlECRkuriOT/S9TE23q0RGiWzk1NOimgqfr1vzQDA9xnBw9T9cucHGLsR7d4EaqFF34dwmnmVIZfYQgfoJXH6WM9QjWOIXDfVjw+Ht4Irq5vy+dmBtvlP5CfihntBEfMBm8/VqbW/1ol4Z+z7cULwvlfImTImMzAzlBvq9ghgx24wUD8kyP8ht8qr8/Y+qtzTgiH3qQ2eaz8+7NvU1ph7pNBgv00PZtjUEQgaTEX2+e/rDVqelbZ99/6OaKrBWHPTMgPBBynNVjUqBT3SIHI5DlP+hZF9et1GCXDKS0fVb9TIH3XjFApeiXcIMJPrpprvmnyNe7LA7FvUJlXituCuMD06ZDuabaPKUh5/QIBAE1LIwc6BKiPtlKU5xMLzsi8JliSLmEZBEI6nRtQgU2lAfFKVqVLvF/B35cdhr41w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(346002)(136003)(376002)(396003)(39860400002)(366004)(451199021)(8936002)(8676002)(5660300002)(235185007)(7416002)(66574015)(83380400001)(186003)(6512007)(38100700002)(21490400003)(2616005)(26005)(6506007)(86362001)(1076003)(82960400001)(41300700001)(44144004)(6486002)(6666004)(66946007)(966005)(4326008)(66556008)(66476007)(36756003)(478600001)(6916009)(316002)(54906003)(30864003)(2906002)(2700100001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: +IigislZm+AXuDqMy6VcEUUwyYXRQRsm7rb8i8gAFg1mCZ9zF9IIy/ErQlVScR/K68t/0ffJlgeEzLgn4K9DaNmwScyAMLaxfKwizLkd6vFGScG3VAO2z0WsKHCvVkjaiMrw6zl+y1uL1aCAq0Hho9w6/AQ+4TZ0OeN+3M5fs33nCcXB9SMgTazkAkq12EWQKSm1awRiu8kwSzFTeHFPsEOP7FSAQku+NjrYVnSS/Rr49+ZyuTSVzqp0K1hYAfOPCuBqM0dLxXZ2v9WDx0N27+fq0yt17YehN6sHBgoAZ1Se0A6FC0bh3NR+j+45YyA5G9zcuZNfS/P1lG/FI40AfTHWsBE4XlSE21QDDvNd+lTkAJYoH5VznpdacpFPLtNLO+Qilpmyh/R3PBvquLoc5K+cq+H3hUxMkoOv+3Lj+fKJvmt+j5UY8GreD9Vim87wCi9lA/V23wNuMRO7XVlVDfUJqqu3JbNfeOgukqWLKScQUTO9i0XfFcWn+z1I0IWYRrWA/7K/b+b8ePkBAn36ouII1uY8ndYtLMX/qkJT/hAMZ35XCE0koh5qiEF5bnwa1+z53I5g9nC27mcFmT/t5kmmj0WNTsbtoTSoYYGlhTOsSWs4Dfl5SZBnPZHHWxxJqaGhOwOwcqTZJxxUoq4FNw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(366004)(376002)(346002)(39860400002)(396003)(136003)(451199021)(7416002)(38100700002)(82960400001)(186003)(2616005)(107886003)(26005)(6506007)(6512007)(1076003)(83380400001)(21490400003)(478600001)(2906002)(30864003)(966005)(86362001)(6486002)(44144004)(19627235002)(54906003)(36756003)(316002)(4326008)(41300700001)(6916009)(66946007)(66556008)(8936002)(8676002)(6666004)(66476007)(5660300002)(235185007)(2700100001)(579004)(559001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?DsbPhSlCdvtZYBIXHCwqm6/EO3UigZ7gv/UkK9sd1ulxq8Nq2+zp41QYw9?=
- =?iso-8859-1?Q?hfcFLWHaX3J36QmV+6V5qaJadrH03jzF/uZoKbs6wa5XhAZ+GG1cITrCQH?=
- =?iso-8859-1?Q?Y5fb1mDH2uvdqQymQiO326xOtddlmXj3a9Bg0IKIHdwx+CYheI/8pb8TMK?=
- =?iso-8859-1?Q?fPclfraO4fTFemXYPvRR9IdYnF3hcibv+S3VvGupALUDE9yYLTWP6b1eQe?=
- =?iso-8859-1?Q?0VD8qGNGPhW3+n2vgAUGFZMyep5UDJEXHSTkdELpGNV2Qp6uAh7y5AIV+v?=
- =?iso-8859-1?Q?tuQY1GJpnYQQ9Ugle8xn0q+tQY6uHol2rE0fCAutu+hmt741p9Ht2KmC3O?=
- =?iso-8859-1?Q?WeuduSZjgwPhqH0aL6qKDYKPY+ieaQ66jIjNKZn+E0jBmsnY4QPnx20YvQ?=
- =?iso-8859-1?Q?bZlb4lmndrZqZuzRKokMloJurqyfg1rBZZ/v5RWlTXaSmpQnlZgYSw3+Mj?=
- =?iso-8859-1?Q?8bjA+YcwUQLpa5yRqIXWPkTn4jtnqCpqR24m1nH5yip127FsNPOplJuD3+?=
- =?iso-8859-1?Q?B45R42vYlFE5fXZseCspRlHA1RN4+E5i/DLim3prkh7DN9xoUrJvUu6XXX?=
- =?iso-8859-1?Q?d30fULc+77s53r/fLi6ItREivftZ/xd1N53Vsi3qd99ccPf9JZZzqc47nX?=
- =?iso-8859-1?Q?gUTSi9TlFCzhwG2y6YWw/JbC4xlN919PurAvvSRpNq0UJdMrQAnylqSQuE?=
- =?iso-8859-1?Q?mu/rkFo2clDxmY4Xul1A60F5SdqteQcavqHijOKwLVpuvxhxRZCWH3v8fp?=
- =?iso-8859-1?Q?Hmoru6YWj4xsrrr+Xa8z2OTBwviyf3c8acOHtHxE0Jl6j9YH6wpP183zdQ?=
- =?iso-8859-1?Q?sswv3N9MphGaPvrem+Ek/4rn6VrXyj5EZ5Dhc84AzsRH3W4h8a6QoK7xrB?=
- =?iso-8859-1?Q?vHi8dWqkcwGTe2JvSzu2YGk99fl0Ds+vaKl1fRoHrpbYQkJEi6UNCFrhkf?=
- =?iso-8859-1?Q?B9aut4W900dW83qMlKAG8LfCuPbYpgVvVsUDlLoT9ygcNgHCNomSJedxEs?=
- =?iso-8859-1?Q?YR51k1M6bQ4i5QMOZnQ4uvZAFkKES+ATYA1PAss6ve43pD1PfnH4VWanCU?=
- =?iso-8859-1?Q?CfJ9Nus0sB6+vMOPzYYd4a5ADN5q4PtyyMcRF/zVSAJ82KvMu6DU+OR2+Y?=
- =?iso-8859-1?Q?D6F1bFBDxN4gRmP/PM4+y9CRx04laIFUxw4Uheo0c43i1fvSSAhlrw0OjG?=
- =?iso-8859-1?Q?uQ49llIqSFghYx4X0M+C20OhQ9HbJ2nsJ/ZzkIdxJDCiwszjKSFP5nQdGe?=
- =?iso-8859-1?Q?Sf8AiBpxOeNanMTmdUnxBB3jX/XPjLzKVqEvS1ktphyk1G79NlSXs4P8dO?=
- =?iso-8859-1?Q?TY9XH7HplZiZWQ1sT0EsHYhPU+0VpdvZ4pZPeXY7FgeOJPQgCS5G+Yer5J?=
- =?iso-8859-1?Q?DOSpJehO6Au2fbRb1xC5B463TTFUF+kOaUYwqv2TO/D/ee9XkS2B2pJsay?=
- =?iso-8859-1?Q?LqNe9s3LDPWwQ5nlu9lVitK8qTXc2vW63VJG2oW6EkFIYw3nfHWUpt+4ws?=
- =?iso-8859-1?Q?ZhFwfFM/jAunCbnEYNRXy2RmPfZ5F9MhJdkKLQvolJqJjHVubflvJ5Hun7?=
- =?iso-8859-1?Q?i7TdoXz2/GzGU2MJqgmRmzezPE9d5niDIPheWdPKxtPTiaHyu3PnwPfYpd?=
- =?iso-8859-1?Q?vySmVSDF+1dS0yfulx7FFQUrmFKnWNn3n4?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 256fc477-8881-42e8-f11c-08db5d8ae0b5
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?S12IkiN+RmndHD74+VvKpSYIN91uxLOLzFAcp8OreMp/MdIkGnB2JBkUa0?=
+ =?iso-8859-1?Q?gBM94RRkNOIMq+mraoAML5DLCrSWdpQtIAi0XHjdv30nSwFaPCl9H3Xm+2?=
+ =?iso-8859-1?Q?Mx0CfZ7HtqIMzR8laqfZkVFn+1RqW0O+0GUvLsPIo6fkYY/K+lSDBO0H9l?=
+ =?iso-8859-1?Q?5oxXG92APBvM4E4eFbeu2lfwPQ/lOSaKTQR3KfyVXYvu6jKn9VY2UgeI4x?=
+ =?iso-8859-1?Q?GzdteMJe2MnevmOz68uJQKkkdLzGpJNI4y9LYdLwJMHn6A8F5jDk1MKwsa?=
+ =?iso-8859-1?Q?4DY8e0cY6o9R0xlG3HwnOztOAa0gL6bv4ZznjSw4s6NMOYf25fC/LRSbs8?=
+ =?iso-8859-1?Q?q17hljdqBZ4Ebv6WHQJ6GlLM84b41taIWFboTsJj5EBV9oFWcX9FIiKEuR?=
+ =?iso-8859-1?Q?3mN/bwmDc8P1TrusAuarxGHBx4XLuJzb4rU8usKjGFSYByUOQPplSwn18R?=
+ =?iso-8859-1?Q?+6z5vsc054CiIVSPsSs09yBKVZjz5MREYdfuLUB2xs6zcyh1S02ZSPTYKd?=
+ =?iso-8859-1?Q?I2EYSGd7puOEYX9P0YzuONSmbe+zwc+L+WGpDENQSLJEbUZFIZGYb3lp3V?=
+ =?iso-8859-1?Q?okxqTc/0zSi0AGRmAvj/GO53zJ+6tNCFFvZ5WZcyOrFIBgOR3huf4+2SHG?=
+ =?iso-8859-1?Q?wSHcWY0FHNJNxtdo4psA3hvFhV3Flea29LKkMu6+6IxTiHE1H/m32yGouZ?=
+ =?iso-8859-1?Q?SPW3oz2dM4OltI6eH7sCNBx8F4uVa9yqYXf+vrxxqwTuLcAj7RnuMsS7jz?=
+ =?iso-8859-1?Q?w7jTK57astEbpf8cERBCfk6gNM7GdYQz23L38ZFeT5ohONxrJzt42oUuw9?=
+ =?iso-8859-1?Q?XNBdwsVEaeOiFe7fCJ99i1uMk2UVyC8hgZCWt6hpm2qTq57KH6vhcMwAJ8?=
+ =?iso-8859-1?Q?XSKNn9/ccTiEDmH2+V4S0p6aUbmnxGxl959EOsJBFX5ERuHxwrbLEe3hvj?=
+ =?iso-8859-1?Q?EyU/T/3QBuc2LlqwMzzwAPCCcL+qw71olI1euOM0ZOXtSVc+clScIDGel6?=
+ =?iso-8859-1?Q?GFF/19dDvseP5+uzhGz1Iq7HfNgQiPeVzoFkKvdZZuwd5BjmpZOyxxSt4Q?=
+ =?iso-8859-1?Q?clOpF3xIuvGxvPJ/vcxYck/agxet7aooMsaX6J8fv8vkbPcY1V+x39RDIW?=
+ =?iso-8859-1?Q?FGzvxnWSxoGBBPSknvf+maDneV22Jzg7iceVvUVJF4ykZAVVMSjNy8OGRq?=
+ =?iso-8859-1?Q?MOG9XMDiO/pwlGnInIHp4z2hlh9RPFd/aCwDSb+6yFdGS3SClxNZtm3Z8g?=
+ =?iso-8859-1?Q?+qQN0TVRLaBw6KZBs6BRQQfoXwpjXC1q43y3/77SEkjBuxmKFNPZR7OQSD?=
+ =?iso-8859-1?Q?jpVd5Qa97QqRPj2fiPhObN6HiA6T7OcKdC97NrphCrxdi5wQH6UOOlpIld?=
+ =?iso-8859-1?Q?53C4sbSEIta5S8PJzbsOXRSVvR87vF8lFJi09WLpwFExtzB/UxjGo/4xBR?=
+ =?iso-8859-1?Q?lVQlbzrPCm5FDiE4Xv+X4uTVg5orC8Z1b0JNr3kWsQuTwConb5W8f5Bfb+?=
+ =?iso-8859-1?Q?FBaynSvexLJYqVesATbYSj3t6w2Vh98dUv9IlTLOe8I1Mfb8VVO3sXLiUC?=
+ =?iso-8859-1?Q?C3eRcJd2fru9voCycfN0zmVl25OYXBW4WcRPm4N7aEqAuEm5RNcwWjDs83?=
+ =?iso-8859-1?Q?ORVpeQ/A7D4ijn++ojrwIgDGEm66ygd9/oNja0158EsZzUuIMWCDGdgA?=
+ =?iso-8859-1?Q?=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: eb98f961-6f3a-41dd-3e85-08db5d914b11
 X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB6779.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 May 2023 01:45:27.0427
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 May 2023 02:31:22.2008
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: JeaR43RoDjNm+typHGSlP3sizdxj+ncCilOWDdEBPhgWmwsvYMFnfdrcUUNsYmYQ52xROS6HzCV2YPRj9zoogQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR11MB5703
+X-MS-Exchange-CrossTenant-UserPrincipalName: WiYRbwU9a7cqc40FiZbMyuBxjRs8JKPGODrrJkCgiVVq6j3qsVA3RrCqmBUrKsfC0m1GxU9Ndq1TETBNiiOLrw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR11MB7158
 X-OriginatorOrg: intel.com
 
---/64j8yPH+ASbT7kY
+--Rke8sLYKeoOfF9kv
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 
 
-
 Hello,
 
-kernel test robot noticed a -46.3% improvement of autonuma-benchmark.numa01.seconds on:
+kernel test robot noticed a -14.6% regression of netperf.Throughput_Mbps on:
 
 
-commit: d281d36ed007eabb243ad2d489c52c43961f8ac3 ("[RFC PATCH V2 1/1] sched/numa: Fix disjoint set vma scan regression")
-url: https://github.com/intel-lab-lkp/linux/commits/Raghavendra-K-T/sched-numa-Fix-disjoint-set-vma-scan-regression/20230516-180954
-base: https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git a6fcdd8d95f7486150b3faadfea119fc3dfc3b74
-patch link: https://lore.kernel.org/all/b0a8f3490b491d4fd003c3e0493e940afaea5f2c.1684228065.git.raghavendra.kt@amd.com/
-patch subject: [RFC PATCH V2 1/1] sched/numa: Fix disjoint set vma scan regression
+commit: 77f5a42b2db3e39c971a7d11f0b63745cef8b496 ("tcp: Convert do_tcp_sendpages() to use MSG_SPLICE_PAGES")
+https://git.kernel.org/cgit/linux/kernel/git/dhowells/linux-fs.git sendpage-1
 
-
-we noticed this patch addressed the performance regression we reported
-https://lore.kernel.org/all/202305101547.20f4c32a-oliver.sang@intel.com/
-
-we also noticed there is still some discussion in the thread
-https://lore.kernel.org/all/202305101547.20f4c32a-oliver.sang@intel.com/
-
-since we didn't see V3 patch, send out this report for your information
-about its performance impact.
-
-
-testcase: autonuma-benchmark
-test machine: 88 threads 2 sockets Intel(R) Xeon(R) Gold 6238M CPU @ 2.10GHz (Cascade Lake) with 128G memory
+testcase: netperf
+test machine: 128 threads 4 sockets Intel(R) Xeon(R) Gold 6338 CPU @ 2.00GHz (Ice Lake) with 256G memory
 parameters:
 
-	iterations: 4x
-	test: numa02_SMT
+	ip: ipv4
+	runtime: 300s
+	nr_threads: 50%
+	cluster: cs-localhost
+	send_size: 10K
+	test: TCP_SENDFILE
 	cpufreq_governor: performance
 
+test-description: Netperf is a benchmark that can be use to measure various aspect of networking performance.
+test-url: http://www.netperf.org/netperf/
 
 
 
+If you fix the issue, kindly add following tag
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202305260951.338c3bfe-oliver.sang@intel.com
 
 
 Details are as below:
@@ -200,292 +188,625 @@ To reproduce:
         # please remove ~/.lkp and /lkp dir to run from a clean state.
 
 =========================================================================================
-compiler/cpufreq_governor/iterations/kconfig/rootfs/tbox_group/test/testcase:
-  gcc-11/performance/4x/x86_64-rhel-8.3/debian-11.1-x86_64-20220510.cgz/lkp-csl-2sp9/numa02_SMT/autonuma-benchmark
+cluster/compiler/cpufreq_governor/ip/kconfig/nr_threads/rootfs/runtime/send_size/tbox_group/test/testcase:
+  cs-localhost/gcc-11/performance/ipv4/x86_64-rhel-8.3/50%/debian-11.1-x86_64-20220510.cgz/300s/10K/lkp-icl-2sp2/TCP_SENDFILE/netperf
 
 commit: 
-  a6fcdd8d95 ("sched/debug: Correct printing for rq->nr_uninterruptible")
-  d281d36ed0 ("sched/numa: Fix disjoint set vma scan regression")
+  b032c5b94f ("tcp: Support MSG_SPLICE_PAGES")
+  77f5a42b2d ("tcp: Convert do_tcp_sendpages() to use MSG_SPLICE_PAGES")
 
-a6fcdd8d95f74861 d281d36ed007eabb243ad2d489c 
+b032c5b94fdcfda3 77f5a42b2db3e39c971a7d11f0b 
 ---------------- --------------------------- 
          %stddev     %change         %stddev
              \          |                \  
-      1899 ±  2%     -37.4%       1189 ± 18%  uptime.boot
-      1809            +3.1%       1866        vmstat.system.cs
- 1.685e+10 ±  3%     -52.2%  8.052e+09 ± 11%  cpuidle..time
-  17400470 ±  3%     -52.3%    8308590 ± 11%  cpuidle..usage
-     26350 ±  7%      -9.2%      23932        meminfo.Active
-     26238 ±  7%      -9.2%      23828        meminfo.Active(anon)
-     38666 ±  8%     +21.4%      46957 ±  7%  meminfo.Mapped
-      1996           -16.5%       1666        meminfo.Mlocked
-     23350 ± 56%     +64.7%      38446 ±  8%  numa-meminfo.node0.Mapped
-      5108 ±  6%     +78.7%       9132 ± 43%  numa-meminfo.node0.Shmem
-     25075 ±  8%      -9.3%      22750        numa-meminfo.node1.Active
-     25057 ±  8%      -9.5%      22681        numa-meminfo.node1.Active(anon)
-   2038104 ±  7%     -34.9%    1327290 ± 12%  numa-numastat.node0.local_node
-   2394647 ±  5%     -30.9%    1655892 ± 15%  numa-numastat.node0.numa_hit
-   1988880 ±  7%     -27.5%    1442918 ± 12%  numa-numastat.node1.local_node
-   2255986 ±  6%     -23.0%    1737172 ± 17%  numa-numastat.node1.numa_hit
-     10.54 ±  3%      -1.7        8.83 ±  9%  mpstat.cpu.all.idle%
-      0.00 ± 74%      +0.1        0.05 ± 13%  mpstat.cpu.all.iowait%
-      2.48            -0.9        1.57        mpstat.cpu.all.irq%
-      0.08 ±  2%      -0.0        0.06 ±  3%  mpstat.cpu.all.soft%
-      1.48            +0.7        2.19 ±  4%  mpstat.cpu.all.sys%
-    427.10           -46.3%     229.25 ±  3%  autonuma-benchmark.numa01.seconds
-      1819           -43.5%       1027 ±  3%  autonuma-benchmark.time.elapsed_time
-      1819           -43.5%       1027 ±  3%  autonuma-benchmark.time.elapsed_time.max
-    791068 ±  2%     -43.6%     446212 ±  4%  autonuma-benchmark.time.involuntary_context_switches
-   2089497           -16.8%    1737489 ±  2%  autonuma-benchmark.time.minor_page_faults
-      7603            +3.2%       7848        autonuma-benchmark.time.percent_of_cpu_this_job_got
-    136519           -42.2%      78864 ±  3%  autonuma-benchmark.time.user_time
-     22402           +44.8%      32429 ±  4%  autonuma-benchmark.time.voluntary_context_switches
-      5919 ± 55%     +64.7%       9747 ±  9%  numa-vmstat.node0.nr_mapped
-      1277 ±  6%     +77.6%       2268 ± 43%  numa-vmstat.node0.nr_shmem
-   2394430 ±  5%     -30.9%    1655441 ± 15%  numa-vmstat.node0.numa_hit
-   2037887 ±  7%     -34.9%    1326839 ± 12%  numa-vmstat.node0.numa_local
-      6261 ±  8%      -9.2%       5683        numa-vmstat.node1.nr_active_anon
-      6261 ±  8%      -9.2%       5683        numa-vmstat.node1.nr_zone_active_anon
-   2255543 ±  6%     -23.0%    1736429 ± 17%  numa-vmstat.node1.numa_hit
-   1988436 ±  7%     -27.5%    1442174 ± 12%  numa-vmstat.node1.numa_local
-     35815 ±  5%     -23.8%      27284 ± 17%  turbostat.C1
-      0.03 ± 17%      +0.0        0.07 ± 12%  turbostat.C1E%
-  17197885 ±  3%     -52.7%    8127065 ± 11%  turbostat.C6
-     10.48 ±  3%      -1.7        8.80 ± 10%  turbostat.C6%
-     10.23 ±  3%     -17.3%       8.46 ± 10%  turbostat.CPU%c1
-      0.24 ±  7%     +61.3%       0.38 ± 11%  turbostat.CPU%c6
- 1.615e+08           -42.4%   93035289 ±  3%  turbostat.IRQ
-     48830 ± 13%     -35.2%      31632 ± 11%  turbostat.POLL
-      0.19 ±  7%     +61.1%       0.30 ± 11%  turbostat.Pkg%pc2
-    238.01            +5.2%     250.27        turbostat.PkgWatt
-     22.38           +25.3%      28.03        turbostat.RAMWatt
-      6557 ±  7%      -9.1%       5963        proc-vmstat.nr_active_anon
-   1539398            -4.8%    1465253        proc-vmstat.nr_anon_pages
-      2955            -5.8%       2785        proc-vmstat.nr_anon_transparent_hugepages
-   1541555            -4.7%    1468824        proc-vmstat.nr_inactive_anon
-      9843 ±  8%     +21.4%      11949 ±  7%  proc-vmstat.nr_mapped
-    499.00           -16.5%     416.67        proc-vmstat.nr_mlock
-      3896            -3.2%       3770        proc-vmstat.nr_page_table_pages
-      6557 ±  7%      -9.1%       5963        proc-vmstat.nr_zone_active_anon
-   1541555            -4.7%    1468824        proc-vmstat.nr_zone_inactive_anon
-     30446 ± 15%    +397.7%     151532 ±  4%  proc-vmstat.numa_hint_faults
-     21562 ± 12%    +312.9%      89028 ±  3%  proc-vmstat.numa_hint_faults_local
-   4651965           -27.0%    3395711 ±  2%  proc-vmstat.numa_hit
-      5122 ±  7%   +1393.9%      76529 ±  5%  proc-vmstat.numa_huge_pte_updates
-   4028316           -31.2%    2772852 ±  2%  proc-vmstat.numa_local
-   1049660          +672.3%    8106150 ±  6%  proc-vmstat.numa_pages_migrated
-   2725369 ±  7%   +1343.9%   39352403 ±  5%  proc-vmstat.numa_pte_updates
-     45132 ± 31%     +31.9%      59519        proc-vmstat.pgactivate
- 1.816e+08 ±  2%      +5.6%  1.918e+08 ±  3%  proc-vmstat.pgalloc_normal
-   5863913           -30.2%    4092045 ±  2%  proc-vmstat.pgfault
- 1.815e+08 ±  2%      +5.7%  1.918e+08 ±  3%  proc-vmstat.pgfree
-   1049660          +672.3%    8106150 ±  6%  proc-vmstat.pgmigrate_success
-    264923           -35.1%     171993 ±  2%  proc-vmstat.pgreuse
-      2037          +675.1%      15790 ±  6%  proc-vmstat.thp_migration_success
-  13598464           -42.9%    7770880 ±  3%  proc-vmstat.unevictable_pgs_scanned
-      3208 ± 14%     +44.1%       4624 ± 12%  sched_debug.cfs_rq:/.load.min
-      2.73 ± 16%     +52.6%       4.16 ± 14%  sched_debug.cfs_rq:/.load_avg.min
-  94294753 ±  2%     -45.7%   51173318 ±  3%  sched_debug.cfs_rq:/.min_vruntime.avg
-  98586361 ±  2%     -46.3%   52983552 ±  3%  sched_debug.cfs_rq:/.min_vruntime.max
-  85615972 ±  2%     -45.4%   46737672 ±  3%  sched_debug.cfs_rq:/.min_vruntime.min
-   2806211 ±  7%     -53.1%    1314959 ±  6%  sched_debug.cfs_rq:/.min_vruntime.stddev
-      2.63 ± 23%     +65.8%       4.36 ± 24%  sched_debug.cfs_rq:/.removed.load_avg.avg
-      1.08 ± 23%     +55.4%       1.68 ± 19%  sched_debug.cfs_rq:/.removed.runnable_avg.avg
-      1.07 ± 24%     +56.7%       1.68 ± 19%  sched_debug.cfs_rq:/.removed.util_avg.avg
-   7252565 ± 13%     -46.6%    3874343 ± 15%  sched_debug.cfs_rq:/.spread0.avg
-  11534195 ± 10%     -50.8%    5673455 ± 12%  sched_debug.cfs_rq:/.spread0.max
-  -1406320           -61.2%    -546147        sched_debug.cfs_rq:/.spread0.min
-   2795186 ±  7%     -53.2%    1309202 ±  6%  sched_debug.cfs_rq:/.spread0.stddev
-      6.57 ± 40%   +6868.7%     457.74 ±  6%  sched_debug.cfs_rq:/.util_est_enqueued.avg
-    275.73 ± 43%    +333.0%       1193 ±  5%  sched_debug.cfs_rq:/.util_est_enqueued.max
-     37.70 ± 41%    +722.1%     309.90 ±  3%  sched_debug.cfs_rq:/.util_est_enqueued.stddev
-    794516 ±  5%     -26.2%     586654 ± 17%  sched_debug.cpu.avg_idle.min
-    224.87 ±  4%     -42.6%     129.01 ± 10%  sched_debug.cpu.clock.stddev
-    885581 ±  2%     -42.6%     508722 ±  3%  sched_debug.cpu.clock_task.min
-     19466 ±  2%     -30.4%      13558 ±  4%  sched_debug.cpu.curr->pid.avg
-     26029 ±  2%     -33.9%      17216 ±  2%  sched_debug.cpu.curr->pid.max
-     13168 ± 11%     -33.3%       8788 ± 12%  sched_debug.cpu.curr->pid.min
-      2761 ± 14%     -37.3%       1730 ± 29%  sched_debug.cpu.curr->pid.stddev
-    958735           -24.7%     721786 ± 11%  sched_debug.cpu.max_idle_balance_cost.max
-     97977 ±  3%     -52.2%      46860 ± 25%  sched_debug.cpu.max_idle_balance_cost.stddev
-      0.00 ±  4%     -41.9%       0.00 ± 10%  sched_debug.cpu.next_balance.stddev
-     20557 ±  3%     -37.3%      12889 ±  3%  sched_debug.cpu.nr_switches.avg
-     81932 ±  7%     -25.4%      61097 ± 15%  sched_debug.cpu.nr_switches.max
-      6643 ±  6%     -39.2%       4037 ± 15%  sched_debug.cpu.nr_switches.min
-     13929 ±  6%     -30.1%       9740 ±  4%  sched_debug.cpu.nr_switches.stddev
-     20.30 ± 23%     +73.3%      35.19 ± 28%  sched_debug.cpu.nr_uninterruptible.max
-    -12.43          +145.8%     -30.55        sched_debug.cpu.nr_uninterruptible.min
-      5.28 ± 12%     +82.4%       9.63 ± 13%  sched_debug.cpu.nr_uninterruptible.stddev
-    925729 ±  2%     -42.4%     533314 ±  3%  sched_debug.sched_clk
-     36.08           +51.2%      54.54 ±  2%  perf-stat.i.MPKI
- 1.037e+08            +9.7%  1.137e+08        perf-stat.i.branch-instructions
-      1.36            +0.0        1.39        perf-stat.i.branch-miss-rate%
-   1602349           +19.8%    1918946 ±  3%  perf-stat.i.branch-misses
-  11889864           +56.5%   18603954 ±  2%  perf-stat.i.cache-misses
-  17973544           +54.5%   27773059 ±  2%  perf-stat.i.cache-references
-      1771            +3.1%       1826        perf-stat.i.context-switches
- 2.147e+11            +3.2%  2.215e+11        perf-stat.i.cpu-cycles
-    112.60           +16.6%     131.26        perf-stat.i.cpu-migrations
-     18460           -33.1%      12347        perf-stat.i.cycles-between-cache-misses
-      0.03 ±  4%      +0.0        0.04 ±  8%  perf-stat.i.dTLB-load-miss-rate%
-     52266 ±  4%     +28.9%      67377 ±  7%  perf-stat.i.dTLB-load-misses
- 1.442e+08            +7.7%  1.553e+08        perf-stat.i.dTLB-loads
-      0.25            +0.0        0.27        perf-stat.i.dTLB-store-miss-rate%
-    189901           +13.6%     215670        perf-stat.i.dTLB-store-misses
-  80186719            +6.8%   85653052        perf-stat.i.dTLB-stores
-    400061 ±  4%     +18.9%     475847 ±  4%  perf-stat.i.iTLB-load-misses
-    361622 ±  2%     -18.0%     296709 ± 12%  perf-stat.i.iTLB-loads
- 5.358e+08            +9.1%  5.845e+08        perf-stat.i.instructions
-      1420 ±  2%      -4.7%       1353 ±  3%  perf-stat.i.instructions-per-iTLB-miss
-      0.00 ±  5%     +24.9%       0.01 ±  8%  perf-stat.i.ipc
-      0.06 ±  8%     -21.0%       0.04 ±  8%  perf-stat.i.major-faults
-      2.44            +3.3%       2.52        perf-stat.i.metric.GHz
-      1592            +3.9%       1655 ±  2%  perf-stat.i.metric.K/sec
-      2.46           +17.0%       2.88        perf-stat.i.metric.M/sec
-      3139           +21.5%       3815        perf-stat.i.minor-faults
-     52.88            +1.2       54.08        perf-stat.i.node-load-miss-rate%
-    238363           +53.4%     365608        perf-stat.i.node-load-misses
-    219288 ±  4%     +35.5%     297188        perf-stat.i.node-loads
-     50.27            -6.3       44.01 ±  4%  perf-stat.i.node-store-miss-rate%
-   5122757           +33.6%    6845784 ±  3%  perf-stat.i.node-store-misses
-   5214111           +77.3%    9242761 ±  5%  perf-stat.i.node-stores
-      3139           +21.5%       3815        perf-stat.i.page-faults
-     33.59           +41.4%      47.50 ±  2%  perf-stat.overall.MPKI
-      1.54            +0.2        1.70 ±  2%  perf-stat.overall.branch-miss-rate%
-    407.04            -6.3%     381.24        perf-stat.overall.cpi
-     18139           -34.2%      11935 ±  2%  perf-stat.overall.cycles-between-cache-misses
-      0.03 ±  4%      +0.0        0.04 ±  7%  perf-stat.overall.dTLB-load-miss-rate%
-      0.24            +0.0        0.25        perf-stat.overall.dTLB-store-miss-rate%
-     54.20 ±  2%      +8.4       62.57 ±  5%  perf-stat.overall.iTLB-load-miss-rate%
-      1353 ±  3%      -8.7%       1236 ±  5%  perf-stat.overall.instructions-per-iTLB-miss
-      0.00            +6.8%       0.00        perf-stat.overall.ipc
-     51.26 ±  2%      +2.9       54.20        perf-stat.overall.node-load-miss-rate%
-     49.80            -7.1       42.74 ±  4%  perf-stat.overall.node-store-miss-rate%
- 1.031e+08           +10.1%  1.136e+08        perf-stat.ps.branch-instructions
-   1590263           +21.1%    1925935 ±  3%  perf-stat.ps.branch-misses
-  11959851           +55.9%   18644201 ±  2%  perf-stat.ps.cache-misses
-  17905275           +54.8%   27718539 ±  2%  perf-stat.ps.cache-references
-      1778            +2.7%       1826        perf-stat.ps.context-switches
- 2.169e+11            +2.5%  2.224e+11        perf-stat.ps.cpu-cycles
-    112.21           +16.9%     131.18        perf-stat.ps.cpu-migrations
-     50162 ±  4%     +30.8%      65621 ±  8%  perf-stat.ps.dTLB-load-misses
- 1.434e+08            +8.0%  1.549e+08        perf-stat.ps.dTLB-loads
-    191061           +13.1%     216009        perf-stat.ps.dTLB-store-misses
-  79737750            +7.0%   85349028        perf-stat.ps.dTLB-stores
-    394455 ±  4%     +20.0%     473256 ±  4%  perf-stat.ps.iTLB-load-misses
-  5.33e+08            +9.5%  5.835e+08        perf-stat.ps.instructions
-      0.06 ±  9%     -21.7%       0.04 ±  8%  perf-stat.ps.major-faults
-      3088           +22.3%       3775        perf-stat.ps.minor-faults
-    236351           +54.5%     365167        perf-stat.ps.node-load-misses
-    225011 ±  4%     +37.1%     308593        perf-stat.ps.node-loads
-   5183662           +32.7%    6879838 ±  3%  perf-stat.ps.node-store-misses
-   5224274           +76.7%    9231733 ±  5%  perf-stat.ps.node-stores
-      3088           +22.3%       3775        perf-stat.ps.page-faults
- 9.703e+11           -38.2%  5.999e+11 ±  2%  perf-stat.total.instructions
-     14.84 ± 13%     -12.7        2.15 ± 14%  perf-profile.calltrace.cycles-pp.asm_sysvec_apic_timer_interrupt
-      1.37 ± 11%      -0.6        0.76 ± 31%  perf-profile.calltrace.cycles-pp.evsel__read_counter.read_counters.process_interval.dispatch_events.cmd_stat
-      0.53 ± 72%      +0.5        1.03 ± 18%  perf-profile.calltrace.cycles-pp.do_anonymous_page.__handle_mm_fault.handle_mm_fault.do_user_addr_fault.exc_page_fault
-      1.26 ± 18%      +0.8        2.11 ± 12%  perf-profile.calltrace.cycles-pp.serial8250_console_write.console_flush_all.console_unlock.vprintk_emit._printk
-      1.26 ± 18%      +0.9        2.13 ± 12%  perf-profile.calltrace.cycles-pp.irq_work_run_list.irq_work_run.__sysvec_irq_work.sysvec_irq_work.asm_sysvec_irq_work
-      1.26 ± 18%      +0.9        2.13 ± 12%  perf-profile.calltrace.cycles-pp.irq_work_single.irq_work_run_list.irq_work_run.__sysvec_irq_work.sysvec_irq_work
-      1.26 ± 18%      +0.9        2.13 ± 12%  perf-profile.calltrace.cycles-pp._printk.irq_work_single.irq_work_run_list.irq_work_run.__sysvec_irq_work
-      1.26 ± 18%      +0.9        2.13 ± 12%  perf-profile.calltrace.cycles-pp.vprintk_emit._printk.irq_work_single.irq_work_run_list.irq_work_run
-      1.26 ± 18%      +0.9        2.13 ± 12%  perf-profile.calltrace.cycles-pp.console_unlock.vprintk_emit._printk.irq_work_single.irq_work_run_list
-      1.26 ± 18%      +0.9        2.13 ± 12%  perf-profile.calltrace.cycles-pp.console_flush_all.console_unlock.vprintk_emit._printk.irq_work_single
-      2.10 ±112%      +6.0        8.06 ± 77%  perf-profile.calltrace.cycles-pp.__libc_start_main
-      2.10 ±112%      +6.0        8.06 ± 77%  perf-profile.calltrace.cycles-pp.main.__libc_start_main
-      2.10 ±112%      +6.0        8.06 ± 77%  perf-profile.calltrace.cycles-pp.run_builtin.main.__libc_start_main
-      1.37 ±105%      +6.0        7.34 ± 77%  perf-profile.calltrace.cycles-pp.record__pushfn.perf_mmap__push.record__mmap_read_evlist.__cmd_record.cmd_record
-      4.80 ± 11%      +9.9       14.67 ± 51%  perf-profile.calltrace.cycles-pp.__handle_mm_fault.handle_mm_fault.do_user_addr_fault.exc_page_fault.asm_exc_page_fault
-      3.42 ± 17%     +10.6       13.98 ± 55%  perf-profile.calltrace.cycles-pp.handle_mm_fault.do_user_addr_fault.exc_page_fault.asm_exc_page_fault
-      3.82 ± 17%     +10.6       14.41 ± 54%  perf-profile.calltrace.cycles-pp.exc_page_fault.asm_exc_page_fault
-      4.01 ± 17%     +10.6       14.60 ± 53%  perf-profile.calltrace.cycles-pp.asm_exc_page_fault
-      3.78 ± 17%     +10.6       14.40 ± 54%  perf-profile.calltrace.cycles-pp.do_user_addr_fault.exc_page_fault.asm_exc_page_fault
-     17.34 ± 10%     -13.4        3.91 ±  9%  perf-profile.children.cycles-pp.asm_sysvec_apic_timer_interrupt
-      1.54 ± 94%      -1.3        0.20 ± 52%  perf-profile.children.cycles-pp.zero_user_segments
-      4.02 ± 15%      -1.3        2.75 ± 16%  perf-profile.children.cycles-pp.exit_to_user_mode_loop
-      3.52 ± 22%      -1.1        2.45 ± 13%  perf-profile.children.cycles-pp.get_perf_callchain
-      3.37 ±  6%      -1.0        2.40 ± 12%  perf-profile.children.cycles-pp.sysvec_apic_timer_interrupt
-      1.16 ±  7%      -1.0        0.20 ± 39%  perf-profile.children.cycles-pp.rcu_gp_kthread
-      1.56 ± 15%      -0.8        0.71 ± 23%  perf-profile.children.cycles-pp.__irq_exit_rcu
-      2.62 ± 23%      -0.8        1.82 ±  8%  perf-profile.children.cycles-pp.perf_callchain_kernel
-      0.92 ± 10%      -0.8        0.16 ± 42%  perf-profile.children.cycles-pp.rcu_gp_fqs_loop
-      2.66 ± 17%      -0.7        1.94 ± 18%  perf-profile.children.cycles-pp.perf_trace_sched_stat_runtime
-      0.93 ± 11%      -0.7        0.24 ± 31%  perf-profile.children.cycles-pp.schedule_timeout
-      1.53 ± 28%      -0.7        0.85 ± 19%  perf-profile.children.cycles-pp.perf_trace_sched_switch
-      2.26 ± 24%      -0.6        1.62 ±  8%  perf-profile.children.cycles-pp.unwind_next_frame
-      1.38 ± 11%      -0.6        0.76 ± 31%  perf-profile.children.cycles-pp.evsel__read_counter
-      1.89 ± 15%      -0.6        1.29 ± 16%  perf-profile.children.cycles-pp.__do_softirq
-      0.60 ± 23%      -0.5        0.06 ± 74%  perf-profile.children.cycles-pp.rebalance_domains
-      0.69 ± 20%      -0.4        0.24 ± 65%  perf-profile.children.cycles-pp.load_balance
-      1.30 ±  8%      -0.4        0.88 ± 20%  perf-profile.children.cycles-pp.readn
-      0.96 ± 16%      -0.4        0.56 ± 14%  perf-profile.children.cycles-pp.task_mm_cid_work
-      0.44 ± 22%      -0.3        0.10 ±  9%  perf-profile.children.cycles-pp.__evlist__disable
-      0.75 ±  8%      -0.3        0.47 ± 24%  perf-profile.children.cycles-pp.perf_read
-      0.72 ± 14%      -0.2        0.47 ± 40%  perf-profile.children.cycles-pp.pick_next_task_fair
-      0.63 ± 23%      -0.2        0.38 ± 33%  perf-profile.children.cycles-pp.put_prev_entity
-      0.52 ± 18%      -0.2        0.28 ± 32%  perf-profile.children.cycles-pp.asm_sysvec_reschedule_ipi
-      0.26 ± 16%      -0.2        0.07 ± 48%  perf-profile.children.cycles-pp.swake_up_one
-      0.26 ± 22%      -0.2        0.08 ± 11%  perf-profile.children.cycles-pp.rcu_report_qs_rdp
-      0.41 ± 26%      -0.2        0.24 ± 30%  perf-profile.children.cycles-pp.__fdget_pos
-      0.19 ± 16%      -0.2        0.03 ±100%  perf-profile.children.cycles-pp.detach_tasks
-      0.19 ± 52%      -0.2        0.03 ±100%  perf-profile.children.cycles-pp.ioctl
-      0.30 ± 20%      -0.1        0.15 ± 49%  perf-profile.children.cycles-pp.evlist__id2evsel
-      0.22 ± 16%      -0.1        0.13 ± 57%  perf-profile.children.cycles-pp.__folio_throttle_swaprate
-      0.22 ± 19%      -0.1        0.13 ± 57%  perf-profile.children.cycles-pp.blk_cgroup_congested
-      0.17 ± 27%      -0.1        0.08 ± 22%  perf-profile.children.cycles-pp.generic_exec_single
-      0.18 ± 24%      -0.1        0.08 ± 22%  perf-profile.children.cycles-pp.smp_call_function_single
-      0.17 ± 21%      -0.1        0.10 ± 32%  perf-profile.children.cycles-pp.__perf_read_group_add
-      0.13 ± 35%      -0.1        0.08 ± 66%  perf-profile.children.cycles-pp.__kmalloc
-      0.10 ± 31%      -0.0        0.05 ± 74%  perf-profile.children.cycles-pp.__perf_event_read
-      0.02 ±144%      +0.1        0.10 ± 28%  perf-profile.children.cycles-pp.mntput_no_expire
-      0.29 ± 19%      +0.1        0.40 ± 19%  perf-profile.children.cycles-pp.dput
-      0.05 ±101%      +0.1        0.18 ± 40%  perf-profile.children.cycles-pp.free_unref_page_prepare
-      0.04 ±152%      +0.2        0.20 ± 22%  perf-profile.children.cycles-pp.devkmsg_read
-      0.86 ±  8%      +0.2        1.08 ± 19%  perf-profile.children.cycles-pp.step_into
-      0.35 ± 27%      +0.3        0.61 ± 15%  perf-profile.children.cycles-pp.run_ksoftirqd
-      1.46 ± 18%      +0.9        2.34 ± 22%  perf-profile.children.cycles-pp.wait_for_lsr
-      1.57 ± 14%      +1.0        2.61 ± 18%  perf-profile.children.cycles-pp.serial8250_console_write
-      1.58 ± 14%      +1.0        2.63 ± 19%  perf-profile.children.cycles-pp.console_unlock
-      1.58 ± 14%      +1.0        2.63 ± 19%  perf-profile.children.cycles-pp.console_flush_all
-      1.58 ± 14%      +1.1        2.63 ± 19%  perf-profile.children.cycles-pp.asm_sysvec_irq_work
-      1.58 ± 14%      +1.1        2.63 ± 19%  perf-profile.children.cycles-pp.irq_work_run_list
-      1.57 ± 14%      +1.1        2.63 ± 19%  perf-profile.children.cycles-pp.sysvec_irq_work
-      1.57 ± 14%      +1.1        2.63 ± 19%  perf-profile.children.cycles-pp.__sysvec_irq_work
-      1.57 ± 14%      +1.1        2.63 ± 19%  perf-profile.children.cycles-pp.irq_work_run
-      1.57 ± 14%      +1.1        2.63 ± 19%  perf-profile.children.cycles-pp.irq_work_single
-      1.57 ± 14%      +1.1        2.63 ± 19%  perf-profile.children.cycles-pp._printk
-      1.57 ± 14%      +1.1        2.63 ± 19%  perf-profile.children.cycles-pp.vprintk_emit
-      2.17 ± 21%      +1.3        3.44 ± 28%  perf-profile.children.cycles-pp.io_serial_in
-      2.24 ±100%      +5.8        8.06 ± 77%  perf-profile.children.cycles-pp.__libc_start_main
-      2.24 ±100%      +5.8        8.06 ± 77%  perf-profile.children.cycles-pp.main
-      2.24 ±100%      +5.8        8.06 ± 77%  perf-profile.children.cycles-pp.run_builtin
-      1.68 ± 86%      +6.4        8.06 ± 77%  perf-profile.children.cycles-pp.cmd_record
-      0.51 ± 59%      +7.9        8.43 ± 94%  perf-profile.children.cycles-pp.copy_page
-      0.33 ±109%      +7.9        8.27 ± 97%  perf-profile.children.cycles-pp.folio_copy
-      0.36 ±101%      +7.9        8.30 ± 96%  perf-profile.children.cycles-pp.move_to_new_folio
-      0.36 ±101%      +7.9        8.30 ± 96%  perf-profile.children.cycles-pp.migrate_folio_extra
-      0.42 ± 93%      +8.8        9.21 ± 88%  perf-profile.children.cycles-pp.migrate_pages_batch
-      0.44 ± 91%      +8.8        9.24 ± 88%  perf-profile.children.cycles-pp.migrate_misplaced_page
-      0.42 ± 93%      +8.8        9.22 ± 88%  perf-profile.children.cycles-pp.migrate_pages
-     10.36 ±  5%      +9.5       19.84 ± 36%  perf-profile.children.cycles-pp.asm_exc_page_fault
-      9.62 ±  5%      +9.5       19.12 ± 37%  perf-profile.children.cycles-pp.exc_page_fault
-      7.83 ±  2%      +9.6       17.45 ± 42%  perf-profile.children.cycles-pp.handle_mm_fault
-      9.20 ±  6%      +9.6       18.84 ± 38%  perf-profile.children.cycles-pp.do_user_addr_fault
-      6.79 ±  2%      +9.7       16.49 ± 44%  perf-profile.children.cycles-pp.__handle_mm_fault
-      0.30 ±117%      +9.8       10.06 ± 79%  perf-profile.children.cycles-pp.do_huge_pmd_numa_page
-     12.05 ± 12%     -11.7        0.31 ± 36%  perf-profile.self.cycles-pp.asm_sysvec_apic_timer_interrupt
-      0.93 ± 14%      -0.4        0.56 ± 14%  perf-profile.self.cycles-pp.task_mm_cid_work
-      0.78 ± 25%      -0.2        0.55 ± 10%  perf-profile.self.cycles-pp.unwind_next_frame
-      0.29 ± 19%      -0.1        0.15 ± 50%  perf-profile.self.cycles-pp.evlist__id2evsel
-      0.20 ± 24%      -0.1        0.11 ± 49%  perf-profile.self.cycles-pp.exc_page_fault
-      0.20 ± 20%      -0.1        0.12 ± 53%  perf-profile.self.cycles-pp.blk_cgroup_congested
-      0.17 ± 14%      -0.1        0.12 ± 20%  perf-profile.self.cycles-pp.perf_swevent_event
-      0.02 ±144%      +0.1        0.10 ± 28%  perf-profile.self.cycles-pp.mntput_no_expire
-      0.12 ± 29%      +0.1        0.23 ± 35%  perf-profile.self.cycles-pp.mod_objcg_state
-      0.04 ±104%      +0.1        0.17 ± 36%  perf-profile.self.cycles-pp.free_unref_page_prepare
-      1.40 ± 13%      +0.9        2.29 ± 19%  perf-profile.self.cycles-pp.io_serial_in
-      0.50 ± 59%      +7.8        8.28 ± 94%  perf-profile.self.cycles-pp.copy_page
+     23176           -14.6%      19795        netperf.Throughput_Mbps
+   1483319           -14.6%    1266931        netperf.Throughput_total_Mbps
+    164111 ±  7%     -11.3%     145564 ±  2%  netperf.time.involuntary_context_switches
+    658.78           -13.4%     570.30        netperf.time.user_time
+ 5.432e+09           -14.6%   4.64e+09        netperf.workload
+ 5.871e+09           +14.9%  6.745e+09        cpuidle..time
+ 7.205e+08           +13.3%  8.164e+08        cpuidle..usage
+     13.69            +2.2       15.92        mpstat.cpu.all.idle%
+      2.67            +0.3        2.99        mpstat.cpu.all.irq%
+     30044 ± 21%     +82.6%      54861 ± 26%  numa-vmstat.node0.nr_anon_pages
+    673.50 ± 39%     +74.3%       1174 ± 20%  numa-vmstat.node0.nr_page_table_pages
+   5091909           +14.7%    5837888        vmstat.system.cs
+   2625027           +13.7%    2983398        vmstat.system.in
+    417561 ±  3%     +11.1%     463713        proc-vmstat.nr_mapped
+      3036            +4.0%       3158        proc-vmstat.nr_page_table_pages
+    775516            +5.3%     816466 ±  5%  proc-vmstat.pgfree
+    120143 ± 21%     +82.6%     219394 ± 26%  numa-meminfo.node0.AnonPages
+    156834 ± 24%     +90.2%     298365 ± 25%  numa-meminfo.node0.AnonPages.max
+      2694 ± 38%     +74.2%       4694 ± 20%  numa-meminfo.node0.PageTables
+     88914 ± 53%     -68.1%      28354 ± 95%  numa-meminfo.node2.AnonHugePages
+  7.19e+08           +13.3%  8.147e+08        turbostat.C1
+     15.08            +2.2       17.31        turbostat.C1%
+     10.22           +15.5%      11.81        turbostat.CPU%c1
+ 7.979e+08           +13.8%  9.084e+08        turbostat.IRQ
+   1479712           +13.5%    1679022        turbostat.POLL
+      0.05            +0.0        0.06        turbostat.POLL%
+      0.86 ± 30%     -58.1%       0.36 ± 31%  sched_debug.cfs_rq:/.load_avg.min
+   7919342 ±  2%      -9.3%    7186168 ±  2%  sched_debug.cfs_rq:/.min_vruntime.min
+    241910 ±  2%     -27.7%     174919 ±  2%  sched_debug.cpu.avg_idle.avg
+    272049 ±  4%     -36.6%     172555 ±  5%  sched_debug.cpu.avg_idle.stddev
+   6051828           +14.8%    6948552        sched_debug.cpu.nr_switches.avg
+   9751445 ±  3%     +18.0%   11507180 ±  3%  sched_debug.cpu.nr_switches.max
+   1258987 ±  9%     +24.1%    1562137 ±  4%  sched_debug.cpu.nr_switches.stddev
+ 4.431e+10            +3.4%   4.58e+10        perf-stat.i.branch-instructions
+      0.89            -0.0        0.84        perf-stat.i.branch-miss-rate%
+ 3.896e+08            -2.3%  3.805e+08        perf-stat.i.branch-misses
+      6.56 ±  5%      -1.0        5.56 ±  2%  perf-stat.i.cache-miss-rate%
+ 1.055e+08 ±  5%     -14.7%   90006058 ±  2%  perf-stat.i.cache-misses
+   5140409           +14.8%    5900606        perf-stat.i.context-switches
+      1.29            -4.8%       1.22        perf-stat.i.cpi
+ 3.019e+11            -1.5%  2.975e+11        perf-stat.i.cpu-cycles
+     27653 ±  3%     +32.4%      36604 ±  6%  perf-stat.i.cpu-migrations
+      2891 ±  5%     +15.5%       3339 ±  2%  perf-stat.i.cycles-between-cache-misses
+      0.01 ±  2%      -0.0        0.01 ± 20%  perf-stat.i.dTLB-load-miss-rate%
+   7555716 ±  2%     -19.0%    6122873 ± 20%  perf-stat.i.dTLB-load-misses
+ 6.929e+10            +1.9%  7.062e+10        perf-stat.i.dTLB-loads
+    957475 ±  4%     +10.0%    1053256 ±  6%  perf-stat.i.dTLB-store-misses
+ 3.778e+10            +1.4%  3.831e+10        perf-stat.i.dTLB-stores
+ 2.345e+11            +3.5%  2.427e+11        perf-stat.i.instructions
+      0.78            +5.0%       0.82        perf-stat.i.ipc
+      2.36            -1.5%       2.32        perf-stat.i.metric.GHz
+    264.09 ±  5%     -10.2%     237.26 ±  2%  perf-stat.i.metric.K/sec
+      1195            +2.2%       1221        perf-stat.i.metric.M/sec
+  14860505 ±  7%     -15.1%   12621197 ±  3%  perf-stat.i.node-load-misses
+   8950975 ±  3%     -13.9%    7706748        perf-stat.i.node-store-misses
+      0.88            -0.0        0.83        perf-stat.overall.branch-miss-rate%
+      6.52 ±  5%      -1.0        5.51 ±  2%  perf-stat.overall.cache-miss-rate%
+      1.29            -4.8%       1.23        perf-stat.overall.cpi
+      2869 ±  5%     +15.3%       3307 ±  2%  perf-stat.overall.cycles-between-cache-misses
+      0.01 ±  2%      -0.0        0.01 ± 20%  perf-stat.overall.dTLB-load-miss-rate%
+      0.78            +5.1%       0.82        perf-stat.overall.ipc
+     12960           +21.4%      15729        perf-stat.overall.path-length
+ 4.416e+10            +3.4%  4.564e+10        perf-stat.ps.branch-instructions
+ 3.883e+08            -2.3%  3.792e+08        perf-stat.ps.branch-misses
+ 1.052e+08 ±  5%     -14.7%   89701078 ±  2%  perf-stat.ps.cache-misses
+   5123329           +14.8%    5881511        perf-stat.ps.context-switches
+ 3.009e+11            -1.5%  2.965e+11        perf-stat.ps.cpu-cycles
+     27520 ±  3%     +32.3%      36412 ±  6%  perf-stat.ps.cpu-migrations
+ 6.906e+10            +1.9%  7.038e+10        perf-stat.ps.dTLB-loads
+    952596 ±  4%     +10.0%    1047647 ±  6%  perf-stat.ps.dTLB-store-misses
+ 3.765e+10            +1.4%  3.818e+10        perf-stat.ps.dTLB-stores
+ 2.337e+11            +3.5%  2.419e+11        perf-stat.ps.instructions
+  14801383 ±  7%     -15.1%   12571364 ±  3%  perf-stat.ps.node-load-misses
+   8918890 ±  3%     -13.9%    7679297        perf-stat.ps.node-store-misses
+  7.04e+13            +3.7%  7.298e+13        perf-stat.total.instructions
+     10.64           -10.6        0.00        perf-profile.calltrace.cycles-pp.tcp_build_frag.do_tcp_sendpages.tcp_sendpage.inet_sendpage.kernel_sendpage
+      7.79            -7.8        0.00        perf-profile.calltrace.cycles-pp.tcp_wmem_schedule.tcp_build_frag.do_tcp_sendpages.tcp_sendpage.inet_sendpage
+      7.54            -7.5        0.00        perf-profile.calltrace.cycles-pp.__sk_mem_schedule.tcp_wmem_schedule.tcp_build_frag.do_tcp_sendpages.tcp_sendpage
+      7.36            -7.4        0.00        perf-profile.calltrace.cycles-pp.__sk_mem_raise_allocated.__sk_mem_schedule.tcp_wmem_schedule.tcp_build_frag.do_tcp_sendpages
+     31.89            -2.7       29.22        perf-profile.calltrace.cycles-pp.tcp_recvmsg.inet_recvmsg.sock_recvmsg.__sys_recvfrom.__x64_sys_recvfrom
+     32.00            -2.7       29.34        perf-profile.calltrace.cycles-pp.inet_recvmsg.sock_recvmsg.__sys_recvfrom.__x64_sys_recvfrom.do_syscall_64
+     32.22            -2.7       29.56        perf-profile.calltrace.cycles-pp.sock_recvmsg.__sys_recvfrom.__x64_sys_recvfrom.do_syscall_64.entry_SYSCALL_64_after_hwframe
+     32.70            -2.7       30.05        perf-profile.calltrace.cycles-pp.__sys_recvfrom.__x64_sys_recvfrom.do_syscall_64.entry_SYSCALL_64_after_hwframe.recv
+     32.80            -2.6       30.16        perf-profile.calltrace.cycles-pp.__x64_sys_recvfrom.do_syscall_64.entry_SYSCALL_64_after_hwframe.recv.process_requests
+     29.44            -2.1       27.38        perf-profile.calltrace.cycles-pp.tcp_recvmsg_locked.tcp_recvmsg.inet_recvmsg.sock_recvmsg.__sys_recvfrom
+     11.30            -1.4        9.96        perf-profile.calltrace.cycles-pp.skb_copy_datagram_iter.tcp_recvmsg_locked.tcp_recvmsg.inet_recvmsg.sock_recvmsg
+     11.23            -1.3        9.88        perf-profile.calltrace.cycles-pp.__skb_datagram_iter.skb_copy_datagram_iter.tcp_recvmsg_locked.tcp_recvmsg.inet_recvmsg
+      7.38            -1.1        6.30        perf-profile.calltrace.cycles-pp.generic_file_splice_read.splice_direct_to_actor.do_splice_direct.do_sendfile.__x64_sys_sendfile64
+     10.00            -1.0        9.00        perf-profile.calltrace.cycles-pp.__dev_queue_xmit.ip_finish_output2.__ip_queue_xmit.__tcp_transmit_skb.tcp_recvmsg_locked
+      6.46            -1.0        5.46        perf-profile.calltrace.cycles-pp.filemap_read.generic_file_splice_read.splice_direct_to_actor.do_splice_direct.do_sendfile
+     10.15            -1.0        9.16        perf-profile.calltrace.cycles-pp.ip_finish_output2.__ip_queue_xmit.__tcp_transmit_skb.tcp_recvmsg_locked.tcp_recvmsg
+     10.50            -1.0        9.53        perf-profile.calltrace.cycles-pp.__ip_queue_xmit.__tcp_transmit_skb.tcp_recvmsg_locked.tcp_recvmsg.inet_recvmsg
+      5.52            -0.9        4.60        perf-profile.calltrace.cycles-pp.lock_sock_nested.tcp_sendpage.inet_sendpage.kernel_sendpage.sock_sendpage
+      7.06            -0.9        6.17        perf-profile.calltrace.cycles-pp._copy_to_iter.__skb_datagram_iter.skb_copy_datagram_iter.tcp_recvmsg_locked.tcp_recvmsg
+      5.20            -0.9        4.32        perf-profile.calltrace.cycles-pp._raw_spin_lock_bh.lock_sock_nested.tcp_sendpage.inet_sendpage.kernel_sendpage
+      6.58            -0.8        5.75        perf-profile.calltrace.cycles-pp.copyout._copy_to_iter.__skb_datagram_iter.skb_copy_datagram_iter.tcp_recvmsg_locked
+     10.27            -0.8        9.47        perf-profile.calltrace.cycles-pp.__tcp_transmit_skb.tcp_recvmsg_locked.tcp_recvmsg.inet_recvmsg.sock_recvmsg
+      4.43            -0.8        3.67        perf-profile.calltrace.cycles-pp.native_queued_spin_lock_slowpath._raw_spin_lock_bh.lock_sock_nested.tcp_sendpage.inet_sendpage
+     15.06            -0.7       14.38        perf-profile.calltrace.cycles-pp.net_rx_action.__do_softirq.do_softirq.__local_bh_enable_ip.__dev_queue_xmit
+      8.78            -0.7        8.10        perf-profile.calltrace.cycles-pp.tcp_rcv_established.tcp_v4_do_rcv.tcp_v4_rcv.ip_protocol_deliver_rcu.ip_local_deliver_finish
+     13.48            -0.7       12.80        perf-profile.calltrace.cycles-pp.__napi_poll.net_rx_action.__do_softirq.do_softirq.__local_bh_enable_ip
+     11.77            -0.7       11.09        perf-profile.calltrace.cycles-pp.tcp_v4_rcv.ip_protocol_deliver_rcu.ip_local_deliver_finish.__netif_receive_skb_one_core.process_backlog
+     13.43            -0.7       12.76        perf-profile.calltrace.cycles-pp.process_backlog.__napi_poll.net_rx_action.__do_softirq.do_softirq
+     12.03            -0.7       11.36        perf-profile.calltrace.cycles-pp.ip_protocol_deliver_rcu.ip_local_deliver_finish.__netif_receive_skb_one_core.process_backlog.__napi_poll
+     15.67            -0.7       15.00        perf-profile.calltrace.cycles-pp.__do_softirq.do_softirq.__local_bh_enable_ip.__dev_queue_xmit.ip_finish_output2
+     12.09            -0.7       11.42        perf-profile.calltrace.cycles-pp.ip_local_deliver_finish.__netif_receive_skb_one_core.process_backlog.__napi_poll.net_rx_action
+     13.04            -0.7       12.38        perf-profile.calltrace.cycles-pp.__netif_receive_skb_one_core.process_backlog.__napi_poll.net_rx_action.__do_softirq
+     15.91            -0.7       15.26        perf-profile.calltrace.cycles-pp.__local_bh_enable_ip.__dev_queue_xmit.ip_finish_output2.__ip_queue_xmit.__tcp_transmit_skb
+     15.82            -0.7       15.17        perf-profile.calltrace.cycles-pp.do_softirq.__local_bh_enable_ip.__dev_queue_xmit.ip_finish_output2.__ip_queue_xmit
+      8.91            -0.6        8.28        perf-profile.calltrace.cycles-pp.tcp_v4_do_rcv.tcp_v4_rcv.ip_protocol_deliver_rcu.ip_local_deliver_finish.__netif_receive_skb_one_core
+      3.10            -0.5        2.61        perf-profile.calltrace.cycles-pp.filemap_get_pages.filemap_read.generic_file_splice_read.splice_direct_to_actor.do_splice_direct
+      2.88            -0.5        2.42        perf-profile.calltrace.cycles-pp.filemap_get_read_batch.filemap_get_pages.filemap_read.generic_file_splice_read.splice_direct_to_actor
+      1.91 ±  9%      -0.5        1.46 ±  2%  perf-profile.calltrace.cycles-pp.__release_sock.release_sock.tcp_recvmsg.inet_recvmsg.sock_recvmsg
+      1.74 ±  9%      -0.4        1.29 ±  2%  perf-profile.calltrace.cycles-pp.tcp_rcv_established.tcp_v4_do_rcv.__release_sock.release_sock.tcp_recvmsg
+      1.83 ±  9%      -0.4        1.38 ±  2%  perf-profile.calltrace.cycles-pp.tcp_v4_do_rcv.__release_sock.release_sock.tcp_recvmsg.inet_recvmsg
+      2.04 ±  9%      -0.4        1.60 ±  2%  perf-profile.calltrace.cycles-pp.release_sock.tcp_recvmsg.inet_recvmsg.sock_recvmsg.__sys_recvfrom
+      1.39 ±  9%      -0.4        0.96 ±  3%  perf-profile.calltrace.cycles-pp.tcp_data_queue.tcp_rcv_established.tcp_v4_do_rcv.__release_sock.release_sock
+      1.18 ±  8%      -0.4        0.76 ±  3%  perf-profile.calltrace.cycles-pp.mem_cgroup_charge_skmem.tcp_data_queue.tcp_rcv_established.tcp_v4_do_rcv.__release_sock
+      1.47 ±  3%      -0.4        1.07 ±  3%  perf-profile.calltrace.cycles-pp.try_charge_memcg.mem_cgroup_charge_skmem.__sk_mem_raise_allocated.__sk_mem_schedule.tcp_wmem_schedule
+      3.22            -0.4        2.83        perf-profile.calltrace.cycles-pp.simple_copy_to_iter.__skb_datagram_iter.skb_copy_datagram_iter.tcp_recvmsg_locked.tcp_recvmsg
+      2.96            -0.4        2.58        perf-profile.calltrace.cycles-pp.__check_object_size.simple_copy_to_iter.__skb_datagram_iter.skb_copy_datagram_iter.tcp_recvmsg_locked
+      2.54            -0.3        2.19 ±  2%  perf-profile.calltrace.cycles-pp.__tcp_push_pending_frames.tcp_rcv_established.tcp_v4_do_rcv.tcp_v4_rcv.ip_protocol_deliver_rcu
+      2.51            -0.3        2.17 ±  2%  perf-profile.calltrace.cycles-pp.tcp_write_xmit.__tcp_push_pending_frames.tcp_rcv_established.tcp_v4_do_rcv.tcp_v4_rcv
+      2.05 ±  9%      -0.3        1.72 ±  2%  perf-profile.calltrace.cycles-pp.tcp_ack.tcp_rcv_established.tcp_v4_do_rcv.tcp_v4_rcv.ip_protocol_deliver_rcu
+      1.02 ±  2%      -0.3        0.69 ±  2%  perf-profile.calltrace.cycles-pp._raw_spin_lock_bh.release_sock.tcp_sendpage.inet_sendpage.kernel_sendpage
+      2.59            -0.3        2.26        perf-profile.calltrace.cycles-pp.check_heap_object.__check_object_size.simple_copy_to_iter.__skb_datagram_iter.skb_copy_datagram_iter
+      1.59 ±  9%      -0.3        1.27 ±  2%  perf-profile.calltrace.cycles-pp.tcp_clean_rtx_queue.tcp_ack.tcp_rcv_established.tcp_v4_do_rcv.tcp_v4_rcv
+      1.28            -0.2        1.08        perf-profile.calltrace.cycles-pp.copy_page_to_iter_pipe.filemap_read.generic_file_splice_read.splice_direct_to_actor.do_splice_direct
+      0.76 ±  2%      -0.1        0.68        perf-profile.calltrace.cycles-pp.page_cache_pipe_buf_release.__splice_from_pipe.generic_splice_sendpage.direct_splice_actor.splice_direct_to_actor
+      0.70            -0.1        0.63        perf-profile.calltrace.cycles-pp.do_splice_to.splice_direct_to_actor.do_splice_direct.do_sendfile.__x64_sys_sendfile64
+      0.58            +0.1        0.64        perf-profile.calltrace.cycles-pp.skb_release_data.napi_consume_skb.net_rx_action.__do_softirq.do_softirq
+      0.68            +0.1        0.75        perf-profile.calltrace.cycles-pp.napi_consume_skb.net_rx_action.__do_softirq.do_softirq.__local_bh_enable_ip
+      1.13            +0.1        1.20        perf-profile.calltrace.cycles-pp.tcp_clean_rtx_queue.tcp_ack.tcp_rcv_established.tcp_v4_do_rcv.__release_sock
+      0.57            +0.1        0.65 ±  2%  perf-profile.calltrace.cycles-pp.enqueue_entity.enqueue_task_fair.activate_task.ttwu_do_activate.sched_ttwu_pending
+      1.36            +0.1        1.46 ±  2%  perf-profile.calltrace.cycles-pp.tcp_ack.tcp_rcv_established.tcp_v4_do_rcv.__release_sock.release_sock
+      0.59 ±  2%      +0.1        0.73        perf-profile.calltrace.cycles-pp.menu_select.cpuidle_idle_call.do_idle.cpu_startup_entry.start_secondary
+      0.93            +0.1        1.07        perf-profile.calltrace.cycles-pp.__schedule.schedule_idle.do_idle.cpu_startup_entry.start_secondary
+      0.99            +0.1        1.14        perf-profile.calltrace.cycles-pp.schedule_idle.do_idle.cpu_startup_entry.start_secondary.secondary_startup_64_no_verify
+      0.79 ±  2%      +0.2        0.95 ±  3%  perf-profile.calltrace.cycles-pp.enqueue_task_fair.activate_task.ttwu_do_activate.sched_ttwu_pending.__sysvec_call_function_single
+      0.82            +0.2        0.98 ±  3%  perf-profile.calltrace.cycles-pp.activate_task.ttwu_do_activate.sched_ttwu_pending.__sysvec_call_function_single.sysvec_call_function_single
+      0.97            +0.2        1.14 ±  2%  perf-profile.calltrace.cycles-pp.ttwu_do_activate.sched_ttwu_pending.__sysvec_call_function_single.sysvec_call_function_single.asm_sysvec_call_function_single
+      2.84            +0.2        3.02        perf-profile.calltrace.cycles-pp.tcp_data_queue.tcp_rcv_established.tcp_v4_do_rcv.tcp_v4_rcv.ip_protocol_deliver_rcu
+      1.24            +0.2        1.46 ±  2%  perf-profile.calltrace.cycles-pp.sched_ttwu_pending.__sysvec_call_function_single.sysvec_call_function_single.asm_sysvec_call_function_single.acpi_safe_halt
+      0.93            +0.2        1.16        perf-profile.calltrace.cycles-pp.try_to_wake_up.__wake_up_common.__wake_up_common_lock.sock_def_readable.tcp_data_queue
+      0.49 ± 46%      +0.3        0.74        perf-profile.calltrace.cycles-pp.dequeue_entity.dequeue_task_fair.__schedule.schedule.schedule_timeout
+      1.05            +0.3        1.30 ±  2%  perf-profile.calltrace.cycles-pp.__wake_up_common.__wake_up_common_lock.sock_def_readable.tcp_data_queue.tcp_rcv_established
+      1.09            +0.3        1.36        perf-profile.calltrace.cycles-pp.__wake_up_common_lock.sock_def_readable.tcp_data_queue.tcp_rcv_established.tcp_v4_do_rcv
+      0.56 ± 46%      +0.3        0.86        perf-profile.calltrace.cycles-pp.dequeue_task_fair.__schedule.schedule.schedule_timeout.wait_woken
+      1.20            +0.3        1.49        perf-profile.calltrace.cycles-pp.sock_def_readable.tcp_data_queue.tcp_rcv_established.tcp_v4_do_rcv.tcp_v4_rcv
+      0.52 ± 46%      +0.3        0.84 ±  4%  perf-profile.calltrace.cycles-pp.newidle_balance.pick_next_task_fair.__schedule.schedule.schedule_timeout
+      1.81            +0.3        2.13 ±  2%  perf-profile.calltrace.cycles-pp.__sysvec_call_function_single.sysvec_call_function_single.asm_sysvec_call_function_single.acpi_safe_halt.acpi_idle_enter
+      0.58 ± 45%      +0.4        0.94 ±  5%  perf-profile.calltrace.cycles-pp.pick_next_task_fair.__schedule.schedule.schedule_timeout.wait_woken
+      2.38            +0.4        2.81 ±  2%  perf-profile.calltrace.cycles-pp.sysvec_call_function_single.asm_sysvec_call_function_single.acpi_safe_halt.acpi_idle_enter.cpuidle_enter_state
+      2.52            +0.5        2.99 ±  2%  perf-profile.calltrace.cycles-pp.wait_woken.sk_wait_data.tcp_recvmsg_locked.tcp_recvmsg.inet_recvmsg
+      2.18 ±  7%      +0.5        2.68 ±  2%  perf-profile.calltrace.cycles-pp.schedule.schedule_timeout.wait_woken.sk_wait_data.tcp_recvmsg_locked
+      2.23 ±  7%      +0.5        2.73 ±  2%  perf-profile.calltrace.cycles-pp.schedule_timeout.wait_woken.sk_wait_data.tcp_recvmsg_locked.tcp_recvmsg
+      2.00 ±  9%      +0.5        2.55 ±  2%  perf-profile.calltrace.cycles-pp.__schedule.schedule.schedule_timeout.wait_woken.sk_wait_data
+      3.10            +0.6        3.66 ±  2%  perf-profile.calltrace.cycles-pp.sk_wait_data.tcp_recvmsg_locked.tcp_recvmsg.inet_recvmsg.sock_recvmsg
+      0.00            +0.6        0.57        perf-profile.calltrace.cycles-pp.__alloc_skb.tcp_stream_alloc_skb.tcp_sendmsg_locked.do_tcp_sendpages.tcp_sendpage
+      3.58            +0.6        4.20        perf-profile.calltrace.cycles-pp.acpi_safe_halt.acpi_idle_enter.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call
+      0.00            +0.7        0.69        perf-profile.calltrace.cycles-pp.read_tsc.ktime_get.tcp_write_xmit.__tcp_push_pending_frames.tcp_sendmsg_locked
+      0.00            +0.8        0.75        perf-profile.calltrace.cycles-pp.tcp_stream_alloc_skb.tcp_sendmsg_locked.do_tcp_sendpages.tcp_sendpage.inet_sendpage
+      5.44 ±  3%      +0.8        6.29        perf-profile.calltrace.cycles-pp.ip_finish_output2.__ip_queue_xmit.__tcp_transmit_skb.tcp_write_xmit.__tcp_push_pending_frames
+      7.23 ±  2%      +0.9        8.11        perf-profile.calltrace.cycles-pp.__tcp_transmit_skb.tcp_write_xmit.__tcp_push_pending_frames.tcp_rcv_established.tcp_v4_do_rcv
+      6.00 ±  2%      +0.9        6.92        perf-profile.calltrace.cycles-pp.__ip_queue_xmit.__tcp_transmit_skb.tcp_write_xmit.__tcp_push_pending_frames.tcp_rcv_established
+      0.00            +1.0        0.96        perf-profile.calltrace.cycles-pp.iov_iter_extract_pages.skb_splice_from_iter.tcp_sendmsg_locked.do_tcp_sendpages.tcp_sendpage
+      5.67            +1.0        6.63        perf-profile.calltrace.cycles-pp.tcp_v4_do_rcv.__release_sock.release_sock.tcp_sendpage.inet_sendpage
+      0.00            +1.0        0.96 ±  2%  perf-profile.calltrace.cycles-pp.tcp_current_mss.tcp_send_mss.tcp_sendmsg_locked.do_tcp_sendpages.tcp_sendpage
+      0.00            +1.0        0.97        perf-profile.calltrace.cycles-pp.ktime_get.tcp_write_xmit.__tcp_push_pending_frames.tcp_sendmsg_locked.do_tcp_sendpages
+      5.67            +1.0        6.64        perf-profile.calltrace.cycles-pp.tcp_rcv_established.tcp_v4_do_rcv.__release_sock.release_sock.tcp_sendpage
+      9.54            +1.0       10.58        perf-profile.calltrace.cycles-pp.release_sock.tcp_sendpage.inet_sendpage.kernel_sendpage.sock_sendpage
+      0.00            +1.1        1.07        perf-profile.calltrace.cycles-pp.skb_append_pagefrags.skb_splice_from_iter.tcp_sendmsg_locked.do_tcp_sendpages.tcp_sendpage
+      5.99            +1.1        7.06        perf-profile.calltrace.cycles-pp.tcp_write_xmit.__tcp_push_pending_frames.tcp_rcv_established.tcp_v4_do_rcv.__release_sock
+      6.02            +1.1        7.10        perf-profile.calltrace.cycles-pp.__tcp_push_pending_frames.tcp_rcv_established.tcp_v4_do_rcv.__release_sock.release_sock
+      0.00            +1.3        1.26        perf-profile.calltrace.cycles-pp.tcp_send_mss.tcp_sendmsg_locked.do_tcp_sendpages.tcp_sendpage.inet_sendpage
+      8.20            +1.4        9.58        perf-profile.calltrace.cycles-pp.__release_sock.release_sock.tcp_sendpage.inet_sendpage.kernel_sendpage
+      8.77            +1.4       10.18        perf-profile.calltrace.cycles-pp.acpi_idle_enter.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call.do_idle
+      9.03            +1.5       10.48        perf-profile.calltrace.cycles-pp.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call.do_idle.cpu_startup_entry
+      9.10            +1.5       10.56        perf-profile.calltrace.cycles-pp.cpuidle_enter.cpuidle_idle_call.do_idle.cpu_startup_entry.start_secondary
+     46.25            +1.5       47.77        perf-profile.calltrace.cycles-pp.splice_direct_to_actor.do_splice_direct.do_sendfile.__x64_sys_sendfile64.do_syscall_64
+      9.94            +1.6       11.56        perf-profile.calltrace.cycles-pp.cpuidle_idle_call.do_idle.cpu_startup_entry.start_secondary.secondary_startup_64_no_verify
+     11.32            +1.8       13.13        perf-profile.calltrace.cycles-pp.do_idle.cpu_startup_entry.start_secondary.secondary_startup_64_no_verify
+     11.36            +1.8       13.18        perf-profile.calltrace.cycles-pp.start_secondary.secondary_startup_64_no_verify
+     11.34            +1.8       13.16        perf-profile.calltrace.cycles-pp.cpu_startup_entry.start_secondary.secondary_startup_64_no_verify
+     11.44            +1.9       13.32        perf-profile.calltrace.cycles-pp.secondary_startup_64_no_verify
+      0.00            +1.9        1.94        perf-profile.calltrace.cycles-pp.ip_finish_output2.__ip_queue_xmit.__tcp_transmit_skb.tcp_write_xmit.tcp_sendmsg_locked
+     12.81            +2.0       14.84        perf-profile.calltrace.cycles-pp.asm_sysvec_call_function_single.acpi_safe_halt.acpi_idle_enter.cpuidle_enter_state.cpuidle_enter
+      0.00            +2.0        2.05        perf-profile.calltrace.cycles-pp.__ip_queue_xmit.__tcp_transmit_skb.tcp_write_xmit.tcp_sendmsg_locked.do_tcp_sendpages
+      0.00            +2.2        2.22        perf-profile.calltrace.cycles-pp.__tcp_transmit_skb.tcp_write_xmit.tcp_sendmsg_locked.do_tcp_sendpages.tcp_sendpage
+      0.00            +2.5        2.46        perf-profile.calltrace.cycles-pp.tcp_write_xmit.tcp_sendmsg_locked.do_tcp_sendpages.tcp_sendpage.inet_sendpage
+     37.23            +2.8       39.99        perf-profile.calltrace.cycles-pp.direct_splice_actor.splice_direct_to_actor.do_splice_direct.do_sendfile.__x64_sys_sendfile64
+      0.00            +2.8        2.76        perf-profile.calltrace.cycles-pp.tcp_write_xmit.__tcp_push_pending_frames.tcp_sendmsg_locked.do_tcp_sendpages.tcp_sendpage
+     37.11            +2.8       39.88        perf-profile.calltrace.cycles-pp.generic_splice_sendpage.direct_splice_actor.splice_direct_to_actor.do_splice_direct.do_sendfile
+     36.69            +2.8       39.49        perf-profile.calltrace.cycles-pp.__splice_from_pipe.generic_splice_sendpage.direct_splice_actor.splice_direct_to_actor.do_splice_direct
+      0.00            +2.9        2.94        perf-profile.calltrace.cycles-pp.skb_splice_from_iter.tcp_sendmsg_locked.do_tcp_sendpages.tcp_sendpage.inet_sendpage
+     34.28            +2.9       37.22        perf-profile.calltrace.cycles-pp.kernel_sendpage.sock_sendpage.pipe_to_sendpage.__splice_from_pipe.generic_splice_sendpage
+     34.79            +3.0       37.74        perf-profile.calltrace.cycles-pp.pipe_to_sendpage.__splice_from_pipe.generic_splice_sendpage.direct_splice_actor.splice_direct_to_actor
+      0.00            +3.0        2.95        perf-profile.calltrace.cycles-pp.__tcp_push_pending_frames.tcp_sendmsg_locked.do_tcp_sendpages.tcp_sendpage.inet_sendpage
+     34.47            +3.0       37.43        perf-profile.calltrace.cycles-pp.sock_sendpage.pipe_to_sendpage.__splice_from_pipe.generic_splice_sendpage.direct_splice_actor
+     33.91            +3.0       36.88        perf-profile.calltrace.cycles-pp.inet_sendpage.kernel_sendpage.sock_sendpage.pipe_to_sendpage.__splice_from_pipe
+     33.42            +3.0       36.44        perf-profile.calltrace.cycles-pp.tcp_sendpage.inet_sendpage.kernel_sendpage.sock_sendpage.pipe_to_sendpage
+     16.84            +3.2       20.00        perf-profile.calltrace.cycles-pp.do_tcp_sendpages.tcp_sendpage.inet_sendpage.kernel_sendpage.sock_sendpage
+      0.00            +3.4        3.35 ±  2%  perf-profile.calltrace.cycles-pp.mem_cgroup_charge_skmem.__sk_mem_raise_allocated.__sk_mem_schedule.tcp_wmem_schedule.tcp_sendmsg_locked
+      0.00            +5.7        5.66 ±  2%  perf-profile.calltrace.cycles-pp.__sk_mem_raise_allocated.__sk_mem_schedule.tcp_wmem_schedule.tcp_sendmsg_locked.do_tcp_sendpages
+      0.00            +5.8        5.82 ±  2%  perf-profile.calltrace.cycles-pp.__sk_mem_schedule.tcp_wmem_schedule.tcp_sendmsg_locked.do_tcp_sendpages.tcp_sendpage
+      0.00            +6.0        6.04 ±  2%  perf-profile.calltrace.cycles-pp.tcp_wmem_schedule.tcp_sendmsg_locked.do_tcp_sendpages.tcp_sendpage.inet_sendpage
+      0.00           +18.9       18.86        perf-profile.calltrace.cycles-pp.tcp_sendmsg_locked.do_tcp_sendpages.tcp_sendpage.inet_sendpage.kernel_sendpage
+     10.85           -10.8        0.00        perf-profile.children.cycles-pp.tcp_build_frag
+     31.93            -2.7       29.26        perf-profile.children.cycles-pp.tcp_recvmsg
+     32.01            -2.7       29.35        perf-profile.children.cycles-pp.inet_recvmsg
+     32.24            -2.7       29.57        perf-profile.children.cycles-pp.sock_recvmsg
+     32.72            -2.7       30.06        perf-profile.children.cycles-pp.__sys_recvfrom
+     32.82            -2.6       30.17        perf-profile.children.cycles-pp.__x64_sys_recvfrom
+     34.07            -2.6       31.52        perf-profile.children.cycles-pp.recv
+     34.30            -2.5       31.76        perf-profile.children.cycles-pp.process_requests
+     29.47            -2.1       27.41        perf-profile.children.cycles-pp.tcp_recvmsg_locked
+      6.95 ±  2%      -2.0        4.97        perf-profile.children.cycles-pp.mem_cgroup_charge_skmem
+      7.70            -1.8        5.92        perf-profile.children.cycles-pp.__sk_mem_schedule
+      7.88            -1.8        6.10        perf-profile.children.cycles-pp.tcp_wmem_schedule
+      7.56            -1.8        5.79 ±  2%  perf-profile.children.cycles-pp.__sk_mem_raise_allocated
+     85.01            -1.8       83.26        perf-profile.children.cycles-pp.entry_SYSCALL_64_after_hwframe
+     84.48            -1.7       82.78        perf-profile.children.cycles-pp.do_syscall_64
+     11.31            -1.4        9.96        perf-profile.children.cycles-pp.skb_copy_datagram_iter
+     11.29            -1.4        9.94        perf-profile.children.cycles-pp.__skb_datagram_iter
+      6.83            -1.2        5.60        perf-profile.children.cycles-pp._raw_spin_lock_bh
+      7.47            -1.1        6.36        perf-profile.children.cycles-pp.generic_file_splice_read
+      3.32 ±  4%      -1.0        2.27 ±  4%  perf-profile.children.cycles-pp.try_charge_memcg
+      6.59            -1.0        5.56        perf-profile.children.cycles-pp.filemap_read
+      5.73            -1.0        4.78        perf-profile.children.cycles-pp.lock_sock_nested
+      7.10            -0.9        6.21        perf-profile.children.cycles-pp._copy_to_iter
+      6.72            -0.8        5.87        perf-profile.children.cycles-pp.copyout
+      4.60            -0.8        3.80        perf-profile.children.cycles-pp.native_queued_spin_lock_slowpath
+     15.14            -0.7       14.44        perf-profile.children.cycles-pp.net_rx_action
+     13.49            -0.7       12.80        perf-profile.children.cycles-pp.process_backlog
+     16.41            -0.7       15.72        perf-profile.children.cycles-pp.__local_bh_enable_ip
+     11.88            -0.7       11.19        perf-profile.children.cycles-pp.tcp_v4_rcv
+     13.53            -0.7       12.84        perf-profile.children.cycles-pp.__napi_poll
+      2.93 ±  2%      -0.7        2.24        perf-profile.children.cycles-pp.__sk_mem_reduce_allocated
+     15.80            -0.7       15.11        perf-profile.children.cycles-pp.__do_softirq
+     12.10            -0.7       11.41        perf-profile.children.cycles-pp.ip_protocol_deliver_rcu
+     13.11            -0.7       12.42        perf-profile.children.cycles-pp.__netif_receive_skb_one_core
+     12.14            -0.7       11.46        perf-profile.children.cycles-pp.ip_local_deliver_finish
+     15.90            -0.7       15.22        perf-profile.children.cycles-pp.do_softirq
+      1.53 ±  4%      -0.5        0.99 ±  5%  perf-profile.children.cycles-pp.page_counter_try_charge
+     17.60            -0.5       17.06        perf-profile.children.cycles-pp.__dev_queue_xmit
+     17.96            -0.5       17.44        perf-profile.children.cycles-pp.ip_finish_output2
+      3.14            -0.5        2.64        perf-profile.children.cycles-pp.filemap_get_pages
+      2.92            -0.5        2.44        perf-profile.children.cycles-pp.filemap_get_read_batch
+      1.54 ±  3%      -0.4        1.10 ±  3%  perf-profile.children.cycles-pp.refill_stock
+      1.27 ±  5%      -0.4        0.84 ±  4%  perf-profile.children.cycles-pp.drain_stock
+      1.24 ±  5%      -0.4        0.81 ±  4%  perf-profile.children.cycles-pp.page_counter_uncharge
+     18.99            -0.4       18.58        perf-profile.children.cycles-pp.__ip_queue_xmit
+      3.26            -0.4        2.87        perf-profile.children.cycles-pp.simple_copy_to_iter
+      3.17            -0.4        2.78        perf-profile.children.cycles-pp.__check_object_size
+      4.39            -0.4        4.01        perf-profile.children.cycles-pp.tcp_data_queue
+      3.92            -0.4        3.54        perf-profile.children.cycles-pp.tcp_ack
+      2.89            -0.4        2.52        perf-profile.children.cycles-pp.tcp_clean_rtx_queue
+      2.66            -0.3        2.32        perf-profile.children.cycles-pp.check_heap_object
+     16.45            -0.3       16.13        perf-profile.children.cycles-pp.tcp_rcv_established
+     16.65            -0.3       16.36        perf-profile.children.cycles-pp.tcp_v4_do_rcv
+     20.21            -0.3       19.92        perf-profile.children.cycles-pp.__tcp_transmit_skb
+      1.34            -0.2        1.13        perf-profile.children.cycles-pp.copy_page_to_iter_pipe
+      0.78 ±  7%      -0.2        0.62 ±  5%  perf-profile.children.cycles-pp.mem_cgroup_uncharge_skmem
+      1.23            -0.1        1.08        perf-profile.children.cycles-pp.security_file_permission
+      1.34            -0.1        1.20        perf-profile.children.cycles-pp.touch_atime
+      1.08            -0.1        0.96        perf-profile.children.cycles-pp.atime_needs_update
+      0.97            -0.1        0.86        perf-profile.children.cycles-pp.apparmor_file_permission
+      0.56            -0.1        0.46 ±  2%  perf-profile.children.cycles-pp._copy_from_user
+      0.79 ±  2%      -0.1        0.70        perf-profile.children.cycles-pp.page_cache_pipe_buf_release
+      0.31 ±  6%      -0.1        0.22 ±  6%  perf-profile.children.cycles-pp.propagate_protected_usage
+      0.74            -0.1        0.65        perf-profile.children.cycles-pp.do_splice_to
+      1.38            -0.1        1.31        perf-profile.children.cycles-pp.tcp_send_mss
+      0.45            -0.1        0.39 ±  3%  perf-profile.children.cycles-pp.current_time
+      0.41            -0.1        0.35        perf-profile.children.cycles-pp.__virt_addr_valid
+      0.76            -0.1        0.70        perf-profile.children.cycles-pp.__cond_resched
+      0.61            -0.1        0.56        perf-profile.children.cycles-pp.__entry_text_start
+      0.63            -0.1        0.58        perf-profile.children.cycles-pp.__fget_light
+      0.51            -0.0        0.46 ±  2%  perf-profile.children.cycles-pp.__fsnotify_parent
+      0.34            -0.0        0.30 ±  2%  perf-profile.children.cycles-pp.__put_user_8
+      0.27 ±  2%      -0.0        0.23 ±  3%  perf-profile.children.cycles-pp.copy_page_to_iter
+      0.42            -0.0        0.38        perf-profile.children.cycles-pp.entry_SYSRETQ_unsafe_stack
+      0.48 ±  2%      -0.0        0.44        perf-profile.children.cycles-pp.netperf_sendfile
+      0.30 ±  2%      -0.0        0.26        perf-profile.children.cycles-pp.syscall_return_via_sysret
+      0.30            -0.0        0.27        perf-profile.children.cycles-pp.aa_file_perm
+      0.97            -0.0        0.94        perf-profile.children.cycles-pp.napi_consume_skb
+      0.24            -0.0        0.21 ±  2%  perf-profile.children.cycles-pp.sanity
+      0.19            -0.0        0.16 ±  2%  perf-profile.children.cycles-pp.rw_verify_area
+      0.17 ±  2%      -0.0        0.15        perf-profile.children.cycles-pp.fsnotify_perm
+      0.16 ±  2%      -0.0        0.14 ±  2%  perf-profile.children.cycles-pp.skb_release_head_state
+      0.14 ±  2%      -0.0        0.12 ±  4%  perf-profile.children.cycles-pp.ktime_get_coarse_real_ts64
+      0.47            -0.0        0.45        perf-profile.children.cycles-pp.syscall_exit_to_user_mode
+      0.28            -0.0        0.26 ±  2%  perf-profile.children.cycles-pp.rcu_all_qs
+      0.16 ±  3%      -0.0        0.13 ±  3%  perf-profile.children.cycles-pp.folio_mark_accessed
+      0.16 ±  2%      -0.0        0.14 ±  3%  perf-profile.children.cycles-pp.skb_clone
+      0.13 ±  4%      -0.0        0.11 ±  4%  perf-profile.children.cycles-pp.check_stack_object
+      0.20 ±  2%      -0.0        0.18 ±  3%  perf-profile.children.cycles-pp._raw_spin_unlock_bh
+      0.16 ±  3%      -0.0        0.14        perf-profile.children.cycles-pp.syscall_exit_to_user_mode_prepare
+      0.11 ±  4%      -0.0        0.09 ±  4%  perf-profile.children.cycles-pp.make_vfsuid
+      0.22 ±  2%      -0.0        0.20 ±  2%  perf-profile.children.cycles-pp._raw_spin_lock_irq
+      0.30            -0.0        0.29 ±  2%  perf-profile.children.cycles-pp.__netif_receive_skb_core
+      0.10 ±  5%      -0.0        0.08 ±  5%  perf-profile.children.cycles-pp.xas_start
+      0.07            -0.0        0.06 ±  6%  perf-profile.children.cycles-pp.tcp_leave_memory_pressure
+      0.10            -0.0        0.09        perf-profile.children.cycles-pp.is_vmalloc_addr
+      0.05            +0.0        0.06        perf-profile.children.cycles-pp.ct_nmi_exit
+      0.05            +0.0        0.06        perf-profile.children.cycles-pp.x2apic_send_IPI
+      0.05            +0.0        0.06        perf-profile.children.cycles-pp.__rdgsbase_inactive
+      0.11            +0.0        0.12        perf-profile.children.cycles-pp.resched_curr
+      0.06            +0.0        0.07        perf-profile.children.cycles-pp.rb_next
+      0.07 ±  5%      +0.0        0.08        perf-profile.children.cycles-pp.switch_fpu_return
+      0.12 ±  3%      +0.0        0.13        perf-profile.children.cycles-pp.__get_task_ioprio
+      0.13 ±  2%      +0.0        0.14 ±  3%  perf-profile.children.cycles-pp.__irq_exit_rcu
+      0.06 ±  6%      +0.0        0.08 ±  6%  perf-profile.children.cycles-pp.irqentry_exit
+      0.06 ±  7%      +0.0        0.08 ±  6%  perf-profile.children.cycles-pp.__tcp_cleanup_rbuf
+      0.06            +0.0        0.07 ±  6%  perf-profile.children.cycles-pp.reweight_entity
+      0.12 ±  3%      +0.0        0.13 ±  3%  perf-profile.children.cycles-pp.finish_task_switch
+      0.11 ±  3%      +0.0        0.12 ±  3%  perf-profile.children.cycles-pp.ct_kernel_exit_state
+      0.18 ±  2%      +0.0        0.20 ±  2%  perf-profile.children.cycles-pp.tick_nohz_next_event
+      0.13 ±  3%      +0.0        0.15        perf-profile.children.cycles-pp.check_preempt_curr
+      0.08 ±  6%      +0.0        0.09 ±  5%  perf-profile.children.cycles-pp.__update_blocked_fair
+      0.07            +0.0        0.09 ±  5%  perf-profile.children.cycles-pp.hrtimer_next_event_without
+      0.17 ±  2%      +0.0        0.19        perf-profile.children.cycles-pp.kfree_skbmem
+      0.10 ±  4%      +0.0        0.12 ±  3%  perf-profile.children.cycles-pp.tick_nohz_idle_enter
+      0.09 ±  5%      +0.0        0.11 ±  3%  perf-profile.children.cycles-pp.os_xsave
+      0.50            +0.0        0.52        perf-profile.children.cycles-pp.kmem_cache_free
+      0.22 ±  3%      +0.0        0.24 ±  2%  perf-profile.children.cycles-pp.__slab_free
+      0.09            +0.0        0.11        perf-profile.children.cycles-pp.__wrgsbase_inactive
+      0.36            +0.0        0.38 ±  2%  perf-profile.children.cycles-pp.enqueue_to_backlog
+      0.17 ±  2%      +0.0        0.19        perf-profile.children.cycles-pp.__update_load_avg_se
+      0.11 ±  3%      +0.0        0.14 ±  3%  perf-profile.children.cycles-pp.tcp_skb_entail
+      0.06 ±  8%      +0.0        0.08        perf-profile.children.cycles-pp.nr_iowait_cpu
+      0.46 ±  2%      +0.0        0.48        perf-profile.children.cycles-pp.irqtime_account_irq
+      0.39            +0.0        0.42        perf-profile.children.cycles-pp.netif_rx_internal
+      0.42            +0.0        0.44 ±  2%  perf-profile.children.cycles-pp.__netif_rx
+      0.15 ±  3%      +0.0        0.18 ±  2%  perf-profile.children.cycles-pp.perf_tp_event
+      0.27 ±  2%      +0.0        0.30 ±  2%  perf-profile.children.cycles-pp.__switch_to
+      0.17 ±  2%      +0.0        0.20 ±  2%  perf-profile.children.cycles-pp.ip_send_check
+      0.11 ±  3%      +0.0        0.14        perf-profile.children.cycles-pp.__list_del_entry_valid
+      0.04 ± 45%      +0.0        0.07 ±  5%  perf-profile.children.cycles-pp.tick_nohz_stop_idle
+      0.16 ±  3%      +0.0        0.18 ±  2%  perf-profile.children.cycles-pp.llist_add_batch
+      0.17            +0.0        0.20 ±  2%  perf-profile.children.cycles-pp.__x2apic_send_IPI_dest
+      0.16 ±  6%      +0.0        0.19 ±  5%  perf-profile.children.cycles-pp.update_sg_lb_stats
+      0.22 ±  2%      +0.0        0.25 ±  2%  perf-profile.children.cycles-pp.__switch_to_asm
+      0.18 ±  2%      +0.0        0.21 ±  3%  perf-profile.children.cycles-pp.__smp_call_single_queue
+      0.24 ±  3%      +0.0        0.27        perf-profile.children.cycles-pp.__ip_local_out
+      0.20 ±  2%      +0.0        0.24        perf-profile.children.cycles-pp.select_idle_sibling
+      0.18 ±  2%      +0.0        0.21 ±  3%  perf-profile.children.cycles-pp.available_idle_cpu
+      1.06            +0.0        1.09        perf-profile.children.cycles-pp.dev_hard_start_xmit
+      0.16 ±  6%      +0.0        0.19 ±  5%  perf-profile.children.cycles-pp.update_blocked_averages
+      0.32            +0.0        0.36 ±  2%  perf-profile.children.cycles-pp.update_curr
+      0.18 ±  2%      +0.0        0.21 ±  3%  perf-profile.children.cycles-pp.native_apic_msr_eoi_write
+      0.96            +0.0        1.00        perf-profile.children.cycles-pp.loopback_xmit
+      0.28 ±  2%      +0.0        0.31        perf-profile.children.cycles-pp.ip_local_out
+      0.12 ±  4%      +0.0        0.15 ±  3%  perf-profile.children.cycles-pp.tcp_downgrade_zcopy_pure
+      0.19            +0.0        0.22 ±  2%  perf-profile.children.cycles-pp.llist_reverse_order
+      0.18 ±  2%      +0.0        0.22 ±  2%  perf-profile.children.cycles-pp.remove_wait_queue
+      0.19 ±  2%      +0.0        0.22 ±  2%  perf-profile.children.cycles-pp.irqentry_enter
+      0.20 ±  3%      +0.0        0.24        perf-profile.children.cycles-pp.___perf_sw_event
+      0.02 ±141%      +0.0        0.06 ±  9%  perf-profile.children.cycles-pp.perf_trace_sched_switch
+      0.44            +0.0        0.48        perf-profile.children.cycles-pp.native_sched_clock
+      0.20 ±  2%      +0.0        0.24        perf-profile.children.cycles-pp.update_rq_clock
+      0.15 ±  4%      +0.0        0.19 ±  2%  perf-profile.children.cycles-pp.tick_irq_enter
+      0.27 ±  2%      +0.0        0.31 ±  2%  perf-profile.children.cycles-pp.select_task_rq_fair
+      0.28 ±  2%      +0.0        0.32 ±  2%  perf-profile.children.cycles-pp.tick_nohz_get_sleep_length
+      0.22            +0.0        0.26        perf-profile.children.cycles-pp.perf_trace_sched_wakeup_template
+      0.20 ±  4%      +0.0        0.24 ±  5%  perf-profile.children.cycles-pp.update_sd_lb_stats
+      0.22 ±  3%      +0.0        0.27 ±  5%  perf-profile.children.cycles-pp.find_busiest_group
+      0.60            +0.0        0.65        perf-profile.children.cycles-pp._raw_spin_lock_irqsave
+      0.25 ±  3%      +0.0        0.30        perf-profile.children.cycles-pp.__update_load_avg_cfs_rq
+      0.29 ±  2%      +0.0        0.34 ±  2%  perf-profile.children.cycles-pp.native_irq_return_iret
+      0.23            +0.0        0.28 ±  2%  perf-profile.children.cycles-pp.set_next_entity
+      0.09 ± 18%      +0.0        0.14 ± 25%  perf-profile.children.cycles-pp.x86_64_start_kernel
+      0.09 ± 18%      +0.0        0.14 ± 25%  perf-profile.children.cycles-pp.x86_64_start_reservations
+      0.09 ± 18%      +0.0        0.14 ± 25%  perf-profile.children.cycles-pp.start_kernel
+      0.09 ± 18%      +0.0        0.14 ± 25%  perf-profile.children.cycles-pp.arch_call_rest_init
+      0.09 ± 18%      +0.0        0.14 ± 25%  perf-profile.children.cycles-pp.rest_init
+      0.00            +0.1        0.05        perf-profile.children.cycles-pp.update_min_vruntime
+      0.00            +0.1        0.05        perf-profile.children.cycles-pp.pipe_unlock
+      0.00            +0.1        0.05        perf-profile.children.cycles-pp.error_entry
+      0.01 ±223%      +0.1        0.06        perf-profile.children.cycles-pp.perf_trace_buf_update
+      0.21 ±  3%      +0.1        0.26 ±  2%  perf-profile.children.cycles-pp.irq_enter_rcu
+      0.49            +0.1        0.54        perf-profile.children.cycles-pp.sched_clock_cpu
+      0.00            +0.1        0.05 ±  8%  perf-profile.children.cycles-pp.__calc_delta
+      0.32            +0.1        0.38 ±  2%  perf-profile.children.cycles-pp.select_task_rq
+      0.10            +0.1        0.16 ±  2%  perf-profile.children.cycles-pp.tcp_chrono_stop
+      0.30 ±  3%      +0.1        0.36 ±  4%  perf-profile.children.cycles-pp.load_balance
+      0.00            +0.1        0.06        perf-profile.children.cycles-pp.tick_nohz_tick_stopped
+      0.32 ±  2%      +0.1        0.39        perf-profile.children.cycles-pp.prepare_task_switch
+      0.38            +0.1        0.45        perf-profile.children.cycles-pp.__flush_smp_call_function_queue
+      0.61            +0.1        0.70        perf-profile.children.cycles-pp.enqueue_entity
+      0.60            +0.1        0.70        perf-profile.children.cycles-pp.update_load_avg
+      0.52            +0.1        0.62 ±  2%  perf-profile.children.cycles-pp.ttwu_queue_wakelist
+      0.67            +0.1        0.77        perf-profile.children.cycles-pp.dequeue_entity
+      0.74            +0.1        0.86        perf-profile.children.cycles-pp.dequeue_task_fair
+      0.00            +0.1        0.12 ±  3%  perf-profile.children.cycles-pp.iov_iter_bvec
+      0.61 ±  2%      +0.1        0.74        perf-profile.children.cycles-pp.menu_select
+      1.00            +0.2        1.16        perf-profile.children.cycles-pp.schedule_idle
+      0.40 ±  2%      +0.2        0.56        perf-profile.children.cycles-pp.tcp_rate_check_app_limited
+      0.14 ±  5%      +0.2        0.30        perf-profile.children.cycles-pp.tcp_mtu_probe
+      0.86            +0.2        1.02 ±  3%  perf-profile.children.cycles-pp.activate_task
+      0.83            +0.2        0.99 ±  3%  perf-profile.children.cycles-pp.enqueue_task_fair
+      0.74 ±  4%      +0.2        0.92 ±  5%  perf-profile.children.cycles-pp.newidle_balance
+      1.00            +0.2        1.19 ±  2%  perf-profile.children.cycles-pp.ttwu_do_activate
+      0.12            +0.2        0.32        perf-profile.children.cycles-pp.tcp_push
+      1.28            +0.2        1.51 ±  2%  perf-profile.children.cycles-pp.sched_ttwu_pending
+      1.29            +0.2        1.53        perf-profile.children.cycles-pp.try_to_wake_up
+      1.08 ±  2%      +0.2        1.33 ±  4%  perf-profile.children.cycles-pp.pick_next_task_fair
+      1.46            +0.3        1.72        perf-profile.children.cycles-pp.__wake_up_common
+      0.24 ±  2%      +0.3        0.52        perf-profile.children.cycles-pp.tcp_tso_segs
+      1.52            +0.3        1.80        perf-profile.children.cycles-pp.__wake_up_common_lock
+      1.70            +0.3        2.00        perf-profile.children.cycles-pp.sock_def_readable
+      1.85            +0.3        2.18 ±  2%  perf-profile.children.cycles-pp.__sysvec_call_function_single
+      0.00            +0.4        0.37 ±  2%  perf-profile.children.cycles-pp.iov_iter_advance
+     11.96            +0.4       12.36        perf-profile.children.cycles-pp.release_sock
+      2.27            +0.4        2.68 ±  2%  perf-profile.children.cycles-pp.schedule
+      2.32            +0.4        2.74 ±  2%  perf-profile.children.cycles-pp.schedule_timeout
+      0.70            +0.4        1.14        perf-profile.children.cycles-pp.read_tsc
+      2.42            +0.5        2.87 ±  2%  perf-profile.children.cycles-pp.sysvec_call_function_single
+      2.53            +0.5        3.00 ±  2%  perf-profile.children.cycles-pp.wait_woken
+      3.14            +0.5        3.69 ±  2%  perf-profile.children.cycles-pp.__schedule
+      3.12            +0.6        3.68 ±  2%  perf-profile.children.cycles-pp.sk_wait_data
+      1.03 ±  2%      +0.6        1.62        perf-profile.children.cycles-pp.ktime_get
+     10.34            +0.7       11.09        perf-profile.children.cycles-pp.__release_sock
+      0.00            +1.0        1.01        perf-profile.children.cycles-pp.iov_iter_extract_pages
+      0.00            +1.1        1.09        perf-profile.children.cycles-pp.skb_append_pagefrags
+      7.76            +1.3        9.05        perf-profile.children.cycles-pp.asm_sysvec_call_function_single
+      8.81            +1.4       10.26        perf-profile.children.cycles-pp.acpi_safe_halt
+      8.84            +1.4       10.29        perf-profile.children.cycles-pp.acpi_idle_enter
+      9.11            +1.5       10.60        perf-profile.children.cycles-pp.cpuidle_enter_state
+      9.17            +1.5       10.68        perf-profile.children.cycles-pp.cpuidle_enter
+     46.29            +1.5       47.80        perf-profile.children.cycles-pp.splice_direct_to_actor
+     10.04            +1.7       11.70        perf-profile.children.cycles-pp.cpuidle_idle_call
+     11.36            +1.8       13.18        perf-profile.children.cycles-pp.start_secondary
+     11.42            +1.9       13.29        perf-profile.children.cycles-pp.do_idle
+     11.44            +1.9       13.32        perf-profile.children.cycles-pp.secondary_startup_64_no_verify
+     11.44            +1.9       13.32        perf-profile.children.cycles-pp.cpu_startup_entry
+     12.44            +2.2       14.68        perf-profile.children.cycles-pp.tcp_write_xmit
+      9.81            +2.5       12.35        perf-profile.children.cycles-pp.__tcp_push_pending_frames
+     37.26            +2.8       40.02        perf-profile.children.cycles-pp.direct_splice_actor
+     37.16            +2.8       39.93        perf-profile.children.cycles-pp.generic_splice_sendpage
+     36.79            +2.8       39.58        perf-profile.children.cycles-pp.__splice_from_pipe
+     34.86            +2.9       37.79        perf-profile.children.cycles-pp.pipe_to_sendpage
+     34.33            +2.9       37.27        perf-profile.children.cycles-pp.kernel_sendpage
+     34.53            +2.9       37.48        perf-profile.children.cycles-pp.sock_sendpage
+     34.02            +3.0       36.98        perf-profile.children.cycles-pp.inet_sendpage
+     33.58            +3.0       36.57        perf-profile.children.cycles-pp.tcp_sendpage
+      0.00            +3.0        3.04        perf-profile.children.cycles-pp.skb_splice_from_iter
+     17.08            +3.1       20.14        perf-profile.children.cycles-pp.do_tcp_sendpages
+      0.00           +19.1       19.14        perf-profile.children.cycles-pp.tcp_sendmsg_locked
+      3.46 ±  5%      -0.9        2.54 ±  4%  perf-profile.self.cycles-pp.mem_cgroup_charge_skmem
+      6.67            -0.8        5.83        perf-profile.self.cycles-pp.copyout
+      4.58            -0.8        3.78        perf-profile.self.cycles-pp.native_queued_spin_lock_slowpath
+      1.37 ±  4%      -0.5        0.87 ±  5%  perf-profile.self.cycles-pp.page_counter_try_charge
+      1.72 ±  3%      -0.5        1.22 ±  3%  perf-profile.self.cycles-pp.try_charge_memcg
+      2.73            -0.5        2.25 ±  2%  perf-profile.self.cycles-pp.__sk_mem_raise_allocated
+      2.71            -0.5        2.25        perf-profile.self.cycles-pp.filemap_get_read_batch
+      2.18            -0.4        1.76        perf-profile.self.cycles-pp._raw_spin_lock_bh
+      1.09 ±  5%      -0.4        0.70 ±  5%  perf-profile.self.cycles-pp.page_counter_uncharge
+      2.15 ±  2%      -0.3        1.88        perf-profile.self.cycles-pp.check_heap_object
+      1.31            -0.2        1.11        perf-profile.self.cycles-pp.filemap_read
+      1.10            -0.2        0.92 ±  2%  perf-profile.self.cycles-pp.copy_page_to_iter_pipe
+      0.73 ±  7%      -0.2        0.56 ±  5%  perf-profile.self.cycles-pp.mem_cgroup_uncharge_skmem
+      1.02            -0.1        0.91        perf-profile.self.cycles-pp.do_sendfile
+      0.54            -0.1        0.45        perf-profile.self.cycles-pp._copy_from_user
+      0.64 ±  2%      -0.1        0.55 ±  2%  perf-profile.self.cycles-pp.__sk_mem_reduce_allocated
+      0.30 ±  7%      -0.1        0.22 ±  6%  perf-profile.self.cycles-pp.propagate_protected_usage
+      0.76 ±  2%      -0.1        0.68        perf-profile.self.cycles-pp.page_cache_pipe_buf_release
+      0.67 ±  2%      -0.1        0.60 ±  2%  perf-profile.self.cycles-pp.apparmor_file_permission
+      0.56            -0.1        0.49        perf-profile.self.cycles-pp.entry_SYSCALL_64_after_hwframe
+      0.68            -0.1        0.62        perf-profile.self.cycles-pp.tcp_v4_rcv
+      0.48            -0.1        0.42 ±  2%  perf-profile.self.cycles-pp.tcp_sendpage
+      0.40            -0.1        0.35 ±  2%  perf-profile.self.cycles-pp.sendfile
+      0.39            -0.1        0.34 ±  2%  perf-profile.self.cycles-pp._copy_to_iter
+      0.70            -0.0        0.65        perf-profile.self.cycles-pp.__splice_from_pipe
+      0.38            -0.0        0.33 ±  2%  perf-profile.self.cycles-pp.__virt_addr_valid
+      0.34            -0.0        0.29        perf-profile.self.cycles-pp.__put_user_8
+      0.60            -0.0        0.56        perf-profile.self.cycles-pp.__fget_light
+      0.48            -0.0        0.43        perf-profile.self.cycles-pp.atime_needs_update
+      0.48            -0.0        0.44 ±  2%  perf-profile.self.cycles-pp.__fsnotify_parent
+      1.00            -0.0        0.95        perf-profile.self.cycles-pp.skb_release_data
+      0.41            -0.0        0.37        perf-profile.self.cycles-pp.entry_SYSRETQ_unsafe_stack
+      0.45            -0.0        0.41        perf-profile.self.cycles-pp.__cond_resched
+      0.78            -0.0        0.74 ±  2%  perf-profile.self.cycles-pp.__skb_datagram_iter
+      0.31 ±  2%      -0.0        0.27 ±  2%  perf-profile.self.cycles-pp.current_time
+      0.24 ±  2%      -0.0        0.20 ±  2%  perf-profile.self.cycles-pp.copy_page_to_iter
+      0.48            -0.0        0.44 ±  2%  perf-profile.self.cycles-pp.sendfile_tcp_stream
+      0.43            -0.0        0.39        perf-profile.self.cycles-pp.netperf_sendfile
+      0.34 ±  2%      -0.0        0.31 ±  3%  perf-profile.self.cycles-pp.__x64_sys_sendfile64
+      0.22 ±  3%      -0.0        0.19        perf-profile.self.cycles-pp.filemap_get_pages
+      0.25 ±  2%      -0.0        0.22 ±  3%  perf-profile.self.cycles-pp.security_file_permission
+      0.40 ±  2%      -0.0        0.37 ±  2%  perf-profile.self.cycles-pp.__check_object_size
+      0.29 ±  2%      -0.0        0.26        perf-profile.self.cycles-pp.syscall_return_via_sysret
+      0.26 ±  2%      -0.0        0.23        perf-profile.self.cycles-pp.aa_file_perm
+      0.30            -0.0        0.28        perf-profile.self.cycles-pp.tcp_send_mss
+      0.33 ±  2%      -0.0        0.30 ±  2%  perf-profile.self.cycles-pp.generic_splice_sendpage
+      0.21            -0.0        0.18 ±  2%  perf-profile.self.cycles-pp.sanity
+      0.33            -0.0        0.30 ±  2%  perf-profile.self.cycles-pp.splice_direct_to_actor
+      0.15 ±  3%      -0.0        0.12 ±  3%  perf-profile.self.cycles-pp.do_splice_to
+      0.42            -0.0        0.39        perf-profile.self.cycles-pp.do_syscall_64
+      0.34 ±  2%      -0.0        0.31 ±  2%  perf-profile.self.cycles-pp.inet_sendpage
+      0.22            -0.0        0.20        perf-profile.self.cycles-pp.generic_file_splice_read
+      0.25            -0.0        0.22 ±  2%  perf-profile.self.cycles-pp.touch_atime
+      0.16 ±  2%      -0.0        0.14 ±  3%  perf-profile.self.cycles-pp.skb_clone
+      0.16 ±  3%      -0.0        0.14 ±  3%  perf-profile.self.cycles-pp.fsnotify_perm
+      0.14 ±  2%      -0.0        0.12 ±  3%  perf-profile.self.cycles-pp.rw_verify_area
+      0.22 ±  3%      -0.0        0.20 ±  3%  perf-profile.self.cycles-pp.__entry_text_start
+      0.11 ±  4%      -0.0        0.10 ±  5%  perf-profile.self.cycles-pp.ktime_get_coarse_real_ts64
+      0.12 ±  4%      -0.0        0.11 ±  3%  perf-profile.self.cycles-pp.folio_mark_accessed
+      0.16            -0.0        0.14 ±  3%  perf-profile.self.cycles-pp.tcp_stream_alloc_skb
+      0.14 ±  2%      -0.0        0.13 ±  3%  perf-profile.self.cycles-pp.__sk_mem_schedule
+      0.14 ±  3%      -0.0        0.12        perf-profile.self.cycles-pp.syscall_exit_to_user_mode_prepare
+      0.30            -0.0        0.29        perf-profile.self.cycles-pp.__netif_receive_skb_core
+      0.12 ±  4%      -0.0        0.10 ±  4%  perf-profile.self.cycles-pp.simple_copy_to_iter
+      0.15 ±  2%      -0.0        0.14        perf-profile.self.cycles-pp.__tcp_select_window
+      0.07            -0.0        0.06        perf-profile.self.cycles-pp.tcp_rate_skb_sent
+      0.06            -0.0        0.05        perf-profile.self.cycles-pp.splice_from_pipe_next
+      0.14            +0.0        0.15        perf-profile.self.cycles-pp.enqueue_to_backlog
+      0.05            +0.0        0.06        perf-profile.self.cycles-pp.schedule_idle
+      0.06            +0.0        0.07        perf-profile.self.cycles-pp.reweight_entity
+      0.06            +0.0        0.07        perf-profile.self.cycles-pp.__tcp_cleanup_rbuf
+      0.11            +0.0        0.12 ±  3%  perf-profile.self.cycles-pp.__get_task_ioprio
+      0.10 ±  4%      +0.0        0.12 ±  4%  perf-profile.self.cycles-pp.ct_kernel_exit_state
+      0.07            +0.0        0.08 ±  4%  perf-profile.self.cycles-pp.sched_clock_cpu
+      0.05            +0.0        0.06 ±  6%  perf-profile.self.cycles-pp.select_task_rq
+      0.11 ±  4%      +0.0        0.12 ±  4%  perf-profile.self.cycles-pp.napi_consume_skb
+      0.06            +0.0        0.07 ±  5%  perf-profile.self.cycles-pp.sysvec_call_function_single
+      0.06            +0.0        0.07 ±  5%  perf-profile.self.cycles-pp.irq_enter_rcu
+      0.11 ±  4%      +0.0        0.12        perf-profile.self.cycles-pp.perf_tp_event
+      0.08            +0.0        0.09 ±  5%  perf-profile.self.cycles-pp.finish_task_switch
+      0.06 ±  8%      +0.0        0.07        perf-profile.self.cycles-pp.switch_fpu_return
+      0.09            +0.0        0.10 ±  4%  perf-profile.self.cycles-pp.os_xsave
+      0.06 ±  7%      +0.0        0.08 ±  4%  perf-profile.self.cycles-pp.pick_next_task_fair
+      0.06            +0.0        0.08 ±  6%  perf-profile.self.cycles-pp.sk_wait_data
+      0.20 ±  2%      +0.0        0.21        perf-profile.self.cycles-pp.loopback_xmit
+      0.08 ±  5%      +0.0        0.10        perf-profile.self.cycles-pp.schedule
+      0.16 ±  3%      +0.0        0.18 ±  2%  perf-profile.self.cycles-pp.kfree_skbmem
+      0.09 ±  4%      +0.0        0.11 ±  3%  perf-profile.self.cycles-pp.tcp_rcv_space_adjust
+      0.09 ±  4%      +0.0        0.10 ±  4%  perf-profile.self.cycles-pp.__wrgsbase_inactive
+      0.08 ±  6%      +0.0        0.09 ±  5%  perf-profile.self.cycles-pp.dequeue_task_fair
+      0.06 ±  7%      +0.0        0.08        perf-profile.self.cycles-pp.cpuidle_enter_state
+      0.15 ±  3%      +0.0        0.17        perf-profile.self.cycles-pp.do_softirq
+      0.13 ±  3%      +0.0        0.15 ±  2%  perf-profile.self.cycles-pp.do_idle
+      0.15            +0.0        0.17 ±  4%  perf-profile.self.cycles-pp.update_curr
+      0.08            +0.0        0.10 ±  3%  perf-profile.self.cycles-pp.cpuidle_idle_call
+      0.22 ±  3%      +0.0        0.24 ±  2%  perf-profile.self.cycles-pp.__slab_free
+      0.15 ±  2%      +0.0        0.17 ±  4%  perf-profile.self.cycles-pp.__update_load_avg_se
+      0.11            +0.0        0.13        perf-profile.self.cycles-pp.tcp_v4_do_rcv
+      0.11 ±  4%      +0.0        0.13 ±  3%  perf-profile.self.cycles-pp.ttwu_queue_wakelist
+      0.24 ±  2%      +0.0        0.26        perf-profile.self.cycles-pp.__mod_timer
+      0.46            +0.0        0.48        perf-profile.self.cycles-pp.tcp_current_mss
+      0.10 ±  3%      +0.0        0.12        perf-profile.self.cycles-pp.__list_del_entry_valid
+      0.09 ±  5%      +0.0        0.12 ±  4%  perf-profile.self.cycles-pp.asm_sysvec_call_function_single
+      0.17 ±  2%      +0.0        0.19        perf-profile.self.cycles-pp.sock_def_readable
+      0.06 ±  9%      +0.0        0.08 ±  4%  perf-profile.self.cycles-pp.nr_iowait_cpu
+      0.11 ±  3%      +0.0        0.13 ±  2%  perf-profile.self.cycles-pp.dequeue_entity
+      0.08 ±  6%      +0.0        0.10        perf-profile.self.cycles-pp.skb_attempt_defer_free
+      0.08 ±  5%      +0.0        0.11 ±  4%  perf-profile.self.cycles-pp.tcp_downgrade_zcopy_pure
+      0.49            +0.0        0.51        perf-profile.self.cycles-pp.kmem_cache_free
+      0.12 ±  6%      +0.0        0.15 ±  5%  perf-profile.self.cycles-pp.update_sg_lb_stats
+      0.64            +0.0        0.67        perf-profile.self.cycles-pp.tcp_rcv_established
+      0.16 ±  4%      +0.0        0.18 ±  2%  perf-profile.self.cycles-pp.ip_send_check
+      0.14 ±  4%      +0.0        0.17 ±  2%  perf-profile.self.cycles-pp.irqentry_enter
+      0.10 ±  3%      +0.0        0.12 ±  4%  perf-profile.self.cycles-pp.update_rq_clock
+      0.16 ±  3%      +0.0        0.18 ±  2%  perf-profile.self.cycles-pp.llist_add_batch
+      0.18 ±  2%      +0.0        0.20 ±  2%  perf-profile.self.cycles-pp.available_idle_cpu
+      0.12 ±  3%      +0.0        0.15 ±  2%  perf-profile.self.cycles-pp.prepare_task_switch
+      0.22 ±  2%      +0.0        0.24 ±  3%  perf-profile.self.cycles-pp.enqueue_entity
+      0.13            +0.0        0.16 ±  3%  perf-profile.self.cycles-pp.__wake_up_common
+      0.26            +0.0        0.29 ±  2%  perf-profile.self.cycles-pp.__switch_to
+      0.21 ±  2%      +0.0        0.24 ±  2%  perf-profile.self.cycles-pp.__switch_to_asm
+      0.18 ±  2%      +0.0        0.21 ±  2%  perf-profile.self.cycles-pp.native_apic_msr_eoi_write
+      0.08 ±  6%      +0.0        0.11 ±  3%  perf-profile.self.cycles-pp.tcp_chrono_stop
+      0.17 ±  2%      +0.0        0.20        perf-profile.self.cycles-pp.__x2apic_send_IPI_dest
+      0.17 ±  4%      +0.0        0.21 ±  2%  perf-profile.self.cycles-pp.___perf_sw_event
+      0.19            +0.0        0.22        perf-profile.self.cycles-pp.llist_reverse_order
+      0.20 ±  2%      +0.0        0.23 ±  3%  perf-profile.self.cycles-pp.__flush_smp_call_function_queue
+      0.22 ±  3%      +0.0        0.25 ±  3%  perf-profile.self.cycles-pp.update_load_avg
+      0.15 ±  3%      +0.0        0.19 ±  3%  perf-profile.self.cycles-pp.try_to_wake_up
+      0.45            +0.0        0.49 ±  2%  perf-profile.self.cycles-pp.tcp_recvmsg_locked
+      0.42            +0.0        0.46        perf-profile.self.cycles-pp.native_sched_clock
+      0.22 ±  2%      +0.0        0.26 ±  2%  perf-profile.self.cycles-pp.wait_woken
+      0.34            +0.0        0.38        perf-profile.self.cycles-pp.__schedule
+      0.22 ±  2%      +0.0        0.27        perf-profile.self.cycles-pp.__update_load_avg_cfs_rq
+      0.59            +0.0        0.64        perf-profile.self.cycles-pp._raw_spin_lock_irqsave
+      0.29 ±  2%      +0.0        0.34 ±  2%  perf-profile.self.cycles-pp.native_irq_return_iret
+      0.00            +0.1        0.05        perf-profile.self.cycles-pp.__update_blocked_fair
+      0.00            +0.1        0.05        perf-profile.self.cycles-pp.__calc_delta
+      0.00            +0.1        0.05        perf-profile.self.cycles-pp.tick_nohz_tick_stopped
+      0.14 ±  3%      +0.1        0.19 ±  3%  perf-profile.self.cycles-pp.__release_sock
+      0.43            +0.1        0.49        perf-profile.self.cycles-pp.__ip_queue_xmit
+      0.24 ±  2%      +0.1        0.30        perf-profile.self.cycles-pp.menu_select
+      0.22 ±  5%      +0.1        0.28 ±  7%  perf-profile.self.cycles-pp.enqueue_task_fair
+      0.26 ±  4%      +0.1        0.34 ± 10%  perf-profile.self.cycles-pp.newidle_balance
+      0.08 ±  5%      +0.1        0.17 ±  4%  perf-profile.self.cycles-pp.__tcp_push_pending_frames
+      0.00            +0.1        0.10        perf-profile.self.cycles-pp.iov_iter_bvec
+      0.36 ±  3%      +0.1        0.50        perf-profile.self.cycles-pp.tcp_rate_check_app_limited
+      0.12 ±  4%      +0.1        0.26        perf-profile.self.cycles-pp.tcp_mtu_probe
+      0.34 ±  7%      +0.2        0.49        perf-profile.self.cycles-pp.ktime_get
+      0.75            +0.2        0.91        perf-profile.self.cycles-pp.do_tcp_sendpages
+      0.10            +0.2        0.30 ±  2%  perf-profile.self.cycles-pp.tcp_push
+      0.23 ±  3%      +0.3        0.49 ±  2%  perf-profile.self.cycles-pp.tcp_tso_segs
+      0.00            +0.3        0.34 ±  2%  perf-profile.self.cycles-pp.iov_iter_advance
+      0.67            +0.4        1.10        perf-profile.self.cycles-pp.read_tsc
+      0.00            +0.6        0.64 ±  2%  perf-profile.self.cycles-pp.iov_iter_extract_pages
+      0.80            +0.7        1.48        perf-profile.self.cycles-pp.tcp_write_xmit
+      5.90            +0.9        6.80        perf-profile.self.cycles-pp.acpi_safe_halt
+      0.00            +1.0        0.98        perf-profile.self.cycles-pp.skb_splice_from_iter
+      0.00            +1.0        1.05        perf-profile.self.cycles-pp.skb_append_pagefrags
+      0.00            +1.8        1.79        perf-profile.self.cycles-pp.tcp_sendmsg_locked
 
 
 
@@ -502,10 +823,10 @@ https://github.com/intel/lkp-tests/wiki
 
 
 
---/64j8yPH+ASbT7kY
+--Rke8sLYKeoOfF9kv
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: attachment;
-	filename="config-6.4.0-rc1-00016-gd281d36ed007"
+	filename="config-6.4.0-rc1-00352-g77f5a42b2db3"
 
 #
 # Automatically generated file; DO NOT EDIT.
@@ -719,7 +1040,7 @@ CONFIG_PROC_PID_CPUSET=y
 CONFIG_CGROUP_DEVICE=y
 CONFIG_CGROUP_CPUACCT=y
 CONFIG_CGROUP_PERF=y
-# CONFIG_CGROUP_BPF is not set
+CONFIG_CGROUP_BPF=y
 # CONFIG_CGROUP_MISC is not set
 # CONFIG_CGROUP_DEBUG is not set
 CONFIG_SOCK_CGROUP_DATA=y
@@ -826,7 +1147,6 @@ CONFIG_HAVE_INTEL_TXT=y
 CONFIG_X86_64_SMP=y
 CONFIG_ARCH_SUPPORTS_UPROBES=y
 CONFIG_FIX_EARLYCON_MEM=y
-CONFIG_DYNAMIC_PHYSICAL_MASK=y
 CONFIG_PGTABLE_LEVELS=5
 CONFIG_CC_HAS_SANE_STACKPROTECTOR=y
 
@@ -864,7 +1184,7 @@ CONFIG_PARAVIRT_TIME_ACCOUNTING=y
 CONFIG_PARAVIRT_CLOCK=y
 # CONFIG_JAILHOUSE_GUEST is not set
 # CONFIG_ACRN_GUEST is not set
-CONFIG_INTEL_TDX_GUEST=y
+# CONFIG_INTEL_TDX_GUEST is not set
 # CONFIG_MK8 is not set
 # CONFIG_MPSC is not set
 # CONFIG_MCORE2 is not set
@@ -927,7 +1247,6 @@ CONFIG_X86_CPUID=y
 CONFIG_X86_5LEVEL=y
 CONFIG_X86_DIRECT_GBPAGES=y
 # CONFIG_X86_CPA_STATISTICS is not set
-CONFIG_X86_MEM_ENCRYPT=y
 CONFIG_NUMA=y
 # CONFIG_AMD_NUMA is not set
 CONFIG_X86_64_ACPI_NUMA=y
@@ -976,9 +1295,12 @@ CONFIG_CRASH_DUMP=y
 CONFIG_KEXEC_JUMP=y
 CONFIG_PHYSICAL_START=0x1000000
 CONFIG_RELOCATABLE=y
-# CONFIG_RANDOMIZE_BASE is not set
+CONFIG_RANDOMIZE_BASE=y
+CONFIG_X86_NEED_RELOCS=y
 CONFIG_PHYSICAL_ALIGN=0x200000
 CONFIG_DYNAMIC_MEMORY_LAYOUT=y
+CONFIG_RANDOMIZE_MEMORY=y
+CONFIG_RANDOMIZE_MEMORY_PHYSICAL_PADDING=0xa
 # CONFIG_ADDRESS_MASKING is not set
 CONFIG_HOTPLUG_CPU=y
 CONFIG_BOOTPARAM_HOTPLUG_CPU0=y
@@ -1330,7 +1652,6 @@ CONFIG_HAVE_ARCH_PREL32_RELOCATIONS=y
 CONFIG_ARCH_USE_MEMREMAP_PROT=y
 # CONFIG_LOCK_EVENT_COUNTS is not set
 CONFIG_ARCH_HAS_MEM_ENCRYPT=y
-CONFIG_ARCH_HAS_CC_PLATFORM=y
 CONFIG_HAVE_STATIC_CALL=y
 CONFIG_HAVE_STATIC_CALL_INLINE=y
 CONFIG_HAVE_PREEMPT_DYNAMIC=y
@@ -2223,6 +2544,7 @@ CONFIG_CGROUP_NET_PRIO=y
 CONFIG_CGROUP_NET_CLASSID=y
 CONFIG_NET_RX_BUSY_POLL=y
 CONFIG_BQL=y
+CONFIG_BPF_STREAM_PARSER=y
 CONFIG_NET_FLOW_LIMIT=y
 
 #
@@ -5384,11 +5706,10 @@ CONFIG_IOMMU_SUPPORT=y
 CONFIG_IOMMU_DEFAULT_DMA_LAZY=y
 # CONFIG_IOMMU_DEFAULT_PASSTHROUGH is not set
 CONFIG_IOMMU_DMA=y
-CONFIG_IOMMU_SVA=y
 # CONFIG_AMD_IOMMU is not set
 CONFIG_DMAR_TABLE=y
 CONFIG_INTEL_IOMMU=y
-CONFIG_INTEL_IOMMU_SVM=y
+# CONFIG_INTEL_IOMMU_SVM is not set
 # CONFIG_INTEL_IOMMU_DEFAULT_ON is not set
 CONFIG_INTEL_IOMMU_FLOPPY_WA=y
 CONFIG_INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON=y
@@ -5916,11 +6237,17 @@ CONFIG_SECURITY_NETWORK=y
 CONFIG_SECURITY_NETWORK_XFRM=y
 CONFIG_SECURITY_PATH=y
 CONFIG_INTEL_TXT=y
+CONFIG_LSM_MMAP_MIN_ADDR=65535
 CONFIG_HAVE_HARDENED_USERCOPY_ALLOCATOR=y
 CONFIG_HARDENED_USERCOPY=y
 CONFIG_FORTIFY_SOURCE=y
 # CONFIG_STATIC_USERMODEHELPER is not set
-# CONFIG_SECURITY_SELINUX is not set
+CONFIG_SECURITY_SELINUX=y
+CONFIG_SECURITY_SELINUX_BOOTPARAM=y
+CONFIG_SECURITY_SELINUX_DEVELOP=y
+CONFIG_SECURITY_SELINUX_AVC_STATS=y
+CONFIG_SECURITY_SELINUX_SIDTAB_HASH_BITS=9
+CONFIG_SECURITY_SELINUX_SID2STR_CACHE_SIZE=256
 # CONFIG_SECURITY_SMACK is not set
 # CONFIG_SECURITY_TOMOYO is not set
 CONFIG_SECURITY_APPARMOR=y
@@ -5944,9 +6271,10 @@ CONFIG_INTEGRITY_AUDIT=y
 # CONFIG_IMA is not set
 # CONFIG_IMA_SECURE_AND_OR_TRUSTED_BOOT is not set
 # CONFIG_EVM is not set
-CONFIG_DEFAULT_SECURITY_APPARMOR=y
+CONFIG_DEFAULT_SECURITY_SELINUX=y
+# CONFIG_DEFAULT_SECURITY_APPARMOR is not set
 # CONFIG_DEFAULT_SECURITY_DAC is not set
-CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,apparmor,selinux,smack,tomoyo,bpf"
+CONFIG_LSM="landlock,lockdown,yama,loadpin,safesetid,selinux,smack,tomoyo,apparmor,bpf"
 
 #
 # Kernel hardening options
@@ -6321,7 +6649,6 @@ CONFIG_DMA_OPS=y
 CONFIG_NEED_SG_DMA_LENGTH=y
 CONFIG_NEED_DMA_MAP_STATE=y
 CONFIG_ARCH_DMA_ADDR_T_64BIT=y
-CONFIG_ARCH_HAS_FORCE_DMA_UNENCRYPTED=y
 CONFIG_SWIOTLB=y
 # CONFIG_DMA_API_DEBUG is not set
 # CONFIG_DMA_MAP_BENCHMARK is not set
@@ -6743,7 +7070,7 @@ CONFIG_ARCH_USE_MEMTEST=y
 # end of Rust hacking
 # end of Kernel hacking
 
---/64j8yPH+ASbT7kY
+--Rke8sLYKeoOfF9kv
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: attachment; filename="job-script"
 
@@ -6751,31 +7078,38 @@ Content-Disposition: attachment; filename="job-script"
 
 export_top_env()
 {
-	export suite='autonuma-benchmark'
-	export testcase='autonuma-benchmark'
+	export suite='netperf'
+	export testcase='netperf'
 	export category='benchmark'
-	export iterations=4
-	export job_origin='autonuma-benchmark.yaml'
+	export disable_latency_stats=1
+	export set_nic_irq_affinity=1
+	export ip='ipv4'
+	export runtime=300
+	export nr_threads=64
+	export cluster='cs-localhost'
+	export job_origin='netperf.yaml'
 	export queue_cmdline_keys='branch
 commit
 kbuild_queue_analysis'
 	export queue='validate'
-	export testbox='lkp-csl-2sp9'
-	export tbox_group='lkp-csl-2sp9'
-	export submit_id='646ebd9c7241271f9e06c478'
-	export job_file='/lkp/jobs/scheduled/lkp-csl-2sp9/autonuma-benchmark-performance-4x-numa02_SMT-debian-11.1-x86_64-20220510.cgz-d281d36ed007eabb243ad2d489c52c43961f8ac3-20230525-8094-1uko7rn-3.yaml'
-	export id='9452b1d14ec11417457fe543fb538788d56eb146'
+	export testbox='lkp-icl-2sp2'
+	export tbox_group='lkp-icl-2sp2'
+	export submit_id='646f63535853c8539d013aa5'
+	export job_file='/lkp/jobs/scheduled/lkp-icl-2sp2/netperf-cs-localhost-performance-ipv4-50%-300s-10K-TCP_SENDFILE-debian-11.1-x86_64-20220510.cgz-77f5a42b2db3e39c971a7d11f0b63745-20230525-21405-2fz5md-4.yaml'
+	export id='0781929aed55b8d6a6dedf286c0d9cebe39c3ece'
 	export queuer_version='/zday/lkp'
-	export model='Cascade Lake'
-	export nr_node=2
-	export nr_cpu=88
-	export memory='128G'
-	export nr_hdd_partitions=4
-	export nr_ssd_partitions=1
-	export hdd_partitions='/dev/disk/by-id/ata-ST4000NM0035-1V4107_ZC13Q1RD-part*'
-	export ssd_partitions='/dev/disk/by-id/ata-INTEL_SSDSC2BB480G7_PHDV723200JX480BGN-part1'
-	export rootfs_partition='/dev/disk/by-id/ata-INTEL_SSDSC2BB480G7_PHDV723200JX480BGN-part2'
-	export brand='Intel(R) Xeon(R) Gold 6238M CPU @ 2.10GHz'
+	export model='Ice Lake'
+	export nr_node=4
+	export nr_cpu=128
+	export memory='256G'
+	export nr_ssd_partitions=4
+	export ssd_partitions='/dev/disk/by-id/nvme-INTEL_SSDPE2KX040T7_PHLF7414019F4P0IGN-part2
+/dev/disk/by-id/nvme-INTEL_SSDPE2KX040T7_PHLF7414019F4P0IGN-part3
+/dev/disk/by-id/nvme-INTEL_SSDPE21K375GA_PHKE734100DV375AGN-part1
+/dev/disk/by-id/nvme-INTEL_SSDPE21K375GA_PHKE734200JC375AGN-part1'
+	export swap_partitions=
+	export rootfs_partition='/dev/disk/by-id/nvme-INTEL_SSDPE2KX040T7_PHLF7414019F4P0IGN-part1'
+	export brand='Intel(R) Xeon(R) Gold 6338 CPU @ 2.00GHz'
 	export need_kconfig=\{\"XFS_DEBUG\"\=\>\"n\"\}'
 '\{\"XFS_WARN\"\=\>\"y\"\}'
 '\{\"PM_DEBUG\"\=\>\"n\"\}'
@@ -6792,37 +7126,34 @@ kbuild_queue_analysis'
 '\{\"DEBUG_MEMORY_INIT\"\=\>\"n\"\}'
 '\{\"SLUB_DEBUG\"\=\>\"n\"\}'
 '\{\"EXPERT\"\=\>\"y\"\}
-	export commit='d281d36ed007eabb243ad2d489c52c43961f8ac3'
-	export ucode='0x5003303'
-	export need_kconfig_hw='{"I40E"=>"y"}
-SATA_AHCI
-INTEL_TH
-INTEL_TH_ACPI'
+	export commit='77f5a42b2db3e39c971a7d11f0b63745cef8b496'
+	export netconsole_port=6680
+	export ucode='0xd000389'
 	export kconfig='x86_64-rhel-8.3'
-	export enqueue_time='2023-05-25 09:45:00 +0800'
-	export _id='646ebd9c7241271f9e06c478'
-	export _rt='/result/autonuma-benchmark/performance-4x-numa02_SMT/lkp-csl-2sp9/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/d281d36ed007eabb243ad2d489c52c43961f8ac3'
+	export enqueue_time='2023-05-25 21:32:03 +0800'
+	export _id='646f63695853c8539d013aa6'
+	export _rt='/result/netperf/cs-localhost-performance-ipv4-50%-300s-10K-TCP_SENDFILE/lkp-icl-2sp2/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/77f5a42b2db3e39c971a7d11f0b63745cef8b496'
 	export user='lkp'
 	export compiler='gcc-11'
 	export LKP_SERVER='internal-lkp-server'
-	export head_commit='01f20a6efd89a14f84c11be95e00abc93ef6fa5e'
+	export head_commit='f147028af5b02c016d7ffd9e565c802f301011fd'
 	export base_commit='44c026a73be8038f03dbdeef028b642880cf1511'
-	export branch='linux-review/Raghavendra-K-T/sched-numa-Fix-disjoint-set-vma-scan-regression/20230516-180954'
+	export branch='dhowells-fs/sendpage-1'
 	export rootfs='debian-11.1-x86_64-20220510.cgz'
-	export result_root='/result/autonuma-benchmark/performance-4x-numa02_SMT/lkp-csl-2sp9/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/d281d36ed007eabb243ad2d489c52c43961f8ac3/3'
+	export result_root='/result/netperf/cs-localhost-performance-ipv4-50%-300s-10K-TCP_SENDFILE/lkp-icl-2sp2/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/77f5a42b2db3e39c971a7d11f0b63745cef8b496/3'
 	export scheduler_version='/lkp/lkp/src'
 	export arch='x86_64'
 	export max_uptime=2100
 	export initrd='/osimage/debian/debian-11.1-x86_64-20220510.cgz'
 	export bootloader_append='root=/dev/ram0
-RESULT_ROOT=/result/autonuma-benchmark/performance-4x-numa02_SMT/lkp-csl-2sp9/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/d281d36ed007eabb243ad2d489c52c43961f8ac3/3
-BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3/gcc-11/d281d36ed007eabb243ad2d489c52c43961f8ac3/vmlinuz-6.4.0-rc1-00016-gd281d36ed007
-branch=linux-review/Raghavendra-K-T/sched-numa-Fix-disjoint-set-vma-scan-regression/20230516-180954
-job=/lkp/jobs/scheduled/lkp-csl-2sp9/autonuma-benchmark-performance-4x-numa02_SMT-debian-11.1-x86_64-20220510.cgz-d281d36ed007eabb243ad2d489c52c43961f8ac3-20230525-8094-1uko7rn-3.yaml
+RESULT_ROOT=/result/netperf/cs-localhost-performance-ipv4-50%-300s-10K-TCP_SENDFILE/lkp-icl-2sp2/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/77f5a42b2db3e39c971a7d11f0b63745cef8b496/3
+BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3/gcc-11/77f5a42b2db3e39c971a7d11f0b63745cef8b496/vmlinuz-6.4.0-rc1-00352-g77f5a42b2db3
+branch=dhowells-fs/sendpage-1
+job=/lkp/jobs/scheduled/lkp-icl-2sp2/netperf-cs-localhost-performance-ipv4-50%-300s-10K-TCP_SENDFILE-debian-11.1-x86_64-20220510.cgz-77f5a42b2db3e39c971a7d11f0b63745-20230525-21405-2fz5md-4.yaml
 user=lkp
 ARCH=x86_64
 kconfig=x86_64-rhel-8.3
-commit=d281d36ed007eabb243ad2d489c52c43961f8ac3
+commit=77f5a42b2db3e39c971a7d11f0b63745cef8b496
 initcall_debug
 nmi_watchdog=0
 max_uptime=2100
@@ -6849,19 +7180,20 @@ earlyprintk=ttyS0,115200
 console=ttyS0,115200
 vga=normal
 rw'
-	export modules_initrd='/pkg/linux/x86_64-rhel-8.3/gcc-11/d281d36ed007eabb243ad2d489c52c43961f8ac3/modules.cgz'
-	export bm_initrd='/osimage/deps/debian-11.1-x86_64-20220510.cgz/run-ipconfig_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/lkp_20220513.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/rsync-rootfs_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/autonuma-benchmark_20220718.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/autonuma-benchmark-x86_64-fdf7a42-1_20220605.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/mpstat_20220516.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/turbostat_20220514.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/turbostat-x86_64-210e04ff7681-1_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/perf_20230522.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/perf-x86_64-00c7b5f4ddc5-1_20230402.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/sar-x86_64-c5bb321-1_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/hw_20220526.cgz'
+	export modules_initrd='/pkg/linux/x86_64-rhel-8.3/gcc-11/77f5a42b2db3e39c971a7d11f0b63745cef8b496/modules.cgz'
+	export bm_initrd='/osimage/deps/debian-11.1-x86_64-20220510.cgz/lkp_20220513.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/run-ipconfig_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/rsync-rootfs_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/netperf_20220627.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/netperf-x86_64-2.7-0_20220627.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/mpstat_20220516.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/turbostat_20220514.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/turbostat-x86_64-210e04ff7681-1_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/perf_20230522.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/perf-x86_64-00c7b5f4ddc5-1_20230402.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/sar-x86_64-c5bb321-1_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/hw_20220526.cgz'
 	export ucode_initrd='/osimage/ucode/intel-ucode-20230406.cgz'
 	export lkp_initrd='/osimage/user/lkp/lkp-x86_64.cgz'
 	export site='lkp-wsx01'
 	export LKP_CGI_PORT=80
 	export LKP_CIFS_PORT=139
-	export last_kernel='6.4.0-rc2-00885-g85326e3c8606'
+	export last_kernel='6.4.0-rc3'
 	export repeat_to=6
 	export kbuild_queue_analysis=1
-	export kernel='/pkg/linux/x86_64-rhel-8.3/gcc-11/d281d36ed007eabb243ad2d489c52c43961f8ac3/vmlinuz-6.4.0-rc1-00016-gd281d36ed007'
-	export dequeue_time='2023-05-25 09:52:20 +0800'
-	export job_initrd='/lkp/jobs/scheduled/lkp-csl-2sp9/autonuma-benchmark-performance-4x-numa02_SMT-debian-11.1-x86_64-20220510.cgz-d281d36ed007eabb243ad2d489c52c43961f8ac3-20230525-8094-1uko7rn-3.cgz'
+	export kernel='/pkg/linux/x86_64-rhel-8.3/gcc-11/77f5a42b2db3e39c971a7d11f0b63745cef8b496/vmlinuz-6.4.0-rc1-00352-g77f5a42b2db3'
+	export dequeue_time='2023-05-25 21:37:42 +0800'
+	export node_roles='server client'
+	export job_initrd='/lkp/jobs/scheduled/lkp-icl-2sp2/netperf-cs-localhost-performance-ipv4-50%-300s-10K-TCP_SENDFILE-debian-11.1-x86_64-20220510.cgz-77f5a42b2db3e39c971a7d11f0b63745-20230525-21405-2fz5md-4.cgz'
 
 	[ -n "$LKP_SRC" ] ||
 	export LKP_SRC=/lkp/${user:-lkp}/src
@@ -6909,7 +7241,15 @@ run_job()
 	run_monitor $LKP_SRC/monitors/wrapper oom-killer
 	run_monitor $LKP_SRC/monitors/plain/watchdog
 
-	run_test test='numa02_SMT' $LKP_SRC/tests/wrapper autonuma-benchmark
+	if role server
+	then
+		start_daemon $LKP_SRC/daemon/wrapper netserver
+	fi
+
+	if role client
+	then
+		run_test send_size='10K' test='TCP_SENDFILE' $LKP_SRC/tests/wrapper netperf
+	fi
 }
 
 extract_stats()
@@ -6917,7 +7257,7 @@ extract_stats()
 	export stats_part_begin=
 	export stats_part_end=
 
-	env test='numa02_SMT' $LKP_SRC/stats/wrapper autonuma-benchmark
+	env send_size='10K' test='TCP_SENDFILE' $LKP_SRC/stats/wrapper netperf
 	$LKP_SRC/stats/wrapper kmsg
 	$LKP_SRC/stats/wrapper boot-time
 	$LKP_SRC/stats/wrapper uptime
@@ -6942,7 +7282,7 @@ extract_stats()
 	$LKP_SRC/stats/wrapper mpstat
 	env debug_mode=0 $LKP_SRC/stats/wrapper perf-profile
 
-	$LKP_SRC/stats/wrapper time autonuma-benchmark.time
+	$LKP_SRC/stats/wrapper time netperf.time
 	$LKP_SRC/stats/wrapper dmesg
 	$LKP_SRC/stats/wrapper kmsg
 	$LKP_SRC/stats/wrapper last_state
@@ -6952,20 +7292,31 @@ extract_stats()
 
 "$@"
 
---/64j8yPH+ASbT7kY
+--Rke8sLYKeoOfF9kv
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: attachment; filename="job.yaml"
 
 ---
 
-#! jobs/autonuma-benchmark.yaml
-suite: autonuma-benchmark
-testcase: autonuma-benchmark
+#! jobs/netperf.yaml
+suite: netperf
+testcase: netperf
 category: benchmark
-iterations: 4x
-autonuma-benchmark:
-  test: numa02_SMT
-job_origin: autonuma-benchmark.yaml
+
+# upto 90% CPU cycles may be used by latency stats
+disable_latency_stats: 1
+set_nic_irq_affinity: 1
+ip: ipv4
+runtime: 300s
+nr_threads: 50%
+cluster: cs-localhost
+if role server:
+  netserver:
+if role client:
+  netperf:
+    send_size: 10K
+    test: TCP_SENDFILE
+job_origin: netperf.yaml
 
 #! queue options
 queue_cmdline_keys:
@@ -6973,26 +7324,29 @@ queue_cmdline_keys:
 - commit
 - kbuild_queue_analysis
 queue: bisect
-testbox: lkp-csl-2sp9
-tbox_group: lkp-csl-2sp9
-submit_id: 646dd517724127981d062a66
-job_file: "/lkp/jobs/scheduled/lkp-csl-2sp9/autonuma-benchmark-performance-4x-numa02_SMT-debian-11.1-x86_64-20220510.cgz-d281d36ed007eabb243ad2d489c52c43961f8ac3-20230524-38941-1u134p1-2.yaml"
-id: eefc77efbbdbabe5157a3da5d47d3b64a59b68db
+testbox: lkp-icl-2sp2
+tbox_group: lkp-icl-2sp2
+submit_id: 646eba295853c84cf3ffe2d1
+job_file: "/lkp/jobs/scheduled/lkp-icl-2sp2/netperf-cs-localhost-performance-ipv4-50%-300s-10K-TCP_SENDFILE-debian-11.1-x86_64-20220510.cgz-77f5a42b2db3e39c971a7d11f0b63745-20230525-19699-omyc2h-0.yaml"
+id: 3fdea673e09227a1c42704a0051b6880a41f3910
 queuer_version: "/zday/lkp"
 
-#! /db/releases/20230517121050/lkp-src/hosts/lkp-csl-2sp9
-model: Cascade Lake
-nr_node: 2
-nr_cpu: 88
-memory: 128G
-nr_hdd_partitions: 4
-nr_ssd_partitions: 1
-hdd_partitions: "/dev/disk/by-id/ata-ST4000NM0035-1V4107_ZC13Q1RD-part*"
-ssd_partitions: "/dev/disk/by-id/ata-INTEL_SSDSC2BB480G7_PHDV723200JX480BGN-part1"
-rootfs_partition: "/dev/disk/by-id/ata-INTEL_SSDSC2BB480G7_PHDV723200JX480BGN-part2"
-brand: Intel(R) Xeon(R) Gold 6238M CPU @ 2.10GHz
+#! /db/releases/20230522162832/lkp-src/hosts/lkp-icl-2sp2
+model: Ice Lake
+nr_node: 4
+nr_cpu: 128
+memory: 256G
+nr_ssd_partitions: 4
+ssd_partitions:
+- "/dev/disk/by-id/nvme-INTEL_SSDPE2KX040T7_PHLF7414019F4P0IGN-part2"
+- "/dev/disk/by-id/nvme-INTEL_SSDPE2KX040T7_PHLF7414019F4P0IGN-part3"
+- "/dev/disk/by-id/nvme-INTEL_SSDPE21K375GA_PHKE734100DV375AGN-part1"
+- "/dev/disk/by-id/nvme-INTEL_SSDPE21K375GA_PHKE734200JC375AGN-part1"
+swap_partitions:
+rootfs_partition: "/dev/disk/by-id/nvme-INTEL_SSDPE2KX040T7_PHLF7414019F4P0IGN-part1"
+brand: Intel(R) Xeon(R) Gold 6338 CPU @ 2.00GHz
 
-#! /db/releases/20230517121050/lkp-src/include/category/benchmark
+#! /db/releases/20230522162832/lkp-src/include/category/benchmark
 need_kconfig:
 - XFS_DEBUG: n
 - XFS_WARN: y
@@ -7040,47 +7394,43 @@ mpstat:
 perf-profile:
   debug_mode: 0
 
-#! /db/releases/20230517121050/lkp-src/include/category/ALL
+#! /db/releases/20230522162832/lkp-src/include/category/ALL
 cpufreq_governor: performance
 
-#! /db/releases/20230517121050/lkp-src/include/queue/cyclic
-commit: d281d36ed007eabb243ad2d489c52c43961f8ac3
+#! /db/releases/20230522162832/lkp-src/include/queue/cyclic
+commit: 77f5a42b2db3e39c971a7d11f0b63745cef8b496
 
-#! /db/releases/20230517121050/lkp-src/include/testbox/lkp-csl-2sp9
-ucode: '0x5003303'
-need_kconfig_hw:
-- I40E: y
-- SATA_AHCI
-- INTEL_TH
-- INTEL_TH_ACPI
+#! /db/releases/20230522162832/lkp-src/include/testbox/lkp-icl-2sp2
+netconsole_port: 6680
+ucode: '0xd000389'
 kconfig: x86_64-rhel-8.3
-enqueue_time: 2023-05-24 17:12:55.987468877 +08:00
-_id: 646dd52c724127981d062a68
-_rt: "/result/autonuma-benchmark/performance-4x-numa02_SMT/lkp-csl-2sp9/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/d281d36ed007eabb243ad2d489c52c43961f8ac3"
+enqueue_time: 2023-05-25 09:30:17.405295928 +08:00
+_id: 646eba295853c84cf3ffe2d1
+_rt: "/result/netperf/cs-localhost-performance-ipv4-50%-300s-10K-TCP_SENDFILE/lkp-icl-2sp2/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/77f5a42b2db3e39c971a7d11f0b63745cef8b496"
 
 #! schedule options
 user: lkp
 compiler: gcc-11
 LKP_SERVER: internal-lkp-server
-head_commit: 01f20a6efd89a14f84c11be95e00abc93ef6fa5e
+head_commit: f147028af5b02c016d7ffd9e565c802f301011fd
 base_commit: 44c026a73be8038f03dbdeef028b642880cf1511
-branch: linux-devel/devel-hourly-20230522-130614
+branch: linux-devel/devel-hourly-20230523-130831
 rootfs: debian-11.1-x86_64-20220510.cgz
-result_root: "/result/autonuma-benchmark/performance-4x-numa02_SMT/lkp-csl-2sp9/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/d281d36ed007eabb243ad2d489c52c43961f8ac3/0"
+result_root: "/result/netperf/cs-localhost-performance-ipv4-50%-300s-10K-TCP_SENDFILE/lkp-icl-2sp2/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/77f5a42b2db3e39c971a7d11f0b63745cef8b496/0"
 scheduler_version: "/lkp/lkp/src"
 arch: x86_64
 max_uptime: 2100
 initrd: "/osimage/debian/debian-11.1-x86_64-20220510.cgz"
 bootloader_append:
 - root=/dev/ram0
-- RESULT_ROOT=/result/autonuma-benchmark/performance-4x-numa02_SMT/lkp-csl-2sp9/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/d281d36ed007eabb243ad2d489c52c43961f8ac3/0
-- BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3/gcc-11/d281d36ed007eabb243ad2d489c52c43961f8ac3/vmlinuz-6.4.0-rc1-00016-gd281d36ed007
-- branch=linux-devel/devel-hourly-20230522-130614
-- job=/lkp/jobs/scheduled/lkp-csl-2sp9/autonuma-benchmark-performance-4x-numa02_SMT-debian-11.1-x86_64-20220510.cgz-d281d36ed007eabb243ad2d489c52c43961f8ac3-20230524-38941-1u134p1-2.yaml
+- RESULT_ROOT=/result/netperf/cs-localhost-performance-ipv4-50%-300s-10K-TCP_SENDFILE/lkp-icl-2sp2/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-11/77f5a42b2db3e39c971a7d11f0b63745cef8b496/0
+- BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3/gcc-11/77f5a42b2db3e39c971a7d11f0b63745cef8b496/vmlinuz-6.4.0-rc1-00352-g77f5a42b2db3
+- branch=linux-devel/devel-hourly-20230523-130831
+- job=/lkp/jobs/scheduled/lkp-icl-2sp2/netperf-cs-localhost-performance-ipv4-50%-300s-10K-TCP_SENDFILE-debian-11.1-x86_64-20220510.cgz-77f5a42b2db3e39c971a7d11f0b63745-20230525-19699-omyc2h-0.yaml
 - user=lkp
 - ARCH=x86_64
 - kconfig=x86_64-rhel-8.3
-- commit=d281d36ed007eabb243ad2d489c52c43961f8ac3
+- commit=77f5a42b2db3e39c971a7d11f0b63745cef8b496
 - initcall_debug
 - nmi_watchdog=0
 - max_uptime=2100
@@ -7109,33 +7459,33 @@ bootloader_append:
 - rw
 
 #! runtime status
-modules_initrd: "/pkg/linux/x86_64-rhel-8.3/gcc-11/d281d36ed007eabb243ad2d489c52c43961f8ac3/modules.cgz"
-bm_initrd: "/osimage/deps/debian-11.1-x86_64-20220510.cgz/lkp_20220513.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/run-ipconfig_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/rsync-rootfs_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/autonuma-benchmark_20220718.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/autonuma-benchmark-x86_64-fdf7a42-1_20220605.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/mpstat_20220516.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/turbostat_20220514.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/turbostat-x86_64-210e04ff7681-1_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/perf_20230522.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/perf-x86_64-00c7b5f4ddc5-1_20230402.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/sar-x86_64-c5bb321-1_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/hw_20220526.cgz"
+modules_initrd: "/pkg/linux/x86_64-rhel-8.3/gcc-11/77f5a42b2db3e39c971a7d11f0b63745cef8b496/modules.cgz"
+bm_initrd: "/osimage/deps/debian-11.1-x86_64-20220510.cgz/run-ipconfig_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/lkp_20220513.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/rsync-rootfs_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/netperf_20220627.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/netperf-x86_64-2.7-0_20220627.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/mpstat_20220516.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/turbostat_20220514.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/turbostat-x86_64-210e04ff7681-1_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/perf_20230522.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/perf-x86_64-00c7b5f4ddc5-1_20230402.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/sar-x86_64-c5bb321-1_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/hw_20220526.cgz"
 ucode_initrd: "/osimage/ucode/intel-ucode-20230406.cgz"
 lkp_initrd: "/osimage/user/lkp/lkp-x86_64.cgz"
 site: lkp-wsx01
 
-#! /db/releases/20230522162832/lkp-src/include/site/lkp-wsx01
+#! /db/releases/20230523172912/lkp-src/include/site/lkp-wsx01
 LKP_CGI_PORT: 80
 LKP_CIFS_PORT: 139
 oom-killer:
 watchdog:
-last_kernel: 6.4.0-rc3-06775-gf147028af5b0
+last_kernel: 6.4.0-rc3
 repeat_to: 3
 
 #! user overrides
 kbuild_queue_analysis: 1
-kernel: "/pkg/linux/x86_64-rhel-8.3/gcc-11/d281d36ed007eabb243ad2d489c52c43961f8ac3/vmlinuz-6.4.0-rc1-00016-gd281d36ed007"
-dequeue_time: 2023-05-24 17:40:28.164585236 +08:00
+kernel: "/pkg/linux/x86_64-rhel-8.3/gcc-11/77f5a42b2db3e39c971a7d11f0b63745cef8b496/vmlinuz-6.4.0-rc1-00352-g77f5a42b2db3"
+dequeue_time: 2023-05-25 20:56:43.949859841 +08:00
 
-#! /db/releases/20230524154417/lkp-src/include/site/lkp-wsx01
+#! /db/releases/20230525183257/lkp-src/include/site/lkp-wsx01
 job_state: finished
-loadavg: 62.11 73.43 52.72 1/838 32848
-start_time: '1684921332'
-end_time: '1684922354'
-version: "/lkp/lkp/.src-20230524-153101:7c0e0e8a904c:b6c0e0f63448"
+loadavg: 52.72 60.58 29.24 2/1203 14635
+start_time: '1685019523'
+end_time: '1685019824'
+version: "/lkp/lkp/.src-20230525-112002:dae2ec49f6b1:b65b959a8e1b"
 
---/64j8yPH+ASbT7kY
+--Rke8sLYKeoOfF9kv
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: attachment; filename="reproduce"
 
@@ -7149,5 +7499,71 @@ do
 	[ -f "$file" ] && echo "performance" > "$file"
 done
 
+netserver -4 -D
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+netperf -4 -H 127.0.0.1 -t TCP_SENDFILE -c -C -l 300 -- -m 10K  &
+wait
 
---/64j8yPH+ASbT7kY--
+--Rke8sLYKeoOfF9kv--
