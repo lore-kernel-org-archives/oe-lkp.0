@@ -1,88 +1,112 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B349101CB
-	for <oe-lkp@lists.linux.dev>; Fri, 26 May 2023 08:51:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1685091076;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=JgtGObo7MVZEjCL6pka0stFh+LUjlR7+Ct1D/LRpVyM=;
-	b=NxCYf2b86MMH88qwHeBF6lhBH0YBEvGzJgaPbvqZUechu/35Eu9T+wrnB5rmqZigD70uup
-	wSqgjnJ6VIaAZjL/Y8iYfBYlGh1kiw/40GkM+7miZVv0gjlPPoQmuG/+jSU+TZwlh6mwZu
-	SFO6Bs5PNhbpNz9iG6Sy3X2IkW2FhDc=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-166-m_jPuWO1M7KYCocyss31pg-1; Fri, 26 May 2023 04:51:14 -0400
-X-MC-Unique: m_jPuWO1M7KYCocyss31pg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B8B6E101A585;
-	Fri, 26 May 2023 08:51:13 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.39.192.68])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id C286E140E961;
-	Fri, 26 May 2023 08:51:11 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-	Kingdom.
-	Registered in England and Wales under Company Registration No. 3798903
-From: David Howells <dhowells@redhat.com>
-In-Reply-To: <202305260951.338c3bfe-oliver.sang@intel.com>
-References: <202305260951.338c3bfe-oliver.sang@intel.com>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: dhowells@redhat.com, oe-lkp@lists.linux.dev, lkp@intel.com,
-    Eric Dumazet <edumazet@google.com>,
-    "David S. Miller" <davem@davemloft.net>,
-    David Ahern <dsahern@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
-    Paolo Abeni <pabeni@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-    Matthew Wilcox <willy@infradead.org>, netdev@vger.kernel.org,
-    ying.huang@intel.com, feng.tang@intel.com, fengwei.yin@intel.com
-Subject: Re: [dhowells-fs:sendpage-1] [tcp] 77f5a42b2d: netperf.Throughput_Mbps -14.6% regression
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34B1211C88
+	for <oe-lkp@lists.linux.dev>; Fri, 26 May 2023 09:49:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABFCCC4339B;
+	Fri, 26 May 2023 09:49:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1685094588;
+	bh=4rlsbDU/W6bbh6jxRAewvlT8eB/L1MX7PjShMljsAF8=;
+	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+	b=IEoxOTmEcdpGmMTIpJ641rXpC63sF/0VHHlvSgJKQTdkA6ILfSFxdjOkQ5DA5OPMv
+	 BFRf8HXxwRu10vPVfCZnIsgq5wGCQPLOyT08DbHqyPa+vR8dXM7ZuxtLM8inODLHB1
+	 vVBi6HHEC3sLLR60QAkJBrw3VEpGYJk7tUNrwdeeEtNwoMCfKwIuz0lD+/dLLsAgyD
+	 Lv5iX4x+DBbgeSflYMYahIj48bn8TV45j4DZhOeKOEM/9mdABwxMLz/AOcroGKLWbU
+	 U9lu58Fz3ADOo0XzAFuherq5N7e3IZ/139h5tGFRtHUpwC+lFsXCNQZoTRLjjbk0sj
+	 YcRUcBAuarjFg==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+	id 37B9ACE0CCF; Fri, 26 May 2023 02:49:44 -0700 (PDT)
+Date: Fri, 26 May 2023 02:49:44 -0700
+From: "Paul E. McKenney" <paulmck@kernel.org>
+To: Yujie Liu <yujie.liu@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+	rcu@vger.kernel.org
+Subject: Re: [paulmck-rcu:dev.2023.05.20a] [rcuscale] 812195e4f7:
+ BUG:kernel_NULL_pointer_dereference,address
+Message-ID: <59850ca7-aad7-4756-888e-12f62373198b@paulmck-laptop>
+Reply-To: paulmck@kernel.org
+References: <202305241757.57c30887-yujie.liu@intel.com>
+ <e4328f8b-6ec5-46eb-bc43-1217feba7ca2@paulmck-laptop>
+ <ZHBm9IfDk1QGj8SY@yujie-X299>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <521115.1685091071.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date: Fri, 26 May 2023 09:51:11 +0100
-Message-ID: <521116.1685091071@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZHBm9IfDk1QGj8SY@yujie-X299>
 
-kernel test robot <oliver.sang@intel.com> wrote:
+On Fri, May 26, 2023 at 03:59:48PM +0800, Yujie Liu wrote:
+> Hi Paul,
+> 
+> On Thu, May 25, 2023 at 09:45:11AM -0700, Paul E. McKenney wrote:
+> > On Thu, May 25, 2023 at 01:37:13AM +0800, kernel test robot wrote:
+> > > Hello,
+> > > 
+> > > kernel test robot noticed "BUG:kernel_NULL_pointer_dereference,address" on:
+> > > 
+> > > commit: 812195e4f70ef0e9fc68127355c553c537749546 ("rcuscale: Measure grace-period kthread CPU time")
+> > > https://git.kernel.org/cgit/linux/kernel/git/paulmck/linux-rcu.git dev.2023.05.20a
+> > > 
+> > > in testcase: boot
+> > > 
+> > > compiler: clang-14
+> > > test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+> > > 
+> > > (please refer to attached dmesg/kmsg for entire log/backtrace)
+> > > 
+> > > 
+> > > +---------------------------------------------+------------+------------+
+> > > |                                             | 2393139b67 | 812195e4f7 |
+> > > +---------------------------------------------+------------+------------+
+> > > | boot_successes                              | 8          | 0          |
+> > > | boot_failures                               | 0          | 8          |
+> > > | BUG:kernel_NULL_pointer_dereference,address | 0          | 8          |
+> > > | Oops:#[##]                                  | 0          | 8          |
+> > > | Kernel_panic-not_syncing:Fatal_exception    | 0          | 8          |
+> > > +---------------------------------------------+------------+------------+
+> > > 
+> > > 
+> > > If you fix the issue, kindly add following tag
+> > > | Reported-by: kernel test robot <yujie.liu@intel.com>
+> > > | Closes: https://lore.kernel.org/oe-lkp/202305241757.57c30887-yujie.liu@intel.com
+> > 
+> > This commmit has since been replaced by this one, which should fix this
+> > problem:
+> > 
+> > 60901dadfadc ("rcuscale: Measure grace-period kthread CPU time")
+> > 
+> > Please let me know if the problem still exists with that commit.
+> 
+> The problem is gone on commit 60901dadfadc. Thanks.
+> 
+> Tested-by: Yujie Liu <yujie.liu@intel.com>
 
-> kernel test robot noticed a -14.6% regression of netperf.Throughput_Mbps=
- on:
+And thank you again for your testing efforts!
 
-Okay, yes, I see something similar on my test machine.  Loopback throughpu=
-t
-drops from ~32Gbit/s to ~26Gbit/s with the Convert do_tcp_sendpages patch.
+							Thanx, Paul
 
-But! The complete set of patches is not yet fully applied.  If you look at=
- the
-two patches I've put on my sendpage-1 branch[1], the first brings the
-performance back to where it was before and the second bumps it up to
-~43Gbit/s.
-
-However, I don't want to push those into the network tree until support fo=
-r
-MSG_SPLICE_PAGES is added to all the network protocols that support splici=
-ng.
-I have two more patchsets in the queue and there will be a third before I =
-can
-get to that point.
-
-Could you try running this branch through your tests?
-
-Thanks,
-David
-
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/=
-log/?h=3Dsendpage-1
-
+> =========================================================================================
+> compiler/kconfig/rootfs/sleep/tbox_group/testcase:
+>   clang-14/x86_64-randconfig-a015-20230522/debian-11.1-i386-20220923.cgz/300/vm-snb/boot
+> 
+> commit:
+>   812195e4f70e ("rcuscale: Measure grace-period kthread CPU time")  <-- old commit from dev.2023.05.20a branch
+>   60901dadfadc ("rcuscale: Measure grace-period kthread CPU time")  <-- new commit from rcu/next branch
+> 
+> 812195e4f70ef0e9 60901dadfadcc152ae5cad7ebae
+> ---------------- ---------------------------
+>        fail:runs  %reproduction    fail:runs
+>            |             |             |
+>           6:6         -100%            :7     dmesg.BUG:kernel_NULL_pointer_dereference,address
+>           6:6         -100%            :7     dmesg.Kernel_panic-not_syncing:Fatal_exception
+>           6:6         -100%            :7     dmesg.Oops:#[##]
+>           6:6         -100%            :7     dmesg.boot_failures
+> 
+> --
+> Best Regards,
+> Yujie
+> 
