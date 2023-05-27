@@ -1,112 +1,241 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34B1211C88
-	for <oe-lkp@lists.linux.dev>; Fri, 26 May 2023 09:49:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABFCCC4339B;
-	Fri, 26 May 2023 09:49:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB78B3212
+	for <oe-lkp@lists.linux.dev>; Sat, 27 May 2023 11:14:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51F8EC433D2;
+	Sat, 27 May 2023 11:14:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1685094588;
-	bh=4rlsbDU/W6bbh6jxRAewvlT8eB/L1MX7PjShMljsAF8=;
+	s=k20201202; t=1685186048;
+	bh=8lS5P5G7+ed2XAfQO36H5TkRWeFxg24U8d5lDJYnpGI=;
 	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-	b=IEoxOTmEcdpGmMTIpJ641rXpC63sF/0VHHlvSgJKQTdkA6ILfSFxdjOkQ5DA5OPMv
-	 BFRf8HXxwRu10vPVfCZnIsgq5wGCQPLOyT08DbHqyPa+vR8dXM7ZuxtLM8inODLHB1
-	 vVBi6HHEC3sLLR60QAkJBrw3VEpGYJk7tUNrwdeeEtNwoMCfKwIuz0lD+/dLLsAgyD
-	 Lv5iX4x+DBbgeSflYMYahIj48bn8TV45j4DZhOeKOEM/9mdABwxMLz/AOcroGKLWbU
-	 U9lu58Fz3ADOo0XzAFuherq5N7e3IZ/139h5tGFRtHUpwC+lFsXCNQZoTRLjjbk0sj
-	 YcRUcBAuarjFg==
+	b=N8ErpLvHVJqQJvzLJtuyll5Ie+vMSL9FPGkAI1/qRl+EzwSAbFNp27jHBY466zTqI
+	 5NajK88xMih+9QaBiAkC5sBYLTyz1et2yEJN2C/8Z2eguzphH3iWZZO3dYxURUiswe
+	 S4VLelwd9N8QttJDqB/nSc4FexEggGnoxMS8ByE37ALCKSQ9Gb7A250AgeUOZppHzL
+	 fuHK0CgvkFl89TcFTW/pJLPR+4wgRENAgbujihED3vIRDv98j9PSUPg8KK9pkheA57
+	 irnO6iImrRpKO5qOIl974oaVx3gsj5+UDwrJfntat8OXIyVAJwjw0SU/LbYjy9tQtJ
+	 12uB8DYw9vU+w==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-	id 37B9ACE0CCF; Fri, 26 May 2023 02:49:44 -0700 (PDT)
-Date: Fri, 26 May 2023 02:49:44 -0700
+	id 01298CE0DB0; Sat, 27 May 2023 04:14:05 -0700 (PDT)
+Date: Sat, 27 May 2023 04:14:05 -0700
 From: "Paul E. McKenney" <paulmck@kernel.org>
-To: Yujie Liu <yujie.liu@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-	rcu@vger.kernel.org
-Subject: Re: [paulmck-rcu:dev.2023.05.20a] [rcuscale] 812195e4f7:
- BUG:kernel_NULL_pointer_dereference,address
-Message-ID: <59850ca7-aad7-4756-888e-12f62373198b@paulmck-laptop>
+To: Qi Zheng <qi.zheng@linux.dev>
+Cc: RCU <rcu@vger.kernel.org>, Yujie Liu <yujie.liu@intel.com>,
+	oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Vlastimil Babka <vbabka@suse.cz>, Kirill Tkhai <tkhai@ya.ru>,
+	Roman Gushchin <roman.gushchin@linux.dev>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	David Hildenbrand <david@redhat.com>,
+	Davidlohr Bueso <dave@stgolabs.net>,
+	Johannes Weiner <hannes@cmpxchg.org>,
+	Michal Hocko <mhocko@kernel.org>,
+	Muchun Song <muchun.song@linux.dev>,
+	Shakeel Butt <shakeelb@google.com>, Yang Shi <shy828301@gmail.com>,
+	linux-mm@kvack.org, ying.huang@intel.com, feng.tang@intel.com,
+	fengwei.yin@intel.com
+Subject: Re: [linus:master] [mm] f95bdb700b: stress-ng.ramfs.ops_per_sec
+ -88.8% regression
+Message-ID: <44407892-b7bc-4d6c-8e4a-6452f0ee88b9@paulmck-laptop>
 Reply-To: paulmck@kernel.org
-References: <202305241757.57c30887-yujie.liu@intel.com>
- <e4328f8b-6ec5-46eb-bc43-1217feba7ca2@paulmck-laptop>
- <ZHBm9IfDk1QGj8SY@yujie-X299>
+References: <202305230837.db2c233f-yujie.liu@intel.com>
+ <eba38fce-2454-d7a4-10ef-240b4686f23d@linux.dev>
+ <ZG29ULGNJdErnatI@yujie-X299>
+ <896bbb09-d400-ec73-ba3a-b64c6e9bbe46@linux.dev>
+ <e5fb8b34-c1ad-92e0-e7e5-f7ed1605dbc6@linux.dev>
+ <bfb36563-fac9-4c84-96db-87dd28892088@linux.dev>
+ <be04dc3e-a671-ec70-6cf6-70dc702f4184@linux.dev>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <ZHBm9IfDk1QGj8SY@yujie-X299>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <be04dc3e-a671-ec70-6cf6-70dc702f4184@linux.dev>
 
-On Fri, May 26, 2023 at 03:59:48PM +0800, Yujie Liu wrote:
-> Hi Paul,
-> 
-> On Thu, May 25, 2023 at 09:45:11AM -0700, Paul E. McKenney wrote:
-> > On Thu, May 25, 2023 at 01:37:13AM +0800, kernel test robot wrote:
-> > > Hello,
-> > > 
-> > > kernel test robot noticed "BUG:kernel_NULL_pointer_dereference,address" on:
-> > > 
-> > > commit: 812195e4f70ef0e9fc68127355c553c537749546 ("rcuscale: Measure grace-period kthread CPU time")
-> > > https://git.kernel.org/cgit/linux/kernel/git/paulmck/linux-rcu.git dev.2023.05.20a
-> > > 
-> > > in testcase: boot
-> > > 
-> > > compiler: clang-14
-> > > test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-> > > 
-> > > (please refer to attached dmesg/kmsg for entire log/backtrace)
-> > > 
-> > > 
-> > > +---------------------------------------------+------------+------------+
-> > > |                                             | 2393139b67 | 812195e4f7 |
-> > > +---------------------------------------------+------------+------------+
-> > > | boot_successes                              | 8          | 0          |
-> > > | boot_failures                               | 0          | 8          |
-> > > | BUG:kernel_NULL_pointer_dereference,address | 0          | 8          |
-> > > | Oops:#[##]                                  | 0          | 8          |
-> > > | Kernel_panic-not_syncing:Fatal_exception    | 0          | 8          |
-> > > +---------------------------------------------+------------+------------+
-> > > 
-> > > 
-> > > If you fix the issue, kindly add following tag
-> > > | Reported-by: kernel test robot <yujie.liu@intel.com>
-> > > | Closes: https://lore.kernel.org/oe-lkp/202305241757.57c30887-yujie.liu@intel.com
+On Thu, May 25, 2023 at 12:03:16PM +0800, Qi Zheng wrote:
+> On 2023/5/24 19:56, Qi Zheng wrote:
+> > On 2023/5/24 19:08, Qi Zheng wrote:
 > > 
-> > This commmit has since been replaced by this one, which should fix this
-> > problem:
+> > [...]
 > > 
-> > 60901dadfadc ("rcuscale: Measure grace-period kthread CPU time")
-> > 
-> > Please let me know if the problem still exists with that commit.
-> 
-> The problem is gone on commit 60901dadfadc. Thanks.
-> 
-> Tested-by: Yujie Liu <yujie.liu@intel.com>
+> > > 
+> > > Well, I just ran the following command and reproduced the result:
+> > > 
+> > > stress-ng --timeout 60 --times --verify --metrics-brief --ramfs 9 &
+> > > 
+> > > 1) with commit 42c9db3970483:
+> > > 
+> > > stress-ng: info:  [11023] setting to a 60 second run per stressor
+> > > stress-ng: info:  [11023] dispatching hogs: 9 ramfs
+> > > stress-ng: info:  [11023] stressor       bogo ops real time  usr
+> > > time sys time   bogo ops/s     bogo ops/s
+> > > stress-ng: info:  [11023]                           (secs)    (secs)
+> > > (secs)   (real time) (usr+sys time)
+> > > stress-ng: info:  [11023] ramfs            774966     60.00    
+> > > 10.18 169.45     12915.89        4314.26
+> > > stress-ng: info:  [11023] for a 60.00s run time:
+> > > stress-ng: info:  [11023]    1920.11s available CPU time
+> > > stress-ng: info:  [11023]      10.18s user time   (  0.53%)
+> > > stress-ng: info:  [11023]     169.44s system time (  8.82%)
+> > > stress-ng: info:  [11023]     179.62s total time  (  9.35%)
+> > > stress-ng: info:  [11023] load average: 8.99 2.69 0.93
+> > > stress-ng: info:  [11023] successful run completed in 60.00s (1 min,
+> > > 0.00 secs)
+> > > 
+> > > 2) with commit f95bdb700bc6b:
+> > > 
+> > > stress-ng: info:  [37676] dispatching hogs: 9 ramfs
+> > > stress-ng: info:  [37676] stressor       bogo ops real time  usr
+> > > time sys time   bogo ops/s     bogo ops/s
+> > > stress-ng: info:  [37676]                           (secs)    (secs)
+> > > (secs)   (real time) (usr+sys time)
+> > > stress-ng: info:  [37676] ramfs            168673     60.00     
+> > > 1.61   39.66      2811.08        4087.47
+> > > stress-ng: info:  [37676] for a 60.10s run time:
+> > > stress-ng: info:  [37676]    1923.36s available CPU time
+> > > stress-ng: info:  [37676]       1.60s user time   (  0.08%)
+> > > stress-ng: info:  [37676]      39.66s system time (  2.06%)
+> > > stress-ng: info:  [37676]      41.26s total time  (  2.15%)
+> > > stress-ng: info:  [37676] load average: 7.69 3.63 2.36
+> > > stress-ng: info:  [37676] successful run completed in 60.10s (1 min,
+> > > 0.10 secs)
+> > > 
+> > > The bogo ops/s (real time) did drop significantly.
+> > > 
+> > > And the memory reclaimation was not triggered in the whole process. so
+> > > theoretically no one is in the read critical section of shrinker_srcu.
+> > > 
+> > > Then I found that some stress-ng-ramfs processes were in
+> > > TASK_UNINTERRUPTIBLE state for a long time:
+> > > 
+> > > root       42313  0.0  0.0  69592  2068 pts/0    S    19:00   0:00
+> > > stress-ng-ramfs [run]
+> > > root       42314  0.0  0.0  69592  2068 pts/0    S    19:00   0:00
+> > > stress-ng-ramfs [run]
+> > > root       42315  0.0  0.0  69592  2068 pts/0    S    19:00   0:00
+> > > stress-ng-ramfs [run]
+> > > root       42316  0.0  0.0  69592  2068 pts/0    S    19:00   0:00
+> > > stress-ng-ramfs [run]
+> > > root       42317  7.8  0.0  69592  1812 pts/0    D    19:00   0:02
+> > > stress-ng-ramfs [run]
+> > > root       42318  0.0  0.0  69592  2068 pts/0    S    19:00   0:00
+> > > stress-ng-ramfs [run]
+> > > root       42319  7.8  0.0  69592  1812 pts/0    D    19:00   0:02
+> > > stress-ng-ramfs [run]
+> > > root       42320  0.0  0.0  69592  2068 pts/0    S    19:00   0:00
+> > > stress-ng-ramfs [run]
+> > > root       42321  7.8  0.0  69592  1812 pts/0    D    19:00   0:02
+> > > stress-ng-ramfs [run]
+> > > root       42322  0.0  0.0  69592  2068 pts/0    S    19:00   0:00
+> > > stress-ng-ramfs [run]
+> > > root       42323  7.8  0.0  69592  1812 pts/0    D    19:00   0:02
+> > > stress-ng-ramfs [run]
+> > > root       42324  0.0  0.0  69592  2068 pts/0    S    19:00   0:00
+> > > stress-ng-ramfs [run]
+> > > root       42325  7.8  0.0  69592  1812 pts/0    D    19:00   0:02
+> > > stress-ng-ramfs [run]
+> > > root       42326  0.0  0.0  69592  2068 pts/0    S    19:00   0:00
+> > > stress-ng-ramfs [run]
+> > > root       42327  7.9  0.0  69592  1812 pts/0    D    19:00   0:02
+> > > stress-ng-ramfs [run]
+> > > root       42328  7.9  0.0  69592  1812 pts/0    D    19:00   0:02
+> > > stress-ng-ramfs [run]
+> > > root       42329  7.9  0.0  69592  1812 pts/0    D    19:00   0:02
+> > > stress-ng-ramfs [run]
+> > > root       42330  7.9  0.0  69592  1556 pts/0    D    19:00   0:02
+> > > stress-ng-ramfs [run]
+> > > 
+> > > Their call stack is as follows:
+> > > 
+> > > cat /proc/42330/stack
+> > > 
+> > > [<0>] __synchronize_srcu.part.21+0x83/0xb0
+> > > [<0>] unregister_shrinker+0x85/0xb0
+> > > [<0>] deactivate_locked_super+0x27/0x70
+> > > [<0>] cleanup_mnt+0xb8/0x140
+> > > [<0>] task_work_run+0x65/0x90
+> > > [<0>] exit_to_user_mode_prepare+0x1ba/0x1c0
+> > > [<0>] syscall_exit_to_user_mode+0x1b/0x40
+> > > [<0>] do_syscall_64+0x44/0x80
+> > > [<0>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> > > 
+> > > + RCU folks, Is this result as expected? I would have thought that
+> > > synchronize_srcu() should return quickly if no one is in the read
+> > > critical section. :(
 
-And thank you again for your testing efforts!
+In theory, it would indeed be nice if synchronize_srcu() would do that.
+In practice, the act of checking to see if there is anyone in an SRCU
+read-side critical section is a heavy-weight operation, involving at
+least one cache miss per CPU along with a number of full memory barriers.
+
+So SRCU has to be careful to not check too frequently.
+
+However, if SRCU has been idle for some time, normal synchronize_srcu()
+will do an immediate check.  And this will of course mark SRCU as
+non-idle.
+
+> > With the following changes, ops/s can return to previous levels:
+> 
+> Or just set rcu_expedited to 1:
+> 	echo 1 > /sys/kernel/rcu_expedited
+
+This does cause SRCU to be much more aggressive.  This can be a good
+choice for small systems, but please keep in mind that this affects normal
+RCU as well as SRCU.  It will cause RCU to also be much more aggressive,
+sending IPIs to CPUs that are (or might be) in RCU read-side critical
+sections.  Depending on your workload, this might or might not be what
+you want RCU to be doing.  For example, if you are running aggressive
+real-time workloads, it most definitely is not what you want.
+
+> > diff --git a/mm/vmscan.c b/mm/vmscan.c
+> > index db2ed6e08f67..90f541b07cd1 100644
+> > --- a/mm/vmscan.c
+> > +++ b/mm/vmscan.c
+> > @@ -763,7 +763,7 @@ void unregister_shrinker(struct shrinker *shrinker)
+> >          debugfs_entry = shrinker_debugfs_remove(shrinker);
+> >          up_write(&shrinker_rwsem);
+> > 
+> > -       synchronize_srcu(&shrinker_srcu);
+> > +       synchronize_srcu_expedited(&shrinker_srcu);
+
+If shrinkers are unregistered only occasionally, this is an entirely
+reasonable change.
+
+> >          debugfs_remove_recursive(debugfs_entry);
+> > 
+> > stress-ng: info:  [13159] dispatching hogs: 9 ramfs
+> > stress-ng: info:  [13159] stressor       bogo ops real time  usr time
+> > sys time   bogo ops/s     bogo ops/s
+> > stress-ng: info:  [13159]                           (secs)    (secs)
+> > (secs)   (real time) (usr+sys time)
+> > stress-ng: info:  [13159] ramfs            710062     60.00      9.63
+> > 157.26     11834.18        4254.75
+> > stress-ng: info:  [13159] for a 60.00s run time:
+> > stress-ng: info:  [13159]    1920.14s available CPU time
+> > stress-ng: info:  [13159]       9.62s user time   (  0.50%)
+> > stress-ng: info:  [13159]     157.26s system time (  8.19%)
+> > stress-ng: info:  [13159]     166.88s total time  (  8.69%)
+> > stress-ng: info:  [13159] load average: 9.49 4.02 1.65
+> > stress-ng: info:  [13159] successful run completed in 60.00s (1 min,
+> > 0.00 secs)
+> > 
+> > Can we make synchronize_srcu() call synchronize_srcu_expedited() when no
+> > one is in the read critical section?
+
+Yes, in theory we could, but this would be a bad thing in practice.
+After all, the point of having synchronize_srcu() be separate from
+synchronize_srcu_expedited() is to allow uses that are OK with longer
+latency avoid consuming too much CPU.  In addition, that longer
+SRCU grace-period latency allows the next grace period to handle more
+synchronize_srcu() and call_srcu() requests.  This amortizes the
+overhead of that next grace period over a larger number of updates.
+
+However, your use of synchronize_srcu_expedited() does have that effect,
+but only for this call point.  Which has the advantage of avoiding
+burning excessive quantities of CPU for the other 50+ call points.
 
 							Thanx, Paul
-
-> =========================================================================================
-> compiler/kconfig/rootfs/sleep/tbox_group/testcase:
->   clang-14/x86_64-randconfig-a015-20230522/debian-11.1-i386-20220923.cgz/300/vm-snb/boot
-> 
-> commit:
->   812195e4f70e ("rcuscale: Measure grace-period kthread CPU time")  <-- old commit from dev.2023.05.20a branch
->   60901dadfadc ("rcuscale: Measure grace-period kthread CPU time")  <-- new commit from rcu/next branch
-> 
-> 812195e4f70ef0e9 60901dadfadcc152ae5cad7ebae
-> ---------------- ---------------------------
->        fail:runs  %reproduction    fail:runs
->            |             |             |
->           6:6         -100%            :7     dmesg.BUG:kernel_NULL_pointer_dereference,address
->           6:6         -100%            :7     dmesg.Kernel_panic-not_syncing:Fatal_exception
->           6:6         -100%            :7     dmesg.Oops:#[##]
->           6:6         -100%            :7     dmesg.boot_failures
-> 
-> --
-> Best Regards,
-> Yujie
-> 
