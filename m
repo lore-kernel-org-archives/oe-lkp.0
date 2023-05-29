@@ -1,258 +1,135 @@
-Received: from out-34.mta0.migadu.com (out-34.mta0.migadu.com [91.218.175.34])
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E044962D
-	for <oe-lkp@lists.linux.dev>; Mon, 29 May 2023 02:39:33 +0000 (UTC)
-Message-ID: <d4b1599d-14c1-071c-6205-09fe60f2ed8b@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1685327971;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=qPg6ZDtxNrVeEaFU+D4Wu5Yq1tkWvN5fR6aSGPARBZA=;
-	b=Z8XIoICremlWHRFpMcWCOQAANOafwHhpcFj6yo+H86RlcpqprVyJ7IZ1w9eblm/lqZG+VB
-	/lKgMQR/5qeYI0UUFPj0ZoRYAIS3cqLFLIAu0/pMs9s5v79n6vavfYbJgZYR2CkffPlstJ
-	acLcdsTWSl0MD+s4mY6Zn9Xbi5cQ4yQ=
-Date: Mon, 29 May 2023 10:39:21 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99039800
+	for <oe-lkp@lists.linux.dev>; Mon, 29 May 2023 06:45:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1685342713; x=1716878713;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=CARm2alkIYsv+uMBImaHq5Qbxi4vwTSJdHj2kvPFm+A=;
+  b=IFjt2I7gQKdvFwzqCUgDQKecFyfEtbCGrYfyLcgOeliQtwrJjIoXPPwP
+   KN2fxlrGqGEnh1Ceq8nXAUZLVGimmhRm9JEbSXVH9fbSjCfMLZDOzIgR0
+   BCUeJL9as6B7+2pv6zZ25HG2PJFHMRFe/4GJTOd+GORD9E+ToVx2etsr6
+   bPs6noxd9iprRlkT243A77p4PRPK7BkYSnPm9dEcKJvUZyXhqyn33iUW8
+   vaR9tqD4xXgtZabJjljL8TIWHjAs1qHvuJ5lYLxJIavIKPW+Rur2eYp7i
+   gGOkv1atyC1p3EXMi5pa9wy+7bshwSCsdFQ1XIyYKeMsEMEE7j+U+jeRZ
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10724"; a="440991638"
+X-IronPort-AV: E=Sophos;i="6.00,200,1681196400"; 
+   d="scan'208";a="440991638"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 May 2023 23:45:12 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10724"; a="771033579"
+X-IronPort-AV: E=Sophos;i="6.00,200,1681196400"; 
+   d="scan'208";a="771033579"
+Received: from bgrzesko-mobl.ger.corp.intel.com (HELO [10.252.52.205]) ([10.252.52.205])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 May 2023 23:45:09 -0700
+Message-ID: <a84c447f-cdfb-d33c-62cb-bb5d9aa8510b@linux.intel.com>
+Date: Mon, 29 May 2023 09:46:08 +0300
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Subject: Re: [linus:master] [mm] f95bdb700b: stress-ng.ramfs.ops_per_sec
- -88.8% regression
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.11.2
+Subject: Re: [PATCH 1/2] tpm, tpm_tis: Handle interrupt storm
 Content-Language: en-US
-To: paulmck@kernel.org, Kirill Tkhai <tkhai@ya.ru>
-Cc: RCU <rcu@vger.kernel.org>, Yujie Liu <yujie.liu@intel.com>,
- oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
- Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>,
- Roman Gushchin <roman.gushchin@linux.dev>,
- =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
- David Hildenbrand <david@redhat.com>, Davidlohr Bueso <dave@stgolabs.net>,
- Johannes Weiner <hannes@cmpxchg.org>, Michal Hocko <mhocko@kernel.org>,
- Muchun Song <muchun.song@linux.dev>, Shakeel Butt <shakeelb@google.com>,
- Yang Shi <shy828301@gmail.com>, linux-mm@kvack.org, ying.huang@intel.com,
- feng.tang@intel.com, fengwei.yin@intel.com
-References: <202305230837.db2c233f-yujie.liu@intel.com>
- <eba38fce-2454-d7a4-10ef-240b4686f23d@linux.dev>
- <ZG29ULGNJdErnatI@yujie-X299>
- <896bbb09-d400-ec73-ba3a-b64c6e9bbe46@linux.dev>
- <e5fb8b34-c1ad-92e0-e7e5-f7ed1605dbc6@linux.dev>
- <bfb36563-fac9-4c84-96db-87dd28892088@linux.dev>
- <be04dc3e-a671-ec70-6cf6-70dc702f4184@linux.dev>
- <44407892-b7bc-4d6c-8e4a-6452f0ee88b9@paulmck-laptop>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Qi Zheng <qi.zheng@linux.dev>
-In-Reply-To: <44407892-b7bc-4d6c-8e4a-6452f0ee88b9@paulmck-laptop>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To: Lino Sanfilippo <l.sanfilippo@kunbus.com>,
+ Jarkko Sakkinen <jarkko@kernel.org>, Lino Sanfilippo
+ <LinoSanfilippo@gmx.de>, peterhuewe@gmx.de, jgg@ziepe.ca
+Cc: jsnitsel@redhat.com, hdegoede@redhat.com, oe-lkp@lists.linux.dev,
+ lkp@intel.com, peterz@infradead.org, linux@mniewoehner.de,
+ linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+ lukas@wunner.de, p.rosenberger@kunbus.com
+References: <20230522143105.8617-1-LinoSanfilippo@gmx.de>
+ <CSTVVFNKUVJW.P69FKI6IF3ZN@suppilovahvero>
+ <da435e0d-5f22-fac7-bc10-96a0fd4c6d54@kunbus.com>
+From: =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@linux.intel.com>
+In-Reply-To: <da435e0d-5f22-fac7-bc10-96a0fd4c6d54@kunbus.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
 
-Hi Paul,
+Hi Lino,
 
-On 2023/5/27 19:14, Paul E. McKenney wrote:
-> On Thu, May 25, 2023 at 12:03:16PM +0800, Qi Zheng wrote:
->> On 2023/5/24 19:56, Qi Zheng wrote:
->>> On 2023/5/24 19:08, Qi Zheng wrote:
->>>
->>> [...]
->>>
->>>>
->>>> Well, I just ran the following command and reproduced the result:
->>>>
->>>> stress-ng --timeout 60 --times --verify --metrics-brief --ramfs 9 &
->>>>
->>>> 1) with commit 42c9db3970483:
->>>>
->>>> stress-ng: info:  [11023] setting to a 60 second run per stressor
->>>> stress-ng: info:  [11023] dispatching hogs: 9 ramfs
->>>> stress-ng: info:  [11023] stressor       bogo ops real time  usr
->>>> time sys time   bogo ops/s     bogo ops/s
->>>> stress-ng: info:  [11023]                           (secs)    (secs)
->>>> (secs)   (real time) (usr+sys time)
->>>> stress-ng: info:  [11023] ramfs            774966     60.00
->>>> 10.18 169.45     12915.89        4314.26
->>>> stress-ng: info:  [11023] for a 60.00s run time:
->>>> stress-ng: info:  [11023]    1920.11s available CPU time
->>>> stress-ng: info:  [11023]      10.18s user time   (  0.53%)
->>>> stress-ng: info:  [11023]     169.44s system time (  8.82%)
->>>> stress-ng: info:  [11023]     179.62s total time  (  9.35%)
->>>> stress-ng: info:  [11023] load average: 8.99 2.69 0.93
->>>> stress-ng: info:  [11023] successful run completed in 60.00s (1 min,
->>>> 0.00 secs)
->>>>
->>>> 2) with commit f95bdb700bc6b:
->>>>
->>>> stress-ng: info:  [37676] dispatching hogs: 9 ramfs
->>>> stress-ng: info:  [37676] stressor       bogo ops real time  usr
->>>> time sys time   bogo ops/s     bogo ops/s
->>>> stress-ng: info:  [37676]                           (secs)    (secs)
->>>> (secs)   (real time) (usr+sys time)
->>>> stress-ng: info:  [37676] ramfs            168673     60.00
->>>> 1.61   39.66      2811.08        4087.47
->>>> stress-ng: info:  [37676] for a 60.10s run time:
->>>> stress-ng: info:  [37676]    1923.36s available CPU time
->>>> stress-ng: info:  [37676]       1.60s user time   (  0.08%)
->>>> stress-ng: info:  [37676]      39.66s system time (  2.06%)
->>>> stress-ng: info:  [37676]      41.26s total time  (  2.15%)
->>>> stress-ng: info:  [37676] load average: 7.69 3.63 2.36
->>>> stress-ng: info:  [37676] successful run completed in 60.10s (1 min,
->>>> 0.10 secs)
->>>>
->>>> The bogo ops/s (real time) did drop significantly.
->>>>
->>>> And the memory reclaimation was not triggered in the whole process. so
->>>> theoretically no one is in the read critical section of shrinker_srcu.
->>>>
->>>> Then I found that some stress-ng-ramfs processes were in
->>>> TASK_UNINTERRUPTIBLE state for a long time:
->>>>
->>>> root       42313  0.0  0.0  69592  2068 pts/0    S    19:00   0:00
->>>> stress-ng-ramfs [run]
->>>> root       42314  0.0  0.0  69592  2068 pts/0    S    19:00   0:00
->>>> stress-ng-ramfs [run]
->>>> root       42315  0.0  0.0  69592  2068 pts/0    S    19:00   0:00
->>>> stress-ng-ramfs [run]
->>>> root       42316  0.0  0.0  69592  2068 pts/0    S    19:00   0:00
->>>> stress-ng-ramfs [run]
->>>> root       42317  7.8  0.0  69592  1812 pts/0    D    19:00   0:02
->>>> stress-ng-ramfs [run]
->>>> root       42318  0.0  0.0  69592  2068 pts/0    S    19:00   0:00
->>>> stress-ng-ramfs [run]
->>>> root       42319  7.8  0.0  69592  1812 pts/0    D    19:00   0:02
->>>> stress-ng-ramfs [run]
->>>> root       42320  0.0  0.0  69592  2068 pts/0    S    19:00   0:00
->>>> stress-ng-ramfs [run]
->>>> root       42321  7.8  0.0  69592  1812 pts/0    D    19:00   0:02
->>>> stress-ng-ramfs [run]
->>>> root       42322  0.0  0.0  69592  2068 pts/0    S    19:00   0:00
->>>> stress-ng-ramfs [run]
->>>> root       42323  7.8  0.0  69592  1812 pts/0    D    19:00   0:02
->>>> stress-ng-ramfs [run]
->>>> root       42324  0.0  0.0  69592  2068 pts/0    S    19:00   0:00
->>>> stress-ng-ramfs [run]
->>>> root       42325  7.8  0.0  69592  1812 pts/0    D    19:00   0:02
->>>> stress-ng-ramfs [run]
->>>> root       42326  0.0  0.0  69592  2068 pts/0    S    19:00   0:00
->>>> stress-ng-ramfs [run]
->>>> root       42327  7.9  0.0  69592  1812 pts/0    D    19:00   0:02
->>>> stress-ng-ramfs [run]
->>>> root       42328  7.9  0.0  69592  1812 pts/0    D    19:00   0:02
->>>> stress-ng-ramfs [run]
->>>> root       42329  7.9  0.0  69592  1812 pts/0    D    19:00   0:02
->>>> stress-ng-ramfs [run]
->>>> root       42330  7.9  0.0  69592  1556 pts/0    D    19:00   0:02
->>>> stress-ng-ramfs [run]
->>>>
->>>> Their call stack is as follows:
->>>>
->>>> cat /proc/42330/stack
->>>>
->>>> [<0>] __synchronize_srcu.part.21+0x83/0xb0
->>>> [<0>] unregister_shrinker+0x85/0xb0
->>>> [<0>] deactivate_locked_super+0x27/0x70
->>>> [<0>] cleanup_mnt+0xb8/0x140
->>>> [<0>] task_work_run+0x65/0x90
->>>> [<0>] exit_to_user_mode_prepare+0x1ba/0x1c0
->>>> [<0>] syscall_exit_to_user_mode+0x1b/0x40
->>>> [<0>] do_syscall_64+0x44/0x80
->>>> [<0>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
->>>>
->>>> + RCU folks, Is this result as expected? I would have thought that
->>>> synchronize_srcu() should return quickly if no one is in the read
->>>> critical section. :(
-> 
-> In theory, it would indeed be nice if synchronize_srcu() would do that.
-> In practice, the act of checking to see if there is anyone in an SRCU
-> read-side critical section is a heavy-weight operation, involving at
-> least one cache miss per CPU along with a number of full memory barriers.
-> 
-> So SRCU has to be careful to not check too frequently.
-
-Got it.
-
-> 
-> However, if SRCU has been idle for some time, normal synchronize_srcu()
-> will do an immediate check.  And this will of course mark SRCU as
-> non-idle.
-> 
->>> With the following changes, ops/s can return to previous levels:
+On 23/05/2023 23:46, Lino Sanfilippo wrote:
+>> On the other hand any new functionality is objectively a maintanance
+>> burden of some measure (applies to any functionality). So how do we know
+>> that taking this change is less of a maintenance burden than just add
+>> new table entries, as they come up?
 >>
->> Or just set rcu_expedited to 1:
->> 	echo 1 > /sys/kernel/rcu_expedited
 > 
-> This does cause SRCU to be much more aggressive.  This can be a good
-> choice for small systems, but please keep in mind that this affects normal
-> RCU as well as SRCU.  It will cause RCU to also be much more aggressive,
-> sending IPIs to CPUs that are (or might be) in RCU read-side critical
-> sections.  Depending on your workload, this might or might not be what
-> you want RCU to be doing.  For example, if you are running aggressive
-> real-time workloads, it most definitely is not what you want.
-
-Yeah, that's not what I want, a shrinker might run for a long time.
-
+> Initially this set was created as a response to this 0-day bug report which you asked me
+> to have a look at:
 > 
->>> diff --git a/mm/vmscan.c b/mm/vmscan.c
->>> index db2ed6e08f67..90f541b07cd1 100644
->>> --- a/mm/vmscan.c
->>> +++ b/mm/vmscan.c
->>> @@ -763,7 +763,7 @@ void unregister_shrinker(struct shrinker *shrinker)
->>>           debugfs_entry = shrinker_debugfs_remove(shrinker);
->>>           up_write(&shrinker_rwsem);
->>>
->>> -       synchronize_srcu(&shrinker_srcu);
->>> +       synchronize_srcu_expedited(&shrinker_srcu);
+> https://lore.kernel.org/linux-integrity/d80b180a569a9f068d3a2614f062cfa3a78af5a6.camel@kernel.org/
 > 
-> If shrinkers are unregistered only occasionally, this is an entirely
-> reasonable change.
+> My hope was that it could also avoid some of (existing or future) DMI entries. But even if it does not
+> (e.g. the problem Péter Ujfalusi reported with the UPX-i11 cannot be fixed by this patch set and thus
+> needs the DMI quirk) we may at least avoid more bug reports due to interrupt storms once
+> 6.4 is released. 
+
+I'm surprised that there is a need for a storm detection in the first
+place... Do we have something else on the same IRQ line on the affected
+devices which might have a bug or no driver at all?
+It is hard to believe that a TPM (Trusted Platform Module) is integrated
+so poorly ;)
+
+But put that aside: I think the storm detection is good given that there
+is no other way to know which machine have sloppy TPM integration.
+There are machines where this happens, so it is a know integration
+issue, right?
+
+My only 'nitpick' is with the printk level to be used.
+The ERR level is not correct as we know the issue and we handle it, so
+all is under control.
+If we want to add these machines to the quirk list then WARN is a good
+level to gain attention but I'm not sure if a user will know how to get
+the machine in the quirk (where to file a bug).
+If we only want the quirk to be used for machines like UPX-i11 which
+simply just have broken (likely floating) IRQ line then the WARN is too
+high level, INFO or even DBG would be appropriate as you are not going
+to update the quirk, it is just handled under the hood (which is a great
+thing, but on the other hand you will have the storm never the less and
+that is not a nice thing).
+
+It is a matter on how this is going to be handled in a long term. Add
+quirk for all the known machines with either stormy or plain broken IRQ
+line or handle the stormy ones and quirk the broken ones only.
+
+>>> Detect an interrupt storm by counting the number of unhandled interrupts
+>>> within a 10 ms time interval. In case that more than 1000 were unhandled
+>>> deactivate interrupts, deregister the handler and fall back to polling.
+>>
+>> I know it can be sometimes hard to evaluate but can you try to explain
+>> how you came up to the 10 ms sampling period and 1000 interrupt
+>> threshold? I just don't like abritrary numbers.
 > 
->>>           debugfs_remove_recursive(debugfs_entry);
->>>
->>> stress-ng: info:  [13159] dispatching hogs: 9 ramfs
->>> stress-ng: info:  [13159] stressor       bogo ops real time  usr time
->>> sys time   bogo ops/s     bogo ops/s
->>> stress-ng: info:  [13159]                           (secs)    (secs)
->>> (secs)   (real time) (usr+sys time)
->>> stress-ng: info:  [13159] ramfs            710062     60.00      9.63
->>> 157.26     11834.18        4254.75
->>> stress-ng: info:  [13159] for a 60.00s run time:
->>> stress-ng: info:  [13159]    1920.14s available CPU time
->>> stress-ng: info:  [13159]       9.62s user time   (  0.50%)
->>> stress-ng: info:  [13159]     157.26s system time (  8.19%)
->>> stress-ng: info:  [13159]     166.88s total time  (  8.69%)
->>> stress-ng: info:  [13159] load average: 9.49 4.02 1.65
->>> stress-ng: info:  [13159] successful run completed in 60.00s (1 min,
->>> 0.00 secs)
->>>
->>> Can we make synchronize_srcu() call synchronize_srcu_expedited() when no
->>> one is in the read critical section?
+> At least the 100 ms is not plucked out of thin air but its the same time period
+> that the generic code in note_interrupt() uses - I assume for a good reason.
+> Not only this number but the whole irq storm detection logic is taken from 
+> there: 
 > 
-> Yes, in theory we could, but this would be a bad thing in practice.
-> After all, the point of having synchronize_srcu() be separate from
-> synchronize_srcu_expedited() is to allow uses that are OK with longer
-> latency avoid consuming too much CPU.  In addition, that longer
-> SRCU grace-period latency allows the next grace period to handle more
-> synchronize_srcu() and call_srcu() requests.  This amortizes the
-> overhead of that next grace period over a larger number of updates.
-> 
-> However, your use of synchronize_srcu_expedited() does have that effect,
-> but only for this call point.  Which has the advantage of avoiding
-> burning excessive quantities of CPU for the other 50+ call points.
+>>
+>>> This equals the implementation that handles interrupt storms in
+>>> note_interrupt() by means of timestamps and counters in struct irq_desc.
+>> The number of 1000 unhandled interrupts is still far below the 99900
+used in
+> note_interrupt() but IMHO enough to indicate that there is something seriously
+> wrong with interrupt processing and it is probably saver to fall back to polling.
 
-Thanks for such a detailed explanation.
+Except that if the line got the spurious designation in core, the
+interrupt line will be disabled while the TPM driver will think that it
+is still using IRQ mode and will not switch to polling.
 
-Now I think we can continue to try to complete the idea[1] from
-Kirill Tkhai. The patch moves heavy synchronize_srcu() to delayed
-work, so it doesn't affect on user-visible unregistration speed.
+A storm of 1000 is better than a storm of 99900 for sure but quirking
+these would be the desired final solution. imho
 
-[1]. 
-https://lore.kernel.org/lkml/153365636747.19074.12610817307548583381.stgit@localhost.localdomain/
+There are many buts around this ;)
 
-Thanks,
-Qi
-
-> 
-> 							Thanx, Paul
-
+-- 
+Péter
