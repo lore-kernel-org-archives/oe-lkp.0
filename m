@@ -1,164 +1,144 @@
-Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A36A8F71
-	for <oe-lkp@lists.linux.dev>; Mon, 29 May 2023 16:28:38 +0000 (UTC)
-Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-3f6c6320d4eso264811cf.1
-        for <oe-lkp@lists.linux.dev>; Mon, 29 May 2023 09:28:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1685377717; x=1687969717;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=QyZCj96iRF2jvhBEHv5YWxHz5llZW0keAn3B6U6pHG8=;
-        b=LXu7PHtOEjdQvmHjgAJQk2uWKbMEVo45NVLDdp1usGse4wFa6F2dChK67MuF6RrHVf
-         gK/I66s5dy1tabHwR9NRHA2SZXaxGnv6kRqUPlwBQbhvrOchDLfxVPfrZv7T3StVoEN0
-         cHFIwPBL3uqpendrz0cCIdpHdaTuxh83oVw9Nc77PKVUtxqEKKE3zhtas7kfZeY5efiQ
-         ne7lcAs9MIT//V6VsXW8IQHLQYbouI+HPAKWah92SrEIxx3HWAHmPJOjDczuH76MSvVa
-         1d7PMMIKd1aREI3fAilZsNBRTWMupgShBJaeooXPtReFUG5AR6qgx6yAdcKKrLYWkZN5
-         6DcQ==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BBD528E7
+	for <oe-lkp@lists.linux.dev>; Mon, 29 May 2023 20:58:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1685393894;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=mV2kHVRcfcyRbrdpPRjIZ0JKYy4IfekVjpRlLT3ji4M=;
+	b=gGKD5gA1OiKBiKUSJT3clZXepL+TQ6RVH9RtUi63u1SkHUkFHBoL4ergqkh1RscweKxrSx
+	ndKqCojTE5UJ5AZXLvaQwblZl6iljkiGrs+3BNi6QDRP1YNLfHgCdljr5lucI4GMLUROs8
+	n5ZcLOXOlwiOEzRtN5uvgeEMjK+9FEg=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-520-vkbnRSgzPReQ8DFVMkBfWw-1; Mon, 29 May 2023 16:58:12 -0400
+X-MC-Unique: vkbnRSgzPReQ8DFVMkBfWw-1
+Received: by mail-qv1-f72.google.com with SMTP id 6a1803df08f44-62628df5347so5992406d6.2
+        for <oe-lkp@lists.linux.dev>; Mon, 29 May 2023 13:58:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685377717; x=1687969717;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=QyZCj96iRF2jvhBEHv5YWxHz5llZW0keAn3B6U6pHG8=;
-        b=h0fodelEI0Tq00LuIx8IHnQ/Skg5aRf8EJk5dVzxtJoPVqzLnOxkucHiW7oJGIDXHQ
-         Qj4pDulxglD72gjFKLTxUpKfIean6IOimXHy7Kv1dDvCX3lX5k0F0bwSCTXhjl1x+34G
-         P3AppY0mbkvGwOIbN83AcUFsIFG1+4e6cYEhNBpO2VQOzIk/kpquKAzYCRRObjW/CS8p
-         WKcpPvs/ONxxhDQyD7u8/3oO9Pys/CZ3bSeyjXONAQ5A0wi3iFwngvH5Axa50M6ROwuv
-         WLvyO/x/wYw7CkcicTI1HDbR2SyU5d7ATjVHabE8/POaDTwlijwihD/ubHIp0lM/+Fo6
-         T/Fw==
-X-Gm-Message-State: AC+VfDya8h5Zy8kaQxjrk2NIhr5wjmsJA7UyzxYaq1fskobbLv0NvOZ0
-	/cOjiNF0rROBZ+3kiTwm0XUcvFhUOVAt85mmzYbkxA==
-X-Google-Smtp-Source: ACHHUZ7tNHeP+NRFPg8fNZtB39JwiTCATOyCnNlEnkEUjwVdhUB9OZhZ4wCiS7rYAJmb89kZZY+NbC48TvRQfGK+GhM=
-X-Received: by 2002:a05:622a:2d4:b0:3f7:ffc8:2f6f with SMTP id
- a20-20020a05622a02d400b003f7ffc82f6fmr403990qtx.28.1685377716957; Mon, 29 May
- 2023 09:28:36 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1685393892; x=1687985892;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=mV2kHVRcfcyRbrdpPRjIZ0JKYy4IfekVjpRlLT3ji4M=;
+        b=Twijoc31GHF2z5nrA35q0e8yXOI/36KPJjfr6Jl64w1EXLmudsAQ2yI6isX3L0+gRR
+         s8Nltd38qFCT7cVC5wC5owy9RdKuI7hPDKFx+ok+nRveTqmVltEzWvTut/tIxTjgwmn5
+         FmMOX4SgfJe4/m2Lyg8tdjiC4l9IdDMNQbDZfeSJcJpw7RcmZVZ/AMfMaFfj5JzIFbZ/
+         hLZljCEGkanCLfPefvBV79E98DJAPv7yqO9g1FxqndvFENoyr0duZD/iQMjiLqAGyU3S
+         FP0n59hO0p4OIUnuzwudpeGD1NaagiBpYnMSFZoBfmHfg1k/9rHQnHLV0rXCrgd1DCjE
+         oOQA==
+X-Gm-Message-State: AC+VfDxBlQLiRtXBc074JzN4TCEr9NauWKE5owimUjWvZOC4QwgITfYD
+	BcdNWSyeooK09y4LG6CU54DDfXb3SSMoVzd8iNiETwX2unhV1Nz+pho9AF/l2kd8h8wM0r0ii6P
+	ISa13f4VVlRqagVGG
+X-Received: by 2002:a05:6214:212e:b0:621:6548:d192 with SMTP id r14-20020a056214212e00b006216548d192mr14671150qvc.49.1685393892317;
+        Mon, 29 May 2023 13:58:12 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ62pZJSF9EG0XG2rv8Pp9vsLFjquc2gpXw/2+onp7YrQzk59kKXZlVMqOssTBoCVkFXIL04Dw==
+X-Received: by 2002:a05:6214:212e:b0:621:6548:d192 with SMTP id r14-20020a056214212e00b006216548d192mr14671137qvc.49.1685393892080;
+        Mon, 29 May 2023 13:58:12 -0700 (PDT)
+Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
+        by smtp.gmail.com with ESMTPSA id ej14-20020ad45a4e000000b00606750abaf9sm1851949qvb.136.2023.05.29.13.58.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 May 2023 13:58:11 -0700 (PDT)
+Date: Mon, 29 May 2023 13:58:09 -0700
+From: Jerry Snitselaar <jsnitsel@redhat.com>
+To: Michael =?utf-8?Q?Niew=C3=B6hner?= <linux@mniewoehner.de>
+Cc: Lino Sanfilippo <l.sanfilippo@kunbus.com>, 
+	Lukas Wunner <lukas@wunner.de>, Jarkko Sakkinen <jarkko@kernel.org>, oe-lkp@lists.linux.dev, 
+	lkp@intel.com, linux-kernel@vger.kernel.org, linux-integrity@vger.kernel.org, 
+	Philipp Rosenberger <p.rosenberger@kunbus.com>, peterz@infradead.org
+Subject: Re: [linus:master] [tpm, tpm_tis] e644b2f498: RIP:acpi_safe_halt
+Message-ID: <6hbzssr2byskuiznx6vvatcuvjkrbhscvorzm4qcheh3n6n4zj@2nrfawn6rbst>
+References: <202305041325.ae8b0c43-yujie.liu@intel.com>
+ <d80b180a569a9f068d3a2614f062cfa3a78af5a6.camel@kernel.org>
+ <42ea93a1-3186-b8ff-c317-d51f3e13856e@kunbus.com>
+ <20230511141607.GA32208@wunner.de>
+ <1a8ecf90-80a4-9aac-95e1-9ce0c4e09ba5@kunbus.com>
+ <6nf5n6fdnkhx6taa2mecnsmyw7sdgaz6fbvkqy7jqkyd7jq2u7@ogsi6ije32in>
+ <fcdc5a27817b17d91df84bb06ad5d382829d5467.camel@mniewoehner.de>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202305291525.df3ce28d-oliver.sang@intel.com>
-In-Reply-To: <202305291525.df3ce28d-oliver.sang@intel.com>
-From: Ian Rogers <irogers@google.com>
-Date: Mon, 29 May 2023 09:28:25 -0700
-Message-ID: <CAP-5=fVjdEUnujbndX4eMqT2Hpuz3QUB6bW0MjcFt+Os-6ux9g@mail.gmail.com>
-Subject: Re: [linus:master] [perf parse] a4c7d7c502: perf-test.perf_pmu_event_count_group.count_group_cpu/branch-misses/_cpu/topdown-heavy-ops/_cpu/branch-misses/_R0.fail
-To: kernel test robot <oliver.sang@intel.com>, "Wang, Weilin" <weilin.wang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org, 
-	Arnaldo Carvalho de Melo <acme@redhat.com>, Adrian Hunter <adrian.hunter@intel.com>, 
-	Alexander Shishkin <alexander.shishkin@linux.intel.com>, 
-	Florian Fischer <florian.fischer@muhq.space>, Ingo Molnar <mingo@redhat.com>, 
-	James Clark <james.clark@arm.com>, Jiri Olsa <jolsa@kernel.org>, 
-	John Garry <john.g.garry@oracle.com>, Kajol Jain <kjain@linux.ibm.com>, 
-	Kan Liang <kan.liang@linux.intel.com>, Kim Phillips <kim.phillips@amd.com>, 
-	Leo Yan <leo.yan@linaro.org>, Mark Rutland <mark.rutland@arm.com>, 
-	Namhyung Kim <namhyung@kernel.org>, Peter Zijlstra <peterz@infradead.org>, 
-	Ravi Bangoria <ravi.bangoria@amd.com>, Sean Christopherson <seanjc@google.com>, 
-	"Steinar H. Gunderson" <sesse@google.com>, Stephane Eranian <eranian@google.com>, 
-	Suzuki Poulouse <suzuki.poulose@arm.com>, Xing Zhengjun <zhengjun.xing@linux.intel.com>, 
-	linux-perf-users@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <fcdc5a27817b17d91df84bb06ad5d382829d5467.camel@mniewoehner.de>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
-On Mon, May 29, 2023 at 12:30=E2=80=AFAM kernel test robot
-<oliver.sang@intel.com> wrote:
->
->
->
-> Hello,
->
-> kernel test robot noticed "perf-test.perf_pmu_event_count_group.count_gro=
-up_cpu/branch-misses/_cpu/topdown-heavy-ops/_cpu/branch-misses/_R0.fail" on=
-:
->
-> commit: a4c7d7c502b935f3a8324d954de78aecf6940897 ("perf parse-events: War=
-n when events are regrouped")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+On Mon, May 29, 2023 at 05:07:54PM +0200, Michael Niewöhner wrote:
+> Hi Jerry,
+> 
+> On Thu, 2023-05-11 at 07:59 -0700, Jerry Snitselaar wrote:
+> > 
+> > IIRC trying to catch the irq storm didn't work in the L490 case for
+> > some reason, so we might still need the dmi entry for that one.
+> > 
+> > The info that the T490s had a pin wired up wrong came from Lenovo, but
+> > this one even looks to be a different vendor so I wonder how often
+> > this happens or if there is something else going on. Is it possible to
+> > get info about the tpm used in the Inspur system? The datasheet online
+> > doesn't mention it.
+> 
+> Are you sure about T490s? To me the wiring looks right on both s and non-s: Pin
+> 18 / PIRQ# goes to PIRQA# of the PCH/SoC.
+> 
+> However on L490 Pin 18 / PIRQ# is wired wrongly to SERIRQ, which probably is the
+> reason that catching the interrupt storm didn't work: I guess this completely
+> messes up LPC communication and causes way more problems. In this case only a
+> DMI quirk can help.
+> 
+> BR
+> Michael
+> 
 
-I'm having a hard time understanding the output from the test:
+I'm searching to see if I can find the old bug/email where that info
+from Lenovo originated.  It could be that the info was wrong, and
+it was some firmware issue instead. IIRC the the T490s issue could be
+solved with the code looking for the irq storm, but the L490 needed
+the dmi check even with the irq storm checking code.
 
-1) the output is filled with sanitizer output that makes it look like
-a non-asan version of libc is being used, either that or we're missing
-asan interceptors for functions called by perf. This means the noise
-is much greater than the signal in the output.
 
-2) the referenced test doesn't appear to be part of the "perf test"
-set of tests. Are these additional tests that Intel have created?
-Could we get them moved to "perf test" which is used as a pre-submit
-and can help avoid regressions.
+I haven't found the info yet, but I did find some other reports from back
+then.
 
-Why a warning would cause this test to start failing I'm not sure.
-Given the amount of difficulty the harness has with asan I think
-there's a good chance this is a false positive. It could also be that
-the test expectations have changed and could have been fixed, which
-would break external tests that make assumptions on things like
-events. Moving the test to "perf test" would be the best way to
-resolve this.
+Spurious irq reported with 5.5.7, so after the irq reverts in v5.5:
 
-Thanks,
-Ian
+tpm_tis IFX0785:00: 2.0 TPM
+Hardware name: Entroware Proteus/Proteus, BIOS 1.07.07TE0 11/15/2019
 
-> [test failed on linux-next/master 6a3d37b4d885129561e1cef361216f00472f7d2=
-e]
->
-> in testcase: perf-test
-> version: perf-test-x86_64-git-1_20220520
-> with following parameters:
->
->         type: lkp
->         group: group-00
->
-> test-description: The internal Perf Test suite.
->
->
-> compiler: gcc-11
-> test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480+ (Sapp=
-hire Rapids) with 256G memory
->
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
->
->
->
->
-> If you fix the issue, kindly add following tag
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202305291525.df3ce28d-oliver.san=
-g@intel.com
->
->
->
-> perf kernel cpu PMU event count group test
-> Sun May 28 06:51:04 UTC 2023
-> 1 test cases pass for perf_pmu_event_count_group test. 1 test cases fail =
-for perf_pmu_event_count_group test.
-> Test Case count_group_cpu/topdown-fetch-lat/_cpu/mem-loads-aux/_cpu/branc=
-h-instructions/_R1 PASS!
-> Test Case count_group_cpu/branch-misses/_cpu/topdown-heavy-ops/_cpu/branc=
-h-misses/_R0 FAILED!
->
->
->
-> To reproduce:
->
->         git clone https://github.com/intel/lkp-tests.git
->         cd lkp-tests
->         sudo bin/lkp install job.yaml           # job file is attached in=
- this email
->         bin/lkp split-job --compatible job.yaml # generate the yaml file =
-for lkp run
->         sudo bin/lkp run generated-yaml-file
->
->         # if come across any failure that blocks the test,
->         # please remove ~/.lkp and /lkp dir to run from a clean state.
->
->
->
-> --
-> 0-DAY CI Kernel Test Service
-> https://github.com/intel/lkp-tests/wiki
->
->
+Thinkpad P53
+tpm_tis STM7308:00: 2.0 TPM
+Hardware name: LENOVO 20QNCTO1WW/20QNCTO1WW, BIOS N2NET34W (1.19 ) 11/28/2019
+
+
+
+Reports from before the 5.5 reverts:
+
+tpm_tis MSFT0101:00: 2.0 TPM
+Hyperbook NH5/Clevo NH55RCQ
+
+tpm_tis IFX0785:00: 2.0 TPM 
+Clevo N151CU-derived notebook
+
+
+Regards,
+Jerry
+
+> > 
+> > Regards,
+> > Jerry
+> > 
+> > > > Thanks,
+> > > > 
+> > > > Lukas
+> > 
+> 
+
