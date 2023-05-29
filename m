@@ -1,82 +1,164 @@
-Received: from sender4-of-o54.zoho.com (sender4-of-o54.zoho.com [136.143.188.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B97C63FD4
-	for <oe-lkp@lists.linux.dev>; Mon, 29 May 2023 15:08:05 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; t=1685372879; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=PsHWBH37boivgn6l9SUGcHMBUDCneiCPydEetLZAgB4ZzXa4W2ayvWo9L++tKZL6wtMWvV3VR1oa4eGELpQisEQhFlrKfx+t3xuxe/LAZzg5l3J9qmwcxCh+L+83LeeyWJue9GfZr5HQPEi3jahuDlqqFX8C2spw+Gwz+MgG/N4=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1685372879; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-	bh=DYXckkWz6vk81Z+sSLyNx7SrZW5XbG3DNStLiANmp9g=; 
-	b=dqnjpdiwSy5UAWRTWYDfZJhKunusJQ+jZ/+Wembg8tmivCytRSidFD2Vk42teEGomUbsAiDa5XsQdbt2d0vJzqblH9RPne4xyAtIRpX6LUvacbn4GlkrOT8m2Fwcg/hy91l/sDzmtHe5jpwq/r6Ksy0+4gzJfFdUYQMI6I84TyU=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	spf=pass  smtp.mailfrom=linux@mniewoehner.de;
-	dmarc=pass header.from=<linux@mniewoehner.de>
-Received: from z3r0.lan (31.187.91.190 [31.187.91.190]) by mx.zohomail.com
-	with SMTPS id 1685372878497518.3575553410253; Mon, 29 May 2023 08:07:58 -0700 (PDT)
-Message-ID: <fcdc5a27817b17d91df84bb06ad5d382829d5467.camel@mniewoehner.de>
-Subject: Re: [linus:master] [tpm, tpm_tis] e644b2f498: RIP:acpi_safe_halt
-From: Michael =?ISO-8859-1?Q?Niew=F6hner?= <linux@mniewoehner.de>
-To: Jerry Snitselaar <jsnitsel@redhat.com>, Lino Sanfilippo
-	 <l.sanfilippo@kunbus.com>
-Cc: Lukas Wunner <lukas@wunner.de>, Jarkko Sakkinen <jarkko@kernel.org>, 
- oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org, 
- linux-integrity@vger.kernel.org, Philipp Rosenberger
- <p.rosenberger@kunbus.com>,  peterz@infradead.org
-In-Reply-To: <6nf5n6fdnkhx6taa2mecnsmyw7sdgaz6fbvkqy7jqkyd7jq2u7@ogsi6ije32in>
-References: <202305041325.ae8b0c43-yujie.liu@intel.com>
-	 <d80b180a569a9f068d3a2614f062cfa3a78af5a6.camel@kernel.org>
-	 <42ea93a1-3186-b8ff-c317-d51f3e13856e@kunbus.com>
-	 <20230511141607.GA32208@wunner.de>
-	 <1a8ecf90-80a4-9aac-95e1-9ce0c4e09ba5@kunbus.com>
-	 <6nf5n6fdnkhx6taa2mecnsmyw7sdgaz6fbvkqy7jqkyd7jq2u7@ogsi6ije32in>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 29 May 2023 17:07:54 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A36A8F71
+	for <oe-lkp@lists.linux.dev>; Mon, 29 May 2023 16:28:38 +0000 (UTC)
+Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-3f6c6320d4eso264811cf.1
+        for <oe-lkp@lists.linux.dev>; Mon, 29 May 2023 09:28:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1685377717; x=1687969717;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=QyZCj96iRF2jvhBEHv5YWxHz5llZW0keAn3B6U6pHG8=;
+        b=LXu7PHtOEjdQvmHjgAJQk2uWKbMEVo45NVLDdp1usGse4wFa6F2dChK67MuF6RrHVf
+         gK/I66s5dy1tabHwR9NRHA2SZXaxGnv6kRqUPlwBQbhvrOchDLfxVPfrZv7T3StVoEN0
+         cHFIwPBL3uqpendrz0cCIdpHdaTuxh83oVw9Nc77PKVUtxqEKKE3zhtas7kfZeY5efiQ
+         ne7lcAs9MIT//V6VsXW8IQHLQYbouI+HPAKWah92SrEIxx3HWAHmPJOjDczuH76MSvVa
+         1d7PMMIKd1aREI3fAilZsNBRTWMupgShBJaeooXPtReFUG5AR6qgx6yAdcKKrLYWkZN5
+         6DcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1685377717; x=1687969717;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=QyZCj96iRF2jvhBEHv5YWxHz5llZW0keAn3B6U6pHG8=;
+        b=h0fodelEI0Tq00LuIx8IHnQ/Skg5aRf8EJk5dVzxtJoPVqzLnOxkucHiW7oJGIDXHQ
+         Qj4pDulxglD72gjFKLTxUpKfIean6IOimXHy7Kv1dDvCX3lX5k0F0bwSCTXhjl1x+34G
+         P3AppY0mbkvGwOIbN83AcUFsIFG1+4e6cYEhNBpO2VQOzIk/kpquKAzYCRRObjW/CS8p
+         WKcpPvs/ONxxhDQyD7u8/3oO9Pys/CZ3bSeyjXONAQ5A0wi3iFwngvH5Axa50M6ROwuv
+         WLvyO/x/wYw7CkcicTI1HDbR2SyU5d7ATjVHabE8/POaDTwlijwihD/ubHIp0lM/+Fo6
+         T/Fw==
+X-Gm-Message-State: AC+VfDya8h5Zy8kaQxjrk2NIhr5wjmsJA7UyzxYaq1fskobbLv0NvOZ0
+	/cOjiNF0rROBZ+3kiTwm0XUcvFhUOVAt85mmzYbkxA==
+X-Google-Smtp-Source: ACHHUZ7tNHeP+NRFPg8fNZtB39JwiTCATOyCnNlEnkEUjwVdhUB9OZhZ4wCiS7rYAJmb89kZZY+NbC48TvRQfGK+GhM=
+X-Received: by 2002:a05:622a:2d4:b0:3f7:ffc8:2f6f with SMTP id
+ a20-20020a05622a02d400b003f7ffc82f6fmr403990qtx.28.1685377716957; Mon, 29 May
+ 2023 09:28:36 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Evolution 3.44.4 
-X-ZohoMailClient: External
+References: <202305291525.df3ce28d-oliver.sang@intel.com>
+In-Reply-To: <202305291525.df3ce28d-oliver.sang@intel.com>
+From: Ian Rogers <irogers@google.com>
+Date: Mon, 29 May 2023 09:28:25 -0700
+Message-ID: <CAP-5=fVjdEUnujbndX4eMqT2Hpuz3QUB6bW0MjcFt+Os-6ux9g@mail.gmail.com>
+Subject: Re: [linus:master] [perf parse] a4c7d7c502: perf-test.perf_pmu_event_count_group.count_group_cpu/branch-misses/_cpu/topdown-heavy-ops/_cpu/branch-misses/_R0.fail
+To: kernel test robot <oliver.sang@intel.com>, "Wang, Weilin" <weilin.wang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org, 
+	Arnaldo Carvalho de Melo <acme@redhat.com>, Adrian Hunter <adrian.hunter@intel.com>, 
+	Alexander Shishkin <alexander.shishkin@linux.intel.com>, 
+	Florian Fischer <florian.fischer@muhq.space>, Ingo Molnar <mingo@redhat.com>, 
+	James Clark <james.clark@arm.com>, Jiri Olsa <jolsa@kernel.org>, 
+	John Garry <john.g.garry@oracle.com>, Kajol Jain <kjain@linux.ibm.com>, 
+	Kan Liang <kan.liang@linux.intel.com>, Kim Phillips <kim.phillips@amd.com>, 
+	Leo Yan <leo.yan@linaro.org>, Mark Rutland <mark.rutland@arm.com>, 
+	Namhyung Kim <namhyung@kernel.org>, Peter Zijlstra <peterz@infradead.org>, 
+	Ravi Bangoria <ravi.bangoria@amd.com>, Sean Christopherson <seanjc@google.com>, 
+	"Steinar H. Gunderson" <sesse@google.com>, Stephane Eranian <eranian@google.com>, 
+	Suzuki Poulouse <suzuki.poulose@arm.com>, Xing Zhengjun <zhengjun.xing@linux.intel.com>, 
+	linux-perf-users@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Jerry,
+On Mon, May 29, 2023 at 12:30=E2=80=AFAM kernel test robot
+<oliver.sang@intel.com> wrote:
+>
+>
+>
+> Hello,
+>
+> kernel test robot noticed "perf-test.perf_pmu_event_count_group.count_gro=
+up_cpu/branch-misses/_cpu/topdown-heavy-ops/_cpu/branch-misses/_R0.fail" on=
+:
+>
+> commit: a4c7d7c502b935f3a8324d954de78aecf6940897 ("perf parse-events: War=
+n when events are regrouped")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-On Thu, 2023-05-11 at 07:59 -0700, Jerry Snitselaar wrote:
->=20
-> IIRC trying to catch the irq storm didn't work in the L490 case for
-> some reason, so we might still need the dmi entry for that one.
->=20
-> The info that the T490s had a pin wired up wrong came from Lenovo, but
-> this one even looks to be a different vendor so I wonder how often
-> this happens or if there is something else going on. Is it possible to
-> get info about the tpm used in the Inspur system? The datasheet online
-> doesn't mention it.
+I'm having a hard time understanding the output from the test:
 
-Are you sure about T490s? To me the wiring looks right on both s and non-s:=
- Pin
-18 / PIRQ# goes to PIRQA# of the PCH/SoC.
+1) the output is filled with sanitizer output that makes it look like
+a non-asan version of libc is being used, either that or we're missing
+asan interceptors for functions called by perf. This means the noise
+is much greater than the signal in the output.
 
-However on L490 Pin 18 / PIRQ# is wired wrongly to SERIRQ, which probably i=
-s the
-reason that catching the interrupt storm didn't work: I guess this complete=
-ly
-messes up LPC communication and causes way more problems. In this case only=
- a
-DMI quirk can help.
+2) the referenced test doesn't appear to be part of the "perf test"
+set of tests. Are these additional tests that Intel have created?
+Could we get them moved to "perf test" which is used as a pre-submit
+and can help avoid regressions.
 
-BR
-Michael
+Why a warning would cause this test to start failing I'm not sure.
+Given the amount of difficulty the harness has with asan I think
+there's a good chance this is a false positive. It could also be that
+the test expectations have changed and could have been fixed, which
+would break external tests that make assumptions on things like
+events. Moving the test to "perf test" would be the best way to
+resolve this.
 
->=20
-> Regards,
-> Jerry
->=20
-> > > Thanks,
-> > >=20
-> > > Lukas
->=20
+Thanks,
+Ian
 
+> [test failed on linux-next/master 6a3d37b4d885129561e1cef361216f00472f7d2=
+e]
+>
+> in testcase: perf-test
+> version: perf-test-x86_64-git-1_20220520
+> with following parameters:
+>
+>         type: lkp
+>         group: group-00
+>
+> test-description: The internal Perf Test suite.
+>
+>
+> compiler: gcc-11
+> test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480+ (Sapp=
+hire Rapids) with 256G memory
+>
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+>
+>
+>
+>
+> If you fix the issue, kindly add following tag
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202305291525.df3ce28d-oliver.san=
+g@intel.com
+>
+>
+>
+> perf kernel cpu PMU event count group test
+> Sun May 28 06:51:04 UTC 2023
+> 1 test cases pass for perf_pmu_event_count_group test. 1 test cases fail =
+for perf_pmu_event_count_group test.
+> Test Case count_group_cpu/topdown-fetch-lat/_cpu/mem-loads-aux/_cpu/branc=
+h-instructions/_R1 PASS!
+> Test Case count_group_cpu/branch-misses/_cpu/topdown-heavy-ops/_cpu/branc=
+h-misses/_R0 FAILED!
+>
+>
+>
+> To reproduce:
+>
+>         git clone https://github.com/intel/lkp-tests.git
+>         cd lkp-tests
+>         sudo bin/lkp install job.yaml           # job file is attached in=
+ this email
+>         bin/lkp split-job --compatible job.yaml # generate the yaml file =
+for lkp run
+>         sudo bin/lkp run generated-yaml-file
+>
+>         # if come across any failure that blocks the test,
+>         # please remove ~/.lkp and /lkp dir to run from a clean state.
+>
+>
+>
+> --
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
+>
+>
