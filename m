@@ -1,85 +1,123 @@
-Received: from out-51.mta1.migadu.com (out-51.mta1.migadu.com [95.215.58.51])
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E36087FB
-	for <oe-lkp@lists.linux.dev>; Tue, 30 May 2023 03:07:43 +0000 (UTC)
-Message-ID: <26da75a6-115f-a17a-73bb-381a6b4a3a75@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1685416060;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=hhVCqVUhvZRjlBrxLBQaFs82AfnvT+az3ouF0P0dHAo=;
-	b=mlTKSDp327yaErwS5wPyUOFLhylZtOXgmCsi5D/Ahv65c8fdvz5AEvKl8wwzngX+XQyxB7
-	3xb9bQMv30BmVUREfvhaXsc5w+Js7ZPspdMxeFle/O48tfkrlr7T8waiZphxSHAtfQN4C0
-	/8vG5h5z2wHuFeuJA+FakXDh+Wquthg=
-Date: Tue, 30 May 2023 11:07:29 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25B2C17AB2
+	for <oe-lkp@lists.linux.dev>; Tue, 30 May 2023 10:32:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
+	t=1685442714; i=linosanfilippo@gmx.de;
+	bh=HLrwqdUJuqN16B/qjsE6jcWhUvILRIzmNm5SbVmJ4dY=;
+	h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+	b=BrPAynvcb6fpBI2DaSXRYjAr9zhgXRkTsbysxdy0gvSn00kbbPcFNbGT0ROmNuJue
+	 fd2xmSFnL0dGmANe0uxL2qoy/ScCYi/3opedQRCYOz7auHnmxu+/QRmuX8A9eFV8Qa
+	 QlFFBonjkHV+JtMYxIqbuYLNYmrl/2YnQm3QLGJwxFpKsTLQ3TDyufs4moKn8DnqIz
+	 nesByy0gXla/eJ4a0HwZ/AhMt05p5GULjW1Ac8/5t4mY4KbkQ6q9ZSw8GcDq5dsTRw
+	 /y2laYytEPXhaRCbjQOV32Hd9U6aVX9SZ+JXetr9NvYHbKl1CWFkUaRtQIznd7rTAi
+	 PKX5BKC/TYGTQ==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from [192.168.2.37] ([84.162.2.106]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MnakX-1qSs0d0xqX-00jWHZ; Tue, 30
+ May 2023 12:31:54 +0200
+Subject: Re: [PATCH 1/2] tpm, tpm_tis: Handle interrupt storm
+To: Jarkko Sakkinen <jarkko@kernel.org>, peterhuewe@gmx.de, jgg@ziepe.ca
+Cc: jsnitsel@redhat.com, hdegoede@redhat.com, oe-lkp@lists.linux.dev,
+ lkp@intel.com, peter.ujfalusi@linux.intel.com, peterz@infradead.org,
+ linux@mniewoehner.de, linux-integrity@vger.kernel.org,
+ linux-kernel@vger.kernel.org, l.sanfilippo@kunbus.com, lukas@wunner.de,
+ p.rosenberger@kunbus.com
+References: <20230522143105.8617-1-LinoSanfilippo@gmx.de>
+ <CSU7G2UZSZ8K.22EGXU5CJTZBB@suppilovahvero>
+ <CSUM65JDEX5D.8GL20PUI2XDV@suppilovahvero>
+From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Message-ID: <fa9d4714-1c26-7f3b-9d27-04295ef74a6c@gmx.de>
+Date: Tue, 30 May 2023 12:31:47 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Subject: Re: [linus:master] [mm] f95bdb700b: stress-ng.ramfs.ops_per_sec
- -88.8% regression
+In-Reply-To: <CSUM65JDEX5D.8GL20PUI2XDV@suppilovahvero>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-To: paulmck@kernel.org, Kirill Tkhai <tkhai@ya.ru>
-Cc: RCU <rcu@vger.kernel.org>, Yujie Liu <yujie.liu@intel.com>,
- oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
- Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>,
- Roman Gushchin <roman.gushchin@linux.dev>,
- =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
- David Hildenbrand <david@redhat.com>, Davidlohr Bueso <dave@stgolabs.net>,
- Johannes Weiner <hannes@cmpxchg.org>, Michal Hocko <mhocko@kernel.org>,
- Muchun Song <muchun.song@linux.dev>, Shakeel Butt <shakeelb@google.com>,
- Yang Shi <shy828301@gmail.com>, linux-mm@kvack.org, ying.huang@intel.com,
- feng.tang@intel.com, fengwei.yin@intel.com
-References: <202305230837.db2c233f-yujie.liu@intel.com>
- <eba38fce-2454-d7a4-10ef-240b4686f23d@linux.dev>
- <ZG29ULGNJdErnatI@yujie-X299>
- <896bbb09-d400-ec73-ba3a-b64c6e9bbe46@linux.dev>
- <e5fb8b34-c1ad-92e0-e7e5-f7ed1605dbc6@linux.dev>
- <bfb36563-fac9-4c84-96db-87dd28892088@linux.dev>
- <be04dc3e-a671-ec70-6cf6-70dc702f4184@linux.dev>
- <44407892-b7bc-4d6c-8e4a-6452f0ee88b9@paulmck-laptop>
- <d4b1599d-14c1-071c-6205-09fe60f2ed8b@linux.dev>
- <095806f1-f7f0-4914-b04b-c874fb25bb83@paulmck-laptop>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Qi Zheng <qi.zheng@linux.dev>
-In-Reply-To: <095806f1-f7f0-4914-b04b-c874fb25bb83@paulmck-laptop>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:TZ4ZU+3gKuoxi5e6X3XtMH0VAzfEjg22iznnnKShF9rUjvFZbci
+ 9wocekfP/wJHdYRVPXkj7Jwh1wTWRm5fRYG8IngxSyTKOEklONBuyVfUo9Yr4Bav/ovajf5
+ Np6Rhsya9u7Fvdqobsla/rEizzX1v8LKWRYsBVX8weJNmvLM++h3CC9IK+/b++xRVjY9DRg
+ 7ICAvpRdEgZi08EpgGSxQ==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:L/+dLP6F3pw=;OcvV0FoqD0LcMLZqCtBrgSMwCe5
+ 3+wgn+HVy6Qfuz9bgGMS51iiHkzqfNH76B++ujeTnoZBbMMNXa76k19m2W+pDus77L2BGGrEj
+ gIyejMGMWjcW4KyeEnwGzf5H+uKIveYfj8X8NymS41TR2VN3VilAuzxHQq18qMzrwJr/ZXMrn
+ pECu8EEzLDLnWqeMZCQ58m9/4XAJ3QlsHgJ1IX3HA0CiCC3hDO5+vzlvTo3c9tSkTsQ7h0k27
+ 9Ky37HDJXFHrB6xGv2P57w3LFDsTBK/I53gJaS032P30DssVmJ5CrGmauY36pAe+MMWqba+Je
+ LcEV1+VR9Q1RB4w+cv+SL/9zMPh/1VKJHmMutnRUHM6guz0wAXAIgOEk0/XmQ5AB69u7r/Gko
+ 2Aux36dUBcWBhx4pwv4r/Xt+0TzL1k2rSuQndGGR4CZxSvHh+Vk+eXl70/QLJVlhBzFPWgc7R
+ xzNHrMNKoZ+F55cU518hu0CdBvWl15yK3fe+b9kMEsYtWRldghpBgPFTQluAlB7rcI2tB0CBA
+ RgQAbCEZ6t2/0odxlb9whujZwNU5cX2x4oVuTLykOi4PfRgEka6z79ZkDYM9rPTXZ2l9gWid7
+ 1gpF95dceOHbW/i9y+ugRMZqNrAKGb3EKfJpJbaaLmXFo4pVZReZVd+/gki5MXvgqTWWfVfBt
+ 24s4pmvLmJr/3S7WIZrH6LaC3TMYQ6I0RXeT7ZbPqvZS6rDWOQyuK2FeYoyK+1tA/BHobaCfk
+ WM/rZgMwKpsQ5QT+qwEFo+XF2O3CCegpPo6m5m6hfUX6h4T4SFblsDsb8QY8YYnl/A9M9PIl/
+ zFfbv+B0xLBCiHLZCaPPBeY1W/CixPj/joHPJJkkRexxAEUhVoYxSv/OrpyJO9BpxpK+M/mr7
+ noAAy5MLeiElSQRlNNfUzYN8HbObuQebmgPehRcHgccsJKgxpG5gp5qsAwxEbtxA8bdMpxLKB
+ YCIu9A==
 
-Hi,
+On 24.05.23 at 17:30, Jarkko Sakkinen wrote:
+> On Wed May 24, 2023 at 6:58 AM EEST, Jarkko Sakkinen wrote:
+>>>  	rc =3D tpm_tis_read32(priv, TPM_INT_STATUS(priv->locality), &interru=
+pt);
+>>>  	if (rc < 0)
+>>> -		return IRQ_NONE;
+>>> +		goto unhandled;
+>>>
+>>>  	if (interrupt =3D=3D 0)
+>>> -		return IRQ_NONE;
+>>> +		goto unhandled;
+>>>
+>>>  	set_bit(TPM_TIS_IRQ_TESTED, &priv->flags);
+>>>  	if (interrupt & TPM_INTF_DATA_AVAIL_INT)
+>>> @@ -780,10 +829,14 @@ static irqreturn_t tis_int_handler(int dummy, vo=
+id *dev_id)
+>>>  	rc =3D tpm_tis_write32(priv, TPM_INT_STATUS(priv->locality), interru=
+pt);
+>>>  	tpm_tis_relinquish_locality(chip, 0);
+>>>  	if (rc < 0)
+>>> -		return IRQ_NONE;
+>>> +		goto unhandled;
+>>>
+>>>  	tpm_tis_read32(priv, TPM_INT_STATUS(priv->locality), &interrupt);
+>>>  	return IRQ_HANDLED;
+>>> +
+>>> +unhandled:
+>>> +	tpm_tis_process_unhandled_interrupt(chip);
+>>> +	return IRQ_HANDLED;
+>>>  }
+>
+> Some minor glitches I noticed.
+>
+> You could simplify the flow by making the helper to return IRQ_NONE.
+>
+> E.g.
+>
+> 	tpm_tis_relinquish_locality(chip, 0);
+> 	if (rc < 0)
+> 		return tpm_tis_process_unhandled_interrupt(chip);
+>
+> I'd recommend changing the function name simply tpm_tis_rollback_interru=
+pt().
+>
 
-On 2023/5/29 20:51, Paul E. McKenney wrote:
-> On Mon, May 29, 2023 at 10:39:21AM +0800, Qi Zheng wrote:
+IMHO this name is worse, since this function does actually _not_ rollback =
+interrupts
+most of the times it is called. Only after an interrupt storm is detected =
+(so currently
+after it has been called at least 1000 times without rollback) it actually
+rolls back interrupts and falls back to polling.
 
-[...]
+Maybe rather tpm_tis_check_for_interrupt_storm()?
 
->>
->> Thanks for such a detailed explanation.
->>
->> Now I think we can continue to try to complete the idea[1] from
->> Kirill Tkhai. The patch moves heavy synchronize_srcu() to delayed
->> work, so it doesn't affect on user-visible unregistration speed.
->>
->> [1]. https://lore.kernel.org/lkml/153365636747.19074.12610817307548583381.stgit@localhost.localdomain/
-> 
-> A blast from the past!  ;-)
-> 
-> But yes, moving the long-latency synchronize_srcu() off the user-visible
-> critical code path can be even better.
+Regards,
+Lino
 
-Yeah, I applied these patches  ([PATCH RFC 04/10]~[PATCH RFC 10/10],
-with few conflicts), the ops/s does get back to the previous levels.
 
-I'll continue updating this patchset after doing more testing.
-
-Thanks,
-Qi
-
-> 
-> 							Thanx, Paul
