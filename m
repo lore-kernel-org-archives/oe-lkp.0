@@ -1,144 +1,85 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from out-51.mta1.migadu.com (out-51.mta1.migadu.com [95.215.58.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BBD528E7
-	for <oe-lkp@lists.linux.dev>; Mon, 29 May 2023 20:58:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1685393894;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E36087FB
+	for <oe-lkp@lists.linux.dev>; Tue, 30 May 2023 03:07:43 +0000 (UTC)
+Message-ID: <26da75a6-115f-a17a-73bb-381a6b4a3a75@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1685416060;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=mV2kHVRcfcyRbrdpPRjIZ0JKYy4IfekVjpRlLT3ji4M=;
-	b=gGKD5gA1OiKBiKUSJT3clZXepL+TQ6RVH9RtUi63u1SkHUkFHBoL4ergqkh1RscweKxrSx
-	ndKqCojTE5UJ5AZXLvaQwblZl6iljkiGrs+3BNi6QDRP1YNLfHgCdljr5lucI4GMLUROs8
-	n5ZcLOXOlwiOEzRtN5uvgeEMjK+9FEg=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-520-vkbnRSgzPReQ8DFVMkBfWw-1; Mon, 29 May 2023 16:58:12 -0400
-X-MC-Unique: vkbnRSgzPReQ8DFVMkBfWw-1
-Received: by mail-qv1-f72.google.com with SMTP id 6a1803df08f44-62628df5347so5992406d6.2
-        for <oe-lkp@lists.linux.dev>; Mon, 29 May 2023 13:58:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685393892; x=1687985892;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=mV2kHVRcfcyRbrdpPRjIZ0JKYy4IfekVjpRlLT3ji4M=;
-        b=Twijoc31GHF2z5nrA35q0e8yXOI/36KPJjfr6Jl64w1EXLmudsAQ2yI6isX3L0+gRR
-         s8Nltd38qFCT7cVC5wC5owy9RdKuI7hPDKFx+ok+nRveTqmVltEzWvTut/tIxTjgwmn5
-         FmMOX4SgfJe4/m2Lyg8tdjiC4l9IdDMNQbDZfeSJcJpw7RcmZVZ/AMfMaFfj5JzIFbZ/
-         hLZljCEGkanCLfPefvBV79E98DJAPv7yqO9g1FxqndvFENoyr0duZD/iQMjiLqAGyU3S
-         FP0n59hO0p4OIUnuzwudpeGD1NaagiBpYnMSFZoBfmHfg1k/9rHQnHLV0rXCrgd1DCjE
-         oOQA==
-X-Gm-Message-State: AC+VfDxBlQLiRtXBc074JzN4TCEr9NauWKE5owimUjWvZOC4QwgITfYD
-	BcdNWSyeooK09y4LG6CU54DDfXb3SSMoVzd8iNiETwX2unhV1Nz+pho9AF/l2kd8h8wM0r0ii6P
-	ISa13f4VVlRqagVGG
-X-Received: by 2002:a05:6214:212e:b0:621:6548:d192 with SMTP id r14-20020a056214212e00b006216548d192mr14671150qvc.49.1685393892317;
-        Mon, 29 May 2023 13:58:12 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ62pZJSF9EG0XG2rv8Pp9vsLFjquc2gpXw/2+onp7YrQzk59kKXZlVMqOssTBoCVkFXIL04Dw==
-X-Received: by 2002:a05:6214:212e:b0:621:6548:d192 with SMTP id r14-20020a056214212e00b006216548d192mr14671137qvc.49.1685393892080;
-        Mon, 29 May 2023 13:58:12 -0700 (PDT)
-Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
-        by smtp.gmail.com with ESMTPSA id ej14-20020ad45a4e000000b00606750abaf9sm1851949qvb.136.2023.05.29.13.58.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 May 2023 13:58:11 -0700 (PDT)
-Date: Mon, 29 May 2023 13:58:09 -0700
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: Michael =?utf-8?Q?Niew=C3=B6hner?= <linux@mniewoehner.de>
-Cc: Lino Sanfilippo <l.sanfilippo@kunbus.com>, 
-	Lukas Wunner <lukas@wunner.de>, Jarkko Sakkinen <jarkko@kernel.org>, oe-lkp@lists.linux.dev, 
-	lkp@intel.com, linux-kernel@vger.kernel.org, linux-integrity@vger.kernel.org, 
-	Philipp Rosenberger <p.rosenberger@kunbus.com>, peterz@infradead.org
-Subject: Re: [linus:master] [tpm, tpm_tis] e644b2f498: RIP:acpi_safe_halt
-Message-ID: <6hbzssr2byskuiznx6vvatcuvjkrbhscvorzm4qcheh3n6n4zj@2nrfawn6rbst>
-References: <202305041325.ae8b0c43-yujie.liu@intel.com>
- <d80b180a569a9f068d3a2614f062cfa3a78af5a6.camel@kernel.org>
- <42ea93a1-3186-b8ff-c317-d51f3e13856e@kunbus.com>
- <20230511141607.GA32208@wunner.de>
- <1a8ecf90-80a4-9aac-95e1-9ce0c4e09ba5@kunbus.com>
- <6nf5n6fdnkhx6taa2mecnsmyw7sdgaz6fbvkqy7jqkyd7jq2u7@ogsi6ije32in>
- <fcdc5a27817b17d91df84bb06ad5d382829d5467.camel@mniewoehner.de>
+	bh=hhVCqVUhvZRjlBrxLBQaFs82AfnvT+az3ouF0P0dHAo=;
+	b=mlTKSDp327yaErwS5wPyUOFLhylZtOXgmCsi5D/Ahv65c8fdvz5AEvKl8wwzngX+XQyxB7
+	3xb9bQMv30BmVUREfvhaXsc5w+Js7ZPspdMxeFle/O48tfkrlr7T8waiZphxSHAtfQN4C0
+	/8vG5h5z2wHuFeuJA+FakXDh+Wquthg=
+Date: Tue, 30 May 2023 11:07:29 +0800
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <fcdc5a27817b17d91df84bb06ad5d382829d5467.camel@mniewoehner.de>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+Subject: Re: [linus:master] [mm] f95bdb700b: stress-ng.ramfs.ops_per_sec
+ -88.8% regression
+Content-Language: en-US
+To: paulmck@kernel.org, Kirill Tkhai <tkhai@ya.ru>
+Cc: RCU <rcu@vger.kernel.org>, Yujie Liu <yujie.liu@intel.com>,
+ oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+ Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>,
+ Roman Gushchin <roman.gushchin@linux.dev>,
+ =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+ David Hildenbrand <david@redhat.com>, Davidlohr Bueso <dave@stgolabs.net>,
+ Johannes Weiner <hannes@cmpxchg.org>, Michal Hocko <mhocko@kernel.org>,
+ Muchun Song <muchun.song@linux.dev>, Shakeel Butt <shakeelb@google.com>,
+ Yang Shi <shy828301@gmail.com>, linux-mm@kvack.org, ying.huang@intel.com,
+ feng.tang@intel.com, fengwei.yin@intel.com
+References: <202305230837.db2c233f-yujie.liu@intel.com>
+ <eba38fce-2454-d7a4-10ef-240b4686f23d@linux.dev>
+ <ZG29ULGNJdErnatI@yujie-X299>
+ <896bbb09-d400-ec73-ba3a-b64c6e9bbe46@linux.dev>
+ <e5fb8b34-c1ad-92e0-e7e5-f7ed1605dbc6@linux.dev>
+ <bfb36563-fac9-4c84-96db-87dd28892088@linux.dev>
+ <be04dc3e-a671-ec70-6cf6-70dc702f4184@linux.dev>
+ <44407892-b7bc-4d6c-8e4a-6452f0ee88b9@paulmck-laptop>
+ <d4b1599d-14c1-071c-6205-09fe60f2ed8b@linux.dev>
+ <095806f1-f7f0-4914-b04b-c874fb25bb83@paulmck-laptop>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Qi Zheng <qi.zheng@linux.dev>
+In-Reply-To: <095806f1-f7f0-4914-b04b-c874fb25bb83@paulmck-laptop>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
 
-On Mon, May 29, 2023 at 05:07:54PM +0200, Michael Niewöhner wrote:
-> Hi Jerry,
+Hi,
+
+On 2023/5/29 20:51, Paul E. McKenney wrote:
+> On Mon, May 29, 2023 at 10:39:21AM +0800, Qi Zheng wrote:
+
+[...]
+
+>>
+>> Thanks for such a detailed explanation.
+>>
+>> Now I think we can continue to try to complete the idea[1] from
+>> Kirill Tkhai. The patch moves heavy synchronize_srcu() to delayed
+>> work, so it doesn't affect on user-visible unregistration speed.
+>>
+>> [1]. https://lore.kernel.org/lkml/153365636747.19074.12610817307548583381.stgit@localhost.localdomain/
 > 
-> On Thu, 2023-05-11 at 07:59 -0700, Jerry Snitselaar wrote:
-> > 
-> > IIRC trying to catch the irq storm didn't work in the L490 case for
-> > some reason, so we might still need the dmi entry for that one.
-> > 
-> > The info that the T490s had a pin wired up wrong came from Lenovo, but
-> > this one even looks to be a different vendor so I wonder how often
-> > this happens or if there is something else going on. Is it possible to
-> > get info about the tpm used in the Inspur system? The datasheet online
-> > doesn't mention it.
+> A blast from the past!  ;-)
 > 
-> Are you sure about T490s? To me the wiring looks right on both s and non-s: Pin
-> 18 / PIRQ# goes to PIRQA# of the PCH/SoC.
+> But yes, moving the long-latency synchronize_srcu() off the user-visible
+> critical code path can be even better.
+
+Yeah, I applied these patches  ([PATCH RFC 04/10]~[PATCH RFC 10/10],
+with few conflicts), the ops/s does get back to the previous levels.
+
+I'll continue updating this patchset after doing more testing.
+
+Thanks,
+Qi
+
 > 
-> However on L490 Pin 18 / PIRQ# is wired wrongly to SERIRQ, which probably is the
-> reason that catching the interrupt storm didn't work: I guess this completely
-> messes up LPC communication and causes way more problems. In this case only a
-> DMI quirk can help.
-> 
-> BR
-> Michael
-> 
-
-I'm searching to see if I can find the old bug/email where that info
-from Lenovo originated.  It could be that the info was wrong, and
-it was some firmware issue instead. IIRC the the T490s issue could be
-solved with the code looking for the irq storm, but the L490 needed
-the dmi check even with the irq storm checking code.
-
-
-I haven't found the info yet, but I did find some other reports from back
-then.
-
-Spurious irq reported with 5.5.7, so after the irq reverts in v5.5:
-
-tpm_tis IFX0785:00: 2.0 TPM
-Hardware name: Entroware Proteus/Proteus, BIOS 1.07.07TE0 11/15/2019
-
-Thinkpad P53
-tpm_tis STM7308:00: 2.0 TPM
-Hardware name: LENOVO 20QNCTO1WW/20QNCTO1WW, BIOS N2NET34W (1.19 ) 11/28/2019
-
-
-
-Reports from before the 5.5 reverts:
-
-tpm_tis MSFT0101:00: 2.0 TPM
-Hyperbook NH5/Clevo NH55RCQ
-
-tpm_tis IFX0785:00: 2.0 TPM 
-Clevo N151CU-derived notebook
-
-
-Regards,
-Jerry
-
-> > 
-> > Regards,
-> > Jerry
-> > 
-> > > > Thanks,
-> > > > 
-> > > > Lukas
-> > 
-> 
-
+> 							Thanx, Paul
