@@ -1,123 +1,149 @@
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
+Received: from sender4-of-o54.zoho.com (sender4-of-o54.zoho.com [136.143.188.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25B2C17AB2
-	for <oe-lkp@lists.linux.dev>; Tue, 30 May 2023 10:32:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
-	t=1685442714; i=linosanfilippo@gmx.de;
-	bh=HLrwqdUJuqN16B/qjsE6jcWhUvILRIzmNm5SbVmJ4dY=;
-	h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-	b=BrPAynvcb6fpBI2DaSXRYjAr9zhgXRkTsbysxdy0gvSn00kbbPcFNbGT0ROmNuJue
-	 fd2xmSFnL0dGmANe0uxL2qoy/ScCYi/3opedQRCYOz7auHnmxu+/QRmuX8A9eFV8Qa
-	 QlFFBonjkHV+JtMYxIqbuYLNYmrl/2YnQm3QLGJwxFpKsTLQ3TDyufs4moKn8DnqIz
-	 nesByy0gXla/eJ4a0HwZ/AhMt05p5GULjW1Ac8/5t4mY4KbkQ6q9ZSw8GcDq5dsTRw
-	 /y2laYytEPXhaRCbjQOV32Hd9U6aVX9SZ+JXetr9NvYHbKl1CWFkUaRtQIznd7rTAi
-	 PKX5BKC/TYGTQ==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [192.168.2.37] ([84.162.2.106]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MnakX-1qSs0d0xqX-00jWHZ; Tue, 30
- May 2023 12:31:54 +0200
-Subject: Re: [PATCH 1/2] tpm, tpm_tis: Handle interrupt storm
-To: Jarkko Sakkinen <jarkko@kernel.org>, peterhuewe@gmx.de, jgg@ziepe.ca
-Cc: jsnitsel@redhat.com, hdegoede@redhat.com, oe-lkp@lists.linux.dev,
- lkp@intel.com, peter.ujfalusi@linux.intel.com, peterz@infradead.org,
- linux@mniewoehner.de, linux-integrity@vger.kernel.org,
- linux-kernel@vger.kernel.org, l.sanfilippo@kunbus.com, lukas@wunner.de,
- p.rosenberger@kunbus.com
-References: <20230522143105.8617-1-LinoSanfilippo@gmx.de>
- <CSU7G2UZSZ8K.22EGXU5CJTZBB@suppilovahvero>
- <CSUM65JDEX5D.8GL20PUI2XDV@suppilovahvero>
-From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Message-ID: <fa9d4714-1c26-7f3b-9d27-04295ef74a6c@gmx.de>
-Date: Tue, 30 May 2023 12:31:47 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 301D619E42
+	for <oe-lkp@lists.linux.dev>; Tue, 30 May 2023 14:40:36 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; t=1685457632; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=NodDAN8jT2f3ZiV5uM1Sf1F2TeqLOOf1uMtemS/b2+xWk2M667hrwH5NRLG5oYgqn4zU9Ic2eJi6wJM68wATTj1IWUi4LXTYO6Vt/gmdgPscl8/WOt3t2O0paXShabvMd4EJY2wnRB+iLTYEhly086sTtrZXg3xkYcVfLoX7u3A=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1685457632; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+	bh=V1GWmIY+CwXqmNGcS38lD96AhFE4C+yB1cMB5Uk2MWc=; 
+	b=NqNW5iwvFO3KyRvwxfdV87L9+h79C3vge95/cUbGDEWXTaR62B1XA1iMU+CfRiSjEhhiwIIvIBJkPrYJ24n4YepZm7makTXISsGGQxCCglqkLRlPVrHPxrMBPd2YYUchL7oWwcrY2og/yNRxxAyWz8wS+5NBfc6lAk2WxErdLWk=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	spf=pass  smtp.mailfrom=linux@mniewoehner.de;
+	dmarc=pass header.from=<linux@mniewoehner.de>
+Received: from z3r0.lan (31.187.91.190 [31.187.91.190]) by mx.zohomail.com
+	with SMTPS id 1685457630706946.7287440721707; Tue, 30 May 2023 07:40:30 -0700 (PDT)
+Message-ID: <0e837a2e859b4c633b068368f3c28ba30fc1af70.camel@mniewoehner.de>
+Subject: Re: [linus:master] [tpm, tpm_tis] e644b2f498: RIP:acpi_safe_halt
+From: Michael =?ISO-8859-1?Q?Niew=F6hner?= <linux@mniewoehner.de>
+To: Jerry Snitselaar <jsnitsel@redhat.com>
+Cc: Lino Sanfilippo <l.sanfilippo@kunbus.com>, Lukas Wunner
+ <lukas@wunner.de>,  Jarkko Sakkinen <jarkko@kernel.org>,
+ oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org, 
+ linux-integrity@vger.kernel.org, Philipp Rosenberger
+ <p.rosenberger@kunbus.com>,  peterz@infradead.org
+In-Reply-To: <6hbzssr2byskuiznx6vvatcuvjkrbhscvorzm4qcheh3n6n4zj@2nrfawn6rbst>
+References: <202305041325.ae8b0c43-yujie.liu@intel.com>
+	 <d80b180a569a9f068d3a2614f062cfa3a78af5a6.camel@kernel.org>
+	 <42ea93a1-3186-b8ff-c317-d51f3e13856e@kunbus.com>
+	 <20230511141607.GA32208@wunner.de>
+	 <1a8ecf90-80a4-9aac-95e1-9ce0c4e09ba5@kunbus.com>
+	 <6nf5n6fdnkhx6taa2mecnsmyw7sdgaz6fbvkqy7jqkyd7jq2u7@ogsi6ije32in>
+	 <fcdc5a27817b17d91df84bb06ad5d382829d5467.camel@mniewoehner.de>
+	 <6hbzssr2byskuiznx6vvatcuvjkrbhscvorzm4qcheh3n6n4zj@2nrfawn6rbst>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Date: Tue, 30 May 2023 16:40:26 +0200
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <CSUM65JDEX5D.8GL20PUI2XDV@suppilovahvero>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:TZ4ZU+3gKuoxi5e6X3XtMH0VAzfEjg22iznnnKShF9rUjvFZbci
- 9wocekfP/wJHdYRVPXkj7Jwh1wTWRm5fRYG8IngxSyTKOEklONBuyVfUo9Yr4Bav/ovajf5
- Np6Rhsya9u7Fvdqobsla/rEizzX1v8LKWRYsBVX8weJNmvLM++h3CC9IK+/b++xRVjY9DRg
- 7ICAvpRdEgZi08EpgGSxQ==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:L/+dLP6F3pw=;OcvV0FoqD0LcMLZqCtBrgSMwCe5
- 3+wgn+HVy6Qfuz9bgGMS51iiHkzqfNH76B++ujeTnoZBbMMNXa76k19m2W+pDus77L2BGGrEj
- gIyejMGMWjcW4KyeEnwGzf5H+uKIveYfj8X8NymS41TR2VN3VilAuzxHQq18qMzrwJr/ZXMrn
- pECu8EEzLDLnWqeMZCQ58m9/4XAJ3QlsHgJ1IX3HA0CiCC3hDO5+vzlvTo3c9tSkTsQ7h0k27
- 9Ky37HDJXFHrB6xGv2P57w3LFDsTBK/I53gJaS032P30DssVmJ5CrGmauY36pAe+MMWqba+Je
- LcEV1+VR9Q1RB4w+cv+SL/9zMPh/1VKJHmMutnRUHM6guz0wAXAIgOEk0/XmQ5AB69u7r/Gko
- 2Aux36dUBcWBhx4pwv4r/Xt+0TzL1k2rSuQndGGR4CZxSvHh+Vk+eXl70/QLJVlhBzFPWgc7R
- xzNHrMNKoZ+F55cU518hu0CdBvWl15yK3fe+b9kMEsYtWRldghpBgPFTQluAlB7rcI2tB0CBA
- RgQAbCEZ6t2/0odxlb9whujZwNU5cX2x4oVuTLykOi4PfRgEka6z79ZkDYM9rPTXZ2l9gWid7
- 1gpF95dceOHbW/i9y+ugRMZqNrAKGb3EKfJpJbaaLmXFo4pVZReZVd+/gki5MXvgqTWWfVfBt
- 24s4pmvLmJr/3S7WIZrH6LaC3TMYQ6I0RXeT7ZbPqvZS6rDWOQyuK2FeYoyK+1tA/BHobaCfk
- WM/rZgMwKpsQ5QT+qwEFo+XF2O3CCegpPo6m5m6hfUX6h4T4SFblsDsb8QY8YYnl/A9M9PIl/
- zFfbv+B0xLBCiHLZCaPPBeY1W/CixPj/joHPJJkkRexxAEUhVoYxSv/OrpyJO9BpxpK+M/mr7
- noAAy5MLeiElSQRlNNfUzYN8HbObuQebmgPehRcHgccsJKgxpG5gp5qsAwxEbtxA8bdMpxLKB
- YCIu9A==
+User-Agent: Evolution 3.44.4 
+X-ZohoMailClient: External
 
-On 24.05.23 at 17:30, Jarkko Sakkinen wrote:
-> On Wed May 24, 2023 at 6:58 AM EEST, Jarkko Sakkinen wrote:
->>>  	rc =3D tpm_tis_read32(priv, TPM_INT_STATUS(priv->locality), &interru=
-pt);
->>>  	if (rc < 0)
->>> -		return IRQ_NONE;
->>> +		goto unhandled;
->>>
->>>  	if (interrupt =3D=3D 0)
->>> -		return IRQ_NONE;
->>> +		goto unhandled;
->>>
->>>  	set_bit(TPM_TIS_IRQ_TESTED, &priv->flags);
->>>  	if (interrupt & TPM_INTF_DATA_AVAIL_INT)
->>> @@ -780,10 +829,14 @@ static irqreturn_t tis_int_handler(int dummy, vo=
-id *dev_id)
->>>  	rc =3D tpm_tis_write32(priv, TPM_INT_STATUS(priv->locality), interru=
-pt);
->>>  	tpm_tis_relinquish_locality(chip, 0);
->>>  	if (rc < 0)
->>> -		return IRQ_NONE;
->>> +		goto unhandled;
->>>
->>>  	tpm_tis_read32(priv, TPM_INT_STATUS(priv->locality), &interrupt);
->>>  	return IRQ_HANDLED;
->>> +
->>> +unhandled:
->>> +	tpm_tis_process_unhandled_interrupt(chip);
->>> +	return IRQ_HANDLED;
->>>  }
->
-> Some minor glitches I noticed.
->
-> You could simplify the flow by making the helper to return IRQ_NONE.
->
-> E.g.
->
-> 	tpm_tis_relinquish_locality(chip, 0);
-> 	if (rc < 0)
-> 		return tpm_tis_process_unhandled_interrupt(chip);
->
-> I'd recommend changing the function name simply tpm_tis_rollback_interru=
-pt().
->
+On Mon, 2023-05-29 at 13:58 -0700, Jerry Snitselaar wrote:
+> On Mon, May 29, 2023 at 05:07:54PM +0200, Michael Niew=C3=B6hner wrote:
+> > Hi Jerry,
+> >=20
+> > On Thu, 2023-05-11 at 07:59 -0700, Jerry Snitselaar wrote:
+> > >=20
+> > > IIRC trying to catch the irq storm didn't work in the L490 case for
+> > > some reason, so we might still need the dmi entry for that one.
+> > >=20
+> > > The info that the T490s had a pin wired up wrong came from Lenovo, bu=
+t
+> > > this one even looks to be a different vendor so I wonder how often
+> > > this happens or if there is something else going on. Is it possible t=
+o
+> > > get info about the tpm used in the Inspur system? The datasheet onlin=
+e
+> > > doesn't mention it.
+> >=20
+> > Are you sure about T490s? To me the wiring looks right on both s and no=
+n-s:
+> > Pin
+> > 18 / PIRQ# goes to PIRQA# of the PCH/SoC.
+> >=20
+> > However on L490 Pin 18 / PIRQ# is wired wrongly to SERIRQ, which probab=
+ly is
+> > the
+> > reason that catching the interrupt storm didn't work: I guess this
+> > completely
+> > messes up LPC communication and causes way more problems. In this case =
+only
+> > a
+> > DMI quirk can help.
+> >=20
+> > BR
+> > Michael
+> >=20
+>=20
+> I'm searching to see if I can find the old bug/email where that info
+> from Lenovo originated.=C2=A0 It could be that the info was wrong, and
+> it was some firmware issue instead. IIRC the the T490s issue could be
+> solved with the code looking for the irq storm, but the L490 needed
+> the dmi check even with the irq storm checking code.
 
-IMHO this name is worse, since this function does actually _not_ rollback =
-interrupts
-most of the times it is called. Only after an interrupt storm is detected =
-(so currently
-after it has been called at least 1000 times without rollback) it actually
-rolls back interrupts and falls back to polling.
+Tbh I wonder why the T490s suffers from that interrupt storm at all, but th=
+at
+might be a FW bug (it's not handling the interrupt). L490 definitely needs =
+that
+DMI check, right.
 
-Maybe rather tpm_tis_check_for_interrupt_storm()?
+>=20
+>=20
+> I haven't found the info yet, but I did find some other reports from back
+> then.
+>=20
+> Spurious irq reported with 5.5.7, so after the irq reverts in v5.5:
+>=20
+> tpm_tis IFX0785:00: 2.0 TPM
+> Hardware name: Entroware Proteus/Proteus, BIOS 1.07.07TE0 11/15/2019
 
-Regards,
-Lino
+That's actually a Clevo N151CU. According to schematics it's wired correctl=
+y to
+PIRQA#, so probably a FW bug as well.
 
+>=20
+> Thinkpad P53
+> tpm_tis STM7308:00: 2.0 TPM
+> Hardware name: LENOVO 20QNCTO1WW/20QNCTO1WW, BIOS N2NET34W (1.19 ) 11/28/=
+2019
+>=20
+>=20
+>=20
+> Reports from before the 5.5 reverts:
+>=20
+> tpm_tis MSFT0101:00: 2.0 TPM
+> Hyperbook NH5/Clevo NH55RCQ
+
+PIRQ# wired to GPP_B0 - needs correct setup in firmware -> probably a firmw=
+are
+bug.
+
+>=20
+> tpm_tis IFX0785:00: 2.0 TPM=20
+> Clevo N151CU-derived notebook
+
+Same device as Entroware Proteus.
+
+>=20
+>=20
+> Regards,
+> Jerry
+>=20
+> > >=20
+> > > Regards,
+> > > Jerry
+> > >=20
+> > > > > Thanks,
+> > > > >=20
+> > > > > Lukas
+> > >=20
+> >=20
+>=20
 
