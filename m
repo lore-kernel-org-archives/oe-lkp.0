@@ -1,161 +1,224 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from forward501c.mail.yandex.net (forward501c.mail.yandex.net [178.154.239.209])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3437E1EA76
-	for <oe-lkp@lists.linux.dev>; Tue, 30 May 2023 17:57:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1685469421;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=GyKFKLtIu90hBDIg15YSYvy11Kb1QZe6D7iw0TE90QU=;
-	b=hv2Z4F4zOeKFRxZ6U39bSgBJskMyFWAWdUWuzTTDqnMhqqHwZRGMND1EKheHgAx/Pl7blV
-	zYiRyjSr2x22beM/c8V13fODiC21mJmW3Ux8CYMaJjG9SOAtTYoatTR/DYfrpe/l6Oi31/
-	Q1cXsNK8oWksizZtuEHwDKrEmJo6KZ8=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-160-h_kSB3i6NnGmIE12v1dtXQ-1; Tue, 30 May 2023 13:57:00 -0400
-X-MC-Unique: h_kSB3i6NnGmIE12v1dtXQ-1
-Received: by mail-qt1-f197.google.com with SMTP id d75a77b69052e-3f803ddb712so491931cf.1
-        for <oe-lkp@lists.linux.dev>; Tue, 30 May 2023 10:57:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1685469419; x=1688061419;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=GyKFKLtIu90hBDIg15YSYvy11Kb1QZe6D7iw0TE90QU=;
-        b=Ha84J4juULwnYxoWU4RuQAXLjmFsrJ7sPDItv6OEgkmrqIoN1TsszUQ6hCvpv04eeu
-         6zKp4IaDpN+5lSVr6nSYO2uM0Hi09b+BTPiYoI45QMJEjg5HfyKrwg6HjiQp5KxWPVkC
-         TVjvr15jqpsP1LNJWGPIZin40uZ2JyDdFCvd3NyJFRyJjWjequXmBdJCObip2nozZBVc
-         Al3Pv0ZkeFum4rSG/Gz03Ner+hUgdEKpBPNwCmI4irlMZSMLKRDR3dOIvYFymSgKyzlz
-         /qLICCxebGZOD4y7WCxqXVH4F1lwopgd8XlNhgpAoAWtDAMt6TV43zQVIs5XWP/BnWCe
-         Vknw==
-X-Gm-Message-State: AC+VfDxnnqwb1lkiyvmZsvGH422Xrgfs/rjJP4BwiKkfzDbWbgG7/puI
-	yKCzZlXiaUh9jERy/rj1LaRDG7jds67XKSvsZtemJzlPzjh0OEjNcoX1VXeAK5iCPeux7ph1AjJ
-	K/JBzCxQsAlzN9pWuPFGdVUhJ
-X-Received: by 2002:a05:622a:1009:b0:3f6:b4bf:8ac6 with SMTP id d9-20020a05622a100900b003f6b4bf8ac6mr12054068qte.27.1685469418990;
-        Tue, 30 May 2023 10:56:58 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ4slbTuvpq5c7Z5B8w/Gq7x3c0ZpfM7wOsA7FmfXU6XF++zKQp9rZ/sglxYsXPhMx3TdqsiAg==
-X-Received: by 2002:a05:622a:1009:b0:3f6:b4bf:8ac6 with SMTP id d9-20020a05622a100900b003f6b4bf8ac6mr12054049qte.27.1685469418687;
-        Tue, 30 May 2023 10:56:58 -0700 (PDT)
-Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
-        by smtp.gmail.com with ESMTPSA id z4-20020ac84544000000b003f38f55e71asm4878069qtn.47.2023.05.30.10.56.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 May 2023 10:56:58 -0700 (PDT)
-Date: Tue, 30 May 2023 10:56:56 -0700
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: =?utf-8?B?UMOpdGVy?= Ujfalusi <peter.ujfalusi@linux.intel.com>
-Cc: Lino Sanfilippo <l.sanfilippo@kunbus.com>, 
-	Jarkko Sakkinen <jarkko@kernel.org>, Lino Sanfilippo <LinoSanfilippo@gmx.de>, peterhuewe@gmx.de, 
-	jgg@ziepe.ca, hdegoede@redhat.com, oe-lkp@lists.linux.dev, lkp@intel.com, 
-	peterz@infradead.org, linux@mniewoehner.de, linux-integrity@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, lukas@wunner.de, p.rosenberger@kunbus.com
-Subject: Re: [PATCH 1/2] tpm, tpm_tis: Handle interrupt storm
-Message-ID: <xkp3zaclvqx6pv4qh4wv7jttqby4lp2atsrareb63ofi7sy2qp@hfugy3pyac4o>
-References: <20230522143105.8617-1-LinoSanfilippo@gmx.de>
- <CSTVVFNKUVJW.P69FKI6IF3ZN@suppilovahvero>
- <da435e0d-5f22-fac7-bc10-96a0fd4c6d54@kunbus.com>
- <a84c447f-cdfb-d33c-62cb-bb5d9aa8510b@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E135A1101
+	for <oe-lkp@lists.linux.dev>; Thu,  1 Jun 2023 01:01:58 +0000 (UTC)
+Received: from mail-nwsmtp-smtp-production-main-39.myt.yp-c.yandex.net (mail-nwsmtp-smtp-production-main-39.myt.yp-c.yandex.net [IPv6:2a02:6b8:c12:4e18:0:640:bf32:0])
+	by forward501c.mail.yandex.net (Yandex) with ESMTP id DF30E5F08E;
+	Thu,  1 Jun 2023 03:57:13 +0300 (MSK)
+Received: by mail-nwsmtp-smtp-production-main-39.myt.yp-c.yandex.net (smtp/Yandex) with ESMTPSA id AvBYmkxDemI0-xmefqHym;
+	Thu, 01 Jun 2023 03:57:12 +0300
+X-Yandex-Fwd: 1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ya.ru; s=mail; t=1685581032;
+	bh=jwTFdF6Jc4HXQmg9VAOI45bTrfpn1DcuZsOOAkfIXxs=;
+	h=From:In-Reply-To:Cc:Date:References:To:Subject:Message-ID;
+	b=n3xuoI4yrBr8y+ddKMSfKazGR+ICb6Pkvg45czOq93hr+jLSnXjhZz+zxw/9NQQfV
+	 zIaXgvhlUPK+AXWZwlOt3EXFgR56Y5sk35If3hLD7P0BwZI/gWCOwyXwykM9VxTLjB
+	 nhY68N26vN2DkAN7yKAtMifojqO7BrnBI+bFDnJ8=
+Authentication-Results: mail-nwsmtp-smtp-production-main-39.myt.yp-c.yandex.net; dkim=pass header.i=@ya.ru
+Message-ID: <bab60fe4-964c-43a6-ecce-4cbd4981d875@ya.ru>
+Date: Thu, 1 Jun 2023 03:57:10 +0300
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <a84c447f-cdfb-d33c-62cb-bb5d9aa8510b@linux.intel.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [linus:master] [mm] f95bdb700b: stress-ng.ramfs.ops_per_sec
+ -88.8% regression
+To: Qi Zheng <qi.zheng@linux.dev>, paulmck@kernel.org
+Cc: RCU <rcu@vger.kernel.org>, Yujie Liu <yujie.liu@intel.com>,
+ oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+ Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>,
+ Roman Gushchin <roman.gushchin@linux.dev>,
+ =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+ David Hildenbrand <david@redhat.com>, Davidlohr Bueso <dave@stgolabs.net>,
+ Johannes Weiner <hannes@cmpxchg.org>, Michal Hocko <mhocko@kernel.org>,
+ Muchun Song <muchun.song@linux.dev>, Shakeel Butt <shakeelb@google.com>,
+ Yang Shi <shy828301@gmail.com>, linux-mm@kvack.org, ying.huang@intel.com,
+ feng.tang@intel.com, fengwei.yin@intel.com
+References: <202305230837.db2c233f-yujie.liu@intel.com>
+ <eba38fce-2454-d7a4-10ef-240b4686f23d@linux.dev>
+ <ZG29ULGNJdErnatI@yujie-X299>
+ <896bbb09-d400-ec73-ba3a-b64c6e9bbe46@linux.dev>
+ <e5fb8b34-c1ad-92e0-e7e5-f7ed1605dbc6@linux.dev>
+ <bfb36563-fac9-4c84-96db-87dd28892088@linux.dev>
+ <be04dc3e-a671-ec70-6cf6-70dc702f4184@linux.dev>
+ <44407892-b7bc-4d6c-8e4a-6452f0ee88b9@paulmck-laptop>
+ <d4b1599d-14c1-071c-6205-09fe60f2ed8b@linux.dev>
+ <095806f1-f7f0-4914-b04b-c874fb25bb83@paulmck-laptop>
+ <26da75a6-115f-a17a-73bb-381a6b4a3a75@linux.dev>
+Content-Language: en-US
+From: Kirill Tkhai <tkhai@ya.ru>
+In-Reply-To: <26da75a6-115f-a17a-73bb-381a6b4a3a75@linux.dev>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-On Mon, May 29, 2023 at 09:46:08AM +0300, Péter Ujfalusi wrote:
-> Hi Lino,
-> 
-> On 23/05/2023 23:46, Lino Sanfilippo wrote:
-> >> On the other hand any new functionality is objectively a maintanance
-> >> burden of some measure (applies to any functionality). So how do we know
-> >> that taking this change is less of a maintenance burden than just add
-> >> new table entries, as they come up?
-> >>
-> > 
-> > Initially this set was created as a response to this 0-day bug report which you asked me
-> > to have a look at:
-> > 
-> > https://lore.kernel.org/linux-integrity/d80b180a569a9f068d3a2614f062cfa3a78af5a6.camel@kernel.org/
-> > 
-> > My hope was that it could also avoid some of (existing or future) DMI entries. But even if it does not
-> > (e.g. the problem Péter Ujfalusi reported with the UPX-i11 cannot be fixed by this patch set and thus
-> > needs the DMI quirk) we may at least avoid more bug reports due to interrupt storms once
-> > 6.4 is released. 
-> 
-> I'm surprised that there is a need for a storm detection in the first
-> place... Do we have something else on the same IRQ line on the affected
-> devices which might have a bug or no driver at all?
-> It is hard to believe that a TPM (Trusted Platform Module) is integrated
-> so poorly ;)
-> 
-> But put that aside: I think the storm detection is good given that there
-> is no other way to know which machine have sloppy TPM integration.
-> There are machines where this happens, so it is a know integration
-> issue, right?
-> 
-> My only 'nitpick' is with the printk level to be used.
-> The ERR level is not correct as we know the issue and we handle it, so
-> all is under control.
-> If we want to add these machines to the quirk list then WARN is a good
-> level to gain attention but I'm not sure if a user will know how to get
-> the machine in the quirk (where to file a bug).
-> If we only want the quirk to be used for machines like UPX-i11 which
-> simply just have broken (likely floating) IRQ line then the WARN is too
-> high level, INFO or even DBG would be appropriate as you are not going
-> to update the quirk, it is just handled under the hood (which is a great
-> thing, but on the other hand you will have the storm never the less and
-> that is not a nice thing).
-> 
-> It is a matter on how this is going to be handled in a long term. Add
-> quirk for all the known machines with either stormy or plain broken IRQ
-> line or handle the stormy ones and quirk the broken ones only.
-> 
-> >>> Detect an interrupt storm by counting the number of unhandled interrupts
-> >>> within a 10 ms time interval. In case that more than 1000 were unhandled
-> >>> deactivate interrupts, deregister the handler and fall back to polling.
-> >>
-> >> I know it can be sometimes hard to evaluate but can you try to explain
-> >> how you came up to the 10 ms sampling period and 1000 interrupt
-> >> threshold? I just don't like abritrary numbers.
-> > 
-> > At least the 100 ms is not plucked out of thin air but its the same time period
-> > that the generic code in note_interrupt() uses - I assume for a good reason.
-> > Not only this number but the whole irq storm detection logic is taken from 
-> > there: 
-> > 
-> >>
-> >>> This equals the implementation that handles interrupt storms in
-> >>> note_interrupt() by means of timestamps and counters in struct irq_desc.
-> >> The number of 1000 unhandled interrupts is still far below the 99900
-> used in
-> > note_interrupt() but IMHO enough to indicate that there is something seriously
-> > wrong with interrupt processing and it is probably saver to fall back to polling.
-> 
-> Except that if the line got the spurious designation in core, the
-> interrupt line will be disabled while the TPM driver will think that it
-> is still using IRQ mode and will not switch to polling.
-> 
-> A storm of 1000 is better than a storm of 99900 for sure but quirking
-> these would be the desired final solution. imho
+Hi,
 
-If that is the case, then output could probably be sent to the console
-detailing the dmi info needed to update the table.
-
-Regards,
-Jerry
-
+On 30.05.2023 06:07, Qi Zheng wrote:
+> Hi,
 > 
-> There are many buts around this ;)
+> On 2023/5/29 20:51, Paul E. McKenney wrote:
+>> On Mon, May 29, 2023 at 10:39:21AM +0800, Qi Zheng wrote:
 > 
-> -- 
-> Péter
+> [...]
+> 
+>>>
+>>> Thanks for such a detailed explanation.
+>>>
+>>> Now I think we can continue to try to complete the idea[1] from
+>>> Kirill Tkhai. The patch moves heavy synchronize_srcu() to delayed
+>>> work, so it doesn't affect on user-visible unregistration speed.
+>>>
+>>> [1]. https://lore.kernel.org/lkml/153365636747.19074.12610817307548583381.stgit@localhost.localdomain/
+>>
+>> A blast from the past!Â  ;-)
+>>
+>> But yes, moving the long-latency synchronize_srcu() off the user-visible
+>> critical code path can be even better.
+> 
+> Yeah, I applied these patchesÂ  ([PATCH RFC 04/10]~[PATCH RFC 10/10],
+> with few conflicts), the ops/s does get back to the previous levels.
+> 
+> I'll continue updating this patchset after doing more testing.
+
+You may also fix the issue using the below generic solution.
+
+In addition to this we need patch, which calls unregister_shrinker_delayed_initiate()
+instead of unregister_shrinker() in deactivate_locked_super(), and calls
+unregister_shrinker_delayed_finalize() from destroy_super_work(). Compilation tested only.
+
+---
+ include/linux/shrinker.h |  2 ++
+ mm/vmscan.c              | 38 ++++++++++++++++++++++++++++++--------
+ 2 files changed, 32 insertions(+), 8 deletions(-)
+diff --git a/include/linux/shrinker.h b/include/linux/shrinker.h
+index 224293b2dd06..4ba2986716d3 100644
+--- a/include/linux/shrinker.h
++++ b/include/linux/shrinker.h
+@@ -4,6 +4,7 @@
+ 
+ #include <linux/atomic.h>
+ #include <linux/types.h>
++#include <linux/rwsem.h>
+ 
+ /*
+  * This struct is used to pass information from page reclaim to the shrinkers.
+@@ -83,6 +84,7 @@ struct shrinker {
+ #endif
+ 	/* objs pending delete, per node */
+ 	atomic_long_t *nr_deferred;
++	struct rw_semaphore rwsem;
+ };
+ #define DEFAULT_SEEKS 2 /* A good number if you don't know better. */
+ 
+diff --git a/mm/vmscan.c b/mm/vmscan.c
+index eeca83e28c9b..19fc129771ce 100644
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -706,6 +706,7 @@ static int __prealloc_shrinker(struct shrinker *shrinker)
+ 	if (!shrinker->nr_deferred)
+ 		return -ENOMEM;
+ 
++	init_rwsem(&shrinker->rwsem);
+ 	return 0;
+ }
+ 
+@@ -757,7 +758,9 @@ void register_shrinker_prepared(struct shrinker *shrinker)
+ {
+ 	mutex_lock(&shrinker_mutex);
+ 	list_add_tail_rcu(&shrinker->list, &shrinker_list);
++	down_write(&shrinker->rwsem);
+ 	shrinker->flags |= SHRINKER_REGISTERED;
++	up_write(&shrinker->rwsem);
+ 	shrinker_debugfs_add(shrinker);
+ 	mutex_unlock(&shrinker_mutex);
+ }
+@@ -802,7 +805,7 @@ EXPORT_SYMBOL(register_shrinker);
+ /*
+  * Remove one
+  */
+-void unregister_shrinker(struct shrinker *shrinker)
++void unregister_shrinker_delayed_initiate(struct shrinker *shrinker)
+ {
+ 	struct dentry *debugfs_entry;
+ 	int debugfs_id;
+@@ -812,20 +815,33 @@ void unregister_shrinker(struct shrinker *shrinker)
+ 
+ 	mutex_lock(&shrinker_mutex);
+ 	list_del_rcu(&shrinker->list);
++	down_write(&shrinker->rwsem);
+ 	shrinker->flags &= ~SHRINKER_REGISTERED;
++	up_write(&shrinker->rwsem);
+ 	if (shrinker->flags & SHRINKER_MEMCG_AWARE)
+ 		unregister_memcg_shrinker(shrinker);
+ 	debugfs_entry = shrinker_debugfs_detach(shrinker, &debugfs_id);
+ 	mutex_unlock(&shrinker_mutex);
+ 
++	shrinker_debugfs_remove(debugfs_entry, debugfs_id); // This is moved in your patch
++}
++EXPORT_SYMBOL(unregister_shrinker_delayed_initiate);
++
++void unregister_shrinker_delayed_finalize(struct shrinker *shrinker)
++{
+ 	atomic_inc(&shrinker_srcu_generation);
+ 	synchronize_srcu(&shrinker_srcu);
+ 
+-	shrinker_debugfs_remove(debugfs_entry, debugfs_id);
+-
+ 	kfree(shrinker->nr_deferred);
+ 	shrinker->nr_deferred = NULL;
+ }
++EXPORT_SYMBOL(unregister_shrinker_delayed_finalize);
++
++void unregister_shrinker(struct shrinker *shrinker)
++{
++	unregister_shrinker_delayed_initiate(shrinker);
++	unregister_shrinker_delayed_finalize(shrinker);
++}
+ EXPORT_SYMBOL(unregister_shrinker);
+ 
+ /**
+@@ -856,9 +872,14 @@ static unsigned long do_shrink_slab(struct shrink_control *shrinkctl,
+ 					  : SHRINK_BATCH;
+ 	long scanned = 0, next_deferred;
+ 
++	down_read(&shrinker->rwsem);
++	if (!(shrinker->flags & SHRINKER_REGISTERED))
++		goto unlock;
+ 	freeable = shrinker->count_objects(shrinker, shrinkctl);
+-	if (freeable == 0 || freeable == SHRINK_EMPTY)
+-		return freeable;
++	if (freeable == 0 || freeable == SHRINK_EMPTY) {
++		freed = freeable;
++		goto unlock;
++	}
+ 
+ 	/*
+ 	 * copy the current shrinker scan count into a local variable
+@@ -935,6 +956,8 @@ static unsigned long do_shrink_slab(struct shrink_control *shrinkctl,
+ 	 * manner that handles concurrent updates.
+ 	 */
+ 	new_nr = add_nr_deferred(next_deferred, shrinker, shrinkctl);
++unlock:
++	up_read(&shrinker->rwsem);
+ 
+ 	trace_mm_shrink_slab_end(shrinker, shrinkctl->nid, freed, nr, new_nr, total_scan);
+ 	return freed;
+@@ -968,9 +991,8 @@ static unsigned long shrink_slab_memcg(gfp_t gfp_mask, int nid,
+ 		struct shrinker *shrinker;
+ 
+ 		shrinker = idr_find(&shrinker_idr, i);
+-		if (unlikely(!shrinker || !(shrinker->flags & SHRINKER_REGISTERED))) {
+-			if (!shrinker)
+-				clear_bit(i, info->map);
++		if (unlikely(!shrinker)) {
++			clear_bit(i, info->map);
+ 			continue;
+ 		}
+ 
+
 
