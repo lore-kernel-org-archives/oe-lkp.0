@@ -1,55 +1,47 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D950A19915
-	for <oe-lkp@lists.linux.dev>; Tue,  6 Jun 2023 16:45:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03BC5C433EF;
-	Tue,  6 Jun 2023 16:45:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1686069952;
-	bh=XGYUzeuyBjUmFprIs2KsG27O/iLzkf4dq24dD5ocyrg=;
-	h=Date:Cc:Subject:From:To:References:In-Reply-To:From;
-	b=gwDbTRqQh3xBIoHS/yG5W5dWo7pswmrBr6u4IGWKYKz2tL7KRHuFoA7jSREWkJ3Qx
-	 iTBSiyqSIXMAFUKjR2ufkOD+RbBi81U80Mabw6mkVIgHNkkMfvesNRVqtV1jTENHwP
-	 noLon/bvCAqwTml3VVq0pR3YjezabuEExvUDtm540i3Yv8LuFztfAt7Cl6iA4Eotwg
-	 L8nSD1tCrqkZ3T6j4qf2/L301vsiSsUvpU216ebqMHgYwk4tu8M7l8djqETAE+SZDX
-	 ++gOS1W1PNA+XznzO/PN7LydchYLH9sWOSPjr40Bra9Dve8URf1LT4JM9DlBlvJiRY
-	 je9lM5ekaRN3g==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE6BC125CC
+	for <oe-lkp@lists.linux.dev>; Tue,  6 Jun 2023 18:47:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=CLlX0vggMROMtuqvN2c1dj9w/eUmy+R/m6XCbHJiuHU=; b=q19aI4oE+OYFJEiFSUfnZCHRem
+	Rg77BMJz0qwU8mdJdu5sE7SuM3oNKzVducd2u0+mrDXqcJyvZg4Km/bek/Tgdsw7nVet/kOaHjMcO
+	LkVKFZpGLNqmWcm4jMCOlYQcw+Z4dEdgMQXl1bf1J7vKQ3elP7q1VVxxsuZ2UNUU/Lf3H3VkcoglP
+	5g6eYrmxBScK5LD1z/9qfj+h8u+V+qbrc2qNul11Poy+qe3YkkHqPZiGOVnEyM0RzcyMZwfZXn1uL
+	h9bdySazRx6xvkGc9Mz0PE54OY0bFd8EfrDt09xbrWAaANd7JaWpgg6PdFqsOdObFjG/wp8g7CM8g
+	YCOTMQ8Q==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.96 #2 (Red Hat Linux))
+	id 1q6bil-002oDx-1W;
+	Tue, 06 Jun 2023 18:47:55 +0000
+Date: Tue, 6 Jun 2023 11:47:55 -0700
+From: Luis Chamberlain <mcgrof@kernel.org>
+To: Joel Granados <j.granados@samsung.com>
+Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, linux-kernel@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH 6/8] test_sysclt: Test for registering a mount point
+Message-ID: <ZH9/WxPIPj2y2PkO@bombadil.infradead.org>
+References: <CGME20230604144143eucas1p1ba7a3773905187be28571e973ef6e118@eucas1p1.samsung.com>
+ <202306042234.f2d7beff-oliver.sang@intel.com>
+ <20230606092717.uesyzrptbsbzefbq@localhost>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Tue, 06 Jun 2023 19:45:46 +0300
-Message-Id: <CT5PWWG5KAMV.2PYG7AVFP6A74@suppilovahvero>
-Cc: <jsnitsel@redhat.com>, <hdegoede@redhat.com>, <oe-lkp@lists.linux.dev>,
- <lkp@intel.com>, <peterz@infradead.org>, <linux@mniewoehner.de>,
- <linux-integrity@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
- <lukas@wunner.de>, <p.rosenberger@kunbus.com>
-Subject: Re: [PATCH 1/2] tpm, tpm_tis: Handle interrupt storm
-From: "Jarkko Sakkinen" <jarkko@kernel.org>
-To: =?utf-8?q?P=C3=A9ter_Ujfalusi?= <peter.ujfalusi@linux.intel.com>, "Lino
- Sanfilippo" <l.sanfilippo@kunbus.com>, "Lino Sanfilippo"
- <LinoSanfilippo@gmx.de>, <peterhuewe@gmx.de>, <jgg@ziepe.ca>
-X-Mailer: aerc 0.15.2-33-gedd4752268b2
-References: <20230522143105.8617-1-LinoSanfilippo@gmx.de>
- <CSTVVFNKUVJW.P69FKI6IF3ZN@suppilovahvero>
- <da435e0d-5f22-fac7-bc10-96a0fd4c6d54@kunbus.com>
- <a84c447f-cdfb-d33c-62cb-bb5d9aa8510b@linux.intel.com>
-In-Reply-To: <a84c447f-cdfb-d33c-62cb-bb5d9aa8510b@linux.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230606092717.uesyzrptbsbzefbq@localhost>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 
-On Mon May 29, 2023 at 9:46 AM EEST, P=C3=A9ter Ujfalusi wrote:
-> I'm surprised that there is a need for a storm detection in the first
-> place... Do we have something else on the same IRQ line on the affected
-> devices which might have a bug or no driver at all?
-> It is hard to believe that a TPM (Trusted Platform Module) is integrated
-> so poorly ;)
+On Tue, Jun 06, 2023 at 11:27:17AM +0200, Joel Granados wrote:
+> On Sun, Jun 04, 2023 at 10:41:05PM +0800, kernel test robot wrote:
+> @mcgrof: Can we just ignore this 0-day report as a false positive?
 
-I mentioned this some emails ago (do not care to look up when does not
-matter) and I guess the reason for this might be that a generic solution
-compassing all arch's etc. might be tricky to design...
+Yes, thanks for highlighting it.
 
-BR, Jarkko
+ Luis
