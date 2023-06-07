@@ -1,68 +1,117 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30BCF468E
-	for <oe-lkp@lists.linux.dev>; Wed,  7 Jun 2023 08:32:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1686126748;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=CML4ab6B58M9ev6BpdLEEY4A76luqMMPJKhl0+/qfpg=;
-	b=DDCZ3d8n3LOFaFDFOEZmwpaXX7NEhFu16PfA4cTzWW6jmnWIvwTG5SS387L+6UpwetD88D
-	wIgF/hKAg5tzhkB/8sDBcYHATDbai6uOY3ayfv1XFNKw7jRVQKjIXtpLcnVruPhb3YgDEb
-	5IQAp3rNSRYwP+zlmbHw5I9PTwTrbjE=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-104-NRO6IdReNw67FASQeh4QKQ-1; Wed, 07 Jun 2023 04:32:24 -0400
-X-MC-Unique: NRO6IdReNw67FASQeh4QKQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B50393802609;
-	Wed,  7 Jun 2023 08:32:23 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.42.28.182])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 4014C40D1B66;
-	Wed,  7 Jun 2023 08:32:20 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-	Kingdom.
-	Registered in England and Wales under Company Registration No. 3798903
-From: David Howells <dhowells@redhat.com>
-In-Reply-To: <ZIA2L76MUoBLyfQf@xsang-OptiPlex-9020>
-References: <ZIA2L76MUoBLyfQf@xsang-OptiPlex-9020> <202305260951.338c3bfe-oliver.sang@intel.com> <521116.1685091071@warthog.procyon.org.uk>
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: dhowells@redhat.com, oe-lkp@lists.linux.dev, lkp@intel.com,
-    Eric Dumazet <edumazet@google.com>,
-    "David S. Miller" <davem@davemloft.net>,
-    David Ahern <dsahern@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
-    Paolo Abeni <pabeni@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-    Matthew Wilcox <willy@infradead.org>, netdev@vger.kernel.org,
-    ying.huang@intel.com, feng.tang@intel.com, fengwei.yin@intel.com
-Subject: Re: [dhowells-fs:sendpage-1] [tcp] 77f5a42b2d: netperf.Throughput_Mbps -14.6% regression
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F93F34D94
+	for <oe-lkp@lists.linux.dev>; Wed,  7 Jun 2023 15:40:05 +0000 (UTC)
+Received: by mail-qv1-f45.google.com with SMTP id 6a1803df08f44-62613b2c8b7so76772886d6.1
+        for <oe-lkp@lists.linux.dev>; Wed, 07 Jun 2023 08:40:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1686152405; x=1688744405;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=zPv1Cbz/IvioYwuDZ0MkjzKXmpJR4p9JtcCddLmXG5Y=;
+        b=RUQQfJP01QbJ3iZeNdhs6bYZLS1UN6NQRIumF1If+O0sqqfu122f3Ral50ruK2LP44
+         cDljFnm7NYJuIsbKm1UwEOkPWQG6GqWJLUf6BueVEH4Cm4wTEROAHnnEkhKTblVhyUyZ
+         SUP7rdGeCVZCNWNBvnRnNGaCnS3ihnCmhu0jEajvPzJRUqRo2k6IfhSpGMzNTUZR507Q
+         lRjywAAsuOcONLmyIowOEYbsOlKVr+UrUMf+trpaBh2RHN20zGJiHTe8l0k8DzRdf1dC
+         5Ldf9fkfHmnwTMPExgHQpNOn4EAa7RArVzVqs7HkwJ7l1Y/F/5SDS9/2ECK4v4ks60E1
+         4Aqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686152405; x=1688744405;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=zPv1Cbz/IvioYwuDZ0MkjzKXmpJR4p9JtcCddLmXG5Y=;
+        b=SnnhoFemrmsGc2pOY3Z8nxG+vyALN7VV+2FFNthZUmbisKo/3sTXI1HHKGxySVf0TN
+         2Tx2q/6fFapxpaeFiOOPT5ch1dtECuOJ1lo/MA9N41kmnYAi36SxTvePSCvORjfWSZg0
+         cyJrOulOzlwJGsfo1lOtWv55ql2WWjm45c8RRCjqytTV+WomSRGG9qd/FP+jgwoozqW8
+         7eXKlCjMkbbuLRMd0EVlXzOM9g24AMJzcsDHUq/1dLVcZ31DRy4978o039wNU2RbPwEz
+         KKjNcPKxh2WBXIa52xzDADzId7rszTzSMBxQvM7UuhcYJhTA7PTesy72TryK5mw+f4hi
+         t04A==
+X-Gm-Message-State: AC+VfDwFk8afD+c9MCeTqbUTPlTDl1ADJI6a9krjEJ6MTcA7CXeaEqfq
+	uqt1i33zPtDJ1K308ZGfPVgJ1syHv4a1NvGpi/I=
+X-Google-Smtp-Source: ACHHUZ4VXos9iLY9AmYRUkSuhaBhqQ9cRtLQoPVi6gMvmn8xwmoMlmNVNaH7vlzsub9a/aeQAKg6i45NP9V36oJ50jw=
+X-Received: by 2002:a05:6214:ca7:b0:629:d3c3:f954 with SMTP id
+ s7-20020a0562140ca700b00629d3c3f954mr4086254qvs.16.1686152404770; Wed, 07 Jun
+ 2023 08:40:04 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <2003297.1686126739.1@warthog.procyon.org.uk>
-Date: Wed, 07 Jun 2023 09:32:19 +0100
-Message-ID: <2003298.1686126739@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.2
+References: <202212032038.a5aa4002-oliver.sang@intel.com> <CAOQ4uxj317GyWPbHQiw2-45+xjMvAjEHstEHcJmr_Fmv29xFUw@mail.gmail.com>
+ <Y5BKYEF4pB+gIU+l@xsang-OptiPlex-9020> <CAOQ4uxhbmWbKGMPxXA7cwGmt=93XJ9baCNtJM_JJJLsqgKjUVQ@mail.gmail.com>
+In-Reply-To: <CAOQ4uxhbmWbKGMPxXA7cwGmt=93XJ9baCNtJM_JJJLsqgKjUVQ@mail.gmail.com>
+From: Amir Goldstein <amir73il@gmail.com>
+Date: Wed, 7 Jun 2023 18:39:53 +0300
+Message-ID: <CAOQ4uxgFDFkKNMTnPwWzRoXKdpqxD3yOC2XPEbQgEHP+B4ZWRA@mail.gmail.com>
+Subject: Re: [amir73il:sb_write_barrier] [vfs] 95586ea7c5: unixbench.score
+ -4.9% regression
+To: Oliver Sang <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, kbuild test robot <lkp@intel.com>, Jan Kara <jack@suse.cz>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Oliver Sang <oliver.sang@intel.com> wrote:
+On Wed, Dec 7, 2022 at 11:05=E2=80=AFAM Amir Goldstein <amir73il@gmail.com>=
+ wrote:
+>
+> On Wed, Dec 7, 2022 at 10:10 AM Oliver Sang <oliver.sang@intel.com> wrote=
+:
+> >
+> > hi Amir,
+> >
+> > On Mon, Dec 05, 2022 at 06:30:12PM +0200, Amir Goldstein wrote:
+> > > On Sat, Dec 3, 2022, 3:06 PM kernel test robot <oliver.sang@intel.com=
+>
+> > > wrote:
+> > >
+> > > >
+> > > > Greeting,
+> > > >
+> > > > FYI, we noticed a -4.9% regression of unixbench.score due to commit=
+:
+> > > >
+> > > >
+> > > > commit: 95586ea7c597ef4e9712ceb101d03438c1ccde20 ("vfs: prepare for
+> > > > pre-modify permission events on write")
+> > > > https://github.com/amir73il/linux sb_write_barrier
+> > > >
+> > >
+> > > Hi Oliver,
+> > >
+> > > I pushed a fixed version for this branch
+> > > Can you please re-test?
+> >
+> > we tested on new branch, found the new commit
+> >   91d26357ebf0 ("vfs: prepare for pre-modify permission events on write=
+")
+> > doesn't cause regression any longer, comparing to its parent.
+>
+> Great! thanks for the re-test!
+>
 
-> > Could you try running this branch through your tests?
-> 
-> sorry for late.
-> 
-> we tested the tip of below branch, as you said, it has better performance
-> even comparing to the parent of 77f5a42b2d
+Hi Oliver,
 
-Many thanks!
+I have changed the implementation again (to a different optimization)
+Could you please re-test branch fan_pre_modify from
+https://github.com/amir73il/linux
 
-David
+HEAD commit is:
+* 0b234e57df14 - fanotify: introduce FAN_MARK_SYNC flag
 
+The suspect commit (from the original regression report) is now:
+* 032fc23e66f8 - vfs: prepare for pre-modify permission events on write
+
+Another commit that was reported as regressing in the past is now:
+* 9c5c99716f26 - fanotify: introduce FAN_PRE_MODIFY permission event
+
+There is one commit before it:
+* 0611d536174b - fsnotify: optimize the case of no permission marks of any =
+type
+
+Which can potentially improve performance compared to upstream master.
+
+Thanks,
+Amir.
