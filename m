@@ -1,31 +1,30 @@
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE9EC19511
-	for <oe-lkp@lists.linux.dev>; Mon, 12 Jun 2023 15:11:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9693B1F18A
+	for <oe-lkp@lists.linux.dev>; Mon, 12 Jun 2023 16:21:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1686582700;
+	s=mimecast20190719; t=1686586882;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=q+WKDAhC6W82GTn7vWAGAICM4aZ0z56aYWFThxC+Hlk=;
-	b=XDJS78Wh3kC77+J4vfkzHgtqzhkcxalrpT7IY9tq0zyt+B+4WLnIDFNOhvVwh5GvHg0WZ3
-	vJ+VrNb40nofsTJ/EYU4f1KCLWoc9eDESU64NiS8kF19vW/v9GFC7FIqTp3MSIa5Kcq8Lg
-	CNhLXdq/QZsV4ATKi6fhecG52MKtsRU=
+	bh=BIokZ+83bpQiYOFz/AxkVvDOS90+kiJUUNctri+wFZ8=;
+	b=XyzT41K5GxrRfrb+XWiufuOdsX3psNlzr5WzYGHDWNkShCtmEtMkWeJJwphhOvFZD5Hw8h
+	1CDWdfeIaWXICMa0CxyvVK9vPgCPwLSLUrw3GCkLOac+oqUkDFzOqRfTzjPsu8Dp8Rpcr/
+	2nmwdXYJTkov8SqMRm4z6brTxYXpetc=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-5-96geMoTrMj6Z8pvBqkMR_A-1; Mon, 12 Jun 2023 11:11:29 -0400
-X-MC-Unique: 96geMoTrMj6Z8pvBqkMR_A-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+ us-mta-339-HxveCVQAM0W6_Ytnfnkd3A-1; Mon, 12 Jun 2023 12:21:20 -0400
+X-MC-Unique: HxveCVQAM0W6_Ytnfnkd3A-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
 	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 43FB9805F7C;
-	Mon, 12 Jun 2023 15:11:23 +0000 (UTC)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C7480101A53B;
+	Mon, 12 Jun 2023 16:21:19 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.42.28.67])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id EC85B1C559;
-	Mon, 12 Jun 2023 15:11:14 +0000 (UTC)
+	by smtp.corp.redhat.com (Postfix) with ESMTP id EFEC240C98D6;
+	Mon, 12 Jun 2023 16:21:16 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
 	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
 	Kingdom.
@@ -55,19 +54,13 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <238651.1686582673.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 12 Jun 2023 16:11:13 +0100
-Message-ID: <238653.1686582673@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
+Content-ID: <387985.1686586876.1@warthog.procyon.org.uk>
+Date: Mon, 12 Jun 2023 17:21:16 +0100
+Message-ID: <387987.1686586876@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.2
 
-David Hildenbrand <david@redhat.com> wrote:
-
-> The first DIO messes up the refcount (double-unpin?) such that the secon=
-d one
-> detects the refcount underflow when trying to pin the page again?
-
-It seems to be something to do with the zero page:-/
+The problem is in dio_bio_alloc() where it sets BIO_PAGE_REFFED and not
+BIO_PAGE_PINNED.
 
 David
 
