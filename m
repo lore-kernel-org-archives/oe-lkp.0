@@ -1,123 +1,66 @@
-Received: from mail-pf1-f180.google.com (mail-pf1-f180.google.com [209.85.210.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31A37174FA
-	for <oe-lkp@lists.linux.dev>; Tue, 13 Jun 2023 20:58:43 +0000 (UTC)
-Received: by mail-pf1-f180.google.com with SMTP id d2e1a72fcca58-65292f79456so4579052b3a.2
-        for <oe-lkp@lists.linux.dev>; Tue, 13 Jun 2023 13:58:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1686689923; x=1689281923;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=kaJ1SlZ50WSiGQJPsQQTsMtPEKHuyraiHKR0QOdAX9I=;
-        b=H80e47crm4ESXow/QaIuxPk66TgxVa/iJGaHnH95xfD08xVJrKMNHs8ysh9jIGX/dr
-         NDw2UibOZWY96JQi/qehTglV6bBwPEKNS9cB24g/qjELKgnSsGugeXdqfhSWJE2tQTe6
-         QS/TOUG6kPDT9evqGfodFJrPyJwJtMP47mu9o=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1686689923; x=1689281923;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=kaJ1SlZ50WSiGQJPsQQTsMtPEKHuyraiHKR0QOdAX9I=;
-        b=Jc1gTtHoiTnD5CIik33JIxOUt4WRcBv6wBsjDXdTzICZPV92TAqDzcA+Hj/6g8wm0u
-         pN0+z2m0DGXLNIVKZQQ64LUJAJXxz9Mf3YNo0qXreMWjKmkakOKegXKmAMxrXfUGheCD
-         CkCGwTxx6wWAQEy37WD3gAzMRyleZ/FPrUucBHtyq23DGT0usb+Muy346OV5FBi2IfU6
-         3T6pWVg/qHH1y7EVXZ3yIz35MrYBMWzfkxsjKasItUQ1n4BiSyI6hWpl1q7ikSLdncbI
-         9kqm9ncxUHLopFVsWBVIacEek2TKpi9yz0RuvgUNatx90Gfjzd1ek8aYFErxjs4eixwa
-         RnEw==
-X-Gm-Message-State: AC+VfDz8FMApfzGZKprY14gPjwCPh0VRma2P2EnTtmpjCozSFte+JyUY
-	BsbO87sx87keYu2rHNZkdwA0Jw==
-X-Google-Smtp-Source: ACHHUZ7n7RXpBZeC4liksc7ps6dJc9YnbYCeZyY/kUOx53JAf3fL+kUrRrJ+Xsm2JqhZ7HUXteWTew==
-X-Received: by 2002:a05:6a00:13a6:b0:65a:cbf3:4687 with SMTP id t38-20020a056a0013a600b0065acbf34687mr54961pfg.0.1686689923521;
-        Tue, 13 Jun 2023 13:58:43 -0700 (PDT)
-Received: from www.outflux.net (198-0-35-241-static.hfc.comcastbusiness.net. [198.0.35.241])
-        by smtp.gmail.com with ESMTPSA id j1-20020aa78d01000000b0065418efa5ebsm9022926pfe.155.2023.06.13.13.58.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Jun 2023 13:58:43 -0700 (PDT)
-Date: Tue, 13 Jun 2023 13:58:42 -0700
-From: Kees Cook <keescook@chromium.org>
-To: "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
-	kernel test robot <oliver.sang@intel.com>,
-	Linux Memory Management List <linux-mm@kvack.org>,
-	Masahiro Yamada <masahiroy@kernel.org>,
-	Nathan Chancellor <nathan@kernel.org>,
-	Nick Desaulniers <ndesaulniers@google.com>,
-	Nicolas Schier <nicolas@fjasle.eu>, linux-kbuild@vger.kernel.org,
-	llvm@lists.linux.dev, linux-hardening@vger.kernel.org
-Subject: Re: [linux-next:master] [kbuild]  df8fc4e934:
- BUG:unable_to_handle_page_fault_for_address
-Message-ID: <202306131354.A499DE60@keescook>
-References: <202306102333.8f5a7443-oliver.sang@intel.com>
- <202306131342.51A51F651C@keescook>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D92073D3A7
+	for <oe-lkp@lists.linux.dev>; Tue, 13 Jun 2023 21:33:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1686692037;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=sq4Gobht14PLhIrlUF3qoMat2z47BnhfNavxp+vbMx8=;
+	b=K3FCIKNEW63PzhYuejzivwTMYKrhSiz/UafoJ7g4cGxw2F5fIw7B5d/zRoDqJkjayZXQv5
+	JBiAdu9FuNsUu+tJzEuXUxTKzryZEKuVc1pTskITVtK0980PT9TcVy0140WOnZMvdkEgcJ
+	70R2xbg19Urk2EeKauL8dRuT7E29ShM=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-26-n-lhBdEfO5-ebbjiGfLzWQ-1; Tue, 13 Jun 2023 17:33:52 -0400
+X-MC-Unique: n-lhBdEfO5-ebbjiGfLzWQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5184F1C0512F;
+	Tue, 13 Jun 2023 21:33:50 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.42.28.67])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id A7C0B140E951;
+	Tue, 13 Jun 2023 21:33:47 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+	Kingdom.
+	Registered in England and Wales under Company Registration No. 3798903
+From: David Howells <dhowells@redhat.com>
+In-Reply-To: <f50b438f-90bc-36b1-c943-18d7a4b3f441@redhat.com>
+References: <f50b438f-90bc-36b1-c943-18d7a4b3f441@redhat.com> <431929.1686588681@warthog.procyon.org.uk>
+To: David Hildenbrand <david@redhat.com>
+Cc: dhowells@redhat.com, Jens Axboe <axboe@kernel.dk>,
+    kernel test robot <oliver.sang@intel.com>,
+    Christoph Hellwig <hch@infradead.org>,
+    Andrew Morton <akpm@linux-foundation.org>,
+    Al Viro <viro@zeniv.linux.org.uk>,
+    Matthew Wilcox <willy@infradead.org>, Jan Kara <jack@suse.cz>,
+    Jeff Layton <jlayton@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>,
+    Logan Gunthorpe <logang@deltatee.com>,
+    Hillf Danton <hdanton@sina.com>,
+    Christian Brauner <brauner@kernel.org>,
+    Lorenzo Stoakes <lstoakes@gmail.com>, linux-fsdevel@vger.kernel.org,
+    linux-block@vger.kernel.org, linux-mm@kvack.org,
+    oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] block: Fix dio_bio_alloc() to set BIO_PAGE_PINNED
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202306131342.51A51F651C@keescook>
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1156282.1686692027.1@warthog.procyon.org.uk>
+Date: Tue, 13 Jun 2023 22:33:47 +0100
+Message-ID: <1156283.1686692027@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
 
-On Tue, Jun 13, 2023 at 01:46:54PM -0700, Kees Cook wrote:
-> On Sun, Jun 11, 2023 at 09:41:30PM +0800, kernel test robot wrote:
-> > the issue we found below is by clang-15, but we confirmed clang-15 we use is
-> > commit 8dfdcc7b7b in llvm-project. it supports the flag already.
-> 
-> Interesting! Thanks for the report.
-> 
-> > [  228.605608][    C1] BUG: unable to handle page fault for address: 04090300
-> > [...]
-> > [ 228.608262][ C1] EIP: string (lib/vsprintf.c:644 lib/vsprintf.c:726) 
-> > [...]
-> > [ 228.608262][ C1] Call Trace:
-> > [ 228.608262][ C1]  <SOFTIRQ>
-> > [ 228.608262][ C1] vsnprintf (lib/vsprintf.c:2817) 
-> > [ 228.608262][ C1] vprintk_store (kernel/printk/printk.c:2191) 
-> > [ 228.608262][ C1] vprintk_emit (kernel/printk/printk.c:2288) 
-> > [ 228.608262][ C1] vprintk_default (kernel/printk/printk.c:2318) 
-> > [ 228.608262][ C1] vprintk (kernel/printk/printk_safe.c:50) 
-> > [ 228.608262][ C1] _printk (kernel/printk/printk.c:2331) 
-> > [ 228.608262][ C1] __ubsan_handle_out_of_bounds (lib/ubsan.c:209 lib/ubsan.c:343) 
-> 
-> This is a crash within the UBSAN handler! That's very unexpected.
+Okay, it isn't this.  The problem appears to be that __blockdev_direct_IO()
+calls dio_cleanup() twice if do_direct_IO() fails.
 
-I still don't understand this. Is printk() not allowed in SOFTIRQ?
+David
 
-> > [ 228.608262][ C1] get_string (drivers/usb/gadget/composite.c:1314) 
-> > [ 228.608262][ C1] composite_setup (drivers/usb/gadget/composite.c:1871) 
-> > [ 228.608262][ C1] dummy_timer (drivers/usb/gadget/udc/dummy_hcd.c:?) 
-> 
-> And the out-of-bounds condition got triggered in dummy_hcd.
-
-I found this. I'm surprised we didn't trip over it earlier!
-
-/* USB_DT_STRING: String descriptor */
-struct usb_string_descriptor {
-        __u8  bLength;
-        __u8  bDescriptorType;
-
-        __le16 wData[1];                /* UTF-16LE encoded */
-} __attribute__ ((packed));
-
-$ git grep 'struct usb_string_descriptor'
-drivers/usb/early/xhci-dbc.c:   struct usb_string_descriptor *s_desc;
-drivers/usb/early/xhci-dbc.c:   s_desc                  = (struct usb_string_descriptor *)strings->serial;
-drivers/usb/early/xhci-dbc.c:   s_desc                  = (struct usb_string_descriptor *)strings->product;
-drivers/usb/early/xhci-dbc.c:   s_desc                  = (struct usb_string_descriptor *)strings->manufacturer;
-drivers/usb/gadget/composite.c:         struct usb_string_descriptor    *s = buf;
-drivers/usb/gadget/udc/aspeed-vhub/hub.c:       struct usb_string_descriptor *sdesc = buf;
-drivers/usb/host/xhci-dbgcap.c: struct usb_string_descriptor    *s_desc;
-drivers/usb/host/xhci-dbgcap.c: s_desc = (struct usb_string_descriptor *)strings->serial;
-drivers/usb/host/xhci-dbgcap.c: s_desc = (struct usb_string_descriptor *)strings->product;
-drivers/usb/host/xhci-dbgcap.c: s_desc = (struct usb_string_descriptor *)strings->manufacturer;
-include/uapi/linux/usb/ch9.h:struct usb_string_descriptor {
-
-Looking at each use, none are using sizeof() on the struct, so it should
-be a trivial replacement. I'll send a patch.
-
--Kees
-
--- 
-Kees Cook
