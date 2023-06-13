@@ -1,52 +1,97 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CB9C136A
-	for <oe-lkp@lists.linux.dev>; Tue, 13 Jun 2023 20:12:19 +0000 (UTC)
-From: Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1686686575;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=VU+jdwZmPTfrzjd0/enC6H7nGe+HOQcMgB70lKmwgx8=;
-	b=xXZ3mEPUjx0rIWDf1HLke99wDvwrPU/fzV1dV4B5kjMm3THv8UNCXcUsB1JviLZjpnPLt4
-	YmPyiiJrNPlwLJo0LGBNLoJmwzEQU+GwHSztWm7V63and3MhZmNLjxXIG+wOeWX1rWH8tL
-	XdFfB4O8tLN8c9z1orXgJVn8Oke/wVe8TPg1taBTmwz+creWCAQG5nVXvM2vGdVwZ8DirK
-	IxjUHg55kcIsgV1Lvq/R5V8jGk1qdHllZgzpHYAtixIkrDNujs75zdK/rN67f9KkDZsccB
-	KrVmjCem05zAFPTtDBJIkZeCltBKLzrv/48I8yHT6uC4X+ckwIhaEcqw3eNoOw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1686686575;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=VU+jdwZmPTfrzjd0/enC6H7nGe+HOQcMgB70lKmwgx8=;
-	b=KSHFsO3FSu9JU+HUS6u0Dd/DRLV+DN+4FhugBE07I9DENvDmJZBLW8i9e15oxPc0d/mWsG
-	tGkRo6F19HtPJ3Cw==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A164A174FA
+	for <oe-lkp@lists.linux.dev>; Tue, 13 Jun 2023 20:46:56 +0000 (UTC)
+Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-1b3b5a5134dso20932125ad.2
+        for <oe-lkp@lists.linux.dev>; Tue, 13 Jun 2023 13:46:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1686689216; x=1689281216;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=UU2W1Yd3b/N1bxttJwHZMPKGDdWn1+63RfP3dSCBBR4=;
+        b=bAZ8pdO/DxdY6zDe8daGd9jbKgSBR2wTKN+h+1X22YogYqUPNT4I78n15bPFBQ2Qie
+         d8nBcepCW8TdqSPQS6v8H+pYQYNqVZS0r2ubI4BOzwLN+126Je4Yi1tKtAWaAcy8vmrq
+         XmgdpIH/9XO5lgOlOBMZPJT8W/gNTxR1kXJYU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1686689216; x=1689281216;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=UU2W1Yd3b/N1bxttJwHZMPKGDdWn1+63RfP3dSCBBR4=;
+        b=cd4CtUDSnnCBqc7lnV3S7XTQmC7vhKaxrKUWnHAe/T5S+Wq0z9BV35va81+GQBleEU
+         j63coFxBRb0YZMmyu2I7pTSiO6iaWNToDgBTRn4CowXgpnRcaD7/2aqh25QqVDa5/WSF
+         q3kyg6zGoWG0UIY0ZlqWzIKTNrBAbzEcXsXm/xdiN6RYO1ExyZ3DprowUiUP+rXzLUOb
+         I/t5xRwhR3EL7IzElKT7kRR+Ur17znXL+Hv472f+5DbVW3RooLvJHFLjW6T/fgmdrFSA
+         kz9/1GuNWKyaNQTVErc0eFvbhQp1BXZGSsfsoThtNG/v+ElfLi/DcdKFwCU4c+4PMY+K
+         wZIA==
+X-Gm-Message-State: AC+VfDytjtAxBKn9shnLqHF7dkSGmwZwUJJjCJkefidjRht3HsA3ScP/
+	nF0YNDuUBiJvk8xTh/WrXknbYg==
+X-Google-Smtp-Source: ACHHUZ6fFOMFh+FwU12YfRQVUNKzL4Zw50Ovq3PP5212pZBhNw4LQmUj8O7Bv6Fc9zyeJpMSdFalcg==
+X-Received: by 2002:a17:903:11d2:b0:1ae:7631:7fa9 with SMTP id q18-20020a17090311d200b001ae76317fa9mr11703605plh.37.1686689215857;
+        Tue, 13 Jun 2023 13:46:55 -0700 (PDT)
+Received: from www.outflux.net (198-0-35-241-static.hfc.comcastbusiness.net. [198.0.35.241])
+        by smtp.gmail.com with ESMTPSA id j11-20020a170902690b00b001b03842ab78sm10672486plk.89.2023.06.13.13.46.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Jun 2023 13:46:55 -0700 (PDT)
+Date: Tue, 13 Jun 2023 13:46:54 -0700
+From: Kees Cook <keescook@chromium.org>
 To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, oliver.sang@intel.com, Anna-Maria
- Behnsen <anna-maria@linutronix.de>
-Subject: Re: [tglx-devel:timers/pushpull] [timer]  8812eeb818:
- kernel-selftests.net.pmtu.sh.ipv6_cleanup_of_cached_exceptions_-_nexthop_objects.fail
-In-Reply-To: <202306132111.c5d146bf-oliver.sang@intel.com>
-References: <202306132111.c5d146bf-oliver.sang@intel.com>
-Date: Tue, 13 Jun 2023 22:02:54 +0200
-Message-ID: <87fs6v5dw1.ffs@tglx>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
+	Linux Memory Management List <linux-mm@kvack.org>,
+	Masahiro Yamada <masahiroy@kernel.org>,
+	Nathan Chancellor <nathan@kernel.org>,
+	Nick Desaulniers <ndesaulniers@google.com>,
+	Nicolas Schier <nicolas@fjasle.eu>,
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>,
+	linux-kbuild@vger.kernel.org, llvm@lists.linux.dev,
+	linux-hardening@vger.kernel.org
+Subject: Re: [linux-next:master] [kbuild]  df8fc4e934:
+ BUG:unable_to_handle_page_fault_for_address
+Message-ID: <202306131342.51A51F651C@keescook>
+References: <202306102333.8f5a7443-oliver.sang@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202306102333.8f5a7443-oliver.sang@intel.com>
 
-On Tue, Jun 13 2023 at 22:23, kernel test robot wrote:
-> kind of hard for us to connect the code change with the test failure, so we
-> run it more times, the issue doesn't always happen on this commit, but with
-> a not small rate. at the same time, parent keeps clean.
+On Sun, Jun 11, 2023 at 09:41:30PM +0800, kernel test robot wrote:
+> the issue we found below is by clang-15, but we confirmed clang-15 we use is
+> commit 8dfdcc7b7b in llvm-project. it supports the flag already.
 
-Weird. We'll have look.
+Interesting! Thanks for the report.
 
-Thanks,
+> [  228.605608][    C1] BUG: unable to handle page fault for address: 04090300
+> [...]
+> [ 228.608262][ C1] EIP: string (lib/vsprintf.c:644 lib/vsprintf.c:726) 
+> [...]
+> [ 228.608262][ C1] Call Trace:
+> [ 228.608262][ C1]  <SOFTIRQ>
+> [ 228.608262][ C1] vsnprintf (lib/vsprintf.c:2817) 
+> [ 228.608262][ C1] vprintk_store (kernel/printk/printk.c:2191) 
+> [ 228.608262][ C1] vprintk_emit (kernel/printk/printk.c:2288) 
+> [ 228.608262][ C1] vprintk_default (kernel/printk/printk.c:2318) 
+> [ 228.608262][ C1] vprintk (kernel/printk/printk_safe.c:50) 
+> [ 228.608262][ C1] _printk (kernel/printk/printk.c:2331) 
+> [ 228.608262][ C1] __ubsan_handle_out_of_bounds (lib/ubsan.c:209 lib/ubsan.c:343) 
 
-        tglx
+This is a crash within the UBSAN handler! That's very unexpected.
+
+> [ 228.608262][ C1] get_string (drivers/usb/gadget/composite.c:1314) 
+> [ 228.608262][ C1] composite_setup (drivers/usb/gadget/composite.c:1871) 
+> [ 228.608262][ C1] dummy_timer (drivers/usb/gadget/udc/dummy_hcd.c:?) 
+
+And the out-of-bounds condition got triggered in dummy_hcd.
+
+I also see this is happening in SOFTIRQ context. I wonder if there is a
+problem with UBSAN vs SOFTIRQ. Again, I'd find that surprising...
+
+I'll see what I can find...
+
+-- 
+Kees Cook
