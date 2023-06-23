@@ -1,22 +1,13 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DACF34CE2
-	for <oe-lkp@lists.linux.dev>; Thu, 22 Jun 2023 08:30:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D458C433C8;
-	Thu, 22 Jun 2023 08:30:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1687422625;
-	bh=+3bhOWdKmIVFqafQUQ3k3iMy77jkrN8TVbh6Ta1cvm0=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=swD3m5EWDl4TeE08aha6k14r+CzeNS98ISMVIImQCiWY4fZgJpxcvSurpqSY1+LEl
-	 7NiAiwb3HBKpwcbVZuAeXJKPUJltsbAoPpXPvAkv6y4XjRtzTN7zpMviRmiOx1d5df
-	 IdL99l9mr3HxDjGmtm2djfXVrZponB9kvpV1MTrI8v76T+KaNCmQwuBVlRxk+IpP7L
-	 Ng1HmC73zbodBiEty7+7XIKOJGoi3deth90qcGji1dksXIatsU1ZmfsEGl7UygRLj1
-	 arFwRHNcNiAHjWPOESKLP0O9iKWQjdpiGkYliNdySaYuij6L4sJIzjIaTKRPHXJhnm
-	 p1uRx+8gnTKkg==
-Message-ID: <09815276-c515-7f3b-e81c-6c60e9ebfe4c@kernel.org>
-Date: Thu, 22 Jun 2023 17:30:22 +0900
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 059762106;
+	Fri, 23 Jun 2023 12:36:57 +0000 (UTC)
+Received: from [2a02:8108:8980:2478:8cde:aa2c:f324:937e]; authenticated
+	by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+	id 1qCg21-0006qx-5j; Fri, 23 Jun 2023 14:36:53 +0200
+Message-ID: <b55af831-7fcb-09c9-c9e7-74719bdd01d9@leemhuis.info>
+Date: Fri, 23 Jun 2023 14:36:52 +0200
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -25,85 +16,62 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.12.0
-Subject: Re: [LTP] [linux-next:master] [scsi] eca2040972:
- ltp.ioprio_set03.fail
-Content-Language: en-US
-To: Petr Vorel <pvorel@suse.cz>, Niklas Cassel <Niklas.Cassel@wdc.com>
-Cc: Cyril Hrubis <chrubis@suse.cz>, kernel test robot
- <oliver.sang@intel.com>, "lkp@intel.com" <lkp@intel.com>,
- "Martin K. Petersen" <martin.petersen@oracle.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
- Linux Memory Management List <linux-mm@kvack.org>,
- Hannes Reinecke <hare@suse.de>,
- "oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>,
- Christoph Hellwig <hch@lst.de>, "ltp@lists.linux.it" <ltp@lists.linux.it>
-References: <202306192248.1ece4c29-oliver.sang@intel.com>
- <61f22c1d-6b04-d193-57c9-8cad1c555e4b@kernel.org> <ZJLxbwCno-it2xBB@yuki>
- <ZJMYP/CCVviG6IMq@x1-carbon> <20230622073256.GA482307@pevik>
-From: Damien Le Moal <dlemoal@kernel.org>
-Organization: Western Digital Research
-In-Reply-To: <20230622073256.GA482307@pevik>
+Reply-To: Linux regressions mailing list <regressions@lists.linux.dev>
+Subject: Re: [linus:master] [page cache] 9425c591e0: vm-scalability.throughput
+ -20.0% regression
+Content-Language: en-US, de-DE
+To: kernel test robot <oliver.sang@intel.com>,
+ Mike Kravetz <mike.kravetz@oracle.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Ackerley Tng <ackerleytng@google.com>, Erdem Aktas <erdemaktas@google.com>,
+ Matthew Wilcox <willy@infradead.org>, Muchun Song
+ <songmuchun@bytedance.com>, Sidhartha Kumar <sidhartha.kumar@oracle.com>,
+ Vishal Annapurve <vannapurve@google.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ linux-fsdevel@vger.kernel.org, ying.huang@intel.com, feng.tang@intel.com,
+ fengwei.yin@intel.com,
+ Linux kernel regressions list <regressions@lists.linux.dev>
+References: <202306211346.1e9ff03e-oliver.sang@intel.com>
+From: "Linux regression tracking #adding (Thorsten Leemhuis)"
+ <regressions@leemhuis.info>
+In-Reply-To: <202306211346.1e9ff03e-oliver.sang@intel.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1687523818;09cc1c5e;
+X-HE-SMSGID: 1qCg21-0006qx-5j
 
-On 6/22/23 16:32, Petr Vorel wrote:
->> On Wed, Jun 21, 2023 at 02:47:43PM +0200, Cyril Hrubis wrote:
->>> Hi!
->>>>> kernel test robot noticed "ltp.ioprio_set03.fail" on:
-> 
->>>> LTP maintainers,
-> 
->>>> Patches have been submitted to fix this issue. Were these patches applied ?
-> 
->>> Looks like they are in, at least these two:
-> 
->>>     ioprio: use ioprio.h kernel header if it exists
->>>     ioprio: Use IOPRIO_PRIO_NUM to check prio range
-> 
->>> And there does not seem to be anything ioprio related haning in the LTP
->>> patchwork.
-> 
-> Hi Niklas,
-> 
->> Hello Cyril, Petr, Damien,
-> 
-> 
->> I just ran LTP master + linux-next and the test case passes for me.
-> 
-> 
->> Although, note that even if you are using LTP master,
->> the way that the LTP header:
->> testcases/kernel/syscalls/ioprio/ioprio.h
->> is written, you will need to run
-> 
->> make headers_install
->> with linux-next kernel source,
-> 
->> before running
->> make autotools && ./configure
->> in LTP.
-> 
->> Otherwise LTP will use the kernel uapi headers from your distro,
->> which does not perform the new checks for the IOPRIO_PRIO_VALUE()
->> macro. (It requires linux uapi headers from linux-next.)
-> 
-> Yes, it should do otherwise more tests would be often broken.
-> 
-> 
->> Does the linux kernel test robot not run
->> make headers_install
->> before running
->> make autotools && ./configure
->> in LTP?
-> 
-> I guess that's the question for Damien (I and Cyril have nothing to do with
-> kernel test robot). I wonder myself.
+[I know this is mostly been dealt with already, but due to the immanent
+release I'll add this to the tracking to make sure Linus becomes aware
+of this]
 
-Sorry, but I have nothing to do with the kernel robot either. I am only acting
-when I get notified of a problem due to one of my patches.
+[TLDR: I'm adding this report to the list of tracked Linux kernel
+regressions; the text you find below is based on a few templates
+paragraphs you might have encountered already in similar form.
+See link in footer if these mails annoy you.]
 
--- 
-Damien Le Moal
-Western Digital Research
+On 21.06.23 09:19, kernel test robot wrote:
 
+> 
+> kernel test robot noticed a -20.0% regression of vm-scalability.throughput on:
+> 
+> 
+> commit: 9425c591e06a9ab27a145ba655fb50532cf0bcc9 ("page cache: fix page_cache_next/prev_miss off by one")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> [...]
+
+Thanks for the report. To be sure the issue doesn't fall through the
+cracks unnoticed, I'm adding it to regzbot, the Linux kernel regression
+tracking bot:
+
+#regzbot ^introduced 9425c591e06a
+#regzbot title mm/page cache: performance regression (2 reverts pending)
+#regzbot monitor:
+https://lore.kernel.org/all/20230621212403.174710-1-mike.kravetz@oracle.com/
+#regzbot ignore-activity
+
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+--
+Everything you wanna know about Linux kernel regression tracking:
+https://linux-regtracking.leemhuis.info/about/#tldr
+That page also explains what to do if mails like this annoy you.
