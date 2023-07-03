@@ -1,2289 +1,263 @@
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ua1-f53.google.com (mail-ua1-f53.google.com [209.85.222.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AF15803
-	for <oe-lkp@lists.linux.dev>; Mon,  3 Jul 2023 07:17:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1688368640; x=1719904640;
-  h=date:from:to:cc:subject:message-id:references:
-   content-transfer-encoding:in-reply-to:mime-version;
-  bh=smn+faaDWxDALIWxsTl9jkmZsCIDe9UrrMC+5D24Kz4=;
-  b=LhHhsSBO4w82S3adpPHMO7LTJ6DwNCtazGMMjbsSO8kGOm/y5GfbIdNd
-   hS7vHbhsBocbrNBaAeV2JLHkwbreQRJSD0+FFtva4xMNi2VwI6SSaHz0I
-   YQ/yIJkqr22HIz9l1fAEN6DcexlnKE0p1yNwbAfjMM1QVCO9IW85usnD3
-   m7/mANVdAD81IJBCadENlFfJjAOrJh6Pe9C5tJ051JJg0eCUEn4nhlfF/
-   ojz6xKu9yZd9agcousefssSTITQUeLH237DqQ3uciWOSjO3Fy0F3KfCrM
-   bFcz9AVr2sz/OkMfHh0FgLjd7g+Wm0fzsbH1Lff3wpLyvlLfCqmnSxYNM
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10759"; a="347596332"
-X-IronPort-AV: E=Sophos;i="6.01,177,1684825200"; 
-   d="scan'208,209";a="347596332"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jul 2023 00:17:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10759"; a="695716066"
-X-IronPort-AV: E=Sophos;i="6.01,177,1684825200"; 
-   d="scan'208,209";a="695716066"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by orsmga006.jf.intel.com with ESMTP; 03 Jul 2023 00:17:18 -0700
-Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Mon, 3 Jul 2023 00:17:17 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27 via Frontend Transport; Mon, 3 Jul 2023 00:17:17 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.105)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.27; Mon, 3 Jul 2023 00:17:16 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=T0ewdavG5EQ/z+DdEuEd2ufSCftKK5GT/+gTeTPITWcSiZD2OERBLIva08UcI0AjALTLT7dc+imkE3fdp1yNsOMpZom7iwKOmyO+V92BWHiu0CQjeSVape81Kq7kYZo96M77eIZADswnepGYm9pX/ftO226vycKYj+wqZ36i4hP0eMjnSPVzgLvMYcocUPFBGdKbWTmy0obwsQkCjmFtcUIpwGJ6ZC/ycQf0E9Oa2Q8hCkknIkn+fFOQhEtTJLCiHux5On/RGn5jPXdiYRbh2dGvzAKa9g9bkupHarJ287fHW2AR/5oCDr2+5/tY3JDe76VZiQJ4rwyLLLOdnle6SA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1ibWDGkHGRBrcC6qGHv5Tk415ti3e1nVRcG+ojmKvic=;
- b=ZJDeisynoIEOlL57mWOVm9SRE1KP/z3o6W+BRBjP4vb3aZDxYbC3Lu0UkB1shDR4EVPAA1zIYYs1CtAqojJyabtGvYquyRkq2Th64/kXOKDKrpJgjdCRhPNr2g3SaxSPjAWC3jXnz4DFeLS4fhaniG8P9zVQzLlocoupTKyL7AGiAyn5XCaNXzK3dg9PPj3VfvWM5Uw8vcc0lo4gGSivzQwxw9hlf0qClVdh+SsHNfFBJct9B5oqtIizi2mdgU400UvFcWIpxHUu7lhZcrtK0+W8/ZliJn+vTU1hF7dCZjdBxjWVoBIm0dYKLyZinfXfmyUr0xc2F2ccSCWfs3FB3w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from SJ0PR11MB6792.namprd11.prod.outlook.com (2603:10b6:a03:485::22)
- by BN9PR11MB5306.namprd11.prod.outlook.com (2603:10b6:408:137::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6544.24; Mon, 3 Jul
- 2023 07:17:11 +0000
-Received: from SJ0PR11MB6792.namprd11.prod.outlook.com
- ([fe80::b6b6:4109:345a:2aab]) by SJ0PR11MB6792.namprd11.prod.outlook.com
- ([fe80::b6b6:4109:345a:2aab%4]) with mapi id 15.20.6544.024; Mon, 3 Jul 2023
- 07:17:10 +0000
-Date: Mon, 3 Jul 2023 15:17:01 +0800
-From: Oliver Sang <oliver.sang@intel.com>
-To: Amir Goldstein <amir73il@gmail.com>
-CC: Jan Kara <jack@suse.cz>, <oe-lkp@lists.linux.dev>, <lkp@intel.com>,
-	<fengwei.yin@intel.com>, <oliver.sang@intel.com>
-Subject: Re: [amir73il:sb_write_barrier] [vfs] e796a59711:
- stress-ng.ramfs.ops_per_sec -13.0% regression
-Message-ID: <ZKJ17aRBNGryOvQD@xsang-OptiPlex-9020>
-References: <202306192245.d77d7216-oliver.sang@intel.com>
- <CAOQ4uxj_md8KqiQ=TTMC7Kv5VFtREfB8T3agB+pVH8STye_5Vw@mail.gmail.com>
- <ZJWwrHozI2GkRnJ6@xsang-OptiPlex-9020>
- <CAOQ4uxg8rr-uHUo62nrZzfp14UpNAz1K9YxyaAq7D2ggAFLHMg@mail.gmail.com>
- <20230626133142.xdcwu7akidnftrla@quack3>
- <CAOQ4uxhf2UkZUtrB42d=5Nti1eS3Fn_Jg7gsqNRkQVS=GWmPTQ@mail.gmail.com>
- <20230627075457.fymnpqn3vrjxjs2u@quack3>
- <CAOQ4uxi4KmMD0xh6Mfk-Rqb_Rwyfb0WL_yiWmonb6qQswNNG=g@mail.gmail.com>
- <ZJ5BT57HFAa52hB8@xsang-OptiPlex-9020>
- <CAOQ4uxgjc4eLvMtKd0yLktinZWfC_Zt9h9YjaOH5+2C9e-GLKw@mail.gmail.com>
-Content-Type: multipart/mixed; boundary="hc9Gr0BXbCeboWjR"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAOQ4uxgjc4eLvMtKd0yLktinZWfC_Zt9h9YjaOH5+2C9e-GLKw@mail.gmail.com>
-X-ClientProxiedBy: SG2PR06CA0205.apcprd06.prod.outlook.com
- (2603:1096:4:68::13) To SJ0PR11MB6792.namprd11.prod.outlook.com
- (2603:10b6:a03:485::22)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20449F9CB
+	for <oe-lkp@lists.linux.dev>; Mon,  3 Jul 2023 15:09:55 +0000 (UTC)
+Received: by mail-ua1-f53.google.com with SMTP id a1e0cc1a2514c-7919342c456so1047909241.2
+        for <oe-lkp@lists.linux.dev>; Mon, 03 Jul 2023 08:09:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1688396995; x=1690988995;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=mUYzduO2fW7e2LuHNG1YO4DIQWHk8LBgb8gpQrJW6RE=;
+        b=YuSBnN4WMSPFMJrnLQ900sacU7Dgzp4X0dD50DDnR4V2YUEYTeMHTt1GJJCZ8EPWal
+         DZt7ATv4TojeZDAUcl8ZMIiK9OZMtywRxE8RUlgYvNhlzxqMO5bA7bvKDc9z7A2YMKqp
+         nhqWbYneYeuRWJSUxwBNqRYRVzFKE20CklNlXSx/gJmvo02zqWJFINyhJpi++x37u7uW
+         XJQ1WmWZPF29tFhbJqUUiVlnHumIWTM7hbUNPgsIlThQUUSWVpX3NFSEby3EPYVOYmfP
+         9eEQHaEUXxWcoW988gFKaVWjsrbG1CDDGKwo2xIBL4JObDwjdrgr939kKvMQLpFbehGe
+         zzuA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1688396995; x=1690988995;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=mUYzduO2fW7e2LuHNG1YO4DIQWHk8LBgb8gpQrJW6RE=;
+        b=KjJyil82hvjQtIsqNyNc3wmE7RqrjgIDKMRf6duYBjiXTQb2dt2DZS69rjqfFQZJTP
+         XB1pk0auxwI386ICo1CGvudjCq9gE3XAa35OLuY0DuGOn3HfcTNyyekQnPvgn/9QDInJ
+         D4DYid0PJDSIluG9NIO8B6YosQX0AMrT/8UHv+5cLBkRzsvvpUaBLq4qxytmcJqJyeXE
+         X1a4XyQFCmSgYWZ+X/6+leuiYldlWdf/D9J8f58N+GDchUH0S+61OuUFfslMNB286iQ7
+         WZTEpXFdQx6luG1GBFwb4OVgrsKEyNx/EgSBMI/lpbhLt936nO2qlTHdR6X/YRrFbDPh
+         nkqw==
+X-Gm-Message-State: ABy/qLbFzxgDlTP0GH1prBn/RH3IJqr0E9Y0Zd3KPQpBSXaOMJNKOmj3
+	+IoXhoxXrLJXOskUBQ4tvcz5+NbIS0LddLGkeD0=
+X-Google-Smtp-Source: APBJJlHAw5mI3obb/QQluexoTfyi5FfaYhB7MAPjXT5GrgVYaoTYkNSTxSbeaTrhZBQE/7WRTapovJdPCTNEkHR6HaM=
+X-Received: by 2002:a67:e88a:0:b0:443:78dd:447 with SMTP id
+ x10-20020a67e88a000000b0044378dd0447mr3058753vsn.3.1688396994682; Mon, 03 Jul
+ 2023 08:09:54 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ0PR11MB6792:EE_|BN9PR11MB5306:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7ef62350-f59a-426f-f528-08db7b9583d3
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: D8kMFom1/TyYP7bNi4uom2lkdYnq/dYhNL3EXAQ37yG6qy+2PI6TBe2rQBoLVqLrme7Z1jBBGzyMT6ZV4r6UPwQbEvAlxL1VpRqFFWAS9nyZ5bNzZ2u3AHtdzyHrLOa2XZEFlKBv72wAj+Gc0hhDA6aH6TwZqhNh/U7oJeIpflnpTyUgx+A1ewWcJnmzkOlxRp38I7/aLPfXOhyZEuAm8HDZpTbSouERW3HP3/5rlYG+XRQX840so9Sf7UcJf2siwU7ZKURzBoWY8y01M1ekX2OCt5qjI8baGHPg2sjQQXpbGh91ilxL83OYKm/yIn7aa7pIahtid4mIVLl91fcWh1x/QamVEStJu5Fk+AfkhSKc4mouFYKBSrBBKuSgt7zoIkKUCvE8oYw0kod9+hxylaRVzgBpS0ypDb3rHd++eJUoE/KXC1Kw8qOQ5VwQ7dEO0ubRgVhuClqQ8rHQI0i8MVf09eLiwUs1i6XXonKTHRYbr/Yx9rYjNGAS5YOx8MDSBTPI+aYULFHwfpAe5HH6BQTI1uIi+saY+ccB76gvzxblO24PZi7fDAbEO7uXqgcvIiROBZdUt8krQ2DJ/7raAgTlcHH6kEyrGei4flFHE+/tWmswnHKhmDZ19msf0YDJ
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR11MB6792.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(376002)(39860400002)(396003)(366004)(346002)(136003)(451199021)(6666004)(33716001)(38100700002)(44144004)(2906002)(33964004)(6486002)(8936002)(8676002)(41300700001)(235185007)(44832011)(5660300002)(478600001)(6916009)(66946007)(66556008)(186003)(66476007)(9686003)(53546011)(107886003)(6506007)(6512007)(26005)(86362001)(4326008)(316002)(83380400001)(82960400001)(2700100001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dGNYRjMyK0pTOTMzMDBoN2kxN3FqWjNMM05ENFlhT29tdHpYdEhXNkk3Wk0r?=
- =?utf-8?B?bzNZODRIUEMxQmorblljWEdLUHI5YnhpbmZFT1JzcDY1VTllbEUyNVNXMWJk?=
- =?utf-8?B?cEtYa0JQWXM5ckN5MnZUZUV2cmFKeTFZVll0MkFLWlE2VDNWUTlCZnA5akNH?=
- =?utf-8?B?WW00WHRzT0UxaU1STDFTc1M1ci9QSlE1alVVeklwdTFPQU1zYUNqaWY3QVdI?=
- =?utf-8?B?cmZtSzV5MUR1aDR0cENwSEhIMUVidFZreTExYXBqbHlVRDhYV004SWZ1TmZX?=
- =?utf-8?B?dExuK0ZTVXFTVnBmbGI0SUJCSkZuQTdyaklRYnRuM25sb1ZtS1ZHWm5lbWZp?=
- =?utf-8?B?cTE3eTZrYTl0aEFjNkZpRk9QUkdKS3I4R1F6SkNnRDhMVEFjakhNLzNaWXI1?=
- =?utf-8?B?K2JkeHhaUEFRUFN2R2hiUjBwTEtHNEVSSXpRenNsT3dzam4veDFWVFNXb1Bx?=
- =?utf-8?B?d2F6TFZTS2NOSkd2Qk5sQ0pFaUh5S28zUlJkaDBJRVR1U0M2dXdLTVJZNklX?=
- =?utf-8?B?NG9JeHBxTHZOOWxZR0ZwYmdvSW91d0psOGRmcTJJeUd6ZDJqKzZ0emRCeUxF?=
- =?utf-8?B?NnVFZ1VQU0VxSlQ1QWtvdW16SEhhbHRMWUxKOXBNQVJZMEp5dzZSMTBqMTB3?=
- =?utf-8?B?NGJ5R0VmQ1NSSWJ4dVc5dzRwOWpyRFRsUlJtSm1ZNFZKUmVhODZaSWxyQWlH?=
- =?utf-8?B?aVhyUWFpb3d6Z0EzNHZHSWFselhiN2FFSUlOSkI5Z0xvU25abm41aFNEQjI4?=
- =?utf-8?B?WnNnamh1bER3TzZuRjdlSXJBUjROeGVlWW4rSU5aQlNJNVYyT3ZUcGJTRlA1?=
- =?utf-8?B?amsxdFF4R3lwYnFpQWhVM1FWZWZOeUNVbEsyMFJpeW5ZVUJTb2FuVGw4aGRQ?=
- =?utf-8?B?aFFxanJHMjd1RDJXV3VFMnJ1ay9ONDlONEhTYkRLY3ZwNTh3TUltRzhOeFJJ?=
- =?utf-8?B?Vm5INVBpYXc4NTMzRlg1cWJQZnBhSC96S3ZqTUxNcEJKeCtqVDBodVdJSDBR?=
- =?utf-8?B?NXlnT0UwMzJJSjRDQkR4ZVVoMUFvdkFPMEtHNnFRbjNDQ0M3SmIxWmhKdUkx?=
- =?utf-8?B?ZlZ4dTFPMHg5OTdhTnhxdWZEUG0zQ2daRkRVWmZ3bkVsK0xqMWpTeEdHRk1s?=
- =?utf-8?B?ZUFnS0ZrcmhuZnNrTTcwVDF3R2IwTVFHV1pNR01pMmFnUWlmZ054UW5zNlZ2?=
- =?utf-8?B?RnpZNnlJbUNWOVFHaVhFU0tnRVRLRzNqK1BoWkV5Mk5lNnJ1SzA5RFhyTDNl?=
- =?utf-8?B?SzNIdW9sZlBoMWx0dk11SGt3V0RGTmNycGtVSEpvZkVXNUJjNkI2MnJENk9T?=
- =?utf-8?B?NTlMK0hDdHJSWCtmY0hRZkFpc2FzYjZ4TFhmSXlMWUdYMnhCTlhZNng2aUR6?=
- =?utf-8?B?T2ZzTGgrUkNKeVIzRXV6ZmpSUGYvSzRtakZ5UWo5Tkp2UEVaODVpdGJTcVZk?=
- =?utf-8?B?MmEwWWhDSk1KTlhEVUZ1WXhlU0llelBFQkFmZXJJOTUzc3pibGtmeUQyK1p1?=
- =?utf-8?B?NFQ0elZIaWhSUHJCMXVVNGZielFCdXhFcUhRdlpIZEFpUjF5Z2JNRkh6RkZ3?=
- =?utf-8?B?MUhpTUJLZTVhQU1WeXVFVWQ5MW81S1dXTjBjQTRiNkJFNGdtSmVyK3QvR3Rh?=
- =?utf-8?B?MDRnYlNqWnBDQk5CUWdlNmdWUXN0M3NleFJaNGdNaS9PK3N2bndzSVNnWmg3?=
- =?utf-8?B?S1FTUUc0MlJWbWp2dzl4bld2K0Z1aGV3OGhvWXBxMGpzSXBVLzNPaU5OWjFh?=
- =?utf-8?B?NzdOeGRuYjAvTnNncFhoWHhKWVkzdWJCTHJPMDQwOUU1eVRnSmlTWXFoNW9B?=
- =?utf-8?B?emFQK2RlYjJzTzlRRXgycnNyZyt4ZGMvSTZoc3dndkpkWno0Wkd1ZnNJbTZz?=
- =?utf-8?B?NXd6MnVEN3E3bHd2a1JPbW9rVW0xR1FURGNrZ2NPMUZleXFnUFZDV21Ca1ZQ?=
- =?utf-8?B?NG9ITVdVODRxT3JQUE1Bek9JWUprY2hGRVMyQ0JiZmlKNjVPbVo3U3hEVEJz?=
- =?utf-8?B?cGdoVHZ6Tkw4ZVNEWWdRNGlUZ3M5NUJsVTJnWTBOakxVLzNtOW5EZXptK0Fk?=
- =?utf-8?B?S1J5NFlTV3l6TlV3SlQ0a2FPdFBUQVBtWTZkRVgybE41UkUwQytpTGQrN3ds?=
- =?utf-8?B?VWhZU00wMm5kQjdRbUpqUmhOMldEdlBXemhhL1d3cFZXandkT1czUnVQUjBL?=
- =?utf-8?B?cXc9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7ef62350-f59a-426f-f528-08db7b9583d3
-X-MS-Exchange-CrossTenant-AuthSource: SJ0PR11MB6792.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jul 2023 07:17:10.3892
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: kbsMbPfRthhYHBejsiZE2C+yNa+YXxgtbLebhBfeg3F7P0L+MXLKrSeqlyctQMU6K+cxVjCBe/K+FvMtQmVqJw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR11MB5306
-X-OriginatorOrg: intel.com
+References: <202306192245.d77d7216-oliver.sang@intel.com> <CAOQ4uxj_md8KqiQ=TTMC7Kv5VFtREfB8T3agB+pVH8STye_5Vw@mail.gmail.com>
+ <ZJWwrHozI2GkRnJ6@xsang-OptiPlex-9020> <CAOQ4uxg8rr-uHUo62nrZzfp14UpNAz1K9YxyaAq7D2ggAFLHMg@mail.gmail.com>
+ <20230626133142.xdcwu7akidnftrla@quack3> <CAOQ4uxhf2UkZUtrB42d=5Nti1eS3Fn_Jg7gsqNRkQVS=GWmPTQ@mail.gmail.com>
+ <20230627075457.fymnpqn3vrjxjs2u@quack3> <CAOQ4uxi4KmMD0xh6Mfk-Rqb_Rwyfb0WL_yiWmonb6qQswNNG=g@mail.gmail.com>
+ <ZJ5BT57HFAa52hB8@xsang-OptiPlex-9020> <CAOQ4uxgjc4eLvMtKd0yLktinZWfC_Zt9h9YjaOH5+2C9e-GLKw@mail.gmail.com>
+ <ZKJ17aRBNGryOvQD@xsang-OptiPlex-9020>
+In-Reply-To: <ZKJ17aRBNGryOvQD@xsang-OptiPlex-9020>
+From: Amir Goldstein <amir73il@gmail.com>
+Date: Mon, 3 Jul 2023 18:09:43 +0300
+Message-ID: <CAOQ4uxh_xHTtT77+_+P3hmvFs72C=FccJVU8eWi=uK+RHtuL+g@mail.gmail.com>
+Subject: Re: [amir73il:sb_write_barrier] [vfs] e796a59711: stress-ng.ramfs.ops_per_sec
+ -13.0% regression
+To: Oliver Sang <oliver.sang@intel.com>
+Cc: Jan Kara <jack@suse.cz>, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	fengwei.yin@intel.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
---hc9Gr0BXbCeboWjR
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-
-hi Amir,
-
-On Fri, Jun 30, 2023 at 03:59:43PM +0300, Amir Goldstein wrote:
-> On Fri, Jun 30, 2023 at 5:43â€¯AM Oliver Sang <oliver.sang@intel.com> wrote:
-> >
-
-...
-
-> > > You are right.
-> > > Let's try that.
+On Mon, Jul 3, 2023 at 10:17=E2=80=AFAM Oliver Sang <oliver.sang@intel.com>=
+ wrote:
+>
+> hi Amir,
+>
+> On Fri, Jun 30, 2023 at 03:59:43PM +0300, Amir Goldstein wrote:
+> > On Fri, Jun 30, 2023 at 5:43=E2=80=AFAM Oliver Sang <oliver.sang@intel.=
+com> wrote:
 > > >
-> > > Oliver can you please re-test:
+>
+> ...
+>
+> > > > You are right.
+> > > > Let's try that.
+> > > >
+> > > > Oliver can you please re-test:
+> > > >
+> > > > * aeeb99484d27 - (sb_write_barrier) fsnotify: activate sb write
+> > > > barriers for permission event watchers
+> > > > * be794cb66c8f - vfs: prepare for pre-modify permission events on a=
+io write
+> > > > * 010093856383 - vfs: prepare for pre-modify permission events on w=
+rite
+> > > > * b31ab27476aa - vfs: implement 'vfs write barriers'
 > > >
-> > > * aeeb99484d27 - (sb_write_barrier) fsnotify: activate sb write
-> > > barriers for permission event watchers
-> > > * be794cb66c8f - vfs: prepare for pre-modify permission events on aio write
-> > > * 010093856383 - vfs: prepare for pre-modify permission events on write
-> > > * b31ab27476aa - vfs: implement 'vfs write barriers'
-> >
-> > we observed the regression still exists
-> >
-> > c739513bb7c55afd b31ab27476aad4585990f14fff9 01009385638362b28c86922863b aeeb99484d2743fe77b4fa7efae
-> > ---------------- --------------------------- --------------------------- ---------------------------
-> >          %stddev     %change         %stddev     %change         %stddev     %change         %stddev
-> >              \          |                \          |                \          |                \
-> >    1494636           -14.6%    1276216 Â±  2%     -15.4%    1264758           -15.4%    1264992 Â±  2%  stress-ng.ramfs.ops
-> >      24910           -14.6%      21270 Â±  2%     -15.4%      21079           -15.4%      21083 Â±  2%  stress-ng.ramfs.ops_per_sec
-> >
-> > detail data are as below [1] (in order to avoid that table looks messy, I
-> > ignored the data for be794cb66c8f since it's similar to 010093856383,
-> > if you still need it, please let me know)
-> >
-> >
+> > > we observed the regression still exists
 > > >
-> > > BTW, Oliver, from your experience, are the following reports of memory
-> > > usage increase reliable:
+> > > c739513bb7c55afd b31ab27476aad4585990f14fff9 01009385638362b28c869228=
+63b aeeb99484d2743fe77b4fa7efae
+> > > ---------------- --------------------------- ------------------------=
+--- ---------------------------
+> > >          %stddev     %change         %stddev     %change         %std=
+dev     %change         %stddev
+> > >              \          |                \          |                =
+\          |                \
+> > >    1494636           -14.6%    1276216 =C2=B1  2%     -15.4%    12647=
+58           -15.4%    1264992 =C2=B1  2%  stress-ng.ramfs.ops
+> > >      24910           -14.6%      21270 =C2=B1  2%     -15.4%      210=
+79           -15.4%      21083 =C2=B1  2%  stress-ng.ramfs.ops_per_sec
 > > >
-> > > >      17796        +48024.2%    8564575        +47827.4%    8529539        +48034.7%    8566438        meminfo.Percpu
-> > > >      91742          +311.6%     377568          +310.0%     376107          +311.2%     377278        meminfo.SUnreclaim
-> > > >     187447          +152.3%     472983          +151.6%     471592          +152.1%     472612        meminfo.Slab
-> > > >      20441         +2173.2%     464664         +2164.2%     462832         +2173.5%     464731        meminfo.VmallocUsed
+> > > detail data are as below [1] (in order to avoid that table looks mess=
+y, I
+> > > ignored the data for be794cb66c8f since it's similar to 010093856383,
+> > > if you still need it, please let me know)
+> > >
+> > >
+> > > >
+> > > > BTW, Oliver, from your experience, are the following reports of mem=
+ory
+> > > > usage increase reliable:
+> > > >
+> > > > >      17796        +48024.2%    8564575        +47827.4%    852953=
+9        +48034.7%    8566438        meminfo.Percpu
+> > > > >      91742          +311.6%     377568          +310.0%     37610=
+7          +311.2%     377278        meminfo.SUnreclaim
+> > > > >     187447          +152.3%     472983          +151.6%     47159=
+2          +152.1%     472612        meminfo.Slab
+> > > > >      20441         +2173.2%     464664         +2164.2%     46283=
+2         +2173.5%     464731        meminfo.VmallocUsed
+> > >
+> > > let me highlight what we got this time:
+> > >
+> > >      17916        +52463.1%    9417643        +52127.1%    9357436   =
+     +51529.3%    9250341        meminfo.Percpu
+> > >      91506          +343.7%     405984          +341.4%     403941   =
+       +337.6%     400384        meminfo.SUnreclaim
+> > >     187356          +167.7%     501479          +166.5%     499365   =
+       +164.7%     495855        meminfo.Slab
+> > >      20457         +2388.0%     508989         +2372.4%     505807   =
+      +2345.3%     500259        meminfo.VmallocUsed
+> > >
 > >
-> > let me highlight what we got this time:
+> > Well that can't be good..
+> > Found one problem with the patch - is that it is missing:
 > >
-> >      17916        +52463.1%    9417643        +52127.1%    9357436        +51529.3%    9250341        meminfo.Percpu
-> >      91506          +343.7%     405984          +341.4%     403941          +337.6%     400384        meminfo.SUnreclaim
-> >     187356          +167.7%     501479          +166.5%     499365          +164.7%     495855        meminfo.Slab
-> >      20457         +2388.0%     508989         +2372.4%     505807         +2345.3%     500259        meminfo.VmallocUsed
+> > /*
+> >  * cleanup_srcu_struct - deconstruct a sleep-RCU structure
+> >  * @ssp: structure to clean up.
+> >  *
+> >  * Must invoke this after you are finished using a given srcu_struct th=
+at
+> >  * was initialized via init_srcu_struct(), else you leak memory.
+> >  */
+> > void cleanup_srcu_struct(struct srcu_struct *ssp)
 > >
-> 
-> Well that can't be good..
-> Found one problem with the patch - is that it is missing:
-> 
-> /*
->  * cleanup_srcu_struct - deconstruct a sleep-RCU structure
->  * @ssp: structure to clean up.
->  *
->  * Must invoke this after you are finished using a given srcu_struct that
->  * was initialized via init_srcu_struct(), else you leak memory.
->  */
-> void cleanup_srcu_struct(struct srcu_struct *ssp)
-> 
-> That could explain the increase in memory usage and maybe
-> the performance regression as a result of that.
-> 
-> However, I do not see that cleanup_srcu_struct() has any
-> effect if srcu was never used and when
-> CONFIG_DEBUG_OBJECTS is not defined and according
-> to the config file attached to the report it wasn't defined.
-> 
-> However, maybe I am missing something, so is here a branch
-> with the missing cleanup_srcu_struct().
-> 
-> I've split the branch to smaller patches and re-ordered them to
-> give us finer grain bisection.
-> 
-> The patch which may regress (hopefully not) is now the second
-> in the series. The rest are not likely to have an impact.
-> 
-> * c587795908ea - (sb_write_barrier) vfs: prepare for pre-modify
-> permission events on aio write
-> * 5af3ebb1340f - vfs: prepare for pre-modify permission events on write
-> * 503d2addcf46 - vfs: add srcu variants for mnt_{want,drop}_write() helpers
-> * 72f17d85a0ad - fsnotify: activate sb write barriers for permission
-> event watchers
-> * 2d9ffee9b227 - vfs: implement 'vfs write barriers'
-> * bab966719c0d - fsnotify: optimize the case of no permission event watchers
-> 
-> Oliver,
-> 
-> Can you please re-test?
+> > That could explain the increase in memory usage and maybe
+> > the performance regression as a result of that.
+> >
+> > However, I do not see that cleanup_srcu_struct() has any
+> > effect if srcu was never used and when
+> > CONFIG_DEBUG_OBJECTS is not defined and according
+> > to the config file attached to the report it wasn't defined.
+> >
+> > However, maybe I am missing something, so is here a branch
+> > with the missing cleanup_srcu_struct().
+> >
 
-the new version seems better, but still with regression
-(I listed data for all commits this time)
+Ah, what I was missing is that I was looking at srcutiny code and
+the kernel is configured to using srcutree code...
 
-efc30bf815efbc76 bab966719c0d18247dbc47f3bbd 2d9ffee9b227e01c4c476583fac 72f17d85a0adabfe8918244e0ff 503d2addcf4606d60784ff0ee35 5af3ebb1340f6eb014ac1311783 c587795908ea996065b73dd5926
----------------- --------------------------- --------------------------- --------------------------- --------------------------- --------------------------- ---------------------------
-         %stddev     %change         %stddev     %change         %stddev     %change         %stddev     %change         %stddev     %change         %stddev     %change         %stddev
-             \          |                \          |                \          |                \          |                \          |                \          |                \
-   1443209            +0.3%    1448023            -7.4%    1335977            -6.7%    1346397            -6.8%    1344653            -6.6%    1348394            -7.0%    1342155        stress-ng.ramfs.ops
-     24053            +0.3%      24133            -7.4%      22266            -6.7%      22439            -6.8%      22410            -6.6%      22473            -7.0%      22369        stress-ng.ramfs.ops_per_sec
+> > I've split the branch to smaller patches and re-ordered them to
+> > give us finer grain bisection.
+> >
+> > The patch which may regress (hopefully not) is now the second
+> > in the series. The rest are not likely to have an impact.
+> >
+> > * c587795908ea - (sb_write_barrier) vfs: prepare for pre-modify
+> > permission events on aio write
+> > * 5af3ebb1340f - vfs: prepare for pre-modify permission events on write
+> > * 503d2addcf46 - vfs: add srcu variants for mnt_{want,drop}_write() hel=
+pers
+> > * 72f17d85a0ad - fsnotify: activate sb write barriers for permission
+> > event watchers
+> > * 2d9ffee9b227 - vfs: implement 'vfs write barriers'
+> > * bab966719c0d - fsnotify: optimize the case of no permission event wat=
+chers
+> >
+> > Oliver,
+> >
+> > Can you please re-test?
+>
+> the new version seems better, but still with regression
+> (I listed data for all commits this time)
+>
+> efc30bf815efbc76 bab966719c0d18247dbc47f3bbd 2d9ffee9b227e01c4c476583fac =
+72f17d85a0adabfe8918244e0ff 503d2addcf4606d60784ff0ee35 5af3ebb1340f6eb014a=
+c1311783 c587795908ea996065b73dd5926
+> ---------------- --------------------------- --------------------------- =
+--------------------------- --------------------------- -------------------=
+-------- ---------------------------
+>          %stddev     %change         %stddev     %change         %stddev =
+    %change         %stddev     %change         %stddev     %change        =
+ %stddev     %change         %stddev
+>              \          |                \          |                \   =
+       |                \          |                \          |           =
+     \          |                \
+>    1443209            +0.3%    1448023            -7.4%    1335977       =
+     -6.7%    1346397            -6.8%    1344653            -6.6%    13483=
+94            -7.0%    1342155        stress-ng.ramfs.ops
+>      24053            +0.3%      24133            -7.4%      22266       =
+     -6.7%      22439            -6.8%      22410            -6.6%      224=
+73            -7.0%      22369        stress-ng.ramfs.ops_per_sec
+>
+> and there are also some changes on meminfo side
+>
+>      17904            +0.3%      17959           +45.7%      26083       =
+    +45.5%      26044           +46.0%      26142           +44.7%      259=
+00           +45.3%      26018        meminfo.Percpu
+>      93698            +0.6%      94235            +0.9%      94538       =
+     +1.7%      95251            +1.4%      94977            +1.1%      947=
+51            +1.7%      95306        meminfo.SUnreclaim
+>     190560            +0.3%     191220            +0.3%     191204       =
+     +1.0%     192473            +0.6%     191785            +0.6%     1916=
+76            +0.9%     192370        meminfo.Slab
+>      20468            +0.1%      20495            +5.1%      21520       =
+     +5.0%      21499            +5.2%      21538            +5.1%      215=
+08            +5.0%      21492        meminfo.VmallocUsed
+>
+>
 
-and there are also some changes on meminfo side
+Excellent! We have finally made progress :)
+I've pushed this branch to sb_write_barrier-rc4 for future reference.
 
-     17904            +0.3%      17959           +45.7%      26083           +45.5%      26044           +46.0%      26142           +44.7%      25900           +45.3%      26018        meminfo.Percpu
-     93698            +0.6%      94235            +0.9%      94538            +1.7%      95251            +1.4%      94977            +1.1%      94751            +1.7%      95306        meminfo.SUnreclaim
-    190560            +0.3%     191220            +0.3%     191204            +1.0%     192473            +0.6%     191785            +0.6%     191676            +0.9%     192370        meminfo.Slab
-     20468            +0.1%      20495            +5.1%      21520            +5.0%      21499            +5.2%      21538            +5.1%      21508            +5.0%      21492        meminfo.VmallocUsed
+I now also realize that stress-ng exercises fanotify permission events.
+I was under the wrong impression that the patches are hurting performance
+of workloads that do not include fanotify permission event watchers.
 
+The optimization patches
+"fsnotify: optimize the case of no permission event watchers" and
+"fsnotify: activate sb write barriers for permission event watchers"
+are therefore not effective with this workload.
 
-I attached the detail data as "sb_write_barrier-tip-c587795908ea9"
+sb_write_barrier() is not needed for the legacy fanotify permission events,
+so I've changed the optimization patches to activate sb_write_barrier()
+only for the new pre-modify event, which stress-ng is not aware of.
 
-> 
-> Jan,
-> 
-> If this doesn't work, I am going to move s_write_srcu into the
-> s_fsnotify_marks connector.
-> 
-> If there is ever any user for sb write barriers other than fsnotify,
-> we could have sb_write_barrier_activate() allocate a never-detached
-> connector, same as we planned to do for the "default event mask".
-> 
-> I do not see value in ever detaching a connector from an active sb,
-> so a READ_ONCE() dereference to the connector from sb should
-> be enough for the *write_srcu helpers, right? like this:
-> 
-> static inline struct srcu_struct *sb_write_srcu(struct super_block *sb)
-> {
->         return atomic_read(&sb->s_writers.srcu_active) ?
->                    &READ_ONCE(sb->s_fsnotify_marks)->s_write_srcu : NULL;
-> }
-> 
-> 
-> Thanks,
-> Amir.
+I also deferred init_srcu_struct() to sb_write_barrier_activate(), which is
+not expected to happen in this workload at all.
 
-[1]
+The code is not fully correct, not checking error from init_srcu_struct()
+and possibly needs synchronize_srcu() before cleanup_srcu_struct(),
+but for the purpose of checking performance regressions for existing
+workloads that do not use the new events, that should suffice.
 
+I pushed these changes to branch sb_write_barrier-rc5:
 
+* 18ab3ccc03f8 - (sb_write_barrier-rc5) vfs: prepare for pre-modify
+permission events on aio write
+* a6375febb518 - vfs: prepare for pre-modify permission events on write
+* d4d8be7b9987 - vfs: add srcu variants for mnt_{want,drop}_write() helpers
+* 92f4fe8a0643 - fsnotify: activate sb write barriers for pre-modify
+event watchers
+* 9de2ba3f2757 - vfs: implement 'vfs write barriers'
+* 925188d1c20d - fsnotify: optimize the case of no pre-modify event watcher=
+s
 
---hc9Gr0BXbCeboWjR
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: attachment;
-	filename="sb_write_barrier-tip-c587795908ea9"
-Content-Transfer-Encoding: 8bit
+Oliver,
 
-=========================================================================================
-class/compiler/cpufreq_governor/disk/fs/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
-  os/gcc-12/performance/1HDD/ext4/x86_64-rhel-8.3/1/debian-11.1-x86_64-20220510.cgz/lkp-csl-d02/ramfs/stress-ng/60s
+If you can re-test once again, that would be great.
+Sorry that this is taking so long and thanks for your patience.
 
-commit:
-  efc30bf815efb (amir73il/fan_pre_access) fanotify: report file range info with FAN_PRE_ACCESSS event
-  bab966719c0d1 fsnotify: optimize the case of no permission event watchers
-  2d9ffee9b227e vfs: implement 'vfs write barriers'
-  72f17d85a0ada fsnotify: activate sb write barriers for permission event watchers
-  503d2addcf460 vfs: add srcu variants for mnt_{want,drop}_write() helpers
-  5af3ebb1340f6 vfs: prepare for pre-modify permission events on write
-  c587795908ea9 (amir73il/sb_write_barrier) vfs: prepare for pre-modify permission events on aio write
-  
-efc30bf815efbc76 bab966719c0d18247dbc47f3bbd 2d9ffee9b227e01c4c476583fac 72f17d85a0adabfe8918244e0ff 503d2addcf4606d60784ff0ee35 5af3ebb1340f6eb014ac1311783 c587795908ea996065b73dd5926
----------------- --------------------------- --------------------------- --------------------------- --------------------------- --------------------------- ---------------------------
-         %stddev     %change         %stddev     %change         %stddev     %change         %stddev     %change         %stddev     %change         %stddev     %change         %stddev
-             \          |                \          |                \          |                \          |                \          |                \          |                \
- 2.144e+09            -0.1%  2.142e+09            -0.3%  2.137e+09            -0.3%  2.137e+09            -0.1%  2.142e+09            -0.3%  2.137e+09            -0.2%   2.14e+09        cpuidle..time
-   3927287            -1.4%    3870917            -1.5%    3868285            -3.4%    3791966 ±  2%      -3.0%    3809669            -2.6%    3823977            -2.7%    3821465 ±  2%  cpuidle..usage
-     92.72            +0.0%      92.73            -0.1%      92.60            +0.2%      92.94            +0.6%      93.31            -0.1%      92.66            +0.4%      93.10        uptime.boot
-      3120            +0.0%       3121            -0.3%       3111            +0.1%       3123            +0.5%       3137            -0.2%       3113            +0.3%       3128        uptime.idle
-     20.54            +0.6%      20.67            +0.0%      20.54            +1.4%      20.83            +1.9%      20.93            +0.2%      20.59            +1.2%      20.78        boot-time.boot
-     11.28            +0.2%      11.30            +0.2%      11.30            +0.7%      11.36            +0.2%      11.31            +0.2%      11.30            +0.0%      11.28        boot-time.dhcp
-    693.80            +0.7%     698.52            +0.0%     693.83            +1.5%     704.12            +2.0%     707.85            +0.3%     695.59            +1.2%     702.28        boot-time.idle
-     22.17 ± 15%      +3.0%      22.83 ± 22%    +209.0%      68.50 ± 21%    +203.8%      67.33 ± 13%    +203.0%      67.17 ±  5%    +193.2%      65.00 ± 12%    +202.3%      67.00 ± 12%  perf-c2c.DRAM.local
-    294.50 ± 16%     -14.0%     253.17 ± 14%     -28.1%     211.83 ±  7%     -22.8%     227.33 ±  7%     -36.1%     188.17 ± 14%     -17.9%     241.83 ±  7%     -19.1%     238.17 ± 18%  perf-c2c.HITM.local
-    294.50 ± 16%     -14.0%     253.17 ± 14%     -28.1%     211.83 ±  7%     -22.8%     227.33 ±  7%     -36.1%     188.17 ± 14%     -17.9%     241.83 ±  7%     -19.1%     238.17 ± 18%  perf-c2c.HITM.total
-     93.55            -0.0%      93.54            -0.2%      93.40            -0.2%      93.40            -0.1%      93.43            -0.2%      93.38            -0.2%      93.38        iostat.cpu.idle
-      0.23 ±  5%      -6.7%       0.21 ±  5%      -6.7%       0.21 ±  5%      -6.7%       0.21 ±  5%     -10.3%       0.20 ±  6%      -3.4%       0.22 ±  2%      +1.8%       0.23 ±  3%  iostat.cpu.iowait
-      3.62            +0.3%       3.63            +5.2%       3.80            +4.9%       3.79            +4.6%       3.78            +5.3%       3.81            +5.0%       3.80        iostat.cpu.system
-      2.60            +0.5%       2.62            -0.7%       2.59            -0.6%       2.59            -0.7%       2.59            -0.4%       2.59            -0.7%       2.59        iostat.cpu.user
-     93.47            +0.0       93.47            -0.2       93.32            -0.2       93.32            -0.1       93.34            -0.2       93.30            -0.2       93.30        mpstat.cpu.all.idle%
-      0.22 ±  5%      -0.0        0.20 ±  5%      -0.0        0.20 ±  5%      -0.0        0.20 ±  4%      -0.0        0.19 ±  7%      -0.0        0.21 ±  3%      +0.0        0.22 ±  4%  mpstat.cpu.all.iowait%
-      0.57 ±  2%      -0.0        0.56            +0.0        0.57            +0.0        0.57 ±  2%      +0.0        0.58 ±  2%      +0.0        0.57            +0.0        0.57 ±  2%  mpstat.cpu.all.irq%
-      0.10 ± 10%      +0.0        0.10 ± 11%      +0.0        0.11 ±  8%      +0.0        0.11 ± 19%      +0.0        0.11 ± 12%      +0.0        0.10 ± 14%      +0.0        0.11 ± 13%  mpstat.cpu.all.soft%
-      3.00            +0.0        3.01            +0.2        3.17            +0.2        3.17            +0.1        3.15            +0.2        3.18            +0.2        3.17        mpstat.cpu.all.sys%
-      2.65            +0.0        2.66            -0.0        2.63            -0.0        2.63            -0.0        2.63            -0.0        2.64            -0.0        2.63        mpstat.cpu.all.usr%
-     62.03            +0.0%      62.04            +0.0%      62.04            -0.0%      62.03            +0.0%      62.05            -0.0%      62.03            +0.0%      62.05        time.elapsed_time
-     62.03            +0.0%      62.04            +0.0%      62.04            -0.0%      62.03            +0.0%      62.05            -0.0%      62.03            +0.0%      62.05        time.elapsed_time.max
-     12.00 ± 33%      +0.0%      12.00 ± 33%     +22.2%      14.67 ± 20%     +22.2%      14.67 ± 20%     +33.3%      16.00            +0.0%      12.00 ± 33%     +11.1%      13.33 ± 28%  time.file_system_inputs
-   1443805            +0.4%    1449578            -7.5%    1336030            -6.7%    1346424            -7.0%    1343307            -6.7%    1347351            -7.0%    1342235        time.involuntary_context_switches
-      0.33 ±141%     +50.0%       0.50 ±152%      +0.0%       0.33 ±223%     +50.0%       0.50 ±100%     +50.0%       0.50 ±100%     +50.0%       0.50 ±100%    -100.0%       0.00        time.major_page_faults
-      6864            +0.7%       6912            +1.4%       6960            +1.4%       6960            +0.7%       6912            -1.4%       6768 ±  3%      +1.4%       6960        time.maximum_resident_set_size
-      9349            -0.1%       9338            +0.2%       9365            +0.1%       9362            +0.1%       9361            -0.1%       9344            +0.3%       9373        time.minor_page_faults
-      4096            +0.0%       4096            +0.0%       4096            +0.0%       4096            +0.0%       4096            +0.0%       4096            +0.0%       4096        time.page_size
-     77.67            +0.4%      78.00            +0.2%      77.83            +0.6%      78.17            +0.4%      78.00            +0.4%      78.00            +0.2%      77.83        time.percent_of_cpu_this_job_got
-     40.78            +0.3%      40.89            +2.0%      41.57            +2.5%      41.78            +2.4%      41.74            +2.4%      41.74            +2.5%      41.78        time.system_time
-      7.63            +1.2%       7.72            -8.4%       6.99            -7.8%       7.03            -6.9%       7.10            -8.3%       7.00            -9.2%       6.93        time.user_time
-    803605 ± 10%      -7.1%     746502 ±  8%      -6.5%     751682 ±  5%     -17.2%     665375 ± 13%     -17.9%     659902 ± 10%     -15.3%     680662 ±  6%     -15.9%     676140 ± 13%  time.voluntary_context_switches
-     93.00            +0.0%      93.00            +0.0%      93.00            +0.0%      93.00            +0.0%      93.00            +0.0%      93.00            +0.0%      93.00        vmstat.cpu.id
-      3.00            +0.0%       3.00            +0.0%       3.00            +0.0%       3.00            +0.0%       3.00            +0.0%       3.00            +0.0%       3.00        vmstat.cpu.sy
-      2.00            +0.0%       2.00            +0.0%       2.00            +0.0%       2.00            +0.0%       2.00            +0.0%       2.00            +0.0%       2.00        vmstat.cpu.us
-      0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00        vmstat.cpu.wa
-     14.50 ±  7%      +3.4%      15.00            +3.4%      15.00            +3.4%      15.00            +3.4%      15.00            +3.4%      15.00            +3.4%      15.00        vmstat.io.bi
-      5167 ±  7%      -4.8%       4918 ±  9%      -6.4%       4834 ±  9%      -5.3%       4894 ±  4%      -9.6%       4673 ±  9%      -5.1%       4902 ±  3%      +1.7%       5255 ±  5%  vmstat.io.bo
-     16312            -1.8%      16018 ±  2%      -2.4%      15924            -2.2%      15960            -1.8%      16022            -1.3%      16095            -0.2%      16276        vmstat.memory.buff
-   3246502            -0.0%    3246136            -0.3%    3235577            -0.3%    3236738            -0.3%    3237761            -0.3%    3236975            -0.3%    3237557        vmstat.memory.cache
- 1.276e+08            +0.0%  1.276e+08            +0.0%  1.276e+08            +0.0%  1.276e+08            +0.0%  1.276e+08            +0.0%  1.276e+08            +0.0%  1.276e+08        vmstat.memory.free
-      0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00        vmstat.procs.b
-      2.00            +0.0%       2.00            +0.0%       2.00            +0.0%       2.00            -8.3%       1.83 ± 20%      +0.0%       2.00            -8.3%       1.83 ± 20%  vmstat.procs.r
-    162625            -1.1%     160774            -5.5%     153755            -7.5%     150390 ±  2%      -7.9%     149726 ±  2%      -6.7%     151688            -7.3%     150712 ±  2%  vmstat.system.cs
-     84816            -0.7%      84203            -0.5%      84354            -1.3%      83723            -1.8%      83301            -1.0%      83961            -1.2%      83819        vmstat.system.in
-   1443209            +0.3%    1448023            -7.4%    1335977            -6.7%    1346397            -6.8%    1344653            -6.6%    1348394            -7.0%    1342155        stress-ng.ramfs.ops
-     24053            +0.3%      24133            -7.4%      22266            -6.7%      22439            -6.8%      22410            -6.6%      22473            -7.0%      22369        stress-ng.ramfs.ops_per_sec
-     62.03            +0.0%      62.04            +0.0%      62.04            -0.0%      62.03            +0.0%      62.05            -0.0%      62.03            +0.0%      62.05        stress-ng.time.elapsed_time
-     62.03            +0.0%      62.04            +0.0%      62.04            -0.0%      62.03            +0.0%      62.05            -0.0%      62.03            +0.0%      62.05        stress-ng.time.elapsed_time.max
-     12.00 ± 33%      +0.0%      12.00 ± 33%     +22.2%      14.67 ± 20%     +22.2%      14.67 ± 20%     +33.3%      16.00            +0.0%      12.00 ± 33%     +11.1%      13.33 ± 28%  stress-ng.time.file_system_inputs
-   1443805            +0.4%    1449578            -7.5%    1336030            -6.7%    1346424            -7.0%    1343307            -6.7%    1347351            -7.0%    1342235        stress-ng.time.involuntary_context_switches
-      0.33 ±141%     +50.0%       0.50 ±152%      +0.0%       0.33 ±223%     +50.0%       0.50 ±100%     +50.0%       0.50 ±100%     +50.0%       0.50 ±100%    -100.0%       0.00        stress-ng.time.major_page_faults
-      6864            +0.7%       6912            +1.4%       6960            +1.4%       6960            +0.7%       6912            -1.4%       6768 ±  3%      +1.4%       6960        stress-ng.time.maximum_resident_set_size
-      9349            -0.1%       9338            +0.2%       9365            +0.1%       9362            +0.1%       9361            -0.1%       9344            +0.3%       9373        stress-ng.time.minor_page_faults
-      4096            +0.0%       4096            +0.0%       4096            +0.0%       4096            +0.0%       4096            +0.0%       4096            +0.0%       4096        stress-ng.time.page_size
-     77.67            +0.4%      78.00            +0.2%      77.83            +0.6%      78.17            +0.4%      78.00            +0.4%      78.00            +0.2%      77.83        stress-ng.time.percent_of_cpu_this_job_got
-     40.78            +0.3%      40.89            +2.0%      41.57            +2.5%      41.78            +2.4%      41.74            +2.4%      41.74            +2.5%      41.78        stress-ng.time.system_time
-      7.63            +1.2%       7.72            -8.4%       6.99            -7.8%       7.03            -6.9%       7.10            -8.3%       7.00            -9.2%       6.93        stress-ng.time.user_time
-    803605 ± 10%      -7.1%     746502 ±  8%      -6.5%     751682 ±  5%     -17.2%     665375 ± 13%     -17.9%     659902 ± 10%     -15.3%     680662 ±  6%     -15.9%     676140 ± 13%  stress-ng.time.voluntary_context_switches
-    264.67            +0.1%     264.83            +3.0%     272.67            +3.3%     273.33            +2.9%     272.33            +3.3%     273.50            +3.1%     273.00        turbostat.Avg_MHz
-      7.04            -0.0        7.04            +0.2        7.25            +0.2        7.26            +0.2        7.25            +0.2        7.27            +0.2        7.26        turbostat.Busy%
-      3759            +0.1%       3762            +0.1%       3763            +0.1%       3762            -0.0%       3757            +0.1%       3762            +0.0%       3760        turbostat.Bzy_MHz
-    105628 ±  2%      +2.3%     108069 ±  3%      +3.4%     109222            +3.0%     108805            +0.3%     105909 ±  2%      -1.0%     104521            +0.9%     106541        turbostat.C1
-      0.30 ±  5%      +0.0        0.32 ±  4%      +0.1        0.36 ±  3%      +0.1        0.38 ± 10%      +0.1        0.37 ±  3%      +0.1        0.37 ±  6%      +0.1        0.37 ±  6%  turbostat.C1%
-   1195736            -0.3%    1191840            +2.9%    1230876            +2.6%    1226702            +2.5%    1226153            +2.7%    1227578            +2.6%    1226626        turbostat.C1E
-      6.34            -0.0        6.30            +0.6        6.96            +0.6        6.90            +0.5        6.86            +0.6        6.90            +0.6        6.90        turbostat.C1E%
-   2033771            -0.1%    2031873            -0.4%    2024714            -0.4%    2025184            -0.1%    2030752            -0.5%    2024320            -0.3%    2027553        turbostat.C6
-     86.58            +0.0       86.61            -0.9       85.70            -0.9       85.72            -0.8       85.80            -0.9       85.73            -0.8       85.75        turbostat.C6%
-     92.08            +0.1%      92.16            -0.1%      91.98            -0.2%      91.89            -0.3%      91.80            -0.2%      91.92            -0.2%      91.89        turbostat.CPU%c1
-      0.88 ± 12%      -8.5%       0.80 ± 10%     -12.9%       0.77 ±  4%      -4.0%       0.84 ±  9%      +7.2%       0.94 ± 12%      -8.0%       0.81 ±  7%      -3.2%       0.85 ± 18%  turbostat.CPU%c6
-     41.33            -0.4%      41.17            -0.8%      41.00            -2.0%      40.50 ±  3%      -0.4%      41.17            +0.4%      41.50            +0.0%      41.33        turbostat.CoreTmp
-      0.42            +1.6%       0.43 ±  3%      -3.6%       0.41            -3.2%       0.41            -3.6%       0.41 ±  2%      -2.8%       0.41            -2.4%       0.41 ±  2%  turbostat.IPC
-   5516736            -1.0%    5463233            -0.8%    5472645            -1.3%    5445136            -1.5%    5432030            -1.3%    5446661            -1.2%    5451816        turbostat.IRQ
-    588758 ± 11%      -8.9%     536299 ± 10%     -15.0%     500403 ±  7%     -27.2%     428515 ± 17%     -24.6%     443755 ± 14%     -21.2%     464188 ±  7%     -22.2%     457947 ± 16%  turbostat.POLL
-      0.05 ±  7%      -0.0        0.04 ±  8%      +0.0        0.05 ±  7%      -0.0        0.04 ± 16%      -0.0        0.04 ± 11%      +0.0        0.05 ±  7%      +0.0        0.05 ± 14%  turbostat.POLL%
-      0.42 ±  7%      -6.7%       0.39 ±  6%      -2.4%       0.41 ±  8%      +0.0%       0.42 ± 19%      +9.5%       0.46 ± 21%      -6.7%       0.39 ± 11%      +4.7%       0.44 ± 26%  turbostat.Pkg%pc2
-     40.33            +0.4%      40.50            +0.8%      40.67            +0.4%      40.50 ±  3%      +0.4%      40.50 ±  2%      +0.0%      40.33            +0.8%      40.67        turbostat.PkgTmp
-     88.18            +0.3%      88.48            +0.7%      88.81            +0.5%      88.60            +0.7%      88.81            +0.9%      88.98            +0.9%      88.94        turbostat.PkgWatt
-     10.19            +0.1%      10.20            +6.6%      10.87            +6.8%      10.89            +7.3%      10.94            +6.7%      10.87            +6.2%      10.83        turbostat.RAMWatt
-      3000            -0.0%       3000            -0.0%       3000            +0.0%       3000            +0.0%       3001            -0.0%       3000            +0.0%       3001        turbostat.TSC_MHz
-    293378            -0.0%     293376            -3.2%     283967            -3.1%     284295            -2.5%     285994            -2.9%     284840            -2.8%     285272        meminfo.Active
-    277021            +0.1%     277335            -3.3%     268003            -3.1%     268307            -2.6%     269935            -3.0%     268705            -2.9%     268954        meminfo.Active(anon)
-     16356            -1.9%      16040 ±  2%      -2.4%      15963            -2.3%      15988            -1.8%      16057 ±  2%      -1.4%      16134            -0.2%      16318        meminfo.Active(file)
-     54624 ± 15%      +1.0%      55146 ± 17%      -0.6%      54272 ± 13%      +8.0%      59002 ±  9%      +2.2%      55813 ± 11%      -1.3%      53893 ± 19%      -2.2%      53408 ± 14%  meminfo.AnonHugePages
-    304634            +0.3%     305451            -0.2%     303919            -0.2%     304123            -0.0%     304565            -0.1%     304353            -0.2%     304170        meminfo.AnonPages
-     16299            -1.8%      16000 ±  2%      -2.4%      15905            -2.2%      15939            -1.8%      16006            -1.4%      16079            -0.2%      16263        meminfo.Buffers
-   3147512            -0.0%    3147319            -0.3%    3136987            -0.3%    3137376            -0.3%    3139172            -0.3%    3138153            -0.3%    3138646        meminfo.Cached
-  65801616            +0.0%   65801616            +0.0%   65801616            +0.0%   65801616            +0.0%   65801616            +0.0%   65801616            +0.0%   65801616        meminfo.CommitLimit
-    792541            +0.0%     792923            -1.2%     782846            -1.2%     783162            -1.1%     784089            -1.1%     783543            -1.1%     783474        meminfo.Committed_AS
- 1.253e+08 ±  2%      +0.4%  1.258e+08            +0.6%   1.26e+08            +1.0%  1.265e+08            -1.7%  1.232e+08 ±  2%      +1.5%  1.272e+08            +0.0%  1.253e+08        meminfo.DirectMap1G
-   8428885 ± 36%      -6.1%    7912106 ± 21%      -8.2%    7733930 ± 23%     -14.6%    7199402 ± 32%     +24.8%   10516138 ± 24%     -22.7%    6518101 ± 15%      +0.0%    8429909 ± 23%  meminfo.DirectMap2M
-    175690 ± 21%      -4.3%     168181 ±  8%      -2.3%     171594 ± 11%      +3.5%     181834 ± 18%      +5.6%     185589 ±  7%      -6.6%     164085 ±  9%      -0.6%     174666 ±  6%  meminfo.DirectMap4k
-     15.50 ± 22%      -3.2%      15.00 ± 21%      -3.2%      15.00 ± 31%      +7.5%      16.67 ± 26%     -18.3%      12.67 ± 34%     -12.9%      13.50 ± 32%      +4.3%      16.17 ± 20%  meminfo.Dirty
-      2048            +0.0%       2048            +0.0%       2048            +0.0%       2048            +0.0%       2048            +0.0%       2048            +0.0%       2048        meminfo.Hugepagesize
-    360441            -0.0%     360322            -0.7%     357879            -0.5%     358765            -0.6%     358408            -0.4%     359077            -0.4%     358848        meminfo.Inactive
-    329971            +0.1%     330456            -0.5%     328186            -0.3%     329015            -0.4%     328523            -0.3%     329038            -0.5%     328445        meminfo.Inactive(anon)
-     30469            -2.0%      29865 ±  2%      -2.6%      29692            -2.4%      29749            -1.9%      29884 ±  2%      -1.4%      30039 ±  2%      -0.2%      30402        meminfo.Inactive(file)
-     96861            +0.1%      96984            -0.2%      96665            +0.4%      97221            -0.1%      96807            +0.1%      96923            +0.2%      97063        meminfo.KReclaimable
-      9051            -0.0%       9049            +0.2%       9070            +0.2%       9070            +0.2%       9069            +0.2%       9069            +0.1%       9064        meminfo.KernelStack
-     48914            -0.4%      48725            +1.7%      49750            +1.7%      49733            +1.5%      49671            +2.0%      49877            +2.1%      49927        meminfo.Mapped
- 1.269e+08            +0.0%  1.269e+08            +0.0%  1.269e+08            +0.0%  1.269e+08            +0.0%  1.269e+08            +0.0%  1.269e+08            +0.0%  1.269e+08        meminfo.MemAvailable
- 1.276e+08            +0.0%  1.276e+08            +0.0%  1.276e+08            +0.0%  1.276e+08            +0.0%  1.276e+08            +0.0%  1.276e+08            +0.0%  1.276e+08        meminfo.MemFree
- 1.316e+08            +0.0%  1.316e+08            +0.0%  1.316e+08            +0.0%  1.316e+08            -0.0%  1.316e+08            -0.0%  1.316e+08            -0.0%  1.316e+08        meminfo.MemTotal
-   3966763            -0.1%    3964017            -0.2%    3959796            -0.2%    3957250            -0.2%    3959355            -0.2%    3960134            -0.2%    3960530        meminfo.Memused
-     11.00            +0.0%      11.00            +0.0%      11.00            +0.0%      11.00            -1.5%      10.83 ±  3%      -1.5%      10.83 ±  3%      -1.5%      10.83 ±  3%  meminfo.Mlocked
-      4001            -0.2%       3994            -0.3%       3990            -0.7%       3973            -0.3%       3989            -0.5%       3982            -0.4%       3984        meminfo.PageTables
-     17904            +0.3%      17959           +45.7%      26083           +45.5%      26044           +46.0%      26142           +44.7%      25900           +45.3%      26018        meminfo.Percpu
-     96861            +0.1%      96984            -0.2%      96665            +0.4%      97221            -0.1%      96807            +0.1%      96923            +0.2%      97063        meminfo.SReclaimable
-     93698            +0.6%      94235            +0.9%      94538            +1.7%      95251            +1.4%      94977            +1.1%      94751            +1.7%      95306        meminfo.SUnreclaim
-    301909            +0.1%     302241            -3.3%     292085            -3.1%     292423            -2.6%     294079            -3.0%     292906            -2.9%     293110        meminfo.Shmem
-    190560            +0.3%     191220            +0.3%     191204            +1.0%     192473            +0.6%     191785            +0.6%     191676            +0.9%     192370        meminfo.Slab
-   2815061            +0.0%    2815134            +0.0%    2815137            +0.0%    2815133            +0.0%    2815137            +0.0%    2815136            -0.0%    2815059        meminfo.Unevictable
- 3.436e+10            +0.0%  3.436e+10            +0.0%  3.436e+10            +0.0%  3.436e+10            +0.0%  3.436e+10            +0.0%  3.436e+10            +0.0%  3.436e+10        meminfo.VmallocTotal
-     20468            +0.1%      20495            +5.1%      21520            +5.0%      21499            +5.2%      21538            +5.1%      21508            +5.0%      21492        meminfo.VmallocUsed
-      0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00        meminfo.Writeback
-   4143647            -0.1%    4138171            -0.1%    4141280            -0.2%    4134361            -0.1%    4138612            -0.2%    4136936            -0.1%    4138144        meminfo.max_used_kB
-     70.83 ± 25%      -5.2%      67.17 ± 11%      -2.6%      69.00 ± 13%      +4.7%      74.17 ± 22%      +6.8%      75.67 ±  8%      -7.8%      65.33 ± 11%      -0.2%      70.67 ±  8%  proc-vmstat.direct_map_level2_splits
-      4.50 ± 66%     -11.1%       4.00 ± 40%     -14.8%       3.83 ± 46%     -25.9%       3.33 ± 68%     +44.4%       6.50 ± 37%     -40.7%       2.67 ± 35%      +0.0%       4.50 ± 42%  proc-vmstat.direct_map_level3_splits
-     69255            +0.1%      69333            -3.3%      67000            -3.1%      67076            -2.6%      67483            -3.0%      67175            -2.9%      67238        proc-vmstat.nr_active_anon
-      4088            -1.9%       4009 ±  2%      -2.4%       3990            -2.3%       3996            -1.8%       4014 ±  2%      -1.4%       4033            -0.2%       4079        proc-vmstat.nr_active_file
-     76157            +0.3%      76363            -0.2%      75980            -0.2%      76034            -0.0%      76139            -0.1%      76089            -0.1%      76045        proc-vmstat.nr_anon_pages
-     26.17 ± 16%      +1.3%      26.50 ± 18%      -0.6%      26.00 ± 13%      +8.3%      28.33 ±  9%      +1.9%      26.67 ± 11%      -1.3%      25.83 ± 18%      -2.5%      25.50 ± 14%  proc-vmstat.nr_anon_transparent_hugepages
-     18.67 ± 66%     -33.0%      12.50 ± 20%      +4.5%      19.50 ± 62%     +22.3%      22.83 ±104%     -12.5%      16.33 ± 51%     -27.7%      13.50 ± 19%     -29.5%      13.17 ± 36%  proc-vmstat.nr_dirtied
-      3.33 ± 28%      +0.0%       3.33 ± 28%      +0.0%       3.33 ± 41%     +15.0%       3.83 ± 23%     -10.0%       3.00 ± 33%     -15.0%       2.83 ± 42%     +10.0%       3.67 ± 20%  proc-vmstat.nr_dirty
-   3166196            +0.0%    3166242            +0.0%    3166339            +0.0%    3166405            +0.0%    3166358            +0.0%    3166344            +0.0%    3166349        proc-vmstat.nr_dirty_background_threshold
-   6340134            +0.0%    6340227            +0.0%    6340422            +0.0%    6340553            +0.0%    6340460            +0.0%    6340432            +0.0%    6340440        proc-vmstat.nr_dirty_threshold
-    790954            -0.0%     790829            -0.3%     788222            -0.3%     788328            -0.3%     788795            -0.3%     788557            -0.3%     788728        proc-vmstat.nr_file_pages
-     38.00            +0.0%      38.00            +0.4%      38.17            +0.0%      38.00            +0.0%      38.00            +0.0%      38.00            +0.4%      38.17        proc-vmstat.nr_foll_pin_acquired
-     38.00            +0.0%      38.00            +0.4%      38.17            +0.0%      38.00            +0.0%      38.00            +0.0%      38.00            +0.4%      38.17        proc-vmstat.nr_foll_pin_released
-  31909120            +0.0%   31909815            +0.0%   31910852            +0.0%   31911487            +0.0%   31910969            +0.0%   31910772            +0.0%   31910676        proc-vmstat.nr_free_pages
-     82494            +0.1%      82614            -0.5%      82048            -0.3%      82256            -0.4%      82130            -0.3%      82260            -0.5%      82113        proc-vmstat.nr_inactive_anon
-      7617            -2.0%       7465 ±  2%      -2.6%       7422            -2.4%       7437            -1.9%       7470 ±  2%      -1.4%       7509 ±  2%      -0.2%       7600        proc-vmstat.nr_inactive_file
-      0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00       +8.3e+101%       0.83 ±223%  proc-vmstat.nr_isolated_anon
-      9051            -0.0%       9048            +0.2%       9070            +0.2%       9071            +0.2%       9069            +0.2%       9068            +0.1%       9064        proc-vmstat.nr_kernel_stack
-     12229            -0.4%      12182            +1.7%      12438            +1.7%      12436            +1.6%      12419            +2.0%      12472            +2.1%      12485        proc-vmstat.nr_mapped
-      2.00            +0.0%       2.00            +0.0%       2.00            +0.0%       2.00            +0.0%       2.00            +0.0%       2.00            +0.0%       2.00        proc-vmstat.nr_mlock
-      1000            -0.2%     998.17            -0.3%     997.17            -0.7%     993.00            -0.3%     997.17            -0.5%     994.83            -0.4%     995.50        proc-vmstat.nr_page_table_pages
-     75478            +0.1%      75560            -3.3%      73020            -3.1%      73105            -2.6%      73520            -3.0%      73226            -2.9%      73277        proc-vmstat.nr_shmem
-     24214            +0.1%      24245            -0.2%      24164            +0.4%      24304            -0.1%      24202            +0.1%      24229            +0.2%      24265        proc-vmstat.nr_slab_reclaimable
-     23423            +0.6%      23557            +0.9%      23632            +1.7%      23812            +1.4%      23744            +1.1%      23686            +1.7%      23824        proc-vmstat.nr_slab_unreclaimable
-    703765            +0.0%     703783            +0.0%     703784            +0.0%     703783            +0.0%     703783            +0.0%     703783            -0.0%     703764        proc-vmstat.nr_unevictable
-      0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00        proc-vmstat.nr_writeback
-     11.17 ± 27%      -3.0%      10.83 ± 24%      -1.5%      11.00 ± 25%      -9.0%      10.17 ± 25%     +20.9%      13.50 ± 40%      +4.5%      11.67 ± 24%      -7.5%      10.33 ± 28%  proc-vmstat.nr_written
-     69255            +0.1%      69333            -3.3%      67000            -3.1%      67076            -2.6%      67483            -3.0%      67175            -2.9%      67238        proc-vmstat.nr_zone_active_anon
-      4088            -1.9%       4009 ±  2%      -2.4%       3990            -2.3%       3996            -1.8%       4014 ±  2%      -1.4%       4033            -0.2%       4079        proc-vmstat.nr_zone_active_file
-     82494            +0.1%      82614            -0.5%      82048            -0.3%      82256            -0.4%      82130            -0.3%      82260            -0.5%      82113        proc-vmstat.nr_zone_inactive_anon
-      7617            -2.0%       7465 ±  2%      -2.6%       7422            -2.4%       7437            -1.9%       7470 ±  2%      -1.4%       7509 ±  2%      -0.2%       7600        proc-vmstat.nr_zone_inactive_file
-    703765            +0.0%     703783            +0.0%     703784            +0.0%     703783            +0.0%     703783            +0.0%     703783            -0.0%     703764        proc-vmstat.nr_zone_unevictable
-      3.33 ± 28%      +0.0%       3.33 ± 28%      -5.0%       3.17 ± 38%     +10.0%       3.67 ± 20%     -15.0%       2.83 ± 42%     -15.0%       2.83 ± 42%     +10.0%       3.67 ± 20%  proc-vmstat.nr_zone_write_pending
-   1235442            +1.0%    1247842           +29.9%    1604535           +24.2%    1534478           +26.2%    1559698           +26.8%    1566654 ±  2%     +26.2%    1559244 ±  3%  proc-vmstat.numa_hit
-      0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00        proc-vmstat.numa_interleave
-   1235492            +1.0%    1248152           +29.9%    1604425           +24.4%    1536808           +26.2%    1559684           +26.7%    1564896 ±  2%     +26.3%    1560551 ±  3%  proc-vmstat.numa_local
-    104137            +0.1%     104280            -3.3%     100722            -3.2%     100799            -2.9%     101119            -3.1%     100957            -3.1%     100941        proc-vmstat.pgactivate
-      0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00        proc-vmstat.pgalloc_dma32
-   1971969 ±  2%      +2.2%    2014675 ±  2%     +18.0%    2326298           +13.7%    2241322           +15.3%    2274171           +15.5%    2278183           +15.2%    2272496 ±  2%  proc-vmstat.pgalloc_normal
-    217635            -0.2%     217101            +1.4%     220782            +1.4%     220662            +1.9%     221831            +2.2%     222320            +1.7%     221292        proc-vmstat.pgfault
-   1837478 ±  2%      +2.3%    1879774 ±  2%     +19.4%    2193887           +14.8%    2108948           +16.6%    2141726           +16.8%    2145377           +16.5%    2140092 ±  3%  proc-vmstat.pgfree
-    970.67 ±  8%      +3.8%       1008            +3.8%       1008            +3.8%       1008            +3.8%       1008            +3.8%       1008            +3.8%       1008        proc-vmstat.pgpgin
-    329584 ±  7%      -5.0%     313193 ±  9%      -6.5%     308086 ±  8%      -5.2%     312513 ±  4%      -9.0%     299896 ±  9%      -5.0%     313191 ±  3%      +2.1%     336414 ±  5%  proc-vmstat.pgpgout
-      7590 ±  2%      -0.5%       7555            -0.3%       7566            -0.9%       7520            -1.2%       7502            -0.9%       7521            -1.0%       7511        proc-vmstat.pgreuse
-     46.50 ±  4%      -0.4%      46.33 ±  5%      -2.2%      45.50 ±  8%      +3.2%      48.00            -2.5%      45.33 ±  9%      -0.4%      46.33 ±  5%      -0.4%      46.33 ±  5%  proc-vmstat.thp_collapse_alloc
-      0.33 ±141%     -50.0%       0.17 ±223%    -100.0%       0.00            +0.0%       0.33 ±141%     -50.0%       0.17 ±223%      +0.0%       0.33 ±141%     -50.0%       0.17 ±223%  proc-vmstat.thp_deferred_split_page
-      1.33 ±103%     +12.5%       1.50 ± 63%     -62.5%       0.50 ±152%     +12.5%       1.50 ±142%      +0.0%       1.33 ± 70%     +25.0%       1.67 ± 66%     -37.5%       0.83 ± 82%  proc-vmstat.thp_fault_alloc
-      0.33 ±141%     -50.0%       0.17 ±223%    -100.0%       0.00            +0.0%       0.33 ±141%     -50.0%       0.17 ±223%      +0.0%       0.33 ±141%     -50.0%       0.17 ±223%  proc-vmstat.thp_split_pmd
-      0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00          -100.0%       0.00        proc-vmstat.thp_zero_page_alloc
-    158.17 ±  4%      +0.0%     158.17            -0.1%     158.00            -0.7%     157.00            -2.1%     154.83 ±  2%      -0.4%     157.50 ±  2%      -0.7%     157.00 ±  2%  proc-vmstat.unevictable_pgs_culled
-      3.00            +0.0%       3.00            +0.0%       3.00            +0.0%       3.00            +0.0%       3.00            +0.0%       3.00            +0.0%       3.00        proc-vmstat.unevictable_pgs_mlocked
-      3.00            +0.0%       3.00           -16.7%       2.50 ± 44%      +0.0%       3.00            +0.0%       3.00            +0.0%       3.00            +0.0%       3.00        proc-vmstat.unevictable_pgs_munlocked
-      3.27            -1.6%       3.22           +25.8%       4.11           +25.9%       4.12           +25.8%       4.12           +25.5%       4.10           +25.9%       4.12        perf-stat.i.MPKI
- 2.715e+09            +0.2%   2.72e+09            -0.4%  2.704e+09            -0.3%  2.707e+09            -0.4%  2.704e+09            -0.0%  2.714e+09            -0.5%  2.702e+09        perf-stat.i.branch-instructions
-      1.51            -0.0        1.50            +0.0        1.54            +0.0        1.54            +0.0        1.54            +0.0        1.54            +0.0        1.55        perf-stat.i.branch-miss-rate%
-  40687192            -0.5%   40498643            +1.7%   41380016            +2.4%   41682342            +1.9%   41442698            +2.5%   41722117            +2.3%   41611968        perf-stat.i.branch-misses
-      4.35 ±  3%      +0.2        4.50 ±  2%      +4.8        9.15 ±  2%      +4.5        8.82 ±  4%      +4.6        9.00 ±  4%      +4.5        8.86 ±  3%      +4.6        8.97 ±  3%  perf-stat.i.cache-miss-rate%
-   1850845 ±  3%      +2.9%    1904640 ±  2%    +167.8%    4955998 ±  2%    +159.2%    4797995 ±  3%    +165.2%    4907598 ±  3%    +159.7%    4806354 ±  2%    +162.3%    4854983 ±  2%  perf-stat.i.cache-misses
-  43707017            -1.1%   43206920           +26.6%   55348265           +26.6%   55353196           +26.0%   55079347           +26.6%   55338631           +26.4%   55263467        perf-stat.i.cache-references
-    169038            -1.4%     166683            -5.7%     159435            -7.5%     156338            -7.7%     156016 ±  2%      -6.9%     157391            -7.3%     156705 ±  2%  perf-stat.i.context-switches
-      0.69            -0.4%       0.69            +3.1%       0.71            +3.0%       0.71            +3.0%       0.71            +3.0%       0.71            +3.1%       0.71        perf-stat.i.cpi
-     36003            -0.0%      36003            +0.0%      36004            +0.0%      36004            -0.0%      36003            +0.0%      36004            +0.0%      36004        perf-stat.i.cpu-clock
-  9.19e+09            -0.2%  9.175e+09            +3.3%   9.49e+09            +3.3%   9.49e+09            +3.0%  9.467e+09            +3.5%  9.512e+09            +3.1%  9.477e+09        perf-stat.i.cpu-cycles
-    709.51            -0.3%     707.08 ±  2%      +6.7%     757.02 ±  3%     +10.3%     782.30 ±  3%      +7.2%     760.59            +8.4%     769.26 ±  2%      +9.4%     776.02        perf-stat.i.cpu-migrations
-      9597 ±  8%      -4.3%       9189 ±  5%     -77.2%       2189 ±  3%     -76.4%       2262 ±  4%     -77.2%       2192 ±  4%     -76.5%       2254 ±  3%     -76.7%       2235 ±  4%  perf-stat.i.cycles-between-cache-misses
-      0.01 ±  8%      -0.0        0.01 ±  4%      +0.0        0.01 ±  3%      +0.0        0.01 ±  4%      +0.0        0.01 ±  4%      +0.0        0.01            +0.0        0.01        perf-stat.i.dTLB-load-miss-rate%
-    197946 ±  7%      -1.3%     195469 ±  5%    +103.5%     402794 ±  3%    +108.2%     412118 ±  4%    +109.8%     415322 ±  4%    +106.7%     409145          +101.1%     398035        perf-stat.i.dTLB-load-misses
- 2.891e+09            +0.3%  2.901e+09            +0.2%  2.896e+09            +0.5%  2.905e+09            +0.2%  2.898e+09            +0.4%  2.904e+09            +0.3%  2.899e+09        perf-stat.i.dTLB-loads
-      0.01 ±  6%      +0.0        0.01 ±  4%      +0.0        0.01            +0.0        0.01 ±  4%      +0.0        0.01 ±  3%      +0.0        0.01 ±  2%      +0.0        0.01 ±  2%  perf-stat.i.dTLB-store-miss-rate%
-     98018 ±  6%      +2.3%     100276 ±  5%    +116.9%     212648          +121.3%     216934 ±  4%    +120.5%     216177 ±  2%    +118.0%     213707 ±  2%    +117.4%     213131 ±  2%  perf-stat.i.dTLB-store-misses
- 1.719e+09            +0.4%  1.726e+09            +2.4%   1.76e+09            +2.8%  1.768e+09            +2.7%  1.766e+09            +2.8%  1.767e+09            +2.6%  1.764e+09        perf-stat.i.dTLB-stores
-     65.48            -0.7       64.83            -1.1       64.37            -0.8       64.64            -1.5       64.02            -1.7       63.75            -1.7       63.79        perf-stat.i.iTLB-load-miss-rate%
-   3467601 ±  2%      -1.4%    3420439 ±  2%      -3.3%    3354556 ±  2%      -2.7%    3372405 ±  2%      -4.6%    3308416 ±  2%      -3.1%    3358715 ±  3%      -5.0%    3293514        perf-stat.i.iTLB-load-misses
-   1803940 ±  2%      +1.6%    1832567            +1.9%    1837405 ±  2%      +1.2%    1825018 ±  2%      +2.0%    1840572 ±  2%      +4.8%    1889927            +2.6%    1851706        perf-stat.i.iTLB-loads
- 1.333e+10            +0.2%  1.335e+10            -0.0%  1.333e+10            +0.1%  1.334e+10            -0.0%  1.333e+10            +0.4%  1.338e+10            -0.1%  1.332e+10        perf-stat.i.instructions
-      3944 ±  2%      +1.4%       3997 ±  2%      +2.6%       4048 ±  2%      +2.5%       4042 ±  2%      +4.4%       4116 ±  2%      +3.2%       4069 ±  3%      +4.4%       4117        perf-stat.i.instructions-per-iTLB-miss
-      1.45            +0.4%       1.46            -3.1%       1.40            -3.0%       1.41            -2.9%       1.41            -2.9%       1.41            -3.0%       1.41        perf-stat.i.ipc
-      0.22 ± 53%      -3.6%       0.21 ± 49%     +64.6%       0.36 ± 26%     +17.0%       0.26 ± 46%     +58.5%       0.35 ± 25%     +40.2%       0.31 ± 13%     +15.8%       0.26 ± 24%  perf-stat.i.major-faults
-      0.26            -0.2%       0.25            +3.3%       0.26            +3.3%       0.26            +3.0%       0.26            +3.5%       0.26            +3.1%       0.26        perf-stat.i.metric.GHz
-    105.16 ±  3%      -0.3%     104.87 ±  3%     +38.9%     146.07 ±  3%     +36.2%     143.24 ±  4%     +38.9%     146.03 ±  3%     +37.5%     144.55 ±  4%     +39.3%     146.48 ±  4%  perf-stat.i.metric.K/sec
-    204.67            +0.3%     205.25            +0.6%     205.96            +0.9%     206.51            +0.7%     206.18            +1.0%     206.65            +0.7%     206.10        perf-stat.i.metric.M/sec
-      1983            -0.5%       1974            +2.6%       2035            +2.5%       2034            +3.2%       2047            +3.6%       2054            +2.9%       2041        perf-stat.i.minor-faults
-    255033 ±  4%      +0.3%     255836 ±  3%    +311.0%    1048156 ±  4%    +298.6%    1016537 ±  5%    +304.9%    1032521 ±  3%    +300.8%    1022295 ±  4%    +305.4%    1033778 ±  2%  perf-stat.i.node-loads
-    530384 ±  5%      +3.0%     546448 ±  3%    +182.4%    1497970 ±  2%    +174.6%    1456197 ±  4%    +181.5%    1493129 ±  3%    +173.9%    1452529 ±  3%    +176.7%    1467697 ±  3%  perf-stat.i.node-stores
-      1984            -0.5%       1975            +2.6%       2036            +2.5%       2034            +3.2%       2048            +3.6%       2055            +2.9%       2041        perf-stat.i.page-faults
-     36003            -0.0%      36003            +0.0%      36004            +0.0%      36004            -0.0%      36003            +0.0%      36004            +0.0%      36004        perf-stat.i.task-clock
-      3.28            -1.3%       3.24           +26.7%       4.15           +26.5%       4.15           +26.1%       4.13           +26.1%       4.14           +26.6%       4.15        perf-stat.overall.MPKI
-      1.50            -0.0        1.49            +0.0        1.53            +0.0        1.54            +0.0        1.53            +0.0        1.54            +0.0        1.54        perf-stat.overall.branch-miss-rate%
-      4.23 ±  2%      +0.2        4.41 ±  2%      +4.7        8.96 ±  2%      +4.4        8.67 ±  4%      +4.7        8.91 ±  3%      +4.5        8.69 ±  3%      +4.6        8.79 ±  2%  perf-stat.overall.cache-miss-rate%
-      0.69            -0.3%       0.69            +3.3%       0.71            +3.1%       0.71            +3.0%       0.71            +3.1%       0.71            +3.2%       0.71        perf-stat.overall.cpi
-      4969 ±  3%      -3.0%       4818 ±  2%     -61.4%       1915 ±  2%     -60.1%       1980 ±  4%     -61.1%       1931 ±  4%     -60.1%       1980 ±  3%     -60.7%       1953 ±  2%  perf-stat.overall.cycles-between-cache-misses
-      0.01 ±  7%      -0.0        0.01 ±  5%      +0.0        0.01 ±  3%      +0.0        0.01 ±  4%      +0.0        0.01 ±  4%      +0.0        0.01            +0.0        0.01        perf-stat.overall.dTLB-load-miss-rate%
-      0.01 ±  6%      +0.0        0.01 ±  5%      +0.0        0.01            +0.0        0.01 ±  4%      +0.0        0.01 ±  2%      +0.0        0.01 ±  2%      +0.0        0.01 ±  2%  perf-stat.overall.dTLB-store-miss-rate%
-     65.78            -0.7       65.11            -1.2       64.61            -0.9       64.88            -1.5       64.25            -1.8       63.98            -1.8       64.01        perf-stat.overall.iTLB-load-miss-rate%
-      3846 ±  2%      +1.6%       3906 ±  2%      +3.3%       3974 ±  2%      +3.0%       3960 ±  3%      +4.8%       4030 ±  2%      +3.7%       3989 ±  4%      +5.1%       4044 ±  2%  perf-stat.overall.instructions-per-iTLB-miss
-      1.45            +0.3%       1.46            -3.2%       1.40            -3.1%       1.41            -3.0%       1.41            -3.0%       1.41            -3.1%       1.41        perf-stat.overall.ipc
- 2.672e+09            +0.2%  2.677e+09            -0.4%  2.661e+09            -0.3%  2.664e+09            -0.4%  2.661e+09            -0.0%  2.671e+09            -0.5%  2.659e+09        perf-stat.ps.branch-instructions
-  40042511            -0.5%   39856062            +1.7%   40723929            +2.4%   41019562            +1.9%   40785473            +2.5%   41060673            +2.3%   40952360        perf-stat.ps.branch-misses
-   1821865 ±  3%      +2.9%    1874860 ±  2%    +167.7%    4877660 ±  2%    +159.2%    4721907 ±  3%    +165.1%    4830099 ±  3%    +159.6%    4730360 ±  2%    +162.3%    4778261 ±  2%  perf-stat.ps.cache-misses
-  43014124            -1.1%   42520785           +26.6%   54470791           +26.6%   54472856           +26.0%   54206194           +26.6%   54461166           +26.4%   54387899        perf-stat.ps.cache-references
-    166353            -1.4%     164030            -5.7%     156905            -7.5%     153850            -7.7%     153539 ±  2%      -6.9%     154892            -7.3%     154220 ±  2%  perf-stat.ps.context-switches
-     35432            -0.0%      35432            +0.0%      35432            -0.0%      35432            -0.0%      35432            +0.0%      35432            +0.0%      35432        perf-stat.ps.cpu-clock
- 9.044e+09            -0.2%   9.03e+09            +3.3%   9.34e+09            +3.3%  9.339e+09            +3.0%  9.317e+09            +3.5%  9.361e+09            +3.1%  9.327e+09        perf-stat.ps.cpu-cycles
-    698.25            -0.3%     695.83 ±  2%      +6.7%     745.01 ±  3%     +10.3%     769.85 ±  3%      +7.2%     748.52            +8.4%     757.06 ±  2%      +9.4%     763.72        perf-stat.ps.cpu-migrations
-    194817 ±  7%      -1.2%     192383 ±  5%    +103.5%     396411 ±  3%    +108.2%     405573 ±  4%    +109.8%     408745 ±  4%    +106.7%     402663          +101.1%     391731        perf-stat.ps.dTLB-load-misses
- 2.845e+09            +0.3%  2.855e+09            +0.2%   2.85e+09            +0.5%  2.859e+09            +0.2%  2.852e+09            +0.4%  2.858e+09            +0.3%  2.853e+09        perf-stat.ps.dTLB-loads
-     96463 ±  6%      +2.3%      98683 ±  5%    +116.9%     209275          +121.3%     213482 ±  4%    +120.5%     212748 ±  2%    +118.0%     210317 ±  2%    +117.4%     209753 ±  2%  perf-stat.ps.dTLB-store-misses
- 1.692e+09            +0.4%  1.698e+09            +2.4%  1.732e+09            +2.8%   1.74e+09            +2.7%  1.738e+09            +2.8%  1.739e+09            +2.6%  1.737e+09        perf-stat.ps.dTLB-stores
-   3412613 ±  2%      -1.4%    3366101 ±  2%      -3.3%    3301371 ±  2%      -2.7%    3318781 ±  2%      -4.6%    3255962 ±  2%      -3.1%    3305464 ±  3%      -5.0%    3241327        perf-stat.ps.iTLB-load-misses
-   1775316 ±  2%      +1.6%    1803433            +1.9%    1808259 ±  2%      +1.2%    1795991 ±  2%      +2.0%    1811371 ±  2%      +4.8%    1859946            +2.6%    1822348        perf-stat.ps.iTLB-loads
- 1.312e+10            +0.2%  1.314e+10            -0.0%  1.311e+10            +0.1%  1.313e+10            -0.0%  1.311e+10            +0.4%  1.317e+10            -0.1%   1.31e+10        perf-stat.ps.instructions
-      0.22 ± 53%      -3.7%       0.21 ± 49%     +64.6%       0.36 ± 26%     +17.0%       0.25 ± 46%     +58.5%       0.34 ± 25%     +40.2%       0.30 ± 13%     +15.8%       0.25 ± 24%  perf-stat.ps.major-faults
-      1952            -0.4%       1943            +2.6%       2003            +2.5%       2002            +3.2%       2015            +3.6%       2022            +2.9%       2008        perf-stat.ps.minor-faults
-    251039 ±  4%      +0.3%     251835 ±  3%    +310.9%    1031577 ±  4%    +298.5%    1000399 ±  5%    +304.8%    1016202 ±  3%    +300.8%    1006115 ±  4%    +305.3%    1017432 ±  2%  perf-stat.ps.node-loads
-    522057 ±  5%      +3.0%     537876 ±  3%    +182.4%    1474274 ±  2%    +174.5%    1433089 ±  4%    +181.5%    1469524 ±  3%    +173.8%    1429540 ±  3%    +176.7%    1444488 ±  3%  perf-stat.ps.node-stores
-      1952            -0.4%       1944            +2.6%       2004            +2.5%       2002            +3.2%       2015            +3.6%       2022            +2.9%       2008        perf-stat.ps.page-faults
-     35432            -0.0%      35432            +0.0%      35432            -0.0%      35432            -0.0%      35432            +0.0%      35432            +0.0%      35432        perf-stat.ps.task-clock
- 8.275e+11            +0.2%  8.291e+11            -0.0%  8.274e+11            +0.1%  8.286e+11            -0.0%  8.274e+11            +0.4%  8.307e+11            -0.1%  8.268e+11        perf-stat.total.instructions
-     36.32 ±223%     -85.8%       5.14 ±223%     -58.6%      15.05 ±141%      -1.8%      35.65 ±171%    -100.0%       0.00           -53.0%      17.07 ±110%     -53.1%      17.04 ±106%  sched_debug.cfs_rq:/.MIN_vruntime.avg
-      1307 ±223%     -85.8%     185.09 ±223%     -58.6%     541.85 ±141%      -1.8%       1283 ±171%    -100.0%       0.00           -53.0%     614.60 ±110%     -53.1%     613.62 ±106%  sched_debug.cfs_rq:/.MIN_vruntime.max
-      0.00            +0.0%       0.00            +0.0%       0.00            +0.0%       0.00            +0.0%       0.00            +0.0%       0.00            +0.0%       0.00        sched_debug.cfs_rq:/.MIN_vruntime.min
-    214.89 ±223%     -85.8%      30.42 ±223%     -58.6%      89.05 ±141%      -1.8%     210.92 ±171%    -100.0%       0.00           -53.0%     101.00 ±110%     -53.1%     100.84 ±106%  sched_debug.cfs_rq:/.MIN_vruntime.stddev
-      0.37 ± 13%     +12.7%       0.41 ±  7%      +3.8%       0.38 ± 10%      +7.6%       0.39 ± 10%      +1.3%       0.37 ± 14%     +10.1%       0.40 ±  9%      +2.5%       0.38 ±  5%  sched_debug.cfs_rq:/.h_nr_running.avg
-      1.00           +16.7%       1.17 ± 31%     +33.3%       1.33 ± 35%     +33.3%       1.33 ± 35%      +0.0%       1.00           +16.7%       1.17 ± 31%     +33.3%       1.33 ± 55%  sched_debug.cfs_rq:/.h_nr_running.max
-      0.48 ±  3%      +4.4%       0.50 ±  4%      +6.4%       0.51 ±  9%      +5.4%       0.50 ±  5%      +0.2%       0.48 ±  2%      +4.0%       0.50 ±  4%      +6.2%       0.51 ± 10%  sched_debug.cfs_rq:/.h_nr_running.stddev
-     13022 ± 23%     +49.2%      19423 ± 53%    +105.2%      26715 ± 54%    +187.8%      37478 ± 68%     +40.9%      18352 ± 67%     +76.0%      22924 ± 58%    +115.1%      28013 ±108%  sched_debug.cfs_rq:/.load.avg
-     71165 ± 35%    +267.5%     261518 ±144%    +692.0%     563595 ± 88%    +936.5%     737606 ±102%    +231.6%     235959 ±154%    +465.6%     402545 ±117%    +486.1%     417099 ±181%  sched_debug.cfs_rq:/.load.max
-     19689 ± 15%    +146.8%      48598 ±121%    +387.4%      95974 ± 80%    +590.5%     135952 ± 92%    +132.0%      45671 ±123%    +263.4%      71558 ±102%    +316.7%      82041 ±163%  sched_debug.cfs_rq:/.load.stddev
-    503.36 ±  9%      +7.1%     538.87 ± 15%     +15.6%     581.68 ±  7%     +13.1%     569.24 ± 16%      +9.4%     550.55 ± 19%      +7.2%     539.55 ± 18%     +13.7%     572.51 ± 16%  sched_debug.cfs_rq:/.load_avg.avg
-     12092 ± 12%      +9.2%      13205 ± 18%     +12.2%      13566 ± 22%     +13.9%      13772 ± 19%     +20.4%      14558 ± 21%     +17.5%      14213 ± 21%     +18.7%      14352 ± 23%  sched_debug.cfs_rq:/.load_avg.max
-      0.50 ±223%     -66.7%       0.17 ±223%     -66.7%       0.17 ±223%     -66.7%       0.17 ±223%    -100.0%       0.00            +0.0%       0.50 ±223%     -33.3%       0.33 ±223%  sched_debug.cfs_rq:/.load_avg.min
-      1984 ± 12%      +9.1%       2166 ± 18%     +12.3%       2228 ± 22%     +13.9%       2260 ± 19%     +20.3%       2387 ± 21%     +17.5%       2332 ± 21%     +18.6%       2353 ± 23%  sched_debug.cfs_rq:/.load_avg.stddev
-     36.32 ±223%     -85.8%       5.14 ±223%     -58.6%      15.05 ±141%      -1.8%      35.65 ±171%    -100.0%       0.00           -53.0%      17.07 ±110%     -53.1%      17.04 ±106%  sched_debug.cfs_rq:/.max_vruntime.avg
-      1307 ±223%     -85.8%     185.09 ±223%     -58.6%     541.85 ±141%      -1.8%       1283 ±171%    -100.0%       0.00           -53.0%     614.60 ±110%     -53.1%     613.62 ±106%  sched_debug.cfs_rq:/.max_vruntime.max
-      0.00            +0.0%       0.00            +0.0%       0.00            +0.0%       0.00            +0.0%       0.00            +0.0%       0.00            +0.0%       0.00        sched_debug.cfs_rq:/.max_vruntime.min
-    214.89 ±223%     -85.8%      30.42 ±223%     -58.6%      89.05 ±141%      -1.8%     210.92 ±171%    -100.0%       0.00           -53.0%     101.00 ±110%     -53.1%     100.84 ±106%  sched_debug.cfs_rq:/.max_vruntime.stddev
-      3117            +0.4%       3128            +0.5%       3132            -0.1%       3113            +0.4%       3130            +0.2%       3123            +0.1%       3120        sched_debug.cfs_rq:/.min_vruntime.avg
-     26380 ± 18%     +11.5%      29413 ± 19%      -6.3%      24714 ± 23%      +5.4%      27814 ± 18%      +5.4%      27802 ± 17%      +3.2%      27214 ± 16%     -13.1%      22916 ± 12%  sched_debug.cfs_rq:/.min_vruntime.max
-    506.85 ±  9%     +16.7%     591.31 ± 30%     +22.7%     621.78 ± 11%      +1.6%     515.02 ± 13%     +42.0%     719.91 ± 12%      +4.3%     528.74 ± 25%     +13.7%     576.36 ± 15%  sched_debug.cfs_rq:/.min_vruntime.min
-      5021 ±  7%      +5.2%       5282 ± 11%      -2.4%       4899 ± 10%      +3.1%       5177 ± 12%      +4.0%       5220 ±  9%      +0.9%       5064 ±  8%      -6.0%       4719 ±  5%  sched_debug.cfs_rq:/.min_vruntime.stddev
-      0.37 ± 13%     +12.7%       0.41 ±  7%      +2.5%       0.38 ±  9%      +7.6%       0.39 ± 10%      +1.3%       0.37 ± 14%     +10.1%       0.40 ±  9%      +2.5%       0.38 ±  5%  sched_debug.cfs_rq:/.nr_running.avg
-      1.00           +16.7%       1.17 ± 31%     +33.3%       1.33 ± 35%     +33.3%       1.33 ± 35%      +0.0%       1.00           +16.7%       1.17 ± 31%     +33.3%       1.33 ± 55%  sched_debug.cfs_rq:/.nr_running.max
-      0.48 ±  3%      +4.4%       0.50 ±  4%      +4.5%       0.50 ±  6%      +5.4%       0.50 ±  5%      +0.2%       0.48 ±  2%      +4.0%       0.50 ±  4%      +6.2%       0.51 ± 10%  sched_debug.cfs_rq:/.nr_running.stddev
-     74.60 ± 41%      +6.4%      79.39 ± 51%     +63.6%     122.03 ± 48%     +25.3%      93.48 ± 37%     -18.7%      60.68 ± 48%     -30.7%      51.69 ± 91%      +0.4%      74.88 ± 46%  sched_debug.cfs_rq:/.removed.load_avg.avg
-      1019            +0.4%       1023            +0.5%       1024            +0.0%       1019            -0.0%       1019           -17.2%     844.00 ± 44%      -0.1%       1018        sched_debug.cfs_rq:/.removed.load_avg.max
-    256.42 ± 20%      +1.3%     259.69 ± 26%     +23.7%     317.24 ± 21%     +11.7%     286.36 ± 17%      -9.6%     231.76 ± 23%     -26.6%     188.31 ± 58%      -0.1%     256.29 ± 22%  sched_debug.cfs_rq:/.removed.load_avg.stddev
-     25.96 ± 47%      +6.5%      27.65 ± 55%     +32.0%      34.27 ± 73%      +5.2%      27.30 ± 43%     -23.6%      19.84 ± 57%     -28.8%      18.48 ± 94%      +5.3%      27.34 ± 53%  sched_debug.cfs_rq:/.removed.runnable_avg.avg
-    431.83 ± 33%      +4.6%     451.83 ± 25%      -8.5%     395.00 ± 32%      -0.2%     431.17 ± 27%      -6.7%     402.83 ± 24%     -20.5%     343.33 ± 65%      +9.1%     471.33 ± 17%  sched_debug.cfs_rq:/.removed.runnable_avg.max
-     92.16 ± 38%      +3.0%      94.92 ± 35%      +3.9%      95.79 ± 42%      +0.6%      92.76 ± 30%     -10.9%      82.12 ± 39%     -24.7%      69.38 ± 72%      +6.6%      98.21 ± 28%  sched_debug.cfs_rq:/.removed.runnable_avg.stddev
-     25.95 ± 47%      +6.3%      27.58 ± 55%     +32.0%      34.25 ± 73%      +5.1%      27.29 ± 43%     -23.6%      19.83 ± 57%     -28.9%      18.45 ± 94%      +4.8%      27.20 ± 54%  sched_debug.cfs_rq:/.removed.util_avg.avg
-    431.67 ± 33%      +4.6%     451.33 ± 25%      -8.5%     395.00 ± 32%      -0.1%     431.17 ± 27%      -6.7%     402.67 ± 24%     -20.7%     342.33 ± 65%      +8.1%     466.50 ± 19%  sched_debug.cfs_rq:/.removed.util_avg.max
-     92.14 ± 38%      +2.9%      94.78 ± 35%      +3.9%      95.75 ± 42%      +0.7%      92.74 ± 30%     -10.9%      82.07 ± 39%     -24.9%      69.24 ± 72%      +5.9%      97.58 ± 29%  sched_debug.cfs_rq:/.removed.util_avg.stddev
-    617.79 ±  6%      +1.6%     627.73 ±  7%      +3.9%     641.83 ±  4%      +4.4%     644.71 ±  3%      -4.5%     590.08 ±  4%      -0.2%     616.77 ±  3%      +0.8%     622.74 ±  3%  sched_debug.cfs_rq:/.runnable_avg.avg
-      1581 ± 21%      -6.2%       1482 ± 13%      +2.6%       1622 ± 14%      +3.1%       1629 ± 11%      +1.7%       1609 ± 25%      -7.6%       1461 ±  7%      +8.7%       1719 ± 15%  sched_debug.cfs_rq:/.runnable_avg.max
-      4.00 ± 77%     -16.7%       3.33 ± 82%      +0.0%       4.00 ± 81%     -41.7%       2.33 ± 31%      +0.0%       4.00 ±102%    +562.5%      26.50 ±205%    +562.5%      26.50 ±196%  sched_debug.cfs_rq:/.runnable_avg.min
-    383.62 ± 14%     -15.4%     324.58 ±  9%      -4.7%     365.76 ± 12%      -1.8%     376.75 ± 10%      -4.0%     368.47 ± 22%      -9.8%     346.17 ±  7%      +9.2%     418.73 ± 17%  sched_debug.cfs_rq:/.runnable_avg.stddev
-    -17795           +28.7%     -22901           -20.9%     -14078            +7.7%     -19170            +8.0%     -19227           +24.9%     -22230            +4.0%     -18513        sched_debug.cfs_rq:/.spread0.avg
-      5476 ±118%     -38.2%       3384 ±155%     +37.0%       7501 ±113%      +1.2%       5543 ±147%      -0.5%       5450 ±100%     -65.6%       1885 ±223%     -76.2%       1305 ±223%  sched_debug.cfs_rq:/.spread0.max
-    -20397           +24.7%     -25443           -18.7%     -16587            +6.7%     -21769            +6.1%     -21636           +21.7%     -24829            +3.2%     -21054        sched_debug.cfs_rq:/.spread0.min
-      5027 ±  7%      +5.1%       5284 ± 11%      -2.5%       4900 ± 10%      +3.0%       5179 ± 12%      +3.9%       5223 ±  9%      +0.8%       5068 ±  8%      -6.1%       4723 ±  5%  sched_debug.cfs_rq:/.spread0.stddev
-    614.63 ±  6%      +1.5%     624.05 ±  7%      +4.0%     639.05 ±  4%      +4.5%     642.11 ±  3%      -4.4%     587.35 ±  4%      -0.2%     613.55 ±  3%      +0.7%     618.89 ±  3%  sched_debug.cfs_rq:/.util_avg.avg
-      1571 ± 21%      -6.8%       1464 ± 14%      +2.9%       1617 ± 15%      +3.2%       1622 ± 11%      +2.2%       1605 ± 25%      -7.2%       1458 ±  7%      +9.2%       1716 ± 15%  sched_debug.cfs_rq:/.util_avg.max
-      3.33 ±103%      +0.0%       3.33 ± 82%      +5.0%       3.50 ± 80%     -30.0%       2.33 ± 31%     +25.0%       4.17 ± 96%    +690.0%      26.33 ±206%    +690.0%      26.33 ±198%  sched_debug.cfs_rq:/.util_avg.min
-    381.69 ± 14%     -15.4%     322.73 ± 10%      -4.5%     364.61 ± 12%      -1.7%     375.08 ± 11%      -3.6%     367.84 ± 22%      -9.7%     344.66 ±  7%      +9.4%     417.70 ± 17%  sched_debug.cfs_rq:/.util_avg.stddev
-     47.68 ± 18%      +6.6%      50.83 ± 19%      +7.8%      51.38 ± 33%     +18.0%      56.26 ± 30%      +5.9%      50.48 ± 30%     +14.9%      54.79 ± 17%     +25.7%      59.93 ± 20%  sched_debug.cfs_rq:/.util_est_enqueued.avg
-    483.17 ±  3%      -2.4%     471.50 ±  3%      -0.0%     483.00 ±  2%      -0.6%     480.50            -2.0%     473.67 ±  3%      -2.6%     470.83 ±  2%      +4.0%     502.50 ±  3%  sched_debug.cfs_rq:/.util_est_enqueued.max
-    130.15 ±  8%      +3.0%     134.09 ±  8%      +2.9%     133.87 ± 13%      +8.9%     141.72 ± 15%      +2.8%     133.82 ± 18%      +6.5%     138.64 ± 11%     +14.2%     148.67 ±  9%  sched_debug.cfs_rq:/.util_est_enqueued.stddev
-    490494 ±  6%      -0.5%     487945 ±  2%      +3.4%     507144 ±  4%      +3.7%     508452 ±  2%      +3.4%     506977 ±  4%      +1.4%     497210 ±  3%      +0.9%     495138 ±  3%  sched_debug.cpu.avg_idle.avg
-    979154 ±  3%      -7.5%     905777 ±  7%      -0.3%     976636 ±  3%      +1.9%     997376            +2.1%    1000000            +2.0%     998626            +0.1%     980551 ±  4%  sched_debug.cpu.avg_idle.max
-      5334 ± 63%     -38.7%       3267 ± 40%     -44.9%       2941 ± 26%     -50.7%       2632 ± 16%    +529.7%      33586 ±172%     -48.9%       2723 ± 10%     -41.3%       3133 ± 35%  sched_debug.cpu.avg_idle.min
-    240114 ± 12%     -11.1%     213348 ± 14%      -7.6%     221784 ±  7%      +1.0%     242417 ± 10%      +0.8%     242141 ±  7%      +1.7%     244145 ±  9%      -1.3%     236973 ±  9%  sched_debug.cpu.avg_idle.stddev
-     28934            +0.2%      28998            -0.2%      28868            +0.9%      29192            +1.7%      29424            -0.0%      28927            +1.2%      29273        sched_debug.cpu.clock.avg
-     28935            +0.2%      28999            -0.2%      28870            +0.9%      29194            +1.7%      29425            -0.0%      28928            +1.2%      29274        sched_debug.cpu.clock.max
-     28932            +0.2%      28997            -0.2%      28867            +0.9%      29191            +1.7%      29422            -0.0%      28926            +1.2%      29271        sched_debug.cpu.clock.min
-      0.80 ±  8%      +2.8%       0.82 ± 13%      -4.0%       0.77 ± 11%     -11.5%       0.71 ± 10%      -1.0%       0.79 ± 12%      -5.4%       0.75 ± 10%      -7.6%       0.74 ±  9%  sched_debug.cpu.clock.stddev
-     28908            +0.2%      28973            -0.2%      28843            +0.9%      29167            +1.7%      29398            -0.0%      28902            +1.2%      29247        sched_debug.cpu.clock_task.avg
-     28929            +0.2%      28993            -0.2%      28864            +0.9%      29189            +1.7%      29419            -0.0%      28923            +1.2%      29268        sched_debug.cpu.clock_task.max
-     28512            +0.2%      28569            -0.2%      28442            +0.9%      28767            +1.7%      28996            -0.0%      28499            +1.2%      28851        sched_debug.cpu.clock_task.min
-     68.29 ±  2%      +1.8%      69.51 ±  2%      +1.0%      68.99 ±  2%      +1.0%      68.97 ±  2%      +1.0%      69.00 ±  2%      +1.5%      69.30 ±  3%      +0.2%      68.42        sched_debug.cpu.clock_task.stddev
-      1141 ± 16%     +10.5%       1261 ±  9%      +5.0%       1197 ± 11%      +4.7%       1194 ± 12%      -1.4%       1124 ± 13%      +8.8%       1241 ±  8%      -0.0%       1140 ±  8%  sched_debug.cpu.curr->pid.avg
-      3296            +0.1%       3298            +0.1%       3300            +0.1%       3299            +0.1%       3300            +0.0%       3297            +0.1%       3299        sched_debug.cpu.curr->pid.max
-      1519 ±  4%      +2.7%       1560            +1.2%       1538 ±  2%      +0.8%       1531            +0.0%       1519 ±  2%      +2.3%       1554            +0.8%       1530        sched_debug.cpu.curr->pid.stddev
-    500000            +0.0%     500000            +0.0%     500000            +0.0%     500000            +0.0%     500000            +0.0%     500000            +0.0%     500000        sched_debug.cpu.max_idle_balance_cost.avg
-    500000            +0.0%     500000            +0.0%     500000            +0.0%     500000            +0.0%     500000            +0.0%     500000            +0.0%     500000        sched_debug.cpu.max_idle_balance_cost.max
-    500000            +0.0%     500000            +0.0%     500000            +0.0%     500000            +0.0%     500000            +0.0%     500000            +0.0%     500000        sched_debug.cpu.max_idle_balance_cost.min
-      4294            +0.0%       4294            -0.0%       4294            +0.0%       4294            +0.0%       4294            -0.0%       4294            +0.0%       4294        sched_debug.cpu.next_balance.avg
-      4294            +0.0%       4294            -0.0%       4294            +0.0%       4294            +0.0%       4294            +0.0%       4294            +0.0%       4294        sched_debug.cpu.next_balance.max
-      4294            +0.0%       4294            -0.0%       4294            +0.0%       4294            +0.0%       4294            -0.0%       4294            +0.0%       4294        sched_debug.cpu.next_balance.min
-      0.00 ±  9%     +37.9%       0.00 ± 40%      -4.7%       0.00 ± 16%      -8.3%       0.00 ± 20%     +10.5%       0.00 ± 14%     +10.3%       0.00 ± 11%     -10.8%       0.00 ± 10%  sched_debug.cpu.next_balance.stddev
-      0.36 ± 12%     +13.0%       0.40 ±  9%     +11.7%       0.40 ±  9%      +9.1%       0.39 ± 11%      -1.3%       0.35 ± 12%     +13.0%       0.40 ± 11%      +2.6%       0.37 ±  6%  sched_debug.cpu.nr_running.avg
-      1.00           +16.7%       1.17 ± 31%     +50.0%       1.50 ± 50%     +16.7%       1.17 ± 31%      +0.0%       1.00           +50.0%       1.50 ± 50%     +33.3%       1.33 ± 55%  sched_debug.cpu.nr_running.max
-      0.48 ±  3%      +4.4%       0.50 ±  4%     +10.8%       0.53 ± 14%      +3.7%       0.49 ±  5%      -0.3%       0.48 ±  2%      +9.4%       0.52 ± 11%      +6.1%       0.51 ± 11%  sched_debug.cpu.nr_running.stddev
-      5004            +0.1%       5011            +0.2%       5012            +0.3%       5017            +0.3%       5020            -0.1%       5000            +0.1%       5011        sched_debug.cpu.nr_switches.avg
-     25113 ± 22%     +52.5%      38306 ± 20%     +12.8%      28339 ± 15%      +6.1%      26644 ± 23%      +9.0%      27382 ± 23%      +9.1%      27397 ± 12%      +6.4%      26732 ± 22%  sched_debug.cpu.nr_switches.max
-    422.17 ± 45%      -3.3%     408.17 ± 39%     +18.9%     501.83 ± 32%      +0.0%     422.33 ± 17%     -12.6%     369.17 ± 13%     -26.1%     312.00 ± 24%      -8.0%     388.50 ± 18%  sched_debug.cpu.nr_switches.min
-      5663 ± 11%     +24.6%       7059 ± 14%      +7.6%       6095 ±  7%      +3.4%       5858 ± 13%      +9.7%       6211 ±  6%      +2.3%       5796 ±  9%      +9.2%       6186 ± 11%  sched_debug.cpu.nr_switches.stddev
-      0.00 ±223%    -100.0%       0.00            +0.0%       0.00 ±223%      +0.0%       0.00 ±223%    -100.0%       0.00            +0.0%       0.00 ±223%    -200.0%      -0.00        sched_debug.cpu.nr_uninterruptible.avg
-     12.17 ± 28%     +15.1%      14.00 ± 26%      +5.5%      12.83 ± 24%      -5.5%      11.50 ± 17%      +8.2%      13.17 ± 18%      -6.8%      11.33 ± 20%      -8.2%      11.17 ± 23%  sched_debug.cpu.nr_uninterruptible.max
-     -8.67            -3.8%      -8.33            +9.6%      -9.50           +17.3%     -10.17           +17.3%     -10.17            -0.0%      -8.67            +1.9%      -8.83        sched_debug.cpu.nr_uninterruptible.min
-      4.94 ±  9%      -4.2%       4.73 ± 12%      +0.1%       4.95 ± 12%      -3.4%       4.77 ±  9%      -0.9%       4.90 ± 10%      -8.6%       4.52 ±  9%     -10.6%       4.42 ± 11%  sched_debug.cpu.nr_uninterruptible.stddev
-     28933            +0.2%      28997            -0.2%      28867            +0.9%      29191            +1.7%      29423            -0.0%      28926            +1.2%      29272        sched_debug.cpu_clk
-    996147            +0.0%     996147            +0.0%     996147            +0.0%     996147            +0.0%     996147            +0.0%     996147            +0.0%     996147        sched_debug.dl_rq:.dl_bw->bw.avg
-    996147            +0.0%     996147            +0.0%     996147            +0.0%     996147            +0.0%     996147            +0.0%     996147            +0.0%     996147        sched_debug.dl_rq:.dl_bw->bw.max
-    996147            +0.0%     996147            +0.0%     996147            +0.0%     996147            +0.0%     996147            +0.0%     996147            +0.0%     996147        sched_debug.dl_rq:.dl_bw->bw.min
- 4.295e+09            +0.0%  4.295e+09            -0.0%  4.295e+09            +0.0%  4.295e+09            +0.0%  4.295e+09            -0.0%  4.295e+09            +0.0%  4.295e+09        sched_debug.jiffies
-     28881            +0.2%      28946            -0.2%      28816            +0.9%      29140            +1.7%      29371            -0.0%      28875            +1.2%      29220        sched_debug.ktime
-    950.00            +0.0%     950.00            +0.0%     950.00            +0.0%     950.00            +0.0%     950.00            +0.0%     950.00            +0.0%     950.00        sched_debug.rt_rq:.rt_runtime.avg
-    950.00            +0.0%     950.00            +0.0%     950.00            +0.0%     950.00            +0.0%     950.00            +0.0%     950.00            +0.0%     950.00        sched_debug.rt_rq:.rt_runtime.max
-    950.00            +0.0%     950.00            +0.0%     950.00            +0.0%     950.00            +0.0%     950.00            +0.0%     950.00            +0.0%     950.00        sched_debug.rt_rq:.rt_runtime.min
-     28954            +0.2%      29018            -0.2%      28889            +0.9%      29213            +1.7%      29445            -0.0%      28947            +1.2%      29293        sched_debug.sched_clk
-      1.00            +0.0%       1.00            +0.0%       1.00            +0.0%       1.00            +0.0%       1.00            +0.0%       1.00            +0.0%       1.00        sched_debug.sched_clock_stable()
-  58611259            +0.0%   58611259            +0.0%   58611259            +0.0%   58611259            +0.0%   58611259            +0.0%   58611259            +0.0%   58611259        sched_debug.sysctl_sched.sysctl_sched_features
-      0.75            +0.0%       0.75            +0.0%       0.75            +0.0%       0.75            +0.0%       0.75            +0.0%       0.75            +0.0%       0.75        sched_debug.sysctl_sched.sysctl_sched_idle_min_granularity
-     24.00            +0.0%      24.00            +0.0%      24.00            +0.0%      24.00            +0.0%      24.00            +0.0%      24.00            +0.0%      24.00        sched_debug.sysctl_sched.sysctl_sched_latency
-      3.00            +0.0%       3.00            +0.0%       3.00            +0.0%       3.00            +0.0%       3.00            +0.0%       3.00            +0.0%       3.00        sched_debug.sysctl_sched.sysctl_sched_min_granularity
-      1.00            +0.0%       1.00            +0.0%       1.00            +0.0%       1.00            +0.0%       1.00            +0.0%       1.00            +0.0%       1.00        sched_debug.sysctl_sched.sysctl_sched_tunable_scaling
-      4.00            +0.0%       4.00            +0.0%       4.00            +0.0%       4.00            +0.0%       4.00            +0.0%       4.00            +0.0%       4.00        sched_debug.sysctl_sched.sysctl_sched_wakeup_granularity
-     10.34 ±  4%      -0.5        9.87 ±  2%      -1.4        8.90 ±  2%      -1.3        9.01 ±  4%      -1.3        9.04 ±  3%      -1.4        8.94 ±  2%      -1.5        8.87 ±  4%  perf-profile.calltrace.cycles-pp.umount2
-      9.92 ±  4%      -0.4        9.49 ±  2%      -1.4        8.51 ±  2%      -1.3        8.63 ±  4%      -1.3        8.66 ±  4%      -1.3        8.60 ±  2%      -1.4        8.54 ±  4%  perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.umount2
-      9.97 ±  4%      -0.4        9.54 ±  2%      -1.4        8.55 ±  2%      -1.3        8.67 ±  4%      -1.3        8.71 ±  3%      -1.3        8.64            -1.4        8.57 ±  4%  perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.umount2
-      6.04 ±  3%      -0.4        5.70 ±  8%      +3.2        9.29 ±  3%      +3.4        9.42 ±  5%      +2.8        8.81 ±  2%      +2.9        8.97 ±  5%      +3.1        9.12 ±  6%  perf-profile.calltrace.cycles-pp.ret_from_fork
-      6.04 ±  3%      -0.4        5.70 ±  8%      +3.2        9.29 ±  3%      +3.4        9.42 ±  5%      +2.8        8.81 ±  2%      +2.9        8.97 ±  5%      +3.1        9.12 ±  6%  perf-profile.calltrace.cycles-pp.kthread.ret_from_fork
-      4.24 ±  5%      -0.3        3.93 ±  3%      +2.9        7.09 ±  2%      +2.8        7.07 ±  4%      +2.5        6.78 ±  3%      +2.6        6.81 ±  2%      +2.7        6.93 ±  7%  perf-profile.calltrace.cycles-pp.worker_thread.kthread.ret_from_fork
-      0.29 ±100%      -0.3        0.00            -0.3        0.00            -0.3        0.00            -0.2        0.09 ±223%      -0.3        0.00            -0.2        0.10 ±223%  perf-profile.calltrace.cycles-pp.synchronize_rcu_expedited_wait.rcu_exp_wait_wake.process_one_work.worker_thread.kthread
-      6.80 ±  4%      -0.3        6.51 ±  3%      -1.0        5.83 ±  2%      -0.9        5.92 ±  4%      -0.8        5.97 ±  3%      -0.8        5.97 ±  2%      -0.9        5.88 ±  4%  perf-profile.calltrace.cycles-pp.__x64_sys_umount.do_syscall_64.entry_SYSCALL_64_after_hwframe.umount2
-      0.29 ±101%      -0.3        0.00            -0.3        0.00            -0.3        0.00            -0.3        0.00            -0.3        0.00            -0.2        0.09 ±223%  perf-profile.calltrace.cycles-pp.schedule.exit_to_user_mode_loop.exit_to_user_mode_prepare.irqentry_exit_to_user_mode.asm_sysvec_call_function_single
-      0.28 ±101%      -0.3        0.00            -0.3        0.00            -0.3        0.00            -0.3        0.00            -0.3        0.00            -0.2        0.09 ±223%  perf-profile.calltrace.cycles-pp.__schedule.schedule.exit_to_user_mode_loop.exit_to_user_mode_prepare.irqentry_exit_to_user_mode
-      0.55 ±  3%      -0.3        0.27 ±100%      -0.3        0.28 ±100%      -0.3        0.28 ±100%      -0.5        0.10 ±223%      -0.4        0.19 ±142%      -0.2        0.36 ± 70%  perf-profile.calltrace.cycles-pp.schedule.worker_thread.kthread.ret_from_fork
-      0.27 ±100%      -0.3        0.00            -0.3        0.00            -0.3        0.00            -0.3        0.00            -0.2        0.09 ±223%      -0.3        0.00        perf-profile.calltrace.cycles-pp.schedule_timeout.__wait_for_common.__flush_work.sync_rcu_exp_select_cpus.wait_rcu_exp_gp
-      0.27 ±100%      -0.3        0.00            -0.3        0.00            -0.3        0.00            -0.2        0.09 ±223%      -0.2        0.08 ±223%      -0.1        0.19 ±141%  perf-profile.calltrace.cycles-pp.vsnprintf.seq_printf.show_mountinfo.seq_read_iter.vfs_read
-      0.45 ± 45%      -0.3        0.19 ±141%      -0.4        0.00            -0.2        0.28 ±100%      -0.4        0.10 ±223%      -0.4        0.00            -0.2        0.27 ±100%  perf-profile.calltrace.cycles-pp.filename_lookup.vfs_statx.vfs_fstatat.__do_sys_newlstat.do_syscall_64
-      3.57 ±  5%      -0.2        3.33 ±  3%      +2.9        6.47 ±  2%      +2.9        6.47 ±  4%      +2.6        6.19 ±  3%      +2.6        6.21 ±  2%      +2.8        6.32 ±  8%  perf-profile.calltrace.cycles-pp.process_one_work.worker_thread.kthread.ret_from_fork
-      0.43 ± 44%      -0.2        0.21 ±144%      -0.3        0.10 ±223%      -0.4        0.00            -0.4        0.00            -0.3        0.09 ±223%      -0.3        0.10 ±223%  perf-profile.calltrace.cycles-pp.__schedule.schedule_idle.do_idle.cpu_startup_entry.start_secondary
-      0.56 ±  6%      -0.2        0.35 ± 70%      -0.6        0.00            -0.6        0.00            -0.6        0.00            -0.4        0.18 ±141%      -0.5        0.08 ±223%  perf-profile.calltrace.cycles-pp.__wait_for_common.__flush_work.sync_rcu_exp_select_cpus.wait_rcu_exp_gp.process_one_work
-      0.57 ±  7%      -0.2        0.36 ± 70%      -0.6        0.00            -0.4        0.17 ±141%      -0.5        0.08 ±223%      -0.5        0.08 ±223%      -0.5        0.08 ±223%  perf-profile.calltrace.cycles-pp.path_lookupat.filename_lookup.user_path_at_empty.__x64_sys_umount.do_syscall_64
-      0.29 ±101%      -0.2        0.08 ±223%      -0.3        0.00            -0.3        0.00            -0.3        0.00            -0.3        0.00            -0.2        0.09 ±223%  perf-profile.calltrace.cycles-pp.exit_to_user_mode_prepare.irqentry_exit_to_user_mode.asm_sysvec_call_function_single
-      0.29 ±101%      -0.2        0.08 ±223%      -0.3        0.00            -0.3        0.00            -0.3        0.00            -0.3        0.00            -0.2        0.09 ±223%  perf-profile.calltrace.cycles-pp.irqentry_exit_to_user_mode.asm_sysvec_call_function_single
-      0.29 ±101%      -0.2        0.08 ±223%      -0.3        0.00            -0.3        0.00            -0.3        0.00            -0.3        0.00            -0.2        0.09 ±223%  perf-profile.calltrace.cycles-pp.exit_to_user_mode_loop.exit_to_user_mode_prepare.irqentry_exit_to_user_mode.asm_sysvec_call_function_single
-      0.19 ±141%      -0.2        0.00            -0.2        0.00            -0.2        0.00            -0.2        0.00            -0.2        0.00            -0.1        0.10 ±223%  perf-profile.calltrace.cycles-pp.synchronize_rcu_expedited_wait_once.synchronize_rcu_expedited_wait.rcu_exp_wait_wake.process_one_work.worker_thread
-      0.28 ±100%      -0.2        0.10 ±223%      +0.1        0.34 ± 70%      -0.2        0.08 ±223%      -0.1        0.18 ±141%      -0.3        0.00            -0.2        0.10 ±223%  perf-profile.calltrace.cycles-pp.strcmp@plt
-      0.17 ±141%      -0.2        0.00            +0.2        0.36 ± 71%      -0.2        0.00            +0.1        0.26 ±100%      -0.1        0.09 ±223%      +0.1        0.29 ±100%  perf-profile.calltrace.cycles-pp.path_compare
-      0.17 ±141%      -0.2        0.00            -0.2        0.00            -0.2        0.00            -0.2        0.00            -0.2        0.00            -0.2        0.00        perf-profile.calltrace.cycles-pp.schedule.schedule_timeout.__wait_for_common.__flush_work.sync_rcu_exp_select_cpus
-      1.98 ±  4%      -0.2        1.82 ±  6%      -0.4        1.57 ±  4%      -0.3        1.68 ±  5%      -0.3        1.69 ±  2%      -0.3        1.66 ±  3%      -0.3        1.67 ±  4%  perf-profile.calltrace.cycles-pp.user_path_at_empty.__x64_sys_umount.do_syscall_64.entry_SYSCALL_64_after_hwframe.umount2
-      0.35 ± 70%      -0.2        0.18 ±141%      -0.1        0.28 ±100%      -0.3        0.09 ±223%      -0.2        0.18 ±141%      -0.4        0.00            -0.1        0.28 ±100%  perf-profile.calltrace.cycles-pp.__xstat64
-      0.45 ± 44%      -0.2        0.30 ±102%      -0.3        0.18 ±141%      -0.4        0.00            -0.4        0.00            -0.4        0.09 ±223%      -0.4        0.10 ±223%  perf-profile.calltrace.cycles-pp.schedule_idle.do_idle.cpu_startup_entry.start_secondary.secondary_startup_64_no_verify
-      4.36 ±  3%      -0.2        4.21 ±  2%      -0.5        3.86 ±  3%      -0.5        3.83 ±  5%      -0.5        3.86 ±  3%      -0.4        3.93 ±  2%      -0.6        3.80 ±  6%  perf-profile.calltrace.cycles-pp.do_umount.path_umount.__x64_sys_umount.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      0.44 ± 45%      -0.2        0.30 ±101%      -0.3        0.10 ±223%      -0.2        0.21 ±142%      -0.4        0.09 ±223%      -0.3        0.10 ±223%      -0.3        0.10 ±223%  perf-profile.calltrace.cycles-pp.menu_select.cpuidle_idle_call.do_idle.cpu_startup_entry.start_secondary
-      0.89 ± 16%      -0.1        0.74 ± 15%      -0.2        0.72 ± 18%      -0.2        0.69 ± 19%      -0.1        0.75 ± 14%      -0.2        0.70 ± 11%      -0.3        0.58 ± 53%  perf-profile.calltrace.cycles-pp.rcu_exp_wait_wake.process_one_work.worker_thread.kthread.ret_from_fork
-      0.65 ±  7%      -0.1        0.51 ± 44%      -0.4        0.26 ±100%      -0.2        0.46 ± 44%      -0.1        0.55 ±  5%      -0.2        0.46 ± 44%      -0.2        0.44 ± 44%  perf-profile.calltrace.cycles-pp.filename_lookup.user_path_at_empty.__x64_sys_umount.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      0.78 ± 19%      -0.1        0.65 ± 10%      -0.0        0.75 ± 12%      -0.3        0.52 ± 71%      -0.1        0.72 ± 10%      -0.4        0.42 ± 71%      -0.4        0.39 ±107%  perf-profile.calltrace.cycles-pp.poll_idle.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call.do_idle
-      4.76 ±  4%      -0.1        4.63 ±  2%      -0.5        4.22 ±  3%      -0.6        4.20 ±  5%      -0.5        4.24 ±  3%      -0.5        4.28 ±  2%      -0.6        4.16 ±  6%  perf-profile.calltrace.cycles-pp.path_umount.__x64_sys_umount.do_syscall_64.entry_SYSCALL_64_after_hwframe.umount2
-      3.92 ±  6%      -0.1        3.78 ±  2%      -0.5        3.44 ±  3%      -0.5        3.39 ±  4%      -0.5        3.44 ±  4%      -0.6        3.33            -0.5        3.40 ±  4%  perf-profile.calltrace.cycles-pp.task_work_run.exit_to_user_mode_loop.exit_to_user_mode_prepare.syscall_exit_to_user_mode.do_syscall_64
-      3.05 ±  5%      -0.1        2.93 ±  2%      -0.4        2.63 ±  2%      -0.4        2.65 ±  5%      -0.4        2.65 ±  6%      -0.5        2.57            -0.4        2.62 ±  4%  perf-profile.calltrace.cycles-pp.exit_to_user_mode_prepare.syscall_exit_to_user_mode.do_syscall_64.entry_SYSCALL_64_after_hwframe.umount2
-      1.85 ±  5%      -0.1        1.73 ±  5%      -0.3        1.58 ±  5%      -0.2        1.68 ±  5%      -0.2        1.60 ±  7%      -0.2        1.63 ±  4%      -0.2        1.62 ± 10%  perf-profile.calltrace.cycles-pp.unlink
-      0.67 ± 16%      -0.1        0.54 ± 46%      -0.1        0.53 ± 45%      -0.2        0.50 ± 46%      -0.3        0.41 ± 72%      -0.5        0.21 ±143%      -0.2        0.42 ± 78%  perf-profile.calltrace.cycles-pp.__irq_exit_rcu.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt.cpuidle_enter_state.cpuidle_enter
-      3.06 ±  5%      -0.1        2.94 ±  2%      -0.4        2.64 ±  2%      -0.4        2.66 ±  5%      -0.4        2.66 ±  6%      -0.5        2.58            -0.4        2.62 ±  4%  perf-profile.calltrace.cycles-pp.syscall_exit_to_user_mode.do_syscall_64.entry_SYSCALL_64_after_hwframe.umount2
-      0.40 ± 71%      -0.1        0.27 ±100%      -0.1        0.27 ±100%      -0.2        0.18 ±141%      -0.0        0.38 ± 71%      -0.4        0.00            +0.1        0.47 ± 45%  perf-profile.calltrace.cycles-pp.device_read_db_internal_filename
-      4.00 ±  6%      -0.1        3.88 ±  2%      -0.5        3.53 ±  3%      -0.5        3.46 ±  4%      -0.5        3.53 ±  4%      -0.6        3.40 ±  2%      -0.5        3.47 ±  4%  perf-profile.calltrace.cycles-pp.exit_to_user_mode_loop.exit_to_user_mode_prepare.syscall_exit_to_user_mode.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      0.38 ± 71%      -0.1        0.26 ±100%      -0.2        0.17 ±141%      -0.4        0.00            -0.2        0.18 ±141%      -0.3        0.10 ±223%      -0.2        0.21 ±141%  perf-profile.calltrace.cycles-pp.seq_printf.show_mountinfo.seq_read_iter.vfs_read.ksys_read
-      3.34 ±  7%      -0.1        3.23 ±  3%      +1.4        4.75 ±  4%      +1.6        4.93 ±  5%      +1.6        4.96 ±  3%      +1.4        4.77 ±  3%      +1.5        4.80 ±  7%  perf-profile.calltrace.cycles-pp.vfs_get_super.vfs_get_tree.do_new_mount.__x64_sys_mount.do_syscall_64
-      3.35 ±  7%      -0.1        3.24 ±  3%      +1.4        4.78 ±  4%      +1.6        4.96 ±  5%      +1.6        4.98 ±  3%      +1.4        4.78 ±  2%      +1.5        4.82 ±  7%  perf-profile.calltrace.cycles-pp.vfs_get_tree.do_new_mount.__x64_sys_mount.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      1.76 ±  4%      -0.1        1.65 ±  6%      -0.2        1.51 ±  5%      -0.2        1.60 ±  5%      -0.2        1.53 ±  7%      -0.2        1.55 ±  4%      -0.2        1.54 ± 10%  perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.unlink
-      1.77 ±  4%      -0.1        1.67 ±  5%      -0.2        1.52 ±  5%      -0.2        1.61 ±  5%      -0.2        1.53 ±  7%      -0.2        1.56 ±  4%      -0.2        1.55 ± 10%  perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.unlink
-      0.22 ±141%      -0.1        0.12 ±223%      +0.4        0.59 ±  8%      +0.4        0.64 ± 10%      +0.2        0.38 ± 72%      +0.3        0.51 ± 47%      +0.4        0.60 ±  9%  perf-profile.calltrace.cycles-pp.delayed_free_vfsmnt.rcu_do_batch.rcu_core.__do_softirq.run_ksoftirqd
-      2.93 ±  5%      -0.1        2.83 ±  4%      -0.4        2.57 ±  2%      -0.3        2.62 ±  7%      -0.3        2.59 ±  2%      -0.3        2.60 ±  3%      -0.4        2.57 ±  6%  perf-profile.calltrace.cycles-pp.stress_rndstr
-      1.74 ±  4%      -0.1        1.64 ±  6%      -0.2        1.50 ±  5%      -0.1        1.59 ±  6%      -0.2        1.51 ±  7%      -0.2        1.53 ±  3%      -0.2        1.52 ± 11%  perf-profile.calltrace.cycles-pp.__x64_sys_unlink.do_syscall_64.entry_SYSCALL_64_after_hwframe.unlink
-      0.10 ±223%      -0.1        0.00            -0.1        0.00            -0.1        0.00            -0.1        0.00            -0.1        0.00            -0.1        0.00        perf-profile.calltrace.cycles-pp.rcu_note_context_switch.__schedule.schedule.exit_to_user_mode_loop.exit_to_user_mode_prepare
-      0.18 ±141%      -0.1        0.09 ±223%      -0.2        0.00            -0.1        0.08 ±223%      -0.2        0.00            -0.2        0.00            -0.1        0.10 ±223%  perf-profile.calltrace.cycles-pp.ramfs_fill_super.vfs_get_super.vfs_get_tree.do_new_mount.__x64_sys_mount
-      0.09 ±223%      -0.1        0.00            -0.1        0.00            -0.1        0.00            -0.1        0.00            -0.1        0.00            -0.1        0.00        perf-profile.calltrace.cycles-pp.swake_up_one.rcu_note_context_switch.__schedule.schedule.exit_to_user_mode_loop
-      0.18 ±141%      -0.1        0.10 ±223%      -0.2        0.00            -0.2        0.00            -0.2        0.00            -0.2        0.00            -0.1        0.09 ±223%  perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.__fxstat64.device_set_syspath.sd_device_new_from_syspath
-      0.09 ±223%      -0.1        0.00            -0.1        0.00            -0.0        0.08 ±223%      -0.1        0.00            -0.1        0.00            -0.1        0.00        perf-profile.calltrace.cycles-pp.schedule.synchronize_rcu_expedited.namespace_unlock.do_umount.path_umount
-      1.26 ±  4%      -0.1        1.17 ± 11%      -0.2        1.02 ±  5%      -0.2        1.08 ±  6%      -0.2        1.10 ±  3%      -0.2        1.06 ±  3%      -0.2        1.09 ±  5%  perf-profile.calltrace.cycles-pp.getname_flags.user_path_at_empty.__x64_sys_umount.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      2.42 ±  6%      -0.1        2.34            -0.3        2.15 ±  5%      -0.3        2.14 ±  6%      -0.2        2.20 ±  4%      -0.2        2.18 ±  4%      -0.3        2.10 ±  6%  perf-profile.calltrace.cycles-pp.namespace_unlock.do_umount.path_umount.__x64_sys_umount.do_syscall_64
-      0.18 ±141%      -0.1        0.09 ±223%      -0.2        0.00            -0.2        0.00            -0.2        0.00            -0.2        0.00            -0.2        0.00        perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.__fxstat64.device_set_syspath.sd_device_new_from_syspath
-      1.41 ± 10%      -0.1        1.32 ±  6%      -0.3        1.13 ±  3%      -0.3        1.13 ±  4%      -0.3        1.14 ±  8%      -0.3        1.12 ±  7%      -0.3        1.10 ±  4%  perf-profile.calltrace.cycles-pp.__percpu_init_rwsem.alloc_super.sget_fc.vfs_get_super.vfs_get_tree
-      0.09 ±223%      -0.1        0.00            -0.1        0.00            -0.1        0.00            -0.1        0.00            -0.1        0.00            -0.1        0.00        perf-profile.calltrace.cycles-pp.__schedule.schedule.synchronize_rcu_expedited.namespace_unlock.do_umount
-      0.08 ±223%      -0.1        0.00            +0.0        0.09 ±223%      -0.1        0.00            -0.1        0.00            -0.1        0.00            +0.0        0.09 ±223%  perf-profile.calltrace.cycles-pp.vfs_fstatat.__do_sys_newstat.do_syscall_64.entry_SYSCALL_64_after_hwframe.__xstat64
-      0.18 ±141%      -0.1        0.09 ±223%      -0.0        0.18 ±141%      -0.0        0.18 ±141%      -0.1        0.10 ±223%      -0.1        0.10 ±223%      -0.1        0.08 ±223%  perf-profile.calltrace.cycles-pp.__schedule.schedule.worker_thread.kthread.ret_from_fork
-      1.35 ±  9%      -0.1        1.27 ±  4%      -0.2        1.18 ±  6%      -0.2        1.15 ± 12%      -0.1        1.20 ±  4%      -0.1        1.21 ±  7%      -0.2        1.12 ± 11%  perf-profile.calltrace.cycles-pp.synchronize_rcu_expedited.namespace_unlock.do_umount.path_umount.__x64_sys_umount
-      1.12 ±  7%      -0.1        1.04 ±  9%      -0.1        1.00 ±  6%      -0.1        1.02 ± 12%      -0.1        1.05 ±  8%      -0.1        1.00 ±  4%      -0.1        1.02 ±  7%  perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.__lxstat64
-      1.33 ± 10%      -0.1        1.26 ± 19%      -0.1        1.20 ±  8%      -0.1        1.18 ±  7%      -0.1        1.28 ± 11%      -0.1        1.22 ±  4%      -0.0        1.30 ± 19%  perf-profile.calltrace.cycles-pp.malloc
-      1.11 ±  8%      -0.1        1.03 ±  8%      -0.1        0.98 ±  6%      -0.1        1.01 ± 12%      -0.1        1.04 ±  8%      -0.1        0.99 ±  3%      -0.1        1.00 ±  7%  perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.__lxstat64
-      1.08 ±  8%      -0.1        1.00 ±  8%      -0.1        0.96 ±  5%      -0.1        0.98 ± 12%      -0.1        1.01 ±  8%      -0.1        0.96 ±  4%      -0.1        0.98 ±  8%  perf-profile.calltrace.cycles-pp.__do_sys_newlstat.do_syscall_64.entry_SYSCALL_64_after_hwframe.__lxstat64
-      1.05 ±  5%      -0.1        0.98 ± 12%      -0.2        0.87 ±  4%      -0.1        0.92 ±  6%      -0.1        0.90 ±  2%      -0.1        0.90 ±  4%      -0.1        0.92 ±  6%  perf-profile.calltrace.cycles-pp.strncpy_from_user.getname_flags.user_path_at_empty.__x64_sys_umount.do_syscall_64
-      0.95 ±  7%      -0.1        0.88 ± 10%      -0.1        0.80 ±  8%      -0.1        0.85 ± 12%      -0.1        0.87 ±  8%      -0.1        0.82 ±  4%      -0.1        0.85 ±  9%  perf-profile.calltrace.cycles-pp.vfs_fstatat.__do_sys_newlstat.do_syscall_64.entry_SYSCALL_64_after_hwframe.__lxstat64
-      1.30 ± 11%      -0.1        1.22 ±  8%      -0.3        1.02 ±  5%      -0.3        1.04 ±  4%      -0.2        1.05 ±  8%      -0.3        1.01 ±  7%      -0.3        0.98 ±  3%  perf-profile.calltrace.cycles-pp.pcpu_alloc.__percpu_init_rwsem.alloc_super.sget_fc.vfs_get_super
-      0.83 ±  7%      -0.1        0.76 ±  5%      -0.1        0.69 ±  4%      -0.2        0.68 ±  5%      -0.1        0.69 ± 11%      -0.1        0.70 ±  6%      -0.1        0.72 ±  4%  perf-profile.calltrace.cycles-pp.mnt_get_writers.cleanup_mnt.task_work_run.exit_to_user_mode_loop.exit_to_user_mode_prepare
-      2.77 ±  5%      -0.1        2.70 ±  2%      -0.4        2.40 ±  2%      -0.3        2.46 ±  5%      -0.3        2.45 ±  6%      -0.4        2.37 ±  2%      -0.3        2.42 ±  5%  perf-profile.calltrace.cycles-pp.cleanup_mnt.task_work_run.exit_to_user_mode_loop.exit_to_user_mode_prepare.syscall_exit_to_user_mode
-      0.66 ±  6%      -0.1        0.59 ±  3%      -0.3        0.35 ± 70%      -0.4        0.27 ±100%      -0.3        0.37 ± 70%      -0.1        0.58 ±  7%      -0.2        0.49 ± 44%  perf-profile.calltrace.cycles-pp.__flush_work.sync_rcu_exp_select_cpus.wait_rcu_exp_gp.process_one_work.worker_thread
-      0.26 ±100%      -0.1        0.19 ±141%      -0.1        0.18 ±141%      -0.2        0.09 ±223%      -0.2        0.09 ±223%      -0.1        0.17 ±141%      +0.0        0.30 ±101%  perf-profile.calltrace.cycles-pp.rdrand
-      1.51 ±  8%      -0.1        1.44 ±  3%      -0.2        1.35 ±  5%      -0.1        1.40 ±  6%      -0.1        1.40 ±  2%      -0.1        1.39 ±  2%      -0.1        1.43 ±  5%  perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.symlink
-      1.50 ±  8%      -0.1        1.44 ±  3%      -0.2        1.34 ±  5%      -0.1        1.40 ±  6%      -0.1        1.39 ±  2%      -0.1        1.38 ±  2%      -0.1        1.42 ±  5%  perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.symlink
-      1.23 ±  6%      -0.1        1.17 ±  9%      -0.2        1.08 ±  5%      -0.1        1.12 ± 14%      -0.1        1.16 ±  9%      -0.1        1.12 ±  4%      -0.1        1.12 ±  7%  perf-profile.calltrace.cycles-pp.__lxstat64
-      1.98 ±  9%      -0.1        1.91 ±  5%      +1.5        3.53 ±  3%      +1.6        3.60 ±  4%      +1.7        3.64 ±  4%      +1.5        3.51 ±  3%      +1.6        3.55 ±  7%  perf-profile.calltrace.cycles-pp.sget_fc.vfs_get_super.vfs_get_tree.do_new_mount.__x64_sys_mount
-      1.56 ±  8%      -0.1        1.50 ±  4%      -0.2        1.40 ±  4%      -0.1        1.44 ±  5%      -0.1        1.44 ±  2%      -0.1        1.42 ±  2%      -0.1        1.47 ±  5%  perf-profile.calltrace.cycles-pp.symlink
-      1.55 ±  4%      -0.1        1.49 ±  6%      -0.2        1.34 ±  6%      -0.1        1.46 ±  6%      -0.2        1.36 ±  7%      -0.2        1.37 ±  4%      -0.2        1.37 ± 11%  perf-profile.calltrace.cycles-pp.do_unlinkat.__x64_sys_unlink.do_syscall_64.entry_SYSCALL_64_after_hwframe.unlink
-      1.31 ±  8%      -0.1        1.26 ±  4%      -0.1        1.21 ±  4%      -0.1        1.24 ±  5%      -0.1        1.24            -0.1        1.23 ±  3%      -0.1        1.26 ±  5%  perf-profile.calltrace.cycles-pp.do_symlinkat.__x64_sys_symlink.do_syscall_64.entry_SYSCALL_64_after_hwframe.symlink
-      1.82 ± 10%      -0.1        1.76 ±  5%      +1.6        3.39 ±  3%      +1.6        3.45 ±  5%      +1.6        3.47 ±  4%      +1.6        3.37 ±  4%      +1.6        3.40 ±  7%  perf-profile.calltrace.cycles-pp.alloc_super.sget_fc.vfs_get_super.vfs_get_tree.do_new_mount
-      0.73 ±  8%      -0.1        0.68 ± 13%      -0.1        0.64 ±  9%      -0.1        0.67 ± 13%      -0.1        0.67 ±  7%      -0.1        0.62 ±  7%      -0.1        0.65 ± 10%  perf-profile.calltrace.cycles-pp.vfs_statx.vfs_fstatat.__do_sys_newlstat.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      1.61 ±  5%      -0.0        1.56 ±  4%      -0.2        1.39 ±  4%      -0.2        1.44 ±  7%      -0.2        1.42 ±  5%      -0.2        1.40 ±  4%      -0.2        1.41 ±  8%  perf-profile.calltrace.cycles-pp.deactivate_locked_super.cleanup_mnt.task_work_run.exit_to_user_mode_loop.exit_to_user_mode_prepare
-      1.48 ±  8%      -0.0        1.43 ±  3%      -0.1        1.34 ±  5%      -0.1        1.39 ±  6%      -0.1        1.38 ±  2%      -0.1        1.37 ±  2%      -0.1        1.42 ±  5%  perf-profile.calltrace.cycles-pp.__x64_sys_symlink.do_syscall_64.entry_SYSCALL_64_after_hwframe.symlink
-      0.76 ± 10%      -0.0        0.71 ±  5%      -0.1        0.66 ±  7%      -0.1        0.65 ± 11%      -0.1        0.67 ±  7%      -0.1        0.68 ±  3%      -0.1        0.66 ±  4%  perf-profile.calltrace.cycles-pp.mnt_get_count.mntput_no_expire.namespace_unlock.do_umount.path_umount
-      2.69 ± 12%      -0.0        2.64 ± 12%      -0.0        2.64 ±  5%      -0.2        2.47 ±  8%      -0.1        2.62 ±  8%      -0.2        2.48 ±  4%      +0.0        2.72 ± 17%  perf-profile.calltrace.cycles-pp.read
-      2.62 ± 11%      -0.0        2.58 ± 12%      -0.0        2.58 ±  4%      -0.2        2.40 ±  8%      -0.1        2.52 ±  9%      -0.2        2.42 ±  4%      +0.0        2.64 ± 18%  perf-profile.calltrace.cycles-pp.ksys_read.do_syscall_64.entry_SYSCALL_64_after_hwframe.read
-      2.42 ± 10%      -0.0        2.38 ± 11%      -0.0        2.40 ±  5%      -0.2        2.23 ±  8%      -0.1        2.35 ±  8%      -0.2        2.24 ±  4%      +0.0        2.43 ± 18%  perf-profile.calltrace.cycles-pp.seq_read_iter.vfs_read.ksys_read.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      2.64 ± 11%      -0.0        2.60 ± 12%      -0.0        2.60 ±  4%      -0.2        2.42 ±  7%      -0.1        2.56 ±  9%      -0.2        2.44 ±  4%      +0.0        2.66 ± 17%  perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.read
-      9.42 ±  5%      -0.0        9.38 ±  3%      +0.8       10.23 ±  3%      +1.2       10.64 ±  5%      +1.2       10.60 ±  3%      +0.8       10.24 ±  3%      +0.9       10.30 ±  5%  perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.mount
-      0.46 ± 70%      -0.0        0.42 ± 71%      +0.0        0.48 ± 44%      -0.1        0.38 ± 72%      -0.2        0.29 ±101%      -0.3        0.20 ±143%      -0.2        0.23 ±148%  perf-profile.calltrace.cycles-pp.__do_softirq.__irq_exit_rcu.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt.cpuidle_enter_state
-      2.63 ± 11%      -0.0        2.59 ± 12%      -0.0        2.59 ±  4%      -0.2        2.41 ±  7%      -0.1        2.55 ±  9%      -0.2        2.43 ±  4%      +0.0        2.66 ± 17%  perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.read
-      9.50 ±  5%      -0.0        9.46 ±  3%      +0.8       10.30 ±  3%      +1.2       10.70 ±  5%      +1.2       10.66 ±  3%      +0.8       10.31 ±  3%      +0.9       10.36 ±  5%  perf-profile.calltrace.cycles-pp.mount
-      8.59 ±  6%      -0.0        8.55 ±  2%      +0.9        9.49 ±  3%      +1.3        9.87 ±  5%      +1.3        9.87 ±  3%      +0.9        9.53 ±  3%      +1.0        9.55 ±  6%  perf-profile.calltrace.cycles-pp.do_new_mount.__x64_sys_mount.do_syscall_64.entry_SYSCALL_64_after_hwframe.mount
-      9.44 ±  5%      -0.0        9.40 ±  3%      +0.8       10.25 ±  3%      +1.2       10.66 ±  5%      +1.2       10.62 ±  3%      +0.8       10.26 ±  3%      +0.9       10.31 ±  5%  perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.mount
-      2.60 ± 11%      -0.0        2.56 ± 12%      -0.0        2.56 ±  4%      -0.2        2.38 ±  8%      -0.1        2.50 ±  8%      -0.2        2.40 ±  4%      +0.0        2.62 ± 17%  perf-profile.calltrace.cycles-pp.vfs_read.ksys_read.do_syscall_64.entry_SYSCALL_64_after_hwframe.read
-      1.25 ± 13%      -0.0        1.21 ±  8%      -0.1        1.16 ± 16%      -0.0        1.22 ± 20%      -0.1        1.14 ±  7%      -0.1        1.11 ± 12%      -0.1        1.13 ± 13%  perf-profile.calltrace.cycles-pp.tick_sched_timer.__hrtimer_run_queues.hrtimer_interrupt.__sysvec_apic_timer_interrupt.sysvec_apic_timer_interrupt
-      0.59 ±  7%      -0.0        0.56 ±  5%      -0.3        0.27 ±100%      -0.2        0.36 ± 70%      -0.2        0.35 ± 70%      -0.3        0.28 ±100%      -0.4        0.18 ±141%  perf-profile.calltrace.cycles-pp.umount_tree.do_umount.path_umount.__x64_sys_umount.do_syscall_64
-      0.64 ± 12%      -0.0        0.60 ±  7%      -0.1        0.50 ± 46%      -0.1        0.55 ± 52%      -0.1        0.52 ± 45%      -0.1        0.50 ± 46%      -0.1        0.51 ± 46%  perf-profile.calltrace.cycles-pp.perf_adjust_freq_unthr_context.perf_event_task_tick.scheduler_tick.update_process_times.tick_sched_handle
-      0.94 ±  5%      -0.0        0.90 ± 11%      -0.1        0.82 ±  5%      -0.1        0.81 ±  9%      -0.1        0.80 ±  7%      -0.1        0.88 ±  6%      -0.1        0.84 ±  9%  perf-profile.calltrace.cycles-pp.propagate_mount_busy.do_umount.path_umount.__x64_sys_umount.do_syscall_64
-      0.98 ±  7%      -0.0        0.94 ±  5%      -0.1        0.86 ±  3%      -0.1        0.87 ±  9%      -0.1        0.84 ±  9%      -0.1        0.84 ±  4%      -0.1        0.89 ± 12%  perf-profile.calltrace.cycles-pp.kill_litter_super.deactivate_locked_super.cleanup_mnt.task_work_run.exit_to_user_mode_loop
-      9.40 ±  5%      -0.0        9.36 ±  3%      +0.8       10.21 ±  3%      +1.2       10.62 ±  5%      +1.2       10.58 ±  3%      +0.8       10.22 ±  3%      +0.9       10.28 ±  5%  perf-profile.calltrace.cycles-pp.__x64_sys_mount.do_syscall_64.entry_SYSCALL_64_after_hwframe.mount
-      1.19 ±  6%      -0.0        1.16 ±  5%      -0.2        0.98 ±  2%      -0.1        1.04 ± 12%      -0.2        1.02 ±  5%      -0.1        1.10 ±  7%      -0.1        1.08 ±  8%  perf-profile.calltrace.cycles-pp.wait_rcu_exp_gp.process_one_work.worker_thread.kthread.ret_from_fork
-      0.65 ± 13%      -0.0        0.62 ±  7%      -0.1        0.51 ± 46%      -0.1        0.56 ± 51%      -0.1        0.53 ± 45%      -0.1        0.51 ± 46%      -0.1        0.52 ± 46%  perf-profile.calltrace.cycles-pp.perf_event_task_tick.scheduler_tick.update_process_times.tick_sched_handle.tick_sched_timer
-      0.80 ±  5%      -0.0        0.77 ± 12%      -0.1        0.70 ±  4%      -0.1        0.70 ±  7%      -0.1        0.68 ±  7%      -0.1        0.75 ±  6%      -0.1        0.71 ± 11%  perf-profile.calltrace.cycles-pp.mnt_get_count.propagate_mount_busy.do_umount.path_umount.__x64_sys_umount
-      1.18 ±  6%      -0.0        1.15 ±  5%      -0.2        0.98 ±  2%      -0.1        1.04 ± 12%      -0.2        1.01 ±  5%      -0.1        1.09 ±  7%      -0.1        1.07 ±  8%  perf-profile.calltrace.cycles-pp.sync_rcu_exp_select_cpus.wait_rcu_exp_gp.process_one_work.worker_thread.kthread
-      1.61 ± 20%      -0.0        1.58 ± 24%      +0.4        2.00 ±  8%      +0.5        2.15 ± 12%      +0.2        1.85 ±  8%      +0.4        1.98 ± 15%      +0.4        2.00 ±  8%  perf-profile.calltrace.cycles-pp.rcu_core.__do_softirq.run_ksoftirqd.smpboot_thread_fn.kthread
-      0.20 ±142%      -0.0        0.17 ±141%      -0.1        0.09 ±223%      -0.2        0.00            -0.2        0.00            -0.2        0.00            -0.2        0.00        perf-profile.calltrace.cycles-pp.__sync_rcu_exp_select_node_cpus.process_one_work.worker_thread.kthread.ret_from_fork
-      0.79 ± 10%      -0.0        0.77 ±  5%      -0.1        0.73 ±  2%      -0.1        0.72 ±  7%      -0.1        0.73 ±  5%      -0.1        0.73 ±  4%      -0.1        0.73 ±  9%  perf-profile.calltrace.cycles-pp.vfs_symlink.do_symlinkat.__x64_sys_symlink.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      1.63 ± 20%      -0.0        1.61 ± 24%      +0.4        2.03 ±  8%      +0.6        2.19 ± 12%      +0.3        1.89 ±  8%      +0.4        2.02 ± 15%      +0.4        2.05 ±  9%  perf-profile.calltrace.cycles-pp.run_ksoftirqd.smpboot_thread_fn.kthread.ret_from_fork
-      0.83 ±  7%      -0.0        0.81 ±  7%      -0.1        0.72 ±  8%      -0.1        0.70 ±  6%      -0.1        0.75 ±  4%      -0.1        0.72 ±  7%      -0.1        0.71 ±  6%  perf-profile.calltrace.cycles-pp.__x64_sys_rmdir.do_syscall_64.entry_SYSCALL_64_after_hwframe.rmdir
-      0.93 ±  6%      -0.0        0.90 ±  6%      -0.1        0.81 ±  3%      -0.1        0.84 ±  9%      -0.1        0.80 ±  9%      -0.1        0.79 ±  4%      -0.1        0.85 ± 10%  perf-profile.calltrace.cycles-pp.generic_shutdown_super.kill_litter_super.deactivate_locked_super.cleanup_mnt.task_work_run
-      2.72 ±  4%      -0.0        2.70 ±  7%      -0.1        2.58 ±  3%      -0.2        2.52 ±  6%      -0.2        2.57 ±  5%      -0.3        2.42 ±  4%      -0.1        2.64 ±  8%  perf-profile.calltrace.cycles-pp.do_sys_openat2.__x64_sys_openat.do_syscall_64.entry_SYSCALL_64_after_hwframe.open64
-      0.93 ±  5%      -0.0        0.91 ±  8%      -0.1        0.84 ±  8%      -0.1        0.86 ± 12%      -0.1        0.85 ±  5%      -0.1        0.84 ±  7%      -0.1        0.84 ± 11%  perf-profile.calltrace.cycles-pp.mkdir
-      1.85 ± 11%      -0.0        1.83 ± 11%      -0.0        1.82 ±  5%      -0.2        1.69 ±  9%      -0.1        1.78 ± 10%      -0.1        1.73 ±  5%      +0.0        1.85 ± 18%  perf-profile.calltrace.cycles-pp.show_mountinfo.seq_read_iter.vfs_read.ksys_read.do_syscall_64
-      1.63 ± 20%      -0.0        1.61 ± 24%      +0.4        2.03 ±  8%      +0.6        2.19 ± 12%      +0.3        1.89 ±  8%      +0.4        2.01 ± 15%      +0.4        2.04 ±  9%  perf-profile.calltrace.cycles-pp.__do_softirq.run_ksoftirqd.smpboot_thread_fn.kthread.ret_from_fork
-      0.84 ±  7%      -0.0        0.82 ±  7%      -0.1        0.73 ±  8%      -0.1        0.71 ±  6%      -0.1        0.76 ±  4%      -0.1        0.72 ±  6%      -0.1        0.72 ±  7%  perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.rmdir
-      0.85 ± 12%      -0.0        0.83 ±  7%      -0.1        0.75 ±  9%      +0.0        0.86 ±  9%      -0.0        0.84 ±  5%      -0.1        0.79 ±  7%      -0.1        0.79 ±  9%  perf-profile.calltrace.cycles-pp.shmem_fill_super.vfs_get_super.vfs_get_tree.do_new_mount.__x64_sys_mount
-      1.13 ± 11%      -0.0        1.11 ±  7%      -0.1        1.05 ± 15%      -0.0        1.12 ± 20%      -0.1        1.04 ±  6%      -0.1        1.00 ± 12%      -0.1        1.02 ± 13%  perf-profile.calltrace.cycles-pp.update_process_times.tick_sched_handle.tick_sched_timer.__hrtimer_run_queues.hrtimer_interrupt
-      1.35 ±  8%      -0.0        1.33 ± 11%      -0.0        1.32 ±  4%      -0.1        1.23 ± 10%      +0.0        1.36 ±  9%      -0.1        1.28 ±  4%      +0.0        1.37 ± 17%  perf-profile.calltrace.cycles-pp.siphash24_compress
-      0.70 ±  8%      -0.0        0.68 ±  6%      -0.1        0.64 ±  7%      -0.2        0.51 ± 44%      -0.1        0.62 ±  4%      -0.1        0.60 ±  5%      -0.1        0.61 ± 14%  perf-profile.calltrace.cycles-pp.__fput.task_work_run.exit_to_user_mode_loop.exit_to_user_mode_prepare.syscall_exit_to_user_mode
-      1.73 ± 19%      -0.0        1.71 ± 23%      +0.4        2.15 ±  8%      +0.6        2.29 ± 12%      +0.3        1.99 ±  8%      +0.4        2.10 ± 15%      +0.4        2.14 ±  8%  perf-profile.calltrace.cycles-pp.smpboot_thread_fn.kthread.ret_from_fork
-      1.14 ± 11%      -0.0        1.12 ±  8%      -0.1        1.06 ± 15%      -0.0        1.13 ± 21%      -0.1        1.05 ±  6%      -0.1        1.01 ± 11%      -0.1        1.03 ± 12%  perf-profile.calltrace.cycles-pp.tick_sched_handle.tick_sched_timer.__hrtimer_run_queues.hrtimer_interrupt.__sysvec_apic_timer_interrupt
-      2.78 ±  4%      -0.0        2.76 ±  7%      -0.2        2.62 ±  3%      -0.2        2.56 ±  6%      -0.2        2.62 ±  5%      -0.3        2.47 ±  3%      -0.1        2.69 ±  8%  perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.open64
-      0.74 ±  8%      -0.0        0.72 ±  7%      -0.1        0.66 ±  9%      -0.1        0.63 ±  5%      -0.1        0.68 ±  5%      -0.1        0.66 ±  7%      -0.1        0.63 ±  7%  perf-profile.calltrace.cycles-pp.do_rmdir.__x64_sys_rmdir.do_syscall_64.entry_SYSCALL_64_after_hwframe.rmdir
-      0.90 ± 11%      -0.0        0.89 ±  5%      -0.0        0.86 ± 16%      +0.0        0.92 ± 22%      -0.0        0.86 ±  7%      -0.1        0.81 ± 11%      -0.1        0.84 ± 11%  perf-profile.calltrace.cycles-pp.scheduler_tick.update_process_times.tick_sched_handle.tick_sched_timer.__hrtimer_run_queues
-      0.84 ±  7%      -0.0        0.83 ±  7%      -0.1        0.73 ±  8%      -0.1        0.71 ±  6%      -0.1        0.76 ±  4%      -0.1        0.73 ±  7%      -0.1        0.72 ±  7%  perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.rmdir
-      1.02 ±  8%      -0.0        1.01 ±  3%      -0.1        0.92 ±  6%      -0.1        0.93 ±  9%      -0.1        0.94 ±  7%      -0.1        0.92 ±  4%      -0.1        0.92 ±  2%  perf-profile.calltrace.cycles-pp.mntput_no_expire.namespace_unlock.do_umount.path_umount.__x64_sys_umount
-      2.78 ±  3%      -0.0        2.77 ±  7%      -0.1        2.64 ±  2%      -0.2        2.58 ±  6%      -0.2        2.63 ±  5%      -0.3        2.48 ±  3%      -0.1        2.70 ±  8%  perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.open64
-      0.88 ±  7%      -0.0        0.86 ±  9%      -0.1        0.80 ±  7%      -0.1        0.82 ± 12%      -0.1        0.80 ±  4%      -0.1        0.79 ±  7%      -0.1        0.79 ± 11%  perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.mkdir
-      1.58 ± 20%      -0.0        1.56 ± 24%      +0.4        1.96 ±  8%      +0.5        2.12 ± 13%      +0.2        1.82 ±  8%      +0.4        1.95 ± 16%      +0.4        1.98 ±  8%  perf-profile.calltrace.cycles-pp.rcu_do_batch.rcu_core.__do_softirq.run_ksoftirqd.smpboot_thread_fn
-      0.87 ±  7%      -0.0        0.86 ±  9%      -0.1        0.79 ±  8%      -0.1        0.81 ± 12%      -0.1        0.80 ±  4%      -0.1        0.79 ±  7%      -0.1        0.79 ± 11%  perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.mkdir
-      0.27 ±100%      -0.0        0.26 ±100%      -0.0        0.26 ±100%      -0.2        0.08 ±223%      +0.1        0.36 ± 71%      -0.3        0.00            +0.2        0.47 ± 45%  perf-profile.calltrace.cycles-pp.link_path_walk.path_openat.do_filp_open.do_sys_openat2.__x64_sys_openat
-      0.90 ±  8%      -0.0        0.89 ±  8%      -0.1        0.78 ±  7%      -0.1        0.76 ±  7%      -0.1        0.80 ±  4%      -0.1        0.78 ±  5%      -0.1        0.78 ±  7%  perf-profile.calltrace.cycles-pp.rmdir
-      2.74 ±  3%      -0.0        2.73 ±  7%      -0.1        2.60 ±  3%      -0.2        2.54 ±  6%      -0.1        2.59 ±  5%      -0.3        2.44 ±  3%      -0.1        2.66 ±  8%  perf-profile.calltrace.cycles-pp.__x64_sys_openat.do_syscall_64.entry_SYSCALL_64_after_hwframe.open64
-      0.86 ±  7%      -0.0        0.86 ±  9%      -0.1        0.78 ±  8%      -0.1        0.80 ± 13%      -0.1        0.78 ±  4%      -0.1        0.78 ±  7%      -0.1        0.78 ± 11%  perf-profile.calltrace.cycles-pp.__x64_sys_mkdir.do_syscall_64.entry_SYSCALL_64_after_hwframe.mkdir
-      0.08 ±223%      -0.0        0.08 ±223%      -0.1        0.00            -0.1        0.00            -0.1        0.00            -0.1        0.00            -0.1        0.00        perf-profile.calltrace.cycles-pp.__do_sys_newfstat.do_syscall_64.entry_SYSCALL_64_after_hwframe.__fxstat64.device_set_syspath
-      0.09 ±223%      -0.0        0.08 ±223%      -0.1        0.00            +0.0        0.09 ±223%      -0.1        0.00            -0.1        0.00            -0.1        0.00        perf-profile.calltrace.cycles-pp.evict.do_unlinkat.__x64_sys_unlink.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      0.00            +0.0        0.00            +0.7        0.66 ±  5%      +0.7        0.71 ± 10%      +0.7        0.66 ±  4%      +0.6        0.64 ± 12%      +0.7        0.66 ±  8%  perf-profile.calltrace.cycles-pp.__flush_work.cleanup_srcu_struct.destroy_super_work.process_one_work.worker_thread
-      0.00            +0.0        0.00            +0.7        0.66 ±  5%      +0.7        0.66 ± 14%      +0.6        0.57 ±  8%      +0.6        0.62 ±  9%      +0.6        0.59 ± 11%  perf-profile.calltrace.cycles-pp.srcu_readers_active.cleanup_srcu_struct.destroy_super_work.process_one_work.worker_thread
-      0.00            +0.0        0.00            +0.7        0.69 ±  8%      +0.7        0.73 ±  6%      +0.8        0.75 ±  8%      +0.7        0.74 ± 10%      +0.7        0.72 ± 11%  perf-profile.calltrace.cycles-pp.memset_orig.pcpu_alloc.init_srcu_struct_fields.alloc_super.sget_fc
-      0.00            +0.0        0.00            +0.8        0.84 ±  4%      +0.8        0.82 ±  2%      +0.8        0.79 ±  6%      +0.7        0.74 ±  7%      +0.8        0.79 ±  8%  perf-profile.calltrace.cycles-pp.lock_timer_base.__try_to_del_timer_sync.__timer_delete_sync.cleanup_srcu_struct.destroy_super_work
-      0.00            +0.0        0.00            +1.0        1.00 ±  3%      +1.0        0.97 ±  2%      +0.9        0.93 ±  5%      +0.9        0.90 ±  5%      +0.9        0.91 ±  8%  perf-profile.calltrace.cycles-pp.__try_to_del_timer_sync.__timer_delete_sync.cleanup_srcu_struct.destroy_super_work.process_one_work
-      0.00            +0.0        0.00            +1.0        1.04 ±  3%      +1.0        1.01 ±  3%      +1.0        0.97 ±  5%      +0.9        0.93 ±  5%      +0.9        0.95 ±  8%  perf-profile.calltrace.cycles-pp.__timer_delete_sync.cleanup_srcu_struct.destroy_super_work.process_one_work.worker_thread
-      0.00            +0.0        0.00            +1.2        1.24 ±  4%      +1.3        1.29 ± 10%      +1.3        1.31 ±  4%      +1.3        1.26 ±  5%      +1.2        1.24 ± 10%  perf-profile.calltrace.cycles-pp.pcpu_alloc.init_srcu_struct_fields.alloc_super.sget_fc.vfs_get_super
-      0.00            +0.0        0.00            +1.9        1.86 ±  4%      +1.9        1.91 ±  8%      +1.9        1.90 ±  4%      +1.9        1.86 ±  5%      +1.9        1.90 ± 10%  perf-profile.calltrace.cycles-pp.init_srcu_struct_fields.alloc_super.sget_fc.vfs_get_super.vfs_get_tree
-      0.00            +0.0        0.00            +3.3        3.27 ±  2%      +3.3        3.30 ±  2%      +3.0        3.04 ±  3%      +3.0        3.01 ±  5%      +3.1        3.13 ±  8%  perf-profile.calltrace.cycles-pp.cleanup_srcu_struct.destroy_super_work.process_one_work.worker_thread.kthread
-      0.00            +0.0        0.00            +3.7        3.66 ±  3%      +3.7        3.68 ±  3%      +3.4        3.41 ±  2%      +3.4        3.40 ±  4%      +3.5        3.53 ±  8%  perf-profile.calltrace.cycles-pp.destroy_super_work.process_one_work.worker_thread.kthread.ret_from_fork
-      0.18 ±141%      +0.0        0.18 ±141%      -0.2        0.00            -0.0        0.17 ±141%      -0.2        0.00            -0.2        0.00            -0.1        0.08 ±223%  perf-profile.calltrace.cycles-pp.path_lookupat.filename_lookup.vfs_statx.vfs_fstatat.__do_sys_newlstat
-      0.76 ±  5%      +0.0        0.76 ± 11%      -0.0        0.72 ±  9%      -0.0        0.72 ± 12%      -0.0        0.71 ±  5%      -0.1        0.70 ±  5%      -0.0        0.71 ± 12%  perf-profile.calltrace.cycles-pp.do_mkdirat.__x64_sys_mkdir.do_syscall_64.entry_SYSCALL_64_after_hwframe.mkdir
-      0.98 ± 10%      +0.0        0.99 ±  7%      -0.1        0.92 ±  7%      -0.1        0.84 ±  6%      -0.1        0.90 ±  3%      -0.1        0.85 ±  6%      -0.1        0.89 ± 13%  perf-profile.calltrace.cycles-pp.exit_to_user_mode_prepare.syscall_exit_to_user_mode.do_syscall_64.entry_SYSCALL_64_after_hwframe.__close
-      0.90 ±  4%      +0.0        0.90 ±  9%      -0.1        0.78 ±  5%      -0.1        0.82 ± 12%      -0.1        0.77 ±  2%      -0.1        0.77 ±  7%      -0.1        0.76 ±  9%  perf-profile.calltrace.cycles-pp.stress_mwc32
-      2.87 ±  4%      +0.0        2.88 ±  7%      -0.1        2.76 ±  2%      -0.2        2.67 ±  6%      -0.1        2.77 ±  6%      -0.3        2.59 ±  3%      -0.1        2.80 ±  8%  perf-profile.calltrace.cycles-pp.open64
-      0.99 ± 10%      +0.0        1.00 ±  8%      -0.0        0.94 ±  7%      -0.1        0.85 ±  6%      -0.1        0.90 ±  3%      -0.1        0.86 ±  6%      -0.1        0.90 ± 13%  perf-profile.calltrace.cycles-pp.syscall_exit_to_user_mode.do_syscall_64.entry_SYSCALL_64_after_hwframe.__close
-      1.76 ± 10%      +0.0        1.77 ± 11%      -0.1        1.71 ±  6%      -0.2        1.56 ±  9%      -0.0        1.74 ±  9%      -0.1        1.65 ±  2%      +0.0        1.79 ± 18%  perf-profile.calltrace.cycles-pp.do_sys_openat2.__x64_sys_openat.do_syscall_64.entry_SYSCALL_64_after_hwframe.openat64
-      1.81 ± 10%      +0.0        1.82 ± 11%      -0.1        1.76 ±  6%      -0.2        1.62 ±  9%      -0.0        1.78 ±  9%      -0.1        1.69 ±  3%      +0.0        1.86 ± 18%  perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.openat64.device_set_syspath.sd_device_new_from_syspath
-      1.77 ± 10%      +0.0        1.78 ± 11%      -0.1        1.72 ±  6%      -0.2        1.58 ±  9%      -0.0        1.75 ± 10%      -0.1        1.66 ±  3%      +0.0        1.81 ± 18%  perf-profile.calltrace.cycles-pp.__x64_sys_openat.do_syscall_64.entry_SYSCALL_64_after_hwframe.openat64.device_set_syspath
-      1.82 ±  9%      +0.0        1.84 ± 11%      -0.0        1.77 ±  6%      -0.2        1.63 ±  9%      -0.0        1.80 ±  9%      -0.1        1.70 ±  3%      +0.0        1.86 ± 19%  perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.openat64.device_set_syspath.sd_device_new_from_syspath
-      2.74 ±  6%      +0.0        2.76 ±  3%      -0.3        2.44 ±  5%      -0.1        2.60 ±  8%      -0.2        2.54 ±  6%      -0.2        2.53 ±  4%      -0.3        2.45 ±  4%  perf-profile.calltrace.cycles-pp.propagate_mnt.attach_recursive_mnt.do_new_mount.__x64_sys_mount.do_syscall_64
-      2.71 ± 12%      +0.0        2.73 ± 11%      -0.1        2.63 ±  3%      -0.3        2.45 ±  9%      -0.1        2.65 ±  9%      -0.2        2.55            +0.0        2.75 ± 18%  perf-profile.calltrace.cycles-pp.device_set_syspath.sd_device_new_from_syspath
-      3.06 ± 12%      +0.0        3.08 ± 11%      -0.1        2.99 ±  3%      -0.3        2.78 ± 10%      -0.1        3.00 ±  8%      -0.2        2.88 ±  2%      +0.1        3.13 ± 18%  perf-profile.calltrace.cycles-pp.sd_device_new_from_syspath
-      1.24 ±  8%      +0.0        1.27 ±  5%      -0.1        1.19 ±  6%      -0.2        1.08 ±  7%      -0.1        1.16 ±  3%      -0.2        1.08 ±  5%      -0.1        1.12 ± 11%  perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.__close
-      3.08 ±  6%      +0.0        3.11 ±  6%      -0.2        2.84 ± 13%      -0.2        2.90 ± 16%      -0.4        2.72 ±  5%      -0.5        2.60 ± 13%      -0.4        2.70 ± 17%  perf-profile.calltrace.cycles-pp.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call
-      0.74 ± 12%      +0.0        0.77 ±  9%      -0.0        0.70 ±  7%      -0.1        0.64 ± 10%      -0.0        0.72 ±  9%      -0.1        0.68 ±  6%      +0.1        0.80 ± 19%  perf-profile.calltrace.cycles-pp.path_lookupat.path_openat.do_filp_open.do_sys_openat2.__x64_sys_openat
-      1.26 ±  9%      +0.0        1.29 ±  5%      -0.1        1.20 ±  6%      -0.2        1.09 ±  7%      -0.1        1.17 ±  3%      -0.2        1.10 ±  5%      -0.1        1.14 ± 11%  perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.__close
-      0.37 ±100%      +0.0        0.40 ± 71%      +0.0        0.39 ± 70%      -0.1        0.29 ±100%      -0.1        0.30 ±100%      -0.0        0.35 ± 70%      -0.2        0.21 ±144%  perf-profile.calltrace.cycles-pp.asm_sysvec_call_function_single
-      0.71 ±  8%      +0.0        0.74 ± 12%      +0.0        0.73 ±  8%      -0.0        0.69 ±  8%      -0.0        0.70 ± 11%      -0.0        0.70 ± 14%      +0.0        0.74 ± 19%  perf-profile.calltrace.cycles-pp.readlinkat
-      1.16 ±  3%      +0.0        1.19 ± 14%      -0.1        1.08 ±  6%      -0.0        1.14 ± 14%      -0.0        1.13 ±  5%      -0.1        1.04 ± 11%      -0.0        1.11 ± 23%  perf-profile.calltrace.cycles-pp.newidle_balance.pick_next_task_fair.__schedule.schedule.do_nanosleep
-      3.19 ±  5%      +0.0        3.22 ±  3%      -0.3        2.88 ±  6%      -0.2        3.02 ±  8%      -0.3        2.93 ±  5%      -0.3        2.92 ±  4%      -0.3        2.84 ±  5%  perf-profile.calltrace.cycles-pp.attach_recursive_mnt.do_new_mount.__x64_sys_mount.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      2.65 ±  6%      +0.0        2.68 ±  3%      -0.3        2.38 ±  5%      -0.1        2.54 ±  8%      -0.2        2.49 ±  5%      -0.2        2.46 ±  3%      -0.3        2.40 ±  4%  perf-profile.calltrace.cycles-pp.propagate_one.propagate_mnt.attach_recursive_mnt.do_new_mount.__x64_sys_mount
-      0.69 ±  7%      +0.0        0.72 ± 12%      +0.0        0.72 ±  8%      -0.0        0.67 ±  8%      -0.0        0.68 ± 10%      -0.0        0.66 ± 13%      +0.0        0.72 ± 20%  perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.readlinkat
-      0.69 ±  7%      +0.0        0.72 ± 12%      +0.0        0.72 ±  8%      -0.0        0.67 ±  8%      -0.0        0.68 ± 10%      -0.0        0.66 ± 13%      +0.0        0.72 ± 20%  perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.readlinkat
-      1.43 ±  6%      +0.0        1.46 ±  3%      -0.2        1.25 ±  8%      -0.1        1.33 ±  7%      -0.1        1.30 ±  7%      -0.1        1.30 ±  4%      -0.1        1.31 ±  5%  perf-profile.calltrace.cycles-pp.pcpu_alloc.alloc_vfsmnt.clone_mnt.copy_tree.propagate_one
-      1.16 ±  3%      +0.0        1.19 ± 14%      -0.1        1.08 ±  6%      -0.0        1.15 ± 14%      -0.0        1.14 ±  5%      -0.1        1.04 ± 11%      -0.0        1.11 ± 23%  perf-profile.calltrace.cycles-pp.pick_next_task_fair.__schedule.schedule.do_nanosleep.hrtimer_nanosleep
-      1.04 ±  3%      +0.0        1.07 ± 15%      -0.1        0.98 ±  7%      -0.0        1.04 ± 15%      -0.0        1.02 ±  4%      -0.1        0.95 ± 12%      -0.0        0.99 ± 23%  perf-profile.calltrace.cycles-pp.load_balance.newidle_balance.pick_next_task_fair.__schedule.schedule
-      0.86 ±  5%      +0.0        0.90 ±  4%      -0.0        0.82 ±  2%      -0.0        0.82 ±  7%      -0.0        0.84 ±  9%      -0.1        0.81 ±  4%      +0.0        0.87 ±  9%  perf-profile.calltrace.cycles-pp.open_last_lookups.path_openat.do_filp_open.do_sys_openat2.__x64_sys_openat
-      1.67 ±  9%      +0.0        1.71 ±  6%      -0.0        1.64 ± 15%      +0.0        1.70 ± 21%      -0.1        1.55 ±  4%      -0.2        1.51 ± 11%      -0.1        1.57 ± 14%  perf-profile.calltrace.cycles-pp.__hrtimer_run_queues.hrtimer_interrupt.__sysvec_apic_timer_interrupt.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt
-      0.68 ±  7%      +0.0        0.71 ± 12%      +0.0        0.71 ±  8%      -0.0        0.66 ±  8%      +0.0        0.68 ± 10%      -0.0        0.66 ± 13%      +0.0        0.71 ± 20%  perf-profile.calltrace.cycles-pp.__x64_sys_readlinkat.do_syscall_64.entry_SYSCALL_64_after_hwframe.readlinkat
-      1.51 ±  3%      +0.0        1.55 ± 13%      -0.1        1.38 ±  2%      +0.0        1.52 ± 14%      -0.1        1.44 ±  5%      -0.2        1.32 ± 12%      -0.1        1.43 ± 24%  perf-profile.calltrace.cycles-pp.hrtimer_nanosleep.common_nsleep.__x64_sys_clock_nanosleep.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      0.67 ±  7%      +0.0        0.71 ± 12%      +0.0        0.70 ±  8%      -0.0        0.66 ±  8%      +0.0        0.68 ± 10%      -0.0        0.66 ± 14%      -0.1        0.62 ± 48%  perf-profile.calltrace.cycles-pp.do_readlinkat.__x64_sys_readlinkat.do_syscall_64.entry_SYSCALL_64_after_hwframe.readlinkat
-      0.66 ±  9%      +0.0        0.70 ±  6%      -0.1        0.58 ±  5%      -0.0        0.62 ±  4%      -0.0        0.66 ±  5%      -0.0        0.64 ±  8%      -0.0        0.65 ± 12%  perf-profile.calltrace.cycles-pp.vfs_create_mount.do_new_mount.__x64_sys_mount.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      1.52 ±  3%      +0.0        1.56 ± 13%      -0.1        1.38 ±  2%      +0.0        1.52 ± 14%      -0.1        1.44 ±  5%      -0.2        1.32 ± 12%      -0.1        1.43 ± 24%  perf-profile.calltrace.cycles-pp.common_nsleep.__x64_sys_clock_nanosleep.do_syscall_64.entry_SYSCALL_64_after_hwframe.clock_nanosleep
-      0.95 ±  3%      +0.0        0.99 ± 16%      -0.1        0.88 ±  7%      -0.0        0.94 ± 15%      -0.0        0.92 ±  4%      -0.1        0.85 ± 12%      -0.0        0.90 ± 23%  perf-profile.calltrace.cycles-pp.update_sd_lb_stats.find_busiest_group.load_balance.newidle_balance.pick_next_task_fair
-      1.44 ±  8%      +0.0        1.48 ±  4%      -0.0        1.40 ±  6%      -0.2        1.26 ±  6%      -0.1        1.36 ±  2%      -0.2        1.28 ±  5%      -0.1        1.34 ± 11%  perf-profile.calltrace.cycles-pp.__close
-      0.70 ±  7%      +0.0        0.74 ±  6%      -0.0        0.68 ±  3%      -0.0        0.66 ±  8%      +0.0        0.70 ±  9%      -0.0        0.68 ±  4%      -0.0        0.69 ± 11%  perf-profile.calltrace.cycles-pp.lookup_open.open_last_lookups.path_openat.do_filp_open.do_sys_openat2
-      2.58 ±  5%      +0.0        2.62 ±  4%      -0.3        2.32 ±  5%      -0.1        2.46 ±  8%      -0.2        2.42 ±  5%      -0.2        2.40 ±  3%      -0.2        2.34 ±  4%  perf-profile.calltrace.cycles-pp.copy_tree.propagate_one.propagate_mnt.attach_recursive_mnt.do_new_mount
-      2.56 ±  6%      +0.0        2.60 ±  3%      -0.3        2.30 ±  5%      -0.1        2.44 ±  8%      -0.2        2.40 ±  5%      -0.2        2.38 ±  3%      -0.2        2.32 ±  4%  perf-profile.calltrace.cycles-pp.clone_mnt.copy_tree.propagate_one.propagate_mnt.attach_recursive_mnt
-      2.19 ±  5%      +0.0        2.24 ±  4%      -0.3        1.93 ±  6%      -0.1        2.07 ±  8%      -0.2        2.04 ±  6%      -0.2        2.02 ±  4%      -0.2        2.00 ±  5%  perf-profile.calltrace.cycles-pp.alloc_vfsmnt.clone_mnt.copy_tree.propagate_one.propagate_mnt
-      3.36 ±  5%      +0.0        3.40 ±  6%      -0.2        3.12 ± 13%      -0.2        3.17 ± 17%      -0.4        2.96 ±  5%      -0.5        2.82 ± 13%      -0.4        2.94 ± 18%  perf-profile.calltrace.cycles-pp.asm_sysvec_apic_timer_interrupt.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call.do_idle
-      3.64 ±  6%      +0.0        3.68 ±  9%      -0.1        3.52 ±  4%      -0.3        3.30 ±  5%      -0.1        3.52 ±  7%      -0.3        3.30 ±  4%      -0.0        3.63 ± 12%  perf-profile.calltrace.cycles-pp.path_openat.do_filp_open.do_sys_openat2.__x64_sys_openat.do_syscall_64
-      1.94 ± 10%      +0.0        1.99 ± 11%      -0.0        1.90 ±  5%      -0.2        1.76 ±  9%      -0.0        1.92 ± 10%      -0.1        1.83 ±  2%      +0.1        2.00 ± 19%  perf-profile.calltrace.cycles-pp.openat64.device_set_syspath.sd_device_new_from_syspath
-      0.87 ±  5%      +0.0        0.91 ± 16%      -0.1        0.80 ± 10%      +0.0        0.87 ± 16%      -0.0        0.86 ±  3%      -0.1        0.79 ± 13%      -0.0        0.82 ± 23%  perf-profile.calltrace.cycles-pp.update_sg_lb_stats.update_sd_lb_stats.find_busiest_group.load_balance.newidle_balance
-      0.96 ±  3%      +0.0        1.01 ± 15%      -0.1        0.90 ±  7%      +0.0        0.96 ± 15%      -0.0        0.94 ±  4%      -0.1        0.87 ± 13%      -0.0        0.92 ± 23%  perf-profile.calltrace.cycles-pp.find_busiest_group.load_balance.newidle_balance.pick_next_task_fair.__schedule
-      1.47 ±  2%      +0.1        1.52 ± 13%      -0.1        1.36 ±  3%      +0.0        1.49 ± 14%      -0.1        1.42 ±  5%      -0.2        1.30 ± 12%      -0.1        1.40 ± 23%  perf-profile.calltrace.cycles-pp.do_nanosleep.hrtimer_nanosleep.common_nsleep.__x64_sys_clock_nanosleep.do_syscall_64
-      1.35 ±  3%      +0.1        1.40 ± 13%      -0.1        1.26 ±  4%      +0.0        1.35 ± 13%      -0.0        1.31 ±  6%      -0.2        1.20 ± 11%      -0.1        1.30 ± 23%  perf-profile.calltrace.cycles-pp.__schedule.schedule.do_nanosleep.hrtimer_nanosleep.common_nsleep
-      1.36 ±  4%      +0.1        1.41 ± 13%      -0.1        1.26 ±  4%      -0.0        1.36 ± 13%      -0.0        1.32 ±  6%      -0.1        1.21 ± 11%      -0.1        1.30 ± 23%  perf-profile.calltrace.cycles-pp.schedule.do_nanosleep.hrtimer_nanosleep.common_nsleep.__x64_sys_clock_nanosleep
-      1.55 ±  3%      +0.1        1.60 ± 13%      -0.1        1.42 ±  3%      +0.0        1.56 ± 15%      -0.1        1.49 ±  5%      -0.2        1.35 ± 12%      -0.1        1.46 ± 23%  perf-profile.calltrace.cycles-pp.__x64_sys_clock_nanosleep.do_syscall_64.entry_SYSCALL_64_after_hwframe.clock_nanosleep
-      1.58 ±  2%      +0.1        1.63 ± 13%      -0.1        1.45 ±  2%      +0.0        1.60 ± 15%      -0.0        1.53 ±  5%      -0.2        1.38 ± 12%      -0.1        1.48 ± 23%  perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.clock_nanosleep
-      1.57 ±  2%      +0.1        1.62 ± 13%      -0.1        1.44 ±  2%      +0.0        1.58 ± 15%      -0.1        1.51 ±  5%      -0.2        1.37 ± 12%      -0.1        1.48 ± 23%  perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.clock_nanosleep
-      3.72 ±  6%      +0.1        3.78 ±  8%      -0.1        3.60 ±  4%      -0.3        3.40 ±  5%      -0.1        3.62 ±  7%      -0.3        3.40 ±  3%      -0.0        3.71 ± 12%  perf-profile.calltrace.cycles-pp.do_filp_open.do_sys_openat2.__x64_sys_openat.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      1.66 ±  2%      +0.1        1.71 ± 13%      -0.1        1.51 ±  2%      +0.0        1.68 ± 15%      -0.0        1.61 ±  4%      -0.2        1.46 ± 12%      -0.1        1.58 ± 23%  perf-profile.calltrace.cycles-pp.clock_nanosleep
-      2.08 ±  9%      +0.1        2.15 ±  7%      -0.1        2.01 ± 16%      -0.0        2.07 ± 20%      -0.2        1.90 ±  4%      -0.2        1.85 ± 11%      -0.2        1.92 ± 14%  perf-profile.calltrace.cycles-pp.__sysvec_apic_timer_interrupt.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt.cpuidle_enter_state.cpuidle_enter
-      0.37 ± 71%      +0.1        0.44 ± 45%      -0.1        0.26 ±100%      -0.1        0.27 ±100%      -0.1        0.25 ±100%      -0.0        0.35 ± 70%      -0.0        0.36 ± 70%  perf-profile.calltrace.cycles-pp.ramfs_symlink.vfs_symlink.do_symlinkat.__x64_sys_symlink.do_syscall_64
-      2.06 ±  9%      +0.1        2.13 ±  7%      -0.1        1.99 ± 16%      -0.0        2.05 ± 20%      -0.2        1.88 ±  4%      -0.2        1.84 ± 11%      -0.2        1.90 ± 14%  perf-profile.calltrace.cycles-pp.hrtimer_interrupt.__sysvec_apic_timer_interrupt.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt.cpuidle_enter_state
-      0.42 ± 71%      +0.1        0.49 ± 46%      -0.0        0.38 ± 70%      -0.1        0.28 ±100%      -0.1        0.30 ±100%      +0.0        0.43 ± 44%      -0.1        0.32 ±101%  perf-profile.calltrace.cycles-pp.__fxstat64.device_set_syspath.sd_device_new_from_syspath
-      0.27 ±100%      +0.1        0.35 ± 70%      -0.3        0.00            -0.2        0.08 ±223%      -0.3        0.00            -0.3        0.00            -0.3        0.00        perf-profile.calltrace.cycles-pp.memset_orig.pcpu_alloc.alloc_vfsmnt.clone_mnt.copy_tree
-      0.52 ± 45%      +0.1        0.60 ±  8%      -0.3        0.26 ±100%      +0.0        0.56 ±  3%      +0.1        0.58 ±  4%      +0.0        0.56 ±  7%      -0.0        0.49 ± 46%  perf-profile.calltrace.cycles-pp.alloc_vfsmnt.vfs_create_mount.do_new_mount.__x64_sys_mount.do_syscall_64
-      0.00            +0.1        0.09 ±223%      +0.0        0.00            +0.1        0.08 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.calltrace.cycles-pp.writeback_inodes_sb.sync_filesystem.generic_shutdown_super.kill_litter_super.deactivate_locked_super
-      0.00            +0.1        0.09 ±223%      +0.0        0.00            +0.1        0.08 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.calltrace.cycles-pp.sync_filesystem.generic_shutdown_super.kill_litter_super.deactivate_locked_super.cleanup_mnt
-      0.09 ±223%      +0.1        0.18 ±141%      +0.1        0.18 ±141%      -0.1        0.00            +0.1        0.17 ±141%      -0.1        0.00            +0.0        0.09 ±223%  perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.__xstat64
-      0.09 ±223%      +0.1        0.18 ±141%      +0.0        0.09 ±223%      -0.1        0.00            -0.1        0.00            -0.1        0.00            +0.0        0.09 ±223%  perf-profile.calltrace.cycles-pp.__do_sys_newstat.do_syscall_64.entry_SYSCALL_64_after_hwframe.__xstat64
-      0.09 ±223%      +0.1        0.18 ±141%      +0.1        0.18 ±141%      -0.1        0.00            +0.1        0.17 ±141%      -0.1        0.00            +0.0        0.10 ±223%  perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.__xstat64
-      0.00            +0.1        0.09 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.calltrace.cycles-pp.__queue_work.queue_work_on.synchronize_rcu_expedited.namespace_unlock.do_umount
-      0.00            +0.1        0.09 ±223%      +0.1        0.09 ±223%      +0.0        0.00            +0.1        0.10 ±223%      +0.1        0.08 ±223%      +0.2        0.20 ±141%  perf-profile.calltrace.cycles-pp.alloc_empty_file.path_openat.do_filp_open.do_sys_openat2.__x64_sys_openat
-      0.00            +0.1        0.09 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.calltrace.cycles-pp.queue_work_on.synchronize_rcu_expedited.namespace_unlock.do_umount.path_umount
-      0.00            +0.1        0.10 ±223%      +0.1        0.09 ±223%      +0.3        0.28 ±100%      +0.0        0.00            +0.1        0.10 ±223%      +0.2        0.18 ±141%  perf-profile.calltrace.cycles-pp.kmem_cache_free.rcu_do_batch.rcu_core.__do_softirq.run_ksoftirqd
-      0.37 ± 70%      +0.2        0.54 ±  5%      -0.3        0.08 ±223%      -0.2        0.17 ±141%      -0.2        0.18 ±141%      -0.3        0.08 ±223%      -0.4        0.00        perf-profile.calltrace.cycles-pp.do_lock_mount.do_new_mount.__x64_sys_mount.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      0.00            +0.2        0.18 ±141%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.calltrace.cycles-pp.asm_sysvec_apic_timer_interrupt.intel_idle_irq.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call
-     30.64 ±  6%      +0.4       31.06 ±  6%      +0.6       31.27 ±  5%      +0.1       30.72 ±  8%      -0.5       30.15 ±  7%      -0.2       30.49 ±  4%      -1.6       29.09 ±  6%  perf-profile.calltrace.cycles-pp.do_idle.cpu_startup_entry.start_secondary.secondary_startup_64_no_verify
-     30.66 ±  6%      +0.4       31.08 ±  6%      +0.6       31.29 ±  5%      +0.1       30.73 ±  8%      -0.5       30.17 ±  7%      -0.1       30.52 ±  4%      -1.5       29.11 ±  6%  perf-profile.calltrace.cycles-pp.start_secondary.secondary_startup_64_no_verify
-     30.65 ±  6%      +0.4       31.08 ±  6%      +0.6       31.29 ±  5%      +0.1       30.73 ±  8%      -0.5       30.17 ±  7%      -0.1       30.51 ±  4%      -1.5       29.10 ±  6%  perf-profile.calltrace.cycles-pp.cpu_startup_entry.start_secondary.secondary_startup_64_no_verify
-     29.69 ±  7%      +0.5       30.19 ±  7%      +0.7       30.42 ±  5%      +0.3       29.96 ±  9%      -0.3       29.37 ±  8%      +0.1       29.75 ±  4%      -1.4       28.33 ±  6%  perf-profile.calltrace.cycles-pp.cpuidle_idle_call.do_idle.cpu_startup_entry.start_secondary.secondary_startup_64_no_verify
-     28.98 ±  7%      +0.5       29.50 ±  7%      +0.8       29.79 ±  5%      +0.3       29.33 ±  8%      -0.2       28.74 ±  8%      +0.1       29.13 ±  4%      -1.3       27.72 ±  6%  perf-profile.calltrace.cycles-pp.cpuidle_enter.cpuidle_idle_call.do_idle.cpu_startup_entry.start_secondary
-      6.32 ± 31%      +0.8        7.15 ± 23%      -1.4        4.96 ± 27%      -0.3        6.04 ± 22%      -0.5        5.82 ± 24%      +0.8        7.10 ± 22%      +0.3        6.61 ± 36%  perf-profile.calltrace.cycles-pp.cpuidle_idle_call.do_idle.cpu_startup_entry.rest_init.arch_call_rest_init
-      6.31 ± 31%      +0.8        7.15 ± 23%      -1.4        4.95 ± 27%      -0.3        6.03 ± 22%      -0.5        5.82 ± 23%      +0.8        7.09 ± 22%      +0.3        6.61 ± 36%  perf-profile.calltrace.cycles-pp.cpuidle_enter.cpuidle_idle_call.do_idle.cpu_startup_entry.rest_init
-      6.34 ± 31%      +0.8        7.18 ± 23%      -1.4        4.98 ± 27%      -0.3        6.06 ± 23%      -0.5        5.84 ± 24%      +0.8        7.13 ± 22%      +0.3        6.63 ± 36%  perf-profile.calltrace.cycles-pp.do_idle.cpu_startup_entry.rest_init.arch_call_rest_init.start_kernel
-      6.34 ± 31%      +0.8        7.18 ± 23%      -1.4        4.98 ± 27%      -0.3        6.06 ± 23%      -0.5        5.84 ± 24%      +0.8        7.13 ± 22%      +0.3        6.63 ± 36%  perf-profile.calltrace.cycles-pp.cpu_startup_entry.rest_init.arch_call_rest_init.start_kernel.x86_64_start_reservations
-      6.34 ± 31%      +0.8        7.18 ± 23%      -1.4        4.98 ± 27%      -0.3        6.06 ± 23%      -0.5        5.84 ± 24%      +0.8        7.13 ± 22%      +0.3        6.63 ± 36%  perf-profile.calltrace.cycles-pp.x86_64_start_kernel.secondary_startup_64_no_verify
-      6.34 ± 31%      +0.8        7.18 ± 23%      -1.4        4.98 ± 27%      -0.3        6.06 ± 23%      -0.5        5.84 ± 24%      +0.8        7.13 ± 22%      +0.3        6.63 ± 36%  perf-profile.calltrace.cycles-pp.x86_64_start_reservations.x86_64_start_kernel.secondary_startup_64_no_verify
-      6.34 ± 31%      +0.8        7.18 ± 23%      -1.4        4.98 ± 27%      -0.3        6.06 ± 23%      -0.5        5.84 ± 24%      +0.8        7.13 ± 22%      +0.3        6.63 ± 36%  perf-profile.calltrace.cycles-pp.start_kernel.x86_64_start_reservations.x86_64_start_kernel.secondary_startup_64_no_verify
-      6.34 ± 31%      +0.8        7.18 ± 23%      -1.4        4.98 ± 27%      -0.3        6.06 ± 23%      -0.5        5.84 ± 24%      +0.8        7.13 ± 22%      +0.3        6.63 ± 36%  perf-profile.calltrace.cycles-pp.arch_call_rest_init.start_kernel.x86_64_start_reservations.x86_64_start_kernel.secondary_startup_64_no_verify
-      6.34 ± 31%      +0.8        7.18 ± 23%      -1.4        4.98 ± 27%      -0.3        6.06 ± 23%      -0.5        5.84 ± 24%      +0.8        7.13 ± 22%      +0.3        6.63 ± 36%  perf-profile.calltrace.cycles-pp.rest_init.arch_call_rest_init.start_kernel.x86_64_start_reservations.x86_64_start_kernel
-     37.00 ±  9%      +1.3       38.26 ±  7%      -0.7       36.27 ±  3%      -0.2       36.80 ±  5%      -1.0       36.01 ±  7%      +0.7       37.65 ±  2%      -1.3       35.74 ±  8%  perf-profile.calltrace.cycles-pp.secondary_startup_64_no_verify
-     35.04 ± 10%      +1.3       36.37 ±  7%      -0.6       34.48 ±  4%      +0.1       35.10 ±  5%      -0.7       34.32 ±  8%      +1.0       35.99 ±  2%      -0.9       34.09 ±  9%  perf-profile.calltrace.cycles-pp.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call.do_idle.cpu_startup_entry
-     29.89 ± 11%      +1.3       31.23 ±  8%      -0.2       29.70 ±  5%      +0.4       30.26 ±  6%      -0.2       29.74 ±  9%      +1.7       31.55 ±  3%      -0.4       29.53 ± 10%  perf-profile.calltrace.cycles-pp.intel_idle.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call.do_idle
-     39.21 ±  5%      -0.6       38.58 ±  4%      -1.7       37.54 ±  2%      -1.6       37.61 ±  3%      -1.1       38.11 ±  4%      -2.3       36.88            -1.3       37.91 ±  4%  perf-profile.children.cycles-pp.entry_SYSCALL_64_after_hwframe
-     38.98 ±  5%      -0.6       38.35 ±  4%      -1.7       37.31 ±  2%      -1.6       37.40 ±  3%      -1.1       37.90 ±  4%      -2.3       36.67 ±  2%      -1.3       37.69 ±  4%  perf-profile.children.cycles-pp.do_syscall_64
-     10.41 ±  4%      -0.5        9.94 ±  2%      -1.5        8.95 ±  2%      -1.3        9.08 ±  4%      -1.3        9.10 ±  3%      -1.4        9.00 ±  2%      -1.5        8.92 ±  4%  perf-profile.children.cycles-pp.umount2
-      6.05 ±  3%      -0.4        5.70 ±  8%      +3.2        9.29 ±  3%      +3.4        9.43 ±  5%      +2.8        8.81 ±  2%      +2.9        8.97 ±  5%      +3.1        9.12 ±  6%  perf-profile.children.cycles-pp.ret_from_fork
-      6.04 ±  3%      -0.4        5.70 ±  8%      +3.2        9.29 ±  3%      +3.4        9.42 ±  5%      +2.8        8.81 ±  2%      +2.9        8.97 ±  5%      +3.1        9.12 ±  6%  perf-profile.children.cycles-pp.kthread
-      4.91 ±  6%      -0.3        4.60 ±  9%      -0.6        4.35 ±  7%      -0.6        4.33 ±  7%      -0.5        4.42 ±  4%      -0.7        4.23 ±  5%      -0.6        4.26 ± 18%  perf-profile.children.cycles-pp.__schedule
-      4.26 ±  5%      -0.3        3.94 ±  3%      +2.8        7.10 ±  2%      +2.8        7.08 ±  5%      +2.5        6.79 ±  3%      +2.6        6.82 ±  2%      +2.7        6.94 ±  7%  perf-profile.children.cycles-pp.worker_thread
-      6.80 ±  4%      -0.3        6.51 ±  3%      -1.0        5.84 ±  2%      -0.9        5.92 ±  4%      -0.8        5.97 ±  3%      -0.8        5.97 ±  2%      -0.9        5.88 ±  4%  perf-profile.children.cycles-pp.__x64_sys_umount
-      5.04 ±  7%      -0.3        4.76 ±  3%      -0.7        4.38 ±  4%      -0.8        4.28 ±  6%      -0.5        4.50 ±  4%      -0.8        4.20 ±  2%      -0.8        4.26 ±  6%  perf-profile.children.cycles-pp.exit_to_user_mode_prepare
-      4.13 ±  7%      -0.3        3.85 ±  8%      -0.5        3.62 ±  6%      -0.5        3.64 ±  9%      -0.4        3.72 ±  3%      -0.6        3.51 ±  5%      -0.6        3.56 ± 18%  perf-profile.children.cycles-pp.schedule
-      4.94 ±  7%      -0.3        4.67 ±  3%      -0.6        4.30 ±  4%      -0.7        4.19 ±  6%      -0.5        4.40 ±  4%      -0.8        4.12 ±  3%      -0.8        4.16 ±  6%  perf-profile.children.cycles-pp.exit_to_user_mode_loop
-      3.58 ±  5%      -0.2        3.34 ±  3%      +2.9        6.48 ±  2%      +2.9        6.48 ±  4%      +2.6        6.20 ±  3%      +2.6        6.21 ±  2%      +2.7        6.32 ±  8%  perf-profile.children.cycles-pp.process_one_work
-      2.60 ±  5%      -0.2        2.41 ±  5%      -0.4        2.16 ±  4%      -0.4        2.25 ±  5%      -0.3        2.30 ±  4%      -0.4        2.19            -0.3        2.29 ±  5%  perf-profile.children.cycles-pp.getname_flags
-      0.82 ± 28%      -0.2        0.63 ± 18%      -0.2        0.62 ± 26%      -0.2        0.59 ± 31%      -0.1        0.71 ± 19%      -0.2        0.61 ± 25%      -0.3        0.56 ± 49%  perf-profile.children.cycles-pp.rcu_note_context_switch
-      2.95 ±  5%      -0.2        2.77 ±  8%      -0.4        2.51 ±  2%      -0.4        2.59 ±  5%      -0.3        2.64 ±  3%      -0.4        2.52 ±  3%      -0.3        2.66 ±  4%  perf-profile.children.cycles-pp.user_path_at_empty
-      4.42 ±  6%      -0.2        4.24 ±  2%      -0.5        3.90 ±  3%      -0.6        3.84 ±  4%      -0.5        3.92 ±  4%      -0.7        3.73 ±  2%      -0.6        3.85 ±  4%  perf-profile.children.cycles-pp.syscall_exit_to_user_mode
-      1.97 ±  4%      -0.2        1.80 ±  6%      -0.4        1.60 ±  4%      -0.3        1.72 ±  6%      -0.3        1.71 ±  3%      -0.3        1.67            -0.3        1.70 ±  7%  perf-profile.children.cycles-pp.strncpy_from_user
-      0.64 ± 33%      -0.2        0.48 ± 22%      -0.2        0.46 ± 33%      -0.2        0.47 ± 39%      -0.1        0.54 ± 24%      -0.2        0.47 ± 32%      -0.2        0.41 ± 64%  perf-profile.children.cycles-pp.swake_up_one
-      4.36 ±  3%      -0.1        4.21 ±  2%      -0.5        3.86 ±  3%      -0.5        3.83 ±  5%      -0.5        3.86 ±  3%      -0.4        3.93 ±  2%      -0.6        3.80 ±  6%  perf-profile.children.cycles-pp.do_umount
-      0.89 ± 16%      -0.1        0.74 ± 15%      -0.2        0.72 ± 18%      -0.2        0.70 ± 19%      -0.1        0.75 ± 14%      -0.2        0.70 ± 11%      -0.2        0.66 ± 27%  perf-profile.children.cycles-pp.rcu_exp_wait_wake
-      0.81 ± 17%      -0.1        0.66 ± 10%      -0.0        0.78 ± 11%      -0.1        0.69 ± 25%      -0.1        0.74 ± 10%      -0.2        0.61 ± 14%      -0.2        0.62 ± 38%  perf-profile.children.cycles-pp.poll_idle
-      4.07 ±  6%      -0.1        3.93            -0.5        3.59 ±  2%      -0.5        3.55 ±  4%      -0.4        3.62 ±  4%      -0.6        3.46            -0.5        3.56 ±  4%  perf-profile.children.cycles-pp.task_work_run
-      4.76 ±  4%      -0.1        4.63 ±  2%      -0.5        4.22 ±  3%      -0.6        4.21 ±  5%      -0.5        4.24 ±  3%      -0.5        4.28 ±  2%      -0.6        4.16 ±  6%  perf-profile.children.cycles-pp.path_umount
-      0.76 ± 26%      -0.1        0.62 ± 16%      -0.2        0.60 ± 18%      -0.2        0.56 ± 32%      -0.1        0.67 ± 13%      -0.2        0.58 ± 21%      -0.2        0.52 ± 34%  perf-profile.children.cycles-pp.irqentry_exit_to_user_mode
-      3.14 ±  3%      -0.1        3.02 ± 12%      +0.0        3.17 ±  5%      +0.1        3.28 ±  4%      -0.2        2.93 ±  3%      -0.2        2.96 ±  7%      -0.0        3.13 ±  9%  perf-profile.children.cycles-pp.__do_softirq
-      1.87 ±  5%      -0.1        1.76 ±  5%      -0.3        1.60 ±  5%      -0.2        1.70 ±  5%      -0.2        1.62 ±  6%      -0.2        1.65 ±  3%      -0.2        1.64 ± 10%  perf-profile.children.cycles-pp.unlink
-      2.78 ±  3%      -0.1        2.66 ± 13%      +0.0        2.82 ±  5%      +0.1        2.90 ±  4%      -0.2        2.62 ±  3%      -0.1        2.66 ±  8%      +0.0        2.80 ±  7%  perf-profile.children.cycles-pp.rcu_core
-      3.34 ±  7%      -0.1        3.23 ±  3%      +1.4        4.75 ±  4%      +1.6        4.93 ±  5%      +1.6        4.96 ±  3%      +1.4        4.77 ±  3%      +1.5        4.80 ±  7%  perf-profile.children.cycles-pp.vfs_get_super
-      3.35 ±  7%      -0.1        3.24 ±  3%      +1.4        4.78 ±  4%      +1.6        4.96 ±  5%      +1.6        4.98 ±  3%      +1.4        4.78 ±  2%      +1.5        4.82 ±  7%  perf-profile.children.cycles-pp.vfs_get_tree
-      1.59 ± 18%      -0.1        1.49 ± 18%      -0.4        1.23 ±  8%      -0.4        1.16 ± 17%      -0.5        1.12 ± 16%      -0.6        1.04 ± 19%      -0.4        1.15 ± 21%  perf-profile.children.cycles-pp.__irq_exit_rcu
-      0.83 ± 11%      -0.1        0.73 ± 11%      -0.2        0.65 ±  8%      -0.2        0.65 ±  6%      -0.2        0.68 ±  8%      -0.1        0.70 ±  6%      -0.2        0.67 ± 17%  perf-profile.children.cycles-pp.schedule_timeout
-      0.50 ± 19%      -0.1        0.40 ± 18%      -0.1        0.39 ± 19%      -0.1        0.36 ± 22%      -0.1        0.42 ± 17%      -0.1        0.39 ± 12%      -0.1        0.36 ± 38%  perf-profile.children.cycles-pp.synchronize_rcu_expedited_wait
-      1.74 ±  4%      -0.1        1.64 ±  6%      -0.2        1.50 ±  5%      -0.2        1.59 ±  6%      -0.2        1.51 ±  7%      -0.2        1.53 ±  3%      -0.2        1.52 ± 11%  perf-profile.children.cycles-pp.__x64_sys_unlink
-      2.69 ±  3%      -0.1        2.60 ± 14%      +0.1        2.75 ±  4%      +0.1        2.83 ±  4%      -0.1        2.55 ±  3%      -0.1        2.61 ±  8%      +0.0        2.74 ±  8%  perf-profile.children.cycles-pp.rcu_do_batch
-      2.48 ±  6%      -0.1        2.39 ±  2%      -0.3        2.19 ±  4%      -0.3        2.18 ±  6%      -0.2        2.24 ±  4%      -0.3        2.21 ±  4%      -0.3        2.14 ±  6%  perf-profile.children.cycles-pp.namespace_unlock
-      1.42 ± 10%      -0.1        1.33 ±  6%      -0.3        1.13 ±  4%      -0.3        1.14 ±  4%      -0.3        1.14 ±  8%      -0.3        1.12 ±  7%      -0.3        1.10 ±  4%  perf-profile.children.cycles-pp.__percpu_init_rwsem
-      0.46 ± 21%      -0.1        0.37 ± 20%      -0.1        0.36 ± 18%      -0.1        0.33 ± 23%      -0.1        0.39 ± 18%      -0.1        0.34 ± 13%      -0.1        0.32 ± 42%  perf-profile.children.cycles-pp.synchronize_rcu_expedited_wait_once
-      1.19 ± 18%      -0.1        1.10 ± 13%      -0.0        1.16 ± 10%      -0.1        1.04 ± 17%      -0.0        1.15 ±  8%      -0.1        1.09 ± 10%      -0.1        1.04 ± 19%  perf-profile.children.cycles-pp.asm_sysvec_call_function_single
-      1.56 ±  4%      -0.1        1.47 ±  8%      +0.1        1.70 ±  4%      +0.1        1.62 ±  4%      +0.1        1.62 ±  3%      +0.0        1.58 ±  4%      +0.1        1.62 ± 11%  perf-profile.children.cycles-pp._raw_spin_lock_irqsave
-      0.96 ± 12%      -0.1        0.88 ±  8%      -0.0        0.92 ±  8%      -0.1        0.87 ± 11%      -0.1        0.90 ±  5%      -0.1        0.84 ±  5%      -0.0        0.94 ± 11%  perf-profile.children.cycles-pp.lookup_fast
-      3.13 ±  4%      -0.1        3.04 ±  4%      -0.4        2.74 ±  3%      -0.3        2.80 ±  7%      -0.4        2.75 ±  2%      -0.3        2.78 ±  3%      -0.4        2.74 ±  6%  perf-profile.children.cycles-pp.stress_rndstr
-      2.31 ±  8%      -0.1        2.22 ±  9%      -0.2        2.08 ±  4%      -0.2        2.06 ±  5%      -0.2        2.12 ±  8%      -0.3        2.00 ±  2%      -0.2        2.16 ± 10%  perf-profile.children.cycles-pp.filename_lookup
-      2.70 ±  7%      -0.1        2.61 ±  8%      -0.3        2.41 ±  5%      -0.2        2.45 ±  3%      -0.2        2.50 ±  8%      -0.4        2.31 ±  3%      -0.1        2.56 ± 10%  perf-profile.children.cycles-pp.link_path_walk
-      0.89 ±  8%      -0.1        0.81 ±  9%      -0.2        0.70 ±  5%      -0.1        0.76 ±  7%      -0.1        0.78 ±  8%      -0.2        0.74 ±  6%      -0.1        0.77 ± 11%  perf-profile.children.cycles-pp.__check_object_size
-      1.69 ± 14%      -0.1        1.61 ±  5%      -0.3        1.41 ± 13%      -0.3        1.43 ± 14%      -0.2        1.51 ±  7%      -0.3        1.43 ± 13%      -0.3        1.35 ± 26%  perf-profile.children.cycles-pp.try_to_wake_up
-      1.34 ± 10%      -0.1        1.27 ± 18%      -0.1        1.21 ±  8%      -0.2        1.19 ±  8%      -0.1        1.29 ± 10%      -0.1        1.23 ±  4%      -0.0        1.31 ± 19%  perf-profile.children.cycles-pp.malloc
-      0.57 ±  9%      -0.1        0.49 ± 11%      -0.1        0.45 ±  6%      -0.1        0.42 ± 18%      -0.1        0.42 ±  8%      -0.2        0.39 ± 12%      -0.1        0.43 ± 15%  perf-profile.children.cycles-pp.dequeue_task_fair
-      3.41 ±  7%      -0.1        3.34 ±  4%      +0.7        4.07 ±  4%      +0.9        4.28 ±  6%      +0.9        4.27 ±  3%      +0.8        4.20 ±  4%      +0.8        4.19 ±  5%  perf-profile.children.cycles-pp.pcpu_alloc
-      0.66 ±  6%      -0.1        0.59 ±  3%      +0.5        1.19            +0.6        1.24 ±  8%      +0.5        1.20 ±  3%      +0.6        1.23 ±  7%      +0.6        1.24 ±  6%  perf-profile.children.cycles-pp.__flush_work
-      1.80 ±  3%      -0.1        1.73 ±  7%      -0.2        1.58 ±  3%      -0.2        1.56 ±  6%      -0.2        1.58 ±  4%      -0.2        1.62 ±  3%      -0.2        1.59 ±  6%  perf-profile.children.cycles-pp.mnt_get_count
-      1.35 ±  9%      -0.1        1.28 ±  4%      -0.2        1.19 ±  6%      -0.2        1.15 ± 12%      -0.1        1.20 ±  4%      -0.1        1.22 ±  7%      -0.2        1.13 ± 11%  perf-profile.children.cycles-pp.synchronize_rcu_expedited
-      2.78 ±  5%      -0.1        2.71 ±  2%      -0.4        2.41 ±  2%      -0.3        2.46 ±  5%      -0.3        2.46 ±  6%      -0.4        2.38 ±  2%      -0.3        2.43 ±  5%  perf-profile.children.cycles-pp.cleanup_mnt
-      1.58 ±  8%      -0.1        1.51 ±  4%      -0.2        1.41 ±  4%      -0.1        1.45 ±  5%      -0.1        1.45 ±  2%      -0.1        1.43 ±  2%      -0.1        1.48 ±  5%  perf-profile.children.cycles-pp.symlink
-      1.28 ±  6%      -0.1        1.21 ±  9%      -0.2        1.12 ±  6%      -0.1        1.16 ± 13%      -0.1        1.20 ±  8%      -0.1        1.15 ±  4%      -0.1        1.16 ±  7%  perf-profile.children.cycles-pp.__lxstat64
-      1.42 ± 10%      -0.1        1.35 ± 10%      -0.1        1.31 ±  7%      -0.2        1.27 ±  6%      -0.1        1.32 ±  9%      -0.2        1.24 ±  3%      -0.1        1.31 ± 10%  perf-profile.children.cycles-pp.vfs_fstatat
-      1.09 ±  8%      -0.1        1.02 ±  8%      -0.1        0.97 ±  6%      -0.1        1.00 ± 13%      -0.1        1.02 ±  8%      -0.1        0.98 ±  4%      -0.1        0.99 ±  8%  perf-profile.children.cycles-pp.__do_sys_newlstat
-      0.62 ± 14%      -0.1        0.56 ±  9%      -0.1        0.55 ±  4%      -0.1        0.50 ±  3%      -0.1        0.50 ± 14%      -0.1        0.50 ±  5%      -0.2        0.47 ± 10%  perf-profile.children.cycles-pp.__call_rcu_common
-      1.47 ± 11%      -0.1        1.40 ±  7%      -0.1        1.38 ± 15%      -0.0        1.44 ± 16%      -0.1        1.37 ±  6%      -0.1        1.34 ± 11%      -0.1        1.33 ± 12%  perf-profile.children.cycles-pp.tick_sched_timer
-      0.88 ±  6%      -0.1        0.82 ±  4%      -0.2        0.73 ±  4%      -0.2        0.73 ±  6%      -0.2        0.73 ± 10%      -0.1        0.74 ±  6%      -0.1        0.76 ±  4%  perf-profile.children.cycles-pp.mnt_get_writers
-      0.48 ± 10%      -0.1        0.42 ±  5%      -0.1        0.38 ±  5%      -0.1        0.39 ± 12%      -0.1        0.38 ± 14%      -0.1        0.38 ± 10%      -0.0        0.43 ± 14%  perf-profile.children.cycles-pp.__legitimize_path
-      1.13 ± 11%      -0.1        1.07 ±  8%      -0.1        1.08 ±  7%      -0.1        1.01 ± 11%      -0.1        1.06 ±  6%      -0.1        0.99 ±  4%      -0.0        1.12 ± 12%  perf-profile.children.cycles-pp.walk_component
-      0.86 ± 10%      -0.1        0.80 ± 16%      +0.1        1.00 ±  5%      +0.1        0.99 ±  6%      +0.1        0.93 ±  5%      +0.1        0.98 ±  4%      +0.2        1.04 ± 10%  perf-profile.children.cycles-pp.free_percpu
-      1.98 ±  9%      -0.1        1.92 ±  5%      +1.5        3.53 ±  3%      +1.6        3.60 ±  4%      +1.7        3.64 ±  4%      +1.5        3.51 ±  3%      +1.6        3.55 ±  7%  perf-profile.children.cycles-pp.sget_fc
-      0.32 ± 10%      -0.1        0.25 ± 11%      -0.1        0.25 ±  8%      -0.0        0.28 ±  8%      -0.1        0.25 ± 12%      -0.1        0.23 ±  5%      -0.0        0.28 ± 16%  perf-profile.children.cycles-pp.shrink_dcache_for_umount
-      0.68 ±  7%      -0.1        0.62 ± 10%      -0.1        0.62 ±  3%      -0.1        0.59 ±  8%      -0.1        0.55 ±  7%      -0.1        0.54 ±  5%      -0.1        0.57 ± 11%  perf-profile.children.cycles-pp.dentry_kill
-      1.55 ±  4%      -0.1        1.49 ±  6%      -0.2        1.35 ±  6%      -0.1        1.46 ±  6%      -0.2        1.37 ±  7%      -0.2        1.38 ±  4%      -0.2        1.38 ± 11%  perf-profile.children.cycles-pp.do_unlinkat
-      0.78 ±  5%      -0.1        0.72 ±  5%      -0.1        0.66 ±  6%      -0.1        0.70 ±  9%      -0.1        0.65 ±  4%      -0.2        0.62 ±  2%      -0.2        0.63 ± 10%  perf-profile.children.cycles-pp.evict
-      1.31 ±  8%      -0.1        1.26 ±  4%      -0.1        1.21 ±  4%      -0.1        1.24 ±  5%      -0.1        1.24            -0.1        1.23 ±  3%      -0.1        1.26 ±  5%  perf-profile.children.cycles-pp.do_symlinkat
-      0.96 ±  5%      -0.1        0.91 ±  5%      -0.2        0.80 ±  5%      -0.1        0.85 ±  5%      -0.1        0.86 ±  7%      -0.1        0.84 ±  4%      -0.1        0.83 ±  7%  perf-profile.children.cycles-pp.__filename_parentat
-      1.14 ± 11%      -0.1        1.08 ± 13%      -0.1        1.06 ±  7%      -0.1        1.02 ±  8%      -0.1        1.04 ±  9%      -0.2        0.98 ±  5%      -0.1        1.04 ± 11%  perf-profile.children.cycles-pp.vfs_statx
-      4.31 ±  6%      -0.1        4.26 ±  5%      -0.6        3.71 ±  8%      -0.6        3.74 ± 13%      -0.7        3.56            -0.9        3.40 ±  8%      -0.8        3.54 ± 11%  perf-profile.children.cycles-pp.sysvec_apic_timer_interrupt
-      0.57 ±  6%      -0.1        0.52 ±  4%      -0.1        0.43 ±  5%      -0.1        0.44 ±  7%      -0.1        0.44 ±  9%      -0.1        0.50 ±  7%      -0.1        0.48 ±  6%  perf-profile.children.cycles-pp.__wait_for_common
-      0.62 ±  8%      -0.1        0.57 ± 10%      -0.1        0.56 ±  5%      -0.1        0.55 ±  8%      -0.1        0.50 ±  9%      -0.1        0.49 ±  6%      -0.1        0.50 ± 12%  perf-profile.children.cycles-pp.__dentry_kill
-      0.54 ± 16%      -0.0        0.49 ± 16%      -0.0        0.52 ±  9%      -0.1        0.48 ± 11%      -0.0        0.52 ± 17%      -0.1        0.46 ±  6%      -0.0        0.54 ± 16%  perf-profile.children.cycles-pp.device_read_db_internal_filename
-      2.44 ± 10%      -0.0        2.39 ± 12%      -0.0        2.41 ±  5%      -0.2        2.24 ±  8%      -0.1        2.35 ±  8%      -0.2        2.25 ±  4%      -0.0        2.44 ± 17%  perf-profile.children.cycles-pp.seq_read_iter
-      0.82 ± 13%      -0.0        0.77 ± 19%      -0.0        0.80 ±  6%      +0.0        0.85 ±  4%      -0.1        0.74 ±  7%      -0.0        0.77 ±  7%      -0.0        0.81 ±  6%  perf-profile.children.cycles-pp.delayed_free_vfsmnt
-      1.48 ±  8%      -0.0        1.43 ±  3%      -0.1        1.34 ±  5%      -0.1        1.39 ±  6%      -0.1        1.38 ±  2%      -0.1        1.37 ±  2%      -0.1        1.42 ±  5%  perf-profile.children.cycles-pp.__x64_sys_symlink
-      1.82 ± 10%      -0.0        1.77 ±  5%      +1.6        3.40 ±  3%      +1.6        3.46 ±  5%      +1.7        3.47 ±  4%      +1.6        3.38 ±  4%      +1.6        3.40 ±  7%  perf-profile.children.cycles-pp.alloc_super
-      1.61 ±  5%      -0.0        1.56 ±  4%      -0.2        1.39 ±  3%      -0.2        1.44 ±  7%      -0.2        1.42 ±  5%      -0.2        1.40 ±  4%      -0.2        1.42 ±  8%  perf-profile.children.cycles-pp.deactivate_locked_super
-      0.98 ±  2%      -0.0        0.93 ±  6%      -0.0        0.98 ±  5%      +0.0        0.98 ±  6%      +0.0        1.00 ±  4%      +0.0        1.00 ±  5%      +0.0        0.99 ±  9%  perf-profile.children.cycles-pp.__cond_resched
-      0.88 ±  4%      -0.0        0.83 ±  7%      -0.2        0.72 ±  7%      -0.1        0.78 ±  6%      -0.1        0.78 ±  7%      -0.1        0.75 ±  5%      -0.1        0.74 ±  9%  perf-profile.children.cycles-pp.path_parentat
-      0.36 ±  8%      -0.0        0.31 ± 11%      -0.1        0.26 ± 13%      -0.1        0.30 ± 11%      -0.0        0.32 ± 14%      -0.1        0.29 ±  5%      -0.0        0.31 ±  7%  perf-profile.children.cycles-pp.__check_heap_object
-      0.40 ±  4%      -0.0        0.36 ± 13%      +0.0        0.40 ± 16%      -0.0        0.38 ± 17%      -0.0        0.39 ± 13%      -0.0        0.36 ± 11%      -0.0        0.36 ± 27%  perf-profile.children.cycles-pp.native_queued_spin_lock_slowpath
-      0.79 ±  6%      -0.0        0.75 ±  4%      -0.1        0.72 ±  7%      -0.0        0.74 ±  9%      -0.0        0.78 ±  7%      -0.0        0.74 ±  6%      -0.0        0.76 ± 13%  perf-profile.children.cycles-pp.filename_create
-      2.70 ± 12%      -0.0        2.66 ± 12%      -0.0        2.65 ±  5%      -0.2        2.47 ±  8%      -0.1        2.63 ±  9%      -0.2        2.49 ±  4%      +0.0        2.73 ± 18%  perf-profile.children.cycles-pp.read
-      2.60 ± 11%      -0.0        2.56 ± 12%      -0.0        2.56 ±  4%      -0.2        2.38 ±  8%      -0.1        2.52 ±  8%      -0.2        2.40 ±  4%      +0.0        2.63 ± 17%  perf-profile.children.cycles-pp.vfs_read
-      2.62 ± 11%      -0.0        2.58 ± 12%      -0.0        2.58 ±  4%      -0.2        2.40 ±  8%      -0.1        2.54 ±  8%      -0.2        2.42 ±  4%      +0.0        2.65 ± 18%  perf-profile.children.cycles-pp.ksys_read
-      2.93 ±  9%      -0.0        2.89 ± 10%      -0.2        2.69 ±  5%      -0.3        2.60 ±  4%      -0.2        2.73 ±  7%      -0.4        2.58 ±  2%      -0.1        2.86 ± 13%  perf-profile.children.cycles-pp.path_lookupat
-      0.60 ±  7%      -0.0        0.56 ±  5%      -0.1        0.50 ±  7%      -0.1        0.52 ±  6%      -0.1        0.52 ±  5%      -0.1        0.52 ±  9%      -0.1        0.51 ± 11%  perf-profile.children.cycles-pp.umount_tree
-      0.32 ± 11%      -0.0        0.28 ± 10%      -0.1        0.27 ± 14%      -0.0        0.28 ± 15%      -0.0        0.28 ± 10%      -0.1        0.24 ± 15%      -0.0        0.28 ± 17%  perf-profile.children.cycles-pp.sched_clock
-      0.17 ± 27%      -0.0        0.13 ± 17%      -0.0        0.15 ±  5%      -0.0        0.14 ± 21%      -0.0        0.15 ± 12%      -0.0        0.14 ± 18%      -0.0        0.14 ± 21%  perf-profile.children.cycles-pp.security_inode_getattr
-      0.32 ± 11%      -0.0        0.28 ±  9%      -0.0        0.27 ± 18%      -0.0        0.28 ± 16%      -0.0        0.30 ±  6%      -0.1        0.24 ± 14%      -0.0        0.29 ± 18%  perf-profile.children.cycles-pp.native_sched_clock
-      9.51 ±  5%      -0.0        9.47 ±  3%      +0.8       10.32 ±  3%      +1.2       10.71 ±  5%      +1.2       10.68 ±  3%      +0.8       10.32 ±  3%      +0.9       10.38 ±  5%  perf-profile.children.cycles-pp.mount
-      0.22 ± 13%      -0.0        0.18 ± 16%      -0.0        0.19 ± 11%      -0.0        0.20 ± 17%      -0.0        0.20 ± 14%      -0.0        0.20 ± 12%      -0.0        0.22 ± 30%  perf-profile.children.cycles-pp.number
-      0.44 ±  9%      -0.0        0.40 ± 15%      -0.1        0.35 ± 10%      -0.1        0.33 ± 17%      -0.1        0.34 ±  7%      -0.1        0.31 ± 12%      -0.1        0.35 ± 12%  perf-profile.children.cycles-pp.dequeue_entity
-      0.54 ± 10%      -0.0        0.50 ±  4%      -0.1        0.46 ±  6%      -0.1        0.47 ± 14%      -0.1        0.46 ± 11%      -0.1        0.44 ±  7%      -0.0        0.51 ± 14%  perf-profile.children.cycles-pp.try_to_unlazy
-      0.94 ±  5%      -0.0        0.90 ± 11%      -0.1        0.82 ±  6%      -0.1        0.81 ±  8%      -0.1        0.80 ±  7%      -0.1        0.88 ±  6%      -0.1        0.84 ±  9%  perf-profile.children.cycles-pp.propagate_mount_busy
-      0.06 ± 21%      -0.0        0.03 ±100%      -0.0        0.02 ±142%      -0.0        0.02 ±142%      -0.1        0.01 ±223%      -0.0        0.04 ± 71%      -0.0        0.02 ±141%  perf-profile.children.cycles-pp.__mem_cgroup_uncharge_list
-      0.04 ± 77%      -0.0        0.01 ±223%      -0.0        0.03 ±100%      -0.0        0.01 ±223%      +0.0        0.06 ±  6%      -0.0        0.03 ±100%      -0.0        0.02 ±141%  perf-profile.children.cycles-pp._ext4_show_options
-      0.05 ±  8%      -0.0        0.02 ±142%      -0.0        0.04 ± 73%      -0.0        0.02 ±141%      -0.0        0.02 ±146%      -0.0        0.03 ±101%      -0.0        0.03 ±100%  perf-profile.children.cycles-pp.try_charge_memcg
-      0.15 ± 18%      -0.0        0.12 ± 24%      -0.0        0.12 ± 16%      -0.0        0.11 ± 28%      -0.0        0.13 ± 15%      -0.0        0.14 ± 12%      -0.0        0.13 ±  9%  perf-profile.children.cycles-pp.propagate_umount
-      0.07 ± 21%      -0.0        0.04 ±102%      -0.0        0.04 ±105%      -0.0        0.03 ±143%      -0.0        0.04 ±108%      -0.0        0.04 ±101%      -0.0        0.03 ±106%  perf-profile.children.cycles-pp.tick_sched_do_timer
-      0.42 ±  5%      -0.0        0.39 ±  5%      -0.1        0.36 ± 12%      -0.0        0.40 ± 10%      -0.1        0.34 ±  8%      -0.1        0.33 ±  5%      -0.1        0.34 ± 13%  perf-profile.children.cycles-pp.truncate_inode_pages_range
-      0.68 ± 15%      -0.0        0.64 ± 11%      -0.0        0.64 ±  9%      -0.1        0.59 ±  7%      -0.1        0.62 ± 12%      -0.1        0.61 ±  6%      -0.0        0.68 ± 20%  perf-profile.children.cycles-pp.seq_printf
-      0.12 ±  8%      -0.0        0.09 ± 12%      -0.0        0.10 ± 17%      -0.0        0.11 ± 21%      -0.0        0.10 ± 22%      -0.0        0.10 ± 28%      -0.0        0.11 ± 16%  perf-profile.children.cycles-pp.may_delete
-      0.34 ±  9%      -0.0        0.31 ± 16%      +0.0        0.36 ±  9%      +0.0        0.36 ± 10%      +0.0        0.35 ± 12%      +0.0        0.36 ±  8%      +0.0        0.39 ± 11%  perf-profile.children.cycles-pp.percpu_free_rwsem
-      0.34 ±  9%      -0.0        0.31 ± 16%      +3.3        3.66 ±  3%      +3.3        3.68 ±  3%      +3.1        3.41 ±  2%      +3.0        3.40 ±  4%      +3.2        3.54 ±  8%  perf-profile.children.cycles-pp.destroy_super_work
-      0.37 ± 11%      -0.0        0.34 ± 14%      -0.0        0.33 ± 14%      -0.0        0.34 ± 14%      -0.0        0.33 ± 15%      -0.1        0.31 ± 17%      -0.0        0.33 ± 10%  perf-profile.children.cycles-pp.__d_lookup_rcu
-      0.98 ±  7%      -0.0        0.94 ±  5%      -0.1        0.86 ±  3%      -0.1        0.87 ±  9%      -0.1        0.84 ±  9%      -0.1        0.84 ±  5%      -0.1        0.89 ± 12%  perf-profile.children.cycles-pp.kill_litter_super
-      8.59 ±  6%      -0.0        8.56 ±  2%      +0.9        9.50 ±  3%      +1.3        9.88 ±  5%      +1.3        9.87 ±  3%      +0.9        9.53 ±  3%      +1.0        9.55 ±  6%  perf-profile.children.cycles-pp.do_new_mount
-      0.80 ± 15%      -0.0        0.76 ± 14%      -0.0        0.76 ±  8%      -0.1        0.73 ±  6%      -0.0        0.77 ± 10%      -0.1        0.74 ±  4%      +0.0        0.81 ± 19%  perf-profile.children.cycles-pp.vsnprintf
-      0.59 ±  6%      -0.0        0.56 ±  7%      -0.0        0.58 ±  8%      -0.0        0.55 ± 10%      -0.0        0.57 ±  7%      -0.0        0.55 ±  5%      -0.0        0.57 ± 15%  perf-profile.children.cycles-pp.ramfs_get_inode
-      0.03 ±102%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00        perf-profile.children.cycles-pp.nr_iowait_cpu
-      0.15 ± 13%      -0.0        0.12 ± 19%      -0.0        0.13 ± 14%      -0.0        0.12 ± 26%      -0.0        0.12 ± 19%      -0.0        0.12 ± 20%      -0.0        0.12 ± 13%  perf-profile.children.cycles-pp.alloc_fd
-      0.08 ± 24%      -0.0        0.05 ± 47%      +0.0        0.09 ± 22%      -0.0        0.08 ± 34%      -0.0        0.08 ± 24%      +0.0        0.09 ± 16%      +0.0        0.09 ± 30%  perf-profile.children.cycles-pp.free@plt
-      9.40 ±  5%      -0.0        9.36 ±  3%      +0.8       10.21 ±  3%      +1.2       10.63 ±  5%      +1.2       10.58 ±  3%      +0.8       10.22 ±  3%      +0.9       10.28 ±  6%  perf-profile.children.cycles-pp.__x64_sys_mount
-      1.32 ± 11%      -0.0        1.28 ±  7%      -0.1        1.25 ± 13%      +0.0        1.32 ± 17%      -0.1        1.25 ±  6%      -0.1        1.22 ± 11%      -0.1        1.20 ± 11%  perf-profile.children.cycles-pp.update_process_times
-      0.68 ±  9%      -0.0        0.65 ± 10%      -0.0        0.63 ±  7%      -0.0        0.66 ±  9%      -0.1        0.59 ± 10%      -0.1        0.59 ±  2%      -0.1        0.60 ± 11%  perf-profile.children.cycles-pp.__sync_rcu_exp_select_node_cpus
-      0.42 ± 15%      -0.0        0.39 ± 12%      -0.1        0.36 ±  7%      -0.1        0.36 ±  6%      -0.0        0.37 ±  7%      -0.1        0.37 ± 10%      -0.0        0.38 ± 11%  perf-profile.children.cycles-pp.vfs_fstat
-      0.09 ± 27%      -0.0        0.06 ± 45%      -0.0        0.09 ± 18%      -0.0        0.08 ± 31%      +0.0        0.10 ±  9%      -0.0        0.08 ± 20%      -0.0        0.08 ± 45%  perf-profile.children.cycles-pp.common_perm_cond
-      0.07 ± 18%      -0.0        0.04 ± 73%      -0.0        0.03 ±101%      -0.1        0.01 ±223%      -0.0        0.06 ±  9%      -0.1        0.01 ±223%      -0.1        0.02 ±144%  perf-profile.children.cycles-pp.unlock_mount
-      0.03 ±101%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.03 ±102%      -0.0        0.00            -0.0        0.02 ±142%  perf-profile.children.cycles-pp.clear_inode
-      0.16 ± 22%      -0.0        0.12 ± 21%      -0.0        0.14 ± 15%      -0.0        0.12 ± 19%      -0.0        0.12 ± 17%      -0.0        0.14 ± 18%      -0.0        0.14 ± 24%  perf-profile.children.cycles-pp.strlen@plt
-      0.26 ± 15%      -0.0        0.23 ± 16%      -0.0        0.25 ± 16%      -0.0        0.25 ±  9%      -0.0        0.26 ± 15%      -0.0        0.21 ±  2%      -0.0        0.24 ± 14%  perf-profile.children.cycles-pp.smp_call_function_single
-      0.29 ±  7%      -0.0        0.26 ±  8%      -0.0        0.25 ± 13%      -0.0        0.26 ± 18%      -0.0        0.27 ±  9%      -0.1        0.23 ± 12%      -0.0        0.27 ± 20%  perf-profile.children.cycles-pp.sched_clock_cpu
-      0.68 ±  9%      -0.0        0.65 ± 12%      -0.1        0.60 ± 11%      -0.1        0.60 ±  8%      -0.1        0.62 ±  8%      -0.1        0.57 ±  4%      -0.1        0.54 ± 16%  perf-profile.children.cycles-pp.__wake_up_common_lock
-      0.49 ±  8%      -0.0        0.46 ±  8%      -0.0        0.44 ±  8%      -0.0        0.44 ± 12%      -0.0        0.46 ±  6%      -0.0        0.44 ±  7%      -0.0        0.44 ± 14%  perf-profile.children.cycles-pp.ramfs_fill_super
-      0.03 ±102%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.03 ±100%      -0.0        0.01 ±223%      -0.0        0.01 ±223%  perf-profile.children.cycles-pp.__mod_timer
-      0.15 ±  8%      -0.0        0.12 ± 15%      -0.0        0.14 ± 11%      -0.1        0.10 ±  6%      -0.0        0.13 ± 19%      -0.0        0.12 ± 20%      -0.0        0.12 ± 22%  perf-profile.children.cycles-pp._hashmap_first_key_and_value
-      0.05 ± 47%      -0.0        0.02 ±142%      +0.0        0.05 ± 84%      -0.0        0.04 ±101%      +0.0        0.06 ± 16%      -0.0        0.02 ±142%      -0.0        0.04 ± 72%  perf-profile.children.cycles-pp.__unfreeze_partials
-      0.26 ± 16%      -0.0        0.23 ± 12%      -0.1        0.20 ±  7%      -0.1        0.20 ± 14%      -0.1        0.20 ± 18%      -0.0        0.21 ± 11%      -0.0        0.22 ± 23%  perf-profile.children.cycles-pp.__legitimize_mnt
-      0.16 ± 32%      -0.0        0.14 ± 24%      +0.0        0.17 ± 15%      -0.0        0.15 ± 22%      -0.0        0.14 ± 19%      -0.0        0.16 ± 13%      -0.0        0.16 ± 20%  perf-profile.children.cycles-pp.siphash24_init
-      1.03 ± 14%      -0.0        1.00 ±  9%      -0.1        0.97 ±  4%      -0.1        0.92 ±  4%      -0.1        0.97 ±  9%      -0.1        0.96 ±  7%      -0.0        1.00 ± 12%  perf-profile.children.cycles-pp.__fxstat64
-      1.34 ±  5%      -0.0        1.31 ±  3%      -0.1        1.24 ±  6%      -0.1        1.28 ±  5%      -0.0        1.33 ±  3%      -0.1        1.27 ±  2%      -0.1        1.24 ±  8%  perf-profile.children.cycles-pp.kmem_cache_alloc_lru
-      1.19 ±  6%      -0.0        1.16 ±  5%      -0.2        0.98 ±  3%      -0.1        1.04 ± 12%      -0.2        1.02 ±  5%      -0.1        1.10 ±  6%      -0.1        1.08 ±  8%  perf-profile.children.cycles-pp.wait_rcu_exp_gp
-      0.19 ± 17%      -0.0        0.16 ± 13%      -0.0        0.16 ± 18%      -0.0        0.16 ± 24%      -0.0        0.15 ± 12%      -0.1        0.13 ± 26%      -0.0        0.14 ± 17%  perf-profile.children.cycles-pp.check_preempt_curr
-      0.25 ± 19%      -0.0        0.22 ± 24%      -0.0        0.22 ± 12%      -0.0        0.22 ± 14%      -0.0        0.20 ± 18%      -0.0        0.22 ± 14%      -0.0        0.23 ± 22%  perf-profile.children.cycles-pp.device_add_property_aux
-      0.16 ±  6%      -0.0        0.13 ± 18%      -0.0        0.14 ± 19%      -0.0        0.14 ± 24%      -0.0        0.12 ± 18%      -0.0        0.12 ± 12%      -0.0        0.13 ± 14%  perf-profile.children.cycles-pp.alloc_fs_context
-      0.04 ± 73%      -0.0        0.01 ±223%      +0.0        0.05 ± 45%      -0.0        0.01 ±223%      -0.0        0.02 ±144%      -0.0        0.01 ±223%      -0.0        0.02 ±141%  perf-profile.children.cycles-pp.path_compare@plt
-      0.05 ± 45%      -0.0        0.02 ±141%      -0.0        0.02 ± 99%      -0.0        0.02 ±141%      -0.0        0.02 ±143%      -0.0        0.02 ±142%      -0.0        0.02 ±142%  perf-profile.children.cycles-pp.prepare_to_swait_event
-      0.81 ±  7%      -0.0        0.78 ± 14%      -0.0        0.80 ±  9%      -0.1        0.72 ±  6%      -0.0        0.77 ± 13%      -0.1        0.72 ±  8%      -0.0        0.77 ± 17%  perf-profile.children.cycles-pp.alloc_empty_file
-      0.04 ± 71%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.02 ±144%  perf-profile.children.cycles-pp.malloc@plt
-      0.24 ± 19%      -0.0        0.22 ±  9%      -0.0        0.20 ± 12%      -0.0        0.22 ± 17%      -0.0        0.19 ± 15%      -0.0        0.20 ± 10%      -0.0        0.22 ± 25%  perf-profile.children.cycles-pp.__switch_to
-      0.12 ± 18%      -0.0        0.09 ± 14%      -0.0        0.09 ± 22%      -0.0        0.10 ± 25%      -0.0        0.10 ±  6%      -0.0        0.09 ± 12%      -0.0        0.10 ± 26%  perf-profile.children.cycles-pp.d_walk
-      0.33 ± 17%      -0.0        0.31 ± 15%      -0.0        0.30 ±  9%      -0.1        0.25 ±  7%      -0.0        0.31 ± 14%      -0.1        0.27 ±  6%      -0.0        0.32 ± 22%  perf-profile.children.cycles-pp.down_read
-      0.20 ± 15%      -0.0        0.17 ± 22%      -0.0        0.17 ± 17%      -0.0        0.19 ± 21%      -0.0        0.16 ± 13%      -0.1        0.14 ± 15%      -0.0        0.19 ± 24%  perf-profile.children.cycles-pp.update_rq_clock
-      1.18 ±  6%      -0.0        1.16 ±  5%      -0.2        0.98 ±  2%      -0.1        1.04 ± 12%      -0.2        1.01 ±  5%      -0.1        1.09 ±  7%      -0.1        1.07 ±  8%  perf-profile.children.cycles-pp.sync_rcu_exp_select_cpus
-      0.82 ±  8%      -0.0        0.80 ±  6%      -0.1        0.76 ±  6%      -0.1        0.70 ± 10%      -0.1        0.76 ±  3%      -0.1        0.70 ±  5%      -0.1        0.73 ± 12%  perf-profile.children.cycles-pp.__fput
-      0.74 ± 10%      -0.0        0.71 ±  8%      -0.1        0.68 ± 10%      +0.0        0.75 ± 22%      -0.0        0.71 ±  9%      -0.1        0.68 ± 11%      -0.0        0.70 ± 13%  perf-profile.children.cycles-pp.perf_adjust_freq_unthr_context
-      1.37 ±  8%      -0.0        1.35 ± 11%      -0.0        1.34 ±  4%      -0.1        1.25 ± 10%      +0.0        1.39 ±  9%      -0.1        1.30 ±  4%      +0.0        1.40 ± 18%  perf-profile.children.cycles-pp.siphash24_compress
-      0.39 ±  9%      -0.0        0.36 ±  8%      -0.1        0.32 ±  8%      -0.1        0.33 ± 11%      -0.1        0.33 ± 10%      -0.1        0.31 ±  9%      -0.1        0.33 ± 16%  perf-profile.children.cycles-pp.check_heap_object
-      0.05 ± 73%      -0.0        0.03 ±102%      -0.0        0.02 ±141%      -0.0        0.04 ± 73%      -0.0        0.04 ± 76%      -0.0        0.01 ±223%      -0.0        0.03 ±100%  perf-profile.children.cycles-pp.local_clock_noinstr
-      0.06 ± 20%      -0.0        0.04 ± 71%      -0.0        0.04 ± 71%      -0.0        0.03 ± 70%      -0.0        0.04 ± 72%      -0.0        0.04 ± 71%      -0.0        0.02 ±141%  perf-profile.children.cycles-pp.__mnt_want_write
-      0.79 ± 10%      -0.0        0.77 ±  4%      -0.1        0.73 ±  2%      -0.1        0.72 ±  7%      -0.1        0.73 ±  5%      -0.1        0.73 ±  4%      -0.1        0.74 ±  9%  perf-profile.children.cycles-pp.vfs_symlink
-      0.29 ±  8%      -0.0        0.27 ± 17%      -0.0        0.26 ±  8%      -0.0        0.24 ± 15%      -0.0        0.24 ± 17%      -0.0        0.24 ± 14%      -0.1        0.24 ±  8%  perf-profile.children.cycles-pp._raw_spin_lock_irq
-      0.16 ±  5%      -0.0        0.14 ± 27%      +0.0        0.18 ± 10%      -0.0        0.16 ± 14%      -0.0        0.16 ± 19%      -0.0        0.13 ± 13%      +0.0        0.16 ± 20%  perf-profile.children.cycles-pp.prepend_path
-      1.32 ± 11%      -0.0        1.30 ±  7%      -0.1        1.26 ± 13%      +0.0        1.34 ± 17%      -0.1        1.26 ±  6%      -0.1        1.23 ± 10%      -0.1        1.22 ± 12%  perf-profile.children.cycles-pp.tick_sched_handle
-      1.06 ± 11%      -0.0        1.04 ±  6%      -0.1        1.01 ± 13%      +0.0        1.09 ± 18%      -0.0        1.03 ±  7%      -0.1        0.98 ± 10%      -0.1        0.99 ± 11%  perf-profile.children.cycles-pp.scheduler_tick
-      1.00 ±  3%      -0.0        0.98 ±  8%      -0.1        0.87 ±  6%      -0.1        0.91 ± 12%      -0.2        0.85            -0.1        0.87 ±  6%      -0.1        0.86 ±  8%  perf-profile.children.cycles-pp.stress_mwc32
-      0.75 ± 10%      -0.0        0.72 ±  8%      -0.1        0.68 ± 10%      +0.0        0.76 ± 21%      -0.0        0.71 ± 10%      -0.1        0.69 ± 12%      -0.0        0.70 ± 13%  perf-profile.children.cycles-pp.perf_event_task_tick
-      0.35 ± 11%      -0.0        0.33 ±  5%      -0.0        0.30 ±  5%      -0.0        0.30 ± 19%      -0.1        0.28 ± 17%      -0.1        0.28 ± 14%      -0.0        0.32 ± 14%  perf-profile.children.cycles-pp.complete_walk
-      0.16 ± 19%      -0.0        0.14 ± 18%      -0.0        0.12 ± 33%      -0.0        0.14 ± 15%      -0.0        0.16 ±  8%      -0.0        0.16 ±  9%      -0.0        0.14 ± 20%  perf-profile.children.cycles-pp.terminate_walk
-      0.34 ± 14%      -0.0        0.32 ± 12%      -0.0        0.30 ±  8%      -0.0        0.32 ± 11%      -0.0        0.30 ±  7%      -0.0        0.31 ± 10%      -0.0        0.32 ± 10%  perf-profile.children.cycles-pp.simple_write_begin
-      0.06 ± 47%      -0.0        0.03 ±100%      +0.0        0.06 ± 19%      -0.0        0.05 ± 76%      +0.0        0.07 ± 25%      -0.0        0.04 ± 71%      +0.0        0.06 ± 48%  perf-profile.children.cycles-pp.prepend_copy
-      0.18 ± 15%      -0.0        0.16 ± 12%      +0.0        0.21 ± 16%      +0.0        0.22 ± 13%      +0.0        0.22 ± 18%      +0.1        0.23 ± 17%      +0.0        0.20 ± 20%  perf-profile.children.cycles-pp._raw_spin_unlock_irqrestore
-      0.88 ±  5%      -0.0        0.86 ±  3%      -0.1        0.80 ±  7%      -0.1        0.80 ±  7%      -0.0        0.86 ±  6%      -0.1        0.82 ±  3%      -0.1        0.81 ± 11%  perf-profile.children.cycles-pp.slab_pre_alloc_hook
-      1.63 ± 20%      -0.0        1.61 ± 24%      +0.4        2.03 ±  8%      +0.6        2.19 ± 12%      +0.3        1.89 ±  8%      +0.4        2.02 ± 15%      +0.4        2.05 ±  9%  perf-profile.children.cycles-pp.run_ksoftirqd
-      0.05 ± 47%      -0.0        0.03 ±101%      +0.0        0.06 ± 13%      -0.0        0.05 ± 46%      -0.0        0.03 ±105%      -0.0        0.03 ±102%      -0.0        0.02 ±141%  perf-profile.children.cycles-pp.update_min_vruntime
-      0.07 ± 17%      -0.0        0.05 ± 72%      -0.0        0.06 ± 48%      +0.0        0.07 ± 18%      -0.0        0.05 ± 47%      -0.0        0.06 ± 46%      -0.0        0.07 ± 44%  perf-profile.children.cycles-pp.path_simplify
-      0.02 ±144%      -0.0        0.00            +0.0        0.03 ±102%      -0.0        0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%  perf-profile.children.cycles-pp.asm_exc_page_fault
-      0.03 ±101%      -0.0        0.01 ±223%      -0.0        0.02 ±141%      +0.0        0.04 ± 72%      +0.0        0.04 ± 72%      -0.0        0.03 ±100%      +0.0        0.03 ±101%  perf-profile.children.cycles-pp.__libc_start_main
-      0.03 ±101%      -0.0        0.01 ±223%      -0.0        0.02 ±141%      +0.0        0.04 ± 72%      +0.0        0.04 ± 72%      -0.0        0.03 ±100%      +0.0        0.03 ±101%  perf-profile.children.cycles-pp.main
-      0.03 ±101%      -0.0        0.01 ±223%      -0.0        0.02 ±141%      +0.0        0.04 ± 72%      +0.0        0.04 ± 72%      -0.0        0.03 ±100%      +0.0        0.03 ±101%  perf-profile.children.cycles-pp.run_builtin
-      0.19 ± 18%      -0.0        0.17 ± 24%      -0.0        0.16 ± 29%      -0.0        0.16 ± 28%      -0.0        0.17 ± 24%      -0.1        0.12 ± 16%      -0.1        0.12 ± 45%  perf-profile.children.cycles-pp.autoremove_wake_function
-      0.10 ± 19%      -0.0        0.08 ±  6%      -0.0        0.07 ± 11%      -0.0        0.07 ± 20%      -0.0        0.05 ± 45%      -0.0        0.06 ± 50%      -0.0        0.08 ± 17%  perf-profile.children.cycles-pp.vmalloc_to_page
-      0.20 ± 10%      -0.0        0.18 ±  9%      -0.0        0.20 ± 16%      +0.0        0.22 ± 16%      +0.0        0.21 ± 14%      -0.0        0.20 ± 13%      -0.0        0.20 ± 17%  perf-profile.children.cycles-pp.rcu_all_qs
-      0.83 ±  7%      -0.0        0.81 ±  7%      -0.1        0.72 ±  8%      -0.1        0.70 ±  6%      -0.1        0.75 ±  4%      -0.1        0.72 ±  7%      -0.1        0.71 ±  6%  perf-profile.children.cycles-pp.__x64_sys_rmdir
-      0.27 ± 14%      -0.0        0.25 ± 14%      -0.0        0.26 ± 17%      -0.0        0.25 ± 12%      +0.0        0.27 ±  9%      -0.0        0.25 ±  4%      +0.0        0.30 ± 14%  perf-profile.children.cycles-pp.kernfs_dop_revalidate
-      0.19 ± 18%      -0.0        0.18 ±  4%      -0.0        0.16 ± 20%      -0.0        0.18 ± 16%      -0.0        0.16 ± 20%      -0.0        0.16 ± 18%      -0.0        0.19 ± 14%  perf-profile.children.cycles-pp.lockref_get_not_dead
-      0.13 ± 14%      -0.0        0.11 ± 21%      -0.0        0.12 ± 14%      -0.0        0.12 ± 19%      -0.0        0.12 ± 16%      -0.0        0.12 ± 20%      -0.0        0.12 ± 12%  perf-profile.children.cycles-pp.memcpy_orig
-      0.15 ± 13%      -0.0        0.13 ± 18%      +0.0        0.16 ± 18%      -0.0        0.15 ± 27%      +0.0        0.16 ± 14%      -0.0        0.14 ± 11%      +0.0        0.16 ± 28%  perf-profile.children.cycles-pp.sendmsg
-      0.02 ±142%      -0.0        0.00            -0.0        0.01 ±223%      +0.0        0.02 ±142%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      +0.0        0.02 ±142%  perf-profile.children.cycles-pp.unit_name_escape
-      0.07 ± 27%      -0.0        0.05 ± 75%      +0.0        0.08 ± 25%      -0.0        0.05 ± 73%      -0.0        0.07 ± 24%      +0.0        0.08 ± 18%      -0.0        0.06 ± 48%  perf-profile.children.cycles-pp.string_table_lookup
-      0.08 ± 20%      -0.0        0.06 ± 19%      -0.0        0.03 ±103%      -0.0        0.04 ±103%      -0.0        0.05 ± 46%      -0.0        0.07 ± 45%      -0.0        0.05 ± 72%  perf-profile.children.cycles-pp.propagation_next
-      0.05 ± 48%      -0.0        0.03 ±102%      -0.0        0.02 ±141%      -0.0        0.03 ±100%      +0.0        0.05 ± 47%      -0.0        0.03 ±100%      +0.0        0.05 ± 49%  perf-profile.children.cycles-pp.xas_clear_mark
-      0.12 ±  9%      -0.0        0.10 ± 23%      -0.0        0.09 ± 22%      -0.0        0.12 ± 19%      +0.0        0.12 ± 13%      -0.0        0.11 ± 22%      -0.0        0.10 ± 16%  perf-profile.children.cycles-pp.mutex_lock
-      0.08 ± 21%      -0.0        0.06 ± 71%      -0.0        0.07 ± 16%      +0.0        0.09 ± 17%      +0.0        0.08 ± 24%      -0.0        0.05 ± 79%      +0.0        0.09 ± 22%  perf-profile.children.cycles-pp.generic_parse_monolithic
-      0.85 ± 12%      -0.0        0.83 ±  7%      -0.1        0.75 ±  8%      +0.0        0.86 ±  9%      -0.0        0.84 ±  5%      -0.1        0.80 ±  7%      -0.1        0.79 ±  9%  perf-profile.children.cycles-pp.shmem_fill_super
-      0.46 ± 11%      -0.0        0.45 ± 12%      -0.1        0.41 ± 14%      -0.1        0.41 ± 13%      -0.0        0.44 ± 11%      -0.1        0.38 ±  7%      -0.1        0.36 ± 25%  perf-profile.children.cycles-pp.__wake_up_common
-      0.40 ± 12%      -0.0        0.38 ±  9%      -0.0        0.36 ± 10%      -0.0        0.38 ± 10%      -0.0        0.36 ±  5%      -0.0        0.38 ±  7%      -0.0        0.38 ±  8%  perf-profile.children.cycles-pp.page_symlink
-      0.93 ±  6%      -0.0        0.92 ±  5%      -0.1        0.82 ±  2%      -0.1        0.84 ±  9%      -0.1        0.81 ± 10%      -0.1        0.80 ±  4%      -0.1        0.85 ± 11%  perf-profile.children.cycles-pp.generic_shutdown_super
-      1.86 ± 11%      -0.0        1.84 ± 11%      -0.0        1.84 ±  5%      -0.2        1.71 ±  8%      -0.1        1.80 ±  9%      -0.1        1.74 ±  5%      +0.0        1.87 ± 17%  perf-profile.children.cycles-pp.show_mountinfo
-      1.73 ± 19%      -0.0        1.71 ± 23%      +0.4        2.15 ±  8%      +0.6        2.29 ± 12%      +0.3        1.99 ±  8%      +0.4        2.10 ± 15%      +0.4        2.14 ±  8%  perf-profile.children.cycles-pp.smpboot_thread_fn
-      0.10 ± 40%      -0.0        0.08 ± 62%      -0.0        0.05 ± 73%      -0.0        0.07 ± 51%      -0.0        0.06 ± 84%      -0.0        0.08 ± 59%      -0.1        0.04 ± 75%  perf-profile.children.cycles-pp.ktime_get_update_offsets_now
-      0.05 ± 71%      -0.0        0.03 ±101%      +0.0        0.07 ± 21%      -0.0        0.04 ± 71%      -0.0        0.04 ± 73%      -0.0        0.03 ±100%      +0.0        0.05 ± 48%  perf-profile.children.cycles-pp.kernfs_fop_open
-      0.02 ± 99%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.00        perf-profile.children.cycles-pp.rcu_gp_kthread
-      0.03 ±100%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.02 ±142%      +0.0        0.03 ±105%      -0.0        0.00            -0.0        0.02 ±141%  perf-profile.children.cycles-pp.putname
-      0.02 ±141%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.01 ±223%      +0.0        0.02 ±141%      +0.0        0.02 ±141%  perf-profile.children.cycles-pp.__radix_tree_lookup
-      0.08 ± 25%      -0.0        0.06 ± 17%      -0.0        0.05 ± 73%      -0.0        0.04 ± 71%      -0.0        0.05 ± 50%      -0.0        0.07 ± 18%      -0.0        0.06 ± 11%  perf-profile.children.cycles-pp.pick_next_entity
-      0.08 ± 16%      -0.0        0.06 ± 47%      -0.0        0.05 ± 70%      -0.0        0.07 ± 17%      -0.0        0.05 ± 71%      -0.0        0.06 ± 19%      -0.0        0.06 ± 48%  perf-profile.children.cycles-pp.mnt_want_write
-      0.12 ± 14%      -0.0        0.10 ± 16%      -0.0        0.09 ± 19%      -0.0        0.09 ± 47%      -0.0        0.09 ± 21%      -0.0        0.08 ± 17%      -0.0        0.09 ± 30%  perf-profile.children.cycles-pp.apparmor_file_free_security
-      0.19 ± 12%      -0.0        0.18 ± 26%      -0.0        0.17 ± 17%      -0.0        0.18 ± 27%      -0.0        0.17 ± 17%      -0.0        0.18 ± 32%      -0.1        0.14 ± 24%  perf-profile.children.cycles-pp.tick_nohz_get_sleep_length
-      0.13 ± 14%      -0.0        0.11 ± 19%      -0.0        0.11 ± 22%      -0.0        0.11 ± 25%      -0.0        0.10 ± 22%      -0.0        0.09 ± 15%      -0.0        0.11 ± 21%  perf-profile.children.cycles-pp.security_file_free
-      0.07 ± 23%      -0.0        0.06 ± 49%      -0.0        0.05 ± 46%      -0.0        0.03 ±103%      -0.0        0.04 ± 75%      -0.0        0.03 ±101%      -0.0        0.05 ± 45%  perf-profile.children.cycles-pp._raw_spin_trylock
-      0.10 ± 19%      -0.0        0.08 ± 13%      -0.0        0.08 ± 17%      -0.0        0.07 ± 24%      -0.0        0.08 ± 30%      -0.0        0.08 ± 23%      -0.0        0.09 ± 17%  perf-profile.children.cycles-pp.security_inode_permission
-      0.10 ± 17%      -0.0        0.08 ± 28%      -0.0        0.08 ± 22%      +0.0        0.10 ± 12%      -0.0        0.09 ± 17%      -0.0        0.08 ± 14%      -0.0        0.08 ± 35%  perf-profile.children.cycles-pp._find_next_and_bit
-      0.10 ± 16%      -0.0        0.08 ± 16%      -0.0        0.09 ± 17%      -0.0        0.10 ± 12%      -0.0        0.08 ± 21%      -0.0        0.07 ± 23%      -0.0        0.08 ± 22%  perf-profile.children.cycles-pp.chacha_block_generic
-      0.10 ± 23%      -0.0        0.08 ± 27%      -0.0        0.09 ± 17%      -0.0        0.10 ± 15%      -0.0        0.08 ± 26%      -0.0        0.08 ± 20%      -0.0        0.08 ± 19%  perf-profile.children.cycles-pp.crng_fast_key_erasure
-      0.15 ± 29%      -0.0        0.13 ± 20%      -0.0        0.14 ± 26%      -0.0        0.12 ± 32%      -0.0        0.14 ± 21%      -0.0        0.14 ± 14%      -0.0        0.14 ± 17%  perf-profile.children.cycles-pp.__get_obj_cgroup_from_memcg
-      0.11 ± 22%      -0.0        0.09 ± 25%      +0.0        0.11 ± 15%      -0.0        0.09 ± 20%      -0.0        0.09 ± 17%      -0.0        0.09 ± 18%      -0.0        0.10 ± 19%  perf-profile.children.cycles-pp.raw_spin_rq_lock_nested
-      0.17 ±  7%      -0.0        0.15 ± 25%      +0.0        0.19 ± 10%      -0.0        0.16 ± 14%      +0.0        0.17 ± 19%      -0.0        0.13 ± 16%      +0.0        0.17 ± 20%  perf-profile.children.cycles-pp.__d_path
-      0.08 ± 25%      -0.0        0.06 ± 52%      -0.0        0.06 ± 49%      -0.0        0.07 ± 18%      -0.0        0.05 ± 76%      -0.0        0.04 ± 72%      -0.0        0.06 ± 11%  perf-profile.children.cycles-pp.dentry_unlink_inode
-      0.07 ± 48%      -0.0        0.05 ± 47%      -0.0        0.05 ± 45%      -0.0        0.04 ± 45%      -0.0        0.04 ± 72%      -0.0        0.05 ± 47%      -0.0        0.04 ±102%  perf-profile.children.cycles-pp.mnt_fstype_is_pseudofs
-      0.37 ±  7%      -0.0        0.35 ± 10%      -0.0        0.35 ± 10%      -0.1        0.32 ±  7%      +0.0        0.37 ±  7%      -0.0        0.33 ±  7%      -0.0        0.35 ± 13%  perf-profile.children.cycles-pp.rcu_report_exp_cpu_mult
-      0.68 ± 16%      -0.0        0.67 ± 11%      -0.1        0.61 ±  3%      -0.1        0.61 ±  3%      -0.1        0.63 ± 10%      -0.1        0.61 ±  7%      -0.0        0.66 ± 10%  perf-profile.children.cycles-pp.__do_sys_newfstat
-      0.67 ±  7%      -0.0        0.66 ± 11%      -0.1        0.60 ± 10%      -0.1        0.59 ± 11%      -0.0        0.64 ±  4%      -0.1        0.62 ±  5%      -0.1        0.59 ±  8%  perf-profile.children.cycles-pp.__d_alloc
-      0.09 ± 16%      -0.0        0.08 ± 14%      -0.0        0.08 ± 17%      -0.0        0.08 ± 25%      -0.0        0.08 ± 23%      -0.0        0.06 ± 21%      -0.0        0.07 ± 46%  perf-profile.children.cycles-pp.chacha_permute
-      0.18 ±  9%      -0.0        0.16 ± 15%      +0.0        0.18 ± 12%      -0.0        0.17 ± 20%      -0.0        0.15 ± 13%      -0.1        0.12 ± 21%      -0.0        0.16 ± 14%  perf-profile.children.cycles-pp.apparmor_file_alloc_security
-      0.07 ± 17%      -0.0        0.05 ± 48%      -0.0        0.06 ± 17%      -0.0        0.06 ± 23%      -0.0        0.06 ± 17%      -0.0        0.06 ± 27%      -0.0        0.06 ± 24%  perf-profile.children.cycles-pp.irq_work_run_list
-      0.03 ±100%      -0.0        0.02 ±142%      -0.0        0.01 ±223%      +0.0        0.04 ± 72%      -0.0        0.00            -0.0        0.00            -0.0        0.02 ±142%  perf-profile.children.cycles-pp.note_gp_changes
-      0.12 ± 25%      -0.0        0.11 ± 28%      -0.0        0.10 ± 17%      +0.0        0.12 ± 31%      -0.0        0.10 ± 26%      -0.0        0.11 ± 46%      -0.0        0.09 ± 20%  perf-profile.children.cycles-pp.tick_nohz_next_event
-      0.11 ± 18%      -0.0        0.09 ± 22%      -0.0        0.10 ± 12%      -0.0        0.10 ± 19%      -0.0        0.09 ± 31%      -0.0        0.08 ± 19%      -0.0        0.08 ± 21%  perf-profile.children.cycles-pp.crng_make_state
-      0.13 ± 10%      -0.0        0.12 ± 12%      -0.0        0.12 ± 21%      +0.0        0.13 ± 16%      -0.0        0.12 ± 23%      -0.0        0.10 ± 14%      -0.0        0.10 ± 18%  perf-profile.children.cycles-pp._get_random_bytes
-      0.08 ± 32%      -0.0        0.06 ± 47%      -0.0        0.08 ± 26%      -0.0        0.07 ± 12%      -0.0        0.07 ± 48%      -0.0        0.07 ± 45%      +0.0        0.08 ± 16%  perf-profile.children.cycles-pp.generic_fillattr
-      0.13 ± 23%      -0.0        0.11 ± 17%      +0.0        0.14 ± 13%      -0.0        0.11 ± 18%      +0.0        0.13 ± 16%      -0.0        0.12 ± 17%      +0.0        0.14 ± 22%  perf-profile.children.cycles-pp.__strdup
-      0.08 ± 11%      -0.0        0.07 ± 21%      -0.0        0.06 ± 51%      -0.0        0.05 ± 73%      -0.0        0.06 ± 19%      -0.0        0.05 ± 72%      -0.0        0.06 ± 47%  perf-profile.children.cycles-pp.__wrgsbase_inactive
-      0.43 ±  8%      -0.0        0.42 ± 12%      -0.0        0.40 ± 10%      -0.1        0.37 ±  6%      -0.0        0.42 ±  6%      -0.0        0.40 ± 13%      -0.0        0.40 ±  6%  perf-profile.children.cycles-pp.d_alloc
-      1.22 ±  6%      -0.0        1.21 ±  9%      -0.1        1.14 ±  6%      -0.1        1.09 ±  5%      -0.0        1.18 ±  5%      -0.1        1.12 ±  2%      -0.0        1.18 ±  9%  perf-profile.children.cycles-pp.kmem_cache_alloc
-      1.79 ±  8%      -0.0        1.78 ±  7%      -0.1        1.72 ±  4%      -0.1        1.66 ±  7%      -0.1        1.73 ±  5%      -0.1        1.65 ±  4%      -0.1        1.67 ±  7%  perf-profile.children.cycles-pp._raw_spin_lock
-      1.06 ±  8%      -0.0        1.04 ±  7%      -0.0        1.03 ±  4%      +0.0        1.06 ±  7%      +0.0        1.07 ±  2%      +0.0        1.07 ±  4%      -0.0        1.04 ± 13%  perf-profile.children.cycles-pp.new_inode
-      0.23 ± 20%      -0.0        0.22 ± 19%      -0.0        0.19 ± 11%      -0.0        0.18 ± 20%      -0.0        0.19 ±  9%      -0.1        0.18 ± 19%      -0.1        0.18 ± 18%  perf-profile.children.cycles-pp.__update_load_avg_cfs_rq
-      0.39 ± 20%      -0.0        0.37 ± 11%      -0.0        0.34 ± 10%      +0.0        0.40 ±  8%      +0.0        0.41 ±  6%      -0.0        0.38 ±  5%      -0.0        0.36 ± 10%  perf-profile.children.cycles-pp.shmem_alloc_inode
-      0.27 ± 10%      -0.0        0.26 ± 17%      +0.0        0.27 ± 15%      -0.0        0.24 ± 15%      +0.0        0.28 ± 17%      -0.0        0.27 ± 11%      +0.0        0.27 ± 16%  perf-profile.children.cycles-pp.get_obj_cgroup_from_current
-      0.36 ± 13%      -0.0        0.34 ± 19%      +0.0        0.36 ± 12%      -0.0        0.32 ± 11%      -0.0        0.33 ± 11%      -0.0        0.31 ± 12%      -0.0        0.34 ± 16%  perf-profile.children.cycles-pp.do_dentry_open
-      0.06 ± 17%      -0.0        0.05 ± 46%      -0.0        0.04 ± 75%      -0.0        0.04 ± 73%      -0.0        0.04 ± 71%      -0.1        0.01 ±223%      -0.0        0.05 ± 47%  perf-profile.children.cycles-pp.wake_up_q
-      0.07 ± 15%      -0.0        0.06 ± 46%      -0.0        0.06 ± 16%      -0.0        0.03 ±111%      +0.0        0.07 ± 12%      -0.0        0.06 ± 46%      +0.0        0.08 ± 33%  perf-profile.children.cycles-pp.m_start
-      0.08 ± 27%      -0.0        0.07 ± 27%      -0.0        0.06 ± 49%      -0.0        0.08 ± 12%      -0.0        0.08 ± 33%      -0.0        0.06 ± 14%      -0.0        0.08 ± 19%  perf-profile.children.cycles-pp.strspn@plt
-      0.08 ± 20%      -0.0        0.07 ± 24%      -0.0        0.06 ± 17%      -0.0        0.07 ± 10%      -0.0        0.07 ± 50%      -0.0        0.07 ± 24%      -0.0        0.08 ± 23%  perf-profile.children.cycles-pp._raw_read_lock_irqsave
-      0.16 ± 15%      -0.0        0.14 ± 20%      -0.0        0.14 ± 12%      -0.0        0.14 ± 11%      -0.0        0.14 ± 17%      -0.0        0.15 ± 10%      -0.0        0.16 ± 10%  perf-profile.children.cycles-pp.__lookup_mnt
-      0.03 ±103%      -0.0        0.02 ±142%      -0.0        0.02 ±142%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.02 ±142%      -0.0        0.02 ±141%  perf-profile.children.cycles-pp.__isoc99_sscanf
-      0.06 ± 46%      -0.0        0.05 ± 46%      -0.0        0.06 ± 17%      +0.0        0.07 ± 10%      -0.0        0.06 ± 17%      -0.0        0.06 ± 11%      -0.0        0.03 ±102%  perf-profile.children.cycles-pp.delete_from_page_cache_batch
-      0.04 ± 71%      -0.0        0.02 ±142%      +0.0        0.05 ± 45%      -0.0        0.03 ±100%      -0.0        0.03 ±100%      -0.0        0.01 ±223%      +0.0        0.04 ± 75%  perf-profile.children.cycles-pp.strextend_with_separator
-      0.06 ±  9%      -0.0        0.05 ± 74%      +0.0        0.07 ± 17%      +0.0        0.06 ± 17%      +0.0        0.07 ± 16%      +0.0        0.06 ± 11%      +0.0        0.06 ± 46%  perf-profile.children.cycles-pp.__alloc_skb
-      0.54 ± 12%      -0.0        0.53 ±  9%      -0.1        0.47 ±  8%      -0.1        0.47 ±  8%      -0.1        0.46 ±  7%      -0.1        0.45 ±  9%      -0.1        0.45 ± 16%  perf-profile.children.cycles-pp.update_load_avg
-      0.90 ±  8%      -0.0        0.89 ±  8%      -0.0        0.87 ±  5%      +0.0        0.92 ±  6%      +0.0        0.92 ±  3%      -0.0        0.89 ±  2%      -0.0        0.88 ± 11%  perf-profile.children.cycles-pp.alloc_inode
-      0.56 ± 12%      -0.0        0.54 ± 12%      -0.0        0.54 ±  6%      -0.1        0.49 ±  9%      -0.0        0.54 ± 11%      -0.1        0.48 ±  7%      -0.0        0.51 ± 17%  perf-profile.children.cycles-pp.strcmp@plt
-      0.74 ±  7%      -0.0        0.73 ±  7%      -0.1        0.66 ±  9%      -0.1        0.63 ±  5%      -0.1        0.68 ±  5%      -0.1        0.66 ±  7%      -0.1        0.64 ±  7%  perf-profile.children.cycles-pp.do_rmdir
-      4.52 ±  6%      -0.0        4.51 ±  8%      -0.2        4.32 ±  3%      -0.4        4.12 ±  5%      -0.2        4.35 ±  7%      -0.4        4.10 ±  2%      -0.1        4.47 ± 11%  perf-profile.children.cycles-pp.do_sys_openat2
-      0.94 ±  5%      -0.0        0.93 ±  8%      -0.1        0.85 ±  7%      -0.1        0.87 ± 12%      -0.1        0.86 ±  5%      -0.1        0.85 ±  8%      -0.1        0.85 ± 11%  perf-profile.children.cycles-pp.mkdir
-      0.21 ± 13%      -0.0        0.20 ±  8%      -0.0        0.20 ± 14%      -0.0        0.18 ± 18%      -0.0        0.18 ± 16%      -0.1        0.16 ± 10%      -0.0        0.17 ± 23%  perf-profile.children.cycles-pp.update_rq_clock_task
-      0.24 ± 16%      -0.0        0.23 ± 13%      -0.0        0.23 ± 13%      -0.0        0.24 ± 21%      -0.0        0.21 ± 11%      -0.0        0.23 ± 14%      -0.0        0.23 ± 12%  perf-profile.children.cycles-pp.pagecache_get_page
-      0.19 ± 16%      -0.0        0.18 ± 12%      +0.0        0.20 ± 18%      -0.0        0.19 ± 13%      +0.0        0.22 ± 11%      -0.0        0.18 ± 14%      +0.0        0.20 ± 23%  perf-profile.children.cycles-pp.up_read
-      0.13 ± 14%      -0.0        0.12 ± 23%      -0.0        0.10 ± 29%      -0.0        0.11 ± 14%      -0.0        0.11 ±  9%      -0.0        0.11 ± 18%      -0.0        0.11 ± 24%  perf-profile.children.cycles-pp.ct_kernel_enter
-      0.04 ± 72%      -0.0        0.03 ±100%      -0.0        0.02 ±141%      -0.0        0.02 ± 99%      -0.0        0.02 ±141%      -0.0        0.02 ± 99%      +0.0        0.06 ± 17%  perf-profile.children.cycles-pp.build_open_flags
-      0.04 ± 72%      -0.0        0.03 ±141%      -0.0        0.03 ±101%      -0.0        0.03 ±144%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.04 ± 72%  perf-profile.children.cycles-pp.get_next_timer_interrupt
-      0.04 ± 72%      -0.0        0.03 ±100%      +0.0        0.04 ± 72%      +0.0        0.05 ± 48%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      +0.0        0.04 ± 73%  perf-profile.children.cycles-pp.strjoin_real
-      0.02 ±144%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.02 ±141%      -0.0        0.00        perf-profile.children.cycles-pp.uncharge_batch
-      0.03 ±105%      -0.0        0.02 ±142%      -0.0        0.02 ±141%      -0.0        0.00            -0.0        0.03 ±100%      -0.0        0.02 ±141%      +0.0        0.03 ±105%  perf-profile.children.cycles-pp.autofs_show_options
-      0.06 ± 50%      -0.0        0.04 ± 73%      -0.0        0.05 ± 48%      -0.0        0.02 ±142%      -0.0        0.04 ± 45%      +0.0        0.06 ±  9%      -0.0        0.03 ±100%  perf-profile.children.cycles-pp.exp_funnel_lock
-      0.04 ± 71%      -0.0        0.03 ±100%      +0.0        0.04 ± 44%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.02 ±144%      -0.0        0.02 ±143%  perf-profile.children.cycles-pp.m_next
-      0.36 ±  9%      -0.0        0.35 ±  9%      -0.1        0.30 ± 13%      -0.0        0.33 ±  6%      -0.0        0.34 ±  8%      -0.1        0.31 ± 15%      -0.1        0.30 ±  7%  perf-profile.children.cycles-pp.memcg_destroy_list_lru
-      0.28 ± 17%      -0.0        0.27 ± 11%      -0.0        0.24 ±  5%      -0.0        0.26 ± 11%      -0.0        0.26 ± 13%      -0.0        0.26 ± 16%      -0.0        0.24 ± 12%  perf-profile.children.cycles-pp.__switch_to_asm
-      0.08 ± 20%      -0.0        0.07 ±  9%      -0.0        0.06 ± 48%      -0.0        0.07 ± 46%      -0.0        0.08 ± 13%      -0.0        0.05 ± 56%      -0.0        0.07 ± 11%  perf-profile.children.cycles-pp.rwsem_wake
-      0.10 ± 16%      -0.0        0.09 ± 20%      -0.0        0.08 ± 26%      -0.0        0.08 ± 45%      -0.0        0.09 ± 23%      -0.0        0.07 ± 49%      -0.0        0.09 ± 19%  perf-profile.children.cycles-pp.check_preempt_wakeup
-      0.09 ± 23%      -0.0        0.08 ± 24%      +0.0        0.09 ± 23%      -0.0        0.08 ± 20%      +0.0        0.09 ± 22%      -0.0        0.07 ± 18%      +0.0        0.10 ± 19%  perf-profile.children.cycles-pp.__fget_light
-      0.09 ± 23%      -0.0        0.08 ± 23%      +0.0        0.09 ± 25%      +0.0        0.10 ± 13%      -0.0        0.08 ± 21%      -0.0        0.08 ± 24%      +0.0        0.09 ± 32%  perf-profile.children.cycles-pp.rcu_exp_handler
-      0.06 ± 47%      -0.0        0.05 ± 74%      +0.0        0.08 ± 21%      -0.0        0.03 ±102%      -0.0        0.06 ± 48%      -0.0        0.05 ± 46%      +0.0        0.08 ± 10%  perf-profile.children.cycles-pp.llist_reverse_order
-      0.66 ±  8%      -0.0        0.65 ± 14%      -0.0        0.62 ±  7%      -0.1        0.54 ±  6%      -0.0        0.64 ±  6%      -0.1        0.58 ±  6%      -0.0        0.64 ± 20%  perf-profile.children.cycles-pp.path_init
-      0.32 ±  8%      -0.0        0.31 ±  8%      -0.0        0.29 ± 15%      -0.0        0.31 ± 10%      -0.0        0.30 ± 16%      -0.0        0.30 ± 13%      -0.0        0.31 ± 11%  perf-profile.children.cycles-pp.vfs_unlink
-      0.22 ± 13%      -0.0        0.20 ±  7%      -0.0        0.17 ± 14%      -0.0        0.20 ± 20%      -0.1        0.15 ± 11%      -0.0        0.18 ± 13%      -0.1        0.16 ± 14%  perf-profile.children.cycles-pp.__folio_batch_release
-      0.09 ± 24%      -0.0        0.08 ± 20%      -0.0        0.05 ± 51%      -0.0        0.07 ± 46%      -0.0        0.08 ± 13%      -0.1        0.04 ± 72%      -0.1        0.03 ±102%  perf-profile.children.cycles-pp.xas_find
-      0.27 ± 10%      -0.0        0.26 ±  6%      -0.0        0.24 ± 16%      -0.0        0.22 ± 11%      -0.1        0.21 ±  9%      -0.0        0.26 ± 10%      -0.0        0.25 ± 15%  perf-profile.children.cycles-pp.set_next_entity
-      0.12 ± 18%      -0.0        0.12 ± 13%      -0.0        0.10 ± 20%      -0.0        0.10 ± 23%      -0.0        0.10 ± 26%      -0.0        0.09 ± 15%      -0.0        0.09 ± 11%  perf-profile.children.cycles-pp.__list_add_valid
-      0.36 ±  9%      -0.0        0.34 ± 11%      -0.0        0.33 ± 14%      -0.0        0.34 ± 12%      -0.0        0.33 ± 10%      -0.0        0.33 ±  9%      -0.0        0.34 ± 10%  perf-profile.children.cycles-pp.vfs_mkdir
-      0.14 ± 18%      -0.0        0.12 ± 24%      -0.0        0.11 ± 24%      -0.0        0.12 ± 12%      -0.0        0.12 ± 11%      -0.0        0.13 ± 13%      -0.0        0.11 ± 21%  perf-profile.children.cycles-pp.ct_idle_exit
-      0.03 ±100%      -0.0        0.02 ±141%      -0.0        0.01 ±223%      +0.0        0.03 ±103%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.02 ±141%  perf-profile.children.cycles-pp.filemap_get_entry
-      0.04 ± 72%      -0.0        0.03 ±101%      +0.0        0.06 ± 23%      +0.0        0.04 ± 75%      +0.0        0.07 ± 23%      -0.0        0.02 ± 99%      +0.0        0.06 ± 48%  perf-profile.children.cycles-pp.copy_from_kernel_nofault
-      0.02 ±142%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00        perf-profile.children.cycles-pp.security_inode_init_security
-      0.02 ±144%      -0.0        0.01 ±223%      -0.0        0.02 ±141%      -0.0        0.00            -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.00        perf-profile.children.cycles-pp.pick_link
-      0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.01 ±223%  perf-profile.children.cycles-pp.mounts_release
-      0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00        perf-profile.children.cycles-pp.rcu_sync_dtor
-      0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.00        perf-profile.children.cycles-pp.cgroup_rstat_updated
-      0.01 ±223%      -0.0        0.00            +0.0        0.01 ±223%      -0.0        0.00            +0.0        0.03 ±102%      +0.0        0.02 ±141%      +0.0        0.02 ± 99%  perf-profile.children.cycles-pp.task_tick_fair
-      0.01 ±223%      -0.0        0.00            +0.0        0.02 ±141%      -0.0        0.00            -0.0        0.01 ±223%      +0.0        0.02 ±141%      +0.0        0.01 ±223%  perf-profile.children.cycles-pp.devpts_show_options
-      0.03 ±101%      -0.0        0.02 ±141%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.02 ±141%      -0.0        0.02 ±141%      -0.0        0.01 ±223%  perf-profile.children.cycles-pp.asm_sysvec_reschedule_ipi
-      0.03 ±100%      -0.0        0.02 ±142%      -0.0        0.01 ±223%      +0.0        0.03 ±102%      -0.0        0.02 ±141%      -0.0        0.02 ±141%      -0.0        0.03 ±100%  perf-profile.children.cycles-pp.reweight_entity
-      0.08 ± 48%      -0.0        0.07 ± 26%      -0.0        0.07 ± 49%      +0.0        0.08 ± 25%      +0.0        0.09 ± 28%      -0.0        0.08 ± 10%      -0.0        0.08 ± 22%  perf-profile.children.cycles-pp.path_hash_func
-      0.10 ± 14%      -0.0        0.09 ± 22%      -0.0        0.10 ± 18%      -0.0        0.10 ± 28%      -0.0        0.09 ± 36%      -0.0        0.09 ± 21%      -0.0        0.09 ± 22%  perf-profile.children.cycles-pp.uuid_gen
-      0.10 ± 11%      -0.0        0.09 ± 15%      -0.0        0.08 ± 13%      -0.0        0.08 ± 15%      -0.0        0.08 ± 14%      -0.0        0.07 ± 54%      -0.0        0.07 ± 55%  perf-profile.children.cycles-pp.__pthread_mutex_unlock_usercnt
-      0.14 ± 26%      -0.0        0.13 ± 18%      -0.0        0.13 ± 11%      -0.0        0.12 ±  5%      -0.0        0.14 ± 12%      -0.0        0.12 ± 13%      -0.0        0.13 ± 25%  perf-profile.children.cycles-pp.kernfs_iop_getattr
-      0.10 ± 12%      -0.0        0.09 ± 24%      -0.0        0.09 ± 17%      -0.0        0.10 ± 32%      +0.0        0.11 ± 23%      -0.0        0.07 ± 50%      -0.0        0.09 ± 20%  perf-profile.children.cycles-pp.xas_descend
-      0.11 ± 10%      -0.0        0.10 ± 13%      -0.0        0.10 ± 10%      -0.0        0.09 ± 26%      -0.0        0.09 ± 23%      -0.0        0.08 ± 11%      -0.0        0.10 ± 27%  perf-profile.children.cycles-pp.__d_add
-      0.12 ± 19%      -0.0        0.12 ± 17%      -0.0        0.11 ± 12%      -0.0        0.12 ± 16%      -0.0        0.11 ± 11%      -0.0        0.12 ± 13%      -0.0        0.10 ± 21%  perf-profile.children.cycles-pp.destroy_inode
-      0.02 ± 99%      -0.0        0.02 ±141%      -0.0        0.02 ±141%      -0.0        0.02 ±144%      +0.0        0.03 ±105%      -0.0        0.01 ±223%      -0.0        0.01 ±223%  perf-profile.children.cycles-pp.siphash24_compress@plt
-      0.04 ± 73%      -0.0        0.03 ±102%      +0.0        0.05 ± 50%      -0.0        0.02 ±141%      -0.0        0.02 ±141%      -0.0        0.02 ±142%      -0.0        0.03 ±101%  perf-profile.children.cycles-pp.call_cpuidle
-      0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.00        perf-profile.children.cycles-pp.rcu_gp_fqs_loop
-      0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.01 ±223%  perf-profile.children.cycles-pp.__sys_connect
-      0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.01 ±223%  perf-profile.children.cycles-pp.__x64_sys_connect
-      0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.children.cycles-pp.shmem_get_partial_folio
-      0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.children.cycles-pp.realpath
-      0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.children.cycles-pp.irqentry_enter
-      0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.children.cycles-pp.tick_nohz_stop_idle
-      0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.children.cycles-pp.set_strjoin
-      0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.children.cycles-pp.unix_stream_connect
-      0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.alloc_pages
-      0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.__put_super
-      0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            +0.0        0.02 ±142%      +0.0        0.01 ±223%  perf-profile.children.cycles-pp.simple_write_end
-      0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00        perf-profile.children.cycles-pp.move_linked_works
-      0.01 ±223%      -0.0        0.00            -0.0        0.00            +0.0        0.01 ±223%      -0.0        0.00            +0.0        0.01 ±223%      -0.0        0.00        perf-profile.children.cycles-pp._hashmap_size
-      0.01 ±223%      -0.0        0.00            -0.0        0.00            +0.0        0.01 ±223%      +0.0        0.02 ±141%      -0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.ct_kernel_exit
-      0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.00            +0.0        0.03 ±100%  perf-profile.children.cycles-pp.__rw_verify_area
-      0.02 ±146%      -0.0        0.01 ±223%      -0.0        0.02 ±142%      +0.0        0.04 ± 71%      -0.0        0.01 ±223%      -0.0        0.02 ±142%      +0.0        0.02 ±142%  perf-profile.children.cycles-pp._dbus_marshal_read_uint32
-      0.01 ±223%      -0.0        0.00            +0.0        0.01 ±223%      -0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00        perf-profile.children.cycles-pp.kmem_cache_alloc_node
-      0.01 ±223%      -0.0        0.00            +0.0        0.01 ±223%      -0.0        0.00            +0.0        0.01 ±223%      -0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.lookup_mnt
-      0.01 ±223%      -0.0        0.00            +0.0        0.01 ±223%      -0.0        0.00            +0.0        0.02 ±141%      -0.0        0.00            -0.0        0.00        perf-profile.children.cycles-pp.tick_nohz_idle_exit
-      0.01 ±223%      -0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00        perf-profile.children.cycles-pp.locks_remove_posix
-      0.01 ±223%      -0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            +0.0        0.02 ± 99%  perf-profile.children.cycles-pp.sched_use_asym_prio
-      0.01 ±223%      -0.0        0.00            +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.__traverse_mounts
-      0.01 ±223%      -0.0        0.00            +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.do_user_addr_fault
-      0.01 ±223%      -0.0        0.00            +0.0        0.02 ±142%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00        perf-profile.children.cycles-pp.proc_self_get_link
-      0.01 ±223%      -0.0        0.00            +0.0        0.02 ±144%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.exc_page_fault
-      0.05 ± 46%      -0.0        0.04 ± 47%      -0.0        0.02 ± 99%      +0.0        0.07 ± 14%      +0.0        0.06 ± 14%      -0.0        0.05 ± 46%      -0.0        0.03 ±101%  perf-profile.children.cycles-pp.obj_cgroup_uncharge_pages
-      0.14 ± 19%      -0.0        0.13 ± 14%      -0.0        0.11 ± 15%      -0.0        0.12 ± 18%      -0.0        0.10 ± 26%      -0.0        0.12 ± 16%      -0.0        0.11 ± 22%  perf-profile.children.cycles-pp.release_pages
-      0.08 ± 26%      -0.0        0.07 ± 49%      -0.0        0.06 ± 53%      +0.0        0.08 ± 27%      +0.0        0.08 ± 12%      -0.0        0.08 ± 20%      -0.0        0.06 ± 14%  perf-profile.children.cycles-pp.__get_fs_type
-      0.08 ± 25%      -0.0        0.07 ± 50%      +0.0        0.08 ±  8%      -0.0        0.06 ± 19%      +0.0        0.08 ± 13%      -0.0        0.07 ±  9%      -0.0        0.08 ± 22%  perf-profile.children.cycles-pp.__lookup_slow
-      0.05 ± 46%      -0.0        0.04 ± 44%      +0.0        0.06 ± 45%      -0.0        0.03 ±101%      -0.0        0.04 ± 75%      -0.0        0.04 ± 72%      -0.0        0.03 ±100%  perf-profile.children.cycles-pp.syscall_exit_to_user_mode_prepare
-      0.04 ± 80%      -0.0        0.04 ± 71%      +0.0        0.05 ± 50%      -0.0        0.04 ± 71%      +0.0        0.06 ± 14%      +0.0        0.05 ± 46%      -0.0        0.03 ±100%  perf-profile.children.cycles-pp.memcg_account_kmem
-      0.91 ±  8%      -0.0        0.90 ±  8%      -0.1        0.79 ±  7%      -0.1        0.77 ±  6%      -0.1        0.82 ±  5%      -0.1        0.79 ±  5%      -0.1        0.79 ±  6%  perf-profile.children.cycles-pp.rmdir
-      0.56 ± 13%      -0.0        0.55 ±  9%      -0.1        0.48 ± 12%      -0.1        0.50 ±  9%      -0.1        0.48 ±  7%      -0.1        0.45 ± 11%      -0.1        0.43 ± 19%  perf-profile.children.cycles-pp.enqueue_entity
-      0.36 ± 17%      -0.0        0.35 ±  8%      -0.0        0.32 ±  9%      -0.1        0.30 ±  7%      -0.0        0.33 ±  8%      -0.0        0.31 ±  9%      -0.1        0.30 ±  5%  perf-profile.children.cycles-pp.vfs_rmdir
-      0.27 ± 10%      -0.0        0.26 ±  7%      -0.0        0.24 ± 13%      -0.0        0.25 ± 12%      -0.0        0.25 ± 13%      -0.0        0.24 ± 12%      -0.0        0.24 ± 17%  perf-profile.children.cycles-pp.native_irq_return_iret
-      0.44 ±  6%      -0.0        0.43 ± 11%      -0.1        0.37 ±  4%      -0.1        0.38 ± 18%      -0.1        0.38 ± 10%      -0.1        0.36 ±  7%      -0.1        0.35 ±  9%  perf-profile.children.cycles-pp.sync_filesystem
-      0.17 ±  5%      -0.0        0.17 ± 17%      -0.0        0.15 ± 18%      -0.0        0.16 ± 11%      -0.0        0.16 ± 21%      -0.0        0.16 ± 10%      -0.0        0.16 ± 14%  perf-profile.children.cycles-pp.shmem_mkdir
-      0.15 ± 25%      -0.0        0.14 ± 21%      -0.0        0.13 ± 20%      -0.0        0.14 ±  8%      -0.0        0.14 ± 10%      -0.0        0.14 ± 20%      -0.0        0.14 ± 15%  perf-profile.children.cycles-pp.___perf_sw_event
-      0.05 ± 47%      -0.0        0.04 ± 45%      -0.0        0.04 ± 72%      -0.0        0.02 ±146%      +0.0        0.05 ± 54%      -0.0        0.05 ± 49%      -0.0        0.04 ±102%  perf-profile.children.cycles-pp.vscnprintf
-      0.04 ±107%      -0.0        0.03 ±100%      +0.0        0.05 ± 47%      -0.0        0.04 ± 71%      -0.0        0.03 ±105%      +0.0        0.04 ± 72%      +0.0        0.04 ± 73%  perf-profile.children.cycles-pp.btrfs_show_options
-      0.04 ± 71%      -0.0        0.03 ±100%      +0.0        0.04 ± 75%      -0.0        0.02 ±144%      -0.0        0.02 ±144%      -0.0        0.00            -0.0        0.02 ±141%  perf-profile.children.cycles-pp.device_get_id_filename
-      0.07 ± 11%      -0.0        0.06 ± 51%      -0.0        0.05 ± 80%      -0.0        0.07 ± 15%      -0.0        0.06 ± 49%      -0.0        0.05 ± 76%      -0.0        0.06 ± 14%  perf-profile.children.cycles-pp.security_file_open
-      0.07 ± 16%      -0.0        0.06 ± 25%      -0.0        0.05 ± 49%      -0.0        0.05 ± 74%      -0.0        0.05 ± 47%      -0.0        0.06 ± 51%      -0.0        0.05 ± 71%  perf-profile.children.cycles-pp.memcpy@plt
-      0.09 ± 19%      -0.0        0.08 ± 21%      -0.0        0.08 ± 18%      -0.0        0.07 ± 45%      -0.0        0.06 ± 54%      -0.0        0.07 ± 21%      -0.0        0.08 ± 20%  perf-profile.children.cycles-pp.syscall_enter_from_user_mode
-      0.11 ± 20%      -0.0        0.10 ± 36%      -0.0        0.09 ± 21%      -0.0        0.09 ± 20%      -0.0        0.10 ± 19%      -0.0        0.10 ± 19%      -0.0        0.10 ± 25%  perf-profile.children.cycles-pp.string_hash_func
-      0.04 ± 72%      -0.0        0.03 ±101%      -0.0        0.03 ±100%      -0.0        0.02 ± 99%      -0.0        0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.03 ±102%  perf-profile.children.cycles-pp.__kmalloc_node
-      0.09 ±  5%      -0.0        0.09 ± 23%      -0.0        0.08 ± 13%      -0.0        0.08 ± 21%      -0.0        0.09 ± 24%      +0.0        0.10 ± 11%      -0.0        0.07 ± 52%  perf-profile.children.cycles-pp.show_mnt_opts
-      0.11 ± 26%      -0.0        0.11 ± 15%      -0.0        0.11 ± 11%      -0.0        0.11 ± 18%      -0.0        0.11 ±  8%      -0.0        0.10 ± 10%      +0.0        0.12 ± 18%  perf-profile.children.cycles-pp.strcmp
-      0.07 ± 49%      -0.0        0.06 ± 47%      +0.0        0.07 ± 14%      -0.0        0.06 ± 19%      +0.0        0.08 ± 12%      -0.0        0.07 ± 16%      -0.0        0.06 ± 50%  perf-profile.children.cycles-pp.rcu_nocb_try_bypass
-      0.02 ±142%      -0.0        0.01 ±223%      -0.0        0.00            +0.0        0.02 ±142%      -0.0        0.02 ±141%      +0.0        0.02 ±142%      -0.0        0.02 ±141%  perf-profile.children.cycles-pp.check_stack_object
-      0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      +0.0        0.02 ±142%      -0.0        0.01 ±223%      +0.0        0.02 ±142%      -0.0        0.00        perf-profile.children.cycles-pp.wq_worker_running
-      0.03 ±103%      -0.0        0.02 ± 99%      -0.0        0.01 ±223%      -0.0        0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%  perf-profile.children.cycles-pp.tick_nohz_idle_enter
-      0.15 ±  6%      -0.0        0.14 ± 15%      -0.0        0.11 ±  8%      -0.0        0.11 ± 22%      -0.0        0.12 ± 10%      -0.0        0.10 ± 17%      -0.0        0.11 ± 10%  perf-profile.children.cycles-pp.shmem_evict_inode
-      0.18 ± 18%      -0.0        0.18 ± 17%      -0.0        0.16 ± 13%      -0.0        0.14 ± 26%      -0.0        0.15 ± 11%      -0.0        0.16 ± 13%      -0.0        0.16 ± 20%  perf-profile.children.cycles-pp.memcg_init_list_lru_one
-      0.22 ± 17%      -0.0        0.21 ±  8%      -0.0        0.19 ± 11%      -0.0        0.20 ±  3%      -0.0        0.19 ± 13%      -0.0        0.18 ± 17%      -0.0        0.18 ± 12%  perf-profile.children.cycles-pp.prepare_task_switch
-      0.11 ± 20%      -0.0        0.11 ± 12%      -0.0        0.10 ± 12%      -0.0        0.11 ± 14%      -0.0        0.10 ± 11%      +0.0        0.11 ± 16%      -0.0        0.10 ± 20%  perf-profile.children.cycles-pp.__destroy_inode
-      0.17 ±  9%      -0.0        0.16 ± 15%      -0.0        0.15 ± 12%      -0.0        0.13 ± 14%      -0.0        0.14 ±  9%      -0.0        0.14 ± 22%      -0.0        0.12 ± 17%  perf-profile.children.cycles-pp.rcu_segcblist_enqueue
-      0.10 ± 16%      -0.0        0.09 ± 23%      -0.0        0.08 ± 14%      -0.0        0.06 ± 49%      -0.0        0.08 ± 16%      -0.0        0.09 ± 18%      -0.0        0.08 ± 46%  perf-profile.children.cycles-pp.entry_SYSCALL_64_safe_stack
-      0.40 ±  6%      -0.0        0.40 ± 12%      +0.0        0.41 ± 10%      -0.0        0.40 ± 10%      +0.0        0.43 ± 10%      -0.0        0.40 ±  9%      +0.0        0.42 ± 13%  perf-profile.children.cycles-pp.lookup_one_qstr_excl
-      0.19 ± 10%      -0.0        0.19 ± 10%      +0.0        0.20 ±  9%      -0.0        0.19 ±  7%      +0.0        0.21 ±  7%      -0.0        0.18 ±  6%      +0.0        0.20 ± 25%  perf-profile.children.cycles-pp.__close_nocancel
-      0.32 ± 14%      -0.0        0.31 ± 18%      +0.1        0.38 ±  9%      +0.0        0.36 ± 13%      +0.1        0.39 ±  8%      +0.0        0.35 ±  7%      +0.1        0.37 ±  9%  perf-profile.children.cycles-pp.__d_lookup
-      1.30 ±  7%      -0.0        1.29 ±  8%      -0.1        1.25 ±  5%      -0.1        1.18 ±  7%      -0.1        1.15 ±  8%      -0.2        1.13 ±  3%      -0.1        1.16 ±  7%  perf-profile.children.cycles-pp.dput
-      0.70 ±  7%      -0.0        0.69 ± 13%      -0.0        0.67 ± 10%      -0.0        0.70 ±  7%      -0.0        0.67 ±  5%      -0.1        0.64 ±  6%      -0.0        0.65 ±  5%  perf-profile.children.cycles-pp.__slab_free
-      0.14 ± 15%      -0.0        0.13 ± 14%      -0.0        0.11 ±  9%      -0.0        0.13 ± 16%      -0.0        0.12 ± 11%      -0.0        0.13 ±  8%      -0.0        0.11 ± 20%  perf-profile.children.cycles-pp.vfs_getattr_nosec
-      0.43 ± 13%      -0.0        0.42 ±  8%      -0.0        0.40 ±  9%      -0.0        0.40 ±  6%      -0.0        0.39 ± 11%      -0.0        0.40 ±  9%      -0.1        0.37 ± 12%  perf-profile.children.cycles-pp.ida_alloc_range
-      0.15 ± 10%      -0.0        0.14 ± 22%      -0.0        0.12 ± 15%      -0.0        0.12 ± 29%      -0.0        0.14 ± 15%      -0.0        0.11 ± 16%      -0.0        0.14 ± 13%  perf-profile.children.cycles-pp.refill_obj_stock
-      0.22 ± 20%      -0.0        0.22 ± 14%      -0.0        0.20 ± 12%      +0.0        0.22 ± 10%      -0.0        0.19 ±  8%      -0.0        0.19 ± 13%      -0.0        0.20 ±  5%  perf-profile.children.cycles-pp.__percpu_counter_init
-      0.06 ± 17%      -0.0        0.06 ± 25%      -0.0        0.06 ± 14%      -0.0        0.06 ± 23%      -0.0        0.05 ± 71%      -0.0        0.05 ± 45%      -0.0        0.06 ± 72%  perf-profile.children.cycles-pp.lookup_constant
-      0.36 ±  5%      -0.0        0.36 ± 22%      +0.0        0.37 ± 13%      -0.0        0.33 ± 13%      -0.0        0.34 ± 12%      -0.1        0.29 ±  9%      -0.0        0.35 ± 16%  perf-profile.children.cycles-pp.init_file
-      0.26 ± 15%      -0.0        0.25 ± 13%      +0.0        0.27 ±  6%      +0.0        0.28 ± 11%      +0.0        0.28 ± 11%      -0.0        0.24 ± 14%      -0.0        0.25 ±  8%  perf-profile.children.cycles-pp.pcpu_block_update_hint_alloc
-      0.03 ±100%      -0.0        0.03 ±100%      +0.0        0.05 ± 49%      -0.0        0.02 ±142%      -0.0        0.02 ±141%      -0.0        0.02 ±141%      -0.0        0.02 ±141%  perf-profile.children.cycles-pp.__mod_memcg_lruvec_state
-      0.07 ± 25%      -0.0        0.07 ± 10%      -0.0        0.04 ± 71%      -0.0        0.04 ±104%      -0.0        0.05 ± 47%      -0.0        0.03 ±101%      -0.0        0.06 ± 47%  perf-profile.children.cycles-pp.strlcpy
-      0.13 ±  6%      -0.0        0.12 ± 10%      -0.0        0.11 ± 17%      -0.0        0.12 ± 13%      +0.0        0.14 ± 14%      +0.0        0.13 ± 16%      +0.0        0.14 ± 24%  perf-profile.children.cycles-pp.__memset
-      0.08 ± 17%      -0.0        0.08 ± 23%      -0.0        0.07 ± 17%      +0.0        0.09 ± 21%      +0.0        0.09 ± 27%      +0.0        0.09 ± 22%      +0.0        0.08 ± 19%  perf-profile.children.cycles-pp.xa_load
-      0.14 ± 27%      -0.0        0.14 ±  8%      +0.0        0.14 ± 14%      -0.0        0.14 ±  9%      -0.0        0.13 ± 14%      -0.0        0.13 ± 17%      -0.0        0.14 ± 20%  perf-profile.children.cycles-pp.flush_smp_call_function_queue
-      0.86 ±  7%      -0.0        0.86 ±  9%      -0.1        0.78 ±  8%      -0.1        0.80 ± 13%      -0.1        0.78 ±  4%      -0.1        0.78 ±  7%      -0.1        0.78 ± 11%  perf-profile.children.cycles-pp.__x64_sys_mkdir
-      0.41 ±  6%      -0.0        0.41 ± 12%      -0.1        0.36 ±  3%      -0.0        0.37 ± 18%      -0.1        0.36 ±  9%      -0.1        0.32 ±  9%      -0.1        0.32 ± 10%  perf-profile.children.cycles-pp.get_nr_dirty_inodes
-      0.16 ± 14%      -0.0        0.16 ± 19%      +0.0        0.17 ±  9%      +0.0        0.18 ± 13%      -0.0        0.16 ± 18%      -0.0        0.15 ± 16%      -0.0        0.16 ±  7%  perf-profile.children.cycles-pp.kfree
-      0.05 ± 51%      -0.0        0.05 ± 46%      -0.0        0.03 ±101%      -0.0        0.03 ±106%      -0.0        0.02 ±142%      -0.0        0.03 ±103%      -0.0        0.05 ± 45%  perf-profile.children.cycles-pp.resched_curr
-      0.07 ± 17%      -0.0        0.06 ± 19%      -0.0        0.04 ± 45%      -0.0        0.06 ± 53%      -0.0        0.05 ± 48%      -0.0        0.04 ± 45%      -0.0        0.06 ± 17%  perf-profile.children.cycles-pp.shrink_dcache_parent
-      0.10 ± 17%      -0.0        0.09 ± 24%      -0.0        0.09 ± 22%      +0.0        0.10 ± 27%      -0.0        0.08 ± 28%      -0.0        0.09 ± 28%      -0.0        0.08 ± 31%  perf-profile.children.cycles-pp.ttwu_queue_wakelist
-      0.06 ± 19%      -0.0        0.06 ± 19%      +0.0        0.06 ± 53%      +0.0        0.08 ± 22%      +0.0        0.08 ± 20%      +0.0        0.07 ± 16%      +0.0        0.06 ± 50%  perf-profile.children.cycles-pp.inode_init_once
-      0.05 ± 46%      -0.0        0.05 ± 46%      +0.0        0.06 ± 17%      -0.0        0.03 ±105%      +0.0        0.05 ± 54%      +0.0        0.06 ± 46%      +0.0        0.06 ± 77%  perf-profile.children.cycles-pp.sysfs_emit_at
-      0.04 ±101%      -0.0        0.03 ±108%      -0.0        0.02 ±141%      +0.0        0.04 ± 73%      +0.0        0.05 ± 46%      +0.0        0.04 ± 71%      +0.0        0.04 ± 76%  perf-profile.children.cycles-pp.os_xsave
-      0.02 ±144%      -0.0        0.02 ±141%      +0.0        0.03 ±105%      -0.0        0.01 ±223%      +0.0        0.02 ±144%      -0.0        0.00            -0.0        0.02 ±142%  perf-profile.children.cycles-pp.d_delete
-      0.03 ±101%      -0.0        0.03 ±100%      -0.0        0.01 ±223%      +0.0        0.04 ± 73%      +0.0        0.05 ± 47%      -0.0        0.00            -0.0        0.02 ±142%  perf-profile.children.cycles-pp.kmalloc_slab
-      0.04 ± 75%      -0.0        0.04 ± 72%      -0.0        0.01 ±223%      -0.0        0.02 ±141%      -0.0        0.02 ±141%      -0.0        0.00            -0.0        0.02 ±141%  perf-profile.children.cycles-pp.find_lock_entries
-      0.03 ±100%      -0.0        0.02 ± 99%      -0.0        0.00            -0.0        0.00            +0.0        0.03 ±100%      +0.0        0.04 ± 71%      -0.0        0.02 ±142%  perf-profile.children.cycles-pp.dbus_message_get_interface
-      0.09 ± 23%      -0.0        0.08 ± 27%      -0.0        0.06 ± 19%      -0.0        0.08 ± 20%      -0.0        0.09 ± 24%      -0.0        0.07 ± 23%      -0.0        0.08 ±  5%  perf-profile.children.cycles-pp.zero_user_segments
-      0.10 ± 20%      -0.0        0.09 ± 29%      -0.0        0.07 ± 49%      -0.0        0.07 ± 24%      -0.0        0.08 ± 21%      -0.0        0.08 ± 12%      -0.0        0.08 ± 22%  perf-profile.children.cycles-pp.path_put
-      0.23 ± 10%      -0.0        0.23 ±  7%      -0.0        0.21 ± 10%      -0.0        0.22 ± 11%      +0.0        0.24 ± 15%      -0.0        0.22 ±  5%      -0.0        0.20 ± 22%  perf-profile.children.cycles-pp.ep_poll_callback
-      0.14 ± 11%      -0.0        0.14 ± 22%      -0.0        0.12 ± 21%      -0.0        0.12 ± 27%      -0.0        0.11 ± 14%      -0.0        0.13 ± 20%      -0.0        0.11 ± 18%  perf-profile.children.cycles-pp.rcu_sched_clock_irq
-      0.13 ± 10%      -0.0        0.13 ± 21%      -0.0        0.11 ± 29%      -0.0        0.13 ± 21%      -0.0        0.11 ± 12%      -0.0        0.12 ± 19%      -0.0        0.12 ± 18%  perf-profile.children.cycles-pp.__update_blocked_fair
-      0.16 ± 10%      -0.0        0.16 ± 17%      -0.0        0.14 ± 25%      -0.0        0.13 ± 16%      -0.0        0.12 ±  7%      -0.0        0.14 ± 14%      -0.0        0.15 ± 21%  perf-profile.children.cycles-pp.__update_load_avg_se
-      0.12 ± 19%      -0.0        0.11 ± 12%      -0.0        0.10 ± 16%      -0.0        0.10 ± 20%      +0.0        0.12 ± 12%      -0.0        0.10 ± 24%      +0.0        0.12 ± 24%  perf-profile.children.cycles-pp.schedule_preempt_disabled
-      0.14 ± 13%      -0.0        0.14 ± 15%      -0.0        0.12 ± 12%      -0.0        0.11 ± 17%      -0.0        0.11 ± 17%      -0.0        0.11 ± 11%      -0.0        0.12 ± 26%  perf-profile.children.cycles-pp.simple_lookup
-      0.08 ± 22%      -0.0        0.08 ± 20%      -0.0        0.06 ± 14%      -0.0        0.05 ± 45%      -0.0        0.05 ± 46%      -0.0        0.06 ± 19%      -0.0        0.06 ± 16%  perf-profile.children.cycles-pp.shmem_undo_range
-      0.07 ± 21%      -0.0        0.07 ± 28%      -0.0        0.06 ± 11%      -0.0        0.06 ± 75%      -0.0        0.07 ± 18%      +0.0        0.08 ± 27%      -0.0        0.07 ± 24%  perf-profile.children.cycles-pp.chase_symlinks
-      0.22 ± 17%      -0.0        0.21 ±  9%      -0.0        0.21 ± 13%      +0.0        0.24 ± 16%      +0.0        0.23 ± 17%      -0.0        0.20 ± 15%      -0.0        0.21 ±  9%  perf-profile.children.cycles-pp.__list_del_entry_valid
-      0.14 ± 29%      -0.0        0.13 ± 14%      -0.0        0.13 ± 12%      -0.0        0.12 ± 14%      -0.0        0.13 ± 15%      -0.0        0.13 ± 21%      +0.0        0.14 ± 23%  perf-profile.children.cycles-pp.realloc
-      0.05 ± 49%      -0.0        0.05 ± 49%      +0.0        0.06 ± 48%      +0.0        0.06 ± 19%      +0.0        0.08 ± 20%      -0.0        0.05 ± 45%      +0.0        0.06 ± 46%  perf-profile.children.cycles-pp.kernfs_fop_release
-      0.13 ± 12%      -0.0        0.13 ± 17%      +0.0        0.16 ± 19%      +0.0        0.14 ± 27%      +0.0        0.17 ±  7%      -0.0        0.12 ± 13%      +0.0        0.13 ± 19%  perf-profile.children.cycles-pp.read_tsc
-      0.52 ± 11%      -0.0        0.52 ±  6%      -0.0        0.49 ±  5%      -0.0        0.50 ±  9%      -0.0        0.49 ±  4%      -0.0        0.51 ±  4%      -0.0        0.52 ±  8%  perf-profile.children.cycles-pp.ramfs_symlink
-      0.30 ± 11%      -0.0        0.30 ± 20%      +0.1        0.36 ± 10%      +0.1        0.37 ± 10%      +0.0        0.35 ± 13%      +0.1        0.36 ±  9%      +0.1        0.37 ± 11%  perf-profile.children.cycles-pp.pcpu_free_area
-      0.52 ±  8%      -0.0        0.52 ± 17%      -0.1        0.47 ± 13%      -0.0        0.49 ± 21%      -0.1        0.47 ±  8%      -0.1        0.47 ± 16%      -0.1        0.46 ± 18%  perf-profile.children.cycles-pp.menu_select
-      0.54 ±  4%      -0.0        0.54 ± 18%      -0.0        0.50 ± 11%      -0.1        0.44 ±  8%      -0.1        0.46 ±  9%      -0.1        0.47 ± 12%      -0.1        0.46 ± 14%  perf-profile.children.cycles-pp.schedule_idle
-      0.30 ±  8%      -0.0        0.30 ± 20%      -0.0        0.28 ± 11%      -0.0        0.26 ± 15%      -0.0        0.25 ± 11%      -0.1        0.22 ± 10%      -0.0        0.26 ± 16%  perf-profile.children.cycles-pp.security_file_alloc
-      0.52 ± 14%      -0.0        0.52 ± 15%      +0.0        0.55 ±  5%      -0.1        0.46 ± 11%      -0.0        0.49 ± 13%      -0.1        0.45 ±  4%      -0.0        0.52 ± 17%  perf-profile.children.cycles-pp.__xstat64
-      0.10 ± 12%      -0.0        0.10 ± 13%      -0.0        0.08 ±  7%      -0.0        0.08 ±  8%      +0.0        0.11 ± 14%      -0.0        0.09 ± 18%      -0.0        0.08 ± 26%  perf-profile.children.cycles-pp.xas_alloc
-      0.25 ± 19%      -0.0        0.25 ± 16%      -0.0        0.24 ± 11%      +0.0        0.25 ± 17%      -0.0        0.23 ± 10%      -0.0        0.24 ± 14%      -0.0        0.24 ± 13%  perf-profile.children.cycles-pp.__filemap_get_folio
-      0.05 ± 50%      -0.0        0.05 ± 72%      -0.0        0.03 ±103%      -0.0        0.04 ± 72%      +0.0        0.06 ± 48%      -0.0        0.03 ±101%      +0.0        0.06 ± 49%  perf-profile.children.cycles-pp.getdelim
-      0.06 ± 21%      -0.0        0.06 ± 23%      -0.0        0.06 ± 50%      +0.0        0.07 ± 11%      +0.0        0.08 ± 19%      -0.0        0.06 ± 47%      +0.0        0.07 ± 21%  perf-profile.children.cycles-pp.consume_skb
-      0.06 ± 19%      -0.0        0.06 ± 11%      +0.0        0.09 ±  7%      +0.0        0.07 ± 20%      -0.0        0.06 ± 47%      +0.0        0.08 ± 13%      +0.0        0.08 ± 21%  perf-profile.children.cycles-pp.shmem_free_in_core_inode
-      0.02 ±141%      -0.0        0.02 ±142%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.children.cycles-pp.radix_tree_node_rcu_free
-      0.02 ±142%      -0.0        0.02 ±141%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.01 ±223%  perf-profile.children.cycles-pp.connect
-      0.03 ±102%      -0.0        0.03 ±100%      -0.0        0.01 ±223%      +0.0        0.04 ± 71%      -0.0        0.02 ±141%      +0.0        0.04 ± 71%      +0.0        0.03 ±105%  perf-profile.children.cycles-pp.pcpu_chunk_relocate
-      0.02 ±146%      -0.0        0.02 ±144%      -0.0        0.01 ±223%      +0.0        0.03 ±105%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.02 ±141%  perf-profile.children.cycles-pp.inode_maybe_inc_iversion
-      0.02 ±141%      -0.0        0.02 ±142%      +0.0        0.02 ±142%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.02 ±142%      -0.0        0.01 ±223%  perf-profile.children.cycles-pp.hashmap_get2
-      0.01 ±223%      -0.0        0.01 ±223%      +0.0        0.02 ±142%      -0.0        0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.01 ±223%      +0.0        0.01 ±223%  perf-profile.children.cycles-pp._IO_feof
-      0.02 ±142%      -0.0        0.02 ±141%      +0.0        0.03 ±100%      -0.0        0.01 ±223%      +0.0        0.04 ±101%      -0.0        0.01 ±223%      -0.0        0.01 ±223%  perf-profile.children.cycles-pp.skb_release_data
-      0.11 ± 13%      -0.0        0.11 ± 16%      -0.0        0.09 ± 21%      -0.0        0.10 ± 23%      -0.0        0.09 ± 17%      -0.0        0.08 ±  8%      -0.0        0.09 ± 27%  perf-profile.children.cycles-pp.make_vfsuid
-      0.03 ±100%      -0.0        0.02 ± 99%      -0.0        0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.02 ±142%      -0.0        0.02 ±141%  perf-profile.children.cycles-pp.__mem_cgroup_charge
-      0.03 ±101%      -0.0        0.03 ±102%      -0.0        0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.03 ±102%      -0.0        0.02 ±145%      -0.0        0.02 ±142%  perf-profile.children.cycles-pp.inode_sb_list_add
-      0.09 ± 12%      -0.0        0.09 ± 20%      +0.0        0.09 ± 15%      -0.0        0.09 ± 29%      +0.0        0.10 ± 22%      +0.0        0.10 ± 21%      +0.0        0.11 ± 30%  perf-profile.children.cycles-pp.percpu_counter_destroy
-      0.05 ± 45%      -0.0        0.04 ± 75%      +0.0        0.06 ± 46%      +0.0        0.05 ± 49%      +0.0        0.07 ± 20%      +0.0        0.06 ±  9%      +0.0        0.06 ± 46%  perf-profile.children.cycles-pp.alloc_skb_with_frags
-      0.09 ± 12%      -0.0        0.09 ± 14%      +0.0        0.11 ± 29%      +0.0        0.12 ± 17%      +0.0        0.13 ± 10%      +0.1        0.14 ± 12%      +0.0        0.13 ±  9%  perf-profile.children.cycles-pp.pcpu_block_update
-      0.42 ±  8%      -0.0        0.42 ±  9%      -0.1        0.36 ± 15%      -0.0        0.39 ±  5%      -0.0        0.41 ±  7%      -0.1        0.37 ± 13%      -0.1        0.35 ±  7%  perf-profile.children.cycles-pp.list_lru_destroy
-      0.17 ±  8%      -0.0        0.17 ± 10%      -0.0        0.14 ± 13%      -0.0        0.16 ± 14%      +0.0        0.18 ±  2%      -0.0        0.15 ±  9%      -0.0        0.15 ± 21%  perf-profile.children.cycles-pp.xas_create
-      0.20 ± 20%      -0.0        0.19 ± 16%      -0.0        0.17 ± 13%      -0.0        0.16 ± 20%      -0.0        0.17 ±  6%      -0.0        0.17 ± 17%      -0.0        0.18 ± 17%  perf-profile.children.cycles-pp.show_type
-      0.14 ± 16%      -0.0        0.14 ± 28%      -0.0        0.13 ± 17%      -0.0        0.12 ± 15%      +0.0        0.16 ± 21%      -0.0        0.13 ± 15%      -0.0        0.13 ± 30%  perf-profile.children.cycles-pp.set_root
-      0.12 ± 12%      -0.0        0.12 ± 27%      -0.0        0.11 ± 34%      +0.0        0.13 ± 14%      -0.0        0.10 ± 30%      -0.0        0.11 ± 31%      -0.0        0.12 ± 18%  perf-profile.children.cycles-pp.run_rebalance_domains
-      0.12 ±  9%      -0.0        0.12 ± 22%      -0.0        0.11 ± 20%      -0.0        0.09 ± 50%      -0.0        0.10 ± 19%      -0.0        0.11 ± 20%      -0.0        0.10 ± 18%  perf-profile.children.cycles-pp.rcu_pending
-      0.26 ± 15%      -0.0        0.26 ± 18%      -0.0        0.26 ±  9%      -0.0        0.25 ±  5%      -0.0        0.26 ± 19%      -0.0        0.25 ± 15%      +0.0        0.28 ± 25%  perf-profile.children.cycles-pp.kernfs_iop_permission
-      0.12 ±  6%      -0.0        0.12 ± 22%      -0.0        0.12 ± 22%      +0.0        0.12 ± 16%      +0.0        0.12 ±  5%      -0.0        0.10 ± 17%      -0.0        0.11 ±  8%  perf-profile.children.cycles-pp.mutex_unlock
-      0.13 ± 22%      -0.0        0.13 ±  5%      +0.0        0.13 ± 14%      -0.0        0.11 ± 13%      -0.0        0.12 ±  9%      +0.0        0.13 ± 23%      -0.0        0.12 ± 23%  perf-profile.children.cycles-pp.kernfs_get_target_path
-      0.42 ±  7%      -0.0        0.42 ± 12%      -0.1        0.36 ±  4%      -0.0        0.37 ± 18%      -0.1        0.36 ± 10%      -0.1        0.34 ±  9%      -0.1        0.33 ± 10%  perf-profile.children.cycles-pp.writeback_inodes_sb
-      1.26 ±  7%      +0.0        1.26            -0.1        1.14 ±  5%      -0.1        1.16 ±  3%      -0.1        1.18 ±  6%      -0.1        1.12 ±  2%      -0.1        1.14 ±  2%  perf-profile.children.cycles-pp.mntput_no_expire
-      0.83 ±  9%      +0.0        0.83 ±  4%      -0.1        0.76 ±  5%      -0.1        0.77 ±  5%      -0.1        0.74 ± 13%      -0.1        0.71 ±  3%      -0.1        0.77 ±  9%  perf-profile.children.cycles-pp.inode_permission
-      0.70 ±  8%      +0.0        0.70 ±  5%      -0.1        0.63 ±  8%      -0.1        0.64 ±  4%      -0.0        0.65 ±  7%      -0.1        0.63 ±  5%      -0.1        0.61 ±  8%  perf-profile.children.cycles-pp.memcg_slab_post_alloc_hook
-      0.22 ±  8%      +0.0        0.22 ± 13%      -0.0        0.17 ±  7%      -0.0        0.19 ± 22%      -0.0        0.18 ± 14%      -0.0        0.18 ± 13%      -0.0        0.19 ± 16%  perf-profile.children.cycles-pp.__virt_addr_valid
-      0.76 ±  5%      +0.0        0.76 ± 11%      -0.0        0.72 ±  9%      -0.0        0.72 ± 12%      -0.0        0.71 ±  5%      -0.1        0.70 ±  6%      -0.1        0.71 ± 12%  perf-profile.children.cycles-pp.do_mkdirat
-      0.06 ± 11%      +0.0        0.06 ± 17%      -0.0        0.03 ±102%      -0.0        0.04 ± 72%      +0.0        0.07 ± 21%      +0.0        0.08 ± 12%      -0.0        0.05 ± 71%  perf-profile.children.cycles-pp.set_anon_super_fc
-      0.02 ±141%      +0.0        0.02 ±141%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.00        perf-profile.children.cycles-pp.security_path_unlink
-      0.13 ±  9%      +0.0        0.13 ±  9%      -0.0        0.12 ± 25%      -0.0        0.12 ± 11%      -0.0        0.11 ± 15%      -0.0        0.12 ± 15%      -0.0        0.11 ± 16%  perf-profile.children.cycles-pp.change_mnt_propagation
-      0.08 ± 10%      +0.0        0.08 ± 12%      -0.0        0.06 ± 48%      -0.0        0.05 ± 50%      +0.0        0.08 ± 22%      -0.0        0.06 ± 45%      +0.0        0.09 ± 29%  perf-profile.children.cycles-pp.rwsem_down_read_slowpath
-      0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.00        perf-profile.children.cycles-pp.simple_rmdir
-      0.10 ± 32%      +0.0        0.10 ± 16%      -0.0        0.10 ± 28%      -0.0        0.10 ± 16%      -0.0        0.09 ± 37%      -0.0        0.07 ± 16%      -0.0        0.09 ± 22%  perf-profile.children.cycles-pp._hashmap_iterate
-      0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.children.cycles-pp.insert_work
-      0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.children.cycles-pp.memcmp@plt
-      0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00        perf-profile.children.cycles-pp.tsc_verify_tsc_adjust
-      0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00        perf-profile.children.cycles-pp.__memcpy
-      0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            +0.0        0.01 ±223%      -0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.prepare_to_wait_event
-      0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.__d_rehash
-      0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.children.cycles-pp.rcu_poll_gp_seq_start_unlocked
-      0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.mounts_open_common
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.register_shrinker_prepared
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.rb_insert_color
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.security_file_permission
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.strcmp_ptr@plt
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.sd_bus_message_append
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00        perf-profile.children.cycles-pp.__mmput
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00        perf-profile.children.cycles-pp.__x64_sys_exit_group
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00        perf-profile.children.cycles-pp.do_group_exit
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00        perf-profile.children.cycles-pp.do_exit
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00        perf-profile.children.cycles-pp.exit_mmap
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00        perf-profile.children.cycles-pp.radix_tree_node_ctor
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00        perf-profile.children.cycles-pp.prctl
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00        perf-profile.children.cycles-pp._raw_read_unlock_irqrestore
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00        perf-profile.children.cycles-pp.apparmor_path_rmdir
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00        perf-profile.children.cycles-pp.copy_page_to_iter
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00        perf-profile.children.cycles-pp.rcu_exp_jiffies_till_stall_check
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00        perf-profile.children.cycles-pp.can_migrate_task
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%  perf-profile.children.cycles-pp.is_vmalloc_addr
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.02 ± 99%      +0.0        0.00        perf-profile.children.cycles-pp.cgroup_show_path
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.__mutex_init
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.__ep_eventpoll_poll
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.skb_copy_datagram_from_iter
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.kick_process
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.seq_open
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.do_sys_poll
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.d_flags_for_inode
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00        perf-profile.children.cycles-pp.string
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.wake_up_bit
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%  perf-profile.children.cycles-pp.x86_pmu_disable
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.03 ±100%      +0.0        0.02 ±141%  perf-profile.children.cycles-pp.simple_unlink
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.02 ±142%      +0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.mnt_fs_strdup_options
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.02 ±144%      +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.switch_fpu_return
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.02 ± 99%      +0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.__x64_sys_poll
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.siphash24_finalize@plt
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.__mark_inode_dirty
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.kvfree_call_rcu
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.update_wall_time
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.timekeeping_advance
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.kernfs_sop_show_path
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.tick_program_event
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.__hrtimer_start_range_ns
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.unix_destruct_scm
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.cpu_stopper_thread
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00        perf-profile.children.cycles-pp.detach_tasks
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%  perf-profile.children.cycles-pp.mntput
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.sock_wfree
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.skb_release_head_state
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00        perf-profile.children.cycles-pp.__bitmap_set
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.kernfs_unlink_open_file
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.proc_root_getattr
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.hrtimer_get_next_event
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.02 ±141%      +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.__errno_location
-      0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.02 ±141%      -0.0        0.00            +0.0        0.01 ±223%      -0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.ep_item_poll
-      0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp._hashmap_remove
-      0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.bus_label_unescape_n
-      0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.__sock_create
-      0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.do_mmap
-      0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.kernfs_refresh_inode
-      0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.mmap_region
-      0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.__attach_mnt
-      0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.safe_close
-      0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.mutex_spin_on_owner
-      0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.__mutex_lock
-      0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.02 ±223%      +0.0        0.00        perf-profile.children.cycles-pp.timekeeping_max_deferment
-      0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.detach_if_pending
-      0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.dentry_path
-      0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.rcu_segcblist_pend_cbs
-      0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.02 ±141%      +0.0        0.03 ±100%      +0.0        0.02 ±144%      -0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.default_send_IPI_single_phys
-      0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.02 ±144%      +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.map_id_range_down
-      0.04 ± 75%      +0.0        0.04 ± 45%      +0.0        0.06 ± 55%      -0.0        0.04 ± 71%      -0.0        0.04 ± 71%      -0.0        0.04 ±100%      -0.0        0.03 ±100%  perf-profile.children.cycles-pp.readlink_copy
-      0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.ktime_get_mono_fast_ns
-      0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.handle_mm_fault
-      0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.__handle_mm_fault
-      0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00        perf-profile.children.cycles-pp.siphash24_init@plt
-      0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.02 ± 99%      +0.0        0.00        perf-profile.children.cycles-pp.pcpu_alloc_pages
-      0.05 ± 51%      +0.0        0.05 ± 49%      +0.0        0.06 ± 17%      +0.0        0.06 ± 21%      +0.0        0.06 ± 19%      +0.0        0.05 ± 53%      +0.0        0.05 ± 49%  perf-profile.children.cycles-pp.irq_work_run
-      0.05 ± 51%      +0.0        0.05 ± 49%      +0.0        0.06 ± 17%      +0.0        0.06 ± 21%      +0.0        0.06 ± 19%      +0.0        0.05 ± 53%      +0.0        0.05 ± 49%  perf-profile.children.cycles-pp._printk
-      0.05 ± 51%      +0.0        0.05 ± 49%      +0.0        0.06 ± 17%      +0.0        0.06 ± 21%      +0.0        0.06 ± 19%      +0.0        0.05 ± 53%      +0.0        0.05 ± 49%  perf-profile.children.cycles-pp.vprintk_emit
-      0.05 ± 51%      +0.0        0.05 ± 49%      +0.0        0.06 ± 17%      +0.0        0.06 ± 21%      +0.0        0.06 ± 19%      +0.0        0.05 ± 53%      +0.0        0.05 ± 49%  perf-profile.children.cycles-pp.console_unlock
-      0.05 ± 51%      +0.0        0.05 ± 49%      +0.0        0.06 ± 17%      +0.0        0.06 ± 21%      +0.0        0.06 ± 19%      +0.0        0.05 ± 53%      +0.0        0.05 ± 49%  perf-profile.children.cycles-pp.console_flush_all
-      0.11 ± 12%      +0.0        0.11 ±  9%      +0.0        0.12 ± 15%      +0.0        0.12 ± 23%      +0.0        0.11 ± 12%      +0.0        0.12 ± 13%      +0.0        0.12 ± 19%  perf-profile.children.cycles-pp.ramfs_mkdir
-      0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.cap_capable
-      0.00            +0.0        0.00            +0.0        0.02 ±141%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.vm_mmap_pgoff
-      0.00            +0.0        0.00            +0.0        0.02 ±141%      +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.pcpu_reclaim_populated
-      0.00            +0.0        0.00            +0.0        0.02 ±142%      +0.0        0.01 ±223%      +0.0        0.02 ±144%      +0.0        0.00            +0.0        0.02 ±141%  perf-profile.children.cycles-pp.srcu_get_delay
-      0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.03 ±100%      -0.0        0.00            +0.0        0.01 ±223%      +0.0        0.03 ± 70%      -0.0        0.00        perf-profile.children.cycles-pp.error_entry
-      0.00            +0.0        0.00            +0.0        0.02 ±144%      +0.0        0.02 ±144%      +0.0        0.01 ±223%      +0.0        0.03 ±101%      +0.0        0.02 ±141%  perf-profile.children.cycles-pp.pcpu_populate_chunk
-      0.00            +0.0        0.00            +0.0        0.02 ± 99%      +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.pcpu_balance_workfn
-      0.00            +0.0        0.00            +0.0        0.03 ±100%      +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.free_unref_page
-      0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.04 ± 71%      +0.0        0.02 ±144%      +0.0        0.02 ±141%      +0.0        0.02 ±142%      +0.0        0.01 ±223%  perf-profile.children.cycles-pp.invent_group_ids
-      0.02 ±142%      +0.0        0.02 ±142%      +0.0        0.06 ± 13%      +0.0        0.04 ± 71%      +0.0        0.03 ±100%      +0.0        0.03 ±100%      +0.0        0.04 ± 71%  perf-profile.children.cycles-pp._dbus_first_type_in_signature
-      0.00            +0.0        0.00            +0.1        0.07 ± 16%      +0.1        0.07 ± 21%      +0.1        0.07 ±  9%      +0.1        0.06 ± 17%      +0.1        0.08 ± 14%  perf-profile.children.cycles-pp.pcpu_next_md_free_region
-      0.00            +0.0        0.00            +0.1        0.08 ± 25%      +0.1        0.07 ± 48%      +0.1        0.07 ± 16%      +0.1        0.06 ± 48%      +0.1        0.09 ± 28%  perf-profile.children.cycles-pp.init_timer_key
-      0.00            +0.0        0.00            +0.1        0.10 ± 11%      +0.1        0.09 ± 19%      +0.1        0.09 ±  7%      +0.1        0.10 ± 16%      +0.1        0.11 ± 20%  perf-profile.children.cycles-pp.pcpu_chunk_refresh_hint
-      0.00            +0.0        0.00            +0.1        0.14 ± 21%      +0.1        0.14 ± 14%      +0.1        0.12 ± 13%      +0.1        0.13 ± 17%      +0.1        0.13 ± 14%  perf-profile.children.cycles-pp.rcu_segcblist_init
-      0.23 ± 16%      +0.0        0.23 ± 21%      +0.2        0.38 ±  8%      +0.1        0.35 ±  6%      +0.1        0.33 ± 16%      +0.1        0.33 ± 13%      +0.1        0.35 ± 12%  perf-profile.children.cycles-pp.rcu_cblist_dequeue
-      0.00            +0.0        0.00            +0.7        0.68 ±  5%      +0.7        0.68 ± 15%      +0.6        0.58 ±  8%      +0.6        0.64 ±  9%      +0.6        0.61 ± 11%  perf-profile.children.cycles-pp.srcu_readers_active
-      0.00            +0.0        0.00            +0.9        0.88 ±  5%      +0.9        0.86 ±  2%      +0.8        0.83 ±  5%      +0.8        0.78 ±  6%      +0.8        0.82 ±  8%  perf-profile.children.cycles-pp.lock_timer_base
-      0.00            +0.0        0.00            +1.1        1.06 ±  3%      +1.0        1.04 ±  4%      +1.0        0.98 ±  4%      +1.0        0.95 ±  5%      +1.0        0.97 ±  9%  perf-profile.children.cycles-pp.__try_to_del_timer_sync
-      0.00            +0.0        0.00            +1.1        1.10 ±  4%      +1.1        1.07 ±  3%      +1.0        1.01 ±  4%      +1.0        0.98 ±  5%      +1.0        1.00 ±  9%  perf-profile.children.cycles-pp.__timer_delete_sync
-      0.00            +0.0        0.00            +1.9        1.86 ±  4%      +1.9        1.92 ±  8%      +1.9        1.92 ±  4%      +1.9        1.86 ±  5%      +1.9        1.92 ±  9%  perf-profile.children.cycles-pp.init_srcu_struct_fields
-      0.00            +0.0        0.00            +3.3        3.29 ±  2%      +3.3        3.31 ±  2%      +3.1        3.06 ±  3%      +3.0        3.03 ±  5%      +3.1        3.14 ±  8%  perf-profile.children.cycles-pp.cleanup_srcu_struct
-      1.00 ±  5%      +0.0        1.00 ±  7%      -0.1        0.90 ±  5%      -0.1        0.94 ±  9%      -0.1        0.87 ±  7%      -0.1        0.92 ±  9%      -0.1        0.94 ± 10%  perf-profile.children.cycles-pp.kmem_cache_free
-      0.41 ±  9%      +0.0        0.41 ± 13%      -0.0        0.36 ±  4%      -0.0        0.40 ± 11%      -0.0        0.40 ±  4%      -0.0        0.39 ±  7%      -0.0        0.36 ±  8%  perf-profile.children.cycles-pp.xas_store
-      0.21 ± 15%      +0.0        0.22 ±  9%      -0.0        0.20 ± 17%      +0.0        0.24 ± 17%      +0.0        0.22 ±  7%      -0.0        0.21 ± 17%      -0.0        0.20 ±  9%  perf-profile.children.cycles-pp._find_next_zero_bit
-      0.13 ± 11%      +0.0        0.13 ± 11%      -0.0        0.12 ± 15%      -0.0        0.12 ± 19%      -0.0        0.12 ± 14%      -0.0        0.11 ± 15%      -0.0        0.11 ± 24%  perf-profile.children.cycles-pp.strlcat
-      0.08 ± 57%      +0.0        0.08 ± 26%      -0.0        0.08 ± 18%      -0.0        0.06 ± 48%      +0.0        0.08 ± 16%      +0.0        0.08 ± 14%      -0.0        0.07 ± 21%  perf-profile.children.cycles-pp.map_id_up
-      0.26 ± 17%      +0.0        0.27 ± 17%      +0.0        0.27 ± 10%      -0.0        0.26 ± 16%      +0.0        0.28 ± 10%      -0.0        0.25 ± 10%      +0.0        0.27 ± 20%  perf-profile.children.cycles-pp.sysfs_kf_seq_show
-      0.08 ± 12%      +0.0        0.08 ± 15%      +0.0        0.09 ± 12%      -0.0        0.06 ± 47%      +0.0        0.08 ± 16%      +0.0        0.08 ± 17%      -0.0        0.06 ± 29%  perf-profile.children.cycles-pp.shmem_parse_one
-      0.33 ± 16%      +0.0        0.34 ± 17%      +0.0        0.34 ± 13%      -0.0        0.31 ± 23%      +0.0        0.34 ± 12%      -0.0        0.32 ±  7%      +0.0        0.37 ± 20%  perf-profile.children.cycles-pp.access
-      0.02 ± 99%      +0.0        0.03 ±100%      -0.0        0.01 ±223%      -0.0        0.02 ±146%      -0.0        0.02 ±141%      -0.0        0.00            -0.0        0.01 ±223%  perf-profile.children.cycles-pp.get_random_u32
-      0.04 ± 73%      +0.0        0.04 ± 72%      +0.0        0.05            -0.0        0.02 ±142%      +0.0        0.06 ± 56%      -0.0        0.03 ±101%      -0.0        0.04 ±100%  perf-profile.children.cycles-pp.percpu_counter_add_batch
-      0.10 ± 16%      +0.0        0.10 ± 26%      +0.0        0.11 ±  8%      +0.0        0.10 ± 24%      -0.0        0.08 ± 14%      +0.0        0.11 ± 11%      -0.0        0.09 ±  7%  perf-profile.children.cycles-pp.lockref_put_or_lock
-      0.10 ± 13%      +0.0        0.10 ± 19%      +0.0        0.12 ± 19%      +0.0        0.11 ± 19%      +0.0        0.11 ±  9%      -0.0        0.09 ± 17%      -0.0        0.10 ± 15%  perf-profile.children.cycles-pp.__smp_call_single_queue
-      0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            +0.0        0.02 ±142%      -0.0        0.00        perf-profile.children.cycles-pp.place_entity
-      0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.children.cycles-pp.cmd_stat
-      0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.children.cycles-pp.dispatch_events
-      0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.children.cycles-pp.process_interval
-      0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            +0.0        0.03 ±102%      +0.0        0.02 ±142%  perf-profile.children.cycles-pp.propagate_mount_unlock
-      0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      +0.0        0.02 ±141%      +0.0        0.02 ±141%      +0.0        0.01 ±223%  perf-profile.children.cycles-pp.trigger_load_balance
-      0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00        perf-profile.children.cycles-pp.arch_cpu_idle_enter
-      0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.children.cycles-pp.page_counter_uncharge
-      0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.02 ±142%      +0.0        0.02 ±141%      -0.0        0.00            +0.0        0.01 ±223%      -0.0        0.00        perf-profile.children.cycles-pp.check_cpu_stall
-      0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.03 ±100%      +0.0        0.02 ±141%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.02 ± 99%  perf-profile.children.cycles-pp.greedy_realloc
-      0.05 ± 51%      +0.0        0.05 ± 48%      +0.0        0.06 ± 17%      +0.0        0.06 ± 21%      +0.0        0.06 ± 19%      +0.0        0.06 ± 27%      +0.0        0.06 ± 19%  perf-profile.children.cycles-pp.asm_sysvec_irq_work
-      0.05 ± 51%      +0.0        0.05 ± 48%      +0.0        0.06 ± 17%      +0.0        0.06 ± 21%      +0.0        0.06 ± 19%      +0.0        0.06 ± 27%      +0.0        0.06 ± 19%  perf-profile.children.cycles-pp.sysvec_irq_work
-      0.05 ± 51%      +0.0        0.05 ± 48%      +0.0        0.06 ± 17%      +0.0        0.06 ± 21%      +0.0        0.06 ± 19%      +0.0        0.06 ± 27%      +0.0        0.06 ± 19%  perf-profile.children.cycles-pp.__sysvec_irq_work
-      0.05 ± 51%      +0.0        0.05 ± 48%      +0.0        0.06 ± 17%      +0.0        0.06 ± 21%      +0.0        0.06 ± 19%      +0.0        0.06 ± 27%      +0.0        0.06 ± 19%  perf-profile.children.cycles-pp.irq_work_single
-      0.21 ± 23%      +0.0        0.21 ± 12%      -0.0        0.19 ±  9%      -0.0        0.20 ± 12%      -0.0        0.20 ± 13%      -0.0        0.18 ± 22%      -0.0        0.18 ± 15%  perf-profile.children.cycles-pp.shmem_symlink
-      0.16 ± 21%      +0.0        0.16 ± 12%      -0.0        0.15 ± 30%      -0.0        0.16 ± 17%      -0.0        0.13 ± 24%      -0.1        0.11 ± 33%      -0.0        0.12 ± 44%  perf-profile.children.cycles-pp.rebalance_domains
-      0.39 ± 38%      +0.0        0.39 ± 38%      -0.1        0.28 ± 23%      -0.1        0.32 ± 36%      -0.1        0.32 ± 39%      -0.1        0.33 ± 42%      -0.1        0.30 ± 39%  perf-profile.children.cycles-pp.ktime_get
-      0.25 ± 18%      +0.0        0.25 ± 18%      +0.0        0.25 ± 10%      +0.0        0.25 ± 17%      +0.0        0.27 ± 11%      -0.0        0.24 ±  9%      +0.0        0.26 ± 21%  perf-profile.children.cycles-pp.dev_attr_show
-      0.62 ±  9%      +0.0        0.63 ±  7%      -0.1        0.55 ±  6%      -0.0        0.60 ± 11%      +0.0        0.63 ±  4%      -0.0        0.58 ±  2%      -0.0        0.58 ± 12%  perf-profile.children.cycles-pp.memcg_list_lru_alloc
-      0.08 ± 26%      +0.0        0.08 ± 14%      -0.0        0.06 ± 77%      -0.0        0.08 ± 26%      -0.0        0.06 ± 47%      -0.0        0.08 ± 23%      -0.0        0.06 ± 11%  perf-profile.children.cycles-pp.__srcu_read_unlock
-      0.17 ±  8%      +0.0        0.17 ± 21%      -0.0        0.15 ± 14%      -0.0        0.15 ± 11%      +0.0        0.19 ± 19%      -0.0        0.15 ± 16%      -0.0        0.16 ± 26%  perf-profile.children.cycles-pp.nd_jump_root
-      0.08 ± 13%      +0.0        0.08 ± 14%      -0.0        0.06 ± 45%      -0.0        0.08 ± 22%      +0.0        0.08 ± 16%      -0.0        0.08 ± 19%      +0.0        0.08 ± 23%  perf-profile.children.cycles-pp.xas_start
-      0.21 ± 15%      +0.0        0.22 ± 24%      -0.0        0.20 ±  4%      -0.0        0.18 ± 15%      -0.0        0.17 ± 12%      -0.0        0.19 ±  9%      -0.0        0.18 ± 19%  perf-profile.children.cycles-pp.finish_task_switch
-      0.12 ± 23%      +0.0        0.12 ± 22%      -0.0        0.12 ± 18%      -0.0        0.11 ± 23%      -0.0        0.10 ± 19%      +0.0        0.13 ± 14%      -0.0        0.12 ± 17%  perf-profile.children.cycles-pp.filemap_add_folio
-      0.25 ± 18%      +0.0        0.25 ± 18%      +0.0        0.25 ±  8%      +0.0        0.25 ± 15%      +0.0        0.26 ±  9%      -0.0        0.24 ± 10%      +0.0        0.26 ± 22%  perf-profile.children.cycles-pp.uevent_show
-      0.25 ± 15%      +0.0        0.25 ±  6%      +0.0        0.26 ±  8%      +0.0        0.25 ± 13%      +0.0        0.26 ±  9%      -0.0        0.25 ±  7%      +0.0        0.26 ± 25%  perf-profile.children.cycles-pp.__sys_sendmsg
-      0.04 ± 71%      +0.0        0.04 ± 71%      -0.0        0.03 ±101%      -0.0        0.02 ±141%      +0.0        0.04 ± 71%      -0.0        0.04 ±102%      +0.0        0.06 ± 16%  perf-profile.children.cycles-pp.switch_mm_irqs_off
-      0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00        perf-profile.children.cycles-pp.tick_nohz_irq_exit
-      0.06 ±  6%      +0.0        0.06 ± 50%      +0.0        0.07 ± 46%      +0.0        0.07 ± 20%      +0.0        0.08 ± 17%      +0.0        0.07 ± 12%      +0.0        0.08 ± 19%  perf-profile.children.cycles-pp.sock_alloc_send_pskb
-      0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.03 ±102%      +0.0        0.01 ±223%      +0.0        0.02 ±142%      +0.0        0.01 ±223%      +0.0        0.01 ±223%  perf-profile.children.cycles-pp.calc_global_load_tick
-      0.09 ± 18%      +0.0        0.10 ± 20%      -0.0        0.06 ± 51%      -0.0        0.09 ± 27%      -0.0        0.05 ± 45%      -0.0        0.06 ± 21%      -0.0        0.07 ± 19%  perf-profile.children.cycles-pp.folio_batch_move_lru
-      0.10 ± 22%      +0.0        0.10 ± 32%      -0.0        0.08 ± 21%      +0.0        0.12 ± 31%      -0.0        0.08 ± 25%      -0.0        0.06 ± 71%      -0.0        0.08 ± 30%  perf-profile.children.cycles-pp.hrtimer_start_range_ns
-      0.11 ± 16%      +0.0        0.11 ± 27%      -0.0        0.10 ± 25%      +0.0        0.12 ± 15%      +0.0        0.11 ±  9%      -0.0        0.10 ± 20%      +0.0        0.11 ± 28%  perf-profile.children.cycles-pp.add_uevent_var
-      0.12 ± 19%      +0.0        0.12 ± 14%      +0.0        0.12 ± 25%      +0.0        0.13 ± 12%      +0.0        0.12 ± 21%      +0.0        0.13 ± 16%      -0.0        0.10 ± 15%  perf-profile.children.cycles-pp.__libc_recvmsg
-      0.10 ± 14%      +0.0        0.10 ± 20%      +0.0        0.11 ± 25%      +0.0        0.11 ± 15%      +0.0        0.11 ± 19%      -0.0        0.08 ±  8%      +0.0        0.11 ± 21%  perf-profile.children.cycles-pp.generic_exec_single
-      0.40 ± 12%      +0.0        0.40 ± 15%      -0.0        0.39 ± 15%      -0.1        0.35 ± 11%      -0.0        0.36 ±  8%      -0.1        0.34 ± 12%      -0.0        0.38 ± 13%  perf-profile.children.cycles-pp.do_open
-      0.17 ± 20%      +0.0        0.18 ± 14%      -0.0        0.16 ± 12%      -0.0        0.16 ± 11%      +0.0        0.18 ± 15%      -0.0        0.15 ±  4%      -0.0        0.15 ± 15%  perf-profile.children.cycles-pp.syscall_return_via_sysret
-      0.18 ± 14%      +0.0        0.18 ± 20%      -0.0        0.17 ±  6%      -0.0        0.18 ±  9%      +0.0        0.20 ± 21%      +0.0        0.18 ± 13%      +0.0        0.19 ± 16%  perf-profile.children.cycles-pp.strchr@plt
-      0.28 ±  7%      +0.0        0.29 ± 20%      -0.0        0.28 ± 18%      +0.0        0.29 ± 16%      -0.0        0.26 ± 12%      -0.0        0.26 ± 14%      -0.0        0.26 ± 15%  perf-profile.children.cycles-pp.update_blocked_averages
-      0.29 ± 15%      +0.0        0.29 ± 17%      +0.0        0.29 ± 10%      -0.0        0.28 ± 13%      -0.0        0.25 ± 13%      +0.0        0.29 ±  8%      -0.0        0.26 ± 14%  perf-profile.children.cycles-pp.rep_movs_alternative
-      0.11 ± 16%      +0.0        0.12 ± 18%      -0.0        0.10 ± 16%      -0.0        0.10 ± 23%      -0.0        0.11 ± 23%      -0.0        0.09 ± 27%      -0.0        0.11 ± 26%  perf-profile.children.cycles-pp.perf_rotate_context
-      0.01 ±223%      +0.0        0.02 ±141%      +0.0        0.02 ±142%      -0.0        0.01 ±223%      +0.0        0.02 ±142%      -0.0        0.01 ±223%      +0.0        0.03 ±105%  perf-profile.children.cycles-pp.strcmp_ptr
-      0.17 ± 10%      +0.0        0.17 ± 22%      -0.0        0.15 ± 12%      -0.0        0.15 ± 22%      -0.0        0.15 ± 11%      -0.0        0.14 ± 22%      -0.0        0.14 ± 22%  perf-profile.children.cycles-pp.filp_close
-      0.13 ± 16%      +0.0        0.14 ±  5%      -0.0        0.13 ± 12%      -0.0        0.11 ± 20%      +0.0        0.14 ± 14%      -0.0        0.12 ± 11%      -0.0        0.12 ± 27%  perf-profile.children.cycles-pp.irqtime_account_irq
-      0.09 ± 25%      +0.0        0.09 ± 27%      +0.0        0.09 ± 26%      +0.0        0.09 ± 30%      +0.0        0.10 ± 15%      -0.0        0.08 ± 23%      -0.0        0.07 ± 12%  perf-profile.children.cycles-pp.get_fs_type
-      0.10 ± 20%      +0.0        0.11 ± 20%      +0.0        0.11 ± 20%      -0.0        0.10 ± 22%      -0.0        0.09 ± 22%      +0.0        0.12 ± 16%      -0.0        0.10 ±  9%  perf-profile.children.cycles-pp.__filemap_add_folio
-      0.17 ± 26%      +0.0        0.18 ± 12%      +0.0        0.17 ± 19%      +0.0        0.17 ± 13%      -0.0        0.13 ±  9%      -0.0        0.15 ± 18%      -0.0        0.16 ± 15%  perf-profile.children.cycles-pp.copy_mount_options
-      0.32 ± 16%      +0.0        0.32 ± 18%      +0.0        0.32 ± 14%      -0.0        0.30 ± 22%      +0.0        0.32 ± 14%      -0.0        0.30 ±  6%      +0.0        0.35 ± 19%  perf-profile.children.cycles-pp.do_faccessat
-      0.27 ± 18%      +0.0        0.28 ±  9%      -0.0        0.26 ± 20%      -0.0        0.24 ± 11%      -0.0        0.24 ± 14%      -0.0        0.25 ± 16%      -0.0        0.25 ± 20%  perf-profile.children.cycles-pp.strlen
-      0.24 ± 11%      +0.0        0.24 ±  6%      +0.0        0.24 ±  6%      -0.0        0.23 ± 14%      +0.0        0.25 ±  2%      +0.0        0.24 ± 10%      +0.0        0.25 ± 19%  perf-profile.children.cycles-pp.ramfs_mknod
-      0.13 ± 15%      +0.0        0.13 ± 19%      +0.0        0.14 ± 14%      +0.0        0.14 ± 14%      +0.0        0.15 ± 14%      +0.0        0.15 ± 12%      +0.0        0.14 ± 15%  perf-profile.children.cycles-pp.pcpu_block_update_hint_free
-      0.05 ± 80%      +0.0        0.06 ± 54%      +0.0        0.07 ± 28%      +0.0        0.05 ± 46%      +0.0        0.07 ± 25%      +0.0        0.08 ± 15%      +0.0        0.08 ± 24%  perf-profile.children.cycles-pp.strcspn@plt
-      0.02 ±142%      +0.0        0.03 ±100%      -0.0        0.02 ±142%      -0.0        0.01 ±223%      -0.0        0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.00        perf-profile.children.cycles-pp.strncmp
-      0.01 ±223%      +0.0        0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.object_path_is_valid
-      0.01 ±223%      +0.0        0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      +0.0        0.02 ±141%      +0.0        0.02 ±141%      +0.0        0.03 ±100%  perf-profile.children.cycles-pp._hashmap_get
-      0.01 ±223%      +0.0        0.02 ±141%      +0.0        0.02 ±141%      +0.0        0.02 ±142%      +0.0        0.02 ± 99%      +0.0        0.02 ±142%      -0.0        0.01 ±223%  perf-profile.children.cycles-pp.serial8250_console_write
-      0.01 ±223%      +0.0        0.02 ±141%      +0.0        0.02 ±141%      +0.0        0.02 ±142%      +0.0        0.02 ± 99%      +0.0        0.02 ±142%      -0.0        0.01 ±223%  perf-profile.children.cycles-pp.uart_console_write
-      0.08 ± 26%      +0.0        0.08 ± 16%      -0.0        0.05 ± 75%      -0.0        0.07 ± 14%      -0.0        0.06 ± 48%      -0.0        0.07 ± 19%      -0.0        0.06 ± 47%  perf-profile.children.cycles-pp.ep_send_events
-      0.06 ± 47%      +0.0        0.06 ± 11%      -0.0        0.04 ± 71%      -0.0        0.04 ± 71%      -0.0        0.04 ± 47%      -0.0        0.05 ± 45%      -0.0        0.04 ± 72%  perf-profile.children.cycles-pp.cpuidle_governor_latency_req
-      0.10 ± 19%      +0.0        0.11 ± 34%      -0.0        0.09 ± 12%      -0.0        0.10 ± 23%      +0.0        0.10 ± 15%      -0.0        0.10 ± 18%      +0.0        0.11 ± 26%  perf-profile.children.cycles-pp.fput
-      0.02 ±146%      +0.0        0.03 ±102%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.02 ±142%      +0.0        0.06 ± 49%  perf-profile.children.cycles-pp.strnlen
-      0.07 ± 10%      +0.0        0.08 ± 17%      -0.0        0.07 ± 28%      -0.0        0.07 ± 17%      -0.0        0.06 ± 46%      -0.0        0.06 ± 19%      -0.0        0.06 ± 48%  perf-profile.children.cycles-pp.mnt_release_group_id
-      0.02 ±141%      +0.0        0.03 ±100%      -0.0        0.02 ±141%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.00            +0.0        0.03 ±100%  perf-profile.children.cycles-pp.__rdgsbase_inactive
-      0.07 ± 53%      +0.0        0.07 ± 17%      +0.0        0.08 ± 17%      +0.0        0.08 ± 32%      +0.0        0.08 ± 12%      -0.0        0.06 ± 47%      -0.0        0.06 ± 52%  perf-profile.children.cycles-pp.folio_alloc
-      0.10 ± 20%      +0.0        0.11 ± 19%      +0.0        0.13 ± 20%      +0.0        0.12 ± 13%      +0.0        0.14 ± 11%      +0.0        0.13 ± 14%      +0.0        0.14 ± 10%  perf-profile.children.cycles-pp.lookup_dcache
-      0.03 ±101%      +0.0        0.04 ± 73%      -0.0        0.02 ±141%      -0.0        0.00            -0.0        0.03 ±100%      -0.0        0.01 ±223%      -0.0        0.02 ±144%  perf-profile.children.cycles-pp.perf_pmu_nop_void
-      0.21 ±  9%      +0.0        0.21 ± 15%      -0.0        0.18 ± 13%      -0.0        0.19 ± 30%      -0.0        0.19 ± 16%      -0.0        0.18 ± 15%      -0.0        0.16 ± 10%  perf-profile.children.cycles-pp.get_nr_inodes
-      0.21 ± 16%      +0.0        0.22 ±  9%      +0.0        0.22 ± 13%      -0.0        0.20 ± 13%      +0.0        0.22 ±  8%      -0.0        0.20 ± 11%      -0.0        0.20 ± 12%  perf-profile.children.cycles-pp.obj_cgroup_charge
-      0.13 ± 15%      +0.0        0.14 ± 27%      +0.0        0.14 ± 19%      -0.0        0.12 ± 12%      -0.0        0.13 ± 21%      +0.0        0.14 ± 21%      -0.0        0.12 ± 21%  perf-profile.children.cycles-pp.idle_cpu
-      2.90 ±  4%      +0.0        2.90 ±  7%      -0.1        2.78 ±  2%      -0.2        2.69 ±  6%      -0.1        2.79 ±  6%      -0.3        2.60 ±  3%      -0.1        2.82 ±  8%  perf-profile.children.cycles-pp.open64
-      0.27 ± 16%      +0.0        0.28 ± 14%      -0.0        0.25 ± 19%      +0.0        0.28 ± 22%      -0.0        0.26 ±  9%      -0.0        0.25 ± 15%      +0.0        0.28 ± 13%  perf-profile.children.cycles-pp.__intel_pmu_enable_all
-      0.22 ± 18%      +0.0        0.23 ±  7%      +0.0        0.23 ± 11%      +0.0        0.23 ± 12%      +0.0        0.24 ±  9%      +0.0        0.23 ± 11%      +0.0        0.24 ± 27%  perf-profile.children.cycles-pp.____sys_sendmsg
-      0.64 ± 10%      +0.0        0.65 ±  8%      +0.1        0.74 ±  2%      +0.1        0.79 ±  6%      +0.1        0.78 ±  4%      +0.1        0.73 ± 10%      +0.1        0.74 ±  6%  perf-profile.children.cycles-pp.pcpu_alloc_area
-      0.12 ± 23%      +0.0        0.13 ± 22%      -0.0        0.10 ± 25%      -0.0        0.12 ± 17%      -0.0        0.12 ± 17%      -0.0        0.11 ± 17%      -0.0        0.11 ± 20%  perf-profile.children.cycles-pp.ct_kernel_exit_state
-      0.13 ± 16%      +0.0        0.14 ± 26%      -0.0        0.12 ± 18%      +0.0        0.15 ± 15%      +0.0        0.14 ±  4%      -0.0        0.12 ± 12%      +0.0        0.13 ± 16%  perf-profile.children.cycles-pp.dev_uevent
-      0.13 ± 12%      +0.0        0.14 ± 11%      -0.0        0.12 ± 22%      -0.0        0.12 ± 15%      +0.0        0.14 ± 13%      -0.0        0.10 ± 16%      -0.0        0.13 ± 13%  perf-profile.children.cycles-pp.xas_load
-      0.04 ± 71%      +0.0        0.05 ± 52%      +0.0        0.04 ± 45%      -0.0        0.04 ± 72%      -0.0        0.04 ± 71%      +0.0        0.06 ± 19%      +0.0        0.06 ± 11%  perf-profile.children.cycles-pp.unregister_shrinker
-      0.08 ± 11%      +0.0        0.09 ± 21%      +0.0        0.09 ± 12%      -0.0        0.08 ± 47%      -0.0        0.08 ± 25%      -0.0        0.07 ± 48%      -0.0        0.06 ± 23%  perf-profile.children.cycles-pp.path_mount
-      0.05 ± 49%      +0.0        0.06 ± 50%      +0.0        0.07 ± 10%      +0.0        0.06 ± 52%      +0.0        0.06 ± 47%      +0.0        0.07 ± 15%      +0.0        0.07 ± 14%  perf-profile.children.cycles-pp.path_startswith
-      0.08 ± 14%      +0.0        0.09 ± 17%      +0.0        0.10 ± 27%      +0.0        0.10 ± 19%      +0.0        0.10 ±  9%      -0.0        0.08 ± 16%      +0.0        0.08 ± 17%  perf-profile.children.cycles-pp.llist_add_batch
-      0.04 ±101%      +0.0        0.04 ± 73%      +0.0        0.05 ± 45%      +0.0        0.06 ± 11%      -0.0        0.02 ±141%      +0.0        0.04 ± 70%      -0.0        0.02 ±142%  perf-profile.children.cycles-pp.__fs_parse
-      0.13 ± 23%      +0.0        0.14 ± 21%      +0.0        0.15 ± 14%      +0.0        0.15 ± 25%      +0.0        0.17 ± 10%      +0.0        0.14 ± 17%      +0.0        0.15 ± 19%  perf-profile.children.cycles-pp.allocate_slab
-      0.03 ±100%      +0.0        0.04 ± 72%      +0.0        0.07 ±  5%      +0.0        0.04 ± 71%      +0.0        0.05 ± 49%      +0.0        0.04 ± 71%      +0.0        0.05 ± 51%  perf-profile.children.cycles-pp.__x64_sys_readlink
-      0.04 ± 71%      +0.0        0.04 ± 71%      +0.1        0.09 ± 15%      +0.1        0.09 ± 22%      +0.0        0.08 ± 19%      +0.0        0.07 ± 51%      +0.0        0.07 ± 21%  perf-profile.children.cycles-pp.get_page_from_freelist
-      0.13 ± 20%      +0.0        0.14 ± 14%      +0.1        0.19 ± 13%      +0.1        0.19 ±  7%      +0.1        0.20 ±  8%      +0.1        0.18 ± 14%      +0.1        0.19 ± 11%  perf-profile.children.cycles-pp.d_lookup
-      0.01 ±223%      +0.0        0.02 ±142%      -0.0        0.00            +0.0        0.02 ±142%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00        perf-profile.children.cycles-pp.__calc_delta
-      0.01 ±223%      +0.0        0.02 ±141%      +0.0        0.01 ±223%      -0.0        0.00            +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00        perf-profile.children.cycles-pp.select_idle_sibling
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.pick_file
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.mnt_table_next_fs
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.tick_nohz_tick_stopped
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.__strndup
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.ihold
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.prioq_peek_by_index
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp._ordered_hashmap_ensure_allocated
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.dbus_message_get_reply_serial
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.unit_type_from_string
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.free_unref_page_list
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.set_cached_acl
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.from_kuid_munged
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.apparmor_path_unlink
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.tick_check_broadcast_expired
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.posix_acl_create
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.copy_msghdr_from_user
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00        perf-profile.children.cycles-pp.security_path_rmdir
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.sd_bus_message_open_container
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00        perf-profile.children.cycles-pp.rcu_sync_init
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.seq_release
-      0.01 ±223%      +0.0        0.02 ±141%      +0.0        0.01 ±223%      -0.0        0.00            +0.0        0.01 ±223%      +0.0        0.02 ±141%      +0.0        0.02 ±141%  perf-profile.children.cycles-pp.handle_dots
-      0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.kmalloc_reserve
-      0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%  perf-profile.children.cycles-pp.strdup@plt
-      0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.02 ±142%      +0.0        0.01 ±223%      +0.0        0.02 ±141%  perf-profile.children.cycles-pp.mnt_reset_fs
-      0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.02 ±146%      +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.d_same_name
-      0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.02 ±142%      +0.0        0.02 ±141%      +0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp._find_first_bit
-      0.00            +0.0        0.01 ±223%      +0.0        0.02 ±141%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.02 ±142%  perf-profile.children.cycles-pp.legitimize_links
-      0.00            +0.0        0.01 ±223%      +0.0        0.02 ±141%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.__skb_datagram_iter
-      0.00            +0.0        0.01 ±223%      +0.0        0.02 ±141%      +0.0        0.02 ±142%      +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.skb_copy_datagram_iter
-      0.00            +0.0        0.01 ±223%      +0.0        0.02 ± 99%      +0.0        0.03 ±100%      +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.02 ±142%  perf-profile.children.cycles-pp.ramfs_parse_param
-      0.04 ± 71%      +0.0        0.04 ± 83%      -0.0        0.00            -0.0        0.02 ±142%      +0.0        0.04 ± 75%      -0.0        0.03 ±102%      -0.0        0.01 ±223%  perf-profile.children.cycles-pp.simple_acl_create
-      0.02 ±141%      +0.0        0.02 ± 99%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.01 ±223%  perf-profile.children.cycles-pp.lru_add_fn
-      0.03 ±101%      +0.0        0.04 ± 72%      +0.0        0.03 ±102%      +0.0        0.03 ±101%      +0.0        0.05 ± 80%      +0.0        0.07 ± 16%      +0.0        0.05 ± 51%  perf-profile.children.cycles-pp.cpuacct_charge
-      0.02 ±141%      +0.0        0.02 ± 99%      +0.0        0.02 ± 99%      +0.0        0.02 ±142%      +0.0        0.04 ± 71%      -0.0        0.01 ±223%      -0.0        0.01 ±223%  perf-profile.children.cycles-pp.__socket
-      0.06 ± 49%      +0.0        0.07 ± 63%      +0.0        0.08 ± 22%      +0.0        0.09 ± 17%      +0.0        0.06 ± 51%      +0.0        0.08 ± 14%      +0.0        0.10 ± 25%  perf-profile.children.cycles-pp.file_free_rcu
-      0.10 ± 19%      +0.0        0.10 ± 17%      -0.0        0.07 ± 26%      +0.0        0.10 ± 19%      -0.0        0.06 ± 45%      -0.0        0.07 ± 20%      -0.0        0.07 ± 18%  perf-profile.children.cycles-pp.lru_add_drain_cpu
-      0.06 ±  9%      +0.0        0.07 ± 19%      +0.0        0.06 ± 19%      -0.0        0.05 ± 48%      -0.0        0.04 ±104%      -0.0        0.05 ± 48%      -0.0        0.06 ± 11%  perf-profile.children.cycles-pp.shmem_getattr
-      0.20 ± 14%      +0.0        0.21 ± 15%      -0.0        0.17 ± 19%      -0.0        0.18 ± 12%      -0.0        0.18 ±  9%      -0.0        0.16 ± 19%      -0.0        0.18 ± 16%  perf-profile.children.cycles-pp.__kmalloc
-      0.26 ± 13%      +0.0        0.27 ± 14%      -0.0        0.24 ± 12%      -0.0        0.26 ±  8%      +0.0        0.26 ± 11%      -0.0        0.24 ±  7%      -0.0        0.21 ± 16%  perf-profile.children.cycles-pp.kstrdup
-      0.22 ± 15%      +0.0        0.23 ± 18%      -0.0        0.22 ±  6%      -0.0        0.20 ± 13%      +0.0        0.22 ± 12%      -0.0        0.20 ± 17%      -0.0        0.21 ± 13%  perf-profile.children.cycles-pp.seq_escape_mem
-      0.28 ± 26%      +0.0        0.29 ± 18%      +0.0        0.30 ± 11%      -0.0        0.25 ± 19%      +0.0        0.29 ±  8%      -0.0        0.27 ± 12%      -0.0        0.28 ± 19%  perf-profile.children.cycles-pp.format_decode
-      0.47 ± 17%      +0.0        0.48 ± 15%      +0.0        0.51 ±  8%      -0.1        0.41 ±  9%      -0.0        0.44 ± 13%      -0.1        0.41 ±  6%      -0.0        0.46 ± 17%  perf-profile.children.cycles-pp.__do_sys_newstat
-      4.55 ±  6%      +0.0        4.56 ±  8%      -0.2        4.36 ±  3%      -0.4        4.15 ±  5%      -0.2        4.38 ±  7%      -0.4        4.13 ±  2%      -0.0        4.52 ± 12%  perf-profile.children.cycles-pp.__x64_sys_openat
-      0.37 ±  9%      +0.0        0.38 ±  8%      -0.0        0.35 ±  9%      -0.0        0.35 ±  6%      -0.0        0.33 ± 11%      -0.0        0.33 ± 11%      -0.0        0.35 ±  9%  perf-profile.children.cycles-pp.__kmem_cache_free
-      0.18 ± 12%      +0.0        0.19 ± 10%      -0.0        0.15 ±  8%      -0.0        0.14 ± 22%      -0.0        0.16 ±  6%      -0.0        0.17 ±  6%      -0.0        0.16 ±  6%  perf-profile.children.cycles-pp.wq_worker_sleeping
-      0.15 ± 19%      +0.0        0.16 ± 18%      -0.0        0.14 ± 12%      +0.0        0.16 ± 22%      +0.0        0.16 ± 23%      -0.0        0.14 ± 19%      -0.0        0.15 ± 14%  perf-profile.children.cycles-pp.task_work_add
-      0.04 ± 71%      +0.0        0.06 ± 48%      +0.0        0.05 ± 13%      +0.0        0.06 ± 47%      +0.0        0.05 ± 49%      +0.0        0.04 ± 74%      +0.0        0.06 ± 47%  perf-profile.children.cycles-pp.__bitmap_clear
-      0.10 ± 22%      +0.0        0.11 ± 10%      -0.0        0.09 ± 13%      -0.0        0.10 ± 19%      +0.0        0.10 ± 27%      -0.0        0.09 ± 17%      +0.0        0.10 ± 26%  perf-profile.children.cycles-pp.__srcu_read_lock
-      0.09 ± 21%      +0.0        0.10 ± 16%      +0.0        0.09 ± 17%      +0.0        0.10 ± 23%      +0.0        0.10 ± 17%      -0.0        0.09 ± 21%      +0.0        0.10 ± 27%  perf-profile.children.cycles-pp.shmem_show_options
-      0.09 ± 18%      +0.0        0.10 ± 19%      +0.0        0.11 ± 15%      +0.0        0.12 ± 22%      +0.0        0.13 ±  7%      +0.0        0.10 ± 15%      +0.0        0.11 ± 21%  perf-profile.children.cycles-pp.shuffle_freelist
-      0.06 ± 47%      +0.0        0.08 ± 18%      +0.0        0.11 ± 15%      +0.1        0.12 ± 24%      +0.0        0.11 ± 12%      +0.0        0.10 ± 27%      +0.0        0.09 ± 22%  perf-profile.children.cycles-pp.__alloc_pages
-      0.02 ±142%      +0.0        0.03 ±100%      -0.0        0.01 ±223%      +0.0        0.04 ± 74%      -0.0        0.01 ±223%      -0.0        0.02 ±141%      +0.0        0.03 ±103%  perf-profile.children.cycles-pp.enqueue_hrtimer
-      0.01 ±223%      +0.0        0.02 ±142%      -0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00        perf-profile.children.cycles-pp.from_kgid_munged
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.read_counters
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00        perf-profile.children.cycles-pp.__mod_lruvec_page_state
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.02 ±141%      +0.0        0.02 ±142%  perf-profile.children.cycles-pp.rb_next
-      0.04 ± 71%      +0.0        0.04 ± 47%      -0.0        0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.03 ±100%      -0.0        0.00            -0.0        0.01 ±223%  perf-profile.children.cycles-pp.inode_wait_for_writeback
-      0.02 ±141%      +0.0        0.03 ±100%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.01 ±223%  perf-profile.children.cycles-pp._IO_link_in
-      0.06 ± 48%      +0.0        0.07 ± 20%      +0.0        0.07 ± 15%      +0.0        0.06 ± 19%      +0.0        0.07 ± 24%      -0.0        0.06 ± 45%      +0.0        0.08 ± 23%  perf-profile.children.cycles-pp._hashmap_clear
-      0.17 ± 22%      +0.0        0.18 ± 13%      -0.0        0.15 ± 14%      -0.0        0.16 ± 11%      -0.0        0.17 ± 12%      -0.0        0.15 ± 10%      -0.0        0.16 ± 10%  perf-profile.children.cycles-pp.up_write
-      0.08 ± 20%      +0.0        0.09 ± 12%      -0.0        0.06 ± 50%      -0.0        0.08 ± 25%      -0.0        0.07 ± 47%      -0.0        0.08 ± 16%      -0.0        0.08 ± 24%  perf-profile.children.cycles-pp.update_irq_load_avg
-      0.20 ±  9%      +0.0        0.21 ± 10%      -0.0        0.20 ± 12%      -0.0        0.19 ± 13%      -0.0        0.16 ± 12%      -0.0        0.18 ± 18%      -0.0        0.19 ± 14%  perf-profile.children.cycles-pp._copy_from_user
-      0.20 ±  8%      +0.0        0.21 ±  5%      +0.0        0.21 ±  7%      +0.0        0.21 ±  4%      +0.0        0.22 ±  5%      -0.0        0.20 ± 17%      +0.0        0.20 ± 16%  perf-profile.children.cycles-pp.vfs_parse_fs_param
-      0.37 ±  6%      +0.0        0.38 ± 12%      +0.0        0.38 ± 11%      -0.0        0.32 ± 19%      -0.0        0.35 ± 11%      -0.0        0.35 ±  9%      -0.0        0.34 ± 12%  perf-profile.children.cycles-pp.entry_SYSRETQ_unsafe_stack
-      0.08 ± 12%      +0.0        0.09 ± 22%      +0.0        0.09 ± 29%      -0.0        0.07 ± 24%      +0.0        0.10 ± 15%      +0.0        0.08 ± 23%      -0.0        0.07 ± 21%  perf-profile.children.cycles-pp._atomic_dec_and_lock
-      0.24 ± 15%      +0.0        0.25 ±  8%      +0.0        0.25 ± 10%      +0.0        0.24 ± 14%      +0.0        0.26 ± 10%      +0.0        0.24 ±  8%      +0.0        0.25 ± 26%  perf-profile.children.cycles-pp.___sys_sendmsg
-      0.14 ± 16%      +0.0        0.15 ± 17%      +0.0        0.16 ± 16%      +0.0        0.16 ± 18%      +0.0        0.17 ± 22%      +0.0        0.15 ± 21%      -0.0        0.14 ± 17%  perf-profile.children.cycles-pp.unix_stream_read_generic
-      0.52 ± 13%      +0.0        0.52 ± 11%      +0.1        0.58 ±  7%      -0.0        0.49 ±  5%      +0.1        0.57 ±  6%      -0.0        0.50 ± 15%      +0.1        0.57 ± 21%  perf-profile.children.cycles-pp.path_compare
-      0.26 ±  7%      +0.0        0.28 ± 15%      -0.0        0.26 ±  9%      -0.0        0.23 ± 19%      -0.0        0.26 ±  9%      -0.0        0.24 ± 13%      -0.0        0.24 ± 19%  perf-profile.children.cycles-pp.__x64_sys_close
-      0.38 ± 10%      +0.0        0.40 ± 15%      -0.1        0.32 ±  9%      -0.0        0.36 ± 14%      -0.0        0.38 ±  6%      -0.0        0.36 ±  5%      -0.1        0.33 ± 17%  perf-profile.children.cycles-pp.d_make_root
-      0.14 ± 16%      +0.0        0.16 ± 12%      -0.0        0.13 ± 18%      +0.0        0.16 ± 14%      +0.0        0.16 ±  9%      -0.0        0.12 ± 27%      -0.0        0.12 ± 11%  perf-profile.children.cycles-pp.__list_lru_init
-      0.19 ± 16%      +0.0        0.20 ± 10%      -0.0        0.18 ± 16%      -0.0        0.18 ± 32%      -0.0        0.18 ± 14%      -0.0        0.16 ± 14%      -0.0        0.18 ± 22%  perf-profile.children.cycles-pp.perf_mux_hrtimer_handler
-      0.20 ± 16%      +0.0        0.21 ± 19%      -0.0        0.19 ±  8%      -0.0        0.18 ± 13%      +0.0        0.20 ± 15%      -0.0        0.18 ± 17%      -0.0        0.19 ± 11%  perf-profile.children.cycles-pp.string_escape_mem
-      0.11 ± 21%      +0.0        0.12 ± 29%      +0.0        0.12 ± 15%      +0.0        0.12 ± 12%      +0.0        0.13 ± 14%      +0.0        0.13 ± 16%      -0.0        0.11 ± 26%  perf-profile.children.cycles-pp.lockref_get
-      0.35 ± 15%      +0.0        0.36 ± 14%      +0.0        0.38 ±  9%      +0.0        0.36 ± 11%      -0.0        0.35 ±  5%      +0.0        0.37 ±  4%      +0.0        0.39 ± 19%  perf-profile.children.cycles-pp.cfree
-      0.04 ± 45%      +0.0        0.06 ± 51%      +0.0        0.05 ± 76%      +0.0        0.06 ±  6%      +0.0        0.07 ± 18%      +0.0        0.07 ± 16%      +0.0        0.08 ± 22%  perf-profile.children.cycles-pp.__d_instantiate
-      0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%  perf-profile.children.cycles-pp.radix_tree_delete_item
-      0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.02 ±141%      +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.stress_ramfs_umount
-      0.03 ±100%      +0.0        0.04 ± 72%      +0.0        0.05 ± 45%      +0.0        0.05 ± 47%      -0.0        0.02 ± 99%      +0.0        0.05 ± 48%      +0.0        0.05 ± 49%  perf-profile.children.cycles-pp.rb_erase
-      0.10 ± 13%      +0.0        0.11 ± 19%      +0.0        0.10 ± 16%      +0.0        0.10 ± 28%      +0.0        0.10 ± 25%      +0.0        0.11 ± 20%      +0.0        0.12 ± 30%  perf-profile.children.cycles-pp.shmem_put_super
-      0.08 ± 13%      +0.0        0.09 ± 18%      +0.0        0.09 ± 17%      -0.0        0.06 ± 53%      +0.0        0.10 ± 23%      +0.0        0.09 ± 19%      +0.0        0.09 ± 12%  perf-profile.children.cycles-pp.close_fd
-      0.07 ± 23%      +0.0        0.08 ± 16%      +0.0        0.09 ± 22%      -0.0        0.05 ± 51%      +0.0        0.08 ± 22%      +0.0        0.08 ± 15%      +0.0        0.08 ± 48%  perf-profile.children.cycles-pp.path_equal
-      0.06 ± 48%      +0.0        0.07 ± 14%      +0.0        0.08 ± 19%      -0.0        0.03 ±100%      +0.0        0.06 ± 19%      -0.0        0.04 ± 75%      +0.0        0.06 ± 73%  perf-profile.children.cycles-pp.unit_file_find_dropin_paths
-      0.08 ± 20%      +0.0        0.09 ± 25%      -0.0        0.06 ± 32%      -0.0        0.05 ± 76%      -0.0        0.07 ± 17%      -0.0        0.06 ± 46%      +0.0        0.08 ± 24%  perf-profile.children.cycles-pp.select_task_rq_fair
-      1.96 ±  7%      +0.0        1.97 ±  6%      -0.0        1.91 ± 13%      +0.0        1.98 ± 17%      -0.1        1.84 ±  4%      -0.2        1.79 ± 10%      -0.1        1.84 ± 13%  perf-profile.children.cycles-pp.__hrtimer_run_queues
-      0.35 ± 10%      +0.0        0.36 ± 14%      +0.1        0.41 ±  7%      +0.0        0.36 ± 10%      -0.0        0.34 ± 11%      -0.0        0.34 ± 13%      +0.0        0.38 ± 14%  perf-profile.children.cycles-pp.__flush_smp_call_function_queue
-      1.53 ±  4%      +0.0        1.54 ±  4%      +0.1        1.63 ±  6%      +0.1        1.67 ±  8%      +0.1        1.61 ±  3%      +0.1        1.62 ±  5%      +0.2        1.72 ±  6%  perf-profile.children.cycles-pp._find_next_bit
-      0.22 ± 67%      +0.0        0.24 ± 69%      -0.1        0.14 ± 38%      -0.0        0.18 ± 67%      -0.1        0.16 ± 81%      -0.0        0.18 ± 59%      -0.1        0.15 ± 70%  perf-profile.children.cycles-pp.tick_irq_enter
-      0.72 ±  9%      +0.0        0.74 ±  3%      -0.1        0.65 ±  3%      -0.1        0.64 ±  7%      -0.1        0.64 ±  9%      -0.1        0.59 ±  8%      -0.1        0.62 ±  4%  perf-profile.children.cycles-pp.rwsem_down_write_slowpath
-      0.29 ±  8%      +0.0        0.30 ±  9%      +0.0        0.29 ±  4%      +0.0        0.29 ±  6%      +0.0        0.30 ±  6%      -0.0        0.28 ± 13%      -0.0        0.28 ± 14%  perf-profile.children.cycles-pp.vfs_parse_fs_string
-      0.21 ± 18%      +0.0        0.23 ±  6%      +0.0        0.23 ± 12%      +0.0        0.22 ± 12%      +0.0        0.24 ± 10%      +0.0        0.22 ±  9%      +0.0        0.23 ± 26%  perf-profile.children.cycles-pp.sock_sendmsg
-      0.14 ± 16%      +0.0        0.16 ± 19%      +0.0        0.17 ± 14%      +0.0        0.16 ± 18%      +0.0        0.17 ± 22%      +0.0        0.16 ± 20%      -0.0        0.14 ± 17%  perf-profile.children.cycles-pp.unix_stream_recvmsg
-      0.07 ± 48%      +0.0        0.08 ± 34%      +0.0        0.08 ± 20%      -0.0        0.07 ± 46%      +0.0        0.09 ± 10%      +0.0        0.09 ± 21%      +0.0        0.10 ± 21%  perf-profile.children.cycles-pp.hashmap_replace
-      0.03 ±102%      +0.0        0.04 ± 72%      -0.0        0.03 ±100%      -0.0        0.02 ±141%      +0.0        0.03 ±102%      -0.0        0.02 ±141%      -0.0        0.01 ±223%  perf-profile.children.cycles-pp.hrtimer_next_event_without
-      0.06 ± 49%      +0.0        0.08 ± 20%      +0.0        0.06 ± 46%      -0.0        0.04 ± 73%      -0.0        0.06 ± 19%      -0.0        0.04 ± 75%      -0.0        0.03 ±101%  perf-profile.children.cycles-pp.update_cfs_group
-      0.05 ± 74%      +0.0        0.06 ± 46%      +0.0        0.07 ± 15%      +0.0        0.08 ± 35%      +0.0        0.08 ±  5%      +0.0        0.09 ± 15%      +0.0        0.09 ± 19%  perf-profile.children.cycles-pp.pcpu_next_fit_region
-      0.02 ± 99%      +0.0        0.04 ± 75%      -0.0        0.02 ±141%      -0.0        0.02 ±141%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.01 ±223%  perf-profile.children.cycles-pp.hrtimer_update_next_event
-      0.03 ±100%      +0.0        0.04 ± 72%      +0.0        0.04 ± 73%      -0.0        0.02 ±143%      +0.0        0.03 ±102%      -0.0        0.02 ± 99%      +0.0        0.03 ±102%  perf-profile.children.cycles-pp.deactivate_super
-      0.14 ± 20%      +0.0        0.16 ± 10%      -0.0        0.11 ± 18%      -0.0        0.12 ± 14%      -0.0        0.12 ± 18%      -0.0        0.12 ±  8%      -0.0        0.14 ± 16%  perf-profile.children.cycles-pp.memdup_user
-      0.21 ± 10%      +0.0        0.22 ± 17%      -0.0        0.19 ± 22%      +0.0        0.22 ± 26%      +0.0        0.22 ± 17%      -0.0        0.17 ± 19%      -0.0        0.18 ± 22%  perf-profile.children.cycles-pp.lapic_next_deadline
-      0.04 ± 72%      +0.0        0.06 ± 47%      -0.0        0.03 ±100%      +0.0        0.05 ± 45%      +0.0        0.05 ± 74%      +0.0        0.06 ± 20%      +0.0        0.06 ± 11%  perf-profile.children.cycles-pp.shmem_unlink
-      0.19 ± 23%      +0.0        0.20 ±  8%      -0.0        0.18 ± 15%      +0.0        0.19 ±  5%      +0.0        0.20 ± 15%      -0.0        0.19 ± 11%      -0.0        0.18 ± 13%  perf-profile.children.cycles-pp.fsnotify_grab_connector
-      0.04 ± 71%      +0.0        0.05 ± 46%      -0.0        0.03 ± 70%      -0.0        0.02 ±141%      -0.0        0.02 ±141%      -0.0        0.02 ±144%      -0.0        0.01 ±223%  perf-profile.children.cycles-pp.__hrtimer_next_event_base
-      0.14 ± 11%      +0.0        0.15 ± 12%      +0.0        0.14 ± 15%      +0.0        0.14 ± 19%      -0.0        0.14 ± 15%      +0.0        0.14 ±  9%      -0.0        0.11 ± 18%  perf-profile.children.cycles-pp.complete
-      0.09 ± 28%      +0.0        0.11 ± 11%      +0.0        0.10 ± 15%      -0.0        0.09 ± 20%      +0.0        0.10 ±  6%      +0.0        0.10 ± 19%      +0.0        0.10 ± 23%  perf-profile.children.cycles-pp.shmem_parse_options
-      0.09 ± 25%      +0.0        0.10 ± 36%      +0.0        0.09 ± 26%      -0.0        0.09 ± 36%      +0.0        0.10 ± 26%      -0.0        0.08 ± 16%      -0.0        0.07 ± 50%  perf-profile.children.cycles-pp.arch_scale_freq_tick
-      0.10 ± 28%      +0.0        0.12 ±  9%      +0.0        0.12 ± 13%      +0.0        0.11 ± 11%      +0.0        0.11 ± 11%      -0.0        0.10 ± 26%      +0.0        0.11 ± 10%  perf-profile.children.cycles-pp.sched_ttwu_pending
-      0.14 ± 10%      +0.0        0.15 ± 11%      -0.0        0.13 ± 13%      -0.0        0.12 ± 14%      -0.0        0.12 ± 24%      -0.0        0.12 ± 18%      -0.0        0.12 ± 19%  perf-profile.children.cycles-pp.rwsem_spin_on_owner
-      0.20 ± 16%      +0.0        0.22 ±  8%      +0.0        0.22 ± 10%      +0.0        0.21 ± 14%      +0.0        0.22 ± 12%      -0.0        0.20 ± 10%      +0.0        0.21 ± 26%  perf-profile.children.cycles-pp.unix_stream_sendmsg
-      0.30 ±  7%      +0.0        0.31 ± 21%      +0.0        0.33 ±  6%      -0.0        0.29 ± 14%      +0.0        0.30 ± 14%      -0.0        0.27 ± 11%      +0.0        0.33 ± 19%  perf-profile.children.cycles-pp.seq_path_root
-      0.25 ± 12%      +0.0        0.26 ± 18%      -0.0        0.22 ± 15%      -0.0        0.22 ±  6%      -0.0        0.20 ± 11%      -0.0        0.22 ±  8%      -0.0        0.22 ±  5%  perf-profile.children.cycles-pp.commit_tree
-      0.07 ± 25%      +0.0        0.08 ± 19%      -0.0        0.06 ± 14%      -0.0        0.06 ± 54%      -0.0        0.06 ± 23%      -0.0        0.05 ± 47%      -0.0        0.06 ± 47%  perf-profile.children.cycles-pp.put_fs_context
-      0.05 ± 53%      +0.0        0.07 ± 23%      -0.0        0.05 ± 47%      -0.0        0.04 ± 72%      -0.0        0.04 ± 77%      -0.0        0.04 ± 72%      +0.0        0.07 ± 18%  perf-profile.children.cycles-pp.d_set_mounted
-      0.01 ±223%      +0.0        0.02 ±149%      +0.0        0.02 ± 99%      +0.0        0.04 ± 79%      -0.0        0.00            -0.0        0.00            +0.0        0.04 ± 45%  perf-profile.children.cycles-pp.i_callback
-      0.90 ±  8%      +0.0        0.92 ±  2%      -0.1        0.83 ±  2%      -0.1        0.83 ±  3%      -0.1        0.81 ±  8%      -0.1        0.76 ± 10%      -0.1        0.81 ±  7%  perf-profile.children.cycles-pp.down_write
-      0.21 ± 14%      +0.0        0.22 ± 13%      -0.0        0.18 ± 17%      -0.0        0.19 ± 14%      -0.0        0.19 ± 15%      -0.0        0.18 ± 11%      +0.0        0.21 ± 11%  perf-profile.children.cycles-pp.ida_free
-      0.20 ± 13%      +0.0        0.21 ± 12%      -0.0        0.19 ± 11%      -0.0        0.18 ± 10%      +0.0        0.21 ± 10%      +0.0        0.20 ± 10%      -0.0        0.20 ±  4%  perf-profile.children.cycles-pp.d_alloc_parallel
-      0.12 ± 16%      +0.0        0.14 ± 12%      +0.0        0.12 ± 14%      -0.0        0.12 ± 19%      -0.0        0.12 ± 21%      +0.0        0.12 ± 12%      +0.0        0.12 ± 19%  perf-profile.children.cycles-pp.seq_puts
-      0.30 ± 11%      +0.0        0.31 ± 11%      +0.0        0.34 ± 15%      +0.0        0.30 ±  8%      +0.0        0.30 ± 15%      +0.0        0.31 ± 17%      -0.0        0.29 ± 25%  perf-profile.children.cycles-pp.vfs_readlink
-      2.17 ±  4%      +0.0        2.19 ± 11%      -0.1        2.06 ±  5%      -0.1        2.12 ±  8%      -0.1        2.09 ±  4%      -0.1        2.07 ±  8%      -0.1        2.08 ± 15%  perf-profile.children.cycles-pp.pick_next_task_fair
-      0.91 ± 11%      +0.0        0.93 ±  4%      -0.1        0.81 ± 11%      -0.1        0.82 ±  8%      -0.1        0.80 ±  6%      -0.1        0.78 ±  9%      -0.2        0.74 ± 15%  perf-profile.children.cycles-pp.ttwu_do_activate
-      0.21 ± 12%      +0.0        0.23 ± 13%      +0.0        0.23 ± 15%      +0.0        0.21 ±  9%      +0.0        0.22 ± 13%      +0.0        0.23 ± 17%      +0.0        0.22 ± 28%  perf-profile.children.cycles-pp.kernfs_iop_get_link
-      0.23 ± 64%      +0.0        0.25 ± 67%      -0.1        0.14 ± 31%      -0.0        0.18 ± 64%      -0.1        0.17 ± 77%      -0.0        0.19 ± 56%      -0.1        0.16 ± 71%  perf-profile.children.cycles-pp.irq_enter_rcu
-      0.26 ± 20%      +0.0        0.28 ± 19%      -0.0        0.26 ± 11%      -0.0        0.25 ± 20%      +0.0        0.28 ± 11%      -0.0        0.26 ±  6%      +0.0        0.28 ± 14%  perf-profile.children.cycles-pp.unit_name_is_valid
-      0.07 ± 21%      +0.0        0.09 ±  4%      +0.0        0.08 ± 25%      +0.0        0.08 ± 30%      +0.0        0.08 ± 25%      +0.0        0.08 ± 18%      -0.0        0.06 ± 63%  perf-profile.children.cycles-pp.sock_def_readable
-      0.13 ± 14%      +0.0        0.15 ± 18%      +0.0        0.14 ± 17%      +0.0        0.15 ± 16%      +0.0        0.13 ± 14%      +0.0        0.16 ±  8%      +0.0        0.14 ± 13%  perf-profile.children.cycles-pp.inode_init_always
-      0.07 ± 51%      +0.0        0.09 ± 32%      +0.0        0.08 ± 28%      -0.0        0.07 ± 16%      +0.0        0.08 ± 24%      +0.0        0.09 ± 19%      +0.0        0.10 ± 22%  perf-profile.children.cycles-pp.shmem_file_read_iter
-      0.10 ± 16%      +0.0        0.12 ± 11%      +0.0        0.12 ± 17%      +0.0        0.13 ± 20%      +0.0        0.13 ± 19%      +0.0        0.14 ± 10%      +0.0        0.14 ± 11%  perf-profile.children.cycles-pp.mutex_lock_killable
-      0.11 ±  9%      +0.0        0.12 ± 13%      +0.0        0.12 ± 12%      +0.0        0.14 ± 19%      +0.0        0.13 ±  6%      +0.0        0.14 ± 11%      +0.0        0.15 ± 15%  perf-profile.children.cycles-pp.pcpu_find_block_fit
-      0.15 ± 26%      +0.0        0.17 ± 15%      +0.0        0.17 ± 12%      +0.0        0.16 ± 14%      -0.0        0.15 ±  5%      +0.0        0.16 ± 21%      +0.0        0.15 ± 14%  perf-profile.children.cycles-pp._copy_to_user
-      0.15 ± 18%      +0.0        0.17 ± 16%      +0.0        0.17 ± 13%      +0.0        0.17 ± 19%      +0.0        0.18 ± 17%      +0.0        0.17 ± 19%      +0.0        0.15 ± 15%  perf-profile.children.cycles-pp.sock_recvmsg
-      0.00            +0.0        0.02 ±141%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.fd_install
-      0.00            +0.0        0.02 ±141%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.unhash_mnt
-      0.00            +0.0        0.02 ±141%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.security_sb_mount
-      0.00            +0.0        0.02 ±141%      +0.0        0.00            +0.0        0.02 ±141%      +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.02 ±142%  perf-profile.children.cycles-pp.timerqueue_add
-      0.00            +0.0        0.02 ±141%      +0.0        0.02 ±141%      +0.0        0.02 ±142%      +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.unix_stream_read_actor
-      0.00            +0.0        0.02 ±141%      +0.0        0.03 ±100%      +0.0        0.02 ±141%      +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.timerqueue_del
-      0.00            +0.0        0.02 ±141%      +0.1        0.06 ± 46%      +0.1        0.07 ± 26%      +0.1        0.06 ± 19%      +0.0        0.04 ± 73%      +0.0        0.04 ± 71%  perf-profile.children.cycles-pp.rmqueue
-      0.01 ±223%      +0.0        0.02 ± 99%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%  perf-profile.children.cycles-pp.idr_alloc_u32
-      0.01 ±223%      +0.0        0.02 ± 99%      +0.0        0.01 ±223%      +0.0        0.02 ±141%      +0.0        0.02 ±141%      -0.0        0.00            -0.0        0.00        perf-profile.children.cycles-pp.__sys_socket
-      0.01 ±223%      +0.0        0.02 ± 99%      +0.0        0.01 ±223%      +0.0        0.02 ±142%      +0.0        0.02 ± 99%      -0.0        0.00            +0.0        0.01 ±223%  perf-profile.children.cycles-pp.__x64_sys_socket
-      0.01 ±223%      +0.0        0.02 ± 99%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%  perf-profile.children.cycles-pp.idr_alloc
-      0.01 ±223%      +0.0        0.02 ± 99%      +0.0        0.02 ±141%      -0.0        0.00            +0.0        0.04 ± 71%      +0.0        0.02 ±141%      +0.0        0.04 ± 71%  perf-profile.children.cycles-pp.__poll
-      0.01 ±223%      +0.0        0.02 ± 99%      +0.0        0.02 ±142%      +0.0        0.02 ±141%      +0.0        0.02 ±142%      +0.0        0.02 ±141%      +0.0        0.01 ±223%  perf-profile.children.cycles-pp.get_partial_node
-      0.01 ±223%      +0.0        0.02 ± 99%      +0.0        0.03 ±100%      +0.0        0.03 ±100%      +0.0        0.02 ±142%      +0.0        0.02 ±142%      +0.0        0.02 ±144%  perf-profile.children.cycles-pp._dbus_type_reader_get_current_type
-      0.05 ± 50%      +0.0        0.07 ± 47%      +0.0        0.08 ± 31%      +0.0        0.07 ± 10%      +0.0        0.07 ± 20%      +0.0        0.06 ± 53%      +0.0        0.06 ± 50%  perf-profile.children.cycles-pp.__prealloc_shrinker
-      0.06 ± 48%      +0.0        0.07 ± 47%      +0.0        0.08 ± 29%      +0.0        0.07 ± 10%      +0.0        0.07 ± 19%      +0.0        0.06 ± 52%      +0.0        0.06 ± 50%  perf-profile.children.cycles-pp.prealloc_shrinker
-      0.24 ± 10%      +0.0        0.26 ± 14%      +0.0        0.28 ±  8%      -0.0        0.24 ± 16%      -0.0        0.23 ±  9%      +0.0        0.25 ± 14%      +0.0        0.26 ± 15%  perf-profile.children.cycles-pp.__sysvec_call_function_single
-      0.62 ± 12%      +0.0        0.63 ± 11%      -0.1        0.54 ±  5%      -0.0        0.57 ±  8%      -0.0        0.58 ±  9%      -0.1        0.53 ±  9%      -0.0        0.58 ± 10%  perf-profile.children.cycles-pp.step_into
-      0.26 ±  9%      +0.0        0.28 ± 14%      +0.0        0.26 ± 10%      -0.0        0.25 ± 18%      -0.0        0.25 ± 16%      -0.0        0.24 ±  7%      -0.0        0.24 ± 15%  perf-profile.children.cycles-pp.update_curr
-      0.03 ±100%      +0.0        0.05 ± 46%      -0.0        0.02 ±144%      +0.0        0.03 ±100%      -0.0        0.01 ±223%      -0.0        0.03 ±100%      -0.0        0.02 ±142%  perf-profile.children.cycles-pp.may_open
-      0.00            +0.0        0.02 ±142%      +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%  perf-profile.children.cycles-pp.atime_needs_update
-      0.01 ±223%      +0.0        0.03 ±102%      +0.0        0.02 ±142%      -0.0        0.01 ±223%      +0.0        0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.00        perf-profile.children.cycles-pp.___d_drop
-      0.00            +0.0        0.02 ±142%      +0.0        0.02 ±144%      +0.0        0.00            +0.0        0.03 ±102%      +0.0        0.02 ±142%      +0.0        0.01 ±223%  perf-profile.children.cycles-pp.balance_fair
-      0.00            +0.0        0.02 ±142%      +0.0        0.02 ±144%      +0.0        0.02 ±141%      +0.0        0.02 ±142%      +0.0        0.00            +0.0        0.03 ±100%  perf-profile.children.cycles-pp.strscpy
-      0.04 ± 71%      +0.0        0.06 ± 17%      +0.0        0.07 ±  8%      -0.0        0.04 ± 71%      +0.0        0.05 ± 49%      +0.0        0.06 ± 15%      +0.0        0.05 ± 75%  perf-profile.children.cycles-pp.readlink
-      0.14 ± 14%      +0.0        0.16 ± 13%      +0.0        0.16 ± 11%      -0.0        0.13 ± 19%      +0.0        0.16 ± 20%      -0.0        0.13 ± 14%      +0.0        0.16 ± 10%  perf-profile.children.cycles-pp.device_read_uevent_file
-      0.29 ± 12%      +0.0        0.31 ±  8%      -0.0        0.26 ± 14%      +0.0        0.30 ±  9%      -0.0        0.26 ± 12%      -0.0        0.25 ± 16%      -0.0        0.26 ± 14%  perf-profile.children.cycles-pp.generic_permission
-      0.27 ±  7%      +0.0        0.29 ± 16%      -0.0        0.24 ± 19%      -0.0        0.26 ± 24%      -0.0        0.26 ± 15%      -0.0        0.23 ± 17%      -0.0        0.23 ± 21%  perf-profile.children.cycles-pp.clockevents_program_event
-      0.11 ±  9%      +0.0        0.13 ± 21%      -0.0        0.11 ± 28%      -0.0        0.10 ± 25%      +0.0        0.12 ± 21%      -0.0        0.11 ± 24%      +0.0        0.12 ± 30%  perf-profile.children.cycles-pp.select_task_rq
-      0.06 ± 50%      +0.0        0.08 ± 27%      -0.0        0.04 ± 72%      -0.0        0.03 ±142%      -0.0        0.05 ± 74%      -0.0        0.06 ± 13%      +0.0        0.07 ± 21%  perf-profile.children.cycles-pp.current_time
-      0.00            +0.0        0.02 ±144%      +0.0        0.00            +0.0        0.00            +0.0        0.02 ±141%      +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.shmem_reserve_inode
-      0.03 ± 70%      +0.0        0.05 ± 48%      -0.0        0.02 ±141%      +0.0        0.04 ± 75%      -0.0        0.03 ±101%      +0.0        0.04 ± 75%      -0.0        0.03 ±102%  perf-profile.children.cycles-pp.apparmor_file_open
-      0.01 ±223%      +0.0        0.03 ±102%      +0.0        0.02 ±146%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.02 ±142%      +0.0        0.04 ± 71%  perf-profile.children.cycles-pp.strnlen_user
-      0.08 ± 49%      +0.0        0.10 ± 20%      +0.0        0.10 ± 21%      +0.0        0.08 ± 23%      +0.0        0.11 ± 28%      +0.0        0.09 ± 14%      +0.0        0.10 ± 16%  perf-profile.children.cycles-pp._IO_default_xsputn
-      0.31 ± 18%      +0.0        0.33 ± 15%      -0.0        0.30 ±  9%      -0.0        0.31 ± 18%      +0.0        0.32 ±  9%      -0.0        0.31 ± 12%      +0.0        0.31 ± 12%  perf-profile.children.cycles-pp.epoll_wait
-      0.16 ± 18%      +0.0        0.18 ± 17%      -0.0        0.15 ± 15%      -0.0        0.14 ± 21%      +0.0        0.16 ±  8%      -0.0        0.14 ±  4%      -0.0        0.14 ± 16%  perf-profile.children.cycles-pp.apparmor_capable
-      0.26 ±  9%      +0.0        0.28 ± 11%      +0.0        0.30 ± 14%      +0.0        0.29 ± 20%      +0.0        0.31 ± 10%      +0.0        0.28 ±  9%      +0.0        0.29 ± 15%  perf-profile.children.cycles-pp.___slab_alloc
-      0.66 ± 14%      +0.0        0.68 ± 11%      -0.0        0.62 ±  6%      +0.0        0.68 ±  7%      +0.0        0.70 ±  6%      +0.0        0.68 ±  5%      -0.0        0.66 ± 12%  perf-profile.children.cycles-pp.shmem_get_inode
-      2.71 ± 12%      +0.0        2.73 ± 11%      -0.1        2.64 ±  4%      -0.3        2.46 ±  9%      -0.1        2.65 ±  8%      -0.2        2.55            +0.0        2.75 ± 18%  perf-profile.children.cycles-pp.device_set_syspath
-      0.66 ±  9%      +0.0        0.68 ±  4%      -0.1        0.59 ±  5%      -0.1        0.58 ±  8%      -0.1        0.57 ±  8%      -0.1        0.54 ±  7%      -0.1        0.57 ±  4%  perf-profile.children.cycles-pp.rwsem_optimistic_spin
-      0.30 ±  8%      +0.0        0.32 ± 13%      +0.1        0.40 ±  6%      +0.1        0.35 ± 11%      +0.0        0.34 ± 11%      +0.1        0.36 ± 13%      +0.1        0.36 ± 11%  perf-profile.children.cycles-pp.sysvec_call_function_single
-      0.20 ± 15%      +0.0        0.22 ± 16%      -0.0        0.20 ±  9%      -0.0        0.19 ± 16%      +0.0        0.21 ± 11%      -0.0        0.18 ±  5%      -0.0        0.18 ±  9%  perf-profile.children.cycles-pp.ns_capable
-      0.12 ± 26%      +0.0        0.15 ± 14%      +0.0        0.13 ± 19%      -0.0        0.12 ± 11%      +0.0        0.13 ± 13%      +0.0        0.13 ± 11%      -0.0        0.12 ± 29%  perf-profile.children.cycles-pp.__libc_sendmsg
-      0.03 ±101%      +0.0        0.05 ± 49%      +0.0        0.06 ± 11%      +0.0        0.04 ± 75%      +0.0        0.03 ±106%      +0.0        0.06 ± 47%      -0.0        0.03 ±100%  perf-profile.children.cycles-pp._copy_to_iter
-      2.74 ±  6%      +0.0        2.76 ±  3%      -0.3        2.44 ±  5%      -0.1        2.61 ±  8%      -0.2        2.55 ±  6%      -0.2        2.53 ±  4%      -0.3        2.46 ±  4%  perf-profile.children.cycles-pp.propagate_mnt
-      0.21 ± 13%      +0.0        0.23 ± 17%      -0.0        0.20 ±  9%      -0.0        0.19 ± 15%      -0.0        0.20 ± 11%      -0.0        0.19 ±  3%      -0.0        0.19 ± 10%  perf-profile.children.cycles-pp.security_capable
-      0.18 ±  5%      +0.0        0.20 ± 24%      +0.0        0.18 ± 20%      +0.0        0.18 ± 17%      -0.0        0.16 ± 15%      -0.0        0.14 ± 19%      -0.0        0.16 ± 19%  perf-profile.children.cycles-pp.cpu_util
-      0.46 ± 14%      +0.0        0.48 ± 15%      +0.0        0.48 ± 11%      -0.0        0.44 ± 11%      +0.0        0.48 ±  7%      +0.0        0.50 ±  4%      +0.1        0.52 ± 17%  perf-profile.children.cycles-pp.rdrand
-      0.05 ± 45%      +0.0        0.08 ± 27%      +0.0        0.07 ± 16%      +0.0        0.05 ± 48%      +0.0        0.07 ± 23%      +0.0        0.08 ± 24%      +0.0        0.08 ± 49%  perf-profile.children.cycles-pp.d_instantiate
-      0.05 ± 75%      +0.0        0.07 ± 21%      -0.0        0.03 ±101%      -0.0        0.04 ± 72%      +0.0        0.05 ± 48%      -0.0        0.04 ± 73%      +0.0        0.06 ± 50%  perf-profile.children.cycles-pp.__libc_calloc
-      0.01 ±223%      +0.0        0.03 ± 70%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%      +0.0        0.02 ±141%      +0.0        0.03 ±100%  perf-profile.children.cycles-pp.should_failslab
-      0.04 ± 71%      +0.0        0.06 ±  9%      +0.0        0.05 ± 46%      +0.0        0.05 ± 46%      -0.0        0.04 ±105%      -0.0        0.03 ±102%      +0.0        0.06 ± 46%  perf-profile.children.cycles-pp.sync_regs
-      0.18 ± 19%      +0.0        0.21 ±  3%      -0.0        0.15 ± 10%      -0.0        0.16 ± 17%      -0.0        0.16 ± 14%      -0.0        0.16 ±  3%      +0.0        0.20 ± 13%  perf-profile.children.cycles-pp.strndup_user
-      0.25 ± 16%      +0.0        0.28 ± 14%      -0.0        0.24 ±  9%      +0.0        0.26 ± 24%      +0.0        0.25 ±  8%      +0.0        0.26 ±  9%      +0.0        0.26 ± 13%  perf-profile.children.cycles-pp.do_epoll_wait
-      3.06 ± 12%      +0.0        3.08 ± 11%      -0.1        2.99 ±  3%      -0.3        2.78 ± 10%      -0.1        3.00 ±  8%      -0.2        2.88 ±  2%      +0.1        3.13 ± 18%  perf-profile.children.cycles-pp.sd_device_new_from_syspath
-      1.51 ±  9%      +0.0        1.53 ±  6%      +0.5        1.99 ±  3%      +0.6        2.09 ±  6%      +0.6        2.16 ±  5%      +0.6        2.14 ±  3%      +0.6        2.07 ±  7%  perf-profile.children.cycles-pp.memset_orig
-      0.52 ± 10%      +0.0        0.54 ±  5%      -0.1        0.44 ±  7%      -0.1        0.47 ±  8%      -0.1        0.47 ± 12%      -0.1        0.43 ± 10%      -0.0        0.47 ±  4%  perf-profile.children.cycles-pp.do_lock_mount
-      0.17 ± 18%      +0.0        0.20 ± 14%      +0.0        0.19 ± 15%      +0.0        0.19 ± 21%      +0.0        0.20 ± 15%      +0.0        0.19 ± 17%      +0.0        0.18 ± 13%  perf-profile.children.cycles-pp.___sys_recvmsg
-      0.23 ± 22%      +0.0        0.25 ± 11%      -0.0        0.22 ± 12%      +0.0        0.23 ± 12%      +0.0        0.23 ± 14%      -0.0        0.22 ± 12%      -0.0        0.21 ±  9%  perf-profile.children.cycles-pp.fsnotify_destroy_marks
-      0.15 ± 17%      +0.0        0.18 ± 14%      +0.0        0.18 ± 15%      +0.0        0.18 ± 22%      +0.0        0.18 ± 17%      +0.0        0.17 ± 22%      +0.0        0.16 ± 13%  perf-profile.children.cycles-pp.____sys_recvmsg
-      0.00            +0.0        0.02 ± 99%      +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.02 ±141%      +0.0        0.02 ±141%      +0.0        0.01 ±223%  perf-profile.children.cycles-pp.fsnotify_sb_delete
-      0.00            +0.0        0.02 ± 99%      +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.children.cycles-pp.__open64_nocancel
-      0.14 ± 15%      +0.0        0.17 ± 18%      +0.0        0.16 ±  4%      +0.0        0.14 ± 24%      +0.0        0.17 ± 11%      -0.0        0.14 ± 22%      +0.0        0.16 ± 11%  perf-profile.children.cycles-pp.pcpu_block_refresh_hint
-      0.24 ± 17%      +0.0        0.26 ± 17%      -0.0        0.23 ±  9%      +0.0        0.24 ± 21%      +0.0        0.24 ±  9%      +0.0        0.24 ± 12%      +0.0        0.24 ± 15%  perf-profile.children.cycles-pp.ep_poll
-      0.18 ± 17%      +0.0        0.20 ± 11%      +0.0        0.20 ± 14%      +0.0        0.20 ± 21%      +0.0        0.21 ± 14%      +0.0        0.20 ± 17%      +0.0        0.18 ± 12%  perf-profile.children.cycles-pp.__sys_recvmsg
-      0.01 ±223%      +0.0        0.04 ± 71%      -0.0        0.00            +0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.00            +0.0        0.02 ±144%  perf-profile.children.cycles-pp.touch_atime
-      0.44 ±  5%      +0.0        0.46 ±  9%      -0.0        0.40 ±  6%      -0.0        0.43 ± 10%      -0.0        0.39 ± 12%      -0.0        0.39 ± 14%      -0.0        0.39 ± 11%  perf-profile.children.cycles-pp.mod_objcg_state
-      0.36 ±  8%      +0.0        0.38 ± 15%      -0.0        0.33 ±  7%      +0.0        0.36 ± 15%      -0.0        0.34 ± 19%      +0.0        0.36 ±  8%      -0.0        0.35 ± 12%  perf-profile.children.cycles-pp.shmem_mknod
-      0.01 ±223%      +0.0        0.04 ± 71%      +0.0        0.01 ±223%      +0.0        0.02 ±142%      +0.0        0.03 ±100%      +0.0        0.01 ±223%      +0.0        0.01 ±223%  perf-profile.children.cycles-pp.ep_autoremove_wake_function
-      0.26 ± 17%      +0.0        0.28 ± 15%      -0.0        0.25 ±  8%      +0.0        0.26 ± 23%      +0.0        0.26 ±  6%      +0.0        0.26 ±  9%      +0.0        0.26 ± 13%  perf-profile.children.cycles-pp.__x64_sys_epoll_wait
-      0.14 ± 18%      +0.0        0.17 ± 18%      +0.0        0.14 ± 12%      +0.0        0.16 ± 25%      +0.0        0.15 ±  7%      +0.0        0.15 ± 13%      +0.0        0.16 ± 17%  perf-profile.children.cycles-pp.schedule_hrtimeout_range_clock
-      0.03 ±100%      +0.0        0.06 ±  9%      -0.0        0.01 ±223%      +0.0        0.03 ± 70%      -0.0        0.02 ±142%      +0.0        0.03 ±100%      +0.0        0.03 ±102%  perf-profile.children.cycles-pp.__put_mountpoint
-      0.10 ± 19%      +0.0        0.13 ± 17%      +0.0        0.11 ± 24%      -0.0        0.09 ± 18%      +0.0        0.12 ± 14%      +0.0        0.10 ± 19%      -0.0        0.10 ± 21%  perf-profile.children.cycles-pp.iput
-      0.31 ± 21%      +0.0        0.34 ±  7%      +0.0        0.32 ±  8%      -0.0        0.30 ±  8%      -0.0        0.30 ± 11%      -0.0        0.31 ±  5%      +0.0        0.33 ±  6%  perf-profile.children.cycles-pp.cp_new_stat
-      0.06 ± 47%      +0.0        0.09 ± 15%      +0.0        0.07 ± 46%      +0.0        0.08 ± 30%      +0.0        0.07 ± 45%      +0.0        0.09 ± 15%      +0.0        0.08 ± 47%  perf-profile.children.cycles-pp.__pthread_mutex_lock
-      0.11 ± 25%      +0.0        0.14 ± 23%      +0.0        0.13 ±  6%      +0.0        0.12 ± 23%      +0.0        0.11 ± 14%      +0.0        0.14 ± 12%      +0.0        0.13 ± 16%  perf-profile.children.cycles-pp.put_prev_entity
-      0.47 ±  7%      +0.0        0.50 ± 12%      -0.1        0.39 ±  5%      -0.1        0.40 ± 12%      -0.0        0.44 ± 12%      -0.0        0.45 ±  8%      -0.0        0.42 ±  8%  perf-profile.children.cycles-pp.__queue_work
-      0.72 ±  8%      +0.0        0.74 ± 12%      +0.0        0.74 ±  8%      -0.0        0.70 ±  7%      -0.0        0.71 ± 11%      -0.0        0.70 ± 13%      +0.0        0.75 ± 20%  perf-profile.children.cycles-pp.readlinkat
-      3.19 ±  5%      +0.0        3.22 ±  3%      -0.3        2.88 ±  6%      -0.2        3.02 ±  8%      -0.3        2.94 ±  5%      -0.3        2.92 ±  4%      -0.3        2.85 ±  5%  perf-profile.children.cycles-pp.attach_recursive_mnt
-      0.10 ± 22%      +0.0        0.13 ± 14%      +0.0        0.11 ± 10%      +0.0        0.11 ± 41%      +0.0        0.10 ± 18%      -0.0        0.10 ± 21%      +0.0        0.11 ± 18%  perf-profile.children.cycles-pp.recvmsg
-      0.15 ± 16%      +0.0        0.18 ±  9%      +0.0        0.17 ± 13%      +0.0        0.18 ± 19%      +0.0        0.16 ± 19%      +0.0        0.17 ± 19%      +0.0        0.19 ± 13%  perf-profile.children.cycles-pp.get_mountpoint
-      2.65 ±  6%      +0.0        2.68 ±  3%      -0.3        2.38 ±  5%      -0.1        2.54 ±  8%      -0.2        2.49 ±  5%      -0.2        2.46 ±  3%      -0.3        2.40 ±  4%  perf-profile.children.cycles-pp.propagate_one
-      0.40 ± 15%      +0.0        0.44 ± 11%      +0.0        0.45 ± 16%      -0.1        0.35 ± 12%      +0.0        0.44 ± 16%      +0.0        0.41 ±  8%      +0.1        0.47 ± 15%  perf-profile.children.cycles-pp.siphash24_finalize
-      0.21 ± 10%      +0.0        0.24 ± 10%      +0.0        0.23 ± 10%      -0.0        0.18 ± 20%      +0.0        0.22 ±  8%      -0.0        0.19 ±  9%      +0.0        0.23 ± 11%  perf-profile.children.cycles-pp.device_properties_prepare
-      0.00            +0.0        0.03 ± 70%      +0.0        0.02 ±141%      +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00        perf-profile.children.cycles-pp.__x64_sys_execve
-      0.00            +0.0        0.03 ± 70%      +0.0        0.02 ±141%      +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00        perf-profile.children.cycles-pp.do_execveat_common
-      0.00            +0.0        0.03 ± 70%      +0.0        0.02 ±141%      +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00        perf-profile.children.cycles-pp.execve
-      0.02 ±141%      +0.0        0.05 ± 47%      +0.0        0.04 ± 72%      +0.0        0.03 ±100%      +0.0        0.02 ±143%      +0.0        0.06 ± 47%      +0.0        0.02 ±141%  perf-profile.children.cycles-pp.copyout
-      0.68 ± 14%      +0.0        0.72 ±  4%      -0.1        0.63 ± 10%      -0.1        0.63 ±  7%      -0.1        0.62 ±  7%      -0.1        0.62 ±  9%      -0.1        0.56 ± 15%  perf-profile.children.cycles-pp.enqueue_task_fair
-      1.59 ±  4%      +0.0        1.62 ± 14%      -0.0        1.55 ±  5%      +0.0        1.62 ± 12%      +0.0        1.60 ±  5%      -0.1        1.49 ± 12%      -0.1        1.53 ± 18%  perf-profile.children.cycles-pp.newidle_balance
-      0.13 ± 12%      +0.0        0.17 ± 20%      +0.0        0.15 ± 16%      +0.0        0.14 ± 20%      +0.0        0.14 ± 21%      -0.0        0.13 ± 16%      +0.0        0.17 ± 24%  perf-profile.children.cycles-pp.mangle_path
-      2.38 ±  7%      +0.0        2.42 ±  7%      -0.1        2.29 ± 14%      -0.0        2.36 ± 16%      -0.2        2.21 ±  4%      -0.2        2.16 ± 10%      -0.2        2.19 ± 12%  perf-profile.children.cycles-pp.hrtimer_interrupt
-      1.98 ± 10%      +0.0        2.02 ± 11%      -0.0        1.95 ±  5%      -0.2        1.79 ±  9%      -0.0        1.97 ± 10%      -0.1        1.86 ±  2%      +0.1        2.04 ± 19%  perf-profile.children.cycles-pp.openat64
-      2.40 ±  7%      +0.0        2.44 ±  7%      -0.1        2.31 ± 14%      -0.0        2.38 ± 16%      -0.2        2.23 ±  4%      -0.2        2.17 ± 10%      -0.2        2.21 ± 12%  perf-profile.children.cycles-pp.__sysvec_apic_timer_interrupt
-      0.87 ±  5%      +0.0        0.90 ±  5%      -0.0        0.82 ±  2%      -0.0        0.83 ±  7%      -0.0        0.85 ±  9%      -0.1        0.82 ±  4%      +0.0        0.88 ±  9%  perf-profile.children.cycles-pp.open_last_lookups
-      0.03 ±100%      +0.0        0.06 ± 28%      +0.0        0.04 ± 73%      +0.0        0.03 ± 70%      -0.0        0.02 ±141%      +0.0        0.06 ± 19%      +0.0        0.03 ±101%  perf-profile.children.cycles-pp.kmemdup_nul
-      0.68 ±  7%      +0.0        0.71 ± 12%      +0.0        0.71 ±  8%      -0.0        0.66 ±  8%      +0.0        0.68 ± 10%      -0.0        0.66 ± 13%      +0.0        0.71 ± 20%  perf-profile.children.cycles-pp.__x64_sys_readlinkat
-      1.47 ±  4%      +0.0        1.51 ± 15%      -0.0        1.43 ±  8%      +0.0        1.51 ± 13%      -0.0        1.44 ±  3%      -0.1        1.35 ± 12%      -0.1        1.38 ± 19%  perf-profile.children.cycles-pp.load_balance
-      2.59 ±  6%      +0.0        2.62 ±  4%      -0.3        2.32 ±  5%      -0.1        2.46 ±  8%      -0.2        2.43 ±  5%      -0.2        2.40 ±  3%      -0.2        2.34 ±  4%  perf-profile.children.cycles-pp.copy_tree
-      1.51 ±  3%      +0.0        1.55 ± 13%      -0.1        1.38 ±  2%      +0.0        1.52 ± 14%      -0.1        1.44 ±  5%      -0.2        1.32 ± 12%      -0.1        1.43 ± 24%  perf-profile.children.cycles-pp.hrtimer_nanosleep
-      1.52 ±  3%      +0.0        1.56 ± 13%      -0.1        1.39 ±  3%      +0.0        1.53 ± 14%      -0.1        1.45 ±  6%      -0.2        1.33 ± 12%      -0.1        1.44 ± 23%  perf-profile.children.cycles-pp.common_nsleep
-      0.50 ±  6%      +0.0        0.54 ± 11%      +0.0        0.54 ±  5%      +0.0        0.54 ±  6%      +0.0        0.54 ±  5%      +0.0        0.53 ± 12%      +0.0        0.51 ±  7%  perf-profile.children.cycles-pp.kmalloc_trace
-      0.01 ±223%      +0.0        0.05 ± 46%      +0.0        0.04 ± 72%      +0.0        0.04 ± 73%      +0.0        0.03 ±101%      +0.0        0.04 ± 45%      +0.0        0.04 ± 71%  perf-profile.children.cycles-pp.seq_dentry
-      0.06 ± 54%      +0.0        0.10 ± 24%      +0.0        0.08 ± 16%      +0.0        0.08 ± 34%      +0.0        0.06 ± 51%      +0.0        0.06 ± 48%      +0.0        0.06 ± 52%  perf-profile.children.cycles-pp.stress_ramfs_child
-      0.66 ±  9%      +0.0        0.70 ±  6%      -0.1        0.58 ±  5%      -0.0        0.62 ±  3%      -0.0        0.66 ±  5%      -0.0        0.64 ±  8%      -0.0        0.65 ± 12%  perf-profile.children.cycles-pp.vfs_create_mount
-      5.01 ±  3%      +0.0        5.05 ±  5%      -0.6        4.39 ±  8%      -0.5        4.49 ± 12%      -0.8        4.19            -0.9        4.09 ±  8%      -0.8        4.26 ±  9%  perf-profile.children.cycles-pp.asm_sysvec_apic_timer_interrupt
-      0.70 ±  7%      +0.0        0.74 ±  6%      -0.0        0.68 ±  3%      -0.0        0.66 ±  8%      +0.0        0.70 ± 10%      -0.0        0.68 ±  4%      -0.0        0.70 ± 10%  perf-profile.children.cycles-pp.lookup_open
-      0.19 ± 13%      +0.0        0.23 ± 12%      +0.0        0.20 ± 20%      +0.0        0.19 ± 19%      +0.0        0.20 ± 16%      -0.0        0.18 ± 10%      +0.0        0.20 ± 11%  perf-profile.children.cycles-pp.strchr
-      2.56 ±  6%      +0.0        2.60 ±  4%      -0.3        2.30 ±  5%      -0.1        2.44 ±  8%      -0.2        2.41 ±  5%      -0.2        2.38 ±  3%      -0.2        2.33 ±  4%  perf-profile.children.cycles-pp.clone_mnt
-      1.30 ±  4%      +0.0        1.34 ± 16%      -0.1        1.22 ±  8%      +0.0        1.31 ± 13%      -0.0        1.26 ±  4%      -0.1        1.18 ± 13%      -0.1        1.21 ± 19%  perf-profile.children.cycles-pp.update_sd_lb_stats
-      0.16 ± 16%      +0.0        0.20 ± 10%      +0.0        0.18 ± 12%      +0.0        0.18 ± 20%      +0.0        0.16 ± 12%      +0.0        0.16 ± 19%      +0.0        0.18 ± 26%  perf-profile.children.cycles-pp.hrtimer_wakeup
-      1.50 ±  8%      +0.0        1.54 ±  4%      -0.0        1.45 ±  5%      -0.2        1.31 ±  6%      -0.1        1.42 ±  3%      -0.2        1.32 ±  5%      -0.1        1.40 ± 12%  perf-profile.children.cycles-pp.__close
-      0.72 ±  7%      +0.0        0.76 ± 12%      +0.1        0.77 ±  7%      -0.0        0.70 ±  6%      +0.0        0.73 ± 10%      -0.0        0.71 ± 12%      +0.0        0.76 ± 20%  perf-profile.children.cycles-pp.do_readlinkat
-      0.27 ± 10%      +0.0        0.31 ± 15%      +0.0        0.27 ±  8%      +0.0        0.28 ± 14%      +0.0        0.27 ±  9%      -0.0        0.26            +0.0        0.27 ± 16%  perf-profile.children.cycles-pp.lockref_put_return
-      0.70 ± 12%      +0.0        0.75 ±  4%      -0.1        0.65 ± 11%      -0.1        0.66 ±  7%      -0.1        0.64 ±  8%      -0.1        0.65 ±  9%      -0.1        0.60 ± 14%  perf-profile.children.cycles-pp.activate_task
-      0.55 ±  6%      +0.0        0.60 ± 10%      -0.0        0.55 ±  9%      -0.0        0.53 ±  8%      +0.0        0.59 ± 12%      -0.0        0.53 ±  9%      +0.0        0.57 ± 13%  perf-profile.children.cycles-pp.__entry_text_start
-      1.17 ±  5%      +0.0        1.22 ± 17%      -0.1        1.10 ±  9%      +0.0        1.19 ± 14%      -0.0        1.15 ±  3%      -0.1        1.07 ± 14%      -0.1        1.10 ± 19%  perf-profile.children.cycles-pp.update_sg_lb_stats
-      1.48 ±  2%      +0.0        1.52 ± 14%      -0.1        1.36 ±  3%      +0.0        1.49 ± 14%      -0.1        1.42 ±  5%      -0.2        1.30 ± 12%      -0.1        1.40 ± 23%  perf-profile.children.cycles-pp.do_nanosleep
-      0.34 ± 11%      +0.0        0.39 ± 12%      -0.0        0.32 ±  9%      -0.0        0.34 ±  8%      -0.0        0.34 ±  9%      -0.0        0.33 ±  5%      -0.0        0.32 ± 11%  perf-profile.children.cycles-pp.__kmalloc_node_track_caller
-      2.80 ±  5%      +0.0        2.85 ±  4%      -0.4        2.44 ±  5%      -0.2        2.63 ±  6%      -0.2        2.63 ±  4%      -0.2        2.58 ±  4%      -0.2        2.58 ±  5%  perf-profile.children.cycles-pp.alloc_vfsmnt
-      1.32 ±  5%      +0.1        1.37 ± 16%      -0.1        1.25 ±  8%      +0.0        1.34 ± 13%      -0.0        1.29 ±  4%      -0.1        1.20 ± 13%      -0.1        1.24 ± 18%  perf-profile.children.cycles-pp.find_busiest_group
-      1.55 ±  3%      +0.1        1.60 ± 13%      -0.1        1.42 ±  3%      +0.0        1.56 ± 15%      -0.1        1.49 ±  5%      -0.2        1.35 ± 12%      -0.1        1.46 ± 23%  perf-profile.children.cycles-pp.__x64_sys_clock_nanosleep
-      0.52 ±  6%      +0.1        0.58 ± 12%      -0.1        0.45 ±  4%      -0.0        0.47 ± 14%      -0.0        0.50 ± 13%      -0.0        0.52 ±  7%      -0.0        0.48 ± 11%  perf-profile.children.cycles-pp.queue_work_on
-      3.68 ±  6%      +0.1        3.73 ±  9%      -0.1        3.56 ±  4%      -0.3        3.34 ±  5%      -0.1        3.56 ±  7%      -0.3        3.34 ±  3%      +0.0        3.68 ± 12%  perf-profile.children.cycles-pp.path_openat
-      3.76 ±  6%      +0.1        3.82 ±  8%      -0.1        3.63 ±  4%      -0.3        3.43 ±  5%      -0.1        3.65 ±  7%      -0.3        3.42 ±  3%      -0.0        3.75 ± 12%  perf-profile.children.cycles-pp.do_filp_open
-      1.66 ±  2%      +0.1        1.72 ± 14%      -0.1        1.52 ±  2%      +0.0        1.69 ± 15%      -0.0        1.62 ±  4%      -0.2        1.48 ± 11%      -0.1        1.58 ± 23%  perf-profile.children.cycles-pp.clock_nanosleep
-      0.97 ±  6%      +0.1        1.05 ±  6%      -0.0        0.96 ±  5%      -0.0        0.97 ±  4%      +0.0        0.97 ±  4%      -0.0        0.96 ±  9%      -0.0        0.94 ±  8%  perf-profile.children.cycles-pp.__kmem_cache_alloc_node
-      0.59 ± 23%      +0.1        0.71 ± 14%      -0.0        0.56 ± 10%      +0.0        0.61 ± 11%      -0.1        0.52 ±  7%      +0.0        0.61 ± 13%      +0.0        0.62 ± 23%  perf-profile.children.cycles-pp.intel_idle_irq
-     30.66 ±  6%      +0.4       31.08 ±  6%      +0.6       31.29 ±  5%      +0.1       30.73 ±  8%      -0.5       30.17 ±  7%      -0.1       30.52 ±  4%      -1.5       29.11 ±  6%  perf-profile.children.cycles-pp.start_secondary
-      6.34 ± 31%      +0.8        7.18 ± 23%      -1.4        4.98 ± 27%      -0.3        6.06 ± 23%      -0.5        5.84 ± 24%      +0.8        7.13 ± 22%      +0.3        6.63 ± 36%  perf-profile.children.cycles-pp.x86_64_start_kernel
-      6.34 ± 31%      +0.8        7.18 ± 23%      -1.4        4.98 ± 27%      -0.3        6.06 ± 23%      -0.5        5.84 ± 24%      +0.8        7.13 ± 22%      +0.3        6.63 ± 36%  perf-profile.children.cycles-pp.x86_64_start_reservations
-      6.34 ± 31%      +0.8        7.18 ± 23%      -1.4        4.98 ± 27%      -0.3        6.06 ± 23%      -0.5        5.84 ± 24%      +0.8        7.13 ± 22%      +0.3        6.63 ± 36%  perf-profile.children.cycles-pp.start_kernel
-      6.34 ± 31%      +0.8        7.18 ± 23%      -1.4        4.98 ± 27%      -0.3        6.06 ± 23%      -0.5        5.84 ± 24%      +0.8        7.13 ± 22%      +0.3        6.63 ± 36%  perf-profile.children.cycles-pp.arch_call_rest_init
-      6.34 ± 31%      +0.8        7.18 ± 23%      -1.4        4.98 ± 27%      -0.3        6.06 ± 23%      -0.5        5.84 ± 24%      +0.8        7.13 ± 22%      +0.3        6.63 ± 36%  perf-profile.children.cycles-pp.rest_init
-     36.99 ±  9%      +1.3       38.25 ±  7%      -0.7       36.26 ±  3%      -0.2       36.79 ±  5%      -1.0       36.00 ±  7%      +0.6       37.64 ±  2%      -1.3       35.74 ±  8%  perf-profile.children.cycles-pp.do_idle
-     37.00 ±  9%      +1.3       38.26 ±  7%      -0.7       36.27 ±  3%      -0.2       36.80 ±  5%      -1.0       36.01 ±  7%      +0.7       37.65 ±  2%      -1.3       35.74 ±  8%  perf-profile.children.cycles-pp.secondary_startup_64_no_verify
-     37.00 ±  9%      +1.3       38.26 ±  7%      -0.7       36.27 ±  3%      -0.2       36.80 ±  5%      -1.0       36.01 ±  7%      +0.7       37.65 ±  2%      -1.3       35.74 ±  8%  perf-profile.children.cycles-pp.cpu_startup_entry
-     36.03 ±  9%      +1.3       37.35 ±  7%      -0.7       35.38 ±  3%      -0.0       36.01 ±  5%      -0.8       35.20 ±  7%      +0.8       36.86 ±  2%      -1.1       34.95 ±  9%  perf-profile.children.cycles-pp.cpuidle_idle_call
-     29.89 ± 11%      +1.3       31.23 ±  8%      -0.2       29.70 ±  5%      +0.4       30.26 ±  6%      -0.2       29.74 ±  8%      +1.7       31.55 ±  3%      -0.4       29.53 ± 10%  perf-profile.children.cycles-pp.intel_idle
-     35.30 ± 10%      +1.3       36.64 ±  7%      -0.6       34.74 ±  3%      +0.1       35.36 ±  5%      -0.7       34.56 ±  8%      +0.9       36.22 ±  2%      -1.0       34.33 ±  9%  perf-profile.children.cycles-pp.cpuidle_enter
-     35.29 ± 10%      +1.4       36.64 ±  7%      -0.6       34.73 ±  3%      +0.1       35.35 ±  5%      -0.7       34.56 ±  8%      +0.9       36.22 ±  2%      -1.0       34.32 ±  9%  perf-profile.children.cycles-pp.cpuidle_enter_state
-      0.77 ± 16%      -0.1        0.64 ± 10%      -0.0        0.74 ± 10%      -0.1        0.66 ± 25%      -0.1        0.72 ± 11%      -0.2        0.60 ± 14%      -0.2        0.60 ± 38%  perf-profile.self.cycles-pp.poll_idle
-      1.17 ±  4%      -0.1        1.07 ±  5%      -0.2        0.99 ±  4%      -0.1        1.02 ±  6%      -0.1        1.02 ±  3%      -0.2        1.02 ±  4%      -0.2        1.01 ±  5%  perf-profile.self.cycles-pp.strncpy_from_user
-      1.39 ±  7%      -0.1        1.30 ±  8%      +0.1        1.50 ±  4%      +0.0        1.43 ±  5%      +0.1        1.45 ±  2%      -0.0        1.39 ±  4%      +0.0        1.44 ± 12%  perf-profile.self.cycles-pp._raw_spin_lock_irqsave
-      1.36 ±  4%      -0.1        1.28 ±  7%      -0.2        1.20 ±  4%      -0.2        1.18 ±  8%      -0.2        1.20 ±  6%      -0.1        1.22 ±  4%      -0.2        1.18 ±  6%  perf-profile.self.cycles-pp.mnt_get_count
-      2.95 ±  4%      -0.1        2.88 ±  4%      -0.3        2.61 ±  2%      -0.3        2.66 ±  7%      -0.3        2.63 ±  2%      -0.3        2.65 ±  3%      -0.3        2.61 ±  6%  perf-profile.self.cycles-pp.stress_rndstr
-      0.39 ± 15%      -0.1        0.33 ± 10%      -0.1        0.32 ± 10%      -0.1        0.32 ± 13%      -0.1        0.32 ±  8%      -0.1        0.32 ± 16%      -0.1        0.32 ± 14%  perf-profile.self.cycles-pp.__schedule
-      0.68 ±  5%      -0.1        0.62 ±  5%      -0.1        0.56 ±  6%      -0.1        0.57 ±  5%      -0.1        0.56 ± 10%      -0.1        0.56 ±  7%      -0.1        0.57 ±  4%  perf-profile.self.cycles-pp.mnt_get_writers
-      0.06 ± 14%      -0.1        0.01 ±223%      -0.0        0.06 ± 16%      -0.0        0.05 ± 76%      -0.0        0.05 ± 73%      +0.0        0.07 ± 15%      -0.0        0.05 ± 48%  perf-profile.self.cycles-pp.free@plt
-      0.70 ± 12%      -0.1        0.64 ±  5%      +0.0        0.70 ± 11%      +0.0        0.72 ±  5%      -0.0        0.69 ± 12%      -0.0        0.68 ±  8%      -0.0        0.68 ±  6%  perf-profile.self.cycles-pp.pcpu_alloc
-      0.36 ± 15%      -0.1        0.31 ± 12%      -0.0        0.32 ± 10%      -0.1        0.29 ±  8%      -0.1        0.28 ± 17%      -0.1        0.30 ± 10%      -0.1        0.28 ± 13%  perf-profile.self.cycles-pp.__call_rcu_common
-      1.25 ±  9%      -0.0        1.20 ± 18%      -0.1        1.14 ±  8%      -0.1        1.12 ±  7%      -0.0        1.22 ± 10%      -0.1        1.16 ±  4%      -0.0        1.24 ± 20%  perf-profile.self.cycles-pp.malloc
-      0.40 ±  4%      -0.0        0.35 ± 14%      +0.0        0.40 ± 16%      -0.0        0.37 ± 17%      -0.0        0.38 ± 12%      -0.0        0.36 ± 11%      -0.0        0.35 ± 25%  perf-profile.self.cycles-pp.native_queued_spin_lock_slowpath
-      0.34 ±  5%      -0.0        0.31 ± 10%      -0.1        0.26 ± 14%      -0.0        0.30 ± 11%      -0.0        0.32 ± 14%      -0.1        0.28 ±  5%      -0.0        0.30 ±  8%  perf-profile.self.cycles-pp.__check_heap_object
-      0.04 ± 45%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.02 ±144%      -0.0        0.03 ±103%      -0.0        0.04 ± 71%      -0.0        0.04 ± 72%  perf-profile.self.cycles-pp.shmem_get_inode
-      0.05 ± 49%      -0.0        0.02 ±142%      -0.0        0.03 ±100%      -0.0        0.05 ± 46%      -0.0        0.03 ±105%      -0.0        0.02 ±141%      -0.0        0.02 ±142%  perf-profile.self.cycles-pp.check_preempt_wakeup
-      0.13 ± 17%      -0.0        0.10 ±  8%      -0.0        0.10 ± 22%      -0.0        0.09 ± 24%      -0.0        0.08 ± 18%      -0.0        0.08 ± 22%      -0.0        0.09 ± 33%  perf-profile.self.cycles-pp.dequeue_task_fair
-      0.12 ± 26%      -0.0        0.09 ± 29%      -0.0        0.10 ± 17%      -0.0        0.10 ± 20%      -0.0        0.09 ± 19%      -0.0        0.09 ± 10%      -0.0        0.10 ± 18%  perf-profile.self.cycles-pp.lookup_fast
-      0.16 ± 19%      -0.0        0.13 ± 13%      -0.0        0.14 ± 20%      -0.0        0.14 ± 13%      -0.0        0.14 ± 14%      -0.0        0.13 ±  6%      -0.0        0.13 ± 23%  perf-profile.self.cycles-pp.smp_call_function_single
-      0.30 ± 12%      -0.0        0.27 ± 10%      -0.0        0.26 ± 19%      -0.0        0.27 ± 19%      -0.0        0.28 ±  5%      -0.1        0.23 ± 14%      -0.0        0.28 ± 19%  perf-profile.self.cycles-pp.native_sched_clock
-      0.06 ± 20%      -0.0        0.03 ±100%      -0.0        0.04 ± 71%      -0.0        0.02 ± 99%      -0.0        0.04 ± 72%      -0.0        0.04 ± 71%      -0.0        0.02 ±141%  perf-profile.self.cycles-pp.__mnt_want_write
-      0.03 ±102%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.nr_iowait_cpu
-      0.07 ± 17%      -0.0        0.04 ± 72%      -0.0        0.04 ± 73%      -0.0        0.05 ± 52%      -0.0        0.04 ± 72%      -0.0        0.03 ±100%      -0.0        0.06 ± 19%  perf-profile.self.cycles-pp.alloc_fd
-      0.24 ± 12%      -0.0        0.21 ±  9%      -0.1        0.18 ±  6%      -0.1        0.19 ± 12%      -0.1        0.19 ± 16%      -0.0        0.21 ± 12%      -0.0        0.21 ± 21%  perf-profile.self.cycles-pp.__legitimize_mnt
-      0.35 ± 10%      -0.0        0.32 ± 17%      -0.0        0.32 ± 14%      -0.0        0.32 ± 12%      -0.0        0.32 ± 14%      -0.1        0.29 ± 18%      -0.0        0.31 ± 10%  perf-profile.self.cycles-pp.__d_lookup_rcu
-      0.09 ± 17%      -0.0        0.06 ± 49%      +0.0        0.09 ± 14%      +0.0        0.11 ± 15%      +0.0        0.09 ± 10%      -0.0        0.08 ± 14%      -0.0        0.08 ±  7%  perf-profile.self.cycles-pp.pcpu_block_update_hint_alloc
-      0.03 ±100%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.attach_recursive_mnt
-      0.03 ±100%      -0.0        0.00            -0.0        0.02 ±144%      -0.0        0.02 ± 99%      -0.0        0.02 ±142%      -0.0        0.01 ±223%      -0.0        0.00        perf-profile.self.cycles-pp.memcg_account_kmem
-      0.05 ± 46%      -0.0        0.02 ±146%      -0.0        0.00            -0.0        0.03 ±100%      -0.0        0.03 ±100%      -0.0        0.03 ±100%      -0.0        0.03 ±105%  perf-profile.self.cycles-pp.alloc_super
-      0.07 ± 48%      -0.0        0.04 ± 72%      -0.0        0.05 ± 49%      -0.0        0.05 ± 82%      -0.0        0.05 ± 46%      -0.0        0.03 ±103%      -0.0        0.03 ±100%  perf-profile.self.cycles-pp.cpuidle_idle_call
-      0.08 ± 25%      -0.0        0.06 ± 45%      +0.0        0.09 ± 16%      -0.0        0.06 ± 52%      +0.0        0.09 ± 10%      -0.0        0.07 ± 24%      -0.0        0.07 ± 45%  perf-profile.self.cycles-pp.common_perm_cond
-      0.20 ±  9%      -0.0        0.17 ± 18%      -0.0        0.17 ± 13%      -0.0        0.17 ± 18%      -0.0        0.17 ± 12%      -0.0        0.17 ± 10%      -0.0        0.19 ± 30%  perf-profile.self.cycles-pp.number
-      0.28 ± 10%      -0.0        0.25 ± 16%      -0.0        0.24 ±  7%      -0.0        0.24 ± 16%      -0.0        0.23 ± 18%      -0.0        0.23 ± 17%      -0.0        0.22 ±  8%  perf-profile.self.cycles-pp._raw_spin_lock_irq
-      0.06 ± 20%      -0.0        0.03 ±103%      -0.0        0.03 ±101%      -0.0        0.03 ±100%      -0.0        0.05 ± 45%      -0.0        0.03 ±100%      -0.0        0.04 ± 75%  perf-profile.self.cycles-pp.d_walk
-      0.19 ± 16%      -0.0        0.16 ± 17%      -0.0        0.17 ± 19%      -0.0        0.14 ± 14%      -0.0        0.16 ± 14%      -0.0        0.15 ± 14%      -0.0        0.17 ± 24%  perf-profile.self.cycles-pp.down_read
-      0.03 ±100%      -0.0        0.00            -0.0        0.02 ±142%      -0.0        0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.01 ±223%  perf-profile.self.cycles-pp.try_charge_memcg
-      0.16 ± 24%      -0.0        0.14 ± 11%      -0.0        0.12 ± 29%      -0.1        0.11 ± 34%      -0.0        0.15 ± 19%      -0.0        0.15 ± 26%      -0.0        0.12 ± 38%  perf-profile.self.cycles-pp.try_to_wake_up
-      0.78 ±  5%      -0.0        0.76 ±  9%      -0.1        0.68 ±  5%      -0.1        0.73 ± 12%      -0.1        0.68 ±  3%      -0.1        0.68 ±  6%      -0.1        0.68 ±  9%  perf-profile.self.cycles-pp.stress_mwc32
-      0.11 ±  6%      -0.0        0.08 ± 21%      -0.0        0.09 ± 25%      -0.0        0.08 ± 29%      -0.0        0.08 ± 22%      -0.0        0.08 ± 16%      -0.0        0.09 ± 22%  perf-profile.self.cycles-pp.dequeue_entity
-      0.05 ± 54%      -0.0        0.03 ±102%      -0.0        0.03 ±100%      -0.0        0.01 ±223%      -0.0        0.02 ±142%      -0.0        0.02 ±142%      -0.0        0.03 ±102%  perf-profile.self.cycles-pp.strspn@plt
-      0.13 ± 11%      -0.0        0.11 ± 22%      -0.0        0.12 ± 10%      -0.0        0.10 ± 13%      -0.0        0.12 ± 18%      -0.0        0.10 ± 20%      -0.0        0.11 ± 28%  perf-profile.self.cycles-pp._hashmap_first_key_and_value
-      0.22 ± 15%      -0.0        0.19 ± 22%      -0.0        0.19 ± 18%      -0.0        0.19 ± 15%      -0.0        0.17 ± 22%      -0.0        0.18 ± 17%      -0.0        0.20 ± 26%  perf-profile.self.cycles-pp.device_add_property_aux
-      0.16 ±  9%      -0.0        0.14 ± 12%      -0.0        0.13 ± 20%      -0.0        0.13 ± 10%      -0.0        0.12 ± 15%      -0.0        0.12 ± 16%      -0.0        0.12 ± 21%  perf-profile.self.cycles-pp.check_heap_object
-      0.13 ± 25%      -0.0        0.10 ± 30%      -0.0        0.10 ± 20%      -0.0        0.10 ± 24%      -0.0        0.09 ± 22%      -0.0        0.09 ± 17%      -0.0        0.08 ± 19%  perf-profile.self.cycles-pp.do_syscall_64
-      0.07 ± 29%      -0.0        0.04 ± 47%      -0.0        0.03 ±100%      -0.0        0.03 ±103%      -0.0        0.03 ±100%      -0.0        0.06 ± 48%      -0.0        0.05 ± 73%  perf-profile.self.cycles-pp.propagation_next
-      0.08 ± 50%      -0.0        0.05 ± 49%      -0.0        0.06 ± 52%      -0.0        0.07 ± 51%      -0.0        0.06 ± 72%      -0.0        0.06 ±  7%      -0.0        0.07 ± 23%  perf-profile.self.cycles-pp.path_hash_func
-      0.04 ± 75%      -0.0        0.02 ±141%      -0.0        0.01 ±223%      +0.0        0.05 ± 74%      +0.0        0.05 ± 45%      -0.0        0.03 ±101%      -0.0        0.02 ±141%  perf-profile.self.cycles-pp.may_delete
-      0.04 ± 72%      -0.0        0.02 ±141%      -0.0        0.02 ±142%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.02 ±142%      -0.0        0.01 ±223%  perf-profile.self.cycles-pp.pcpu_block_refresh_hint
-      0.08 ± 62%      -0.0        0.05 ±108%      -0.0        0.04 ± 72%      -0.0        0.05 ± 74%      -0.0        0.03 ±150%      -0.0        0.05 ±109%      -0.1        0.02 ±144%  perf-profile.self.cycles-pp.ktime_get_update_offsets_now
-      0.49 ±  9%      -0.0        0.46 ± 11%      -0.1        0.43 ± 10%      -0.1        0.42 ± 17%      -0.0        0.45 ±  6%      -0.1        0.40 ±  4%      -0.0        0.44 ± 13%  perf-profile.self.cycles-pp.kmem_cache_alloc
-      0.12 ±  9%      -0.0        0.09 ± 24%      -0.0        0.10 ± 16%      -0.0        0.10 ± 15%      -0.0        0.10 ± 25%      -0.0        0.10 ± 14%      -0.0        0.10 ± 29%  perf-profile.self.cycles-pp.__check_object_size
-      0.44 ±  9%      -0.0        0.42 ± 11%      -0.0        0.41 ±  7%      -0.0        0.43 ± 22%      -0.0        0.43 ± 12%      -0.0        0.41 ±  9%      -0.0        0.40 ± 17%  perf-profile.self.cycles-pp.perf_adjust_freq_unthr_context
-      0.07 ± 15%      -0.0        0.05 ± 47%      -0.0        0.05 ± 73%      -0.0        0.02 ± 99%      +0.0        0.08 ± 18%      +0.0        0.07 ± 16%      +0.0        0.08 ± 34%  perf-profile.self.cycles-pp.__fput
-      0.06 ± 47%      -0.0        0.04 ± 73%      -0.0        0.04 ± 71%      -0.0        0.04 ± 45%      -0.0        0.04 ± 72%      -0.0        0.04 ± 45%      -0.0        0.04 ±104%  perf-profile.self.cycles-pp.mnt_fstype_is_pseudofs
-      0.10 ± 17%      -0.0        0.08 ± 24%      -0.0        0.08 ± 25%      -0.0        0.10 ± 11%      -0.0        0.09 ± 19%      -0.0        0.08 ± 20%      -0.0        0.07 ± 54%  perf-profile.self.cycles-pp._find_next_and_bit
-      0.19 ± 19%      -0.0        0.17 ±  6%      -0.0        0.16 ± 21%      -0.0        0.17 ± 15%      -0.0        0.15 ± 19%      -0.0        0.16 ± 19%      -0.0        0.18 ± 15%  perf-profile.self.cycles-pp.lockref_get_not_dead
-      0.18 ± 11%      -0.0        0.16 ± 18%      +0.1        0.25 ± 13%      +0.1        0.26 ± 13%      +0.1        0.27 ± 11%      +0.1        0.28 ±  2%      +0.1        0.30 ± 13%  perf-profile.self.cycles-pp.free_percpu
-      0.06 ± 58%      -0.0        0.04 ± 73%      -0.0        0.04 ± 75%      -0.0        0.06 ± 13%      +0.0        0.06 ± 11%      -0.0        0.03 ±100%      -0.0        0.06 ± 50%  perf-profile.self.cycles-pp.exit_to_user_mode_prepare
-      0.03 ±103%      -0.0        0.01 ±223%      -0.0        0.02 ±142%      +0.0        0.04 ± 71%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.00        perf-profile.self.cycles-pp.xas_find
-      0.02 ±141%      -0.0        0.00            -0.0        0.02 ±142%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.02 ±141%  perf-profile.self.cycles-pp.complete_walk
-      0.05 ± 52%      -0.0        0.03 ±101%      -0.0        0.01 ±223%      -0.0        0.03 ±100%      -0.0        0.02 ±146%      -0.0        0.01 ±223%      -0.0        0.01 ±223%  perf-profile.self.cycles-pp.security_inode_getattr
-      0.07 ± 24%      -0.0        0.05 ± 70%      -0.0        0.04 ± 72%      -0.0        0.06 ± 17%      -0.0        0.06 ± 50%      -0.0        0.07 ± 53%      -0.0        0.06 ± 54%  perf-profile.self.cycles-pp.memcg_destroy_list_lru
-      0.08 ± 16%      -0.0        0.06 ± 11%      -0.0        0.06 ± 54%      -0.0        0.07 ± 14%      -0.0        0.07 ± 23%      -0.0        0.07 ± 18%      -0.0        0.06 ± 48%  perf-profile.self.cycles-pp.do_idle
-      0.08 ± 18%      -0.0        0.06 ± 52%      -0.0        0.07 ± 11%      -0.0        0.07 ± 16%      -0.0        0.06 ± 50%      -0.0        0.06 ± 50%      -0.0        0.06 ± 73%  perf-profile.self.cycles-pp.strlen@plt
-      0.03 ±101%      -0.0        0.01 ±223%      +0.0        0.04 ± 73%      -0.0        0.03 ±100%      -0.0        0.00            -0.0        0.00            +0.0        0.04 ± 72%  perf-profile.self.cycles-pp.strjoin_real
-      0.04 ± 71%      -0.0        0.02 ±142%      +0.0        0.04 ± 45%      +0.0        0.04 ± 72%      -0.0        0.02 ±144%      -0.0        0.03 ±102%      -0.0        0.01 ±223%  perf-profile.self.cycles-pp.update_min_vruntime
-      0.10 ± 19%      -0.0        0.08 ±  6%      -0.0        0.07 ± 11%      -0.0        0.07 ± 21%      -0.1        0.04 ± 45%      -0.0        0.06 ± 50%      -0.0        0.08 ± 17%  perf-profile.self.cycles-pp.vmalloc_to_page
-      0.12 ± 16%      -0.0        0.10 ± 22%      -0.0        0.09 ± 25%      -0.0        0.09 ± 18%      -0.0        0.10 ± 10%      -0.0        0.10 ±  8%      -0.0        0.10 ± 20%  perf-profile.self.cycles-pp.pick_next_task_fair
-      0.14 ± 19%      -0.0        0.12 ± 16%      -0.0        0.14 ± 18%      -0.0        0.11 ± 23%      -0.0        0.12 ± 23%      -0.0        0.09 ± 21%      -0.0        0.10 ± 30%  perf-profile.self.cycles-pp.update_rq_clock_task
-      0.23 ± 20%      -0.0        0.21 ±  9%      -0.0        0.19 ± 11%      -0.0        0.21 ± 15%      -0.0        0.19 ± 15%      -0.0        0.20 ± 10%      -0.0        0.21 ± 22%  perf-profile.self.cycles-pp.__switch_to
-      0.05 ± 46%      -0.0        0.03 ±101%      -0.0        0.02 ±142%      -0.0        0.03 ±100%      +0.0        0.05 ± 46%      -0.0        0.03 ±100%      +0.0        0.05 ± 47%  perf-profile.self.cycles-pp.xas_clear_mark
-      0.08 ± 23%      -0.0        0.06 ± 23%      -0.0        0.06 ± 47%      -0.0        0.03 ±103%      -0.0        0.06 ±  9%      -0.0        0.06 ± 49%      -0.0        0.06 ± 13%  perf-profile.self.cycles-pp.set_next_entity
-      0.04 ± 71%      -0.0        0.02 ±141%      +0.0        0.04 ± 71%      -0.0        0.03 ±102%      +0.0        0.05 ± 72%      -0.0        0.01 ±223%      +0.0        0.04 ± 71%  perf-profile.self.cycles-pp.copy_from_kernel_nofault
-      0.04 ± 71%      -0.0        0.02 ±141%      +0.0        0.04 ± 45%      -0.0        0.02 ±142%      -0.0        0.02 ±146%      -0.0        0.03 ±100%      -0.0        0.02 ±142%  perf-profile.self.cycles-pp.syscall_exit_to_user_mode_prepare
-      0.07 ± 21%      -0.0        0.05 ± 47%      -0.0        0.04 ± 73%      +0.0        0.07 ± 19%      -0.0        0.05 ± 45%      -0.0        0.06 ± 21%      -0.0        0.06 ± 14%  perf-profile.self.cycles-pp.__update_blocked_fair
-      0.02 ±142%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.note_gp_changes
-      0.02 ±142%      -0.0        0.00            +0.0        0.03 ±102%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.__mod_memcg_lruvec_state
-      0.38 ± 17%      -0.0        0.37 ± 17%      +0.0        0.39 ± 13%      -0.0        0.36 ± 12%      +0.0        0.40 ± 17%      -0.0        0.34 ±  8%      +0.0        0.39 ± 18%  perf-profile.self.cycles-pp.device_read_db_internal_filename
-      0.02 ± 99%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.01 ±223%  perf-profile.self.cycles-pp.rcu_note_context_switch
-      0.07 ±  7%      -0.0        0.05 ± 78%      -0.0        0.04 ± 74%      -0.0        0.05 ± 80%      -0.0        0.06 ± 19%      -0.0        0.04 ± 72%      -0.0        0.04 ± 71%  perf-profile.self.cycles-pp.__wake_up_common_lock
-      0.06 ± 17%      -0.0        0.05 ± 76%      -0.0        0.04 ± 71%      -0.0        0.05 ± 74%      -0.0        0.05 ± 49%      +0.0        0.07 ± 21%      -0.0        0.05 ± 47%  perf-profile.self.cycles-pp.chase_symlinks
-      0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      +0.0        0.04 ± 71%      -0.0        0.02 ±142%      -0.0        0.00        perf-profile.self.cycles-pp._ext4_show_options
-      0.02 ±141%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.__wait_for_common
-      0.02 ±141%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.01 ±223%      +0.0        0.02 ±141%      +0.0        0.02 ±141%  perf-profile.self.cycles-pp.__radix_tree_lookup
-      0.02 ±141%      -0.0        0.00            -0.0        0.00            -0.0        0.01 ±223%      +0.0        0.02 ±146%      -0.0        0.01 ±223%      -0.0        0.00        perf-profile.self.cycles-pp.siphash24_compress@plt
-      0.02 ±141%      -0.0        0.00            -0.0        0.01 ±223%      +0.0        0.02 ±142%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      +0.0        0.02 ±142%  perf-profile.self.cycles-pp.unit_name_escape
-      0.23 ± 21%      -0.0        0.21 ± 21%      -0.0        0.19 ± 11%      -0.0        0.18 ± 20%      -0.0        0.19 ±  7%      -0.1        0.17 ± 20%      -0.1        0.18 ± 16%  perf-profile.self.cycles-pp.__update_load_avg_cfs_rq
-      0.12 ± 12%      -0.0        0.10 ± 17%      -0.0        0.09 ± 18%      -0.0        0.09 ± 48%      -0.0        0.08 ± 22%      -0.0        0.08 ± 20%      -0.0        0.09 ± 29%  perf-profile.self.cycles-pp.apparmor_file_free_security
-      0.17 ±  9%      -0.0        0.15 ± 17%      +0.0        0.17 ± 14%      -0.0        0.16 ± 18%      -0.0        0.14 ± 15%      -0.1        0.11 ± 23%      -0.0        0.15 ± 14%  perf-profile.self.cycles-pp.apparmor_file_alloc_security
-      0.10 ± 18%      -0.0        0.08 ± 14%      +0.0        0.10 ± 21%      -0.0        0.09 ± 19%      +0.0        0.10 ± 23%      +0.0        0.10 ± 16%      +0.0        0.11 ± 21%  perf-profile.self.cycles-pp.__strdup
-      0.09 ± 17%      -0.0        0.07 ± 54%      +0.0        0.10 ± 27%      -0.0        0.08 ± 14%      -0.0        0.08 ± 17%      -0.0        0.07 ± 16%      -0.0        0.08 ± 24%  perf-profile.self.cycles-pp.prepend_path
-      0.16 ± 16%      -0.0        0.14 ± 13%      +0.0        0.19 ± 18%      +0.0        0.20 ± 11%      +0.0        0.20 ± 21%      +0.1        0.21 ± 16%      +0.0        0.18 ± 18%  perf-profile.self.cycles-pp._raw_spin_unlock_irqrestore
-      0.13 ± 32%      -0.0        0.11 ± 26%      +0.0        0.14 ±  8%      -0.0        0.12 ± 23%      -0.0        0.11 ± 31%      -0.0        0.12 ± 21%      +0.0        0.14 ± 24%  perf-profile.self.cycles-pp.siphash24_init
-      0.69 ±  6%      -0.0        0.68 ± 13%      -0.0        0.66 ± 10%      -0.0        0.69 ±  7%      -0.0        0.66 ±  5%      -0.1        0.63 ±  6%      -0.1        0.64 ±  4%  perf-profile.self.cycles-pp.__slab_free
-      0.21 ±  7%      -0.0        0.20 ±  9%      -0.0        0.18 ±  6%      -0.0        0.18 ±  7%      -0.0        0.17 ± 19%      -0.0        0.19 ±  7%      -0.0        0.18 ± 18%  perf-profile.self.cycles-pp.rcu_report_exp_cpu_mult
-      0.15 ± 15%      -0.0        0.14 ± 19%      -0.0        0.13 ± 13%      -0.0        0.14 ± 13%      -0.0        0.14 ± 19%      -0.0        0.14 ±  8%      -0.0        0.15 ± 10%  perf-profile.self.cycles-pp.__lookup_mnt
-      0.09 ± 12%      -0.0        0.08 ± 21%      -0.0        0.09 ± 10%      -0.0        0.06 ± 51%      -0.0        0.07 ± 21%      -0.0        0.09 ± 25%      -0.0        0.08 ± 14%  perf-profile.self.cycles-pp.do_dentry_open
-      0.07 ± 23%      -0.0        0.06 ± 50%      -0.0        0.05 ± 47%      -0.0        0.03 ±101%      -0.0        0.03 ±101%      -0.0        0.03 ±103%      -0.0        0.05 ± 46%  perf-profile.self.cycles-pp._raw_spin_trylock
-      0.05 ± 46%      -0.0        0.04 ± 71%      +0.0        0.06 ± 13%      -0.0        0.04 ± 71%      -0.0        0.05 ± 48%      -0.0        0.04 ± 71%      +0.0        0.06 ± 50%  perf-profile.self.cycles-pp.umount_tree
-      0.03 ±100%      -0.0        0.02 ±142%      +0.0        0.05 ± 45%      +0.0        0.03 ±106%      +0.0        0.04 ± 74%      +0.0        0.04 ± 71%      -0.0        0.03 ±101%  perf-profile.self.cycles-pp.alloc_empty_file
-      0.03 ±100%      -0.0        0.01 ±223%      -0.0        0.02 ±149%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.02 ±142%      -0.0        0.03 ±100%  perf-profile.self.cycles-pp.tick_sched_do_timer
-      0.07 ± 25%      -0.0        0.06 ± 15%      -0.0        0.04 ± 72%      -0.0        0.03 ±100%      -0.0        0.05 ± 49%      -0.0        0.06 ± 17%      -0.0        0.06 ±  9%  perf-profile.self.cycles-pp.pick_next_entity
-      0.08 ± 11%      -0.0        0.07 ± 21%      -0.0        0.06 ± 51%      -0.0        0.05 ± 73%      -0.0        0.06 ± 19%      -0.0        0.05 ± 72%      -0.0        0.06 ± 47%  perf-profile.self.cycles-pp.__wrgsbase_inactive
-      0.10 ± 19%      -0.0        0.08 ± 10%      -0.0        0.08 ± 14%      -0.0        0.07 ± 24%      -0.0        0.08 ± 30%      -0.0        0.08 ± 20%      -0.0        0.09 ± 17%  perf-profile.self.cycles-pp.security_inode_permission
-      0.14 ± 28%      -0.0        0.13 ± 22%      -0.0        0.14 ± 25%      -0.0        0.11 ± 31%      -0.0        0.14 ± 19%      -0.0        0.14 ± 13%      +0.0        0.14 ± 17%  perf-profile.self.cycles-pp.__get_obj_cgroup_from_memcg
-      0.09 ± 12%      -0.0        0.08 ± 26%      -0.0        0.07 ± 12%      -0.0        0.08 ± 24%      -0.0        0.08 ± 16%      -0.0        0.09 ± 23%      -0.0        0.07 ± 45%  perf-profile.self.cycles-pp.mutex_lock
-      0.05 ± 51%      -0.0        0.04 ±100%      +0.0        0.06 ± 49%      -0.0        0.04 ± 73%      +0.0        0.05 ± 51%      +0.0        0.06 ± 47%      +0.0        0.06 ± 49%  perf-profile.self.cycles-pp.string_table_lookup
-      0.08 ± 20%      -0.0        0.06 ± 47%      -0.0        0.04 ± 71%      -0.0        0.06 ± 17%      -0.0        0.03 ±100%      -0.0        0.06 ± 19%      -0.0        0.06 ± 45%  perf-profile.self.cycles-pp.syscall_exit_to_user_mode
-      0.06 ± 47%      -0.0        0.05 ± 73%      +0.0        0.08 ± 21%      -0.0        0.03 ±102%      -0.0        0.06 ± 48%      -0.0        0.05 ± 46%      +0.0        0.08 ± 10%  perf-profile.self.cycles-pp.llist_reverse_order
-      0.12 ± 15%      -0.0        0.11 ± 18%      -0.0        0.09 ± 16%      -0.0        0.10 ± 25%      -0.0        0.10 ± 28%      -0.0        0.08 ± 16%      -0.0        0.08 ±  8%  perf-profile.self.cycles-pp.__list_add_valid
-      0.10 ± 13%      -0.0        0.08 ± 19%      -0.0        0.08 ± 16%      -0.0        0.07 ±  9%      -0.0        0.07 ± 12%      -0.0        0.06 ± 76%      -0.0        0.07 ± 55%  perf-profile.self.cycles-pp.__pthread_mutex_unlock_usercnt
-      0.09 ± 14%      -0.0        0.08 ± 14%      -0.0        0.07 ± 17%      -0.0        0.08 ± 23%      -0.0        0.08 ± 23%      -0.0        0.06 ± 21%      -0.0        0.07 ± 46%  perf-profile.self.cycles-pp.chacha_permute
-      0.04 ± 72%      -0.0        0.03 ±100%      -0.0        0.02 ±141%      -0.0        0.02 ±141%      -0.0        0.02 ±142%      -0.0        0.02 ± 99%      +0.0        0.06 ± 17%  perf-profile.self.cycles-pp.build_open_flags
-      0.02 ±144%      -0.0        0.01 ±223%      +0.0        0.07 ± 11%      +0.0        0.06 ± 19%      +0.0        0.03 ±100%      +0.0        0.06 ± 52%      +0.0        0.05 ± 47%  perf-profile.self.cycles-pp.shmem_free_in_core_inode
-      0.01 ±223%      -0.0        0.00            +0.6        0.61 ±  4%      +0.6        0.62 ± 10%      +0.6        0.59 ±  5%      +0.6        0.56 ± 10%      +0.6        0.61 ±  7%  perf-profile.self.cycles-pp.__flush_work
-      0.05 ± 45%      -0.0        0.04 ±104%      -0.0        0.02 ±149%      -0.0        0.02 ±141%      -0.0        0.02 ±142%      -0.0        0.03 ±102%      +0.0        0.05 ± 49%  perf-profile.self.cycles-pp.kernfs_iop_permission
-      0.04 ± 71%      -0.0        0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.03 ± 70%  perf-profile.self.cycles-pp.__x64_sys_umount
-      0.28 ± 16%      -0.0        0.27 ± 11%      -0.0        0.24 ±  4%      -0.0        0.26 ± 11%      -0.0        0.26 ± 13%      -0.0        0.26 ± 16%      -0.0        0.24 ± 14%  perf-profile.self.cycles-pp.__switch_to_asm
-      0.26 ± 13%      -0.0        0.25 ±  9%      -0.0        0.23 ± 10%      -0.0        0.23 ±  4%      -0.0        0.23 ± 15%      -0.0        0.22 ± 11%      -0.0        0.24 ± 10%  perf-profile.self.cycles-pp.inode_permission
-      0.08 ± 22%      -0.0        0.07 ± 24%      -0.0        0.06 ± 17%      -0.0        0.07 ± 12%      -0.0        0.07 ± 50%      -0.0        0.07 ± 21%      -0.0        0.08 ± 22%  perf-profile.self.cycles-pp._raw_read_lock_irqsave
-      0.12 ±  8%      -0.0        0.10 ± 28%      -0.0        0.10 ± 29%      -0.0        0.10 ± 15%      -0.0        0.10 ± 16%      -0.0        0.09 ± 14%      -0.0        0.08 ± 19%  perf-profile.self.cycles-pp.umount2
-      0.08 ± 14%      -0.0        0.07 ± 18%      -0.0        0.07 ± 15%      -0.0        0.08 ± 25%      +0.0        0.09 ± 28%      -0.0        0.08 ± 18%      +0.0        0.09 ± 32%  perf-profile.self.cycles-pp.__close
-      0.08 ± 20%      -0.0        0.06 ± 58%      -0.0        0.07 ± 21%      -0.0        0.07 ± 21%      -0.0        0.07 ± 12%      +0.0        0.08 ± 12%      -0.0        0.07 ± 18%  perf-profile.self.cycles-pp.propagate_umount
-      0.17 ± 16%      -0.0        0.16 ± 18%      -0.0        0.16 ± 14%      +0.0        0.18 ± 18%      +0.0        0.17 ± 13%      +0.0        0.17 ± 16%      -0.0        0.16 ± 17%  perf-profile.self.cycles-pp.rcu_all_qs
-      0.06 ± 19%      -0.0        0.05 ± 49%      -0.0        0.06 ± 74%      +0.0        0.07 ± 25%      +0.0        0.08 ± 26%      +0.0        0.07 ± 17%      +0.0        0.06 ± 51%  perf-profile.self.cycles-pp.inode_init_once
-      0.09 ± 23%      -0.0        0.08 ± 23%      +0.0        0.09 ± 25%      +0.0        0.10 ± 13%      -0.0        0.08 ± 21%      -0.0        0.08 ± 24%      +0.0        0.09 ± 32%  perf-profile.self.cycles-pp.rcu_exp_handler
-      1.28 ±  8%      -0.0        1.27 ± 11%      -0.0        1.26 ±  4%      -0.1        1.18 ± 10%      +0.0        1.30 ±  8%      -0.0        1.23 ±  4%      +0.0        1.32 ± 18%  perf-profile.self.cycles-pp.siphash24_compress
-      0.11 ±  8%      -0.0        0.10 ± 24%      -0.0        0.10 ± 16%      -0.0        0.10 ± 22%      -0.0        0.11 ± 14%      +0.0        0.12 ± 16%      +0.0        0.12 ± 14%  perf-profile.self.cycles-pp.memcpy_orig
-      0.06 ± 15%      -0.0        0.05 ± 79%      -0.0        0.05 ± 47%      -0.0        0.05 ± 50%      -0.0        0.03 ±100%      -0.0        0.03 ±143%      -0.0        0.05 ± 49%  perf-profile.self.cycles-pp.pcpu_free_area
-      0.16 ± 16%      -0.0        0.15 ± 14%      +0.0        0.16 ± 15%      +0.0        0.18 ± 11%      +0.0        0.18 ±  7%      -0.0        0.15 ± 14%      +0.0        0.16 ±  9%  perf-profile.self.cycles-pp.clone_mnt
-      0.04 ± 72%      -0.0        0.03 ±100%      -0.0        0.03 ±100%      -0.0        0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.check_preempt_curr
-      0.03 ±100%      -0.0        0.02 ±141%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.02 ±142%      -0.0        0.01 ±223%  perf-profile.self.cycles-pp.propagate_mnt
-      0.03 ±100%      -0.0        0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.02 ±142%      -0.0        0.02 ±142%      -0.0        0.02 ±141%      -0.0        0.02 ±142%  perf-profile.self.cycles-pp.__d_alloc
-      0.03 ±100%      -0.0        0.02 ±141%      -0.0        0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.02 ±141%      -0.0        0.02 ±142%  perf-profile.self.cycles-pp.seq_printf
-      0.05 ± 51%      -0.0        0.04 ± 72%      +0.0        0.06 ± 47%      -0.0        0.04 ± 73%      +0.0        0.06 ± 54%      -0.0        0.04 ± 72%      -0.0        0.05 ± 75%  perf-profile.self.cycles-pp.openat64
-      0.05 ± 48%      -0.0        0.04 ± 73%      +0.0        0.06 ± 51%      +0.0        0.07 ± 20%      -0.0        0.05 ± 46%      -0.0        0.05 ± 46%      +0.0        0.06 ± 45%  perf-profile.self.cycles-pp.path_simplify
-      0.07 ± 23%      -0.0        0.06 ± 51%      +0.0        0.09 ± 24%      -0.0        0.04 ± 71%      +0.0        0.08 ± 35%      +0.0        0.07 ± 10%      +0.0        0.08 ± 18%  perf-profile.self.cycles-pp.init_file
-      0.02 ±142%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      +0.0        0.02 ±142%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%  perf-profile.self.cycles-pp.putname
-      0.02 ±142%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      +0.0        0.03 ±100%      -0.0        0.01 ±223%      +0.0        0.03 ±100%      -0.0        0.01 ±223%  perf-profile.self.cycles-pp.pcpu_chunk_relocate
-      0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.02 ±141%      +0.0        0.03 ±100%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.00        perf-profile.self.cycles-pp.path_umount
-      0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.00            +0.0        0.02 ±142%      +0.0        0.03 ±100%      +0.0        0.03 ±100%  perf-profile.self.cycles-pp.strcspn@plt
-      0.03 ±100%      -0.0        0.02 ±142%      -0.0        0.00            -0.0        0.03 ±100%      -0.0        0.02 ±141%      -0.0        0.02 ±141%      -0.0        0.03 ±100%  perf-profile.self.cycles-pp.reweight_entity
-      0.03 ±100%      -0.0        0.02 ±142%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%  perf-profile.self.cycles-pp.xas_load
-      0.10 ± 10%      -0.0        0.09 ± 23%      -0.0        0.09 ± 17%      -0.0        0.10 ± 32%      +0.0        0.11 ± 24%      -0.0        0.07 ± 50%      -0.0        0.09 ± 20%  perf-profile.self.cycles-pp.xas_descend
-      0.16 ± 18%      -0.0        0.15 ±  8%      -0.0        0.13 ±  9%      -0.0        0.15 ± 30%      -0.0        0.15 ± 27%      -0.0        0.14 ±  9%      -0.0        0.13 ± 15%  perf-profile.self.cycles-pp.filename_lookup
-      0.10 ± 16%      -0.0        0.08 ± 25%      -0.0        0.08 ± 14%      -0.0        0.06 ± 50%      -0.0        0.08 ± 16%      -0.0        0.09 ± 18%      -0.0        0.08 ± 46%  perf-profile.self.cycles-pp.entry_SYSCALL_64_safe_stack
-      0.20 ± 16%      -0.0        0.19 ±  5%      -0.0        0.19 ± 16%      +0.0        0.22 ± 17%      +0.0        0.20 ± 16%      -0.0        0.18 ± 19%      -0.0        0.19 ± 11%  perf-profile.self.cycles-pp.__list_del_entry_valid
-      0.15 ± 15%      -0.0        0.14 ± 12%      +0.0        0.15 ± 19%      -0.0        0.14 ± 14%      +0.0        0.17 ± 15%      +0.0        0.15 ± 15%      +0.0        0.16 ± 26%  perf-profile.self.cycles-pp.up_read
-      0.08 ± 21%      -0.0        0.07 ± 20%      +0.0        0.08 ± 23%      -0.0        0.08 ± 19%      +0.0        0.09 ± 26%      -0.0        0.07 ± 21%      +0.0        0.10 ± 20%  perf-profile.self.cycles-pp.__fget_light
-      0.12 ± 17%      -0.0        0.12 ± 23%      -0.0        0.10 ± 18%      -0.0        0.11 ± 16%      +0.0        0.14 ± 24%      -0.0        0.10 ± 18%      -0.0        0.10 ± 30%  perf-profile.self.cycles-pp.set_root
-      0.04 ± 47%      -0.0        0.04 ± 71%      -0.0        0.02 ±141%      -0.0        0.03 ±100%      -0.0        0.03 ±101%      -0.0        0.03 ± 70%      -0.0        0.02 ±142%  perf-profile.self.cycles-pp.schedule_timeout
-      0.02 ± 99%      -0.0        0.02 ±141%      -0.0        0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.02 ±141%      -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.change_mnt_propagation
-      0.05 ± 80%      -0.0        0.04 ± 73%      +0.0        0.05 ± 46%      +0.0        0.05 ± 72%      -0.0        0.02 ±145%      -0.0        0.04 ± 76%      +0.0        0.05 ± 74%  perf-profile.self.cycles-pp.ttwu_queue_wakelist
-      0.07 ± 11%      -0.0        0.06 ± 49%      +0.0        0.07 ±  5%      -0.0        0.05 ± 49%      -0.0        0.06 ± 46%      -0.0        0.06 ± 13%      +0.0        0.07 ± 19%  perf-profile.self.cycles-pp.schedule
-      0.04 ± 71%      -0.0        0.03 ±100%      -0.0        0.02 ±142%      -0.0        0.02 ±141%      +0.0        0.05 ± 48%      -0.0        0.01 ±223%      +0.0        0.04 ±102%  perf-profile.self.cycles-pp.newidle_balance
-      0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.01 ±223%  perf-profile.self.cycles-pp.dbus_message_get_interface
-      0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.security_inode_init_security
-      0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%      +0.0        0.02 ±142%      -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.show_mnt_opts
-      0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.seq_escape_mem
-      0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.__do_softirq
-      0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.find_lock_entries
-      0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.sget_fc
-      0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.__irq_exit_rcu
-      0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.vfs_parse_fs_string
-      0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.set_strjoin
-      0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.cgroup_rstat_updated
-      0.01 ±223%      -0.0        0.00            -0.0        0.00            +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.swake_up_one
-      0.01 ±223%      -0.0        0.00            -0.0        0.00            +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.shmem_show_options
-      0.01 ±223%      -0.0        0.00            -0.0        0.00            +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            +0.0        0.02 ±141%  perf-profile.self.cycles-pp.memcg_init_list_lru_one
-      0.01 ±223%      -0.0        0.00            -0.0        0.00            +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.__d_rehash
-      0.01 ±223%      -0.0        0.00            -0.0        0.00            +0.0        0.02 ±144%      -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.filemap_get_entry
-      0.01 ±223%      -0.0        0.00            +0.0        0.02 ±141%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%  perf-profile.self.cycles-pp._IO_feof
-      0.01 ±223%      -0.0        0.00            +0.0        0.02 ±142%      +0.0        0.02 ±141%      -0.0        0.00            -0.0        0.00            +0.0        0.01 ±223%  perf-profile.self.cycles-pp.alloc_fs_context
-      0.07 ± 20%      -0.0        0.06 ± 14%      -0.0        0.06 ± 23%      -0.0        0.06 ± 46%      -0.0        0.04 ± 72%      -0.0        0.05 ± 49%      -0.0        0.06 ± 45%  perf-profile.self.cycles-pp.syscall_enter_from_user_mode
-      0.14 ± 13%      -0.0        0.13 ± 15%      +0.0        0.14 ± 25%      -0.0        0.13 ±  7%      -0.0        0.13 ± 18%      +0.0        0.15 ± 15%      +0.0        0.15 ±  9%  perf-profile.self.cycles-pp.dput
-      0.06 ± 50%      -0.0        0.05 ± 48%      +0.0        0.06 ± 46%      -0.0        0.03 ±100%      +0.0        0.06 ± 15%      -0.0        0.05 ± 47%      -0.0        0.03 ±108%  perf-profile.self.cycles-pp.load_balance
-      0.10 ± 22%      -0.0        0.10 ± 40%      -0.0        0.09 ± 21%      -0.0        0.09 ± 19%      -0.0        0.10 ± 17%      -0.0        0.10 ± 19%      -0.0        0.10 ± 24%  perf-profile.self.cycles-pp.string_hash_func
-      0.13 ± 16%      -0.0        0.12 ± 18%      +0.0        0.13 ± 24%      -0.0        0.12 ± 15%      -0.0        0.12 ± 23%      -0.0        0.12 ± 19%      +0.0        0.13 ± 18%  perf-profile.self.cycles-pp.show_mountinfo
-      0.27 ± 10%      -0.0        0.26 ±  7%      -0.0        0.24 ± 13%      -0.0        0.25 ± 12%      -0.0        0.25 ± 13%      -0.0        0.24 ± 12%      -0.0        0.24 ± 18%  perf-profile.self.cycles-pp.native_irq_return_iret
-      0.07 ± 14%      -0.0        0.06 ± 50%      +0.0        0.07 ± 18%      -0.0        0.05 ± 71%      -0.0        0.04 ± 72%      +0.0        0.07 ± 17%      -0.0        0.06 ±  6%  perf-profile.self.cycles-pp.lockref_put_or_lock
-      0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.01 ±223%  perf-profile.self.cycles-pp.ramfs_get_inode
-      0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.01 ±223%  perf-profile.self.cycles-pp.hashmap_get2
-      0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      +0.0        0.02 ±142%      +0.0        0.02 ±144%      +0.0        0.02 ±142%      +0.0        0.02 ±141%  perf-profile.self.cycles-pp.irqtime_account_irq
-      0.03 ± 70%      -0.0        0.03 ±100%      -0.0        0.02 ±141%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.02 ±141%  perf-profile.self.cycles-pp.__lxstat64
-      0.06 ± 73%      -0.0        0.05 ± 48%      -0.0        0.05 ± 51%      +0.0        0.08 ± 21%      +0.0        0.07 ± 21%      +0.0        0.06 ± 52%      -0.0        0.05 ± 46%  perf-profile.self.cycles-pp.rcu_do_batch
-      0.16 ± 13%      -0.0        0.16 ± 17%      -0.0        0.14 ± 12%      -0.0        0.15 ± 20%      -0.0        0.14 ±  5%      -0.0        0.12 ± 11%      -0.0        0.13 ± 14%  perf-profile.self.cycles-pp.get_nr_dirty_inodes
-      0.11 ± 21%      -0.0        0.10 ± 22%      -0.0        0.10 ± 10%      -0.0        0.10 ± 17%      -0.0        0.10 ± 12%      -0.0        0.10 ± 13%      +0.0        0.12 ± 20%  perf-profile.self.cycles-pp.strcmp
-      0.20 ± 22%      -0.0        0.19 ± 16%      +0.0        0.24 ±  8%      +0.1        0.25 ±  8%      +0.1        0.26 ± 10%      +0.0        0.24 ±  8%      +0.0        0.24 ±  7%  perf-profile.self.cycles-pp.__d_lookup
-      0.02 ± 99%      -0.0        0.02 ±144%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.01 ±223%  perf-profile.self.cycles-pp.do_open
-      0.09 ± 15%      -0.0        0.09 ± 20%      -0.0        0.08 ± 18%      -0.0        0.06 ± 80%      -0.0        0.06 ± 48%      -0.0        0.08 ± 46%      -0.0        0.06 ± 48%  perf-profile.self.cycles-pp.rcu_pending
-      0.08 ± 19%      -0.0        0.08 ± 17%      -0.0        0.07 ± 18%      -0.0        0.07 ± 13%      -0.0        0.08 ± 21%      +0.0        0.08 ± 16%      +0.0        0.09 ± 15%  perf-profile.self.cycles-pp.__filename_parentat
-      0.07 ± 14%      -0.0        0.07 ± 45%      -0.0        0.06 ± 51%      -0.0        0.04 ± 72%      -0.0        0.06 ± 48%      -0.0        0.06 ± 50%      -0.0        0.05 ± 46%  perf-profile.self.cycles-pp.exit_to_user_mode_loop
-      0.11 ± 17%      -0.0        0.10 ± 23%      -0.0        0.10 ± 19%      -0.0        0.08 ± 30%      +0.0        0.12 ± 20%      -0.0        0.10 ± 28%      +0.0        0.12 ± 15%  perf-profile.self.cycles-pp.string_escape_mem
-      0.02 ± 99%      -0.0        0.02 ±144%      +0.0        0.03 ± 70%      +0.0        0.03 ±100%      -0.0        0.02 ±142%      -0.0        0.00            +0.0        0.04 ± 73%  perf-profile.self.cycles-pp.strextend_with_separator
-      0.03 ±100%      -0.0        0.02 ±142%      -0.0        0.02 ± 99%      -0.0        0.02 ±141%      +0.0        0.04 ± 72%      +0.0        0.03 ±100%      -0.0        0.01 ±223%  perf-profile.self.cycles-pp.synchronize_rcu_expedited
-      0.16 ±  8%      -0.0        0.15 ± 16%      -0.0        0.14 ± 24%      -0.0        0.12 ± 15%      -0.0        0.12 ±  7%      -0.0        0.14 ± 14%      -0.0        0.14 ± 22%  perf-profile.self.cycles-pp.__update_load_avg_se
-      0.57 ±  5%      -0.0        0.57 ± 13%      -0.1        0.51 ±  9%      -0.0        0.54 ± 10%      -0.0        0.55 ± 15%      -0.1        0.52 ±  7%      -0.0        0.55 ± 10%  perf-profile.self.cycles-pp.link_path_walk
-      0.38 ± 10%      -0.0        0.38 ± 16%      -0.0        0.36 ±  8%      -0.0        0.38 ± 18%      -0.1        0.31 ±  9%      -0.0        0.35 ±  5%      -0.0        0.33 ± 13%  perf-profile.self.cycles-pp.__sync_rcu_exp_select_node_cpus
-      0.14 ± 21%      -0.0        0.13 ± 21%      -0.0        0.12 ± 21%      -0.0        0.13 ± 17%      -0.0        0.12 ± 12%      -0.0        0.14 ± 14%      -0.0        0.12 ± 18%  perf-profile.self.cycles-pp.xas_store
-      0.16 ± 12%      -0.0        0.16 ± 17%      -0.0        0.14 ± 11%      -0.0        0.13 ± 13%      -0.0        0.14 ±  8%      -0.0        0.13 ± 21%      -0.0        0.11 ± 20%  perf-profile.self.cycles-pp.rcu_segcblist_enqueue
-      0.24 ± 10%      -0.0        0.23 ±  9%      -0.0        0.23 ± 10%      -0.0        0.22 ± 15%      -0.0        0.22 ±  8%      -0.0        0.22 ± 12%      -0.0        0.22 ± 19%  perf-profile.self.cycles-pp.entry_SYSCALL_64_after_hwframe
-      0.06 ± 11%      -0.0        0.06 ± 48%      -0.0        0.05 ± 73%      -0.0        0.04 ± 71%      +0.0        0.07 ± 18%      -0.0        0.03 ±101%      -0.0        0.05 ± 46%  perf-profile.self.cycles-pp._atomic_dec_and_lock
-      0.12 ± 30%      -0.0        0.12 ± 14%      -0.0        0.12 ± 14%      -0.0        0.10 ± 21%      -0.0        0.11 ± 19%      +0.0        0.12 ± 23%      +0.0        0.13 ± 24%  perf-profile.self.cycles-pp.realloc
-      0.03 ±103%      -0.0        0.03 ±100%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.02 ± 99%      -0.0        0.03 ±100%  perf-profile.self.cycles-pp.worker_thread
-      0.05 ± 51%      -0.0        0.05 ± 45%      -0.0        0.03 ±101%      -0.0        0.03 ±103%      -0.0        0.02 ±142%      -0.0        0.03 ±103%      -0.0        0.05 ± 45%  perf-profile.self.cycles-pp.resched_curr
-      0.04 ±101%      -0.0        0.03 ±108%      -0.0        0.02 ±141%      +0.0        0.04 ± 73%      +0.0        0.05 ± 46%      +0.0        0.04 ± 71%      +0.0        0.04 ± 76%  perf-profile.self.cycles-pp.os_xsave
-      0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.00        perf-profile.self.cycles-pp.tick_nohz_next_event
-      0.05 ± 47%      -0.0        0.04 ± 77%      -0.0        0.04 ± 72%      -0.0        0.04 ± 75%      -0.0        0.04 ± 71%      +0.0        0.06 ± 50%      -0.0        0.04 ±101%  perf-profile.self.cycles-pp.memcpy@plt
-      0.06 ±  7%      -0.0        0.06 ± 52%      +0.1        0.12 ± 13%      +0.1        0.13 ± 17%      +0.0        0.11 ±  9%      +0.0        0.11 ± 12%      +0.1        0.12 ± 15%  perf-profile.self.cycles-pp.delayed_free_vfsmnt
-      0.17 ± 17%      -0.0        0.16 ± 17%      -0.0        0.14 ± 14%      -0.0        0.15 ± 30%      -0.0        0.15 ± 18%      -0.0        0.14 ± 16%      -0.0        0.13 ± 14%  perf-profile.self.cycles-pp.get_nr_inodes
-      0.11 ± 19%      -0.0        0.11 ± 23%      -0.0        0.10 ± 13%      -0.0        0.10 ± 27%      -0.0        0.10 ± 25%      -0.0        0.10 ± 21%      -0.0        0.10 ± 23%  perf-profile.self.cycles-pp.update_sd_lb_stats
-      0.16 ± 15%      -0.0        0.15 ± 12%      -0.0        0.14 ± 17%      -0.0        0.13 ± 22%      -0.0        0.12 ± 16%      -0.0        0.12 ± 12%      -0.0        0.14 ± 13%  perf-profile.self.cycles-pp.getname_flags
-      0.48 ±  9%      -0.0        0.48 ±  8%      -0.0        0.44 ± 12%      -0.0        0.46 ±  5%      -0.0        0.45 ±  6%      -0.0        0.44 ±  9%      -0.1        0.43 ±  7%  perf-profile.self.cycles-pp.memcg_slab_post_alloc_hook
-      0.26 ± 15%      -0.0        0.26 ± 18%      +0.0        0.26 ±  9%      -0.0        0.24 ± 13%      -0.0        0.22 ± 13%      -0.0        0.26 ±  8%      -0.0        0.24 ± 14%  perf-profile.self.cycles-pp.rep_movs_alternative
-      0.16 ± 23%      -0.0        0.16 ± 25%      -0.0        0.12 ± 17%      -0.0        0.14 ± 11%      -0.0        0.12 ± 17%      -0.1        0.10 ± 15%      -0.1        0.11 ± 27%  perf-profile.self.cycles-pp.enqueue_entity
-      0.11 ± 16%      -0.0        0.11 ± 22%      -0.0        0.10 ±  9%      -0.0        0.09 ± 15%      -0.0        0.09 ± 27%      -0.0        0.09 ± 18%      -0.0        0.09 ± 18%  perf-profile.self.cycles-pp.finish_task_switch
-      0.16 ± 15%      -0.0        0.16 ± 24%      +0.0        0.16 ±  6%      -0.0        0.15 ±  5%      +0.0        0.18 ± 25%      +0.0        0.16 ± 19%      +0.0        0.17 ± 17%  perf-profile.self.cycles-pp.strchr@plt
-      0.13 ± 13%      -0.0        0.13 ± 17%      +0.0        0.15 ± 21%      +0.0        0.14 ± 24%      +0.0        0.16 ±  7%      -0.0        0.12 ± 12%      -0.0        0.13 ± 18%  perf-profile.self.cycles-pp.read_tsc
-      0.05 ± 77%      -0.0        0.05 ± 46%      -0.0        0.04 ± 72%      -0.0        0.05 ± 47%      +0.0        0.06 ± 47%      -0.0        0.05 ± 46%      -0.0        0.05 ± 73%  perf-profile.self.cycles-pp.generic_fillattr
-      0.05 ± 46%      -0.0        0.05 ± 46%      -0.0        0.05 ± 76%      -0.0        0.04 ± 71%      -0.0        0.04 ± 80%      +0.0        0.05 ± 48%      -0.0        0.03 ±100%  perf-profile.self.cycles-pp.rcu_exp_wait_wake
-      0.06 ± 47%      -0.0        0.06 ± 48%      +0.0        0.07 ± 19%      +0.0        0.08 ± 21%      +0.0        0.08 ± 21%      +0.0        0.06 ± 14%      +0.0        0.08 ± 16%  perf-profile.self.cycles-pp.kernfs_dop_revalidate
-      0.02 ±141%      -0.0        0.02 ±142%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.radix_tree_node_rcu_free
-      0.02 ±142%      -0.0        0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%  perf-profile.self.cycles-pp.show_type
-      0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.00            +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.00        perf-profile.self.cycles-pp.release_pages
-      0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      +0.0        0.02 ±142%      +0.0        0.01 ±223%      +0.0        0.02 ±142%      -0.0        0.00        perf-profile.self.cycles-pp.xa_load
-      0.01 ±223%      -0.0        0.01 ±223%      +0.0        0.02 ±141%      -0.0        0.01 ±223%      +0.0        0.02 ±142%      -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.rwsem_spin_on_owner
-      0.02 ±142%      -0.0        0.02 ±141%      +0.0        0.03 ±100%      +0.0        0.03 ±100%      +0.0        0.03 ±100%      -0.0        0.00            -0.0        0.01 ±223%  perf-profile.self.cycles-pp.__do_sys_newlstat
-      0.03 ±100%      -0.0        0.03 ±100%      -0.0        0.01 ±223%      +0.0        0.03 ±102%      +0.0        0.03 ±102%      -0.0        0.00            -0.0        0.02 ±141%  perf-profile.self.cycles-pp.kmalloc_slab
-      0.10 ± 27%      -0.0        0.10 ± 19%      -0.0        0.09 ± 26%      -0.0        0.08 ± 17%      -0.0        0.08 ± 31%      -0.0        0.07 ± 17%      -0.0        0.08 ± 19%  perf-profile.self.cycles-pp._hashmap_iterate
-      0.10 ± 14%      -0.0        0.10 ± 12%      -0.0        0.07 ± 46%      -0.0        0.10 ± 22%      -0.0        0.08 ± 17%      -0.0        0.08 ±  8%      -0.0        0.09 ± 28%  perf-profile.self.cycles-pp.make_vfsuid
-      0.06 ± 47%      -0.0        0.06 ± 46%      -0.0        0.05 ± 48%      -0.0        0.04 ± 75%      +0.0        0.06 ± 13%      -0.0        0.05 ± 46%      +0.0        0.07 ± 16%  perf-profile.self.cycles-pp.__do_sys_newfstat
-      0.20 ±  7%      +0.0        0.20 ± 15%      -0.0        0.16 ±  7%      -0.0        0.17 ± 24%      -0.0        0.17 ± 16%      -0.0        0.16 ± 15%      -0.0        0.18 ± 15%  perf-profile.self.cycles-pp.__virt_addr_valid
-      0.03 ±100%      +0.0        0.03 ±100%      -0.0        0.01 ±223%      -0.0        0.02 ±143%      -0.0        0.00            -0.0        0.00            -0.0        0.02 ±142%  perf-profile.self.cycles-pp.update_rq_clock
-      0.23 ± 14%      +0.0        0.23 ± 14%      -0.0        0.22 ± 15%      -0.0        0.22 ± 10%      -0.0        0.23 ± 16%      -0.0        0.20 ± 11%      +0.0        0.25 ± 21%  perf-profile.self.cycles-pp.vsnprintf
-      0.02 ±144%      +0.0        0.02 ±144%      -0.0        0.01 ±223%      +0.0        0.03 ±100%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.02 ±141%  perf-profile.self.cycles-pp.inode_maybe_inc_iversion
-      0.08 ± 16%      +0.0        0.08 ± 16%      -0.0        0.06 ± 48%      -0.0        0.06 ± 48%      -0.0        0.06 ± 48%      -0.0        0.06 ± 52%      -0.0        0.05 ± 73%  perf-profile.self.cycles-pp.pcpu_block_update_hint_free
-      0.16 ± 17%      +0.0        0.16 ± 14%      -0.0        0.15 ± 11%      -0.0        0.15 ± 12%      +0.0        0.17 ± 14%      -0.0        0.15 ±  6%      -0.0        0.14 ± 14%  perf-profile.self.cycles-pp.syscall_return_via_sysret
-      0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.security_capable
-      0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.lookup_constant
-      0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp._hashmap_get
-      0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            +0.0        0.01 ±223%      +0.0        0.02 ±141%      -0.0        0.00            +0.0        0.02 ±141%  perf-profile.self.cycles-pp.kernfs_iop_getattr
-      0.04 ± 71%      +0.0        0.04 ± 71%      -0.0        0.03 ±101%      -0.0        0.02 ±141%      +0.0        0.04 ± 71%      -0.0        0.04 ±101%      +0.0        0.06 ± 16%  perf-profile.self.cycles-pp.switch_mm_irqs_off
-      0.02 ±141%      +0.0        0.02 ±141%      -0.0        0.01 ±223%      +0.0        0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.asm_sysvec_apic_timer_interrupt
-      0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            +0.0        0.01 ±223%  perf-profile.self.cycles-pp.object_path_is_valid
-      0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            +0.0        0.01 ±223%  perf-profile.self.cycles-pp.__legitimize_path
-      0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%  perf-profile.self.cycles-pp.select_task_rq
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%  perf-profile.self.cycles-pp.activate_task
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%  perf-profile.self.cycles-pp.detach_if_pending
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%  perf-profile.self.cycles-pp.read
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%  perf-profile.self.cycles-pp.strcmp_ptr
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%  perf-profile.self.cycles-pp.__queue_work
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.02 ±141%  perf-profile.self.cycles-pp.mnt_reset_fs
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00        perf-profile.self.cycles-pp._hashmap_size
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00        perf-profile.self.cycles-pp.radix_tree_node_ctor
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00        perf-profile.self.cycles-pp.close_fd
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00        perf-profile.self.cycles-pp._raw_read_unlock_irqrestore
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.switch_fpu_return
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.01 ±223%  perf-profile.self.cycles-pp.mnt_fs_strdup_options
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.01 ±223%  perf-profile.self.cycles-pp.sd_bus_message_open_container
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.01 ±223%  perf-profile.self.cycles-pp.d_flags_for_inode
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00        perf-profile.self.cycles-pp.string
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%  perf-profile.self.cycles-pp.lookup_open
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%  perf-profile.self.cycles-pp.x86_pmu_disable
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.perf_rotate_context
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.do_unlinkat
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.siphash24_finalize@plt
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.namespace_unlock
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.lru_add_fn
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.rmdir
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.scheduler_tick
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.wq_worker_running
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%  perf-profile.self.cycles-pp.unlink
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.locks_remove_posix
-      0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00        perf-profile.self.cycles-pp.__bitmap_set
-      0.15 ± 13%      +0.0        0.15 ± 16%      +0.0        0.16 ± 13%      +0.0        0.16 ± 11%      -0.0        0.15 ± 20%      -0.0        0.14 ± 20%      -0.0        0.14 ± 11%  perf-profile.self.cycles-pp.kfree
-      0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            +0.0        0.01 ±223%  perf-profile.self.cycles-pp.do_umount
-      0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.mutex_spin_on_owner
-      0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.02 ±141%      +0.0        0.01 ±223%      +0.0        0.02 ±141%      -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.shmem_getattr
-      0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.do_sys_openat2
-      0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.d_same_name
-      0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.02 ±223%      +0.0        0.00        perf-profile.self.cycles-pp.timekeeping_max_deferment
-      0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.rcu_segcblist_pend_cbs
-      0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.map_id_range_down
-      0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.cap_capable
-      0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00        perf-profile.self.cycles-pp.siphash24_init@plt
-      0.00            +0.0        0.00            +0.0        0.02 ±141%      +0.0        0.01 ±223%      +0.0        0.02 ±144%      +0.0        0.00            +0.0        0.02 ±141%  perf-profile.self.cycles-pp.srcu_get_delay
-      0.03 ±102%      +0.0        0.03 ±102%      +0.0        0.05 ± 50%      -0.0        0.01 ±223%      -0.0        0.02 ±142%      -0.0        0.02 ±142%      -0.0        0.03 ±100%  perf-profile.self.cycles-pp.call_cpuidle
-      0.00            +0.0        0.00            +0.0        0.02 ±142%      +0.0        0.00            +0.0        0.00            +0.0        0.02 ±141%      +0.0        0.00        perf-profile.self.cycles-pp.error_entry
-      0.00            +0.0        0.00            +0.0        0.02 ±142%      +0.0        0.03 ±100%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%  perf-profile.self.cycles-pp.__timer_delete_sync
-      0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.03 ± 70%      +0.0        0.02 ±141%      +0.0        0.02 ±141%      +0.0        0.01 ±223%      +0.0        0.03 ±100%  perf-profile.self.cycles-pp._dbus_first_type_in_signature
-      0.00            +0.0        0.00            +0.1        0.07 ± 16%      +0.1        0.07 ± 20%      +0.1        0.07 ±  9%      +0.1        0.06 ± 14%      +0.1        0.08 ± 14%  perf-profile.self.cycles-pp.pcpu_next_md_free_region
-      0.00            +0.0        0.00            +0.1        0.08 ± 22%      +0.1        0.07 ± 47%      +0.1        0.07 ± 16%      +0.1        0.06 ± 48%      +0.1        0.09 ± 29%  perf-profile.self.cycles-pp.init_timer_key
-      0.00            +0.0        0.00            +0.1        0.10 ± 10%      +0.1        0.10 ± 27%      +0.1        0.09 ± 23%      +0.1        0.10 ± 18%      +0.1        0.08 ± 14%  perf-profile.self.cycles-pp.__try_to_del_timer_sync
-      0.00            +0.0        0.00            +0.1        0.14 ± 21%      +0.1        0.14 ± 13%      +0.1        0.11 ± 15%      +0.1        0.13 ± 20%      +0.1        0.13 ± 13%  perf-profile.self.cycles-pp.rcu_segcblist_init
-      0.00            +0.0        0.00            +0.2        0.25 ±  5%      +0.3        0.26 ± 11%      +0.3        0.26 ± 13%      +0.3        0.26 ±  7%      +0.3        0.29 ± 14%  perf-profile.self.cycles-pp.init_srcu_struct_fields
-      0.00            +0.0        0.00            +0.6        0.56 ± 10%      +0.5        0.55 ±  3%      +0.5        0.53 ± 14%      +0.5        0.48 ± 10%      +0.6        0.57 ± 10%  perf-profile.self.cycles-pp.cleanup_srcu_struct
-      0.00            +0.0        0.00            +0.6        0.58 ±  6%      +0.6        0.59 ± 15%      +0.5        0.52 ±  8%      +0.5        0.55 ± 10%      +0.5        0.53 ± 14%  perf-profile.self.cycles-pp.srcu_readers_active
-      0.00            +0.0        0.00            +0.6        0.64 ±  5%      +0.6        0.61 ±  6%      +0.6        0.59 ±  8%      +0.6        0.58 ±  9%      +0.6        0.58 ±  7%  perf-profile.self.cycles-pp.lock_timer_base
-      0.11 ±  6%      +0.0        0.11 ± 20%      +0.0        0.11 ± 20%      +0.0        0.12 ± 18%      +0.0        0.12 ±  8%      -0.0        0.10 ± 18%      -0.0        0.11 ± 10%  perf-profile.self.cycles-pp.mutex_unlock
-      0.46 ± 14%      +0.0        0.46 ± 15%      -0.0        0.44 ±  9%      -0.1        0.36 ± 14%      -0.0        0.42 ±  6%      -0.1        0.40 ±  2%      -0.0        0.45 ± 23%  perf-profile.self.cycles-pp.path_init
-      0.08 ± 27%      +0.0        0.08 ± 13%      -0.0        0.05 ± 76%      -0.0        0.08 ± 26%      -0.0        0.06 ± 48%      +0.0        0.08 ± 23%      -0.0        0.06 ± 14%  perf-profile.self.cycles-pp.__srcu_read_unlock
-      0.12 ± 19%      +0.0        0.12 ± 14%      -0.0        0.10 ± 13%      -0.0        0.11 ± 22%      -0.0        0.10 ±  9%      -0.0        0.12 ± 12%      -0.0        0.10 ± 17%  perf-profile.self.cycles-pp.vfs_getattr_nosec
-      0.02 ± 99%      +0.0        0.03 ±100%      -0.0        0.02 ±141%      -0.0        0.01 ±223%      +0.0        0.04 ± 71%      +0.0        0.03 ±100%      -0.0        0.02 ±141%  perf-profile.self.cycles-pp.terminate_walk
-      0.12 ± 22%      +0.0        0.12 ± 17%      +0.0        0.12 ± 27%      +0.0        0.12 ± 17%      +0.0        0.14 ± 19%      +0.0        0.13 ± 20%      +0.0        0.12 ± 14%  perf-profile.self.cycles-pp.get_obj_cgroup_from_current
-      0.04 ± 72%      +0.0        0.04 ± 72%      +0.0        0.05            -0.0        0.02 ±142%      +0.0        0.06 ± 53%      -0.0        0.03 ±101%      -0.0        0.03 ±100%  perf-profile.self.cycles-pp.percpu_counter_add_batch
-      0.04 ± 73%      +0.0        0.04 ± 72%      +0.0        0.06 ± 13%      +0.0        0.06 ± 48%      +0.0        0.04 ± 71%      +0.0        0.06 ± 13%      +0.0        0.07 ± 11%  perf-profile.self.cycles-pp.path_startswith
-      0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.00            +0.0        0.02 ±142%  perf-profile.self.cycles-pp._dbus_marshal_read_uint32
-      0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            -0.0        0.00            +0.0        0.02 ±142%  perf-profile.self.cycles-pp.malloc@plt
-      0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.page_counter_uncharge
-      0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            +0.0        0.01 ±223%      +0.0        0.02 ±141%      +0.0        0.02 ±142%      +0.0        0.01 ±223%  perf-profile.self.cycles-pp.check_stack_object
-      0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      +0.0        0.02 ±141%      -0.0        0.01 ±223%      +0.0        0.01 ±223%  perf-profile.self.cycles-pp.trigger_load_balance
-      0.03 ±100%      +0.0        0.03 ±101%      +0.0        0.03 ±100%      -0.0        0.02 ± 99%      +0.0        0.05 ± 46%      -0.0        0.01 ±223%      +0.0        0.03 ±100%  perf-profile.self.cycles-pp.ep_poll_callback
-      0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.02 ±142%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.greedy_realloc
-      0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.02 ±142%      +0.0        0.02 ±141%      -0.0        0.00            +0.0        0.01 ±223%      -0.0        0.00        perf-profile.self.cycles-pp.check_cpu_stall
-      0.09 ± 25%      +0.0        0.10 ± 16%      -0.0        0.08 ± 21%      -0.0        0.06 ± 11%      -0.0        0.08 ± 24%      -0.0        0.08 ± 18%      -0.0        0.08 ± 25%  perf-profile.self.cycles-pp.slab_pre_alloc_hook
-      0.18 ± 10%      +0.0        0.18 ± 12%      -0.0        0.16 ± 14%      +0.0        0.18 ± 14%      -0.0        0.18 ± 15%      -0.0        0.16 ± 16%      -0.0        0.16 ± 28%  perf-profile.self.cycles-pp.update_load_avg
-      0.07 ± 16%      +0.0        0.07 ± 24%      -0.0        0.05 ± 45%      -0.0        0.06 ± 19%      -0.0        0.04 ± 72%      -0.0        0.03 ±103%      -0.0        0.02 ±146%  perf-profile.self.cycles-pp.prepare_task_switch
-      0.14 ± 11%      +0.0        0.15 ±  8%      -0.0        0.14 ±  7%      +0.0        0.14 ± 12%      -0.0        0.14 ± 16%      -0.0        0.13 ± 18%      -0.0        0.14 ± 20%  perf-profile.self.cycles-pp.down_write
-      0.13 ± 18%      +0.0        0.13 ± 12%      +0.0        0.13 ± 19%      +0.0        0.13 ± 11%      +0.0        0.13 ± 19%      +0.0        0.14 ± 26%      -0.0        0.12 ± 16%  perf-profile.self.cycles-pp.ida_alloc_range
-      0.05 ± 47%      +0.0        0.05 ± 49%      -0.0        0.02 ±142%      -0.0        0.02 ±142%      -0.0        0.02 ±142%      -0.0        0.04 ± 71%      -0.0        0.02 ±141%  perf-profile.self.cycles-pp.__wake_up_common
-      0.06 ± 77%      +0.0        0.07 ± 22%      +0.0        0.06 ± 14%      -0.0        0.06 ± 48%      +0.0        0.07 ± 14%      -0.0        0.05 ± 50%      -0.0        0.04 ± 72%  perf-profile.self.cycles-pp.map_id_up
-      0.02 ± 99%      +0.0        0.03 ±102%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      +0.0        0.03 ±100%      -0.0        0.00            -0.0        0.01 ±223%  perf-profile.self.cycles-pp.nd_jump_root
-      0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00            +0.0        0.02 ±142%      -0.0        0.00        perf-profile.self.cycles-pp.place_entity
-      0.01 ±223%      +0.0        0.01 ±223%      -0.0        0.00            +0.0        0.04 ± 72%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.propagate_one
-      0.03 ±102%      +0.0        0.03 ±108%      +0.0        0.04 ± 71%      +0.0        0.04 ±109%      +0.0        0.04 ± 71%      -0.0        0.02 ±142%      +0.0        0.04 ± 73%  perf-profile.self.cycles-pp.try_to_unlazy
-      0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.03 ±102%      +0.0        0.01 ±223%      +0.0        0.02 ±142%      +0.0        0.01 ±223%      +0.0        0.01 ±223%  perf-profile.self.cycles-pp.calc_global_load_tick
-      0.08 ± 26%      +0.0        0.08 ±  8%      -0.0        0.07 ± 20%      +0.0        0.08 ± 27%      +0.0        0.09 ± 20%      +0.0        0.08 ± 18%      -0.0        0.07 ± 49%  perf-profile.self.cycles-pp.do_filp_open
-      0.10 ± 14%      +0.0        0.10 ± 19%      +0.0        0.10 ± 21%      +0.0        0.10 ± 25%      +0.0        0.11 ± 16%      -0.0        0.09 ±  9%      +0.0        0.10 ± 21%  perf-profile.self.cycles-pp.___slab_alloc
-      0.08 ± 15%      +0.0        0.08 ± 13%      +0.0        0.11 ± 27%      +0.0        0.12 ± 19%      +0.0        0.12 ± 14%      +0.1        0.13 ± 14%      +0.0        0.12 ± 12%  perf-profile.self.cycles-pp.pcpu_block_update
-      0.14 ± 15%      +0.0        0.14 ± 19%      -0.0        0.12 ± 19%      -0.0        0.11 ± 30%      -0.0        0.12 ± 12%      -0.0        0.10 ± 17%      -0.0        0.13 ± 13%  perf-profile.self.cycles-pp.refill_obj_stock
-      0.34 ± 12%      +0.0        0.35 ±  9%      -0.1        0.28 ±  7%      -0.0        0.30 ± 11%      -0.0        0.32 ±  7%      -0.0        0.29 ± 11%      -0.0        0.30 ± 15%  perf-profile.self.cycles-pp.step_into
-      0.04 ± 75%      +0.0        0.05 ± 71%      -0.0        0.03 ±102%      -0.0        0.04 ± 71%      +0.0        0.06 ± 50%      -0.0        0.03 ±101%      +0.0        0.06 ± 49%  perf-profile.self.cycles-pp.getdelim
-      0.04 ± 75%      +0.0        0.05 ± 82%      +0.0        0.04 ± 71%      +0.0        0.05 ± 50%      -0.0        0.02 ±141%      +0.0        0.06 ± 19%      +0.0        0.04 ± 76%  perf-profile.self.cycles-pp.queue_work_on
-      0.19 ± 14%      +0.0        0.20 ± 12%      +0.0        0.23 ± 11%      +0.0        0.23 ±  8%      +0.0        0.21 ± 15%      +0.0        0.21 ± 11%      +0.0        0.22 ± 11%  perf-profile.self.cycles-pp.pcpu_alloc_area
-      0.65 ±  6%      +0.0        0.65 ±  6%      -0.1        0.59 ±  2%      -0.1        0.59 ± 15%      -0.1        0.59 ± 11%      -0.0        0.62 ± 11%      -0.0        0.62 ± 10%  perf-profile.self.cycles-pp.kmem_cache_free
-      0.20 ± 15%      +0.0        0.20 ± 10%      -0.0        0.18 ± 19%      +0.0        0.22 ± 19%      +0.0        0.21 ±  9%      -0.0        0.20 ± 19%      -0.0        0.18 ±  8%  perf-profile.self.cycles-pp._find_next_zero_bit
-      0.25 ± 11%      +0.0        0.26 ±  8%      -0.0        0.24 ± 13%      -0.0        0.24 ±  6%      -0.0        0.22 ±  8%      -0.0        0.22 ± 12%      -0.0        0.24 ± 13%  perf-profile.self.cycles-pp.__kmem_cache_free
-      0.22 ± 14%      +0.0        0.23 ± 22%      +0.2        0.37 ±  7%      +0.1        0.34 ±  8%      +0.1        0.32 ± 18%      +0.1        0.33 ± 13%      +0.1        0.35 ± 12%  perf-profile.self.cycles-pp.rcu_cblist_dequeue
-      0.05 ± 49%      +0.0        0.06 ± 72%      -0.0        0.04 ± 73%      +0.0        0.06 ± 17%      +0.0        0.06 ± 48%      +0.0        0.05 ± 47%      +0.0        0.07 ± 14%  perf-profile.self.cycles-pp.memcg_list_lru_alloc
-      0.02 ±146%      +0.0        0.03 ±100%      -0.0        0.01 ±223%      -0.0        0.02 ±142%      -0.0        0.02 ±141%      -0.0        0.00            +0.0        0.03 ±100%  perf-profile.self.cycles-pp.truncate_inode_pages_range
-      0.02 ±142%      +0.0        0.03 ±100%      -0.0        0.02 ±142%      -0.0        0.01 ±223%      -0.0        0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.00        perf-profile.self.cycles-pp.strncmp
-      0.08 ± 10%      +0.0        0.08 ± 14%      -0.0        0.06 ± 47%      -0.0        0.06 ± 46%      +0.0        0.08 ± 16%      -0.0        0.07 ± 23%      +0.0        0.08 ± 22%  perf-profile.self.cycles-pp.xas_start
-      0.02 ±146%      +0.0        0.03 ±102%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.02 ±142%      +0.0        0.06 ± 49%  perf-profile.self.cycles-pp.strnlen
-      0.02 ±141%      +0.0        0.03 ±100%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.02 ±141%      -0.0        0.00            -0.0        0.02 ±141%  perf-profile.self.cycles-pp.perf_pmu_nop_void
-      0.12 ± 31%      +0.0        0.13 ± 21%      -0.0        0.12 ± 20%      -0.0        0.12 ±  7%      +0.0        0.13 ±  8%      +0.0        0.12 ± 26%      -0.0        0.12 ± 18%  perf-profile.self.cycles-pp.___perf_sw_event
-      0.02 ±141%      +0.0        0.03 ±100%      -0.0        0.02 ±141%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.00            +0.0        0.03 ±100%  perf-profile.self.cycles-pp.__rdgsbase_inactive
-      0.08 ± 14%      +0.0        0.09 ± 17%      +0.0        0.10 ± 27%      +0.0        0.10 ± 19%      +0.0        0.10 ±  9%      -0.0        0.08 ± 16%      +0.0        0.08 ± 17%  perf-profile.self.cycles-pp.llist_add_batch
-      0.04 ± 72%      +0.0        0.05 ± 50%      -0.0        0.03 ±102%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      +0.0        0.05 ± 46%      -0.0        0.00        perf-profile.self.cycles-pp.sync_rcu_exp_select_cpus
-      0.06 ± 49%      +0.0        0.06 ± 65%      +0.0        0.08 ± 22%      +0.0        0.09 ± 17%      +0.0        0.06 ± 51%      +0.0        0.08 ± 14%      +0.0        0.10 ± 25%  perf-profile.self.cycles-pp.file_free_rcu
-      0.13 ± 18%      +0.0        0.14 ± 10%      -0.0        0.12 ± 18%      +0.0        0.14 ± 14%      -0.0        0.13 ±  9%      +0.0        0.14 ± 10%      -0.0        0.12 ± 13%  perf-profile.self.cycles-pp.kmem_cache_alloc_lru
-      0.27 ± 16%      +0.0        0.28 ± 14%      -0.0        0.25 ± 19%      +0.0        0.28 ± 22%      -0.0        0.26 ±  9%      -0.0        0.25 ± 15%      +0.0        0.28 ± 13%  perf-profile.self.cycles-pp.__intel_pmu_enable_all
-      0.25 ± 20%      +0.0        0.26 ± 10%      -0.0        0.25 ± 18%      -0.0        0.22 ± 13%      -0.0        0.24 ± 13%      -0.0        0.25 ± 15%      -0.0        0.24 ± 18%  perf-profile.self.cycles-pp.strlen
-      0.35 ±  6%      +0.0        0.36 ± 12%      +0.0        0.36 ± 10%      -0.0        0.31 ± 19%      -0.0        0.34 ± 11%      -0.0        0.34 ±  8%      -0.0        0.33 ± 11%  perf-profile.self.cycles-pp.entry_SYSRETQ_unsafe_stack
-      0.10 ± 22%      +0.0        0.10 ±  9%      -0.0        0.09 ± 13%      -0.0        0.09 ± 19%      -0.0        0.10 ± 30%      -0.0        0.09 ± 17%      +0.0        0.10 ± 25%  perf-profile.self.cycles-pp.__srcu_read_lock
-      0.08 ± 21%      +0.0        0.09 ± 10%      -0.0        0.06 ± 49%      -0.0        0.08 ± 25%      -0.0        0.07 ± 47%      -0.0        0.08 ± 18%      -0.0        0.08 ± 24%  perf-profile.self.cycles-pp.update_irq_load_avg
-      0.12 ± 23%      +0.0        0.13 ± 22%      -0.0        0.10 ± 25%      -0.0        0.12 ± 17%      -0.0        0.12 ± 19%      -0.0        0.11 ± 17%      -0.0        0.11 ± 20%  perf-profile.self.cycles-pp.ct_kernel_exit_state
-      0.06 ± 48%      +0.0        0.06 ± 19%      +0.0        0.06 ± 17%      +0.0        0.06 ± 16%      -0.0        0.05 ± 50%      -0.0        0.05 ± 44%      +0.0        0.08 ± 25%  perf-profile.self.cycles-pp._hashmap_clear
-      0.01 ±223%      +0.0        0.02 ±142%      -0.0        0.00            +0.0        0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.__calc_delta
-      0.01 ±223%      +0.0        0.02 ±141%      -0.0        0.00            +0.0        0.01 ±223%      -0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%  perf-profile.self.cycles-pp.fput
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.stress_ramfs_umount
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.evict
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.tick_nohz_tick_stopped
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.get_partial_node
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.ihold
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.__kmalloc_node_track_caller
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.shmem_evict_inode
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.dbus_message_get_reply_serial
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.shmem_file_read_iter
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.set_cached_acl
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.apparmor_path_unlink
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%  perf-profile.self.cycles-pp.sched_clock_cpu
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00        perf-profile.self.cycles-pp.rcu_sync_init
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.__unfreeze_partials
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.find_busiest_group
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.timerqueue_add
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.xas_create
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.02 ±141%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%  perf-profile.self.cycles-pp._dbus_type_reader_get_current_type
-      0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%  perf-profile.self.cycles-pp.legitimize_links
-      0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.put_fs_context
-      0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00        perf-profile.self.cycles-pp.__fs_parse
-      0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp._find_first_bit
-      0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.02 ±141%      +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%  perf-profile.self.cycles-pp.update_process_times
-      0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00        perf-profile.self.cycles-pp.vfs_unlink
-      0.00            +0.0        0.01 ±223%      +0.0        0.02 ±141%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00        perf-profile.self.cycles-pp.deactivate_super
-      0.00            +0.0        0.01 ±223%      +0.0        0.04 ± 71%      +0.0        0.03 ±106%      +0.0        0.02 ±142%      +0.0        0.04 ± 73%      +0.0        0.04 ±104%  perf-profile.self.cycles-pp.percpu_free_rwsem
-      0.02 ±142%      +0.0        0.03 ±100%      +0.0        0.04 ± 71%      +0.0        0.04 ± 45%      -0.0        0.01 ±223%      +0.0        0.05 ± 46%      +0.0        0.05 ± 49%  perf-profile.self.cycles-pp.rb_erase
-      0.02 ±141%      +0.0        0.02 ± 99%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.00        perf-profile.self.cycles-pp.__hrtimer_next_event_base
-      0.02 ±141%      +0.0        0.02 ± 99%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.01 ±223%  perf-profile.self.cycles-pp._IO_link_in
-      0.03 ±101%      +0.0        0.04 ± 72%      +0.0        0.03 ±102%      -0.0        0.02 ±142%      +0.0        0.05 ± 80%      +0.0        0.07 ± 16%      +0.0        0.05 ± 51%  perf-profile.self.cycles-pp.cpuacct_charge
-      0.08 ± 13%      +0.0        0.09 ± 23%      -0.0        0.08 ± 27%      +0.0        0.09 ±  8%      -0.0        0.07 ± 12%      +0.0        0.08 ± 13%      -0.0        0.07 ± 52%  perf-profile.self.cycles-pp.inode_init_always
-      0.12 ±  8%      +0.0        0.12 ± 15%      +0.0        0.12 ± 15%      -0.0        0.10 ±  9%      -0.0        0.11 ± 15%      -0.0        0.10 ± 18%      -0.0        0.10 ± 23%  perf-profile.self.cycles-pp.strlcat
-      0.27 ± 27%      +0.0        0.28 ± 15%      +0.0        0.27 ± 12%      -0.0        0.23 ± 20%      +0.0        0.27 ± 11%      -0.0        0.26 ± 10%      -0.0        0.27 ± 18%  perf-profile.self.cycles-pp.format_decode
-      0.26 ± 53%      +0.0        0.28 ± 54%      -0.1        0.17 ± 24%      -0.0        0.23 ± 50%      -0.1        0.20 ± 71%      -0.0        0.24 ± 53%      -0.1        0.20 ± 55%  perf-profile.self.cycles-pp.ktime_get
-      0.09 ± 28%      +0.0        0.10 ± 12%      +0.0        0.09 ± 22%      +0.0        0.11 ± 14%      +0.0        0.10 ± 25%      +0.0        0.12 ±  9%      +0.0        0.11 ± 18%  perf-profile.self.cycles-pp.mutex_lock_killable
-      0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.02 ±141%      +0.0        0.02 ±142%  perf-profile.self.cycles-pp.rb_next
-      0.01 ±223%      +0.0        0.02 ±142%      +0.0        0.01 ±223%      +0.0        0.02 ±146%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.01 ±223%  perf-profile.self.cycles-pp.seq_puts
-      0.04 ± 75%      +0.0        0.05 ± 46%      +0.0        0.04 ± 75%      -0.0        0.02 ±144%      +0.0        0.05 ± 45%      +0.0        0.04 ± 75%      -0.0        0.04 ± 72%  perf-profile.self.cycles-pp.kernfs_get_target_path
-      0.05 ± 46%      +0.0        0.06 ± 17%      +0.0        0.06 ± 19%      -0.0        0.03 ±108%      +0.0        0.06 ± 27%      +0.0        0.06 ± 13%      +0.0        0.06 ± 49%  perf-profile.self.cycles-pp.path_equal
-      0.16 ±  6%      +0.0        0.17 ± 22%      +0.0        0.16 ±  5%      +0.0        0.19 ± 17%      +0.0        0.19 ± 18%      +0.0        0.18 ± 10%      +0.0        0.17 ± 11%  perf-profile.self.cycles-pp.alloc_vfsmnt
-      0.13 ± 14%      +0.0        0.14 ± 26%      +0.0        0.14 ± 20%      -0.0        0.12 ± 14%      +0.0        0.13 ± 21%      +0.0        0.13 ± 22%      -0.0        0.12 ± 22%  perf-profile.self.cycles-pp.idle_cpu
-      0.24 ± 12%      +0.0        0.25 ± 18%      +0.0        0.27 ± 14%      +0.0        0.28 ±  7%      +0.1        0.29 ±  6%      +0.0        0.26 ±  2%      +0.0        0.28 ± 13%  perf-profile.self.cycles-pp.__cond_resched
-      0.38 ± 16%      +0.0        0.39 ±  7%      -0.0        0.35 ±  9%      -0.0        0.36 ± 11%      -0.0        0.36            -0.0        0.37 ± 19%      -0.0        0.36 ± 14%  perf-profile.self.cycles-pp.__kmem_cache_alloc_node
-      0.05 ± 46%      +0.0        0.06 ± 50%      -0.0        0.01 ±223%      -0.0        0.03 ±100%      -0.0        0.03 ±100%      -0.0        0.02 ±142%      -0.0        0.03 ±100%  perf-profile.self.cycles-pp.ida_free
-      0.25 ± 21%      +0.0        0.26 ± 20%      -0.0        0.24 ± 12%      -0.0        0.23 ± 20%      +0.0        0.27 ± 10%      -0.0        0.24 ± 10%      +0.0        0.26 ± 14%  perf-profile.self.cycles-pp.unit_name_is_valid
-      0.11 ± 22%      +0.0        0.12 ±  9%      +0.0        0.11 ± 10%      +0.0        0.11 ±  6%      +0.0        0.12 ±  6%      -0.0        0.11 ± 14%      -0.0        0.10 ± 16%  perf-profile.self.cycles-pp.obj_cgroup_charge
-      0.04 ± 71%      +0.0        0.06 ± 48%      +0.0        0.04 ± 47%      +0.0        0.06 ± 47%      +0.0        0.05 ± 49%      +0.0        0.04 ± 74%      +0.0        0.06 ± 47%  perf-profile.self.cycles-pp.__bitmap_clear
-      0.13 ± 14%      +0.0        0.14 ± 23%      +0.0        0.13 ± 19%      -0.0        0.11 ± 18%      -0.0        0.11 ± 24%      -0.0        0.10 ± 18%      -0.0        0.10 ± 20%  perf-profile.self.cycles-pp.update_curr
-      0.11 ± 20%      +0.0        0.12 ± 29%      +0.0        0.11 ± 15%      +0.0        0.12 ±  9%      +0.0        0.13 ± 12%      +0.0        0.13 ± 16%      -0.0        0.11 ± 26%  perf-profile.self.cycles-pp.lockref_get
-      0.14 ± 14%      +0.0        0.15 ± 13%      +0.0        0.15 ± 13%      -0.0        0.12 ± 15%      +0.0        0.15 ± 17%      -0.0        0.12 ± 14%      +0.0        0.15 ± 10%  perf-profile.self.cycles-pp.device_read_uevent_file
-      0.04 ± 76%      +0.0        0.06 ± 50%      -0.0        0.02 ±142%      -0.0        0.03 ±100%      +0.0        0.05 ± 46%      -0.0        0.04 ± 73%      +0.0        0.05 ± 73%  perf-profile.self.cycles-pp.__libc_calloc
-      0.00            +0.0        0.01 ±223%      +0.1        0.06 ± 49%      +0.1        0.06 ± 55%      +0.0        0.04 ± 73%      +0.0        0.05 ± 77%      +0.1        0.05 ± 49%  perf-profile.self.cycles-pp.get_mountpoint
-      0.12 ± 21%      +0.0        0.13 ± 11%      -0.0        0.11 ± 19%      -0.0        0.11 ± 17%      -0.0        0.10 ± 30%      -0.0        0.11 ± 12%      +0.0        0.12 ±  9%  perf-profile.self.cycles-pp.cp_new_stat
-      1.41 ±  9%      +0.0        1.42 ±  7%      +0.5        1.91 ±  3%      +0.6        2.00 ±  6%      +0.6        2.06 ±  5%      +0.6        2.05 ±  3%      +0.6        1.98 ±  7%  perf-profile.self.cycles-pp.memset_orig
-      0.05 ± 71%      +0.0        0.06 ± 13%      -0.0        0.01 ±223%      -0.0        0.03 ±108%      -0.0        0.04 ± 71%      -0.0        0.02 ±141%      +0.0        0.05 ± 45%  perf-profile.self.cycles-pp.strlcpy
-      0.05 ± 74%      +0.0        0.06 ± 46%      +0.0        0.07 ± 15%      +0.0        0.08 ± 35%      +0.0        0.08 ±  5%      +0.0        0.09 ± 13%      +0.0        0.09 ± 19%  perf-profile.self.cycles-pp.pcpu_next_fit_region
-      0.21 ± 10%      +0.0        0.22 ± 17%      -0.0        0.19 ± 22%      +0.0        0.21 ± 26%      +0.0        0.22 ± 17%      -0.0        0.17 ± 19%      -0.0        0.18 ± 24%  perf-profile.self.cycles-pp.lapic_next_deadline
-      0.06 ± 52%      +0.0        0.07 ± 16%      +0.0        0.06 ± 46%      -0.0        0.03 ±102%      -0.0        0.03 ±103%      -0.0        0.04 ± 77%      -0.0        0.02 ±142%  perf-profile.self.cycles-pp.update_cfs_group
-      0.22 ± 13%      +0.0        0.24 ± 17%      +0.0        0.23 ± 12%      -0.0        0.22 ± 12%      +0.0        0.24 ± 15%      +0.0        0.23 ± 12%      +0.0        0.24 ± 19%  perf-profile.self.cycles-pp.__entry_text_start
-      0.08 ± 32%      +0.0        0.09 ± 22%      +0.0        0.09 ± 15%      +0.0        0.08 ± 17%      -0.0        0.07 ± 16%      +0.0        0.08 ± 25%      +0.0        0.08 ± 19%  perf-profile.self.cycles-pp._copy_to_user
-      0.10 ± 10%      +0.0        0.11 ± 16%      -0.0        0.09 ± 14%      -0.0        0.07 ± 52%      +0.0        0.10 ± 25%      -0.0        0.09 ± 17%      +0.0        0.11 ± 24%  perf-profile.self.cycles-pp.walk_component
-      0.14 ± 16%      +0.0        0.15 ± 18%      -0.0        0.13 ± 18%      +0.0        0.14 ± 24%      +0.0        0.15 ± 27%      -0.0        0.12 ± 17%      +0.0        0.14 ± 13%  perf-profile.self.cycles-pp.task_work_add
-      0.15 ± 19%      +0.0        0.17 ± 14%      -0.0        0.15 ± 18%      -0.0        0.13 ± 22%      +0.0        0.15 ± 10%      -0.0        0.14 ±  5%      -0.0        0.14 ± 16%  perf-profile.self.cycles-pp.apparmor_capable
-      0.09 ± 27%      +0.0        0.10 ± 36%      +0.0        0.09 ± 26%      -0.0        0.08 ± 38%      +0.0        0.10 ± 26%      -0.0        0.08 ± 16%      -0.0        0.07 ± 50%  perf-profile.self.cycles-pp.arch_scale_freq_tick
-      0.05 ± 49%      +0.0        0.06 ± 14%      +0.0        0.06 ± 19%      +0.0        0.06 ± 52%      +0.0        0.08 ± 22%      +0.0        0.05 ± 49%      +0.0        0.06 ± 17%  perf-profile.self.cycles-pp.path_lookupat
-      0.01 ±223%      +0.0        0.02 ±149%      +0.0        0.02 ±141%      +0.0        0.04 ± 79%      -0.0        0.00            -0.0        0.00            +0.0        0.04 ± 71%  perf-profile.self.cycles-pp.i_callback
-      0.02 ±141%      +0.0        0.03 ±102%      +0.0        0.02 ± 99%      +0.0        0.04 ± 73%      +0.0        0.04 ± 72%      -0.0        0.01 ±223%      -0.0        0.01 ±223%  perf-profile.self.cycles-pp.fsnotify_destroy_marks
-      0.06 ± 49%      +0.0        0.08 ± 36%      +0.0        0.07 ± 19%      -0.0        0.06 ± 47%      +0.0        0.08 ± 14%      +0.0        0.07 ± 45%      +0.0        0.08 ± 23%  perf-profile.self.cycles-pp.hashmap_replace
-      1.25 ±  6%      +0.0        1.27 ±  6%      +0.1        1.36 ±  6%      +0.2        1.41 ±  7%      +0.1        1.37 ±  3%      +0.1        1.39 ±  7%      +0.2        1.46 ±  5%  perf-profile.self.cycles-pp._find_next_bit
-      0.14 ±  9%      +0.0        0.15 ±  8%      +0.0        0.15 ± 16%      +0.0        0.14 ± 11%      +0.0        0.15 ± 14%      -0.0        0.13 ± 17%      +0.0        0.15 ± 16%  perf-profile.self.cycles-pp.mntput_no_expire
-      0.01 ±223%      +0.0        0.03 ±100%      +0.0        0.02 ±141%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.01 ±223%      -0.0        0.00        perf-profile.self.cycles-pp.___d_drop
-      0.03 ±101%      +0.0        0.05 ± 45%      +0.0        0.04 ± 72%      -0.0        0.00            -0.0        0.01 ±223%      -0.0        0.02 ±142%      +0.0        0.03 ±101%  perf-profile.self.cycles-pp.hrtimer_interrupt
-      0.07 ± 17%      +0.0        0.09 ±  9%      -0.0        0.07 ± 17%      +0.0        0.09 ± 12%      +0.0        0.10 ± 21%      +0.0        0.08 ± 17%      +0.0        0.08 ± 23%  perf-profile.self.cycles-pp.__memset
-      0.04 ± 71%      +0.0        0.05 ± 51%      -0.0        0.02 ± 99%      -0.0        0.02 ±142%      -0.0        0.03 ±101%      -0.0        0.02 ±141%      +0.0        0.04 ± 75%  perf-profile.self.cycles-pp.current_time
-      0.00            +0.0        0.02 ±142%      +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.00            +0.0        0.02 ±141%      +0.0        0.00        perf-profile.self.cycles-pp.put_prev_entity
-      0.01 ±223%      +0.0        0.03 ±100%      +0.0        0.02 ±146%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.02 ±142%      +0.0        0.03 ±100%  perf-profile.self.cycles-pp.strnlen_user
-      0.00            +0.0        0.02 ±142%      +0.0        0.02 ±142%      +0.0        0.01 ±223%      +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.03 ±100%  perf-profile.self.cycles-pp.strscpy
-      0.09 ± 16%      +0.0        0.11 ± 24%      +0.0        0.11 ± 15%      +0.0        0.10 ± 25%      -0.0        0.08 ± 21%      +0.0        0.10 ± 15%      +0.0        0.10 ± 17%  perf-profile.self.cycles-pp.__flush_smp_call_function_queue
-      0.06 ± 72%      +0.0        0.08 ± 16%      -0.0        0.05 ± 45%      +0.0        0.07 ± 16%      +0.0        0.08 ± 14%      +0.0        0.08 ± 25%      -0.0        0.06 ± 74%  perf-profile.self.cycles-pp.__fxstat64
-      0.12 ± 24%      +0.0        0.14 ± 10%      -0.0        0.12 ± 14%      +0.0        0.12 ±  7%      +0.0        0.13 ± 13%      -0.0        0.12 ± 19%      +0.0        0.12 ±  7%  perf-profile.self.cycles-pp.up_write
-      0.06 ± 17%      +0.0        0.08 ± 21%      +0.0        0.07 ± 45%      -0.0        0.06 ± 51%      +0.0        0.07 ± 23%      +0.0        0.07 ± 20%      +0.0        0.07 ± 52%  perf-profile.self.cycles-pp.mangle_path
-      0.05 ± 47%      +0.0        0.07 ± 28%      -0.0        0.04 ± 72%      -0.0        0.02 ± 99%      -0.0        0.02 ±141%      -0.0        0.02 ±144%      -0.0        0.02 ± 99%  perf-profile.self.cycles-pp.__hrtimer_run_queues
-      0.02 ±141%      +0.0        0.04 ± 71%      +0.0        0.02 ±142%      -0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            -0.0        0.00        perf-profile.self.cycles-pp.commit_tree
-      0.00            +0.0        0.02 ±144%      +0.0        0.01 ±223%      +0.0        0.02 ±141%      +0.0        0.00            +0.0        0.00            +0.0        0.01 ±223%  perf-profile.self.cycles-pp.select_task_rq_fair
-      0.03 ± 70%      +0.0        0.05 ± 48%      -0.0        0.02 ±141%      +0.0        0.04 ± 72%      -0.0        0.03 ±102%      +0.0        0.04 ± 75%      -0.0        0.03 ±102%  perf-profile.self.cycles-pp.apparmor_file_open
-      0.02 ±142%      +0.0        0.04 ± 72%      -0.0        0.01 ±223%      +0.0        0.02 ± 99%      +0.0        0.02 ±141%      -0.0        0.01 ±223%      +0.0        0.06 ± 11%  perf-profile.self.cycles-pp.open64
-      0.05 ± 46%      +0.0        0.07 ± 20%      +0.0        0.06 ± 16%      -0.0        0.04 ± 73%      +0.0        0.05 ± 47%      -0.0        0.04 ± 71%      +0.0        0.06 ± 13%  perf-profile.self.cycles-pp._copy_from_user
-      0.08 ± 48%      +0.0        0.10 ± 18%      +0.0        0.09 ± 19%      +0.0        0.08 ± 24%      +0.0        0.10 ± 27%      +0.0        0.09 ± 12%      +0.0        0.09 ± 21%  perf-profile.self.cycles-pp._IO_default_xsputn
-      0.03 ±100%      +0.0        0.05 ± 46%      +0.0        0.04 ± 71%      -0.0        0.01 ±223%      +0.0        0.03 ±101%      +0.0        0.04 ± 71%      +0.0        0.03 ±101%  perf-profile.self.cycles-pp.rcu_nocb_try_bypass
-      0.40 ± 15%      +0.0        0.42 ± 15%      +0.1        0.45 ± 11%      +0.0        0.41 ±  6%      +0.1        0.45 ±  8%      -0.0        0.40 ± 13%      +0.1        0.46 ± 19%  perf-profile.self.cycles-pp.path_compare
-      0.40 ±  2%      +0.0        0.42 ±  8%      -0.0        0.36 ±  4%      -0.0        0.40 ± 10%      -0.0        0.36 ± 13%      -0.0        0.37 ± 15%      -0.0        0.36 ± 11%  perf-profile.self.cycles-pp.mod_objcg_state
-      0.05 ± 45%      +0.0        0.07 ± 21%      -0.0        0.04 ± 73%      +0.0        0.06 ± 46%      +0.0        0.05 ± 51%      +0.0        0.06 ± 11%      +0.0        0.06 ± 16%  perf-profile.self.cycles-pp.task_work_run
-      0.00            +0.0        0.02 ±146%      +0.0        0.01 ±223%      +0.0        0.02 ±142%      +0.0        0.02 ±142%      +0.0        0.01 ±223%      +0.0        0.03 ±100%  perf-profile.self.cycles-pp.strcmp@plt
-      0.02 ±142%      +0.0        0.04 ± 73%      +0.0        0.03 ±103%      +0.0        0.03 ±100%      -0.0        0.02 ±141%      +0.0        0.02 ± 99%      +0.0        0.05 ± 47%  perf-profile.self.cycles-pp.pcpu_find_block_fit
-      0.44 ± 13%      +0.0        0.46 ± 16%      +0.0        0.46 ± 12%      -0.0        0.43 ± 10%      +0.0        0.45 ±  9%      +0.0        0.48 ±  6%      +0.1        0.50 ± 17%  perf-profile.self.cycles-pp.rdrand
-      0.01 ±223%      +0.0        0.03 ± 70%      +0.0        0.01 ±223%      -0.0        0.00            -0.0        0.00            +0.0        0.02 ±142%      +0.0        0.03 ±100%  perf-profile.self.cycles-pp.should_failslab
-      0.04 ± 71%      +0.0        0.06 ±  9%      +0.0        0.05 ± 46%      +0.0        0.05 ± 46%      -0.0        0.04 ±105%      -0.0        0.03 ±102%      +0.0        0.06 ± 46%  perf-profile.self.cycles-pp.sync_regs
-      1.52 ±  7%      +0.0        1.54 ±  7%      -0.1        1.45 ±  5%      -0.1        1.41 ± 11%      -0.1        1.46 ±  5%      -0.1        1.43 ±  4%      -0.1        1.45 ±  5%  perf-profile.self.cycles-pp._raw_spin_lock
-      0.13 ±  9%      +0.0        0.15 ±  4%      -0.0        0.12 ±  8%      -0.0        0.11 ± 14%      -0.0        0.10 ± 20%      -0.0        0.11 ± 14%      -0.0        0.11 ± 12%  perf-profile.self.cycles-pp.process_one_work
-      0.22 ± 10%      +0.0        0.24 ±  8%      -0.0        0.21 ± 14%      +0.0        0.23 ± 10%      -0.0        0.20 ± 17%      -0.0        0.20 ± 16%      -0.0        0.20 ± 11%  perf-profile.self.cycles-pp.generic_permission
-      0.27 ± 17%      +0.0        0.30 ± 16%      +0.0        0.31 ± 11%      +0.0        0.27 ± 13%      +0.0        0.28 ±  9%      +0.0        0.28 ±  5%      +0.0        0.30 ± 22%  perf-profile.self.cycles-pp.cfree
-      0.00            +0.0        0.03 ±102%      +0.0        0.00            +0.0        0.02 ±141%      +0.0        0.00            +0.0        0.01 ±223%      +0.0        0.01 ±223%  perf-profile.self.cycles-pp.path_openat
-      0.06 ± 45%      +0.0        0.08 ± 20%      +0.0        0.06 ± 47%      +0.0        0.08 ± 27%      +0.0        0.06 ± 45%      +0.0        0.08 ± 12%      +0.0        0.07 ± 49%  perf-profile.self.cycles-pp.__pthread_mutex_lock
-      0.18 ± 13%      +0.0        0.20 ± 14%      +0.0        0.18 ± 17%      -0.0        0.17 ± 20%      -0.0        0.17 ± 16%      -0.0        0.15 ±  9%      +0.0        0.18 ± 16%  perf-profile.self.cycles-pp.strchr
-      0.17 ±  5%      +0.0        0.20 ± 24%      +0.0        0.18 ± 19%      +0.0        0.18 ± 16%      -0.0        0.15 ± 13%      -0.0        0.14 ± 21%      -0.0        0.16 ± 19%  perf-profile.self.cycles-pp.cpu_util
-      0.37 ± 16%      +0.0        0.40 ± 12%      +0.0        0.40 ± 18%      -0.0        0.32 ± 14%      +0.0        0.41 ± 17%      +0.0        0.38 ± 10%      +0.1        0.43 ± 15%  perf-profile.self.cycles-pp.siphash24_finalize
-      0.23 ±  8%      +0.0        0.26 ± 16%      -0.0        0.23 ± 15%      -0.0        0.23 ± 23%      -0.0        0.22 ±  7%      -0.0        0.21 ± 13%      +0.0        0.24 ± 17%  perf-profile.self.cycles-pp.menu_select
-      0.58 ±  7%      +0.0        0.61 ±  3%      -0.1        0.52 ±  6%      -0.1        0.51 ±  7%      -0.1        0.50 ±  8%      -0.1        0.49 ±  6%      -0.1        0.50 ±  4%  perf-profile.self.cycles-pp.rwsem_optimistic_spin
-      0.38 ± 10%      +0.0        0.42 ± 16%      -0.0        0.37 ± 13%      -0.0        0.38 ± 22%      -0.0        0.35 ± 13%      -0.0        0.34 ± 18%      -0.0        0.34 ± 22%  perf-profile.self.cycles-pp.cpuidle_enter_state
-      0.00            +0.0        0.04 ± 71%      +0.0        0.01 ±223%      +0.0        0.00            +0.0        0.02 ±141%      +0.0        0.00            +0.0        0.03 ±103%  perf-profile.self.cycles-pp.__x64_sys_openat
-      0.78 ±  6%      +0.0        0.82 ± 14%      -0.1        0.71 ±  6%      +0.0        0.80 ± 16%      +0.0        0.79 ±  3%      -0.0        0.73 ± 12%      -0.0        0.74 ± 21%  perf-profile.self.cycles-pp.update_sg_lb_stats
-      0.04 ± 75%      +0.0        0.08 ± 29%      +0.0        0.07 ± 16%      +0.0        0.06 ± 58%      +0.0        0.05 ± 47%      +0.0        0.05 ± 48%      +0.0        0.05 ± 77%  perf-profile.self.cycles-pp.stress_ramfs_child
-      0.12 ± 19%      +0.0        0.16 ± 14%      +0.0        0.14 ± 17%      +0.0        0.13 ± 19%      +0.0        0.14 ± 16%      +0.0        0.17 ± 11%      +0.0        0.13 ± 18%  perf-profile.self.cycles-pp.enqueue_task_fair
-      0.26 ±  9%      +0.0        0.30 ± 16%      -0.0        0.25 ± 10%      +0.0        0.26 ± 15%      +0.0        0.26 ±  7%      -0.0        0.24 ±  4%      +0.0        0.26 ± 16%  perf-profile.self.cycles-pp.lockref_put_return
-      0.03 ±100%      +0.1        0.08 ± 23%      +0.0        0.06 ± 17%      +0.0        0.04 ± 72%      +0.0        0.06 ± 49%      +0.0        0.06 ± 47%      +0.0        0.07 ± 20%  perf-profile.self.cycles-pp.vfs_create_mount
-      0.51 ± 26%      +0.1        0.62 ± 14%      -0.0        0.49 ± 11%      +0.0        0.56 ± 11%      -0.1        0.46 ±  7%      +0.0        0.56 ± 15%      +0.1        0.56 ± 23%  perf-profile.self.cycles-pp.intel_idle_irq
-     29.89 ± 11%      +1.3       31.23 ±  8%      -0.2       29.70 ±  5%      +0.4       30.26 ±  6%      -0.2       29.74 ±  8%      +1.7       31.55 ±  3%      -0.4       29.53 ± 10%  perf-profile.self.cycles-pp.intel_idle
-
---hc9Gr0BXbCeboWjR--
+Amir.
