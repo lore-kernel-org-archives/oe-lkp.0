@@ -1,296 +1,387 @@
-Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FA0914A94
-	for <oe-lkp@lists.linux.dev>; Mon, 10 Jul 2023 19:13:49 +0000 (UTC)
-Received: by mail-qt1-f180.google.com with SMTP id d75a77b69052e-403b622101bso60601cf.1
-        for <oe-lkp@lists.linux.dev>; Mon, 10 Jul 2023 12:13:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1689016428; x=1691608428;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=F+hA88FR3vPplUQ1011adLOle3GTZBi7T5Emm/QInIk=;
-        b=hmhTZ7NGouMWNCZh6IekL2vgyQ2LQcEvrTPLhV3EfbbMDYQgPoifrRTfhfyWC1qjwF
-         jcwqMTIYqx3ugfS7WWU0d7nTeYwY/UzoOINz9gIbJ+vyj35KKF//xRR3U5KQnRDzCAjx
-         NOH9hJHOa22Y0PJSfCaYk3LpNGL8J9rL2vptOTQHKDfpnT8ZeRpqvRz6B1fmz6zn0oCk
-         XX2c1KLa4qMkvbL6RSgwWQJ01phyuBvysYabdwihfYx52w820th2RzE8OUxdLeO+GWpe
-         3TKF6mEnUEuDRT6zfEqR17JZ5qLx/VSmSiwrOllBseulxCi65qBmsH9Xl95VrEOd3wvH
-         Xpjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1689016428; x=1691608428;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=F+hA88FR3vPplUQ1011adLOle3GTZBi7T5Emm/QInIk=;
-        b=XAA8IL94OlEjGtTmFYHdyzxkMZAh2kBbyZZl7GDBpKm4vWwzYqT0ao8un+Q8ZbQXI1
-         hZWF13NTzYhsLzBLX+jJ/uBf873eDMOL8FHdbkJtlKu7fThAmYNwCg+OfhPhfYERutsM
-         w06XnN0t3bQbVKdRcncdx6vONxfB5LHgPGZvDzvUxEN0IentVHz3/zUp9E7gbBgKItS0
-         7SpBuBwfzYzBurvC2rKc+6Y5Vdxn4bm8Orj5qwD61+0XvqZD7pa/FGblwyk8LcMryF8X
-         Hq6yAnQcwAENvCTf97F36T3A5KXE8ueOamWzpcZ492+0ZCmsvdAPxZQhY9tZU6IHo0D7
-         /now==
-X-Gm-Message-State: ABy/qLbpYvlMGf+MN+wlpAnLbTKcWw16au6d34/OmZPk9Jq/Cou374jG
-	1PNeXY0RFIS1q51ZMcbvnLqqG3L1HJIWRXLSMZdBEg==
-X-Google-Smtp-Source: APBJJlFCs60IYfIke7ip+lzlgj6rKsEJCExfA8nbyBjdWEr2aqsvgey9Fl462Ly/r/Mb35oACz0sHqgwq1Yv0eAnotM=
-X-Received: by 2002:ac8:5882:0:b0:3f9:a78f:c527 with SMTP id
- t2-20020ac85882000000b003f9a78fc527mr17762qta.21.1689016428164; Mon, 10 Jul
- 2023 12:13:48 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A029196
+	for <oe-lkp@lists.linux.dev>; Tue, 11 Jul 2023 00:50:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22480C433C8;
+	Tue, 11 Jul 2023 00:50:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1689036611;
+	bh=mZmsLSP5c8pSPcG/BlSgKxjmgEV+HlIp/6GqTKi3MCE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=EBAlG74wtNwEaFpLHKoRzRSo5JRzTj2CCx44ZJ2KVJZSUMtRYwTuD+7vw2XAo8T/I
+	 WBzkon6LhTYKpSe+WkZmRqxKyNWuO3ZsVbUklHYyoLhsAMn6tf/ZiW+/5OUJehsiov
+	 HZHtrJfNCv9T8sObIkqcgGoROf/psXiQ5+kIRMDYfncyKYrqKRea+EeG60T/nRcoMG
+	 N+v2cXtQN8g+Vw7X+TCu183oy225Bmhy3B70nCEZZzEcTLekRoUpxYvZU7jnWzh8uY
+	 ON0rMlEZ1NObU3vpSvBxVHILIrxnqUsFJ73nXSCPc5+RT/angr39G1FTgEHqTjpU9D
+	 8TpqzegIyimxw==
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-References: <202307101059.86ea1eac-oliver.sang@intel.com>
-In-Reply-To: <202307101059.86ea1eac-oliver.sang@intel.com>
-From: Ian Rogers <irogers@google.com>
-Date: Mon, 10 Jul 2023 12:13:36 -0700
-Message-ID: <CAP-5=fVQc_FioO2QAGrW2B7QMQN8TyD1_Ns=rMNxmGQ9hhPnYQ@mail.gmail.com>
-Subject: Re: [linus:master] [perf parse] 70c90e4a6b: perf-test.perf_hw_event_sample_group.group_sampe_cpu-cycles_cache-misses_and_cpu-cycles_cache-misses_instructions_HAS_FIX_NO_NMI_R1.fail
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org, 
-	Arnaldo Carvalho de Melo <acme@redhat.com>, Kan Liang <kan.liang@linux.intel.com>, 
-	Adrian Hunter <adrian.hunter@intel.com>, Ahmad Yasin <ahmad.yasin@intel.com>, 
-	Alexander Shishkin <alexander.shishkin@linux.intel.com>, Andi Kleen <ak@linux.intel.com>, 
-	Athira Rajeev <atrajeev@linux.vnet.ibm.com>, Caleb Biggers <caleb.biggers@intel.com>, 
-	Edward Baker <edward.baker@intel.com>, Florian Fischer <florian.fischer@muhq.space>, 
-	Ingo Molnar <mingo@redhat.com>, James Clark <james.clark@arm.com>, Jiri Olsa <jolsa@kernel.org>, 
-	John Garry <john.g.garry@oracle.com>, Kajol Jain <kjain@linux.ibm.com>, 
-	Kang Minchul <tegongkang@gmail.com>, Leo Yan <leo.yan@linaro.org>, 
-	Mark Rutland <mark.rutland@arm.com>, Namhyung Kim <namhyung@kernel.org>, 
-	Perry Taylor <perry.taylor@intel.com>, Peter Zijlstra <peterz@infradead.org>, 
-	Ravi Bangoria <ravi.bangoria@amd.com>, Rob Herring <robh@kernel.org>, 
-	Samantha Alt <samantha.alt@intel.com>, Stephane Eranian <eranian@google.com>, 
-	Sumanth Korikkar <sumanthk@linux.ibm.com>, Suzuki Poulouse <suzuki.poulose@arm.com>, 
-	Thomas Richter <tmricht@linux.ibm.com>, Tiezhu Yang <yangtiezhu@loongson.cn>, 
-	Weilin Wang <weilin.wang@intel.com>, Xing Zhengjun <zhengjun.xing@linux.intel.com>, 
-	Yang Jihong <yangjihong1@huawei.com>, linux-perf-users@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Tue, 11 Jul 2023 03:50:05 +0300
+Message-Id: <CTYXI8TL7C36.2SCWH82FAZWBO@suppilovahvero>
+From: "Jarkko Sakkinen" <jarkko@kernel.org>
+To: "Lino Sanfilippo" <LinoSanfilippo@gmx.de>, <peterhuewe@gmx.de>,
+ <jgg@ziepe.ca>
+Cc: <jsnitsel@redhat.com>, <hdegoede@redhat.com>, <oe-lkp@lists.linux.dev>,
+ <lkp@intel.com>, <peter.ujfalusi@linux.intel.com>, <peterz@infradead.org>,
+ <linux@mniewoehner.de>, <linux-integrity@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>, <l.sanfilippo@kunbus.com>,
+ <lukas@wunner.de>, <p.rosenberger@kunbus.com>, "kernel test robot"
+ <yujie.liu@intel.com>
+Subject: Re: [PATCH 3] tpm,tpm_tis: Disable interrupts after 1000 unhandled
+ IRQs
+X-Mailer: aerc 0.14.0
+References: <20230619092219.2600-1-LinoSanfilippo@gmx.de>
+In-Reply-To: <20230619092219.2600-1-LinoSanfilippo@gmx.de>
 
-Hi and thanks for the report, I'm confused by the output. Specifically:
 
-Direct leak of 17544 byte(s) in 51 object(s) allocated from:
-    #0 0x7f49ee50c037 in __interceptor_calloc
-../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:154
-    #1 0x556656895a6b in map__new2 util/map.c:226
-    #2 0x55665687a6ac in machine__addnew_module_map util/machine.c:1039
-    #3 0x556656880bfa in machine__process_kernel_mmap_event util/machine.c:=
-1809
-    #4 0x556656882eb7 in machine__process_mmap_event util/machine.c:1996
-    #5 0x5566567426bd in perf_event__process_mmap util/event.c:370
-    #6 0x5566568b3536 in machines__deliver_event util/session.c:1565
-    #7 0x5566568b4e16 in perf_session__deliver_event util/session.c:1645
-    #8 0x5566568b7ea1 in perf_session__process_event util/session.c:1881
-    #9 0x5566568bed4d in process_simple util/session.c:2442
-    #10 0x5566568bdd9d in reader__read_event util/session.c:2371
-    #11 0x5566568be6dd in reader__process_events util/session.c:2420
-    #12 0x5566568bf506 in __perf_session__process_events util/session.c:246=
-7
-    #13 0x5566568c243e in perf_session__process_events util/session.c:2633
-    #14 0x5566563ff7d9 in __cmd_report
-/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-70c90e4a6b2fbe775b662eafefae51f=
-64d627790/tools/perf/builtin-report.c:989
-    #15 0x55665640be73 in cmd_report
-/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-70c90e4a6b2fbe775b662eafefae51f=
-64d627790/tools/perf/builtin-report.c:1709
-    #16 0x5566566e0d7f in run_builtin
-/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-70c90e4a6b2fbe775b662eafefae51f=
-64d627790/tools/perf/perf.c:323
-    #17 0x5566566e1601 in handle_internal_command
-/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-70c90e4a6b2fbe775b662eafefae51f=
-64d627790/tools/perf/perf.c:377
-    #18 0x5566566e1b33 in run_argv
-/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-70c90e4a6b2fbe775b662eafefae51f=
-64d627790/tools/perf/perf.c:421
-    #19 0x5566566e225f in main
-/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-70c90e4a6b2fbe775b662eafefae51f=
-64d627790/tools/perf/perf.c:537
-    #20 0x7f49ed6b3d09 in __libc_start_main
-(/lib/x86_64-linux-gnu/libc.so.6+0x23d09)
+BTW, you should do next time:
 
-It shows a map being leaked but without the reference count checker
-being enabled, which shouldn't happen given:
-https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/to=
-ols/lib/perf/include/internal/rc_check.h#n12
+git format-patch -v4 to get "[PATCH v4]", which defacto way to mark up
+patch set versions.
 
-Trying to look further, the blamed line is a closing curly for a function:
-https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/to=
-ols/perf/util/machine.c#n1039
-
-As such I'm not sure there is anything actionable here and I suspect
-the underlying issues were fixed with the numerous reference count
-checker fixes to the perf tool.
-
-Thanks,
-Ian
-
-On Sun, Jul 9, 2023 at 8:10=E2=80=AFPM kernel test robot <oliver.sang@intel=
-.com> wrote:
+On Mon Jun 19, 2023 at 12:22 PM EEST, Lino Sanfilippo wrote:
+> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
 >
+> After activation of interrupts for TPM TIS drivers 0-day reports an
+> interrupt storm on an Inspur NF5180M6 server.
 >
-> hi Ian Rogers,
+> Fix this by detecting the storm and falling back to polling:
+> Count the number of unhandled interrupts within a 10 ms time interval. In
+> case that more than 1000 were unhandled deactivate interrupts entirely,
+> deregister the handler and use polling instead.
 >
-> when we reported
-> "[linux-next:master] [perf parse]  70c90e4a6b: perf-test.perf_hw_event_sa=
-mple_group.group_sampe_cpu-cycles_cache-misses_and_cpu-cycles_cache-misses_=
-instructions_HAS_FIX_NO_NMI_R1.fail"
-> on
-> https://lore.kernel.org/all/202306161546.17ace7b9-oliver.sang@intel.com/
-> when this commit is still on linus-next, you mentioned it should be fixed=
- by
-> https://lore.kernel.org/r/20230608232823.4027869-20-irogers@google.com
-> which we noticed is already on mainline now.
->   "1981da1fe2499 perf machine: Don't leak module maps"
+> Also print a note to point to the tpm_tis_dmi_table.
 >
-> now we noticed the commit is on mainline already, and the issues seem sti=
-ll
-> exist. we also tested on latest linus/master linux-next/master when this =
-bisect
-> done, which we confirmed both include 1981da1fe2499. but we found the tes=
+> Since the interrupt deregistration function devm_free_irq() waits for all
+> interrupt handlers to finish, only trigger a worker in the interrupt
+> handler and do the unregistration in the worker to avoid a deadlock.
+>
+> Note: the storm detection logic equals the implementation in
+> note_interrupt() which uses timestamps and counters stored in struct
+> irq_desc. Since this structure is private to the generic interrupt core
+> the TPM TIS core uses its own timestamps and counters. Furthermore the TP=
+M
+> interrupt handler always returns IRQ_HANDLED to prevent the generic
+> interrupt core from processing the interrupt storm.
+>
+> Reported-by: kernel test robot <yujie.liu@intel.com>
+> Closes: https://lore.kernel.org/oe-lkp/202305041325.ae8b0c43-yujie.liu@in=
+tel.com/
+> Suggested-by: Lukas Wunner <lukas@wunner.de>
+> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+> ---
+>  drivers/char/tpm/tpm_tis_core.c | 117 ++++++++++++++++++++++++++++----
+>  drivers/char/tpm/tpm_tis_core.h |   4 ++
+>  2 files changed, 106 insertions(+), 15 deletions(-)
+>
+> Changes to v2:
+> - use define for max number of unhandles irqs(requested by Jarko)
+> - rename intmask to int_mask (requested by Jarko)
+> - rephrased short summary (requested by Jarko)
+> - rename disable_interrupts to tpm_tis_disable_interrupts (requested by J=
+arko)
+> - print info message concerning adding an entry to tpm_tis_dmi_table
+>   (suggested by Jerry)
+> - amended commit message
+> - handle failure of locality request by returning IRQ_NONE
+> - dont take and release locality in __tpm_tis_disable_interrupts but in i=
 ts
-> still failed. so we send this report again FYI.
+> caller
 >
+> diff --git a/drivers/char/tpm/tpm_tis_core.c b/drivers/char/tpm/tpm_tis_c=
+ore.c
+> index 558144fa707a..d42537b985c5 100644
+> --- a/drivers/char/tpm/tpm_tis_core.c
+> +++ b/drivers/char/tpm/tpm_tis_core.c
+> @@ -24,9 +24,12 @@
+>  #include <linux/wait.h>
+>  #include <linux/acpi.h>
+>  #include <linux/freezer.h>
+> +#include <linux/dmi.h>
+>  #include "tpm.h"
+>  #include "tpm_tis_core.h"
+> =20
+> +#define TPM_TIS_MAX_UNHANDLED_IRQS	1000
+> +
+>  static void tpm_tis_clkrun_enable(struct tpm_chip *chip, bool value);
+> =20
+>  static bool wait_for_tpm_stat_cond(struct tpm_chip *chip, u8 mask,
+> @@ -468,25 +471,29 @@ static int tpm_tis_send_data(struct tpm_chip *chip,=
+ const u8 *buf, size_t len)
+>  	return rc;
+>  }
+> =20
+> -static void disable_interrupts(struct tpm_chip *chip)
+> +static void __tpm_tis_disable_interrupts(struct tpm_chip *chip)
+> +{
+> +	struct tpm_tis_data *priv =3D dev_get_drvdata(&chip->dev);
+> +	u32 int_mask =3D 0;
+> +
+> +	tpm_tis_read32(priv, TPM_INT_ENABLE(priv->locality), &int_mask);
+> +	int_mask &=3D ~TPM_GLOBAL_INT_ENABLE;
+> +	tpm_tis_write32(priv, TPM_INT_ENABLE(priv->locality), int_mask);
+> +
+> +	chip->flags &=3D ~TPM_CHIP_FLAG_IRQ;
+> +}
+> +
+> +static void tpm_tis_disable_interrupts(struct tpm_chip *chip)
+>  {
+>  	struct tpm_tis_data *priv =3D dev_get_drvdata(&chip->dev);
+> -	u32 intmask;
+> -	int rc;
+> =20
+>  	if (priv->irq =3D=3D 0)
+>  		return;
+> =20
+> -	rc =3D tpm_tis_read32(priv, TPM_INT_ENABLE(priv->locality), &intmask);
+> -	if (rc < 0)
+> -		intmask =3D 0;
+> -
+> -	intmask &=3D ~TPM_GLOBAL_INT_ENABLE;
+> -	rc =3D tpm_tis_write32(priv, TPM_INT_ENABLE(priv->locality), intmask);
+> +	__tpm_tis_disable_interrupts(chip);
+> =20
+>  	devm_free_irq(chip->dev.parent, priv->irq, chip);
+>  	priv->irq =3D 0;
+> -	chip->flags &=3D ~TPM_CHIP_FLAG_IRQ;
+>  }
+
+These look pretty good.
+
+> =20
+>  /*
+> @@ -552,7 +559,7 @@ static int tpm_tis_send(struct tpm_chip *chip, u8 *bu=
+f, size_t len)
+>  	if (!test_bit(TPM_TIS_IRQ_TESTED, &priv->flags))
+>  		tpm_msleep(1);
+>  	if (!test_bit(TPM_TIS_IRQ_TESTED, &priv->flags))
+> -		disable_interrupts(chip);
+> +		tpm_tis_disable_interrupts(chip);
+>  	set_bit(TPM_TIS_IRQ_TESTED, &priv->flags);
+>  	return rc;
+>  }
+> @@ -752,6 +759,71 @@ static bool tpm_tis_req_canceled(struct tpm_chip *ch=
+ip, u8 status)
+>  	return status =3D=3D TPM_STS_COMMAND_READY;
+>  }
+> =20
+> +static irqreturn_t tpm_tis_reenable_polling(struct tpm_chip *chip)
+
+
+I'd rename this to tpm_tis_revert_interrupts(), as it reverts enabling
+the interrupts. Polling was never enabled in a fully initialized driver
+so the function name is implying something that never happened.
+
+> +{
+> +	struct tpm_tis_data *priv =3D dev_get_drvdata(&chip->dev);
+> +	const char *product;
+> +	const char *vendor;
+> +
+> +	dev_warn(&chip->dev, FW_BUG
+> +		 "TPM interrupt storm detected, polling instead\n");
+> +
+> +	vendor =3D dmi_get_system_info(DMI_SYS_VENDOR);
+> +	product =3D dmi_get_system_info(DMI_PRODUCT_VERSION);
+> +
+> +	if (vendor && product) {
+> +		dev_info(&chip->dev,
+> +			"Consider adding the following entry to tpm_tis_dmi_table:\n");
+> +		dev_info(&chip->dev, "\tDMI_SYS_VENDOR: %s\n", vendor);
+> +		dev_info(&chip->dev, "\tDMI_PRODUCT_VERSION: %s\n", product);
+> +	}
+> +
+> +	if (tpm_tis_request_locality(chip, 0) !=3D 0)
+> +		return IRQ_NONE;
+> +
+> +	__tpm_tis_disable_interrupts(chip);
+> +	tpm_tis_relinquish_locality(chip, 0);
+> +
+> +	/*
+> +	 * devm_free_irq() must not be called from within the interrupt handler=
+,
+> +	 * since this function waits for running handlers to finish and thus it
+> +	 * would deadlock. Instead trigger a worker that takes care of the
+> +	 * unregistration.
+> +	 */
+
+Way too complex description. This should do:
+
+	/* Defer devm_free_irq() outside the interrupt context: */
+
+> +	schedule_work(&priv->free_irq_work);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static irqreturn_t tpm_tis_check_for_interrupt_storm(struct tpm_chip *ch=
+ip)
+
+What does checking interrupt storm mean, anyway?
+
+> +{
+> +	struct tpm_tis_data *priv =3D dev_get_drvdata(&chip->dev);
+> +	irqreturn_t irqret =3D IRQ_HANDLED;
+> +
+> +	/*
+> +	 * The worker to free the TPM interrupt (free_irq_work) may already
+> +	 * be scheduled, so make sure it is not scheduled again.
+> +	 */
+
+I don't understand the text in the comment. It is not even a proper
+sentence ("to work to free").
+
+> +	if (!(chip->flags & TPM_CHIP_FLAG_IRQ))
+> +		return IRQ_HANDLED;
+> +
+> +	if (time_after(jiffies, priv->last_unhandled_irq + HZ/10))
+> +		priv->unhandled_irqs =3D 1;
+> +	else
+> +		priv->unhandled_irqs++;
+> +
+> +	priv->last_unhandled_irq =3D jiffies;
+> +
+> +	if (priv->unhandled_irqs > TPM_TIS_MAX_UNHANDLED_IRQS)
+> +		irqret =3D tpm_tis_reenable_polling(chip);
+> +
+> +	/*
+> +	 * Prevent the genirq code from starting its own interrupt storm
+> +	 * handling by always reporting that the interrupt was handled.
+> +	 */
+
+Ditto, textual content is confusing.
+
+You can either make them more informative, or add a short description
+before the function.
+
+> +	return irqret;
+> +}
+> +
+>  static irqreturn_t tis_int_handler(int dummy, void *dev_id)
+>  {
+>  	struct tpm_chip *chip =3D dev_id;
+> @@ -761,10 +833,10 @@ static irqreturn_t tis_int_handler(int dummy, void =
+*dev_id)
+> =20
+>  	rc =3D tpm_tis_read32(priv, TPM_INT_STATUS(priv->locality), &interrupt)=
+;
+>  	if (rc < 0)
+> -		return IRQ_NONE;
+> +		goto unhandled;
+
+s/unhandled/err/g
+
+> =20
+>  	if (interrupt =3D=3D 0)
+> -		return IRQ_NONE;
+> +		goto unhandled;
+> =20
+>  	set_bit(TPM_TIS_IRQ_TESTED, &priv->flags);
+>  	if (interrupt & TPM_INTF_DATA_AVAIL_INT)
+> @@ -780,10 +852,13 @@ static irqreturn_t tis_int_handler(int dummy, void =
+*dev_id)
+>  	rc =3D tpm_tis_write32(priv, TPM_INT_STATUS(priv->locality), interrupt)=
+;
+>  	tpm_tis_relinquish_locality(chip, 0);
+>  	if (rc < 0)
+> -		return IRQ_NONE;
+> +		goto unhandled;
+> =20
+>  	tpm_tis_read32(priv, TPM_INT_STATUS(priv->locality), &interrupt);
+>  	return IRQ_HANDLED;
+> +
+> +unhandled:
+> +	return tpm_tis_check_for_interrupt_storm(chip);
+>  }
+> =20
+>  static void tpm_tis_gen_interrupt(struct tpm_chip *chip)
+> @@ -804,6 +879,15 @@ static void tpm_tis_gen_interrupt(struct tpm_chip *c=
+hip)
+>  		chip->flags &=3D ~TPM_CHIP_FLAG_IRQ;
+>  }
+> =20
+> +static void tpm_tis_free_irq_func(struct work_struct *work)
+> +{
+> +	struct tpm_tis_data *priv =3D container_of(work, typeof(*priv), free_ir=
+q_work);
+> +	struct tpm_chip *chip =3D priv->chip;
+> +
+> +	devm_free_irq(chip->dev.parent, priv->irq, chip);
+> +	priv->irq =3D 0;
+> +}
+> +
+>  /* Register the IRQ and issue a command that will cause an interrupt. If=
+ an
+>   * irq is seen then leave the chip setup for IRQ operation, otherwise re=
+verse
+>   * everything and leave in polling mode. Returns 0 on success.
+> @@ -816,6 +900,7 @@ static int tpm_tis_probe_irq_single(struct tpm_chip *=
+chip, u32 intmask,
+>  	int rc;
+>  	u32 int_status;
+> =20
+> +	INIT_WORK(&priv->free_irq_work, tpm_tis_free_irq_func);
+> =20
+>  	rc =3D devm_request_threaded_irq(chip->dev.parent, irq, NULL,
+>  				       tis_int_handler, IRQF_ONESHOT | flags,
+> @@ -918,6 +1003,7 @@ void tpm_tis_remove(struct tpm_chip *chip)
+>  		interrupt =3D 0;
+> =20
+>  	tpm_tis_write32(priv, reg, ~TPM_GLOBAL_INT_ENABLE & interrupt);
+> +	flush_work(&priv->free_irq_work);
+> =20
+>  	tpm_tis_clkrun_enable(chip, false);
+> =20
+> @@ -1021,6 +1107,7 @@ int tpm_tis_core_init(struct device *dev, struct tp=
+m_tis_data *priv, int irq,
+>  	chip->timeout_b =3D msecs_to_jiffies(TIS_TIMEOUT_B_MAX);
+>  	chip->timeout_c =3D msecs_to_jiffies(TIS_TIMEOUT_C_MAX);
+>  	chip->timeout_d =3D msecs_to_jiffies(TIS_TIMEOUT_D_MAX);
+> +	priv->chip =3D chip;
+>  	priv->timeout_min =3D TPM_TIMEOUT_USECS_MIN;
+>  	priv->timeout_max =3D TPM_TIMEOUT_USECS_MAX;
+>  	priv->phy_ops =3D phy_ops;
+> @@ -1179,7 +1266,7 @@ int tpm_tis_core_init(struct device *dev, struct tp=
+m_tis_data *priv, int irq,
+>  			rc =3D tpm_tis_request_locality(chip, 0);
+>  			if (rc < 0)
+>  				goto out_err;
+> -			disable_interrupts(chip);
+> +			tpm_tis_disable_interrupts(chip);
+>  			tpm_tis_relinquish_locality(chip, 0);
+>  		}
+>  	}
+> diff --git a/drivers/char/tpm/tpm_tis_core.h b/drivers/char/tpm/tpm_tis_c=
+ore.h
+> index 610bfadb6acf..b1a169d7d1ca 100644
+> --- a/drivers/char/tpm/tpm_tis_core.h
+> +++ b/drivers/char/tpm/tpm_tis_core.h
+> @@ -91,11 +91,15 @@ enum tpm_tis_flags {
+>  };
+> =20
+>  struct tpm_tis_data {
+> +	struct tpm_chip *chip;
+>  	u16 manufacturer_id;
+>  	struct mutex locality_count_mutex;
+>  	unsigned int locality_count;
+>  	int locality;
+>  	int irq;
+> +	struct work_struct free_irq_work;
+> +	unsigned long last_unhandled_irq;
+> +	unsigned int unhandled_irqs;
+>  	unsigned int int_mask;
+>  	unsigned long flags;
+>  	void __iomem *ilb_base_addr;
 >
-> Hello,
->
-> kernel test robot noticed "perf-test.perf_hw_event_sample_group.group_sam=
-pe_cpu-cycles_cache-misses_and_cpu-cycles_cache-misses_instructions_HAS_FIX=
-_NO_NMI_R1.fail" on:
->
-> commit: 70c90e4a6b2fbe775b662eafefae51f64d627790 ("perf parse-events: Avo=
-id scanning PMUs before parsing")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
->
-> [test failed on linus/master 1c7873e3364570ec89343ff4877e0f27a7b21a61]
-> [test failed on linux-next/master 123212f53f3e394c1ae69a58c05dfdda56fec8c=
-6]
->
-> in testcase: perf-test
-> version: perf-test-x86_64-git-1_20220520
-> with following parameters:
->
->         type: lkp
->         group: group-00
->
-> test-description: The internal Perf Test suite.
->
->
-> compiler: gcc-12
-> test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480+ (Sapp=
-hire Rapids) with 256G memory
->
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
->
->
->
->
-> If you fix the issue in a separate patch/commit (i.e. not just a new vers=
-ion of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202307101059.86ea1eac-oliver.san=
-g@intel.com
->
->
-> besides, we also noticed several other cases will fail on this commit but=
- pass
-> on parent:
->
-> 442eeb77044705f2 70c90e4a6b2fbe775b662eafefa
-> ---------------- ---------------------------
->        fail:runs  %reproduction    fail:runs
->            |             |             |
->            :6          100%           6:6     perf-test.perf_hw_event_sam=
-ple_group.group_sampe_cpu-cycles_cache-misses_and_cpu-cycles_cache-misses_i=
-nstructions_HAS_FIX_NO_NMI_R1.fail
->            :6          100%           6:6     perf-test.perf_hw_event_sam=
-ple_group.group_sampe_cpu-cycles_cache-misses_and_cpu-cycles_cache-misses_i=
-nstructions_NO_FIX_HAS_NMI_R1.fail
->            :6          100%           6:6     perf-test.perf_hw_event_sam=
-ple_group.group_sampe_cpu-cycles_instructions_k_HAS_FIX_NO_NMI_R1.fail
->            :6          100%           6:6     perf-test.perf_hw_event_sam=
-ple_group.group_sampe_cpu-cycles_instructions_k_NO_FIX_HAS_NMI_R1.fail
->
->
->
-> 28 test cases pass for perf_hw_event_sample_group test. 4 test cases fail=
- for perf_hw_event_sample_group test.
-> Test Case sampe_cpu-cycles_cache-misses_instructions_NO_FIX_HAS_NMI_R1 PA=
-SS!
-> Test Case group_sampe_cpu-cycles_cache-misses_NO_FIX_HAS_NMI_R1 PASS!
-> Test Case group_sampe_cache-misses_instructions_u_NO_FIX_HAS_NMI_R1 PASS!
-> Test Case group_sampe_cpu-cycles_instructions_k_NO_FIX_HAS_NMI_R1 FAILED!=
-     <----------
-> Test Case group_sampe_cpu-cycles_cache-misses_and_cache-misses_instructio=
-ns_NO_FIX_HAS_NMI_R1 PASS!
-> Test Case group_sampe_cpu-cycles_cache-misses_instructions_NO_FIX_HAS_NMI=
-_R1 PASS!
-> Test Case group_sampe_cpu-cycles_cache-misses_and_cpu-cycles_cache-misses=
-_instructions_NO_FIX_HAS_NMI_R1 FAILED!     <----------
-> Test Case group_sampe_cpu-cycles_cache-misses_instructions_and_cpu-cycles=
-_cache-misses_instructions_NO_FIX_HAS_NMI_R1 PASS!
-> Test Case sampe_cpu-cycles_cache-misses_instructions_HAS_FIX_NO_NMI_R1 PA=
-SS!
-> Test Case group_sampe_cpu-cycles_cache-misses_HAS_FIX_NO_NMI_R1 PASS!
-> Test Case group_sampe_cache-misses_instructions_u_HAS_FIX_NO_NMI_R1 PASS!
-> Test Case group_sampe_cpu-cycles_instructions_k_HAS_FIX_NO_NMI_R1 FAILED!=
-     <----------
-> Test Case group_sampe_cpu-cycles_cache-misses_and_cache-misses_instructio=
-ns_HAS_FIX_NO_NMI_R1 PASS!
-> Test Case group_sampe_cpu-cycles_cache-misses_instructions_HAS_FIX_NO_NMI=
-_R1 PASS!
-> Test Case group_sampe_cpu-cycles_cache-misses_and_cpu-cycles_cache-misses=
-_instructions_HAS_FIX_NO_NMI_R1 FAILED!     <----------
-> Test Case group_sampe_cpu-cycles_cache-misses_instructions_and_cpu-cycles=
-_cache-misses_instructions_HAS_FIX_NO_NMI_R1 PASS!
-> Test Case sampe_bus-cycles_bus-cycles_branch-misses_NO_FIX_HAS_NMI_R0 PAS=
-S!
-> Test Case group_sampe_bus-cycles_bus-cycles_NO_FIX_HAS_NMI_R0 PASS!
-> Test Case group_sampe_bus-cycles_branch-misses_u_NO_FIX_HAS_NMI_R0 PASS!
-> Test Case group_sampe_bus-cycles_branch-misses_k_NO_FIX_HAS_NMI_R0 PASS!
-> Test Case group_sampe_bus-cycles_bus-cycles_and_bus-cycles_branch-misses_=
-NO_FIX_HAS_NMI_R0 PASS!
-> Test Case group_sampe_bus-cycles_bus-cycles_branch-misses_NO_FIX_HAS_NMI_=
-R0 PASS!
-> Test Case group_sampe_bus-cycles_bus-cycles_and_bus-cycles_bus-cycles_bra=
-nch-misses_NO_FIX_HAS_NMI_R0 PASS!
-> Test Case group_sampe_bus-cycles_bus-cycles_branch-misses_and_bus-cycles_=
-bus-cycles_branch-misses_NO_FIX_HAS_NMI_R0 PASS!
-> Test Case sampe_bus-cycles_bus-cycles_branch-misses_HAS_FIX_NO_NMI_R0 PAS=
-S!
-> Test Case group_sampe_bus-cycles_bus-cycles_HAS_FIX_NO_NMI_R0 PASS!
-> Test Case group_sampe_bus-cycles_branch-misses_u_HAS_FIX_NO_NMI_R0 PASS!
-> Test Case group_sampe_bus-cycles_branch-misses_k_HAS_FIX_NO_NMI_R0 PASS!
-> Test Case group_sampe_bus-cycles_bus-cycles_and_bus-cycles_branch-misses_=
-HAS_FIX_NO_NMI_R0 PASS!
-> Test Case group_sampe_bus-cycles_bus-cycles_branch-misses_HAS_FIX_NO_NMI_=
-R0 PASS!
-> Test Case group_sampe_bus-cycles_bus-cycles_and_bus-cycles_bus-cycles_bra=
-nch-misses_HAS_FIX_NO_NMI_R0 PASS!
-> Test Case group_sampe_bus-cycles_bus-cycles_branch-misses_and_bus-cycles_=
-bus-cycles_branch-misses_HAS_FIX_NO_NMI_R0 PASS!
-> perf hardware cache event sample group test
->
->
->
-> To reproduce:
->
->         git clone https://github.com/intel/lkp-tests.git
->         cd lkp-tests
->         sudo bin/lkp install job.yaml           # job file is attached in=
- this email
->         bin/lkp split-job --compatible job.yaml # generate the yaml file =
-for lkp run
->         sudo bin/lkp run generated-yaml-file
->
->         # if come across any failure that blocks the test,
->         # please remove ~/.lkp and /lkp dir to run from a clean state.
->
->
->
-> --
-> 0-DAY CI Kernel Test Service
-> https://github.com/intel/lkp-tests/wiki
->
->
+> base-commit: 45a3e24f65e90a047bef86f927ebdc4c710edaa1
+> --=20
+> 2.40.1
+
+
+BR, Jarkko
