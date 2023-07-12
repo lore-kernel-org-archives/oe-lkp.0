@@ -1,33 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6286019BC2
-	for <oe-lkp@lists.linux.dev>; Tue, 11 Jul 2023 16:41:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1AC4C433C8;
-	Tue, 11 Jul 2023 16:41:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C12E6200DF
+	for <oe-lkp@lists.linux.dev>; Wed, 12 Jul 2023 16:59:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C69A6C433C8;
+	Wed, 12 Jul 2023 16:59:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1689093718;
-	bh=e12fVv+jbg+rtuqgZVdbfY4QsX3pyZ0VOma3IqU2+NY=;
-	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-	b=ZA/ODN8NQ5VUYztVEv5WCj/EDFBzIgVSBCbRM8NBJgB04WuxBTE9U+m3rV/eFzGbY
-	 eecTHXoY3UfvaaRq1fMeI2KQF1UbO21eUW4TJNMFUNxNf4iBfcvUMk6iZDx1QmpKIg
-	 Zl55cGXb2v/WSII0Th2ZwiS2p+K5jJbJ1CWY3Q57xOUrm9h/2jtLwD48dT8zfZnack
-	 tneQPkaq+r3SpbZ5/+y+K83NPjcPN8VE0J+3jyuNe2CEF6anJulMSDWZwENXHnOraY
-	 xSb0/bo+KrIRUmhbrVTQTYewg0IQiu/RQAwCatuKoqmEj9R4WkEVWC32AxRZ53XYAJ
-	 c0kAL6xmQbAvA==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-	id 709E9CE03F1; Tue, 11 Jul 2023 09:41:58 -0700 (PDT)
-Date: Tue, 11 Jul 2023 09:41:58 -0700
-From: "Paul E. McKenney" <paulmck@kernel.org>
-To: Frederic Weisbecker <frederic@kernel.org>
+	s=k20201202; t=1689181181;
+	bh=HQtXkMg12Bx/r1+2FzstJ+bpGVWpL35U0D2HToug0qI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=TbFnCeQ0k4sYSwBow+wy/0KN6BCCfYiinHy1ICWWBFz4isQyRq/qWecNr861xSpdH
+	 FCnO+FW37zj66bmQni5dmPYpoCchqBMJQwde5Co3EYHS9AWTWIFpgvNaP/gzFmfcLw
+	 E59Wp7SItpJ0QExhK3b6kh30OgjJ1cq1h316Jd4D7qPtzOso2nJAsmZM+IL1fTCW8p
+	 rjEGTxddmM/qTfTX2Q4jQ1w9aZUzSeEEK4YEA/NJ8Nv5IU7DCUchrtvo1QeVJtu8I9
+	 DFV4vDFpyJZDGjX/65ZCv/iFdlJhWhN7FByCOcnBt+2gBJIGFE7fRsQFiBqmVaw6Ow
+	 J/2Mkpzn9jsRQ==
+Date: Wed, 12 Jul 2023 18:59:38 +0200
+From: Frederic Weisbecker <frederic@kernel.org>
+To: "Paul E. McKenney" <paulmck@kernel.org>
 Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
 	lkp@intel.com, linux-kernel@vger.kernel.org, rcu@vger.kernel.org
 Subject: Re: [linus:master] [rcu/nocb]  7625926086:
  WARNING:at_kernel/rcu/tree_nocb.h:#rcu_nocb_try_bypass
-Message-ID: <842683bc-5859-48be-8ca5-17a1e4bf3f39@paulmck-laptop>
-Reply-To: paulmck@kernel.org
+Message-ID: <ZK7b+vIJpOZhndbm@lothringen>
 References: <202307111535.4823c255-oliver.sang@intel.com>
  <ZK1983kQCrN+zCqs@lothringen>
+ <842683bc-5859-48be-8ca5-17a1e4bf3f39@paulmck-laptop>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -36,108 +34,29 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZK1983kQCrN+zCqs@lothringen>
+In-Reply-To: <842683bc-5859-48be-8ca5-17a1e4bf3f39@paulmck-laptop>
 
-On Tue, Jul 11, 2023 at 06:06:11PM +0200, Frederic Weisbecker wrote:
-> On Tue, Jul 11, 2023 at 04:48:06PM +0800, kernel test robot wrote:
-> > 
-> > 
-> > Hello,
-> > 
-> > kernel test robot noticed "WARNING:at_kernel/rcu/tree_nocb.h:#rcu_nocb_try_bypass" on:
-> > 
-> > commit: 7625926086765123251f765d91fc3a70617d334d ("rcu/nocb: Fix shrinker race against callback enqueuer")
-> > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> > 
-> > [test failed on linus/master Linux 6.5-rc1]
-> > [test failed on linux-next/master fe57d0d86f03a8b2afe2869a95477d0ed1824c96]
-> > 
-> > in testcase: trinity
-> > version: trinity-i386-abe9de86-1_20230429
-> > with following parameters:
-> > 
-> > 	runtime: 300s
-> > 	group: group-00
-> > 
-> > test-description: Trinity is a linux system call fuzz tester.
-> > test-url: http://codemonkey.org.uk/projects/trinity/
-> > 
-> > 
-> > compiler: gcc-12
-> > test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-> > 
-> > (please refer to attached dmesg/kmsg for entire log/backtrace):
-> > 
-> > 
-> > the WARNING only happens in a low rate (10 out of 204 runs as below).
-> > but since we never observed the issue on parent, and we also noticed
-> > there is a WARN_ON_ONCE in code change, so just report what we observed
-> > in our tests FYI.
-> > 
-> > 5c83cedbaaad6dfe 7625926086765123251f765d91f
-> > ---------------- ---------------------------
-> >        fail:runs  %reproduction    fail:runs
-> >            |             |             |
-> >            :202          5%          10:204   dmesg.RIP:rcu_nocb_bypass_lock
-> >            :202          5%          10:204   dmesg.RIP:rcu_nocb_try_bypass
-> >            :202          5%          10:204   dmesg.WARNING:at_kernel/rcu/tree_nocb.h:#rcu_nocb_bypass_lock
-> >            :202          5%          10:204   dmesg.WARNING:at_kernel/rcu/tree_nocb.h:#rcu_nocb_try_bypass
-> > 
-> > 
-> > If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> > the same patch/commit), kindly add following tags
-> > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> > | Closes: https://lore.kernel.org/oe-lkp/202307111535.4823c255-oliver.sang@intel.com
-> > 
-> > 
-> > 
-> > [ 315.569574][ T16] WARNING: CPU: 1 PID: 16 at kernel/rcu/tree_nocb.h:124
-> > rcu_nocb_try_bypass (kernel/rcu/tree_nocb.h:124 kernel/rcu/tree_nocb.h:513)
+On Tue, Jul 11, 2023 at 09:41:58AM -0700, Paul E. McKenney wrote:
+> On Tue, Jul 11, 2023 at 06:06:11PM +0200, Frederic Weisbecker wrote:
+> Heh!
 > 
-> It's:
+> The purpose was to see if this lock was ever contended.  I guess we now
+> have an answer, which is "Yes, but rarely."
 > 
-> static void rcu_nocb_wait_contended(struct rcu_data *rdp)
-> {
-> 	WARN_ON_ONCE(smp_processor_id() != rdp->cpu);
-> 	while (WARN_ON_ONCE(atomic_read(&rdp->nocb_lock_contended))) <<< HERE
-> 		cpu_relax();
-> }
+> It looks like the victim commit increased the size of the ->nocb_lock
+> critical section, just enough to make this happen sometimes.
 > 
-> This is called on enqueue time by rcu_nocb_try_bypass().
-> 
-> The places that can increment ->nocb_lock_contended are:
-> 
-> * rcu_nocb_try_bypass() itself, but it's not re-entrant
-> 
-> * rcu_nocb_rdp_deoffload(), but it executes on the local CPU with
->   IRQs disabled, so rcu_nocb_try_bypass() can't race
->   
-> * lazy_rcu_shrink_scan(): that's indeed the issue here
-> 
-> * rcu_barrier_entrain(), executed either locally with IRQs disabled
->   or remotely when the target is dead, so can't race with rcu_nocb_try_bypass()
->   
-> * rcutree_migrate_callback(): locally with IRQs disabled, can't race
-> 
-> So indeed lazy_rcu_shrink_scan() is the only possible culprit. But then
-> I wonder, what is the purpose of this ->nocb_lock_contended if it's actually
-> not an allowed behaviour?
-> 
-> Paul, any recollection of that?
+> Removing the WARN_ON_ONCE() seems appropriate, especially given that
+> this only happens when shrinking.
 
-Heh!
+Ok, I'll check that.
 
-The purpose was to see if this lock was ever contended.  I guess we now
-have an answer, which is "Yes, but rarely."
+> Should we add something that monitors that lock's contention?  It is
+> often the case that lock contention rises over time as new features and
+> optimizations are added.
 
-It looks like the victim commit increased the size of the ->nocb_lock
-critical section, just enough to make this happen sometimes.
+I'm not sure. Should we keep the current ->nocb_lock_contended based engine
+to report contention somehow somewhere? Also does it behave better than our
+current spinlock slow path implementations?
 
-Removing the WARN_ON_ONCE() seems appropriate, especially given that
-this only happens when shrinking.
-
-Should we add something that monitors that lock's contention?  It is
-often the case that lock contention rises over time as new features and
-optimizations are added.
-
-							Thanx, Paul
+Thanks.
