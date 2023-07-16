@@ -1,151 +1,262 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from CY4PR02CU008.outbound.protection.outlook.com (mail-westcentralusazon11012011.outbound.protection.outlook.com [40.93.200.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 514752C80
-	for <oe-lkp@lists.linux.dev>; Fri, 14 Jul 2023 22:58:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32E7EC433C7;
-	Fri, 14 Jul 2023 22:58:26 +0000 (UTC)
-Date: Fri, 14 Jul 2023 18:58:24 -0400
-From: Steven Rostedt <rostedt@goodmis.org>
-To: Ajay Kaher <akaher@vmware.com>
-Cc: shuah@kernel.org, mhiramat@kernel.org, chinglinyu@google.com,
- linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
- linux-trace-kernel@vger.kernel.org, lkp@intel.com, namit@vmware.com,
- oe-lkp@lists.linux.dev, amakhalov@vmware.com, er.ajay.kaher@gmail.com,
- srivatsa@csail.mit.edu, tkundu@vmware.com, vsirnapalli@vmware.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8323EA0
+	for <oe-lkp@lists.linux.dev>; Sun, 16 Jul 2023 17:32:42 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Jk1QCtTre+KAsO+86fXd2vhzXeF+klpPIVanwNL54Iwgz4EdwQj8vf7qjlCYv9S8DMcsGbItZrjHkjGRG6eDbam20R91gUpOEvKrasTh7csVsxzIt68HUGhl0pvFD8m/19/Ked4nRZb3Hd/U8/i8iXkZrHZq4meTEvQdm5yC0qa1iCiKEWy2b4kR8v0oi/uhVqpl2FaDLkyzsGxm3x3n3ItaMrt0viGOE1xI5vPZJ/h4r819wR05n5bfQyKbkIX0rbRZTVyl3E2BSHiJdLX3Pr6z0DgNodVimhSguv9pggioEkbgI1SSi8MoeQ0wA2LYVzWIfvhGTOXCnh/XY5WRxA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=AZ2tQpiVrIrX+kpKpTLdRj80WnGQFnXUbzeDkKydQVs=;
+ b=lK7js/pDRvPDsymsmddWS1cNragOHzcxfrIZ12NF7bh3Zm2VAZrxNKt0d/7IEuY93o+BDEs92k2Mstm8nUh25lstMd8vz/Xker+aRBTmJqQTPjibdLiMIVOpLsl8WYXl8LfZ0yLkLR//7XxTjGN0JZ9Ci//aInxbOaEOIRXUSQ5TmrvqS9U3FgbhC2LeXweOGHG+jmCDhryK4omg50J1/Gih+rNzL9qdryleyqoF1RV15R7unqpSs2XZDV7j9d03QyTny5FeohS+/6QTHpai/pgAZB/09ZJ6ZLpAtvlIZWRrt/YMzprmps+o8OlD/XLmT2z7afKnBksEFE/bbVfX8g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vmware.com; dmarc=pass action=none header.from=vmware.com;
+ dkim=pass header.d=vmware.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vmware.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AZ2tQpiVrIrX+kpKpTLdRj80WnGQFnXUbzeDkKydQVs=;
+ b=c/fcCCKatKOmgunIsoR9yZzGncK2dSy4wAbwXq6OzyhciCldPllN1k0jclaIvbaH3uaXYYQrK3x6u/gss95V7B+vQ31mJRb2DubEYNfYXrOnhsyk9VJm8ySuOorpE3S1J2cLy4F3QT//HBHjrrFrLe+QFlHFR9+fe1fC/0Fmexw=
+Received: from PH0PR05MB8703.namprd05.prod.outlook.com (2603:10b6:510:bd::5)
+ by LV8PR05MB10325.namprd05.prod.outlook.com (2603:10b6:408:188::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6588.31; Sun, 16 Jul
+ 2023 17:32:36 +0000
+Received: from PH0PR05MB8703.namprd05.prod.outlook.com
+ ([fe80::119b:d975:430c:e1b4]) by PH0PR05MB8703.namprd05.prod.outlook.com
+ ([fe80::119b:d975:430c:e1b4%6]) with mapi id 15.20.6565.028; Sun, 16 Jul 2023
+ 17:32:36 +0000
+From: Ajay Kaher <akaher@vmware.com>
+To: Steven Rostedt <rostedt@goodmis.org>
+CC: "shuah@kernel.org" <shuah@kernel.org>, "mhiramat@kernel.org"
+	<mhiramat@kernel.org>, Ching-lin Yu <chinglinyu@google.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+	"linux-trace-kernel@vger.kernel.org" <linux-trace-kernel@vger.kernel.org>,
+	"lkp@intel.com" <lkp@intel.com>, Nadav Amit <namit@vmware.com>,
+	"oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>, Alexey Makhalov
+	<amakhalov@vmware.com>, "er.ajay.kaher@gmail.com" <er.ajay.kaher@gmail.com>,
+	"srivatsa@csail.mit.edu" <srivatsa@csail.mit.edu>, Tapas Kundu
+	<tkundu@vmware.com>, Vasavi Sirnapalli <vsirnapalli@vmware.com>
 Subject: Re: [PATCH v4 00/10] tracing: introducing eventfs
-Message-ID: <20230714185824.62556254@gandalf.local.home>
-In-Reply-To: <1689248004-8158-1-git-send-email-akaher@vmware.com>
+Thread-Topic: [PATCH v4 00/10] tracing: introducing eventfs
+Thread-Index: AQHZtX3ozc4V8XrumUqju4s3WlXUgK+54mYAgALJloA=
+Date: Sun, 16 Jul 2023 17:32:35 +0000
+Message-ID: <883F9774-3E76-4346-9988-2788FAF0D55E@vmware.com>
 References: <1689248004-8158-1-git-send-email-akaher@vmware.com>
-X-Mailer: Claws Mail 3.19.1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+ <20230714185824.62556254@gandalf.local.home>
+In-Reply-To: <20230714185824.62556254@gandalf.local.home>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-mailer: Apple Mail (2.3731.600.7)
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vmware.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR05MB8703:EE_|LV8PR05MB10325:EE_
+x-ms-office365-filtering-correlation-id: 433fb2f6-b412-4ef2-e8a0-08db8622a506
+x-ld-processed: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ 3LjCH1iTKYRWyCDzqWfYyJA7L/X7b3SFe52D4YqSWNGHyCGTlEkJe95PMKgcLET2kRtiHf2WxAh/gH+TxvRrS9T08Y9QrzcKPo1zYNuXq7nGb6jD/Zk1FHtVwca65v6Z7i9d76ZCCsjjUWLhZeNcUy4Y/j9fpQlicLkYG8veYVwswLcgjN9VOQBoJhizek6BHjoFKjsbFIezUqS/j474LFcmw4BES26aVMAuF2+aSmQYx3IFaBjEB5U4FWJ4AnYndZ2pJkKBCDsVvPMVDCBtM9i+jPcApvb5SO3+lLk4NfbNwev2Slsx2kutuif4SYAr8bhJwmQjyK/RSWTb8XnSDfWDHwIGgNEPmwyiBrMU0s7RtbsJSTDL/f1ENtun6x4AOw2PX3OjyCf/02MLmEE8SrefvhWSWRxKRghdHU/7GzchfF0V5R4CrsD5jM6JhnoZV/ctpp3kmoOQ9SGfTuxO+7+dC9q7p8B2/j2qJd+WaX6MeSSvwlGvX3aSongfeVlPdxmuDsqjsAijzaBlrluOCT9oNP6FfM1JjMrAQN87DffkPt2A6qwhSI7kwW0EaFUpGgMvJG02grSEojFDJK//U8dIvttCV+PcR7UEOC7dra/ezHv5JzFepXzEcw4YRJkdifvB5MsmW5TPHzlGp7igZAIgYT58Rz93ePQsA9KhHsejGPS6ItT9QGsOzaJjd4WYMOGcfaVEbvFo40R9C/Kypg==
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR05MB8703.namprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(346002)(136003)(39860400002)(396003)(376002)(451199021)(478600001)(71200400001)(6486002)(91956017)(54906003)(186003)(53546011)(6506007)(36756003)(26005)(6512007)(107886003)(2906002)(76116006)(316002)(41300700001)(66446008)(64756008)(6916009)(4326008)(66946007)(66476007)(5660300002)(7416002)(8936002)(8676002)(66556008)(38100700002)(122000001)(86362001)(38070700005)(2616005)(83380400001)(33656002)(45980500001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?b5XgC82tlYbvhEXIG3olTYr5lw3YHABbsW1Eai3phXt1gCaMnKfxqg/A5HC1?=
+ =?us-ascii?Q?FJfES356ffN6/7igqi7B9FYtL6CxWdJrdn4OxmTgO+OT1xWCXrIDXC590Z+V?=
+ =?us-ascii?Q?SzOxO0XKQMwm26Yi3XmKtgv/xjN2YjJ22uwOnGJI24y0KFe2Ru4672H5+bNr?=
+ =?us-ascii?Q?fUHiSrDk5UZCU8tokAmP9qLUYvl40iUe87oGKH+RAYlIoBMebpe8j/IJv2lW?=
+ =?us-ascii?Q?c1270L8054LA1uFL7j3ppklMGtL5oZMs37+o1hSNE9/WeH7dlhjMaVhwQVo3?=
+ =?us-ascii?Q?aoA1HjTA+ACWcuvh/BXwZhOcA3COkgXOrKTOZp1OBZ+fIUgzg7MUUfvkAthk?=
+ =?us-ascii?Q?HUZQtqwHf+1kVd2O6APfxgiFaQ/5mNSyeSlc4JOsGVbjIKW5FOOiMYhmsJIl?=
+ =?us-ascii?Q?y+YUgX/mBxBKpJipLVlG4bebF70L5sMa+YKOUI/LRbHxaxrjTmP/Kl8DWmFm?=
+ =?us-ascii?Q?u7wYW+TO3odOZUMwCs5YDrtstat4C0KcTuuYjtqr3Xh2lfHYSbFnRdFVmfDi?=
+ =?us-ascii?Q?ArELaah7+SFz7qfhT53pgIvWz47rzw/b/nGhMSGlgn5onyIsABt3Bghxsoxq?=
+ =?us-ascii?Q?ZyT8n1ljR/cFkagBMGZIgC7apxYCMoA/PyuYZdEyR8zXJl6A+zPdCvh/GCOr?=
+ =?us-ascii?Q?elWMKZtf2aKBWbufMblAuABwcaAvUWMgpB20Es3lf9buoV0fEgqvSRVff+yN?=
+ =?us-ascii?Q?DgHQ+BVDSUyMWmOMo7yefXitmMkkVo4TMnX2F+Jw9uZ2/7654o2dlF4Kei+4?=
+ =?us-ascii?Q?FcAhTEgTtI3IJhrBJ08E7zOikk1sA6lvP9XO5nqVy10HjUKwN2LWdzXCxw51?=
+ =?us-ascii?Q?pjFRAUqY8l55w6jOiRGtTNr/nJf7Vpw+y++hUZOddpLQrku45iC0lAIGZPfb?=
+ =?us-ascii?Q?npEXn40Aco6cf/H0pIjBq+EiZ8wbeI/Sdsfkdlo6lefQewIKEPiFOVorIsF0?=
+ =?us-ascii?Q?xERbZIsIqSjN5xi6dEH5S14bZLGPCmi/8JNEbKSXMZacUM4wEcB0hh/OvzKs?=
+ =?us-ascii?Q?IrPtjWDttaoxI1k5JLcTjUuG73yPj6QmeR8zz7Ih7KthpocjUfgYIwzzurVw?=
+ =?us-ascii?Q?oClRw0cFlj1Af2ah0WN4TeP/fXWyspWVHeeiq+00pATz1wgRaYTHRCzScT7d?=
+ =?us-ascii?Q?KCT8MdcJfl5FPunnyTjyyRpE1PgiKD7j/seDHoGC337MdbYhc1NOu7p0wd99?=
+ =?us-ascii?Q?ShNNzZKCwdk2Mx0Y8EGm8rUhLOawGWsFcBU1ln3YG/rXO8b7Fu+x8houg3Ph?=
+ =?us-ascii?Q?hLxz4hVZzGVLpqagmv++N+QvVt4NCu2rmDrqq4eJwYfLBgZarB9TwLgIo2I8?=
+ =?us-ascii?Q?8W4fnXDff+3bTxa56Q2W6vStHKSwHfFWU38YsID028OnQWepZBi+AnFNUrpU?=
+ =?us-ascii?Q?N7ULRH4aloxncOwklIH/czUX0z8aHYbtHpVed8Los0NYPd3qO26x40tY0A6s?=
+ =?us-ascii?Q?Dz1U+hJkGUx3Gj8N44RxAJtfouBuidfH75v+BQZs1OgYoAp0VbBhIYaiFLS8?=
+ =?us-ascii?Q?H1l0WGnD13uBKSNEk8PooLniG42cq9zdZ7AJY7zh2I1F7Oa274mLag2Y5ncV?=
+ =?us-ascii?Q?nutPJTlVcT6/duysawqdshcfkIWzrIP0QyP4+OuY?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <0BB0E57FA5F00844A7EAA72E131F0CCD@namprd05.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-
-On Thu, 13 Jul 2023 17:03:14 +0530
-Ajay Kaher <akaher@vmware.com> wrote:
-
-> Events Tracing infrastructure contains lot of files, directories
-> (internally in terms of inodes, dentries). And ends up by consuming
-> memory in MBs. We can have multiple events of Events Tracing, which
-> further requires more memory.
-> 
-> Instead of creating inodes/dentries, eventfs could keep meta-data and
-> skip the creation of inodes/dentries. As and when require, eventfs will
-> create the inodes/dentries only for required files/directories.
-> Also eventfs would delete the inodes/dentries once no more requires
-> but preserve the meta data.
-> 
-> Tracing events took ~9MB, with this approach it took ~4.5MB
-> for ~10K files/dir.
-
-I think we are very close to getting this in for the next merge window. I
-ran several tests and so far it's holding up!
-
-I made a bunch of nits for this series, but nothing major. Mostly fixing up
-change logs and comments, as well as some naming conventions and
-reorganizing the series a little bit.
-
-Anyway, I'm hoping that v5 will be ready to go into linux-next.
-
-Thanks a lot Ajay for working on this!
-
--- Steve
+X-OriginatorOrg: vmware.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR05MB8703.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 433fb2f6-b412-4ef2-e8a0-08db8622a506
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Jul 2023 17:32:35.8636
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: x91rDGdvplNaKCY07AdpVMN/ml6iIbLkRv+uQlUG5Qt+1f+lmmP6ErTBikX426RjRLi2R51Dg5bwpA36mn+1gw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV8PR05MB10325
 
 
-> 
-> v3:
-> Patch 3,4,5,7,9:
->          removed all the eventfs_rwsem code and replaced it with an srcu
->          lock for the readers, and a mutex to synchronize the writers of
->          the list.
-> 
-> Patch 2: moved 'tracefs_inode' and 'get_tracefs()' to v4 03/10
-> 
-> Patch 3: moved the struct eventfs_file and eventfs_inode into event_inode.c
->          as it really should not be exposed to all users.
-> 
-> Patch 5: added a recursion check to eventfs_remove_rec() as it is really
->          dangerous to have unchecked recursion in the kernel (we do have
->          a fixed size stack).
-> 
->          have the free use srcu callbacks. After the srcu grace periods
->          are done, it adds the eventfs_file onto a llist (lockless link
->          list) and wakes up a work queue. Then the work queue does the
->          freeing (this needs to be done in task/workqueue context, as
->          srcu callbacks are done in softirq context).
-> 
-> Patch 6: renamed:
->          eventfs_create_file() -> create_file()
->          eventfs_create_dir() -> create_dir()
-> 
-> v2:
-> Patch 01: new patch:'Require all trace events to have a TRACE_SYSTEM'
-> Patch 02: moved from v1 1/9
-> Patch 03: moved from v1 2/9
->           As suggested by Zheng Yejian, introduced eventfs_prepare_ef()
->           helper function to add files or directories to eventfs
->           fix WARNING reported by kernel test robot in v1 8/9
-> Patch 04: moved from v1 3/9
->           used eventfs_prepare_ef() to add files
->           fix WARNING reported by kernel test robot in v1 8/9
-> Patch 05: moved from v1 4/9
->           fix compiling warning reported by kernel test robot in v1 4/9
-> Patch 06: moved from v1 5/9
-> Patch 07: moved from v1 6/9
-> Patch 08: moved from v1 7/9
-> Patch 09: moved from v1 8/9
->           rebased because of v3 01/10
-> Patch 10: moved from v1 9/9
-> 
-> v1:
-> Patch 1: add header file
-> Patch 2: resolved kernel test robot issues
->          protecting eventfs lists using nested eventfs_rwsem
-> Patch 3: protecting eventfs lists using nested eventfs_rwsem
-> Patch 4: improve events cleanup code to fix crashes
-> Patch 5: resolved kernel test robot issues
->          removed d_instantiate_anon() calls
-> Patch 6: resolved kernel test robot issues
->          fix kprobe test in eventfs_root_lookup()
->          protecting eventfs lists using nested eventfs_rwsem
-> Patch 7: remove header file
-> Patch 8: pass eventfs_rwsem as argument to eventfs functions
->          called eventfs_remove_events_dir() instead of tracefs_remove()
->          from event_trace_del_tracer()
-> Patch 9: new patch to fix kprobe test case
-> 
-> Ajay Kaher (9):
->   tracefs: Rename some tracefs function
->   eventfs: Implement eventfs dir creation functions
->   eventfs: Implement eventfs file add functions
->   eventfs: Implement eventfs file, directory remove function
->   eventfs: Implement functions to create eventfs files and directories
->   eventfs: Implement eventfs lookup, read, open functions
->   eventfs: Implement tracefs_inode_cache
->   eventfs: Move tracing/events to eventfs
->   test: ftrace: Fix kprobe test for eventfs
-> 
-> Steven Rostedt (Google) (1):
->   tracing: Require all trace events to have a TRACE_SYSTEM
-> 
->  fs/tracefs/Makefile                           |   1 +
->  fs/tracefs/event_inode.c                      | 711 ++++++++++++++++++
->  fs/tracefs/inode.c                            | 124 ++-
->  fs/tracefs/internal.h                         |  25 +
->  include/linux/trace_events.h                  |   1 +
->  include/linux/tracefs.h                       |  32 +
->  kernel/trace/trace.h                          |   2 +-
->  kernel/trace/trace_events.c                   |  78 +-
->  .../ftrace/test.d/kprobe/kprobe_args_char.tc  |   4 +-
->  .../test.d/kprobe/kprobe_args_string.tc       |   4 +-
->  10 files changed, 930 insertions(+), 52 deletions(-)
->  create mode 100644 fs/tracefs/event_inode.c
->  create mode 100644 fs/tracefs/internal.h
-> 
+
+> On 15-Jul-2023, at 4:28 AM, Steven Rostedt <rostedt@goodmis.org> wrote:
+>=20
+> !! External Email
+>=20
+> On Thu, 13 Jul 2023 17:03:14 +0530
+> Ajay Kaher <akaher@vmware.com> wrote:
+>=20
+>> Events Tracing infrastructure contains lot of files, directories
+>> (internally in terms of inodes, dentries). And ends up by consuming
+>> memory in MBs. We can have multiple events of Events Tracing, which
+>> further requires more memory.
+>>=20
+>> Instead of creating inodes/dentries, eventfs could keep meta-data and
+>> skip the creation of inodes/dentries. As and when require, eventfs will
+>> create the inodes/dentries only for required files/directories.
+>> Also eventfs would delete the inodes/dentries once no more requires
+>> but preserve the meta data.
+>>=20
+>> Tracing events took ~9MB, with this approach it took ~4.5MB
+>> for ~10K files/dir.
+>=20
+> I think we are very close to getting this in for the next merge window. I
+> ran several tests and so far it's holding up!
+>=20
+> I made a bunch of nits for this series, but nothing major. Mostly fixing =
+up
+> change logs and comments, as well as some naming conventions and
+> reorganizing the series a little bit.
+>=20
+> Anyway, I'm hoping that v5 will be ready to go into linux-next.
+>=20
+> Thanks a lot Ajay for working on this!
+
+
+Thanks Steve, hopefully I will fix all the pending nits in v5.
+Here is the checkpatch.pl report:
+
+
+./scripts/checkpatch.pl v4/*
+--------------------------
+v4/0000-cover-letter.patch
+--------------------------
+total: 0 errors, 0 warnings, 0 lines checked
+
+v4/0000-cover-letter.patch has no obvious style problems and is ready for s=
+ubmission.
+------------------------------------------------------------------
+v4/0001-tracing-Require-all-trace-events-to-have-a-TRACE_SYS.patch
+------------------------------------------------------------------
+total: 0 errors, 0 warnings, 22 lines checked
+
+v4/0001-tracing-Require-all-trace-events-to-have-a-TRACE_SYS.patch has no o=
+bvious style problems and is ready for submission.
+--------------------------------------------------
+v4/0002-tracefs-Rename-some-tracefs-function.patch
+--------------------------------------------------
+total: 0 errors, 0 warnings, 71 lines checked
+
+v4/0002-tracefs-Rename-some-tracefs-function.patch has no obvious style pro=
+blems and is ready for submission.
+--------------------------------------------------------------
+v4/0003-eventfs-Implement-eventfs-dir-creation-functions.patch
+--------------------------------------------------------------
+WARNING: added, moved or deleted file(s), does MAINTAINERS need updating?
+#52:
+new file mode 100644
+
+WARNING: Symbolic permissions 'S_IRWXU | S_IRUGO | S_IXUGO' are not preferr=
+ed. Consider using octal permissions '0755'.
+#194: FILE: fs/tracefs/event_inode.c:138:
++	inode->i_mode =3D S_IFDIR | S_IRWXU | S_IRUGO | S_IXUGO;
+
+WARNING: Symbolic permissions 'S_IRWXU | S_IRUGO | S_IXUGO' are not preferr=
+ed. Consider using octal permissions '0755'.
+#229: FILE: fs/tracefs/event_inode.c:173:
++		S_IFDIR | S_IRWXU | S_IRUGO | S_IXUGO,
+
+WARNING: Symbolic permissions 'S_IRWXU | S_IRUGO | S_IXUGO' are not preferr=
+ed. Consider using octal permissions '0755'.
+#261: FILE: fs/tracefs/event_inode.c:205:
++		S_IFDIR | S_IRWXU | S_IRUGO | S_IXUGO,
+
+total: 0 errors, 4 warnings, 297 lines checked
+
+NOTE: For some of the reported defects, checkpatch may be able to
+      mechanically convert to the typical style using --fix or --fix-inplac=
+e.
+
+v4/0003-eventfs-Implement-eventfs-dir-creation-functions.patch has style pr=
+oblems, please review.
+----------------------------------------------------------
+v4/0004-eventfs-Implement-eventfs-file-add-functions.patch
+----------------------------------------------------------
+total: 0 errors, 0 warnings, 101 lines checked
+
+v4/0004-eventfs-Implement-eventfs-file-add-functions.patch has no obvious s=
+tyle problems and is ready for submission.
+------------------------------------------------------------------
+v4/0005-eventfs-Implement-eventfs-file-directory-remove-func.patch
+------------------------------------------------------------------
+total: 0 errors, 0 warnings, 129 lines checked
+
+v4/0005-eventfs-Implement-eventfs-file-directory-remove-func.patch has no o=
+bvious style problems and is ready for submission.
+------------------------------------------------------------------
+v4/0006-eventfs-Implement-functions-to-create-eventfs-files-.patch
+------------------------------------------------------------------
+total: 0 errors, 0 warnings, 182 lines checked
+
+v4/0006-eventfs-Implement-functions-to-create-eventfs-files-.patch has no o=
+bvious style problems and is ready for submission.
+------------------------------------------------------------------
+v4/0007-eventfs-Implement-eventfs-lookup-read-open-functions.patch
+------------------------------------------------------------------
+total: 0 errors, 0 warnings, 224 lines checked
+
+v4/0007-eventfs-Implement-eventfs-lookup-read-open-functions.patch has no o=
+bvious style problems and is ready for submission.
+---------------------------------------------------
+v4/0008-eventfs-Implement-tracefs_inode_cache.patch
+---------------------------------------------------
+total: 0 errors, 0 warnings, 68 lines checked
+
+v4/0008-eventfs-Implement-tracefs_inode_cache.patch has no obvious style pr=
+oblems and is ready for submission.
+----------------------------------------------------
+v4/0009-eventfs-Move-tracing-events-to-eventfs.patch
+----------------------------------------------------
+total: 0 errors, 0 warnings, 241 lines checked
+
+v4/0009-eventfs-Move-tracing-events-to-eventfs.patch has no obvious style p=
+roblems and is ready for submission.
+-----------------------------------------------------
+v4/0010-test-ftrace-Fix-kprobe-test-for-eventfs.patch
+-----------------------------------------------------
+total: 0 errors, 0 warnings, 32 lines checked
+
+v4/0010-test-ftrace-Fix-kprobe-test-for-eventfs.patch has no obvious style =
+problems and is ready for submission.
+
+-Ajay
+
 
