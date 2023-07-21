@@ -1,11 +1,11 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2647627F00
-	for <oe-lkp@lists.linux.dev>; Fri, 21 Jul 2023 17:24:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17FEDC433C7;
-	Fri, 21 Jul 2023 17:24:55 +0000 (UTC)
-Date: Fri, 21 Jul 2023 13:24:54 -0400
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE44427F00
+	for <oe-lkp@lists.linux.dev>; Fri, 21 Jul 2023 17:30:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCE68C433C7;
+	Fri, 21 Jul 2023 17:30:05 +0000 (UTC)
+Date: Fri, 21 Jul 2023 13:30:00 -0400
 From: Steven Rostedt <rostedt@goodmis.org>
 To: Nadav Amit <namit@vmware.com>
 Cc: Ajay Kaher <akaher@vmware.com>, "shuah@kernel.org" <shuah@kernel.org>,
@@ -20,7 +20,7 @@ Cc: Ajay Kaher <akaher@vmware.com>, "shuah@kernel.org" <shuah@kernel.org>,
  <srivatsa@csail.mit.edu>, Tapas Kundu <tkundu@vmware.com>, Vasavi
  Sirnapalli <vsirnapalli@vmware.com>
 Subject: Re: [PATCH v4 00/10] tracing: introducing eventfs
-Message-ID: <20230721132454.07d6c8b2@gandalf.local.home>
+Message-ID: <20230721133000.763cd3c3@gandalf.local.home>
 In-Reply-To: <66DACCE8-1C57-4A30-8ACF-D88179CA6381@vmware.com>
 References: <1689248004-8158-1-git-send-email-akaher@vmware.com>
 	<20230714185824.62556254@gandalf.local.home>
@@ -46,36 +46,14 @@ Content-Transfer-Encoding: quoted-printable
 On Fri, 21 Jul 2023 17:17:24 +0000
 Nadav Amit <namit@vmware.com> wrote:
 
+> [ And =E2=80=9Cbool" is clearer type for is_freed. ]
 
-> > I also added a "is_freed" field that is part of the union and is set if
-> > list elements have content. Note, since the union was criticized before=
-, I
-> > will state the entire purpose of doing this patch set is to save memory.
-> > This structure will be used for every event file. What's the point of
-> > getting rid of dentries if we are replacing it with something just as b=
-ig?
-> > Anyway, struct dentry does the exact same thing! =20
->=20
-> Hey, don=E2=80=99t shoot me=E2=80=A6
+Oh, and to answer why I didn't use bool. I want to make sure that it
+doesn't use just part of the other elements in the union. If the compiler
+decides to use one byte for the bool (which it is perfectly valid to do
+so), and it happens to map over a zero of the other elements in the union,
+then it will give a false negative.
 
- ;-)
-
->=20
-> [And admittedly, I didn=E2=80=99t review the whole series after v1.]
->=20
-> I understand your position, but I think that at least is_freed should not
-> be in the union, and you can just put it after umode_t.
->=20
-> Even for the matter of size, it should not matter in most architectures
-> since umode_t is 16-bit, as natural alignment is at least 32-bits.
-
-My new code I'm working on removes the umode_t and will require this then.
-I rather have that part tested before adding other drastic changes.
+By using unsigned long, it will be guaranteed to contain some content.
 
 -- Steve
-
-
->=20
-> [ And =E2=80=9Cbool" is clearer type for is_freed. ]
->=20
-
