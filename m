@@ -1,43 +1,43 @@
-Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
+Received: from mail-pg1-f170.google.com (mail-pg1-f170.google.com [209.85.215.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69B7A2F51
-	for <oe-lkp@lists.linux.dev>; Sun, 23 Jul 2023 19:09:32 +0000 (UTC)
-Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-1b852785a65so23739995ad.0
-        for <oe-lkp@lists.linux.dev>; Sun, 23 Jul 2023 12:09:32 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 118082F51
+	for <oe-lkp@lists.linux.dev>; Sun, 23 Jul 2023 19:09:37 +0000 (UTC)
+Received: by mail-pg1-f170.google.com with SMTP id 41be03b00d2f7-55b83ae9be2so2574729a12.2
+        for <oe-lkp@lists.linux.dev>; Sun, 23 Jul 2023 12:09:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1690139372; x=1690744172;
+        d=gmail.com; s=20221208; t=1690139377; x=1690744177;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=gKo85STH0xt3042Px3GwfcVzSaeLLym3sMWM8T4c8oI=;
-        b=n2mPX/AnU5HRR2TatQSvEtq454ZA0uqEV+XcsaSntFyzBasdSjUD2ZxXYhdtKsJ8Ek
-         N9htiNr2hrIdgrBE9skKL+CIacqccCRmdK02SxoejK2Q1awY9vRG/2TvqQDK6Syxfxj8
-         2kbd0N7UF3rp7kIS3xCjLnlJqHAmiS4StmhmdAYyMZNjjd5Dkf8T4ZdXZx+nRl8G5CyZ
-         xyId8mYgj1BZRUun2hsOiY5K4Oo/jHj9H2P94lDE6qSxJT3Z5wZbzJKGx1BSBfKHLgV6
-         MGGFpyqeVUcYcdjRQFSL+G+W1+7NynXeEe0rLe7ZlLKTi9rEp8ygNOqDEXZo4x/wXXa7
-         /u6A==
+        bh=r/RoRea2RA0cNUB7aJ08JIbxus10wCykI3szBf/b3NI=;
+        b=Ou4Wv9xAdrG23117hD6v3zkc3JOqEdfqt1Qu9ZrCNSbLtrIaXd+6wF32CEMSTd5na6
+         7A4Guaqf64bRqeW0tCtQ3dcA6oQku9WLgiqy4Me04QKAWd3fmPrJLmu8AjG0JZx3jRBL
+         hstkawb10WlcxmKoFfy0da+F7E75mpmfcKyMuRUHGldiAFUkoLeykz80oJDSAuWDOXWk
+         KXk5oTCiwgbucfFmgcXHqCnTDdL05FW9V+s4UvDhY8p68ItPDrDmUNJBHBrjC6auj4W7
+         /lrlhfTfTf9r+moYceZyaJC6HkUM5ekZ3jNJYt3cPYA4LvyFgu4LhZluoSlht0DWlKVo
+         jKUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1690139372; x=1690744172;
+        d=1e100.net; s=20221208; t=1690139377; x=1690744177;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=gKo85STH0xt3042Px3GwfcVzSaeLLym3sMWM8T4c8oI=;
-        b=IPD4tFwRgv8HsFZ1czYvZst2DxM75y/Kz/Sdi7gI+fHKHgcu3dUtb7z47Rabcdvkvq
-         lw4a6XczriAnGIogEBxoKuiTGyBzH0zk71wrW9ybhfvki+76ak/KXx7CAaIBMr84B6CO
-         PJk72QK3NTR/kr4M8aHHCY1t8AiM9b26KsY9OemQtO8Q0tTJq3b++tP8t3+8xxhqfBCI
-         t5Y5e3RSCeHQK07N8pre2PwVAQApBlw45u7SSUdsgM998Qk8AMBcDlbVBorscpB6WgWw
-         SU0kdvTsQbxa1UurfHgpwo1XHXfYjYuUnSN7ZcHyXpQxdJpv0qP8LhmjtMPx0zyCCfJj
-         O1pw==
-X-Gm-Message-State: ABy/qLYZillIptAWc7PKoT9lqsHo0TuaLbwUzO+FZSR+5ayqNJr51irG
-	8S4HqaqsukzTKSb2BpAXs2I=
-X-Google-Smtp-Source: APBJJlF1frUPXLA+nNbwlQwx8oe1ROZ8tR8dgVHs6kFaKVR6/CntGZhb6WAHDnToH/UXDwmWuSjusA==
-X-Received: by 2002:a17:902:f687:b0:1bb:8cb6:3f99 with SMTP id l7-20020a170902f68700b001bb8cb63f99mr4867895plg.14.1690139371565;
-        Sun, 23 Jul 2023 12:09:31 -0700 (PDT)
+        bh=r/RoRea2RA0cNUB7aJ08JIbxus10wCykI3szBf/b3NI=;
+        b=EQ9FE8WHkJ9YLOnayeUUbCb/jVpfhudgCsGi1vjSlwJ/hy5IGvbzfVsyrnFN29J/wt
+         YC5HC8rjlgvAw+n+OluP1P4rKwEgL4v76kt/I0EAyghMTjSVddsPP8FI+F94Vzwpf8ty
+         eplVJG2ps3iGBOJIBl+GYOymvmpJqauuGL4iuaF2RWhJTPpIS46yoCIKHjDtqpfcctDx
+         gCwNJJYIi+uNARjaBxCZcPxmZ8ApDG8ke3pRm2e1pZhu/KNGhuUC2E41Hh3syPiUctio
+         qUK8l0PDkXmsbjRt3eGELguh37nWr0/pBx0nk5GCQ86F8S55LJIILO81PN0ED2NHzE7k
+         r41g==
+X-Gm-Message-State: ABy/qLZJeVTi01V24EvR1ngJzchRFk9ZwL3v/sXqHL4bUfdtkfY5Dlan
+	4K61BfpmWw8eA7GAstniZFo=
+X-Google-Smtp-Source: APBJJlGkPj1Di2xoKkNZYf+n3venm8BAIC1yQaqaQC5aMCdLWvD6Q5YstcIl0N6JZs1PReycc5iu/Q==
+X-Received: by 2002:a17:903:1208:b0:1b9:d307:c1df with SMTP id l8-20020a170903120800b001b9d307c1dfmr10327171plh.17.1690139377245;
+        Sun, 23 Jul 2023 12:09:37 -0700 (PDT)
 Received: from fedora.. ([1.245.179.104])
-        by smtp.gmail.com with ESMTPSA id s10-20020a170902ea0a00b001b53d3d8f3dsm7168625plg.299.2023.07.23.12.09.26
+        by smtp.gmail.com with ESMTPSA id s10-20020a170902ea0a00b001b53d3d8f3dsm7168625plg.299.2023.07.23.12.09.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 Jul 2023 12:09:31 -0700 (PDT)
+        Sun, 23 Jul 2023 12:09:36 -0700 (PDT)
 From: Hyeonggon Yoo <42.hyeyoo@gmail.com>
 To: Vlastimil Babka <vbabka@suse.cz>,
 	Christoph Lameter <cl@linux.com>,
@@ -60,9 +60,9 @@ Cc: Roman Gushchin <roman.gushchin@linux.dev>,
 	linux-mm@kvack.org,
 	linux-kernel@vger.kernel.org,
 	Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Subject: [RFC 1/2] Revert "mm, slub: change percpu partial accounting from objects to pages"
-Date: Mon, 24 Jul 2023 04:09:05 +0900
-Message-ID: <20230723190906.4082646-2-42.hyeyoo@gmail.com>
+Subject: [RFC 2/2] mm/slub: prefer NUMA locality over slight memory saving on NUMA machines
+Date: Mon, 24 Jul 2023 04:09:06 +0900
+Message-ID: <20230723190906.4082646-3-42.hyeyoo@gmail.com>
 X-Mailer: git-send-email 2.41.0
 In-Reply-To: <20230723190906.4082646-1-42.hyeyoo@gmail.com>
 References: <20230723190906.4082646-1-42.hyeyoo@gmail.com>
@@ -74,165 +74,160 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This is partial revert of commit b47291ef02b0 ("mm, slub: change percpu
-partial accounting from objects to pages"). and full revert of commit
-662188c3a20e ("mm/slub: Simplify struct slab slabs field definition").
+By default, SLUB sets remote_node_defrag_ratio to 1000, which makes it
+(in most cases) take slabs from remote nodes first before trying allocating
+new folios on the local node from buddy.
 
-While b47291ef02b0 prevents percpu partial slab list becoming too long,
-it assumes that the order of slabs are always oo_order(s->oo).
+Documentation/ABI/testing/sysfs-kernel-slab says:
+> The file remote_node_defrag_ratio specifies the percentage of
+> times SLUB will attempt to refill the cpu slab with a partial
+> slab from a remote node as opposed to allocating a new slab on
+> the local node.  This reduces the amount of wasted memory over
+> the entire system but can be expensive.
 
-The current approach can surprisingly lower the number of objects cached
-per cpu when it fails to allocate high order slabs. Instead of accounting
-the number of slabs, change it back to accounting objects, but keep
-the assumption that the slab is always half-full.
+Although this made sense when it was introduced, the portion of
+per node partial lists in the overall SLUB memory usage has been decreased
+since the introduction of per cpu partial lists. Therefore, it's worth
+reevaluating its overhead on performance and memory usage.
 
-With this change, the number of cached objects per cpu is not surprisingly
-decreased even when it fails to allocate high order slabs. It still
-prevents large inaccuracy because it does not account based on the
-number of free objects when taking slabs.
+[
+	XXX: Add performance data. I tried to measure its impact on
+	hackbench with a 2 socket NUMA 	machine. but it seems hackbench is
+	too synthetic to benefit from this, because the	skbuff_head_cache's
+	size fits into the last level cache.
+
+	Probably more realistic workloads like netperf would benefit
+	from this?
+]
+
+Set remote_node_defrag_ratio to zero by default, and the new behavior is:
+	1) try refilling per CPU partial list from the local node
+	2) try allocating new slabs from the local node without reclamation
+	3) try refilling per CPU partial list from remote nodes
+	4) try allocating new slabs from the local node or remote nodes
+
+If user specified remote_node_defrag_ratio, it probabilistically tries
+3) first and then try 2) and 4) in order, to avoid unexpected behavioral
+change from user's perspective.
 ---
- include/linux/slub_def.h |  2 --
- mm/slab.h                |  6 ++++++
- mm/slub.c                | 31 ++++++++++++-------------------
- 3 files changed, 18 insertions(+), 21 deletions(-)
+ mm/slub.c | 45 +++++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 37 insertions(+), 8 deletions(-)
 
-diff --git a/include/linux/slub_def.h b/include/linux/slub_def.h
-index deb90cf4bffb..589ff6a2a23f 100644
---- a/include/linux/slub_def.h
-+++ b/include/linux/slub_def.h
-@@ -109,8 +109,6 @@ struct kmem_cache {
- #ifdef CONFIG_SLUB_CPU_PARTIAL
- 	/* Number of per cpu partial objects to keep around */
- 	unsigned int cpu_partial;
--	/* Number of per cpu partial slabs to keep around */
--	unsigned int cpu_partial_slabs;
- #endif
- 	struct kmem_cache_order_objects oo;
- 
-diff --git a/mm/slab.h b/mm/slab.h
-index 799a315695c6..be38a264df16 100644
---- a/mm/slab.h
-+++ b/mm/slab.h
-@@ -65,7 +65,13 @@ struct slab {
- #ifdef CONFIG_SLUB_CPU_PARTIAL
- 				struct {
- 					struct slab *next;
-+#ifdef CONFIG_64BIT
- 					int slabs;	/* Nr of slabs left */
-+					int pobjects;	/* Approximate count */
-+#else
-+					short int slabs;
-+					short int pobjects;
-+#endif
- 				};
- #endif
- 			};
 diff --git a/mm/slub.c b/mm/slub.c
-index f7940048138c..199d3d03d5b9 100644
+index 199d3d03d5b9..cfdea3e3e221 100644
 --- a/mm/slub.c
 +++ b/mm/slub.c
-@@ -486,18 +486,7 @@ static inline unsigned int oo_objects(struct kmem_cache_order_objects x)
- #ifdef CONFIG_SLUB_CPU_PARTIAL
- static void slub_set_cpu_partial(struct kmem_cache *s, unsigned int nr_objects)
+@@ -2319,7 +2319,8 @@ static void *get_partial_node(struct kmem_cache *s, struct kmem_cache_node *n,
+ /*
+  * Get a slab from somewhere. Search in increasing NUMA distances.
+  */
+-static void *get_any_partial(struct kmem_cache *s, struct partial_context *pc)
++static void *get_any_partial(struct kmem_cache *s, struct partial_context *pc,
++			     bool force_defrag)
  {
--	unsigned int nr_slabs;
--
- 	s->cpu_partial = nr_objects;
--
--	/*
--	 * We take the number of objects but actually limit the number of
--	 * slabs on the per cpu partial list, in order to limit excessive
--	 * growth of the list. For simplicity we assume that the slabs will
--	 * be half-full.
--	 */
--	nr_slabs = DIV_ROUND_UP(nr_objects * 2, oo_objects(s->oo));
--	s->cpu_partial_slabs = nr_slabs;
+ #ifdef CONFIG_NUMA
+ 	struct zonelist *zonelist;
+@@ -2347,8 +2348,8 @@ static void *get_any_partial(struct kmem_cache *s, struct partial_context *pc)
+ 	 * may be expensive if we do it every time we are trying to find a slab
+ 	 * with available objects.
+ 	 */
+-	if (!s->remote_node_defrag_ratio ||
+-			get_cycles() % 1024 > s->remote_node_defrag_ratio)
++	if (!force_defrag && (!s->remote_node_defrag_ratio ||
++			get_cycles() % 1024 > s->remote_node_defrag_ratio))
+ 		return NULL;
+ 
+ 	do {
+@@ -2382,7 +2383,8 @@ static void *get_any_partial(struct kmem_cache *s, struct partial_context *pc)
+ /*
+  * Get a partial slab, lock it and return it.
+  */
+-static void *get_partial(struct kmem_cache *s, int node, struct partial_context *pc)
++static void *get_partial(struct kmem_cache *s, int node, struct partial_context *pc,
++			 bool force_defrag)
+ {
+ 	void *object;
+ 	int searchnode = node;
+@@ -2394,7 +2396,7 @@ static void *get_partial(struct kmem_cache *s, int node, struct partial_context
+ 	if (object || node != NUMA_NO_NODE)
+ 		return object;
+ 
+-	return get_any_partial(s, pc);
++	return get_any_partial(s, pc, force_defrag);
  }
- #else
- static inline void
-@@ -2275,7 +2264,7 @@ static void *get_partial_node(struct kmem_cache *s, struct kmem_cache_node *n,
- 	struct slab *slab, *slab2;
- 	void *object = NULL;
+ 
+ #ifndef CONFIG_SLUB_TINY
+@@ -3092,6 +3094,7 @@ static void *___slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
+ 	struct slab *slab;
  	unsigned long flags;
--	unsigned int partial_slabs = 0;
-+	int objects_taken = 0;
+ 	struct partial_context pc;
++	gfp_t local_flags;
  
- 	/*
- 	 * Racy check. If we mistakenly see no partial slabs then we
-@@ -2312,11 +2301,11 @@ static void *get_partial_node(struct kmem_cache *s, struct kmem_cache_node *n,
- 		} else {
- 			put_cpu_partial(s, slab, 0);
- 			stat(s, CPU_PARTIAL_NODE);
--			partial_slabs++;
-+			objects_taken += slab->objects / 2;
- 		}
- #ifdef CONFIG_SLUB_CPU_PARTIAL
- 		if (!kmem_cache_has_cpu_partial(s)
--			|| partial_slabs > s->cpu_partial_slabs / 2)
-+			|| objects_taken > s->cpu_partial / 2)
- 			break;
- #else
- 		break;
-@@ -2699,13 +2688,14 @@ static void put_cpu_partial(struct kmem_cache *s, struct slab *slab, int drain)
- 	struct slab *slab_to_unfreeze = NULL;
- 	unsigned long flags;
- 	int slabs = 0;
-+	int pobjects = 0;
+ 	stat(s, ALLOC_SLOWPATH);
  
- 	local_lock_irqsave(&s->cpu_slab->lock, flags);
+@@ -3208,10 +3211,35 @@ static void *___slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
+ 	pc.flags = gfpflags;
+ 	pc.slab = &slab;
+ 	pc.orig_size = orig_size;
+-	freelist = get_partial(s, node, &pc);
++
++	freelist = get_partial(s, node, &pc, false);
+ 	if (freelist)
+ 		goto check_new_slab;
  
- 	oldslab = this_cpu_read(s->cpu_slab->partial);
- 
- 	if (oldslab) {
--		if (drain && oldslab->slabs >= s->cpu_partial_slabs) {
-+		if (drain && oldslab->pobjects >= s->cpu_partial) {
- 			/*
- 			 * Partial array is full. Move the existing set to the
- 			 * per node partial list. Postpone the actual unfreezing
-@@ -2714,14 +2704,17 @@ static void put_cpu_partial(struct kmem_cache *s, struct slab *slab, int drain)
- 			slab_to_unfreeze = oldslab;
- 			oldslab = NULL;
- 		} else {
-+			pobjects = oldslab->pobjects;
- 			slabs = oldslab->slabs;
- 		}
++	/*
++	 * try allocating slab from the local node first before taking slabs
++	 * from remote nodes. If user specified remote_node_defrag_ratio,
++	 * try taking slabs from remote nodes first.
++	 */
++	slub_put_cpu_ptr(s->cpu_slab);
++	local_flags = (gfpflags | __GFP_NOWARN | __GFP_THISNODE);
++	local_flags &= ~(__GFP_NOFAIL | __GFP_RECLAIM);
++	slab = new_slab(s, local_flags, node);
++	c = slub_get_cpu_ptr(s->cpu_slab);
++
++	if (slab)
++		goto alloc_slab;
++
++	/*
++	 * At this point no memory can be allocated lightly.
++	 * Take slabs from remote nodes.
++	 */
++	if (node == NUMA_NO_NODE) {
++		freelist = get_any_partial(s, &pc, true);
++		if (freelist)
++			goto check_new_slab;
++	}
++
+ 	slub_put_cpu_ptr(s->cpu_slab);
+ 	slab = new_slab(s, gfpflags, node);
+ 	c = slub_get_cpu_ptr(s->cpu_slab);
+@@ -3221,6 +3249,7 @@ static void *___slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
+ 		return NULL;
  	}
  
- 	slabs++;
-+	pobjects += slab->objects / 2;
++alloc_slab:
+ 	stat(s, ALLOC_SLAB);
  
- 	slab->slabs = slabs;
- 	slab->next = oldslab;
-+	slab->pobjects = pobjects;
+ 	if (kmem_cache_debug(s)) {
+@@ -3404,7 +3433,7 @@ static void *__slab_alloc_node(struct kmem_cache *s,
+ 	pc.flags = gfpflags;
+ 	pc.slab = &slab;
+ 	pc.orig_size = orig_size;
+-	object = get_partial(s, node, &pc);
++	object = get_partial(s, node, &pc, false);
  
- 	this_cpu_write(s->cpu_slab->partial, slab);
+ 	if (object)
+ 		return object;
+@@ -4538,7 +4567,7 @@ static int kmem_cache_open(struct kmem_cache *s, slab_flags_t flags)
+ 	set_cpu_partial(s);
  
-@@ -5653,13 +5646,13 @@ static ssize_t slabs_cpu_partial_show(struct kmem_cache *s, char *buf)
- 
- 		slab = slub_percpu_partial(per_cpu_ptr(s->cpu_slab, cpu));
- 
--		if (slab)
-+		if (slab) {
- 			slabs += slab->slabs;
-+			objects += slab->objects;
-+		}
- 	}
+ #ifdef CONFIG_NUMA
+-	s->remote_node_defrag_ratio = 1000;
++	s->remote_node_defrag_ratio = 0;
  #endif
  
--	/* Approximate half-full slabs, see slub_set_cpu_partial() */
--	objects = (slabs * oo_objects(s->oo)) / 2;
- 	len += sysfs_emit_at(buf, len, "%d(%d)", objects, slabs);
- 
- #ifdef CONFIG_SLUB_CPU_PARTIAL
-@@ -5669,7 +5662,7 @@ static ssize_t slabs_cpu_partial_show(struct kmem_cache *s, char *buf)
- 		slab = slub_percpu_partial(per_cpu_ptr(s->cpu_slab, cpu));
- 		if (slab) {
- 			slabs = READ_ONCE(slab->slabs);
--			objects = (slabs * oo_objects(s->oo)) / 2;
-+			objects = READ_ONCE(slab->pobjects);
- 			len += sysfs_emit_at(buf, len, " C%d=%d(%d)",
- 					     cpu, objects, slabs);
- 		}
+ 	/* Initialize the pre-computed randomized freelist if slab is up */
 -- 
 2.41.0
 
