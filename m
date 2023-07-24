@@ -1,87 +1,81 @@
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34AF07C
-	for <oe-lkp@lists.linux.dev>; Mon, 24 Jul 2023 05:57:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 937CA10F8
+	for <oe-lkp@lists.linux.dev>; Mon, 24 Jul 2023 06:42:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1690178233; x=1721714233;
+  t=1690180957; x=1721716957;
   h=date:from:to:cc:subject:message-id:
    content-transfer-encoding:mime-version;
-  bh=j8DKwf+fvUHqp7Dwp3wq41yoB0CvHFWKZf6KWUfEjHE=;
-  b=jHKFAg1LdgiXN7iIVK4qnwZlKSugSl/VDqUbFYkVwOILjPmqZFuugw2E
-   HVNe6Y2sLYY9vPaJSP5pyo412jKRn1wT1bXHgkFPD2q3lYt0J14PuL4Pz
-   GyOUpxB1wn9UIhHxokvBIbB4Efhak/bZ5G7kzkj7bIxpC/B3vgLkVGz+l
-   inK1ay9Ag7UepMei7/eJBqbHc5SZmaPzux0oG3THfsdHjxzP6jrUqhS+A
-   PSDSXOIpq9yuX2b1HHqqy3ZbfmzovVnt9Lj/3QbLghORZkGfQdGt4z7up
-   b1wK8Il1FCHe2HexyHP56qQus6zjcAePhGO6z9A4qLhshWqJ8NJjurbOk
+  bh=1ptCVUJIUSqWKlTEWUHgGvWQ97D5f1K6F8Aksue/G1s=;
+  b=WXnTFqWGoXg3sB7eNf+PbxPaNNb1nJL0Yp0aqKJfhzabjl8P+pmEhSWQ
+   NDkIDnMGa5zD+8bdgWXDuHsfvZRQl1gNkeD8nH7+IqYEaEzNXepzDGkoH
+   g3FHrIsDDHVECxoK1VENCLsZMO6dNRT5BNbfQ8nb7yixmuet0K7KSUO4n
+   8VjtMYq7TUmqtWu3Y4b6aTZP+SN9vT/2ih8rq1Q+3e+rFzS832g6Xsztp
+   hqFfNP7SRw7uNPjtpXzGwhnpp5LE7+Pg9hNfRja6paFazY02dHQto5vRw
+   LxdH5f41bEJ0n3EfmqTwy1abfqqc+xHAiWQXU9/Z/mmtt3GE/qV65+kSI
    w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="352248043"
+X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="366254265"
 X-IronPort-AV: E=Sophos;i="6.01,228,1684825200"; 
-   d="yaml'?scan'208";a="352248043"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jul 2023 22:57:11 -0700
+   d="yaml'?scan'208";a="366254265"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jul 2023 23:42:34 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="815698902"
+X-IronPort-AV: E=McAfee;i="6600,9927,10780"; a="755199840"
 X-IronPort-AV: E=Sophos;i="6.01,228,1684825200"; 
-   d="yaml'?scan'208";a="815698902"
+   d="yaml'?scan'208";a="755199840"
 Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by FMSMGA003.fm.intel.com with ESMTP; 23 Jul 2023 22:57:10 -0700
-Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+  by orsmga008.jf.intel.com with ESMTP; 23 Jul 2023 23:42:34 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
  ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Sun, 23 Jul 2023 22:57:10 -0700
-Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
- ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Sun, 23 Jul 2023 22:57:09 -0700
+ 15.1.2507.27; Sun, 23 Jul 2023 23:42:33 -0700
 Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27 via Frontend Transport; Sun, 23 Jul 2023 22:57:09 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.105)
+ 15.1.2507.27 via Frontend Transport; Sun, 23 Jul 2023 23:42:33 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.168)
  by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.27; Sun, 23 Jul 2023 22:57:09 -0700
+ 15.1.2507.27; Sun, 23 Jul 2023 23:42:32 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XpMmgjGT3NHZNiblCf+GJLgYLzYJ+1jSv5EepMjy4CfCDgUaxQByTrRtWAAauOtu1vjnDC8G2q9gOl5uY/f9tjNyJVcEgXjCnamtHDhPlpVaBZpOqFIS/d2nUfh+/6L52kOxjQs7lyJmNQt4YkgeNd/5KPAHHPUexvOug4K2+Z7UZxMC1xLaNO/Uf18WHuLvXR+uhzt128XYuL5p0EXCobBO7oin022em5uE9vSx4aJQq37OjpbKl65oy9J/mDhGLgGsBjiRX5RlM1jA340E8oFMGJPCn14bUBPePxOki+4aAAmeBRXU3i01wws/ShPKjCALIzWM009ujKKjmZAk8Q==
+ b=OjxrkWm2a7bzoMKHCeNj24DLlYLxushoXieiKN8Ck/h45/VXT2qwFHWMI11+A8ahQJYzw9w53OKFsI0Y6P+qS9b7IaM/v0wUHpNvMQhFmMwRR0GPSWpoIOU8k/JUv08rO7Ghpwf0BUdGfrXCb8U2ffGu9FbYli/fgvj3EQJ9RQzOfj6ecP/YzkA3ZAWgTzbUeVJBDUGIC3Mwt5V81anavWr9yd42MQxvElwAOdLd2kwHrxPumpnRtXur+TFccRyCWFP6YDGiRm6CHFU1mIdphdMND28xOq9i0LfRhe5+BqgbBp30kyxmP5ufGOisw9eGO5hfisqp0lXZSzosyXtXog==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4v3DaWD29vqHPJSxq2GVsO89lmXYJnUCyzIvtTVaBxw=;
- b=VQHrvfd/Px3Os4I4HbA//tcoP3WtGBr6tVhfj8tfLqLuy9ZrHOZq0y1CrEjVHlb06DmZICb7s5vaFq4YYza4Rg0vMgSr8aaI0dUS7MNZy5k1ETDDMyV8ccjtDuhZ4z9vjYYQebT5PPne94Syb3QGHoujxMTu7qWSEEnni4OPrQe/S6ZSukRUPzOxo/TXK9qhodI0BsBLzCBP8FkNpiER8q1iBZQd359Q1TxJd+NjNd1ySVTaKbhGIIFQOf66l+W27j8gdoxnOfPeeNZZJFs72l8MEu7PT71YZ87cGfCcPYytlMMN7kMMxsRdZC8p1eQEXwNdY4TXIxIiQS6DLrxdtQ==
+ bh=9z6Imj7LEP9qP+DacAtXM917wbhiurhNj+No/O4q5l0=;
+ b=EdOJMUaO2Qmv2cStAjtAljVy3lZiY4pqF95/oFqTjFaRitg/DavoAUbCvVhpUk2hpkvGlXqhjx2Yf6V3GdgWYc/pBIiI6o6nV633vehLWIzlyesBfeVes78IfpsDOzqSDuIkJonLz61lGD6pQz+k3N0doKTCpA5s//VwoYjF8eYe3I0NB49bi4tr9e+Pz7sef3digh9iP1XkMRmidWz/s8dCExvYBRTMPjDHZX953y8oZxDS1ZwGJf8mbn9tXUgoEq6DojxRn0pLk/Xe2wmdoz9O8cUWa2/Q2aNcBUNRj6ufcvf8NYQVM5fWakWu3uQ0/L+zthCrPM8KOjS5B1yAhA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
- by PH8PR11MB7992.namprd11.prod.outlook.com (2603:10b6:510:25b::15) with
+ by IA1PR11MB8199.namprd11.prod.outlook.com (2603:10b6:208:455::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6609.30; Mon, 24 Jul
- 2023 05:57:02 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6609.31; Mon, 24 Jul
+ 2023 06:42:29 +0000
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com
  ([fe80::1778:c00c:d5ff:da66]) by PH8PR11MB6779.namprd11.prod.outlook.com
  ([fe80::1778:c00c:d5ff:da66%6]) with mapi id 15.20.6609.031; Mon, 24 Jul 2023
- 05:57:02 +0000
-Date: Mon, 24 Jul 2023 13:56:51 +0800
+ 06:42:29 +0000
+Date: Mon, 24 Jul 2023 14:42:19 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Christoph Hellwig <hch@lst.de>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
-	David Sterba <dsterba@suse.com>, Chris Mason <clm@fb.com>, Johannes Thumshirn
-	<johannes.thumshirn@wdc.com>, <linux-btrfs@vger.kernel.org>,
-	<ying.huang@intel.com>, <feng.tang@intel.com>, <fengwei.yin@intel.com>,
-	<oliver.sang@intel.com>
-Subject: [linus:master] [btrfs]  da02361807:  filebench.sum_operations/s
- 69.7% improvement
-Message-ID: <202307241246.7cc66fda-oliver.sang@intel.com>
-Content-Type: multipart/mixed; boundary="tzlx3Ab+uqULRPvA"
+To: Dai Ngo <dai.ngo@oracle.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Linux Memory Management List
+	<linux-mm@kvack.org>, Chuck Lever <chuck.lever@oracle.com>,
+	<linux-nfs@vger.kernel.org>, <ying.huang@intel.com>, <feng.tang@intel.com>,
+	<fengwei.yin@intel.com>, <oliver.sang@intel.com>
+Subject: [linux-next:master] [NFSD]  e5b9a37505:  fsmark.files_per_sec 2.1%
+ improvement
+Message-ID: <202307241214.756a4c64-oliver.sang@intel.com>
+Content-Type: multipart/mixed; boundary="xrZS/9iY6bIqZL+1"
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: SI2PR02CA0022.apcprd02.prod.outlook.com
- (2603:1096:4:195::23) To PH8PR11MB6779.namprd11.prod.outlook.com
- (2603:10b6:510:1ca::17)
+X-ClientProxiedBy: SG3P274CA0011.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:be::23)
+ To PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -89,57 +83,57 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|PH8PR11MB7992:EE_
-X-MS-Office365-Filtering-Correlation-Id: beb345c2-2191-4675-1ef9-08db8c0acc99
+X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|IA1PR11MB8199:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1b79b439-3880-4471-7571-08db8c112664
 X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: NSC1Y7HznlCaFMr8qdH8wng4x16wW5hdyFw/AC9Mn0m4b5h/TxVjeKVoBcBTLZQmN9DULTNg51i5ePlBIKjTlGMPBdgvegxxkqKKhNpy7p0VZ74PNx6bc2hYVF9kYqHFZeE83cWNtZpaq6TbYWVWNe5XTgFgEMLE0WXTmb1i3BlURL6QsL2UwMtxMrofNmnpSWW9Bq5hPF4EVmdlV6UkNk08uYNopgB2nUw5JBYOHxqaD9A+W8dUg42Ow6E4WleATjpnsHt/qYDSRqgC8NbKtirGg6VtqWujJ9o7gyrA0BR9CZ9pZjvadCGtdJZ6sKFLy65BdwFcYmCuSKpwt1u3ddtrMDJWpx5W7egdwsjX8YCQYDkn+f/03G2M0lgnrOaYsppIwOgZW/0kn6xzqwnsOnhGDZFDOmUGxzltBZYGMmHNnED3avn2m/+nSn3jgzka3fmxxZsKl5NKiRARWb0rfjIO386cGzCjpZ6uR/esWPdlDAU6MB/SxFnRAQdQKF1LoW245i62AulDvfxYP2ncMMMVvh3hdUdpON7MwebRpQYBERq4s6bOWRqtsbUQ3SskcmbzkGXlDBRXy6PSVbvlI+pXaMYA3296IISj3FTKQ74U9EcoxeTHKH6QcsFGkOXTgW/a9ZEgpmNx/0jyGf66Mw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(366004)(396003)(39860400002)(376002)(136003)(346002)(451199021)(2906002)(66946007)(66476007)(66556008)(6916009)(44144004)(6666004)(66574015)(478600001)(6486002)(6512007)(966005)(54906003)(19627235002)(83380400001)(86362001)(36756003)(21490400003)(186003)(82960400001)(2616005)(107886003)(26005)(1076003)(6506007)(38100700002)(4326008)(30864003)(41300700001)(8936002)(8676002)(235185007)(5660300002)(316002)(2700100001)(559001)(579004);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: 6gTfubtOba5iz8b2oHbBMDAO43mLcPcWI3mUSel9FU/w/BEQAdN1u4lcIb15YKT8DrmgeUFiRP2qia2hPtiv0lVcD8Y8GDPGMJtvxv5xUbeHbQLCJEV9DgNdAyS80vHfD/SP0fjFh309e9N45HP1LxWxIpuQYIkTNdPTPeVWzP5nFoBfpdNVGy+0y1SIK6zHjw/ecwP4jomsjys42XoaoEnpYv/rExLQHgkl+x0WU/VzqvZaikgk4LaKFzubsUx+RNA4elCn8R/e1rwSyjKohWBZJpZrnXHFLCHINxgFBjcZ6Hyl4LLj80UxkBrdBbpZrFh0xXQfXBhSGtVQfvh4I93t3sUndAJHI6XCpXTmHE4fhDPXugiNKMF6aMJLyFKsUKYM+b7WnM0p9/TQmXSo3gBhSh4MGLfOgdRo63g6owXyvn1fzVRS7j5H0QaOQD+0t7s+LzS+jGYdKUVSGx20Fjhfeb0Mi8Ms0f8c1f4fz+gKsAEORIidIutxAHn0rTmtA9EQhA8Qm/bmvfSiM9eanobpWu71UJPs5rIeA0Qsb+XbE8hJ0jtBbZ0vc3DBwiLVghRrw+Pc7hfeuwGTuj1fh0OEUckkUCUwiz4pki+G/ebavlY8pWo68i/X7jOpGAYdVqilNoLeGI5ZWYbc4CiXbw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(136003)(346002)(366004)(396003)(376002)(39860400002)(451199021)(83380400001)(38100700002)(36756003)(86362001)(82960400001)(54906003)(478600001)(2906002)(1076003)(186003)(26005)(6506007)(6666004)(6512007)(966005)(6486002)(44144004)(8936002)(5660300002)(235185007)(8676002)(316002)(41300700001)(66946007)(66476007)(6916009)(66556008)(4326008)(107886003)(2616005)(21490400003)(2700100001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?rWJCbutcPiV0waBeMvcPGW5MHR0iRhewm4GKpc+ZZnYUwdxkUdPo2fqVj2?=
- =?iso-8859-1?Q?/vzsVmHibKt2FJUUlCQSHfHC5m3UCwhM+Fc6UeRV5BopjT+dzSxZuYXZr6?=
- =?iso-8859-1?Q?dQYbgI8bHPI1ceYfO/+FgRcKpWNpDgQal73RYIJ9Q3THBvKH7+b1bB0FE7?=
- =?iso-8859-1?Q?btUYyQYdx9yli9pamawSzRnyGiieD9NSm4SwrrFMo3m+KQXQxS5HG+mdDr?=
- =?iso-8859-1?Q?DVbvzD47EpGh3RGuqP934qOAJLgxNjPjqUCTd1aN0fbIeFZaLKIMGLzWN3?=
- =?iso-8859-1?Q?LxOlC2rI0ir9Iz7OGkaeWAbpDB+PaCxW7RzkWbhPk6zo2Ai/eyrM3P3U4q?=
- =?iso-8859-1?Q?A+ajj6bOULcCK0VUR4QI3lZSLriH9sHpnP4uZvkvbxiPn9pG5yYw3HosG7?=
- =?iso-8859-1?Q?Q2pHJx/nFdEaH04FtPnanbk4tmw3Kzvuk8lSR2ParYRtMfJkvMHBPzmadN?=
- =?iso-8859-1?Q?8oLs1KIspQ0u+RHJFpr4BlsMxkX5DBvqnMFn5Sh0IsvlGV928iTDcK4vbm?=
- =?iso-8859-1?Q?snn8WyMgXnYomaH4z+DkSyClDf5j+d34wRAfyzTjBYYK/zKj2uYtTpnaIE?=
- =?iso-8859-1?Q?h/3plTbieyT5HGIlGGoovLXWtWF9uI1g3vh+Qr/mg89cFP4hrt/bFRrqsl?=
- =?iso-8859-1?Q?TgT6YOPejZctUuYT7Mlvo+83RffDTYunyBIv6cJDi4dgzbXIj59UgrH+iG?=
- =?iso-8859-1?Q?u0PccrT5DG4agnn2X4zPKJOBg82BxHcshq+i9pQ0KSxdN7OYhUmtTfGDGk?=
- =?iso-8859-1?Q?jR1qFbTlmTmGy33La8qDNQMJJH3CJam7K11rH4+RgVs32EUDSGkeDQwz8D?=
- =?iso-8859-1?Q?KK79sVbSfJQsO+G0g6916kNUio5V+By+Ups1CIbGaYxt9vPRfenYKucrF0?=
- =?iso-8859-1?Q?qGg21gQEAu59D4lfoVBGfzaaa5njz8YwDTovjLY0yW4OoR/rbnFHN8O7DK?=
- =?iso-8859-1?Q?8qHswHejSz5aMMk5BMZ1SViWT9PDKzK0q006ZsyQSqXIJ4p/zMoc36Kixi?=
- =?iso-8859-1?Q?qpbvUlhzmkZmNndC8HZEjgeJb7xYaQNN0THZt3APBpSIuAEPFd5qSez5Ad?=
- =?iso-8859-1?Q?0DIH9hHA4gJ7X3fCZMTIRmIRx0RT6sY1bU/ibFb6/N7dUgKJO78qEKM0gH?=
- =?iso-8859-1?Q?qhBVUZoj4EGdO/Eu3mJEV6Zaw1ca9S4NzPf1ju5op2sF+e1Au0DuSUnrj7?=
- =?iso-8859-1?Q?mxxuQaukrHG8AaS9l4DTucevp8qGlf3x4DHE/0Ywdff/p7kMmCzFgRTkwF?=
- =?iso-8859-1?Q?JPsU0UxuoxD/HgvVEINmcARQNFEER3tAIeMIX3VpTH2XGdIhJ/fs3zGNTw?=
- =?iso-8859-1?Q?ua78xeekAH9tBuLBHI2vClmUrf6vl9akf2MoyO2A15IJTgAIYfphVXFMWo?=
- =?iso-8859-1?Q?/Mo4pLlgBO9Rmmb43+XhjJgwF7GFt7eZqCLYicesH2TVl4z0mRhUIUL/Mp?=
- =?iso-8859-1?Q?Rs7/rEevudmdxPVHPHd9/5iMg+rRAjDNPEq+hkc4rFru5ENliMUMyYbr3V?=
- =?iso-8859-1?Q?s0TbRHosPu5DjLxePQ5iqw7bp/aXlERFtcMBrFpV7yCpjaEl30vUpDtP+a?=
- =?iso-8859-1?Q?eLCEpGXecM8e5yFXiuLI8Gv7xsIM1LTyt4wdxa1BBo3c4LkVds+2LwIqat?=
- =?iso-8859-1?Q?hw6AxTtB5IOVq6XEKwi7hPl7aGlPq9okz1G+0FA8GqcKkWLe4QlG1X6Q?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?jlgrMlyK+4pdpq4b5Ll6PHZ6bol/yyJd4rzD3ym9SuZgf3zauHHl9Kijm/?=
+ =?iso-8859-1?Q?CL8N8PgskPLFYnhMnUHadH3ItNV65OEfu7w51ZSu/dFqzsHVym6i8lRNkG?=
+ =?iso-8859-1?Q?Eu0AHVgwTYgVEAcph8el/pXGqoyVeeLq42XtOG7VDt1DbuRs7g20C51pCn?=
+ =?iso-8859-1?Q?AgWeTsfXLhcDMUx3zHpHyidkUNzb8KN5cZ+kq5tDJa9yd+/betfInrxI0u?=
+ =?iso-8859-1?Q?TtXYdO5jbLas2CmIIzyTrYQNtyyk+45zpSW85RLDUMJPuQQq7B/BPXWOvd?=
+ =?iso-8859-1?Q?ePC24IXyGys5SBK45Vscw7o2c9spQyka8yEkvlBsQz76/TLwP8VjkNBQOe?=
+ =?iso-8859-1?Q?Cs6sKdghYn3O1kY8bhpGahKpG5wK8rnDcmB8MZ0hV/K7KMQQkeKWacNJVx?=
+ =?iso-8859-1?Q?h1GQH2qirKkWj8gPL5q3h3yjUjWLSovw0qnwm2qG+4tQ4xSZDeQ1j8Nvmg?=
+ =?iso-8859-1?Q?1+896xwtj9odTOgPqdZFLEJSf4H4RH2hX+6+nWrjr66mox96SUeB47kkes?=
+ =?iso-8859-1?Q?0gG+dLzy71MX2kqNiPnm5w1rS3Q2G0bP4uT3Y7ZlfTrfHeVOmaI7Dpu0dJ?=
+ =?iso-8859-1?Q?ahXHkcq2v53+RASu6kQqCccM2P6VV6XjiMIz1jsxxVdv46O/ZVNNERaNQY?=
+ =?iso-8859-1?Q?PszLcGpngKLPlGmbuBBNh5M/WZLUkL2mLlwxVLxH1nUERRbEvxxY+mysHb?=
+ =?iso-8859-1?Q?b6VHK5YOIbRfBEdMfbAJQHF29y0O0hnqe0o8/5RPQmfgRBKfBonlaIjYmD?=
+ =?iso-8859-1?Q?OpMUc5CH8x5OcYzGoCHWE3QRwlGAqoN1bmyvkzKtO32Uj7k18I9FCn+eMI?=
+ =?iso-8859-1?Q?MaqJ0+1jZ9dOhvyteRlqS6gFvuIJ9IcIJuvS/UlstPF+gh0a+tX3ACY3Sw?=
+ =?iso-8859-1?Q?bpAIjpnVmd+8uLHJ7byEWDi1fDYUQpvwXOpAWxxh1qru1Hu9YGzU6XrhfX?=
+ =?iso-8859-1?Q?0EgYsOqzkpprUYygk2swzDbuPWSDTSWYx2RPaBbx2ERXknh+EIGMUDEdIn?=
+ =?iso-8859-1?Q?YdoHSCAspsz/xlIDUeenVGuISsuaEZf4dNedA7x5WGD2ceFXKeRqE4ftPB?=
+ =?iso-8859-1?Q?+QMfU9iucJOD37yXiaWKh8KNd6htHQivaPuXDR56COETkfxH2fNnbmNaUK?=
+ =?iso-8859-1?Q?kZFHBw5JrVkvWnZTIc1ArZ0n5131L8aPFI0s1h9yRoNJOiLLskbOFZNb9/?=
+ =?iso-8859-1?Q?imxS++QW5qSGqqHWNYrLVu5ax+9kxoadf6I7p6AgGNASGtGZKR+5BWcjAL?=
+ =?iso-8859-1?Q?VRJMKtl9YgIXqsNKCEUBRI9UMMZxhj6inDcxAuW0loyP9DdgmvJT9qXlUH?=
+ =?iso-8859-1?Q?RSx6UUdlAstMYzxt4+4NuRap75gmD8Ic3cmClv5vWEhgojUrfVJxuxn60k?=
+ =?iso-8859-1?Q?4dvC6x/+CB2xuRFASjR9AEJuQpkNLPWDFr7q4EBdv2hFdnab6Q5GuLTGi6?=
+ =?iso-8859-1?Q?BDa9G0JZ94TVER8hiONYx81koBxdQyKHy9UVXJuZF9c3cjVD6HUYto4MNR?=
+ =?iso-8859-1?Q?32WZ001QUc06x2q6d87EWpRQPj/ga45XQEtvv/otS1+OeJ7AE2LDcpe+ka?=
+ =?iso-8859-1?Q?2J8RxxL1ahUdjlZIAJGWxTvZ4p0hj96cA0UmUto0mGtiS9AkasIS7/ST9i?=
+ =?iso-8859-1?Q?qzpn4PkzMVdvm9wv3DtNkuzMiG9N6YMYlwu4lKR51i7ir12PMNqpL8mA?=
  =?iso-8859-1?Q?=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: beb345c2-2191-4675-1ef9-08db8c0acc99
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1b79b439-3880-4471-7571-08db8c112664
 X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB6779.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jul 2023 05:57:02.1778
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jul 2023 06:42:29.6166
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: E2f95aFN+FqbOUJVRWTP8i0BRytYBlexjNEWMOQDzvqzLnRe1erBx/PG+qMIzTFT79tdrN61nwvbFfzsxhzz1g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR11MB7992
+X-MS-Exchange-CrossTenant-UserPrincipalName: OcMhDeS8qkL88BDEIKI8c26MfpdzHsLeehGltrGG4RqhfZcvtARQgyrM6ZSaCC+sulOkDbFYDKJcQzWszWL1xw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB8199
 X-OriginatorOrg: intel.com
 
---tzlx3Ab+uqULRPvA
+--xrZS/9iY6bIqZL+1
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
@@ -148,68 +142,29 @@ Content-Transfer-Encoding: 8bit
 
 Hello,
 
-kernel test robot noticed a 69.7% improvement of filebench.sum_operations/s on:
+kernel test robot noticed a 2.1% improvement of fsmark.files_per_sec on:
 
 
-commit: da023618076a13c35bcde1a49a87b7da64761f1d ("btrfs: submit IO synchronously for fast checksum implementations")
-https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+commit: e5b9a37505880cb3d76ebddca25a7242fd9d6f91 ("NFSD: Enable write delegation support")
+https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
 
-testcase: filebench
-test machine: 96 threads 2 sockets (Ice Lake) with 128G memory
+testcase: fsmark
+test machine: 48 threads 2 sockets Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GHz (Ivy Bridge-EP) with 112G memory
 parameters:
 
-	disk: 1HDD
+	iterations: 1x
+	nr_threads: 32t
+	disk: 1SSD
 	fs: btrfs
-	test: webserver.f
+	fs2: nfsv4
+	filesize: 9B
+	test_size: 400M
+	sync_method: fsyncBeforeClose
+	nr_directories: 16d
+	nr_files_per_directory: 256fpd
 	cpufreq_governor: performance
 
 
-In addition to that, the commit also has significant impact on the following tests:
-
-+------------------+-----------------------------------------------------------------------------------------------+
-| testcase: change | filebench: filebench.sum_operations/s 2.5% improvement                                        |
-| test machine     | 96 threads 2 sockets (Ice Lake) with 128G memory                                              |
-| test parameters  | cpufreq_governor=performance                                                                  |
-|                  | disk=1HDD                                                                                     |
-|                  | fs=btrfs                                                                                      |
-|                  | test=randomfileaccess.f                                                                       |
-+------------------+-----------------------------------------------------------------------------------------------+
-| testcase: change | fio-basic: fio.write_iops 119.2% improvement                                                  |
-| test machine     | 64 threads 2 sockets Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz (Ice Lake) with 256G memory     |
-| test parameters  | bs=4M                                                                                         |
-|                  | cpufreq_governor=performance                                                                  |
-|                  | disk=1HDD                                                                                     |
-|                  | fs=btrfs                                                                                      |
-|                  | ioengine=splice                                                                               |
-|                  | nr_task=100%                                                                                  |
-|                  | runtime=300s                                                                                  |
-|                  | rw=randwrite                                                                                  |
-|                  | test_size=128G                                                                                |
-+------------------+-----------------------------------------------------------------------------------------------+
-| testcase: change | phoronix-test-suite: phoronix-test-suite.blogbench.Write.final_score 97.0% improvement        |
-| test machine     | 96 threads 2 sockets Intel(R) Xeon(R) Gold 6252 CPU @ 2.10GHz (Cascade Lake) with 512G memory |
-| test parameters  | cpufreq_governor=performance                                                                  |
-|                  | option_a=Write                                                                                |
-|                  | test=blogbench-1.1.0                                                                          |
-+------------------+-----------------------------------------------------------------------------------------------+
-| testcase: change | fio-basic: fio.write_iops 16.1% improvement                                                   |
-| test machine     | 64 threads 2 sockets Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz (Ice Lake) with 256G memory     |
-| test parameters  | bs=4k                                                                                         |
-|                  | cpufreq_governor=performance                                                                  |
-|                  | disk=1HDD                                                                                     |
-|                  | fs=btrfs                                                                                      |
-|                  | ioengine=vsync                                                                                |
-|                  | nr_task=100%                                                                                  |
-|                  | runtime=300s                                                                                  |
-|                  | rw=randwrite                                                                                  |
-|                  | test_size=128G                                                                                |
-+------------------+-----------------------------------------------------------------------------------------------+
-| testcase: change | blogbench: blogbench.write_score 195.3% improvement                                           |
-| test machine     | 64 threads 2 sockets Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz (Ice Lake) with 256G memory     |
-| test parameters  | cpufreq_governor=performance                                                                  |
-|                  | disk=1HDD                                                                                     |
-|                  | fs=btrfs                                                                                      |
-+------------------+-----------------------------------------------------------------------------------------------+
 
 
 
@@ -230,2255 +185,92 @@ To reproduce:
         # please remove ~/.lkp and /lkp dir to run from a clean state.
 
 =========================================================================================
-compiler/cpufreq_governor/disk/fs/kconfig/rootfs/tbox_group/test/testcase:
-  gcc-12/performance/1HDD/btrfs/x86_64-rhel-8.3/debian-11.1-x86_64-20220510.cgz/lkp-icl-2sp1/webserver.f/filebench
+compiler/cpufreq_governor/disk/filesize/fs2/fs/iterations/kconfig/nr_directories/nr_files_per_directory/nr_threads/rootfs/sync_method/tbox_group/test_size/testcase:
+  gcc-12/performance/1SSD/9B/nfsv4/btrfs/1x/x86_64-rhel-8.3/16d/256fpd/32t/debian-11.1-x86_64-20220510.cgz/fsyncBeforeClose/lkp-ivb-2ep1/400M/fsmark
 
 commit: 
-  adbe7e388e ("btrfs: use SECTOR_SHIFT to convert LBA to physical offset")
-  da02361807 ("btrfs: submit IO synchronously for fast checksum implementations")
+  af7c14f91a ("NFSD: Enforce flush-on-close for write delegations")
+  e5b9a37505 ("NFSD: Enable write delegation support")
 
-adbe7e388e4239d9 da023618076a13c35bcde1a49a8 
+af7c14f91a306eee e5b9a37505880cb3d76ebddca25 
 ---------------- --------------------------- 
          %stddev     %change         %stddev
              \          |                \  
-      8731 ± 15%     -40.0%       5240 ±  5%  uptime.idle
- 3.528e+09 ± 36%     -87.3%  4.481e+08 ±  5%  cpuidle..time
-  13448815 ±  8%     +26.4%   16993346 ±  2%  cpuidle..usage
-     49.46 ± 21%     -81.7%       9.07 ±  7%  iostat.cpu.idle
-      0.91 ± 28%     -82.4%       0.16 ± 13%  iostat.cpu.iowait
-     48.43 ± 21%     +82.8%      88.52        iostat.cpu.system
-      1.20 ± 19%     +87.2%       2.25        iostat.cpu.user
-    935309 ± 18%     +73.2%    1620327 ±  3%  numa-numastat.node0.local_node
-    989046 ± 15%     +68.3%    1664817 ±  5%  numa-numastat.node0.numa_hit
-   1018597 ± 16%     +52.1%    1549230 ±  4%  numa-numastat.node1.local_node
-   1064097 ± 16%     +50.7%    1603947 ±  5%  numa-numastat.node1.numa_hit
-     48.07 ± 22%     -41.8        6.31 ± 11%  mpstat.cpu.all.idle%
-      0.93 ± 28%      -0.8        0.15 ± 15%  mpstat.cpu.all.iowait%
-      2.18 ± 12%      -1.1        1.07 ±  3%  mpstat.cpu.all.irq%
-      0.28 ± 16%      +0.1        0.40 ±  4%  mpstat.cpu.all.soft%
-     47.31 ± 23%     +42.5       89.77        mpstat.cpu.all.sys%
-      1.23 ± 20%      +1.1        2.31        mpstat.cpu.all.usr%
-     49.00 ± 21%     -83.0%       8.33 ±  5%  vmstat.cpu.id
-     47.83 ± 21%     +84.0%      88.00        vmstat.cpu.sy
-   6344447 ± 19%     +30.9%    8306302        vmstat.memory.cache
-     46.83 ± 25%     +93.2%      90.50        vmstat.procs.r
-    371419 ± 24%     +87.6%     696799 ±  2%  vmstat.system.cs
-    158416 ± 10%     +31.9%     209001 ±  2%  vmstat.system.in
-      5.45 ± 51%      -4.5        0.92 ±143%  perf-profile.calltrace.cycles-pp._free_event.perf_event_release_kernel.perf_release.__fput.task_work_run
-      3.57 ± 68%      -2.6        0.92 ±143%  perf-profile.calltrace.cycles-pp.sw_perf_event_destroy._free_event.perf_event_release_kernel.perf_release.__fput
-      6.69 ± 21%      -2.1        4.64 ± 28%  perf-profile.calltrace.cycles-pp.cmd_record.run_builtin.main.__libc_start_main
-      6.69 ± 21%      -2.1        4.64 ± 28%  perf-profile.calltrace.cycles-pp.__cmd_record.cmd_record.run_builtin.main.__libc_start_main
-     81.03 ±  6%     -13.4       67.63 ± 13%  perf-profile.children.cycles-pp.do_syscall_64
-      5.45 ± 51%      -4.5        0.92 ±143%  perf-profile.children.cycles-pp._free_event
-      3.57 ± 68%      -2.6        0.92 ±143%  perf-profile.children.cycles-pp.sw_perf_event_destroy
-    181472 ± 21%     +44.5%     262190        meminfo.Active(file)
-   6257269 ± 19%     +29.7%    8114811        meminfo.Cached
-    950618 ± 15%    +294.8%    3752789 ±  5%  meminfo.Dirty
-   4269677 ± 15%     +32.6%    5659735        meminfo.Inactive
-   2867351 ± 21%     +45.1%    4159910        meminfo.Inactive(file)
-    111066 ± 43%    +141.4%     268110 ± 33%  meminfo.Mapped
-   9017124 ± 13%     +22.1%   11011299        meminfo.Memused
-    822644 ± 65%     -99.6%       3263 ± 11%  meminfo.Writeback
-    904747 ± 98%    +208.0%    2786769        sched_debug.cfs_rq:/.min_vruntime.avg
-    942699 ± 97%    +204.1%    2867116        sched_debug.cfs_rq:/.min_vruntime.max
-    841765 ± 99%    +197.1%    2500816 ±  2%  sched_debug.cfs_rq:/.min_vruntime.min
-     19473 ± 85%    +218.2%      61961 ± 12%  sched_debug.cfs_rq:/.min_vruntime.stddev
-    -76669          +328.9%    -328861        sched_debug.cfs_rq:/.spread0.min
-     19477 ± 85%    +218.2%      61983 ± 12%  sched_debug.cfs_rq:/.spread0.stddev
-    309.24 ± 12%     -23.1%     237.79 ±  6%  sched_debug.cfs_rq:/.util_avg.stddev
-     79409 ± 94%    +194.0%     233463 ±  2%  sched_debug.cpu.nr_switches.avg
-    282553 ± 25%     +53.9%     434875        sched_debug.cpu.nr_switches.max
-     70977 ± 99%    +193.4%     208229 ±  4%  sched_debug.cpu.nr_switches.min
-      2421 ± 15%     +69.7%       4111        filebench.sum_bytes_mb/s
-  28989865 ± 15%     +69.7%   49208425        filebench.sum_operations
-    483126 ± 15%     +69.7%     820074        filebench.sum_operations/s
-    155847 ± 15%     +69.7%     264539        filebench.sum_reads/s
-     15585 ± 15%     +69.7%      26454        filebench.sum_writes/s
-  10553993 ± 15%     +69.4%   17882230        filebench.time.file_system_outputs
-     22770 ± 13%     +68.0%      38253        filebench.time.involuntary_context_switches
-      4700 ± 23%     +89.3%       8899        filebench.time.percent_of_cpu_this_job_got
-      3188 ± 15%     +69.6%       5407        filebench.time.system_time
-     73.00 ± 15%     +68.0%     122.60        filebench.time.user_time
-  13824977 ± 15%     +68.6%   23303866 ±  2%  filebench.time.voluntary_context_switches
-    213064 ± 90%    +174.0%     583838 ± 27%  numa-meminfo.node0.Active
-    125296 ±143%    +264.9%     457219 ± 35%  numa-meminfo.node0.Active(anon)
-     87767 ± 18%     +44.3%     126618 ±  8%  numa-meminfo.node0.Active(file)
-    470438 ± 17%    +295.8%    1862086 ±  6%  numa-meminfo.node0.Dirty
-   2082729 ± 13%     +34.1%    2792951 ±  2%  numa-meminfo.node0.Inactive
-   1415915 ± 20%     +45.9%    2066389 ±  2%  numa-meminfo.node0.Inactive(file)
-     45328 ± 30%    +158.6%     117223 ± 34%  numa-meminfo.node0.Mapped
-    124715 ±  3%     +10.5%     137824 ±  4%  numa-meminfo.node0.SUnreclaim
-    146595 ±118%    +253.6%     518400 ± 32%  numa-meminfo.node0.Shmem
-    403000 ± 64%     -99.6%       1578 ± 18%  numa-meminfo.node0.Writeback
-     93803 ± 28%     +44.6%     135676 ±  8%  numa-meminfo.node1.Active(file)
-    480669 ± 14%    +293.6%    1891831 ±  4%  numa-meminfo.node1.Dirty
-   2191533 ± 18%     +31.0%    2869968 ±  4%  numa-meminfo.node1.Inactive
-   1453292 ± 23%     +44.3%    2096389 ±  2%  numa-meminfo.node1.Inactive(file)
-    419520 ± 66%     -99.6%       1621 ± 21%  numa-meminfo.node1.Writeback
-      1603 ± 22%     +85.5%       2975        turbostat.Avg_MHz
-     51.63 ± 21%     +41.6       93.22        turbostat.Busy%
-      3097            +3.2%       3196        turbostat.Bzy_MHz
-   8453377 ± 14%     +69.0%   14288047 ±  2%  turbostat.C1
-      0.39 ± 24%      +0.3        0.72        turbostat.C1%
-      1.13 ± 26%      -0.9        0.27 ±  8%  turbostat.C1E%
-   3540495 ± 37%     -89.8%     359678 ±  7%  turbostat.C6
-     47.18 ± 22%     -41.1        6.07 ±  6%  turbostat.C6%
-      4.60 ± 21%     -70.0%       1.38 ±  6%  turbostat.CPU%c1
-     43.77 ± 22%     -87.7%       5.40 ±  6%  turbostat.CPU%c6
-     51.50 ±  3%     +14.9%      59.17 ±  2%  turbostat.CoreTmp
-  11798935 ± 12%     +16.4%   13731351 ±  2%  turbostat.IRQ
-   1274549 ± 19%     +72.4%    2197956 ±  8%  turbostat.POLL
-      0.04 ± 31%      +0.0        0.08 ±  5%  turbostat.POLL%
-      0.48 ± 17%     -91.7%       0.04 ±223%  turbostat.Pkg%pc6
-     52.33 ±  3%     +12.7%      59.00        turbostat.PkgTmp
-    273.98 ±  6%     +27.5%     349.33        turbostat.PkgWatt
-     62.91 ±  6%     +15.1%      72.38        turbostat.RAMWatt
-     45337 ± 21%     +44.6%      65556        proc-vmstat.nr_active_file
-   1320953 ± 15%     +69.3%    2236378        proc-vmstat.nr_dirtied
-    237492 ± 15%    +295.1%     938312 ±  5%  proc-vmstat.nr_dirty
-   1563856 ± 19%     +29.7%    2029090        proc-vmstat.nr_file_pages
-  30598147            -1.6%   30098757        proc-vmstat.nr_free_pages
-    350586            +7.0%     374962 ±  6%  proc-vmstat.nr_inactive_anon
-    716397 ± 21%     +45.2%    1040311        proc-vmstat.nr_inactive_file
-     27805 ± 43%    +141.5%      67150 ± 33%  proc-vmstat.nr_mapped
-      1943            +5.0%       2041 ±  2%  proc-vmstat.nr_page_table_pages
-     59229            +7.3%      63542        proc-vmstat.nr_slab_unreclaimable
-    205556 ± 65%     -99.6%     791.17 ± 15%  proc-vmstat.nr_writeback
-     45337 ± 21%     +44.6%      65556        proc-vmstat.nr_zone_active_file
-    350586            +7.0%     374962 ±  6%  proc-vmstat.nr_zone_inactive_anon
-    716397 ± 21%     +45.2%    1040311        proc-vmstat.nr_zone_inactive_file
-    443014 ± 27%    +112.0%     939123 ±  4%  proc-vmstat.nr_zone_write_pending
-   2057931 ± 14%     +58.9%    3269868        proc-vmstat.numa_hit
-   1955332 ± 15%     +62.2%    3170661        proc-vmstat.numa_local
-    115983 ± 46%    +125.9%     261961 ± 25%  proc-vmstat.pgactivate
-   2470760 ± 12%     +49.0%    3680401        proc-vmstat.pgalloc_normal
-   2100726 ± 13%     -59.8%     844206 ±  2%  proc-vmstat.pgfree
-    733696 ± 12%     -12.1%     645120 ±  4%  proc-vmstat.unevictable_pgs_scanned
-     31343 ±143%    +265.0%     114408 ± 35%  numa-vmstat.node0.nr_active_anon
-     21937 ± 18%     +44.4%      31682 ±  8%  numa-vmstat.node0.nr_active_file
-    654819 ± 17%     +69.4%    1109530 ±  2%  numa-vmstat.node0.nr_dirtied
-    117443 ± 17%    +296.5%     465687 ±  6%  numa-vmstat.node0.nr_dirty
-    353939 ± 20%     +46.1%     516982 ±  2%  numa-vmstat.node0.nr_inactive_file
-     11368 ± 30%    +159.0%      29447 ± 35%  numa-vmstat.node0.nr_mapped
-     36691 ±118%    +253.6%     129745 ± 32%  numa-vmstat.node0.nr_shmem
-     31177 ±  3%     +10.5%      34457 ±  4%  numa-vmstat.node0.nr_slab_unreclaimable
-    100744 ± 64%     -99.6%     404.33 ± 13%  numa-vmstat.node0.nr_writeback
-     31343 ±143%    +265.0%     114407 ± 35%  numa-vmstat.node0.nr_zone_active_anon
-     21937 ± 18%     +44.4%      31682 ±  8%  numa-vmstat.node0.nr_zone_active_file
-    353940 ± 20%     +46.1%     516980 ±  2%  numa-vmstat.node0.nr_zone_inactive_file
-    218173 ± 26%    +113.6%     466104 ±  6%  numa-vmstat.node0.nr_zone_write_pending
-    988847 ± 15%     +68.4%    1665032 ±  5%  numa-vmstat.node0.numa_hit
-    935111 ± 18%     +73.3%    1620541 ±  3%  numa-vmstat.node0.numa_local
-     23446 ± 28%     +44.8%      33950 ±  8%  numa-vmstat.node1.nr_active_file
-    666112 ± 14%     +69.2%    1126866 ±  2%  numa-vmstat.node1.nr_dirtied
-    119979 ± 14%    +294.3%     473104 ±  4%  numa-vmstat.node1.nr_dirty
-    363273 ± 23%     +44.4%     524481 ±  2%  numa-vmstat.node1.nr_inactive_file
-    104883 ± 66%     -99.6%     419.00 ± 16%  numa-vmstat.node1.nr_writeback
-     23446 ± 28%     +44.8%      33950 ±  8%  numa-vmstat.node1.nr_zone_active_file
-    363273 ± 23%     +44.4%     524481 ±  2%  numa-vmstat.node1.nr_zone_inactive_file
-    224849 ± 29%    +110.6%     473545 ±  4%  numa-vmstat.node1.nr_zone_write_pending
-   1062560 ± 16%     +51.0%    1604992 ±  5%  numa-vmstat.node1.numa_hit
-   1017057 ± 16%     +52.4%    1550275 ±  4%  numa-vmstat.node1.numa_local
-     76.04 ± 17%     -73.4%      20.22 ±  2%  perf-stat.i.MPKI
- 2.266e+09 ± 17%     +85.5%  4.202e+09        perf-stat.i.branch-instructions
-      5.03 ± 24%      -4.0        1.07 ±  2%  perf-stat.i.branch-miss-rate%
-  30659518 ± 10%     +41.8%   43465160 ±  2%  perf-stat.i.branch-misses
-     17.16 ± 21%     +14.6       31.76        perf-stat.i.cache-miss-rate%
-  64445994 ± 21%     +91.4%  1.233e+08        perf-stat.i.cache-misses
- 2.493e+08 ± 13%     +53.8%  3.834e+08        perf-stat.i.cache-references
-    393008 ± 24%     +87.4%     736453 ±  2%  perf-stat.i.context-switches
-     10.50 ± 15%     +45.9%      15.31        perf-stat.i.cpi
- 1.572e+11 ± 22%     +87.2%  2.943e+11        perf-stat.i.cpu-cycles
-      5124 ±  9%     -53.5%       2383        perf-stat.i.cycles-between-cache-misses
-      0.77 ± 18%      -0.7        0.05 ± 58%  perf-stat.i.dTLB-load-miss-rate%
- 2.634e+09 ± 17%     +84.2%   4.85e+09        perf-stat.i.dTLB-loads
-      0.10 ± 27%      -0.1        0.01 ± 28%  perf-stat.i.dTLB-store-miss-rate%
- 1.068e+09 ± 16%     +86.3%  1.989e+09        perf-stat.i.dTLB-stores
- 1.061e+10 ± 17%     +84.8%  1.961e+10        perf-stat.i.instructions
-      0.17 ± 16%     -48.4%       0.09 ±  4%  perf-stat.i.ipc
-      1.64 ± 22%     +87.2%       3.07        perf-stat.i.metric.GHz
-     64.34 ± 17%     +84.9%     118.98        perf-stat.i.metric.M/sec
-      6782 ± 20%     +72.0%      11667 ± 13%  perf-stat.i.minor-faults
-  10403440 ± 19%     +96.4%   20435835        perf-stat.i.node-load-misses
-    218303 ± 17%     +92.2%     419568 ±  4%  perf-stat.i.node-loads
-   9269132 ± 22%     +87.1%   17339066        perf-stat.i.node-store-misses
-  12883228 ± 22%     +94.5%   25051829 ±  3%  perf-stat.i.node-stores
-      6782 ± 20%     +72.0%      11667 ± 13%  perf-stat.i.page-faults
-     23.70 ±  5%     -17.5%      19.56        perf-stat.overall.MPKI
-      1.37 ±  9%      -0.3        1.03        perf-stat.overall.branch-miss-rate%
-     25.56 ±  8%      +6.6       32.17        perf-stat.overall.cache-miss-rate%
-      0.09 ± 30%      -0.0        0.05 ± 56%  perf-stat.overall.dTLB-load-miss-rate%
-      0.02 ± 29%      -0.0        0.01 ± 23%  perf-stat.overall.dTLB-store-miss-rate%
- 2.228e+09 ± 17%     +85.5%  4.133e+09        perf-stat.ps.branch-instructions
-  30174220 ± 10%     +41.7%   42753082 ±  2%  perf-stat.ps.branch-misses
-  63387270 ± 21%     +91.4%  1.213e+08        perf-stat.ps.cache-misses
- 2.454e+08 ± 13%     +53.7%  3.772e+08        perf-stat.ps.cache-references
-    386470 ± 24%     +87.5%     724478 ±  2%  perf-stat.ps.context-switches
- 1.546e+11 ± 22%     +87.2%  2.895e+11        perf-stat.ps.cpu-cycles
- 2.591e+09 ± 17%     +84.2%  4.771e+09        perf-stat.ps.dTLB-loads
-  1.05e+09 ± 16%     +86.3%  1.956e+09        perf-stat.ps.dTLB-stores
- 1.044e+10 ± 17%     +84.8%  1.929e+10        perf-stat.ps.instructions
-      6675 ± 20%     +72.0%      11481 ± 13%  perf-stat.ps.minor-faults
-  10232924 ± 19%     +96.5%   20104362        perf-stat.ps.node-load-misses
-    214711 ± 17%     +92.2%     412736 ±  4%  perf-stat.ps.node-loads
-   9121970 ± 22%     +87.1%   17063118        perf-stat.ps.node-store-misses
-  12667972 ± 22%     +94.5%   24645471 ±  3%  perf-stat.ps.node-stores
-      6675 ± 20%     +72.0%      11481 ± 13%  perf-stat.ps.page-faults
- 7.386e+11 ± 13%     +64.0%  1.211e+12        perf-stat.total.instructions
-      0.03 ±142%    +398.0%       0.17 ± 54%  perf-sched.sch_delay.avg.ms.__cond_resched.do_user_addr_fault.exc_page_fault.asm_exc_page_fault.__put_user_4
-      0.00 ±142%   +3209.1%       0.06 ±107%  perf-sched.sch_delay.avg.ms.__cond_resched.down_write_killable.exec_mmap.begin_new_exec.load_elf_binary
-      0.00 ±141%   +5650.0%       0.02 ±126%  perf-sched.sch_delay.avg.ms.__cond_resched.stop_one_cpu.migrate_task_to.task_numa_migrate.isra
-      0.02 ± 19%     +46.5%       0.02 ± 17%  perf-sched.sch_delay.avg.ms.do_nanosleep.hrtimer_nanosleep.common_nsleep.__x64_sys_clock_nanosleep
-      0.03 ±143%    +283.1%       0.11 ± 22%  perf-sched.sch_delay.avg.ms.exit_to_user_mode_loop.exit_to_user_mode_prepare.syscall_exit_to_user_mode.ret_from_fork
-      0.00 ±142%    +472.2%       0.02 ± 30%  perf-sched.sch_delay.avg.ms.schedule_preempt_disabled.rwsem_down_write_slowpath.down_write.btrfs_inode_lock
-      0.03 ± 15%     +24.3%       0.04 ±  4%  perf-sched.sch_delay.avg.ms.worker_thread.kthread.ret_from_fork
-      0.20 ±141%    +461.0%       1.13 ±103%  perf-sched.sch_delay.max.ms.__cond_resched.do_user_addr_fault.exc_page_fault.asm_exc_page_fault.__put_user_4
-      0.01 ±148%   +7478.0%       0.75 ±107%  perf-sched.sch_delay.max.ms.__cond_resched.down_write_killable.exec_mmap.begin_new_exec.load_elf_binary
-      0.00 ±145%  +12380.0%       0.21 ±142%  perf-sched.sch_delay.max.ms.__cond_resched.stop_one_cpu.migrate_task_to.task_numa_migrate.isra
-      5.21 ±141%    +291.6%      20.39 ± 18%  perf-sched.sch_delay.max.ms.futex_wait_queue.futex_wait.do_futex.__x64_sys_futex
-      0.17 ±141%   +1139.7%       2.16 ±118%  perf-sched.sch_delay.max.ms.schedule_preempt_disabled.rwsem_down_write_slowpath.down_write.btrfs_inode_lock
-      0.77 ±188%    +451.4%       4.23 ± 75%  perf-sched.sch_delay.max.ms.schedule_timeout.rcu_gp_fqs_loop.rcu_gp_kthread.kthread
-      7.02 ± 86%    +190.4%      20.39 ± 18%  perf-sched.total_sch_delay.max.ms
-     12.79 ± 31%     -45.4%       6.99        perf-sched.wait_and_delay.avg.ms.__cond_resched.__wait_for_common.affine_move_task.__set_cpus_allowed_ptr.__sched_setaffinity
-    479.24 ± 31%     -46.3%     257.56 ±  2%  perf-sched.wait_and_delay.avg.ms.smpboot_thread_fn.kthread.ret_from_fork
-    312.89 ± 39%     +88.9%     591.07 ±  7%  perf-sched.wait_and_delay.avg.ms.worker_thread.kthread.ret_from_fork
-     90.33 ± 13%     +19.4%     107.83        perf-sched.wait_and_delay.count.do_wait.kernel_wait4.__do_sys_wait4.do_syscall_64
-      1552 ± 73%    +114.9%       3337 ±  2%  perf-sched.wait_and_delay.count.smpboot_thread_fn.kthread.ret_from_fork
-      5.81 ±141%    +350.2%      26.14 ±  9%  perf-sched.wait_and_delay.max.ms.futex_wait_queue.futex_wait.do_futex.__x64_sys_futex
-      0.06 ±142%    +358.9%       0.27 ±  7%  perf-sched.wait_time.avg.ms.__cond_resched.__alloc_pages.__get_free_pages.pgd_alloc.mm_init
-      0.07 ±143%    +278.1%       0.25 ± 24%  perf-sched.wait_time.avg.ms.__cond_resched.__alloc_pages.get_zeroed_page.__pud_alloc.__handle_mm_fault
-      0.07 ±143%    +337.1%       0.29 ± 35%  perf-sched.wait_time.avg.ms.__cond_resched.__anon_vma_prepare.do_anonymous_page.__handle_mm_fault.handle_mm_fault
-     12.79 ± 31%     -45.4%       6.99        perf-sched.wait_time.avg.ms.__cond_resched.__wait_for_common.affine_move_task.__set_cpus_allowed_ptr.__sched_setaffinity
-      0.07 ±141%    +231.3%       0.23 ±  5%  perf-sched.wait_time.avg.ms.__cond_resched.copy_strings.isra.0.do_execveat_common
-      0.07 ±141%    +208.0%       0.20 ± 18%  perf-sched.wait_time.avg.ms.__cond_resched.do_user_addr_fault.exc_page_fault.asm_exc_page_fault.[unknown]
-      0.02 ±193%    +694.9%       0.16 ±131%  perf-sched.wait_time.avg.ms.__cond_resched.down_write.generic_file_write_iter.vfs_write.ksys_write
-      0.07 ±142%    +206.7%       0.21 ± 28%  perf-sched.wait_time.avg.ms.__cond_resched.kmem_cache_alloc.__anon_vma_prepare.do_anonymous_page.__handle_mm_fault
-      0.00 ±142%   +2977.8%       0.05 ±179%  perf-sched.wait_time.avg.ms.__cond_resched.kmem_cache_alloc.alloc_extent_state.__set_extent_bit.set_extent_bit
-      0.05 ±141%    +434.8%       0.26 ± 96%  perf-sched.wait_time.avg.ms.__cond_resched.kmem_cache_alloc.getname_flags.part.0
-      0.01 ±198%    +694.4%       0.09 ± 31%  perf-sched.wait_time.avg.ms.__cond_resched.kmem_cache_alloc.security_file_alloc.__alloc_file.alloc_empty_file
-      0.00 ±223%   +1450.0%       0.02 ±134%  perf-sched.wait_time.avg.ms.__cond_resched.mutex_lock.perf_poll.do_poll.constprop
-      0.01 ±145%    +374.4%       0.06 ± 40%  perf-sched.wait_time.avg.ms.__cond_resched.shmem_get_folio_gfp.shmem_write_begin.generic_perform_write.__generic_file_write_iter
-      0.02 ±149%   +3184.4%       0.70 ±198%  perf-sched.wait_time.avg.ms.__cond_resched.stop_one_cpu.migrate_task_to.task_numa_migrate.isra
-      0.07 ±141%    +212.5%       0.23 ±  7%  perf-sched.wait_time.avg.ms.exit_to_user_mode_loop.exit_to_user_mode_prepare.irqentry_exit_to_user_mode.asm_exc_page_fault
-      0.24 ±218%    +652.7%       1.77 ± 87%  perf-sched.wait_time.avg.ms.exit_to_user_mode_loop.exit_to_user_mode_prepare.irqentry_exit_to_user_mode.asm_sysvec_apic_timer_interrupt
-      0.04 ±141%    +251.9%       0.14 ± 22%  perf-sched.wait_time.avg.ms.exit_to_user_mode_loop.exit_to_user_mode_prepare.irqentry_exit_to_user_mode.asm_sysvec_call_function_single
-      0.06 ±141%    +211.5%       0.17 ± 16%  perf-sched.wait_time.avg.ms.exit_to_user_mode_loop.exit_to_user_mode_prepare.irqentry_exit_to_user_mode.asm_sysvec_reschedule_ipi
-      0.04 ±143%    +262.9%       0.14 ± 21%  perf-sched.wait_time.avg.ms.schedule_preempt_disabled.rwsem_down_write_slowpath.down_write.btrfs_inode_lock
-    479.24 ± 31%     -46.3%     257.55 ±  2%  perf-sched.wait_time.avg.ms.smpboot_thread_fn.kthread.ret_from_fork
-    312.86 ± 39%     +88.9%     591.03 ±  7%  perf-sched.wait_time.avg.ms.worker_thread.kthread.ret_from_fork
-      0.22 ±142%    +318.6%       0.92 ± 19%  perf-sched.wait_time.max.ms.__cond_resched.__alloc_pages.__get_free_pages.pgd_alloc.mm_init
-      0.20 ±146%    +278.4%       0.75 ± 21%  perf-sched.wait_time.max.ms.__cond_resched.__alloc_pages.get_zeroed_page.__pud_alloc.__handle_mm_fault
-      0.18 ±141%    +334.4%       0.78 ± 46%  perf-sched.wait_time.max.ms.__cond_resched.__anon_vma_prepare.do_anonymous_page.__handle_mm_fault.handle_mm_fault
-      0.29 ±141%    +275.0%       1.08 ± 49%  perf-sched.wait_time.max.ms.__cond_resched.do_user_addr_fault.exc_page_fault.asm_exc_page_fault.[unknown]
-      0.33 ±149%  +19493.0%      64.56 ±220%  perf-sched.wait_time.max.ms.__cond_resched.do_user_addr_fault.exc_page_fault.asm_exc_page_fault.fault_in_readable
-      0.22 ±149%    +299.1%       0.88 ± 42%  perf-sched.wait_time.max.ms.__cond_resched.down_write_killable.exec_mmap.begin_new_exec.load_elf_binary
-      0.15 ±141%    +330.3%       0.62 ± 53%  perf-sched.wait_time.max.ms.__cond_resched.dput.terminate_walk.path_openat.do_filp_open
-      0.00 ±142%   +4407.7%       0.10 ±177%  perf-sched.wait_time.max.ms.__cond_resched.kmem_cache_alloc.alloc_extent_state.__set_extent_bit.set_extent_bit
-      0.15 ±143%    +188.9%       0.44 ± 73%  perf-sched.wait_time.max.ms.__cond_resched.kmem_cache_alloc.getname_flags.part.0
-      0.04 ±209%    +568.6%       0.29 ± 43%  perf-sched.wait_time.max.ms.__cond_resched.kmem_cache_alloc.security_file_alloc.__alloc_file.alloc_empty_file
-      0.32 ±141%    +303.1%       1.28 ± 19%  perf-sched.wait_time.max.ms.__cond_resched.mutex_lock_killable.pcpu_alloc.__percpu_counter_init.mm_init
-      0.16 ±142%    +524.2%       0.98 ± 29%  perf-sched.wait_time.max.ms.__cond_resched.shmem_get_folio_gfp.shmem_write_begin.generic_perform_write.__generic_file_write_iter
-      0.18 ±142%   +4361.7%       7.81 ±209%  perf-sched.wait_time.max.ms.__cond_resched.stop_one_cpu.migrate_task_to.task_numa_migrate.isra
-      0.41 ±143%    +246.0%       1.43 ± 19%  perf-sched.wait_time.max.ms.__cond_resched.stop_one_cpu.sched_exec.bprm_execve.part
-      0.24 ±145%    +361.0%       1.10 ± 37%  perf-sched.wait_time.max.ms.exit_to_user_mode_loop.exit_to_user_mode_prepare.irqentry_exit_to_user_mode.asm_sysvec_call_function_single
-      0.30 ±143%    +286.9%       1.15 ± 14%  perf-sched.wait_time.max.ms.exit_to_user_mode_loop.exit_to_user_mode_prepare.irqentry_exit_to_user_mode.asm_sysvec_reschedule_ipi
-      4.22 ±141%    +201.4%      12.71 ± 16%  perf-sched.wait_time.max.ms.futex_wait_queue.futex_wait.do_futex.__x64_sys_futex
-      0.74 ±141%    +302.5%       2.98 ± 27%  perf-sched.wait_time.max.ms.schedule_preempt_disabled.rwsem_down_write_slowpath.down_write.btrfs_inode_lock
-      0.07 ±157%    +373.0%       0.31 ± 63%  perf-sched.wait_time.max.ms.schedule_timeout.btrfs_delalloc_reserve_metadata.btrfs_buffered_write.btrfs_do_write_iter
-
-
-***************************************************************************************************
-lkp-icl-2sp1: 96 threads 2 sockets (Ice Lake) with 128G memory
-=========================================================================================
-compiler/cpufreq_governor/disk/fs/kconfig/rootfs/tbox_group/test/testcase:
-  gcc-12/performance/1HDD/btrfs/x86_64-rhel-8.3/debian-11.1-x86_64-20220510.cgz/lkp-icl-2sp1/randomfileaccess.f/filebench
-
-commit: 
-  adbe7e388e ("btrfs: use SECTOR_SHIFT to convert LBA to physical offset")
-  da02361807 ("btrfs: submit IO synchronously for fast checksum implementations")
-
-adbe7e388e4239d9 da023618076a13c35bcde1a49a8 
----------------- --------------------------- 
-         %stddev     %change         %stddev
-             \          |                \  
-      5.96            +3.8%       6.19        iostat.cpu.system
-      0.23            -0.1        0.11 ±  2%  mpstat.cpu.all.iowait%
-     42.00 ±  5%     +14.3%      48.00 ±  9%  perf-c2c.HITM.remote
-     64545           +38.0%      89061 ± 11%  meminfo.Dirty
-     14844 ±  3%     -98.7%     194.67 ± 36%  meminfo.Writeback
-      6059            +1.7%       6161        vmstat.io.bo
-      3046 ±  4%     -13.1%       2647 ±  5%  vmstat.system.cs
-     48.99 ±  5%      +9.3%      53.54 ±  6%  boot-time.boot
-     23.42           +20.6%      28.25 ± 17%  boot-time.dhcp
-      4340 ±  5%      +8.8%       4723 ±  6%  boot-time.idle
-      1.18 ±  7%     +63.3%       1.92 ± 41%  boot-time.smp_boot
-      3160            +3.1%       3259        turbostat.Bzy_MHz
-     77185 ±  4%     -22.0%      60191 ±  8%  turbostat.C1E
-      0.54 ±  2%      -0.1        0.42 ±  6%  turbostat.C1E%
-    137.84 ± 70%     -99.9%       0.12        turbostat.IPC
-      5327 ±  4%     +10.2%       5870 ±  4%  turbostat.POLL
-    236.23            +1.6%     239.93        turbostat.PkgWatt
-     23658            +3.1%      24384        proc-vmstat.nr_active_file
-     16137           +38.0%      22262 ± 11%  proc-vmstat.nr_dirty
-     18408            +2.7%      18911        proc-vmstat.nr_kernel_stack
-      3707 ±  3%     -98.7%      47.67 ± 42%  proc-vmstat.nr_writeback
-    101217            +1.6%     102879        proc-vmstat.nr_written
-     23658            +3.1%      24384        proc-vmstat.nr_zone_active_file
-    399938            +1.7%     406716        proc-vmstat.pgpgout
-     28278            +5.1%      29730        filebench.sum_bytes_mb/s
-    161270            +2.5%     165295        filebench.sum_operations
-      2687            +2.5%       2754        filebench.sum_operations/s
-    597.33            +2.5%     612.00        filebench.sum_reads/s
-      1.86            -2.4%       1.81        filebench.sum_time_ms/op
-    298.67            +2.5%     306.00        filebench.sum_writes/s
-    431.33            +7.6%     464.00        filebench.time.percent_of_cpu_this_job_got
-    257.76            +7.6%     277.37        filebench.time.system_time
-     15536 ±  2%      +6.5%      16544 ±  3%  filebench.time.voluntary_context_switches
-      0.01 ± 61%     -56.8%       0.01 ± 96%  perf-sched.sch_delay.avg.ms.btrfs_start_ordered_extent.btrfs_wait_ordered_range.__btrfs_wait_cache_io.btrfs_start_dirty_block_groups
-      0.06 ± 29%     -41.5%       0.04 ± 36%  perf-sched.sch_delay.avg.ms.syslog_print.do_syslog.kmsg_read.vfs_read
-      0.01 ± 61%     -56.8%       0.01 ± 96%  perf-sched.sch_delay.max.ms.btrfs_start_ordered_extent.btrfs_wait_ordered_range.__btrfs_wait_cache_io.btrfs_start_dirty_block_groups
-      0.10 ± 18%     -40.1%       0.06 ± 41%  perf-sched.sch_delay.max.ms.devkmsg_read.vfs_read.ksys_read.do_syscall_64
-      0.17 ± 11%     -14.3%       0.15 ±  4%  perf-sched.sch_delay.max.ms.schedule_timeout.__wait_for_common.wait_for_completion_state.kernel_clone
-      1116 ±  6%     -11.9%     982.67 ±  7%  perf-sched.wait_and_delay.count.futex_wait_queue.futex_wait.do_futex.__x64_sys_futex
-     25.00 ± 24%     -36.7%      15.82 ± 25%  perf-sched.wait_time.avg.ms.__cond_resched.__alloc_pages.folio_alloc.__filemap_get_folio.pagecache_get_page
-      0.15 ± 18%     +26.9%       0.19 ± 16%  perf-sched.wait_time.avg.ms.schedule_timeout.khugepaged_wait_work.khugepaged.kthread
-     50.00 ± 24%     -36.7%      31.63 ± 25%  perf-sched.wait_time.max.ms.__cond_resched.__alloc_pages.folio_alloc.__filemap_get_folio.pagecache_get_page
-      0.15 ± 18%     +26.9%       0.19 ± 16%  perf-sched.wait_time.max.ms.schedule_timeout.khugepaged_wait_work.khugepaged.kthread
-     57550 ± 21%     -35.3%      37247 ± 23%  numa-meminfo.node0.Active
-     56230 ± 20%     -35.1%      36505 ± 23%  numa-meminfo.node0.Active(file)
-    245539 ± 33%     -38.9%     150132 ± 54%  numa-meminfo.node0.AnonPages
-    271865 ± 34%     -34.1%     179253 ± 54%  numa-meminfo.node0.AnonPages.max
-    555034 ± 14%     -54.2%     254435 ± 44%  numa-meminfo.node0.Inactive
-    290326 ± 28%     -43.0%     165461 ± 44%  numa-meminfo.node0.Inactive(anon)
-    264708           -66.4%      88972 ±140%  numa-meminfo.node0.Inactive(file)
-      2863 ± 24%     -33.9%       1892        numa-meminfo.node0.PageTables
-     46244 ±  3%     -64.8%      16265 ±114%  numa-meminfo.node0.Shmem
-     13038 ±  7%     -99.4%      84.67 ± 94%  numa-meminfo.node0.Writeback
-     46489 ± 26%     +50.0%      69717 ± 11%  numa-meminfo.node1.Active
-     39133 ± 30%     +58.0%      61832 ± 12%  numa-meminfo.node1.Active(file)
-    188707 ± 43%     +50.8%     284517 ± 28%  numa-meminfo.node1.AnonPages
-     10070 ± 22%    +457.3%      56125 ± 45%  numa-meminfo.node1.Dirty
-    191729 ± 43%    +157.2%     493051 ± 22%  numa-meminfo.node1.Inactive
-    191244 ± 43%     +65.5%     316597 ± 22%  numa-meminfo.node1.Inactive(anon)
-    484.67 ± 27%  +36307.1%     176453 ± 70%  numa-meminfo.node1.Inactive(file)
-      8755 ±  2%      +9.9%       9626 ±  2%  numa-meminfo.node1.KernelStack
-      2340 ± 30%     +41.1%       3301        numa-meminfo.node1.PageTables
-    100024 ±  3%     +10.7%     110718 ±  2%  numa-meminfo.node1.SUnreclaim
-     10159 ± 17%    +295.1%      40143 ± 46%  numa-meminfo.node1.Shmem
-      1861 ± 26%     -94.1%     110.33 ± 41%  numa-meminfo.node1.Writeback
-     14057 ± 20%     -35.1%       9126 ± 23%  numa-vmstat.node0.nr_active_file
-     61384 ± 33%     -38.9%      37535 ± 54%  numa-vmstat.node0.nr_anon_pages
-     91490 ±  5%     -58.5%      37983 ± 78%  numa-vmstat.node0.nr_dirtied
-     72586 ± 28%     -43.0%      41366 ± 43%  numa-vmstat.node0.nr_inactive_anon
-     66176           -66.4%      22242 ±140%  numa-vmstat.node0.nr_inactive_file
-    715.33 ± 24%     -33.9%     472.67        numa-vmstat.node0.nr_page_table_pages
-     11567 ±  3%     -64.9%       4064 ±114%  numa-vmstat.node0.nr_shmem
-      3257 ±  7%     -99.4%      19.67 ± 91%  numa-vmstat.node0.nr_writeback
-     87600 ±  4%     -58.6%      36290 ± 82%  numa-vmstat.node0.nr_written
-     14057 ± 20%     -35.1%       9126 ± 23%  numa-vmstat.node0.nr_zone_active_file
-     72586 ± 28%     -43.0%      41366 ± 43%  numa-vmstat.node0.nr_zone_inactive_anon
-     66176           -66.4%      22242 ±140%  numa-vmstat.node0.nr_zone_inactive_file
-      9782 ± 30%     +58.0%      15459 ± 12%  numa-vmstat.node1.nr_active_file
-     47177 ± 43%     +50.8%      71130 ± 28%  numa-vmstat.node1.nr_anon_pages
-     15543 ± 23%    +347.1%      69501 ± 44%  numa-vmstat.node1.nr_dirtied
-      2517 ± 22%    +457.4%      14032 ± 45%  numa-vmstat.node1.nr_dirty
-     47813 ± 43%     +65.5%      79149 ± 22%  numa-vmstat.node1.nr_inactive_anon
-    120.67 ± 27%  +36457.7%      44113 ± 70%  numa-vmstat.node1.nr_inactive_file
-      8759 ±  2%      +9.9%       9629 ±  2%  numa-vmstat.node1.nr_kernel_stack
-    584.67 ± 30%     +41.1%     825.00        numa-vmstat.node1.nr_page_table_pages
-      2539 ± 17%    +295.2%      10035 ± 46%  numa-vmstat.node1.nr_shmem
-     25005 ±  3%     +10.7%      27679 ±  2%  numa-vmstat.node1.nr_slab_unreclaimable
-    465.00 ± 26%     -94.2%      27.00 ± 42%  numa-vmstat.node1.nr_writeback
-     13549 ± 28%    +391.0%      66527 ± 45%  numa-vmstat.node1.nr_written
-      9782 ± 30%     +58.0%      15459 ± 12%  numa-vmstat.node1.nr_zone_active_file
-     47813 ± 43%     +65.5%      79149 ± 22%  numa-vmstat.node1.nr_zone_inactive_anon
-    120.67 ± 27%  +36457.7%      44113 ± 70%  numa-vmstat.node1.nr_zone_inactive_file
-      2983 ± 23%    +371.3%      14059 ± 45%  numa-vmstat.node1.nr_zone_write_pending
-     99.05            -2.5%      96.62        perf-stat.i.MPKI
-  1.46e+09            +2.8%  1.501e+09        perf-stat.i.branch-instructions
-      2.01 ±  4%      -0.5        1.47 ±  3%  perf-stat.i.branch-miss-rate%
-     26.10            +0.5       26.62        perf-stat.i.cache-miss-rate%
- 6.418e+08            +4.6%  6.712e+08        perf-stat.i.cache-references
-      2723 ±  4%     -15.7%       2295 ±  4%  perf-stat.i.context-switches
- 1.976e+10            +5.9%  2.093e+10        perf-stat.i.cpu-cycles
-    435.19 ±  3%     -64.0%     156.51 ±  6%  perf-stat.i.cycles-between-cache-misses
-      0.30 ±  2%      -0.1        0.20 ±  5%  perf-stat.i.dTLB-load-miss-rate%
- 1.966e+09            +3.1%  2.027e+09        perf-stat.i.dTLB-loads
-      0.03 ± 10%      -0.0        0.02 ±  5%  perf-stat.i.dTLB-store-miss-rate%
- 1.057e+09            +3.7%  1.096e+09        perf-stat.i.dTLB-stores
- 7.123e+09            +2.7%  7.317e+09        perf-stat.i.instructions
-      0.21            +6.0%       0.22        perf-stat.i.metric.GHz
-     53.50            +3.1%      55.18        perf-stat.i.metric.M/sec
-     60.56            +1.5       62.10        perf-stat.i.node-store-miss-rate%
-   1548826            +9.4%    1693710 ±  3%  perf-stat.i.node-store-misses
-   1037930 ±  2%      +6.7%    1107521 ±  5%  perf-stat.i.node-stores
-      1.58 ±  2%      -0.1        1.48 ±  3%  perf-stat.overall.branch-miss-rate%
-     27.38            -1.0       26.34        perf-stat.overall.cache-miss-rate%
-      2.78            +3.2%       2.86        perf-stat.overall.cpi
-    112.40            +5.3%     118.38        perf-stat.overall.cycles-between-cache-misses
-      0.36            -3.1%       0.35        perf-stat.overall.ipc
- 1.437e+09            +2.7%  1.476e+09        perf-stat.ps.branch-instructions
- 6.321e+08            +4.5%  6.607e+08        perf-stat.ps.cache-references
-      2675 ±  4%     -15.6%       2256 ±  4%  perf-stat.ps.context-switches
- 1.945e+10            +5.9%   2.06e+10        perf-stat.ps.cpu-cycles
- 1.935e+09            +3.0%  1.994e+09        perf-stat.ps.dTLB-loads
-  1.04e+09            +3.7%  1.078e+09        perf-stat.ps.dTLB-stores
- 7.009e+09            +2.7%  7.195e+09        perf-stat.ps.instructions
-   1524302            +9.3%    1666454 ±  3%  perf-stat.ps.node-store-misses
-   1020125 ±  2%      +6.6%    1087676 ±  5%  perf-stat.ps.node-stores
- 4.421e+11            +3.0%  4.553e+11        perf-stat.total.instructions
-      0.18 ±  8%     -16.7%       0.15 ± 14%  sched_debug.cfs_rq:/.h_nr_running.avg
-      0.38 ±  3%      -8.3%       0.35 ±  6%  sched_debug.cfs_rq:/.h_nr_running.stddev
-     39207 ± 20%    +501.6%     235857 ±112%  sched_debug.cfs_rq:/.load.max
-    131.75 ±  7%     -34.4%      86.39 ± 13%  sched_debug.cfs_rq:/.load_avg.avg
-      1455 ± 21%     -29.2%       1030 ± 22%  sched_debug.cfs_rq:/.load_avg.max
-    305.30 ±  7%     -33.1%     204.17 ± 17%  sched_debug.cfs_rq:/.load_avg.stddev
-     22576 ± 20%    +133.3%      52675 ± 56%  sched_debug.cfs_rq:/.min_vruntime.max
-      3022 ± 18%    +212.8%       9456 ± 79%  sched_debug.cfs_rq:/.min_vruntime.stddev
-      0.18 ±  8%     -20.6%       0.14 ± 13%  sched_debug.cfs_rq:/.nr_running.avg
-      0.38 ±  3%     -10.1%       0.34 ±  6%  sched_debug.cfs_rq:/.nr_running.stddev
-     66.61 ± 14%     -60.6%      26.22 ± 17%  sched_debug.cfs_rq:/.removed.load_avg.avg
-    249.81 ±  7%     -42.5%     143.62 ± 19%  sched_debug.cfs_rq:/.removed.load_avg.stddev
-     27.81 ± 16%     -74.4%       7.12 ± 23%  sched_debug.cfs_rq:/.removed.runnable_avg.avg
-    530.00 ±  2%     -29.7%     372.33 ± 28%  sched_debug.cfs_rq:/.removed.runnable_avg.max
-    108.35 ±  9%     -59.1%      44.31 ± 27%  sched_debug.cfs_rq:/.removed.runnable_avg.stddev
-     27.81 ± 16%     -74.4%       7.12 ± 23%  sched_debug.cfs_rq:/.removed.util_avg.avg
-    530.00 ±  2%     -29.7%     372.33 ± 28%  sched_debug.cfs_rq:/.removed.util_avg.max
-    108.35 ±  9%     -59.1%      44.31 ± 27%  sched_debug.cfs_rq:/.removed.util_avg.stddev
-    329.05 ±  4%     -22.9%     253.60 ± 16%  sched_debug.cfs_rq:/.runnable_avg.avg
-      9915 ± 38%    +262.2%      35918 ± 60%  sched_debug.cfs_rq:/.spread0.max
-      3025 ± 18%    +212.1%       9441 ± 79%  sched_debug.cfs_rq:/.spread0.stddev
-    328.70 ±  4%     -23.0%     253.20 ± 16%  sched_debug.cfs_rq:/.util_avg.avg
-     33.48 ± 11%     +18.3%      39.61 ± 14%  sched_debug.cfs_rq:/.util_est_enqueued.avg
-    129.48 ±  3%     +14.5%     148.32 ± 14%  sched_debug.cfs_rq:/.util_est_enqueued.stddev
-     51921 ±  4%     +30.1%      67558 ± 24%  sched_debug.cpu.clock.avg
-     51925 ±  4%     +30.1%      67562 ± 24%  sched_debug.cpu.clock.max
-     51918 ±  4%     +30.1%      67552 ± 24%  sched_debug.cpu.clock.min
-     51673 ±  4%     +29.7%      67021 ± 24%  sched_debug.cpu.clock_task.avg
-     51869 ±  4%     +29.9%      67369 ± 23%  sched_debug.cpu.clock_task.max
-    627.28           +79.3%       1124 ± 38%  sched_debug.cpu.clock_task.stddev
-    161.67 ±  9%     +54.1%     249.17 ± 35%  sched_debug.cpu.nr_switches.min
-     51918 ±  4%     +30.1%      67556 ± 24%  sched_debug.cpu_clk
-     50752 ±  4%     +30.8%      66389 ± 24%  sched_debug.ktime
-      0.00 ± 90%     -80.2%       0.00 ± 77%  sched_debug.rt_rq:.rt_time.avg
-      0.08 ± 90%     -80.2%       0.02 ± 77%  sched_debug.rt_rq:.rt_time.max
-      0.01 ± 90%     -80.2%       0.00 ± 77%  sched_debug.rt_rq:.rt_time.stddev
-      5.92 ± 25%      -3.4        2.51 ± 87%  perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.__libc_fork
-      5.92 ± 25%      -3.4        2.51 ± 87%  perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.__libc_fork
-      5.92 ± 25%      -3.4        2.51 ± 87%  perf-profile.calltrace.cycles-pp.__do_sys_clone.do_syscall_64.entry_SYSCALL_64_after_hwframe.__libc_fork
-      5.92 ± 25%      -3.4        2.51 ± 87%  perf-profile.calltrace.cycles-pp.copy_process.kernel_clone.__do_sys_clone.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      5.92 ± 25%      -3.4        2.51 ± 87%  perf-profile.calltrace.cycles-pp.__libc_fork
-      5.92 ± 25%      -3.4        2.51 ± 87%  perf-profile.calltrace.cycles-pp.kernel_clone.__do_sys_clone.do_syscall_64.entry_SYSCALL_64_after_hwframe.__libc_fork
-      3.77 ± 43%      -2.4        1.39 ± 72%  perf-profile.calltrace.cycles-pp.do_read_fault.do_fault.__handle_mm_fault.handle_mm_fault.do_user_addr_fault
-      3.77 ± 44%      -2.4        1.39 ± 72%  perf-profile.calltrace.cycles-pp.__xstat64
-      3.09 ± 22%      -1.7        1.39 ± 72%  perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.__xstat64
-      3.09 ± 22%      -1.7        1.39 ± 72%  perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.__xstat64
-      3.09 ± 22%      -1.7        1.39 ± 72%  perf-profile.calltrace.cycles-pp.__do_sys_newstat.do_syscall_64.entry_SYSCALL_64_after_hwframe.__xstat64
-      3.09 ± 22%      -1.7        1.39 ± 72%  perf-profile.calltrace.cycles-pp.vfs_fstatat.__do_sys_newstat.do_syscall_64.entry_SYSCALL_64_after_hwframe.__xstat64
-      6.62 ± 18%      -1.7        4.95 ± 24%  perf-profile.calltrace.cycles-pp.__libc_start_main
-      6.62 ± 18%      -1.7        4.95 ± 24%  perf-profile.calltrace.cycles-pp.main.__libc_start_main
-      6.62 ± 18%      -1.7        4.95 ± 24%  perf-profile.calltrace.cycles-pp.run_builtin.main.__libc_start_main
-      6.62 ± 18%      -1.7        4.95 ± 24%  perf-profile.calltrace.cycles-pp.cmd_record.run_builtin.main.__libc_start_main
-      6.62 ± 18%      -1.7        4.95 ± 24%  perf-profile.calltrace.cycles-pp.__cmd_record.cmd_record.run_builtin.main.__libc_start_main
-      2.43 ± 88%      +2.5        4.89 ± 42%  perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.execve
-      2.43 ± 88%      +2.5        4.89 ± 42%  perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.execve
-      2.43 ± 88%      +2.5        4.89 ± 42%  perf-profile.calltrace.cycles-pp.__x64_sys_execve.do_syscall_64.entry_SYSCALL_64_after_hwframe.execve
-      2.43 ± 88%      +2.5        4.89 ± 42%  perf-profile.calltrace.cycles-pp.do_execveat_common.__x64_sys_execve.do_syscall_64.entry_SYSCALL_64_after_hwframe.execve
-      2.43 ± 88%      +2.5        4.89 ± 42%  perf-profile.calltrace.cycles-pp.execve
-      0.44 ±141%      +3.5        3.90 ± 58%  perf-profile.calltrace.cycles-pp.sw_perf_event_destroy._free_event.perf_event_release_kernel.perf_release.__fput
-      1.12 ± 75%      +5.0        6.14 ± 16%  perf-profile.calltrace.cycles-pp._free_event.perf_event_release_kernel.perf_release.__fput.task_work_run
-      5.92 ± 25%      -3.4        2.51 ± 87%  perf-profile.children.cycles-pp.__do_sys_clone
-      5.92 ± 25%      -3.4        2.51 ± 87%  perf-profile.children.cycles-pp.copy_process
-      5.92 ± 25%      -3.4        2.51 ± 87%  perf-profile.children.cycles-pp.__libc_fork
-      5.92 ± 25%      -3.4        2.51 ± 87%  perf-profile.children.cycles-pp.kernel_clone
-      3.77 ± 44%      -2.4        1.39 ± 72%  perf-profile.children.cycles-pp.do_read_fault
-      3.77 ± 44%      -2.4        1.39 ± 72%  perf-profile.children.cycles-pp.__xstat64
-      6.62 ± 18%      -1.7        4.95 ± 24%  perf-profile.children.cycles-pp.__libc_start_main
-      6.62 ± 18%      -1.7        4.95 ± 24%  perf-profile.children.cycles-pp.main
-      6.62 ± 18%      -1.7        4.95 ± 24%  perf-profile.children.cycles-pp.run_builtin
-      6.62 ± 18%      -1.7        4.95 ± 24%  perf-profile.children.cycles-pp.cmd_record
-      6.62 ± 18%      -1.7        4.95 ± 24%  perf-profile.children.cycles-pp.__cmd_record
-      0.68 ±141%      +1.4        2.11 ± 11%  perf-profile.children.cycles-pp.__pte_alloc
-      0.68 ±141%      +1.4        2.11 ± 11%  perf-profile.children.cycles-pp.pte_alloc_one
-      0.00            +2.1        2.11 ± 11%  perf-profile.children.cycles-pp.__do_softirq
-      2.43 ± 88%      +2.5        4.89 ± 42%  perf-profile.children.cycles-pp.__x64_sys_execve
-      2.43 ± 88%      +2.5        4.89 ± 42%  perf-profile.children.cycles-pp.do_execveat_common
-      2.43 ± 88%      +2.5        4.89 ± 42%  perf-profile.children.cycles-pp.execve
-      0.44 ±141%      +3.5        3.90 ± 58%  perf-profile.children.cycles-pp.sw_perf_event_destroy
-      1.12 ± 75%      +5.0        6.14 ± 16%  perf-profile.children.cycles-pp._free_event
-      0.44 ±141%      +1.7        2.11 ± 11%  perf-profile.self.cycles-pp.__cond_resched
-
-
-
-***************************************************************************************************
-lkp-icl-2sp9: 64 threads 2 sockets Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz (Ice Lake) with 256G memory
-=========================================================================================
-bs/compiler/cpufreq_governor/disk/fs/ioengine/kconfig/nr_task/rootfs/runtime/rw/tbox_group/test_size/testcase:
-  4M/gcc-12/performance/1HDD/btrfs/splice/x86_64-rhel-8.3/100%/debian-11.1-x86_64-20220510.cgz/300s/randwrite/lkp-icl-2sp9/128G/fio-basic
-
-commit: 
-  adbe7e388e ("btrfs: use SECTOR_SHIFT to convert LBA to physical offset")
-  da02361807 ("btrfs: submit IO synchronously for fast checksum implementations")
-
-adbe7e388e4239d9 da023618076a13c35bcde1a49a8 
----------------- --------------------------- 
-         %stddev     %change         %stddev
-             \          |                \  
-      0.95 ±  4%     +25.5%       1.20        iostat.cpu.system
- 3.499e+10 ± 14%     -44.9%  1.926e+10        cpuidle..time
-  35515536 ± 14%     -45.0%   19523118        cpuidle..usage
-      0.34 ± 10%      +0.2        0.55        mpstat.cpu.all.sys%
-      0.06 ± 10%      +0.0        0.10 ±  2%  mpstat.cpu.all.usr%
-     14.33 ±107%    +281.4%      54.67 ± 14%  perf-c2c.DRAM.local
-     35.33 ± 23%    +108.5%      73.67 ± 30%  perf-c2c.DRAM.remote
-    590.17 ± 13%     -39.7%     355.71 ±  3%  uptime.boot
-     18204 ± 31%     -45.8%       9867 ± 10%  uptime.idle
-     49.33 ± 14%     +27.7%      63.00        vmstat.procs.b
-      2549 ± 11%     +40.9%       3592        vmstat.system.cs
-   8213417 ± 10%     +18.2%    9707818 ±  2%  numa-numastat.node0.local_node
-   8253170 ± 10%     +17.9%    9728663 ±  2%  numa-numastat.node0.numa_hit
-     40206 ± 34%     -48.2%      20845 ± 84%  numa-numastat.node0.other_node
-     26237 ± 53%     +73.9%      45617 ± 38%  numa-numastat.node1.other_node
-     45.67 ±  3%     +25.5%      57.33        turbostat.Avg_MHz
-      1.27 ±  3%      +0.3        1.60        turbostat.Busy%
-  35439387 ± 14%     -45.1%   19473136        turbostat.C1
-      0.11 ±  4%     +14.7%       0.13        turbostat.IPC
-  35714421 ± 14%     -44.8%   19719399        turbostat.IRQ
-     82.00            -6.9%      76.33        turbostat.PkgTmp
-   6468736 ± 14%     +28.9%    8339922        meminfo.AnonHugePages
-   6705410 ± 14%     +29.0%    8647405        meminfo.AnonPages
-   8836179 ± 13%     +28.2%   11327598        meminfo.Committed_AS
-    487337 ±  6%     -31.5%     333737 ±  9%  meminfo.DirectMap4k
-    741937 ± 18%   +5747.1%   43381775        meminfo.Dirty
-   6717476 ± 14%     +28.9%    8657350        meminfo.Inactive(anon)
-    961.67 ± 21%    -100.0%       0.00        meminfo.Mlocked
-     20537 ± 12%     +27.1%      26106        meminfo.PageTables
-    252989 ±  2%     -30.3%     176385        meminfo.SUnreclaim
-     47596 ±  8%     -20.6%      37805        meminfo.Shmem
-    500690 ±  4%     -15.2%     424425        meminfo.Slab
-  29301806 ±  6%     -99.9%      19323        meminfo.Writeback
-      4116 ± 11%     +66.0%       6832 ± 13%  numa-meminfo.node0.Active(anon)
-    388606 ± 10%   +5412.6%   21422389 ±  2%  numa-meminfo.node0.Dirty
-    162852 ±  2%     -42.9%      93021 ±  5%  numa-meminfo.node0.SUnreclaim
-  14596105 ±  3%     -99.9%       9695 ±  3%  numa-meminfo.node0.Writeback
-     30965 ± 14%     -26.0%      22908        numa-meminfo.node1.Active(anon)
-   3267625 ± 11%     +38.3%    4518290 ±  5%  numa-meminfo.node1.AnonHugePages
-   3374382 ± 10%     +38.5%    4672747 ±  5%  numa-meminfo.node1.AnonPages
-    352580 ± 29%   +6128.1%   21958912        numa-meminfo.node1.Dirty
-   3376634 ± 10%     +38.6%    4679422 ±  5%  numa-meminfo.node1.Inactive(anon)
-      9274 ± 12%     +54.8%      14352 ± 21%  numa-meminfo.node1.PageTables
-     90142 ±  5%      -7.5%      83371 ±  6%  numa-meminfo.node1.SUnreclaim
-  14710018 ±  9%     -99.9%       9795 ±  3%  numa-meminfo.node1.Writeback
-   1676022 ± 14%     +29.1%    2163688        proc-vmstat.nr_anon_pages
-      3157 ± 14%     +29.1%       4075        proc-vmstat.nr_anon_transparent_hugepages
-  15655636 ± 13%     +20.7%   18895181        proc-vmstat.nr_dirtied
-    185179 ± 18%   +5756.8%   10845492        proc-vmstat.nr_dirty
-   1679040 ± 14%     +29.0%    2166174        proc-vmstat.nr_inactive_anon
-     14501            +5.6%      15309        proc-vmstat.nr_kernel_stack
-     11164            +2.3%      11425        proc-vmstat.nr_mapped
-    240.00 ± 21%    -100.0%       0.00        proc-vmstat.nr_mlock
-      5132 ± 12%     +27.3%       6532        proc-vmstat.nr_page_table_pages
-     11900 ±  8%     -20.6%       9448        proc-vmstat.nr_shmem
-     63244 ±  2%     -30.3%      44098        proc-vmstat.nr_slab_unreclaimable
-   7324773 ±  6%     -99.9%       4815        proc-vmstat.nr_writeback
-  14535132 ± 14%     -45.2%    7963207        proc-vmstat.nr_written
-   1679040 ± 14%     +29.0%    2166174        proc-vmstat.nr_zone_inactive_anon
-   7509951 ±  6%     +44.5%   10850281        proc-vmstat.nr_zone_write_pending
-     97739 ± 18%    +136.7%     231338 ±  2%  proc-vmstat.pgactivate
-   1199254 ± 12%     -37.1%     754651        proc-vmstat.pgfault
-   3179542 ±  3%     -25.0%    2384083 ±  9%  proc-vmstat.pgfree
-  58321438 ± 14%     -45.2%   31941933        proc-vmstat.pgpgout
-     54698 ± 14%     -39.2%      33262        proc-vmstat.pgreuse
-   4189440 ± 14%     -43.6%    2361344        proc-vmstat.unevictable_pgs_scanned
-      0.60 ± 93%      -0.5        0.12 ± 20%  fio.latency_1000ms%
-      1.00 ± 39%      -0.5        0.54 ±  5%  fio.latency_100ms%
-     65.69 ± 13%     -11.7       53.95        fio.latency_10ms%
-      2.58 ± 15%      -1.3        1.27 ± 26%  fio.latency_20ms%
-      0.58 ±120%      -0.6        0.02 ± 74%  fio.latency_2ms%
-      7.64 ±122%      -7.0        0.69 ±  7%  fio.latency_500ms%
-      3.47 ± 13%      -1.1        2.33 ±  6%  fio.latency_50ms%
-      9.82 ±134%      -9.6        0.22 ± 15%  fio.latency_750ms%
-      1.93 ± 14%     +37.2       39.10        fio.latency_>=2000ms%
-    547.45 ± 14%     -44.9%     301.66        fio.time.elapsed_time
-    547.45 ± 14%     -44.9%     301.66        fio.time.elapsed_time.max
- 1.248e+08 ± 13%     +21.0%   1.51e+08        fio.time.file_system_outputs
-     19.67 ± 10%     +96.6%      38.67        fio.time.percent_of_cpu_this_job_got
-    101.93 ±  5%      +8.1%     110.19        fio.time.system_time
-    143914 ± 46%     +96.5%     282794        fio.time.voluntary_context_switches
-     15234 ± 13%     +21.0%      18427        fio.workload
-    111.61 ±  2%    +119.2%     244.68        fio.write_bw_MBps
- 3.923e+08 ± 60%    +520.0%  2.433e+09        fio.write_clat_90%_us
- 6.554e+08 ± 82%    +283.1%  2.511e+09        fio.write_clat_95%_us
- 9.373e+09 ±  5%     -37.6%   5.85e+09 ±  6%  fio.write_clat_99%_us
- 1.754e+09 ± 13%     -40.5%  1.044e+09        fio.write_clat_mean_us
- 2.425e+10 ± 11%     -93.8%   1.51e+09 ±  2%  fio.write_clat_stddev
-     27.90 ±  2%    +119.2%      61.17        fio.write_iops
-      1028 ± 11%     +66.1%       1707 ± 13%  numa-vmstat.node0.nr_active_anon
-   7807621 ± 11%     +20.9%    9439800 ±  2%  numa-vmstat.node0.nr_dirtied
-     97295 ± 10%   +5404.4%    5355530 ±  2%  numa-vmstat.node0.nr_dirty
-     40709 ±  2%     -42.9%      23254 ±  5%  numa-vmstat.node0.nr_slab_unreclaimable
-   3648538 ±  3%     -99.9%       2470        numa-vmstat.node0.nr_writeback
-   7180095 ± 14%     -45.0%    3951629 ±  2%  numa-vmstat.node0.nr_written
-      1028 ± 11%     +66.1%       1707 ± 13%  numa-vmstat.node0.nr_zone_active_anon
-   3745834 ±  3%     +43.0%    5357992 ±  2%  numa-vmstat.node0.nr_zone_write_pending
-   8252650 ± 10%     +17.9%    9728708 ±  2%  numa-vmstat.node0.numa_hit
-   8212897 ± 10%     +18.2%    9707863 ±  2%  numa-vmstat.node0.numa_local
-     40206 ± 34%     -48.2%      20845 ± 84%  numa-vmstat.node0.numa_other
-      7741 ± 14%     -26.0%       5727        numa-vmstat.node1.nr_active_anon
-    843576 ± 10%     +38.5%    1168072 ±  5%  numa-vmstat.node1.nr_anon_pages
-      1595 ± 11%     +38.3%       2205 ±  5%  numa-vmstat.node1.nr_anon_transparent_hugepages
-     88373 ± 29%   +6111.9%    5489684        numa-vmstat.node1.nr_dirty
-    844138 ± 10%     +38.6%    1169743 ±  5%  numa-vmstat.node1.nr_inactive_anon
-      2318 ± 12%     +54.8%       3587 ± 21%  numa-vmstat.node1.nr_page_table_pages
-     22535 ±  5%      -7.5%      20842 ±  6%  numa-vmstat.node1.nr_slab_unreclaimable
-   3676837 ±  9%     -99.9%       2463        numa-vmstat.node1.nr_writeback
-   7353930 ± 15%     -45.3%    4021154        numa-vmstat.node1.nr_written
-      7741 ± 14%     -26.0%       5727        numa-vmstat.node1.nr_zone_active_anon
-    844138 ± 10%     +38.6%    1169743 ±  5%  numa-vmstat.node1.nr_zone_inactive_anon
-   3765210 ±  9%     +45.9%    5492132        numa-vmstat.node1.nr_zone_write_pending
-     26237 ± 53%     +73.9%      45617 ± 38%  numa-vmstat.node1.numa_other
-     26.13 ± 36%    -100.0%       0.00        sched_debug.cfs_rq:/.MIN_vruntime.avg
-      1672 ± 36%    -100.0%       0.00        sched_debug.cfs_rq:/.MIN_vruntime.max
-    207.38 ± 36%    -100.0%       0.00        sched_debug.cfs_rq:/.MIN_vruntime.stddev
-      0.08 ±  8%     -19.0%       0.07 ±  8%  sched_debug.cfs_rq:/.h_nr_running.avg
-      0.26 ±  5%     -12.5%       0.23 ±  4%  sched_debug.cfs_rq:/.h_nr_running.stddev
-     42597 ± 13%     -41.9%      24746 ± 10%  sched_debug.cfs_rq:/.load.avg
-    170057 ± 11%     -25.4%     126940 ±  7%  sched_debug.cfs_rq:/.load.stddev
-     26.13 ± 36%    -100.0%       0.00        sched_debug.cfs_rq:/.max_vruntime.avg
-      1672 ± 36%    -100.0%       0.00        sched_debug.cfs_rq:/.max_vruntime.max
-    207.38 ± 36%    -100.0%       0.00        sched_debug.cfs_rq:/.max_vruntime.stddev
-      0.08 ±  8%     -19.0%       0.07 ±  8%  sched_debug.cfs_rq:/.nr_running.avg
-      0.26 ±  5%     -12.5%       0.23 ±  4%  sched_debug.cfs_rq:/.nr_running.stddev
-     75.46 ± 10%     +24.9%      94.25 ±  4%  sched_debug.cfs_rq:/.runnable_avg.avg
-     75.37 ± 10%     +24.9%      94.16 ±  4%  sched_debug.cfs_rq:/.util_avg.avg
-    430661 ±  2%     +21.9%     525181 ± 13%  sched_debug.cpu.avg_idle.min
-    132479 ±  6%     -23.2%     101803 ±  9%  sched_debug.cpu.avg_idle.stddev
-    292198 ± 12%     -30.3%     203578 ±  6%  sched_debug.cpu.clock.avg
-    292200 ± 12%     -30.3%     203579 ±  6%  sched_debug.cpu.clock.max
-    292197 ± 12%     -30.3%     203575 ±  6%  sched_debug.cpu.clock.min
-    290247 ± 12%     -30.5%     201684 ±  6%  sched_debug.cpu.clock_task.avg
-    290662 ± 12%     -30.3%     202533 ±  6%  sched_debug.cpu.clock_task.max
-    280298 ± 13%     -35.1%     181981        sched_debug.cpu.clock_task.min
-      9838 ±  8%     -22.3%       7648        sched_debug.cpu.curr->pid.max
-      1430 ±  5%     -14.0%       1230        sched_debug.cpu.curr->pid.stddev
-      3075 ± 72%    +143.7%       7492 ± 28%  sched_debug.cpu.max_idle_balance_cost.stddev
-     30493 ±  6%     -11.2%      27087 ±  3%  sched_debug.cpu.nr_switches.stddev
-    292197 ± 12%     -30.3%     203576 ±  6%  sched_debug.cpu_clk
-    290970 ± 12%     -30.5%     202344 ±  6%  sched_debug.ktime
-    289241 ± 12%     -34.1%     190744        sched_debug.sched_clk
-      0.00          -100.0%       0.00        perf-sched.sch_delay.avg.ms.__cond_resched.mempool_alloc.bio_alloc_bioset.bio_split.__bio_split_to_limits
-      0.00          -100.0%       0.00        perf-sched.sch_delay.avg.ms.__cond_resched.submit_bio_noacct.run_ordered_work.process_one_work.worker_thread
-      0.00          +200.0%       0.00        perf-sched.sch_delay.avg.ms.io_schedule.rq_qos_wait.wbt_wait.__rq_qos_throttle
-      0.01 ± 12%     -87.1%       0.00 ±141%  perf-sched.sch_delay.max.ms.__cond_resched.mempool_alloc.bio_alloc_bioset.bio_split.__bio_split_to_limits
-      0.00 ± 20%    -100.0%       0.00        perf-sched.sch_delay.max.ms.__cond_resched.submit_bio_noacct.run_ordered_work.process_one_work.worker_thread
-      0.01 ± 10%     +34.6%       0.01 ±  4%  perf-sched.sch_delay.max.ms.io_schedule.rq_qos_wait.wbt_wait.__rq_qos_throttle
-      0.02 ±  2%     +38.8%       0.02 ± 12%  perf-sched.sch_delay.max.ms.irq_thread.kthread.ret_from_fork
-      0.01 ± 58%     -50.0%       0.01        perf-sched.sch_delay.max.ms.schedule_hrtimeout_range_clock.do_select.core_sys_select.kern_select
-      0.01 ± 27%    +609.7%       0.07 ± 12%  perf-sched.sch_delay.max.ms.smpboot_thread_fn.kthread.ret_from_fork
-     67.34 ±  6%     +49.3%     100.57 ±  2%  perf-sched.total_wait_and_delay.average.ms
-     67.34 ±  6%     +49.3%     100.56 ±  2%  perf-sched.total_wait_time.average.ms
-     10.18 ±  9%    -100.0%       0.00        perf-sched.wait_and_delay.avg.ms.__cond_resched.mempool_alloc.bio_alloc_bioset.bio_split.__bio_split_to_limits
-     15.96 ± 46%    +251.4%      56.10 ±  4%  perf-sched.wait_and_delay.avg.ms.io_schedule.rq_qos_wait.wbt_wait.__rq_qos_throttle
-     26.62           +17.2%      31.20 ±  9%  perf-sched.wait_and_delay.avg.ms.pipe_read.vfs_read.ksys_read.do_syscall_64
-     79.10 ± 30%     -31.4%      54.23 ± 14%  perf-sched.wait_and_delay.avg.ms.schedule_hrtimeout_range_clock.do_select.core_sys_select.kern_select
-     31.32 ± 34%    +135.2%      73.67        perf-sched.wait_and_delay.avg.ms.schedule_timeout.io_schedule_timeout.balance_dirty_pages.balance_dirty_pages_ratelimited_flags
-     60.28 ± 25%    +543.9%     388.18        perf-sched.wait_and_delay.avg.ms.worker_thread.kthread.ret_from_fork
-    278.00 ± 21%    -100.0%       0.00        perf-sched.wait_and_delay.count.__cond_resched.mempool_alloc.bio_alloc_bioset.bio_split.__bio_split_to_limits
-      2394           -13.5%       2070 ±  8%  perf-sched.wait_and_delay.count.pipe_read.vfs_read.ksys_read.do_syscall_64
-      1411 ± 34%    +203.0%       4276        perf-sched.wait_and_delay.count.schedule_timeout.io_schedule_timeout.balance_dirty_pages.balance_dirty_pages_ratelimited_flags
-      3207 ± 12%     -81.4%     597.33 ±  3%  perf-sched.wait_and_delay.count.worker_thread.kthread.ret_from_fork
-    399.86 ± 49%    -100.0%       0.00        perf-sched.wait_and_delay.max.ms.__cond_resched.mempool_alloc.bio_alloc_bioset.bio_split.__bio_split_to_limits
-     38.54 ± 42%    +110.1%      80.96        perf-sched.wait_and_delay.max.ms.schedule_timeout.io_schedule_timeout.balance_dirty_pages.balance_dirty_pages_ratelimited_flags
-      4295 ±  6%     -21.0%       3392 ± 15%  perf-sched.wait_and_delay.max.ms.worker_thread.kthread.ret_from_fork
-     10.18 ±  9%     -99.0%       0.10 ±141%  perf-sched.wait_time.avg.ms.__cond_resched.mempool_alloc.bio_alloc_bioset.bio_split.__bio_split_to_limits
-     12.56 ± 19%    -100.0%       0.00        perf-sched.wait_time.avg.ms.__cond_resched.submit_bio_noacct.run_ordered_work.process_one_work.worker_thread
-     15.96 ± 46%    +251.4%      56.09 ±  4%  perf-sched.wait_time.avg.ms.io_schedule.rq_qos_wait.wbt_wait.__rq_qos_throttle
-     26.62           +17.2%      31.20 ±  9%  perf-sched.wait_time.avg.ms.pipe_read.vfs_read.ksys_read.do_syscall_64
-     79.09 ± 30%     -31.4%      54.23 ± 14%  perf-sched.wait_time.avg.ms.schedule_hrtimeout_range_clock.do_select.core_sys_select.kern_select
-     31.31 ± 34%    +135.3%      73.67        perf-sched.wait_time.avg.ms.schedule_timeout.io_schedule_timeout.balance_dirty_pages.balance_dirty_pages_ratelimited_flags
-     60.28 ± 25%    +544.0%     388.17        perf-sched.wait_time.avg.ms.worker_thread.kthread.ret_from_fork
-    399.85 ± 49%     -99.8%       0.86 ±141%  perf-sched.wait_time.max.ms.__cond_resched.mempool_alloc.bio_alloc_bioset.bio_split.__bio_split_to_limits
-    209.83 ±  4%    -100.0%       0.00        perf-sched.wait_time.max.ms.__cond_resched.submit_bio_noacct.run_ordered_work.process_one_work.worker_thread
-     38.53 ± 42%    +110.1%      80.96        perf-sched.wait_time.max.ms.schedule_timeout.io_schedule_timeout.balance_dirty_pages.balance_dirty_pages_ratelimited_flags
-      4295 ±  6%     -21.0%       3392 ± 15%  perf-sched.wait_time.max.ms.worker_thread.kthread.ret_from_fork
-      7.43 ± 13%     +82.9%      13.58        perf-stat.i.MPKI
- 1.723e+08 ±  2%     +39.4%  2.401e+08        perf-stat.i.branch-instructions
-      1.18 ±  3%      -0.3        0.91 ±  4%  perf-stat.i.branch-miss-rate%
-   1802643 ±  4%     +33.2%    2401582 ±  4%  perf-stat.i.branch-misses
-     16.56 ± 13%     +20.8       37.38        perf-stat.i.cache-miss-rate%
-   4283204 ±  2%     +80.6%    7737536        perf-stat.i.cache-misses
-  10476128 ±  2%     +73.7%   18196537        perf-stat.i.cache-references
-      2524 ± 12%     +41.1%       3562        perf-stat.i.context-switches
-      2.95 ±  5%     -24.7%       2.22        perf-stat.i.cpi
-  2.22e+09 ±  4%     +28.7%  2.857e+09        perf-stat.i.cpu-cycles
-     71.21            +6.2%      75.63        perf-stat.i.cpu-migrations
-      4352 ± 14%     -89.4%     462.63 ±  3%  perf-stat.i.cycles-between-cache-misses
-      0.04 ±  2%      -0.0        0.03 ±  4%  perf-stat.i.dTLB-load-miss-rate%
-     56751 ±  2%     +21.3%      68814 ±  4%  perf-stat.i.dTLB-load-misses
- 2.317e+08 ±  2%     +34.4%  3.113e+08        perf-stat.i.dTLB-loads
-      0.02            +0.0        0.02 ±  6%  perf-stat.i.dTLB-store-miss-rate%
-     14811 ±  4%     +93.0%      28592 ±  8%  perf-stat.i.dTLB-store-misses
- 1.107e+08           +35.4%  1.499e+08        perf-stat.i.dTLB-stores
- 8.634e+08 ±  2%     +37.7%  1.189e+09        perf-stat.i.instructions
-      0.36 ±  5%     +28.9%       0.46        perf-stat.i.ipc
-      0.03 ±  4%     +29.1%       0.04        perf-stat.i.metric.GHz
-    551.35 ±  2%     -65.8%     188.33        perf-stat.i.metric.K/sec
-      7.70 ±  2%     +44.7%      11.14        perf-stat.i.metric.M/sec
-      1952            +8.0%       2108        perf-stat.i.minor-faults
-     76.11 ±  9%     -23.8       52.27 ±  5%  perf-stat.i.node-load-miss-rate%
-    231966           +78.7%     414587 ±  5%  perf-stat.i.node-load-misses
-    338854 ±  3%     +80.1%     610248 ±  2%  perf-stat.i.node-loads
-     21.73 ± 23%      -7.1       14.61 ±  9%  perf-stat.i.node-store-miss-rate%
-     67614 ± 11%    +237.1%     227915 ± 10%  perf-stat.i.node-store-misses
-   1326467 ±  5%     +97.3%    2616617        perf-stat.i.node-stores
-      1952            +8.0%       2108        perf-stat.i.page-faults
-     12.32 ±  2%     +25.6%      15.48        perf-stat.overall.MPKI
-      1.04            -0.0        0.99 ±  4%  perf-stat.overall.branch-miss-rate%
-     41.10 ±  2%      +1.6       42.67        perf-stat.overall.cache-miss-rate%
-      2.59 ±  3%      -6.0%       2.43        perf-stat.overall.cpi
-    511.19           -28.0%     368.31        perf-stat.overall.cycles-between-cache-misses
-      0.02 ±  4%      -0.0        0.02 ±  4%  perf-stat.overall.dTLB-load-miss-rate%
-      0.01 ±  5%      +0.0        0.02 ±  8%  perf-stat.overall.dTLB-store-miss-rate%
-      0.39 ±  3%      +6.3%       0.41        perf-stat.overall.ipc
-      4.89 ± 15%      +3.0        7.89 ±  9%  perf-stat.overall.node-store-miss-rate%
-  31436417           -36.9%   19832297        perf-stat.overall.path-length
- 1.747e+08 ±  3%     +39.8%  2.442e+08        perf-stat.ps.branch-instructions
-   1813082 ±  4%     +33.3%    2416943 ±  4%  perf-stat.ps.branch-misses
-   4430452 ±  3%     +80.1%    7980285        perf-stat.ps.cache-misses
-  10778952 ±  2%     +73.5%   18704454        perf-stat.ps.cache-references
-      2521 ± 12%     +40.9%       3551        perf-stat.ps.context-switches
- 2.265e+09 ±  4%     +29.7%  2.939e+09        perf-stat.ps.cpu-cycles
-     71.15            +6.1%      75.47        perf-stat.ps.cpu-migrations
-     56751 ±  2%     +21.2%      68810 ±  4%  perf-stat.ps.dTLB-load-misses
- 2.346e+08 ±  2%     +34.7%   3.16e+08        perf-stat.ps.dTLB-loads
-     14898 ±  4%     +93.1%      28771 ±  8%  perf-stat.ps.dTLB-store-misses
-  1.12e+08 ±  2%     +35.7%  1.519e+08        perf-stat.ps.dTLB-stores
- 8.751e+08 ±  2%     +38.1%  1.208e+09        perf-stat.ps.instructions
-      1951            +7.9%       2105        perf-stat.ps.minor-faults
-    236765           +78.2%     421877 ±  5%  perf-stat.ps.node-load-misses
-    353669 ±  4%     +79.8%     635807 ±  2%  perf-stat.ps.node-loads
-     70662 ±  9%    +229.8%     233054 ±  9%  perf-stat.ps.node-store-misses
-   1385168 ±  6%     +96.1%    2716895        perf-stat.ps.node-stores
-      1951            +7.9%       2105        perf-stat.ps.page-faults
- 4.779e+11 ± 12%     -23.5%  3.655e+11        perf-stat.total.instructions
-    113.69 ±  4%     -15.7       97.99        perf-profile.calltrace.cycles-pp.asm_sysvec_apic_timer_interrupt.acpi_safe_halt.acpi_idle_enter.cpuidle_enter_state.cpuidle_enter
-     91.21 ±  4%     -13.3       77.90        perf-profile.calltrace.cycles-pp.secondary_startup_64_no_verify
-     89.64 ±  4%     -13.1       76.53        perf-profile.calltrace.cycles-pp.cpu_startup_entry.start_secondary.secondary_startup_64_no_verify
-     89.64 ±  4%     -13.1       76.54        perf-profile.calltrace.cycles-pp.start_secondary.secondary_startup_64_no_verify
-     89.50 ±  4%     -13.1       76.40        perf-profile.calltrace.cycles-pp.do_idle.cpu_startup_entry.start_secondary.secondary_startup_64_no_verify
-     88.67 ±  4%     -12.9       75.80        perf-profile.calltrace.cycles-pp.cpuidle_idle_call.do_idle.cpu_startup_entry.start_secondary.secondary_startup_64_no_verify
-     85.02 ±  4%     -11.7       73.31        perf-profile.calltrace.cycles-pp.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call.do_idle.cpu_startup_entry
-     83.59 ±  4%     -11.6       72.02        perf-profile.calltrace.cycles-pp.acpi_idle_enter.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call.do_idle
-     83.93 ±  4%     -11.5       72.38        perf-profile.calltrace.cycles-pp.cpuidle_enter.cpuidle_idle_call.do_idle.cpu_startup_entry.start_secondary
-     45.84 ±  6%      -5.6       40.20 ±  3%  perf-profile.calltrace.cycles-pp.acpi_safe_halt.acpi_idle_enter.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call
-     35.67 ±  7%      -3.8       31.84 ±  2%  perf-profile.calltrace.cycles-pp.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt.acpi_safe_halt.acpi_idle_enter.cpuidle_enter_state
-     26.52 ±  9%      -2.9       23.62 ±  4%  perf-profile.calltrace.cycles-pp.__sysvec_apic_timer_interrupt.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt.acpi_safe_halt.acpi_idle_enter
-     25.38 ±  8%      -2.5       22.87 ±  4%  perf-profile.calltrace.cycles-pp.hrtimer_interrupt.__sysvec_apic_timer_interrupt.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt.acpi_safe_halt
-     21.95 ±  8%      -2.4       19.56 ±  5%  perf-profile.calltrace.cycles-pp.__hrtimer_run_queues.hrtimer_interrupt.__sysvec_apic_timer_interrupt.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt
-     11.68 ±  8%      -1.4       10.33 ±  3%  perf-profile.calltrace.cycles-pp.perf_event_task_tick.scheduler_tick.update_process_times.tick_sched_handle.tick_sched_timer
-     11.38 ±  9%      -1.3       10.05 ±  3%  perf-profile.calltrace.cycles-pp.perf_adjust_freq_unthr_context.perf_event_task_tick.scheduler_tick.update_process_times.tick_sched_handle
-      3.74 ± 17%      -1.3        2.45 ±  9%  perf-profile.calltrace.cycles-pp.menu_select.cpuidle_idle_call.do_idle.cpu_startup_entry.start_secondary
-      2.89 ± 14%      -1.2        1.72 ±  8%  perf-profile.calltrace.cycles-pp.perf_mux_hrtimer_handler.__hrtimer_run_queues.hrtimer_interrupt.__sysvec_apic_timer_interrupt.sysvec_apic_timer_interrupt
-      7.34 ± 10%      -1.1        6.24 ±  4%  perf-profile.calltrace.cycles-pp.__intel_pmu_enable_all.perf_adjust_freq_unthr_context.perf_event_task_tick.scheduler_tick.update_process_times
-      2.13 ± 25%      -1.0        1.12 ±  7%  perf-profile.calltrace.cycles-pp.tick_nohz_get_sleep_length.menu_select.cpuidle_idle_call.do_idle.cpu_startup_entry
-      2.45 ± 17%      -0.9        1.59 ± 12%  perf-profile.calltrace.cycles-pp.rcu_core.__do_softirq.__irq_exit_rcu.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt
-      1.47 ± 35%      -0.8        0.65 ±  6%  perf-profile.calltrace.cycles-pp.tick_nohz_next_event.tick_nohz_get_sleep_length.menu_select.cpuidle_idle_call.do_idle
-      6.22 ±  3%      -0.8        5.47 ±  6%  perf-profile.calltrace.cycles-pp.__irq_exit_rcu.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt.acpi_safe_halt.acpi_idle_enter
-      5.55 ±  3%      -0.6        4.97 ±  5%  perf-profile.calltrace.cycles-pp.__do_softirq.__irq_exit_rcu.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt.acpi_safe_halt
-      1.35 ± 23%      -0.5        0.82 ±  6%  perf-profile.calltrace.cycles-pp.note_gp_changes.rcu_core.__do_softirq.__irq_exit_rcu.sysvec_apic_timer_interrupt
-      0.88 ± 16%      -0.4        0.45 ± 72%  perf-profile.calltrace.cycles-pp.rcu_report_qs_rdp.rcu_core.__do_softirq.__irq_exit_rcu.sysvec_apic_timer_interrupt
-      1.29 ±  7%      -0.3        1.02 ±  8%  perf-profile.calltrace.cycles-pp.perf_rotate_context.perf_mux_hrtimer_handler.__hrtimer_run_queues.hrtimer_interrupt.__sysvec_apic_timer_interrupt
-      0.85 ± 18%      -0.2        0.61 ± 12%  perf-profile.calltrace.cycles-pp.folio_end_writeback.end_bio_extent_writepage.blk_update_request.scsi_end_request.scsi_io_completion
-      0.97 ±  3%      -0.2        0.73 ±  2%  perf-profile.calltrace.cycles-pp.__intel_pmu_enable_all.perf_rotate_context.perf_mux_hrtimer_handler.__hrtimer_run_queues.hrtimer_interrupt
-      1.05 ± 16%      -0.2        0.81 ± 11%  perf-profile.calltrace.cycles-pp.end_bio_extent_writepage.blk_update_request.scsi_end_request.scsi_io_completion.complete_cmd_fusion
-      1.05 ± 16%      -0.2        0.83 ± 12%  perf-profile.calltrace.cycles-pp.blk_update_request.scsi_end_request.scsi_io_completion.complete_cmd_fusion.megasas_isr_fusion
-      1.09 ±  9%      -0.2        0.91 ±  7%  perf-profile.calltrace.cycles-pp.lapic_next_deadline.clockevents_program_event.hrtimer_interrupt.__sysvec_apic_timer_interrupt.sysvec_apic_timer_interrupt
-      0.23 ±141%      +0.4        0.67 ± 12%  perf-profile.calltrace.cycles-pp._raw_spin_trylock.rebalance_domains.__do_softirq.__irq_exit_rcu.sysvec_apic_timer_interrupt
-      0.18 ±141%      +0.5        0.70 ± 13%  perf-profile.calltrace.cycles-pp.filemap_dirty_folio.btrfs_dirty_pages.btrfs_buffered_write.btrfs_do_write_iter.do_iter_readv_writev
-      0.26 ±141%      +0.5        0.80 ± 10%  perf-profile.calltrace.cycles-pp.balance_dirty_pages.balance_dirty_pages_ratelimited_flags.btrfs_buffered_write.btrfs_do_write_iter.do_iter_readv_writev
-      0.00            +0.6        0.58 ± 13%  perf-profile.calltrace.cycles-pp.folio_alloc.__filemap_get_folio.pagecache_get_page.prepare_pages.btrfs_buffered_write
-      0.27 ±141%      +0.6        0.86 ± 11%  perf-profile.calltrace.cycles-pp.balance_dirty_pages_ratelimited_flags.btrfs_buffered_write.btrfs_do_write_iter.do_iter_readv_writev.do_iter_write
-      0.28 ±141%      +0.7        0.94 ± 16%  perf-profile.calltrace.cycles-pp.__filemap_add_folio.filemap_add_folio.__filemap_get_folio.pagecache_get_page.prepare_pages
-      0.65 ± 79%      +0.8        1.44 ± 13%  perf-profile.calltrace.cycles-pp.filemap_add_folio.__filemap_get_folio.pagecache_get_page.prepare_pages.btrfs_buffered_write
-      0.49 ± 72%      +0.9        1.40 ± 11%  perf-profile.calltrace.cycles-pp.btrfs_dirty_pages.btrfs_buffered_write.btrfs_do_write_iter.do_iter_readv_writev.do_iter_write
-      0.30 ±141%      +1.0        1.28 ±  6%  perf-profile.calltrace.cycles-pp.get_io_u
-      0.97 ± 80%      +1.3        2.27 ±  8%  perf-profile.calltrace.cycles-pp.__filemap_get_folio.pagecache_get_page.prepare_pages.btrfs_buffered_write.btrfs_do_write_iter
-      0.98 ± 79%      +1.3        2.29 ±  9%  perf-profile.calltrace.cycles-pp.pagecache_get_page.prepare_pages.btrfs_buffered_write.btrfs_do_write_iter.do_iter_readv_writev
-      1.23 ± 77%      +1.6        2.81 ±  7%  perf-profile.calltrace.cycles-pp.prepare_pages.btrfs_buffered_write.btrfs_do_write_iter.do_iter_readv_writev.do_iter_write
-      0.00            +2.1        2.09 ± 16%  perf-profile.calltrace.cycles-pp.crc_pcl.crc32c_pcl_intel_digest.btrfs_csum_one_bio.btrfs_submit_chunk.btrfs_submit_bio
-      0.00            +2.1        2.13 ± 17%  perf-profile.calltrace.cycles-pp.crc32c_pcl_intel_digest.btrfs_csum_one_bio.btrfs_submit_chunk.btrfs_submit_bio.submit_one_bio
-      0.00            +2.2        2.21 ± 16%  perf-profile.calltrace.cycles-pp.btrfs_csum_one_bio.btrfs_submit_chunk.btrfs_submit_bio.submit_one_bio.submit_extent_page
-      1.82 ± 75%      +2.2        4.04 ±  4%  perf-profile.calltrace.cycles-pp.__memcpy.copy_page_from_iter_atomic.btrfs_copy_from_user.btrfs_buffered_write.btrfs_do_write_iter
-      1.87 ± 75%      +2.2        4.11 ±  5%  perf-profile.calltrace.cycles-pp.btrfs_copy_from_user.btrfs_buffered_write.btrfs_do_write_iter.do_iter_readv_writev.do_iter_write
-      0.00            +2.3        2.25 ± 16%  perf-profile.calltrace.cycles-pp.submit_one_bio.submit_extent_page.__extent_writepage_io.__extent_writepage.extent_write_cache_pages
-      0.00            +2.3        2.25 ± 16%  perf-profile.calltrace.cycles-pp.btrfs_submit_bio.submit_one_bio.submit_extent_page.__extent_writepage_io.__extent_writepage
-      0.00            +2.3        2.25 ± 16%  perf-profile.calltrace.cycles-pp.btrfs_submit_chunk.btrfs_submit_bio.submit_one_bio.submit_extent_page.__extent_writepage_io
-      1.86 ± 75%      +2.3        4.11 ±  4%  perf-profile.calltrace.cycles-pp.copy_page_from_iter_atomic.btrfs_copy_from_user.btrfs_buffered_write.btrfs_do_write_iter.do_iter_readv_writev
-      0.00            +2.3        2.34 ± 16%  perf-profile.calltrace.cycles-pp.submit_extent_page.__extent_writepage_io.__extent_writepage.extent_write_cache_pages.extent_writepages
-      0.00            +3.2        3.23 ± 15%  perf-profile.calltrace.cycles-pp.__extent_writepage_io.__extent_writepage.extent_write_cache_pages.extent_writepages.do_writepages
-      0.00            +4.1        4.10 ± 16%  perf-profile.calltrace.cycles-pp.__extent_writepage.extent_write_cache_pages.extent_writepages.do_writepages.__writeback_single_inode
-      0.00            +4.7        4.67 ± 14%  perf-profile.calltrace.cycles-pp.extent_write_cache_pages.extent_writepages.do_writepages.__writeback_single_inode.writeback_sb_inodes
-      0.00            +4.7        4.74 ± 15%  perf-profile.calltrace.cycles-pp.do_writepages.__writeback_single_inode.writeback_sb_inodes.__writeback_inodes_wb.wb_writeback
-      0.00            +4.7        4.74 ± 15%  perf-profile.calltrace.cycles-pp.extent_writepages.do_writepages.__writeback_single_inode.writeback_sb_inodes.__writeback_inodes_wb
-      0.00            +4.7        4.74 ± 15%  perf-profile.calltrace.cycles-pp.wb_workfn.process_one_work.worker_thread.kthread.ret_from_fork
-      0.00            +4.7        4.74 ± 15%  perf-profile.calltrace.cycles-pp.wb_do_writeback.wb_workfn.process_one_work.worker_thread.kthread
-      0.00            +4.7        4.74 ± 15%  perf-profile.calltrace.cycles-pp.wb_writeback.wb_do_writeback.wb_workfn.process_one_work.worker_thread
-      0.00            +4.7        4.74 ± 15%  perf-profile.calltrace.cycles-pp.__writeback_inodes_wb.wb_writeback.wb_do_writeback.wb_workfn.process_one_work
-      0.00            +4.7        4.74 ± 15%  perf-profile.calltrace.cycles-pp.writeback_sb_inodes.__writeback_inodes_wb.wb_writeback.wb_do_writeback.wb_workfn
-      0.00            +4.7        4.74 ± 15%  perf-profile.calltrace.cycles-pp.__writeback_single_inode.writeback_sb_inodes.__writeback_inodes_wb.wb_writeback.wb_do_writeback
-      0.64 ±  5%      +5.1        5.70 ± 14%  perf-profile.calltrace.cycles-pp.ret_from_fork
-      0.64 ±  5%      +5.1        5.70 ± 14%  perf-profile.calltrace.cycles-pp.kthread.ret_from_fork
-      0.00            +5.2        5.21 ± 15%  perf-profile.calltrace.cycles-pp.process_one_work.worker_thread.kthread.ret_from_fork
-      0.00            +5.3        5.32 ± 15%  perf-profile.calltrace.cycles-pp.worker_thread.kthread.ret_from_fork
-      4.26 ± 76%      +6.9       11.18 ±  4%  perf-profile.calltrace.cycles-pp.btrfs_buffered_write.btrfs_do_write_iter.do_iter_readv_writev.do_iter_write.iter_file_splice_write
-      4.28 ± 76%      +6.9       11.20 ±  4%  perf-profile.calltrace.cycles-pp.btrfs_do_write_iter.do_iter_readv_writev.do_iter_write.iter_file_splice_write.do_splice
-      4.30 ± 76%      +6.9       11.22 ±  4%  perf-profile.calltrace.cycles-pp.do_iter_write.iter_file_splice_write.do_splice.__do_splice.__x64_sys_splice
-      4.28 ± 76%      +6.9       11.22 ±  4%  perf-profile.calltrace.cycles-pp.do_iter_readv_writev.do_iter_write.iter_file_splice_write.do_splice.__do_splice
-      4.33 ± 76%      +7.0       11.31 ±  4%  perf-profile.calltrace.cycles-pp.iter_file_splice_write.do_splice.__do_splice.__x64_sys_splice.do_syscall_64
-      4.34 ± 76%      +7.0       11.35 ±  4%  perf-profile.calltrace.cycles-pp.do_splice.__do_splice.__x64_sys_splice.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      4.35 ± 76%      +7.0       11.37 ±  4%  perf-profile.calltrace.cycles-pp.__do_splice.__x64_sys_splice.do_syscall_64.entry_SYSCALL_64_after_hwframe.splice
-      4.36 ± 76%      +7.0       11.39 ±  4%  perf-profile.calltrace.cycles-pp.__x64_sys_splice.do_syscall_64.entry_SYSCALL_64_after_hwframe.splice
-      4.37 ± 76%      +7.1       11.42 ±  4%  perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.splice
-      4.37 ± 76%      +7.1       11.43 ±  4%  perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.splice
-      4.39 ± 76%      +7.1       11.49 ±  4%  perf-profile.calltrace.cycles-pp.splice
-     91.21 ±  4%     -13.3       77.90        perf-profile.children.cycles-pp.secondary_startup_64_no_verify
-     91.21 ±  4%     -13.3       77.90        perf-profile.children.cycles-pp.cpu_startup_entry
-     91.19 ±  4%     -13.3       77.90        perf-profile.children.cycles-pp.do_idle
-     90.35 ±  4%     -13.1       77.22        perf-profile.children.cycles-pp.cpuidle_idle_call
-     89.64 ±  4%     -13.1       76.54        perf-profile.children.cycles-pp.start_secondary
-     85.44 ±  4%     -11.8       73.69        perf-profile.children.cycles-pp.cpuidle_enter
-     85.06 ±  4%     -11.7       73.39        perf-profile.children.cycles-pp.cpuidle_enter_state
-     83.63 ±  4%     -11.6       72.07        perf-profile.children.cycles-pp.acpi_idle_enter
-     83.37 ±  4%     -11.6       71.81        perf-profile.children.cycles-pp.acpi_safe_halt
-     75.32 ±  5%      -9.7       65.63        perf-profile.children.cycles-pp.asm_sysvec_apic_timer_interrupt
-     35.91 ±  7%      -3.7       32.24 ±  2%  perf-profile.children.cycles-pp.sysvec_apic_timer_interrupt
-     26.82 ±  9%      -2.8       24.02 ±  4%  perf-profile.children.cycles-pp.__sysvec_apic_timer_interrupt
-     25.86 ±  8%      -2.6       23.28 ±  4%  perf-profile.children.cycles-pp.hrtimer_interrupt
-     22.44 ±  8%      -2.5       19.93 ±  4%  perf-profile.children.cycles-pp.__hrtimer_run_queues
-     11.89 ±  9%      -1.4       10.47 ±  3%  perf-profile.children.cycles-pp.perf_event_task_tick
-     11.80 ±  9%      -1.4       10.41 ±  3%  perf-profile.children.cycles-pp.perf_adjust_freq_unthr_context
-      8.52 ±  8%      -1.4        7.15 ±  4%  perf-profile.children.cycles-pp.__intel_pmu_enable_all
-      3.81 ± 17%      -1.3        2.55 ±  9%  perf-profile.children.cycles-pp.menu_select
-      3.03 ± 16%      -1.2        1.79 ±  9%  perf-profile.children.cycles-pp.perf_mux_hrtimer_handler
-      3.02 ± 27%      -1.1        1.96 ±  8%  perf-profile.children.cycles-pp.ktime_get
-      2.18 ± 25%      -1.0        1.19 ±  8%  perf-profile.children.cycles-pp.tick_nohz_get_sleep_length
-      2.51 ± 15%      -0.9        1.63 ± 12%  perf-profile.children.cycles-pp.rcu_core
-      1.50 ± 35%      -0.8        0.69 ±  6%  perf-profile.children.cycles-pp.tick_nohz_next_event
-      6.34 ±  3%      -0.7        5.60 ±  6%  perf-profile.children.cycles-pp.__irq_exit_rcu
-      5.67 ±  4%      -0.6        5.08 ±  5%  perf-profile.children.cycles-pp.__do_softirq
-      1.37 ± 23%      -0.5        0.84 ±  5%  perf-profile.children.cycles-pp.note_gp_changes
-      0.71 ± 35%      -0.4        0.34 ±  4%  perf-profile.children.cycles-pp.tick_nohz_irq_exit
-      0.89 ± 15%      -0.3        0.59 ± 26%  perf-profile.children.cycles-pp.rcu_report_qs_rdp
-      1.38 ±  6%      -0.3        1.09 ±  9%  perf-profile.children.cycles-pp.perf_rotate_context
-      1.57 ±  3%      -0.3        1.28 ±  7%  perf-profile.children.cycles-pp.native_irq_return_iret
-      0.84 ± 11%      -0.2        0.60 ±  8%  perf-profile.children.cycles-pp.native_apic_msr_eoi_write
-      1.07 ± 18%      -0.2        0.83 ± 11%  perf-profile.children.cycles-pp.end_bio_extent_writepage
-      0.87 ± 21%      -0.2        0.64 ± 14%  perf-profile.children.cycles-pp.folio_end_writeback
-      0.82 ± 19%      -0.2        0.59 ± 21%  perf-profile.children.cycles-pp.__folio_end_writeback
-      1.14 ± 10%      -0.2        0.96 ±  6%  perf-profile.children.cycles-pp.lapic_next_deadline
-      0.57 ±  8%      -0.1        0.45 ±  6%  perf-profile.children.cycles-pp.update_rq_clock_task
-      0.27 ± 17%      -0.1        0.15 ± 30%  perf-profile.children.cycles-pp.hrtimer_get_next_event
-      0.19 ± 24%      -0.1        0.08 ±  5%  perf-profile.children.cycles-pp.tsc_verify_tsc_adjust
-      0.21 ± 22%      -0.1        0.10 ± 14%  perf-profile.children.cycles-pp.arch_cpu_idle_enter
-      0.24 ± 22%      -0.1        0.14 ± 24%  perf-profile.children.cycles-pp.tick_program_event
-      0.53 ±  7%      -0.1        0.43 ±  4%  perf-profile.children.cycles-pp.cpuidle_governor_latency_req
-      0.17 ± 24%      -0.1        0.08 ± 71%  perf-profile.children.cycles-pp.__xa_clear_mark
-      0.41 ± 15%      -0.1        0.32 ±  2%  perf-profile.children.cycles-pp.update_irq_load_avg
-      0.28 ± 13%      -0.1        0.19 ± 19%  perf-profile.children.cycles-pp.idle_cpu
-      0.34 ± 18%      -0.1        0.26 ± 12%  perf-profile.children.cycles-pp.irqentry_enter
-      0.30 ±  2%      -0.1        0.22 ± 13%  perf-profile.children.cycles-pp.timerqueue_add
-      0.31 ±  8%      -0.1        0.24 ±  6%  perf-profile.children.cycles-pp.ct_idle_exit
-      0.10 ± 25%      -0.1        0.04 ± 76%  perf-profile.children.cycles-pp.sysvec_call_function_single
-      0.10 ± 27%      -0.1        0.04 ± 71%  perf-profile.children.cycles-pp.raise_softirq
-      0.15 ± 24%      -0.0        0.11 ± 15%  perf-profile.children.cycles-pp.cpuidle_reflect
-      0.14 ± 28%      -0.0        0.10 ±  9%  perf-profile.children.cycles-pp.__libc_fork
-      0.16 ± 12%      -0.0        0.11 ± 22%  perf-profile.children.cycles-pp.rb_insert_color
-      0.11 ± 19%      -0.0        0.07 ± 23%  perf-profile.children.cycles-pp.ct_kernel_exit
-      0.10 ± 12%      +0.0        0.14 ± 13%  perf-profile.children.cycles-pp.intel_pmu_disable_all
-      0.10 ±  8%      +0.0        0.14 ±  3%  perf-profile.children.cycles-pp.readn
-      0.07 ± 71%      +0.0        0.11 ±  8%  perf-profile.children.cycles-pp.__poll
-      0.13 ± 18%      +0.0        0.18 ± 14%  perf-profile.children.cycles-pp._find_next_and_bit
-      0.04 ± 73%      +0.1        0.09        perf-profile.children.cycles-pp.do_sys_poll
-      0.02 ±141%      +0.1        0.08 ± 24%  perf-profile.children.cycles-pp.__vfork
-      0.05 ± 71%      +0.1        0.11 ± 19%  perf-profile.children.cycles-pp.cgroup_rstat_updated
-      0.02 ±141%      +0.1        0.07 ± 23%  perf-profile.children.cycles-pp.folio_mapping
-      0.09 ±  5%      +0.1        0.15 ±  3%  perf-profile.children.cycles-pp.__libc_read
-      0.00            +0.1        0.06 ± 23%  perf-profile.children.cycles-pp.set_state_bits
-      0.00            +0.1        0.06 ± 13%  perf-profile.children.cycles-pp.btree_write_cache_pages
-      0.00            +0.1        0.06 ± 13%  perf-profile.children.cycles-pp.btrfs_write_and_wait_transaction
-      0.00            +0.1        0.06 ± 13%  perf-profile.children.cycles-pp.btrfs_write_marked_extents
-      0.00            +0.1        0.06 ± 19%  perf-profile.children.cycles-pp.__x64_sys_vfork
-      0.00            +0.1        0.06 ± 29%  perf-profile.children.cycles-pp.workingset_activation
-      0.09 ± 70%      +0.1        0.16 ±  6%  perf-profile.children.cycles-pp.gup_pgd_range
-      0.09 ± 70%      +0.1        0.16 ±  5%  perf-profile.children.cycles-pp.lockless_pages_from_mm
-      0.22 ± 28%      +0.1        0.29 ± 18%  perf-profile.children.cycles-pp.__update_blocked_fair
-      0.09 ± 70%      +0.1        0.17 ±  7%  perf-profile.children.cycles-pp.internal_get_user_pages_fast
-      0.10 ± 71%      +0.1        0.17 ±  9%  perf-profile.children.cycles-pp.get_user_pages_fast
-      0.00            +0.1        0.08 ± 26%  perf-profile.children.cycles-pp.calc_available_free_space
-      0.29 ± 14%      +0.1        0.37 ±  8%  perf-profile.children.cycles-pp.__libc_start_main
-      0.29 ± 14%      +0.1        0.37 ±  8%  perf-profile.children.cycles-pp.main
-      0.29 ± 14%      +0.1        0.37 ±  8%  perf-profile.children.cycles-pp.run_builtin
-      0.20 ± 14%      +0.1        0.28 ± 15%  perf-profile.children.cycles-pp.__do_sys_wait4
-      0.19 ± 16%      +0.1        0.27 ± 12%  perf-profile.children.cycles-pp.kernel_wait4
-      0.27 ±  4%      +0.1        0.36 ± 24%  perf-profile.children.cycles-pp.ksys_read
-      0.02 ±141%      +0.1        0.10 ±  4%  perf-profile.children.cycles-pp.set_extent_bit
-      0.00            +0.1        0.08 ± 24%  perf-profile.children.cycles-pp.__count_memcg_events
-      0.10 ± 71%      +0.1        0.18 ± 12%  perf-profile.children.cycles-pp.__iov_iter_get_pages_alloc
-      0.10 ± 71%      +0.1        0.18 ± 12%  perf-profile.children.cycles-pp.iov_iter_get_pages2
-      0.02 ±141%      +0.1        0.11 ± 26%  perf-profile.children.cycles-pp.folio_mark_accessed
-      0.00            +0.1        0.09 ± 33%  perf-profile.children.cycles-pp.__filemap_fdatawrite_range
-      0.00            +0.1        0.09 ± 33%  perf-profile.children.cycles-pp.filemap_fdatawrite_wbc
-      0.09 ± 71%      +0.1        0.18 ±  9%  perf-profile.children.cycles-pp.do_wait
-      0.14 ± 27%      +0.1        0.23 ± 37%  perf-profile.children.cycles-pp.tick_check_oneshot_broadcast_this_cpu
-      0.08 ± 83%      +0.1        0.18 ± 34%  perf-profile.children.cycles-pp.drm_atomic_commit
-      0.08 ± 83%      +0.1        0.18 ± 34%  perf-profile.children.cycles-pp.drm_atomic_helper_commit
-      0.08 ± 30%      +0.1        0.17 ± 24%  perf-profile.children.cycles-pp.ttwu_do_activate
-      0.06 ± 70%      +0.1        0.15 ± 20%  perf-profile.children.cycles-pp.newidle_balance
-      0.00            +0.1        0.10 ± 12%  perf-profile.children.cycles-pp.__lookup_extent_mapping
-      0.00            +0.1        0.10 ± 35%  perf-profile.children.cycles-pp.btrfs_can_overcommit
-      0.00            +0.1        0.10 ± 24%  perf-profile.children.cycles-pp.btrfs_page_clamp_set_uptodate
-      0.13 ± 41%      +0.1        0.23 ±  4%  perf-profile.children.cycles-pp.__mod_lruvec_state
-      0.00            +0.1        0.10 ±  8%  perf-profile.children.cycles-pp.alloc_extent_state
-      0.05 ± 74%      +0.1        0.15 ± 10%  perf-profile.children.cycles-pp.set_page_extent_mapped
-      0.11 ± 62%      +0.1        0.21 ± 42%  perf-profile.children.cycles-pp.calc_global_load_tick
-      0.03 ±141%      +0.1        0.13 ± 24%  perf-profile.children.cycles-pp.pick_next_task_fair
-      0.08 ± 83%      +0.1        0.19 ± 37%  perf-profile.children.cycles-pp.drm_atomic_helper_dirtyfb
-      0.09 ± 19%      +0.1        0.19 ±  7%  perf-profile.children.cycles-pp.release_pages
-      0.02 ±141%      +0.1        0.13 ± 41%  perf-profile.children.cycles-pp.__pagevec_release
-      0.00            +0.1        0.11 ± 19%  perf-profile.children.cycles-pp.need_preemptive_reclaim
-      0.00            +0.1        0.11 ± 51%  perf-profile.children.cycles-pp.merge_state
-      0.00            +0.1        0.11 ± 25%  perf-profile.children.cycles-pp.btrfs_find_delalloc_range
-      0.00            +0.1        0.11 ± 11%  perf-profile.children.cycles-pp.btrfs_get_alloc_profile
-      0.15 ± 71%      +0.1        0.27 ±  6%  perf-profile.children.cycles-pp.iter_to_pipe
-      0.09 ± 13%      +0.1        0.22 ±  9%  perf-profile.children.cycles-pp.call_timer_fn
-      0.00            +0.1        0.13 ± 26%  perf-profile.children.cycles-pp.btrfs_commit_transaction
-      0.00            +0.1        0.13 ± 26%  perf-profile.children.cycles-pp.transaction_kthread
-      0.14 ± 72%      +0.1        0.27 ±  8%  perf-profile.children.cycles-pp.btrfs_do_readpage
-      0.06 ±141%      +0.1        0.19 ±  4%  perf-profile.children.cycles-pp.io_schedule_timeout
-      0.03 ±141%      +0.1        0.16 ± 20%  perf-profile.children.cycles-pp.lock_extent
-      0.00            +0.1        0.14 ± 35%  perf-profile.children.cycles-pp.filemap_get_folios_contig
-      0.12 ± 76%      +0.1        0.26 ± 15%  perf-profile.children.cycles-pp.try_to_wake_up
-      0.11 ± 95%      +0.1        0.25 ± 15%  perf-profile.children.cycles-pp.charge_memcg
-      0.11 ± 18%      +0.1        0.26 ±  9%  perf-profile.children.cycles-pp.__run_timers
-      0.06 ±141%      +0.1        0.20        perf-profile.children.cycles-pp.schedule_timeout
-      0.13 ± 45%      +0.1        0.28 ± 35%  perf-profile.children.cycles-pp.drm_fb_helper_damage_work
-      0.13 ± 45%      +0.1        0.28 ± 35%  perf-profile.children.cycles-pp.drm_fbdev_generic_helper_fb_dirty
-      0.14 ± 70%      +0.1        0.29 ± 10%  perf-profile.children.cycles-pp.lru_add_fn
-      0.27 ± 24%      +0.2        0.42 ±  9%  perf-profile.children.cycles-pp.percpu_counter_add_batch
-      0.17 ± 72%      +0.2        0.32 ±  3%  perf-profile.children.cycles-pp.vmsplice
-      0.18 ± 70%      +0.2        0.34 ±  3%  perf-profile.children.cycles-pp.btrfs_read_folio
-      0.09 ± 38%      +0.2        0.24 ±  9%  perf-profile.children.cycles-pp.filemap_get_entry
-      0.09 ±  9%      +0.2        0.25 ± 10%  perf-profile.children.cycles-pp.run_timer_softirq
-      0.00            +0.2        0.16 ± 13%  perf-profile.children.cycles-pp.lock_delalloc_pages
-      0.18 ± 70%      +0.2        0.35 ±  5%  perf-profile.children.cycles-pp.prepare_uptodate_page
-      0.14 ± 71%      +0.2        0.31 ± 17%  perf-profile.children.cycles-pp.rmqueue
-      0.00            +0.2        0.17 ± 25%  perf-profile.children.cycles-pp.btrfs_reserve_data_bytes
-      0.00            +0.2        0.18 ± 27%  perf-profile.children.cycles-pp.btrfs_check_data_free_space
-      0.10 ± 29%      +0.2        0.29 ± 16%  perf-profile.children.cycles-pp.__mod_memcg_lruvec_state
-      0.05 ± 78%      +0.2        0.24 ± 17%  perf-profile.children.cycles-pp.lock_and_cleanup_extent_if_need
-      0.20 ± 37%      +0.2        0.39 ±  6%  perf-profile.children.cycles-pp.schedule
-      0.06 ± 71%      +0.2        0.26 ± 14%  perf-profile.children.cycles-pp.__set_extent_bit
-      0.00            +0.2        0.20 ± 12%  perf-profile.children.cycles-pp.btrfs_get_extent
-      0.34 ± 34%      +0.2        0.56 ± 10%  perf-profile.children.cycles-pp.__schedule
-      0.14 ±100%      +0.2        0.36 ± 27%  perf-profile.children.cycles-pp.__mem_cgroup_charge
-      0.00            +0.2        0.22 ± 96%  perf-profile.children.cycles-pp.btrfs_page_clamp_set_ordered
-      0.09 ± 80%      +0.2        0.32 ± 17%  perf-profile.children.cycles-pp.mem_cgroup_css_rstat_flush
-      0.02 ±141%      +0.2        0.26 ± 31%  perf-profile.children.cycles-pp.btrfs_clear_delalloc_extent
-      0.09 ± 70%      +0.3        0.35 ±  3%  perf-profile.children.cycles-pp.folio_account_dirtied
-      0.22 ± 74%      +0.3        0.48 ± 14%  perf-profile.children.cycles-pp.folio_batch_move_lru
-      0.22 ± 74%      +0.3        0.48 ± 11%  perf-profile.children.cycles-pp.folio_add_lru
-      0.22 ± 77%      +0.3        0.48 ± 17%  perf-profile.children.cycles-pp.get_page_from_freelist
-      0.25 ± 79%      +0.3        0.55 ± 19%  perf-profile.children.cycles-pp.__alloc_pages
-      0.20 ± 21%      +0.3        0.50 ±  6%  perf-profile.children.cycles-pp.__mod_lruvec_page_state
-      0.23 ± 71%      +0.3        0.54 ± 11%  perf-profile.children.cycles-pp.__folio_mark_dirty
-      0.00            +0.3        0.31 ± 28%  perf-profile.children.cycles-pp.folio_clear_dirty_for_io
-      0.25 ± 76%      +0.3        0.58 ± 13%  perf-profile.children.cycles-pp.folio_alloc
-      0.00            +0.3        0.33 ± 13%  perf-profile.children.cycles-pp.find_lock_delalloc_range
-      0.22 ± 81%      +0.3        0.55 ± 18%  perf-profile.children.cycles-pp.cgroup_rstat_flush_locked
-      0.21 ± 84%      +0.3        0.55 ± 18%  perf-profile.children.cycles-pp.do_flush_stats
-      0.21 ± 84%      +0.3        0.55 ± 18%  perf-profile.children.cycles-pp.cgroup_rstat_flush_atomic
-      0.22 ± 81%      +0.3        0.57 ± 16%  perf-profile.children.cycles-pp.mem_cgroup_wb_stats
-      0.08 ± 81%      +0.4        0.43 ± 24%  perf-profile.children.cycles-pp.clear_state_bit
-      0.34 ± 71%      +0.4        0.71 ± 14%  perf-profile.children.cycles-pp.filemap_dirty_folio
-      0.00            +0.4        0.41 ± 48%  perf-profile.children.cycles-pp.btrfs_run_delalloc_range
-      0.00            +0.4        0.41 ± 48%  perf-profile.children.cycles-pp.run_delalloc_nocow
-      0.00            +0.4        0.42 ± 18%  perf-profile.children.cycles-pp.__folio_start_writeback
-      0.35 ± 90%      +0.5        0.80 ± 10%  perf-profile.children.cycles-pp.balance_dirty_pages
-      0.13 ± 77%      +0.5        0.59 ± 22%  perf-profile.children.cycles-pp.__clear_extent_bit
-      0.37 ± 90%      +0.5        0.86 ± 10%  perf-profile.children.cycles-pp.balance_dirty_pages_ratelimited_flags
-      0.00            +0.5        0.52 ± 30%  perf-profile.children.cycles-pp.btrfs_reserve_metadata_bytes
-      0.00            +0.5        0.54 ± 35%  perf-profile.children.cycles-pp.__process_pages_contig
-      0.42 ± 84%      +0.5        0.96 ± 17%  perf-profile.children.cycles-pp.__filemap_add_folio
-      0.53 ± 17%      +0.6        1.09 ± 22%  perf-profile.children.cycles-pp.native_queued_spin_lock_slowpath
-      0.00            +0.6        0.57 ± 42%  perf-profile.children.cycles-pp.btrfs_inode_rsv_release
-      0.00            +0.6        0.57 ± 42%  perf-profile.children.cycles-pp.btrfs_block_rsv_release
-      0.00            +0.6        0.58 ± 17%  perf-profile.children.cycles-pp.btrfs_set_range_writeback
-      0.04 ±141%      +0.6        0.64 ± 24%  perf-profile.children.cycles-pp.btrfs_delalloc_reserve_metadata
-      0.04 ± 71%      +0.7        0.69 ± 27%  perf-profile.children.cycles-pp.__reserve_bytes
-      0.00            +0.8        0.75 ± 31%  perf-profile.children.cycles-pp.writepage_delalloc
-      0.65 ± 79%      +0.8        1.44 ± 13%  perf-profile.children.cycles-pp.filemap_add_folio
-      0.49 ± 72%      +0.9        1.40 ± 11%  perf-profile.children.cycles-pp.btrfs_dirty_pages
-      0.36 ±106%      +0.9        1.28 ±  6%  perf-profile.children.cycles-pp.get_io_u
-      1.15 ±  3%      +1.0        2.20 ± 20%  perf-profile.children.cycles-pp._raw_spin_lock
-      0.98 ± 79%      +1.4        2.37 ±  8%  perf-profile.children.cycles-pp.__filemap_get_folio
-      0.98 ± 80%      +1.4        2.41 ±  9%  perf-profile.children.cycles-pp.pagecache_get_page
-      1.24 ± 77%      +1.6        2.84 ±  7%  perf-profile.children.cycles-pp.prepare_pages
-      1.87 ± 75%      +2.2        4.11 ±  4%  perf-profile.children.cycles-pp.btrfs_copy_from_user
-      1.84 ± 75%      +2.3        4.09 ±  5%  perf-profile.children.cycles-pp.__memcpy
-      1.86 ± 75%      +2.3        4.12 ±  5%  perf-profile.children.cycles-pp.copy_page_from_iter_atomic
-      0.00            +2.3        2.31 ± 16%  perf-profile.children.cycles-pp.crc_pcl
-      0.00            +2.3        2.33 ± 16%  perf-profile.children.cycles-pp.crc32c_pcl_intel_digest
-      0.00            +2.4        2.38 ± 16%  perf-profile.children.cycles-pp.submit_extent_page
-      0.00            +2.4        2.41 ± 15%  perf-profile.children.cycles-pp.btrfs_csum_one_bio
-      0.00            +2.5        2.50 ± 16%  perf-profile.children.cycles-pp.submit_one_bio
-      0.00            +2.5        2.50 ± 16%  perf-profile.children.cycles-pp.btrfs_submit_bio
-      0.00            +2.5        2.50 ± 16%  perf-profile.children.cycles-pp.btrfs_submit_chunk
-      0.00            +3.3        3.26 ± 15%  perf-profile.children.cycles-pp.__extent_writepage_io
-      0.00            +4.1        4.12 ± 16%  perf-profile.children.cycles-pp.__extent_writepage
-      0.00            +4.7        4.69 ± 15%  perf-profile.children.cycles-pp.extent_write_cache_pages
-      0.00            +4.7        4.74 ± 15%  perf-profile.children.cycles-pp.wb_workfn
-      0.00            +4.7        4.74 ± 15%  perf-profile.children.cycles-pp.wb_do_writeback
-      0.00            +4.7        4.74 ± 15%  perf-profile.children.cycles-pp.wb_writeback
-      0.00            +4.7        4.74 ± 15%  perf-profile.children.cycles-pp.__writeback_inodes_wb
-      0.00            +4.7        4.74 ± 15%  perf-profile.children.cycles-pp.writeback_sb_inodes
-      0.00            +4.7        4.74 ± 15%  perf-profile.children.cycles-pp.__writeback_single_inode
-      0.00            +4.8        4.77 ± 15%  perf-profile.children.cycles-pp.extent_writepages
-      0.00            +4.8        4.83 ± 15%  perf-profile.children.cycles-pp.do_writepages
-      0.32 ± 11%      +4.9        5.21 ± 15%  perf-profile.children.cycles-pp.process_one_work
-      0.37 ±  5%      +5.0        5.32 ± 15%  perf-profile.children.cycles-pp.worker_thread
-      0.68 ±  8%      +5.0        5.72 ± 14%  perf-profile.children.cycles-pp.ret_from_fork
-      0.64 ±  5%      +5.1        5.70 ± 14%  perf-profile.children.cycles-pp.kthread
-      4.27 ± 76%      +6.9       11.18 ±  4%  perf-profile.children.cycles-pp.btrfs_buffered_write
-      4.28 ± 76%      +6.9       11.20 ±  4%  perf-profile.children.cycles-pp.btrfs_do_write_iter
-      4.30 ± 76%      +6.9       11.22 ±  4%  perf-profile.children.cycles-pp.do_iter_write
-      4.28 ± 76%      +6.9       11.22 ±  4%  perf-profile.children.cycles-pp.do_iter_readv_writev
-      4.33 ± 76%      +7.0       11.32 ±  4%  perf-profile.children.cycles-pp.iter_file_splice_write
-      4.34 ± 76%      +7.0       11.35 ±  4%  perf-profile.children.cycles-pp.do_splice
-      4.35 ± 76%      +7.0       11.38 ±  4%  perf-profile.children.cycles-pp.__do_splice
-      4.36 ± 76%      +7.0       11.39 ±  4%  perf-profile.children.cycles-pp.__x64_sys_splice
-      4.39 ± 76%      +7.1       11.49 ±  4%  perf-profile.children.cycles-pp.splice
-      6.68 ± 52%      +7.3       14.03 ±  4%  perf-profile.children.cycles-pp.do_syscall_64
-      6.71 ± 52%      +7.4       14.06 ±  4%  perf-profile.children.cycles-pp.entry_SYSCALL_64_after_hwframe
-     43.67 ±  2%      -7.3       36.39        perf-profile.self.cycles-pp.acpi_safe_halt
-      8.52 ±  8%      -1.4        7.15 ±  4%  perf-profile.self.cycles-pp.__intel_pmu_enable_all
-      2.09 ± 39%      -1.1        0.98 ± 20%  perf-profile.self.cycles-pp.ktime_get
-      0.89 ± 29%      -0.3        0.54 ±  6%  perf-profile.self.cycles-pp.note_gp_changes
-      1.57 ±  3%      -0.3        1.28 ±  7%  perf-profile.self.cycles-pp.native_irq_return_iret
-      0.82 ± 10%      -0.2        0.60 ±  8%  perf-profile.self.cycles-pp.native_apic_msr_eoi_write
-      0.97 ±  8%      -0.2        0.78 ± 10%  perf-profile.self.cycles-pp.menu_select
-      1.13 ±  9%      -0.2        0.96 ±  6%  perf-profile.self.cycles-pp.lapic_next_deadline
-      0.19 ± 22%      -0.2        0.04 ± 71%  perf-profile.self.cycles-pp.tsc_verify_tsc_adjust
-      0.59 ±  8%      -0.1        0.48 ± 10%  perf-profile.self.cycles-pp.cpuidle_idle_call
-      0.23 ± 22%      -0.1        0.13 ± 24%  perf-profile.self.cycles-pp.tick_program_event
-      0.32 ± 14%      -0.1        0.22 ± 18%  perf-profile.self.cycles-pp.irqtime_account_irq
-      0.48 ± 13%      -0.1        0.39 ± 13%  perf-profile.self.cycles-pp.ct_kernel_exit_state
-      0.40 ± 15%      -0.1        0.32        perf-profile.self.cycles-pp.update_irq_load_avg
-      0.22 ± 10%      -0.1        0.15 ±  8%  perf-profile.self.cycles-pp.__do_softirq
-      0.26 ± 15%      -0.1        0.19 ± 22%  perf-profile.self.cycles-pp.idle_cpu
-      0.18 ± 16%      -0.1        0.11 ±  8%  perf-profile.self.cycles-pp.__folio_end_writeback
-      0.32 ±  5%      -0.1        0.25 ±  4%  perf-profile.self.cycles-pp.do_idle
-      0.09 ± 25%      -0.1        0.03 ± 70%  perf-profile.self.cycles-pp.raise_softirq
-      0.14 ± 20%      -0.1        0.09 ± 23%  perf-profile.self.cycles-pp.cpuidle_governor_latency_req
-      0.13 ±  6%      -0.1        0.08 ±  6%  perf-profile.self.cycles-pp.rcu_core
-      0.11 ± 19%      -0.0        0.06 ± 19%  perf-profile.self.cycles-pp.hrtimer_next_event_without
-      0.17 ± 10%      -0.0        0.13 ± 16%  perf-profile.self.cycles-pp.timerqueue_add
-      0.17 ±  2%      -0.0        0.14 ± 13%  perf-profile.self.cycles-pp.update_rq_clock_task
-      0.09 ± 13%      +0.0        0.13 ± 13%  perf-profile.self.cycles-pp.__update_blocked_fair
-      0.13 ± 18%      +0.0        0.17 ± 16%  perf-profile.self.cycles-pp._find_next_and_bit
-      0.00            +0.1        0.05        perf-profile.self.cycles-pp.balance_dirty_pages_ratelimited_flags
-      0.02 ±141%      +0.1        0.07 ± 23%  perf-profile.self.cycles-pp.folio_mapping
-      0.00            +0.1        0.06 ±  8%  perf-profile.self.cycles-pp.xas_store
-      0.02 ±141%      +0.1        0.07 ± 23%  perf-profile.self.cycles-pp.__mod_lruvec_state
-      0.05 ± 74%      +0.1        0.11 ± 22%  perf-profile.self.cycles-pp.set_page_extent_mapped
-      0.00            +0.1        0.06 ± 19%  perf-profile.self.cycles-pp.btrfs_csum_one_bio
-      0.00            +0.1        0.07 ± 11%  perf-profile.self.cycles-pp.get_page_from_freelist
-      0.02 ±141%      +0.1        0.09 ± 44%  perf-profile.self.cycles-pp.rmqueue
-      0.00            +0.1        0.08 ± 16%  perf-profile.self.cycles-pp.folio_account_dirtied
-      0.00            +0.1        0.08 ±  6%  perf-profile.self.cycles-pp.extent_write_cache_pages
-      0.00            +0.1        0.08 ± 26%  perf-profile.self.cycles-pp.prepare_pages
-      0.00            +0.1        0.08 ± 27%  perf-profile.self.cycles-pp.filemap_get_entry
-      0.06 ± 79%      +0.1        0.14 ±  9%  perf-profile.self.cycles-pp.__filemap_add_folio
-      0.14 ± 27%      +0.1        0.22 ± 38%  perf-profile.self.cycles-pp.tick_check_oneshot_broadcast_this_cpu
-      0.00            +0.1        0.09 ± 23%  perf-profile.self.cycles-pp.btrfs_find_delalloc_range
-      0.00            +0.1        0.10 ± 12%  perf-profile.self.cycles-pp.__lookup_extent_mapping
-      0.00            +0.1        0.10 ± 24%  perf-profile.self.cycles-pp.btrfs_page_clamp_set_uptodate
-      0.11 ± 62%      +0.1        0.21 ± 42%  perf-profile.self.cycles-pp.calc_global_load_tick
-      0.05 ± 84%      +0.1        0.17 ±  7%  perf-profile.self.cycles-pp.release_pages
-      0.24 ± 33%      +0.1        0.36 ± 10%  perf-profile.self.cycles-pp.percpu_counter_add_batch
-      0.00            +0.1        0.12 ± 38%  perf-profile.self.cycles-pp.filemap_get_folios_contig
-      0.00            +0.1        0.13 ± 30%  perf-profile.self.cycles-pp.__mod_lruvec_page_state
-      0.00            +0.1        0.14 ± 34%  perf-profile.self.cycles-pp.folio_clear_dirty_for_io
-      0.00            +0.1        0.14 ± 13%  perf-profile.self.cycles-pp.__folio_start_writeback
-      0.02 ±141%      +0.2        0.21 ± 14%  perf-profile.self.cycles-pp.__mod_memcg_lruvec_state
-      0.08 ± 83%      +0.2        0.29 ± 18%  perf-profile.self.cycles-pp.mem_cgroup_css_rstat_flush
-      0.08 ± 70%      +0.3        0.35 ± 63%  perf-profile.self.cycles-pp.tick_sched_do_timer
-      1.11            +0.4        1.51 ± 10%  perf-profile.self.cycles-pp._raw_spin_lock
-      0.53 ± 17%      +0.6        1.09 ± 22%  perf-profile.self.cycles-pp.native_queued_spin_lock_slowpath
-      0.36 ±106%      +0.9        1.28 ±  6%  perf-profile.self.cycles-pp.get_io_u
-      1.84 ± 75%      +2.3        4.09 ±  5%  perf-profile.self.cycles-pp.__memcpy
-      0.00            +2.3        2.28 ± 17%  perf-profile.self.cycles-pp.crc_pcl
-
-
-
-***************************************************************************************************
-lkp-csl-2sp7: 96 threads 2 sockets Intel(R) Xeon(R) Gold 6252 CPU @ 2.10GHz (Cascade Lake) with 512G memory
-=========================================================================================
-compiler/cpufreq_governor/kconfig/option_a/rootfs/tbox_group/test/testcase:
-  gcc-12/performance/x86_64-rhel-8.3/Write/debian-x86_64-phoronix/lkp-csl-2sp7/blogbench-1.1.0/phoronix-test-suite
-
-commit: 
-  adbe7e388e ("btrfs: use SECTOR_SHIFT to convert LBA to physical offset")
-  da02361807 ("btrfs: submit IO synchronously for fast checksum implementations")
-
-adbe7e388e4239d9 da023618076a13c35bcde1a49a8 
----------------- --------------------------- 
-         %stddev     %change         %stddev
-             \          |                \  
- 4.274e+09 ±  5%     +21.6%  5.198e+09        cpuidle..time
-     13.22 ±  4%      +2.0       15.20        mpstat.cpu.all.idle%
-      0.24            +0.2        0.43 ±  5%  mpstat.cpu.all.iowait%
-   5188104           +19.1%    6177905 ±  6%  numa-numastat.node0.local_node
-   5196723           +19.0%    6186300 ±  6%  numa-numastat.node0.numa_hit
-      2356 ±  8%     +28.0%       3015 ±  3%  perf-c2c.DRAM.local
-      5805 ±  7%     +11.9%       6498 ±  3%  perf-c2c.DRAM.remote
-      1850 ±  5%     +12.0%       2072 ±  5%  perf-c2c.HITM.remote
-     39454           +47.1%      58019        vmstat.io.bo
-   9228392           +25.1%   11540476        vmstat.memory.cache
-      1.00          +133.3%       2.33 ± 20%  vmstat.procs.b
-     25579 ±  3%     -29.7%      17972        vmstat.system.cs
-    108380            -0.9%     107362        vmstat.system.in
-      2652 ±  2%     +97.0%       5224        phoronix-test-suite.blogbench.Write.final_score
-    330.90            +3.8%     343.51        phoronix-test-suite.time.elapsed_time
-    330.90            +3.8%     343.51        phoronix-test-suite.time.elapsed_time.max
-  24770224           +46.1%   36182181        phoronix-test-suite.time.file_system_outputs
-   1822389 ±  2%     -11.7%    1609946        phoronix-test-suite.time.involuntary_context_switches
-      8071            -2.8%       7842        phoronix-test-suite.time.percent_of_cpu_this_job_got
-     26252            +0.9%      26490        phoronix-test-suite.time.system_time
-   1992092 ±  4%     -31.0%    1374302        phoronix-test-suite.time.voluntary_context_switches
-    820056 ± 12%     -62.9%     304020 ±  4%  turbostat.C1
-      0.13 ± 12%      -0.1        0.06 ±  7%  turbostat.C1%
-    913881 ±  7%     -29.9%     640272 ±  4%  turbostat.C1E
-   4099403 ±  5%     +23.4%    5058619        turbostat.C6
-     12.39 ±  4%      +2.4       14.81        turbostat.C6%
-     11.00 ±  6%     +15.4%      12.69        turbostat.CPU%c1
-      2.24 ±  3%     +25.1%       2.81 ±  4%  turbostat.CPU%c6
-      1.06 ± 23%     +27.4%       1.35 ±  6%  turbostat.Pkg%pc2
-    262.62            -1.6%     258.50        turbostat.PkgWatt
-   5418491 ±  2%     +32.7%    7193021        meminfo.Active
-   5273100 ±  2%     +33.5%    7039701        meminfo.Active(file)
-    223334 ±  4%      +9.0%     243333 ±  2%  meminfo.AnonHugePages
-   8597554           +25.3%   10771240        meminfo.Cached
-    163456 ±  4%    +189.4%     472975        meminfo.Dirty
-   3625024           +11.0%    4023907        meminfo.Inactive
-   2475160           +16.1%    2873317        meminfo.Inactive(file)
-    640691           +18.2%     757584        meminfo.KReclaimable
-  11077090           +20.8%   13375976        meminfo.Memused
-    640691           +18.2%     757584        meminfo.SReclaimable
-    525575           -10.9%     468109        meminfo.SUnreclaim
-    302322 ±  3%     -99.6%       1226 ±  5%  meminfo.Writeback
-  11350829           +23.0%   13959963        meminfo.max_used_kB
-   2611141 ±  5%     +49.3%    3897215 ± 10%  numa-meminfo.node0.Active
-     33694 ± 11%     +20.0%      40420 ±  6%  numa-meminfo.node0.Active(anon)
-   2577446 ±  6%     +49.6%    3856794 ± 10%  numa-meminfo.node0.Active(file)
-     86636 ±  3%    +209.2%     267913 ±  7%  numa-meminfo.node0.Dirty
-   3909725 ±  9%     +47.4%    5763751 ± 11%  numa-meminfo.node0.FilePages
-   1598105 ± 14%     +32.4%    2115992 ± 12%  numa-meminfo.node0.Inactive
-    856357 ±  7%     +97.3%    1689190 ± 21%  numa-meminfo.node0.Inactive(file)
-    291874 ± 13%     +37.6%     401707 ± 12%  numa-meminfo.node0.KReclaimable
-   5092785 ±  8%     +39.3%    7094593 ±  9%  numa-meminfo.node0.MemUsed
-    291874 ± 13%     +37.6%     401707 ± 12%  numa-meminfo.node0.SReclaimable
-    257580 ±  4%      -5.3%     243975 ±  5%  numa-meminfo.node0.SUnreclaim
-    475384 ± 31%     -54.4%     216823 ± 46%  numa-meminfo.node0.Shmem
-    151008 ± 15%     -99.6%     631.33 ± 10%  numa-meminfo.node0.Writeback
-     77129 ±  7%    +165.7%     204901 ± 10%  numa-meminfo.node1.Dirty
-    267589 ±  4%     -16.5%     223515 ±  6%  numa-meminfo.node1.SUnreclaim
-    374688 ± 41%     +71.1%     641099 ± 15%  numa-meminfo.node1.Shmem
-    151050 ± 13%     -99.6%     560.67 ±  6%  numa-meminfo.node1.Writeback
-      1.78 ± 15%     +40.6%       2.50 ± 16%  sched_debug.cfs_rq:/.h_nr_running.max
-      0.22 ± 18%     +37.6%       0.30 ± 12%  sched_debug.cfs_rq:/.h_nr_running.stddev
-     13214 ± 20%     +33.5%      17634 ± 24%  sched_debug.cfs_rq:/.load.avg
-     26076 ± 34%     +80.2%      46988 ± 44%  sched_debug.cfs_rq:/.load.stddev
-     43.62 ± 15%    +108.3%      90.85        sched_debug.cfs_rq:/.load_avg.avg
-    795.11 ± 54%    +290.5%       3105 ± 11%  sched_debug.cfs_rq:/.load_avg.max
-     96.94 ± 45%    +274.5%     363.08 ±  5%  sched_debug.cfs_rq:/.load_avg.stddev
-    158589 ± 11%     +29.0%     204521 ± 10%  sched_debug.cfs_rq:/.min_vruntime.stddev
-      6.49 ± 34%     +70.0%      11.03 ± 26%  sched_debug.cfs_rq:/.removed.load_avg.avg
-     31.65 ± 17%     +30.0%      41.14 ± 12%  sched_debug.cfs_rq:/.removed.load_avg.stddev
-   -542289          +141.7%   -1310830        sched_debug.cfs_rq:/.spread0.min
-    158707 ± 10%     +28.9%     204583 ± 10%  sched_debug.cfs_rq:/.spread0.stddev
-    633.27 ±  6%     +14.3%     723.64        sched_debug.cfs_rq:/.util_est_enqueued.avg
-      1236 ±  5%     +26.0%       1557 ±  4%  sched_debug.cfs_rq:/.util_est_enqueued.max
-    302.98 ±  3%     -12.5%     265.17 ±  2%  sched_debug.cfs_rq:/.util_est_enqueued.stddev
-      1.78 ± 15%     +37.5%       2.44 ± 14%  sched_debug.cpu.nr_running.max
-      0.22 ± 18%     +36.1%       0.30 ± 11%  sched_debug.cpu.nr_running.stddev
-     55105 ±  4%     -39.2%      33485        sched_debug.cpu.nr_switches.avg
-    100770 ±  3%     +21.7%     122658 ± 15%  sched_debug.cpu.nr_switches.max
-     30707 ±  7%     -36.0%      19649 ±  6%  sched_debug.cpu.nr_switches.min
-      8419 ± 11%     +20.0%      10103 ±  6%  numa-vmstat.node0.nr_active_anon
-    644681 ±  6%     +49.6%     964234 ±  9%  numa-vmstat.node0.nr_active_file
-   1616938 ±  5%     +64.3%    2656937 ±  7%  numa-vmstat.node0.nr_dirtied
-     21669 ±  3%    +209.4%      67038 ±  7%  numa-vmstat.node0.nr_dirty
-    977857 ±  9%     +47.4%    1441023 ± 11%  numa-vmstat.node0.nr_file_pages
-    214197 ±  8%     +97.2%     422341 ± 21%  numa-vmstat.node0.nr_inactive_file
-    118842 ± 31%     -54.4%      54205 ± 46%  numa-vmstat.node0.nr_shmem
-     72990 ± 13%     +37.6%     100432 ± 12%  numa-vmstat.node0.nr_slab_reclaimable
-     64352 ±  4%      -5.3%      60967 ±  5%  numa-vmstat.node0.nr_slab_unreclaimable
-     37773 ± 15%     -99.6%     154.33 ± 10%  numa-vmstat.node0.nr_writeback
-   1522969 ±  6%     +69.8%    2586213 ±  8%  numa-vmstat.node0.nr_written
-      8419 ± 11%     +20.0%      10103 ±  6%  numa-vmstat.node0.nr_zone_active_anon
-    644681 ±  6%     +49.6%     964234 ±  9%  numa-vmstat.node0.nr_zone_active_file
-    214197 ±  8%     +97.2%     422342 ± 21%  numa-vmstat.node0.nr_zone_inactive_file
-   5195575           +19.1%    6186515 ±  6%  numa-vmstat.node0.numa_hit
-   5186955           +19.1%    6178120 ±  6%  numa-vmstat.node0.numa_local
-   1633011 ±  7%     +29.4%    2112635 ±  9%  numa-vmstat.node1.nr_dirtied
-     19294 ±  7%    +165.7%      51259 ± 10%  numa-vmstat.node1.nr_dirty
-     93631 ± 41%     +71.2%     160266 ± 15%  numa-vmstat.node1.nr_shmem
-     66848 ±  4%     -16.4%      55863 ±  6%  numa-vmstat.node1.nr_slab_unreclaimable
-     37754 ± 12%     -99.6%     143.67 ±  5%  numa-vmstat.node1.nr_writeback
-   1537368 ±  8%     +32.9%    2043139 ± 10%  numa-vmstat.node1.nr_written
-     37.03            -0.7       36.30        perf-profile.calltrace.cycles-pp.__x64_sys_close.do_syscall_64.entry_SYSCALL_64_after_hwframe
-     36.83            -0.7       36.10        perf-profile.calltrace.cycles-pp.close_fd.__x64_sys_close.do_syscall_64.entry_SYSCALL_64_after_hwframe
-     36.67            -0.7       35.94        perf-profile.calltrace.cycles-pp._raw_spin_lock.close_fd.__x64_sys_close.do_syscall_64.entry_SYSCALL_64_after_hwframe
-     36.50            -0.7       35.78        perf-profile.calltrace.cycles-pp.native_queued_spin_lock_slowpath._raw_spin_lock.close_fd.__x64_sys_close.do_syscall_64
-      5.89            +0.9        6.80        perf-profile.calltrace.cycles-pp.native_queued_spin_lock_slowpath._raw_spin_lock.put_unused_fd.do_sys_openat2.__x64_sys_openat
-      5.91            +0.9        6.83        perf-profile.calltrace.cycles-pp._raw_spin_lock.put_unused_fd.do_sys_openat2.__x64_sys_openat.do_syscall_64
-      5.93            +0.9        6.86        perf-profile.calltrace.cycles-pp.put_unused_fd.do_sys_openat2.__x64_sys_openat.do_syscall_64.entry_SYSCALL_64_after_hwframe
-     37.03            -0.7       36.30        perf-profile.children.cycles-pp.__x64_sys_close
-     36.83            -0.7       36.10        perf-profile.children.cycles-pp.close_fd
-      0.06            -0.0        0.05        perf-profile.children.cycles-pp.dput
-      0.09            +0.0        0.10        perf-profile.children.cycles-pp.task_tick_fair
-      0.07 ±  6%      +0.0        0.10 ±  4%  perf-profile.children.cycles-pp.worker_thread
-      0.07 ±  7%      +0.0        0.10 ±  9%  perf-profile.children.cycles-pp.process_one_work
-      0.02 ±141%      +0.0        0.06 ±  7%  perf-profile.children.cycles-pp.do_writepages
-      0.02 ±141%      +0.0        0.06 ±  7%  perf-profile.children.cycles-pp.extent_writepages
-      0.02 ±141%      +0.0        0.06 ±  7%  perf-profile.children.cycles-pp.filemap_fdatawrite_wbc
-      0.00            +0.1        0.05        perf-profile.children.cycles-pp.extent_write_cache_pages
-      0.00            +0.1        0.05 ±  8%  perf-profile.children.cycles-pp.flush_space
-      0.00            +0.1        0.05 ±  8%  perf-profile.children.cycles-pp.shrink_delalloc
-      0.00            +0.1        0.05 ±  8%  perf-profile.children.cycles-pp.btrfs_start_delalloc_roots
-      0.00            +0.1        0.05 ±  8%  perf-profile.children.cycles-pp.start_delalloc_inodes
-      5.93            +0.9        6.86        perf-profile.children.cycles-pp.put_unused_fd
-     36348 ±  2%      +5.4%      38317 ±  3%  proc-vmstat.nr_active_anon
-   1318258 ±  2%     +33.5%    1759403        proc-vmstat.nr_active_file
-   3249952           +46.8%    4769572        proc-vmstat.nr_dirtied
-     40877 ±  4%    +189.3%     118238        proc-vmstat.nr_dirty
-   2149786           +25.2%    2692498        proc-vmstat.nr_file_pages
-    618782           +16.1%     718140        proc-vmstat.nr_inactive_file
-    160167           +18.2%     189354        proc-vmstat.nr_slab_reclaimable
-    131446           -11.0%     116961        proc-vmstat.nr_slab_unreclaimable
-     75554 ±  3%     -99.6%     280.33 ±  6%  proc-vmstat.nr_writeback
-   3061318           +51.2%    4629352        proc-vmstat.nr_written
-     36348 ±  2%      +5.4%      38317 ±  3%  proc-vmstat.nr_zone_active_anon
-   1318258 ±  2%     +33.5%    1759403        proc-vmstat.nr_zone_active_file
-    618782           +16.1%     718140        proc-vmstat.nr_zone_inactive_file
-  10575074           +13.1%   11963617 ±  2%  proc-vmstat.numa_hit
-  10549465           +13.2%   11938366 ±  2%  proc-vmstat.numa_local
-   2512530           +40.7%    3534649        proc-vmstat.pgactivate
-  17387867 ±  2%      +8.1%   18803514 ±  3%  proc-vmstat.pgalloc_normal
-   1537293            +1.9%    1566929        proc-vmstat.pgfault
-  16757362 ±  2%      +9.2%   18304445 ±  3%  proc-vmstat.pgfree
-  13188777           +52.6%   20132590        proc-vmstat.pgpgout
-    219865            +2.7%     225895        proc-vmstat.pgreuse
-   2658304            +3.0%    2739200        proc-vmstat.unevictable_pgs_scanned
-     19.12 ±  2%      +5.5%      20.17 ±  3%  perf-stat.i.MPKI
- 5.543e+09            -3.3%  5.361e+09        perf-stat.i.branch-instructions
-      0.81 ±  3%      +0.1        0.92 ±  3%  perf-stat.i.branch-miss-rate%
-  24176389            -4.3%   23135864 ±  3%  perf-stat.i.branch-misses
-     70.86            -1.1       69.73        perf-stat.i.cache-miss-rate%
-     25811 ±  2%     -29.9%      18087        perf-stat.i.context-switches
-      9.12            -1.4%       9.00        perf-stat.i.cpi
- 2.323e+11            -2.8%  2.259e+11        perf-stat.i.cpu-cycles
-      1433 ±  3%     -17.1%       1188        perf-stat.i.cpu-migrations
- 6.187e+09            -3.6%  5.964e+09        perf-stat.i.dTLB-loads
- 1.476e+09            -4.6%  1.408e+09 ±  3%  perf-stat.i.dTLB-stores
-    877460           -15.3%     743385 ±  2%  perf-stat.i.iTLB-loads
- 2.417e+10            -3.5%  2.332e+10        perf-stat.i.instructions
-      2.42            -2.8%       2.35        perf-stat.i.metric.GHz
-    141.66            -3.5%     136.65        perf-stat.i.metric.M/sec
-     66.08            +1.3       67.40        perf-stat.i.node-load-miss-rate%
-     77.10            -1.0       76.07        perf-stat.i.node-store-miss-rate%
-  12884688            -3.0%   12499895 ±  3%  perf-stat.i.node-store-misses
-     66.22            +1.3       67.53        perf-stat.overall.node-load-miss-rate%
- 5.529e+09            -3.2%  5.349e+09        perf-stat.ps.branch-instructions
-  24092830            -4.2%   23069317 ±  3%  perf-stat.ps.branch-misses
-     25689 ±  2%     -29.8%      18042        perf-stat.ps.context-switches
- 2.318e+11            -2.8%  2.254e+11        perf-stat.ps.cpu-cycles
-      1428 ±  3%     -16.8%       1187        perf-stat.ps.cpu-migrations
-  6.17e+09            -3.6%   5.95e+09        perf-stat.ps.dTLB-loads
- 1.471e+09            -4.6%  1.404e+09 ±  3%  perf-stat.ps.dTLB-stores
-    873254           -15.2%     740841 ±  2%  perf-stat.ps.iTLB-loads
- 2.411e+10            -3.5%  2.326e+10        perf-stat.ps.instructions
-
-
-
-***************************************************************************************************
-lkp-icl-2sp9: 64 threads 2 sockets Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz (Ice Lake) with 256G memory
-=========================================================================================
-bs/compiler/cpufreq_governor/disk/fs/ioengine/kconfig/nr_task/rootfs/runtime/rw/tbox_group/test_size/testcase:
-  4k/gcc-12/performance/1HDD/btrfs/vsync/x86_64-rhel-8.3/100%/debian-11.1-x86_64-20220510.cgz/300s/randwrite/lkp-icl-2sp9/128G/fio-basic
-
-commit: 
-  adbe7e388e ("btrfs: use SECTOR_SHIFT to convert LBA to physical offset")
-  da02361807 ("btrfs: submit IO synchronously for fast checksum implementations")
-
-adbe7e388e4239d9 da023618076a13c35bcde1a49a8 
----------------- --------------------------- 
-         %stddev     %change         %stddev
-             \          |                \  
-     63.33 ±  6%     -18.4%      51.67 ±  2%  perf-c2c.DRAM.local
-     97.44            -1.3%      96.20        iostat.cpu.idle
-      1.63           +77.3%       2.90        iostat.cpu.iowait
-      1.64            +1.3        2.91        mpstat.cpu.all.iowait%
-      0.19 ±  3%      -0.0        0.16 ±  6%  mpstat.cpu.all.sys%
-     32312 ±  2%     -43.5%      18266        vmstat.system.cs
-     79589            -8.0%      73217        vmstat.system.in
-     32169 ±  7%     +14.8%      36928 ±  9%  turbostat.POLL
-     84.67            -4.3%      81.00 ±  3%  turbostat.PkgTmp
-    244.30            -1.7%     240.11        turbostat.PkgWatt
-    794507 ±  8%     +26.5%    1004734 ±  4%  numa-numastat.node0.local_node
-    815347 ±  8%     +26.3%    1029667 ±  3%  numa-numastat.node0.numa_hit
-    937335 ±  6%     -25.2%     701281 ±  9%  numa-numastat.node1.local_node
-    982943 ±  5%     -24.4%     742759 ±  7%  numa-numastat.node1.numa_hit
-    455575 ±  8%     -12.7%     397511 ±  9%  meminfo.Active
-     84566 ±  7%     -17.1%      70063 ±  4%  meminfo.Active(anon)
-    371008 ±  9%     -11.7%     327448 ± 10%  meminfo.Active(file)
-    498942 ±  7%     -26.4%     367188 ± 22%  meminfo.DirectMap4k
-     60180 ±  2%    +273.6%     224860        meminfo.Dirty
-   1952591           +12.8%    2203042        meminfo.Inactive
-   1575631           +15.9%    1826926        meminfo.Inactive(file)
-    521032           -43.2%     295696        meminfo.SUnreclaim
-    103817 ±  5%     -14.2%      89117 ±  3%  meminfo.Shmem
-    786652           -27.0%     574007        meminfo.Slab
-    185508           -99.5%     979.33 ± 41%  meminfo.Writeback
-     20773 ±  9%     +29.7%      26946 ± 10%  sched_debug.cfs_rq:/.load.avg
-    113277 ±  7%     +17.3%     132879 ±  5%  sched_debug.cfs_rq:/.load.stddev
-      4042 ± 11%     -17.4%       3339 ± 14%  sched_debug.cfs_rq:/.min_vruntime.stddev
-      4042 ± 11%     -17.4%       3338 ± 14%  sched_debug.cfs_rq:/.spread0.stddev
-      9.35 ± 16%     -34.4%       6.13 ± 13%  sched_debug.cfs_rq:/.util_est_enqueued.avg
-     36.47 ±  8%     -20.5%      29.00 ± 10%  sched_debug.cfs_rq:/.util_est_enqueued.stddev
-    244197 ±  9%     -26.8%     178856 ±  3%  sched_debug.cpu.avg_idle.stddev
-      1.31 ±  2%     -14.1%       1.13 ±  3%  sched_debug.cpu.clock.stddev
-     80476 ±  6%     -36.3%      51260        sched_debug.cpu.nr_switches.avg
-    360342 ±  4%     -28.3%     258504 ±  4%  sched_debug.cpu.nr_switches.max
-      8427 ± 19%     -66.4%       2832 ± 51%  sched_debug.cpu.nr_switches.min
-     78906 ±  2%     -30.6%      54780 ±  5%  sched_debug.cpu.nr_switches.stddev
-     21141 ±  7%     -17.1%      17516 ±  4%  proc-vmstat.nr_active_anon
-     92769 ±  9%     -11.7%      81880 ± 10%  proc-vmstat.nr_active_file
-    967066 ±  3%      +8.5%    1049172 ±  2%  proc-vmstat.nr_dirtied
-     15057 ±  2%    +273.2%      56196        proc-vmstat.nr_dirty
-   1209189            +4.0%    1257420        proc-vmstat.nr_file_pages
-    393949           +15.9%     456775        proc-vmstat.nr_inactive_file
-     15451            -1.2%      15268        proc-vmstat.nr_kernel_stack
-     25954 ±  5%     -14.2%      22274 ±  3%  proc-vmstat.nr_shmem
-     66406            +4.8%      69577        proc-vmstat.nr_slab_reclaimable
-    130252           -43.2%      73923        proc-vmstat.nr_slab_unreclaimable
-     46369           -99.5%     236.00 ± 43%  proc-vmstat.nr_writeback
-    887970 ±  3%     +11.0%     985284        proc-vmstat.nr_written
-     21141 ±  7%     -17.1%      17516 ±  4%  proc-vmstat.nr_zone_active_anon
-     92769 ±  9%     -11.7%      81880 ± 10%  proc-vmstat.nr_zone_active_file
-    393949           +15.9%     456775        proc-vmstat.nr_zone_inactive_file
-     61430            -8.1%      56428        proc-vmstat.nr_zone_write_pending
-    210846 ±  5%     -47.8%     110045        proc-vmstat.pgactivate
-   2521653           -22.8%    1947721        proc-vmstat.pgalloc_normal
-    749177            -1.3%     739575        proc-vmstat.pgfault
-   1336337           -45.6%     726476        proc-vmstat.pgfree
-      0.32            -0.3        0.02 ± 10%  fio.latency_1000us%
-      2.44 ±  3%      -2.1        0.35 ± 34%  fio.latency_100ms%
-      8.89 ±  2%      -1.9        6.95 ±  7%  fio.latency_10ms%
-      0.08 ±  7%      -0.0        0.05 ± 28%  fio.latency_2000ms%
-      5.82 ± 15%     +28.5       34.31 ±  2%  fio.latency_20ms%
-     36.35           -31.1        5.29 ± 13%  fio.latency_250us%
-      1.27            -1.2        0.08 ± 14%  fio.latency_2ms%
-      4.79 ±  2%     +13.4       18.21 ± 11%  fio.latency_4ms%
-     21.97 ±  3%      -3.2       18.80 ±  5%  fio.latency_50ms%
-      1.27 ±  6%      -0.8        0.43 ± 79%  fio.latency_50us%
-      0.95 ± 46%      -0.8        0.10 ± 48%  fio.latency_750ms%
-      0.34 ±  3%      -0.3        0.02 ± 38%  fio.latency_750us%
-   5637418 ±  2%     +16.1%    6542962        fio.time.file_system_outputs
-    689791 ±  2%     +16.5%     803277        fio.time.voluntary_context_switches
-    704677 ±  2%     +16.1%     817870        fio.workload
-      9.14 ±  2%     +16.1%      10.62        fio.write_bw_MBps
-  40632320           -28.3%   29141674 ±  4%  fio.write_clat_90%_us
-  63700992           -39.2%   38709930 ±  4%  fio.write_clat_95%_us
- 4.858e+08 ±  8%     -26.8%  3.558e+08 ±  5%  fio.write_clat_99%_us
-  27355619 ±  2%     -13.9%   23541448        fio.write_clat_mean_us
- 1.008e+08 ±  4%     -23.8%   76833552 ±  2%  fio.write_clat_stddev
-      2347 ±  2%     +16.1%       2724        fio.write_iops
-      2639 ± 16%  +11169.8%     297484 ±  4%  numa-meminfo.node0.Active
-    699.33 ±  7%  +42224.0%     295986 ±  4%  numa-meminfo.node0.Active(file)
-     13.00 ± 59%  +1.3e+06%     164403 ± 19%  numa-meminfo.node0.Dirty
-   2630285 ± 55%     +59.0%    4181808 ±  3%  numa-meminfo.node0.FilePages
-    911311 ± 19%     +59.8%    1456023 ± 12%  numa-meminfo.node0.Inactive
-    729983 ± 26%     +68.0%    1226151 ± 11%  numa-meminfo.node0.Inactive(file)
-    125652 ± 37%     +50.1%     188650 ± 12%  numa-meminfo.node0.KReclaimable
-   3391467 ± 43%     +51.5%    5138399 ±  3%  numa-meminfo.node0.MemUsed
-    125652 ± 37%     +50.1%     188650 ± 12%  numa-meminfo.node0.SReclaimable
-     97014 ±  8%    +106.6%     200446 ± 11%  numa-meminfo.node0.SUnreclaim
-    222667 ± 24%     +74.7%     389096 ± 11%  numa-meminfo.node0.Slab
-     92814 ± 11%     -98.9%     977.67 ± 46%  numa-meminfo.node0.Writeback
-    452549 ±  8%     -77.8%     100325 ± 48%  numa-meminfo.node1.Active
-     82575 ±  7%     -17.0%      68569 ±  4%  numa-meminfo.node1.Active(anon)
-    369973 ±  9%     -91.4%      31756 ±141%  numa-meminfo.node1.Active(file)
-   2205248 ± 63%     -61.5%     848514 ± 22%  numa-meminfo.node1.FilePages
-   1040774 ± 15%     -28.2%     747601 ± 22%  numa-meminfo.node1.Inactive
-    845020 ± 21%     -28.8%     601391 ± 22%  numa-meminfo.node1.Inactive(file)
-   3370578 ± 42%     -52.8%    1592444 ± 13%  numa-meminfo.node1.MemUsed
-    423914 ±  2%     -77.5%      95267 ± 25%  numa-meminfo.node1.SUnreclaim
-     89367 ±  6%     -16.3%      74806 ±  6%  numa-meminfo.node1.Shmem
-    563831 ±  9%     -67.2%     184942 ± 24%  numa-meminfo.node1.Slab
-     92656 ± 11%    -100.0%      44.00 ±112%  numa-meminfo.node1.Writeback
-    174.67 ±  7%  +42276.9%      74018 ±  4%  numa-vmstat.node0.nr_active_file
-    364531 ± 14%    +107.2%     755264 ±  9%  numa-vmstat.node0.nr_dirtied
-      3.33 ± 50%  +1.2e+06%      41117 ± 19%  numa-vmstat.node0.nr_dirty
-    657609 ± 55%     +59.0%    1045523 ±  3%  numa-vmstat.node0.nr_file_pages
-    182534 ± 26%     +68.0%     306587 ± 11%  numa-vmstat.node0.nr_inactive_file
-     31414 ± 37%     +50.1%      47164 ± 12%  numa-vmstat.node0.nr_slab_reclaimable
-     24253 ±  8%    +106.6%      50114 ± 11%  numa-vmstat.node0.nr_slab_unreclaimable
-     23201 ± 11%     -98.9%     244.00 ± 44%  numa-vmstat.node0.nr_writeback
-    338969 ± 15%    +107.9%     704823 ±  9%  numa-vmstat.node0.nr_written
-    174.67 ±  7%  +42276.9%      74018 ±  4%  numa-vmstat.node0.nr_zone_active_file
-    182534 ± 26%     +68.0%     306587 ± 11%  numa-vmstat.node0.nr_zone_inactive_file
-     22652 ± 11%     +82.6%      41358 ± 19%  numa-vmstat.node0.nr_zone_write_pending
-    815589 ±  8%     +26.3%    1029919 ±  3%  numa-vmstat.node0.numa_hit
-    794749 ±  8%     +26.5%    1004986 ±  4%  numa-vmstat.node0.numa_local
-     20643 ±  7%     -17.0%      17142 ±  4%  numa-vmstat.node1.nr_active_anon
-     92517 ±  9%     -91.4%       7940 ±141%  numa-vmstat.node1.nr_active_file
-    602536 ±  6%     -51.1%     294710 ± 32%  numa-vmstat.node1.nr_dirtied
-    551364 ± 63%     -61.5%     212153 ± 22%  numa-vmstat.node1.nr_file_pages
-    211284 ± 21%     -28.8%     150370 ± 22%  numa-vmstat.node1.nr_inactive_file
-     22342 ±  6%     -16.3%      18702 ±  6%  numa-vmstat.node1.nr_shmem
-    105980 ±  2%     -77.5%      23815 ± 25%  numa-vmstat.node1.nr_slab_unreclaimable
-     23160 ± 11%     -99.9%      14.00 ±126%  numa-vmstat.node1.nr_writeback
-    548508 ±  6%     -48.7%     281257 ± 30%  numa-vmstat.node1.nr_written
-     20643 ±  7%     -17.0%      17142 ±  4%  numa-vmstat.node1.nr_zone_active_anon
-     92517 ±  9%     -91.4%       7940 ±141%  numa-vmstat.node1.nr_zone_active_file
-    211284 ± 21%     -28.8%     150370 ± 22%  numa-vmstat.node1.nr_zone_inactive_file
-     38820 ±  6%     -61.1%      15082 ± 48%  numa-vmstat.node1.nr_zone_write_pending
-    982889 ±  5%     -24.4%     743013 ±  7%  numa-vmstat.node1.numa_hit
-    937280 ±  6%     -25.2%     701535 ±  9%  numa-vmstat.node1.numa_local
-      7.66            -5.5%       7.23        perf-stat.i.MPKI
-  2.24e+08            -4.3%  2.145e+08        perf-stat.i.branch-instructions
-      1.16            -0.1        1.08        perf-stat.i.branch-miss-rate%
-   3160831            -8.0%    2909278        perf-stat.i.branch-misses
-   7948142            -9.7%    7174432        perf-stat.i.cache-references
-     32516 ±  2%     -43.5%      18359        perf-stat.i.context-switches
- 2.082e+09            -5.2%  1.973e+09        perf-stat.i.cpu-cycles
-    120.60 ± 10%    +129.4%     276.60 ±  7%  perf-stat.i.cpu-migrations
-      0.04 ±  9%      -0.0        0.03 ± 15%  perf-stat.i.dTLB-load-miss-rate%
-    110840 ± 11%     -26.1%      81886 ± 15%  perf-stat.i.dTLB-load-misses
- 3.124e+08            -4.4%  2.987e+08        perf-stat.i.dTLB-loads
-     16556 ±  2%      -6.3%      15514 ±  2%  perf-stat.i.dTLB-store-misses
- 1.537e+08            -5.8%  1.449e+08        perf-stat.i.dTLB-stores
- 1.172e+09            -4.3%  1.121e+09        perf-stat.i.instructions
-      0.03            -5.3%       0.03        perf-stat.i.metric.GHz
-    136.31           -10.0%     122.69 ±  2%  perf-stat.i.metric.K/sec
-     10.78            -4.7%      10.28        perf-stat.i.metric.M/sec
-      2107            -1.4%       2078        perf-stat.i.minor-faults
-    253530 ±  4%     -41.9%     147239 ± 10%  perf-stat.i.node-loads
-      2107            -1.4%       2078        perf-stat.i.page-faults
-      6.78            -5.6%       6.40        perf-stat.overall.MPKI
-      1.41            -0.1        1.36        perf-stat.overall.branch-miss-rate%
-      0.04 ±  9%      -0.0        0.03 ± 15%  perf-stat.overall.dTLB-load-miss-rate%
-     49.52 ±  3%     +11.5       60.98 ± 15%  perf-stat.overall.node-load-miss-rate%
-    499295           -17.6%     411235        perf-stat.overall.path-length
- 2.233e+08            -4.3%  2.137e+08        perf-stat.ps.branch-instructions
-   3150762            -8.0%    2899286        perf-stat.ps.branch-misses
-   7922504            -9.7%    7150463        perf-stat.ps.cache-references
-     32408 ±  2%     -43.5%      18297        perf-stat.ps.context-switches
- 2.075e+09            -5.2%  1.967e+09        perf-stat.ps.cpu-cycles
-    120.22 ± 10%    +129.3%     275.65 ±  7%  perf-stat.ps.cpu-migrations
-    110474 ± 11%     -26.1%      81612 ± 15%  perf-stat.ps.dTLB-load-misses
- 3.114e+08            -4.4%  2.977e+08        perf-stat.ps.dTLB-loads
-     16501 ±  2%      -6.3%      15462 ±  2%  perf-stat.ps.dTLB-store-misses
- 1.532e+08            -5.8%  1.444e+08        perf-stat.ps.dTLB-stores
- 1.168e+09            -4.4%  1.117e+09        perf-stat.ps.instructions
-      2100            -1.4%       2071        perf-stat.ps.minor-faults
-    252716 ±  4%     -41.9%     146739 ± 10%  perf-stat.ps.node-loads
-      2100            -1.4%       2071        perf-stat.ps.page-faults
- 3.517e+11            -4.4%  3.363e+11        perf-stat.total.instructions
-      0.00          -100.0%       0.00        perf-sched.sch_delay.avg.ms.btrfs_start_ordered_extent.btrfs_run_ordered_extent_work.btrfs_work_helper.process_one_work
-      0.00          +166.7%       0.00 ± 17%  perf-sched.sch_delay.avg.ms.schedule_preempt_disabled.rwsem_down_read_slowpath.down_read.__btrfs_tree_read_lock
-      0.00          -100.0%       0.00        perf-sched.sch_delay.avg.ms.schedule_timeout.__wait_for_common.btrfs_wait_ordered_extents.btrfs_wait_ordered_roots
-      0.01 ±  6%    -100.0%       0.00        perf-sched.sch_delay.max.ms.__cond_resched.submit_bio_noacct.run_ordered_work.process_one_work.worker_thread
-      0.02 ±  9%    -100.0%       0.00        perf-sched.sch_delay.max.ms.btrfs_start_ordered_extent.btrfs_run_ordered_extent_work.btrfs_work_helper.process_one_work
-      0.00 ± 70%    +633.3%       0.01 ±  6%  perf-sched.sch_delay.max.ms.io_schedule.rq_qos_wait.wbt_wait.__rq_qos_throttle
-      0.04 ± 36%     -61.0%       0.01 ± 17%  perf-sched.sch_delay.max.ms.pipe_read.vfs_read.ksys_read.do_syscall_64
-      0.01 ±  7%     -30.0%       0.00 ± 10%  perf-sched.sch_delay.max.ms.schedule_hrtimeout_range_clock.ep_poll.do_epoll_wait.__x64_sys_epoll_wait
-      0.01 ±  3%    -100.0%       0.00        perf-sched.sch_delay.max.ms.schedule_timeout.__wait_for_common.btrfs_wait_ordered_extents.btrfs_wait_ordered_roots
-      0.02 ± 25%     -59.7%       0.01 ± 31%  perf-sched.sch_delay.max.ms.smpboot_thread_fn.kthread.ret_from_fork
-     11.44 ±  6%     +58.6%      18.13 ±  4%  perf-sched.total_wait_and_delay.average.ms
-     93732 ±  8%     -37.5%      58543 ±  5%  perf-sched.total_wait_and_delay.count.ms
-     11.43 ±  6%     +58.6%      18.13 ±  4%  perf-sched.total_wait_time.average.ms
-      0.40 ±  8%    -100.0%       0.00        perf-sched.wait_and_delay.avg.ms.__cond_resched.submit_bio_noacct.run_ordered_work.process_one_work.worker_thread
-      1.75 ±  9%    -100.0%       0.00        perf-sched.wait_and_delay.avg.ms.btrfs_start_ordered_extent.btrfs_run_ordered_extent_work.btrfs_work_helper.process_one_work
-     26.22 ±  9%     -16.5%      21.89 ±  3%  perf-sched.wait_and_delay.avg.ms.handle_reserve_ticket.__reserve_bytes.btrfs_reserve_metadata_bytes.btrfs_delalloc_reserve_metadata
-      0.03 ± 67%   +1651.2%       0.48 ± 19%  perf-sched.wait_and_delay.avg.ms.io_schedule.rq_qos_wait.wbt_wait.__rq_qos_throttle
-    369.73 ±  5%     +17.2%     433.31 ±  5%  perf-sched.wait_and_delay.avg.ms.schedule_hrtimeout_range_clock.do_poll.constprop.0.do_sys_poll
-      0.45 ±  8%    -100.0%       0.00        perf-sched.wait_and_delay.avg.ms.schedule_timeout.__wait_for_common.btrfs_wait_ordered_extents.btrfs_wait_ordered_roots
-      7.99 ±  6%     +37.2%      10.97 ±  4%  perf-sched.wait_and_delay.avg.ms.worker_thread.kthread.ret_from_fork
-     11269 ±  7%    -100.0%       0.00        perf-sched.wait_and_delay.count.__cond_resched.submit_bio_noacct.run_ordered_work.process_one_work.worker_thread
-     20048 ±  8%    -100.0%       0.00        perf-sched.wait_and_delay.count.btrfs_start_ordered_extent.btrfs_run_ordered_extent_work.btrfs_work_helper.process_one_work
-     11231 ±  8%     +27.8%      14352        perf-sched.wait_and_delay.count.handle_reserve_ticket.__reserve_bytes.btrfs_reserve_metadata_bytes.btrfs_delalloc_reserve_metadata
-    945.67 ±  8%    +358.1%       4332 ±  9%  perf-sched.wait_and_delay.count.io_schedule.rq_qos_wait.wbt_wait.__rq_qos_throttle
-     45.33 ±  5%     -14.0%      39.00 ±  5%  perf-sched.wait_and_delay.count.schedule_hrtimeout_range_clock.do_poll.constprop.0.do_sys_poll
-      9961 ±  7%    -100.0%       0.00        perf-sched.wait_and_delay.count.schedule_timeout.__wait_for_common.btrfs_wait_ordered_extents.btrfs_wait_ordered_roots
-     35060 ±  8%     -28.7%      24988 ±  2%  perf-sched.wait_and_delay.count.worker_thread.kthread.ret_from_fork
-    517.70 ± 14%    -100.0%       0.00        perf-sched.wait_and_delay.max.ms.__cond_resched.submit_bio_noacct.run_ordered_work.process_one_work.worker_thread
-    517.90 ± 14%    -100.0%       0.00        perf-sched.wait_and_delay.max.ms.btrfs_start_ordered_extent.btrfs_run_ordered_extent_work.btrfs_work_helper.process_one_work
-    553.85 ± 14%     -34.5%     363.03 ± 14%  perf-sched.wait_and_delay.max.ms.handle_reserve_ticket.__reserve_bytes.btrfs_reserve_metadata_bytes.btrfs_delalloc_reserve_metadata
-     17.40 ± 72%   +1912.3%     350.12 ± 17%  perf-sched.wait_and_delay.max.ms.io_schedule.rq_qos_wait.wbt_wait.__rq_qos_throttle
-    515.28 ± 14%    -100.0%       0.00        perf-sched.wait_and_delay.max.ms.schedule_timeout.__wait_for_common.btrfs_wait_ordered_extents.btrfs_wait_ordered_roots
-      0.40 ±  8%    -100.0%       0.00        perf-sched.wait_time.avg.ms.__cond_resched.submit_bio_noacct.run_ordered_work.process_one_work.worker_thread
-      1.75 ±  9%    -100.0%       0.00        perf-sched.wait_time.avg.ms.btrfs_start_ordered_extent.btrfs_run_ordered_extent_work.btrfs_work_helper.process_one_work
-     26.21 ±  9%     -16.5%      21.89 ±  3%  perf-sched.wait_time.avg.ms.handle_reserve_ticket.__reserve_bytes.btrfs_reserve_metadata_bytes.btrfs_delalloc_reserve_metadata
-      0.03 ± 67%   +1650.0%       0.48 ± 19%  perf-sched.wait_time.avg.ms.io_schedule.rq_qos_wait.wbt_wait.__rq_qos_throttle
-    369.72 ±  5%     +17.2%     433.31 ±  5%  perf-sched.wait_time.avg.ms.schedule_hrtimeout_range_clock.do_poll.constprop.0.do_sys_poll
-      0.03 ± 79%   +4765.9%       1.33 ±  8%  perf-sched.wait_time.avg.ms.schedule_preempt_disabled.rwsem_down_read_slowpath.down_read.__btrfs_tree_read_lock
-      0.45 ±  8%    -100.0%       0.00        perf-sched.wait_time.avg.ms.schedule_timeout.__wait_for_common.btrfs_wait_ordered_extents.btrfs_wait_ordered_roots
-      7.99 ±  6%     +37.2%      10.96 ±  4%  perf-sched.wait_time.avg.ms.worker_thread.kthread.ret_from_fork
-    517.70 ± 14%    -100.0%       0.00        perf-sched.wait_time.max.ms.__cond_resched.submit_bio_noacct.run_ordered_work.process_one_work.worker_thread
-    517.90 ± 14%    -100.0%       0.00        perf-sched.wait_time.max.ms.btrfs_start_ordered_extent.btrfs_run_ordered_extent_work.btrfs_work_helper.process_one_work
-    553.84 ± 14%     -34.5%     363.02 ± 14%  perf-sched.wait_time.max.ms.handle_reserve_ticket.__reserve_bytes.btrfs_reserve_metadata_bytes.btrfs_delalloc_reserve_metadata
-     17.40 ± 72%   +1912.4%     350.12 ± 17%  perf-sched.wait_time.max.ms.io_schedule.rq_qos_wait.wbt_wait.__rq_qos_throttle
-      4.85 ±113%   +6394.7%     315.17 ±  3%  perf-sched.wait_time.max.ms.schedule_preempt_disabled.rwsem_down_read_slowpath.down_read.__btrfs_tree_read_lock
-    515.28 ± 14%    -100.0%       0.00        perf-sched.wait_time.max.ms.schedule_timeout.__wait_for_common.btrfs_wait_ordered_extents.btrfs_wait_ordered_roots
-      9.78 ±  8%      -5.0        4.74 ±  7%  perf-profile.calltrace.cycles-pp.asm_sysvec_call_function_single.acpi_safe_halt.acpi_idle_enter.cpuidle_enter_state.cpuidle_enter
-      5.04 ± 10%      -2.6        2.47 ± 23%  perf-profile.calltrace.cycles-pp.btrfs_async_reclaim_metadata_space.process_one_work.worker_thread.kthread.ret_from_fork
-      5.03 ± 10%      -2.6        2.47 ± 23%  perf-profile.calltrace.cycles-pp.flush_space.btrfs_async_reclaim_metadata_space.process_one_work.worker_thread.kthread
-      4.52 ±  8%      -2.2        2.29 ±  5%  perf-profile.calltrace.cycles-pp.btrfs_buffered_write.btrfs_do_write_iter.do_iter_readv_writev.do_iter_write.vfs_writev
-      4.55 ±  8%      -2.2        2.33 ±  5%  perf-profile.calltrace.cycles-pp.do_iter_readv_writev.do_iter_write.vfs_writev.do_writev.do_syscall_64
-      4.60 ±  9%      -2.2        2.38 ±  6%  perf-profile.calltrace.cycles-pp.vfs_writev.do_writev.do_syscall_64.entry_SYSCALL_64_after_hwframe.writev
-      4.58 ±  9%      -2.2        2.37 ±  6%  perf-profile.calltrace.cycles-pp.do_iter_write.vfs_writev.do_writev.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      4.53 ±  9%      -2.2        2.32 ±  5%  perf-profile.calltrace.cycles-pp.btrfs_do_write_iter.do_iter_readv_writev.do_iter_write.vfs_writev.do_writev
-      4.60 ±  9%      -2.2        2.40 ±  6%  perf-profile.calltrace.cycles-pp.do_writev.do_syscall_64.entry_SYSCALL_64_after_hwframe.writev
-      4.62 ±  8%      -2.2        2.44 ±  6%  perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.writev
-      4.63 ±  8%      -2.2        2.45 ±  6%  perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.writev
-     13.22 ±  6%      -2.1       11.08 ± 11%  perf-profile.calltrace.cycles-pp.process_one_work.worker_thread.kthread.ret_from_fork
-      4.68 ±  9%      -2.1        2.55 ±  6%  perf-profile.calltrace.cycles-pp.writev
-      3.80 ±  4%      -1.4        2.45 ± 22%  perf-profile.calltrace.cycles-pp.shrink_delalloc.flush_space.btrfs_async_reclaim_metadata_space.process_one_work.worker_thread
-      3.39 ±  3%      -0.9        2.45 ± 22%  perf-profile.calltrace.cycles-pp.btrfs_start_delalloc_roots.shrink_delalloc.flush_space.btrfs_async_reclaim_metadata_space.process_one_work
-      3.39 ±  3%      -0.9        2.45 ± 22%  perf-profile.calltrace.cycles-pp.start_delalloc_inodes.btrfs_start_delalloc_roots.shrink_delalloc.flush_space.btrfs_async_reclaim_metadata_space
-      3.39 ±  3%      -0.9        2.45 ± 22%  perf-profile.calltrace.cycles-pp.do_writepages.filemap_fdatawrite_wbc.start_delalloc_inodes.btrfs_start_delalloc_roots.shrink_delalloc
-      3.39 ±  3%      -0.9        2.45 ± 22%  perf-profile.calltrace.cycles-pp.extent_writepages.do_writepages.filemap_fdatawrite_wbc.start_delalloc_inodes.btrfs_start_delalloc_roots
-      3.39 ±  3%      -0.9        2.45 ± 22%  perf-profile.calltrace.cycles-pp.filemap_fdatawrite_wbc.start_delalloc_inodes.btrfs_start_delalloc_roots.shrink_delalloc.flush_space
-      3.35 ±  3%      -0.9        2.45 ± 22%  perf-profile.calltrace.cycles-pp.extent_write_cache_pages.extent_writepages.do_writepages.filemap_fdatawrite_wbc.start_delalloc_inodes
-      3.16 ±  3%      -0.8        2.31 ± 20%  perf-profile.calltrace.cycles-pp.__extent_writepage.extent_write_cache_pages.extent_writepages.do_writepages.filemap_fdatawrite_wbc
-      1.05 ± 17%      -0.6        0.44 ± 72%  perf-profile.calltrace.cycles-pp.__sysvec_call_function_single.sysvec_call_function_single.asm_sysvec_call_function_single.acpi_safe_halt.acpi_idle_enter
-      1.36 ± 17%      -0.5        0.82 ± 19%  perf-profile.calltrace.cycles-pp.sysvec_call_function_single.asm_sysvec_call_function_single.acpi_safe_halt.acpi_idle_enter.cpuidle_enter_state
-      0.82 ± 15%      -0.4        0.40 ± 70%  perf-profile.calltrace.cycles-pp.blk_update_request.scsi_end_request.scsi_io_completion.complete_cmd_fusion.megasas_isr_fusion
-      2.71 ±  4%      -0.3        2.38 ±  9%  perf-profile.calltrace.cycles-pp.writepage_delalloc.__extent_writepage.extent_write_cache_pages.extent_writepages.do_writepages
-      2.62 ±  4%      -0.3        2.30 ± 10%  perf-profile.calltrace.cycles-pp.btrfs_run_delalloc_range.writepage_delalloc.__extent_writepage.extent_write_cache_pages.extent_writepages
-      2.61 ±  4%      -0.3        2.30 ± 10%  perf-profile.calltrace.cycles-pp.run_delalloc_nocow.btrfs_run_delalloc_range.writepage_delalloc.__extent_writepage.extent_write_cache_pages
-      2.88            -0.1        2.82        perf-profile.calltrace.cycles-pp.menu_select.cpuidle_idle_call.do_idle.cpu_startup_entry.start_secondary
-      1.70 ±  2%      +0.1        1.76 ±  2%  perf-profile.calltrace.cycles-pp.perf_mux_hrtimer_handler.__hrtimer_run_queues.hrtimer_interrupt.__sysvec_apic_timer_interrupt.sysvec_apic_timer_interrupt
-      1.36 ±  8%      +0.1        1.49 ±  2%  perf-profile.calltrace.cycles-pp.arch_scale_freq_tick.scheduler_tick.update_process_times.tick_sched_handle.tick_sched_timer
-      1.62 ± 10%      +0.3        1.92 ±  2%  perf-profile.calltrace.cycles-pp.rcu_core.__do_softirq.__irq_exit_rcu.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt
-      1.00 ± 16%      +0.4        1.44 ± 17%  perf-profile.calltrace.cycles-pp.cpuidle_idle_call.do_idle.cpu_startup_entry.rest_init.arch_call_rest_init
-      0.96 ± 16%      +0.4        1.40 ± 17%  perf-profile.calltrace.cycles-pp.cpuidle_enter.cpuidle_idle_call.do_idle.cpu_startup_entry.rest_init
-      1.01 ± 17%      +0.4        1.46 ± 16%  perf-profile.calltrace.cycles-pp.cpu_startup_entry.rest_init.arch_call_rest_init.start_kernel.x86_64_start_reservations
-      1.01 ± 17%      +0.4        1.46 ± 16%  perf-profile.calltrace.cycles-pp.x86_64_start_kernel.secondary_startup_64_no_verify
-      1.01 ± 17%      +0.4        1.46 ± 16%  perf-profile.calltrace.cycles-pp.x86_64_start_reservations.x86_64_start_kernel.secondary_startup_64_no_verify
-      1.01 ± 17%      +0.4        1.46 ± 16%  perf-profile.calltrace.cycles-pp.start_kernel.x86_64_start_reservations.x86_64_start_kernel.secondary_startup_64_no_verify
-      1.01 ± 17%      +0.4        1.46 ± 16%  perf-profile.calltrace.cycles-pp.arch_call_rest_init.start_kernel.x86_64_start_reservations.x86_64_start_kernel.secondary_startup_64_no_verify
-      1.01 ± 17%      +0.4        1.46 ± 16%  perf-profile.calltrace.cycles-pp.rest_init.arch_call_rest_init.start_kernel.x86_64_start_reservations.x86_64_start_kernel
-      1.01 ± 17%      +0.4        1.46 ± 16%  perf-profile.calltrace.cycles-pp.do_idle.cpu_startup_entry.rest_init.arch_call_rest_init.start_kernel
-      0.00            +0.7        0.68 ± 18%  perf-profile.calltrace.cycles-pp.__schedule.schedule.worker_thread.kthread.ret_from_fork
-      0.81 ±  9%      +0.7        1.51 ± 28%  perf-profile.calltrace.cycles-pp.ktime_get_update_offsets_now.hrtimer_interrupt.__sysvec_apic_timer_interrupt.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt
-      0.00            +0.7        0.70 ± 17%  perf-profile.calltrace.cycles-pp.schedule.worker_thread.kthread.ret_from_fork
-      1.08 ± 72%      +0.9        2.03 ±  6%  perf-profile.calltrace.cycles-pp.__irqentry_text_start.acpi_safe_halt.acpi_idle_enter.cpuidle_enter_state.cpuidle_enter
-      0.00            +1.1        1.13 ± 38%  perf-profile.calltrace.cycles-pp.submit_extent_page.__extent_writepage_io.__extent_writepage.extent_write_cache_pages.extent_writepages
-      0.00            +1.2        1.23 ± 37%  perf-profile.calltrace.cycles-pp.__extent_writepage_io.__extent_writepage.extent_write_cache_pages.extent_writepages.do_writepages
-      2.07 ±  9%      +1.2        3.30 ± 18%  perf-profile.calltrace.cycles-pp.transaction_kthread.kthread.ret_from_fork
-      2.07 ±  9%      +1.2        3.30 ± 18%  perf-profile.calltrace.cycles-pp.btrfs_commit_transaction.transaction_kthread.kthread.ret_from_fork
-     16.90 ±  4%      +1.3       18.23 ±  2%  perf-profile.calltrace.cycles-pp.__hrtimer_run_queues.hrtimer_interrupt.__sysvec_apic_timer_interrupt.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt
-      0.17 ±141%      +1.4        1.61 ± 39%  perf-profile.calltrace.cycles-pp.do_writepages.__writeback_single_inode.writeback_sb_inodes.__writeback_inodes_wb.wb_writeback
-      0.17 ±141%      +1.4        1.61 ± 39%  perf-profile.calltrace.cycles-pp.wb_workfn.process_one_work.worker_thread.kthread.ret_from_fork
-      0.17 ±141%      +1.4        1.61 ± 39%  perf-profile.calltrace.cycles-pp.wb_do_writeback.wb_workfn.process_one_work.worker_thread.kthread
-      0.17 ±141%      +1.4        1.61 ± 39%  perf-profile.calltrace.cycles-pp.wb_writeback.wb_do_writeback.wb_workfn.process_one_work.worker_thread
-      0.17 ±141%      +1.4        1.61 ± 39%  perf-profile.calltrace.cycles-pp.__writeback_inodes_wb.wb_writeback.wb_do_writeback.wb_workfn.process_one_work
-      0.17 ±141%      +1.4        1.61 ± 39%  perf-profile.calltrace.cycles-pp.writeback_sb_inodes.__writeback_inodes_wb.wb_writeback.wb_do_writeback.wb_workfn
-      0.17 ±141%      +1.4        1.61 ± 39%  perf-profile.calltrace.cycles-pp.__writeback_single_inode.writeback_sb_inodes.__writeback_inodes_wb.wb_writeback.wb_do_writeback
-      0.00            +1.5        1.51 ± 39%  perf-profile.calltrace.cycles-pp.__extent_writepage.extent_write_cache_pages.extent_writepages.do_writepages.__writeback_single_inode
-      0.00            +1.6        1.61 ± 39%  perf-profile.calltrace.cycles-pp.extent_writepages.do_writepages.__writeback_single_inode.writeback_sb_inodes.__writeback_inodes_wb
-      0.00            +1.6        1.61 ± 39%  perf-profile.calltrace.cycles-pp.extent_write_cache_pages.extent_writepages.do_writepages.__writeback_single_inode.writeback_sb_inodes
-     75.29            +2.1       77.42        perf-profile.calltrace.cycles-pp.start_secondary.secondary_startup_64_no_verify
-     75.28            +2.1       77.42        perf-profile.calltrace.cycles-pp.cpu_startup_entry.start_secondary.secondary_startup_64_no_verify
-     75.13            +2.1       77.27        perf-profile.calltrace.cycles-pp.do_idle.cpu_startup_entry.start_secondary.secondary_startup_64_no_verify
-     20.13 ±  4%      +2.2       22.32 ±  3%  perf-profile.calltrace.cycles-pp.__sysvec_apic_timer_interrupt.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt.acpi_safe_halt.acpi_idle_enter
-     19.47 ±  4%      +2.2       21.69 ±  3%  perf-profile.calltrace.cycles-pp.hrtimer_interrupt.__sysvec_apic_timer_interrupt.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt.acpi_safe_halt
-     74.09            +2.3       76.42        perf-profile.calltrace.cycles-pp.cpuidle_idle_call.do_idle.cpu_startup_entry.start_secondary.secondary_startup_64_no_verify
-     70.25            +2.4       72.66        perf-profile.calltrace.cycles-pp.cpuidle_enter.cpuidle_idle_call.do_idle.cpu_startup_entry.start_secondary
-     36.44 ±  2%      +2.5       38.91        perf-profile.calltrace.cycles-pp.acpi_safe_halt.acpi_idle_enter.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call
-     76.30            +2.6       78.88        perf-profile.calltrace.cycles-pp.secondary_startup_64_no_verify
-     27.02 ±  3%      +2.7       29.73        perf-profile.calltrace.cycles-pp.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt.acpi_safe_halt.acpi_idle_enter.cpuidle_enter_state
-     69.12            +2.9       72.04        perf-profile.calltrace.cycles-pp.acpi_idle_enter.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call.do_idle
-     70.77            +2.9       73.71        perf-profile.calltrace.cycles-pp.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call.do_idle.cpu_startup_entry
-     84.82 ±  2%      +7.8       92.64        perf-profile.calltrace.cycles-pp.asm_sysvec_apic_timer_interrupt.acpi_safe_halt.acpi_idle_enter.cpuidle_enter_state.cpuidle_enter
-      5.68 ±  9%      -2.8        2.91 ±  9%  perf-profile.children.cycles-pp.asm_sysvec_call_function_single
-      5.04 ± 10%      -2.6        2.47 ± 23%  perf-profile.children.cycles-pp.btrfs_async_reclaim_metadata_space
-      5.03 ± 10%      -2.6        2.47 ± 23%  perf-profile.children.cycles-pp.flush_space
-      4.55 ±  8%      -2.2        2.33 ±  5%  perf-profile.children.cycles-pp.do_iter_readv_writev
-      4.60 ±  9%      -2.2        2.38 ±  6%  perf-profile.children.cycles-pp.vfs_writev
-      4.52 ±  8%      -2.2        2.31 ±  6%  perf-profile.children.cycles-pp.btrfs_buffered_write
-      4.58 ±  9%      -2.2        2.37 ±  6%  perf-profile.children.cycles-pp.do_iter_write
-      4.53 ±  9%      -2.2        2.32 ±  5%  perf-profile.children.cycles-pp.btrfs_do_write_iter
-      4.60 ±  9%      -2.2        2.40 ±  6%  perf-profile.children.cycles-pp.do_writev
-      4.69 ±  9%      -2.1        2.55 ±  7%  perf-profile.children.cycles-pp.writev
-     13.22 ±  6%      -2.1       11.08 ± 11%  perf-profile.children.cycles-pp.process_one_work
-      3.90 ± 14%      -2.0        1.95 ± 15%  perf-profile.children.cycles-pp._raw_spin_lock
-      6.21 ±  5%      -1.9        4.29 ±  3%  perf-profile.children.cycles-pp.entry_SYSCALL_64_after_hwframe
-      6.20 ±  4%      -1.9        4.28 ±  3%  perf-profile.children.cycles-pp.do_syscall_64
-      2.32 ± 14%      -1.8        0.53 ± 14%  perf-profile.children.cycles-pp.native_queued_spin_lock_slowpath
-      1.89 ± 12%      -1.4        0.49 ±  5%  perf-profile.children.cycles-pp.btrfs_delalloc_reserve_metadata
-      1.82 ± 17%      -1.4        0.43 ± 10%  perf-profile.children.cycles-pp.__reserve_bytes
-      3.80 ±  4%      -1.4        2.45 ± 22%  perf-profile.children.cycles-pp.shrink_delalloc
-      1.76 ± 16%      -1.3        0.42 ±  9%  perf-profile.children.cycles-pp.btrfs_reserve_metadata_bytes
-      1.21 ± 36%      -1.0        0.17 ± 55%  perf-profile.children.cycles-pp.btrfs_run_delayed_refs
-      1.21 ± 36%      -1.0        0.17 ± 55%  perf-profile.children.cycles-pp.__btrfs_run_delayed_refs
-      1.32 ± 12%      -1.0        0.36 ±  8%  perf-profile.children.cycles-pp.handle_reserve_ticket
-      3.39 ±  3%      -0.9        2.45 ± 22%  perf-profile.children.cycles-pp.btrfs_start_delalloc_roots
-      3.39 ±  3%      -0.9        2.45 ± 22%  perf-profile.children.cycles-pp.start_delalloc_inodes
-      1.31 ± 16%      -0.9        0.44 ± 12%  perf-profile.children.cycles-pp.btrfs_block_rsv_release
-      2.88 ±  5%      -0.7        2.18 ± 14%  perf-profile.children.cycles-pp.btrfs_search_slot
-      1.39 ± 17%      -0.5        0.85 ± 19%  perf-profile.children.cycles-pp.sysvec_call_function_single
-      0.61 ± 31%      -0.5        0.07 ± 28%  perf-profile.children.cycles-pp.cleanup_ref_head
-      0.55 ± 31%      -0.5        0.07 ± 18%  perf-profile.children.cycles-pp.btrfs_delayed_refs_rsv_release
-      0.56 ± 43%      -0.5        0.10 ± 84%  perf-profile.children.cycles-pp.btrfs_run_delayed_refs_for_head
-      1.07 ± 17%      -0.5        0.62 ± 17%  perf-profile.children.cycles-pp.__sysvec_call_function_single
-      0.71 ± 32%      -0.4        0.31 ± 24%  perf-profile.children.cycles-pp.btrfs_bin_search
-      0.77 ± 11%      -0.4        0.37 ± 12%  perf-profile.children.cycles-pp.btrfs_inode_rsv_release
-      2.71 ±  4%      -0.3        2.39 ±  9%  perf-profile.children.cycles-pp.writepage_delalloc
-      2.62 ±  4%      -0.3        2.31 ± 10%  perf-profile.children.cycles-pp.btrfs_run_delalloc_range
-      2.61 ±  4%      -0.3        2.31 ± 10%  perf-profile.children.cycles-pp.run_delalloc_nocow
-      0.98 ± 15%      -0.3        0.69 ±  9%  perf-profile.children.cycles-pp.__lookup_extent_mapping
-      0.69 ±  9%      -0.3        0.39 ± 19%  perf-profile.children.cycles-pp.btrfs_cow_block
-      0.69 ±  9%      -0.3        0.39 ± 19%  perf-profile.children.cycles-pp.__btrfs_cow_block
-      0.73 ± 19%      -0.3        0.45 ± 21%  perf-profile.children.cycles-pp.sched_ttwu_pending
-      2.04 ±  3%      -0.3        1.76 ± 10%  perf-profile.children.cycles-pp.ktime_get
-      0.84 ± 15%      -0.3        0.57 ± 15%  perf-profile.children.cycles-pp.blk_update_request
-      0.58 ± 24%      -0.3        0.32 ± 32%  perf-profile.children.cycles-pp.__push_leaf_right
-      1.56 ±  5%      -0.2        1.32 ±  8%  perf-profile.children.cycles-pp.btrfs_insert_empty_items
-      0.39 ± 33%      -0.2        0.17 ± 12%  perf-profile.children.cycles-pp.unpin_extent_cache
-      0.35 ± 13%      -0.2        0.15 ±  6%  perf-profile.children.cycles-pp.btrfs_alloc_ordered_extent
-      0.35 ± 13%      -0.2        0.15 ±  5%  perf-profile.children.cycles-pp.btrfs_add_ordered_extent
-      0.67 ± 23%      -0.2        0.46 ± 14%  perf-profile.children.cycles-pp.end_bio_extent_writepage
-      0.66 ± 11%      -0.2        0.47 ±  5%  perf-profile.children.cycles-pp.__filemap_get_folio
-      0.66 ± 11%      -0.2        0.47        perf-profile.children.cycles-pp.pagecache_get_page
-      0.28 ± 30%      -0.2        0.11 ± 29%  perf-profile.children.cycles-pp.copy_page
-      0.27 ± 29%      -0.2        0.11 ± 29%  perf-profile.children.cycles-pp.copy_extent_buffer_full
-      0.30 ± 18%      -0.1        0.15 ± 10%  perf-profile.children.cycles-pp.__flush_smp_call_function_queue
-      0.21 ±  4%      -0.1        0.07 ± 81%  perf-profile.children.cycles-pp.resched_curr
-      0.53 ±  4%      -0.1        0.39 ±  6%  perf-profile.children.cycles-pp.prepare_pages
-      0.39 ±  7%      -0.1        0.26 ±  6%  perf-profile.children.cycles-pp.filemap_add_folio
-      0.23 ±  5%      -0.1        0.11 ± 43%  perf-profile.children.cycles-pp.check_preempt_curr
-      0.44 ±  7%      -0.1        0.31 ±  8%  perf-profile.children.cycles-pp.ct_kernel_exit_state
-      0.32 ± 18%      -0.1        0.19 ± 34%  perf-profile.children.cycles-pp.autoremove_wake_function
-      0.44 ± 12%      -0.1        0.32 ± 17%  perf-profile.children.cycles-pp.__wake_up_common_lock
-      0.32 ± 10%      -0.1        0.20 ± 16%  perf-profile.children.cycles-pp.__filemap_add_folio
-      0.20 ±  6%      -0.1        0.08 ± 17%  perf-profile.children.cycles-pp.__slab_free
-      0.33 ± 17%      -0.1        0.21 ± 23%  perf-profile.children.cycles-pp.xas_load
-      0.47 ±  8%      -0.1        0.36 ± 13%  perf-profile.children.cycles-pp.btrfs_try_granting_tickets
-      0.36 ± 14%      -0.1        0.25 ± 33%  perf-profile.children.cycles-pp.__wake_up_common
-      0.33 ± 13%      -0.1        0.23 ±  9%  perf-profile.children.cycles-pp.x86_pmu_disable
-      0.26 ± 14%      -0.1        0.16 ± 13%  perf-profile.children.cycles-pp.folio_end_writeback
-      0.20 ± 16%      -0.1        0.10 ± 32%  perf-profile.children.cycles-pp.__switch_to
-      0.26 ± 19%      -0.1        0.17 ± 40%  perf-profile.children.cycles-pp.irqentry_exit
-      0.15 ± 22%      -0.1        0.06 ± 73%  perf-profile.children.cycles-pp.__mod_lruvec_page_state
-      0.27 ± 20%      -0.1        0.18 ± 21%  perf-profile.children.cycles-pp.btrfs_alloc_tree_block
-      0.31 ± 15%      -0.1        0.22 ±  9%  perf-profile.children.cycles-pp.queue_work_on
-      0.24 ± 17%      -0.1        0.15 ± 13%  perf-profile.children.cycles-pp.__folio_end_writeback
-      0.38 ± 12%      -0.1        0.29 ±  4%  perf-profile.children.cycles-pp.local_clock
-      2.96            -0.1        2.88        perf-profile.children.cycles-pp.menu_select
-      0.20 ± 37%      -0.1        0.12 ± 18%  perf-profile.children.cycles-pp.alloc_extent_buffer
-      0.11 ±  4%      -0.1        0.04 ± 73%  perf-profile.children.cycles-pp.btrfs_can_overcommit
-      0.15 ± 18%      -0.1        0.08 ± 12%  perf-profile.children.cycles-pp.__list_del_entry_valid
-      0.25 ± 15%      -0.1        0.19 ± 10%  perf-profile.children.cycles-pp.call_cpuidle
-      0.17 ± 10%      -0.1        0.11 ± 23%  perf-profile.children.cycles-pp.prepare_task_switch
-      0.16 ± 25%      -0.1        0.09 ± 20%  perf-profile.children.cycles-pp.xas_find_marked
-      0.19 ± 24%      -0.1        0.14 ±  3%  perf-profile.children.cycles-pp.filemap_get_folios_tag
-      0.14 ±  6%      -0.1        0.09 ± 21%  perf-profile.children.cycles-pp.llist_reverse_order
-      0.17 ± 14%      -0.1        0.11 ±  7%  perf-profile.children.cycles-pp.xas_descend
-      0.14 ± 27%      -0.1        0.08 ±  5%  perf-profile.children.cycles-pp.__mem_cgroup_charge
-      0.09 ± 18%      -0.1        0.04 ± 73%  perf-profile.children.cycles-pp.__x2apic_send_IPI_dest
-      0.10 ± 21%      -0.1        0.05 ± 72%  perf-profile.children.cycles-pp.finish_task_switch
-      0.22 ± 10%      -0.1        0.17 ±  7%  perf-profile.children.cycles-pp.rb_erase
-      0.10 ±  4%      -0.0        0.05 ± 71%  perf-profile.children.cycles-pp.call_timer_fn
-      0.12 ± 41%      -0.0        0.07 ±  6%  perf-profile.children.cycles-pp.charge_memcg
-      0.30 ± 11%      -0.0        0.25 ±  6%  perf-profile.children.cycles-pp.balance_dirty_pages
-      0.26 ±  8%      -0.0        0.22 ±  7%  perf-profile.children.cycles-pp.lock_and_cleanup_extent_if_need
-      0.29 ±  8%      -0.0        0.25 ±  6%  perf-profile.children.cycles-pp.mem_cgroup_wb_stats
-      0.29 ±  8%      -0.0        0.25 ±  6%  perf-profile.children.cycles-pp.do_flush_stats
-      0.29 ±  8%      -0.0        0.25 ±  6%  perf-profile.children.cycles-pp.cgroup_rstat_flush_atomic
-      0.08 ± 20%      -0.0        0.05 ±  8%  perf-profile.children.cycles-pp.nohz_balancer_kick
-      0.15 ±  5%      -0.0        0.13 ±  3%  perf-profile.children.cycles-pp.__x64_sys_exit_group
-      0.15 ±  5%      -0.0        0.13 ±  3%  perf-profile.children.cycles-pp.do_group_exit
-      0.15 ±  5%      -0.0        0.13 ±  3%  perf-profile.children.cycles-pp.do_exit
-      0.07 ± 23%      +0.0        0.10 ±  4%  perf-profile.children.cycles-pp.free_extent_buffer
-      0.05 ± 70%      +0.0        0.08 ±  5%  perf-profile.children.cycles-pp.copy_process
-      0.09 ± 33%      +0.0        0.13 ± 16%  perf-profile.children.cycles-pp.percpu_counter_add_batch
-      0.02 ±141%      +0.0        0.06 ± 14%  perf-profile.children.cycles-pp.copyin
-      0.10 ± 21%      +0.0        0.15 ± 17%  perf-profile.children.cycles-pp.__x64_sys_openat
-      0.10 ± 21%      +0.0        0.15 ± 17%  perf-profile.children.cycles-pp.do_sys_openat2
-      0.02 ±141%      +0.0        0.06 ± 19%  perf-profile.children.cycles-pp.join_transaction
-      0.04 ± 76%      +0.0        0.09 ±  9%  perf-profile.children.cycles-pp.__libc_fork
-      0.02 ±141%      +0.0        0.06 ±  7%  perf-profile.children.cycles-pp.copy_extent_buffer
-      0.21 ±  5%      +0.1        0.27 ±  4%  perf-profile.children.cycles-pp.timerqueue_del
-      0.02 ±141%      +0.1        0.07 ± 17%  perf-profile.children.cycles-pp.perf_event_mmap_event
-      0.31 ±  4%      +0.1        0.36        perf-profile.children.cycles-pp.__clear_extent_bit
-      0.22 ± 11%      +0.1        0.28 ± 10%  perf-profile.children.cycles-pp.hrtimer_update_next_event
-      0.02 ±141%      +0.1        0.08 ± 12%  perf-profile.children.cycles-pp.perf_event_mmap
-      0.11 ±  4%      +0.1        0.17 ± 14%  perf-profile.children.cycles-pp._raw_spin_unlock_irqrestore
-      0.04 ± 71%      +0.1        0.10        perf-profile.children.cycles-pp._raw_read_lock
-      0.20 ± 10%      +0.1        0.26 ± 15%  perf-profile.children.cycles-pp.do_mmap
-      0.00            +0.1        0.06 ± 13%  perf-profile.children.cycles-pp.entry_SYSRETQ_unsafe_stack
-      0.05 ± 70%      +0.1        0.11 ±  4%  perf-profile.children.cycles-pp.kernel_clone
-      0.20 ± 12%      +0.1        0.26 ± 12%  perf-profile.children.cycles-pp.vm_mmap_pgoff
-      0.02 ±141%      +0.1        0.08 ± 24%  perf-profile.children.cycles-pp.blk_mq_free_request
-      0.00            +0.1        0.07 ± 18%  perf-profile.children.cycles-pp.__do_sys_clone
-      0.16 ± 28%      +0.1        0.23 ±  6%  perf-profile.children.cycles-pp.btrfs_get_8
-      0.02 ±141%      +0.1        0.10 ± 31%  perf-profile.children.cycles-pp.start_transaction
-      0.23 ± 15%      +0.1        0.31 ± 15%  perf-profile.children.cycles-pp.enqueue_hrtimer
-      0.00            +0.1        0.08 ± 22%  perf-profile.children.cycles-pp.__btrfs_map_block
-      0.00            +0.1        0.08 ± 24%  perf-profile.children.cycles-pp.up_write
-      0.80 ±  5%      +0.1        0.89 ±  2%  perf-profile.children.cycles-pp.lapic_next_deadline
-      0.26 ± 24%      +0.1        0.34 ± 11%  perf-profile.children.cycles-pp.idle_cpu
-      0.02 ±141%      +0.1        0.11 ± 61%  perf-profile.children.cycles-pp.btrfs_update_inode
-      0.12 ±  3%      +0.1        0.21 ± 11%  perf-profile.children.cycles-pp.rb_insert_color
-      0.00            +0.1        0.10 ± 53%  perf-profile.children.cycles-pp.check_delayed_ref
-      0.00            +0.1        0.12 ± 56%  perf-profile.children.cycles-pp.btrfs_root_node
-      0.10 ±  8%      +0.1        0.22 ± 32%  perf-profile.children.cycles-pp.io_schedule
-      0.10 ±  4%      +0.1        0.24 ± 48%  perf-profile.children.cycles-pp.rq_qos_wait
-      0.10 ± 21%      +0.1        0.23 ± 44%  perf-profile.children.cycles-pp.blk_mq_dispatch_rq_list
-      0.09 ± 15%      +0.1        0.23 ± 46%  perf-profile.children.cycles-pp.scsi_queue_rq
-      0.10 ±  4%      +0.1        0.24 ± 51%  perf-profile.children.cycles-pp.__rq_qos_throttle
-      0.10 ±  4%      +0.1        0.24 ± 51%  perf-profile.children.cycles-pp.wbt_wait
-      0.22 ± 15%      +0.1        0.37 ± 12%  perf-profile.children.cycles-pp.btrfs_remove_ordered_extent
-      1.37 ±  6%      +0.1        1.51 ±  3%  perf-profile.children.cycles-pp.arch_scale_freq_tick
-      0.00            +0.2        0.15 ± 32%  perf-profile.children.cycles-pp.schedule_preempt_disabled
-      0.16 ± 40%      +0.2        0.31 ± 12%  perf-profile.children.cycles-pp.__set_extent_bit
-      0.00            +0.2        0.16 ± 31%  perf-profile.children.cycles-pp.rwsem_down_read_slowpath
-      0.02 ±141%      +0.2        0.18 ± 37%  perf-profile.children.cycles-pp.btrfs_read_lock_root_node
-      0.12 ± 36%      +0.2        0.29 ± 12%  perf-profile.children.cycles-pp.tick_check_oneshot_broadcast_this_cpu
-      0.09 ± 22%      +0.2        0.26 ±  6%  perf-profile.children.cycles-pp.lock_extent
-      0.83 ± 18%      +0.2        1.02 ± 11%  perf-profile.children.cycles-pp.check_extent_data_item
-      0.30 ± 22%      +0.2        0.50 ± 35%  perf-profile.children.cycles-pp.btrfs_csum_one_bio
-      0.08 ± 22%      +0.2        0.28 ± 81%  perf-profile.children.cycles-pp.__btrfs_tree_lock
-      0.09 ± 19%      +0.2        0.31 ± 72%  perf-profile.children.cycles-pp.down_write
-      0.02 ±141%      +0.2        0.24 ± 28%  perf-profile.children.cycles-pp.__btrfs_tree_read_lock
-      0.11 ±  8%      +0.2        0.35 ± 57%  perf-profile.children.cycles-pp.blk_mq_get_new_requests
-      0.03 ±141%      +0.2        0.27 ± 34%  perf-profile.children.cycles-pp.down_read
-      0.16 ±  8%      +0.3        0.42 ± 58%  perf-profile.children.cycles-pp.blk_mq_sched_dispatch_requests
-      0.15 ± 13%      +0.3        0.42 ± 59%  perf-profile.children.cycles-pp.__blk_mq_sched_dispatch_requests
-      0.15 ± 10%      +0.3        0.42 ± 59%  perf-profile.children.cycles-pp.__blk_mq_do_dispatch_sched
-      0.15 ± 10%      +0.3        0.42 ± 58%  perf-profile.children.cycles-pp.blk_mq_run_work_fn
-      1.67 ±  9%      +0.3        1.95        perf-profile.children.cycles-pp.rcu_core
-      0.10 ± 74%      +0.3        0.42 ± 48%  perf-profile.children.cycles-pp.crc32c_pcl_intel_digest
-      1.76 ± 14%      +0.3        2.09 ± 11%  perf-profile.children.cycles-pp.check_leaf
-      1.92 ± 15%      +0.3        2.25 ± 12%  perf-profile.children.cycles-pp.btree_csum_one_bio
-      1.92 ± 15%      +0.3        2.24 ± 13%  perf-profile.children.cycles-pp.csum_one_extent_buffer
-      0.89 ±  2%      +0.4        1.25 ±  7%  perf-profile.children.cycles-pp.update_sg_lb_stats
-      0.61 ± 27%      +0.4        0.98 ± 16%  perf-profile.children.cycles-pp.pick_next_task_fair
-      0.67 ± 32%      +0.4        1.06 ±  2%  perf-profile.children.cycles-pp.__irqentry_text_start
-      1.46 ±  6%      +0.4        1.86 ±  8%  perf-profile.children.cycles-pp.load_balance
-      0.48 ± 17%      +0.4        0.89 ± 16%  perf-profile.children.cycles-pp.newidle_balance
-      1.12 ±  4%      +0.4        1.53 ±  8%  perf-profile.children.cycles-pp.find_busiest_group
-      1.06 ±  6%      +0.4        1.48 ±  9%  perf-profile.children.cycles-pp.update_sd_lb_stats
-      1.01 ± 17%      +0.4        1.46 ± 16%  perf-profile.children.cycles-pp.x86_64_start_kernel
-      1.01 ± 17%      +0.4        1.46 ± 16%  perf-profile.children.cycles-pp.x86_64_start_reservations
-      1.01 ± 17%      +0.4        1.46 ± 16%  perf-profile.children.cycles-pp.start_kernel
-      1.01 ± 17%      +0.4        1.46 ± 16%  perf-profile.children.cycles-pp.arch_call_rest_init
-      1.01 ± 17%      +0.4        1.46 ± 16%  perf-profile.children.cycles-pp.rest_init
-      0.08 ±141%      +0.6        0.64 ± 39%  perf-profile.children.cycles-pp._find_next_zero_bit
-      0.09 ±141%      +0.6        0.70 ± 40%  perf-profile.children.cycles-pp.__btrfs_add_free_space
-      0.08 ±141%      +0.6        0.70 ± 40%  perf-profile.children.cycles-pp.steal_from_bitmap
-      0.09 ±141%      +0.6        0.71 ± 41%  perf-profile.children.cycles-pp.unpin_extent_range
-      0.09 ±141%      +0.6        0.72 ± 42%  perf-profile.children.cycles-pp.btrfs_finish_extent_commit
-      0.85 ±  8%      +0.7        1.58 ± 29%  perf-profile.children.cycles-pp.ktime_get_update_offsets_now
-      5.53 ±  4%      +0.9        6.47 ±  7%  perf-profile.children.cycles-pp.do_writepages
-      0.43 ±  2%      +1.0        1.40 ± 23%  perf-profile.children.cycles-pp.__extent_writepage_io
-      2.09 ±  4%      +1.1        3.24 ±  3%  perf-profile.children.cycles-pp.submit_extent_page
-     17.29 ±  4%      +1.2       18.48 ±  2%  perf-profile.children.cycles-pp.__hrtimer_run_queues
-      2.07 ±  9%      +1.2        3.30 ± 18%  perf-profile.children.cycles-pp.transaction_kthread
-      2.07 ±  9%      +1.2        3.30 ± 18%  perf-profile.children.cycles-pp.btrfs_commit_transaction
-      2.18 ± 13%      +1.2        3.42 ±  5%  perf-profile.children.cycles-pp.btrfs_submit_bio
-      2.18 ± 13%      +1.2        3.42 ±  5%  perf-profile.children.cycles-pp.btrfs_submit_chunk
-      2.18 ± 13%      +1.2        3.42 ±  6%  perf-profile.children.cycles-pp.submit_one_bio
-      0.17 ±141%      +1.4        1.61 ± 39%  perf-profile.children.cycles-pp.wb_workfn
-      0.17 ±141%      +1.4        1.61 ± 39%  perf-profile.children.cycles-pp.wb_do_writeback
-      0.17 ±141%      +1.4        1.61 ± 39%  perf-profile.children.cycles-pp.wb_writeback
-      0.17 ±141%      +1.4        1.61 ± 39%  perf-profile.children.cycles-pp.__writeback_inodes_wb
-      0.17 ±141%      +1.4        1.61 ± 39%  perf-profile.children.cycles-pp.writeback_sb_inodes
-      0.17 ±141%      +1.4        1.61 ± 39%  perf-profile.children.cycles-pp.__writeback_single_inode
-     20.51 ±  4%      +2.1       22.59 ±  2%  perf-profile.children.cycles-pp.__sysvec_apic_timer_interrupt
-     19.87 ±  4%      +2.1       21.97 ±  2%  perf-profile.children.cycles-pp.hrtimer_interrupt
-     75.29            +2.1       77.42        perf-profile.children.cycles-pp.start_secondary
-     27.55 ±  2%      +2.5       30.09        perf-profile.children.cycles-pp.sysvec_apic_timer_interrupt
-     76.30            +2.6       78.88        perf-profile.children.cycles-pp.secondary_startup_64_no_verify
-     76.30            +2.6       78.88        perf-profile.children.cycles-pp.cpu_startup_entry
-     76.28            +2.6       78.87        perf-profile.children.cycles-pp.do_idle
-     75.16            +2.8       77.97        perf-profile.children.cycles-pp.cpuidle_idle_call
-     71.24            +2.8       74.09        perf-profile.children.cycles-pp.cpuidle_enter
-     68.91            +2.9       71.80        perf-profile.children.cycles-pp.acpi_safe_halt
-     69.15            +2.9       72.08        perf-profile.children.cycles-pp.acpi_idle_enter
-     70.81            +2.9       73.74        perf-profile.children.cycles-pp.cpuidle_enter_state
-     56.68 ±  2%      +5.1       61.78        perf-profile.children.cycles-pp.asm_sysvec_apic_timer_interrupt
-      2.32 ± 14%      -1.8        0.53 ± 14%  perf-profile.self.cycles-pp.native_queued_spin_lock_slowpath
-      0.98 ± 15%      -0.3        0.69 ±  9%  perf-profile.self.cycles-pp.__lookup_extent_mapping
-      0.55 ±  2%      -0.3        0.29 ± 23%  perf-profile.self.cycles-pp.btrfs_bin_search
-      1.12 ±  5%      -0.2        0.90 ± 12%  perf-profile.self.cycles-pp.ktime_get
-      0.28 ± 30%      -0.2        0.11 ± 29%  perf-profile.self.cycles-pp.copy_page
-      0.20 ± 12%      -0.2        0.05 ± 81%  perf-profile.self.cycles-pp.btrfs_alloc_ordered_extent
-      0.42 ±  4%      -0.1        0.29 ±  5%  perf-profile.self.cycles-pp.ct_kernel_exit_state
-      0.21 ±  4%      -0.1        0.07 ± 81%  perf-profile.self.cycles-pp.resched_curr
-      0.31 ± 16%      -0.1        0.18 ±  7%  perf-profile.self.cycles-pp.x86_pmu_disable
-      0.20 ±  6%      -0.1        0.08 ± 17%  perf-profile.self.cycles-pp.__slab_free
-      0.16 ± 30%      -0.1        0.05 ± 72%  perf-profile.self.cycles-pp.__flush_smp_call_function_queue
-      0.19 ± 22%      -0.1        0.09 ± 26%  perf-profile.self.cycles-pp.__switch_to
-      0.40            -0.1        0.31 ±  3%  perf-profile.self.cycles-pp.cpuidle_enter
-      0.96 ±  6%      -0.1        0.88 ±  8%  perf-profile.self.cycles-pp.native_sched_clock
-      0.15 ± 18%      -0.1        0.08 ± 12%  perf-profile.self.cycles-pp.__list_del_entry_valid
-      0.14 ± 30%      -0.1        0.07 ± 20%  perf-profile.self.cycles-pp.btrfs_try_granting_tickets
-      0.19 ± 22%      -0.1        0.12 ± 15%  perf-profile.self.cycles-pp.rb_erase
-      0.15 ± 25%      -0.1        0.09 ± 20%  perf-profile.self.cycles-pp.xas_find_marked
-      0.14 ±  6%      -0.1        0.09 ± 21%  perf-profile.self.cycles-pp.llist_reverse_order
-      0.09 ± 18%      -0.1        0.04 ± 73%  perf-profile.self.cycles-pp.__x2apic_send_IPI_dest
-      0.16 ± 18%      -0.1        0.11 ±  8%  perf-profile.self.cycles-pp.xas_descend
-      0.10 ± 25%      -0.0        0.06 ± 13%  perf-profile.self.cycles-pp.rebalance_domains
-      0.12 ± 10%      -0.0        0.09 ± 19%  perf-profile.self.cycles-pp.get_next_timer_interrupt
-      0.04 ± 71%      +0.0        0.08 ± 14%  perf-profile.self.cycles-pp._raw_read_lock
-      0.09 ± 15%      +0.0        0.13 ± 15%  perf-profile.self.cycles-pp._raw_spin_unlock_irqrestore
-      0.02 ±141%      +0.0        0.06 ± 14%  perf-profile.self.cycles-pp.copyin
-      0.04 ± 73%      +0.0        0.09 ± 14%  perf-profile.self.cycles-pp.hrtimer_update_next_event
-      0.11 ± 29%      +0.1        0.16 ±  5%  perf-profile.self.cycles-pp.find_extent_buffer_nolock
-      0.14 ± 11%      +0.1        0.19 ±  8%  perf-profile.self.cycles-pp.kmem_cache_alloc
-      0.09 ± 27%      +0.1        0.14 ±  5%  perf-profile.self.cycles-pp.tick_nohz_tick_stopped
-      0.02 ±141%      +0.1        0.07 ± 11%  perf-profile.self.cycles-pp.ct_nmi_exit
-      0.00            +0.1        0.06 ± 13%  perf-profile.self.cycles-pp.entry_SYSRETQ_unsafe_stack
-      0.00            +0.1        0.06 ± 13%  perf-profile.self.cycles-pp.sched_clock
-      0.23 ± 14%      +0.1        0.30 ±  6%  perf-profile.self.cycles-pp.__hrtimer_run_queues
-      0.06 ± 14%      +0.1        0.13 ±  6%  perf-profile.self.cycles-pp.timerqueue_del
-      0.13 ± 35%      +0.1        0.20 ±  4%  perf-profile.self.cycles-pp.btrfs_get_8
-      0.07 ± 74%      +0.1        0.14 ± 11%  perf-profile.self.cycles-pp.rcu_core
-      0.80 ±  5%      +0.1        0.88        perf-profile.self.cycles-pp.lapic_next_deadline
-      0.11 ± 12%      +0.1        0.19 ± 14%  perf-profile.self.cycles-pp.rb_insert_color
-      0.02 ±141%      +0.1        0.11 ± 34%  perf-profile.self.cycles-pp.steal_from_bitmap
-      0.00            +0.1        0.10 ± 40%  perf-profile.self.cycles-pp.down_read
-      0.00            +0.1        0.12 ± 56%  perf-profile.self.cycles-pp.btrfs_root_node
-      1.36 ±  6%      +0.1        1.50 ±  2%  perf-profile.self.cycles-pp.arch_scale_freq_tick
-      0.02 ±141%      +0.1        0.16 ±  8%  perf-profile.self.cycles-pp.__set_extent_bit
-      0.36 ±  9%      +0.2        0.52 ± 19%  perf-profile.self.cycles-pp.asm_sysvec_apic_timer_interrupt
-      0.11 ± 29%      +0.2        0.28 ± 11%  perf-profile.self.cycles-pp.tick_check_oneshot_broadcast_this_cpu
-      0.57 ± 11%      +0.2        0.74 ±  7%  perf-profile.self.cycles-pp.note_gp_changes
-      0.74 ±  4%      +0.3        1.07 ±  4%  perf-profile.self.cycles-pp.update_sg_lb_stats
-      0.07 ±141%      +0.5        0.60 ± 42%  perf-profile.self.cycles-pp._find_next_zero_bit
-      0.68 ±  9%      +0.8        1.47 ± 31%  perf-profile.self.cycles-pp.ktime_get_update_offsets_now
-
-
-
-***************************************************************************************************
-lkp-icl-2sp9: 64 threads 2 sockets Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz (Ice Lake) with 256G memory
-=========================================================================================
-bs/compiler/cpufreq_governor/disk/fs/ioengine/kconfig/nr_task/rootfs/runtime/rw/tbox_group/test_size/testcase:
-  4k/gcc-12/performance/1HDD/btrfs/posixaio/x86_64-rhel-8.3/1/debian-11.1-x86_64-20220510.cgz/300s/randwrite/lkp-icl-2sp9/128G/fio-basic
-
-commit: 
-  adbe7e388e ("btrfs: use SECTOR_SHIFT to convert LBA to physical offset")
-  da02361807 ("btrfs: submit IO synchronously for fast checksum implementations")
-
-adbe7e388e4239d9 da023618076a13c35bcde1a49a8 
----------------- --------------------------- 
-         %stddev     %change         %stddev
-             \          |                \  
-      2.86            +2.9%       2.94        iostat.cpu.iowait
-      0.19            -0.1        0.12 ± 32%  mpstat.cpu.all.sys%
-    597474 ± 34%     +45.8%     871009 ± 46%  numa-numastat.node1.local_node
-    106.67 ± 16%     +50.9%     161.00 ± 24%  perf-c2c.HITM.local
-     45873           -72.5%      12608 ± 42%  vmstat.io.bo
-      0.19 ±  2%     -12.9%       0.16 ±  7%  turbostat.IPC
-      8326 ±  7%    +772.4%      72642 ± 43%  turbostat.POLL
-    453.67 ±140%   +8580.7%      39381 ± 58%  numa-vmstat.node1.nr_dirty
-     68549 ±141%    +279.9%     260430 ± 71%  numa-vmstat.node1.nr_inactive_file
-     68549 ±141%    +279.9%     260430 ± 71%  numa-vmstat.node1.nr_zone_inactive_file
-     16106 ±141%    +145.7%      39572 ± 58%  numa-vmstat.node1.nr_zone_write_pending
-    597360 ± 34%     +45.8%     870766 ± 46%  numa-vmstat.node1.numa_local
-    902715           -62.8%     335889 ± 44%  meminfo.Active
-    874721           -66.3%     294930 ± 45%  meminfo.Active(file)
-      5516         +3745.1%     212122 ±  5%  meminfo.Dirty
-    461194           -43.5%     260384 ± 14%  meminfo.SUnreclaim
-    674371           -23.7%     514553 ± 14%  meminfo.Slab
-    187593           -99.3%       1232 ± 48%  meminfo.Writeback
-    338866           -29.1%     240112 ± 32%  numa-meminfo.node0.AnonPages.max
-     23350 ± 19%    +260.9%      84278 ± 60%  numa-meminfo.node1.AnonHugePages
-      1826 ±140%   +8522.5%     157504 ± 58%  numa-meminfo.node1.Dirty
-    361247 ±102%    +231.7%    1198329 ± 59%  numa-meminfo.node1.Inactive
-    274177 ±141%    +279.9%    1041614 ± 71%  numa-meminfo.node1.Inactive(file)
-   1562317 ± 62%     +88.2%    2940817 ± 42%  numa-meminfo.node1.MemUsed
-    218687           -66.3%      73747 ± 45%  proc-vmstat.nr_active_file
-   2028219           -58.6%     840065 ± 39%  proc-vmstat.nr_dirtied
-      1379         +3745.0%      53048 ±  5%  proc-vmstat.nr_dirty
-    115298           -43.5%      65094 ± 14%  proc-vmstat.nr_slab_unreclaimable
-     46908           -99.3%     307.00 ± 47%  proc-vmstat.nr_writeback
-   1971758           -60.3%     782603 ± 41%  proc-vmstat.nr_written
-    218687           -66.3%      73747 ± 45%  proc-vmstat.nr_zone_active_file
-     48286           +10.5%      53354 ±  5%  proc-vmstat.nr_zone_write_pending
-    259171           -62.6%      96821 ± 43%  proc-vmstat.pgactivate
-    944857           -24.2%     716447        proc-vmstat.pgfree
-  13942326           -72.6%    3826358 ± 42%  proc-vmstat.pgpgout
-     29761            -1.6%      29291        proc-vmstat.pgreuse
-      0.52 ±  6%      -0.5        0.01 ± 54%  fio.latency_1000us%
-      0.07 ± 16%      +0.2        0.30 ±106%  fio.latency_100ms%
-      2.51 ±  5%      -0.9        1.58 ± 17%  fio.latency_10ms%
-      4.63 ±  5%     +13.5       18.10 ± 10%  fio.latency_20ms%
-     53.54           -38.4       15.16 ±  7%  fio.latency_250us%
-     12.05           +19.5       31.58 ±  2%  fio.latency_2ms%
-      6.26           +11.7       17.95 ± 18%  fio.latency_4ms%
-      4.06            -2.6        1.44 ±  6%  fio.latency_500ms%
-      3.44 ±  8%      -3.4        0.03 ± 29%  fio.latency_500us%
-      0.66 ±  5%      -0.6        0.01 ± 15%  fio.latency_750us%
-    168060          +310.6%     690074 ± 38%  fio.time.voluntary_context_switches
-    276.12 ±  3%      -8.9%     251.64        fio.write_slat_mean_us
-    316.55 ±  2%     -21.0%     250.11 ± 13%  fio.write_slat_stddev
-     51.89 ± 22%     +33.0%      69.01 ± 10%  sched_debug.cfs_rq:/.load_avg.avg
-     20.64 ± 34%     +77.7%      36.66 ± 21%  sched_debug.cfs_rq:/.removed.load_avg.avg
-    341.33 ± 40%    +112.5%     725.33 ± 30%  sched_debug.cfs_rq:/.removed.load_avg.max
-     76.48 ± 36%     +87.5%     143.39 ± 22%  sched_debug.cfs_rq:/.removed.load_avg.stddev
-      8.27 ± 41%     +81.8%      15.04 ± 23%  sched_debug.cfs_rq:/.removed.runnable_avg.avg
-    172.39 ± 40%    +112.6%     366.54 ± 30%  sched_debug.cfs_rq:/.removed.runnable_avg.max
-     33.84 ± 40%     +93.6%      65.50 ± 25%  sched_debug.cfs_rq:/.removed.runnable_avg.stddev
-      8.27 ± 41%     +81.8%      15.04 ± 23%  sched_debug.cfs_rq:/.removed.util_avg.avg
-    172.39 ± 40%    +112.6%     366.54 ± 30%  sched_debug.cfs_rq:/.removed.util_avg.max
-     33.84 ± 40%     +93.6%      65.50 ± 25%  sched_debug.cfs_rq:/.removed.util_avg.stddev
-     91.81 ±  4%     +10.5%     101.42 ±  5%  sched_debug.cfs_rq:/.runnable_avg.avg
-     91.79 ±  4%     +10.4%     101.35 ±  5%  sched_debug.cfs_rq:/.util_avg.avg
-    215316 ±  4%    +112.2%     456956 ± 37%  sched_debug.cpu.nr_switches.max
-      5.10           +28.1%       6.54 ±  9%  perf-stat.i.MPKI
- 2.306e+08           -15.2%  1.957e+08 ± 14%  perf-stat.i.branch-instructions
-      0.90            +0.2        1.06 ±  8%  perf-stat.i.branch-miss-rate%
-     18.93            -5.1       13.81 ± 14%  perf-stat.i.cache-miss-rate%
-   1076460           -23.4%     824124 ± 32%  perf-stat.i.cache-misses
-      1.72 ±  2%     +25.9%       2.17 ± 13%  perf-stat.i.cpi
-     71.71          +117.4%     155.93 ± 22%  perf-stat.i.cpu-migrations
-      1879           +49.8%       2817 ± 47%  perf-stat.i.cycles-between-cache-misses
-      0.03            +0.0        0.03 ± 11%  perf-stat.i.dTLB-load-miss-rate%
- 3.226e+08           -16.7%  2.687e+08 ± 16%  perf-stat.i.dTLB-loads
-      0.01            +0.0        0.01 ± 17%  perf-stat.i.dTLB-store-miss-rate%
- 1.491e+08           -13.8%  1.285e+08 ± 17%  perf-stat.i.dTLB-stores
- 1.244e+09           -19.0%  1.008e+09 ± 15%  perf-stat.i.instructions
-      0.60 ±  2%     -17.7%       0.49 ± 11%  perf-stat.i.ipc
-     96.27 ±  2%     +64.8%     158.60 ± 46%  perf-stat.i.metric.K/sec
-     10.97           -16.2%       9.20 ± 17%  perf-stat.i.metric.M/sec
-     26.29           +14.0       40.27 ± 32%  perf-stat.i.node-load-miss-rate%
-    187323           -23.0%     144255 ± 42%  perf-stat.i.node-loads
-      5.60 ±  7%      +8.6       14.21 ± 65%  perf-stat.i.node-store-miss-rate%
-     14626 ±  4%     +39.1%      20347 ± 12%  perf-stat.i.node-store-misses
-    251078 ±  2%     -33.9%     166086 ± 35%  perf-stat.i.node-stores
-      1.19            +0.2        1.39 ±  9%  perf-stat.overall.branch-miss-rate%
-     18.42            -4.7       13.72 ± 13%  perf-stat.overall.cache-miss-rate%
-      1.55           +17.7%       1.82 ±  8%  perf-stat.overall.cpi
-      1789           +40.9%       2521 ± 39%  perf-stat.overall.cycles-between-cache-misses
-      0.03            +0.0        0.03 ±  7%  perf-stat.overall.dTLB-load-miss-rate%
-      0.01            +0.0        0.01 ± 15%  perf-stat.overall.dTLB-store-miss-rate%
-      0.65           -14.5%       0.55 ±  7%  perf-stat.overall.ipc
-     25.54 ±  2%     +12.4       37.98 ± 29%  perf-stat.overall.node-load-miss-rate%
-      5.51 ±  6%      +7.7       13.23 ± 57%  perf-stat.overall.node-store-miss-rate%
-   1198302           -52.4%     570485 ± 43%  perf-stat.overall.path-length
- 2.298e+08           -15.1%   1.95e+08 ± 14%  perf-stat.ps.branch-instructions
-   1072906           -23.4%     821337 ± 32%  perf-stat.ps.cache-misses
-     71.51          +117.3%     155.40 ± 22%  perf-stat.ps.cpu-migrations
- 3.215e+08           -16.7%  2.678e+08 ± 16%  perf-stat.ps.dTLB-loads
- 1.486e+08           -13.8%  1.281e+08 ± 17%  perf-stat.ps.dTLB-stores
-  1.24e+09           -18.9%  1.005e+09 ± 15%  perf-stat.ps.instructions
-    186713           -23.0%     143767 ± 42%  perf-stat.ps.node-loads
-     14578 ±  4%     +39.1%      20278 ± 12%  perf-stat.ps.node-store-misses
-    250224 ±  2%     -33.9%     165523 ± 35%  perf-stat.ps.node-stores
- 3.741e+11           -19.1%  3.026e+11 ± 15%  perf-stat.total.instructions
-      0.00 ± 14%    -100.0%       0.00        perf-sched.sch_delay.avg.ms.__cond_resched.__filemap_get_folio.pagecache_get_page.write_dev_supers.write_all_supers
-      0.05 ± 11%    -100.0%       0.00        perf-sched.sch_delay.avg.ms.__cond_resched.__wait_for_common.barrier_all_devices.write_all_supers.btrfs_commit_transaction
-      0.00          -100.0%       0.00        perf-sched.sch_delay.avg.ms.__cond_resched.btrfs_search_slot.update_block_group_item.btrfs_start_dirty_block_groups.btrfs_commit_transaction
-      0.00          -100.0%       0.00        perf-sched.sch_delay.avg.ms.__cond_resched.btrfs_search_slot.update_block_group_item.btrfs_write_dirty_block_groups.commit_cowonly_roots
-      0.00          -100.0%       0.00        perf-sched.sch_delay.avg.ms.__cond_resched.btrfs_search_slot.update_cache_item.__btrfs_wait_cache_io.btrfs_write_dirty_block_groups
-      0.00          -100.0%       0.00        perf-sched.sch_delay.avg.ms.__cond_resched.mutex_lock.btrfs_start_dirty_block_groups.btrfs_commit_transaction.flush_space
-      0.00          -100.0%       0.00        perf-sched.sch_delay.avg.ms.btrfs_start_ordered_extent.btrfs_run_ordered_extent_work.btrfs_work_helper.process_one_work
-      0.02          -100.0%       0.00        perf-sched.sch_delay.avg.ms.btrfs_start_ordered_extent.btrfs_wait_ordered_range.__btrfs_wait_cache_io.btrfs_start_dirty_block_groups
-      0.01 ±  3%    -100.0%       0.00        perf-sched.sch_delay.avg.ms.btrfs_start_ordered_extent.btrfs_wait_ordered_range.__btrfs_wait_cache_io.btrfs_write_dirty_block_groups
-      0.01 ± 10%     +29.8%       0.01 ±  3%  perf-sched.sch_delay.avg.ms.devkmsg_read.vfs_read.ksys_read.do_syscall_64
-      0.00          -100.0%       0.00        perf-sched.sch_delay.avg.ms.io_schedule.folio_wait_bit_common.folio_wait_writeback.__filemap_fdatawait_range
-      0.00 ± 17%    -100.0%       0.00        perf-sched.sch_delay.avg.ms.schedule_preempt_disabled.__mutex_lock.constprop.0.__btrfs_release_delayed_node
-      0.00          -100.0%       0.00        perf-sched.sch_delay.avg.ms.schedule_preempt_disabled.__mutex_lock.constprop.0.btrfs_delayed_update_inode
-      0.00 ± 17%    -100.0%       0.00        perf-sched.sch_delay.avg.ms.schedule_preempt_disabled.__mutex_lock.constprop.0.btrfs_start_delalloc_roots
-      0.00          -100.0%       0.00        perf-sched.sch_delay.avg.ms.schedule_timeout.__wait_for_common.btrfs_wait_ordered_extents.btrfs_wait_ordered_roots
-      0.00 ± 28%    -100.0%       0.00        perf-sched.sch_delay.avg.ms.schedule_timeout.shrink_delalloc.flush_space.btrfs_preempt_reclaim_metadata_space
-      0.00          -100.0%       0.00        perf-sched.sch_delay.avg.ms.wait_current_trans.start_transaction.btrfs_finish_ordered_io.btrfs_work_helper
-      0.01 ± 53%    -100.0%       0.00        perf-sched.sch_delay.max.ms.__cond_resched.__filemap_get_folio.pagecache_get_page.write_dev_supers.write_all_supers
-      0.18 ± 25%    -100.0%       0.00        perf-sched.sch_delay.max.ms.__cond_resched.__wait_for_common.barrier_all_devices.write_all_supers.btrfs_commit_transaction
-      0.01 ± 63%    -100.0%       0.00        perf-sched.sch_delay.max.ms.__cond_resched.btrfs_search_slot.update_block_group_item.btrfs_start_dirty_block_groups.btrfs_commit_transaction
-      0.00 ± 20%    -100.0%       0.00        perf-sched.sch_delay.max.ms.__cond_resched.btrfs_search_slot.update_block_group_item.btrfs_write_dirty_block_groups.commit_cowonly_roots
-      0.00 ± 12%    -100.0%       0.00        perf-sched.sch_delay.max.ms.__cond_resched.btrfs_search_slot.update_cache_item.__btrfs_wait_cache_io.btrfs_write_dirty_block_groups
-      0.00          -100.0%       0.00        perf-sched.sch_delay.max.ms.__cond_resched.mutex_lock.btrfs_start_dirty_block_groups.btrfs_commit_transaction.flush_space
-      0.01 ± 18%    -100.0%       0.00        perf-sched.sch_delay.max.ms.__cond_resched.submit_bio_noacct.run_ordered_work.process_one_work.worker_thread
-      0.01 ±  4%    -100.0%       0.00        perf-sched.sch_delay.max.ms.btrfs_start_ordered_extent.btrfs_run_ordered_extent_work.btrfs_work_helper.process_one_work
-      0.02 ±  2%    -100.0%       0.00        perf-sched.sch_delay.max.ms.btrfs_start_ordered_extent.btrfs_wait_ordered_range.__btrfs_wait_cache_io.btrfs_start_dirty_block_groups
-      0.01 ±  3%    -100.0%       0.00        perf-sched.sch_delay.max.ms.btrfs_start_ordered_extent.btrfs_wait_ordered_range.__btrfs_wait_cache_io.btrfs_write_dirty_block_groups
-      0.01 ± 18%     +36.2%       0.02 ±  6%  perf-sched.sch_delay.max.ms.devkmsg_read.vfs_read.ksys_read.do_syscall_64
-      0.01 ± 42%    -100.0%       0.00        perf-sched.sch_delay.max.ms.io_schedule.folio_wait_bit_common.folio_wait_writeback.__filemap_fdatawait_range
-      0.13 ± 40%     -88.8%       0.01 ± 18%  perf-sched.sch_delay.max.ms.io_schedule.rq_qos_wait.wbt_wait.__rq_qos_throttle
-      0.00          -100.0%       0.00        perf-sched.sch_delay.max.ms.schedule_preempt_disabled.__mutex_lock.constprop.0.__btrfs_release_delayed_node
-      0.01 ± 47%    -100.0%       0.00        perf-sched.sch_delay.max.ms.schedule_preempt_disabled.__mutex_lock.constprop.0.btrfs_delayed_update_inode
-      0.00          -100.0%       0.00        perf-sched.sch_delay.max.ms.schedule_preempt_disabled.__mutex_lock.constprop.0.btrfs_start_delalloc_roots
-      0.01 ± 50%     -89.3%       0.00 ±173%  perf-sched.sch_delay.max.ms.schedule_preempt_disabled.rwsem_down_write_slowpath.down_write.__btrfs_tree_lock
-      0.01 ± 54%    -100.0%       0.00        perf-sched.sch_delay.max.ms.schedule_timeout.__wait_for_common.btrfs_wait_ordered_extents.btrfs_wait_ordered_roots
-      0.01 ± 13%    -100.0%       0.00        perf-sched.sch_delay.max.ms.schedule_timeout.shrink_delalloc.flush_space.btrfs_preempt_reclaim_metadata_space
-      0.01 ± 14%     -27.5%       0.01 ± 11%  perf-sched.sch_delay.max.ms.smpboot_thread_fn.kthread.ret_from_fork
-      0.01           -16.7%       0.01 ±  6%  perf-sched.sch_delay.max.ms.syslog_print.do_syslog.kmsg_read.vfs_read
-      0.01 ± 46%    -100.0%       0.00        perf-sched.sch_delay.max.ms.wait_current_trans.start_transaction.btrfs_finish_ordered_io.btrfs_work_helper
-      1.15          -100.0%       0.00        perf-sched.wait_and_delay.avg.ms.__cond_resched.submit_bio_noacct.run_ordered_work.process_one_work.worker_thread
-      5.85 ±  9%    -100.0%       0.00        perf-sched.wait_and_delay.avg.ms.btrfs_start_ordered_extent.btrfs_run_ordered_extent_work.btrfs_work_helper.process_one_work
-     10.35 ±  6%     -87.6%       1.28 ±125%  perf-sched.wait_and_delay.avg.ms.handle_reserve_ticket.__reserve_bytes.btrfs_reserve_metadata_bytes.btrfs_delalloc_reserve_metadata
-    679.34 ±  2%     -34.7%     443.46 ± 13%  perf-sched.wait_and_delay.avg.ms.schedule_hrtimeout_range_clock.do_poll.constprop.0.do_sys_poll
-      0.66 ± 56%    -100.0%       0.00        perf-sched.wait_and_delay.avg.ms.schedule_timeout.__wait_for_common.btrfs_wait_ordered_extents.btrfs_wait_ordered_roots
-      4100 ±  3%    -100.0%       0.00        perf-sched.wait_and_delay.count.__cond_resched.submit_bio_noacct.run_ordered_work.process_one_work.worker_thread
-    622.67 ±  6%    -100.0%       0.00        perf-sched.wait_and_delay.count.btrfs_start_ordered_extent.btrfs_run_ordered_extent_work.btrfs_work_helper.process_one_work
-    436.67 ±  5%   +2316.1%      10550 ± 51%  perf-sched.wait_and_delay.count.handle_reserve_ticket.__reserve_bytes.btrfs_reserve_metadata_bytes.btrfs_delalloc_reserve_metadata
-    394.33 ±  2%     +17.5%     463.25        perf-sched.wait_and_delay.count.rcu_gp_kthread.kthread.ret_from_fork
-      2695 ± 12%     -57.7%       1141 ± 52%  perf-sched.wait_and_delay.count.schedule_preempt_disabled.rwsem_down_read_slowpath.down_read.__btrfs_tree_read_lock
-    317.33 ±  6%    -100.0%       0.00        perf-sched.wait_and_delay.count.schedule_timeout.__wait_for_common.btrfs_wait_ordered_extents.btrfs_wait_ordered_roots
-    778.00 ±  5%     -22.3%     604.75        perf-sched.wait_and_delay.count.schedule_timeout.rcu_gp_fqs_loop.rcu_gp_kthread.kthread
-    464.18          -100.0%       0.00        perf-sched.wait_and_delay.max.ms.__cond_resched.submit_bio_noacct.run_ordered_work.process_one_work.worker_thread
-    542.53 ±  8%    -100.0%       0.00        perf-sched.wait_and_delay.max.ms.btrfs_start_ordered_extent.btrfs_run_ordered_extent_work.btrfs_work_helper.process_one_work
-      3741 ± 14%     -72.7%       1019 ±  3%  perf-sched.wait_and_delay.max.ms.schedule_hrtimeout_range_clock.do_poll.constprop.0.do_sys_poll
-    691.64 ± 14%     -40.1%     414.18 ± 30%  perf-sched.wait_and_delay.max.ms.schedule_preempt_disabled.rwsem_down_read_slowpath.down_read.__btrfs_tree_read_lock
-     94.44 ±116%    -100.0%       0.00        perf-sched.wait_and_delay.max.ms.schedule_timeout.__wait_for_common.btrfs_wait_ordered_extents.btrfs_wait_ordered_roots
-      0.55 ± 17%    -100.0%       0.00        perf-sched.wait_time.avg.ms.__cond_resched.__filemap_get_folio.pagecache_get_page.write_dev_supers.write_all_supers
-     10.62 ± 24%    -100.0%       0.00        perf-sched.wait_time.avg.ms.__cond_resched.__wait_for_common.barrier_all_devices.write_all_supers.btrfs_commit_transaction
-      2.97 ± 15%    -100.0%       0.00        perf-sched.wait_time.avg.ms.__cond_resched.btrfs_search_slot.update_block_group_item.btrfs_start_dirty_block_groups.btrfs_commit_transaction
-      2.17 ± 62%    -100.0%       0.00        perf-sched.wait_time.avg.ms.__cond_resched.btrfs_search_slot.update_block_group_item.btrfs_write_dirty_block_groups.commit_cowonly_roots
-      1.68 ± 41%    -100.0%       0.00        perf-sched.wait_time.avg.ms.__cond_resched.btrfs_search_slot.update_cache_item.__btrfs_wait_cache_io.btrfs_write_dirty_block_groups
-      0.68 ±  8%    -100.0%       0.00        perf-sched.wait_time.avg.ms.__cond_resched.mutex_lock.btrfs_start_dirty_block_groups.btrfs_commit_transaction.flush_space
-      0.00          -100.0%       0.00        perf-sched.wait_time.avg.ms.__cond_resched.process_one_work.worker_thread.kthread.ret_from_fork
-      1.15          -100.0%       0.00        perf-sched.wait_time.avg.ms.__cond_resched.submit_bio_noacct.run_ordered_work.process_one_work.worker_thread
-      5.84 ±  9%    -100.0%       0.00        perf-sched.wait_time.avg.ms.btrfs_start_ordered_extent.btrfs_run_ordered_extent_work.btrfs_work_helper.process_one_work
-      0.47 ±  5%    -100.0%       0.00        perf-sched.wait_time.avg.ms.btrfs_start_ordered_extent.btrfs_wait_ordered_range.__btrfs_wait_cache_io.btrfs_start_dirty_block_groups
-      2.04 ± 50%    -100.0%       0.00        perf-sched.wait_time.avg.ms.btrfs_start_ordered_extent.btrfs_wait_ordered_range.__btrfs_wait_cache_io.btrfs_write_dirty_block_groups
-      1.52 ±  6%     +10.7%       1.68        perf-sched.wait_time.avg.ms.devkmsg_read.vfs_read.ksys_read.do_syscall_64
-     10.35 ±  6%     -87.6%       1.28 ±125%  perf-sched.wait_time.avg.ms.handle_reserve_ticket.__reserve_bytes.btrfs_reserve_metadata_bytes.btrfs_delalloc_reserve_metadata
-      2.67 ±  8%    -100.0%       0.00        perf-sched.wait_time.avg.ms.io_schedule.folio_wait_bit_common.folio_wait_writeback.__filemap_fdatawait_range
-      0.00 ± 20%    -100.0%       0.00        perf-sched.wait_time.avg.ms.io_schedule.folio_wait_bit_common.write_all_supers.btrfs_commit_transaction
-    679.34 ±  2%     -34.7%     443.46 ± 13%  perf-sched.wait_time.avg.ms.schedule_hrtimeout_range_clock.do_poll.constprop.0.do_sys_poll
-      0.02 ± 21%    -100.0%       0.00        perf-sched.wait_time.avg.ms.schedule_preempt_disabled.__mutex_lock.constprop.0.__btrfs_release_delayed_node
-      0.13 ± 16%    -100.0%       0.00        perf-sched.wait_time.avg.ms.schedule_preempt_disabled.__mutex_lock.constprop.0.btrfs_delayed_update_inode
-      0.01 ± 51%    -100.0%       0.00        perf-sched.wait_time.avg.ms.schedule_preempt_disabled.__mutex_lock.constprop.0.btrfs_start_delalloc_roots
-      5.12 ± 70%     -99.8%       0.01 ±173%  perf-sched.wait_time.avg.ms.schedule_preempt_disabled.rwsem_down_write_slowpath.down_write.__btrfs_tree_lock
-      0.66 ± 57%    -100.0%       0.00        perf-sched.wait_time.avg.ms.schedule_timeout.__wait_for_common.btrfs_wait_ordered_extents.btrfs_wait_ordered_roots
-      0.01 ±  8%    -100.0%       0.00        perf-sched.wait_time.avg.ms.schedule_timeout.io_schedule_timeout.__wait_for_common.barrier_all_devices
-      3.29 ± 12%    -100.0%       0.00        perf-sched.wait_time.avg.ms.schedule_timeout.shrink_delalloc.flush_space.btrfs_preempt_reclaim_metadata_space
-      1.53 ±  6%     +10.7%       1.69        perf-sched.wait_time.avg.ms.syslog_print.do_syslog.kmsg_read.vfs_read
-     18.73 ± 28%    -100.0%       0.00        perf-sched.wait_time.avg.ms.wait_current_trans.start_transaction.btrfs_finish_ordered_io.btrfs_work_helper
-      1.30 ± 15%    -100.0%       0.00        perf-sched.wait_time.max.ms.__cond_resched.__filemap_get_folio.pagecache_get_page.write_dev_supers.write_all_supers
-     58.17 ± 60%    -100.0%       0.00        perf-sched.wait_time.max.ms.__cond_resched.__wait_for_common.barrier_all_devices.write_all_supers.btrfs_commit_transaction
-     21.27 ± 11%    -100.0%       0.00        perf-sched.wait_time.max.ms.__cond_resched.btrfs_search_slot.update_block_group_item.btrfs_start_dirty_block_groups.btrfs_commit_transaction
-      9.90 ± 68%    -100.0%       0.00        perf-sched.wait_time.max.ms.__cond_resched.btrfs_search_slot.update_block_group_item.btrfs_write_dirty_block_groups.commit_cowonly_roots
-     10.33 ± 63%    -100.0%       0.00        perf-sched.wait_time.max.ms.__cond_resched.btrfs_search_slot.update_cache_item.__btrfs_wait_cache_io.btrfs_write_dirty_block_groups
-      0.70 ± 12%    -100.0%       0.00        perf-sched.wait_time.max.ms.__cond_resched.mutex_lock.btrfs_start_dirty_block_groups.btrfs_commit_transaction.flush_space
-      0.00          -100.0%       0.00        perf-sched.wait_time.max.ms.__cond_resched.process_one_work.worker_thread.kthread.ret_from_fork
-    464.17          -100.0%       0.00        perf-sched.wait_time.max.ms.__cond_resched.submit_bio_noacct.run_ordered_work.process_one_work.worker_thread
-    542.52 ±  8%    -100.0%       0.00        perf-sched.wait_time.max.ms.btrfs_start_ordered_extent.btrfs_run_ordered_extent_work.btrfs_work_helper.process_one_work
-      0.55 ±  8%    -100.0%       0.00        perf-sched.wait_time.max.ms.btrfs_start_ordered_extent.btrfs_wait_ordered_range.__btrfs_wait_cache_io.btrfs_start_dirty_block_groups
-      9.07 ± 64%    -100.0%       0.00        perf-sched.wait_time.max.ms.btrfs_start_ordered_extent.btrfs_wait_ordered_range.__btrfs_wait_cache_io.btrfs_write_dirty_block_groups
-      3.04 ±  6%     +10.7%       3.37        perf-sched.wait_time.max.ms.devkmsg_read.vfs_read.ksys_read.do_syscall_64
-     22.87 ± 10%    -100.0%       0.00        perf-sched.wait_time.max.ms.io_schedule.folio_wait_bit_common.folio_wait_writeback.__filemap_fdatawait_range
-      0.00 ± 20%    -100.0%       0.00        perf-sched.wait_time.max.ms.io_schedule.folio_wait_bit_common.write_all_supers.btrfs_commit_transaction
-      3741 ± 14%     -72.7%       1019 ±  3%  perf-sched.wait_time.max.ms.schedule_hrtimeout_range_clock.do_poll.constprop.0.do_sys_poll
-      0.03 ± 21%    -100.0%       0.00        perf-sched.wait_time.max.ms.schedule_preempt_disabled.__mutex_lock.constprop.0.__btrfs_release_delayed_node
-      0.57 ±  9%    -100.0%       0.00        perf-sched.wait_time.max.ms.schedule_preempt_disabled.__mutex_lock.constprop.0.btrfs_delayed_update_inode
-      0.01 ± 74%    -100.0%       0.00        perf-sched.wait_time.max.ms.schedule_preempt_disabled.__mutex_lock.constprop.0.btrfs_start_delalloc_roots
-    691.63 ± 14%     -40.1%     414.18 ± 30%  perf-sched.wait_time.max.ms.schedule_preempt_disabled.rwsem_down_read_slowpath.down_read.__btrfs_tree_read_lock
-    321.87 ± 81%    -100.0%       0.01 ±173%  perf-sched.wait_time.max.ms.schedule_preempt_disabled.rwsem_down_write_slowpath.down_write.__btrfs_tree_lock
-     94.44 ±116%    -100.0%       0.00        perf-sched.wait_time.max.ms.schedule_timeout.__wait_for_common.btrfs_wait_ordered_extents.btrfs_wait_ordered_roots
-      0.01 ± 46%    -100.0%       0.00        perf-sched.wait_time.max.ms.schedule_timeout.io_schedule_timeout.__wait_for_common.barrier_all_devices
-     43.11 ± 16%    -100.0%       0.00        perf-sched.wait_time.max.ms.schedule_timeout.shrink_delalloc.flush_space.btrfs_preempt_reclaim_metadata_space
-      3.06 ±  6%     +10.7%       3.38        perf-sched.wait_time.max.ms.syslog_print.do_syslog.kmsg_read.vfs_read
-    213.23 ± 62%    -100.0%       0.00        perf-sched.wait_time.max.ms.wait_current_trans.start_transaction.btrfs_finish_ordered_io.btrfs_work_helper
-     10.86 ± 12%     -10.5        0.38 ±173%  perf-profile.calltrace.cycles-pp.btrfs_async_reclaim_metadata_space.process_one_work.worker_thread.kthread.ret_from_fork
-     10.86 ± 12%     -10.5        0.38 ±173%  perf-profile.calltrace.cycles-pp.flush_space.btrfs_async_reclaim_metadata_space.process_one_work.worker_thread.kthread
-      8.88 ± 12%      -8.9        0.00        perf-profile.calltrace.cycles-pp.btrfs_commit_transaction.flush_space.btrfs_async_reclaim_metadata_space.process_one_work.worker_thread
-     17.43 ± 10%      -8.1        9.30 ± 47%  perf-profile.calltrace.cycles-pp.process_one_work.worker_thread.kthread.ret_from_fork
-     17.70 ± 10%      -7.8        9.88 ± 47%  perf-profile.calltrace.cycles-pp.worker_thread.kthread.ret_from_fork
-      7.67 ± 12%      -7.7        0.00        perf-profile.calltrace.cycles-pp.__filemap_fdatawrite_range.btrfs_write_marked_extents.btrfs_write_and_wait_transaction.btrfs_commit_transaction.flush_space
-      7.67 ± 12%      -7.7        0.00        perf-profile.calltrace.cycles-pp.btrfs_write_and_wait_transaction.btrfs_commit_transaction.flush_space.btrfs_async_reclaim_metadata_space.process_one_work
-      7.67 ± 12%      -7.7        0.00        perf-profile.calltrace.cycles-pp.btrfs_write_marked_extents.btrfs_write_and_wait_transaction.btrfs_commit_transaction.flush_space.btrfs_async_reclaim_metadata_space
-      7.67 ± 12%      -6.1        1.60 ± 60%  perf-profile.calltrace.cycles-pp.do_writepages.filemap_fdatawrite_wbc.__filemap_fdatawrite_range.btrfs_write_marked_extents.btrfs_write_and_wait_transaction
-      7.67 ± 12%      -6.1        1.60 ± 60%  perf-profile.calltrace.cycles-pp.filemap_fdatawrite_wbc.__filemap_fdatawrite_range.btrfs_write_marked_extents.btrfs_write_and_wait_transaction.btrfs_commit_transaction
-      7.66 ± 12%      -6.1        1.60 ± 60%  perf-profile.calltrace.cycles-pp.btree_write_cache_pages.do_writepages.filemap_fdatawrite_wbc.__filemap_fdatawrite_range.btrfs_write_marked_extents
-      6.84 ± 11%      -5.4        1.49 ± 60%  perf-profile.calltrace.cycles-pp.csum_one_extent_buffer.btree_csum_one_bio.btrfs_submit_chunk.btrfs_submit_bio.submit_one_bio
-      6.18 ± 10%      -4.9        1.32 ± 60%  perf-profile.calltrace.cycles-pp.check_leaf.csum_one_extent_buffer.btree_csum_one_bio.btrfs_submit_chunk.btrfs_submit_bio
-      4.49 ±  9%      -2.9        1.58 ± 60%  perf-profile.calltrace.cycles-pp.write_one_eb.btree_write_cache_pages.do_writepages.filemap_fdatawrite_wbc.__filemap_fdatawrite_range
-      4.16 ±  8%      -2.6        1.52 ± 60%  perf-profile.calltrace.cycles-pp.submit_extent_page.write_one_eb.btree_write_cache_pages.do_writepages.filemap_fdatawrite_wbc
-      4.13 ±  8%      -2.6        1.50 ± 60%  perf-profile.calltrace.cycles-pp.submit_one_bio.submit_extent_page.write_one_eb.btree_write_cache_pages.do_writepages
-      4.13 ±  8%      -2.6        1.50 ± 60%  perf-profile.calltrace.cycles-pp.btrfs_submit_bio.submit_one_bio.submit_extent_page.write_one_eb.btree_write_cache_pages
-      4.13 ±  8%      -2.6        1.50 ± 60%  perf-profile.calltrace.cycles-pp.btrfs_submit_chunk.btrfs_submit_bio.submit_one_bio.submit_extent_page.write_one_eb
-      4.09 ±  8%      -2.6        1.49 ± 60%  perf-profile.calltrace.cycles-pp.btree_csum_one_bio.btrfs_submit_chunk.btrfs_submit_bio.submit_one_bio.submit_extent_page
-      2.07 ±  4%      -1.4        0.62 ± 58%  perf-profile.calltrace.cycles-pp.check_extent_data_item.check_leaf.csum_one_extent_buffer.btree_csum_one_bio.btrfs_submit_chunk
-      2.50 ±  9%      +0.4        2.87 ± 12%  perf-profile.calltrace.cycles-pp.menu_select.cpuidle_idle_call.do_idle.cpu_startup_entry.start_secondary
-      0.00            +2.3        2.30 ± 45%  perf-profile.calltrace.cycles-pp.btrfs_commit_transaction.transaction_kthread.kthread.ret_from_fork
-      0.00            +2.3        2.30 ± 45%  perf-profile.calltrace.cycles-pp.transaction_kthread.kthread.ret_from_fork
-      0.00            +2.6        2.62 ± 84%  perf-profile.calltrace.cycles-pp.poll_idle.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call.do_idle
-     10.86 ± 12%     -10.4        0.46 ±133%  perf-profile.children.cycles-pp.btrfs_async_reclaim_metadata_space
-     11.47 ± 11%      -9.7        1.79 ± 49%  perf-profile.children.cycles-pp.flush_space
-     17.43 ± 10%      -8.1        9.30 ± 47%  perf-profile.children.cycles-pp.process_one_work
-     17.70 ± 10%      -7.8        9.88 ± 47%  perf-profile.children.cycles-pp.worker_thread
-      8.88 ± 12%      -6.6        2.30 ± 45%  perf-profile.children.cycles-pp.btrfs_commit_transaction
-      7.73 ± 12%      -6.0        1.71 ± 46%  perf-profile.children.cycles-pp.__filemap_fdatawrite_range
-      7.67 ± 12%      -6.0        1.71 ± 46%  perf-profile.children.cycles-pp.btrfs_write_and_wait_transaction
-      7.67 ± 12%      -6.0        1.71 ± 46%  perf-profile.children.cycles-pp.btrfs_write_marked_extents
-      7.67 ± 12%      -6.0        1.71 ± 46%  perf-profile.children.cycles-pp.btree_write_cache_pages
-      7.15 ± 12%      -5.6        1.58 ± 47%  perf-profile.children.cycles-pp.btree_csum_one_bio
-      7.14 ± 12%      -5.6        1.58 ± 46%  perf-profile.children.cycles-pp.csum_one_extent_buffer
-     17.95 ± 10%      -5.5       12.43 ± 45%  perf-profile.children.cycles-pp.ret_from_fork
-      8.97 ± 12%      -5.5        3.47 ± 46%  perf-profile.children.cycles-pp.filemap_fdatawrite_wbc
-      6.66 ± 10%      -5.2        1.43 ± 46%  perf-profile.children.cycles-pp.check_leaf
-      7.32 ± 12%      -4.9        2.42 ± 47%  perf-profile.children.cycles-pp.submit_one_bio
-      7.32 ± 12%      -4.9        2.42 ± 47%  perf-profile.children.cycles-pp.btrfs_submit_bio
-      7.32 ± 12%      -4.9        2.42 ± 47%  perf-profile.children.cycles-pp.btrfs_submit_chunk
-      8.98 ± 12%      -3.7        5.30 ± 46%  perf-profile.children.cycles-pp.do_writepages
-      4.49 ±  9%      -2.8        1.69 ± 45%  perf-profile.children.cycles-pp.write_one_eb
-      3.64 ±  8%      -2.0        1.65 ± 52%  perf-profile.children.cycles-pp.btrfs_search_slot
-      4.33 ±  8%      -1.8        2.54 ± 48%  perf-profile.children.cycles-pp.submit_extent_page
-      2.36 ±  4%      -1.6        0.72 ± 43%  perf-profile.children.cycles-pp.check_extent_data_item
-      1.67 ± 14%      -1.4        0.30 ± 91%  perf-profile.children.cycles-pp.btrfs_cow_block
-      1.91 ± 21%      -1.4        0.54 ± 43%  perf-profile.children.cycles-pp.btrfs_get_32
-      1.66 ± 14%      -1.4        0.30 ± 91%  perf-profile.children.cycles-pp.__btrfs_cow_block
-      1.85 ± 15%      -1.3        0.56 ± 52%  perf-profile.children.cycles-pp.read_extent_buffer
-      1.61 ± 10%      -1.2        0.44 ± 48%  perf-profile.children.cycles-pp.__btrfs_run_delayed_refs
-      1.61 ± 10%      -1.2        0.44 ± 48%  perf-profile.children.cycles-pp.btrfs_run_delayed_refs
-      1.57 ± 12%      -1.1        0.42 ± 47%  perf-profile.children.cycles-pp.btrfs_get_64
-      1.43 ± 11%      -1.0        0.39 ± 48%  perf-profile.children.cycles-pp.btrfs_run_delayed_refs_for_head
-      0.92            -0.9        0.04 ±118%  perf-profile.children.cycles-pp.rwsem_down_write_slowpath
-      0.91            -0.9        0.04 ±118%  perf-profile.children.cycles-pp.rwsem_optimistic_spin
-      0.96            -0.9        0.11 ± 50%  perf-profile.children.cycles-pp.__btrfs_tree_lock
-      0.97            -0.8        0.12 ± 35%  perf-profile.children.cycles-pp.down_write
-      0.79 ± 25%      -0.7        0.12 ± 83%  perf-profile.children.cycles-pp.btrfs_alloc_tree_block
-      0.73 ±  7%      -0.7        0.08 ± 83%  perf-profile.children.cycles-pp.btrfs_lock_root_node
-      0.66 ± 19%      -0.6        0.10 ± 74%  perf-profile.children.cycles-pp.check_leaf_item
-      0.66 ±  7%      -0.5        0.16 ± 42%  perf-profile.children.cycles-pp.alloc_reserved_tree_block
-      0.68 ± 14%      -0.5        0.20 ± 62%  perf-profile.children.cycles-pp.run_delayed_tree_ref
-      0.68 ± 14%      -0.5        0.20 ± 62%  perf-profile.children.cycles-pp.__btrfs_free_extent
-      0.66 ± 28%      -0.5        0.18 ± 45%  perf-profile.children.cycles-pp.btrfs_finish_extent_commit
-      0.64 ± 30%      -0.5        0.18 ± 46%  perf-profile.children.cycles-pp.unpin_extent_range
-      0.61 ± 29%      -0.4        0.18 ± 46%  perf-profile.children.cycles-pp.__btrfs_add_free_space
-      0.60 ± 30%      -0.4        0.18 ± 46%  perf-profile.children.cycles-pp.steal_from_bitmap
-      0.59 ±  5%      -0.4        0.18 ± 58%  perf-profile.children.cycles-pp.btrfs_lookup_csum
-      0.84 ± 31%      -0.4        0.45 ± 21%  perf-profile.children.cycles-pp.native_queued_spin_lock_slowpath
-      0.52 ± 27%      -0.4        0.16 ± 50%  perf-profile.children.cycles-pp._find_next_zero_bit
-      0.41 ± 25%      -0.3        0.06 ± 77%  perf-profile.children.cycles-pp.btrfs_comp_cpu_keys
-      0.37 ± 57%      -0.3        0.02 ±100%  perf-profile.children.cycles-pp.irq_work_run_list
-      0.45 ± 17%      -0.3        0.12 ± 83%  perf-profile.children.cycles-pp.btrfs_del_items
-      0.43 ± 17%      -0.3        0.15 ± 60%  perf-profile.children.cycles-pp.crc32c_pcl_intel_update
-      0.40 ± 22%      -0.3        0.12 ± 96%  perf-profile.children.cycles-pp.copy_extent_buffer_full
-      0.41 ± 23%      -0.3        0.15 ± 60%  perf-profile.children.cycles-pp.csum_tree_block
-      0.39 ± 20%      -0.3        0.13 ± 88%  perf-profile.children.cycles-pp.copy_page
-      0.26 ± 13%      -0.2        0.07 ± 69%  perf-profile.children.cycles-pp.btrfs_mark_buffer_dirty
-      0.31 ± 16%      -0.2        0.13 ± 38%  perf-profile.children.cycles-pp.btrfs_get_8
-      0.20 ± 20%      -0.2        0.03 ±102%  perf-profile.children.cycles-pp.lookup_inline_extent_backref
-      0.23 ± 10%      -0.2        0.06 ± 66%  perf-profile.children.cycles-pp.set_extent_buffer_dirty
-      0.23 ± 20%      -0.2        0.06 ±109%  perf-profile.children.cycles-pp.btrfs_init_new_buffer
-      0.17 ± 20%      -0.1        0.03 ±102%  perf-profile.children.cycles-pp.lookup_extent_backref
-      0.18 ± 31%      -0.1        0.07 ± 68%  perf-profile.children.cycles-pp.folio_clear_dirty_for_io
-      0.16 ± 16%      -0.1        0.05 ± 60%  perf-profile.children.cycles-pp.rcu_do_batch
-      0.20 ± 13%      -0.1        0.10 ± 62%  perf-profile.children.cycles-pp.filemap_dirty_folio
-      0.26 ± 25%      -0.1        0.18 ± 12%  perf-profile.children.cycles-pp.mmap_region
-      0.12 ± 23%      -0.1        0.06 ± 63%  perf-profile.children.cycles-pp.__mmap
-      0.11 ± 26%      -0.1        0.05 ± 64%  perf-profile.children.cycles-pp.do_vmi_align_munmap
-      0.09 ± 13%      -0.1        0.04 ± 58%  perf-profile.children.cycles-pp.mas_store_prealloc
-      0.09 ± 13%      -0.0        0.04 ± 59%  perf-profile.children.cycles-pp.elf_map
-      0.02 ±141%      +0.0        0.06 ± 20%  perf-profile.children.cycles-pp.filename_lookup
-      0.02 ±141%      +0.0        0.06 ± 20%  perf-profile.children.cycles-pp.rmqueue
-      0.02 ±141%      +0.1        0.07 ± 28%  perf-profile.children.cycles-pp.get_page_from_freelist
-      0.08 ±  6%      +0.1        0.13 ±  9%  perf-profile.children.cycles-pp.kernel_clone
-      0.02 ±141%      +0.1        0.08 ± 38%  perf-profile.children.cycles-pp.wake_affine
-      0.05 ± 81%      +0.1        0.10 ± 30%  perf-profile.children.cycles-pp.select_task_rq
-      0.14 ± 20%      +0.1        0.19 ±  4%  perf-profile.children.cycles-pp._find_next_and_bit
-      0.02 ±141%      +0.1        0.07 ± 46%  perf-profile.children.cycles-pp.set_next_entity
-      0.05 ± 81%      +0.1        0.11 ± 19%  perf-profile.children.cycles-pp.select_task_rq_fair
-      0.05 ± 72%      +0.1        0.11 ± 21%  perf-profile.children.cycles-pp.copy_process
-      0.04 ± 71%      +0.1        0.10 ± 10%  perf-profile.children.cycles-pp.___perf_sw_event
-      0.04 ± 71%      +0.1        0.10 ± 24%  perf-profile.children.cycles-pp.__switch_to_asm
-      0.00            +0.1        0.07 ± 41%  perf-profile.children.cycles-pp.xas_set_mark
-      0.00            +0.1        0.07 ± 26%  perf-profile.children.cycles-pp.folio_alloc
-      0.00            +0.1        0.09 ± 26%  perf-profile.children.cycles-pp.prepare_task_switch
-      0.00            +0.1        0.11 ± 36%  perf-profile.children.cycles-pp.cgroup_rstat_flush_atomic
-      0.00            +0.1        0.11 ± 36%  perf-profile.children.cycles-pp.mem_cgroup_wb_stats
-      0.00            +0.1        0.11 ± 36%  perf-profile.children.cycles-pp.do_flush_stats
-      0.06 ±  7%      +0.1        0.18 ± 35%  perf-profile.children.cycles-pp.enqueue_task_fair
-      0.00            +0.1        0.11 ± 38%  perf-profile.children.cycles-pp.balance_dirty_pages
-      0.48            +0.1        0.59 ±  9%  perf-profile.children.cycles-pp.update_rq_clock_task
-      0.07 ± 25%      +0.1        0.19 ± 36%  perf-profile.children.cycles-pp.activate_task
-      0.00            +0.1        0.13 ± 32%  perf-profile.children.cycles-pp.cgroup_rstat_flush_locked
-      0.36 ± 18%      +0.1        0.48 ± 18%  perf-profile.children.cycles-pp.update_rq_clock
-      0.00            +0.1        0.14 ± 42%  perf-profile.children.cycles-pp.balance_dirty_pages_ratelimited_flags
-      0.85 ±  2%      +0.1        1.00 ±  7%  perf-profile.children.cycles-pp.native_sched_clock
-      0.76 ±  2%      +0.2        0.92 ±  5%  perf-profile.children.cycles-pp.sched_clock_cpu
-      0.34 ±  7%      +0.2        0.50 ± 23%  perf-profile.children.cycles-pp._raw_spin_lock_irq
-      0.04 ± 76%      +0.2        0.22 ± 38%  perf-profile.children.cycles-pp.__wake_up_common
-      0.00            +0.2        0.18 ± 50%  perf-profile.children.cycles-pp.handle_reserve_ticket
-      0.02 ±141%      +0.2        0.22 ± 35%  perf-profile.children.cycles-pp.__reserve_bytes
-      0.02 ±141%      +0.2        0.22 ± 40%  perf-profile.children.cycles-pp.btrfs_reserve_metadata_bytes
-      0.09 ± 48%      +0.2        0.29 ± 41%  perf-profile.children.cycles-pp.prepare_pages
-      0.02 ±141%      +0.2        0.22 ± 47%  perf-profile.children.cycles-pp.rq_qos_wait
-      0.02 ±141%      +0.2        0.22 ± 47%  perf-profile.children.cycles-pp.__rq_qos_throttle
-      0.02 ±141%      +0.2        0.22 ± 47%  perf-profile.children.cycles-pp.wbt_wait
-      0.00            +0.2        0.21 ± 44%  perf-profile.children.cycles-pp.btrfs_inode_rsv_release
-      0.00            +0.2        0.24 ± 48%  perf-profile.children.cycles-pp.btrfs_block_rsv_release
-      0.12 ± 29%      +0.2        0.37 ± 36%  perf-profile.children.cycles-pp.btrfs_set_extent_delalloc
-      0.03 ±141%      +0.3        0.29 ± 42%  perf-profile.children.cycles-pp.btrfs_delalloc_reserve_metadata
-      0.14 ± 24%      +0.3        0.43 ± 39%  perf-profile.children.cycles-pp.btrfs_get_extent
-      0.02 ±141%      +0.3        0.31 ± 28%  perf-profile.children.cycles-pp.io_schedule
-      0.91 ± 14%      +0.3        1.24 ±  2%  perf-profile.children.cycles-pp.read_tsc
-      2.55 ±  9%      +0.4        2.94 ± 11%  perf-profile.children.cycles-pp.menu_select
-      0.64 ± 12%      +0.5        1.16 ± 13%  perf-profile.children.cycles-pp.update_sg_lb_stats
-      0.84 ± 15%      +0.5        1.39 ±  9%  perf-profile.children.cycles-pp.update_sd_lb_stats
-      0.88 ± 13%      +0.5        1.43 ±  9%  perf-profile.children.cycles-pp.find_busiest_group
-      0.17 ± 10%      +0.6        0.78 ± 37%  perf-profile.children.cycles-pp.newidle_balance
-      1.17 ± 12%      +0.6        1.81 ±  7%  perf-profile.children.cycles-pp.load_balance
-      0.22 ±  7%      +0.6        0.86 ± 38%  perf-profile.children.cycles-pp.pick_next_task_fair
-      0.40 ±  8%      +0.7        1.12 ± 36%  perf-profile.children.cycles-pp.schedule
-      0.54 ±  8%      +0.8        1.39 ± 34%  perf-profile.children.cycles-pp.__schedule
-      2.35 ± 22%      +1.3        3.69 ± 18%  perf-profile.children.cycles-pp.do_syscall_64
-      2.35 ± 21%      +1.3        3.70 ± 18%  perf-profile.children.cycles-pp.entry_SYSCALL_64_after_hwframe
-      0.00            +1.8        1.84 ± 47%  perf-profile.children.cycles-pp.__writeback_inodes_wb
-      0.00            +1.8        1.84 ± 47%  perf-profile.children.cycles-pp.__writeback_single_inode
-      0.00            +1.8        1.84 ± 47%  perf-profile.children.cycles-pp.wb_workfn
-      0.00            +1.8        1.84 ± 47%  perf-profile.children.cycles-pp.wb_do_writeback
-      0.00            +1.8        1.84 ± 47%  perf-profile.children.cycles-pp.wb_writeback
-      0.00            +1.8        1.84 ± 47%  perf-profile.children.cycles-pp.writeback_sb_inodes
-      0.00            +2.3        2.30 ± 45%  perf-profile.children.cycles-pp.transaction_kthread
-      0.15 ± 25%      +2.5        2.62 ± 84%  perf-profile.children.cycles-pp.poll_idle
-      1.82 ± 15%      -1.3        0.55 ± 52%  perf-profile.self.cycles-pp.read_extent_buffer
-      1.70 ± 21%      -1.2        0.48 ± 45%  perf-profile.self.cycles-pp.btrfs_get_32
-      1.26 ±  4%      -0.9        0.40 ± 50%  perf-profile.self.cycles-pp.btrfs_get_64
-      0.59 ± 19%      -0.5        0.12 ± 62%  perf-profile.self.cycles-pp.check_leaf
-      0.84 ± 31%      -0.4        0.45 ± 21%  perf-profile.self.cycles-pp.native_queued_spin_lock_slowpath
-      0.39 ± 33%      -0.3        0.05 ±110%  perf-profile.self.cycles-pp.check_leaf_item
-      0.45 ± 13%      -0.3        0.11 ± 77%  perf-profile.self.cycles-pp.check_extent_data_item
-      0.48 ± 28%      -0.3        0.16 ± 55%  perf-profile.self.cycles-pp._find_next_zero_bit
-      0.35 ± 22%      -0.3        0.06 ± 80%  perf-profile.self.cycles-pp.btrfs_comp_cpu_keys
-      0.39 ± 21%      -0.3        0.13 ± 88%  perf-profile.self.cycles-pp.copy_page
-      0.26 ± 12%      -0.2        0.10 ± 64%  perf-profile.self.cycles-pp.btrfs_get_8
-      0.42 ± 11%      -0.1        0.33 ±  4%  perf-profile.self.cycles-pp.cpuidle_enter_state
-      0.12 ± 13%      +0.1        0.17 ± 11%  perf-profile.self.cycles-pp._find_next_and_bit
-      0.24 ±  9%      +0.1        0.30        perf-profile.self.cycles-pp.x86_pmu_disable
-      0.09 ± 19%      +0.1        0.14 ± 21%  perf-profile.self.cycles-pp.cpuidle_governor_latency_req
-      0.00            +0.1        0.07 ± 36%  perf-profile.self.cycles-pp.xas_set_mark
-      0.02 ±141%      +0.1        0.09 ± 11%  perf-profile.self.cycles-pp.___perf_sw_event
-      0.02 ±141%      +0.1        0.10 ± 21%  perf-profile.self.cycles-pp.__switch_to_asm
-      0.05 ± 74%      +0.1        0.13 ± 22%  perf-profile.self.cycles-pp.__schedule
-      0.08 ± 22%      +0.1        0.17 ± 31%  perf-profile.self.cycles-pp.irqentry_enter
-      0.06 ± 71%      +0.1        0.16 ± 28%  perf-profile.self.cycles-pp.rcu_sched_clock_irq
-      0.81            +0.1        0.95 ±  7%  perf-profile.self.cycles-pp.native_sched_clock
-      0.83 ± 21%      +0.2        1.02 ± 13%  perf-profile.self.cycles-pp.menu_select
-      0.88 ± 14%      +0.3        1.19 ±  2%  perf-profile.self.cycles-pp.read_tsc
-      0.52 ±  9%      +0.4        0.93 ± 12%  perf-profile.self.cycles-pp.update_sg_lb_stats
-      0.13 ± 28%      +2.4        2.57 ± 84%  perf-profile.self.cycles-pp.poll_idle
-
+   4426369           -12.5%    3873415        cpuidle..usage
+      5.93 ±  2%      -0.5        5.47        mpstat.cpu.all.sys%
+      9.48            +2.1%       9.68        iostat.cpu.iowait
+      7.84            -6.0%       7.37        iostat.cpu.system
+    310366 ±  2%     -14.8%     264523        vmstat.system.cs
+     69011            -5.3%      65342        vmstat.system.in
+  11823460           -11.4%   10471571        fsmark.app_overhead
+      5058            +2.1%       5165        fsmark.files_per_sec
+     55.00            +2.4%      56.33        fsmark.time.percent_of_cpu_this_job_got
+    477760            -9.2%     433730        fsmark.time.voluntary_context_switches
+      5.77 ± 69%      -4.4        1.36 ±148%  perf-profile.calltrace.cycles-pp.do_filp_open.do_sys_openat2.__x64_sys_openat.do_syscall_64.entry_SYSCALL_64_after_hwframe
+      5.77 ± 69%      -4.4        1.36 ±148%  perf-profile.calltrace.cycles-pp.path_openat.do_filp_open.do_sys_openat2.__x64_sys_openat.do_syscall_64
+      7.35 ± 68%      -5.5        1.86 ±142%  perf-profile.children.cycles-pp.__x64_sys_openat
+      7.35 ± 68%      -5.5        1.86 ±142%  perf-profile.children.cycles-pp.do_sys_openat2
+      5.77 ± 69%      -4.4        1.36 ±148%  perf-profile.children.cycles-pp.do_filp_open
+      5.77 ± 69%      -4.4        1.36 ±148%  perf-profile.children.cycles-pp.path_openat
+      5.10 ± 88%      -3.2        1.92 ±142%  perf-profile.children.cycles-pp.sched_setaffinity
+   2453462           -20.3%    1954727        turbostat.C1
+     14.80            -1.8       13.03        turbostat.C1%
+     18.26            +0.8       19.04        turbostat.C1E%
+     92.44            -1.7%      90.91        turbostat.CorWatt
+     32589           -34.7%      21295 ±  2%  turbostat.POLL
+      0.13 ±  2%      -0.0        0.09        turbostat.POLL%
+    120.46            -1.3%     118.92        turbostat.PkgWatt
+    712376            -1.4%     702472        proc-vmstat.nr_dirtied
+     46109            -6.9%      42910        proc-vmstat.nr_slab_unreclaimable
+    705524            -1.4%     695317        proc-vmstat.nr_written
+   2314060            -3.9%    2223615        proc-vmstat.numa_hit
+    489398 ±  9%     -12.0%     430864 ±  9%  proc-vmstat.numa_other
+    218171            -1.6%     214672        proc-vmstat.pgactivate
+   2765841            -3.3%    2673651        proc-vmstat.pgalloc_normal
+   1981302            -7.0%    1842873 ±  3%  proc-vmstat.pgfree
+   2140457            -1.8%    2102818        proc-vmstat.pgpgout
+ 2.073e+09            -4.5%   1.98e+09        perf-stat.i.branch-instructions
+      4.89            +0.2        5.10        perf-stat.i.branch-miss-rate%
+      6.86            -0.3        6.60        perf-stat.i.cache-miss-rate%
+  16995704            -6.9%   15830167        perf-stat.i.cache-misses
+ 2.565e+08            -3.3%   2.48e+08        perf-stat.i.cache-references
+    355982           -13.9%     306606        perf-stat.i.context-switches
+ 1.713e+10            -5.2%  1.623e+10        perf-stat.i.cpu-cycles
+      1706            -6.8%       1589 ±  2%  perf-stat.i.cpu-migrations
+ 2.443e+09            -4.5%  2.334e+09        perf-stat.i.dTLB-loads
+ 1.196e+09            -5.0%  1.137e+09        perf-stat.i.dTLB-stores
+     52.68            +1.9       54.58        perf-stat.i.iTLB-load-miss-rate%
+   2927293            -9.6%    2646648        perf-stat.i.iTLB-loads
+ 1.018e+10            -4.2%  9.752e+09        perf-stat.i.instructions
+      0.60            +1.0%       0.60        perf-stat.i.ipc
+      0.36            -5.2%       0.34        perf-stat.i.metric.GHz
+    669.99           -10.0%     602.81        perf-stat.i.metric.K/sec
+    124.30            -4.5%     118.67        perf-stat.i.metric.M/sec
+   8004496           -12.0%    7040516        perf-stat.i.node-load-misses
+   8642285           -11.0%    7688294        perf-stat.i.node-loads
+     35.10            -1.0       34.11        perf-stat.i.node-store-miss-rate%
+   3782168           -10.9%    3370639        perf-stat.i.node-store-misses
+   6991064            -7.0%    6505160        perf-stat.i.node-stores
+      4.87            +0.2        5.06        perf-stat.overall.branch-miss-rate%
+      6.63            -0.2        6.38        perf-stat.overall.cache-miss-rate%
+     52.17            +1.9       54.08        perf-stat.overall.iTLB-load-miss-rate%
+      0.59            +1.1%       0.60        perf-stat.overall.ipc
+     35.11            -1.0       34.13        perf-stat.overall.node-store-miss-rate%
+ 1.979e+09            -4.7%  1.886e+09        perf-stat.ps.branch-instructions
+  16221561            -7.1%   15076188        perf-stat.ps.cache-misses
+ 2.448e+08            -3.5%  2.362e+08        perf-stat.ps.cache-references
+    339800           -14.1%     292030        perf-stat.ps.context-switches
+ 1.635e+10            -5.4%  1.546e+10        perf-stat.ps.cpu-cycles
+      1628            -7.0%       1513 ±  2%  perf-stat.ps.cpu-migrations
+ 2.332e+09            -4.7%  2.223e+09        perf-stat.ps.dTLB-loads
+ 1.141e+09            -5.2%  1.082e+09        perf-stat.ps.dTLB-stores
+   2794208            -9.8%    2520816        perf-stat.ps.iTLB-loads
+ 9.712e+09            -4.4%  9.288e+09        perf-stat.ps.instructions
+   7640561           -12.2%    6705747        perf-stat.ps.node-load-misses
+   8249263           -11.2%    7322640        perf-stat.ps.node-loads
+   3609780           -11.1%    3209985        perf-stat.ps.node-store-misses
+   6672465            -7.2%    6195169        perf-stat.ps.node-stores
+ 2.143e+11            -8.7%  1.956e+11        perf-stat.total.instructions
 
 
 
@@ -2495,14 +287,14 @@ https://github.com/intel/lkp-tests/wiki
 
 
 
---tzlx3Ab+uqULRPvA
+--xrZS/9iY6bIqZL+1
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: attachment;
-	filename="config-6.4.0-rc7-00010-gda023618076a"
+	filename="config-6.5.0-rc2-00005-ge5b9a3750588"
 
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86_64 6.4.0-rc7 Kernel Configuration
+# Linux/x86_64 6.5.0-rc2 Kernel Configuration
 #
 CONFIG_CC_VERSION_TEXT="gcc-12 (Debian 12.2.0-14) 12.2.0"
 CONFIG_CC_IS_GCC=y
@@ -2776,6 +568,7 @@ CONFIG_KALLSYMS_BASE_RELATIVE=y
 CONFIG_ARCH_HAS_MEMBARRIER_SYNC_CORE=y
 CONFIG_KCMP=y
 CONFIG_RSEQ=y
+CONFIG_CACHESTAT_SYSCALL=y
 # CONFIG_DEBUG_RSEQ is not set
 # CONFIG_EMBEDDED is not set
 CONFIG_HAVE_PERF_EVENTS=y
@@ -2826,7 +619,6 @@ CONFIG_CC_HAS_SANE_STACKPROTECTOR=y
 # Processor type and features
 #
 CONFIG_SMP=y
-CONFIG_X86_FEATURE_NAMES=y
 CONFIG_X86_X2APIC=y
 CONFIG_X86_MPPARSE=y
 # CONFIG_GOLDFISH is not set
@@ -2975,8 +767,6 @@ CONFIG_RANDOMIZE_MEMORY=y
 CONFIG_RANDOMIZE_MEMORY_PHYSICAL_PADDING=0xa
 # CONFIG_ADDRESS_MASKING is not set
 CONFIG_HOTPLUG_CPU=y
-CONFIG_BOOTPARAM_HOTPLUG_CPU0=y
-# CONFIG_DEBUG_HOTPLUG_CPU0 is not set
 # CONFIG_COMPAT_VDSO is not set
 CONFIG_LEGACY_VSYSCALL_XONLY=y
 # CONFIG_LEGACY_VSYSCALL_NONE is not set
@@ -3204,6 +994,11 @@ CONFIG_AS_GFNI=y
 CONFIG_CRASH_CORE=y
 CONFIG_KEXEC_CORE=y
 CONFIG_HOTPLUG_SMT=y
+CONFIG_HOTPLUG_CORE_SYNC=y
+CONFIG_HOTPLUG_CORE_SYNC_DEAD=y
+CONFIG_HOTPLUG_CORE_SYNC_FULL=y
+CONFIG_HOTPLUG_SPLIT_STARTUP=y
+CONFIG_HOTPLUG_PARALLEL=y
 CONFIG_GENERIC_ENTRY=y
 CONFIG_KPROBES=y
 CONFIG_JUMP_LABEL=y
@@ -3233,6 +1028,7 @@ CONFIG_GENERIC_SMP_IDLE_THREAD=y
 CONFIG_ARCH_HAS_FORTIFY_SOURCE=y
 CONFIG_ARCH_HAS_SET_MEMORY=y
 CONFIG_ARCH_HAS_SET_DIRECT_MAP=y
+CONFIG_ARCH_HAS_CPU_FINALIZE_INIT=y
 CONFIG_HAVE_ARCH_THREAD_STRUCT_WHITELIST=y
 CONFIG_ARCH_WANTS_DYNAMIC_TASK_STRUCT=y
 CONFIG_ARCH_WANTS_NO_INSTR=y
@@ -3464,6 +1260,7 @@ CONFIG_ZPOOL=y
 CONFIG_SWAP=y
 CONFIG_ZSWAP=y
 # CONFIG_ZSWAP_DEFAULT_ON is not set
+# CONFIG_ZSWAP_EXCLUSIVE_LOADS_DEFAULT_ON is not set
 # CONFIG_ZSWAP_COMPRESSOR_DEFAULT_DEFLATE is not set
 CONFIG_ZSWAP_COMPRESSOR_DEFAULT_LZO=y
 # CONFIG_ZSWAP_COMPRESSOR_DEFAULT_842 is not set
@@ -3484,7 +1281,7 @@ CONFIG_ZSMALLOC_CHAIN_SIZE=8
 #
 # SLAB allocator options
 #
-# CONFIG_SLAB is not set
+# CONFIG_SLAB_DEPRECATED is not set
 CONFIG_SLUB=y
 # CONFIG_SLUB_TINY is not set
 CONFIG_SLAB_MERGE_DEFAULT=y
@@ -3574,6 +1371,7 @@ CONFIG_PTE_MARKER_UFFD_WP=y
 # CONFIG_LRU_GEN is not set
 CONFIG_ARCH_SUPPORTS_PER_VMA_LOCK=y
 CONFIG_PER_VMA_LOCK=y
+CONFIG_LOCK_MM_AND_FIND_VMA=y
 
 #
 # Data Access Monitoring
@@ -4593,6 +2391,7 @@ CONFIG_INTEL_MEI_ME=m
 # CONFIG_INTEL_MEI_GSC is not set
 # CONFIG_INTEL_MEI_HDCP is not set
 # CONFIG_INTEL_MEI_PXP is not set
+# CONFIG_INTEL_MEI_GSC_PROXY is not set
 # CONFIG_VMWARE_VMCI is not set
 # CONFIG_GENWQE is not set
 # CONFIG_ECHO is not set
@@ -5730,13 +3529,13 @@ CONFIG_GPIO_CDEV_V1=y
 # CONFIG_GPIO_GENERIC_PLATFORM is not set
 CONFIG_GPIO_ICH=m
 # CONFIG_GPIO_MB86S7X is not set
-# CONFIG_GPIO_VX855 is not set
 # CONFIG_GPIO_AMD_FCH is not set
 # end of Memory mapped GPIO drivers
 
 #
 # Port-mapped I/O GPIO drivers
 #
+# CONFIG_GPIO_VX855 is not set
 # CONFIG_GPIO_F7188X is not set
 # CONFIG_GPIO_IT87 is not set
 # CONFIG_GPIO_SCH is not set
@@ -5917,6 +3716,7 @@ CONFIG_SENSORS_MAX197=m
 # CONFIG_SENSORS_MAX31722 is not set
 # CONFIG_SENSORS_MAX31730 is not set
 # CONFIG_SENSORS_MAX31760 is not set
+# CONFIG_MAX31827 is not set
 # CONFIG_SENSORS_MAX6620 is not set
 # CONFIG_SENSORS_MAX6621 is not set
 CONFIG_SENSORS_MAX6639=m
@@ -6022,6 +3822,7 @@ CONFIG_SENSORS_ACPI_POWER=m
 CONFIG_SENSORS_ATK0110=m
 # CONFIG_SENSORS_ASUS_WMI is not set
 # CONFIG_SENSORS_ASUS_EC is not set
+# CONFIG_SENSORS_HP_WMI is not set
 CONFIG_THERMAL=y
 # CONFIG_THERMAL_NETLINK is not set
 # CONFIG_THERMAL_STATISTICS is not set
@@ -6032,6 +3833,7 @@ CONFIG_THERMAL_WRITABLE_TRIPS=y
 CONFIG_THERMAL_DEFAULT_GOV_STEP_WISE=y
 # CONFIG_THERMAL_DEFAULT_GOV_FAIR_SHARE is not set
 # CONFIG_THERMAL_DEFAULT_GOV_USER_SPACE is not set
+# CONFIG_THERMAL_DEFAULT_GOV_BANG_BANG is not set
 CONFIG_THERMAL_GOV_FAIR_SHARE=y
 CONFIG_THERMAL_GOV_STEP_WISE=y
 CONFIG_THERMAL_GOV_BANG_BANG=y
@@ -6174,6 +3976,7 @@ CONFIG_MFD_INTEL_LPSS_PCI=y
 # CONFIG_MFD_88PM805 is not set
 # CONFIG_MFD_88PM860X is not set
 # CONFIG_MFD_MAX14577 is not set
+# CONFIG_MFD_MAX77541 is not set
 # CONFIG_MFD_MAX77693 is not set
 # CONFIG_MFD_MAX77843 is not set
 # CONFIG_MFD_MAX8907 is not set
@@ -6215,6 +4018,8 @@ CONFIG_MFD_SM501_GPIO=y
 # CONFIG_MFD_TPS65910 is not set
 # CONFIG_MFD_TPS65912_I2C is not set
 # CONFIG_MFD_TPS65912_SPI is not set
+# CONFIG_MFD_TPS6594_I2C is not set
+# CONFIG_MFD_TPS6594_SPI is not set
 # CONFIG_TWL4030_CORE is not set
 # CONFIG_TWL6040_CORE is not set
 # CONFIG_MFD_WL1273_CORE is not set
@@ -6455,12 +4260,15 @@ CONFIG_FB=y
 CONFIG_FB_CFB_FILLRECT=y
 CONFIG_FB_CFB_COPYAREA=y
 CONFIG_FB_CFB_IMAGEBLIT=y
-CONFIG_FB_SYS_FILLRECT=m
-CONFIG_FB_SYS_COPYAREA=m
-CONFIG_FB_SYS_IMAGEBLIT=m
+CONFIG_FB_SYS_FILLRECT=y
+CONFIG_FB_SYS_COPYAREA=y
+CONFIG_FB_SYS_IMAGEBLIT=y
 # CONFIG_FB_FOREIGN_ENDIAN is not set
-CONFIG_FB_SYS_FOPS=m
+CONFIG_FB_SYS_FOPS=y
 CONFIG_FB_DEFERRED_IO=y
+CONFIG_FB_IO_HELPERS=y
+CONFIG_FB_SYS_HELPERS=y
+CONFIG_FB_SYS_HELPERS_DEFERRED=y
 # CONFIG_FB_MODE_HELPERS is not set
 CONFIG_FB_TILEBLITTING=y
 
@@ -6895,6 +4703,7 @@ CONFIG_UCSI_ACPI=y
 # CONFIG_TYPEC_MUX_FSA4480 is not set
 # CONFIG_TYPEC_MUX_GPIO_SBU is not set
 # CONFIG_TYPEC_MUX_PI3USB30532 is not set
+# CONFIG_TYPEC_MUX_NB7VPQ904M is not set
 # end of USB Type-C Multiplexer/DeMultiplexer Switch support
 
 #
@@ -6946,6 +4755,7 @@ CONFIG_LEDS_CLASS=y
 # LED drivers
 #
 # CONFIG_LEDS_APU is not set
+# CONFIG_LEDS_AW200XX is not set
 CONFIG_LEDS_LM3530=m
 # CONFIG_LEDS_LM3532 is not set
 # CONFIG_LEDS_LM3642 is not set
@@ -6975,7 +4785,6 @@ CONFIG_LEDS_MLXCPLD=m
 # CONFIG_LEDS_MLXREG is not set
 # CONFIG_LEDS_USER is not set
 # CONFIG_LEDS_NIC78BX is not set
-# CONFIG_LEDS_TI_LMU_COMMON is not set
 
 #
 # Flash and Torch LED drivers
@@ -7200,12 +5009,18 @@ CONFIG_VFIO_CONTAINER=y
 CONFIG_VFIO_IOMMU_TYPE1=m
 CONFIG_VFIO_NOIOMMU=y
 CONFIG_VFIO_VIRQFD=y
+
+#
+# VFIO support for PCI devices
+#
 CONFIG_VFIO_PCI_CORE=m
 CONFIG_VFIO_PCI_MMAP=y
 CONFIG_VFIO_PCI_INTX=y
 CONFIG_VFIO_PCI=m
 # CONFIG_VFIO_PCI_VGA is not set
 # CONFIG_VFIO_PCI_IGD is not set
+# end of VFIO support for PCI devices
+
 CONFIG_IRQ_BYPASS_MANAGER=m
 # CONFIG_VIRT_DRIVERS is not set
 CONFIG_VIRTIO_ANCHOR=y
@@ -7260,7 +5075,7 @@ CONFIG_MXM_WMI=m
 # CONFIG_NVIDIA_WMI_EC_BACKLIGHT is not set
 # CONFIG_XIAOMI_WMI is not set
 # CONFIG_GIGABYTE_WMI is not set
-# CONFIG_YOGABOOK_WMI is not set
+# CONFIG_YOGABOOK is not set
 CONFIG_ACERHDF=m
 # CONFIG_ACER_WIRELESS is not set
 CONFIG_ACER_WMI=m
@@ -7908,7 +5723,6 @@ CONFIG_SECURITY_NETWORK_XFRM=y
 CONFIG_SECURITY_PATH=y
 CONFIG_INTEL_TXT=y
 CONFIG_LSM_MMAP_MIN_ADDR=65535
-CONFIG_HAVE_HARDENED_USERCOPY_ALLOCATOR=y
 CONFIG_HARDENED_USERCOPY=y
 CONFIG_FORTIFY_SOURCE=y
 # CONFIG_STATIC_USERMODEHELPER is not set
@@ -7987,6 +5801,7 @@ CONFIG_CRYPTO_ALGAPI=y
 CONFIG_CRYPTO_ALGAPI2=y
 CONFIG_CRYPTO_AEAD=y
 CONFIG_CRYPTO_AEAD2=y
+CONFIG_CRYPTO_SIG2=y
 CONFIG_CRYPTO_SKCIPHER=y
 CONFIG_CRYPTO_SKCIPHER2=y
 CONFIG_CRYPTO_HASH=y
@@ -8077,6 +5892,7 @@ CONFIG_CRYPTO_XTS=m
 # CONFIG_CRYPTO_CHACHA20POLY1305 is not set
 CONFIG_CRYPTO_CCM=m
 CONFIG_CRYPTO_GCM=y
+CONFIG_CRYPTO_GENIV=y
 CONFIG_CRYPTO_SEQIV=y
 CONFIG_CRYPTO_ECHAINIV=m
 CONFIG_CRYPTO_ESSIV=m
@@ -8097,7 +5913,7 @@ CONFIG_CRYPTO_RMD160=m
 CONFIG_CRYPTO_SHA1=y
 CONFIG_CRYPTO_SHA256=y
 CONFIG_CRYPTO_SHA512=y
-CONFIG_CRYPTO_SHA3=m
+CONFIG_CRYPTO_SHA3=y
 # CONFIG_CRYPTO_SM3_GENERIC is not set
 # CONFIG_CRYPTO_STREEBOG is not set
 CONFIG_CRYPTO_VMAC=m
@@ -8136,6 +5952,7 @@ CONFIG_CRYPTO_DRBG_HASH=y
 CONFIG_CRYPTO_DRBG_CTR=y
 CONFIG_CRYPTO_DRBG=y
 CONFIG_CRYPTO_JITTERENTROPY=y
+# CONFIG_CRYPTO_JITTERENTROPY_TESTINTERFACE is not set
 # end of Random number generation
 
 #
@@ -8319,6 +6136,7 @@ CONFIG_HAS_IOPORT=y
 CONFIG_HAS_IOPORT_MAP=y
 CONFIG_HAS_DMA=y
 CONFIG_DMA_OPS=y
+CONFIG_NEED_SG_DMA_FLAGS=y
 CONFIG_NEED_SG_DMA_LENGTH=y
 CONFIG_NEED_DMA_MAP_STATE=y
 CONFIG_ARCH_DMA_ADDR_T_64BIT=y
@@ -8488,14 +6306,20 @@ CONFIG_PANIC_TIMEOUT=0
 CONFIG_LOCKUP_DETECTOR=y
 CONFIG_SOFTLOCKUP_DETECTOR=y
 # CONFIG_BOOTPARAM_SOFTLOCKUP_PANIC is not set
-CONFIG_HARDLOCKUP_DETECTOR_PERF=y
-CONFIG_HARDLOCKUP_CHECK_TIMESTAMP=y
+CONFIG_HAVE_HARDLOCKUP_DETECTOR_BUDDY=y
 CONFIG_HARDLOCKUP_DETECTOR=y
+# CONFIG_HARDLOCKUP_DETECTOR_PREFER_BUDDY is not set
+CONFIG_HARDLOCKUP_DETECTOR_PERF=y
+# CONFIG_HARDLOCKUP_DETECTOR_BUDDY is not set
+# CONFIG_HARDLOCKUP_DETECTOR_ARCH is not set
+CONFIG_HARDLOCKUP_DETECTOR_COUNTS_HRTIMER=y
+CONFIG_HARDLOCKUP_CHECK_TIMESTAMP=y
 CONFIG_BOOTPARAM_HARDLOCKUP_PANIC=y
 CONFIG_DETECT_HUNG_TASK=y
 CONFIG_DEFAULT_HUNG_TASK_TIMEOUT=480
 # CONFIG_BOOTPARAM_HUNG_TASK_PANIC is not set
 CONFIG_WQ_WATCHDOG=y
+# CONFIG_WQ_CPU_INTENSIVE_REPORT is not set
 # CONFIG_TEST_LOCKUP is not set
 # end of Debug Oops, Lockups and Hangs
 
@@ -8571,6 +6395,7 @@ CONFIG_HAVE_RETHOOK=y
 CONFIG_RETHOOK=y
 CONFIG_HAVE_FUNCTION_TRACER=y
 CONFIG_HAVE_FUNCTION_GRAPH_TRACER=y
+CONFIG_HAVE_FUNCTION_GRAPH_RETVAL=y
 CONFIG_HAVE_DYNAMIC_FTRACE=y
 CONFIG_HAVE_DYNAMIC_FTRACE_WITH_REGS=y
 CONFIG_HAVE_DYNAMIC_FTRACE_WITH_DIRECT_CALLS=y
@@ -8596,6 +6421,7 @@ CONFIG_FTRACE=y
 # CONFIG_BOOTTIME_TRACING is not set
 CONFIG_FUNCTION_TRACER=y
 CONFIG_FUNCTION_GRAPH_TRACER=y
+# CONFIG_FUNCTION_GRAPH_RETVAL is not set
 CONFIG_DYNAMIC_FTRACE=y
 CONFIG_DYNAMIC_FTRACE_WITH_REGS=y
 CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS=y
@@ -8743,7 +6569,7 @@ CONFIG_ARCH_USE_MEMTEST=y
 # end of Rust hacking
 # end of Kernel hacking
 
---tzlx3Ab+uqULRPvA
+--xrZS/9iY6bIqZL+1
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: attachment; filename="job-script"
 
@@ -8751,30 +6577,32 @@ Content-Disposition: attachment; filename="job-script"
 
 export_top_env()
 {
-	export suite='filebench'
-	export testcase='filebench'
+	export suite='fsmark'
+	export testcase='fsmark'
 	export category='benchmark'
-	export job_origin='filebench-part1.yaml'
+	export iterations=1
+	export nr_threads=32
+	export job_origin='fsmark-1ssd-nfs.yaml'
 	export queue_cmdline_keys='branch
 commit
 kbuild_queue_analysis'
 	export queue='validate'
-	export testbox='lkp-icl-2sp1'
-	export tbox_group='lkp-icl-2sp1'
-	export submit_id='64bc5e056ee82b7138548e1f'
-	export job_file='/lkp/jobs/queued/validate/lkp-icl-2sp1/filebench-performance-1HDD-btrfs-webserver.f-debian-11.1-x86_64-20220510.cgz-da023618076a-20230723-160056-1kwfhd-4.yaml'
-	export id='8ea95f450c1e8524aa3296eff77ca971258dff60'
+	export testbox='lkp-ivb-2ep1'
+	export tbox_group='lkp-ivb-2ep1'
+	export submit_id='64bc77ca9e6bfd372eed1277'
+	export job_file='/lkp/jobs/queued/validate/lkp-ivb-2ep1/fsmark-performance-1SSD-9B-btrfs-nfsv4-1x-16d-256fpd-32t-fsyncBeforeClose-400M-debian-11.1-x86_64-20220510.cgz-e5b9a3750588-20230723-79662-pqk3ih-5.yaml'
+	export id='0dfc473d80e1acde3e35d9bf233a6f7683f152eb'
 	export queuer_version='/zday/lkp'
-	export model='Ice Lake'
+	export model='Ivy Bridge-EP'
 	export nr_node=2
-	export nr_cpu=96
-	export memory='128G'
-	export nr_hdd_partitions=1
-	export hdd_partitions='/dev/disk/by-id/ata-ST9500530NS_9SP1KLAR-part1'
-	export ssd_partitions='/dev/nvme0n1p1'
-	export swap_partitions=
-	export kernel_cmdline_hw='acpi_rsdp=0x665fd014'
-	export rootfs_partition='/dev/disk/by-id/ata-INTEL_SSDSC2BB800G4_PHWL4204005K800RGN-part3'
+	export nr_cpu=48
+	export memory='112G'
+	export nr_ssd_partitions=1
+	export nr_hdd_partitions=4
+	export hdd_partitions='/dev/disk/by-id/ata-ST1000DM010-2EP102_W9APNAHE-part*'
+	export ssd_partitions='/dev/disk/by-id/ata-INTEL_SSDSC2BB800G4_PHWL42040057800RGN-part2'
+	export rootfs_partition='/dev/disk/by-id/ata-INTEL_SSDSC2BB800G4_PHWL42040057800RGN-part1'
+	export brand='Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GHz'
 	export need_kconfig='{"XFS_DEBUG"=>"n"}
 {"XFS_WARN"=>"y"}
 {"PM_DEBUG"=>"n"}
@@ -8811,21 +6639,26 @@ SATA_AHCI
 SATA_AHCI_PLATFORM
 ATA
 {"PCI"=>"y"}
+NFS_V4
+NFSD
 BTRFS_FS'
-	export commit='da023618076a13c35bcde1a49a87b7da64761f1d'
-	export ucode='0xb000280'
+	export commit='e5b9a37505880cb3d76ebddca25a7242fd9d6f91'
+	export ucode='0x42e'
 	export need_kconfig_hw='{"PTP_1588_CLOCK"=>"y"}
 {"IGB"=>"y"}
-{"IXGBE"=>"y"}
-SATA_AHCI'
+SCSI_SAS_LIBSAS
+SCSI_ISCI
+ATA_PIIX
+{"SCSI_SAS_ATA"=>"y"}'
+	export bisect_dmesg=true
 	export kconfig='x86_64-rhel-8.3'
-	export enqueue_time='2023-07-23 06:53:58 +0800'
-	export _id='64bc5e076ee82b7138548e20'
-	export _rt='/result/filebench/performance-1HDD-btrfs-webserver.f/lkp-icl-2sp1/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-12/da023618076a13c35bcde1a49a87b7da64761f1d'
+	export enqueue_time='2023-07-23 08:43:54 +0800'
+	export _id='64bc77cb9e6bfd372eed1279'
+	export _rt='/result/fsmark/performance-1SSD-9B-btrfs-nfsv4-1x-16d-256fpd-32t-fsyncBeforeClose-400M/lkp-ivb-2ep1/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-12/e5b9a37505880cb3d76ebddca25a7242fd9d6f91'
 	export compiler='gcc-12'
-	export head_commit='094fc741d0f5925c31db436d278c7ca8eca03651'
+	export head_commit='cd875ef432fda9d248c23f18d539b75794046b6f'
 	export base_commit='fdf0eaf11452d72945af31804e2a1048ee1b574c'
-	export branch='linus/master'
+	export branch='cel/topic-sunrpc-thread-scheduling'
 	export rootfs='debian-11.1-x86_64-20220510.cgz'
 	export user='lkp'
 	export LKP_SERVER='internal-lkp-server'
@@ -8834,16 +6667,15 @@ SATA_AHCI'
 	export max_uptime=2100
 	export initrd='/osimage/debian/debian-11.1-x86_64-20220510.cgz'
 	export bootloader_append='root=/dev/ram0
-RESULT_ROOT=/result/filebench/performance-1HDD-btrfs-webserver.f/lkp-icl-2sp1/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-12/da023618076a13c35bcde1a49a87b7da64761f1d/3
-BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3/gcc-12/da023618076a13c35bcde1a49a87b7da64761f1d/vmlinuz-6.4.0-rc7-00010-gda023618076a
-branch=linus/master
-job=/lkp/jobs/scheduled/lkp-icl-2sp1/filebench-performance-1HDD-btrfs-webserver.f-debian-11.1-x86_64-20220510.cgz-da023618076a-20230723-160056-1kwfhd-4.yaml
+RESULT_ROOT=/result/fsmark/performance-1SSD-9B-btrfs-nfsv4-1x-16d-256fpd-32t-fsyncBeforeClose-400M/lkp-ivb-2ep1/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-12/e5b9a37505880cb3d76ebddca25a7242fd9d6f91/3
+BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3/gcc-12/e5b9a37505880cb3d76ebddca25a7242fd9d6f91/vmlinuz-6.5.0-rc2-00005-ge5b9a3750588
+branch=cel/topic-sunrpc-thread-scheduling
+job=/lkp/jobs/scheduled/lkp-ivb-2ep1/fsmark-performance-1SSD-9B-btrfs-nfsv4-1x-16d-256fpd-32t-fsyncBeforeClose-400M-debian-11.1-x86_64-20220510.cgz-e5b9a3750588-20230723-79662-pqk3ih-5.yaml
 user=lkp
 ARCH=x86_64
 kconfig=x86_64-rhel-8.3
-commit=da023618076a13c35bcde1a49a87b7da64761f1d
+commit=e5b9a37505880cb3d76ebddca25a7242fd9d6f91
 nmi_watchdog=0
-acpi_rsdp=0x665fd014
 max_uptime=2100
 LKP_SERVER=internal-lkp-server
 nokaslr
@@ -8868,20 +6700,23 @@ earlyprintk=ttyS0,115200
 console=ttyS0,115200
 vga=normal
 rw'
-	export modules_initrd='/pkg/linux/x86_64-rhel-8.3/gcc-12/da023618076a13c35bcde1a49a87b7da64761f1d/modules.cgz'
-	export bm_initrd='/osimage/deps/debian-11.1-x86_64-20220510.cgz/run-ipconfig_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/lkp_20220513.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/rsync-rootfs_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/fs_20220526.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/fs2_20220526.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/filebench-x86_64-22620e6-1_20221010.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/mpstat_20220516.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/turbostat_20220514.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/turbostat-x86_64-210e04ff7681-1_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/perf_20230522.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/perf-x86_64-00c7b5f4ddc5-1_20230402.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/sar-x86_64-c5bb321-1_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/hw_20220526.cgz'
+	export modules_initrd='/pkg/linux/x86_64-rhel-8.3/gcc-12/e5b9a37505880cb3d76ebddca25a7242fd9d6f91/modules.cgz'
+	export bm_initrd='/osimage/deps/debian-11.1-x86_64-20220510.cgz/run-ipconfig_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/lkp_20220513.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/rsync-rootfs_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/fs_20220526.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/fs2_20220526.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/fsmark-x86_64-2628be5-1_20230209.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/mpstat_20220516.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/turbostat_20220514.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/turbostat-x86_64-210e04ff7681-1_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/perf_20230522.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/perf-x86_64-00c7b5f4ddc5-1_20230402.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/sar-x86_64-c5bb321-1_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/hw_20220526.cgz'
 	export ucode_initrd='/osimage/ucode/intel-ucode-20230406.cgz'
 	export lkp_initrd='/osimage/user/lkp/lkp-x86_64.cgz'
 	export site='lkp-wsx01'
 	export LKP_CGI_PORT=80
 	export LKP_CIFS_PORT=139
-	export job_initrd='/lkp/jobs/scheduled/lkp-icl-2sp1/filebench-performance-1HDD-btrfs-webserver.f-debian-11.1-x86_64-20220510.cgz-da023618076a-20230723-160056-1kwfhd-4.cgz'
-	export last_kernel='6.5.0-rc2-07657-g31dee1695e98'
-	export acpi_rsdp='0x665fd014'
+	export job_initrd='/lkp/jobs/scheduled/lkp-ivb-2ep1/fsmark-performance-1SSD-9B-btrfs-nfsv4-1x-16d-256fpd-32t-fsyncBeforeClose-400M-debian-11.1-x86_64-20220510.cgz-e5b9a3750588-20230723-79662-pqk3ih-5.cgz'
+	export last_kernel='6.5.0-rc2'
+	export acpi_rsdp='0x000f0410'
 	export repeat_to=6
+	export bad_samples='5174.7
+5143.0
+5181.6'
 	export kbuild_queue_analysis=1
-	export kernel='/pkg/linux/x86_64-rhel-8.3/gcc-12/da023618076a13c35bcde1a49a87b7da64761f1d/vmlinuz-6.4.0-rc7-00010-gda023618076a'
-	export result_root='/result/filebench/performance-1HDD-btrfs-webserver.f/lkp-icl-2sp1/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-12/da023618076a13c35bcde1a49a87b7da64761f1d/3'
+	export kernel='/pkg/linux/x86_64-rhel-8.3/gcc-12/e5b9a37505880cb3d76ebddca25a7242fd9d6f91/vmlinuz-6.5.0-rc2-00005-ge5b9a3750588'
+	export result_root='/result/fsmark/performance-1SSD-9B-btrfs-nfsv4-1x-16d-256fpd-32t-fsyncBeforeClose-400M/lkp-ivb-2ep1/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-12/e5b9a37505880cb3d76ebddca25a7242fd9d6f91/3'
 
 	[ -n "$LKP_SRC" ] ||
 	export LKP_SRC=/lkp/${user:-lkp}/src
@@ -8897,11 +6732,11 @@ run_job()
 
 	export_top_env
 
-	run_setup nr_hdd=1 $LKP_SRC/setup/disk
+	run_setup nr_ssd=1 $LKP_SRC/setup/disk
 
 	run_setup fs='btrfs' $LKP_SRC/setup/fs
 
-	run_setup test='webserver.f' $LKP_SRC/setup/filebench-setup
+	run_setup fs='nfsv4' $LKP_SRC/setup/fs2
 
 	run_setup $LKP_SRC/setup/cpufreq_governor 'performance'
 
@@ -8938,7 +6773,7 @@ run_job()
 	run_monitor $LKP_SRC/monitors/wrapper oom-killer
 	run_monitor $LKP_SRC/monitors/plain/watchdog
 
-	run_test $LKP_SRC/tests/wrapper filebench
+	run_test filesize='9B' test_size='400M' sync_method='fsyncBeforeClose' nr_directories='16d' nr_files_per_directory='256fpd' $LKP_SRC/tests/wrapper fsmark
 }
 
 extract_stats()
@@ -8946,7 +6781,7 @@ extract_stats()
 	export stats_part_begin=
 	export stats_part_end=
 
-	$LKP_SRC/stats/wrapper filebench
+	env filesize='9B' test_size='400M' sync_method='fsyncBeforeClose' nr_directories='16d' nr_files_per_directory='256fpd' $LKP_SRC/stats/wrapper fsmark
 	$LKP_SRC/stats/wrapper kmsg
 	$LKP_SRC/stats/wrapper boot-time
 	$LKP_SRC/stats/wrapper uptime
@@ -8972,7 +6807,7 @@ extract_stats()
 	$LKP_SRC/stats/wrapper perf-c2c
 	env debug_mode=0 $LKP_SRC/stats/wrapper perf-profile
 
-	$LKP_SRC/stats/wrapper time filebench.time
+	$LKP_SRC/stats/wrapper time fsmark.time
 	$LKP_SRC/stats/wrapper dmesg
 	$LKP_SRC/stats/wrapper kmsg
 	$LKP_SRC/stats/wrapper last_state
@@ -8982,50 +6817,47 @@ extract_stats()
 
 "$@"
 
---tzlx3Ab+uqULRPvA
+--xrZS/9iY6bIqZL+1
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: attachment; filename="job.yaml"
 
 ---
-
-#! jobs/filebench-part1.yaml
-suite: filebench
-testcase: filebench
+suite: fsmark
+testcase: fsmark
 category: benchmark
-disk: 1HDD
+iterations: 1x
+nr_threads: 32t
+disk: 1SSD
 fs: btrfs
-fs2:
-filebench-setup:
-  test: webserver.f
-filebench:
-job_origin: filebench-part1.yaml
-
-#! queue options
+fs2: nfsv4
+fsmark:
+  filesize: 9B
+  test_size: 400M
+  sync_method: fsyncBeforeClose
+  nr_directories: 16d
+  nr_files_per_directory: 256fpd
+job_origin: fsmark-1ssd-nfs.yaml
 queue_cmdline_keys:
 - branch
 - commit
 - kbuild_queue_analysis
 queue: bisect
-testbox: lkp-icl-2sp1
-tbox_group: lkp-icl-2sp1
-submit_id: 64bc54986ee82b6ee89eaf8f
-job_file: "/lkp/jobs/scheduled/lkp-icl-2sp1/filebench-performance-1HDD-btrfs-webserver.f-debian-11.1-x86_64-20220510.cgz-da023618076a-20230723-159464-gxpofa-2.yaml"
-id: 827ce4c21fafbfe910231a5a99eb887c785f171f
+testbox: lkp-ivb-2ep1
+tbox_group: lkp-ivb-2ep1
+submit_id: 64bc69439e6bfd3290712656
+job_file: "/lkp/jobs/scheduled/lkp-ivb-2ep1/fsmark-performance-1SSD-9B-btrfs-nfsv4-1x-16d-256fpd-32t-fsyncBeforeClose-400M-debian-11.1-x86_64-20220510.cgz-e5b9a3750588-20230723-78480-os4kul-1.yaml"
+id: f91468bd40cf2bb6ced3055927fbf261d28582b7
 queuer_version: "/zday/lkp"
-
-#! /db/releases/20230718234219/lkp-src/hosts/lkp-icl-2sp1
-model: Ice Lake
+model: Ivy Bridge-EP
 nr_node: 2
-nr_cpu: 96
-memory: 128G
-nr_hdd_partitions: 1
-hdd_partitions: "/dev/disk/by-id/ata-ST9500530NS_9SP1KLAR-part1"
-ssd_partitions: "/dev/nvme0n1p1"
-swap_partitions:
-kernel_cmdline_hw: acpi_rsdp=0x665fd014
-rootfs_partition: "/dev/disk/by-id/ata-INTEL_SSDSC2BB800G4_PHWL4204005K800RGN-part3"
-
-#! /db/releases/20230718234219/lkp-src/include/category/benchmark
+nr_cpu: 48
+memory: 112G
+nr_ssd_partitions: 1
+nr_hdd_partitions: 4
+hdd_partitions: "/dev/disk/by-id/ata-ST1000DM010-2EP102_W9APNAHE-part*"
+ssd_partitions: "/dev/disk/by-id/ata-INTEL_SSDSC2BB800G4_PHWL42040057800RGN-part2"
+rootfs_partition: "/dev/disk/by-id/ata-INTEL_SSDSC2BB800G4_PHWL42040057800RGN-part1"
+brand: Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GHz
 need_kconfig:
 - XFS_DEBUG: n
 - XFS_WARN: y
@@ -9063,6 +6895,8 @@ need_kconfig:
 - SATA_AHCI_PLATFORM
 - ATA
 - PCI: y
+- NFS_V4
+- NFSD
 - BTRFS_FS
 kmsg:
 boot-time:
@@ -9094,36 +6928,27 @@ mpstat:
 perf-c2c:
 perf-profile:
   debug_mode: 0
-
-#! /db/releases/20230718234219/lkp-src/include/category/ALL
 cpufreq_governor: performance
 sanity-check:
-
-#! /db/releases/20230718234219/lkp-src/include/disk/nr_hdd
-
-#! /db/releases/20230718234219/lkp-src/include/queue/cyclic
-commit: da023618076a13c35bcde1a49a87b7da64761f1d
-
-#! /db/releases/20230718234219/lkp-src/include/testbox/lkp-icl-2sp1
-ucode: '0xb000280'
+commit: e5b9a37505880cb3d76ebddca25a7242fd9d6f91
+ucode: '0x42e'
 need_kconfig_hw:
 - PTP_1588_CLOCK: y
 - IGB: y
-- IXGBE: y
-- SATA_AHCI
-
-#! /db/releases/20230718234219/lkp-src/include/fs/OTHERS
+- SCSI_SAS_LIBSAS
+- SCSI_ISCI
+- ATA_PIIX
+- SCSI_SAS_ATA: y
+bisect_dmesg: true
 kconfig: x86_64-rhel-8.3
-enqueue_time: 2023-07-23 06:13:44.200961103 +08:00
-_id: 64bc54996ee82b6ee89eaf91
-_rt: "/result/filebench/performance-1HDD-btrfs-webserver.f/lkp-icl-2sp1/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-12/da023618076a13c35bcde1a49a87b7da64761f1d"
+enqueue_time: 2023-07-23 07:41:55.833883246 +08:00
+_id: 64bc6b9f9e6bfd3290712657
+_rt: "/result/fsmark/performance-1SSD-9B-btrfs-nfsv4-1x-16d-256fpd-32t-fsyncBeforeClose-400M/lkp-ivb-2ep1/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-12/e5b9a37505880cb3d76ebddca25a7242fd9d6f91"
 compiler: gcc-12
-head_commit: '094fc741d0f5925c31db436d278c7ca8eca03651'
+head_commit: cd875ef432fda9d248c23f18d539b75794046b6f
 base_commit: fdf0eaf11452d72945af31804e2a1048ee1b574c
-branch: internal-devel/devel-hourly-20230722-120627
+branch: linux-devel/devel-hourly-20230721-143654
 rootfs: debian-11.1-x86_64-20220510.cgz
-
-#! schedule options
 user: lkp
 LKP_SERVER: internal-lkp-server
 scheduler_version: "/lkp/lkp/src"
@@ -9132,16 +6957,15 @@ max_uptime: 2100
 initrd: "/osimage/debian/debian-11.1-x86_64-20220510.cgz"
 bootloader_append:
 - root=/dev/ram0
-- RESULT_ROOT=/result/filebench/performance-1HDD-btrfs-webserver.f/lkp-icl-2sp1/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-12/da023618076a13c35bcde1a49a87b7da64761f1d/1
-- BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3/gcc-12/da023618076a13c35bcde1a49a87b7da64761f1d/vmlinuz-6.4.0-rc7-00010-gda023618076a
-- branch=internal-devel/devel-hourly-20230722-120627
-- job=/lkp/jobs/scheduled/lkp-icl-2sp1/filebench-performance-1HDD-btrfs-webserver.f-debian-11.1-x86_64-20220510.cgz-da023618076a-20230723-159464-gxpofa-2.yaml
+- RESULT_ROOT=/result/fsmark/performance-1SSD-9B-btrfs-nfsv4-1x-16d-256fpd-32t-fsyncBeforeClose-400M/lkp-ivb-2ep1/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-12/e5b9a37505880cb3d76ebddca25a7242fd9d6f91/0
+- BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3/gcc-12/e5b9a37505880cb3d76ebddca25a7242fd9d6f91/vmlinuz-6.5.0-rc2-00005-ge5b9a3750588
+- branch=linux-devel/devel-hourly-20230721-143654
+- job=/lkp/jobs/scheduled/lkp-ivb-2ep1/fsmark-performance-1SSD-9B-btrfs-nfsv4-1x-16d-256fpd-32t-fsyncBeforeClose-400M-debian-11.1-x86_64-20220510.cgz-e5b9a3750588-20230723-78480-os4kul-1.yaml
 - user=lkp
 - ARCH=x86_64
 - kconfig=x86_64-rhel-8.3
-- commit=da023618076a13c35bcde1a49a87b7da64761f1d
+- commit=e5b9a37505880cb3d76ebddca25a7242fd9d6f91
 - nmi_watchdog=0
-- acpi_rsdp=0x665fd014
 - max_uptime=2100
 - LKP_SERVER=internal-lkp-server
 - nokaslr
@@ -9166,44 +6990,62 @@ bootloader_append:
 - console=ttyS0,115200
 - vga=normal
 - rw
-modules_initrd: "/pkg/linux/x86_64-rhel-8.3/gcc-12/da023618076a13c35bcde1a49a87b7da64761f1d/modules.cgz"
-bm_initrd: "/osimage/deps/debian-11.1-x86_64-20220510.cgz/lkp_20220513.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/run-ipconfig_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/rsync-rootfs_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/fs_20220526.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/fs2_20220526.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/filebench-x86_64-22620e6-1_20221010.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/mpstat_20220516.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/turbostat_20220514.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/turbostat-x86_64-210e04ff7681-1_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/perf_20230522.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/perf-x86_64-00c7b5f4ddc5-1_20230402.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/sar-x86_64-c5bb321-1_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/hw_20220526.cgz"
+modules_initrd: "/pkg/linux/x86_64-rhel-8.3/gcc-12/e5b9a37505880cb3d76ebddca25a7242fd9d6f91/modules.cgz"
+bm_initrd: "/osimage/deps/debian-11.1-x86_64-20220510.cgz/lkp_20220513.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/run-ipconfig_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/rsync-rootfs_20220515.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/fs_20220526.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/fs2_20220526.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/fsmark-x86_64-2628be5-1_20230209.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/mpstat_20220516.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/turbostat_20220514.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/turbostat-x86_64-210e04ff7681-1_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/perf_20230522.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/perf-x86_64-00c7b5f4ddc5-1_20230402.cgz,/osimage/pkg/debian-11.1-x86_64-20220510.cgz/sar-x86_64-c5bb321-1_20220518.cgz,/osimage/deps/debian-11.1-x86_64-20220510.cgz/hw_20220526.cgz"
 ucode_initrd: "/osimage/ucode/intel-ucode-20230406.cgz"
 lkp_initrd: "/osimage/user/lkp/lkp-x86_64.cgz"
 site: lkp-wsx01
-
-#! /db/releases/20230721222328/lkp-src/include/site/lkp-wsx01
 LKP_CGI_PORT: 80
 LKP_CIFS_PORT: 139
 oom-killer:
 watchdog:
-job_initrd: "/lkp/jobs/scheduled/lkp-icl-2sp1/filebench-performance-1HDD-btrfs-webserver.f-debian-11.1-x86_64-20220510.cgz-da023618076a-20230723-159464-gxpofa-2.cgz"
-last_kernel: 6.4.0-rc7-00010-gda023618076a
-acpi_rsdp: '0x665fd014'
+job_initrd: "/lkp/jobs/scheduled/lkp-ivb-2ep1/fsmark-performance-1SSD-9B-btrfs-nfsv4-1x-16d-256fpd-32t-fsyncBeforeClose-400M-debian-11.1-x86_64-20220510.cgz-e5b9a3750588-20230723-78480-os4kul-1.cgz"
+last_kernel: 6.5.0-rc2-05095-g0c5d1bf7b1ba
+acpi_rsdp: '0x000f0410'
 repeat_to: 3
-kbuild_queue_analysis: 1
+bad_samples:
+- 5174.7
+- 5143.0
+- 5181.6
+
+#! queue options
 
 #! user overrides
-kernel: "/pkg/linux/x86_64-rhel-8.3/gcc-12/da023618076a13c35bcde1a49a87b7da64761f1d/vmlinuz-6.4.0-rc7-00010-gda023618076a"
-result_root: "/result/filebench/performance-1HDD-btrfs-webserver.f/lkp-icl-2sp1/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-12/da023618076a13c35bcde1a49a87b7da64761f1d/1"
-dequeue_time: 2023-07-23 06:28:00.256912954 +08:00
+kbuild_queue_analysis: 1
+kernel: "/pkg/linux/x86_64-rhel-8.3/gcc-12/e5b9a37505880cb3d76ebddca25a7242fd9d6f91/vmlinuz-6.5.0-rc2-00005-ge5b9a3750588"
+result_root: "/result/fsmark/performance-1SSD-9B-btrfs-nfsv4-1x-16d-256fpd-32t-fsyncBeforeClose-400M/lkp-ivb-2ep1/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-12/e5b9a37505880cb3d76ebddca25a7242fd9d6f91/0"
+
+#! schedule options
+
+#! /db/releases/20230721222328/lkp-src/include/site/lkp-wsx01
+dequeue_time: 2023-07-23 08:11:07.981767464 +08:00
 job_state: finished
-loadavg: 15.17 13.91 5.85 1/956 8107
-start_time: '1690064979'
-end_time: '1690065041'
+loadavg: 10.21 3.26 1.18 2/611 5918
+start_time: '1690071250'
+end_time: '1690071270'
 version: "/lkp/lkp/.src-20230723-000404:21afd11b9aae:4b685812345f"
 
---tzlx3Ab+uqULRPvA
+--xrZS/9iY6bIqZL+1
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: attachment; filename="reproduce"
 
 dmsetup remove_all
-wipefs -a --force /dev/sda1
-mkfs -t btrfs /dev/sda1
-mkdir -p /fs/sda1
-mount -t btrfs /dev/sda1 /fs/sda1
-sync
-echo 3 > /proc/sys/vm/drop_caches
+wipefs -a --force /dev/sda2
+mkfs -t btrfs /dev/sda2
+mkdir -p /fs/sda2
+mount -t btrfs /dev/sda2 /fs/sda2
+mkdir /export
+mount -t tmpfs nfsv4_root_export /export
+mkdir -p /export//fs/sda2
+mount --bind /fs/sda2 /export//fs/sda2
+echo '/export//fs/sda2 *(rw,no_subtree_check,no_root_squash)' >> /etc/exports
+systemctl restart rpcbind
+systemctl restart rpc-statd
+systemctl restart nfs-idmapd
+systemctl restart nfs-server
+mkdir -p /nfs/sda2
+timeout 5m mount -t nfs -o vers=4 localhost:/fs/sda2 /nfs/sda2
+touch /nfs/sda2/wait_for_nfs_grace_period
 
 for cpu_dir in /sys/devices/system/cpu/cpu[0-9]*
 do
@@ -9214,6 +7056,6 @@ do
 	[ -f "$file" ] && echo "performance" > "$file"
 done
 
-filebench -f /lkp/benchmarks/filebench/share/filebench/workloads/webserver.f
+fs_mark -d /nfs/sda2/1 -d /nfs/sda2/2 -d /nfs/sda2/3 -d /nfs/sda2/4 -d /nfs/sda2/5 -d /nfs/sda2/6 -d /nfs/sda2/7 -d /nfs/sda2/8 -d /nfs/sda2/9 -d /nfs/sda2/10 -d /nfs/sda2/11 -d /nfs/sda2/12 -d /nfs/sda2/13 -d /nfs/sda2/14 -d /nfs/sda2/15 -d /nfs/sda2/16 -d /nfs/sda2/17 -d /nfs/sda2/18 -d /nfs/sda2/19 -d /nfs/sda2/20 -d /nfs/sda2/21 -d /nfs/sda2/22 -d /nfs/sda2/23 -d /nfs/sda2/24 -d /nfs/sda2/25 -d /nfs/sda2/26 -d /nfs/sda2/27 -d /nfs/sda2/28 -d /nfs/sda2/29 -d /nfs/sda2/30 -d /nfs/sda2/31 -d /nfs/sda2/32 -D 16 -N 256 -n 3200 -L 1 -S 1 -s 9
 
---tzlx3Ab+uqULRPvA--
+--xrZS/9iY6bIqZL+1--
