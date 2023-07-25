@@ -1,106 +1,161 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF122263BA
-	for <oe-lkp@lists.linux.dev>; Tue, 25 Jul 2023 18:31:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FA0EC433C7;
-	Tue, 25 Jul 2023 18:31:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1690309866;
-	bh=F5JqDshbxaXCKris4572/rBxtI1EmqM7jtTeptVm1Hg=;
-	h=Subject:From:To:Cc:Date:From;
-	b=GaMZE71Ta/JLhienrTM3trvjeVgjaWFXxXsfKf4Wnm964prrKS4U6YQuXe0+dUQ5j
-	 J9I2JOg0vHRHJvF5cjzIPg73WNpz6XbdrKyMuTMXHpRxQ8TctI3I9iIKiTPbQtgihj
-	 bOmdgsUQu77EI3p6U/fVma77YnQVMv5RLSMDz3+dGzC/JyGX8TBUM48OH96EQk9BzR
-	 5XNcdiso7pSCs9T9onwgxkLe/xglfJLRlQVvEVRPcSVOEa0y2w4UFiq1x4azqOKLQk
-	 Rx3SbH8GTGeKbNs1HMHY8KeUHUSz+fabZDbzjRff37ijHXdvYob3nqB610bebLO29J
-	 D6zp+bsYW+hgQ==
-Subject: [PATCH RFC] libfs: Remove parent dentry locking in
- offset_iterate_dir()
-From: Chuck Lever <cel@kernel.org>
-To: linux-fsdevel@vger.kernel.org, linux-mm@kvack.org
-Cc: kernel test robot <oliver.sang@intel.com>,
- Chuck Lever <chuck.lever@oracle.com>, oliver.sang@intel.com,
- oe-lkp@lists.linux.dev, ying.huang@intel.com, feng.tang@intel.com,
- fengwei.yin@intel.com
-Date: Tue, 25 Jul 2023 14:31:04 -0400
-Message-ID: 
- <169030957098.157536.9938425508695693348.stgit@manet.1015granger.net>
-User-Agent: StGit/1.5
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF3A58462
+	for <oe-lkp@lists.linux.dev>; Tue, 25 Jul 2023 23:06:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05956C433C8;
+	Tue, 25 Jul 2023 23:06:19 +0000 (UTC)
+Date: Tue, 25 Jul 2023 19:06:17 -0400
+From: Steven Rostedt <rostedt@goodmis.org>
+To: Ajay Kaher <akaher@vmware.com>
+Cc: shuah@kernel.org, mhiramat@kernel.org, chinglinyu@google.com,
+ linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+ linux-trace-kernel@vger.kernel.org, lkp@intel.com, namit@vmware.com,
+ oe-lkp@lists.linux.dev, amakhalov@vmware.com, er.ajay.kaher@gmail.com,
+ srivatsa@csail.mit.edu, tkundu@vmware.com, vsirnapalli@vmware.com
+Subject: Re: [PATCH v5 02/10] eventfs: Implement tracefs_inode_cache
+Message-ID: <20230725190617.14c85997@rorschach.local.home>
+In-Reply-To: <1690054625-31939-3-git-send-email-akaher@vmware.com>
+References: <1690054625-31939-1-git-send-email-akaher@vmware.com>
+	<1690054625-31939-3-git-send-email-akaher@vmware.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-From: Chuck Lever <chuck.lever@oracle.com>
 
-Since offset_iterate_dir() does not walk the parent's d_subdir list
-nor does it manipulate the parent's d_child, there doesn't seem to
-be a reason to hold the parent's d_lock. The offset_ctx's xarray can
-be sufficiently protected with just the RCU read lock.
+Some more nits.
 
-Flame graph data captured during the git regression run shows a
-20% reduction in CPU cycles consumed in offset_find_next().
+On Sun, 23 Jul 2023 01:06:57 +0530
+Ajay Kaher <akaher@vmware.com> wrote:
 
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Closes: https://lore.kernel.org/oe-lkp/202307171640.e299f8d5-oliver.sang@intel.com
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
----
- fs/libfs.c |    9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+> Create a kmem cache of tracefs_inodes. To be more efficient, as there are
+> lots of tracefs inodes, create its own cache. This also allows to see how
+> many tracefs inodes have been created.
+> 
+> Add helper functions:
+> tracefs_alloc_inode()
+> tracefs_free_inode()
+> get_tracefs()
+> 
+> Signed-off-by: Ajay Kaher <akaher@vmware.com>
+> Co-developed-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+> Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+> Tested-by: Ching-lin Yu <chinglinyu@google.com>
+> ---
+>  fs/tracefs/inode.c    | 39 +++++++++++++++++++++++++++++++++++++++
+>  fs/tracefs/internal.h | 19 +++++++++++++++++++
+>  2 files changed, 58 insertions(+)
+>  create mode 100644 fs/tracefs/internal.h
+> 
+> diff --git a/fs/tracefs/inode.c b/fs/tracefs/inode.c
+> index 57ac8aa4a724..2508944cc4d8 100644
+> --- a/fs/tracefs/inode.c
+> +++ b/fs/tracefs/inode.c
+> @@ -21,13 +21,33 @@
+>  #include <linux/parser.h>
+>  #include <linux/magic.h>
+>  #include <linux/slab.h>
+> +#include "internal.h"
+>  
+>  #define TRACEFS_DEFAULT_MODE	0700
+> +static struct kmem_cache *tracefs_inode_cachep __ro_after_init;
+>  
+>  static struct vfsmount *tracefs_mount;
+>  static int tracefs_mount_count;
+>  static bool tracefs_registered;
+>  
+> +static struct inode *tracefs_alloc_inode(struct super_block *sb)
+> +{
+> +	struct tracefs_inode *ti;
+> +
+> +	ti = kmem_cache_alloc(tracefs_inode_cachep, GFP_KERNEL);
+> +	if (!ti)
+> +		return NULL;
+> +
+> +	ti->flags = 0;
+> +
+> +	return &ti->vfs_inode;
+> +}
+> +
+> +static void tracefs_free_inode(struct inode *inode)
+> +{
+> +	kmem_cache_free(tracefs_inode_cachep, get_tracefs(inode));
+> +}
+> +
+>  static ssize_t default_read_file(struct file *file, char __user *buf,
+>  				 size_t count, loff_t *ppos)
+>  {
+> @@ -346,6 +366,9 @@ static int tracefs_show_options(struct seq_file *m, struct dentry *root)
+>  }
+>  
+>  static const struct super_operations tracefs_super_operations = {
+> +	.alloc_inode    = tracefs_alloc_inode,
+> +	.free_inode     = tracefs_free_inode,
+> +	.drop_inode     = generic_delete_inode,
+>  	.statfs		= simple_statfs,
+>  	.remount_fs	= tracefs_remount,
+>  	.show_options	= tracefs_show_options,
+> @@ -628,10 +651,26 @@ bool tracefs_initialized(void)
+>  	return tracefs_registered;
+>  }
+>  
+> +static void init_once(void *foo)
+> +{
+> +	struct tracefs_inode *ti = (struct tracefs_inode *) foo;
+> +
+> +	inode_init_once(&ti->vfs_inode);
+> +}
+> +
+>  static int __init tracefs_init(void)
+>  {
+>  	int retval;
+>  
+> +	tracefs_inode_cachep = kmem_cache_create("tracefs_inode_cache",
+> +						 sizeof(struct tracefs_inode),
+> +						 0, (SLAB_RECLAIM_ACCOUNT|
+> +						     SLAB_MEM_SPREAD|
+> +						     SLAB_ACCOUNT),
+> +						 init_once);
+> +	if (!tracefs_inode_cachep)
+> +		return -ENOMEM;
+> +
+>  	retval = sysfs_create_mount_point(kernel_kobj, "tracing");
+>  	if (retval)
+>  		return -EINVAL;
+> diff --git a/fs/tracefs/internal.h b/fs/tracefs/internal.h
+> new file mode 100644
+> index 000000000000..49b5e8949e1c
+> --- /dev/null
+> +++ b/fs/tracefs/internal.h
+> @@ -0,0 +1,19 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#ifndef _TRACEFS_INTERNAL_H
+> +#define _TRACEFS_INTERNAL_H
+> +
+> +enum {
+> +	TRACEFS_EVENT_INODE     = BIT(1),
+> +};
 
-This is a possible fix for the will-it-scale regression recently
-reported by the kernel test robot. It passes the git regression
-test over NFS and doesn't seem to perturb xfstests.
+Let's not introduce the enum until it is used.
 
-I'm not able to run lkp here yet, so anyone who can run the
-will-it-scale test, please report the results. Many thanks.
+-- Steve
 
-
-diff --git a/fs/libfs.c b/fs/libfs.c
-index fcc0f1f3c2dc..b69c41fb3c63 100644
---- a/fs/libfs.c
-+++ b/fs/libfs.c
-@@ -406,7 +406,7 @@ static struct dentry *offset_find_next(struct xa_state *xas)
- 	child = xas_next_entry(xas, U32_MAX);
- 	if (!child)
- 		goto out;
--	spin_lock_nested(&child->d_lock, DENTRY_D_LOCK_NESTED);
-+	spin_lock(&child->d_lock);
- 	if (simple_positive(child))
- 		found = dget_dlock(child);
- 	spin_unlock(&child->d_lock);
-@@ -424,17 +424,14 @@ static bool offset_dir_emit(struct dir_context *ctx, struct dentry *dentry)
- 			  inode->i_ino, fs_umode_to_dtype(inode->i_mode));
- }
- 
--static void offset_iterate_dir(struct dentry *dir, struct dir_context *ctx)
-+static void offset_iterate_dir(struct inode *inode, struct dir_context *ctx)
- {
--	struct inode *inode = d_inode(dir);
- 	struct offset_ctx *so_ctx = inode->i_op->get_offset_ctx(inode);
- 	XA_STATE(xas, &so_ctx->xa, ctx->pos);
- 	struct dentry *dentry;
- 
- 	while (true) {
--		spin_lock(&dir->d_lock);
- 		dentry = offset_find_next(&xas);
--		spin_unlock(&dir->d_lock);
- 		if (!dentry)
- 			break;
- 
-@@ -478,7 +475,7 @@ static int offset_readdir(struct file *file, struct dir_context *ctx)
- 	if (!dir_emit_dots(file, ctx))
- 		return 0;
- 
--	offset_iterate_dir(dir, ctx);
-+	offset_iterate_dir(d_inode(dir), ctx);
- 	return 0;
- }
- 
-
+> +
+> +struct tracefs_inode {
+> +	unsigned long           flags;
+> +	void                    *private;
+> +	struct inode            vfs_inode;
+> +};
+> +
+> +static inline struct tracefs_inode *get_tracefs(const struct inode *inode)
+> +{
+> +	return container_of(inode, struct tracefs_inode, vfs_inode);
+> +}
+> +#endif /* _TRACEFS_INTERNAL_H */
 
