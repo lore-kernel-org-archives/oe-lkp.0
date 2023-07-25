@@ -1,85 +1,97 @@
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B5015385
-	for <oe-lkp@lists.linux.dev>; Tue, 25 Jul 2023 05:03:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 323D2BA47
+	for <oe-lkp@lists.linux.dev>; Tue, 25 Jul 2023 09:20:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1690261433; x=1721797433;
+  t=1690276809; x=1721812809;
   h=date:from:to:cc:subject:message-id:references:
    in-reply-to:mime-version;
-  bh=4V7GalSez2h6j4ZNK4vW1oob2+C5z1N/FzPv+WtKdEU=;
-  b=eZDpYexNoutq2tYZcWeC2hugK1ZnY4RFIW5IzJeoKFS8Qgcig7GbGHYp
-   meuXhdZqnpSKi2R2V0cBfgqJKxFR3u/FOFN3niow5jMpcOCx1hyB5MA/L
-   OoEhqIR3b4EP45BngfTOBYRFE8bwmo4daWaOCH7OqD0ktXL0N4qF35N1J
-   bmLVFenvu243K+ExSK7etNEjq6z5YEFtEykeyNSM5uzL0Qjt2CEoP0ATQ
-   A6+az+OjeJPfzskZtWxQqgY5YmVDcmLHgztTGiiZRh+jehDcln4oRc8Pc
-   CEzWHtWpIn6vai8FPp0SLbG6Zy0gwJ2QtZqGbHhpRpVmrwNUjLXfZ/5rz
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10781"; a="352517937"
-X-IronPort-AV: E=Sophos;i="6.01,229,1684825200"; 
-   d="scan'208";a="352517937"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2023 22:03:52 -0700
+  bh=OofqkXW+Bg/6SoYONHU+AtDdOjwI5FHUEflif6L5aus=;
+  b=gZZsNvHOEE3ieUAKEyXlL9lfiA50q3bqE170OQtLccafoecVAWuBTUFz
+   kNaQ0hPi4k+5tY3prazP/0By1oRWnPULPvNb8cofZferwK2Inmb9vcHW5
+   Ge5q7m7AAKIkeDMHXGAGJHd/J3a8Gr93HQJDxFW7karo/m5sT1bqWwC5K
+   Wzd95P6O+mMilkG0+tJTKuv6HVCvsf3IAkiJ9XhLhyEyEKyd+hDkB0l8d
+   pFNtG3k1CDIeykVUM35IwlGMcuRPJJo1QJSDcd5p+12uSRpFyXDUcL0Nj
+   Ytwft10npTWf8xkQCWMYVHym18k7xq3SmXkiFPxGHHZd59uPsfam/K1P7
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10781"; a="367691417"
+X-IronPort-AV: E=Sophos;i="6.01,230,1684825200"; 
+   d="scan'208";a="367691417"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2023 02:20:05 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10781"; a="729199153"
-X-IronPort-AV: E=Sophos;i="6.01,229,1684825200"; 
-   d="scan'208";a="729199153"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by fmsmga007.fm.intel.com with ESMTP; 24 Jul 2023 22:03:46 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+X-IronPort-AV: E=McAfee;i="6600,9927,10781"; a="719980855"
+X-IronPort-AV: E=Sophos;i="6.01,230,1684825200"; 
+   d="scan'208";a="719980855"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orsmga007.jf.intel.com with ESMTP; 25 Jul 2023 02:20:04 -0700
+Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Mon, 24 Jul 2023 22:03:46 -0700
-Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ 15.1.2507.27; Tue, 25 Jul 2023 02:20:04 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Mon, 24 Jul 2023 22:03:46 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27 via Frontend Transport; Mon, 24 Jul 2023 22:03:46 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.100)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ 15.1.2507.27 via Frontend Transport; Tue, 25 Jul 2023 02:20:04 -0700
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.49) by
+ edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.27; Mon, 24 Jul 2023 22:03:45 -0700
+ 15.1.2507.27; Tue, 25 Jul 2023 02:20:04 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bh3+h/WrIo018YO0RViIRhiMo9TI4DUh2DdPwnWv8Gdow51MVYYp0ZRmU3REnkVMfgBmbR9UvXqtSXAV6xHo4i8TOeS7UWhMBrqy4iyZ4hw3vrdwmal9C1wYJQMcuqFbzAsj8a7yOzJdonQtOY27OiA0x4UHhGsdoaGQBR9oqmBJzw1aEvLKnLQ6FGE0x5Wa4GcRR6Beg6DmuWCyBMiSLIJoE2HoHPMQYBGqPUk1Dktnz5BXblwT5TeL/FD+x8V1Wh+er2NcQvpCYMTFeXA9snaRmAkwkA7Q+eE0/FVrqbodqrXjOc9Aplp0OmmZvSfzYznKBVIVl/4vPHVu8OCAOA==
+ b=RcWSRtinmpKsbCKg1tPVT9ahNSSf/3tRv8XIQmtW8LkfPOHMrwUOotdEzXtzGHjtom4tK+sDSULu/OD+DfU8ZMqxfMbPfV9uLZikilfRxy84u+IesRaf8p1gx3fhO9tzoYrAiM0oKMpkMkVRLHx5oTo4ofYTdW/Mrpi6EulLCad0oEovUdq2p3kXorUGubIuR8oHFFOnyT2U+DHy0kR4DgfaBeRG9ev+iLxfKpcKyDwTMun4mPBmrmw5v7HQQjKYMgOW4coxX1sfFHgInM/jKhq80bc0i4E45NCz0EynS473JxnY3M5LJACyZdXxBBiw1M15t6+eOkHk4h15uLu+CQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=A4KRz2SUwptfqzZMOUmgh0s3hfO/71gLI7JnFQ8F+fc=;
- b=FquTuJeuAkbp+Cx41DygAaeF3plihM3VRwpmsPqoJSc99l60toEJsxN8BSefzs/0hFjP+ciyWHXZVDurADnDjptr6hB1Fk1/pnp+tzePFRqc1GcFGW48lWA9BHzMSsvS8925g7NZuEjMNw6w0DmeEdSrX1X0MkaF8H5i2rNGiBc+AW8RvBTuMzGTOZAG2CzY1qy3+Sj47E0rVxQzj0z/0KzEVxWVdqIlaz1qfDmHfi23W/bqOT7Boa3KpcRNA1yWCXTP2VTn9ikFVex4IteC1NIKpmnBFdp4Kv8gQYovzug1S+pE49mfwc+dPkp8WihslYMIXSh43ny0S8QXzS05Bg==
+ bh=zaz9gC5mBiHJoiBTUQnzXiVBMITT/DUYV0cQQDejq0I=;
+ b=OVWoY3bdH84jGAp78UOScQ6MkaAbUSMSgCTRC0fGA9HOz+zVk1Qj8XjYsz/nojb5roI1v7b+oLJjhmAWWiH+kBtSAqd7LCBwQDxrG6KA1Nr2yM45zGyL/E7miVcoCZBQ8fOFviCVK1l1us94ZPa0VS1X6TqdTkUp43GG5KfDp27NeFuzjCp86QhEgMrKn2g6JZgZkBqEwI9Y1robTMfNyIiQOD9KI79XnQqKbmpGdFWluq83Ekq8XlQn7avI7YhpzJUqME6DByISjYq/QdQRkhpORn2nH4qbuzEhUlVt4xA8L6DXIQs23EdPitkCjZ4IrMjPr1NN+86fnY7SklMFug==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
- by PH7PR11MB6428.namprd11.prod.outlook.com (2603:10b6:510:1f4::12) with
+Received: from MN0PR11MB6304.namprd11.prod.outlook.com (2603:10b6:208:3c0::7)
+ by CH3PR11MB8363.namprd11.prod.outlook.com (2603:10b6:610:177::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6609.28; Tue, 25 Jul
- 2023 05:03:44 +0000
-Received: from PH8PR11MB6779.namprd11.prod.outlook.com
- ([fe80::1778:c00c:d5ff:da66]) by PH8PR11MB6779.namprd11.prod.outlook.com
- ([fe80::1778:c00c:d5ff:da66%6]) with mapi id 15.20.6609.032; Tue, 25 Jul 2023
- 05:03:43 +0000
-Date: Tue, 25 Jul 2023 13:03:30 +0800
-From: Oliver Sang <oliver.sang@intel.com>
-To: Ard Biesheuvel <ardb@kernel.org>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, "Kirill A. Shutemov"
-	<kirill.shutemov@linux.intel.com>, <oliver.sang@intel.com>
-Subject: Re: [ardb:x86-efistub-cleanup-v6] [x86/decompressor] 4cd5b5012c:
- cannot kexec to kernel with this commit
-Message-ID: <ZL9XopcTAkRLawDZ@xsang-OptiPlex-9020>
-References: <ZLvlkuJW+ooH1nCK@xsang-OptiPlex-9020>
- <CAMj1kXGTdkN0j9W6HvjXi86jnsJF011sTzUsknwfs7PWccmQRQ@mail.gmail.com>
- <CAMj1kXEVhRAeqDTwETW3KZ5TVwiRNbXSDAcED=XfvXjEs=DPuA@mail.gmail.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6609.25; Tue, 25 Jul
+ 2023 09:20:02 +0000
+Received: from MN0PR11MB6304.namprd11.prod.outlook.com
+ ([fe80::57e7:80ff:c440:c53a]) by MN0PR11MB6304.namprd11.prod.outlook.com
+ ([fe80::57e7:80ff:c440:c53a%5]) with mapi id 15.20.6609.032; Tue, 25 Jul 2023
+ 09:20:02 +0000
+Date: Tue, 25 Jul 2023 17:12:06 +0800
+From: Feng Tang <feng.tang@intel.com>
+To: Hyeonggon Yoo <42.hyeyoo@gmail.com>, Vlastimil Babka <vbabka@suse.cz>,
+	David Rientjes <rientjes@google.com>
+CC: "Sang, Oliver" <oliver.sang@intel.com>, Jay Patel
+	<jaypatel@linux.ibm.com>, "oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>,
+	lkp <lkp@intel.com>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "Huang, Ying"
+	<ying.huang@intel.com>, "Yin, Fengwei" <fengwei.yin@intel.com>,
+	"cl@linux.com" <cl@linux.com>, "penberg@kernel.org" <penberg@kernel.org>,
+	"rientjes@google.com" <rientjes@google.com>, "iamjoonsoo.kim@lge.com"
+	<iamjoonsoo.kim@lge.com>, "akpm@linux-foundation.org"
+	<akpm@linux-foundation.org>, "vbabka@suse.cz" <vbabka@suse.cz>,
+	"aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
+	"tsahu@linux.ibm.com" <tsahu@linux.ibm.com>, "piyushs@linux.ibm.com"
+	<piyushs@linux.ibm.com>
+Subject: Re: [PATCH] [RFC PATCH v2]mm/slub: Optimize slub memory usage
+Message-ID: <ZL+R5kJpnHMUgGY2@feng-clx>
+References: <20230628095740.589893-1-jaypatel@linux.ibm.com>
+ <202307172140.3b34825a-oliver.sang@intel.com>
+ <CAB=+i9QY99=NzQugoMCdbEwkCKJObxx4DwWXwNjMqyMRYrgOHA@mail.gmail.com>
+ <ZLijZ8QRc0FRgJIF@xsang-OptiPlex-9020>
+ <CAB=+i9QmF2C7QsZBEW0HMT-PGcEf3MeCukVaq0_O1HkGy7n93w@mail.gmail.com>
+ <ZLk7UpWWLf5agKDW@feng-clx>
+ <CAB=+i9S6Ykp90+4N1kCE=hiTJTE4wzJDi8k5pBjjO_3sf0aeqg@mail.gmail.com>
+ <ZL6MQXOaOHTvdGti@feng-clx>
+ <CAB=+i9SNS-Z8-WARiivMBy5gibZDCkpS+sk8v+2awvyffAwB8g@mail.gmail.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <CAMj1kXEVhRAeqDTwETW3KZ5TVwiRNbXSDAcED=XfvXjEs=DPuA@mail.gmail.com>
-X-ClientProxiedBy: SG2PR06CA0183.apcprd06.prod.outlook.com (2603:1096:4:1::15)
- To PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
+In-Reply-To: <CAB=+i9SNS-Z8-WARiivMBy5gibZDCkpS+sk8v+2awvyffAwB8g@mail.gmail.com>
+X-ClientProxiedBy: SI2PR01CA0006.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:191::14) To MN0PR11MB6304.namprd11.prod.outlook.com
+ (2603:10b6:208:3c0::7)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -87,227 +99,106 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|PH7PR11MB6428:EE_
-X-MS-Office365-Filtering-Correlation-Id: ac4716c9-08b3-4c18-c4f7-08db8ccc8499
+X-MS-TrafficTypeDiagnostic: MN0PR11MB6304:EE_|CH3PR11MB8363:EE_
+X-MS-Office365-Filtering-Correlation-Id: 563d7dbc-205c-47ef-f209-08db8cf052f9
 X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: qlwyz8dF6dB3npJURa/nON+CqdTmKp5iJtP7PtNfAEcgCab6PyjCvew3tm1EL78YBRI4FBfEw8rSemTaenqKC4vz3fgU5Ef2Tm97V6OPCmVo2h0Tep+H3DBMHQ9CrCB3PmW2WHf57/DJ11qtHxh3ii/YrdOZeK75Gs7KJYVVK9NKhykJLfVO2zcSGtjTiqYN2yH7Ys03Z+nPmCUKyMcl+bLIhiACZpYcXjnKp41ANhtODcIdM5CRNhZR2TP/GKJX6rErf7lQEwX+R5Vn1nGKXW86e0YTVX7s4Luz0GV4nUCShmS/sCZmqWFzxLjL1Nzxj5FbRgT5DUjVZ54QxUKuGiU25iCDl9J0fDYBgh3/Dl0BrERBXY1PGOwHQ2jgP3vaOoTEx1/9GekaZcz6P/pCtu06ZtV4SSlQIMWzBvuiCGL9me06RHds0FQZ4qytrjbbGPmW01D8o8T+KtuwzUC+OiV+cDW1TdLXOe48GjffOpzBD3tccJ/TjoVgGX/IbzXh6fojheYW5P0BizvOCiGlz2R4wTg3Z5Y8jgxbT1Y+GGU=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(136003)(396003)(39860400002)(366004)(346002)(376002)(451199021)(33716001)(41300700001)(6512007)(9686003)(478600001)(6666004)(316002)(66476007)(6486002)(4326008)(86362001)(66556008)(66946007)(6916009)(186003)(8936002)(38100700002)(83380400001)(82960400001)(44832011)(2906002)(966005)(6506007)(8676002)(5660300002)(26005);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: qQV1GxpjK3xQdUFsQMlhWelOkK8tsnsA7pHqBzV62K3EdDY6h5QnBl6IRqrrXXcJnIHzTatiR56B8YjT6wh7FVc5zot6ZKgfzsqe9+6LUo5IHB0lYVAlgs98Kkvr+ed+h/dd0pxz9uVzz2jW3xalJRrvvE+3099iKquYbbOW6stEniqAmG4d67SIryO8hstvd1LObfapZmzSMQNNGRLF+Dv3Fw6BX4BJ2n1Yq2qGiCTGX8Ee4QzjAB9cyBwwFc32JpZE7iX+qdynjDaKT5uAUKH/h+e96OCQ5IflVm5jSH5YBBoKs9gdPLApYtvd3FFt9vF0q2Ss9PNTUegPXbENMlx/mhgFM/BCawxtplrYqWm/uSqmUa5Ec50GCf+vDNHvPu6EKoG8Sm1+5dOg+LB/870bYq0GepvdJeXwK0/pJVjlm2y1pQTqwzSVEsOGfTzX5/q90ikjYDjVqgFbEtwFZNQujriQuknDpIxIsXyynlxslcLFgEacIsB0LCzDNRV0a72fA3vOEnwWlYiJ8xSIcgp6Elj4gQgQY0btgcxGCWUqMdRlU0jqFer8PyMnxlLEl4nVIFb9V4KHOEA1cm2bnEi8LCIXP7W1+kaI7EPSlbA=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR11MB6304.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(39860400002)(396003)(366004)(136003)(376002)(346002)(451199021)(9686003)(478600001)(316002)(86362001)(4326008)(33716001)(6486002)(6512007)(110136005)(66476007)(66556008)(82960400001)(66946007)(186003)(38100700002)(5660300002)(6506007)(41300700001)(26005)(8676002)(54906003)(7416002)(8936002)(44832011)(2906002)(83380400001)(67856001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?xNDEGRz+lrd1qFFxynWLnX9KM3aApHp1vVpkHzYxFh/d3BZumHF6AXqutnEt?=
- =?us-ascii?Q?yh/vtEnqgsVa8MMuEnYRqLqCutCBnfuSgTKrw1qy+8gpezb4wlogclholKN/?=
- =?us-ascii?Q?tj5siXkb/PVze4zCBQhqypxI89OqxxioURbznbi1znVN9pR7ROZJVD4y+YqG?=
- =?us-ascii?Q?mRJDqiHqLOBARymlqYC3dk58FSWpujlteHSjYEISw5BUjKf1A41phbH8OrWb?=
- =?us-ascii?Q?m4ywUQy2k8AN6zU280YQVOzZbvVEAWgi6o+WwOijBVuJJWds4DoF7nkCaFhz?=
- =?us-ascii?Q?vrOLw70QY97A9W8a5VIg6mFsPFwuYvl+FazCd0qhinRKe+cfrQPSbQHQyp0T?=
- =?us-ascii?Q?c1AeBG+39S7LFwzpDUb0jUYKUeIm+D/x9Qtd9r8z07jdCWKeDk19MYnsUfKe?=
- =?us-ascii?Q?Rdcydd7CvSvANr37ASNZf6dHEvpo6O5581I/5CZn9ZfJQQ9T0L287Wiv/dXZ?=
- =?us-ascii?Q?2ibfLRNMVidVrqR/fX1JjyhJz3MaUfMKJyjU8GDbd2eBr0Qrov9fgt/RFNGC?=
- =?us-ascii?Q?LajhcFyTzkNorcRSMTF+80U1AW5GEb7brlqpKApUYFXXok/I/WSa55xxMfMd?=
- =?us-ascii?Q?SZYPgmfimAK/4wC8m0qs2b0tyKOVfUVEA7NQBj4vMkIfoRSIKoYqCvET8UmF?=
- =?us-ascii?Q?XK1gPnDGV4RVX41w0bVhXfZxrCPYN9GzABXHc8F/IXg6yOU4/f6KKuNOxfn2?=
- =?us-ascii?Q?OkLahyYpMyxXbchebznH5qyKjC7DPBQP6OgKQ0TpjEJgoC6EFJOdSGjF4dzY?=
- =?us-ascii?Q?L3O+7+QpMungVoLv/UQwDjdQKvFRHCGm1/JI+T/xTstUUKUOhQ1LlOIhN9SE?=
- =?us-ascii?Q?EWum+GPUiOtgVDfSII5R6fBJR6paRkalPVRMLgExPShjTORnNzCA7M4ZxL19?=
- =?us-ascii?Q?l9an9ZV26T5cromD8E98TF0LEFkj1bHS5+kT9neK7zgK9D6iFzPYNbiPmzDz?=
- =?us-ascii?Q?MCqIJXDVPQXOHupxQD3muPHm4k+PDJqoRC21LsayGHKK6pbEuT9Rr/hWRHGl?=
- =?us-ascii?Q?bN/BJa30KjtahiD1Ykjz/qxPZW4EZI2deVv+L1mcLsRifinhhPRy5MagEaI/?=
- =?us-ascii?Q?2sHBVDO8+xLdoutkxMG4C5D3kHrDMrmhLZ/aXHQV5nv/F/rbAs2tcs2QFhTy?=
- =?us-ascii?Q?sN/pCnqz2AOaXp7wVbPc0uWWN/67kR0YtgajkDMirZ1s2CmokL/ePIcMKHEY?=
- =?us-ascii?Q?gWcOOaQmINmb0ozc5Ux4W1IRivq8+E2ikLpnZI18Al2hJvFzV+9zXG6kWFwz?=
- =?us-ascii?Q?d7+ygB5YvmvfK3b0liIBsBo/v5nM6N984JixDyusucW3mKmSrmqLZeTRls1u?=
- =?us-ascii?Q?e+lqyJy/bAmiEtrnQls5vHvQ8TcYGKeF/Mas3VHxIAy0yVpguiYG7Xj3jyCt?=
- =?us-ascii?Q?y+xpMuHOkI+YxdGX+m/U2m0WsRfI+PKlm2CG1yDGcTaOY86VHFlWUZjUZiQL?=
- =?us-ascii?Q?rv17gR00XSSoH7+eJ6AbcK4HFrgSFZbbNX3XyAp/IUIwOC1loMjg2FYWfFR4?=
- =?us-ascii?Q?vOG1vUcnHmgO91ATVbRc21Sv4WaKs+GZGQPurtGqBU9C5oee+kdtAo0yzgNJ?=
- =?us-ascii?Q?vHfT7oyZr0IYKGKcndnKzX3olcrc3NVKroOejsBJ9l8kYbtW0fWb9oEcLKwx?=
- =?us-ascii?Q?zw=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: ac4716c9-08b3-4c18-c4f7-08db8ccc8499
-X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB6779.namprd11.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?MfNw4dURa5M18sEm/yed7q82q+mK9UfR8MV0cTdWRQPQ2MWcF9C7JtvYYHXk?=
+ =?us-ascii?Q?AwDqUKtLadt8nHrh53tsfMP7wBwBGnlKN91tK6dlILOp4btaR90IseTjoLx7?=
+ =?us-ascii?Q?W7J4Wbr4tVCJV2ziTRpwoHglUoe1vR5avXxhEHOOndbtPkYjqNF2965uf9Jh?=
+ =?us-ascii?Q?A+OPdW3O9cBt/QbIW1uNeYgdgHI+pjxvoQFYPZbjXd5I3/+RRLmDQsQPrU0m?=
+ =?us-ascii?Q?St5dSNnrEzwfTDe6x/gZJdueqSLl2o0Qx4A47+B0KZSzn3jFHn5KCzIWdTb0?=
+ =?us-ascii?Q?82dkZjV1hz+9RWOjIqlbWUneank69itFwzWS4DcU8eR7tQ5ZJfDkFe9FPGOW?=
+ =?us-ascii?Q?iFbGix3ixwwdgxG9qaGFoud51fqUGy+k5BXC9SFSMIUXMU4ihp6NO3PJDolP?=
+ =?us-ascii?Q?BbxcHPeVmpTWsVHgxze4rQFredYcQ1jYcQ5qAbt7qfgQH2bqVEn3zFjhGMty?=
+ =?us-ascii?Q?iAavnofIkwGE5mQEjBCRe+Absg7moSSkWABlTiQ01er+M9yd6DJfUw7xVXCa?=
+ =?us-ascii?Q?BF3r9I17d1n3Z/3R+yqecTEhVtjAha97GHhQ5pWr1QEWsyneftGWTOpX0cL3?=
+ =?us-ascii?Q?dmu/7VrOTKsDiH4HE5xFk0s0PM6bTpk1quFIg0ACGu0I6XwC19RcXGtWWCGY?=
+ =?us-ascii?Q?RVSHZLxLDB43AF+pp+tIbzKyzNwP/+6aaBCujsyYiz4StkVbGWMEkC+vdiku?=
+ =?us-ascii?Q?xYwMwK69er2jx8AiYLT+VFBMHEodftBn+5wg5mF/Kkx0Q3NPcyly5IXkTIoz?=
+ =?us-ascii?Q?t/9ogDWGLhig9q1Uv+UjCek9KXiOIFNavQqy5YfsRSJAx6z4IxnWOy+KLCra?=
+ =?us-ascii?Q?PL43SV/CAhXrsOYLUpmx/hNxKPhqdCs8avOZZUUYe2bD8tTR2geWLlU+dB7I?=
+ =?us-ascii?Q?45PjG75Ct8UlgYhcHbcG8C/fvrEnPHSHwZ2HiPCX2j06b2IKhTL/q++l9j8W?=
+ =?us-ascii?Q?kRirVbnjHbB4RJOpeKND0CM5QLJs/1jvWwy4sqP5oS+bgP8TVU9AfnYvlAxc?=
+ =?us-ascii?Q?pWd+nCS/4fFJjLlAxyVHHLAKb7LGwvVvgzRQ8lZhQdeDWj6XxI/zSmxJLRtq?=
+ =?us-ascii?Q?EoV7PXxwDdwm95adLvB9PHsaOKXSAwqGtbXyfVHcggmOTBBI+CWiz20Sbz/s?=
+ =?us-ascii?Q?jDXIsacgW15OAQs8dfqPxZDtFCPQwJi645Q5GcpmXdG71Yn64vRYtPD/DM3a?=
+ =?us-ascii?Q?Tv4kWCQitfFI+AHK4UyGyOcztDMZDu+GKbzhWzbjaymh/f7DJm4o+OVBaRDh?=
+ =?us-ascii?Q?+b4RLKrMxvi4liTaY0k2qJmHLVV5VI939D1xxiy9u3HavRNdJPqWxiS4FTac?=
+ =?us-ascii?Q?rvFdoegF9dw0aauCXAX+4To188779E/1ILCDewPCf47ZwJyp6KXsPpeQ6/TH?=
+ =?us-ascii?Q?KTszFDmIF5JttP7W22pJxGBq2xf8zesvdCvQzom5oiLF+ZctA7SHuDAC7hU6?=
+ =?us-ascii?Q?Zu6WzCLMo9MC1LYQW8lYFCnfM1N7VYJw2M1N7sKPr7iQwhfaFLuL4CBCpZ+n?=
+ =?us-ascii?Q?rZ7ijg2C8C+if4vqGFGqy+AOV/s449cIZS4B2KFpUYA/iEqO5vB86+08o5hf?=
+ =?us-ascii?Q?Hne/TwfMldreyS+5/exdmc4BwvCE5JTrvHytR9YY?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 563d7dbc-205c-47ef-f209-08db8cf052f9
+X-MS-Exchange-CrossTenant-AuthSource: MN0PR11MB6304.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jul 2023 05:03:43.1934
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jul 2023 09:20:01.9686
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3ns6yUCDIhKcW4VhZ2DCZMrH+TuTPvGgJ/I1SCSHg1Keyfgc+1AZtnHTSI2ofpUpOmQEhxr/MrJCpwKN5bEvEw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB6428
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5jomknUaLlUOvzSA7dwt6+q8/k6WFBnqN+1L22RUYKfYcREJUb2cM7chnpLOiXQskv8zFaL2lSkq3gbQqCBygQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR11MB8363
 X-OriginatorOrg: intel.com
 
-hi, Ard Biesheuvel,
-
-let me firstly answer your question last time.
-
-On Mon, Jul 24, 2023 at 03:04:00PM +0200, Ard Biesheuvel wrote:
-> On Sun, 23 Jul 2023 at 16:29, Ard Biesheuvel <ardb@kernel.org> wrote:
+On Tue, Jul 25, 2023 at 12:13:56PM +0900, Hyeonggon Yoo wrote:
+[...]
 > >
-> > (cc Kirill)
+> > I run the reproduce command in a local 2-socket box:
 > >
-> > On Sat, 22 Jul 2023 at 16:20, kernel test robot <oliver.sang@intel.com> wrote:
-> > >
-> > >
-> > >
-> > > Hello,
-> > >
-> > > kernel test robot noticed a kexec issue with this commit:
-> > >
-> > > commit: 4cd5b5012cce11b2e66b3e4b927b3f30c05c4d0a ("x86/decompressor: Avoid the need for a stack in the 32-bit trampoline")
-> > > git://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git x86-efistub-cleanup-v6
-> > >
-> > > test machine: Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz (Ick Lake)
-> > >
-> > > if the kexec target kernel is with this commit, the kexec will fail.
-> > > but if the target kernel is with the parent of this commit, the kexec has no
-> > > problem.
-> > >
-> > > if you fix the issue in a separate patch/commit (i.e. not just a new version of
-> > > the same patch/commit), kindly add following tags
-> > > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> > >
-> > > below are some logs we catpured from machine serial:
-> > >
-> > > >>>> while in v6.5-rc1 kernel, we wget kernel image for 4cd5b5012c
-> > >
-> > > [  583.891936][ T1491] /usr/bin/wget -q --timeout=3600 --tries=1 --local-encoding=UTF-8 http://internal-lkp-server:80/~lkp/pkg/linux/x86_64-rhel-8.3/gcc-12/4cd5b5012cce11b2e66b3e4b927b3f30c05c4d0a/vmlinuz-6.5.0-rc1-00010-g4cd5b5012cce -N -P /opt/rootfs/tmp/pkg/linux/x86_64-rhel-8.3/gcc-12/4cd5b5012cce11b2e66b3e4b927b3f30c05c4d0a
-> > > ...
-> > > [  586.421781][ T1491] /usr/bin/wget -q --timeout=3600 --tries=1 --local-encoding=UTF-8 http://internal-lkp-server:80/~lkp/pkg/linux/x86_64-rhel-8.3/gcc-12/4cd5b5012cce11b2e66b3e4b927b3f30c05c4d0a/modules.cgz -N -P /opt/rootfs/tmp/pkg/linux/x86_64-rhel-8.3/gcc-12/4cd5b5012cce11b2e66b3e4b927b3f30c05c4d0a
-> > > [  586.421793][ T1491]
-> > > [  590.795340][ T1493] 592936 blocks
-> > > [  590.795353][ T1493]
-> > > [  590.985102][ T1491] /usr/bin/wget -q --timeout=3600 --tries=1 --local-encoding=UTF-8 http://internal-lkp-server:80/~lkp/osimage/ucode/intel-ucode-20230406.cgz -N -P /opt/rootfs/tmp/osimage/ucode
-> > > [  590.985117][ T1491]
-> > > [  591.072220][ T1491] /opt/rootfs/tmp/osimage/ucode/intel-ucode-20230406.cgz isn't modified
-> > > [  591.072234][ T1491]
-> > > [  591.893130][ T1491] LKP: kexec loading... acpi_rsdp: 0x69ffd014
-> > >
-> > > >>>> then kexec
-> > >
-> > > [  591.893144][ T1491]
-> > > [  591.907051][ T1491] kexec --noefi -l /opt/rootfs/tmp/pkg/linux/x86_64-rhel-8.3/gcc-12/4cd5b5012cce11b2e66b3e4b927b3f30c05c4d0a/vmlinuz-6.5.0-rc1-00010-g4cd5b5012cce --initrd=/opt/rootfs/tmp/initrd-concatenated
-> > > [  591.907063][ T1491]
+> > "/usr/bin/hackbench" "-g" "128" "-f" "20" "--process" "-l" "30000" "-s" "100"
 > >
-> > This is the kexec load right?
-
-right
-
+> > And found 2 kmem_cache has been boost: 'kmalloc-cg-512' and
+> > 'skbuff_head_cache'. Only order of 'kmalloc-cg-512' was reduced
+> > from 3 to 2 with the patch, while its 'cpu_partial_slabs' was bumped
+> > from 2 to 4. The setting of 'skbuff_head_cache' was kept unchanged.
 > >
-> > > [  594.660319][ T1491] --append=ip=::::lkp-icl-2sp5::dhcp root=/dev/ram0 RESULT_ROOT=/result/boot/1/lkp-icl-2sp5/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3/gcc-12/4cd5b5012cce11b2e66b3e4b927b3f30c05c4d0a/0 BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3/gcc-12/4cd5b5012cce11b2e66b3e4b927b3f30c05c4d0a/vmlinuz-6.5.0-rc1-00010-g4cd5b5012cce branch=ardb/x86-efistub-cleanup-v6 job=/lkp/jobs/scheduled/lkp-icl-2sp5/boot-1-debian-11.1-x86_64-20220510.cgz-4cd5b5012cce-20230714-61744-1x1amw7-0.yaml user=lkp ARCH=x86_64 kconfig=x86_64-rhel-8.3 commit=4cd5b5012cce11b2e66b3e4b927b3f30c05c4d0a nmi_watchdog=0 acpi_rsdp=0x69ffd014 max_uptime=600 LKP_SERVER=internal-lkp-server nokaslr selinux=0 debug apic=debug sysrq_always_enabled rcupdate.rcu_cpu_stall_timeout=100 net.ifnames=0 printk.devkmsg=on panic=-1 softlockup_panic=1 nmi_watchdog=panic oops=panic load_ramdisk=2 prompt_ramdisk=0 drbd.minor_count=8 systemd.log_level=err ignor
-> > > [  594.660335][ T1491]
-> > > LKP: rebooting by exec
+> > And this compiled with the perf-profile info from 0Day's report, that the
+> > 'list_lock' contention is increased with the patch:
 > >
-> > And the kexec exec is issued here?
-
-yes
-
-> >
-> > That command line seems to be truncated. Could you try doing the kexec
-> > with earlyprintk just like the original kernel? That way, we may get
-> > some more context on what is going on.
-
-yes, here actually just a echo <command>, since echo has length limitation,
-we cannot see the full command line. but actually we enabled earlyprink.
-
-like in both config I attached in original mail, we enabled:
-CONFIG_EARLY_PRINTK_USB=y
-CONFIG_EARLY_PRINTK=y
-CONFIG_EARLY_PRINTK_DBGP=y
-CONFIG_EARLY_PRINTK_USB_XDBC=y
-
-then add below in commandline:
-earlyprintk=ttyS0,115200 console=ttyS0,115200 vga=normal
-
-could you kindly educate us if above is not sufficient?
-
-> >
-> >
-> > > [  596.812805][ T8290] intel_rapl_msr intel_rapl_msr.0: shutdown
-> > > [  596.832306][ T8290] platform coretemp.1: shutdown
-> > > [  596.840097][ T8290] platform coretemp.0: shutdown
-> > > [  596.847790][ T8290] sd 3:0:0:0: shutdown
-> > > [  596.854858][ T8290] sd 3:0:0:0: [sdb] Synchronizing SCSI cache
-> > > [  596.864259][ T8290] sd 2:0:0:0: shutdown
-> > > [  596.870699][ T8290] sd 2:0:0:0: [sdc] Synchronizing SCSI cache
-> > > [  596.879227][ T8290] sd 1:0:0:0: shutdown
-> > > [  596.886046][ T8290] sd 1:0:0:0: [sda] Synchronizing SCSI cache
-> > > [  596.895425][ T8290] sd 0:0:0:0: shutdown
-> > > [  596.902234][ T8290] sd 0:0:0:0: [sdd] Synchronizing SCSI cache
-> >
-> > <snip 400 lines of irrelevant output>
-> >
-> > > [  599.298932][ T8290] kexec_core: Starting new kernel
-> > > 3h@^@3harly console in extract_kernel
-> > >
-> > > <<<< however, just nothing after this "Starting new kernel",
-> > > and our test machine just auto-reboot as below >>>>
-> > >
-> > > input_data: 0x000000207f2192dd
-> > > input_len: 0x0000000000c0e1e2
-> > > output: 0x000000207d000000
-> > > output_len: 0x0000000002dd9224
-> > > kernel_total_size: 0x0000000002c30000
-> > > needed_size: 0x0000000002e00000
-> > > trampoline_32bit: 0x000000000009d000
-> > >
-> > >
-> > > KASLR disabled: 'nokaslr' on cmdline.
-> > >
-> > >
-> > > Decompressing Linux... Parsing ELF... No relocation needed... done.
-> > > Booting the kernel (entry_offset: 0x0000000000000000).
-> > >
-> > >
-> > >
-> > > sorry, maybe above information is not sufficient, but we cannot capture
-> > > further information from serial.
-> >
-> > As I suggested above, can you please try with earlyprintk for the kexec kernel?
-> >
-> > I have tried to reproduce this in QEMU, using both emulation and KVM,
-> > and everything works fine for me. My host CPU does not have 5 level
-> > paging, but i tried QEMU emulation with LA57 enabled.
-> >
-> > As for the change itself: the only difference that stands out at
-> > something that might trigger this behavior is the removal of the DS/SS
-> > segment register assignments. Kirill: any thoughts?
-> >
-> > One thing that would definitely help narrow this down (if the CPU in
-> > question implements LA57 support) is to build both kernels with
-> > CONFIG_X86_5LEVEL disabled, and to see if the behavior is different.
-
-the cpu has LA57 support, we tried to rebuild kernel with CONFIG_X86_5LEVEL disabled
-the only diff are:
-@@ -318,7 +318,7 @@ CONFIG_HAVE_INTEL_TXT=y
- CONFIG_X86_64_SMP=y
- CONFIG_ARCH_SUPPORTS_UPROBES=y
- CONFIG_FIX_EARLYCON_MEM=y
--CONFIG_PGTABLE_LEVELS=5
-+CONFIG_PGTABLE_LEVELS=4
- CONFIG_CC_HAS_SANE_STACKPROTECTOR=y
-
- #
-@@ -414,7 +414,7 @@ CONFIG_MICROCODE_INTEL=y
- CONFIG_MICROCODE_LATE_LOADING=y
- CONFIG_X86_MSR=y
- CONFIG_X86_CPUID=y
--CONFIG_X86_5LEVEL=y
-+# CONFIG_X86_5LEVEL is not set
- CONFIG_X86_DIRECT_GBPAGES=y
- # CONFIG_X86_CPA_STATISTICS is not set
- CONFIG_NUMA=y
-
-the issue still can be reproduced.
-
-> >
+> >     13.71%    13.70%  [kernel.kallsyms]         [k] native_queued_spin_lock_slowpath                            -      -
+> > 5.80% native_queued_spin_lock_slowpath;_raw_spin_lock_irqsave;__unfreeze_partials;skb_release_data;consume_skb;unix_stream_read_generic;unix_stream_recvmsg;sock_recvmsg;sock_read_iter;vfs_read;ksys_read;do_syscall_64;entry_SYSCALL_64_after_hwframe;__libc_read
+> > 5.56% native_queued_spin_lock_slowpath;_raw_spin_lock_irqsave;get_partial_node.part.0;___slab_alloc.constprop.0;__kmem_cache_alloc_node;__kmalloc_node_track_caller;kmalloc_reserve;__alloc_skb;alloc_skb_with_frags;sock_alloc_send_pskb;unix_stream_sendmsg;sock_write_iter;vfs_write;ksys_write;do_syscall_64;entry_SYSCALL_64_after_hwframe;__libc_write
 > 
-> I have prepared an alternative branch here
+> Oh... neither of the assumptions were not true.
+> AFAICS it's a case of decreasing slab order increases lock contention,
 > 
-> https://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git/log/?h=x86-efistub-cleanup-v6a
-> 
-> that has the exact same changes, but split into more patches, so it
-> should be easier to narrow down which change triggers the regression.
-> 
-> Could you please run the same test using this branch? Thanks.
+> The number of cached objects per CPU is mostly the same (not exactly same,
+> because the cpu slab is not accounted for),
 
-ok, will test and bisect on this branch.
+Yes, this makes sense!
+
+> but only increases the
+> number of slabs
+> to process while taking slabs (get_partial_node()), and flushing the current
+> cpu partial list. (put_cpu_partial() -> __unfreeze_partials())
+> 
+> Can we do better in this situation? improve __unfreeze_partials()?
+
+We can check that, IMHO, current MIN_PARTIAL and MAX_PARTIAL are too
+small as a global parameter, especially for server platforms with
+hundreds of GB or TBs memory.
+
+As for 'list_lock', I'm thinking of bumping the number of per-cpu
+objects in set_cpu_partial(), at least give user an option to do
+that for sever platforms with huge mount of memory. Will do some test
+around it, and let 0Day's peformance testing framework monitor
+for any regression.
+
+Thanks,
+Feng
+
+> 
+> > Also I tried to restore the slub_max_order to 3, and the regression was
+> > gone.
+> >
+> >  static unsigned int slub_max_order =
+> > -       IS_ENABLED(CONFIG_SLUB_TINY) ? 1 : 2;
+> > +       IS_ENABLED(CONFIG_SLUB_TINY) ? 1 : 3;
+> >  static unsigned int slub_min_objects;
