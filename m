@@ -1,44 +1,44 @@
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 044F0A93E
-	for <oe-lkp@lists.linux.dev>; Wed, 26 Jul 2023 10:06:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3086CA41
+	for <oe-lkp@lists.linux.dev>; Wed, 26 Jul 2023 10:35:00 +0000 (UTC)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
 	(No client certificate requested)
-	by smtp-out2.suse.de (Postfix) with ESMTPS id 942091F890;
-	Wed, 26 Jul 2023 10:06:34 +0000 (UTC)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id C4A6821CAC;
+	Wed, 26 Jul 2023 10:34:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1690365994; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	t=1690367692; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=GPktWs9VgmR9RgbGAAfENWTA8Yrnts52yiHDqYW1GHw=;
-	b=H2ceb6qXKd0q7XUUFC/rXp9aRuMZU9H5K7yk+bc8uHNzDJFVjvVs/gLxxD0p+GGggvqwEW
-	40guVFbkIWZc1yR4u1cc44hZ5WFr5r/J+xXiS+xyd+L4T05y6xNAUnrYXn3Jg+VrjwqoFM
-	1+BT3pFG1SSzsFryfvhIvvNuGdFN+vg=
+	bh=rP9cCoRQS2E3rGBBhQPwvc58rPFE1YgDISl0GEDJwyA=;
+	b=3GiZP0ywJ9twiZK95tEdvn42lF3vNqbRlVXTr5uHmQaNt7gk5vdFLBVY7EF6iLkqgvX6HW
+	TqgKt1lo2w+nb3z+EiAm6XT7r1M2LzPtgrwED4nO13z6nHBuQIIn2of1c7yXEsfCDd91Ag
+	EH48EE4rY2WI4aAGVHWrsw+qxiHh+bU=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1690365994;
+	s=susede2_ed25519; t=1690367692;
 	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=GPktWs9VgmR9RgbGAAfENWTA8Yrnts52yiHDqYW1GHw=;
-	b=rD0DyCzxUFMmUAhdYkcR1oZn1YXKTIkyWFRLMqyUMvR3T4CSPw9pJzYdFWL/U5ypn3krvA
-	HeGwhB6zyxNwU0Ag==
+	bh=rP9cCoRQS2E3rGBBhQPwvc58rPFE1YgDISl0GEDJwyA=;
+	b=anRpI62xl12WDfgp8LFxrUmRveWxcwf0808WL6NI7A4gnSaWp7oep1P4W5ox7tQdMKYt6J
+	qHcUOgc2PzBiJmDA==
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
 	(No client certificate requested)
-	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 50E6A1341F;
-	Wed, 26 Jul 2023 10:06:34 +0000 (UTC)
+	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 78B7A139BD;
+	Wed, 26 Jul 2023 10:34:52 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
 	by imap2.suse-dmz.suse.de with ESMTPSA
-	id uw7sEirwwGRxfAAAMHmgww
-	(envelope-from <vbabka@suse.cz>); Wed, 26 Jul 2023 10:06:34 +0000
-Message-ID: <91bd907e-adc0-d7c7-7eaa-da199689c99c@suse.cz>
-Date: Wed, 26 Jul 2023 12:06:33 +0200
+	id XMi7HMz2wGSzCwAAMHmgww
+	(envelope-from <vbabka@suse.cz>); Wed, 26 Jul 2023 10:34:52 +0000
+Message-ID: <7a94996f-b6f0-c427-eb1e-126bcb97930c@suse.cz>
+Date: Wed, 26 Jul 2023 12:34:52 +0200
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -47,193 +47,200 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.13.0
-Subject: Re: [PATCH] [RFC PATCH v2]mm/slub: Optimize slub memory usage
+Subject: Re: [RFC 1/2] Revert "mm, slub: change percpu partial accounting from
+ objects to pages"
 Content-Language: en-US
-To: Hyeonggon Yoo <42.hyeyoo@gmail.com>, Feng Tang <feng.tang@intel.com>
-Cc: "Sang, Oliver" <oliver.sang@intel.com>, Jay Patel
- <jaypatel@linux.ibm.com>, "oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>,
- lkp <lkp@intel.com>, "linux-mm@kvack.org" <linux-mm@kvack.org>,
- "Huang, Ying" <ying.huang@intel.com>, "Yin, Fengwei"
- <fengwei.yin@intel.com>, "cl@linux.com" <cl@linux.com>,
- "penberg@kernel.org" <penberg@kernel.org>,
- "rientjes@google.com" <rientjes@google.com>,
- "iamjoonsoo.kim@lge.com" <iamjoonsoo.kim@lge.com>,
- "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
- "aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
- "tsahu@linux.ibm.com" <tsahu@linux.ibm.com>,
- "piyushs@linux.ibm.com" <piyushs@linux.ibm.com>
-References: <20230628095740.589893-1-jaypatel@linux.ibm.com>
- <202307172140.3b34825a-oliver.sang@intel.com>
- <CAB=+i9QY99=NzQugoMCdbEwkCKJObxx4DwWXwNjMqyMRYrgOHA@mail.gmail.com>
- <ZLijZ8QRc0FRgJIF@xsang-OptiPlex-9020>
- <CAB=+i9QmF2C7QsZBEW0HMT-PGcEf3MeCukVaq0_O1HkGy7n93w@mail.gmail.com>
- <ZLk7UpWWLf5agKDW@feng-clx>
- <CAB=+i9S6Ykp90+4N1kCE=hiTJTE4wzJDi8k5pBjjO_3sf0aeqg@mail.gmail.com>
- <ZL6MQXOaOHTvdGti@feng-clx>
- <CAB=+i9SNS-Z8-WARiivMBy5gibZDCkpS+sk8v+2awvyffAwB8g@mail.gmail.com>
+To: Hyeonggon Yoo <42.hyeyoo@gmail.com>, Christoph Lameter <cl@linux.com>,
+ Pekka Enberg <penberg@kernel.org>, Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+ David Rientjes <rientjes@google.com>,
+ Andrew Morton <akpm@linux-foundation.org>
+Cc: Roman Gushchin <roman.gushchin@linux.dev>, Feng Tang
+ <feng.tang@intel.com>, "Sang, Oliver" <oliver.sang@intel.com>,
+ Jay Patel <jaypatel@linux.ibm.com>, Binder Makin <merimus@google.com>,
+ aneesh.kumar@linux.ibm.com, tsahu@linux.ibm.com, piyushs@linux.ibm.com,
+ fengwei.yin@intel.com, ying.huang@intel.com, lkp <lkp@intel.com>,
+ "oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>, linux-mm@kvack.org,
+ linux-kernel@vger.kernel.org
+References: <20230723190906.4082646-1-42.hyeyoo@gmail.com>
+ <20230723190906.4082646-2-42.hyeyoo@gmail.com>
 From: Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <CAB=+i9SNS-Z8-WARiivMBy5gibZDCkpS+sk8v+2awvyffAwB8g@mail.gmail.com>
+In-Reply-To: <20230723190906.4082646-2-42.hyeyoo@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 7/25/23 05:13, Hyeonggon Yoo wrote:
-> On Mon, Jul 24, 2023 at 11:43 PM Feng Tang <feng.tang@intel.com> wrote:
->>
->> On Thu, Jul 20, 2023 at 11:05:17PM +0800, Hyeonggon Yoo wrote:
->> > > > > let me introduce our test process.
->> > > > >
->> > > > > we make sure the tests upon commit and its parent have exact same environment
->> > > > > except the kernel difference, and we also make sure the config to build the
->> > > > > commit and its parent are identical.
->> > > > >
->> > > > > we run tests for one commit at least 6 times to make sure the data is stable.
->> > > > >
->> > > > > such like for this case, we rebuild the commit and its parent's kernel, the
->> > > > > config is attached FYI.
->> > > >
->> > > > Hello Oliver,
->> > > >
->> > > > Thank you for confirming the testing environment is totally fine.
->> > > > and I'm sorry. I didn't mean to offend that your tests were bad.
->> > > >
->> > > > It was more like  "oh, the data totally doesn't make sense to me"
->> > > > and I blamed the tests rather than my poor understanding of the data ;)
->> > > >
->> > > > Anyway,
->> > > > as the data shows a repeatable regression,
->> > > > let's think more about the possible scenario:
->> > > >
->> > > > I can't stop thinking that the patch must've affected the system's
->> > > > reclamation behavior in some way.
->> > > > (I think more active anon pages with a similar number total of anon
->> > > > pages implies the kernel scanned more pages)
->> > > >
->> > > > It might be because kswapd was more frequently woken up (possible if
->> > > > skbs were allocated with GFP_ATOMIC)
->> > > > But the data provided is not enough to support this argument.
->> > > >
->> > > > >  2.43 ± 7% +4.5 6.90 ± 11% perf-profile.children.cycles-pp.get_partial_node
->> > > > >  3.23 ±  5%      +4.5        7.77 ±  9%  perf-profile.children.cycles-pp.___slab_alloc
->> > > > >  7.51 ±  2%      +4.6       12.11 ±  5%  perf-profile.children.cycles-pp.kmalloc_reserve
->> > > > > 6.94 ±  2%      +4.7       11.62 ±  6%  perf-profile.children.cycles-pp.__kmalloc_node_track_caller
->> > > > > 6.46 ±  2%      +4.8       11.22 ±  6%  perf-profile.children.cycles-pp.__kmem_cache_alloc_node
->> > > > >  8.48 ±  4%      +7.9       16.42 ±  8%  perf-profile.children.cycles-pp._raw_spin_lock_irqsave
->> > > > >  6.12 ±  6%      +8.6       14.74 ±  9%  perf-profile.children.cycles-pp.native_queued_spin_lock_slowpath
->> > > >
->> > > > And this increased cycles in the SLUB slowpath implies that the actual
->> > > > number of objects available in
->> > > > the per cpu partial list has been decreased, possibly because of
->> > > > inaccuracy in the heuristic?
->> > > > (cuz the assumption that slabs cached per are half-filled, and that
->> > > > slabs' order is s->oo)
->> > >
->> > > From the patch:
->> > >
->> > >  static unsigned int slub_max_order =
->> > > -       IS_ENABLED(CONFIG_SLUB_TINY) ? 1 : PAGE_ALLOC_COSTLY_ORDER;
->> > > +       IS_ENABLED(CONFIG_SLUB_TINY) ? 1 : 2;
->> > >
->> > > Could this be related? that it reduces the order for some slab cache,
->> > > so each per-cpu slab will has less objects, which makes the contention
->> > > for per-node spinlock 'list_lock' more severe when the slab allocation
->> > > is under pressure from many concurrent threads.
->> >
->> > hackbench uses skbuff_head_cache intensively. So we need to check if
->> > skbuff_head_cache's
->> > order was increased or decreased. On my desktop skbuff_head_cache's
->> > order is 1 and I roughly
->> > guessed it was increased, (but it's still worth checking in the testing env)
->> >
->> > But decreased slab order does not necessarily mean decreased number
->> > of cached objects per CPU, because when oo_order(s->oo) is smaller,
->> > then it caches
->> > more slabs into the per cpu slab list.
->> >
->> > I think more problematic situation is when oo_order(s->oo) is higher,
->> > because the heuristic
->> > in SLUB assumes that each slab has order of oo_order(s->oo) and it's
->> > half-filled. if it allocates
->> > slabs with order lower than oo_order(s->oo), the number of cached
->> > objects per CPU
->> > decreases drastically due to the inaccurate assumption.
->> >
->> > So yeah, decreased number of cached objects per CPU could be the cause
->> > of the regression due to the heuristic.
->> >
->> > And I have another theory: it allocated high order slabs from remote node
->> > even if there are slabs with lower order in the local node.
->> >
->> > ofc we need further experiment, but I think both improving the
->> > accuracy of heuristic and
->> > avoiding allocating high order slabs from remote nodes would make SLUB
->> > more robust.
->>
->> I run the reproduce command in a local 2-socket box:
->>
->> "/usr/bin/hackbench" "-g" "128" "-f" "20" "--process" "-l" "30000" "-s" "100"
->>
->> And found 2 kmem_cache has been boost: 'kmalloc-cg-512' and
->> 'skbuff_head_cache'. Only order of 'kmalloc-cg-512' was reduced
->> from 3 to 2 with the patch, while its 'cpu_partial_slabs' was bumped
->> from 2 to 4. The setting of 'skbuff_head_cache' was kept unchanged.
->>
->> And this compiled with the perf-profile info from 0Day's report, that the
->> 'list_lock' contention is increased with the patch:
->>
->>     13.71%    13.70%  [kernel.kallsyms]         [k] native_queued_spin_lock_slowpath                            -      -
->> 5.80% native_queued_spin_lock_slowpath;_raw_spin_lock_irqsave;__unfreeze_partials;skb_release_data;consume_skb;unix_stream_read_generic;unix_stream_recvmsg;sock_recvmsg;sock_read_iter;vfs_read;ksys_read;do_syscall_64;entry_SYSCALL_64_after_hwframe;__libc_read
->> 5.56% native_queued_spin_lock_slowpath;_raw_spin_lock_irqsave;get_partial_node.part.0;___slab_alloc.constprop.0;__kmem_cache_alloc_node;__kmalloc_node_track_caller;kmalloc_reserve;__alloc_skb;alloc_skb_with_frags;sock_alloc_send_pskb;unix_stream_sendmsg;sock_write_iter;vfs_write;ksys_write;do_syscall_64;entry_SYSCALL_64_after_hwframe;__libc_write
+Nit: I would change the subject from "Revert: " as it's not a revert
+exactly. If we can come up with a good subject that's not very long :)
+
+On 7/23/23 21:09, Hyeonggon Yoo wrote:
+> This is partial revert of commit b47291ef02b0 ("mm, slub: change percpu
+> partial accounting from objects to pages"). and full revert of commit
+> 662188c3a20e ("mm/slub: Simplify struct slab slabs field definition").
 > 
-> Oh... neither of the assumptions were not true.
-> AFAICS it's a case of decreasing slab order increases lock contention,
+> While b47291ef02b0 prevents percpu partial slab list becoming too long,
+> it assumes that the order of slabs are always oo_order(s->oo).
 
-Oh good, that would be the least surprising result, at least :) Yeah I've
-pointed out in my reply to this v2 that this patch should not result in
-decreasing slab order, at least for 4k pages.
+I think I've considered this possibility, but decided it's not important
+because if the system becomes memory pressured in a way that it can't
+allocate the oo_order() and has to fallback, we no longer care about
+accurate percpu caching, as we're unlikely having optimum performance anyway.
 
-The v3/v4 is indeed different in that it only affects 64k pages. But the
-inital goal from v1 to increase the order for 4k is also no longer there.
-Maybe that's fine as there's two things to consider here IMHO. 1) the order
-could be increased for 4k pages for some cache sizes to minimize waste
-(that's what v1 did, but also for 64k where it was not an improvement) 2)
-the orders we have might be too large for 64k pages. Now v4 addresses 2)
-AFAICS. We could return also to 1) separately if it shows benefits.
+> The current approach can surprisingly lower the number of objects cached
+> per cpu when it fails to allocate high order slabs. Instead of accounting
+> the number of slabs, change it back to accounting objects, but keep
+> the assumption that the slab is always half-full.
 
-In any case it means the benchmark results on v2 are no longer applicable,
-so we could move the discussion to v4:
+That's a nice solution as that avoids converting the sysfs variable, so I
+wouldn't mind going that way even if I doubt the performance benefits in a
+memory pressured system. But maybe there's a concern that if the system is
+really memory pressured and has to fallback to smaller orders, before this
+patch it would keep fewer percpu partial slabs than after this patch, which
+would increase the pressure further and thus be counter-productive?
 
-https://lore.kernel.org/all/20230720102337.2069722-1-jaypatel@linux.ibm.com/
-
-Now I noticed in v4 there's only M: folks from the MAINTAINERS slab section
-on Cc: but not R: folks. Next time please Cc: also R: (Hyeonggon and Roman).
-Thanks!
-
-> The number of cached objects per CPU is mostly the same (not exactly same,
-> because the cpu slab is not accounted for), but only increases the
-> number of slabs
-> to process while taking slabs (get_partial_node()), and flushing the current
-> cpu partial list. (put_cpu_partial() -> __unfreeze_partials())
+> With this change, the number of cached objects per cpu is not surprisingly
+> decreased even when it fails to allocate high order slabs. It still
+> prevents large inaccuracy because it does not account based on the
+> number of free objects when taking slabs.
+> ---
+>  include/linux/slub_def.h |  2 --
+>  mm/slab.h                |  6 ++++++
+>  mm/slub.c                | 31 ++++++++++++-------------------
+>  3 files changed, 18 insertions(+), 21 deletions(-)
 > 
-> Can we do better in this situation? improve __unfreeze_partials()?
-> 
->> Also I tried to restore the slub_max_order to 3, and the regression was
->> gone.
->>
->>  static unsigned int slub_max_order =
->> -       IS_ENABLED(CONFIG_SLUB_TINY) ? 1 : 2;
->> +       IS_ENABLED(CONFIG_SLUB_TINY) ? 1 : 3;
->>  static unsigned int slub_min_objects;
->>
->> Thanks,
->> Feng
->>
->> > > I don't have direct data to backup it, and I can try some experiment.
->> >
->> > Thank you for taking time for experiment!
->> >
->> > Thanks,
->> > Hyeonggon
->> >
->> > > > > then retest on this test machine:
->> > > > > 128 threads 2 sockets Intel(R) Xeon(R) Gold 6338 CPU @ 2.00GHz (Ice Lake) with 256G memory
+> diff --git a/include/linux/slub_def.h b/include/linux/slub_def.h
+> index deb90cf4bffb..589ff6a2a23f 100644
+> --- a/include/linux/slub_def.h
+> +++ b/include/linux/slub_def.h
+> @@ -109,8 +109,6 @@ struct kmem_cache {
+>  #ifdef CONFIG_SLUB_CPU_PARTIAL
+>  	/* Number of per cpu partial objects to keep around */
+>  	unsigned int cpu_partial;
+> -	/* Number of per cpu partial slabs to keep around */
+> -	unsigned int cpu_partial_slabs;
+>  #endif
+>  	struct kmem_cache_order_objects oo;
+>  
+> diff --git a/mm/slab.h b/mm/slab.h
+> index 799a315695c6..be38a264df16 100644
+> --- a/mm/slab.h
+> +++ b/mm/slab.h
+> @@ -65,7 +65,13 @@ struct slab {
+>  #ifdef CONFIG_SLUB_CPU_PARTIAL
+>  				struct {
+>  					struct slab *next;
+> +#ifdef CONFIG_64BIT
+>  					int slabs;	/* Nr of slabs left */
+> +					int pobjects;	/* Approximate count */
+> +#else
+> +					short int slabs;
+> +					short int pobjects;
+> +#endif
+>  				};
+>  #endif
+>  			};
+> diff --git a/mm/slub.c b/mm/slub.c
+> index f7940048138c..199d3d03d5b9 100644
+> --- a/mm/slub.c
+> +++ b/mm/slub.c
+> @@ -486,18 +486,7 @@ static inline unsigned int oo_objects(struct kmem_cache_order_objects x)
+>  #ifdef CONFIG_SLUB_CPU_PARTIAL
+>  static void slub_set_cpu_partial(struct kmem_cache *s, unsigned int nr_objects)
+>  {
+> -	unsigned int nr_slabs;
+> -
+>  	s->cpu_partial = nr_objects;
+> -
+> -	/*
+> -	 * We take the number of objects but actually limit the number of
+> -	 * slabs on the per cpu partial list, in order to limit excessive
+> -	 * growth of the list. For simplicity we assume that the slabs will
+> -	 * be half-full.
+> -	 */
+> -	nr_slabs = DIV_ROUND_UP(nr_objects * 2, oo_objects(s->oo));
+> -	s->cpu_partial_slabs = nr_slabs;
+>  }
+>  #else
+>  static inline void
+> @@ -2275,7 +2264,7 @@ static void *get_partial_node(struct kmem_cache *s, struct kmem_cache_node *n,
+>  	struct slab *slab, *slab2;
+>  	void *object = NULL;
+>  	unsigned long flags;
+> -	unsigned int partial_slabs = 0;
+> +	int objects_taken = 0;
+>  
+>  	/*
+>  	 * Racy check. If we mistakenly see no partial slabs then we
+> @@ -2312,11 +2301,11 @@ static void *get_partial_node(struct kmem_cache *s, struct kmem_cache_node *n,
+>  		} else {
+>  			put_cpu_partial(s, slab, 0);
+>  			stat(s, CPU_PARTIAL_NODE);
+> -			partial_slabs++;
+> +			objects_taken += slab->objects / 2;
+>  		}
+>  #ifdef CONFIG_SLUB_CPU_PARTIAL
+>  		if (!kmem_cache_has_cpu_partial(s)
+> -			|| partial_slabs > s->cpu_partial_slabs / 2)
+> +			|| objects_taken > s->cpu_partial / 2)
+>  			break;
+>  #else
+>  		break;
+> @@ -2699,13 +2688,14 @@ static void put_cpu_partial(struct kmem_cache *s, struct slab *slab, int drain)
+>  	struct slab *slab_to_unfreeze = NULL;
+>  	unsigned long flags;
+>  	int slabs = 0;
+> +	int pobjects = 0;
+>  
+>  	local_lock_irqsave(&s->cpu_slab->lock, flags);
+>  
+>  	oldslab = this_cpu_read(s->cpu_slab->partial);
+>  
+>  	if (oldslab) {
+> -		if (drain && oldslab->slabs >= s->cpu_partial_slabs) {
+> +		if (drain && oldslab->pobjects >= s->cpu_partial) {
+>  			/*
+>  			 * Partial array is full. Move the existing set to the
+>  			 * per node partial list. Postpone the actual unfreezing
+> @@ -2714,14 +2704,17 @@ static void put_cpu_partial(struct kmem_cache *s, struct slab *slab, int drain)
+>  			slab_to_unfreeze = oldslab;
+>  			oldslab = NULL;
+>  		} else {
+> +			pobjects = oldslab->pobjects;
+>  			slabs = oldslab->slabs;
+>  		}
+>  	}
+>  
+>  	slabs++;
+> +	pobjects += slab->objects / 2;
+>  
+>  	slab->slabs = slabs;
+>  	slab->next = oldslab;
+> +	slab->pobjects = pobjects;
+>  
+>  	this_cpu_write(s->cpu_slab->partial, slab);
+>  
+> @@ -5653,13 +5646,13 @@ static ssize_t slabs_cpu_partial_show(struct kmem_cache *s, char *buf)
+>  
+>  		slab = slub_percpu_partial(per_cpu_ptr(s->cpu_slab, cpu));
+>  
+> -		if (slab)
+> +		if (slab) {
+>  			slabs += slab->slabs;
+> +			objects += slab->objects;
+> +		}
+>  	}
+>  #endif
+>  
+> -	/* Approximate half-full slabs, see slub_set_cpu_partial() */
+> -	objects = (slabs * oo_objects(s->oo)) / 2;
+>  	len += sysfs_emit_at(buf, len, "%d(%d)", objects, slabs);
+>  
+>  #ifdef CONFIG_SLUB_CPU_PARTIAL
+> @@ -5669,7 +5662,7 @@ static ssize_t slabs_cpu_partial_show(struct kmem_cache *s, char *buf)
+>  		slab = slub_percpu_partial(per_cpu_ptr(s->cpu_slab, cpu));
+>  		if (slab) {
+>  			slabs = READ_ONCE(slab->slabs);
+> -			objects = (slabs * oo_objects(s->oo)) / 2;
+> +			objects = READ_ONCE(slab->pobjects);
+>  			len += sysfs_emit_at(buf, len, " C%d=%d(%d)",
+>  					     cpu, objects, slabs);
+>  		}
 
