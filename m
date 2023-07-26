@@ -1,231 +1,239 @@
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CBC5BA20
-	for <oe-lkp@lists.linux.dev>; Wed, 26 Jul 2023 09:07:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1690362450; x=1721898450;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=olj/ac544F9oFdTDxddDfzwYYdns9GKVGokPTymshc4=;
-  b=TvU3HSTHvzjplBQn2YQQg6TP/ft63f+9y2r+ChSC7OLu64P/Q23XT6YX
-   TTulikxesYwANy2xf2d7td1IECNpWCvtdIhmj260M/fmM11nK7aRs+oJn
-   ILCzECApI0EzSI1CeUJ0aNNrQJ/xCl2TVXnB0CrDFBY2X+Fi3ALY/aKYw
-   3CIlYTFOi1bmn2RwYYekmslCHTG/YYZJoXIY99NtmRmEgXmWtuBrtNakv
-   RS0EWA0RBVxklA5lE4KAZyAP3/YbT13Z8LHIxk6EVQWr1W6t0j7IO8574
-   IHTUNTZPPMvdDyq5TXCw2XtzzKN5EM1LbrD0J+SImbh9Ev22uY+3N8nBQ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10782"; a="370637113"
-X-IronPort-AV: E=Sophos;i="6.01,231,1684825200"; 
-   d="scan'208";a="370637113"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2023 02:07:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10782"; a="1057136202"
-X-IronPort-AV: E=Sophos;i="6.01,231,1684825200"; 
-   d="scan'208";a="1057136202"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by fmsmga005.fm.intel.com with ESMTP; 26 Jul 2023 02:07:28 -0700
-Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Wed, 26 Jul 2023 02:07:27 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27 via Frontend Transport; Wed, 26 Jul 2023 02:07:27 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.175)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.27; Wed, 26 Jul 2023 02:07:27 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lv5E2tlpRE0EoIzpn+lVvJb/58GNWhTH2zD6FURT4AWhZB30vagfEkxyjiqz462Uv2zsDBgPiQbfTRwda2pzuuePib8HlIusQnJdKxoDA5C/iXc+2eXU4lqzxKxYicV237XnLOJ/s+6EQs1nFOnX/mewm3mknzepT2a0jpK+7O8XtNHkYVNn9wGEgO0+0uaUlLUb+D1caFAgA8K62UYPWm/YNY6IhtfGjS3AZGFNYKO+J6iNsT0cFpKMLa8PDV6G9VU2KMb2VCxi/TNrbFigAsu6S9A4Fe1qprQE5GTJqJ3tlVpFEJiS0celQrCXDQmiyPkojGu2wGwSz06cQ25sfw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=M7a5EER7DoLUnq5e6U4NjPw5s7uBTbSh9cmlHX/H9+U=;
- b=d5O9CCew16/YWRiEzQRA8AZvvartKs/fB6segW2tZqFU7tEYGvmxEUSvcwYMvkSocdyxa6dpbUs/EZBkQ0mYzDKE3ievCHg5QE2xV37DiYt4WbGxE4we33Z8cK92CGMR3bLUN748s5VEbKFLF4RjUxEdbtHdTs8Lcab54uf9FtyXMsoCfvd74P7YnOS7P4fbrhULUCxw/tKYHggxPJUHpEWs05CzWyS+CJi31+J7Gp+/vLFUa4Zv10KmpBWvB3k3KEPJKMvGygAoBJyZJBWa1kc6Tt63p1VucppPmsEyAbsxTc84WEXkWjwEb2zcbc0lHYCarLslMfzf1PO5CAaHgA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from PH8PR11MB6780.namprd11.prod.outlook.com (2603:10b6:510:1cb::11)
- by CH3PR11MB7761.namprd11.prod.outlook.com (2603:10b6:610:151::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6609.31; Wed, 26 Jul
- 2023 09:07:25 +0000
-Received: from PH8PR11MB6780.namprd11.prod.outlook.com
- ([fe80::2803:94a7:314c:3254]) by PH8PR11MB6780.namprd11.prod.outlook.com
- ([fe80::2803:94a7:314c:3254%7]) with mapi id 15.20.6609.032; Wed, 26 Jul 2023
- 09:07:25 +0000
-From: "Gao, Chao" <chao.gao@intel.com>
-To: "Sang, Oliver" <oliver.sang@intel.com>
-CC: "oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>
-Subject: RE: [intel-tdx:guest-hardening-rebased] [swiotlb]  36e8ff9c97:
- kernel-selftests.dma.dma_map_benchmark.average_unmap_latency -33.3%
- improvement
-Thread-Topic: [intel-tdx:guest-hardening-rebased] [swiotlb]  36e8ff9c97:
- kernel-selftests.dma.dma_map_benchmark.average_unmap_latency -33.3%
- improvement
-Thread-Index: AQHZv5hgLMmM5F2ptUm9a8H4XF1Nza/LwR9w
-Date: Wed, 26 Jul 2023 09:07:24 +0000
-Message-ID: <PH8PR11MB678052E2CC8D56B8D4DA83EF8D00A@PH8PR11MB6780.namprd11.prod.outlook.com>
-References: <202307261507.e3351d3f-oliver.sang@intel.com>
-In-Reply-To: <202307261507.e3351d3f-oliver.sang@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH8PR11MB6780:EE_|CH3PR11MB7761:EE_
-x-ms-office365-filtering-correlation-id: 78eec8ab-75ca-4056-acec-08db8db7ba7c
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: G08KNAY//ZnBW6VftN8AYQM0ssMIA952sX1QAoSCb5P/J3m9M1+pf1lUSc5VlpiCdH+EMmCVOiOFkVH3UgfF5A0MVuDno8E5eGE73sBCRxEGsCo8cIxNOFR0CxCPZ5RssucYcNm63fah8GODYPwX8tHIzxtlBrMIQyIp+OioAdM2UKcHpehQsN38uYzG2OCmoeSusQWo50vF7zCpQcAYaCDTFlGyIouIqXhev+BgRQ7cc3UfuDXLkl0OtuWe9T+OummNkNBW1QdjjwO1FnowCGA95kEzBLtI7ouqs/8HCtLIExSSkC8o1cj5ETrWCHbbOecG362gmM1VJzHZlViNqTz7hF7mWfNlA6mSfmHxCfEwUfhLXuCPCODvKGiNrqNJ33Gxo+rAECrS92wQ/GvbKwG+hAt/6AHsCowDpGYzEV7cMgpZxOMmvSX7I5RUXZnRBDg0UupmcXv750ZF+lzaPylGgeCBx3S7JHJgbZ4KCmiyuFaVrvcmlftz5dZHHsWx0dVaGXk8XLYQvWvrHSmfHocCAG8ktHLRffHFWCO/l2L0f2vtvuVDAbEgSGm6QP88srVs+SI9seOcsqQiPdkqBJG+laTRONl8h44T7dGrscyWdZZaLm9bFK0oh46NU8FPsjywm65ZKt4jOfAyL7wD7A==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6780.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(376002)(39860400002)(136003)(366004)(346002)(396003)(451199021)(8936002)(5660300002)(52536014)(6862004)(8676002)(41300700001)(316002)(2906002)(66556008)(66476007)(66446008)(66946007)(64756008)(76116006)(6506007)(53546011)(38070700005)(38100700002)(55016003)(6636002)(26005)(966005)(86362001)(9686003)(7696005)(83380400001)(4326008)(478600001)(71200400001)(82960400001)(122000001)(33656002)(186003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?UZ2n5Qps2cSAjYr8cVzcya0oSe8NnTD/ZDDWL9XTcL1fR4F9oxEucGxaGL?=
- =?iso-8859-1?Q?yyw2DTW7dUh7rykF4B9Vq0bL0+S90pyZzNedAmjN3GGKRJEfQkSKPpouMO?=
- =?iso-8859-1?Q?KgFcy3+r+qp9IH5mlRSKnYBSACxl11mLUT8brwt8JaRfydALishUv/SUtv?=
- =?iso-8859-1?Q?ftABFyKjNFpBHaILixWivA7nPM52mx7U8KtI+9TotjM+5ssP+wO0L00dZI?=
- =?iso-8859-1?Q?thSdBaNOevUaKkoxKFZM1aXCHgr0O1iAS91XcHT/CMTxJpQ7RJ2gQaJIkq?=
- =?iso-8859-1?Q?RygeY3QEjy8dSDtCjN1cRDPpe9MAEB4ZYl98lizoT37AV+ig+CaXi169Rx?=
- =?iso-8859-1?Q?okkvv4oUIUK3Xph5nI3tNRq/p3cVPQAwEqop0pDoKkhxVdp4ad/GG9dfzN?=
- =?iso-8859-1?Q?48Vvrxqw822PYJPhcQzzB8BiaXhBZHMXY7q3yeEsye/rAyfQ5Bsy7MJWuD?=
- =?iso-8859-1?Q?pTMXEoitclZjmTSXcX7OAUXNOUwl//9Di4cSUrtOLxHi4gyb0KUtKr7uuI?=
- =?iso-8859-1?Q?S2LT1L4Kpxx9IS+jBTssJBUK34x/VU3JqyM+QOOKpihoF3URiegMaNCocu?=
- =?iso-8859-1?Q?Mfwrx/+tR7aGIxTGVUHvL9QfbOHkTgpQzNJJejJ/FFs3emiW7ZSHvA4DGA?=
- =?iso-8859-1?Q?IU9P6/bNxpFVUDiXp8SdP2ntksTkPPzewb26dKryYQZAD+6BLlc8/KYs5h?=
- =?iso-8859-1?Q?MAcxbxP43F+iJHPHM/Ddx1Fpl3TTzQtFRSvtMA08KYhqMfKHwHils29LU9?=
- =?iso-8859-1?Q?BIM9jyhDzwn4F2xVceKGQYXENQT6kJXl2S5NMzRr3fBfPQH81S55aikCe/?=
- =?iso-8859-1?Q?2EBM84T+zo3NG4D/VWFyPXRYzk+J22ppNHk4iFSgrEvKg3nrm34O4PJ7hD?=
- =?iso-8859-1?Q?34foyPATY7z11GmcwqNq9tQNCE5Kyza9n8rXizGY2CsuCQc9car2PLV1uL?=
- =?iso-8859-1?Q?+ABZhNORiO8Lz4bgqrGyi+rckvW5vbX7IlremfgfXdT6exJbJ3W3PkxerY?=
- =?iso-8859-1?Q?VBmP3MPUsTWftSqu7FW81HZGkIX+KX8YkR6fLlNTbtmk45NHqSimESZjdA?=
- =?iso-8859-1?Q?fUJjmpucoC5MielpcQY7hOJ9SDSmj3P2FT867B3y2PY3i8vjwMv3XNi9Nk?=
- =?iso-8859-1?Q?vwy7tVahd2teCzghEr34FYm/6Fx2pERCBn80Q7/qhjsDnJLcnMijnBGBUf?=
- =?iso-8859-1?Q?SEsKNN9tIL4PgZ8sai8PqXZd0sQBTV9zhZ8ZZnevBfrWBJ5Vpo6yZsGbkU?=
- =?iso-8859-1?Q?au+6HSaf+JYg9vUooRxRVmeExkfid+XtKxi0g1JjansCrN1743d+rk0uhX?=
- =?iso-8859-1?Q?GFsehEISqquiSSdWUq/I0mR9Shf87Vlpk5ejkZEZGbkpp6PeRGiZmDwmmw?=
- =?iso-8859-1?Q?MrwNraCZCL/NYuW7jYgSZ8d+JEHN/JOHXK9NaQzzmlC3ThTcs0YrxWiSoK?=
- =?iso-8859-1?Q?q5CioXjzYydmZ9I+BPp07DUWdp5o4iAum8gb4iVLNNqrvEOG3vyrke3Ttk?=
- =?iso-8859-1?Q?h9g90T1pXOB2wcauQxaJJrhgLpbCOnfHPwz8znKWrfIzlpZUYIiwvkEI6X?=
- =?iso-8859-1?Q?gHElB37vWosCdUGoJbCv/+5jy7w6dqDfNhMaC3De4WbzSWxn8cPo/Ajeuz?=
- =?iso-8859-1?Q?FU4mTjg1R0sNk=3D?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 044F0A93E
+	for <oe-lkp@lists.linux.dev>; Wed, 26 Jul 2023 10:06:39 +0000 (UTC)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 942091F890;
+	Wed, 26 Jul 2023 10:06:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1690365994; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=GPktWs9VgmR9RgbGAAfENWTA8Yrnts52yiHDqYW1GHw=;
+	b=H2ceb6qXKd0q7XUUFC/rXp9aRuMZU9H5K7yk+bc8uHNzDJFVjvVs/gLxxD0p+GGggvqwEW
+	40guVFbkIWZc1yR4u1cc44hZ5WFr5r/J+xXiS+xyd+L4T05y6xNAUnrYXn3Jg+VrjwqoFM
+	1+BT3pFG1SSzsFryfvhIvvNuGdFN+vg=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1690365994;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=GPktWs9VgmR9RgbGAAfENWTA8Yrnts52yiHDqYW1GHw=;
+	b=rD0DyCzxUFMmUAhdYkcR1oZn1YXKTIkyWFRLMqyUMvR3T4CSPw9pJzYdFWL/U5ypn3krvA
+	HeGwhB6zyxNwU0Ag==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	(No client certificate requested)
+	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 50E6A1341F;
+	Wed, 26 Jul 2023 10:06:34 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+	by imap2.suse-dmz.suse.de with ESMTPSA
+	id uw7sEirwwGRxfAAAMHmgww
+	(envelope-from <vbabka@suse.cz>); Wed, 26 Jul 2023 10:06:34 +0000
+Message-ID: <91bd907e-adc0-d7c7-7eaa-da199689c99c@suse.cz>
+Date: Wed, 26 Jul 2023 12:06:33 +0200
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB6780.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 78eec8ab-75ca-4056-acec-08db8db7ba7c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Jul 2023 09:07:25.0006
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: MG2IhSbcOYiWQgPPZbbbAPAaETgVUXzDXXbALPcpdgxJkOVsnKXcMTdOL9QbGnmK24da8VYazt3YubweEpvb7Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR11MB7761
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
+Subject: Re: [PATCH] [RFC PATCH v2]mm/slub: Optimize slub memory usage
+Content-Language: en-US
+To: Hyeonggon Yoo <42.hyeyoo@gmail.com>, Feng Tang <feng.tang@intel.com>
+Cc: "Sang, Oliver" <oliver.sang@intel.com>, Jay Patel
+ <jaypatel@linux.ibm.com>, "oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>,
+ lkp <lkp@intel.com>, "linux-mm@kvack.org" <linux-mm@kvack.org>,
+ "Huang, Ying" <ying.huang@intel.com>, "Yin, Fengwei"
+ <fengwei.yin@intel.com>, "cl@linux.com" <cl@linux.com>,
+ "penberg@kernel.org" <penberg@kernel.org>,
+ "rientjes@google.com" <rientjes@google.com>,
+ "iamjoonsoo.kim@lge.com" <iamjoonsoo.kim@lge.com>,
+ "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+ "aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
+ "tsahu@linux.ibm.com" <tsahu@linux.ibm.com>,
+ "piyushs@linux.ibm.com" <piyushs@linux.ibm.com>
+References: <20230628095740.589893-1-jaypatel@linux.ibm.com>
+ <202307172140.3b34825a-oliver.sang@intel.com>
+ <CAB=+i9QY99=NzQugoMCdbEwkCKJObxx4DwWXwNjMqyMRYrgOHA@mail.gmail.com>
+ <ZLijZ8QRc0FRgJIF@xsang-OptiPlex-9020>
+ <CAB=+i9QmF2C7QsZBEW0HMT-PGcEf3MeCukVaq0_O1HkGy7n93w@mail.gmail.com>
+ <ZLk7UpWWLf5agKDW@feng-clx>
+ <CAB=+i9S6Ykp90+4N1kCE=hiTJTE4wzJDi8k5pBjjO_3sf0aeqg@mail.gmail.com>
+ <ZL6MQXOaOHTvdGti@feng-clx>
+ <CAB=+i9SNS-Z8-WARiivMBy5gibZDCkpS+sk8v+2awvyffAwB8g@mail.gmail.com>
+From: Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <CAB=+i9SNS-Z8-WARiivMBy5gibZDCkpS+sk8v+2awvyffAwB8g@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Hi Oliver,
+On 7/25/23 05:13, Hyeonggon Yoo wrote:
+> On Mon, Jul 24, 2023 at 11:43 PM Feng Tang <feng.tang@intel.com> wrote:
+>>
+>> On Thu, Jul 20, 2023 at 11:05:17PM +0800, Hyeonggon Yoo wrote:
+>> > > > > let me introduce our test process.
+>> > > > >
+>> > > > > we make sure the tests upon commit and its parent have exact same environment
+>> > > > > except the kernel difference, and we also make sure the config to build the
+>> > > > > commit and its parent are identical.
+>> > > > >
+>> > > > > we run tests for one commit at least 6 times to make sure the data is stable.
+>> > > > >
+>> > > > > such like for this case, we rebuild the commit and its parent's kernel, the
+>> > > > > config is attached FYI.
+>> > > >
+>> > > > Hello Oliver,
+>> > > >
+>> > > > Thank you for confirming the testing environment is totally fine.
+>> > > > and I'm sorry. I didn't mean to offend that your tests were bad.
+>> > > >
+>> > > > It was more like  "oh, the data totally doesn't make sense to me"
+>> > > > and I blamed the tests rather than my poor understanding of the data ;)
+>> > > >
+>> > > > Anyway,
+>> > > > as the data shows a repeatable regression,
+>> > > > let's think more about the possible scenario:
+>> > > >
+>> > > > I can't stop thinking that the patch must've affected the system's
+>> > > > reclamation behavior in some way.
+>> > > > (I think more active anon pages with a similar number total of anon
+>> > > > pages implies the kernel scanned more pages)
+>> > > >
+>> > > > It might be because kswapd was more frequently woken up (possible if
+>> > > > skbs were allocated with GFP_ATOMIC)
+>> > > > But the data provided is not enough to support this argument.
+>> > > >
+>> > > > >  2.43 ± 7% +4.5 6.90 ± 11% perf-profile.children.cycles-pp.get_partial_node
+>> > > > >  3.23 ±  5%      +4.5        7.77 ±  9%  perf-profile.children.cycles-pp.___slab_alloc
+>> > > > >  7.51 ±  2%      +4.6       12.11 ±  5%  perf-profile.children.cycles-pp.kmalloc_reserve
+>> > > > > 6.94 ±  2%      +4.7       11.62 ±  6%  perf-profile.children.cycles-pp.__kmalloc_node_track_caller
+>> > > > > 6.46 ±  2%      +4.8       11.22 ±  6%  perf-profile.children.cycles-pp.__kmem_cache_alloc_node
+>> > > > >  8.48 ±  4%      +7.9       16.42 ±  8%  perf-profile.children.cycles-pp._raw_spin_lock_irqsave
+>> > > > >  6.12 ±  6%      +8.6       14.74 ±  9%  perf-profile.children.cycles-pp.native_queued_spin_lock_slowpath
+>> > > >
+>> > > > And this increased cycles in the SLUB slowpath implies that the actual
+>> > > > number of objects available in
+>> > > > the per cpu partial list has been decreased, possibly because of
+>> > > > inaccuracy in the heuristic?
+>> > > > (cuz the assumption that slabs cached per are half-filled, and that
+>> > > > slabs' order is s->oo)
+>> > >
+>> > > From the patch:
+>> > >
+>> > >  static unsigned int slub_max_order =
+>> > > -       IS_ENABLED(CONFIG_SLUB_TINY) ? 1 : PAGE_ALLOC_COSTLY_ORDER;
+>> > > +       IS_ENABLED(CONFIG_SLUB_TINY) ? 1 : 2;
+>> > >
+>> > > Could this be related? that it reduces the order for some slab cache,
+>> > > so each per-cpu slab will has less objects, which makes the contention
+>> > > for per-node spinlock 'list_lock' more severe when the slab allocation
+>> > > is under pressure from many concurrent threads.
+>> >
+>> > hackbench uses skbuff_head_cache intensively. So we need to check if
+>> > skbuff_head_cache's
+>> > order was increased or decreased. On my desktop skbuff_head_cache's
+>> > order is 1 and I roughly
+>> > guessed it was increased, (but it's still worth checking in the testing env)
+>> >
+>> > But decreased slab order does not necessarily mean decreased number
+>> > of cached objects per CPU, because when oo_order(s->oo) is smaller,
+>> > then it caches
+>> > more slabs into the per cpu slab list.
+>> >
+>> > I think more problematic situation is when oo_order(s->oo) is higher,
+>> > because the heuristic
+>> > in SLUB assumes that each slab has order of oo_order(s->oo) and it's
+>> > half-filled. if it allocates
+>> > slabs with order lower than oo_order(s->oo), the number of cached
+>> > objects per CPU
+>> > decreases drastically due to the inaccurate assumption.
+>> >
+>> > So yeah, decreased number of cached objects per CPU could be the cause
+>> > of the regression due to the heuristic.
+>> >
+>> > And I have another theory: it allocated high order slabs from remote node
+>> > even if there are slabs with lower order in the local node.
+>> >
+>> > ofc we need further experiment, but I think both improving the
+>> > accuracy of heuristic and
+>> > avoiding allocating high order slabs from remote nodes would make SLUB
+>> > more robust.
+>>
+>> I run the reproduce command in a local 2-socket box:
+>>
+>> "/usr/bin/hackbench" "-g" "128" "-f" "20" "--process" "-l" "30000" "-s" "100"
+>>
+>> And found 2 kmem_cache has been boost: 'kmalloc-cg-512' and
+>> 'skbuff_head_cache'. Only order of 'kmalloc-cg-512' was reduced
+>> from 3 to 2 with the patch, while its 'cpu_partial_slabs' was bumped
+>> from 2 to 4. The setting of 'skbuff_head_cache' was kept unchanged.
+>>
+>> And this compiled with the perf-profile info from 0Day's report, that the
+>> 'list_lock' contention is increased with the patch:
+>>
+>>     13.71%    13.70%  [kernel.kallsyms]         [k] native_queued_spin_lock_slowpath                            -      -
+>> 5.80% native_queued_spin_lock_slowpath;_raw_spin_lock_irqsave;__unfreeze_partials;skb_release_data;consume_skb;unix_stream_read_generic;unix_stream_recvmsg;sock_recvmsg;sock_read_iter;vfs_read;ksys_read;do_syscall_64;entry_SYSCALL_64_after_hwframe;__libc_read
+>> 5.56% native_queued_spin_lock_slowpath;_raw_spin_lock_irqsave;get_partial_node.part.0;___slab_alloc.constprop.0;__kmem_cache_alloc_node;__kmalloc_node_track_caller;kmalloc_reserve;__alloc_skb;alloc_skb_with_frags;sock_alloc_send_pskb;unix_stream_sendmsg;sock_write_iter;vfs_write;ksys_write;do_syscall_64;entry_SYSCALL_64_after_hwframe;__libc_write
+> 
+> Oh... neither of the assumptions were not true.
+> AFAICS it's a case of decreasing slab order increases lock contention,
 
-How should I interpret the -33.3% improvement, i.e., is it an improvement o=
-r regression? What's your expectation on me?
+Oh good, that would be the least surprising result, at least :) Yeah I've
+pointed out in my reply to this v2 that this patch should not result in
+decreasing slab order, at least for 4k pages.
 
-> -----Original Message-----
-> From: Sang, Oliver <oliver.sang@intel.com>
-> Sent: Wednesday, July 26, 2023 4:08 PM
-> To: Gao, Chao <chao.gao@intel.com>
-> Cc: oe-lkp@lists.linux.dev; Sang, Oliver <oliver.sang@intel.com>
-> Subject: [intel-tdx:guest-hardening-rebased] [swiotlb] 36e8ff9c97: kernel=
--
-> selftests.dma.dma_map_benchmark.average_unmap_latency -33.3%
-> improvement
->=20
->=20
->=20
-> Hello,
->=20
-> kernel test robot noticed a -33.3% improvement of
-> kernel-selftests.dma.dma_map_benchmark.average_unmap_latency on:
->=20
->=20
-> commit: 36e8ff9c972448105048d404fd26be48fa4d7df1 ("swiotlb: use bitmap to
-> track free slots")
-> https://github.com/intel/tdx.git guest-hardening-rebased
->=20
-> testcase: kernel-selftests
-> test machine: 36 threads 1 sockets Intel(R) Core(TM) i9-10980XE CPU @ 3.0=
-0GHz
-> (Cascade Lake) with 32G memory
-> parameters:
->=20
-> 	group: group-01
->=20
->=20
->=20
-> Details are as below:
-> -------------------------------------------------------------------------=
--------------------------
-> >
->=20
->=20
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> tbox_group/testcase/rootfs/kconfig/compiler/group:
->   lkp-csl-d01/kernel-selftests/debian-12-x86_64-20220629.cgz/x86_64-rhel-=
-8.3-
-> kselftests/gcc-12/group-01
->=20
->=20
-> 06e94bd5b0f103a8 36e8ff9c972448105048d404fd2
-> ---------------- ---------------------------
->          %stddev     %change         %stddev
->              \          |                \
->       0.40           -25.0%       0.30        kernel-
-> selftests.dma.dma_map_benchmark.average_map_latency
->       0.30           -33.3%       0.20        kernel-
-> selftests.dma.dma_map_benchmark.average_unmap_latency
->       0.17 =B1 26%      +0.0%       0.17 =B1 26%  kernel-
-> selftests.dma.dma_map_benchmark.average_unmap_latency_stddev
->=20
->=20
-> To reproduce:
->=20
->         git clone https://github.com/intel/lkp-tests.git
->         cd lkp-tests
->         sudo bin/lkp install job.yaml           # job file is attached in=
- this email
->         bin/lkp split-job --compatible job.yaml # generate the yaml file =
-for lkp run
->         sudo bin/lkp run generated-yaml-file
->=20
->         # if come across any failure that blocks the test,
->         # please remove ~/.lkp and /lkp dir to run from a clean state.
->=20
->=20
->=20
->=20
-> Disclaimer:
-> Results have been estimated based on internal Intel analysis and are prov=
-ided
-> for informational purposes only. Any difference in system hardware or sof=
-tware
-> design or configuration may affect actual performance.
->=20
->=20
-> --
-> 0-DAY CI Kernel Test Service
-> https://github.com/intel/lkp-tests/wiki
->=20
+The v3/v4 is indeed different in that it only affects 64k pages. But the
+inital goal from v1 to increase the order for 4k is also no longer there.
+Maybe that's fine as there's two things to consider here IMHO. 1) the order
+could be increased for 4k pages for some cache sizes to minimize waste
+(that's what v1 did, but also for 64k where it was not an improvement) 2)
+the orders we have might be too large for 64k pages. Now v4 addresses 2)
+AFAICS. We could return also to 1) separately if it shows benefits.
+
+In any case it means the benchmark results on v2 are no longer applicable,
+so we could move the discussion to v4:
+
+https://lore.kernel.org/all/20230720102337.2069722-1-jaypatel@linux.ibm.com/
+
+Now I noticed in v4 there's only M: folks from the MAINTAINERS slab section
+on Cc: but not R: folks. Next time please Cc: also R: (Hyeonggon and Roman).
+Thanks!
+
+> The number of cached objects per CPU is mostly the same (not exactly same,
+> because the cpu slab is not accounted for), but only increases the
+> number of slabs
+> to process while taking slabs (get_partial_node()), and flushing the current
+> cpu partial list. (put_cpu_partial() -> __unfreeze_partials())
+> 
+> Can we do better in this situation? improve __unfreeze_partials()?
+> 
+>> Also I tried to restore the slub_max_order to 3, and the regression was
+>> gone.
+>>
+>>  static unsigned int slub_max_order =
+>> -       IS_ENABLED(CONFIG_SLUB_TINY) ? 1 : 2;
+>> +       IS_ENABLED(CONFIG_SLUB_TINY) ? 1 : 3;
+>>  static unsigned int slub_min_objects;
+>>
+>> Thanks,
+>> Feng
+>>
+>> > > I don't have direct data to backup it, and I can try some experiment.
+>> >
+>> > Thank you for taking time for experiment!
+>> >
+>> > Thanks,
+>> > Hyeonggon
+>> >
+>> > > > > then retest on this test machine:
+>> > > > > 128 threads 2 sockets Intel(R) Xeon(R) Gold 6338 CPU @ 2.00GHz (Ice Lake) with 256G memory
 
