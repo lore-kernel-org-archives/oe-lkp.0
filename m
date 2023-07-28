@@ -1,294 +1,78 @@
-Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7CD317EC
-	for <oe-lkp@lists.linux.dev>; Fri, 28 Jul 2023 04:08:30 +0000 (UTC)
-Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-4036bd4fff1so169571cf.0
-        for <oe-lkp@lists.linux.dev>; Thu, 27 Jul 2023 21:08:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1690517309; x=1691122109;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=jTPzb3rb/gmto9ara7xlmi33Mo+qRIpZpkA6OxihvQI=;
-        b=2v+eCZWRkCo+GrbSIBgKeqXZ+INlQ7KZlqy8x1oUUUT9CmHWsmTn5ji26xvwHTwK/k
-         LBfIFSM+E18RKKqRVCyAeq/R4Q3A+k57eCG4390hy28v4goVzd8AkcTjJvBD2LW3kq15
-         Cqav8MYqa8CzocyXEwJGLCdtTTU7gg1n+fhrHmX4jWTD2K65t7ubvtAkI9Gydabw6VmK
-         +GQORiAC36A9caQnBoOxl6H64EaX439vlffHYNg745zBYzoxN0Iz8+CqsZoXyuuWQC1E
-         P/ByzynMAi8CqQocpXGfSd4W4FTFw+UT99e1w3EafB0Hv2cfkpPZZeIcnHRAJDt+Mj+3
-         hGEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1690517309; x=1691122109;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=jTPzb3rb/gmto9ara7xlmi33Mo+qRIpZpkA6OxihvQI=;
-        b=WnjN05t2x9WN3ztXgSRYkSnY18gqhlbHcAs0oNcmTHbOmQ5kIksmulu/JREliUcLMY
-         z125tfydTHwbGoAY3ttPIszBu5XcL++cv1aAhLZ17yL/T0rx2kR361w8ErqZtOZ4+8Vf
-         McFwzBUCUkR1wWUuuC4j1tYriagsbe9FO9xUwEQP+rQvPdU9c1uVpJQclPBft5qAEGik
-         P+DwqCr+rSaUNd1VWsKUbxJlLg842bovJBJ9ysPMZ5I60Lw+iZTZAye8+iTd5XAbTfpP
-         IPZURG7EAhAPO6eSiwFQtv5LPpvJaKLmkHStVAG/z74Id1dpwyOak+G/KBCpXcyPi9lB
-         gEng==
-X-Gm-Message-State: ABy/qLaipPH7XC4F3bRmS8AJgMGurgGGLPS1nJHycSfg9PVAO6nIiKBg
-	3d/ZB82ELxVLsKrEqJpEVTUjaeuNegoqk3/BQ5hh9A==
-X-Google-Smtp-Source: APBJJlF/B8BCPcpCjkUOs2mffCGLpBCM9Xl7lBDh1eCwox9S7i16Z0rf9/jcT2gk1wOiKg+kcz0CxT0Pc/scfQTmiyA=
-X-Received: by 2002:ac8:59c7:0:b0:3ef:404a:b291 with SMTP id
- f7-20020ac859c7000000b003ef404ab291mr97010qtf.7.1690517309321; Thu, 27 Jul
- 2023 21:08:29 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0C03C8EA
+	for <oe-lkp@lists.linux.dev>; Fri, 28 Jul 2023 08:07:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B465C433C8;
+	Fri, 28 Jul 2023 08:06:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1690531620;
+	bh=SA6A0yrELgyo+eU0lbBKfgUSEb8O2y86fT7korpoL+s=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=bKjSac6+s1O1BFRDRt3KJXlNfmtkeUFgxzL9bivmAOZYlD56X7PApiT3jiFLSA+sf
+	 95iXJ0TOzO40qcC9gk1/fUuyDhjxl6Se+JFYaT86iEwUnZxvPHrMZkOYQOLPwWI+NP
+	 F0LWIyto9CBoVtwHZ4rk7dzVhVtg9M7Fz+2Vi0qy3Dwf3SFhLM06cLY3dezQJBfIkP
+	 q7OC41NAUTSnYK3FnOe8JuvzPeDHGecv7acPyHv5SzJe59+oa+wYYI14MK/LLesRPD
+	 Y4XWYGdtVP2/E4A645ddzEuC3S0J40qF3jx/+GzOxAeEJ7W2pBZ7sXh0SrZJpSoPQZ
+	 wS6E25n0WwXPA==
+From: Christian Brauner <brauner@kernel.org>
+To: Chuck Lever <cel@kernel.org>,
+	oliver.sang@intel.com
+Cc: Christian Brauner <brauner@kernel.org>,
+	Chuck Lever <chuck.lever@oracle.com>,
+	oe-lkp@lists.linux.dev,
+	ying.huang@intel.com,
+	feng.tang@intel.com,
+	fengwei.yin@intel.com,
+	linux-fsdevel@vger.kernel.org,
+	linux-mm@kvack.org
+Subject: Re: [PATCH RFC] libfs: Remove parent dentry locking in offset_iterate_dir()
+Date: Fri, 28 Jul 2023 10:06:49 +0200
+Message-Id: <20230728-sorglos-krempel-7f7b18c4c247@brauner>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To:  <169030957098.157536.9938425508695693348.stgit@manet.1015granger.net>
+References:  <169030957098.157536.9938425508695693348.stgit@manet.1015granger.net>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202307271322.40c2fc50-oliver.sang@intel.com>
-In-Reply-To: <202307271322.40c2fc50-oliver.sang@intel.com>
-From: Ian Rogers <irogers@google.com>
-Date: Thu, 27 Jul 2023 21:08:17 -0700
-Message-ID: <CAP-5=fV3N1h84yMBN2mA2TpasCy2trX0_cvq6MxJSH3oMVMjGQ@mail.gmail.com>
-Subject: Re: [linus:master] [perf pmu] a0c41caeba: kmsg.sanitizer.direct_leak/__interceptor_malloc/perf_cpu_map__alloc/perf_cpu_map__empty_new/cpu_map__from_range/cpu_map__new_data/perf_event__fprintf_event_update
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org, 
-	Arnaldo Carvalho de Melo <acme@redhat.com>, Kan Liang <kan.liang@linux.intel.com>, 
-	Adrian Hunter <adrian.hunter@intel.com>, 
-	Alexander Shishkin <alexander.shishkin@linux.intel.com>, Ali Saidi <alisaidi@amazon.com>, 
-	Athira Rajeev <atrajeev@linux.vnet.ibm.com>, Dmitrii Dolgov <9erthalion6@gmail.com>, 
-	Huacai Chen <chenhuacai@kernel.org>, Ingo Molnar <mingo@redhat.com>, 
-	James Clark <james.clark@arm.com>, Jing Zhang <renyu.zj@linux.alibaba.com>, 
-	Jiri Olsa <jolsa@kernel.org>, John Garry <john.g.garry@oracle.com>, 
-	Kajol Jain <kjain@linux.ibm.com>, Kang Minchul <tegongkang@gmail.com>, Leo Yan <leo.yan@linaro.org>, 
-	Madhavan Srinivasan <maddy@linux.ibm.com>, Mark Rutland <mark.rutland@arm.com>, 
-	Mike Leach <mike.leach@linaro.org>, Ming Wang <wangming01@loongson.cn>, 
-	Namhyung Kim <namhyung@kernel.org>, Peter Zijlstra <peterz@infradead.org>, 
-	Ravi Bangoria <ravi.bangoria@amd.com>, Rob Herring <robh@kernel.org>, 
-	Sandipan Das <sandipan.das@amd.com>, Sean Christopherson <seanjc@google.com>, 
-	Suzuki Poulouse <suzuki.poulose@arm.com>, Thomas Richter <tmricht@linux.ibm.com>, 
-	Will Deacon <will@kernel.org>, Xing Zhengjun <zhengjun.xing@linux.intel.com>, 
-	linux-perf-users@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1353; i=brauner@kernel.org; h=from:subject:message-id; bh=SA6A0yrELgyo+eU0lbBKfgUSEb8O2y86fT7korpoL+s=; b=owGbwMvMwCU28Zj0gdSKO4sYT6slMaQcLhefcL/u7cnS23MzZCTuNJ6VOifrzPiA7TCDr8wSrlsW N7/UdJSyMIhxMciKKbI4tJuEyy3nqdhslKkBM4eVCWQIAxenAExkuSfDfzeVyGoH2R1vNgWuaf+9Ji tiygMr16IzFcY1CTfm/on7Lc7I8Htb6KWyKaqHH/WuzGxyTNB8wZjnNaOFa+/fjF/CbxiSWAE=
+X-Developer-Key: i=brauner@kernel.org; a=openpgp; fpr=4880B8C9BD0E5106FC070F4F7B3C391EFEA93624
+Content-Transfer-Encoding: 8bit
 
-On Thu, Jul 27, 2023 at 6:07=E2=80=AFPM kernel test robot <oliver.sang@inte=
-l.com> wrote:
->
->
->
-> Hello,
->
-> kernel test robot noticed "kmsg.sanitizer.direct_leak/__interceptor_mallo=
-c/perf_cpu_map__alloc/perf_cpu_map__empty_new/cpu_map__from_range/cpu_map__=
-new_data/perf_event__fprintf_event_update" on:
->
-> commit: a0c41caebab2fa224454d50dd4e29ae008ead25f ("perf pmu: Add CPU map =
-for "cpu" PMUs")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
->
-> [test failed on linus/master 18b44bc5a67275641fb26f2c54ba7eef80ac5950]
-> [test failed on linux-next/master 0ba5d07205771c50789fd9063950aa75e7f1183=
-f]
->
-> in testcase: perf-test
-> version: perf-test-x86_64-git-1_20220520
-> with following parameters:
->
->         type: lkp
->         group: group-01
->
-> test-description: The internal Perf Test suite.
->
->
-> compiler: gcc-12
-> test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480+ (Sapp=
-hire Rapids) with 256G memory
->
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
->
->
-> we also noticed there are 2 other "Direct leak" but exist on both this co=
-mmit
-> and parent. (there are 3 "Indrect leak", but since exist on both this com=
-mit
-> and parent, we don't highlight below, details are in attached dmesg)
->
-> we are not sure enough the impact of those 2 other "Direct leak", which w=
-e will
-> check further if we can capture the first commit caused them. we just rep=
-ort
-> this difference we found in our tests FYI.
->
->
-> 1578e63d3ac292ab a0c41caebab2fa224454d50dd4e
-> ---------------- ---------------------------
->        fail:runs  %reproduction    fail:runs
->            |             |             |
->           6:6            0%           6:6     kmsg.sanitizer.direct_leak/=
-__interceptor_calloc/map__new2/machine__addnew_module_map/machine__process_=
-kernel_mmap_event/machine__process_mmap_event/perf_event__process_mmap
->           6:6            0%           6:6     kmsg.sanitizer.direct_leak/=
-__interceptor_malloc/__maps__insert/maps__insert/thread__insert_map/machine=
-__process_mmap2_event/perf_event__process_mmap2
->            :6          100%           6:6     kmsg.sanitizer.direct_leak/=
-__interceptor_malloc/perf_cpu_map__alloc/perf_cpu_map__empty_new/cpu_map__f=
-rom_range/cpu_map__new_data/perf_event__fprintf_event_update
->
->
->
-> If you fix the issue in a separate patch/commit (i.e. not just a new vers=
-ion of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202307271322.40c2fc50-oliver.san=
-g@intel.com
->
->
->
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> =3D=3D16107=3D=3DERROR: LeakSanitizer: detected memory leaks
->
-> Direct leak of 17544 byte(s) in 51 object(s) allocated from:     <----- a=
-lso happens on parent
->     #0 0x7f77a26ad037 in __interceptor_calloc ../../../../src/libsanitize=
-r/asan/asan_malloc_linux.cpp:154
->     #1 0x55eae21bcf4a in map__new2 util/map.c:226
->     #2 0x55eae21a1b8b in machine__addnew_module_map util/machine.c:1039
->     #3 0x55eae21a80d9 in machine__process_kernel_mmap_event util/machine.=
-c:1809
->     #4 0x55eae21aa396 in machine__process_mmap_event util/machine.c:1996
->     #5 0x55eae2069f1c in perf_event__process_mmap util/event.c:371
->     #6 0x55eae21daa15 in machines__deliver_event util/session.c:1565
->     #7 0x55eae21dc2f5 in perf_session__deliver_event util/session.c:1645
->     #8 0x55eae21df380 in perf_session__process_event util/session.c:1881
->     #9 0x55eae21e622c in process_simple util/session.c:2442
->     #10 0x55eae21e527c in reader__read_event util/session.c:2371
->     #11 0x55eae21e5bbc in reader__process_events util/session.c:2420
->     #12 0x55eae21e69e5 in __perf_session__process_events util/session.c:2=
-467
->     #13 0x55eae21e991d in perf_session__process_events util/session.c:263=
-3
->     #14 0x55eae1d248dc in __cmd_report /usr/src/perf_selftests-x86_64-rhe=
-l-8.3-bpf-a0c41caebab2fa224454d50dd4e29ae008ead25f/tools/perf/builtin-repor=
-t.c:989
->     #15 0x55eae1d30f76 in cmd_report /usr/src/perf_selftests-x86_64-rhel-=
-8.3-bpf-a0c41caebab2fa224454d50dd4e29ae008ead25f/tools/perf/builtin-report.=
-c:1709
->     #16 0x55eae200824f in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--8.3-bpf-a0c41caebab2fa224454d50dd4e29ae008ead25f/tools/perf/perf.c:323
->     #17 0x55eae2008ad1 in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-8.3-bpf-a0c41caebab2fa224454d50dd4e29ae008ead25f/tools/perf/pe=
-rf.c:377
->     #18 0x55eae2009003 in run_argv /usr/src/perf_selftests-x86_64-rhel-8.=
-3-bpf-a0c41caebab2fa224454d50dd4e29ae008ead25f/tools/perf/perf.c:421
->     #19 0x55eae200972f in main /usr/src/perf_selftests-x86_64-rhel-8.3-bp=
-f-a0c41caebab2fa224454d50dd4e29ae008ead25f/tools/perf/perf.c:537
->     #20 0x7f77a1854d09 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x23d09)
+On Tue, 25 Jul 2023 14:31:04 -0400, Chuck Lever wrote:
+> Since offset_iterate_dir() does not walk the parent's d_subdir list
+> nor does it manipulate the parent's d_child, there doesn't seem to
+> be a reason to hold the parent's d_lock. The offset_ctx's xarray can
+> be sufficiently protected with just the RCU read lock.
+> 
+> Flame graph data captured during the git regression run shows a
+> 20% reduction in CPU cycles consumed in offset_find_next().
+> 
+> [...]
 
-This was already fixed by:
-https://lore.kernel.org/r/20230608232823.4027869-20-irogers@google.com
+I've picked this up. It would be very nice if we could get a perf test
+from lkp for this fix.
 
-Thanks,
-Ian
+---
 
-> Direct leak of 904 byte(s) in 1 object(s) allocated from:
->     #0 0x7f77a26ace8f in __interceptor_malloc ../../../../src/libsanitize=
-r/asan/asan_malloc_linux.cpp:145
->     #1 0x55eae2648cdd in perf_cpu_map__alloc (/usr/src/perf_selftests-x86=
-_64-rhel-8.3-bpf-a0c41caebab2fa224454d50dd4e29ae008ead25f/tools/perf/perf+0=
-x19a5cdd)
->     #2 0x55eae22f7525 in perf_cpu_map__empty_new util/cpumap.c:163
->     #3 0x55eae22f6dae in cpu_map__from_range util/cpumap.c:121
->     #4 0x55eae22f7278 in cpu_map__new_data util/cpumap.c:144
->     #5 0x55eae2179b4c in perf_event__fprintf_event_update util/header.c:4=
-348
->     #6 0x55eae217a084 in perf_event__process_event_update util/header.c:4=
-410
->     #7 0x55eae21dcbb1 in perf_session__process_user_event util/session.c:=
-1679
->     #8 0x55eae21df1b7 in perf_session__process_event util/session.c:1867
->     #9 0x55eae21e622c in process_simple util/session.c:2442
->     #10 0x55eae21e527c in reader__read_event util/session.c:2371
->     #11 0x55eae21e5bbc in reader__process_events util/session.c:2420
->     #12 0x55eae21e69e5 in __perf_session__process_events util/session.c:2=
-467
->     #13 0x55eae21e991d in perf_session__process_events util/session.c:263=
-3
->     #14 0x55eae1d248dc in __cmd_report /usr/src/perf_selftests-x86_64-rhe=
-l-8.3-bpf-a0c41caebab2fa224454d50dd4e29ae008ead25f/tools/perf/builtin-repor=
-t.c:989
->     #15 0x55eae1d30f76 in cmd_report /usr/src/perf_selftests-x86_64-rhel-=
-8.3-bpf-a0c41caebab2fa224454d50dd4e29ae008ead25f/tools/perf/builtin-report.=
-c:1709
->     #16 0x55eae200824f in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--8.3-bpf-a0c41caebab2fa224454d50dd4e29ae008ead25f/tools/perf/perf.c:323
->     #17 0x55eae2008ad1 in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-8.3-bpf-a0c41caebab2fa224454d50dd4e29ae008ead25f/tools/perf/pe=
-rf.c:377
->     #18 0x55eae2009003 in run_argv /usr/src/perf_selftests-x86_64-rhel-8.=
-3-bpf-a0c41caebab2fa224454d50dd4e29ae008ead25f/tools/perf/perf.c:421
->     #19 0x55eae200972f in main /usr/src/perf_selftests-x86_64-rhel-8.3-bp=
-f-a0c41caebab2fa224454d50dd4e29ae008ead25f/tools/perf/perf.c:537
->     #20 0x7f77a1854d09 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x23d09)
->
-> Direct leak of 64 byte(s) in 2 object(s) allocated from:     <----- also =
-happens on parent
->     #0 0x7f77a26ace8f in __interceptor_malloc ../../../../src/libsanitize=
-r/asan/asan_malloc_linux.cpp:145
->     #1 0x55eae21c15b1 in __maps__insert util/maps.c:43
->     #2 0x55eae21c1a2a in maps__insert util/maps.c:70
->     #3 0x55eae22038ba in thread__insert_map util/thread.c:355
->     #4 0x55eae21a9bed in machine__process_mmap2_event util/machine.c:1959
->     #5 0x55eae2069f70 in perf_event__process_mmap2 util/event.c:379
->     #6 0x55eae21dac1e in machines__deliver_event util/session.c:1569
->     #7 0x55eae21dc2f5 in perf_session__deliver_event util/session.c:1645
->     #8 0x55eae21c7f35 in ordered_events__deliver_event util/session.c:188
->     #9 0x55eae21f7824 in do_flush util/ordered-events.c:245
->     #10 0x55eae21f863f in __ordered_events__flush util/ordered-events.c:3=
-24
->     #11 0x55eae21f8b1a in ordered_events__flush util/ordered-events.c:342
->     #12 0x55eae21e6a08 in __perf_session__process_events util/session.c:2=
-471
->     #13 0x55eae21e991d in perf_session__process_events util/session.c:263=
-3
->     #14 0x55eae1d248dc in __cmd_report /usr/src/perf_selftests-x86_64-rhe=
-l-8.3-bpf-a0c41caebab2fa224454d50dd4e29ae008ead25f/tools/perf/builtin-repor=
-t.c:989
->     #15 0x55eae1d30f76 in cmd_report /usr/src/perf_selftests-x86_64-rhel-=
-8.3-bpf-a0c41caebab2fa224454d50dd4e29ae008ead25f/tools/perf/builtin-report.=
-c:1709
->     #16 0x55eae200824f in run_builtin /usr/src/perf_selftests-x86_64-rhel=
--8.3-bpf-a0c41caebab2fa224454d50dd4e29ae008ead25f/tools/perf/perf.c:323
->     #17 0x55eae2008ad1 in handle_internal_command /usr/src/perf_selftests=
--x86_64-rhel-8.3-bpf-a0c41caebab2fa224454d50dd4e29ae008ead25f/tools/perf/pe=
-rf.c:377
->     #18 0x55eae2009003 in run_argv /usr/src/perf_selftests-x86_64-rhel-8.=
-3-bpf-a0c41caebab2fa224454d50dd4e29ae008ead25f/tools/perf/perf.c:421
->     #19 0x55eae200972f in main /usr/src/perf_selftests-x86_64-rhel-8.3-bp=
-f-a0c41caebab2fa224454d50dd4e29ae008ead25f/tools/perf/perf.c:537
->     #20 0x7f77a1854d09 in __libc_start_main (/lib/x86_64-linux-gnu/libc.s=
-o.6+0x23d09)
->
->
->
-> To reproduce:
->
->         git clone https://github.com/intel/lkp-tests.git
->         cd lkp-tests
->         sudo bin/lkp install job.yaml           # job file is attached in=
- this email
->         bin/lkp split-job --compatible job.yaml # generate the yaml file =
-for lkp run
->         sudo bin/lkp run generated-yaml-file
->
->         # if come across any failure that blocks the test,
->         # please remove ~/.lkp and /lkp dir to run from a clean state.
->
->
->
-> --
-> 0-DAY CI Kernel Test Service
-> https://github.com/intel/lkp-tests/wiki
->
->
+Applied to the vfs.tmpfs branch of the vfs/vfs.git tree.
+Patches in the vfs.tmpfs branch should appear in linux-next soon.
+
+Please report any outstanding bugs that were missed during review in a
+new review to the original patch series allowing us to drop it.
+
+It's encouraged to provide Acked-bys and Reviewed-bys even though the
+patch has now been applied. If possible patch trailers will be updated.
+
+Note that commit hashes shown below are subject to change due to rebase,
+trailer updates or similar. If in doubt, please check the listed branch.
+
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/vfs/vfs.git
+branch: vfs.tmpfs
+
+[1/1] libfs: Remove parent dentry locking in offset_iterate_dir()
+      https://git.kernel.org/vfs/vfs/c/01c45fd0472c
