@@ -1,264 +1,267 @@
-Received: from mail-vk1-f176.google.com (mail-vk1-f176.google.com [209.85.221.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.126])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5A111774A
-	for <oe-lkp@lists.linux.dev>; Mon, 31 Jul 2023 09:49:17 +0000 (UTC)
-Received: by mail-vk1-f176.google.com with SMTP id 71dfb90a1353d-4863f6ffed5so1539777e0c.0
-        for <oe-lkp@lists.linux.dev>; Mon, 31 Jul 2023 02:49:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1690796956; x=1691401756;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=QZrQfTaVDB/9sDfezwMGZiQUIIPPiVARPWKD4Tzyc08=;
-        b=BneMlC6cunTAzIFvXLJ+zvDgUJiCqVSOMb+2LAPogDXtYUbt5mEBRIRKerrpN53Utl
-         e96+FD9iunXOcMLfbORO8YKbXdxxv8lOQP1NcC0jsOhUrzelWOwawSNoSbR/XkgW/yGb
-         hkgl3wpfQ822QRasQ4vwY9X5oIAOMznpZbk4XMPp2rkmjIwVINP9WDGCOJbb0zD12jET
-         e0Ip6/McDAMPLwDuA+mrYBo5ZRsWFdNiQUn3LqdWDSBzbGk2jAQt83nAxZQNcgbiOlh7
-         Fq7ilW1p5jdfZ3Gvsxw2PdDgzii6wonHAi25zfL+Rxn85IZvPcSDz7oRxumJMD+FXjCI
-         HDVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1690796956; x=1691401756;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=QZrQfTaVDB/9sDfezwMGZiQUIIPPiVARPWKD4Tzyc08=;
-        b=BBS2EZXkbo9s3MeIMlepMVZTb0KfN9W+XSVElmCF8Ulo/8sxK1bwAESyObVhL1sB57
-         iOpYw3eq6lsqavuPa0OgzXlE7AnYWV2PheejCD4VDVJPhglA/CBpHdb5dnrNFKxRu5Rk
-         7Icv0VWiqc5J5Tn1Ra1q+8Yv7dNcAt87ovRbJZKZOfW0e9Ufq1dVSYawwvrLX4fkvY3l
-         zPx4iEmde1xJ2EwdRJZdYw5mfzuwWdbb8WVSqaeA5sOwW4o4MIk0QUWPrHFz5F99LMS5
-         TXzWHySLzUEvruJ4w1euHVugjHfLZBBibG4mgVeVm+k+PhzCZ2kDdJtaZeM7Gy/Lag9B
-         t2fg==
-X-Gm-Message-State: ABy/qLaV7sV18y1iPkF0g/jVn7R3X+tPk3TMqNOd82/uB3PCZV9w+LWQ
-	WuHf9ECoPH2RWii2fD23fXpNjG+ZS4n4II+d+pc=
-X-Google-Smtp-Source: APBJJlFlaSjJhhy4O9UDqPzIHFX0ptPBT9xiO5aBuxf5txacHNFM817fP7qQSmfXfbiY2x8Xnn7hHhbwLfiqZzyNfZs=
-X-Received: by 2002:a1f:60c3:0:b0:485:f674:dcea with SMTP id
- u186-20020a1f60c3000000b00485f674dceamr4214689vkb.16.1690796956184; Mon, 31
- Jul 2023 02:49:16 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2505C8BF0
+	for <oe-lkp@lists.linux.dev>; Mon, 31 Jul 2023 12:10:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1690805439; x=1722341439;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=ToN/RvIHLH/6zNQA8Pa+34jXXN/Qe1r0x+yHt5ztkrE=;
+  b=S5Ary4Jen1/wJcyIc1kw5MAR2fEtgbO53laREcddqYWsrrAbP+Z62VEG
+   MVlfzNiStm5LEr0uvY3f7jtAUrqfoA8ECBSNZejXGJj9yDtP8LjSE1zaT
+   W43fOzBivsjRYVjB59RNEGZlvKwV4VmEHZeYPg68hJqCw5bMtYHlImBgk
+   C3demRL8dFvswriUu7i3Wx9ZbCbaqX2R3k5jDKmJUpTeV4TPYkGh1zImR
+   UW8OWNIyuINhufteFIePZfxmtqAgvwakZxY1/KnG/aocTMxHqeJj3WWCn
+   z4AoOKArsL3aZ8DQt895ClEDMVXLa53RkvYUd/pLMFBi9ScX0Lofu2H6L
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10787"; a="353915703"
+X-IronPort-AV: E=Sophos;i="6.01,244,1684825200"; 
+   d="scan'208";a="353915703"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2023 05:10:38 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10787"; a="974839884"
+X-IronPort-AV: E=Sophos;i="6.01,244,1684825200"; 
+   d="scan'208";a="974839884"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by fmsmga006.fm.intel.com with ESMTP; 31 Jul 2023 05:10:38 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27; Mon, 31 Jul 2023 05:10:37 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27; Mon, 31 Jul 2023 05:10:37 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27 via Frontend Transport; Mon, 31 Jul 2023 05:10:37 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.103)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.27; Mon, 31 Jul 2023 05:10:37 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XOV45ScBHCc2YrSU26+e8Mij9Ih0CrQ6IyHdcef9iPAlqT9+P3Vn/qKhzmbSvVV6OqrqOLu/9gSlFSTsPqzllvmsOGnjp7yrvOMCdG75b/TLh/GB8LHFpAo5a1ADbesqi2tnOvSRnNsJ/VIo1QzcXcIyatADlOk+KYCQ1Asl5UjQdBCwVfi1PTGB+eiFD70Xgtb3vGtpi6WRkFhjmwZWezGOJUQf38veFMHpLIXGwXeePC0635v8irSp4TOFsS71QcAKtHkLdDBt4qJOe9DHTLFnkCWm/IXVTHkVQ8W44XIkIQsSOQKeeBbdPNEyKpwLDJvtp/b3U9HOh1yj0uf9XQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=TTEiWMshkBflSr2WH5BIQYu50UJz6UTrxJe7zoKUcrs=;
+ b=BIGwkFEi0wISC21op/WXeeqb6+bHBlO9seoi9pC9wO9QQNKCPPfMNYCdLzw/m5xX/F0qBa5IGUoHDxx65ED6iiCQA1nEMpraPffSeJrUwK0HsutO3MhhHRZYg74aKgefZ2rKjiG2+dZggSYdx1Hd0WrfRGqgBEjoSUusV4YpnfvvDEWdxxUmrNwtfn9aZVAT2zXzeo7MX9tz03o1tABZ0Kc0L6JsQSl/8k8hTBT7XuQ4i9soPsTkcV7arAkCzextmCmTl64loYHy6576cAgIP0xg6EhBe3fnerVg15yUSaooko2xJXM57n8acl7UIWZcq9T/AWlJDWfm7aU48HHg8w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from MN0PR11MB6304.namprd11.prod.outlook.com (2603:10b6:208:3c0::7)
+ by CH3PR11MB8433.namprd11.prod.outlook.com (2603:10b6:610:168::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6631.42; Mon, 31 Jul
+ 2023 12:10:35 +0000
+Received: from MN0PR11MB6304.namprd11.prod.outlook.com
+ ([fe80::57e7:80ff:c440:c53a]) by MN0PR11MB6304.namprd11.prod.outlook.com
+ ([fe80::57e7:80ff:c440:c53a%5]) with mapi id 15.20.6631.043; Mon, 31 Jul 2023
+ 12:10:35 +0000
+Date: Mon, 31 Jul 2023 20:02:46 +0800
+From: Feng Tang <feng.tang@intel.com>
+To: kernel test robot <oliver.sang@intel.com>, Thomas Gleixner
+	<tglx@linutronix.de>
+CC: <x86@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
+	<oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	<ying.huang@intel.com>, <fengwei.yin@intel.com>
+Subject: Re: [linus:master] [x86/fpu]  b81fac906a:
+ stress-ng.af-alg.ops_per_sec -34.6% regression
+Message-ID: <ZMei5uMRwOJo2r6Z@feng-clx>
+References: <202307192135.203ac24e-oliver.sang@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <202307192135.203ac24e-oliver.sang@intel.com>
+X-ClientProxiedBy: SGXP274CA0013.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b8::25)
+ To MN0PR11MB6304.namprd11.prod.outlook.com (2603:10b6:208:3c0::7)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230628095740.589893-1-jaypatel@linux.ibm.com>
- <202307172140.3b34825a-oliver.sang@intel.com> <CAB=+i9QY99=NzQugoMCdbEwkCKJObxx4DwWXwNjMqyMRYrgOHA@mail.gmail.com>
- <ZLijZ8QRc0FRgJIF@xsang-OptiPlex-9020> <CAB=+i9QmF2C7QsZBEW0HMT-PGcEf3MeCukVaq0_O1HkGy7n93w@mail.gmail.com>
- <CAB=+i9Rn0WXgK-CfaKy0k7HXHx3VEmSjzopaPakcThSG5Ri3vA@mail.gmail.com>
- <CAB=+i9SRCZ1OKBTrojbnbR2YgtmGoRiuTW4VBqvbW1=TNgVWMQ@mail.gmail.com> <ZL3kYgZ3TK3e4otz@xsang-OptiPlex-9020>
-In-Reply-To: <ZL3kYgZ3TK3e4otz@xsang-OptiPlex-9020>
-From: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Date: Mon, 31 Jul 2023 18:49:03 +0900
-Message-ID: <CAB=+i9TE3NrtVOnDSxG_MbuzDVCx3mgVdyjYYkEf92xtvt9hbA@mail.gmail.com>
-Subject: Re: [PATCH] [RFC PATCH v2]mm/slub: Optimize slub memory usage
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: Jay Patel <jaypatel@linux.ibm.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
-	linux-mm@kvack.org, ying.huang@intel.com, feng.tang@intel.com, 
-	fengwei.yin@intel.com, cl@linux.com, penberg@kernel.org, rientjes@google.com, 
-	iamjoonsoo.kim@lge.com, akpm@linux-foundation.org, vbabka@suse.cz, 
-	aneesh.kumar@linux.ibm.com, tsahu@linux.ibm.com, piyushs@linux.ibm.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MN0PR11MB6304:EE_|CH3PR11MB8433:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8f76da03-0de3-4ab2-799a-08db91bf250f
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: A1RMqbZ54fCw2lsH4jacQRsISMcOMZSXxLmoNiIxylCbH57hSO1/RcMxINDgOoKZ7PVmKidlOTt6kEhXTe54WuxeoJG3gWbY4I7qvVMjcbmIZTs0il4CgOmqMk1h0xGDxcUCwI5q9ZmCNdkgx0g4zFRhnzg774hBu0BbxlhOE0ikWJxW6aVxvjM0XyFTEmDdAF4YZA7C70voBA32+fa9Qu3L5bpt8RS8Iw+ZXhDQaY2MROqzuFRL2pjC0Y8zvZ4bq98y+7Xh8BMeGlp25deISXpI41JqHdfvAtZqjLpfO1uQ1PovLMjQNCdZgrD414Pr3UnoNqGCSpljAQBR6CHxRjTKZNXaZikrB/ffBrtJtib28fQQUuzCw25+SDyNFQuDerXfS04OMi77d81kTGmkQgui9LvDQ37r8er2hBJq8wmTtkQjWKAXbsc07EcVz4CQ+896jXuo4dlhXZGQGWlX2JNKkAf0UowUfvYeHyjJyjqTvHqGIQ3p5uTPKQJ59av5/VguwHaMxezBJYBcd8PvTBPHgyOMAaunaPPexL7QvVPVGA3aWdSsE/esGsdPpXnhezBh4f36MSU5zRpsehXVDw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR11MB6304.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(376002)(39860400002)(366004)(136003)(396003)(346002)(451199021)(33716001)(38100700002)(82960400001)(86362001)(6512007)(966005)(9686003)(6666004)(478600001)(6486002)(107886003)(186003)(53546011)(26005)(8936002)(6506007)(8676002)(44832011)(5660300002)(66556008)(66476007)(66946007)(110136005)(2906002)(41300700001)(4326008)(316002)(83380400001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?HYK/r5E2sRL2z5wVnxQ/yAhXxv5JqaaVR4MxKvit1joMvSFFRHxK/18Vx5vJ?=
+ =?us-ascii?Q?JsxX7VExNV02IO3F614K2KYOj3OOJjM27dotxSPFuvXZ48jpJKzzSiUu0JzG?=
+ =?us-ascii?Q?vI+wGQbbv6n5EuSVha1DPZ0kKeBVw5pGQ4jC9k7LJ5dgufUThK0Ldy9rSTGo?=
+ =?us-ascii?Q?OkP0Vkik9B9062llSMUDoubeh+UX19pg4dcNAZ0Wp/p+c1bq5DU5gBzy1SQg?=
+ =?us-ascii?Q?/unK4zv9Mqb2Bq4EB1mqfciKuHCut4sfQYLLtYJTAWRf4CGLseyxNdb5z8Dl?=
+ =?us-ascii?Q?9hc4mpD0y8le93yPO8mjbYiZ2Bygd0640llRlMzhka/3Vtcs3JbLPDdbqUVO?=
+ =?us-ascii?Q?6KbM/ZypS20rPA/cY8Eo3uTJ+Cz5VdCeDWpxn6EDhO6lybAOfv7gxmk4nVaO?=
+ =?us-ascii?Q?iCdhUEV5Ai2Zy68ZheIGcULPyxyt4P2RH4e7XOcLXZKDROyBrMKdWsTaiauV?=
+ =?us-ascii?Q?3CjNF1xClSA8Cbw98WTueZcBDz9jyOuMiXaCnNm2TIYUhe6nIhl2pMmBo5Tk?=
+ =?us-ascii?Q?+VZHnD5aDbak9mMyj93o/NMZNxjd8oJ0wA7dxM7MtaPv5QiWStWqQlWh57Ly?=
+ =?us-ascii?Q?sBoucFUlrBkqFCv72bPwzlWUqgRa6faKTQ9Lhn3nPyfrgeqpay7iZizoR/JP?=
+ =?us-ascii?Q?fkrlphQtwZuQniQSdIRwLdgJSyYLsUCTuGTrunQlcR+xMKCf2Dx5E//4bOr2?=
+ =?us-ascii?Q?0J0oxVqjZX/MgVnXRtd97EYOYaZjg61Ezjn9IUHI/+4wbenrwyApDseEpCdl?=
+ =?us-ascii?Q?GJmGHOAdMN6G/dOk19zqHbqKShTM0MtIig4MX769tvNqqe7YCJYFFbIiFNDw?=
+ =?us-ascii?Q?YfGFut+ps7/GqdSKrUaRy/sU38m0heFhbjMKqA8iDOPi2Omb1mINuODoq4Ov?=
+ =?us-ascii?Q?SdbVmj6N9EB4YoP/1Cqdlx262hwzVdgurLS0UJKaRj1FL403bEEXEy06EOZS?=
+ =?us-ascii?Q?SNKdPhFLYAmxU88XGsnjNzR7xoerLLYsQgfdRMnrJePTEdpoDy0dX4/pE4wc?=
+ =?us-ascii?Q?J6kfp23oOOkYDtL7O9568+4OzDIGscUhAEhxUvYwU3gYh85tnbD7XFGTRmGE?=
+ =?us-ascii?Q?vjK/6PNSrzMUhlbHdSxQ3jXuKoCSf2KRwS0NaX+y6yXP2OsJiYGJXRDI/XQa?=
+ =?us-ascii?Q?RiWlJCFyhx/CsntWfG5F5luSgPclU6qisqerwvyaxC/6IvpKUeXwlUeFcH1l?=
+ =?us-ascii?Q?A/I8BKxP5f8HTJHnqHjjF8jT7SJE8sYfuMc23tBd9GW+cgb80/3L9nN+vDAD?=
+ =?us-ascii?Q?a6zlIPWD3a7zoxPhsa3HGfw6+k1WXavNhpzRSpROyoKoE/vU6nqDnjEFk7Pt?=
+ =?us-ascii?Q?rrTr2UWegKhPnzn/2utmVgJD5kgNfc1FV8RvipL6AwVAnef/HQuLfYeztTtE?=
+ =?us-ascii?Q?CvgjR5GGTZh/M0fLpRx4ptRN1ncJZtWbRpGaQEZRJp+VY9wNzb3vSyOKv33/?=
+ =?us-ascii?Q?QXZOgfztxGzxhfAAOLfGrDORjr3EwYqoNyZePrCTjF4Ax2NUf6xWbK98BdAq?=
+ =?us-ascii?Q?CKbJmu+Ql+T+WpTRUXwZxw68u3gpPhsgXJoJ+N4Jb85ME/GIDOeQQG+sv0Yb?=
+ =?us-ascii?Q?rWRrGNQv4Kp6JzgQTBYLKrFEMujFKNxAs8l31yI+?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8f76da03-0de3-4ab2-799a-08db91bf250f
+X-MS-Exchange-CrossTenant-AuthSource: MN0PR11MB6304.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jul 2023 12:10:35.3861
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Gc0gI8soHj8T1Qn/VYbaHL0s1OFyEY6kBON8gsTxtq5TMifwCCKuKD7xdIk5/cc1rxo56AY5CP7nQ2yhIpzB3Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR11MB8433
+X-OriginatorOrg: intel.com
 
-On Mon, Jul 24, 2023 at 11:40=E2=80=AFAM Oliver Sang <oliver.sang@intel.com=
-> wrote:
->
-> hi, Hyeonggon Yoo,
->
-> On Thu, Jul 20, 2023 at 11:15:04PM +0900, Hyeonggon Yoo wrote:
-> > On Thu, Jul 20, 2023 at 10:46=E2=80=AFPM Hyeonggon Yoo <42.hyeyoo@gmail=
-.com> wrote:
-> > >
-> > > On Thu, Jul 20, 2023 at 9:59=E2=80=AFPM Hyeonggon Yoo <42.hyeyoo@gmai=
-l.com> wrote:
-> > > > On Thu, Jul 20, 2023 at 12:01=E2=80=AFPM Oliver Sang <oliver.sang@i=
-ntel.com> wrote:
-> > > > > > > commit:
-> > > > > > >   7bc162d5cc ("Merge branches 'slab/for-6.5/prandom', 'slab/f=
-or-6.5/slab_no_merge' and 'slab/for-6.5/slab-deprecate' into slab/for-next"=
-)
-> > > > > > >   a0fd217e6d ("mm/slub: Optimize slub memory usage")
-> > > > > > >
-> > > > > > > 7bc162d5cc4de5c3 a0fd217e6d6fbd23e91f8796787
-> > > > > > > ---------------- ---------------------------
-> > > > > > >          %stddev     %change         %stddev
-> > > > > > >              \          |                \
-> > > > > > >     222503 =C4=85 86%    +108.7%     464342 =C4=85 58%  numa-=
-meminfo.node1.Active
-> > > > > > >     222459 =C4=85 86%    +108.7%     464294 =C4=85 58%  numa-=
-meminfo.node1.Active(anon)
-> > > > > > >      55573 =C4=85 85%    +108.0%     115619 =C4=85 58%  numa-=
-vmstat.node1.nr_active_anon
-> > > > > > >      55573 =C4=85 85%    +108.0%     115618 =C4=85 58%  numa-=
-vmstat.node1.nr_zone_active_anon
-> > > > > >
-> > > > > > I'm quite baffled while reading this.
-> > > > > > How did changing slab order calculation double the number of ac=
-tive anon pages?
-> > > > > > I doubt two experiments were performed on the same settings.
-> > > > >
-> > > > > let me introduce our test process.
-> > > > >
-> > > > > we make sure the tests upon commit and its parent have exact same=
- environment
-> > > > > except the kernel difference, and we also make sure the config to=
- build the
-> > > > > commit and its parent are identical.
-> > > > >
-> > > > > we run tests for one commit at least 6 times to make sure the dat=
-a is stable.
-> > > > >
-> > > > > such like for this case, we rebuild the commit and its parent's k=
-ernel, the
-> > > > > config is attached FYI.
-> > >
-> > > Oh I missed the attachments.
-> > > I need more time to look more into that, but could you please test
-> > > this patch (attached)?
-> >
-> > Oh, my mistake. It has nothing to do with reclamation modifiers.
-> > The correct patch should be this. Sorry for the noise.
->
-> I applied below patch directly upon "mm/slub: Optimize slub memory usage"=
-,
-> so our tree looks like below:
->
-> * 6ba0286048431 (linux-devel/fixup-a0fd217e6d6fbd23e91f8796787b621e7d5760=
-88) mm/slub: do not allocate from remote node to allocate high order slab
-> * a0fd217e6d6fb (linux-review/Jay-Patel/mm-slub-Optimize-slub-memory-usag=
-e/20230628-180050) mm/slub: Optimize slub memory usage
-> *---.   7bc162d5cc4de (vbabka-slab/for-linus) Merge branches 'slab/for-6.=
-5/prandom', 'slab/for-6.5/slab_no_merge' and 'slab/for-6.5/slab-deprecate' =
-into slab/for-next
->
-> 6ba0286048431 is as below [1]
-> since there are some line number differences, no sure if my applying ok? =
-or
-> should I pick another base?
+On Wed, Jul 19, 2023 at 10:07:52PM +0800, kernel test robot wrote:
+> 
+> 
+> Hello,
+> 
+> kernel test robot noticed a -34.6% regression of stress-ng.af-alg.ops_per_sec on:
+> 
+> 
+> commit: b81fac906a8f9e682e513ddd95697ec7a20878d4 ("x86/fpu: Move FPU initialization into arch_cpu_finalize_init()")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> 
+> still regression on:
+> fix commit: fe3e0a13e597c1c8617814bf9b42ab732db5c26e
+> linus/master: ccff6d117d8dc8d8d86e8695a75e5f8b01e573bf
+> 
+> testcase: stress-ng
+> test machine: 64 threads 2 sockets Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz (Ice Lake) with 256G memory
+> parameters:
+> 
+> 	nr_threads: 10%
+> 	disk: 1HDD
+> 	testtime: 60s
+> 	fs: ext4
+> 	class: os
+> 	test: af-alg
+> 	cpufreq_governor: performance
+> 
+> 
+> besides, we noticed there are below information in dmesg (attached kmsg.xz),
+> which we didn't see in dmesg for parent:
+> 
+> kern  :info  : [   65.660392] AVX or AES-NI instructions are not detected.
+> user  :notice: [   65.661743] stress-ng: info:  [4738] af-alg: 9 cryptographic algorithms are internal and may be unused
+> 
+> kern  :info  : [   65.720205] AVX or AES-NI instructions are not detected.
+> kern  :info  : [   65.820334] AVX2 instructions are not detected.
+> kern  :info  : [   66.130644] AVX or AES-NI instructions are not detected.
+> kern  :info  : [   66.167749] AVX or AES-NI instructions are not detected.
+> kern  :info  : [   66.213178] AVX2 instructions are not detected.
+> kern  :info  : [   66.318235] AVX or AES-NI instructions are not detected.
+> kern  :info  : [   66.360766] AVX or AES-NI instructions are not detected.
+> kern  :info  : [   66.437318] AVX2 instructions are not detected.
+> kern  :info  : [   66.683666] AVX or AES-NI instructions are not detected.
+> user  :notice: [   66.713976] BMC ARP Control         : ARP Responses Enabled, Gratuitous ARP Disabled
+> 
+> kern  :info  : [   66.738790] AVX or AES-NI instructions are not detected.
+> kern  :info  : [   66.822332] AVX2 instructions are not detected.
+> kern  :info  : [   67.083360] AVX or AES-NI instructions are not detected.
+> kern  :info  : [   67.122804] AVX or AES-NI instructions are not detected.
 
-It was fine, it was tested correctly.
+I think the regression is related with the commit, that commit
+b81fac906a8f changes the FPU init order, and cause the 'X86_FEATURE_OSXSAVE'
+missed the cpu capability setup, thus all later check of
+boot_cpu_has(X86_FEATURE_OSXSAVE) will return false.
 
-> by this applying, we noticed the regression still exists.
-> on 128 threads 2 sockets Intel(R) Xeon(R) Gold 6338 CPU @ 2.00GHz (Ice La=
-ke) with 256G memory
+   arch_cpu_finalize_init
+       identify_boot_cpu
+	   identify_cpu
+	       generic_identify
+                   get_cpu_cap --> setup cpu capability
+       ...
+       fpu__init_cpu
+           fpu__init_cpu_xstate
+               cr4_set_bits(X86_CR4_OSXSAVE);
 
-Thank you for testing it!
-Unfortunately my guess seems to be wrong in this case,
-based on information that Feng Tang gave us.
+Many security moduels in arch/x86 have dependency on X86_FEATURE_OSXSAVE,
+and will fail to load later. While this 'af-alg' case involves secuirty
+operation and tries to load those modules but fail, which cause the
+regression.
 
-While I'm still interested in evaluating potential gains in SLUB,
-for this case I would like to focus more on the v4 in this case as
-Vlastimil pointed out!
+Setting the 'OSXSVAE' feature bit after OSXSAVE enabling can restore
+the regression, like the below RFC patch. pls help to review, thanks!
 
-Thanks,
-Hyeonggon
+- Feng
 
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> compiler/cpufreq_governor/ipc/iterations/kconfig/mode/nr_threads/rootfs/t=
-box_group/testcase:
->   gcc-12/performance/socket/4/x86_64-rhel-8.3/process/100%/debian-11.1-x8=
-6_64-20220510.cgz/lkp-icl-2sp2/hackbench
->
-> 7bc162d5cc4de5c3 a0fd217e6d6fbd23e91f8796787 6ba02860484315665e300d9f415
-> ---------------- --------------------------- ---------------------------
->          %stddev     %change         %stddev     %change         %stddev
->              \          |                \          |                \
->     479042           -12.5%     419357           -12.0%     421407       =
- hackbench.throughput
->
-> detail data is attached as hackbench-6ba0286048431-ICL-Gold-6338
->
->
-> on 128 threads 2 sockets Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz (Ic=
-e Lake) with 128G memory
->
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> compiler/cpufreq_governor/ipc/iterations/kconfig/mode/nr_threads/rootfs/t=
-box_group/testcase:
->   gcc-12/performance/socket/4/x86_64-rhel-8.3/process/100%/debian-11.1-x8=
-6_64-20220510.cgz/lkp-icl-2sp6/hackbench
->
-> 7bc162d5cc4de5c3 a0fd217e6d6fbd23e91f8796787 6ba02860484315665e300d9f415
-> ---------------- --------------------------- ---------------------------
->          %stddev     %change         %stddev     %change         %stddev
->              \          |                \          |                \
->     455347            -5.9%     428458            -6.4%     426221       =
- hackbench.throughput
->
-> detail data is attached as hackbench-6ba0286048431-ICL-Platinum-8358
->
->
-> [1]
-> commit 6ba02860484315665e300d9f41511f36940a50f0 (linux-devel/fixup-a0fd21=
-7e6d6fbd23e91f8796787b621e7d576088)
-> Author: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-> Date:   Thu Jul 20 22:29:16 2023 +0900
->
->     mm/slub: do not allocate from remote node to allocate high order slab
->
->     Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
->
-> diff --git a/mm/slub.c b/mm/slub.c
-> index 8ea7a5ccac0dc..303c57ee0f560 100644
-> --- a/mm/slub.c
-> +++ b/mm/slub.c
-> @@ -1981,7 +1981,7 @@ static struct slab *allocate_slab(struct kmem_cache=
- *s, gfp_t flags, int node)
->          * Let the initial higher-order allocation fail under memory pres=
-sure
->          * so we fall-back to the minimum order allocation.
->          */
-> -       alloc_gfp =3D (flags | __GFP_NOWARN | __GFP_NORETRY) & ~__GFP_NOF=
-AIL;
-> +       alloc_gfp =3D (flags | __GFP_THISNODE | __GFP_NOWARN | __GFP_NORE=
-TRY) & ~__GFP_NOFAIL;
->         if ((alloc_gfp & __GFP_DIRECT_RECLAIM) && oo_order(oo) > oo_order=
-(s->min))
->                 alloc_gfp =3D (alloc_gfp | __GFP_NOMEMALLOC) & ~__GFP_REC=
-LAIM;
->
->
->
->
->
-> > From 74142b5131e731f662740d34623d93fd324f9b65 Mon Sep 17 00:00:00 2001
-> > From: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-> > Date: Thu, 20 Jul 2023 22:29:16 +0900
-> > Subject: [PATCH] mm/slub: do not allocate from remote node to allocate =
-high
-> >  order slab
-> >
-> > Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-> > ---
-> >  mm/slub.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/mm/slub.c b/mm/slub.c
-> > index f7940048138c..c584237d6a0d 100644
-> > --- a/mm/slub.c
-> > +++ b/mm/slub.c
-> > @@ -2010,7 +2010,7 @@ static struct slab *allocate_slab(struct kmem_cac=
-he *s, gfp_t flags, int node)
-> >        * Let the initial higher-order allocation fail under memory pres=
-sure
-> >        * so we fall-back to the minimum order allocation.
-> >        */
-> > -     alloc_gfp =3D (flags | __GFP_NOWARN | __GFP_NORETRY) & ~__GFP_NOF=
-AIL;
-> > +     alloc_gfp =3D (flags | __GFP_THISNODE | __GFP_NOWARN | __GFP_NORE=
-TRY) & ~__GFP_NOFAIL;
-> >       if ((alloc_gfp & __GFP_DIRECT_RECLAIM) && oo_order(oo) > oo_order=
-(s->min))
-> >               alloc_gfp =3D (alloc_gfp | __GFP_NOMEMALLOC) & ~__GFP_REC=
-LAIM;
-> >
-> > --
-> > 2.41.0
-> >
->
+---
+
+From 62d05a24cae9198b0ed45a8857edbe4c9c4184f9 Mon Sep 17 00:00:00 2001
+From: Feng Tang <feng.tang@intel.com>
+Date: Mon, 31 Jul 2023 16:45:34 +0800
+Subject: [PATCH RFC] x86/fpu: set X86_FEATURE_OSXSAVE feature after enabling
+ OSXSAVE in CR4
+
+Commit b81fac906a8f ("x86/fpu: Move FPU initialization into
+arch_cpu_finalize_init()" optimized the FPU init order, and moves the
+CR4_OSXSAVE enabling into a later flace.
+
+   arch_cpu_finalize_init
+       identify_boot_cpu
+	   identify_cpu
+	       generic_identify
+                   get_cpu_cap --> setup cpu capability
+       ...
+       fpu__init_cpu
+           fpu__init_cpu_xstate
+               cr4_set_bits(X86_CR4_OSXSAVE);
+
+This makes 'X86_FEATURE_OSXSAVE' missed in cpu capability setup. Many
+security module like 'camellia_aesni_avx_x86_64' depends on this feature
+and will fail to load after the commit. 0Day caught a 34% regression
+in stress-ng's 'af-alg' test case [1].
+
+So set X86_FEATURE_OSXSAVE feature after OSXSAVE enabling to fix it.
+
+[1]. https://lore.kernel.org/lkml/202307192135.203ac24e-oliver.sang@intel.com/
+
+Fixes: b81fac906a8f ("x86/fpu: Move FPU initialization into arch_cpu_finalize_init()")
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Signed-off-by: Feng Tang <feng.tang@intel.com>
+---
+ arch/x86/kernel/fpu/xstate.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/arch/x86/kernel/fpu/xstate.c b/arch/x86/kernel/fpu/xstate.c
+index 0bab497c9436..8ebea0d522d2 100644
+--- a/arch/x86/kernel/fpu/xstate.c
++++ b/arch/x86/kernel/fpu/xstate.c
+@@ -173,6 +173,9 @@ void fpu__init_cpu_xstate(void)
+ 
+ 	cr4_set_bits(X86_CR4_OSXSAVE);
+ 
++	if (!boot_cpu_has(X86_FEATURE_OSXSAVE))
++		setup_force_cpu_cap(X86_FEATURE_OSXSAVE);
++
+ 	/*
+ 	 * Must happen after CR4 setup and before xsetbv() to allow KVM
+ 	 * lazy passthrough.  Write independent of the dynamic state static
+-- 
+2.27.0
+
