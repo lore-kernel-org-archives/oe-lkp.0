@@ -1,110 +1,101 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E31D7FBE6
-	for <oe-lkp@lists.linux.dev>; Wed,  2 Aug 2023 17:42:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50597C433C7;
-	Wed,  2 Aug 2023 17:42:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE5F1101C1
+	for <oe-lkp@lists.linux.dev>; Wed,  2 Aug 2023 18:19:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ADBFC433C8;
+	Wed,  2 Aug 2023 18:19:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1690998132;
-	bh=EY7xWTy+uC5nBlkjVqqP03MYWu0uTvv/MME+Ja83TR8=;
+	s=k20201202; t=1691000396;
+	bh=2mY6RWsid4MKxODez7iIsenojC64trTIG4Y5LLPdYRY=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=gBr245IHCceT9BV1+b8usevH8xJCSLnB3B6T6/2GgCWVuWoxgq5ew/QoizRkj9BgG
-	 lLKcQBJK1nxp8+9grnqnkT1Nx9Mcpd6cwcNQdKXvwYqMwJEWB9gxV+DaQM2cmYDqQa
-	 4e8ZrGMebQqhb5afoRVwhhPooIIegwlYtbUz49Gdfu8ezohV/VTEUg/bYa9OXPINg5
-	 jihL61eLUHeplRxLoN4DEcokP3jUzBmWfhYd9elOjDMGJUEEvO7Xc5fjHy6meS9jwG
-	 bLg/1GL7nQ/VKAeh95awNHMQVPVBKllnKKD+Rt8Z6DE5iCkckGqHpdQYJ7Qt1IQwai
-	 wqwSscvN2tL8g==
-Date: Wed, 2 Aug 2023 10:42:10 -0700
-From: Nathan Chancellor <nathan@kernel.org>
+	b=gyRrIVt8EH9ix5L/EA/uYiTRQ/fdg9/fdoYbDvRD2oM4YfuZwhxpUAG6li80w+7pa
+	 piQQYRdS4fQPkqlLZB/R619xQZPmwh8xFs0mMD0t3JURPZ0A7J08p13lPmQ2L5/J5G
+	 DUV1FgERFKmi5dynVloIcwTiK9Uu9zpO6rMjr3AX/aW4ZwKcrIecJftQ5iMMbuHJx6
+	 04uOE2TONKBclmoseHrAqdMEGNHMWKTsw3VRLnZOYEEco6cQT98ZGlHlYvC/3cvNRS
+	 N6Gj+50yrrTL02dG8X+ObUWYr0Z+GpFLbb6S7NmJ4PSQag68now7dSo5140Jd5g/sC
+	 vsUcY/6slGKZg==
+Date: Wed, 2 Aug 2023 19:19:50 +0100
+From: Mark Brown <broonie@kernel.org>
 To: kernel test robot <oliver.sang@intel.com>
-Cc: Sami Tolvanen <samitolvanen@google.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, linux-kernel@vger.kernel.org,
-	Kees Cook <keescook@chromium.org>,
-	Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [linus:master] [x86]  3c516f89e1:
- WARNING:CPU:#PID:#at_call_timer_fn
-Message-ID: <20230802174210.GA2202600@dev-arch.thelio-3990X>
-References: <202308020936.58787e6c-oliver.sang@intel.com>
+Cc: Tony Lindgren <tony@atomide.com>, oe-lkp@lists.linux.dev, lkp@intel.com,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@intel.com>,
+	Dhruva Gole <d-gole@ti.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	John Ogness <john.ogness@linutronix.de>,
+	Johan Hovold <johan@kernel.org>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Vignesh Raghavendra <vigneshr@ti.com>
+Subject: Re: [PATCH v5 3/3] serial: core: Fix serial core controller port
+ name to show controller id
+Message-ID: <ca09d15f-50ab-452c-a3d5-f2b4cde6426f@sirena.org.uk>
+References: <20230725054216.45696-4-tony@atomide.com>
+ <202308021529.35b3ad6c-oliver.sang@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="FtSNUiXiugn7UOqY"
+Content-Disposition: inline
+In-Reply-To: <202308021529.35b3ad6c-oliver.sang@intel.com>
+X-Cookie: Your present plans will be successful.
+
+
+--FtSNUiXiugn7UOqY
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202308020936.58787e6c-oliver.sang@intel.com>
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Aug 02, 2023 at 10:59:03AM +0800, kernel test robot wrote:
-> Hello,
-> 
-> kernel test robot noticed "WARNING:CPU:#PID:#at_call_timer_fn" on:
-> 
-> commit: 3c516f89e17e56b4738f05588e51267e295b5e63 ("x86: Add support for CONFIG_CFI_CLANG")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> 
-> [test failed on linus/master 12214540ad87ce824a8a791a3f063e6121ec5b66]
-> [test failed on linux-next/master d7b3af5a77e8d8da28f435f313e069aea5bcf172]
-> [test failed on fix commit 883bbbffa5a4ffd1915f8b42934dab81b7f87226]
-> 
+On Wed, Aug 02, 2023 at 04:15:28PM +0800, kernel test robot wrote:
+
+> kernel test robot noticed machine hang on:
+
+> commit: 4de64f4800a581e7eeba6392b3b2ce2131195145 ("[PATCH v5 3/3] serial:=
+ core: Fix serial core controller port name to show controller id")
+> url: https://github.com/intel-lab-lkp/linux/commits/Tony-Lindgren/serial-=
+core-Controller-id-cannot-be-negative/20230725-134452
+> base: https://git.kernel.org/cgit/linux/kernel/git/gregkh/tty.git tty-tes=
+ting
+> patch link: https://lore.kernel.org/all/20230725054216.45696-4-tony@atomi=
+de.com/
+> patch subject: [PATCH v5 3/3] serial: core: Fix serial core controller po=
+rt name to show controller id
+>=20
 > in testcase: boot
-> 
-> compiler: clang-16
-> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-> 
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
-> 
-> 
-> the config to build this commit has below difference with the one for parent:
-> 
-> --- /pkg/linux/x86_64-randconfig-r034-20230729/clang-16/a4b7a12c5594fe5e6ab2a5aa514a9ae3c0b85573/.config      2023-07-31 12:32:40.547938738 +0800
-> +++ /pkg/linux/x86_64-randconfig-r034-20230729/clang-16/3c516f89e17e56b4738f05588e51267e295b5e63/.config      2023-07-31 12:33:11.354874788 +0800
-> @@ -610,6 +610,10 @@ CONFIG_HAVE_STACKPROTECTOR=y
->  CONFIG_ARCH_SUPPORTS_LTO_CLANG=y
->  CONFIG_ARCH_SUPPORTS_LTO_CLANG_THIN=y
->  CONFIG_LTO_NONE=y
-> +CONFIG_ARCH_SUPPORTS_CFI_CLANG=y
-> +CONFIG_ARCH_USES_CFI_TRAPS=y
-> +CONFIG_CFI_CLANG=y
-> +CONFIG_CFI_PERMISSIVE=y
->  CONFIG_HAVE_ARCH_WITHIN_STACK_FRAMES=y
->  CONFIG_HAVE_CONTEXT_TRACKING_USER=y
->  CONFIG_HAVE_CONTEXT_TRACKING_USER_OFFSTACK=y
-> 
-> we are not sure if that we can see below WARNINGs on this commit is just
-> expected.
-> 
-> we also tested on linus/master linux-next/master when this bisection done,
-> as well as one fix commit 883bbbffa5, we found the
-> dmesg.WARNING:CPU:#PID:#at_call_timer_fn (below (1)) still exists on them,
-> while others (below (2)(3)(4)) are gone. not sure if there are some further
-> fixes.
-> 
-> a4b7a12c5594fe5e 3c516f89e17e56b4738f05588e5
-> ---------------- ---------------------------
->        fail:runs  %reproduction    fail:runs
->            |             |             |
->            :6          100%           6:6     dmesg.WARNING:CPU:#PID:#at_call_timer_fn    (1)
->            :6          100%           6:6     dmesg.WARNING:CPU:#PID:#at_do_basic_setup   (2)
->            :6          100%           6:6     dmesg.WARNING:CPU:#PID:#at_sha256_finup     (3)
->            :6          100%           6:6     dmesg.WARNING:CPU:#PID:#at_sha256_update    (4)
-> 
-> 
-> 
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202308020936.58787e6c-oliver.sang@intel.com
-> 
-> 
-> 
-> [   28.182726][    C1] CFI failure at call_timer_fn+0x161/0x390 (target: dsp_cmx_send+0x0/0x212f; expected type: 0x91b4a83a)
+>=20
+> compiler: gcc-12
+> test machine: 96 threads 2 sockets Intel(R) Xeon(R) Gold 6252 CPU @ 2.10G=
+Hz (Cascade Lake) with 512G memory
 
-Thanks a lot for the report, this does seem expected. I have sent a
-patch:
+I've also bisected this commit as causing boot hangs on at least the
+i.MX8MP-EVK, though most of the boards in my lab and a huge swathe of
+those in KernelCI are out:
 
-https://lore.kernel.org/20230802-fix-dsp_cmx_send-cfi-failure-v1-1-2f2e79b0178d@kernel.org/
+   https://linux.kernelci.org/test/job/next/branch/master/kernel/next-20230=
+802/plan/baseline/
 
-Cheers,
-Nathan
+which is having a pretty devastating effect on -next testing.
+
+--FtSNUiXiugn7UOqY
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmTKnkUACgkQJNaLcl1U
+h9BxCwf/fQzBjT6EzjqGQzPFRwTJ/05CYpVVA9bJWr4oG+ZDO1T9djXWj0tbuvc4
+lx2MWX+kIKF2T2BxSU7WORpy0TRvXZn2x0/wahnAt4dOnt18Y48seKNA8iW9P3Vs
++S23UT+CTkNjHb19/5frPcYgfZwFcF9KJxmRHrkVjPTq24TGDmF59xWhj6Zm1Dej
+fCltnbwBHSL34KThMXcLcp7/SjJdDc1leDneDqsNpIaTb1Um1uvEsP6KWgot60aD
+XvwHZRaEGGszxsXO+hQp1ieYv+1FcnbuXe/ojdsBSCYwPL3tIqywYuyuCpaq/uOp
+1Ur30i38ymeKThvgXlKUKwyYLDtGoQ==
+=crqL
+-----END PGP SIGNATURE-----
+
+--FtSNUiXiugn7UOqY--
