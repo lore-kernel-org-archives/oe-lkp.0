@@ -1,103 +1,231 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ua1-f51.google.com (mail-ua1-f51.google.com [209.85.222.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1801E182C8
-	for <oe-lkp@lists.linux.dev>; Thu,  3 Aug 2023 16:03:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1691078587;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Sy/pMcIe0FGwi3bcJkSKyZOI5YwKdeEf2lhviH4RpPs=;
-	b=BEdcO0flMxhCPI1qKZMBPfLWuEM8GpRdwvhqTu95u8zXhFlvVuKqjNEcqJ8n3c2juPbVVr
-	RmGxUs+SFIxxYi0YZfGDFYcEDCqwJNbyF2qOTnP6dzIhnPe2XsVqGSW0nt+Lbw0davcD2X
-	lQRuz5SpF0usSxOuyFJosWwtcYKOmVU=
-Received: from mimecast-mx02.redhat.com (66.187.233.73 [66.187.233.73]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-647-GVusM_KNO2mJ-jwttlKWlg-1; Thu, 03 Aug 2023 12:03:04 -0400
-X-MC-Unique: GVusM_KNO2mJ-jwttlKWlg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6348A1C05B02;
-	Thu,  3 Aug 2023 16:03:01 +0000 (UTC)
-Received: from [10.22.17.81] (unknown [10.22.17.81])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 70F68C5796C;
-	Thu,  3 Aug 2023 16:03:00 +0000 (UTC)
-Message-ID: <e603b6cc-35ee-f22e-ba50-73bd5caefa20@redhat.com>
-Date: Thu, 3 Aug 2023 12:03:00 -0400
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79E9B63BC
+	for <oe-lkp@lists.linux.dev>; Thu,  3 Aug 2023 20:04:38 +0000 (UTC)
+Received: by mail-ua1-f51.google.com with SMTP id a1e0cc1a2514c-7870821d9a1so908047241.1
+        for <oe-lkp@lists.linux.dev>; Thu, 03 Aug 2023 13:04:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1691093077; x=1691697877;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ApfWi0t4jty7JeS4yL2vS1J6JB48ODRK1f0RMIx0PtQ=;
+        b=fZDqaXw6QplzIVfcMJM6ZOYKZfo4O++l29jDpsXiJsS0y790Tw6n7qRql8UNHGW5hu
+         hIMAITgcVSxhks3eH/31jsAnUui224j7BDqiqIpHzBTTt3KihnW/a0FMsqfQnqCy0x+M
+         ZnM1Og7oklXOoZY4wxH7G/Wcu0xQTZPMMls699505L9X2Kd7nmNE1nuTN2zISxY9J6QX
+         rG86BEnpVrAIv0s/ycU+mXFW2z35Qs4faUru1UqWdjS9/pbNAb3lyHSoJZQ+T81H/P3n
+         /ghlJoYE2jbO98sraCbBi6MPQAOLAQQil4W6x7LWf3Iygf7g49Sp1/HEjjmJgPgLsZv7
+         YkCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1691093077; x=1691697877;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ApfWi0t4jty7JeS4yL2vS1J6JB48ODRK1f0RMIx0PtQ=;
+        b=VzLzc3lg5H5ZFmeUUHfmcHr5ZXOLxe+cXNlxK/VnxMC4gJYpZFKl3Qa0rHtZl/TtXM
+         SZXx4wMH1n+xbq767gJQXMvVtcPfv4bK4nNpa39dZgWDDZtqqEVGfpdvzUHLl8pxXxud
+         hTQS0Tn/Jwj9c2erW7dXmq3T/1d9EZ7+egY3SZ8xSa80rfl7u9rS0irtGm9bgiSq7yoB
+         +6zVlsR0JWniqH4X2bamv3/jukMtfC5r5trXmUKA5zU8zXEE1KtMtcBlwIgQE7nA/Oez
+         V+zUwhsPdLdFj+NEzviuCynTYhUCf91OBON6iHbotvS5Rx9Zxcmi4NSD2jW9UDMD/dtW
+         nh0A==
+X-Gm-Message-State: ABy/qLbzLUxgrKhjoaQeQKZkxioZwqmexqJa0FusOMlr6ZXbLfDRmd3K
+	vTyG1uKij2BGXH/siUSoVGzPsLhwwy35KXiQxXA=
+X-Google-Smtp-Source: APBJJlGD7rFuynuZ0oNK7SxxdLxXgaUuaS7EyHYFHk2sJVKXReQv79vIo32qBP4WKum2zu+eK6p/UeNQxnqRpXmktKM=
+X-Received: by 2002:a05:6102:33d3:b0:443:8053:f969 with SMTP id
+ w19-20020a05610233d300b004438053f969mr4001661vsh.17.1691093077007; Thu, 03
+ Aug 2023 13:04:37 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH v2] sched/core: Use empty mask to reset cpumasks in
- sched_setaffinity()
+References: <20230801170255.163237-21-jim.cromie@gmail.com> <202308031432.fcb4197-oliver.sang@intel.com>
+In-Reply-To: <202308031432.fcb4197-oliver.sang@intel.com>
+From: jim.cromie@gmail.com
+Date: Thu, 3 Aug 2023 14:04:10 -0600
+Message-ID: <CAJfuBxz1RT-U_Pphz11CPv4u+SOioBTkOYOVmDvscZJ-jM7Wng@mail.gmail.com>
+Subject: Re: [Intel-gfx] [PATCH v5 19/22] drm: restore CONFIG_DRM_USE_DYNAMIC_DEBUG
+ un-BROKEN
 To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
- aubrey.li@linux.intel.com, yu.c.chen@intel.com,
- Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>,
- Juri Lelli <juri.lelli@redhat.com>,
- Vincent Guittot <vincent.guittot@linaro.org>,
- Dietmar Eggemann <dietmar.eggemann@arm.com>,
- Steven Rostedt <rostedt@goodmis.org>, Ben Segall <bsegall@google.com>,
- Mel Gorman <mgorman@suse.de>, Daniel Bristot de Oliveira
- <bristot@redhat.com>, Valentin Schneider <vschneid@redhat.com>,
- Phil Auld <pauld@redhat.com>, Brent Rowsell <browsell@redhat.com>,
- Peter Hunt <pehunt@redhat.com>
-References: <202307251613.4f2de1be-oliver.sang@intel.com>
-Content-Language: en-US
-From: Waiman Long <longman@redhat.com>
-In-Reply-To: <202307251613.4f2de1be-oliver.sang@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, dri-devel@lists.freedesktop.org, 
+	daniel.vetter@ffwll.ch, daniel@ffwll.ch, jbaron@akamai.com, 
+	gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, 
+	amd-gfx@lists.freedesktop.org, intel-gvt-dev@lists.freedesktop.org, 
+	intel-gfx@lists.freedesktop.org, jani.nikula@intel.com, 
+	linux@rasmusvillemoes.dk, seanpaul@chromium.org, joe@perches.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+On Thu, Aug 3, 2023 at 1:14=E2=80=AFAM kernel test robot <oliver.sang@intel=
+.com> wrote:
+>
+>
+> hi, Jim Cromie,
+>
+> we send this report to you to consult that if there is any limitation to =
+use
+> this CONFIG_DRM_USE_DYNAMIC_DEBUG?
+> attached config is a randconfig which has CONFIG_DRM_USE_DYNAMIC_DEBUG, t=
+he
+> kernel built with it failed to boot in our tests, but we also tested with=
+ some
+> other config then the issue cannot reproduce.
+>
+> below full report FYI.
+>
 
 
-On 7/25/23 09:07, kernel test robot wrote:
->
-> Hello,
->
-> kernel test robot noticed "kernel-selftests.vDSO.vdso_test_correctness.fail" on:
->
-> commit: 8bd21fae1e37284f0f78fa42fb4d20a6cadfa68a ("[PATCH v2] sched/core: Use empty mask to reset cpumasks in sched_setaffinity()")
-> url: https://github.com/intel-lab-lkp/linux/commits/Waiman-Long/sched-core-Use-empty-mask-to-reset-cpumasks-in-sched_setaffinity/20230718-194823
-> base: https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git 2ae2fb98b77339277a2c2f18dfec605dfd8dd321
-> patch link: https://lore.kernel.org/all/20230717180243.3607603-1-longman@redhat.com/
-> patch subject: [PATCH v2] sched/core: Use empty mask to reset cpumasks in sched_setaffinity()
->
-> in testcase: kernel-selftests
-> version: kernel-selftests-x86_64-60acb023-1_20230329
-> with following parameters:
->
-> 	group: group-03
->
->
->
-> compiler: gcc-12
-> test machine: 36 threads 1 sockets Intel(R) Core(TM) i9-10980XE CPU @ 3.00GHz (Cascade Lake) with 32G memory
->
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
-> # [OK]	CPU 34: syscall: cpu 34, node 0 vdso: cpu 34, node 0 vsyscall: cpu 34, node 0
-> # [OK]	CPU 35: syscall: cpu 35, node 0 vdso: cpu 35, node 0 vsyscall: cpu 35, node 0
-> # [FAIL]	CPU 36: syscall: cpu 35, node 0 vdso: cpu 35, node 0 vsyscall: cpu 35, node 0
-> not ok 6 selftests: vDSO: vdso_test_correctness # exit=1
 
-I have figured out what this fail. The vdso_test_correctness.c test 
-calls sched_setaffinity() from cpu 0 and up until it hits an error 
-return. There are 36 CPUs in the test system and once the CPU number hit 
-36, the cpumask_empty() test in sched_setaffinity() returns true causing 
-a non-error return.
+> To reproduce:
+>
+>         # build kernel
+>         cd linux
+>         cp config-6.5.0-rc2-00390-gfb82a8bb4e30 .config
+>         make HOSTCC=3Dgcc-12 CC=3Dgcc-12 ARCH=3Dx86_64 olddefconfig prepa=
+re modules_prepare bzImage modules
+>         make HOSTCC=3Dgcc-12 CC=3Dgcc-12 ARCH=3Dx86_64 INSTALL_MOD_PATH=
+=3D<mod-install-dir> modules_install
+>         cd <mod-install-dir>
+>         find lib/ | cpio -o -H newc --quiet | gzip > modules.cgz
+>
+>
+>         git clone https://github.com/intel/lkp-tests.git
+>         cd lkp-tests
+>         bin/lkp qemu -k <bzImage> -m modules.cgz job-script # job-script =
+is attached in this email
+>
+>         # if come across any failure that blocks the test,
+>         # please remove ~/.lkp and /lkp dir to run from a clean state.
+>
 
-It seems like I need to always return an error code to not break 
-existing test program, but perhaps with a different error code to 
-indicate some action is done.
+I have recapitulated this, except I used make.cross , and the gcc I
+had that was close.
+If I can get the test to run, maybe I can get the same error.
+If I run to completion, I'll return to get a closer match on gcc version.
 
-Cheers,
-Longman
+Ive gotten to qemu, but its failing on "initrd is too large"
 
+[jimc@frodo lkp-tests]$ bin/lkp qemu -k
+/home/jimc/projects/lx/wk-suren/builds/8-3-lkp/./arch/x86_64/boot/bzImage
+-m /home/jimc/projects/lx/wk-suren/builds/8-3-lkp/Imods/modules.cgz
+~/Downloads/job-script
+try-run: /home/jimc/projects/lkp-tests/bin/qemu
+try-run: /home/jimc/projects/lkp-tests/sbin/qemu
+try-run: /home/jimc/projects/lkp-tests/tools/qemu
+try-run: /home/jimc/projects/lkp-tests/lkp-exec/qemu
+~/projects/lkp-tests/pkg/lkp-src ~/projects/lkp-tests
+x86_64
+=3D=3D> Making package: lkp-src 0-1 (Thu Aug  3 01:37:51 PM MDT 2023)
+=3D=3D> Checking runtime dependencies...
+=3D=3D> Checking buildtime dependencies...
+=3D=3D> WARNING: Using existing $srcdir/ tree
+=3D=3D> Removing existing $pkgdir/ directory...
+=3D=3D> Starting build()...
+make: Entering directory '/home/jimc/projects/lkp-tests/bin/event'
+gcc  -D_FORTIFY_SOURCE=3D2  -c -o wakeup.o wakeup.c
+In file included from /usr/include/sys/types.h:25,
+                 from wakeup.c:1:
+/usr/include/features.h:413:4: warning: #warning _FORTIFY_SOURCE
+requires compiling with optimization (-O) [-Wcpp]
+  413 | #  warning _FORTIFY_SOURCE requires compiling with optimization (-O=
+)
+      |    ^~~~~~~
+gcc  -Wl,-O1,--sort-common,--as-needed,-z,relro -static -o wakeup wakeup.o
+rm -f wakeup.o
+strip wakeup
+make: Leaving directory '/home/jimc/projects/lkp-tests/bin/event'
+=3D=3D> Entering fakeroot environment...
+x86_64
+=3D=3D> Starting package()...
+=3D=3D> Creating package "lkp-src"...
+14610330 blocks
+renamed '/home/jimc/.lkp/cache/lkp-x86_64.cgz.tmp' ->
+'/home/jimc/.lkp/cache/lkp-x86_64.cgz'
+=3D=3D> Leaving fakeroot environment.
+=3D=3D> Finished making: lkp-src 0-1 (Thu Aug  3 01:42:18 PM MDT 2023)
+~/projects/lkp-tests
+result_root: /home/jimc/.lkp//result/boot/1/vm-snb/yocto-i386-minimal-20190=
+520.cgz/x86_64-randconfig-x015-20230731/gcc-12/fb82a8bb4e30dcf042c48563987a=
+d3a24a416f5d/8
+downloading initrds ...
+use local modules: /home/jimc/.lkp/cache/modules.cgz
+skip downloading
+/home/jimc/.lkp/cache/osimage/yocto/yocto-i386-minimal-20190520.cgz
+17916 blocks
+exec command: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -m 8G
+-fsdev local,id=3Dtest_dev,path=3D/home/jimc/.lkp//result/boot/1/vm-snb/yoc=
+to-i386-minimal-20190520.cgz/x86_64-randconfig-x015-20230731/gcc-12/fb82a8b=
+b4e30dcf042c48563987ad3a24a416f5d/8,security_model=3Dnone
+-device virtio-9p-pci,fsdev=3Dtest_dev,mount_tag=3D9p/virtfs_mount -kernel
+/home/jimc/projects/lx/wk-suren/builds/8-3-lkp/./arch/x86_64/boot/bzImage
+-append root=3D/dev/ram0
+RESULT_ROOT=3D/result/boot/1/vm-snb/yocto-i386-minimal-20190520.cgz/x86_64-=
+randconfig-x015-20230731/gcc-12/fb82a8bb4e30dcf042c48563987ad3a24a416f5d/3
+BOOT_IMAGE=3D/pkg/linux/x86_64-randconfig-x015-20230731/gcc-12/fb82a8bb4e30=
+dcf042c48563987ad3a24a416f5d/vmlinuz-6.5.0-rc2-00390-gfb82a8bb4e30
+branch=3Dlinux-review/Jim-Cromie/drm-use-correct-ccflags-y-syntax/20230802-=
+010749
+job=3D/lkp/jobs/scheduled/vm-meta-58/boot-1-yocto-i386-minimal-20190520.cgz=
+-x86_64-randconfig-x015-20230731-fb82a8bb4e30-20230803-93950-6g16ti-3.yaml
+user=3Dlkp ARCH=3Dx86_64 kconfig=3Dx86_64-randconfig-x015-20230731
+commit=3Dfb82a8bb4e30dcf042c48563987ad3a24a416f5d nmi_watchdog=3D0
+vmalloc=3D256M initramfs_async=3D0 page_owner=3Don max_uptime=3D600
+LKP_LOCAL_RUN=3D1 selinux=3D0 debug apic=3Ddebug sysrq_always_enabled
+rcupdate.rcu_cpu_stall_timeout=3D100 net.ifnames=3D0 printk.devkmsg=3Don
+panic=3D-1 softlockup_panic=3D1 nmi_watchdog=3Dpanic oops=3Dpanic
+load_ramdisk=3D2 prompt_ramdisk=3D0 drbd.minor_count=3D8
+systemd.log_level=3Derr ignore_loglevel console=3Dtty0
+earlyprintk=3DttyS0,115200 console=3DttyS0,115200 vga=3Dnormal rw  ip=3Ddhc=
+p
+result_service=3D9p/virtfs_mount -initrd
+/home/jimc/.lkp/cache/final_initrd -smp 2 -m 1312M -no-reboot -device
+i6300esb -rtc base=3Dlocaltime -device e1000,netdev=3Dnet0 -netdev
+user,id=3Dnet0 -display none -monitor null -serial stdio
+qemu: initrd is too large, cannot support.(max: 1375567871, need 6117354712=
+)
+
+
+looking at qemu.git src  (Im probly running fedora's version) but its
+gotta be close..
+
+[jimc@frodo qemu]$ ack -B3 -A3 'initrd is too large'
+hw/i386/x86.c
+878-                initrd_size =3D g_mapped_file_get_length(mapped_file);
+879-                initrd_max =3D x86ms->below_4g_mem_size - acpi_data_siz=
+e - 1;
+880-                if (initrd_size >=3D initrd_max) {
+881:                    fprintf(stderr, "qemu: initrd is too large,
+cannot support."
+882-                            "(max: %"PRIu32", need %"PRId64")\n",
+883-                            initrd_max, (uint64_t)initrd_size);
+884-                    exit(1);
+--
+1023-        initrd_data =3D g_mapped_file_get_contents(mapped_file);
+1024-        initrd_size =3D g_mapped_file_get_length(mapped_file);
+1025-        if (initrd_size >=3D initrd_max) {
+1026:            fprintf(stderr, "qemu: initrd is too large, cannot support=
+."
+1027-                    "(max: %"PRIu32", need %"PRId64")\n",
+1028-                    initrd_max, (uint64_t)initrd_size);
+1029-            exit(1);
+
+
+This doesnt seem like this is a limitation I can just hack around.
+
+why is it in i386 anyway ?
+
+Im surprised JUMP_LABEL is supported on i386
+
+
+
+
+
+>
+>
+> --
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
+>
+>
