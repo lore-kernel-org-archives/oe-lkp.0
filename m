@@ -1,84 +1,132 @@
-Received: from mail-vs1-f53.google.com (mail-vs1-f53.google.com [209.85.217.53])
+Received: from mail-vk1-f174.google.com (mail-vk1-f174.google.com [209.85.221.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92606263B4
-	for <oe-lkp@lists.linux.dev>; Thu,  3 Aug 2023 20:21:40 +0000 (UTC)
-Received: by mail-vs1-f53.google.com with SMTP id ada2fe7eead31-44758646388so593241137.1
-        for <oe-lkp@lists.linux.dev>; Thu, 03 Aug 2023 13:21:40 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FF8A1C14
+	for <oe-lkp@lists.linux.dev>; Mon,  7 Aug 2023 08:39:48 +0000 (UTC)
+Received: by mail-vk1-f174.google.com with SMTP id 71dfb90a1353d-48735dd1b98so505796e0c.2
+        for <oe-lkp@lists.linux.dev>; Mon, 07 Aug 2023 01:39:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1691094099; x=1691698899;
+        d=gmail.com; s=20221208; t=1691397587; x=1692002387;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=SSaRAjLMTa67lFk5QZwB/CpwmOcN1LDlBkoWiiPNHX0=;
-        b=S2LXdDKSgccv1prhAF8Z0oKo1xmicxyewP0ylBhuICK2rO/fsSjef3jFU/28NJ3Vh1
-         WyXNOi2jAPT0ODKE80piyhpf+XC+KO14qoq4Zoq9pxkFvuS+D2a8yfb562h8HIX6AEVF
-         ch5p1S7/7QdkjxqxTnXku3kQTsVPaQDaUh5EfbRUaCprqY2YJTNY+lFJ8hQOdhtnnyJ8
-         QqTaODyCa/GBNPH6fxj5g2iNTLieOqvxoez8ocqemnPGBtsl+ns4zbS4tkGe113R9mG/
-         EmWP7hTP8mPWwhpZzOshyk7rlRKtsUMGcRFGAd1dhHj6GV5xqfNRF4asRtTybLNxarB7
-         Y1MQ==
+        bh=BPzZTlICzLYEHMNh2iGs7nTLC2Ztxao8NLG8OMNUOK0=;
+        b=FM53P8h7ve9is3BOG/5+xvjnPTfH5lB0YQcOp3ZovLoZKpjTgwypoT9loSaVciRU4V
+         +P0bzq1sFOpMZCn66RaRdve2DTdRn47tBO+7nlmCcY7GHBV96ISMSWhef3k26Gy7Mcfp
+         AqPBxGhncfT8VH91Y+JagWTYuQ+veYPbZI1I0kXUjF8HRs8A8cD/1znwNCoZNE3rDJ4l
+         7zGtBVY7Ah+t38pnjZF+B8oVo+FKOd7cKl/UYgEfvo3HLpy2KDJcUikhuPtVIDJ8pJK9
+         JMC0L15Snj6ToehTMzpjJaAg31eQy9LLS48Q4RRn8rFMBrLMztV7efxHsC9EzXRSkEkl
+         1Y7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691094099; x=1691698899;
+        d=1e100.net; s=20221208; t=1691397587; x=1692002387;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=SSaRAjLMTa67lFk5QZwB/CpwmOcN1LDlBkoWiiPNHX0=;
-        b=M3X2KB2h8rlRwdO5UMo4erwRThTxxgJLy644oevYm7X9yOSD3kh/MsifiyHYDpzZns
-         bMO3Sd9ROdfFVlSoXos/gas11gxu1fG6Eb02s/jU+/xuBAnfjcHX8LRqz8euHSutf6td
-         jbia+tms9c2phfArPANWrnJ595N1J9oCT3nYE9f038V2qlSyolhroJpTnkmkEdNBfy2k
-         Ha7l4oXtcq7aQHtTBna9UzxB8NG0iBRf5gkKSN0cOy/ZTTl6YiXoNJtb+OTprFLFCbiC
-         +m4sGdIVhyegKhrz0zOhYZX7ICdY6kywySG6+QV5MHPGUe7/JO70GAbYdc0JQ2Wy0y83
-         g+gw==
-X-Gm-Message-State: ABy/qLa+KRnEC3UimxyJI71o4DagC1dC3wrEELwrmYFPiowSPDHbsxKT
-	Jb1idBj9PS2a5jywPtKFGy714A5oAoOezjJnu2Q=
-X-Google-Smtp-Source: APBJJlG1CySCstG+XEKldbhygdyS13vjgjak8avQeTacOxbhbG8cLi/Juych8hTizx9FjNhgErCFMh1d0Escb3V3rHQ=
-X-Received: by 2002:a67:bb04:0:b0:443:895d:1b53 with SMTP id
- m4-20020a67bb04000000b00443895d1b53mr8351230vsn.10.1691094099065; Thu, 03 Aug
- 2023 13:21:39 -0700 (PDT)
+        bh=BPzZTlICzLYEHMNh2iGs7nTLC2Ztxao8NLG8OMNUOK0=;
+        b=Jcvm3BrhpXLlxBLeBtzReGYlyNfRXUHK9bUwO+SzTj6CzecBOSfxS852BIAA6W8Cfd
+         Q5zFeKGlEayjpbTnzwBMh8rs2B6x2nsULcuti34VFTgTXC+/HyAMV9s6+4TFHeCc2Fk4
+         BDld7ocTuO0ie41mGFb5mGf3uz5ZOSuHtWnX/ni+7kbdW6N5En49Qi9Bj1iFo1t5qq4Z
+         mrOAeNXEplEyA8MNRc8rAAEhWfXWPA7L6WWDRfAUHDSCKRyJ/6Zw2OYvfcn3Bn974rhP
+         N0Hu4bei8Wrv5hg5nvjq4Rw78NGbEaPvyrbxovaxztYyPUqDrPakJbc4tIosIGfHPcCz
+         Vt5w==
+X-Gm-Message-State: AOJu0YxrYckdrrUEvUBVt8xOxGxlTGk3YLOLDnh8WplqVGsHB3T5654y
+	ZkMZC/H09of01oaMnmqsVcDsjxNJnGWC2VqvaNw=
+X-Google-Smtp-Source: AGHT+IHL5u3t52XLQEfHjY0HO8ytpXExG0xmtQIZn6rLE5AItd5HTGIYn8AxhWWp1BT4sRC/YFbTfh8JxD1CjlWRyQs=
+X-Received: by 2002:a1f:3d95:0:b0:485:e984:779e with SMTP id
+ k143-20020a1f3d95000000b00485e984779emr3965774vka.2.1691397587074; Mon, 07
+ Aug 2023 01:39:47 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230801170255.163237-21-jim.cromie@gmail.com> <202308031432.fcb4197-oliver.sang@intel.com>
-In-Reply-To: <202308031432.fcb4197-oliver.sang@intel.com>
-From: jim.cromie@gmail.com
-Date: Thu, 3 Aug 2023 14:21:13 -0600
-Message-ID: <CAJfuBxzq_5skGRkcdK9kJBE_qL8X_waq88XsUO-FHyVQkQUb4w@mail.gmail.com>
-Subject: Re: [Intel-gfx] [PATCH v5 19/22] drm: restore CONFIG_DRM_USE_DYNAMIC_DEBUG
- un-BROKEN
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, dri-devel@lists.freedesktop.org, 
-	daniel.vetter@ffwll.ch, daniel@ffwll.ch, jbaron@akamai.com, 
-	gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, 
-	amd-gfx@lists.freedesktop.org, intel-gvt-dev@lists.freedesktop.org, 
-	intel-gfx@lists.freedesktop.org, jani.nikula@intel.com, 
-	linux@rasmusvillemoes.dk, seanpaul@chromium.org, joe@perches.com
+References: <20230723190906.4082646-1-42.hyeyoo@gmail.com> <20230723190906.4082646-3-42.hyeyoo@gmail.com>
+ <1f88aff2-8027-1020-71b2-6a6528f82207@suse.cz>
+In-Reply-To: <1f88aff2-8027-1020-71b2-6a6528f82207@suse.cz>
+From: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Date: Mon, 7 Aug 2023 17:39:35 +0900
+Message-ID: <CAB=+i9R52jLzD9eAMxhRTMHTFDmAGPDPcD0pwCxxDwq5yFZbxQ@mail.gmail.com>
+Subject: Re: [RFC 2/2] mm/slub: prefer NUMA locality over slight memory saving
+ on NUMA machines
+To: Vlastimil Babka <vbabka@suse.cz>
+Cc: Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, 
+	Joonsoo Kim <iamjoonsoo.kim@lge.com>, David Rientjes <rientjes@google.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, Roman Gushchin <roman.gushchin@linux.dev>, 
+	Feng Tang <feng.tang@intel.com>, "Sang, Oliver" <oliver.sang@intel.com>, 
+	Jay Patel <jaypatel@linux.ibm.com>, Binder Makin <merimus@google.com>, aneesh.kumar@linux.ibm.com, 
+	tsahu@linux.ibm.com, piyushs@linux.ibm.com, fengwei.yin@intel.com, 
+	ying.huang@intel.com, lkp <lkp@intel.com>, 
+	"oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>, linux-mm@kvack.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Aug 3, 2023 at 1:14=E2=80=AFAM kernel test robot <oliver.sang@intel=
-.com> wrote:
+On Thu, Aug 3, 2023 at 11:54=E2=80=AFPM Vlastimil Babka <vbabka@suse.cz> wr=
+ote:
 >
+> On 7/23/23 21:09, Hyeonggon Yoo wrote:
+> > By default, SLUB sets remote_node_defrag_ratio to 1000, which makes it
+> > (in most cases) take slabs from remote nodes first before trying alloca=
+ting
+> > new folios on the local node from buddy.
+> >
+> > Documentation/ABI/testing/sysfs-kernel-slab says:
+> >> The file remote_node_defrag_ratio specifies the percentage of
+> >> times SLUB will attempt to refill the cpu slab with a partial
+> >> slab from a remote node as opposed to allocating a new slab on
+> >> the local node.  This reduces the amount of wasted memory over
+> >> the entire system but can be expensive.
+> >
+> > Although this made sense when it was introduced, the portion of
+> > per node partial lists in the overall SLUB memory usage has been decrea=
+sed
+> > since the introduction of per cpu partial lists. Therefore, it's worth
+> > reevaluating its overhead on performance and memory usage.
+> >
+> > [
+> >       XXX: Add performance data. I tried to measure its impact on
+> >       hackbench with a 2 socket NUMA  machine. but it seems hackbench i=
+s
+> >       too synthetic to benefit from this, because the skbuff_head_cache=
+'s
+> >       size fits into the last level cache.
+> >
+> >       Probably more realistic workloads like netperf would benefit
+> >       from this?
+> > ]
+> >
+> > Set remote_node_defrag_ratio to zero by default, and the new behavior i=
+s:
+> >       1) try refilling per CPU partial list from the local node
+> >       2) try allocating new slabs from the local node without reclamati=
+on
+> >       3) try refilling per CPU partial list from remote nodes
+> >       4) try allocating new slabs from the local node or remote nodes
+> >
+> > If user specified remote_node_defrag_ratio, it probabilistically tries
+> > 3) first and then try 2) and 4) in order, to avoid unexpected behaviora=
+l
+> > change from user's perspective.
 >
-> hi, Jim Cromie,
->
-> we send this report to you to consult that if there is any limitation to =
-use
-> this CONFIG_DRM_USE_DYNAMIC_DEBUG?
-> attached config is a randconfig which has CONFIG_DRM_USE_DYNAMIC_DEBUG, t=
-he
-> kernel built with it failed to boot in our tests, but we also tested with=
- some
-> other config then the issue cannot reproduce.
->
+> It makes sense to me, but as you note it would be great to demonstrate
+> benefits, because it adds complexity, especially in the already complex
+> ___slab_alloc(). Networking has been indeed historically a workload very
+> sensitive to slab performance, so seems a good candidate.
 
-Theres no limitation I know of - particularly not CONFIG related
+Thank you for looking at it!
 
-on an earlier version, I saw some odd transient / red-herring
-linker-errors (collisions on __UNIQUE_ID constructs)
-on s390, mips, older gcc (iirc - I could go find it in lkp-reports if
-its meaningful)
-that had me hacking at the fallback which uses __LINE__
-But this seems different.
+Yeah, it was a PoC for what I thought "oh, it might be useful"
+and definitely I will try to measure it.
+
+> We could also postpone this until we have tried the percpu arrays
+> improvements discussed at LSF/MM.
+
+Possibly, but can you please share your plans/opinions on it?
+I think one possible way is simply to allow the cpu freelist to be
+mixed by objects from different slabs
+if we want to minimize changes, Or introduce a per cpu array similar
+to what SLAB does now.
+
+And one thing I'm having difficulty understanding is - what is the
+mind behind/or impact of managing objects
+on a slab basis, other than avoiding array queues in 2007?
