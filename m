@@ -1,152 +1,169 @@
-Received: from mail-vs1-f52.google.com (mail-vs1-f52.google.com [209.85.217.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.126])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78BA221512
-	for <oe-lkp@lists.linux.dev>; Thu, 10 Aug 2023 18:06:59 +0000 (UTC)
-Received: by mail-vs1-f52.google.com with SMTP id ada2fe7eead31-4476a50c64bso519100137.3
-        for <oe-lkp@lists.linux.dev>; Thu, 10 Aug 2023 11:06:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1691690818; x=1692295618;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=aPggHN+KL9d2/Q3Rpvyp82p/xsp4vjRXrDXYASWyz9A=;
-        b=BMqbAQkMVc4rNnjupLXTyP46meAanoIfIMW4T0t0IUlx/+2MG7a0S0b5RTy3cQS5zR
-         UtOu4AtWVCWv2ZDSnR59p03Wf2dOihR9kTtTZW1lJ4ciU8Xys+foIenrTWYVS5tabNhY
-         v66CoAjyVnctyRya8RHvHYoZ7ygBpa7URgI5YHMq7OWfieVIx8t+5SE8cDMcnsgpWTP7
-         U2kek4gr6DFxjlrALNrTkwHf/MwRBCKcNbkIfvUHeYOXVOq0Iou3r7Ru54QzFYs/xJlm
-         y+u5oz/jBXkAeYpGBeDZvx8oG94p0CPUaKILu55nO9GHlR6GikKAwmiLPVrdpGfitIby
-         sF7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1691690818; x=1692295618;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=aPggHN+KL9d2/Q3Rpvyp82p/xsp4vjRXrDXYASWyz9A=;
-        b=abkX9ifZONE+/zwwx8PaIzoyV5wNeM/PDbNibjuuW10GHTy5N/z5UpVLTIEUVkMU+c
-         HVy7ij4UcGToJQjvc5EQYnwX+ZDVwJwjxfrngZtSw8Ly5ITasPyGpeJbWlGzBP5V970z
-         fLP2MOQxGeNkr4E5gANoQQt63ji3zGl3RG78HtavkR+h2OJUcOPOWT4sDxQgGH1Prk3V
-         SRW8ZjPXNanUDS9P0wL0CA0hykz+ZM9vyEM7kk/6Mt7nS2wRvu55SuS2h9PPG/YY3vt7
-         elBlICicoVqyl061wQq9YMoG3FKwPTlf78jDcgTN374SPiSsintatU6rMKyZMfUSAicJ
-         I2+Q==
-X-Gm-Message-State: AOJu0YzptIWjrTuk0D7cZW4p9TCiTYZcj182m+FIiY6LkG8vH2M3up1x
-	BbiPpOWigIpOrbKNw+oNGV6Pn8UUMVJRJmi67aw=
-X-Google-Smtp-Source: AGHT+IHaXzdlEcSoa1ZAf6+x7x1exg0T7bfxl5sQsWyIGsDQA0mv57xzP5uDE3HaRcFNWqTYUbLDcRa6a6OZAgEPS0Q=
-X-Received: by 2002:a67:ff81:0:b0:447:6ef1:c4e with SMTP id
- v1-20020a67ff81000000b004476ef10c4emr2295262vsq.34.1691690817970; Thu, 10 Aug
- 2023 11:06:57 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5ECD6371
+	for <oe-lkp@lists.linux.dev>; Fri, 11 Aug 2023 01:11:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1691716301; x=1723252301;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=4cdCNLUFS08Rlq537lVMk3/VGCFz2a5Ayd1THQpQ5/s=;
+  b=i4S5Vmv6tgxUICGajnq1FASKrZbclEQwOTaxOthsjGqGW/pNISZ6TVrH
+   w4I2WbYxM8vG7q+HQ/o9tNwHJ7ODu8dwp3HtVZuhSkEi9jqnW9ly8qS4B
+   6FNxeeEebzXPS97okBg0iGt0j5RYb54sPS6g4VHG32I6eP4wN0TrwgYkY
+   EB9tqsxMeCNTcTTitDGeUvL8CzjJm9sNxay4XVN7U1Eu/qR/j9iMWf2OW
+   Zjpu00UJ+qKxc15MizXfZQnuked1Vm8D/IDlZaE2x1KHiaVNnBYzkqlJZ
+   3H+3M460gNHKyW+SCAhk0LE90GmJixUDywyOFBp4nzVatRIYUPEnZOZmZ
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10798"; a="356529573"
+X-IronPort-AV: E=Sophos;i="6.01,163,1684825200"; 
+   d="scan'208";a="356529573"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2023 18:11:40 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10798"; a="735607739"
+X-IronPort-AV: E=Sophos;i="6.01,163,1684825200"; 
+   d="scan'208";a="735607739"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by fmsmga007.fm.intel.com with ESMTP; 10 Aug 2023 18:11:40 -0700
+Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27; Thu, 10 Aug 2023 18:11:40 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27 via Frontend Transport; Thu, 10 Aug 2023 18:11:40 -0700
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.169)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.27; Thu, 10 Aug 2023 18:11:40 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ilqT/R23MYHCb6QSUZo00p9szIWKC6Za+X4mDKcpCgej60WWDq+ZtzjVq72aMbJ8thGKwTfuUq+OIxU+N47xJpLtXX3pdK+GPqBv2Bwgfu4MaHjFLp87Rf5XChFCundzqksmA3oACD7QrjHI8omhIOa1roNhWOMyWu86HOyAfAEbWVGpG0UTjcdbiO/BuktjYUSfLexj+h9Bn+NFkvgTCekgHfvb5P05aRTbbzUfYjavNhZfOPv/YfsIIx+WJjtCDC7N1yYqagVR+UeAj0+nifs5rmCvW3qArCzf4r5xGxEZU0Y6e/fIv3KNlD3ToGpKw994A8Hb6jjflWhBf2tElQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qaK/pmu0/7o+qRT1yHi3qXkP75KGZOANZWvI4lqErRI=;
+ b=h2U9TUFii5wrCYUQK+SB91s/1j9oAgnL6y2Z9pTYETycBNoXxWHBTQqLTFryWNckyOxebiX4QpfXKrm/gnbGH0+RrP7ecTEGEt2lDtx2OHra6ZBasDZezzN4rbxf+/HNboz5gfCY5/iKkWNOciXHCJ2s4KWeOg/SC4p1r3rnZUIsTqMs1fgZs3VAuIok5hPkW5RZL4ylDhLj/IFkiGkZVOwU3fowIrQrpJ9kuCRAiActmRt80RYw8IVWRSbMsCTJeoRw8bcqhenGUti1dU+RtHCHKitFRcJ7WQ94lZstWYufM4uTXjNqj5EJAbr4Z/estDMRTR6D7MhmdS52DwhL8Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from MN0PR11MB6206.namprd11.prod.outlook.com (2603:10b6:208:3c6::8)
+ by BL1PR11MB5224.namprd11.prod.outlook.com (2603:10b6:208:30a::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6678.19; Fri, 11 Aug
+ 2023 01:11:36 +0000
+Received: from MN0PR11MB6206.namprd11.prod.outlook.com
+ ([fe80::d9d9:1535:1180:603a]) by MN0PR11MB6206.namprd11.prod.outlook.com
+ ([fe80::d9d9:1535:1180:603a%2]) with mapi id 15.20.6652.029; Fri, 11 Aug 2023
+ 01:11:36 +0000
+Date: Fri, 11 Aug 2023 09:11:21 +0800
+From: Chen Yu <yu.c.chen@intel.com>
+To: Peter Zijlstra <peterz@infradead.org>
+CC: kernel test robot <oliver.sang@intel.com>, <oe-lkp@lists.linux.dev>,
+	<lkp@intel.com>, <linux-kernel@vger.kernel.org>, <x86@kernel.org>, "Ingo
+ Molnar" <mingo@kernel.org>
+Subject: Re: [tip:sched/eevdf] [sched/fair]  e0c2ff903c:
+ phoronix-test-suite.blogbench.Write.final_score -34.8% regression
+Message-ID: <ZNWKuccyWnS3UJjK@chenyu5-mobl2.bbrouter>
+References: <202308101628.7af4631a-oliver.sang@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <202308101628.7af4631a-oliver.sang@intel.com>
+X-ClientProxiedBy: SI2PR01CA0005.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:191::23) To MN0PR11MB6206.namprd11.prod.outlook.com
+ (2603:10b6:208:3c6::8)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230723190906.4082646-1-42.hyeyoo@gmail.com> <30b5d85348d84891bf61d7c57370d8b46df8e1a0.camel@linux.ibm.com>
-In-Reply-To: <30b5d85348d84891bf61d7c57370d8b46df8e1a0.camel@linux.ibm.com>
-From: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Date: Fri, 11 Aug 2023 03:06:46 +0900
-Message-ID: <CAB=+i9TQsPmdpjJ5g-q6ennSha00EO8GGKGjvg5RE-JH36JZxA@mail.gmail.com>
-Subject: Re: [RFC 0/2] An attempt to improve SLUB on NUMA / under memory pressure
-To: jaypatel@linux.ibm.com
-Cc: Vlastimil Babka <vbabka@suse.cz>, Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, 
-	Joonsoo Kim <iamjoonsoo.kim@lge.com>, David Rientjes <rientjes@google.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, Roman Gushchin <roman.gushchin@linux.dev>, 
-	Feng Tang <feng.tang@intel.com>, "Sang, Oliver" <oliver.sang@intel.com>, 
-	Binder Makin <merimus@google.com>, aneesh.kumar@linux.ibm.com, tsahu@linux.ibm.com, 
-	piyushs@linux.ibm.com, fengwei.yin@intel.com, ying.huang@intel.com, 
-	lkp <lkp@intel.com>, "oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>, linux-mm@kvack.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MN0PR11MB6206:EE_|BL1PR11MB5224:EE_
+X-MS-Office365-Filtering-Correlation-Id: c1b88596-658f-45f8-9f65-08db9a07e888
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: vtHMULf9nYZ0KqIdvv7GMaSg0aZWJdTIFlyZcVPY36MmuSZDGOjmTZX8Co0Csr62U10A8Nth73GnYYhLH2JPJEPzKhxPOJEHJojlgtQf8Lh4wCszyxqJuJzP2nxmb4noOhYOvVdLTVZgYshEkjoBR704fGIrGKkFhMhsEu0IoWe5lEnNJBmWS6JCxbkrKErCiXvgNg+EQ3vvYlU7JrvW/xEX7if4M6qntiXO9pDYHxh2ZYWeaR/2fKd8YkH1SXB2Sl3re1r0JdhgJx6hesreI8887Hy3B8T8LBzdqke3zG6bpTRdyNCBSnfc3XG0tkpbQjLHVCFBoVv6BqrzIg9v35DGBWN6IitoizxvxW9j6SY10KXjneeyipjzJ27Acn0yrK520mggPk3dJOu9XqYE8fnijcW3PO/DiAvUuWO/iPp2Aw2dk+nio/ObarF1ZbJ/1k06jfCmiNx3RgRvFyPT9eAfEJSWzVnc5m5ZGrV0uf/1WbzZEXdZ0JbWYIQbiyotVEwwLQ3tmjvj+SiIBV/rGahtSYL3W74An6tPwik1DOQ=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR11MB6206.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(39860400002)(136003)(376002)(366004)(396003)(346002)(1800799006)(186006)(451199021)(66476007)(66946007)(66556008)(6916009)(4326008)(41300700001)(316002)(6506007)(53546011)(26005)(83380400001)(86362001)(38100700002)(82960400001)(54906003)(6486002)(6666004)(9686003)(6512007)(966005)(478600001)(2906002)(8676002)(8936002)(5660300002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?qoHaRdg2S6cE+GXduHkVPDc/T2jgFze65k8gOhxNaXCYlPyjne+aMnVq7jl2?=
+ =?us-ascii?Q?Rslru+wsfl6k82+h2yIBVVZ64MsQgrkfnPstoykdLZoo6HOV12F7U5UZ3f4M?=
+ =?us-ascii?Q?p+MuhzUQcsqozWb+EvfP/8mNSJZ4ZJ9u+QrQRzD2u2f6VCKQaGXUEIhayugz?=
+ =?us-ascii?Q?sLDJZSgdTizqmQw9rFLPMcIV4H1Tj+H9Cuzog4mPUyJanPZ//Oco2JdDwyTk?=
+ =?us-ascii?Q?eKbE/cF7IXfgY5BzCJmhCC0lDjieSHT0YCvvZiqZXE4b6Lv1AIDyXTf/dKNq?=
+ =?us-ascii?Q?4ZbliI/OjNcJL5j3oUo+cqxN+tS41kUGkMTSW6rFt3ikxkSM8fek2iHpF02f?=
+ =?us-ascii?Q?wyPqTItgD6rabeJTE1pq8KxiRR+hW74VVc1X60Gzv90m4kkXYNNSach/vfxw?=
+ =?us-ascii?Q?vy442mscTSwW9jbJw0Ykq2z2ce9ECDE0bpHICFVfrD12JKjftvV05AUsiyED?=
+ =?us-ascii?Q?f9UX1x6G26ntJxgrliUTyk3wfMMwaTKTo0VB3BjGhnjH6rOn6XtAdGZ7YdWV?=
+ =?us-ascii?Q?ZpsFgzxtp9me7WIlj7w6l6+GCARopMVzxPPypRUMVcwCrN/6BSUeaS5aIjwZ?=
+ =?us-ascii?Q?nZUNlNFb8ueEyzyyIhtDiybJPa38dVwl8Dnp6sIOQKKaVsFMlDLDoadIaQ1i?=
+ =?us-ascii?Q?VN4G4QIkBZFuEh9SfgqeiG7BPER6z924waPerbDco+5l8oIARMcdzewtIIYQ?=
+ =?us-ascii?Q?3tuAN67iSPBkLB9dbZZDPsID+iWy/tWNQf/8KIw2OhmGVGhJxmZZvVyzrYaO?=
+ =?us-ascii?Q?1Mli6tEBFS/UTDooUSUbii8HbzJBpzBTyLZsQihGWGoRSMNGx3boBvQWiUrx?=
+ =?us-ascii?Q?cgk/JTYyt9kGBNBSVz6ri4oa2PstpQyECj18K438Vm99xxKaaJdJGAsCmjVz?=
+ =?us-ascii?Q?/lNO0mReFCKChxdlkTkZ8EJhR+rVzjV55XEt3hc+i/v8OVRw1TNq39SYEuAG?=
+ =?us-ascii?Q?ZXT/GxSXFGYwL2N6ldpXmMlz6JBl4dW/Yh9t/b8DokWa8mgXx6GzGgpxA84v?=
+ =?us-ascii?Q?PUj71Ctlpy9aGr2PGOdSR9tBMV1SL2oh5hqiZZyxCxoeRre8UdbJvQN+PCiD?=
+ =?us-ascii?Q?VWUwXJ9OlipSDNfn5HbgJRH+WagyOJUz7esaUB/qujKZo0J6UBSMQr0iyVnL?=
+ =?us-ascii?Q?PuAm+kJA/1x76Mj45k4NovITVyZjdVt+x1S/kyFbpTv/+qn3CoJkqYChNtWZ?=
+ =?us-ascii?Q?3xdWmFk7Bz3IG2oe7VPUpNyCj2Xhxam0cAmKAVFLnGGJGqfnPHLnc55jPal/?=
+ =?us-ascii?Q?ZvTNoPSfwDG8wXJRzVlav1StZkn/iqOHAnnh98qgpM6vaXtASfj+bUqE1VNe?=
+ =?us-ascii?Q?oLCZW19Y/QwSz95L9Kg1IXyeKV/K3zOukDz3k/tGR+33cV7X1pBdKGSbOV2A?=
+ =?us-ascii?Q?9LM066GSKqiD+cNuuwScznc+fn6PEjpgCJFi6M4oYZoz9s7+cXHK/odz0JwM?=
+ =?us-ascii?Q?hsqRV9o5Lq5o7iKH4vhtNs/dBdH/XB9/54gqQu7opkTimztU7gO8ITyn+Fwg?=
+ =?us-ascii?Q?1My8jE/y8k18TU3KyN4cKUn9J3hVuwYsI4XKID5i59hrgtjDyTBZmZDD8TjK?=
+ =?us-ascii?Q?pV5R2j2ET/ZTQRG0BiXKgHuWHDrd+9VfTqA7cHld?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: c1b88596-658f-45f8-9f65-08db9a07e888
+X-MS-Exchange-CrossTenant-AuthSource: MN0PR11MB6206.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Aug 2023 01:11:36.1707
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: j9AJ21Ozip1KX7lPgQYS71pnzSfMC7FthPgZR0JnjZa7pkGzGsVac+ADaoFXiAmDlIUVaGQ02cX7MvudpAuZ/A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR11MB5224
+X-OriginatorOrg: intel.com
 
-On Thu, Aug 10, 2023 at 7:56=E2=80=AFPM Jay Patel <jaypatel@linux.ibm.com> =
-wrote:
->
-> On Mon, 2023-07-24 at 04:09 +0900, Hyeonggon Yoo wrote:
-> > Hello folks,
-> >
-> > This series is motivated by kernel test bot report [1] on Jay's patch
-> > that modifies slab order. While the patch was not merged and not in
-> > the
-> > final form, I think it was a good lesson that changing slab order has
-> > more
-> > impacts on performance than we expected.
-> >
-> > While inspecting the report, I found some potential points to improve
-> > SLUB. [2] It's _potential_ because it shows no improvements on
-> > hackbench.
-> > but I believe more realistic workloads would benefit from this. Due
-> > to
-> > lack of resources and lack of my understanding of *realistic*
-> > workloads,
-> > I am asking you to help evaluating this together.
->
-> Hi Hyeonggon,
-> I tried hackbench test on Powerpc machine with 16 cpus but
-> got ~32% of Regression with patch.
+On 2023-08-10 at 21:24:37 +0800, kernel test robot wrote:
+> 
+> 
+> Hello,
+> 
+> kernel test robot noticed a -34.8% regression of phoronix-test-suite.blogbench.Write.final_score on:
+> 
+> 
+> commit: e0c2ff903c320d3fd3c2c604dc401b3b7c0a1d13 ("sched/fair: Remove sched_feat(START_DEBIT)")
+> https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git sched/eevdf
+> 
+> testcase: phoronix-test-suite
+> test machine: 96 threads 2 sockets Intel(R) Xeon(R) Gold 6252 CPU @ 2.10GHz (Cascade Lake) with 512G memory
+> parameters:
+> 
+> 	test: blogbench-1.1.0
+> 	option_a: Write
+> 	cpufreq_governor: performance
+> 
 
-Thank you so much for measuring this! That's very helpful.
-It's interesting because on an AMD machine with 2 NUMA nodes there was
-not much difference.
+It seems that commit e0c2ff903c32 removed the sched_feat(START_DEBIT) for initial
+task, but also increases the vruntime for non-initial task:
+Before the e0c2ff903c32, the vruntime for a enqueued task is:
+cfs_rq->min_vruntime
+After the e0c2ff903c32, the vruntime for a enqueued task is:
+avg_vruntime(cfs_rq) = \Sum v_i * w_i / W
+                     = \Sum v_i / nr_tasks
+which is usually higher than cfs_rq->min_vruntime, and we give less sleep bonus to
+the wakee, which could bring more or less impact to different workloads.
+But since later we switched to lag based placement, this new vruntime will minus
+lag, which could mitigate this problem. 
 
-Does it have more than one socket?
 
-Could you confirm if the offending patch is patch 1 or 2?
-If the offending one is patch 2, can you please check how large is L3
-cache miss rate
-during hackbench?
+thanks,
+Chenyu
 
-> Results as
->
-> +-------+----+---------+------------+------------+
-> |       |    | Normal  | With Patch |            |
-> +-------+----+---------+------------+------------+
-> | Amean | 1  | 1.3700  | 2.0353     | ( -32.69%) |
-> | Amean | 4  | 5.1663  | 7.6563     | (- 32.52%) |
-> | Amean | 7  | 8.9180  | 13.3353    | ( -33.13%) |
-> | Amean | 12 | 15.4290 | 23.0757    | ( -33.14%) |
-> | Amean | 21 | 27.3333 | 40.7823    | ( -32.98%) |
-> | Amean | 30 | 38.7677 | 58.5300    | ( -33.76%) |
-> | Amean | 48 | 62.2987 | 92.9850    | ( -33.00%) |
-> | Amean | 64 | 82.8993 | 123.4717   | ( -32.86%) |
-> +-------+----+---------+------------+------------+
->
-> Thanks
-> Jay Patel
-> >
-> > It only consists of two patches. Patch #1 addresses inaccuracy in
-> > SLUB's heuristic, which can negatively affect workloads' performance
-> > when large folios are not available from buddy.
-> >
-> > Patch #2 changes SLUB's behavior when there are no slabs available on
-> > the
-> > local node's partial slab list, increasing NUMA locality when there
-> > are
-> > available memory (without reclamation) on the local node from buddy.
-> >
-> > This is early state, but I think it's a good enough to start
-> > discussion.
-> > Any feedbacks and ideas are welcome. Thank you in advance!
-> >
-> > Hyeonggon
-> >
-> > https://lore.kernel.org/linux-mm/202307172140.3b34825a-oliver.sang@inte=
-l.com
-> > [1]
-> > https://lore.kernel.org/linux-mm/CAB=3D+i9S6Ykp90+4N1kCE=3DhiTJTE4wzJDi=
-8k5pBjjO_3sf0aeqg@mail.gmail.com
-> > [2]
-> >
-> > Hyeonggon Yoo (2):
-> >   Revert "mm, slub: change percpu partial accounting from objects to
-> >     pages"
-> >   mm/slub: prefer NUMA locality over slight memory saving on NUMA
-> >     machines
-> >
-> >  include/linux/slub_def.h |  2 --
-> >  mm/slab.h                |  6 ++++
-> >  mm/slub.c                | 76 ++++++++++++++++++++++++++----------
-> > ----
-> >  3 files changed, 55 insertions(+), 29 deletions(-)
-> >
->
