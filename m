@@ -1,41 +1,42 @@
-Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 535E6A923
-	for <oe-lkp@lists.linux.dev>; Mon, 14 Aug 2023 12:49:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0845BA2D
+	for <oe-lkp@lists.linux.dev>; Mon, 14 Aug 2023 13:29:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
 	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
 	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=nSu5pZF90pcdhTItj4iKD/oA2dZDTfI4QLO16UzUIZs=; b=eIUlbBMESs05G7H3pZKwv3cv94
-	EiHP+k5HnjKtPSsRSAazLweh0fDPTRHxLRrycEAZzgoXBrDuFPQkfjAhaeybKu+7ccKhhZXvt8/KY
-	VGaxaghnE3KqFtJPvsWIG0Hl5at2sEQkoqNsGxqsnrwdxnRFa/B5dhGKiBFZEDlFjYV08PXv2HaF9
-	W/KEpYYv80PJChRhhS7ZEIvtOJcbwdhsnyp4Uu3HFARJrR0j7SJ6hCVl74/ZdiYVJeTpqt1sr5t/E
-	r8I7fYzRZlWGHRPujO7P4hz11vzkcBPT9Asq6yYfL7LmOKViJ4mc+aDpAY6rUJeSrAU4xgHNKkanQ
-	H/KKcpHg==;
+	bh=Taagr/PgWuW5Zl+sgeC8v4hWn3GEM6MsenHQCvQR1vY=; b=Z7Bz7uVR9dwfiM63NckpKdiJgA
+	g5adrqZrRPgS2a5xt0PkshKbVx1yKEDr992QpMslWpoXyNncLy9skomxnodxzTfEHlfNhKfNPxxPG
+	Nok0JZO1SeHVq7pND/26yMWpfM79A8L5vWN3YvLQBZBD7fhHvENtiJmN/r9JZZFktPqQ/QCfWQ1PC
+	33gRDk6Fb3SpU1BEitgSz5h2eS4uKBsHxyWpbl3953bRCDib0OhwMn8KItxNdwH4R+DBTZ4tWynsL
+	qn72MK62ck0v7tC7ywhYbvCQAFTpcR+bKl89fUuBHpn6FcVFzB2BNEqKPmkRL7AldNRRrG1sGZu4I
+	55q0YQ3w==;
 Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-	by desiato.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-	id 1qVX0U-00Aaoq-31;
-	Mon, 14 Aug 2023 12:49:15 +0000
+	by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+	id 1qVXdY-002C6j-0i; Mon, 14 Aug 2023 13:29:36 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
 	(Client did not present a certificate)
-	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 8AA51300137;
-	Mon, 14 Aug 2023 14:49:14 +0200 (CEST)
+	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 731E2300137;
+	Mon, 14 Aug 2023 15:29:35 +0200 (CEST)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-	id 46491202BDC7A; Mon, 14 Aug 2023 14:49:14 +0200 (CEST)
-Date: Mon, 14 Aug 2023 14:49:14 +0200
+	id 54DDB202BDC7A; Mon, 14 Aug 2023 15:29:35 +0200 (CEST)
+Date: Mon, 14 Aug 2023 15:29:35 +0200
 From: Peter Zijlstra <peterz@infradead.org>
 To: Chen Yu <yu.c.chen@intel.com>
 Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
 	lkp@intel.com, linux-kernel@vger.kernel.org, x86@kernel.org,
-	Ingo Molnar <mingo@kernel.org>
+	Ingo Molnar <mingo@kernel.org>,
+	Mike Galbraith <umgwanakikbuti@gmail.com>
 Subject: Re: [tip:sched/eevdf] [sched/fair]  e0c2ff903c:
  phoronix-test-suite.blogbench.Write.final_score -34.8% regression
-Message-ID: <20230814124914.GJ776869@hirez.programming.kicks-ass.net>
+Message-ID: <20230814132935.GK776869@hirez.programming.kicks-ass.net>
 References: <202308101628.7af4631a-oliver.sang@intel.com>
  <ZNWKuccyWnS3UJjK@chenyu5-mobl2.bbrouter>
+ <ZNWgAeN/EVS/vOLi@chenyu5-mobl2.bbrouter>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -44,45 +45,124 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZNWKuccyWnS3UJjK@chenyu5-mobl2.bbrouter>
+In-Reply-To: <ZNWgAeN/EVS/vOLi@chenyu5-mobl2.bbrouter>
 
-On Fri, Aug 11, 2023 at 09:11:21AM +0800, Chen Yu wrote:
-> On 2023-08-10 at 21:24:37 +0800, kernel test robot wrote:
-> > 
-> > 
-> > Hello,
-> > 
-> > kernel test robot noticed a -34.8% regression of phoronix-test-suite.blogbench.Write.final_score on:
-> > 
-> > 
-> > commit: e0c2ff903c320d3fd3c2c604dc401b3b7c0a1d13 ("sched/fair: Remove sched_feat(START_DEBIT)")
-> > https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git sched/eevdf
-> > 
-> > testcase: phoronix-test-suite
-> > test machine: 96 threads 2 sockets Intel(R) Xeon(R) Gold 6252 CPU @ 2.10GHz (Cascade Lake) with 512G memory
-> > parameters:
-> > 
-> > 	test: blogbench-1.1.0
-> > 	option_a: Write
-> > 	cpufreq_governor: performance
-> > 
+On Fri, Aug 11, 2023 at 10:42:09AM +0800, Chen Yu wrote:
 
-Is this benchmark fork() heavy?
+> Since previously lkp has reported that with eevdf policy enabled, there was
+> a regression in hackbench, I did some experiments and found that, with eevdf
+> enabled there are more preemptions, and this preemption could slow down
+> the waker(each waker could wakes up 20 wakee in hackbench). The reason might
+> be that, check_preempt_wakeup() is easier to preempt the current task in eevdf:
 
-> It seems that commit e0c2ff903c32 removed the sched_feat(START_DEBIT) for initial
-> task, but also increases the vruntime for non-initial task:
-> Before the e0c2ff903c32, the vruntime for a enqueued task is:
-> cfs_rq->min_vruntime
-> After the e0c2ff903c32, the vruntime for a enqueued task is:
-> avg_vruntime(cfs_rq) = \Sum v_i * w_i / W
->                      = \Sum v_i / nr_tasks
-> which is usually higher than cfs_rq->min_vruntime, and we give less sleep bonus to
-> the wakee, which could bring more or less impact to different workloads.
-> But since later we switched to lag based placement, this new vruntime will minus
-> lag, which could mitigate this problem. 
+This is true.
 
-Right.. but given this problem was bisected through the lag based
-placement to this commit, I wondered about fork() / pthread_create().
+> Without eevdf enabled, the /proc/schedstat delta within 5 seconds on CPU8 is:
+> Thu Aug 10 11:02:02 2023              cpu8
+> .stats.check_preempt_count            51973       <-----
+> .stats.need_preempt_count             10514       <-----
+> .stats.rq_cpu_time                   5004068598
+> .stats.rq_sched_info.pcount           60374
+> .stats.rq_sched_info.run_delay       80405664582
+> .stats.sched_count                    60609
+> .stats.sched_goidle                    227
+> .stats.ttwu_count                     56250
+> .stats.ttwu_local                     14619
+> 
+> The preemption success ration is 10514 / 51973 = 20.23%
+> -----------------------------------------------------------------------------
+> 
+> With eevdf enabled, the /proc/schedstat delta within 5 seconds on CPU8 is:
+> Thu Aug 10 10:22:55 2023              cpu8
+> .stats.check_preempt_count            71673      <----
+> .stats.low_gran_preempt_count         57410
+> .stats.need_preempt_count             57413      <----
+> .stats.rq_cpu_time                   5007778990
+> .stats.rq_sched_info.pcount          129233
+> .stats.rq_sched_info.run_delay       164830921362
+> .stats.sched_count                   129233
+> .stats.ttwu_count                     70222
+> .stats.ttwu_local                     66847
+> 
+> The preemption success ration is 57413 / 71673 = 80.10%
 
-If this is indeed fork()/pthread_create() heavy, could you please see if
-disabling PLACE_DEADLINE_INITIAL helps?
+note: wakeup-preemption
+
+> According to the low_gran_preempt_count, most successfully preemption happens
+> when the current->vruntime is smaller than wakee->vruntime + sysctl_sched_wakeup_granularity,
+> which will not happen in current cfs's wakeup_preempt_entity().
+> 
+> It seems that, eevdf does not inhit the wakeup preemption as much as cfs, and
+> maybe it is because eevdf needs to consider fairness more?
+
+Not fairness, latency. Because it wants to honour the virtual deadline.
+
+
+Are these wakeup preemptions typically on runqueues that have only a
+single other task?
+
+That is, consider a single task running, then avg_vruntime will be it's
+vruntime, because the average of one variable must be the value of that
+one variable.
+
+Then the moment a second task joins, we get two options:
+
+ - positive lag
+ - negative lag
+
+When the new task has negative lag, it gets placed to the right of the
+currently running task (and avg_vruntime has a forward discontinuity).
+At this point the new task is not eligible and does not get to run.
+
+When the new task has positive lag, it gets placed to the left of the
+currently running task (and avg_vruntime has a backward discontinuity).
+At this point the currently running task is no longer eligible, and the
+new task must be selected -- irrespective of it's deadline.
+
+The paper doesn't (AFAIR) consider the case of wake-up-preemption
+explicitly. It only considers task selection and vruntime placement.
+
+One option I suppose would be to gate the wakeup preemption by virtual
+deadline, only allow when the new task has an earlier deadline than the
+currently running one, and otherwise rely on tick preemption.
+
+NOTE: poking at wakeup preemption is a double edged sword, some
+workloads love it, some hate it. Touching it is bound to upset the
+balance -- again.
+
+(also, did I get that the right way around? -- I've got a Monday brain
+that isn't willing to boot properly)
+
+---
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index fe5be91c71c7..16d24e5dda8f 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -8047,6 +8047,15 @@ static void check_preempt_wakeup(struct rq *rq, struct task_struct *p, int wake_
+ 	cfs_rq = cfs_rq_of(se);
+ 	update_curr(cfs_rq);
+ 
++	if (sched_feat(WAKEUP_DEADLINE)) {
++		/*
++		 * Only allow preemption if the virtual deadline of the new
++		 * task is before the virtual deadline of the existing task.
++		 */
++		if (deadline_gt(deadline, pse, se))
++			return;
++	}
++
+ 	/*
+ 	 * XXX pick_eevdf(cfs_rq) != se ?
+ 	 */
+diff --git a/kernel/sched/features.h b/kernel/sched/features.h
+index 61bcbf5e46a4..e733981b32aa 100644
+--- a/kernel/sched/features.h
++++ b/kernel/sched/features.h
+@@ -24,6 +24,7 @@ SCHED_FEAT(CACHE_HOT_BUDDY, true)
+  * Allow wakeup-time preemption of the current task:
+  */
+ SCHED_FEAT(WAKEUP_PREEMPTION, true)
++SCHED_FEAT(WAKEUP_DEADLINE, true)
+ 
+ SCHED_FEAT(HRTICK, false)
+ SCHED_FEAT(HRTICK_DL, false)
