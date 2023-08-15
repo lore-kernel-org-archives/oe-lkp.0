@@ -1,168 +1,190 @@
-Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com [209.85.167.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71BC1BA23
-	for <oe-lkp@lists.linux.dev>; Tue, 15 Aug 2023 07:49:51 +0000 (UTC)
-Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-4f13c41c957so1561119e87.1
-        for <oe-lkp@lists.linux.dev>; Tue, 15 Aug 2023 00:49:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mihalicyn.com; s=mihalicyn; t=1692085789; x=1692690589;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=JXOEvzRF8ADpNQSaByqRT4RWjoHlgIorYKOCNB0xrSo=;
-        b=ctI2X5htkoAwJxA2kfQY81apo4f+wOZMRTR4YSRI2MhUTPTrl1aaQxfvGnkOK021Xh
-         N2b6oekgxREzZSBd26EtP2sXHYTmO4B9wM/i9SlqSuK8I2WTsnM40oatmwc5vZcC6UsX
-         dxeGlWj27TUrD/saPJfipYs6jTOAXOCVPpCS0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692085789; x=1692690589;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=JXOEvzRF8ADpNQSaByqRT4RWjoHlgIorYKOCNB0xrSo=;
-        b=fUQIEHCDafeuI0rLvq7WnTnWgYH08jZcVs945IMlfTN3NatHbeUWbhZtunD9JwItBD
-         P6rBqeDgyj0TGce0elbCt74vlVGQeaEIXTUE35Hzrs/72tXGUihmouClk4VqGmotwPFv
-         YrW3Rrw4jV3Y9MP9gVYhEz6I55ni+lEjD8l15nhWngvUmIhIGscVamyP7gX3/RZjK6nY
-         Bzn1EPway64eZ0OO6LZo6d7LzM9sn8kM0oa0C6JXvmITOQ20jjVpBKUCa+D8eXot5sPj
-         sv3qjHe3fRDBssLXTLIBzyTvoqPDN0p1JP/EKqtZGAdKXAZo7k2qvGfostJ4pUJskJjS
-         eCfQ==
-X-Gm-Message-State: AOJu0YwXhVwFzPO/HisVnj1F9rSKpP8sD+jRnKzysPQlXC8V/OOuERai
-	8JNy+1Xymvsh9fxYbFf5JLyjYUTR+Q1YieU4e7vjLQ==
-X-Google-Smtp-Source: AGHT+IGn1Ixr5bTVNGHlW/hSLsuoMvWjfq1mrKGq4Ekrskbsvt5z7tXbeqR2zu4QGtGdbLbRF6sbB0NZkd2uhSdrjUM=
-X-Received: by 2002:a05:6512:49a:b0:4fd:d0f7:5b90 with SMTP id
- v26-20020a056512049a00b004fdd0f75b90mr5999537lfq.4.1692085788398; Tue, 15 Aug
- 2023 00:49:48 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25A395C9D
+	for <oe-lkp@lists.linux.dev>; Tue, 15 Aug 2023 12:10:23 +0000 (UTC)
+Received: from kwepemm600012.china.huawei.com (unknown [172.30.72.57])
+	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4RQ96N6wGqzrScB;
+	Tue, 15 Aug 2023 20:09:00 +0800 (CST)
+Received: from [10.174.178.220] (10.174.178.220) by
+ kwepemm600012.china.huawei.com (7.193.23.74) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.31; Tue, 15 Aug 2023 20:10:19 +0800
+Message-ID: <5f3794ef-6719-d9fd-a264-8c467db52ae6@huawei.com>
+Date: Tue, 15 Aug 2023 20:10:19 +0800
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230814-devcg_guard-v1-4-654971ab88b1@aisec.fraunhofer.de> <202308151506.6be3b169-oliver.sang@intel.com>
-In-Reply-To: <202308151506.6be3b169-oliver.sang@intel.com>
-From: Alexander Mikhalitsyn <alexander@mihalicyn.com>
-Date: Tue, 15 Aug 2023 09:49:37 +0200
-Message-ID: <CAJqdLrrZAXn8hwReSFtP7x+G_ge-eOrx8A5gUvOZojQdwk4frw@mail.gmail.com>
-Subject: Re: [PATCH RFC 4/4] fs: allow mknod in non-initial userns using
- cgroup device guard
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH v3 9/9] scsi:scsi_debug: Add debugfs interface to fail
+ target reset
+Content-Language: en-US
 To: kernel test robot <oliver.sang@intel.com>
-Cc: =?UTF-8?Q?Michael_Wei=C3=9F?= <michael.weiss@aisec.fraunhofer.de>, 
-	oe-lkp@lists.linux.dev, lkp@intel.com, linux-fsdevel@vger.kernel.org, 
-	Christian Brauner <brauner@kernel.org>, Alexei Starovoitov <ast@kernel.org>, 
-	Daniel Borkmann <daniel@iogearbox.net>, Andrii Nakryiko <andrii@kernel.org>, 
-	Martin KaFai Lau <martin.lau@linux.dev>, Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>, 
-	John Fastabend <john.fastabend@gmail.com>, KP Singh <kpsingh@kernel.org>, 
-	Stanislav Fomichev <sdf@google.com>, Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>, 
-	Quentin Monnet <quentin@isovalent.com>, Alexander Viro <viro@zeniv.linux.org.uk>, bpf@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, gyroidos@aisec.fraunhofer.de, 
-	stgraber@ubuntu.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-scsi@vger.kernel.org>,
+	"James E . J . Bottomley" <jejb@linux.ibm.com>, "Martin K . Petersen"
+	<martin.petersen@oracle.com>, Douglas Gilbert <dgilbert@interlog.com>,
+	<linux-kernel@vger.kernel.org>, Dan Carpenter <error27@gmail.com>,
+	<louhongxiang@huawei.com>
+References: <202308031027.5941ce5f-oliver.sang@intel.com>
+From: "haowenchao (C)" <haowenchao2@huawei.com>
+In-Reply-To: <202308031027.5941ce5f-oliver.sang@intel.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.220]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600012.china.huawei.com (7.193.23.74)
+X-CFilter-Loop: Reflected
 
-On Tue, Aug 15, 2023 at 9:18=E2=80=AFAM kernel test robot <oliver.sang@inte=
-l.com> wrote:
->
->
->
+On 2023/8/3 14:26, kernel test robot wrote:
+> 
+> 
 > Hello,
->
-> kernel test robot noticed "WARNING:suspicious_RCU_usage" on:
->
-> commit: bffc333633f1e681c01ada11bd695aa220518bd8 ("[PATCH RFC 4/4] fs: al=
-low mknod in non-initial userns using cgroup device guard")
-> url: https://github.com/intel-lab-lkp/linux/commits/Michael-Wei/bpf-add-c=
-group-device-guard-to-flag-a-cgroup-device-prog/20230814-224110
-> patch link: https://lore.kernel.org/all/20230814-devcg_guard-v1-4-654971a=
-b88b1@aisec.fraunhofer.de/
-> patch subject: [PATCH RFC 4/4] fs: allow mknod in non-initial userns usin=
-g cgroup device guard
->
-> in testcase: boot
->
+> 
+> kernel test robot noticed "BUG:sleeping_function_called_from_invalid_context_at_kernel/locking/rwsem.c" on:
+> 
+> commit: b75b216522fef4d99e145fd9a1535db987ef2836 ("[PATCH v3 9/9] scsi:scsi_debug: Add debugfs interface to fail target reset")
+> url: https://github.com/intel-lab-lkp/linux/commits/Wenchao-Hao/scsi-scsi_debug-create-scsi_debug-directory-in-the-debugfs-filesystem/20230723-182123
+> base: https://git.kernel.org/cgit/linux/kernel/git/mkp/scsi.git for-next
+> patch link: https://lore.kernel.org/all/20230723234105.1628982-10-haowenchao2@huawei.com/
+> patch subject: [PATCH v3 9/9] scsi:scsi_debug: Add debugfs interface to fail target reset
+> 
+> in testcase: xfstests
+> version: xfstests-x86_64-bb8af9c-1_20230801
+> with following parameters:
+> 
+> 	disk: 4HDD
+> 	fs: ext4
+> 	test: generic-350
+> 
+> 
+> 
 > compiler: gcc-12
-> test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m 4G
->
+> test machine: 4 threads Intel(R) Core(TM) i5-6500 CPU @ 3.20GHz (Skylake) with 32G memory
+> 
 > (please refer to attached dmesg/kmsg for entire log/backtrace)
->
->
->
-> If you fix the issue in a separate patch/commit (i.e. not just a new vers=
-ion of
+> 
+> 
+> 
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of
 > the same patch/commit), kindly add following tags
 > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202308151506.6be3b169-oliver.san=
-g@intel.com
->
->
->
-> [   14.468719][  T139]
-> [   14.468999][  T139] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> [   14.469545][  T139] WARNING: suspicious RCU usage
-> [   14.469968][  T139] 6.5.0-rc6-00004-gbffc333633f1 #1 Not tainted
-> [   14.470520][  T139] -----------------------------
-> [   14.470940][  T139] include/linux/cgroup.h:423 suspicious rcu_derefere=
-nce_check() usage!
+> | Closes: https://lore.kernel.org/oe-lkp/202308031027.5941ce5f-oliver.sang@intel.com
+> 
+> 
 
-Most likely it's because in "cgroup_bpf_device_guard_enabled" function:
+Would be fixed in v4 patch.
 
-struct cgroup *cgrp =3D task_dfl_cgroup(task);
 
-should be under rcu_read_lock (or cgroup_mutex). If we get rid of
-cgroup_mutex and make cgroup_bpf_device_guard_enabled
-function specific to "current" task we will solve this issue too.
+> [  224.728219][ T2216] BUG: sleeping function called from invalid context at kernel/locking/rwsem.c:1572
+> [  224.737418][ T2216] in_atomic(): 1, irqs_disabled(): 1, non_block: 0, pid: 2216, name: modprobe
+> [  224.746095][ T2216] preempt_count: 1, expected: 0
+> [  224.750787][ T2216] RCU nest depth: 0, expected: 0
+> [  224.755564][ T2216] CPU: 3 PID: 2216 Comm: modprobe Tainted: G          I        6.5.0-rc1-00013-gb75b216522fe #1
+> [  224.765799][ T2216] Hardware name: Dell Inc. OptiPlex 7040/0Y7WYT, BIOS 1.1.1 10/07/2015
+> [  224.773867][ T2216] Call Trace:
+> [  224.777011][ T2216]  <TASK>
+> [ 224.779796][ T2216] dump_stack_lvl (lib/dump_stack.c:107 (discriminator 1))
+> [ 224.784146][ T2216] __might_resched (kernel/sched/core.c:10190)
+> [ 224.788753][ T2216] ? preempt_notifier_dec (kernel/sched/core.c:10144)
+> [ 224.793792][ T2216] ? preempt_notifier_dec (kernel/sched/core.c:10144)
+> [ 224.798851][ T2216] down_write (include/linux/kernel.h:111 kernel/locking/rwsem.c:1572)
+> [ 224.802936][ T2216] ? rwsem_down_write_slowpath (kernel/locking/rwsem.c:1571)
+> [ 224.808582][ T2216] ? kobject_put (arch/x86/include/asm/atomic.h:103 include/linux/atomic/atomic-arch-fallback.h:940 include/linux/atomic/atomic-instrumented.h:401 include/linux/refcount.h:272 include/linux/refcount.h:315 include/linux/refcount.h:333 include/linux/kref.h:64 lib/kobject.c:730)
+> [ 224.812858][ T2216] simple_recursive_removal (include/linux/dcache.h:385 include/linux/dcache.h:400 include/linux/dcache.h:410 fs/libfs.c:273)
+> [ 224.818256][ T2216] ? start_creating (fs/tracefs/inode.c:135)
+> [ 224.823555][ T2216] ? _raw_spin_lock_irqsave (arch/x86/include/asm/atomic.h:115 include/linux/atomic/atomic-arch-fallback.h:2155 include/linux/atomic/atomic-instrumented.h:1296 include/asm-generic/qspinlock.h:111 include/linux/spinlock.h:187 include/linux/spinlock_api_smp.h:111 kernel/locking/spinlock.c:162)
+> [ 224.828766][ T2216] ? _raw_read_unlock_irqrestore (kernel/locking/spinlock.c:161)
+> [ 224.834412][ T2216] debugfs_remove (fs/debugfs/inode.c:766)
+> [ 224.838758][ T2216] sdebug_target_destroy (drivers/scsi/scsi_debug.c:1147) scsi_debug
+> [ 224.844874][ T2216] scsi_target_destroy (drivers/scsi/scsi_scan.c:401)
+> [ 224.849830][ T2216] __scsi_remove_device (drivers/scsi/scsi_sysfs.c:1517)
+> [ 224.854889][ T2216] scsi_forget_host (drivers/scsi/scsi_scan.c:1988)
+> [ 224.859508][ T2216] scsi_remove_host (drivers/scsi/hosts.c:182)
+> [ 224.864113][ T2216] sdebug_driver_remove (drivers/scsi/scsi_debug.c:8342) scsi_debug
+> [ 224.870201][ T2216] ? kernfs_remove_by_name_ns (fs/kernfs/dir.c:1679)
+> [ 224.875758][ T2216] device_release_driver_internal (drivers/base/dd.c:1272 drivers/base/dd.c:1293)
+> [ 224.881662][ T2216] bus_remove_device (include/linux/kobject.h:191 drivers/base/base.h:73 drivers/base/bus.c:581)
+> [ 224.886442][ T2216] device_del (drivers/base/core.c:3815)
+> [ 224.890616][ T2216] ? __device_link_del (drivers/base/core.c:3769)
+> [ 224.895567][ T2216] ? mutex_unlock (arch/x86/include/asm/atomic64_64.h:109 include/linux/atomic/atomic-arch-fallback.h:4303 include/linux/atomic/atomic-long.h:1499 include/linux/atomic/atomic-instrumented.h:4446 kernel/locking/mutex.c:181 kernel/locking/mutex.c:540)
+> [ 224.899915][ T2216] ? __mutex_unlock_slowpath+0x2b0/0x2b0
+> [ 224.906427][ T2216] device_unregister (drivers/base/core.c:3732 drivers/base/core.c:3845)
+> [ 224.911038][ T2216] sdebug_do_remove_host (drivers/scsi/scsi_debug.c:7691) scsi_debug
+> [ 224.917309][ T2216] scsi_debug_exit (drivers/scsi/scsi_debug.c:8170) scsi_debug
+> [ 224.922889][ T2216] __do_sys_delete_module+0x316/0x540
+> [ 224.929162][ T2216] ? module_flags (kernel/module/main.c:698)
+> [ 224.933689][ T2216] ? task_work_cancel (kernel/task_work.c:147)
+> [ 224.938388][ T2216] ? _raw_spin_lock (arch/x86/include/asm/atomic.h:115 include/linux/atomic/atomic-arch-fallback.h:2155 include/linux/atomic/atomic-instrumented.h:1296 include/asm-generic/qspinlock.h:111 include/linux/spinlock.h:187 include/linux/spinlock_api_smp.h:134 kernel/locking/spinlock.c:154)
+> [ 224.942921][ T2216] ? exit_to_user_mode_loop (include/linux/sched.h:2337 include/linux/resume_user_mode.h:61 kernel/entry/common.c:171)
+> [ 224.948222][ T2216] do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
+> [ 224.952483][ T2216] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120)
+> [  224.958217][ T2216] RIP: 0033:0x7fe4243fc417
+> [ 224.962479][ T2216] Code: 73 01 c3 48 8b 0d 79 1a 0d 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 b8 b0 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 49 1a 0d 00 f7 d8 64 89 01 48
+> All code
+> ========
+>     0:	73 01                	jae    0x3
+>     2:	c3                   	retq
+>     3:	48 8b 0d 79 1a 0d 00 	mov    0xd1a79(%rip),%rcx        # 0xd1a83
+>     a:	f7 d8                	neg    %eax
+>     c:	64 89 01             	mov    %eax,%fs:(%rcx)
+>     f:	48 83 c8 ff          	or     $0xffffffffffffffff,%rax
+>    13:	c3                   	retq
+>    14:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
+>    1b:	00 00 00
+>    1e:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+>    23:	b8 b0 00 00 00       	mov    $0xb0,%eax
+>    28:	0f 05                	syscall
+>    2a:*	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax		<-- trapping instruction
+>    30:	73 01                	jae    0x33
+>    32:	c3                   	retq
+>    33:	48 8b 0d 49 1a 0d 00 	mov    0xd1a49(%rip),%rcx        # 0xd1a83
+>    3a:	f7 d8                	neg    %eax
+>    3c:	64 89 01             	mov    %eax,%fs:(%rcx)
+>    3f:	48                   	rex.W
+> 
+> Code starting with the faulting instruction
+> ===========================================
+>     0:	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax
+>     6:	73 01                	jae    0x9
+>     8:	c3                   	retq
+>     9:	48 8b 0d 49 1a 0d 00 	mov    0xd1a49(%rip),%rcx        # 0xd1a59
+>    10:	f7 d8                	neg    %eax
+>    12:	64 89 01             	mov    %eax,%fs:(%rcx)
+>    15:	48                   	rex.W
+> [  224.981910][ T2216] RSP: 002b:00007ffc194cd048 EFLAGS: 00000206 ORIG_RAX: 00000000000000b0
+> [  224.990153][ T2216] RAX: ffffffffffffffda RBX: 00005641e66c7c70 RCX: 00007fe4243fc417
+> [  224.997962][ T2216] RDX: 0000000000000000 RSI: 0000000000000800 RDI: 00005641e66c7cd8
+> [  225.005769][ T2216] RBP: 00005641e66c7c70 R08: 0000000000000000 R09: 0000000000000000
+> [  225.013579][ T2216] R10: 00007fe42447cac0 R11: 0000000000000206 R12: 00005641e66c7cd8
+> [  225.021386][ T2216] R13: 0000000000000000 R14: 0000000000000000 R15: 00005641e66c7df0
+> [  225.029197][ T2216]  </TASK>
+> [  225.355582][ T2223] EXT4-fs (sda1): unmounting filesystem fc80755b-20bd-48b4-996a-4bc58040c94e.
+> [  225.676238][  T277] generic/350       _check_dmesg: something found in dmesg (see /lkp/benchmarks/xfstests/results//generic/350.dmesg)
+> [  225.676268][  T277]
+> [  304.321275][  T277]
+> [  304.321304][  T277]
+> [  304.343153][  T277] Ran: generic/350
+> [  304.343170][  T277]
+> [  304.349423][  T277] Failures: generic/350
+> [  304.349436][  T277]
+> [  304.356135][  T277] Failed 1 of 1 tests
+> 
+> 
+> To reproduce:
+> 
+>          git clone https://github.com/intel/lkp-tests.git
+>          cd lkp-tests
+>          sudo bin/lkp install job.yaml           # job file is attached in this email
+>          bin/lkp split-job --compatible job.yaml # generate the yaml file for lkp run
+>          sudo bin/lkp run generated-yaml-file
+> 
+>          # if come across any failure that blocks the test,
+>          # please remove ~/.lkp and /lkp dir to run from a clean state.
+> 
+> 
+> 
 
-> [   14.471703][  T139]
-> [   14.471703][  T139] other info that might help us debug this:
-> [   14.471703][  T139]
-> [   14.472692][  T139]
-> [   14.472692][  T139] rcu_scheduler_active =3D 2, debug_locks =3D 1
-> [   14.473469][  T139] no locks held by (journald)/139.
-> [   14.473935][  T139]
-> [   14.473935][  T139] stack backtrace:
-> [   14.474454][  T139] CPU: 1 PID: 139 Comm: (journald) Not tainted 6.5.0=
--rc6-00004-gbffc333633f1 #1
-> [   14.475296][  T139] Hardware name: QEMU Standard PC (i440FX + PIIX, 19=
-96), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-> [   14.476298][  T139] Call Trace:
-> [   14.476608][  T139]  dump_stack_lvl+0x78/0x8c
-> [   14.477055][  T139]  dump_stack+0x12/0x18
-> [   14.477420][  T139]  lockdep_rcu_suspicious+0x153/0x1a4
-> [   14.477928][  T139]  cgroup_bpf_device_guard_enabled+0x14f/0x168
-> [   14.478476][  T139]  devcgroup_task_is_guarded+0x10/0x20
-> [   14.478973][  T139]  may_open_dev+0x11/0x44
-> [   14.479367][  T139]  may_open+0x115/0x13c
-> [   14.479727][  T139]  do_open+0xa1/0x378
-> [   14.480113][  T139]  path_openat+0xdc/0x1bc
-> [   14.480512][  T139]  do_filp_open+0x91/0x124
-> [   14.480911][  T139]  ? lock_release+0x62/0x118
-> [   14.481329][  T139]  ? _raw_spin_unlock+0x18/0x34
-> [   14.481797][  T139]  ? alloc_fd+0x112/0x1c4
-> [   14.482183][  T139]  do_sys_openat2+0x7a/0xa0
-> [   14.482592][  T139]  __ia32_sys_openat+0x66/0x9c
-> [   14.483065][  T139]  do_int80_syscall_32+0x27/0x48
-> [   14.483502][  T139]  entry_INT80_32+0x10d/0x10d
-> [   14.483962][  T139] EIP: 0xa7f39092
-> [   14.484267][  T139] Code: 00 00 00 e9 90 ff ff ff ff a3 24 00 00 00 68=
- 30 00 00 00 e9 80 ff ff ff ff a3 f8 ff ff ff 66 90 00 00 00 00 00 00 00 00=
- cd 80 <c3> 8d b4
->  26 00 00 00 00 8d b6 00 00 00 00 8b 1c 24 c3 8d b4 26 00
-> [   14.485995][  T139] EAX: ffffffda EBX: ffffff9c ECX: 005df542 EDX: 000=
-08100
-> [   14.486622][  T139] ESI: 00000000 EDI: 00000000 EBP: affeb888 ESP: aff=
-eb6ec
-> [   14.487225][  T139] DS: 007b ES: 007b FS: 0000 GS: 0033 SS: 007b EFLAG=
-S: 00200246
->
->
->
-> The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20230815/202308151506.6be3b169-ol=
-iver.sang@intel.com
->
->
->
-> --
-> 0-DAY CI Kernel Test Service
-> https://github.com/intel/lkp-tests/wiki
->
