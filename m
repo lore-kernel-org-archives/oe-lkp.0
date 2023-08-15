@@ -1,124 +1,168 @@
-Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
+Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com [209.85.167.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0EA7185D
-	for <oe-lkp@lists.linux.dev>; Tue, 15 Aug 2023 07:43:05 +0000 (UTC)
-Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-1c26bb27feeso2640086fac.0
-        for <oe-lkp@lists.linux.dev>; Tue, 15 Aug 2023 00:43:05 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71BC1BA23
+	for <oe-lkp@lists.linux.dev>; Tue, 15 Aug 2023 07:49:51 +0000 (UTC)
+Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-4f13c41c957so1561119e87.1
+        for <oe-lkp@lists.linux.dev>; Tue, 15 Aug 2023 00:49:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1692085384; x=1692690184;
-        h=cc:to:subject:message-id:date:from:references:in-reply-to
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=dopEln9VPZxL0Iq2JZLCcr+rwxXbLb8d+hQCQTunBsQ=;
-        b=sXpXbQ7X0/LnTySjZDkaO9nHDDYr/pU3abQLw5n+GIKm504OloCtIss+QlRkXMojYd
-         lnsMof65iO5zpZY4PDmzq4MvCqh87E7X54BHvQSyyEBEsvQLKlRcO9PFHOwnoC26UxSi
-         0EOZolvVtmL/fjRleZjuvqGddQNE1ZoIFWROwVG2UGNYm6q4+PQ4gJr4l2gvaDj98KI7
-         LNthh1PBVu5kZzVpkcc4O5PE+NiDnj53oYq5p6Usr6X7mva8914eox15YAr9OxM1pcMm
-         bfXnNogduAOX/QmakZMZx8O5v4D5wLTjB0DaOjr43HLmAUvjt7TZ5afaza86l8WrDnrm
-         0KsQ==
+        d=mihalicyn.com; s=mihalicyn; t=1692085789; x=1692690589;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=JXOEvzRF8ADpNQSaByqRT4RWjoHlgIorYKOCNB0xrSo=;
+        b=ctI2X5htkoAwJxA2kfQY81apo4f+wOZMRTR4YSRI2MhUTPTrl1aaQxfvGnkOK021Xh
+         N2b6oekgxREzZSBd26EtP2sXHYTmO4B9wM/i9SlqSuK8I2WTsnM40oatmwc5vZcC6UsX
+         dxeGlWj27TUrD/saPJfipYs6jTOAXOCVPpCS0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692085384; x=1692690184;
-        h=cc:to:subject:message-id:date:from:references:in-reply-to
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=dopEln9VPZxL0Iq2JZLCcr+rwxXbLb8d+hQCQTunBsQ=;
-        b=CrcfS0MqVxsrPTiZAPlMITFaFG1VbgMKn7duo3wqGet90aPANOMxZZRazqTRlYud7n
-         pBU9ZeQgiBeaabT34a/v4CScR/cwU+G3/q498/0vkXd4fUdV/YBrKOnmbBLP1EZJsyTB
-         K1G+bnPQxWYgt2tZMdXdq11H/HKFwRS6nLO2+4nDIEkrMeuziUrQbKscgyHtA+GtSYbD
-         IHyyO5endD+b4DMXZOvFNkAdZm+V81HiuSABNI00q7xNlQfH8O5tb9l1qTbO7sZU6ibM
-         nu+yGAcnY54nNfMr0p+HpafHBbJ2h3HwFDCpyg1/FUs//QIC8ZP24OevKJJJjwknJHNY
-         F+WA==
-X-Gm-Message-State: AOJu0Yyj8UiSC1fqeKg775YCRTUpn78PF5BmMz1SCOrj7dJbloIJdzx7
-	fgg861OwwAXiUx/WCYzt5qmOdUBJDQ5OKyzXg1s=
-X-Google-Smtp-Source: AGHT+IH21/5w6crwWPD7vIv/j0w3adsBN5eHck6Oh1Qn4awi8woAnlWJm3VwnpYegg1T9u8cFeJOGx/7gnb2bXKv5QE=
-X-Received: by 2002:a05:6870:15d5:b0:1bf:9f6:b810 with SMTP id
- k21-20020a05687015d500b001bf09f6b810mr11562135oad.36.1692085384532; Tue, 15
- Aug 2023 00:43:04 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1692085789; x=1692690589;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=JXOEvzRF8ADpNQSaByqRT4RWjoHlgIorYKOCNB0xrSo=;
+        b=fUQIEHCDafeuI0rLvq7WnTnWgYH08jZcVs945IMlfTN3NatHbeUWbhZtunD9JwItBD
+         P6rBqeDgyj0TGce0elbCt74vlVGQeaEIXTUE35Hzrs/72tXGUihmouClk4VqGmotwPFv
+         YrW3Rrw4jV3Y9MP9gVYhEz6I55ni+lEjD8l15nhWngvUmIhIGscVamyP7gX3/RZjK6nY
+         Bzn1EPway64eZ0OO6LZo6d7LzM9sn8kM0oa0C6JXvmITOQ20jjVpBKUCa+D8eXot5sPj
+         sv3qjHe3fRDBssLXTLIBzyTvoqPDN0p1JP/EKqtZGAdKXAZo7k2qvGfostJ4pUJskJjS
+         eCfQ==
+X-Gm-Message-State: AOJu0YwXhVwFzPO/HisVnj1F9rSKpP8sD+jRnKzysPQlXC8V/OOuERai
+	8JNy+1Xymvsh9fxYbFf5JLyjYUTR+Q1YieU4e7vjLQ==
+X-Google-Smtp-Source: AGHT+IGn1Ixr5bTVNGHlW/hSLsuoMvWjfq1mrKGq4Ekrskbsvt5z7tXbeqR2zu4QGtGdbLbRF6sbB0NZkd2uhSdrjUM=
+X-Received: by 2002:a05:6512:49a:b0:4fd:d0f7:5b90 with SMTP id
+ v26-20020a056512049a00b004fdd0f75b90mr5999537lfq.4.1692085788398; Tue, 15 Aug
+ 2023 00:49:48 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Received: by 2002:ac9:745a:0:b0:4f0:1250:dd51 with HTTP; Tue, 15 Aug 2023
- 00:43:04 -0700 (PDT)
-In-Reply-To: <CAHk-=whbOEhPUL1m8Ua-+-E7kJXED4xa+duzRF-wJKR84NAPWg@mail.gmail.com>
-References: <202308151426.97be5bd8-oliver.sang@intel.com> <CAHk-=whbOEhPUL1m8Ua-+-E7kJXED4xa+duzRF-wJKR84NAPWg@mail.gmail.com>
-From: Mateusz Guzik <mjguzik@gmail.com>
-Date: Tue, 15 Aug 2023 09:43:04 +0200
-Message-ID: <CAGudoHFFdFa=0y0XSEMNF4eucngxHKs7tby3rf32A-Wn1cqivQ@mail.gmail.com>
-Subject: Re: [linus:master] [locking] c8afaa1b0f: stress-ng.zero.ops_per_sec
- 6.3% improvement
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
-	linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, 
-	linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, 
-	sparclinux@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
-	ying.huang@intel.com, feng.tang@intel.com, fengwei.yin@intel.com
+References: <20230814-devcg_guard-v1-4-654971ab88b1@aisec.fraunhofer.de> <202308151506.6be3b169-oliver.sang@intel.com>
+In-Reply-To: <202308151506.6be3b169-oliver.sang@intel.com>
+From: Alexander Mikhalitsyn <alexander@mihalicyn.com>
+Date: Tue, 15 Aug 2023 09:49:37 +0200
+Message-ID: <CAJqdLrrZAXn8hwReSFtP7x+G_ge-eOrx8A5gUvOZojQdwk4frw@mail.gmail.com>
+Subject: Re: [PATCH RFC 4/4] fs: allow mknod in non-initial userns using
+ cgroup device guard
+To: kernel test robot <oliver.sang@intel.com>
+Cc: =?UTF-8?Q?Michael_Wei=C3=9F?= <michael.weiss@aisec.fraunhofer.de>, 
+	oe-lkp@lists.linux.dev, lkp@intel.com, linux-fsdevel@vger.kernel.org, 
+	Christian Brauner <brauner@kernel.org>, Alexei Starovoitov <ast@kernel.org>, 
+	Daniel Borkmann <daniel@iogearbox.net>, Andrii Nakryiko <andrii@kernel.org>, 
+	Martin KaFai Lau <martin.lau@linux.dev>, Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>, 
+	John Fastabend <john.fastabend@gmail.com>, KP Singh <kpsingh@kernel.org>, 
+	Stanislav Fomichev <sdf@google.com>, Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>, 
+	Quentin Monnet <quentin@isovalent.com>, Alexander Viro <viro@zeniv.linux.org.uk>, bpf@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, gyroidos@aisec.fraunhofer.de, 
+	stgraber@ubuntu.com
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 8/15/23, Linus Torvalds <torvalds@linux-foundation.org> wrote:
-> On Tue, 15 Aug 2023 at 07:12, kernel test robot <oliver.sang@intel.com>
-> wrote:
->>
->> kernel test robot noticed a 6.3% improvement of stress-ng.zero.ops_per_sec
->> on:
+On Tue, Aug 15, 2023 at 9:18=E2=80=AFAM kernel test robot <oliver.sang@inte=
+l.com> wrote:
 >
-> WTF? That's ridiculous. Why would that even test new_inode() at all?
-> And why would it make any difference anyway to prefetch a new inode?
-> The 'zero' test claims to just read /dev/zero in a loop...
 >
-> [ Goes looking ]
 >
+> Hello,
+>
+> kernel test robot noticed "WARNING:suspicious_RCU_usage" on:
+>
+> commit: bffc333633f1e681c01ada11bd695aa220518bd8 ("[PATCH RFC 4/4] fs: al=
+low mknod in non-initial userns using cgroup device guard")
+> url: https://github.com/intel-lab-lkp/linux/commits/Michael-Wei/bpf-add-c=
+group-device-guard-to-flag-a-cgroup-device-prog/20230814-224110
+> patch link: https://lore.kernel.org/all/20230814-devcg_guard-v1-4-654971a=
+b88b1@aisec.fraunhofer.de/
+> patch subject: [PATCH RFC 4/4] fs: allow mknod in non-initial userns usin=
+g cgroup device guard
+>
+> in testcase: boot
+>
+> compiler: gcc-12
+> test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m 4G
+>
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+>
+>
+>
+> If you fix the issue in a separate patch/commit (i.e. not just a new vers=
+ion of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202308151506.6be3b169-oliver.san=
+g@intel.com
+>
+>
+>
+> [   14.468719][  T139]
+> [   14.468999][  T139] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> [   14.469545][  T139] WARNING: suspicious RCU usage
+> [   14.469968][  T139] 6.5.0-rc6-00004-gbffc333633f1 #1 Not tainted
+> [   14.470520][  T139] -----------------------------
+> [   14.470940][  T139] include/linux/cgroup.h:423 suspicious rcu_derefere=
+nce_check() usage!
 
-Ye man, I was puzzled myself but just figured it out and was about to respond ;)
+Most likely it's because in "cgroup_bpf_device_guard_enabled" function:
 
-# bpftrace -e 'kprobe:new_inode { @[kstack()] = count(); }'
-Attaching 1 probe...
+struct cgroup *cgrp =3D task_dfl_cgroup(task);
 
-@[
-    new_inode+1
-    shmem_get_inode+137
-    __shmem_file_setup+195
-    shmem_zero_setup+46
-    mmap_region+1937
-    do_mmap+956
-    vm_mmap_pgoff+224
-    do_syscall_64+46
-    entry_SYSCALL_64_after_hwframe+115
-]: 2689570
+should be under rcu_read_lock (or cgroup_mutex). If we get rid of
+cgroup_mutex and make cgroup_bpf_device_guard_enabled
+function specific to "current" task we will solve this issue too.
 
-the bench is doing this *A LOT* and this looks so fishy, for the bench
-itself and the kernel doing it, but I'm not going to dig into any of
-that.
-
->>      39.35            -0.3       39.09
->> perf-profile.calltrace.cycles-pp.inode_sb_list_add.new_inode.shmem_get_inode.__shmem_file_setup.shmem_zero_setup
+> [   14.471703][  T139]
+> [   14.471703][  T139] other info that might help us debug this:
+> [   14.471703][  T139]
+> [   14.472692][  T139]
+> [   14.472692][  T139] rcu_scheduler_active =3D 2, debug_locks =3D 1
+> [   14.473469][  T139] no locks held by (journald)/139.
+> [   14.473935][  T139]
+> [   14.473935][  T139] stack backtrace:
+> [   14.474454][  T139] CPU: 1 PID: 139 Comm: (journald) Not tainted 6.5.0=
+-rc6-00004-gbffc333633f1 #1
+> [   14.475296][  T139] Hardware name: QEMU Standard PC (i440FX + PIIX, 19=
+96), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> [   14.476298][  T139] Call Trace:
+> [   14.476608][  T139]  dump_stack_lvl+0x78/0x8c
+> [   14.477055][  T139]  dump_stack+0x12/0x18
+> [   14.477420][  T139]  lockdep_rcu_suspicious+0x153/0x1a4
+> [   14.477928][  T139]  cgroup_bpf_device_guard_enabled+0x14f/0x168
+> [   14.478476][  T139]  devcgroup_task_is_guarded+0x10/0x20
+> [   14.478973][  T139]  may_open_dev+0x11/0x44
+> [   14.479367][  T139]  may_open+0x115/0x13c
+> [   14.479727][  T139]  do_open+0xa1/0x378
+> [   14.480113][  T139]  path_openat+0xdc/0x1bc
+> [   14.480512][  T139]  do_filp_open+0x91/0x124
+> [   14.480911][  T139]  ? lock_release+0x62/0x118
+> [   14.481329][  T139]  ? _raw_spin_unlock+0x18/0x34
+> [   14.481797][  T139]  ? alloc_fd+0x112/0x1c4
+> [   14.482183][  T139]  do_sys_openat2+0x7a/0xa0
+> [   14.482592][  T139]  __ia32_sys_openat+0x66/0x9c
+> [   14.483065][  T139]  do_int80_syscall_32+0x27/0x48
+> [   14.483502][  T139]  entry_INT80_32+0x10d/0x10d
+> [   14.483962][  T139] EIP: 0xa7f39092
+> [   14.484267][  T139] Code: 00 00 00 e9 90 ff ff ff ff a3 24 00 00 00 68=
+ 30 00 00 00 e9 80 ff ff ff ff a3 f8 ff ff ff 66 90 00 00 00 00 00 00 00 00=
+ cd 80 <c3> 8d b4
+>  26 00 00 00 00 8d b6 00 00 00 00 8b 1c 24 c3 8d b4 26 00
+> [   14.485995][  T139] EAX: ffffffda EBX: ffffff9c ECX: 005df542 EDX: 000=
+08100
+> [   14.486622][  T139] ESI: 00000000 EDI: 00000000 EBP: affeb888 ESP: aff=
+eb6ec
+> [   14.487225][  T139] DS: 007b ES: 007b FS: 0000 GS: 0033 SS: 007b EFLAG=
+S: 00200246
 >
-> Ahh. It also does the mmap side, and the shared case ends up always
-> creating a new inode.
 >
-> And while the test only tests *reading* and the mmap is read-only, the
-> /dev/zero file descriptor was opened for writing too, for a different
-> part of a test.
 >
-> So even though the mapping is never written to, MAYWRITE is set, and
-> so the /dev/zero mapping is done as a shared memory mapping and we
-> can't do it as just a private one.
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20230815/202308151506.6be3b169-ol=
+iver.sang@intel.com
 >
-> That's kind of stupid and looks unintentional, but whatever.
 >
-> End result: that benchmark ends up being at least partly (and a fairly
-> noticeable part) a shmem setup benchmark, for no actual good reason.
 >
-> Oh well. I certainly don't mind the removal apparently then also
-> helping some odd benchmark case, but I don't think this translates to
-> anything real. Very random.
+> --
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
 >
->                     Linus
->
-
-
--- 
-Mateusz Guzik <mjguzik gmail.com>
