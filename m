@@ -1,522 +1,296 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.136])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4182C3D70
-	for <oe-lkp@lists.linux.dev>; Wed, 16 Aug 2023 03:40:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1692157254; x=1723693254;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=fYtbcEZvhx0Hq/2vqj6iuvfgtDJHJ7W8jpsM35URs60=;
-  b=OhDcXruI2UQ3THe4JHpX0JQRFE9fpCpk/OJvGQTIT/OHVVO7MbVoWESO
-   HOZ+ac+nzVjH/r6vIk0spYOTrWumxEZqlyXGEVbV12BuYwf6I0D5q2Obu
-   lxaZFnY1sLZZIWY9ohnCiFhecsEPa+t6SO9nmoe4oc0PWv2QwI4bjtoto
-   zsVtUM6HNVF1AkhUJaIaZC+ltf7foMo6rN6vf+rq7hHWU075endHO8Pf2
-   uphnw9ZvHWWiywPBZJnhGs/6ij42IV2wSzrhJ4Dkkqiqgtusu8C43wavE
-   ERsD4AcwG0/VUZ4Uor1RV1LNPoem3zMo9a9L6169wEXmw3SVQWFq+2+H1
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10803"; a="352019177"
-X-IronPort-AV: E=Sophos;i="6.01,175,1684825200"; 
-   d="scan'208";a="352019177"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2023 20:40:53 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.01,202,1684825200"; 
-   d="scan'208";a="877600910"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by fmsmga001.fm.intel.com with ESMTP; 15 Aug 2023 20:40:57 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Tue, 15 Aug 2023 20:40:52 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27 via Frontend Transport; Tue, 15 Aug 2023 20:40:52 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.170)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.27; Tue, 15 Aug 2023 20:40:52 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mrzsrDpzYcHqASCi8XozlYiqBl5bZIsGVokjFEBXYHiqH3+OBii77difLFik8rAz8oZJuf6WU4sPjsZTIhDcd22E8gI0FzeuGMU6dVN4dGh+nexBbXJUxFYAGnok7hww5QIB2M84eZNWLGAtdGBlgWkOIHXZRHFZh16usg43G95H9a4ABX/hcHShzAh1ap0l6ySizU2lkl8DhOQI11E7c1EuVD9kDUEt4IVqV8LoEfHuFqKCKlROokPch+eeXu688fnQbPsZHLFMFXwq7QKK/eAoIvrFjIrRyP0MZntVJ34CgWyr0TLO1eXedldxJjIgvNhzpFM0YSOqbdFpGWvGgw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=74x/TgVVwPiUg7YxcC+t49jaGZjy4hWxKDGBB3JBKuA=;
- b=jRYsrxnEBShrAdRtaTVUM+MvCkdEVkB0MoBCI7WqjFD8OVNp1rNkFWSlPhnpRIjfALnBrE4yqt0tTbiQ81Tbyc2pACfNqCTAfK/Botzsdr6wOSxGpYBTqyIsKbosZV5CWlQSXN6aMzNcvDZmIzOeHUc9qs4vIRNnzQLE6UOhbAvtS7T9EseVD/h8CHaNJ8eX9gImQlCqSTuOTWaLT/9lmVLVLk8zVE7CBkLxsyi9t6l0pPrk/wFRAUbef4lhN5gqX2RhttBmhtaCP3nsbfBLQb/S7N0kl/2QTs/DVoD9SgH+RFyRrFpZrufuofgnf0mboDv96Z+rcVZ9eRGvqqT5iA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from MN0PR11MB6206.namprd11.prod.outlook.com (2603:10b6:208:3c6::8)
- by BL1PR11MB5495.namprd11.prod.outlook.com (2603:10b6:208:317::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6678.29; Wed, 16 Aug
- 2023 03:40:50 +0000
-Received: from MN0PR11MB6206.namprd11.prod.outlook.com
- ([fe80::d9d9:1535:1180:603a]) by MN0PR11MB6206.namprd11.prod.outlook.com
- ([fe80::d9d9:1535:1180:603a%2]) with mapi id 15.20.6678.025; Wed, 16 Aug 2023
- 03:40:50 +0000
-Date: Wed, 16 Aug 2023 11:40:33 +0800
-From: Chen Yu <yu.c.chen@intel.com>
-To: Peter Zijlstra <peterz@infradead.org>
-CC: kernel test robot <oliver.sang@intel.com>, <oe-lkp@lists.linux.dev>,
-	<lkp@intel.com>, <linux-kernel@vger.kernel.org>, <x86@kernel.org>, "Ingo
- Molnar" <mingo@kernel.org>, Mike Galbraith <umgwanakikbuti@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6491443E
+	for <oe-lkp@lists.linux.dev>; Wed, 16 Aug 2023 03:54:13 +0000 (UTC)
+Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-99357737980so802361766b.2
+        for <oe-lkp@lists.linux.dev>; Tue, 15 Aug 2023 20:54:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1692158052; x=1692762852;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=qd39vlsN1BuWdE9COw37WfFe0DzwQFXWEWN3mP2Zgmw=;
+        b=pPm7rrC+aArZpa6lolm5Mp0t4vCsaqWUZ1rGLHSQCjmzYSYOtXAZcCKOuqxbtAMG3W
+         KkqN98e/dmMvECyQNVE8PkXZhIzkBavTzjDNllfp5bsI6w7iQmoEVgSfH6AmNUQfmC5J
+         JCgliR1XMCuECuaPc60jvhY2ptRzlJEqX5MOErWfmKBkj79krA3vDN6pxHLJ5cPvxfkT
+         jw1pgWI4hdy0hqqxGuY/X58DEZg+S8Xl1209utOoPw9BK4+6xsy/O/mTmkc3l6px7Zxy
+         UuScDTNd2AyDVtbAYWFN4Xf9e0T1fnFkQ0tVOV70pPsTv6x9XJB55roGVFuZo6KtbIG5
+         gzZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1692158052; x=1692762852;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=qd39vlsN1BuWdE9COw37WfFe0DzwQFXWEWN3mP2Zgmw=;
+        b=DdDw/VEhLp/F+0A9mlJkh+8gIlhg15vYgiJlcOcY+WasMSK9nn04PX9ytOjilxOEHT
+         Ub9KUlzff1kbzGQA9FspwylhoUeLUrPnzfDlOwmSYlr1C7id0vkRMfPBk0kuxymzSpJp
+         w8GiTb+47HDnVAI5IdIaA9ci1JvS2mEcW0max27A6M1WUWvIhHXe598fw5eDkd46alTh
+         7YwJUNujikPBcu/DCllGoL5x3ldOGHxvPvdPN+CGtkbFiLM/xQM5Cg6mKg7aBG49u3+d
+         k/6R0jy2Vh5UFHjeLDJa6wQkzYq+jazRFiEiYilRdBm6u5KGHpqzE4VhMpEvjnAhR3kQ
+         5PRw==
+X-Gm-Message-State: AOJu0YwkBhzBGQ7yXZTzUJ0bxCJkdjE/NF1WnQNxRdNVrFZtpjT/JLA/
+	U1jg6yqZLsSccQHV4518JEw=
+X-Google-Smtp-Source: AGHT+IHtnY+3U/eUX4Gva9hoBUlAd+e5l1+L+92pOdymZXNhehcl9Qxv56qpAE/Ezr3oLLudP8gDuA==
+X-Received: by 2002:a17:906:4999:b0:999:26d3:b815 with SMTP id p25-20020a170906499900b0099926d3b815mr557145eju.64.1692158051627;
+        Tue, 15 Aug 2023 20:54:11 -0700 (PDT)
+Received: from homer.fritz.box ([185.221.149.128])
+        by smtp.googlemail.com with ESMTPSA id mb8-20020a170906eb0800b00988f168811bsm7947605ejb.135.2023.08.15.20.54.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Aug 2023 20:54:11 -0700 (PDT)
+Message-ID: <7af8d19c774b61db98e13dac30312ce2cd3d4e34.camel@gmail.com>
 Subject: Re: [tip:sched/eevdf] [sched/fair]  e0c2ff903c:
  phoronix-test-suite.blogbench.Write.final_score -34.8% regression
-Message-ID: <ZNxFMYZNoyZSdUbd@chenyu5-mobl2>
+From: Mike Galbraith <umgwanakikbuti@gmail.com>
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: Chen Yu <yu.c.chen@intel.com>, kernel test robot
+ <oliver.sang@intel.com>,  oe-lkp@lists.linux.dev, lkp@intel.com,
+ linux-kernel@vger.kernel.org,  x86@kernel.org, Ingo Molnar
+ <mingo@kernel.org>
+Date: Wed, 16 Aug 2023 05:54:10 +0200
+In-Reply-To: <20230815235201.GH971582@hirez.programming.kicks-ass.net>
 References: <202308101628.7af4631a-oliver.sang@intel.com>
- <ZNWKuccyWnS3UJjK@chenyu5-mobl2.bbrouter>
- <ZNWgAeN/EVS/vOLi@chenyu5-mobl2.bbrouter>
- <20230814132935.GK776869@hirez.programming.kicks-ass.net>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20230814132935.GK776869@hirez.programming.kicks-ass.net>
-X-ClientProxiedBy: KU1PR03CA0038.apcprd03.prod.outlook.com
- (2603:1096:802:19::26) To MN0PR11MB6206.namprd11.prod.outlook.com
- (2603:10b6:208:3c6::8)
+	 <ZNWKuccyWnS3UJjK@chenyu5-mobl2.bbrouter>
+	 <ZNWgAeN/EVS/vOLi@chenyu5-mobl2.bbrouter>
+	 <20230814132935.GK776869@hirez.programming.kicks-ass.net>
+	 <bd96d883d0d1575ebbee4323f4396596adb0ad09.camel@gmail.com>
+	 <20230815235201.GH971582@hirez.programming.kicks-ass.net>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MN0PR11MB6206:EE_|BL1PR11MB5495:EE_
-X-MS-Office365-Filtering-Correlation-Id: ef588fbc-075f-430c-fa6b-08db9e0a9581
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: POhTBi1Q7eZ0xy3ClSZtiKNo5GLrMQ1E02bOhnX4Syfr6du16jdAoHK1H908S84a3jm5HRhCk3IaQ/f3kloFLGyotQOeS6ku63WEuVL2c1/Tr0eHon1EzrY9jlx+aqPbjPLecRmwXcpVLJGMHbJTNczkJzd8xLYg+1CdhUrYUxYUoibDSqwJu6WvMXi3GCt5C7PgWYb0wO6fd63UkxKpBJbYJ89m2egrOY/gls21CnqEtJnQ7L8veAHum8cFVwekRd6uv9so3WAFbEXaBgml7WHAoEgeoJCjq5dRji9Fk0KqouRVv7x9UkJvQHL38Qw8tnQ2R6DyEh3FPcHMn2IlULgHqUT3RJq/ppXb6H1qGhWfrncF68zSOp16IKtNkQJEXnWkPa3+xaK29jZx+k9Gn0nQwuGgPE8J0Of5aIhmMkTQ8q4CqTAfKD2sEMwHA3mjeO8rDRVEZhLTcW7DL9AJZe5UHZcZF/R3HZoSUeCIXbEEMDtIgZjcCS4+L6FmpRo07PGBV6kXQUi0mVUaMMkqE/5cDOM2WdDxK9iYHTUxUspTht1R4/0ArRGeYgH6AU+H4WxKXpF5A6jo5aF9t+vMRG7A2qfiN7HGeOHQmCCp4UC5akpewpOUJNe27fd5lKspZ33R+IQ9CP2TrSnkf/olUQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR11MB6206.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(7916004)(376002)(366004)(39860400002)(396003)(346002)(136003)(1800799009)(451199024)(186009)(6666004)(54906003)(66476007)(66556008)(66946007)(6512007)(6486002)(6506007)(30864003)(2906002)(478600001)(9686003)(26005)(6916009)(5660300002)(83380400001)(41300700001)(316002)(53546011)(8936002)(4326008)(8676002)(38100700002)(33716001)(82960400001)(86362001)(47234003)(21314003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?H9dKu3myuJbJCZcpxM0dWflIb8GjRIZ2KxlDF/nmlH9qjn5uGchQLEeWZ5v9?=
- =?us-ascii?Q?waxXLkOpIKGR2nn8Xj6d4jfxr7QTSlAmOcPGzFSSowBWiBlgMhtIevGtvq7N?=
- =?us-ascii?Q?A5LEthMilseVAeMjwtHWEnGoR0hMQ52msP/fVHv4jTc4dMSgaAbxMaa6m7Gv?=
- =?us-ascii?Q?zcQexAmYOS48VQqnfT70PCK0Xe1iJIsW2AcurDMBYYh11Bm7IdYuJGdgITdD?=
- =?us-ascii?Q?PSdS1taa7LwGdPBqDDmYYuDMaKVCAMYiCZNZ3Ga9wc/Grsn5t+n+gfLH5F6H?=
- =?us-ascii?Q?ahhr70dWX5zjgwPJtw5HbS4szx/5rtl/mBYnABoTK/Bn/rHgeujRwO/Faa+O?=
- =?us-ascii?Q?FXAKp1KrLb1erri2KIY/rlAbiNIZfFKioLtL30fQCKxcXBV+uhdHMKHPeo4J?=
- =?us-ascii?Q?iU7c2HYJJW8plmghn4vADAtIH+K3AtQyVS7ZBvQTqVwhnRS/x+X0I1a7bjvz?=
- =?us-ascii?Q?ZCSDfd3edtGIpMZSDRAFH7/dPcYsqOyEQUbCzwVm0nZoLGj6jE/d0lW3h3bI?=
- =?us-ascii?Q?YmHmmVqtkI/egtvs41mKbUNvVi85zh4ZrOH/qDauTfZs+sCQD20+aDh9YqIW?=
- =?us-ascii?Q?Zv1Vw3ZTOhuchvK3TsCE+HWpNKoZEtxZ2Fs5b/4t36hn3kT2OfqoabWg3yJp?=
- =?us-ascii?Q?ERUylC5QNiYNUhE2DsuriFQq0hxjh4JRPoLTJAmNt/VzSOWCpcLSJ60oB/lk?=
- =?us-ascii?Q?lq18Ql5wmV+h5p96rSR90HMV5e9jWzwvXFNnzjWtNxqNj72nBJnxIneHzFP6?=
- =?us-ascii?Q?ilOmJsBELqSlZZioforOUKaAZHBKbzvZ+9G6EKgBlTrtVUQjLUUYqVxlxgP0?=
- =?us-ascii?Q?ODN8Gyb+S5tqs/8mgEkwaIW6wHRByvFNg1hFcboSBK5oqj5aTJGwbDHSxHbo?=
- =?us-ascii?Q?wp4TCUwVToNgDraPfJ+3qsZE3L/D+WM+k0r6NtSF54J1Uy4+TQ1/f4WBHg2Q?=
- =?us-ascii?Q?CY7FrkahwUOprgNDcaXJuQKZJP/pV/WP3KPiOeqJuGAQJhPTNWqMrs0eClLA?=
- =?us-ascii?Q?U3mHk0jsRIeJeWEVr+CdYVFMWjE1KqeOiBSDkvgGzKV4wBjFbCWGgL84W9/S?=
- =?us-ascii?Q?IdOR6OQKl5g+9DHHJGlifXtvRqMcCegeBkLUD8psiD7hAxJa8UTEBQge/ZbH?=
- =?us-ascii?Q?spgcDXrZZknSlqorVJyIdJCSxrCPMPNrNZj3Dz7EM++cT0wal+fyMQKXwAJ0?=
- =?us-ascii?Q?r45YBq9p5Fd0dS8LavD4pBkvrS5TSQOlU+KUdaPZA+S4RDLrD2RylI71dNiy?=
- =?us-ascii?Q?Vm/bb3k2I1zAKLETCFaWgN+Nc59Cp23wWOZd5Pn4fLlVmAe/gqbdgbP1D9+g?=
- =?us-ascii?Q?tA6wgB/8K4rNCSST1OQ99CBy/HBesYscEBNK2vNyGMiCv7sRdRhKxYs5K7+u?=
- =?us-ascii?Q?sPB0eOoUDulKt3D8w3sscrBPn/JH7urkTtXqefYWb4RiSVEKKGB8XAwLRvqM?=
- =?us-ascii?Q?hqc+I/Gb7quctzD/LofqBVyRGENZY9zKUW8IaYgxdfLjvWb8u0xn+QbejWO1?=
- =?us-ascii?Q?VReXq6EmmeWUiO6yq9wjhILWXFMyU6yXWixT4pZV4ORJFph3EuoPJJFhoWwz?=
- =?us-ascii?Q?20PEzqfPSxOaZFY5ABpOHSm3pQZL2s4mAidyM7mw?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: ef588fbc-075f-430c-fa6b-08db9e0a9581
-X-MS-Exchange-CrossTenant-AuthSource: MN0PR11MB6206.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2023 03:40:50.0388
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: avJCddcXW4cBOcxj8dcSIEOEg6amXmPWoBEsbF37CSGkFGb++OPqt5fsRb/L3bTEB4ID3jjBNsQuLvKccfEhAg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR11MB5495
-X-OriginatorOrg: intel.com
+Content-Transfer-Encoding: 7bit
 
-On 2023-08-14 at 15:29:35 +0200, Peter Zijlstra wrote:
-> On Fri, Aug 11, 2023 at 10:42:09AM +0800, Chen Yu wrote:
+On Wed, 2023-08-16 at 01:52 +0200, Peter Zijlstra wrote:
+> On Mon, Aug 14, 2023 at 08:32:55PM +0200, Mike Galbraith wrote:
 > 
-> > Since previously lkp has reported that with eevdf policy enabled, there was
-> > a regression in hackbench, I did some experiments and found that, with eevdf
-> > enabled there are more preemptions, and this preemption could slow down
-> > the waker(each waker could wakes up 20 wakee in hackbench). The reason might
-> > be that, check_preempt_wakeup() is easier to preempt the current task in eevdf:
+> > I don't have that phoronix thingy, but the above didn't seem to do
+> > anything for hackbench here.
 > 
-> This is true.
+> Yeah, looking at it this is because the lag and the request/slice are on
+> the same order of things.
 > 
-> > Without eevdf enabled, the /proc/schedstat delta within 5 seconds on CPU8 is:
-> > Thu Aug 10 11:02:02 2023              cpu8
-> > .stats.check_preempt_count            51973       <-----
-> > .stats.need_preempt_count             10514       <-----
-> > .stats.rq_cpu_time                   5004068598
-> > .stats.rq_sched_info.pcount           60374
-> > .stats.rq_sched_info.run_delay       80405664582
-> > .stats.sched_count                    60609
-> > .stats.sched_goidle                    227
-> > .stats.ttwu_count                     56250
-> > .stats.ttwu_local                     14619
-> > 
-> > The preemption success ration is 10514 / 51973 = 20.23%
-> > -----------------------------------------------------------------------------
-> > 
-> > With eevdf enabled, the /proc/schedstat delta within 5 seconds on CPU8 is:
-> > Thu Aug 10 10:22:55 2023              cpu8
-> > .stats.check_preempt_count            71673      <----
-> > .stats.low_gran_preempt_count         57410
-> > .stats.need_preempt_count             57413      <----
-> > .stats.rq_cpu_time                   5007778990
-> > .stats.rq_sched_info.pcount          129233
-> > .stats.rq_sched_info.run_delay       164830921362
-> > .stats.sched_count                   129233
-> > .stats.ttwu_count                     70222
-> > .stats.ttwu_local                     66847
-> > 
-> > The preemption success ration is 57413 / 71673 = 80.10%
+> More thinking required, but perhaps not at 2am.
 > 
-> note: wakeup-preemption
+> > I whack eevdf with the stick below to dampen its scheduling enthusiasm
+> > a little, and it did help the hackbench deficit some.
 > 
-> > According to the low_gran_preempt_count, most successfully preemption happens
-> > when the current->vruntime is smaller than wakee->vruntime + sysctl_sched_wakeup_granularity,
-> > which will not happen in current cfs's wakeup_preempt_entity().
-> > 
-> > It seems that, eevdf does not inhit the wakeup preemption as much as cfs, and
-> > maybe it is because eevdf needs to consider fairness more?
-> 
-> Not fairness, latency. Because it wants to honour the virtual deadline.
-> 
-> 
-> Are these wakeup preemptions typically on runqueues that have only a
-> single other task?
->
+> I'm thinking there's an argument to be had the current WAKEUP_PREEMPTION
+> knob is at the wrong place and should be more or less where you put the
+> triddle at.
 
-There are 112 groups of hackbench waker/wakee on a 112 CPUs system.
-Each group has 1 waker and 20 wakees. It seems that there are more than 1
-other task on each runqueue. I collected the statistics below.
- 
-> That is, consider a single task running, then avg_vruntime will be it's
-> vruntime, because the average of one variable must be the value of that
-> one variable.
-> 
-> Then the moment a second task joins, we get two options:
-> 
->  - positive lag
->  - negative lag
-> 
-> When the new task has negative lag, it gets placed to the right of the
-> currently running task (and avg_vruntime has a forward discontinuity).
-> At this point the new task is not eligible and does not get to run.
-> 
-> When the new task has positive lag, it gets placed to the left of the
-> currently running task (and avg_vruntime has a backward discontinuity).
-> At this point the currently running task is no longer eligible, and the
-> new task must be selected -- irrespective of it's deadline.
-> 
-> The paper doesn't (AFAIR) consider the case of wake-up-preemption
-> explicitly. It only considers task selection and vruntime placement.
-> 
-> One option I suppose would be to gate the wakeup preemption by virtual
-> deadline, only allow when the new task has an earlier deadline than the
-> currently running one, and otherwise rely on tick preemption.
-> 
-> NOTE: poking at wakeup preemption is a double edged sword, some
-> workloads love it, some hate it. Touching it is bound to upset the
-> balance -- again.
-> 
-> (also, did I get that the right way around? -- I've got a Monday brain
-> that isn't willing to boot properly)
-> 
-> ---
-> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> index fe5be91c71c7..16d24e5dda8f 100644
-> --- a/kernel/sched/fair.c
-> +++ b/kernel/sched/fair.c
-> @@ -8047,6 +8047,15 @@ static void check_preempt_wakeup(struct rq *rq, struct task_struct *p, int wake_
->  	cfs_rq = cfs_rq_of(se);
->  	update_curr(cfs_rq);
->  
-> +	if (sched_feat(WAKEUP_DEADLINE)) {
-> +		/*
-> +		 * Only allow preemption if the virtual deadline of the new
-> +		 * task is before the virtual deadline of the existing task.
-> +		 */
-> +		if (deadline_gt(deadline, pse, se))
-> +			return;
-> +	}
-> +
->  	/*
->  	 * XXX pick_eevdf(cfs_rq) != se ?
->  	 */
-> diff --git a/kernel/sched/features.h b/kernel/sched/features.h
-> index 61bcbf5e46a4..e733981b32aa 100644
-> --- a/kernel/sched/features.h
-> +++ b/kernel/sched/features.h
-> @@ -24,6 +24,7 @@ SCHED_FEAT(CACHE_HOT_BUDDY, true)
->   * Allow wakeup-time preemption of the current task:
->   */
->  SCHED_FEAT(WAKEUP_PREEMPTION, true)
-> +SCHED_FEAT(WAKEUP_DEADLINE, true)
->  
->  SCHED_FEAT(HRTICK, false)
->  SCHED_FEAT(HRTICK_DL, false)
+FWIW, the full twiddle also incorporates your XXX wakeup preempt check
+as well, which turned too harsh into local keeper.
 
-Added more schedstats to track the counter, when the wakee
-succeed to preempt the current task:
+It turned out that someone at SUSE likes blogbench enough to package
+it, so I installed it and took it for a spin.  I don't have near enough
+box to be running the thing, the resulting numbers aren't interesting,
+but I think the perf sched summaries below are, show that preemption
+adjust of some sort (less mallet like) would help that load.
 
-1. curr's deadline is smaller than the wakee's deadline
-2. curr is not eligible
-3. the cfs_rq->nr_running <= 2
+	-Mike
 
-Also applied Mike's RUN_TO_PARITY patch with some minor change
-to only apply RUN_TO_PARITY for wakeup:
+for i in `seq 3`
+do
+	rm -r /usr/local/blogbench/*
+	blogbench -i 5 -r 10 -d /usr/local/blogbench 2>&1|grep Final
+done
 
+Full warmup, repeat for numbers, then perf sched record an instance.
 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 57e8bc14b06e..da7260ddd7e7 100644
+6.4.10-cfs                                                   avg
+Final score for writes:          4834     4900     4945     4893
+Final score for reads :        189432   202455   199513   197133
+
+6.4.10-eevdf virgin                                                vs cfs
+Final score for writes:          3729*    4354     4309     4130     .844
+Final score for reads :        171679*  210588   192533   191600     .971
+                               
+6.4.10-eevdf WAKEUP_DEADLINE
+Final score for writes:          3890*    4319     4473     4227     .863
+Final score for reads :        200479   245808*  209308   218531    1.108
+
+6.4.10-eevdf WAKEUP_DEADLINE XXX
+Final score for writes:          4913     4912     4993     4939    1.009
+Final score for reads :        204454   198320   204883   202552    1.027
+
+6.4.10-eevdf RUN_TO_PARITY (full hacklet below)
+Final score for writes:          4942     4786     4788     4838     .988
+Final score for reads :        199547   226007   203031   209528    1.062
+
+6.4.10-cfs
+ ----------------------------------------------------------------------------------------------------------
+  Task                  |   Runtime ms  | Switches | Avg delay ms    | Max delay ms    | Sum delay ms     |
+ ----------------------------------------------------------------------------------------------------------
+  blogbench:4184        |  18113.843 ms |    11542 | avg:   0.295 ms | max:  40.177 ms | sum: 3401.177 ms |
+  blogbench:4185        |  16225.865 ms |    10951 | avg:   0.276 ms | max:  39.698 ms | sum: 3021.575 ms |
+  blogbench:4181        |  16348.799 ms |    10064 | avg:   0.285 ms | max:  39.266 ms | sum: 2871.963 ms |
+  blogbench:4176        |  15557.432 ms |     8826 | avg:   0.381 ms | max:  37.174 ms | sum: 3366.757 ms |
+  blogbench:4182        |  19597.634 ms |    12680 | avg:   0.289 ms | max:  36.001 ms | sum: 3669.867 ms |
+  blogbench:4179        |  17484.541 ms |    10899 | avg:   0.327 ms | max:  32.517 ms | sum: 3565.309 ms |
+  blogbench:4183        |  15369.613 ms |    11474 | avg:   0.256 ms | max:  32.484 ms | sum: 2934.823 ms |
+  blogbench:4180        |  17114.917 ms |     7941 | avg:   0.408 ms | max:  32.041 ms | sum: 3242.867 ms |
+  blogbench:4175        |  10835.899 ms |     3204 | avg:   0.356 ms | max:  29.878 ms | sum: 1141.257 ms |
+  blogbench:4173        |  11471.599 ms |     2938 | avg:   0.392 ms | max:  28.987 ms | sum: 1153.089 ms |
+ ----------------------------------------------------------------------------------------------------------
+  TOTAL:                | 265634.961 ms |   506626 |                 |       40.177 ms |     49808.651 ms |
+ ----------------------------------------------------------------------------------------------------------
+
+6.4.10-eevdf virgin
+ ----------------------------------------------------------------------------------------------------------
+  Task                  |   Runtime ms  | Switches | Avg delay ms    | Max delay ms    | Sum delay ms     |
+ ----------------------------------------------------------------------------------------------------------
+  blogbench:6759        |   4969.658 ms |     3906 | avg:   0.732 ms | max:  27.500 ms | sum: 2860.151 ms |
+  blogbench:6770        |  23275.253 ms |    14462 | avg:   0.321 ms | max:  20.348 ms | sum: 4642.321 ms |
+  blogbench:6764        |  10269.476 ms |     3651 | avg:   0.444 ms | max:  20.153 ms | sum: 1621.928 ms |
+  blogbench:6762        |  10399.828 ms |     3555 | avg:   0.475 ms | max:  20.087 ms | sum: 1689.091 ms |
+  blogbench:6776        |  21011.106 ms |    15849 | avg:   0.290 ms | max:  19.485 ms | sum: 4598.075 ms |
+  kworker/u16:1-e:5339  |   5160.247 ms |    82402 | avg:   0.056 ms | max:  19.024 ms | sum: 4626.026 ms |
+  blogbench:6760        |   4907.866 ms |     3742 | avg:   0.716 ms | max:  18.101 ms | sum: 2679.361 ms |
+  blogbench:6758        |   4937.399 ms |     3963 | avg:   0.677 ms | max:  17.450 ms | sum: 2682.504 ms |
+  blogbench:6767        |  18588.108 ms |    10497 | avg:   0.430 ms | max:  17.372 ms | sum: 4515.504 ms |
+  blogbench:6771        |  19485.111 ms |    10453 | avg:   0.391 ms | max:  17.009 ms | sum: 4084.894 ms |
+ ----------------------------------------------------------------------------------------------------------
+  TOTAL:                | 296257.549 ms |   586072 |                 |       27.500 ms |     78716.789 ms |
+ ----------------------------------------------------------------------------------------------------------
+
+6.4.10-eevdf WAKEUP_DEADLINE
+ ----------------------------------------------------------------------------------------------------------
+  Task                  |   Runtime ms  | Switches | Avg delay ms    | Max delay ms    | Sum delay ms     |
+ ----------------------------------------------------------------------------------------------------------
+  blogbench:7137        |  25101.783 ms |    14411 | avg:   0.310 ms | max:  41.585 ms | sum: 4472.840 ms |
+  blogbench:7143        |  22564.665 ms |    13603 | avg:   0.311 ms | max:  41.051 ms | sum: 4235.135 ms |
+  blogbench:7138        |  23607.049 ms |    14775 | avg:   0.276 ms | max:  24.185 ms | sum: 4075.245 ms |
+  blogbench:7133        |  10642.876 ms |     3114 | avg:   0.594 ms | max:  21.304 ms | sum: 1849.157 ms |
+  blogbench:7126        |   4900.276 ms |     3188 | avg:   0.855 ms | max:  21.100 ms | sum: 2725.992 ms |
+  blogbench:7131        |  10280.962 ms |     3209 | avg:   0.591 ms | max:  20.345 ms | sum: 1897.020 ms |
+  kworker/1:0H-kb:5226  |   1059.870 ms |    89053 | avg:   0.019 ms | max:  18.226 ms | sum: 1657.880 ms |
+  blogbench:7140        |  22845.026 ms |    13193 | avg:   0.345 ms | max:  18.215 ms | sum: 4548.112 ms |
+  blogbench:7141        |  22977.420 ms |    14292 | avg:   0.330 ms | max:  17.376 ms | sum: 4717.075 ms |
+  blogbench:7135        |  22996.398 ms |    12226 | avg:   0.337 ms | max:  16.682 ms | sum: 4118.248 ms |
+ ----------------------------------------------------------------------------------------------------------
+  TOTAL:                | 312915.682 ms |   571062 |                 |       41.585 ms |     81987.387 ms |
+ ----------------------------------------------------------------------------------------------------------
+
+6.4.10-eevdf WAKEUP_DEADLINE XXX
+ ----------------------------------------------------------------------------------------------------------
+  Task                  |   Runtime ms  | Switches | Avg delay ms    | Max delay ms    | Sum delay ms     |
+ ----------------------------------------------------------------------------------------------------------
+  blogbench:4462        |  19047.513 ms |    10408 | avg:   0.374 ms | max:  23.974 ms | sum: 3894.010 ms |
+  blogbench:4464        |  18542.851 ms |     8309 | avg:   0.461 ms | max:  22.786 ms | sum: 3833.045 ms |
+  blogbench:4454        |   5168.071 ms |     1892 | avg:   0.774 ms | max:  19.453 ms | sum: 1463.996 ms |
+  blogbench:4469        |  18260.551 ms |     9593 | avg:   0.390 ms | max:  18.606 ms | sum: 3742.130 ms |
+  blogbench:4467        |  18285.308 ms |     9095 | avg:   0.444 ms | max:  18.176 ms | sum: 4041.126 ms |
+  blogbench:4461        |  16543.137 ms |     8470 | avg:   0.432 ms | max:  18.155 ms | sum: 3656.709 ms |
+  blogbench:4470        |  16395.913 ms |     8358 | avg:   0.454 ms | max:  17.316 ms | sum: 3795.385 ms |
+  kworker/u16:6-e:67    |   3952.031 ms |    33202 | avg:   0.101 ms | max:  17.238 ms | sum: 3344.452 ms |
+  blogbench:4453        |   5281.302 ms |     1755 | avg:   0.872 ms | max:  16.601 ms | sum: 1530.829 ms |
+  blogbench:4465        |  17635.375 ms |     6986 | avg:   0.551 ms | max:  16.107 ms | sum: 3848.489 ms |
+ ----------------------------------------------------------------------------------------------------------
+  TOTAL:                | 272453.638 ms |   427507 |                 |       23.974 ms |     68015.737 ms |
+ ----------------------------------------------------------------------------------------------------------
+
+6.4.10-eevdf RUN_TO_PARITY
+ ----------------------------------------------------------------------------------------------------------
+  Task                  |   Runtime ms  | Switches | Avg delay ms    | Max delay ms    | Sum delay ms     |
+ ----------------------------------------------------------------------------------------------------------
+  kworker/7:2H-tt:4421  |    360.323 ms |    35601 | avg:   0.040 ms | max:  29.541 ms | sum: 1433.946 ms |
+  kthreadd:4527         |   3680.986 ms |    33028 | avg:   0.095 ms | max:  29.180 ms | sum: 3147.411 ms |
+  blogbench:4520        |  17032.741 ms |     7149 | avg:   0.360 ms | max:  20.841 ms | sum: 2575.967 ms |
+  blogbench:4518        |  16433.272 ms |     6425 | avg:   0.462 ms | max:  20.177 ms | sum: 2967.848 ms |
+  blogbench:4517        |  16930.930 ms |     7137 | avg:   0.443 ms | max:  18.468 ms | sum: 3158.274 ms |
+  blogbench:4515        |  17921.101 ms |     6469 | avg:   0.454 ms | max:  18.389 ms | sum: 2937.433 ms |
+  kworker/u16:4-e:65    |   4764.526 ms |    36137 | avg:   0.099 ms | max:  17.966 ms | sum: 3571.866 ms |
+  blogbench:4523        |  18151.172 ms |     9356 | avg:   0.306 ms | max:  17.855 ms | sum: 2866.256 ms |
+  blogbench:4506        |   5139.457 ms |     1653 | avg:   0.945 ms | max:  17.768 ms | sum: 1562.387 ms |
+  blogbench:4524        |  16104.410 ms |     7232 | avg:   0.414 ms | max:  15.995 ms | sum: 2992.634 ms |
+ ----------------------------------------------------------------------------------------------------------
+  TOTAL:                | 269989.455 ms |   410693 |                 |       29.541 ms |     62477.554 ms |
+ ----------------------------------------------------------------------------------------------------------
+
+WAKEUP_DEADLINE XXX
+---
+ kernel/sched/fair.c     |   10 ++++++++++
+ kernel/sched/features.h |    1 +
+ 2 files changed, 11 insertions(+)
+
 --- a/kernel/sched/fair.c
 +++ b/kernel/sched/fair.c
-@@ -931,14 +931,20 @@ static struct sched_entity *pick_cfs(struct cfs_rq *cfs_rq, struct sched_entity
-  *
-  * Which allows an EDF like search on (sub)trees.
-  */
--static struct sched_entity *pick_eevdf(struct cfs_rq *cfs_rq)
-+static struct sched_entity *pick_eevdf(struct cfs_rq *cfs_rq, int wake)
- {
- 	struct rb_node *node = cfs_rq->tasks_timeline.rb_root.rb_node;
- 	struct sched_entity *curr = cfs_rq->curr;
- 	struct sched_entity *best = NULL;
+@@ -7959,6 +7959,16 @@ static void check_preempt_wakeup(struct
+ 	cfs_rq = cfs_rq_of(se);
+ 	update_curr(cfs_rq);
  
--	if (curr && (!curr->on_rq || !entity_eligible(cfs_rq, curr)))
-+	if (curr && (!curr->on_rq || !entity_eligible(cfs_rq, curr))) {
- 		curr = NULL;
-+		if (wake)
-+			schedstat_inc(cfs_rq->rq->curr_noeli_preempt_count);
++	if (sched_feat(WAKEUP_DEADLINE)) {
++		/*
++		 * Only allow preemption if the virtual deadline of the next
++		 * task in line is earlier than that of the current task.
++		 */
++		if (deadline_gt(deadline, se, pick_eevdf(cfs_rq)))
++			goto preempt;
++		return;
 +	}
 +
-+	if (sched_feat(RUN_TO_PARITY) && wake && curr)
-+		return curr;
- 
- 	while (node) {
- 		struct sched_entity *se = __node_2_se(node);
-@@ -5441,7 +5447,7 @@ pick_next_entity(struct cfs_rq *cfs_rq, struct sched_entity *curr)
- 		    cfs_rq->next && entity_eligible(cfs_rq, cfs_rq->next))
- 			return cfs_rq->next;
- 
--		return pick_eevdf(cfs_rq);
-+		return pick_eevdf(cfs_rq, 0);
- 	}
- 
- 	se = left = pick_cfs(cfs_rq, curr);
-@@ -8294,6 +8300,8 @@ static void check_preempt_wakeup(struct rq *rq, struct task_struct *p, int wake_
- 	int next_buddy_marked = 0;
- 	int cse_is_idle, pse_is_idle;
- 
-+	schedstat_inc(rq->check_preempt_count);
-+
- 	if (unlikely(se == pse))
- 		return;
- 
-@@ -8358,8 +8366,19 @@ static void check_preempt_wakeup(struct rq *rq, struct task_struct *p, int wake_
- 		/*
- 		 * XXX pick_eevdf(cfs_rq) != se ?
- 		 */
--		if (pick_eevdf(cfs_rq) == pse)
-+		if (pick_eevdf(cfs_rq, 1) == pse) {
-+			if (cfs_rq->curr->vruntime <
-+			    pse->vruntime + sysctl_sched_wakeup_granularity) {
-+				schedstat_inc(rq->curr_lowgran_preempt_count);
-+			}
-+			if (cfs_rq->curr->deadline < pse->deadline) {
-+				schedstat_inc(rq->curr_lowdl_preempt_count);
-+			}
-+			if (cfs_rq->nr_running <= 2) {
-+				schedstat_inc(rq->curr_lownr_preempt_count);
-+			}
- 			goto preempt;
-+		}
- 
- 		return;
- 	}
-@@ -8377,6 +8396,8 @@ static void check_preempt_wakeup(struct rq *rq, struct task_struct *p, int wake_
- 	return;
- 
- preempt:
-+	schedstat_inc(rq->need_preempt_count);
-+
- 	resched_curr(rq);
  	/*
- 	 * Only set the backward buddy when the current task is still
-diff --git a/kernel/sched/features.h b/kernel/sched/features.h
-index 2a830eccda3e..d021dd0e0226 100644
+ 	 * XXX pick_eevdf(cfs_rq) != se ?
+ 	 */
 --- a/kernel/sched/features.h
 +++ b/kernel/sched/features.h
-@@ -6,6 +6,7 @@
+@@ -25,6 +25,7 @@ SCHED_FEAT(CACHE_HOT_BUDDY, true)
+  * Allow wakeup-time preemption of the current task:
   */
+ SCHED_FEAT(WAKEUP_PREEMPTION, true)
++SCHED_FEAT(WAKEUP_DEADLINE, true)
+ 
+ SCHED_FEAT(HRTICK, false)
+ SCHED_FEAT(HRTICK_DL, false)
+
+
+RUN_TO_PARITY hacklet.
+---
+ kernel/sched/fair.c     |   12 ++++++++++++
+ kernel/sched/features.h |    1 +
+ 2 files changed, 13 insertions(+)
+
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -875,6 +875,12 @@ static struct sched_entity *pick_eevdf(s
+ 	if (curr && (!curr->on_rq || !entity_eligible(cfs_rq, curr)))
+ 		curr = NULL;
+ 
++	/*
++	 * Once selected, run the task to parity to avoid overscheduling.
++	 */
++	if (sched_feat(RUN_TO_PARITY) && curr)
++		return curr;
++
+ 	while (node) {
+ 		struct sched_entity *se = __node_2_se(node);
+ 
+@@ -7959,6 +7965,12 @@ static void check_preempt_wakeup(struct
+ 	cfs_rq = cfs_rq_of(se);
+ 	update_curr(cfs_rq);
+ 
++	if (sched_feat(RUN_TO_PARITY)) {
++		if (pick_eevdf(cfs_rq) != se)
++			goto preempt;
++		return;
++	}
++
+ 	/*
+ 	 * XXX pick_eevdf(cfs_rq) != se ?
+ 	 */
+--- a/kernel/sched/features.h
++++ b/kernel/sched/features.h
+@@ -7,6 +7,7 @@
  SCHED_FEAT(PLACE_LAG, true)
+ SCHED_FEAT(PLACE_FUDGE, true)
  SCHED_FEAT(PLACE_DEADLINE_INITIAL, true)
 +SCHED_FEAT(RUN_TO_PARITY, true)
  
  /*
   * Prefer to schedule the task we woke last (assuming it failed
-diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index aa5b293ca4ed..b6e245d2bba5 100644
---- a/kernel/sched/sched.h
-+++ b/kernel/sched/sched.h
-@@ -1128,6 +1128,12 @@ struct rq {
- 	/* try_to_wake_up() stats */
- 	unsigned int		ttwu_count;
- 	unsigned int		ttwu_local;
-+	unsigned int		check_preempt_count;
-+	unsigned int		need_preempt_count;
-+	unsigned int		curr_lowgran_preempt_count;
-+	unsigned int		curr_lowdl_preempt_count;
-+	unsigned int		curr_noeli_preempt_count;
-+	unsigned int		curr_lownr_preempt_count;
- #endif
- 
- #ifdef CONFIG_CPU_IDLE
-diff --git a/kernel/sched/stats.c b/kernel/sched/stats.c
-index 857f837f52cb..e7f02e7bfff2 100644
---- a/kernel/sched/stats.c
-+++ b/kernel/sched/stats.c
-@@ -133,12 +133,16 @@ static int show_schedstat(struct seq_file *seq, void *v)
- 
- 		/* runqueue-specific stats */
- 		seq_printf(seq,
--		    "cpu%d %u 0 %u %u %u %u %llu %llu %lu",
-+		    "cpu%d %u 0 %u %u %u %u %llu %llu %lu %u %u %u %u %u %u",
- 		    cpu, rq->yld_count,
- 		    rq->sched_count, rq->sched_goidle,
- 		    rq->ttwu_count, rq->ttwu_local,
- 		    rq->rq_cpu_time,
--		    rq->rq_sched_info.run_delay, rq->rq_sched_info.pcount);
-+		    rq->rq_sched_info.run_delay, rq->rq_sched_info.pcount,
-+		    rq->check_preempt_count, rq->need_preempt_count, rq->curr_lowgran_preempt_count,
-+		    rq->curr_lowdl_preempt_count,
-+		    rq->curr_noeli_preempt_count,
-+		    rq->curr_lownr_preempt_count);
- 
- 		seq_printf(seq, "\n");
- 
--- 
-2.25.1
-
-
-
-
-NO_RUN_TO_PARITY:
-
-Tue Aug 15 19:16:30 2023              cpu8  
-.stats.check_preempt_count            85754 
-.stats.curr_lowdl_preempt_count       5189  
-.stats.curr_lowgran_preempt_count     70063
-.stats.curr_lownr_preempt_count        31   
-.stats.curr_noeli_preempt_count       30252 
-.stats.need_preempt_count             70066 
-.stats.rq_cpu_time                   5032932195
-.stats.rq_sched_info.pcount          155748 
-.stats.rq_sched_info.run_delay       159730175645
-.stats.sched_count                   155748 
-.stats.ttwu_count                     84568 
-.stats.ttwu_local                     81029 
-
-
-When the wakee succeeds to preempt the current task:
-
-1. curr's deadline is smaller than wakee's deadline:
-   5189 / 70066 = 7.41%
-
-2. curr is not eligible
-   30252 / 70066 = 43.18%
-
-3. the cfs_rq->nr_running <= 2
-   31 / 70066 = 0.04%
-
-According to above data, maybe comparing the deadline does not take much
-effect in this case(per 1). And the scenario of only 1 other task
-seldom happens(per 3). And considering the current task's eligibility
-without checking deadline might help(per 2, there are (70066 - 30252) times
-that the current is eligible but preempted, and Mike's patch addressed
-that)
-
-
-RUN_TO_PARITY:
-
-Tue Aug 15 19:19:07 2023           cpu8  
-.stats.check_preempt_count         20147 
-.stats.curr_lowdl_preempt_count     334  
-.stats.curr_lowgran_preempt_count  4637  
-.stats.curr_lownr_preempt_count      8   
-.stats.curr_noeli_preempt_count    5451  
-.stats.need_preempt_count          4645  
-.stats.rq_cpu_time                5052091287
-.stats.rq_sched_info.pcount        25486 
-.stats.rq_sched_info.run_delay    166261574881
-.stats.sched_count                 25486 
-.stats.ttwu_count                  20146 
-.stats.ttwu_local                  20146 
-
-With Mike's change, the wakeup preemption success ratio drops
-to 4645 / 20147 = 23.06%, which is very close to cfs wakeup preemption
-ratio 20.23%. And the throughput has been increased:
-
-echo NO_RUN_TO_PARITY > /sys/kernel/debug/sched/features 
-hackbench -g 112 -f 20 --threads -l 30000 -s 100
-Running in threaded mode with 112 groups using 40 file descriptors each (== 4480 tasks)
-Each sender will pass 30000 messages of 100 bytes
-Time: 117.487
-
-echo RUN_TO_PARITY > /sys/kernel/debug/sched/features 
-hackbench -g 112 -f 20 --threads -l 30000 -s 100
-Running in threaded mode with 112 groups using 40 file descriptors each (== 4480 tasks)
-Each sender will pass 30000 messages of 100 bytes
-Time: 101.285  <--- lower the better
-
-Also tested schbench with/without RUN_TO_PARITY, no much difference(especially wakeup
-latency) is observed:
-
-echo NO_RUN_TO_PARITY > /sys/kernel/debug/sched/features
-./schbench -m 14 -t 16 -r 100
-Wakeup Latencies percentiles (usec) runtime 100 (s) (941339 total samples)
-	  50.0th: 4          (53382 samples)
-	  90.0th: 3772       (353480 samples)
-	* 99.0th: 7448       (84115 samples)
-	  99.9th: 7976       (8244 samples)
-	  min=1, max=15186
-Request Latencies percentiles (usec) runtime 100 (s) (941598 total samples)
-	  50.0th: 23264      (283891 samples)
-	  90.0th: 32672      (375363 samples)
-	* 99.0th: 52288      (83963 samples)
-	  99.9th: 95360      (8449 samples)
-	  min=4487, max=241201
-RPS percentiles (requests) runtime 100 (s) (101 total samples)
-	  20.0th: 9264       (22 samples)
-	* 50.0th: 9392       (33 samples)
-	  90.0th: 9584       (36 samples)
-	  min=9055, max=10176
-average rps: 9415.98
-
-echo RUN_TO_PARITY > /sys/kernel/debug/sched/features
-./schbench -m 14 -t 16 -r 100
-Wakeup Latencies percentiles (usec) runtime 100 (s) (943005 total samples)
-	  50.0th: 4          (53961 samples)
-	  90.0th: 3772       (366473 samples)
-	* 99.0th: 7496       (84902 samples)
-	  99.9th: 9296       (8441 samples)
-	  min=1, max=20467
-Request Latencies percentiles (usec) runtime 100 (s) (943206 total samples)
-	  50.0th: 23072      (283181 samples)
-	  90.0th: 32096      (376473 samples)
-	* 99.0th: 53568      (84586 samples)
-	  99.9th: 99456      (8443 samples)
-	  min=4078, max=219330
-RPS percentiles (requests) runtime 100 (s) (101 total samples)
-	  20.0th: 9296       (22 samples)
-	* 50.0th: 9392       (34 samples)
-	  90.0th: 9584       (38 samples)
-	  min=9065, max=10188
-average rps: 9432.06
-
-
-thanks,
-Chenyu
 
