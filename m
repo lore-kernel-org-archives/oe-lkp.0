@@ -1,31 +1,30 @@
-Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2770F322A
-	for <oe-lkp@lists.linux.dev>; Wed, 16 Aug 2023 12:37:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AE9BFC01
+	for <oe-lkp@lists.linux.dev>; Wed, 16 Aug 2023 13:41:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
 	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
 	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=meButugzK+c8b7F/2W247t2wjtoumPjf98JrcWTnXLk=; b=clHXquPzLZPNUfJ/MkxaqbYb3Y
-	I2vcp4UlQJFz7KT+/RXOOlNFUMtMsUK6prRFwzZKkrTHa+lIasMeLbY0824nvgbF7e8LOn1gDRFGB
-	hyU4qzRQpF2Tcxyml4YJOBtlQLIW7GpJ5dP55DkKjVrzt9Z5c5ANn7Ugp8ePPz/6kJMAeeQl98FQv
-	deIeS42+iR/FLxgKMT5ILnoR+gfjqE81YZLe4q+nQJ8xW9FJHNp0RcW9dTFCv0MHvQsIL6obrDMDu
-	iEcpsffCybCb0CfnY8DAGLUKuQoJluykptTZ+Wt62rIuyfWiULmEfFqh+BImwUhQK23YETX+V8679
-	MbJTmnWA==;
+	bh=AvZJrYevqOe0SxYwi0hYlseZ1CJ5Fk5Gk4FXzqItAQs=; b=vXmofc+rGbDzLr/hZFbSG7KSKn
+	k0/sVDjUeqSkKDigAbVCLKjKVRwul+jDZDOL4ptgVku3La6kd8YXnsAI5VzHDt8MUVChWiF+P4xy0
+	5hfrOVIr58UeOD09g3kAop5HK7KpBJx0kICCmoAI8HxNFpYMGjTt16hSTg+1pb2ti5IPkJcQTH35x
+	lbf6cJnj2He9l+M8LQwqVzv3kvbVlUOtb3WgDIOimoVYYqPFrQe69gK2zmwAh+Rw4ciVwHGCDfiuQ
+	qc0dzZaoJnK/pLiwDcR9UdICcdJEKWDrY5l6516qzMwC6QditnMFiIARnUHWcHbbSFAwI3sjUMmAm
+	VkrB7Xww==;
 Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-	by desiato.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-	id 1qWFm0-00CzLf-2c;
-	Wed, 16 Aug 2023 12:37:17 +0000
+	by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+	id 1qWGlg-00Ex0s-J3; Wed, 16 Aug 2023 13:41:00 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(Client did not present a certificate)
-	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 32ED13001FD;
-	Wed, 16 Aug 2023 14:37:16 +0200 (CEST)
+	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 09C1D3001FD;
+	Wed, 16 Aug 2023 15:41:00 +0200 (CEST)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-	id 1AB6A2C2FDF3F; Wed, 16 Aug 2023 14:37:16 +0200 (CEST)
-Date: Wed, 16 Aug 2023 14:37:16 +0200
+	id E46A9203B4384; Wed, 16 Aug 2023 15:40:59 +0200 (CEST)
+Date: Wed, 16 Aug 2023 15:40:59 +0200
 From: Peter Zijlstra <peterz@infradead.org>
 To: Mike Galbraith <umgwanakikbuti@gmail.com>
 Cc: Chen Yu <yu.c.chen@intel.com>,
@@ -34,12 +33,13 @@ Cc: Chen Yu <yu.c.chen@intel.com>,
 	Ingo Molnar <mingo@kernel.org>
 Subject: Re: [tip:sched/eevdf] [sched/fair]  e0c2ff903c:
  phoronix-test-suite.blogbench.Write.final_score -34.8% regression
-Message-ID: <20230816123716.GI980931@hirez.programming.kicks-ass.net>
+Message-ID: <20230816134059.GC982867@hirez.programming.kicks-ass.net>
 References: <202308101628.7af4631a-oliver.sang@intel.com>
  <ZNWKuccyWnS3UJjK@chenyu5-mobl2.bbrouter>
  <ZNWgAeN/EVS/vOLi@chenyu5-mobl2.bbrouter>
  <20230814132935.GK776869@hirez.programming.kicks-ass.net>
  <bd96d883d0d1575ebbee4323f4396596adb0ad09.camel@gmail.com>
+ <20230816123716.GI980931@hirez.programming.kicks-ass.net>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -48,29 +48,80 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <bd96d883d0d1575ebbee4323f4396596adb0ad09.camel@gmail.com>
+In-Reply-To: <20230816123716.GI980931@hirez.programming.kicks-ass.net>
 
-On Mon, Aug 14, 2023 at 08:32:55PM +0200, Mike Galbraith wrote:
+On Wed, Aug 16, 2023 at 02:37:16PM +0200, Peter Zijlstra wrote:
+> On Mon, Aug 14, 2023 at 08:32:55PM +0200, Mike Galbraith wrote:
+> 
+> > --- a/kernel/sched/fair.c
+> > +++ b/kernel/sched/fair.c
+> > @@ -875,6 +875,12 @@ static struct sched_entity *pick_eevdf(s
+> >  	if (curr && (!curr->on_rq || !entity_eligible(cfs_rq, curr)))
+> >  		curr = NULL;
+> >  
+> > +	/*
+> > +	 * Once selected, run the task to parity to avoid overscheduling.
+> > +	 */
+> > +	if (sched_feat(RUN_TO_PARITY) && curr)
+> > +		return curr;
+> > +
+> >  	while (node) {
+> >  		struct sched_entity *se = __node_2_se(node);
+> >  
+> 
+> So I read it wrong last night... but I rather like this idea. But
+> there's something missing. When curr starts a new slice it should
+> probably do a full repick and not stick with it.
+> 
+> Let me poke at this a bit.. nice
 
-> --- a/kernel/sched/fair.c
-> +++ b/kernel/sched/fair.c
-> @@ -875,6 +875,12 @@ static struct sched_entity *pick_eevdf(s
->  	if (curr && (!curr->on_rq || !entity_eligible(cfs_rq, curr)))
->  		curr = NULL;
->  
-> +	/*
-> +	 * Once selected, run the task to parity to avoid overscheduling.
-> +	 */
-> +	if (sched_feat(RUN_TO_PARITY) && curr)
-> +		return curr;
-> +
->  	while (node) {
->  		struct sched_entity *se = __node_2_se(node);
->  
+Something like so.. it shouldn't matter much now, but might make a
+difference once we start mixing different slice lengths.
 
-So I read it wrong last night... but I rather like this idea. But
-there's something missing. When curr starts a new slice it should
-probably do a full repick and not stick with it.
+---
+ kernel/sched/fair.c     | 12 ++++++++++++
+ kernel/sched/features.h |  1 +
+ 2 files changed, 13 insertions(+)
 
-Let me poke at this a bit.. nice
-
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index fe5be91c71c7..128a78f3f264 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -873,6 +873,13 @@ static struct sched_entity *pick_eevdf(struct cfs_rq *cfs_rq)
+ 	if (curr && (!curr->on_rq || !entity_eligible(cfs_rq, curr)))
+ 		curr = NULL;
+ 
++	/*
++	 * Once selected, run a task until it either becomes non-eligible or
++	 * until it gets a new slice. See the HACK in set_next_entity().
++	 */
++	if (sched_feat(RUN_TO_PARITY) && curr && curr->vlag == curr->deadline)
++		return curr;
++
+ 	while (node) {
+ 		struct sched_entity *se = __node_2_se(node);
+ 
+@@ -5168,6 +5175,11 @@ set_next_entity(struct cfs_rq *cfs_rq, struct sched_entity *se)
+ 		update_stats_wait_end_fair(cfs_rq, se);
+ 		__dequeue_entity(cfs_rq, se);
+ 		update_load_avg(cfs_rq, se, UPDATE_TG);
++		/*
++		 * HACK, stash a copy of deadline at the point of pick in vlag,
++		 * which isn't used until dequeue.
++		 */
++		se->vlag = se->deadline;
+ 	}
+ 
+ 	update_stats_curr_start(cfs_rq, se);
+diff --git a/kernel/sched/features.h b/kernel/sched/features.h
+index 61bcbf5e46a4..f770168230ae 100644
+--- a/kernel/sched/features.h
++++ b/kernel/sched/features.h
+@@ -6,6 +6,7 @@
+  */
+ SCHED_FEAT(PLACE_LAG, true)
+ SCHED_FEAT(PLACE_DEADLINE_INITIAL, true)
++SCHED_FEAT(RUN_TO_PARITY, true)
+ 
+ /*
+  * Prefer to schedule the task we woke last (assuming it failed
