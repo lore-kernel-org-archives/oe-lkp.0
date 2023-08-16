@@ -1,152 +1,221 @@
-Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
+Received: from mail-pf1-f174.google.com (mail-pf1-f174.google.com [209.85.210.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 961CC10957
-	for <oe-lkp@lists.linux.dev>; Wed, 16 Aug 2023 15:38:23 +0000 (UTC)
-Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-986d8332f50so905335866b.0
-        for <oe-lkp@lists.linux.dev>; Wed, 16 Aug 2023 08:38:23 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F355B3D60
+	for <oe-lkp@lists.linux.dev>; Wed, 16 Aug 2023 19:27:27 +0000 (UTC)
+Received: by mail-pf1-f174.google.com with SMTP id d2e1a72fcca58-68824a0e747so969624b3a.1
+        for <oe-lkp@lists.linux.dev>; Wed, 16 Aug 2023 12:27:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1692200301; x=1692805101;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=rrMrEjSD5O6M353I1H2xKh6LAOtsP+e9kUfVNrj6nQw=;
-        b=S3LJgZzUaprjtW+YHecwMBWFucUDfVvf8lauTGYI4vH2TpkJMTZeGmlFoXnDCXlNZE
-         UIIX30ErJ3DhxY/qd+YdiLsByU5YF/JnfJqPh/JNfCyQjIXdGvV/dy0qPIjKWC3NVsu/
-         n0hwCABVGPB3DcK0qEE3nyL5t8ReDeeB+uz1oBgxh8eVPBvVsl3fjersjMNlqfqItsdd
-         4yQmwqjU6AC4EATwFmjWIJ/9ToRBdAn9jYDU/Jge3iTWROz0/ssfmjtGdbME88J13urG
-         T4a5mNE7OG7OoydZwWEXULMaLZkfEYUTRofMGgg9G/eT8X9FxLmFPO850yjS2kKT9bP4
-         RIhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692200301; x=1692805101;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+        d=kernel-dk.20221208.gappssmtp.com; s=20221208; t=1692214047; x=1692818847;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=rrMrEjSD5O6M353I1H2xKh6LAOtsP+e9kUfVNrj6nQw=;
-        b=KkBvY65wEKwtbrtqgie8ldcg/Abb4k/GXV8Ic0haqs6dXPLxK2Fq6zoCPs2hftHFCZ
-         fplvujjoFUFH9E2m1u1bJHRJ9tWOGXoabqY1+ci+fXts74riYlBGIsP5hLMLPke3rTFS
-         kzyncEgr4Mnr1Ea5wI2Od1AC5iv2h2G1xYMI37QAuZyaPZUOpFoS11DE8j7JoWsHVdQI
-         lh1iJwDgKNx7urOW7lIWqyag5XgJfghVk4BIhSGaN4KvC28dtgL87RxFd8CWWHg+1YJG
-         sNbUeCWBul55m2KRxx21W0UZV6Dh9AnXSNJBMxG2ahFNtjK3Evat9OdhX0bTumLZawCM
-         3PBw==
-X-Gm-Message-State: AOJu0Yy37irc1IJLkruj0xE5F1SF3D9fZ8Z5Wu8GGmsOaxk99OArt2/A
-	gLB2DINdPRzXhOKHnZ3TALc=
-X-Google-Smtp-Source: AGHT+IFOZRTiNwDqdqhRuKNh28Wi6CXzO7shnwHZCKEBp0Nd03KAc/h84roVEXIgOO5R6fENycTjhQ==
-X-Received: by 2002:a17:907:2724:b0:992:ab3a:f0d4 with SMTP id d4-20020a170907272400b00992ab3af0d4mr1653874ejl.17.1692200301404;
-        Wed, 16 Aug 2023 08:38:21 -0700 (PDT)
-Received: from homer.fritz.box ([185.191.217.218])
-        by smtp.googlemail.com with ESMTPSA id c17-20020a170906695100b0099297782aa9sm8611996ejs.49.2023.08.16.08.38.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Aug 2023 08:38:21 -0700 (PDT)
-Message-ID: <3d10fbfb0171cc017e19adf39fa97a3160a76206.camel@gmail.com>
-Subject: Re: [tip:sched/eevdf] [sched/fair]  e0c2ff903c:
- phoronix-test-suite.blogbench.Write.final_score -34.8% regression
-From: Mike Galbraith <umgwanakikbuti@gmail.com>
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: Chen Yu <yu.c.chen@intel.com>, kernel test robot
- <oliver.sang@intel.com>,  oe-lkp@lists.linux.dev, lkp@intel.com,
- linux-kernel@vger.kernel.org,  x86@kernel.org, Ingo Molnar
- <mingo@kernel.org>
-Date: Wed, 16 Aug 2023 17:38:20 +0200
-In-Reply-To: <20230816134059.GC982867@hirez.programming.kicks-ass.net>
-References: <202308101628.7af4631a-oliver.sang@intel.com>
-	 <ZNWKuccyWnS3UJjK@chenyu5-mobl2.bbrouter>
-	 <ZNWgAeN/EVS/vOLi@chenyu5-mobl2.bbrouter>
-	 <20230814132935.GK776869@hirez.programming.kicks-ass.net>
-	 <bd96d883d0d1575ebbee4323f4396596adb0ad09.camel@gmail.com>
-	 <20230816123716.GI980931@hirez.programming.kicks-ass.net>
-	 <20230816134059.GC982867@hirez.programming.kicks-ass.net>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 
+        bh=2HUcpa3iMWGIi5p4N5dk0bMC9c1CU10lky57bGztfbY=;
+        b=wmeIzXcsbc1dzPFU4qk1WMuM8mL1JHd9wxVQUUKjhcExFJPKF/fLtMZiXdWJvVXhBv
+         WUQ5PPhcceIxBvoFrDZEx5WULwpIW6h6bGrKfV+/yN0q5YBfMUOD0Dq8jGUS7uqGlr6J
+         rRjFafJVu+/1WfvbgOML3kf9JKqDpcVZXzAf74AO05rsKS8CdnL9ie58wNYuEN5TcSzO
+         LiGpQA+nyAFYlC4XJHn7GqmdJ/RP92j7AlPqM1sSJ9JgDbqa96+2bBzwe0nsetVvRq0B
+         8EYKA/DzGyjdN16s8GddC52GHzzT/0qLOrv57MzOkdhdkfuU+D5r545cGekmyZqbuuHk
+         4ZZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1692214047; x=1692818847;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=2HUcpa3iMWGIi5p4N5dk0bMC9c1CU10lky57bGztfbY=;
+        b=aZeCNzDz7WQZyYBCPn6yg3jOprZYJBW1naI3NnLMhpIB1ZlVFfFyKtxtLD6NP5XJTJ
+         jiWeEEG+9/qfhGCo6JchKEmACHhQReVYMTSHXqwD6TQ52R6Wuo6dlYHecd2hbmXrO1HS
+         sU1MhRH+3PRyKavX3zWAAWVyj2S9Xo0o4C+g70PjLlXDi+/u5oZwScBU52zirY/8Q+jR
+         GaCV7zI2UW2rTvx7ve4EPpC6nnZFqA7Sj+4cIWnQDQhbF/CyZF4Rl8Tfm71jOHC5gCVh
+         YE9M9s5l+5E3wt1dvRJ0JIKKxBVj/GD4RHrclr4i4pFnYz8SWkvgQnx7SkZuULjisfoi
+         yUZQ==
+X-Gm-Message-State: AOJu0YyfsH40yTbMKZhJYinlCab3J8RaGPEDNoRByRpHeJKeUpPY3oqo
+	uhbDDHihocWnPx3D7vCTgrZwYg==
+X-Google-Smtp-Source: AGHT+IF3E+Quu9/8CGPu4O3VVBBji7WwDT+aqYCrn3GMcbo7TAbieO74SQRqTNcu8Gktiq+b+N3DSg==
+X-Received: by 2002:a05:6a00:a17:b0:687:95ad:d8dd with SMTP id p23-20020a056a000a1700b0068795add8ddmr3089223pfh.0.1692214046903;
+        Wed, 16 Aug 2023 12:27:26 -0700 (PDT)
+Received: from [192.168.1.136] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id x21-20020aa784d5000000b006889511ab14sm957268pfn.37.2023.08.16.12.27.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 16 Aug 2023 12:27:26 -0700 (PDT)
+Message-ID: <8a19b81a-10ed-4d65-9fbd-433af11e822f@kernel.dk>
+Date: Wed, 16 Aug 2023 13:27:24 -0600
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [linus:master] [io_uring] caec5ebe77:
+ stress-ng.io-uring.ops_per_sec -33.1% regression
+Content-Language: en-US
+To: "Yin, Fengwei" <fengwei.yin@intel.com>,
+ kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+ io-uring@vger.kernel.org, ying.huang@intel.com, feng.tang@intel.com
+References: <202307060958.3594f22f-oliver.sang@intel.com>
+ <80519d5f-e328-4ea4-a488-00209432d5d9@intel.com>
+From: Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <80519d5f-e328-4ea4-a488-00209432d5d9@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Wed, 2023-08-16 at 15:40 +0200, Peter Zijlstra wrote:
-> On Wed, Aug 16, 2023 at 02:37:16PM +0200, Peter Zijlstra wrote:
-> > On Mon, Aug 14, 2023 at 08:32:55PM +0200, Mike Galbraith wrote:
-> > 
-> > > --- a/kernel/sched/fair.c
-> > > +++ b/kernel/sched/fair.c
-> > > @@ -875,6 +875,12 @@ static struct sched_entity *pick_eevdf(s
-> > >         if (curr && (!curr->on_rq || !entity_eligible(cfs_rq, curr)))
-> > >                 curr = NULL;
-> > >  
-> > > +       /*
-> > > +        * Once selected, run the task to parity to avoid overscheduling.
-> > > +        */
-> > > +       if (sched_feat(RUN_TO_PARITY) && curr)
-> > > +               return curr;
-> > > +
-> > >         while (node) {
-> > >                 struct sched_entity *se = __node_2_se(node);
-> > >  
-> > 
-> > So I read it wrong last night... but I rather like this idea. But
-> > there's something missing. When curr starts a new slice it should
-> > probably do a full repick and not stick with it.
-> > 
-> > Let me poke at this a bit.. nice
+On 8/16/23 9:32 AM, Yin, Fengwei wrote:
+> Hi Jens,
 > 
-> Something like so.. it shouldn't matter much now, but might make a
-> difference once we start mixing different slice lengths.
-
-Hm, that stash the deadline trick _seems_ to have cured the reason I
-was inspired to added that XXX hunk.. no 'ew, that's a tad harsh'
-latency penalty in sight <knocks wood>.
-
-Here's hoping test bots don't have a cow. 
-
+> On 7/6/2023 3:29 PM, kernel test robot wrote:
+>>
+>>
+>> Hello,
+>>
+>> kernel test robot noticed a -33.1% regression of stress-ng.io-uring.ops_per_sec on:
+>>
+>>
+>> commit: caec5ebe77f97d948dcf46f07d622bda7f1f6dfd ("io_uring: rely solely on FMODE_NOWAIT")
+>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>>
+>>
+>> NOTE:
+>> one thing we want to mention is we reported
+>> "[linux-next:master] [io_uring]  caec5ebe77: stress-ng.io-uring.ops_per_sec 32.5% improvement"
+>> on
+>> https://lore.kernel.org/all/202306061247.510feb23-oliver.sang@intel.com/
+>> however, by further checking, we realized the test machine ran in abnormal
+>> status at that time due to BIOS issue, which we finally fixed recently.
+>> please just ignore that report upon linus-next/master.
+>>
+>>
+>> testcase: stress-ng
+>> test machine: 64 threads 2 sockets Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz (Ice Lake) with 256G memory
+>> parameters:
+>>
+>> 	nr_threads: 100%
+>> 	testtime: 60s
+>> 	class: pts
+>> 	test: io-uring
+>> 	cpufreq_governor: performance
+>>
+>>
+>> In addition to that, the commit also has significant impact on the following tests:
+>>
+>> +------------------+-------------------------------------------------------------------------------------------------+
+>> | testcase: change | stress-ng: stress-ng.io-uring.ops_per_sec -1.3% regression                                      |
+>> | test machine     | 36 threads 1 sockets Intel(R) Core(TM) i9-10980XE CPU @ 3.00GHz (Cascade Lake) with 128G memory |
+>> | test parameters  | class=pts                                                                                       |
+>> |                  | cpufreq_governor=performance                                                                    |
+>> |                  | nr_threads=100%                                                                                 |
+>> |                  | test=io-uring                                                                                   |
+>> |                  | testtime=60s                                                                                    |
+>> +------------------+-------------------------------------------------------------------------------------------------+
+>>
+>>
+>> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+>> the same patch/commit), kindly add following tags
+>> | Reported-by: kernel test robot <oliver.sang@intel.com>
+>> | Closes: https://lore.kernel.org/oe-lkp/202307060958.3594f22f-oliver.sang@intel.com
+>>
+>>
+>> Details are as below:
+>> -------------------------------------------------------------------------------------------------->
+>>
+>>
+>> To reproduce:
+>>
+>>         git clone https://github.com/intel/lkp-tests.git
+>>         cd lkp-tests
+>>         sudo bin/lkp install job.yaml           # job file is attached in this email
+>>         bin/lkp split-job --compatible job.yaml # generate the yaml file for lkp run
+>>         sudo bin/lkp run generated-yaml-file
+>>
+>>         # if come across any failure that blocks the test,
+>>         # please remove ~/.lkp and /lkp dir to run from a clean state.
+>>
+>> =========================================================================================
+>> class/compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
+>>   pts/gcc-12/performance/x86_64-rhel-8.3/100%/debian-11.1-x86_64-20220510.cgz/lkp-icl-2sp7/io-uring/stress-ng/60s
+>>
+>> commit: 
+>>   e9833d8701 ("block: mark bdev files as FMODE_NOWAIT if underlying device supports it")
+>>   caec5ebe77 ("io_uring: rely solely on FMODE_NOWAIT")
+> About this regression, some findings in my side:
+> - LKP use initrd to do stress-ng testing. That means the stress-ng is using the
+>   file in initrd as test file.
+> - The commit caec5ebe77 makes io_uring rely on FMODE_NOWAIT. But the tmpfs and
+>   the file on initrd doesn't has that bit set. I suppose this is why we can see
+>   this regression with LKP which is using initrd.
 > 
-> ---
->  kernel/sched/fair.c     | 12 ++++++++++++
->  kernel/sched/features.h |  1 +
->  2 files changed, 13 insertions(+)
+>   I tried to let stress-ng.io_uring use the file on tmpfs and also can see
+>   signifcient performance change with this commit.
 > 
-> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> index fe5be91c71c7..128a78f3f264 100644
-> --- a/kernel/sched/fair.c
-> +++ b/kernel/sched/fair.c
-> @@ -873,6 +873,13 @@ static struct sched_entity *pick_eevdf(struct cfs_rq *cfs_rq)
->         if (curr && (!curr->on_rq || !entity_eligible(cfs_rq, curr)))
->                 curr = NULL;
->  
-> +       /*
-> +        * Once selected, run a task until it either becomes non-eligible or
-> +        * until it gets a new slice. See the HACK in set_next_entity().
-> +        */
-> +       if (sched_feat(RUN_TO_PARITY) && curr && curr->vlag == curr->deadline)
-> +               return curr;
+> - If apply following change based on commit caec5ebe77:
+> diff --git a/io_uring/io_uring.c b/io_uring/io_uring.c
+> index 7c426584e35a..e755697c773f 100644
+> --- a/io_uring/io_uring.c
+> +++ b/io_uring/io_uring.c
+> @@ -1765,6 +1765,17 @@ static void io_iopoll_req_issued(struct io_kiocb *req, unsigned int issue_flags)
+>   */
+>  static bool __io_file_supports_nowait(struct file *file, umode_t mode)
+>  {
+> +       if (S_ISREG(mode)) {
+> +               struct block_device *bdev = file->f_inode->i_sb->s_bdev;
 > +
->         while (node) {
->                 struct sched_entity *se = __node_2_se(node);
->  
-> @@ -5168,6 +5175,11 @@ set_next_entity(struct cfs_rq *cfs_rq, struct sched_entity *se)
->                 update_stats_wait_end_fair(cfs_rq, se);
->                 __dequeue_entity(cfs_rq, se);
->                 update_load_avg(cfs_rq, se, UPDATE_TG);
-> +               /*
-> +                * HACK, stash a copy of deadline at the point of pick in vlag,
-> +                * which isn't used until dequeue.
-> +                */
-> +               se->vlag = se->deadline;
->         }
->  
->         update_stats_curr_start(cfs_rq, se);
-> diff --git a/kernel/sched/features.h b/kernel/sched/features.h
-> index 61bcbf5e46a4..f770168230ae 100644
-> --- a/kernel/sched/features.h
-> +++ b/kernel/sched/features.h
-> @@ -6,6 +6,7 @@
->   */
->  SCHED_FEAT(PLACE_LAG, true)
->  SCHED_FEAT(PLACE_DEADLINE_INITIAL, true)
-> +SCHED_FEAT(RUN_TO_PARITY, true)
->  
->  /*
->   * Prefer to schedule the task we woke last (assuming it failed
+> +               if (IS_ENABLED(CONFIG_BLOCK) &&
+> +                               (!bdev || bdev_nowait(bdev)) &&
+> +                               !io_is_uring_fops(file))
+> +                       return true;
+> +
+> +               return false;
+> +       }
+> +
+>         /* any ->read/write should understand O_NONBLOCK */
+>         if (file->f_flags & O_NONBLOCK)
+>                 return true;
+> 
+> The regression is gone with LKP.
+> 
+> - If apply following change based on commit caec5ebe77:
+> diff --git a/mm/shmem.c b/mm/shmem.c
+> index e40a08c5c6d7..e9df664f0063 100644
+> --- a/mm/shmem.c
+> +++ b/mm/shmem.c
+> @@ -3962,9 +3962,16 @@ const struct address_space_operations shmem_aops = {
+>  };
+>  EXPORT_SYMBOL(shmem_aops);
+> 
+> +static int shmem_file_open(struct inode *inode, struct file *filp)
+> +{
+> +       filp->f_mode |= FMODE_NOWAIT;
+> +
+> +       return generic_file_open(inode, filp);
+> +}
+> +
+>  static const struct file_operations shmem_file_operations = {
+>         .mmap           = shmem_mmap,
+> -       .open           = generic_file_open,
+> +       .open           = shmem_file_open,
+>         .get_unmapped_area = shmem_get_unmapped_area,
+>  #ifdef CONFIG_TMPFS
+>         .llseek         = shmem_file_llseek,
+> 
+> The performance change when running stress-ng.io_uring with testing file
+> in tmpfs is gone.
+> 
+> This is just the information FYI. I may miss something obviously here. Thanks.
+
+This actually highlighted a problem with the old nowait logic, in that
+it assumed !bdev would mean that nowait was fine. Looking at shmem, we
+definitely need IOCB_NOWAIT handling in there to make that safe. So the
+old code was buggy, and conversely, we can't also just add the
+FMODE_NOWAIT without first making those improvements to shmem first.
+
+Basically you'd want to ensure that the read_iter and write_iter paths
+honor IOCB_NOWAIT. Once that's done, then FMODE_NOWAIT can indeed be set
+in the open helper.
+
+I might take a stab at this, but I'm out sick right now so don't think
+it'd be cohesive if I did it right now.
+
+-- 
+Jens Axboe
 
