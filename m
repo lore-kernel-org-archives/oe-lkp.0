@@ -1,45 +1,45 @@
-Received: from mail-pf1-f173.google.com (mail-pf1-f173.google.com [209.85.210.173])
+Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87B8714AA6
-	for <oe-lkp@lists.linux.dev>; Thu, 17 Aug 2023 17:24:52 +0000 (UTC)
-Received: by mail-pf1-f173.google.com with SMTP id d2e1a72fcca58-6874a386ec7so3081b3a.1
-        for <oe-lkp@lists.linux.dev>; Thu, 17 Aug 2023 10:24:52 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1CC014AA6
+	for <oe-lkp@lists.linux.dev>; Thu, 17 Aug 2023 17:26:27 +0000 (UTC)
+Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-1bf095e1becso50345ad.1
+        for <oe-lkp@lists.linux.dev>; Thu, 17 Aug 2023 10:26:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20221208.gappssmtp.com; s=20221208; t=1692293092; x=1692897892;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+        d=kernel-dk.20221208.gappssmtp.com; s=20221208; t=1692293187; x=1692897987;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=8vHHVkxWW04IoUZrYFRpOEcAsjjg8V3LWudLTC9GREA=;
-        b=QYVrl6FujIq30u7lKbb0YTqb9pdMFvQv2J3WVa07YyWOZKIgoaBlzAvTb5pTrRVof8
-         cwaXMhFmAQivePfOEM2qJ1y8z0bqwqTpZht34ALsShKn9IuvFbFXCOzTBFla6NxdbKst
-         BsKg5muo7QMuu7YzP4ETLd43HAQxN/vFhVEjAhdDzERTuWkPcuCYLgK4Llj7TR1TjTof
-         Tgw/8zqqHFI+SSJ9G0N8nKDzsz/agYbRuCP3h53Ul7UwUO6DnIo7p82KqZj2piOqkIFU
-         NT4dyeVLATqeeBqGekxu6Z+immD3fVmqbXI+OOWTTkNil4G/VfzFFxLwrn/RWxrdawve
-         j7+A==
+        bh=CDRl1/FFXQzt1PG5UM+41faxkoiYDoNvq2d7j+I4d6M=;
+        b=2mwQCh5jd41H1BJAU+hEBa8u1PRPFONFNvdXcHOgRsWX1CPT2Nb/5RhD0DZWCc8Clu
+         2v+sEIidduxj/LXVHU6xGOVzR5jJwANuymgND905u8yG6UZ2Cbeg0/vFpr1qPwM+hSFT
+         Q0g1tOgsrAkOPGbb8l/Ow3pE/5Upg4r89MKU5Oelsd/GRTJdCFkqnNe1VsFEl4ADmQHw
+         jhIJ8oStYVaCu7uHY0MCIf+GWRur98K/WOuqrlWp0nOrz5WO94OjPQrm85pvFL0O99zg
+         duJEtpObhhWxHie0ZcbAm9LwauPIVnYiWLLarm2htg9VSOXS1iTKq2SJSpGR/e322zmn
+         D/YQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692293092; x=1692897892;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+        d=1e100.net; s=20221208; t=1692293187; x=1692897987;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=8vHHVkxWW04IoUZrYFRpOEcAsjjg8V3LWudLTC9GREA=;
-        b=N4rQaYoVI10rRNqKR/rc8qJQZ49x36zWHF40bBc8/8WLvb0kd3NdTy45fadFQuxdkb
-         q22UYOucDTFfUAscLzx3rM0CABzlq/76Y91NGO3xLVI99vitAV6YqFqoazAjuPZCWZ4A
-         8kqfqL7FTCi0oRDYNNq+Nguj2lopIciED6qMSJC7kV+Zr3MGSGf/xfQ+77cxORd3Sm4q
-         ZfbosDpcByUsgOzISbK3Mf6ZNPu3EzxgyzBKJsvoSw0AFVdSb4x3NhTxRbvTXs7xeOul
-         mX3QzelKjRBCrx0l0yGFqD8sMSUQ8PqDXnlombdDoPZDMJr7u7bGekTUr+P/fJRF9xOm
-         kRpA==
-X-Gm-Message-State: AOJu0YwMhWQ/sRiPTFmKpKfMroKTCjQQu3N+1UDDv3q9AWHAPFljtd0C
-	2k6C6xq44gQ+WNt9mq+bqt9ZWw==
-X-Google-Smtp-Source: AGHT+IER3moHf5FdPQm18isIK0ga5d2T5yo9hxPQGIExbRChtG44xh6QtgSsZYySjPATDDv02NbsQA==
-X-Received: by 2002:a17:903:22ce:b0:1b8:17e8:547e with SMTP id y14-20020a17090322ce00b001b817e8547emr70150plg.1.1692293092439;
-        Thu, 17 Aug 2023 10:24:52 -0700 (PDT)
+        bh=CDRl1/FFXQzt1PG5UM+41faxkoiYDoNvq2d7j+I4d6M=;
+        b=kxWnbuhGBvcq6z4y2+k3NZX6ftxZT1WIVVvaOx1fb6eEDoyYM+LMMkvpT+eq9GNoJQ
+         T3qkCu3dR2PGQd6p9SJBPitHAwv5/94hG+Zo5qxRsUN/YHmf2QLWUEZlLKjlmjcJGzEu
+         swZaCq4OcqVNCS+P4K8p9NxvbrWk8+XfCYQY8J+r40zXKfj/j60gxY8+WVMJcIWsVf5x
+         5Q82KFRszqweJMMUjeg8LxhrsSrckhelbATj++avfIvs9OO797aiQvru9TW4LzbsC/bn
+         zVKE1DOsFs8YyYubFsQrZlfZEIHNP/CqzeQEXEsr2PYzutePWHsPujZd7oLWKVNW/oI2
+         QOFA==
+X-Gm-Message-State: AOJu0YyeKBd0G9VWPnU+E4edgDadwNXKk86Lz0ZQ1H3iHhu0L9IGnzun
+	Lg1/ZcAziEbDmXxZMcwxf59I1A==
+X-Google-Smtp-Source: AGHT+IHNnMqBatXZYdvKTkOvYxFNJ7DOcCguixrdqDz0LK7VurLGe3CXxam/YuJMZnTSzK3oRdJRiA==
+X-Received: by 2002:a17:903:22cd:b0:1b8:50a9:6874 with SMTP id y13-20020a17090322cd00b001b850a96874mr19735plg.5.1692293186761;
+        Thu, 17 Aug 2023 10:26:26 -0700 (PDT)
 Received: from [192.168.1.136] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id w6-20020a170902d3c600b001bdf45eb5b6sm12246plb.284.2023.08.17.10.24.51
+        by smtp.gmail.com with ESMTPSA id w6-20020a170902d3c600b001bdf45eb5b6sm12246plb.284.2023.08.17.10.26.25
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Aug 2023 10:24:51 -0700 (PDT)
-Message-ID: <12ecac8d-1837-4083-a7e9-efe826d9ae7f@kernel.dk>
-Date: Thu, 17 Aug 2023 11:24:50 -0600
+        Thu, 17 Aug 2023 10:26:26 -0700 (PDT)
+Message-ID: <8a33da7a-425b-4fb5-9bf0-9a34ff01d80f@kernel.dk>
+Date: Thu, 17 Aug 2023 11:26:25 -0600
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -50,7 +50,6 @@ User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v2] blk-mq: release scheduler resource when request
  complete
 Content-Language: en-US
-From: Jens Axboe <axboe@kernel.dk>
 To: Chengming Zhou <chengming.zhou@linux.dev>,
  Bart Van Assche <bvanassche@acm.org>, hch@lst.de
 Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
@@ -60,13 +59,14 @@ Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
 References: <202308172100.8ce4b853-oliver.sang@intel.com>
  <af61c72c-b3ec-ce7a-4f41-bce9a9844baf@acm.org>
  <317715dc-f6e4-1847-5b78-b2d8184b446a@linux.dev>
- <8c262b00-9856-49fa-b425-da863efdff7d@kernel.dk>
-In-Reply-To: <8c262b00-9856-49fa-b425-da863efdff7d@kernel.dk>
+ <d16edaf8-1eef-f099-eb15-7599906d1492@linux.dev>
+From: Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <d16edaf8-1eef-f099-eb15-7599906d1492@linux.dev>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 8/17/23 11:20 AM, Jens Axboe wrote:
-> On 8/17/23 9:29 AM, Chengming Zhou wrote:
+On 8/17/23 11:17 AM, Chengming Zhou wrote:
+> On 2023/8/17 23:29, Chengming Zhou wrote:
 >> On 2023/8/17 22:50, Bart Van Assche wrote:
 >>> On 8/17/23 07:41, kernel test robot wrote:
 >>>> [  222.622837][ T2216] statistics for priority 1: i 276 m 0 d 276 c 278
@@ -95,20 +95,38 @@ On 8/17/23 11:20 AM, Jens Axboe wrote:
 >> +       }
 >>  }
 >>
->>
->> Clear RQF_USE_SCHED flag here should fix this problem, which should be ok
->> since finish_request() is the last callback, this flag isn't needed anymore.
->>
->> Jens, should I send this diff as another patch or resend updated v3?
 > 
-> I don't think this is the right solution, it makes all kinds of
-> assumptions on what that flag is and when it's safe to clear it. It's a
-> very fragile fix, I think we need to do better than that.
+> I just tried to run LKP and xfstests, firstly failed to run LKP on my server
+> which seems to miss some dependencies. Then I ran xfstests successfully.
+> 
+> But xfstests generic/704 always pass and no WARN in dmesg. (I don't know why,
+> maybe my server settings are some different from the test robot.)
+> 
+> So I try to reproduce it manually. Steps:
+> 
+> ```
+> echo mq-deadline > /sys/block/sdb/queue/scheduler
+> 
+> mkfs.ext4 /dev/sdb
+> mount /dev/sdb /fs/sdb
+> cd /fs/sdb
+> stress-ng --symlink 4 --timeout 60
+> 
+> echo none > /sys/block/sdb/queue/scheduler
+> ```
+> 
+> This way the WARNING in mq-deadline can be reproduced easily.
+> 
+> Then retest with the diff, mq-deadline WARNING still happened... So there
+> are still other requests which have RQF_USE_SCHED flag completed without
+> being inserted into elevator.
+> 
+> Will use some tracing and look again.
 
-Well maybe this is actually fine, since we're freeing the request now
-anyway. I can fold it in the fix, I'll add a comment as well. If this is
-subtle enough that it caused this issue, we definitely should have a
-comment on why we're clearing this flag.
+Ah missed this, thanks for doing this testing. I'll wait for an update
+version. We can just fold in whatever change we need, and most likely
+just push the patch to next week rather than send off a pull request for
+this week. It's the only important thing pending on the block side.
 
 -- 
 Jens Axboe
