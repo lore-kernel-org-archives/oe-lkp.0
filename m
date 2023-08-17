@@ -1,66 +1,84 @@
-Received: from mail-pg1-f182.google.com (mail-pg1-f182.google.com [209.85.215.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out-49.mta0.migadu.com (out-49.mta0.migadu.com [91.218.175.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D59E6E568
-	for <oe-lkp@lists.linux.dev>; Thu, 17 Aug 2023 14:50:40 +0000 (UTC)
-Received: by mail-pg1-f182.google.com with SMTP id 41be03b00d2f7-565ea1088fbso2041600a12.2
-        for <oe-lkp@lists.linux.dev>; Thu, 17 Aug 2023 07:50:40 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692283840; x=1692888640;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Swe7qS1gWsrm3LERSWVriC7BNsYVaHQ/NWIJOtLygzE=;
-        b=XTdrF+6CmV79XT/cds+zVDuVB4E6WAwKZrzGBjBg/I5rZtzE5TpWjXS8qNjDBKaJjp
-         Ou+OejQhwzzqcimgNzoMx43mcFNXyqzZSi77EdlpqiHtQs0DNhRvMlXLL/qD3MrgwVrB
-         1Ju8jAK/FF0i6sMo1CioR+KpRoD2JIm+Kb0Zrw+5k06LfIiu3bDCp5UlgtlKDmi58C0S
-         sw8wY8daVDiv8aAu9X8dB6FpI5RkZyi5jX5Um9xQYFYGTgumr6ru2pDeDTLLEbknmFm3
-         bSwuimvXo85bFjxj9gh14xIW/6fD/wlff9u/xhhCEsYTJG26GhxJYICHeRSRjJgfIXvm
-         F/UQ==
-X-Gm-Message-State: AOJu0YwCTynt86ANGwqwvAhpx0PgSw2aClfpAYJ6clbMldmEOkEgvVh7
-	bUJc9+PknAXyztOIbX2oBbw=
-X-Google-Smtp-Source: AGHT+IFixLVVwRoS+ebQdkKmKGR5+zSOuE1vDbyNm+1B3b/hEgjshhzCxdl3EVfg+K86FX4nwiVxtQ==
-X-Received: by 2002:a17:90a:fc95:b0:268:52a6:103d with SMTP id ci21-20020a17090afc9500b0026852a6103dmr4656895pjb.9.1692283839903;
-        Thu, 17 Aug 2023 07:50:39 -0700 (PDT)
-Received: from ?IPV6:2620:15c:211:201:dfd:6f25:f7be:a9ca? ([2620:15c:211:201:dfd:6f25:f7be:a9ca])
-        by smtp.gmail.com with ESMTPSA id fv23-20020a17090b0e9700b0025645ce761dsm1663238pjb.35.2023.08.17.07.50.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Aug 2023 07:50:39 -0700 (PDT)
-Message-ID: <af61c72c-b3ec-ce7a-4f41-bce9a9844baf@acm.org>
-Date: Thu, 17 Aug 2023 07:50:38 -0700
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CBAE1548B
+	for <oe-lkp@lists.linux.dev>; Thu, 17 Aug 2023 15:30:18 +0000 (UTC)
+Message-ID: <317715dc-f6e4-1847-5b78-b2d8184b446a@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1692286216;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=yJM4Hdms6SRtkTPMdaK0rVnNa8K7qD60i1kkq/z/JZE=;
+	b=p4dgNVuyKQlmB33x/50qtlSqE3/3/CevI0ifBM5IQvX1C/7yA73d/Xri0b6QgxeX4PQBd2
+	BjMahVhit6WQ4pV8S0Bal9utS+qfRhZf+z1SRDoDO3kvE5uOaITm6yy3uoZQmZ9D1TEgIs
+	RHkCkj96v+cfKGcYJc1ipVNCHQqYCAs=
+Date: Thu, 17 Aug 2023 23:29:37 +0800
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.13.1
 Subject: Re: [PATCH v2] blk-mq: release scheduler resource when request
  complete
 Content-Language: en-US
-To: chengming.zhou@linux.dev
+To: Bart Van Assche <bvanassche@acm.org>, axboe@kernel.dk, hch@lst.de
 Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
  Chuck Lever <chuck.lever@oracle.com>, linux-block@vger.kernel.org,
- axboe@kernel.dk, hch@lst.de, cel@kernel.org, linux-kernel@vger.kernel.org,
- zhouchengming@bytedance.com, kernel test robot <oliver.sang@intel.com>
+ cel@kernel.org, linux-kernel@vger.kernel.org,
+ kernel test robot <oliver.sang@intel.com>, chengming.zhou@linux.dev
 References: <202308172100.8ce4b853-oliver.sang@intel.com>
-From: Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <202308172100.8ce4b853-oliver.sang@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+ <af61c72c-b3ec-ce7a-4f41-bce9a9844baf@acm.org>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Chengming Zhou <chengming.zhou@linux.dev>
+In-Reply-To: <af61c72c-b3ec-ce7a-4f41-bce9a9844baf@acm.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
 
-On 8/17/23 07:41, kernel test robot wrote:
-> [  222.622837][ T2216] statistics for priority 1: i 276 m 0 d 276 c 278
-> [ 222.629307][ T2216] WARNING: CPU: 0 PID: 2216 at block/mq-deadline.c:680 dd_exit_sched (block/mq-deadline.c:680 (discriminator 3))
+On 2023/8/17 22:50, Bart Van Assche wrote:
+> On 8/17/23 07:41, kernel test robot wrote:
+>> [  222.622837][ T2216] statistics for priority 1: i 276 m 0 d 276 c 278
+>> [ 222.629307][ T2216] WARNING: CPU: 0 PID: 2216 at block/mq-deadline.c:680 dd_exit_sched (block/mq-deadline.c:680 (discriminator 3))
+> 
+> The above information shows that dd_inserted_request() has been called
+> 276 times and also that dd_finish_request() has been called 278 times.
 
-The above information shows that dd_inserted_request() has been called
-276 times and also that dd_finish_request() has been called 278 times.
-Calling dd_finish_request() more than once per request breaks the code
-for priority handling since that code checks how many requests are
-pending per priority level by subtracting the number of completion calls
-from the number of insertion calls (see also dd_queued()). I think the
-above output indicates that this patch introduced a regression.
+Thanks much for your help.
 
-Bart.
+This patch indeed introduced a regression, postflush requests will be completed
+twice, so here dd_finish_request() is more than dd_inserted_request().
 
+diff --git a/block/blk-mq.c b/block/blk-mq.c
+index a8c63bef8ff1..7cd47ffc04ce 100644
+--- a/block/blk-mq.c
++++ b/block/blk-mq.c
+@@ -686,8 +686,10 @@ static void blk_mq_finish_request(struct request *rq)
+ {
+        struct request_queue *q = rq->q;
+
+-       if (rq->rq_flags & RQF_USE_SCHED)
++       if (rq->rq_flags & RQF_USE_SCHED) {
+                q->elevator->type->ops.finish_request(rq);
++               rq->rq_flags &= ~RQF_USE_SCHED;
++       }
+ }
+
+
+Clear RQF_USE_SCHED flag here should fix this problem, which should be ok
+since finish_request() is the last callback, this flag isn't needed anymore.
+
+Jens, should I send this diff as another patch or resend updated v3?
+
+Thanks.
+
+> Calling dd_finish_request() more than once per request breaks the code
+> for priority handling since that code checks how many requests are
+> pending per priority level by subtracting the number of completion calls
+> from the number of insertion calls (see also dd_queued()). I think the
+> above output indicates that this patch introduced a regression.
+> 
+> Bart.
+> 
