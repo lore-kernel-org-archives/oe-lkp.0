@@ -1,204 +1,146 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48F85E56C
-	for <oe-lkp@lists.linux.dev>; Fri, 18 Aug 2023 07:34:38 +0000 (UTC)
-Received: from pps.filterd (m0356516.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 37I6wa1Q014632;
-	Fri, 18 Aug 2023 07:11:05 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : reply-to : to : cc : date : in-reply-to : references : content-type
- : content-transfer-encoding : mime-version; s=pp1;
- bh=KXTyljC1PGxfD7a41MS7yLuWCYN4oKOGjG0mRBwBEuA=;
- b=CboI3jVDTeT9aVTVn9VtQKVc8bL7uZNG/C789DXOB5tyoMMqgdU0MtrxKt7oIs2SzhTC
- uH04OpAXPYonbK59az5dfY67vfaAWc2+JgaZkSpW5oYkP8n6pN9ix+1hDcVtJHioJGRh
- D3RgPy6jiPpcsJ5t145vfl8Pfl7zQ8Hg4qGNaIHEF1k2i0ShigZrMDJhCy8LudWOH229
- gPaFzgQt8bbRL9A2LaIDkIMgn/MWncx1rrqYOAdy2RG4cjGqY6QYRGKMx3zFKuodWxF/
- dDEau827esFIAOT7PUA8WIj1meh15/xEQ3CQh8OfVLbSbm3tUNhUpRcx7FB0+etSKdVM YA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3sj3nhgnay-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 18 Aug 2023 07:11:05 +0000
-Received: from m0356516.ppops.net (m0356516.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 37I6l5LS011100;
-	Fri, 18 Aug 2023 07:11:04 GMT
-Received: from ppma23.wdc07v.mail.ibm.com (5d.69.3da9.ip4.static.sl-reverse.com [169.61.105.93])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3sj3nhgn6m-10
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 18 Aug 2023 07:11:04 +0000
-Received: from pps.filterd (ppma23.wdc07v.mail.ibm.com [127.0.0.1])
-	by ppma23.wdc07v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 37I6ChQx007848;
-	Fri, 18 Aug 2023 06:46:04 GMT
-Received: from smtprelay07.dal12v.mail.ibm.com ([172.16.1.9])
-	by ppma23.wdc07v.mail.ibm.com (PPS) with ESMTPS id 3senwkvt40-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 18 Aug 2023 06:46:04 +0000
-Received: from smtpav01.wdc07v.mail.ibm.com (smtpav01.wdc07v.mail.ibm.com [10.39.53.228])
-	by smtprelay07.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 37I6k2M738404800
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 18 Aug 2023 06:46:03 GMT
-Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id A780558055;
-	Fri, 18 Aug 2023 06:46:02 +0000 (GMT)
-Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id A5E525804B;
-	Fri, 18 Aug 2023 06:45:50 +0000 (GMT)
-Received: from patel (unknown [9.179.31.12])
-	by smtpav01.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-	Fri, 18 Aug 2023 06:45:49 +0000 (GMT)
-Message-ID: <dcddd1ebfb71fd0451b3e8a4fb63b30d560d401d.camel@linux.ibm.com>
-Subject: Re: [RFC 0/2] An attempt to improve SLUB on NUMA / under memory
- pressure
-From: Jay Patel <jaypatel@linux.ibm.com>
-Reply-To: jaypatel@linux.ibm.com
-To: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>, Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        David Rientjes <rientjes@google.com>,
-        Andrew Morton
- <akpm@linux-foundation.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Feng Tang <feng.tang@intel.com>,
-        "Sang, Oliver" <oliver.sang@intel.com>,
-        Binder Makin <merimus@google.com>, aneesh.kumar@linux.ibm.com,
-        tsahu@linux.ibm.com, piyushs@linux.ibm.com, fengwei.yin@intel.com,
-        ying.huang@intel.com, lkp <lkp@intel.com>,
-        "oe-lkp@lists.linux.dev"
- <oe-lkp@lists.linux.dev>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Date: Fri, 18 Aug 2023 12:15:33 +0530
-In-Reply-To: <CAB=+i9TQsPmdpjJ5g-q6ennSha00EO8GGKGjvg5RE-JH36JZxA@mail.gmail.com>
-References: <20230723190906.4082646-1-42.hyeyoo@gmail.com>
-	 <30b5d85348d84891bf61d7c57370d8b46df8e1a0.camel@linux.ibm.com>
-	 <CAB=+i9TQsPmdpjJ5g-q6ennSha00EO8GGKGjvg5RE-JH36JZxA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-22.el8) 
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 4d5sBftuWBI-rcgiRv2Guppafcok5ntb
-X-Proofpoint-ORIG-GUID: ikHfJvHK2yjaJQ3v3PkfUxZsI8ZVdkHz
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2961B14F9D;
+	Fri, 18 Aug 2023 07:58:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1692345530; x=1723881530;
+  h=from:to:cc:subject:sender:date:message-id:
+   content-transfer-encoding:mime-version;
+  bh=UnK0YL4eshwYSyCjK3HJ0gIbD0Qcbn8v9Fva0/0hvWs=;
+  b=ZG9iGqI+1WHk5tSZsmpqF16YgGdMw0+CGfd9owh6A6fbsz+kLnnZxn4E
+   1p4l6gpscTqGAbwKSNOhKb5a93jDjgVGHKZG4HVPdP6qNs9S6RrBfJaSQ
+   mEyMmbkLRBfaLxw69/DG9SzDVOoufQjeQzHEOD9N8eLOp6A4UIWRieCqk
+   2DosvFtuJM2dD1uiCvpsTLTXgZXNSkxKsbuEzw+jBHYeSml2nqW57XL/c
+   XFog8i5Ivp2Hzxs7ick0zXphPGu8A+F0qIp71nngJeaddKVnQNx4Qrz+h
+   faIWHrhNUa5pxl/kjblNbjJt68KVRVrkmSk6KZmaNS0nOAJL5njonsYBe
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10805"; a="376801398"
+X-IronPort-AV: E=Sophos;i="6.01,182,1684825200"; 
+   d="scan'208";a="376801398"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2023 00:58:49 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10805"; a="684793544"
+X-IronPort-AV: E=Sophos;i="6.01,182,1684825200"; 
+   d="scan'208";a="684793544"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by orsmga003.jf.intel.com with ESMTP; 18 Aug 2023 00:58:49 -0700
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27; Fri, 18 Aug 2023 00:58:49 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27 via Frontend Transport; Fri, 18 Aug 2023 00:58:49 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.100)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.27; Fri, 18 Aug 2023 00:58:48 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=flQ2KZ+3gYM9+Oaw8LuEtPz6CBPanh5umQzC+4G99mHXawZNR9ZbOKAssVQJ79kDd6Cjj8h1MM24zO+/rSYxBO9NuhckEEoKZ9gkx21a+NxPH9EI/vteM4IvyKZ8YUERXvez1/lZOOe+JMJ2H6/JQjPgPFWVGsJ3Je00ql5r5a/kwGRWH0BL4mYz+GcB96zjzTLFyonKDNf2gb2J0Tv+hkrrdOuFmwqjogmJFqlhmcSy+6UgOvW7W2Hy2ZCJV2gtex2kaxks/+P/nt34CuvakSQHwI+tqKKJFTREJrVKlo55otimMD9Xi5nKfZAvtWsAjEeSfbcGHMZol2dEEc1t9Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=UnK0YL4eshwYSyCjK3HJ0gIbD0Qcbn8v9Fva0/0hvWs=;
+ b=iSgXuo7QiElOAvwNwVdIXqjnsNi1eaY6A9ax7cxC1N+GvDrGRbL0mouuph6MVEVHNDfXPEIBwtglUkWfbFPy8diirUpcVFh+KxUb1dd4tU9jwF9ZCYB+vjmc0BG019StV/Nsuy8fi6J/rKslYKf0KvYt950uka5wnS5Yeg4GH2ZHGnLV/iBimG3jCwElFoyfXOa7WcFCqEeoovc4d+fCk9pF+5iinVcrx0+mWI8lz6wkvhWze65j/entynRniH9AT6iaMGgQtzrkHG2QglIkmc6YKWGyGQuHOWR5XSkrd3tQOZ31OV4LOnFl+nCVEzZkry3HGfnEDq+cJ+Nbm3Ae0A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from SJ0PR11MB6792.namprd11.prod.outlook.com (2603:10b6:a03:485::22)
+ by SN7PR11MB7539.namprd11.prod.outlook.com (2603:10b6:806:343::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6678.26; Fri, 18 Aug
+ 2023 07:58:47 +0000
+Received: from SJ0PR11MB6792.namprd11.prod.outlook.com
+ ([fe80::55ae:a9d8:12e6:d0c7]) by SJ0PR11MB6792.namprd11.prod.outlook.com
+ ([fe80::55ae:a9d8:12e6:d0c7%7]) with mapi id 15.20.6678.031; Fri, 18 Aug 2023
+ 07:58:47 +0000
+From: lkp <lkp@intel.com>
+To: "oe-kbuild-all@lists.linux.dev" <oe-kbuild-all@lists.linux.dev>,
+	"oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>
+CC: LKML <linux-kernel@vger.kernel.org>
+Subject: [0-Day CI notification] the service will be paused from Friday Aug
+ 18, 5 PM CST to Monday Aug 21, 3 PM CST (GMT+8)
+Thread-Topic: [0-Day CI notification] the service will be paused from Friday
+ Aug 18, 5 PM CST to Monday Aug 21, 3 PM CST (GMT+8)
+Thread-Index: AdnRqceHdEhLnziXSEy2TuQjp1jT/g==
+Sender: "Sang, Oliver" <oliver.sang@intel.com>
+Date: Fri, 18 Aug 2023 07:58:47 +0000
+Message-ID: <SJ0PR11MB6792576A4E0EA2D3A61F26CBF11BA@SJ0PR11MB6792.namprd11.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-exchange-messagesentrepresentingtype: 2
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SJ0PR11MB6792:EE_|SN7PR11MB7539:EE_
+x-ms-office365-filtering-correlation-id: ae352a9d-188d-4426-dc83-08db9fc0f3be
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: hWd5PDZTuydXvQy0LjsFme/ErrAcazlr89wX7I35fRK/SSWJnLaSzfFzpKewGkzSPrjFBW+Kv3LZuZ4eV6qiORlgrNaF57ewv7D5AQjjFk5H5tQ6M1DAYgCuwbc7cpL4dTsrRp5OXef3iQ4j2bh9a7Ns/SWajCLHOlMao4WY2wcD14ykFq3SdEtymtbFn/tsqC5XvtToEHLo9PaWaCmbYA6RFvvZvKg0TbZ54g4rlsq9nUDwqJVxXb9ryIFomOLyMdIYf+0IMiVaN/80/ZYQ3blNkDnQpXWCIHOh5MxTiA9yEV7fqi9LzHKZtsykMhze2Z362151O/WmL1Npg/gjDc3NtkiORijaMYUZHOOykCKJLvNjAJ9oJs4XKJvV/lGoV16m4rxsQn3j8UwUStPGLMvZFAyWRvmCVQM0BEgbHcM3IvMKS1o9ORC30J/A95+kJrE39Fm9GLUmVI34NqdHRs5Qty1NPM7TtsdTeHY3H8p7ciO65hsRkYCpiMqCgcgnV/ciChBrX7+fshPBGUUGveVhVyjCitQTfIpEY8Q4i9dHnaJynF0EQwsR9CpXu5QRoqVMMcE9hWlxrxU0cw0+Zd8ejpRLVsHfFO0jWeHwLmFnnIHjMQMOve9pnlc3LIzE
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR11MB6792.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(136003)(376002)(346002)(39860400002)(396003)(186009)(451199024)(1800799009)(2906002)(4744005)(83380400001)(26005)(478600001)(6506007)(7696005)(7846003)(71200400001)(33656002)(9686003)(55016003)(5660300002)(52536014)(41300700001)(66446008)(122000001)(66476007)(64756008)(76116006)(66946007)(66556008)(316002)(110136005)(4326008)(8936002)(8676002)(82960400001)(38070700005)(38100700002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?nXXzEFFXEan3UwEaCWqmljy2t+OLr+GBKIr2e9uHuJGDcbefIIZp+m0+akzV?=
+ =?us-ascii?Q?kVe6FLgJYt0RhRlivTTANDCE8Bm/8RTQJBIUQyd/A77UlY26xpBGAwxMCxfN?=
+ =?us-ascii?Q?1jRGEXqB5HQz+55CGlCSjOO5cVtuVh4sPWivKKtp/DpOOnnuLYa0aWGfsoP9?=
+ =?us-ascii?Q?8VMGPztF50M6Aufz9FjGuyYINh5ObtpvyyYiaO8/1FkjvRD4KSV+jqjIZCK0?=
+ =?us-ascii?Q?t8ky//fNrH2j5cJiDinIKrGu/bMJQFAZgWd+hwyIVwl7osh3JUURlsAKmcX4?=
+ =?us-ascii?Q?oKVIRHed75lRqr9vsr705GOJrh0K909BCAC98tsLJuOtMt6D/IFliZS+BKU1?=
+ =?us-ascii?Q?KkDi+OSafphgdIQ4DrYieKZynYpGVPeA7EoK10oTRx8ovWXWGls37cUkx6AI?=
+ =?us-ascii?Q?bwnOhQv+Mn4sHycN6vYLSRdqq/algx/Sz3Gh39/m3FQpZ36/28zyP36PtSZj?=
+ =?us-ascii?Q?AQdj9hzFxdxN+XFTgRWoVt6VZJuGGyFmaA1tteuNCXxug+u6cuBFj4lJ5gnQ?=
+ =?us-ascii?Q?pFAwEo6jWRBe/cOocCIdRJtjHc1ZviVrjlkUn7vtsctZBPTW2lPEhb+V2fC+?=
+ =?us-ascii?Q?1dVwv1niAr3dUjL23+FoTpz+t92hTzSIR2WzNL1MRj7ZsxVbol4ky48e+GP8?=
+ =?us-ascii?Q?TBt2ashg+aXtQr45lYxtv2qigY6vd7UOAUj4/qPqNauy0mv/kufrSSwXeGbY?=
+ =?us-ascii?Q?M2M8Qb6vuqA16jso7XWU8c0+pZKXIwKNOTkA7b5B11Z2gUitV465QMsem32Z?=
+ =?us-ascii?Q?vEdmVgLcYTkpKUexBB0EYzUn1Gv3hYN+RuZuTL7Kn6VDveH1gVrdKXh76DiW?=
+ =?us-ascii?Q?79clvZpdf+VxUtduVqA++Og3wZIooqQtG4gf/beRk0K8pOIuw3f7vUPLT2PW?=
+ =?us-ascii?Q?QEpbP8koM/EDTVC3IW3Q/mWopsiPpEHNtyssrMXzru2829zTL/oK4z1g15Hs?=
+ =?us-ascii?Q?J6Y1nyDDgs4OnvXZXZ+He+7/Ud76CDnqCOoptB885uGTM6G9eE89jWYpDhHK?=
+ =?us-ascii?Q?V+HpX04+u/BzSrMc8JF93yg9V6UwMbm2Y6K5HdKg9LrFC13HU7/WzsiDMgCw?=
+ =?us-ascii?Q?Z4Hf9nxfrKDsGWdZbPQK3NMClBA2d7JPUfrP8J4YOLvZlLGUzSwx49eIB21M?=
+ =?us-ascii?Q?7803RvwR6QkLGu1F14+SN8AvfZIzqO3emn0QNqojq+8eSSWH/ieqLAkVob2e?=
+ =?us-ascii?Q?kU2TMmDyyNSgIJniL5aa6EK2F23xB0VSIr+HVfB+tvMrv++DC4tpIgbME/By?=
+ =?us-ascii?Q?T3KhOD3bXDvkLMvl9FoN/LdIrwozGM6wGYQzZIX3I1Vugs7GRMB4uPykUrt1?=
+ =?us-ascii?Q?nfWNbJojQAER8mpJ5nYN5W80lyPx433GlP93gQnMh+CnhELYbKESvYq3BG5S?=
+ =?us-ascii?Q?8drI7RpgAuecse4HFTjp9nj59TjHmBRnFvGVWuOgtjv1+/y354hpso6d7ZjS?=
+ =?us-ascii?Q?3NJMqeTGuG7EviDxb1LNsoN+d3hMr83aEYMR7q/y6yuKzKalJ3oR7daNtsya?=
+ =?us-ascii?Q?PdY5F05CXWdbSREKxh5JlcbAt7dBLVQEI3++xiNFz8Ghiurn0BQelTHT0Vex?=
+ =?us-ascii?Q?t0paiXdxvaX+p6TWF9YR9l/JcZYB1ILdcZTMFIuS?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.267,Aquarius:18.0.957,Hydra:6.0.601,FMLib:17.11.176.26
- definitions=2023-08-18_08,2023-08-17_02,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 malwarescore=0
- spamscore=0 mlxlogscore=819 suspectscore=0 lowpriorityscore=0 phishscore=0
- mlxscore=0 impostorscore=0 bulkscore=0 priorityscore=1501 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2306200000
- definitions=main-2308180067
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR11MB6792.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ae352a9d-188d-4426-dc83-08db9fc0f3be
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Aug 2023 07:58:47.4792
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: CeNXFRguBpHFX74S+P1DNP5qeTXOWsZr7gVb4hJT29PkR/OgLBn2gfKy+7XocD5ljMrM2RrPhov5L7l06t7b5Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB7539
+X-OriginatorOrg: intel.com
 
-On Fri, 2023-08-11 at 03:06 +0900, Hyeonggon Yoo wrote:
-> On Thu, Aug 10, 2023 at 7:56 PM Jay Patel <jaypatel@linux.ibm.com>
-> wrote:
-> > On Mon, 2023-07-24 at 04:09 +0900, Hyeonggon Yoo wrote:
-> > > Hello folks,
-> > > 
-> > > This series is motivated by kernel test bot report [1] on Jay's
-> > > patch
-> > > that modifies slab order. While the patch was not merged and not
-> > > in
-> > > the
-> > > final form, I think it was a good lesson that changing slab order
-> > > has
-> > > more
-> > > impacts on performance than we expected.
-> > > 
-> > > While inspecting the report, I found some potential points to
-> > > improve
-> > > SLUB. [2] It's _potential_ because it shows no improvements on
-> > > hackbench.
-> > > but I believe more realistic workloads would benefit from this.
-> > > Due
-> > > to
-> > > lack of resources and lack of my understanding of *realistic*
-> > > workloads,
-> > > I am asking you to help evaluating this together.
-> > 
-> > Hi Hyeonggon,
-> > I tried hackbench test on Powerpc machine with 16 cpus but
-> > got ~32% of Regression with patch.
-> 
-> Thank you so much for measuring this! That's very helpful.
-> It's interesting because on an AMD machine with 2 NUMA nodes there
-> was
-> not much difference.
-> 
-> Does it have more than one socket?
+Hi all,
 
-I have tested on single socket system.
-> 
-> Could you confirm if the offending patch is patch 1 or 2?
-> If the offending one is patch 2, can you please check how large is L3
-> cache miss rate
-> during hackbench?
-> 
-Below regression is cause by Patch 1 "Revert mm, slub: change percpu
-partial accounting from objects to pages"
+this is Kernel Test Robot from the 0-Day CI test service. Thanks for
+anyone who subscribes to the service. We will have a lab power shutdown
+this weekend, thus need to pause the service for about 3 days, from
+Friday Aug 18, 5 PM CST to Monday Aug 21, 3 PM CST (GMT+8).
 
-Thanks 
-Jay Patel
+Sorry for any inconvenience caused by this, we will recover the
+service to be online as early as possible.
 
-> > Results as
-> > 
-> > +-------+----+---------+------------+------------+
-> > >       |    | Normal  | With Patch |            |
-> > +-------+----+---------+------------+------------+
-> > > Amean | 1  | 1.3700  | 2.0353     | ( -32.69%) |
-> > > Amean | 4  | 5.1663  | 7.6563     | (- 32.52%) |
-> > > Amean | 7  | 8.9180  | 13.3353    | ( -33.13%) |
-> > > Amean | 12 | 15.4290 | 23.0757    | ( -33.14%) |
-> > > Amean | 21 | 27.3333 | 40.7823    | ( -32.98%) |
-> > > Amean | 30 | 38.7677 | 58.5300    | ( -33.76%) |
-> > > Amean | 48 | 62.2987 | 92.9850    | ( -33.00%) |
-> > > Amean | 64 | 82.8993 | 123.4717   | ( -32.86%) |
-> > +-------+----+---------+------------+------------+
-> > 
-> > Thanks
-> > Jay Patel
-> > > It only consists of two patches. Patch #1 addresses inaccuracy in
-> > > SLUB's heuristic, which can negatively affect workloads'
-> > > performance
-> > > when large folios are not available from buddy.
-> > > 
-> > > Patch #2 changes SLUB's behavior when there are no slabs
-> > > available on
-> > > the
-> > > local node's partial slab list, increasing NUMA locality when
-> > > there
-> > > are
-> > > available memory (without reclamation) on the local node from
-> > > buddy.
-> > > 
-> > > This is early state, but I think it's a good enough to start
-> > > discussion.
-> > > Any feedbacks and ideas are welcome. Thank you in advance!
-> > > 
-> > > Hyeonggon
-> > > 
-> > > https://lore.kernel.org/linux-mm/202307172140.3b34825a-oliver.sang@intel.com
-> > > [1]
-> > > https://lore.kernel.org/linux-mm/CAB=+i9S6Ykp90+4N1kCE=hiTJTE4wzJDi8k5pBjjO_3sf0aeqg@mail.gmail.com
-> > > [2]
-> > > 
-> > > Hyeonggon Yoo (2):
-> > >   Revert "mm, slub: change percpu partial accounting from objects
-> > > to
-> > >     pages"
-> > >   mm/slub: prefer NUMA locality over slight memory saving on NUMA
-> > >     machines
-> > > 
-> > >  include/linux/slub_def.h |  2 --
-> > >  mm/slab.h                |  6 ++++
-> > >  mm/slub.c                | 76 ++++++++++++++++++++++++++------
-> > > ----
-> > > ----
-> > >  3 files changed, 55 insertions(+), 29 deletions(-)
-> > > 
-
+Thanks
