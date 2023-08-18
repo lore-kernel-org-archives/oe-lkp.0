@@ -1,55 +1,55 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C737FEAF1
-	for <oe-lkp@lists.linux.dev>; Fri, 18 Aug 2023 08:34:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48BD93D7F
+	for <oe-lkp@lists.linux.dev>; Fri, 18 Aug 2023 08:37:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1692347655; x=1723883655;
+  t=1692347868; x=1723883868;
   h=date:from:to:cc:subject:message-id:in-reply-to:
    mime-version;
-  bh=IYrahrD3ps1D4oEcmYLPVJ+iw7TUM3dLhK/d2B5wB4k=;
-  b=HhJV7BMoZfNMziYvksZXD1+laIRe6o7THl60YDCVYmIGo4tywpo+gkdG
-   gF50TRbKd3MI1ITMXrvWnvbKp/bHU0fo2QGSiT2ncoJLlApTAsM1DCZHZ
-   paj0+7UDQwZncb+2R7+k6dNtr32PH4stFmJvPUSL+YPg9ms+yPvHX4vxr
-   2aqANufD1moaRWtDMQUBwWO6tiheG1/jV4af0JQywYc8FmOGfe8kYdore
-   +/XXr0ewqqib/5h0maFMZxIYkW2vAPBwpeA2cPBVhe3M7Y7J4PVDblk/o
-   TlTekjYNl9teMrjJVvq6QJpawG1L7+/+KeeQHDfOkQsvBx4NGYKrvB1QQ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10805"; a="363208539"
+  bh=yA59sgZ3HUKCkyrBkfJYc3kappBu3wH0O9cy9sUcpho=;
+  b=nQ+76bfogJF5gOrXvfTeiU4G4zujRUmMyH/4AzwMGfNuJnmblm6Lhr02
+   LTIYAD9LUiE75lrHiiJP5yZEGT7ePNSXbE+F1pZ1WASyV9id8F8Dlx4+U
+   rCSC9hR0TbQUyPeNc2T+hJ5FXIo9SHK2BoKwtqhQHWk3tMvLgifSraTJE
+   AOA2hbCvxBFqLqFGFN45LuEfZ3G4S0AlQVjwYDPeG2DZOwvNtwFWZfxEf
+   p2cD5mwoClqbuQGmq7tfqO7ubrlwsp4vEUMHxY0OKEJrK7M52bcQetoEp
+   lzAdYVprHiTaUKb4AwzJOwVidmZBVUCT1srQ6KR1+Cu6gkDgFJB105wtX
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10805"; a="376809277"
 X-IronPort-AV: E=Sophos;i="6.01,182,1684825200"; 
-   d="scan'208";a="363208539"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2023 01:34:14 -0700
+   d="scan'208";a="376809277"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2023 01:37:47 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10805"; a="735017612"
+X-IronPort-AV: E=McAfee;i="6600,9927,10805"; a="728526306"
 X-IronPort-AV: E=Sophos;i="6.01,182,1684825200"; 
-   d="scan'208";a="735017612"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by orsmga002.jf.intel.com with ESMTP; 18 Aug 2023 01:34:13 -0700
+   d="scan'208";a="728526306"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orsmga007.jf.intel.com with ESMTP; 18 Aug 2023 01:37:46 -0700
 Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Fri, 18 Aug 2023 01:34:13 -0700
+ 15.1.2507.27; Fri, 18 Aug 2023 01:37:45 -0700
 Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
  fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Fri, 18 Aug 2023 01:34:13 -0700
+ 15.1.2507.27; Fri, 18 Aug 2023 01:37:45 -0700
 Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
  fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27 via Frontend Transport; Fri, 18 Aug 2023 01:34:13 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.177)
+ 15.1.2507.27 via Frontend Transport; Fri, 18 Aug 2023 01:37:45 -0700
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.176)
  by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.27; Fri, 18 Aug 2023 01:34:12 -0700
+ 15.1.2507.27; Fri, 18 Aug 2023 01:37:44 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Uq/dHujVHFTHHCYL7ZbumOa92XvB5c6lxBD97c01QaHGJFhLcaXOPpboN4O4gVv1ogsO2RoO+kPs2SfAlrb5PBZWUeRxszMTq6EuYkPSdLaf0nP0W1XbcrWunbqrVoFpS77DzLO4O+dl0YL88AjRQmHeQ4WWYCbred65aagLqYhGZQb/7T9FPJd/seATjn6BddQDD+xUMkpJPyBI5JYc+jR3aZNCaUEhy0LXJj5L5Q7MYc5i16rvgVBOV1zfJcup/vvVhU//Rabz2Wr/vqNsB7YdDIsv+8ZW86t2P0FzxJDci6cgoMjLFEuYMX3aG1n00QE/fc9V5Tau0CIq8Gx/Bw==
+ b=HLo7whCWhbHOwbOvzay13TE4vNwVhNCJIauUmnTON5es7Df08ttyF2IuKYRMSd6eyG4j/j5TbxNNnepiLMBsYqUqD4UBSEO9y2Dg0PE+s7FM0oeGe18q5KDAAiBR0tGGLIVr3HYGwNP3//luRCPg08LsY2X0uAElzsdnpQBeI24oTAyOSVk9E8bn/1lZnnomb71YEG7n9xWSA1ziu2MLFAHi6Po7q2ii3mOtrvUQ8QsJ/9tuHjfnldqeYVJ/RtaByjb/IQVs7evhsRsC6DP4AMRU2VnXKMC3KTXWBzTHLRZPL0s3yvYc0G7J6O6hO+hohdIi5sIud0pwZSD6/AD+4A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CrotsK/VkxbY9n8rBhs3ISkSzHnNiZWJ/OfO2u7d0T4=;
- b=ErJ1dxJpQ2mazS8+5/zVE9/k3ObxnSUf+h6CmYS4jC7Rjb2z/Eh1xmiM+ZXLtqo+6BD0zk0B7giIDZsjMGeYQkCKYll1xM+35Qwxd8uAfcThdwnI/qor9PnxuryUZBVdrdJKuqorNMcjC4fK/f7lPIwF0CRslhoT4aYW4RgE7OA2E2Els/wlx0kB7QwgBm7QodGrarnLdMC/FV9RSfY+KGcKuhXRiAaly4MoMh5U2QK/Vm3HgsvkrHz2YO1pavFfyphktiavN1YRn3lMzrkO57Y1t4+mE5fNnoWWBW107ZFJZACDFZdiSYjexLGhhNpWxznYI1sF2AW9SCHTSrGwHQ==
+ bh=sxUdj99tolTissXMDj9OOY6cKt9HKYuKeAFvat+qkeE=;
+ b=LJ1Pj1oN13fWFzEq67lgai4dO1aE3TgLC9aHpag9Z7ws8DqbPWTEioTJjJmQX80ZfuISOUCJmpyCErnZAIu9yMhPGfdY9M8oM4d4Ab8VieJ/Ano0WuUPbhuFEhNShWB9MLcZO/BFZf/BCro6YJqM6UnVUjtfaBEkhCH1X/lRw1oXpbDcumO8iwuwd+bL9MlMzh1HJuduuhxSKSZvAQVjdTc2Spo4ALYl/0UQgrYQvij0qzrj6bvN4gjhVdFRQZ2FqNRFExJd8UR5RH0O178nhMphXAiCTP8aF2zQ+oIqwO64fS53X5wLSwTi3svQUS4eILsL8DK+3mnFmJl2FpFkAw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
@@ -59,27 +59,24 @@ Received: from PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
  by IA1PR11MB6099.namprd11.prod.outlook.com (2603:10b6:208:3d5::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6678.31; Fri, 18 Aug
- 2023 08:34:11 +0000
+ 2023 08:37:42 +0000
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com
  ([fe80::73c6:1231:e700:924]) by PH8PR11MB6779.namprd11.prod.outlook.com
  ([fe80::73c6:1231:e700:924%4]) with mapi id 15.20.6699.020; Fri, 18 Aug 2023
- 08:34:10 +0000
-Date: Fri, 18 Aug 2023 16:33:59 +0800
+ 08:37:42 +0000
+Date: Fri, 18 Aug 2023 16:37:32 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-usb@vger.kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	<linux-kernel@vger.kernel.org>, Valentina Manea
-	<valentina.manea.m@gmail.com>, Shuah Khan <shuah@kernel.org>, Hongren Zheng
-	<i@zenithal.me>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	<oliver.sang@intel.com>
-Subject: Re: [PATCH v1 1/1] usbip: Use platform_device_register_full()
-Message-ID: <202308181658.e33ac42a-oliver.sang@intel.com>
+To: Maarten Lankhorst <dev@lankhorst.se>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>,
+	<intel-gfx@lists.freedesktop.org>, <oliver.sang@intel.com>
+Subject: Re: [Intel-gfx] [PATCH 2/2] drm/i915: Handle legacy cursor update as
+ normal update
+Message-ID: <202308181627.2fec1157-oliver.sang@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20230817121300.501637-1-andriy.shevchenko@linux.intel.com>
-X-ClientProxiedBy: SI2PR06CA0013.apcprd06.prod.outlook.com
- (2603:1096:4:186::18) To PH8PR11MB6779.namprd11.prod.outlook.com
+In-Reply-To: <20230814065006.47160-2-dev@lankhorst.se>
+X-ClientProxiedBy: KL1PR0401CA0006.apcprd04.prod.outlook.com
+ (2603:1096:820:f::11) To PH8PR11MB6779.namprd11.prod.outlook.com
  (2603:10b6:510:1ca::17)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -89,51 +86,51 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|IA1PR11MB6099:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2b7130a3-a889-4506-a0c6-08db9fc5e4a0
+X-MS-Office365-Filtering-Correlation-Id: 34d38d03-00f7-4b94-9b32-08db9fc6636d
 X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: sCiK/RYBpNoiSO3pGlODkQGg97TCcqdt9wv3XCKrkTYFbHbdOWtl/s21vZvbdj8KKOu4C/torGit1qWXeHr6JzwMSc/aEBT/xmArvhxwJFbhqw1uNM/KzNrHIEGnbbEUUOAmerv5wRzJT9yKY8ZytgYdT7FwNuUr22MZUBdv0YCvUuh1fBK7F+oQ2zLfVBTR7YHs39pKPGkTO4wCSVkTEiF8effXk1YXf2ir5GuF7tb28VKNmDeNio3gDpSWFqA2n7bU+hJUJDGBvlnQKF00g34SlqL53/VA2/mUp4I3+R20YglNGWJuBZQZbJkoYP0mc/Kzqxlj2bGiE5qyJ398lGId3phgMoWjoG6DP7PPrP2Ls9NWqblnVTRETKFfQ0HVGsEmZwpie9KwScgJ/Q8cCfx2mQmP47n/vkFRQHgp4GpdlcA/sqWbFus2e/WXpiInWRjufQOyyv4qoswQbqeWHR/dBkmmJY/VIifFx6BU5INYRRYpI8mL3GcW1ylefSnxsKtktnreJ/tLMefx/ryXFtJIkgHQr1veWTnkW5kYYs68hmJQ+NPU1d9dpaTxLmRClnxdMvrL5Bh8tc6lb1HFxA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(376002)(136003)(366004)(396003)(39860400002)(451199024)(1800799009)(186009)(86362001)(36756003)(82960400001)(38100700002)(966005)(2616005)(5660300002)(45080400002)(66556008)(478600001)(6506007)(66946007)(66476007)(6666004)(6486002)(54906003)(316002)(6916009)(26005)(1076003)(6512007)(4326008)(8676002)(8936002)(41300700001)(83380400001)(2906002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: 9s6Tn1zhxUHQ3qGx8Dow/tzGbKhnN5tW40zJ0y79WaP0uHVbTM5TsOj00HWjmYCD1BtiLfmP+nZ7aQjEMBz4vMzKbeJ11Zugngcd5I+2iGlhGxbgitGImEgnQkxd5Ax9uNJ5Kh98+aw+yvo0Tt4nCpSUTgR9BvkqDkGAVl3FxRVXNsLdmZ6XPHWrEJwHXsNxTg8Vq5XEiQbUhtn8NcWPDwhvjhUwoAAkiJsaMm7djiLv89bwfvUuov797hhnCVCVP84iP6LPWvQy1QBt7WnKQ2sNGXBjMCdtYLNIKeG1LLK3S9xgA1LQJyyXgT/YQvstOyZp8VJ8aa2qY+WdSgwmrXx5QbOr/IO0i85Aq6CJkZMlkZkPgwgb3kRZo9D3CqrHNetS+sWGP8hAGnF2GPENrmgaxCfYKAGwQ3Sw5qq6aDWXcp+B8ZBkHptO4vxtV/rKXvWki6123hRhjF92G4JcuVvr4KjMJvVVHb7yuYRySpp/ZDevAUQt5OHEUnIRraUZ327HGLWOKF2MbLFGLOOywJJhWGnF2oVos7bLygG6jw4i8AmUmxZYJhz8uu1ljEwjz0ffJZw4iFKoYwldBGIlKw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(376002)(136003)(366004)(396003)(39860400002)(451199024)(1800799009)(186009)(86362001)(36756003)(82960400001)(38100700002)(107886003)(966005)(2616005)(5660300002)(66556008)(478600001)(6506007)(66946007)(66476007)(6666004)(6486002)(316002)(6916009)(26005)(1076003)(6512007)(4326008)(8676002)(8936002)(41300700001)(15650500001)(83380400001)(2906002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?mlOSpO3foJekAfubQAYgW5ZEFi/8+6aaB7dEo0nIlM9UO/GTxX6nMaI7sRLc?=
- =?us-ascii?Q?mZxOAIFRiIOQYX6wXYdmaZTKWXyQSExeU+rn+nu9jpROLD1ok8L+upFROtvn?=
- =?us-ascii?Q?B/7c3aiEMXO2sdcn8YUasn9w4j09iNYvRs9BoB2+jYymTK/aA/gbE6tL1qft?=
- =?us-ascii?Q?OLQcPFFvhUUwCOGwN3BdmIu3kS7yQWUjY9GxnW1FSNanFxkFrjfLkU4ZsBoT?=
- =?us-ascii?Q?dtrdRlUdSM3aDNpCX9rHm67y8b8HGdsfOn1hYd/gYefE/Fa+jAKDR/YvJWoI?=
- =?us-ascii?Q?b0yegHPqiwg7gC1uHkZBVG+Ftwk6EjT9rAb1BDdGQDUHd4lPj2wecOuqqUAQ?=
- =?us-ascii?Q?pA/wCvrvNegqF3PfEeSNR0MSP4Myfccr9YmPF8i0WkgthL0S4pHPLitY+1jq?=
- =?us-ascii?Q?+sWsssKv7srFR0vL23WwCZF4eGeWci5DeSydTM8o0573eMsF5qagQQlzegxn?=
- =?us-ascii?Q?917YTftvAMxEuSO3RQICicietC2StokgG4q8Yux34cctaeEXKnBt7i/N135x?=
- =?us-ascii?Q?rIsHsVq3lZ/hcm/fYhSDdPj5CYcrAFansCKG+w9b/ylLaK5VSxnwlZPveZgM?=
- =?us-ascii?Q?As9NxcNZaBeby3CMqNBbPqXA1ywtLxUPbuj1BuA+OLpEmk/SeyebRqlRo5Av?=
- =?us-ascii?Q?w0mRnADf/Da/zhHS/ee4yjY7Rq2iqI8SB1o6BEXz/hwcR/vN1Peb0wU/6wOl?=
- =?us-ascii?Q?j1fi+2YnFQAzcZuUM6z2TfAutJQUwOi7Wtxf01FaD7nHTfxIPmDU7jORj1tu?=
- =?us-ascii?Q?RiNayOJkwd3PQyS/IxZ1nIaFB04Lj8jgi8SleoyT8knP4GG30P9Eh/1Zcdig?=
- =?us-ascii?Q?jOx9ZsD9pCvrWIwsCNj6ZUK8Om/ktIlzBFEcpgaZuJuHPZdvLVMxw626zdn1?=
- =?us-ascii?Q?FaoMNGeFQtBeYVyW1hKMdlWtpP+XCmboJLbMAIxDcIscUT3pww8WEhQH5zhD?=
- =?us-ascii?Q?SfWMtgbNFAPUi6zeZgXLeH13UxMYlekAvrjw+HzPULo3EkiPR8/3Pz7ZvDf/?=
- =?us-ascii?Q?g1G1N8/gV9oTCHBQD9x3knv13unjoowyY6nAA4B4dr4t9ntIPgdqzHnObWsY?=
- =?us-ascii?Q?hEo3JHwTbPNfhegus03Yk8/ttU42H1Ge5FHYX/dxyFVV0WHSqqcr03G2l3KQ?=
- =?us-ascii?Q?IjLWgslN1YbN5ApBzLFMc3gq7qP3+9Dpon96Yzqr4vB6UqgYUAfFZarZsfcH?=
- =?us-ascii?Q?6D67hkQOGIwwB2sCd45oX46U5kykcUFa9HkLdGefNLs1AF+uh9Y/BrhDtzZ3?=
- =?us-ascii?Q?iakZFDyW6UfMo909icxdgEEfcqQpfJtao+2eVDrnKfc90GzeWT5R2xOGjTb3?=
- =?us-ascii?Q?yqOULpWbqY1UCvGKgIl8c/ncwe6sMMTzK0mAzRzv+D0cdv3Du/WbprENkGZh?=
- =?us-ascii?Q?3YIO/eON6XcfgU5Kfsbw5MpHzg6A9elFh9oJ3vovvXbFH5Hd3yewsG8naVuJ?=
- =?us-ascii?Q?GCyQQDAo38tV/lsOV8sEcrLbdnDljoqwnPTN/wz+Nm2xvcLTAaJMjHvSKhTC?=
- =?us-ascii?Q?i+TWFlo53RbGEJcIg4tciizLd4TlKCZH7BmU8pji35SBGyEYcQJjAd7cJ/Uk?=
- =?us-ascii?Q?TPYK+7GuAWXLlk3PQfu09TUbcobZdnG2fc7jDLeqSDTO7H0ntH3w6dRrI1m5?=
- =?us-ascii?Q?Sg=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2b7130a3-a889-4506-a0c6-08db9fc5e4a0
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?W/ZwPrpPfOyjyBmeb/RBKH/3D8omrrvRmsDkJsivZeBt8akFe2jG70KGmwHD?=
+ =?us-ascii?Q?9q9dh/tHGtRziap5+Rnz8FyQQnT49Gjdd+YjPok9btwxZkXBdl6ofnz8kDZS?=
+ =?us-ascii?Q?GAQPCjTfOiBSrKjg+xcMKj9gCq42SiSN3Am9kmL85aeXt8+qi97ItrGifHxV?=
+ =?us-ascii?Q?r9MLX2eNPAkhNvtadlYyeMkZXZ26AiQ3zc1FFkh3FOYIzPIbfJlQxBIz8vCZ?=
+ =?us-ascii?Q?RkQVezSvDDJBhiC+gquen7u/V5MclXeorHX35dbZ09QWI37UBQL3X5IBDaUl?=
+ =?us-ascii?Q?gp7DCXxPTVisKUENdqWUghjla7aThjPtIBUgus6AB6POE5+b9wKpSSRFTvzl?=
+ =?us-ascii?Q?7uLscvtOxRIeEHHcd+QJzpRYpc+MZ7jG5hXjDYUGZ+yvx/okn+C3pdPfZzO4?=
+ =?us-ascii?Q?bDiAmd49D4x/bOipgTvMYE26Wj3QAlFjyGaXTaD7iqNlePr4Ag6wcbotrSf9?=
+ =?us-ascii?Q?7sE4pZnUTM4132p3dZPyuKrB+fRotP2iJXtjlSivJZSnzISbJYtOXT3LicUx?=
+ =?us-ascii?Q?PKOhuiyPIHLRgObThp87CXRYqBpdK/VTNnHXJKn5DH6j+UUYLN1v+e1q315O?=
+ =?us-ascii?Q?wt4gqU+HhOjOrCaDWRJx3qvGLivNLYv3DsLM7hNw98mA5cx5hfuBwcgGg1Bt?=
+ =?us-ascii?Q?pylkjbeDSY4d4BaT/XoWSMnso15yyzR7wr0cwwJB3iTxt9mfTNTP1LK/XAUZ?=
+ =?us-ascii?Q?SX21UJS6EE7xVvwJFggIqmk6aJGuJ4ugs8YxMP5zTdU/I/HwkoiKbCUsBldc?=
+ =?us-ascii?Q?NQJowMcrWrrJXhDLAsk3GFC7c0GGWeFcS5wLbPrDaN5L++eZT+jKUanBsDxG?=
+ =?us-ascii?Q?iLbW/Uq6W5lU6ggDGQggttCuf8ovrC4NZTL3qK5dbTXuwiiExSkwc8oy4lfR?=
+ =?us-ascii?Q?GISPDUbqm/Ase7kThq6Ke7Vuxad+QycJ7qXT3JxFUKn5oElcUy+N1aT1WyTq?=
+ =?us-ascii?Q?d/oxcv6/1YbR4AGmvYh0JbF87wif4OaDfvbsn6Q9V7VsYFvUlxwsk/pZiMQZ?=
+ =?us-ascii?Q?paIUk4tap77GCdDkz0y6FKHpiM8QVgA18VjzUlHEzs9408UYiBMikNp5x/5X?=
+ =?us-ascii?Q?7OmNnz6XiN4bgn5gUdVQ4i3HyxgBHkFbH+p6o3T/FQ35pfS9UJjkNP1xJ9pc?=
+ =?us-ascii?Q?a6xhvBQ4CJkPxPjZSNhxSAUn63bmxsscpTUsjpLqIEQ6+PFRTH8I8wMn+QHl?=
+ =?us-ascii?Q?QhyklUCYlKfqBZRSplCsSH6vipIe0ClqXy6a2YRUPV7rSWN4EMbStcpSnFFz?=
+ =?us-ascii?Q?MJ3LP6SqueKDk116AKBC0qFWHC8Dq85uCXgqvmbKqKq+I2CnDnRuACCFSDyj?=
+ =?us-ascii?Q?Eu8M4W8jiLPq4sQc96iTGt1j4e3VCe6otVsT3y1FcCyqqvnfrbjsW9bjywNZ?=
+ =?us-ascii?Q?SMxI9xKJ0wfzkkuTMmwofOPk+bOH4rw3iSb2MxjTD1CC/bngCDXdHmcCCvK2?=
+ =?us-ascii?Q?hi32bbp5PevvW9TQobSzPpG5kN6OODqEPBaStvBn27qQ0kZZQbXJnECRtU3J?=
+ =?us-ascii?Q?9j5wnjDb4Ew48YRi8eYVwdZXqOGHRqspTbdn8aFrI2r5z7D6TGGsy86KZcVv?=
+ =?us-ascii?Q?x8hsyHpqtlQLJzQnkDJKVW+ZQPlCA2dD1nPqWIv0W7ytWC6rZIN/TxV+BEnc?=
+ =?us-ascii?Q?0g=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 34d38d03-00f7-4b94-9b32-08db9fc6636d
 X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB6779.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2023 08:34:09.9974
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2023 08:37:42.5652
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: yfrQOUaEjZP6gkQKe+qQY/nPjDcrhdHJ4ptCOMKdIcQgKiwamPAcx0radlumVT3DdTGkR17sBUQnXI5N0Dg++w==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6g9ART9jzo0Xd25Ji5jP6eie7Saqf97ydav/DkxFGoBKsmd2KJUSP09qOuGGVGuwoajQOxC3W+h8efenZjG2Mg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB6099
 X-OriginatorOrg: intel.com
 
@@ -141,124 +138,140 @@ X-OriginatorOrg: intel.com
 
 Hello,
 
-kernel test robot noticed "BUG:kernel_NULL_pointer_dereference,address" on:
+kernel test robot noticed "BUG:KASAN:slab-use-after-free_in_intel_wait_for_vblank_workers" on:
 
-commit: 86a50b56c5a09f33c75fdd6c1275188b0de61eb3 ("[PATCH v1 1/1] usbip: Use platform_device_register_full()")
-url: https://github.com/intel-lab-lkp/linux/commits/Andy-Shevchenko/usbip-Use-platform_device_register_full/20230817-201652
-base: https://git.kernel.org/cgit/linux/kernel/git/gregkh/usb.git usb-testing
-patch link: https://lore.kernel.org/all/20230817121300.501637-1-andriy.shevchenko@linux.intel.com/
-patch subject: [PATCH v1 1/1] usbip: Use platform_device_register_full()
+commit: cfd54d37e5cd9511b5a4a98bba6d4b2f596149cf ("[Intel-gfx] [PATCH 2/2] drm/i915: Handle legacy cursor update as normal update")
+url: https://github.com/intel-lab-lkp/linux/commits/Maarten-Lankhorst/drm-i915-Handle-legacy-cursor-update-as-normal-update/20230814-145051
+base: git://anongit.freedesktop.org/drm/drm-tip drm-tip
+patch link: https://lore.kernel.org/all/20230814065006.47160-2-dev@lankhorst.se/
+patch subject: [Intel-gfx] [PATCH 2/2] drm/i915: Handle legacy cursor update as normal update
 
-in testcase: boot
+in testcase: igt
+version: igt-x86_64-0f075441-1_20230520
+with following parameters:
 
-compiler: clang-16
-test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m 4G
+	group: group-23
+
+
+
+compiler: gcc-12
+test machine: 20 threads 1 sockets (Commet Lake) with 16G memory
 
 (please refer to attached dmesg/kmsg for entire log/backtrace)
 
-
-+---------------------------------------------+------------+------------+
-|                                             | bbb9e06d2c | 86a50b56c5 |
-+---------------------------------------------+------------+------------+
-| boot_successes                              | 20         | 0          |
-| boot_failures                               | 0          | 12         |
-| BUG:kernel_NULL_pointer_dereference,address | 0          | 12         |
-| Oops:#[##]                                  | 0          | 12         |
-| EIP:vhci_setup                              | 0          | 12         |
-| Kernel_panic-not_syncing:Fatal_exception    | 0          | 12         |
-+---------------------------------------------+------------+------------+
 
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202308181658.e33ac42a-oliver.sang@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202308181627.2fec1157-oliver.sang@intel.com
 
 
+kern :err : [  162.196982] BUG: KASAN: slab-use-after-free in intel_wait_for_vblank_workers (drivers/gpu/drm/i915/display/intel_crtc.c:395 drivers/gpu/drm/i915/display/intel_crtc.c:447) i915
+kern  :err   : [  162.206530] Read of size 1 at addr ffff88811d8dc150 by task kworker/0:0H/8
 
-[    8.098949][    T1] vhci_hcd: vhci_hcd_probe:1345: name vhci_hcd id 0
-[    8.100593][    T1] vhci_hcd vhci_hcd.0: USB/IP Virtual Host Controller
-[    8.102740][    T1] vhci_hcd vhci_hcd.0: new USB bus registered, assigned bus number 1
-[    8.104945][    T1] BUG: kernel NULL pointer dereference, address: 00000028
-[    8.106630][    T1] #PF: supervisor write access in kernel mode
-[    8.108111][    T1] #PF: error_code(0x0002) - not-present page
-[    8.109638][    T1] *pde = 00000000
-[    8.110567][    T1] Oops: 0002 [#1] PREEMPT
-[    8.111655][    T1] CPU: 0 PID: 1 Comm: swapper Tainted: G S                 6.5.0-rc6-00120-g86a50b56c5a0 #5
-[    8.114034][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-[    8.114778][    T1] EIP: vhci_setup+0x22/0x60
-[    8.114778][    T1] Code: 90 90 90 90 90 90 90 90 55 89 e5 57 56 89 c6 8b 00 8b 40 3c 8b 38 89 f0 e8 8b d8 f5 ff 31 c9 85 c0 0f 94 c1 8d 86 18 02 00 00 <89> 44 8f
- 28 89 be 18 02 00 00 8d 04 09 83 c0 03 c1 e1 05 83 c1 20
-[    8.114778][    T1] EAX: ebb42218 EBX: ffffffea ECX: 00000000 EDX: 00000000
-[    8.114778][    T1] ESI: ebb42000 EDI: 00000000 EBP: c55f1a90 ESP: c55f1a88
-[    8.114778][    T1] DS: 007b ES: 007b FS: 0000 GS: 0000 SS: 0068 EFLAGS: 00010202
-[    8.114778][    T1] CR0: 80050033 CR2: 00000028 CR3: 04782000 CR4: 00040690
-[    8.114778][    T1] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 00000000
-[    8.114778][    T1] DR6: fffe0ff0 DR7: 00000400
-[    8.114778][    T1] Call Trace:
-[    8.114778][    T1]  ? __die_body+0x64/0xb0
-[    8.114778][    T1]  ? __die+0x6b/0x80
-[    8.114778][    T1]  ? page_fault_oops+0x2bd/0x2f0
-[    8.114778][    T1]  ? kernelmode_fixup_or_oops+0xab/0xc0
-[    8.114778][    T1]  ? __bad_area_nosemaphore+0x40/0x1b0
-[    8.114778][    T1]  ? bad_area_nosemaphore+0xd/0x20
-[    8.114778][    T1]  ? do_user_addr_fault+0x382/0x410
-[    8.114778][    T1]  ? exc_page_fault+0x4f/0xe0
-[    8.114778][    T1]  ? pvclock_clocksource_read_nowd+0x170/0x170
-[    8.114778][    T1]  ? handle_exception+0x14c/0x14c
-[    8.114778][    T1]  ? pvclock_clocksource_read_nowd+0x170/0x170
-[    8.114778][    T1]  ? vhci_setup+0x22/0x60
-[    8.114778][    T1]  ? pvclock_clocksource_read_nowd+0x170/0x170
-[    8.114778][    T1]  ? vhci_setup+0x22/0x60
-[    8.114778][    T1]  usb_add_hcd+0x240/0x490
-[    8.114778][    T1]  vhci_hcd_probe+0x79/0x1b0
-[    8.114778][    T1]  platform_probe+0x5a/0x80
-[    8.114778][    T1]  really_probe+0x14d/0x3b0
-[    8.114778][    T1]  __driver_probe_device+0x78/0x180
-[    8.114778][    T1]  driver_probe_device+0x19/0xf0
-[    8.114778][    T1]  __device_attach_driver+0xb5/0x110
-[    8.114778][    T1]  bus_for_each_drv+0xe0/0x120
-[    8.114778][    T1]  ? __pm_runtime_resume+0x66/0x80
-[    8.114778][    T1]  __device_attach+0xae/0x170
-[    8.114778][    T1]  ? coredump_store+0x40/0x40
-[    8.114778][    T1]  device_initial_probe+0xf/0x20
-[    8.114778][    T1]  bus_probe_device+0x7b/0xd0
-[    8.114778][    T1]  device_add+0x2a5/0x4b0
-[    8.114778][    T1]  ? dev_set_name+0x15/0x20
-[    8.114778][    T1]  platform_device_add+0x7b/0x230
-[    8.114778][    T1]  platform_device_register_full+0x1a8/0x1f0
-[    8.114778][    T1]  vhci_hcd_init+0xce/0x150
-[    8.114778][    T1]  do_one_initcall+0x193/0x310
-[    8.114778][    T1]  ? usbip_core_init+0x10/0x10
-[    8.114778][    T1]  do_initcall_level+0x93/0xc0
-[    8.114778][    T1]  ? rest_init+0x170/0x170
-[    8.114778][    T1]  do_initcalls+0x36/0x70
-[    8.114778][    T1]  ? rest_init+0x170/0x170
-[    8.114778][    T1]  do_basic_setup+0x12/0x20
-[    8.114778][    T1]  kernel_init_freeable+0x63/0xb0
-[    8.114778][    T1]  kernel_init+0x12/0x190
-[    8.114778][    T1]  ret_from_fork+0x2c/0x40
-[    8.114778][    T1]  ret_from_fork_asm+0x12/0x20
-[    8.114778][    T1]  entry_INT80_32+0x10c/0x10c
-[    8.114778][    T1] Modules linked in:
-[    8.114778][    T1] CR2: 0000000000000028
-[    8.114778][    T1] ---[ end trace 0000000000000000 ]---
-[    8.114778][    T1] EIP: vhci_setup+0x22/0x60
-[    8.114778][    T1] Code: 90 90 90 90 90 90 90 90 55 89 e5 57 56 89 c6 8b 00 8b 40 3c 8b 38 89 f0 e8 8b d8 f5 ff 31 c9 85 c0 0f 94 c1 8d 86 18 02 00 00 <89> 44 8f
- 28 89 be 18 02 00 00 8d 04 09 83 c0 03 c1 e1 05 83 c1 20
-[    8.114778][    T1] EAX: ebb42218 EBX: ffffffea ECX: 00000000 EDX: 00000000
-[    8.114778][    T1] ESI: ebb42000 EDI: 00000000 EBP: c55f1a90 ESP: c55f1a88
-[    8.114778][    T1] DS: 007b ES: 007b FS: 0000 GS: 0000 SS: 0068 EFLAGS: 00010202
-[    8.114778][    T1] CR0: 80050033 CR2: 00000028 CR3: 04782000 CR4: 00040690
-[    8.114778][    T1] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 00000000
-[    8.114778][    T1] DR6: fffe0ff0 DR7: 00000400
-[    8.114778][    T1] Kernel panic - not syncing: Fatal exception
-[    8.114778][    T1] Kernel Offset: disabled
+kern  :err   : [  162.216391] CPU: 0 PID: 8 Comm: kworker/0:0H Not tainted 6.5.0-rc6-00947-gcfd54d37e5cd #1
+kern  :err   : [  162.225319] Workqueue: events_highpri intel_atomic_cleanup_work [i915]
+kern  :err   : [  162.232683] Call Trace:
+kern  :err   : [  162.235861]  <TASK>
+kern :err : [  162.238688] dump_stack_lvl (lib/dump_stack.c:107 (discriminator 1)) 
+kern :err : [  162.243085] print_address_description+0x2c/0x3a0 
+kern :err : [  162.249618] ? intel_wait_for_vblank_workers (drivers/gpu/drm/i915/display/intel_crtc.c:395 drivers/gpu/drm/i915/display/intel_crtc.c:447) i915
+kern :err : [  162.256370] print_report (mm/kasan/report.c:476) 
+kern :err : [  162.260681] ? kasan_addr_to_slab (mm/kasan/common.c:35) 
+kern :err : [  162.265515] ? intel_wait_for_vblank_workers (drivers/gpu/drm/i915/display/intel_crtc.c:395 drivers/gpu/drm/i915/display/intel_crtc.c:447) i915
+kern :err : [  162.272267] kasan_report (mm/kasan/report.c:590) 
+kern :err : [  162.276584] ? intel_wait_for_vblank_workers (drivers/gpu/drm/i915/display/intel_crtc.c:395 drivers/gpu/drm/i915/display/intel_crtc.c:447) i915
+kern :err : [  162.283336] intel_wait_for_vblank_workers (drivers/gpu/drm/i915/display/intel_crtc.c:395 drivers/gpu/drm/i915/display/intel_crtc.c:447) i915
+kern :err : [  162.289911] intel_atomic_cleanup_work (drivers/gpu/drm/i915/display/intel_display.c:6901) i915
+kern :err : [  162.296191] ? drm_dev_put (drivers/gpu/drm/drm_drv.c:827) drm
+kern :err : [  162.301672] process_one_work (kernel/workqueue.c:2605) 
+kern :err : [  162.306507] worker_thread (include/linux/list.h:292 kernel/workqueue.c:2752) 
+kern :err : [  162.311080] ? rescuer_thread (kernel/workqueue.c:2694) 
+kern :err : [  162.315828] kthread (kernel/kthread.c:389) 
+kern :err : [  162.319791] ? kthread_complete_and_exit (kernel/kthread.c:342) 
+kern :err : [  162.325323] ret_from_fork (arch/x86/kernel/process.c:151) 
+kern :err : [  162.329630] ? kthread_complete_and_exit (kernel/kthread.c:342) 
+kern :err : [  162.335181] ret_from_fork_asm (arch/x86/entry/entry_64.S:312) 
+kern  :err   : [  162.339840]  </TASK>
 
+kern  :err   : [  162.344980] Allocated by task 4201:
+kern :warn : [  162.349214] kasan_save_stack (mm/kasan/common.c:46) 
+kern :warn : [  162.353787] kasan_set_track (mm/kasan/common.c:52) 
+kern :warn : [  162.358270] __kasan_kmalloc (mm/kasan/common.c:374 mm/kasan/common.c:383) 
+kern :warn : [  162.362757] __kmalloc_node_track_caller (include/linux/kasan.h:196 mm/slab_common.c:985 mm/slab_common.c:1005) 
+kern :warn : [  162.368283] kmemdup (mm/util.c:131) 
+kern :warn : [  162.372075] intel_crtc_duplicate_state (include/linux/fortify-string.h:765 drivers/gpu/drm/i915/display/intel_atomic.c:242) i915
+kern :warn : [  162.378364] drm_atomic_get_crtc_state (drivers/gpu/drm/drm_atomic.c:363) drm
+kern :warn : [  162.384453] drm_atomic_get_plane_state (drivers/gpu/drm/drm_atomic.c:567) drm
+kern :warn : [  162.390622] drm_atomic_helper_update_plane (drivers/gpu/drm/drm_atomic_helper.c:3127) drm_kms_helper
+kern :warn : [  162.397997] drm_mode_cursor_universal (drivers/gpu/drm/drm_plane.c:1086) drm
+kern :warn : [  162.404086] drm_mode_cursor_common (drivers/gpu/drm/drm_plane.c:1172) drm
+kern :warn : [  162.409973] drm_mode_cursor_ioctl (drivers/gpu/drm/drm_plane.c:1188) drm
+kern :warn : [  162.415628] drm_ioctl_kernel (drivers/gpu/drm/drm_ioctl.c:795) drm
+kern :warn : [  162.420933] drm_ioctl (drivers/gpu/drm/drm_ioctl.c:893) drm
+kern :warn : [  162.425627] __x64_sys_ioctl (fs/ioctl.c:52 fs/ioctl.c:870 fs/ioctl.c:856 fs/ioctl.c:856) 
+kern :warn : [  162.430284] do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80) 
+kern :warn : [  162.434590] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120) 
+
+kern  :err   : [  162.442600] Freed by task 266:
+kern :warn : [  162.446384] kasan_save_stack (mm/kasan/common.c:46) 
+kern :warn : [  162.450957] kasan_set_track (mm/kasan/common.c:52) 
+kern :warn : [  162.455435] kasan_save_free_info (mm/kasan/generic.c:524) 
+kern :warn : [  162.460355] __kasan_slab_free (mm/kasan/common.c:238 mm/kasan/common.c:200 mm/kasan/common.c:244) 
+kern :warn : [  162.465185] __kmem_cache_free (mm/slub.c:1818 mm/slub.c:3801 mm/slub.c:3814) 
+kern :warn : [  162.470016] drm_atomic_state_default_clear (drivers/gpu/drm/drm_atomic.c:228) drm
+kern :warn : [  162.476541] intel_atomic_state_clear (drivers/gpu/drm/i915/display/intel_atomic.c:343) i915
+kern :warn : [  162.482512] __drm_atomic_state_free (drivers/gpu/drm/drm_atomic.c:313) drm
+kern :warn : [  162.488342] intel_atomic_helper_free_state (drivers/gpu/drm/i915/display/intel_display.c:6850) i915
+kern :warn : [  162.494833] process_one_work (kernel/workqueue.c:2605) 
+kern :warn : [  162.499668] worker_thread (include/linux/list.h:292 kernel/workqueue.c:2752) 
+kern :warn : [  162.504244] kthread (kernel/kthread.c:389) 
+kern :warn : [  162.508205] ret_from_fork (arch/x86/kernel/process.c:151) 
+kern :warn : [  162.512521] ret_from_fork_asm (arch/x86/entry/entry_64.S:312) 
+
+kern  :err   : [  162.519398] The buggy address belongs to the object at ffff88811d8dc000
+which belongs to the cache kmalloc-8k of size 8192
+kern  :err   : [  162.533366] The buggy address is located 336 bytes inside of
+freed 8192-byte region [ffff88811d8dc000, ffff88811d8de000)
+
+kern  :err   : [  162.549380] The buggy address belongs to the physical page:
+kern  :warn  : [  162.555691] page:00000000f71065d9 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x11d8d8
+kern  :warn  : [  162.565835] head:00000000f71065d9 order:3 entire_mapcount:0 nr_pages_mapped:0 pincount:0
+kern  :warn  : [  162.574675] flags: 0x17ffffc0010200(slab|head|node=0|zone=2|lastcpupid=0x1fffff)
+kern  :warn  : [  162.582819] page_type: 0xffffffff()
+kern  :warn  : [  162.587049] raw: 0017ffffc0010200 ffff88810c843180 dead000000000122 0000000000000000
+kern  :warn  : [  162.595537] raw: 0000000000000000 0000000080020002 00000001ffffffff 0000000000000000
+kern  :warn  : [  162.604024] page dumped because: kasan: bad access detected
+
+kern  :err   : [  162.612551] Memory state around the buggy address:
+kern  :err   : [  162.618082]  ffff88811d8dc000: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+kern  :err   : [  162.626051]  ffff88811d8dc080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+kern  :err   : [  162.634018] >ffff88811d8dc100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+kern  :err   : [  162.641981]                                                  ^
+kern  :err   : [  162.648551]  ffff88811d8dc180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+kern  :err   : [  162.656516]  ffff88811d8dc200: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+kern  :err   : [  162.664482] ==================================================================
+kern  :warn  : [  162.672474] Disabling lock debugging due to kernel taint
+user  :info  : [  183.845750] [IGT] kms_cursor_legacy: starting dynamic subtest pipe-B
+user  :notice: [  183.847199] Total updates 140241 (median of 20 processes is 6978.00)
+
+user  :notice: [  183.862752] Dynamic subtest pipe-A: SUCCESS (21.683s)
+
+user  :notice: [  183.871250] Starting dynamic subtest: pipe-B
+
+user  :info  : [  205.481554] [IGT] kms_cursor_legacy: starting dynamic subtest pipe-C
+user  :notice: [  205.483064] Total updates 146561 (median of 20 processes is 7323.50)
+
+user  :notice: [  205.498578] Dynamic subtest pipe-B: SUCCESS (21.629s)
+
+user  :notice: [  205.507030] Starting dynamic subtest: pipe-C
+
+user  :info  : [  227.139947] [IGT] kms_cursor_legacy: starting dynamic subtest all-pipes
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20230818/202308181658.e33ac42a-oliver.sang@intel.com
+https://download.01.org/0day-ci/archive/20230818/202308181627.2fec1157-oliver.sang@intel.com
 
 
 
