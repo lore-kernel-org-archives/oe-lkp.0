@@ -1,88 +1,85 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C55D375
-	for <oe-lkp@lists.linux.dev>; Fri, 18 Aug 2023 01:09:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4221398
+	for <oe-lkp@lists.linux.dev>; Fri, 18 Aug 2023 01:55:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1692320988; x=1723856988;
+  t=1692323714; x=1723859714;
   h=date:from:to:cc:subject:message-id:references:
    in-reply-to:mime-version;
-  bh=3EauyMaaeO80atCeYIwKxpQYc/uMEyV8NFZjzPNGMKQ=;
-  b=CtPorsqWJ6bs9iI4nkzfwSWRIyf/FoxCs+jRmoCJHtu3ARVKMPYp8vx1
-   COSulSBLwYTSmatCG4nH50cQYJvnJ09wdV75Rib//6xedtU44oY9rIog7
-   uWAk/bvh8f73GX10Ed2ptp4e7XQSHO4VynGMWQ5XVa1kMVkQJXadIBZVM
-   4B8KKT1njnKcSRzHLQJPomLSV5om6XN50wEw3nlXiOWbveni9berbAiS8
-   udwfOq/uj+mVXzt1dwFJdfgFRTOfFZx1LjtT8s5irRaYiVTeMgTnrJB3s
-   idBGkCBSa9raHMRy65GwNRSiriUvkAJsHsERAP1LnWMoA+09wzwKSPmFE
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10805"; a="376737327"
+  bh=z/ochIVUafwiZPN1bzFkAs/EOKyEsbzWFR16jpVsBSk=;
+  b=nhypNmlyaUoBN2gpE4p6H8p2VkVi1p6w/SXO4ktQI8QccD7EdXLYD96h
+   JQkIrqe7pzaq2fBPIS9hU3PxdAbgMZeF0PnFWcBqQsW5QjIclIbJiVmIH
+   3bIl2IanbmqDGYYQEidkxRBcmDIqmjtueZK2pO0Ow4lBBt8ZB/KgMHG/i
+   z5VZ+s8v6JGWmyma5JmYIQnevZ6bUrU5v3fx8+Q9SwA65MR2KwnXkmH4h
+   4KfnPPvi9AE9IhfAXO64T84NnBRha+mqi6zsEV9ch2enmOyiEhP1YbODG
+   NrMkBcajEOZ98wOtSLeRYk8G+Bl/DVpTwk9fZgGEClEUdsP2JBDp2OT/+
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10805"; a="372971698"
 X-IronPort-AV: E=Sophos;i="6.01,181,1684825200"; 
-   d="scan'208";a="376737327"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2023 18:09:47 -0700
+   d="scan'208";a="372971698"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2023 18:55:13 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10805"; a="981431536"
-X-IronPort-AV: E=Sophos;i="6.01,181,1684825200"; 
-   d="scan'208";a="981431536"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmsmga006.fm.intel.com with ESMTP; 17 Aug 2023 18:09:47 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+X-IronPort-AV: E=Sophos;i="6.01,202,1684825200"; 
+   d="scan'208";a="878476822"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by fmsmga001.fm.intel.com with ESMTP; 17 Aug 2023 18:55:17 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Thu, 17 Aug 2023 18:09:47 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ 15.1.2507.27; Thu, 17 Aug 2023 18:55:13 -0700
+Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27 via Frontend Transport; Thu, 17 Aug 2023 18:09:47 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.169)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ 15.1.2507.27; Thu, 17 Aug 2023 18:55:12 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27 via Frontend Transport; Thu, 17 Aug 2023 18:55:12 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.174)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.27; Thu, 17 Aug 2023 18:09:46 -0700
+ 15.1.2507.27; Thu, 17 Aug 2023 18:55:12 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eTFrkn3dqD/5p3/ZRZhN2t05S4Amiaxchqged/w5+9uxY4sXs2HbUT7pWOvWk/iQTTHrf6SZG6mGscMuN+r44QoGefPgrX/65uKQVVR4D5IDB1rzeOO1QTUugmebQSYq7XJHUxCmmUUM807Gp+RUuMGTobjtx2WGXM+OOZnxk96rsSIy1e6KpcJNdgsD5qq8ZNirzkFWlx0eAZIeASxuNJThfEBFD6sn3oWEa5ZO5lLiq+hLuWPpZ5CTU3GpoqQOCR/txwxRxyQDNZ8tmUu+U/90aBf6U9G1Vi4OccBV2S7SwCOPwffqZ2oj28ODO/MaFkXlO8qsPg8YiGNorcHtQQ==
+ b=GEQoorl3aqBxWOPMh8z5yffhyHimVsRnlYbUUAeLmzOXx2CP09ECvoixeSlPB2h0qhL7MVTjZx92twvOCH6D/tUEhOhgtpeaPhQeXcFGb9pGIkBvulmZepUhMw0QVzkMX2/9WHopRNj8i3OZjCh+giRd9wDYnfIEuo+ZwxoSbi/nOdf/KRX8uiZwv2pSIrZYSPUkrQ24mLGAVWdLBlz4/LoGhF2MrbElkkYreYZ7O+HoXVH1CnPwpyRjscCI8ZNTb1ByuqVslWID6T5BqdkymUyb12evUfFqnzmCWX9bkI1J7BgoJj4j4mR1i1hfUemtVYr5ptxYIrsDrBdBKaj5Nw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GAP+n09ao/+8cz0JoiyQN/8HJ168tr39FZzdIy6QWeM=;
- b=RA83ejQaaasZtvnC+1ba4F41C9Jt1fzM5dQoqFlF79bpdwGtgMWh+O2NpCMEPc9QVo551K/0VzZEb5FEc5CwFKbdPtxe6tZZexmAnCX95eHTG5KI5EZQIm5XZTNWNWuVBNtJRuxarhPNKFZ4wgBwRlXYjfKyHneEOQtsmbhZ1+8AjRhZ5IzYX/NTKInKYC3zWS/8lRFoCiKxR9eefQsYh2Dafts+MmI1BxNCPk/VxfyJQmX/q5fpK2AtuKWnvX4vTgsHqvyCG2JOaYoGC8gveFdDkvH4xYRrr9d17loAyTR+dq01aoEgAr+6UCH/dFp2glRK34OvB0/wHpE08VyUdw==
+ bh=SAjV7p4kKykL2o5dRxKt0n7GV3n4NlBi3Uo5hDIi4uM=;
+ b=LP16EnHhEjPVmSEOJ9DH3h4qTFrXlZrhkvRPxqUU+EsG9ZxpOSFzW+UVR7BH1TPlq6AF3ovDO7/9TifTS7GcOgnBYASDBvE6fd+J8E7klIUWLeIYtJ2jhRWRdMl5hosJ+fIg2KCzB8NjQHr43Y3/kGCWf1JBmBcYxMcT3Pu+ryhcxrc+YsCJwmAiFb6iDAvFzbqh9v48jxU/Ka5vUQoGxsleANGlbrRjr/H5CH+Rzn2/iw6CAJkR3t/aS0PDcu7yPqN6/sLSaYrbqNB8B6nsJtx5awzU6stxAd9rvr5OjaM4RoZzA5Cn+v1XZisgJBLKqd+ZlykJG9qtcRJ7dgOnUQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from MN0PR11MB6206.namprd11.prod.outlook.com (2603:10b6:208:3c6::8)
- by IA1PR11MB7856.namprd11.prod.outlook.com (2603:10b6:208:3f5::10) with
+ by SA1PR11MB6808.namprd11.prod.outlook.com (2603:10b6:806:24f::10) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6678.31; Fri, 18 Aug
- 2023 01:09:44 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6678.30; Fri, 18 Aug
+ 2023 01:55:11 +0000
 Received: from MN0PR11MB6206.namprd11.prod.outlook.com
  ([fe80::d9d9:1535:1180:603a]) by MN0PR11MB6206.namprd11.prod.outlook.com
  ([fe80::d9d9:1535:1180:603a%2]) with mapi id 15.20.6678.031; Fri, 18 Aug 2023
- 01:09:43 +0000
-Date: Fri, 18 Aug 2023 09:09:29 +0800
+ 01:55:11 +0000
+Date: Fri, 18 Aug 2023 09:54:54 +0800
 From: Chen Yu <yu.c.chen@intel.com>
 To: Peter Zijlstra <peterz@infradead.org>
-CC: Mike Galbraith <umgwanakikbuti@gmail.com>, kernel test robot
-	<oliver.sang@intel.com>, <oe-lkp@lists.linux.dev>, <lkp@intel.com>,
-	<linux-kernel@vger.kernel.org>, <x86@kernel.org>, Ingo Molnar
-	<mingo@kernel.org>
+CC: kernel test robot <oliver.sang@intel.com>, <oe-lkp@lists.linux.dev>,
+	<lkp@intel.com>, <linux-kernel@vger.kernel.org>, <x86@kernel.org>, "Ingo
+ Molnar" <mingo@kernel.org>, Mike Galbraith <umgwanakikbuti@gmail.com>
 Subject: Re: [tip:sched/eevdf] [sched/fair]  e0c2ff903c:
  phoronix-test-suite.blogbench.Write.final_score -34.8% regression
-Message-ID: <ZN7EyZ+BLfjEJTWJ@chenyu5-mobl2>
+Message-ID: <ZN7Pbrb3GJyJ+hev@chenyu5-mobl2>
 References: <202308101628.7af4631a-oliver.sang@intel.com>
  <ZNWKuccyWnS3UJjK@chenyu5-mobl2.bbrouter>
- <ZNWgAeN/EVS/vOLi@chenyu5-mobl2.bbrouter>
- <20230814132935.GK776869@hirez.programming.kicks-ass.net>
- <bd96d883d0d1575ebbee4323f4396596adb0ad09.camel@gmail.com>
- <20230816123716.GI980931@hirez.programming.kicks-ass.net>
- <20230816134059.GC982867@hirez.programming.kicks-ass.net>
+ <20230814124914.GJ776869@hirez.programming.kicks-ass.net>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20230816134059.GC982867@hirez.programming.kicks-ass.net>
-X-ClientProxiedBy: SI2PR04CA0016.apcprd04.prod.outlook.com
- (2603:1096:4:197::7) To MN0PR11MB6206.namprd11.prod.outlook.com
- (2603:10b6:208:3c6::8)
+In-Reply-To: <20230814124914.GJ776869@hirez.programming.kicks-ass.net>
+X-ClientProxiedBy: SG2P153CA0033.APCP153.PROD.OUTLOOK.COM (2603:1096:4:c7::20)
+ To MN0PR11MB6206.namprd11.prod.outlook.com (2603:10b6:208:3c6::8)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -90,172 +87,155 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MN0PR11MB6206:EE_|IA1PR11MB7856:EE_
-X-MS-Office365-Filtering-Correlation-Id: d8ede29b-a2ab-4124-c33f-08db9f87ce7c
+X-MS-TrafficTypeDiagnostic: MN0PR11MB6206:EE_|SA1PR11MB6808:EE_
+X-MS-Office365-Filtering-Correlation-Id: 07709976-e7ea-41b5-16d2-08db9f8e27f4
 X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 9Zvsv2IIrG5QlwGBst+YtkPCccyUBUQvWLU43VWnZEq8X0paD23OgH21vhG7lYn7pIzDP2uEAzaTfsQV0b1hEPJFwSDcgJvNeOb+TcZQDd8HJxWZxzxSCB7rhuQyGh8h8XinU17FK99SPhBBZDJwOyabWf63uOAAro8pElXvFbzzlFrqre+A1n8e7E1sMFMfLv4PmvHAOmF6/Pnp/VSQUJoQHN36KQkC06OvHfj8ppCZNc4Ff2OgDy0Hna3D0IAVHyJpysm+nHL1V9lSfiZRsmURmbe4+P02AZLjkHYVuJlMCvq/0UhW6AudkC9KO/ATLu+a3BE3IPpns0ZZXqDxIRBjw122h8ffWReo/B6aDGqGQQLeogTDiA9w8KI3wqQu5L/knKYTH0bqe3beUj7Z3vcSaHjl6kYyRV6g8gplwPsbPnJprpmImUFxp/Dh35XfTum6PhyhenE98r6DOTe1Jr7eFzMtohf0dchYZL7TvfXxBo9rU9hDSD1gU33RP8C/KvcOaTXsNjZildrGStEWLAOI3ljphI6WI7JEoI9B6siUJ9cbpN0ykuY0hc+IPD+jt38FC3p1l7d5Dr192x5g5UgnsoYMi5awb2gHSxKkmAs=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR11MB6206.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(7916004)(346002)(39860400002)(396003)(136003)(366004)(376002)(451199024)(186009)(1800799009)(86362001)(33716001)(82960400001)(38100700002)(5660300002)(66946007)(66556008)(66476007)(478600001)(6666004)(6486002)(316002)(53546011)(6916009)(6506007)(54906003)(6512007)(9686003)(26005)(8676002)(4326008)(8936002)(41300700001)(2906002)(83380400001)(67856001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: hqTcmxFL1xs5xoMT3tJPRmQ1GbjW3pVTZffuz4yRyc1fr2OwPI3PMlbtQ+zNJWWgmY/i/7AnqQrO1uDfAQxLBmW8F98bHtAeqMaWgHjK7eXAxaK1rb1bDQDmI5hyJ0KHReqkQJJjFVX7WR8NZfIjNzzw6quqffccrGZSpipku0KriyEL0p+vgxdVZOXfy0QhSvJFP/dHfDe4kdcjLy6zdQq35EPxFahDdRkNSkzFG8OiIUc8W0s0aPh6iUvJt12/+2TyMs3APRMe5K4iV8wG5R1OBoe3APNxSpWv1qGB30tqbYjqfMjhfxT0nBVCLxYEuZpVrRtxOCquuu3uMWHhf/OyTng0HA7ngURPP4Ug4bSYUJXtbQnQ6j1/WY/A9RgwRuTmpi5RKXBuyLNgz3eBHf9p7TggC++kiDbiJsPVEVI/sozOmsD14Xh8aDCydMQJ6RahbHX1a2YmVcBv71tZw1RXwaLqrjXZDC7QpEzpFnpq34PiCgS/5S/EQnBbBZNu89ASXbJB3lo4S3kZsYoR/QY8m+J/2UHNC1V8jbexFOVygLK2vvHvfjJ3r+JFI1LYga+aiScBJg6OdVafcEkNfA00k/ZJNMlmzeCK+fz3rrI=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR11MB6206.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(7916004)(136003)(396003)(366004)(376002)(346002)(39860400002)(186009)(451199024)(1800799009)(33716001)(86362001)(6916009)(4326008)(5660300002)(8936002)(8676002)(83380400001)(2906002)(41300700001)(6666004)(6506007)(9686003)(6486002)(53546011)(26005)(6512007)(966005)(66946007)(478600001)(316002)(54906003)(38100700002)(82960400001)(66556008)(66476007)(67856001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Zof0Ywxat0UqOSKM9UGgxVHkDVkI5thJMz8hQrCL/5PQb+cyrT4pgxjp81gM?=
- =?us-ascii?Q?P7RXFC5xGmHNvSUujWmjZ4J0+/NDOSxlLzsXakwsOyvmXZjCvzzw34raehrE?=
- =?us-ascii?Q?q4fwVniaRsBa7nnBqBIkdcOBQblCrkhBVEmC0Tf2Kw0/rjHO++aG3+5Bd9FK?=
- =?us-ascii?Q?FTAwTDDkRNU+j63re3b2WJtvKRabJI+GsgYyphD+w0IGGi4rRkcb+yIrhWEv?=
- =?us-ascii?Q?zENll1himODQjggPYdO/+MVKZFc+evFvjfJnoonJrPUasHW7UCrmz4dzbmgJ?=
- =?us-ascii?Q?EGNgqb6EFYZyCtJZhyhvnRvFZWyePkkrx3d6uJj9bET9eatxNPjDOFCUUxgp?=
- =?us-ascii?Q?RogsXaPQbY3o8OanWHWOq3NUYcS4rGuVBsM+77XoP+mBZyEj+PWyTOzK7gfj?=
- =?us-ascii?Q?gWObvyWhcO7CCOlC3xFuJQoBzKb38IEs0R8lWmKKFkignMigjieG5g9E84sI?=
- =?us-ascii?Q?aByo9LeXOEIb7sjOF4Nw2EmQEajcj/NK+/cmfs0WwtsV5RB3uPGQIhBiYaDf?=
- =?us-ascii?Q?Alx090piBRIRxlSAgR+5GCPnTmOyYiuVVMJs4rXCxO0dMarXDKZw5pBYHlXy?=
- =?us-ascii?Q?mAroAYCRfrB3uzhQkh6CaNkMwFDn1vTvOKuA93AJh3v1Aks7LhPMrguDFDv3?=
- =?us-ascii?Q?+evSheg1DWystfQk8MP+wmMyW3Pv62ejgpEnvWj4j6N0UMcpog4XSQJ27Bqa?=
- =?us-ascii?Q?hzB7R3Q/IjMPXpOBW7keNBa6QuXolhAW5lGbnFpRpqfVRiDHH4MV6bE0lRLM?=
- =?us-ascii?Q?uvT7FjMfaruOcLvv//nuodifxRtuHp8s4knoVOv3Oo1GT/UbY4KPGo4ILvr2?=
- =?us-ascii?Q?dFWhDdLdezB0rR+a5Hoz0/i2pfFZUVkTUu+Tt/qpggd3UqNKFbRFnhhaNozM?=
- =?us-ascii?Q?3o+t07djYGKiUImJo8wUkMvO60t0nnSilVChsNNQdYPy0XYmNzso2VtLIF23?=
- =?us-ascii?Q?+TSHoag8f3NbfgsDBF6yb/Zpa1nB8J5HMl4IBLa/NWzXql7PcVv1KF9IStEk?=
- =?us-ascii?Q?spoSM3V5tR1UEGdxZz89wK+pEMmcbFQi5QcADPBXrEdqRwxE0PrnIfZN6gC/?=
- =?us-ascii?Q?/zzylTMU16CJ+QsPr2+ujGwOx/Zig688Nb58jBZrNW8bXDh2wpOO/Nq8k0Ne?=
- =?us-ascii?Q?wicx3R0m3ZL8Y376fgT2YFGEQ+Qf/iiO6bP1UTKGaRdQpfpa/EkVmqRCJ0rU?=
- =?us-ascii?Q?jMrxpFP05mkaJWrCFPZAOl54dY9d42Ar5qQf9WdTgAoQY0YLurrlm898EKM3?=
- =?us-ascii?Q?QRtYUDF7YmfG5zd+pQvBsrq3nCYfd5eyBWi47NFVotknhyDqAtfaipn5O1Qp?=
- =?us-ascii?Q?VPAAussP/9qa+TqVDQ3BOY1amEU/+WDPSuxqboIXnMMiP3GLC3QUXP6btxqi?=
- =?us-ascii?Q?yLmK+RYNtZF9Bw4Xqf26QTL42CIBuPV3MSkHjJ8EyVXuzop6HWoNZEekX61Z?=
- =?us-ascii?Q?rJsPZ5+4blKL0aRKvpssv1EPHuDwUi4ZphG+mxrK+nbg4tkLpfFRTSsftuKN?=
- =?us-ascii?Q?LM0v4mAX9jkM4b66qRVgFIBtKtsJIJk0Ec6bgyVSCSj2z4XaFPEwuCIah8OU?=
- =?us-ascii?Q?ckHjZibevoxmRHgGz2Ffppcwi2MAWKUpzYjyLsFz?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: d8ede29b-a2ab-4124-c33f-08db9f87ce7c
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?i49gMiq6wfd00MBpT9932vOE3Tj/GIRSQprG97NW3unN4csekjk3TTQQw4oP?=
+ =?us-ascii?Q?KvlRrEENG3VpwFqHUk1yDSp1LrPD74ouL7A1jGdkaRNP1mOtw94B8EiW8R62?=
+ =?us-ascii?Q?4ceM4rFnOx8+b+dMMQDcwV8eG7TnaitSSa9QSx+Hw2BgK3YqXvNxq7bpxBlX?=
+ =?us-ascii?Q?oFJSDvqEPd1JFMqH4IbqsrBBtUav6ohNiO5ScfKB1MAnyZItjJ0qgbAHZYpe?=
+ =?us-ascii?Q?EFo9VC1PwqTslcBTOZH1erZtry4Nd1xI/BnxEpT1OqInJWDi7vl4fheYtxEv?=
+ =?us-ascii?Q?ypm7Oqk7NaXFxyt4Ih2M7jR1OrTPf+WsNTv2MfEG3ELP17d7LGszNmXGnlDT?=
+ =?us-ascii?Q?gUmgaHJEW/3sWuw5+u3KVK9nGBICGLIfw5el70W8i+NXCEoE3OJKoYSZXkbu?=
+ =?us-ascii?Q?ThOyZxfuaheiV8XFi5uSSPKf3fSBDtxgWJ7scArOUrB0UPzSJuFjhV0eWkJV?=
+ =?us-ascii?Q?8J1nRXSNIfp/1RxFKnhygUZbUXEbIa53XIYlwnTKo7GzzQTr5NhkxVb/CKAa?=
+ =?us-ascii?Q?Sf3l9YaSKQfay/R9TQfYc/tnKqYzK/3YAxfuvZYIJ8HXx0XwlSgQe8eTfOqL?=
+ =?us-ascii?Q?8zfVS73yHIv1dY0nwra2uGIXulYTT3cMqQqm8UQCp1X4zTIodOLkrco/bRr9?=
+ =?us-ascii?Q?i8cQTgoyiorJtvnOUYMRLqKhJVebJZFXKWV3HEkW2TEmPNLKWifSA8kKe7db?=
+ =?us-ascii?Q?bvbRQopDLGKmy2T9MK+soChcdO4VZJuhYir7zvlJtuRVMp/30R4ctB/W6YpX?=
+ =?us-ascii?Q?sa07jHNqnvPk+xK88eetmPkXpA7rtzxLTHzYe2yWkC9hV4OytfSsIvJh0xVK?=
+ =?us-ascii?Q?h+Qa8lME0gkDD8A4f0XuVDU5y4I+nN2v+KNwZgRV/4hUKov6GwZvfgxDVJnl?=
+ =?us-ascii?Q?U/qU/KGiBaemwuoDl6nJcjRkmoHLVsBf99HcGPQSluXVLbYB0B0FDXSBZenT?=
+ =?us-ascii?Q?KMjRwnjSFt0r1mYsz5Apmz3Y5lb+63f5RfO0xB2nawqTXq3ACes43IdC7gkj?=
+ =?us-ascii?Q?VNog6epKKIYDYhW3075Khc7/El0iaFsxi06/Z7toMq7PnX6NAwwPT1Xr9LFw?=
+ =?us-ascii?Q?2tOIIb95zt5EiTPXSb5Aq0XQbtX8/pERMG0PS+pmQUuLAIpDGI7lX3hy2aUy?=
+ =?us-ascii?Q?NZzA34dv6ZVJEJCQujwP/i7ZVCdYsu9gCD/2Vyt2/qdgMLmKAXwKw1G6EpaD?=
+ =?us-ascii?Q?uZBmFNL2aJ5iaaLE+X+OQoTxTjKYDhf9Qlg/SEB0CZfeS/9F8qqNzx48x5ZF?=
+ =?us-ascii?Q?ZcDNpJFoaJIUX+u0vIn07CZliaQVJ1XfecvZW2awl+dvyzEoNthJLxZXUcJA?=
+ =?us-ascii?Q?HeB70+ae66ynnKQgTvecsRWAh/0g0ZNKOJAZLmyw2F7VIH2OOhz3CIYIprjW?=
+ =?us-ascii?Q?7gTlU7elXRbrW7omwbTxA7uam+ylt7ZxT8IDbAx1ujXtjW6cYzUU+gBB2PvY?=
+ =?us-ascii?Q?3hjwrqhEDCsX569Cf94aiEtZ671BOrDwCb7YOzt0lr2yzSSm/15+1Oed5yMD?=
+ =?us-ascii?Q?szfXVp/9ZT8ccdCmc3ufZKOQkFDR3MEGu97JC6+VF6Oe2yvs500ZhgGGIEHB?=
+ =?us-ascii?Q?IkSnAR1bbp1TsN2cKJpYeEutyo/ld08qTyxLorSi?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 07709976-e7ea-41b5-16d2-08db9f8e27f4
 X-MS-Exchange-CrossTenant-AuthSource: MN0PR11MB6206.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2023 01:09:43.8908
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2023 01:55:10.9324
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: A0GnB/6cjVuctSbLrXTHLEO3IU7cTUIUq4qMTVp4/z6Bn8PfwjlV+NpIiERSLwKNXNdSHLJBjLvHzeuYndVKLA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB7856
+X-MS-Exchange-CrossTenant-UserPrincipalName: rE3pBkD+CstSZfiqrJdgQk/sU/ggsFV9WDYRRIsbrN61LHuptvCQBdJwh15GZNA+X8z3bl5dv++jtaWchpDlOA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR11MB6808
 X-OriginatorOrg: intel.com
 
-On 2023-08-16 at 15:40:59 +0200, Peter Zijlstra wrote:
-> On Wed, Aug 16, 2023 at 02:37:16PM +0200, Peter Zijlstra wrote:
-> > On Mon, Aug 14, 2023 at 08:32:55PM +0200, Mike Galbraith wrote:
-> > 
-> > > --- a/kernel/sched/fair.c
-> > > +++ b/kernel/sched/fair.c
-> > > @@ -875,6 +875,12 @@ static struct sched_entity *pick_eevdf(s
-> > >  	if (curr && (!curr->on_rq || !entity_eligible(cfs_rq, curr)))
-> > >  		curr = NULL;
-> > >  
-> > > +	/*
-> > > +	 * Once selected, run the task to parity to avoid overscheduling.
-> > > +	 */
-> > > +	if (sched_feat(RUN_TO_PARITY) && curr)
-> > > +		return curr;
-> > > +
-> > >  	while (node) {
-> > >  		struct sched_entity *se = __node_2_se(node);
-> > >  
-> > 
-> > So I read it wrong last night... but I rather like this idea. But
-> > there's something missing. When curr starts a new slice it should
-> > probably do a full repick and not stick with it.
-> > 
-> > Let me poke at this a bit.. nice
+On 2023-08-14 at 14:49:14 +0200, Peter Zijlstra wrote:
+> On Fri, Aug 11, 2023 at 09:11:21AM +0800, Chen Yu wrote:
+> > On 2023-08-10 at 21:24:37 +0800, kernel test robot wrote:
+> > > 
+> > > 
+> > > Hello,
+> > > 
+> > > kernel test robot noticed a -34.8% regression of phoronix-test-suite.blogbench.Write.final_score on:
+> > > 
+> > > 
+> > > commit: e0c2ff903c320d3fd3c2c604dc401b3b7c0a1d13 ("sched/fair: Remove sched_feat(START_DEBIT)")
+> > > https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git sched/eevdf
+> > > 
+> > > testcase: phoronix-test-suite
+> > > test machine: 96 threads 2 sockets Intel(R) Xeon(R) Gold 6252 CPU @ 2.10GHz (Cascade Lake) with 512G memory
+> > > parameters:
+> > > 
+> > > 	test: blogbench-1.1.0
+> > > 	option_a: Write
+> > > 	cpufreq_governor: performance
+> > > 
 > 
-> Something like so.. it shouldn't matter much now, but might make a
-> difference once we start mixing different slice lengths.
+> Is this benchmark fork() heavy?
+>
+
+It is not fork() heavy. After created the threads, it becomes a
+loop to write to some files.
+ 
+> > It seems that commit e0c2ff903c32 removed the sched_feat(START_DEBIT) for initial
+> > task, but also increases the vruntime for non-initial task:
+> > Before the e0c2ff903c32, the vruntime for a enqueued task is:
+> > cfs_rq->min_vruntime
+> > After the e0c2ff903c32, the vruntime for a enqueued task is:
+> > avg_vruntime(cfs_rq) = \Sum v_i * w_i / W
+> >                      = \Sum v_i / nr_tasks
+> > which is usually higher than cfs_rq->min_vruntime, and we give less sleep bonus to
+> > the wakee, which could bring more or less impact to different workloads.
+> > But since later we switched to lag based placement, this new vruntime will minus
+> > lag, which could mitigate this problem. 
 > 
-> ---
->  kernel/sched/fair.c     | 12 ++++++++++++
->  kernel/sched/features.h |  1 +
->  2 files changed, 13 insertions(+)
+> Right.. but given this problem was bisected through the lag based
+> placement to this commit, I wondered about fork() / pthread_create().
 > 
-> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> index fe5be91c71c7..128a78f3f264 100644
-> --- a/kernel/sched/fair.c
-> +++ b/kernel/sched/fair.c
-> @@ -873,6 +873,13 @@ static struct sched_entity *pick_eevdf(struct cfs_rq *cfs_rq)
->  	if (curr && (!curr->on_rq || !entity_eligible(cfs_rq, curr)))
->  		curr = NULL;
->  
-> +	/*
-> +	 * Once selected, run a task until it either becomes non-eligible or
-> +	 * until it gets a new slice. See the HACK in set_next_entity().
-> +	 */
-> +	if (sched_feat(RUN_TO_PARITY) && curr && curr->vlag == curr->deadline)
-> +		return curr;
-> +
->  	while (node) {
->  		struct sched_entity *se = __node_2_se(node);
->  
-> @@ -5168,6 +5175,11 @@ set_next_entity(struct cfs_rq *cfs_rq, struct sched_entity *se)
->  		update_stats_wait_end_fair(cfs_rq, se);
->  		__dequeue_entity(cfs_rq, se);
->  		update_load_avg(cfs_rq, se, UPDATE_TG);
-> +		/*
-> +		 * HACK, stash a copy of deadline at the point of pick in vlag,
-> +		 * which isn't used until dequeue.
-> +		 */
-> +		se->vlag = se->deadline;
->  	}
->  
->  	update_stats_curr_start(cfs_rq, se);
-> diff --git a/kernel/sched/features.h b/kernel/sched/features.h
-> index 61bcbf5e46a4..f770168230ae 100644
-> --- a/kernel/sched/features.h
-> +++ b/kernel/sched/features.h
-> @@ -6,6 +6,7 @@
->   */
->  SCHED_FEAT(PLACE_LAG, true)
->  SCHED_FEAT(PLACE_DEADLINE_INITIAL, true)
-> +SCHED_FEAT(RUN_TO_PARITY, true)
->  
->  /*
->   * Prefer to schedule the task we woke last (assuming it failed
+> If this is indeed fork()/pthread_create() heavy, could you please see if
+> disabling PLACE_DEADLINE_INITIAL helps?
 
-I had a test on top of this, and it restored some performance:
+Tested with PLACE_DEADLINE_INITIAL disabled, no much difference is observed.
 
-uname -r
-6.5.0-rc2-mixed-slice-run-parity
+The baseline is Commit 246c6d7ab4d0 ("sched/eevdf: Better handle mixed slice length")
 
-echo NO_RUN_TO_PARITY > /sys/kernel/debug/sched/features 
-hackbench -g 112 -f 20 --threads -l 30000 -s 100
-Running in threaded mode with 112 groups using 40 file descriptors each (== 4480 tasks)
-Each sender will pass 30000 messages of 100 bytes
-Time: 118.220  <---
+PLACE_DEADLINE_I   NO_PLACE_DEADLINE_INITIAL
+---------------- ---------------------------
+       fail:runs  %reproduction    fail:runs
+           |             |             |
+      4166            -4.7%       3969        phoronix-test-suite.blogbench.Write.final_score
+    330.88            +4.4%     345.49        phoronix-test-suite.time.elapsed_time
+    330.88            +4.4%     345.49        phoronix-test-suite.time.elapsed_time.max
+    150672            -0.0%     150640        phoronix-test-suite.time.file_system_inputs
+  29947344            -2.2%   29277840        phoronix-test-suite.time.file_system_outputs
+   1954038            -0.3%    1947949        phoronix-test-suite.time.involuntary_context_switches
+    163.00            +1.2%     165.00        phoronix-test-suite.time.major_page_faults
+     32256            +0.7%      32472        phoronix-test-suite.time.maximum_resident_set_size
+    152607            -1.1%     150874        phoronix-test-suite.time.minor_page_faults
+      4096            +0.0%       4096        phoronix-test-suite.time.page_size
+      8169            -5.0%       7764        phoronix-test-suite.time.percent_of_cpu_this_job_got
+     26616            -0.9%      26374        phoronix-test-suite.time.system_time
+    416.59            +8.3%     450.98        phoronix-test-suite.time.user_time
+   1764497            -0.8%    1749992        phoronix-test-suite.time.voluntary_context_switches
 
 
-echo RUN_TO_PARITY > /sys/kernel/debug/sched/features 
-hackbench -g 112 -f 20 --threads -l 30000 -s 100
-Running in threaded mode with 112 groups using 40 file descriptors each (== 4480 tasks)
-Each sender will pass 30000 messages of 100 bytes
-Time: 100.873  <---
+blogbench.Write.final_score on different commits in eevdf branch:
 
-Then I switched to the first commit of EEVDF, that is to
-introduce the avg_runtime for cfs_rq(but not use it yet)
-It seems that there is still 50% performance to restored:
+sched/fair: Add cfs_rq::avg_vruntime
+5217
 
-uname -r
-6.5.0-rc2-add-cfs-avruntime
+sched/fair: Remove sched_feat(START_DEBIT)
+3223
 
-hackbench -g 112 -f 20 --threads -l 30000 -s 100
-Running in threaded mode with 112 groups using 40 file descriptors each (== 4480 tasks)
-Each sender will pass 30000 messages of 100 bytes
-Time: 52.569  <---
+sched/fair: Add lag based placement
+2736
 
-I'll collect the statistic to check what's remainning there.
+sched/fair: Implement an EEVDF-like scheduling policy
+3942
 
-[Besides, with the $subject benchmark, I tested it with PLACE_DEADLINE_INITIAL
-diabled, and it did not show much difference. I'll work with lkp
-to test it with RUN_TO_PARITY enabled.]
+sched/fair: Commit to EEVDF
+3957
+
+sched/eevdf: Better handle mixed slice length
+3836
+
+
+It seems that, "Remove sched_feat(START_DEBIT)" brings some impact
+and "Implement an EEVDF-like scheduling policy" restores some
+throughput. The score from "sched/fair: Add lag based placement"
+might not be reliable that, in place_entity() it scales the vlag
+based on se->load.weight directly, while
+"Implement an EEVDF-like scheduling policy" fixes that by using
+scale_load_down().
+
+I'll check what RUN_TO_PARITY brings to blogbench.
 
 thanks,
 Chenyu
-
-thanks,
-Chenyu
-
-
 
