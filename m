@@ -1,278 +1,321 @@
-Received: from mail-vk1-f178.google.com (mail-vk1-f178.google.com [209.85.221.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B029879F7
-	for <oe-lkp@lists.linux.dev>; Mon, 21 Aug 2023 15:12:10 +0000 (UTC)
-Received: by mail-vk1-f178.google.com with SMTP id 71dfb90a1353d-48d1412c5c5so458843e0c.3
-        for <oe-lkp@lists.linux.dev>; Mon, 21 Aug 2023 08:12:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1692630729; x=1693235529;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=T9B1WPg720c/UQRGbMagsKGeB4rOW/mtgVsxIYWp3tA=;
-        b=fxUNbRDhpRpYCBSAiHqbwRz6bNhKuhdlw2QIcmURMGxdCR1bZ+YSXFWUzOynutlUC6
-         WywY3pVpEXrT4OgvY/IhfHUFfSBPlOIK+PGVQESGGum2M1RPHF5yTH4MjwAT/kDVhQK4
-         6y44lbQG8h4Xcgwh6Csm+E6D8rge1E2WgXefVV7bqphsnvUDYUbCp4xuK2v4hUsrriTr
-         HXEKp93CbMWvVcOdnFJwE1ezTcPWr4o4F7SAePWC53OSe9JY4lj7uqT5Xi+pzCW6decP
-         LPho8MYH98fCJgCf4cNRlyMyI9V4IFhWuTEYlrwi+VnZtqI23CeivMIDIWoSvF6aAuuk
-         P6pw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1692630729; x=1693235529;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=T9B1WPg720c/UQRGbMagsKGeB4rOW/mtgVsxIYWp3tA=;
-        b=KNTllAPcLD9OR5/AvK7R9RCQ4zDHZkUVtGUzokwLV/J9Og0BXzxURgu1w7gEojvai6
-         Y3e5AIIseYNBUqXEVmp/INfdsXUILMQiBcWGyFrcquTzpyK/9awR1ytWTO6UgxxC8t60
-         zOxYcGElycSBEECQeFG//XqUd3WD9J6OtaZpAXdIr5/srBLrmp+60z8oYgLwsKlxI4/J
-         BurQWRJJt6gup+z8Uq0SiMprFg+MY5f7wwdY1ZTedOfpQ3kSQdsgPjrkxILzU4vuhD4B
-         p7WryGRHF3rns6A3nkb/kpqTJhSc3RggzLPtmUbCxmRFICkmFUyOFr8V3bjc7Dc3axA2
-         +bUA==
-X-Gm-Message-State: AOJu0YyTBv4w46WkdvrRz94NqEeThIMVpbwT0WTtzjucdqcR0+KcK1cX
-	2PEVDSFJGhbo1r1qPBgxPJm95EG9MBZ0qNFZLu4=
-X-Google-Smtp-Source: AGHT+IEZA1kBL3yVlQA44VcyLySARltBr4dHnEz7Xo7TabNRoZse8HXfYwb0zXbiKDqJgOQSGz0aoz8SS6dSpdDBE3o=
-X-Received: by 2002:a1f:66c1:0:b0:48f:87d6:f039 with SMTP id
- a184-20020a1f66c1000000b0048f87d6f039mr12785vkc.2.1692630728876; Mon, 21 Aug
- 2023 08:12:08 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84E9B63CC
+	for <oe-lkp@lists.linux.dev>; Tue, 22 Aug 2023 06:49:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1692686956; x=1724222956;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=t+AtwmgXjKWXDOlBYXmoWiMJtNK34R22GsozTamQWVI=;
+  b=PVCWsE1yxH2LzYeI9swV5/ZcnoKHg+XGd6ZpjJ6zrlUgMBj+NbKaiUmw
+   1IFDKYU8MbqnWxBt/b5WmuAlpix2WNKeIoiQblBfRHIQAEFSpSMnZrmPn
+   Z17IZY4DVDiSrzNpp1F2OHKfxCO0CcKGrEF0o3xWFd2FYKqioodvOg2ll
+   HIU8zkmyncB/+2U7o3Ju056f69lxKr8rtoYyX5GzOdr4poTPZDeJWR7uP
+   1XKloDyLI58xVKY1cL6GYiBwFc+P416THT3cMVEdU/d2EMpYu9BUNcmzF
+   vmXE0a7IZb1tev4RM6S7VyKUHe0/4xdumfLZWTi/xxuXjlBIrPfGU+iaQ
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10809"; a="354126870"
+X-IronPort-AV: E=Sophos;i="6.01,192,1684825200"; 
+   d="scan'208";a="354126870"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2023 23:49:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10809"; a="729696188"
+X-IronPort-AV: E=Sophos;i="6.01,192,1684825200"; 
+   d="scan'208";a="729696188"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by orsmga007.jf.intel.com with ESMTP; 21 Aug 2023 23:49:10 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27; Mon, 21 Aug 2023 23:49:10 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27; Mon, 21 Aug 2023 23:49:09 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27 via Frontend Transport; Mon, 21 Aug 2023 23:49:09 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.106)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.27; Mon, 21 Aug 2023 23:49:09 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kcIfgSx29ec0WbAFKwKB5AFAlYXtN3BF2q39eXywEYenpW7dE5/zdFMvVJwgGVntDe+MxgsqSpmtQUSuR7cliz0MEX1m/0Xtz48F5bplVcI2RDnskZPh5glveWkLt3sjQ31a18HxpPjMnXmWw6VBCe8bPXADn6x7bhHeROP/WAVQfAxc5sn6lpp8Kdxqp363rwMjogx/DJBU9hzecwl80wQxbw//Ezo4R2nfvPDpVoDDpDlweuDFOVFP6ZGIl1awpz912NUZ/vy6uOIwwlGtetC9Z+mXu0HZmkJO2kxwqzZZOoY54VcgjCPy/8S8YxrI+vvyceFpkLkGyC/A9KhOpw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=AZuM9WZGrKbBlyr9XXz9qu0GNN6ax/6W+nEaEmEXwkY=;
+ b=J87W6Arv9CbGC+fRQiWfeHbVLskHRAuFBny2Bj2Tc6mtXqdUOUsAyRW+JV05s088Gdv0B3ACguLCYBij98kAiGWSJ//y2Uu95UFGwIwMfrMuY+GuJvW3KU+u1pVVGPsGhkb1NT4465d7VvFNyjYObSQGeb6abDiBQg2F9hqY9fc8H6LZ7xUC4ayXDIRPBX/VrkJptuN+QDwrGWer4FlGWhA8DQcSQNwyOVH/iq6Q+q/NIF4j1FZGZpAPEBelp5K6exaANopxGISWIqgIWKj0OQcC9Ks4D7vOtBbNEQQfyUvzyae3vq7GJyb6DwJPyB9fBzUyOz2Z9zdw6dFcTpLjSA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from MN0PR11MB6206.namprd11.prod.outlook.com (2603:10b6:208:3c6::8)
+ by BL3PR11MB6433.namprd11.prod.outlook.com (2603:10b6:208:3b9::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.24; Tue, 22 Aug
+ 2023 06:49:07 +0000
+Received: from MN0PR11MB6206.namprd11.prod.outlook.com
+ ([fe80::d9d9:1535:1180:603a]) by MN0PR11MB6206.namprd11.prod.outlook.com
+ ([fe80::d9d9:1535:1180:603a%2]) with mapi id 15.20.6699.022; Tue, 22 Aug 2023
+ 06:49:06 +0000
+Date: Tue, 22 Aug 2023 14:48:50 +0800
+From: Chen Yu <yu.c.chen@intel.com>
+To: Peter Zijlstra <peterz@infradead.org>, Mike Galbraith
+	<umgwanakikbuti@gmail.com>
+CC: kernel test robot <oliver.sang@intel.com>, <oe-lkp@lists.linux.dev>,
+	<lkp@intel.com>, <linux-kernel@vger.kernel.org>, <x86@kernel.org>, "Ingo
+ Molnar" <mingo@kernel.org>, K Prateek Nayak <kprateek.nayak@amd.com>, "Feng
+ Tang" <feng.tang@intel.com>
+Subject: Re: [tip:sched/eevdf] [sched/fair]  e0c2ff903c:
+ phoronix-test-suite.blogbench.Write.final_score -34.8% regression
+Message-ID: <ZORaUsd+So+tnyMV@chenyu5-mobl2>
+References: <202308101628.7af4631a-oliver.sang@intel.com>
+ <ZNWKuccyWnS3UJjK@chenyu5-mobl2.bbrouter>
+ <ZNWgAeN/EVS/vOLi@chenyu5-mobl2.bbrouter>
+ <20230814132935.GK776869@hirez.programming.kicks-ass.net>
+ <bd96d883d0d1575ebbee4323f4396596adb0ad09.camel@gmail.com>
+ <20230816123716.GI980931@hirez.programming.kicks-ass.net>
+ <20230816134059.GC982867@hirez.programming.kicks-ass.net>
+ <ZN7EyZ+BLfjEJTWJ@chenyu5-mobl2>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <ZN7EyZ+BLfjEJTWJ@chenyu5-mobl2>
+X-ClientProxiedBy: KL1PR02CA0018.apcprd02.prod.outlook.com
+ (2603:1096:820:c::23) To MN0PR11MB6206.namprd11.prod.outlook.com
+ (2603:10b6:208:3c6::8)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230723190906.4082646-1-42.hyeyoo@gmail.com> <20230723190906.4082646-2-42.hyeyoo@gmail.com>
- <7a94996f-b6f0-c427-eb1e-126bcb97930c@suse.cz>
-In-Reply-To: <7a94996f-b6f0-c427-eb1e-126bcb97930c@suse.cz>
-From: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Date: Tue, 22 Aug 2023 00:11:56 +0900
-Message-ID: <CAB=+i9QmqJTCN4NZTxW3=hGLCN5hDH6wS2seFbZbU0A-PyMP0A@mail.gmail.com>
-Subject: Re: [RFC 1/2] Revert "mm, slub: change percpu partial accounting from
- objects to pages"
-To: Vlastimil Babka <vbabka@suse.cz>
-Cc: Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, 
-	Joonsoo Kim <iamjoonsoo.kim@lge.com>, David Rientjes <rientjes@google.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, Roman Gushchin <roman.gushchin@linux.dev>, 
-	Feng Tang <feng.tang@intel.com>, "Sang, Oliver" <oliver.sang@intel.com>, 
-	Jay Patel <jaypatel@linux.ibm.com>, Binder Makin <merimus@google.com>, aneesh.kumar@linux.ibm.com, 
-	tsahu@linux.ibm.com, piyushs@linux.ibm.com, fengwei.yin@intel.com, 
-	ying.huang@intel.com, lkp <lkp@intel.com>, 
-	"oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>, linux-mm@kvack.org, linux-kernel@vger.kernel.org, 
-	Jesper Dangaard Brouer <brouer@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MN0PR11MB6206:EE_|BL3PR11MB6433:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5f5ae848-cc86-435a-d6b7-08dba2dbe13c
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ak1p3CM/3ZRzdVqAyxVhoGwfWrmUo4wP/WSIK8wrfsojtZCPSa99fgyKsI8/ijLnAfFZhBjwqiOzHnE6/XonUneioZIagle8m3CKeQL98WcCa1ey6m2cglKvdhT2kzZOwd1aZXWzzyXJ+WrO7sZqpKQocF9vq4QYa8ngq6GA1Y4zBD/uOKhlLvLWgpOaI9/0GkDK+NM4tIPOdpCyFEZvqWgSPyQAn+fSyWHFBlHb7TG1G3Jg8+yGfeubHKPD4ZH0NvaCGuBZ417Cic3ANRiR28IVwuYHaGnKOgnnXgu69O7TTDBDY/ZUtKAbghc0kye+1EXQdDwXBwz/FyY4jERd2MJhGgZV4Uxw7+AeCjDDJpBaylCBA3R+1AMJnoDIr4oeDSSY+QHLB4guOKVLPH/RZP0AHZgyvhjaZ98oW2f/DoZRgEnbEv1Y08ro+dpwqbTrQHEhR4L/KSqmcSCl2wYIrYZtyTlJ9mE1jaSpBrQLxbVzUkaPqrdlhv12/4+yhZ6wqqTi0NwGKxGMxyjWdZzCZWTtKPgFffxTxKGTc7z5Z4M=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR11MB6206.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(7916004)(366004)(376002)(346002)(396003)(39860400002)(136003)(451199024)(1800799009)(186009)(2906002)(53546011)(38100700002)(6486002)(6506007)(83380400001)(5660300002)(26005)(86362001)(8676002)(8936002)(4326008)(107886003)(316002)(9686003)(6512007)(66946007)(54906003)(66556008)(66476007)(110136005)(82960400001)(966005)(478600001)(6666004)(41300700001)(33716001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?3pSI93zJ7I6CGSXvx9anoPamy63rBZtlmWt1xZWGVwqv+85zj3vg/BcusyxL?=
+ =?us-ascii?Q?7FBjtqahsEzSM8w82MaNzX45xFmXtNeRQFqS4h/InbMZuNWI2nt7rhg4lEjy?=
+ =?us-ascii?Q?GHOf2aOGakYwufmL6LJJNPU8q9iqfzq00BUU4v7p3fSliLWbXfciBRia2qA5?=
+ =?us-ascii?Q?p8w1mDvDs99eL7/trEuMxlZWGnXjOZLxTQZrzVvavBhRgC6YIKHlWqZeqBcZ?=
+ =?us-ascii?Q?zeMHSpdyUCl6c2G8iU4WVxo5AstqO0rq9/gKGcUq640imG3E9VwVB+DyiltS?=
+ =?us-ascii?Q?AuUBYzonphruKjY6j/0/qwWVKe/rVQxJ6Uo7+ojQPR2GcM8j3SMDNItuN/tm?=
+ =?us-ascii?Q?nludqNFkhiq46RTtFgtKwN7d0eU3Q8rYlnso6qIMoK7upNha98eSEBQ5Z8zu?=
+ =?us-ascii?Q?tFjW5t+YXyZ+cVyqKzpArmFQlHmOBdGgnrjzTmr+MXMNR7ehrL9VqrmUD3rK?=
+ =?us-ascii?Q?cc5C/I1LOFLqnDocpEF3M0QU59ob6VbyjSDsqZWqM6/jeZw2TMbhdzbl54h/?=
+ =?us-ascii?Q?JAJrVF5ClGSJUY0bTLTvsY57jDaVkJF9PQE2ti+l7tU3AmjV9C/4LDrwfrcE?=
+ =?us-ascii?Q?OIFO7vuvBW1Z65EkE97uFhrCmc4Xq8KZScfLsuw+dS8NOo8bd+VB5/fhNzqW?=
+ =?us-ascii?Q?dib5c7d2kaFxpbEIKj/5F2hVzqwNfYUiehC2xzrgsRPw38PsrD/wznEqCP85?=
+ =?us-ascii?Q?WJIpyltn4MJWFOUFCI2mrnA0U4aOf/doe8rQXdcoJQFuBfrYF3M5poRahDVE?=
+ =?us-ascii?Q?mN8dIE0Kmk1xtHriy2OW8fzYSbQ/4E1XDM49SXq6Z43ZqtoMwXcW6iskok4p?=
+ =?us-ascii?Q?srIQ4Z4kFWFTHPV4g6VulMOKvwjce3/vrAkSEbG8hgzxfitCwuvYNpESqHg5?=
+ =?us-ascii?Q?1tTjqVj/FNmVvqVZRN13gjI5iIk84DTZiYMogruL3msF/VhoK9RBURHKIIam?=
+ =?us-ascii?Q?e1I1c77mgsXU6hHLVqOVOMY/2f3EI7nH9kN+Y8dp+Htoiqe1EbjM1e6GsZGa?=
+ =?us-ascii?Q?/yKZHBJ4iOaRsvC+l1Yy9cxhnQZdojxn0/e3XxXUXrQ405uoqygw7Zf2an21?=
+ =?us-ascii?Q?1wzGX/eAbrv66yNWedK+jF5fmdFJCfByyfJ+mu/nR9ln/tn39SsvUjq9PCou?=
+ =?us-ascii?Q?jo6WgGxJwDePWzjXH9AAPbGXNXE+mlY27J/5xFIjY9aoBOXlKvu2HBssLA3d?=
+ =?us-ascii?Q?zWi3dqveB78EKBvuNWdGS6kUTTEr2P2SrjFio0Nxg4AJyy+yTXxufYdC8vW/?=
+ =?us-ascii?Q?zLsyMmQ5gLtfphfmsYTfopfXV4uzAP7I/eBlSCeXacaJHMf0fcdpqUNrAY40?=
+ =?us-ascii?Q?b3PNhanLC7GLWYydanacDRGZaIEB2eP7c7Aov6z+8KKHcm+lmQiatV8VcBQ5?=
+ =?us-ascii?Q?rFfi59ss22Em96cXZqLr7e3B1/ykmrAhPLdNhyBprupeclFJIqyxWLtuDeFe?=
+ =?us-ascii?Q?3n5TPHKZ8XbqUGhBi7kPQryz7YpsbicZ8FHapOxAgbycdTHOXjn9YtCiQc7n?=
+ =?us-ascii?Q?kDk6JTDlVsRoarV+7jsCUD2qUSAJ5dtoLsTrbwdzba3NJoiVdoej8YtD6WyD?=
+ =?us-ascii?Q?oK7DghleP2U+V9uPG45O0A/PXBymD+Sj/yPosb4D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5f5ae848-cc86-435a-d6b7-08dba2dbe13c
+X-MS-Exchange-CrossTenant-AuthSource: MN0PR11MB6206.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Aug 2023 06:49:06.7024
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0jAcpilxp7SSaSVyiqgImrGZVxJJdMBmYIWRoRnqaxQp6yGbR7X1gL8mDi02vTt/A6rLF26Myzpr86qtg3knZA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR11MB6433
+X-OriginatorOrg: intel.com
 
-[ +Cc Jesper - he might have an opinion on this. ]
+Hi Peter, Mike,
 
-On Wed, Jul 26, 2023 at 7:34=E2=80=AFPM Vlastimil Babka <vbabka@suse.cz> wr=
-ote:
->
-> Nit: I would change the subject from "Revert: " as it's not a revert
-> exactly. If we can come up with a good subject that's not very long :)
-
-Will do :)
-
-> On 7/23/23 21:09, Hyeonggon Yoo wrote:
-> > This is partial revert of commit b47291ef02b0 ("mm, slub: change percpu
-> > partial accounting from objects to pages"). and full revert of commit
-> > 662188c3a20e ("mm/slub: Simplify struct slab slabs field definition").
-> >
-> > While b47291ef02b0 prevents percpu partial slab list becoming too long,
-> > it assumes that the order of slabs are always oo_order(s->oo).
-
-> I think I've considered this possibility, but decided it's not important
-> because if the system becomes memory pressured in a way that it can't
-> allocate the oo_order() and has to fallback, we no longer care about
-> accurate percpu caching, as we're unlikely having optimum performance any=
-way.
-
-But it does not perform any direct reclamation/compaction to allocate
-high order slabs,
-so isn't it an easier condition to happen than that?
-
-> > The current approach can surprisingly lower the number of objects cache=
-d
-> > per cpu when it fails to allocate high order slabs. Instead of accounti=
-ng
-> > the number of slabs, change it back to accounting objects, but keep
-> > the assumption that the slab is always half-full.
->
-> That's a nice solution as that avoids converting the sysfs variable, so I
-> wouldn't mind going that way even if I doubt the performance benefits in =
-a
-> memory pressured system.
-
-> But maybe there's a concern that if the system is
-> really memory pressured and has to fallback to smaller orders, before thi=
-s
-> patch it would keep fewer percpu partial slabs than after this patch, whi=
-ch
-> would increase the pressure further and thus be counter-productive?
-
-You mean SLUB needs to stop per-cpu caching when direct/or indirect
-reclamation is desired?
-
-> > With this change, the number of cached objects per cpu is not surprisin=
-gly
-> > decreased even when it fails to allocate high order slabs. It still
-> > prevents large inaccuracy because it does not account based on the
-> > number of free objects when taking slabs.
+On 2023-08-18 at 09:09:29 +0800, Chen Yu wrote:
+> On 2023-08-16 at 15:40:59 +0200, Peter Zijlstra wrote:
+> > On Wed, Aug 16, 2023 at 02:37:16PM +0200, Peter Zijlstra wrote:
+> > > On Mon, Aug 14, 2023 at 08:32:55PM +0200, Mike Galbraith wrote:
+> > > 
+> > > > --- a/kernel/sched/fair.c
+> > > > +++ b/kernel/sched/fair.c
+> > > > @@ -875,6 +875,12 @@ static struct sched_entity *pick_eevdf(s
+> > > >  	if (curr && (!curr->on_rq || !entity_eligible(cfs_rq, curr)))
+> > > >  		curr = NULL;
+> > > >  
+> > > > +	/*
+> > > > +	 * Once selected, run the task to parity to avoid overscheduling.
+> > > > +	 */
+> > > > +	if (sched_feat(RUN_TO_PARITY) && curr)
+> > > > +		return curr;
+> > > > +
+> > > >  	while (node) {
+> > > >  		struct sched_entity *se = __node_2_se(node);
+> > > >  
+> > > 
+> > > So I read it wrong last night... but I rather like this idea. But
+> > > there's something missing. When curr starts a new slice it should
+> > > probably do a full repick and not stick with it.
+> > > 
+> > > Let me poke at this a bit.. nice
+> > 
+> > Something like so.. it shouldn't matter much now, but might make a
+> > difference once we start mixing different slice lengths.
+> > 
 > > ---
-> >  include/linux/slub_def.h |  2 --
-> >  mm/slab.h                |  6 ++++++
-> >  mm/slub.c                | 31 ++++++++++++-------------------
-> >  3 files changed, 18 insertions(+), 21 deletions(-)
-> >
-> > diff --git a/include/linux/slub_def.h b/include/linux/slub_def.h
-> > index deb90cf4bffb..589ff6a2a23f 100644
-> > --- a/include/linux/slub_def.h
-> > +++ b/include/linux/slub_def.h
-> > @@ -109,8 +109,6 @@ struct kmem_cache {
-> >  #ifdef CONFIG_SLUB_CPU_PARTIAL
-> >       /* Number of per cpu partial objects to keep around */
-> >       unsigned int cpu_partial;
-> > -     /* Number of per cpu partial slabs to keep around */
-> > -     unsigned int cpu_partial_slabs;
-> >  #endif
-> >       struct kmem_cache_order_objects oo;
-> >
-> > diff --git a/mm/slab.h b/mm/slab.h
-> > index 799a315695c6..be38a264df16 100644
-> > --- a/mm/slab.h
-> > +++ b/mm/slab.h
-> > @@ -65,7 +65,13 @@ struct slab {
-> >  #ifdef CONFIG_SLUB_CPU_PARTIAL
-> >                               struct {
-> >                                       struct slab *next;
-> > +#ifdef CONFIG_64BIT
-> >                                       int slabs;      /* Nr of slabs le=
-ft */
-> > +                                     int pobjects;   /* Approximate co=
-unt */
-> > +#else
-> > +                                     short int slabs;
-> > +                                     short int pobjects;
-> > +#endif
-> >                               };
-> >  #endif
-> >                       };
-> > diff --git a/mm/slub.c b/mm/slub.c
-> > index f7940048138c..199d3d03d5b9 100644
-> > --- a/mm/slub.c
-> > +++ b/mm/slub.c
-> > @@ -486,18 +486,7 @@ static inline unsigned int oo_objects(struct kmem_=
-cache_order_objects x)
-> >  #ifdef CONFIG_SLUB_CPU_PARTIAL
-> >  static void slub_set_cpu_partial(struct kmem_cache *s, unsigned int nr=
-_objects)
-> >  {
-> > -     unsigned int nr_slabs;
-> > -
-> >       s->cpu_partial =3D nr_objects;
-> > -
-> > -     /*
-> > -      * We take the number of objects but actually limit the number of
-> > -      * slabs on the per cpu partial list, in order to limit excessive
-> > -      * growth of the list. For simplicity we assume that the slabs wi=
-ll
-> > -      * be half-full.
-> > -      */
-> > -     nr_slabs =3D DIV_ROUND_UP(nr_objects * 2, oo_objects(s->oo));
-> > -     s->cpu_partial_slabs =3D nr_slabs;
-> >  }
-> >  #else
-> >  static inline void
-> > @@ -2275,7 +2264,7 @@ static void *get_partial_node(struct kmem_cache *=
-s, struct kmem_cache_node *n,
-> >       struct slab *slab, *slab2;
-> >       void *object =3D NULL;
-> >       unsigned long flags;
-> > -     unsigned int partial_slabs =3D 0;
-> > +     int objects_taken =3D 0;
-> >
-> >       /*
-> >        * Racy check. If we mistakenly see no partial slabs then we
-> > @@ -2312,11 +2301,11 @@ static void *get_partial_node(struct kmem_cache=
- *s, struct kmem_cache_node *n,
-> >               } else {
-> >                       put_cpu_partial(s, slab, 0);
-> >                       stat(s, CPU_PARTIAL_NODE);
-> > -                     partial_slabs++;
-> > +                     objects_taken +=3D slab->objects / 2;
-> >               }
-> >  #ifdef CONFIG_SLUB_CPU_PARTIAL
-> >               if (!kmem_cache_has_cpu_partial(s)
-> > -                     || partial_slabs > s->cpu_partial_slabs / 2)
-> > +                     || objects_taken > s->cpu_partial / 2)
-> >                       break;
-> >  #else
-> >               break;
-> > @@ -2699,13 +2688,14 @@ static void put_cpu_partial(struct kmem_cache *=
-s, struct slab *slab, int drain)
-> >       struct slab *slab_to_unfreeze =3D NULL;
-> >       unsigned long flags;
-> >       int slabs =3D 0;
-> > +     int pobjects =3D 0;
-> >
-> >       local_lock_irqsave(&s->cpu_slab->lock, flags);
-> >
-> >       oldslab =3D this_cpu_read(s->cpu_slab->partial);
-> >
-> >       if (oldslab) {
-> > -             if (drain && oldslab->slabs >=3D s->cpu_partial_slabs) {
-> > +             if (drain && oldslab->pobjects >=3D s->cpu_partial) {
-> >                       /*
-> >                        * Partial array is full. Move the existing set t=
-o the
-> >                        * per node partial list. Postpone the actual unf=
-reezing
-> > @@ -2714,14 +2704,17 @@ static void put_cpu_partial(struct kmem_cache *=
-s, struct slab *slab, int drain)
-> >                       slab_to_unfreeze =3D oldslab;
-> >                       oldslab =3D NULL;
-> >               } else {
-> > +                     pobjects =3D oldslab->pobjects;
-> >                       slabs =3D oldslab->slabs;
-> >               }
-> >       }
-> >
-> >       slabs++;
-> > +     pobjects +=3D slab->objects / 2;
-> >
-> >       slab->slabs =3D slabs;
-> >       slab->next =3D oldslab;
-> > +     slab->pobjects =3D pobjects;
-> >
-> >       this_cpu_write(s->cpu_slab->partial, slab);
-> >
-> > @@ -5653,13 +5646,13 @@ static ssize_t slabs_cpu_partial_show(struct km=
-em_cache *s, char *buf)
-> >
-> >               slab =3D slub_percpu_partial(per_cpu_ptr(s->cpu_slab, cpu=
-));
-> >
-> > -             if (slab)
-> > +             if (slab) {
-> >                       slabs +=3D slab->slabs;
-> > +                     objects +=3D slab->objects;
-> > +             }
-> >       }
-> >  #endif
-> >
-> > -     /* Approximate half-full slabs, see slub_set_cpu_partial() */
-> > -     objects =3D (slabs * oo_objects(s->oo)) / 2;
-> >       len +=3D sysfs_emit_at(buf, len, "%d(%d)", objects, slabs);
-> >
-> >  #ifdef CONFIG_SLUB_CPU_PARTIAL
-> > @@ -5669,7 +5662,7 @@ static ssize_t slabs_cpu_partial_show(struct kmem=
-_cache *s, char *buf)
-> >               slab =3D slub_percpu_partial(per_cpu_ptr(s->cpu_slab, cpu=
-));
-> >               if (slab) {
-> >                       slabs =3D READ_ONCE(slab->slabs);
-> > -                     objects =3D (slabs * oo_objects(s->oo)) / 2;
-> > +                     objects =3D READ_ONCE(slab->pobjects);
-> >                       len +=3D sysfs_emit_at(buf, len, " C%d=3D%d(%d)",
-> >                                            cpu, objects, slabs);
-> >               }
+> >  kernel/sched/fair.c     | 12 ++++++++++++
+> >  kernel/sched/features.h |  1 +
+> >  2 files changed, 13 insertions(+)
+> > 
+> > diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+> > index fe5be91c71c7..128a78f3f264 100644
+> > --- a/kernel/sched/fair.c
+> > +++ b/kernel/sched/fair.c
+> > @@ -873,6 +873,13 @@ static struct sched_entity *pick_eevdf(struct cfs_rq *cfs_rq)
+> >  	if (curr && (!curr->on_rq || !entity_eligible(cfs_rq, curr)))
+> >  		curr = NULL;
+> >  
+> > +	/*
+> > +	 * Once selected, run a task until it either becomes non-eligible or
+> > +	 * until it gets a new slice. See the HACK in set_next_entity().
+> > +	 */
+> > +	if (sched_feat(RUN_TO_PARITY) && curr && curr->vlag == curr->deadline)
+> > +		return curr;
+> > +
+> >  	while (node) {
+> >  		struct sched_entity *se = __node_2_se(node);
+> >  
+> > @@ -5168,6 +5175,11 @@ set_next_entity(struct cfs_rq *cfs_rq, struct sched_entity *se)
+> >  		update_stats_wait_end_fair(cfs_rq, se);
+> >  		__dequeue_entity(cfs_rq, se);
+> >  		update_load_avg(cfs_rq, se, UPDATE_TG);
+> > +		/*
+> > +		 * HACK, stash a copy of deadline at the point of pick in vlag,
+> > +		 * which isn't used until dequeue.
+> > +		 */
+> > +		se->vlag = se->deadline;
+> >  	}
+> >  
+> >  	update_stats_curr_start(cfs_rq, se);
+> > diff --git a/kernel/sched/features.h b/kernel/sched/features.h
+> > index 61bcbf5e46a4..f770168230ae 100644
+> > --- a/kernel/sched/features.h
+> > +++ b/kernel/sched/features.h
+> > @@ -6,6 +6,7 @@
+> >   */
+> >  SCHED_FEAT(PLACE_LAG, true)
+> >  SCHED_FEAT(PLACE_DEADLINE_INITIAL, true)
+> > +SCHED_FEAT(RUN_TO_PARITY, true)
+> >  
+> >  /*
+> >   * Prefer to schedule the task we woke last (assuming it failed
+> 
+> I had a test on top of this, and it restored some performance:
+> 
+> uname -r
+> 6.5.0-rc2-mixed-slice-run-parity
+> 
+> echo NO_RUN_TO_PARITY > /sys/kernel/debug/sched/features 
+> hackbench -g 112 -f 20 --threads -l 30000 -s 100
+> Running in threaded mode with 112 groups using 40 file descriptors each (== 4480 tasks)
+> Each sender will pass 30000 messages of 100 bytes
+> Time: 118.220  <---
+> 
+> 
+> echo RUN_TO_PARITY > /sys/kernel/debug/sched/features 
+> hackbench -g 112 -f 20 --threads -l 30000 -s 100
+> Running in threaded mode with 112 groups using 40 file descriptors each (== 4480 tasks)
+> Each sender will pass 30000 messages of 100 bytes
+> Time: 100.873  <---
+> 
+> Then I switched to the first commit of EEVDF, that is to
+> introduce the avg_runtime for cfs_rq(but not use it yet)
+> It seems that there is still 50% performance to restored:
+> 
+> uname -r
+> 6.5.0-rc2-add-cfs-avruntime
+> 
+> hackbench -g 112 -f 20 --threads -l 30000 -s 100
+> Running in threaded mode with 112 groups using 40 file descriptors each (== 4480 tasks)
+> Each sender will pass 30000 messages of 100 bytes
+> Time: 52.569  <---
+> 
+> I'll collect the statistic to check what's remainning there.
+> 
+> [Besides, with the $subject benchmark, I tested it with PLACE_DEADLINE_INITIAL
+> diabled, and it did not show much difference. I'll work with lkp
+> to test it with RUN_TO_PARITY enabled.]
+> 
 >
+
+To figure out the remainning hackbench performance gap, I pulled the
+tip/sched/core and launched Flamegraph to track the perf profile.
+The bottleneck according to flamegraph profile is as followed:
+
+Baseline:
+"sched/fair: Add cfs_rq::avg_vruntime"
+unix_stream_sendmsg() -> slab_alloc_node() -> memcg_slab_pre_alloc_hook()
+                      -> obj_cgroup_charge_pages() -> atomic_add()
+The per memory cgroup counter atomic write is the bottleneck[1]
+
+Compare:
+"sched/eevdf: Curb wakeup-preemption"
+unix_stream_sendmsg() -> slab_alloc_node() -> ___slab_alloc()
+                      -> get_partial()  -> get_partial_node()
+                      -> spinlock_irq()
+The per kmem_cache_node's list_lock spinlock is the bottleneck[2]
+
+In theory the negative impact of atomic write should be less than the
+spinlock, because the latter would increase the busy wait time a lot.
+And this might be the reason why we saw lower throughput with EEVDF.
+
+Since EEVDF does not change any code in mm, I've no idea why the bottleneck
+switches from atomic write to spinlock. One reason I can guess is the timing.
+Before EEVDF, tasks enter spinlock critical section in difference time
+slots, while after EEVDF, tasks enter the critical section at the same
+time.
+
+Reducing the spinlock contention could help improve the situation.
+Feng Tang told me that there is a discussion on the LKML related to high
+slub spinlock contention[2]. And Feng provides a hack patch which
+enlarges the slab percpu partial list order so as to reduce the lock
+contention on the node(if I understand the patch correctly)
+
+With this patch applied, the spinlock contention has been reduced a lot[3],
+and the performance has been improved to:
+
+hackbench -g 112 -f 20 --threads -l 30000 -s 100
+Running in threaded mode with 112 groups using 40 file descriptors each (== 4480 tasks)
+Each sender will pass 30000 messages of 100 bytes
+Time: 71.838
+
+I guess if we enlarge the percpu slab partial list further, it can reduce the
+spinlock contention further, and get more improvement. Meanwhile I'm still
+wondering what the reason to cause multiple tasks enter the spinlock section
+at the same time.
+
+BTW, with RUN_TO_PARITY enabled, the blogbench has also restored some
+of its performance.
+
+
+[1] https://raw.githubusercontent.com/yu-chen-surf/schedtests/master/results/eevdf/flamegraph_add_avg_runtime.svg
+[2] https://raw.githubusercontent.com/yu-chen-surf/schedtests/master/results/eevdf/flamegraph_eevdf_parity.svg
+[3] https://raw.githubusercontent.com/yu-chen-surf/schedtests/master/results/eevdf/flamegraph_slab_enlarge_order_eevdf_parity.svg
+
+thanks,
+Chenyu
+
