@@ -1,87 +1,84 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F7DD15B5
-	for <oe-lkp@lists.linux.dev>; Wed, 23 Aug 2023 02:52:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D0B4C152
+	for <oe-lkp@lists.linux.dev>; Wed, 23 Aug 2023 14:16:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1692759157; x=1724295157;
+  t=1692800164; x=1724336164;
   h=date:from:to:cc:subject:message-id:in-reply-to:
    mime-version;
-  bh=BxhTdxd+e8kzFSkcAc1Aj2Tpu6g68mXoJxeEwrExm7o=;
-  b=PiUmf5jRVnNURKScLzh0fvyUKhBGnt/zhOFVANx48cnFXQuG6ln99KVX
-   Ikp3htHrl3Bg0vXtR3V9ekM9hwTbvUzJVin6btGQAQOAaGxT9OZBrbwzK
-   RfjdBuBGDulxSVu31iXR7YiwNU011EGvlqgvkfPErp4NBz7eNfqh+ylkI
-   /HC79S2GcPxfqUuCHJkyXcDak/ugKDrzlJ6CKyS3ASq/uUi4bqWw9/D7P
-   CA/iH/Vtt0JC/M7uTp0OPMjq7svE1slGe/0zFpkU0lecEZjZ2OXTWcGJZ
-   09aJITxOh4TfN8wPbtKw9E0ktRPbBfV5QCefhssigAWbW9yWeLEAP8MvG
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10810"; a="374021286"
-X-IronPort-AV: E=Sophos;i="6.01,194,1684825200"; 
-   d="scan'208";a="374021286"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2023 19:52:35 -0700
+  bh=OiydVkb0icIAH0X+rLIqIkvYODPMhX1t6mFGkX9l9r0=;
+  b=oIz5oX4OKsWQClvBYRxf40hjJVzXn0Gwd2Cm6ntB4xYkDQVhJ4GRbTlA
+   lyoptnZkLVxF0parjMqUBCpE8Q86+IfKdSf3DpNmUIG9IH7QOTQwUt1Bb
+   Juafi5VH4LqDBP+ECBZljKEc3K5YiuXawN+yjkjhWwjk0U+AXpEnesIMM
+   r2UDnimvTPjI3BsjNnVo1kFgr/QogoNeL4JVxhxggDf/sL/ihY3+CYP0X
+   TkU/PC8BFZNwEDqu7fIJ5Ift4BHRBzHaBVi9l9nn9DW4A7Ee4JwLxsJpS
+   AiaaNP7yo8SQnFbzBhsajOTEfsSu3QSxGrqAQB6/Tz6lQxjovbyMh6346
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10811"; a="440529900"
+X-IronPort-AV: E=Sophos;i="6.01,195,1684825200"; 
+   d="scan'208";a="440529900"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2023 07:16:03 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10810"; a="801921618"
-X-IronPort-AV: E=Sophos;i="6.01,194,1684825200"; 
-   d="scan'208";a="801921618"
+X-IronPort-AV: E=McAfee;i="6600,9927,10811"; a="806706373"
+X-IronPort-AV: E=Sophos;i="6.01,195,1684825200"; 
+   d="scan'208";a="806706373"
 Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by fmsmga008.fm.intel.com with ESMTP; 22 Aug 2023 19:52:34 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+  by fmsmga004.fm.intel.com with ESMTP; 23 Aug 2023 07:16:03 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
  fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Tue, 22 Aug 2023 19:52:34 -0700
+ 15.1.2507.27; Wed, 23 Aug 2023 07:16:02 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27; Wed, 23 Aug 2023 07:16:02 -0700
 Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
  fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27 via Frontend Transport; Tue, 22 Aug 2023 19:52:34 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.171)
+ 15.1.2507.27 via Frontend Transport; Wed, 23 Aug 2023 07:16:02 -0700
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.169)
  by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.27; Tue, 22 Aug 2023 19:52:34 -0700
+ 15.1.2507.27; Wed, 23 Aug 2023 07:16:01 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GjYiyVum820svmuDihdcVWyj52umjPU5exoasqnxvUxXNRxr18UuBZzsqQNkTam5hrd1QK/BY6zrTgnNaiFaogxi48OfGnipn536wTTiyTI6r5AfFmt6Xh8i3S3tjXWI8BaUvRaYD24kktZUferrm2Gb0dU906Q2lGBxH/jFkEr4qARHPTxobS0jVjIIAqaAkCXmItnm7gUn/ST6W4B7/xjU4xL+lyRVWnfE6bwJ5oYzr7JdrTxNrati3/HVpfr0jzjksBg4/nl6on4JYQCZ66tt0UiW/Fm1SpttLIGaMonnZTV6SdW7cLjknSCuhJbbA4v2npawTaelX3mmoxpziA==
+ b=Z06tXtm0T1O72X6iZ4wpBeZwMWbo8F80RluKA9zL3c96LVTKYZU3iodJHsqrHxftjD9LoTZ/rZi2JC/7DMzbxeRAgE1qEP2kTNlO/OGn1f2TQRavCTyEbEe3jzJsqeBXeAskI2eJKsJ32YmQ2FHXczTTQKRr4CQMnfvN9jSb0RGSgPSZOkW0OYC5wV6gtmMI5JhVeiIx/VHqySTWp8mlA0ZTxsv1pQ/AuWRdlDBV+XIeIWGBJx0qTeN2ar8CM7n5B7P2P74aEi30X/hnm2i4gcKcY2U40gWj0s+ynrM7oM8BPExivllj9UgVS9L2MvyYB51xrUQMqpai3qOs5oOmrw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=eo3tJgFNeollXkd8mbWHHCXyOobhXgL+EsBb6oAVG1U=;
- b=flouoUKet1tAvtEsNM4zoVybrF3EA+M40gYiZBcjrSofMPCgCRGZJX50nU7G8oXR+/Y87BV7Fgi2BR/K3WTMu365tJCIECDsmAJLKIUsBK/hLVUH6Wz8jr2/Kv7ypPB1uffWu59GzFa+luJ15JBxIX1Q6ep71ovgWtDWiqekYKcSDJKBd48w1CMUlpXXBqM2Hw0B6mS6HZOrN1l3in/pHyxv52wAwCgK0/ObOY5g59iQBmXaURP1AfFoLB26zNIFPxVE6Dbiy0UpsnTwXgu+2eu++C34RfI3SF9+qtAjPtsTslfnRtot9lsXcZHkElo9D/EiIJn/GlWMi9BdfrY7Iw==
+ bh=bdYNYd5PyBvgACL3kypuE13fiVf7EGakiKav83Ytwb8=;
+ b=cU9xeHSEqHUwvMFNy6klpG4VH6SvpjPtr0SVABHP6o/uQCgX4qJ/1DNv53Phs/YxLZLQtkjYxiWFA2scWgtzyfz9QhxryNYtc7e77ArXGbszB5Vx1Txu2+ESRnG+FginoGF19F1bhJXB858vLXn4VfqWFKu13t6BH55DEO9PT65aFdNNgH4U4YbUNopWZTPXgOKItmwUEqOgsJiverPAUhCMYxK7Z0YJaewAHLsLu3/RhMCjPnItyR9q4whcdmlm8+/kX6UuNZW64bQvPNr/qHzS+pNq+u3vNFMSfEIvTjTlQ9sJyUSCnUWjhn9wdu0uJCihRJ9cl85ApM9FObuaEQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
- by CH3PR11MB7674.namprd11.prod.outlook.com (2603:10b6:610:12b::8) with
+ by DS0PR11MB7767.namprd11.prod.outlook.com (2603:10b6:8:138::5) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6678.26; Wed, 23 Aug
- 2023 02:52:32 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.25; Wed, 23 Aug
+ 2023 14:15:59 +0000
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com
  ([fe80::73c6:1231:e700:924]) by PH8PR11MB6779.namprd11.prod.outlook.com
- ([fe80::73c6:1231:e700:924%4]) with mapi id 15.20.6699.020; Wed, 23 Aug 2023
- 02:52:32 +0000
-Date: Wed, 23 Aug 2023 10:52:17 +0800
+ ([fe80::73c6:1231:e700:924%4]) with mapi id 15.20.6699.026; Wed, 23 Aug 2023
+ 14:15:59 +0000
+Date: Wed, 23 Aug 2023 22:15:49 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Ze Gao <zegao2021@gmail.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Steven Rostedt
-	<rostedt@goodmis.org>, Ze Gao <zegao@tencent.com>,
-	<linux-kernel@vger.kernel.org>, <linux-trace-kernel@vger.kernel.org>, "Adrian
- Hunter" <adrian.hunter@intel.com>, Alexander Shishkin
-	<alexander.shishkin@linux.intel.com>, Arnaldo Carvalho de Melo
-	<acme@kernel.org>, Ian Rogers <irogers@google.com>, Ingo Molnar
-	<mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>, Mark Rutland
-	<mark.rutland@arm.com>, Masami Hiramatsu <mhiramat@kernel.org>, Namhyung Kim
-	<namhyung@kernel.org>, Peter Zijlstra <peterz@infradead.org>,
-	<linux-perf-users@vger.kernel.org>, <oliver.sang@intel.com>
-Subject: Re: [RFC PATCH v6 3/5] sched, tracing: reorganize fields of switch
- event struct
-Message-ID: <202308231018.8ddf15b7-oliver.sang@intel.com>
+To: Sanath S <Sanath.S@amd.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Sanjay R Mehta
+	<sanju.mehta@amd.com>, <linux-pci@vger.kernel.org>, <bhelgaas@google.com>,
+	<linux-kernel@vger.kernel.org>, <mario.limonciello@amd.com>, Sanath S
+	<Sanath.S@amd.com>, <oliver.sang@intel.com>
+Subject: Re: [PATCH] PCI: Allocate maximum available buses to help extending
+ the daisy chain
+Message-ID: <202308232106.50c8f492-oliver.sang@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20230803083352.1585-4-zegao@tencent.com>
-X-ClientProxiedBy: KL1PR01CA0045.apcprd01.prod.exchangelabs.com
- (2603:1096:820:1::33) To PH8PR11MB6779.namprd11.prod.outlook.com
- (2603:10b6:510:1ca::17)
+In-Reply-To: <20230816051923.2287912-1-Sanath.S@amd.com>
+X-ClientProxiedBy: SGXP274CA0005.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b8::17)
+ To PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -89,97 +86,112 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|CH3PR11MB7674:EE_
-X-MS-Office365-Filtering-Correlation-Id: 537351b9-ff3f-4c13-a8b4-08dba383ff06
+X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|DS0PR11MB7767:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0588aebf-acbb-429f-06dd-08dba3e3797c
 X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: +jYCMfEeUY3aPDVc0XV672iB8FSZ2TeUMyjlDlw3lrGk1bvnIM6EXEqBl2ot0v+I1XYULxg5eT7zAJsyjvYHjNWEk8INkwocb42nbHVS7c1Aw1eX016KmJvmi+XDw7tcj1eaHkgPn92YXlrHiW4KsyYXOPfN5ZmKFbwmTV+9E+sWr3JnEEBNe89llcj/DbKMFGzx6DwKcSPdNB6J8QSmmTja25WnPtElwJ0MH6zxoA2QQokkiCcE2SPinJ99Wm/OeemEFGlLHWStu0nD1G43qj/gc+fKzWDKZv82DkJAHCR+/YimCDJWvctmv+Ws8q6WrJXX0ZdNuwH12j+DXD4Fg51ta+1FnBXfxfc7lgWXM64x81EoB4y8Mzw33lyaIwwjoNtT64qhfNrqewb6apP0C9DSlSiMKSn+MYpbJjb1WrwiQz1ig2dfiyBl251y4TytnPwBPLIhHtCo3Gpg1PL4pmYcU+3on9+JxXXEwc7hFjRY94mWmBxiAjO4IYrVeP5yF0M4LP+dePclBhyKUj1VAnYG9tmNJaftGTaztNo52rqAcoa8NtupIKS/JNXILmwFlA8penha9kPrj0Th/rlORg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(136003)(376002)(366004)(346002)(396003)(186009)(451199024)(1800799009)(86362001)(4326008)(5660300002)(8676002)(7416002)(2906002)(36756003)(8936002)(478600001)(966005)(26005)(2616005)(6506007)(6666004)(1076003)(6486002)(6512007)(83380400001)(82960400001)(66946007)(66556008)(66476007)(316002)(6916009)(54906003)(38100700002)(41300700001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: fmGy8FRU9vZrk3ICV7UJzzxqjvbQUz9VtThT0VdsGcRlNT3/FbL2ZN1TXsE3CwkxiXE+nRkCZBf/omoAovVTF5PuV0jcWa1mmB74PNrETgs39Qe6I0PyZqKuSi4vN6Bz53PaMS6T2rSlqceCRtkVxpzWVRoqisL+Ed87iD7EotxueXk8vSRpNp/XwG3wZPj3nEe/pfaTZ7J11HbiFAbojBzpXV7JECYDSg7WK5WyQhSOBJOgneSrZ8BwmZQbtC7uINMRNP48zVJzVvo25yRR4jze39YRrH9UA0lmdoHbZzhvpKawB+0GkeOl3upEKx0zPHK0cVpMu9B5AqXjSjqzPeH2FrrWMH3MPMbu2azSR5lp27pgxeF946cVhDwakgg0klGjvyWzECXWBW+vXzxt5K5E4QFZ0no0FPrUu0aVj37qROwCfXZYc2gJultBtIGfzDHFgH/n4t6RUX2t5H8jjK2larYB69sfSlvoCL6OH+0I2ljjDCaXcw3gYy7qa5/m8i6fMh1d9HEUVqR4ML32mSQWa+07GVtCvB3jYPHoJCicFZfExCrEyxqxs4pRx1clQ8OGFcXm2R0J1uof0DvcRD8b1EEkRztBwANhXHxK3blczaXmRuZkv6DRInhqciV5OjcxDCBS+DAG/oxxEb25/Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(366004)(39860400002)(346002)(136003)(396003)(1800799009)(186009)(451199024)(966005)(6666004)(6486002)(478600001)(1076003)(107886003)(6506007)(6512007)(2616005)(2906002)(26005)(5660300002)(8676002)(8936002)(66946007)(54906003)(36756003)(41300700001)(6916009)(86362001)(316002)(4326008)(66556008)(66476007)(82960400001)(38100700002)(83380400001)(131093003);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?i2oKLUU4+6//P3hPxz2E0/LXdfIaA8SUOi5AmySrcvHRudrNtBLSbWHl7HNg?=
- =?us-ascii?Q?wy0LiC1C8LlI85hJDYq9ozQXu46t1iwEqCPvwL8OY0eNl7hs/sGrSW7m0VSo?=
- =?us-ascii?Q?LAnuj59ngn4Mf6ihQhat5Ki+8QUWddubGdQOfo/8gshOJR4srICu83KjwxKN?=
- =?us-ascii?Q?hHtyjsuxvA1dBVmZYpaoxSCbvDy+qTTxjC5BTGEAyX6fsudSyVWeByHjEMFh?=
- =?us-ascii?Q?tiSYWtp9erxR3B9/0AsmeUk5EUswr+ayKDRxj/weuNDXHhy21weMygdcZFLT?=
- =?us-ascii?Q?dQpgPaYujodwn4s1rZmCkk/UUJ59nNHBInEhjSSsVcR9KlogiD8M3zLevylz?=
- =?us-ascii?Q?wYa/YUbW2PQGEQHYGvetsFaqlvuSJMGu/xDnhEXs7MhSEdRVNy1rlc/JkI4y?=
- =?us-ascii?Q?WTNJbo6iM4SmV/4muJEKkV4/04uqNHceuJNRasn8fu+gnitkOcBKkB+5P39h?=
- =?us-ascii?Q?RDR4n/MsPwpkXaxfH/VP0ScP/4TPqHDP1ZJj1EVRT5gRulWUpdVU0YfVWmr2?=
- =?us-ascii?Q?RvQ5MRB034RVbYBfuMhduykpehG6yjgcM1e00glx6Uq4nGP+uIP1BeK9Fj0w?=
- =?us-ascii?Q?Jg56Oly6LkCZYu4gwt4lfJDgC5EVbdaONt2MiqXW1BUNVu8z9XREMD2tt0uH?=
- =?us-ascii?Q?CVFSQZ20A60kgMlq/Z9S/vTx+f4siP9LdP1KsxgPEB+o9mnXH9glDfa9c+aV?=
- =?us-ascii?Q?17owstnhcn5WRPAIRN1Uxja1ics0yNo48WIdbZmpCTxSbZnYVlQzg8+w18BX?=
- =?us-ascii?Q?xT8UkclbMVxFt4D6CAkofitB/QWf3Iccb3nkgjGhQ3eFP3BC7++D3M964aNk?=
- =?us-ascii?Q?H+yLDQOZzvkb9JpUaxEkmu9PFYqP5sg1iCfqsZdV/wdxvVBdA6OOoSOtIlg/?=
- =?us-ascii?Q?eCv9lgrYsT2Bsn18gWQg7WGL/kSGkQyBs3Yr7jE5EqWZ/wpvR1DN56cUyFuL?=
- =?us-ascii?Q?1tWppyYTz8xsRfCewvB43E+MyWrCUpQQwyBXxxHujQIWIY2vWa6U3GFjchsx?=
- =?us-ascii?Q?Xl0FLdrXXmCCc/KoYdweC5KUEIlZRSJkFcawvop8oqd1f+kc5DkhnSs491/2?=
- =?us-ascii?Q?Qj3g9glUVnGxzD1S0b9WxT8wA/hmLjuOBLRg2djxyjcl4fKpgjpRHjKrZY8B?=
- =?us-ascii?Q?VYsr0ef4SGE/1kwDTAGmJ4rnmi1yDyR7sm2L1NH2ikH0P17fIlBn7NguXDUx?=
- =?us-ascii?Q?AZyL1XrgKtxDnoqJRiPC4rHcovgDtf7BYrk2Cv1wyy5eXSuJHf/EPIYnO34r?=
- =?us-ascii?Q?UoS7TQ35V4LGdHuU3BbOhemrYYJE4En/jGx3/Fqo7fTZYCDCjCrQpw7F5FFl?=
- =?us-ascii?Q?Eu+G4qxf97fRtDZVuDaVR2U4x3ifnWQcD5GSQrAlO3Ib5jlWZhSYsj9v7hnU?=
- =?us-ascii?Q?AMTaJgJ4ymMAtZjy4vplsaYAMYMPGI/mXaDiltc5tQPVSuh6GU5fqtCL7XwS?=
- =?us-ascii?Q?5pXo4gm2euTLAXDdfKdkjAMtU4dq2TL4CA+3Ir95sI5ml+0zrOLn46nrSaq4?=
- =?us-ascii?Q?BTReVe1DlkK4yP1H4gTnhJYA0Pe1FG/LOJvHjaHj3cpOOhj9mzxQ1k88N9cn?=
- =?us-ascii?Q?KOv3yyzZ06DB8NFI3ADFlgcrDmc1NAkdyhJ+2JMzlwS1SKBdgorz/BTmbnPF?=
- =?us-ascii?Q?Wg=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 537351b9-ff3f-4c13-a8b4-08dba383ff06
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?utydqtxa3VuRq3PtTWODHac9Gs0TH0MlFx00rEMOy8qDpItL+IFIHWU4SRMz?=
+ =?us-ascii?Q?WIADEDLvOLrm8cYRobr3nFVreRuaw+GP73o0bCbl5a2l2yRGCSQALJpUFB49?=
+ =?us-ascii?Q?mOiYt+tbFpo4cBOmBt+01zNgQ/y6ayfQI1De+lkUpk6LFAz1+4kmyyrYy6BG?=
+ =?us-ascii?Q?afaZGLRdv2cXGXKh2VLPD5a6cTjW7LStJ57cY4dJ3L4EgoCajuRVIlqb1Cn7?=
+ =?us-ascii?Q?MiDqZuxqXd9dN6HXaDYdV4BQT0kNrwvHITxIA7yxmOPqdCC955vgBAl6tAxz?=
+ =?us-ascii?Q?7t1p2RUtREr3t3w8LfQoEVgpR23nxHaph2NHqPAA6ZzSRheT9JRvTd0OU8xF?=
+ =?us-ascii?Q?lQ/9YiQIvA4JebRCL5COFhIerA4EAt2lgcwrRSQGyGeZaliVnlBWQzNQE1FO?=
+ =?us-ascii?Q?CPKufw3BRPO/EjjAiOXYzsBQS7u4I3Uni2LswVVN/+TOnOrWCSgHwtQweUNc?=
+ =?us-ascii?Q?xcp/08AGhF/BeLYlM+TrfkEC6ncOHsHSQiySP8wuvwQJ1eLdNb4yFBt58k4m?=
+ =?us-ascii?Q?CM+D3x1y+PDV5pSz+S0K4s45PnZQjxpwB6C+v6NPd5ooAuQW3rASjLF0T4qh?=
+ =?us-ascii?Q?O36rx6ciLyJuw5BmaHqH5Vl28/9sWGHU6ES8xYDqcCrDyQvVwXC86ck0kcff?=
+ =?us-ascii?Q?ceEQ7H4C7zZfHataqHGIKQahYkaRq1SvQGDcyw6dgoKA4JFFJn2jnbZaO6VK?=
+ =?us-ascii?Q?TjslozpYrg47QRfrLH53Fw54hz9DRrXV4K71ufvP1jVVxeyd5kKbOSrkbY9g?=
+ =?us-ascii?Q?3+RRuM9gejD76pjCZKbxH1OEAMxuL+nuaho8ZnivjVBqG8KeH70WRPh1WMgR?=
+ =?us-ascii?Q?KMIxvnjVrf2KWNNrffdWjitlblHlNjpP8PqGB+tzc8yx/Dv5KGtQ3RKGmOql?=
+ =?us-ascii?Q?CyYQqw3xhdpYjsWONOB3TJdCP0yu5F157MdN+ii5yo6g6nLCsojQHnh4jq/O?=
+ =?us-ascii?Q?gR6aewYbo8HR2cH/M1SUxwLFZPkKsuWDumQFWNC5KKWAFRGk5CrizCtwsK1F?=
+ =?us-ascii?Q?myj0Lal4a50q/IXX4jFsZ1HAeQDWN6v33rUq8GvFoLNU/gzLVM/zKul6OtCn?=
+ =?us-ascii?Q?RfsY8BGO9j2J5rK9Kg6hzTBkWpFt9oH6r20Lr93vVPgdsBm8uYdIr31BhpDn?=
+ =?us-ascii?Q?xBslQVBdZRYWAUn0srKG09YzTUAwXKp2z7HJ9IVIGVh+eVUgZ+Yi6WJ7KsAU?=
+ =?us-ascii?Q?8WuY50iJy4ksDkM4L7Lq2vFKeCeTsEjKUFDa6EzSd7ZHu9i8pY7tS+2BomUj?=
+ =?us-ascii?Q?jNi55zZw+iGrwc5AMw581WzW2WOgp245JsLFcL04eVpvNdk/YZmsVc/A/9R+?=
+ =?us-ascii?Q?PncO+eH29eOjuvMGdruiVAij9wbVaaAvHzoNgY+5b7V5vr6rqLpEuETTQM2a?=
+ =?us-ascii?Q?DpSjlmTsfbs8KjvTeZ/KFQxOwlanm1Xrd5F6RH+Ru+3IvOMYKvNiWBpDQVen?=
+ =?us-ascii?Q?FqA12184Ta0AM9ZdHtekHKMOg/6nf91WILf+AZ3Img+TcUu99be/A/ZibYuA?=
+ =?us-ascii?Q?VMT18KNpjOuSSlmv5iDZK+1lTN7cYWNE33guLPcnt2gZymSz5p74csf0+8Cm?=
+ =?us-ascii?Q?oX4A0p/v6xyl4wD0NZHp9VT+1tC7XVYoVmARueWN1cb8WHy+gVvPCgYMfRVc?=
+ =?us-ascii?Q?UQ=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0588aebf-acbb-429f-06dd-08dba3e3797c
 X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB6779.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2023 02:52:31.9285
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2023 14:15:59.5824
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: CkxN5jT8dA/vRgc38SlTiUqQDn7tR/4G6H1RD55hGUzCdHeNGHiBoogeA59ETZ3B+57xj9G+8P7+cgp/AEvq8g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR11MB7674
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1RESUSwDriW22guPN+ADlORVn6H8tC6yXW4ND2Ovbl6UrlAxsXynoHZQ8TasaSOEuwZfZQ/Fzptbwk7y+gmn0A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB7767
 X-OriginatorOrg: intel.com
 
 
 
 Hello,
 
-kernel test robot noticed "perf-sanity-tests.Parse_sched_tracepoints_fields.fail" on:
+kernel test robot noticed disk issues on:
 
-commit: 029aadfe946d99c4b11f1dd52f9ff76a09b21f69 ("[RFC PATCH v6 3/5] sched, tracing: reorganize fields of switch event struct")
-url: https://github.com/intel-lab-lkp/linux/commits/Ze-Gao/perf-sched-sync-state-char-array-with-the-kernel/20230803-163946
-base: https://git.kernel.org/cgit/linux/kernel/git/acme/linux.git perf/core
-patch link: https://lore.kernel.org/all/20230803083352.1585-4-zegao@tencent.com/
-patch subject: [RFC PATCH v6 3/5] sched, tracing: reorganize fields of switch event struct
+commit: 4f0dbecaea6160d50d568fcaa4e09346052f7423 ("[PATCH] PCI: Allocate maximum available buses to help extending the daisy chain")
+url: https://github.com/intel-lab-lkp/linux/commits/Sanath-S/PCI-Allocate-maximum-available-buses-to-help-extending-the-daisy-chain/20230816-132324
+base: https://git.kernel.org/cgit/linux/kernel/git/pci/pci.git next
+patch link: https://lore.kernel.org/all/20230816051923.2287912-1-Sanath.S@amd.com/
+patch subject: [PATCH] PCI: Allocate maximum available buses to help extending the daisy chain
 
-in testcase: perf-sanity-tests
-version: perf-x86_64-00c7b5f4ddc5-1_20230402
+in testcase: filebench
+version: filebench-x86_64-22620e6-1_20221010
 with following parameters:
 
-	perf_compiler: gcc
+	fs: xfs
+	test: filemicro_statfile.f
+	cpufreq_governor: performance
 
 
 
 compiler: gcc-12
-test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480+ (Sapphire Rapids) with 256G memory
+test machine: 96 threads 2 sockets Intel(R) Xeon(R) Platinum 8260L CPU @ 2.40GHz (Cascade Lake) with 128G memory
 
 (please refer to attached dmesg/kmsg for entire log/backtrace)
+
 
 
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202308231018.8ddf15b7-oliver.sang@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202308232106.50c8f492-oliver.sang@intel.com
 
 
+[    6.738560][    T1] pci 0000:17:00.0: Bridge has subordinate 0x19 but max busn 0x39, reconfiguring
+...
+[  238.092454][ T1230] ls: cannot access '/dev/nvme1n1p1': No such file or directory
+[  238.092457][ T1230]
+[  238.526845][ T1230] disk number 2 mismatch with 1 real disks: /dev/nvme1n1p1 /dev/nvme0n1p1
 
- 14: Roundtrip evsel->name                                           : Ok
- 15: Parse sched tracepoints fields                                  : FAILED!
- 16: syscalls:sys_enter_openat event fields                          : Ok
+
+before this commit, we have below two disks on server:
+
+# ls -l /dev/disk/by-path/
+lrwxrwxrwx 1 root root  13 Aug 23 23:00 pci-0000:83:00.0-nvme-1 -> ../../nvme0n1
+lrwxrwxrwx 1 root root  15 Aug 23 23:00 pci-0000:83:00.0-nvme-1-part1 -> ../../nvme0n1p1
+lrwxrwxrwx 1 root root  13 Aug 23 23:00 pci-0000:84:00.0-nvme-1 -> ../../nvme1n1
+lrwxrwxrwx 1 root root  15 Aug 23 23:00 pci-0000:84:00.0-nvme-1-part1 -> ../../nvme1n1p1
+
+but after this commit, there is no nvme1n1p1 detected
 
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20230823/202308231018.8ddf15b7-oliver.sang@intel.com
+https://download.01.org/0day-ci/archive/20230823/202308232106.50c8f492-oliver.sang@intel.com
 
 
 
