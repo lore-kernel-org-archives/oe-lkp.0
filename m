@@ -1,192 +1,131 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f172.google.com (mail-pg1-f172.google.com [209.85.215.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A616125B4
-	for <oe-lkp@lists.linux.dev>; Thu, 24 Aug 2023 15:25:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 709E6C433D9
-	for <oe-lkp@lists.linux.dev>; Thu, 24 Aug 2023 15:25:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1692890716;
-	bh=zM6juq8xM0ioLZjO8HqYn5YlFgyLKPSxXfTQouHy1Hk=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=iAGUTPCdoT0+BiGAKECcZToTz02uLWO/Idp4vZwu6ONMRNNmy2WFeMU/N6j5RziNU
-	 +cccaXU+seqG8zDkrmJlEttgWBBnh79kpaQkImLjCHRiujliOy3KgOLHsbkhmqobJK
-	 PrFVYLHsP1RUDuYWtWLCWWz/nl7/2hGt2prRYPV1V13NRKswXTy/0lf2ARQ9xoxiqg
-	 J81yjHuYWgrcxi6jg3GDzcKHAOVKyn/16mwESCE2wN9u7PhpVWYjlX+6LyjVjSaRGj
-	 Wrf2/EGHFFMDtev9toHXdM+pwY5yvoNw39yBjINu68mGXtHYZeyGfuE54yDezq+kod
-	 0X5klGTkOGbkw==
-Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-1c0d0bf18d6so293605ad.0
-        for <oe-lkp@lists.linux.dev>; Thu, 24 Aug 2023 08:25:16 -0700 (PDT)
-X-Gm-Message-State: AOJu0YwmIbT/s+GDKs9Ahyzam4Jyqi29AnUbKU/ra1FLaj25x/3vYHUL
-	7dikZmt1DqbrSEwpJbZK5UMtqS2nNz/I9FPLrxM3+g==
-X-Google-Smtp-Source: AGHT+IEHow0McqsBMgXtEFTtyq5RM47lr+urwT6cDnN6OOUx+FsmxIKCak8O1onoCCYUeUTYf0QnN3a8nC1/6bTr9v0=
-X-Received: by 2002:a17:90a:4dc6:b0:26d:2fe5:ff2a with SMTP id
- r6-20020a17090a4dc600b0026d2fe5ff2amr14176041pjl.29.1692890715658; Thu, 24
- Aug 2023 08:25:15 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C309134A1
+	for <oe-lkp@lists.linux.dev>; Thu, 24 Aug 2023 20:25:35 +0000 (UTC)
+Received: by mail-pg1-f172.google.com with SMTP id 41be03b00d2f7-5657add1073so219577a12.0
+        for <oe-lkp@lists.linux.dev>; Thu, 24 Aug 2023 13:25:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1692908735; x=1693513535;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=cFJmG532/HPrRYioCuTk24wDgNpYX0BgfAByTQWgk1M=;
+        b=hcYfs51+SXXdiuzfra3zBaVWjYAKmLEEu4HyBnj77dLyAB+5NHqIw5vtGWJSUa4Wkq
+         9tpVFHW/u9pi3bBXquub9ifJFGLeoM3kym4INXeUVKwXLQll1QeiG9tx+psfSO+BB4Wk
+         +6xpzwVXtOvtWU+3f2a1wipUMGGDRQMOEz9YY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1692908735; x=1693513535;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=cFJmG532/HPrRYioCuTk24wDgNpYX0BgfAByTQWgk1M=;
+        b=QUQNFrrNxSzOGEICZeQrLYYhjT0zyyl0NHQutPGXIryo0z1nSHL4vqv6bWDXI7yZdZ
+         1K7Lcb4ZGIyjv+Ew2acTTZJypH42ccVC43rf8H/rjCl+4RSQxXOF+S+cU8rGZ1SspAIq
+         2cSdriD7JY7IRL57fW38hXkLw4m0Hu+3HiXNiag7d77cLUlWFWLQfzIMwqni5PeHimI4
+         QYJuHu+qvn2/MOWRo9apvNUrVkgD64vlk8yyHpC+WTdLOVhH5EU7Cg8UjyOcTqUsqmmo
+         n32JX7pahmQcT+bXP7lPugHU3kh+12uBcEZ7moU9mA1rFUhGvVO9tIFC7wbPAJbkttBd
+         cqRQ==
+X-Gm-Message-State: AOJu0Yxn5CtwH8Tv+2rfeNv8e9dzbpBPAGw6uZfz+PJscvN6jhbfFFVs
+	DBj9QBz7LFMg0rNrAwl8IMntxw==
+X-Google-Smtp-Source: AGHT+IFDXM7s9KQxsf1VNjwyTfPp9NokbBCnA0JlZH0mI8k2jO5MowzUQ/Rg4DxQnxD+bS+ULgkGrQ==
+X-Received: by 2002:a05:6a20:158f:b0:137:c971:6a0c with SMTP id h15-20020a056a20158f00b00137c9716a0cmr20659159pzj.31.1692908734819;
+        Thu, 24 Aug 2023 13:25:34 -0700 (PDT)
+Received: from www.outflux.net (198-0-35-241-static.hfc.comcastbusiness.net. [198.0.35.241])
+        by smtp.gmail.com with ESMTPSA id j12-20020aa7800c000000b00653fe2d527esm141767pfi.32.2023.08.24.13.25.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Aug 2023 13:25:34 -0700 (PDT)
+Date: Thu, 24 Aug 2023 13:25:33 -0700
+From: Kees Cook <keescook@chromium.org>
+To: Yonghong Song <yhs@fb.com>
+Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, linux-kernel@vger.kernel.org,
+	Song Liu <song@kernel.org>, Zhen Lei <thunder.leizhen@huawei.com>,
+	Nick Desaulniers <ndesaulniers@google.com>
+Subject: Re: [linus:master] [kallsyms]  8cc32a9bbf:
+ Kernel_panic-not_syncing:stack-protector:Kernel_stack_is_corrupted_in:test_entry
+Message-ID: <202308241323.ABBE0B09B@keescook>
+References: <202308232200.1c932a90-oliver.sang@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230817-free_pcppages_bulk-v1-2-c14574a9f80c@kernel.org> <202308241221.cc5ac84a-oliver.sang@intel.com>
-In-Reply-To: <202308241221.cc5ac84a-oliver.sang@intel.com>
-From: Chris Li <chrisl@kernel.org>
-Date: Thu, 24 Aug 2023 08:25:03 -0700
-X-Gmail-Original-Message-ID: <CAF8kJuNNcs5+0V4L9xC=DJSkDbUDj=61=70cw7FrKfgrHD60MA@mail.gmail.com>
-Message-ID: <CAF8kJuNNcs5+0V4L9xC=DJSkDbUDj=61=70cw7FrKfgrHD60MA@mail.gmail.com>
-Subject: Re: [PATCH RFC 2/2] mm/page_alloc: free_pcppages_bulk clean up
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-mm <linux-mm@kvack.org>, 
-	Andrew Morton <akpm@linux-foundation.org>, Kemeng Shi <shikemeng@huaweicloud.com>, 
-	baolin.wang@linux.alibaba.com, Mel Gorman <mgorman@techsingularity.net>, 
-	Michal Hocko <mhocko@suse.com>, David Hildenbrand <david@redhat.com>, Matthew Wilcox <willy@infradead.org>, 
-	Namhyung Kim <namhyung@google.com>, Greg Thelen <gthelen@google.com>, 
-	LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202308232200.1c932a90-oliver.sang@intel.com>
 
-Hi Oliver,
+I was able to reproduce this failure. Yonghong, any ideas what's going
+on here? I'm still trying to figure out what part of the
+kallsyms_selftest actually failed (there are about 4 places that all
+lead to this error message).
 
-Indeed, that is my bad. Thanks for reporting it.
+-Kees
 
-The patch has been sitting in my tree for a very long time.
-When I adopt it for the later kernel, I accidentally drop this chunk:
-
--                       if (!list_empty(list))
--                               break;
-
-I think that is what is missing. I will address that in the V2 and do
-more testing before I send it out.
-
-On Wed, Aug 23, 202
-
->
+On Wed, Aug 23, 2023 at 10:48:58PM +0800, kernel test robot wrote:
+> 
+> 
+> Hello,
+> 
+> kernel test robot noticed "Kernel_panic-not_syncing:stack-protector:Kernel_stack_is_corrupted_in:test_entry" on:
+> 
+> commit: 8cc32a9bbf2934d90762d9de0187adcb5ad46a11 ("kallsyms: strip LTO-only suffixes from promoted global functions")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> 
+> [test failed on linus/master f7757129e3dea336c407551c98f50057c22bb266]
+> [test failed on linux-next/master 28c736b0e92e11bfe2b9997688213dc43cb22182]
+> 
 > in testcase: boot
->
-> compiler: gcc-12
+> 
+> compiler: clang-16
 > test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
->
+> 
 > (please refer to attached dmesg/kmsg for entire log/backtrace)
-
-The kernel test robot is very interesting.
-I see that is how to start the qemu system.
-
-How do I invoke the test once I have qemu up and running with my testing kernel?
-
-I want to replicate it before I send out the V2 version.
-
-Chris
-
->
->
->
+> 
+> 
+> 
 > If you fix the issue in a separate patch/commit (i.e. not just a new version of
 > the same patch/commit), kindly add following tags
 > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202308241221.cc5ac84a-oliver.sang@intel.com
->
->
->
-> [   15.890907][    C0] BUG: kernel NULL pointer dereference, address: 00000005
-> [   15.891555][    C0] #PF: supervisor read access in kernel mode
-> [   15.892037][    C0] #PF: error_code(0x0000) - not-present page
-> [   15.893161][    C0] *pdpt = 000000002c9e7001 *pde = 0000000000000000
-> [   15.894410][    C0] Oops: 0000 [#1] SMP PTI
-> [   15.895385][    C0] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G            E      6.5.0-rc4-00242-g3373e582e78e #1
-> [   15.896801][    C0] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-> [   15.898250][    C0] EIP: free_pcppages_bulk+0x7d/0x200
-> [   15.899281][    C0] Code: 8d 34 c6 89 75 e4 83 f8 0c 0f 84 ee 00 00 00 ba ab aa aa aa f7 e2 b8 01 00 00 00 89 d1 d1 e9 d3 e0 89 45 e0 8b 45 e4 8b 50 04 <8b> 72 04
->  8d 5a fc 83 ee 04 39 c2 0f 84 0a 01 00 00 89 4d e8 eb 28
-> [   15.914130][    C0] EAX: e4c7520c EBX: e4c9f510 ECX: 55555555 EDX: 00000001
-> [   15.915477][    C0] ESI: e4c7520c EDI: e4c75200 EBP: c1819d98 ESP: c1819d60
-> [   15.916755][    C0] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068 EFLAGS: 00210006
-> [   15.918067][    C0] CR0: 80050033 CR2: 00000005 CR3: 2ca6a000 CR4: 000406f0
-> [   15.919278][    C0] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 00000000
-> [   15.920468][    C0] DR6: fffe0ff0 DR7: 00000400
-> [   15.921446][    C0] Call Trace:
-> [   15.922298][    C0]  <SOFTIRQ>
-> [   15.923149][    C0]  ? show_regs+0x55/0x80
-> [   15.924069][    C0]  ? __die+0x1d/0x80
-> [   15.924934][    C0]  ? page_fault_oops+0x65/0xc0
-> [   15.925890][    C0]  ? kernelmode_fixup_or_oops+0x73/0x100
-> [   15.926986][    C0]  ? __bad_area_nosemaphore+0xdc/0x1c0
-> [   15.928086][    C0]  ? bad_area_nosemaphore+0xf/0x40
-> [   15.929061][    C0]  ? do_user_addr_fault+0x1ac/0x3c0
-> [   15.930036][    C0]  ? exc_page_fault+0x51/0x140
-> [   15.930957][    C0]  ? pvclock_clocksource_read_nowd+0x140/0x140
-> [   15.931997][    C0]  ? handle_exception+0x133/0x133
-> [   15.932938][    C0]  ? pmd_clear_huge+0x7b/0x80
-> [   15.934885][    C0]  ? pvclock_clocksource_read_nowd+0x140/0x140
-> [   15.935963][    C0]  ? free_pcppages_bulk+0x7d/0x200
-> [   15.936915][    C0]  ? pvclock_clocksource_read_nowd+0x140/0x140
-> [   15.937954][    C0]  ? free_pcppages_bulk+0x7d/0x200
-> [   15.938876][    C0]  free_unref_page_commit+0x120/0x180
-> [   15.939826][    C0]  free_unref_page+0xe7/0x100
-> [   15.940688][    C0]  __free_pages+0x87/0xc0
-> [   15.941519][    C0]  __free_slab+0xa1/0x100
-> [   15.942383][    C0]  free_slab+0x27/0xc0
-> [   15.943187][    C0]  discard_slab+0x38/0x40
-> [   15.944014][    C0]  __unfreeze_partials+0x20c/0x240
-> [   15.946439][    C0]  put_cpu_partial+0x5b/0x80
-> [   15.947347][    C0]  __slab_free+0x287/0x380
-> [   15.948207][    C0]  ? __mod_memcg_lruvec_state+0x3e/0x80
-> [   15.949138][    C0]  kmem_cache_free+0x329/0x340
-> [   15.950003][    C0]  ? mt_free_rcu+0x10/0x40
-> [   15.950805][    C0]  ? free_task+0x4d/0x80
-> [   15.951594][    C0]  ? mt_free_rcu+0x10/0x40
-> [   15.952390][    C0]  mt_free_rcu+0x10/0x40
-> [   15.953181][    C0]  rcu_do_batch+0x158/0x440
-> [   15.953998][    C0]  rcu_core+0xce/0x1c0
-> [   15.954751][    C0]  rcu_core_si+0xd/0x40
-> [   15.955512][    C0]  __do_softirq+0xad/0x233
-> [   15.956293][    C0]  ? __lock_text_end+0x3/0x3
-> [   15.957084][    C0]  call_on_stack+0x45/0x80
-> [   15.957871][    C0]  </SOFTIRQ>
-> [   15.958525][    C0]  ? irq_exit_rcu+0x6a/0xc0
-> [   15.959284][    C0]  ? sysvec_apic_timer_interrupt+0x27/0x40
-> [   15.960136][    C0]  ? handle_exception+0x133/0x133
-> [   15.960900][    C0]  ? alarm_handle_timer+0xfb/0x100
-> [   15.961669][    C0]  ? sysvec_call_function_single+0x40/0x40
-> [   15.962542][    C0]  ? default_idle+0xb/0x40
-> [   15.963234][    C0]  ? sysvec_call_function_single+0x40/0x40
-> [   15.964026][    C0]  ? default_idle+0xb/0x40
-> [   15.964703][    C0]  ? arch_cpu_idle+0x8/0x40
-> [   15.965379][    C0]  ? default_idle_call+0x2a/0xc0
-> [   15.967867][    C0]  ? cpuidle_idle_call+0x122/0x180
-> [   15.968680][    C0]  ? do_idle+0x79/0xc0
-> [   15.969357][    C0]  ? cpu_startup_entry+0x25/0x40
-> [   15.970106][    C0]  ? rest_init+0x96/0xc0
-> [   15.970770][    C0]  ? arch_call_rest_init+0xd/0x80
-> [   15.971505][    C0]  ? start_kernel+0x347/0x480
-> [   15.972209][    C0]  ? early_idt_handler_common+0x44/0x44
-> [   15.972969][    C0]  ? i386_start_kernel+0x48/0x80
-> [   15.973678][    C0]  ? startup_32_smp+0x156/0x158
-> [   15.974397][    C0] Modules linked in: intel_rapl_msr(E) intel_rapl_common(E) ata_generic(E) ppdev(E) crc32_pclmul(E) crc32c_intel(E) aesni_intel(E) ipmi_devintf(
-> E) ipmi_msghandler(E) crypto_simd(E) ata_piix(E) cryptd(E) rapl(E) i2c_piix4(E) psmouse(E) evdev(E) serio_raw(E) bochs(E) drm_vram_helper(E) drm_kms_helper(E) drm_tt
-> m_helper(E) ttm(E) libata(E) parport_pc(E) floppy(E) parport(E) qemu_fw_cfg(E) button(E) drm(E) configfs(E) fuse(E) autofs4(E)
-> [   15.978905][    C0] CR2: 0000000000000005
-> [   15.979621][    C0] ---[ end trace 0000000000000000 ]---
-> [   15.980419][    C0] EIP: free_pcppages_bulk+0x7d/0x200
-> [   15.981222][    C0] Code: 8d 34 c6 89 75 e4 83 f8 0c 0f 84 ee 00 00 00 ba ab aa aa aa f7 e2 b8 01 00 00 00 89 d1 d1 e9 d3 e0 89 45 e0 8b 45 e4 8b 50 04 <8b> 72 04
->  8d 5a fc 83 ee 04 39 c2 0f 84 0a 01 00 00 89 4d e8 eb 28
-> [   15.983663][    C0] EAX: e4c7520c EBX: e4c9f510 ECX: 55555555 EDX: 00000001
-> [   15.984705][    C0] ESI: e4c7520c EDI: e4c75200 EBP: c1819d98 ESP: c1819d60
-> [   15.985738][    C0] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068 EFLAGS: 00210006
-> [   15.986822][    C0] CR0: 80050033 CR2: 00000005 CR3: 2ca6a000 CR4: 000406f0
-> [   15.987832][    C0] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 00000000
-> [   15.988839][    C0] DR6: fffe0ff0 DR7: 00000400
-> [   15.989679][    C0] Kernel panic - not syncing: Fatal exception in interrupt
-> [   15.996118][    C0] Kernel Offset: disabled
->
->
->
+> | Closes: https://lore.kernel.org/oe-lkp/202308232200.1c932a90-oliver.sang@intel.com
+> 
+> 
+> 
+> [   28.923687][    T1] systemd[1]: RTC configured in localtime, applying delta of 0 minutes to system time.
+> [   28.926842][    T1] systemd[1]: Failed to find module 'autofs4'
+> 
+> Welcome to Debian GNU/Linux 11 (bullseye)!
+> 
+> [   30.135342][  T115] kallsyms_selftest: Test for 1153th symbol failed: (show_trace_log_lvl) addr=c1033b00
+> [   30.135366][  T115] kallsyms_selftest: abort
+> [   30.137440][  T115] Kernel panic - not syncing: stack-protector: Kernel stack is corrupted in: test_entry+0x1419/0x1430
+> [   30.138878][  T115] CPU: 0 PID: 115 Comm: kallsyms_test Tainted: G                T  6.5.0-rc1-00002-g8cc32a9bbf29 #1
+> [   30.140321][  T115] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> [   30.141688][  T115] Call Trace:
+> [   30.142207][  T115]  panic+0xf4/0x31c
+> [   30.142789][  T115]  __stack_chk_fail+0x10/0x10
+> [   30.143470][  T115]  ? test_entry+0x1419/0x1430
+> [   30.144141][  T115]  test_entry+0x1419/0x1430
+> [   30.144802][  T115]  ? __die_body+0xb0/0xb0
+> [   30.145432][  T115]  ? 0xc1000000
+> [   30.145962][  T115]  ? __die_body+0xb0/0xb0
+> [   30.146642][  T115]  kthread+0x203/0x220
+> [   30.147262][  T115]  ? sprint_backtrace_build_id+0x20/0x20
+> [   30.148032][  T115]  ? kthreadd+0x2f0/0x2f0
+> [   30.148656][  T115]  ret_from_fork+0x19/0x24
+> [   30.149412][  T115] Kernel Offset: disabled
+> 
+> 
+> 
 > The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20230824/202308241221.cc5ac84a-oliver.sang@intel.com
->
->
->
-> --
+> https://download.01.org/0day-ci/archive/20230823/202308232200.1c932a90-oliver.sang@intel.com
+> 
+> 
+> 
+> -- 
 > 0-DAY CI Kernel Test Service
 > https://github.com/intel/lkp-tests/wiki
->
->
+> 
+
+-- 
+Kees Cook
