@@ -1,80 +1,89 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C38DA925
-	for <oe-lkp@lists.linux.dev>; Fri, 25 Aug 2023 08:26:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35F7C63A
+	for <oe-lkp@lists.linux.dev>; Tue, 29 Aug 2023 02:42:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1692952012; x=1724488012;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   mime-version;
-  bh=ID2TFMfnsg60k6fBvq2L/MbrVzCFMaThb1XVHruqSwk=;
-  b=VQBce5jiHBp32SOHQ1dsC/xyzrfO9NFfI5oWL/x9gl2yDo3EupAgPKVZ
-   PjhUpgtx1sRnk3/8qA8yRCd9yUY2uORXTaBX62lt8v44gDp2NCczTmAUn
-   LtFa3CPnp+nbGwG1YaahaC/5h5mLjphiWiYr0wG1r+h/5vuHBvGvOMZ9A
-   ygNiv7Oqo8FIxtd9vTx6p9Tq/7mb3Ru1yPEIVR3JCRpqgtvnmCKu/6ZCc
-   FhNHE39UK+4LRHyQGVReBiOl0fScHYyJL3+oOfanuVF1sYmi7DWpRELBM
-   e4FNxIn9VfIFr3r2zmjilJAeAkdyLf/bSN/B3XRgAB2mAbpUknEU/Uv/Z
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10812"; a="377404751"
-X-IronPort-AV: E=Sophos;i="6.02,195,1688454000"; 
-   d="scan'208";a="377404751"
+  t=1693276941; x=1724812941;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=FoXoadNI3su0bt27LLPndCMCilW/GxdnGLxcMm/Q2EE=;
+  b=bW6CSuvqA56DGSHK9dX8clFkoV1ipxh4cHx9h7jodmqOjmpSkEr/myh+
+   KMy9/AO3D+TJg+GQ5683y6YoL7UQvLh1bfZsYQKCvIWcMEXuBaEfa7hZF
+   f3jMi42TSw8Bcv0WCwtDZZKzTcwF86mmc8sFBoIcWFY9eLoW0MkdOQPtE
+   jl+g1kmEvc6WemRTCX1tAR5XUj4ehUCFqkKZI7+oVa82yeOXjFg1uHIHI
+   nTfOsj7irU9WArf4lyFz+Mw0PPMTVOVQ6zmbUzV9X6uv2rqX5DvW7bfPu
+   CRkimAmJH/2T2W9b2tWg0rUvHcIF3tvVcwR772/In2++I5jj4jmOQF2/E
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10816"; a="372676125"
+X-IronPort-AV: E=Sophos;i="6.02,208,1688454000"; 
+   d="scan'208";a="372676125"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2023 01:26:51 -0700
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2023 19:42:20 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10812"; a="766882365"
-X-IronPort-AV: E=Sophos;i="6.02,195,1688454000"; 
-   d="scan'208";a="766882365"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orsmga008.jf.intel.com with ESMTP; 25 Aug 2023 01:26:50 -0700
-Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+X-IronPort-AV: E=McAfee;i="6600,9927,10816"; a="767898823"
+X-IronPort-AV: E=Sophos;i="6.02,208,1688454000"; 
+   d="scan'208";a="767898823"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orsmga008.jf.intel.com with ESMTP; 28 Aug 2023 19:42:19 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Fri, 25 Aug 2023 01:26:50 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ 15.1.2507.27; Mon, 28 Aug 2023 19:42:18 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27 via Frontend Transport; Fri, 25 Aug 2023 01:26:50 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.177)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ 15.1.2507.27; Mon, 28 Aug 2023 19:42:18 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.27 via Frontend Transport; Mon, 28 Aug 2023 19:42:18 -0700
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (104.47.73.176)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.27; Fri, 25 Aug 2023 01:26:48 -0700
+ 15.1.2507.27; Mon, 28 Aug 2023 19:42:17 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RztI4JH2l4WgzGd3B+V7C7qUF69WKSO2l822agBdHbPIaHy+n+gxaM6low1BFn9Z9qAB81dyeTShlLrNwuXhRXfsmk5jKXZL8eL4s7mMZhw5pnUI7mCN1T/5LPsPSEt1zluNrAgYF7andvIQpemJPUyhAnfMhmPjhSyRvAeChtSmDIq91GvUlzzCIq5Ubn3SKKJmhCJiXTAuQIpdbgZ3ZwGfyAZEaxzfnP/PjyGrT4NmdYCvy9duTPB6vAb9Y4MeFnaIW2BKBply/d6N/DsYiDpAkA4lfImBDjJ8fdxZPiQGq3/sjbU8qbI96vQmZzvR23rva1rOtnnayFOJwX1HKQ==
+ b=JZcrFFql8ZexcIOhmap9EipoPUhF8jTO+/58tJjhC1upYWNbjBCe8+naPTk9kE9iJGh+qo5zmpKLNmnBc380OYZkGNXoqWB4eHFMRMEyZwKdM6wotkPVvOfLiM159iYFt6R9g4hoPMArjVugfME5qWVrlr5l3jQpXO1DfakhlOWYRCE9Ew2yCYeY/4/Hu3aL3GdwkjmJTrK7E84PFLFAH9gwi05lco6eVx2MQThRW3iVvk4oKaE2MEX7y7/i4JpYEjJdD32VW93RW4cqMINjfrUMItnHF98M3iQ4vNsvUVC+eeHTL8FI/eFBNLZ6IsPrrKafbvE16+3VnBT1cUsl5Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=v0Av7+Bxi1pLJXlxeS5calqQybre+eDUEr/tT8x+J+k=;
- b=DXOOyliWFlYcohG8wL+xr5eHVtmtISP2LU8QAgDJb+bkyLs/0RCb+AqlDYxzjFNj9ORFHrmF1VDQYTQQ5WZ2hDvI8yp7UPX9z1rtzd5kGHZ0L4sO4LSKKzqeKc0U9jIf5cBjvmdRqd/7ECNcFCanErS8DralMZI0elCSFcpXWvL59sBpeSuLxCAzCPSU2tTOuljxQwJ2o3drCKiJ/cBd5uKRUB0VD5GgwRdg2JGi5xMnTGLG0N4XTNfImjh/TO9M9merFW+cCt2IJ/InqfUbO1Yn92hOZXPvEp+7ngE3//qAQTjp15vSUmzwgGqRNKzJYo/LfNZEo9ewJ7I5sszbIQ==
+ bh=P+Ai5l+tltZW2ISDbpNRA1ne2DJwE62iESVi/HieTmk=;
+ b=FdPJu/TuDKQSJjguO1oifUxG+Crgr5Xvh7vpLJZAwjHMOtMp/Eja1IooSlOi8Lb56y+kNtAKN3DZAb8wNVqNL3Ik7j3Q0kV+gG0XPMKikuiTWFii4a1gB1sE5CmKM2TLgI07bHjPmM0HheHeWizA7niDLt1WUhd+oD3ViUNtwNDAwMs/n9C1qn+gFDvPhAcF0SvLwvbISYhrIERe5G2OHxh7vIYsUDadw/Jd5wyFwCw1/ngB196GMuJcGkmcT9MBNK5/N/qEvuM+jmCo8yP3YTiz5LYk1SJkSuq8Pc0ASyTLNl9PXcO8BT0zM0RBlqsjSDup09uSvx5VhYIPNZz/+g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
- by BL3PR11MB6361.namprd11.prod.outlook.com (2603:10b6:208:3b4::15) with
+ by CH3PR11MB8518.namprd11.prod.outlook.com (2603:10b6:610:1b8::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.29; Fri, 25 Aug
- 2023 08:26:41 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6699.13; Tue, 29 Aug
+ 2023 02:42:13 +0000
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com
  ([fe80::73c6:1231:e700:924]) by PH8PR11MB6779.namprd11.prod.outlook.com
- ([fe80::73c6:1231:e700:924%4]) with mapi id 15.20.6699.027; Fri, 25 Aug 2023
- 08:26:41 +0000
-Date: Fri, 25 Aug 2023 16:26:31 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: Sven Schnelle <svens@linux.ibm.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
-	<linux-trace-kernel@vger.kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
-	Masami Hiramatsu <mhiramat@kernel.org>, <bpf@vger.kernel.org>,
+ ([fe80::73c6:1231:e700:924%4]) with mapi id 15.20.6699.034; Tue, 29 Aug 2023
+ 02:42:13 +0000
+Date: Tue, 29 Aug 2023 10:42:04 +0800
+From: Oliver Sang <oliver.sang@intel.com>
+To: Adrian Hunter <adrian.hunter@intel.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Arnaldo Carvalho de Melo
+	<acme@redhat.com>, Ian Rogers <irogers@google.com>, Jiri Olsa
+	<jolsa@kernel.org>, Namhyung Kim <namhyung@kernel.org>,
+	<linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
 	<oliver.sang@intel.com>
-Subject: Re: [PATCH RESEND v3 1/3] tracing/synthetic: use union instead of
- casts
-Message-ID: <202308251530.5bd302e0-oliver.sang@intel.com>
+Subject: Re: [perf-tools-next:tmp.perf-tools-next] [perf dlfilter]
+ f178a76b05: perf-sanity-tests.dlfilter_C_API.fail
+Message-ID: <ZO1a/GyZmevAXj9Z@xsang-OptiPlex-9020>
+References: <202308232146.94d82cb4-oliver.sang@intel.com>
+ <78a87ed2-3aa8-95ef-28ae-19961f7c4acb@intel.com>
+ <ZOa1LnnwETWCQ6n5@xsang-OptiPlex-9020>
+ <8685878c-8de0-88b9-4434-f823620f6abf@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20230816154928.4171614-2-svens@linux.ibm.com>
-X-ClientProxiedBy: SI2PR02CA0041.apcprd02.prod.outlook.com
- (2603:1096:4:196::20) To PH8PR11MB6779.namprd11.prod.outlook.com
+In-Reply-To: <8685878c-8de0-88b9-4434-f823620f6abf@intel.com>
+X-ClientProxiedBy: SI2PR01CA0040.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:193::14) To PH8PR11MB6779.namprd11.prod.outlook.com
  (2603:10b6:510:1ca::17)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -83,159 +92,470 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|BL3PR11MB6361:EE_
-X-MS-Office365-Filtering-Correlation-Id: bde65618-3497-425d-8fe2-08dba54501dc
+X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|CH3PR11MB8518:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2b5e2453-9186-409c-a901-08dba8398cb2
 X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: FcQ32JC1oK4JxD8/pN59toQmguNV6SWdMqZY09qO4/1LXjEAN6j6CB9lCvWfjvOjNIiHURgIqLZLhP8EF6V3lGCX+MZ3ZSNqEkuT2sFgCtpAszG0sxjA69UNcIls2qjoIBJ+9SRfxJrTT1c9mHb9UvNh9GbRXFUKYpGffQbiQFYHcCNRdHGofPdeLItAzdBRb1vsNhlrsPue4jzMCIirugvdDP+zK+uZARuc1ew1rBug0Fn1FI3Q1ONCwyeRzLQ5QgeDDTInziOdzAmL4s85t0htJSLi71VRHLC6TS566w3JIfpbpCesWWUo4ZCoIWPgxnuszFVDWEp14A/1hMIS83RErqnnLt0d3mn9zm/nslI3CKtSIJ6evDQKST+b1yebPVOaP/5QWy23I6cA9Qx+7P/igvbrjxqrhe4dtZGFEFmzw8grQWwh2PhMeqaeDIjgQjFnXv5y8kN5v0o6hMAXBqxjORsC76s0qZr9wR+eWMeAG2et1uI1qdP4rJn70a3tGoaJr7bLN+YCqZ9sZlYK1GjccrB8/ongxSNynglY/zDbPFV9+MGIMvk2GSrGZqkGrtAegjuugnD/wkavokheOQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(396003)(366004)(376002)(136003)(39860400002)(1800799009)(451199024)(186009)(1076003)(83380400001)(6512007)(26005)(478600001)(2616005)(45080400002)(5660300002)(107886003)(966005)(2906002)(8676002)(8936002)(4326008)(82960400001)(38100700002)(66476007)(66556008)(66946007)(6916009)(86362001)(41300700001)(54906003)(6506007)(6486002)(36756003)(6666004)(316002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: DHV7V49qomXn+kzfuHmJhFyAefhojhb8lBTa7uxmUtZdxXNneucwCC+qCyigDDQLuc9O1b8MuoVYF35PuptNxtnZmTBSaZoyMsihRbMXerg1jubBXAmFuKbbV0X2plbV9Pm4zbgTmbVtKcavb6ZCKN0APA6fan0+Vp7ack8QI6SqIe7qpIB9mlg1MIjXCO77Oaw2yZy03cgFSJt7cSDqIldZvuin26LdlvV3R7aoU3m91EODArZQyyg4Jmk2a60jiYQZCnaLTt1aX3U2gm29qgYkt6t64aueoa0gICxedXRqimDOn/f/leuWyF38kVznQZnW+Cp1+jsVl6XTzlpE1u6ipwPIZPqszAkJ3A+8cwOGHML3v61Vr5033rDdUcqkUVUymz/Jm5byfXKDoe66MLEPtCpc0CKbaiDzed8hzR9tkWDIP0jcLqje8ZPz4HMLK0ismOa2XuJyBUbIXtBqeGAJ5zbaLo76lW591XaJxBkdkrhQ3nVnPdbW3TI5mFdgV9qkMV8SpS+Xu/WslvdUWesVDJuS5XDvGOUVFVxbSb6S2se4Yb+YZOGiOSnq2BAZfmUvhNYUmEi4LziwzvNeSIMmQLgD8YonQVNpf4X9uQAg5ah+P6HeDZ0nglsKSO+I
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(7916004)(39860400002)(376002)(366004)(346002)(136003)(396003)(451199024)(186009)(1800799009)(966005)(33716001)(86362001)(6862004)(5660300002)(53546011)(9686003)(83380400001)(30864003)(44832011)(8676002)(41300700001)(4326008)(66556008)(6512007)(6486002)(6666004)(107886003)(26005)(6506007)(8936002)(54906003)(82960400001)(38100700002)(66946007)(2906002)(66476007)(6636002)(316002)(478600001)(2004002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?XOL5/UYfM95xVAkV45HQLRsoEiPVEPpHaZVI5ri9J3nbKrNMbvPIm0W50Yjl?=
- =?us-ascii?Q?/c9iaLCmN1QHERdGoFArtZRup7QuQIcbPGsWKKTfOfqWFAkcDBuywSgciZWA?=
- =?us-ascii?Q?FUvi5D44y1rbPsLF6QbkxwUL/bxebvQFvNibvJhS4o0dc08zwLWy0vywCMkP?=
- =?us-ascii?Q?DsZJl30GnYvTls/T0NRxJ8uoe5ImeyKa4DovOogrKIBOVuzEaBkm3dfpO3cr?=
- =?us-ascii?Q?0OXYxCwE0WmS+ICivIdU5eDFu4bfZNsiSgm9dxFUZlNrZS01nhv0CP1YFYHX?=
- =?us-ascii?Q?TksHI3gS76Y4He9S3cCHPxWP3qd8LuP/ab2hczvG6eujSiQBWZnBMM3Z+1II?=
- =?us-ascii?Q?DaTxLCEdVxepOOKxt6ez7Dj/gpjENnini5xNj6KheTZk45IskHYnY7z2uU/5?=
- =?us-ascii?Q?FAhhEIp9pbEMZhVbCGeA9J0rUc0HsZIJr2Ex3stdv970+YaIwh1NqzXYb7A3?=
- =?us-ascii?Q?vl6A+aSuy722IBJrrDL2NkYrZFFFTM9yAGVJjEgCNGC7guZcCwC9wHGSyeXM?=
- =?us-ascii?Q?kP2fMga6aq+FrTBTnjmsyFyEtDREpGQ5Yj+ZHazbGPVI4AHOK/vuarRNIYEv?=
- =?us-ascii?Q?K69cqiU1AOy4Oh8blrKbu/v0lgCq9B5cSlsiKhVznOdi1e6zxXp4c2lrfPZw?=
- =?us-ascii?Q?sEVWMUNlj5Om+TJVLUdUhEsekmMMNr8E/1qDC2ZW5WL2f1xLF1OAQchNPwtD?=
- =?us-ascii?Q?m6yyreTZVUMlvOs7riqObohIk92mkGaub8buwXRVQZo7VVTzpcPSEh6okxE3?=
- =?us-ascii?Q?B3/CA3iBUpZZRJ8Ff4ojVlD6unVwvkIS+FySJFW9BKlJsGbQ/oezlEFQoTzR?=
- =?us-ascii?Q?AatEqaiQlcQjAUmkK/QM2ZtlUQB1Dw4wxqJYo9lycQNg82AYbSMQ3bjGndVZ?=
- =?us-ascii?Q?t0ro/q+/rbpIQEPzj13pBvpK15TthFoeRw/LdGceUvz+wzLcLF4zn5IT4jlH?=
- =?us-ascii?Q?pj/fUOiGl7mYNgZRDjmH70PIM7TpBzA2lH6rf4FR57888MfKCLB3GnPDaJe1?=
- =?us-ascii?Q?8grumailjuMO4H1tA4FiVFdDqWJaM2qZ371CwvWqD2RxBXbevpgMPKR3cSMY?=
- =?us-ascii?Q?GvF/VzdZfVOpF7Erwt8dN7+wfJC10FNg/ppIV9Cx8hY00MaC5XCWzBsvPpc5?=
- =?us-ascii?Q?SetnO/Q+7CjqkERzW6NOX05mxXjtfb1qv+l2eWF5wYMDXskeWjVdLUURJ/NH?=
- =?us-ascii?Q?5faLhIWdksBagPaGFrzMwUo+m/wWEl3gBOz6J9/wYKzXBCUhs0Lx42h/gQ9X?=
- =?us-ascii?Q?LrjbKO9sgcWihFiBf57l9qYGLvPxAkx2Ps9BiQUPImdaewJEE4DZZfxugV/X?=
- =?us-ascii?Q?Bt+I1qrq7e4/xUZWykRk40WKPuhplDfYY02M6P9xkhknXZ797asnbvsAfiR3?=
- =?us-ascii?Q?x7qQfMsWk02Ez+vumznqjbasK5XNvyEul9HWUPXiXFn5Kc4Jqns3OFAYXI7B?=
- =?us-ascii?Q?WCbdqhb+noIdICpf1AJaQOB3wZY/E6WuMDoaTSqKt7srKtM+TWDWPR23bvH6?=
- =?us-ascii?Q?zw374G7KbOhMxgAqVs/eIr3qAPWG/MTAiVOnrbIBgFjjKA3TTRE/wmBKzsU8?=
- =?us-ascii?Q?PBn4UN0X+3bpDbYWEyzP8tz3zwGMQdUmUK6EFSYFdmIHQaE++S8cezNHutFZ?=
- =?us-ascii?Q?zw=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: bde65618-3497-425d-8fe2-08dba54501dc
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?pjbMA8KcdaHgyLBzt7Lh0aiOopVgF16MYhAF4YbLuO6U1KLd16wrENzNjTPU?=
+ =?us-ascii?Q?YrrswXhIdeNP29e1nsRNoTyM0N7eOPKHbjNQoXZFizv0IR89iuJvGx2KgBgt?=
+ =?us-ascii?Q?0fQESEiObYlMwqnEivK2kO+AVklw43GtW8D1rHepk8tJ0FXHf1LuAIz7KS8J?=
+ =?us-ascii?Q?t+wO0+aMYAhjp7Gs57d6tPh8es+m8jNSH6FELraX1CT2rhM8jKqeqQmYQtTy?=
+ =?us-ascii?Q?WjfXUoqx4/Jm2ofHFdW7esn4EtDYR0vbue3L4TMBcKCHqZqPOpBkMt8HydC+?=
+ =?us-ascii?Q?vxxH421IJm7MkqCAzy9LcmTl78ivf+OaI3m2CISLZYc75pZEJTfRZFpJLJBa?=
+ =?us-ascii?Q?SF5tFGyNNhw8/SbOLdQ/OjtKQk3Doko3yHLxk1nzjdeHlFOoR6lCU6LccJ1q?=
+ =?us-ascii?Q?l4cYpqt0PdfnW448yOl5/I9iyYU/5wdbLiBqcdP5HpiOvitUfyubfukCAluu?=
+ =?us-ascii?Q?m8+h+Gph/NfJhhKRwnJGJNoz/KQyuph1iucILrcziPIhvwrvKdSvBsSCA9ML?=
+ =?us-ascii?Q?OrYaRupIJLk8DVTP2Ehn4ydijQ3bcJnKr6iyBRYsGLIwdEiJOAvnxc4VERh3?=
+ =?us-ascii?Q?xR3fpB2eiDE/qOv1HkIrUlm7OPMBzhnfjNRQoVAyygTCQSneiGppVyCi1+DP?=
+ =?us-ascii?Q?qxW0rQ2WQS6o3v7V9BW9liHO/EnQwPkPDF9gaSQDx1vZs61Hsy1AFcwjPovV?=
+ =?us-ascii?Q?1cK6I/m6snMcW1gfB/hDEHBziJiVkYpZHzSOKK4qwxW1OyuE2vgMeDUUP22l?=
+ =?us-ascii?Q?sjZxgENar/eDKPlpmemZMp+v7c3AXnmZyeiHBFAhAC/+8Xim9xEEpEt++BBL?=
+ =?us-ascii?Q?PRAjeOdLxjwWIw/loBVsfXccB17fxVq49I8QRbDT3bAEemwFnEcrWUwcr6Kr?=
+ =?us-ascii?Q?/3uMGoi0O53Wttok2ri+x+QQ8RGmWgaYL8AYqc0L6KOmcHs6bJh7KTPigpc2?=
+ =?us-ascii?Q?RQHDZJ0ThQIHKmFZEjPc2UVBJLNVoS351on1H/cW/xC0MVeeuvwfU+eMTfRM?=
+ =?us-ascii?Q?01hm2cPpPf4OJhANGp4BbKx0IjrmBdManxyX5TR3jdmunQvSilsRARDL+O5v?=
+ =?us-ascii?Q?8bcMF1HNcF4ez3Wxhiin0tJcRUzE0lWn//XwXuRCNwaqhdTGMaIxZ0luYOYf?=
+ =?us-ascii?Q?Ijvy7HMn2FOKde1DHRIsraLNNOgrM86BolItCUcIZ5eklOXJgFbSnw6+aB7W?=
+ =?us-ascii?Q?uLMGiff3B323s4EsXodRtF+FFmuhGczSgTMh2zJaHNHSDqENBjHePh/ckWpr?=
+ =?us-ascii?Q?Nef6Pfb3ksu7GSxg9kwLhAJP+tJM8OBU9np5t5GSdewMnYJ1caA/oKsyQR3J?=
+ =?us-ascii?Q?s8s+cWL98G5lvOlvMaHjvtYnpMoZzlFJUi4C76M/mMPGO4E8D7pYc6Y+bamX?=
+ =?us-ascii?Q?AgsUXZukj4Maf3Mpyc/e8BZilDCL1yZBeXh3cfiaDGLSN6Nn3DskW5ag6VB9?=
+ =?us-ascii?Q?22HnYpDNshFvo/hdm/Oe71+683w69lq11wzlUJnuOmbVSwPksOuowml+Kwrl?=
+ =?us-ascii?Q?7sBEH/04TeH9oL5yO0cFZFX3K3HFl4OL5MZDizqSymPnTusZtxuPjciGzL3g?=
+ =?us-ascii?Q?jireGqBWs04txaoME5avOEAUEBrwFFgfZPfGOmp1wedVUghvAHEHncdzRk/u?=
+ =?us-ascii?Q?sQ=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2b5e2453-9186-409c-a901-08dba8398cb2
 X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB6779.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2023 08:26:40.8919
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Aug 2023 02:42:13.3256
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 76zUVLl3LJ9Zivw9E39ZHNaok45dlYPuHkA/o2zvAf5qC6oHubrruR1S9EJUyXBckRaiwnVKVF96neYgFdvU4Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR11MB6361
+X-MS-Exchange-CrossTenant-UserPrincipalName: YIVD0nOFNs1ikvzGfLXabbMbcQxDG8+D6tPaMTy177UUq3GlyguD/vnotBi1HvZlUm6xZ5nONRpy7msfrQsaAw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR11MB8518
 X-OriginatorOrg: intel.com
 
+hi, Adrian Hunter,
+
+On Thu, Aug 24, 2023 at 07:45:25AM +0300, Adrian Hunter wrote:
+> On 24/08/23 04:41, Oliver Sang wrote:
+> > hi, Adrian Hunter,
+> > 
+> > On Wed, Aug 23, 2023 at 06:37:49PM +0300, Adrian Hunter wrote:
+> >> On 23/08/23 17:57, kernel test robot wrote:
+> >>>
+> >>>
+> >>> Hello,
+> >>>
+> >>> kernel test robot noticed "perf-sanity-tests.dlfilter_C_API.fail" on:
+> >>>
+> >>> commit: f178a76b054fd046d212c3c67745146ff191a443 ("perf dlfilter: Add a test for resolve_address()")
+> >>> https://git.kernel.org/cgit/linux/kernel/git/perf/perf-tools-next.git tmp.perf-tools-next
+> >>>
+> >>> [test failed on linux-next/master 28c736b0e92e11bfe2b9997688213dc43cb22182]
+> >>
+> >> We sometimes make a test for an issue then fix it, so the new test fails,
+> >> but is fixed in a subsequent patch.  If you read the commit it says as much:
+> >>
+> >> commit f178a76b054fd046d212c3c67745146ff191a443
+> >> Author: Adrian Hunter <adrian.hunter@intel.com>
+> >> Date:   Mon Jul 31 12:18:55 2023 +0300
+> >>
+> >>     perf dlfilter: Add a test for resolve_address()
+> >>     
+> >>     Extend the "dlfilter C API" test to test
+> >>     perf_dlfilter_fns.resolve_address(). The test currently fails, but passes
+> >>     after a subsequent patch.
+> >>     
+> >>     Reviewed-by: Ian Rogers <irogers@google.com>
+> >>     Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+> >>     Cc: Jiri Olsa <jolsa@kernel.org>
+> >>     Cc: Namhyung Kim <namhyung@kernel.org>
+> >>     Link: https://lore.kernel.org/r/20230731091857.10681-1-adrian.hunter@intel.com
+> >>     Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+> >>
+> >> The fix is:
+> >>
+> >> 42c6dd9d23019ff339d0aca80a444eb71087050e perf dlfilter: Initialize addr_location before passing it to thread__find_symbol_fb()
+> > 
+> > thanks a lot for information!
+> > 
+> > as above mentioned, when this auto-bisect done, it confirmed the issue still
+> > exists linux-next/master:
+> > [test failed on linux-next/master 28c736b0e92e11bfe2b9997688213dc43cb22182]
+> > which includes 42c6dd9d23019ff339d0aca80a444eb71087050e
+> > 
+> > we will test again on latest linux-next/master:
+> > e3f80d3eae76c (tag: next-20230823, linux-next/master, broonie-ci/next-master) Add linux-next specific files for 20230823
+> > and 42c6dd9d23019ff339d0aca80a444eb71087050e
+> > 
+> > Thanks
+> 
+> Could you include the output from:
+> 
+> 	perf test -v dlfilter
+
+sorry for late. by testing again on e3f80d3eae76c (next-20230823) and fix
+commit (42c6dd9d23019), we still observed the failure of "dlfilter C API"
+test.
+
+below is the output after adding '-v':
+
+ 67: dlfilter C API                                                  :
+--- start ---
+test child forked, pid 10070
+Checking for gcc
+Command: gcc --version
+gcc (Debian 10.2.1-6) 10.2.1 20210110
+Copyright (C) 2020 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+dlfilters path: /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/dlfilters
+Command: gcc -g -o /tmp/dlfilter-test-10070-prog /tmp/dlfilter-test-10070-prog.c
+Creating new host machine structure
+Command: /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf script -i /tmp/dlfilter-test-10070-perf-data --dlfilter /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/dlfilters/dlfilter-test-api-v0.so --dlarg first --dlarg 1 --dlarg 4198700 --dlarg 4198693 --dlarg 0 --dlarg last
+start API
+filter_event_early API
+filter_event API
+stop API
+
+=================================================================
+==10080==ERROR: LeakSanitizer: detected memory leaks
+
+Indirect leak of 1314 byte(s) in 21 object(s) allocated from:
+    #0 0x7fb81e5d2037 in __interceptor_calloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:154
+    #1 0x5629993429c2 in symbol__new util/symbol.c:300
+    #2 0x5629996dfe6b in dso__load_sym_internal util/symbol-elf.c:1713
+    #3 0x5629996e08c8 in dso__load_sym util/symbol-elf.c:1771
+    #4 0x56299934f62a in dso__load util/symbol.c:2042
+    #5 0x5629993d9f61 in map__load util/map.c:353
+    #6 0x5629993da42a in map__find_symbol util/map.c:387
+    #7 0x56299928f86c in machine__resolve util/event.c:760
+    #8 0x562998fa4ba1 in process_sample_event /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/builtin-script.c:2389
+    #9 0x5629993f6a7a in evlist__deliver_sample util/session.c:1518
+    #10 0x5629993f6f94 in machines__deliver_event util/session.c:1557
+    #11 0x5629993f8902 in perf_session__deliver_event util/session.c:1639
+    #12 0x5629993e45dd in ordered_events__deliver_event util/session.c:188
+    #13 0x562999413dbc in do_flush util/ordered-events.c:245
+    #14 0x562999414bd7 in __ordered_events__flush util/ordered-events.c:324
+    #15 0x5629994150b2 in ordered_events__flush util/ordered-events.c:342
+    #16 0x5629993fe9ac in __perf_session__process_pipe_events util/session.c:2122
+    #17 0x562999405d8a in perf_session__process_events util/session.c:2622
+    #18 0x562998faa215 in __cmd_script /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/builtin-script.c:2839
+    #19 0x562998fbe081 in cmd_script /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/builtin-script.c:4365
+    #20 0x562999224c02 in run_builtin /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:322
+    #21 0x56299922547f in handle_internal_command /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:375
+    #22 0x5629992259b1 in run_argv /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:419
+    #23 0x5629992260dd in main /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:535
+    #24 0x7fb81d77ad09 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x23d09)
+
+Indirect leak of 478 byte(s) in 1 object(s) allocated from:
+    #0 0x7fb81e5d2037 in __interceptor_calloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:154
+    #1 0x562999336ea3 in dso__new_id util/dso.c:1315
+    #2 0x56299933d354 in __dsos__addnew_id util/dsos.c:271
+    #3 0x56299933d4e1 in __dsos__findnew_id util/dsos.c:294
+    #4 0x56299933d58d in dsos__findnew_id util/dsos.c:301
+    #5 0x5629993d4c4b in machine__findnew_dso_id util/machine.c:3364
+    #6 0x5629993d8a33 in map__new util/map.c:167
+    #7 0x5629993c759d in machine__process_mmap_event util/machine.c:2029
+    #8 0x56299928acc7 in perf_event__process_mmap util/event.c:395
+    #9 0x5629993f7022 in machines__deliver_event util/session.c:1559
+    #10 0x5629993f8902 in perf_session__deliver_event util/session.c:1639
+    #11 0x5629993fb98d in perf_session__process_event util/session.c:1875
+    #12 0x5629993fe31b in __perf_session__process_pipe_events util/session.c:2102
+    #13 0x562999405d8a in perf_session__process_events util/session.c:2622
+    #14 0x562998faa215 in __cmd_script /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/builtin-script.c:2839
+    #15 0x562998fbe081 in cmd_script /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/builtin-script.c:4365
+    #16 0x562999224c02 in run_builtin /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:322
+    #17 0x56299922547f in handle_internal_command /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:375
+    #18 0x5629992259b1 in run_argv /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:419
+    #19 0x5629992260dd in main /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:535
+    #20 0x7fb81d77ad09 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x23d09)
+
+Indirect leak of 256 byte(s) in 1 object(s) allocated from:
+    #0 0x7fb81e5d2037 in __interceptor_calloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:154
+    #1 0x56299986b463 in zalloc (/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf+0x1923463)
+    #2 0x56299941dcbe in thread__new util/thread.c:44
+    #3 0x5629993bb6b7 in ____machine__findnew_thread util/machine.c:654
+    #4 0x5629993bbad8 in __machine__findnew_thread util/machine.c:693
+    #5 0x5629993bbb8e in machine__findnew_thread util/machine.c:703
+    #6 0x5629993bc0a1 in machine__process_comm_event util/machine.c:750
+    #7 0x562999289065 in perf_event__process_comm util/event.c:224
+    #8 0x5629993f72b9 in machines__deliver_event util/session.c:1565
+    #9 0x5629993f8902 in perf_session__deliver_event util/session.c:1639
+    #10 0x5629993fb98d in perf_session__process_event util/session.c:1875
+    #11 0x5629993fe31b in __perf_session__process_pipe_events util/session.c:2102
+    #12 0x562999405d8a in perf_session__process_events util/session.c:2622
+    #13 0x562998faa215 in __cmd_script /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/builtin-script.c:2839
+    #14 0x562998fbe081 in cmd_script /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/builtin-script.c:4365
+    #15 0x562999224c02 in run_builtin /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:322
+    #16 0x56299922547f in handle_internal_command /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:375
+    #17 0x5629992259b1 in run_argv /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:419
+    #18 0x5629992260dd in main /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:535
+    #19 0x7fb81d77ad09 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x23d09)
+
+Indirect leak of 120 byte(s) in 1 object(s) allocated from:
+    #0 0x7fb81e5d2037 in __interceptor_calloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:154
+    #1 0x56299986b463 in zalloc (/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf+0x1923463)
+    #2 0x5629993debff in maps__new util/maps.c:166
+    #3 0x56299941dbfe in thread__init_maps util/thread.c:27
+    #4 0x5629993bb822 in ____machine__findnew_thread util/machine.c:674
+    #5 0x5629993bbad8 in __machine__findnew_thread util/machine.c:693
+    #6 0x56299941dc26 in thread__init_maps util/thread.c:29
+    #7 0x5629993bb822 in ____machine__findnew_thread util/machine.c:674
+    #8 0x5629993bbad8 in __machine__findnew_thread util/machine.c:693
+    #9 0x5629993bbb8e in machine__findnew_thread util/machine.c:703
+    #10 0x5629993bc0a1 in machine__process_comm_event util/machine.c:750
+    #11 0x562999289065 in perf_event__process_comm util/event.c:224
+    #12 0x5629993f72b9 in machines__deliver_event util/session.c:1565
+    #13 0x5629993f8902 in perf_session__deliver_event util/session.c:1639
+    #14 0x5629993fb98d in perf_session__process_event util/session.c:1875
+    #15 0x5629993fe31b in __perf_session__process_pipe_events util/session.c:2102
+    #16 0x562999405d8a in perf_session__process_events util/session.c:2622
+    #17 0x562998faa215 in __cmd_script /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/builtin-script.c:2839
+    #18 0x562998fbe081 in cmd_script /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/builtin-script.c:4365
+    #19 0x562999224c02 in run_builtin /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:322
+    #20 0x56299922547f in handle_internal_command /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:375
+    #21 0x5629992259b1 in run_argv /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:419
+    #22 0x5629992260dd in main /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:535
+    #23 0x7fb81d77ad09 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x23d09)
+
+Indirect leak of 72 byte(s) in 1 object(s) allocated from:
+    #0 0x7fb81e5d1e8f in __interceptor_malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:145
+    #1 0x5629993d86fc in map__new util/map.c:128
+    #2 0x5629993c759d in machine__process_mmap_event util/machine.c:2029
+    #3 0x56299928acc7 in perf_event__process_mmap util/event.c:395
+    #4 0x5629993f7022 in machines__deliver_event util/session.c:1559
+    #5 0x5629993f8902 in perf_session__deliver_event util/session.c:1639
+    #6 0x5629993fb98d in perf_session__process_event util/session.c:1875
+    #7 0x5629993fe31b in __perf_session__process_pipe_events util/session.c:2102
+    #8 0x562999405d8a in perf_session__process_events util/session.c:2622
+    #9 0x562998faa215 in __cmd_script /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/builtin-script.c:2839
+    #10 0x562998fbe081 in cmd_script /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/builtin-script.c:4365
+    #11 0x562999224c02 in run_builtin /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:322
+    #12 0x56299922547f in handle_internal_command /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:375
+    #13 0x5629992259b1 in run_argv /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:419
+    #14 0x5629992260dd in main /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:535
+    #15 0x7fb81d77ad09 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x23d09)
+
+Indirect leak of 67 byte(s) in 1 object(s) allocated from:
+    #0 0x7fb81e5d2037 in __interceptor_calloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:154
+    #1 0x5629993429c2 in symbol__new util/symbol.c:300
+    #2 0x5629996d554e in dso__synthesize_plt_got_symbols util/symbol-elf.c:653
+    #3 0x5629996d5f7f in dso__synthesize_plt_symbols util/symbol-elf.c:714
+    #4 0x56299934f662 in dso__load util/symbol.c:2049
+    #5 0x5629993d9f61 in map__load util/map.c:353
+    #6 0x5629993da42a in map__find_symbol util/map.c:387
+    #7 0x56299928f86c in machine__resolve util/event.c:760
+    #8 0x562998fa4ba1 in process_sample_event /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/builtin-script.c:2389
+    #9 0x5629993f6a7a in evlist__deliver_sample util/session.c:1518
+    #10 0x5629993f6f94 in machines__deliver_event util/session.c:1557
+    #11 0x5629993f8902 in perf_session__deliver_event util/session.c:1639
+    #12 0x5629993e45dd in ordered_events__deliver_event util/session.c:188
+    #13 0x562999413dbc in do_flush util/ordered-events.c:245
+    #14 0x562999414bd7 in __ordered_events__flush util/ordered-events.c:324
+    #15 0x5629994150b2 in ordered_events__flush util/ordered-events.c:342
+    #16 0x5629993fe9ac in __perf_session__process_pipe_events util/session.c:2122
+    #17 0x562999405d8a in perf_session__process_events util/session.c:2622
+    #18 0x562998faa215 in __cmd_script /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/builtin-script.c:2839
+    #19 0x562998fbe081 in cmd_script /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/builtin-script.c:4365
+    #20 0x562999224c02 in run_builtin /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:322
+    #21 0x56299922547f in handle_internal_command /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:375
+    #22 0x5629992259b1 in run_argv /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:419
+    #23 0x5629992260dd in main /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:535
+    #24 0x7fb81d77ad09 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x23d09)
+
+Indirect leak of 53 byte(s) in 1 object(s) allocated from:
+    #0 0x7fb81e5d2037 in __interceptor_calloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:154
+    #1 0x5629993429c2 in symbol__new util/symbol.c:300
+    #2 0x5629996d5e7e in dso__synthesize_plt_symbols util/symbol-elf.c:707
+    #3 0x56299934f662 in dso__load util/symbol.c:2049
+    #4 0x5629993d9f61 in map__load util/map.c:353
+    #5 0x5629993da42a in map__find_symbol util/map.c:387
+    #6 0x56299928f86c in machine__resolve util/event.c:760
+    #7 0x562998fa4ba1 in process_sample_event /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/builtin-script.c:2389
+    #8 0x5629993f6a7a in evlist__deliver_sample util/session.c:1518
+    #9 0x5629993f6f94 in machines__deliver_event util/session.c:1557
+    #10 0x5629993f8902 in perf_session__deliver_event util/session.c:1639
+    #11 0x5629993e45dd in ordered_events__deliver_event util/session.c:188
+    #12 0x562999413dbc in do_flush util/ordered-events.c:245
+    #13 0x562999414bd7 in __ordered_events__flush util/ordered-events.c:324
+    #14 0x5629994150b2 in ordered_events__flush util/ordered-events.c:342
+    #15 0x5629993fe9ac in __perf_session__process_pipe_events util/session.c:2122
+    #16 0x562999405d8a in perf_session__process_events util/session.c:2622
+    #17 0x562998faa215 in __cmd_script /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/builtin-script.c:2839
+    #18 0x562998fbe081 in cmd_script /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/builtin-script.c:4365
+    #19 0x562999224c02 in run_builtin /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:322
+    #20 0x56299922547f in handle_internal_command /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:375
+    #21 0x5629992259b1 in run_argv /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:419
+    #22 0x5629992260dd in main /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:535
+    #23 0x7fb81d77ad09 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x23d09)
+
+Indirect leak of 48 byte(s) in 1 object(s) allocated from:
+    #0 0x7fb81e5d2037 in __interceptor_calloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:154
+    #1 0x56299986b463 in zalloc (/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf+0x1923463)
+    #2 0x56299941ac12 in comm__new util/comm.c:110
+    #3 0x56299941dddc in thread__new util/thread.c:64
+    #4 0x5629993bb6b7 in ____machine__findnew_thread util/machine.c:654
+    #5 0x5629993bbad8 in __machine__findnew_thread util/machine.c:693
+    #6 0x5629993bbb8e in machine__findnew_thread util/machine.c:703
+    #7 0x5629993bc0a1 in machine__process_comm_event util/machine.c:750
+    #8 0x562999289065 in perf_event__process_comm util/event.c:224
+    #9 0x5629993f72b9 in machines__deliver_event util/session.c:1565
+    #10 0x5629993f8902 in perf_session__deliver_event util/session.c:1639
+    #11 0x5629993fb98d in perf_session__process_event util/session.c:1875
+    #12 0x5629993fe31b in __perf_session__process_pipe_events util/session.c:2102
+    #13 0x562999405d8a in perf_session__process_events util/session.c:2622
+    #14 0x562998faa215 in __cmd_script /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/builtin-script.c:2839
+    #15 0x562998fbe081 in cmd_script /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/builtin-script.c:4365
+    #16 0x562999224c02 in run_builtin /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:322
+    #17 0x56299922547f in handle_internal_command /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:375
+    #18 0x5629992259b1 in run_argv /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:419
+    #19 0x5629992260dd in main /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:535
+    #20 0x7fb81d77ad09 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x23d09)
+
+Indirect leak of 32 byte(s) in 1 object(s) allocated from:
+    #0 0x7fb81e5d1e8f in __interceptor_malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:145
+    #1 0x5629993ddbfc in __maps__insert util/maps.c:43
+    #2 0x5629993de075 in maps__insert util/maps.c:70
+    #3 0x56299941f59f in thread__insert_map util/thread.c:349
+    #4 0x5629993c75cb in machine__process_mmap_event util/machine.c:2036
+    #5 0x56299928acc7 in perf_event__process_mmap util/event.c:395
+    #6 0x5629993f7022 in machines__deliver_event util/session.c:1559
+    #7 0x5629993f8902 in perf_session__deliver_event util/session.c:1639
+    #8 0x5629993fb98d in perf_session__process_event util/session.c:1875
+    #9 0x5629993fe31b in __perf_session__process_pipe_events util/session.c:2102
+    #10 0x562999405d8a in perf_session__process_events util/session.c:2622
+    #11 0x562998faa215 in __cmd_script /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/builtin-script.c:2839
+    #12 0x562998fbe081 in cmd_script /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/builtin-script.c:4365
+    #13 0x562999224c02 in run_builtin /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:322
+    #14 0x56299922547f in handle_internal_command /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:375
+    #15 0x5629992259b1 in run_argv /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:419
+    #16 0x5629992260dd in main /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:535
+    #17 0x7fb81d77ad09 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x23d09)
+
+Indirect leak of 32 byte(s) in 1 object(s) allocated from:
+    #0 0x7fb81e5d2037 in __interceptor_calloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:154
+    #1 0x5629994178b7 in nsinfo__alloc util/namespaces.c:147
+    #2 0x56299941796e in nsinfo__new util/namespaces.c:161
+    #3 0x56299941de82 in thread__new util/thread.c:72
+    #4 0x5629993bb6b7 in ____machine__findnew_thread util/machine.c:654
+    #5 0x5629993bbad8 in __machine__findnew_thread util/machine.c:693
+    #6 0x5629993bbb8e in machine__findnew_thread util/machine.c:703
+    #7 0x5629993bc0a1 in machine__process_comm_event util/machine.c:750
+    #8 0x562999289065 in perf_event__process_comm util/event.c:224
+    #9 0x5629993f72b9 in machines__deliver_event util/session.c:1565
+    #10 0x5629993f8902 in perf_session__deliver_event util/session.c:1639
+    #11 0x5629993fb98d in perf_session__process_event util/session.c:1875
+    #12 0x5629993fe31b in __perf_session__process_pipe_events util/session.c:2102
+    #13 0x562999405d8a in perf_session__process_events util/session.c:2622
+    #14 0x562998faa215 in __cmd_script /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/builtin-script.c:2839
+    #15 0x562998fbe081 in cmd_script /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/builtin-script.c:4365
+    #16 0x562999224c02 in run_builtin /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:322
+    #17 0x56299922547f in handle_internal_command /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:375
+    #18 0x5629992259b1 in run_argv /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:419
+    #19 0x5629992260dd in main /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:535
+    #20 0x7fb81d77ad09 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x23d09)
+
+Indirect leak of 30 byte(s) in 1 object(s) allocated from:
+    #0 0x7fb81e57f817 in __interceptor_strdup ../../../../src/libsanitizer/asan/asan_interceptors.cpp:452
+    #1 0x56299934f456 in dso__load util/symbol.c:2011
+    #2 0x5629993d9f61 in map__load util/map.c:353
+    #3 0x5629993da42a in map__find_symbol util/map.c:387
+    #4 0x56299928f86c in machine__resolve util/event.c:760
+    #5 0x562998fa4ba1 in process_sample_event /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/builtin-script.c:2389
+    #6 0x5629993f6a7a in evlist__deliver_sample util/session.c:1518
+    #7 0x5629993f6f94 in machines__deliver_event util/session.c:1557
+    #8 0x5629993f8902 in perf_session__deliver_event util/session.c:1639
+    #9 0x5629993e45dd in ordered_events__deliver_event util/session.c:188
+    #10 0x562999413dbc in do_flush util/ordered-events.c:245
+    #11 0x562999414bd7 in __ordered_events__flush util/ordered-events.c:324
+    #12 0x5629994150b2 in ordered_events__flush util/ordered-events.c:342
+    #13 0x5629993fe9ac in __perf_session__process_pipe_events util/session.c:2122
+    #14 0x562999405d8a in perf_session__process_events util/session.c:2622
+    #15 0x562998faa215 in __cmd_script /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/builtin-script.c:2839
+    #16 0x562998fbe081 in cmd_script /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/builtin-script.c:4365
+    #17 0x562999224c02 in run_builtin /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:322
+    #18 0x56299922547f in handle_internal_command /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:375
+    #19 0x5629992259b1 in run_argv /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:419
+    #20 0x5629992260dd in main /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:535
+    #21 0x7fb81d77ad09 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x23d09)
+
+Indirect leak of 25 byte(s) in 1 object(s) allocated from:
+    #0 0x7fb81e57f817 in __interceptor_strdup ../../../../src/libsanitizer/asan/asan_interceptors.cpp:452
+    #1 0x56299933d208 in dso__set_basename util/dsos.c:259
+    #2 0x56299933d37e in __dsos__addnew_id util/dsos.c:275
+    #3 0x56299933d4e1 in __dsos__findnew_id util/dsos.c:294
+    #4 0x56299933d58d in dsos__findnew_id util/dsos.c:301
+    #5 0x5629993d4c4b in machine__findnew_dso_id util/machine.c:3364
+    #6 0x5629993d8a33 in map__new util/map.c:167
+    #7 0x5629993c759d in machine__process_mmap_event util/machine.c:2029
+    #8 0x56299928acc7 in perf_event__process_mmap util/event.c:395
+    #9 0x5629993f7022 in machines__deliver_event util/session.c:1559
+    #10 0x5629993f8902 in perf_session__deliver_event util/session.c:1639
+    #11 0x5629993fb98d in perf_session__process_event util/session.c:1875
+    #12 0x5629993fe31b in __perf_session__process_pipe_events util/session.c:2102
+    #13 0x562999405d8a in perf_session__process_events util/session.c:2622
+    #14 0x562998faa215 in __cmd_script /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/builtin-script.c:2839
+    #15 0x562998fbe081 in cmd_script /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/builtin-script.c:4365
+    #16 0x562999224c02 in run_builtin /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:322
+    #17 0x56299922547f in handle_internal_command /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:375
+    #18 0x5629992259b1 in run_argv /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:419
+    #19 0x5629992260dd in main /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-42c6dd9d23019ff339d0aca80a444eb71087050e/tools/perf/perf.c:535
+    #20 0x7fb81d77ad09 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x23d09)
+
+SUMMARY: AddressSanitizer: 2527 byte(s) leaked in 32 allocation(s).
+Failed with return value 256
+test child finished with -1
+---- end ----
+dlfilter C API: FAILED!
 
 
-Hello,
-
-kernel test robot noticed "BUG:unable_to_handle_page_fault_for_address" on:
-
-commit: e2c9745169808b98f235c09d1366cf8b53ce0d3c ("[PATCH RESEND v3 1/3] tracing/synthetic: use union instead of casts")
-url: https://github.com/intel-lab-lkp/linux/commits/Sven-Schnelle/tracing-synthetic-use-union-instead-of-casts/20230817-002758
-base: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git 4853c74bd7ab7fdb83f319bd9ace8a08c031e9b6
-patch link: https://lore.kernel.org/all/20230816154928.4171614-2-svens@linux.ibm.com/
-patch subject: [PATCH RESEND v3 1/3] tracing/synthetic: use union instead of casts
-
-in testcase: boot
-
-compiler: clang-16
-test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m 4G
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202308251530.5bd302e0-oliver.sang@intel.com
-
-
-
-[   64.204176][   T48] Dumping ftrace buffer:
-[   64.204632][   T48] ---------------------------------
-[   64.205082][   T48] BUG: unable to handle page fault for address: 001c24ca
-[   64.205641][   T48] #PF: supervisor read access in kernel mode
-[   64.206115][   T48] #PF: error_code(0x0000) - not-present page
-[   64.206588][   T48] *pde = 00000000
-[   64.206897][   T48] Oops: 0000 [#1] SMP
-[   64.207221][   T48] CPU: 0 PID: 48 Comm: rcu_scale_write Tainted: G                T  6.5.0-rc6-00037-ge2c974516980 #1
-[   64.208074][   T48] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-[   64.208892][   T48] EIP: string+0x98/0x100
-[   64.209237][   T48] Code: 94 c2 75 b4 a1 8c c2 75 b4 40 89 44 24 18 31 d2 eb 0e 47 89 3d 94 c2 75 b4 42 39 54 24 0c 74 32 8b 44 24 08 8d 0c 10 8b 45 08 <0f> b6 04
- 10 84 c0 74 2c 8b 74 24 18 01 d6 89 35 8c c2 75 b4 3b 0c
-[   64.210761][   T48] EAX: 001c24ca EBX: 000405c2 ECX: b516e406 EDX: 00000000
-[   64.211325][   T48] ESI: ffff0a00 EDI: 00005af2 EBP: b600bcd4 ESP: b600bca8
-[   64.211876][   T48] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068 EFLAGS: 00010046
-[   64.212468][   T48] CR0: 80050033 CR2: 001c24ca CR3: 08d2a000 CR4: 000406d0
-[   64.213022][   T48] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 00000000
-[   64.213577][   T48] DR6: fffe0ff0 DR7: 00000400
-[   64.213945][   T48] Call Trace:
-[   64.214208][   T48]  ? __die_body+0x69/0xc0
-[   64.214546][   T48]  ? __die+0x7e/0x90
-[   64.214863][   T48]  ? page_fault_oops+0x22d/0x2b0
-[   64.215242][   T48]  ? is_prefetch+0x4a/0x220
-[   64.215605][   T48]  ? kernelmode_fixup_or_oops+0xfa/0x140
-[   64.216051][   T48]  ? __bad_area_nosemaphore+0x64/0x2a0
-[   64.216485][   T48]  ? bad_area_nosemaphore+0x12/0x20
-[   64.216899][   T48]  ? do_user_addr_fault+0x650/0x7e0
-[   64.217313][   T48]  ? pvclock_clocksource_read_nowd+0x7c/0x230
-[   64.217800][   T48]  ? exc_page_fault+0xc5/0x358
-[   64.218183][   T48]  ? pvclock_clocksource_read_nowd+0x230/0x230
-[   64.218666][   T48]  ? handle_exception+0x14b/0x14b
-[   64.219059][   T48]  ? number+0x9b/0x630
-[   64.219378][   T48]  ? pvclock_clocksource_read_nowd+0x230/0x230
-[   64.219866][   T48]  ? string+0x98/0x100
-[   64.220187][   T48]  ? pvclock_clocksource_read_nowd+0x230/0x230
-[   64.220656][   T48]  ? string+0x98/0x100
-[   64.220986][   T48]  vsnprintf+0x420/0x580
-[   64.221323][   T48]  ? vsnprintf+0x3e7/0x580
-[   64.221669][   T48]  seq_buf_vprintf+0x79/0xc0
-[   64.222029][   T48]  trace_seq_printf+0x35/0xa0
-[   64.222400][   T48]  print_synth_event+0x26f/0x300
-[   64.222805][   T48]  ? trace_event_raw_event_synth+0x410/0x410
-[   64.223272][   T48]  print_trace_fmt+0xfe/0x170
-[   64.223651][   T48]  print_trace_line+0x10d/0x1c0
-[   64.224046][   T48]  ftrace_dump+0x2fa/0x410
-[   64.224407][   T48]  rcu_scale_writer+0x59c/0x640
-[   64.224808][   T48]  kthread+0x158/0x170
-[   64.225146][   T48]  ? rcu_scale_reader+0x180/0x180
-[   64.225559][   T48]  ? kthread_unuse_mm+0x160/0x160
-[   64.225968][   T48]  ? kthread_unuse_mm+0x160/0x160
-[   64.226379][   T48]  ret_from_fork+0x43/0x70
-[   64.226742][   T48]  ret_from_fork_asm+0x12/0x1c
-[   64.227130][   T48]  entry_INT80_32+0x108/0x108
-[   64.227516][   T48] Modules linked in:
-[   64.227832][   T48] CR2: 00000000001c24ca
-[   64.228166][   T48] ---[ end trace 0000000000000000 ]---
-[   64.228586][   T48] EIP: string+0x98/0x100
-[   64.228921][   T48] Code: 94 c2 75 b4 a1 8c c2 75 b4 40 89 44 24 18 31 d2 eb 0e 47 89 3d 94 c2 75 b4 42 39 54 24 0c 74 32 8b 44 24 08 8d 0c 10 8b 45 08 <0f> b6 04
- 10 84 c0 74 2c 8b 74 24 18 01 d6 89 35 8c c2 75 b4 3b 0c
-[   64.230401][   T48] EAX: 001c24ca EBX: 000405c2 ECX: b516e406 EDX: 00000000
-[   64.230918][   T48] ESI: ffff0a00 EDI: 00005af2 EBP: b600bcd4 ESP: b600bca8
-[   64.231432][   T48] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068 EFLAGS: 00010046
-[   64.231993][   T48] CR0: 80050033 CR2: 001c24ca CR3: 08d2a000 CR4: 000406d0
-[   64.232527][   T48] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 00000000
-[   64.233094][   T48] DR6: fffe0ff0 DR7: 00000400
-[   64.233474][   T48] Kernel panic - not syncing: Fatal exception
-[   64.234050][   T48] Kernel Offset: disabled
-
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20230825/202308251530.5bd302e0-oliver.sang@intel.com
-
-
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
+> 
+> > 
+> >>>
+> >>> in testcase: perf-sanity-tests
+> >>> version: perf-x86_64-00c7b5f4ddc5-1_20230402
+> >>> with following parameters:
+> >>>
+> >>> 	perf_compiler: gcc
+> >>>
+> >>>
+> >>>
+> >>> compiler: gcc-12
+> >>> test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480+ (Sapphire Rapids) with 256G memory
+> >>>
+> >>> (please refer to attached dmesg/kmsg for entire log/backtrace)
+> >>>
+> >>>
+> >>>
+> >>>
+> >>> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> >>> the same patch/commit), kindly add following tags
+> >>> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> >>> | Closes: https://lore.kernel.org/oe-lkp/202308232146.94d82cb4-oliver.sang@intel.com
+> >>>
+> >>>
+> >>>
+> >>>  66: Convert perf time to TSC                                        :
+> >>>  66.1: TSC support                                                   : Ok
+> >>>  66.2: Perf time to TSC                                              : Ok
+> >>>  67: dlfilter C API                                                  : FAILED!  <---
+> >>>  68: Sigtrap                                                         : Ok
+> >>>
+> >>>
+> >>>
+> >>> The kernel config and materials to reproduce are available at:
+> >>> https://download.01.org/0day-ci/archive/20230823/202308232146.94d82cb4-oliver.sang@intel.com
+> >>>
+> >>>
+> >>>
+> >>
+> 
