@@ -1,324 +1,206 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f175.google.com (mail-pg1-f175.google.com [209.85.215.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85A5D186A
-	for <oe-lkp@lists.linux.dev>; Thu, 31 Aug 2023 14:59:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1693493966; x=1725029966;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=bAlykBBRRe0MFqKpbSb4Eo/OFmjbwXO9yw1Iiwt/XAM=;
-  b=FXQRPH5kwkdOraV1a6c+oAu47RMBJzOJ3rnkJw92/B0wsK2HRrizrmY4
-   mC1A64GAVyISzYTk+I3tQtCkK+NAYuydDiPLztblrk9A0qx7qOCwfTr5j
-   VU5299ACPtEYGzWIHMIsvInTj/jNghDnj0YqggyDUuDdJXgMIWuUGJVqV
-   my/WbNnwx6DYauHlbQaDNpehaGzGGA1d/WxDYsVPW+Pd71d8e1LwY5ZYR
-   TPq3YCXdFCFLZm2Y+WKX2KLf/alJxrL/myrLfaP9EWy9aLLtV68FeVb2b
-   +66R+40gjysKHqV5mfBqeEMDwDhMY1ywGRwu7yoH3RIhMr8Fphz/d9S7g
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10819"; a="356281170"
-X-IronPort-AV: E=Sophos;i="6.02,217,1688454000"; 
-   d="scan'208";a="356281170"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2023 07:59:24 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10819"; a="854312210"
-X-IronPort-AV: E=Sophos;i="6.02,217,1688454000"; 
-   d="scan'208";a="854312210"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by fmsmga002.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 31 Aug 2023 07:59:24 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Thu, 31 Aug 2023 07:59:23 -0700
-Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Thu, 31 Aug 2023 07:59:23 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27 via Frontend Transport; Thu, 31 Aug 2023 07:59:23 -0700
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (104.47.56.40) by
- edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.27; Thu, 31 Aug 2023 07:59:22 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fdbK44VUshkdJxPIDeO/o8UoISOdRQwuqPpJYQ+17cDorQLWj6Qn2XSkm8cGdUxbsRgXXjVsQ7t/WUDhv2lhFG93if0EfGh9IZFfO5S+H2LXhGzP38mWgYRU5e0zvI53/kYlNDiYaMsueKFXrK+yxsjsZG5JFBXbKO7Ku7IpoID3tIpt+nq8wN9JbS9MngYHgRvV3C5X4SmSIs4emymnIYBnyEHzi3VtAF+wbHZd/mxFA0lts+yJoEvye6fcdJSWBInAZTkWzTxQNHTGXoIb3X9RM8ZInRAWeP3AH0CZf4kVzP2LrLl2MEgmbWuHCF55g20uUNaW8/7L2H3UEAQQMw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mpo02v/lDXV/NFKbAWnUkKeufyBK5QSQfDhP+s6TcOE=;
- b=R75awCVs4FpNfBWdCXpt3hTvpbwze6X6vn6+u88UtoUae0ReMtHnX2/wpGxfgDiUstgogOHBzU7m9QL5gA6UgU5jQnX/R5fLW76nB4OKSxD0Qp0CgIwxy4Xsf5BCY8yiDQAtJ2c0PmNSWaYPs0A+aS8HXJ2VdjkbYV1aCI+I/Bxmw664vvugT31tH6+higFw2MAQ8HUaWzB6kKIJMhRny+K1JnIv9//wxSwNIuvS01p+rhrlMmjVPd8mpm7kZMDlI8R4DJVCxslN7ce2VGt0D0gEj6Y5RIzt8tPgh+7zsBb9rXnQEpwItrn8cn8/sHiReuuTL6SOu3uuyfz+x6f/Dw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
- by SA1PR11MB7040.namprd11.prod.outlook.com (2603:10b6:806:2b7::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6745.20; Thu, 31 Aug
- 2023 14:59:20 +0000
-Received: from PH8PR11MB6779.namprd11.prod.outlook.com
- ([fe80::73c6:1231:e700:924]) by PH8PR11MB6779.namprd11.prod.outlook.com
- ([fe80::73c6:1231:e700:924%4]) with mapi id 15.20.6745.021; Thu, 31 Aug 2023
- 14:59:20 +0000
-Date: Thu, 31 Aug 2023 22:59:11 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: John Ogness <john.ogness@linutronix.de>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Sebastian Andrzej Siewior
-	<bigeasy@linutronix.de>, <linux-serial@vger.kernel.org>,
-	<oliver.sang@intel.com>
-Subject: [rt-devel:linux-6.5.y-rt-rebase] [serial] bbed94a61d:
- INFO:rcu_preempt_detected_stalls_on_CPUs/tasks
-Message-ID: <202308312242.eb909be8-oliver.sang@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-X-ClientProxiedBy: SGXP274CA0022.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b8::34)
- To PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B15C679E6
+	for <oe-lkp@lists.linux.dev>; Fri,  1 Sep 2023 10:58:23 +0000 (UTC)
+Received: by mail-pg1-f175.google.com with SMTP id 41be03b00d2f7-56963f2e48eso1358300a12.1
+        for <oe-lkp@lists.linux.dev>; Fri, 01 Sep 2023 03:58:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance.com; s=google; t=1693565903; x=1694170703; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=0OJ2dXFmVQZDKYTCTqxGvL38WRbzk3NvjgnLsPgru5I=;
+        b=JdGyAL0g+LMonzFj3LdHTuDHOBc2LdICB+9apZRb3ZAwt1zxY7UkfrzhJemI597VC6
+         YxYsfJDTjLipEZwL5wDT4yQE0V7rONF9c7fgcr/VBxZy9qQVcT1Q/xr24qrZwavg7sBF
+         r6hjxWln+Cg2V3RTAdKvihBihN4uIbwbosEEKu2wHyZLjtAUIKkhdQtXrXWsq4V7BBV7
+         K5KzyLiVwQlhQzXszqONHv5OE760bBB4x+RnbZ9T0LmD+QI/tk+stqoNrwzoI0McGH6t
+         20iRI39o/9Gev51Q5jMzGISTlboNlTSMllkJZJGDc4+NhhknwdmcHKSkE63kYVWSIb4l
+         1CWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1693565903; x=1694170703;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=0OJ2dXFmVQZDKYTCTqxGvL38WRbzk3NvjgnLsPgru5I=;
+        b=GUE2n5Zb6bprol5bEAahaYjalVw3eeVeuOc15/uJJ1rtL6mNSSulCZuNuUPjbyFccX
+         zfDvMJqusugVc69rpwibsdPL6wiKFKtwFhx6yotxRjohrZyAKXM4Bv6O2Ns/IpyDqNvl
+         NBn8INzIGM8NnbKbTsQIGt0AXX/mh9qDC0VlcTj2Oeu2NX3vJyNKnos0+8uFVjxfUin6
+         0A4jdx8NFgzePlRCRIm1iBLDIvL0AKN+OkkWVOebhrHA7n2bbK4evhnvweQm4fFC/6xL
+         uKGSs8zMDqJv6knjUNZ7iUSF5qqveKMyhqd5mUUVphpvTH6YCKooS/Cg7AFNYsGuRzmq
+         fUmg==
+X-Gm-Message-State: AOJu0YzV6LA1hPQNryyeFA9QgwJfR0gAstnYRVIuH53aKxZ/YbcSLpwx
+	1zCGagAITdaDjPp0c0O12qnSWg==
+X-Google-Smtp-Source: AGHT+IFGbfzgdwxEt/HnFveYKKdr+aD0fnh004mDvQW3jFYTFzXeSmwTJL/T/b9JwunOBQtUQUpHqw==
+X-Received: by 2002:a17:90b:150:b0:263:43c6:69ac with SMTP id em16-20020a17090b015000b0026343c669acmr1761895pjb.44.1693565902618;
+        Fri, 01 Sep 2023 03:58:22 -0700 (PDT)
+Received: from [10.254.254.90] ([139.177.225.247])
+        by smtp.gmail.com with ESMTPSA id ck18-20020a17090afe1200b00262d662c9adsm4344759pjb.53.2023.09.01.03.58.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 01 Sep 2023 03:58:22 -0700 (PDT)
+Message-ID: <0e9a87d9-410f-a906-e95c-976a141f24f0@bytedance.com>
+Date: Fri, 1 Sep 2023 18:58:13 +0800
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|SA1PR11MB7040:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5c9a53a7-82fd-4d80-1103-08dbaa32dab6
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: DYe94a5w4fEj+f5lfOlL2DxBe/Jc8yndB5BB9AY9n2FthAG9GoI4spKZ9jikLnuMkRruKaKxvq5MCgbXDv9M64SGv9MIlIkgV456yrwYjifypBTMAmFe6GgF2CU5dvKcYQRveCaCpR95fq42abIR5FuZPSbwaXgTWTTuSKDbjzsygYwaOTaeK4U0SaKbf7BAm5s9s+uxhfrWmzFnx3APv9Top3p9i9TK7O3W+wCMR/IoqVsH5agBLoD5BEA9k8w9LlRj6bEH/d8XB+7q+7WnO6TVm1HMYdKzFDA5ftAZEnyuV/hCOTWOHOFbwEdVSRSD3y5rcpy+zGq3kJHKcXkHZlF5LHuCzyc8Xk5ZTTd3EH4jqJ01PGmZasxhIKlifvy8bmiJshc39+/DvA7Q5J75JmloDUmLOWSXiOsNrO5gFzDMZ9UCuTmByhOZlOVF8i7dTy0o+/WjjVIxdFkA2V8l0yEBLFM/L/vQhHWNQkOXrL5y3oR++UGe4ec/aAeH0SgwZRacEWVeqKOoYlpBrY9wRMaFTTlW4UA9vtuH9DVxFS6WxrV5goHSW1XErWtH7sQLIDDTwZM3Gv5DlcrLZq8jiQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(39860400002)(376002)(396003)(136003)(366004)(451199024)(186009)(1800799009)(478600001)(38100700002)(26005)(1076003)(36756003)(966005)(66946007)(41300700001)(6512007)(2616005)(83380400001)(107886003)(82960400001)(66476007)(66556008)(316002)(6666004)(6486002)(6506007)(6916009)(5660300002)(4326008)(8936002)(8676002)(86362001)(2906002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?I4W5Rjple8DqG8z+BhgIP1c4eD7sBBfelSR2+37VqWjX/oa+KQ+2HtoDDwyD?=
- =?us-ascii?Q?QVjUdgFjxssIi2fHmBxMJK3P7Dc72xnGcCp6tHFjhuHOAaBPK3XtSCYzSXcU?=
- =?us-ascii?Q?giz7ucsutmS4dr3ba5vcnvofqq+xLyd6VAhqMcsbzjq6Lw8/YoxFcsNvrqII?=
- =?us-ascii?Q?uRu/KXUraJrPSs/qOD7yGly96Xr53rMW1XzbRL8cO1mzlx7ffkQaLTVxYsn5?=
- =?us-ascii?Q?NULswVlJmhmtIeET7yGkRWcCZfXYy29yaiKbQndHW8wjBHIUfgJOFt2BKDZa?=
- =?us-ascii?Q?GupzSSqs4czPyjfUdHYu/v+qZqfLMd4QfFvlCww0KgZuSmQTWFNVnEJsj+5/?=
- =?us-ascii?Q?CpX5Ci36JlBv9yhYKcwUnbonNSgEIgsY+5TF3q4TEoOxOj4qu7zS9YxJoLSp?=
- =?us-ascii?Q?zP3YFzrBW3BPVFGELfm5x9EI3t28TdAfOQyH1TU06Yc4YYizZFCn9zGJt99E?=
- =?us-ascii?Q?nC90dWOW2kkQzF7KjHef4Sdo+oUMNZhu9cqYC09CNRGk+cDtHf3n6/7rppDG?=
- =?us-ascii?Q?SYG+2h49VBVck35j243SNIRPCARYtWvZtdnhKHlb6QSWtKom3sqm8myCVZDL?=
- =?us-ascii?Q?ivRxMc1teahC2PEm2HC+2/kmKRJ2WGwVkXNPp+14MT8w9w8cwCnOS0JXy+/N?=
- =?us-ascii?Q?ITvlJ8KT6ILzOtr4HWuXwpqYcIzHM8LHERmuO5GdjC6D96Z74uEd65Ol9Xp9?=
- =?us-ascii?Q?LZpbhr/BFBbI8UIlvQIzEbJzS34HhrJnzVd4CliJxBs0Rx2NOkuap4qB0qz1?=
- =?us-ascii?Q?HUOx7h7g16a8S8JAVSN8VO0ZcyXOGEHdd+xdKSQUA3saDUqTuaLcTV4rPWH4?=
- =?us-ascii?Q?hxgphITDVTGuhUV07LyPmXwDds/VDZt41PjkD9PycBSxzIrLZzAuQu7WrG7V?=
- =?us-ascii?Q?7r/Z86c1vKmFY+uf4Q3gDrgH7miwbrC9pC2mrgFJzUTYSnOUmkGNwuSyeoRr?=
- =?us-ascii?Q?8dRLaQS1iM3zYu5UhidxfOBHCAOFXIwtOWJexF5Ku1B+N4kNWZddaBklx2Sd?=
- =?us-ascii?Q?iumZs7hiBSTjliIcKhkhPwJQ0PIP1juLgGvwq5D+38bSM/ZU9eX0jLtBQVgq?=
- =?us-ascii?Q?OeFqhht5LVMCIAXYTlH+6RtXswgXrXExZzbGHarIk2rqEFy0RKb3HCYLS14h?=
- =?us-ascii?Q?5y5UV/ODCOSVzSmz2+q1lDBOisQjTmNIoQcH1dRzBjSbkuaGeg15K1ncoqcE?=
- =?us-ascii?Q?vHa7b1SMvcHgNrv2DIvbh99KML1IFdI4aWPlxHvnZDanSJCOlP5ToaYwTj4L?=
- =?us-ascii?Q?DIk9OqPBdJSNBFDVFij82TtHxHNVfC4z0rs7wBqKISVGevxXQBa0/rMifq8d?=
- =?us-ascii?Q?a2rFyWM/Wu9O4qiZyuzoqQmtLupdj0+hBSq/9BgoZTx6YxN2XoCSvAGsjtpQ?=
- =?us-ascii?Q?/ud7BxkWsMrNOMRVFjAMRZvbwH0JBU6jPuE9fvIL2KSZ+8k4QQDm+TZ8Xczg?=
- =?us-ascii?Q?ZKs3AbXeMWKjDHjvrSldMfIswsCcBhBgOWX58bqcSFtGg0XUffcyTzWiyENK?=
- =?us-ascii?Q?4ZPxznu9ZFB7ThOW1OMPPzZ3xZhC4RZ6/7sUx5kt7/sJertctFudimlM0hAN?=
- =?us-ascii?Q?D9Scv5ZiCk2Rt2wMQFmZgSxYb1ES0YxHBcuCmDjNmXhwpdpbx6ifoVgaCsU7?=
- =?us-ascii?Q?9g=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5c9a53a7-82fd-4d80-1103-08dbaa32dab6
-X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB6779.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Aug 2023 14:59:20.0426
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: I792aMeugWmSzuf3c/USMqvaFqHSLWUZFytAwZeuhom1tvfk4W4Wfxi0IRyDSj2FtJixZXyIBsfez0PedrBCfA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR11MB7040
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.14.0
+Subject: Re: [PATCH v2 5/6] maple_tree: Update check_forking() and
+ bench_forking()
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, maple-tree@lists.infradead.org,
+ linux-mm@kvack.org, Liam.Howlett@oracle.com, corbet@lwn.net,
+ akpm@linux-foundation.org, willy@infradead.org, brauner@kernel.org,
+ surenb@google.com, michael.christie@oracle.com, peterz@infradead.org,
+ mathieu.desnoyers@efficios.com, npiggin@gmail.com, avagin@gmail.com,
+ linux-doc@vger.kernel.org, Peng Zhang <zhangpeng.00@bytedance.com>,
+ linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
+References: <202308312115.cad34fed-oliver.sang@intel.com>
+From: Peng Zhang <zhangpeng.00@bytedance.com>
+In-Reply-To: <202308312115.cad34fed-oliver.sang@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
 
 
-Hello,
-
-kernel test robot noticed "INFO:rcu_preempt_detected_stalls_on_CPUs/tasks" on:
-
-commit: bbed94a61d7be55a64c9d87e0c5d55faef924f57 ("serial: 8250: implement non-BKL console")
-https://git.kernel.org/cgit/linux/kernel/git/rt/linux-rt-devel.git linux-6.5.y-rt-rebase
-
-in testcase: boot
-
-compiler: gcc-7
-test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202308312242.eb909be8-oliver.sang@intel.com
-
-
-
-[  148.995863][    C1] NMI backtrace for cpu 1
-[  148.995867][    C1]
-[  148.995868][    C1] ================================
-[  148.995870][    C1] WARNING: inconsistent lock state
-[  148.995871][    C1] 6.5.0-00051-gbbed94a61d7b #1 Tainted: G        W        N
-[  148.995873][    C1] --------------------------------
-[  148.995874][    C1] inconsistent {INITIAL USE} -> {IN-NMI} usage.
-[  148.995876][    C1] swapper/0/1 [HC1[1]:SC0[0]:HE0:SE1] takes:
-[ 148.995878][ C1] 828529a8 (console_srcu){....}-{0:0}, at: rcu_lock_acquire (include/linux/rcupdate.h:302) 
-[  148.995889][    C1] {INITIAL USE} state was registered at:
-[ 148.995890][ C1] lock_sync (kernel/locking/lockdep.c:467 kernel/locking/lockdep.c:5811) 
-[ 148.995893][ C1] __synchronize_srcu (kernel/rcu/srcutree.c:1347) 
-[ 148.995897][ C1] synchronize_srcu_expedited (kernel/rcu/srcutree.c:1386) 
-[ 148.995900][ C1] synchronize_srcu (kernel/rcu/srcutree.c:1439) 
-[ 148.995902][ C1] unregister_console_locked (kernel/printk/printk.c:3739) 
-[ 148.995905][ C1] register_console (kernel/printk/printk.c:3681) 
-[ 148.995908][ C1] univ8250_console_init (drivers/tty/serial/8250/8250_core.c:754) 
-[ 148.995911][ C1] console_init (kernel/printk/printk.c:3836) 
-[ 148.995913][ C1] start_kernel (init/main.c:1005 (discriminator 3)) 
-[ 148.995917][ C1] mk_early_pgtbl_32 (arch/x86/kernel/head32.c:74) 
-[ 148.995919][ C1] startup_32_smp (arch/x86/kernel/head_32.S:305) 
-[  148.995921][    C1] irq event stamp: 3902978
-[ 148.995922][ C1] hardirqs last enabled at (3902977): _raw_spin_unlock_irqrestore (arch/x86/include/asm/irqflags.h:26 arch/x86/include/asm/irqflags.h:67 arch/x86/include/asm/irqflags.h:127 include/linux/spinlock_api_smp.h:151 kernel/locking/spinlock.c:194) 
-[ 148.995926][ C1] hardirqs last disabled at (3902978): _raw_spin_lock_irqsave (arch/x86/include/asm/preempt.h:80 include/linux/spinlock_api_smp.h:109 kernel/locking/spinlock.c:162) 
-[ 148.995929][ C1] softirqs last enabled at (3902962): __do_softirq (arch/x86/include/asm/preempt.h:27 kernel/softirq.c:413 kernel/softirq.c:595) 
-[ 148.995932][ C1] softirqs last disabled at (3902951): call_on_stack (arch/x86/kernel/irq_32.c:57) 
-[  148.995936][    C1]
-[  148.995936][    C1] other info that might help us debug this:
-[  148.995937][    C1]  Possible unsafe locking scenario:
-[  148.995937][    C1]
-[  148.995938][    C1]        CPU0
-[  148.995938][    C1]        ----
-[  148.995939][    C1]   lock(console_srcu);
-[  148.995941][    C1]   <Interrupt>
-[  148.995941][    C1]     lock(console_srcu);
-[  148.995943][    C1]
-[  148.995943][    C1]  *** DEADLOCK ***
-[  148.995943][    C1]
-[  148.995943][    C1] 4 locks held by swapper/0/1:
-[ 148.995945][ C1] #0: ed98f914 (&tty->legacy_mutex){+.+.}-{3:3}, at: tty_lock (drivers/tty/tty_mutex.c:19) 
-[ 148.995952][ C1] #1: 868f51b4 (&port->mutex){+.+.}-{3:3}, at: tty_port_open (drivers/tty/tty_port.c:781) 
-[ 148.995957][ C1] #2: 8365b8d0 (&port_lock_key){....}-{2:2}, at: serial8250_do_startup (drivers/tty/serial/8250/8250_port.c:2366) 
-[ 148.995964][ C1] #3: 828529a8 (console_srcu){....}-{0:0}, at: rcu_lock_acquire (include/linux/rcupdate.h:302) 
-[  148.995970][    C1]
-[  148.995970][    C1] stack backtrace:
-[  148.995971][    C1] CPU: 1 PID: 1 Comm: swapper/0 Tainted: G        W        N 6.5.0-00051-gbbed94a61d7b #1
-[  148.995975][    C1] Call Trace:
-[ 148.995979][ C1] dump_stack_lvl (lib/dump_stack.c:107) 
-[ 148.995982][ C1] dump_stack (lib/dump_stack.c:114) 
-[ 148.995985][ C1] print_usage_bug (kernel/locking/lockdep.c:4008) 
-[ 148.995988][ C1] ? console_list_unlock (include/linux/rcupdate.h:302) 
-[ 148.995991][ C1] lock_acquire (kernel/locking/lockdep.c:5693 kernel/locking/lockdep.c:5752) 
-[ 148.995994][ C1] ? console_list_unlock (include/linux/rcupdate.h:302) 
-[ 148.995997][ C1] ? prb_final_commit (kernel/printk/printk_ringbuffer.c:1671) 
-[ 148.996000][ C1] rcu_lock_acquire (include/linux/rcupdate.h:304) 
-[ 148.996002][ C1] ? console_list_unlock (include/linux/rcupdate.h:302) 
-[ 148.996005][ C1] console_srcu_read_lock (kernel/printk/printk.c:293) 
-[ 148.996007][ C1] cons_atomic_flush (kernel/printk/printk_nobkl.c:1587) 
-[ 148.996012][ C1] vprintk_emit (kernel/printk/printk.c:2333) 
-[ 148.996017][ C1] vprintk_deferred (kernel/printk/printk.c:4101) 
-[ 148.996021][ C1] vprintk (kernel/printk/printk_safe.c:65) 
-[ 148.996023][ C1] _printk (kernel/printk/printk.c:2371) 
-[ 148.996026][ C1] nmi_cpu_backtrace (lib/nmi_backtrace.c:110) 
-[ 148.996029][ C1] nmi_cpu_backtrace_handler (arch/x86/kernel/apic/hw_nmi.c:46) 
-[ 148.996033][ C1] nmi_handle (arch/x86/kernel/nmi.c:150 (discriminator 7)) 
-[ 148.996037][ C1] default_do_nmi (arch/x86/kernel/nmi.c:347) 
-[ 148.996041][ C1] exc_nmi (arch/x86/kernel/nmi.c:543) 
-[ 148.996043][ C1] asm_exc_nmi (arch/x86/entry/entry_32.S:1149) 
-[ 148.996046][ C1] EIP: cons_try_acquire (kernel/printk/printk_nobkl.c:736 kernel/printk/printk_nobkl.c:836) 
-[ 148.996049][ C1] Code: 34 8d 00 00 00 00 83 e0 e3 89 55 e8 83 e7 03 c1 e7 03 09 f0 09 f8 83 e0 9f 88 45 e8 8b 45 e8 25 7f 00 00 fe 0b 45 d0 89 45 e8 <8a> 45 e4 a8 01 75 1f 8d 45 e8 8d 4d e4 31 d2 50 8b 45 e0 e8 60 fd
-All code
-========
-   0:	34 8d                	xor    $0x8d,%al
-   2:	00 00                	add    %al,(%rax)
-   4:	00 00                	add    %al,(%rax)
-   6:	83 e0 e3             	and    $0xffffffe3,%eax
-   9:	89 55 e8             	mov    %edx,-0x18(%rbp)
-   c:	83 e7 03             	and    $0x3,%edi
-   f:	c1 e7 03             	shl    $0x3,%edi
-  12:	09 f0                	or     %esi,%eax
-  14:	09 f8                	or     %edi,%eax
-  16:	83 e0 9f             	and    $0xffffff9f,%eax
-  19:	88 45 e8             	mov    %al,-0x18(%rbp)
-  1c:	8b 45 e8             	mov    -0x18(%rbp),%eax
-  1f:	25 7f 00 00 fe       	and    $0xfe00007f,%eax
-  24:	0b 45 d0             	or     -0x30(%rbp),%eax
-  27:	89 45 e8             	mov    %eax,-0x18(%rbp)
-  2a:*	8a 45 e4             	mov    -0x1c(%rbp),%al		<-- trapping instruction
-  2d:	a8 01                	test   $0x1,%al
-  2f:	75 1f                	jne    0x50
-  31:	8d 45 e8             	lea    -0x18(%rbp),%eax
-  34:	8d 4d e4             	lea    -0x1c(%rbp),%ecx
-  37:	31 d2                	xor    %edx,%edx
-  39:	50                   	push   %rax
-  3a:	8b 45 e0             	mov    -0x20(%rbp),%eax
-  3d:	e8                   	.byte 0xe8
-  3e:	60                   	(bad)  
-  3f:	fd                   	std    
-
-Code starting with the faulting instruction
-===========================================
-   0:	8a 45 e4             	mov    -0x1c(%rbp),%al
-   3:	a8 01                	test   $0x1,%al
-   5:	75 1f                	jne    0x26
-   7:	8d 45 e8             	lea    -0x18(%rbp),%eax
-   a:	8d 4d e4             	lea    -0x1c(%rbp),%ecx
-   d:	31 d2                	xor    %edx,%edx
-   f:	50                   	push   %rax
-  10:	8b 45 e0             	mov    -0x20(%rbp),%eax
-  13:	e8                   	.byte 0xe8
-  14:	60                   	(bad)  
-  15:	fd                   	std    
-[  148.996052][    C1] EAX: 00000089 EBX: 8365bb40 ECX: 00000000 EDX: 0000000d
-[  148.996054][    C1] ESI: 00000000 EDI: 00000008 EBP: 865f5d30 ESP: 865f5d00
-[  148.996055][    C1] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068 EFLAGS: 00000002
-[ 148.996059][ C1] ? build_sched_domains (kernel/sched/topology.c:2268 kernel/sched/topology.c:1467 kernel/sched/topology.c:2494) 
-[ 148.996064][ C1] ? build_sched_domains (kernel/sched/topology.c:2268 kernel/sched/topology.c:1467 kernel/sched/topology.c:2494) 
-[ 148.996067][ C1] ? cons_try_acquire (kernel/printk/printk_nobkl.c:736 kernel/printk/printk_nobkl.c:836) 
-[ 148.996071][ C1] console_try_acquire (kernel/printk/printk_nobkl.c:942) 
-[ 148.996074][ C1] serial8250_enter_unsafe (drivers/tty/serial/8250/8250.h:222 drivers/tty/serial/8250/8250.h:250) 
-[ 148.996077][ C1] serial8250_do_startup (drivers/tty/serial/8250/8250_port.c:2369) 
-[ 148.996081][ C1] serial8250_startup (drivers/tty/serial/8250/8250_port.c:2513) 
-[ 148.996084][ C1] uart_startup (drivers/tty/serial/serial_core.c:290 drivers/tty/serial/serial_core.c:332) 
-[ 148.996086][ C1] uart_port_activate (drivers/tty/serial/serial_core.c:1967) 
-[ 148.996089][ C1] tty_port_open (drivers/tty/tty_port.c:786) 
-[ 148.996092][ C1] uart_open (drivers/tty/serial/serial_core.c:1950) 
-[ 148.996095][ C1] tty_open (drivers/tty/tty_io.c:2154) 
-[ 148.996100][ C1] chrdev_open (fs/char_dev.c:415) 
-[ 148.996105][ C1] do_dentry_open (fs/open.c:915) 
-[ 148.996107][ C1] ? cdev_put (fs/char_dev.c:374) 
-[ 148.996110][ C1] vfs_open (fs/open.c:1049) 
-[ 148.996112][ C1] path_openat (fs/namei.c:3636 fs/namei.c:3793) 
-[ 148.996117][ C1] do_filp_open (fs/namei.c:3821) 
-[ 148.996122][ C1] ? kmemleak_alloc (mm/kmemleak.c:724 mm/kmemleak.c:976) 
-[ 148.996126][ C1] ? slab_post_alloc_hook+0x7e/0x8d 
-[ 148.996132][ C1] file_open_name (fs/open.c:1353) 
-[ 148.996136][ C1] filp_open (fs/open.c:1372) 
-[ 148.996138][ C1] console_on_rootfs (init/main.c:1508) 
-[ 148.996141][ C1] kernel_init_freeable (init/main.c:1557) 
-[ 148.996144][ C1] ? rest_init (init/main.c:1429) 
-[ 148.996146][ C1] kernel_init (init/main.c:1439) 
-[ 148.996148][ C1] ret_from_fork (arch/x86/kernel/process.c:151) 
-[ 148.996151][ C1] ? rest_init (init/main.c:1429) 
-[ 148.996154][ C1] ret_from_fork_asm (arch/x86/entry/entry_32.S:741) 
-[ 148.996156][ C1] entry_INT80_32 (arch/x86/entry/entry_32.S:947) 
-[  148.996161][    C1] CPU: 1 PID: 1 Comm: swapper/0 Tainted: G        W        N 6.5.0-00051-gbbed94a61d7b #1
-[ 148.996163][ C1] EIP: cons_try_acquire (kernel/printk/printk_nobkl.c:736 kernel/printk/printk_nobkl.c:836) 
-[ 148.996165][ C1] Code: 34 8d 00 00 00 00 83 e0 e3 89 55 e8 83 e7 03 c1 e7 03 09 f0 09 f8 83 e0 9f 88 45 e8 8b 45 e8 25 7f 00 00 fe 0b 45 d0 89 45 e8 <8a> 45 e4 a8 01 75 1f 8d 45 e8 8d 4d e4 31 d2 50 8b 45 e0 e8 60 fd
-All code
-========
-   0:	34 8d                	xor    $0x8d,%al
-   2:	00 00                	add    %al,(%rax)
-   4:	00 00                	add    %al,(%rax)
-   6:	83 e0 e3             	and    $0xffffffe3,%eax
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20230831/202308312242.eb909be8-oliver.sang@intel.com
-
-
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
+在 2023/8/31 21:40, kernel test robot 写道:
+> 
+> 
+> Hello,
+> 
+> kernel test robot noticed "WARNING:possible_recursive_locking_detected" on:
+> 
+> commit: 2730245bd6b13a94a67e84c10832a9f52fad0aa5 ("[PATCH v2 5/6] maple_tree: Update check_forking() and bench_forking()")
+> url: https://github.com/intel-lab-lkp/linux/commits/Peng-Zhang/maple_tree-Add-two-helpers/20230830-205847
+> base: https://git.kernel.org/cgit/linux/kernel/git/akpm/mm.git mm-everything
+> patch link: https://lore.kernel.org/all/20230830125654.21257-6-zhangpeng.00@bytedance.com/
+> patch subject: [PATCH v2 5/6] maple_tree: Update check_forking() and bench_forking()
+> 
+> in testcase: boot
+> 
+> compiler: clang-16
+> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+> 
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+> 
+> 
+> 
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202308312115.cad34fed-oliver.sang@intel.com
+> 
+> 
+> [   25.146957][    T1] WARNING: possible recursive locking detected
+> [   25.147110][    T1] 6.5.0-rc4-00632-g2730245bd6b1 #1 Tainted: G                TN
+> [   25.147110][    T1] --------------------------------------------
+> [   25.147110][    T1] swapper/1 is trying to acquire lock:
+> [ 25.147110][ T1] ffffffff86485058 (&mt->ma_lock){+.+.}-{2:2}, at: check_forking (include/linux/spinlock.h:? lib/test_maple_tree.c:1854)
+> [   25.147110][    T1]
+> [   25.147110][    T1] but task is already holding lock:
+> [ 25.147110][ T1] ffff888110847a30 (&mt->ma_lock){+.+.}-{2:2}, at: check_forking (include/linux/spinlock.h:351 lib/test_maple_tree.c:1854)
+Thanks for the test. I checked that these are two different locks, why
+is this warning reported? Did I miss something?
+> [   25.147110][    T1]
+> [   25.147110][    T1] other info that might help us debug this:
+> [   25.147110][    T1]  Possible unsafe locking scenario:
+> [   25.147110][    T1]
+> [   25.147110][    T1]        CPU0
+> [   25.147110][    T1]        ----
+> [   25.147110][    T1]   lock(&mt->ma_lock);
+> [   25.147110][    T1]
+> [   25.147110][    T1]  *** DEADLOCK ***
+> [   25.147110][    T1]
+> [   25.147110][    T1]  May be due to missing lock nesting notation
+> [   25.147110][    T1]
+> [   25.147110][    T1] 1 lock held by swapper/1:
+> [ 25.147110][ T1] #0: ffff888110847a30 (&mt->ma_lock){+.+.}-{2:2}, at: check_forking (include/linux/spinlock.h:351 lib/test_maple_tree.c:1854)
+> [   25.147110][    T1]
+> [   25.147110][    T1] stack backtrace:
+> [   25.147110][    T1] CPU: 0 PID: 1 Comm: swapper Tainted: G                TN 6.5.0-rc4-00632-g2730245bd6b1 #1
+> [   25.147110][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> [   25.147110][    T1] Call Trace:
+> [   25.147110][    T1]  <TASK>
+> [ 25.147110][ T1] dump_stack_lvl (lib/dump_stack.c:? lib/dump_stack.c:106)
+> [ 25.147110][ T1] validate_chain (kernel/locking/lockdep.c:?)
+> [ 25.147110][ T1] ? look_up_lock_class (kernel/locking/lockdep.c:926)
+> [ 25.147110][ T1] ? mark_lock (arch/x86/include/asm/bitops.h:228 arch/x86/include/asm/bitops.h:240 include/asm-generic/bitops/instrumented-non-atomic.h:142 kernel/locking/lockdep.c:228 kernel/locking/lockdep.c:4655)
+> [ 25.147110][ T1] __lock_acquire (kernel/locking/lockdep.c:?)
+> [ 25.147110][ T1] lock_acquire (kernel/locking/lockdep.c:5753)
+> [ 25.147110][ T1] ? check_forking (include/linux/spinlock.h:? lib/test_maple_tree.c:1854)
+> [ 25.147110][ T1] _raw_spin_lock (include/linux/spinlock_api_smp.h:133 kernel/locking/spinlock.c:154)
+> [ 25.147110][ T1] ? check_forking (include/linux/spinlock.h:? lib/test_maple_tree.c:1854)
+> [ 25.147110][ T1] check_forking (include/linux/spinlock.h:? lib/test_maple_tree.c:1854)
+> [ 25.147110][ T1] maple_tree_seed (lib/test_maple_tree.c:3583)
+> [ 25.147110][ T1] do_one_initcall (init/main.c:1232)
+> [ 25.147110][ T1] ? __cfi_maple_tree_seed (lib/test_maple_tree.c:3508)
+> [ 25.147110][ T1] do_initcall_level (init/main.c:1293)
+> [ 25.147110][ T1] do_initcalls (init/main.c:1307)
+> [ 25.147110][ T1] kernel_init_freeable (init/main.c:1550)
+> [ 25.147110][ T1] ? __cfi_kernel_init (init/main.c:1429)
+> [ 25.147110][ T1] kernel_init (init/main.c:1439)
+> [ 25.147110][ T1] ? __cfi_kernel_init (init/main.c:1429)
+> [ 25.147110][ T1] ret_from_fork (arch/x86/kernel/process.c:151)
+> [ 25.147110][ T1] ? __cfi_kernel_init (init/main.c:1429)
+> [ 25.147110][ T1] ret_from_fork_asm (arch/x86/entry/entry_64.S:312)
+> [   25.147110][    T1]  </TASK>
+> [   28.697241][   T32] clocksource_wdtest: --- Verify jiffies-like uncertainty margin.
+> [   28.698316][   T32] clocksource: wdtest-jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 6370867519511994 ns
+> [   29.714980][   T32] clocksource_wdtest: --- Verify tsc-like uncertainty margin.
+> [   29.716387][   T32] clocksource: wdtest-ktime: mask: 0xffffffffffffffff max_cycles: 0x1cd42e4dffb, max_idle_ns: 881590591483 ns
+> [   29.721896][   T32] clocksource_wdtest: --- tsc-like times: 1693478138832947444 - 1693478138832945950 = 1494.
+> [   29.723570][   T32] clocksource_wdtest: --- Watchdog with 0x error injection, 2 retries.
+> [   31.898906][   T32] clocksource_wdtest: --- Watchdog with 1x error injection, 2 retries.
+> [   34.043415][   T32] clocksource_wdtest: --- Watchdog with 2x error injection, 2 retries, expect message.
+> [   34.512462][    C0] clocksource: timekeeping watchdog on CPU0: kvm-clock retried 2 times before success
+> [   36.169157][   T32] clocksource_wdtest: --- Watchdog with 3x error injection, 2 retries, expect clock skew.
+> [   36.513464][    C0] clocksource: timekeeping watchdog on CPU0: wd-wdtest-ktime-wd excessive read-back delay of 1000880ns vs. limit of 125000ns, wd-wd read-back delay only 46ns, attempt 3, marking wdtest-ktime unstable
+> [   36.516829][    C0] clocksource_wdtest: --- Marking wdtest-ktime unstable due to clocksource watchdog.
+> [   38.412889][   T32] clocksource: wdtest-ktime: mask: 0xffffffffffffffff max_cycles: 0x1cd42e4dffb, max_idle_ns: 881590591483 ns
+> [   38.421249][   T32] clocksource_wdtest: --- Watchdog clock-value-fuzz error injection, expect clock skew and per-CPU mismatches.
+> [   38.990462][    C0] clocksource: timekeeping watchdog on CPU0: Marking clocksource 'wdtest-ktime' as unstable because the skew is too large:
+> [   38.992698][    C0] clocksource:                       'kvm-clock' wd_nsec: 479996388 wd_now: 9454aecf2 wd_last: 928aec30e mask: ffffffffffffffff
+> [   38.994924][    C0] clocksource:                       'wdtest-ktime' cs_nsec: 679996638 cs_now: 17807167426ff864 cs_last: 1780716719e80b86 mask: ffffffffffffffff
+> [   38.997374][    C0] clocksource:                       Clocksource 'wdtest-ktime' skewed 200000250 ns (200 ms) over watchdog 'kvm-clock' interval of 479996388 ns (479 ms)
+> [   38.999919][    C0] clocksource:                       'kvm-clock' (not 'wdtest-ktime') is current clocksource.
+> [   39.001696][    C0] clocksource_wdtest: --- Marking wdtest-ktime unstable due to clocksource watchdog.
+> [   40.441815][   T32] clocksource: Not enough CPUs to check clocksource 'wdtest-ktime'.
+> [   40.443303][   T32] clocksource_wdtest: --- Done with test.
+> [  293.673815][    T1] swapper invoked oom-killer: gfp_mask=0xcc0(GFP_KERNEL), order=0, oom_score_adj=0
+> [  293.675628][    T1] CPU: 0 PID: 1 Comm: swapper Tainted: G                TN 6.5.0-rc4-00632-g2730245bd6b1 #1
+> [  293.677082][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> [  293.677082][    T1] Call Trace:
+> [  293.677082][    T1]  <TASK>
+> [ 293.677082][ T1] dump_stack_lvl (lib/dump_stack.c:107)
+> [ 293.677082][ T1] dump_header (mm/oom_kill.c:?)
+> [ 293.677082][ T1] out_of_memory (mm/oom_kill.c:1159)
+> [ 293.677082][ T1] __alloc_pages_slowpath (mm/page_alloc.c:3372 mm/page_alloc.c:4132)
+> [ 293.677082][ T1] __alloc_pages (mm/page_alloc.c:4469)
+> [ 293.677082][ T1] alloc_slab_page (mm/slub.c:1866)
+> [ 293.677082][ T1] new_slab (mm/slub.c:2017 mm/slub.c:2062)
+> [ 293.677082][ T1] ? mas_alloc_nodes (lib/maple_tree.c:1282)
+> [ 293.677082][ T1] ___slab_alloc (arch/x86/include/asm/preempt.h:80 mm/slub.c:3216)
+> [ 293.677082][ T1] ? mas_alloc_nodes (lib/maple_tree.c:1282)
+> [ 293.677082][ T1] kmem_cache_alloc_bulk (mm/slub.c:? mm/slub.c:4041)
+> [ 293.677082][ T1] mas_alloc_nodes (lib/maple_tree.c:1282)
+> [ 293.677082][ T1] mas_nomem (lib/maple_tree.c:?)
+> [ 293.677082][ T1] mtree_store_range (lib/maple_tree.c:6191)
+> [ 293.677082][ T1] check_dup_gaps (lib/test_maple_tree.c:2623)
+> [ 293.677082][ T1] check_dup (lib/test_maple_tree.c:2707)
+> [ 293.677082][ T1] maple_tree_seed (lib/test_maple_tree.c:3766)
+> [ 293.677082][ T1] do_one_initcall (init/main.c:1232)
+> [ 293.677082][ T1] ? __cfi_maple_tree_seed (lib/test_maple_tree.c:3508)
+> [ 293.677082][ T1] do_initcall_level (init/main.c:1293)
+> [ 293.677082][ T1] do_initcalls (init/main.c:1307)
+> [ 293.677082][ T1] kernel_init_freeable (init/main.c:1550)
+> [ 293.677082][ T1] ? __cfi_kernel_init (init/main.c:1429)
+> 
+> 
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20230831/202308312115.cad34fed-oliver.sang@intel.com
+> 
+> 
+> 
