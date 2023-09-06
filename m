@@ -1,82 +1,84 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E51162B
-	for <oe-lkp@lists.linux.dev>; Wed,  6 Sep 2023 01:38:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCFA07E
+	for <oe-lkp@lists.linux.dev>; Wed,  6 Sep 2023 02:45:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1693964331; x=1725500331;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=uMv7Cdc7pawgpK+pLaWXGgJ7GRzY8vPnisgI1CjMXd4=;
-  b=MDknNR1mI8CC6NQn2j3l23+NjAHr1mVdlFeF1lLyxpBWUR4rvCE+qlna
-   h4R1pjBdjyZGWMDu5gqYRc+wfeel1a+1cHKiAGO0hGVnv17v1XPCoaNKl
-   k+ioCTmUtG0LOF4ZEep5mSX8dJFbk7kw7URNfhhkPHENy/3v0kseSFegh
-   /unokiovnIzN32yzHQoLDEczDiKuy19zH3XIiLDyp9xEuVNvi9BrRVv9C
-   aC6Xy/bODE1CbLUQTObvBzNwFwbFpo9m5bOoOFvy9hm+eKRVXc9fiCab8
-   S2k121J3vqqEk+iqIkz7ljvWYRqUbMDxO1zZkbG8DCWkq/sTm43bmK3ck
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10824"; a="380749524"
+  t=1693968329; x=1725504329;
+  h=date:from:to:cc:subject:message-id:
+   content-transfer-encoding:in-reply-to:mime-version;
+  bh=Syifn1patVDRQ1bTWhNlhAzOkPL4GkTq6vFxajDqmzk=;
+  b=MksCp10+/hbTW4tIahHh2TECe6iqk9BgXDa/MIdUZmGS00IE/M7DN9+w
+   TqhGzC2mGYnyNc1vwRNbw9zxAsfCGVUeXadhChM5bxKKSYi7OOi6+ICiV
+   wrOfBu6p+Y/ZRWkgk5yEPEfkXNPPxtQZ4YZpnKOpXPJ8OtQAVFPJRaF6t
+   9JO6gylp/MQF8SYkyyrHlz4fmreNfUPep3qHnv7fwavoZsMaHH5rwo/2q
+   9gZhcqCYy8onVWoQaSCW5Ehjt1YijwcYyaOBkddci1Pz2MpuyBWjjb6K2
+   g0obkQXOdMRhiqcSngxd80v88q55hc4kq8/7Ipq1RWyFufW1EjH0Py4EX
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10824"; a="407953850"
 X-IronPort-AV: E=Sophos;i="6.02,230,1688454000"; 
-   d="scan'208";a="380749524"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Sep 2023 18:38:37 -0700
+   d="scan'208";a="407953850"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Sep 2023 19:45:27 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10824"; a="831449153"
+X-IronPort-AV: E=McAfee;i="6600,9927,10824"; a="776409948"
 X-IronPort-AV: E=Sophos;i="6.02,230,1688454000"; 
-   d="scan'208";a="831449153"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by FMSMGA003.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 05 Sep 2023 18:38:35 -0700
+   d="scan'208";a="776409948"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by orsmga001.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 05 Sep 2023 19:45:26 -0700
 Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Tue, 5 Sep 2023 18:38:33 -0700
+ 15.1.2507.27; Tue, 5 Sep 2023 19:45:25 -0700
 Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
  ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27; Tue, 5 Sep 2023 18:38:32 -0700
+ 15.1.2507.27; Tue, 5 Sep 2023 19:45:25 -0700
 Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
  orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.27 via Frontend Transport; Tue, 5 Sep 2023 18:38:32 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.41) by
- edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ 15.1.2507.27 via Frontend Transport; Tue, 5 Sep 2023 19:45:25 -0700
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.175)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.27; Tue, 5 Sep 2023 18:38:32 -0700
+ 15.1.2507.27; Tue, 5 Sep 2023 19:45:25 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JTEfsJVyuMR1NZE338rjhlRuF2jLdCiEfSsQd+KN1ugUMDPXoHzE4vR3EMo+cihz8QfH+AElDNPK8/P+kYCkHiIzlT0mobF1O4K9LxqTXHLp+LaDfu5QDgIdkrSJ9+IbZJsxCX0I5/S10EHJImQ7satSa9bRQIAHV7DtY7Amy8Wo4tJYhwHQow+lgJRidmE6RM5zeL7kULCwlUX8TuDyzMBrAt+bUF6d/hVqh3wEZDsxJrwITcbeFmlSeyB7c7dJhvC7x7u/1wrVJqkjf/T1Ew7fJ3/nT4EFTN2s4/uUmKzjGnqUrQStKQF5yp4k+2+Huhk2XSRwNBAchUHLyoK2FQ==
+ b=RkwjjgkNY461gzFngbKuT7f1uxSjciJbHXla8lSJ0RJH9seasnFVNF6gzC1DVy4vCTJW6gmJUyVpe+omOgt+f0CwzRp0cfRl9kB2AET1bSQ5upLZ4CgBb2Hj4BXBbp2JljFLldgURKxekAINHTE/dJwnZOD9yGxBG5AEBN77bzKls68C/JOsBSc0RjziIaNdeq0JQ4i4bqapRgQ++3sb69CF+TMJhSGyXdy+AOT0gLAMIT0QFHiPeTw5VOLOLWOCJmKj7hYssWjGA1MuSpsbPyTgfNKFBo8pQ2FzC7f7sTluIlJYU7TiRkGzRpJKCykCRm1/DqSwdlU1eZdHeE6yfw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MzmbGRk4DauRHsEEHvaCZ7vkBCAL7q+Q7fFdwy/WRpg=;
- b=i8ueVNoOmwl//r6uJCQdTWlqNn3/xHJY23f86UPr12aznzaI3uwwgROLUtFETl8FScl5yo0ukSkrd4p5GLLmvdoiQVuBG7jjdKDic2EXp5m3ude1ZBfiK2UW3g3HvZKDV3u2xMMmPahUzD1ScmGSzAa/kJjkZ814idlwlv3UpgfvDObi5IH8zhzJh2GKhTZ/+dSMUBB105fihxA+lWUiaH7u6dELkQEtpAv2TDny7ENNR8xbw7Y0Vn/b5T67IfffKinXrtuUv2N+xmEsmtDtscRlclFonpdYyxkE+D8WO47qBtSzFuLKYJGY3dN1gmjgzd9vAXcl+2SFreW5nRMVZQ==
+ bh=pzWYa4EnxH8rbEQvsXAIzziYd0W/0YPegbuTx1tcoCA=;
+ b=KFQevcf9EfZrYceJ2W+8gynQDY90zAP9FSMQATScbYmdMHw15e7ZMYF1ctCyT8YxeQLjb591/p8imfrRJWUaaWpQJ8jNnOAf7nl4pvG15jOyknX9yFjRow4tOOWFCS2OYEcmOmOSo9U6ql7FtAH+DNohKaH9vu6HqV7RMpGMc42bh6WVK8zcxiWt9itJV+1sxqOZB7INV5gqJxs0m4gb7KRRrXBW7Ebx6ib4/GreT0amWpfp6an9uOGkm7byhCLRZ7tmgMNACmaPg8jCeOLjyZjZoTVMrWoRTrdU9PLZbFiTFkKU4cGuVo4YWzfeJAXSnefcr9//AsoV00AGQDax2g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
- by SA1PR11MB5921.namprd11.prod.outlook.com (2603:10b6:806:22a::15) with
+ by MW5PR11MB5788.namprd11.prod.outlook.com (2603:10b6:303:198::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6745.33; Wed, 6 Sep
- 2023 01:38:30 +0000
+ 2023 02:45:21 +0000
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com
  ([fe80::73c6:1231:e700:924]) by PH8PR11MB6779.namprd11.prod.outlook.com
  ([fe80::73c6:1231:e700:924%4]) with mapi id 15.20.6745.030; Wed, 6 Sep 2023
- 01:38:30 +0000
-Date: Wed, 6 Sep 2023 09:38:21 +0800
+ 02:45:21 +0000
+Date: Wed, 6 Sep 2023 10:45:10 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Bart Van Assche <bvanassche@acm.org>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, "Martin K. Petersen"
-	<martin.petersen@oracle.com>, Damien Le Moal <dlemoal@kernel.org>, "Christoph
- Hellwig" <hch@lst.de>, Ming Lei <ming.lei@redhat.com>,
-	<linux-scsi@vger.kernel.org>, <oliver.sang@intel.com>
-Subject: [bvanassche:block-for-next] [scsi]  6d1716982b:
- BUG:kernel_NULL_pointer_dereference,address
-Message-ID: <202309060922.cefc15f7-oliver.sang@intel.com>
-Content-Type: text/plain; charset="us-ascii"
+To: Qu Wenruo <wqu@suse.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-btrfs@vger.kernel.org>,
+	<ying.huang@intel.com>, <feng.tang@intel.com>, <fengwei.yin@intel.com>,
+	<oliver.sang@intel.com>
+Subject: Re: [PATCH 3/3] btrfs: utilize the physically/virtually continuous
+ extent buffer memory
+Message-ID: <202309061050.19c12499-oliver.sang@intel.com>
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
-X-ClientProxiedBy: PS1PR03CA0004.apcprd03.prod.outlook.com
- (2603:1096:803:3d::16) To PH8PR11MB6779.namprd11.prod.outlook.com
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <8bc15bfdaa2805d1d1b660b8b2e07a55aa02027d.1692858397.git.wqu@suse.com>
+X-ClientProxiedBy: SI2PR04CA0007.apcprd04.prod.outlook.com
+ (2603:1096:4:197::19) To PH8PR11MB6779.namprd11.prod.outlook.com
  (2603:10b6:510:1ca::17)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -85,223 +87,242 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|SA1PR11MB5921:EE_
-X-MS-Office365-Filtering-Correlation-Id: fadc2059-d7eb-4c08-29a1-08dbae79f985
+X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|MW5PR11MB5788:EE_
+X-MS-Office365-Filtering-Correlation-Id: aebda27e-0ff0-47b8-977a-08dbae834fee
 X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8WKdXp0O5xsPLy0KcYIQ+I94zrIJVUUNO8g2zPd8Z1yajD3gL4oqjPF2Sf4cUO0qrZ5Zybd548Kh1U7PkwgliLIOwWZKReB3i0ketDTtOb/Rw1GZAgHLKSxw+pn3fwh5/nvVmTqjtYtqWGyaIjj4un+//Kxk7SUNJvrTkWtlkhaDYP5zMqIdxeLrriGaA0Lm+/WoeDQqP04aNw3svYVe4h2gQ3yVy2yzaA+zfo3NIvIXXiPFRrpwYZF++RagD7Rr7cfamxk5OJ8nV+lqV+gZ4wJWZm0Swnw3nb5AsDg16kbI7SAaWm+BI0xItTpG4ovv9DYiN4iT2XdjsYN7vQ6hom226iuIqLVNX/5RZ8cdXiIuWQwtRPc4q41p62tmWP3Ysi6VMktDXaB6LRKpIhs6794SDZyPaa8Ue5tFs1yHr8kMtebGayg9GfrhZjGyEoatBBr7kJ9a9RYTScaOK5ObGporynL0euyKSJdh3GLVhknV3HBjRsF476xEOBV1qS5v7tmdr9SqyAo8MxyROW3a2CI4iRqZfkrRYtO5yg5UUTMV2HUWs+wpXAiKikE08PFfseHdsZvmM6qAouQWB3FNxg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(39860400002)(366004)(136003)(346002)(396003)(451199024)(186009)(1800799009)(6486002)(82960400001)(38100700002)(6506007)(36756003)(6666004)(86362001)(45080400002)(966005)(478600001)(6512007)(83380400001)(1076003)(26005)(107886003)(2616005)(66476007)(66556008)(4326008)(66946007)(6916009)(8676002)(8936002)(41300700001)(2906002)(316002)(54906003)(5660300002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: S0ej1vk711A7VWr0OAxPe8a0aewCMgG8it6vXwfFwkObXaWgRIaL4Qkasjud/CyFAz+3Jj88efJtbPVgPzzjpQ3Cs3wt0X0pb9HjMUVbitF3quGv7fDqwNP8MU6plj/Guq3BEoeDCooLtvfyfadvp5aBOxjIVZDtux15uYY0ztqabUTnJ4Phn1pcnAxpfi5q/oR8fLa1lVz3UveC7tuvfK1V+JgSDlnhBT+HTw0m4+1JIuKo3IX7lQULF7/6lAYl1rjQYkjwmhD7cw/FMo1FlJxsLx/VEJ+GVDH3zFaJcWoRKdlCQCi0rsJotYscGyrDNw6otvh5rqhZT+G6d+vkI1VU3FFpOp7JkrUSpsn3gOo4GAchFXe3D1AsCkg9r79KT+5GmjgIAUYLlERqenUuygXsZoDJ/yYdjxv+n3f5ztLl9zJRYcvw1yL/UTP3sV1LEej6YWOuRxu+IlnXazvL35TmdL1V56tO0lxB4LyzsQ4vWmw1+likFosrIf91C2ZkNI3oXrXGJZzCezFc74ZBQncg3j8D1lDgCBOHsXQd+usNx/Cmya7H0ugxYxXbim9EoAcGpK8cb6L6GuouGTluvA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(346002)(39860400002)(136003)(366004)(376002)(186009)(1800799009)(451199024)(38100700002)(478600001)(5660300002)(966005)(6666004)(82960400001)(6916009)(66946007)(66556008)(66476007)(316002)(41300700001)(4326008)(8936002)(8676002)(83380400001)(2906002)(26005)(30864003)(86362001)(36756003)(6512007)(107886003)(2616005)(1076003)(6506007)(6486002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?jPZZ+7ATXH8HQFLoqyHbKK3uDJMBUYa1W+VNZQzIxJ8EL5pCz7P4Xh+VIXmK?=
- =?us-ascii?Q?g7IEd9uBtxv+7zqw7apyKvDNJcM/ASdxVY424H3VHAxBZt1Q5yVoal8GdKw7?=
- =?us-ascii?Q?7mVFnUQZsdryjPLtiWvuWJZCJ4NW8rcmfkMKLqu3kb/Hm148kxPRR5vdT0p7?=
- =?us-ascii?Q?+o+NgKuXKfps6FAJWhoZqrEhl/gHwSZg/kI0PLctUz43JY0Ncv0WnWIcWrgg?=
- =?us-ascii?Q?xRloUGkXbDIdp5Fu5Ce/c28FbTxL4yggY3EeEk6mD8yW3VEdQ9HblkrbPrRE?=
- =?us-ascii?Q?Enq17CUDuZhZsNUVrWbJLXffcJ7AKgKVs9KmQGldljuMuZDdnhGPGf91M+Mt?=
- =?us-ascii?Q?vcotjKdrbdwqxL4nKNls3hsScblmOv4mo3iuTbaliV0tnNyhheUJCapUBEEu?=
- =?us-ascii?Q?IdVvRq7+zrEal2cwq9ng3g2qVQnA6R8d21f+2IrVvNxrfO8OjVQILI2UATsO?=
- =?us-ascii?Q?M8n3rhm888Mg30RUUz+ojkAp+UpugysS1TL7OD3G9FqVbbLBHzjZVURfUxy8?=
- =?us-ascii?Q?stvdOUaMzeY8etiKzKWh2/E1buVYZkq4o7WIhXDbP8IGhw5rjfcwkZno9z6N?=
- =?us-ascii?Q?TLyzv6v55eaedQ1sNFfTDtj7Nj6/5edo6p2JygN7nq4o/I1L/5wgvLLIRBzF?=
- =?us-ascii?Q?EDwTLC9wFrjFND56qVzi3uLB8WlQl/jNiKLGrRE8QKjKWTX4uviqUB2KJi5W?=
- =?us-ascii?Q?Co8Ho18qUEB7UHeyi8jU5QKE+0dnD0jx+X5RlPeBXOP4y9q4cr+9clkrBOUt?=
- =?us-ascii?Q?vzOyowhoe1gByc1CsVabH9U94jfOeLv3eIgLGevmp0Ud9dnokmwTN/c1YcxS?=
- =?us-ascii?Q?ZG59alwZmzYEEb8hfctsrH8gEmxsKzy6SvwpYxK5LvvofvR92z9lvCQF/l3+?=
- =?us-ascii?Q?lJ3YkjnTIcSnpkbkxqY6g0f+dkOLqpTwYjv5mWvGAFlklPQPi+avrBv4zT3J?=
- =?us-ascii?Q?d9ry/kOKqC5tRMvWFkeToB4muMcfDpXkRrz53x217Qm6Um/CyzdpeEFoLlXG?=
- =?us-ascii?Q?8lymie3wVScX2++rD9yRjI0E9J+fPRaEZ9Km38Bmsvr2w2I14cyrC3gBEHSz?=
- =?us-ascii?Q?1pC+shKgSbPsKni5hqAeFoY9MLUQ/LaVVmi7w+Mqw26zmeteAswxnK6DaTZk?=
- =?us-ascii?Q?cUiSJaXtQ3sdH82q3N+Sj5XorZV4hKiZiFzlWovsCc9LskMZK90hUi1Ce813?=
- =?us-ascii?Q?843PZUPMlTP1tKkjvPkNFV1DVRBQQNtJVI5WGm/1UZSdDsRuXRUjiMCswJHW?=
- =?us-ascii?Q?4Rxi7GeZbVdY1vCR/4Vf/tVpUgSy6ZkLOsCgxjX5G2TibFyc4Pm/vj7s74ss?=
- =?us-ascii?Q?foInurST2BY4KnRRPOQ4rfEyW2Jk7MqaZ35YCYqBlK+75xO1IuvGUF8uhkQw?=
- =?us-ascii?Q?KpmgEpd3TnCcCZCemWBZjcwtXCkXxkE3CmpviwplJLvLQvm7ji6Z1qMfBZwv?=
- =?us-ascii?Q?sSamrd2h0zJCYgFmzb68M4sBok0iFqeRua//q3ZUws+IE7t9REhZJGot5eYK?=
- =?us-ascii?Q?LT38o4o5PMq2lRE4cM7641BeK6V4QS/rsXTSy6ezUoqZaPyEPcVjODi5sqdU?=
- =?us-ascii?Q?iXEJXZV7ezJjSdNJ+R25oirwJHO8h7L5Wjdd/2MIKWAerYxzFZ5ctOnHKo94?=
- =?us-ascii?Q?zA=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: fadc2059-d7eb-4c08-29a1-08dbae79f985
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?LiOa1zZfDDwWkcPzbwTkvHTY0YFmhkP/CpRd+Zb4LWDAvfAtczWYxT7FyH?=
+ =?iso-8859-1?Q?dKlZVjmKOIGoGz959/Vyoer0Ewxn7aztJiUou4qaqiGVZsZm/q+gx2HMSp?=
+ =?iso-8859-1?Q?Ux7+c9E5skRaD8VgSUjWW/xPjtk6eru4Lr++SvVb4pQK+2lADWurvM7J8v?=
+ =?iso-8859-1?Q?XrVBfpWrjhxo/HuWd76zAVd9C/lEZvh9DCoFgJIs1ICLxnmsZwn9qo8dwi?=
+ =?iso-8859-1?Q?sBC4V3C3ThxlJEiaVTzoQnLIwUEJ6Csez96M5yWA9lYLZV9cm8PzBEKpbB?=
+ =?iso-8859-1?Q?3fxIt34DCdoA5TS8GRCtPmx3bCqRLVQ3HtAcSB0pfLCPfbw21ZxwmUeerC?=
+ =?iso-8859-1?Q?NZzSJEbvEFuQsbMa2PwzySii+9nsu0twscF5H5wOn9OUtmXgx/oYB33/fS?=
+ =?iso-8859-1?Q?SmCN3CF8PzE4Bc+hnP9WSbUnZt0TxGfalEL9plzehChDISpRmkDa84wZLb?=
+ =?iso-8859-1?Q?Q3FBgKFWscMXYJcgC+RA0Xz+u0uAaB7pS6boDPSlRCudEHH6GVPEbchRai?=
+ =?iso-8859-1?Q?u1y0OeSSJkL3OfE83Q7C9pOpcs8TS9/DCjCyi7vkZSi4qeHuClba51DdQH?=
+ =?iso-8859-1?Q?j4y1uBurc0sjpNAH463u9ARfokxfDOUCkH881Js5Rmn4INmMi1DrRSFYNT?=
+ =?iso-8859-1?Q?TLzsPMmGL8/QNv6fzSuaGNAXInmWT5mRlAX7p6ibynIKkGC822V0nlJJvT?=
+ =?iso-8859-1?Q?pTPR4Yll0dLET90gWyFgPEZXMk8JF5bxTCN0tLIptrMxJYt3khSucv95hy?=
+ =?iso-8859-1?Q?ViSP+JY6tEYnNM7g+X/E2K7EbMAmvnij6SqBfYvA9eE3/MskHbJ8mQOy8u?=
+ =?iso-8859-1?Q?JT5oCS+Rfgx9L2pmjtVwHHXtotn5OC3Tj7x80r3BEOfEt9VWfK0rJom2ve?=
+ =?iso-8859-1?Q?f3cAWwE1CtMktJXm4/rglUKQRh2yE62KptynqTCjAZyyUTzeEODjeKDezN?=
+ =?iso-8859-1?Q?9ALMErA8OeI5nuFQyLAYwBzweQLfvYMurLnkLI0XsrT6Wy+XsmC3Ce9ZTU?=
+ =?iso-8859-1?Q?wtuOG1UmFMZGH6PMX17h17Dj5kpkDv+0wnvuLrzfwW03K05uotpyQo12Nw?=
+ =?iso-8859-1?Q?JjGI9shXd0GY5FPmqXwwuebn7M1sZjO5dvCKmUdPVM+bHXKk3UqVyF9l8I?=
+ =?iso-8859-1?Q?xxXpQUUe/Pae+4faQDZtJrhNohTYg3LvBdzkemOXbeGA+Pt0n/9HZCtP3H?=
+ =?iso-8859-1?Q?ruInuVx1KaMdjZoQvHFJiom9fWH6K5L8NRf0ner0oPNQKgYlbyicS9ZJYE?=
+ =?iso-8859-1?Q?ZA4bLYzO4gJ/8ZwKs9sauotywRZJwStNsbQgiYKsMHUU1k3tvRMQJLZSWm?=
+ =?iso-8859-1?Q?SABj6yWgJ5obD37CH1eF5BVQIK0kRTMoE0614tEttzl1UbyeKpAm/TKJjZ?=
+ =?iso-8859-1?Q?rfUjmq/HdBCZD8or8OGFW+lKHYEYE4XTQ6hLcvi3m1XuFWgTwAafqQeIG4?=
+ =?iso-8859-1?Q?wW3UsQGuGvLSYie8/4O6I7MXxyOTt3EcezqbVjaODEJQjLNkoWIzCjJFL2?=
+ =?iso-8859-1?Q?ytyK0kkg038M8a5PkBJSeFX2tXIVD07xxJjcPpQREizixhqccnIpyQG7UW?=
+ =?iso-8859-1?Q?59jjp4O53VQSmcd9Aff3BARwP6X2nuVkgIm9dTVddmPwM0EACOdd/hU++n?=
+ =?iso-8859-1?Q?WYtiOpwH1ioz0laKkblSYAMZ/8qllIieYWnZpdsrwd483qrHfvTaGeIg?=
+ =?iso-8859-1?Q?=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: aebda27e-0ff0-47b8-977a-08dbae834fee
 X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB6779.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Sep 2023 01:38:30.6096
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Sep 2023 02:45:21.1616
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FJN7dg5edjhd9XOTiDjcpgD3OFxjQfUrmv5zqwycXX4n1VNJYuzHqXT4HoguMCJFRK5vbd4fOerWMvcRCBkLyg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR11MB5921
+X-MS-Exchange-CrossTenant-UserPrincipalName: PbCkqAixno3o1NzV4h4RLQiG3L3M+26QbtcEUZYnHAWiEZXaJcX9AhxkcHcp+5d+j8Cdyz4GVhRrMJimUeE9Sw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW5PR11MB5788
 X-OriginatorOrg: intel.com
 
 
 
 Hello,
 
-kernel test robot noticed "BUG:kernel_NULL_pointer_dereference,address" on:
-
-commit: 6d1716982bc67e5c6409456e4a6d37fb6909a779 ("scsi: core: Introduce a mechanism for reordering requests in the error handler")
-https://github.com/bvanassche/linux block-for-next
-
-in testcase: boot
-
-compiler: gcc-12
-test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
+kernel test robot noticed a 12.0% improvement of filebench.sum_operations/s on:
 
 
-+---------------------------------------------+------------+------------+
-|                                             | 4618ba9202 | 6d1716982b |
-+---------------------------------------------+------------+------------+
-| boot_successes                              | 6          | 0          |
-| boot_failures                               | 0          | 6          |
-| BUG:kernel_NULL_pointer_dereference,address | 0          | 6          |
-| Oops:#[##]                                  | 0          | 6          |
-| EIP:scsi_call_prepare_resubmit              | 0          | 6          |
-| Kernel_panic-not_syncing:Fatal_exception    | 0          | 6          |
-+---------------------------------------------+------------+------------+
+commit: 2fa4ac9754a7fa77bad88aae11ac77ba137d3858 ("[PATCH 3/3] btrfs: utilize the physically/virtually continuous extent buffer memory")
+url: https://github.com/intel-lab-lkp/linux/commits/Qu-Wenruo/btrfs-warn-on-tree-blocks-which-are-not-nodesize-aligned/20230824-143628
+base: https://git.kernel.org/cgit/linux/kernel/git/kdave/linux.git for-next
+patch link: https://lore.kernel.org/all/8bc15bfdaa2805d1d1b660b8b2e07a55aa02027d.1692858397.git.wqu@suse.com/
+patch subject: [PATCH 3/3] btrfs: utilize the physically/virtually continuous extent buffer memory
+
+testcase: filebench
+test machine: 96 threads 2 sockets (Ice Lake) with 128G memory
+parameters:
+
+	disk: 1HDD
+	fs: btrfs
+	fs2: cifs
+	test: webproxy.f
+	cpufreq_governor: performance
 
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202309060922.cefc15f7-oliver.sang@intel.com
 
 
-[    7.088822][  T113] BUG: kernel NULL pointer dereference, address: 00000064
-[    7.089409][  T113] #PF: supervisor read access in kernel mode
-[    7.089981][  T113] #PF: error_code(0x0000) - not-present page
-[    7.090463][  T113] *pdpt = 000000002de92001 *pde = 0000000000000000
-[    7.090986][  T113] Oops: 0000 [#1] SMP PTI
-[    7.091358][  T113] CPU: 0 PID: 113 Comm: scsi_eh_1 Tainted: G            E      6.5.0-rc7-00153-g6d1716982bc6 #1
-[    7.092170][  T113] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-[ 7.092974][ T113] EIP: scsi_call_prepare_resubmit (drivers/scsi/scsi_error.c:2202 drivers/scsi/scsi_error.c:2228) 
-[ 7.093463][ T113] Code: 89 e5 57 89 c7 56 53 83 ec 1c 64 a1 1c 17 4d cd 89 45 f0 8b 07 39 c7 74 2d 8d 58 fc 8d b6 00 00 00 00 8b 03 8b 80 4c 01 00 00 <8b> 50 64 85 d2 74 0b 89 d8 e8 c2 17 45 00 84 c0 75 26 8b 43 04 8d
-All code
-========
-   0:	89 e5                	mov    %esp,%ebp
-   2:	57                   	push   %rdi
-   3:	89 c7                	mov    %eax,%edi
-   5:	56                   	push   %rsi
-   6:	53                   	push   %rbx
-   7:	83 ec 1c             	sub    $0x1c,%esp
-   a:	64 a1 1c 17 4d cd 89 	movabs %fs:0x8bf04589cd4d171c,%eax
-  11:	45 f0 8b 
-  14:	07                   	(bad)
-  15:	39 c7                	cmp    %eax,%edi
-  17:	74 2d                	je     0x46
-  19:	8d 58 fc             	lea    -0x4(%rax),%ebx
-  1c:	8d b6 00 00 00 00    	lea    0x0(%rsi),%esi
-  22:	8b 03                	mov    (%rbx),%eax
-  24:	8b 80 4c 01 00 00    	mov    0x14c(%rax),%eax
-  2a:*	8b 50 64             	mov    0x64(%rax),%edx		<-- trapping instruction
-  2d:	85 d2                	test   %edx,%edx
-  2f:	74 0b                	je     0x3c
-  31:	89 d8                	mov    %ebx,%eax
-  33:	e8 c2 17 45 00       	call   0x4517fa
-  38:	84 c0                	test   %al,%al
-  3a:	75 26                	jne    0x62
-  3c:	8b 43 04             	mov    0x4(%rbx),%eax
-  3f:	8d                   	.byte 0x8d
 
-Code starting with the faulting instruction
-===========================================
-   0:	8b 50 64             	mov    0x64(%rax),%edx
-   3:	85 d2                	test   %edx,%edx
-   5:	74 0b                	je     0x12
-   7:	89 d8                	mov    %ebx,%eax
-   9:	e8 c2 17 45 00       	call   0x4517d0
-   e:	84 c0                	test   %al,%al
-  10:	75 26                	jne    0x38
-  12:	8b 43 04             	mov    0x4(%rbx),%eax
-  15:	8d                   	.byte 0x8d
-[    7.094917][  T113] EAX: 00000000 EBX: ed40a0a0 ECX: 00000000 EDX: c21ded44
-[    7.095473][  T113] ESI: edfb2ed4 EDI: edfb2ed4 EBP: c23fded8 ESP: c23fdeb0
-[    7.096024][  T113] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068 EFLAGS: 00010206
-[    7.096644][  T113] CR0: 80050033 CR2: 00000064 CR3: 2de50000 CR4: 000406f0
-[    7.097201][  T113] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 00000000
-[    7.097756][  T113] DR6: fffe0ff0 DR7: 00000400
-[    7.098160][  T113] Call Trace:
-[ 7.098464][ T113] ? show_regs (arch/x86/kernel/dumpstack.c:479 arch/x86/kernel/dumpstack.c:465) 
-[ 7.098831][ T113] ? __die (arch/x86/kernel/dumpstack.c:421 arch/x86/kernel/dumpstack.c:434) 
-[ 7.099176][ T113] ? page_fault_oops (arch/x86/mm/fault.c:707) 
-[ 7.099582][ T113] ? kernelmode_fixup_or_oops+0x73/0x100 
-[ 7.100106][ T113] ? __bad_area_nosemaphore+0xdc/0x1c0 
-[ 7.100621][ T113] ? ata_eh_speed_down (drivers/ata/libata-eh.c:1819) libata
-[ 7.101108][ T113] ? bad_area_nosemaphore (arch/x86/mm/fault.c:867) 
-[ 7.101535][ T113] ? do_user_addr_fault (arch/x86/mm/fault.c:1457) 
-[ 7.101972][ T113] ? exc_page_fault (arch/x86/include/asm/irqflags.h:37 arch/x86/include/asm/irqflags.h:72 arch/x86/mm/fault.c:1494 arch/x86/mm/fault.c:1542) 
-[ 7.102377][ T113] ? pvclock_clocksource_read_nowd (arch/x86/mm/fault.c:1499) 
-[ 7.102868][ T113] ? handle_exception (arch/x86/entry/entry_32.S:1056) 
-[ 7.103285][ T113] ? ata_eh_thaw_port (arch/x86/include/asm/bitops.h:228 arch/x86/include/asm/bitops.h:240 include/asm-generic/bitops/instrumented-non-atomic.h:142 include/linux/cpumask.h:504 include/linux/cpumask.h:1082 include/trace/events/libata.h:630 drivers/ata/libata-eh.c:1149 drivers/ata/libata-eh.c:1133) libata
-[ 7.103755][ T113] ? pvclock_clocksource_read_nowd (arch/x86/mm/fault.c:1499) 
-[ 7.104251][ T113] ? scsi_call_prepare_resubmit (drivers/scsi/scsi_error.c:2202 drivers/scsi/scsi_error.c:2228) 
-[ 7.104723][ T113] ? ata_eh_thaw_port (arch/x86/include/asm/bitops.h:228 arch/x86/include/asm/bitops.h:240 include/asm-generic/bitops/instrumented-non-atomic.h:142 include/linux/cpumask.h:504 include/linux/cpumask.h:1082 include/trace/events/libata.h:630 drivers/ata/libata-eh.c:1149 drivers/ata/libata-eh.c:1133) libata
-[ 7.105189][ T113] ? pvclock_clocksource_read_nowd (arch/x86/mm/fault.c:1499) 
-[ 7.105681][ T113] ? scsi_call_prepare_resubmit (drivers/scsi/scsi_error.c:2202 drivers/scsi/scsi_error.c:2228) 
-[ 7.106158][ T113] ? ata_sff_error_handler (drivers/ata/libata-sff.c:2096) libata
-[ 7.106665][ T113] ? ata_sff_softreset (drivers/ata/libata-sff.c:2000) libata
-[ 7.107153][ T113] ? ata_sff_dev_classify (drivers/ata/libata-sff.c:1920) libata
-[ 7.107658][ T113] scsi_eh_flush_done_q (drivers/scsi/scsi_error.c:2266) 
-[ 7.108084][ T113] ata_scsi_port_error_handler (drivers/ata/libata-eh.c:754) libata
-[ 7.108616][ T113] ata_scsi_error (include/linux/list.h:292 drivers/ata/libata-eh.c:549) libata
-[ 7.109060][ T113] scsi_error_handler (drivers/scsi/scsi_error.c:2406) 
-[ 7.109472][ T113] kthread (kernel/kthread.c:389) 
-[ 7.109847][ T113] ? scsi_eh_flush_done_q (drivers/scsi/scsi_error.c:2349) 
-[ 7.110291][ T113] ? kthread_complete_and_exit (kernel/kthread.c:342) 
-[ 7.110747][ T113] ret_from_fork (arch/x86/kernel/process.c:151) 
-[ 7.111126][ T113] ? kthread_complete_and_exit (kernel/kthread.c:342) 
-[ 7.111585][ T113] ret_from_fork_asm (arch/x86/entry/entry_32.S:741) 
-[ 7.111989][ T113] entry_INT80_32 (arch/x86/entry/entry_32.S:947) 
-[    7.112377][  T113] Modules linked in: rapl(E) ppdev(E) evdev(E) drm(E) ata_piix(E) psmouse(E) serio_raw(E) i2c_piix4(E) libata(E) floppy(E) parport_pc(E) parport(E) qemu_fw_cfg(E) button(E)
-[    7.113658][  T113] CR2: 0000000000000064
-[    7.114027][  T113] ---[ end trace 0000000000000000 ]---
-[ 7.114475][ T113] EIP: scsi_call_prepare_resubmit (drivers/scsi/scsi_error.c:2202 drivers/scsi/scsi_error.c:2228) 
-[ 7.114956][ T113] Code: 89 e5 57 89 c7 56 53 83 ec 1c 64 a1 1c 17 4d cd 89 45 f0 8b 07 39 c7 74 2d 8d 58 fc 8d b6 00 00 00 00 8b 03 8b 80 4c 01 00 00 <8b> 50 64 85 d2 74 0b 89 d8 e8 c2 17 45 00 84 c0 75 26 8b 43 04 8d
-All code
-========
-   0:	89 e5                	mov    %esp,%ebp
-   2:	57                   	push   %rdi
-   3:	89 c7                	mov    %eax,%edi
-   5:	56                   	push   %rsi
-   6:	53                   	push   %rbx
-   7:	83 ec 1c             	sub    $0x1c,%esp
-   a:	64 a1 1c 17 4d cd 89 	movabs %fs:0x8bf04589cd4d171c,%eax
-  11:	45 f0 8b 
-  14:	07                   	(bad)
-  15:	39 c7                	cmp    %eax,%edi
-  17:	74 2d                	je     0x46
-  19:	8d 58 fc             	lea    -0x4(%rax),%ebx
-  1c:	8d b6 00 00 00 00    	lea    0x0(%rsi),%esi
-  22:	8b 03                	mov    (%rbx),%eax
-  24:	8b 80 4c 01 00 00    	mov    0x14c(%rax),%eax
-  2a:*	8b 50 64             	mov    0x64(%rax),%edx		<-- trapping instruction
-  2d:	85 d2                	test   %edx,%edx
-  2f:	74 0b                	je     0x3c
-  31:	89 d8                	mov    %ebx,%eax
-  33:	e8 c2 17 45 00       	call   0x4517fa
-  38:	84 c0                	test   %al,%al
-  3a:	75 26                	jne    0x62
-  3c:	8b 43 04             	mov    0x4(%rbx),%eax
-  3f:	8d                   	.byte 0x8d
 
-Code starting with the faulting instruction
-===========================================
-   0:	8b 50 64             	mov    0x64(%rax),%edx
-   3:	85 d2                	test   %edx,%edx
-   5:	74 0b                	je     0x12
-   7:	89 d8                	mov    %ebx,%eax
-   9:	e8 c2 17 45 00       	call   0x4517d0
-   e:	84 c0                	test   %al,%al
-  10:	75 26                	jne    0x38
-  12:	8b 43 04             	mov    0x4(%rbx),%eax
-  15:	8d                   	.byte 0x8d
+Details are as below:
+-------------------------------------------------------------------------------------------------->
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20230906/202309060922.cefc15f7-oliver.sang@intel.com
+https://download.01.org/0day-ci/archive/20230906/202309061050.19c12499-oliver.sang@intel.com
 
+=========================================================================================
+compiler/cpufreq_governor/disk/fs2/fs/kconfig/rootfs/tbox_group/test/testcase:
+  gcc-12/performance/1HDD/cifs/btrfs/x86_64-rhel-8.3/debian-11.1-x86_64-20220510.cgz/lkp-icl-2sp1/webproxy.f/filebench
+
+commit: 
+  19e81514b8 ("btrfs: map uncontinuous extent buffer pages into virtual address space")
+  2fa4ac9754 ("btrfs: utilize the physically/virtually continuous extent buffer memory")
+
+19e81514b8c09202 2fa4ac9754a7fa77bad88aae11a 
+---------------- --------------------------- 
+         %stddev     %change         %stddev
+             \          |                \  
+     30592 ±194%     -92.3%       2343 ± 24%  sched_debug.cpu.avg_idle.min
+      1.38            -5.9%       1.30        iostat.cpu.iowait
+      4.63            +8.9%       5.04        iostat.cpu.system
+      2.56            +0.5        3.09        mpstat.cpu.all.sys%
+      0.54            +0.1        0.61        mpstat.cpu.all.usr%
+      1996            +3.3%       2062        vmstat.io.bo
+     33480           +13.5%      37993        vmstat.system.cs
+    152.67           +12.6%     171.83        turbostat.Avg_MHz
+      2562            +4.2%       2670        turbostat.Bzy_MHz
+      5.34            +0.5        5.83        turbostat.C1E%
+      7.12 ± 12%     -21.6%       5.58 ± 12%  turbostat.Pkg%pc2
+    209.72            +1.5%     212.81        turbostat.PkgWatt
+      4.92 ± 24%      +3.5        8.37 ± 32%  perf-profile.calltrace.cycles-pp.cpuidle_enter.cpuidle_idle_call.do_idle.cpu_startup_entry.start_secondary
+      5.13 ± 28%      +3.6        8.68 ± 31%  perf-profile.calltrace.cycles-pp.cpuidle_idle_call.do_idle.cpu_startup_entry.start_secondary.secondary_startup_64_no_verify
+      5.13 ± 28%      +3.8        8.90 ± 30%  perf-profile.calltrace.cycles-pp.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call.do_idle.cpu_startup_entry
+      5.13 ± 28%      +3.8        8.90 ± 30%  perf-profile.children.cycles-pp.cpuidle_enter
+      5.13 ± 28%      +3.8        8.90 ± 30%  perf-profile.children.cycles-pp.cpuidle_enter_state
+      5.34 ± 34%      +3.9        9.21 ± 28%  perf-profile.children.cycles-pp.cpuidle_idle_call
+     13.90            +9.6%      15.23        filebench.sum_bytes_mb/s
+    238030           +12.0%     266575        filebench.sum_operations
+      3966           +12.0%       4442        filebench.sum_operations/s
+      1043           +12.0%       1168        filebench.sum_reads/s
+     25.14           -10.7%      22.46        filebench.sum_time_ms/op
+    208.83           +11.9%     233.67        filebench.sum_writes/s
+    506705            +5.8%     536097        filebench.time.file_system_outputs
+      1597 ±  5%     -36.1%       1020 ±  3%  filebench.time.involuntary_context_switches
+     61810 ±  2%      +6.0%      65519        filebench.time.minor_page_faults
+    157.67 ±  2%     +31.5%     207.33        filebench.time.percent_of_cpu_this_job_got
+    117.60 ±  2%     +27.1%     149.48        filebench.time.system_time
+    375177           +10.3%     413862        filebench.time.voluntary_context_switches
+     18717            +6.5%      19942        proc-vmstat.nr_active_anon
+     20206            +1.2%      20445        proc-vmstat.nr_active_file
+    298911            +2.2%     305406        proc-vmstat.nr_anon_pages
+    132893            +5.6%     140397        proc-vmstat.nr_dirtied
+    313040            +2.0%     319443        proc-vmstat.nr_inactive_anon
+     32910            +3.4%      34035        proc-vmstat.nr_shmem
+     62503            +1.4%      63367        proc-vmstat.nr_slab_unreclaimable
+     99471            +3.7%     103159        proc-vmstat.nr_written
+     18717            +6.5%      19942        proc-vmstat.nr_zone_active_anon
+     20206            +1.2%      20445        proc-vmstat.nr_zone_active_file
+    313040            +2.0%     319443        proc-vmstat.nr_zone_inactive_anon
+    943632            +3.2%     974142        proc-vmstat.numa_hit
+    841654            +3.6%     871757        proc-vmstat.numa_local
+    453634 ± 17%     +27.0%     576268 ±  5%  proc-vmstat.numa_pte_updates
+     87464            +6.1%      92814        proc-vmstat.pgactivate
+   1595438            +2.9%    1641074        proc-vmstat.pgalloc_normal
+   1453326            +3.0%    1497530        proc-vmstat.pgfree
+     17590 ±  5%     +14.0%      20045 ±  7%  proc-vmstat.pgreuse
+    732160            -1.8%     719104        proc-vmstat.unevictable_pgs_scanned
+     19.10            -8.1%      17.55        perf-stat.i.MPKI
+ 2.039e+09           +17.3%  2.393e+09        perf-stat.i.branch-instructions
+      1.27 ±  2%      -0.1        1.15        perf-stat.i.branch-miss-rate%
+  25600761            +5.8%   27075672        perf-stat.i.branch-misses
+   5037721 ±  4%     +11.4%    5612619        perf-stat.i.cache-misses
+ 1.632e+08            +5.9%  1.729e+08        perf-stat.i.cache-references
+     34079           +14.1%      38871        perf-stat.i.context-switches
+ 1.326e+10           +14.7%  1.521e+10        perf-stat.i.cpu-cycles
+    551.02 ±  2%     +21.0%     666.59 ±  3%  perf-stat.i.cpu-migrations
+   3953434 ±  2%     +10.8%    4381924 ±  3%  perf-stat.i.dTLB-load-misses
+ 2.343e+09           +15.4%  2.704e+09        perf-stat.i.dTLB-loads
+ 1.141e+09           +14.3%  1.303e+09        perf-stat.i.dTLB-stores
+ 9.047e+09           +14.9%  1.039e+10        perf-stat.i.instructions
+      0.69            +2.0%       0.71        perf-stat.i.ipc
+      0.14           +14.7%       0.16        perf-stat.i.metric.GHz
+     34.94 ±  4%     +11.1%      38.80        perf-stat.i.metric.K/sec
+     59.21           +15.6%      68.43        perf-stat.i.metric.M/sec
+      3999 ±  3%      +6.3%       4250        perf-stat.i.minor-faults
+   1116010 ±  4%     +14.8%    1280875 ±  2%  perf-stat.i.node-load-misses
+   1168171 ±  3%      +7.9%    1259922 ±  2%  perf-stat.i.node-stores
+      3999 ±  3%      +6.3%       4250        perf-stat.i.page-faults
+     18.04            -7.8%      16.64        perf-stat.overall.MPKI
+      1.26 ±  2%      -0.1        1.13        perf-stat.overall.branch-miss-rate%
+ 2.012e+09           +17.3%  2.359e+09        perf-stat.ps.branch-instructions
+  25253051            +5.7%   26690222        perf-stat.ps.branch-misses
+   4970910 ±  4%     +11.3%    5534021        perf-stat.ps.cache-misses
+  1.61e+08            +5.9%  1.705e+08        perf-stat.ps.cache-references
+     33628           +14.0%      38332        perf-stat.ps.context-switches
+ 1.308e+10           +14.6%    1.5e+10        perf-stat.ps.cpu-cycles
+    543.73 ±  2%     +20.9%     657.37 ±  3%  perf-stat.ps.cpu-migrations
+   3900887 ±  2%     +10.8%    4321011 ±  3%  perf-stat.ps.dTLB-load-misses
+ 2.312e+09           +15.3%  2.666e+09        perf-stat.ps.dTLB-loads
+ 1.125e+09           +14.2%  1.285e+09        perf-stat.ps.dTLB-stores
+ 8.925e+09           +14.8%  1.024e+10        perf-stat.ps.instructions
+      3943 ±  3%      +6.2%       4187        perf-stat.ps.minor-faults
+   1101275 ±  4%     +14.7%    1263151 ±  2%  perf-stat.ps.node-load-misses
+   1152648 ±  3%      +7.7%    1241973 ±  2%  perf-stat.ps.node-stores
+      3943 ±  3%      +6.2%       4187        perf-stat.ps.page-faults
+ 6.777e+11           +10.5%   7.49e+11        perf-stat.total.instructions
+      0.01 ±  7%     -28.2%       0.00 ± 26%  perf-sched.sch_delay.avg.ms.schedule_preempt_disabled.rwsem_down_read_slowpath.down_read.__btrfs_tree_read_lock
+      0.30 ± 35%     -63.0%       0.11 ± 25%  perf-sched.sch_delay.max.ms.__cond_resched.__kmem_cache_alloc_node.__kmalloc.cifs_strndup_to_utf16.cifs_convert_path_to_utf16
+     30.21 ±  3%      -6.2%      28.33 ±  3%  perf-sched.total_wait_and_delay.average.ms
+     30.15 ±  3%      -6.2%      28.28 ±  3%  perf-sched.total_wait_time.average.ms
+      1.08           -20.5%       0.86 ±  2%  perf-sched.wait_and_delay.avg.ms.io_schedule.folio_wait_bit_common.filemap_update_page.filemap_get_pages
+     99.86 ± 27%     +71.6%     171.38 ± 32%  perf-sched.wait_and_delay.avg.ms.kthreadd.ret_from_fork.ret_from_fork_asm
+      1.10 ±  2%     -16.3%       0.92        perf-sched.wait_and_delay.avg.ms.schedule_hrtimeout_range_clock.ep_poll.do_epoll_wait.__x64_sys_epoll_wait
+      1.41 ±  5%     -87.1%       0.18 ±223%  perf-sched.wait_and_delay.avg.ms.schedule_preempt_disabled.__mutex_lock.constprop.0.cifs_call_async
+      0.21           -13.4%       0.18        perf-sched.wait_and_delay.avg.ms.schedule_timeout.wait_woken.sk_wait_data.tcp_recvmsg_locked
+    195.95 ± 10%     -18.4%     159.83 ± 12%  perf-sched.wait_and_delay.avg.ms.wait_for_response.compound_send_recv.cifs_send_recv.__SMB2_close
+      2.60           -23.5%       1.99        perf-sched.wait_and_delay.avg.ms.wait_for_response.compound_send_recv.cifs_send_recv.query_info
+     20.46           -13.7%      17.66 ±  4%  perf-sched.wait_and_delay.avg.ms.wait_for_response.compound_send_recv.smb2_compound_op.smb2_query_path_info
+      3.35 ± 66%    +342.5%      14.82 ± 20%  perf-sched.wait_and_delay.avg.ms.wait_for_response.compound_send_recv.smb2_compound_op.smb2_unlink
+      2103           +10.0%       2312 ±  3%  perf-sched.wait_and_delay.count.__lock_sock.sk_wait_data.tcp_recvmsg_locked.tcp_recvmsg
+      1025           +14.8%       1176        perf-sched.wait_and_delay.count.io_schedule.folio_wait_bit_common.folio_wait_writeback.__filemap_fdatawait_range
+      9729 ±  2%     +21.1%      11779        perf-sched.wait_and_delay.count.schedule_hrtimeout_range_clock.ep_poll.do_epoll_wait.__x64_sys_epoll_wait
+      2349 ±  9%     +29.3%       3038 ± 10%  perf-sched.wait_and_delay.count.schedule_preempt_disabled.__mutex_lock.constprop.0.compound_send_recv
+    998.00           +14.3%       1140        perf-sched.wait_and_delay.count.schedule_preempt_disabled.rwsem_down_write_slowpath.down_write.do_unlinkat
+      1026           +15.0%       1181        perf-sched.wait_and_delay.count.schedule_preempt_disabled.rwsem_down_write_slowpath.down_write.open_last_lookups
+     18409           +12.5%      20714 ±  4%  perf-sched.wait_and_delay.count.schedule_timeout.wait_woken.sk_wait_data.tcp_recvmsg_locked
+      1011           +14.8%       1160        perf-sched.wait_and_delay.count.wait_for_response.compound_send_recv.cifs_send_recv.query_info
+      1013           +14.5%       1160        perf-sched.wait_and_delay.count.wait_for_response.compound_send_recv.smb2_compound_op.smb2_unlink
+      2.68 ±  4%     -19.6%       2.16 ±  7%  perf-sched.wait_and_delay.max.ms.__lock_sock.sk_wait_data.tcp_recvmsg_locked.tcp_recvmsg
+    282.00 ±  3%     -11.3%     250.07 ±  4%  perf-sched.wait_and_delay.max.ms.schedule_preempt_disabled.rwsem_down_write_slowpath.down_write.do_unlinkat
+    280.97 ±  2%     -12.8%     244.97 ±  2%  perf-sched.wait_and_delay.max.ms.schedule_preempt_disabled.rwsem_down_write_slowpath.down_write.open_last_lookups
+      0.49 ±125%     -97.2%       0.01 ±198%  perf-sched.wait_time.avg.ms.exit_to_user_mode_loop.exit_to_user_mode_prepare.irqentry_exit_to_user_mode.asm_sysvec_call_function_single
+      1.05           -20.9%       0.83 ±  2%  perf-sched.wait_time.avg.ms.io_schedule.folio_wait_bit_common.filemap_update_page.filemap_get_pages
+      2.14 ±  4%     +19.1%       2.55 ±  8%  perf-sched.wait_time.avg.ms.io_schedule.rq_qos_wait.wbt_wait.__rq_qos_throttle
+     99.82 ± 27%     +69.8%     169.46 ± 31%  perf-sched.wait_time.avg.ms.kthreadd.ret_from_fork.ret_from_fork_asm
+      1.08 ±  2%     -16.6%       0.90        perf-sched.wait_time.avg.ms.schedule_hrtimeout_range_clock.ep_poll.do_epoll_wait.__x64_sys_epoll_wait
+      1.37 ±  5%     -24.5%       1.03 ±  5%  perf-sched.wait_time.avg.ms.schedule_preempt_disabled.__mutex_lock.constprop.0.cifs_call_async
+      0.20           -14.2%       0.17        perf-sched.wait_time.avg.ms.schedule_timeout.wait_woken.sk_wait_data.tcp_recvmsg_locked
+    195.53 ± 10%     -18.4%     159.54 ± 12%  perf-sched.wait_time.avg.ms.wait_for_response.compound_send_recv.cifs_send_recv.__SMB2_close
+      2.54           -24.0%       1.93        perf-sched.wait_time.avg.ms.wait_for_response.compound_send_recv.cifs_send_recv.query_info
+     20.44           -13.8%      17.63 ±  4%  perf-sched.wait_time.avg.ms.wait_for_response.compound_send_recv.smb2_compound_op.smb2_query_path_info
+      3.32 ± 67%    +345.6%      14.78 ± 20%  perf-sched.wait_time.avg.ms.wait_for_response.compound_send_recv.smb2_compound_op.smb2_unlink
+    245.89 ±  9%     -11.8%     216.92 ±  6%  perf-sched.wait_time.max.ms.__cond_resched.__kmem_cache_alloc_node.__kmalloc.cifs_strndup_to_utf16.cifs_convert_path_to_utf16
+      3.14 ±  9%     -43.6%       1.77 ± 40%  perf-sched.wait_time.max.ms.__cond_resched.dput.terminate_walk.path_openat.do_filp_open
+      2.65 ±  3%     -19.9%       2.12 ±  6%  perf-sched.wait_time.max.ms.__lock_sock.sk_wait_data.tcp_recvmsg_locked.tcp_recvmsg
+      0.57 ±101%     -91.5%       0.05 ±213%  perf-sched.wait_time.max.ms.exit_to_user_mode_loop.exit_to_user_mode_prepare.irqentry_exit_to_user_mode.asm_sysvec_call_function_single
+      1.79 ± 82%     -86.4%       0.24 ± 58%  perf-sched.wait_time.max.ms.exit_to_user_mode_loop.exit_to_user_mode_prepare.irqentry_exit_to_user_mode.asm_sysvec_reschedule_ipi
+    281.92 ±  3%     -11.3%     249.99 ±  4%  perf-sched.wait_time.max.ms.schedule_preempt_disabled.rwsem_down_write_slowpath.down_write.do_unlinkat
+    280.90 ±  2%     -12.8%     244.88 ±  2%  perf-sched.wait_time.max.ms.schedule_preempt_disabled.rwsem_down_write_slowpath.down_write.open_last_lookups
+
+
+
+
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provided
+for informational purposes only. Any difference in system hardware or software
+design or configuration may affect actual performance.
 
 
 -- 
