@@ -1,293 +1,481 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E7231116
-	for <oe-lkp@lists.linux.dev>; Thu,  7 Sep 2023 07:43:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1694072616; x=1725608616;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   mime-version;
-  bh=ZBvrjKkFu99H+xzyZvYNohpQnWfUT4DGFLFK8WAZ2pA=;
-  b=fJYL8D0fUpNFGpiPtWyMwXD5mIwns6KRhtqJjmP45olfjkAFtjtqyDbR
-   eFwSqx3k1UA7IwxuOHgRss+LoQCNrpWy+enQ1ZU1+xWLkA9wmE6ZNxgYz
-   vGmjXbyWrb6YOgENi/Z9arS68FU0MOE4hDQjNHWpXTdamQS8EnbkLW+G7
-   5Yos3K/bb+Ake5ZGgIpegFUa9qAaO17o61sJOpPv1/ItkPBWTXs0sQ1jq
-   8JL2XlsR6ZdRj83eBELDCS5eyk+djCwLfR3chwonqVOqzZY8FqNBtkKYj
-   Afn7BHFUC/z0eMW9GmRZFkyBYQ7rmIYclsjEa1t6b39a4kJyoQAeeeBfG
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10825"; a="443669673"
-X-IronPort-AV: E=Sophos;i="6.02,234,1688454000"; 
-   d="scan'208";a="443669673"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Sep 2023 00:43:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10825"; a="988656437"
-X-IronPort-AV: E=Sophos;i="6.02,234,1688454000"; 
-   d="scan'208";a="988656437"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by fmsmga006.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 07 Sep 2023 00:43:34 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Thu, 7 Sep 2023 00:43:33 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32 via Frontend Transport; Thu, 7 Sep 2023 00:43:33 -0700
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (104.47.51.49) by
- edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.27; Thu, 7 Sep 2023 00:43:33 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nnw97aLqMjuuCCzrj17k9ZC1lwcIKGyKO4IozBFpoPHE801v8OpE66z7WNlWFlONTK/LN7eq/EHjn+QiElWpHtAoRzygTsaK+UoeyJZ4XL9N8XTDDT2R05thTfgtTjjip9HTqUTFcwy4OnTt/Ot3Y+pmJl3anKynMqRF2I1lNjKKfU4Xd2ogbsKCbDWYa0Afu5TupMpMdTHDGi1x147NNusyjwZBb+HXJR/sjPgkYwHh/KjpXrB/b2bkgScJ3qr3MVmvbkkuxbWyeO09+/gh0xFTz94shm2biCBhBmSrOXIRrbcQlGkaO5Y+iVmLcB+rltQjNyRI0XiyB6cwGYuiEg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KJs/8gcqTHZNs9zB896PtPlkvLZiW/+FtUpSRJWBTXs=;
- b=LsBFFURelPmwz09G4kazf3Mo3z1pi5FvIcTGLqDpX+RHaqqRueSpMYfje99FZQt6dSGSfOwkUt9Zan0fGzKoBzX4HYwprP2DtjNGBwL1jIcyzX9bVXKws9/wt6jCfzq/Z5a3XUUo3fK9BroyL2wwmkceTqLTdfeRlz8t4XNmcgHcDAbdxpPRIBEFU7Sapi/nNm9JRVWT071F9B8/LimIb4WZAQ7Tg6yJTyOEb4EKLOL57xcaks8VCPJU9KsklPPsntOImHxPg6dz9ZRXHE8b+ePZRWiVTCE5DyzseWA1c9Si5vdtT92Ir4v9RK1IqHdNQYF7n0nAjAckR1vuVtMeSw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
- by CO1PR11MB4788.namprd11.prod.outlook.com (2603:10b6:303:97::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6745.34; Thu, 7 Sep
- 2023 07:43:31 +0000
-Received: from PH8PR11MB6779.namprd11.prod.outlook.com
- ([fe80::73c6:1231:e700:924]) by PH8PR11MB6779.namprd11.prod.outlook.com
- ([fe80::73c6:1231:e700:924%4]) with mapi id 15.20.6745.034; Thu, 7 Sep 2023
- 07:43:31 +0000
-Date: Thu, 7 Sep 2023 15:43:19 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: <linan666@huaweicloud.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, luojian <luojian5@huawei.com>,
-	Niklas Cassel <niklas.cassel@wdc.com>, <linux-ide@vger.kernel.org>,
-	<dlemoal@kernel.org>, <htejun@gmail.com>, <linux-kernel@vger.kernel.org>,
-	<linan122@huawei.com>, <yukuai3@huawei.com>, <yi.zhang@huawei.com>,
-	<houtao1@huawei.com>, <yangerkun@huawei.com>, <oliver.sang@intel.com>
-Subject: Re: [PATCH v4] ata: libata-eh: Honor all EH scheduling requests
-Message-ID: <202309071557.3a90e7a8-oliver.sang@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20230906084212.1016634-1-linan666@huaweicloud.com>
-X-ClientProxiedBy: SI2PR01CA0013.apcprd01.prod.exchangelabs.com
- (2603:1096:4:191::9) To PH8PR11MB6779.namprd11.prod.outlook.com
- (2603:10b6:510:1ca::17)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C896566C
+	for <oe-lkp@lists.linux.dev>; Thu,  7 Sep 2023 10:08:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD56EC433B9;
+	Thu,  7 Sep 2023 10:08:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1694081313;
+	bh=Uvh3itFPi3f2rNpOz+0wOaEQRtpvKFcxcWUQaF3LklI=;
+	h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+	b=EtWqmmplqobrFkXZqA+C7sfxzPaEIL9Y22Fcnw9YpEvU2FEsElv/t+cy0s6+7mf1m
+	 bHrY6wtyiXtwsZ12km6c23k6cyvDWtlRqEkV/MjGcERAB3hc289tg2dJACy5uvBTTH
+	 YhU19WjlcM3/U14KPux3paYzq4EEHRmp5DYyB9/H7NEIJgcQ1QojzRfh/SYOtS9wCo
+	 LA7bSBlqWWGZ34OJwnsqNHXDbprUvWgiwqme1wFI1Hf0AtJP0WUBJuyNuf60Uah/YN
+	 mCzzU4voEA/JR07skPUB74LyKMTmBieFxHvGbDBU1TrqaTMDKLA6mQOQrbRgcY3kwR
+	 y4RNefNwkmlNA==
+Message-ID: <84d2418526ca59f3c706eea27dee583ccf678c14.camel@kernel.org>
+Subject: Re: [linus:master] [tmpfs]  d48c339729: ltp.mount03.fail
+From: Jeff Layton <jlayton@kernel.org>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org, 
+	Christian Brauner
+	 <brauner@kernel.org>, Jan Kara <jack@suse.cz>, linux-mm@kvack.org, 
+	ltp@lists.linux.it
+Date: Thu, 07 Sep 2023 06:08:31 -0400
+In-Reply-To: <202309071017.a64aca5e-oliver.sang@intel.com>
+References: <202309071017.a64aca5e-oliver.sang@intel.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.48.4 (3.48.4-1.fc38) 
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|CO1PR11MB4788:EE_
-X-MS-Office365-Filtering-Correlation-Id: 58ab98f0-b6ed-4f33-fa36-08dbaf762191
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: InQb0bQS62FrBIJFMynT2F4wrVf10E3sggvnCvr1ZE+4fEd3kSn5kvE1jcTxg6t9To+Zk+VmNPRNaK4X7oQvkkI9yfQW9lzRxVDS3BQB3NLv/lsE77id1S7VBZ74HJJmpdLxuaft24furXlBuvJaRQNi2Bz+hcg9VulkIfCUGMdxU/MVXt8Mn/BkDVlzKzIG51NbVxQaqivYWI/dpXaZ/U4pcrDrjoM2YieMWFOvbSW+8K61JMuWF2UCkwAXmQlcldKCqwEyKJim/VpD5vRACIe+rf7Q+vAXFp1fjL/e7rWnaV6T7Rc5MVG+U8wnlQPv6RRhfzQZkDugkZzvSuqi5gIFSozB1QyMIw3ua9ZAJYmFA5EQqPrcf+8hlQw/ng9LIu62THmuVpgRtWUmmLWMd0qxV4OpeXzFESgJYHageJJ9bpFtR4OWnEkWgXiuUkZzCxLJ6wYyhD6DpAOkH5a9yJRRYVFCo2SSn7TG517bOCJSajC6P26mfBGs9B7o2apx0YgLVtZbd+S1yNdQHjs8D/U6bTr1R29awMStQV0RreV9Yo0NSLib4dpEPWZlA9EXo3vwaHC+9/SIQZsKKYHpvA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(39860400002)(366004)(136003)(346002)(396003)(186009)(1800799009)(451199024)(2906002)(966005)(86362001)(26005)(1076003)(2616005)(107886003)(6666004)(6486002)(36756003)(45080400002)(6506007)(6512007)(38100700002)(83380400001)(82960400001)(478600001)(7416002)(41300700001)(8676002)(8936002)(4326008)(5660300002)(6916009)(316002)(66946007)(66476007)(54906003)(66556008);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?6L7xAOVXGhHpHtES3NsOl2QlMuhiF74BWqQ+iasfZq21fE4e9GSOMPRHqAJM?=
- =?us-ascii?Q?sW8fSWEKgDxuBnMaIB+bZEKOiBPmy7K4x0qU3X3fup4pDmdT0apPYSgGvUoJ?=
- =?us-ascii?Q?buM0U5cXtdM1RUP18a3X9e/dQLc+i2hEijMiCvy0hO8jEj9NE8U1OTj/4bqY?=
- =?us-ascii?Q?92xIKgdPG9Y4yjErZvjyPPbNU5vduhG9WkAbH3WCkqKi+Nfwu2B38/IN9bkC?=
- =?us-ascii?Q?OcmUVmSaJ19j406jiSliJIg6wHEkFqvTJHEgYNA/2nILA/fAHSTVhIIa7orY?=
- =?us-ascii?Q?5akUAGUGx35pX+ZLnI9ulBKJRnnJbsQXugQwWUyT9HzXd6hu7Hl+Qlb/ZMv8?=
- =?us-ascii?Q?gOJ3MxMJoqjet9RSbOoH+gpMg97YKEZNoqRUJOHP8UQ7ALSd69MFPLAiTmh9?=
- =?us-ascii?Q?fNKJuI9mkwOFS4DG8vJCfDMfQW+79VcXvasmlgXicTThbIHnWdEeHbDCtK/3?=
- =?us-ascii?Q?KoiouiWbbMrxUnNdd8OMLigo0wW7nJ85RWXSjBSyby9rNpUBudNofqYgRZYF?=
- =?us-ascii?Q?ecjprFmHIydj3i++rny7jxX/V7ZCnTeeA1Ot855wt6Aw7MQ24Mu+tQ3f38gY?=
- =?us-ascii?Q?rUOAi4IpSz9fHFcS2XWmu8MTtha5zJavc40XSLn7/qF/3jIpEaSxHM+Y8PBG?=
- =?us-ascii?Q?/bMBoSpL2VxIdJlUcH9wtTculaw4uFhxtaRvHn4faVCiiTHAwV5rQ9AhZHJE?=
- =?us-ascii?Q?NTFeJOQTXGtVr+XJwI2LH64yXgUpOBggwtx/P3QgcHP7Gv0Hku3bG4XYGD+u?=
- =?us-ascii?Q?cLAAl6w+Hf0603DXOZ1FnjkXARzV4GWl1/ZKeze0PbIw+vSrR4PpltpFT0yx?=
- =?us-ascii?Q?eIyxgJiOHqwjiBwno4M5zieurPRuAllbx14w2wO/nq0qKNtDjVL79HClV8FT?=
- =?us-ascii?Q?6tFftb3pgkUsutWRTYDbLXMSIYwgvuNY3nSGz0NljCwAF6lTYaB8StpN8VSj?=
- =?us-ascii?Q?ve/w/6jTRBVBvtp9OHicm3puTX3mxACQM7Ec9Nec0XJKQC91K1c2ClPGMjt9?=
- =?us-ascii?Q?RH8OUHk7TbGwMmAptEKGq6o7z7JzdTsuRngF3TSKcCmXwePzO6OJmSCwGlF7?=
- =?us-ascii?Q?iA+/SJpL+Tf3rQf7eQBcNfSlgfk/6vktBrghgWs/Z9YnUDc3odtvQJt5/aPV?=
- =?us-ascii?Q?SXwS+JXfHzvCpHp7se6qUbureojcwAy4NpOcRb0dnHOP2lWB/lFI+oHFafHZ?=
- =?us-ascii?Q?fog2a7iHsB+JRkzutl5ciAiaMZqUZmzUZeQbQXwwhV9bPuipjG1wCNTzOpnH?=
- =?us-ascii?Q?iZVfsWatFoDaAjWXADkWxQkUBvS5Jws0QaIiDNGYDWxjlIQCE/Esy0Kjqwg4?=
- =?us-ascii?Q?8SVmpcXsObvfSOw+oJlN5hLXqR4UO2wNHw38eMGTuP8Nwvfvy8iUkDH135Rd?=
- =?us-ascii?Q?qgCBEuKIOqPDVjtl61jFAvBVKBJ6EniS70mxzC3phAbWL3e3RimjNp1diMnT?=
- =?us-ascii?Q?DC3JdbYCx2NOiKhulamk3BW2RGmbCH6Tx4r4JAaf0KqkWF3WTYuKadvoa2lc?=
- =?us-ascii?Q?M8TLrLDfII1eCTApGGOSk34nGAEppqnYkXetvBYl5b7Z/9RbF3ZBlTzLtZrJ?=
- =?us-ascii?Q?40o+IfER3RpIfo5pfXAwA5Er1yjUI3o9cnS3crVYNqa5Rfp/VOfFkSEzUbaP?=
- =?us-ascii?Q?EA=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 58ab98f0-b6ed-4f33-fa36-08dbaf762191
-X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB6779.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Sep 2023 07:43:31.1389
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: CoPcRbk8wM1r0m7mGfZe8XU55L6AWKJWj9pTOuZG2azbrwPguRAFBWRm9ClsnUF2B6EmMyIuh+VswXytiCKt0w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR11MB4788
-X-OriginatorOrg: intel.com
 
+On Thu, 2023-09-07 at 10:59 +0800, kernel test robot wrote:
+>=20
+> Hello,
+>=20
+> kernel test robot noticed "ltp.mount03.fail" on:
+>=20
+> commit: d48c3397291690c3576d6c983b0a86ecbc203cac ("tmpfs: add support for=
+ multigrain timestamps")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>=20
+> [test failed on linus/master 708283abf896dd4853e673cc8cba70acaf9bf4ea]
+> [test failed on linux-next/master a47fc304d2b678db1a5d760a7d644dac9b06775=
+2]
+>=20
+> in testcase: ltp
+> version: ltp-x86_64-14c1f76-1_20230715
+> with following parameters:
+>=20
+> 	disk: 1HDD
+> 	fs: f2fs
+> 	test: syscalls-00/mount03
+>=20
+>=20
+>=20
+> compiler: gcc-12
+> test machine: 4 threads 1 sockets Intel(R) Core(TM) i3-3220 CPU @ 3.30GHz=
+ (Ivy Bridge) with 8G memory
+>=20
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+>=20
+>=20
+> If you fix the issue in a separate patch/commit (i.e. not just a new vers=
+ion of
+> the same patch/commit), kindly add following tags
+> > Reported-by: kernel test robot <oliver.sang@intel.com>
+> > Closes: https://lore.kernel.org/oe-lkp/202309071017.a64aca5e-oliver.san=
+g@intel.com
+>=20
+>=20
+> we also noticed this issue doesn't always happen, as below, on d48c339729=
+,
+> 13 out of 30 runs failed, while others can pass.
+> and on parent commit, we didn't observe the failure on 30 runs.
+>=20
+> ffb6cf19e0633406 d48c3397291690c3576d6c983b0
+> ---------------- ---------------------------
+>        fail:runs  %reproduction    fail:runs
+>            |             |             |
+>            :30          43%          13:30    ltp.mount03.fail
+>=20
+>=20
+> when failure happens, it shows
+> tst_test.c:1634: TINFO: =3D=3D=3D Testing on tmpfs =3D=3D=3D
+> ...
+> mount03.c:214: TINFO: Testing flag MS_STRICTATIME
+> mount03.c:140: TFAIL: st.st_atime(1694017088) < atime(1694069961)
+>=20
+>=20
+> when it pass:
+> mount03.c:214: TINFO: Testing flag MS_STRICTATIME
+> mount03.c:137: TPASS: st.st_atime(1693999383) > atime(1693999381)
+>=20
+>=20
+> below detail log while running mount03:
+>=20
+> Running tests.......
+> <<<test_start>>>
+> tag=3Dmount03 stime=3D1694017062
+> cmdline=3D"mount03"
+> contacts=3D""
+> analysis=3Dexit
+> <<<test_output>>>
+> tst_device.c:96: TINFO: Found free device 0 '/dev/loop0'
+> tst_test.c:1558: TINFO: Timeout per run is 0h 02m 30s
+> tst_supported_fs_types.c:90: TINFO: Kernel supports ext2
+> tst_supported_fs_types.c:55: TINFO: mkfs.ext2 does exist
+> tst_supported_fs_types.c:90: TINFO: Kernel supports ext3
+> tst_supported_fs_types.c:55: TINFO: mkfs.ext3 does exist
+> tst_supported_fs_types.c:90: TINFO: Kernel supports ext4
+> tst_supported_fs_types.c:55: TINFO: mkfs.ext4 does exist
+> tst_supported_fs_types.c:90: TINFO: Kernel supports xfs
+> tst_supported_fs_types.c:55: TINFO: mkfs.xfs does exist
+> tst_supported_fs_types.c:90: TINFO: Kernel supports btrfs
+> tst_supported_fs_types.c:55: TINFO: mkfs.btrfs does exist
+> tst_supported_fs_types.c:157: TINFO: Skipping vfat as requested by the te=
+st
+> tst_supported_fs_types.c:157: TINFO: Skipping exfat as requested by the t=
+est
+> tst_supported_fs_types.c:157: TINFO: Skipping ntfs as requested by the te=
+st
+> tst_supported_fs_types.c:90: TINFO: Kernel supports tmpfs
+> tst_supported_fs_types.c:42: TINFO: mkfs is not needed for tmpfs
+> tst_test.c:1634: TINFO: =3D=3D=3D Testing on ext2 =3D=3D=3D
+> tst_test.c:1093: TINFO: Formatting /dev/loop0 with ext2 opts=3D'' extra o=
+pts=3D''
+> mke2fs 1.46.6-rc1 (12-Sep-2022)
+> mount03.c:214: TINFO: Testing flag MS_RDONLY
+> mount03.c:52: TPASS: otfd =3D open(file, O_CREAT | O_RDWR, 0700) : EROFS =
+(30)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_NODEV
+> mount03.c:59: TPASS: otfd =3D open(file, O_RDWR, 0700) : EACCES (13)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_NOEXEC
+> mount03.c:67: TPASS: execlp(file, basename(file), NULL) : EACCES (13)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_REMOUNT
+> mount03.c:72: TINFO: Mounting /dev/loop0 to /fs/sda2/tmpdir/ltp-YGq2uVXRd=
+6/LTP_mouxTci2R/mntpoint fstyp=3Dext2 flags=3D20
+> mount03.c:74: TPASS: otfd =3D open(file, O_CREAT | O_RDWR, 0700) returned=
+ fd 4
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_NOSUID
+> mount03_suid_child.c:22: TPASS: setreuid(getuid(), 0) : EPERM (1)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_NOATIME
+> mount03.c:143: TPASS: st.st_atime =3D=3D atime (1694017064)
+> mount03.c:154: TPASS: dir_st.st_atime =3D=3D dir_atime (1694017064)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_NODIRATIME
+> mount03.c:137: TPASS: st.st_atime(1694017066) > atime(1694017064)
+> mount03.c:154: TPASS: dir_st.st_atime =3D=3D dir_atime (1694017064)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_STRICTATIME
+> mount03.c:137: TPASS: st.st_atime(1694017067) > atime(1694017066)
+> mount03.c:148: TPASS: dir_st.st_atime(1694017067) > dir_atime(1694017064)
+> mount03.c:229: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> tst_device.c:442: TINFO: No device is mounted at mntpoint
+> tst_test.c:1634: TINFO: =3D=3D=3D Testing on ext3 =3D=3D=3D
+> tst_test.c:1093: TINFO: Formatting /dev/loop0 with ext3 opts=3D'' extra o=
+pts=3D''
+> mke2fs 1.46.6-rc1 (12-Sep-2022)
+> mount03.c:214: TINFO: Testing flag MS_RDONLY
+> mount03.c:52: TPASS: otfd =3D open(file, O_CREAT | O_RDWR, 0700) : EROFS =
+(30)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_NODEV
+> mount03.c:59: TPASS: otfd =3D open(file, O_RDWR, 0700) : EACCES (13)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_NOEXEC
+> mount03.c:67: TPASS: execlp(file, basename(file), NULL) : EACCES (13)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_REMOUNT
+> mount03.c:72: TINFO: Mounting /dev/loop0 to /fs/sda2/tmpdir/ltp-YGq2uVXRd=
+6/LTP_mouxTci2R/mntpoint fstyp=3Dext3 flags=3D20
+> mount03.c:74: TPASS: otfd =3D open(file, O_CREAT | O_RDWR, 0700) returned=
+ fd 4
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_NOSUID
+> mount03_suid_child.c:22: TPASS: setreuid(getuid(), 0) : EPERM (1)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_NOATIME
+> mount03.c:143: TPASS: st.st_atime =3D=3D atime (1694017068)
+> mount03.c:154: TPASS: dir_st.st_atime =3D=3D dir_atime (1694017068)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_NODIRATIME
+> mount03.c:137: TPASS: st.st_atime(1694017070) > atime(1694017068)
+> mount03.c:154: TPASS: dir_st.st_atime =3D=3D dir_atime (1694017068)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_STRICTATIME
+> mount03.c:137: TPASS: st.st_atime(1694017072) > atime(1694017070)
+> mount03.c:148: TPASS: dir_st.st_atime(1694017072) > dir_atime(1694017068)
+> mount03.c:229: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> tst_device.c:442: TINFO: No device is mounted at mntpoint
+> tst_test.c:1634: TINFO: =3D=3D=3D Testing on ext4 =3D=3D=3D
+> tst_test.c:1093: TINFO: Formatting /dev/loop0 with ext4 opts=3D'' extra o=
+pts=3D''
+> mke2fs 1.46.6-rc1 (12-Sep-2022)
+> mount03.c:214: TINFO: Testing flag MS_RDONLY
+> mount03.c:52: TPASS: otfd =3D open(file, O_CREAT | O_RDWR, 0700) : EROFS =
+(30)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_NODEV
+> mount03.c:59: TPASS: otfd =3D open(file, O_RDWR, 0700) : EACCES (13)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_NOEXEC
+> mount03.c:67: TPASS: execlp(file, basename(file), NULL) : EACCES (13)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_REMOUNT
+> mount03.c:72: TINFO: Mounting /dev/loop0 to /fs/sda2/tmpdir/ltp-YGq2uVXRd=
+6/LTP_mouxTci2R/mntpoint fstyp=3Dext4 flags=3D20
+> mount03.c:74: TPASS: otfd =3D open(file, O_CREAT | O_RDWR, 0700) returned=
+ fd 4
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_NOSUID
+> mount03_suid_child.c:22: TPASS: setreuid(getuid(), 0) : EPERM (1)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_NOATIME
+> mount03.c:143: TPASS: st.st_atime =3D=3D atime (1694017073)
+> mount03.c:154: TPASS: dir_st.st_atime =3D=3D dir_atime (1694017073)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_NODIRATIME
+> mount03.c:137: TPASS: st.st_atime(1694017075) > atime(1694017073)
+> mount03.c:154: TPASS: dir_st.st_atime =3D=3D dir_atime (1694017073)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_STRICTATIME
+> mount03.c:137: TPASS: st.st_atime(1694017076) > atime(1694017075)
+> mount03.c:148: TPASS: dir_st.st_atime(1694017076) > dir_atime(1694017073)
+> mount03.c:229: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> tst_device.c:442: TINFO: No device is mounted at mntpoint
+> tst_test.c:1634: TINFO: =3D=3D=3D Testing on xfs =3D=3D=3D
+> tst_test.c:1093: TINFO: Formatting /dev/loop0 with xfs opts=3D'' extra op=
+ts=3D''
+> mount03.c:214: TINFO: Testing flag MS_RDONLY
+> mount03.c:52: TPASS: otfd =3D open(file, O_CREAT | O_RDWR, 0700) : EROFS =
+(30)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_NODEV
+> mount03.c:59: TPASS: otfd =3D open(file, O_RDWR, 0700) : EACCES (13)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_NOEXEC
+> mount03.c:67: TPASS: execlp(file, basename(file), NULL) : EACCES (13)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_REMOUNT
+> mount03.c:72: TINFO: Mounting /dev/loop0 to /fs/sda2/tmpdir/ltp-YGq2uVXRd=
+6/LTP_mouxTci2R/mntpoint fstyp=3Dxfs flags=3D20
+> mount03.c:74: TPASS: otfd =3D open(file, O_CREAT | O_RDWR, 0700) returned=
+ fd 4
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_NOSUID
+> mount03_suid_child.c:22: TPASS: setreuid(getuid(), 0) : EPERM (1)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_NOATIME
+> mount03.c:143: TPASS: st.st_atime =3D=3D atime (1694017077)
+> mount03.c:154: TPASS: dir_st.st_atime =3D=3D dir_atime (1694017077)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_NODIRATIME
+> mount03.c:137: TPASS: st.st_atime(1694017080) > atime(1694017077)
+> mount03.c:154: TPASS: dir_st.st_atime =3D=3D dir_atime (1694017077)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_STRICTATIME
+> mount03.c:137: TPASS: st.st_atime(1694017081) > atime(1694017080)
+> mount03.c:148: TPASS: dir_st.st_atime(1694017081) > dir_atime(1694017077)
+> mount03.c:229: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> tst_device.c:442: TINFO: No device is mounted at mntpoint
+> tst_test.c:1634: TINFO: =3D=3D=3D Testing on btrfs =3D=3D=3D
+> tst_test.c:1093: TINFO: Formatting /dev/loop0 with btrfs opts=3D'' extra =
+opts=3D''
+> mount03.c:214: TINFO: Testing flag MS_RDONLY
+> mount03.c:52: TPASS: otfd =3D open(file, O_CREAT | O_RDWR, 0700) : EROFS =
+(30)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_NODEV
+> mount03.c:59: TPASS: otfd =3D open(file, O_RDWR, 0700) : EACCES (13)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_NOEXEC
+> mount03.c:67: TPASS: execlp(file, basename(file), NULL) : EACCES (13)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_REMOUNT
+> mount03.c:72: TINFO: Mounting /dev/loop0 to /fs/sda2/tmpdir/ltp-YGq2uVXRd=
+6/LTP_mouxTci2R/mntpoint fstyp=3Dbtrfs flags=3D20
+> mount03.c:74: TPASS: otfd =3D open(file, O_CREAT | O_RDWR, 0700) returned=
+ fd 4
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_NOSUID
+> mount03_suid_child.c:22: TPASS: setreuid(getuid(), 0) : EPERM (1)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_NOATIME
+> mount03.c:143: TPASS: st.st_atime =3D=3D atime (1694017082)
+> mount03.c:154: TPASS: dir_st.st_atime =3D=3D dir_atime (1694017082)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_NODIRATIME
+> mount03.c:137: TPASS: st.st_atime(1694017084) > atime(1694017082)
+> mount03.c:154: TPASS: dir_st.st_atime =3D=3D dir_atime (1694017082)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_STRICTATIME
+> mount03.c:137: TPASS: st.st_atime(1694017085) > atime(1694017084)
+> mount03.c:148: TPASS: dir_st.st_atime(1694017085) > dir_atime(1694017082)
+> mount03.c:229: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> tst_device.c:442: TINFO: No device is mounted at mntpoint
+> tst_test.c:1634: TINFO: =3D=3D=3D Testing on tmpfs =3D=3D=3D
+> tst_test.c:1093: TINFO: Skipping mkfs for TMPFS filesystem
+> mount03.c:214: TINFO: Testing flag MS_RDONLY
+> mount03.c:52: TPASS: otfd =3D open(file, O_CREAT | O_RDWR, 0700) : EROFS =
+(30)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_NODEV
+> mount03.c:59: TPASS: otfd =3D open(file, O_RDWR, 0700) : EACCES (13)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_NOEXEC
+> mount03.c:67: TPASS: execlp(file, basename(file), NULL) : EACCES (13)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_REMOUNT
+> mount03.c:72: TINFO: Mounting /dev/loop0 to /fs/sda2/tmpdir/ltp-YGq2uVXRd=
+6/LTP_mouxTci2R/mntpoint fstyp=3Dtmpfs flags=3D20
+> mount03.c:74: TPASS: otfd =3D open(file, O_CREAT | O_RDWR, 0700) returned=
+ fd 4
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_NOSUID
+> mount03_suid_child.c:22: TPASS: setreuid(getuid(), 0) : EPERM (1)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_NOATIME
+> mount03.c:143: TPASS: st.st_atime =3D=3D atime (1694017085)
+> mount03.c:154: TPASS: dir_st.st_atime =3D=3D dir_atime (1694017085)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_NODIRATIME
+> mount03.c:137: TPASS: st.st_atime(1694017087) > atime(1694017086)
+> mount03.c:154: TPASS: dir_st.st_atime =3D=3D dir_atime (1694017086)
+> mount03.c:235: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> mount03.c:214: TINFO: Testing flag MS_STRICTATIME
+> mount03.c:140: TFAIL: st.st_atime(1694017088) < atime(1694069961)
+> mount03.c:148: TPASS: dir_st.st_atime(1694017088) > dir_atime(1694017087)
+> mount03.c:229: TPASS: statfs() gets the correct mount flag
+> mount03.c:205: TINFO: Umounting /fs/sda2/tmpdir/ltp-YGq2uVXRd6/LTP_mouxTc=
+i2R/mntpoint
+> tst_device.c:442: TINFO: No device is mounted at mntpoint
+>=20
+> Summary:
+> passed   113
+> failed   1
+> broken   0
+> skipped  0
+> warnings 0
+> incrementing stop
+> <<<execution_status>>>
+> initiation_status=3D"ok"
+> duration=3D26 termination_type=3Dexited termination_id=3D1 corefile=3Dno
+> cutime=3D5 cstime=3D284
+> <<<test_end>>>
+> INFO: ltp-pan reported some tests FAIL
+> LTP Version: 20230516-75-g2e582e743
+>=20
+>        ###############################################################
+>=20
+>             Done executing testcases.
+>             LTP Version:  20230516-75-g2e582e743
+>        ###############################################################
+>=20
+>=20
+>=20
+>=20
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20230907/202309071017.a64aca5e-ol=
+iver.sang@intel.com
+>=20
+>=20
+>=20
 
+I suspect what happened here is that the atime got updated to a fine-
+grained value (possibly at create time), and then later got updated with
+an earlier, coarse-grained value.
 
-Hello,
+Probably we can just fix this by being more careful not to update unless
+the new atime is later than the older one. I'll see if I can reproduce
+it and come up with a fix.
 
-kernel test robot noticed "kernel_BUG_at_drivers/ata/libata-sff.c" on:
-
-commit: d3d099d5c2dd38db84abd96df39f9f0828c16b7b ("[PATCH v4] ata: libata-eh: Honor all EH scheduling requests")
-url: https://github.com/intel-lab-lkp/linux/commits/linan666-huaweicloud-com/ata-libata-eh-Honor-all-EH-scheduling-requests/20230906-164907
-base: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git 65d6e954e37872fd9afb5ef3fc0481bb3c2f20f4
-patch link: https://lore.kernel.org/all/20230906084212.1016634-1-linan666@huaweicloud.com/
-patch subject: [PATCH v4] ata: libata-eh: Honor all EH scheduling requests
-
-in testcase: boot
-
-compiler: gcc-12
-test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-+------------------------------------------+------------+------------+
-|                                          | 65d6e954e3 | d3d099d5c2 |
-+------------------------------------------+------------+------------+
-| boot_successes                           | 8          | 0          |
-| boot_failures                            | 0          | 4          |
-| kernel_BUG_at_drivers/ata/libata-sff.c   | 0          | 4          |
-| invalid_opcode:#[##]                     | 0          | 4          |
-| RIP:ata_sff_pio_task[libata]             | 0          | 4          |
-| Kernel_panic-not_syncing:Fatal_exception | 0          | 4          |
-+------------------------------------------+------------+------------+
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202309071557.3a90e7a8-oliver.sang@intel.com
-
-
-[   29.974031][    T8] ------------[ cut here ]------------
-[   29.974432][    T8] kernel BUG at drivers/ata/libata-sff.c:1220!
-[   29.974866][    T8] invalid opcode: 0000 [#1] SMP PTI
-[   29.975228][    T8] CPU: 0 PID: 8 Comm: kworker/0:0 Not tainted 6.5.0-11939-gd3d099d5c2dd #1
-[   29.975817][    T8] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-[   29.976529][    T8] Workqueue: ata_sff ata_sff_pio_task [libata]
-[ 29.977003][ T8] RIP: 0010:ata_sff_pio_task (drivers/ata/libata-sff.c:1220 (discriminator 1)) libata
-[ 29.977518][ T8] Code: 35 a6 0d 01 00 48 8d 90 b8 00 00 00 e8 da a6 fb f4 e9 cc fe ff ff 84 c0 0f 89 e7 fe ff ff e9 4b ff ff ff 0f 0b e9 1c ff ff ff <0f> 0b 66 66 2e 0f 1f 84 00 00 00 00 00 66 66 2e 0f 1f 84 00 00 00
-All code
-========
-   0:	35 a6 0d 01 00       	xor    $0x10da6,%eax
-   5:	48 8d 90 b8 00 00 00 	lea    0xb8(%rax),%rdx
-   c:	e8 da a6 fb f4       	callq  0xfffffffff4fba6eb
-  11:	e9 cc fe ff ff       	jmpq   0xfffffffffffffee2
-  16:	84 c0                	test   %al,%al
-  18:	0f 89 e7 fe ff ff    	jns    0xffffffffffffff05
-  1e:	e9 4b ff ff ff       	jmpq   0xffffffffffffff6e
-  23:	0f 0b                	ud2    
-  25:	e9 1c ff ff ff       	jmpq   0xffffffffffffff46
-  2a:*	0f 0b                	ud2    		<-- trapping instruction
-  2c:	66 66 2e 0f 1f 84 00 	data16 nopw %cs:0x0(%rax,%rax,1)
-  33:	00 00 00 00 
-  37:	66                   	data16
-  38:	66                   	data16
-  39:	2e                   	cs
-  3a:	0f                   	.byte 0xf
-  3b:	1f                   	(bad)  
-  3c:	84 00                	test   %al,(%rax)
-	...
-
-Code starting with the faulting instruction
-===========================================
-   0:	0f 0b                	ud2    
-   2:	66 66 2e 0f 1f 84 00 	data16 nopw %cs:0x0(%rax,%rax,1)
-   9:	00 00 00 00 
-   d:	66                   	data16
-   e:	66                   	data16
-   f:	2e                   	cs
-  10:	0f                   	.byte 0xf
-  11:	1f                   	(bad)  
-  12:	84 00                	test   %al,(%rax)
-	...
-[   29.978931][    T8] RSP: 0018:ffffb84cc004be40 EFLAGS: 00010046
-[   29.979363][    T8] RAX: 0000000000000000 RBX: ffff88a1d49180b8 RCX: ffff88a4efc2d5e8
-[   29.979906][    T8] RDX: 0000000000000001 RSI: 0000000000000001 RDI: ffff88a1fa6299c0
-[   29.980449][    T8] RBP: ffff88a1d49180b8 R08: ff6565725e607360 R09: ffff88a4ea0e32c0
-[   29.980994][    T8] R10: 0000000000000008 R11: fefefefefefefeff R12: ffff88a4ea592200
-[   29.981559][    T8] R13: 0000000000000000 R14: ffff88a4ea592205 R15: ffff88a1d49180c0
-[   29.982108][    T8] FS:  0000000000000000(0000) GS:ffff88a4efc00000(0000) knlGS:0000000000000000
-[   29.982720][    T8] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   29.983173][    T8] CR2: 00007f1549cb1028 CR3: 000000011465a000 CR4: 00000000000406f0
-[   29.983726][    T8] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[   29.984856][    T8] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[   29.986008][    T8] Call Trace:
-[   29.987041][    T8]  <TASK>
-[ 29.987799][ T8] ? die (arch/x86/kernel/dumpstack.c:421 arch/x86/kernel/dumpstack.c:434 arch/x86/kernel/dumpstack.c:447) 
-[ 29.988599][ T8] ? do_trap (arch/x86/kernel/traps.c:112 arch/x86/kernel/traps.c:153) 
-[ 29.989418][ T8] ? ata_sff_pio_task (drivers/ata/libata-sff.c:1220 (discriminator 1)) libata
-[ 29.990388][ T8] ? do_error_trap (arch/x86/include/asm/traps.h:59 arch/x86/kernel/traps.c:174) 
-[ 29.991210][ T8] ? ata_sff_pio_task (drivers/ata/libata-sff.c:1220 (discriminator 1)) libata
-[ 29.992148][ T8] ? exc_invalid_op (arch/x86/kernel/traps.c:265) 
-[ 29.992972][ T8] ? ata_sff_pio_task (drivers/ata/libata-sff.c:1220 (discriminator 1)) libata
-[ 29.993919][ T8] ? asm_exc_invalid_op (arch/x86/include/asm/idtentry.h:568) 
-[ 29.994748][ T8] ? ata_sff_pio_task (drivers/ata/libata-sff.c:1220 (discriminator 1)) libata
-[ 29.995668][ T8] process_one_work (kernel/workqueue.c:2635) 
-[ 29.996515][ T8] worker_thread (kernel/workqueue.c:2697 kernel/workqueue.c:2784) 
-[ 29.997328][ T8] ? __pfx_worker_thread (kernel/workqueue.c:2730) 
-[ 29.998163][ T8] kthread (kernel/kthread.c:388) 
-[ 29.998902][ T8] ? __pfx_kthread (kernel/kthread.c:341) 
-[ 29.999685][ T8] ret_from_fork (arch/x86/kernel/process.c:153) 
-[ 30.000452][ T8] ? __pfx_kthread (kernel/kthread.c:341) 
-[ 30.001228][ T8] ret_from_fork_asm (arch/x86/entry/entry_64.S:312) 
-[   30.002045][    T8]  </TASK>
-[   30.002705][    T8] Modules linked in: intel_rapl_msr sr_mod intel_rapl_common crct10dif_pclmul crc32_pclmul crc32c_intel cdrom bochs ghash_clmulni_intel drm_vram_helper drm_kms_helper drm_ttm_helper sha512_ssse3 ttm ata_generic rapl ppdev drm ata_piix joydev serio_raw libata i2c_piix4 parport_pc parport
-[   30.005504][    T8] ---[ end trace 0000000000000000 ]---
-[ 30.006390][ T8] RIP: 0010:ata_sff_pio_task (drivers/ata/libata-sff.c:1220 (discriminator 1)) libata
-[ 30.007379][ T8] Code: 35 a6 0d 01 00 48 8d 90 b8 00 00 00 e8 da a6 fb f4 e9 cc fe ff ff 84 c0 0f 89 e7 fe ff ff e9 4b ff ff ff 0f 0b e9 1c ff ff ff <0f> 0b 66 66 2e 0f 1f 84 00 00 00 00 00 66 66 2e 0f 1f 84 00 00 00
-All code
-========
-   0:	35 a6 0d 01 00       	xor    $0x10da6,%eax
-   5:	48 8d 90 b8 00 00 00 	lea    0xb8(%rax),%rdx
-   c:	e8 da a6 fb f4       	callq  0xfffffffff4fba6eb
-  11:	e9 cc fe ff ff       	jmpq   0xfffffffffffffee2
-  16:	84 c0                	test   %al,%al
-  18:	0f 89 e7 fe ff ff    	jns    0xffffffffffffff05
-  1e:	e9 4b ff ff ff       	jmpq   0xffffffffffffff6e
-  23:	0f 0b                	ud2    
-  25:	e9 1c ff ff ff       	jmpq   0xffffffffffffff46
-  2a:*	0f 0b                	ud2    		<-- trapping instruction
-  2c:	66 66 2e 0f 1f 84 00 	data16 nopw %cs:0x0(%rax,%rax,1)
-  33:	00 00 00 00 
-  37:	66                   	data16
-  38:	66                   	data16
-  39:	2e                   	cs
-  3a:	0f                   	.byte 0xf
-  3b:	1f                   	(bad)  
-  3c:	84 00                	test   %al,(%rax)
-	...
-
-Code starting with the faulting instruction
-===========================================
-   0:	0f 0b                	ud2    
-   2:	66 66 2e 0f 1f 84 00 	data16 nopw %cs:0x0(%rax,%rax,1)
-   9:	00 00 00 00 
-   d:	66                   	data16
-   e:	66                   	data16
-   f:	2e                   	cs
-  10:	0f                   	.byte 0xf
-  11:	1f                   	(bad)  
-  12:	84 00                	test   %al,(%rax)
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20230907/202309071557.3a90e7a8-oliver.sang@intel.com
-
-
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
+Thanks!
+--=20
+Jeff Layton <jlayton@kernel.org>
