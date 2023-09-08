@@ -1,271 +1,200 @@
-Received: from esa4.hgst.iphmx.com (esa4.hgst.iphmx.com [216.71.154.42])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92FD713AEA
-	for <oe-lkp@lists.linux.dev>; Thu,  7 Sep 2023 21:04:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1694120653; x=1725656653;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE5DAEDB
+	for <oe-lkp@lists.linux.dev>; Fri,  8 Sep 2023 04:49:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1694148546; x=1725684546;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
    mime-version;
-  bh=6AEAcbqNN5OPw4JSV1r+/Z1dB8CH2L/Nhagq4lNhRt8=;
-  b=G7Q0OVF1iq1GmCNN4VNof9LzHIwo+/flO+l7ECbnng3fgdC/72TqTdH0
-   nOH6WhVXwHB3WcgHPkZZBKW4F9nhJcGno92TVQKE7Xdulg7F6TuKtNpDm
-   g1A9sTgcH35oxUpXjBwJSS66zGtKCGLx8zxvluvLrdQPAgZ00AMsaZuvj
-   SKscZtzUe49Gg/z9CEd9kFFOHsMESMdledWMjQ5XuVh2YsaKCKZZA8qL1
-   KXXculm1k9Lrs1SMYk7q0JemfA/1NxYptTid6YBjidOwrG9XnpyBQutfl
-   Lui2jk+Q1dOvHTz481l7Ov13e3BoTpPLivBhC2j4rhgHqkGXD19Q9LheM
-   w==;
-X-CSE-ConnectionGUID: pxx3Ct1ZRhu+2GZl90yZBQ==
-X-CSE-MsgGUID: 2GZvYZRSQEmT1h6mhOaelA==
-X-IronPort-AV: E=Sophos;i="6.02,236,1688400000"; 
-   d="scan'208";a="241503415"
-Received: from mail-dm6nam04lp2041.outbound.protection.outlook.com (HELO NAM04-DM6-obe.outbound.protection.outlook.com) ([104.47.73.41])
-  by ob1.hgst.iphmx.com with ESMTP; 08 Sep 2023 05:03:01 +0800
+  bh=bXvdR5B4NKDnac6t0Bs1PqH4w3JI00qhEFcUHT0maFg=;
+  b=TxuGN+a4CXpoLrAA+xOrwSmVLtQmJ0dSixnHP7+hlzhOYzl5OIiT2/VB
+   6leXkdV6zlLEc3Bbuj+7CJyTQTPn4qEjcmezXgt8T0ERuOT4XcscsiCps
+   zuOrzk7FI2WmfSsnfUD1amslGChBWJlndiYHeSq6Va/+trPLYBxkcA6cr
+   ATr7Vasbqx1oI1kzv+RqBSnZWBqW5QoOQz7SJIMqhIar0r4ygPTT+XgVu
+   rJzcIYPG+7bPF696FdNP+nXzWfgcZUz5fAo0tFb/yzZKJUDxvyPQPOZaB
+   jZ62KZLFi+m0uFcjLYQtW8Tdu9RI8zOFc1UeLydsuo1YsvlnxZ7ZnBryO
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10826"; a="374941119"
+X-IronPort-AV: E=Sophos;i="6.02,236,1688454000"; 
+   d="scan'208";a="374941119"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Sep 2023 21:49:05 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10826"; a="745470950"
+X-IronPort-AV: E=Sophos;i="6.02,236,1688454000"; 
+   d="scan'208";a="745470950"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by fmsmga007.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 07 Sep 2023 21:49:05 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.32; Thu, 7 Sep 2023 21:49:05 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.32 via Frontend Transport; Thu, 7 Sep 2023 21:49:05 -0700
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.40) by
+ edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.32; Thu, 7 Sep 2023 21:49:04 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VNOxSwWN5THjqiXV8XlRf/+2hxKOH487lbhtZZU+8GlE77IYjFlCEmBVQyeMAXah4OCfRqYydGiaYFdluqg7ElvlAYiq1r/65WOeXLDfKTvudzdF2c8POoZ+GrhLkG9wyUqs4GEWc6NjVqZLnUP6KBSNjK8v0/pDpl/heh0cxAIt4xWIZgM9kaJ2Rtq+oJOKYg77Ofix3nOI09U0Z6bq8p1yxNe98GwG1auhJQ8PKGeUXD8nWFOEJMJmal5xFRrKBQcj7QSGpLyqnIjx3SQYwYNTOCBdU19REVYTiLqsDWrHPGdXl0KidTlHWUSYvMQ3Xoh1alkfxV44K1m0uHbMHQ==
+ b=AvH4+LIX86SHme2tjSWY5aSbUoCMRZv8f7/dGQOUV/knpEY0MCbCCH+hmSaiOP/LHjT2zloVfB2AbckjielUxDzFbNmjfeJ1iFjse9YCoAEkZSujqYzx2G9BdKN8exFoDoRK38y3VRdB5GU8UQHYsavCqlU697c/p42r/9HRF1+/vT15MUtJQD6dHAvOyvCQK1DTUqmBXmscu7xSmrP/stj9Leko1mwFZzLjLvELdt+FuTOdMxDBo0bIlyRpQDdbgA2vZRNoyIwOFZM3ITElmWmKL39x9UBcQMdA155MPBLiJaKhKfTXInuZfwLnIVEiWgx2QPBdnfn2XCyq3J6eeg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kiINRoX6Z0Ok4h0fJKMmrgsWBFNV4XRvnaWCVx6m+b0=;
- b=A+YiPy56LXeT1GIVqVrXTjvT9fVuBJpUceVxdIxyVyvNiRwZnWnDRykQP++P7kUBD+2tlKKOzUXG7Se06J2qAskt74EY0ehGrJNffOAFQfXMmLhIQqZs09nTtJwJMMCC1UJJJ+9VCucqmbiE0Y053Rdm4qgXlTCRAP0P9U14+GT+Ka/GeC2nQjHZgdTTY8vLVLWT6sw7wqJkFF3PrOMTzDXRv8P0Uw8Q3DAtzAzzuNOBqQfk+5VCSHcd2V86NL7mkpRSTK95hSY7sQpjvlJYm9jDHKkvSaZQgWRTypfK2UZxcj3AeKgnrxjpFdeTzWOymFbUdT7k/0zSBElP27UNqA==
+ bh=sfXTt2cxpLJMFH4gCwh/qhjmC1zi639O3iToNrmtbC8=;
+ b=gGz54JsF+MrIs2HaIFcJNPMUhMHmLjI6bMCEWBdZVy/iua0DlbJHOzIADZZ9YtaY4S7gKWI2IolKWx6IGXtwRw+Kyr+GgEAFaqgMxPTUOkujumcSkHu6vrGyanuTdBXqaoB5oufm8AywjxJwGasiZHw593iW6SUtaLwGqhp6LAzPVAJnbIBVB7eHkBQqLTgU+hQXVAEXOVUnAfI8Zg2pZh4u1Ka4KVjY5ENgH0YQmCzWG/FbQZ9CI5Iqusrwf0WB7H5ZASm3Kbo7qDpWp8iVulw9xWCMxtagHLic+X/DRCC7QzzNmE4yJoKM6r1Y9etUYIwPTjh4XioB+wrB41VqaQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=wdc.com; dmarc=pass action=none header.from=wdc.com; dkim=pass
- header.d=wdc.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=sharedspace.onmicrosoft.com; s=selector2-sharedspace-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kiINRoX6Z0Ok4h0fJKMmrgsWBFNV4XRvnaWCVx6m+b0=;
- b=xHRKF2WnorRElf+QVcFSPwk7w71xKnnb9GimrrGTNtdU1Yb16fa5FaGQ/PhWt23iTYNCRS3mGn+YZz952+ZU6VT+x/acjCXv/DDv9RgrKGXA2c0Wd7LqLJ9HjNkSBCPv437TyF6hWrHpDKo331+cDrsDh02YPYBy8GeUounCYDI=
-Received: from MN2PR04MB6272.namprd04.prod.outlook.com (2603:10b6:208:e0::27)
- by SJ0PR04MB7774.namprd04.prod.outlook.com (2603:10b6:a03:303::21) with
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
+ by CO1PR11MB4785.namprd11.prod.outlook.com (2603:10b6:303:6f::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6768.26; Thu, 7 Sep
- 2023 21:02:59 +0000
-Received: from MN2PR04MB6272.namprd04.prod.outlook.com
- ([fe80::ac1f:2999:a2a6:35a5]) by MN2PR04MB6272.namprd04.prod.outlook.com
- ([fe80::ac1f:2999:a2a6:35a5%2]) with mapi id 15.20.6768.024; Thu, 7 Sep 2023
- 21:02:59 +0000
-From: Niklas Cassel <Niklas.Cassel@wdc.com>
-To: kernel test robot <oliver.sang@intel.com>
-CC: "linan666@huaweicloud.com" <linan666@huaweicloud.com>,
-	"oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>, "lkp@intel.com"
-	<lkp@intel.com>, luojian <luojian5@huawei.com>, "linux-ide@vger.kernel.org"
-	<linux-ide@vger.kernel.org>, "dlemoal@kernel.org" <dlemoal@kernel.org>,
-	"htejun@gmail.com" <htejun@gmail.com>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linan122@huawei.com" <linan122@huawei.com>,
-	"yukuai3@huawei.com" <yukuai3@huawei.com>, "yi.zhang@huawei.com"
-	<yi.zhang@huawei.com>, "houtao1@huawei.com" <houtao1@huawei.com>,
-	"yangerkun@huawei.com" <yangerkun@huawei.com>
-Subject: Re: [PATCH v4] ata: libata-eh: Honor all EH scheduling requests
-Thread-Topic: [PATCH v4] ata: libata-eh: Honor all EH scheduling requests
-Thread-Index: AQHZ4V8Fhmj5bt9aZE6JyD/cOfJ8WLAP2peA
-Date: Thu, 7 Sep 2023 21:02:58 +0000
-Message-ID: <ZPo6fXqTbmwDyopr@x1-carbon>
-References: <20230906084212.1016634-1-linan666@huaweicloud.com>
- <202309071557.3a90e7a8-oliver.sang@intel.com>
-In-Reply-To: <202309071557.3a90e7a8-oliver.sang@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=wdc.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: MN2PR04MB6272:EE_|SJ0PR04MB7774:EE_
-x-ms-office365-filtering-correlation-id: 1d9716fc-4117-4c7b-ffa7-08dbafe5d0ec
-wdcipoutbound: EOP-TRUE
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- ijWLHjcyaEF5cu1tA/qnkCpeCzAkOA01U7Xr+1jXVLjgCAXyYphH0hHWhyaWIQy94E2W8THc/1iF/tC18pc6506a/rb/LnF4l8gOLBDxLEK3CBL3VnDdstGrTxNy7+oGiYAn34tyzzJWfh/BAjy9KioDhjHB1soS0WzG1c4JAKvkd2/qJHhDDNra32g+NqL+JAamoXvIWmqlT6uNWHLm+15UQPflFA6vRbzke9Vcg9lOVHYl/lMi0iAjdISKhH2Ha3dZKS5cvkpwo7HIr9e+X1yL+b4820XpJv/Mbwm8iiXhOguolcIkTfCzw8cEtFJmKMe1w2je+r4OW11jdXrVS5uDlXPIuBnOrTAnP6Z+HP6AdEX7jtMfBx51U/0zOLEX9H2vn2s3dI7MqeC2nZJtQUvP2dGxisfJzib5d+H/HM9d+n8f+wsvnKDrNXtjzftij13A3ox0sy3yNjUoCPUfmz+JcS9RuFZoIMpEFg0mIVfq8mSMD6rZ75+o5udRr5Mtq8qosBg273Xq6YFqh89LtLeUGoVIyZTRziL/GsNFDqW4U1NQTz0fCDU1gRWijMHJxHkvGDhi+6FkgnNIZy2rg0IQOiWa6ni0Yb8js9a2aRcIpnyLCcDnIw0/0U2q49l5TMtCXzCrDnZR8/RdxLanfg==
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR04MB6272.namprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(7916004)(376002)(366004)(136003)(346002)(39860400002)(396003)(186009)(451199024)(1800799009)(82960400001)(478600001)(6512007)(9686003)(38100700002)(38070700005)(91956017)(33716001)(122000001)(966005)(41300700001)(66556008)(64756008)(54906003)(66476007)(66946007)(316002)(6916009)(66446008)(83380400001)(6486002)(6506007)(76116006)(26005)(5660300002)(4326008)(8676002)(2906002)(8936002)(71200400001)(86362001)(7416002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?NikuOK6Xw+344U6/aIhtpkZyA5Je4NBSv4cRz0EZiD109HFBjInSpZuZvQD0?=
- =?us-ascii?Q?8paqMOXMUxXNMX/FdxTgxJfToqFR1u2QAhzJlzXeZFiurBJc1A1MCFwnhGjs?=
- =?us-ascii?Q?YQISBMYeGTSQJeiRyhcVueKRRQ27QVIjzaL7uIizDvQndTTmQ3RWYaZ/GxK0?=
- =?us-ascii?Q?VF+aS2XKIg5k4qdVtEAr0hHrGHFM1U0RYgy39AdN/MBdAEYk2fvRq8z8YgXR?=
- =?us-ascii?Q?jIf6sGvgAkDY6H7g4lKGphM2u7422PoHowqpFX9yMzqaTw9+z5YDDa+euX5Y?=
- =?us-ascii?Q?WOGOd7qbgNvcFpOgi0rp77p/UO/rEE+QFMbZ3gwVWKe07RjWtyiFFEyssZ2S?=
- =?us-ascii?Q?mjDp83iupVAWfXS0w/45TllALeyD7/gplRNNQ9lK5VBmSbh2iz68Utsx6i2d?=
- =?us-ascii?Q?tYSibOWSs+bP0ED9+ghBRjLP9XgsNRSuKJmF9vPh3XkGdSQoY6fJrHAOR3RJ?=
- =?us-ascii?Q?rOsunkxyAWTP8y0Qw6iM/fbNaoAWTAdqET1VNW6IRApm8JOCLDeM94o+OM/T?=
- =?us-ascii?Q?vxwm5eA6LMpDIesYGJv50zC7t4/7vw4ueGVvP9hKPCYnWuak9KlsCezfLFsa?=
- =?us-ascii?Q?mFN1kmaAeRM7v+PalV5f6TG5782w+zGi5BWVN99Fh/VWJXQM4vFf+lxvGgon?=
- =?us-ascii?Q?0uYPH4ztP4e9vZbnrmhlJ7zqO8cv6997Q0w8Pg8wSvjpKuaWtiGKyKChYluL?=
- =?us-ascii?Q?FiqUmoh2hNeb6R2IsMiXy2sboav2HNe+o80dxPKzEo/Fqx3CwZJ6vLSYG6oK?=
- =?us-ascii?Q?exLovK0dyKTLKdpb27LHV+u4f4BnC632RR25Ilf8eODSHg+fhz7tz5icFVNL?=
- =?us-ascii?Q?Qdgbg/wxLwiSsn4AroXW3RRwgXVGXG1cM4oKjJX4X6bjUZdKWltPn+HalNRp?=
- =?us-ascii?Q?Lbn3qWbeE0bWhyhdK+wmr4/G70cj5r6wHISsyaobicV+lzxfDmOwvyxrTEVk?=
- =?us-ascii?Q?RTW6WufJAO/vyPWredB1PQcMGnZJYDWcD0vAPGQX8QxvtYpSiVqzGBhREk1d?=
- =?us-ascii?Q?xK801GR0jbEJAidTtvO0HRad0DYLel+X38/0Rngk766BL+EFAWHSScsAGqQW?=
- =?us-ascii?Q?mmp75L3PrF4JSg9ibZiDPTcP8c31IXx0BDOua0Bcci+qmB/OWkwZUijDwlFR?=
- =?us-ascii?Q?mN+5NJhkFUfbgvNBV5gIfjzyia5jeBWhV/GO0CNlHA5ZK+pvwD4IVNBmiNSL?=
- =?us-ascii?Q?GgclK79KhniWOreeHYNYmqLPT2CIMcz9tjJBlerelWP+wUPZDH8AGeA3uDKu?=
- =?us-ascii?Q?p5tGZuFrt/EluxZrtJmSkIWdcSPJ/EDzLCQemIYhdrPNWpguTruB4fwDQg8A?=
- =?us-ascii?Q?ebWQESOrlwuuCuVARqtG5/TThugRNr30zyBtj6KmpTpHh6X+r2W+Wt3eH5wn?=
- =?us-ascii?Q?o/9WnIocXECaLvAngb+ubDakY81Owjeknnk2qElEtcxwHs4MRmk32K1NQXvr?=
- =?us-ascii?Q?JpCL5IwB7LV7k+yrhQEFaOzqPq/g48m49pkull1u0yhLmLDUMC6JzdTLcJZu?=
- =?us-ascii?Q?719gGYp+JQ4XUmrYRDgBYdm7D2CIDjeN/ryJAWaLH1uOuQiVw1UIMB022RMs?=
- =?us-ascii?Q?CltiMoTYXhBNc5k146qv4ZEbMRMBYVMuBsRAOscXBpsSjCEikyYUKesyZBoY?=
- =?us-ascii?Q?/g=3D=3D?=
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6768.30; Fri, 8 Sep
+ 2023 04:49:02 +0000
+Received: from PH8PR11MB6779.namprd11.prod.outlook.com
+ ([fe80::73c6:1231:e700:924]) by PH8PR11MB6779.namprd11.prod.outlook.com
+ ([fe80::73c6:1231:e700:924%4]) with mapi id 15.20.6768.029; Fri, 8 Sep 2023
+ 04:49:02 +0000
+Date: Fri, 8 Sep 2023 12:48:49 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: Nikita Zhandarovich <n.zhandarovich@fintech.ru>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-sctp@vger.kernel.org>,
+	Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>, Xin Long
+	<lucien.xin@gmail.com>, Nikita Zhandarovich <n.zhandarovich@fintech.ru>,
+	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	<netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<syzbot+70a42f45e76bede082be@syzkaller.appspotmail.com>,
+	<oliver.sang@intel.com>
+Subject: Re: [PATCH net] sctp: fix uninit-value in sctp_inq_pop()
+Message-ID: <202309081012.be01cf11-oliver.sang@intel.com>
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <3319089EACC46348838CEE07A8CF4227@namprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+In-Reply-To: <20230829071334.58083-1-n.zhandarovich@fintech.ru>
+X-ClientProxiedBy: SI2PR01CA0037.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:193::9) To PH8PR11MB6779.namprd11.prod.outlook.com
+ (2603:10b6:510:1ca::17)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
-	=?us-ascii?Q?iFqgbDtr6cPk5vvJ6kT5n8FjeTmqw2qDzigNudLhuLoz85gJ4cFT4cStzE+z?=
- =?us-ascii?Q?DA5ikV7MiOyM3Ct3tJ89qTD5dJ3NjI6lRlCSUwOi9/o/FGolb0aXSNZB8VUf?=
- =?us-ascii?Q?VGj+CUwzAEloY3lNizZHKMuseJshehBrmkWPEXGop+bF4/wxZJYLUV2Pic71?=
- =?us-ascii?Q?/QyYk3ExH2ll3C12S1hay5jvrA/duIDDYW7hdV3xiQMO8xQOwGQ1XYeq/DUm?=
- =?us-ascii?Q?1i+Q6ll2KTOP5N/yid4T1ei7LFGwLeL39XUmdgkqxlsngqsYceGn45qWkiob?=
- =?us-ascii?Q?VdqNb83whZmCFd5zEpEvmsUOKqkTt0MOsIcS0kzf9o29m5HOuUeXJcrf2mVo?=
- =?us-ascii?Q?dmrZiE9iMS3Sxrk7o1TXaKLWndA84d7i6ycvCJpo45yNi5/Y3Aoa1A+4D5mi?=
- =?us-ascii?Q?68euEPNIF4NI9kpQYdAiPccoNSezYV/mGxtZi5S+eYN7T9DRpnZfDZbvMv3Z?=
- =?us-ascii?Q?Rw++djgsrNqewKn98v/D8FCUVco4gG4yHtLzwh4yIHhAuctHAivT/H8RGpsN?=
- =?us-ascii?Q?Jf5E5ATe21I8IS+9PWrmo6dVhVSdliM125syx51o6hRjiUlcOlKgwopSsypN?=
- =?us-ascii?Q?MmOed/8LCLYzjBpvhz04hs0eL7KGSFNTTJtYBcn/d7pOGr7AV+Ovjon+KyEw?=
- =?us-ascii?Q?7IicA1yJvb3E+vzE2Ql8zYspeDy+LlTDHap6apGK/0r+u5rK57Z4mESqCGc/?=
- =?us-ascii?Q?9ZGLQ99XC3RZVwZsDQWhaLz4FrXBQQRiUsHA4AdGXhA6yfUJFiup4SJAn6Gz?=
- =?us-ascii?Q?Zapw2ow8H3Wcp5KIAXQ0bDZW7jUnrWHlMvackM89In/xbyIn+umN+em/zPtm?=
- =?us-ascii?Q?+qht3ALZTCYGKKnkTOmbuAayEIrbdHQp6G8UJpwYDilhxS4uxyu9Erb5xhI7?=
- =?us-ascii?Q?5HMDDi5kffNKuO2JC9sJ8E/sfbrum5Rze+d6hKZDkJSCjh4K9aD4C18DER1S?=
- =?us-ascii?Q?axNOsncKb6Xy7jddLQzoAmNpefxtouCYxNGm+7BxSL8=3D?=
-X-OriginatorOrg: wdc.com
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|CO1PR11MB4785:EE_
+X-MS-Office365-Filtering-Correlation-Id: a4fec114-27ac-445b-15bb-08dbb026eb53
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: H8l9fqKPegHBsCywiiwHWm2V1biDWj3Z+4lYRtDg2vat+OgBJPYuMttI8knW/Kym+KYB8FLIsIgbM3ORXPyU1FyrscqfnNMNkz5BHR+L4CLbDj3cbYJvV5SEUWmSNHko75iljM0jUHlnb+jkle8/cpcvMtSmhWvxoM+1KhgN1GloPa+eEdpLJ/oKj8oBhxH1eb0cjJSC1faaq7QaA33WTaUHGcdgHLGV2/OTMrMq4Iqlu0iwnuyfun7QrbuYQm8CdMiOVJS64Yzbf1actcMj9hzgYgxqA6I1zWTczkjo42pJDbvTCVvfXQns2lzc0Jnf2qR+zqy/WUuZT4skBT7uYgOShmNYu3SRxv94aejVXpxnKZzwyGeEhTN2c/qQ1Q21ydU6YKJ/xKX0es+rZ3cxwWq/G+maRyusx5h7mI3+M38TDEuo+WwlZdo3vSR8jYNAhow0FcHYloi5YyAlsqljtxU+70hHhgdWQo+qwPE9ayO8Lepl4ByzGlcPjkkBIv5w4Et08E10Xb0WsNQLf1HYmPFSUhHu/VivN7yHDQGmn0+93fmPUNo0lNU//FQMEc2J3NosjZhb3GQX0wxJnEamsg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(366004)(396003)(376002)(39860400002)(136003)(451199024)(186009)(1800799009)(478600001)(5660300002)(66476007)(66946007)(66556008)(54906003)(966005)(6916009)(83380400001)(316002)(8676002)(2906002)(4326008)(8936002)(6666004)(41300700001)(7416002)(6486002)(6506007)(6512007)(107886003)(2616005)(1076003)(26005)(36756003)(82960400001)(86362001)(38100700002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?wWniYioiCDpOge6LjANNKfSPECMfKpqtgoq8QPEXkgL6sBovpryU6CO48jAt?=
+ =?us-ascii?Q?tYZi337jwWpto4ZWhlIHWtjycYbRKwSyZlOwRAAMU01LJNlT3TLFI5nMCCny?=
+ =?us-ascii?Q?zPRCqOt9M1/ikY4fwIF3mKFprPskdA+AHkPVD4v+cr457ICpYR3u/CJiesEO?=
+ =?us-ascii?Q?6KamYCXMBLztz/oBW2+vKTGXBBgRij4h453DvYWx8qvG15UnmBwAToz5j+98?=
+ =?us-ascii?Q?DGeF+HcUMYs35YtjqYvVe0SlBexB2r6d/nHDe5Bg/NSwRXLX5JKhKp+e9AAh?=
+ =?us-ascii?Q?baAH+xoT0yPjjxye3pyyglREWJaBIyQVv2SkA+kVwfbIGu4EKyKIXaIyBa56?=
+ =?us-ascii?Q?zLFI5UpxbOVIlJpIZRmdLkO8cir5fX68hPI177R2+u5+Bo5/m49wDUpEYb0V?=
+ =?us-ascii?Q?cktf5MOs7vbJ2RXcblEAlPSA5gfekT473+i92xj0mpcyv0RaiUA54nYl+pl9?=
+ =?us-ascii?Q?6hwedGMmx5Ih88DRzt5eMXwJZVjdt9bK+d/7XHf5YIT9gVegvq1C6O0QoUds?=
+ =?us-ascii?Q?MACtpWMlLINQ4Pz4sQDDTWVn9kkbnyJqfkLC+U04Db10aO/THipuCQvmgVgx?=
+ =?us-ascii?Q?6qeDQyESgkD0FrN+m335EoOwIFV3WSDKWh6mP4yDqdwhVwVZ3EwicJocsxY5?=
+ =?us-ascii?Q?fZDCf8xz7Rg9lsyrEU0vp8ITrpmmh7PD3quFxdS/ZYFgYA2Rlt63Z8XBC3JA?=
+ =?us-ascii?Q?ZGUszj0FQz/dax0488jIpByJGZUdppumJwcgiTMir/JRAMVYhZXKBqQ3rve1?=
+ =?us-ascii?Q?rMLrRACjFtjsOIA7N0UtVsx8HyK8+C6ep9TaG7kbrV0U1XIqK9yHCp48/4VQ?=
+ =?us-ascii?Q?MwjuCMso91tZFSwO48bvkZVxgHgfGxDXFE6Zn08rb00iOXIY5Xdm0iHDzfZS?=
+ =?us-ascii?Q?fXTdVbBhIgm+01ViUpb7cEPVA8eDYrQlwYnTGwCWPZAhMRWz+iXijx1ap1Gi?=
+ =?us-ascii?Q?WIsysvON9BJFwnrcqSVxFNYU/siaNUAVlkk4Q4hq9CXNIRTWR3Q5Kst4t5wY?=
+ =?us-ascii?Q?X284fd/qYzYQn/+RWimUgMjCT5v5V0Uo+WaYl4vls7HMCeiGMBQtH1fW2zR1?=
+ =?us-ascii?Q?umYX6/atzNck7THABVMl/U2Ydo/rVCGl5+VaXoRKtkSeYZx+Iz+W6Sl4H2HP?=
+ =?us-ascii?Q?phrnQlUsLETQADXicRJToroBmlWIiQmhCzuOu45HA7aQpozR1bb87TNIHQ8I?=
+ =?us-ascii?Q?Q/CmLS5d5DwqfYRSOtjnGLWzcYv0+n0yw0OZBvcm88Y2zfeSIB2gzcht1sWX?=
+ =?us-ascii?Q?dJTLDzxnJ92lV3bRUR33juymNNnT/kUeQUfhXjEJBQs4h0tPTZVXNvjSGOfD?=
+ =?us-ascii?Q?xkArtCbVXukE7fQ84V3H4SgYhUcJCbRaars/UpXgSZZDQUTAA+tEi7H7Um7D?=
+ =?us-ascii?Q?B3qz/lEvYx5AhvAJ7Xd5jxZ/u8IkKCFgbzM95gLA1thqs1bj0P5kC7Ev+U4r?=
+ =?us-ascii?Q?Uo7a7ZnBt2ndZUcPC90XjwP9w+dyMM6C7zNwUvoSX4idWwaEe80kRRUIrs7+?=
+ =?us-ascii?Q?mzNIQP8nW5/FpB/iMGNVSukc9VLimTCWJS4qoOuhIyVGrf1twAZ+fqBe7BHp?=
+ =?us-ascii?Q?cBxn8mog5rAXk69zyuqPNv47s8PuJv48fVTK2+GF8/k4GNkwNUroHGWwW4/c?=
+ =?us-ascii?Q?kg=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: a4fec114-27ac-445b-15bb-08dbb026eb53
+X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB6779.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR04MB6272.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1d9716fc-4117-4c7b-ffa7-08dbafe5d0ec
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Sep 2023 21:02:59.0074
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Sep 2023 04:49:02.5502
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: b61c8803-16f3-4c35-9b17-6f65f441df86
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: L8z+e1eMJ5xtzbs+n1muGnynTpQNFEUuQXh2pFmWLpkaAxDQcSJnyXKgGI6jffnXYLxjYU4QBsw1SnpSxXnpiw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR04MB7774
-
-On Thu, Sep 07, 2023 at 03:43:19PM +0800, kernel test robot wrote:
->=20
->=20
-> Hello,
->=20
-> kernel test robot noticed "kernel_BUG_at_drivers/ata/libata-sff.c" on:
->=20
-> commit: d3d099d5c2dd38db84abd96df39f9f0828c16b7b ("[PATCH v4] ata: libata=
--eh: Honor all EH scheduling requests")
-> url: https://github.com/intel-lab-lkp/linux/commits/linan666-huaweicloud-=
-com/ata-libata-eh-Honor-all-EH-scheduling-requests/20230906-164907
-> base: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git 65d=
-6e954e37872fd9afb5ef3fc0481bb3c2f20f4
-> patch link: https://lore.kernel.org/all/20230906084212.1016634-1-linan666=
-@huaweicloud.com/
-> patch subject: [PATCH v4] ata: libata-eh: Honor all EH scheduling request=
-s
->=20
-> in testcase: boot
->=20
-> compiler: gcc-12
-> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 1=
-6G
-
-Unfortunately the problem reported by the kernel test robot is very real.
-I could reproduce without too much effort in QEMU.
-
-The problem is basically that we cannot simply perform a host_eh_scheduled-=
--;
-in ata_std_end_eh().
-
-ata_std_end_eh() is called at the end of ata_scsi_port_error_handler(),
-so it is called once every time ata_scsi_port_error_handler() is called.
-
-However, ata_scsi_port_error_handler() will be called by SCSI EH each
-time SCSI wakes up.
-
-SCSI EH will sleep as long as:
-if ((shost->host_failed =3D=3D 0 && shost->host_eh_scheduled =3D=3D 0) ||
-                    shost->host_failed !=3D scsi_host_busy(shost)) {
-	schedule();
-	continue;
-}
-
-
-The methods in libata which we use to trigger EH are:
-
-1) ata_std_sched_eh(), which calls scsi_schedule_eh(), which does
-host_eh_scheduled++;
-
-2) ata_qc_schedule_eh(), which will end up in scsi_timeout,
-which calls scsi_eh_scmd_add() which does:
-host_failed++;
-
-
-So before this patch, setting host_eh_scheduled =3D 0; in ata_std_end_eh()
-makes us say that works because it only negates the EH scheduled by
-ata_std_sched_eh().
-
-However, if we do host_eh_scheduled--, then if the EH was triggered by
-ata_qc_schedule_eh(), then host_eh_scheduled will decrease < 0,
-which will trigger SCSI EH to wake up again :)
-
-We could do something like only decreasing host_eh_scheduled if it is > 0.
-The QCs added to EH using ata_qc_schedule_eh() will be handled by
-ata_eh_finish(), which will iterate over all QCs owned by EH, and will
-either fail or retry each QC. After that scsi_error_handler() has finished
-the call to eh_strategy_handler() (ata_scsi_error()) it will unconditionall=
-y
-set host_failed to 0:
-https://github.com/torvalds/linux/blob/v6.5/drivers/scsi/scsi_error.c#L2331=
--L2337
-
-So something like this on top of the patch in $subject:
-
-diff --git a/drivers/ata/libata-eh.c b/drivers/ata/libata-eh.c
-index 2d5ecd68b7e0..9ab12d7f6d9f 100644
---- a/drivers/ata/libata-eh.c
-+++ b/drivers/ata/libata-eh.c
-@@ -952,7 +952,13 @@ EXPORT_SYMBOL_GPL(ata_std_sched_eh);
-  */
- void ata_std_end_eh(struct ata_port *ap)
- {
--       ap->scsi_host->host_eh_scheduled--;
-+       struct Scsi_Host *host =3D ap->scsi_host;
-+       unsigned long flags;
-+
-+       spin_lock_irqsave(host->host_lock, flags);
-+       if (host->host_eh_scheduled > 0)
-+               host->host_eh_scheduled--;
-+       spin_unlock_irqrestore(host->host_lock, flags);
- }
- EXPORT_SYMBOL(ata_std_end_eh);
-
-
-With that incremental patch, I can no longer reproduce the crash reported
-by the kernel test robot in my QEMU setup.
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: sBACLqaHckPZM3Y4UdIvlE+saZARzEjBmMQ9CPTMyZEyhBmwczERvXMK6khlG99stO7aVuyXpl7vPtCDvJLcCQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR11MB4785
+X-OriginatorOrg: intel.com
 
 
 
-It might be worth mentioning that the race window for the bug that the patc=
-h
-in $subject is fixing, should be much smaller after this patch is in:
-https://lore.kernel.org/linux-ide/20230907081710.4946-1-Chloe_Chen@asmedia.=
-com.tw/
+Hello,
 
-Li Nan, perhaps you could see if you can still reproduce your original
-problem with the patch from the ASMedia guys?
+kernel test robot noticed "stress-ng.sctp.fail" on:
 
-However, even with the ASMedia patch, it should still be theoretically
-possible to get an error irq after ata_eh_reset() has called ahci_thaw(),
-so I suppose that this patch still makes some sense...
+commit: 8c7dea932ab60ed7519996ade2d1e21db2c76cd4 ("[PATCH net] sctp: fix uninit-value in sctp_inq_pop()")
+url: https://github.com/intel-lab-lkp/linux/commits/Nikita-Zhandarovich/sctp-fix-uninit-value-in-sctp_inq_pop/20230829-151540
+base: https://git.kernel.org/cgit/linux/kernel/git/davem/net.git 90ca51e8c654699b672ba61aeaa418dfb3252e5e
+patch link: https://lore.kernel.org/all/20230829071334.58083-1-n.zhandarovich@fintech.ru/
+patch subject: [PATCH net] sctp: fix uninit-value in sctp_inq_pop()
+
+in testcase: stress-ng
+version: stress-ng-x86_64-0.15.04-1_20230812
+with following parameters:
+
+	nr_threads: 100%
+	testtime: 60s
+	class: network
+	test: sctp
+	cpufreq_governor: performance
 
 
-Kind regards,
-Niklas=
+
+compiler: gcc-12
+test machine: 64 threads 2 sockets Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz (Ice Lake) with 256G memory
+
+(please refer to attached dmesg/kmsg for entire log/backtrace)
+
+
+
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202309081012.be01cf11-oliver.sang@intel.com
+
+2023-09-07 16:33:40 stress-ng --timeout 60 --times --verify --metrics-brief --sctp 64
+stress-ng: info:  [4148] setting to a 60 second run per stressor
+stress-ng: info:  [4148] dispatching hogs: 64 sctp
+stress-ng: info:  [4148] stressor       bogo ops real time  usr time  sys time   bogo ops/s     bogo ops/s
+stress-ng: info:  [4148]                           (secs)    (secs)    (secs)   (real time) (usr+sys time)
+stress-ng: info:  [4148] sctp                  0     60.00      0.03      0.01         0.00           0.00
+stress-ng: warn:  [4148] metrics-check: all bogo-op counters are zero, data may be incorrect
+stress-ng: info:  [4148] for a 60.01s run time:
+stress-ng: info:  [4148]    3840.71s available CPU time
+stress-ng: info:  [4148]       0.04s user time   (  0.00%)
+stress-ng: info:  [4148]       0.01s system time (  0.00%)
+stress-ng: info:  [4148]       0.05s total time  (  0.00%)
+stress-ng: info:  [4148] load average: 0.63 0.32 0.12
+stress-ng: info:  [4148] successful run completed in 60.01s (1 min, 0.01 secs)
+
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20230908/202309081012.be01cf11-oliver.sang@intel.com
+
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
