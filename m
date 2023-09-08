@@ -1,106 +1,288 @@
-Received: from mail-pf1-f176.google.com (mail-pf1-f176.google.com [209.85.210.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BDFC2108
-	for <oe-lkp@lists.linux.dev>; Fri,  8 Sep 2023 09:47:15 +0000 (UTC)
-Received: by mail-pf1-f176.google.com with SMTP id d2e1a72fcca58-68e369ba5f8so1512587b3a.2
-        for <oe-lkp@lists.linux.dev>; Fri, 08 Sep 2023 02:47:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1694166435; x=1694771235; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:references:to:subject
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ZOFDh/D3nnnbGTYfl9jTSGlOLCGKw3LCJaJiKQKzt8k=;
-        b=AEMZZGkYW8Hm/JSB5U1vK3MhPFpteZS0RFYtG2/eLN2/FyVKFkh+ks9echmtBCGfTU
-         5KqdgYh1hY7Wuk5LfpyDKC1PXQx+8orXgCdNxsorTpF+7AqdAi0ZF+1fSJRA+diBD5Ky
-         U7gVvlazQ3rAUf71eMi3fXbv+RAWOyiOtSwFJxdGKzM5vaQ36M2q9sbR0KR6kMpQoKca
-         84g/b5sbcMmjQsq4vL6wtSqwj04JNO9S7iCvizmE997ORSzXQxn7Vx2TZPn7kOTyABXT
-         qVTfOXZVuPjNNbMLMRZl14d8CPLcq/F0TALllWg/of51HEFoVHNG71FTjxNP9AaZzyeL
-         4sGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1694166435; x=1694771235;
-        h=content-transfer-encoding:in-reply-to:from:references:to:subject
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=ZOFDh/D3nnnbGTYfl9jTSGlOLCGKw3LCJaJiKQKzt8k=;
-        b=aAziEcHa9G43fKtnbl/bgjzi55F92qoH30RtDU1lmfduLzeinejrn/VkI67TdGTgNY
-         vVL3d7IrqtKg32YQSqqun2mAFm8eCbu8SNmfBywcSaOZWjFXKEG0f1DW6h9luuNgQY9y
-         4Rg5qYcqFatyIZeWPhxTsCRsZ2FUS9MLs1xSclB9o4FeDMp4XkjnhkOiWrfCDDb2aWRI
-         xHbvkPlm7D9vO3Fry8K/XT7A2efM4RXg0B4SKf+lQgeKitNadnDPrvMUeZ0CxZOH9pdh
-         yCx1CdmZojiasL2ECKacY71rc2/2j+SdZeGFHBzt0wmgOq6xvAKIqGcxzcCzOMN7/yx7
-         tWCQ==
-X-Gm-Message-State: AOJu0YydaawZ+jKYfwok8V8jpGYiN2Ty/QscbzvbyL927MeUg4M45zFd
-	z3KyPNeKLuC+vdyxXPIfotR9qA==
-X-Google-Smtp-Source: AGHT+IGToacl2IfMv5vF0nuGEuNbbaTH2uXstB2lcyAVK5QoZX/d+uZ0rVygQlbRD+yxYwSf4/OO+w==
-X-Received: by 2002:a05:6a20:1441:b0:153:588c:f197 with SMTP id a1-20020a056a20144100b00153588cf197mr2569108pzi.35.1694166435181;
-        Fri, 08 Sep 2023 02:47:15 -0700 (PDT)
-Received: from [10.254.232.87] ([139.177.225.246])
-        by smtp.gmail.com with ESMTPSA id p5-20020a170902bd0500b001bba7aab822sm439696pls.5.2023.09.08.02.47.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 Sep 2023 02:47:14 -0700 (PDT)
-Message-ID: <bbb0959d-5ad1-846b-b896-eb4c5dd900bf@bytedance.com>
-Date: Fri, 8 Sep 2023 17:47:03 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 175E11863
+	for <oe-lkp@lists.linux.dev>; Fri,  8 Sep 2023 11:20:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A228C433C9;
+	Fri,  8 Sep 2023 11:20:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1694172029;
+	bh=ir8Mb1Y8thF7Si5+XmY0etkU/3vWu6EkvoiVlDTeqRA=;
+	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+	b=o2/4u4xPcg3eqRLuoewCahfZxIhrOP51aZapwP0+hBPMfxigUPaNxHS2wFx9vyUxE
+	 Em0ERbosArWnqUAAZvgYYvzA/xFlPIzh6Ouy3Zl/osKGjaRktcOIAPji/+x9A3cIJQ
+	 y648bay2IRMzZ56pXon7L+U91+8sdLxoNTwYH4hpIQI0LHaPr23bJ+GscnnceW2/Lv
+	 YxiAdO9zVWHv5sEEVkN296OsgEc30xO91rlCPVReuhmtSA851GxRZKYr5Y6YHWoBFR
+	 hXywe5kICu8lp8rZVOmFc3AB39a+1Vh2rKaEm4++2tmUYYDPzMAEYP7kVw7PY8DdYI
+	 d6ZDucuG3Ng6A==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+	id 064DFCE0FF4; Fri,  8 Sep 2023 04:20:29 -0700 (PDT)
+Date: Fri, 8 Sep 2023 04:20:28 -0700
+From: "Paul E. McKenney" <paulmck@kernel.org>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org
+Subject: Re: [paulmck-rcu:dev.2023.08.24a] [EXP qspinlock] 3d22d912bd:
+ UBSAN:array-index-out-of-bounds_in_kernel/locking/qspinlock.c
+Message-ID: <07830e28-83da-4fe9-99b7-5036a762fb6c@paulmck-laptop>
+Reply-To: paulmck@kernel.org
+References: <202309081258.8d57032f-oliver.sang@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.15.0
-Subject: Re: [PATCH v2 5/6] maple_tree: Update check_forking() and
- bench_forking()
-To: Matthew Wilcox <willy@infradead.org>,
- "Liam R. Howlett" <Liam.Howlett@oracle.com>,
- Peng Zhang <zhangpeng.00@bytedance.com>,
- kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
- lkp@intel.com, maple-tree@lists.infradead.org, linux-mm@kvack.org,
- corbet@lwn.net, akpm@linux-foundation.org, brauner@kernel.org,
- surenb@google.com, michael.christie@oracle.com, peterz@infradead.org,
- mathieu.desnoyers@efficios.com, npiggin@gmail.com, avagin@gmail.com,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-fsdevel@vger.kernel.org
-References: <202308312115.cad34fed-oliver.sang@intel.com>
- <0e9a87d9-410f-a906-e95c-976a141f24f0@bytedance.com>
- <20230907180301.lms4ihtwfuwj7bkb@revolver>
- <ZPoThAU9zoW2q/YR@casper.infradead.org>
-From: Peng Zhang <zhangpeng.00@bytedance.com>
-In-Reply-To: <ZPoThAU9zoW2q/YR@casper.infradead.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202309081258.8d57032f-oliver.sang@intel.com>
 
-
-
-在 2023/9/8 02:16, Matthew Wilcox 写道:
-> On Thu, Sep 07, 2023 at 02:03:01PM -0400, Liam R. Howlett wrote:
->>>>   WARNING: possible recursive locking detected
->>>>   6.5.0-rc4-00632-g2730245bd6b1 #1 Tainted: G                TN
->>>>   --------------------------------------------
->>>>   swapper/1 is trying to acquire lock:
->>>> ffffffff86485058 (&mt->ma_lock){+.+.}-{2:2}, at: check_forking (include/linux/spinlock.h:? lib/test_maple_tree.c:1854)
->>>>
->>>>   but task is already holding lock:
->>>>   ffff888110847a30 (&mt->ma_lock){+.+.}-{2:2}, at: check_forking (include/linux/spinlock.h:351 lib/test_maple_tree.c:1854)
->>> Thanks for the test. I checked that these are two different locks, why
->>> is this warning reported? Did I miss something?
->>
->> I don't think you can nest spinlocks like this.  In my previous test I
->> avoided nesting, but in your case we cannot avoid having both locks at
->> the same time.
->>
->> You can get around this by using an rwsemaphore, set the two trees as
->> external and use down_write_nested(&lock2, SINGLE_DEPTH_NESTING) like
->> the real fork.  Basically, switch the locking to exactly what fork does.
-Here I can use rwsemaphore to avoid the warning. But what about in
-mtree_dup()? mtree_dup() handles locks internally.
-
-Maybe spin_lock_nested() mentioned by Matthew can be used in
-mtree_dup().
+On Fri, Sep 08, 2023 at 12:54:10PM +0800, kernel test robot wrote:
 > 
-> spin_lock_nested() exists.
-Thanks for mentioning this, I'll have a look.
 > 
-> You should probably both read through
-> Documentation/locking/lockdep-design.rst It's not the best user
-> documentation in the world, but it's what we have.
+> Hello,
+> 
+> kernel test robot noticed "UBSAN:array-index-out-of-bounds_in_kernel/locking/qspinlock.c" on:
+> 
+> commit: 3d22d912bd0373dd479764644b8c0c81ec4bcc61 ("EXP qspinlock: Dump lock state, add call from locktorture")
+> https://git.kernel.org/cgit/linux/kernel/git/paulmck/linux-rcu.git dev.2023.08.24a
+> 
+> in testcase: boot
+> 
+> compiler: gcc-9
+> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+> 
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+> 
+> 
+> 
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202309081258.8d57032f-oliver.sang@intel.com
+> 
+> 
+> [ 1660.539448][    C0] UBSAN: array-index-out-of-bounds in kernel/locking/qspinlock.c:712:8
+> [ 1660.539448][    C0] index -1 is out of range for type 'long unsigned int [64]'
+
+Oooh...  Good catch, fix in progress, thank you!
+
+							Thanx, Paul
+
+> [ 1660.539448][    C0] CPU: 0 PID: 1 Comm: swapper/0 Tainted: G        W       TN 6.5.0-rc1-00129-g3d22d912bd03 #1
+> [ 1660.539448][    C0] Call Trace:
+> [ 1660.539448][    C0]  <IRQ>
+> [ 1660.539448][ C0] dump_stack_lvl (lib/dump_stack.c:107 (discriminator 4)) 
+> [ 1660.539448][ C0] dump_stack (lib/dump_stack.c:114) 
+> [ 1660.539448][ C0] ubsan_epilogue (lib/ubsan.c:218) 
+> [ 1660.539448][ C0] __ubsan_handle_out_of_bounds (lib/ubsan.c:349) 
+> [ 1660.539448][ C0] spinlock_dump (kernel/locking/qspinlock.c:712) 
+> [ 1660.539448][ C0] torture_spin_lock_dump (kernel/locking/locktorture.c:289) 
+> [ 1660.539448][ C0] notifier_call_chain (kernel/notifier.c:93) 
+> [ 1660.539448][ C0] atomic_notifier_call_chain (kernel/notifier.c:231) 
+> [ 1660.539448][ C0] rcu_stall_notifier_call_chain (kernel/rcu/tree_stall.h:1101) 
+> [ 1660.539448][ C0] rcu_sched_clock_irq (kernel/rcu/tree_stall.h:775 kernel/rcu/tree.c:3863 kernel/rcu/tree.c:2241) 
+> [ 1660.539448][ C0] update_process_times (arch/x86/include/asm/preempt.h:27 kernel/time/timer.c:2073) 
+> [ 1660.539448][ C0] tick_sched_handle+0x45/0x54 
+> [ 1660.539448][ C0] tick_sched_timer (kernel/time/tick-sched.c:1492) 
+> [ 1660.539448][ C0] ? tick_sched_do_timer (kernel/time/tick-sched.c:1479) 
+> [ 1660.539448][ C0] __hrtimer_run_queues (kernel/time/hrtimer.c:1690 kernel/time/hrtimer.c:1752) 
+> [ 1660.539448][ C0] hrtimer_interrupt (kernel/time/hrtimer.c:1817) 
+> [ 1660.539448][ C0] __sysvec_apic_timer_interrupt (arch/x86/include/asm/jump_label.h:27 include/linux/jump_label.h:207 arch/x86/include/asm/trace/irq_vectors.h:41 arch/x86/kernel/apic/apic.c:1116) 
+> [ 1660.539448][ C0] sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1109 (discriminator 14)) 
+> [ 1660.539448][    C0]  </IRQ>
+> [ 1660.539448][    C0]  <TASK>
+> [ 1660.539448][ C0] asm_sysvec_apic_timer_interrupt (arch/x86/include/asm/idtentry.h:645) 
+> [ 1660.539448][ C0] RIP: 0010:_raw_spin_unlock_irqrestore (include/linux/spinlock_api_smp.h:152 kernel/locking/spinlock.c:194) 
+> [ 1660.539448][ C0] Code: 5e 12 ff 81 e3 00 02 00 00 74 05 e8 12 96 1a ff 9c 58 0f ba e0 09 73 05 e8 97 4a ff ff 48 85 db 74 01 fb 65 ff 0d d3 c8 17 7e <75> 05 0f 1f 44 00 00 5b 41 5c 5d c3 f3 0f 1e fa 55 48 89 e5 53 48
+> All code
+> ========
+>    0:	5e                   	pop    %rsi
+>    1:	12 ff                	adc    %bh,%bh
+>    3:	81 e3 00 02 00 00    	and    $0x200,%ebx
+>    9:	74 05                	je     0x10
+>    b:	e8 12 96 1a ff       	callq  0xffffffffff1a9622
+>   10:	9c                   	pushfq 
+>   11:	58                   	pop    %rax
+>   12:	0f ba e0 09          	bt     $0x9,%eax
+>   16:	73 05                	jae    0x1d
+>   18:	e8 97 4a ff ff       	callq  0xffffffffffff4ab4
+>   1d:	48 85 db             	test   %rbx,%rbx
+>   20:	74 01                	je     0x23
+>   22:	fb                   	sti    
+>   23:	65 ff 0d d3 c8 17 7e 	decl   %gs:0x7e17c8d3(%rip)        # 0x7e17c8fd
+>   2a:*	75 05                	jne    0x31		<-- trapping instruction
+>   2c:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+>   31:	5b                   	pop    %rbx
+>   32:	41 5c                	pop    %r12
+>   34:	5d                   	pop    %rbp
+>   35:	c3                   	retq   
+>   36:	f3 0f 1e fa          	endbr64 
+>   3a:	55                   	push   %rbp
+>   3b:	48 89 e5             	mov    %rsp,%rbp
+>   3e:	53                   	push   %rbx
+>   3f:	48                   	rex.W
+> 
+> Code starting with the faulting instruction
+> ===========================================
+>    0:	75 05                	jne    0x7
+>    2:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+>    7:	5b                   	pop    %rbx
+>    8:	41 5c                	pop    %r12
+>    a:	5d                   	pop    %rbp
+>    b:	c3                   	retq   
+>    c:	f3 0f 1e fa          	endbr64 
+>   10:	55                   	push   %rbp
+>   11:	48 89 e5             	mov    %rsp,%rbp
+>   14:	53                   	push   %rbx
+>   15:	48                   	rex.W
+> [ 1660.539448][    C0] RSP: 0000:ffff88810038fb20 EFLAGS: 00000246
+> [ 1660.539448][    C0] RAX: 0000000000000002 RBX: 0000000000000200 RCX: 000001829fdcdc01
+> [ 1660.539448][    C0] RDX: 0000000000000000 RSI: 0000000000000006 RDI: ffffffff82075cdb
+> [ 1660.539448][    C0] RBP: ffff88810038fb30 R08: 000001829fdce0a9 R09: 00000000bf076f6e
+> [ 1660.539448][    C0] R10: 0000000071314968 R11: 0000000068a51dbd R12: ffffffff837adc28
+> [ 1660.539448][    C0] R13: ffff88810038fb78 R14: ffff88810038fc34 R15: 0000000000000004
+> [ 1660.539448][ C0] ? _raw_spin_unlock_irqrestore (arch/x86/include/asm/irqflags.h:26 arch/x86/include/asm/irqflags.h:67 arch/x86/include/asm/irqflags.h:127 include/linux/spinlock_api_smp.h:151 kernel/locking/spinlock.c:194) 
+> [ 1660.539448][ C0] crng_make_state (drivers/char/random.c:343) 
+> [ 1660.539448][ C0] _get_random_bytes (drivers/char/random.c:386) 
+> [ 1660.539448][ C0] get_random_u32 (drivers/char/random.c:532 (discriminator 13)) 
+> [ 1660.539448][ C0] __get_random_u32_below (drivers/char/random.c:557) 
+> [ 1660.539448][ C0] get_random_u32_below (include/linux/random.h:91) 
+> [ 1660.539448][ C0] get_rcw_we (lib/reed_solomon/test_rslib.c:187 (discriminator 1)) 
+> [ 1660.539448][ C0] ex_rs_helper (lib/reed_solomon/test_rslib.c:277 lib/reed_solomon/test_rslib.c:331) 
+> [ 1660.539448][ C0] ? vprintk_emit (kernel/printk/printk.c:2312 (discriminator 3)) 
+> [ 1660.539448][ C0] test_rslib_init (lib/reed_solomon/test_rslib.c:360 lib/reed_solomon/test_rslib.c:475 lib/reed_solomon/test_rslib.c:494) 
+> [ 1660.539448][ C0] ? crc64_rocksoft_mod_init (lib/reed_solomon/test_rslib.c:488) 
+> [ 1660.539448][ C0] do_one_initcall (init/main.c:1232) 
+> [ 1660.539448][ C0] kernel_init_freeable (init/main.c:1293 init/main.c:1310 init/main.c:1329 init/main.c:1546) 
+> [ 1660.539448][ C0] ? rest_init (init/main.c:1429) 
+> [ 1660.539448][ C0] kernel_init (init/main.c:1439) 
+> [ 1660.539448][ C0] ret_from_fork (arch/x86/entry/entry_64.S:314) 
+> [ 1660.539448][    C0]  </TASK>
+> [ 1660.539448][    C0] ================================================================================
+> [ 1660.539448][    C0] spinlock_dump: End of queue.
+> [ 1660.539448][    C0] rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+> [ 1660.539448][    C0] rcu: 	(detected by 0, t=105002 jiffies, g=47729, q=35 ncpus=2)
+> [ 1660.539448][    C0] rcu: All QSes seen, last rcu_preempt kthread activity 105002 (4296327522-4296222520), jiffies_till_next_fqs=3, root ->qsmask 0x0
+> [ 1660.539448][    C0] rcu: rcu_preempt kthread starved for 105002 jiffies! g47729 f0x2 RCU_GP_WAIT_FQS(5) ->state=0x0 ->cpu=0
+> [ 1660.539448][    C0] rcu: 	Unless rcu_preempt kthread gets sufficient CPU time, OOM is now expected behavior.
+> [ 1660.539448][    C0] rcu: RCU grace-period kthread stack dump:
+> [ 1660.539448][    C0] task:rcu_preempt     state:R  running task     stack:14320 pid:12    ppid:2      flags:0x00004000
+> [ 1660.539448][    C0] Call Trace:
+> [ 1660.539448][    C0]  <TASK>
+> [ 1660.539448][ C0] __schedule (kernel/sched/core.c:5381 kernel/sched/core.c:6710) 
+> [ 1660.539448][ C0] schedule (arch/x86/include/asm/preempt.h:85 (discriminator 1) kernel/sched/core.c:6787 (discriminator 1)) 
+> [ 1660.539448][ C0] schedule_timeout (include/linux/timer.h:200 kernel/time/timer.c:2168) 
+> [ 1660.539448][ C0] ? __next_timer_interrupt (kernel/time/timer.c:2091) 
+> [ 1660.539448][ C0] rcu_gp_fqs_loop (kernel/rcu/tree.c:1613 (discriminator 13)) 
+> [ 1660.539448][ C0] rcu_gp_kthread (kernel/rcu/tree.c:1815) 
+> [ 1660.539448][ C0] ? rcu_gp_fqs_loop (kernel/rcu/tree.c:1787) 
+> [ 1660.539448][ C0] kthread (kernel/kthread.c:391) 
+> [ 1660.539448][ C0] ? kthread_complete_and_exit (kernel/kthread.c:342) 
+> [ 1660.539448][ C0] ret_from_fork (arch/x86/entry/entry_64.S:314) 
+> [ 1660.539448][    C0]  </TASK>
+> [ 1660.539448][    C0] rcu: Stack dump where RCU GP kthread last ran:
+> [ 1660.539448][    C0] CPU: 0 PID: 1 Comm: swapper/0 Tainted: G        W       TN 6.5.0-rc1-00129-g3d22d912bd03 #1
+> [ 1660.539448][ C0] RIP: 0010:_raw_spin_unlock_irqrestore (include/linux/spinlock_api_smp.h:152 kernel/locking/spinlock.c:194) 
+> [ 1660.539448][ C0] Code: 5e 12 ff 81 e3 00 02 00 00 74 05 e8 12 96 1a ff 9c 58 0f ba e0 09 73 05 e8 97 4a ff ff 48 85 db 74 01 fb 65 ff 0d d3 c8 17 7e <75> 05 0f 1f 44 00 00 5b 41 5c 5d c3 f3 0f 1e fa 55 48 89 e5 53 48
+> All code
+> ========
+>    0:	5e                   	pop    %rsi
+>    1:	12 ff                	adc    %bh,%bh
+>    3:	81 e3 00 02 00 00    	and    $0x200,%ebx
+>    9:	74 05                	je     0x10
+>    b:	e8 12 96 1a ff       	callq  0xffffffffff1a9622
+>   10:	9c                   	pushfq 
+>   11:	58                   	pop    %rax
+>   12:	0f ba e0 09          	bt     $0x9,%eax
+>   16:	73 05                	jae    0x1d
+>   18:	e8 97 4a ff ff       	callq  0xffffffffffff4ab4
+>   1d:	48 85 db             	test   %rbx,%rbx
+>   20:	74 01                	je     0x23
+>   22:	fb                   	sti    
+>   23:	65 ff 0d d3 c8 17 7e 	decl   %gs:0x7e17c8d3(%rip)        # 0x7e17c8fd
+>   2a:*	75 05                	jne    0x31		<-- trapping instruction
+>   2c:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+>   31:	5b                   	pop    %rbx
+>   32:	41 5c                	pop    %r12
+>   34:	5d                   	pop    %rbp
+>   35:	c3                   	retq   
+>   36:	f3 0f 1e fa          	endbr64 
+>   3a:	55                   	push   %rbp
+>   3b:	48 89 e5             	mov    %rsp,%rbp
+>   3e:	53                   	push   %rbx
+>   3f:	48                   	rex.W
+> 
+> Code starting with the faulting instruction
+> ===========================================
+>    0:	75 05                	jne    0x7
+>    2:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+>    7:	5b                   	pop    %rbx
+>    8:	41 5c                	pop    %r12
+>    a:	5d                   	pop    %rbp
+>    b:	c3                   	retq   
+>    c:	f3 0f 1e fa          	endbr64 
+>   10:	55                   	push   %rbp
+>   11:	48 89 e5             	mov    %rsp,%rbp
+>   14:	53                   	push   %rbx
+>   15:	48                   	rex.W
+> [ 1660.539448][    C0] RSP: 0000:ffff88810038fb20 EFLAGS: 00000246
+> [ 1660.539448][    C0] RAX: 0000000000000002 RBX: 0000000000000200 RCX: 000001829fdcdc01
+> [ 1660.539448][    C0] RDX: 0000000000000000 RSI: 0000000000000006 RDI: ffffffff82075cdb
+> [ 1660.539448][    C0] RBP: ffff88810038fb30 R08: 000001829fdce0a9 R09: 00000000bf076f6e
+> [ 1660.539448][    C0] R10: 0000000071314968 R11: 0000000068a51dbd R12: ffffffff837adc28
+> [ 1660.539448][    C0] R13: ffff88810038fb78 R14: ffff88810038fc34 R15: 0000000000000004
+> [ 1660.539448][    C0] FS:  0000000000000000(0000) GS:ffff88842fa00000(0000) knlGS:0000000000000000
+> [ 1660.539448][    C0] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [ 1660.539448][    C0] CR2: ffff88843ffff000 CR3: 000000000323b000 CR4: 00000000000406f0
+> [ 1660.539448][    C0] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> [ 1660.539448][    C0] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> [ 1660.539448][    C0] Call Trace:
+> [ 1660.539448][    C0]  <IRQ>
+> [ 1660.539448][ C0] ? show_regs (arch/x86/kernel/dumpstack.c:479) 
+> [ 1660.539448][ C0] ? dump_cpu_task (kernel/sched/core.c:11472) 
+> [ 1660.539448][ C0] ? rcu_check_gp_kthread_starvation (kernel/rcu/tree_stall.h:549) 
+> [ 1660.539448][ C0] ? print_other_cpu_stall (kernel/rcu/tree_stall.h:652 (discriminator 3)) 
+> [ 1660.539448][ C0] ? rcu_sched_clock_irq (kernel/rcu/tree_stall.h:783 kernel/rcu/tree.c:3863 kernel/rcu/tree.c:2241) 
+> [ 1660.539448][ C0] ? update_process_times (arch/x86/include/asm/preempt.h:27 kernel/time/timer.c:2073) 
+> [ 1660.539448][ C0] ? tick_sched_handle+0x45/0x54 
+> [ 1660.539448][ C0] ? tick_sched_timer (kernel/time/tick-sched.c:1492) 
+> [ 1660.539448][ C0] ? tick_sched_do_timer (kernel/time/tick-sched.c:1479) 
+> [ 1660.539448][ C0] ? __hrtimer_run_queues (kernel/time/hrtimer.c:1690 kernel/time/hrtimer.c:1752) 
+> [ 1660.539448][ C0] ? hrtimer_interrupt (kernel/time/hrtimer.c:1817) 
+> [ 1660.539448][ C0] ? __sysvec_apic_timer_interrupt (arch/x86/include/asm/jump_label.h:27 include/linux/jump_label.h:207 arch/x86/include/asm/trace/irq_vectors.h:41 arch/x86/kernel/apic/apic.c:1116) 
+> [ 1660.539448][ C0] ? sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1109 (discriminator 14)) 
+> [ 1660.539448][    C0]  </IRQ>
+> [ 1660.539448][    C0]  <TASK>
+> [ 1660.539448][ C0] ? asm_sysvec_apic_timer_interrupt (arch/x86/include/asm/idtentry.h:645) 
+> [ 1660.539448][ C0] ? _raw_spin_unlock_irqrestore (arch/x86/include/asm/irqflags.h:26 arch/x86/include/asm/irqflags.h:67 arch/x86/include/asm/irqflags.h:127 include/linux/spinlock_api_smp.h:151 kernel/locking/spinlock.c:194) 
+> [ 1660.539448][ C0] ? _raw_spin_unlock_irqrestore (include/linux/spinlock_api_smp.h:152 kernel/locking/spinlock.c:194) 
+> [ 1660.539448][ C0] crng_make_state (drivers/char/random.c:343) 
+> [ 1660.539448][ C0] _get_random_bytes (drivers/char/random.c:386) 
+> [ 1660.539448][ C0] get_random_u32 (drivers/char/random.c:532 (discriminator 13)) 
+> [ 1660.539448][ C0] __get_random_u32_below (drivers/char/random.c:557) 
+> [ 1660.539448][ C0] get_random_u32_below (include/linux/random.h:91) 
+> [ 1660.539448][ C0] get_rcw_we (lib/reed_solomon/test_rslib.c:187 (discriminator 1)) 
+> [ 1660.539448][ C0] ex_rs_helper (lib/reed_solomon/test_rslib.c:277 lib/reed_solomon/test_rslib.c:331) 
+> [ 1660.539448][ C0] ? vprintk_emit (kernel/printk/printk.c:2312 (discriminator 3)) 
+> [ 1660.539448][ C0] test_rslib_init (lib/reed_solomon/test_rslib.c:360 lib/reed_solomon/test_rslib.c:475 lib/reed_solomon/test_rslib.c:494) 
+> [ 1660.539448][ C0] ? crc64_rocksoft_mod_init (lib/reed_solomon/test_rslib.c:488) 
+> [ 1660.539448][ C0] do_one_initcall (init/main.c:1232) 
+> [ 1660.539448][ C0] kernel_init_freeable (init/main.c:1293 init/main.c:1310 init/main.c:1329 init/main.c:1546) 
+> [ 1660.539448][ C0] ? rest_init (init/main.c:1429) 
+> [ 1660.539448][ C0] kernel_init (init/main.c:1439) 
+> [ 1660.539448][ C0] ret_from_fork (arch/x86/entry/entry_64.S:314) 
+> [ 1660.539448][    C0]  </TASK>
+> [ 1661.397796][    T1]   Testing with caller provided syndrome...
+> [ 1673.580986][    T1]   Testing in-place interface...
+> [ 1686.021233][    T1] Testing beyond error correction capacity...
+> 
+> 
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20230908/202309081258.8d57032f-oliver.sang@intel.com
+> 
+> 
+> 
+> -- 
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
 > 
