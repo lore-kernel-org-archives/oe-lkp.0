@@ -1,301 +1,191 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21D5523CC
-	for <oe-lkp@lists.linux.dev>; Mon, 11 Sep 2023 06:41:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1694414496; x=1725950496;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Ga/mhCirhyf6mgmcnNTlqNHSEDygj9B2TLzLZ3mhEiI=;
-  b=Ik0aJXXqD/Li/3En/WN+GkTMRDw6lBqisUt3QOFIt8E6CgEdVk/d/X8Y
-   8JG0fGtABdRr4htJqTSpOKQOsI8bMi9PlKGmHqNAZzby1qT4Yov9tq99H
-   xDUMcNn/SKs8CLlDxoX6IW5ReYhVKW3/XtL6wssYffsRuSPrC1o9IAMIO
-   vykflNiN3WYk0GelRHLkWamajHDU2eOr26LDboz85slsSQ+vbWusmteqN
-   kyv+cGPoa/KO1kw9XBmBStmZ+2nkEox35gFWziJhikFx1tKM3EwETdNDc
-   iq2a1nC/OF9Ycy62LnNZalz+Bb0uD36GjqSzyht2cEbJqhwOjXjh9dGV8
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10829"; a="380706326"
-X-IronPort-AV: E=Sophos;i="6.02,243,1688454000"; 
-   d="scan'208";a="380706326"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Sep 2023 23:41:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10829"; a="746300043"
-X-IronPort-AV: E=Sophos;i="6.02,243,1688454000"; 
-   d="scan'208";a="746300043"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by fmsmga007.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 10 Sep 2023 23:41:34 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Sun, 10 Sep 2023 23:41:33 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Sun, 10 Sep 2023 23:41:33 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32 via Frontend Transport; Sun, 10 Sep 2023 23:41:33 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.176)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.32; Sun, 10 Sep 2023 23:41:32 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VtOvtvmDJN7JmEHpfsv7jyt0vBqmSBIohp5ZPls4aBFqmA0qmALzbdorl1VzJK/fYCeelo0YQc5EtrL8kU26sUx/4a24Iit5Ckn8cNO2UlQyGcPZJzJloekVjAvLlZG0GcRI5nC66UdTdNb+odvcaJldit6GFYFJBDEHIDNzoBSLHww6BdISOZ5qbgGx4EeNX0zXBdM22fxEnXudfGJmNtaHbNA9/X1yS2cPn+TQGTpHrsQFXAFMLts4HH6U3KsSHaT07CJYwi9tY+VcfFI5Zv4XIzGBKFyiGVJkr/36XOPGKzaWR9RqcizWcwm0/DwfzrKcXGRN9U3RqRV+ZxLKWA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2z7exCmtp+KmLn/rCF6RAq9OhpPOVN3jw5MP306Tjlc=;
- b=JkSsyutHrsIbKJAQEKW0ibpAEdPSGzlm+4detDUiQBaCciYSf1ZGcwIe4uAOJPFPVLlD1hiy9mqAid0DXSZhfPDThObPeqb8mAXq32qt976P1IbPeq9kKBpDRLXwdu3erdnLero+zFVQ8qLnLi6ryFBqv0mDDr1dmUtKagsQoma9LVm7ISjx4eh9G8nsSc9ZGdqXBetzRQIwWz/TFsaaWDwACcWpBV9iR6YutQNC330SBUSu/D352/2IpbVBpCAbvs2ocgrcIZXgJRNUyc5rgeQftvGz7Xv86t86Yg0Ad9rxD8o+QCnC+JlW/7tqtQvE4eAK8z532l6he4+JGjm4mQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
- by CO1PR11MB4849.namprd11.prod.outlook.com (2603:10b6:303:90::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6768.33; Mon, 11 Sep
- 2023 06:41:31 +0000
-Received: from PH8PR11MB6779.namprd11.prod.outlook.com
- ([fe80::73c6:1231:e700:924]) by PH8PR11MB6779.namprd11.prod.outlook.com
- ([fe80::73c6:1231:e700:924%4]) with mapi id 15.20.6768.029; Mon, 11 Sep 2023
- 06:41:31 +0000
-Date: Mon, 11 Sep 2023 14:41:22 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <kvm@vger.kernel.org>,
-	<oliver.sang@intel.com>
-Subject: [intel-tdx:guest-kexec] [x86/kvm]  ba13210a07:
- BUG:unable_to_handle_page_fault_for_address
-Message-ID: <202309111410.32547f17-oliver.sang@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-X-ClientProxiedBy: PS2PR02CA0046.apcprd02.prod.outlook.com
- (2603:1096:300:59::34) To PH8PR11MB6779.namprd11.prod.outlook.com
- (2603:10b6:510:1ca::17)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2EB3D188
+	for <oe-lkp@lists.linux.dev>; Mon, 11 Sep 2023 07:16:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A87CAC433C7;
+	Mon, 11 Sep 2023 07:16:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1694416618;
+	bh=lWO/C3U3yqJl7tGyp46raVBwGBuyZj7w0yX4db1mPx8=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=Xdd4B/wTOAbv4WtkaHdz8hIcZ4t47IDoYOXCjU77wxDiMHSey+J52iTQLul0adktJ
+	 V3J7bD/qZHjFNWYvjy81zuU9seURlGdPVVH3SEe0w9/Z+mUfTKrCNIPXdwxib3oOUa
+	 vgShLAyVEuNC9YKkiZKbuk4TkZeFVKM9xC/eRlCA1x0JDGwMyP3SosIXjzH1dQepNF
+	 FM2qPf+fc/4gITGtfw2l6l24d/QHSXDOi/C2QsAedKAmGrhce9fipEB5XZdqpyUPWc
+	 VUXXtRvAaE7Vvo0HgTcIyCJjvzFFCKQdBEsU5eMsq6NUmEp1M6p72CTYfcFExkPZAS
+	 LzBU/RAfTgIiw==
+Message-ID: <d88625ca-9bc7-cf33-2fa7-9e71d4153e7f@kernel.org>
+Date: Mon, 11 Sep 2023 16:16:55 +0900
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|CO1PR11MB4849:EE_
-X-MS-Office365-Filtering-Correlation-Id: c4a7b1cb-d152-4510-ae6b-08dbb29221d5
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: dQPmFK5NQ+IeFrI9E/Duwt/w2QDSHFAwn8u+syFCG5Ha8xDKNSE3CvCk8CLvylZ5U0MmILha0vQjdSf/ZMbO37z7wsnKsv0m3Z0l3etllzenxZeQxou/xsPaZH5+aaQ4KdHBm/6aJQuJvW0Y+rCwsgVV2uUMVIaSQ6haATT0freedy+DcC35QnwJBddzWrRiAoFCVrCwsF05cK6IPOhUdLFiUgTr9UkmDJs9Y2fRfqmccTRzoCks4i7HRvRSLqN/bR9rbZ9q/FdISyYO2qQWOPuBqrcR9VAHZSyDfVNV3ezINruPK8CKKWp3x6AnxUrLOICnDXxxxaDkog6kamMSTyUjLyA6FNrAv2GLf+HOhT+qfWqtxszF8HHCbAih7U++swk09pWZSyYJ/7YMQlauG4qqSIYpnyT7WUJEPE5Atshyk8GXb+2dz6JvX4qIo/8Pbv4BqZkllSt1mON5CkZOwwpp2h5nl0Zt/cWyM5X7VA3OlAU5xYWKXROYlt6u1pCpBTjJfjdWMgPO+PzESQw46eSeIrsrAYTWxNdCQQI8Q6RSPMHTs2d33pf9LSKMJ4Zjww2xaoAzzQJf7q2uJJ4XIg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(136003)(346002)(396003)(366004)(39860400002)(186009)(1800799009)(451199024)(41300700001)(6666004)(6486002)(6506007)(82960400001)(36756003)(86362001)(38100700002)(1076003)(2616005)(2906002)(966005)(45080400002)(6512007)(83380400001)(478600001)(316002)(8936002)(8676002)(4326008)(5660300002)(26005)(6916009)(66946007)(66556008)(66476007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?UQD8KE1SNXi+B+Xl1vIlst6NpmX/os0Va0veYDYfFuj07b24aSl2kLTXZrJu?=
- =?us-ascii?Q?UBstP18HUV5hPs1R+xZiKc9+/QwD9yCpv5eK+eEASCDTGRVs43FOVAGz2xtw?=
- =?us-ascii?Q?mWJ0Hq+qnjt2lNM+oMb28d1HiLNdOUOLF7IYAp6cTgIhWIJ0Qi8baucto8BM?=
- =?us-ascii?Q?/iJYn5YaA2q9EE4hh9/9JWXFGpefuBQx+2YxgCnYHe0sjNMnazWSvUrLtEH0?=
- =?us-ascii?Q?kmA43V8PjfTeFFcmsk6aEjFrroUJKo+NiHgF73gVpRW5eZtrtTCkb5BqDtnG?=
- =?us-ascii?Q?zULr/VsnGy5Xp7MZ+Xk0kSy2YrwVBLyjFdKECeeZvLN8IxWU3jNqiBqJs/I1?=
- =?us-ascii?Q?sQNxhtxkGpOaLp1dcvac9gHyAAORmJu2fk9WB/OwIFmIURpOjxEiaQNdF8GB?=
- =?us-ascii?Q?vht6nvgVNk7hRNaULkKqhrWqdMk3MstGjUDa+Y8W9w4guXxZHgp77IVyW5xq?=
- =?us-ascii?Q?Pi9qK2WRfO9RX9mBFm1qaeHVhVEvGXoOrthkmArnUrV45sAIcfJw7hSmkO2c?=
- =?us-ascii?Q?0YRY/W8PJfnHHF/jLol8fhAaj6opfmYZDTVdsntECZLizm4uM2PSC+e58ZG0?=
- =?us-ascii?Q?WNo/Q+GpOHbVpLuSgit+z3HE9Ja72vFvltIhG2e+vd2Naaazm5cau0LywUev?=
- =?us-ascii?Q?PAycXfBjtb7vLvGZbxv87Nb4pf+O3nYtz5+HtksMeXTyiNd26ZW1wNbw0yrg?=
- =?us-ascii?Q?DZ46tEKS28m2a0kZVY03u0BR3IxrktaS1guinlbMS/1/apRyZnSPB7dOJ7nX?=
- =?us-ascii?Q?MOXRqJLU5nLrm+PngQbXp5Yzi0uE1klPRGYDu0XE1i0YugTR2hyJNKCxfJ5T?=
- =?us-ascii?Q?mhS3Uhumu4jO0iUeNvX4UoU1anSeIizTxlqXNt5B472e+0JSyuSYHzQ7msjB?=
- =?us-ascii?Q?7ela2+1HABadsVox+7jkB07nuroqmjeF5NX7CIl0xf/+eUbKrsY/yUHhUsRi?=
- =?us-ascii?Q?9UncBX73G3pt6yjzSmzVeEUP7Kx8OVnOCG4eKJLC9yOXGTxd530DQ/0mAbE5?=
- =?us-ascii?Q?xiTZ6I0Llh9tZ71rMJH3mbWEgokR8fuiilS2FQ8w2MmLg57Uci3jbHazQ9yp?=
- =?us-ascii?Q?3GxV8sgQIKi4dZiqlznrboTNhm/TD7b/cLiJLskNJNlDNJYgbI8EtfBcrgbE?=
- =?us-ascii?Q?wVWg6Aa5yAaLJV8y9csG1YBgdcIuuKI9IHaDKl/FYSN9/v2KNsVFsLJfhHLO?=
- =?us-ascii?Q?CZD9FNmCdLnKfjeMx+Oqay9ybXB7JFTEfeQPcqZIph6q6VDztpPkii25cHAt?=
- =?us-ascii?Q?XjL2Wj9ZdbkfaYffnqLtlR32AFIdWDd2+5LRZTxjRqozf6TjcBa9b/I+Hi/v?=
- =?us-ascii?Q?I8AZkwgAX5ctNvg1wOGwh9nIG+2YDNW2F/HEyaZQsVvZXEUFE9PRzTlymfvC?=
- =?us-ascii?Q?4j9bqnhg/k1ohYe/fD+72joerPh3iN1jAlMOADcTgcp2U2iLjmBs7+FtnFZ1?=
- =?us-ascii?Q?suAP0+ZgZ+1bx7yw1PVOdwnnRdz22+Nxajbp8alzGAgFULp7AV/F0A9xMval?=
- =?us-ascii?Q?EKv+yfGMksyNEqWn40uGkNHa9Pahp2euueK2uJ5KUnLMfHzl7YEwoFa60M0e?=
- =?us-ascii?Q?KQKksfFroSd3KiMlf73HaiWpay/3Fqtaaaz4Scq4O1ZSfG0qSe1bhPqo+OSZ?=
- =?us-ascii?Q?og=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: c4a7b1cb-d152-4510-ae6b-08dbb29221d5
-X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB6779.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Sep 2023 06:41:30.7994
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: IMiJ/TRqak+orbf5nca1axUfNRhHWBjP9BkRVLNNhBRlV54Pwn3+Kve0Kr9U390If9H0Bn499rNeXoCMo/Qp8g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR11MB4849
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.13.0
+Subject: Re: [PATCH v4] ata: libata-eh: Honor all EH scheduling requests
+Content-Language: en-US
+To: Niklas Cassel <Niklas.Cassel@wdc.com>,
+ kernel test robot <oliver.sang@intel.com>
+Cc: "linan666@huaweicloud.com" <linan666@huaweicloud.com>,
+ "oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>,
+ "lkp@intel.com" <lkp@intel.com>, luojian <luojian5@huawei.com>,
+ "linux-ide@vger.kernel.org" <linux-ide@vger.kernel.org>,
+ "htejun@gmail.com" <htejun@gmail.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linan122@huawei.com" <linan122@huawei.com>,
+ "yukuai3@huawei.com" <yukuai3@huawei.com>,
+ "yi.zhang@huawei.com" <yi.zhang@huawei.com>,
+ "houtao1@huawei.com" <houtao1@huawei.com>,
+ "yangerkun@huawei.com" <yangerkun@huawei.com>
+References: <20230906084212.1016634-1-linan666@huaweicloud.com>
+ <202309071557.3a90e7a8-oliver.sang@intel.com> <ZPo6fXqTbmwDyopr@x1-carbon>
+From: Damien Le Moal <dlemoal@kernel.org>
+Organization: Western Digital Research
+In-Reply-To: <ZPo6fXqTbmwDyopr@x1-carbon>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+On 9/8/23 06:02, Niklas Cassel wrote:
+> On Thu, Sep 07, 2023 at 03:43:19PM +0800, kernel test robot wrote:
+>>
+>>
+>> Hello,
+>>
+>> kernel test robot noticed "kernel_BUG_at_drivers/ata/libata-sff.c" on:
+>>
+>> commit: d3d099d5c2dd38db84abd96df39f9f0828c16b7b ("[PATCH v4] ata: libata-eh: Honor all EH scheduling requests")
+>> url: https://github.com/intel-lab-lkp/linux/commits/linan666-huaweicloud-com/ata-libata-eh-Honor-all-EH-scheduling-requests/20230906-164907
+>> base: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git 65d6e954e37872fd9afb5ef3fc0481bb3c2f20f4
+>> patch link: https://lore.kernel.org/all/20230906084212.1016634-1-linan666@huaweicloud.com/
+>> patch subject: [PATCH v4] ata: libata-eh: Honor all EH scheduling requests
+>>
+>> in testcase: boot
+>>
+>> compiler: gcc-12
+>> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+> 
+> Unfortunately the problem reported by the kernel test robot is very real.
+> I could reproduce without too much effort in QEMU.
+> 
+> The problem is basically that we cannot simply perform a host_eh_scheduled--;
+> in ata_std_end_eh().
+> 
+> ata_std_end_eh() is called at the end of ata_scsi_port_error_handler(),
+> so it is called once every time ata_scsi_port_error_handler() is called.
+> 
+> However, ata_scsi_port_error_handler() will be called by SCSI EH each
+> time SCSI wakes up.
+> 
+> SCSI EH will sleep as long as:
+> if ((shost->host_failed == 0 && shost->host_eh_scheduled == 0) ||
+>                     shost->host_failed != scsi_host_busy(shost)) {
+> 	schedule();
+> 	continue;
+> }
+> 
+> 
+> The methods in libata which we use to trigger EH are:
+> 
+> 1) ata_std_sched_eh(), which calls scsi_schedule_eh(), which does
+> host_eh_scheduled++;
+> 
+> 2) ata_qc_schedule_eh(), which will end up in scsi_timeout,
+> which calls scsi_eh_scmd_add() which does:
+> host_failed++;
+> 
+> 
+> So before this patch, setting host_eh_scheduled = 0; in ata_std_end_eh()
+> makes us say that works because it only negates the EH scheduled by
+> ata_std_sched_eh().
+> 
+> However, if we do host_eh_scheduled--, then if the EH was triggered by
+> ata_qc_schedule_eh(), then host_eh_scheduled will decrease < 0,
+> which will trigger SCSI EH to wake up again :)
+> 
+> We could do something like only decreasing host_eh_scheduled if it is > 0.
+> The QCs added to EH using ata_qc_schedule_eh() will be handled by
+> ata_eh_finish(), which will iterate over all QCs owned by EH, and will
+> either fail or retry each QC. After that scsi_error_handler() has finished
+> the call to eh_strategy_handler() (ata_scsi_error()) it will unconditionally
+> set host_failed to 0:
+> https://github.com/torvalds/linux/blob/v6.5/drivers/scsi/scsi_error.c#L2331-L2337
+> 
+> So something like this on top of the patch in $subject:
+> 
+> diff --git a/drivers/ata/libata-eh.c b/drivers/ata/libata-eh.c
+> index 2d5ecd68b7e0..9ab12d7f6d9f 100644
+> --- a/drivers/ata/libata-eh.c
+> +++ b/drivers/ata/libata-eh.c
+> @@ -952,7 +952,13 @@ EXPORT_SYMBOL_GPL(ata_std_sched_eh);
+>   */
+>  void ata_std_end_eh(struct ata_port *ap)
+>  {
+> -       ap->scsi_host->host_eh_scheduled--;
+> +       struct Scsi_Host *host = ap->scsi_host;
+> +       unsigned long flags;
+> +
+> +       spin_lock_irqsave(host->host_lock, flags);
+> +       if (host->host_eh_scheduled > 0)
+> +               host->host_eh_scheduled--;
+> +       spin_unlock_irqrestore(host->host_lock, flags);
+>  }
+>  EXPORT_SYMBOL(ata_std_end_eh);
+> 
+> 
+> With that incremental patch, I can no longer reproduce the crash reported
+> by the kernel test robot in my QEMU setup.
+
+I am not confident that playing with host_eh_schedule count is the right
+approach. A better solution may be to change the timing of clearing
+ATA_PFLAG_EH_PENDING. Right now, this is done on entry to
+ata_scsi_port_error_handler(), unconditionally. So ata_eh_reset() should not
+need to clear the flag again. If we remove that, then a new interrupt received
+after ata_eh_thaw() and setting EH_PENDING would be cought by the retry loop in
+ata_scsi_port_error_handler(), which would run again ap->ops->error_handler(ap).
+
+So let's try this fix instead:
+
+diff --git a/drivers/ata/libata-eh.c b/drivers/ata/libata-eh.c
+index 159ba6ba19eb..d1d081aa0c95 100644
+--- a/drivers/ata/libata-eh.c
++++ b/drivers/ata/libata-eh.c
+@@ -2807,7 +2807,6 @@ int ata_eh_reset(struct ata_link *link, int classify,
+        memset(&link->eh_info, 0, sizeof(link->eh_info));
+        if (slave)
+                memset(&slave->eh_info, 0, sizeof(link->eh_info));
+-       ap->pflags &= ~ATA_PFLAG_EH_PENDING;
+        spin_unlock_irqrestore(link->ap->lock, flags);
+
+        if (ata_port_is_frozen(ap))
+
+Li,
+
+Can you please test this ?
+
+> 
+> 
+> 
+> It might be worth mentioning that the race window for the bug that the patch
+> in $subject is fixing, should be much smaller after this patch is in:
+> https://lore.kernel.org/linux-ide/20230907081710.4946-1-Chloe_Chen@asmedia.com.tw/
+> 
+> Li Nan, perhaps you could see if you can still reproduce your original
+> problem with the patch from the ASMedia guys?
 
 
-
-Hello,
-
-kernel test robot noticed "BUG:unable_to_handle_page_fault_for_address" on:
-
-commit: ba13210a07cb255812dff0e660a6978923724b0d ("x86/kvm: Do not try to disable kvmclock if it was not enabled")
-https://github.com/intel/tdx.git guest-kexec
-
-in testcase: rcutorture
-version: 
-with following parameters:
-
-	runtime: 300s
-	test: cpuhotplug
-	torture_type: tasks
-
-
-
-compiler: gcc-12
-test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202309111410.32547f17-oliver.sang@intel.com
-
-
-[  183.786472][   T21] BUG: unable to handle page fault for address: ffffffff85f6e650
-[  183.786929][   T21] #PF: supervisor read access in kernel mode
-[  183.787244][   T21] #PF: error_code(0x0000) - not-present page
-[  183.787556][   T21] PGD 4492067 P4D 4492067 PUD 4493063 PMD 800ffffffa1ff062
-[  183.787959][   T21] Oops: 0000 [#1] SMP KASAN PTI
-[  183.788216][   T21] CPU: 1 PID: 21 Comm: cpuhp/1 Tainted: G        W          6.5.0-00004-gba13210a07cb #1
-[  183.788723][   T21] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-[ 183.789263][ T21] RIP: 0010:kvmclock_disable (arch/x86/kernel/kvmclock.c:198 (discriminator 1)) 
-[ 183.789557][ T21] Code: 00 b8 01 00 00 00 5b 31 d2 31 ff c3 cc cc cc cc e8 58 a2 78 00 eb cb 66 0f 1f 44 00 00 48 83 ec 08 e8 67 ec ff ff 84 c0 74 0a <8b> 05 2d ee e2 04 85 c0 75 13 48 83 c4 08 31 c0 31 d2 31 c9 31 f6
-All code
-========
-   0:	00 b8 01 00 00 00    	add    %bh,0x1(%rax)
-   6:	5b                   	pop    %rbx
-   7:	31 d2                	xor    %edx,%edx
-   9:	31 ff                	xor    %edi,%edi
-   b:	c3                   	retq   
-   c:	cc                   	int3   
-   d:	cc                   	int3   
-   e:	cc                   	int3   
-   f:	cc                   	int3   
-  10:	e8 58 a2 78 00       	callq  0x78a26d
-  15:	eb cb                	jmp    0xffffffffffffffe2
-  17:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
-  1d:	48 83 ec 08          	sub    $0x8,%rsp
-  21:	e8 67 ec ff ff       	callq  0xffffffffffffec8d
-  26:	84 c0                	test   %al,%al
-  28:	74 0a                	je     0x34
-  2a:*	8b 05 2d ee e2 04    	mov    0x4e2ee2d(%rip),%eax        # 0x4e2ee5d		<-- trapping instruction
-  30:	85 c0                	test   %eax,%eax
-  32:	75 13                	jne    0x47
-  34:	48 83 c4 08          	add    $0x8,%rsp
-  38:	31 c0                	xor    %eax,%eax
-  3a:	31 d2                	xor    %edx,%edx
-  3c:	31 c9                	xor    %ecx,%ecx
-  3e:	31 f6                	xor    %esi,%esi
-
-Code starting with the faulting instruction
-===========================================
-   0:	8b 05 2d ee e2 04    	mov    0x4e2ee2d(%rip),%eax        # 0x4e2ee33
-   6:	85 c0                	test   %eax,%eax
-   8:	75 13                	jne    0x1d
-   a:	48 83 c4 08          	add    $0x8,%rsp
-   e:	31 c0                	xor    %eax,%eax
-  10:	31 d2                	xor    %edx,%edx
-  12:	31 c9                	xor    %ecx,%ecx
-  14:	31 f6                	xor    %esi,%esi
-[  183.790582][   T21] RSP: 0018:ffffc9000016fd90 EFLAGS: 00210002
-[  183.790903][   T21] RAX: 0000000040000001 RBX: 0000000000000001 RCX: 0000000000000000
-[  183.791318][   T21] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-[  183.791731][   T21] RBP: ffff8883aee27300 R08: 0000000000000000 R09: 0000000000000000
-[  183.792143][   T21] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000001
-[  183.792556][   T21] R13: ffffffff84550898 R14: ffff8883aee27328 R15: ffffffff84550888
-[  183.792970][   T21] FS:  0000000000000000(0000) GS:ffff8883aee00000(0000) knlGS:0000000000000000
-[  183.793435][   T21] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  183.793785][   T21] CR2: ffffffff85f6e650 CR3: 000000012e91c000 CR4: 00000000000406a0
-[  183.794240][   T21] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[  183.794652][   T21] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[  183.795063][   T21] Call Trace:
-[  183.795239][   T21]  <TASK>
-[ 183.795394][ T21] ? __die (arch/x86/kernel/dumpstack.c:421 arch/x86/kernel/dumpstack.c:434) 
-[ 183.795603][ T21] ? page_fault_oops (arch/x86/mm/fault.c:707) 
-[ 183.795864][ T21] ? show_fault_oops (arch/x86/mm/fault.c:635) 
-[ 183.796124][ T21] ? kernelmode_fixup_or_oops (arch/x86/mm/fault.c:758) 
-[ 183.796421][ T21] ? exc_page_fault (arch/x86/mm/fault.c:1484 arch/x86/mm/fault.c:1542) 
-[ 183.796670][ T21] ? asm_exc_page_fault (arch/x86/include/asm/idtentry.h:570) 
-[ 183.796938][ T21] ? kvmclock_disable (arch/x86/kernel/kvmclock.c:198 (discriminator 1)) 
-[ 183.797193][ T21] kvm_cpu_down_prepare (arch/x86/kernel/kvm.c:714 (discriminator 1)) 
-[ 183.797461][ T21] cpuhp_invoke_callback (include/linux/jump_label.h:270 include/trace/events/cpuhp.h:65 kernel/cpu.c:196) 
-[ 183.797746][ T21] ? io_schedule_timeout (kernel/sched/core.c:6592) 
-[ 183.798036][ T21] ? cpuhp_thread_fun (kernel/cpu.c:109 kernel/cpu.c:1094) 
-[ 183.798303][ T21] cpuhp_thread_fun (kernel/cpu.c:1080) 
-[ 183.798561][ T21] ? __cpuhp_state_remove_instance (kernel/cpu.c:1037) 
-[ 183.798884][ T21] ? smpboot_thread_fn (kernel/smpboot.c:112) 
-[ 183.799152][ T21] ? smpboot_thread_fn (kernel/smpboot.c:112) 
-[ 183.799416][ T21] smpboot_thread_fn (kernel/smpboot.c:164 (discriminator 4)) 
-[ 183.799678][ T21] ? sort_range (kernel/smpboot.c:109) 
-[ 183.799906][ T21] kthread (kernel/kthread.c:389) 
-[ 183.800123][ T21] ? kthread_complete_and_exit (kernel/kthread.c:346) 
-[ 183.800418][ T21] ret_from_fork (arch/x86/kernel/process.c:151) 
-[ 183.800664][ T21] ? kthread_complete_and_exit (kernel/kthread.c:346) 
-[ 183.800959][ T21] ret_from_fork_asm (arch/x86/entry/entry_64.S:312) 
-[  183.801216][   T21]  </TASK>
-[  183.801379][   T21] Modules linked in: rcutorture torture ppdev crc32_pclmul polyval_clmulni input_leds led_class aesni_intel rtc_cmos parport_pc drm drm_panel_orientation_quirks
-[  183.802235][   T21] CR2: ffffffff85f6e650
-[  183.802457][   T21] ---[ end trace 0000000000000000 ]---
-[ 183.802741][ T21] RIP: 0010:kvmclock_disable (arch/x86/kernel/kvmclock.c:198 (discriminator 1)) 
-[ 183.803026][ T21] Code: 00 b8 01 00 00 00 5b 31 d2 31 ff c3 cc cc cc cc e8 58 a2 78 00 eb cb 66 0f 1f 44 00 00 48 83 ec 08 e8 67 ec ff ff 84 c0 74 0a <8b> 05 2d ee e2 04 85 c0 75 13 48 83 c4 08 31 c0 31 d2 31 c9 31 f6
-All code
-========
-   0:	00 b8 01 00 00 00    	add    %bh,0x1(%rax)
-   6:	5b                   	pop    %rbx
-   7:	31 d2                	xor    %edx,%edx
-   9:	31 ff                	xor    %edi,%edi
-   b:	c3                   	retq   
-   c:	cc                   	int3   
-   d:	cc                   	int3   
-   e:	cc                   	int3   
-   f:	cc                   	int3   
-  10:	e8 58 a2 78 00       	callq  0x78a26d
-  15:	eb cb                	jmp    0xffffffffffffffe2
-  17:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
-  1d:	48 83 ec 08          	sub    $0x8,%rsp
-  21:	e8 67 ec ff ff       	callq  0xffffffffffffec8d
-  26:	84 c0                	test   %al,%al
-  28:	74 0a                	je     0x34
-  2a:*	8b 05 2d ee e2 04    	mov    0x4e2ee2d(%rip),%eax        # 0x4e2ee5d		<-- trapping instruction
-  30:	85 c0                	test   %eax,%eax
-  32:	75 13                	jne    0x47
-  34:	48 83 c4 08          	add    $0x8,%rsp
-  38:	31 c0                	xor    %eax,%eax
-  3a:	31 d2                	xor    %edx,%edx
-  3c:	31 c9                	xor    %ecx,%ecx
-  3e:	31 f6                	xor    %esi,%esi
-
-Code starting with the faulting instruction
-===========================================
-   0:	8b 05 2d ee e2 04    	mov    0x4e2ee2d(%rip),%eax        # 0x4e2ee33
-   6:	85 c0                	test   %eax,%eax
-   8:	75 13                	jne    0x1d
-   a:	48 83 c4 08          	add    $0x8,%rsp
-   e:	31 c0                	xor    %eax,%eax
-  10:	31 d2                	xor    %edx,%edx
-  12:	31 c9                	xor    %ecx,%ecx
-  14:	31 f6                	xor    %esi,%esi
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20230911/202309111410.32547f17-oliver.sang@intel.com
-
-
+> 
+> However, even with the ASMedia patch, it should still be theoretically
+> possible to get an error irq after ata_eh_reset() has called ahci_thaw(),
+> so I suppose that this patch still makes some sense...
+> 
+> 
+> Kind regards,
+> Niklas
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Damien Le Moal
+Western Digital Research
 
