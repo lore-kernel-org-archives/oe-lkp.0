@@ -1,174 +1,108 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B75C5179A1
-	for <oe-lkp@lists.linux.dev>; Tue, 12 Sep 2023 13:19:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1694524767; x=1726060767;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=HG6MCGkzzq79j1ZlD6pEW84nCYH28gpr5UOFoOC1HRA=;
-  b=iUaugDspJQR/uiG7pSQe11L3mQgHqz/q2wp8jv07xiXeqQ9e8qypIdZI
-   Mdl9RQC5LtnbGGPxNYMrnNfmYeNmWFv6Ztx5fPSAgK10fJ5gA1Y9TfonW
-   ewWWSumoD/gst4h63zMzqSnSzdDGK0VuBgWjN2F1Jh4kripIHbgbMnAk9
-   i+Gp98oQo56TsrrItRL80+J3/5cdc96dgPzaPgzBEAiFRNrhXqk44sVez
-   VAaMWyH7bkQUPlUjLRvEHKk4c8zVshSIuIWeNiDFK0CXCq3flwFWewlMJ
-   rpY3x86bNswqjIvXgghqzSAhX8qx+ZmHZJh+U05ME67AROZ8jPhJ4wtUh
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10831"; a="381071153"
-X-IronPort-AV: E=Sophos;i="6.02,139,1688454000"; 
-   d="scan'208";a="381071153"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2023 06:19:24 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10831"; a="990499510"
-X-IronPort-AV: E=Sophos;i="6.02,139,1688454000"; 
-   d="scan'208";a="990499510"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmsmga006.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 12 Sep 2023 06:19:24 -0700
-Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Tue, 12 Sep 2023 06:19:23 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32 via Frontend Transport; Tue, 12 Sep 2023 06:19:23 -0700
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.57.46) by
- edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.32; Tue, 12 Sep 2023 06:19:23 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Et2ghq9ewBk7FK1hncQykwTXqHC5BjcoB7x+BqiURB5uoECfOux23LSvZB4gN4vGYq1xJOQ2dtlZPEiPM2l7qskb3IiynrV44focABJ+TtHRBCCbAlJnb44bi1GJSWAhlo2Dj+5xulsZf3qWmPaz2P7OaQFrowYbQoMvMgPzZD7fZara00LUeWHo0/v2/ZBgrUyD3Ys4jIU5hyrMRFe2hVXF7TGD3pyKJRRFsEeXh+PHKXamMTJpFSRJhCRl2J4iR6rJWnzFSkS00rpI3XStcan5HXavSAjHuDIRjvB4KizRDDALfEt93KNXVEKUIYb7WbKlmQfw4gsxFF+WmacImg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hV/Eayf1fWoL+oxARHV6slrGWnK3Da+Ti41Ara72mNo=;
- b=gcXbYvXq+8DCyrIjLIjXUWthlTQdWXTpsO/4Ma+cPH48pmVuxBDJd9h/P3wEFFabmDXruZXkU/oGMc+uyXRXtJhzF8hmE7vRPwGb65lP1R3cD4bEiARBMZej0VLLItGGLvgF6ui2ozWBstvpHO4StvAq3EWjWuvbkQgkaLrkcCH1EZyGdqH3oRQ5N1D7KEdhmqPCgFLWMDfryrUkmG82ta+B2BWP5vhIIS4h+wEWRGXLYsJ3uUpYhf8zwo3IHGVeKY6eBOlYCyplR6QA6cOLDrosizDERQWKGorLH5X6QlBXt4Bmdvsoh/PzCnHDOrIuh2UzElitNWL0UpLquXNb1w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
- by BN9PR11MB5337.namprd11.prod.outlook.com (2603:10b6:408:136::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6768.37; Tue, 12 Sep
- 2023 13:19:22 +0000
-Received: from PH8PR11MB6779.namprd11.prod.outlook.com
- ([fe80::73c6:1231:e700:924]) by PH8PR11MB6779.namprd11.prod.outlook.com
- ([fe80::73c6:1231:e700:924%4]) with mapi id 15.20.6768.029; Tue, 12 Sep 2023
- 13:19:21 +0000
-Date: Tue, 12 Sep 2023 21:19:11 +0800
-From: Oliver Sang <oliver.sang@intel.com>
-To: Chuck Lever III <chuck.lever@oracle.com>
-CC: "oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>, kernel test robot
-	<lkp@intel.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	Christian Brauner <brauner@kernel.org>, linux-mm <linux-mm@kvack.org>,
-	"ying.huang@intel.com" <ying.huang@intel.com>, "feng.tang@intel.com"
-	<feng.tang@intel.com>, "fengwei.yin@intel.com" <fengwei.yin@intel.com>,
-	<oliver.sang@intel.com>
-Subject: Re: [linus:master] [shmem]  a2e459555c:  aim9.disk_src.ops_per_sec
- -19.0% regression
-Message-ID: <ZQBlT7NYfHldWs0t@xsang-OptiPlex-9020>
-References: <202309081306.3ecb3734-oliver.sang@intel.com>
- <C85F44FD-BC7D-421B-9585-C5FDFAEA9400@oracle.com>
- <ZP++GV9WURg1GhoY@xsang-OptiPlex-9020>
- <84984801-F885-4739-B4B3-DE8DE4ABE378@oracle.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <84984801-F885-4739-B4B3-DE8DE4ABE378@oracle.com>
-X-ClientProxiedBy: SG2PR06CA0202.apcprd06.prod.outlook.com (2603:1096:4:1::34)
- To PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7A5118F49;
+	Tue, 12 Sep 2023 13:50:59 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C146EC15;
+	Tue, 12 Sep 2023 06:51:35 -0700 (PDT)
+Received: from e125769.cambridge.arm.com (e125769.cambridge.arm.com [10.1.196.26])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 642633F5A1;
+	Tue, 12 Sep 2023 06:50:56 -0700 (PDT)
+From: Ryan Roberts <ryan.roberts@arm.com>
+To: Shuah Khan <shuah@kernel.org>,
+	Tom Rix <trix@redhat.com>,
+	kernel test robot <oliver.sang@intel.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Mark Brown <broonie@kernel.org>,
+	David Hildenbrand <david@redhat.com>,
+	Florent Revest <revest@chromium.org>,
+	=?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>,
+	John Hubbard <jhubbard@nvidia.com>,
+	Peter Xu <peterx@redhat.com>
+Cc: Ryan Roberts <ryan.roberts@arm.com>,
+	linux-kselftest@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	llvm@lists.linux.dev,
+	oe-lkp@lists.linux.dev,
+	lkp@intel.com
+Subject: [PATCH v1] selftests: Link libasan statically for tests with -fsanitize=address
+Date: Tue, 12 Sep 2023 14:50:48 +0100
+Message-Id: <20230912135048.1755771-1-ryan.roberts@arm.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|BN9PR11MB5337:EE_
-X-MS-Office365-Filtering-Correlation-Id: 70bfd686-a8e5-4020-2f60-08dbb392e083
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: zj9ZuQc7s8+cVRwB9bO4OzrtlUT4fksY0ZYhjnFw0ri4ffbK6VeLScIrNnPXkN8qVosajkPVyDn5hemC818mS0d4Ka8RGyJ3vtyIifYIcSiEm/6kAi5nJ/vWorZfsFQVeTZVvOKRfhJlZDaPdEZT9lAV5OFR30Li/MX+j7rRUXvoooRNV3H9uDzuIBEu3O27dhMvVHdZmGT2RqGCSv49RhwMYprBYIwEo4cT1+AXI3smtV8vUzYmR13yVcOPj+2JalgYX6kNz7yjAjiJz/rCptZjxM03I9ylJIPgy4IFqHzEnaJmpIsPHRJIhuFQnZHz2MSS94KD+dGGGnk+fCgEDC2/4AhE/fbqI9k7fmbFL+oWMh0ebnKbdPlxFWhvTX4RVXhAMsWXLP/wzdXKJDLOR7sJhml5I9jRFWis+/p4Or38Xv8TsRClbW//V3KvhKb5z52E2ry43OqoTG1N58//aBw55wfYoANp4RqkXITRYZHswtaoaz01KEzW/Gqb62MR4LUv3JcLPc01FAVHSQdw2C7T3Z42stfqtsmSeQ7lPpB3ACUkAn5EmLR2eladKITt
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(7916004)(136003)(366004)(396003)(376002)(346002)(39860400002)(451199024)(186009)(1800799009)(83380400001)(66946007)(54906003)(41300700001)(66556008)(6506007)(6486002)(107886003)(26005)(6666004)(82960400001)(8936002)(8676002)(66476007)(4326008)(44832011)(6916009)(316002)(5660300002)(478600001)(38100700002)(86362001)(4744005)(2906002)(33716001)(9686003)(6512007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?CDwMRdzupi+fiJySiZPGx8x+fJBhdq+Ht0pfgy530W62NvNEwu0SmvWxaa7G?=
- =?us-ascii?Q?jsbbkUuN0MQzxL4R+x7kbKLMNA7Tgda6QoXeQE7OhUh3D2hGtDEz27kR/xne?=
- =?us-ascii?Q?T5LOn56tP0KHrRAE6/cu2LBCREjMEWFKN43E9s9R4DJvf89W3Fy4q1ohYmT/?=
- =?us-ascii?Q?mzQ7wtndeaCPwNn3tawkrwRoGaexxFTsnMnUHdYf9P3MTc+U4ny8SEj5djuk?=
- =?us-ascii?Q?22WKoIkl/tT76U95BDRbCeBYzhOhLeYAsyUyiDrMvhbXsmw7C2VGN5RmgeVw?=
- =?us-ascii?Q?lSNQdrnHuHNvu/9aSkQ1UKDfHGJ15mMYWqJBWzlawAwrzTvLFHainfkfwbph?=
- =?us-ascii?Q?ojaa7cb1JBPWkoqEesH2sB95YdhuyL1OYxkq6ES1xdkh2BbziVxJQhsmOyhz?=
- =?us-ascii?Q?Ge7Lic5EBcN9Zsb+pbcyAv1NvkHgByCBtMrBWCM2OLSrzk2KV3Am4eqzUS4y?=
- =?us-ascii?Q?bLJeq2t5p2JgEEHD5yx1+p1u+l34UVVi56jPHw5RC2WgIGJTAGQPcmoUdVeS?=
- =?us-ascii?Q?OWZDP3ArUQhgCcjtEVqLvc+LHpOv2M3thT58we4fTuc+Cm5O+3W5lksmbzWN?=
- =?us-ascii?Q?M3YBGFXJx3rPm0bFSSz9fSJlcMrRHwXdZiHnudniN1foiyvX7l5WtHNzUy0i?=
- =?us-ascii?Q?v/+MPwBlXw1rW/sprHmr0+MVtUi+4unZKelMatSNLQ4ZhSmgmtfA9kCRcwpD?=
- =?us-ascii?Q?g81cP3wyCucMVAgCFtxr4DZCqUREpp5IPYg5axVHsZmtK8XMfFwnfEwEkUMD?=
- =?us-ascii?Q?QXtrPtirBPx3WS2fM09XqOjwYg4IFug1WVWrLLwZAAsGwMDM3xyfK6MjQNAI?=
- =?us-ascii?Q?96yfGvFGM8D0MzPYIjEzpScta9xXoorAvnFKpc/s0kRVQzN1CrH2DtepuokO?=
- =?us-ascii?Q?kKaSVaoxYWnV5doA7aC0AZmn0yDf848AlYovj0BENgqgiedXB4z9bhk7iZsk?=
- =?us-ascii?Q?3+qYNqVGYfPCbj+uLQMxIHqcp3AhRJIf2PTuTGbSCDPqczgTnN5cso5CL10+?=
- =?us-ascii?Q?5F3nyziHQPT4UCv667mBbqA2e7BHwGsPFnjoucEh9whEIKKVvvUGN3/WwJ22?=
- =?us-ascii?Q?hPuwjYPVIhj2D2onuWYey+mMqihR3wm4lOoC4XHsg1qGrvQEVV5pSw4WnfzN?=
- =?us-ascii?Q?uOvCekB7RrV3Y+4eoS8207Y5l8K9WlOozHO3XrMtlOaSCeqlTPvobfb6fXpv?=
- =?us-ascii?Q?kjnzDQoc8kYmqh0PFV2WbUSUzt66axNf+RpsgtYpt398s60G8Hhscqpm2iFY?=
- =?us-ascii?Q?6fhQW2j4kfUSEvY9zrQ8l+qFX8CzKVT6tJtNQZ+lXybc0AVuOUayzJZMSuC+?=
- =?us-ascii?Q?mlGkvNyeaoUhHRQVY3Dbhsks+MZadwkZcnyHwVMXhR5+GgtBA1rmZIXkjJlj?=
- =?us-ascii?Q?XW1YrR2Tw9PrgE0Db7qAC9vpnX4U19A93ginfkjuYqcn6UWrdYhucHl6ItAG?=
- =?us-ascii?Q?nsb/AoIyRiORm0q+u8itfpWERM9in5y+F39nA/74qCwoRR5tekja2bY3pi/I?=
- =?us-ascii?Q?R5kzId2IFxn3Lnjhly17BAV1XnMs1dMpMJeo/lI6WGIAXxxUQGhuzGpOf94M?=
- =?us-ascii?Q?TUDRf1GPFvbyRCCWDJo/0zaKbUi6YjY5VfDFQzg6VLmR++QxgKM/ypEjPhXG?=
- =?us-ascii?Q?CQ=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 70bfd686-a8e5-4020-2f60-08dbb392e083
-X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB6779.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Sep 2023 13:19:21.7624
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 6RDXvZpbCAPtaSoELA+SI3t1C0NMg+bzFQfWwhwYO5uG9yJjYBBgiBTLXC8RCfsk3eJTK/+Y4GX5NfAOVuFdcA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR11MB5337
-X-OriginatorOrg: intel.com
+Content-Transfer-Encoding: 8bit
 
-hi, Chuck Lever,
+When dynamically linking, Address Sanitizer requires its library to be
+the first one to be loaded; this is apparently to ensure that every call
+to malloc is intercepted. If using LD_PRELOAD, those listed libraries
+will be loaded before the libraries listed in the program's ELF and will
+therefore violate this requirement, leading to the below failure and
+output from ASan.
 
-On Tue, Sep 12, 2023 at 01:01:29PM +0000, Chuck Lever III wrote:
-> 
-> 
-> > in our tests, the regression still exists.
-> 
-> Thanks for clarifying. I wondered about that, of course only just
-> after clicking "Send".
-> 
-> 
-> >> But, I'm still in a position where I can't run this test,
-> >> and the results don't really indicate where the problem
-> >> is. So I can't possibly address this issue.
-> >> 
-> >> Any suggestions, advice, or help would be appreciated.
-> > 
-> > if you have further fix patch, could you let us know? I will test it.
-> 
-> Well that's the problem. Since I can't run the reproducer, there's
-> nothing I can do to troubleshoot the problem myself.
-> 
-> Is there any hope in getting this reproducer to run on Fedora?
+commit 58e2847ad2e6 ("selftests: line buffer test program's stdout")
+modified the kselftest runner to force line buffering by forcing the
+test programs to run through `stdbuf`. It turns out that stdbuf
+implements line buffering by injecting a library via LD_PRELOAD.
+Therefore selftests that use ASan started failing.
 
-sorry about this, maybe it's hard for us to support Fedora in a short time.
+Fix this by statically linking libasan in the affected test programs,
+using the `-static-libasan` option. Note this is already the default for
+Clang, but not got GCC.
 
-BTW, we are investigating this regression now, hope that we can update you
-later. Thanks
+Test output sample for failing case:
 
-> 
-> 
-> --
-> Chuck Lever
-> 
-> 
+  TAP version 13
+  1..3
+  # timeout set to 300
+  # selftests: openat2: openat2_test
+  # ==4052==ASan runtime does not come first in initial library list;
+  you should either link runtime to your application or manually preload
+  it with LD_PRELOAD.
+  not ok 1 selftests: openat2: openat2_test # exit=1
+  # timeout set to 300
+  # selftests: openat2: resolve_test
+  # ==4070==ASan runtime does not come first in initial library list;
+  you should either link runtime to your application or manually preload
+  it with LD_PRELOAD.
+  not ok 2 selftests: openat2: resolve_test # exit=1
+
+Signed-off-by: Ryan Roberts <ryan.roberts@arm.com>
+Fixes: 58e2847ad2e6 ("selftests: line buffer test program's stdout")
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Closes: https://lore.kernel.org/oe-lkp/202309121342.97e2f008-oliver.sang@intel.com
+---
+ tools/testing/selftests/fchmodat2/Makefile | 2 +-
+ tools/testing/selftests/openat2/Makefile   | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tools/testing/selftests/fchmodat2/Makefile b/tools/testing/selftests/fchmodat2/Makefile
+index 20839f8e43f2..71ec34bf1501 100644
+--- a/tools/testing/selftests/fchmodat2/Makefile
++++ b/tools/testing/selftests/fchmodat2/Makefile
+@@ -1,6 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0-or-later
+
+-CFLAGS += -Wall -O2 -g -fsanitize=address -fsanitize=undefined $(KHDR_INCLUDES)
++CFLAGS += -Wall -O2 -g -fsanitize=address -fsanitize=undefined -static-libasan $(KHDR_INCLUDES)
+ TEST_GEN_PROGS := fchmodat2_test
+
+ include ../lib.mk
+diff --git a/tools/testing/selftests/openat2/Makefile b/tools/testing/selftests/openat2/Makefile
+index 843ba56d8e49..254d676a2689 100644
+--- a/tools/testing/selftests/openat2/Makefile
++++ b/tools/testing/selftests/openat2/Makefile
+@@ -1,6 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0-or-later
+
+-CFLAGS += -Wall -O2 -g -fsanitize=address -fsanitize=undefined
++CFLAGS += -Wall -O2 -g -fsanitize=address -fsanitize=undefined -static-libasan
+ TEST_GEN_PROGS := openat2_test resolve_test rename_attack_test
+
+ include ../lib.mk
+--
+2.25.1
+
