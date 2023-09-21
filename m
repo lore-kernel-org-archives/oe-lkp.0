@@ -1,189 +1,92 @@
-Received: from mail-ua1-f46.google.com (mail-ua1-f46.google.com [209.85.222.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B3EBBA3E
-	for <oe-lkp@lists.linux.dev>; Thu, 21 Sep 2023 14:44:22 +0000 (UTC)
-Received: by mail-ua1-f46.google.com with SMTP id a1e0cc1a2514c-7a29ef55d5fso461026241.3
-        for <oe-lkp@lists.linux.dev>; Thu, 21 Sep 2023 07:44:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1695307462; x=1695912262; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=BFaHfoaxn08xsAqYV/UBPB0BsJ0aDfd3cBl6EMbcNgw=;
-        b=Og7RC2pUnJpsyCjKS9xqzapzxSQeXXcVSW+xh70XDmeeBwCxxssVyS65Msiytu0RVV
-         YSh8qvpeq+f+SkSVIbInwitAGS5AcVnvqM+RzEYFPgxdQGZZ6aeUF/OHtqsVQIeHQU1S
-         KaLTN3DxYtsZI5dDkhyNErxn6SvB4EOFn4v4hG9EVGFK5zQ3aKmKpD0HN8eBOuGlsKLm
-         tyRlNFNKwEWX/L+Ur/rWaNcLQ2EZVPLUIWHYvdhTer+LYW2uhvZX7/h1Kc1luJ7fVL2J
-         wCouKwbTX05NH/1Mb0pdj0Wa5GwgYCIVbfFGBpW4pUu1QYshq/WRQ3oPMg9zzNFFLFrM
-         B3kg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695307462; x=1695912262;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=BFaHfoaxn08xsAqYV/UBPB0BsJ0aDfd3cBl6EMbcNgw=;
-        b=rOymTqj9wjCmR+JoKOZf/Adw0FKwD1pImbs7HTMkQVm4et6NVuhcH+4hViWTTxNrVc
-         xw8C2QdBaqEgV99Hf6ci5AtsB4T2T38v9A9QX6iurllf6pUu4GUhmLwAjPSa2CKjzdQU
-         xAdazuOzrXCO6wYkMs8XeMal0F5onSylTlvGoRW9uI+KkDB5JVVJwa10wE6l31lEYmLM
-         +BCRuvfFURGmTRXsChG93xMzey2idBJsJrWqqtjqe30mtcoLr/akAGl9XeV+lP4SKnL7
-         d7Li5i8XS1XzmCtAerRmw5nnnwqqjHWaB0G0MKdEXIbteZaiE56bEDsZro8uIgGEUSHL
-         9UOw==
-X-Gm-Message-State: AOJu0Yz9ENkF9wNk2gTxG+0KItgn/Cr1Gz2Xwnnrz9AdX4dbh9Ab9Ahc
-	d/tYuszmabZoc65EAB815FoJlGJZa8e85rBo/VE=
-X-Google-Smtp-Source: AGHT+IEX0oUA/m6qcydkc/MWRxmpvID/DRX9SY5OT+po1vq9MZCQuVXYDV3BHR9AxQnZho/TDPq2BuQ2cxuIIY5YALM=
-X-Received: by 2002:a67:e8da:0:b0:452:988c:f339 with SMTP id
- y26-20020a67e8da000000b00452988cf339mr5582120vsn.5.1695307461687; Thu, 21 Sep
- 2023 07:44:21 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2F2B20E7
+	for <oe-lkp@lists.linux.dev>; Thu, 21 Sep 2023 15:36:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1695310603; x=1726846603;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=uzDkfWXeowTfu3zdB2+xHFSe333dlATcO9CRMMxZdao=;
+  b=NMewOcL1Vfldc5ACR3xm8WqrUqdZwrxFHTAUfA5idUWy68lJHZ3RKPNE
+   AXtxj4STDD7jdysWUffAnKGSULzoiBuV27MgjDGm0/M6ugDELPRK79G83
+   E2oG7SAT99oQkKlK50e0e5Bi9x3K1Ci5ZMq3qRilx7HZoWeBerdyTnsD2
+   Yfv52bG5pC8o/ube6GEe2lbH3PhrOxvsHf+yCMahqqua8up5uxrjD7txx
+   Dyqa/RsVFreMdveqwnMB5R2hfVbjlo9KrT0ar6ifiShLTIvqLBK8HAvyr
+   p9C6lQARVdBKTc0jhV//waWIo5JG/UdN/QDbVCXEUvcyltWTiBIrfoIeG
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10840"; a="411497383"
+X-IronPort-AV: E=Sophos;i="6.03,165,1694761200"; 
+   d="scan'208";a="411497383"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2023 08:36:42 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10840"; a="862522382"
+X-IronPort-AV: E=Sophos;i="6.03,165,1694761200"; 
+   d="scan'208";a="862522382"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2023 08:36:41 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97-RC0)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1qjLjK-0000000Gwxq-22aH;
+	Thu, 21 Sep 2023 18:36:38 +0300
+Date: Thu, 21 Sep 2023 18:36:38 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+	Luis Chamberlain <mcgrof@kernel.org>
+Subject: Re: [PATCH v1 1/6] params: Use sysfs_emit() to instead of scnprintf()
+Message-ID: <ZQxjBkFZV5T6BELA@smile.fi.intel.com>
+References: <20230912150551.401537-1-andriy.shevchenko@linux.intel.com>
+ <202309211632.67e4c1e0-oliver.sang@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230909043806.3539-1-reubenhwk@gmail.com> <202309191018.68ec87d7-oliver.sang@intel.com>
- <CAOQ4uxhc8q=GAuL9OPRVOr=mARDL3TExPY0Zipij1geVKknkkQ@mail.gmail.com> <CAD_8n+TpZF2GoE1HUeBLs0vmpSna0yR9b+hsd-VC1ZurTe41LQ@mail.gmail.com>
-In-Reply-To: <CAD_8n+TpZF2GoE1HUeBLs0vmpSna0yR9b+hsd-VC1ZurTe41LQ@mail.gmail.com>
-From: Amir Goldstein <amir73il@gmail.com>
-Date: Thu, 21 Sep 2023 17:44:10 +0300
-Message-ID: <CAOQ4uxj7-=pU_WR8PbV4QUK=cepZnmd_1eCqRcwthJNkkzA5VA@mail.gmail.com>
-Subject: Re: [PATCH] vfs: fix readahead(2) on block devices
-To: Reuben Hawkins <reubenhwk@gmail.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-fsdevel@vger.kernel.org, 
-	kernel test robot <oliver.sang@intel.com>, ltp@lists.linux.it, mszeredi@redhat.com, 
-	willy@infradead.org, viro@zeniv.linux.org.uk, brauner@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202309211632.67e4c1e0-oliver.sang@intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Thu, Sep 21, 2023 at 4:01=E2=80=AFPM Reuben Hawkins <reubenhwk@gmail.com=
-> wrote:
->
->
-> On Tue, Sep 19, 2023 at 3:43=E2=80=AFAM Amir Goldstein <amir73il@gmail.co=
-m> wrote:
->>
->> On Tue, Sep 19, 2023 at 5:47=E2=80=AFAM kernel test robot <oliver.sang@i=
-ntel.com> wrote:
->> >
->> >
->> >
->> > Hello,
->> >
->> > kernel test robot noticed "ltp.readahead01.fail" on:
->> >
->> > commit: f49a20c992d7fed16e04c4cfa40e9f28f18f81f7 ("[PATCH] vfs: fix re=
-adahead(2) on block devices")
->> > url: https://github.com/intel-lab-lkp/linux/commits/Reuben-Hawkins/vfs=
--fix-readahead-2-on-block-devices/20230909-124349
->> > base: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git =
-32bf43e4efdb87e0f7e90ba3883e07b8522322ad
->> > patch link: https://lore.kernel.org/all/20230909043806.3539-1-reubenhw=
-k@gmail.com/
->> > patch subject: [PATCH] vfs: fix readahead(2) on block devices
->> >
->> > in testcase: ltp
->> > version: ltp-x86_64-14c1f76-1_20230715
->> > with following parameters:
->> >
->> >         disk: 1HDD
->> >         fs: ext4
->> >         test: syscalls-00/readahead01
->> >
->> >
->> >
->> > compiler: gcc-12
->> > test machine: 4 threads 1 sockets Intel(R) Core(TM) i3-3220 CPU @ 3.30=
-GHz (Ivy Bridge) with 8G memory
->> >
->> > (please refer to attached dmesg/kmsg for entire log/backtrace)
->> >
->> >
->> >
->> >
->> > If you fix the issue in a separate patch/commit (i.e. not just a new v=
-ersion of
->> > the same patch/commit), kindly add following tags
->> > | Reported-by: kernel test robot <oliver.sang@intel.com>
->> > | Closes: https://lore.kernel.org/oe-lkp/202309191018.68ec87d7-oliver.=
-sang@intel.com
->> >
->> >
->> >
->> > COMMAND:    /lkp/benchmarks/ltp/bin/ltp-pan   -e -S   -a 3917     -n 3=
-917 -p -f /fs/sdb2/tmpdir/ltp-R8Bqhtsv5t/alltests -l /lkp/benchmarks/ltp/re=
-sults/LTP_RUN_ON-2023_09_13-20h_17m_53s.log  -C /lkp/benchmarks/ltp/output/=
-LTP_RUN_ON-2023_09_13-20h_17m_53s.failed -T /lkp/benchmarks/ltp/output/LTP_=
-RUN_ON-2023_09_13-20h_17m_53s.tconf
->> > LOG File: /lkp/benchmarks/ltp/results/LTP_RUN_ON-2023_09_13-20h_17m_53=
-s.log
->> > FAILED COMMAND File: /lkp/benchmarks/ltp/output/LTP_RUN_ON-2023_09_13-=
-20h_17m_53s.failed
->> > TCONF COMMAND File: /lkp/benchmarks/ltp/output/LTP_RUN_ON-2023_09_13-2=
-0h_17m_53s.tconf
->> > Running tests.......
->> > <<<test_start>>>
->> > tag=3Dreadahead01 stime=3D1694636274
->> > cmdline=3D"readahead01"
->> > contacts=3D""
->> > analysis=3Dexit
->> > <<<test_output>>>
->> > tst_test.c:1558: TINFO: Timeout per run is 0h 02m 30s
->> > readahead01.c:36: TINFO: test_bad_fd -1
->> > readahead01.c:37: TPASS: readahead(-1, 0, getpagesize()) : EBADF (9)
->> > readahead01.c:39: TINFO: test_bad_fd O_WRONLY
->> > readahead01.c:45: TPASS: readahead(fd, 0, getpagesize()) : EBADF (9)
->> > readahead01.c:54: TINFO: test_invalid_fd pipe
->> > readahead01.c:56: TPASS: readahead(fd[0], 0, getpagesize()) : EINVAL (=
-22)
->> > readahead01.c:60: TINFO: test_invalid_fd socket
->> > readahead01.c:62: TFAIL: readahead(fd[0], 0, getpagesize()) succeeded
->> >
->>
->> Reuben,
->>
->> This report is on an old version of your patch.
->> However:
->> 1. LTP test readahead01 will need to be fixed to accept also ESPIPE
->> 2. I am surprised that with the old patch readahead on socket did not
->>     fail. Does socket have aops?
->>
->> Please try to run LTP test readahead01 on the patch that Christian queue=
-d
->> and see how it behaves and if anything needs to be fixed wrt sockets.
->>
->> Thanks,
->> Amir.
->
->
-> ack.  Will try to test.  My Ubuntu 22.04 system wasn't able to find packa=
-ges called
-> for by the test case, so it'll take me a little while to figure out how t=
-o get the
-> test case working...
+On Thu, Sep 21, 2023 at 09:34:13PM +0800, kernel test robot wrote:
+> 
+> Hello,
+> 
+> kernel test robot noticed "WARNING:at_fs/sysfs/file.c:#sysfs_emit" on:
+> 
+> commit: d4004295e5502a1eb3e361e97ea4dd1686046af6 ("[PATCH v1 1/6] params: Use sysfs_emit() to instead of scnprintf()")
+> url: https://github.com/intel-lab-lkp/linux/commits/Andy-Shevchenko/params-Introduce-the-param_unknown_fn-type/20230912-231033
+> base: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git 0bb80ecc33a8fb5a682236443c1e740d5c917d1d
+> patch link: https://lore.kernel.org/all/20230912150551.401537-1-andriy.shevchenko@linux.intel.com/
+> patch subject: [PATCH v1 1/6] params: Use sysfs_emit() to instead of scnprintf()
+> 
+> in testcase: trinity
+> version: trinity-i386-abe9de86-1_20230429
+> with following parameters:
+> 
+> 	runtime: 300s
+> 	group: group-04
+> 	nr_groups: 5
 
-Heh! you can write a small C program instead, you don't even need to
-build the LTP test.
 
-It is clear what the failed test is doing:
+> what we observed is this issue doesn't always happen. we run the test upon
+> this commit almost 500 times, it happened 42 times.
+> however, the parent keeps clean.
+> 
+>         v6.6-rc1 d4004295e5502a1eb3e361e97ea
+> ---------------- ---------------------------
+>        fail:runs  %reproduction    fail:runs
+>            |             |             |
+>            :497          8%          42:496   dmesg.EIP:sysfs_emit
+>            :497          8%          42:496   dmesg.WARNING:at_fs/sysfs/file.c:#sysfs_emit
 
-static void test_invalid_fd(void)
-{
-        int fd[2];
+Cool! I will check this, thank you for the report.
 
-        tst_res(TINFO, "%s pipe", __func__);
-        SAFE_PIPE(fd);
-        TST_EXP_FAIL(readahead(fd[0], 0, getpagesize()), EINVAL);
-        SAFE_CLOSE(fd[0]);
-        SAFE_CLOSE(fd[1]);
+-- 
+With Best Regards,
+Andy Shevchenko
 
-        tst_res(TINFO, "%s socket", __func__);
-        fd[0] =3D SAFE_SOCKET(AF_INET, SOCK_STREAM, 0);
-        TST_EXP_FAIL(readahead(fd[0], 0, getpagesize()), EINVAL);
-        SAFE_CLOSE(fd[0]);
-}
 
-The report claims that readahead on socket succeeds
-and this is surprising.
-
-Thanks,
-Amir.
