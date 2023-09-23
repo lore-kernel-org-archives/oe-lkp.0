@@ -1,251 +1,114 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f51.google.com (mail-qv1-f51.google.com [209.85.219.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39AC722F00;
-	Fri, 22 Sep 2023 20:34:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14E6AC433CA;
-	Fri, 22 Sep 2023 20:34:05 +0000 (UTC)
-Date: Fri, 22 Sep 2023 16:34:46 -0400
-From: Steven Rostedt <rostedt@goodmis.org>
-To: LKML <linux-kernel@vger.kernel.org>, Linux Trace Kernel
- <linux-trace-kernel@vger.kernel.org>
-Cc: Masami Hiramatsu <mhiramat@kernel.org>, Mark Rutland
- <mark.rutland@arm.com>, Ajay Kaher <akaher@vmware.com>,
- chinglinyu@google.com, lkp@intel.com, namit@vmware.com,
- oe-lkp@lists.linux.dev, amakhalov@vmware.com, er.ajay.kaher@gmail.com,
- srivatsa@csail.mit.edu, tkundu@vmware.com, vsirnapalli@vmware.com
-Subject: [PATCH v2] eventfs: Remember what dentries were created on dir open
-Message-ID: <20230922163446.1431d4fa@gandalf.local.home>
-X-Mailer: Claws Mail 3.19.1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60737A53
+	for <oe-lkp@lists.linux.dev>; Sat, 23 Sep 2023 05:56:40 +0000 (UTC)
+Received: by mail-qv1-f51.google.com with SMTP id 6a1803df08f44-656262cd5aeso19127726d6.3
+        for <oe-lkp@lists.linux.dev>; Fri, 22 Sep 2023 22:56:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1695448599; x=1696053399; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=FYWvm/4SgJ1DnOwyE8GnR0KsTumSCWlYc7xSynW0xVM=;
+        b=TeW8sICPVH/LmfJb/BrfFU28apwCOnfeHH4OdcTPf51fnBDH8I+NRHypKKZXSENGa6
+         sLsSgLahCStg3CrZzUV2LFDPkftwOrLQQvI7EQE4yQvZfgiSozSp/H20QnarPWJgoSQm
+         6NOUjRQRGSzfJfT3Ws4RRS4X2Z8+eUtSCgHgx+Te1FmcK22XwxkbgSknioz3Y/wFTJ74
+         CJYUHU8YT6bezMzfq55k391CZFEFPR4UhTpHgjkY/j/Ry2QWDBNdG3IwgQ+EyQ5UVEZ3
+         VQEWAqpJDeDDJPCf168sLm9ucm0SFDIGJ5HAps9IAIFT+ilvkZJCyvp6gP/hXtTH9snM
+         DyHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1695448599; x=1696053399;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=FYWvm/4SgJ1DnOwyE8GnR0KsTumSCWlYc7xSynW0xVM=;
+        b=dbqE5AatxiasZpvtOo2CAvXscAFerxy7RBi9kMkblV4OXUp79YdGX/eDi3Fr3ZiKbX
+         De+OBS5HMWZ7G/nMPgI078CA+ya4WFoEdAfw5YMklwcBM/Zu89wlue2ls7DhJkE4Klu2
+         SQ9N1kU1EI0QN76KTox6dtYxvezWuRwH+MIDssb8fTNpySwdat2yCIYFMK6Uv9oHHCx1
+         ZR7tX+F+OdkyoAEMeIeR7zZxRgL7osJ09cpBQKyvhhGCWImFQ12aTQSjvuDzO1uez3Tj
+         miVdm9fUMMgEEujWH41wr4CHRfBUscBVUtM0AB46n4BOFOMpI9ippGYQ6FsCmvn0PZOm
+         EilA==
+X-Gm-Message-State: AOJu0YxCPTFS94ENadvze/Ad0bdpeSlx+sj3cz/ODDtvIydHwKL7S9Op
+	fMcDf563dxvhd1Prx1X6ME6M2S1gvuM5mguxAcA=
+X-Google-Smtp-Source: AGHT+IESwen9eFjqESJ1fXAsIxvoYG12qJbJ3e7iD8TUFnc0sKdccyFfxBxcSZoyX985pCpTNSBBQUk4P+HLUNlq+mw=
+X-Received: by 2002:a0c:b253:0:b0:656:4af7:ab with SMTP id k19-20020a0cb253000000b006564af700abmr1238352qve.7.1695448599177;
+ Fri, 22 Sep 2023 22:56:39 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20230909043806.3539-1-reubenhwk@gmail.com> <202309191018.68ec87d7-oliver.sang@intel.com>
+ <CAOQ4uxhc8q=GAuL9OPRVOr=mARDL3TExPY0Zipij1geVKknkkQ@mail.gmail.com>
+ <CAD_8n+TpZF2GoE1HUeBLs0vmpSna0yR9b+hsd-VC1ZurTe41LQ@mail.gmail.com>
+ <ZQ1Z_JHMPE3hrzv5@yuki> <CAD_8n+ShV=HJuk5v-JeYU1f+MAq1nDz9GqVmbfK9NpNThRjzSg@mail.gmail.com>
+In-Reply-To: <CAD_8n+ShV=HJuk5v-JeYU1f+MAq1nDz9GqVmbfK9NpNThRjzSg@mail.gmail.com>
+From: Amir Goldstein <amir73il@gmail.com>
+Date: Sat, 23 Sep 2023 08:56:28 +0300
+Message-ID: <CAOQ4uxjnCdAeWe3W4mp=DwgL49Vwp_FVx4S_V33A3-JLtzJb-g@mail.gmail.com>
+Subject: Re: [LTP] [PATCH] vfs: fix readahead(2) on block devices
+To: Reuben Hawkins <reubenhwk@gmail.com>
+Cc: Cyril Hrubis <chrubis@suse.cz>, mszeredi@redhat.com, brauner@kernel.org, lkp@intel.com, 
+	willy@infradead.org, linux-fsdevel@vger.kernel.org, 
+	kernel test robot <oliver.sang@intel.com>, viro@zeniv.linux.org.uk, oe-lkp@lists.linux.dev, 
+	ltp@lists.linux.it
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
+On Fri, Sep 22, 2023 at 11:29=E2=80=AFPM Reuben Hawkins <reubenhwk@gmail.co=
+m> wrote:
+>
+>
+>
+> On Fri, Sep 22, 2023 at 4:09=E2=80=AFAM Cyril Hrubis <chrubis@suse.cz> wr=
+ote:
+>>
+>> Hi!
+>> > ack.  Will try to test.  My Ubuntu 22.04 system wasn't able to find
+>> > packages called
+>> > for by the test case, so it'll take me a little while to figure out ho=
+w to
+>> > get the
+>> > test case working...
+>>
+>> Huh? The test is a simple C binary you shouldn't need anything more
+>> than:
+>>
+>> $ git clone https://github.com/linux-test-project/ltp.git
+>> $ cd ltp
+>> $ make autotools
+>> $ ./configure
+>>
+>> $ cd testcases/kernel/syscalls/readahead
+>> $ make
+>> $ ./readahead01
+>>
+>> And this is well described in the readme at:
+>>
+>> https://github.com/linux-test-project/ltp/
+>>
+>> And the packages required for the compilation are make, C compiler and
+>> autotools nothing extraordinary.
+>>
+> Awesome.  That was simpler than whatever it was I was trying.  I've
+> reproduced the failed test and will try a few variations on the patch.
 
-Using the following code with libtracefs:
+Cool.
 
-	int dfd;
+For people that were not following the patch review,
+the goal is not to pass the existing test.
 
-	// create the directory events/kprobes/kp1
-	tracefs_kprobe_raw(NULL, "kp1", "schedule_timeout", "time=$arg1");
+We decided to deliberately try the change of behavior
+from EINVAL to ESPIPE, to align with fadvise behavior,
+so eventually the LTP test should be changed to allow both.
 
-	// Open the kprobes directory
-	dfd = tracefs_instance_file_open(NULL, "events/kprobes", O_RDONLY);
+It was the test failure on the socket that alarmed me.
+However, if we will have to special case socket in
+readahead() after all, we may as well also special case
+pipe with it and retain the EINVAL behavior - let's see
+what your findings are and decide.
 
-	// Do a lookup of the kprobes/kp1 directory (by looking at enable)
-	tracefs_file_exists(NULL, "events/kprobes/kp1/enable");
-
-	// Now create a new entry in the kprobes directory
-	tracefs_kprobe_raw(NULL, "kp2", "schedule_hrtimeout", "expires=$arg1");
-
-	// Do another lookup to create the dentries
-	tracefs_file_exists(NULL, "events/kprobes/kp2/enable"))
-
-	// Close the directory
-	close(dfd);
-
-What happened above, the first open (dfd) will call
-dcache_dir_open_wrapper() that will create the dentries and up their ref
-counts.
-
-Now the creation of "kp2" will add another dentry within the kprobes
-directory.
-
-Upon the close of dfd, eventfs_release() will now do a dput for all the
-entries in kprobes. But this is where the problem lies. The open only
-upped the dentry of kp1 and not kp2. Now the close is decrementing both
-kp1 and kp2, which causes kp2 to get a negative count.
-
-Doing a "trace-cmd reset" which deletes all the kprobes cause the kernel
-to crash! (due to the messed up accounting of the ref counts).
-
-To solve this, save all the dentries that are opened in the
-dcache_dir_open_wrapper() into an array, and use this array to know what
-dentries to do a dput on in eventfs_release().
-
-Since the dcache_dir_open_wrapper() calls dcache_dir_open() which uses the
-file->private_data, we need to also add a wrapper around dcache_readdir()
-that uses the cursor assigned to the file->private_data. This is because
-the dentries need to also be saved in the file->private_data. To do this
-create the structure:
-
-  struct dentry_list {
-	void		*cursor;
-	struct dentry	**dentries;
-  };
-
-Which will hold both the cursor and the dentries. Some shuffling around is
-needed to make sure that dcache_dir_open() and dcache_readdir() only see
-the cursor.
-
-Link: https://lore.kernel.org/linux-trace-kernel/20230919211804.230edf1e@gandalf.local.home/
-
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Ajay Kaher <akaher@vmware.com>
-Fixes: 63940449555e7 ("eventfs: Implement eventfs lookup, read, open functions")
-Reported-by: "Masami Hiramatsu (Google)" <mhiramat@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
----
-Changes since v1: https://lore.kernel.org/linux-trace-kernel/20230920221537.521e2562@gandalf.local.home
-
-- Had dcache_readdir_wrapper() return itself "dcache_readdir_wrapper" and
-  not call dcache_readdir()
-
- fs/tracefs/event_inode.c | 87 ++++++++++++++++++++++++++++++++--------
- 1 file changed, 70 insertions(+), 17 deletions(-)
-
-diff --git a/fs/tracefs/event_inode.c b/fs/tracefs/event_inode.c
-index 9f64e7332796..5f1714089884 100644
---- a/fs/tracefs/event_inode.c
-+++ b/fs/tracefs/event_inode.c
-@@ -70,6 +70,7 @@ static struct dentry *eventfs_root_lookup(struct inode *dir,
- 					  struct dentry *dentry,
- 					  unsigned int flags);
- static int dcache_dir_open_wrapper(struct inode *inode, struct file *file);
-+static int dcache_readdir_wrapper(struct file *file, struct dir_context *ctx);
- static int eventfs_release(struct inode *inode, struct file *file);
- 
- static const struct inode_operations eventfs_root_dir_inode_operations = {
-@@ -79,7 +80,7 @@ static const struct inode_operations eventfs_root_dir_inode_operations = {
- static const struct file_operations eventfs_file_operations = {
- 	.open		= dcache_dir_open_wrapper,
- 	.read		= generic_read_dir,
--	.iterate_shared	= dcache_readdir,
-+	.iterate_shared	= dcache_readdir_wrapper,
- 	.llseek		= generic_file_llseek,
- 	.release	= eventfs_release,
- };
-@@ -396,6 +397,11 @@ static struct dentry *eventfs_root_lookup(struct inode *dir,
- 	return ret;
- }
- 
-+struct dentry_list {
-+	void			*cursor;
-+	struct dentry		**dentries;
-+};
-+
- /**
-  * eventfs_release - called to release eventfs file/dir
-  * @inode: inode to be released
-@@ -404,26 +410,25 @@ static struct dentry *eventfs_root_lookup(struct inode *dir,
- static int eventfs_release(struct inode *inode, struct file *file)
- {
- 	struct tracefs_inode *ti;
--	struct eventfs_inode *ei;
--	struct eventfs_file *ef;
--	struct dentry *dentry;
--	int idx;
-+	struct dentry_list *dlist = file->private_data;
-+	void *cursor;
-+	int i;
- 
- 	ti = get_tracefs(inode);
- 	if (!(ti->flags & TRACEFS_EVENT_INODE))
- 		return -EINVAL;
- 
--	ei = ti->private;
--	idx = srcu_read_lock(&eventfs_srcu);
--	list_for_each_entry_srcu(ef, &ei->e_top_files, list,
--				 srcu_read_lock_held(&eventfs_srcu)) {
--		mutex_lock(&eventfs_mutex);
--		dentry = ef->dentry;
--		mutex_unlock(&eventfs_mutex);
--		if (dentry)
--			dput(dentry);
-+	if (WARN_ON_ONCE(!dlist))
-+		return -EINVAL;
-+
-+	for (i = 0; dlist->dentries[i]; i++) {
-+		dput(dlist->dentries[i]);
- 	}
--	srcu_read_unlock(&eventfs_srcu, idx);
-+
-+	cursor = dlist->cursor;
-+	kfree(dlist->dentries);
-+	kfree(dlist);
-+	file->private_data = cursor;
- 	return dcache_dir_close(inode, file);
- }
- 
-@@ -442,22 +447,70 @@ static int dcache_dir_open_wrapper(struct inode *inode, struct file *file)
- 	struct tracefs_inode *ti;
- 	struct eventfs_inode *ei;
- 	struct eventfs_file *ef;
-+	struct dentry_list *dlist;
-+	struct dentry **dentries = NULL;
- 	struct dentry *dentry = file_dentry(file);
-+	struct dentry *d;
- 	struct inode *f_inode = file_inode(file);
-+	int cnt = 0;
- 	int idx;
-+	int ret;
- 
- 	ti = get_tracefs(f_inode);
- 	if (!(ti->flags & TRACEFS_EVENT_INODE))
- 		return -EINVAL;
- 
-+	if (WARN_ON_ONCE(file->private_data))
-+		return -EINVAL;
-+
-+	dlist = kmalloc(sizeof(*dlist), GFP_KERNEL);
-+	if (!dlist)
-+		return -ENOMEM;
-+
- 	ei = ti->private;
- 	idx = srcu_read_lock(&eventfs_srcu);
- 	list_for_each_entry_srcu(ef, &ei->e_top_files, list,
- 				 srcu_read_lock_held(&eventfs_srcu)) {
--		create_dentry(ef, dentry, false);
-+		d = create_dentry(ef, dentry, false);
-+		if (d) {
-+			struct dentry **tmp;
-+
-+			tmp = krealloc(dentries, sizeof(d) * (cnt + 2), GFP_KERNEL);
-+			if (!tmp)
-+				break;
-+			tmp[cnt] = d;
-+			tmp[cnt + 1] = NULL;
-+			cnt++;
-+			dentries = tmp;
-+		}
- 	}
- 	srcu_read_unlock(&eventfs_srcu, idx);
--	return dcache_dir_open(inode, file);
-+	ret = dcache_dir_open(inode, file);
-+
-+	/*
-+	 * dcache_dir_open() sets file->private_data to a dentry cursor.
-+	 * Need to save that but also save all the dentries that were
-+	 * opened by this function.
-+	 */
-+	dlist->cursor = file->private_data;
-+	dlist->dentries = dentries;
-+	file->private_data = dlist;
-+	return ret;
-+}
-+
-+/*
-+ * This just sets the file->private_data back to the cursor and back.
-+ */
-+static int dcache_readdir_wrapper(struct file *file, struct dir_context *ctx)
-+{
-+	struct dentry_list *dlist = file->private_data;
-+	int ret;
-+
-+	file->private_data = dlist->cursor;
-+	ret = dcache_readdir(file, ctx);
-+	dlist->cursor = file->private_data;
-+	file->private_data = dlist;
-+	return ret;
- }
- 
- /**
--- 
-2.40.1
-
+Thanks,
+Amir.
