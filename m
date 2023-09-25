@@ -1,125 +1,206 @@
-Received: from mail-ua1-f44.google.com (mail-ua1-f44.google.com [209.85.222.44])
+Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com [209.85.208.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2141213FF0
-	for <oe-lkp@lists.linux.dev>; Mon, 25 Sep 2023 09:43:54 +0000 (UTC)
-Received: by mail-ua1-f44.google.com with SMTP id a1e0cc1a2514c-7a7857e5290so2192879241.1
-        for <oe-lkp@lists.linux.dev>; Mon, 25 Sep 2023 02:43:54 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C04118AE7
+	for <oe-lkp@lists.linux.dev>; Mon, 25 Sep 2023 11:07:13 +0000 (UTC)
+Received: by mail-lj1-f169.google.com with SMTP id 38308e7fff4ca-2c038a1e2e6so93893851fa.2
+        for <oe-lkp@lists.linux.dev>; Mon, 25 Sep 2023 04:07:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1695635034; x=1696239834; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=LNQh3gPWZLNGBWs6Syw4BOUBLWuSAVzqnOqg+zAodOI=;
-        b=IumNSLFKw3Ipp/5O/1VOAQK/Y/2yVnZWgmk/peWwYcxjx+xq2BURQg6IKOn/9p4Tm1
-         mUoZDaaGJg4c4B4izcwQi43zadcgOa0KhIORBsNxv4yyb6Yu2AmG2iXizcwvEBITJDpe
-         adepXbCnJPspsG0ndg/r52HsmXAYQgBGIOdWG+076tdBgwliNQ1h8NMn2SKftAv/YoJX
-         /Duze0xNCHEbzLlurFNQy6i8onyEdgAH3JeIGc77hQ83jLntLl69tBFTZt91hI6kZgQ8
-         FDfhR+C9Q17iso4oFJZb1Dzl0WzK4LMaGYVVaNHqs4E4slo6curRBCI9lwa8bho27o6O
-         PVUw==
+        d=gmail.com; s=20230601; t=1695640032; x=1696244832; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:sender
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=FwoKKDz7PFuhCsGgBGv/macPzEyZeZss0ErZH7Fj3bA=;
+        b=XErH+r2sjvRuJi9fzn3BkVkfTQVqWNKwS44Dw+Yplenkq7YBJPbWZSztyf7ksD24tI
+         PaAB2blhMQXge7bhtYOK1NDbkn4f24Jk46Z7IO9wm89bX7p3bSEpCrjWaoBJ7PAQGDps
+         wpQ1EOlsU5AtbT/iFcGyB5FKfzoy09Yyqn/kVTSbART1zM967o91jR8qUG3XDzUzSWiX
+         Sw8Tbc5H0y79+1tlxgyyfQ8uf46m2fXRXLgWiBLnEZwlGluRRSqFp29PV0wbOHJVoEtG
+         QJMQVqd4tEh/Z2cU9GC315g9iLbbHh2oFdD4/YRdsz4NyKaQ1atJfb1FujjjzOpL1SkF
+         NgAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1695635034; x=1696239834;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=LNQh3gPWZLNGBWs6Syw4BOUBLWuSAVzqnOqg+zAodOI=;
-        b=nfLG10bPIsCwmeoKp2pF6XUefEpWvKB3DDADi18dMezXEFzCbQg4gaLrcWGMZ2Co+1
-         Bn7+wT5Lw2vRDoHW9uWVSiyWUAq6TgasjYZQNDSK4OHq7FDb2Fdqa5jqYJPoGYa7raI0
-         Q1efkepnXluhhuFnDKO7SVRtyXw2Xji/e9Twdp7LXBxnCsQLmSTuJujGRp0gDBwaLixM
-         Z47SGZM1T9Ro0SoifjJG8dsvHBy1pnplVYf49ttcSTaYppVJXT0dsza9LI9gFPUKBbXY
-         uPMOPm1YblLPheAIQY5qqCI+6+H+fxuDc5MHyc7LQkiL7kpO0z1CmCo5UiwjZMiFnhna
-         FSyA==
-X-Gm-Message-State: AOJu0YzCS5nPcVVlqKsmWvlEDM+7lAIGDVRF2HSkTTvalVNcq4hJCol8
-	JG1hRDqJY195YxrO6t68UnscER39l1AtvHwwIfU=
-X-Google-Smtp-Source: AGHT+IH0jb03GIUmHtK1EkjiqCNYXZEkwUjbBbZYOnt4nVO3r6Y1rHWqSBAU6t3SQmyfZy6Q9UnpfVPqiMGbFW8zN7k=
-X-Received: by 2002:a67:f108:0:b0:44f:c528:6255 with SMTP id
- n8-20020a67f108000000b0044fc5286255mr3609591vsk.16.1695635033900; Mon, 25 Sep
- 2023 02:43:53 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1695640032; x=1696244832;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:sender
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=FwoKKDz7PFuhCsGgBGv/macPzEyZeZss0ErZH7Fj3bA=;
+        b=S/7OxMACOm5k0Pv5bkX7qG+p/RuOscd/gYXZzEhDyX+/nqL7xkDH4N66J0qSA24v1G
+         A7piBQwB3uOj8wjgBm2qz8GASLvZozmHqTLcUeJPNYaTp7pMf22DBIKoW8/Kp9D9Qgbj
+         1cRTV+OguSJjKkuYMtYot59aStQTafHTneZEA2QCBQteUlVa0J36vb083D9exgLHnYya
+         O2n2eaxwJFRBoGI+Whx2HGZ9iUg73ljOJcA3Ds2mcBwtsDz9gcg36huDZqFBlLlphZPE
+         iFqSTUSxddhtidWIJSVVuJIeTt390gmYfMfK4ody0sm+4fKq/LfaVYwtCBIPovUs9E8N
+         rKYA==
+X-Gm-Message-State: AOJu0YwTGEuyot2EpwYgxSmR+lGApW3lVS4ZCYj9auw8oxkaX2x/Ery6
+	DU2y6OUe3ic57JEEshfaxls=
+X-Google-Smtp-Source: AGHT+IGgo4ldpuJySiGdM4mYj2o+lTju6PG/SZZ6Y1W43nWulrR8PpEcBgAgQD3tRKGy+KsBVWeuSw==
+X-Received: by 2002:a2e:9845:0:b0:2bf:ff17:811e with SMTP id e5-20020a2e9845000000b002bfff17811emr5041152ljj.14.1695640031811;
+        Mon, 25 Sep 2023 04:07:11 -0700 (PDT)
+Received: from gmail.com (195-38-113-94.pool.digikabel.hu. [195.38.113.94])
+        by smtp.gmail.com with ESMTPSA id k20-20020a170906681400b0099bd046170fsm6093814ejr.104.2023.09.25.04.07.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Sep 2023 04:07:10 -0700 (PDT)
+Sender: Ingo Molnar <mingo.kernel.org@gmail.com>
+Date: Mon, 25 Sep 2023 13:07:08 +0200
+From: Ingo Molnar <mingo@kernel.org>
+To: kernel test robot <oliver.sang@intel.com>,
+	Mel Gorman <mgorman@techsingularity.net>,
+	Peter Zijlstra <peterz@infradead.org>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+	ying.huang@intel.com, feng.tang@intel.com, fengwei.yin@intel.com,
+	aubrey.li@linux.intel.com, yu.c.chen@intel.com,
+	Mike Galbraith <efault@gmx.de>,
+	K Prateek Nayak <kprateek.nayak@amd.com>,
+	"Peter Zijlstra (Intel)" <peterz@infradead.org>,
+	linux-tip-commits@vger.kernel.org, x86@kernel.org,
+	Gautham Shenoy <gautham.shenoy@amd.com>
+Subject: Re: [PATCH] sched/fair: Do not wakeup-preempt same-prio SCHED_OTHER
+ tasks
+Message-ID: <ZRFp3EO2JUXtK6XB@gmail.com>
+References: <ZQljoiSBhZLEFI/G@gmail.com>
+ <202309221758.d655aa5b-oliver.sang@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CAOQ4uxjnCdAeWe3W4mp=DwgL49Vwp_FVx4S_V33A3-JLtzJb-g@mail.gmail.com>
- <ZQ75JynY8Y2DqaHD@casper.infradead.org> <CAOQ4uxjOGqWFdS4rU8u9TuLMLJafqMUsQUD3ToY3L9bOsfGibg@mail.gmail.com>
- <CAD_8n+SNKww4VwLRsBdOg+aBc7pNzZhmW9TPcj9472_MjGhWyg@mail.gmail.com>
- <CAOQ4uxjM8YTA9DjT5nYW1RBZReLjtLV6ZS3LNOOrgCRQcR2F9A@mail.gmail.com>
- <CAOQ4uxjmyfKmOxP0MZQPfu8PL3KjLeC=HwgEACo21MJg-6rD7g@mail.gmail.com>
- <ZRBHSACF5NdZoQwx@casper.infradead.org> <CAOQ4uxjmoY_Pu_JiY9U1TAa=Tz1Mta3aH=wwn192GOfRuvLJQw@mail.gmail.com>
- <ZRCwjGSF//WUPohL@casper.infradead.org> <CAD_8n+SBo4EaU4-u+DaEFq3Bgii+vX0JobsqJV-4m+JjY9wq8w@mail.gmail.com>
- <ZREr3M32aIPfdem7@casper.infradead.org>
-In-Reply-To: <ZREr3M32aIPfdem7@casper.infradead.org>
-From: Amir Goldstein <amir73il@gmail.com>
-Date: Mon, 25 Sep 2023 12:43:42 +0300
-Message-ID: <CAOQ4uxgUC2KxO2fD-rSgVo3RyrrWbP-UHH+crG57uwXVn_sf2Q@mail.gmail.com>
-Subject: Re: [LTP] [PATCH] vfs: fix readahead(2) on block devices
-To: Matthew Wilcox <willy@infradead.org>
-Cc: Reuben Hawkins <reubenhwk@gmail.com>, kernel test robot <oliver.sang@intel.com>, brauner@kernel.org, 
-	Cyril Hrubis <chrubis@suse.cz>, mszeredi@redhat.com, lkp@intel.com, 
-	linux-fsdevel@vger.kernel.org, viro@zeniv.linux.org.uk, 
-	oe-lkp@lists.linux.dev, ltp@lists.linux.it, Jan Kara <jack@suse.cz>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <202309221758.d655aa5b-oliver.sang@intel.com>
 
-On Mon, Sep 25, 2023 at 9:42=E2=80=AFAM Matthew Wilcox <willy@infradead.org=
-> wrote:
->
-> On Sun, Sep 24, 2023 at 11:35:48PM -0500, Reuben Hawkins wrote:
-> > The v2 patch does NOT return ESPIPE on a socket.  It succeeds.
-> >
-> > readahead01.c:54: TINFO: test_invalid_fd pipe
-> > readahead01.c:56: TFAIL: readahead(fd[0], 0, getpagesize()) expected
-> > EINVAL: ESPIPE (29)
-> > readahead01.c:60: TINFO: test_invalid_fd socket
-> > readahead01.c:62: TFAIL: readahead(fd[0], 0, getpagesize()) succeeded
-> > <-------here
->
-> Thanks!  I am of the view that this is wrong (although probably
-> harmless).  I suspect what happens is that we take the
-> 'bdi =3D=3D &noop_backing_dev_info' condition in generic_fadvise()
-> (since I don't see anywhere in net/ setting f_op->fadvise) and so
-> return 0 without doing any work.
->
-> The correct solution is probably your v2, combined with:
->
->         inode =3D file_inode(file);
-> -       if (S_ISFIFO(inode->i_mode))
-> +       if (S_ISFIFO(inode->i_mode) || S_ISSOCK(inode->i_mode))
->                 return -ESPIPE;
->
-> in generic_fadvise(), but that then changes the return value from
-> posix_fadvise(), as I outlined in my previous email.  And I'm OK with
-> that, because I think it's what POSIX intended.  Amir may well disagree
-> ;-)
 
-I really have no problem with that change to posix_fadvise().
-I only meant to say that we are not going to ask Reuben to talk to
-the standard committee, but that's obvious ;-)
-A patch to man-pages, that I would recommend as a follow up.
+* kernel test robot <oliver.sang@intel.com> wrote:
 
-FWIW, I checked and there is currently no test for
-posix_fadvise() on socket in LTP AFAIK.
-Maybe Cyril will follow your suggestion and this will add test
-coverage for socket in posix_fadvise().
+> Hello,
+> 
+> kernel test robot noticed a -19.0% regression of stress-ng.filename.ops_per_sec on:
 
-Reuben,
+Thanks for the testing, this is useful!
 
-The actionable item, if all agree with Matthew's proposal, is
-not to change the v2 patch to readahead(), but to send a new
-patch for generic_fadvise().
+So I've tabulated the results into a much easier to read format:
 
-When you send the patch to Christian, you should specify
-the dependency - it needs to be applied before the readahead
-patch.
+> | testcase: change | stress-ng: stress-ng.filename.ops_per_sec                                      -19.0% regression
+> | testcase: change | stress-ng: stress-ng.lockbus.ops_per_sec                                        -6.0% regression 
+> | testcase: change | stress-ng: stress-ng.sigfd.ops_per_sec                                          17.6% improvement
+> | testcase: change | phoronix-test-suite: phoronix-test-suite.darktable.Masskrug.CPU-only.seconds    -5.3% improvement
+> | testcase: change | lmbench3: lmbench3.TCP.socket.bandwidth.64B.MB/sec                              11.5% improvement
+> | testcase: change | phoronix-test-suite: phoronix-test-suite.darktable.Boat.CPU-only.seconds        -3.5% improvement
+> | testcase: change | stress-ng: stress-ng.sigrt.ops_per_sec                                         100.2% improvement
+> | testcase: change | stress-ng: stress-ng.sigsuspend.ops_per_sec                                    -93.9% regression
+> | testcase: change | stress-ng: stress-ng.sigsuspend.ops_per_sec                                    -82.1% regression
+> | testcase: change | stress-ng: stress-ng.sock.ops_per_sec                                           59.4% improvement
+> | testcase: change | blogbench: blogbench.write_score                                               -35.9% regression
+> | testcase: change | hackbench: hackbench.throughput                                                 -4.8% regression
+> | testcase: change | blogbench: blogbench.write_score                                               -59.3% regression
+> | testcase: change | stress-ng: stress-ng.exec.ops_per_sec                                          -34.6% regression
+> | testcase: change | netperf: netperf.Throughput_Mbps                                                60.6% improvement
+> | testcase: change | hackbench: hackbench.throughput                                                 19.1% improvement
+> | testcase: change | stress-ng: stress-ng.dnotify.ops_per_sec                                       -15.7% regression
 
-If the readahead patch was not already in the vfs tree, you
-would have needed to send a patch series with a cover letter,
-where you would leave the Reviewed-by on the unchanged
-[2/2] readahead patch.
+And then sorted them along the regression/improvement axis:
 
-Sending a patch series is a good thing to practice, but it is
-not strictly needed in this case, so I'll leave it up to you to decide.
+> | testcase: change | stress-ng: stress-ng.sigsuspend.ops_per_sec                                    -93.9% regression
+> | testcase: change | stress-ng: stress-ng.sigsuspend.ops_per_sec                                    -82.1% regression
+> | testcase: change | blogbench: blogbench.write_score                                               -59.3% regression
+> | testcase: change | blogbench: blogbench.write_score                                               -35.9% regression
+> | testcase: change | stress-ng: stress-ng.exec.ops_per_sec                                          -34.6% regression
+> | testcase: change | stress-ng: stress-ng.filename.ops_per_sec                                      -19.0% regression
+> | testcase: change | stress-ng: stress-ng.dnotify.ops_per_sec                                       -15.7% regression
+> | testcase: change | stress-ng: stress-ng.lockbus.ops_per_sec                                        -6.0% regression
+> | testcase: change | hackbench: hackbench.throughput                                                 -4.8% regression
+> | testcase: change | phoronix-test-suite: phoronix-test-suite.darktable.Masskrug.CPU-only.seconds    +5.3% improvement
+> | testcase: change | phoronix-test-suite: phoronix-test-suite.darktable.Boat.CPU-only.seconds        +3.5% improvement
+> | testcase: change | lmbench3: lmbench3.TCP.socket.bandwidth.64B.MB/sec                              11.5% improvement
+> | testcase: change | stress-ng: stress-ng.sigfd.ops_per_sec                                          17.6% improvement
+> | testcase: change | hackbench: hackbench.throughput                                                 19.1% improvement
+> | testcase: change | stress-ng: stress-ng.sock.ops_per_sec                                           59.4% improvement
+> | testcase: change | netperf: netperf.Throughput_Mbps                                                60.6% improvement
+> | testcase: change | stress-ng: stress-ng.sigrt.ops_per_sec                                         100.2% improvement
+
+Testing results notes:
+
+    - the '+' denotes an inverted improvement. The mixing of signs in the output of the 
+      ktest robot is arguably confusing.
+
+    - Any hope getting similar summary format by default? It's much more informative than 
+      just picking up the biggest regression, which wasn't even done correctly AFAICT.
+
+Summary:
+
+While there's a lot of improvements, it is primarily the nature of performance
+regressions that dictate the way forward:
+
+ - stress-ng.sigsuspend.ops_per_sec regressions, -93%:
+
+    Clearly signal delivery performance hurts from delayed preemption, but
+    that should be straightforward to resolve, if we are willing to commit
+    to adding a high-prio insta-wakeup variant API ...
+
+ - stress-ng.exec.ops_per_sec -34% regression:
+
+    Likewise this possibly expresses that it's better to immediately reschedule
+    during exec() - but maybe it's more and reflects some unfavorable migration,
+    as suggested by the NUMA locality figures:
+
+                     %change         %stddev
+                        |                \                                         
+  79317172           -34.2%   52217838 ±  3%  numa-numastat.node0.local_node
+  79360983           -34.2%   52240348 ±  3%  numa-numastat.node0.numa_hit                            
+  77971050           -33.2%   52068168 ±  3%  numa-numastat.node1.local_node
+  78009071           -33.2%   52089987 ±  3%  numa-numastat.node1.numa_hit
+     88287           -45.7%      47970 ±  2%  vmstat.system.cs
+
+ - 'blogbench' regression of -59%:
+
+    It too has a very large reduction in context switches:
+
+         %stddev     %change         %stddev
+             \          |                \  
+     30035           -49.7%      15097 ±  3%  vmstat.system.cs
+   2243545 ±  2%      -4.1%    2152228        blogbench.read_score
+  52412617           -28.3%   37571769        blogbench.time.file_system_outputs
+   2682930           -74.1%     694136        blogbench.time.involuntary_context_switches
+   2369329           -50.0%    1184098 ±  5%  blogbench.time.voluntary_context_switches
+      5851           -35.9%       3752 ±  2%  blogbench.write_score
+
+    It's unclear to me what's happening with this one, just from these stats,
+    but it's "write_score" that hurts most.
+ 
+ - 'stress-ng.filename.ops_per_sec' regression of -19%:
+
+    This test suffered from an *increase* in context-switching, and a large
+    increase in CPU-idle:
+
+         %stddev     %change         %stddev
+             \          |                \  
+   4641666           +19.5%    5545394 ±  2%  cpuidle..usage
+     90589 ±  2%     +70.5%     154471 ±  2%  vmstat.system.cs
+    628439           -19.2%     507711        stress-ng.filename.ops
+     10317           -19.0%       8355        stress-ng.filename.ops_per_sec
+
+    171981           -59.7%      69333 ±  3%  stress-ng.time.involuntary_context_switches
+    770691 ±  3%    +200.9%    2319214        stress-ng.time.voluntary_context_switches
+
+Anyway, it's clear from these results that while many workloads hurt
+from our notion of wake-preemption, there's several ones that benefit
+from it, especially generic ones like phoronix-test-suite - which have
+no good way to turn off wakeup preemption (SCHED_BATCH might help though).
+
+One way to approach this would be to instead of always doing
+wakeup-preemption (our current default), we could turn it around and
+only use it when it is clearly beneficial - such as signal delivery,
+or exec().
+
+The canonical way to solve this would be give *userspace* a way to
+signal that it's beneficial to preempt immediately, ie. yield(),
+but right now that interface is hurting tasks that only want to
+give other tasks a chance to run, without necessarily giving up
+their own right to run:
+
+        se->deadline += calc_delta_fair(se->slice, se);
+
+Anyway, my patch is obviously a no-go as-is, and this clearly needs more work.
 
 Thanks,
-Amir.
+
+	Ingo
