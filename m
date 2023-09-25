@@ -1,81 +1,81 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA7831094A
-	for <oe-lkp@lists.linux.dev>; Mon, 25 Sep 2023 07:19:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45050CA5D
+	for <oe-lkp@lists.linux.dev>; Mon, 25 Sep 2023 07:59:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695626391; x=1727162391;
+  t=1695628765; x=1727164765;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=+ZdZWZOtv0T0y/UtTNQkU2QttflOTo8vbik5PDcQDOc=;
-  b=I4Udx4YBXYOJS1MCLmnk7EXxyrQbuF9NunWE0yyjXxHA+/XRClmgJP3/
-   96RhBanLtKnX8H1fER0MV2OZnF/Dj9pvB2IjFcdsIA73vBCi40szdtvZC
-   KMYEszf5C/YWXPdzcwX2xPGtQek8V9jIQH/ssHe1sJHe7YLVV6PSmtOqy
-   6u9nkqm8WCJdY/RapbIQGRBQZQtrrhHjWkTX47Da3TzseELRMyRcf4g1F
-   svknYu6eMn+cYF+ksb4m7zH/xAa1F+OYFsLX64DTWdDhDDTAmO3e8Yb14
-   IKdi4f2ADR4ULj/SH9BlN1IYKECfkidzuJs9fZ7ahqo+kwphfmwS/RP0j
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="371508974"
+  bh=AneeSbmy4MmpBWu4g9Gca8bIV/hoyReEvp11TFYBx/Y=;
+  b=Ve+5KQgxAdxtfKBhsUBTJ9PrGgBPXTrCAI77hmJvyOrs1MtB3yPlOos/
+   RYesBNOZD1/VuTA3DYqA53NLjML+1jFZjUJyxKm/W1elk+QJSEx9roEW5
+   7BvmFETy3En9wyNjb20NX06GOzfFL3ZKjJ+DDcm9LcmqViDLMU53lcZ+K
+   J74s2BFNpDMene5VsojshsBcmUYIVWRE5hlhMlrVx65ObkpAuafwJKsON
+   V7zKpGdSgd7Jx0Df3VEFnjnJ+QYwXVtNMZvynSzL+Lxpz5S1+1YT/o2li
+   IBW5LTCzJGGXj31ABmpzOS27Fe4H4u680Cz7qoDSvWGR9Y+wSBDWeV+99
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="380067737"
 X-IronPort-AV: E=Sophos;i="6.03,174,1694761200"; 
-   d="scan'208";a="371508974"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Sep 2023 00:19:51 -0700
+   d="scan'208";a="380067737"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Sep 2023 00:59:24 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="921880328"
+X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="863774224"
 X-IronPort-AV: E=Sophos;i="6.03,174,1694761200"; 
-   d="scan'208";a="921880328"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orsmga005.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 25 Sep 2023 00:19:49 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+   d="scan'208";a="863774224"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by fmsmga002.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 25 Sep 2023 00:59:23 -0700
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Mon, 25 Sep 2023 00:19:50 -0700
-Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ 15.1.2507.32; Mon, 25 Sep 2023 00:59:23 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Mon, 25 Sep 2023 00:19:50 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ 15.1.2507.32; Mon, 25 Sep 2023 00:59:18 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32 via Frontend Transport; Mon, 25 Sep 2023 00:19:50 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.168)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ 15.1.2507.32 via Frontend Transport; Mon, 25 Sep 2023 00:59:18 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.106)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.32; Mon, 25 Sep 2023 00:19:49 -0700
+ 15.1.2507.32; Mon, 25 Sep 2023 00:59:18 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JYh9t5t4Ua9UGHlVpXirPbMfZTRywiu88s4eqDJykPR0NW13uhkrcZmLBH3aL/18zbpWKF7Pz0rke8Q/tAN7JojsCJYMT7yc4uK1Rh8BfkrATGIfphGfcMsgm0ZC/R0ZQn91We1VVg82ClSomN2z4FwXrBdVMXrLcbltkiKJT70Zizj2+iTtC+qUlflwdMxJ+rv5g+daBrxDxykmgVruaBQefb9679XfrfAiZQxUmHfrZF5nKFTgEuh2w3rmeErEOGxWLMgymgwV9xF3uU/KmQLXgrzAvdqmPyG66THyJsIOFJuxCxdmpTG2c9PEVQiAzdj0c/t9V3EH/3cUriBe1w==
+ b=gMFWPDdrKomMch1ydGugbYPyMsnDIknYG+IPgN/pZl1E5SQJPK0AVmJOhKrvf6fMhytOl9tkhkcJZNgticFhZ0d9nxOYWCxZ6gooH+gfsHoKfTt13j0g21yeD4ToZ7UTxhqRwUq9v9dI+4G/7UOKoGrt/SVzkRWYQ6ABV5i7wLPgY4Okvym+FEs+uHtZ9WxKBdTXnAA51v7tsoVldP8Lj+Zd+0iXnD2nGaqQh2FMglRu1nK73/JpfuEPSV2OLf/81nP5x6e+dZju0KcHQj9UwejgId09oFqvPsD3bOQCaquyN50Yu3G5CtWaxThGFZnTnViaLKAqwDtz00yUtGS4Og==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dHC3moK+2TeCISbXs63+USEJs8v/DcoOyteXMS3xqio=;
- b=Xa0yptQFnJ0wrIhZ4xBZoEGJwlvGCH7cQA9NGyfMXCIpTYjA+WM/ItBGiOtRgVpkiCVuLmC3HunZ01ZGZuMg1YJ8zjP982Tuvs8WhLNXKv6A4FwPHPCGmXcYf688y+uYNxTnIYfjjV2auDh3+RpOwpaqQOhRBW6ob6wccdayrPBCTqjqLGAOHMV84hko0TCq9bCHu1o+wI6xkbWjNOrAVxUBMg3oWpnow1RaFfkCJAXd+gomsahQBUZN9YWOUbOMzxzag4jODRnC3Do5DA59rVzGryy2kC1MUKbQ0xqJDkcq6ws/pdOYIaBMZHE5SGtPmEAc9YBfKcG/DENi/vQvvg==
+ bh=h8D2n8EGrSaJ6xV74P53nmwL+ikFHQuusEup4ZFxdes=;
+ b=UZ10H502fiuz6jBLxpxXQIMJMVXGolCZF+zj5NLqmS4ZHlpIK5aTf72XFre5PAfZ4s1OY0BR30IAglkl+WZu1MM5o/Y12YuURc7opbEASpZTXT9K1zR30RUOMTCardch6Vs5tlMkj2kGzhSdvaaSaKfsyEFZd9WNCiC82+1gNLQtR7r9t77s8kba0PH9+nRe0TW5uqCXIQ32rjvKVvyj9mveVP6EQebVERUqUARB8lzez36PM5WgEtfT+3caqW8mjjW8VH++TC6V06hnBLqwkWs/nhfOu5NK5R6T90WPuPSeCrqDBFu4dXlmzUrZEzT0rYb1t/b81kxSy9yXRjRA8Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
- by BL1PR11MB5351.namprd11.prod.outlook.com (2603:10b6:208:318::5) with
+ by PH7PR11MB8569.namprd11.prod.outlook.com (2603:10b6:510:304::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6813.23; Mon, 25 Sep
- 2023 07:19:42 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6813.20; Mon, 25 Sep
+ 2023 07:59:17 +0000
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com
  ([fe80::73c6:1231:e700:924]) by PH8PR11MB6779.namprd11.prod.outlook.com
  ([fe80::73c6:1231:e700:924%4]) with mapi id 15.20.6813.017; Mon, 25 Sep 2023
- 07:19:42 +0000
-Date: Mon, 25 Sep 2023 15:18:46 +0800
+ 07:59:17 +0000
+Date: Mon, 25 Sep 2023 15:59:10 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Tejun Heo <tj@kernel.org>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
-	<linux-doc@vger.kernel.org>, <oliver.sang@intel.com>
-Subject: [linus:master] [workqueue]  8a1dd1e547:
- BUG:KCSAN:data-race_in_print_report/wq_worker_tick
-Message-ID: <202309251423.8ef230c0-oliver.sang@intel.com>
+To: Johannes Berg <johannes.berg@intel.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Linux Memory Management List
+	<linux-mm@kvack.org>, <linux-wireless@vger.kernel.org>,
+	<oliver.sang@intel.com>
+Subject: [linux-next:master] [wifi]  97c19e42b2:
+ hwsim.dpp_test_vector_p_256_b.fail
+Message-ID: <202309251502.aa08a357-oliver.sang@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-X-ClientProxiedBy: SG2PR02CA0057.apcprd02.prod.outlook.com
- (2603:1096:4:54::21) To PH8PR11MB6779.namprd11.prod.outlook.com
- (2603:10b6:510:1ca::17)
+X-ClientProxiedBy: SG2P153CA0019.APCP153.PROD.OUTLOOK.COM (2603:1096:4:c7::6)
+ To PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -83,172 +83,132 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|BL1PR11MB5351:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0d124fca-1cfa-429e-c20d-08dbbd97c924
+X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|PH7PR11MB8569:EE_
+X-MS-Office365-Filtering-Correlation-Id: c73f5a02-efe4-41fd-ce5c-08dbbd9d5114
 X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: FwVW/IofLvsBD+TkQrwcMeM+u/XEUAE37HBwAXQ1wwqykROCF4uI0INUG4dRH/rOoVom+1tAmyvQ9Ec7IY1XWRRCp+RD5n/ijcUmJVhuwICPAVYuZ7mWBFQPPYti1QGro0hQWDN9Y5IwaDII+AO5fd2o9CCttB+xFDnqOymmu/Bu4boBFAT2J5DPlt4xQ+yf1LRXq2v/poickbSZO9394sUR3akALuvWaMscgmPQXtB2HXtDIq9sx802Thz67Vd0a06TKXfUNnO1iqnJoTt2ueI5OYAzzBz488kcB9MXlXJ/UKFKwjXeAzZqK+G1YMnPkyTa917yI6bvoKTn+fg34b/97DFQ71rgDUlfi0F03iNnCDyHp4K5QHaZnvpMCvTGXfbrDFJshpSXUKmUWQNpAGJhglRyKuAlKcAF80mYCTZi1lNwbENwm0+lUcqfkGC4iX9U3ZdxKbYvWgetSv/Lx4TSBbfbGvEys0OjlUsv3d9KcKKOa/BwmCPK5BhWxNFxBHjnnYoTioTREcRLfyMInUFQZFFi9MkTm/JRIyO6CWO5i0BAjy9BzKvU5EGNSsvXqwiIJ2+DeHrl0GUAvagB0Q==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(366004)(346002)(39860400002)(376002)(136003)(230922051799003)(1800799009)(186009)(451199024)(38100700002)(6512007)(6506007)(966005)(6486002)(1076003)(478600001)(2616005)(83380400001)(66946007)(86362001)(66476007)(82960400001)(26005)(66556008)(6916009)(107886003)(8676002)(5660300002)(4326008)(41300700001)(8936002)(316002)(2906002)(36756003);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: s2hfHJgZ/IIUtP6WAUHvvWwX4cupddzMsD+j4tGP+FPB90eS6ol7hwPL1vZ33qSKzHA7JqXTf3AueZYlsB3LCYJGfvwpWE/mSP1ZJMlPSCQls0eou80Yi5n6gs167h8cZQ/w1AYbNA7KvXukeiKBw9pw8cmLfsqLbY00Wf4ZxqgRVQ/TTifE5IsuZt4PiPBQp5+klf6FPGulq4Sqepv2jbe9Fl0SZIUbS9KV93UhwDXeBoqN07pE6OK8Rbt1UxNFxgO03jmc48noQBfpv78Z1EEEysa56o4yhQqwyLhwisSBmw6Xnwm6843ox34bbOxIEq/qTRcGbfUZP5Sbn1dAQFkYgWms3VpxoH4FDWgAMo7MQ9gZ30F4KPdFijb5leScuzwYwtA4Oh4+ZZgRVcpCgYUEZSj1jYlw7EdPsxL7Wf4yZ/AepjGyqSKygcEUuHZGlInMfuUJ7OBOS02Osi+WvRFu2ZZW5VVJVET3c2xvQy9I8nkhFBJYHPwXR136c3FYdovt4UEABiPmsSgXt2sWo8G9Xy7XRvmZYMFvYFoODk2INn+wu0ASVMSOrh+BZEqVy7OXsPZqYMYZ0Re+c4ID7A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(366004)(346002)(136003)(376002)(39860400002)(230922051799003)(186009)(451199024)(1800799009)(83380400001)(26005)(1076003)(38100700002)(82960400001)(2906002)(966005)(4326008)(478600001)(8936002)(41300700001)(6666004)(8676002)(6486002)(6862004)(6506007)(5660300002)(37006003)(66946007)(6636002)(66476007)(2616005)(66556008)(107886003)(86362001)(36756003)(316002)(6512007);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?q3Pa8D86CM1/nFjYd8RgTYZ4n3AWmhYQq5MVsJUuFmm331pOD/e6FfAnF4O4?=
- =?us-ascii?Q?dzcXA35Ot0wCO3QcT3KVzZCd/dbGAAxT0pp01RvH+TLcPbD+OLNWd8WzApp2?=
- =?us-ascii?Q?imOMxQ6WtTiTkgbitIqQl+e6KhA8QjUlhTuUQZJRgPevlV3fVUgbOrUoC7P4?=
- =?us-ascii?Q?T4gKeTuPk+RkQvSOSP9VStbMIEN0+CTw3wanMRbF69Ek6Y6iotBygy9je+N2?=
- =?us-ascii?Q?1mbPCxoT6AXqMGa9IdicnjEQz4caWRgjf0BXaFRmESYhHLMHmWhsCwc8Dx6S?=
- =?us-ascii?Q?wkuk0zSo0He06AX++wxJzBjSYtuz1nLN9mRWP/qZB0qe3COVs1xZdNCcpcFl?=
- =?us-ascii?Q?xnI5SxGouzgeGbFWuQyAUmkqdyX3TRxvvSEaVNnFeEJkx9Xsbp0o/X7mCx4E?=
- =?us-ascii?Q?6zxDB0qSL07dBgwbotU3TLHquvQJDPPcc3qhw+m+8EyGgNwgp0O7cgFiuO7u?=
- =?us-ascii?Q?HkccMyUwPpvRFi6NDUw6whXIqANe48hIqWdJEEQ00Lm6MfiGIT16R/aFHXF2?=
- =?us-ascii?Q?UnsamRwV3KbkgiRWl4PRwKua8r0zQuO6fMrR/bjDC/NzJR4XpFm+XSjIlhdi?=
- =?us-ascii?Q?LTox5jj90Lls2079TBS8nIoYYYYykBAxcEIbPUSata/buwtBZgJk/1lOBzJg?=
- =?us-ascii?Q?e4p35skDMP9TXncvrhdrhs2Wg0aJleLDvkqh3jGfyboQKF3dHOwTJSm6bR4N?=
- =?us-ascii?Q?jSykI2JtM9qUgknEakU3WYm4YupaAEhqPHja/oOgOIGRZjXqWkB+4ig0g0F1?=
- =?us-ascii?Q?IEGGfKiqHhAhC8ydQOLVhslbjAtpcgdSdyvCgcp2JiEhmBO7l/Em/wkhK9pU?=
- =?us-ascii?Q?PchTJ78lTD9JUG0pmwmbPSeUaA6liImhkOgolPBd0CX2fmdU2Kuza5mk6VGC?=
- =?us-ascii?Q?Yc4WpKgtv6ZDTE35HUEuZpFUbKQeHfh7POvTk595gMJlrLpGbIhXZnhrk3A7?=
- =?us-ascii?Q?QP7Tfp0+NEf/VQuGlOphk66P4s85tFW3+NDc6fVEL9FlnzZa+O9itU4+NOgF?=
- =?us-ascii?Q?yTsHOEZwfICOP6+qSe6Qsoy9W48mRrB5anGXcifhw17P+BCEujgxNHCRlIer?=
- =?us-ascii?Q?JPIicN3bJMlgQf1BobXm8wqk9NWcO+3VSa3aX4hUXoKgwe13ec+bG0Pay9gC?=
- =?us-ascii?Q?dNpQNxGNir9/LxQJrhPgEg79tkz3FcNPg2aqTfUnJFPw+E11RRza5nkFuTrJ?=
- =?us-ascii?Q?423/wl+0KcTZcn6rvPrP+WJUi+JhXrGimA53aJQxgDxH6xvHwwVcZzv3U4sF?=
- =?us-ascii?Q?LEhqm/vODSy8nQQUEcit2y+9GmH5WNO6metIdA3TRsNoQ/g/K/BqT2SN5KHO?=
- =?us-ascii?Q?+57E13lzkol56H9eWVFTVgn3Fh/+JQirH6pb3eKOE6E0TcsdrDaxvMV35bzv?=
- =?us-ascii?Q?mURQQiOerrki2XyURbDmzY83YEfaPWs8Brd0sbcADBedLJKWxg6JExJQz/Ed?=
- =?us-ascii?Q?47BQtw8mr3QF1vy3aAVGDp7QxL3EOOv+b9n4c4Dy2KuHC0u5zZEATUdJJNCN?=
- =?us-ascii?Q?hA8IJR9cuGVZxiGkR1SsRRNwkYkJtvuiyBwCpuSSjjKWOYwXDy2JeVLibL4J?=
- =?us-ascii?Q?tGTgQ/G4Aeb2kYRv99XuKTQd/GRKSC+nZ9JQTG3WlH6gILEC4+FnDVK8HfDB?=
- =?us-ascii?Q?KA=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0d124fca-1cfa-429e-c20d-08dbbd97c924
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Q+h0uBfY8qsrV6A9+8OO5yCif8YkhfpdGNRnCn/Dlc77KfNTBFodgcT96wLd?=
+ =?us-ascii?Q?ARbjLHfCKyvctROwbdaFHkVh5+V9xlYKK4rWFt1xhDZCeoABTNCPGHtAg0sf?=
+ =?us-ascii?Q?mFQP1vb9K6OuFnbLyob277gO6GScL5zQRFQ3e+xmSrbiwGH4aLsbdrwDoxVu?=
+ =?us-ascii?Q?um/DOuBfr+ElC/4FRoU9pys3H7rzCPm8rB5y5SnpqQfGiJaxS1wYPaHK167X?=
+ =?us-ascii?Q?g09mcBPzbjdgWLR5mh4DFh4dBnDP8/2q3ghmcwR3zuWhf3AwBMRDan8mrLjW?=
+ =?us-ascii?Q?yhkCyBWcR8KPqtek1lE9ih2yza9ZSu8Qt8VWFE1gWLJP5XfTjgV030neDt2f?=
+ =?us-ascii?Q?r5oFnXxE0d5ieCyJzyOnBgPZlQaqOiTbFOsFWpewiSPhkP6gSE2ZZzuGIUd4?=
+ =?us-ascii?Q?JrzYtmvkqHjIltmGUu5qH9C4+WlEJjCNboHCPQ+DgbAamkmY46+X+fumHaR/?=
+ =?us-ascii?Q?f2iScQN1j4XqmUmk9s4Hk0mU0v2Rh73/1sKERuakop+Tb9/6c5yvSvpGG7qa?=
+ =?us-ascii?Q?aLtI6oDtVlKuSy8lVSNicDhZxRMC9fJLfo2aL3kWltyo9zB/4+KJaPz0P3H9?=
+ =?us-ascii?Q?mMvxtW4/sLTwhIrkzCB/UbrrAKWBUFqg9f5oroLC44q/+zdZ+35e9s1QInBw?=
+ =?us-ascii?Q?b8M1aK6303qdPZ+ZcZNOErbYEfFfJuNR0Y1Rr2aFYpZhyNcqZppEtSdVI7I0?=
+ =?us-ascii?Q?o9q5DLiLOTwaLd/1AAZGjPkKo0DCB04qaK+77w+OrD/OZ8QtCSwkXGFkVvLI?=
+ =?us-ascii?Q?jnkRGCQLDEcIlinjaCZf7SfL6Z21Z6wfwf+/xhNeJ1yIa10jjOveVsr7SCWT?=
+ =?us-ascii?Q?8PF9wutCahI/kCAG1OTZb1X4+QYza6FQr/xTL7bGCdqCY3hmZr9wgezeVCJt?=
+ =?us-ascii?Q?fmT2a2JXQYqzIeGi1or6SQqclO3og/cXojbn0jfmP05mDqhmlTaJ/ENXH3DK?=
+ =?us-ascii?Q?u2faMdYcMGm8lxZje2vxXzHJe4Rj54bqC1FkBexQrU5tCYA1FKX+d8wZdjJC?=
+ =?us-ascii?Q?i/wTkKb0NzkM7krphfI39zrORp2ZND9SDrijTPx4+4mQiX2CfH28Y8wYBazx?=
+ =?us-ascii?Q?WEwbDcwOaYj17m35/Crk/xvVGoRoLoO3Jceqjwi3/PRLwru6erIGUb5i2LCi?=
+ =?us-ascii?Q?1B8oksJF+SoK+vb9vItPOcsv0nPWYKuof3ZwNlKtwrMFEv7DELBy76aM7BFV?=
+ =?us-ascii?Q?TzZ2+2GsPHChlA/HYVSIV0FKTLw1ZBMMyL0wPxqMvnO+K6AI4kmz1OOZyIPa?=
+ =?us-ascii?Q?w/t8mOwf60poD1Beehe5H72vhuLKo7q+XWGsfIIXeduddMJs/lVlrlU11Aum?=
+ =?us-ascii?Q?yH+GTCkdpX9xvWKXsipSwcgbI5XbTN5v2fTR12tra6p8KJK787jgLfLwHm3a?=
+ =?us-ascii?Q?nA3ZotdFZXYXnSfW4ykKmTLBZtVAPeihqFOg/JWg5eKsUUGuez7H3lHhTfZf?=
+ =?us-ascii?Q?6KCaTk2vjw380Wn8gSNXYBthCZa/XIkiWne8QBhWpI9vo9xRLqNar1kCWKrs?=
+ =?us-ascii?Q?xkoBaABRLptHUrcIbhOkKfkgSZ3QV+KFCYlu91hBicx3XoALN9TaZBycEubx?=
+ =?us-ascii?Q?jiF7D7dBS2Z3/RB2wj2Fqwz8HcBcnWbOkva+oPUmbrEkwbQVwCipClSNCesM?=
+ =?us-ascii?Q?rg=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: c73f5a02-efe4-41fd-ce5c-08dbbd9d5114
 X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB6779.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Sep 2023 07:19:41.7007
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Sep 2023 07:59:17.3691
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xTZhsnqA74xnIO7sr8xjwY3WaMMVp7e/+LZh0ugmRbAR/tVEkKGVUa2/2z7k7MLbFx6O+xF5jpB6lpyOHJb/jQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR11MB5351
+X-MS-Exchange-CrossTenant-UserPrincipalName: XO6QIT3uqkMzpPKgNFL2OC6I+/068QXR4pkrXpH0jFGlN966tusrXY37rPzE/BYmoPcELbrNjnanC95LIqXeEw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB8569
 X-OriginatorOrg: intel.com
 
 
 
 Hello,
 
-kernel test robot noticed "BUG:KCSAN:data-race_in_print_report/wq_worker_tick" on:
+kernel test robot noticed "hwsim.dpp_test_vector_p_256_b.fail" on:
 
-commit: 8a1dd1e547c1a037692e7a6da6a76108108c72b1 ("workqueue: Track and monitor per-workqueue CPU time usage")
-https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+commit: 97c19e42b264e6b71a9ff9deea04c19f621805b9 ("wifi: mac80211: move offchannel works to wiphy work")
+https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
 
-[test failed on linus/master 2cf0f715623872823a72e451243bbf555d10d032]
-[test failed on linux-next/master 29e400e3ea486bf942b214769fc9778098114113]
+[test failed on linux-next/master 926f75c8a5ab70567eb4c2d82fbc96963313e564]
 
-in testcase: boot
+in testcase: hwsim
+version: hwsim-x86_64-717e5d7-1_20230720
+with following parameters:
+
+	test: dpp_test_vector_p_256_b
+
+
 
 compiler: gcc-12
-test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4790 v3 @ 3.60GHz (Haswell) with 6G memory
 
 (please refer to attached dmesg/kmsg for entire log/backtrace)
 
 
-we found various KCSAN issues happen on both parent/fbc, but below (1)
-only happens on this commit and clean on parent after almost 1000 runs.
-we don't have enough knowledge how connect the code change to the issue,
-just report what we observed in our tests FYI.
+we found the failure does not always happen, around ~50%. but keep clean on
+parent.
 
-6363845005202148 8a1dd1e547c1a037692e7a6da6a
+730538edc8e0eb14 97c19e42b264e6b71a9ff9deea0
 ---------------- ---------------------------
        fail:runs  %reproduction    fail:runs
            |             |             |
-        956:986         -0%         955:981   dmesg.BUG:KCSAN:data-race_in__mutex_add_waiter/print_report
-          4:986         -0%           1:981   dmesg.BUG:KCSAN:data-race_in__mutex_remove_waiter/print_report
-          1:986         -0%            :981   dmesg.BUG:KCSAN:data-race_in_do_timer/print_report
-          1:986          0%           2:981   dmesg.BUG:KCSAN:data-race_in_enqueue_timer/print_report
-          4:986         -0%           1:981   dmesg.BUG:KCSAN:data-race_in_print_report/process_one_work
-          5:986         -0%           4:981   dmesg.BUG:KCSAN:data-race_in_print_report/threadfunc
-          4:986          0%           4:981   dmesg.BUG:KCSAN:data-race_in_print_report/tick_nohz_handler
-        175:986          2%         199:981   dmesg.BUG:KCSAN:data-race_in_print_report/tick_nohz_stop_tick
-           :986          2%          24:981   dmesg.BUG:KCSAN:data-race_in_print_report/wq_worker_tick     <----- (1)
+           :20          50%          10:20    hwsim.dpp_test_vector_p_256_b.fail
 
 
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202309251423.8ef230c0-oliver.sang@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202309251502.aa08a357-oliver.sang@intel.com
 
-
-[  121.059354][    C0] ==================================================================
-[  121.060132][    C0] BUG: KCSAN: data-race in print_report / wq_worker_tick
-[  121.060132][    C0]
-[  121.060132][    C0] write to 0xffff88810336eaa8 of 8 bytes by interrupt on cpu 1:
-[ 121.060132][ C0] wq_worker_tick (kernel/workqueue.c:1140) 
-[ 121.060132][ C0] scheduler_tick (kernel/sched/core.c:5639) 
-[ 121.060132][ C0] update_process_times (kernel/time/timer.c:2078) 
-[ 121.060132][ C0] tick_nohz_handler (kernel/time/tick-sched.c:1369) 
-[ 121.060132][ C0] __sysvec_apic_timer_interrupt (arch/x86/include/asm/jump_label.h:27 include/linux/jump_label.h:207 arch/x86/include/asm/trace/irq_vectors.h:41 arch/x86/kernel/apic/apic.c:1113) 
-[ 121.060132][ C0] sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1106 (discriminator 14)) 
-[ 121.060132][ C0] asm_sysvec_apic_timer_interrupt (arch/x86/include/asm/idtentry.h:645) 
-[ 121.060132][ C0] kcsan_setup_watchpoint (kernel/kcsan/core.c:704 (discriminator 7)) 
-[ 121.060132][ C0] do_raw_spin_unlock (kernel/locking/spinlock_debug.c:99 kernel/locking/spinlock_debug.c:140) 
-[ 121.060132][ C0] _raw_spin_unlock (arch/x86/include/asm/preempt.h:85 include/linux/spinlock_api_smp.h:143 kernel/locking/spinlock.c:186) 
-[ 121.060132][ C0] __ww_mutex_lock+0x7fb/0xcfd 
-[ 121.060132][ C0] ww_mutex_lock (kernel/locking/mutex.c:873) 
-[ 121.060132][ C0] stress_one_work (kernel/locking/test-ww_mutex.c:545) 
-[ 121.060132][ C0] process_one_work (arch/x86/include/asm/jump_label.h:27 include/linux/jump_label.h:207 include/trace/events/workqueue.h:108 kernel/workqueue.c:2589) 
-[ 121.060132][ C0] worker_thread (include/linux/list.h:292 kernel/workqueue.c:2736) 
-[ 121.060132][ C0] kthread (kernel/kthread.c:381) 
-[ 121.060132][ C0] ret_from_fork (arch/x86/entry/entry_64.S:314) 
-[  121.060132][    C0]
-[  121.060132][    C0] read to 0xffff88810336eaa8 of 8 bytes by interrupt on cpu 0:
-[ 121.060132][ C0] print_report (kernel/kcsan/report.c:396) 
-[ 121.060132][ C0] kcsan_report_known_origin (kernel/kcsan/report.c:504 kernel/kcsan/report.c:694) 
-[ 121.060132][ C0] kcsan_setup_watchpoint (kernel/kcsan/core.c:678) 
-[ 121.060132][ C0] wq_worker_tick (kernel/workqueue.c:1140) 
-[ 121.060132][ C0] scheduler_tick (kernel/sched/core.c:5639) 
-[ 121.060132][ C0] update_process_times (kernel/time/timer.c:2078) 
-[ 121.060132][ C0] tick_nohz_handler (kernel/time/tick-sched.c:1369) 
-[ 121.060132][ C0] __sysvec_apic_timer_interrupt (arch/x86/include/asm/jump_label.h:27 include/linux/jump_label.h:207 arch/x86/include/asm/trace/irq_vectors.h:41 arch/x86/kernel/apic/apic.c:1113) 
-[ 121.060132][ C0] sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1106 (discriminator 14)) 
-[ 121.060132][ C0] asm_sysvec_apic_timer_interrupt (arch/x86/include/asm/idtentry.h:645) 
-[ 121.060132][ C0] queued_spin_lock_slowpath (include/linux/instrumented.h:69 include/linux/atomic/atomic-instrumented.h:27 arch/x86/include/asm/qspinlock.h:100 kernel/locking/qspinlock.c:327) 
-[ 121.060132][ C0] do_raw_spin_lock (kernel/locking/spinlock_debug.c:93 kernel/locking/spinlock_debug.c:117) 
-[ 121.060132][ C0] _raw_spin_lock (include/linux/spinlock_api_smp.h:134 kernel/locking/spinlock.c:154) 
-[ 121.060132][ C0] __ww_mutex_lock+0x941/0xcfd 
-[ 121.060132][ C0] ww_mutex_lock (kernel/locking/mutex.c:873) 
-[ 121.060132][ C0] stress_reorder_work (kernel/locking/test-ww_mutex.c:505) 
-[ 121.060132][ C0] process_one_work (arch/x86/include/asm/jump_label.h:27 include/linux/jump_label.h:207 include/trace/events/workqueue.h:108 kernel/workqueue.c:2589) 
-[ 121.060132][ C0] worker_thread (include/linux/list.h:292 kernel/workqueue.c:2736) 
-[ 121.060132][ C0] kthread (kernel/kthread.c:381) 
-[ 121.060132][ C0] ret_from_fork (arch/x86/entry/entry_64.S:314) 
-[  121.060132][    C0]
-[  121.060132][    C0] value changed: 0x00000000001364d8 -> 0x00000000001368c0
-[  121.060132][    C0]
-[  121.060132][    C0] Reported by Kernel Concurrency Sanitizer on:
-[  121.060132][    C0] CPU: 0 PID: 42 Comm: kworker/u4:3 Tainted: G                T  6.4.0-rc1-00009-g8a1dd1e547c1 #1
-[  121.060132][    C0] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-[  121.060132][    C0] Workqueue: test-ww_mutex stress_reorder_work
-[  121.060132][    C0] ==================================================================
-[  121.932570][    T1] All ww mutex selftests passed
-[  121.942977][    T1] Initialise system trusted keyrings
-[  121.950392][    T1] workingset: timestamp_bits=46 max_order=22 bucket_order=0
-[  121.975697][    T1] NET: Registered PF_ALG protocol family
-[  121.977547][    T1] Key type asymmetric registered
-[  121.979060][    T1] Asymmetric key parser 'x509' registered
-[  121.980897][    T1] Asymmetric key parser 'pkcs8' registered
-[  121.982622][    T1]
-[  121.982622][    T1] Start testing find_bit() with random-filled bitmap
-[  122.008302][    T1] find_next_bit:                 8628942 ns, 163936 iterations
-[  122.020467][    T1] find_next_zero_bit:            9789528 ns, 163745 iterations
-[  122.032835][    T1] find_last_bit:                10001837 ns, 163935 iterations
-[  122.248386][    T1] find_nth_bit:                213810108 ns,  16175 iterations
-[  122.437809][    T1] find_first_bit:              187071076 ns,  16176 iterations
+group: group-34, test: dpp_test_vector_p_256_b
+2023-09-22 11:50:05 export USER=root
+2023-09-22 11:50:05 ./build.sh
+Building TNC testing tools
+Building wlantest
+Building hs20-osu-client
+Building hostapd
+Building wpa_supplicant
+2023-09-22 11:51:03 ./start.sh
+2023-09-22 11:51:04 ./run-tests.py dpp_test_vector_p_256_b
+DEV: wlan0: 02:00:00:00:00:00
+DEV: wlan1: 02:00:00:00:01:00
+DEV: wlan2: 02:00:00:00:02:00
+APDEV: wlan3
+APDEV: wlan4
+START dpp_test_vector_p_256_b 1/1
+Test: DPP P-256 test vector (Responder-only auth)
+DPP authentication did not succeed (Responder)
+Traceback (most recent call last):
+  File "/lkp/benchmarks/hwsim/tests/hwsim/./run-tests.py", line 531, in main
+    t(dev, apdev)
+  File "/lkp/benchmarks/hwsim/tests/hwsim/test_dpp.py", line 2583, in test_dpp_test_vector_p_256_b
+    wait_auth_success(dev[0], dev[1])
+  File "/lkp/benchmarks/hwsim/tests/hwsim/test_dpp.py", line 4878, in wait_auth_success
+    raise Exception("DPP authentication did not succeed (Responder)")
+Exception: DPP authentication did not succeed (Responder)
+FAIL dpp_test_vector_p_256_b 5.350665 2023-09-22 11:51:11.790041
+passed 0 test case(s)
+skipped 0 test case(s)
+failed tests: dpp_test_vector_p_256_b
+2023-09-22 11:51:11 ./stop.sh
 
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20230925/202309251423.8ef230c0-oliver.sang@intel.com
+https://download.01.org/0day-ci/archive/20230925/202309251502.aa08a357-oliver.sang@intel.com
 
 
 
