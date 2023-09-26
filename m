@@ -1,82 +1,87 @@
 Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DDD2EDB
-	for <oe-lkp@lists.linux.dev>; Tue, 26 Sep 2023 06:25:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78DAF4C7D
+	for <oe-lkp@lists.linux.dev>; Tue, 26 Sep 2023 06:46:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695709517; x=1727245517;
+  t=1695710760; x=1727246760;
   h=date:from:to:cc:subject:message-id:in-reply-to:
    mime-version;
-  bh=yk3F53lq+MZeaQ3UEnDM6EU7NBbRqcoUCdyowDfK1iI=;
-  b=GhgzxCCkTiyTDA7ur3MZCn85bel4yC26DRz5Q/kWAZM/UuksOPD1th4E
-   HtVIiNoITUEkS1t/06AWk7nCzTUfOSe5beHQJNh0Arp1KRY+qnvl0MvjG
-   78UJOP1uE5de5wx6/EPRlnCue/gwr33iw3tWScWZFvosqJvt/Hi/iMVvH
-   lnJ1f9h26zP8qbTT8mGVhDLtXQpqzPN5vFAtXK+n/O4UFVLoQLDNAPu+S
-   bOML2xhV9kBQsVEJUrm4vFQyTyoYecCBZpRBdsAbP7dRVKOC0nmLBORWG
-   OEsKF1vNdyI1ym61/YhazDSWc54FgyNuhzQkEqCw9N9q2xn+W3rN6/lvM
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="385345415"
+  bh=/CWzfvMlR7ThN63/qn2lmwjJDfkEWcsvkbL/SqFdDeI=;
+  b=S4x4ytxqNGFWqobKUvA/VG+bOYmgK9BOt9+q5tsi6yYhyIH3pHb4Uo14
+   V/T9YRCKB4Ovs3YswLjJ4aEazTEJ6ZiQ0RaDMQGz9oOS4P9HItIz0JQ9I
+   RgQg83ijdHJSRliKXeUtBebO8QRzxmWagxhXUrAEFzRYPZDLLM6F7iOkN
+   Ost6OdJ8KAX/iGUkk6cAFQuYeAffLkJwtAxajR+ciUkDrQRRC4JXijOHl
+   54hZbQym9hkK6cfXBjLxSAshCKUEzum0Twk9AXPGmTjrlaPM9bz30NnGL
+   Hh4I9eAzoUhgcbIRbvAlZIcVU9YGxPenDBZ1Fk08D3fcQilGD/KV3AmXA
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="385348489"
 X-IronPort-AV: E=Sophos;i="6.03,177,1694761200"; 
-   d="scan'208";a="385345415"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Sep 2023 23:25:16 -0700
+   d="scan'208";a="385348489"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Sep 2023 23:45:59 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="872378053"
+X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="752047218"
 X-IronPort-AV: E=Sophos;i="6.03,177,1694761200"; 
-   d="scan'208";a="872378053"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orsmga004.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 25 Sep 2023 23:25:16 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+   d="scan'208";a="752047218"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by fmsmga007.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 25 Sep 2023 23:45:57 -0700
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Mon, 25 Sep 2023 23:25:16 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Mon, 25 Sep 2023 23:25:15 -0700
+ 15.1.2507.32; Mon, 25 Sep 2023 23:45:57 -0700
 Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32 via Frontend Transport; Mon, 25 Sep 2023 23:25:15 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.105)
+ 15.1.2507.32 via Frontend Transport; Mon, 25 Sep 2023 23:45:57 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.169)
  by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.32; Mon, 25 Sep 2023 23:25:15 -0700
+ 15.1.2507.32; Mon, 25 Sep 2023 23:45:48 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lE5sbySCvEAV0Q/gbUfgDw7DK1+ICB1hTFoqLt2eSIDNbhOArvnrMetK09ONEbcVb7TCPrqCnCXZt7S8WZCAfvFfbnm0D8gxTlj712gNeGrQ0uQtZ+oYb4DAhSQFZZlLmXUqbRI2Q9dd78cQzWwp/q7QS1TP7s92tcGf2oixVAZ9F73ehStT0Ri+l02avjdzE5q0qY/LBhNm+5CV1qWsw6pmme9pk3Xxj46EUAwAboyh59wfIg2/TlT89C1QhbbWnmEc3e62AfxbkBdEflnWj38nvvMetAQtdlsDDH4lpa6Td+XX9P4WhbTfU2BvhkT0oMhYbw63NREbN3MnCRz8Fg==
+ b=izr+KnHOwQsnRXGs4JA/qq+kgpyO5E3dsj/E3ggcJLUljk7uKkntakdKI/sP0FDuUsDg64wOEmducbPbXa7j75hJtqVr3uQsIbCao3WzTzop+9TMdW086Bp0ZhTdfX9rh91/KTY2SKF2nimy/Ywh3t/r6+25ROkxoMkCYrw8Zi6R7YzNwrYF6XL1ZLLlcxBa9s6kOy6FFJzgmgx8DmoJ+5D0mU8J8OruHbbm/nA36O3hp0s8cIFnxHPbVO/Da0LGPio7Iv2AX7ep3ENHrHdKJq209mcA+mnwpIVIZJr6RyCDeSB4qNoiDatlIfo1qTDH/pxFXO+d43EwupsCctFMoQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fAJUcyyIugZNdmh269Eg8EGdWYd7z0M80ShEZi00QHw=;
- b=YjGmIi+yMXfg98XTaEkl1JVwhV5bY+eyeU/v/IAcI9QKArDQdNyqnAIXeA3vFfwbusEE4pdB5uBirOeZ94UC4GC1uF15z5EaGMIYiYuiYqsci3okF8QGh8sRNnNhg3I80F1swaqCuc60+nkYJVZgew9fieIVDfdOvKprOT3LRE+G3iZDbV0drsYX1w2C7TAMKpy0x5mxaNizO5l1FsGh+gLd32Dj+E8D+Qa7WbMYWkNK6KZDVOdJoTJJRrYDsF+uRhZ3n3dGiEqH7WjAg3B0ACu9NAIqhKEdA733j6IvQFPHe6iKq2pDEI6HW+OrAiuSp7sZP1ubyGDLQNTIPScrNg==
+ bh=JZVs81wWZ6OL6o9jm+6JXf/rb93C6SAH2Z1a1tTMGhA=;
+ b=YFbrKyvqK89A8RAtY//Y5HTsWjwJwg2rYiRMzJiRFA9L/nxQpCc7D3R2mK+W+3sFKzMBoT2Pk85Suc1N1wzCUAut9Eb+QxRtGE7Sl6ZvE/ISFUGiyzlfKlmn0kvEuDCiEgRYVR0Nnf5tSOJ66hSAJIjv+qdy+niWeUTG712Rwjvxy4ILrZf8g1DNkW8rRpsku2CvfkUbOs+8BzIJxhg2PyHWB+RnX5O9rAsUeY2CgbuBb59CTtBu9fRR/YvPlR0Bfs9pVL4Wl265L9i5/se5+llP+QZD/WFsPUSU7W4gJikgQ9ydmrPJ1IgP8CS6bAH8EAqq49tukJdP4A4p/oXpYQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
- by CO1PR11MB4930.namprd11.prod.outlook.com (2603:10b6:303:9b::11) with
+ by DM4PR11MB7206.namprd11.prod.outlook.com (2603:10b6:8:112::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6813.20; Tue, 26 Sep
- 2023 06:25:14 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6813.21; Tue, 26 Sep
+ 2023 06:45:41 +0000
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com
  ([fe80::73c6:1231:e700:924]) by PH8PR11MB6779.namprd11.prod.outlook.com
  ([fe80::73c6:1231:e700:924%4]) with mapi id 15.20.6813.017; Tue, 26 Sep 2023
- 06:25:14 +0000
-Date: Tue, 26 Sep 2023 14:25:06 +0800
+ 06:45:41 +0000
+Date: Tue, 26 Sep 2023 14:45:27 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: <fdmanana@kernel.org>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-btrfs@vger.kernel.org>,
-	<ltp@lists.linux.it>, <oliver.sang@intel.com>
-Subject: Re: [PATCH 7/8] btrfs: use extent_io_tree_release() to empty dirty
- log pages
-Message-ID: <202309261438.d1bebb50-oliver.sang@intel.com>
+To: Puranjay Mohan <puranjay12@gmail.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <bpf@vger.kernel.org>, "Alexei
+ Starovoitov" <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>,
+	"Andrii Nakryiko" <andrii@kernel.org>, Martin KaFai Lau
+	<martin.lau@linux.dev>, "Song Liu" <song@kernel.org>, Yonghong Song
+	<yonghong.song@linux.dev>, "John Fastabend" <john.fastabend@gmail.com>, KP
+ Singh <kpsingh@kernel.org>, Stanislav Fomichev <sdf@google.com>, Hao Luo
+	<haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>, Shubham Bansal
+	<illusionist.neo@gmail.com>, Russell King <linux@armlinux.org.uk>, Mykola
+ Lysenko <mykolal@fb.com>, Shuah Khan <shuah@kernel.org>,
+	<linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<puranjay12@gmail.com>, <oliver.sang@intel.com>
+Subject: Re: [PATCH bpf-next v3 8/9] bpf/tests: add tests for cpuv4
+ instructions
+Message-ID: <202309261451.8934f9ad-oliver.sang@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <459c0d25abdfecdc7c57192fa656c6abda11af31.1695333278.git.fdmanana@suse.com>
-X-ClientProxiedBy: SI2PR01CA0025.apcprd01.prod.exchangelabs.com
- (2603:1096:4:192::10) To PH8PR11MB6779.namprd11.prod.outlook.com
+In-Reply-To: <20230907230550.1417590-9-puranjay12@gmail.com>
+X-ClientProxiedBy: SG2PR02CA0026.apcprd02.prod.outlook.com
+ (2603:1096:3:18::14) To PH8PR11MB6779.namprd11.prod.outlook.com
  (2603:10b6:510:1ca::17)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -85,168 +90,99 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|CO1PR11MB4930:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9901e5be-6d93-4514-6c1e-08dbbe5957e1
+X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|DM4PR11MB7206:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9a12ec24-33bc-4e8a-626f-08dbbe5c334f
 X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ou1QNKvFK8X7/Qu40ilpwPfaYMjwyiyvWBJxTuyK1t71TRxo3OSzoSrkwV6IvZqZSTXHxCSk7cuFAOOlm9nJJ8riPs7IiWZv9oWccy8Qq+7H1Hf2Kmfup+cuJj0+ccOO3EIQdORzQW0BRSVDTQIFzaLPjO53tMi34q39cVj9i90eIrB0J7t244LpllN+mKmChgkLOi7E6vHFrFbCXyZBRT0KB9p/Ifp9g+UZKK+06h4UR6I+E9YJffuLU8gQG6XaLn6gAysOQeTRqBokbTERIwjJW4QVBIrgap8As9MFI+btMbBmYgUc4oMxF5de38TGUIrZ/YR1IjAgszmu+HKNbG6SmwGQyjNaEQStqQacFmYwMeWQfUaoXultfrHwCA0aLTj9G0y8qU8HRi/7gV1alb3YIIqB//vl9PqYjQpz3FqovDBYZpauheEQbowMdVbdvLiPEEaH0lkvEMPJyuNTg0/q/BY6LWYAGyNMR9rt3JV4FDLD84labvqROw3pH2jruRxafu2HAOiosP+ww4jgSP/EdkBTpWYqMBTZJHyejURbAj4Rn0Y1d4bxozqHa2upIlEOrOUSpGKOr1m6uGwO1cg2ea4YTpdGqFErCWlJQ+urZ9GVD/vq4QfYUMZiUS8+FRO2cBuV+391HH0wnfPJUw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(136003)(376002)(39860400002)(366004)(396003)(230922051799003)(1800799009)(186009)(451199024)(6506007)(478600001)(6486002)(6512007)(6666004)(36756003)(8936002)(82960400001)(38100700002)(966005)(2616005)(1076003)(66946007)(26005)(83380400001)(2906002)(86362001)(4326008)(41300700001)(5660300002)(8676002)(316002)(6916009)(66476007)(107886003)(66556008)(14143004);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: vE/2bEt337oIR/4YOV70oY5QRnYBBr4UT4v1oVfbGrJudizQ3+v+q9eyIgXnNPSaFNxuKq4g8lJvB+k72SPu5XDjODu2vQTG88olHw3B4g38Bq7InQE+ljT/kaIlsXFLnOUw09WJHmCmytrO/e8EY644YOz3q0T3PlGlqBfeHwMspFYpWtAq9/UD5SfZjImBpe75CLk7Ew6QRtZdrke2dxCDCcwXEZJLlBPZ5JEp/hX4+ndPgH+CZNh72rM5s3ouOaVQ81cxIKrVIdQSaVy5XcNTXUUveFSjg7CL3y5N7udc3CPcecIR12VDuAqyRtqAZcnELTCrCzt2kgPMleyeQap8nen8HkaftQiRXZQ36HU4aVOF7NuFJhZ4/zcZJDrQHf3FrYERPDOHPSOHUpLhKCXOCUjlJrN8MRp3oMfv8sGcndgE8uxQ9IP9cm1P21zm1bkU15snWXS9JftnSh18QCCtLyrC1VIt+22tDssUmZvq9HyezKcFu7jASoAQ16eoYyq4ZPuBT41xvFuUE7OlOwvOJ5v1pvNOd4WPb+9o6DS/y7n5bn8/Pwcy3oKTDhXosuxz2YRGceOpsk5b2p0tXg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(39860400002)(376002)(396003)(366004)(136003)(230922051799003)(1800799009)(186009)(451199024)(2906002)(6486002)(38100700002)(966005)(478600001)(36756003)(83380400001)(6666004)(26005)(2616005)(107886003)(1076003)(82960400001)(6506007)(86362001)(6512007)(7416002)(4326008)(8936002)(8676002)(41300700001)(66476007)(66556008)(66946007)(54906003)(5660300002)(316002)(6916009);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Z0Vn8NbPCyJI81bQcvgSjf0jVwlJqxSnyQVN20e1Xx4JkZTESOncQv8tGq/w?=
- =?us-ascii?Q?xklvmX0/snA84yKkbm13Wa1omJS40edGoFsMMehg+cONr6DHNyap6+S9QEwX?=
- =?us-ascii?Q?zktMeZdGhgBAkk0I9BYtrvoxOgWByfLlTV/+3IT7xe0xcQ8nO/tgkF8GFOxs?=
- =?us-ascii?Q?Cde8NLM+AA6tHgcKrhoH9TAqu6FjqdoTwXIj2Tiwd8D2YZ7e8Gmei98c0k4H?=
- =?us-ascii?Q?bD94TBuuXiC1RQwKPtNByJCXfAXqljGNssGKuIxCKhN+sDWnruCaUAWI2Tec?=
- =?us-ascii?Q?HsxwSfZ1TXlNPBNUiUL7caeYRVOgVKpN3y68qYItpJgZP2+KMO1CFxv4BH3x?=
- =?us-ascii?Q?eaNOyYmuogYIU63JyDUJXtitZieQpZKqjh3tUF9WFJ7+QHc8pbIYHz56cK7m?=
- =?us-ascii?Q?t01biOFlgxJaLTkxWHNxTcrYKZkn2QeFUPW7fSuqiBiGiiQI3siSRNKYAZVt?=
- =?us-ascii?Q?8Jr8aU04szdIcFyAPPYU9tls9TA260faLsVOY1Ol7uUo9dlKrB15HYeXYsTi?=
- =?us-ascii?Q?nOZJcVVGPW6+pJDE6VjQvk9gs5rNLZSBVje2vAx8D1kokoXxZ8i693zPw2cj?=
- =?us-ascii?Q?BoL39KR2392Z+BdwlYDDV31j1Za/Q40S9jGyhWSm43ElIk4wZ4luAukYpaZS?=
- =?us-ascii?Q?fZP5A94HUqD2A8xZYQK/7ZUhzGPpAlv1WeGfNdaguq/QzK6Z4qt89NcdyH72?=
- =?us-ascii?Q?o+YtA6PwPeauQYKGAV6vm4V64gnz320iY45bDt+mq1Y51bOXdle/S9MeovPG?=
- =?us-ascii?Q?N3fZtN/JUMbZ2/gosBzl16FDZe0MCzadpt2U7aRYwfj5OenxOyHuh/zNhTKn?=
- =?us-ascii?Q?xrpTwke2LBl2gnezhLppFiiey1Q5f+qYee61gbcLaMwPubiAPsADtPeF+7iB?=
- =?us-ascii?Q?RbN2/vty8v+2gAMT44A3tUeZpHElSqmgSSrfCZanzTDib7iY0EsTPQQpEkNE?=
- =?us-ascii?Q?CTkcu0UYW2mqyrYAknnnr6E4dAR3iEf6zuZy7mDTVCb1CBL90gUAoI90PLD4?=
- =?us-ascii?Q?iMGoezPKZBGgRz4/LlDCp3/8a1p3VVtdeRQb2yIUXdhryNY1YoqdPosKUv78?=
- =?us-ascii?Q?HmdHyl/tj2MwdQO6WTFZZekCmxWRhSywwcyl/pDGFI9IGaDjMoS3cbjtaOzI?=
- =?us-ascii?Q?EA7qMHpbKKFDOZMLUres0D1Ny/nYfG+yNROknam2TWxydwkn0V1EdD+WyHm8?=
- =?us-ascii?Q?z19oPnGT0SEfrGvN1YTndjH31HN/YVjLr434OXZp+HTdkIwCWY0algjMI39A?=
- =?us-ascii?Q?e68NDLghsWQPa1XgzATRrn3wYCwE5zNzmMnAAckKg1kCSPrR9S+eE02x2J5Q?=
- =?us-ascii?Q?rOnv7c6xOqk/PzrBP5/u1CBueOVv3FA6jsPuj3PZFDTO2rp4qTG5VZstyQrg?=
- =?us-ascii?Q?mfc5K+15HFPEIsApvR9FXhONBxH+qGiOc8rRyLpQXYkO2aBS0q4FUwre6Zhp?=
- =?us-ascii?Q?iSREIUYtf6tgSSUYEAV/mGQgf7ZSC0f0snWnIIM2qVtsi0J1Vnk9BYzyaLCs?=
- =?us-ascii?Q?rE9ek8X8Q/zUd/H4TSnoDtQ6OdrDZbINlz+TZ8nD7eQ5S4ib0T6cP9Ur6v7A?=
- =?us-ascii?Q?ruOm5vfJjt+gKonueginN6TSHXswPZniZlGeJenKf4eyErRcNTcNotlhcBEN?=
- =?us-ascii?Q?AQ=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9901e5be-6d93-4514-6c1e-08dbbe5957e1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?TFlE16BMyBQdFxKUibMh9cZwXELm6PoNCEUMJ0mzVstd1fAxD1is4S5ejnWd?=
+ =?us-ascii?Q?Igqjyi3Tc4tcqdreV1zYeUuAP04Q9r0/8kkNg8eibW1bCgJX0CtGn/Uvckuv?=
+ =?us-ascii?Q?TnHZmZV2boXmYapuBj7I4/aGS5Q/1rWV5GPcqlzJr/4tjMU3T5nBrQk+0JiH?=
+ =?us-ascii?Q?CFrud5RDWwo6DnFi6QseAf3bAR88e9iNg0Eq/gvXgs3l7WbvqBwphwwLUH4T?=
+ =?us-ascii?Q?3YPnP5D9IjgE2tSWaimvbJDf1pznCsnEhRaKmfFnbaoqqZGA9eybNaK9XTIZ?=
+ =?us-ascii?Q?A4n27mnlDpzSE5t13Ags8zPBT7PivIz6mDDj4tTKYp3AqIbkXNg/ifmJjoTE?=
+ =?us-ascii?Q?phInoy8/0aQpphT3du1qoKEKTydiiK0GTHLgX3NWq62yiOyYpjgCl0UQn5R8?=
+ =?us-ascii?Q?trQvm7eDNAYx9BDGDfVPWOwi9m6irl1OMxsqU4YjwoyJCre8VZQbFW3PD//h?=
+ =?us-ascii?Q?fXw7JmfJsJjGsFPCevuJHWylcLnvAxFrP0aSkobxjfDfupSN++34Su8xtbdV?=
+ =?us-ascii?Q?btoQae2rzYwM36Bph24CZPKNAv42VynE4InPApNpQyOk6LTKi0NXmTfkgBqx?=
+ =?us-ascii?Q?iTDDQAC5v9AhAwjaaYHzPg1QuhFNDbQaEjm20Hsyt+WNjuu3FkT35wU8xI/C?=
+ =?us-ascii?Q?gH1RTimRFQFQBsLI0wKisdYzIIvnjAH6VVaTH9qfPslaTA5jijee0oRj5ZkA?=
+ =?us-ascii?Q?R+fTRQqWtRycIhEAqPztf7eom0IvTEQir1OiMJqLGyBXsaeO6TFEFPMRcfoZ?=
+ =?us-ascii?Q?//wwIA3XnNqYCcFUCgYfQ1V+QUrR222K4QZ1Ufwk2pdKNFI6IJ+HsW2rQ4UB?=
+ =?us-ascii?Q?ZPcVeyPRffoIaWLRDcuzqwfAoLExnVhlgaEgmt8d8Anas8vv7rTLIz7df5fN?=
+ =?us-ascii?Q?/Uj3qQtv3P9uD9nJ0NjSSYyEeYttks6+mVS0+8aIT6VBIxHuSvdyr7amc3Fb?=
+ =?us-ascii?Q?0/CZt1QsX4Mqt1dJgjaSbk3jG1R1DnnPP/uabSDVG4FwgHXFsYNzA7LwUlfZ?=
+ =?us-ascii?Q?Cu/z3HUCgHKLrjI8+BjGoGQSRL28SaLZF1xw47JKm19NMDcXIdE6NtT0g2sR?=
+ =?us-ascii?Q?uJ1nQfslTE7UW7vH6VTS0nwbIOLv8H1qOZfhL76rRdzk98Cf4GWww1ub7P2I?=
+ =?us-ascii?Q?cDcz6fSyRzfqPQ7NytNhha+TvrLJgybAFBslUGDJ3xZfWeSH9ZY2Vre3Xrtb?=
+ =?us-ascii?Q?QJHdxml3xPggNbP//cvoae+zC0RmsVz7ihaVWI/0fn92ut20PnT0dQ7OD+o5?=
+ =?us-ascii?Q?OUfuRcwnuiLyOKyxeoRPOLDe5tfR/QbON0MZD7vTOwplOKDsHhVQGVV/JFsv?=
+ =?us-ascii?Q?6tD5T3tt8fil7HXbnatoJoKJ8WMKVvBlDnNvQylNggr2OJz1DshFXKfF/2Rb?=
+ =?us-ascii?Q?2mKSLngS/xQv6nW20kvPn4uvJV2heiYNagZ0sIFr3bfDLz3lCvNKbvSvRXWU?=
+ =?us-ascii?Q?+MeTzIKxbQ75PTWhpWXIGBw4MK03ipw0i0rZ4AmruARqyeV5wtDEnaQD+uy2?=
+ =?us-ascii?Q?hDswMxYBSRg+AtJtbf6xMxObr0GLquYewALCzcQhQAhtiiEzSR3b/02fglPA?=
+ =?us-ascii?Q?+5UxJjZ53Amyh2yKl6AIzdZ6B5P0LcFS4UPKj9elzkCgrh9suPvNQojwNXaI?=
+ =?us-ascii?Q?IQ=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9a12ec24-33bc-4e8a-626f-08dbbe5c334f
 X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB6779.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Sep 2023 06:25:14.1443
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Sep 2023 06:45:41.2000
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: bN8QRH95l0Ul3bEeQTPv8zU2CnWBm5616Yg/SxM0slCe50zZcioTabg5zjtN1JQuh4UfhSoQUSe4L/7i/I1kGg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR11MB4930
+X-MS-Exchange-CrossTenant-UserPrincipalName: jGy/Wner2th1WXKAqjoPojbyTDqa5jCnqUnayNVFTvMf+q4UUTaHF0iQwgWPG+AKP0fzIesq1MHy7wB8Z1vxow==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB7206
 X-OriginatorOrg: intel.com
 
 
 
 Hello,
 
-kernel test robot noticed "BUG:sleeping_function_called_from_invalid_context_at_fs/btrfs/extent-io-tree.c" on:
+kernel test robot noticed "kernel-selftests.net.test_bpf.sh.fail" on:
 
-commit: 84b23544b95acd2e4c05fc473816d19b749fe17b ("[PATCH 7/8] btrfs: use extent_io_tree_release() to empty dirty log pages")
-url: https://github.com/intel-lab-lkp/linux/commits/fdmanana-kernel-org/btrfs-make-extent-state-merges-more-efficient-during-insertions/20230922-184038
-base: https://git.kernel.org/cgit/linux/kernel/git/kdave/linux.git for-next
-patch link: https://lore.kernel.org/all/459c0d25abdfecdc7c57192fa656c6abda11af31.1695333278.git.fdmanana@suse.com/
-patch subject: [PATCH 7/8] btrfs: use extent_io_tree_release() to empty dirty log pages
+commit: 361ceaa10db461a35068f21db451a02c07e2a6bd ("[PATCH bpf-next v3 8/9] bpf/tests: add tests for cpuv4 instructions")
+url: https://github.com/intel-lab-lkp/linux/commits/Puranjay-Mohan/arm32-bpf-add-support-for-32-bit-offset-jmp-instruction/20230908-070721
+base: https://git.kernel.org/cgit/linux/kernel/git/bpf/bpf-next.git master
+patch link: https://lore.kernel.org/all/20230907230550.1417590-9-puranjay12@gmail.com/
+patch subject: [PATCH bpf-next v3 8/9] bpf/tests: add tests for cpuv4 instructions
 
-in testcase: ltp
-version: ltp-x86_64-14c1f76-1_20230715
+in testcase: kernel-selftests
+version: kernel-selftests-x86_64-60acb023-1_20230329
 with following parameters:
 
-	disk: 1HDD
-	fs: btrfs
-	test: ltp-aiodio.part2-01
+	group: net
 
 
 
 compiler: gcc-12
-test machine: 4 threads 1 sockets Intel(R) Core(TM) i3-3220 CPU @ 3.30GHz (Ivy Bridge) with 8G memory
+test machine: 36 threads 1 sockets Intel(R) Core(TM) i9-10980XE CPU @ 3.00GHz (Cascade Lake) with 32G memory
 
 (please refer to attached dmesg/kmsg for entire log/backtrace)
+
 
 
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202309261438.d1bebb50-oliver.sang@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202309261451.8934f9ad-oliver.sang@intel.com
 
 
 
-kern  :err   : [  179.301033] BUG: sleeping function called from invalid context at fs/btrfs/extent-io-tree.c:132
-kern  :err   : [  179.301247] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 3670, name: aiodio_sparse
-kern  :err   : [  179.301432] preempt_count: 1, expected: 0
-kern  :err   : [  179.301544] RCU nest depth: 0, expected: 0
-kern  :warn  : [  179.301708] CPU: 1 PID: 3670 Comm: aiodio_sparse Not tainted 6.6.0-rc2-00143-g84b23544b95a #1
-kern  :warn  : [  179.301924] Hardware name: Hewlett-Packard p6-1451cx/2ADA, BIOS 8.15 02/05/2013
-kern  :warn  : [  179.302126] Call Trace:
-kern  :warn  : [  179.302242]  <TASK>
-kern :warn : [  179.302351] dump_stack_lvl (lib/dump_stack.c:107 (discriminator 1)) 
-kern :warn : [  179.302489] __might_resched (kernel/sched/core.c:10188) 
-kern :warn : [  179.302630] ? preempt_notifier_dec (kernel/sched/core.c:10142) 
-kern :warn : [  179.302781] ? extent_io_tree_release (fs/btrfs/extent-io-tree.c:132) btrfs
-kern :warn : [  179.303082] ? walk_down_log_tree (fs/btrfs/tree-log.c:2711) btrfs
-kern :warn : [  179.303368] extent_io_tree_release (include/linux/sched.h:2097 fs/btrfs/extent-io-tree.c:132) btrfs
-kern :warn : [  179.303657] free_log_tree (fs/btrfs/tree-log.c:3214) btrfs
-kern :warn : [  179.303922] ? walk_log_tree (fs/btrfs/tree-log.c:3173) btrfs
-kern :warn : [  179.304123] ? free_log_tree (fs/btrfs/tree-log.c:330) btrfs
-kern :warn : [  179.304323] btrfs_free_log (fs/btrfs/tree-log.c:3227) btrfs
-kern :warn : [  179.304519] commit_fs_roots (fs/btrfs/transaction.c:1539) btrfs
-kern :warn : [  179.304721] ? btrfs_read_block_groups (fs/btrfs/block-group.c:2668) btrfs
-kern :warn : [  179.304934] ? __btrfs_run_delayed_refs (fs/btrfs/extent-tree.c:2135) btrfs
-kern :warn : [  179.305142] ? trace_btrfs_transaction_commit (fs/btrfs/transaction.c:1501) btrfs
-kern :warn : [  179.305357] btrfs_commit_transaction (fs/btrfs/transaction.c:2508 (discriminator 3)) btrfs
-kern :warn : [  179.305566] ? cleanup_transaction (fs/btrfs/transaction.c:2243) btrfs
-kern :warn : [  179.305769] ? dput (fs/dcache.c:900) 
-kern :warn : [  179.305879] ? dget_parent (fs/dcache.c:971) 
-kern :warn : [  179.305988] btrfs_sync_file (fs/btrfs/file.c:1987) btrfs
-kern :warn : [  179.306184] ? start_ordered_ops+0x100/0x100 btrfs
-kern :warn : [  179.306400] ? find_vma (mm/mmap.c:1853) 
-kern :warn : [  179.306506] ? find_vma_intersection (mm/mmap.c:1853) 
-kern :warn : [  179.306630] __do_sys_msync (mm/msync.c:97) 
-kern :warn : [  179.306742] do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80) 
-kern :warn : [  179.306852] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120) 
-kern  :warn  : [  179.306986] RIP: 0033:0x7f3b83d45740
-kern :warn : [ 179.307093] Code: 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 80 3d a1 8e 0d 00 00 74 17 b8 1a 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 58 c3 0f 1f 80 00 00 00 00 48 83 ec 28 89 54
-All code
-========
-   0:	00 f7                	add    %dh,%bh
-   2:	d8 64 89 01          	fsubs  0x1(%rcx,%rcx,4)
-   6:	48 83 c8 ff          	or     $0xffffffffffffffff,%rax
-   a:	c3                   	retq   
-   b:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
-  12:	00 00 00 
-  15:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
-  1a:	80 3d a1 8e 0d 00 00 	cmpb   $0x0,0xd8ea1(%rip)        # 0xd8ec2
-  21:	74 17                	je     0x3a
-  23:	b8 1a 00 00 00       	mov    $0x1a,%eax
-  28:	0f 05                	syscall 
-  2a:*	48 3d 00 f0 ff ff    	cmp    $0xfffffffffffff000,%rax		<-- trapping instruction
-  30:	77 58                	ja     0x8a
-  32:	c3                   	retq   
-  33:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
-  3a:	48 83 ec 28          	sub    $0x28,%rsp
-  3e:	89                   	.byte 0x89
-  3f:	54                   	push   %rsp
-
-Code starting with the faulting instruction
-===========================================
-   0:	48 3d 00 f0 ff ff    	cmp    $0xfffffffffffff000,%rax
-   6:	77 58                	ja     0x60
-   8:	c3                   	retq   
-   9:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
-  10:	48 83 ec 28          	sub    $0x28,%rsp
-  14:	89                   	.byte 0x89
-  15:	54                   	push   %rsp
-kern  :warn  : [  179.307439] RSP: 002b:00007ffdafb85f58 EFLAGS: 00000202 ORIG_RAX: 000000000000001a
-kern  :warn  : [  179.307615] RAX: ffffffffffffffda RBX: 0000000006400000 RCX: 00007f3b83d45740
-kern  :warn  : [  179.307777] RDX: 0000000000000004 RSI: 0000000006400000 RDI: 00007f3b7d800000
-kern  :warn  : [  179.307938] RBP: 00007f3b7d800000 R08: 0000000000000004 R09: 0000000000000000
-kern  :warn  : [  179.308098] R10: 00007f3b83c50168 R11: 0000000000000202 R12: 0000000000000004
-kern  :warn  : [  179.308287] R13: 000055b86e53d033 R14: 000055b86e53d140 R15: 0000000000000000
-kern  :warn  : [  179.308454]  </TASK>
+# timeout set to 1500
+# selftests: net: test_bpf.sh
+# test_bpf: [FAIL]
+not ok 13 selftests: net: test_bpf.sh # exit=1
 
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20230926/202309261438.d1bebb50-oliver.sang@intel.com
+https://download.01.org/0day-ci/archive/20230926/202309261451.8934f9ad-oliver.sang@intel.com
 
 
 
