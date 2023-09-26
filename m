@@ -1,241 +1,168 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F07BB7EC
-	for <oe-lkp@lists.linux.dev>; Tue, 26 Sep 2023 01:56:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1695693382; x=1727229382;
-  h=date:from:to:cc:subject:message-id:references:
-   content-transfer-encoding:in-reply-to:mime-version;
-  bh=bDxo79vISUGmqilgGArHT37rFEIyYaJ5H8wiQ9yrBIs=;
-  b=hR4JzKxCeG1fZyp74rWDWxMYOmXzUvczzEeJfeEgGb96/1/IVITiDPHJ
-   tA3fQTaJ+wECHaER/inbOSMXbZRYM4QPupV+CpTIOFWfyRkd5hXa8uZj6
-   3wnNhw8RI/nbN3wLKch7o35EZSeKOEiyAB3u5DAjCajDQ1o6UHtJjkAet
-   StGaN6a5YjsdqnIXEQmPWPktvDRhyBPmUbWk/6ngvw/zJFpQ1kozy5exx
-   yUXwtm48P3PgItz/a09DqCSSDgH31uH/Hky4YIB/S+ZbGohRY9cpDtAwi
-   ZvF0tvzop1AabOzF9LsMpONFqxnETNpntKHv4WwAIobJl6X8yOrdx4WY1
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="384236166"
-X-IronPort-AV: E=Sophos;i="6.03,176,1694761200"; 
-   d="scan'208";a="384236166"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Sep 2023 18:56:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10843"; a="818860785"
-X-IronPort-AV: E=Sophos;i="6.03,176,1694761200"; 
-   d="scan'208";a="818860785"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmsmga004.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 25 Sep 2023 18:56:17 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Mon, 25 Sep 2023 18:56:16 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Mon, 25 Sep 2023 18:56:15 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32 via Frontend Transport; Mon, 25 Sep 2023 18:56:15 -0700
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.57.47) by
- edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.32; Mon, 25 Sep 2023 18:56:15 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nEeelnw7wNBrMyWJjnZTGzecDMtEOmCGqSzKHqmW+3ceG7HPiZnA5GQCfHebH+1KPd0il9ucbphbtGNnaXD6jizqozclN6CSo445R+RAhqNCbcJ1b4oB2ZgmRmgl8F6cO9uCnJUDsFd0SRR+k/Lc+7cmNx/fZZLj/qTs5zEPeBWvfvQkiZ0S/vD8GD0xYxBp/+EDTw5SuVxBONhklZsjBagne8CPpLmFEYGVyYXkYM+1VUf6+w/ID7g70YNsXMf5p2eT3mqFiIEDaKLRzJxwOncewlJbJplYIq+hOTZmXDZh9LeH+cqFO+A3dGJot2HW7XE/KQ3LVlQ9t1Rhe6uuoA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TCnYwu7tE65Tl4cWOCZi49pD5Wp52dVT3fn9hffWcYM=;
- b=bvBb+wEUEey3hRTWC/IZwiR31IxYRTQ78c07MNvNOm1SRQX44y/qK21LdS9w2eQzGtkcQAO4VQ/JGrADa//s1optIP0g/qmyaJEKVZKCNfcT0Lfpks01LIO6cYt+fRZNdHFTe87nUZ2JV/a7giUELmMMzdBkIf9Z2BXWmeNeHKo7ALOlKEZXbcvh+w61bAd7COGES59HwFaBWy6raZRV51+Zcfme3bLjYVykQhNyDamTpJY28tQlOCplDkTKr9CyVjfENzB26YbXT/CYAtzagMXr+asfwB7qd0ohjy5XPzFLXC2DOKh+w+u2SB2S5hHjfl0h0KOd8N1kMCFCsPUOtw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
- by SA3PR11MB7553.namprd11.prod.outlook.com (2603:10b6:806:316::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6813.28; Tue, 26 Sep
- 2023 01:56:13 +0000
-Received: from PH8PR11MB6779.namprd11.prod.outlook.com
- ([fe80::73c6:1231:e700:924]) by PH8PR11MB6779.namprd11.prod.outlook.com
- ([fe80::73c6:1231:e700:924%4]) with mapi id 15.20.6813.017; Tue, 26 Sep 2023
- 01:56:13 +0000
-Date: Tue, 26 Sep 2023 09:56:02 +0800
-From: Oliver Sang <oliver.sang@intel.com>
-To: Amir Goldstein <amir73il@gmail.com>
-CC: Matthew Wilcox <willy@infradead.org>, Reuben Hawkins
-	<reubenhwk@gmail.com>, <brauner@kernel.org>, Cyril Hrubis <chrubis@suse.cz>,
-	<mszeredi@redhat.com>, <lkp@intel.com>, <linux-fsdevel@vger.kernel.org>,
-	<viro@zeniv.linux.org.uk>, <oe-lkp@lists.linux.dev>, <ltp@lists.linux.it>,
-	Jan Kara <jack@suse.cz>, <oliver.sang@intel.com>
-Subject: Re: [LTP] [PATCH] vfs: fix readahead(2) on block devices
-Message-ID: <ZRI6MsKeEgDnsyTo@xsang-OptiPlex-9020>
-References: <ZQ1Z_JHMPE3hrzv5@yuki>
- <CAD_8n+ShV=HJuk5v-JeYU1f+MAq1nDz9GqVmbfK9NpNThRjzSg@mail.gmail.com>
- <CAOQ4uxjnCdAeWe3W4mp=DwgL49Vwp_FVx4S_V33A3-JLtzJb-g@mail.gmail.com>
- <ZQ75JynY8Y2DqaHD@casper.infradead.org>
- <CAOQ4uxjOGqWFdS4rU8u9TuLMLJafqMUsQUD3ToY3L9bOsfGibg@mail.gmail.com>
- <CAD_8n+SNKww4VwLRsBdOg+aBc7pNzZhmW9TPcj9472_MjGhWyg@mail.gmail.com>
- <CAOQ4uxjM8YTA9DjT5nYW1RBZReLjtLV6ZS3LNOOrgCRQcR2F9A@mail.gmail.com>
- <CAOQ4uxjmyfKmOxP0MZQPfu8PL3KjLeC=HwgEACo21MJg-6rD7g@mail.gmail.com>
- <ZRBHSACF5NdZoQwx@casper.infradead.org>
- <CAOQ4uxjmoY_Pu_JiY9U1TAa=Tz1Mta3aH=wwn192GOfRuvLJQw@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAOQ4uxjmoY_Pu_JiY9U1TAa=Tz1Mta3aH=wwn192GOfRuvLJQw@mail.gmail.com>
-X-ClientProxiedBy: SI2PR02CA0006.apcprd02.prod.outlook.com
- (2603:1096:4:194::8) To PH8PR11MB6779.namprd11.prod.outlook.com
- (2603:10b6:510:1ca::17)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C675D7F
+	for <oe-lkp@lists.linux.dev>; Tue, 26 Sep 2023 02:55:35 +0000 (UTC)
+Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-1c1ff5b741cso69917525ad.2
+        for <oe-lkp@lists.linux.dev>; Mon, 25 Sep 2023 19:55:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance.com; s=google; t=1695696935; x=1696301735; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:references:to:subject
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=FrQ2Nq84VzrtnFGziz71CiExgTFO4ujxz6F6FWLEQKE=;
+        b=PFYKT0+u6ExSC8uku1K0eQjRbXSNCOZLTEcKaCW663kdhUoCfyPEOvfSdwsxXBLw/K
+         gicxCSWu4EFgOgwXcvra+4IrbepJ+AXNq5sx4NLI8iqhUhvKFyvhHWH8l97qrMivh9Fj
+         HJUhYIcbNCygO+xliZ67wipnp53k32b5sJyJvx5XmM9n/1xPmB2ubuVUL/9YhNctYoCR
+         XcaOzm2BeowJxleQtJD+AQRjtXu/YfVuXsFb/mcs6AtJT+t3FGscxyjigvEPv7t/M235
+         arPHNIVWGXtcQMrsRFep9EVtFka6v35qwh3pblNFLzLune+2kVcTuqG/psUGHCIoutTk
+         87DQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1695696935; x=1696301735;
+        h=content-transfer-encoding:in-reply-to:from:references:to:subject
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=FrQ2Nq84VzrtnFGziz71CiExgTFO4ujxz6F6FWLEQKE=;
+        b=YpcE3pBq7ueXLLo4p39ZwVqkQIq0Kay82Z95S0bPJ/ON2BKVQ6IylNP6NZ/ZOEmEls
+         BXAgNVA3mAym9QNSqZIDxPDDlQZaZfR5tkrsq7LbfkJwPgDLujUOrZ2YspZ0cfrJB+ge
+         zVjS6kerdppllmAlnhem3/Oda08Nfj4fDF9i1fzRzvx1nhzUcdIPgCzHSzow4cJFCg2f
+         Gwzo9FPeGwp6kmAL4VwMzBqJkzjVFpoT/3EGQx4dCKexgTjc22SuPrJyDCF9KwAMXUIY
+         4wfUMgZyK+g2G71W6kVjWoDJlleKL7eeQVT1jGXiNCUhGVDFuPfl/thhi7y52s/dDBJm
+         kAsg==
+X-Gm-Message-State: AOJu0YwYTiGCmDK3JdEa3VomDX4tjyhcjniUW/d0xOFm/qoXT7lrx/7b
+	ky1LN6xvF1VM78yrS4inPkX37w==
+X-Google-Smtp-Source: AGHT+IFRjE7PoccokAyS+idzJy1C3sfLW4xKzMk1dOJKth/RNh3wZv7eCbzbFTyvK2j+5pvj66S70A==
+X-Received: by 2002:a17:902:b284:b0:1c3:3dae:5869 with SMTP id u4-20020a170902b28400b001c33dae5869mr8423829plr.63.1695696934952;
+        Mon, 25 Sep 2023 19:55:34 -0700 (PDT)
+Received: from [10.254.245.222] ([139.177.225.234])
+        by smtp.gmail.com with ESMTPSA id jh5-20020a170903328500b001bb9bc8d232sm9699340plb.61.2023.09.25.19.55.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 Sep 2023 19:55:34 -0700 (PDT)
+Message-ID: <ee06ab24-0455-d212-e995-745f83366e00@bytedance.com>
+Date: Tue, 26 Sep 2023 10:55:27 +0800
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|SA3PR11MB7553:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6126c56d-3f04-41ed-937f-08dbbe33c379
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: AbpKzNbHT2lCKWcTL9fVhZWcYQx5ocytSnI+MawxK/IXD9ww6s2feAqs+2hKUPrwYXs3ZdG9vsyrw//1w1jY0GMlQVlr+kDRkSI91DJi6Ow503PXYSqdUvVojImuOUOx0FrYqf1tmQU3rdW1kXpxi35SHLIP/t7999SNkFzSr+yKoYT+emuyDA4YUf/jF52GhVEAp/wYrtpP4dzg5YIitQ/OM7YrM/s06DeQ5/1DDS3W/oSxf6qAlj0qldN/XLG88DZVY6pf0ww9h9NkImKpB4Ij4U2LkqXVSsX2d+XlGksebrc7oERwo/EAhxEHmAQmhTvg/3O/WY9v2noDkRYivztMJK6+iPUYqhxPaFRs6xBaKZVDsolIVWFE4aqowuzoSfuQ1Pc2mdTAnN0g286xOvu3exJ3qpMmaspbkDjPQr6FRQOcJXk8N1bGsalZsztHfB5JnjnoQVIBy5fr8U576I0wLFgTChiM4p9nk2KnTZsRoAFrh2l2/5CimoynaYwi0LUSjpqdNC7IBtKqbzxuJcIWRuqG+vmSmLhBBuZwPT8=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(7916004)(376002)(136003)(366004)(396003)(39860400002)(346002)(230922051799003)(451199024)(186009)(1800799009)(41300700001)(316002)(8676002)(54906003)(66556008)(66946007)(66476007)(6916009)(7416002)(6512007)(9686003)(8936002)(2906002)(4326008)(44832011)(478600001)(6666004)(26005)(6486002)(38100700002)(6506007)(53546011)(83380400001)(5660300002)(966005)(107886003)(86362001)(82960400001)(33716001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cmlMQ3o4QmtPNVhwUVk0Rk1yZ2lqU1pIZjBqbnVnOUJJUVhPL01UUU1SNmw2?=
- =?utf-8?B?dU9ZRjNobC80d2VTV3hRQkFxS2JBdk40UXk5SjB6MThWcWFqdDBuRlYvb1l6?=
- =?utf-8?B?K1lOMEhwTXVuYlArZHlLNzgrcVcweHBSZGJ3R3UwVXBJUEZDWXY5eTlvQmVW?=
- =?utf-8?B?YnRabDNtQWxBOFFqS0dkdHpXOEppSlZqclNQMC83TkVDSC92SitlU3k2SHpm?=
- =?utf-8?B?b2pUUHVJSjdXb0tyV1hWUHFGbnZiK21WN2dBUTJIZFdBMGJWSnFvcUk0YVB2?=
- =?utf-8?B?aS9FaWdSUkw0SGYzU3ZFM2RnU2taZ0pyRWw1WklvVFhIUnhObnZyWGJtZ1RI?=
- =?utf-8?B?TXhXcHl3QTVwRnNvNU1QMEhya0lqaHFuSDRITHg3bVJNMFc5cFNWTXhaV29M?=
- =?utf-8?B?aXJ5b0ZlQktnVjZTMWZ1VERrTE85UWJzTXNRcDczMkN2Z21pSmxac2UrNmtF?=
- =?utf-8?B?NFpLSk03cUdHRmJjUEFPd0wxc09zcnlGZW5GL0pmd1gzaXlJN0hZUUhua0gy?=
- =?utf-8?B?RHAvV2tyZmRWK2FRamdSYVpBd212WTFNdllhczdIMUVxVUltTlBpUjNmQk1r?=
- =?utf-8?B?N3dzMnBwenhLWkJOeWhnZ05IcndtL21aZ2lUUzFtQUVoOXA1QWRSSHdOaldv?=
- =?utf-8?B?OGVWS29maTR2eDh4T1FEU2JnR05ES2dzdVQ3TDcrdjcxUktNeURFYUZNR1R0?=
- =?utf-8?B?WlZnNUxhajFUeGJsVHpvbU82cG41Z1hmeXBqTm45d0N1M2d1N08wTkk1SWpv?=
- =?utf-8?B?TmdJbFF4bmgwd1R1OHNKRjR6L2p2Y00zc3kzK2lJVDNpMWFUZHd4VWQrWjFF?=
- =?utf-8?B?WUpWbVhnRFNLT1NMR1lLNXVFWCsvQ1l5YnhoWGZrQmZvMldMYUhKdkF4NU5K?=
- =?utf-8?B?UWZZeU05azVpMTBnVGR3c1dXOTFTUmFvbFprS0dzc2hkclE5ay9pUE92TnJD?=
- =?utf-8?B?aWRGeXVpR2hKSkdERzhTNno0M1RweWUrdzFXRUdTYWd5R2NkT2hhaXE5ZFlo?=
- =?utf-8?B?S241a3dzWndsYlBJbWV3cmlQeUpFOWdXRjZXeU1LSkI2K3MwUXQyZmpOMkYr?=
- =?utf-8?B?SWhoY081TjhRcGJnQkhGNXF5TnBDcERSYlJkT2VoaE9XM3IxUXFNWHdpQVVT?=
- =?utf-8?B?U0lGMENNc3dQWk1oRC9tWVFsZ3lnK3JzUmx2ckZVaWo1T1Evam1vdm1ZYWQ5?=
- =?utf-8?B?bFNmc1FCbzdpOEhvTHdJM0t0a1VHK1FYU01QalFCZXZBd1NNZG1Ed204cjJq?=
- =?utf-8?B?d3NQY2hVOC9MV2Juek9jSDFmOUJiTE5oZzlNYVdvS2pnS2dEdWFJbVM5VEJP?=
- =?utf-8?B?Z0tXYk5MbHhsWmowa3Zhd2hqQVpHbVF2empjT1lvRTBFR3VWdkR2dTNTOTdO?=
- =?utf-8?B?ZW1mVmV3b0lyMCtaVWJHMk1rMHF6Z0s2VFZySHJFa0x2eXRvSEY3akpBT3NM?=
- =?utf-8?B?UnlMYmdmR0RDbFN2aWViemhqMDc3TkFRVmNUSHlNWTJjcEU2TkFDWk0zdWpX?=
- =?utf-8?B?NkpFY1RuMXgrcGpiekEyUHBJM01Qclc5ZzVjSTF6ZEFySDBGcms5VlZzUDBu?=
- =?utf-8?B?dkF3SUZzc3BCdTFvQjdadUUxdXlIbWN1eXNjU1U5eDFtemV3ak1wbWN3NVFN?=
- =?utf-8?B?cnRETWZlMTJDeGk3Z2c2Vmh4ZTFob0J4V2UyOTZRL1RGek1oQ3hNUmFVTVQ2?=
- =?utf-8?B?TlNmbG5JM3dISXNZdjZkZzFldHBIR3RJaGhyZ1NmeWdCbEVlN2pSc0k2aGJK?=
- =?utf-8?B?bmJBc2lJV2xOVzQyQU9GUGVNZmZOdk1LaHRRVllQT2kvTnMvOWxEbGl2VFJS?=
- =?utf-8?B?ZnJ6ZWp1Z1J3MkVPOStBUWVYeXRWcnVveTZxS3MzMlRFV0FpSmo4NHNIcDFF?=
- =?utf-8?B?SXFlUWd2QmVBWkJ3RmtHcFcrVnlSNGdJc05nejhaU21NZERsVkMyOXRDb2g5?=
- =?utf-8?B?emJtVU4wM2RIYitSNW4vcDFaRVkrbkwyaTFoWlRoQVVSVmpLRExvb3ZyVXFG?=
- =?utf-8?B?d3ZCdFpWUHJPak1SbkQ0cXpybmxoZjZaQTZTRHZ6aHREM09ab3p5YUxycVIv?=
- =?utf-8?B?Z2xObVhMaVhpOWttMVRNNVE2YjIxdDN6T0U5aHJkcm0wVU1uRWJkLzJYOEQ4?=
- =?utf-8?B?ZG0yWm9QOHZqOUNmR0JWcmY2eEFXNk1OYkdRek1SeXlKVEl1akw0ckU0WXA3?=
- =?utf-8?B?dnc9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6126c56d-3f04-41ed-937f-08dbbe33c379
-X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB6779.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Sep 2023 01:56:13.6235
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: LFWIBm6vkirgqwsKUPjaO9K5iYd86aoaUqvecKG2B8TVsGIvUCCqQUmnWxaQ+jQyXdNLYo+uHh4I9I609Py2qQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR11MB7553
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.15.1
+Subject: Re: [linux-next:master] [maple_tree] 2041864a22:
+ BUG:sleeping_function_called_from_invalid_context_at_include/linux/sched/mm.h
+To: "Liam R. Howlett" <Liam.Howlett@Oracle.com>,
+ Peng Zhang <zhangpeng.00@bytedance.com>, jason.sim@samsung.com,
+ kernel test robot <oliver.sang@intel.com>,
+ "oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>,
+ "lkp@intel.com" <lkp@intel.com>,
+ Linux Memory Management List <linux-mm@kvack.org>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Matthew Wilcox <willy@infradead.org>, Suren Baghdasaryan
+ <surenb@google.com>,
+ "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>
+References: <202309242123.7ebe65b5-oliver.sang@intel.com>
+ <CGME20230924135059epcas1p4c0595d07a7d50da7a877a0af696d9c78@epcms1p8>
+ <20230925123907epcms1p82db5bc72fa25e390986f2e195a58b362@epcms1p8>
+ <08cffec5-a3ae-f02a-ca97-d93f7a17eaee@bytedance.com>
+ <20230925152353.zoezenruphilf2kc@revolver>
+From: Peng Zhang <zhangpeng.00@bytedance.com>
+In-Reply-To: <20230925152353.zoezenruphilf2kc@revolver>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-hi Amir,
 
-On Sun, Sep 24, 2023 at 06:32:30PM +0300, Amir Goldstein wrote:
-> On Sun, Sep 24, 2023 at 5:27 PM Matthew Wilcox <willy@infradead.org> wrote:
-> >
-> > On Sun, Sep 24, 2023 at 02:47:42PM +0300, Amir Goldstein wrote:
-> > > Since you joined the discussion, you have the opportunity to agree or
-> > > disagree with our decision to change readahead() to ESPIPE.
-> > > Judging  by your citing of lseek and posix_fadvise standard,
-> > > I assume that you will be on board?
-> >
-> > I'm fine with returning ESPIPE (it's like ENOTTY in a sense).  but
-> > that's not what kbuild reported:
+
+在 2023/9/25 23:23, Liam R. Howlett 写道:
+> * Peng Zhang <zhangpeng.00@bytedance.com> [230925 08:47]:
+>>
+>>
+>> 在 2023/9/25 20:39, Jaeseon Sim 写道:
+>>>> Hello,
+>>>>
+>>>> kernel test robot noticed "BUG:sleeping_function_called_from_invalid_context_at_include/linux/sched/mm.h" on:
+>>>>
+>>>> commit: 2041864a22d4f4e900d0a3def4985432a21d8e6d ("maple_tree: use mas_node_count_gfp() in mas_expected_entries()")
+>>>> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+>>>>
+>>>> [test failed on linux-next/master 940fcc189c51032dd0282cbee4497542c982ac59]
+>>>>
+>>>> in testcase: boot
+>>>>
+>>>> compiler: gcc-9
+>>>> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+>>>>
+>>>> (please refer to attached dmesg/kmsg for entire log/backtrace)
+>>>>
+>>>>
+>>>>
+>>>> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+>>>> the same patch/commit), kindly add following tags
+>>>> | Reported-by: kernel test robot <oliver.sang@intel.com>
+>>>> | Closes: https://lore.kernel.org/oe-lkp/202309242123.7ebe65b5-oliver.sang@intel.com
+>>>>
+>>>>
+>>>> [  113.582828][    T1] BUG: sleeping function called from invalid context at include/linux/sched/mm.h:306
+>>>> [  113.583602][    T1] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 1, name: swapper/0
+>>>> [  113.584246][    T1] preempt_count: 1, expected: 0
+>>>> [  113.584613][    T1] RCU nest depth: 0, expected: 0
+>>>> [  113.584983][    T1] 1 lock held by swapper/0/1:
+>>>> [ 113.585344][ T1] #0: ffffc9000001fc10 (&mt->ma_lock){+.+.}-{2:2}, at: check_forking+0x1e0/0x5c0
+>>> Dear Liam,
+>>>
+>>> mas_expected_entries() in check_forking() tried to sleep while holding spinlock, and panic occurred.
+>>> I think mas_expected_entries() in lib/test_maple_tree.c need to be modified to align with commit 2041864a22d4f.
+>>> Do you have any idea for it? or Could you give some guide?
 > 
-> kbuild report is from v1 patch that was posted to the list
-> this is not the patch (v2) that is applied to vfs.misc
-> and has been in linux-next for a few days.
+> There are two ways we could fix this: one is to pass through the GFP
+> flag and use different flags in the test module, the other is to move
+> the testing out of the module and into the userspace tests.
+Actually, there is a third method that can be used to solve this
+problem, which is to use an externally sleepable lock, such as
+rw_semaphore.
 > 
-> Oliver,
+> Adding the GFP flag to the interface might be needed in the future but
+> there's no need for that now.  I was concerned about too large of a
+> change to the existing code, and this would increase the runtime code
+> changes - although not a lot.
 > 
-> Can you say the failure (on socket) is reproduced on
-> https://git.kernel.org/pub/scm/linux/kernel/git/vfs/vfs.git vfs.misc?
+> I think the best thing would be to move the forking test out of the
+> module into the userspace testing (tools/testing/radix-tree/maple.c)
 > 
-> I would expect the pipe test to fail for getting ESPIPE
-> but according to Reuben the socket test does not fail.
-
-I tested on this commit:
-15d4000b93539 (brauner-vfs/vfs.misc) vfs: fix readahead(2) on block devices
-
-below is the test output:
-
-<<<test_output>>>
-tst_test.c:1558: TINFO: Timeout per run is 0h 02m 30s
-readahead01.c:36: TINFO: test_bad_fd -1
-readahead01.c:37: TPASS: readahead(-1, 0, getpagesize()) : EBADF (9)
-readahead01.c:39: TINFO: test_bad_fd O_WRONLY
-readahead01.c:45: TPASS: readahead(fd, 0, getpagesize()) : EBADF (9)
-readahead01.c:54: TINFO: test_invalid_fd pipe
-readahead01.c:56: TFAIL: readahead(fd[0], 0, getpagesize()) expected EINVAL: ESPIPE (29)
-readahead01.c:60: TINFO: test_invalid_fd socket
-readahead01.c:62: TFAIL: readahead(fd[0], 0, getpagesize()) succeeded
-
-Summary:
-passed   2
-failed   2
-broken   0
-skipped  0
-warnings 0
-
-
-BTW, I noticed the branch updated, now:
-e9168b6800ecd (brauner-vfs/vfs.misc) vfs: fix readahead(2) on block devices
-
-though the patch-id are same. do you want us to test it again?
-
+>> This is just a test module. The work[1] I'm doing modifies this place
+>> and it will fix this bug.
 > 
-> >
-> > readahead01.c:62: TFAIL: readahead(fd[0], 0, getpagesize()) succeeded
-> >
-> > 61:     fd[0] = SAFE_SOCKET(AF_INET, SOCK_STREAM, 0);
-> > 62:     TST_EXP_FAIL(readahead(fd[0], 0, getpagesize()), EINVAL);
-> >
-> > I think LTP would report 'wrong error code' rather than 'succeeded'
-> > if it were returning ESPIPE.
-> >
-> > I'm not OK with readahead() succeeding on a socket.
+> Thanks Peng.  This is a temporary fix for upstream, but is needed for
+> the LTS kernels as well.  I've mentioned your patches to others, so
+> don't think they aren't noticed - they are eagerly awaited.
 > 
-> Agree. Reuben reported that this does not happen on v2
-> although I cannot explain why it was reported on v1...
+> Since your patch adds the necessary GFP flag, we could move the
+> check_forking test back in your update, (patch 7/9 [1]) which avoids the
+> GFP_KERNEL flag (thanks!), if it is moved.  I think it's worth while to
+> do since you already have a lot of userspace tests as well that uses
+> GFP_KERNEL (4/9 [2]) and it's good to keep as much in the kernel module
+> as possible.
 > 
-> > I think that should
-> > also return ESPIPE.  I think posix_fadvise() should return ESPIPE on a
-> > socket too, but reporting bugs to the Austin Group seems quite painful.
-> > Perhaps somebody has been through this process and can do that for us?
-> >
+> By the way Peng, I have gotten complaints (I cannot find a reference
+> quickly) from older CPUs taking a long time on the test module.  You are
+> making things faster, but I just wanted you to be aware of that in case
+> you add tests in the future that cause complaints :)  I still think it
+> is worth keeping as much as possible in that module - it's a more valid
+> test scenario and it still runs from the userspace testing.
+I understand this now, and I will take this into consideration when
+adding tests in the future.
 > 
-> This is Reuben's first kernel patch.
-> Let's agree that changing the standard of posix_fadvise() for socket is
-> beyond the scope of his contribution :)
+> ...
+> 
+>> Thanks.
+>>
+>> [1] https://lore.kernel.org/lkml/20230925035617.84767-1-zhangpeng.00@bytedance.com/
+> 
+> ...
 > 
 > Thanks,
-> Amir.
+> Liam
+> 
+> [1] https://lore.kernel.org/lkml/20230925035617.84767-8-zhangpeng.00@bytedance.com/
+> [2] https://lore.kernel.org/lkml/20230925035617.84767-5-zhangpeng.00@bytedance.com/
+> 
 > 
