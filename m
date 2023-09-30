@@ -1,81 +1,80 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D694160
-	for <oe-lkp@lists.linux.dev>; Sat, 30 Sep 2023 02:40:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64A991388
+	for <oe-lkp@lists.linux.dev>; Sat, 30 Sep 2023 02:53:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1696041634; x=1727577634;
+  t=1696042428; x=1727578428;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=dzuxYsGjLajwbHTu9rRZRh2x3oN8RrICtugTA0pbHBY=;
-  b=kN9//43TTs/e0qWwizTHOYOMvgeyDY2Xs4AZCJCjKx89eQnKQbFwnTg7
-   sZGQnTB2Juq/gwqQ7HQ1NBOrq5LYe0IvKWw4stMmd4svIxMIs963c5gv5
-   vVjCtI8fTAAx72XgcqjI24tlJ2tH/zHrhMIRIEIingSa3uR6rZkEqJBQh
-   IIzB4DjTuSl1A1md+HNVUKrwxFhIoXLaV6JsUfcMBPTNx8J+fe4nXNEQJ
-   1sw4R+X1ATbob3HxHv2Iep3MIpbTBqNLRqCHFDVoZg8cE2ZSwRGRRjaSm
-   H2xrwZIy0KQF1BhdmkE+qpdtCT//OScH6pNY8VV/Gsf12Ikk+zHT6kds5
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10848"; a="3991115"
+  bh=c2fXqADM4q6xlBgn9qmAZboWeKx63tdhh7KXXI5nXuk=;
+  b=iDru3NBEwOAVvvaKM0fFC0sIwUO2NR12eMujhXOvqHH/dtLfS3wdRuXg
+   9PmEeOUMD3QcdTqqiiGiRJC+qc7E6GMrN/Xt6mulBp0nmv9Df/rmyUs3F
+   pIO5xU42Z5inhFs2YBrKttEpbyGloKphlV2YzKlH0r8kqJ0kblA/Zpgvk
+   mfoDdjpeg98pwCjndTeH1Vcc5h5M7eAsk1+Ew8RaGIe8CDWE9ZUEuxhh5
+   UIInjqq0QHYaj+b5qi6IBGm7N6ChtawGuAsoppjo5+sTz5QkczE/K4W8D
+   bStWETJCNdFqgZsfm6loHcU2VRamSzIXctEfO8wOLIJszTuUHxWVdTTtO
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10848"; a="3991779"
 X-IronPort-AV: E=Sophos;i="6.03,189,1694761200"; 
-   d="scan'208";a="3991115"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2023 19:40:28 -0700
+   d="scan'208";a="3991779"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2023 19:53:47 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10848"; a="753557296"
+X-IronPort-AV: E=McAfee;i="6600,9927,10848"; a="820361922"
 X-IronPort-AV: E=Sophos;i="6.03,189,1694761200"; 
-   d="scan'208";a="753557296"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by fmsmga007.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 29 Sep 2023 19:40:27 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+   d="scan'208";a="820361922"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by fmsmga004.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 29 Sep 2023 19:53:47 -0700
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Fri, 29 Sep 2023 19:40:27 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ 15.1.2507.32; Fri, 29 Sep 2023 19:53:46 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Fri, 29 Sep 2023 19:40:27 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ 15.1.2507.32; Fri, 29 Sep 2023 19:53:46 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32 via Frontend Transport; Fri, 29 Sep 2023 19:40:27 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.104)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ 15.1.2507.32 via Frontend Transport; Fri, 29 Sep 2023 19:53:46 -0700
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.57.43) by
+ edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.32; Fri, 29 Sep 2023 19:40:26 -0700
+ 15.1.2507.32; Fri, 29 Sep 2023 19:53:45 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=k5bbxm2bjeRtfc2HIeqr9xgcR0kbubZVLtAvF3M/dH8tsfXqT1iJ5wvUCQhWiYth2vjD96CnwJq/CXG3AGnvTQh0JQnitm3v9Qyjlh4KxZ+PO615TwWS/jctMQNUQ7jGo8SkFQ9tiTHeCaGUakqzGpW9gLXQ+6fWBm1XTJNj0cI2SDwOQyk+RjdpLWXj7pwXOorxGCLd+MfPU8Yt1VauKcJP8VTHsbwAHvfE1LFXf1AxIXYXLMNH7kieAHVMr3HaXFistSc+GTB3ssfPPZwfCzSg0A6ZRKmgFUHUFwupgqjHFZfjZ5bBnwqMaMs761gt6WgaDA6DJsXzAEmycIncGA==
+ b=IGi9Vl1N91vDYMrIAM08vFbM75V3t66SQa95OW/FAdOu8on5lT22ldsALpg6e/54moZs9n9KZV88MMbw1GIVtlFCe+/1jzedhkZSD5PYKEUzMxKDvlPqRX3MYMRM00WB9JMe+gT3/9Czhl1Idujw7xiUAbVHslCwITR7/OoZnJx6e+G3p5Ha+v5WEV40eG38qUwgHn0cs5vtzS64TFEb4vSSfsSSRJ8hpQ+R7lU6pEZwZ2J5KG48NqLykqTekW8hW3LspHtwnishp4yE1wLbxig/GUg2C4GZvnpGzi8FMRSi+OE4bozD7zLA4yrqzA/3w94EWfL47pGcMZb6OctSKg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=12eZ5+DKcCUk583jZfaeKvbzAMnvGgeF5ft4xDQd1pU=;
- b=NBhbYjvTimN9XVw97n3wMUkWgu/EurfIbWnFb/5TkKiA/LHwk70v97dgmigk7xS4UcKshCws4KCDS94wrUmEKP9kh2fBiA0iA7aPnSMK47nbPx0cb9zBObZaQ9bZYQUsPUvIQaUoiDUeLwQ7rZCAL55NxfkeC37YpKTgQNm/j8X/A4K8BT34Ltmw6ZYMG6EG9kwJ+NCfCO3eTQbgx4tWiuJM4Kr+0uy6zrmoEWpeJ37TBDKC0oIgg1Ua+FKwIMFGLfxSUDVYJLLbsgs1nhMgiaswbyD1ZBua2dp4UbnDEkgS7skZtD8EYo+syGRRfawNTWmaQJ527YTGw69iZdqkKw==
+ bh=kHuNbRgexFnlBfa6o0a/L5wcFI6IvTxg4HDLIy3UmA8=;
+ b=hlg1/KpcSrkZQWbA9vTe7r0OWDkM1MzrxoNZYMrB+SDnusn86Wb6YAfsTDOQJqsQSLTKcs1PlpFUGVpf6qeo7b2FAeujQar/ghOyK7DwOEz25tEDvHc6cv2rySPruP4T/uaybFVxQNfnmkbSUi7lZUSDoFo8OF/qx2344lJgtP+oRextzxQqm/F2cSoNax933PPKh90N7ZKVOk4sKEikWJJNh26fuSVDv5txcPJ1CCTtO+YedT+fe192oeXJZjjkw0+PAg2MLiDLSQSLfP19z0ie+Pgjt4bcwdtbt9QOroHGpqV+ldXmdDCRqqfkzRhvrnrXhzX6MFDbpSrJpOuiMA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
- by SN7PR11MB7973.namprd11.prod.outlook.com (2603:10b6:806:2e6::15) with
+ by CO6PR11MB5585.namprd11.prod.outlook.com (2603:10b6:5:356::23) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6838.26; Sat, 30 Sep
- 2023 02:40:19 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6813.28; Sat, 30 Sep
+ 2023 02:53:37 +0000
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com
  ([fe80::73c6:1231:e700:924]) by PH8PR11MB6779.namprd11.prod.outlook.com
  ([fe80::73c6:1231:e700:924%4]) with mapi id 15.20.6813.017; Sat, 30 Sep 2023
- 02:40:18 +0000
-Date: Sat, 30 Sep 2023 10:40:09 +0800
+ 02:53:37 +0000
+Date: Sat, 30 Sep 2023 10:53:27 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: John Ogness <john.ogness@linutronix.de>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Sebastian Andrzej Siewior
-	<bigeasy@linutronix.de>, <linux-serial@vger.kernel.org>,
-	<oliver.sang@intel.com>
-Subject: [rt-devel:linux-6.6.y-rt-rebase] [serial] 7ae7fa6bcb:
- dmesg.inconsistent{INITIAL_USE}->{IN-NMI}usage
-Message-ID: <202309301045.1475d353-oliver.sang@intel.com>
+To: Dave Chinner <david@fromorbit.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <oliver.sang@intel.com>
+Subject: [dgc-xfs:xlog-grant-head-bytes] [xfs]  7eb8d07ad0:
+ xfstests.xfs.011.fail
+Message-ID: <202309301000.a6eba40-oliver.sang@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-X-ClientProxiedBy: SG3P274CA0004.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:be::16)
- To PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
+X-ClientProxiedBy: SI2PR06CA0012.apcprd06.prod.outlook.com
+ (2603:1096:4:186::13) To PH8PR11MB6779.namprd11.prod.outlook.com
+ (2603:10b6:510:1ca::17)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -83,247 +82,125 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|SN7PR11MB7973:EE_
-X-MS-Office365-Filtering-Correlation-Id: f9e97606-a842-461a-bdfa-08dbc15e9537
+X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|CO6PR11MB5585:EE_
+X-MS-Office365-Filtering-Correlation-Id: a314fa9a-bb11-49b1-3678-08dbc1607189
 X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: fmBlrD69o6uUFBG5S/3UpjxOVsuV/sVdnm2Zi+ag8uKYiRS9+8YgZ+kNj4YjYAqXhVqAKA9F3BJ/LhX8HR+J/QdRBRybAUA9rVsqB3apM68C1RE/jcZMnlcP8wAZwxmM0ZRWWBLg0D2sYtVtmx2rljoTHHfiUTbSmTEnmTPwnpcvUykmMOdvyppFHPnbQzPmifr4gPMu6BtIN+0a+M+qHWfJrfgJ/fpsygtEnSId0SoKNUFrOFP7Ru7UelQsMBgXT8bIz8A02EfKxnylPbc42NqY3vAM6BGp4EtzVT7cZnLAFEPDrsXmuZAI3X/DR3cMGw06ZuJoKburW187TkrzReVshez/+ZtsyaSjMwZilXGftRkD6QCDS8gV8YPBO/SEha+RWvkxk8owr5U8L0igwRL/u6i7RKn2qdeHmeY32CRpMpdGnxxc0Jw/b9+pBcwZZxTiW0jK6Kp7a67CNuyXCzvqECny1LhvwLZAy5wzuSYmkM2K9CV8YLCuWASy1smT9rsPHoYWRHyd4xyVmwZK4PoCijLEAfsIsIJARZlTFiD2xd7GsyTM4e/uIjz8JnFmkLsqmJlaXe4q1iveGUc59g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(39860400002)(376002)(346002)(366004)(396003)(230922051799003)(64100799003)(451199024)(1800799009)(186009)(66946007)(316002)(66556008)(66476007)(6916009)(36756003)(8936002)(4326008)(8676002)(26005)(41300700001)(1076003)(107886003)(2616005)(6486002)(83380400001)(478600001)(966005)(6506007)(6666004)(6512007)(86362001)(38100700002)(82960400001)(2906002)(5660300002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: Gbby6ukt49YGJSaf3PgQpvLZwJPOcgwYpU04acI1Wxk0ygxEDfr6dFibQfvfgY6K1ps8kTXTwUHevPR91KT5dTsH0LP2A0cSLwgyQoFxcVW5cxUc9UdcuBcrkIaeswkyaGG0LMLdBNCB/2YEWpuinxW3V1W/7PKRryqDPKM5XdpBm4b7AdEA8XjpGHzJ3CjqLwp0a0Xqngwyek9RICQmkaljeByeCarqoVuBK7cLbIVhM/8ASQuJhLrDO6Y6uVbKunks6v29oma/htrmBg6rFFQhjaqa2Ldgdb9plZ4NbMpi45xtZQcEg+Lu3uEuc5cv8iTnlb/dYpjinSuJhUMGHDb2S7Z+8QQhbqFSpm+RayiBZugR0Jl0/Dg/o1vOoZ/WFCbbiLMDSaKVsehirpWHUNzPV1haK4jK8LPuqFkSbGBi57EPfC1BLxIfYWtSmADfSQjUaalXd88vE7pKA/83e/ry/SN1xHd+d6Hkr0hyF3Q0/06hF85WO5leziNQepwGJycUsvsUELpkxPzsifEdazXkoJIRsCicTbmQAJKS0tEgLoEFTRZWDusF6IQ+1mXTxGybZxiiM50kxNX79/nIiA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(39860400002)(346002)(396003)(136003)(366004)(230922051799003)(451199024)(186009)(64100799003)(1800799009)(2906002)(86362001)(26005)(2616005)(1076003)(6512007)(107886003)(6506007)(36756003)(6666004)(6486002)(478600001)(966005)(83380400001)(82960400001)(38100700002)(4326008)(8936002)(8676002)(41300700001)(5660300002)(66476007)(66946007)(66556008)(6916009)(316002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?zGsRYdV7/8PDodGhzxVouX0okWE/B98s/YfdJ25thhmimCbVBbXRDJA5Os7n?=
- =?us-ascii?Q?mDm10bGksIPKkaeU041MNnxSuwJjV+pp60FpZjCSSxxlEfL2MdgDBmTN1lmI?=
- =?us-ascii?Q?6MYgLSdslJq9mVdleZrc2C4o1KojoUg+rzDKG7ThXnAh8wVtCxy0ZxNruSm8?=
- =?us-ascii?Q?OyLX2j6fvJ+v8/+qZXgrL5gdtVTiDx708u72n3z53IKSFqzA3nKLko9VpoC3?=
- =?us-ascii?Q?cgGJEx83Gr69oM5jf2c8tCVBLU95pR1/630x96jjhF6S0re1nuVlr7ykA5ia?=
- =?us-ascii?Q?oQoNof6R7HheqKE/26O8fh73QAJJmhDGUGhJgr65gPhizCaCvbpa10LdvvQI?=
- =?us-ascii?Q?zDujPXEAZtfKPgMJCN1j3DlpTS/dW/ulfGEd5M1ecFsuw5ca8IqHj6zcmSE9?=
- =?us-ascii?Q?esjgWaYQS/GcuwGzbSJLWqn13salDL+Zo+hFomJgsr23cxlQRXanCJWIy1B2?=
- =?us-ascii?Q?RhjpODO63m9UAukZfpwnwmucvdp8ZGxH/0NbDYH2x0cxzJVRb91lhfzLxld8?=
- =?us-ascii?Q?w2dPoLGXX2WBNV7P3FtY2hKwKGICxAQ++s8kCgULKZxhWGgj5PgqTMp8oofM?=
- =?us-ascii?Q?Kn0DrYNRk9vMuyG0fa1IKenyyRjVHRkICo79diELVuRFIeQ8l5XMElx+H+mI?=
- =?us-ascii?Q?Mu0jQqcaSAufrF6p9sJdjyeqbmCviLINxKKEqKol+QOZO6G9P736hgAA+QOO?=
- =?us-ascii?Q?nGEBQSBQ5fynIplbgAtYmT1nCve+27l8kJomKcL26XK5CQNNbWs+B1PkqcTA?=
- =?us-ascii?Q?eT118LZr5lQp7C+XXeNNOHhfk5aTQ6jXsaTlYCrxMWa7iRwbiNmrR4P2/KvS?=
- =?us-ascii?Q?Hj/+XI5wR8PJKUK1JIO69yNdi8JKvEeI6W7ZKpur8pXcq2zgbi4xrXPjNU9M?=
- =?us-ascii?Q?jMNOelCwiJu8kAKWOt+SMWkl1ZS/v6CvswGbnLiT1l7bUbaVqSV5CiVZ7nv/?=
- =?us-ascii?Q?Db8klz8IzFErkfbnC9+Q23Bp/VZbSO+oyJ2nVkCZqVfrWVIapq5RtmgLKTSh?=
- =?us-ascii?Q?mwE4dCjXzMGKGY7gL1xfc98ag2KnhAbOAny8T3MSxbVUOwOqshMRXLrQyE13?=
- =?us-ascii?Q?mFdpc67zuonusPdifsppvUmcYMW6oHBgvpKnwfVKcUCJCWsv84hT9QTMDo4J?=
- =?us-ascii?Q?O2yNyZsOgxShDnn4Q6w7UkxU2jOIkjdu57imxlqVyAQw08+F7dWRaFS35W3O?=
- =?us-ascii?Q?LLvVL3mDZmSB+y3rNHNjaXi8t1nYLFtV+LrLsXJfOXv4cNy26IxA2or0Tj+c?=
- =?us-ascii?Q?yR2LA0q2b4PR+syA7/hd2v1/SUmLdAWW91zg+sJ4jckM4HeKEw+W56/eKDU0?=
- =?us-ascii?Q?DwbcS/X4uvshKuXYUZTU5MUwke5skhQgAQn+ZABwCS3fOg7Lmr2Ri6XceaxK?=
- =?us-ascii?Q?CwxQHhmq3FM9FkJQUyiOF/s2widtZk2mO+Fh+ajUe6uctVfKLnJzeGSUhsB4?=
- =?us-ascii?Q?H47r4FT5FvK/vXs+5IxOJ0CJ86+cHU8GbCf9K5h7WWKrC12dFfAJmFiVaO1U?=
- =?us-ascii?Q?NlvAw/L9pvFYjUafNjBLUpO7EVQPn+k38NMX87QyWgZo7tqLdkncSHrLt4uU?=
- =?us-ascii?Q?Ic8MeVyd/1WqmoHb1RQLd7zct6zz1joghNnlVf8k?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: f9e97606-a842-461a-bdfa-08dbc15e9537
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?nV6p6zubzFvmvM428jLp4fCvS2cB8uCawwb+by1ERGbzs9oeDDEIX98jsPz+?=
+ =?us-ascii?Q?IBbXpC1zZNCniV2NnPJLtnEMXiNAFBkPCx3REpGEBTd1NFvXBTfW2GvxoCPK?=
+ =?us-ascii?Q?VPksf5KFxOVttJ3txrRDjU8dKNs8aDAT482kkG4zSjMIFWp7QMgUsbiAKsMC?=
+ =?us-ascii?Q?ta5U+IkoPytEx/b7Mz9vFdd9r+Ydzc2vpDvFlZlR28MogRlpSa5SFl+zQgmK?=
+ =?us-ascii?Q?hpzXazNMU8pWFRxyl0xHsAhK0MWFojEye2Y/dxI/eXiQZLLv1HDBLe7Hb3i4?=
+ =?us-ascii?Q?HkS4WeFA6Wx68eLvkH9hMERqzMlJw0MsSQtIsYxRrs7YDoKft2jortcFKr7F?=
+ =?us-ascii?Q?5hzJM/B81zhEYUIK7LptzZJGs0AJ5KaImhbz3TAFSNpY1IAFFzcuLuYxnP3G?=
+ =?us-ascii?Q?A+C0LLItnM40TxUb9/CteburkBGGrLY74agkPjrTOuWxtUE8XGMONCsvsYwe?=
+ =?us-ascii?Q?JfGLZwh3iifuF47HZqjXrNLDM5vxZrP8JlW/G2qU4Yk6xNoTO6+WWUvjbOiE?=
+ =?us-ascii?Q?edxcKaFIOYc9KuXeTJVs65OS9oK1Gbyt5nKhaGvNK1DWbeA50n1msO6rUoQk?=
+ =?us-ascii?Q?sRzld0PwmJln5P+pZYeGKgtq3+Cb130zdz62OnPw3AYSFYchKYIlRsRo/m6g?=
+ =?us-ascii?Q?xR8eO2Uw+8WivFU2GkloNcxUF88Nj6jL/mNN/0Cd9PtEG9g/n1kJYJAmAHE+?=
+ =?us-ascii?Q?juEb7pq0t6M4Op7O73Ae4fF+boad2g2vVP+qwYNrIc5ZBQl4iqX7miX77iTs?=
+ =?us-ascii?Q?Y6MwgWanbYXnQ/J8lB0+hY0SXseub490iotUUWV4GaHD8kvGkhkkMb6zuNjs?=
+ =?us-ascii?Q?i4/Fsl0pcp8vhiHP7N/AQ8zEHfmBulWqxwgKyNdwYxpCQ4ppRGreHbwyZDOV?=
+ =?us-ascii?Q?uAbLlONemCtxVx37TfwgIldlIYlFdEFlrNAepxcIWqjYgXONQ29R36sQfgYr?=
+ =?us-ascii?Q?Zh5/Lh8FUPXbam+hwzk5ONTD9ZWuqxToB1XNU3oxY8VSSrMtu2UQle9FCbGS?=
+ =?us-ascii?Q?Q6P6fHKWjHfIKPKqjcWCJNp72jyWrqkwvY6Bhcl8v/W9tpmgaF2XUCqMHpvK?=
+ =?us-ascii?Q?b5zSlRMQVQ3ku/pk0gD0jSY+qXxUPxHJnklYOPHCA8/MbTMOIXm/zxIxu5JX?=
+ =?us-ascii?Q?q5HYW43v9EGGLZ9Fnwtz7OcRbup7+Q+l6tbcVM5PAdC/FeIeaFC+lHUrtR7H?=
+ =?us-ascii?Q?YtTb/vcD/NzZO3jumsaqN9wreyeA9r9fcU643aVgDL1tIJaDSIm1rShbACJR?=
+ =?us-ascii?Q?w1TEwlLYHPlvldqFYCwoN9T77CqFdyYh1dbW1qlQsA0rzIwyFxI6v+abhcgZ?=
+ =?us-ascii?Q?PMioAmzE38z3y45yLvjHgKG2QsCnpSTlwfrOgd4ZBEoBfFlWqA8vEalCLNga?=
+ =?us-ascii?Q?/xv5JKFQCJTCpom0TDv1yVAzAWW/COAr7UJHNE9OQE3T6HLdLsmObk29vgWg?=
+ =?us-ascii?Q?9sFIw8mCb45ETHbINQSB4K3YAiwHgIIj2RzBTT6VAOI7rCaZ+ARVYtC0M/2S?=
+ =?us-ascii?Q?Eqd+PxiHlfesS34dwcCJvnmYNtWvmkrNFCv0WaRUzo+mIbiePKMaGRHGkxET?=
+ =?us-ascii?Q?nSVtm5SyXNBNgTySpXWOFPAJId9pPPM204cKddjCkOAoZj+Aaaii01STfFsW?=
+ =?us-ascii?Q?9g=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: a314fa9a-bb11-49b1-3678-08dbc1607189
 X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB6779.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Sep 2023 02:40:18.0238
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Sep 2023 02:53:37.2850
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xESwecnP3rWb+Frffw/lS99Hc/l1qRbZrgSFKydwFUhN917CGCq4USgANi3+18CaCPjJWpTR039luvPGG5qKkQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB7973
+X-MS-Exchange-CrossTenant-UserPrincipalName: iXtlOafT5Ep/NW2yKOPIv0qMZ3P9T+b5Sc+ciOEr0m7gkEQyQJfbMHIiN6erg4DB08Ha7TdBFSNtrPgm2siELw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR11MB5585
 X-OriginatorOrg: intel.com
 
 
 
 Hello,
 
-kernel test robot noticed "dmesg.inconsistent{INITIAL_USE}->{IN-NMI}usage" on:
+kernel test robot noticed "xfstests.xfs.011.fail" on:
 
-commit: 7ae7fa6bcb29a234a2e618f94bb69f533cecaf53 ("serial: 8250: implement non-BKL console")
-https://git.kernel.org/cgit/linux/kernel/git/rt/linux-rt-devel.git linux-6.6.y-rt-rebase
+commit: 7eb8d07ad0f2233dc7566bccb4bd20065f9eafbd ("xfs: grant heads track byte counts, not LSNs")
+https://git.kernel.org/cgit/linux/kernel/git/dgc/linux-xfs.git xlog-grant-head-bytes
 
-in testcase: boot
+in testcase: xfstests
+version: xfstests-x86_64-b15b6cc-1_20230925
+with following parameters:
+
+	disk: 4HDD
+	fs: xfs
+	test: xfs-011
+
+
 
 compiler: gcc-12
-test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+test machine: 4 threads Intel(R) Xeon(R) CPU E3-1225 v5 @ 3.30GHz (Skylake) with 16G memory
 
 (please refer to attached dmesg/kmsg for entire log/backtrace)
+
 
 
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202309301045.1475d353-oliver.sang@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202309301000.a6eba40-oliver.sang@intel.com
 
+2023-09-26 10:05:43 export TEST_DIR=/fs/sda1
+2023-09-26 10:05:43 export TEST_DEV=/dev/sda1
+2023-09-26 10:05:43 export FSTYP=xfs
+2023-09-26 10:05:43 export SCRATCH_MNT=/fs/scratch
+2023-09-26 10:05:43 mkdir /fs/scratch -p
+2023-09-26 10:05:43 export SCRATCH_DEV=/dev/sda4
+2023-09-26 10:05:43 export SCRATCH_LOGDEV=/dev/sda2
+2023-09-26 10:05:43 export SCRATCH_XFS_LIST_METADATA_FIELDS=u3.sfdir3.hdr.parent.i4
+2023-09-26 10:05:43 export SCRATCH_XFS_LIST_FUZZ_VERBS=random
+2023-09-26 10:05:43 echo xfs/011
+2023-09-26 10:05:43 ./check xfs/011
+FSTYP         -- xfs (debug)
+PLATFORM      -- Linux/x86_64 lkp-skl-d06 6.6.0-rc2-00034-g7eb8d07ad0f2-dirty #1 SMP PREEMPT_DYNAMIC Tue Sep 26 12:19:53 CST 2023
+MKFS_OPTIONS  -- -f /dev/sda4
+MOUNT_OPTIONS -- /dev/sda4 /fs/scratch
 
+xfs/011       - output mismatch (see /lkp/benchmarks/xfstests/results//xfs/011.out.bad)
+    --- tests/xfs/011.out	2023-09-25 16:30:56.000000000 +0000
+    +++ /lkp/benchmarks/xfstests/results//xfs/011.out.bad	2023-09-26 10:07:27.992138770 +0000
+    @@ -1,2 +1,14 @@
+     QA output created by 011
+     Silence is golden.
+    +reserve_grant_head (4096:) does not match log_head_lsn (1:8192), possible leak detected.
+    +write_grant_head (4096:) does not match log_head_lsn (1:8192), possible leak detected.
+    +reserve_grant_head (4096:) does not match log_head_lsn (1:761856), possible leak detected.
+    +write_grant_head (4096:) does not match log_head_lsn (1:761856), possible leak detected.
+    +reserve_grant_head (4096:) does not match log_head_lsn (1:1490944), possible leak detected.
+    ...
+    (Run 'diff -u /lkp/benchmarks/xfstests/tests/xfs/011.out /lkp/benchmarks/xfstests/results//xfs/011.out.bad'  to see the entire diff)
+Ran: xfs/011
+Failures: xfs/011
+Failed 1 of 1 tests
 
-[  504.779539][    C1] NMI backtrace for cpu 1
-[  504.779544][    C1] 
-[  504.779546][    C1] ================================
-[  504.779547][    C1] WARNING: inconsistent lock state
-[  504.779549][    C1] 6.6.0-rc3-00047-g7ae7fa6bcb29 #1 Tainted: G        W        N
-[  504.779551][    C1] --------------------------------
-[  504.779552][    C1] inconsistent {INITIAL USE} -> {IN-NMI} usage.
-[  504.779554][    C1] swapper/0/1 [HC1[1]:SC0[0]:HE0:SE1] takes:
-[  504.779557][    C1] c383e7c8 (console_srcu){....}-{0:0}, at: console_srcu_read_lock+0x0/0x58
-[  504.779571][    C1] {INITIAL USE} state was registered at:
-[  504.779572][    C1]   __lock_acquire+0x2d1/0xb68
-[  504.779579][    C1]   lock_sync+0x80/0xd0
-[  504.779583][    C1]   __synchronize_srcu+0x4c/0x168
-[  504.779588][    C1]   synchronize_srcu+0x9a/0xc0
-[  504.779591][    C1]   unregister_console_locked+0xaa/0x228
-[  504.779594][    C1]   register_console+0x33d/0x500
-[  504.779598][    C1]   univ8250_console_init+0x1b/0x30
-[  504.779604][    C1]   console_init+0x46/0x21c
-[  504.779610][    C1]   start_kernel+0x240/0x490
-[  504.779614][    C1]   i386_start_kernel+0x43/0x44
-[  504.779618][    C1]   startup_32_smp+0x156/0x158
-[  504.779621][    C1] irq event stamp: 224066784
-[  504.779622][    C1] hardirqs last  enabled at (224066783): [<c26e24e5>] _raw_spin_unlock_irqrestore+0x51/0x80
-[  504.779630][    C1] hardirqs last disabled at (224066784): [<c26e22c5>] _raw_spin_lock_irqsave+0x5d/0x60
-[  504.779635][    C1] softirqs last  enabled at (224065172): [<c2555944>] fib_create_info+0x66c/0x8e0
-[  504.779639][    C1] softirqs last disabled at (224065170): [<c2555888>] fib_create_info+0x5b0/0x8e0
-[  504.779642][    C1] 
-[  504.779642][    C1] other info that might help us debug this:
-[  504.779643][    C1]  Possible unsafe locking scenario:
-[  504.779643][    C1] 
-[  504.779644][    C1]        CPU0
-[  504.779645][    C1]        ----
-[  504.779645][    C1]   lock(console_srcu);
-[  504.779648][    C1]   <Interrupt>
-[  504.779649][    C1]     lock(console_srcu);
-[  504.779651][    C1] 
-[  504.779651][    C1]  *** DEADLOCK ***
-[  504.779651][    C1] 
-[  504.779652][    C1] 4 locks held by swapper/0/1:
-[  504.779654][    C1]  #0: cb13ccf0 (&tty->legacy_mutex){+.+.}-{3:3}, at: tty_lock+0x2b/0x54
-[  504.779665][    C1]  #1: cb17117c (&port->mutex){+.+.}-{3:3}, at: tty_port_open+0x48/0xc0
-[  504.779674][    C1]  #2: c4719e70 (&port_lock_key){....}-{2:2}, at: serial8250_do_startup+0x2a6/0xb70
-[  504.779682][    C1]  #3: c383e7c8 (console_srcu){....}-{0:0}, at: console_srcu_read_lock+0x0/0x58
-[  504.779689][    C1] 
-[  504.779689][    C1] stack backtrace:
-[  504.779691][    C1] CPU: 1 PID: 1 Comm: swapper/0 Tainted: G        W        N 6.6.0-rc3-00047-g7ae7fa6bcb29 #1
-[  504.779695][    C1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-[  504.779697][    C1] Call Trace:
-[  504.779699][    C1]  dump_stack_lvl+0x70/0xe0
-[  504.779704][    C1]  dump_stack+0x12/0x18
-[  504.779707][    C1]  print_usage_bug+0x26b/0x360
-[  504.779713][    C1]  lock_acquire+0x1cc/0x2a0
-[  504.779718][    C1]  ? prb_final_commit+0x1a/0x2c
-[  504.779723][    C1]  ? console_srcu_read_lock_is_held+0x2c/0x2c
-[  504.779727][    C1]  console_srcu_read_lock+0x4e/0x58
-[  504.779730][    C1]  ? console_srcu_read_lock_is_held+0x2c/0x2c
-[  504.779733][    C1]  cons_atomic_flush+0x4c/0x390
-[  504.779738][    C1]  vprintk_emit+0x8d/0x300
-[  504.779743][    C1]  vprintk_deferred+0x29/0x30
-[  504.779747][    C1]  vprintk+0x28/0x38
-[  504.779750][    C1]  _printk+0x18/0x1c
-[  504.779752][    C1]  nmi_cpu_backtrace+0xc3/0x1cc
-[  504.779758][    C1]  nmi_cpu_backtrace_handler+0xa/0x10
-[  504.779762][    C1]  nmi_handle+0x124/0x30c
-[  504.779768][    C1]  ? nmi_handle+0x18/0x30c
-[  504.779773][    C1]  default_do_nmi+0x36/0x1bc
-[  504.779781][    C1]  exc_nmi+0xde/0x118
-[  504.779785][    C1]  asm_exc_nmi+0xae/0x29c
-[  504.779790][    C1] EIP: serial8250_do_startup+0x954/0xb70
-[  504.779794][    C1] Code: c6 02 00 8b 45 ec ba 01 00 00 00 8b 7d e4 89 90 84 02 00 00 89 b8 5c 02 00 00 8b 45 e8 e8 14 43 51 ff 84 c0 75 34 f3 90 85 f6 <8b> 55 f0 bf 40 00 00 00 74 86 c6 02 00 8d 52 01 bf 3f 00 00 00 f6
-[  504.779797][    C1] EAX: 00000000 EBX: 00000000 ECX: 00000000 EDX: 00000000
-[  504.779799][    C1] ESI: 00000000 EDI: c3993800 EBP: c4acbcd4 ESP: c4acbc9c
-[  504.779801][    C1] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068 EFLAGS: 00000046
-[  504.779806][    C1]  ? trace_raw_output_console+0x2f/0x64
-[  504.779812][    C1]  ? serial8250_do_startup+0x954/0xb70
-[  504.779815][    C1]  ? mark_held_locks+0x43/0x68
-[  504.779821][    C1]  serial8250_startup+0x19/0x1c
-[  504.779824][    C1]  uart_port_startup+0xec/0x264
-[  504.779829][    C1]  uart_startup+0x26/0x38
-[  504.779832][    C1]  uart_port_activate+0x37/0x74
-[  504.779836][    C1]  tty_port_open+0x6d/0xc0
-[  504.779840][    C1]  uart_open+0x15/0x20
-[  504.779844][    C1]  tty_open+0x13a/0x698
-[  504.779848][    C1]  ? chrdev_open+0x1c7/0x1f8
-[  504.779854][    C1]  ? tty_init_dev+0x204/0x204
-[  504.779857][    C1]  chrdev_open+0x99/0x1f8
-[  504.779861][    C1]  ? __unregister_chrdev+0x3c/0x3c
-[  504.779865][    C1]  do_dentry_open+0x1e5/0x540
-[  504.779871][    C1]  ? inode_permission+0x63/0x1b4
-[  504.779875][    C1]  ? __unregister_chrdev+0x3c/0x3c
-[  504.779879][    C1]  vfs_open+0x2e/0x38
-[  504.779883][    C1]  do_open+0x22d/0x384
-[  504.779888][    C1]  path_openat+0xcb/0x1d4
-[  504.779891][    C1]  ? kmem_cache_alloc+0x189/0x390
-[  504.779898][    C1]  do_filp_open+0xa2/0x144
-[  504.779906][    C1]  file_open_name+0x180/0x1a8
-[  504.779911][    C1]  filp_open+0x2b/0x5c
-[  504.779916][    C1]  console_on_rootfs+0x1a/0x58
-[  504.779920][    C1]  ? wait_for_initramfs+0x38/0x60
-[  504.779923][    C1]  kernel_init_freeable+0x196/0x2dc
-[  504.779927][    C1]  ? kernel_init+0x15/0x1c4
-[  504.779930][    C1]  ? rest_init+0x18c/0x18c
-[  504.779933][    C1]  kernel_init+0x15/0x1c4
-[  504.779936][    C1]  ? schedule_tail+0x4e/0x54
-[  504.779941][    C1]  ret_from_fork+0x35/0x40
-[  504.779946][    C1]  ? rest_init+0x18c/0x18c
-[  504.779950][    C1]  ret_from_fork_asm+0x12/0x18
-[  504.779953][    C1]  entry_INT80_32+0xf0/0xf0
-[  504.779959][    C1] CPU: 1 PID: 1 Comm: swapper/0 Tainted: G        W        N 6.6.0-rc3-00047-g7ae7fa6bcb29 #1
-[  504.779962][    C1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-[  504.779964][    C1] EIP: serial8250_do_startup+0x954/0xb70
-[  504.779968][    C1] Code: c6 02 00 8b 45 ec ba 01 00 00 00 8b 7d e4 89 90 84 02 00 00 89 b8 5c 02 00 00 8b 45 e8 e8 14 43 51 ff 84 c0 75 34 f3 90 85 f6 <8b> 55 f0 bf 40 00 00 00 74 86 c6 02 00 8d 52 01 bf 3f 00 00 00 f6
-[  504.779970][    C1] EAX: 00000000 EBX: 00000000 ECX: 00000000 EDX: 00000000
-[  504.779972][    C1] ESI: 00000000 EDI: c3993800 EBP: c4acbcd4 ESP: c4acbc9c
-[  504.779975][    C1] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068 EFLAGS: 00000046
-[  504.779978][    C1] CR0: 80050033 CR2: b7efdcd4 CR3: 03d2d000 CR4: 000406d0
-[  504.779985][    C1] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 00000000
-[  504.779987][    C1] DR6: fffe0ff0 DR7: 00000400
-[  504.779989][    C1] Call Trace:
-[  504.779990][    C1]  ? show_regs+0x51/0x58
-[  504.779994][    C1]  ? nmi_cpu_backtrace+0xca/0x1cc
-[  504.779999][    C1]  ? nmi_cpu_backtrace_handler+0xa/0x10
-[  504.780003][    C1]  ? nmi_handle+0x124/0x30c
-[  504.780006][    C1]  ? nmi_handle+0x18/0x30c
-[  504.780011][    C1]  ? default_do_nmi+0x36/0x1bc
-[  504.780016][    C1]  ? exc_nmi+0xde/0x118
-[  504.780020][    C1]  ? asm_exc_nmi+0xae/0x29c
-[  504.780024][    C1]  ? trace_raw_output_console+0x2f/0x64
-[  504.780029][    C1]  ? serial8250_do_startup+0x954/0xb70
-[  504.780033][    C1]  ? serial8250_do_startup+0x954/0xb70
-[  504.780036][    C1]  ? mark_held_locks+0x43/0x68
-[  504.780042][    C1]  serial8250_startup+0x19/0x1c
-[  504.780045][    C1]  uart_port_startup+0xec/0x264
-[  504.780049][    C1]  uart_startup+0x26/0x38
-[  504.780053][    C1]  uart_port_activate+0x37/0x74
-[  504.780057][    C1]  tty_port_open+0x6d/0xc0
-[  504.780061][    C1]  uart_open+0x15/0x20
-[  504.780065][    C1]  tty_open+0x13a/0x698
-[  504.780068][    C1]  ? chrdev_open+0x1c7/0x1f8
-[  504.780072][    C1]  ? tty_init_dev+0x204/0x204
-[  504.780076][    C1]  chrdev_open+0x99/0x1f8
-[  504.780080][    C1]  ? __unregister_chrdev+0x3c/0x3c
-[  504.780083][    C1]  do_dentry_open+0x1e5/0x540
-[  504.780088][    C1]  ? inode_permission+0x63/0x1b4
-[  504.780091][    C1]  ? __unregister_chrdev+0x3c/0x3c
-[  504.780095][    C1]  vfs_open+0x2e/0x38
-[  504.780099][    C1]  do_open+0x22d/0x384
-[  504.780103][    C1]  path_openat+0xcb/0x1d4
-[  504.780107][    C1]  ? kmem_cache_alloc+0x189/0x390
-[  504.780112][    C1]  do_filp_open+0xa2/0x144
-[  504.780120][    C1]  file_open_name+0x180/0x1a8
-[  504.780125][    C1]  filp_open+0x2b/0x5c
-[  504.780130][    C1]  console_on_rootfs+0x1a/0x58
-[  504.780134][    C1]  ? wait_for_initramfs+0x38/0x60
-[  504.780137][    C1]  kernel_init_freeable+0x196/0x2dc
-[  504.780141][    C1]  ? kernel_init+0x15/0x1c4
-[  504.780145][    C1]  ? rest_init+0x18c/0x18c
-[  504.780148][    C1]  kernel_init+0x15/0x1c4
-[  504.780151][    C1]  ? schedule_tail+0x4e/0x54
-[  504.780155][    C1]  ret_from_fork+0x35/0x40
-[  504.780158][    C1]  ? rest_init+0x18c/0x18c
-[  504.780161][    C1]  ret_from_fork_asm+0x12/0x18
-[  504.780164][    C1]  entry_INT80_32+0xf0/0xf0
 
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20230930/202309301045.1475d353-oliver.sang@intel.com
+https://download.01.org/0day-ci/archive/20230930/202309301000.a6eba40-oliver.sang@intel.com
 
 
 
