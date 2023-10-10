@@ -1,87 +1,84 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9997B12B65
-	for <oe-lkp@lists.linux.dev>; Tue, 10 Oct 2023 07:54:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C14D2135A
+	for <oe-lkp@lists.linux.dev>; Tue, 10 Oct 2023 13:32:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cqfRdzYf"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YO8G04kk"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1696924467; x=1728460467;
+  t=1696944725; x=1728480725;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=TmSdkSG6Z/JnFvgy8Ifi8L9Qbrdkwpn1ukDraLUMGVk=;
-  b=cqfRdzYfIzLmAVwkhsW7wswv6kfbQA3YhS3DxwXBh/6U2EyBWQIWJWtL
-   DePpKllOKAHwalHLqqP6P/F9RbH5dhukvyYXSrCQOE+J+7EDLFIA6XQTE
-   83lliNrX4f8rzPGyBqRNCVtSHlpEv7F9JLB8RK/cqzhfqHLIOlf3LEhlh
-   RW2BYd0SXreqtjKTQg0pkiWzpypAP1Ix25fi1Hm4pfTg45v8x2jKf7tHv
-   eOxZTM79yzW2I8DP0xntnUP6RlwNajcCpfGNftM6gf98FHugsedePKmP3
-   UzikKBQ3x8/3PHt6yZEbME6s5c13KrEe8pZP0DU2Jupij+67tC+sKMP92
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10858"; a="450829768"
+  bh=pMxeNgO5QD2ThIPpaexK0BakbfU82f6Pj/nySPVKkpo=;
+  b=YO8G04kklzEW0wb2v6qfHqerXAKuDmZ1hXvAMvM/4T7fce+f3FxTP5wC
+   CRpc5aIsNmYqTIyS1YU8hzG+JQzD0Rz+JvX62F1V0b1WcopugoPETi4OY
+   KyGCOpcxjVK0emXRm9j41GmU79rYK5ThM0eq2szmMg1vAykvwLe1dVa+e
+   6FT3Kt8uIBbV+w2Q5xovPd27cGNGcdkCEwYhZqYSqdQilByiLgTp8zRoe
+   bGk5OCcpmKRo5WWLQRNKjgWIpBOHi7zqTYKLJwaSHATdX+o4hcPC7+OKt
+   yWBdZNgd8NIbsBHafyUePYiOehQ9+StrIPZeRfWzMVfE6QNZRvuWI2WDw
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10859"; a="470660741"
 X-IronPort-AV: E=Sophos;i="6.03,212,1694761200"; 
-   d="scan'208";a="450829768"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Oct 2023 00:54:26 -0700
+   d="scan'208";a="470660741"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Oct 2023 06:32:03 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10858"; a="1084679080"
+X-IronPort-AV: E=McAfee;i="6600,9927,10859"; a="897194910"
 X-IronPort-AV: E=Sophos;i="6.03,212,1694761200"; 
-   d="scan'208";a="1084679080"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by fmsmga005.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 10 Oct 2023 00:54:26 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+   d="scan'208";a="897194910"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by fmsmga001.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 10 Oct 2023 06:30:20 -0700
+Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Tue, 10 Oct 2023 00:54:25 -0700
-Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ 15.1.2507.32; Tue, 10 Oct 2023 06:32:02 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Tue, 10 Oct 2023 00:54:25 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32 via Frontend Transport; Tue, 10 Oct 2023 00:54:25 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.168)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ 15.1.2507.32 via Frontend Transport; Tue, 10 Oct 2023 06:32:02 -0700
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.168)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.32; Tue, 10 Oct 2023 00:54:25 -0700
+ 15.1.2507.32; Tue, 10 Oct 2023 06:32:02 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CGYhdZjFR2V8exN7RC+DXph+18s9y1cGVxLaHbZyuYv7fJy/gYj193syPXcmKRIIPZq5+UybeR31SE7/eBXkRnR5F4TvdPnWV4ckpsmp6PEkweJTxMhZyJ6EBnJZY4GHERk/1iCOoz225wO7LzU9ml2jyuc4n7ooxjYuI33pNW7MDpXQvGmdgzgc0LYgb0OVvqYcDrJtORS7F7Azo4leTH2EmF9G7YaqLoJ271OBM4PRjCwumEtFvOEFM7XByyJfELI2gk8u3MJOVfs72zhOp91vcRUyiVzooW3ucLL/K61ICfEoyAZqlPdf33Ih4zHydMJM6dfFYTNUW9MjgbsjNw==
+ b=S7iJHBJF8wwU4u9H2KVc4fhEn0IRrMEDnU+PYNFhAio3HHxoUbv+JA9aMxb0LgUo8FW5FrZGMAVEEU7NWSo2gZp0g4ermaJ9b3w/Tma0KLzj0Ayfgf2Y5Mtz7OSndxqdmdEgcexwRsO58hzY1l1wnCUCV9IV6DHotTXTPsP2TykmC4TsoplYcRPGjQhPjF553fWEW5XOJihs0KI3z8Q0YLGjHxG/soROm5TlIkXzUf243VYwC8DUhKoMol8pZalhIf9yKHp7CW+QNbLz0MwQjqX4nVCtqX1TJ1qsUSrx5MDJxuzv/ajsG8PiCqq/Bwl0maPSYlxruttlp8NtWZBJXQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=RIY+rAT1B+2xTNaZqqIlknbmlonL/I8uRRqZYO44f5c=;
- b=i4qe1rXR90+iz14S6SNuGIUqDXuorXGVkMyYFYJc9v0SM7d8+XTNF7a2oMS9yYIemMDp7W5uSFBaet9aFH9evbkX3ti7Qe1jHwgrufLaqTzi8nkUTMltmxlJ8AqfPU97IwZYHqnZQYpsMxpvYryuBhdhJ/A+RwJ02u8KazneFxUFdWnyXIFg9mNAHyX95MK4Oz2FR+yl8WtprfaIXwcAYdsGttwcKLbE7yr1D8/9Kxr0Ux2ySiyH123AxTTmzFNMIc87V0Vusr2HkN7lb9KleDj37CgGSCfHaTayNqFC73ZPa9H3NZIRUfRi5kfeIygszP2iWrwI6Z+UtKM32SN3ag==
+ bh=vwFG/twXmGUds47sVudkIlb7xWhaHmUEs/VhJnATBT8=;
+ b=KeE/ys2fvDW1+qqcqVL55+ws6eo5SLABYCYLqf5KpN6OYGN63eb96rc+ccrtrp1corPulhUO6FEjkURVEYhwH6g/LgIWLz8RNzL/zxy6Jc0oqCy4jqtm70T7LNCY4QK8SDVFpv3dUspxaKzR85FInDaSCu1PIzg9NuMN7SNsWlH2om5AdHFs9vv7J3nCbPzVjoqlOensc15jc8eooUWhXqXwOiLDr3A+7tD5wqvNdHW0291UQae8+zuzquWxuUnBgRuTxtnkg0YURW7uMOtXQzek8kkMaHvA9Fn1JtHH6HfUX+63QPcnIWEn59WDVhte0Lsg+7/DUIpCOiUFLkErpA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
- by BN9PR11MB5497.namprd11.prod.outlook.com (2603:10b6:408:102::6) with
+ by IA1PR11MB8151.namprd11.prod.outlook.com (2603:10b6:208:44d::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6863.38; Tue, 10 Oct
- 2023 07:54:23 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6863.37; Tue, 10 Oct
+ 2023 13:31:58 +0000
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com
  ([fe80::73c6:1231:e700:924]) by PH8PR11MB6779.namprd11.prod.outlook.com
  ([fe80::73c6:1231:e700:924%4]) with mapi id 15.20.6838.029; Tue, 10 Oct 2023
- 07:54:23 +0000
-Date: Tue, 10 Oct 2023 15:54:10 +0800
+ 13:31:58 +0000
+Date: Tue, 10 Oct 2023 21:31:44 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Dietmar Eggemann <dietmar.eggemann@arm.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
-	"Paul E. McKenney" <paulmck@kernel.org>, Josh Triplett
-	<josh@joshtriplett.org>, Joel Fernandes <joel@joelfernandes.org>, Juri Lelli
-	<juri.lelli@redhat.com>, Valentin Schneider <vschneid@redhat.com>, "John
- Stultz" <jstultz@google.com>, Davidlohr Bueso <dave@stgolabs.net>,
-	<linux-doc@vger.kernel.org>, <oliver.sang@intel.com>
-Subject: [linus:master] [torture]  5d248bb39f: BUG:workqueue_lockup-pool
-Message-ID: <202310101456.53664ae-oliver.sang@intel.com>
+To: David Howells <dhowells@redhat.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Christian Brauner
+	<christianvanbrauner@gmail.com>, Christian Brauner <brauner@kernel.org>,
+	Alexander Viro <viro@zeniv.linux.org.uk>, Jens Axboe <axboe@kernel.dk>,
+	Christoph Hellwig <hch@lst.de>, Christian Brauner <christian@brauner.io>,
+	Matthew Wilcox <willy@infradead.org>, Linus Torvalds
+	<torvalds@linux-foundation.org>, David Laight <David.Laight@aculab.com>,
+	<linux-kernel@vger.kernel.org>, <oliver.sang@intel.com>
+Subject: [brauner-vfs:vfs.iov_iter] [iov_iter]  376fdc4552: last_state.OOM
+Message-ID: <202310101622.31e71d6d-oliver.sang@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-X-ClientProxiedBy: KL1PR0401CA0021.apcprd04.prod.outlook.com
- (2603:1096:820:e::8) To PH8PR11MB6779.namprd11.prod.outlook.com
+X-ClientProxiedBy: KL1PR02CA0023.apcprd02.prod.outlook.com
+ (2603:1096:820:d::10) To PH8PR11MB6779.namprd11.prod.outlook.com
  (2603:10b6:510:1ca::17)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -90,105 +87,79 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|BN9PR11MB5497:EE_
-X-MS-Office365-Filtering-Correlation-Id: fe2f3d9f-f30d-4112-8767-08dbc9661dc0
+X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|IA1PR11MB8151:EE_
+X-MS-Office365-Filtering-Correlation-Id: a955538b-3f5b-4b20-9ff6-08dbc9954722
 X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 2J477YzJisrRLJrrU5msIye2KODT+53T66U5QTVpEC8eYfkMgC/qycU7VT9QUrWCBSbaZVct9XeU2dDAEe/TnEhZLYEX15PxW72LE02famUErUqM2tknizu3/7lLFKA97bCyyfT+Aim2B9ui2cspy3ceYA1AYn6fzKRBkHucqWEei4IngnNOPDww3l6eBwVRgkXAwKSOEsKzRLyuINug3URZ4yHf9/PUql05mUkUxuww2/GWVchWrnQ6NIqULP0IUM9CPu03T9RIPNO7XjxNGcw9WLIKUk/L18ImqeqjnXuGuDBH6dNL08T5YDuBEpU5TafX7kfVs0ZUiisynWcCDvdflbValvYcSU7Qb0GireOuEud8xEFilhZLrYZUMWfK0JZ+8m25NcgT6p03vua3JYxKXaQpubmeus6Vw6lqSk7GTvdZiQbMlBOhlhuloGIEtOBBfhuPIrexyBWLw8NeVDBNVEgpzvNtvVNQU6muC+PjD9ogvwIjtH2h18vk1fu8+ExTOW//vk1iQ8QXcofMcb9+Mukyo301wYj9r/coLukqn+DfTQqhwLpAKWpApeY18clkZrDA0Gm0vg6aYgik/FvXTZV3zWd0GpoQNApdWwwXRclOm6U9QXjEBSX9CVORLFLNEPd0+ObKBzKvrP10+g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(376002)(366004)(39860400002)(396003)(136003)(230922051799003)(186009)(64100799003)(1800799009)(451199024)(83380400001)(107886003)(36756003)(478600001)(6666004)(6512007)(6506007)(38100700002)(54906003)(966005)(6486002)(66556008)(1076003)(2616005)(26005)(66946007)(66476007)(6916009)(316002)(41300700001)(8676002)(8936002)(4326008)(5660300002)(82960400001)(7416002)(2906002)(30864003)(86362001)(568244002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: 1l3NC+/eD1jRbZRRIouc9QiIZTcOM1xm+cIrvnObqOEHSC5kbuBkaQ9MyzuEIGWnHwMYNRdsQYEO0ygPLCjXosNaEbQEaENLXASVAX5mM9lhCwKSLWFIzHXiD4dz+aaGpNk10PWd9rbibwqbDIXHTBpMOJl9CbXQ3ilnkAiL5G/wge9gWgYLDAo6NT/hxyPS9aHGgHmIA0wLSYr9i2NTdjb3Co0CJuFzzOQFVnwLX+tmijgCXiQquKMgeWSsJ42stb/syS5VTiHSqaavY+vEfcm7AlBUZdt7AKu2Q09xYRFzR738ZsKLId6qDk19RdBSuW4eE0FN/4Xguronjo6VlkzQiNyXL1ONSWOjRr9NfNp3ZlLuc+12uhHR108bZ+B5dV/FPNFtxGEqIhB/4U6teb1J0bdelVkQVTABUnS4xMjBwb+UHQrkadnCpqveX7t8Dxeca6d6QUDQGCYmK7vHLs84MHMi63WSNVdJ6AiCG0IYb9Sjum4r7RRC4xnse+9dIzVxwybxo4wunabHu5xqzF9Uk9hZ4cHIXDTgY1i0/0/MZBUnJOup8d5gvD4ZiRopAWNOAZQEUIbE6w2AI3HiFA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(396003)(346002)(39860400002)(366004)(136003)(230922051799003)(186009)(64100799003)(451199024)(1800799009)(6512007)(66899024)(5660300002)(2616005)(6506007)(1076003)(107886003)(6916009)(54906003)(316002)(66476007)(7416002)(26005)(66946007)(66556008)(4326008)(8676002)(6666004)(41300700001)(966005)(2906002)(30864003)(6486002)(478600001)(83380400001)(40140700001)(36756003)(38100700002)(82960400001)(86362001)(8936002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?S2MF0RK5yVP6RqyKCzi9l1oS61C2aDEvGkcI4HjrrRRAUuuXGH4OVV3dgfgl?=
- =?us-ascii?Q?nWZfw1qMTnPDXrySqmVYZOvf/cTAYfQQOvqK0UZhMNisitxjsEr/RIVhxhMp?=
- =?us-ascii?Q?+jnJJ9zQVY3yJ49s6oWta61R4GHpMu3z7K0EMJMN8nTcboie14oyqsoNJE6S?=
- =?us-ascii?Q?nmzhCv7SawvBxZhcgXU1ARX0c4zrbfX9r9D87oxww0APqwJGsm8jVNiOAP8H?=
- =?us-ascii?Q?eOpptvxqjmD/ziztTFHDNbjKPQGb7Zj9RmdM7mZ472MSXgGMpg9runPG4G4H?=
- =?us-ascii?Q?TuVMiBiseKp8yo0A0QGTFtCXGLzVXO0bwJ/D6KRsd40Y8cge0SG+q25KCV5O?=
- =?us-ascii?Q?0rPizZVtWz0zhPr1oHj2Gtb5PhmTrUUYaW0FD0Boji727gFf9h4cHnkMAPG8?=
- =?us-ascii?Q?bS3jkrNWYUp9CYtkJ+xpS/Ru1w03aegNDX2YAm6d2dJXnOmaNQJA8KvDslKo?=
- =?us-ascii?Q?E2KPC3mCxRLH6DweaNL9OSBamLW2D4K0V9a6+Nk2vhySoGqw7LvL1NWcdMxr?=
- =?us-ascii?Q?CmtUys+IQueIB5rjaZn93BAkRWWIbp4zvAPi2trdW0TT4lFkmr2cjvF7NQIC?=
- =?us-ascii?Q?FyRDof4e8kynpZrSRlNl9EqYlDJ5WKki8uPH/jkO1mOZU+aHn7xg5mGb1gr7?=
- =?us-ascii?Q?w4zSP5dPX5y72hlOZ3hFG9wMni8nXbuDLnSMBgzGpiRnvQ6GRhQ8hXPXrVWF?=
- =?us-ascii?Q?5AQft0nkhRBA3JkO5iGuCSeF8by57uACDiSB1jn/v0M5MVddTjODDF+3fGbm?=
- =?us-ascii?Q?44IMFSbYHUeg9HhWilb/BKdnW9MlD27dSZxxo8jm7T4gBJn4QxE3jbY2raOa?=
- =?us-ascii?Q?1sOx5XpnxA/xV2hNvKEhBhhoA/OiCWya6HcsCTo+4Id2HQhnIjje3RVsP+YY?=
- =?us-ascii?Q?igO8hudwT4NnTRlnvfUcx67ejpBR/emgvXq8R3+bws6ZdPj4gikcgQM1T47a?=
- =?us-ascii?Q?zXGC80pMZuSte/XUKN70nnLk4UvBnujxmdrKUIb2NOKrJt+ganvsLrJjpYPx?=
- =?us-ascii?Q?3o/twErXqrzAY2Vy528iXrmaXaKVIOOyAIer6vYj23RumWEMwoQqHBCcsWX7?=
- =?us-ascii?Q?Sw9KCdrdQ4RgLzHO6eQpTcfOyjFuRED9ZUEOCoOHyV6ohtqsi0bu4BbVqfTz?=
- =?us-ascii?Q?54ws/K4sQrkiadzJO1Xqgt18j9/xu6rk7AKLO2p+aDZNPd4kAbfqmBncRa1R?=
- =?us-ascii?Q?14XEKta6z1Ams54rkGDMyf3AraJ4N6uRVni6wxSjt+uWaUIOTTbYpT8NMlNP?=
- =?us-ascii?Q?3lP2AiDPiknFXIa1Pp2n62sOclcSlLWZshb3RRcVDd6lS9wMPyLrz7OwT2EO?=
- =?us-ascii?Q?C9ais54bwi7IlCeu942zcayTuM/1qKnSPSVqJdKtJnGzIEeHg8ZNkBRq36Zp?=
- =?us-ascii?Q?Y5YSzPYb1ZtHmeiKlWjl6bvjremu+wQ6PbEAK/bBKtykwX1I090x31/mFRol?=
- =?us-ascii?Q?gNQSAnBUB9o4MbZy8Kyg5boz/65cwavUitvkS5J/yS3moAeA5UrXb9+5vgo9?=
- =?us-ascii?Q?OcUG7xrQr9uRYf9kKqPhDKN0eXj3CkMK/I54Ej3R47mpGPoOyP2Vi9N68O4W?=
- =?us-ascii?Q?kW2Ijse1z0iz1shzbpNU5F2UYG+ahojDKi4K/2/dIjuPRg3hqMpGA+XqEYzF?=
- =?us-ascii?Q?xA=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: fe2f3d9f-f30d-4112-8767-08dbc9661dc0
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?eE0rzY8FyM4r2mG+GT5s6+3t8FpuMN0JlQvxFM7SwoAzm69dqgGxslhQwd3Z?=
+ =?us-ascii?Q?Z4S6plIOYcvjAawaty0yotdpg6CwAUcd/tZTgsf8oTN58SZeFjDMxIUHhvpI?=
+ =?us-ascii?Q?tQk3sbGcbvfJR/f7EPdiTYNCaOWp2Gb2qRK8MbDUj8bCVBnw5gckHBJyK5iG?=
+ =?us-ascii?Q?KiWkn5l4mIv1iF+1KuWZOwDBeSUKbm8iNVVOPQ5/cR5uNBfLEQemFK04BWvF?=
+ =?us-ascii?Q?NBmLY57qC6fgQ0Zsvfxrs4G/agpb+6a8uTdf1O1H+o5lC8NyIc+rJhNWCjWq?=
+ =?us-ascii?Q?/EbWpSFcQ/dgATQVHxHh2uaY+1JD31AkGvVdDbqa3O8+Zb7JKbxAv/oTfeR6?=
+ =?us-ascii?Q?ny1BkJMtPhPZhSFpotmDTKAvSXnWji3q6mbZLquIfnYXhHUyZsQ610kzJ8D8?=
+ =?us-ascii?Q?bpkUWej1HLgiUVIJcVno1t2sayjRe0PGkxmZXwV+FnBKfNTZXxRpY+mIXNe4?=
+ =?us-ascii?Q?hZZbHUE17GJHe5dL2xv83NL4w+qjyUB+BpbESH/wrc6ekrA5ugh9BQhw6O1T?=
+ =?us-ascii?Q?VXcIwKDQY/6lbCJrnpO/Av8r5W36bwnZmr9CNGBNJLngpydEyn00edq3uts1?=
+ =?us-ascii?Q?bNXy0n13LF/j2a3EN1z02dgMYmODR91XVJ8YqF8oQKLPw/QPtHVtfdApcM8f?=
+ =?us-ascii?Q?uQ260zIHxc4/u7l61v1x70XejZWbEyX1KGQhqs9cC1ZVdx/uKgEV0HghIde1?=
+ =?us-ascii?Q?+Rkl9dRjtbNKTGi6iVtwiGu5h/GNI4XVp6+IkQ9Pe6g57bq4dLFWsynL7OhQ?=
+ =?us-ascii?Q?meq1AwzWdUMRXMpgS1ucc3m6edJmzTCPK/GNIPbdW28rzjMxH5vnItDJjrmK?=
+ =?us-ascii?Q?J1wTREqiWjTcV9DD1rmruJUGtkz7JVyRYv5xgLoK9Aj9R5P6sj7023v+WfNC?=
+ =?us-ascii?Q?oWodEYPozP0tVn4GZGJSYxdfFRlPLXCpzOdojQnj87X5R+7AQFS/oP3fevc/?=
+ =?us-ascii?Q?MAHV+gfWj3n6H0tjDQAFss9Ws9zV/6b7iH2PIJcFaUFgIyaMRV4/3KvwzltR?=
+ =?us-ascii?Q?blVxZfo0ARyH4b937rvniE1SxqrpQfJ1utiTRDoOl5LeIDfNMdUnK4rVaCda?=
+ =?us-ascii?Q?c+XULq+S6RFiQ8NeuFKYgfbyKDoh374lh0648r+dBneRghqWjxfCyfw+zXYe?=
+ =?us-ascii?Q?jw081R10dFNh8XeOePpPRWdjA7AFhuAVSRugvWprYZDrlxQPkb8QONF4xmXJ?=
+ =?us-ascii?Q?mOYqX5r9L1nk6yLg/3IJwH6HbXL2vudtCsB5dymFArO2qQVoCSv2TlKKUnF2?=
+ =?us-ascii?Q?Hz37rjG3nutQddYjXaMjB4pkE1ltWnawmPI87MtXAZ/6QOUCxO5YURpD4+64?=
+ =?us-ascii?Q?2wv+KTAT1fVDSZlyxMFBW+xNV0n2Vwg4j4HJx8gKM1T5xv+Vxxry21C8W252?=
+ =?us-ascii?Q?l5TpKQnrZR8g7LpWRbTd6MndAf9FYhhIEm6mIoYIkUwzCuxnXHXdbhRmCGT6?=
+ =?us-ascii?Q?iSclW9V0cqvYWTAOmhvKiysLuFvFv1XMXvyc3b3qLbS5VN4hLtkbM6n789/h?=
+ =?us-ascii?Q?Xx/PQ80T490ihDGnmL9VPl2mi5GcuZQ9nqltpayv0AnZ8LQlr/8FMAjhVKwf?=
+ =?us-ascii?Q?CQh5r0HfVDKt6S7teI4W328POOaEBFl4ffM11UEfuGrEw5rqZb8rdY7AT++T?=
+ =?us-ascii?Q?Bg=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: a955538b-3f5b-4b20-9ff6-08dbc9954722
 X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB6779.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Oct 2023 07:54:22.9893
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Oct 2023 13:31:58.6042
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ybQXvnQoIZcWvFy41pXz0h7G94MDjE9JxzyEf25by/97Yxq6FLBJBf/Nh50aviffAfe1Nv5KlEYm8cE1eZuPTw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR11MB5497
+X-MS-Exchange-CrossTenant-UserPrincipalName: teZU/v4NklLjAgyhh1j3Jesreklg8xS2/zddXGrMisPqQwwnV1uGEXqU6y1zmm6HIY/puILNIEn61M6Skn4DzA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB8151
 X-OriginatorOrg: intel.com
 
 
-hi, Dietmar Eggemann,
-
-we don't have enough knowledge to explain below issue, just report what we
-observed in our tests FYI.
-
-since random, we run the jobs for both 5d248bb39f and parent to 999 times:
-
-67d5404d27437689 5d248bb39fe1388943acb6510f8
----------------- ---------------------------
-       fail:runs  %reproduction    fail:runs
-           |             |             |
-           :999          6%          56:999   dmesg.BUG:workqueue_lockup-pool   <--------
-           :999          0%           1:999   dmesg.INFO:rcu_preempt_detected_stalls_on_CPUs/tasks
-           :999          0%           1:999   dmesg.INFO:rcu_tasks_detected_stalls_on_tasks
-          2:999          2%          19:999   dmesg.INFO:task_blocked_for_more_than#seconds
-          8:999         -1%            :999   dmesg.IP-Config:Auto-configuration_of_network_failed
-          2:999          2%          19:999   dmesg.Kernel_panic-not_syncing:hung_task:blocked_tasks
-           :999          0%           2:999   dmesg.RIP:__might_resched
-           :999          0%           1:999   dmesg.RIP:debug_lockdep_rcu_enabled
-           :999          0%           2:999   dmesg.RIP:ftrace_likely_update
-          1:999         -0%            :999   dmesg.RIP:kasan_check_range
-           :999          0%           1:999   dmesg.RIP:kfree_rcu_monitor
-           :999          0%           1:999   dmesg.RIP:lock_acquire
-           :999          0%           2:999   dmesg.RIP:lock_is_held_type
-           :999          0%           1:999   dmesg.RIP:process_one_work
-          1:999         -0%            :999   dmesg.WARNING:inconsistent_lock_state
-          1:999         -0%            :999   dmesg.calltrace:irq_exit_rcu
-          1:999         -0%            :999   dmesg.inconsistent{IN-HARDIRQ-W}->{HARDIRQ-ON-W}usage
-
-as above, both commits have various random issues.
-however, for dmesg.BUG:workqueue_lockup-pool, we only observed it happens for
-5d248bb39f with a low rate (56 times out of 999 runs), but never happen on
-parent.
-
-below is more details. 
 
 Hello,
 
-kernel test robot noticed "BUG:workqueue_lockup-pool" on:
+kernel test robot noticed "last_state.OOM" on:
 
-commit: 5d248bb39fe1388943acb6510f8f48fa5570e0ec ("torture: Add lock_torture writer_fifo module parameter")
-https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+commit: 376fdc4552f1ec23677fd7321ff5f7a208bd9eb9 ("iov_iter: Don't deal with iter->copy_mc in memcpy_from_iter_mc()")
+https://git.kernel.org/cgit/linux/kernel/git/vfs/vfs.git vfs.iov_iter
 
-[test failed on linus/master 6465e260f48790807eef06b583b38ca9789b6072]
-[test failed on linux-next/master 4ae73bba62a367f2314f6ce69e3085a941983d8b]
+[test failed on linux-next/master 33b64befb1a28bca3f5a9ed9807d2f87e976c63a]
 
-in testcase: boot
+in testcase: trinity
+version: trinity-i386-abe9de86-1_20230429
+with following parameters:
 
-compiler: gcc-9
+	runtime: 300s
+	group: group-04
+	nr_groups: 5
+
+test-description: Trinity is a linux system call fuzz tester.
+test-url: http://codemonkey.org.uk/projects/trinity/
+
+
+compiler: gcc-12
 test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
 
 (please refer to attached dmesg/kmsg for entire log/backtrace)
@@ -198,196 +169,135 @@ test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202310101456.53664ae-oliver.sang@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202310101622.31e71d6d-oliver.sang@intel.com
 
 
-[  456.238517][    C0] BUG: workqueue lockup - pool cpus=1 node=0 flags=0x0 nice=0 stuck for 34s!
-[  456.263857][    C0] Showing busy workqueues and worker pools:
-[  456.283499][    C0] workqueue events_power_efficient: flags=0x80
-[  456.299402][    C0]   pwq 2: cpus=1 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
-[  456.302891][    C0]     pending: check_lifetime
-[  456.331425][    C0] Showing backtraces of running workers in stalled CPU-bound worker pools:
-[  464.399159][    C0] hrtimer: interrupt took 9163921 ns
-[  486.958477][    C0] BUG: workqueue lockup - pool cpus=1 node=0 flags=0x0 nice=0 stuck for 65s!
-[  486.974447][    C0] Showing busy workqueues and worker pools:
-[  486.984953][    C0] workqueue events_power_efficient: flags=0x80
-[  486.996029][    C0]   pwq 2: cpus=1 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
-[  486.996193][    C0]     pending: check_lifetime
-[  486.996710][    C0] Showing backtraces of running workers in stalled CPU-bound worker pools:
-[  517.678504][    C0] BUG: workqueue lockup - pool cpus=1 node=0 flags=0x0 nice=0 stuck for 96s!
-[  517.694928][    C0] Showing busy workqueues and worker pools:
-[  517.706364][    C0] workqueue events_power_efficient: flags=0x80
-[  517.716928][    C0]   pwq 2: cpus=1 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
-[  517.717091][    C0]     pending: check_lifetime
-[  517.717615][    C0] Showing backtraces of running workers in stalled CPU-bound worker pools:
-[  548.398534][    C0] BUG: workqueue lockup - pool cpus=1 node=0 flags=0x0 nice=0 stuck for 126s!
-[  548.415903][    C0] Showing busy workqueues and worker pools:
-[  548.445877][    C0] workqueue events_power_efficient: flags=0x80
-[  548.472451][    C0]   pwq 2: cpus=1 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
-[  548.472645][    C0]     pending: check_lifetime
-[  548.473106][    C0] Showing backtraces of running workers in stalled CPU-bound worker pools:
-[  579.118467][    C0] BUG: workqueue lockup - pool cpus=1 node=0 flags=0x0 nice=0 stuck for 157s!
-[  579.227632][    C0] Showing busy workqueues and worker pools:
-[  579.238527][    C0] workqueue events_power_efficient: flags=0x80
-[  579.249190][    C0]   pwq 2: cpus=1 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
-[  579.249353][    C0]     pending: check_lifetime
-[  579.249896][    C0] Showing backtraces of running workers in stalled CPU-bound worker pools:
-[  609.838492][    C0] BUG: workqueue lockup - pool cpus=1 node=0 flags=0x0 nice=0 stuck for 188s!
-[  609.854400][    C0] Showing busy workqueues and worker pools:
-[  609.869467][    C0] workqueue events_power_efficient: flags=0x80
-[  609.884664][    C0]   pwq 2: cpus=1 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
-[  609.884855][    C0]     pending: check_lifetime
-[  609.885412][    C0] Showing backtraces of running workers in stalled CPU-bound worker pools:
-[  640.558322][    C0] BUG: workqueue lockup - pool cpus=1 node=0 flags=0x0 nice=0 stuck for 219s!
-[  640.573488][    C0] Showing busy workqueues and worker pools:
-[  640.584383][    C0] workqueue events_power_efficient: flags=0x80
-[  640.596724][    C0]   pwq 2: cpus=1 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
-[  640.596891][    C0]     pending: check_lifetime
-[  640.597439][    C0] Showing backtraces of running workers in stalled CPU-bound worker pools:
-[  671.278472][    C0] BUG: workqueue lockup - pool cpus=1 node=0 flags=0x0 nice=0 stuck for 249s!
-[  671.305078][    C0] Showing busy workqueues and worker pools:
-[  671.317258][    C0] workqueue events_power_efficient: flags=0x80
-[  671.333460][    C0]   pwq 2: cpus=1 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
-[  671.333624][    C0]     pending: check_lifetime
-[  671.357925][    C0] Showing backtraces of running workers in stalled CPU-bound worker pools:
-[  701.998584][    C0] BUG: workqueue lockup - pool cpus=1 node=0 flags=0x0 nice=0 stuck for 280s!
-[  702.019680][    C0] Showing busy workqueues and worker pools:
-[  702.030924][    C0] workqueue events_power_efficient: flags=0x80
-[  702.042393][    C0]   pwq 2: cpus=1 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
-[  702.043337][    C0]     pending: check_lifetime
-[  702.044403][    C0] Showing backtraces of running workers in stalled CPU-bound worker pools:
-[  732.718468][    C0] BUG: workqueue lockup - pool cpus=1 node=0 flags=0x0 nice=0 stuck for 311s!
-[  732.741426][    C0] Showing busy workqueues and worker pools:
-[  732.758915][    C0] workqueue events_power_efficient: flags=0x80
-[  732.768737][    C0]   pwq 2: cpus=1 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
-[  732.768923][    C0]     pending: check_lifetime
-[  732.806456][    C0] Showing backtraces of running workers in stalled CPU-bound worker pools:
-[  763.438485][    C0] BUG: workqueue lockup - pool cpus=1 node=0 flags=0x0 nice=0 stuck for 342s!
-[  763.461942][    C0] Showing busy workqueues and worker pools:
-[  763.472996][    C0] workqueue events_power_efficient: flags=0x80
-[  763.484138][    C0]   pwq 2: cpus=1 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
-[  763.484304][    C0]     pending: check_lifetime
-[  763.484727][    C0] Showing backtraces of running workers in stalled CPU-bound worker pools:
-[  794.158571][    C0] BUG: workqueue lockup - pool cpus=1 node=0 flags=0x0 nice=0 stuck for 372s!
-[  794.174418][    C0] Showing busy workqueues and worker pools:
-[  794.188676][    C0] workqueue events_power_efficient: flags=0x80
-[  794.199823][    C0]   pwq 2: cpus=1 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
-[  794.199990][    C0]     pending: check_lifetime
-[  794.200477][    C0] Showing backtraces of running workers in stalled CPU-bound worker pools:
-[  824.878523][    C0] BUG: workqueue lockup - pool cpus=1 node=0 flags=0x0 nice=0 stuck for 403s!
-[  824.898973][    C0] Showing busy workqueues and worker pools:
-[  824.915273][    C0] workqueue events_power_efficient: flags=0x80
-[  824.926393][    C0]   pwq 2: cpus=1 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
-[  824.926581][    C0]     pending: check_lifetime
-[  824.927107][    C0] Showing backtraces of running workers in stalled CPU-bound worker pools:
-[  855.598509][    C0] BUG: workqueue lockup - pool cpus=1 node=0 flags=0x0 nice=0 stuck for 434s!
-[  855.628235][    C0] Showing busy workqueues and worker pools:
-[  855.638889][    C0] workqueue events_power_efficient: flags=0x80
-[  855.651558][    C0]   pwq 2: cpus=1 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
-[  855.651727][    C0]     pending: check_lifetime
-[  855.652271][    C0] Showing backtraces of running workers in stalled CPU-bound worker pools:
-[  886.318451][    C0] BUG: workqueue lockup - pool cpus=1 node=0 flags=0x0 nice=0 stuck for 464s!
-[  886.343400][    C0] Showing busy workqueues and worker pools:
-[  886.353541][    C0] workqueue events_power_efficient: flags=0x80
-[  886.372345][    C0]   pwq 2: cpus=1 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
-[  886.372510][    C0]     pending: check_lifetime
-[  886.373057][    C0] Showing backtraces of running workers in stalled CPU-bound worker pools:
-[  917.038624][    C0] BUG: workqueue lockup - pool cpus=1 node=0 flags=0x0 nice=0 stuck for 495s!
-[  917.061144][    C0] Showing busy workqueues and worker pools:
-[  917.072203][    C0] workqueue events_power_efficient: flags=0x80
-[  917.094365][    C0]   pwq 2: cpus=1 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
-[  917.094591][    C0]     pending: check_lifetime
-[  917.095106][    C0] Showing backtraces of running workers in stalled CPU-bound worker pools:
-[  947.758605][    C0] BUG: workqueue lockup - pool cpus=1 node=0 flags=0x0 nice=0 stuck for 526s!
-[  947.794471][    C0] Showing busy workqueues and worker pools:
-[  947.806830][    C0] workqueue events_power_efficient: flags=0x80
-[  947.819558][    C0]   pwq 2: cpus=1 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
-[  947.819811][    C0]     pending: check_lifetime
-[  947.820305][    C0] Showing backtraces of running workers in stalled CPU-bound worker pools:
-[  978.478528][    C0] BUG: workqueue lockup - pool cpus=1 node=0 flags=0x0 nice=0 stuck for 557s!
-[  978.503662][    C0] Showing busy workqueues and worker pools:
-[  978.514379][    C0] workqueue events_power_efficient: flags=0x80
-[  978.525533][    C0]   pwq 2: cpus=1 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
-[  978.525723][    C0]     pending: check_lifetime
-[  978.548149][    C0] Showing backtraces of running workers in stalled CPU-bound worker pools:
-[ 1009.198483][    C0] BUG: workqueue lockup - pool cpus=1 node=0 flags=0x0 nice=0 stuck for 587s!
-[ 1009.221412][    C0] Showing busy workqueues and worker pools:
-[ 1009.237792][    C0] workqueue events_power_efficient: flags=0x80
-[ 1009.269282][    C0]   pwq 2: cpus=1 node=0 flags=0x0 nice=0 active=1/256 refcnt=2
-[ 1009.269477][    C0]     pending: check_lifetime
-[ 1009.290321][    C0] Showing backtraces of running workers in stalled CPU-bound worker pools:
-[ 1029.678914][   T30] INFO: task swapper/0:1 blocked for more than 491 seconds.
-[ 1029.699579][   T30]       Not tainted 6.5.0-rc1-00004-g5d248bb39fe1 #1
-[ 1029.718868][   T30] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-[ 1029.740371][   T30] task:swapper/0       state:D stack:0     pid:1     ppid:0      flags:0x00004000
-[ 1029.767948][   T30] Call Trace:
-[ 1029.773801][   T30]  <TASK>
-[ 1029.778983][ T30] __schedule (kernel/sched/core.c:5381 kernel/sched/core.c:6710) 
-[ 1029.791567][ T30] ? io_schedule_timeout (kernel/sched/core.c:6592) 
-[ 1029.800242][ T30] ? __lock_acquire (kernel/locking/lockdep.c:5144) 
-[ 1029.808382][ T30] schedule (kernel/sched/core.c:6787 (discriminator 1)) 
-[ 1029.815057][ T30] schedule_timeout (kernel/time/timer.c:2144) 
-[ 1029.822775][ T30] ? mark_lock (arch/x86/include/asm/bitops.h:228 (discriminator 3) arch/x86/include/asm/bitops.h:240 (discriminator 3) include/asm-generic/bitops/instrumented-non-atomic.h:142 (discriminator 3) kernel/locking/lockdep.c:228 (discriminator 3) kernel/locking/lockdep.c:4663 (discriminator 3)) 
-[ 1029.833948][ T30] ? usleep_range_state (kernel/time/timer.c:2129) 
-[ 1029.842598][ T30] ? check_preemption_disabled (lib/smp_processor_id.c:16) 
-[ 1029.851647][ T30] ? _raw_spin_unlock_irq (arch/x86/include/asm/irqflags.h:42 arch/x86/include/asm/irqflags.h:77 include/linux/spinlock_api_smp.h:159 kernel/locking/spinlock.c:202) 
-[ 1029.860296][ T30] ? wait_for_completion (kernel/sched/completion.c:85 kernel/sched/completion.c:106 kernel/sched/completion.c:117 kernel/sched/completion.c:138) 
-[ 1029.869302][ T30] wait_for_completion (kernel/sched/completion.c:86 kernel/sched/completion.c:106 kernel/sched/completion.c:117 kernel/sched/completion.c:138) 
-[ 1029.877507][ T30] ? wait_for_completion_io (kernel/sched/completion.c:137) 
-[ 1029.886807][ T30] __cpuhp_kick_ap (kernel/cpu.c:737) 
-[ 1029.894385][ T30] cpuhp_issue_call (kernel/cpu.c:1123 kernel/cpu.c:2324) 
-[ 1029.907022][ T30] __cpuhp_setup_state_cpuslocked (kernel/cpu.c:2473) 
-[ 1029.917563][ T30] ? rcu_read_lock_held (kernel/rcu/update.c:380) 
-[ 1029.926533][ T30] ? xz_dec_bcj_reset (lib/percpu_counter.c:201) 
-[ 1029.934476][ T30] __cpuhp_setup_state (include/linux/percpu-rwsem.h:99 kernel/cpu.c:501 kernel/cpu.c:2503) 
-[ 1029.942992][ T30] ? libcrc32c_mod_init (lib/percpu_counter.c:258) 
-[ 1029.951358][ T30] percpu_counter_startup (lib/percpu_counter.c:263) 
-[ 1029.959755][ T30] do_one_initcall (init/main.c:1232) 
-[ 1029.967660][ T30] ? trace_event_raw_event_initcall_level (init/main.c:1223) 
-[ 1029.978323][ T30] ? parameq (kernel/params.c:171) 
-[ 1029.985581][ T30] ? check_preemption_disabled (lib/smp_processor_id.c:16) 
-[ 1029.994714][ T30] ? check_preemption_disabled (lib/smp_processor_id.c:16) 
-[ 1030.004702][ T30] kernel_init_freeable (init/main.c:1293 init/main.c:1310 init/main.c:1329 init/main.c:1546) 
-[ 1030.013031][ T30] ? rest_init (init/main.c:1429) 
-[ 1030.020898][ T30] kernel_init (init/main.c:1439) 
-[ 1030.027964][ T30] ? rest_init (init/main.c:1429) 
-[ 1030.035129][ T30] ret_from_fork (arch/x86/entry/entry_64.S:314) 
-[ 1030.047506][   T30]  </TASK>
-[ 1030.052818][   T30]
-[ 1030.052818][   T30] Showing all locks held in the system:
-[ 1030.065360][   T30] 2 locks held by swapper/0/1:
-[ 1030.073338][ T30] #0: ffffffff84b35190 (cpu_hotplug_lock){++++}-{0:0}, at: percpu_counter_startup (lib/percpu_counter.c:263) 
-[ 1030.091412][ T30] #1: ffffffff84b37848 (cpuhp_state_mutex){+.+.}-{3:3}, at: __cpuhp_setup_state_cpuslocked (kernel/cpu.c:2278 kernel/cpu.c:2449) 
-[ 1030.109624][   T30] 1 lock held by rcu_tasks_kthre/11:
-[ 1030.117928][ T30] #0: ffffffff84f38e50 (rcu_tasks.tasks_gp_mutex){+.+.}-{3:3}, at: rcu_tasks_one_gp (kernel/rcu/tasks.h:525) 
-[ 1030.134843][   T30] 1 lock held by rcu_tasks_trace/12:
-[ 1030.143010][ T30] #0: ffffffff84f38b50 (rcu_tasks_trace.tasks_gp_mutex){+.+.}-{3:3}, at: rcu_tasks_one_gp (kernel/rcu/tasks.h:525) 
-[ 1030.163969][   T30] 1 lock held by khungtaskd/30:
-[ 1030.180109][ T30] #0: ffffffff84f39aa0 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks (kernel/locking/lockdep.c:6615) 
-[ 1030.200232][   T30]
-[ 1030.204126][   T30] =============================================
-[ 1030.204126][   T30]
-[ 1030.217675][   T30] Kernel panic - not syncing: hung_task: blocked tasks
-[ 1030.221472][   T30] CPU: 0 PID: 30 Comm: khungtaskd Not tainted 6.5.0-rc1-00004-g5d248bb39fe1 #1
-[ 1030.221472][   T30] Call Trace:
-[ 1030.221472][   T30]  <TASK>
-[ 1030.221472][ T30] dump_stack_lvl (lib/dump_stack.c:107) 
-[ 1030.221472][ T30] dump_stack (lib/dump_stack.c:114) 
-[ 1030.221472][ T30] panic (kernel/panic.c:340) 
-[ 1030.221472][ T30] ? panic_smp_self_stop+0x100/0x100 
-[ 1030.221472][ T30] watchdog (kernel/hung_task.c:195 kernel/hung_task.c:379) 
-[ 1030.221472][ T30] kthread (kernel/kthread.c:389) 
-[ 1030.221472][ T30] ? calculate_sigpending (kernel/signal.c:200) 
-[ 1030.221472][ T30] ? proc_dohung_task_timeout_secs (kernel/hung_task.c:362) 
-[ 1030.221472][ T30] ? kthread_complete_and_exit (kernel/kthread.c:342) 
-[ 1030.221472][ T30] ret_from_fork (arch/x86/entry/entry_64.S:314) 
-[ 1030.221472][   T30]  </TASK>
-[ 1030.221472][   T30] Kernel Offset: disabled
+
+[  218.519632][ T7791] trinity-c4 invoked oom-killer: gfp_mask=0x140cca(GFP_HIGHUSER_MOVABLE|__GFP_COMP), order=0, oom_score_adj=500
+[  218.521337][ T7791] CPU: 0 PID: 7791 Comm: trinity-c4 Tainted: G        W        N 6.6.0-rc2-00008-g376fdc4552f1 #1 75cb4084668096873a4da81c5b2fd1231af43beb
+[  218.523040][ T7791] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+[  218.524361][ T7791] Call Trace:
+[  218.524861][ T7791]  dump_stack_lvl+0x72/0x90
+[  218.525505][ T7791]  dump_stack+0xd/0x10
+[  218.526097][ T7791]  dump_header+0x42/0x460
+[  218.526729][ T7791]  ? ___ratelimit+0x6b/0x110
+[  218.527418][ T7791]  oom_kill_process+0x69/0xf0
+[  218.528091][ T7791]  out_of_memory+0xb8/0x2c0
+[  218.528736][ T7791]  __alloc_pages_slowpath+0x829/0xa20
+[  218.529607][ T7791]  __alloc_pages+0x2b5/0x300
+[  218.530249][ T7791]  __folio_alloc+0x15/0x20
+[  218.530882][ T7791]  shmem_get_folio_gfp+0x351/0x640
+[  218.531750][ T7791]  ? irqentry_exit+0x39/0xa0
+[  218.532419][ T7791]  shmem_write_begin+0x4b/0xd0
+[  218.533075][ T7791]  ? fault_in_readable+0x70/0xc0
+[  218.533772][ T7791]  generic_perform_write+0xb5/0x200
+[  218.534492][ T7791]  shmem_file_write_iter+0x78/0x80
+[  218.535199][ T7791]  do_iter_readv_writev+0xee/0x130
+[  218.535892][ T7791]  do_iter_write+0x75/0x150
+[  218.536524][ T7791]  vfs_writev+0x82/0x250
+[  218.537139][ T7791]  ? exit_to_user_mode_prepare+0xa2/0x1c0
+[  218.537918][ T7791]  ? syscall_exit_to_user_mode+0x41/0x60
+[  218.538687][ T7791]  ? do_int80_syscall_32+0x5d/0x80
+[  218.540140][ T7791]  do_writev+0x67/0xf0
+[  218.540721][ T7791]  __ia32_sys_writev+0x17/0x20
+[  218.541376][ T7791]  do_int80_syscall_32+0x53/0x80
+[  218.542042][ T7791]  ? __ia32_sys_alarm+0x58/0xa0
+[  218.542691][ T7791]  ? __ia32_sys_alarm+0x58/0xa0
+[  218.543354][ T7791]  ? exit_to_user_mode_prepare+0xa2/0x1c0
+[  218.544085][ T7791]  ? syscall_exit_to_user_mode+0x41/0x60
+[  218.544822][ T7791]  ? do_int80_syscall_32+0x5d/0x80
+[  218.545517][ T7791]  ? do_int80_syscall_32+0x5d/0x80
+[  218.546220][ T7791]  ? sysvec_call_function_single+0x26/0x30
+[  218.546996][ T7791]  entry_INT80_32+0x108/0x108
+[  218.547664][ T7791] EIP: 0xb7f18092
+[  218.548207][ T7791] Code: 00 00 00 e9 90 ff ff ff ff a3 24 00 00 00 68 30 00 00 00 e9 80 ff ff ff ff a3 f8 ff ff ff 66 90 00 00 00 00 00 00 00 00 cd 80 <c3> 8d b4 26 00 00 00 00 8d b6 00 00 00 00 8b 1c 24 c3 8d b4 26 00
+[  218.550566][ T7791] EAX: ffffffda EBX: 00000117 ECX: 011227b0 EDX: 00000001
+[  218.551538][ T7791] ESI: 0000f000 EDI: 2493800c EBP: 000000e8 ESP: bfa72c68
+[  218.552406][ T7791] DS: 007b ES: 007b FS: 0000 GS: 0033 SS: 007b EFLAGS: 00000296
+[  218.553502][ T7791] Mem-Info:
+[  218.554011][ T7791] active_anon:773 inactive_anon:619045 isolated_anon:0
+[  218.554011][ T7791]  active_file:10 inactive_file:382 isolated_file:64
+[  218.554011][ T7791]  unevictable:87071 dirty:0 writeback:0
+[  218.554011][ T7791]  slab_reclaimable:8235 slab_unreclaimable:12508
+[  218.554011][ T7791]  mapped:11138 shmem:584383 pagetables:326
+[  218.554011][ T7791]  sec_pagetables:0 bounce:0
+[  218.554011][ T7791]  kernel_misc_reclaimable:0
+[  218.554011][ T7791]  free:22215 free_pcp:122 free_cma:0
+[  218.559177][ T7791] Node 0 active_anon:3092kB inactive_anon:2476180kB active_file:40kB inactive_file:1728kB unevictable:348284kB isolated(anon):0kB isolated(file):0kB mapped:44552kB dirty:0kB writeback:0kB shmem:2337532kB writeback_tmp:0kB kernel_stack:1088kB pagetables:1304kB sec_pagetables:0kB all_unreclaimable? yes
+[  218.562603][ T7791] DMA free:11428kB boost:0kB min:80kB low:100kB high:120kB reserved_highatomic:0KB active_anon:0kB inactive_anon:3924kB active_file:0kB inactive_file:0kB unevictable:0kB writepending:0kB present:15992kB managed:15360kB mlocked:0kB bounce:0kB free_pcp:0kB local_pcp:0kB free_cma:0kB
+[  218.565709][ T7791] lowmem_reserve[]: 0 515 2843 2843
+[  218.566468][ T7791] Normal free:77240kB boost:0kB min:2864kB low:3580kB high:4296kB reserved_highatomic:0KB active_anon:0kB inactive_anon:444420kB active_file:40kB inactive_file:1668kB unevictable:8708kB writepending:0kB present:745464kB managed:622688kB mlocked:0kB bounce:0kB free_pcp:240kB local_pcp:240kB free_cma:0kB
+[  218.569877][ T7791] lowmem_reserve[]: 0 0 18623 18623
+[  218.570654][ T7791] HighMem free:192kB boost:0kB min:512kB low:3744kB high:6976kB reserved_highatomic:0KB active_anon:3092kB inactive_anon:2027732kB active_file:0kB inactive_file:0kB unevictable:339576kB writepending:0kB present:2383752kB managed:2383752kB mlocked:3216kB bounce:0kB free_pcp:248kB local_pcp:248kB free_cma:0kB
+[  218.574073][ T7791] lowmem_reserve[]: 0 0 0 0
+[  218.574727][ T7791] DMA: 1*4kB (M) 0*8kB 0*16kB 1*32kB (M) 0*64kB 1*128kB (M) 0*256kB 0*512kB 1*1024kB (U) 1*2048kB (U) 2*4096kB (M) = 11428kB
+[  218.576418][ T7791] Normal: 662*4kB (UME) 434*8kB (UME) 497*16kB (UME) 290*32kB (UME) 116*64kB (UE) 45*128kB (UME) 23*256kB (UME) 14*512kB (UME) 3*1024kB (ME) 2*2048kB (E) 5*4096kB (M) = 77240kB
+[  218.578665][ T7791] HighMem: 2*4kB (U) 3*8kB (UM) 2*16kB (UM) 2*32kB (U) 1*64kB (M) 0*128kB 0*256kB 0*512kB 0*1024kB 0*2048kB 0*4096kB = 192kB
+[  218.580281][ T7791] 671109 total pagecache pages
+[  218.580943][ T7791] 786302 pages RAM
+[  218.581477][ T7791] 595938 pages HighMem/MovableOnly
+[  218.582192][ T7791] 30852 pages reserved
+[  218.582769][ T7791] 0 pages cma reserved
+[  218.583337][ T7791] Tasks state (memory values in pages):
+[  218.584065][ T7791] [  pid  ]   uid  tgid total_vm      rss pgtables_bytes swapents oom_score_adj name
+[  218.585258][ T7791] [   4192]     0  4192     9791     1711    45056        0          -250 systemd-journal
+[  218.586711][ T7791] [   4205]     0  4205     4826     1184    20480        0         -1000 systemd-udevd
+[  218.587982][ T7791] [   4241]   103  4241     1957      928    16384        0             0 rpcbind
+[  218.589205][ T7791] [   4244]     0  4244     1433      672    16384        0             0 cron
+[  218.590439][ T7791] [   4245]   105  4245     1960     1024    16384        0          -900 dbus-daemon
+[  218.591671][ T7791] [   4255]     0  4255     6714     1210    28672        0             0 rsyslogd
+[  218.592856][ T7791] [   4257]     0  4257     3379     1536    24576        0             0 systemd-logind
+[  218.594137][ T7791] [   4294]     0  4294      635      384    12288        0             0 rc.local
+[  218.595340][ T7791] [   4299]     0  4299      636      384    12288        0             0 lkp-bootstrap
+[  218.596555][ T7791] [   4302]     0  4302      635      160    12288        0             0 lkp-bootstrap
+[  218.597798][ T7791] [   4304]     0  4304      666      416    12288        0         -1000 lkp-setup-rootf
+[  218.599125][ T7791] [   4307]     0  4307     1084      416    16384        0             0 sleep
+[  218.655851][ T7791] [   4315]     0  4315     3326     1760    20480        0         -1000 sshd
+[  218.657036][ T7791] [   4316]     0  4316     1096      416    16384        0         -1000 tail
+[  218.658257][ T7791] [   4317]     0  4317    18758    17312    81920        0         -1000 sed
+[  218.659421][ T7791] [   4318]     0  4318     1096      416    16384        0         -1000 tail
+[  218.660609][ T7791] [   4319]     0  4319    17272    15904    77824        0         -1000 sed
+[  218.661767][ T7791] [   4385]     0  4385      681      448    12288        0         -1000 run-lkp
+[  218.668218][ T7791] [   4390]     0  4390     1096      448    16384        0         -1000 tail
+[  218.669418][ T7791] [   4391]     0  4391     1096      416    16384        0         -1000 tail
+[  218.670649][ T7791] [   4392]     0  4392     1096      448    16384        0         -1000 tail
+[  218.671830][ T7791] [   4413]     0  4413      637      416    12288        0          1000 trinity-group-0
+[  218.673112][ T7791] [   4426]     0  4426     1142      480    16384        0             0 dmesg
+[  218.678519][ T7791] [   4428]     0  4428     1952      736    16384        0             0 vmstat
+[  218.679644][ T7791] [   4433]     0  4433      642      384    12288        0             0 meminfo
+[  218.680824][ T7791] [   4442]     0  4442      642      352    12288        0         -1000 oom-killer
+[  218.684283][ T7791] [   4445]     0  4445      637      352    12288        0             0 watchdog
+[  218.688855][ T7791] [   4455]     0  4455      222      128     8192        0             0 wait
+[  218.690069][ T7791] [   4464]     0  4464     1120      416    16384        0             0 cat
+[  218.691224][ T7791] [   4469]     0  4469      675      352    12288        0             0 gzip-meminfo
+[  218.692462][ T7791] [   4471]     0  4471      222       32     8192        0             0 wakeup
+[  218.693640][ T7791] [   4474]     0  4474      222       32     8192        0             0 wakeup
+[  218.699181][ T7791] [   4481]     0  4481     1120      384    16384        0             0 cat
+[  218.700343][ T7791] [   4498]     0  4498      609      288    12288        0             0 time
+[  218.701484][ T7791] [   4502]     0  4502     1087      416    16384        0             0 tee
+[  218.702718][ T7791] [   4505]     0  4505      637      384    12288        0             0 trinity
+[  218.703887][ T7791] [   7569]     0  7569      637      225    12288        0             0 trinity
+[  218.705052][ T7791] [   7570]     0  7570     1085      416    16384        0             0 sleep
+[  218.706238][ T7791] [   7572] 65534  7572     9171     6560    57344        0             0 trinity-main
+[  218.707449][ T7791] [   7787] 65534  7787     9168     5188    61440        0           500 trinity-c0
+[  218.708652][ T7791] [   7789] 65534  7789     8856     5857    61440        0           500 trinity-c2
+[  218.709839][ T7791] [   7790] 65534  7790     9087     5319    61440        0           500 trinity-c3
+[  218.719541][ T7791] [   7791] 65534  7791     9612     5383    61440        0           500 trinity-c4
+[  218.720763][ T7791] [   7792] 65534  7792     8208     5503    61440        0           500 trinity-c5
+[  218.722024][ T7791] [   7794] 65534  7794     9780     5863    65536        0           500 trinity-c7
+[  218.725926][ T7791] [   7809] 65534  7809     9390     6341    61440        0           500 trinity-c1
+[  218.727209][ T7791] [   7855] 65534  7855     9605     6760    65536        0           500 trinity-c6
+[  218.728330][ T7791] [   7921]     0  7921      222      128     8192        0         -1000 wait
+[  218.729374][ T7791] [   7957]     0  7957      222      128     8192        0             0 wait
+[  218.730495][ T7791] oom-kill:constraint=CONSTRAINT_NONE,nodemask=(null),task=trinity-group-0,pid=4413,uid=0
+[  218.732135][ T7791] Out of memory: Killed process 4413 (trinity-group-0) total-vm:2548kB, anon-rss:128kB, file-rss:1536kB, shmem-rss:0kB, UID:0 pgtables:12kB oom_score_adj:1000
+[  218.753318][ T4319] Killed
+[  218.753343][ T4319] 
 
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20231010/202310101456.53664ae-oliver.sang@intel.com
+https://download.01.org/0day-ci/archive/20231010/202310101622.31e71d6d-oliver.sang@intel.com
 
 
 
