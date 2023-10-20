@@ -1,84 +1,87 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D7B523D8
-	for <oe-lkp@lists.linux.dev>; Fri, 20 Oct 2023 06:07:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F29DECA6C
+	for <oe-lkp@lists.linux.dev>; Fri, 20 Oct 2023 07:03:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Yoq21kMU"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NtVv5OqS"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1697782034; x=1729318034;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   mime-version;
-  bh=QmnRmtauu7llxECxVGDOIuQ4umU6PdCC8bMlFkbOPzk=;
-  b=Yoq21kMU1voaeUaWuIRM9+3Q0D1qnJ+EbuGf5sC9T0Q8RlW2SznL8/NJ
-   rpAkNvbK7OYsF7/l+T1WPVyz29N6miR3e8TdVtnZdvqnozROD0+647kF9
-   mTtO9DLot5sJlqpNhHY+hPai+BGz9aRobpk9dt8EWnG2JpypdC3vTVWuT
-   D5mLe8hmFb6rq38hzVY5w778b/L3TkK6Eva+De65qNLsTuhiYo8TxlRY+
-   kekB8HSs0XdAo0aNfdJKIP0Z4L4Cd+rbvxPs9kBxuESl4QxKTgVJhlk/K
-   5/0FJGB42KPXve3iovrKGqg6h+kegnYZztmc5vxwLHXg8+WFZHZD1g6wS
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10868"; a="8000630"
+  t=1697785425; x=1729321425;
+  h=date:from:to:cc:subject:message-id:
+   content-transfer-encoding:mime-version;
+  bh=DVoYFPTIhcCNprsD2BdN0gf5jagKEx9iCOxHVTjywxo=;
+  b=NtVv5OqS9/y4+1qymGrr58uAtA9V1d+Z+liMLbSXlraKTHTTkAumYrr8
+   qVkXOZl3o/jewar+p5F3QlRFooN4qTWvDcVis+USrMgD/xtZmVTsBmCRE
+   xTzwPuZKsy1Qug3DiMf9LldY79AjpMbIxTTb+eaSvPwn7dYm47QWwKl14
+   qenbw2U83W+2f2HFqmkDoZ9mN5s5Umv2EHf4EXbfPXhU2RSUxa5HMYDPv
+   OKBwXM9pYUEDJstKy0ZAFw/D1+n3j596SRgsM44k8Mb7hNFCCA76CQtS9
+   K85UHXRCXbzWE7z3VC1yuF8zJ2mWbheS6RoGUa0S6elt7Io+D9Tn6st4L
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10868"; a="385319777"
 X-IronPort-AV: E=Sophos;i="6.03,238,1694761200"; 
-   d="scan'208";a="8000630"
+   d="scan'208";a="385319777"
 Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2023 23:07:13 -0700
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2023 00:03:44 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.03,238,1694761200"; 
-   d="scan'208";a="5283106"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by fmviesa001.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 19 Oct 2023 23:07:14 -0700
+   d="scan'208";a="5293179"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by fmviesa001.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 20 Oct 2023 00:03:44 -0700
 Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32; Thu, 19 Oct 2023 23:07:12 -0700
+ 15.1.2507.32; Fri, 20 Oct 2023 00:03:41 -0700
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.32; Fri, 20 Oct 2023 00:03:41 -0700
 Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ orsmsx612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.32 via Frontend Transport; Thu, 19 Oct 2023 23:07:12 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.168)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ 15.1.2507.32 via Frontend Transport; Fri, 20 Oct 2023 00:03:41 -0700
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (104.47.74.41) by
+ edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.32; Thu, 19 Oct 2023 23:06:43 -0700
+ 15.1.2507.32; Fri, 20 Oct 2023 00:03:41 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Nru9cV96/bw8iTkJs2V23DoH80A4kuK2yvWjQXX6qJssFpRJTrh0QJT+ZlDVa0rS0K9kG23jQzN+76ck5/0PCuEMb249PLlK2D0Gmo3YujKf1PKf4tmxsD7haCXDiARDETomNTpfbPNfGYWL5PmszIWdbwNA3sXkbOHvidLpZ/vpwMN+3QqT1TdK28zGESFLVV3XEVwUor9lspALchkx6/0GjOunfiRRwagC49tE9gX1twI79QWzMoPpajCvDis8H0Z7cvYL3G0iJEBgMz+oUZsslu/39ujyEJ5fWKdj8A89n10/0tMtjKqepI2gekrRCHtK7QBw1NsxFgA3ABflpQ==
+ b=eK5xAt+mmEIvN7z8EVsi0/PzQz24RfO9Kl3xnAS2lRD4Yq9V93zBfyaG/5cM7uJB6TdtclSLCCaoAfSygw0K+XYiqIgrTdGU2eMoG67Kf6+oQ89snQfANKmBt3ega+tgGnKC5Vr1q0wljl6CPDu0+jPDPaGB7yJ1pKpwP6bFY1lMSTmRJpLMc6ZqfEBxbAt2geQkkQHHSg2yYoRMe55s157mKTo2d3WG7ZuApgYWpH7to9wkkLFDQ64xkJtNh8RQSyHmdHJ0rG+scWalDw3JbYtqf99JzqNPjUQM+FK72L15NuIK4QZ2hO2K3OwCyr1TXaD3Lq+++fpgURG36mg1KA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=H1URGM3KeJS0zub2VV915z26j0xAlu0l++wWPzuwy/g=;
- b=ZpwxdepPjNWjP0ReQx/eUUZQ5+hshZJEF8UZ3JzqUUkQ74nI1bg4P0WECrrpl5dQ3lNkmoaG/leIf9QOXmjcRv7yYcxdoqZYurgnh3JPQ97XCo0Pn8BbzIobCWn32ILEeEo1v9gkWqjrpQ8IBXYkn0sTJkLel//S7/Cv0LWZ60C3Ea8wKQkiHZ49ESzyuIx3b64bZb0Ag65Ax/g6FI7FPqrEih+R+eWWZtOyeVrKSfnFWT0w4PB4WsO2I0UHIuO/uOm/UhKU+4F+gCKGbj1SrTHCc7GKK144uGpMuR7jFYMHf/O3nOHWmWacizg8SXw+xzBW8OYpMUV9ees9QQv8/A==
+ bh=62FKlY8A1lVxctMznNfagFc1UeckK6QRgj9IDMUHjaw=;
+ b=QDZKXkNFOM31luOyutSEgdgRLNw0ycy3z4QrmvTTm2ImoxEhQsyNRXVZNf4RcWsrcI093gcxJvl7ZPl+BCkqwEpVJ/6NeVawVtFG3JHbDX0bDYMuITv8ovffP3uTTLjvvNRRC6Coetv+QFkhIQh1ZyFGoHTuOSW+cl8x3MEKE6igzBp5hVW4uii1Ir49OJnbI1zXnGcgUuAg3/zeL1wOHV1r3khGBPDFqNi296JZm/JkiqoyBX3aVOAPGR4qszigPDoY9goufSpxIGnJzHOXsU4Pz++hAu9M/KJYn35QouzMBY4N3MQQI1DmEbk0uGqKRTGoJuMlkiZhR6tOkcK3gQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
- by IA1PR11MB7917.namprd11.prod.outlook.com (2603:10b6:208:3fe::19) with
+ by SJ0PR11MB5184.namprd11.prod.outlook.com (2603:10b6:a03:2d5::5) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6907.26; Fri, 20 Oct
- 2023 06:06:41 +0000
+ 2023 07:03:34 +0000
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com
  ([fe80::134a:412c:eb02:ae17]) by PH8PR11MB6779.namprd11.prod.outlook.com
  ([fe80::134a:412c:eb02:ae17%5]) with mapi id 15.20.6863.046; Fri, 20 Oct 2023
- 06:06:40 +0000
-Date: Fri, 20 Oct 2023 14:06:31 +0800
+ 07:03:34 +0000
+Date: Fri, 20 Oct 2023 15:03:25 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Alyssa Ross <hi@alyssa.is>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-mm@kvack.org>,
-	<linux-fsdevel@vger.kernel.org>, Alexander Viro <viro@zeniv.linux.org.uk>,
-	Christian Brauner <brauner@kernel.org>, Kees Cook <keescook@chromium.org>,
-	Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>, Eric Biederman
-	<ebiederm@xmission.com>, <linux-kernel@vger.kernel.org>,
-	<oliver.sang@intel.com>
-Subject: Re: [PATCH] exec: allow executing block devices
-Message-ID: <202310201132.ec34d76b-oliver.sang@intel.com>
-Content-Type: text/plain; charset="us-ascii"
+To: Jeff Layton <jlayton@kernel.org>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	Chandan Babu R <chandanbabu@kernel.org>, "Darrick J. Wong"
+	<djwong@kernel.org>, <linux-xfs@vger.kernel.org>, <ying.huang@intel.com>,
+	<feng.tang@intel.com>, <fengwei.yin@intel.com>, <oliver.sang@intel.com>
+Subject: [linus:master] [xfs]  cbc06310c3:  filebench.sum_operations/s -40.3%
+ regression
+Message-ID: <202310201455.d9efae-oliver.sang@intel.com>
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
-In-Reply-To: <20231010092133.4093612-1-hi@alyssa.is>
-X-ClientProxiedBy: SI2PR01CA0016.apcprd01.prod.exchangelabs.com
- (2603:1096:4:191::20) To PH8PR11MB6779.namprd11.prod.outlook.com
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: KU1PR03CA0041.apcprd03.prod.outlook.com
+ (2603:1096:802:19::29) To PH8PR11MB6779.namprd11.prod.outlook.com
  (2603:10b6:510:1ca::17)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -87,77 +90,75 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|IA1PR11MB7917:EE_
-X-MS-Office365-Filtering-Correlation-Id: ac0d4136-7043-464d-97d7-08dbd132ba31
+X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|SJ0PR11MB5184:EE_
+X-MS-Office365-Filtering-Correlation-Id: c59e3648-5a33-4a82-392d-08dbd13aacb5
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: MCdNEplHhNtpQlFNM+qSc1mvJQ2UKLYXdLXbGjuhL/LsZ2v71X7eFjwvf42UPozPI6UKuDoYfvn9R7dFnj35bOUTjmK5bdyOfkYDBJYXSaqQnGO6QOsVXjlvm29MI7zDQSWgQJBNt5yr3QW5rCcSV2YL/jbTzzlx1e6su23tz/GL1Tq+qGl0Rlixgual01w4MdeZoVMTxPyCrnIQ4VaWxpY/E3NlYC2Aaw9aYmbAjS47BX/tI2rA+RvmCT5r+oA5/8klG+ls9gvK+hpSoAXqeZmtWyA0zS20caHM1lM4WlXfUxapbSJxz+nkz0Y2J3gcsyjBYWqDTkA6e40hwDpQ57TZ6JpUzcmLSj/zIrHRw+QHtU5UgnLHOD+04lo0zonOE4kyM7G1X67YQFZr5vnI9vf81UJyOn9dPWRQpWhirU5YWkkuJSOKWDzud0aV328TEkw5uWXKAe6hNFAHV3ZXtNk6EaChHXxQ9ryYlzR7DM2Cc9mDE1D4jF3hnY3+p+ob+euQtQi+56g42USwD1ocCVJes4wm781SGst9TDbTPnw19vb1WBM/A+hv8B3zJfzdH56LOawSkFQlZ0FAqvfpFg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(136003)(366004)(376002)(396003)(346002)(230922051799003)(451199024)(1800799009)(64100799003)(186009)(2906002)(66476007)(6916009)(66946007)(66556008)(316002)(54906003)(8936002)(966005)(6666004)(6486002)(8676002)(478600001)(4326008)(41300700001)(36756003)(86362001)(83380400001)(7416002)(5660300002)(38100700002)(6506007)(26005)(107886003)(2616005)(6512007)(1076003)(82960400001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: SkKAiRmGkZeahPAR1/ODYCo4LmjKqawtN6QiCCtXOp255YINCNrcPMGDzprbl5cXFAFIK/zJLjYyYqAtaaqZxve9umFFK5QZmFXXfO6pdAFeiuaq7BkfLollhduiNYxfz55iTf07EZSTJvoFDcii1e6rjfdXawzFAhWLJVZSWkzMHOyxnHyvw3xuDXwdHByTKjrAOr3PQ6jbjmDNnDBODCXwmCPN6SRaLhliRd9qOUREenOiE3yHxgVf6S5ykbLGrHhYZD1xNYUvcbSL4WUxWd+LdsRuzgfVQgrhtvLyFUxmXAc+48BJvzoQrnrDqHlU8IgQjIvk2k1oNo9zLNWDqp61RjmGmfcA+RcFSOU2ATYJEHcrIFRjivxCeiYuKWIK4SH3Dog7hb2wamS9sswIBzOXpLXHeFrB+JlYUNzYJSkwUFQhH/uhQ6+Li3WJPNS4KA+4PM455U5uFVIhYNNBz21dOTISJxSH4bWLTgUwO2bKeufV1Rj/5PFM/Hxxl5q3B0tFuIn+y5kzVAQNrIU2e15nHNiEikgXjlTlZ9UFHyH5ei1oGX1mOGeOGL9O7Iw9O4sZihrNqWQl524snUE/pw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(396003)(376002)(346002)(366004)(136003)(230922051799003)(186009)(64100799003)(1800799009)(451199024)(41300700001)(2906002)(6486002)(478600001)(966005)(5660300002)(4326008)(8936002)(8676002)(66946007)(6916009)(54906003)(66556008)(66476007)(316002)(83380400001)(36756003)(86362001)(38100700002)(82960400001)(2616005)(1076003)(26005)(6666004)(6512007)(6506007)(107886003);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?GwTacHDcCtX6fr5wfSpWKDy8AReTWYQxnJQmQCm4FjfcvVqACtmS3v09frfv?=
- =?us-ascii?Q?k0bnI1qSaGTM0CgwiYkMe9KqMNUG7Sf1s/YeHwrfipjAoZYYSOTOUbquqmqk?=
- =?us-ascii?Q?7OK1wKs4aOkKWzacpWe0XnBhkMjPWLsvTs2Q5LsbQJk7sd8zgABBTmEt4VZQ?=
- =?us-ascii?Q?qjwUv4AdWBXMCFHgOb1os0pgV/RtUvvLuUa752jDSJuvBJBwngncLmFQHkRB?=
- =?us-ascii?Q?37Zy6uraQnqymzt/qWweakh0MXgH3eLzIU7f/Uh7Fvjo81N7k6o/x5vsOET+?=
- =?us-ascii?Q?pyeHeByEbflJmzMh8lXr+lWQ+oiOISdNAgrqZfMixC6CD/jUaZvGG6+nB3fU?=
- =?us-ascii?Q?bXHFsKmuW7nXdr/YzZpy7CIZ97WaEv2d2li6dXrlpLRgxjCgw3A89I7pFFkF?=
- =?us-ascii?Q?RHQw78nMcXbQkud0KeUEPrP0DFGR9hq5RgjwYNm04XX/tzZkhJ3wNEUrqAAv?=
- =?us-ascii?Q?Sd05VCBgBCeVNtYAVEDdvKQtEFwTrPEs2PqP6A321fwcygqmIiMIxF/EWk3i?=
- =?us-ascii?Q?l8MtRJ0UtJ4QucbH/+CX5ps0+FoL6mWWOGKl4AlyrFKT1KkNkZW6puYp1UY+?=
- =?us-ascii?Q?tWTp8dGEfz9fsrz6LdVFbX5m1iE5MDIlS6m4wxlo9vBx36D+BeMnMbZSTC69?=
- =?us-ascii?Q?cvdvwYvfJoWehAc5YOjycegnOtRzVkAuoQc8MXqwqeGNCl7sxtjkzkuZYxD+?=
- =?us-ascii?Q?EVQVIx2DvZV7WB2iPjZUbj83qqbI++nF2/8cPgMYcaUKpMjgidIJb+HX6GXq?=
- =?us-ascii?Q?1T1u1zI35VADOHFTYH9lR9BQgoBM2K5f16VcAtqrWBnUOBWAfL8Igr5rWnB/?=
- =?us-ascii?Q?GnVo13cxKg5w3J9z9AQLOkaoo68AoedZ93CrhQQj3xzyGSeti9N6QWhqXdcm?=
- =?us-ascii?Q?rEehvlkcRY4xyegGPHBLCnEF4jiucBushgbpBfGlavfcLsKQOBRZVb70z9Cx?=
- =?us-ascii?Q?c0AbVx1d/5SXO6FGzLKWcZNTXH34KK3NJmVWKPTFVrBRaaRr0jcvadTGve8I?=
- =?us-ascii?Q?GuaI8+wAhbda7wLuBW/RC1olBApbQOjXBSiYChzv+NN0b0V2Fu7CyvuZk3YF?=
- =?us-ascii?Q?dUysMUxpjF3Qq4N3fWauy7w3NzXLTeD3IE9vatZ7Z5zniBi8neYJxX1BW+hc?=
- =?us-ascii?Q?1zOUt1jguXOo40bBUnQE286h9xBUGUmPCzs1NxNX19j3ngc5fQqR8Yrtj9lj?=
- =?us-ascii?Q?AF2P81iImHlEgqhQBSkm1M57HUENtTQ7pbegBHo3dAlghT7IYTOOzmrWoDRp?=
- =?us-ascii?Q?omt8wm+27u5Zg4Zzn9Ta/xWiQHXqNx4cj/TMmFJPbCP/kdKe9jBZ7s3f4PRS?=
- =?us-ascii?Q?PVsK6oEcW+af6UMjzzdz9YKAF+QITmw/T3rpRdQMaw2R8CP4WNAA6T++math?=
- =?us-ascii?Q?1St8bPN1UCwtlhkCPT8YkcdijB1p3iGBIKWuVu7N3v5DCd4EdQBn9WeeYmLQ?=
- =?us-ascii?Q?UgEAfo33Hb9Q98t3GxSIGAgzqgtfZwtzImiaxPZc+LeOZB/ros8zKXlRd3NX?=
- =?us-ascii?Q?g/sApm7GYUxKOxCkb0PRnEpETzWSkdmlV0mC1QmQDKpGbK3/4vUjekcN99/z?=
- =?us-ascii?Q?ISk0Qq6eyy3ozAxJai9cVlw0gAEp8ZDENlCs5pRLyZ1eTd3shL0DoZo/M6L0?=
- =?us-ascii?Q?cg=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: ac0d4136-7043-464d-97d7-08dbd132ba31
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?Y+dTlZY7u7yRuKlCzeNoy+T+A6iW0gH+yMdrmPxwUxHusNWHRYsx7pQHR7?=
+ =?iso-8859-1?Q?7SUEE0+75wn7DOw2x80jaKXW/dzrX9zI+2Q+I4Ozz3Odoa5m0bfltK17jr?=
+ =?iso-8859-1?Q?9BCUJKvlVD4l4QLzGtQPnm8UXAY8v6P1uvmQFphDfdMIdVdOs3GeRS5USr?=
+ =?iso-8859-1?Q?xraARj0RJNcVljaMUXy5IBO+S80VBXSWnaGg/JBTf4ermPrswnDygKBhDg?=
+ =?iso-8859-1?Q?/n1FS2wadYln/QSzQhQwxdmitAX6qMzQnhWeKKD+Fp8CxPdaQwygF5MPn9?=
+ =?iso-8859-1?Q?h0L2SuHBwv4n5xOSWkuRW5Jy3iYm94X5dEpxr6DaJqTS+ZH+6Mf6SnHqxD?=
+ =?iso-8859-1?Q?x7/a2eymN91CI5MliDkgIffdjI+sCNq4DeyigsTjU5oKUCAEoQ1Cl8h3QO?=
+ =?iso-8859-1?Q?3qCr4jb0gh/bTglp4WqFtakKYfZ5clebAs9FUdzEVBeENSsqSc2yKPUNrp?=
+ =?iso-8859-1?Q?jvR+HzJEH8oraWrZiK+Qm7Dprxx396AjclLYsuTKBcBDLTKTbC5qHBEY8F?=
+ =?iso-8859-1?Q?Rv4H2yLbTUI0BgTH0TCoiJfbKppNywNJQthiMsWd1+ExD3vhRZQyn+heoc?=
+ =?iso-8859-1?Q?eA935VRcS4YHT2p+DRZ2zWjHVm0xEAiqYMfm643fCORnVMVci/uIGeNuCL?=
+ =?iso-8859-1?Q?cmJ1/ZotC/zMXDdnMJZchttyO09u/wOH7LfQy+whrAB6u02246BbLSnrwb?=
+ =?iso-8859-1?Q?NTlcnB5rYKG6POh4cQkwJyTE77zQt5+tR4u5uTGjZ0EDYXhv5wN6g4OkYb?=
+ =?iso-8859-1?Q?aE1wvqOR13Ymn1qLtL+wlK1xkBmhzIQGcE8jtyJ2XIKvVE3nt5Aims8lHl?=
+ =?iso-8859-1?Q?sbcqX6wOvFALLxo0J+gxzMKNYJ/hifFl0x66Jw1aIAJvXfwWakybXnRymf?=
+ =?iso-8859-1?Q?LwL0CNyqzOGt7Z9/bnDglFPwqRpahT1mErwx/5DuGOH3lFyPozlO/NhHNx?=
+ =?iso-8859-1?Q?X13Gd+wq9BsaYFBOvw4J/VOHT+KAx1aUeVeOhOLHN5852tzYGt+iEJ8Or6?=
+ =?iso-8859-1?Q?1b4cFyFB4l2DigEYf6IZb97c13NWtp6xC+Tb8r3zPp2SkYheXrX8zR7vbr?=
+ =?iso-8859-1?Q?CUnnuClQpO7XA6X4jE7tRjDOC05PtnMLMghTsiHqdbhPcYPuGclNhhJrmb?=
+ =?iso-8859-1?Q?moPD1n8K+ViSFGUZ1Gl9vYzfJfZRwsa7nuHU7OSBS62nx3o6BSAyBYiOeA?=
+ =?iso-8859-1?Q?TTlUHcTMZVh6MyvgYrYcH2+SquIiUTtFyncgD+80gpS6xBKrlZ6J3UZJPC?=
+ =?iso-8859-1?Q?HdWib8fFUlBh60orw0y7bOqyFi1S1opycCJ94dJSr98/YdY5vyxCQgdj6h?=
+ =?iso-8859-1?Q?u3jqI/3rI0fBIT7f307ZICOn2ZNqn7ksMHi1DYoMYEqHNBEfKVOupe0+aR?=
+ =?iso-8859-1?Q?e25iCu2JnY3ue8Qjl75aFN0hnFvnHgU7xrkUTbU8W2wrns5z4DaxwU5NCL?=
+ =?iso-8859-1?Q?55OmwjBGdFDszDZm3WO8Ga8INo97cGvVuZJtS7mMqDCKRIbJS3nYjZVzVq?=
+ =?iso-8859-1?Q?fn5kCcFSVcQ24TmvGS+UxRWAW6kPFObueqaRnxYvl3bCKRp+sQf3746Bvh?=
+ =?iso-8859-1?Q?cm1985C2qwtjoRQZRXvrxU5Tu+sOwXudtJYpcwVM5qxZADlYVbLZKgkDHu?=
+ =?iso-8859-1?Q?TUHUrEI31V9kF3cuFDr40Z4kIpoY/9P/wKxKx+PugT0ADS1qMJ2aTv5A?=
+ =?iso-8859-1?Q?=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: c59e3648-5a33-4a82-392d-08dbd13aacb5
 X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB6779.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Oct 2023 06:06:40.8372
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Oct 2023 07:03:34.0576
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YYaslacSzQkh/Sy1wmC5kLrcdaBvwxfT+bZi8dDFGOzwb+W8ngjk7pQmlLAyMGQ+sEsa0lR9p/OtiG7f67PEww==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB7917
+X-MS-Exchange-CrossTenant-UserPrincipalName: l+qyvbzowzU9g3/vcqDkvi1iE53kdsZ/D2/CYFBDjl0DgyA2/SkRTe9w4t5qC1AIhXEqelUq8SB4SgCPYjVYPQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB5184
 X-OriginatorOrg: intel.com
 
 
 
 Hello,
 
-kernel test robot noticed "kernel-selftests.exec.non-regular.fail" on:
-
-commit: f086dcc88a64a2022314af666bd15d64c6748d27 ("[PATCH] exec: allow executing block devices")
-url: https://github.com/intel-lab-lkp/linux/commits/Alyssa-Ross/exec-allow-executing-block-devices/20231010-172704
-patch link: https://lore.kernel.org/all/20231010092133.4093612-1-hi@alyssa.is/
-patch subject: [PATCH] exec: allow executing block devices
-
-in testcase: kernel-selftests
-version: kernel-selftests-x86_64-60acb023-1_20230329
-with following parameters:
-
-	group: group-01
+kernel test robot noticed a -40.3% regression of filebench.sum_operations/s on:
 
 
+commit: cbc06310c36f73a5f3b0c6f0d974d60cf66d816b ("xfs: reinstate the old i_version counter as STATX_CHANGE_COOKIE")
+https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-compiler: gcc-12
-test machine: 36 threads 1 sockets Intel(R) Core(TM) i9-10980XE CPU @ 3.00GHz (Cascade Lake) with 32G memory
+testcase: filebench
+test machine: 96 threads 2 sockets Intel(R) Xeon(R) Platinum 8260L CPU @ 2.40GHz (Cascade Lake) with 128G memory
+parameters:
 
-(please refer to attached dmesg/kmsg for entire log/backtrace)
+	disk: 1HDD
+	fs: xfs
+	fs2: nfsv4
+	test: filemicro_rread.f
+	cpufreq_governor: performance
 
 
 
@@ -165,44 +166,74 @@ test machine: 36 threads 1 sockets Intel(R) Core(TM) i9-10980XE CPU @ 3.00GHz (C
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202310201132.ec34d76b-oliver.sang@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202310201455.d9efae-oliver.sang@intel.com
 
 
-
-# timeout set to 300
-# selftests: exec: non-regular
-# TAP version 13
-# 1..6
-# # Starting 6 tests from 6 test cases.
-# #  RUN           file.S_IFLNK.exec_errno ...
-# #            OK  file.S_IFLNK.exec_errno
-# ok 1 file.S_IFLNK.exec_errno
-# #  RUN           file.S_IFDIR.exec_errno ...
-# #            OK  file.S_IFDIR.exec_errno
-# ok 2 file.S_IFDIR.exec_errno
-# #  RUN           file.S_IFBLK.exec_errno ...
-# # non-regular.c:166:exec_errno:Expected errno (6) == variant->expected (13)
-# # exec_errno: Test failed at step #4
-# #          FAIL  file.S_IFBLK.exec_errno
-# not ok 3 file.S_IFBLK.exec_errno
-# #  RUN           file.S_IFCHR.exec_errno ...
-# #            OK  file.S_IFCHR.exec_errno
-# ok 4 file.S_IFCHR.exec_errno
-# #  RUN           file.S_IFIFO.exec_errno ...
-# #            OK  file.S_IFIFO.exec_errno
-# ok 5 file.S_IFIFO.exec_errno
-# #  RUN           sock.exec_errno ...
-# #            OK  sock.exec_errno
-# ok 6 sock.exec_errno
-# # FAILED: 5 / 6 tests passed.
-# # Totals: pass:5 fail:1 xfail:0 xpass:0 skip:0 error:0
-not ok 5 selftests: exec: non-regular # exit=1
-
+Details are as below:
+-------------------------------------------------------------------------------------------------->
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20231020/202310201132.ec34d76b-oliver.sang@intel.com
+https://download.01.org/0day-ci/archive/20231020/202310201455.d9efae-oliver.sang@intel.com
 
+=========================================================================================
+compiler/cpufreq_governor/disk/fs2/fs/kconfig/rootfs/tbox_group/test/testcase:
+  gcc-12/performance/1HDD/nfsv4/xfs/x86_64-rhel-8.3/debian-11.1-x86_64-20220510.cgz/lkp-csl-2sp3/filemicro_rread.f/filebench
+
+commit: 
+  f93b930030 ("xfs: Remove duplicate include")
+  cbc06310c3 ("xfs: reinstate the old i_version counter as STATX_CHANGE_COOKIE")
+
+f93b9300301d30f2 cbc06310c36f73a5f3b0c6f0d97 
+---------------- --------------------------- 
+         %stddev     %change         %stddev
+             \          |                \  
+      0.05 ±  3%      +0.0        0.05 ±  6%  mpstat.cpu.all.sys%
+      1801 ±  3%    +192.8%       5272 ±  5%  vmstat.system.cs
+     34136 ±  3%     +47.7%      50422 ±  5%  meminfo.Active
+    264.26 ± 11%   +6281.8%      16864 ± 20%  meminfo.Active(file)
+     22783 ±  7%   +1234.4%     304018 ±  7%  turbostat.C1
+      0.03 ± 17%      +0.0        0.06 ± 11%  turbostat.C1%
+     60181 ± 10%     +93.2%     116249 ±  7%  turbostat.POLL
+     68.91            +1.0%      69.58        turbostat.PkgWatt
+     64.00           -40.2%      38.24 ± 13%  filebench.sum_bytes_mb/s
+     32765           -40.3%      19568 ± 13%  filebench.sum_operations/s
+     32765           -40.3%      19568 ± 13%  filebench.sum_reads/s
+      0.00 ± 33%   +1911.1%       0.03 ± 19%  filebench.sum_time_ms/op
+     20275 ± 31%    +269.7%      74961 ±  8%  filebench.time.voluntary_context_switches
+     65.23 ± 10%   +6225.9%       4126 ± 16%  proc-vmstat.nr_active_file
+    517254            -1.5%     509753        proc-vmstat.nr_inactive_file
+     65.23 ± 10%   +6225.9%       4126 ± 16%  proc-vmstat.nr_zone_active_file
+    517254            -1.5%     509753        proc-vmstat.nr_zone_inactive_file
+   1199999           +24.8%    1497636        proc-vmstat.numa_hit
+     13948         +1878.7%     276000        proc-vmstat.pgactivate
+   1767189           +17.2%    2070794        proc-vmstat.pgalloc_normal
+   1733917           +17.5%    2037105        proc-vmstat.pgfree
+ 1.462e+08            +4.8%  1.532e+08        perf-stat.i.branch-instructions
+      1683 ±  3%    +210.4%       5224 ±  5%  perf-stat.i.context-switches
+ 1.943e+08            +4.9%  2.038e+08        perf-stat.i.dTLB-loads
+  98635751            +5.4%  1.039e+08        perf-stat.i.dTLB-stores
+    177093           +18.5%     209883 ±  3%  perf-stat.i.iTLB-loads
+ 7.228e+08            +4.5%  7.552e+08        perf-stat.i.instructions
+      3.91 ±  3%      +6.2%       4.15 ±  2%  perf-stat.i.metric.M/sec
+     10.86            -0.5       10.34        perf-stat.overall.branch-miss-rate%
+      6.91 ±  2%      -3.6%       6.66        perf-stat.overall.cpi
+     80.11            -2.6       77.55        perf-stat.overall.iTLB-load-miss-rate%
+      1012            +2.9%       1042 ±  2%  perf-stat.overall.instructions-per-iTLB-miss
+ 1.455e+08            +4.8%  1.524e+08        perf-stat.ps.branch-instructions
+      1674 ±  3%    +209.9%       5188 ±  5%  perf-stat.ps.context-switches
+ 1.933e+08            +4.9%  2.028e+08        perf-stat.ps.dTLB-loads
+  98135969            +5.3%  1.034e+08        perf-stat.ps.dTLB-stores
+    176255           +18.5%     208779 ±  3%  perf-stat.ps.iTLB-loads
+  7.19e+08            +4.5%  7.512e+08        perf-stat.ps.instructions
+
+
+
+
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provided
+for informational purposes only. Any difference in system hardware or software
+design or configuration may affect actual performance.
 
 
 -- 
