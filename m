@@ -1,44 +1,44 @@
-Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
+Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFF512AB2B
-	for <oe-lkp@lists.linux.dev>; Wed, 25 Oct 2023 17:06:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA246F50A
+	for <oe-lkp@lists.linux.dev>; Wed, 25 Oct 2023 18:36:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="wQP91HLo"
-Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-1c9d4f08d7cso7625ad.0
-        for <oe-lkp@lists.linux.dev>; Wed, 25 Oct 2023 10:06:50 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="W83FLNjv"
+Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-98377c5d53eso15448066b.0
+        for <oe-lkp@lists.linux.dev>; Wed, 25 Oct 2023 11:36:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1698253610; x=1698858410; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1698259013; x=1698863813; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=0BLyhOS6DaA3Azb/y3i+aSNsSqvELymfgVFVzC4E2iU=;
-        b=wQP91HLoW3xZH/Q2QAzV1wy+Y+aIZh5tG3MdxAuV05m6vEjM+VBkdP1Qb3bkEJTfUJ
-         HYLDouuA4biAW+oUreM2KgaYCHvDuPAjXcLuTXM2PhnMbrEc/79CiMaTJh3RUssba/M5
-         w1sdgzhmGVvuY9oPRDCAeoz6avYtPM6Mq9oR/hNAV2HUoKmyPPTJQKn5H2NukugBFWVP
-         10kW2J/XjwlKU1DHz+PuH98RKChE/pDgmVYuHkHPbcnn5it/zXlrWrPukt5r3ByfpG7Q
-         6APGyjIGb7ZwR3oMCtEIWfhoJLX6Zo/2MHGwgFtxQFivX6mx76S/S1N522fuwZE9rr6t
-         T1pw==
+        bh=2e92O8wEWD/53OKXUltaj6IOD/TJFtp9v92hFMtfX+0=;
+        b=W83FLNjv3dtLvA4QNn/ySg2x+uJyjXtXCXihhAJ8KX6dtJ0Rrxkv0uhEH0ZiDNUspx
+         gYH9NgLaHeLQKtCgCE+86t8ew+u4uasbxeBndoyx2ITZx3d98ZZoU7Xco+uBUWmJrLq5
+         VsbGqD3BlBAUcPpjLj4vwf5aNJAulTsXP3GLBcWYKdM5a1aEIeOAiEUtgugJp5I6Efd6
+         DpSmEf6TOJuOGa2sqChslt1KhLPYmbFdbHMyk1o3l3WPSXFxpU187Xyzhf1EbkTkUr54
+         YzPI3wys8esK2QQG1XE5jZCyQgAqXV3/BPGAXUMfgvDGyp6QDTumJAwx76nNTNCHDNEM
+         7k2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698253610; x=1698858410;
+        d=1e100.net; s=20230601; t=1698259013; x=1698863813;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=0BLyhOS6DaA3Azb/y3i+aSNsSqvELymfgVFVzC4E2iU=;
-        b=Og5lJ65PkTRgAI5ADquxYChy92WNTqUFHrXH3TDZxwaygairKQFHofw0nh0Ojn2iOy
-         T0GpRBjndmKq+Oq/a5+4LYp/EHHVRka1abjdW4Wkw4Qupal9pYNC4F2m2HtJpToDbax6
-         0tHAmc3kw+cex/p7vbqiH+T1xSxeNqa9FpWDlJ9jcXDdrjG8ZotP727al9WIoii3Phwr
-         fNcXpDBC89tD81DTo03LbPJV7CKYHKqIpwpuv+iUKTWbWcfK9WGeUjHw5efLIEFtbF5e
-         uAnR3avod0v+d3ZwdPM2Bynvjl5Yye/7mkn0RxsjLPhGWrnInzSALpXqsIdT52R57u4V
-         cC9w==
-X-Gm-Message-State: AOJu0YzF6I5HqHBhloGKVdAZygUszMwiO+79db7qsJSkBgVBPW68MsR4
-	HcxZvlDpNNa6IyH84Mo8s0pTVbJAL5eMi7NmiKsaZkTwhd3cA3l8Fcs=
-X-Google-Smtp-Source: AGHT+IHTm3Fl1nDGBKuyZQng/G9O2lKwSEtDCNTvLWku+yOpMLnEMFF3diKUa2ikj5TXXEN2m6Iuk1tLQYL8Awlf64s=
-X-Received: by 2002:a17:903:144b:b0:1ca:42a:1773 with SMTP id
- lq11-20020a170903144b00b001ca042a1773mr241841plb.12.1698253609714; Wed, 25
- Oct 2023 10:06:49 -0700 (PDT)
+        bh=2e92O8wEWD/53OKXUltaj6IOD/TJFtp9v92hFMtfX+0=;
+        b=jgICvjMClZf9wkTMQyBxUwx2smzJUxsEuJN7Bg0y4IlDbYJqhWgfuFI7Nqmj0jHt3a
+         3gYP7wG+hvTQX13sUozj1RdjBxO/+w+oTGXwCkCblrvmu4F5EkM9e4V7c/hcM6CFXPhX
+         EoE3yYF8NQ+305OQwugYDIQTKIEzA5eNK8msPncjfqrsvtSZRyZr03uU9WIas02JZbsJ
+         NdL3n8gipsPCinEPP6r3yFnbx1BdCLh6WV4pq30vGZMyRWNvf6zFF7ffhhMSMb/eJHrc
+         qwgGMrpe48FOwlhtFODigcpSkL8v0d1e4Z4i2p+HdC6EG+wD2o5ODOiAiEGhAg/JZ5p/
+         VQ0A==
+X-Gm-Message-State: AOJu0YyxTQ43b9CuhMOHuFwrGcfoGQUryFgIwiaADBDsvzs6cw71oNJa
+	EJ0IvppBpUaEDEcoAM/uKeRB0lWltgQwtNsrDrviIg==
+X-Google-Smtp-Source: AGHT+IFOrNXjGlGRWcmGJFHDoHQlFO4oVM3n0QNoccBm8uXU8YVkyo7zdGNfYE0da5c1OHviWCGusZmXqEZmjkytLeo=
+X-Received: by 2002:a17:907:70b:b0:9c6:724:fa16 with SMTP id
+ xb11-20020a170907070b00b009c60724fa16mr12368133ejb.59.1698259012860; Wed, 25
+ Oct 2023 11:36:52 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -52,12 +52,13 @@ References: <20231010032117.1577496-4-yosryahmed@google.com>
  <CAJD7tkYXJ3vcGvteNH98tB_C7OTo718XSxL=mFsUa7kO8vzFzA@mail.gmail.com>
  <ZTdqpcDFVHhFwWMc@xsang-OptiPlex-9020> <CAJD7tka7hmOD6KPmJBJa+TscbYEMmTjS+Jh2utPfTbKkfvwD9A@mail.gmail.com>
  <ZTiw/iIb0SbvN7vh@xsang-OptiPlex-9020> <CAJD7tkaBnSwarz8yHu9RL_3DtaLRfjrcZ7m0YZZgHJsJdtHaZw@mail.gmail.com>
-In-Reply-To: <CAJD7tkaBnSwarz8yHu9RL_3DtaLRfjrcZ7m0YZZgHJsJdtHaZw@mail.gmail.com>
-From: Shakeel Butt <shakeelb@google.com>
-Date: Wed, 25 Oct 2023 10:06:37 -0700
-Message-ID: <CALvZod5V-Ag5avAewE2nFp8__J6b_WqHuQw5=F70OPQrGNjfVw@mail.gmail.com>
+ <CALvZod5V-Ag5avAewE2nFp8__J6b_WqHuQw5=F70OPQrGNjfVw@mail.gmail.com>
+In-Reply-To: <CALvZod5V-Ag5avAewE2nFp8__J6b_WqHuQw5=F70OPQrGNjfVw@mail.gmail.com>
+From: Yosry Ahmed <yosryahmed@google.com>
+Date: Wed, 25 Oct 2023 11:36:13 -0700
+Message-ID: <CAJD7tkaw1bFDgC1dfbuuCkyLToXRO2T2T7OuMt2fbfEKisP_4Q@mail.gmail.com>
 Subject: Re: [PATCH v2 3/5] mm: memcg: make stats flushing threshold per-memcg
-To: Yosry Ahmed <yosryahmed@google.com>
+To: Shakeel Butt <shakeelb@google.com>
 Cc: Oliver Sang <oliver.sang@intel.com>, Johannes Weiner <hannes@cmpxchg.org>, 
 	Feng Tang <feng.tang@intel.com>, "oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>, lkp <lkp@intel.com>, 
 	"cgroups@vger.kernel.org" <cgroups@vger.kernel.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, 
@@ -73,46 +74,63 @@ Cc: Oliver Sang <oliver.sang@intel.com>, Johannes Weiner <hannes@cmpxchg.org>,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Oct 24, 2023 at 11:23=E2=80=AFPM Yosry Ahmed <yosryahmed@google.com=
-> wrote:
+On Wed, Oct 25, 2023 at 10:06=E2=80=AFAM Shakeel Butt <shakeelb@google.com>=
+ wrote:
 >
-[...]
+> On Tue, Oct 24, 2023 at 11:23=E2=80=AFPM Yosry Ahmed <yosryahmed@google.c=
+om> wrote:
+> >
+> [...]
+> >
+> > Thanks Oliver for running the numbers. If I understand correctly the
+> > will-it-scale.fallocate1 microbenchmark is the only one showing
+> > significant regression here, is this correct?
+> >
+> > In my runs, other more representative microbenchmarks benchmarks like
+> > netperf and will-it-scale.page_fault* show minimal regression. I would
+> > expect practical workloads to have high concurrency of page faults or
+> > networking, but maybe not fallocate/ftruncate.
+> >
+> > Oliver, in your experience, how often does such a regression in such a
+> > microbenchmark translate to a real regression that people care about?
+> > (or how often do people dismiss it?)
+> >
+> > I tried optimizing this further for the fallocate/ftruncate case but
+> > without luck. I even tried moving stats_updates into cgroup core
+> > (struct cgroup_rstat_cpu) to reuse the existing loop in
+> > cgroup_rstat_updated() -- but it somehow made it worse.
+> >
+> > On the other hand, we do have some machines in production running this
+> > series together with a previous optimization for non-hierarchical
+> > stats [1] on an older kernel, and we do see significant reduction in
+> > cpu time spent on reading the stats. Domenico did a similar experiment
+> > with only this series and reported similar results [2].
+> >
+> > Shakeel, Johannes, (and other memcg folks), I personally think the
+> > benefits here outweigh a regression in this particular benchmark, but
+> > I am obviously biased. What do you think?
+> >
+> > [1]https://lore.kernel.org/lkml/20230726153223.821757-2-yosryahmed@goog=
+le.com/
+> > [2]https://lore.kernel.org/lkml/CAFYChMv_kv_KXOMRkrmTN-7MrfgBHMcK3YXv0d=
+PYEL7nK77e2A@mail.gmail.com/
 >
-> Thanks Oliver for running the numbers. If I understand correctly the
-> will-it-scale.fallocate1 microbenchmark is the only one showing
-> significant regression here, is this correct?
->
-> In my runs, other more representative microbenchmarks benchmarks like
-> netperf and will-it-scale.page_fault* show minimal regression. I would
-> expect practical workloads to have high concurrency of page faults or
-> networking, but maybe not fallocate/ftruncate.
->
-> Oliver, in your experience, how often does such a regression in such a
-> microbenchmark translate to a real regression that people care about?
-> (or how often do people dismiss it?)
->
-> I tried optimizing this further for the fallocate/ftruncate case but
-> without luck. I even tried moving stats_updates into cgroup core
-> (struct cgroup_rstat_cpu) to reuse the existing loop in
-> cgroup_rstat_updated() -- but it somehow made it worse.
->
-> On the other hand, we do have some machines in production running this
-> series together with a previous optimization for non-hierarchical
-> stats [1] on an older kernel, and we do see significant reduction in
-> cpu time spent on reading the stats. Domenico did a similar experiment
-> with only this series and reported similar results [2].
->
-> Shakeel, Johannes, (and other memcg folks), I personally think the
-> benefits here outweigh a regression in this particular benchmark, but
-> I am obviously biased. What do you think?
->
-> [1]https://lore.kernel.org/lkml/20230726153223.821757-2-yosryahmed@google=
-.com/
-> [2]https://lore.kernel.org/lkml/CAFYChMv_kv_KXOMRkrmTN-7MrfgBHMcK3YXv0dPY=
-EL7nK77e2A@mail.gmail.com/
+> I still am not convinced of the benefits outweighing the regression
+> but I would not block this. So, let's do this, skip this open window,
+> get the patch series reviewed and hopefully we can work together on
+> fixing that regression and we can make an informed decision of
+> accepting the regression for this series for the next cycle.
 
-I still am not convinced of the benefits outweighing the regression
-but I would not block this. So, let's do this, skip this open window,
-get the patch series reviewed and hopefully we can work together on
-fixing that regression and we can make an informed decision of
-accepting the regression for this series for the next cycle.
+Skipping this open window sounds okay to me.
+
+FWIW, I think with this patch series we can keep the old behavior
+(roughly) and hide the changes behind a tunable (config option or
+sysfs file). I think the only changes that need to be done to the code
+to approximate the previous behavior are:
+- Use root when updating the pending stats in memcg_rstat_updated()
+instead of the passed memcg.
+- Use root in mem_cgroup_flush_stats() instead of the passed memcg.
+- Use mutex_trylock() instead of mutex_lock() in mem_cgroup_flush_stats().
+
+So I think it should be doable to hide most changes behind a tunable,
+but let's not do this unless necessary.
