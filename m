@@ -1,80 +1,86 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8C2C8F47
-	for <oe-lkp@lists.linux.dev>; Thu, 26 Oct 2023 04:56:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D81FC134
+	for <oe-lkp@lists.linux.dev>; Thu, 26 Oct 2023 05:49:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hQLT0PCF"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="l+20XiA7"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698296177; x=1729832177;
-  h=date:from:to:cc:subject:message-id:
-   content-transfer-encoding:mime-version;
-  bh=3mMDP7kWPQ9CvqLnXpmv7iN4wE/IQf7kYyQgiwKgGYY=;
-  b=hQLT0PCF8Twh5qXzEtAsybtjXst8AS6jxj05Iog/WyhJCT/Mdc7c5KaL
-   bw/A9DGpwUzVS1pkl3WvcD6xR/ozvMp4XtWUzK1LnUX9+SPLqMR8cqnGu
-   ZSZSqBgrtUAaegMR9pns3mcsDr5f9eOm31xBXEYE3dTyA6D1mI78HW/SK
-   dKAF9NIdth8GTGs/F7ID2RR05sP/tEonxkV5y+LTpc8FsXzG4yqxV5Mya
-   39xbVmrFr2H3z0LsXeqpDqSS8skT0KTtme3YZCQQYKQXBniwLL/ECDgZy
-   Fdrhj6WtT0al20b60LEYOSvDThtWBRKvLd/KsE4S7VQ6b53KLyacNX22O
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10874"; a="390317829"
+  t=1698299382; x=1729835382;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   mime-version;
+  bh=6yWXcJ7q1e1JrigHI95WVWxzPtUK0DcWTYlRA5vWltY=;
+  b=l+20XiA7HfONORPl2dhNIoVjqr1MxL9c9e+Ztrr+d8bOpTLO8EGD00Bs
+   M2N+UOFhHR+ZBcFtviIGGm7PgRgOW4uZ8L+wcpcYrNHeZ5hDSgsu7r1GY
+   OFhcZ+L8kCDJyDky05VoO5+SECunTR7dLUXywGVDX01YJlZPfrbMU2uR+
+   9L8snrVI3fF/6zY1x1KeGaL++Vc+N3jAc3S3gbrNtomOICnNgFEbHXstL
+   zoatzaHfZ6lxOBJc+m0DgEV7Aw+5xKXn4kHtI2vUtrEj43ZtNTojAdw75
+   Sour6gY/+4TRWdnihA0LrJyFOGTsTdV3F42gXSp0b5JgXehsJ0njYQZCG
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10874"; a="256678"
 X-IronPort-AV: E=Sophos;i="6.03,253,1694761200"; 
-   d="scan'208";a="390317829"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2023 21:56:17 -0700
+   d="scan'208";a="256678"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2023 22:49:40 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10874"; a="752589671"
+X-IronPort-AV: E=McAfee;i="6600,9927,10874"; a="882704189"
 X-IronPort-AV: E=Sophos;i="6.03,253,1694761200"; 
-   d="scan'208";a="752589671"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by orsmga007.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 25 Oct 2023 21:56:17 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+   d="scan'208";a="882704189"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orsmga004.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 25 Oct 2023 22:49:39 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34; Wed, 25 Oct 2023 21:56:16 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ 15.1.2507.34; Wed, 25 Oct 2023 22:49:38 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34 via Frontend Transport; Wed, 25 Oct 2023 21:56:16 -0700
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.57.40) by
- edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ 15.1.2507.34 via Frontend Transport; Wed, 25 Oct 2023 22:49:38 -0700
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.168)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.32; Wed, 25 Oct 2023 21:56:16 -0700
+ 15.1.2507.32; Wed, 25 Oct 2023 22:49:38 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SIGqVzrGTG2Um4j0R3w5tBIvZ5yuX6qBfyUcEc1jhV3IAF/JRJgm4G22nvf5uFuWrUz9F79gpynDTEPDyv/AgINJiX90Jd9A8ZHkH2uo+HH/y6XGDvvpKbg2b9HeJoJrYzyFppeqpkJzkd31fy3ucrvrmVSaBbmZ0T3fQJMNdcWGUUGFLSDfwYYXSFdRp1sHoLKwzd7/L9omz8tXkHpS5GqzYlhccVBsBIJxOhary5P63+qOfUGgXJuVSECT/XFQOp2hn2uMp+mlxZeOo1JwIm14FIGbW5CzDKDoWjf91wX+6/O8yrekyuwEqS9958dcd5k5HXLjJ0gjxA8SKsxFTA==
+ b=gW0c2j+GLPVEl5XCr0C3k0vHu2ApQdRUYbpsSFA4gfsaKFeOrVTSQqjb/mt65jP2BbILSTFMElGGVKvSbvRTfkdH0418vcb7pHTW+Mm8Y1mSmPv8VWoIt64+Iv4rYQIjuwaW5hO7MJV8SqAzKjkhjZKMPwF6djAuIUVAAdTzt6cB97iiqH2ZPtf2NhcodfQtJP4EgOkUV3dFCNiNi8UPwtJOPSDeJAZA/MHK1kg+Wzx5DIGjGnSJxQpMjM4EFRzlRFxi1RDG/7/1bF9Z8t69jIwa1+TxjfrBZbH8aPDzgJysIT0WawixyX78WY3+uKvGcvlfhOSGtxwNaDDybQRAvQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JijO1YhGgFNw/0qMP7cX/Y0ZJyjPb0ikPZ/JgvcUXdw=;
- b=Q0CWfeSZc3WfjxphjWyfTw1aUz7VvK+dJIv6EduSgLEhZHboLOlxmmvyBmLQEPWxL0ASDH5I+upGqQt75Cj1YaZCHIWmrzy8w78N9vUo01+bGJe728/eyk3DqXdNo0RoEL6k8n+gg66FfrUO6FrcY/OjlGJ9rQ/sIoJDriRgig19ZQl/k8jHNhU0dQ9v7Vx/7IpbIM+85WiMIyBEzG00d5utQX+lz4P6F/kU0BxHiGu8q2wEacwWibtbSa1/1hyiSYW2wxq2n19uzjNfVoS6NBf9AS0PXsu8U1NCm8t9bQAsm8grTZYojECprFtoocnRog7LuANtHi5+WUKarA6WjA==
+ bh=bHPuS79qQFsEP3AoUDG5hOys/4fYvRhn0JTQKcVd92E=;
+ b=UQ75rP286HFtm/2jt/Ntgd9TmObK39ZFMyWKjfAImFkvx6V1oPIF1VKMQ8rR/O476JNhyb9k5sKKoXieYhMUX+MSmi2/S2Y2YU/JD/5WxZim6RUm5Wm5BXlQiWTmhjefiQCmTCSnFCHTjaLncoowm47Q2ivMTmyE/ORBMr7PlcGntOh0uEIkG4ipg+3sFsmH8uAFoM9jy9hRXqVRNmRGeJg6GvjTb5re8XB4TYpflLY7iLJ0BWIeyzKLTMk8bySRyyADoTReTJjcXOkD61Ix3SAEtRcaMBhVXnxzx8CzzIaBBiH3iDBpsVnJ7q3iQgARlPD2OxvwdaLb5TiFCBT5yw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
- by IA1PR11MB6172.namprd11.prod.outlook.com (2603:10b6:208:3e8::5) with
+ by DM6PR11MB4737.namprd11.prod.outlook.com (2603:10b6:5:2a2::12) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6907.24; Thu, 26 Oct
- 2023 04:56:12 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6933.19; Thu, 26 Oct
+ 2023 05:49:31 +0000
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com
  ([fe80::29f0:3f0f:2591:d1f6]) by PH8PR11MB6779.namprd11.prod.outlook.com
  ([fe80::29f0:3f0f:2591:d1f6%3]) with mapi id 15.20.6907.032; Thu, 26 Oct 2023
- 04:56:12 +0000
-Date: Thu, 26 Oct 2023 12:56:06 +0800
+ 05:49:30 +0000
+Date: Thu, 26 Oct 2023 13:49:21 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Aleksander Lobakin <aleksander.lobakin@intel.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <oliver.sang@intel.com>
-Subject: [alobakin:pfcp] [bitmap]  f84b23853c: kernel-selftests.kvm.make.fail
-Message-ID: <202310261116.c6bf98ab-oliver.sang@intel.com>
+To: <chengming.zhou@linux.dev>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-mm@kvack.org>,
+	<cl@linux.com>, <penberg@kernel.org>, <rientjes@google.com>,
+	<iamjoonsoo.kim@lge.com>, <akpm@linux-foundation.org>, <vbabka@suse.cz>,
+	<roman.gushchin@linux.dev>, <42.hyeyoo@gmail.com>,
+	<linux-kernel@vger.kernel.org>, <chengming.zhou@linux.dev>, Chengming Zhou
+	<zhouchengming@bytedance.com>, <oliver.sang@intel.com>
+Subject: Re: [RFC PATCH v3 6/7] slub: Delay freezing of partial slabs
+Message-ID: <202310261032.b4590eb0-oliver.sang@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-X-ClientProxiedBy: SG2P153CA0016.APCP153.PROD.OUTLOOK.COM (2603:1096::26) To
- PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
+In-Reply-To: <20231024093345.3676493-7-chengming.zhou@linux.dev>
+X-ClientProxiedBy: KL1PR01CA0064.apcprd01.prod.exchangelabs.com
+ (2603:1096:820:5::28) To PH8PR11MB6779.namprd11.prod.outlook.com
+ (2603:10b6:510:1ca::17)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -82,227 +88,215 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|IA1PR11MB6172:EE_
-X-MS-Office365-Filtering-Correlation-Id: f454894f-9b65-4f31-34f9-08dbd5dfe05a
+X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|DM6PR11MB4737:EE_
+X-MS-Office365-Filtering-Correlation-Id: c10ba2fb-4582-4587-b5b0-08dbd5e7529e
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: f/sEWnQc5+EHHw802UIEz1CvEj6kTx0QX70l1dtm6WP+aD+YeM48SIb6sGbp5/nUbAvdsJQe9V3TNMKljS1xItEdBMXOG0QOFOVBCTePvDxAmD+0yQvufdyVRt5p/Zoh3uHzWTZSa3NCdGxn9uObvCwyBD5IbbWwvOZiU1OXqXSNRo4qACPbu+vHyeN0eitHYR6r23LL8Yw3ME5K24s17khPIrDqeeC6Q2fGzgv0673LZQpoNWkhaiYGhn7Hl12NhmbiUCRrkRWpXTCCB46DFI3vE0qnvUqgWYEy1m2IkASSOHO0z/hM4Sjj4Mv1/JPeAio6Azmy6R1w2HMt9QykANklTH0feKP9knzdd+LY+s1fTxojIcecw+7olZFO4jtNv9gMEdINs8wKMR2bQpucmkGH/Gt+QSGND1pLhz/AofJOAW3AgadfupIvthb7m/SAWiwNch1LN30U5rH6+MtncbZdxuIjDrXxYQXszXF+uMTr496uikRWkttmyv+EN0onC6K/KPPmpO4YrpHZnkIvPyXLIWRGy8tZMtId/ehuJHCoAVMyRDg9hmbKDDd1sKABTSkG1b4u/vtJaMr5Xyiejw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(366004)(396003)(136003)(39860400002)(376002)(230922051799003)(1800799009)(451199024)(186009)(64100799003)(6636002)(8676002)(6666004)(83380400001)(6506007)(66556008)(37006003)(86362001)(66946007)(41300700001)(2906002)(6862004)(66476007)(316002)(4326008)(4001150100001)(8936002)(26005)(6512007)(478600001)(6486002)(966005)(38100700002)(36756003)(2616005)(5660300002)(107886003)(1076003)(82960400001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: 731poS4Wv0giAN8TdQQnolHuguOOdd25rD5jdY5UrbTXbnFWYkYiKCNEnkZW/g4PIISgquh1XIo9FX9pvDfSw+KuGe5bxPH/tkGSwb3PanwqovQmeMIrxWeU+aDyNZ1JvRUKaSeoGEJqtLYtwmRPjXKrnCR23jhgmjzhdHIxLIiuFTIKqWmDVTzmX5l85PDwLJC0FyVNnG+8lpdBzi2fuKH6MmOuUimwgMGAqEWvATcoxrqhsCtu+zs2rDqfGJFz+9AqDJa7NiLgXNeBR9YTqA1jxVfbWkDs/KWE7ulduzQBp8nFJkBnMbOmDZjmCqxTjPncEX3DGEr88uVKVaQgAC6P9ybRHLC7jVJ+xgXev4EhlvKsGSEar75B/wVYehShlZVOf777dTrPYEOtbKxvf3RS14WU3exMFAFv5F6u96MCDW18QZ4589A4htjVL76XhsjwkKYltxVq0VHDWHvewosnQdN+zUroWYDAI0zaMDOcfigqfBzkJx9xVYydfrM8S06cUV6UOyXBJs/H97CqOnuPJ5c1zSW2xtF0L8mob64vpp+33RLBpXvAj8dcsY40EP1poAM/HkcRUohaFABCiw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(376002)(396003)(39860400002)(366004)(136003)(230922051799003)(451199024)(186009)(1800799009)(64100799003)(1076003)(6512007)(26005)(2616005)(45080400002)(107886003)(6506007)(6666004)(478600001)(7416002)(6486002)(83380400001)(966005)(41300700001)(66476007)(5660300002)(66946007)(66556008)(8936002)(8676002)(4326008)(316002)(6916009)(38100700002)(82960400001)(86362001)(36756003)(2906002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?nkgr7BoRX86hbXRivk3CGX6VLmjioB2J3V6ENMhFLpSlroan7EiMT09BeDx+?=
- =?us-ascii?Q?K5aOB6cHUjU7iUVw9C04/TV+6cSc9VOhQLcNCdfcbrWiRQDAIdB+J4zMeYeJ?=
- =?us-ascii?Q?AtkUBLfRgi0yLZUdYp4aO3QKFJiQQhbfiBzWok/30Tr5Bz+RBZe0vnIjoi4Z?=
- =?us-ascii?Q?5Rs4zNmdU863tA4OcnCh7ZJ+FElAxs7uthBhsOqHfq14EJDExeypL6UdCUHx?=
- =?us-ascii?Q?/rw4viYuotS1aZuBUDvNZmeLlN5ghWH5L2rilzpYnN0Tnn8AehzjdPOGP+Mb?=
- =?us-ascii?Q?k9OPzVAZmzkUFMhRcMRynA8+eIV+EuA7Z2KSc7GibU0fkYyPOWGLVGHFGYTk?=
- =?us-ascii?Q?U55uVosRrTTR7fKzU0A3rguUca9mRa2QcEEllnJSwqgkaGTsj83jtCojiTnL?=
- =?us-ascii?Q?TqzQPXcgJUnDOfsyNkyU3LLTEDZ8iYWwfQPHE9+W2tRtCzL+xGW+meAmNApC?=
- =?us-ascii?Q?XcqsEg3gLlAFI71CDozZYHPCi4FweyZwbzMijhIQIQ+0bNQlZ9Gcwdo6NlIC?=
- =?us-ascii?Q?KwRbRYh53xottI3TxsHFFz2Ns+I8rqO4oqJiS5do1NSrAUrpEGRJrL8QS1Md?=
- =?us-ascii?Q?xHMKZNR8ZsbWE1kJQhxoGaHSSCLIN80Xruy0EdfHNffxKh4rxl4ePpItYb4z?=
- =?us-ascii?Q?/NGoHDX6TUUkdO+cYxyGEXMyQ0Zw3BjVzGcKjGRgWG5Q6CWFZuHXROf0IlGJ?=
- =?us-ascii?Q?RQeOE/1RwjivAPDV0crhjMWJTM6FzJ6UQLe0QPYDEekgtJx4mfQe41BQOrQE?=
- =?us-ascii?Q?p2meb16crhHVN8G6uxlVMr4mrxxK+Et0o5/aa2nomosb3keU7dbEgsM0wTyi?=
- =?us-ascii?Q?qlPQvazT6y1IVkEgI6hwKbb62/GLL7pYB/1R7Rjbg0ubb5+/WLcTVXBF+dST?=
- =?us-ascii?Q?3lDikVcJwh+F6aP5tVi2TRRSC1Pw9GDeKwoPKmahfCyUvWELNVdOblCo6E6y?=
- =?us-ascii?Q?7sUlXBUe1zvqQZNwzrDzUBwAkPaQYxVoik9iwZTFnYYy3k9MSsxmqVw+5Va0?=
- =?us-ascii?Q?4cJQjkeKGp6n7yFqljZb/ktzLBWZIV30dQTnK23fU7BwLB8ZXMCgkMvqA+px?=
- =?us-ascii?Q?Qdt6yn/AmS4ibpuosthYIuUVWAFlPSrB3xjlrhK3juM6bbHYFK5eMxZ0yIrI?=
- =?us-ascii?Q?PdYSBWTmPaCT4GLRH86V6AUYphOO6K2dold3FN+iiLMXYYMS6JXPgkPO+fE1?=
- =?us-ascii?Q?Rc/5U9f9Pmr4k8blQbW9Px+IV7//o5vt7ec0iJV4XHXiSFWsOK0CbA68k09i?=
- =?us-ascii?Q?HMZ1yX7qASxioOrrDHOZux/4P7aU6LSjJ5NNysOPav2k0/0wgjR5Ex0qs75U?=
- =?us-ascii?Q?s2qSlD1Fs4Pq4p71sfJdnSi2JseBQk07hDoWNi1WGPTd285opPJPafbC9Lpv?=
- =?us-ascii?Q?vKB567QvntQ/ZL3AdV7BH8OHeFthDxS2S0Vg4qokjalrBE9lCQHfF3/tF3Qt?=
- =?us-ascii?Q?MHvf65igKbf3zWok9dalM6R1wAj+8k4cN/MBSpoF76ScNDKKSrRTHYP/tfWh?=
- =?us-ascii?Q?ll9IJKealyG9wwFDor1okiqD/TDFCQA5jc0F3xBHMm6GS0AynZmWdxkrCL5I?=
- =?us-ascii?Q?xbuXu4dRhK1uP+sZhyhXF4mq3+kOmqIsXHGRr26vT2HbYukPVQ6FhRuRI7L+?=
- =?us-ascii?Q?6Q=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: f454894f-9b65-4f31-34f9-08dbd5dfe05a
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?NZE+YKRjGmTvMzlhm6OWxbDvjA/GXpmr2OME/KfDBuBTc5aevRUpylaoBeBi?=
+ =?us-ascii?Q?zAVz0t8Q+sRTXfkwIlI44xiU9OxBmW94XbOtX0tPExC93lFioyfabdIo0qGd?=
+ =?us-ascii?Q?3acO36iMJtm0Firfrqjg9nVzm+vXS2FKa5qumMDU5f2MfJ0k3g0oEZCGxHxt?=
+ =?us-ascii?Q?jFd4rh48fLzprypLFksdslhJSzQ0AtNidlQLh8Mfvyf1B543gwZwsNEnsVJl?=
+ =?us-ascii?Q?HR4eARfioeSE2mwY8M/hU22gvlUuEjZYU6ldMpqGSaZVr4Nsdskj/nLDnTNk?=
+ =?us-ascii?Q?XwWNXhBivMbW7ILNmjDz0zCQlxiFG9Z7HzTeXlvNqvaSIeeoAYLfK4Q2hJMr?=
+ =?us-ascii?Q?6yiad9SeGGhs/BhIknLXwZ36z4wfRpYuem3V99uaguaYy3lf4YmmK0R5BUWE?=
+ =?us-ascii?Q?xSiNXWG+ziANZ9H0ZjvORFcIxR173y1R0cclq4KcjP0ISACgvHqyJab/5nUX?=
+ =?us-ascii?Q?wXm2Kf60dJEIAGHx4GS6r6A7OsQftfbEAgA+3cA49RkR6VrZjnovOg94V+tg?=
+ =?us-ascii?Q?X/fLuiRI3vG8hbO4sPhMf1JWG/2ZJXr6CvCNieH335oOg/3nHhjcV2EVfd+U?=
+ =?us-ascii?Q?zdk1QG2Wy+P/s2UKzqnZPqtJutY/oLMPDNDR2YzKZwJ+DhiVIw8Y4bnV5/dg?=
+ =?us-ascii?Q?qJB/XxQcxZsP/IoFrkJRSMZFzBk+S+1OktWtxPk/r17x9tJE42eMZ5KJYYHZ?=
+ =?us-ascii?Q?YCZYT+EDI8LmCy3WUv2X+ejSexstRUSEINCHW+mCskjNwjb7+OKmvONnzUOU?=
+ =?us-ascii?Q?R+O3rWcPuaglbidxF71pSobXsjAiVMUExJjEoACzSYI4IYtjSJITEZZR3BBq?=
+ =?us-ascii?Q?eNNdXUrDM7r06cNnDXHC3xe/lsDnyA8QacHdLrmXCn6M7UDXg/q1ssGV4S0c?=
+ =?us-ascii?Q?EaJnTtqiF8DgyLXZ/lxF1B4ROVBgsSxEMKCcXcQzDu1Z1hhIyEGwrADMkl9c?=
+ =?us-ascii?Q?MNQ1ZvMuFCOCnX3X7BHC9kevI+wBFbZcKcuPh4z+W+wZ881IWiYsE4hy8Yb2?=
+ =?us-ascii?Q?0B87RvULy9udq1YgtyOR8H2VgcWFRxCk8gru5BtHD6CToNjpaXis4ZPKEuBg?=
+ =?us-ascii?Q?FLWr1f2Da7Tw4f/UNrJGIOAkKciLcaQiovdaT/9XHD2JATWW5X9L5VNLIprZ?=
+ =?us-ascii?Q?w0jCCBdB3sWlFnMEcPe230RaTxuDy5M0FK///z8FIBO9e4YuprhfmJMHj+qX?=
+ =?us-ascii?Q?JuEdk35kZw66Gknb+fxc2Ndm1jk3+pA2jQlwoLTByWVsg7aL+RUmOeP8+uhh?=
+ =?us-ascii?Q?n52xtBJ7ctwXzpdkGnSEm/BEriIACAqjJQ34/zZWB+lSUW+E1SF1kZrhh+gN?=
+ =?us-ascii?Q?dvNy4diASg3m1EryR0y/rKCryG0jFok4x9zo1YmP1k3OFNo3a2/R67R3ttDe?=
+ =?us-ascii?Q?yTzpplHexrts+gCNQKsn4Dg9/JCSphe6SKI+qD9AJzxSF6FxNdAGbS909Ue3?=
+ =?us-ascii?Q?GXXL8+QuvzvGGNWlXpURQWZcYFTjT4Bgv5kFryoPP7faHfjKTtN0Zk7u5ShB?=
+ =?us-ascii?Q?orDAkNLStuaV/ya0MSE7PmuZaxOXP0Udgxb9dzqtH+m7vec9IK6QrtdmJMXK?=
+ =?us-ascii?Q?sTd6qly3Bd5A36n78ZvmSQMJ1dDwquBlTICCIuTmrIvG+/w3qM7a24nhPxYX?=
+ =?us-ascii?Q?Gg=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: c10ba2fb-4582-4587-b5b0-08dbd5e7529e
 X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB6779.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Oct 2023 04:56:12.4483
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Oct 2023 05:49:30.7226
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tvmY6zSxlN1NCg2HNntkbo8ITaehI92qtiUN4MvVY/57655GZkn8uwV72qX52jU/+ylmW+qYbL5SrY1xZhzgFg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB6172
+X-MS-Exchange-CrossTenant-UserPrincipalName: cylnebmlEjGv+33QMejaint8yXib2FPvVSWlZ3pku7hyRJpHHukPawp2qYc4GqqVMlJhMEhUfN1N+yXpusBTwg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4737
 X-OriginatorOrg: intel.com
 
 
 
 Hello,
 
-kernel test robot noticed "kernel-selftests.kvm.make.fail" on:
+kernel test robot noticed "WARNING:at_mm/slub.c:#___slab_alloc" on:
 
-commit: f84b23853c43a55b5d7dbf03195ed0cdcddd5ddf ("bitmap: introduce generi=
-c optimized bitmap_size()")
-https://github.com/alobakin/linux pfcp
+commit: b34342e2732b0dc92b29d6807c5314e2e5e0c27c ("[RFC PATCH v3 6/7] slub: Delay freezing of partial slabs")
+url: https://github.com/intel-lab-lkp/linux/commits/chengming-zhou-linux-dev/slub-Keep-track-of-whether-slub-is-on-the-per-node-partial-list/20231024-173519
+base: git://git.kernel.org/cgit/linux/kernel/git/vbabka/slab.git for-next
+patch link: https://lore.kernel.org/all/20231024093345.3676493-7-chengming.zhou@linux.dev/
+patch subject: [RFC PATCH v3 6/7] slub: Delay freezing of partial slabs
 
-in testcase: kernel-selftests
-version: kernel-selftests-x86_64-60acb023-1_20230329
+in testcase: rcutorture
+version: 
 with following parameters:
 
-	group: kvm
+	runtime: 300s
+	test: default
+	torture_type: rcu
 
 
 
 compiler: gcc-12
-test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480+ (Sapphi=
-re Rapids) with 256G memory
+test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
 
 (please refer to attached dmesg/kmsg for entire log/backtrace)
 
 
++------------------------------------------------+------------+------------+
+|                                                | e87d1d9973 | b34342e273 |
++------------------------------------------------+------------+------------+
+| boot_successes                                 | 15         | 0          |
+| boot_failures                                  | 0          | 15         |
+| WARNING:at_mm/slub.c:#___slab_alloc            | 0          | 15         |
+| RIP:___slab_alloc                              | 0          | 15         |
++------------------------------------------------+------------+------------+
 
 
-If you fix the issue in a separate patch/commit (i.e. not just a new versio=
-n of
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202310261116.c6bf98ab-oliver.sang@=
-intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202310261032.b4590eb0-oliver.sang@intel.com
 
-KERNEL SELFTESTS: linux_headers_dir is /usr/src/linux-headers-x86_64-rhel-8=
-.3-kselftests-f84b23853c43a55b5d7dbf03195ed0cdcddd5ddf
-2023-10-21 10:06:44 ln -sf /usr/bin/clang
-2023-10-21 10:06:44 ln -sf /usr/sbin/iptables-nft /usr/bin/iptables
-2023-10-21 10:06:44 ln -sf /usr/sbin/ip6tables-nft /usr/bin/ip6tables
-2023-10-21 10:06:44 sed -i s/default_timeout=3D45/default_timeout=3D300/ ks=
-elftest/runner.sh
-LKP WARN miss config CONFIG_KVM_AMD=3D of kvm/config
-2023-10-21 10:06:44 make -j224 -C kvm
-make: Entering directory '/usr/src/perf_selftests-x86_64-rhel-8.3-kselftest=
-s-f84b23853c43a55b5d7dbf03195ed0cdcddd5ddf/tools/testing/selftests/kvm'
 
-...
+[    4.907500][    T1] ------------[ cut here ]------------
+[ 4.908232][ T1] WARNING: CPU: 0 PID: 1 at mm/slub.c:577 ___slab_alloc (mm/slub.c:577 mm/slub.c:3033 mm/slub.c:3205) 
+[    4.909242][    T1] Modules linked in:
+[    4.909739][    T1] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 6.6.0-rc5-00013-gb34342e2732b #1
+[ 4.910746][ T1] RIP: 0010:___slab_alloc (mm/slub.c:577 mm/slub.c:3033 mm/slub.c:3205) 
+[ 4.911433][ T1] Code: 9f 05 66 25 ff 7f 66 89 45 b8 48 8b 4d b8 45 85 e4 74 1a 65 8b 05 dd c4 a3 7e 85 c0 75 0f 65 8b 05 de c1 87 7e 85 c0 74 04 90 <0f> 0b 90 81 e6 00 00 00 40 74 31 4c 89 f8 f0 49 0f c7 48 20 0f 84
+All code
+========
+   0:	9f                   	lahf
+   1:	05 66 25 ff 7f       	add    $0x7fff2566,%eax
+   6:	66 89 45 b8          	mov    %ax,-0x48(%rbp)
+   a:	48 8b 4d b8          	mov    -0x48(%rbp),%rcx
+   e:	45 85 e4             	test   %r12d,%r12d
+  11:	74 1a                	je     0x2d
+  13:	65 8b 05 dd c4 a3 7e 	mov    %gs:0x7ea3c4dd(%rip),%eax        # 0x7ea3c4f7
+  1a:	85 c0                	test   %eax,%eax
+  1c:	75 0f                	jne    0x2d
+  1e:	65 8b 05 de c1 87 7e 	mov    %gs:0x7e87c1de(%rip),%eax        # 0x7e87c203
+  25:	85 c0                	test   %eax,%eax
+  27:	74 04                	je     0x2d
+  29:	90                   	nop
+  2a:*	0f 0b                	ud2		<-- trapping instruction
+  2c:	90                   	nop
+  2d:	81 e6 00 00 00 40    	and    $0x40000000,%esi
+  33:	74 31                	je     0x66
+  35:	4c 89 f8             	mov    %r15,%rax
+  38:	f0 49 0f c7 48 20    	lock cmpxchg16b 0x20(%r8)
+  3e:	0f                   	.byte 0xf
+  3f:	84                   	.byte 0x84
 
-gcc  -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -Wno-gnu=
--variable-sized-type-not-at-end -MD -fno-builtin-memcmp -fno-builtin-memcpy=
- -fno-builtin-memset -fno-builtin-strnlen -fno-stack-protector -fno-PIE -I/=
-usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-f84b23853c43a55b5d7dbf031=
-95ed0cdcddd5ddf/tools/testing/selftests/../../../tools/include -I/usr/src/p=
-erf_selftests-x86_64-rhel-8.3-kselftests-f84b23853c43a55b5d7dbf03195ed0cdcd=
-dd5ddf/tools/testing/selftests/../../../tools/arch/x86/include -I/usr/src/p=
-erf_selftests-x86_64-rhel-8.3-kselftests-f84b23853c43a55b5d7dbf03195ed0cdcd=
-dd5ddf/tools/testing/selftests/../../../usr/include/ -Iinclude -Ix86_64 -Ii=
-nclude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-rhel=
--8.3-kselftests-f84b23853c43a55b5d7dbf03195ed0cdcddd5ddf/usr/include   -c x=
-86_64/set_sregs_test.c -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselftest=
-s-f84b23853c43a55b5d7dbf03195ed0cdcddd5ddf/tools/testing/selftests/kvm/x86_=
-64/set_sregs_test.o
-In file included from lib/x86_64/processor.c:8:
-/usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-f84b23853c43a55b5d7dbf03=
-195ed0cdcddd5ddf/tools/testing/selftests/../../../tools/include/linux/bitma=
-p.h:5:10: fatal error: linux/align.h: No such file or directory
-    5 | #include <linux/align.h>
-      |          ^~~~~~~~~~~~~~~
-compilation terminated.
-make: *** [Makefile:263: /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests=
--f84b23853c43a55b5d7dbf03195ed0cdcddd5ddf/tools/testing/selftests/kvm/lib/x=
-86_64/processor.o] Error 1
-make: *** Waiting for unfinished jobs....
-In file included from lib/memstress.c:8:
-/usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-f84b23853c43a55b5d7dbf03=
-195ed0cdcddd5ddf/tools/testing/selftests/../../../tools/include/linux/bitma=
-p.h:5:10: fatal error: linux/align.h: No such file or directory
-    5 | #include <linux/align.h>
-      |          ^~~~~~~~~~~~~~~
-compilation terminated.
-make: *** [Makefile:263: /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests=
--f84b23853c43a55b5d7dbf03195ed0cdcddd5ddf/tools/testing/selftests/kvm/lib/m=
-emstress.o] Error 1
-In file included from x86_64/dirty_log_page_splitting_test.c:14:
-/usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-f84b23853c43a55b5d7dbf03=
-195ed0cdcddd5ddf/tools/testing/selftests/../../../tools/include/linux/bitma=
-p.h:5:10: fatal error: linux/align.h: No such file or directory
-    5 | #include <linux/align.h>
-      |          ^~~~~~~~~~~~~~~
-compilation terminated.
-make: *** [Makefile:254: /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests=
--f84b23853c43a55b5d7dbf03195ed0cdcddd5ddf/tools/testing/selftests/kvm/x86_6=
-4/dirty_log_page_splitting_test.o] Error 1
-In file included from lib/x86_64/memstress.c:9:
-/usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-f84b23853c43a55b5d7dbf03=
-195ed0cdcddd5ddf/tools/testing/selftests/../../../tools/include/linux/bitma=
-p.h:5:10: fatal error: linux/align.h: No such file or directory
-    5 | #include <linux/align.h>
-      |          ^~~~~~~~~~~~~~~
-compilation terminated.
-make: *** [Makefile:263: /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests=
--f84b23853c43a55b5d7dbf03195ed0cdcddd5ddf/tools/testing/selftests/kvm/lib/x=
-86_64/memstress.o] Error 1
-In file included from x86_64/hyperv_evmcs.c:13:
-/usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-f84b23853c43a55b5d7dbf03=
-195ed0cdcddd5ddf/tools/testing/selftests/../../../tools/include/linux/bitma=
-p.h:5:10: fatal error: linux/align.h: No such file or directory
-    5 | #include <linux/align.h>
-      |          ^~~~~~~~~~~~~~~
-compilation terminated.
-make: *** [Makefile:254: /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests=
--f84b23853c43a55b5d7dbf03195ed0cdcddd5ddf/tools/testing/selftests/kvm/x86_6=
-4/hyperv_evmcs.o] Error 1
-In file included from x86_64/hyperv_svm_test.c:15:
-/usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-f84b23853c43a55b5d7dbf03=
-195ed0cdcddd5ddf/tools/testing/selftests/../../../tools/include/linux/bitma=
-p.h:5:10: fatal error: linux/align.h: No such file or directory
-    5 | #include <linux/align.h>
-      |          ^~~~~~~~~~~~~~~
-compilation terminated.
-make: *** [Makefile:254: /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests=
--f84b23853c43a55b5d7dbf03195ed0cdcddd5ddf/tools/testing/selftests/kvm/x86_6=
-4/hyperv_svm_test.o] Error 1
-In file included from lib/ucall_common.c:4:
-/usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-f84b23853c43a55b5d7dbf03=
-195ed0cdcddd5ddf/tools/testing/selftests/../../../tools/include/linux/bitma=
-p.h:5:10: fatal error: linux/align.h: No such file or directory
-    5 | #include <linux/align.h>
-      |          ^~~~~~~~~~~~~~~
-compilation terminated.
-make: *** [Makefile:263: /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests=
--f84b23853c43a55b5d7dbf03195ed0cdcddd5ddf/tools/testing/selftests/kvm/lib/u=
-call_common.o] Error 1
-make: Leaving directory '/usr/src/perf_selftests-x86_64-rhel-8.3-kselftests=
--f84b23853c43a55b5d7dbf03195ed0cdcddd5ddf/tools/testing/selftests/kvm'
-2023-10-21 10:06:48 make quicktest=3D1 run_tests -C kvm
-make: Entering directory '/usr/src/perf_selftests-x86_64-rhel-8.3-kselftest=
-s-f84b23853c43a55b5d7dbf03195ed0cdcddd5ddf/tools/testing/selftests/kvm'
-gcc  -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=3Dgnu99 -Wno-gnu=
--variable-sized-type-not-at-end -MD -fno-builtin-memcmp -fno-builtin-memcpy=
- -fno-builtin-memset -fno-builtin-strnlen -fno-stack-protector -fno-PIE -I/=
-usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-f84b23853c43a55b5d7dbf031=
-95ed0cdcddd5ddf/tools/testing/selftests/../../../tools/include -I/usr/src/p=
-erf_selftests-x86_64-rhel-8.3-kselftests-f84b23853c43a55b5d7dbf03195ed0cdcd=
-dd5ddf/tools/testing/selftests/../../../tools/arch/x86/include -I/usr/src/p=
-erf_selftests-x86_64-rhel-8.3-kselftests-f84b23853c43a55b5d7dbf03195ed0cdcd=
-dd5ddf/tools/testing/selftests/../../../usr/include/ -Iinclude -Ilib -Iincl=
-ude/x86_64 -I ../rseq -I..  -isystem /usr/src/perf_selftests-x86_64-rhel-8.=
-3-kselftests-f84b23853c43a55b5d7dbf03195ed0cdcddd5ddf/usr/include   -c lib/=
-memstress.c -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-f84b23853=
-c43a55b5d7dbf03195ed0cdcddd5ddf/tools/testing/selftests/kvm/lib/memstress.o
-In file included from lib/memstress.c:8:
-/usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-f84b23853c43a55b5d7dbf03=
-195ed0cdcddd5ddf/tools/testing/selftests/../../../tools/include/linux/bitma=
-p.h:5:10: fatal error: linux/align.h: No such file or directory
-    5 | #include <linux/align.h>
-      |          ^~~~~~~~~~~~~~~
-compilation terminated.
-make: *** [Makefile:263: /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests=
--f84b23853c43a55b5d7dbf03195ed0cdcddd5ddf/tools/testing/selftests/kvm/lib/m=
-emstress.o] Error 1
-make: Leaving directory '/usr/src/perf_selftests-x86_64-rhel-8.3-kselftests=
--f84b23853c43a55b5d7dbf03195ed0cdcddd5ddf/tools/testing/selftests/kvm'
-
+Code starting with the faulting instruction
+===========================================
+   0:	0f 0b                	ud2
+   2:	90                   	nop
+   3:	81 e6 00 00 00 40    	and    $0x40000000,%esi
+   9:	74 31                	je     0x3c
+   b:	4c 89 f8             	mov    %r15,%rax
+   e:	f0 49 0f c7 48 20    	lock cmpxchg16b 0x20(%r8)
+  14:	0f                   	.byte 0xf
+  15:	84                   	.byte 0x84
+[    4.913822][    T1] RSP: 0000:ffffc9000001f830 EFLAGS: 00010202
+[    4.914602][    T1] RAX: 0000000000000001 RBX: 0000000000000000 RCX: 0000000080270027
+[    4.914743][    T1] RDX: 0000000000270021 RSI: 0000000048000000 RDI: ffffffff842e066b
+[    4.915745][    T1] RBP: ffffc9000001f8e0 R08: ffffea0005931d40 R09: fffffbfff0e33a5a
+[    4.916743][    T1] R10: ffffffff8719d2d7 R11: 0000000000000000 R12: 0000000000000001
+[    4.917696][    T1] R13: ffff8883ae809430 R14: ffff88810033e3c0 R15: ffff888164c75dd0
+[    4.918688][    T1] FS:  0000000000000000(0000) GS:ffff8883ae600000(0000) knlGS:0000000000000000
+[    4.918754][    T1] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    4.919522][    T1] CR2: ffff88843ffff000 CR3: 0000000005c89000 CR4: 00000000000406f0
+[    4.920500][    T1] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[    4.921496][    T1] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[    4.922461][    T1] Call Trace:
+[    4.922742][    T1]  <TASK>
+[ 4.923107][ T1] ? __warn (kernel/panic.c:673) 
+[ 4.923632][ T1] ? ___slab_alloc (mm/slub.c:577 mm/slub.c:3033 mm/slub.c:3205) 
+[ 4.924250][ T1] ? report_bug (lib/bug.c:180 lib/bug.c:219) 
+[ 4.924831][ T1] ? handle_bug (arch/x86/kernel/traps.c:237) 
+[ 4.925376][ T1] ? exc_invalid_op (arch/x86/kernel/traps.c:258 (discriminator 1)) 
+[ 4.925962][ T1] ? asm_exc_invalid_op (arch/x86/include/asm/idtentry.h:568) 
+[ 4.926595][ T1] ? _raw_spin_unlock_irqrestore (arch/x86/include/asm/irqflags.h:42 arch/x86/include/asm/irqflags.h:77 arch/x86/include/asm/irqflags.h:135 include/linux/spinlock_api_smp.h:151 kernel/locking/spinlock.c:194) 
+[ 4.926741][ T1] ? ___slab_alloc (mm/slub.c:577 mm/slub.c:3033 mm/slub.c:3205) 
+[ 4.927370][ T1] ? acpi_ut_allocate_object_desc_dbg (include/linux/slab.h:710 include/acpi/platform/aclinuxex.h:67 drivers/acpi/acpica/utobject.c:359) 
+[ 4.928186][ T1] ? kmem_cache_alloc (mm/slub.c:3295 mm/slub.c:3348 mm/slub.c:3440 mm/slub.c:3458 mm/slub.c:3465 mm/slub.c:3474) 
+[ 4.928824][ T1] kmem_cache_alloc (mm/slub.c:3295 mm/slub.c:3348 mm/slub.c:3440 mm/slub.c:3458 mm/slub.c:3465 mm/slub.c:3474) 
+[ 4.929442][ T1] ? acpi_ut_allocate_object_desc_dbg (include/linux/slab.h:710 include/acpi/platform/aclinuxex.h:67 drivers/acpi/acpica/utobject.c:359) 
+[ 4.930221][ T1] acpi_ut_allocate_object_desc_dbg (include/linux/slab.h:710 include/acpi/platform/aclinuxex.h:67 drivers/acpi/acpica/utobject.c:359) 
+[ 4.930743][ T1] acpi_ut_create_internal_object_dbg (drivers/acpi/acpica/utobject.c:71) 
+[ 4.931576][ T1] acpi_ut_copy_esimple_to_isimple (drivers/acpi/acpica/utcopy.c:434) 
+[ 4.932394][ T1] acpi_ut_copy_eobject_to_iobject (drivers/acpi/acpica/utcopy.c:618) 
+[ 4.933185][ T1] ? __kasan_kmalloc (mm/kasan/common.c:374 mm/kasan/common.c:383) 
+[ 4.933816][ T1] acpi_evaluate_object (drivers/acpi/acpica/nsxfeval.c:259) 
+[ 4.934486][ T1] ? acpi_get_data_full (drivers/acpi/acpica/nsxfeval.c:167) 
+[ 4.934756][ T1] ? hlock_class (arch/x86/include/asm/bitops.h:228 arch/x86/include/asm/bitops.h:240 include/asm-generic/bitops/instrumented-non-atomic.h:142 kernel/locking/lockdep.c:228) 
+[ 4.935345][ T1] ? __uuid_parse+0xd0/0x1b0 
+[ 4.936024][ T1] acpi_run_osc (drivers/acpi/bus.c:217) 
+[ 4.936609][ T1] ? acpi_bus_detach_private_data (drivers/acpi/bus.c:187) 
+[ 4.937363][ T1] ? _raw_spin_unlock_irqrestore (arch/x86/include/asm/irqflags.h:42 arch/x86/include/asm/irqflags.h:77 arch/x86/include/asm/irqflags.h:135 include/linux/spinlock_api_smp.h:151 kernel/locking/spinlock.c:194) 
+[ 4.938127][ T1] ? acpi_get_data (drivers/acpi/acpica/nsxfname.c:48) 
+[ 4.938710][ T1] acpi_bus_init (drivers/acpi/bus.c:352 drivers/acpi/bus.c:1329) 
+[ 4.938742][ T1] ? up (include/linux/list.h:373 kernel/locking/semaphore.c:188) 
+[ 4.939205][ T1] ? acpi_sleep_proc_init (drivers/acpi/bus.c:1289) 
+[ 4.939862][ T1] ? _raw_spin_unlock_irqrestore (arch/x86/include/asm/irqflags.h:42 arch/x86/include/asm/irqflags.h:77 arch/x86/include/asm/irqflags.h:135 include/linux/spinlock_api_smp.h:151 kernel/locking/spinlock.c:194) 
+[ 4.940581][ T1] ? acpi_os_signal_semaphore (drivers/acpi/osl.c:1294 (discriminator 5)) 
+[ 4.941313][ T1] ? acpi_ut_release_mutex (drivers/acpi/acpica/utmutex.c:329) 
+[ 4.942007][ T1] ? acpi_install_address_space_handler_internal (drivers/acpi/acpica/evxfregn.c:94) 
+[ 4.942744][ T1] ? acpi_bus_init (drivers/acpi/bus.c:1390) 
+[ 4.943325][ T1] acpi_init (drivers/acpi/bus.c:1404) 
+[ 4.943832][ T1] ? acpi_bus_init (drivers/acpi/bus.c:1390) 
+[ 4.944420][ T1] ? kb3886_init (drivers/video/fbdev/core/fbmem.c:1111) 
+[ 4.944976][ T1] ? acpi_bus_init (drivers/acpi/bus.c:1390) 
+[ 4.945579][ T1] do_one_initcall (init/main.c:1232) 
+[ 4.946157][ T1] ? trace_event_raw_event_initcall_level (init/main.c:1223) 
+[ 4.946747][ T1] ? kasan_set_track (mm/kasan/common.c:52) 
+[ 4.947373][ T1] ? __kasan_kmalloc (mm/kasan/common.c:374 mm/kasan/common.c:383) 
+[ 4.948010][ T1] do_initcalls (init/main.c:1293 init/main.c:1310) 
+[ 4.948614][ T1] kernel_init_freeable (init/main.c:1549) 
+[ 4.949315][ T1] ? rest_init (init/main.c:1429) 
+[ 4.949894][ T1] kernel_init (init/main.c:1439) 
+[ 4.950743][ T1] ? _raw_spin_unlock_irq (arch/x86/include/asm/irqflags.h:42 arch/x86/include/asm/irqflags.h:77 include/linux/spinlock_api_smp.h:159 kernel/locking/spinlock.c:202) 
+[ 4.951386][ T1] ret_from_fork (arch/x86/kernel/process.c:153) 
+[ 4.951957][ T1] ? rest_init (init/main.c:1429) 
+[ 4.952520][ T1] ret_from_fork_asm (arch/x86/entry/entry_64.S:312) 
+[    4.953143][    T1]  </TASK>
+[    4.953514][    T1] irq event stamp: 85121
+[ 4.954040][ T1] hardirqs last enabled at (85129): console_unlock (arch/x86/include/asm/irqflags.h:42 arch/x86/include/asm/irqflags.h:77 arch/x86/include/asm/irqflags.h:135 kernel/printk/printk.c:347 kernel/printk/printk.c:2718 kernel/printk/printk.c:3037) 
+[ 4.954736][ T1] hardirqs last disabled at (85138): console_unlock (kernel/printk/printk.c:345 kernel/printk/printk.c:2718 kernel/printk/printk.c:3037) 
+[ 4.955884][ T1] softirqs last enabled at (84862): __do_softirq (arch/x86/include/asm/preempt.h:27 kernel/softirq.c:400 kernel/softirq.c:582) 
+[ 4.957017][ T1] softirqs last disabled at (84857): irq_exit_rcu (kernel/softirq.c:427 kernel/softirq.c:632 kernel/softirq.c:644) 
+[    4.958128][    T1] ---[ end trace 0000000000000000 ]---
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20231026/202310261116.c6bf98ab-oliv=
-er.sang@intel.com
+https://download.01.org/0day-ci/archive/20231026/202310261032.b4590eb0-oliver.sang@intel.com
 
 
 
---=20
+-- 
 0-DAY CI Kernel Test Service
 https://github.com/intel/lkp-tests/wiki
 
