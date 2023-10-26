@@ -1,213 +1,215 @@
-Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B94F6749F
-	for <oe-lkp@lists.linux.dev>; Thu, 26 Oct 2023 07:16:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF721623
+	for <oe-lkp@lists.linux.dev>; Thu, 26 Oct 2023 07:38:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hJyGCElU"
-Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-53df747cfe5so844713a12.2
-        for <oe-lkp@lists.linux.dev>; Thu, 26 Oct 2023 00:16:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1698304568; x=1698909368; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XE9K/zLmyjAI/eqnnXkydpu2Z1qLEJmMy+aUPHF96ls=;
-        b=hJyGCElUCLMFnmBHG1ljObX0qaFJ2q4eEkvEvzgsaVYR6mXt+kZ2TznnIWB7QeJz0l
-         +GwmyUEVLd2oQKn6sXzfF9elJssfulk3euI61VaKwtQBE4plGsdRoIQTKEZvJhug66ne
-         nMXD/tTamN995SUR5gp2p8xlaH4kyX4d5bY3lpcdSpDFQu4Pv8BLHLAZhrZhOWIx+PfH
-         SbpEvnNtXvuOuZsuZf9rDof8z03E2hv+8o2aWh441YsIM0GN9Cg6v7Dw08mEqzZtXNdv
-         v1H+YVsZqJBeQbbxrML8FCm75yo3zsgXXV8e55Pv7BK0I0uFeeXvvrxsh/yxyLgX9J0c
-         L81Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1698304568; x=1698909368;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=XE9K/zLmyjAI/eqnnXkydpu2Z1qLEJmMy+aUPHF96ls=;
-        b=SM9frL17Un6wLuCX5RRfhuL8eG3rOelAo8o/StyHxKoLlLOUV17WH5ttvdMjEACk3e
-         XuBSWojupH6xi7gQkz5nAe6gGwRFRN3rTol585HXyxKybXLJ6RrTeUbUQEqsMHfL7HyM
-         QAEaNxgRduysA6d2Mm2ZE8gJEWVCuaikReelmClarxmoqjHg6rqoj54jdxd6pZbPp0iL
-         Mq/ZnTA7LI02WMjZD0ahFFWhF8gRYlVv/41r27W4Ll9mc2QMrB/r7vdoVj8sahKqCDmn
-         kOY2I3PZT37tMXC9ui8mj11Bp9oxG631ae1vt62BO3vmbvnmy0d5n1T8WX0mZi/HNA+l
-         QnHA==
-X-Gm-Message-State: AOJu0YzQ1DYfxKD5yd+gLYnFA6NDYnB/yxJhxNIMVdB2kkY5Zdtlgcer
-	OUnuV/oZ23Qy5s0LaH+oYPchjTTSstix1stewyM=
-X-Google-Smtp-Source: AGHT+IG7HVWFmDZlQ4OjN9X3Rowm9DAorTwDMoPMqOFZgCZydOHrqviKTR2JkKhHG2vJ57fdE3nal8BE40d17b6TWEc=
-X-Received: by 2002:a50:9ec5:0:b0:540:2a0c:97a2 with SMTP id
- a63-20020a509ec5000000b005402a0c97a2mr8907566edf.16.1698304567699; Thu, 26
- Oct 2023 00:16:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="M8MeV+Hs"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1698305935; x=1729841935;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=jcIF8hTieIxX0HnXPHF4xImq6jCa0TEAIWvfuQZEnpc=;
+  b=M8MeV+HsjyXYVdMhHmyBRdPy3jvAlQDsytfdbUoB3/HlbzAr4g6UPbqL
+   b+vuWquug626dMpGIY79ZDXqgKKZ69oRXU5GdJITwC2sWZkq9b5ySXiXk
+   +9SzPujDEA3oIrIowhdt13YF3MWZrxtFwHH+KmX+kfZf+zOvFYKX/cCLK
+   tuUjnwP2k+2kWAmryMQ9DrdYSpoCj+HW82h9b6kJlbbNfQMUmVIKn2W3D
+   MLTbGPKc/M/odFdOZRJx5KIKQcWhAGtKG+RJ1+Dl/Iec6LMR7yr08/VIA
+   Eo7wy3gEV5NtaIkJgLutDvpzqQy76l6vLBc4nNVDdgkAIzpyidAWVEomp
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10874"; a="273392"
+X-IronPort-AV: E=Sophos;i="6.03,253,1694761200"; 
+   d="scan'208";a="273392"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2023 00:38:53 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10874"; a="824890512"
+X-IronPort-AV: E=Sophos;i="6.03,253,1694761200"; 
+   d="scan'208";a="824890512"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by fmsmga008.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 26 Oct 2023 00:38:52 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.34; Thu, 26 Oct 2023 00:38:52 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.34; Thu, 26 Oct 2023 00:38:51 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.34 via Frontend Transport; Thu, 26 Oct 2023 00:38:51 -0700
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.40) by
+ edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.34; Thu, 26 Oct 2023 00:38:51 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GUDOL4sj5gsuR4sAqrU7E/ouae84P4cBRIQnk1JnBSS4ycKkzqqcj3pgZ0TI20mj0SKrELNe/0C993pBvTnBJTX88dJw1ioNGd2D+gJhrIW5LGhZ6tQ1p/uTrDfRixG3WXdGfy8mKgiMPZqKUjcCP3pWqslYF2EKWJj/bfTvYmzeeIqE3V8K/3nhX1I+zjcPAu9yXYwJo5SODLmLc32zh3+s1IPEl/0O1ki1yQRHl3++D+GIq0aC1zSQ9qPWHKYBW3oopeESy7bFxzgBfV1VdIVn9SpeIcf9Xvogu5+T75NsNoRbif/7qCVJ5h3ZLy5wQUC9ijIPCFXV1Z1zjDXm4w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9Os/Jy1Jlm+l/4ueSjSsXbow1/udDgRqQQlM1ApmKt0=;
+ b=FpJAYmTQUjOFutAgcV53pAm/uWbflZlWlM6nPYMf28Jy2/OtPQgD3Vx+PmjvaJcJUtBVSIZMLeQHNYKrYdCRLVzwYrZQc/+OUy/3wHWKVHy3+LuTZl1Vepwe4MJJGE4XFAzwR2O8ddVkrnlnQBEM3D2Wgcf6vxTfG+iYcXZCayD70zQBtpsDgavxfOGQkVAF6ntSemvxDTNsZW4LaqDVTb3tRSUcqfIzRaFwf3WJ/2clBk+kJJTr2IQG6c/ANlh94LblCD9INRC6572pgxJeKzH/tXinDZKOLLepKxNJD13erAE1DXKt6bDWncdeuJTzJkTZOHwxD5lmHusbUyVMnQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
+ by PH0PR11MB4888.namprd11.prod.outlook.com (2603:10b6:510:32::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6933.19; Thu, 26 Oct
+ 2023 07:38:44 +0000
+Received: from PH8PR11MB6779.namprd11.prod.outlook.com
+ ([fe80::29f0:3f0f:2591:d1f6]) by PH8PR11MB6779.namprd11.prod.outlook.com
+ ([fe80::29f0:3f0f:2591:d1f6%3]) with mapi id 15.20.6907.032; Thu, 26 Oct 2023
+ 07:38:44 +0000
+Date: Thu, 26 Oct 2023 15:38:37 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: Johannes Berg <johannes.berg@intel.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	Max Schulze <max.schulze@online.de>, <linux-wireless@vger.kernel.org>,
+	<oliver.sang@intel.com>
+Subject: [linus:master] [wifi]  37c20b2eff:
+ hwsim.wpas_ctrl_signal_monitor.fail
+Message-ID: <202310261527.66167d98-oliver.sang@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+X-ClientProxiedBy: SG2PR04CA0151.apcprd04.prod.outlook.com (2603:1096:4::13)
+ To PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20231012161237.114733-2-ubizjak@gmail.com> <202310261417.b269d37e-oliver.sang@intel.com>
-In-Reply-To: <202310261417.b269d37e-oliver.sang@intel.com>
-From: Uros Bizjak <ubizjak@gmail.com>
-Date: Thu, 26 Oct 2023 09:15:56 +0200
-Message-ID: <CAFULd4ZVBfQEGH0h8v1Br=3DbHteHA9V4u0+m2d5XQPLUu10mA@mail.gmail.com>
-Subject: Re: [PATCH 1/4] x86/percpu: Use explicit segment registers in lib/cmpxchg{8,16}b_emu.S
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, 
-	Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
-	Dave Hansen <dave.hansen@linux.intel.com>, "H. Peter Anvin" <hpa@zytor.com>, 
-	Peter Zijlstra <peterz@infradead.org>, linux-kernel@vger.kernel.org, x86@kernel.org, 
-	xen-devel@lists.xenproject.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|PH0PR11MB4888:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4b67cab8-0f9d-4738-ea94-08dbd5f694e8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 5exRfVAky0Rp02nsOimWBoQe2yxBKdW/DERYDHaDpCykRONfUwl422qqybnjFpFxrDPBLa6fC5AKZgj+T0RYRh8NB3QC1/PnDaCDlyiAorK7MGTV/XluU6MSc5QQ96lo+kAyF9Sc9hY+x52qA93VaSdJQz6+XJydaHkPE2I73z0Zsakt8FCXT7rbNytmu7iaVQ2p2v++VdR8BhyhvaythhOgEP3y3gxnC47CrtyPb3cHO7YVk1Xse8SsWWa92/SEgO3FqX+SbUvZE1xmHQAauzVj4fmlzE3ciUY2Tx0HIAR/B+wXcN+lOIepmGGyfWjME1UVZftNU9uPHJtqn1LzFO6x6nKUWcAXA8Sz00u0RbFiZIm+Z/MZoFiTSH77fZ6qx7aE3MjLaJCTNrHsOxInk/k1dYbw8jyI/YnzU8djjOJLDR2vzPRuUacgYsOoMvKr03tiZOYKvNhw25reT5uiqrcz1zUpTsfQe3hFU7teQVqBiNgltbE0CyKrMxQBAoVRaYZ7jbt3ndy5L88UaglO/XShM1fsfMGYmfp0G/NyI4FLrRRI/oJH9W1qyNXv6VRUx6ogzMSW5irc4puhN8adgQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(396003)(376002)(136003)(39860400002)(366004)(230922051799003)(64100799003)(451199024)(186009)(1800799009)(36756003)(2906002)(83380400001)(8676002)(6862004)(8936002)(966005)(6486002)(4326008)(107886003)(4001150100001)(82960400001)(5660300002)(41300700001)(6512007)(86362001)(6506007)(37006003)(6636002)(316002)(6666004)(1076003)(26005)(478600001)(2616005)(38100700002)(66946007)(66556008)(66476007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?lTUEdcWVQ/BTifFKYNOIgLCCEt3YhOlYLsAh+UYH/Bk9aFRiF3W/p+RLICR1?=
+ =?us-ascii?Q?u0Q9ly+A6csV/MLk1LvZwPCGGXPcJkg7CUdbf0wZMvFL93nXLnabHe3YM6aY?=
+ =?us-ascii?Q?Z17YX056D4OcRYELcjg32z1pvfXe6JysLhFjet2+OPkGemEpbID6knSdXsqf?=
+ =?us-ascii?Q?nexbyvCN3EaUfkIi10Kdd3iRUkWPQ9rDvM37Pfz1zyi7L17NMn8PAXrmPFi+?=
+ =?us-ascii?Q?MVsIv9iz0q5yzzkLP3WTCq2kqURIdebMH41KmDR/ADqiMy+urh0B7JmQ/iTb?=
+ =?us-ascii?Q?r33iNqVIMAWfHzWm3f6oEJl/WjhgM23wswVhZQP6EGM/VgKLaw4urSV/hzKm?=
+ =?us-ascii?Q?M7DMbAtz+FZX9/FlaZhXE+Xicaxjy+9hrom5e7336R8Rq8yT47WbH1XxevYR?=
+ =?us-ascii?Q?Q+p5ubp3BPvRohACT1/1J6FNJefuSErcclnVPu5VghLQ72Y5ziPpSr13pNgG?=
+ =?us-ascii?Q?izlDXdaPg4TqrSjmdgVbfqOQM6GpS+uZ/JK3dJofzY7Y6pN848giO3OMevbl?=
+ =?us-ascii?Q?5hiuizJ9xicn+b8zRY2wyaTvJaHSAaX/U4i6x8Qy4X2h7wsNk2DbE+WSYmZv?=
+ =?us-ascii?Q?+71hhY5ufVH23hLjhozI7G5nB8wnhI4JGwAOEOOsf4bkBCQhV/+XX7NMfzbr?=
+ =?us-ascii?Q?5hVpXpwXZSWTe/kKU4m5i57Tohznyv/jS82ofpuJUQuNfILOMSij8iChL7HQ?=
+ =?us-ascii?Q?fYe09PYQxUKMyBLnmEPS+u6ho1FPkuv6BQWVHaPs2r/uTTaLBW9MjPBdsBtF?=
+ =?us-ascii?Q?YGXlmzvVMU0PgBE9uETWc5lZHWKfZbzcoMCapWHoM+eTVCgONTMfZ7kiw0zS?=
+ =?us-ascii?Q?CXCHlMt1af/r1Rt2blsWNV26mlIY5TUaMJ1wPn5L3b/itMpp9WPO3V1fLa1P?=
+ =?us-ascii?Q?8+b3hkREgNJhh/JiTDemJGpS9Nw0XiKxxNTptclbvxY/+nXlSRx9XUBaWRrR?=
+ =?us-ascii?Q?SQ0wtcnktEM6ZoBBCxoJ8nvR8Rs8W8yIzvzz+oNC2N4E7CssaRVMENiwEs1A?=
+ =?us-ascii?Q?tftfhjUYbkIk8pKaukiX6vkj3jG6GC6ahL2weVCMfUw4DK6509tQrMp+rzOt?=
+ =?us-ascii?Q?oTPHqh1RbjK56rRcaUqiLefScqTnEieZ70SPBnRXLELuCxnkLEY8Z+KxTl3N?=
+ =?us-ascii?Q?piFfQxmwRU5/wwmjJi6XN9C8oAWplmsKhQkXtwqYXXulRk9qh1TZHv9ZyWHB?=
+ =?us-ascii?Q?YMV9EvB4Lv6VUA9QtsYazkgzyeCRGM5klCuxbG/C70mnJjwwJ1Mndt8R8Qpj?=
+ =?us-ascii?Q?+AzJ5QA2jaxClBfObUWrvFDVTokvY5hCYdH9I6+SIScidG2qNizZJOs9WhqX?=
+ =?us-ascii?Q?zjPMUTwGbYXDo91+d/0XQfWfRtQOvpK6uXce0bRt/0Zr/26HJ5DID2SXq9xh?=
+ =?us-ascii?Q?rLyQ+bBy2j1s6o8qA6o7g0LNO1td0K1B+hbXm+OhuLIskELVSkP000zrU9EX?=
+ =?us-ascii?Q?ONyG9/0k7+ifDKWfZdm8jnFgd90Ti+9e75g+DGssJV3mXWdWMY8nxncCyue+?=
+ =?us-ascii?Q?wUpY8540XMzgrQxgEQA1aDASIrDKFk6GVXc9g+zXfnypWZczXW2MuJcRFb5F?=
+ =?us-ascii?Q?MUzRFcARXH6mq84WOFHQ/wEV0uUQuqN3i2xkowFbQZu1pBSKtNCV5ly4ozc/?=
+ =?us-ascii?Q?WA=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4b67cab8-0f9d-4738-ea94-08dbd5f694e8
+X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB6779.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Oct 2023 07:38:44.1643
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: JwnE5bViw2oso5I9xwMNzefScQuS0gLwe8l+C0sbzQK8CC20dX4XeByVrnBoUNCqjULZZN5Mf+DBiyQSmISEBg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB4888
+X-OriginatorOrg: intel.com
 
-On Thu, Oct 26, 2023 at 9:01=E2=80=AFAM kernel test robot <oliver.sang@inte=
-l.com> wrote:
->
->
->
-> Hello,
->
-> kernel test robot noticed "general_protection_fault:#[##]" on:
->
-> commit: 33c7952d925e905f7af1fb7628e48e03f59885da ("[PATCH 1/4] x86/percpu=
-: Use explicit segment registers in lib/cmpxchg{8,16}b_emu.S")
-> url: https://github.com/intel-lab-lkp/linux/commits/Uros-Bizjak/x86-percp=
-u-Use-explicit-segment-registers-in-lib-cmpxchg-8-16-b_emu-S/20231017-11130=
-4
-> base: https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git 92fe9bb77b=
-0c9fade150350fdb0629a662f0923f
-> patch link: https://lore.kernel.org/all/20231012161237.114733-2-ubizjak@g=
-mail.com/
-> patch subject: [PATCH 1/4] x86/percpu: Use explicit segment registers in =
-lib/cmpxchg{8,16}b_emu.S
->
-> in testcase: boot
->
-> compiler: gcc-12
-> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 1=
-6G
 
-This problem was fixed in a -v3 version of the patch [1], that was
-committed to the tip/percpu branch and later merged into tip/master.
 
-[1] https://lore.kernel.org/lkml/20231017162811.200569-3-ubizjak@gmail.com/
+Hello,
 
-Thanks,
-Uros.
+kernel test robot noticed "hwsim.wpas_ctrl_signal_monitor.fail" on:
 
->
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
->
->
-> +------------------------------------------+------------+------------+
-> |                                          | 92fe9bb77b | 33c7952d92 |
-> +------------------------------------------+------------+------------+
-> | boot_successes                           | 7          | 0          |
-> | boot_failures                            | 0          | 7          |
-> | general_protection_fault:#[##]           | 0          | 7          |
-> | EIP:this_cpu_cmpxchg8b_emu               | 0          | 7          |
-> | Kernel_panic-not_syncing:Fatal_exception | 0          | 7          |
-> +------------------------------------------+------------+------------+
->
->
-> If you fix the issue in a separate patch/commit (i.e. not just a new vers=
-ion of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202310261417.b269d37e-oliver.san=
-g@intel.com
->
->
-> [    0.186570][    T0] stackdepot hash table entries: 65536 (order: 6, 26=
-2144 bytes, linear)
-> [    0.187499][    T0] Initializing HighMem for node 0 (0002ebfe:000bffe0=
-)
-> [    1.727965][    T0] Initializing Movable for node 0 (00000000:00000000=
-)
-> [    1.943274][    T0] Checking if this processor honours the WP bit even=
- in supervisor mode...Ok.
-> [    1.944313][    T0] Memory: 2896220K/3145208K available (16182K kernel=
- code, 5537K rwdata, 11756K rodata, 816K init, 9720K bss, 248988K reserved,=
- 0K cma-reserved, 2379656K highmem)
-> [    1.947172][    T0] general protection fault: 0000 [#1] PREEMPT
-> [    1.947900][    T0] CPU: 0 PID: 0 Comm: swapper Not tainted 6.6.0-rc1-=
-00024-g33c7952d925e #1 8d4b014f9a0a85cc9a3f6a52ed8e88f1e431f74e
-> [    1.949317][    T0] Hardware name: QEMU Standard PC (i440FX + PIIX, 19=
-96), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-> [ 1.950480][ T0] EIP: this_cpu_cmpxchg8b_emu (kbuild/src/consumer/arch/x8=
-6/lib/cmpxchg8b_emu.S:73)
-> [ 1.951093][ T0] Code: ff ff ff 8d b4 26 00 00 00 00 66 90 83 c6 01 3c 3d=
- 0f 95 c0 0f b6 c0 83 c0 01 e9 56 ff ff ff bf ff ff ff ff eb a6 cc cc 9c fa=
- <64> 3b 06 75 13 64 3b 56 04 75 0d 64 89 1e 64 89 4e 04 83 0c 24 40
-> All code
-> =3D=3D=3D=3D=3D=3D=3D=3D
->    0:   ff                      (bad)
->    1:   ff                      (bad)
->    2:   ff 8d b4 26 00 00       decl   0x26b4(%rbp)
->    8:   00 00                   add    %al,(%rax)
->    a:   66 90                   xchg   %ax,%ax
->    c:   83 c6 01                add    $0x1,%esi
->    f:   3c 3d                   cmp    $0x3d,%al
->   11:   0f 95 c0                setne  %al
->   14:   0f b6 c0                movzbl %al,%eax
->   17:   83 c0 01                add    $0x1,%eax
->   1a:   e9 56 ff ff ff          jmp    0xffffffffffffff75
->   1f:   bf ff ff ff ff          mov    $0xffffffff,%edi
->   24:   eb a6                   jmp    0xffffffffffffffcc
->   26:   cc                      int3
->   27:   cc                      int3
->   28:   9c                      pushf
->   29:   fa                      cli
->   2a:*  64 3b 06                cmp    %fs:(%rsi),%eax          <-- trapp=
-ing instruction
->   2d:   75 13                   jne    0x42
->   2f:   64 3b 56 04             cmp    %fs:0x4(%rsi),%edx
->   33:   75 0d                   jne    0x42
->   35:   64 89 1e                mov    %ebx,%fs:(%rsi)
->   38:   64 89 4e 04             mov    %ecx,%fs:0x4(%rsi)
->   3c:   83 0c 24 40             orl    $0x40,(%rsp)
->
-> Code starting with the faulting instruction
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->    0:   64 3b 06                cmp    %fs:(%rsi),%eax
->    3:   75 13                   jne    0x18
->    5:   64 3b 56 04             cmp    %fs:0x4(%rsi),%edx
->    9:   75 0d                   jne    0x18
->    b:   64 89 1e                mov    %ebx,%fs:(%rsi)
->    e:   64 89 4e 04             mov    %ecx,%fs:0x4(%rsi)
->   12:   83 0c 24 40             orl    $0x40,(%rsp)
-> [    1.953397][    T0] EAX: c3c01100 EBX: c3c01180 ECX: 00000004 EDX: 000=
-00003
-> [    1.954231][    T0] ESI: e52cd090 EDI: e52cd090 EBP: c2b4bf00 ESP: c2b=
-4bec4
-> [    1.955060][    T0] DS: 007b ES: 007b FS: 0000 GS: 0000 SS: 0068 EFLAG=
-S: 00210082
-> [    1.955949][    T0] CR0: 80050033 CR2: ffdeb000 CR3: 031b5000 CR4: 000=
-00090
-> [    1.956783][    T0] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 000=
-00000
-> [    1.957641][    T0] DR6: fffe0ff0 DR7: 00000400
-> [    1.958190][    T0] Call Trace:
-> [ 1.958554][ T0] ? show_regs (kbuild/src/consumer/arch/x86/kernel/dumpsta=
-ck.c:479)
-> [ 1.959026][ T0] ? die_addr (kbuild/src/consumer/arch/x86/kernel/dumpstac=
-k.c:421 kbuild/src/consumer/arch/x86/kernel/dumpstack.c:460)
-> [ 1.959480][ T0] ? exc_general_protection (kbuild/src/consumer/arch/x86/k=
-ernel/traps.c:697 kbuild/src/consumer/arch/x86/kernel/traps.c:642)
-> [ 1.960101][ T0] ? exc_bounds (kbuild/src/consumer/arch/x86/kernel/traps.=
-c:642)
-> [ 1.960579][ T0] ? handle_exception (kbuild/src/consumer/arch/x86/entry/e=
-ntry_32.S:1049)
->
->
-> The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20231026/202310261417.b269d37e-ol=
-iver.sang@intel.com
->
->
->
-> --
-> 0-DAY CI Kernel Test Service
-> https://github.com/intel/lkp-tests/wiki
->
+commit: 37c20b2effe987b806c8de6d12978e4ffeff026f ("wifi: cfg80211: fix cqm_config access race")
+https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+
+[test failed on linus/master 9a3dad63edbe9a2ab2be1e7361a2133f519f855b]
+[test failed on linux-next/master e3b18f7200f45d66f7141136c25554ac1e82009b]
+
+in testcase: hwsim
+version: hwsim-x86_64-717e5d7-1_20230720
+with following parameters:
+
+	test: wpas_ctrl_signal_monitor
+
+
+
+compiler: gcc-12
+test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (Haswell) with 8G memory
+
+(please refer to attached dmesg/kmsg for entire log/backtrace)
+
+
+
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202310261527.66167d98-oliver.sang@intel.com
+
+group: group-07, test: wpas_ctrl_signal_monitor
+2023-10-20 08:52:44 export USER=root
+2023-10-20 08:52:44 ./build.sh
+Building TNC testing tools
+Building wlantest
+Building hs20-osu-client
+Building hostapd
+Building wpa_supplicant
+2023-10-20 08:53:42 ./start.sh
+2023-10-20 08:53:44 ./run-tests.py wpas_ctrl_signal_monitor
+DEV: wlan0: 02:00:00:00:00:00
+DEV: wlan1: 02:00:00:00:01:00
+DEV: wlan2: 02:00:00:00:02:00
+APDEV: wlan3
+APDEV: wlan4
+START wpas_ctrl_signal_monitor 1/1
+Test: wpa_supplicant SIGNAL_MONITOR command
+Starting AP wlan3
+Connect STA wlan0 to AP
+Connect STA wlan1 to AP
+Connect STA wlan2 to AP
+No signal change event seen
+Traceback (most recent call last):
+  File "/lkp/benchmarks/hwsim/tests/hwsim/./run-tests.py", line 531, in main
+    t(dev, apdev)
+  File "/lkp/benchmarks/hwsim/tests/hwsim/test_wpas_ctrl.py", line 2021, in test_wpas_ctrl_signal_monitor
+    raise Exception("No signal change event seen")
+Exception: No signal change event seen
+FAIL wpas_ctrl_signal_monitor 12.266827 2023-10-20 08:53:58.780133
+passed 0 test case(s)
+skipped 0 test case(s)
+failed tests: wpas_ctrl_signal_monitor
+2023-10-20 08:53:58 ./stop.sh
+
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20231026/202310261527.66167d98-oliver.sang@intel.com
+
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
