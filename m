@@ -1,302 +1,382 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D81FC134
-	for <oe-lkp@lists.linux.dev>; Thu, 26 Oct 2023 05:49:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0951A882A
+	for <oe-lkp@lists.linux.dev>; Thu, 26 Oct 2023 06:33:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="l+20XiA7"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698299382; x=1729835382;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   mime-version;
-  bh=6yWXcJ7q1e1JrigHI95WVWxzPtUK0DcWTYlRA5vWltY=;
-  b=l+20XiA7HfONORPl2dhNIoVjqr1MxL9c9e+Ztrr+d8bOpTLO8EGD00Bs
-   M2N+UOFhHR+ZBcFtviIGGm7PgRgOW4uZ8L+wcpcYrNHeZ5hDSgsu7r1GY
-   OFhcZ+L8kCDJyDky05VoO5+SECunTR7dLUXywGVDX01YJlZPfrbMU2uR+
-   9L8snrVI3fF/6zY1x1KeGaL++Vc+N3jAc3S3gbrNtomOICnNgFEbHXstL
-   zoatzaHfZ6lxOBJc+m0DgEV7Aw+5xKXn4kHtI2vUtrEj43ZtNTojAdw75
-   Sour6gY/+4TRWdnihA0LrJyFOGTsTdV3F42gXSp0b5JgXehsJ0njYQZCG
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10874"; a="256678"
-X-IronPort-AV: E=Sophos;i="6.03,253,1694761200"; 
-   d="scan'208";a="256678"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2023 22:49:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10874"; a="882704189"
-X-IronPort-AV: E=Sophos;i="6.03,253,1694761200"; 
-   d="scan'208";a="882704189"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orsmga004.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 25 Oct 2023 22:49:39 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34; Wed, 25 Oct 2023 22:49:38 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34 via Frontend Transport; Wed, 25 Oct 2023 22:49:38 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.168)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.32; Wed, 25 Oct 2023 22:49:38 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gW0c2j+GLPVEl5XCr0C3k0vHu2ApQdRUYbpsSFA4gfsaKFeOrVTSQqjb/mt65jP2BbILSTFMElGGVKvSbvRTfkdH0418vcb7pHTW+Mm8Y1mSmPv8VWoIt64+Iv4rYQIjuwaW5hO7MJV8SqAzKjkhjZKMPwF6djAuIUVAAdTzt6cB97iiqH2ZPtf2NhcodfQtJP4EgOkUV3dFCNiNi8UPwtJOPSDeJAZA/MHK1kg+Wzx5DIGjGnSJxQpMjM4EFRzlRFxi1RDG/7/1bF9Z8t69jIwa1+TxjfrBZbH8aPDzgJysIT0WawixyX78WY3+uKvGcvlfhOSGtxwNaDDybQRAvQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bHPuS79qQFsEP3AoUDG5hOys/4fYvRhn0JTQKcVd92E=;
- b=UQ75rP286HFtm/2jt/Ntgd9TmObK39ZFMyWKjfAImFkvx6V1oPIF1VKMQ8rR/O476JNhyb9k5sKKoXieYhMUX+MSmi2/S2Y2YU/JD/5WxZim6RUm5Wm5BXlQiWTmhjefiQCmTCSnFCHTjaLncoowm47Q2ivMTmyE/ORBMr7PlcGntOh0uEIkG4ipg+3sFsmH8uAFoM9jy9hRXqVRNmRGeJg6GvjTb5re8XB4TYpflLY7iLJ0BWIeyzKLTMk8bySRyyADoTReTJjcXOkD61Ix3SAEtRcaMBhVXnxzx8CzzIaBBiH3iDBpsVnJ7q3iQgARlPD2OxvwdaLb5TiFCBT5yw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
- by DM6PR11MB4737.namprd11.prod.outlook.com (2603:10b6:5:2a2::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6933.19; Thu, 26 Oct
- 2023 05:49:31 +0000
-Received: from PH8PR11MB6779.namprd11.prod.outlook.com
- ([fe80::29f0:3f0f:2591:d1f6]) by PH8PR11MB6779.namprd11.prod.outlook.com
- ([fe80::29f0:3f0f:2591:d1f6%3]) with mapi id 15.20.6907.032; Thu, 26 Oct 2023
- 05:49:30 +0000
-Date: Thu, 26 Oct 2023 13:49:21 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: <chengming.zhou@linux.dev>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-mm@kvack.org>,
-	<cl@linux.com>, <penberg@kernel.org>, <rientjes@google.com>,
-	<iamjoonsoo.kim@lge.com>, <akpm@linux-foundation.org>, <vbabka@suse.cz>,
-	<roman.gushchin@linux.dev>, <42.hyeyoo@gmail.com>,
-	<linux-kernel@vger.kernel.org>, <chengming.zhou@linux.dev>, Chengming Zhou
-	<zhouchengming@bytedance.com>, <oliver.sang@intel.com>
-Subject: Re: [RFC PATCH v3 6/7] slub: Delay freezing of partial slabs
-Message-ID: <202310261032.b4590eb0-oliver.sang@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20231024093345.3676493-7-chengming.zhou@linux.dev>
-X-ClientProxiedBy: KL1PR01CA0064.apcprd01.prod.exchangelabs.com
- (2603:1096:820:5::28) To PH8PR11MB6779.namprd11.prod.outlook.com
- (2603:10b6:510:1ca::17)
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="Mub/rcU/"
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 7E04921B14;
+	Thu, 26 Oct 2023 06:33:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1698301998; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=c0PrQo/5ylfzN9pxaAwNTPj5sf6WxWHTV5YnBbi4mlw=;
+	b=Mub/rcU/5E/F1EzmOLSxVUyX1kxcfv3YfG9M+yCC6O+CFarOWPM+y6qo4u9HwSmqihKYi8
+	YO2wD2iWSDcoS3K7efbUH/QE87Rm7+Zf9qQJxPzZwwh+CnjQ8I9zxLPrKR9ID8kTKiUDpV
+	Zt0F6yiGeO4C1gK9TLE8StxRjXME1hA=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	(No client certificate requested)
+	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 099CB133F5;
+	Thu, 26 Oct 2023 06:33:18 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+	by imap2.suse-dmz.suse.de with ESMTPSA
+	id 4zzkAC4IOmXXWAAAMHmgww
+	(envelope-from <jgross@suse.com>); Thu, 26 Oct 2023 06:33:18 +0000
+Message-ID: <4d300f38-f906-4246-908a-3b9d757a9660@suse.com>
+Date: Thu, 26 Oct 2023 08:33:17 +0200
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|DM6PR11MB4737:EE_
-X-MS-Office365-Filtering-Correlation-Id: c10ba2fb-4582-4587-b5b0-08dbd5e7529e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 731poS4Wv0giAN8TdQQnolHuguOOdd25rD5jdY5UrbTXbnFWYkYiKCNEnkZW/g4PIISgquh1XIo9FX9pvDfSw+KuGe5bxPH/tkGSwb3PanwqovQmeMIrxWeU+aDyNZ1JvRUKaSeoGEJqtLYtwmRPjXKrnCR23jhgmjzhdHIxLIiuFTIKqWmDVTzmX5l85PDwLJC0FyVNnG+8lpdBzi2fuKH6MmOuUimwgMGAqEWvATcoxrqhsCtu+zs2rDqfGJFz+9AqDJa7NiLgXNeBR9YTqA1jxVfbWkDs/KWE7ulduzQBp8nFJkBnMbOmDZjmCqxTjPncEX3DGEr88uVKVaQgAC6P9ybRHLC7jVJ+xgXev4EhlvKsGSEar75B/wVYehShlZVOf777dTrPYEOtbKxvf3RS14WU3exMFAFv5F6u96MCDW18QZ4589A4htjVL76XhsjwkKYltxVq0VHDWHvewosnQdN+zUroWYDAI0zaMDOcfigqfBzkJx9xVYydfrM8S06cUV6UOyXBJs/H97CqOnuPJ5c1zSW2xtF0L8mob64vpp+33RLBpXvAj8dcsY40EP1poAM/HkcRUohaFABCiw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(376002)(396003)(39860400002)(366004)(136003)(230922051799003)(451199024)(186009)(1800799009)(64100799003)(1076003)(6512007)(26005)(2616005)(45080400002)(107886003)(6506007)(6666004)(478600001)(7416002)(6486002)(83380400001)(966005)(41300700001)(66476007)(5660300002)(66946007)(66556008)(8936002)(8676002)(4326008)(316002)(6916009)(38100700002)(82960400001)(86362001)(36756003)(2906002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?NZE+YKRjGmTvMzlhm6OWxbDvjA/GXpmr2OME/KfDBuBTc5aevRUpylaoBeBi?=
- =?us-ascii?Q?zAVz0t8Q+sRTXfkwIlI44xiU9OxBmW94XbOtX0tPExC93lFioyfabdIo0qGd?=
- =?us-ascii?Q?3acO36iMJtm0Firfrqjg9nVzm+vXS2FKa5qumMDU5f2MfJ0k3g0oEZCGxHxt?=
- =?us-ascii?Q?jFd4rh48fLzprypLFksdslhJSzQ0AtNidlQLh8Mfvyf1B543gwZwsNEnsVJl?=
- =?us-ascii?Q?HR4eARfioeSE2mwY8M/hU22gvlUuEjZYU6ldMpqGSaZVr4Nsdskj/nLDnTNk?=
- =?us-ascii?Q?XwWNXhBivMbW7ILNmjDz0zCQlxiFG9Z7HzTeXlvNqvaSIeeoAYLfK4Q2hJMr?=
- =?us-ascii?Q?6yiad9SeGGhs/BhIknLXwZ36z4wfRpYuem3V99uaguaYy3lf4YmmK0R5BUWE?=
- =?us-ascii?Q?xSiNXWG+ziANZ9H0ZjvORFcIxR173y1R0cclq4KcjP0ISACgvHqyJab/5nUX?=
- =?us-ascii?Q?wXm2Kf60dJEIAGHx4GS6r6A7OsQftfbEAgA+3cA49RkR6VrZjnovOg94V+tg?=
- =?us-ascii?Q?X/fLuiRI3vG8hbO4sPhMf1JWG/2ZJXr6CvCNieH335oOg/3nHhjcV2EVfd+U?=
- =?us-ascii?Q?zdk1QG2Wy+P/s2UKzqnZPqtJutY/oLMPDNDR2YzKZwJ+DhiVIw8Y4bnV5/dg?=
- =?us-ascii?Q?qJB/XxQcxZsP/IoFrkJRSMZFzBk+S+1OktWtxPk/r17x9tJE42eMZ5KJYYHZ?=
- =?us-ascii?Q?YCZYT+EDI8LmCy3WUv2X+ejSexstRUSEINCHW+mCskjNwjb7+OKmvONnzUOU?=
- =?us-ascii?Q?R+O3rWcPuaglbidxF71pSobXsjAiVMUExJjEoACzSYI4IYtjSJITEZZR3BBq?=
- =?us-ascii?Q?eNNdXUrDM7r06cNnDXHC3xe/lsDnyA8QacHdLrmXCn6M7UDXg/q1ssGV4S0c?=
- =?us-ascii?Q?EaJnTtqiF8DgyLXZ/lxF1B4ROVBgsSxEMKCcXcQzDu1Z1hhIyEGwrADMkl9c?=
- =?us-ascii?Q?MNQ1ZvMuFCOCnX3X7BHC9kevI+wBFbZcKcuPh4z+W+wZ881IWiYsE4hy8Yb2?=
- =?us-ascii?Q?0B87RvULy9udq1YgtyOR8H2VgcWFRxCk8gru5BtHD6CToNjpaXis4ZPKEuBg?=
- =?us-ascii?Q?FLWr1f2Da7Tw4f/UNrJGIOAkKciLcaQiovdaT/9XHD2JATWW5X9L5VNLIprZ?=
- =?us-ascii?Q?w0jCCBdB3sWlFnMEcPe230RaTxuDy5M0FK///z8FIBO9e4YuprhfmJMHj+qX?=
- =?us-ascii?Q?JuEdk35kZw66Gknb+fxc2Ndm1jk3+pA2jQlwoLTByWVsg7aL+RUmOeP8+uhh?=
- =?us-ascii?Q?n52xtBJ7ctwXzpdkGnSEm/BEriIACAqjJQ34/zZWB+lSUW+E1SF1kZrhh+gN?=
- =?us-ascii?Q?dvNy4diASg3m1EryR0y/rKCryG0jFok4x9zo1YmP1k3OFNo3a2/R67R3ttDe?=
- =?us-ascii?Q?yTzpplHexrts+gCNQKsn4Dg9/JCSphe6SKI+qD9AJzxSF6FxNdAGbS909Ue3?=
- =?us-ascii?Q?GXXL8+QuvzvGGNWlXpURQWZcYFTjT4Bgv5kFryoPP7faHfjKTtN0Zk7u5ShB?=
- =?us-ascii?Q?orDAkNLStuaV/ya0MSE7PmuZaxOXP0Udgxb9dzqtH+m7vec9IK6QrtdmJMXK?=
- =?us-ascii?Q?sTd6qly3Bd5A36n78ZvmSQMJ1dDwquBlTICCIuTmrIvG+/w3qM7a24nhPxYX?=
- =?us-ascii?Q?Gg=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: c10ba2fb-4582-4587-b5b0-08dbd5e7529e
-X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB6779.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Oct 2023 05:49:30.7226
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cylnebmlEjGv+33QMejaint8yXib2FPvVSWlZ3pku7hyRJpHHukPawp2qYc4GqqVMlJhMEhUfN1N+yXpusBTwg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4737
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 4/5] x86/paravirt: switch mixed paravirt/alternative
+ calls to alternative_2
+Content-Language: en-US
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
+ Peter Zijlstra <peterz@infradead.org>, linux-kernel@vger.kernel.org,
+ virtualization@lists.linux-foundation.org, x86@kernel.org,
+ Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>,
+ Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>,
+ "H. Peter Anvin" <hpa@zytor.com>, Ajay Kaher <akaher@vmware.com>,
+ Alexey Makhalov <amakhalov@vmware.com>,
+ VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
+References: <202310261032.76a10bc0-oliver.sang@intel.com>
+From: Juergen Gross <jgross@suse.com>
+Autocrypt: addr=jgross@suse.com; keydata=
+ xsBNBFOMcBYBCACgGjqjoGvbEouQZw/ToiBg9W98AlM2QHV+iNHsEs7kxWhKMjrioyspZKOB
+ ycWxw3ie3j9uvg9EOB3aN4xiTv4qbnGiTr3oJhkB1gsb6ToJQZ8uxGq2kaV2KL9650I1SJve
+ dYm8Of8Zd621lSmoKOwlNClALZNew72NjJLEzTalU1OdT7/i1TXkH09XSSI8mEQ/ouNcMvIJ
+ NwQpd369y9bfIhWUiVXEK7MlRgUG6MvIj6Y3Am/BBLUVbDa4+gmzDC9ezlZkTZG2t14zWPvx
+ XP3FAp2pkW0xqG7/377qptDmrk42GlSKN4z76ELnLxussxc7I2hx18NUcbP8+uty4bMxABEB
+ AAHNH0p1ZXJnZW4gR3Jvc3MgPGpncm9zc0BzdXNlLmNvbT7CwHkEEwECACMFAlOMcK8CGwMH
+ CwkIBwMCAQYVCAIJCgsEFgIDAQIeAQIXgAAKCRCw3p3WKL8TL8eZB/9G0juS/kDY9LhEXseh
+ mE9U+iA1VsLhgDqVbsOtZ/S14LRFHczNd/Lqkn7souCSoyWsBs3/wO+OjPvxf7m+Ef+sMtr0
+ G5lCWEWa9wa0IXx5HRPW/ScL+e4AVUbL7rurYMfwCzco+7TfjhMEOkC+va5gzi1KrErgNRHH
+ kg3PhlnRY0Udyqx++UYkAsN4TQuEhNN32MvN0Np3WlBJOgKcuXpIElmMM5f1BBzJSKBkW0Jc
+ Wy3h2Wy912vHKpPV/Xv7ZwVJ27v7KcuZcErtptDevAljxJtE7aJG6WiBzm+v9EswyWxwMCIO
+ RoVBYuiocc51872tRGywc03xaQydB+9R7BHPzsBNBFOMcBYBCADLMfoA44MwGOB9YT1V4KCy
+ vAfd7E0BTfaAurbG+Olacciz3yd09QOmejFZC6AnoykydyvTFLAWYcSCdISMr88COmmCbJzn
+ sHAogjexXiif6ANUUlHpjxlHCCcELmZUzomNDnEOTxZFeWMTFF9Rf2k2F0Tl4E5kmsNGgtSa
+ aMO0rNZoOEiD/7UfPP3dfh8JCQ1VtUUsQtT1sxos8Eb/HmriJhnaTZ7Hp3jtgTVkV0ybpgFg
+ w6WMaRkrBh17mV0z2ajjmabB7SJxcouSkR0hcpNl4oM74d2/VqoW4BxxxOD1FcNCObCELfIS
+ auZx+XT6s+CE7Qi/c44ibBMR7hyjdzWbABEBAAHCwF8EGAECAAkFAlOMcBYCGwwACgkQsN6d
+ 1ii/Ey9D+Af/WFr3q+bg/8v5tCknCtn92d5lyYTBNt7xgWzDZX8G6/pngzKyWfedArllp0Pn
+ fgIXtMNV+3t8Li1Tg843EXkP7+2+CQ98MB8XvvPLYAfW8nNDV85TyVgWlldNcgdv7nn1Sq8g
+ HwB2BHdIAkYce3hEoDQXt/mKlgEGsLpzJcnLKimtPXQQy9TxUaLBe9PInPd+Ohix0XOlY+Uk
+ QFEx50Ki3rSDl2Zt2tnkNYKUCvTJq7jvOlaPd6d/W0tZqpyy7KVay+K4aMobDsodB3dvEAs6
+ ScCnh03dDAFgIq5nsB11j3KPKdVoPlfucX2c7kGNH+LUMbzqV6beIENfNexkOfxHfw==
+In-Reply-To: <202310261032.76a10bc0-oliver.sang@intel.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------lzKKkXpwCv50m0d63i7ucD9c"
+Authentication-Results: smtp-out1.suse.de;
+	none
+X-Spam-Level: 
+X-Spam-Score: -11.99
+X-Spamd-Result: default: False [-11.99 / 50.00];
+	 ARC_NA(0.00)[];
+	 RCVD_VIA_SMTP_AUTH(0.00)[];
+	 XM_UA_NO_VERSION(0.01)[];
+	 FROM_HAS_DN(0.00)[];
+	 TO_DN_SOME(0.00)[];
+	 TO_MATCH_ENVRCPT_ALL(0.00)[];
+	 BAYES_HAM(-3.00)[100.00%];
+	 MIME_GOOD(-0.20)[multipart/signed,multipart/mixed,text/plain];
+	 HAS_ATTACHMENT(0.00)[];
+	 REPLY(-4.00)[];
+	 MIME_BASE64_TEXT_BOGUS(1.00)[];
+	 NEURAL_HAM_LONG(-3.00)[-1.000];
+	 DKIM_SIGNED(0.00)[suse.com:s=susede1];
+	 NEURAL_HAM_SHORT(-1.00)[-1.000];
+	 MIME_BASE64_TEXT(0.10)[];
+	 RCPT_COUNT_TWELVE(0.00)[15];
+	 SIGNED_PGP(-2.00)[];
+	 FROM_EQ_ENVFROM(0.00)[];
+	 MIME_TRACE(0.00)[0:+,1:+,2:+,3:+,4:~,5:~];
+	 RCVD_COUNT_TWO(0.00)[2];
+	 RCVD_TLS_ALL(0.00)[];
+	 MID_RHS_MATCH_FROM(0.00)[];
+	 MIME_UNKNOWN(0.10)[application/pgp-keys]
+X-Spam-Flag: NO
 
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------lzKKkXpwCv50m0d63i7ucD9c
+Content-Type: multipart/mixed; boundary="------------JK0KsUWdL8K5ifpC0yIf3I07";
+ protected-headers="v1"
+From: Juergen Gross <jgross@suse.com>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
+ Peter Zijlstra <peterz@infradead.org>, linux-kernel@vger.kernel.org,
+ virtualization@lists.linux-foundation.org, x86@kernel.org,
+ Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>,
+ Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>,
+ "H. Peter Anvin" <hpa@zytor.com>, Ajay Kaher <akaher@vmware.com>,
+ Alexey Makhalov <amakhalov@vmware.com>,
+ VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
+Message-ID: <4d300f38-f906-4246-908a-3b9d757a9660@suse.com>
+Subject: Re: [PATCH v3 4/5] x86/paravirt: switch mixed paravirt/alternative
+ calls to alternative_2
+References: <202310261032.76a10bc0-oliver.sang@intel.com>
+In-Reply-To: <202310261032.76a10bc0-oliver.sang@intel.com>
 
+--------------JK0KsUWdL8K5ifpC0yIf3I07
+Content-Type: multipart/mixed; boundary="------------vXVY5q74bxCtMVo2nQsVkZjS"
 
-Hello,
+--------------vXVY5q74bxCtMVo2nQsVkZjS
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-kernel test robot noticed "WARNING:at_mm/slub.c:#___slab_alloc" on:
+T24gMjYuMTAuMjMgMDQ6NDQsIGtlcm5lbCB0ZXN0IHJvYm90IHdyb3RlOg0KPiANCj4gDQo+
+IEhlbGxvLA0KPiANCj4ga2VybmVsIHRlc3Qgcm9ib3Qgbm90aWNlZCAiQlVHOnVuYWJsZV90
+b19oYW5kbGVfcGFnZV9mYXVsdF9mb3JfYWRkcmVzcyIgb246DQo+IA0KPiBjb21taXQ6IGIw
+YjhiMDY1NDhmNzk4NDM1MWI1MDNlYzVmNWMxM2ZhODBiYWU2YTIgKCJbUEFUQ0ggdjMgNC81
+XSB4ODYvcGFyYXZpcnQ6IHN3aXRjaCBtaXhlZCBwYXJhdmlydC9hbHRlcm5hdGl2ZSBjYWxs
+cyB0byBhbHRlcm5hdGl2ZV8yIikNCj4gdXJsOiBodHRwczovL2dpdGh1Yi5jb20vaW50ZWwt
+bGFiLWxrcC9saW51eC9jb21taXRzL0p1ZXJnZW4tR3Jvc3MveDg2LXBhcmF2aXJ0LW1vdmUt
+c29tZS1mdW5jdGlvbnMtYW5kLWRlZmluZXMtdG8tYWx0ZXJuYXRpdmUvMjAyMzEwMTktMTcx
+NzA5DQo+IGJhc2U6IGh0dHBzOi8vZ2l0Lmtlcm5lbC5vcmcvY2dpdC92aXJ0L2t2bS9rdm0u
+Z2l0IHF1ZXVlDQo+IHBhdGNoIGxpbms6IGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2FsbC8y
+MDIzMTAxOTA5MTUyMC4xNDU0MC01LWpncm9zc0BzdXNlLmNvbS8NCj4gcGF0Y2ggc3ViamVj
+dDogW1BBVENIIHYzIDQvNV0geDg2L3BhcmF2aXJ0OiBzd2l0Y2ggbWl4ZWQgcGFyYXZpcnQv
+YWx0ZXJuYXRpdmUgY2FsbHMgdG8gYWx0ZXJuYXRpdmVfMg0KPiANCj4gaW4gdGVzdGNhc2U6
+IGJvb3QNCj4gDQo+IGNvbXBpbGVyOiBnY2MtMTINCj4gdGVzdCBtYWNoaW5lOiBxZW11LXN5
+c3RlbS14ODZfNjQgLWVuYWJsZS1rdm0gLWNwdSBTYW5keUJyaWRnZSAtc21wIDIgLW0gMTZH
+DQo+IA0KPiAocGxlYXNlIHJlZmVyIHRvIGF0dGFjaGVkIGRtZXNnL2ttc2cgZm9yIGVudGly
+ZSBsb2cvYmFja3RyYWNlKQ0KPiANCj4gDQo+ICstLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0rLS0tLS0tLS0tLS0tKy0tLS0tLS0tLS0tLSsNCj4gfCAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgZWZhMWE3MGYw
+YiB8IGIwYjhiMDY1NDggfA0KPiArLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tKy0tLS0tLS0tLS0tLSstLS0tLS0tLS0tLS0rDQo+IHwgQlVHOnVuYWJs
+ZV90b19oYW5kbGVfcGFnZV9mYXVsdF9mb3JfYWRkcmVzcyB8IDAgICAgICAgICAgfCAxNCAg
+ICAgICAgIHwNCj4gfCBPb3BzOiNbIyNdICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgIHwgMCAgICAgICAgICB8IDE0ICAgICAgICAgfA0KPiB8IEVJUDphcHBseV9hbHRlcm5h
+dGl2ZXMgICAgICAgICAgICAgICAgICAgICAgfCAwICAgICAgICAgIHwgMTQgICAgICAgICB8
+DQo+IHwgS2VybmVsX3BhbmljLW5vdF9zeW5jaW5nOkZhdGFsX2V4Y2VwdGlvbiAgICB8IDAg
+ICAgICAgICAgfCAxNCAgICAgICAgIHwNCj4gKy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLSstLS0tLS0tLS0tLS0rLS0tLS0tLS0tLS0tKw0KPiANCj4g
+DQo+IElmIHlvdSBmaXggdGhlIGlzc3VlIGluIGEgc2VwYXJhdGUgcGF0Y2gvY29tbWl0IChp
+LmUuIG5vdCBqdXN0IGEgbmV3IHZlcnNpb24gb2YNCj4gdGhlIHNhbWUgcGF0Y2gvY29tbWl0
+KSwga2luZGx5IGFkZCBmb2xsb3dpbmcgdGFncw0KPiB8IFJlcG9ydGVkLWJ5OiBrZXJuZWwg
+dGVzdCByb2JvdCA8b2xpdmVyLnNhbmdAaW50ZWwuY29tPg0KPiB8IENsb3NlczogaHR0cHM6
+Ly9sb3JlLmtlcm5lbC5vcmcvb2UtbGtwLzIwMjMxMDI2MTAzMi43NmExMGJjMC1vbGl2ZXIu
+c2FuZ0BpbnRlbC5jb20NCj4gDQo+IA0KPiBbICAgIDEuMzgyNTAwXVsgICAgVDBdIEJVRzog
+dW5hYmxlIHRvIGhhbmRsZSBwYWdlIGZhdWx0IGZvciBhZGRyZXNzOiA4NDg2NGU5MQ0KPiBb
+ICAgIDEuMzgzNjMzXVsgICAgVDBdICNQRjogc3VwZXJ2aXNvciByZWFkIGFjY2VzcyBpbiBr
+ZXJuZWwgbW9kZQ0KPiBbICAgIDEuMzg0NTc5XVsgICAgVDBdICNQRjogZXJyb3JfY29kZSgw
+eDAwMDApIC0gbm90LXByZXNlbnQgcGFnZQ0KPiBbICAgIDEuMzg0NTc5XVsgICAgVDBdICpw
+ZGUgPSAwMDAwMDAwMA0KPiBbICAgIDEuMzg0NTc5XVsgICAgVDBdIE9vcHM6IDAwMDAgWyMx
+XSBQUkVFTVBUIFNNUA0KPiBbICAgIDEuMzg0NTc5XVsgICAgVDBdIENQVTogMCBQSUQ6IDAg
+Q29tbTogc3dhcHBlci8wIE5vdCB0YWludGVkIDYuNi4wLXJjNS0wMDEwMS1nYjBiOGIwNjU0
+OGY3ICMxIDdjYjdmMDE2YzA1OTg2Y2M0NTNhM2FlNGIzN2NkMzcxMmM2MmMwYzANCj4gWyAg
+ICAxLjM4NDU3OV1bICAgIFQwXSBIYXJkd2FyZSBuYW1lOiBRRU1VIFN0YW5kYXJkIFBDIChp
+NDQwRlggKyBQSUlYLCAxOTk2KSwgQklPUyAxLjE2LjItZGViaWFuLTEuMTYuMi0xIDA0LzAx
+LzIwMTQNCj4gWyAxLjM4NDU3OV1bIFQwXSBFSVA6IGFwcGx5X2FsdGVybmF0aXZlcyAoYXJj
+aC94ODYva2VybmVsL2FsdGVybmF0aXZlLmM6NDE5IGFyY2gveDg2L2tlcm5lbC9hbHRlcm5h
+dGl2ZS5jOjQ4OSkNCj4gWyAxLjM4NDU3OV1bIFQwXSBDb2RlOiAzYyAwNiAwZiA4NSA0ZSAw
+MiAwMCAwMCA4YiA4NSBlYyBmZSBmZiBmZiA4MCAzOCBmZiAwZiA4NSAzZiAwMiAwMCAwMCA4
+MCA3OCAwMSAxNSAwZiA4NSAzNSAwMiAwMCAwMCA4YiA4ZCBlYyBmZSBmZiBmZiA4YiA0MSAw
+MiA8OGI+IDQ0IDAxIDA2IDg1IGMwIDc0IDE3IDg5IGMyIDgxIGVhIDYwIDE4IDdjIGMyIDAx
+IDk1IGYzIGZlIGZmIGZmDQo+IEFsbCBjb2RlDQo+ID09PT09PT09DQo+ICAgICAwOgkzYyAw
+NiAgICAgICAgICAgICAgICAJY21wICAgICQweDYsJWFsDQo+ICAgICAyOgkwZiA4NSA0ZSAw
+MiAwMCAwMCAgICAJam5lICAgIDB4MjU2DQo+ICAgICA4Ogk4YiA4NSBlYyBmZSBmZiBmZiAg
+ICAJbW92ICAgIC0weDExNCglcmJwKSwlZWF4DQo+ICAgICBlOgk4MCAzOCBmZiAgICAgICAg
+ICAgICAJY21wYiAgICQweGZmLCglcmF4KQ0KPiAgICAxMToJMGYgODUgM2YgMDIgMDAgMDAg
+ICAgCWpuZSAgICAweDI1Ng0KPiAgICAxNzoJODAgNzggMDEgMTUgICAgICAgICAgCWNtcGIg
+ICAkMHgxNSwweDEoJXJheCkNCj4gICAgMWI6CTBmIDg1IDM1IDAyIDAwIDAwICAgIAlqbmUg
+ICAgMHgyNTYNCj4gICAgMjE6CThiIDhkIGVjIGZlIGZmIGZmICAgIAltb3YgICAgLTB4MTE0
+KCVyYnApLCVlY3gNCj4gICAgMjc6CThiIDQxIDAyICAgICAgICAgICAgIAltb3YgICAgMHgy
+KCVyY3gpLCVlYXgNCj4gICAgMmE6Kgk4YiA0NCAwMSAwNiAgICAgICAgICAJbW92ICAgIDB4
+NiglcmN4LCVyYXgsMSksJWVheAkJPC0tIHRyYXBwaW5nIGluc3RydWN0aW9uDQo+ICAgIDJl
+Ogk4NSBjMCAgICAgICAgICAgICAgICAJdGVzdCAgICVlYXgsJWVheA0KPiAgICAzMDoJNzQg
+MTcgICAgICAgICAgICAgICAgCWplICAgICAweDQ5DQo+ICAgIDMyOgk4OSBjMiAgICAgICAg
+ICAgICAgICAJbW92ICAgICVlYXgsJWVkeA0KPiAgICAzNDoJODEgZWEgNjAgMTggN2MgYzIg
+ICAgCXN1YiAgICAkMHhjMjdjMTg2MCwlZWR4DQo+ICAgIDNhOgkwMSA5NSBmMyBmZSBmZiBm
+ZiAgICAJYWRkICAgICVlZHgsLTB4MTBkKCVyYnApDQo+IA0KPiBDb2RlIHN0YXJ0aW5nIHdp
+dGggdGhlIGZhdWx0aW5nIGluc3RydWN0aW9uDQo+ID09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT0NCj4gICAgIDA6CThiIDQ0IDAxIDA2ICAgICAgICAgIAlt
+b3YgICAgMHg2KCVyY3gsJXJheCwxKSwlZWF4DQo+ICAgICA0Ogk4NSBjMCAgICAgICAgICAg
+ICAgICAJdGVzdCAgICVlYXgsJWVheA0KPiAgICAgNjoJNzQgMTcgICAgICAgICAgICAgICAg
+CWplICAgICAweDFmDQo+ICAgICA4Ogk4OSBjMiAgICAgICAgICAgICAgICAJbW92ICAgICVl
+YXgsJWVkeA0KPiAgICAgYToJODEgZWEgNjAgMTggN2MgYzIgICAgCXN1YiAgICAkMHhjMjdj
+MTg2MCwlZWR4DQo+ICAgIDEwOgkwMSA5NSBmMyBmZSBmZiBmZiAgICAJYWRkICAgICVlZHgs
+LTB4MTBkKCVyYnApDQo+IFsgICAgMS4zODQ1NzldWyAgICBUMF0gRUFYOiBjMzdlNzM3NCBF
+Qlg6IGMzN2I3ZTNhIEVDWDogYzEwN2RiMTcgRURYOiAwMDAwMDAwNQ0KPiBbICAgIDEuMzg0
+NTc5XVsgICAgVDBdIEVTSTogYzNmZmM3MGEgRURJOiAwMDAwMDAwMCBFQlA6IGMzN2I3ZjQ4
+IEVTUDogYzM3YjdlMDANCj4gWyAgICAxLjM4NDU3OV1bICAgIFQwXSBEUzogMDA3YiBFUzog
+MDA3YiBGUzogMDBkOCBHUzogMDAwMCBTUzogMDA2OCBFRkxBR1M6IDAwMjEwMjQ2DQo+IFsg
+ICAgMS4zODQ1NzldWyAgICBUMF0gQ1IwOiA4MDA1MDAzMyBDUjI6IDg0ODY0ZTkxIENSMzog
+MDQwMzcwMDAgQ1I0OiAwMDA0MDZkMA0KPiBbICAgIDEuMzg0NTc5XVsgICAgVDBdIERSMDog
+MDAwMDAwMDAgRFIxOiAwMDAwMDAwMCBEUjI6IDAwMDAwMDAwIERSMzogMDAwMDAwMDANCj4g
+WyAgICAxLjM4NDU3OV1bICAgIFQwXSBEUjY6IGZmZmUwZmYwIERSNzogMDAwMDA0MDANCj4g
+WyAgICAxLjM4NDU3OV1bICAgIFQwXSBDYWxsIFRyYWNlOg0KPiBbIDEuMzg0NTc5XVsgVDBd
+ID8gc2hvd19yZWdzIChhcmNoL3g4Ni9rZXJuZWwvZHVtcHN0YWNrLmM6NDc5KQ0KPiBbIDEu
+Mzg0NTc5XVsgVDBdID8gX19kaWUgKGFyY2gveDg2L2tlcm5lbC9kdW1wc3RhY2suYzo0MjEg
+YXJjaC94ODYva2VybmVsL2R1bXBzdGFjay5jOjQzNCkNCj4gWyAxLjM4NDU3OV1bIFQwXSA/
+IG9vcHNfZW50ZXIgKGtlcm5lbC9wYW5pYy5jOjYyNykNCj4gWyAxLjM4NDU3OV1bIFQwXSA/
+IHBhZ2VfZmF1bHRfb29wcyAoYXJjaC94ODYvbW0vZmF1bHQuYzo3MDcpDQo+IFsgMS4zODQ1
+NzldWyBUMF0gPyBrZXJuZWxtb2RlX2ZpeHVwX29yX29vcHMrMHg5Yy8weGY0DQo+IFsgMS4z
+ODQ1NzldWyBUMF0gPyBfX2JhZF9hcmVhX25vc2VtYXBob3JlKzB4MTNmLzB4MjYwDQo+IFsg
+MS4zODQ1NzldWyBUMF0gPyBpbnNuX2dldF9vcGNvZGUgKGFyY2gveDg2L2xpYi9pbnNuLmM6
+Mjk5KQ0KPiBbIDEuMzg0NTc5XVsgVDBdID8gaW5zbl9nZXRfbW9kcm0gKGFyY2gveDg2L2xp
+Yi9pbnNuLmM6MzQ0KQ0KPiBbIDEuMzg0NTc5XVsgVDBdID8gaW5zbl9nZXRfc2liIChhcmNo
+L3g4Ni9saWIvaW5zbi5jOjQyMikNCj4gWyAxLjM4NDU3OV1bIFQwXSA/IGJhZF9hcmVhX25v
+c2VtYXBob3JlIChhcmNoL3g4Ni9tbS9mYXVsdC5jOjg2NykNCj4gWyAxLjM4NDU3OV1bIFQw
+XSA/IGRvX3VzZXJfYWRkcl9mYXVsdCAoYXJjaC94ODYvbW0vZmF1bHQuYzoxNDc2KQ0KPiBb
+IDEuMzg0NTc5XVsgVDBdID8gb3B0aW1pemVfbm9wcyAoYXJjaC94ODYva2VybmVsL2FsdGVy
+bmF0aXZlLmM6MjQ2KQ0KPiBbIDEuMzg0NTc5XVsgVDBdID8gZXhjX3BhZ2VfZmF1bHQgKGFy
+Y2gveDg2L2luY2x1ZGUvYXNtL2lycWZsYWdzLmg6MjYgYXJjaC94ODYvaW5jbHVkZS9hc20v
+aXJxZmxhZ3MuaDo2NyBhcmNoL3g4Ni9pbmNsdWRlL2FzbS9pcnFmbGFncy5oOjEyNyBhcmNo
+L3g4Ni9tbS9mYXVsdC5jOjE1MTMgYXJjaC94ODYvbW0vZmF1bHQuYzoxNTYxKQ0KPiBbIDEu
+Mzg0NTc5XVsgVDBdID8gcHZjbG9ja19jbG9ja3NvdXJjZV9yZWFkX25vd2QgKGFyY2gveDg2
+L21tL2ZhdWx0LmM6MTUxOCkNCj4gWyAxLjM4NDU3OV1bIFQwXSA/IGhhbmRsZV9leGNlcHRp
+b24gKGFyY2gveDg2L2VudHJ5L2VudHJ5XzMyLlM6MTA0OSkNCj4gWyAxLjM4NDU3OV1bIFQw
+XSA/IF9fX3B0ZV9mcmVlX3RsYiAoYXJjaC94ODYvaW5jbHVkZS9hc20vcGFyYXZpcnQuaDo5
+MiBhcmNoL3g4Ni9tbS9wZ3RhYmxlLmM6NTcpDQo+IFsgMS4zODQ1NzldWyBUMF0gPyBwdmNs
+b2NrX2Nsb2Nrc291cmNlX3JlYWRfbm93ZCAoYXJjaC94ODYvbW0vZmF1bHQuYzoxNTE4KQ0K
+PiBbIDEuMzg0NTc5XVsgVDBdID8gYXBwbHlfYWx0ZXJuYXRpdmVzIChhcmNoL3g4Ni9rZXJu
+ZWwvYWx0ZXJuYXRpdmUuYzo0MTkgYXJjaC94ODYva2VybmVsL2FsdGVybmF0aXZlLmM6NDg5
+KQ0KPiBbIDEuMzg0NTc5XVsgVDBdID8gcHZjbG9ja19jbG9ja3NvdXJjZV9yZWFkX25vd2Qg
+KGFyY2gveDg2L21tL2ZhdWx0LmM6MTUxOCkNCj4gWyAxLjM4NDU3OV1bIFQwXSA/IGFwcGx5
+X2FsdGVybmF0aXZlcyAoYXJjaC94ODYva2VybmVsL2FsdGVybmF0aXZlLmM6NDE5IGFyY2gv
+eDg2L2tlcm5lbC9hbHRlcm5hdGl2ZS5jOjQ4OSkNCj4gWyAxLjM4NDU3OV1bIFQwXSA/IGxv
+Y2tfYWNxdWlyZSAoa2VybmVsL2xvY2tpbmcvbG9ja2RlcC5jOjU2NzAga2VybmVsL2xvY2tp
+bmcvbG9ja2RlcC5jOjU3NDQpDQo+IFsgMS4zODQ1NzldWyBUMF0gPyBfX19wdGVfZnJlZV90
+bGIgKGFyY2gveDg2L2luY2x1ZGUvYXNtL3BhcmF2aXJ0Lmg6OTIgYXJjaC94ODYvbW0vcGd0
+YWJsZS5jOjU3KQ0KPiBbIDEuMzg0NTc5XVsgVDBdIGFsdGVybmF0aXZlX2luc3RydWN0aW9u
+cyAoYXJjaC94ODYva2VybmVsL2FsdGVybmF0aXZlLmM6MTY3NykNCj4gWyAxLjM4NDU3OV1b
+IFQwXSA/IGZwdV9faW5pdF9jcHUgKGFyY2gveDg2L2tlcm5lbC9mcHUvaW5pdC5jOjU0KQ0K
+PiBbIDEuMzg0NTc5XVsgVDBdIGFyY2hfY3B1X2ZpbmFsaXplX2luaXQgKGFyY2gveDg2L2tl
+cm5lbC9jcHUvY29tbW9uLmM6MjQwNykNCj4gWyAxLjM4NDU3OV1bIFQwXSBzdGFydF9rZXJu
+ZWwgKGluaXQvbWFpbi5jOjEwMzUpDQo+IFsgMS4zODQ1NzldWyBUMF0gPyBzZXRfaW5pdF9h
+cmcgKGluaXQvbWFpbi5jOjUzMCkNCj4gWyAxLjM4NDU3OV1bIFQwXSBpMzg2X3N0YXJ0X2tl
+cm5lbCAoYXJjaC94ODYva2VybmVsL2hlYWQzMi5jOjc0KQ0KPiBbIDEuMzg0NTc5XVsgVDBd
+IHN0YXJ0dXBfMzJfc21wIChhcmNoL3g4Ni9rZXJuZWwvaGVhZF8zMi5TOjMwNSkNCj4gWyAg
+ICAxLjM4NDU3OV1bICAgIFQwXSBNb2R1bGVzIGxpbmtlZCBpbjoNCj4gWyAgICAxLjM4NDU3
+OV1bICAgIFQwXSBDUjI6IDAwMDAwMDAwODQ4NjRlOTENCj4gWyAgICAxLjM4NDU3OV1bICAg
+IFQwXSAtLS1bIGVuZCB0cmFjZSAwMDAwMDAwMDAwMDAwMDAwIF0tLS0NCj4gWyAxLjM4NDU3
+OV1bIFQwXSBFSVA6IGFwcGx5X2FsdGVybmF0aXZlcyAoYXJjaC94ODYva2VybmVsL2FsdGVy
+bmF0aXZlLmM6NDE5IGFyY2gveDg2L2tlcm5lbC9hbHRlcm5hdGl2ZS5jOjQ4OSkNCj4gWyAx
+LjM4NDU3OV1bIFQwXSBDb2RlOiAzYyAwNiAwZiA4NSA0ZSAwMiAwMCAwMCA4YiA4NSBlYyBm
+ZSBmZiBmZiA4MCAzOCBmZiAwZiA4NSAzZiAwMiAwMCAwMCA4MCA3OCAwMSAxNSAwZiA4NSAz
+NSAwMiAwMCAwMCA4YiA4ZCBlYyBmZSBmZiBmZiA4YiA0MSAwMiA8OGI+IDQ0IDAxIDA2IDg1
+IGMwIDc0IDE3IDg5IGMyIDgxIGVhIDYwIDE4IDdjIGMyIDAxIDk1IGYzIGZlIGZmIGZmDQo+
+IEFsbCBjb2RlDQo+ID09PT09PT09DQo+ICAgICAwOgkzYyAwNiAgICAgICAgICAgICAgICAJ
+Y21wICAgICQweDYsJWFsDQo+ICAgICAyOgkwZiA4NSA0ZSAwMiAwMCAwMCAgICAJam5lICAg
+IDB4MjU2DQo+ICAgICA4Ogk4YiA4NSBlYyBmZSBmZiBmZiAgICAJbW92ICAgIC0weDExNCgl
+cmJwKSwlZWF4DQo+ICAgICBlOgk4MCAzOCBmZiAgICAgICAgICAgICAJY21wYiAgICQweGZm
+LCglcmF4KQ0KPiAgICAxMToJMGYgODUgM2YgMDIgMDAgMDAgICAgCWpuZSAgICAweDI1Ng0K
+PiAgICAxNzoJODAgNzggMDEgMTUgICAgICAgICAgCWNtcGIgICAkMHgxNSwweDEoJXJheCkN
+Cj4gICAgMWI6CTBmIDg1IDM1IDAyIDAwIDAwICAgIAlqbmUgICAgMHgyNTYNCj4gICAgMjE6
+CThiIDhkIGVjIGZlIGZmIGZmICAgIAltb3YgICAgLTB4MTE0KCVyYnApLCVlY3gNCj4gICAg
+Mjc6CThiIDQxIDAyICAgICAgICAgICAgIAltb3YgICAgMHgyKCVyY3gpLCVlYXgNCj4gICAg
+MmE6Kgk4YiA0NCAwMSAwNiAgICAgICAgICAJbW92ICAgIDB4NiglcmN4LCVyYXgsMSksJWVh
+eAkJPC0tIHRyYXBwaW5nIGluc3RydWN0aW9uDQo+ICAgIDJlOgk4NSBjMCAgICAgICAgICAg
+ICAgICAJdGVzdCAgICVlYXgsJWVheA0KPiAgICAzMDoJNzQgMTcgICAgICAgICAgICAgICAg
+CWplICAgICAweDQ5DQo+ICAgIDMyOgk4OSBjMiAgICAgICAgICAgICAgICAJbW92ICAgICVl
+YXgsJWVkeA0KPiAgICAzNDoJODEgZWEgNjAgMTggN2MgYzIgICAgCXN1YiAgICAkMHhjMjdj
+MTg2MCwlZWR4DQo+ICAgIDNhOgkwMSA5NSBmMyBmZSBmZiBmZiAgICAJYWRkICAgICVlZHgs
+LTB4MTBkKCVyYnApDQo+IA0KPiBDb2RlIHN0YXJ0aW5nIHdpdGggdGhlIGZhdWx0aW5nIGlu
+c3RydWN0aW9uDQo+ID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT0NCj4gICAgIDA6CThiIDQ0IDAxIDA2ICAgICAgICAgIAltb3YgICAgMHg2KCVyY3gsJXJh
+eCwxKSwlZWF4DQo+ICAgICA0Ogk4NSBjMCAgICAgICAgICAgICAgICAJdGVzdCAgICVlYXgs
+JWVheA0KPiAgICAgNjoJNzQgMTcgICAgICAgICAgICAgICAgCWplICAgICAweDFmDQo+ICAg
+ICA4Ogk4OSBjMiAgICAgICAgICAgICAgICAJbW92ICAgICVlYXgsJWVkeA0KPiAgICAgYToJ
+ODEgZWEgNjAgMTggN2MgYzIgICAgCXN1YiAgICAkMHhjMjdjMTg2MCwlZWR4DQo+ICAgIDEw
+OgkwMSA5NSBmMyBmZSBmZiBmZiAgICAJYWRkICAgICVlZHgsLTB4MTBkKCVyYnApDQo+IA0K
+PiANCj4gVGhlIGtlcm5lbCBjb25maWcgYW5kIG1hdGVyaWFscyB0byByZXByb2R1Y2UgYXJl
+IGF2YWlsYWJsZSBhdDoNCj4gaHR0cHM6Ly9kb3dubG9hZC4wMS5vcmcvMGRheS1jaS9hcmNo
+aXZlLzIwMjMxMDI2LzIwMjMxMDI2MTAzMi43NmExMGJjMC1vbGl2ZXIuc2FuZ0BpbnRlbC5j
+b20NCg0KWWF5LCAzMi1iaXQgY29kZS4NCg0KSSdsbCB1cGRhdGUgdGhlIHBhdGNoIHRvIGNv
+bnNpZGVyIFg4Nl8zMiwgd2hpY2ggaGFzIG5vICVyaXAgcmVsYXRpdmUgaW5kaXJlY3QNCmNh
+bGwuDQoNCg0KSnVlcmdlbg0KDQo=
+--------------vXVY5q74bxCtMVo2nQsVkZjS
+Content-Type: application/pgp-keys; name="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Disposition: attachment; filename="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Description: OpenPGP public key
+Content-Transfer-Encoding: quoted-printable
 
-commit: b34342e2732b0dc92b29d6807c5314e2e5e0c27c ("[RFC PATCH v3 6/7] slub: Delay freezing of partial slabs")
-url: https://github.com/intel-lab-lkp/linux/commits/chengming-zhou-linux-dev/slub-Keep-track-of-whether-slub-is-on-the-per-node-partial-list/20231024-173519
-base: git://git.kernel.org/cgit/linux/kernel/git/vbabka/slab.git for-next
-patch link: https://lore.kernel.org/all/20231024093345.3676493-7-chengming.zhou@linux.dev/
-patch subject: [RFC PATCH v3 6/7] slub: Delay freezing of partial slabs
+-----BEGIN PGP PUBLIC KEY BLOCK-----
 
-in testcase: rcutorture
-version: 
-with following parameters:
+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
+jR/i1DG86lem3iBDXzXsZDn8R38=3D
+=3D2wuH
+-----END PGP PUBLIC KEY BLOCK-----
 
-	runtime: 300s
-	test: default
-	torture_type: rcu
+--------------vXVY5q74bxCtMVo2nQsVkZjS--
 
+--------------JK0KsUWdL8K5ifpC0yIf3I07--
 
+--------------lzKKkXpwCv50m0d63i7ucD9c
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature.asc"
 
-compiler: gcc-12
-test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+-----BEGIN PGP SIGNATURE-----
 
-(please refer to attached dmesg/kmsg for entire log/backtrace)
+wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmU6CC0FAwAAAAAACgkQsN6d1ii/Ey9l
++Af/VvYHCk96aRxmoW1ZFC1xqbYTNbg3MN6Y1pUFRQGAwzxBzlHV8hcaNPDdGAerGBlZaOETOxzX
+BeH6Mp14ZGocHCRfdGzjC9PmPvI/exCMBaBBsMiXc7hug6gv/SDWcdYcvrXOGabFZYyMMOkKLWIw
+Hn9t1kbWy39nl+WF2OnJiEASlWN7kI4b7gzZ1RYitpA9yBt1XutUJNgzdMqN834WyF+g+adG2uC7
+E3Ahg4m7/Zh/HW2RYS+JXUKxB7S9UwFa/QHYSfbwMZ8oho9OnLbP1Snp2w4mEXdomkyf0ybzm/XC
+5hmve+NsXQCFP9QnNYeG98bPk+n37R/zxldDjUB3GA==
+=joMq
+-----END PGP SIGNATURE-----
 
-
-+------------------------------------------------+------------+------------+
-|                                                | e87d1d9973 | b34342e273 |
-+------------------------------------------------+------------+------------+
-| boot_successes                                 | 15         | 0          |
-| boot_failures                                  | 0          | 15         |
-| WARNING:at_mm/slub.c:#___slab_alloc            | 0          | 15         |
-| RIP:___slab_alloc                              | 0          | 15         |
-+------------------------------------------------+------------+------------+
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202310261032.b4590eb0-oliver.sang@intel.com
-
-
-[    4.907500][    T1] ------------[ cut here ]------------
-[ 4.908232][ T1] WARNING: CPU: 0 PID: 1 at mm/slub.c:577 ___slab_alloc (mm/slub.c:577 mm/slub.c:3033 mm/slub.c:3205) 
-[    4.909242][    T1] Modules linked in:
-[    4.909739][    T1] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 6.6.0-rc5-00013-gb34342e2732b #1
-[ 4.910746][ T1] RIP: 0010:___slab_alloc (mm/slub.c:577 mm/slub.c:3033 mm/slub.c:3205) 
-[ 4.911433][ T1] Code: 9f 05 66 25 ff 7f 66 89 45 b8 48 8b 4d b8 45 85 e4 74 1a 65 8b 05 dd c4 a3 7e 85 c0 75 0f 65 8b 05 de c1 87 7e 85 c0 74 04 90 <0f> 0b 90 81 e6 00 00 00 40 74 31 4c 89 f8 f0 49 0f c7 48 20 0f 84
-All code
-========
-   0:	9f                   	lahf
-   1:	05 66 25 ff 7f       	add    $0x7fff2566,%eax
-   6:	66 89 45 b8          	mov    %ax,-0x48(%rbp)
-   a:	48 8b 4d b8          	mov    -0x48(%rbp),%rcx
-   e:	45 85 e4             	test   %r12d,%r12d
-  11:	74 1a                	je     0x2d
-  13:	65 8b 05 dd c4 a3 7e 	mov    %gs:0x7ea3c4dd(%rip),%eax        # 0x7ea3c4f7
-  1a:	85 c0                	test   %eax,%eax
-  1c:	75 0f                	jne    0x2d
-  1e:	65 8b 05 de c1 87 7e 	mov    %gs:0x7e87c1de(%rip),%eax        # 0x7e87c203
-  25:	85 c0                	test   %eax,%eax
-  27:	74 04                	je     0x2d
-  29:	90                   	nop
-  2a:*	0f 0b                	ud2		<-- trapping instruction
-  2c:	90                   	nop
-  2d:	81 e6 00 00 00 40    	and    $0x40000000,%esi
-  33:	74 31                	je     0x66
-  35:	4c 89 f8             	mov    %r15,%rax
-  38:	f0 49 0f c7 48 20    	lock cmpxchg16b 0x20(%r8)
-  3e:	0f                   	.byte 0xf
-  3f:	84                   	.byte 0x84
-
-Code starting with the faulting instruction
-===========================================
-   0:	0f 0b                	ud2
-   2:	90                   	nop
-   3:	81 e6 00 00 00 40    	and    $0x40000000,%esi
-   9:	74 31                	je     0x3c
-   b:	4c 89 f8             	mov    %r15,%rax
-   e:	f0 49 0f c7 48 20    	lock cmpxchg16b 0x20(%r8)
-  14:	0f                   	.byte 0xf
-  15:	84                   	.byte 0x84
-[    4.913822][    T1] RSP: 0000:ffffc9000001f830 EFLAGS: 00010202
-[    4.914602][    T1] RAX: 0000000000000001 RBX: 0000000000000000 RCX: 0000000080270027
-[    4.914743][    T1] RDX: 0000000000270021 RSI: 0000000048000000 RDI: ffffffff842e066b
-[    4.915745][    T1] RBP: ffffc9000001f8e0 R08: ffffea0005931d40 R09: fffffbfff0e33a5a
-[    4.916743][    T1] R10: ffffffff8719d2d7 R11: 0000000000000000 R12: 0000000000000001
-[    4.917696][    T1] R13: ffff8883ae809430 R14: ffff88810033e3c0 R15: ffff888164c75dd0
-[    4.918688][    T1] FS:  0000000000000000(0000) GS:ffff8883ae600000(0000) knlGS:0000000000000000
-[    4.918754][    T1] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[    4.919522][    T1] CR2: ffff88843ffff000 CR3: 0000000005c89000 CR4: 00000000000406f0
-[    4.920500][    T1] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[    4.921496][    T1] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[    4.922461][    T1] Call Trace:
-[    4.922742][    T1]  <TASK>
-[ 4.923107][ T1] ? __warn (kernel/panic.c:673) 
-[ 4.923632][ T1] ? ___slab_alloc (mm/slub.c:577 mm/slub.c:3033 mm/slub.c:3205) 
-[ 4.924250][ T1] ? report_bug (lib/bug.c:180 lib/bug.c:219) 
-[ 4.924831][ T1] ? handle_bug (arch/x86/kernel/traps.c:237) 
-[ 4.925376][ T1] ? exc_invalid_op (arch/x86/kernel/traps.c:258 (discriminator 1)) 
-[ 4.925962][ T1] ? asm_exc_invalid_op (arch/x86/include/asm/idtentry.h:568) 
-[ 4.926595][ T1] ? _raw_spin_unlock_irqrestore (arch/x86/include/asm/irqflags.h:42 arch/x86/include/asm/irqflags.h:77 arch/x86/include/asm/irqflags.h:135 include/linux/spinlock_api_smp.h:151 kernel/locking/spinlock.c:194) 
-[ 4.926741][ T1] ? ___slab_alloc (mm/slub.c:577 mm/slub.c:3033 mm/slub.c:3205) 
-[ 4.927370][ T1] ? acpi_ut_allocate_object_desc_dbg (include/linux/slab.h:710 include/acpi/platform/aclinuxex.h:67 drivers/acpi/acpica/utobject.c:359) 
-[ 4.928186][ T1] ? kmem_cache_alloc (mm/slub.c:3295 mm/slub.c:3348 mm/slub.c:3440 mm/slub.c:3458 mm/slub.c:3465 mm/slub.c:3474) 
-[ 4.928824][ T1] kmem_cache_alloc (mm/slub.c:3295 mm/slub.c:3348 mm/slub.c:3440 mm/slub.c:3458 mm/slub.c:3465 mm/slub.c:3474) 
-[ 4.929442][ T1] ? acpi_ut_allocate_object_desc_dbg (include/linux/slab.h:710 include/acpi/platform/aclinuxex.h:67 drivers/acpi/acpica/utobject.c:359) 
-[ 4.930221][ T1] acpi_ut_allocate_object_desc_dbg (include/linux/slab.h:710 include/acpi/platform/aclinuxex.h:67 drivers/acpi/acpica/utobject.c:359) 
-[ 4.930743][ T1] acpi_ut_create_internal_object_dbg (drivers/acpi/acpica/utobject.c:71) 
-[ 4.931576][ T1] acpi_ut_copy_esimple_to_isimple (drivers/acpi/acpica/utcopy.c:434) 
-[ 4.932394][ T1] acpi_ut_copy_eobject_to_iobject (drivers/acpi/acpica/utcopy.c:618) 
-[ 4.933185][ T1] ? __kasan_kmalloc (mm/kasan/common.c:374 mm/kasan/common.c:383) 
-[ 4.933816][ T1] acpi_evaluate_object (drivers/acpi/acpica/nsxfeval.c:259) 
-[ 4.934486][ T1] ? acpi_get_data_full (drivers/acpi/acpica/nsxfeval.c:167) 
-[ 4.934756][ T1] ? hlock_class (arch/x86/include/asm/bitops.h:228 arch/x86/include/asm/bitops.h:240 include/asm-generic/bitops/instrumented-non-atomic.h:142 kernel/locking/lockdep.c:228) 
-[ 4.935345][ T1] ? __uuid_parse+0xd0/0x1b0 
-[ 4.936024][ T1] acpi_run_osc (drivers/acpi/bus.c:217) 
-[ 4.936609][ T1] ? acpi_bus_detach_private_data (drivers/acpi/bus.c:187) 
-[ 4.937363][ T1] ? _raw_spin_unlock_irqrestore (arch/x86/include/asm/irqflags.h:42 arch/x86/include/asm/irqflags.h:77 arch/x86/include/asm/irqflags.h:135 include/linux/spinlock_api_smp.h:151 kernel/locking/spinlock.c:194) 
-[ 4.938127][ T1] ? acpi_get_data (drivers/acpi/acpica/nsxfname.c:48) 
-[ 4.938710][ T1] acpi_bus_init (drivers/acpi/bus.c:352 drivers/acpi/bus.c:1329) 
-[ 4.938742][ T1] ? up (include/linux/list.h:373 kernel/locking/semaphore.c:188) 
-[ 4.939205][ T1] ? acpi_sleep_proc_init (drivers/acpi/bus.c:1289) 
-[ 4.939862][ T1] ? _raw_spin_unlock_irqrestore (arch/x86/include/asm/irqflags.h:42 arch/x86/include/asm/irqflags.h:77 arch/x86/include/asm/irqflags.h:135 include/linux/spinlock_api_smp.h:151 kernel/locking/spinlock.c:194) 
-[ 4.940581][ T1] ? acpi_os_signal_semaphore (drivers/acpi/osl.c:1294 (discriminator 5)) 
-[ 4.941313][ T1] ? acpi_ut_release_mutex (drivers/acpi/acpica/utmutex.c:329) 
-[ 4.942007][ T1] ? acpi_install_address_space_handler_internal (drivers/acpi/acpica/evxfregn.c:94) 
-[ 4.942744][ T1] ? acpi_bus_init (drivers/acpi/bus.c:1390) 
-[ 4.943325][ T1] acpi_init (drivers/acpi/bus.c:1404) 
-[ 4.943832][ T1] ? acpi_bus_init (drivers/acpi/bus.c:1390) 
-[ 4.944420][ T1] ? kb3886_init (drivers/video/fbdev/core/fbmem.c:1111) 
-[ 4.944976][ T1] ? acpi_bus_init (drivers/acpi/bus.c:1390) 
-[ 4.945579][ T1] do_one_initcall (init/main.c:1232) 
-[ 4.946157][ T1] ? trace_event_raw_event_initcall_level (init/main.c:1223) 
-[ 4.946747][ T1] ? kasan_set_track (mm/kasan/common.c:52) 
-[ 4.947373][ T1] ? __kasan_kmalloc (mm/kasan/common.c:374 mm/kasan/common.c:383) 
-[ 4.948010][ T1] do_initcalls (init/main.c:1293 init/main.c:1310) 
-[ 4.948614][ T1] kernel_init_freeable (init/main.c:1549) 
-[ 4.949315][ T1] ? rest_init (init/main.c:1429) 
-[ 4.949894][ T1] kernel_init (init/main.c:1439) 
-[ 4.950743][ T1] ? _raw_spin_unlock_irq (arch/x86/include/asm/irqflags.h:42 arch/x86/include/asm/irqflags.h:77 include/linux/spinlock_api_smp.h:159 kernel/locking/spinlock.c:202) 
-[ 4.951386][ T1] ret_from_fork (arch/x86/kernel/process.c:153) 
-[ 4.951957][ T1] ? rest_init (init/main.c:1429) 
-[ 4.952520][ T1] ret_from_fork_asm (arch/x86/entry/entry_64.S:312) 
-[    4.953143][    T1]  </TASK>
-[    4.953514][    T1] irq event stamp: 85121
-[ 4.954040][ T1] hardirqs last enabled at (85129): console_unlock (arch/x86/include/asm/irqflags.h:42 arch/x86/include/asm/irqflags.h:77 arch/x86/include/asm/irqflags.h:135 kernel/printk/printk.c:347 kernel/printk/printk.c:2718 kernel/printk/printk.c:3037) 
-[ 4.954736][ T1] hardirqs last disabled at (85138): console_unlock (kernel/printk/printk.c:345 kernel/printk/printk.c:2718 kernel/printk/printk.c:3037) 
-[ 4.955884][ T1] softirqs last enabled at (84862): __do_softirq (arch/x86/include/asm/preempt.h:27 kernel/softirq.c:400 kernel/softirq.c:582) 
-[ 4.957017][ T1] softirqs last disabled at (84857): irq_exit_rcu (kernel/softirq.c:427 kernel/softirq.c:632 kernel/softirq.c:644) 
-[    4.958128][    T1] ---[ end trace 0000000000000000 ]---
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20231026/202310261032.b4590eb0-oliver.sang@intel.com
-
-
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
+--------------lzKKkXpwCv50m0d63i7ucD9c--
