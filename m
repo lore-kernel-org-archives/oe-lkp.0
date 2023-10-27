@@ -1,104 +1,107 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+Received: from domac.alu.hr (domac.alu.unizg.hr [161.53.235.3])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA0B9171CE
-	for <oe-lkp@lists.linux.dev>; Fri, 27 Oct 2023 09:56:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0B3537158
+	for <oe-lkp@lists.linux.dev>; Fri, 27 Oct 2023 16:00:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=alu.hr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alu.hr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="WhnsnkgU";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="ke4guPlc"
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id ED2282189F;
-	Fri, 27 Oct 2023 09:55:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1698400553; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=YD1o6sfRvS2RQUo/el5YTc3fUIklZeB7u3TV/v2B32U=;
-	b=WhnsnkgUiSPGNj9yVikeYVC2OHDoRpPDBDXIJN1U8obNSQrsmwRCBfDFG6TRezTEiMr9C+
-	4Wj3og1/lzAsexOaxFMgPOKtBiIurYHfhvtOeZt9JxYIzjKud4IjjOdvomEeDIXRFBvXm0
-	UrTVyqP1GKapyvVYQxQLnuGYyAiu4Ew=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1698400553;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=YD1o6sfRvS2RQUo/el5YTc3fUIklZeB7u3TV/v2B32U=;
-	b=ke4guPlc+Sq6VnmXl9etET2DE6fltwJnVVxcoCaoQ3CGDim4SGlX8FbNcc9YhBp4CtrHQW
-	RCx6v/Sh/EbDpAAg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-	(No client certificate requested)
-	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D3A9F13524;
-	Fri, 27 Oct 2023 09:55:53 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-	by imap2.suse-dmz.suse.de with ESMTPSA
-	id xrM8MymJO2VWagAAMHmgww
-	(envelope-from <jack@suse.cz>); Fri, 27 Oct 2023 09:55:53 +0000
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-	id 63479A05BC; Fri, 27 Oct 2023 11:55:53 +0200 (CEST)
-Date: Fri, 27 Oct 2023 11:55:53 +0200
-From: Jan Kara <jack@suse.cz>
-To: Yury Norov <yury.norov@gmail.com>
-Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-	kernel test robot <oliver.sang@intel.com>, Jan Kara <jack@suse.cz>,
-	oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-	ying.huang@intel.com, feng.tang@intel.com, fengwei.yin@intel.com,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Mirsad Todorovac <mirsad.todorovac@alu.unizg.hr>,
-	Matthew Wilcox <willy@infradead.org>, linux-fsdevel@vger.kernel.org
-Subject: Re: [PATCH 1/2] lib/find: Make functions safe on changing bitmaps
-Message-ID: <20231027095553.7zdfk36babswvw25@quack3>
-References: <202310251458.48b4452d-oliver.sang@intel.com>
- <374465d3-dceb-43b1-930e-dd4e9b7322d2@rasmusvillemoes.dk>
- <ZTszoD6fhLvCewXn@yury-ThinkPad>
+	dkim=pass (2048-bit key) header.d=alu.hr header.i=@alu.hr header.b="p2dSKeLx";
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=alu.unizg.hr header.i=@alu.unizg.hr header.b="vXyuycej"
+Received: from localhost (localhost [127.0.0.1])
+	by domac.alu.hr (Postfix) with ESMTP id 3BDDA6019B;
+	Fri, 27 Oct 2023 17:51:05 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.hr; s=mail;
+	t=1698421865; bh=bcp2l66R6isCMuWqZZo9LM2yUuFsYZafsOLfI4eojr8=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=p2dSKeLx0S15csZSw5jy516VWtCZLVCvznNMWujGKxr5mdRaGGzDlGsFXxhTaX7Rc
+	 b/85ePFXxgoGX7TQNkekh5uq8cl6r68MaqzO1knOhP02Vpbxoa70uP8AXVPhnVZBII
+	 qtpZmzlXmOQdepXmKKn5z6t4ybsNyNErIUOBWcjSFUdgU3geH/Ncy+k+9UT8Jrqv23
+	 mf2wxWAs7/o1jj0l+9PpO0wgXJ5Q1YBXWu7VMB7lof9G88vUbpkOqjC7+4KGD4ccT9
+	 ARH6Oh3/z0HahT1ZbGFMbcofKMqfM6J4V0tsGnrDTuo29BNCcsMW4ael9vACEtTC/X
+	 Gq26bwOc4DXlA==
+X-Virus-Scanned: Debian amavisd-new at domac.alu.hr
+Received: from domac.alu.hr ([127.0.0.1])
+	by localhost (domac.alu.hr [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id F2S1zlzVpZyA; Fri, 27 Oct 2023 17:51:02 +0200 (CEST)
+Received: from [IPV6:2001:b68:2:2600:646f:d9a1:a315:536c] (unknown [IPv6:2001:b68:2:2600:646f:d9a1:a315:536c])
+	by domac.alu.hr (Postfix) with ESMTPSA id 0754660197;
+	Fri, 27 Oct 2023 17:51:02 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+	t=1698421862; bh=bcp2l66R6isCMuWqZZo9LM2yUuFsYZafsOLfI4eojr8=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=vXyuycejpXwyGdwPS3vAJpQK8MRuc057Pqjh0f1kuS1WYzID6KOGPYFp3nWnHpEj9
+	 TUXmaJNf7WwuMDhWAwehw7+nqapnDWhW+F9suBMbpyw59q7gSMjCzI7a5Ph4HAhZ90
+	 P8F2g1wLi8+bBxBTNcEYANE79lsQVp8eijwcGo7YVz7UVnbMie/6BxKE8qIeC8Jddo
+	 praGi3VAjTWooGVFiNUczXb4yMCrt7Vm0FL88sIsKT163ikI4gr/5Z/fRweMA58ABf
+	 lyg0IG4JNkFTKf/pH50lUAvE0zfAj3tuH4joL7RSVI1RZTxqExtIXRMr0jZH1I3yra
+	 c9A0gxwSnmWmQ==
+Message-ID: <1e976d6e-b685-4adb-8bfb-6f7f910e5baf@alu.unizg.hr>
+Date: Fri, 27 Oct 2023 17:51:02 +0200
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] lib/find: Make functions safe on changing bitmaps
+Content-Language: en-US
+To: Yury Norov <yury.norov@gmail.com>,
+ Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc: kernel test robot <oliver.sang@intel.com>, Jan Kara <jack@suse.cz>,
+ oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+ ying.huang@intel.com, feng.tang@intel.com, fengwei.yin@intel.com,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Mirsad Todorovac <mirsad.todorovac@alu.unizg.hr>,
+ Matthew Wilcox <willy@infradead.org>, linux-fsdevel@vger.kernel.org
+References: <202310251458.48b4452d-oliver.sang@intel.com>
+ <374465d3-dceb-43b1-930e-dd4e9b7322d2@rasmusvillemoes.dk>
+ <ZTszoD6fhLvCewXn@yury-ThinkPad>
+From: Mirsad Todorovac <mirsad.todorovac@alu.hr>
 In-Reply-To: <ZTszoD6fhLvCewXn@yury-ThinkPad>
-Authentication-Results: smtp-out1.suse.de;
-	none
-X-Spam-Level: 
-X-Spam-Score: -5.10
-X-Spamd-Result: default: False [-5.10 / 50.00];
-	 ARC_NA(0.00)[];
-	 RCVD_VIA_SMTP_AUTH(0.00)[];
-	 BAYES_HAM(-3.00)[100.00%];
-	 FROM_HAS_DN(0.00)[];
-	 TO_DN_SOME(0.00)[];
-	 TO_MATCH_ENVRCPT_ALL(0.00)[];
-	 FREEMAIL_ENVRCPT(0.00)[gmail.com];
-	 TAGGED_RCPT(0.00)[];
-	 MIME_GOOD(-0.10)[text/plain];
-	 NEURAL_HAM_LONG(-3.00)[-1.000];
-	 DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	 NEURAL_HAM_SHORT(-1.00)[-1.000];
-	 RCPT_COUNT_TWELVE(0.00)[14];
-	 FREEMAIL_TO(0.00)[gmail.com];
-	 FROM_EQ_ENVFROM(0.00)[];
-	 MIME_TRACE(0.00)[0:+];
-	 MID_RHS_NOT_FQDN(0.50)[];
-	 RCVD_COUNT_TWO(0.00)[2];
-	 RCVD_TLS_ALL(0.00)[];
-	 SUSPICIOUS_RECIPS(1.50)[]
-X-Spam-Flag: NO
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu 26-10-23 20:51:22, Yury Norov wrote:
+On 10/27/2023 5:51 AM, Yury Norov wrote:
 > On Wed, Oct 25, 2023 at 10:18:00AM +0200, Rasmus Villemoes wrote:
-> > Yes, users will have to treat results from the find routines carefully
-> > if their bitmap may be concurrently modified. They do. Nobody wins if
-> > those users are forced to implement their own bitmap routines for their
-> > lockless algorithms.
+>> On 25/10/2023 09.18, kernel test robot wrote:
+>>>
+>>>
+>>> Hello,
+>>>
+>>> kernel test robot noticed a 3.7% improvement of will-it-scale.per_thread_ops on:
+>>
+>> So with that, can we please just finally say "yeah, let's make the
+>> generic bitmap library functions correct
+> 
+> They are all correct already.
+> 
+>> and usable in more cases"
+> 
+> See below.
+> 
+>> instead of worrying about random micro-benchmarks that just show
+>> you-win-some-you-lose-some.
+> 
+> That's I agree. I don't worry about either +2% or -3% benchmark, and
+> don't think that they alone can or can't justificate such a radical
+> change like making all find_bit functions volatile, and shutting down
+> a newborn KCSAN.
+> 
+> Keeping that in mind, my best guess is that Jan's and Misrad's test
+> that shows +2% was against stable bitmaps; and what robot measured
+> is most likely against heavily concurrent access to some bitmap in
+> the kernel.
+> 
+> I didn't look at both tests sources, but that at least makes some
+> sense, because if GCC optimizes code against properly described
+> memory correctly, this is exactly what we can expect.
+> 
+>> Yes, users will have to treat results from the find routines carefully
+>> if their bitmap may be concurrently modified. They do. Nobody wins if
+>> those users are forced to implement their own bitmap routines for their
+>> lockless algorithms.
 > 
 > Again, I agree with this point, and I'm trying to address exactly this.
 > 
@@ -107,47 +110,109 @@ On Thu 26-10-23 20:51:22, Yury Norov wrote:
 > I'll submit it in the next merge window.
 > 
 > https://github.com/norov/linux/commits/find_and_bit
-
-I agree that the find_and_{set|clear}() bit functions are useful and we'll
-be able to remove some boilerplate code with them. But also note that you
-will need to duplicate practically all of the bitmap API to provide similar
-"atomic" functionality - e.g. the sbitmap conversion you have in your
-branch has a bug that it drops the 'lock' memory ordering from the bitmap
-manipulation. So you need something like find_and_set_bit_lock() (which you
-already have) and find_and_set_bit_wrap_lock() (which you don't have yet).
-If you are to convert bitmap code in filesystems (some of which is lockless
-as well), you will need to add little and big endian variants of volatile
-bitmap functions. Finally there are users like lib/xarray.c which don't
-want to set/clear found bit (we just want to quickly find a good guess for
-a set bit in the bitmap and we then verify in another structure whether the
-guess was right or not). So we'll need the volatile variant of plain
-find_first_bit(), find_next_bit() as well. Also when we have variants of
-bitmap functions that are safe wrt parallel changes and those that are not,
-the function names should be probably indicating which are which.
-
-So as much as I agree your solution is theorically the cleanest, I
-personally don't think the cost in terms of code duplication and code churn
-is really worth it.
-
+> 
 > Now that we've got a test that presumably works faster if find_bit()
 > functions are all switched to be volatile, it would be great if we get
 > into details and understand:
->  - what find_bit function or functions gives that gain in performance;
->  - on what bitmap(s);
->  - is the reason in concurrent memory access (guess yes), and if so,
->  - can we refactor the code to use lockless find_and_bit() functions
->    mentioned above;
->  - if not, how else can we address this.
+>   - what find_bit function or functions gives that gain in performance;
+>   - on what bitmap(s);
 
-Frankly, I don't think there's any substantial reason why the volatile or
-non-volatile code should be faster. The guys from compiler team looked at
-the x86 disassembly and said both variants should be the same speed based on
-instruction costs. What could be causing these small performance differences
-is that the resulting code is layed out slightly differently (and the
-volatile bitmap functions end up being somewhat larger) and that somehow
-interferes with instruction caching or CPU-internal out-of-order execution.
+I am positive that your test_and_clear_bit() loop per bit wouldn't 
+improve performance. No insult, but it has to:
 
-								Honza
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+- LOCK the bus
+- READ the (byte/word/longword/quadword) from memory
+- TEST the bit and remember the result in FLAGS
+- CLEAR the bit
+- WRITE back the entire byte/word/longword/quadword
+
+So, instead of speeding up, you'd end up reading 64 times in the worst 
+case where only the last bit in the quadword is set.
+
+What we need is this ffs() that expands to assembly instruction BSF
+(bit scan forward)
+
+  [1] https://www.felixcloutier.com/x86/bsf
+
+followed by a BTR (bit test and reset)
+
+  [2] https://www.felixcloutier.com/x86/btr
+
+Ideally, we'd have an instruction that does both, and atomic, or a way 
+to LOCK the bus for two instructions. But bad guys could use that to 
+stall all cores indefinitely:
+
+DON'T DO THIS!
+-----------------------------
+      LOCK
+loop:
+      BSF r16, m16/m32/m64
+      BTR m16/m32/m64, r16
+      JMP loop
+      UNLOCK
+-----------------------------
+
+This would better work with the hardware-assisted CAM locking device, 
+than stopping all cores from reading and writing on each memory barrier.
+
+But this is a long story.
+
+>   - is the reason in concurrent memory access (guess yes), and if so,
+>   - can we refactor the code to use lockless find_and_bit() functions
+>     mentioned above;
+>   - if not, how else can we address this.
+> 
+> If you or someone else have an extra time slot to get deeper into
+> that, I'll be really thankful.
+
+I don't know if the Linux kernel uses any advantage of a trasnactional 
+memory device if it finds one?
+
+The idea of each mutex() or even user-space futex() stalling all cores 
+to "asm LOCK CMPXCHG m8/m16/m32/m64, r8/r16/r32/r64" simply doesn't 
+scale well with i.e. 128 cores that have to wait for one long 
+read-modify-write cycle that bypasses cache and talks to very slow memory.
+
+I see some progress with per-CPU variables.
+
+[3] 
+https://stackoverflow.com/questions/58664496/locking-on-per-cpu-variable/67997961#67997961
+
+For multiprocessor system and to protect percpu variables, we can just 
+disable preemption and do local_irq_save. This way we avoid taking the 
+spinlock. Spinlock requires atomicity across multiple CPU's. With per 
+cpu variables it shall not be required.
+
+	local_irq_save(flags);
+	preempt_disable();
+	-- Modify the percpu variable
+	preempt_enable();
+	local_irq_restore(flags);
+
+That compiles roughly to:
+
+	unsigned long flags;
+
+	asm volatile("cli": : :"memory");
+	asm volatile(
+		"mrs	%0, " IRQMASK_REG_NAME_R " @local_save_flags"
+		: "=r" (flags) : : "memory", "cc");
+	preempt_count_inc();
+	__asm__ __volatile__("": : :"memory")  // barrier()
+	--- your stuff here ---
+	if (!(!(flags & X86_EFLAGS_IF))
+		asm volatile("sti": : :"memory");
+	__asm__ __volatile__("": : :"memory")  // barrier()
+	preempt_count_dec();
+
+With this code other CPUs can work in parallel. None of the CPU spins.
+
+If we take spinlock then we modify an atomic variable also other CPU 
+comes then it has to wait/spin if spinlock is acquired.
+
+Best regards,
+Mirsad
+
+
+> Thanks,
+> Yury
