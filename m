@@ -1,84 +1,85 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.31])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75952D293
-	for <oe-lkp@lists.linux.dev>; Mon, 30 Oct 2023 14:46:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AFEB611E
+	for <oe-lkp@lists.linux.dev>; Mon, 30 Oct 2023 15:40:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="P4gEaPQz"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NTjygBSy"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698677179; x=1730213179;
+  t=1698680420; x=1730216420;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=/DvCn/4whddg/gc4zkCyRUcJmB+z0Nh2Nt3BTWvcTNE=;
-  b=P4gEaPQzx8w7S6+cb4BlKKE1pobP/Q81m+mDHGrh3QyyYNF6tSlEp51f
-   aSOlIg7oyK/IZZyW1lUfqe5Q9Syk6HjTME+vgLVKTOFqvfpDZVnXAeRbq
-   Hkitu5o88PTuAu/J5Bh1QOsBELXAAWhS1b4jk4mZDqlIRC++mByT9Y/78
-   cucpnYaoEiN78ltyLNqor1qU3KLQ77Sm3m1W2ouRg4EGM3YJLNxOtyNq6
-   zb251I2Rd2cQkXVPMtfpIg0JbqtJptLLgPvcwGEUUSlRddR3tcNjmtO5W
-   k3IeNf5Pro50QhnkZdUf48tbIKZmjohfB6g+iFoGlZPseBBkXx6sGl0wx
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10879"; a="452340708"
+  bh=rJff4Q1JtP8I9BKYKBizm5r7PU3gg3h+uS6xkuxXMDo=;
+  b=NTjygBSy08tt8aODeKaZX1la1A59xS3VcgzPBX2BO0Jn3KQHgNsWiY0S
+   zOyO3sB0BQ0n3wvMHndlYZ91PNkxDNNryuMvc8gteVdq9Lo5o97lF8Sag
+   eLuyf7r2XIKF3HkO2u/sxC21jXo1pG3lwxkKg4hGhSM6MjrH55YC4gknj
+   NL2BYfAjBTvqPmw8J54P4B2sB8sMw2fA6H4sAalTv/Uz1BU02NNnMB9+V
+   2YUfKePT39FJQPKQ9Qmq1/mWS2189TU4UH+O+RLfdBFvLSwYxnjD0xAcE
+   10lVfh7TsM2jFySLEDQc56OaU0pto36ICiexcXuYqiyc8sIouY3D6t0DO
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10879"; a="936608"
 X-IronPort-AV: E=Sophos;i="6.03,263,1694761200"; 
-   d="scan'208";a="452340708"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2023 07:46:18 -0700
+   d="scan'208";a="936608"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2023 08:40:19 -0700
 X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10879"; a="710127878"
 X-IronPort-AV: E=Sophos;i="6.03,263,1694761200"; 
-   d="scan'208";a="1528928"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by fmviesa002.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 30 Oct 2023 07:46:18 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+   d="scan'208";a="710127878"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by orsmga003.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 30 Oct 2023 08:40:17 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34; Mon, 30 Oct 2023 07:46:17 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ 15.1.2507.34; Mon, 30 Oct 2023 08:40:17 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34; Mon, 30 Oct 2023 07:46:17 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ 15.1.2507.34; Mon, 30 Oct 2023 08:40:17 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34 via Frontend Transport; Mon, 30 Oct 2023 07:46:17 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.101)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ 15.1.2507.34 via Frontend Transport; Mon, 30 Oct 2023 08:40:17 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.101)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.34; Mon, 30 Oct 2023 07:46:15 -0700
+ 15.1.2507.34; Mon, 30 Oct 2023 08:40:15 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hcI7ZJMEYWfMN0bIL9sZNaS/OumRn1f0OSoO/Qv1oKG7RvC6aHqtJzM2fxpR2FfQpkxL04koRVv9h0j//6TyPJD2Ry9edHZ3qCDC769K1jvsABw150vQ4ruorT5KjGeQs6h7f52L/MHPejBzgAgeMp92Rk7yMkRzMs1zIp6u/FqbGRalHU/Vg0nGWGZfa+bXfwDTs0jRc3Q+eIBAR+6YdiMw7A/1mTvVK/M9f7gGI1PU3QYk3wZtsZ1ILvhrA6WrAcJN6jeJSHVERvZfLSHfjvC5CIBQy11s1QhzauV0OrujVKRScEAMGOZ4W62xCnaXX9xFPyhPksSCestwqKdcYg==
+ b=NmcyfVUVZU2CvaHIw42DokYvNHo2JSZYSbqJuIGASFHfGVBpjAzJPPuo/gI6UNRHvj0CLCPbOVshW680cqxO0xSOSx7YvlFINqbKb+vy5tZ1MjAEtAdUWY1XzkEtJ41v/GnWiibEOSdB+iR6Jo16VhpAhIk5rJvveNWgD2iB/sR0o5FHHcJGzxsuweXl9spshqBaZPFJsmeY43b06IjnJ6jSj1X5PMq/IxFRNtnxIbDGfQW8VYJwEABe+SRa6+SRr3yS4n09XxwZCoNdv1+FXo3rEdSoTCCqiXYkyM1Qy80nM5ep51HnYDE0eN03jDTThCvZToOWSNoDoy2HHTpGlg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3bgBPy0gWFiknXx2JW7yN6XHv4oOS8rBD8N4nKEKfK8=;
- b=oDtLFKVmy0rMdm2V/poTlp7+ZoZvCBb4qgxRRjNynVun5G8S8jEU79dE7g+zytZRh6bfDdtGIgmXMk7MZ6naDix88WZ3xiOKb0ynkao+UiEzv9J3KZVpsV4qr6eBp7if+YErhPx+NvK2nSZY3eZgGJxda4KrI13kM0Y+rOFGn8AOz3uT4lizSGEL6MiyB27KoJ7FGpvXAasptUE7zXJ2iKY4ull7n2picdIAkfTOF5HhlTrkS87wU5PkLTrZTyLdYnnHS1pDZiH2uNMW5tid4yxlwAcVoBYmGiPKPvPOZQmckZ4jyHE6MUlQOQJB55PDy+AKkG1I5Bb91PImWBtoKg==
+ bh=4qcAmFA9dGe1t0TzGvjmrcNid57+ciSnyJp+PkniET8=;
+ b=M3IRwbtF8qiuDi04d7mWNnbYP67ermBTmUHt/Z3iNCSDPDujpFTQf62CPC1lrzaVRbjafE49KOBcZW7XSqAHb+lpl7pzuZoupsmdDQWApOr92qBEZr0qkoqSndjJh1wEe13vJ0D0cISqnpaooGIAnDDRw3zygvmK9urBhpG9v+hJ8fUkNBqobYHmXd8JF/cXGqLKTYq3e096hO8LghcrLV2adS+7iI/s7tlLetQs0D7P7RF2U1CZbJULcCyiCsATHqU09niOfcuVpgJOrSDwDMhaDQMq1ey4kXGi3Z2EGDoa+yQDid4byUHJcCUsa31A+LnpS4Re3y07DdD8IgQ1Xg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
- by SN7PR11MB6899.namprd11.prod.outlook.com (2603:10b6:806:2a7::14) with
+ by PH7PR11MB7595.namprd11.prod.outlook.com (2603:10b6:510:27a::6) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6933.26; Mon, 30 Oct
- 2023 14:46:13 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6933.25; Mon, 30 Oct
+ 2023 15:40:08 +0000
 Received: from PH8PR11MB6779.namprd11.prod.outlook.com
  ([fe80::29f0:3f0f:2591:d1f6]) by PH8PR11MB6779.namprd11.prod.outlook.com
  ([fe80::29f0:3f0f:2591:d1f6%3]) with mapi id 15.20.6933.026; Mon, 30 Oct 2023
- 14:46:13 +0000
-Date: Mon, 30 Oct 2023 22:46:06 +0800
+ 15:40:08 +0000
+Date: Mon, 30 Oct 2023 23:40:01 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Eric Dumazet <edumazet@google.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Linux Memory Management List
-	<linux-mm@kvack.org>, "David S. Miller" <davem@davemloft.net>,
-	<netdev@vger.kernel.org>, <oliver.sang@intel.com>
-Subject: [linux-next:master] [tcp]  614e8316aa:
- packetdrill.packetdrill/gtests/net/tcp/fastopen/server/client-ack-dropped-then-recovery-ms-timestamps_ipv4-mapped-v6.fail
-Message-ID: <202310302216.f79d78bc-oliver.sang@intel.com>
+To: Waiman Long <longman@redhat.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>, <aubrey.li@linux.intel.com>,
+	<yu.c.chen@intel.com>, <oliver.sang@intel.com>
+Subject: [linus:master] [sched]  851a723e45:
+ WARNING:possible_circular_locking_dependency_detected
+Message-ID: <202310302207.a25f1a30-oliver.sang@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-X-ClientProxiedBy: SI2PR01CA0033.apcprd01.prod.exchangelabs.com
- (2603:1096:4:192::23) To PH8PR11MB6779.namprd11.prod.outlook.com
+X-ClientProxiedBy: SI2PR02CA0020.apcprd02.prod.outlook.com
+ (2603:1096:4:195::7) To PH8PR11MB6779.namprd11.prod.outlook.com
  (2603:10b6:510:1ca::17)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -87,112 +88,234 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|SN7PR11MB6899:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8eb607b6-84f5-4077-189b-08dbd956f6cd
+X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|PH7PR11MB7595:EE_
+X-MS-Office365-Filtering-Correlation-Id: d7f0926d-ab87-4721-3d96-08dbd95e7f00
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: yIZJc+Jb+1uqy6YqlSKeydD1wdMFO2uNMEZsKS1Dp7JuNcODcpQMSZtWau8kpbsIZH/plqROYm1Rh2SG2j1fPu2dZHeWd8CK0Zvj8r4BmF8mE+TRx0clJzXecKOvqj3AhqM+Lu+/E8C7FqJtGYimLjrebpTmUmChyw6Tk6ZjPFaLx249pqCEtHo7+NdXN2WIXKRWH5ryn9dTt7RT3XWTz4TabIt/dzw+sDW4d3hEQkl5NbuSScvXjMP7IUoFv9olA9QV548m+H+c1iB32JVZcDP24f1maC0HrXQx1pybGC4gqzuSvl1JhAanaIu632ZL67FB868BzlYUT3KwRuMH3fSbxMKAOOtH2jlMT6aQ1MApDH0wAhzX9P5jqzEEtyxbUEBmn+srAlK1J7W1o+RdoF14uLa/TmaOns+6tzEL9f5nKUYFkOLNtQ9A+qPBXBbqhXe61D8REBCgyjpdnE9LVMs9DJyIKa3ogeQfxuwNkFjsn+18D1PgZQm6N01VfbwEyg8mi40c01ltPOWLNjAWORyVw2KI17SVqo1vx4G5CYY5pwxw28zbZsJMCafAELx1uexS0iB6+66p/HNq7w2ACg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(376002)(366004)(136003)(39860400002)(346002)(230922051799003)(64100799003)(1800799009)(186009)(451199024)(66556008)(66476007)(6916009)(54906003)(82960400001)(316002)(38100700002)(6666004)(6506007)(6486002)(6512007)(478600001)(966005)(2616005)(83380400001)(66946007)(1076003)(107886003)(26005)(5660300002)(41300700001)(2906002)(8676002)(8936002)(4326008)(86362001)(36756003);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: a9oRouKR0CmwK2iZuiAonrij1wK5wsxRqTa9YcMGjczM6ZF/tg8xTstATlxaP4Re5bOG379BCWIH2WhWjXhzqqrTLMtbCALm6Du7VQKaaxIkWtNm/ibYeiwSiesKK8WUWrI0cRtFjUsCcHweGUE4NWFOZi3S8095kAneIOgPyd6aAyhhVzQ+DAys4NQ5G4VW5OfD0NV1tH7Zb9OoUiXiPYBS1zDp4dvUTgTY4V3RJeUOg4Fb2OhozaI11yqE0FZkHZ2PkJvcp25I1wjzByg7/YrPctC0k3ayvALSHyQDrryA0SaWsg4BSsHWJnW2Q/Qg6J4x8At32+8VvR0KBBuqCKCEIpTkDLtl4aAUQxHJu0DTWE5GEPtblWTWtuuHqMLYiwfIuMJ4+zYpfRAwhEoe/Y+2RCBe/yvDWyCHEZYQ1AIAHzl7DHM96upjkQ7AwKcyjrgV4320813ptCLo21t/7QyowaDkRePiTfOgxsMN4WjpFXjxUO1SwU11uIuCexGKxqoHCWOIoqO7T8LF71CoaPxFUv385ii3i+cCB3dq91JrotLHvnW1jaUV2auMgvq9S/0WJMRYSmMAlneDJV6ePUp8qM16OBk+yAnAYcv/uO/nKtmAVmW6eYW4ESBW3Y+/s2mzitfHaMopCDZ4x5KTwg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(366004)(39860400002)(346002)(136003)(376002)(230173577357003)(230922051799003)(230273577357003)(64100799003)(451199024)(186009)(1800799009)(4326008)(8936002)(8676002)(6486002)(2906002)(82960400001)(966005)(26005)(1076003)(83380400001)(66574015)(2616005)(86362001)(5660300002)(36756003)(478600001)(66476007)(66556008)(66946007)(6916009)(41300700001)(6506007)(6512007)(316002)(38100700002)(6666004);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?LbmWMp1ezqhK6zSTA7l2vZ5NsEP/RFdQcxgkolHWpsnWT+gJX1EMsGL4ZmVV?=
- =?us-ascii?Q?W9dGpxt9VzURX79wpvwP1t0QFE07sPnE9WT1LKGS//8CwmUKp4tn5oDk33qi?=
- =?us-ascii?Q?KJ6IBalhfWo19ZtcsoG1OECuwf2pMsPBb7/byz5PrFSw30CetNOTDzqU3h33?=
- =?us-ascii?Q?JkTu6Kz9m3RCFYg8iA8ku+DXcNZbgsJI4j4pe6FEX5qijdLVq0R2RSeBLYup?=
- =?us-ascii?Q?uvCY7Z826zRipKHvgy5zPzwZe1p5n6vTwoJxg9OQldymdfGKFABgBK3n2E4Y?=
- =?us-ascii?Q?9LteBj7pkp7AXxy72ujYNSFrMhym2TwGN8+dyFo0sHqp4xdM63UGc+oXcLG1?=
- =?us-ascii?Q?9kKXLGpbF7rxfyNs8wFOF6baw4eNaUu1FqQcINhf0vsZ3Txa4qWx9w5F3Rni?=
- =?us-ascii?Q?rTbo28032o+IhcHFTWviCWBkDwQFzcPYIXg/oj24Cp36g7+ziB7Sxo+KCp8r?=
- =?us-ascii?Q?kP2sY52PPRG211+Yn5QVCIHTGTMjIivJZnCcRvUewiAXqjrmzLT33lUpyBad?=
- =?us-ascii?Q?Wl7foRrqTX17ggzYmCadkCIT82wE6UCxjMaOFKYnlt4SWiR/aU8pBWFj1RYw?=
- =?us-ascii?Q?66YHJ7Tnr13w1zV0DrXyhpjKfHE/POtAX54zUDLPcYS9tv7gNmkKnnJsEGrs?=
- =?us-ascii?Q?oXjDEZBUTl/fhnvtjQyi26x0bkAyPn6SHWg1Yg3JfdrOb3/xjkDikMIu8V9n?=
- =?us-ascii?Q?ub1WxqwJM/HRfMS39ZX2JkqhViI59FyeYa+FoSY2wV4XmTUtV+PAnotnacEI?=
- =?us-ascii?Q?jJFnHHqVYxRsKd7M9mqAcLSgoLGajuT5G8IzQP8IHe7S8YuxQ4V1ke4+71yP?=
- =?us-ascii?Q?i/1MNqjGbDJ594TSP44ucRqJhRYccuZBYuaE4GhJ+kfmXtWl4M/Z+A57T+4K?=
- =?us-ascii?Q?hHawIaz1S9UcXcDvhzSdQZa5dLaWtowd0KPukVchS9ziXQvt1wEo0jABU+pI?=
- =?us-ascii?Q?0/yy22d/X01KInyhq1/1iRW11V0+10fery5tMleinYRlQRQjFP/+U+K4efbY?=
- =?us-ascii?Q?9uRZy1XI1p0I8ZHkxWt9Q+QjBuHUz0Ow1U5QeOsR1uEgIS6OWndRF/gQWHBj?=
- =?us-ascii?Q?k8UbTpiSwuEH0TzjgVbGIFn1L9luc/Q81DwGr6H4O4MS8edPEqtheD+GB027?=
- =?us-ascii?Q?Cwu3uxi3N7QrjYgBecvS+UL/QHHmIFO+B6cM3fkvshcro72ei8UpRHFvJG0G?=
- =?us-ascii?Q?NiPrv9pM9Ig0INQEthXXoMMiRxuvGRbbXxe9POWGCO2elkpTtiQ4IWN/GWi0?=
- =?us-ascii?Q?vf75swYz26Awj0xkKLMBaItnSZfxOlgz4BM9guBAtGPSkJd4J/1NY1iOC0ZO?=
- =?us-ascii?Q?kTR0sb5+lj9qdybkxNJ3NwR1qPahHrMaWSTmeyOww3yhGReP2OSR7awXkQLo?=
- =?us-ascii?Q?LnPv5lzLDPBdnZ/qB7u6qiwHK9j/sOWu0rcKj1Rh9WbP7Vckt2wHpsaEKpbd?=
- =?us-ascii?Q?eXdVz5H9/DzakZX7t4lBULZWYGE+CUUjV9fccQR8s/qrLLdtUrtTz4GWILS8?=
- =?us-ascii?Q?zN6syHbA/jf34QC2SR3IhznGb8mkF9P3KF/DRn63UUAU5/UiNqLU4SNBVCR+?=
- =?us-ascii?Q?dhSmQy+aWQbu3dXXVuJkyznKgMfj+DbyboZRs9G3e4Evq0H8kaTKkEQee0lC?=
- =?us-ascii?Q?2g=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8eb607b6-84f5-4077-189b-08dbd956f6cd
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?L94IzFEv1thCBCmw9lSt5yHuDrSUbfxoltXFCcBehrAVrDVtRV6gK+oIbCue?=
+ =?us-ascii?Q?J4m0hkT42jx851lh8D23CYACc1BuXa4KDf7Oki6cb9HTscdlm6QzhhUQqBgR?=
+ =?us-ascii?Q?uN8IPqNSJLvn1m3d9GI8x580I8vOhISB6ibZdHTRwb9oTd8cpaAQ34ief6p6?=
+ =?us-ascii?Q?7fG6nTul4P82NFMv3w6Nxugq+0iQxeeYsve3dSFaWLj8pLTrgSmF9wUngWC0?=
+ =?us-ascii?Q?L7ABJ2nMVfXSwbe1r6IQKo1Edagu7s4bc4wkiQ0b+aPjDxgWK/SpBJkaBDtM?=
+ =?us-ascii?Q?4+mTfQtRJZmpz30/qe2PIImkvTSqYsm+YczgxDXxHCgc1ysOkYHstMDUA7rR?=
+ =?us-ascii?Q?PpOaDXNdw3dPI3wQke3C0IfMeWYW3nKvxmbTxer5SrpXWep+N6twvkc55r1t?=
+ =?us-ascii?Q?Deiczw0V9egHKkjOYzWSNaqFkiUW0XaPm1voApTkXidd/R/zZpqB1vGfCWge?=
+ =?us-ascii?Q?jwbvNGjfzoHfrMi5fwVzbLrNjZso2pjDGpwErNB7rBxq3ujYF32OGmTmJDlo?=
+ =?us-ascii?Q?l6IWrZkhZuRJphCXwEfalkdAzH2T6coPhAU8Fg8t/Zp8MAI3WuwuLnYwEv/5?=
+ =?us-ascii?Q?6hMbNbFYyU+SKEnKMc0o2eA1EjQ2NJ/+gWm6iLxckB2sUnx/Xe8Y2cpyn5no?=
+ =?us-ascii?Q?Or8JVLACYWpYEs5DMAtjGWwdJF/jOhltKdxOsUJSQo7M3Q18lzp6s/XIXfns?=
+ =?us-ascii?Q?AnjNpmcwYDUMvXJIArC3XIX4z1rCdh5cdfLvkHBIAHzWbwpeBOBzdcPSSTKB?=
+ =?us-ascii?Q?ASJdJIPcgZY9VmRdOqTgjwKxTFS8S3wWe3GW2c+U8qEWfgtgK//VJnMU+dRp?=
+ =?us-ascii?Q?9BH1lXbOBmaxN28P7yVdKHI4JjfXDrUJ2kdkfIkv989g1+2Por75qfV1BtRv?=
+ =?us-ascii?Q?ECARoUs1Msjvs2mlgPSGMggONNfJOjIjFJ57viY7bzKQYex6ReFBFF+oKkY3?=
+ =?us-ascii?Q?XIbpEopFqQCKfbTjPk4XqSBSGsgJ/5c5ACWJpsn6Ua6c517uEeMUQfSGJoqz?=
+ =?us-ascii?Q?vZwJ0ub3sWtykfDM123XPXsuTx1FzsXNC0E/cso95a/8bL30Q7mU2knWFLup?=
+ =?us-ascii?Q?+WvTRxxAbls7qWh5b+Zol0ZGNgE5SUUOvAkENIeN4JWIhJpovDdlauEk7/i5?=
+ =?us-ascii?Q?+KoeidLC7KbnFV5DTmvbszoqwbPQOuLZKXGqIeFJkXYXx6BLzF+sGRzh5wIp?=
+ =?us-ascii?Q?vObuZHAFHH3XxSij0tmqudBsHg+5e/ELq4oB6Du4mnliQ3oVS373jsiwPvHB?=
+ =?us-ascii?Q?CcOEMFNUpz1oJikxjJ768I0mlRajrLhHeY45zv/RwAQ9XTTrozN+/Rdx2yFv?=
+ =?us-ascii?Q?1Bnw02k+cZT1u5emqTV6TH16gz72ulHTMjKd679Tj7+oDzIab0jDFa5auWhw?=
+ =?us-ascii?Q?svLLam3TBg+/UrEPIQl+sEOJgmha/al+Mpt1VUMAhSPGNerw4OQv2GpPfG7Z?=
+ =?us-ascii?Q?ATFrdOlE32ZMMFAiNTVwaDuoIUvNdH9ct4N3pYGbu8l+ilhtbh5MYXu9zqXB?=
+ =?us-ascii?Q?DlOZ0tlnlMmsBrg/9NZ+MvMZNhg1ZP8bnxrUmWJuqfP/SMNUcYWKrTOeKJ7h?=
+ =?us-ascii?Q?EROiloQ7/6nHuHkcJAY7fctU5AHpvFdQJ4o6PWJTxZlVvjLLFLcn1Cm0tKiw?=
+ =?us-ascii?Q?3g=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: d7f0926d-ab87-4721-3d96-08dbd95e7f00
 X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB6779.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Oct 2023 14:46:13.5277
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Oct 2023 15:40:08.5753
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: h6mHJGV6NCkozesJYzyNOI6YSQDoBLJMRWLpPQgyy0b9Y51n6VAxSxigqNgKHNXK5tbG18xbZYuclTWd24tdcQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB6899
+X-MS-Exchange-CrossTenant-UserPrincipalName: K7P8PyoPtqXMxToPpmVwZxGhG5ttLO5tE71QVM0oU1451o3WYZAtK0uW+m3DmuO0YOhI4/u7sz9BWJgB/HXopA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB7595
 X-OriginatorOrg: intel.com
 
 
 
 Hello,
 
-kernel test robot noticed "packetdrill.packetdrill/gtests/net/tcp/fastopen/server/client-ack-dropped-then-recovery-ms-timestamps_ipv4-mapped-v6.fail" on:
+kernel test robot noticed "WARNING:possible_circular_locking_dependency_detected" on:
 
-(in fact, we noticed 3 tests failed on this commit with high rate, but keep
-clean on parent
+commit: 851a723e45d1c4c8f6f7b0d2cfbc5f53690bb4e9 ("sched: Always clear user_cpus_ptr in do_set_cpus_allowed()")
+https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-af7721448a609d19 614e8316aa4cafba3e204cb8ee4
----------------- ---------------------------
-       fail:runs  %reproduction    fail:runs
-           |             |             |
-           :20          55%          11:20    packetdrill.packetdrill/gtests/net/tcp/fastopen/server/client-ack-dropped-then-recovery-ms-timestamps_ipv4-mapped-v6.fail
-           :20          70%          14:20    packetdrill.packetdrill/gtests/net/tcp/fastopen/server/client-ack-dropped-then-recovery-ms-timestamps_ipv4.fail
-           :20          45%           9:20    packetdrill.packetdrill/gtests/net/tcp/fastopen/server/client-ack-dropped-then-recovery-ms-timestamps_ipv6.fail
-)
-
-commit: 614e8316aa4cafba3e204cb8ee48bd12b92f3d93 ("tcp: add support for usec resolution in TCP TS values")
-https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
-
+[test failed on linus/master 56567a20b22bdbf85c3e55eee3bf2bd23fa2f108]
 [test failed on linux-next/master 66f1e1ea3548378ff6387b1ce0b40955d54e86aa]
 
-in testcase: packetdrill
-version: packetdrill-x86_64-31fbbb7-1_20231004
+in testcase: rcutorture
+version: 
 with following parameters:
+
+	runtime: 300s
+	test: cpuhotplug
+	torture_type: trivial
+
 
 
 compiler: gcc-12
-test machine: 16 threads 1 sockets Intel(R) Xeon(R) CPU D-1541 @ 2.10GHz (Broadwell-DE) with 48G memory
+test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
 
 (please refer to attached dmesg/kmsg for entire log/backtrace)
+
+
+please be aware that the issue doesn't always happen, ~50% rate:
+
+da019032819a1f09 851a723e45d1c4c8f6f7b0d2cfb
+---------------- ---------------------------
+       fail:runs  %reproduction    fail:runs
+           |             |             |
+           :44          45%          20:44    dmesg.WARNING:possible_circular_locking_dependency_detected
+           :44          45%          20:44    dmesg.WARNING:possible_circular_locking_dependency_detected_migration_is_trying_to_acquire_lock:at:rcu_nocb_try_bypass_but_task_is_already_holding_lock:at:__balance_push_cpu_stop/0x
+
 
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202310302216.f79d78bc-oliver.sang@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202310302207.a25f1a30-oliver.sang@intel.com
 
 
-...
 
-FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/fastopen/server/client-ack-dropped-then-recovery-ms-timestamps.pkt (ipv6)]
-
-...
-
-FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/fastopen/server/client-ack-dropped-then-recovery-ms-timestamps.pkt (ipv4-mapped-v6)]
-
-...
-
-FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/fastopen/server/client-ack-dropped-then-recovery-ms-timestamps.pkt (ipv4)]
-
-...
+[  708.890347][   T22] 
+[  708.890648][   T22] ======================================================
+[  708.891276][   T22] WARNING: possible circular locking dependency detected
+[  708.891882][   T22] 6.1.0-rc2-00015-g851a723e45d1 #1 Tainted: G        W         
+[  708.892549][   T22] ------------------------------------------------------
+[  708.893234][   T22] migration/1/22 is trying to acquire lock:
+[  708.893792][   T22] ffff88839d3f2478 (&rdp->nocb_lock){-.-.}-{2:2}, at: rcu_nocb_try_bypass+0x71b/0x990
+[  708.894716][   T22] 
+[  708.894716][   T22] but task is already holding lock:
+[  708.895414][   T22] ffff88839d3f1518 (&rq->__lock){-.-.}-{2:2}, at: __balance_push_cpu_stop+0xa0/0x470
+[  708.896311][   T22] 
+[  708.896311][   T22] which lock already depends on the new lock.
+[  708.896311][   T22] 
+[  708.897274][   T22] 
+[  708.897274][   T22] the existing dependency chain (in reverse order) is:
+[  708.898122][   T22] 
+[  708.898122][   T22] -> #2 (&rq->__lock){-.-.}-{2:2}:
+[  708.898816][   T22]        __lock_acquire+0x9d7/0x1330
+[  708.899332][   T22]        lock_acquire+0x193/0x500
+[  708.899802][   T22]        _raw_spin_lock_nested+0x2e/0x70
+[  708.900317][   T22]        resched_cpu+0x77/0x150
+[  708.900802][   T22]        rcu_implicit_dynticks_qs+0x5bc/0x850
+[  708.901391][   T22]        force_qs_rnp+0x40b/0x790
+[  708.901873][   T22]        rcu_gp_fqs_loop+0x63a/0xa40
+[  708.902393][   T22]        rcu_gp_kthread+0x23b/0x380
+[  708.902886][   T22]        kthread+0x246/0x2d0
+[  708.903320][   T22]        ret_from_fork+0x1f/0x30
+[  708.903777][   T22] 
+[  708.903777][   T22] -> #1 (rcu_node_0){-.-.}-{2:2}:
+[  708.904456][   T22]        __lock_acquire+0x9d7/0x1330
+[  708.904971][   T22]        lock_acquire+0x193/0x500
+[  708.905470][   T22]        _raw_spin_lock+0x30/0x70
+[  708.905961][   T22]        nocb_gp_wait+0x349/0x1d50
+[  708.906460][   T22]        rcu_nocb_gp_kthread+0xa3/0x230
+[  708.907000][   T22]        kthread+0x246/0x2d0
+[  708.907448][   T22]        ret_from_fork+0x1f/0x30
+[  708.907923][   T22] 
+[  708.907923][   T22] -> #0 (&rdp->nocb_lock){-.-.}-{2:2}:
+[  708.908664][   T22]        check_prev_add+0x94/0xbc0
+[  708.909167][   T22]        validate_chain+0x701/0x950
+[  708.909678][   T22]        __lock_acquire+0x9d7/0x1330
+[  708.910197][   T22]        lock_acquire+0x193/0x500
+[  708.910682][   T22]        _raw_spin_lock+0x30/0x70
+[  708.911174][   T22]        rcu_nocb_try_bypass+0x71b/0x990
+[  708.911715][   T22]        call_rcu+0x22d/0x840
+[  708.912172][   T22]        __kmem_cache_free+0x1c9/0x460
+[  708.912691][   T22]        select_fallback_rq+0x546/0x690
+[  708.913226][   T22]        __balance_push_cpu_stop+0x21d/0x470
+[  708.913791][   T22]        cpu_stopper_thread+0x206/0x450
+[  708.914328][   T22]        smpboot_thread_fn+0x38a/0x870
+[  708.914852][   T22]        kthread+0x246/0x2d0
+[  708.915297][   T22]        ret_from_fork+0x1f/0x30
+[  708.915769][   T22] 
+[  708.915769][   T22] other info that might help us debug this:
+[  708.915769][   T22] 
+[  708.916718][   T22] Chain exists of:
+[  708.916718][   T22]   &rdp->nocb_lock --> rcu_node_0 --> &rq->__lock
+[  708.916718][   T22] 
+[  708.917838][   T22]  Possible unsafe locking scenario:
+[  708.917838][   T22] 
+[  708.918541][   T22]        CPU0                    CPU1
+[  708.919055][   T22]        ----                    ----
+[  708.919543][   T22]   lock(&rq->__lock);
+[  708.919927][   T22]                                lock(rcu_node_0);
+[  708.920535][   T22]                                lock(&rq->__lock);
+[  708.921146][   T22]   lock(&rdp->nocb_lock);
+[  708.921576][   T22] 
+[  708.921576][   T22]  *** DEADLOCK ***
+[  708.921576][   T22] 
+[  708.922329][   T22] 2 locks held by migration/1/22:
+[  708.922796][   T22]  #0: ffff88812e1ec000 (&p->pi_lock){-.-.}-{2:2}, at: __balance_push_cpu_stop+0x8b/0x470
+[  708.923764][   T22]  #1: ffff88839d3f1518 (&rq->__lock){-.-.}-{2:2}, at: __balance_push_cpu_stop+0xa0/0x470
+[  708.924711][   T22] 
+[  708.924711][   T22] stack backtrace:
+[  708.925280][   T22] CPU: 1 PID: 22 Comm: migration/1 Tainted: G        W          6.1.0-rc2-00015-g851a723e45d1 #1
+[  708.926248][   T22] Stopper: __balance_push_cpu_stop+0x0/0x470 <- balance_push+0x218/0x360
+[  708.927040][   T22] Call Trace:
+[  708.927351][   T22]  <TASK>
+[  708.927632][   T22]  dump_stack_lvl+0x9c/0xea
+[  708.928053][   T22]  check_noncircular+0x28e/0x330
+[  708.928517][   T22]  ? kvm_sched_clock_read+0x14/0x30
+[  708.929024][   T22]  ? print_circular_bug+0x470/0x470
+[  708.929546][   T22]  ? housekeeping_affine+0xa0/0xa0
+[  708.930071][   T22]  ? alloc_chain_hlocks+0x21f/0x6f0
+[  708.930572][   T22]  check_prev_add+0x94/0xbc0
+[  708.931053][   T22]  ? lockdep_lock+0xa8/0x190
+[  708.931491][   T22]  ? usage_skip+0x170/0x170
+[  708.931936][   T22]  validate_chain+0x701/0x950
+[  708.932378][   T22]  ? check_prev_add+0xbc0/0xbc0
+[  708.932842][   T22]  ? mark_lock+0x36/0x3c0
+[  708.933282][   T22]  __lock_acquire+0x9d7/0x1330
+[  708.933749][   T22]  lock_acquire+0x193/0x500
+[  708.934198][   T22]  ? rcu_nocb_try_bypass+0x71b/0x990
+[  708.934717][   T22]  ? lock_downgrade+0x120/0x120
+[  708.935188][   T22]  _raw_spin_lock+0x30/0x70
+[  708.935631][   T22]  ? rcu_nocb_try_bypass+0x71b/0x990
+[  708.936143][   T22]  rcu_nocb_try_bypass+0x71b/0x990
+[  708.936641][   T22]  ? rcu_implicit_dynticks_qs+0x850/0x850
+[  708.937195][   T22]  ? find_and_remove_object+0x1b0/0x1b0
+[  708.937700][   T22]  call_rcu+0x22d/0x840
+[  708.938095][   T22]  ? rcu_nocb_try_bypass+0x990/0x990
+[  708.938591][   T22]  ? select_fallback_rq+0x546/0x690
+[  708.939097][   T22]  __kmem_cache_free+0x1c9/0x460
+[  708.939580][   T22]  select_fallback_rq+0x546/0x690
+[  708.940067][   T22]  ? __do_set_cpus_allowed+0x730/0x730
+[  708.940593][   T22]  ? update_rq_clock+0xd8/0x890
+[  708.941060][   T22]  __balance_push_cpu_stop+0x21d/0x470
+[  708.941605][   T22]  ? tracer_hardirqs_on+0x3b/0x3f0
+[  708.942101][   T22]  ? migration_cpu_stop+0xb60/0xb60
+[  708.942582][   T22]  ? _raw_spin_unlock_irq+0x24/0x40
+[  708.943068][   T22]  ? migration_cpu_stop+0xb60/0xb60
+[  708.943566][   T22]  cpu_stopper_thread+0x206/0x450
+[  708.944084][   T22]  ? stop_core_cpuslocked+0x1c0/0x1c0
+[  708.944611][   T22]  ? smpboot_thread_fn+0x6f/0x870
+[  708.945096][   T22]  smpboot_thread_fn+0x38a/0x870
+[  708.945604][   T22]  ? find_next_bit+0x30/0x30
+[  708.946058][   T22]  kthread+0x246/0x2d0
+[  708.946467][   T22]  ? kthread_complete_and_exit+0x40/0x40
+[  708.947015][   T22]  ret_from_fork+0x1f/0x30
+[  708.947449][   T22]  </TASK>
+[  708.974879][ T3910] smpboot: CPU 1 is now offline
+[  709.052971][ T3910] x86: Booting SMP configuration:
+[  709.053504][ T3910] smpboot: Booting Node 0 Processor 1 APIC 0x1
+[  709.065107][    T0] masked ExtINT on CPU#1
+[  709.177297][ T3910] smpboot: CPU 1 is now offline
+[  709.236384][ T3910] x86: Booting SMP configuration:
+[  709.236914][ T3910] smpboot: Booting Node 0 Processor 1 APIC 0x1
+[  709.248562][    T0] masked ExtINT on CPU#1
+[  709.357577][ T3910] smpboot: CPU 1 is now offline
 
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20231030/202310302216.f79d78bc-oliver.sang@intel.com
+https://download.01.org/0day-ci/archive/20231030/202310302207.a25f1a30-oliver.sang@intel.com
 
 
 
