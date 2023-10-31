@@ -1,195 +1,204 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.24])
+Received: from dggsgout12.his.huawei.com (dggsgout12.his.huawei.com [45.249.212.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4C9220E6
-	for <oe-lkp@lists.linux.dev>; Tue, 31 Oct 2023 07:46:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZS3gnszU"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698738399; x=1730274399;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=+I7MJfrDSrlWPuliA1tdEITtShmNym5QuTB2OMm1B7Y=;
-  b=ZS3gnszU44AzqS17LtXfm8lSQDMknEfRQr8wXE3g14WYg9kxCgcbHszK
-   J4X/AIWpRu3GbXvA+l6fnjUdVc2aeNwoiGTQ2V7he4jZYsrgmhmN54lBc
-   X2ENtxRzcR4NquFzLK8vgxCc+Rl+NyRPmFgzNLs2MFpYoKxalYF89KuKh
-   xkGZHK0bc8kF+WWNPEHNyuQ9ZpKE3Mo985Hm5SmVL88FyelBrY52FRTJL
-   2uY75f4vvOk04KixoqKS7dJRwuhDusR1kT1YpXEmipH9b/jg1iYNll03W
-   6rgZuhrfgDnlC85S0ds9bv+0ZJ8Y9bumICX/lZlTmhsOL9JKlkT9jJfLG
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10879"; a="391107305"
-X-IronPort-AV: E=Sophos;i="6.03,265,1694761200"; 
-   d="scan'208";a="391107305"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Oct 2023 00:46:39 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10879"; a="877422140"
-X-IronPort-AV: E=Sophos;i="6.03,265,1694761200"; 
-   d="scan'208";a="877422140"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by fmsmga002.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 31 Oct 2023 00:46:36 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34; Tue, 31 Oct 2023 00:46:37 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34 via Frontend Transport; Tue, 31 Oct 2023 00:46:37 -0700
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.57.41) by
- edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.34; Tue, 31 Oct 2023 00:46:37 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HRD5/qpGKFkK0QEymFNUohPy6oThRkAnGXkrwPqtcPtP4K+f2jCR06xRrWDNGoBiLPsnquDySgrQbliCDC+gGgK3QgI8jzg3HHW/KwB28vFy1JhoP+S3fCPZrV2k2sYa2uzneAXFYEUPHlMPTetE0GkSj2SDDYSDdbEOU5RHDjYjfwqUwRQQdspcvh+0pQsPPxEjwX6Ae8zE/8jbO5TtRssmMNKozqVYUKs6uU1TfWoOw3oGNiD+C2RM8SHIwySfXwU5v8576x2OcUch8c1VXXLTtkvggEuDrVjEhVizPsG3yxeYmVTi9LTNSfRUSBSBvYYItVIZcoECGILYC+UP7Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nrgHfw73PnSaE56A4xvQE0EQhD+x6KTA30XpCSCJ3Wo=;
- b=Y8cKsjHeTHrlpGURBB9FoC3uurdQ17VA5t8oJ/9aDyl6Ws1XqnGg0wVlKPDuOrDm2buMgwZJii1xDqpDMTIbI5uyAtmXyNov9Ged/AtCJSu1yHdrPyQZM1/qysADqAQIXeCaHcdQRKFVYpfTPFAqCKL2a7dO1uSoy4LCRJBX/i7tAzrbFR5G1lSksGHKdYaTAC5tIHDakImRZTL+h2CL5GaPKDIVmbte0MFcPy0rCdC4CJNsO4OatoEc6Mte8CYYTXqhpE1u73cqlGuglMKRfr5nyGUPB5L1szN7Szx5GpAspq9M13DIS1s3OYcqEYdEsdaMi+/sktY6SbEpm/s0vw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
- by SN7PR11MB6750.namprd11.prod.outlook.com (2603:10b6:806:266::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6933.27; Tue, 31 Oct
- 2023 07:46:30 +0000
-Received: from PH8PR11MB6779.namprd11.prod.outlook.com
- ([fe80::29f0:3f0f:2591:d1f6]) by PH8PR11MB6779.namprd11.prod.outlook.com
- ([fe80::29f0:3f0f:2591:d1f6%3]) with mapi id 15.20.6933.026; Tue, 31 Oct 2023
- 07:46:30 +0000
-Date: Tue, 31 Oct 2023 15:46:23 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: Anand Jain <anand.jain@oracle.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, David Sterba
-	<dsterba@suse.com>, <linux-btrfs@vger.kernel.org>, <oliver.sang@intel.com>
-Subject: [kdave-btrfs-devel:dev/guilherme/temp-fsid-v4] [btrfs] 479361d32b:
- xfstests.btrfs.185.fail
-Message-ID: <202310311425.c2e34aef-oliver.sang@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-X-ClientProxiedBy: KL1PR01CA0098.apcprd01.prod.exchangelabs.com
- (2603:1096:820:3::14) To PH8PR11MB6779.namprd11.prod.outlook.com
- (2603:10b6:510:1ca::17)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01EC3111AE
+	for <oe-lkp@lists.linux.dev>; Tue, 31 Oct 2023 08:18:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=huaweicloud.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=huaweicloud.com
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: from mail.maildlp.com (unknown [172.19.163.216])
+	by dggsgout12.his.huawei.com (SkyGuard) with ESMTP id 4SKMyy66z7z4f3jrc
+	for <oe-lkp@lists.linux.dev>; Tue, 31 Oct 2023 16:01:14 +0800 (CST)
+Received: from mail02.huawei.com (unknown [10.116.40.128])
+	by mail.maildlp.com (Postfix) with ESMTP id 003791A0177
+	for <oe-lkp@lists.linux.dev>; Tue, 31 Oct 2023 16:01:20 +0800 (CST)
+Received: from [10.174.176.117] (unknown [10.174.176.117])
+	by APP4 (Coremail) with SMTP id gCh0CgBH0M9JtEBlu0O_EQ--.40065S2;
+	Tue, 31 Oct 2023 16:01:16 +0800 (CST)
+Subject: Re: [linus:master] [bpf] c930472552:
+ WARNING:at_kernel/bpf/memalloc.c:#bpf_mem_alloc_init
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+ Alexei Starovoitov <ast@kernel.org>, bpf@vger.kernel.org,
+ "houtao1@huawei.com" <houtao1@huawei.com>
+References: <202310302113.9f8fe705-oliver.sang@intel.com>
+From: Hou Tao <houtao@huaweicloud.com>
+Message-ID: <7506b682-3be3-fcd0-4bb4-c1db48f609a2@huaweicloud.com>
+Date: Tue, 31 Oct 2023 16:01:13 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|SN7PR11MB6750:EE_
-X-MS-Office365-Filtering-Correlation-Id: 26cd1e6c-eb84-4af1-7c3c-08dbd9e57ee2
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Av3p4zFpEOts+sMzdU055DaMn2eG5S8u3RzBEhlH1Jhgrf+aR12UT7QrczZ50SIR49pbiQHPKcYGF2ImPDow4Hxy33Y46hkmVNbXfpCIcJj6m/5mnSBncdxJMlDNN4lyxcTX8WSG+rshxUHtmjGBtHQUAuw/sQNTs8gazzKuDpFN1UMEM2cvcL1ieJVaVFjbTcv09IHKytZS9AM+SnQ4FF+nTnL1C8aBa5RiwlpLIu1Krvi5mKZITukxkx4IaQeEcn0DJs256kdBf5UN83Syl2OXsd8eD5Qwwauy2Leq5D+9MZMVpVsVMM9lcDg8BWHPB8huFJaFDLPsbt2xXOlnGdqJ5PV0de98qEc/mn7vMzQXEWDELlzCIUeOuniGZS9Ct6MI4SZCfHblDYYz2Og/lqYCDYxnrj8qyIJQJGMFT8MNC1XwvjbZLi0NmeNm9Q0oSZgRho1XEYjMsnQOu+LNe6291CUb+z6z64gSkfHQH4lPr5o1oiD0BbyFH3tq5LMBpeY9CBb54nR9XvvV5ts4AXvgY9Gvys+fF/Q4SZMyffutUTyC5zUQ2b/9YVkG1RDPqoPJEiCzxHQPl6qKoBlh6g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(366004)(376002)(39860400002)(346002)(396003)(230922051799003)(186009)(451199024)(1800799009)(64100799003)(5660300002)(41300700001)(2906002)(8936002)(66476007)(66946007)(66556008)(966005)(6486002)(8676002)(4326008)(316002)(6916009)(478600001)(38100700002)(83380400001)(107886003)(86362001)(36756003)(6506007)(6666004)(6512007)(26005)(1076003)(82960400001)(2616005);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?CR21UnINveb1eeiWKFaVJxUWkdIjV4Tq3o/UwVPfz1fjFBmfD54uAs96rrvO?=
- =?us-ascii?Q?Pp0yVyh9rWOMwSwJtp/120opRKeKQHIAjcWFB2pOWC7Nd3Zp68ByWckypooo?=
- =?us-ascii?Q?XV1WRkS9K7sQwkeXvGS43SUaZ1GgqOx2D3FUajyt7+5yVUzADQJRqShFlKSy?=
- =?us-ascii?Q?RJOVasmjky6S86X9PCu1E8TKPRNa4nP/a2tcih6dcvjg17T4P74jl6B5Nxbb?=
- =?us-ascii?Q?Y6ucEB8SzGgz4JB6oxsSkFAAjPJ68cfR4HdHxjw9GjytoEftAz8ToVeoeCCt?=
- =?us-ascii?Q?7RHVCFruzlCi73rMQ90DltVgffZwShT+hA0sUa0Bd5Ip/zW4rTAnmK9yWtNt?=
- =?us-ascii?Q?fXh9LQRv2+CSPTlHd0M/xfsRPYjXHw+Fc8+5xG/Tv7biyKZLDBm2OcbTChKU?=
- =?us-ascii?Q?qiifU8dHcGqY0gtVA11ve/Embp0nV5vEr5IC2Q8L9x9lgX4K8y+34y8Hm7C9?=
- =?us-ascii?Q?ygoGh4IejEV+M261xafv4TBMdfLSjoyRXt+WTMvwz1X0aOx1z9v0bth4iW3p?=
- =?us-ascii?Q?CZN1+Vbic+cueC0vqk5zWZ+PwGMhc1AQ6cg15GL8LwwxVNStGGgyxCWxapoL?=
- =?us-ascii?Q?m0kyjFzHELVfQxmgrGugoFL4M16EDMyPVUnvUWJtWXB4274ZEoe2Qzv9livb?=
- =?us-ascii?Q?9bLAoxJPBQ3SvYizXvdCW3VKjbsXUKJDIxf+edixoz2vZV6FnSwcaX0i3uA4?=
- =?us-ascii?Q?QZkY9Bt4WylJckCl4JLKCQqXMWTPVVxIryrF096q3WuNVUC4aKMPdqsEnV4S?=
- =?us-ascii?Q?ocaLClvKDIAwYM2Wiu6YN4th8u9GTEtYA6WqOgRYAXKnH6YUIEIWLOtympaA?=
- =?us-ascii?Q?7McGSxAqKI+9mzQDHr56jYJiM2fy6ofk/LCNNBSEQniCTejZ/8Zi5dSog62x?=
- =?us-ascii?Q?kTsmCZWp0QEmVzglD7xqqwm6e8Y3mnEYJq59EpyerOmlAqriK3XOdxUIg9V7?=
- =?us-ascii?Q?koU9XZiGPN65OEVxou7O1o99aQ0yNWe+f7kQtcmJo9L6SsbZlB1foTZe8gF7?=
- =?us-ascii?Q?wWUMG5QKHprH2u9sEoQw0CG2vm2zNIRgR868jQjgdSrnIz8K5bIWRlcFraoq?=
- =?us-ascii?Q?Lcc9RgXo6jU23c6Tr0FhuJyG/rmJDAyJbFeXm6EodL0qLC+B3t2hvxJThaDY?=
- =?us-ascii?Q?Bpew8lVTHRdtofsnwI0KzaEDjIBai6Pbag5hpDyODDmL3vcMzasRpp8f6lmu?=
- =?us-ascii?Q?2zS+QoHXK4BXKAtvHgJj/QQFLwQZeT16M1X6kdwBa4Uc2z0N+uKvKaRuIAah?=
- =?us-ascii?Q?lvbehagLvM2wQbZi73rnyJBE6GG6MhJh+exLtoVkcRMbsWNpMTZeI9a+zlPr?=
- =?us-ascii?Q?BzbVeGdk8MMWaqoBwdFr2WjG1J7ZupxGb26a3OnfPzZ1bu2DFqLItrvgiUVQ?=
- =?us-ascii?Q?I50KRyKmJ2W08Pjb2pV2U+9KMqj6N+uSGuG/a/M/X140IO4y4u+QcuySG+nB?=
- =?us-ascii?Q?RhAPNvJ5RlvLtnBcQeiUwUFM2XM4ZC2UTg80WgRzqJ0DhbYLmmE+yT+3AlHn?=
- =?us-ascii?Q?AfQDQvL/FRur3ibbHryTKhCiLPwKFKblavifW53zFw9ZORVoUwErG9RW69uv?=
- =?us-ascii?Q?dxlSySjomaju9vv2lkj+bWA8hVEuwYN1HuQjOniC4tq2/3Nr0UJy9IPZw09M?=
- =?us-ascii?Q?5w=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 26cd1e6c-eb84-4af1-7c3c-08dbd9e57ee2
-X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB6779.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Oct 2023 07:46:30.3814
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: dpJEouXB6Z2Bi8NJr2DKU4JInE/NVZngi5aAs1CbtSezW1ge1DPSzdGafPcW8uCD9Sa4X0OGUd6zd7uJUnuy7w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB6750
-X-OriginatorOrg: intel.com
+In-Reply-To: <202310302113.9f8fe705-oliver.sang@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-CM-TRANSID:gCh0CgBH0M9JtEBlu0O_EQ--.40065S2
+X-Coremail-Antispam: 1UD129KBjvJXoW3JF1DXr18tF1UZw4xZw1xGrg_yoW3Ww1xpa
+	y3JFyxGr4kZFWUJ3WUJF1Fyr15XwnYy3W7tF9rKr1rZr1jkryDZrZ7XrWSqr9IkrWDCr13
+	JF1DtF48tryUXaUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUyEb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k2
+	6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
+	vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7Cj
+	xVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x
+	0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG
+	6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFV
+	Cjc4AY6r1j6r4UM4x0Y48IcVAKI48JMxk0xIA0c2IEe2xFo4CEbIxvr21l42xK82IYc2Ij
+	64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x
+	8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAKI48JMIIF0xvE
+	2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42
+	xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIE
+	c7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7IU1zuWJUUUUU==
+X-CM-SenderInfo: xkrx3t3r6k3tpzhluzxrxghudrp/
 
+Hi,
 
+On 10/30/2023 10:11 PM, kernel test robot wrote:
+> hi, Hou Tao,
+>
+> we noticed a WARN_ONCE added in this commit was hit in our tests. FYI.
+>
+>
+> Hello,
+>
+> kernel test robot noticed "WARNING:at_kernel/bpf/memalloc.c:#bpf_mem_alloc_init" on:
+>
+> commit: c930472552022bd09aab3cd946ba3f243070d5c7 ("bpf: Ensure unit_size is matched with slab cache object size")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>
+> [test failed on linus/master ffc253263a1375a65fa6c9f62a893e9767fbebfa]
+> [test failed on linux-next/master c503e3eec382ac708ee7adf874add37b77c5d312]
+>
+> in testcase: boot
+>
+> compiler: gcc-12
+> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+>
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+>
+>
+> +-------------------------------------------------------------+------------+------------+
+> |                                                             | b1d53958b6 | c930472552 |
+> +-------------------------------------------------------------+------------+------------+
+> | WARNING:at_kernel/bpf/memalloc.c:#bpf_mem_alloc_init        | 0          | 14         |
+> | EIP:bpf_mem_alloc_init                                      | 0          | 14         |
+> +-------------------------------------------------------------+------------+------------+
+>
+>
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202310302113.9f8fe705-oliver.sang@intel.com
+>
+>
+> [   32.249545][    T1] ------------[ cut here ]------------
+> [   32.250152][    T1] bpf_mem_cache[0]: unexpected object size 128, expect 96
+> [ 32.250953][ T1] WARNING: CPU: 1 PID: 1 at kernel/bpf/memalloc.c:500 bpf_mem_alloc_init (kernel/bpf/memalloc.c:500 kernel/bpf/memalloc.c:579) 
+> [   32.252065][    T1] Modules linked in:
+> [   32.252548][    T1] CPU: 1 PID: 1 Comm: swapper/0 Tainted: G        W          6.5.0-12679-gc93047255202 #1
+> [ 32.253767][ T1] EIP: bpf_mem_alloc_init (kernel/bpf/memalloc.c:500 kernel/bpf/memalloc.c:579) 
+> [ 32.254439][ T1] Code: 30 e8 7e 22 04 00 8b 56 20 39 d0 74 24 80 3d 18 c0 cc c2 00 75 3b c6 05 18 c0 cc c2 01 52 50 53 68 df 53 57 c2 e8 47 70 ef ff <0f> 0b 83 c4 10 eb 20 43 83 c6 74 83 fb 0b 0f 85 6a ff ff ff 8b 45
 
-Hello,
+Thanks for the report. I also could reproduce the warning in v6.6 by
+following the reproducing steps in the link below.
 
-kernel test robot noticed "xfstests.btrfs.185.fail" on:
+According the reproduce job, it seems that the kernel is built for i386
+(make HOSTCC=gcc-12 CC=gcc-12 ARCH=i386 olddefconfig prepare
+modules_prepare bzImage) and in .config CONFIG_SLAB instead of
+CONFIG_SLUB is enabled, I will check whether or not these two setups
+make any thing being different.
 
-commit: 479361d32be2d93c5fe727cc5cd2ea2c187635a8 ("btrfs: scan but don't register device on single device filesystem")
-https://github.com/kdave/btrfs-devel.git dev/guilherme/temp-fsid-v4
-
-in testcase: xfstests
-version: xfstests-x86_64-b15b6cc-1_20230925
-with following parameters:
-
-	disk: 6HDD
-	fs: btrfs
-	test: btrfs-185
-
-
-
-compiler: gcc-12
-test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (Haswell) with 8G memory
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202310311425.c2e34aef-oliver.sang@intel.com
-
-
-
-btrfs/185       [failed, exit status 1]- output mismatch (see /lkp/benchmarks/xfstests/results//btrfs/185.out.bad)
-    --- tests/btrfs/185.out	2023-09-25 16:30:56.000000000 +0000
-    +++ /lkp/benchmarks/xfstests/results//btrfs/185.out.bad	2023-09-27 11:53:55.152939282 +0000
-    @@ -1,2 +1,3 @@
-     QA output created by 185
-    -Silence is golden
-    +cloned device scan should fail
-    +(see /lkp/benchmarks/xfstests/results//btrfs/185.full for details)
-    ...
-    (Run 'diff -u /lkp/benchmarks/xfstests/tests/btrfs/185.out /lkp/benchmarks/xfstests/results//btrfs/185.out.bad'  to see the entire diff)
-
-HINT: You _MAY_ be missing kernel fix:
-      a9261d4125c9 btrfs: harden agaist duplicate fsid on scanned devices
-
-Ran: btrfs/185
-Failures: btrfs/185
-Failed 1 of 1 tests
-
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20231031/202310311425.c2e34aef-oliver.sang@intel.com
-
-
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Regards,
+Tao
+> All code
+> ========
+>    0:	30 e8                	xor    %ch,%al
+>    2:	7e 22                	jle    0x26
+>    4:	04 00                	add    $0x0,%al
+>    6:	8b 56 20             	mov    0x20(%rsi),%edx
+>    9:	39 d0                	cmp    %edx,%eax
+>    b:	74 24                	je     0x31
+>    d:	80 3d 18 c0 cc c2 00 	cmpb   $0x0,-0x3d333fe8(%rip)        # 0xffffffffc2ccc02c
+>   14:	75 3b                	jne    0x51
+>   16:	c6 05 18 c0 cc c2 01 	movb   $0x1,-0x3d333fe8(%rip)        # 0xffffffffc2ccc035
+>   1d:	52                   	push   %rdx
+>   1e:	50                   	push   %rax
+>   1f:	53                   	push   %rbx
+>   20:	68 df 53 57 c2       	push   $0xffffffffc25753df
+>   25:	e8 47 70 ef ff       	call   0xffffffffffef7071
+>   2a:*	0f 0b                	ud2		<-- trapping instruction
+>   2c:	83 c4 10             	add    $0x10,%esp
+>   2f:	eb 20                	jmp    0x51
+>   31:	43 83 c6 74          	rex.XB add $0x74,%r14d
+>   35:	83 fb 0b             	cmp    $0xb,%ebx
+>   38:	0f 85 6a ff ff ff    	jne    0xffffffffffffffa8
+>   3e:	8b                   	.byte 0x8b
+>   3f:	45                   	rex.RB
+>
+> Code starting with the faulting instruction
+> ===========================================
+>    0:	0f 0b                	ud2
+>    2:	83 c4 10             	add    $0x10,%esp
+>    5:	eb 20                	jmp    0x27
+>    7:	43 83 c6 74          	rex.XB add $0x74,%r14d
+>    b:	83 fb 0b             	cmp    $0xb,%ebx
+>    e:	0f 85 6a ff ff ff    	jne    0xffffffffffffff7e
+>   14:	8b                   	.byte 0x8b
+>   15:	45                   	rex.RB
+> [   32.256641][    T1] EAX: 00000037 EBX: 00000000 ECX: 00000002 EDX: 80000002
+> [   32.257402][    T1] ESI: fefbda30 EDI: da953a30 EBP: c3d49ef0 ESP: c3d49ec0
+> [   32.258176][    T1] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068 EFLAGS: 00010286
+> [   32.259000][    T1] CR0: 80050033 CR2: 00000000 CR3: 02dd5000 CR4: 000406d0
+> [   32.259768][    T1] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 00000000
+> [   32.260526][    T1] DR6: fffe0ff0 DR7: 00000400
+> [   32.261021][    T1] Call Trace:
+> [ 32.261376][ T1] ? show_regs (arch/x86/kernel/dumpstack.c:479 arch/x86/kernel/dumpstack.c:465) 
+> [ 32.261835][ T1] ? bpf_mem_alloc_init (kernel/bpf/memalloc.c:500 kernel/bpf/memalloc.c:579) 
+> [ 32.262395][ T1] ? __warn (kernel/panic.c:673) 
+> [ 32.262840][ T1] ? report_bug (lib/bug.c:201 lib/bug.c:219) 
+> [ 32.263327][ T1] ? bpf_mem_alloc_init (kernel/bpf/memalloc.c:500 kernel/bpf/memalloc.c:579) 
+> [ 32.263884][ T1] ? exc_overflow (arch/x86/kernel/traps.c:250) 
+> [ 32.264368][ T1] ? handle_bug (arch/x86/kernel/traps.c:237) 
+> [ 32.264833][ T1] ? exc_invalid_op (arch/x86/kernel/traps.c:258 (discriminator 1)) 
+> [ 32.265333][ T1] ? handle_exception (arch/x86/entry/entry_32.S:1056) 
+> [ 32.265903][ T1] ? exc_overflow (arch/x86/kernel/traps.c:250) 
+> [ 32.266392][ T1] ? bpf_mem_alloc_init (kernel/bpf/memalloc.c:500 kernel/bpf/memalloc.c:579) 
+> [ 32.266982][ T1] ? exc_overflow (arch/x86/kernel/traps.c:250) 
+> [ 32.267476][ T1] ? bpf_mem_alloc_init (kernel/bpf/memalloc.c:500 kernel/bpf/memalloc.c:579) 
+> [ 32.268050][ T1] ? irq_work_init_threads (kernel/bpf/core.c:2919) 
+> [ 32.268610][ T1] bpf_global_ma_init (kernel/bpf/core.c:2923) 
+> [ 32.269142][ T1] do_one_initcall (init/main.c:1232) 
+> [ 32.269657][ T1] ? debug_smp_processor_id (lib/smp_processor_id.c:61) 
+> [ 32.270243][ T1] ? rcu_is_watching (include/linux/context_tracking.h:122 kernel/rcu/tree.c:699) 
+> [ 32.270770][ T1] do_initcalls (init/main.c:1293 init/main.c:1310) 
+> [ 32.271275][ T1] kernel_init_freeable (init/main.c:1549) 
+> [ 32.271841][ T1] ? rest_init (init/main.c:1429) 
+> [ 32.272324][ T1] kernel_init (init/main.c:1439) 
+> [ 32.272785][ T1] ret_from_fork (arch/x86/kernel/process.c:153) 
+> [ 32.273272][ T1] ? rest_init (init/main.c:1429) 
+> [ 32.273752][ T1] ret_from_fork_asm (arch/x86/entry/entry_32.S:741) 
+> [ 32.274272][ T1] entry_INT80_32 (arch/x86/entry/entry_32.S:947) 
+> [   32.274803][    T1] irq event stamp: 16968005
+> [ 32.275293][ T1] hardirqs last enabled at (16968013): console_unlock (arch/x86/include/asm/irqflags.h:26 arch/x86/include/asm/irqflags.h:67 arch/x86/include/asm/irqflags.h:127 kernel/printk/printk.c:347 kernel/printk/printk.c:2720 kernel/printk/printk.c:3039) 
+> [ 32.276277][ T1] hardirqs last disabled at (16968022): console_unlock (kernel/printk/printk.c:345 kernel/printk/printk.c:2720 kernel/printk/printk.c:3039) 
+> [ 32.277242][ T1] softirqs last enabled at (16967866): __do_softirq (arch/x86/include/asm/preempt.h:27 kernel/softirq.c:400 kernel/softirq.c:582) 
+> [ 32.278202][ T1] softirqs last disabled at (16967861): do_softirq_own_stack (arch/x86/kernel/irq_32.c:57 arch/x86/kernel/irq_32.c:147) 
+> [   32.279228][    T1] ---[ end trace 0000000000000000 ]---
+> [   32.280294][    T1] kmemleak: Kernel memory leak detector initialized (mem pool available: 15783)
+> [   32.281276][    T1] debug_vm_pgtable: [debug_vm_pgtable         ]: Validating architecture page table helpers
+> [   32.285847][   T74] kmemleak: Automatic memory scanning thread started
+> [   32.290289][    T1] UBI error: cannot create "ubi" debugfs directory, error -2
+> [   32.291558][    T1] UBI error: cannot initialize UBI, error -2
+>
+>
+>
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20231030/202310302113.9f8fe705-oliver.sang@intel.com
+>
+>
+>
 
