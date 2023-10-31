@@ -1,204 +1,162 @@
-Received: from dggsgout12.his.huawei.com (dggsgout12.his.huawei.com [45.249.212.56])
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01EC3111AE
-	for <oe-lkp@lists.linux.dev>; Tue, 31 Oct 2023 08:18:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=huaweicloud.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=huaweicloud.com
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from mail.maildlp.com (unknown [172.19.163.216])
-	by dggsgout12.his.huawei.com (SkyGuard) with ESMTP id 4SKMyy66z7z4f3jrc
-	for <oe-lkp@lists.linux.dev>; Tue, 31 Oct 2023 16:01:14 +0800 (CST)
-Received: from mail02.huawei.com (unknown [10.116.40.128])
-	by mail.maildlp.com (Postfix) with ESMTP id 003791A0177
-	for <oe-lkp@lists.linux.dev>; Tue, 31 Oct 2023 16:01:20 +0800 (CST)
-Received: from [10.174.176.117] (unknown [10.174.176.117])
-	by APP4 (Coremail) with SMTP id gCh0CgBH0M9JtEBlu0O_EQ--.40065S2;
-	Tue, 31 Oct 2023 16:01:16 +0800 (CST)
-Subject: Re: [linus:master] [bpf] c930472552:
- WARNING:at_kernel/bpf/memalloc.c:#bpf_mem_alloc_init
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1AB21802B
+	for <oe-lkp@lists.linux.dev>; Tue, 31 Oct 2023 09:23:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oracle.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="PktaQ/Sq";
+	dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="fbDJoLzK"
+Received: from pps.filterd (m0333521.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 39UMxHSw001890;
+	Tue, 31 Oct 2023 09:23:29 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2023-03-30;
+ bh=4YaT9bmvZ02XV53+fUJ58TRnyYrckeFckAoB/rvHw1M=;
+ b=PktaQ/SqyW5YIgTwdg8BRUcublvQdLDdf5a6aqf84Mw+F7rmX94K9hepTEA5KqyFPG6V
+ 87gywi4XHr+dJM7d2pJtlCHj35+U6eEj4tZd9sPuCx/QfQxo5WihDFPPlcVmE7PVyY3U
+ fYvuXVsRH+6N98VfWrbzAe8X56XwiYtWdmOvTf7XckNr5cYxItyhQh3AcoIPt2HhB8Cv
+ NS3y7CekcKcQCVvI2jjWG+AD5wWqw9AknrWP0YulKhcPa3E0NYxIHPe3RJLgBjVZlIb6
+ 9sP4zm1gNoLE7PjXB7Qq6B+553szKXYjQxoyCzvdd8+KFLZo+JCw8wMZP+CL9ESueO5D Yg== 
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3u0s7bvmnb-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 31 Oct 2023 09:23:28 +0000
+Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 39V8oeb3020308;
+	Tue, 31 Oct 2023 09:23:27 GMT
+Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2100.outbound.protection.outlook.com [104.47.70.100])
+	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3u0rrbmpf3-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 31 Oct 2023 09:23:27 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YUq1Urvd94Yy4lAph8QxDNEY10Sr+k78sxrkXTRZgR5sZdIIU9GRGjyG5ZsYciIYnkIJLvgxdjtfevlakSaGeIoYWKZ7NOhnf8LKhdkHkD7STbw82Kf9msxI213HdD8WDwxyYYc5CO/JIuWwnVt+RSs9ZnPZfrcyiyK+hyIEUQX2DNtYlTbHvIgy2E0pq076IR5uwKvG/HEuBtqxCsTxco+rkTzbrdFeP2z9Qts/WVWxZOp9sPEPnOTyi2JVLbsMIRBLdVN9EX3EQNoA8ddH8Rd8gb+HN5qus+dVus+EEKhF6Pkn+PixpB0L9XrC+h2Ttyv+6SWr2xFA37cre6McDA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4YaT9bmvZ02XV53+fUJ58TRnyYrckeFckAoB/rvHw1M=;
+ b=Un8CFhDFYOZG82PAmBorCf12UdTrPVOvgfDIR/snoMBusS3sG1uLSeVCjiUANvb3qSoWSAFb1/U32oOceOMhyZ3xZR4D88uEydTEtHpXJBEj7pKqW1Onx8fORn7OZNNvS1X7inTHCLQlCuuXZyMsIHIIg0fnV1TfHPIsOW7rUPipqLHhczPvkrLLUP8ub0TeXJv19+2kpkhjwxqLDRkbq5/c2WniX5Hz+DH+WsCyVmUlo2dVWSgbTVVa6wnWiYh4YxDCa9ICG2fqJpxTTTpgPdZ4jJT5wGDkGPwQYWqYBmmx1UDrBw0Uq24wOa8pvJfCtP0etRhLKwnVVi+5o0N5WA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4YaT9bmvZ02XV53+fUJ58TRnyYrckeFckAoB/rvHw1M=;
+ b=fbDJoLzKMxgU4YdJflgv3FKlIXs1cRmmEWzcTotjc6VnHKb12olTbwbn0fRTAof62c7ivKKhw4zs58w4xE3wnw4YUHt+Cle8u05vWHAKQnKxP2NxOWrACgU3NBArTXkRJsCho6mQ15qHOcxnk72JtwjVnAmDHKGR4oWIrCB8y4Q=
+Received: from PH0PR10MB5706.namprd10.prod.outlook.com (2603:10b6:510:148::10)
+ by SN7PR10MB6497.namprd10.prod.outlook.com (2603:10b6:806:2a4::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6933.24; Tue, 31 Oct
+ 2023 09:23:26 +0000
+Received: from PH0PR10MB5706.namprd10.prod.outlook.com
+ ([fe80::8732:b8be:e262:1fb]) by PH0PR10MB5706.namprd10.prod.outlook.com
+ ([fe80::8732:b8be:e262:1fb%4]) with mapi id 15.20.6933.029; Tue, 31 Oct 2023
+ 09:23:25 +0000
+Message-ID: <f291309a-71d3-484b-a876-99382a61363d@oracle.com>
+Date: Tue, 31 Oct 2023 17:23:18 +0800
+User-Agent: Mozilla Thunderbird
+Subject: Re: [kdave-btrfs-devel:dev/guilherme/temp-fsid-v4] [btrfs]
+ 479361d32b: xfstests.btrfs.185.fail
+Content-Language: en-US
 To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
- Alexei Starovoitov <ast@kernel.org>, bpf@vger.kernel.org,
- "houtao1@huawei.com" <houtao1@huawei.com>
-References: <202310302113.9f8fe705-oliver.sang@intel.com>
-From: Hou Tao <houtao@huaweicloud.com>
-Message-ID: <7506b682-3be3-fcd0-4bb4-c1db48f609a2@huaweicloud.com>
-Date: Tue, 31 Oct 2023 16:01:13 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, David Sterba <dsterba@suse.com>,
+        linux-btrfs@vger.kernel.org
+References: <202310311425.c2e34aef-oliver.sang@intel.com>
+From: Anand Jain <anand.jain@oracle.com>
+In-Reply-To: <202310311425.c2e34aef-oliver.sang@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SG2P153CA0038.APCP153.PROD.OUTLOOK.COM (2603:1096:4:c6::7)
+ To PH0PR10MB5706.namprd10.prod.outlook.com (2603:10b6:510:148::10)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <202310302113.9f8fe705-oliver.sang@intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-CM-TRANSID:gCh0CgBH0M9JtEBlu0O_EQ--.40065S2
-X-Coremail-Antispam: 1UD129KBjvJXoW3JF1DXr18tF1UZw4xZw1xGrg_yoW3Ww1xpa
-	y3JFyxGr4kZFWUJ3WUJF1Fyr15XwnYy3W7tF9rKr1rZr1jkryDZrZ7XrWSqr9IkrWDCr13
-	JF1DtF48tryUXaUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUyEb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k2
-	6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
-	vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7Cj
-	xVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x
-	0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG
-	6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFV
-	Cjc4AY6r1j6r4UM4x0Y48IcVAKI48JMxk0xIA0c2IEe2xFo4CEbIxvr21l42xK82IYc2Ij
-	64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x
-	8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAKI48JMIIF0xvE
-	2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42
-	xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIE
-	c7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7IU1zuWJUUUUU==
-X-CM-SenderInfo: xkrx3t3r6k3tpzhluzxrxghudrp/
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR10MB5706:EE_|SN7PR10MB6497:EE_
+X-MS-Office365-Filtering-Correlation-Id: 21a32b82-adc2-469a-b697-08dbd9f308aa
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 
+	fUJtKSeul7hHJ2HTOwsz9+1ykUc1talcMfbTc5VHLGg+8/PCOxOywUnWwckS1oLi07IRp4EdFSH9Z9usdOGVN0MdJGPSwR91nBZq4f4MxQ4ruGXkhLmOCeIMxHWYPpwl+en3j15hP2IYc5yyBf8f1zuXzApno7FT3FYh3G7nmqRS0rNpU3kdZBxNI8M+KDn77mMe2TK7PY2Xf3rksjDFn5NnhQ+PUchzfJ+bdt5T08+43hh9y2br4nssbZvt5OcBuCaYUKS0cTxvUIo/rCoClfI2upgJP0NAFdXbbT/FPL1Im7Zy/BSIzxBjKdU8bnY6heHBNmNVWaNCoPTsM8Y0AuWXJrZ1mM6J4FbkvprsSA0mN7az7BVMutMsXI9hxyROhbgV3a9yFXVbB9PhsUM+vZB1T1VysdDQ1WNAvKPPMpgR3BPFoYmVRTOUuBBXqeVi9z0yIVVvl/Ia92oXRCbpQYTUixxVe/BcssyLY/aZF4MAE2rjYdTthXV35lfztlyhDMW+ggAkGXv3DczAK/ncuVXAHCOll7WKf5iP1nq6o1Ewz5EgbkWLveckOAY1+APk2rwAA0fXf8cO61l2BmL9urKCw+jKi8qwR0m4ZE7mFS9/DyacfXj3nsiR4XHwQSKPpog+G7oFqjIOeKvTVueihQ==
+X-Forefront-Antispam-Report: 
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR10MB5706.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(136003)(39860400002)(346002)(376002)(396003)(230922051799003)(451199024)(64100799003)(1800799009)(186009)(558084003)(31686004)(6666004)(6506007)(6512007)(41300700001)(86362001)(8676002)(8936002)(5660300002)(4326008)(38100700002)(2906002)(66946007)(2616005)(36756003)(26005)(44832011)(66556008)(31696002)(66476007)(478600001)(83380400001)(6916009)(316002)(6486002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: 
+	=?utf-8?B?TVhSNDJsb0dkOStWaHdRL1BPTjBHVTZrOFZLTDF2QnFDWklVcW01eGp4Z2Jr?=
+ =?utf-8?B?ZGZVWlpNQzVaWG9nQXFOdkMrcStqcDZCdEp4V0dJaTlQbGt5emdRUGRQcXRh?=
+ =?utf-8?B?S0JDN2I3bml2ZXVrblFucWtKb1FyMWVIaFY2MDZ5Q3pTVTdqd2ZEMmkva2Rp?=
+ =?utf-8?B?aWFpWElMNDlyVGtNMVBZdk9tNzlORVV1L3ROOGozaVdFZHhFMTRaU2s1RUNM?=
+ =?utf-8?B?ZlBPeUpGVktzdUFUaTBBcGxucVhkbERNQTBIWGZoOS96Kzk4Ly96RlZ1OExX?=
+ =?utf-8?B?UExZMlU3UUhwbUUzaVIzZkVnUjlRNkpreE81Y1VNRmhCQzVZRmhieDFqcHEv?=
+ =?utf-8?B?eW10K1ZmQnBFcERkUFA1VU1id1BFcDAzNUpuaXBKNzlOYkd2djVueWxWanFp?=
+ =?utf-8?B?MmxRV0FrazcrWHBncGNmTm5scFZTL21qS3d6TktBTmFPUXI2Q05YVTJsWGZW?=
+ =?utf-8?B?Um5PQ09YMG5CSnVpTWFsdGwveVJ0RXFwMVRBelQ0QWlORURXcXFjNHZLaE5O?=
+ =?utf-8?B?ZmFFQXAvQTBFZ2prY2krMU9HckhpT2tLSzJMVzBaSlhFSVJlZFBzNzJGOGxD?=
+ =?utf-8?B?VlduSzNWSnJGbDNEYWZTNEpVVy9BcFk1ek9rNUsyOEZwbmlyTk9sWlVneTJH?=
+ =?utf-8?B?T1FFRU9RZGF5SVJCMDBML3R0RTNVaUtpTFpCZGQwWDJrLzVabWFNMUhjR1Ju?=
+ =?utf-8?B?bkxRZTB3VzR4Z2toWUpGR0pISlZMUS9XVEJzNHUrMStSRU5GbEord2poUVlM?=
+ =?utf-8?B?ZkRUNTgvZzlSNU9vdWRUZWNCcHgxa1d1d0VBYVF5elBmbnBQcWtWbWJJOTFF?=
+ =?utf-8?B?b1F1SlRrc1AvV1lxZ2RLQVMraEpWajhlZ2xHRDJsZWFJTmJ1cWd2UGU1TWc2?=
+ =?utf-8?B?Q0hGSnl0TmNxMlk5R1ZFekd2WFBHYVBCMnR5UW1LenlEbGtKT01aQy9jVUtL?=
+ =?utf-8?B?VHlianZtZC9sY1RjTEtqRnZFVTFOOFNabVdGREhwL0xXNUNlYUdxb3EwTVNP?=
+ =?utf-8?B?OHlDSmN6aWloQVdhNGxBUVhRRGUvalFZbVFVSHJudVI4NGhQVUNhQnQ2MGlS?=
+ =?utf-8?B?U3RxWlpBVVhUa3lQTitiTUZDSHo5d294OWlGRXZ1WnBaS3htZURka1BDUklh?=
+ =?utf-8?B?MGhUNm1aNjQvUXg3NVlZTVY2czFnNW5nMDJ4aWV4N1h5eGZjbkhXa3diOEps?=
+ =?utf-8?B?ODZ5cWtNZTNLODAwa1NxdnQ2QzNtd2VuUDBOaUJMVkN3eHZmWWExc3B6VDV3?=
+ =?utf-8?B?L1NvclRna3NxYjBxVkN3TDRpU013YzhnQ1ZFamoydWI0N1BXOFpZU2FoVldi?=
+ =?utf-8?B?WGkwUHNmelNOckVUajA1MUNIek40S0lrbXgvRjdOWDNmcWlHVDA2VzlUN3Qx?=
+ =?utf-8?B?cDVJMkNocWNYWUJZcjYrNHUrczNCT0FaSThxNHo2c2V5eS9CWE1OTjZqbFJm?=
+ =?utf-8?B?VEljNGJKWm0vS2dVVUMyVTVXQUhGQ2NrcFhYZjZTV2QyK1UyVStGYVdLOXVa?=
+ =?utf-8?B?aFdnalU1Z0g5Q25tZ2tiRWZPd1BWOW9VaHIxYlo2VWJVbm44UWhiWEl1dUFT?=
+ =?utf-8?B?Y3h0bUF6VFkrVEtYaVpGdElhUStyQk5OL1NlTjVGUDRYTVpyMGZPdkdjTFJa?=
+ =?utf-8?B?cGVTemxEcXkzUDM1Wmwrdk1Oam03Y1V5ejY5enZmWWJ1b1NwV1J0K3RtY3Fu?=
+ =?utf-8?B?ZVlnM3BVZktZRjQxaFFtQkc5SHJkRG9FV0VrZmo1WWtsdmJQa1NETzBDcXJD?=
+ =?utf-8?B?V2hteHdyNzhBZGtsbHNDZnpLWFpnVjFkMGJNcUJScU5WZUVEbVVpdXFEdkRM?=
+ =?utf-8?B?UjFsSEV6TmpzRW9ROFRGMGFnejZZLytWK2lzSVQrODVvMlM0RWhwR25tUDlx?=
+ =?utf-8?B?Nkd3a21wMnEwR1FaY2syRXpObHg0Mjl5L1B2VEhqU3ZIdFV1UmpQYjRySEM4?=
+ =?utf-8?B?SXF3RFMwUzFlbm1OY001SnRGb0VNQllzSDc4ZTVtQ0ZuNWdiQlgwWjFnVHBM?=
+ =?utf-8?B?MDl4NjhCbGc1QWRBOTJadnB1Qm0rUEI1SVdxdjlZS1JlRFRTUVluVGlSSUtt?=
+ =?utf-8?B?WHFzTVJDZndFcVFwc0YrdmUzc1hXQ21oV1JxV2x0cXJHYlg1QVBsL2RENVJp?=
+ =?utf-8?B?K215NDg2RGVFQnFtKzFxajdaK3h4SnR0UEQ5KzRLcUhvV2dtSFRIdXZKTDVO?=
+ =?utf-8?B?T0E9PQ==?=
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
+	DrUBNofGXXei4KlEgdZchEtBiDOpNQyNr7qFFEhRVkHWCgZVA2W8Hz43k0ozoiY5hA7YPE6wqWVC1xfnBH+mg+RaHe7ZztbMEJXJCPiob9AHG8AplbgDuKvlU11jUgOX3LrqJ03cMJq8LF32LQKrSzzvl1KZaSBXC1F2KLYu1VJI3dbnLJWzNeckfzpXp+f9q7lFo4LNBfXT7VszwIEO6dzpJv70PhXl3xUBLLTGBY18qlPOZfHXhHg7Sli9w/CHw48XSswUe4X6AM6m6w82AiB3j5g+EjmO304snOr3+uZstg23o5GPGBiTKoie5F2TA1E+SbeI4aVq72mxlbUsZfrB+tiY9rhjherWE2UGMvC16pRj/BIOR8ZJ++b/WXmuYbXXtxGxIZCh2dBjwDH0+gOGgyDDevxTYezHza6t60xsN7qtpjZW8+G6RHU2/zyfJJqKZ9dJMZAVgSLic98EVntm9eT5pIITMlO3APYLHFF9dXGE5wY0vXAEJrVwDMZWGd3I1k6YjuTDK5gbssKU3wN2c1WVpZUy68v/lKsvyKOHyzwCss/zkyENKUoLtyYeZHuk5rAPnNrjsMg2Jon2u4m71MOX/M0HBnUy19TEr7S1BVpx2gboFp5SwULWfD78acpNYfm7GOBm4GfdU1rz+eZPyN4kfpn8l+/kBXVOvHIohtkedVcdNfzsl6AaQmxU02vLadduj6SSzR8KgqZN1ptPMojzbyplimUxYQ06ZD9Y+4lLyLLWx0PEiO8Gvfm51ZWe0nq1xraQGwH+3UbjkdCDzqOE3l5U5SQCFUr3BnW1AjmpVtpt8d1CKKHsQaTIGnd74ALcZQgkoa0/4o93D+GbDVSOlppu5dsHmW13u10=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 21a32b82-adc2-469a-b697-08dbd9f308aa
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR10MB5706.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Oct 2023 09:23:25.3046
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: apm0ILfHZTskeIpIybTHcVUOf5NAdAqUsecKC987vsusPHJWhYQuRW6m8q/oYdAuvZJFBa3Vb/oPsM7P+DZcVw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR10MB6497
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.987,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-10-30_13,2023-10-31_03,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 suspectscore=0 spamscore=0
+ phishscore=0 mlxlogscore=967 adultscore=0 mlxscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2310240000
+ definitions=main-2310310073
+X-Proofpoint-GUID: g5Lu5hGJap7SNUXCI_ZO_54OknTH8GxC
+X-Proofpoint-ORIG-GUID: g5Lu5hGJap7SNUXCI_ZO_54OknTH8GxC
 
-Hi,
+Thanks for the report.
 
-On 10/30/2023 10:11 PM, kernel test robot wrote:
-> hi, Hou Tao,
->
-> we noticed a WARN_ONCE added in this commit was hit in our tests. FYI.
->
->
-> Hello,
->
-> kernel test robot noticed "WARNING:at_kernel/bpf/memalloc.c:#bpf_mem_alloc_init" on:
->
-> commit: c930472552022bd09aab3cd946ba3f243070d5c7 ("bpf: Ensure unit_size is matched with slab cache object size")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
->
-> [test failed on linus/master ffc253263a1375a65fa6c9f62a893e9767fbebfa]
-> [test failed on linux-next/master c503e3eec382ac708ee7adf874add37b77c5d312]
->
-> in testcase: boot
->
-> compiler: gcc-12
-> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
->
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
->
->
-> +-------------------------------------------------------------+------------+------------+
-> |                                                             | b1d53958b6 | c930472552 |
-> +-------------------------------------------------------------+------------+------------+
-> | WARNING:at_kernel/bpf/memalloc.c:#bpf_mem_alloc_init        | 0          | 14         |
-> | EIP:bpf_mem_alloc_init                                      | 0          | 14         |
-> +-------------------------------------------------------------+------------+------------+
->
->
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202310302113.9f8fe705-oliver.sang@intel.com
->
->
-> [   32.249545][    T1] ------------[ cut here ]------------
-> [   32.250152][    T1] bpf_mem_cache[0]: unexpected object size 128, expect 96
-> [ 32.250953][ T1] WARNING: CPU: 1 PID: 1 at kernel/bpf/memalloc.c:500 bpf_mem_alloc_init (kernel/bpf/memalloc.c:500 kernel/bpf/memalloc.c:579) 
-> [   32.252065][    T1] Modules linked in:
-> [   32.252548][    T1] CPU: 1 PID: 1 Comm: swapper/0 Tainted: G        W          6.5.0-12679-gc93047255202 #1
-> [ 32.253767][ T1] EIP: bpf_mem_alloc_init (kernel/bpf/memalloc.c:500 kernel/bpf/memalloc.c:579) 
-> [ 32.254439][ T1] Code: 30 e8 7e 22 04 00 8b 56 20 39 d0 74 24 80 3d 18 c0 cc c2 00 75 3b c6 05 18 c0 cc c2 01 52 50 53 68 df 53 57 c2 e8 47 70 ef ff <0f> 0b 83 c4 10 eb 20 43 83 c6 74 83 fb 0b 0f 85 6a ff ff ff 8b 45
+>      +cloned device scan should fail
 
-Thanks for the report. I also could reproduce the warning in v6.6 by
-following the reproducing steps in the link below.
+Your fstests is missing the following commit:
+    1348ed0e256a ("fstests: btrfs/185 update for single device pseudo 
+device-scan")
+Pls upgrade.
 
-According the reproduce job, it seems that the kernel is built for i386
-(make HOSTCC=gcc-12 CC=gcc-12 ARCH=i386 olddefconfig prepare
-modules_prepare bzImage) and in .config CONFIG_SLAB instead of
-CONFIG_SLUB is enabled, I will check whether or not these two setups
-make any thing being different.
-
-Regards,
-Tao
-> All code
-> ========
->    0:	30 e8                	xor    %ch,%al
->    2:	7e 22                	jle    0x26
->    4:	04 00                	add    $0x0,%al
->    6:	8b 56 20             	mov    0x20(%rsi),%edx
->    9:	39 d0                	cmp    %edx,%eax
->    b:	74 24                	je     0x31
->    d:	80 3d 18 c0 cc c2 00 	cmpb   $0x0,-0x3d333fe8(%rip)        # 0xffffffffc2ccc02c
->   14:	75 3b                	jne    0x51
->   16:	c6 05 18 c0 cc c2 01 	movb   $0x1,-0x3d333fe8(%rip)        # 0xffffffffc2ccc035
->   1d:	52                   	push   %rdx
->   1e:	50                   	push   %rax
->   1f:	53                   	push   %rbx
->   20:	68 df 53 57 c2       	push   $0xffffffffc25753df
->   25:	e8 47 70 ef ff       	call   0xffffffffffef7071
->   2a:*	0f 0b                	ud2		<-- trapping instruction
->   2c:	83 c4 10             	add    $0x10,%esp
->   2f:	eb 20                	jmp    0x51
->   31:	43 83 c6 74          	rex.XB add $0x74,%r14d
->   35:	83 fb 0b             	cmp    $0xb,%ebx
->   38:	0f 85 6a ff ff ff    	jne    0xffffffffffffffa8
->   3e:	8b                   	.byte 0x8b
->   3f:	45                   	rex.RB
->
-> Code starting with the faulting instruction
-> ===========================================
->    0:	0f 0b                	ud2
->    2:	83 c4 10             	add    $0x10,%esp
->    5:	eb 20                	jmp    0x27
->    7:	43 83 c6 74          	rex.XB add $0x74,%r14d
->    b:	83 fb 0b             	cmp    $0xb,%ebx
->    e:	0f 85 6a ff ff ff    	jne    0xffffffffffffff7e
->   14:	8b                   	.byte 0x8b
->   15:	45                   	rex.RB
-> [   32.256641][    T1] EAX: 00000037 EBX: 00000000 ECX: 00000002 EDX: 80000002
-> [   32.257402][    T1] ESI: fefbda30 EDI: da953a30 EBP: c3d49ef0 ESP: c3d49ec0
-> [   32.258176][    T1] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068 EFLAGS: 00010286
-> [   32.259000][    T1] CR0: 80050033 CR2: 00000000 CR3: 02dd5000 CR4: 000406d0
-> [   32.259768][    T1] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 00000000
-> [   32.260526][    T1] DR6: fffe0ff0 DR7: 00000400
-> [   32.261021][    T1] Call Trace:
-> [ 32.261376][ T1] ? show_regs (arch/x86/kernel/dumpstack.c:479 arch/x86/kernel/dumpstack.c:465) 
-> [ 32.261835][ T1] ? bpf_mem_alloc_init (kernel/bpf/memalloc.c:500 kernel/bpf/memalloc.c:579) 
-> [ 32.262395][ T1] ? __warn (kernel/panic.c:673) 
-> [ 32.262840][ T1] ? report_bug (lib/bug.c:201 lib/bug.c:219) 
-> [ 32.263327][ T1] ? bpf_mem_alloc_init (kernel/bpf/memalloc.c:500 kernel/bpf/memalloc.c:579) 
-> [ 32.263884][ T1] ? exc_overflow (arch/x86/kernel/traps.c:250) 
-> [ 32.264368][ T1] ? handle_bug (arch/x86/kernel/traps.c:237) 
-> [ 32.264833][ T1] ? exc_invalid_op (arch/x86/kernel/traps.c:258 (discriminator 1)) 
-> [ 32.265333][ T1] ? handle_exception (arch/x86/entry/entry_32.S:1056) 
-> [ 32.265903][ T1] ? exc_overflow (arch/x86/kernel/traps.c:250) 
-> [ 32.266392][ T1] ? bpf_mem_alloc_init (kernel/bpf/memalloc.c:500 kernel/bpf/memalloc.c:579) 
-> [ 32.266982][ T1] ? exc_overflow (arch/x86/kernel/traps.c:250) 
-> [ 32.267476][ T1] ? bpf_mem_alloc_init (kernel/bpf/memalloc.c:500 kernel/bpf/memalloc.c:579) 
-> [ 32.268050][ T1] ? irq_work_init_threads (kernel/bpf/core.c:2919) 
-> [ 32.268610][ T1] bpf_global_ma_init (kernel/bpf/core.c:2923) 
-> [ 32.269142][ T1] do_one_initcall (init/main.c:1232) 
-> [ 32.269657][ T1] ? debug_smp_processor_id (lib/smp_processor_id.c:61) 
-> [ 32.270243][ T1] ? rcu_is_watching (include/linux/context_tracking.h:122 kernel/rcu/tree.c:699) 
-> [ 32.270770][ T1] do_initcalls (init/main.c:1293 init/main.c:1310) 
-> [ 32.271275][ T1] kernel_init_freeable (init/main.c:1549) 
-> [ 32.271841][ T1] ? rest_init (init/main.c:1429) 
-> [ 32.272324][ T1] kernel_init (init/main.c:1439) 
-> [ 32.272785][ T1] ret_from_fork (arch/x86/kernel/process.c:153) 
-> [ 32.273272][ T1] ? rest_init (init/main.c:1429) 
-> [ 32.273752][ T1] ret_from_fork_asm (arch/x86/entry/entry_32.S:741) 
-> [ 32.274272][ T1] entry_INT80_32 (arch/x86/entry/entry_32.S:947) 
-> [   32.274803][    T1] irq event stamp: 16968005
-> [ 32.275293][ T1] hardirqs last enabled at (16968013): console_unlock (arch/x86/include/asm/irqflags.h:26 arch/x86/include/asm/irqflags.h:67 arch/x86/include/asm/irqflags.h:127 kernel/printk/printk.c:347 kernel/printk/printk.c:2720 kernel/printk/printk.c:3039) 
-> [ 32.276277][ T1] hardirqs last disabled at (16968022): console_unlock (kernel/printk/printk.c:345 kernel/printk/printk.c:2720 kernel/printk/printk.c:3039) 
-> [ 32.277242][ T1] softirqs last enabled at (16967866): __do_softirq (arch/x86/include/asm/preempt.h:27 kernel/softirq.c:400 kernel/softirq.c:582) 
-> [ 32.278202][ T1] softirqs last disabled at (16967861): do_softirq_own_stack (arch/x86/kernel/irq_32.c:57 arch/x86/kernel/irq_32.c:147) 
-> [   32.279228][    T1] ---[ end trace 0000000000000000 ]---
-> [   32.280294][    T1] kmemleak: Kernel memory leak detector initialized (mem pool available: 15783)
-> [   32.281276][    T1] debug_vm_pgtable: [debug_vm_pgtable         ]: Validating architecture page table helpers
-> [   32.285847][   T74] kmemleak: Automatic memory scanning thread started
-> [   32.290289][    T1] UBI error: cannot create "ubi" debugfs directory, error -2
-> [   32.291558][    T1] UBI error: cannot initialize UBI, error -2
->
->
->
-> The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20231030/202310302113.9f8fe705-oliver.sang@intel.com
->
->
->
-
+Thanks, Anand
