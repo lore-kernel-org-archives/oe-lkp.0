@@ -1,300 +1,318 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
+Received: from dggsgout11.his.huawei.com (unknown [45.249.212.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 184D2134A9
-	for <oe-lkp@lists.linux.dev>; Fri,  3 Nov 2023 06:30:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ID4QOzF9"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698993019; x=1730529019;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   mime-version;
-  bh=ov7SpjepZFBeCQiul1lD0agtxa8kmRSfr4IdbxN0rZc=;
-  b=ID4QOzF9w0Gj5Lnebto6aIPlTwgZqKx41Nz722XUa+Xwfx7yFe+fpxt4
-   ec3SZi6GvjQhZ4Ef5lIGv1zsbf6x1Ore6f1ZEl5dvk8ARPbE5T0HaDj4R
-   pT+yxFboGqo7LGPHoMedbOae4RmAFhglwm1Bqlwb0nRP2KakD7JnFp5Q+
-   +nxgJQ4gmYkzRK8mAMsL/UFV/KEjycLZQsHLQgLam6NeYkmZNo1AWD7CO
-   Z3dA103zVdwAP3bBrvemDxOXaz7xori32e/iJH1IGU/3/O1oAHB2Luosf
-   NE9FKL8deH4HJSolgQnwaHBAqJ/mJ5v+QJl/CafKUC6QaVKmV1MQcWK5W
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10882"; a="419996664"
-X-IronPort-AV: E=Sophos;i="6.03,273,1694761200"; 
-   d="scan'208";a="419996664"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2023 23:30:17 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10882"; a="935014516"
-X-IronPort-AV: E=Sophos;i="6.03,273,1694761200"; 
-   d="scan'208";a="935014516"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orsmga005.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 02 Nov 2023 23:30:17 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34; Thu, 2 Nov 2023 23:30:16 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34 via Frontend Transport; Thu, 2 Nov 2023 23:30:16 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.101)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.34; Thu, 2 Nov 2023 23:30:16 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TcBm7z5YCO5hvAkd09F49QkeZijT0v/4JtUHte7bXJC0eSOh78El2PPE6EDUd7KJGuZFTvIJwCPaE+SsE43R0AtC3fXuCfLTYCE6Xe2k+FGUavSxHMxtu4M3JlH8WM2CwNHAAvNG5XzawdSh8kSjmuGEK+FIdhFNn3icHmjEsn6RyB9j4xPlJPQoRHzVO0pb1UP5GJZrIuFFisaMJ4DaYHMMQCa8tJwskMdKLVEItS6rMUF1TDhGYUiWdCfBIrYPfZENAWShkQdx3xP6LYVvUg7qsv9l7d96gURLt2bwdIS0vAtuP35iovD5LCyBNdQfxvw0sb0vBU6PwdFwrW3XJQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=R6bRuK8UPZMaAsO9HuWUsSrMgh+CiYSHHQpmbtWE1Pw=;
- b=kmDNwEk7DwuYdRKOS8AL1BExn6x5IxEr/YH94EJCTpFTSp2IKDmm7oH0kc6rlz/F4YE5iI3x/Yo+PlqOM7S3Ji710OlQhDwhbEcoudkKCwqDyGImbHVJniLxDuf5b7XLHlBbOB2qdpX1UeN6gIiK4UaGbsdBCVDx56aPYh82/IoFgngaaGAHJtgi4s8W6nctzp+mMJ6x756Ow4qtVBnVaEDPXqbFej3vub5oXYIz3lWT8S8iJFbkQrTAA31DteFoym7yLg304DVH2a4ZT+VtlCxpGK2hHcrq2UOjgr5LWB9026TL5GGxvIegcSfeplsZGw+6xLFHNvdsf8xoFDyxww==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from SJ0PR11MB6792.namprd11.prod.outlook.com (2603:10b6:a03:485::22)
- by CY8PR11MB7923.namprd11.prod.outlook.com (2603:10b6:930:7e::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6954.21; Fri, 3 Nov
- 2023 06:30:14 +0000
-Received: from SJ0PR11MB6792.namprd11.prod.outlook.com
- ([fe80::f284:604e:8e12:2356]) by SJ0PR11MB6792.namprd11.prod.outlook.com
- ([fe80::f284:604e:8e12:2356%3]) with mapi id 15.20.6954.021; Fri, 3 Nov 2023
- 06:30:14 +0000
-Date: Fri, 3 Nov 2023 14:30:04 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: Abhinav Singh <singhabhinav9051571833@gmail.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
-	<akpm@linux-foundation.org>, <brauner@kernel.org>, <surenb@google.com>,
-	<mst@redhat.com>, <michael.christie@oracle.com>,
-	<mathieu.desnoyers@efficios.com>, <mjguzik@gmail.com>, <npiggin@gmail.com>,
-	<shakeelb@google.com>, <peterz@infradead.org>,
-	<linux-kernel-mentees@lists.linuxfoundation.org>, Abhinav Singh
-	<singhabhinav9051571833@gmail.com>, <oliver.sang@intel.com>
-Subject: Re: [PATCH v3] Fixing directly deferencing a __rcu pointer warning
-Message-ID: <202311031320.c3ebc782-oliver.sang@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20231028204609.426841-1-singhabhinav9051571833@gmail.com>
-X-ClientProxiedBy: SI2PR06CA0009.apcprd06.prod.outlook.com
- (2603:1096:4:186::17) To SJ0PR11MB6792.namprd11.prod.outlook.com
- (2603:10b6:a03:485::22)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D1247E
+	for <oe-lkp@lists.linux.dev>; Fri,  3 Nov 2023 06:54:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=huaweicloud.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=huaweicloud.com
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: from mail.maildlp.com (unknown [172.19.163.216])
+	by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4SMBLD4z9Qz4f3lg7
+	for <oe-lkp@lists.linux.dev>; Fri,  3 Nov 2023 14:54:12 +0800 (CST)
+Received: from mail02.huawei.com (unknown [10.116.40.112])
+	by mail.maildlp.com (Postfix) with ESMTP id 4AC831A016F
+	for <oe-lkp@lists.linux.dev>; Fri,  3 Nov 2023 14:54:16 +0800 (CST)
+Received: from [10.174.176.117] (unknown [10.174.176.117])
+	by APP1 (Coremail) with SMTP id cCh0CgDXX7AMmURlIzzhEQ--.31337S2;
+	Fri, 03 Nov 2023 14:54:08 +0800 (CST)
+Subject: Re: [linus:master] [bpf] c930472552:
+ WARNING:at_kernel/bpf/memalloc.c:#bpf_mem_alloc_init
+To: Yonghong Song <yonghong.song@linux.dev>,
+ Alexei Starovoitov <ast@kernel.org>,
+ kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+ bpf@vger.kernel.org, "houtao1@huawei.com" <houtao1@huawei.com>
+References: <202310302113.9f8fe705-oliver.sang@intel.com>
+ <7506b682-3be3-fcd0-4bb4-c1db48f609a2@huaweicloud.com>
+ <99e9d615-b720-7f33-3df0-9824a92f6644@huaweicloud.com>
+ <52383a4f-6efd-43ce-bedb-a91e130850f3@linux.dev>
+From: Hou Tao <houtao@huaweicloud.com>
+Message-ID: <3629948c-793e-307b-6b6e-00557f3f6212@huaweicloud.com>
+Date: Fri, 3 Nov 2023 14:54:04 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ0PR11MB6792:EE_|CY8PR11MB7923:EE_
-X-MS-Office365-Filtering-Correlation-Id: 59e30621-fa9a-4dde-b77f-08dbdc3655ab
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: l0DWuVSzoYcPBXorsQhGP3EcKGRWc6HSowBKTFaFwSYd9YbtHVSAma13f0Vc4qQO+9LI7wvMexvn9UqN0bPGQ1ME69gDKo11k2GtPbVIp9lgltkAHEIchLVB5PsNYkFjXOQ6mvhBsufcuMRpvlM2x/QzDDvJn3i721R4B6OweLvcYuyTGgAY7O4LYgsMOixQWfN04oX6MOWPy+Si817a9hZOYRkgvtS1Hy7+/6UkaUoMDhZcRV6iDa87pbwHCOqC4O2EmhAiltGgO4tlPOFX1Cqq2s/Gv5JVK5+jcbc9rVnke+o+O8LkF2zXrqmCW2imRzw3K6xhuEvlwq40xQE6kjqACAO1SGBGCOmpCCQ/BxKUVjKCX+XvJDL+1R5qgXq2zqXqkW1Ww0ccBQVeBM2eyi6wTkjZtJ0Iqec60V1mfFse1MrllaRFGVNwMkygwWRjA3dFQic9JATNELgOlGq5Ltw9f/ulNTAjjGJdX3VzEo/CXfF9jIdUsInQ4KT9dsQ1xR4nsJNvUAwHwR+h3RVLPOjzVi3ZPny83mg2yIYBnjyTedTwmUXnPA0SSVv+1VZoQw9n3Pweb1VMK6e4+GTtx15F59ky6YE3VTWRfJiOIi7/SXte099K1DhxiyTEkaKsCI6S2akfvtwRpd96OVFSrA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR11MB6792.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(136003)(39860400002)(366004)(376002)(396003)(230273577357003)(230173577357003)(230922051799003)(64100799003)(451199024)(1800799009)(186009)(6916009)(66556008)(66946007)(316002)(6512007)(6506007)(66476007)(2616005)(26005)(36756003)(1076003)(6666004)(82960400001)(38100700002)(86362001)(83380400001)(6486002)(107886003)(478600001)(966005)(2906002)(5660300002)(30864003)(7416002)(41300700001)(4326008)(8936002)(8676002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Xunzx88eLaCf6cmScIeEuX0kI3cy4ZE72SKCONksbFyKrvaEMVolyHMaoQ6g?=
- =?us-ascii?Q?4uM/vqyOxOmUWr43HHURH9bOSyZDgEA0LUBq8ckqvKThkNLTHhus8Tb6f75L?=
- =?us-ascii?Q?OxOT4N+Fy68DHDBOCPsT3oq6K4KdRk150TP+ToAn/eenRFvlPtvPUyrVW7JD?=
- =?us-ascii?Q?3Ll0oidCvd9+3C0sGzdWAHAuOkKqh2h7kFV7vKN7q66OJsjmsfyHhpElLed6?=
- =?us-ascii?Q?JZbWO96yqyKQBEqxx4uDl1Z0LUSL0HrbD9N5EutdimCIrZr0aq9Pf4FuenN1?=
- =?us-ascii?Q?e6aIutRyO8dlAz+UGUpmvZLD+vP21qDKp+vmE/Iq0+hFPioVS2dk+v2ptJQx?=
- =?us-ascii?Q?CDXf25Yt5gxOySuKx4FtCfQwKrtoggsftRDNowAJ5wiRzOMk0RBSI+1b3ZOg?=
- =?us-ascii?Q?WdNJ2h/UTDIXhrvov4ZHQBjA/luVMqZ64hqVevVjjCvFHNNSKy/w8nczrwIg?=
- =?us-ascii?Q?OgmpPGTYCcqVONhckzHeAMWSAkEwCPvHNWntLkKMwxaXMTQBveczmm2td4+A?=
- =?us-ascii?Q?GoA00xTDQoH2h7wXstVR3vhQYlrZ3twYXSzLmXpjijtwow4U66kQbmTia+El?=
- =?us-ascii?Q?sadJD/QiKSewfUYEC61yB/Q9ZmWcjL9P+QYR1INoxeJdLjyu2arCnmLFRle3?=
- =?us-ascii?Q?QoTyrFEeecyim9FJE1yKTce+v1NAQMuK+04uG3el8YBnf2rYrb7Gja1+R71R?=
- =?us-ascii?Q?NLW1uDacaJ0ZgMINFdiIgu3TV+KIRhL24NDCa0W3ZJMFRPbSSsbnc4aNyQ/a?=
- =?us-ascii?Q?HErY99CUya3eb5ALtMWHSr58ueCuSmD78F3SMgJDRUaHvv5Gc37iQBze5Y/K?=
- =?us-ascii?Q?sBpWWGPFcQ9TVysIHkqnn6nyCO7qdyovXmf+wCyASzLIyCMezjPDAvOBEKOH?=
- =?us-ascii?Q?8qWsT5rRWN9CSUEuMwUL0ObPx9SPAYd7gu9UOtS/mnBxYAmixEbpIJJM/+B5?=
- =?us-ascii?Q?izDo7/9saQ+sqed/Jyrfoe8QZvPddyXkt2eSesiBVtmsNDhefmXQmOkB4jg3?=
- =?us-ascii?Q?TiHc3g0FToBYWin7oC2oUU3Xknpy0OJkZNPrctG4eiv7q8uOVkWbO0umvEK/?=
- =?us-ascii?Q?TOYZisEnpY4XwQquLNU23hModhi4FoqjGrqJHDv5f5gQFIaPL0Ccu4MF6tk4?=
- =?us-ascii?Q?oPhdemseetlGarUBYNjIE2tO33oPwwHqK05LZA8X4PAimpS4vJl+7g57kj/h?=
- =?us-ascii?Q?a017SKP1p9sN97OukVWgfLqMM/2PG0ARd/xRW5xnh/k2x0dlGP+fzdERPF8k?=
- =?us-ascii?Q?E0ksXVVsORralaYrcB5btpB1muGo92UrxWmTUlXkJ/NRWZqmjGAK8uyrd7Zd?=
- =?us-ascii?Q?PI+jkVaMq+/VDlvIm2jN/sP0HLA9LLr9S/MWnVC4ug0nZ8gn7dKdr3OIO4bY?=
- =?us-ascii?Q?EpEZVnyklO6/ZHvXBPgIqLE1jwYSdyPBusloioiqwxlYFR17H0De4VudXo7g?=
- =?us-ascii?Q?qF7lIt387nQ0KA12K5ACez8vinlhy7OnPxtYltA7KMCDU/BsFklWkugYG4Il?=
- =?us-ascii?Q?c8MsSqPAXWNHpKCy2qDO+a96Nz6f8sMv/aC/UHSzcMuEUWKgrHU82FdDb8V6?=
- =?us-ascii?Q?xX2qTWn4HwDJzh47Ou+KuuG92WR6sQopCnp+8clFhCZ/lSShIq/9a2+p2jBm?=
- =?us-ascii?Q?bQ=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 59e30621-fa9a-4dde-b77f-08dbdc3655ab
-X-MS-Exchange-CrossTenant-AuthSource: SJ0PR11MB6792.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2023 06:30:13.1061
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2NcdbKViOmwq6sNlNDfmlG83kDWD0rwr80AnhBIjzBL+u6nfSOgYqBaVQLlEegQj9sqIuDAlNf25/DYUpytlTw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR11MB7923
-X-OriginatorOrg: intel.com
+In-Reply-To: <52383a4f-6efd-43ce-bedb-a91e130850f3@linux.dev>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-CM-TRANSID:cCh0CgDXX7AMmURlIzzhEQ--.31337S2
+X-Coremail-Antispam: 1UD129KBjvAXoW3ZryDCrW3AF4fGF1rWw1UAwb_yoW8GFyfCo
+	W8ur13Cr4rGFyUGr1UJw1UJr15Jw1UJrnrJr15Jw17GFyjy3WUJ348tryUG3y5tr1rGF4U
+	Ar1jqw1UAa45Jr1kn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73VFW2AGmfu7bjvjm3
+	AaLaJ3UjIYCTnIWjp_UUU5R7kC6x804xWl14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK
+	8VAvwI8IcIk0rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4
+	AK67xGY2AK021l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF
+	7I0E14v26r4UJVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7
+	CjxVAFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8C
+	rVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4
+	IE7xkEbVWUJVW8JwACjcxG0xvEwIxGrwCYjI0SjxkI62AI1cAE67vIY487MxAIw28IcxkI
+	7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxV
+	Cjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY
+	6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6x
+	AIw20EY4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv
+	6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x07UWE__UUUUU=
+X-CM-SenderInfo: xkrx3t3r6k3tpzhluzxrxghudrp/
 
+Hi,
 
+On 11/3/2023 12:08 AM, Yonghong Song wrote:
+>
+> On 11/2/23 6:40 AM, Hou Tao wrote:
+>> Hi Alexei,
+>>
+>> On 10/31/2023 4:01 PM, Hou Tao wrote:
+>>> Hi,
+>>>
+>>> On 10/30/2023 10:11 PM, kernel test robot wrote:
+>>>> hi, Hou Tao,
+>>>>
+>>>> we noticed a WARN_ONCE added in this commit was hit in our tests. FYI.
+>>>>
+>>>>
+>>>> Hello,
+>>>>
+>>>> kernel test robot noticed
+>>>> "WARNING:at_kernel/bpf/memalloc.c:#bpf_mem_alloc_init" on:
+>>>>
+>>>> commit: c930472552022bd09aab3cd946ba3f243070d5c7 ("bpf: Ensure
+>>>> unit_size is matched with slab cache object size")
+>>>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>>>>
+>>>> [test failed on linus/master ffc253263a1375a65fa6c9f62a893e9767fbebfa]
+>>>> [test failed on linux-next/master
+>>>> c503e3eec382ac708ee7adf874add37b77c5d312]
+>>>>
+>>>> in testcase: boot
+>>>>
+>>>> compiler: gcc-12
+>>>> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp
+>>>> 2 -m 16G
+>>>>
+>>>> (please refer to attached dmesg/kmsg for entire log/backtrace)
+>>>>
+>>>>
+>>>> +-------------------------------------------------------------+------------+------------+
+>>>>
+>>>> |                                                             |
+>>>> b1d53958b6 | c930472552 |
+>>>> +-------------------------------------------------------------+------------+------------+
+>>>>
+>>>> | WARNING:at_kernel/bpf/memalloc.c:#bpf_mem_alloc_init        |
+>>>> 0          | 14         |
+>>>> | EIP:bpf_mem_alloc_init                                      |
+>>>> 0          | 14         |
+>>>> +-------------------------------------------------------------+------------+------------+
+>>>>
+>>>>
+>>>>
+>>>> If you fix the issue in a separate patch/commit (i.e. not just a
+>>>> new version of
+>>>> the same patch/commit), kindly add following tags
+>>>> | Reported-by: kernel test robot <oliver.sang@intel.com>
+>>>> | Closes:
+>>>> https://lore.kernel.org/oe-lkp/202310302113.9f8fe705-oliver.sang@intel.com
+>>>>
+>>>>
+>>>> [   32.249545][    T1] ------------[ cut here ]------------
+>>>> [   32.250152][    T1] bpf_mem_cache[0]: unexpected object size
+>>>> 128, expect 96
+>>>> [ 32.250953][ T1] WARNING: CPU: 1 PID: 1 at
+>>>> kernel/bpf/memalloc.c:500 bpf_mem_alloc_init
+>>>> (kernel/bpf/memalloc.c:500 kernel/bpf/memalloc.c:579)
+>>>> [   32.252065][    T1] Modules linked in:
+>>>> [   32.252548][    T1] CPU: 1 PID: 1 Comm: swapper/0 Tainted:
+>>>> G        W          6.5.0-12679-gc93047255202 #1
+>>>> [ 32.253767][ T1] EIP: bpf_mem_alloc_init
+>>>> (kernel/bpf/memalloc.c:500 kernel/bpf/memalloc.c:579)
+>>>> [ 32.254439][ T1] Code: 30 e8 7e 22 04 00 8b 56 20 39 d0 74 24 80
+>>>> 3d 18 c0 cc c2 00 75 3b c6 05 18 c0 cc c2 01 52 50 53 68 df 53 57
+>>>> c2 e8 47 70 ef ff <0f> 0b 83 c4 10 eb 20 43 83 c6 74 83 fb 0b 0f 85
+>>>> 6a ff ff ff 8b 45
+>>> Thanks for the report. I also could reproduce the warning in v6.6 by
+>>> following the reproducing steps in the link below.
+>>>
+>>> According the reproduce job, it seems that the kernel is built for i386
+>>> (make HOSTCC=gcc-12 CC=gcc-12 ARCH=i386 olddefconfig prepare
+>>> modules_prepare bzImage) and in .config CONFIG_SLAB instead of
+>>> CONFIG_SLUB is enabled, I will check whether or not these two setups
+>>> make any thing being different.
+>> I see what has happened. The problem is twofold:
+>> (1) The object_size of kmalloc-cg-96 is adjust from 96 to 128 due to
+>> slab merge in __kmem_cache_alias(). For SLAB, SLAB_HWCACHE_ALIGN is
+>> enabled by default for kmalloc slab, so align is 64 and size is 128 for
+>> kmalloc-cg-96. So when unit_alloc() does kmalloc_node(96, __GFP_ACCOUNT,
+>> node), ksize() will return 128 instead of 96 for the returned pointer.
+>> SLUB has a similar merge logic, but because its align is 8 under x86-64,
+>> so the warning doesn't happen for i386 + SLUB, but I think the similar
+>> problem may exist for other architectures.
+>> (2) kmalloc_size_roundup() returns the object_size of kmalloc-96 instead
+>> of kmalloc-cg-96, so bpf_mem_cache_adjust_size() doesn't adjust
+>> size_index accordingly. The reason why the object_size of kmalloc-96 is
+>> 96 instead of 128 is that there is slab merge for kmalloc-96.
+>>
+>> About how to fix the problem, I have two ideas:
+>> The first is to introduce kmalloc_size_roundup_flags(), so
+>> bpf_mem_cache_adjust_size() could use kmalloc_size_roundup_flags(size,
+>> __GFP_ACCOUNT) to get the object_size of kmalloc-cg-xxx. It could fix
+>> the warning for now, but the warning may pop-up occasionally due to SLUB
+>> merge and unusual slab align. The second is just using the bpf_mem_cache
+>> pointer to get the unit_size which is saved before the to-be-free
+>> pointer. Its downside is that it may can not be able to skip the free
+>> operation for pointer which is not allocated from bpf ma, but I think it
+>> is acceptable. I prefer the latter solution. What do you think ?
+>
+>
+> Is it possible that in bpf_mem_cache_adjust_size(), we do a series of
+> kmalloc (for supported bucket size) and call ksize() to get the actual
+> allocated object size. So eventually all possible allocated object sizes
+> will be used for size_index[]. This will avoid all kind of special
+> corner cases due to config/macro/arch etc. WDYT?
 
-Hello,
+It is basically the same as the first proposed solution and it has the
+same flaw. The problem is that slab merge can happen in any time, so the
+return value of ksize() may change even all passed pointers are
+allocated from the same slab. Considering the following case: during the
+invocation of bpf_mem_cache_adjust_size() or the initialization of
+bpf_global_ma, there is no slab merge and ksize() for a 96-bytes object
+returns 96. But after these invocations, a new slab created by a kernel
+module is merged to kmalloc-cg-96 and the object_size of kmalloc-cg-96
+is adjust from 96 to 128 (which is possible for x86-64 + CONFIG_SLAB,
+because it is alignment requirement is 64 for 96-bytes slab). So soon or
+later, when bpf_global_ma frees a 96-byte-sized pointer which is
+allocated from a bpf_mem_cache in which unit_size is 96, bpf_mem_free()
+will free the pointer through a bpf_mem_cache in which unit_size is 128,
+because the return value of ksize() changes. Maybe we should introduce a
+new API in mm which returns size instead of object_size of underlying
+slab, so the return value will not change due to slab merge.
 
-kernel test robot noticed "WARNING:suspicious_RCU_usage" on:
-
-commit: 0c940f3d0d4c41567b1957a4e09ad68bdeee2111 ("[PATCH v3] Fixing directly deferencing a __rcu pointer warning")
-url: https://github.com/intel-lab-lkp/linux/commits/Abhinav-Singh/Fixing-directly-deferencing-a-__rcu-pointer-warning/20231029-044918
-base: https://git.kernel.org/cgit/linux/kernel/git/akpm/mm.git mm-everything
-patch link: https://lore.kernel.org/all/20231028204609.426841-1-singhabhinav9051571833@gmail.com/
-patch subject: [PATCH v3] Fixing directly deferencing a __rcu pointer warning
-
-in testcase: boot
-
-compiler: gcc-12
-test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-+--------------------------------------------------------+------------+------------+
-|                                                        | 44c9217272 | 0c940f3d0d |
-+--------------------------------------------------------+------------+------------+
-| WARNING:suspicious_RCU_usage                           | 0          | 8          |
-| kernel/fork.c:#suspicious_rcu_dereference_check()usage | 0          | 8          |
-+--------------------------------------------------------+------------+------------+
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202311031320.c3ebc782-oliver.sang@intel.com
-
-
-[    2.386253][    T0] WARNING: suspicious RCU usage
-[    2.386253][    T0] 6.6.0-rc4-00506-g0c940f3d0d4c #7 Not tainted
-[    2.386253][    T0] -----------------------------
-[    2.386253][    T0] kernel/fork.c:2688 suspicious rcu_dereference_check() usage!
-[    2.386253][    T0]
-[    2.386253][    T0] other info that might help us debug this:
-[    2.386253][    T0]
-[    2.386253][    T0] rcu_scheduler_active = 2, debug_locks = 1
-[    2.386253][    T0] 3 locks held by swapper/0:
-[ 2.386253][ T0] #0: ffffffff84dbdc50 (cgroup_threadgroup_rwsem){.+.+}-{0:0}, at: cgroup_can_fork (kbuild/src/rand-x86_64-3/kernel/cgroup/cgroup.c:6538) 
-[ 2.386253][ T0] #1: ffffffff8482f010 (tasklist_lock){....}-{2:2}, at: copy_process (kbuild/src/rand-x86_64-3/kernel/fork.c:2624) 
-[ 2.386253][ T0] #2: ffffffff84846178 (init_sighand.siglock){....}-{2:2}, at: copy_process (kbuild/src/rand-x86_64-3/kernel/fork.c:2226 kbuild/src/rand-x86_64-3/kernel/fork.c:2643) 
-[    2.386253][    T0]
-[    2.386253][    T0] stack backtrace:
-[    2.386253][    T0] CPU: 0 PID: 0 Comm: swapper Not tainted 6.6.0-rc4-00506-g0c940f3d0d4c #7 88a30a6c68427eeed926405592f52ff30544ebdd
-[    2.386253][    T0] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-[    2.386253][    T0] Call Trace:
-[    2.386253][    T0]  <TASK>
-[ 2.386253][ T0] copy_process (kbuild/src/rand-x86_64-3/kernel/fork.c:2688 (discriminator 9)) 
-[ 2.386253][ T0] ? pidfd_prepare (kbuild/src/rand-x86_64-3/kernel/fork.c:2245) 
-[ 2.386253][ T0] ? acpi_hw_validate_register (kbuild/src/rand-x86_64-3/drivers/acpi/acpica/hwregs.c:196) 
-[ 2.386253][ T0] ? proc_register (kbuild/src/rand-x86_64-3/fs/proc/generic.c:383) 
-[ 2.386253][ T0] kernel_clone (kbuild/src/rand-x86_64-3/include/linux/random.h:26 kbuild/src/rand-x86_64-3/kernel/fork.c:2903) 
-[ 2.386253][ T0] ? acpi_hw_register_read (kbuild/src/rand-x86_64-3/drivers/acpi/acpica/hwregs.c:489) 
-[ 2.386253][ T0] ? create_io_thread (kbuild/src/rand-x86_64-3/kernel/fork.c:2862) 
-[ 2.386253][ T0] user_mode_thread (kbuild/src/rand-x86_64-3/kernel/fork.c:2971) 
-[ 2.386253][ T0] ? kernel_thread (kbuild/src/rand-x86_64-3/kernel/fork.c:2971) 
-[ 2.386253][ T0] ? acpi_hw_validate_io_request (kbuild/src/rand-x86_64-3/drivers/acpi/acpica/hwvalid.c:128) 
-[ 2.386253][ T0] ? rest_init (kbuild/src/rand-x86_64-3/init/main.c:1429) 
-[ 2.386253][ T0] rest_init (kbuild/src/rand-x86_64-3/init/main.c:691) 
-[ 2.386253][ T0] arch_call_rest_init+0x13/0x80 
-[ 2.386253][ T0] start_kernel (kbuild/src/rand-x86_64-3/init/main.c:992 (discriminator 1)) 
-[ 2.386253][ T0] x86_64_start_reservations (kbuild/src/rand-x86_64-3/arch/x86/kernel/head64.c:544) 
-[ 2.386253][ T0] x86_64_start_kernel (??:?) 
-[ 2.386253][ T0] secondary_startup_64_no_verify (kbuild/src/rand-x86_64-3/arch/x86/kernel/head_64.S:433) 
-[    2.386253][    T0]  </TASK>
-[    2.386253][    T0]
-[    2.386253][    T0] =============================
-[    2.386253][    T0] WARNING: suspicious RCU usage
-[    2.386253][    T0] 6.6.0-rc4-00506-g0c940f3d0d4c #7 Not tainted
-[    2.386253][    T0] -----------------------------
-[    2.386253][    T0] kernel/fork.c:2689 suspicious rcu_dereference_check() usage!
-[    2.386253][    T0]
-[    2.386253][    T0] other info that might help us debug this:
-[    2.386253][    T0]
-[    2.386253][    T0] rcu_scheduler_active = 2, debug_locks = 1
-[    2.386253][    T0] 3 locks held by swapper/0:
-[ 2.386253][ T0] #0: ffffffff84dbdc50 (cgroup_threadgroup_rwsem){.+.+}-{0:0}, at: cgroup_can_fork (kbuild/src/rand-x86_64-3/kernel/cgroup/cgroup.c:6538) 
-[ 2.386253][ T0] #1: ffffffff8482f010 (tasklist_lock){....}-{2:2}, at: copy_process (kbuild/src/rand-x86_64-3/kernel/fork.c:2624) 
-[ 2.386253][ T0] #2: ffffffff84846178 (init_sighand.siglock){....}-{2:2}, at: copy_process (kbuild/src/rand-x86_64-3/kernel/fork.c:2226 kbuild/src/rand-x86_64-3/kernel/fork.c:2643) 
-[    2.386253][    T0]
-[    2.386253][    T0] stack backtrace:
-[    2.386253][    T0] CPU: 0 PID: 0 Comm: swapper Not tainted 6.6.0-rc4-00506-g0c940f3d0d4c #7 88a30a6c68427eeed926405592f52ff30544ebdd
-[    2.386253][    T0] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-[    2.386253][    T0] Call Trace:
-[    2.386253][    T0]  <TASK>
-[ 2.386253][ T0] copy_process (kbuild/src/rand-x86_64-3/kernel/fork.c:2689 (discriminator 9)) 
-[ 2.386253][ T0] ? pidfd_prepare (kbuild/src/rand-x86_64-3/kernel/fork.c:2245) 
-[ 2.386253][ T0] ? acpi_hw_validate_register (kbuild/src/rand-x86_64-3/drivers/acpi/acpica/hwregs.c:196) 
-[ 2.386253][ T0] ? proc_register (kbuild/src/rand-x86_64-3/fs/proc/generic.c:383) 
-[ 2.386253][ T0] kernel_clone (kbuild/src/rand-x86_64-3/include/linux/random.h:26 kbuild/src/rand-x86_64-3/kernel/fork.c:2903) 
-[ 2.386253][ T0] ? acpi_hw_register_read (kbuild/src/rand-x86_64-3/drivers/acpi/acpica/hwregs.c:489) 
-[ 2.386253][ T0] ? create_io_thread (kbuild/src/rand-x86_64-3/kernel/fork.c:2862) 
-[ 2.386253][ T0] user_mode_thread (kbuild/src/rand-x86_64-3/kernel/fork.c:2971) 
-[ 2.386253][ T0] ? kernel_thread (kbuild/src/rand-x86_64-3/kernel/fork.c:2971) 
-[ 2.386253][ T0] ? acpi_hw_validate_io_request (kbuild/src/rand-x86_64-3/drivers/acpi/acpica/hwvalid.c:128) 
-[ 2.386253][ T0] ? rest_init (kbuild/src/rand-x86_64-3/init/main.c:1429) 
-[ 2.386253][ T0] rest_init (kbuild/src/rand-x86_64-3/init/main.c:691) 
-[ 2.386253][ T0] arch_call_rest_init+0x13/0x80 
-[ 2.386253][ T0] start_kernel (kbuild/src/rand-x86_64-3/init/main.c:992 (discriminator 1)) 
-[ 2.386253][ T0] x86_64_start_reservations (kbuild/src/rand-x86_64-3/arch/x86/kernel/head64.c:544) 
-[ 2.386253][ T0] x86_64_start_kernel (??:?) 
-[ 2.386253][ T0] secondary_startup_64_no_verify (kbuild/src/rand-x86_64-3/arch/x86/kernel/head_64.S:433) 
-[    2.386253][    T0]  </TASK>
-[    2.386253][    T0]
-[    2.386253][    T0] =============================
-[    2.386253][    T0] WARNING: suspicious RCU usage
-[    2.386253][    T0] 6.6.0-rc4-00506-g0c940f3d0d4c #7 Not tainted
-[    2.386253][    T0] -----------------------------
-[    2.386253][    T0] kernel/fork.c:2690 suspicious rcu_dereference_check() usage!
-[    2.386253][    T0]
-[    2.386253][    T0] other info that might help us debug this:
-[    2.386253][    T0]
-[    2.386253][    T0] rcu_scheduler_active = 2, debug_locks = 1
-[    2.386253][    T0] 3 locks held by swapper/0:
-[ 2.386253][ T0] #0: ffffffff84dbdc50 (cgroup_threadgroup_rwsem){.+.+}-{0:0}, at: cgroup_can_fork (kbuild/src/rand-x86_64-3/kernel/cgroup/cgroup.c:6538) 
-[ 2.386253][ T0] #1: ffffffff8482f010 (tasklist_lock){....}-{2:2}, at: copy_process (kbuild/src/rand-x86_64-3/kernel/fork.c:2624) 
-[ 2.386253][ T0] #2: ffffffff84846178 (init_sighand.siglock){....}-{2:2}, at: copy_process (kbuild/src/rand-x86_64-3/kernel/fork.c:2226 kbuild/src/rand-x86_64-3/kernel/fork.c:2643) 
-[    2.386253][    T0]
-[    2.386253][    T0] stack backtrace:
-[    2.386253][    T0] CPU: 0 PID: 0 Comm: swapper Not tainted 6.6.0-rc4-00506-g0c940f3d0d4c #7 88a30a6c68427eeed926405592f52ff30544ebdd
-[    2.386253][    T0] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-[    2.386253][    T0] Call Trace:
-[    2.386253][    T0]  <TASK>
-[ 2.386253][ T0] copy_process (kbuild/src/rand-x86_64-3/kernel/fork.c:2690 (discriminator 9)) 
-[ 2.386253][ T0] ? pidfd_prepare (kbuild/src/rand-x86_64-3/kernel/fork.c:2245) 
-[ 2.386253][ T0] ? acpi_hw_validate_register (kbuild/src/rand-x86_64-3/drivers/acpi/acpica/hwregs.c:196) 
-[ 2.386253][ T0] ? proc_register (kbuild/src/rand-x86_64-3/fs/proc/generic.c:383) 
-[ 2.386253][ T0] kernel_clone (kbuild/src/rand-x86_64-3/include/linux/random.h:26 kbuild/src/rand-x86_64-3/kernel/fork.c:2903) 
-[ 2.386253][ T0] ? acpi_hw_register_read (kbuild/src/rand-x86_64-3/drivers/acpi/acpica/hwregs.c:489) 
-[ 2.386253][ T0] ? create_io_thread (kbuild/src/rand-x86_64-3/kernel/fork.c:2862) 
-[ 2.386253][ T0] user_mode_thread (kbuild/src/rand-x86_64-3/kernel/fork.c:2971) 
-[ 2.386253][ T0] ? kernel_thread (kbuild/src/rand-x86_64-3/kernel/fork.c:2971) 
-[ 2.386253][ T0] ? acpi_hw_validate_io_request (kbuild/src/rand-x86_64-3/drivers/acpi/acpica/hwvalid.c:128) 
-[ 2.386253][ T0] ? rest_init (kbuild/src/rand-x86_64-3/init/main.c:1429) 
-[ 2.386253][ T0] rest_init (kbuild/src/rand-x86_64-3/init/main.c:691) 
-[ 2.386253][ T0] arch_call_rest_init+0x13/0x80 
-[ 2.386253][ T0] start_kernel (kbuild/src/rand-x86_64-3/init/main.c:992 (discriminator 1)) 
-[ 2.386253][ T0] x86_64_start_reservations (kbuild/src/rand-x86_64-3/arch/x86/kernel/head64.c:544) 
-[ 2.386253][ T0] x86_64_start_kernel (??:?) 
-[ 2.386253][ T0] secondary_startup_64_no_verify (kbuild/src/rand-x86_64-3/arch/x86/kernel/head_64.S:433) 
-[    2.386253][    T0]  </TASK>
-[    2.387851][    T1] RCU Tasks: Setting shift to 0 and lim to 1 rcu_task_cb_adjust=1.
-[    2.389031][    T1] RCU Tasks Rude: Setting shift to 0 and lim to 1 rcu_task_cb_adjust=1.
-[    2.390637][    T1] RCU Tasks Trace: Setting shift to 0 and lim to 1 rcu_task_cb_adjust=1.
-[    2.391901][    T1] Running RCU-tasks wait API self tests
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20231103/202311031320.c3ebc782-oliver.sang@intel.com
-
-
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Regards,
+Tao
+>
+>
+>>> Regards,
+>>> Tao
+>>>> All code
+>>>> ========
+>>>>     0:    30 e8                    xor    %ch,%al
+>>>>     2:    7e 22                    jle    0x26
+>>>>     4:    04 00                    add    $0x0,%al
+>>>>     6:    8b 56 20                 mov    0x20(%rsi),%edx
+>>>>     9:    39 d0                    cmp    %edx,%eax
+>>>>     b:    74 24                    je     0x31
+>>>>     d:    80 3d 18 c0 cc c2 00     cmpb  
+>>>> $0x0,-0x3d333fe8(%rip)        # 0xffffffffc2ccc02c
+>>>>    14:    75 3b                    jne    0x51
+>>>>    16:    c6 05 18 c0 cc c2 01     movb  
+>>>> $0x1,-0x3d333fe8(%rip)        # 0xffffffffc2ccc035
+>>>>    1d:    52                       push   %rdx
+>>>>    1e:    50                       push   %rax
+>>>>    1f:    53                       push   %rbx
+>>>>    20:    68 df 53 57 c2           push   $0xffffffffc25753df
+>>>>    25:    e8 47 70 ef ff           call   0xffffffffffef7071
+>>>>    2a:*    0f 0b                    ud2        <-- trapping
+>>>> instruction
+>>>>    2c:    83 c4 10                 add    $0x10,%esp
+>>>>    2f:    eb 20                    jmp    0x51
+>>>>    31:    43 83 c6 74              rex.XB add $0x74,%r14d
+>>>>    35:    83 fb 0b                 cmp    $0xb,%ebx
+>>>>    38:    0f 85 6a ff ff ff        jne    0xffffffffffffffa8
+>>>>    3e:    8b                       .byte 0x8b
+>>>>    3f:    45                       rex.RB
+>>>>
+>>>> Code starting with the faulting instruction
+>>>> ===========================================
+>>>>     0:    0f 0b                    ud2
+>>>>     2:    83 c4 10                 add    $0x10,%esp
+>>>>     5:    eb 20                    jmp    0x27
+>>>>     7:    43 83 c6 74              rex.XB add $0x74,%r14d
+>>>>     b:    83 fb 0b                 cmp    $0xb,%ebx
+>>>>     e:    0f 85 6a ff ff ff        jne    0xffffffffffffff7e
+>>>>    14:    8b                       .byte 0x8b
+>>>>    15:    45                       rex.RB
+>>>> [   32.256641][    T1] EAX: 00000037 EBX: 00000000 ECX: 00000002
+>>>> EDX: 80000002
+>>>> [   32.257402][    T1] ESI: fefbda30 EDI: da953a30 EBP: c3d49ef0
+>>>> ESP: c3d49ec0
+>>>> [   32.258176][    T1] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068
+>>>> EFLAGS: 00010286
+>>>> [   32.259000][    T1] CR0: 80050033 CR2: 00000000 CR3: 02dd5000
+>>>> CR4: 000406d0
+>>>> [   32.259768][    T1] DR0: 00000000 DR1: 00000000 DR2: 00000000
+>>>> DR3: 00000000
+>>>> [   32.260526][    T1] DR6: fffe0ff0 DR7: 00000400
+>>>> [   32.261021][    T1] Call Trace:
+>>>> [ 32.261376][ T1] ? show_regs (arch/x86/kernel/dumpstack.c:479
+>>>> arch/x86/kernel/dumpstack.c:465)
+>>>> [ 32.261835][ T1] ? bpf_mem_alloc_init (kernel/bpf/memalloc.c:500
+>>>> kernel/bpf/memalloc.c:579)
+>>>> [ 32.262395][ T1] ? __warn (kernel/panic.c:673)
+>>>> [ 32.262840][ T1] ? report_bug (lib/bug.c:201 lib/bug.c:219)
+>>>> [ 32.263327][ T1] ? bpf_mem_alloc_init (kernel/bpf/memalloc.c:500
+>>>> kernel/bpf/memalloc.c:579)
+>>>> [ 32.263884][ T1] ? exc_overflow (arch/x86/kernel/traps.c:250)
+>>>> [ 32.264368][ T1] ? handle_bug (arch/x86/kernel/traps.c:237)
+>>>> [ 32.264833][ T1] ? exc_invalid_op (arch/x86/kernel/traps.c:258
+>>>> (discriminator 1))
+>>>> [ 32.265333][ T1] ? handle_exception (arch/x86/entry/entry_32.S:1056)
+>>>> [ 32.265903][ T1] ? exc_overflow (arch/x86/kernel/traps.c:250)
+>>>> [ 32.266392][ T1] ? bpf_mem_alloc_init (kernel/bpf/memalloc.c:500
+>>>> kernel/bpf/memalloc.c:579)
+>>>> [ 32.266982][ T1] ? exc_overflow (arch/x86/kernel/traps.c:250)
+>>>> [ 32.267476][ T1] ? bpf_mem_alloc_init (kernel/bpf/memalloc.c:500
+>>>> kernel/bpf/memalloc.c:579)
+>>>> [ 32.268050][ T1] ? irq_work_init_threads (kernel/bpf/core.c:2919)
+>>>> [ 32.268610][ T1] bpf_global_ma_init (kernel/bpf/core.c:2923)
+>>>> [ 32.269142][ T1] do_one_initcall (init/main.c:1232)
+>>>> [ 32.269657][ T1] ? debug_smp_processor_id (lib/smp_processor_id.c:61)
+>>>> [ 32.270243][ T1] ? rcu_is_watching
+>>>> (include/linux/context_tracking.h:122 kernel/rcu/tree.c:699)
+>>>> [ 32.270770][ T1] do_initcalls (init/main.c:1293 init/main.c:1310)
+>>>> [ 32.271275][ T1] kernel_init_freeable (init/main.c:1549)
+>>>> [ 32.271841][ T1] ? rest_init (init/main.c:1429)
+>>>> [ 32.272324][ T1] kernel_init (init/main.c:1439)
+>>>> [ 32.272785][ T1] ret_from_fork (arch/x86/kernel/process.c:153)
+>>>> [ 32.273272][ T1] ? rest_init (init/main.c:1429)
+>>>> [ 32.273752][ T1] ret_from_fork_asm (arch/x86/entry/entry_32.S:741)
+>>>> [ 32.274272][ T1] entry_INT80_32 (arch/x86/entry/entry_32.S:947)
+>>>> [   32.274803][    T1] irq event stamp: 16968005
+>>>> [ 32.275293][ T1] hardirqs last enabled at (16968013):
+>>>> console_unlock (arch/x86/include/asm/irqflags.h:26
+>>>> arch/x86/include/asm/irqflags.h:67
+>>>> arch/x86/include/asm/irqflags.h:127 kernel/printk/printk.c:347
+>>>> kernel/printk/printk.c:2720 kernel/printk/printk.c:3039)
+>>>> [ 32.276277][ T1] hardirqs last disabled at (16968022):
+>>>> console_unlock (kernel/printk/printk.c:345
+>>>> kernel/printk/printk.c:2720 kernel/printk/printk.c:3039)
+>>>> [ 32.277242][ T1] softirqs last enabled at (16967866): __do_softirq
+>>>> (arch/x86/include/asm/preempt.h:27 kernel/softirq.c:400
+>>>> kernel/softirq.c:582)
+>>>> [ 32.278202][ T1] softirqs last disabled at (16967861):
+>>>> do_softirq_own_stack (arch/x86/kernel/irq_32.c:57
+>>>> arch/x86/kernel/irq_32.c:147)
+>>>> [   32.279228][    T1] ---[ end trace 0000000000000000 ]---
+>>>> [   32.280294][    T1] kmemleak: Kernel memory leak detector
+>>>> initialized (mem pool available: 15783)
+>>>> [   32.281276][    T1] debug_vm_pgtable: [debug_vm_pgtable        
+>>>> ]: Validating architecture page table helpers
+>>>> [   32.285847][   T74] kmemleak: Automatic memory scanning thread
+>>>> started
+>>>> [   32.290289][    T1] UBI error: cannot create "ubi" debugfs
+>>>> directory, error -2
+>>>> [   32.291558][    T1] UBI error: cannot initialize UBI, error -2
+>>>>
+>>>>
+>>>>
+>>>> The kernel config and materials to reproduce are available at:
+>>>> https://download.01.org/0day-ci/archive/20231030/202310302113.9f8fe705-oliver.sang@intel.com
+>>>>
+>>>>
+>>>>
+>>>>
+>>
 
