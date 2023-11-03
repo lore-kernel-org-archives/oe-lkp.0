@@ -1,251 +1,312 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from out-176.mta0.migadu.com (out-176.mta0.migadu.com [91.218.175.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0A7F79D1
-	for <oe-lkp@lists.linux.dev>; Fri,  3 Nov 2023 08:15:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD7211D52A
+	for <oe-lkp@lists.linux.dev>; Fri,  3 Nov 2023 16:49:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hlTTCDVq"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1698999307; x=1730535307;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=vIxgmUi+4wmNF+rS5xDfrqjQW94RRh8lO5nxQeQ8RPc=;
-  b=hlTTCDVqZvZUp/j1WAGpbsv7stO1yLg+cpftGMfyte+hgQp2LgE7AMfx
-   RnPI/sq+/idTuy2NsBY3vNx3b2UeWhUBgHip0r9R07H10uZvjZ/T1z7Td
-   Cw6WaNZK/1XrFBUBGxERQ+LplNtSlZftyufbN/8f43El0Up7VT7khRr1I
-   7xavGatGev11jJ4LrBz0BB0siWHeMkceu5KjeuyyJ5gkel+LSSZcd6W4C
-   +bT/MHzmJJz73VF+7hkBooJY7N1TgDbwBq4gDLtzGIsjiDK2aRiif1i1W
-   uO+Tb1Z3FFx/ZGSrqIXM7oOvgTSlyPZUlTeij81H2aGvZlYL5rCJquffd
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10882"; a="1835962"
-X-IronPort-AV: E=Sophos;i="6.03,273,1694761200"; 
-   d="scan'208";a="1835962"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2023 01:15:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10882"; a="711437569"
-X-IronPort-AV: E=Sophos;i="6.03,273,1694761200"; 
-   d="scan'208";a="711437569"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orsmga003.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 03 Nov 2023 01:15:04 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34; Fri, 3 Nov 2023 01:15:04 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34; Fri, 3 Nov 2023 01:15:04 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34 via Frontend Transport; Fri, 3 Nov 2023 01:15:04 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.168)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.34; Fri, 3 Nov 2023 01:15:03 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FqkVZYJP0WQlxpeOUmplfSTCLjpH9l7jeS4qw7xcLX4PD9D/VBUMWFvLrZbkMGa6x28GkK6G7YZJm++Jsmf3YhNiJFiyJTqUX7OTfclOQrOYp7cx9ANdLNl9nZoApgEYx0dL1KsM0k1pRwAVPNKinLL58xVuE98qH2WmwnQTYX3id59v5ZDVTLX7NBicdU9SBDBQ5KYuWX6IYfP5Dfnvio9MqEzmSTvbs7D0qCn/XtvDBBrO7jOQzdBg5Rm8IsqUiAFtfRG/jIIE8YLmpbVngxwazbnyimRub0RHj1KSM/G8QnLlHAbGrFBn50rTRP6eZBnbvub81VsBJ9SA3tqooA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=aTAQF+r+jWPmKVzU/D+NtTeYgXS5ViqgWJakwPKCy4A=;
- b=FDlJLPUVnQemLMebSo1NS1Xsn4R59oHEQr+WDatraduOtMyFpYoUkQvfemZ5bX4g6Ck5aqNPsjnild8bUsa3Yi5H6CR5O5CvFKmnnI3uMvC+OLPvi+TOXd5Gpleaj9MFrq125pTMdSw4ZqbZLD3ym8bM94xyiBct3Lw9MhUZfjP1qUkjjNSHeFvRP/4LWuKxAcJX1m7rRJHBPVOfyFCuBAyU9Tgrf+ULUmYNMLrycE6Dh/A6wqxC8mGDjrxUABycQlM6A8yXwd/P7yVHfxwAV6Pqn+dVt8BhRGq8j/4e/UktJIaUMJc0tLrPdh20+2b5nCNJrQWv/Un85aH6c2rU5Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH8PR11MB6779.namprd11.prod.outlook.com (2603:10b6:510:1ca::17)
- by CY5PR11MB6533.namprd11.prod.outlook.com (2603:10b6:930:43::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6954.19; Fri, 3 Nov
- 2023 08:15:01 +0000
-Received: from PH8PR11MB6779.namprd11.prod.outlook.com
- ([fe80::b8:30e8:1502:b2a7]) by PH8PR11MB6779.namprd11.prod.outlook.com
- ([fe80::b8:30e8:1502:b2a7%4]) with mapi id 15.20.6954.021; Fri, 3 Nov 2023
- 08:15:01 +0000
-Date: Fri, 3 Nov 2023 16:14:53 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: Stefan Roesch <shr@devkernel.io>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Linux Memory Management List
-	<linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>, "David
- Hildenbrand" <david@redhat.com>, Johannes Weiner <hannes@cmpxchg.org>, "Rik
- van Riel" <riel@surriel.com>, <ltp@lists.linux.it>, <oliver.sang@intel.com>
-Subject: [linux-next:master] [mm/ksm]  5e924ff54d: ltp.ksm01_1.fail
-Message-ID: <202311031548.66780ff5-oliver.sang@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-X-ClientProxiedBy: SI1PR02CA0010.apcprd02.prod.outlook.com
- (2603:1096:4:1f7::17) To PH8PR11MB6779.namprd11.prod.outlook.com
- (2603:10b6:510:1ca::17)
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="J+hBJivp"
+Message-ID: <3b3b1384-88ba-4796-8e11-d6632afb35ac@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1699030175;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=3uszdkpoS+497OBYSli94OpXefHaiQHfyI1jh0hoCzQ=;
+	b=J+hBJivpPkDYS3G4/2HLB+F6BMUxJczjAFkWYZj1VystNYa0ZKK3uDh7nsb15NWZY+xAhX
+	sEhhiljDlvy7oRqZaWpeWroZauher6Lrclyx/vp12n6vgQcSln88q+bsXLJy6Gm64TBwVU
+	H4dcXissfRa/2aFs69cLP3Pp3j8LNmM=
+Date: Fri, 3 Nov 2023 09:49:28 -0700
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR11MB6779:EE_|CY5PR11MB6533:EE_
-X-MS-Office365-Filtering-Correlation-Id: cda5c34e-9cc4-4292-6b66-08dbdc44f98b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: D+ifsNs7rgLLXV7VuvRabAOu4C/aaw5MRQgGDlVhNZfbKYc2gXcYPePIjF0PvCRtDwOiuM7iUUEbdCcARHbCF3UpWIzv3cXur208sEGl6DKNUUzQktn3edwmb1arHmpM+PcSeLs5ZlnW3UFrpI9K9RNZ2IFmZxYi7y14zmkgERBl+mbXziK77FNhq9kpR/jbUrN4ALsanB8SdsLrPZSf8FSvIYnx1dV25rOwdUfnhdpa8f5QPHaRekkwaKWVN+pWixSRY9LzGLvlge6EIIdpXHneZtkzBTEN/cumxy4nlhv2vmahbbeSPfCqOZksnDXUwm7zgkTYo/1L6Qj8n3TEg6pAaElghmuUBc0tFuDPLiJ+TMP7Y8Ir9KID+KOPFSHWJqT+IztO+YCFnebnX/LJ6UdHXMZ1cJj4VHG2QcCqVAt8sybw55kiY0AKn/LUIwPonhtTDMPg1rTysvdlmpFJiR0wc0Tq5XQNoZqWKAGYl07fVG8ogYh17BXfNjGCeS3VpVThiBHUSZDodYFr0fGNJO4zOYUqLnwDBIXQ+tRkNKZK001nVbSGews74GoObpJOft36/AJRGVW+OurC+sM/m72NX7YgZ9AbXC3iSS+i6QXnuhe4/mVZIt1MJEZkf5ExMN6mpztVOraKbmfNt8geRA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB6779.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(39860400002)(376002)(366004)(396003)(346002)(230922051799003)(230173577357003)(230273577357003)(451199024)(1800799009)(64100799003)(186009)(1076003)(2616005)(26005)(4326008)(6512007)(38100700002)(82960400001)(36756003)(86362001)(2906002)(83380400001)(5660300002)(6506007)(478600001)(107886003)(66946007)(6666004)(6916009)(8676002)(8936002)(316002)(6486002)(54906003)(66476007)(41300700001)(66556008)(966005);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?kRwAiiG7mPkC1hH0sIWaVQH9sgkZfja5d/DZIjCWL69cdmeK3SwGeKAj5wBR?=
- =?us-ascii?Q?yfr0ujweFijdmWk4bfkV+3alZnb9hcJhpy0Yx4ylgKIhHb3pr06rsB4mEZFx?=
- =?us-ascii?Q?watmDlp3oPr5A86JyW1yyE5ZAD/JoaKeW6sG+6AeG/tupmgX/VyGK6LlqQu+?=
- =?us-ascii?Q?lh4zETIwsqQXbNlkQP2tpwPKsxIstDBsh5Qts6/rNXSEPKuUruRpfzPBmSuR?=
- =?us-ascii?Q?jm2ldoXvsHfGydCABKqWml31m76uSjUJXJpCbDY9WaauXPewEe2MNPBisx4N?=
- =?us-ascii?Q?r1cEuCMViDDavxA0UAQ2qCc6ap+e1ySNRQ5ivsaQ/T1ceCJWo2BXwK0X8A4E?=
- =?us-ascii?Q?h03Ovo5Sc/fqvLrUZZp9r5APpBLi2DlZDyyrZ3ycQjTWjizoxMALU+pAomXo?=
- =?us-ascii?Q?IG9nbI7ceoLObl290a+QUxUrsSdvkw7oaU5P3ZudT3ecI/TqVa6AORsSwERa?=
- =?us-ascii?Q?oEh2yGRcOutFI87TdEZZjzk2jrr38+0C6CtdaEunv2Ka7e4TVIhOv6zXeE80?=
- =?us-ascii?Q?45M0aaV+OvzVhcfDTtRjbT+qK0F1n9Exqnq11SgrA+8FUVQxM4pOcKsxzcKK?=
- =?us-ascii?Q?TNknuiVGVW3a9+o2PSQLPzG/LEdU4/fKL8pC2nBVVvMqXjYXxcSXT65+WMam?=
- =?us-ascii?Q?LyJ73DGoTaKgPB/H82xs3pP1/JAlswyoHQ66rpXa7lfAuBEz3LFEH3JBmY8N?=
- =?us-ascii?Q?UmYaNSt9SaB3aWq4FzLf3oGYfsZNsMlboY6IhX+MoUe2MH/bTX+sUCn1awO1?=
- =?us-ascii?Q?DNif7t/m1rrxrKaUs87g0I/0lsSDn5C8YSvLbM4ufFbx9XD3GV9toHwYPA+M?=
- =?us-ascii?Q?4hH+BgDbtnHWadVCQFESadS5IvA0PTSnFkf4t7M5qvnx5dYvipjJkg8L2J44?=
- =?us-ascii?Q?3eHPFSb6xIzuO+kSK1aLwBXVGyfBeWh3FM0J74MAjD3ZJtz9sElqoBRMQL/Z?=
- =?us-ascii?Q?loqS3P2GKGZok3bcUJ9wkxTAWDFtpPZ7smJHfSFrCp2HIveULgkjWRhXJdc4?=
- =?us-ascii?Q?fp7UTZ4EZPq9r3Ujj2Og0fkazjLhRziurabvSUWv4+IVMin+5eocgkOKxFwy?=
- =?us-ascii?Q?VccQsqSrzSb8wTKj9hn85bgd7o7qLMaLYlGIn8tDKLYhcZQde4fg8tVMh8sF?=
- =?us-ascii?Q?IpAUtLmkNVbsprA6Kb402CR8h3yG6alY3sT9+0N9Y/7bVwLrmUZVNrikMkV1?=
- =?us-ascii?Q?lDjfCuC9y9w4SsOyVo1wIjk0dfzufhhKE2JZfibQdMWK+TqqGoyOj1g19rRu?=
- =?us-ascii?Q?P5ZMw2n9H4qBDCebDwIrKEtusUFlVkhm/rM5+P8YiQ9xG4aAQV8h6zUBqcAc?=
- =?us-ascii?Q?0zkr4p5F7Z/RmSdOnOJjymnFUlGynBvvn9QVJHoZ7es6UBm2NN3gWXFTspbG?=
- =?us-ascii?Q?C+Ez1Qg4zpjX6EX8hpf3JLa0TeYqPQMAWsk0/nkQaXmucaARiv7tYJhuvseS?=
- =?us-ascii?Q?FTleiFRRHltTfnnQZ43yct4qfrIjA7ys2OrcY/9I1s6p4D03p1vo9W4UuCOq?=
- =?us-ascii?Q?zPbLQR0ti3ex72e94O/Cf5yiMYQFmpAENDH1w46iPcJ6taz3mJKjTqgAJ0uE?=
- =?us-ascii?Q?r94xK4gDm92+EjxY51cz8vpJRUH+AGyHH5zynkzPXCTKdwh8EQh5LekP3cRp?=
- =?us-ascii?Q?ow=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: cda5c34e-9cc4-4292-6b66-08dbdc44f98b
-X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB6779.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2023 08:15:01.1996
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: L3K1VUnZRlcCOnL5QoCCBr5bI8wkX3nirFNRwNB7GgYEYCmdex7vTjuFDeyaxhyu3PmTxWfFohOwroLPduqBgQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR11MB6533
-X-OriginatorOrg: intel.com
+Subject: Re: [linus:master] [bpf] c930472552:
+ WARNING:at_kernel/bpf/memalloc.c:#bpf_mem_alloc_init
+Content-Language: en-GB
+To: Hou Tao <houtao@huaweicloud.com>, Alexei Starovoitov <ast@kernel.org>,
+ kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+ bpf@vger.kernel.org, "houtao1@huawei.com" <houtao1@huawei.com>
+References: <202310302113.9f8fe705-oliver.sang@intel.com>
+ <7506b682-3be3-fcd0-4bb4-c1db48f609a2@huaweicloud.com>
+ <99e9d615-b720-7f33-3df0-9824a92f6644@huaweicloud.com>
+ <52383a4f-6efd-43ce-bedb-a91e130850f3@linux.dev>
+ <3629948c-793e-307b-6b6e-00557f3f6212@huaweicloud.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Yonghong Song <yonghong.song@linux.dev>
+In-Reply-To: <3629948c-793e-307b-6b6e-00557f3f6212@huaweicloud.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
 
 
+On 11/2/23 11:54 PM, Hou Tao wrote:
+> Hi,
+>
+> On 11/3/2023 12:08 AM, Yonghong Song wrote:
+>> On 11/2/23 6:40 AM, Hou Tao wrote:
+>>> Hi Alexei,
+>>>
+>>> On 10/31/2023 4:01 PM, Hou Tao wrote:
+>>>> Hi,
+>>>>
+>>>> On 10/30/2023 10:11 PM, kernel test robot wrote:
+>>>>> hi, Hou Tao,
+>>>>>
+>>>>> we noticed a WARN_ONCE added in this commit was hit in our tests. FYI.
+>>>>>
+>>>>>
+>>>>> Hello,
+>>>>>
+>>>>> kernel test robot noticed
+>>>>> "WARNING:at_kernel/bpf/memalloc.c:#bpf_mem_alloc_init" on:
+>>>>>
+>>>>> commit: c930472552022bd09aab3cd946ba3f243070d5c7 ("bpf: Ensure
+>>>>> unit_size is matched with slab cache object size")
+>>>>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>>>>>
+>>>>> [test failed on linus/master ffc253263a1375a65fa6c9f62a893e9767fbebfa]
+>>>>> [test failed on linux-next/master
+>>>>> c503e3eec382ac708ee7adf874add37b77c5d312]
+>>>>>
+>>>>> in testcase: boot
+>>>>>
+>>>>> compiler: gcc-12
+>>>>> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp
+>>>>> 2 -m 16G
+>>>>>
+>>>>> (please refer to attached dmesg/kmsg for entire log/backtrace)
+>>>>>
+>>>>>
+>>>>> +-------------------------------------------------------------+------------+------------+
+>>>>>
+>>>>> |                                                             |
+>>>>> b1d53958b6 | c930472552 |
+>>>>> +-------------------------------------------------------------+------------+------------+
+>>>>>
+>>>>> | WARNING:at_kernel/bpf/memalloc.c:#bpf_mem_alloc_init        |
+>>>>> 0          | 14         |
+>>>>> | EIP:bpf_mem_alloc_init                                      |
+>>>>> 0          | 14         |
+>>>>> +-------------------------------------------------------------+------------+------------+
+>>>>>
+>>>>>
+>>>>>
+>>>>> If you fix the issue in a separate patch/commit (i.e. not just a
+>>>>> new version of
+>>>>> the same patch/commit), kindly add following tags
+>>>>> | Reported-by: kernel test robot <oliver.sang@intel.com>
+>>>>> | Closes:
+>>>>> https://lore.kernel.org/oe-lkp/202310302113.9f8fe705-oliver.sang@intel.com
+>>>>>
+>>>>>
+>>>>> [   32.249545][    T1] ------------[ cut here ]------------
+>>>>> [   32.250152][    T1] bpf_mem_cache[0]: unexpected object size
+>>>>> 128, expect 96
+>>>>> [ 32.250953][ T1] WARNING: CPU: 1 PID: 1 at
+>>>>> kernel/bpf/memalloc.c:500 bpf_mem_alloc_init
+>>>>> (kernel/bpf/memalloc.c:500 kernel/bpf/memalloc.c:579)
+>>>>> [   32.252065][    T1] Modules linked in:
+>>>>> [   32.252548][    T1] CPU: 1 PID: 1 Comm: swapper/0 Tainted:
+>>>>> G        W          6.5.0-12679-gc93047255202 #1
+>>>>> [ 32.253767][ T1] EIP: bpf_mem_alloc_init
+>>>>> (kernel/bpf/memalloc.c:500 kernel/bpf/memalloc.c:579)
+>>>>> [ 32.254439][ T1] Code: 30 e8 7e 22 04 00 8b 56 20 39 d0 74 24 80
+>>>>> 3d 18 c0 cc c2 00 75 3b c6 05 18 c0 cc c2 01 52 50 53 68 df 53 57
+>>>>> c2 e8 47 70 ef ff <0f> 0b 83 c4 10 eb 20 43 83 c6 74 83 fb 0b 0f 85
+>>>>> 6a ff ff ff 8b 45
+>>>> Thanks for the report. I also could reproduce the warning in v6.6 by
+>>>> following the reproducing steps in the link below.
+>>>>
+>>>> According the reproduce job, it seems that the kernel is built for i386
+>>>> (make HOSTCC=gcc-12 CC=gcc-12 ARCH=i386 olddefconfig prepare
+>>>> modules_prepare bzImage) and in .config CONFIG_SLAB instead of
+>>>> CONFIG_SLUB is enabled, I will check whether or not these two setups
+>>>> make any thing being different.
+>>> I see what has happened. The problem is twofold:
+>>> (1) The object_size of kmalloc-cg-96 is adjust from 96 to 128 due to
+>>> slab merge in __kmem_cache_alias(). For SLAB, SLAB_HWCACHE_ALIGN is
+>>> enabled by default for kmalloc slab, so align is 64 and size is 128 for
+>>> kmalloc-cg-96. So when unit_alloc() does kmalloc_node(96, __GFP_ACCOUNT,
+>>> node), ksize() will return 128 instead of 96 for the returned pointer.
+>>> SLUB has a similar merge logic, but because its align is 8 under x86-64,
+>>> so the warning doesn't happen for i386 + SLUB, but I think the similar
+>>> problem may exist for other architectures.
+>>> (2) kmalloc_size_roundup() returns the object_size of kmalloc-96 instead
+>>> of kmalloc-cg-96, so bpf_mem_cache_adjust_size() doesn't adjust
+>>> size_index accordingly. The reason why the object_size of kmalloc-96 is
+>>> 96 instead of 128 is that there is slab merge for kmalloc-96.
+>>>
+>>> About how to fix the problem, I have two ideas:
+>>> The first is to introduce kmalloc_size_roundup_flags(), so
+>>> bpf_mem_cache_adjust_size() could use kmalloc_size_roundup_flags(size,
+>>> __GFP_ACCOUNT) to get the object_size of kmalloc-cg-xxx. It could fix
+>>> the warning for now, but the warning may pop-up occasionally due to SLUB
+>>> merge and unusual slab align. The second is just using the bpf_mem_cache
+>>> pointer to get the unit_size which is saved before the to-be-free
+>>> pointer. Its downside is that it may can not be able to skip the free
+>>> operation for pointer which is not allocated from bpf ma, but I think it
+>>> is acceptable. I prefer the latter solution. What do you think ?
+>>
+>> Is it possible that in bpf_mem_cache_adjust_size(), we do a series of
+>> kmalloc (for supported bucket size) and call ksize() to get the actual
+>> allocated object size. So eventually all possible allocated object sizes
+>> will be used for size_index[]. This will avoid all kind of special
+>> corner cases due to config/macro/arch etc. WDYT?
+> It is basically the same as the first proposed solution and it has the
+> same flaw. The problem is that slab merge can happen in any time, so the
+> return value of ksize() may change even all passed pointers are
+> allocated from the same slab. Considering the following case: during the
+> invocation of bpf_mem_cache_adjust_size() or the initialization of
+> bpf_global_ma, there is no slab merge and ksize() for a 96-bytes object
+> returns 96. But after these invocations, a new slab created by a kernel
+> module is merged to kmalloc-cg-96 and the object_size of kmalloc-cg-96
+> is adjust from 96 to 128 (which is possible for x86-64 + CONFIG_SLAB,
+> because it is alignment requirement is 64 for 96-bytes slab). So soon or
 
-Hello,
-
-kernel test robot noticed "ltp.ksm01_1.fail" on:
-
-commit: 5e924ff54d088828794d9f1a4d5bf17808f7270e ("mm/ksm: add "smart" page scanning mode")
-https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
-
-[test failed on linux-next/master ab57716449b3438c0136f6f412a2e59e0cf037a9]
-
-in testcase: ltp
-version: ltp-x86_64-14c1f76-1_20230715
-with following parameters:
-
-	disk: 1HDD
-	test: mm-00/ksm01_1
+So, the object_size for allocated objects in that is adjusted from 96 to 128
+while previously allocated objects should have no change, it is merely ksize(old_obj)
+previous return 96, now returns 128, right? Okay, so this is indeed a problem
+since we use ksize() to decide the bucket.
 
 
+> later, when bpf_global_ma frees a 96-byte-sized pointer which is
+> allocated from a bpf_mem_cache in which unit_size is 96, bpf_mem_free()
+> will free the pointer through a bpf_mem_cache in which unit_size is 128,
+> because the return value of ksize() changes. Maybe we should introduce a
+> new API in mm which returns size instead of object_size of underlying
+> slab, so the return value will not change due to slab merge.
 
-compiler: gcc-12
-test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-7700 CPU @ 3.60GHz (Kaby Lake) with 32G memory
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202311031548.66780ff5-oliver.sang@intel.com
+In this case, to avoid the warning, indeed we need to use '96' instead of '128'.
+So use the original ksize() return value is indeed a solution.
+We could use the mechanism similar to percpu alloc to save '96' in the memory.
 
 
-
-Running tests.......
-<<<test_start>>>
-tag=ksm01_1 stime=1698967074
-cmdline="ksm01 -u 128"
-contacts=""
-analysis=exit
-<<<test_output>>>
-tst_kconfig.c:87: TINFO: Parsing kernel config '/proc/config.gz'
-tst_test.c:1558: TINFO: Timeout per run is 0h 00m 30s
-mem.c:388: TINFO: child 0 stops.
-mem.c:388: TINFO: child 1 stops.
-mem.c:422: TINFO: wait for all children to stop.
-mem.c:388: TINFO: child 2 stops.
-mem.c:495: TINFO: KSM merging...
-mem.c:434: TINFO: resume all children.
-mem.c:422: TINFO: wait for all children to stop.
-mem.c:344: TINFO: child 0 continues...
-mem.c:347: TINFO: child 0 allocates 128 MB filled with 'c'
-mem.c:344: TINFO: child 1 continues...
-mem.c:347: TINFO: child 1 allocates 128 MB filled with 'a'
-mem.c:344: TINFO: child 2 continues...
-mem.c:347: TINFO: child 2 allocates 128 MB filled with 'a'
-mem.c:400: TINFO: child 2 stops.
-mem.c:400: TINFO: child 0 stops.
-mem.c:400: TINFO: child 1 stops.
-ksm_helper.c:36: TINFO: ksm daemon takes 2s to run two full scans
-mem.c:264: TINFO: check!
-mem.c:255: TPASS: run is 1.
-mem.c:255: TPASS: pages_shared is 2.
-
-....
-
-mem.c:255: TPASS: pages_shared is 1.
-mem.c:255: TPASS: pages_sharing is 98302.
-mem.c:252: TFAIL: pages_volatile is not 0 but 1.     <-----
-mem.c:252: TFAIL: pages_unshared is not 1 but 0.     <-----
-mem.c:255: TPASS: sleep_millisecs is 0.
-mem.c:255: TPASS: pages_to_scan is 98304.
-
-....
-
-mem.c:415: TINFO: child 1 finished.
-mem.c:415: TINFO: child 0 finished.
-mem.c:415: TINFO: child 2 finished.
-
-Summary:
-passed   40
-failed   2
-broken   0
-skipped  0
-warnings 0
-incrementing stop
-<<<execution_status>>>
-initiation_status="ok"
-duration=8 termination_type=exited termination_id=1 corefile=no
-cutime=170 cstime=290
-<<<test_end>>>
-INFO: ltp-pan reported some tests FAIL
-LTP Version: 20230516-75-g2e582e743
-
-       ###############################################################
-
-            Done executing testcases.
-            LTP Version:  20230516-75-g2e582e743
-       ###############################################################
-
-
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20231103/202311031548.66780ff5-oliver.sang@intel.com
-
-
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
+>
+> Regards,
+> Tao
+>>
+>>>> Regards,
+>>>> Tao
+>>>>> All code
+>>>>> ========
+>>>>>      0:    30 e8                    xor    %ch,%al
+>>>>>      2:    7e 22                    jle    0x26
+>>>>>      4:    04 00                    add    $0x0,%al
+>>>>>      6:    8b 56 20                 mov    0x20(%rsi),%edx
+>>>>>      9:    39 d0                    cmp    %edx,%eax
+>>>>>      b:    74 24                    je     0x31
+>>>>>      d:    80 3d 18 c0 cc c2 00     cmpb
+>>>>> $0x0,-0x3d333fe8(%rip)        # 0xffffffffc2ccc02c
+>>>>>     14:    75 3b                    jne    0x51
+>>>>>     16:    c6 05 18 c0 cc c2 01     movb
+>>>>> $0x1,-0x3d333fe8(%rip)        # 0xffffffffc2ccc035
+>>>>>     1d:    52                       push   %rdx
+>>>>>     1e:    50                       push   %rax
+>>>>>     1f:    53                       push   %rbx
+>>>>>     20:    68 df 53 57 c2           push   $0xffffffffc25753df
+>>>>>     25:    e8 47 70 ef ff           call   0xffffffffffef7071
+>>>>>     2a:*    0f 0b                    ud2        <-- trapping
+>>>>> instruction
+>>>>>     2c:    83 c4 10                 add    $0x10,%esp
+>>>>>     2f:    eb 20                    jmp    0x51
+>>>>>     31:    43 83 c6 74              rex.XB add $0x74,%r14d
+>>>>>     35:    83 fb 0b                 cmp    $0xb,%ebx
+>>>>>     38:    0f 85 6a ff ff ff        jne    0xffffffffffffffa8
+>>>>>     3e:    8b                       .byte 0x8b
+>>>>>     3f:    45                       rex.RB
+>>>>>
+>>>>> Code starting with the faulting instruction
+>>>>> ===========================================
+>>>>>      0:    0f 0b                    ud2
+>>>>>      2:    83 c4 10                 add    $0x10,%esp
+>>>>>      5:    eb 20                    jmp    0x27
+>>>>>      7:    43 83 c6 74              rex.XB add $0x74,%r14d
+>>>>>      b:    83 fb 0b                 cmp    $0xb,%ebx
+>>>>>      e:    0f 85 6a ff ff ff        jne    0xffffffffffffff7e
+>>>>>     14:    8b                       .byte 0x8b
+>>>>>     15:    45                       rex.RB
+>>>>> [   32.256641][    T1] EAX: 00000037 EBX: 00000000 ECX: 00000002
+>>>>> EDX: 80000002
+>>>>> [   32.257402][    T1] ESI: fefbda30 EDI: da953a30 EBP: c3d49ef0
+>>>>> ESP: c3d49ec0
+>>>>> [   32.258176][    T1] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068
+>>>>> EFLAGS: 00010286
+>>>>> [   32.259000][    T1] CR0: 80050033 CR2: 00000000 CR3: 02dd5000
+>>>>> CR4: 000406d0
+>>>>> [   32.259768][    T1] DR0: 00000000 DR1: 00000000 DR2: 00000000
+>>>>> DR3: 00000000
+>>>>> [   32.260526][    T1] DR6: fffe0ff0 DR7: 00000400
+>>>>> [   32.261021][    T1] Call Trace:
+>>>>> [ 32.261376][ T1] ? show_regs (arch/x86/kernel/dumpstack.c:479
+>>>>> arch/x86/kernel/dumpstack.c:465)
+>>>>> [ 32.261835][ T1] ? bpf_mem_alloc_init (kernel/bpf/memalloc.c:500
+>>>>> kernel/bpf/memalloc.c:579)
+>>>>> [ 32.262395][ T1] ? __warn (kernel/panic.c:673)
+>>>>> [ 32.262840][ T1] ? report_bug (lib/bug.c:201 lib/bug.c:219)
+>>>>> [ 32.263327][ T1] ? bpf_mem_alloc_init (kernel/bpf/memalloc.c:500
+>>>>> kernel/bpf/memalloc.c:579)
+>>>>> [ 32.263884][ T1] ? exc_overflow (arch/x86/kernel/traps.c:250)
+>>>>> [ 32.264368][ T1] ? handle_bug (arch/x86/kernel/traps.c:237)
+>>>>> [ 32.264833][ T1] ? exc_invalid_op (arch/x86/kernel/traps.c:258
+>>>>> (discriminator 1))
+>>>>> [ 32.265333][ T1] ? handle_exception (arch/x86/entry/entry_32.S:1056)
+>>>>> [ 32.265903][ T1] ? exc_overflow (arch/x86/kernel/traps.c:250)
+>>>>> [ 32.266392][ T1] ? bpf_mem_alloc_init (kernel/bpf/memalloc.c:500
+>>>>> kernel/bpf/memalloc.c:579)
+>>>>> [ 32.266982][ T1] ? exc_overflow (arch/x86/kernel/traps.c:250)
+>>>>> [ 32.267476][ T1] ? bpf_mem_alloc_init (kernel/bpf/memalloc.c:500
+>>>>> kernel/bpf/memalloc.c:579)
+>>>>> [ 32.268050][ T1] ? irq_work_init_threads (kernel/bpf/core.c:2919)
+>>>>> [ 32.268610][ T1] bpf_global_ma_init (kernel/bpf/core.c:2923)
+>>>>> [ 32.269142][ T1] do_one_initcall (init/main.c:1232)
+>>>>> [ 32.269657][ T1] ? debug_smp_processor_id (lib/smp_processor_id.c:61)
+>>>>> [ 32.270243][ T1] ? rcu_is_watching
+>>>>> (include/linux/context_tracking.h:122 kernel/rcu/tree.c:699)
+>>>>> [ 32.270770][ T1] do_initcalls (init/main.c:1293 init/main.c:1310)
+>>>>> [ 32.271275][ T1] kernel_init_freeable (init/main.c:1549)
+>>>>> [ 32.271841][ T1] ? rest_init (init/main.c:1429)
+>>>>> [ 32.272324][ T1] kernel_init (init/main.c:1439)
+>>>>> [ 32.272785][ T1] ret_from_fork (arch/x86/kernel/process.c:153)
+>>>>> [ 32.273272][ T1] ? rest_init (init/main.c:1429)
+>>>>> [ 32.273752][ T1] ret_from_fork_asm (arch/x86/entry/entry_32.S:741)
+>>>>> [ 32.274272][ T1] entry_INT80_32 (arch/x86/entry/entry_32.S:947)
+>>>>> [   32.274803][    T1] irq event stamp: 16968005
+>>>>> [ 32.275293][ T1] hardirqs last enabled at (16968013):
+>>>>> console_unlock (arch/x86/include/asm/irqflags.h:26
+>>>>> arch/x86/include/asm/irqflags.h:67
+>>>>> arch/x86/include/asm/irqflags.h:127 kernel/printk/printk.c:347
+>>>>> kernel/printk/printk.c:2720 kernel/printk/printk.c:3039)
+>>>>> [ 32.276277][ T1] hardirqs last disabled at (16968022):
+>>>>> console_unlock (kernel/printk/printk.c:345
+>>>>> kernel/printk/printk.c:2720 kernel/printk/printk.c:3039)
+>>>>> [ 32.277242][ T1] softirqs last enabled at (16967866): __do_softirq
+>>>>> (arch/x86/include/asm/preempt.h:27 kernel/softirq.c:400
+>>>>> kernel/softirq.c:582)
+>>>>> [ 32.278202][ T1] softirqs last disabled at (16967861):
+>>>>> do_softirq_own_stack (arch/x86/kernel/irq_32.c:57
+>>>>> arch/x86/kernel/irq_32.c:147)
+>>>>> [   32.279228][    T1] ---[ end trace 0000000000000000 ]---
+>>>>> [   32.280294][    T1] kmemleak: Kernel memory leak detector
+>>>>> initialized (mem pool available: 15783)
+>>>>> [   32.281276][    T1] debug_vm_pgtable: [debug_vm_pgtable
+>>>>> ]: Validating architecture page table helpers
+>>>>> [   32.285847][   T74] kmemleak: Automatic memory scanning thread
+>>>>> started
+>>>>> [   32.290289][    T1] UBI error: cannot create "ubi" debugfs
+>>>>> directory, error -2
+>>>>> [   32.291558][    T1] UBI error: cannot initialize UBI, error -2
+>>>>>
+>>>>>
+>>>>>
+>>>>> The kernel config and materials to reproduce are available at:
+>>>>> https://download.01.org/0day-ci/archive/20231030/202310302113.9f8fe705-oliver.sang@intel.com
+>>>>>
+>>>>>
+>>>>>
+>>>>>
