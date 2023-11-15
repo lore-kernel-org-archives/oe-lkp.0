@@ -1,36 +1,35 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2935C156FE
-	for <oe-lkp@lists.linux.dev>; Wed, 15 Nov 2023 12:48:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEC77199CE
+	for <oe-lkp@lists.linux.dev>; Wed, 15 Nov 2023 13:19:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="DQs875zR"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="ef4zcAM2"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1700052529;
+	s=mimecast20190719; t=1700054345;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=zFEdAC3yS3fukStfiQ/KxalSWdJSJaS6HL2miwuT1M8=;
-	b=DQs875zRpQcUPLoDHX1IZHyXIce3ZRFyImU/wT0ghLsyewfEAjRbFlVc3O3rZRn4jsyB4U
-	fdupsL7XrkOnCDOxuedK9zsRt7uoz+hOzoKVaF7FEf8DwUCEb+uB6QVfKSccBmDojLWyqe
-	sPH/M7GbCu4wI5FB3nJahKi4kTxl6tY=
+	bh=yujd6UhXHawR/gjwBGAV+nSzwzwsSbizmMzlrag/8U8=;
+	b=ef4zcAM27aatPuR6P5d9AwouVp0hFA48wBlV6kwS0AHWmBYUIQXwZpBS+cssXRfp8spycS
+	T1awGsA8ToIJ+GroKSTUyHJzINTYS/eOYs4ohFgYLOzdEVvTFy1Sz8Qk3rqY9dA0LlWGfW
+	un2AcmBfP41g/rA+/i/q2t8m7Cinl0U=
 Received: from mimecast-mx02.redhat.com (mx-ext.redhat.com [66.187.233.73])
  by relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-663-SjmSY5dlMEGHutWxNc2ztQ-1; Wed,
- 15 Nov 2023 07:48:45 -0500
-X-MC-Unique: SjmSY5dlMEGHutWxNc2ztQ-1
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-170-2ykAGyRXPyWM2TIkyFDjqA-1; Wed,
+ 15 Nov 2023 08:18:58 -0500
+X-MC-Unique: 2ykAGyRXPyWM2TIkyFDjqA-1
 Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A2A7C2808FC3;
-	Wed, 15 Nov 2023 12:48:44 +0000 (UTC)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 48F983C000B1;
+	Wed, 15 Nov 2023 13:18:57 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.42.28.16])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id CF78C492BFD;
-	Wed, 15 Nov 2023 12:48:40 +0000 (UTC)
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 24AB6492BFE;
+	Wed, 15 Nov 2023 13:18:55 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
 	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
 	Kingdom.
@@ -57,24 +56,13 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <3851105.1700052520.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 15 Nov 2023 12:48:40 +0000
-Message-ID: <3851106.1700052520@warthog.procyon.org.uk>
+Content-ID: <3857441.1700054334.1@warthog.procyon.org.uk>
+Date: Wed, 15 Nov 2023 13:18:54 +0000
+Message-ID: <3857442.1700054334@warthog.procyon.org.uk>
 X-Scanned-By: MIMEDefang 3.4.1 on 10.11.54.10
 
-I can't run the test program:
-
-andromeda1# bin/lkp run ./job-300s-256G-msync.yaml
-grep: /root/lkp-tests/hosts/andromeda.procyon.org.uk: No such file or dire=
-ctory
-/root/lkp-tests/bin/run-local:121:in `<main>': undefined method `chomp' fo=
-r nil:NilClass (NoMethodError)
-
-job['memory'] ||=3D `grep -w '^memory:' #{LKP_SRC}/hosts/#{HOSTNAME}`.spli=
-t(' ')[1].chomp
-                                                                          =
-       ^^^^^^
+Is there some way to run the testcase without it downloading and building its
+own kernel, but rather just use the one running on the box?
 
 David
 
