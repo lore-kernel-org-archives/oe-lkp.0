@@ -1,381 +1,149 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2987364D0
-	for <oe-lkp@lists.linux.dev>; Wed, 15 Nov 2023 18:35:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4642364C8
+	for <oe-lkp@lists.linux.dev>; Wed, 15 Nov 2023 18:38:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="QlsEFkXn"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1700073341;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=9TcRagWPCoG2DdsGqLFhChJSsHvxmy5XsheDLk2JaLs=;
-	b=QlsEFkXni/ZeZ0PPtcgW7DqmpLdCMNl08J412VemntEo4YO16tpPn2Dt1x+t3hAlsWHMGS
-	N9HXzzI4xuT/ri/7xCdw8yRReA8jPxmKAlRfInO8He+t3B3JKIKZCR5RP6YayQTz7Gc0hG
-	PBaesiLLJUMPv1s/vh65nkiGyuqqf0Q=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-404-1AAlrEALOjGVLAOSAQdB6A-1; Wed, 15 Nov 2023 13:35:38 -0500
-X-MC-Unique: 1AAlrEALOjGVLAOSAQdB6A-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7C4FB185A780;
-	Wed, 15 Nov 2023 18:35:37 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.42.28.16])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 58B3B36EE;
-	Wed, 15 Nov 2023 18:35:35 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-	Kingdom.
-	Registered in England and Wales under Company Registration No. 3798903
-From: David Howells <dhowells@redhat.com>
-In-Reply-To: <CAHk-=wjCUckvZUQf7gqp2ziJUWxVpikM_6srFdbcNdBJTxExRg@mail.gmail.com>
-References: <CAHk-=wjCUckvZUQf7gqp2ziJUWxVpikM_6srFdbcNdBJTxExRg@mail.gmail.com> <202311061616.cd495695-oliver.sang@intel.com> <3865842.1700061614@warthog.procyon.org.uk> <CAHk-=whM-cEwAsLtKsf5dYwV7nDTaRv1bUKLVBstMAQBug24uQ@mail.gmail.com>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: dhowells@redhat.com, kernel test robot <oliver.sang@intel.com>,
-    oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-    Christian Brauner <brauner@kernel.org>,
-    Alexander Viro <viro@zeniv.linux.org.uk>,
-    Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>,
-    Christian Brauner <christian@brauner.io>,
-    Matthew Wilcox <willy@infradead.org>,
-    David Laight <David.Laight@aculab.com>, ying.huang@intel.com,
-    feng.tang@intel.com, fengwei.yin@intel.com
-Subject: Re: [linus:master] [iov_iter] c9eec08bac: vm-scalability.throughput -16.9% regression
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="ZUYDVsCc"
+Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-5435336ab0bso1436a12.1
+        for <oe-lkp@lists.linux.dev>; Wed, 15 Nov 2023 10:38:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google; t=1700073517; x=1700678317; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=0MD0pshjJBw/chdZXVFrwHJqdy9ZbUZCE/cfITJ+qfg=;
+        b=ZUYDVsCcvCadfGMpP6gdEItVD+FKrZ8IjG7SvbykaSzMKUmixfRkzDL24mmY2hNB8T
+         u3DmVYBoqEAQVDpJQQseVSXEZVLzHInYwdVoWGw0J8tl6rs+zBsoLf/9be9Qjap9tlmL
+         Qs13MHsensi9/9hkbM+AzHuIqAosLUf3Vdzv4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1700073517; x=1700678317;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=0MD0pshjJBw/chdZXVFrwHJqdy9ZbUZCE/cfITJ+qfg=;
+        b=mv+r06mgU3Cpx7Nd2CxFaOSKwierQRvvN6YCN4QGi3UcgF7Er1tiIvlJszeO+2ZVHQ
+         Y8aZ0+Hl6wlEVTgM5XehDnR61Pn7m/SwX9ub2CT9BmoYWPP2mbKyXSyi+dHBW+srvgWv
+         EPBt8o/Cn2AbCu1dllaED830ns+OYvGH32g67jwdnh3wDOwAqiRBBxA9Y1KvbAYx3d1w
+         WRf04VGhYDHD0S6PEXQsQlmPCgX2toxVHLcU09xoiP6jOTH680gRyj7eojlXzAS6Isr6
+         2d3neFQwJHDyZfpmMuzu279icMvGcAufSQEaTc2Y8oOCejxWddePeLMvO/rGTs3T+Peh
+         yqlg==
+X-Gm-Message-State: AOJu0Yw7vrJI3uVTFU4Nq7xNC0lAyYQjoDZZ5MPkDcJ5ru0buT0RT2m8
+	JC2uXiEGKnpQ8N3vHB4tadvP9Tu2h8CEzW0unjGC9gye
+X-Google-Smtp-Source: AGHT+IF38cmf4Zp/8dt8L57N9u9h2h3KsZfXloPxgOlSO/41icGWd9aPlunrtzeweWGgoVjrQwFuqA==
+X-Received: by 2002:a05:6402:88d:b0:543:7201:7c70 with SMTP id e13-20020a056402088d00b0054372017c70mr12145904edy.7.1700073516847;
+        Wed, 15 Nov 2023 10:38:36 -0800 (PST)
+Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com. [209.85.208.41])
+        by smtp.gmail.com with ESMTPSA id x11-20020a50ba8b000000b0053d9cb67248sm6909551ede.18.2023.11.15.10.38.36
+        for <oe-lkp@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Nov 2023 10:38:36 -0800 (PST)
+Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-53db360294fso11053084a12.3
+        for <oe-lkp@lists.linux.dev>; Wed, 15 Nov 2023 10:38:36 -0800 (PST)
+X-Received: by 2002:a05:6402:11c8:b0:543:c578:f9d2 with SMTP id
+ j8-20020a05640211c800b00543c578f9d2mr14437856edw.2.1700073516118; Wed, 15 Nov
+ 2023 10:38:36 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <4007889.1700073334.1@warthog.procyon.org.uk>
-Date: Wed, 15 Nov 2023 18:35:34 +0000
-Message-ID: <4007890.1700073334@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.4.1 on 10.11.54.1
+References: <202311061616.cd495695-oliver.sang@intel.com> <3865842.1700061614@warthog.procyon.org.uk>
+ <CAHk-=whM-cEwAsLtKsf5dYwV7nDTaRv1bUKLVBstMAQBug24uQ@mail.gmail.com> <CAHk-=wjCUckvZUQf7gqp2ziJUWxVpikM_6srFdbcNdBJTxExRg@mail.gmail.com>
+In-Reply-To: <CAHk-=wjCUckvZUQf7gqp2ziJUWxVpikM_6srFdbcNdBJTxExRg@mail.gmail.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Wed, 15 Nov 2023 13:38:18 -0500
+X-Gmail-Original-Message-ID: <CAHk-=wjhs6uuedgz-7HbcPtirEq+vvjJBY-M2zyteJwBhOMZhg@mail.gmail.com>
+Message-ID: <CAHk-=wjhs6uuedgz-7HbcPtirEq+vvjJBY-M2zyteJwBhOMZhg@mail.gmail.com>
+Subject: Re: [linus:master] [iov_iter] c9eec08bac: vm-scalability.throughput
+ -16.9% regression
+To: David Howells <dhowells@redhat.com>, Borislav Petkov <bp@alien8.de>
+Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	linux-kernel@vger.kernel.org, Christian Brauner <brauner@kernel.org>, 
+	Alexander Viro <viro@zeniv.linux.org.uk>, Jens Axboe <axboe@kernel.dk>, 
+	Christoph Hellwig <hch@lst.de>, Christian Brauner <christian@brauner.io>, Matthew Wilcox <willy@infradead.org>, 
+	David Laight <David.Laight@aculab.com>, ying.huang@intel.com, feng.tang@intel.com, 
+	fengwei.yin@intel.com
+Content-Type: multipart/mixed; boundary="000000000000059111060a3536ba"
 
-Linus Torvalds <torvalds@linux-foundation.org> wrote:
+--000000000000059111060a3536ba
+Content-Type: text/plain; charset="UTF-8"
 
-> which makes *zero* sense. It first checks that the the length is at
-> least 8 bytes, then it moves *one* word by hand, then it aligns the
-> code to 8 bytes remaining, and does the remaining (possibly
-> overlapping at the beginning) words as one "rep movsq",
+On Wed, 15 Nov 2023 at 12:38, Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> The gcc code generation here is *really* odd. I've never seen this
+> before, so it may be new to newer versions of gcc. [...]
 
-That's not what I see.  See attached for a dump of _copy_from_iter from my
-kernel.  It's just using REP MOVSB.
+Ok, so I've been annoyed by gcc code generation for 'memcpy()' before,
+mainly because it can't do the "let's inline it as an ALTERNATIVE() of
+'rep movs' or an out-of-line call" thing that we do for user copies.
 
-For reference, the compiler is gcc-13.2.1-3.fc39.x86_64 with
-binutils-2.40-13.fc39.x86_64.
+So here's a complete hack that says "we override the
+__builtin_memcpy() implementation for non-constant lengths". We
+stillwant gcc to deal with the constant size case, since often that
+can be turned into just plain moves.
 
-David
----
+And this is *ENTIRELY* untested, except for checking that it makes the
+code generation in lib/iov_iter.c look better.
 
-(gdb) disas _copy_from_iter
-Dump of assembler code for function _copy_from_iter:
-    <+0>:	push   %r15
-    <+2>:	push   %r14
-    <+4>:	push   %r13
-    <+6>:	push   %r12
-    <+8>:	push   %rbp
-    <+9>:	push   %rbx
-    <+10>:	sub    $0x40,%rsp
-    <+14>:	mov    %gs:0x28,%rax
-    <+23>:	mov    %rax,0x38(%rsp)
-    <+28>:	xor    %eax,%eax
-    <+30>:	cmpb   $0x0,0x3(%rdx)
-    <+34>:	je     0xffffffff81770334 <_copy_from_iter+50>
-    <+36>:	cmpb   $0x0,0x1(%rdx)
-    <+40>:	mov    %rdi,%r12
-    <+43>:	mov    %rdx,%rbx
-    <+46>:	je     0xffffffff81770364 <_copy_from_iter+98>
-    <+48>:	jmp    0xffffffff8177033d <_copy_from_iter+59>
-    <+50>:	ud2
-    <+52>:	xor    %ebp,%ebp
-    <+54>:	jmp    0xffffffff8177067e <_copy_from_iter+892>
+It's probably completely broken. I particularly worry about "memcpy()"
+being used *during* the instruction rewriting, so the whole approach
+with ALTERNATIVE() is probably entirely broken.
 
-    <+59>:	mov    0x38(%rsp),%rax
-    <+64>:	sub    %gs:0x28,%rax
-    <+73>:	jne    0xffffffff8177068e <_copy_from_iter+908>
-    <+79>:	add    $0x40,%rsp
-    <+83>:	pop    %rbx
-    <+84>:	pop    %rbp
-    <+85>:	pop    %r12
-    <+87>:	pop    %r13
-    <+89>:	pop    %r14
-    <+91>:	pop    %r15
-    <+93>:	jmp    0xffffffff8176ee3f <__copy_from_iter_mc>
+But I'm cc'ing Borislav, because we've talked about the whole "inline
+memcpy() with alternatives" before, so maybe this gives Borislav some
+ideas for how to do it right.
 
-    <+98>:	mov    0x18(%rdx),%rax
-    <+102>:	cmp    %rax,%rsi
-    <+105>:	cmova  %rax,%rsi
-    <+109>:	test   %rsi,%rsi
-    <+112>:	mov    %rsi,%rbp
-    <+115>:	je     0xffffffff8177067e <_copy_from_iter+892>
+Borislav, see
 
-    <+121>:	mov    (%rdx),%dl
-    <+123>:	test   %dl,%dl		# ITER_UBUF
-    <+125>:	jne    0xffffffff817703cc <_copy_from_iter+202>
-    <+127>:	mov    0x8(%rbx),%rsi
-    <+131>:	mov    %rbp,%rcx
-    <+134>:	add    0x10(%rbx),%rsi
-    <+138>:	mov    %rsi,%rdx
-    <+141>:	mov    %rbp,%rsi
-    <+144>:	mov    %rdx,%rdi
-    <+147>:	call   0xffffffff8176ec9e <__access_ok>
-    <+152>:	test   %al,%al
-    <+154>:	je     0xffffffff817703af <_copy_from_iter+173>
-    <+156>:	nop
-    <+157>:	nop
-    <+158>:	nop
-    <+159>:	mov    %r12,%rdi
-    <+162>:	mov    %rdx,%rsi
-    <+165>:	rep movsb %ds:(%rsi),%es:(%rdi)
-    <+167>:	nop
-    <+168>:	nop
-    <+169>:	nop
-    <+170>:	nop
-    <+171>:	nop
-    <+172>:	nop
-    <+173>:	mov    %rbp,%rax
-    <+176>:	sub    %rcx,%rax
-    <+179>:	add    0x18(%rbx),%rcx
-    <+183>:	add    %rax,0x8(%rbx)
-    <+187>:	sub    %rbp,%rcx
-    <+190>:	mov    %rax,%rbp
-    <+193>:	mov    %rcx,0x18(%rbx)
-    <+197>:	jmp    0xffffffff8177067e <_copy_from_iter+892>
+    https://lore.kernel.org/all/CAHk-=wjCUckvZUQf7gqp2ziJUWxVpikM_6srFdbcNdBJTxExRg@mail.gmail.com/
 
-    <+202>:	cmp    $0x1,%dl		# ITER_IOVEC
-    <+205>:	jne    0xffffffff8177044c <_copy_from_iter+330>
-    <+207>:	mov    0x10(%rbx),%r9
-    <+211>:	mov    %rsi,%r8
-    <+214>:	xor    %ebp,%ebp
-    <+216>:	mov    0x8(%rbx),%r10
-    <+220>:	mov    0x8(%r9),%rdx
-    <+224>:	sub    %r10,%rdx
-    <+227>:	cmp    %r8,%rdx
-    <+230>:	cmova  %r8,%rdx
-    <+234>:	test   %rdx,%rdx
-    <+237>:	je     0xffffffff81770433 <_copy_from_iter+305>
-    <+239>:	mov    (%r9),%r11
-    <+242>:	mov    %rdx,%rsi
-    <+245>:	mov    %rdx,%rcx
-    <+248>:	add    %r10,%r11
-    <+251>:	mov    %r11,%rdi
-    <+254>:	call   0xffffffff8176ec9e <__access_ok>
-    <+259>:	test   %al,%al
-    <+261>:	je     0xffffffff8177041b <_copy_from_iter+281>
-    <+263>:	nop
-    <+264>:	nop
-    <+265>:	nop
-    <+266>:	lea    (%r12,%rbp,1),%rdi
-    <+270>:	mov    %r11,%rsi
-    <+273>:	rep movsb %ds:(%rsi),%es:(%rdi)
-    <+275>:	nop
-    <+276>:	nop
-    <+277>:	nop
-    <+278>:	nop
-    <+279>:	nop
-    <+280>:	nop
-    <+281>:	mov    %rdx,%rax
-    <+284>:	sub    %rdx,%r8
-    <+287>:	sub    %rcx,%rax
-    <+290>:	add    %rcx,%r8
-    <+293>:	add    %rax,%rbp
-    <+296>:	add    %rax,%r10
-    <+299>:	cmp    0x8(%r9),%r10
-    <+303>:	jb     0xffffffff81770444 <_copy_from_iter+322>
-    <+305>:	add    $0x10,%r9
-    <+309>:	xor    %r10d,%r10d
-    <+312>:	test   %r8,%r8
-    <+315>:	jne    0xffffffff817703de <_copy_from_iter+220>
-    <+317>:	jmp    0xffffffff81770544 <_copy_from_iter+578>
-    <+322>:	mov    %r10,%r8
-    <+325>:	jmp    0xffffffff81770544 <_copy_from_iter+578>
+for some truly crazy code generation by gcc.
 
-    <+330>:	cmp    $0x2,%dl		# ITER_BVEC
-    <+333>:	jne    0xffffffff817704ee <_copy_from_iter+492>
-    <+339>:	mov    0x10(%rbx),%r8
-    <+343>:	mov    %rsi,%r11
-    <+346>:	xor    %ebp,%ebp
-    <+348>:	mov    $0x1000,%r10d
-    <+354>:	mov    0x8(%rbx),%r9
-    <+358>:	mov    0xc(%r8),%ecx
-    <+362>:	add    %r9,%rcx
-    <+365>:	mov    %rcx,%rdi
-    <+368>:	and    $0xfff,%ecx
-    <+374>:	shr    $0xc,%rdi
-    <+378>:	shl    $0x6,%rdi
-    <+382>:	add    (%r8),%rdi
-    <+385>:	call   0xffffffff8176e72e <kmap_local_page>
-    <+390>:	mov    %r10,%rdx
-    <+393>:	mov    %rax,%rsi
-    <+396>:	mov    0x8(%r8),%eax
-    <+400>:	sub    %r9,%rax
-    <+403>:	cmp    %r11,%rax
-    <+406>:	cmova  %r11,%rax
-    <+410>:	sub    %rcx,%rdx
-    <+413>:	cmp    %rdx,%rax
-    <+416>:	cmova  %rdx,%rax
-    <+420>:	add    %rcx,%rsi
-    <+423>:	lea    (%r12,%rbp,1),%rdx
-    <+427>:	mov    %eax,%ecx
-    <+429>:	sub    %rax,%r11
-    <+432>:	mov    %rdx,%rdi
-    <+435>:	add    %rax,%rbp
-    <+438>:	add    %rax,%r9
-    <+441>:	rep movsb %ds:(%rsi),%es:(%rdi)
-    <+443>:	mov    0x8(%r8),%eax
-    <+447>:	cmp    %rax,%r9
-    <+450>:	jb     0xffffffff817704cd <_copy_from_iter+459>
-    <+452>:	add    $0x10,%r8
-    <+456>:	xor    %r9d,%r9d
-    <+459>:	test   %r11,%r11
-    <+462>:	jne    0xffffffff81770468 <_copy_from_iter+358>
-    <+464>:	mov    %r8,%rax
-    <+467>:	sub    0x10(%rbx),%rax
-    <+471>:	mov    %r9,0x8(%rbx)
-    <+475>:	mov    %r8,0x10(%rbx)
-    <+479>:	sar    $0x4,%rax
-    <+483>:	sub    %rax,0x20(%rbx)
-    <+487>:	jmp    0xffffffff81770671 <_copy_from_iter+879>
+                   Linus
 
-    <+492>:	cmp    $0x3,%dl		# ITER_KVEC
-    <+495>:	jne    0xffffffff81770560 <_copy_from_iter+606>
-    <+497>:	mov    0x10(%rbx),%r9
-    <+501>:	mov    %rsi,%r8
-    <+504>:	xor    %ebp,%ebp
-    <+506>:	mov    0x8(%rbx),%rdx
-    <+510>:	mov    0x8(%r9),%rax
-    <+514>:	sub    %rdx,%rax
-    <+517>:	cmp    %r8,%rax
-    <+520>:	cmova  %r8,%rax
-    <+524>:	test   %rax,%rax
-    <+527>:	je     0xffffffff81770534 <_copy_from_iter+562>
-    <+529>:	mov    (%r9),%rsi
-    <+532>:	lea    (%r12,%rbp,1),%r10
-    <+536>:	mov    %rax,%rcx
-    <+539>:	add    %rax,%rbp
-    <+542>:	mov    %r10,%rdi
-    <+545>:	sub    %rax,%r8
-    <+548>:	add    %rdx,%rsi
-    <+551>:	add    %rax,%rdx
-    <+554>:	rep movsb %ds:(%rsi),%es:(%rdi)
-    <+556>:	cmp    0x8(%r9),%rdx
-    <+560>:	jb     0xffffffff81770541 <_copy_from_iter+575>
-    <+562>:	add    $0x10,%r9
-    <+566>:	xor    %edx,%edx
-    <+568>:	test   %r8,%r8
-    <+571>:	jne    0xffffffff81770500 <_copy_from_iter+510>
-    <+573>:	jmp    0xffffffff81770544 <_copy_from_iter+578>
-    <+575>:	mov    %rdx,%r8
-    <+578>:	mov    %r9,%rax
-    <+581>:	sub    0x10(%rbx),%rax
-    <+585>:	mov    %r8,0x8(%rbx)
-    <+589>:	mov    %r9,0x10(%rbx)
-    <+593>:	sar    $0x4,%rax
-    <+597>:	sub    %rax,0x20(%rbx)
-    <+601>:	jmp    0xffffffff81770671 <_copy_from_iter+879>
+--000000000000059111060a3536ba
+Content-Type: text/x-patch; charset="US-ASCII"; name="patch.diff"
+Content-Disposition: attachment; filename="patch.diff"
+Content-Transfer-Encoding: base64
+Content-ID: <f_lp03tds80>
+X-Attachment-Id: f_lp03tds80
 
-    <+606>:	cmp    $0x4,%dl		# ITER_XARRAY
-    <+609>:	jne    0xffffffff81770677 <_copy_from_iter+885>
-    <+615>:	movq   $0x3,0x18(%rsp)
-    <+624>:	mov    0x10(%rbx),%rax
-    <+628>:	xor    %edx,%edx
-    <+630>:	mov    0x8(%rbx),%r14
-    <+634>:	mov    %rdx,0x20(%rsp)
-    <+639>:	add    0x20(%rbx),%r14
-    <+643>:	mov    %rdx,0x28(%rsp)
-    <+648>:	mov    %rdx,0x30(%rsp)
-    <+653>:	mov    %rax,(%rsp)
-    <+657>:	mov    %r14,%rax
-    <+660>:	shr    $0xc,%rax
-    <+664>:	mov    %rax,0x8(%rsp)
-    <+669>:	xor    %eax,%eax
-    <+671>:	mov    %eax,0x10(%rsp)
-    <+675>:	or     $0xffffffffffffffff,%rsi
-    <+679>:	mov    %rsp,%rdi
-    <+682>:	mov    %rbp,%r13
-    <+685>:	call   0xffffffff81d617d1 <xas_find>
-    <+690>:	xor    %ebp,%ebp
-    <+692>:	mov    $0x1000,%r15d
-    <+698>:	mov    %rax,%r8
-    <+701>:	test   %r8,%r8
-    <+704>:	je     0xffffffff8177066d <_copy_from_iter+875>
-    <+710>:	mov    %r8,%rsi
-    <+713>:	mov    %rsp,%rdi
-    <+716>:	call   0xffffffff8176e7a8 <xas_retry>
-    <+721>:	test   %al,%al
-    <+723>:	jne    0xffffffff8177065d <_copy_from_iter+859>
-    <+729>:	test   $0x1,%r8d
-    <+736>:	jne    0xffffffff81770614 <_copy_from_iter+786>
-    <+738>:	mov    %r8,%rdi
-    <+741>:	call   0xffffffff8176e6a4 <folio_test_hugetlb>
-    <+746>:	test   %al,%al
-    <+748>:	jne    0xffffffff81770618 <_copy_from_iter+790>
-    <+750>:	call   0xffffffff8176e714 <folio_size>
-    <+755>:	lea    (%r14,%rbp,1),%rdx
-    <+759>:	lea    -0x1(%rax),%r10
-    <+763>:	call   0xffffffff8176e714 <folio_size>
-    <+768>:	and    %rdx,%r10
-    <+771>:	sub    %r10,%rax
-    <+774>:	cmp    %r13,%rax
-    <+777>:	cmova  %r13,%rax
-    <+781>:	mov    %rax,%r9
-    <+784>:	jmp    0xffffffff81770658 <_copy_from_iter+854>
-    <+786>:	ud2
-    <+788>:	jmp    0xffffffff8177066d <_copy_from_iter+875>
-    <+790>:	ud2
-    <+792>:	jmp    0xffffffff8177066d <_copy_from_iter+875>
-    <+794>:	lea    (%r12,%rbp,1),%r11
-    <+798>:	mov    %r10,%rsi
-    <+801>:	mov    %r8,%rdi
-    <+804>:	call   0xffffffff8176e753 <kmap_local_folio>
-    <+809>:	mov    %r15,%rdx
-    <+812>:	mov    %r11,%rdi
-    <+815>:	mov    %rax,%rsi
-    <+818>:	mov    %r10,%rax
-    <+821>:	and    $0xfff,%eax
-    <+826>:	sub    %rax,%rdx
-    <+829>:	cmp    %r9,%rdx
-    <+832>:	cmova  %r9,%rdx
-    <+836>:	add    %rdx,%rbp
-    <+839>:	sub    %rdx,%r13
-    <+842>:	mov    %edx,%ecx
-    <+844>:	rep movsb %ds:(%rsi),%es:(%rdi)
-    <+846>:	je     0xffffffff8177066d <_copy_from_iter+875>
-    <+848>:	sub    %rdx,%r9
-    <+851>:	add    %rdx,%r10
-    <+854>:	test   %r9,%r9
-    <+857>:	jne    0xffffffff8177061c <_copy_from_iter+794>
-    <+859>:	mov    %rsp,%rdi
-    <+862>:	call   0xffffffff8176f307 <xas_next_entry>
-    <+867>:	mov    %rax,%r8
-    <+870>:	jmp    0xffffffff817705bf <_copy_from_iter+701>
-    <+875>:	add    %rbp,0x8(%rbx)
-    <+879>:	sub    %rbp,0x18(%rbx)
-    <+883>:	jmp    0xffffffff8177067e <_copy_from_iter+892>
-
-    # ITER_DISCARD / default
-    <+885>:	sub    %rsi,%rax
-    <+888>:	mov    %rax,0x18(%rbx)
-    <+892>:	mov    0x38(%rsp),%rax
-    <+897>:	sub    %gs:0x28,%rax
-    <+906>:	je     0xffffffff81770693 <_copy_from_iter+913>
-    <+908>:	call   0xffffffff81d67d8d <__stack_chk_fail>
-    <+913>:	add    $0x40,%rsp
-    <+917>:	mov    %rbp,%rax
-    <+920>:	pop    %rbx
-    <+921>:	pop    %rbp
-    <+922>:	pop    %r12
-    <+924>:	pop    %r13
-    <+926>:	pop    %r14
-    <+928>:	pop    %r15
-    <+930>:	jmp    0xffffffff81d745a0 <__x86_return_thunk>
-
+IGFyY2gveDg2L2luY2x1ZGUvYXNtL3N0cmluZ182NC5oIHwgMjIgKysrKysrKysrKysrKysrKysr
+KysrKwogaW5jbHVkZS9saW51eC9mb3J0aWZ5LXN0cmluZy5oICAgfCAgMSArCiAyIGZpbGVzIGNo
+YW5nZWQsIDIzIGluc2VydGlvbnMoKykKCmRpZmYgLS1naXQgYS9hcmNoL3g4Ni9pbmNsdWRlL2Fz
+bS9zdHJpbmdfNjQuaCBiL2FyY2gveDg2L2luY2x1ZGUvYXNtL3N0cmluZ182NC5oCmluZGV4IDg1
+N2QzNjRiOTg4OC4uYzYyM2Y0MTY3ODlhIDEwMDY0NAotLS0gYS9hcmNoL3g4Ni9pbmNsdWRlL2Fz
+bS9zdHJpbmdfNjQuaAorKysgYi9hcmNoL3g4Ni9pbmNsdWRlL2FzbS9zdHJpbmdfNjQuaApAQCAt
+NCw2ICs0LDEwIEBACiAKICNpZmRlZiBfX0tFUk5FTF9fCiAjaW5jbHVkZSA8bGludXgvanVtcF9s
+YWJlbC5oPgorI2luY2x1ZGUgPGxpbnV4L2NvbXBpbGVyLmg+CisjaW5jbHVkZSA8bGludXgvY29u
+c3QuaD4KKyNpbmNsdWRlIDxhc20vYWx0ZXJuYXRpdmUuaD4KKyNpbmNsdWRlIDxhc20vY3B1ZmVh
+dHVyZXMuaD4KIAogLyogV3JpdHRlbiAyMDAyIGJ5IEFuZGkgS2xlZW4gKi8KIApAQCAtMTgsNiAr
+MjIsMjQgQEAKIGV4dGVybiB2b2lkICptZW1jcHkodm9pZCAqdG8sIGNvbnN0IHZvaWQgKmZyb20s
+IHNpemVfdCBsZW4pOwogZXh0ZXJuIHZvaWQgKl9fbWVtY3B5KHZvaWQgKnRvLCBjb25zdCB2b2lk
+ICpmcm9tLCBzaXplX3QgbGVuKTsKIAorZXh0ZXJuIF9fYWx3YXlzX2lubGluZSB2b2lkICpfX3Jl
+cF9tb3ZzX21lbWNweSh2b2lkICp0bywgY29uc3Qgdm9pZCAqZnJvbSwgc2l6ZV90IGxlbikKK3sK
+Kwlhc20gdm9sYXRpbGUoQUxURVJOQVRJVkUoCisJCSJyZXAgbW92c2IiLAorCQkiY2FsbCByZXBf
+bW92c19hbHRlcm5hdGl2ZSIsCisJCUFMVF9OT1QoWDg2X0ZFQVRVUkVfRlNSTSkpCisJOiIrYyIg
+KGxlbiksICIrRCIgKHRvKSwgIitTIiAoZnJvbSksIEFTTV9DQUxMX0NPTlNUUkFJTlQKKwk6IDog
+Im1lbW9yeSIsICJyYXgiKTsKKwlyZXR1cm4gdG87Cit9CisKKyNkZWZpbmUgX19idWlsdGluX21l
+bWNweSh0bywgZnJvbSwgbGVuKSBcCisJX19idWlsdGluX2Nob29zZV9leHByKF9faXNfY29uc3Rl
+eHByKGxlbiksIFwKKwkJX19idWlsdGluX21lbWNweSh0bywgZnJvbSwgbGVuKSwgXAorCQlfX3Jl
+cF9tb3ZzX21lbWNweSh0bywgZnJvbSwgbGVuKSkKKworI2RlZmluZSBtZW1jcHkgX19idWlsdGlu
+X21lbWNweQorCiAjZGVmaW5lIF9fSEFWRV9BUkNIX01FTVNFVAogdm9pZCAqbWVtc2V0KHZvaWQg
+KnMsIGludCBjLCBzaXplX3Qgbik7CiB2b2lkICpfX21lbXNldCh2b2lkICpzLCBpbnQgYywgc2l6
+ZV90IG4pOwpkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9mb3J0aWZ5LXN0cmluZy5oIGIvaW5j
+bHVkZS9saW51eC9mb3J0aWZ5LXN0cmluZy5oCmluZGV4IGRhNTFhODNiMjgyOS4uY2I3NzhmNjhm
+NTM3IDEwMDY0NAotLS0gYS9pbmNsdWRlL2xpbnV4L2ZvcnRpZnktc3RyaW5nLmgKKysrIGIvaW5j
+bHVkZS9saW51eC9mb3J0aWZ5LXN0cmluZy5oCkBAIC02OTAsNiArNjkwLDcgQEAgX19GT1JUSUZZ
+X0lOTElORSBib29sIGZvcnRpZnlfbWVtY3B5X2NoayhfX2tlcm5lbF9zaXplX3Qgc2l6ZSwKICAq
+IF9fc3RydWN0X3NpemUoKSB2cyBfX21lbWJlcl9zaXplKCkgbXVzdCBiZSBjYXB0dXJlZCBoZXJl
+IHRvIGF2b2lkCiAgKiBldmFsdWF0aW5nIGFyZ3VtZW50IHNpZGUtZWZmZWN0cyBmdXJ0aGVyIGlu
+dG8gdGhlIG1hY3JvIGxheWVycy4KICAqLworI3VuZGVmIG1lbWNweQogI2RlZmluZSBtZW1jcHko
+cCwgcSwgcykgIF9fZm9ydGlmeV9tZW1jcHlfY2hrKHAsIHEsIHMsCQkJXAogCQlfX3N0cnVjdF9z
+aXplKHApLCBfX3N0cnVjdF9zaXplKHEpLAkJCVwKIAkJX19tZW1iZXJfc2l6ZShwKSwgX19tZW1i
+ZXJfc2l6ZShxKSwJCQlcCg==
+--000000000000059111060a3536ba--
