@@ -1,233 +1,104 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 847CA3EA99
-	for <oe-lkp@lists.linux.dev>; Wed, 15 Nov 2023 15:20:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E7B51D55E
+	for <oe-lkp@lists.linux.dev>; Wed, 15 Nov 2023 16:59:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="ayeZk+Xt"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1700061623;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=VyQzbJEnX2TdDTDcKx6zAX1Mn/CHxaqqGd8YZWvobWQ=;
-	b=ayeZk+Xt9mDizDrKiaByNIufxYpfXVXulZpLfkOGmeDvoCDHlwgmc3yfYbiHashm4x0fB9
-	+rgFJ6hrtf5GM8iGdWlO+Y6Ko32MRJjhKPEXBmPFLcCXv6EJJYS+S9oOar1k1BTF469dch
-	L1TvRTonIgDjoWCNpWIZXQQ0ggX39iA=
-Received: from mimecast-mx02.redhat.com (mx-ext.redhat.com [66.187.233.73])
- by relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-645-7iAGC8ihN7-vKfyUrNYFRw-1; Wed,
- 15 Nov 2023 10:20:17 -0500
-X-MC-Unique: 7iAGC8ihN7-vKfyUrNYFRw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id EC44D38117E6;
-	Wed, 15 Nov 2023 15:20:16 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.42.28.16])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id C8D381121308;
-	Wed, 15 Nov 2023 15:20:14 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-	Kingdom.
-	Registered in England and Wales under Company Registration No. 3798903
-From: David Howells <dhowells@redhat.com>
-In-Reply-To: <202311061616.cd495695-oliver.sang@intel.com>
-References: <202311061616.cd495695-oliver.sang@intel.com>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: dhowells@redhat.com, oe-lkp@lists.linux.dev, lkp@intel.com,
-    linux-kernel@vger.kernel.org, Christian Brauner <brauner@kernel.org>,
-    Alexander Viro <viro@zeniv.linux.org.uk>,
-    Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>,
-    Christian Brauner <christian@brauner.io>,
-    Matthew Wilcox <willy@infradead.org>,
-    Linus Torvalds <torvalds@linux-foundation.org>,
-    "David
- Laight" <David.Laight@aculab.com>, ying.huang@intel.com,
-    feng.tang@intel.com, fengwei.yin@intel.com
-Subject: Re: [linus:master] [iov_iter] c9eec08bac: vm-scalability.throughput -16.9% regression
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="RquYnmfb"
+Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-507ad511315so10038318e87.0
+        for <oe-lkp@lists.linux.dev>; Wed, 15 Nov 2023 08:59:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google; t=1700067548; x=1700672348; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=1sF8rVm6qSPjNpZ4MRVa5Fv/0C/XbN0BqIbvH3bfCTs=;
+        b=RquYnmfb1FkQa+U2R4TkIrXSkPJ2xESi8BzfAVcjxfu12UOP/+kihkrFtsrOJP9OKs
+         GHNYpebrFjWwZofAk3xWXQPAfG3GuDhztCNGv6kCpP5pORKb7aOOAMgitKlKimcQP/L7
+         awm0xKakkotCd+vhlS/6R20S/AKpT6mZXO1NU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1700067548; x=1700672348;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=1sF8rVm6qSPjNpZ4MRVa5Fv/0C/XbN0BqIbvH3bfCTs=;
+        b=bDUxWTWZltbXXtMTAUMLv+42eM5ZH5BLO6cZ4Wr4ZpDFLbdFFwOcOLH3TQSk2ruON2
+         yPbYbVpaa/G0a2EyzAV03o9hxar6i1HnqJUalOn48zmnF4vBIOD4siw6cRNVd4VgD7i2
+         LAMAo66DszxU88yV7EsIlB6LfavLLlJ8hmq1E8/2RmGEAx4JlMJt+f/BVv7H8SaOJNft
+         K20c02XrbYf+A54H2Sjoj/EB66d9F2LObS2IjG+8AtogCbmafMX/bUOHKj/1a65LUq7g
+         HyBqZYpOtDYiotM4imEQrIzZ0fkMaRPN3uDCd+kXBo1xoZabUE1yZQQIb5wiKLkBRbfW
+         NVyg==
+X-Gm-Message-State: AOJu0YzKtopqhnqz5DR1I3VNFlyUkfXUYY7G2NpAXu/wiqTboBmxD4/G
+	mdNBicos49vaDwhh4He+7zJj47wAo1tns9mOA547/Zm8
+X-Google-Smtp-Source: AGHT+IEbB5Q9+ph1a3ApOV9f3cfEoJyIjKFvg1ADLKwK3trQ78wZkxazTBKbPtUrYq7mBglHYQREiA==
+X-Received: by 2002:ac2:558b:0:b0:4fb:bef0:948e with SMTP id v11-20020ac2558b000000b004fbbef0948emr8418736lfg.5.1700067547972;
+        Wed, 15 Nov 2023 08:59:07 -0800 (PST)
+Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com. [209.85.208.175])
+        by smtp.gmail.com with ESMTPSA id q7-20020a0565123a8700b004fe10276bbfsm1699439lfu.296.2023.11.15.08.59.07
+        for <oe-lkp@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Nov 2023 08:59:07 -0800 (PST)
+Received: by mail-lj1-f175.google.com with SMTP id 38308e7fff4ca-2c788f5bf53so81585291fa.2
+        for <oe-lkp@lists.linux.dev>; Wed, 15 Nov 2023 08:59:07 -0800 (PST)
+X-Received: by 2002:a05:6402:1052:b0:542:d69d:d075 with SMTP id
+ e18-20020a056402105200b00542d69dd075mr8367028edu.6.1700067205341; Wed, 15 Nov
+ 2023 08:53:25 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <3865841.1700061614.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 15 Nov 2023 15:20:14 +0000
-Message-ID: <3865842.1700061614@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.4.1 on 10.11.54.3
+References: <202311061616.cd495695-oliver.sang@intel.com> <3865842.1700061614@warthog.procyon.org.uk>
+In-Reply-To: <3865842.1700061614@warthog.procyon.org.uk>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Wed, 15 Nov 2023 11:53:08 -0500
+X-Gmail-Original-Message-ID: <CAHk-=whM-cEwAsLtKsf5dYwV7nDTaRv1bUKLVBstMAQBug24uQ@mail.gmail.com>
+Message-ID: <CAHk-=whM-cEwAsLtKsf5dYwV7nDTaRv1bUKLVBstMAQBug24uQ@mail.gmail.com>
+Subject: Re: [linus:master] [iov_iter] c9eec08bac: vm-scalability.throughput
+ -16.9% regression
+To: David Howells <dhowells@redhat.com>
+Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	linux-kernel@vger.kernel.org, Christian Brauner <brauner@kernel.org>, 
+	Alexander Viro <viro@zeniv.linux.org.uk>, Jens Axboe <axboe@kernel.dk>, 
+	Christoph Hellwig <hch@lst.de>, Christian Brauner <christian@brauner.io>, Matthew Wilcox <willy@infradead.org>, 
+	David Laight <David.Laight@aculab.com>, ying.huang@intel.com, feng.tang@intel.com, 
+	fengwei.yin@intel.com
+Content-Type: text/plain; charset="UTF-8"
 
-Okay, I've got this to work - kind of.  Your test box has a lot more RAM t=
-han
-mine (192G according to the email), so I had to reduce the sizes and make =
-it
-delete the files between tests.  I ended up using the attached script to r=
-un
-things.  I don't see the statistical analysis stuff.
+On Wed, 15 Nov 2023 at 10:28, David Howells <dhowells@redhat.com> wrote:
+>
+> But the outcome is a bit variable and the result spaces overlap considerably.
+> I certainly don't see a 17% performance reduction.  Now, this may be due to
+> hardware differences.  The CPU I'm using is an Intel i3-4170 - which is a few
+> years old at this point.
 
-Anyway, with upstream Linus, I see something like:
+I tried to look at the perf profile changes in the original report,
+and very little of it makes sense to me.
 
-	Count: 27
-	Total: 10649173
-	Range: 391374...398472
-	Mean : 394413
-	Stdev: 10218
+Having looked at quite a lot of those in the past (although certainly
+less than Oliver) hat's *usually* a result of a test that is unstable.
 
-With that patch reverted, I see something like:
+In this case, though, I think the big difference is
 
-	Count: 27
-	Total: 10665161
-	Range: 391427...399601
-	Mean : 395005
-	Stdev: 13720
+  -11.0  perf-profile.self.cycles-pp.memcpy_orig
+  +14.7  perf-profile.self.cycles-pp.copy_page_from_iter_atomic
 
-But the outcome is a bit variable and the result spaces overlap considerab=
-ly.
-I certainly don't see a 17% performance reduction.  Now, this may be due t=
-o
-hardware differences.  The CPU I'm using is an Intel i3-4170 - which is a =
-few
-years old at this point.
+which is a bit odd. It looks like the old code used to use a regular
+out-of-line memcpy (and that machine doesn't have FSRM), and the new
+code for some reason does it inline.
 
-David
----
-for cpu_dir in /sys/devices/system/cpu/cpu[0-9]*
-do
-	online_file=3D"$cpu_dir"/online
-	[ -f "$online_file" ] && [ "$(cat "$online_file")" -eq 0 ] && continue
+I wonder if gcc somehow decided to inline "memcpy()" in
+memcpy_from_iter() as a "rep movsb" because of other inlining changes?
 
-	file=3D"$cpu_dir"/cpufreq/scaling_governor
-	[ -f "$file" ] && echo "performance" > "$file"
-done
+[ Goes out to look ]
 
-#DATADIR=3D/mnt2/vm-scalability-tmp
-#WORKDIR=3D$DATADIR/vm-scalability
-#WORKDIR=3D/mnt2/vm-scalability
-WORKDIR=3D/tmp/vm-scalability
+Yup, I think that's exactly what happened. Gcc seems to decide that it
+might be a small memcpy(), and seems to do at least part of it
+directly.
 
-cd /root/lkp-tests/pkg/vm-scalability/vm-scalability-lkp/lkp/benchmarks/vm=
--scalability
-#mount -t tmpfs -o size=3D100% vm-scalability-tmp $DATADIR
-#mkdir -p $DATADIR || exit $?
-#truncate -s 10G $WORKDIR.img || exit $?
-#mkfs.xfs -f -q $WORKDIR.img || exit $?
-mkdir -p $WORKDIR || exit $?
-#mount -o loop $WORKDIR.img $WORKDIR || exit $?
-#./case-msync
+So I *think* this all is mainly an artifact of gcc having changed code
+generation due to the code re-organization.
 
-truncate $WORKDIR/sparse-msync-1 -s 10G
-./usemem --runtime 300 -S -f $WORKDIR/sparse-msync-1 -F --prealloc --open-=
-rw 449340754
-rm $WORKDIR/sparse-msync-1
-
-truncate $WORKDIR/sparse-msync-2 -s 10G
-./usemem --runtime 300 -S -f $WORKDIR/sparse-msync-2 -F --prealloc --open-=
-rw 449340754
-rm $WORKDIR/sparse-msync-2
-
-truncate $WORKDIR/sparse-msync-3 -s 10G
-truncate $WORKDIR/sparse-msync-4 -s 10G
-./usemem --runtime 300 -S -f $WORKDIR/sparse-msync-3 -F --prealloc --open-=
-rw 449340754
-./usemem --runtime 300 -S -f $WORKDIR/sparse-msync-4 -F --prealloc --open-=
-rw 449340754
-rm $WORKDIR/sparse-msync-[34]
-
-truncate $WORKDIR/sparse-msync-5 -s 10G
-truncate $WORKDIR/sparse-msync-6 -s 10G
-./usemem --runtime 300 -S -f $WORKDIR/sparse-msync-5 -F --prealloc --open-=
-rw 449340754
-./usemem --runtime 300 -S -f $WORKDIR/sparse-msync-6 -F --prealloc --open-=
-rw 449340754
-rm $WORKDIR/sparse-msync-[56]
-
-truncate $WORKDIR/sparse-msync-7 -s 10G
-truncate $WORKDIR/sparse-msync-8 -s 10G
-./usemem --runtime 300 -S -f $WORKDIR/sparse-msync-7 -F --prealloc --open-=
-rw 449340754
-./usemem --runtime 300 -S -f $WORKDIR/sparse-msync-8 -F --prealloc --open-=
-rw 449340754
-rm $WORKDIR/sparse-msync-[78]
-
-truncate $WORKDIR/sparse-msync-9 -s 10G
-truncate $WORKDIR/sparse-msync-10 -s 10G
-./usemem --runtime 300 -S -f $WORKDIR/sparse-msync-9 -F --prealloc --open-=
-rw 449340754
-truncate $WORKDIR/sparse-msync-11 -s 10G
-./usemem --runtime 300 -S -f $WORKDIR/sparse-msync-10 -F --prealloc --open=
--rw 449340754
-rm $WORKDIR/sparse-msync-{9,10}
-
-truncate $WORKDIR/sparse-msync-12 -s 10G
-./usemem --runtime 300 -S -f $WORKDIR/sparse-msync-11 -F --prealloc --open=
--rw 449340754
-./usemem --runtime 300 -S -f $WORKDIR/sparse-msync-12 -F --prealloc --open=
--rw 449340754
-rm $WORKDIR/sparse-msync-{11,12}
-
-truncate $WORKDIR/sparse-msync-13 -s 10G
-truncate $WORKDIR/sparse-msync-14 -s 10G
-./usemem --runtime 300 -S -f $WORKDIR/sparse-msync-13 -F --prealloc --open=
--rw 449340754
-./usemem --runtime 300 -S -f $WORKDIR/sparse-msync-14 -F --prealloc --open=
--rw 449340754
-rm $WORKDIR/sparse-msync-{13,14}
-
-truncate $WORKDIR/sparse-msync-15 -s 10G
-truncate $WORKDIR/sparse-msync-16 -s 10G
-./usemem --runtime 300 -S -f $WORKDIR/sparse-msync-15 -F --prealloc --open=
--rw 449340754
-./usemem --runtime 300 -S -f $WORKDIR/sparse-msync-16 -F --prealloc --open=
--rw 449340754
-rm $WORKDIR/sparse-msync-{15,16}
-
-truncate $WORKDIR/sparse-msync-17 -s 10G
-truncate $WORKDIR/sparse-msync-18 -s 10G
-./usemem --runtime 300 -S -f $WORKDIR/sparse-msync-17 -F --prealloc --open=
--rw 449340754
-truncate $WORKDIR/sparse-msync-19 -s 10G
-./usemem --runtime 300 -S -f $WORKDIR/sparse-msync-18 -F --prealloc --open=
--rw 449340754
-./usemem --runtime 300 -S -f $WORKDIR/sparse-msync-19 -F --prealloc --open=
--rw 449340754
-rm $WORKDIR/sparse-msync-{17,18,19}
-
-truncate $WORKDIR/sparse-msync-20 -s 10G
-truncate $WORKDIR/sparse-msync-21 -s 10G
-./usemem --runtime 300 -S -f $WORKDIR/sparse-msync-20 -F --prealloc --open=
--rw 449340754
-truncate $WORKDIR/sparse-msync-22 -s 10G
-./usemem --runtime 300 -S -f $WORKDIR/sparse-msync-21 -F --prealloc --open=
--rw 449340754
-./usemem --runtime 300 -S -f $WORKDIR/sparse-msync-22 -F --prealloc --open=
--rw 449340754
-rm $WORKDIR/sparse-msync-{20,21,22}
-
-truncate $WORKDIR/sparse-msync-23 -s 10G
-./usemem --runtime 300 -S -f $WORKDIR/sparse-msync-23 -F --prealloc --open=
--rw 449340754
-rm $WORKDIR/sparse-msync-23
-truncate $WORKDIR/sparse-msync-24 -s 10G
-./usemem --runtime 300 -S -f $WORKDIR/sparse-msync-24 -F --prealloc --open=
--rw 449340754
-rm $WORKDIR/sparse-msync-24
-truncate $WORKDIR/sparse-msync-25 -s 10G
-truncate $WORKDIR/sparse-msync-26 -s 10G
-./usemem --runtime 300 -S -f $WORKDIR/sparse-msync-25 -F --prealloc --open=
--rw 449340754
-./usemem --runtime 300 -S -f $WORKDIR/sparse-msync-26 -F --prealloc --open=
--rw 449340754
-rm $WORKDIR/sparse-msync-{25,26}
-
-truncate $WORKDIR/sparse-msync-27 -s 10G
-truncate $WORKDIR/sparse-msync-28 -s 10G
-./usemem --runtime 300 -S -f $WORKDIR/sparse-msync-27 -F --prealloc --open=
--rw 449340754
-rm $WORKDIR/sparse-msync-{27,28}
-
+         Linus
