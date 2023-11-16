@@ -1,27 +1,27 @@
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8E842D033
-	for <oe-lkp@lists.linux.dev>; Thu, 16 Nov 2023 10:15:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3EA0745943
+	for <oe-lkp@lists.linux.dev>; Thu, 16 Nov 2023 11:38:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ACULAB.COM
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=aculab.com
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
 Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
  relay.mimecast.com with ESMTP with both STARTTLS and AUTH (version=TLSv1.2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mtapsc-4-KbudXczuMvSlfOhXmqjSIA-1; Thu, 16 Nov 2023 10:08:18 +0000
-X-MC-Unique: KbudXczuMvSlfOhXmqjSIA-1
+ uk-mta-56-nB6YrNm6ObaH_dAU9qjzxw-1; Thu, 16 Nov 2023 11:38:04 +0000
+X-MC-Unique: nB6YrNm6ObaH_dAU9qjzxw-1
 Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
  (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Thu, 16 Nov
- 2023 10:07:35 +0000
+ 2023 11:38:08 +0000
 Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.048; Thu, 16 Nov 2023 10:07:35 +0000
+ id 15.00.1497.048; Thu, 16 Nov 2023 11:38:08 +0000
 From: David Laight <David.Laight@ACULAB.COM>
-To: 'Linus Torvalds' <torvalds@linux-foundation.org>, Borislav Petkov
-	<bp@alien8.de>
-CC: David Howells <dhowells@redhat.com>, kernel test robot
-	<oliver.sang@intel.com>, "oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>,
-	"lkp@intel.com" <lkp@intel.com>, "linux-kernel@vger.kernel.org"
+To: 'David Howells' <dhowells@redhat.com>
+CC: 'Linus Torvalds' <torvalds@linux-foundation.org>, Borislav Petkov
+	<bp@alien8.de>, kernel test robot <oliver.sang@intel.com>,
+	"oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>, "lkp@intel.com"
+	<lkp@intel.com>, "linux-kernel@vger.kernel.org"
 	<linux-kernel@vger.kernel.org>, Christian Brauner <brauner@kernel.org>,
 	Alexander Viro <viro@zeniv.linux.org.uk>, Jens Axboe <axboe@kernel.dk>,
 	Christoph Hellwig <hch@lst.de>, Christian Brauner <christian@brauner.io>,
@@ -32,10 +32,11 @@ Subject: RE: [linus:master] [iov_iter] c9eec08bac: vm-scalability.throughput
  -16.9% regression
 Thread-Topic: [linus:master] [iov_iter] c9eec08bac: vm-scalability.throughput
  -16.9% regression
-Thread-Index: AQHaF/9mUr/d/cPMC0WC86r1pNT+UrB8tOyw
-Date: Thu, 16 Nov 2023 10:07:35 +0000
-Message-ID: <4c0c3ee6cfa84d21a807055bc1aa27b8@AcuMS.aculab.com>
-References: <202311061616.cd495695-oliver.sang@intel.com>
+Thread-Index: AQHaF/9mUr/d/cPMC0WC86r1pNT+UrB8tOywgAAGVICAAAkJMA==
+Date: Thu, 16 Nov 2023 11:38:08 +0000
+Message-ID: <cde76a2d8ed54885a77771894ecd3e99@AcuMS.aculab.com>
+References: <4c0c3ee6cfa84d21a807055bc1aa27b8@AcuMS.aculab.com>
+ <202311061616.cd495695-oliver.sang@intel.com>
  <3865842.1700061614@warthog.procyon.org.uk>
  <CAHk-=whM-cEwAsLtKsf5dYwV7nDTaRv1bUKLVBstMAQBug24uQ@mail.gmail.com>
  <CAHk-=wjCUckvZUQf7gqp2ziJUWxVpikM_6srFdbcNdBJTxExRg@mail.gmail.com>
@@ -43,7 +44,8 @@ References: <202311061616.cd495695-oliver.sang@intel.com>
  <20231115190938.GGZVUXcuUjI3i1JRAB@fat_crate.local>
  <CAHk-=whFW+uWOmOtRNh0What_fu8Xo8KF2+EeUH1kn4qFxGAhA@mail.gmail.com>
  <CAHk-=whrc-ruKs4Kt90EGzKd+pYhZFKs6bgBVCV=55BK+p1nzg@mail.gmail.com>
-In-Reply-To: <CAHk-=whrc-ruKs4Kt90EGzKd+pYhZFKs6bgBVCV=55BK+p1nzg@mail.gmail.com>
+ <97468.1700129643@warthog.procyon.org.uk>
+In-Reply-To: <97468.1700129643@warthog.procyon.org.uk>
 Accept-Language: en-GB, en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
@@ -59,35 +61,50 @@ X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: aculab.com
 Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: quoted-printable
 
-RnJvbTogTGludXMgVG9ydmFsZHMNCj4gU2VudDogMTUgTm92ZW1iZXIgMjAyMyAyMDowNw0KLi4u
-DQo+ICAtIG91ciBjdXJyZW50ICJtZW1jcHlfb3JpZyIgZmFsbGJhY2sgZG9lcyB1bnJvbGxlZCBj
-b3B5IGxvb3BzLCBhbmQNCj4gdGhlIHJlcF9tb3ZzX2FsdGVybmF0aXZlIGZhbGxiYWNrIG9idmlv
-dXNseSBkb2Vzbid0Lg0KPiANCj4gSXQncyBub3QgY2xlYXIgdGhhdCB0aGUgdW5yb2xsZWQgY29w
-eSBsb29wcyBtYXR0ZXIgZm9yIHRoZSBpbi1rZXJuZWwNCj4ga2luZHMgb2YgY29waWVzLCBidXQg
-d2hvIGtub3dzLiBUaGUgbWVtY3B5X29yaWcgY29kZSBpcyBkZWZpbml0ZWx5DQo+IHRyeWluZyB0
-byBiZSBzbWFydGVyIGluIHNvbWUgb3RoZXIgd2F5cyB0b28uIFNvIHRoZSBmYWxsYmFjayBzaG91
-bGQNCj4gdHJ5IGEgKmJpdCogaGFyZGVyIHRoYW4gSSBkaWQsIGFuZCBub3QganVzdCB3aXRoIHRo
-ZSB3aG9sZSAiZG9uJ3QgdHJ5DQo+IHRvIGhhbmRsZSBleGNlcHRpb25zIiBpc3N1ZSBJIG1lbnRp
-b25lZC4NCg0KSSdtIHByZXR0eSBzdXJlIHRoZSB1bnJvbGxlZCBjb3B5IChhbmQgb3RoZXIgdW5y
-b2xsZWQgbG9vcHMpDQpqdXN0IHdhc3RlcyBJLWNhY2hlIGFuZCBzbG93cyB0aGluZ3MgZG93biBj
-b2xkLWNhY2hlLg0KDQpXaXRoIG91dCBvZiBvcmRlciBleGVjdXRlIG9uIG1vc3QgeDg2IGNwdSAo
-ZXhjZXB0IGF0b21zKSB5b3UNCmRvbid0IHJlYWxseSBoYXZlIHRvIHdvcnJ5IGFib3V0IHRoZSBt
-ZW1vcnkgbGF0ZW5jeS4NClNvIGdldCB0aGUgbG9vcCBjb250cm9sIGluc3RydWN0aW9ucyB0byBy
-dW4gaW4gcGFyYWxsZWwgd2l0aA0KdGhlIG1lbW9yeSBhY2Nlc3Mgb25lcyBhbmQgeW91IGNhbiBj
-b3B5IG9uZSB3b3JkIGV2ZXJ5IGNsb2NrLg0KSSBuZXZlciBtYW5hZ2VkIGEgc2luZ2xlIGNsb2Nr
-IGxvb3AsIGJ1dCB5b3UgY2FuIGdldCBhIHR3bw0KY2xvY2sgbG9vcCAod2l0aCAyIHJlYWRzIGFu
-ZCAyIHdyaXRlcyBpbiBpdCkuDQoNClNvIHVucm9sbGluZyBvbmNlIGlzIHR5cGljYWxseSBlbm91
-Z2guDQoNCllvdSBjYW4gYWxzbyBpZ25vcmUgYWxpZ25tZW50LCB0aGUgZXh0cmEgY29zdCBpcyBt
-aW5pbWFsIChvbg0KSW50ZWwgY3B1IGF0IGxlYXN0KS4gSSB0aGluayBpdCByZXF1aXJlcyBhbiBl
-eHRyYSB1LW9wIHdoZW4NCnRoZSBjb3B5IGNyb3NzZXMgYSBjYWNoZSBsaW5lIGJvdW5kYWRyeS4N
-Cg0KT24gaGFzd2VsbCAod2hpY2ggaXMgbm93IHF1aXRlIG9sZCkgYm90aCAncmVwIG1vdnNiJyBh
-bmQNCidyZXAgbW92c3EnIGNvcHkgMTYgYnl0ZXMvY2xvY2sgdW5sZXNzIHRoZSBkZXN0aW5hdGlv
-bg0KaXMgMzIgYnl0ZSBhbGlnbmVkIHdoZW4gdGhleSBjb3B5IDMyIGJ5dGVzL2Nsb2NrLg0KU291
-cmNlIGFsaWdubWVudCBtYWtlIG5vIGRpZmZlcmVudCwgbmVpdGhlciBkb2VzIGJ5dGUNCmFsaWdu
-bWVudC4NCg0KQW5vdGhlciAtT3Mgc3R1cGlkaXR5IGlzICdwdXNoICR4OyBwb3AgJXJlZycgdG8g
-bG9hZA0KYSBzaWduZWQgYnl0ZSBjb25zdGFudC4NCg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQg
-QWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVz
-LCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
+From: David Howells
+> Sent: 16 November 2023 10:14
+>=20
+> David Laight <David.Laight@ACULAB.COM> wrote:
+>=20
+> > On haswell (which is now quite old) both 'rep movsb' and
+> > 'rep movsq' copy 16 bytes/clock unless the destination
+> > is 32 byte aligned when they copy 32 bytes/clock.
+> > Source alignment make no different, neither does byte
+> > alignment.
+>=20
+> I think the i3-4170 cpu I'm using is Haswell.  Does that mean for my
+> particular cpu, just using inline "rep movsb" is the best choice?
+
+I've just looked at a slight old copy of the instruction timing
+doc from https://www.agner.org/optimize
+
+Apart from P4 (130 clock setup!) the setup cost for 'rep movs'
+is relatively small.
+I think everything since sandy bridge and bulldozer (except atoms,
+but including silvermont) do fast copies for 'rep movsb'.
+(But the C2758 atom we use claims erms.)
+
+I'd bet that the overhead for using 'rep movsb' for a short copy
+is less than that of the mispredicted branch (or two) to select
+the required code.
+
+That rather implies always using 'rep movsb' is best unless
+someone is compiling explicitly for an old cpu.
+And apart from P4 an explicit 'rep movsl' will be fastest then
+because the setup cost is minimal/zero.
+
+The cutoff for using 'rep movsb' for constant sized copies
+is probably also a lot less than you might expect.
+Especially assuming cold cache.
+
+This all makes that POS that gcc is inlining even more stupid.
+
+=09David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1=
+PT, UK
+Registration No: 1397386 (Wales)
 
