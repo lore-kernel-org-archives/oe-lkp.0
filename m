@@ -1,81 +1,93 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FA202CCAD
-	for <oe-lkp@lists.linux.dev>; Thu, 16 Nov 2023 10:14:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="hyeLf+R4"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1700129653;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=/qSf17nLKwBzvhXGOsVf7cFolqlSlgq1S8Xm68Mw6Xg=;
-	b=hyeLf+R4rDMgBo07tU9eg0BwfioTv8ZmJfI4Z3OdL2ezUwNuRdVR/lOAWxDjdDFVza9xsE
-	kdxxdeMzLbNNHGylQtPI+29xbzN8GZwtptO9dfmKT04fUV0bAjsQZ4hNMdAkV5vNVduyzJ
-	A27OkM/rUZIR1G4Ujd/Cf2dlhDxzHKM=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-403-dMjoYVQONpiGjZaMrqRBHA-1; Thu, 16 Nov 2023 05:14:08 -0500
-X-MC-Unique: dMjoYVQONpiGjZaMrqRBHA-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 07D0C101A529;
-	Thu, 16 Nov 2023 10:14:08 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.42.28.16])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 99618492BFD;
-	Thu, 16 Nov 2023 10:14:04 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-	Kingdom.
-	Registered in England and Wales under Company Registration No. 3798903
-From: David Howells <dhowells@redhat.com>
-In-Reply-To: <4c0c3ee6cfa84d21a807055bc1aa27b8@AcuMS.aculab.com>
-References: <4c0c3ee6cfa84d21a807055bc1aa27b8@AcuMS.aculab.com> <202311061616.cd495695-oliver.sang@intel.com> <3865842.1700061614@warthog.procyon.org.uk> <CAHk-=whM-cEwAsLtKsf5dYwV7nDTaRv1bUKLVBstMAQBug24uQ@mail.gmail.com> <CAHk-=wjCUckvZUQf7gqp2ziJUWxVpikM_6srFdbcNdBJTxExRg@mail.gmail.com> <CAHk-=wjhs6uuedgz-7HbcPtirEq+vvjJBY-M2zyteJwBhOMZhg@mail.gmail.com> <20231115190938.GGZVUXcuUjI3i1JRAB@fat_crate.local> <CAHk-=whFW+uWOmOtRNh0What_fu8Xo8KF2+EeUH1kn4qFxGAhA@mail.gmail.com> <CAHk-=whrc-ruKs4Kt90EGzKd+pYhZFKs6bgBVCV=55BK+p1nzg@mail.gmail.com>
-To: David Laight <David.Laight@ACULAB.COM>
-Cc: dhowells@redhat.com,
-    'Linus Torvalds' <torvalds@linux-foundation.org>,
-    Borislav Petkov <bp@alien8.de>,
-    kernel test robot <oliver.sang@intel.com>,
-    "oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>,
-    "lkp@intel.com" <lkp@intel.com>,
-    "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-    Christian Brauner <brauner@kernel.org>,
-    Alexander Viro <viro@zeniv.linux.org.uk>,
-    Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>,
-    Christian Brauner <christian@brauner.io>,
-    Matthew Wilcox <willy@infradead.org>,
-    "ying.huang@intel.com" <ying.huang@intel.com>,
-    "feng.tang@intel.com" <feng.tang@intel.com>,
-    "fengwei.yin@intel.com" <fengwei.yin@intel.com>
-Subject: Re: [linus:master] [iov_iter] c9eec08bac: vm-scalability.throughput -16.9% regression
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8E842D033
+	for <oe-lkp@lists.linux.dev>; Thu, 16 Nov 2023 10:15:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ACULAB.COM
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=aculab.com
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with both STARTTLS and AUTH (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mtapsc-4-KbudXczuMvSlfOhXmqjSIA-1; Thu, 16 Nov 2023 10:08:18 +0000
+X-MC-Unique: KbudXczuMvSlfOhXmqjSIA-1
+Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
+ (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Thu, 16 Nov
+ 2023 10:07:35 +0000
+Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
+ id 15.00.1497.048; Thu, 16 Nov 2023 10:07:35 +0000
+From: David Laight <David.Laight@ACULAB.COM>
+To: 'Linus Torvalds' <torvalds@linux-foundation.org>, Borislav Petkov
+	<bp@alien8.de>
+CC: David Howells <dhowells@redhat.com>, kernel test robot
+	<oliver.sang@intel.com>, "oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>,
+	"lkp@intel.com" <lkp@intel.com>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, Christian Brauner <brauner@kernel.org>,
+	Alexander Viro <viro@zeniv.linux.org.uk>, Jens Axboe <axboe@kernel.dk>,
+	Christoph Hellwig <hch@lst.de>, Christian Brauner <christian@brauner.io>,
+	Matthew Wilcox <willy@infradead.org>, "ying.huang@intel.com"
+	<ying.huang@intel.com>, "feng.tang@intel.com" <feng.tang@intel.com>,
+	"fengwei.yin@intel.com" <fengwei.yin@intel.com>
+Subject: RE: [linus:master] [iov_iter] c9eec08bac: vm-scalability.throughput
+ -16.9% regression
+Thread-Topic: [linus:master] [iov_iter] c9eec08bac: vm-scalability.throughput
+ -16.9% regression
+Thread-Index: AQHaF/9mUr/d/cPMC0WC86r1pNT+UrB8tOyw
+Date: Thu, 16 Nov 2023 10:07:35 +0000
+Message-ID: <4c0c3ee6cfa84d21a807055bc1aa27b8@AcuMS.aculab.com>
+References: <202311061616.cd495695-oliver.sang@intel.com>
+ <3865842.1700061614@warthog.procyon.org.uk>
+ <CAHk-=whM-cEwAsLtKsf5dYwV7nDTaRv1bUKLVBstMAQBug24uQ@mail.gmail.com>
+ <CAHk-=wjCUckvZUQf7gqp2ziJUWxVpikM_6srFdbcNdBJTxExRg@mail.gmail.com>
+ <CAHk-=wjhs6uuedgz-7HbcPtirEq+vvjJBY-M2zyteJwBhOMZhg@mail.gmail.com>
+ <20231115190938.GGZVUXcuUjI3i1JRAB@fat_crate.local>
+ <CAHk-=whFW+uWOmOtRNh0What_fu8Xo8KF2+EeUH1kn4qFxGAhA@mail.gmail.com>
+ <CAHk-=whrc-ruKs4Kt90EGzKd+pYhZFKs6bgBVCV=55BK+p1nzg@mail.gmail.com>
+In-Reply-To: <CAHk-=whrc-ruKs4Kt90EGzKd+pYhZFKs6bgBVCV=55BK+p1nzg@mail.gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <97467.1700129643.1@warthog.procyon.org.uk>
-Date: Thu, 16 Nov 2023 10:14:03 +0000
-Message-ID: <97468.1700129643@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.4.1 on 10.11.54.10
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 
-David Laight <David.Laight@ACULAB.COM> wrote:
-
-> On haswell (which is now quite old) both 'rep movsb' and
-> 'rep movsq' copy 16 bytes/clock unless the destination
-> is 32 byte aligned when they copy 32 bytes/clock.
-> Source alignment make no different, neither does byte
-> alignment.
-
-I think the i3-4170 cpu I'm using is Haswell.  Does that mean for my
-particular cpu, just using inline "rep movsb" is the best choice?
-
-David
+RnJvbTogTGludXMgVG9ydmFsZHMNCj4gU2VudDogMTUgTm92ZW1iZXIgMjAyMyAyMDowNw0KLi4u
+DQo+ICAtIG91ciBjdXJyZW50ICJtZW1jcHlfb3JpZyIgZmFsbGJhY2sgZG9lcyB1bnJvbGxlZCBj
+b3B5IGxvb3BzLCBhbmQNCj4gdGhlIHJlcF9tb3ZzX2FsdGVybmF0aXZlIGZhbGxiYWNrIG9idmlv
+dXNseSBkb2Vzbid0Lg0KPiANCj4gSXQncyBub3QgY2xlYXIgdGhhdCB0aGUgdW5yb2xsZWQgY29w
+eSBsb29wcyBtYXR0ZXIgZm9yIHRoZSBpbi1rZXJuZWwNCj4ga2luZHMgb2YgY29waWVzLCBidXQg
+d2hvIGtub3dzLiBUaGUgbWVtY3B5X29yaWcgY29kZSBpcyBkZWZpbml0ZWx5DQo+IHRyeWluZyB0
+byBiZSBzbWFydGVyIGluIHNvbWUgb3RoZXIgd2F5cyB0b28uIFNvIHRoZSBmYWxsYmFjayBzaG91
+bGQNCj4gdHJ5IGEgKmJpdCogaGFyZGVyIHRoYW4gSSBkaWQsIGFuZCBub3QganVzdCB3aXRoIHRo
+ZSB3aG9sZSAiZG9uJ3QgdHJ5DQo+IHRvIGhhbmRsZSBleGNlcHRpb25zIiBpc3N1ZSBJIG1lbnRp
+b25lZC4NCg0KSSdtIHByZXR0eSBzdXJlIHRoZSB1bnJvbGxlZCBjb3B5IChhbmQgb3RoZXIgdW5y
+b2xsZWQgbG9vcHMpDQpqdXN0IHdhc3RlcyBJLWNhY2hlIGFuZCBzbG93cyB0aGluZ3MgZG93biBj
+b2xkLWNhY2hlLg0KDQpXaXRoIG91dCBvZiBvcmRlciBleGVjdXRlIG9uIG1vc3QgeDg2IGNwdSAo
+ZXhjZXB0IGF0b21zKSB5b3UNCmRvbid0IHJlYWxseSBoYXZlIHRvIHdvcnJ5IGFib3V0IHRoZSBt
+ZW1vcnkgbGF0ZW5jeS4NClNvIGdldCB0aGUgbG9vcCBjb250cm9sIGluc3RydWN0aW9ucyB0byBy
+dW4gaW4gcGFyYWxsZWwgd2l0aA0KdGhlIG1lbW9yeSBhY2Nlc3Mgb25lcyBhbmQgeW91IGNhbiBj
+b3B5IG9uZSB3b3JkIGV2ZXJ5IGNsb2NrLg0KSSBuZXZlciBtYW5hZ2VkIGEgc2luZ2xlIGNsb2Nr
+IGxvb3AsIGJ1dCB5b3UgY2FuIGdldCBhIHR3bw0KY2xvY2sgbG9vcCAod2l0aCAyIHJlYWRzIGFu
+ZCAyIHdyaXRlcyBpbiBpdCkuDQoNClNvIHVucm9sbGluZyBvbmNlIGlzIHR5cGljYWxseSBlbm91
+Z2guDQoNCllvdSBjYW4gYWxzbyBpZ25vcmUgYWxpZ25tZW50LCB0aGUgZXh0cmEgY29zdCBpcyBt
+aW5pbWFsIChvbg0KSW50ZWwgY3B1IGF0IGxlYXN0KS4gSSB0aGluayBpdCByZXF1aXJlcyBhbiBl
+eHRyYSB1LW9wIHdoZW4NCnRoZSBjb3B5IGNyb3NzZXMgYSBjYWNoZSBsaW5lIGJvdW5kYWRyeS4N
+Cg0KT24gaGFzd2VsbCAod2hpY2ggaXMgbm93IHF1aXRlIG9sZCkgYm90aCAncmVwIG1vdnNiJyBh
+bmQNCidyZXAgbW92c3EnIGNvcHkgMTYgYnl0ZXMvY2xvY2sgdW5sZXNzIHRoZSBkZXN0aW5hdGlv
+bg0KaXMgMzIgYnl0ZSBhbGlnbmVkIHdoZW4gdGhleSBjb3B5IDMyIGJ5dGVzL2Nsb2NrLg0KU291
+cmNlIGFsaWdubWVudCBtYWtlIG5vIGRpZmZlcmVudCwgbmVpdGhlciBkb2VzIGJ5dGUNCmFsaWdu
+bWVudC4NCg0KQW5vdGhlciAtT3Mgc3R1cGlkaXR5IGlzICdwdXNoICR4OyBwb3AgJXJlZycgdG8g
+bG9hZA0KYSBzaWduZWQgYnl0ZSBjb25zdGFudC4NCg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQg
+QWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVz
+LCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
 
