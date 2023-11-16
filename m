@@ -1,181 +1,92 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1416430FA8
-	for <oe-lkp@lists.linux.dev>; Thu, 16 Nov 2023 21:13:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F27711718
+	for <oe-lkp@lists.linux.dev>; Thu, 16 Nov 2023 22:42:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="fqfqqAny"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1700169206;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=l6B51kHuwLmyHLtffoopCcRE0yAJ1jVAzbx5f+dxL4g=;
-	b=fqfqqAnyQvDnZH5k/HlW5ZbdmnD/BZNcgw9Ygr9KvZhTEeKsvJtBmXFYBfS7hvgkwWDD9z
-	jUm2QhIQ3woQ1dWx6xn0m9l+X1Kvzea8YdQqW3nBmqac/hyVp2cTE870Gns4eM17n5sUuY
-	qqVd9hneQI1kcwoiyfNQAynMy/l9Dq8=
-Received: from mimecast-mx02.redhat.com (mx-ext.redhat.com [66.187.233.73])
- by relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-673-_lRLhBGzMz2xswfXPOP2ag-1; Thu,
- 16 Nov 2023 16:10:49 -0500
-X-MC-Unique: _lRLhBGzMz2xswfXPOP2ag-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 36F5C2823817;
-	Thu, 16 Nov 2023 21:09:08 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.42.28.16])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id F3BB01C060AE;
-	Thu, 16 Nov 2023 21:09:05 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-	Kingdom.
-	Registered in England and Wales under Company Registration No. 3798903
-From: David Howells <dhowells@redhat.com>
-In-Reply-To: <CAHk-=wi7gdgFM4tnLXfE4cj2XiKNARbGY-N2aF5h9CMaN6JUbA@mail.gmail.com>
-References: <CAHk-=wi7gdgFM4tnLXfE4cj2XiKNARbGY-N2aF5h9CMaN6JUbA@mail.gmail.com> <202311061616.cd495695-oliver.sang@intel.com> <3865842.1700061614@warthog.procyon.org.uk> <CAHk-=whM-cEwAsLtKsf5dYwV7nDTaRv1bUKLVBstMAQBug24uQ@mail.gmail.com> <CAHk-=wjCUckvZUQf7gqp2ziJUWxVpikM_6srFdbcNdBJTxExRg@mail.gmail.com> <CAHk-=wjhs6uuedgz-7HbcPtirEq+vvjJBY-M2zyteJwBhOMZhg@mail.gmail.com> <4097023.1700084620@warthog.procyon.org.uk> <CAHk-=wgR3Mw2-8k2O3S10T-f4oz8FNfg7aziLU_6pbx0qowxew@mail.gmail.com> <42895.1700089191@warthog.procyon.org.uk>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: dhowells@redhat.com, Borislav Petkov <bp@alien8.de>,
-    kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
-    lkp@intel.com, linux-kernel@vger.kernel.org,
-    Christian Brauner <brauner@kernel.org>,
-    Alexander Viro <viro@zeniv.linux.org.uk>,
-    Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>,
-    Christian Brauner <christian@brauner.io>,
-    Matthew Wilcox <willy@infradead.org>,
-    David Laight <David.Laight@aculab.com>, ying.huang@intel.com,
-    feng.tang@intel.com, fengwei.yin@intel.com
-Subject: Re: [linus:master] [iov_iter] c9eec08bac: vm-scalability.throughput -16.9% regression
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="JpET9h2C"
+Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-9db6cf8309cso186994566b.0
+        for <oe-lkp@lists.linux.dev>; Thu, 16 Nov 2023 14:42:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google; t=1700174565; x=1700779365; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=Fg0CJY1mi+VcLE2vTZuvqELHi9zo++jHybcNxPzB83U=;
+        b=JpET9h2CDVnOrFqHCKpxeRo4Wdg/fhUk6Xu9An11mT4bs7HUbZxIUA3nYq156P6gqq
+         LoJG3SI/DSo5kJ7ycyV5cpdLPCOJDkKW1vavwavhhWSDcWctiB/x8LVZIlqFEa49V2O0
+         FU+5MUXLaiLb5vxQGNBikF7W1LNIWoudJCPZ4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1700174565; x=1700779365;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Fg0CJY1mi+VcLE2vTZuvqELHi9zo++jHybcNxPzB83U=;
+        b=sY7QCpMiLpAplWbl+Fs2xqh61g1W34u86vM3PHAcI88fdJ2LKkoHrCV3X+jXWqFIKC
+         xTotwjT+rZGnX8hFn8htcLCPYPR4KhXXG8x079UVuCJZr8FvAkbIujKhulM5cSu4x52z
+         Y+1XSOYbA/e/wbEoS+qopXvuxj66VeMK6skJd66rDrThvAdaXkvilX+eCZAS3/DiMoIr
+         FICwLnTW9PWCtY+vtnsoq6WUeRwwuHo/KSLtvS88dO0Z9QO51SuwplauX7Jnax1oxcZw
+         JJ5HI0SzqIekoKJsCZGZPvYma0ZMiKxthdX8aKB+jXiiCS5s2KykRF0N60WEegKFichd
+         MXAA==
+X-Gm-Message-State: AOJu0Yzm1YF54G3QO+L4nofR6lMq3jbtcLZ1D43PghWxcf4pPmzqUxMX
+	uM27YGmjwxPADXM47RdQJGe5BEJN3Dr46iC67TVl+Unm
+X-Google-Smtp-Source: AGHT+IEGaejH+n+S7lNgFLgwcdlY9fwAbv9yyXO+JxVcOv3SSji81guqWvEY2ropvqQndQBBkEzyVg==
+X-Received: by 2002:a17:906:ae8e:b0:9bd:a7a5:3a5a with SMTP id md14-20020a170906ae8e00b009bda7a53a5amr13112544ejb.36.1700174565546;
+        Thu, 16 Nov 2023 14:42:45 -0800 (PST)
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com. [209.85.128.50])
+        by smtp.gmail.com with ESMTPSA id lh3-20020a170906f8c300b009dd7097ca22sm115350ejb.194.2023.11.16.14.42.45
+        for <oe-lkp@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Nov 2023 14:42:45 -0800 (PST)
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-4084e49a5e5so11656145e9.3
+        for <oe-lkp@lists.linux.dev>; Thu, 16 Nov 2023 14:42:45 -0800 (PST)
+X-Received: by 2002:a05:6402:2050:b0:543:d584:7d8f with SMTP id
+ bc16-20020a056402205000b00543d5847d8fmr12994935edb.32.1700174226739; Thu, 16
+ Nov 2023 14:37:06 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <282730.1700168945.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 16 Nov 2023 21:09:05 +0000
-Message-ID: <282731.1700168945@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.4.1 on 10.11.54.7
+References: <202311061616.cd495695-oliver.sang@intel.com> <3865842.1700061614@warthog.procyon.org.uk>
+ <CAHk-=whM-cEwAsLtKsf5dYwV7nDTaRv1bUKLVBstMAQBug24uQ@mail.gmail.com>
+ <CAHk-=wjCUckvZUQf7gqp2ziJUWxVpikM_6srFdbcNdBJTxExRg@mail.gmail.com>
+ <CAHk-=wjhs6uuedgz-7HbcPtirEq+vvjJBY-M2zyteJwBhOMZhg@mail.gmail.com>
+ <4097023.1700084620@warthog.procyon.org.uk> <CAHk-=wgR3Mw2-8k2O3S10T-f4oz8FNfg7aziLU_6pbx0qowxew@mail.gmail.com>
+ <42895.1700089191@warthog.procyon.org.uk> <CAHk-=wi7gdgFM4tnLXfE4cj2XiKNARbGY-N2aF5h9CMaN6JUbA@mail.gmail.com>
+ <282731.1700168945@warthog.procyon.org.uk>
+In-Reply-To: <282731.1700168945@warthog.procyon.org.uk>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Thu, 16 Nov 2023 17:36:47 -0500
+X-Gmail-Original-Message-ID: <CAHk-=wjNv9NK=6rTNuQUkBfngw-jvP81esrV5ZLq0RBR9qaOuA@mail.gmail.com>
+Message-ID: <CAHk-=wjNv9NK=6rTNuQUkBfngw-jvP81esrV5ZLq0RBR9qaOuA@mail.gmail.com>
+Subject: Re: [linus:master] [iov_iter] c9eec08bac: vm-scalability.throughput
+ -16.9% regression
+To: David Howells <dhowells@redhat.com>
+Cc: Borislav Petkov <bp@alien8.de>, kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, 
+	lkp@intel.com, linux-kernel@vger.kernel.org, 
+	Christian Brauner <brauner@kernel.org>, Alexander Viro <viro@zeniv.linux.org.uk>, 
+	Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>, Christian Brauner <christian@brauner.io>, 
+	Matthew Wilcox <willy@infradead.org>, David Laight <David.Laight@aculab.com>, ying.huang@intel.com, 
+	feng.tang@intel.com, fengwei.yin@intel.com
+Content-Type: text/plain; charset="UTF-8"
 
-Linus Torvalds <torvalds@linux-foundation.org> wrote:
+On Thu, 16 Nov 2023 at 16:13, David Howells <dhowells@redhat.com> wrote:
+>
+>
+> Okay, I disabled RETPOLINE, which seems like it should be the important one.
+> With inlined memcpy:
 
-> You could try building the kernel without mitigations (or booting with t=
-hem
-> off, which isn't quite as good) to verify.
+Yeah, your machine really seems to hate the out-of-line call version.
 
-Okay, I disabled RETPOLINE, which seems like it should be the important on=
-e.
-With inlined memcpy:
+It is also not unlikely that the benchmark is the perfect example of
+that kind of "bad memory copy benchmark" where the actual results of
+the copy are never used or touched. It's one case that sometimes makes
+"rep movs" look (somewhat artificially) good, just because the
+optimized rep string will do cacheline copies in L2. So if you never
+touch the source or the destination of the copy, it never even gets
+brought into the L1.
 
- iov_kunit_benchmark_bvec: avg 3160 uS, stddev 17 uS
- iov_kunit_benchmark_bvec_split: avg 3380 uS, stddev 29 uS
- iov_kunit_benchmark_kvec: avg 2940 uS, stddev 978 uS
- iov_kunit_benchmark_xarray: avg 3599 uS, stddev 8 uS
- iov_kunit_benchmark_xarray_to_bvec: avg 3964 uS, stddev 16 uS
-
-Directly calling __memcpy():
-
- iov_kunit_benchmark_bvec: avg 9947 uS, stddev 61 uS
- iov_kunit_benchmark_bvec_split: avg 9790 uS, stddev 13 uS
- iov_kunit_benchmark_kvec: avg 9565 uS, stddev 758 uS
- iov_kunit_benchmark_xarray: avg 10498 uS, stddev 24 uS
- iov_kunit_benchmark_xarray_to_bvec: avg 10459 uS, stddev 188 uS
-
-I created a duplicate of __memcpy() (called __movsb_memcpy) without the
-"alternative" statement and made it call that:
-
- iov_kunit_benchmark_bvec: avg 3177 uS, stddev 7 uS
- iov_kunit_benchmark_bvec_split: avg 3393 uS, stddev 10 uS
- iov_kunit_benchmark_kvec: avg 2813 uS, stddev 385 uS
- iov_kunit_benchmark_xarray: avg 3651 uS, stddev 7 uS
- iov_kunit_benchmark_xarray_to_bvec: avg 3946 uS, stddev 8 uS
-
-And then I made it call memcpy_orig() directly:
-
- iov_kunit_benchmark_bvec: avg 9942 uS, stddev 17 uS
- iov_kunit_benchmark_bvec_split: avg 9802 uS, stddev 29 uS
- iov_kunit_benchmark_kvec: avg 9547 uS, stddev 598 uS
- iov_kunit_benchmark_xarray: avg 10486 uS, stddev 13 uS
- iov_kunit_benchmark_xarray_to_bvec: avg 10438 uS, stddev 12 uS
-
-(See attached patch)
-
-David
----
-diff --git a/arch/x86/lib/memcpy_64.S b/arch/x86/lib/memcpy_64.S
-index 0ae2e1712e2e..df1ebbe345e2 100644
---- a/arch/x86/lib/memcpy_64.S
-+++ b/arch/x86/lib/memcpy_64.S
-@@ -43,7 +43,7 @@ EXPORT_SYMBOL(__memcpy)
- SYM_FUNC_ALIAS_MEMFUNC(memcpy, __memcpy)
- EXPORT_SYMBOL(memcpy)
- =
-
--SYM_FUNC_START_LOCAL(memcpy_orig)
-+SYM_TYPED_FUNC_START(memcpy_orig)
- 	movq %rdi, %rax
- =
-
- 	cmpq $0x20, %rdx
-@@ -169,4 +169,12 @@ SYM_FUNC_START_LOCAL(memcpy_orig)
- .Lend:
- 	RET
- SYM_FUNC_END(memcpy_orig)
-+EXPORT_SYMBOL(memcpy_orig)
- =
-
-+SYM_TYPED_FUNC_START(__movsb_memcpy)
-+	movq %rdi, %rax
-+	movq %rdx, %rcx
-+	rep movsb
-+	RET
-+SYM_FUNC_END(__movsb_memcpy)
-+EXPORT_SYMBOL(__movsb_memcpy)
-diff --git a/lib/iov_iter.c b/lib/iov_iter.c
-index de7d11cf4c63..620cd6356a5b 100644
---- a/lib/iov_iter.c
-+++ b/lib/iov_iter.c
-@@ -58,11 +58,18 @@ size_t copy_from_user_iter(void __user *iter_from, siz=
-e_t progress,
- 	return res;
- }
- =
-
-+extern void *__movsb_memcpy(void *, const void *, size_t);
-+extern void *memcpy_orig(void *, const void *, size_t);
-+
- static __always_inline
- size_t memcpy_to_iter(void *iter_to, size_t progress,
- 		      size_t len, void *from, void *priv2)
- {
--	memcpy(iter_to, from + progress, len);
-+#if 0
-+	__movsb_memcpy(iter_to, from + progress, len);
-+#else
-+	memcpy_orig(iter_to, from + progress, len);
-+#endif	=
-
- 	return 0;
- }
- =
-
-@@ -70,7 +77,11 @@ static __always_inline
- size_t memcpy_from_iter(void *iter_from, size_t progress,
- 			size_t len, void *to, void *priv2)
- {
--	memcpy(to + progress, iter_from, len);
-+#if 0
-+	__movsb_memcpy(to + progress, iter_from, len);
-+#else
-+	memcpy_orig(to + progress, iter_from, len);
-+#endif
- 	return 0;
- }
- =
-
+                 Linus
