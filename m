@@ -1,112 +1,110 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com [209.85.208.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E431A28361
-	for <oe-lkp@lists.linux.dev>; Thu, 16 Nov 2023 16:44:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A21363EA8E
+	for <oe-lkp@lists.linux.dev>; Thu, 16 Nov 2023 16:48:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="cfu35j5D"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1700153055;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=cgOZv+HSF5fpSXSIYpXcb5BN5q50Bv1mWBUvFipGc6w=;
-	b=cfu35j5DOlblQGxJBqy7HpKo5GOooRm37Y06d8ZfrT4nCGEptsA6M8ZC8sUJ4MgTkh7OaB
-	1yHlEtJMf7ke75fYdoJy0G5DGv3xdnuRubk61RioQ9LriS0EPog6hEvnA1idynid8FhPBQ
-	uuJGzU0RA1Ks7d6LcRwZkI+JR1j/k0s=
-Received: from mimecast-mx02.redhat.com (mx-ext.redhat.com [66.187.233.73])
- by relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-454-NjtpnwZ_OYiC2dtYogqGHg-1; Thu,
- 16 Nov 2023 11:44:10 -0500
-X-MC-Unique: NjtpnwZ_OYiC2dtYogqGHg-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 658D9381258D;
-	Thu, 16 Nov 2023 16:44:09 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.42.28.16])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 3814E10F47;
-	Thu, 16 Nov 2023 16:44:07 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-	Kingdom.
-	Registered in England and Wales under Company Registration No. 3798903
-From: David Howells <dhowells@redhat.com>
-In-Reply-To: <20231116154406.GDZVY4xmFvRQt0wGGE@fat_crate.local>
-References: <20231116154406.GDZVY4xmFvRQt0wGGE@fat_crate.local> <202311061616.cd495695-oliver.sang@intel.com> <3865842.1700061614@warthog.procyon.org.uk> <CAHk-=whM-cEwAsLtKsf5dYwV7nDTaRv1bUKLVBstMAQBug24uQ@mail.gmail.com> <CAHk-=wjCUckvZUQf7gqp2ziJUWxVpikM_6srFdbcNdBJTxExRg@mail.gmail.com> <CAHk-=wjhs6uuedgz-7HbcPtirEq+vvjJBY-M2zyteJwBhOMZhg@mail.gmail.com> <20231115190938.GGZVUXcuUjI3i1JRAB@fat_crate.local> <CAHk-=wh0TcXyGmKHfs+Xe=5Sd5bNn=NNV9CEtOy_tbyHAAmk9g@mail.gmail.com>
-To: Borislav Petkov <bp@alien8.de>
-Cc: dhowells@redhat.com, Linus Torvalds <torvalds@linux-foundation.org>,
-    kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
-    lkp@intel.com, linux-kernel@vger.kernel.org,
-    Christian Brauner <brauner@kernel.org>,
-    Alexander Viro <viro@zeniv.linux.org.uk>,
-    Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>,
-    Christian Brauner <christian@brauner.io>,
-    Matthew Wilcox <willy@infradead.org>,
-    David Laight <David.Laight@aculab.com>, ying.huang@intel.com,
-    feng.tang@intel.com, fengwei.yin@intel.com
-Subject: Re: [linus:master] [iov_iter] c9eec08bac: vm-scalability.throughput -16.9% regression
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="g7AAK/Mf"
+Received: by mail-lj1-f178.google.com with SMTP id 38308e7fff4ca-2c5087d19a6so13150951fa.0
+        for <oe-lkp@lists.linux.dev>; Thu, 16 Nov 2023 08:48:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google; t=1700153317; x=1700758117; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=UKTCm7ggbJLm3ZHcQ81iQju2vexC4L52XL08aMMC/TA=;
+        b=g7AAK/Mf5/kJ5raEJND/vYAS7lFBRc8KAyafotPNCiT7Lrjj/uD14b5Ky6g6TLpDPf
+         kRZIS+2LUlkjiY8uQoruRWaLEH0foRvl/UL/bj68TVR5Y49DPw5aRhcObHPVe5Ge6qNS
+         zt4/KhiTy3BXSHO7gWwop7YhzEl1LoJLE2jug=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1700153317; x=1700758117;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=UKTCm7ggbJLm3ZHcQ81iQju2vexC4L52XL08aMMC/TA=;
+        b=IfNVZUWS1kh/6Oa2U/DGmLAfNP9eIsHyngBmu1UvH+ZtWXlqkIZPKgh9xeVQxxtQM7
+         p9CeucfDjpsEi1V505y0XVR2kd2DArjVJvGOpdpYON51JUIzUNwTcTiPwOigxXv15fEx
+         yg8rEJ0W5VCV+LqUwLO9mPuQ3Js2bESDh5IcIKWb/PTGNwRd1n2jQVGZtswz1mAetDsp
+         MR6G++xEW4jU1mYShmd26ODwDbnS8kgyKxi1wyYrbXSZBlCfVS+3a0r8/Ng4Z6BzdkR4
+         rRFmhQvtw9Uq1pfh6La795LB2qgpPKwdGE7o/TlzCpt6utBOw7lxgEKxg84EeiA8jCPS
+         kYLg==
+X-Gm-Message-State: AOJu0YyjXjgDP1d0Y4DvKB4m3NoKlkdcaCMq0PTQzTiRm1mAoIq08AaY
+	Co9P4wjAIrI8Q95WkFH12OPK+K5JNvABwJjkKhIam09F
+X-Google-Smtp-Source: AGHT+IE6COvucyLo6z8r1ltuHQxLFkpvR4WeXz901AwkMrThhI9He5QYWIArglwT1xrgK/BCbocm5w==
+X-Received: by 2002:a2e:a4a2:0:b0:2c5:6d8:8dfc with SMTP id g2-20020a2ea4a2000000b002c506d88dfcmr7330235ljm.13.1700153317385;
+        Thu, 16 Nov 2023 08:48:37 -0800 (PST)
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com. [209.85.208.49])
+        by smtp.gmail.com with ESMTPSA id z20-20020a170906241400b0099bc80d5575sm8583687eja.200.2023.11.16.08.48.36
+        for <oe-lkp@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Nov 2023 08:48:36 -0800 (PST)
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-54553e4888bso1495515a12.2
+        for <oe-lkp@lists.linux.dev>; Thu, 16 Nov 2023 08:48:36 -0800 (PST)
+X-Received: by 2002:aa7:d510:0:b0:533:520:a5a8 with SMTP id
+ y16-20020aa7d510000000b005330520a5a8mr12500577edq.29.1700153316001; Thu, 16
+ Nov 2023 08:48:36 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <232439.1700153046.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 16 Nov 2023 16:44:06 +0000
-Message-ID: <232440.1700153046@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.4.1 on 10.11.54.5
+References: <202311061616.cd495695-oliver.sang@intel.com> <3865842.1700061614@warthog.procyon.org.uk>
+ <CAHk-=whM-cEwAsLtKsf5dYwV7nDTaRv1bUKLVBstMAQBug24uQ@mail.gmail.com>
+ <CAHk-=wjCUckvZUQf7gqp2ziJUWxVpikM_6srFdbcNdBJTxExRg@mail.gmail.com>
+ <CAHk-=wjhs6uuedgz-7HbcPtirEq+vvjJBY-M2zyteJwBhOMZhg@mail.gmail.com>
+ <20231115190938.GGZVUXcuUjI3i1JRAB@fat_crate.local> <CAHk-=wh0TcXyGmKHfs+Xe=5Sd5bNn=NNV9CEtOy_tbyHAAmk9g@mail.gmail.com>
+ <20231116154406.GDZVY4xmFvRQt0wGGE@fat_crate.local>
+In-Reply-To: <20231116154406.GDZVY4xmFvRQt0wGGE@fat_crate.local>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Thu, 16 Nov 2023 11:48:18 -0500
+X-Gmail-Original-Message-ID: <CAHk-=wjGQh3ucZFmFR0evbKu2OyEuue-bOjsrnCvxSQdj8x6aw@mail.gmail.com>
+Message-ID: <CAHk-=wjGQh3ucZFmFR0evbKu2OyEuue-bOjsrnCvxSQdj8x6aw@mail.gmail.com>
+Subject: Re: [linus:master] [iov_iter] c9eec08bac: vm-scalability.throughput
+ -16.9% regression
+To: Borislav Petkov <bp@alien8.de>
+Cc: David Howells <dhowells@redhat.com>, kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, 
+	lkp@intel.com, linux-kernel@vger.kernel.org, 
+	Christian Brauner <brauner@kernel.org>, Alexander Viro <viro@zeniv.linux.org.uk>, 
+	Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>, Christian Brauner <christian@brauner.io>, 
+	Matthew Wilcox <willy@infradead.org>, David Laight <David.Laight@aculab.com>, ying.huang@intel.com, 
+	feng.tang@intel.com, fengwei.yin@intel.com
+Content-Type: text/plain; charset="UTF-8"
 
-Borislav Petkov <bp@alien8.de> wrote:
+On Thu, 16 Nov 2023 at 10:44, Borislav Petkov <bp@alien8.de> wrote:
+>
+> Reportedly and apparently, this pretty much addresses the issue at hand.
+> However, I'd still like for the compiler to handle the small length
+> cases by issuing plain MOVs instead of blindly doing "call memcpy".
+>
+> Lemme see how it would work with your patch...
 
-> diff --git a/Makefile b/Makefile
-> index ede0bd241056..94d93070d54a 100644
-> --- a/Makefile
-> +++ b/Makefile
-> @@ -996,6 +996,8 @@ endif
->  # change __FILE__ to the relative path from the srctree
->  KBUILD_CPPFLAGS +=3D $(call cc-option,-fmacro-prefix-map=3D$(srctree)/=3D=
-)
->  =
+Hmm. I know about the '-mstringop-strategy' flag because of the fairly
+recently discussed bug where gcc would create a byte-by-byte copy in
+some crazy circumstances with the address space attributes:
 
-> +KBUILD_CFLAGS	+=3D $(call cc-option,-mstringop-strategy=3Dlibcall)
-> +
->  # include additional Makefiles when needed
->  include-y			:=3D scripts/Makefile.extrawarn
->  include-$(CONFIG_DEBUG_INFO)	+=3D scripts/Makefile.debug
+    https://gcc.gnu.org/bugzilla/show_bug.cgi?id=111657
 
-If you wanted this patch trying, I get the following numbers:
+But I incorrectly thought that "-mstringop-strategy=libcall" would
+then *always* do library calls.
 
- iov_kunit_benchmark_bvec: avg 9950 uS, stddev 40 uS
- iov_kunit_benchmark_bvec: avg 9950 uS, stddev 53 uS
- iov_kunit_benchmark_bvec: avg 9973 uS, stddev 69 uS
- iov_kunit_benchmark_bvec_split: avg 9793 uS, stddev 28 uS
- iov_kunit_benchmark_bvec_split: avg 9800 uS, stddev 41 uS
- iov_kunit_benchmark_bvec_split: avg 9804 uS, stddev 16 uS
- iov_kunit_benchmark_kvec: avg 10122 uS, stddev 4403 uS
- iov_kunit_benchmark_kvec: avg 9757 uS, stddev 1516 uS
- iov_kunit_benchmark_kvec: avg 9909 uS, stddev 2694 uS
- iov_kunit_benchmark_xarray: avg 10526 uS, stddev 52 uS
- iov_kunit_benchmark_xarray: avg 10529 uS, stddev 48 uS
- iov_kunit_benchmark_xarray: avg 10532 uS, stddev 63 uS
- iov_kunit_benchmark_xarray_to_bvec: avg 10468 uS, stddev 23 uS
- iov_kunit_benchmark_xarray_to_bvec: avg 10469 uS, stddev 157 uS
- iov_kunit_benchmark_xarray_to_bvec: avg 10471 uS, stddev 163 uS
+So I decided to test, and that shows that gcc still ends up doing the
+"expand small constant size copies inline" even with that option, and
+doesn't force library calls for those cases.
 
-I'm using the 6 patches here:
+IOW, my assumption was just broken, and using
+"-mstringop-strategy=libcall" may well be the right thing to do.
 
-	https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/log=
-/?h=3Diov-kunit
+Of course, it's also possible that with all the function call overhead
+introduced by the CPU mitigations on older CPU's, we should just say
+"rep movsb" is always correct - if you have a new CPU with FSRM it's
+good, and if you have an old CPU it's no worse than the horrendous CPU
+mitigation overhead for function call/returns.
 
-Set CONFIG_TEST_IOV_ITER=3Dm and then load the kunit_iov_iter.ko module.  =
-It'll
-dump its benchmarks to dmesg.
+I really hate the mitigations. Oh well.
 
-David
+Ayway, maybe your patch is the RightThing(tm). Or maybe we should use
+'rep_byte' instead of 'libcall'. Who knows..
 
+             Linus
