@@ -1,141 +1,181 @@
-Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 434C535883
-	for <oe-lkp@lists.linux.dev>; Thu, 16 Nov 2023 17:25:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1416430FA8
+	for <oe-lkp@lists.linux.dev>; Thu, 16 Nov 2023 21:13:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="UDnW+A2x"
-Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-9d242846194so159155966b.1
-        for <oe-lkp@lists.linux.dev>; Thu, 16 Nov 2023 09:25:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1700155517; x=1700760317; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=U1iPlcZ3/XGhU6rtBc5tXppbT+kLnQ6bw9pSEmXipB0=;
-        b=UDnW+A2x+rwmCrCV+jTCvwwCQNwkkRB4s/wfcJbU6vegQq9on9mR8MFFYs3+/ms1dN
-         eU0UvxEoczaAAlOTxJ6Bx7r3tV/bnpkgx2fg5jcxIdcP9bcXs1r0gRh064iWMwvnUTX+
-         liMumQAtQu6+RHTN9Y5v+nWxbBXpqRHWs6rHw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700155517; x=1700760317;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=U1iPlcZ3/XGhU6rtBc5tXppbT+kLnQ6bw9pSEmXipB0=;
-        b=BCYJNBZh8U8Zkafn0RsrAbHLATkDl9KpMA0sR1uxTSTpZKR+qey0/tUZYlM6DTeSch
-         mIYd5RBs6TmPE+S5QU1j28ePtL5FFZ1pE0tNAlZ3S05PIDy3sZxFzHgjTwJnuDdf8FEB
-         X80M0BDvOd3DZIiaNDyVrW6TIaoDv94hlvfqm0l6bLkdgV8cQ9xz1VWaL3C50O5kT9/S
-         j01wd+AKWy1rKLpHecM0fiERrLXUScmhLZVgpomfLKfdtbdpswVBMYDjLFVsi8NfdSWl
-         S8LR1gT1sASxVbd4RpJNpMmbElHdGN+CFo//FX2ZCMei/1tQINDZ0uxL5qL/Cry+XX/a
-         705w==
-X-Gm-Message-State: AOJu0YxdYbrFRTCNlF+BGP2R3LskBKg2bAVjLGg71gi2GIIkm9NAPcIQ
-	oNrCvxR/a/CU/NkD0150xv2kkXKnCddM1YTw54rKy084
-X-Google-Smtp-Source: AGHT+IFQ4usnB+rU7mjPcGp+k9NPeYoukFn/Ud0tUhu92GkU9o5UF4GwxXsB2DCs6Uuwhy3tDPa2bw==
-X-Received: by 2002:a17:906:7d4:b0:9e4:7b7:267d with SMTP id m20-20020a17090607d400b009e407b7267dmr12271592ejc.52.1700155517243;
-        Thu, 16 Nov 2023 09:25:17 -0800 (PST)
-Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com. [209.85.208.41])
-        by smtp.gmail.com with ESMTPSA id o16-20020a170906775000b00982a92a849asm8648898ejn.91.2023.11.16.09.25.16
-        for <oe-lkp@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Nov 2023 09:25:16 -0800 (PST)
-Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-544455a4b56so1539428a12.1
-        for <oe-lkp@lists.linux.dev>; Thu, 16 Nov 2023 09:25:16 -0800 (PST)
-X-Received: by 2002:aa7:c993:0:b0:53d:a17a:7576 with SMTP id
- c19-20020aa7c993000000b0053da17a7576mr13094274edt.8.1700155516281; Thu, 16
- Nov 2023 09:25:16 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="fqfqqAny"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1700169206;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=l6B51kHuwLmyHLtffoopCcRE0yAJ1jVAzbx5f+dxL4g=;
+	b=fqfqqAnyQvDnZH5k/HlW5ZbdmnD/BZNcgw9Ygr9KvZhTEeKsvJtBmXFYBfS7hvgkwWDD9z
+	jUm2QhIQ3woQ1dWx6xn0m9l+X1Kvzea8YdQqW3nBmqac/hyVp2cTE870Gns4eM17n5sUuY
+	qqVd9hneQI1kcwoiyfNQAynMy/l9Dq8=
+Received: from mimecast-mx02.redhat.com (mx-ext.redhat.com [66.187.233.73])
+ by relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-673-_lRLhBGzMz2xswfXPOP2ag-1; Thu,
+ 16 Nov 2023 16:10:49 -0500
+X-MC-Unique: _lRLhBGzMz2xswfXPOP2ag-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 36F5C2823817;
+	Thu, 16 Nov 2023 21:09:08 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.42.28.16])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id F3BB01C060AE;
+	Thu, 16 Nov 2023 21:09:05 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+	Kingdom.
+	Registered in England and Wales under Company Registration No. 3798903
+From: David Howells <dhowells@redhat.com>
+In-Reply-To: <CAHk-=wi7gdgFM4tnLXfE4cj2XiKNARbGY-N2aF5h9CMaN6JUbA@mail.gmail.com>
+References: <CAHk-=wi7gdgFM4tnLXfE4cj2XiKNARbGY-N2aF5h9CMaN6JUbA@mail.gmail.com> <202311061616.cd495695-oliver.sang@intel.com> <3865842.1700061614@warthog.procyon.org.uk> <CAHk-=whM-cEwAsLtKsf5dYwV7nDTaRv1bUKLVBstMAQBug24uQ@mail.gmail.com> <CAHk-=wjCUckvZUQf7gqp2ziJUWxVpikM_6srFdbcNdBJTxExRg@mail.gmail.com> <CAHk-=wjhs6uuedgz-7HbcPtirEq+vvjJBY-M2zyteJwBhOMZhg@mail.gmail.com> <4097023.1700084620@warthog.procyon.org.uk> <CAHk-=wgR3Mw2-8k2O3S10T-f4oz8FNfg7aziLU_6pbx0qowxew@mail.gmail.com> <42895.1700089191@warthog.procyon.org.uk>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: dhowells@redhat.com, Borislav Petkov <bp@alien8.de>,
+    kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+    lkp@intel.com, linux-kernel@vger.kernel.org,
+    Christian Brauner <brauner@kernel.org>,
+    Alexander Viro <viro@zeniv.linux.org.uk>,
+    Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>,
+    Christian Brauner <christian@brauner.io>,
+    Matthew Wilcox <willy@infradead.org>,
+    David Laight <David.Laight@aculab.com>, ying.huang@intel.com,
+    feng.tang@intel.com, fengwei.yin@intel.com
+Subject: Re: [linus:master] [iov_iter] c9eec08bac: vm-scalability.throughput -16.9% regression
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202311061616.cd495695-oliver.sang@intel.com> <3865842.1700061614@warthog.procyon.org.uk>
- <CAHk-=whM-cEwAsLtKsf5dYwV7nDTaRv1bUKLVBstMAQBug24uQ@mail.gmail.com>
- <CAHk-=wjCUckvZUQf7gqp2ziJUWxVpikM_6srFdbcNdBJTxExRg@mail.gmail.com>
- <CAHk-=wjhs6uuedgz-7HbcPtirEq+vvjJBY-M2zyteJwBhOMZhg@mail.gmail.com>
- <4097023.1700084620@warthog.procyon.org.uk> <CAHk-=wgR3Mw2-8k2O3S10T-f4oz8FNfg7aziLU_6pbx0qowxew@mail.gmail.com>
- <42895.1700089191@warthog.procyon.org.uk> <CAHk-=wi7gdgFM4tnLXfE4cj2XiKNARbGY-N2aF5h9CMaN6JUbA@mail.gmail.com>
- <4cfd4808cc694f169aa8b83547ebc74d@AcuMS.aculab.com>
-In-Reply-To: <4cfd4808cc694f169aa8b83547ebc74d@AcuMS.aculab.com>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Thu, 16 Nov 2023 12:24:58 -0500
-X-Gmail-Original-Message-ID: <CAHk-=whuKOMn73oinrTQCcNwhXNOw5eksSBiCSzxycZ--asp4Q@mail.gmail.com>
-Message-ID: <CAHk-=whuKOMn73oinrTQCcNwhXNOw5eksSBiCSzxycZ--asp4Q@mail.gmail.com>
-Subject: Re: [linus:master] [iov_iter] c9eec08bac: vm-scalability.throughput
- -16.9% regression
-To: David Laight <David.Laight@aculab.com>
-Cc: David Howells <dhowells@redhat.com>, Borislav Petkov <bp@alien8.de>, 
-	kernel test robot <oliver.sang@intel.com>, "oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>, 
-	"lkp@intel.com" <lkp@intel.com>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Christian Brauner <brauner@kernel.org>, 
-	Alexander Viro <viro@zeniv.linux.org.uk>, Jens Axboe <axboe@kernel.dk>, 
-	Christoph Hellwig <hch@lst.de>, Christian Brauner <christian@brauner.io>, Matthew Wilcox <willy@infradead.org>, 
-	"ying.huang@intel.com" <ying.huang@intel.com>, "feng.tang@intel.com" <feng.tang@intel.com>, 
-	"fengwei.yin@intel.com" <fengwei.yin@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <282730.1700168945.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 16 Nov 2023 21:09:05 +0000
+Message-ID: <282731.1700168945@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.4.1 on 10.11.54.7
 
-On Thu, 16 Nov 2023 at 11:55, David Laight <David.Laight@aculab.com> wrote:
->
-> I presume lack of coffee is responsible for the s/movs/stos/ :-)
+Linus Torvalds <torvalds@linux-foundation.org> wrote:
 
-Yes.
+> You could try building the kernel without mitigations (or booting with t=
+hem
+> off, which isn't quite as good) to verify.
 
-> How much difference does FSRM actually make?
-> Especially when compared to the cost of a function call (even
-> without the horrid return thunk).
+Okay, I disabled RETPOLINE, which seems like it should be the important on=
+e.
+With inlined memcpy:
 
-It can be a big deal.  The subject line here is an example. On that
-machine, using the call to 'memcpy_orig' clearly performs *noticeably*
-better. So that 16% regression was"fast  apparently at least partly
-because of
+ iov_kunit_benchmark_bvec: avg 3160 uS, stddev 17 uS
+ iov_kunit_benchmark_bvec_split: avg 3380 uS, stddev 29 uS
+ iov_kunit_benchmark_kvec: avg 2940 uS, stddev 978 uS
+ iov_kunit_benchmark_xarray: avg 3599 uS, stddev 8 uS
+ iov_kunit_benchmark_xarray_to_bvec: avg 3964 uS, stddev 16 uS
 
-  -11.0  perf-profile.self.cycles-pp.memcpy_orig
-  +14.7  perf-profile.self.cycles-pp.copy_page_from_iter_atomic
+Directly calling __memcpy():
 
-where that inlined copy (that used 'rep movsq' and other things around
-it) was noticeably worse than just calling memcpy_orig that does a
-basic unrolled loop.
+ iov_kunit_benchmark_bvec: avg 9947 uS, stddev 61 uS
+ iov_kunit_benchmark_bvec_split: avg 9790 uS, stddev 13 uS
+ iov_kunit_benchmark_kvec: avg 9565 uS, stddev 758 uS
+ iov_kunit_benchmark_xarray: avg 10498 uS, stddev 24 uS
+ iov_kunit_benchmark_xarray_to_bvec: avg 10459 uS, stddev 188 uS
 
-Now, *why* it matters a lot is unclear. Some machines literally have
-the "fast rep string" code disabled, and then "rep movsb" is just
-horrendous. That's arguably a machine setup issue, but people have
-been known to do those things because of problems (most recently
-"reptar").
+I created a duplicate of __memcpy() (called __movsb_memcpy) without the
+"alternative" statement and made it call that:
 
-And in most older microarchitectures it's not just the cycles in the
-repat thing, it is also a pipeline stall and I think it's also a
-(partial? full?) barrier for OoO execution. That pipeline stall was
-most noticeable on P4, but it's most definitely there on other cores
-too.
+ iov_kunit_benchmark_bvec: avg 3177 uS, stddev 7 uS
+ iov_kunit_benchmark_bvec_split: avg 3393 uS, stddev 10 uS
+ iov_kunit_benchmark_kvec: avg 2813 uS, stddev 385 uS
+ iov_kunit_benchmark_xarray: avg 3651 uS, stddev 7 uS
+ iov_kunit_benchmark_xarray_to_bvec: avg 3946 uS, stddev 8 uS
 
-And the OoO execution batter can mean that it *benchmarks* fairly well
-when you just do "rep movs" in a loop to test, but then if you have
-code *around* it, it causes problems for the instructions around it.
+And then I made it call memcpy_orig() directly:
 
-I have this memory from my "push for -Os" (which is from over a decade
-ago, to take my memory with a pinch of salt) of seeing "rep movsb"
-followed by a load of the result causing a horrid stall on the load.
+ iov_kunit_benchmark_bvec: avg 9942 uS, stddev 17 uS
+ iov_kunit_benchmark_bvec_split: avg 9802 uS, stddev 29 uS
+ iov_kunit_benchmark_kvec: avg 9547 uS, stddev 598 uS
+ iov_kunit_benchmark_xarray: avg 10486 uS, stddev 13 uS
+ iov_kunit_benchmark_xarray_to_bvec: avg 10438 uS, stddev 12 uS
 
-A regular load-store loop will have the store data forwarded to any
-subsequent load, but "rep movs" might not do that and if it works on a
-cacheline level you might lose out on those kinds of things.
+(See attached patch)
 
-Don't get me wrong - I really like the rep string instructions, and
-while they have issues I'd *love* for CPU's to basically do "memcpy"
-and "memset" without any library call overhead. The security
-mitigations have made indirect calls much worse, but they have made
-regular function call overhead worse too (and there's the I$ footprint
-thing etc etc).
+David
+---
+diff --git a/arch/x86/lib/memcpy_64.S b/arch/x86/lib/memcpy_64.S
+index 0ae2e1712e2e..df1ebbe345e2 100644
+--- a/arch/x86/lib/memcpy_64.S
++++ b/arch/x86/lib/memcpy_64.S
+@@ -43,7 +43,7 @@ EXPORT_SYMBOL(__memcpy)
+ SYM_FUNC_ALIAS_MEMFUNC(memcpy, __memcpy)
+ EXPORT_SYMBOL(memcpy)
+ =
 
-So I like "rep movs" a lot when it works well, but it most definitely
-does not work well everywhere.
+-SYM_FUNC_START_LOCAL(memcpy_orig)
++SYM_TYPED_FUNC_START(memcpy_orig)
+ 	movq %rdi, %rax
+ =
 
-Of course, while the kernel test robot doesn't seem to like the
-inlined "rep movsq", clearly the machine David is on absolutely
-*hates* the call to memcpy_orig. Possibly due to mitigation overhead.
+ 	cmpq $0x20, %rdx
+@@ -169,4 +169,12 @@ SYM_FUNC_START_LOCAL(memcpy_orig)
+ .Lend:
+ 	RET
+ SYM_FUNC_END(memcpy_orig)
++EXPORT_SYMBOL(memcpy_orig)
+ =
 
-The problem with code generation at this level is that you win some,
-you lose some. You can seldom make everybody happy.
++SYM_TYPED_FUNC_START(__movsb_memcpy)
++	movq %rdi, %rax
++	movq %rdx, %rcx
++	rep movsb
++	RET
++SYM_FUNC_END(__movsb_memcpy)
++EXPORT_SYMBOL(__movsb_memcpy)
+diff --git a/lib/iov_iter.c b/lib/iov_iter.c
+index de7d11cf4c63..620cd6356a5b 100644
+--- a/lib/iov_iter.c
++++ b/lib/iov_iter.c
+@@ -58,11 +58,18 @@ size_t copy_from_user_iter(void __user *iter_from, siz=
+e_t progress,
+ 	return res;
+ }
+ =
 
-                 Linus
++extern void *__movsb_memcpy(void *, const void *, size_t);
++extern void *memcpy_orig(void *, const void *, size_t);
++
+ static __always_inline
+ size_t memcpy_to_iter(void *iter_to, size_t progress,
+ 		      size_t len, void *from, void *priv2)
+ {
+-	memcpy(iter_to, from + progress, len);
++#if 0
++	__movsb_memcpy(iter_to, from + progress, len);
++#else
++	memcpy_orig(iter_to, from + progress, len);
++#endif	=
+
+ 	return 0;
+ }
+ =
+
+@@ -70,7 +77,11 @@ static __always_inline
+ size_t memcpy_from_iter(void *iter_from, size_t progress,
+ 			size_t len, void *to, void *priv2)
+ {
+-	memcpy(to + progress, iter_from, len);
++#if 0
++	__movsb_memcpy(to + progress, iter_from, len);
++#else
++	memcpy_orig(to + progress, iter_from, len);
++#endif
+ 	return 0;
+ }
+ =
+
