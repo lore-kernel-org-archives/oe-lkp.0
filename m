@@ -1,127 +1,88 @@
-Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89485DF6E
-	for <oe-lkp@lists.linux.dev>; Fri, 17 Nov 2023 13:36:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F006E30CF7
+	for <oe-lkp@lists.linux.dev>; Fri, 17 Nov 2023 14:12:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="MQJU4c3F"
-Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-5484ef5e3d2so646233a12.3
-        for <oe-lkp@lists.linux.dev>; Fri, 17 Nov 2023 05:36:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1700228185; x=1700832985; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=j4nL6lMcchz3OqRF6Jql0QZtDg2jb+Lp1wFMbOZWnTY=;
-        b=MQJU4c3F0zMVSWwijvNEcM6CVFNymAAENKQhImIR4F4zlKa+xo6/wjvd/a6kFOk4xJ
-         X40M+ym2eyKT7ceSGaKUjti9hsW43ZkDu+jZk8ScUEYIbz0ZqIgIjK3I+BgE84JAbcYi
-         sdjV9VgXFGM5AVpj6OEau+2vM5pFJdHZCIJ64=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700228185; x=1700832985;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=j4nL6lMcchz3OqRF6Jql0QZtDg2jb+Lp1wFMbOZWnTY=;
-        b=FJ33HVFKeVdIbFPrJPpMV+BwA+dEQe+KZQakzxvh69ipbdmZbE949Gtsk2/oVtUOuM
-         FHTTLBzV3p5mGeeUQjWG4gNKpYPt1izJQT/MGTVmY/tADFa0hwVmZMZkaoOi55rUyPxj
-         O+BjJEcghSfFKBCKxEQojdVSDbEw/NRagfb6pMhBb87hci2eyepLq7Uzm5vDLgPH5Rsq
-         TAIP4KNPazfrRQq9lNJG6ypZGKjezpNv4gBSo9tfSGvltU/DS+/cnDQ1UAPmuxPboMuK
-         BFcA51g5oFAGGi5pCjn0Dpg2wrx7BhJDf6lDmhnMGwxnZZQeol5pPJlEYeS3S5RdgIUj
-         GWZA==
-X-Gm-Message-State: AOJu0YyD7y01Ruhr0q3XKakyOloyD9DCYoFFZfPm06iTe82LQhxiWQXb
-	aib7fWJL/kfXKPrODxzmhEA5sRUmf53GftEtg3X2WR3X
-X-Google-Smtp-Source: AGHT+IFMj2w8LeHGZBIFk4GsZm5aAMuBUNQooPslv1oQWjdtwRSjWl87N11dGzJGMLjVAAI+7Goj5A==
-X-Received: by 2002:aa7:db4d:0:b0:545:4ca7:6eee with SMTP id n13-20020aa7db4d000000b005454ca76eeemr13471474edt.22.1700228185702;
-        Fri, 17 Nov 2023 05:36:25 -0800 (PST)
-Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com. [209.85.208.48])
-        by smtp.gmail.com with ESMTPSA id j2-20020aa7c402000000b0053d9cb67248sm728671edq.18.2023.11.17.05.36.21
-        for <oe-lkp@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 17 Nov 2023 05:36:22 -0800 (PST)
-Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-5484ef5e3d2so646109a12.3
-        for <oe-lkp@lists.linux.dev>; Fri, 17 Nov 2023 05:36:21 -0800 (PST)
-X-Received: by 2002:a05:6402:55:b0:543:5927:f969 with SMTP id
- f21-20020a056402005500b005435927f969mr14403549edu.3.1700228181455; Fri, 17
- Nov 2023 05:36:21 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Gtzk0XZn"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1700230349;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=C+D0LhO6NECogVwI5g3Kwjiq5nOgvXFKjlmubrqlGHE=;
+	b=Gtzk0XZnwXtL/T4DcSd8Mz/nxUEiHxjY8/fntrSt7HJdA6n5B1hVpDDRwMFMls37O/4PiH
+	EQrKbCYUvl1UYCPnlf9/9xmnCHIndVDiwxhvLgBz5xYTsA892ue/37fywUIYHtWOB/l1iq
+	x5Q/UV8FfPEycYBnk8wEnrRDl6pey1U=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-365-wzdnngaRM4yo03wd8meQTQ-1; Fri, 17 Nov 2023 09:12:22 -0500
+X-MC-Unique: wzdnngaRM4yo03wd8meQTQ-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2D3B09758C1;
+	Fri, 17 Nov 2023 14:12:20 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.42.28.16])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 1AA58492BE0;
+	Fri, 17 Nov 2023 14:12:17 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+	Kingdom.
+	Registered in England and Wales under Company Registration No. 3798903
+From: David Howells <dhowells@redhat.com>
+In-Reply-To: <20231117113549.GBZVdQFQ7VrfsPd9mV@fat_crate.local>
+References: <20231117113549.GBZVdQFQ7VrfsPd9mV@fat_crate.local> <20231116154406.GDZVY4xmFvRQt0wGGE@fat_crate.local> <202311061616.cd495695-oliver.sang@intel.com> <3865842.1700061614@warthog.procyon.org.uk> <CAHk-=whM-cEwAsLtKsf5dYwV7nDTaRv1bUKLVBstMAQBug24uQ@mail.gmail.com> <CAHk-=wjCUckvZUQf7gqp2ziJUWxVpikM_6srFdbcNdBJTxExRg@mail.gmail.com> <CAHk-=wjhs6uuedgz-7HbcPtirEq+vvjJBY-M2zyteJwBhOMZhg@mail.gmail.com> <20231115190938.GGZVUXcuUjI3i1JRAB@fat_crate.local> <CAHk-=wh0TcXyGmKHfs+Xe=5Sd5bNn=NNV9CEtOy_tbyHAAmk9g@mail.gmail.com> <232440.1700153046@warthog.procyon.org.uk>
+To: Borislav Petkov <bp@alien8.de>
+Cc: dhowells@redhat.com, Linus Torvalds <torvalds@linux-foundation.org>,
+    kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+    lkp@intel.com, linux-kernel@vger.kernel.org,
+    Christian Brauner <brauner@kernel.org>,
+    Alexander Viro <viro@zeniv.linux.org.uk>,
+    Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>,
+    Christian Brauner <christian@brauner.io>,
+    Matthew Wilcox <willy@infradead.org>,
+    David Laight <David.Laight@aculab.com>, ying.huang@intel.com,
+    feng.tang@intel.com, fengwei.yin@intel.com
+Subject: Re: [linus:master] [iov_iter] c9eec08bac: vm-scalability.throughput -16.9% regression
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202311061616.cd495695-oliver.sang@intel.com> <3865842.1700061614@warthog.procyon.org.uk>
- <CAHk-=whM-cEwAsLtKsf5dYwV7nDTaRv1bUKLVBstMAQBug24uQ@mail.gmail.com>
- <CAHk-=wjCUckvZUQf7gqp2ziJUWxVpikM_6srFdbcNdBJTxExRg@mail.gmail.com>
- <CAHk-=wjhs6uuedgz-7HbcPtirEq+vvjJBY-M2zyteJwBhOMZhg@mail.gmail.com>
- <20231115190938.GGZVUXcuUjI3i1JRAB@fat_crate.local> <CAHk-=wh0TcXyGmKHfs+Xe=5Sd5bNn=NNV9CEtOy_tbyHAAmk9g@mail.gmail.com>
- <20231116154406.GDZVY4xmFvRQt0wGGE@fat_crate.local> <CAHk-=wjGQh3ucZFmFR0evbKu2OyEuue-bOjsrnCvxSQdj8x6aw@mail.gmail.com>
- <20231117114421.GCZVdSFZ7DKtBol821@fat_crate.local> <67acdf70c3fd4adf9bc0dddd4b10d4a1@AcuMS.aculab.com>
-In-Reply-To: <67acdf70c3fd4adf9bc0dddd4b10d4a1@AcuMS.aculab.com>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Fri, 17 Nov 2023 08:36:03 -0500
-X-Gmail-Original-Message-ID: <CAHk-=wjjF7tQ4ycPiA4gbYqF-dpTQx+VVHCDqjWR=ogqNUR51g@mail.gmail.com>
-Message-ID: <CAHk-=wjjF7tQ4ycPiA4gbYqF-dpTQx+VVHCDqjWR=ogqNUR51g@mail.gmail.com>
-Subject: Re: [linus:master] [iov_iter] c9eec08bac: vm-scalability.throughput
- -16.9% regression
-To: David Laight <David.Laight@aculab.com>
-Cc: Borislav Petkov <bp@alien8.de>, David Howells <dhowells@redhat.com>, 
-	kernel test robot <oliver.sang@intel.com>, "oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>, 
-	"lkp@intel.com" <lkp@intel.com>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Christian Brauner <brauner@kernel.org>, 
-	Alexander Viro <viro@zeniv.linux.org.uk>, Jens Axboe <axboe@kernel.dk>, 
-	Christoph Hellwig <hch@lst.de>, Christian Brauner <christian@brauner.io>, Matthew Wilcox <willy@infradead.org>, 
-	"ying.huang@intel.com" <ying.huang@intel.com>, "feng.tang@intel.com" <feng.tang@intel.com>, 
-	"fengwei.yin@intel.com" <fengwei.yin@intel.com>, 
-	linux-toolchains ML <linux-toolchains@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <864269.1700230337.1@warthog.procyon.org.uk>
+Date: Fri, 17 Nov 2023 14:12:17 +0000
+Message-ID: <864270.1700230337@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.4.1 on 10.11.54.9
 
-On Fri, 17 Nov 2023 at 08:09, David Laight <David.Laight@aculab.com> wrote:
->
-> Zero length copies are different, they always take ~60 clocks.
+Borislav Petkov <bp@alien8.de> wrote:
 
-That zero-length thing is some odd microcode implementation issue, and
-I think intel actually made a FZRM cpuid bit available for it ("Fast
-Zero-size Rep Movs").
+> Hmm, stupid question: are those results better than without that
+> oneliner?
 
-I don't think we care in the kernel, but somebody else did (or maybe
-Intel added a flag for "we fixed it" just because they noticed)
+Without any changes, I see something like:
 
-I at some point did some profiling, and we do have zero-length memcpy
-cases occasionally (at least for user copies, which was what I was
-looking at), but they aren't common enough to worry about some small
-extra strange overhead.
+ iov_kunit_benchmark_bvec: avg 3185 uS, stddev 19 uS
+ iov_kunit_benchmark_bvec: avg 3186 uS, stddev 9 uS
+ iov_kunit_benchmark_bvec: avg 3244 uS, stddev 153 uS
+ iov_kunit_benchmark_bvec_split: avg 3397 uS, stddev 16 uS
+ iov_kunit_benchmark_bvec_split: avg 3400 uS, stddev 16 uS
+ iov_kunit_benchmark_bvec_split: avg 3402 uS, stddev 34 uS
+ iov_kunit_benchmark_kvec: avg 2818 uS, stddev 550 uS
+ iov_kunit_benchmark_kvec: avg 2906 uS, stddev 21 uS
+ iov_kunit_benchmark_kvec: avg 2923 uS, stddev 1496 uS
+ iov_kunit_benchmark_xarray: avg 3564 uS, stddev 6 uS
+ iov_kunit_benchmark_xarray: avg 3573 uS, stddev 17 uS
+ iov_kunit_benchmark_xarray: avg 3575 uS, stddev 58 uS
+ iov_kunit_benchmark_xarray_to_bvec: avg 3929 uS, stddev 9 uS
+ iov_kunit_benchmark_xarray_to_bvec: avg 3930 uS, stddev 6 uS
+ iov_kunit_benchmark_xarray_to_bvec: avg 3930 uS, stddev 7 uS
 
-(In case you care, it was for things like an ioctl doing "copy the
-base part of the ioctl data, then copy the rest separately".  Where
-"the rest" was then often nothing at all).
+David
 
-> My current guess for the 5000 clocks is that the logic to
-> decode 'rep movsb' is loaded into a buffer that is also used
-> to decode some other instructions.
-
-Unlikely.
-
-I would guess it's the "power up the AVX2 side". The memory copy uses
-those same resources internally.
-
-You could try to see if "first AVX memory access" (or similar) has the
-same extra initial cpu cycle issue.
-
-Anyway, the CPU you are testing is new enough to have ERMS - that's
-the "we do pretty well on string instructions" flag. It does indeed do
-pretty well on string instructions, but has a few oddities in addition
-to the zero-sized thing.
-
-The other bad cases tend to be along the line of "it falls flat on its
-face when the source and destination address are not mutually aligned,
-but they are the same virtual address modulo 4096".
-
-Or something like that. I forget the exact details. The details do
-exist, but I forget where (I suspect either Agner Fog or some footnote
-in some Intel architecture manual).
-
-So it's very much not as simple as "fixed initial cost and then a
-fairly fixed cost per 32B", even if that is *one* pattern.
-
-                Linus
