@@ -1,112 +1,137 @@
-Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E093030FB3
-	for <oe-lkp@lists.linux.dev>; Fri, 17 Nov 2023 16:10:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 730DA4314D
+	for <oe-lkp@lists.linux.dev>; Fri, 17 Nov 2023 16:32:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b="Twxv6dHp"
-Received: from localhost (localhost.localdomain [127.0.0.1])
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id 0495840E01A4;
-	Fri, 17 Nov 2023 16:10:05 +0000 (UTC)
-X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
-Received: from mail.alien8.de ([127.0.0.1])
-	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id 4U9P1q4_ffaT; Fri, 17 Nov 2023 16:10:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
-	t=1700237402; bh=4l/AX34Xk8xNnGdKcFWHaYBWUllvSpSZLfrnRLTllOY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Twxv6dHpy3SzM+aq6d+bZRAuIvY8zd0jPmeGIpMB8JZwTXx8FseOGkRpkvEeP5v9u
-	 qLVqb4iNC8xgAuuaP02DvCC3DxRc4qRHa2RGl6yrHc1YagK6U9I11O56BMaKsQMy4P
-	 IFofW/vrpzFYNLpSBFJUmENf0yEV0uyHUE7N70cIzEtLetNOfKCd9p5L5VXBWy1Iun
-	 T3oHYe/H92iHuAojhjkOpgG1nozLYkHH9SLNV4FF0ERqwUrkvmZbT4xBOUdkXgBOBN
-	 i1/E/QPiP/kqoOWASQsM6KfiAYxpQgABjnjCwPk5RhnX4HFfJwM9XMdLWvYpoxgjhy
-	 be5TLHvpNdFAOZi5JM8KpqEgy4fDPAP9xuCP/I6SGu+5jH2umR0ZQVVMqUmx2dyzBk
-	 //dyMSM2UwjbkX1xm5+XhAg2NT+IB6F6OwKDZp+K7eXU/UFVY9MIgkkIU0ZPQTfnuU
-	 SXP5wD0diKRcwAfUZaEs9SzoLlEnCJsjSgLBtsrhagXkOTjEOX8mHPMLPsArX+6egX
-	 BduvBN0P7hpsF1Piy9g+SOvIohYxQsq5SpN33TNeRfF9M4pao8bhDmSdCoqCn0IiZ5
-	 x1IyK8+Va+pygzzY00CwAK1+De4zV1MPEfhEWxtlfjC8ZiOuD8GLl1ItD/5U3isBRp
-	 b4yP1TnGLTroUffTbtSJrgIk=
-Received: from zn.tnic (pd95304da.dip0.t-ipconnect.de [217.83.4.218])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
-	(No client certificate requested)
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id E19E640E0030;
-	Fri, 17 Nov 2023 16:09:45 +0000 (UTC)
-Date: Fri, 17 Nov 2023 17:09:40 +0100
-From: Borislav Petkov <bp@alien8.de>
-To: David Howells <dhowells@redhat.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>,
-	kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, linux-kernel@vger.kernel.org,
-	Christian Brauner <brauner@kernel.org>,
-	Alexander Viro <viro@zeniv.linux.org.uk>,
-	Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>,
-	Christian Brauner <christian@brauner.io>,
-	Matthew Wilcox <willy@infradead.org>,
-	David Laight <David.Laight@aculab.com>, ying.huang@intel.com,
-	feng.tang@intel.com, fengwei.yin@intel.com
-Subject: Re: [linus:master] [iov_iter] c9eec08bac: vm-scalability.throughput
- -16.9% regression
-Message-ID: <20231117160940.GGZVeQRLgLjJZXBLE1@fat_crate.local>
-References: <20231116154406.GDZVY4xmFvRQt0wGGE@fat_crate.local>
- <202311061616.cd495695-oliver.sang@intel.com>
- <3865842.1700061614@warthog.procyon.org.uk>
- <CAHk-=whM-cEwAsLtKsf5dYwV7nDTaRv1bUKLVBstMAQBug24uQ@mail.gmail.com>
- <CAHk-=wjCUckvZUQf7gqp2ziJUWxVpikM_6srFdbcNdBJTxExRg@mail.gmail.com>
- <CAHk-=wjhs6uuedgz-7HbcPtirEq+vvjJBY-M2zyteJwBhOMZhg@mail.gmail.com>
- <20231115190938.GGZVUXcuUjI3i1JRAB@fat_crate.local>
- <CAHk-=wh0TcXyGmKHfs+Xe=5Sd5bNn=NNV9CEtOy_tbyHAAmk9g@mail.gmail.com>
- <232440.1700153046@warthog.procyon.org.uk>
- <864270.1700230337@warthog.procyon.org.uk>
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="a2sVH93n"
+Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-9f924e0481aso87479966b.1
+        for <oe-lkp@lists.linux.dev>; Fri, 17 Nov 2023 08:32:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google; t=1700238770; x=1700843570; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=sWqn8BVZx48aeIBfXi/N03W7SfnJax/+BdIf2xPvMfQ=;
+        b=a2sVH93nupmuNT2w7h1hu1Ua9+4l5sy9iUpcMwv1miWyf6ihoPcMRuR7PgKgyYy6Dy
+         vvklpTzAn2gPfGaeeifPYFUJW/3e7T64UQYX8CEvBelyXrAbInzgYxI3YGg79rFxcXtG
+         MXMdTGdinuRnyKeb85ah4VNjMB5kdKQxazOcQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1700238770; x=1700843570;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=sWqn8BVZx48aeIBfXi/N03W7SfnJax/+BdIf2xPvMfQ=;
+        b=lpjl6wBJ/ca19k+aT8qEps5YcrsccuVV9a00J2N7nDQoWvQYuCXZwGOpO2Fl/DeSaw
+         A90r4OOT5rh+pVo4uQagIeH0N2CewnvGNaQuZf60FILXmA0gAfnXoFA0NE9AzMas3VNV
+         NqTdjWnzXQmP4Dgoq2LSVgcrerHD+YP4hRM1DOdCgBcjMXctqD6U7cXhntRM44JGLFw2
+         jZ+TydDWDth4lJ1HjfL1nAxEc+NSS4CZsrwS3jtqqOF/3gmHM5aIGV76Sd8HCMC6SbRu
+         YOQGBPvpsZOriRQ8/MIlT4HWMQUsxxEvZWZ/wDUsRHdeR/TUizttwKe0CZjdaGxdyNCI
+         i88g==
+X-Gm-Message-State: AOJu0YzijFMLk6lYwxgpkcF+TIC17/djOeelfGVp28J4LldYFiMi4q9i
+	B9wfrVWZIuCif+mnc9ZjeRksy+oy83SQJcN4LbFBDcwm
+X-Google-Smtp-Source: AGHT+IFx/u0v9ipmjXAv7cqql9aLgTcRz61egZpsz/OcScPo1pBE7gDeT/ZwyWheNYc0kd+QSCZoKw==
+X-Received: by 2002:a17:906:e4c:b0:9bd:a5a9:34de with SMTP id q12-20020a1709060e4c00b009bda5a934demr5121081eji.23.1700238770564;
+        Fri, 17 Nov 2023 08:32:50 -0800 (PST)
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com. [209.85.208.48])
+        by smtp.gmail.com with ESMTPSA id la21-20020a170906ad9500b009c6a4a5ac80sm933571ejb.169.2023.11.17.08.32.49
+        for <oe-lkp@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Nov 2023 08:32:49 -0800 (PST)
+Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-547e7de7b6fso4221573a12.0
+        for <oe-lkp@lists.linux.dev>; Fri, 17 Nov 2023 08:32:49 -0800 (PST)
+X-Received: by 2002:a05:6402:1744:b0:52c:f73:3567 with SMTP id
+ v4-20020a056402174400b0052c0f733567mr5355762edx.13.1700238768931; Fri, 17 Nov
+ 2023 08:32:48 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <864270.1700230337@warthog.procyon.org.uk>
+References: <20231116154406.GDZVY4xmFvRQt0wGGE@fat_crate.local>
+ <202311061616.cd495695-oliver.sang@intel.com> <3865842.1700061614@warthog.procyon.org.uk>
+ <CAHk-=whM-cEwAsLtKsf5dYwV7nDTaRv1bUKLVBstMAQBug24uQ@mail.gmail.com>
+ <CAHk-=wjCUckvZUQf7gqp2ziJUWxVpikM_6srFdbcNdBJTxExRg@mail.gmail.com>
+ <CAHk-=wjhs6uuedgz-7HbcPtirEq+vvjJBY-M2zyteJwBhOMZhg@mail.gmail.com>
+ <20231115190938.GGZVUXcuUjI3i1JRAB@fat_crate.local> <CAHk-=wh0TcXyGmKHfs+Xe=5Sd5bNn=NNV9CEtOy_tbyHAAmk9g@mail.gmail.com>
+ <232440.1700153046@warthog.procyon.org.uk> <864270.1700230337@warthog.procyon.org.uk>
+ <20231117160940.GGZVeQRLgLjJZXBLE1@fat_crate.local>
+In-Reply-To: <20231117160940.GGZVeQRLgLjJZXBLE1@fat_crate.local>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Fri, 17 Nov 2023 11:32:31 -0500
+X-Gmail-Original-Message-ID: <CAHk-=wj33FoGBQ7HkqjLbyOBQogWpYAG7WUTXatcfBF5duijjQ@mail.gmail.com>
+Message-ID: <CAHk-=wj33FoGBQ7HkqjLbyOBQogWpYAG7WUTXatcfBF5duijjQ@mail.gmail.com>
+Subject: Re: [linus:master] [iov_iter] c9eec08bac: vm-scalability.throughput
+ -16.9% regression
+To: Borislav Petkov <bp@alien8.de>
+Cc: David Howells <dhowells@redhat.com>, kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, 
+	lkp@intel.com, linux-kernel@vger.kernel.org, 
+	Christian Brauner <brauner@kernel.org>, Alexander Viro <viro@zeniv.linux.org.uk>, 
+	Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>, Christian Brauner <christian@brauner.io>, 
+	Matthew Wilcox <willy@infradead.org>, David Laight <David.Laight@aculab.com>, ying.huang@intel.com, 
+	feng.tang@intel.com, fengwei.yin@intel.com
+Content-Type: text/plain; charset="UTF-8"
 
-On Fri, Nov 17, 2023 at 02:12:17PM +0000, David Howells wrote:
-> Borislav Petkov <bp@alien8.de> wrote:
-> 
-> > Hmm, stupid question: are those results better than without that
-> > oneliner?
-> 
-> Without any changes, I see something like:
-> 
->  iov_kunit_benchmark_bvec: avg 3185 uS, stddev 19 uS
->  iov_kunit_benchmark_bvec: avg 3186 uS, stddev 9 uS
->  iov_kunit_benchmark_bvec: avg 3244 uS, stddev 153 uS
->  iov_kunit_benchmark_bvec_split: avg 3397 uS, stddev 16 uS
->  iov_kunit_benchmark_bvec_split: avg 3400 uS, stddev 16 uS
->  iov_kunit_benchmark_bvec_split: avg 3402 uS, stddev 34 uS
->  iov_kunit_benchmark_kvec: avg 2818 uS, stddev 550 uS
->  iov_kunit_benchmark_kvec: avg 2906 uS, stddev 21 uS
->  iov_kunit_benchmark_kvec: avg 2923 uS, stddev 1496 uS
->  iov_kunit_benchmark_xarray: avg 3564 uS, stddev 6 uS
->  iov_kunit_benchmark_xarray: avg 3573 uS, stddev 17 uS
->  iov_kunit_benchmark_xarray: avg 3575 uS, stddev 58 uS
->  iov_kunit_benchmark_xarray_to_bvec: avg 3929 uS, stddev 9 uS
->  iov_kunit_benchmark_xarray_to_bvec: avg 3930 uS, stddev 6 uS
->  iov_kunit_benchmark_xarray_to_bvec: avg 3930 uS, stddev 7 uS
+On Fri, 17 Nov 2023 at 11:10, Borislav Petkov <bp@alien8.de> wrote:
+>
+> Which looks like those added memcpy calls add a lot of overhead due to
+> the mitigations crap.
 
-Which looks like those added memcpy calls add a lot of overhead due to
-the mitigations crap.
+No, you missed where I thought that too and asked David to test
+without mitigations.
 
-You could verify that if you boot a kernel with the oneliner but add
-"mitigations=off" on the cmdline.
+That load really loves "rep movsb" on his machine (and that includes
+the gcc-generated odd inlined "one word by hand, and then 'rep movsq'
+for the rest").
 
-Or profile the workload and check whether the return thunks appear
-higher in the profile... I'd say.
+It's probably because it's a benchmark that doesn't actually touch the
+data, and does page-sized copies. It's pretty much the optimal case
+for ERMS.
 
-Thx.
+The "do one word by hand, the rest with 'rep movsq'" model that gcc
+uses (but only in this particular code generation case) probably ends
+up being quite reasonable in general - the one word by hand allows for
+unaligned counts, but it also brings in the beginning of the copy into
+the cache (which is *often* the part used later - not in this
+benchmark, but in general), and then the rest ends up being done as L2
+cacheline copies at least when we have those nice page-aligned
+patterns.
 
--- 
-Regards/Gruss,
-    Boris.
+Of course, this whole thread started because the kernel test robot
+then has exactly the opposite reaction - it seems to really *hate*
+that inlined code generation by gcc. Whether that is because it's a
+very different microarchitecture, or it's because it's just a very
+different access pattern than the one that David's random KUnit test
+pattern is, I don't know.
 
-https://people.kernel.org/tglx/notes-about-netiquette
+That kernel test robot case is on a Cooper Lake Xeon, which is (I
+think) is just Skylake server. Random Intel codenames...
+
+So that test robot has ERMS too, but no FSRM, so we do the old
+"memcpy_orig()" with the regular memcpy loop.
+
+And on that Xeon, it really does seem to be the right thing to do.
+
+But the profile is so noisy with other changes that it's not like I
+can guarantee that that is the main issue here. The reason I zeroed in
+on the memcpy thing was really just that (a) it does show up in the
+profiles and (b) the commit that introduced that 16% regression
+doesn't really seem to do anything else than reorganize things just
+enough that gcc seems to do that alternate memcpy implementation.
+
+The test case seems to be (from the profile) just a simple
+
+do_iter_readv_writev ->
+  shmem_file_write_iter ->
+    generic_perform_write ->
+      copy_page_from_iter_atomic ->
+        memcpy_from_iter_mc
+
+and that's then where the new code generation matters (ie does it do
+that "inline with rep movsq" or "call memcpy_orig").
+
+For David, the rep movsq is great. For the kernel test robot, it's bad.
+
+                  Linus
