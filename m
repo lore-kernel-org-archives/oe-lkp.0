@@ -1,49 +1,49 @@
-Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 730DA4314D
-	for <oe-lkp@lists.linux.dev>; Fri, 17 Nov 2023 16:32:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA8241B28D
+	for <oe-lkp@lists.linux.dev>; Fri, 17 Nov 2023 16:44:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="a2sVH93n"
-Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-9f924e0481aso87479966b.1
-        for <oe-lkp@lists.linux.dev>; Fri, 17 Nov 2023 08:32:52 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="TGwDAXHD"
+Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-9f924e0481aso89651166b.1
+        for <oe-lkp@lists.linux.dev>; Fri, 17 Nov 2023 08:44:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1700238770; x=1700843570; darn=lists.linux.dev;
+        d=linux-foundation.org; s=google; t=1700239469; x=1700844269; darn=lists.linux.dev;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=sWqn8BVZx48aeIBfXi/N03W7SfnJax/+BdIf2xPvMfQ=;
-        b=a2sVH93nupmuNT2w7h1hu1Ua9+4l5sy9iUpcMwv1miWyf6ihoPcMRuR7PgKgyYy6Dy
-         vvklpTzAn2gPfGaeeifPYFUJW/3e7T64UQYX8CEvBelyXrAbInzgYxI3YGg79rFxcXtG
-         MXMdTGdinuRnyKeb85ah4VNjMB5kdKQxazOcQ=
+        bh=bs2wsPjA2JAN6w4n7okuC94+1cRA6FNJdtHsM2rFQKI=;
+        b=TGwDAXHDJIG9KTFVbdiAvvUkrBQsEqiZ/WFS+5aCiOyIam/gZ+5eC1Y5Rw1amRWZUP
+         w9XvJuAS7ktMTONqMp1jpL7V0vkkWAvlEVRETLRFRoI1PDwf27yCyhnB0sXMkXVepFDh
+         fynzY1kPWzCb1F2+/0kYmkgCjPUY+grRkfx7Q=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700238770; x=1700843570;
+        d=1e100.net; s=20230601; t=1700239469; x=1700844269;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=sWqn8BVZx48aeIBfXi/N03W7SfnJax/+BdIf2xPvMfQ=;
-        b=lpjl6wBJ/ca19k+aT8qEps5YcrsccuVV9a00J2N7nDQoWvQYuCXZwGOpO2Fl/DeSaw
-         A90r4OOT5rh+pVo4uQagIeH0N2CewnvGNaQuZf60FILXmA0gAfnXoFA0NE9AzMas3VNV
-         NqTdjWnzXQmP4Dgoq2LSVgcrerHD+YP4hRM1DOdCgBcjMXctqD6U7cXhntRM44JGLFw2
-         jZ+TydDWDth4lJ1HjfL1nAxEc+NSS4CZsrwS3jtqqOF/3gmHM5aIGV76Sd8HCMC6SbRu
-         YOQGBPvpsZOriRQ8/MIlT4HWMQUsxxEvZWZ/wDUsRHdeR/TUizttwKe0CZjdaGxdyNCI
-         i88g==
-X-Gm-Message-State: AOJu0YzijFMLk6lYwxgpkcF+TIC17/djOeelfGVp28J4LldYFiMi4q9i
-	B9wfrVWZIuCif+mnc9ZjeRksy+oy83SQJcN4LbFBDcwm
-X-Google-Smtp-Source: AGHT+IFx/u0v9ipmjXAv7cqql9aLgTcRz61egZpsz/OcScPo1pBE7gDeT/ZwyWheNYc0kd+QSCZoKw==
-X-Received: by 2002:a17:906:e4c:b0:9bd:a5a9:34de with SMTP id q12-20020a1709060e4c00b009bda5a934demr5121081eji.23.1700238770564;
-        Fri, 17 Nov 2023 08:32:50 -0800 (PST)
-Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com. [209.85.208.48])
-        by smtp.gmail.com with ESMTPSA id la21-20020a170906ad9500b009c6a4a5ac80sm933571ejb.169.2023.11.17.08.32.49
+        bh=bs2wsPjA2JAN6w4n7okuC94+1cRA6FNJdtHsM2rFQKI=;
+        b=ZqJSto5D8VMWUgsDMJCCwmsHK3A1IfKgr73Tvzgl83vtwEmmbjXfUuo5Lpw8dqWNEA
+         mg/E0xEmwe+03V6A4CyRFTZW/5u/ffZgZQDb9ZPBPmNTLWApvztnDNcVE8vhqsmM30sv
+         VWBnNcOIQar65+WXCI8jCgHMrX2eqLVRBDOWq2sfJmjMZevLGsVai5CDsMR2im4sz0DW
+         8SUJk+Dg65c3EcXMwkiSlP9DWq62QXOfBnv14t/Acj7siyvcPK34yP6nzRiMFKWqlVjy
+         S28mVxH1pH17R7bSYTinVBretHK+fPGWPhArdoBdPlSBmBE/AmbIQji0EmP0rZJlaWxi
+         4hBQ==
+X-Gm-Message-State: AOJu0YyygCPBT2etzBJfsFrO7ddw+t2yDNIWauHakG0+pAaQGL2nfYLh
+	+pu1zUr1ePl+34MVUCL5QH69FEf15HEYujzd11gVQCa8
+X-Google-Smtp-Source: AGHT+IGCEsOd5sAhrUuSpvYOE9jOOYzL51o3vDIBC2NmHL4NVZZHAp6D5ud9g+eqTujHqgTR91U45Q==
+X-Received: by 2002:a17:906:38da:b0:9ae:50ec:bd81 with SMTP id r26-20020a17090638da00b009ae50ecbd81mr4252004ejd.21.1700239469179;
+        Fri, 17 Nov 2023 08:44:29 -0800 (PST)
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com. [209.85.218.52])
+        by smtp.gmail.com with ESMTPSA id n12-20020a17090673cc00b009dd606ce80fsm972919ejl.31.2023.11.17.08.44.28
         for <oe-lkp@lists.linux.dev>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 17 Nov 2023 08:32:49 -0800 (PST)
-Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-547e7de7b6fso4221573a12.0
-        for <oe-lkp@lists.linux.dev>; Fri, 17 Nov 2023 08:32:49 -0800 (PST)
-X-Received: by 2002:a05:6402:1744:b0:52c:f73:3567 with SMTP id
- v4-20020a056402174400b0052c0f733567mr5355762edx.13.1700238768931; Fri, 17 Nov
- 2023 08:32:48 -0800 (PST)
+        Fri, 17 Nov 2023 08:44:29 -0800 (PST)
+Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-9becde9ea7bso663664566b.0
+        for <oe-lkp@lists.linux.dev>; Fri, 17 Nov 2023 08:44:28 -0800 (PST)
+X-Received: by 2002:a17:906:24d0:b0:9f1:a725:54a6 with SMTP id
+ f16-20020a17090624d000b009f1a72554a6mr5387650ejb.1.1700239468401; Fri, 17 Nov
+ 2023 08:44:28 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -57,12 +57,12 @@ References: <20231116154406.GDZVY4xmFvRQt0wGGE@fat_crate.local>
  <CAHk-=wjhs6uuedgz-7HbcPtirEq+vvjJBY-M2zyteJwBhOMZhg@mail.gmail.com>
  <20231115190938.GGZVUXcuUjI3i1JRAB@fat_crate.local> <CAHk-=wh0TcXyGmKHfs+Xe=5Sd5bNn=NNV9CEtOy_tbyHAAmk9g@mail.gmail.com>
  <232440.1700153046@warthog.procyon.org.uk> <864270.1700230337@warthog.procyon.org.uk>
- <20231117160940.GGZVeQRLgLjJZXBLE1@fat_crate.local>
-In-Reply-To: <20231117160940.GGZVeQRLgLjJZXBLE1@fat_crate.local>
+ <20231117160940.GGZVeQRLgLjJZXBLE1@fat_crate.local> <CAHk-=wj33FoGBQ7HkqjLbyOBQogWpYAG7WUTXatcfBF5duijjQ@mail.gmail.com>
+In-Reply-To: <CAHk-=wj33FoGBQ7HkqjLbyOBQogWpYAG7WUTXatcfBF5duijjQ@mail.gmail.com>
 From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Fri, 17 Nov 2023 11:32:31 -0500
-X-Gmail-Original-Message-ID: <CAHk-=wj33FoGBQ7HkqjLbyOBQogWpYAG7WUTXatcfBF5duijjQ@mail.gmail.com>
-Message-ID: <CAHk-=wj33FoGBQ7HkqjLbyOBQogWpYAG7WUTXatcfBF5duijjQ@mail.gmail.com>
+Date: Fri, 17 Nov 2023 11:44:10 -0500
+X-Gmail-Original-Message-ID: <CAHk-=whLbJ7vvB1ACVC6t44zjihX8w7GMY2y584+Fm83rsmaKg@mail.gmail.com>
+Message-ID: <CAHk-=whLbJ7vvB1ACVC6t44zjihX8w7GMY2y584+Fm83rsmaKg@mail.gmail.com>
 Subject: Re: [linus:master] [iov_iter] c9eec08bac: vm-scalability.throughput
  -16.9% regression
 To: Borislav Petkov <bp@alien8.de>
@@ -74,64 +74,38 @@ Cc: David Howells <dhowells@redhat.com>, kernel test robot <oliver.sang@intel.co
 	feng.tang@intel.com, fengwei.yin@intel.com
 Content-Type: text/plain; charset="UTF-8"
 
-On Fri, 17 Nov 2023 at 11:10, Borislav Petkov <bp@alien8.de> wrote:
+On Fri, 17 Nov 2023 at 11:32, Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
 >
-> Which looks like those added memcpy calls add a lot of overhead due to
-> the mitigations crap.
+> The test case seems to be (from the profile) just a simple
 
-No, you missed where I thought that too and asked David to test
-without mitigations.
+Just to clarify: that's the test robot test case. David's test-case is
+just the simple KUnit test.
 
-That load really loves "rep movsb" on his machine (and that includes
-the gcc-generated odd inlined "one word by hand, and then 'rep movsq'
-for the rest").
+> do_iter_readv_writev ->
+>   shmem_file_write_iter ->
+>     generic_perform_write ->
+>       copy_page_from_iter_atomic ->
+>         memcpy_from_iter_mc
 
-It's probably because it's a benchmark that doesn't actually touch the
-data, and does page-sized copies. It's pretty much the optimal case
-for ERMS.
+.. and more details: this is *not* the actual normal "write()" path,
+which would copy memory from user space, and that uses our
+"copy_user()" function etc.
 
-The "do one word by hand, the rest with 'rep movsq'" model that gcc
-uses (but only in this particular code generation case) probably ends
-up being quite reasonable in general - the one word by hand allows for
-unaligned counts, but it also brings in the beginning of the copy into
-the cache (which is *often* the part used later - not in this
-benchmark, but in general), and then the rest ends up being done as L2
-cacheline copies at least when we have those nice page-aligned
-patterns.
+No, the path leading up to this seems to be
 
-Of course, this whole thread started because the kernel test robot
-then has exactly the opposite reaction - it seems to really *hate*
-that inlined code generation by gcc. Whether that is because it's a
-very different microarchitecture, or it's because it's just a very
-different access pattern than the one that David's random KUnit test
-pattern is, I don't know.
+  worker_thread ->
+    process_one_work ->
+      loop_process_work ->
+        lo_write_simple ->
+         do_iter_write
 
-That kernel test robot case is on a Cooper Lake Xeon, which is (I
-think) is just Skylake server. Random Intel codenames...
+which is why it uses a regular memcpy (ie it's a kernel buffer due to
+loop block device).
 
-So that test robot has ERMS too, but no FSRM, so we do the old
-"memcpy_orig()" with the regular memcpy loop.
+So the test robot load is kind of odd.
 
-And on that Xeon, it really does seem to be the right thing to do.
-
-But the profile is so noisy with other changes that it's not like I
-can guarantee that that is the main issue here. The reason I zeroed in
-on the memcpy thing was really just that (a) it does show up in the
-profiles and (b) the commit that introduced that 16% regression
-doesn't really seem to do anything else than reorganize things just
-enough that gcc seems to do that alternate memcpy implementation.
-
-The test case seems to be (from the profile) just a simple
-
-do_iter_readv_writev ->
-  shmem_file_write_iter ->
-    generic_perform_write ->
-      copy_page_from_iter_atomic ->
-        memcpy_from_iter_mc
-
-and that's then where the new code generation matters (ie does it do
-that "inline with rep movsq" or "call memcpy_orig").
-
-For David, the rep movsq is great. For the kernel test robot, it's bad.
+Not that I think that David's KUnit test is necessarily much of a real
+load either. so...
 
                   Linus
