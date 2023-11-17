@@ -1,110 +1,236 @@
-Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9478B31A84
-	for <oe-lkp@lists.linux.dev>; Fri, 17 Nov 2023 19:13:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDF3D43AB0
+	for <oe-lkp@lists.linux.dev>; Fri, 17 Nov 2023 20:54:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b="lUb/Bt4V"
-Received: from localhost (localhost.localdomain [127.0.0.1])
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id 5AEF440E0199;
-	Fri, 17 Nov 2023 19:13:09 +0000 (UTC)
-X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
-Received: from mail.alien8.de ([127.0.0.1])
-	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id EG6AgXXuyaF7; Fri, 17 Nov 2023 19:13:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
-	t=1700248387; bh=qd/m7qtc5JsyS+Bk5EH7vdXV4yKIrZrxAIziQWZ5NNo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=lUb/Bt4VIM2/LiWOlBGvKSrveY6/QFk37LBygxEhVb3Yiu3Cwpgpf/+tFYv8L/bjW
-	 SmJAY9NAcp4H5OvrSTwb1oguosYcarSm9Ssz2H1nPYjHEZ+pHJekO+gKSKioESztgx
-	 /DuUmokzn3L9qH1ACdMmDY/GLTeHLlkJELUl5w2I3KF9JdZFzAeThDAFdLqIgQsaty
-	 jatzo/oFBxkvBfE70cnA+tlciGle3Mh2EqpPe4QLI1H1YnIBdfCissvW6JiJCRrPyo
-	 gqxLasitDhYxZwXhggBPX+J5oxwCYX5A255/QWq5bvj5XS1y5BXX6kvt5Cp4vvLk7q
-	 cq5mrIUq989d1cqkVLx/j88FtF9AVlUhQ0XVbqZ/7DX4UlMEucvQsfKBuvXzDywYG0
-	 jwu8N12Rguk77IvJ3f/KJ7eTiJ/wazhcnhVKIsu5aqs91GWye/Gsf++Bal/vI2oVlf
-	 sNy8NyaVm9ipTNdmN2uilEiHO+FAKW74s6IBrmqIhDN4ve5zznxcISX8Kxxtumhv6Z
-	 jSQ1yg9cdpLgw7wfIrx26/48pK0k/4ZDaMtjKPW7MlWx2cTLFi/uKvdHcblKJjuutW
-	 AAt5DxJ1Pn0inRroMO/G830vDdKjlpl/2TDsH4vkY78z4v7E2AhCQcEaBHHldGCJem
-	 FH0f8mNpCO5ljqAa1UpkRSkk=
-Received: from zn.tnic (pd95304da.dip0.t-ipconnect.de [217.83.4.218])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
-	(No client certificate requested)
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id D9A7340E0032;
-	Fri, 17 Nov 2023 19:12:50 +0000 (UTC)
-Date: Fri, 17 Nov 2023 20:12:43 +0100
-From: Borislav Petkov <bp@alien8.de>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: David Howells <dhowells@redhat.com>,
-	kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="kM+hQgjI"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=/34QMA5NbLub0mKSSuyQnE9R/cq6uYurcKuJplDoBJk=; b=kM+hQgjIMtEx9z00gS72cercDk
+	H675drS6hKWj/m5mPyCEJItg8gt2chcZdf0ikfenmGfNax4CLSlmar4nGLrBKQlEKY9gNc4/S4KTF
+	MOk6LYTfdvfwMzT6FCZV1hFfGRpeU2sm5wz8MGDUKaJCNb5l3EQsAT3ya582AEIZZi2KocZ+Q+35H
+	6iXzYWdic9GvQY2EEDCYsVUeUaHogV5TzQ5ojoXYSKYjBZ40vpMFqQ1eOUox59OiDC7u0DA3OdvUv
+	gXGvO/2SNs13Dji6KxQvIUHfmp4c18kWGAHQlykWbO3jEwL9yDNGonCEBLaaureWjO49VoOg2QlTu
+	18PdQtyw==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.96 #2 (Red Hat Linux))
+	id 1r45qr-007Gwi-0R;
+	Fri, 17 Nov 2023 20:54:09 +0000
+Date: Fri, 17 Nov 2023 12:54:09 -0800
+From: Luis Chamberlain <mcgrof@kernel.org>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: Daniel Gomez <da.gomez@samsung.com>, oe-lkp@lists.linux.dev,
 	lkp@intel.com, linux-kernel@vger.kernel.org,
-	Christian Brauner <brauner@kernel.org>,
-	Alexander Viro <viro@zeniv.linux.org.uk>,
-	Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>,
-	Christian Brauner <christian@brauner.io>,
-	Matthew Wilcox <willy@infradead.org>,
-	David Laight <David.Laight@aculab.com>, ying.huang@intel.com,
-	feng.tang@intel.com, fengwei.yin@intel.com
-Subject: Re: [linus:master] [iov_iter] c9eec08bac: vm-scalability.throughput
- -16.9% regression
-Message-ID: <20231117191243.GHZVe7K4vN9n5M92gb@fat_crate.local>
-References: <CAHk-=whM-cEwAsLtKsf5dYwV7nDTaRv1bUKLVBstMAQBug24uQ@mail.gmail.com>
- <CAHk-=wjCUckvZUQf7gqp2ziJUWxVpikM_6srFdbcNdBJTxExRg@mail.gmail.com>
- <CAHk-=wjhs6uuedgz-7HbcPtirEq+vvjJBY-M2zyteJwBhOMZhg@mail.gmail.com>
- <20231115190938.GGZVUXcuUjI3i1JRAB@fat_crate.local>
- <CAHk-=wh0TcXyGmKHfs+Xe=5Sd5bNn=NNV9CEtOy_tbyHAAmk9g@mail.gmail.com>
- <232440.1700153046@warthog.procyon.org.uk>
- <864270.1700230337@warthog.procyon.org.uk>
- <20231117160940.GGZVeQRLgLjJZXBLE1@fat_crate.local>
- <CAHk-=wj33FoGBQ7HkqjLbyOBQogWpYAG7WUTXatcfBF5duijjQ@mail.gmail.com>
- <CAHk-=whLbJ7vvB1ACVC6t44zjihX8w7GMY2y584+Fm83rsmaKg@mail.gmail.com>
+	"willy@infradead.org" <willy@infradead.org>,
+	"gost.dev@samsung.com" <gost.dev@samsung.com>,
+	Pankaj Raghav <p.raghav@samsung.com>
+Subject: Re: [PATCH 1/2] test_xarray: add tests for advanced multi-index use
+Message-ID: <ZVfS8fiudvHADtoR@bombadil.infradead.org>
+References: <20231104005747.1389762-2-da.gomez@samsung.com>
+ <202311152254.610174ff-oliver.sang@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHk-=whLbJ7vvB1ACVC6t44zjihX8w7GMY2y584+Fm83rsmaKg@mail.gmail.com>
+In-Reply-To: <202311152254.610174ff-oliver.sang@intel.com>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 
-On Fri, Nov 17, 2023 at 11:44:10AM -0500, Linus Torvalds wrote:
-> So the test robot load is kind of odd.
+On Wed, Nov 15, 2023 at 11:02:59PM +0800, kernel test robot wrote:
+> [  304.121213][    T1] WARNING: suspicious RCU usage
+> [  304.122111][    T1] 6.6.0-12894-g68f563aa7e55 #1 Tainted: G                 N
+> [  304.123404][    T1] -----------------------------
+> [  304.124297][    T1] include/linux/xarray.h:1200 suspicious rcu_dereference_check() usage!
+> [  304.125787][    T1]
+> [  304.125787][    T1] other info that might help us debug this:
+> [  304.125787][    T1]
+> [  304.127648][    T1]
+> [  304.127648][    T1] rcu_scheduler_active = 2, debug_locks = 1
+> [  304.129454][    T1] no locks held by swapper/1.
+> [  304.130560][    T1]
+> [  304.130560][    T1] stack backtrace:
+> [  304.131863][    T1] CPU: 0 PID: 1 Comm: swapper Tainted: G                 N 6.6.0-12894-g68f563aa7e55 #1
+> [  304.132791][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> [  304.132791][    T1] Call Trace:
+> [  304.132791][    T1]  <TASK>
+> [ 304.132791][ T1] dump_stack_lvl (lib/dump_stack.c:107 (discriminator 1)) 
+> [ 304.132791][ T1] lockdep_rcu_suspicious (include/linux/context_tracking.h:153 kernel/locking/lockdep.c:6712) 
+> [ 304.132791][ T1] xas_start (include/linux/xarray.h:1200 include/linux/xarray.h:1198 lib/xarray.c:190) 
+> [ 304.132791][ T1] xas_load (lib/xarray.c:237) 
+> [ 304.132791][ T1] xas_store (lib/xarray.c:789) 
+> [ 304.132791][ T1] ? xa_load (include/linux/rcupdate.h:306 include/linux/rcupdate.h:780 lib/xarray.c:1465) 
+> [ 304.132791][ T1] check_xa_multi_store_adv_delete+0xf0/0x120 
 
-So looking at that. IINM, its documentation says:
+Yup... I forgot to lock on deletion. I also decided to polish this up
+some more and also address some soft lockups which can happen on low
+end test machines when we test for order 20, which has 1<<20 entries
+(1,048,576). The patch below fixes all this. I'll spin this series up
+and send a v2.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/wfg/vm-scalability.git/tree/Documentation
-
-case-msync:
-Create N sparse files, each with a size of $MemTotal. For each sparse file,
-start a process to write 1/2N of the sparse file's size. After the write,
-do a msync to make sure the change in memory has reached the file.
-
-Is that something userspace usually does?
-
-Some distributed, shared thing logging to the same file?
-
-I obviously have no effing clue what userspace does...
-
-> Not that I think that David's KUnit test is necessarily much of a real
-> load either. so...
-
-Which begs the question: what are our priorities here?
-
-I wouldn't want to optimize some weird loads. Especially if you have
-weird loads which perform differently depending on what uarch
-"optimizations" they sport.
-
-I guess optimizing for the majority of machines - modern FSRM ones which
-can do "rep; movsb" just fine - is one way to put it. And the rest is
-best effort.
-
-Hmmm.
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+diff --git a/lib/test_xarray.c b/lib/test_xarray.c
+index 3c19d12c1bf5..ac0e887ccbd6 100644
+--- a/lib/test_xarray.c
++++ b/lib/test_xarray.c
+@@ -32,6 +32,16 @@ void xa_dump(const struct xarray *xa) { }
+ } while (0)
+ #endif
+ 
++/*
++ * Can be used in contexts which busy loop on large number of entries but can
++ * sleep and timing is if no importance to test correctness.
++ */
++#define XA_BUG_ON_RELAX(xa, x) do {				\
++	if ((tests_run % 1000) == 0)				\
++		schedule();					\
++	XA_BUG_ON(xa, x);					\
++} while (0)
++
+ static void *xa_mk_index(unsigned long index)
+ {
+ 	return xa_mk_value(index & LONG_MAX);
+@@ -728,12 +738,17 @@ static noinline void check_multi_store(struct xarray *xa)
+ }
+ 
+ #ifdef CONFIG_XARRAY_MULTI
++/* mimics page cache __filemap_add_folio() */
+ static noinline void check_xa_multi_store_adv_add(struct xarray *xa,
+ 						  unsigned long index,
+ 						  unsigned int order,
+ 						  void *p)
+ {
+ 	XA_STATE(xas, xa, index);
++	unsigned int nrpages = 1UL << order;
++
++	/* users are responsible for index alignemnt to the order when adding */
++	XA_BUG_ON(xa, index & (nrpages - 1));
+ 
+ 	xas_set_order(&xas, index, order);
+ 
+@@ -750,23 +765,48 @@ static noinline void check_xa_multi_store_adv_add(struct xarray *xa,
+ 	XA_BUG_ON(xa, xas_error(&xas));
+ }
+ 
++/* mimics page_cache_delete() */
++static noinline void check_xa_multi_store_adv_del_entry(struct xarray *xa,
++						        unsigned long index,
++							unsigned int order)
++{
++	XA_STATE(xas, xa, index);
++
++	xas_set_order(&xas, index, order);
++	xas_store(&xas, NULL);
++	xas_init_marks(&xas);
++}
++
+ static noinline void check_xa_multi_store_adv_delete(struct xarray *xa,
+ 						     unsigned long index,
+ 						     unsigned int order)
+ {
+-	unsigned int nrpages = 1UL << order;
+-	unsigned long base = round_down(index, nrpages);
+-	XA_STATE(xas, xa, base);
++	xa_lock_irq(xa);
++	check_xa_multi_store_adv_del_entry(xa, index, order);
++	xa_unlock_irq(xa);
++}
+ 
+-	xas_set_order(&xas, base, order);
+-	xas_store(&xas, NULL);
+-	xas_init_marks(&xas);
++/* mimics page cache filemap_get_entry() */
++static noinline void *test_get_entry(struct xarray *xa, unsigned long index)
++{
++	XA_STATE(xas, xa, index);
++	void *p;
++
++	rcu_read_lock();
++repeat:
++	xas_reset(&xas);
++	p = xas_load(&xas);
++	if (xas_retry(&xas, p))
++		goto repeat;
++	rcu_read_unlock();
++
++	return p;
+ }
+ 
+ static unsigned long some_val = 0xdeadbeef;
+ static unsigned long some_val_2 = 0xdeaddead;
+ 
+-/* mimics the page cache */
++/* mimics the page cache usage */
+ static noinline void check_xa_multi_store_adv(struct xarray *xa,
+ 					      unsigned long pos,
+ 					      unsigned int order)
+@@ -783,13 +823,13 @@ static noinline void check_xa_multi_store_adv(struct xarray *xa,
+ 	check_xa_multi_store_adv_add(xa, base, order, &some_val);
+ 
+ 	for (i = 0; i < nrpages; i++)
+-		XA_BUG_ON(xa, xa_load(xa, base + i) != &some_val);
++		XA_BUG_ON_RELAX(xa, test_get_entry(xa, base + i) != &some_val);
+ 
+-	XA_BUG_ON(xa, xa_load(xa, next_index) != NULL);
++	XA_BUG_ON(xa, test_get_entry(xa, next_index) != NULL);
+ 
+ 	/* Use order 0 for the next item */
+ 	check_xa_multi_store_adv_add(xa, next_index, 0, &some_val_2);
+-	XA_BUG_ON(xa, xa_load(xa, next_index) != &some_val_2);
++	XA_BUG_ON(xa, test_get_entry(xa, next_index) != &some_val_2);
+ 
+ 	/* Remove the next item */
+ 	check_xa_multi_store_adv_delete(xa, next_index, 0);
+@@ -798,7 +838,8 @@ static noinline void check_xa_multi_store_adv(struct xarray *xa,
+ 	check_xa_multi_store_adv_add(xa, next_index, order, &some_val_2);
+ 
+ 	for (i = 0; i < nrpages; i++)
+-		XA_BUG_ON(xa, xa_load(xa, next_index + i) != &some_val_2);
++		XA_BUG_ON_RELAX(xa,
++			test_get_entry(xa, next_index + i) != &some_val_2);
+ 
+ 	check_xa_multi_store_adv_delete(xa, next_index, order);
+ 	check_xa_multi_store_adv_delete(xa, base, order);
+@@ -812,13 +853,15 @@ static noinline void check_xa_multi_store_adv(struct xarray *xa,
+ 	check_xa_multi_store_adv_add(xa, next_index, order, &some_val_2);
+ 
+ 	for (i = 0; i < nrpages; i++)
+-		XA_BUG_ON(xa, xa_load(xa, base + i) != NULL);
++		XA_BUG_ON_RELAX(xa, test_get_entry(xa, base + i) != NULL);
+ 
+ 	for (i = 0; i < nrpages; i++)
+-		XA_BUG_ON(xa, xa_load(xa, next_index + i) != &some_val_2);
++		XA_BUG_ON_RELAX(xa,
++			test_get_entry(xa, next_index + i) != &some_val_2);
+ 
+ 	for (i = 0; i < nrpages; i++)
+-		XA_BUG_ON(xa, xa_load(xa, next_next_index + i) != NULL);
++		XA_BUG_ON_RELAX(xa,
++			test_get_entry(xa, next_next_index + i) != NULL);
+ 
+ 	check_xa_multi_store_adv_delete(xa, next_index, order);
+ 	XA_BUG_ON(xa, !xa_empty(xa));
+@@ -828,13 +871,15 @@ static noinline void check_xa_multi_store_adv(struct xarray *xa,
+ 	check_xa_multi_store_adv_add(xa, next_next_index, order, &some_val_2);
+ 
+ 	for (i = 0; i < nrpages; i++)
+-		XA_BUG_ON(xa, xa_load(xa, base + i) != NULL);
++		XA_BUG_ON_RELAX(xa,
++			test_get_entry(xa, base + i) != NULL);
+ 
+ 	for (i = 0; i < nrpages; i++)
+-		XA_BUG_ON(xa, xa_load(xa, next_index + i) != NULL);
++		XA_BUG_ON_RELAX(xa, test_get_entry(xa, next_index + i) != NULL);
+ 
+ 	for (i = 0; i < nrpages; i++)
+-		XA_BUG_ON(xa, xa_load(xa, next_next_index + i) != &some_val_2);
++		XA_BUG_ON_RELAX(xa,
++			test_get_entry(xa, next_next_index + i) != &some_val_2);
+ 
+ 	check_xa_multi_store_adv_delete(xa, next_next_index, order);
+ 	XA_BUG_ON(xa, !xa_empty(xa));
