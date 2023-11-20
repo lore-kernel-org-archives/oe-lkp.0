@@ -1,214 +1,231 @@
-Received: from dggsgout11.his.huawei.com (dggsgout11.his.huawei.com [45.249.212.51])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D747B10A31
-	for <oe-lkp@lists.linux.dev>; Sat, 18 Nov 2023 13:12:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=huaweicloud.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=huaweicloud.com
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from mail.maildlp.com (unknown [172.19.163.235])
-	by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4SXZ1k1Cgrz4f3jJB
-	for <oe-lkp@lists.linux.dev>; Sat, 18 Nov 2023 21:12:26 +0800 (CST)
-Received: from mail02.huawei.com (unknown [10.116.40.128])
-	by mail.maildlp.com (Postfix) with ESMTP id C01611A0173
-	for <oe-lkp@lists.linux.dev>; Sat, 18 Nov 2023 21:12:28 +0800 (CST)
-Received: from [10.174.176.117] (unknown [10.174.176.117])
-	by APP4 (Coremail) with SMTP id gCh0CgAng0M4uFhlhuA5BQ--.16460S2;
-	Sat, 18 Nov 2023 21:12:27 +0800 (CST)
-Subject: Re: [linus:master] [bpf] c930472552:
- WARNING:at_kernel/bpf/memalloc.c:#bpf_mem_alloc_init
-To: Yonghong Song <yonghong.song@linux.dev>,
- Alexei Starovoitov <ast@kernel.org>,
- kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
- bpf@vger.kernel.org, "houtao1@huawei.com" <houtao1@huawei.com>
-References: <202310302113.9f8fe705-oliver.sang@intel.com>
- <7506b682-3be3-fcd0-4bb4-c1db48f609a2@huaweicloud.com>
- <99e9d615-b720-7f33-3df0-9824a92f6644@huaweicloud.com>
- <52383a4f-6efd-43ce-bedb-a91e130850f3@linux.dev>
- <3629948c-793e-307b-6b6e-00557f3f6212@huaweicloud.com>
- <3b3b1384-88ba-4796-8e11-d6632afb35ac@linux.dev>
- <f413cce7-db58-fd5c-63b9-5dfc5876c1aa@huaweicloud.com>
- <40ba7904-ade6-4a06-bb40-26b3853d0c0b@linux.dev>
-From: Hou Tao <houtao@huaweicloud.com>
-Message-ID: <4c17dbf2-6ead-4d87-10d5-a0c9256242d9@huaweicloud.com>
-Date: Sat, 18 Nov 2023 21:12:24 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73D5A1FAD
+	for <oe-lkp@lists.linux.dev>; Mon, 20 Nov 2023 06:48:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lIFI79U5"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1700462905; x=1731998905;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=bU75+tCinFWcUYa6oAjJJpAvEoTjNx409iVoUz4+U5E=;
+  b=lIFI79U5Il7DKZ5QaAAPFJ551rQYnwQ5QYqLqles+DXK87aETo/QcrM3
+   Kv/7hx7z471Rw7HAYhO6hK+ZViifwvK/XQex8ptWPWRYtO+rVJ7l1NnCS
+   zolTObk9PqfvgMk2elgAnnGbZ0cp8batFLLo3jBoFEluWNeEIZS/viduP
+   i/CEtw0yjVv6PbyAliA99yH1gCAw7mbvRdHVjcDKkDAbSinF8yeJXYoBA
+   IDARDrwFVEihXTc/i18pLEoLkNUlFinU0IscppgqAkphCW470HsqU+HY4
+   nl3/GohQkp1bh71qKHcugKwHZJchoU8UPQgkZP1aIGpY0vG6TMU2YmRdu
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10899"; a="381952586"
+X-IronPort-AV: E=Sophos;i="6.04,213,1695711600"; 
+   d="scan'208";a="381952586"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2023 22:48:24 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10899"; a="795374683"
+X-IronPort-AV: E=Sophos;i="6.04,213,1695711600"; 
+   d="scan'208";a="795374683"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orsmga008.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 19 Nov 2023 22:48:24 -0800
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.34; Sun, 19 Nov 2023 22:48:23 -0800
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.34 via Frontend Transport; Sun, 19 Nov 2023 22:48:23 -0800
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.168)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.34; Sun, 19 Nov 2023 22:48:23 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TLxTFX0jxUHHWDYZDdrvgAk00ET47CanrRaAaXhjUy8EmS7PRxzZweMCQNI2N5Yji72AeVt880UjHOY3KMjRIx5C9OcUiH/Yan5lEamkYix8vxTq1OCsSa/sFdUB+VBno42Zpy65wtZP6H9HgIpev8pf07F8kZkEibLHab8h+Q58fkIdczhfGQoV/WPULFz4dNquAv0JUsdQ5413PoGaU7AjCttqyGcdlDzYIiGHgHw0aKZxPDFIO0atHfObpdEpG5erz7ZSBeHsbVTNQGIbma8qCA89OqSxvCncQHw8bRPTcTVp4o7pHbnUeczJp/E2mDvFwsA4jKJqYzKGoAG6JQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4XB3dJCEVdwVkVAUIWxwCPM25d9+T5usG5iVfKglki8=;
+ b=eL5pNQeSQrFdsq5aVesz/fOzALYQFx8FKLxPKYkP1glg1QYDlht8HlfKAjTTk3EJAZ5hI6qcvUthBcfjHStYAan1eYqKRflFgxcmRnUu1BR+nU1FQFUQdRx8wjTCfidU0Tq3vv+5GXbysQcbGcXOWXVXA0TgDfcKLT5lrL5RfOXrUKLwcan94M6HSAG3IutB6cAX6BritNV9h3T5Y4CzNZzL/d1GtB5119ISac15gUxqJosFx5DFmerizYx8yC5PUu1V92wIJ2kV5lBSGodcOt62wIr5uibNlDlDCylQdQEoPtR1GZiz0HAXyp27tK9zSG0Oqatf5cURFubZXaIxWA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by MW4PR11MB6763.namprd11.prod.outlook.com (2603:10b6:303:20b::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7002.27; Mon, 20 Nov
+ 2023 06:48:21 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::1236:9a2e:5acd:a7f]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::1236:9a2e:5acd:a7f%3]) with mapi id 15.20.7002.027; Mon, 20 Nov 2023
+ 06:48:20 +0000
+Date: Mon, 20 Nov 2023 14:48:14 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: Joel Granados <j.granados@samsung.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <oliver.sang@intel.com>
+Subject: [joelgranados:jag/sysctl_remove_empty_elem_kernel] [scheduler]
+ 423f75083a: BUG:KASAN:global-out-of-bounds_in_insert_header
+Message-ID: <202311201431.57aae8f3-oliver.sang@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+X-ClientProxiedBy: SI2P153CA0026.APCP153.PROD.OUTLOOK.COM
+ (2603:1096:4:190::18) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <40ba7904-ade6-4a06-bb40-26b3853d0c0b@linux.dev>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-CM-TRANSID:gCh0CgAng0M4uFhlhuA5BQ--.16460S2
-X-Coremail-Antispam: 1UD129KBjvJXoW3Xr4DArW3Gr4DJr1fJryfXrb_yoWxXry8pF
-	WfJF10yrWDAr18Ar42qw18AFy8tw1Ig34UW34Yqr1UZrn0vr1vqr4ktrWj9a4kXr48Ga1U
-	trs5tFyfZr1DAaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUkjb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k2
-	6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
-	vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7Cj
-	xVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I
-	0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40E
-	x7xfMcIj6xIIjxv20xvE14v26r106r15McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x
-	0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lc7I2V7IY0VAS07AlzVAYIcxG8wCF04k20xvY0x0E
-	wIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E74
-	80Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0
-	I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04
-	k26cxKx2IYs7xG6rWUJVWrZr1UMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIE
-	c7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07UQzVbUUUUU=
-X-CM-SenderInfo: xkrx3t3r6k3tpzhluzxrxghudrp/
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|MW4PR11MB6763:EE_
+X-MS-Office365-Filtering-Correlation-Id: 89c607c4-fb7a-4049-18c4-08dbe994af28
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 201pSSHhH7XCeu+Thjm5jUViKpck+GcM8R2VOeekHVYMlMluyftLbYTJbkxld82UwoBqTH5PY0quJH7dsk0yxshEGgbpsYf2noKxq71eIyjL/zBswhxW2fez0SZLU2Tfz09HmhTelEngETfRWYSTbxO3wJCJhQ+55t26wkwuJ/cVhFjNTcbngplTN/SQCxtw7xfQe5gsEuJfgQlB5sjnY89/KCVTXk/Exf1Ssg/hzJeQnkoRZAVn+icR1LRT9tSQ+RCAvwK6nWAkkmVCfh0Ffpq5o1D7iqrQSgNE39OkZ2TeAiTAP+NMroSMzQEPs7Zdn6ejDbxfunAwhUxLI/LhshIG9rJFZwGV/OtrNc8jasjE6Pp7lidYiF/bHY/pVG+cLpsp24VIUR6+kWzDSTTY3SEvKveTqzGySartuLhsS1sN8K0CrGjGP4y5TPfXoeLx1g9NRt/Iyi4yMSE/L7tjLEvJUhQe4pTXYa9drE0m/D3NRmVnE1cuYBBqjsvlmOB4HtiPd5vKTAL4QkcovJE4ZUKmpMzitTr4V6pd+e3nxyNdt/kUkj1bGtHP9EEOdVxmj50iNYWjzvJy5ZBTIdjMvaiNTv0wY9Ew0VUgBKv2KCM/1Y11dviyA1zv3nt3AA/524bWee1LiPMGo/0DRFZh3A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(396003)(136003)(39860400002)(366004)(346002)(230922051799003)(1800799012)(186009)(451199024)(64100799003)(6506007)(107886003)(26005)(1076003)(6666004)(6512007)(2616005)(6916009)(316002)(6486002)(966005)(478600001)(83380400001)(82960400001)(66946007)(66556008)(66476007)(8936002)(8676002)(4326008)(86362001)(38100700002)(5660300002)(2906002)(41300700001)(36756003)(505234007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?qrchQ88G+1PJeCg0ZVbrHEZoS/0t9apbZqP7PxzgA6gVqgBA/1siTZDNc8xr?=
+ =?us-ascii?Q?RfGPf0SkdYXq2MAAA7jz55vduR2YskPsLMcp9HnYgKG9BkK6E9ZqeX3/UlNZ?=
+ =?us-ascii?Q?aSM6hcYLbWvIZ8OQ+YQWzdsxjGUIc3XgUsFbd3MpwjxJmfZnwUpbl9+Uvg3G?=
+ =?us-ascii?Q?PiOXLquxLQuIoLrNSnVjubhIkE+OzI1ch8qvpP5YyoOzLgkMclVHznM4Vw8m?=
+ =?us-ascii?Q?UIrNTplWIGbuIvxq+6HEjdGZueqFpfbYlzyrDfNL+WHP4/BhbqjT+1g6U7EG?=
+ =?us-ascii?Q?TvgqMWYmp/MOCZUQIH+OFa9Y/dLcVEotv6kXX0erfeUIVbnZ7/nrCgli5Xop?=
+ =?us-ascii?Q?5Udz2UTOLEd9aTwnSgTudaYBsQkNVO+Be0u7c5POnfzjfC+LaJnH/q0I8190?=
+ =?us-ascii?Q?d/gdOBCoJB52USdCW+p/vO52bXhc+KBzTbcPJN8p2u4cbs02gAB5UZ+FWN1v?=
+ =?us-ascii?Q?bLyogzO2RVcd9hwclYhUmCejjLVALueqoPNNA8+b+q39aRWRKbryemZYrFr9?=
+ =?us-ascii?Q?xogF24dCVjebDMSKtIUmdyPc+O49fDdtGB/XnIo9hmRrHvhmAwbdR2ylezI5?=
+ =?us-ascii?Q?AOKw1L4Ke4ev4hTv5cMn5DLy+7gFCClRHO8F59beZgTFrDYlpbKKoNEQBvws?=
+ =?us-ascii?Q?IltnTf1pdh+iAwmwmK33i1NIqbPZZpa3AanRg5OvPaDw8uJ8ZqipzQJy/vCu?=
+ =?us-ascii?Q?8yGJH7+4Z9xUdiuoZxHboI27X91URQYuy2Vq0e+duzE7J+2GWSXyB6PFlnek?=
+ =?us-ascii?Q?6c4/w7LCBHwv5S9iwiJpSNrpTXp+AMM73eJQSaHNLhH6gDAjHGD0N36uOQai?=
+ =?us-ascii?Q?i+4/CnFS5/KphUQa7vlMs5xb6GOAcqJRmDjd3zqH35BpMRuy+r4gXSlwco5v?=
+ =?us-ascii?Q?Xb58kw2EUJe3UvIp7biXf4F9SbgVha05pN5qD9J3f2q4+KJM8wNKTvEeNBJO?=
+ =?us-ascii?Q?biKniLPLYDOoKNS4n+AaCjKpD2wu213iUn71nkg0xqCDiCvv1c7SkDGkpKyv?=
+ =?us-ascii?Q?33DEdlu3BT8FwB51Uj9nugC4+664pA47iaxV61SEC7t/DMK9RFvwkB5nkxd7?=
+ =?us-ascii?Q?tRDlhSqCdlSC9qjeKoWwtcCxeI6AcCa3z5WkmhRPzLKv1GDX98BrIkDyi+xr?=
+ =?us-ascii?Q?Wk3oOUk+dXkfL+EolZvzteSforqxNA6RATFz93zxwTtztcLQ3Lf2eBQWVJ/V?=
+ =?us-ascii?Q?o5Y74WORPEbi63Rk23IL7sITLWe99k6WLxex/NBhNlhRqCJriAAuyZRFoX5C?=
+ =?us-ascii?Q?SEGLprKvDAlYPyV3Ssjdex6DDAisJBXjKMDaycf6HSLle5UoY5pLRfmFOhUL?=
+ =?us-ascii?Q?mC07tb4v/yMVwA5bVb8VGpegrzDDM6Fj2198aQOrf/N1Pqju4E/aSbXgpwX5?=
+ =?us-ascii?Q?n6QejJj7Ty50TfYA/+X4TJNasWpJmkbEAnkyDrjg/XAnu06zOgC4v9DLcpkj?=
+ =?us-ascii?Q?DTP6PRv/WeiJd/6Zgtizuns46kvHskNecrlymP8n2hAZXZdIj+ALP6fByHOk?=
+ =?us-ascii?Q?v9TdaRShh3e8zFyxHJznvIegXHN4pSvTWmvU8qfIeMHCjkHf+oOKf9Z0a6HP?=
+ =?us-ascii?Q?ekB93YVoyizRWxokouBT1bmkar7yTWxR9tnAhi1duyLQyCJNDRechv+oTBWy?=
+ =?us-ascii?Q?TQ=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 89c607c4-fb7a-4049-18c4-08dbe994af28
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Nov 2023 06:48:20.9018
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: p0SW5ZZTwh1FfSb/H7CnfDukhqIqzJsf5jBI7iSzoP3TtfduvxFAq/x8zkG/tyzmaTPmoi6XYnxiTMsDMQNnGA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR11MB6763
+X-OriginatorOrg: intel.com
 
-Hi,
 
-On 11/8/2023 12:04 AM, Yonghong Song wrote:
->
-> On 11/7/23 2:43 AM, Hou Tao wrote:
->> Hi,
->>
->> On 11/4/2023 12:49 AM, Yonghong Song wrote:
->>> On 11/2/23 11:54 PM, Hou Tao wrote:
->>>> Hi,
->>>>
->>>> On 11/3/2023 12:08 AM, Yonghong Song wrote:
->>>>> On 11/2/23 6:40 AM, Hou Tao wrote:
->>>>>> Hi Alexei,
->>>>>>
->>>>>> On 10/31/2023 4:01 PM, Hou Tao wrote:
->>>>>>> Hi,
->>>>>>>
->>>>>>> On 10/30/2023 10:11 PM, kernel test robot wrote:
->>>>>>>> hi, Hou Tao,
->>>>>>>>
->>>>>>>> we noticed a WARN_ONCE added in this commit was hit in our tests.
->>>>>>>> FYI.
->>>>>>>>
->>>>>>>>
->> SNIP
->>>>>> I see what has happened. The problem is twofold:
->>>>>> (1) The object_size of kmalloc-cg-96 is adjust from 96 to 128 due to
->>>>>> slab merge in __kmem_cache_alias(). For SLAB, SLAB_HWCACHE_ALIGN is
->>>>>> enabled by default for kmalloc slab, so align is 64 and size is 128
->>>>>> for
->>>>>> kmalloc-cg-96. So when unit_alloc() does kmalloc_node(96,
->>>>>> __GFP_ACCOUNT,
->>>>>> node), ksize() will return 128 instead of 96 for the returned
->>>>>> pointer.
->>>>>> SLUB has a similar merge logic, but because its align is 8 under
->>>>>> x86-64,
->>>>>> so the warning doesn't happen for i386 + SLUB, but I think the
->>>>>> similar
->>>>>> problem may exist for other architectures.
->>>>>> (2) kmalloc_size_roundup() returns the object_size of kmalloc-96
->>>>>> instead
->>>>>> of kmalloc-cg-96, so bpf_mem_cache_adjust_size() doesn't adjust
->>>>>> size_index accordingly. The reason why the object_size of
->>>>>> kmalloc-96 is
->>>>>> 96 instead of 128 is that there is slab merge for kmalloc-96.
->>>>>>
->>>>>> About how to fix the problem, I have two ideas:
->>>>>> The first is to introduce kmalloc_size_roundup_flags(), so
->>>>>> bpf_mem_cache_adjust_size() could use
->>>>>> kmalloc_size_roundup_flags(size,
->>>>>> __GFP_ACCOUNT) to get the object_size of kmalloc-cg-xxx. It could
->>>>>> fix
->>>>>> the warning for now, but the warning may pop-up occasionally due to
->>>>>> SLUB
->>>>>> merge and unusual slab align. The second is just using the
->>>>>> bpf_mem_cache
->>>>>> pointer to get the unit_size which is saved before the to-be-free
->>>>>> pointer. Its downside is that it may can not be able to skip the
->>>>>> free
->>>>>> operation for pointer which is not allocated from bpf ma, but I
->>>>>> think it
->>>>>> is acceptable. I prefer the latter solution. What do you think ?
->>>>> Is it possible that in bpf_mem_cache_adjust_size(), we do a series of
->>>>> kmalloc (for supported bucket size) and call ksize() to get the
->>>>> actual
->>>>> allocated object size. So eventually all possible allocated object
->>>>> sizes
->>>>> will be used for size_index[]. This will avoid all kind of special
->>>>> corner cases due to config/macro/arch etc. WDYT?
->>>> It is basically the same as the first proposed solution and it has the
->>>> same flaw. The problem is that slab merge can happen in any time,
->>>> so the
->>>> return value of ksize() may change even all passed pointers are
->>>> allocated from the same slab. Considering the following case:
->>>> during the
->>>> invocation of bpf_mem_cache_adjust_size() or the initialization of
->>>> bpf_global_ma, there is no slab merge and ksize() for a 96-bytes
->>>> object
->>>> returns 96. But after these invocations, a new slab created by a
->>>> kernel
->>>> module is merged to kmalloc-cg-96 and the object_size of kmalloc-cg-96
->>>> is adjust from 96 to 128 (which is possible for x86-64 + CONFIG_SLAB,
->>>> because it is alignment requirement is 64 for 96-bytes slab). So
->>>> soon or
->>> So, the object_size for allocated objects in that is adjusted from 96
->>> to 128
->>> while previously allocated objects should have no change, it is merely
->>> ksize(old_obj)
->>> previous return 96, now returns 128, right? Okay, so this is indeed a
->>> problem
->>> since we use ksize() to decide the bucket.
->> Yes. The object_size of underlying slab changes, so the return value of
->> ksize() will change as well.
->>>
->>>> later, when bpf_global_ma frees a 96-byte-sized pointer which is
->>>> allocated from a bpf_mem_cache in which unit_size is 96,
->>>> bpf_mem_free()
->>>> will free the pointer through a bpf_mem_cache in which unit_size is
->>>> 128,
->>>> because the return value of ksize() changes. Maybe we should
->>>> introduce a
->>>> new API in mm which returns size instead of object_size of underlying
->>>> slab, so the return value will not change due to slab merge.
->>> In this case, to avoid the warning, indeed we need to use '96' instead
->>> of '128'.
->>> So use the original ksize() return value is indeed a solution.
->>> We could use the mechanism similar to percpu alloc to save '96' in the
->>> memory.
->> We have already saved the pointer of bpf_mem_cache in the extra space
->> (aka LLIST_NODE_SZ) which is allocated together with the returned
->> pointer, so I think we could use bpf_mem_cache->unit_size to get the
->> size of the free pointer directly. I will check whether or not there is
->> performance degradation before posting the patch.
 
-Post for status update.
+Hello,
 
-There is no benchmark for bpf_mem_free(), so I am stilling write the
-benchmark for bpf_mem_alloc() and bpf_mem_free(). After the benchmark is
-ready (I think it will be next week), I will post the fix patch.
->
-> See:
->
-> bpf_local_storage.c:            err =
-> bpf_mem_alloc_init(&smap->selem_ma, smap->elem_size, false);
-> bpf_local_storage.c:            err =
-> bpf_mem_alloc_init(&smap->storage_ma, sizeof(struct
-> bpf_local_storage), false);
-> core.c: ret = bpf_mem_alloc_init(&bpf_global_ma, 0, false);
-> core.c: ret = bpf_mem_alloc_init(&bpf_global_percpu_ma, 0, true);
-> cpumask.c:      ret = bpf_mem_alloc_init(&bpf_cpumask_ma,
-> sizeof(struct bpf_cpumask), false);
-> hashtab.c:              err = bpf_mem_alloc_init(&htab->ma,
-> htab->elem_size, false);
-> hashtab.c:                      err = bpf_mem_alloc_init(&htab->pcpu_ma,
-> memalloc.c:int bpf_mem_alloc_init(struct bpf_mem_alloc *ma, int size,
-> bool percpu)
->
-> Some 'size' parameter in core.c is zero.
-> Not sure how exactly you will resolve this issue based on
-> bpf_mem_cache->unit_size. But looking forward to your patch!
->
->>
->> Regards,
->> Tao
->>
->
-> .
+kernel test robot noticed "BUG:KASAN:global-out-of-bounds_in_insert_header" on:
+
+commit: 423f75083acd947804c8d5c31ad1e1b5fcb3c020 ("scheduler:  Remove the now superfluous sentinel elements from ctl_table array")
+https://github.com/Joelgranados/linux.git jag/sysctl_remove_empty_elem_kernel
+
+in testcase: boot
+
+compiler: gcc-9
+test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+
+(please refer to attached dmesg/kmsg for entire log/backtrace)
+
+
++---------------------------------------------------+------------+------------+
+|                                                   | 9bd138a89a | 423f75083a |
++---------------------------------------------------+------------+------------+
+| BUG:KASAN:global-out-of-bounds_in_insert_header   | 0          | 14         |
++---------------------------------------------------+------------+------------+
+
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202311201431.57aae8f3-oliver.sang@intel.com
+
+
+[ 19.917748][ T1] BUG: KASAN: global-out-of-bounds in insert_header (fs/proc/proc_sysctl.c:236) 
+[   19.917748][    T1] Read of size 4 at addr ffffffff86ade6b8 by task swapper/0/1
+[   19.917748][    T1]
+[   19.917748][    T1] CPU: 1 PID: 1 Comm: swapper/0 Not tainted 6.6.0-rc2-00030-g423f75083acd #1 ed4fb2c8ca9b9b9984dcf540593bcadd356bb772
+[   19.917748][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+[   19.917748][    T1] Call Trace:
+[   19.917748][    T1]  <TASK>
+[ 19.917748][ T1] dump_stack_lvl (lib/dump_stack.c:108) 
+[ 19.917748][ T1] print_address_description+0x66/0x390 
+[ 19.917748][ T1] ? insert_header (fs/proc/proc_sysctl.c:236) 
+[ 19.917748][ T1] print_report (mm/kasan/report.c:476) 
+[ 19.917748][ T1] ? kasan_addr_to_slab (mm/kasan/common.c:35) 
+[ 19.917748][ T1] kasan_report (mm/kasan/report.c:590) 
+[ 19.917748][ T1] ? insert_header (fs/proc/proc_sysctl.c:236) 
+[ 19.917748][ T1] insert_header (fs/proc/proc_sysctl.c:236) 
+[ 19.917748][ T1] ? do_raw_spin_lock (arch/x86/include/asm/atomic.h:115 include/linux/atomic/atomic-arch-fallback.h:2155 include/linux/atomic/atomic-instrumented.h:1296 include/asm-generic/qspinlock.h:111 kernel/locking/spinlock_debug.c:115) 
+[ 19.917748][ T1] ? __kasan_kmalloc (mm/kasan/common.c:384) 
+[ 19.917748][ T1] __register_sysctl_table (fs/proc/proc_sysctl.c:1395) 
+[ 19.917748][ T1] ? mix_pool_bytes (drivers/char/random.c:918) 
+[ 19.917748][ T1] __register_sysctl_init (fs/proc/proc_sysctl.c:1454) 
+[ 19.917748][ T1] ? user_namespace_sysctl_init (kernel/sched/core.c:4717) 
+[ 19.917748][ T1] sched_core_sysctl_init (kernel/sched/core.c:4720) 
+[ 19.917748][ T1] do_one_initcall (init/main.c:1236) 
+[ 19.917748][ T1] ? trace_event_raw_event_initcall_level (init/main.c:1227) 
+[ 19.917748][ T1] ? parameq (kernel/params.c:171) 
+[ 19.917748][ T1] ? _raw_spin_trylock_bh (include/linux/spinlock_api_smp.h:174 kernel/locking/spinlock.c:146) 
+[ 19.917748][ T1] ? kasan_set_track (mm/kasan/common.c:52) 
+[ 19.917748][ T1] ? __kasan_kmalloc (mm/kasan/common.c:384) 
+[ 19.917748][ T1] kernel_init_freeable (init/main.c:1297 init/main.c:1314 init/main.c:1333 init/main.c:1551) 
+[ 19.917748][ T1] ? rest_init (init/main.c:1433) 
+[ 19.917748][ T1] kernel_init (init/main.c:1443) 
+[ 19.917748][ T1] ? _raw_spin_unlock_irq (arch/x86/include/asm/irqflags.h:42 arch/x86/include/asm/irqflags.h:77 include/linux/spinlock_api_smp.h:159 kernel/locking/spinlock.c:202) 
+[ 19.917748][ T1] ret_from_fork (arch/x86/kernel/process.c:153) 
+[ 19.917748][ T1] ? rest_init (init/main.c:1433) 
+[ 19.917748][ T1] ret_from_fork_asm (arch/x86/entry/entry_64.S:312) 
+[   19.917748][    T1]  </TASK>
+[   19.917748][    T1]
+[   19.917748][    T1] The buggy address belongs to the variable:
+[ 19.917748][ T1] sched_core_sysctls+0x18/0x20 
+[   19.917748][    T1]
+[   19.917748][    T1] The buggy address belongs to the physical page:
+[   19.917748][    T1] page:ffffea00001ab780 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x6ade
+[   19.917748][    T1] flags: 0x4000000000004000(reserved|zone=1)
+[   19.917748][    T1] page_type: 0xffffffff()
+[   19.917748][    T1] raw: 4000000000004000 ffffea00001ab788 ffffea00001ab788 0000000000000000
+[   19.917748][    T1] raw: 0000000000000000 0000000000000000 00000001ffffffff 0000000000000000
+[   19.917748][    T1] page dumped because: kasan: bad access detected
+[   19.917748][    T1] page_owner info is not present (never set?)
+[   19.917748][    T1]
+[   19.917748][    T1] Memory state around the buggy address:
+[   19.917748][    T1]  ffffffff86ade580: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+[   19.917748][    T1]  ffffffff86ade600: 00 00 00 00 00 00 00 00 f9 f9 f9 f9 04 f9 f9 f9
+[   19.917748][    T1] >ffffffff86ade680: f9 f9 f9 f9 f9 f9 f9 f9 00 00 f9 f9 f9 f9 f9 f9
+[   19.917748][    T1]                                         ^
+[   19.917748][    T1]  ffffffff86ade700: 00 f9 f9 f9 f9 f9 f9 f9 04 f9 f9 f9 f9 f9 f9 f9
+[   19.917748][    T1]  ffffffff86ade780: 00 00 f9 f9 f9 f9 f9 f9 00 00 f9 f9 f9 f9 f9 f9
+[   19.917748][    T1] ==================================================================
+[   19.956634][    T1] Disabling lock debugging due to kernel taint
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20231120/202311201431.57aae8f3-oliver.sang@intel.com
+
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
 
