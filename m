@@ -1,62 +1,62 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D223B523D;
-	Mon, 20 Nov 2023 07:41:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D69718638
+	for <oe-lkp@lists.linux.dev>; Mon, 20 Nov 2023 11:52:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Zyp+fKoJ"
-Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-32f7abbb8b4so2681549f8f.0;
-        Sun, 19 Nov 2023 23:41:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1700466106; x=1701070906; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=UcnRCn9RBtyZwzYZjL7Mal3df0TOYaoALw3ajoI8ruo=;
-        b=Zyp+fKoJvCXhwQxJr1YPjIN1o61yFi4pXc8Kl9up72VH6JjoCCVW4PBwl3G3VOZi/t
-         hXfRxseVFqKJpXIX+zovts9AKGPsJUCpoSMqIupI/xsQSTvPcriN8mGYO6WgMJSVO/sj
-         TsnnDJjtiwthKLcJhisA7Av4bmaZV42ikBMCOCOFJBD+t7msC+jPKIU4Umg2tL72eRDu
-         ilxIwAlr4Ws88kIRBtWztwY11vm4V3pHxXJNdgMnQ6iT02d60V8Klf9rd3IzqeGPwMdE
-         YEnJpZgBKm1HEeP9QoOsCWtmXIGJzrQQKti86y+VcfolgiOy6WhxXXWkLsFUo/Tgp/0a
-         GP2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700466106; x=1701070906;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=UcnRCn9RBtyZwzYZjL7Mal3df0TOYaoALw3ajoI8ruo=;
-        b=YTp+Nzfq2QQWTJhL+w6bCChPatxyI0M21hBcpIoZ4JTUAOoOvLx6Txb2qM7piYicpc
-         FsfqHOhed4lLt/zAQYvOqUxaWo6FUrd9qj6Pva5E//8ihm31pT1Hr7PVtcva9S6TuBfJ
-         xcotMrttV/P0p063zYpia9cyljbYMSXZYERK0xEm4p/n8CtpHoROa/NNSAxayw5DRaBD
-         95QGf7AYaQ+Abh30chYe3vg/RLRXmxdEgxxtiQeXrTV24IuhKPY2/ymiBcPBPA5n+sC4
-         VXN9A4edPSO/Hvu7Rc0VHNdEKJiRLJY/Lmo0MJiaA3200yTxgcBkEKwdinFaqmGZYIIR
-         rlvQ==
-X-Gm-Message-State: AOJu0YxV/r91Q/kFblnVRsJPmIxxMTcfzCbvjdWMAICjNALQhN6Vixig
-	ORcqNHrc9/QPbBIj9MNlklI=
-X-Google-Smtp-Source: AGHT+IGLxhKtp3IKpPAJiweTS4UYRDByB4GjdiKC0IaFf2a6rUb8Hh+cAbWkEb3mZscgg4QSavm/EA==
-X-Received: by 2002:a5d:48c9:0:b0:331:6ad3:853 with SMTP id p9-20020a5d48c9000000b003316ad30853mr3683767wrs.41.1700466105720;
-        Sun, 19 Nov 2023 23:41:45 -0800 (PST)
-Received: from f (cst-prg-3-109.cust.vodafone.cz. [46.135.3.109])
-        by smtp.gmail.com with ESMTPSA id i13-20020a5d55cd000000b003313426f136sm10142299wrw.39.2023.11.19.23.41.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 19 Nov 2023 23:41:45 -0800 (PST)
-Date: Mon, 20 Nov 2023 08:41:06 +0100
-From: Mateusz Guzik <mjguzik@gmail.com>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: Christian Brauner <brauner@kernel.org>, oe-lkp@lists.linux.dev,
+	dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b="i5zCaZK5"
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id 6AF3940E0176;
+	Mon, 20 Nov 2023 11:52:44 +0000 (UTC)
+X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
+Received: from mail.alien8.de ([127.0.0.1])
+	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id HXxpPNQd3fZY; Mon, 20 Nov 2023 11:52:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
+	t=1700481162; bh=ITi3Gn+m3vTTDynqZAFETeYNR+5doeRxRkLicXZ5pNU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=i5zCaZK53qu3MRozLRxvKT2tUip1HALtua9N58GpmZ3NayN6S4TMBhMfPQMYb04CO
+	 svVjWrV8YSvUuiNNbD16FdQWv2RAwGmZxaF86P4pVrvHk/NlX6n0laeV6L85raIBnN
+	 gN0SFE5P9FNs5rvQ06Xb200hVC44euHfn/inpkCwcN/WmWvHdG611Iy6km581AnEQP
+	 vttiR8c7GSp6Oz1TBpFud46FIn86x6X/EdWFzZG5FtnkTjb4COTWiD91UDIHLtCgRY
+	 2gJUovI0B1NrbhRuFzTDXc6322PzqayNDDUOdz7SB9qdO3MkG0fU1kwBjjehtNCvlY
+	 dF4mRv49K9DhPgwwDV9L2xJTbqwnFcVsu7Yb+/8OrsPw3AG+f8/Xcadks9dSo+ZhWA
+	 lZ8KxlquUk/rMWib7aiuv+5xI36bBoXrOIRNQHUeZqKoQUCiRuflMpab+g1aPgz7yb
+	 iGGZ37USmgXRyF2dBrggZ9n92Xo6QWiUJSIYIxdcChUOYvNC2uDyQnJiO5tIembhSY
+	 mVndbw/bhkfago0IyTQ+tYc7ekGx32QWwR15aPripvC4sKaZlArhcKdJV0mHVT0E4q
+	 P5164PMCQBnUlEIzLTDSoIFslOf/3CTN5SWB7aNrMkil9BdPTSr+4IVliJb87peY3I
+	 2Crc6uAnnDf6JZPjFx0xgkLA=
+Received: from zn.tnic (pd95304da.dip0.t-ipconnect.de [217.83.4.218])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id C0E4E40E0031;
+	Mon, 20 Nov 2023 11:52:25 +0000 (UTC)
+Date: Mon, 20 Nov 2023 12:52:20 +0100
+From: Borislav Petkov <bp@alien8.de>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: David Howells <dhowells@redhat.com>,
+	kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
 	lkp@intel.com, linux-kernel@vger.kernel.org,
-	Jann Horn <jannh@google.com>,
-	Linus Torvalds <torvalds@linux-foundation.org>,
-	linux-doc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-	intel-gfx@lists.freedesktop.org, linux-fsdevel@vger.kernel.org,
-	gfs2@lists.linux.dev, bpf@vger.kernel.org, ying.huang@intel.com,
+	Christian Brauner <brauner@kernel.org>,
+	Alexander Viro <viro@zeniv.linux.org.uk>,
+	Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>,
+	Christian Brauner <christian@brauner.io>,
+	Matthew Wilcox <willy@infradead.org>,
+	David Laight <David.Laight@aculab.com>, ying.huang@intel.com,
 	feng.tang@intel.com, fengwei.yin@intel.com
-Subject: Re: [linus:master] [file]  0ede61d858:  will-it-scale.per_thread_ops
- -2.9% regression
-Message-ID: <ZVsNklEgxi5GkIZ/@f>
-References: <202311201406.2022ca3f-oliver.sang@intel.com>
+Subject: Re: [linus:master] [iov_iter] c9eec08bac: vm-scalability.throughput
+ -16.9% regression
+Message-ID: <20231120115220.GEZVtIdEcA5z1Gxdwc@fat_crate.local>
+References: <202311061616.cd495695-oliver.sang@intel.com>
+ <3865842.1700061614@warthog.procyon.org.uk>
+ <CAHk-=whM-cEwAsLtKsf5dYwV7nDTaRv1bUKLVBstMAQBug24uQ@mail.gmail.com>
+ <CAHk-=wjCUckvZUQf7gqp2ziJUWxVpikM_6srFdbcNdBJTxExRg@mail.gmail.com>
+ <CAHk-=wjhs6uuedgz-7HbcPtirEq+vvjJBY-M2zyteJwBhOMZhg@mail.gmail.com>
+ <4097023.1700084620@warthog.procyon.org.uk>
+ <CAHk-=wgR3Mw2-8k2O3S10T-f4oz8FNfg7aziLU_6pbx0qowxew@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -65,62 +65,83 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <202311201406.2022ca3f-oliver.sang@intel.com>
+In-Reply-To: <CAHk-=wgR3Mw2-8k2O3S10T-f4oz8FNfg7aziLU_6pbx0qowxew@mail.gmail.com>
 
-On Mon, Nov 20, 2023 at 03:11:31PM +0800, kernel test robot wrote:
+On Wed, Nov 15, 2023 at 04:50:06PM -0500, Linus Torvalds wrote:
+> Sadly, we don't seem to have any obvious #define for "this is not real
+> kernel code". We just have a lot of ad-hoc tricks, like removing
+> compiler flags and disabling things like KASAN etc on a file-by-file
+> (or directory) basis.
 > 
-> 
-> Hello,
-> 
-> kernel test robot noticed a -2.9% regression of will-it-scale.per_thread_ops on:
-> 
-> 
-> commit: 0ede61d8589cc2d93aa78230d74ac58b5b8d0244 ("file: convert to SLAB_TYPESAFE_BY_RCU")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> 
-> 93faf426e3cc000c 0ede61d8589cc2d93aa78230d74 
-> ---------------- --------------------------- 
->          %stddev     %change         %stddev
->              \          |                \  
-[snip]
->      30.90 ±  4%     -20.6       10.35 ±  2%  perf-profile.self.cycles-pp.__fget_light
->       0.00           +26.5       26.48        perf-profile.self.cycles-pp.__get_file_rcu
-[snip]
+> The purgatory code isn't exactly boot-time code, but it's very similar
+> - it's kind of a limited environment that runs at crash time to load a
+> new kernel.
 
-So __fget_light now got a func call.
+So I've been trying to do a proper and clean kernel proper from "other
+objects" split by not allowing kernel proper crap from getting linked
+into those other objects.
 
-I don't know if this is worth patching (and benchmarking after), but I
-if sorting this out is of interest, triviality below is probably the
-easiest way out:
+Because the same thing happens here: the sha256.o object gets included
+from kernel proper:
 
-diff --git a/fs/file.c b/fs/file.c
-index 5fb0b146e79e..d8d3e18800c4 100644
---- a/fs/file.c
-+++ b/fs/file.c
-@@ -856,14 +856,14 @@ void do_close_on_exec(struct files_struct *files)
- 	spin_unlock(&files->file_lock);
- }
- 
--static struct file *__get_file_rcu(struct file __rcu **f)
-+static __always_inline struct file *__get_file_rcu(struct file __rcu **f)
- {
- 	struct file __rcu *file;
- 	struct file __rcu *file_reloaded;
- 	struct file __rcu *file_reloaded_cmp;
- 
- 	file = rcu_dereference_raw(*f);
--	if (!file)
-+	if (unlikely(!file))
- 		return NULL;
- 
- 	if (unlikely(!atomic_long_inc_not_zero(&file->f_count)))
-@@ -891,7 +891,7 @@ static struct file *__get_file_rcu(struct file __rcu **f)
- 	 * If the pointers don't match the file has been reallocated by
- 	 * SLAB_TYPESAFE_BY_RCU.
- 	 */
--	if (file == file_reloaded_cmp)
-+	if (likely(file == file_reloaded_cmp))
- 		return file_reloaded;
- 
- 	fput(file);
+$(obj)/sha256.o: $(srctree)/lib/crypto/sha256.c FORCE
+        $(call if_changed_rule,cc_o_c)
+
+and that object has the alternatives sections:
+
+  [ 7] .altinstructions  PROGBITS         0000000000000000  00000be8
+       000000000000002a  0000000000000000   A       0     0     1
+  [ 8] .rela.altins[...] RELA             0000000000000000  00001190
+       0000000000000090  0000000000000018   I      16     7     8
+  [ 9] .altinstr_re[...] PROGBITS         0000000000000000  00000c12
+       000000000000000f  0000000000000000  AX       0     0     1
+
+and in it there are calls to rep_movs_alternative which the linker tries
+to resolve, leading to that failure.
+
+And we don't need those damn sections and we can simply do objcopy
+--remove-section but then more sh*t happens, see end of mail.
+
+So I'd really like for us to have a rule (or a couple of rules) which
+clarify how other objects should include kernel proper stuff. Because it
+is a mess currently. Pretty much every time we try to include some stuff
+from kernel proper, those other builds fail.
+
+I've been trying to disentangle the compressed kernel on x86 too, this
+way, and we have had some success in defining separate facilities which
+can be shared by others:
+
+arch/x86/include/asm/shared/
+
+but it needs a lot of work and policing... :-\
+
+So I'm open to ideas...
+
+Thx.
+
+arch/x86/purgatory/purgatory.ro: in function `sha256_transform_blocks':
+/home/boris/kernel/5th/linux/lib/crypto/sha256.c:123:(.text+0x801): undefined reference to `__fentry__'
+ld: /home/boris/kernel/5th/linux/lib/crypto/sha256.c:132:(.text+0xfde): undefined reference to `__x86_return_thunk'
+ld: arch/x86/purgatory/purgatory.ro: in function `sha256_update':
+/home/boris/kernel/5th/linux/lib/crypto/sha256.c:135:(.text+0x1005): undefined reference to `__fentry__'
+ld: /home/boris/kernel/5th/linux/lib/crypto/sha256.c:137:(.text+0x1071): undefined reference to `__x86_return_thunk'
+ld: arch/x86/purgatory/purgatory.ro: in function `__sha256_final':
+/home/boris/kernel/5th/linux/lib/crypto/sha256.c:141:(.text+0x10f1): undefined reference to `__fentry__'
+ld: /home/boris/kernel/5th/linux/lib/crypto/sha256.c:144:(.text+0x1204): undefined reference to `__x86_return_thunk'
+ld: arch/x86/purgatory/purgatory.ro: in function `sha256_final':
+/home/boris/kernel/5th/linux/lib/crypto/sha256.c:147:(.text+0x1295): undefined reference to `__fentry__'
+ld: arch/x86/purgatory/purgatory.ro: in function `sha224_final':
+/home/boris/kernel/5th/linux/lib/crypto/sha256.c:153:(.text+0x12c5): undefined reference to `__fentry__'
+ld: arch/x86/purgatory/purgatory.ro: in function `sha256':
+/home/boris/kernel/5th/linux/lib/crypto/sha256.c:159:(.text+0x12f5): undefined reference to `__fentry__'
+ld: /home/boris/kernel/5th/linux/lib/crypto/sha256.c:165:(.text+0x13bd): undefined reference to `__x86_return_thunk'
+ld: /home/boris/kernel/5th/linux/lib/crypto/sha256.c:165:(.text+0x13f7): undefined reference to `__stack_chk_fail'
+make[4]: *** [arch/x86/purgatory/Makefile:92: arch/x86/purgatory/purgatory.chk] Error 1
+make[3]: *** [scripts/Makefile.build:480: arch/x86/purgatory] Error 2
+make[2]: *** [scripts/Makefile.build:480: arch/x86] Error 2
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
