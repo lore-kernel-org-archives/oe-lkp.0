@@ -1,223 +1,175 @@
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.126])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC2385254
-	for <oe-lkp@lists.linux.dev>; Mon, 20 Nov 2023 16:08:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ACULAB.COM
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=aculab.com
-Authentication-Results: smtp.subspace.kernel.org; dkim=none
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with both STARTTLS and AUTH (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-27-vLVux7jWOF6nLYmEF7DxSQ-1; Mon, 20 Nov 2023 16:08:31 +0000
-X-MC-Unique: vLVux7jWOF6nLYmEF7DxSQ-1
-Received: from AcuMS.Aculab.com (10.202.163.4) by AcuMS.aculab.com
- (10.202.163.4) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Mon, 20 Nov
- 2023 16:09:02 +0000
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.048; Mon, 20 Nov 2023 16:09:02 +0000
-From: David Laight <David.Laight@ACULAB.COM>
-To: 'David Howells' <dhowells@redhat.com>, Linus Torvalds
-	<torvalds@linux-foundation.org>
-CC: Borislav Petkov <bp@alien8.de>, kernel test robot <oliver.sang@intel.com>,
-	"oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>, "lkp@intel.com"
-	<lkp@intel.com>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, Christian Brauner <brauner@kernel.org>,
-	Alexander Viro <viro@zeniv.linux.org.uk>, Jens Axboe <axboe@kernel.dk>,
-	Christoph Hellwig <hch@lst.de>, Christian Brauner <christian@brauner.io>,
-	Matthew Wilcox <willy@infradead.org>, "ying.huang@intel.com"
-	<ying.huang@intel.com>, "feng.tang@intel.com" <feng.tang@intel.com>,
-	"fengwei.yin@intel.com" <fengwei.yin@intel.com>
-Subject: RE: [linus:master] [iov_iter] c9eec08bac: vm-scalability.throughput
- -16.9% regression
-Thread-Topic: [linus:master] [iov_iter] c9eec08bac: vm-scalability.throughput
- -16.9% regression
-Thread-Index: AQHaG7YSFfqMOen5JUCwmbDFX2u0nbCDUWGA
-Date: Mon, 20 Nov 2023 16:09:02 +0000
-Message-ID: <ade6cd8de43b492589125295c3bc88d5@AcuMS.aculab.com>
-References: <CAHk-=wiRQHD5xnB8H9Lwk9fJPDpfVNAwPS4KLnfrcrU3zbMAdQ@mail.gmail.com>
- <CAHk-=whM-cEwAsLtKsf5dYwV7nDTaRv1bUKLVBstMAQBug24uQ@mail.gmail.com>
- <CAHk-=wjCUckvZUQf7gqp2ziJUWxVpikM_6srFdbcNdBJTxExRg@mail.gmail.com>
- <CAHk-=wjhs6uuedgz-7HbcPtirEq+vvjJBY-M2zyteJwBhOMZhg@mail.gmail.com>
- <20231115190938.GGZVUXcuUjI3i1JRAB@fat_crate.local>
- <CAHk-=wh0TcXyGmKHfs+Xe=5Sd5bNn=NNV9CEtOy_tbyHAAmk9g@mail.gmail.com>
- <232440.1700153046@warthog.procyon.org.uk>
- <864270.1700230337@warthog.procyon.org.uk>
- <20231117160940.GGZVeQRLgLjJZXBLE1@fat_crate.local>
- <CAHk-=wj33FoGBQ7HkqjLbyOBQogWpYAG7WUTXatcfBF5duijjQ@mail.gmail.com>
- <CAHk-=whLbJ7vvB1ACVC6t44zjihX8w7GMY2y584+Fm83rsmaKg@mail.gmail.com>
- <20231117191243.GHZVe7K4vN9n5M92gb@fat_crate.local>
- <2284219.1700487177@warthog.procyon.org.uk>
-In-Reply-To: <2284219.1700487177@warthog.procyon.org.uk>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D13C11641F
+	for <oe-lkp@lists.linux.dev>; Tue, 21 Nov 2023 02:35:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fFcD0vne"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1700534152; x=1732070152;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=MEb81jU+9zMP4FpjtS6Km0ToaYWirQo05+YSCg1m+Es=;
+  b=fFcD0vneRMFuRZEIwylba/7J1uZyp75Nf3FLuimwAXpstE6ZMDm2IK/D
+   LWlAppbl2/oG9nXHysFRi6bUAgl3q4os+uhHJNNkOVb1/Ot1TB/9bNjBc
+   ycj5zj7XvwbR8txFPkc5BQFEic9Zr4fXXB8sQsgIViWXXiqfry3OeZjEx
+   0vh5/9XAi3JGnQ6AceHnOmQX4j+51dHWvrRLq4aawD9ee013q6BWyimcr
+   Y3HeBa5CboQkEgAjJjgrHQpyqysj6f3CyJ6eXKKKZUrR+fvQKsL+QtMTZ
+   JGP4Pr42MykhfYeelJ/1+eA3P3EUYqOrpCXyUL40o8gumqhnk81mZXL5J
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10900"; a="376788406"
+X-IronPort-AV: E=Sophos;i="6.04,215,1695711600"; 
+   d="scan'208";a="376788406"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Nov 2023 18:35:52 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10900"; a="766495324"
+X-IronPort-AV: E=Sophos;i="6.04,215,1695711600"; 
+   d="scan'208";a="766495324"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by orsmga002.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 20 Nov 2023 18:35:50 -0800
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.34; Mon, 20 Nov 2023 18:35:50 -0800
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.34; Mon, 20 Nov 2023 18:35:49 -0800
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.34 via Frontend Transport; Mon, 20 Nov 2023 18:35:49 -0800
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.169)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.34; Mon, 20 Nov 2023 18:35:48 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IvrSzOi3MLeVg79aNJDwn0GknC6k8AmK/X8BjRYUyjj3MJd1lf8YmnNYU+TOTpNP4LJdz0ft+0tiNuWs9VoxObdG5aa88ABs5BlX46R4tUcKUXT53WzpGaX9dNlx+Ft/+ZyPWaBwxr7ijXSMOibEoCMOmDU0m0/tmEyuEkyNad1jf8JxJiUcaKYiWLyrb+gHRL9ZWFL0GZyuoXWcy8AWRNv+0m6Mkn35N3dM0ZwaceORtBzQvm0OZay78/1RjCU4Jmffk6CVeUnB6d9S8DLG3pczLkXyVdR32JIjeVCQXnJ7vuInRHmwfYDY54B46eW8a0T2td5vyAnH1+5sXSNBEA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=w9IXd/mHEIng8mxk7+Mj4j/ZkYH6L2Vb5p9sQnWd2TE=;
+ b=gaD52jwMsHODGSbi/rkEB5hO/mLxfKbh+GeeBdKhPA+qQMezys+CuDc5IBeYh+o5+h6mn7tXH9sJGKxXAW/uUbv7n15J3zk9p20gv/5I/kngRl+qsu5rb5y3EX8C1mfycmSfhSTHCeaQXTVI0/evY8hoNk3gSNMKJJ4uSKvrnhrcas7YWxO3VtSaiw/gfi2+w4XpQIrfXqn22zU9KxDpuexDmo9RjgUA2IhLesHfht42KBxIn9QRNvmXI2jo3WMA7oyxUiTGCII0cihbB3oDPRMpq2vlCLb2XZrCHrHrh2lHDZPUlbB+ygnc35L4w7cFlahEaCDqI0JUr6WdqHfcEA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from SJ0PR11MB4831.namprd11.prod.outlook.com (2603:10b6:a03:2d2::20)
+ by IA0PR11MB7814.namprd11.prod.outlook.com (2603:10b6:208:408::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7002.27; Tue, 21 Nov
+ 2023 02:35:47 +0000
+Received: from SJ0PR11MB4831.namprd11.prod.outlook.com
+ ([fe80::50f0:1dd8:29fc:3f87]) by SJ0PR11MB4831.namprd11.prod.outlook.com
+ ([fe80::50f0:1dd8:29fc:3f87%4]) with mapi id 15.20.6977.029; Tue, 21 Nov 2023
+ 02:35:47 +0000
+Message-ID: <133dee64-848b-4212-9432-8760b057fe0a@intel.com>
+Date: Tue, 21 Nov 2023 10:34:11 +0800
+User-Agent: Mozilla Thunderbird
+Subject: Re: [linus:master] [filemap] c8be038067: vm-scalability.throughput
+ -27.3% regression
+Content-Language: en-US
+To: kernel test robot <oliver.sang@intel.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>, Feng Tang <feng.tang@intel.com>,
+	Huang Ying <ying.huang@intel.com>, Matthew Wilcox <willy@infradead.org>,
+	<linux-fsdevel@vger.kernel.org>
+References: <202311201605.b86d11b-oliver.sang@intel.com>
+From: Yin Fengwei <fengwei.yin@intel.com>
+In-Reply-To: <202311201605.b86d11b-oliver.sang@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SG2PR01CA0189.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:189::15) To SJ0PR11MB4831.namprd11.prod.outlook.com
+ (2603:10b6:a03:2d2::20)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ0PR11MB4831:EE_|IA0PR11MB7814:EE_
+X-MS-Office365-Filtering-Correlation-Id: 97614555-b6d8-43dd-6435-08dbea3a9128
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: L0MqMiC3OSPrXandNcicR1CgzKfPJYIFyfTotjlQP/fu1f1zOgdCP2Be8G7suhGzRyN7ZHzXB2sn1h3fApxEqLzgkDp1dswadC5+lRStdCKiJudTZKy+HG6Lw3in3HyJGkVr0p9c+9YeR+i+wy9ydHu9rC917T0AixMTeU3Qgoam/zX5aymNXMzOMUcphN2bEq9aQOmibGt7YZQx80pctoe+sXB+Yarh5Xtdy1gNIyD8W/QveL+I9xAoJmOhSxnRqt8y8tTWObGjhsYAYnDq8FbjoOtiYKdn3FUhFg0Q+BzjMBcvZzR/jfRtFq1VG8b3Yng94iz9I+f/yPIGWiGU94WwYL21q1B0TZ8pHRkUoZdwMInqBXY6uTWsyF+yIZ84PCWRJhJfgHB6oMVkSqjrzfhFUHmTubs/lxGgiDG+ST2VN99Tp4KKCmFe6gmf0WCitxkdm4jwziJ044QQh46NGdszmMGBKcoMtihTkBEcEBm4ZQOKqdXodAABsGIuRxOc9LzuTOcncmNtbZcG+cBIovmF2oWx9E9uE/3d3EIUWbtcHFYrDZpjGWzqxTj8p/GEf0JD29/GfsNLgraK767fHizkEPlf/zAZgeaPuOPos6+IHHUYqwcRWtWv+87GuTMSwm1MxAc7gBULga8Nk96RNg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR11MB4831.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(39860400002)(366004)(376002)(396003)(346002)(230922051799003)(64100799003)(186009)(1800799012)(451199024)(2616005)(82960400001)(86362001)(31696002)(31686004)(6486002)(6666004)(6506007)(37006003)(66476007)(6636002)(66556008)(316002)(54906003)(66946007)(36756003)(6512007)(53546011)(26005)(83380400001)(2906002)(4744005)(478600001)(5660300002)(38100700002)(8936002)(41300700001)(8676002)(6862004)(4326008)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?RG9STTdnUnFjVzQxSTF4aGY5ZytPOVVUYy8xa080RDR6WC9ueVVMemJOTjdl?=
+ =?utf-8?B?V1UwTWZzN3RnQ2w1aDJ1M1ZEMVRYQWU5Znc2TXF5d2JPOVNEd0ZlbVdGWktC?=
+ =?utf-8?B?MkhpZXJrSWFtdS84WnNMZE1pTUFzdW5XTElXMCt1eVB0a2xMYnhOS0c1ZzZo?=
+ =?utf-8?B?ay9YUHp0V0I4dnE3ek8zNTIrU0pvVXg1ZlpaeFVGRzRuKzRDZFp2ZTJZdUJi?=
+ =?utf-8?B?bFEvc2dIakdhYWRHR3VDNkowak04TkFuOGNtZ1lLYUFpZVZDVTA0bXBDbXRw?=
+ =?utf-8?B?UHQ4K3VFcWZLVjJOZFhxSkJjbDg4SHhKVllqaUFRZEVTN0JONk96cjMyVjlL?=
+ =?utf-8?B?RXdmTEdHcFkwMzEzRGR2dU5POE9LYitrUEFYYzQyOHZsOEJaV1IxN3dqYzZO?=
+ =?utf-8?B?YkZMSjBHMmM3NXdNUDVlYW03aW1nakVrNGZrQVk2TnJJaXRlL1dUNndpdWN5?=
+ =?utf-8?B?RkVvaDI5azVoc0c0OHliSGpUV0RIVEk3WndsZ3N4eEdnQ3VuS1BDR1Q1NjA0?=
+ =?utf-8?B?TVlDNWR2a1VIZWVDV1FKWDlrTnUyR1Z4Mk9vemF5SC9wTHk5eWMrQjR2YTM5?=
+ =?utf-8?B?OHBkZnRvTGVqbzlHRUdlWTNYcVA2YTdMdUV1OTNqQ001WGExejBiMUpKU1lQ?=
+ =?utf-8?B?VmFuV1ZndVlWcWJrblJzd0MyRDZOcXhIdG9CZ0pTbDFCRVFkeG9qNENyVlBk?=
+ =?utf-8?B?V2ZVNExXWlJvR1ZoZUZYL215SDZLOXcvLzI0RkhXQUJQZWszTXlmSmRSYTh6?=
+ =?utf-8?B?c285clg2WHhuSDFvV3J0UjVma296VVp5Q1pnRlFsVnc3UFNNYVQ2bEFaZ1hS?=
+ =?utf-8?B?dm1UckdRem9kczZPSXIwNE15dHpaVitsTXhaL3VIQy9RODBDRm5TRkVuVGs5?=
+ =?utf-8?B?eFBlVnN6RFVLMmVLc0U5TEJzb0kvc01jVkZuZXFTL0tqMTA1U01DcFI2YmZy?=
+ =?utf-8?B?OU43ZkV0NllRR2JmWm1BL2VzN1lyV2JjNHZ6YVZYcTd6ektaeHdBczczTVRE?=
+ =?utf-8?B?dnNLem5sZE1TYUlRUXBrTHNCV2N2U2QyQVp4Y215ZVBIcmZVSzl2VG9OSmZh?=
+ =?utf-8?B?UWIzUHhlcDc5NTJkc1VocUZlVTMrOGp1TWJjbjI4cmFTWUY2dGNSd0FDdTZI?=
+ =?utf-8?B?OFNwMERJRm1SOHllM0VBNWxwMGp3NjFKbUt5Q2xjaUh3VStva3FaM3VHVHBR?=
+ =?utf-8?B?TlRLL0dYVUtaUkVscmY5OXVORkYzUXNRcVFFdWJaUTNFZjFSaTdFa3BLZE1j?=
+ =?utf-8?B?cDljckREdHcvSlphS29NWXFHVVMvcHI3TnFZTjBNVnJ4TjNhWjJneGZRdUVt?=
+ =?utf-8?B?Vkh2YlVMeTM4ZzNKVDZFY0EvS0pIaG1DMHlYTUE4aEt6cEVuVENNNUV0ZmVO?=
+ =?utf-8?B?bnB6YzdaS1pnRGZIUzZKMm0zaktQaDBlM0hnaTZJQWs4M2hWM3Q4clhDMGRP?=
+ =?utf-8?B?MTNWTzk4REErWFRobUpuQ01IRlJJWWw2ZWw4REdETm5WT2lDd3BQOVlFWWlH?=
+ =?utf-8?B?a2JTZVZzWDhXQ0htUlNJWVdOaGtDVDJaOXR0bDZEL0VLMlRaZ1lOampwZ2cr?=
+ =?utf-8?B?SC9RM1JOZDRoaWxOUjc4dzNJZEI3bWFvQzNyNmEwQlhEaFJ0UkNmQjl4TExs?=
+ =?utf-8?B?QzdkbTRwWFNWZzdNK0tEWnFwSWw4U0dSRDIycHRzZGlLOTRvaXMvbDljMmN0?=
+ =?utf-8?B?MFdDRzh0Yk9LUHcyb2RHMWtaZHlYemRCVDFBYTRwQjRuSkttVDN6RXBmNHJB?=
+ =?utf-8?B?SExHYWlIRDcvNmF1SzdFck9ETmY3M2VQMXpFd0ZlTDZGNSs0Q0JGZTFEcWNE?=
+ =?utf-8?B?eTk1VHJzdG5mc0s1MmhuRlNXejF5Ym5zZDlBQlhWWDBERW53cllqSXB1QmtB?=
+ =?utf-8?B?ekp4ZlBJaFdYbmFUT0hkOG9SZkVMYVRSTW9NMHlYMmM1a3M3ZnA1WWV5dlZY?=
+ =?utf-8?B?NU5EY0tkVFoyYW5zRy92RFdxb3AzaWphM2FGYktmdmFZSWMzUHhrcUx3SE0w?=
+ =?utf-8?B?NDh4Nkd1ckxRWXVFbzloYnE4NnJVSW5TclNNdjgxUlJleklYV3B1VWpWeXAv?=
+ =?utf-8?B?UlJXNWRBenlNY1YrbWw3UUhCd0RTS05ISzhiZVhscXo1bC8wVVJFQW9MdjNw?=
+ =?utf-8?B?cG5nUVJyS0ZwQ2hrUWtHSUdzcVRBZWduTmlCcU9Ia2VZWWRIOGVHR2NBNnp5?=
+ =?utf-8?B?cGc9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 97614555-b6d8-43dd-6435-08dbea3a9128
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR11MB4831.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Nov 2023 02:35:47.0760
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7bM6sCDISE9gq+v4b/4FMOhPKaQ2E8ApwUxB6PdA0CpEHjOHPBMLj1V9O7SjQbn1QQELYXSvnvgLldIZ/1i1xw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR11MB7814
+X-OriginatorOrg: intel.com
 
-From: David Howells=20
-> Sent: 20 November 2023 13:33
->=20
-> Linus Torvalds <torvalds@linux-foundation.org> wrote:
->=20
-> > So I don't think we should use either of these benchmarks as a "we
-> > need to optimize for *this*", but it is another example of how much
-> > memcpy() does matter. Even if the end result is then "but different
-> > microarchitectrues react so differently that we can't please
-> > everybody".
->=20
-> So what, if anything, should I change?  Should I make it directly call
-> __memcpy?  Or should we just leave it to the compiler?  I would prefer to
-> leave memcpy_from_iter() and memcpy_to_iter() as __always_inline to elimi=
-nate
-> the function pointer call we otherwise end up with and to eliminate the r=
-eturn
-> value (which is always 0 in this case).
 
-I'd have thought you'd just want to call memcpy() (or xxxx_memcpy())
-Anything that matters here is likely to make more difference elsewhere.
 
-I wonder if the kernel ever uses the return value from memcpy().
-I suspect it only exists for very historic reasons.
+On 11/20/23 21:48, kernel test robot wrote:
+> 
+> hi, Fengwei,
+> 
+> we noticed c8be038067 is the fix commit for
+> de74976eb65151a2f568e477fc2e0032df5b22b4 ("filemap: add filemap_map_folio_range()")
+> 
+> and we captured numbers of improvement for this commit
+> (refer to below
+> "In addition to that, the commit also has significant impact on the following tests"
+> part which includes several examples)
+> 
+> however, recently, we found a regression as title mentioned.
 
-The wrapper:
-#define memcpy(d, s, l) {( \
-=09const void *dd =3D d; \
-=09memcpy_void(dd, s, l); \
-=09dd; \
-)}
-would save all the asm implementations from saving the result.
+Thanks for the testing. I will take a look at this regression.
 
-I did some more measurements over the weekend.
-A quick summary - I've not quite finished (and need to find some
-more test systems - newer and amd).
-I'm now thinking that the 5k clocks is a TLB miss.
-In any case it is a feature of my test not the instruction.
-I'm also subtracting off a baseline that has 'nop; nop' not 'rep movsb'.
 
-I'm not entirely certain about the fractional clocks!
-I counting 10 operations and getting pretty consistent counts.
-I suspect they are end effects.
-
-These measurements are also for 4k aligned src and dest.
-
-An ivy bridge i7-3xxx seems to do:
-      0=0941.4 clocks
-   1-64=0931.5 clocks
-  65-128=0944.3
- 129-191=0955.1
-     192=0947.4
- 193-255=0958.8
-then an extra 3 clocks every 64 bytes.
-
-Whereas kaby lake i7-7xxx does:
-     0=0951.5 clocks
-  1-64=0922.9
- 65-95=0925.3
-    96=0930.5
- 97-127=0934.1
-    128=0931.5
-then an extra clock every 32 bytes (if dest aligned).
-
-Note that this system is somewhat slower if the destination
-is less than (iirc) 48 bytes before the source (mod 4k).
-There are several different slow speeds worst is about half
-the speed.
-
-I might be able to find a newer system with fsrm.
-
-I was going to measure orig_memcpy() and also see what I can write.
-Both those cpu can do a read and write every clock.
-So a 64bit copy loop can execute at 8 bytes/clock.
-It should be possible to get a 2 clock loop copying 16 bytes.
-But that will need a few instructions to setup.
-You need to use negative offsets from the end so that only
-one register is changed and the 'add' sets Z for the jump.
-It can be written in C - but gcc will pessimise it for you.
-
-You also need a conditional branch for short copies (< 16 bytes)
-that could easily be mispredicted pretty much 50% of the time.
-(IIRC no static prediction on recent x86 cpu.)
-And probably a separate test for 0.
-It is hard genning a sane clock count for short copies because
-the mispredicted branches kill you.
-Trouble is any benchmark measurement is likely to train the
-branch predictor.
-It might actually be hard to reliably beat the ~20 clocks
-for 'rep movsb' on kaby lake.
-
-This graph is from the fsrm patch:
-
-Time (cycles) for memmove() sizes 1..31 with neither source nor
-destination in cache.
-
-  1800 +-+-------+--------+---------+---------+---------+--------+-------+-=
-+
-       +         +        +         +         +         +        +         =
-+
-  1600 +-+                                          'memmove-fsrm' *******-=
-+
-       |   ######                                   'memmove-orig' ####### =
-|
-  1400 +-+ #     #####################                                   +-=
-+
-       |   #                          ############                         =
-|
-  1200 +-+#                                       ##################     +-=
-+
-       |  #                                                                =
-|
-  1000 +-+#                                                              +-=
-+
-       |  #                                                                =
-|
-       | #                                                                 =
-|
-   800 +-#                                                               +-=
-+
-       | #                                                                 =
-|
-   600 +-***********************                                         +-=
-+
-       |                        *****************************              =
-|
-   400 +-+                                                   *******     +-=
-+
-       |                                                                   =
-|
-   200 +-+                                                               +-=
-+
-       +         +        +         +         +         +        +         =
-+
-     0 +-+-------+--------+---------+---------+---------+--------+-------+-=
-+
-       0         5        10        15        20        25       30        =
-35
-
-I don't know what that was measured on.
-600 clocks seems a lot - could be dominated by loading the cache.
-I'd have thought short buffers are actually likely to be in the cache
-and/or wanted in it.
-
-There is also the lack of 'rep movsb' on erms (on various cpu).
-
-=09David
-
-=09
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1=
-PT, UK
-Registration No: 1397386 (Wales)
-
+Regards
+Yin, Fengwei
