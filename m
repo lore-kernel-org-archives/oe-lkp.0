@@ -1,236 +1,136 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D43430CF4
-	for <oe-lkp@lists.linux.dev>; Mon, 27 Nov 2023 13:59:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7863328D7
+	for <oe-lkp@lists.linux.dev>; Mon, 27 Nov 2023 17:11:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LN4YQlBa"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1701093574; x=1732629574;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   mime-version;
-  bh=TgX49Kliq2PZdMHdIbnHg8Dvlkok0hTHpO0YaR0GozI=;
-  b=LN4YQlBafrcbq3XTSJtJWHTJVzh9bUn1Cv3Ca3JfcfopjAVvhlA6ib1C
-   1Q0AlWWkd77Ba433ZqAgv0Hrx2y31dhbuM60vreW6F13tY6WyF0fCoAii
-   nYBxHWM7/8ortzM1qbUVloMuilDCU1ao0HXBoANOuN4tirGMAij4NQvZq
-   6CRo+gxTommHryIbUcmgaXY82vpWR8LYNb0LW0jrDfaA0oBMsufMm7LQc
-   vfR4Hb8rcDaNUasrUNrwmgKuA7UHo42Ewjxw1Yn3UHVt+wkJ9B0UbrET0
-   F3Q/6AKS/co9aTuVuH54B/oRZRGGORYaIgJMmNhpEDvKVjDDl7IcAC/XD
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10906"; a="396610343"
-X-IronPort-AV: E=Sophos;i="6.04,231,1695711600"; 
-   d="scan'208";a="396610343"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2023 05:59:33 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10906"; a="838719031"
-X-IronPort-AV: E=Sophos;i="6.04,231,1695711600"; 
-   d="scan'208";a="838719031"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by fmsmga004.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 27 Nov 2023 05:59:32 -0800
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34; Mon, 27 Nov 2023 05:59:31 -0800
-Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34; Mon, 27 Nov 2023 05:59:31 -0800
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34 via Frontend Transport; Mon, 27 Nov 2023 05:59:31 -0800
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (104.47.73.168)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.34; Mon, 27 Nov 2023 05:59:30 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lpFuz+4whmTIoOlXeYiicJKFWK/vjhuraSFKyoFAQCm8zbZs6pma6BCgKRaB0FxdEMjqhJhn4HIxEro1roRDXG5upaBGs1cTuBICHwdTsmI/7vt037CLN2trKZdldO8o6wit3Y7K0gCIgaiThm40OK2+5IrmWZQnvxIjSu8SwkJiVj97TNm1GhtD6vyFjr7yvpXaksBg3g8CCT5D107MJAyNsh74+SpQAe47Jzbc12iaOnCINoWh0zEBpDZo9JqhzxADwaBOmL35NstkFbhw6LohcSb3pwCgiZ2XlhthhfMjBW318qCRIdvkYifPXIi0tx8bZPF+aDVXg/o6J1a1XQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=stTtFR54szEVXzMSoXmz9RQf8l4FWnOY3wU1MiYgnvs=;
- b=WoRsoDTlcVhsMG8oZZz83n8RzBgGC3Qk3wDHgtmNgFIA71Nu/pmNPvPMRjG2nQw3sJujxqH5Sgr3IbnPwUX4xZlGVJ96/gskCfsdujO1Aeq4XushnH+Ol4rmenymViSst1CmjIBQ5YooB4hg/4QMKCNCFDzE+108+4zD6ZqYpFV8kRRh3m6UIxH0jvpR0e1u38Vmckt9pT9TTFF85GDCWcwzv/74s1W1nmUj6TcucG1AxpHOHIGkO2mYsTd4DfJZl+PLmTtem3ORiI+dSqMElaSs8nNORvAiCVYmJIBX4uyBVvdd3azMHy6WZEX9h8luLAo/CiFXFiaUCNEEwMuLpw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by PH7PR11MB6724.namprd11.prod.outlook.com (2603:10b6:510:1b4::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7025.27; Mon, 27 Nov
- 2023 13:59:27 +0000
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::1236:9a2e:5acd:a7f]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::1236:9a2e:5acd:a7f%3]) with mapi id 15.20.7002.027; Mon, 27 Nov 2023
- 13:59:27 +0000
-Date: Mon, 27 Nov 2023 21:59:12 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: Kunwu Chan <chentao@kylinos.cn>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <netdev@vger.kernel.org>,
-	<aubrey.li@linux.intel.com>, <yu.c.chen@intel.com>, <jhs@mojatatu.com>,
-	<xiyou.wangcong@gmail.com>, <jiri@resnulli.us>, <davem@davemloft.net>,
-	<edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-	<kunwu.chan@hotmail.com>, <linux-kernel@vger.kernel.org>, Kunwu Chan
-	<chentao@kylinos.cn>, <oliver.sang@intel.com>
-Subject: Re: [PATCH] net: sched: Fix an endian bug in tcf_proto_create
-Message-ID: <202311271643.12f713c2-oliver.sang@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20231117093110.1842011-1-chentao@kylinos.cn>
-X-ClientProxiedBy: SG2PR04CA0213.apcprd04.prod.outlook.com
- (2603:1096:4:187::11) To LV3PR11MB8603.namprd11.prod.outlook.com
- (2603:10b6:408:1b6::9)
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="HGkQ3guW"
+Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-54b532b261bso1967761a12.1
+        for <oe-lkp@lists.linux.dev>; Mon, 27 Nov 2023 09:11:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google; t=1701105072; x=1701709872; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=X8veV/N8u0KLOX8kp8+RpeOybN7ghMV50gJ3VwXOlp8=;
+        b=HGkQ3guWxsktLPKrs0D7EGv8OCiJnyTO5tlSRP9ttPPvjES2Z6KDkG+aGTHizw+sR9
+         W54ytWHFK0GKNi62IKTEjakGiIopvkw9+sHmxp0UWUEY79aJ9iYmYxMfIDrwuQ5x//DD
+         WZH1tuo3UE/wy0V2w0vktfNAaCX9l3Dxqenfs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701105072; x=1701709872;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=X8veV/N8u0KLOX8kp8+RpeOybN7ghMV50gJ3VwXOlp8=;
+        b=Ok5PHQ2jZ+4upuMsDCwKi4PaQcMnvzr5bkgFW9TaEbUG6OHuYF0nEA4vw8N+uD6cYC
+         9lpFx4NQsFgaozLkcsJxwPLiHgvX1hxcmcIBO5YoUJsgaU78ZEqItua5V8nSH8Q8TeQT
+         KYTuCzFzb8866k4YOEZR1BkzFxEw5ZNVup5CbdCnnGRnC1py21lh8/T1B8jgjRcjn0vC
+         O5dvo83PqlkyfB7yr0ibBRn3bhpUu4uAh6cLDBLC8KdE8uRr6QJi7GkfFRPUQGWu/GrT
+         KX2SmxRPYnPkMCRFPMpAUBu22n8jGQodM1AHfS8ymjpQ9oiqcf34E8rX6kNC7IpDANLt
+         pcCg==
+X-Gm-Message-State: AOJu0YxzPKykS9vaKM/olG0y22m9owLgB6f2A0SZkzumP6uO/oYgfEax
+	EJu7rdXPNkXBg4q2R+KyUL+jhGnkhKHVBBdF86rcvA==
+X-Google-Smtp-Source: AGHT+IEu68+NPMwbWKOJDTeDFf/eUSck4yJVAaHCoxf/bEsmmEFn1UONb0S0EAgJzgIG+tk3p39tAA==
+X-Received: by 2002:a50:aa8d:0:b0:547:9f26:e581 with SMTP id q13-20020a50aa8d000000b005479f26e581mr9228126edc.37.1701105071886;
+        Mon, 27 Nov 2023 09:11:11 -0800 (PST)
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com. [209.85.208.48])
+        by smtp.gmail.com with ESMTPSA id d22-20020aa7c1d6000000b00548c3ba4f80sm5422747edp.88.2023.11.27.09.11.11
+        for <oe-lkp@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Nov 2023 09:11:11 -0800 (PST)
+Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-54b0e553979so3541580a12.2
+        for <oe-lkp@lists.linux.dev>; Mon, 27 Nov 2023 09:11:11 -0800 (PST)
+X-Received: by 2002:a50:d4c5:0:b0:53e:1b:15f5 with SMTP id e5-20020a50d4c5000000b0053e001b15f5mr7964361edj.39.1701105070828;
+ Mon, 27 Nov 2023 09:11:10 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|PH7PR11MB6724:EE_
-X-MS-Office365-Filtering-Correlation-Id: f387da75-28d4-4674-a0c4-08dbef5111e1
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: CJZj6ym/FfyTaiQ0OyCqfa3PaTu+65RCBiD7YT5Eqj6ZqTqTlxNu6OIngGL1lamcphfsTGMVnIsslWyErGW3RnrEU2pbRxCkw7LNK7+keMAor/XggR1XY4d/juiMkzMdQ0iP/0zCGFqb719HLoDtyQWGB1VvW1UesjCenLf3RslXBAOsAPw4AB+wsQ7K877+vMKv8V5NeeK8PWYcA8i3omXMIGpqL6HEGTLSqyVHjSNPnjLJNRZnhFyQpdLRqSmYxqPV9wgE6a7HAoQdJTbYReRuA+7QfCBSZ7nE52eJIHZwHiaxg7dRG46POg5HsJKtjBR5ArAbJWUZRuygrZ747qGgKUstX2yzPHfGvY78JRnW5kboKfdFfgwoN3SR8DWbdfNcXXW3H+bp9jp0AI60MsB/hoFdxOhS0xP6el4Lz/8asAPQg8+vuaCnQU/gJhF9cLjdgyQjajeZ+bkj+qpy/90r1EjJpYlybUjpsYuIZXbesSViVoRHOC6r5VEUG4bE2C2n3+Fk1mu0RRjKl6cWhvsqjC+OYUwm+hd3eKMSs/Tw1m80xd+6vbG2a0zDa66F0bCVIZTg+te9Q6jQnmZtCg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(39860400002)(366004)(376002)(396003)(346002)(230922051799003)(1800799012)(186009)(451199024)(64100799003)(2906002)(7416002)(316002)(66476007)(6916009)(66556008)(66946007)(6666004)(6512007)(4326008)(8676002)(8936002)(41300700001)(478600001)(5660300002)(6486002)(966005)(6506007)(1076003)(26005)(2616005)(83380400001)(38100700002)(86362001)(82960400001)(36756003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Yv1L2YigF2f0jeixhNr52cwjBgbQIS6nnKq6bPOUGkRWqt8MQweV+bN0/R4v?=
- =?us-ascii?Q?NBYSKFN+OIGX2hI6ZjRqJMjYqRNcfLmAO7lMNjNP34iTEe2AyoNYwC1O+vfp?=
- =?us-ascii?Q?pwCt1fjTSsUK+ilqoA2FMMCQFGs1H5eY7lNBXlWMSdtO2PmWv4VbQGppz8lL?=
- =?us-ascii?Q?qmmNI5P8AwPEH1DicssQJE6nIx23mOJoa6xleydNiJSyhhDLM9Etm5JoMEot?=
- =?us-ascii?Q?bK/mk87/MpOkmWMUVqJjsbutte6sfOPoXoDzauwy936EyDemGyaBsisaSX7T?=
- =?us-ascii?Q?GMdNrdZjYtbCNO0qWmlKyGsIFoc1AWJCHmwC/kk4JMC79yLB3UQdtYYX3dBL?=
- =?us-ascii?Q?Yy0Ya4ViGip3/fsWgNjt8Wb2t8ygr+rhTCLqzUyJXosEdn/FEGmqcbe2Pd+x?=
- =?us-ascii?Q?lxuezz5HSOYD7JO0b1HiB93Wusp4s5RM5KiH0lFOjzszx9F/Hke0c2zeTRlN?=
- =?us-ascii?Q?sIwbXPvjJ8TroTGFcAhZrglwJRVK5SqsvnGCPRI4l0Dw64qLpGVHnQJIxUeq?=
- =?us-ascii?Q?eANFGloqel9KYzjuUCS16CSP6uTSncAQTJgHY/wyiMuI6Qdl38B6Mq6L4DMF?=
- =?us-ascii?Q?cMSo+6MrrTTTLfrJwdjDBqDOM36+0obdkkDgXvAHmHQcWQpJ+YkzJnj2HS0y?=
- =?us-ascii?Q?qFLLqolbNjM2Aty75PsLfNRl8mRjwUb2lFnSynXhMxxuQrvfuDWuQsoDKX7S?=
- =?us-ascii?Q?XUiXrAqadv6uH4IwHi0+LwS71fJM+7CBXOkPTkLYBIdCXSt10f7TYa8t3R6E?=
- =?us-ascii?Q?k1oX/gNwmnhYiDpckDjJJNT4EW+H1SWhVQ4Br9q1is8RgAOXJsT2AuttTSZs?=
- =?us-ascii?Q?DhZVMD2AjB9xQahcq4S13T/BeFc9PKjv4nHOLQhSMNPfbyF2wWfif93Zgwn3?=
- =?us-ascii?Q?TPJes/Mh1yStYRH2EaQlxD1dNtiesemS7sg3sO1tg/V68OcmTiTkz25V9KH2?=
- =?us-ascii?Q?6AIpzmmsPqgdPOPnKqTsmIhzGg9ranlf9r2zyG4ICkcQnot+yAdvmc2OARTr?=
- =?us-ascii?Q?UmK+4oTJh/xmPXjj9pzzVxse7WboWRrn7ufDcXh17/cZhHmbBxF6JdUFiCF+?=
- =?us-ascii?Q?kk5bdmPJFBisrbFZSlEaG+hcEhbkcc23zmsGGhHSveKlMPVsh9cbd0ekaYWd?=
- =?us-ascii?Q?YClW97Yy16bJY0CnpBtlxjiFYu2Od+U5x2H6ei1ePy6S05KyDAHFrzn1SV7s?=
- =?us-ascii?Q?YubgPKFH7blMg6+uOb23qKUXH6t9SwEvCPtRNZmr64+KIwNx0/B3rwQJvozs?=
- =?us-ascii?Q?FY4YlQdPu6VLuvAISV5WZhEjsst7J/PuwaAouewAOpQzp8YMnG18DF5pZNTU?=
- =?us-ascii?Q?ppAyT2fLT1onolmv3PPDBoCzaCPAzsnL0ym2IJiI0NJElXSlyn7P/kjyhvjT?=
- =?us-ascii?Q?/b1aWgS0s/1NRF8nH3JHSwcOcBtODZ6bEyFlfc5yqqnMgM8CLq1uUdAxYWXv?=
- =?us-ascii?Q?S67TCYtt366aqMZRVCrcNE5/3bmxdALkFwIBXQ44dTkgq3JwiH3ROqk7FOl3?=
- =?us-ascii?Q?vG0q3DDnp8o035YF+/CyT/cOdeAcgcOdLr/0Tdz6pMhPU3xqBekQgQXilM8W?=
- =?us-ascii?Q?xNfXsHnLyseS0Ys7GqQ0hT/wIk79w8dOpM6I+dqDSHNj9IOwZE+0orNnxicp?=
- =?us-ascii?Q?hA=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: f387da75-28d4-4674-a0c4-08dbef5111e1
-X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Nov 2023 13:59:27.8215
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: JWUK2YOJTsREjVuNDJCpgdVnakGq0a6omEnk6IrOzLLo1ymnM2kOLH0L13INGxh07em3CpaCGFmjLkkW4erBcg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB6724
-X-OriginatorOrg: intel.com
+References: <202311201406.2022ca3f-oliver.sang@intel.com> <CAHk-=wjMKONPsXAJ=yJuPBEAx6HdYRkYE8TdYVBvpm3=x_EnCw@mail.gmail.com>
+ <CAHk-=wiCJtLbFWNURB34b9a_R_unaH3CiMRXfkR0-iihB_z68A@mail.gmail.com> <20231127-kirschen-dissens-b511900fa85a@brauner>
+In-Reply-To: <20231127-kirschen-dissens-b511900fa85a@brauner>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Mon, 27 Nov 2023 09:10:54 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wgwpzgoSYU9Ob+MRyFuHRow4s5J099=DsCo1hGT=bkCtw@mail.gmail.com>
+Message-ID: <CAHk-=wgwpzgoSYU9Ob+MRyFuHRow4s5J099=DsCo1hGT=bkCtw@mail.gmail.com>
+Subject: Re: [linus:master] [file] 0ede61d858: will-it-scale.per_thread_ops
+ -2.9% regression
+To: Christian Brauner <brauner@kernel.org>
+Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	linux-kernel@vger.kernel.org, Jann Horn <jannh@google.com>, linux-doc@vger.kernel.org, 
+	linuxppc-dev@lists.ozlabs.org, intel-gfx@lists.freedesktop.org, 
+	linux-fsdevel@vger.kernel.org, gfs2@lists.linux.dev, bpf@vger.kernel.org, 
+	ying.huang@intel.com, feng.tang@intel.com, fengwei.yin@intel.com
+Content-Type: text/plain; charset="UTF-8"
 
+On Mon, 27 Nov 2023 at 02:27, Christian Brauner <brauner@kernel.org> wrote:
+>
+> So I've picked up your patch (vfs.misc). It's clever alright so thanks
+> for the comments in there otherwise I would've stared at this for far
+> too long.
 
+Note that I should probably have commented on one other thing: that
+whole "just load from fd[0] is always safe, because the fd[] array
+always exists".
 
-Hello,
+IOW, that whole "load and mask" thing only works when you know the
+array exists at all.
 
-kernel test robot noticed "kernel-selftests.net.fib_tests.sh.IPv4_rp_filter_tests.rp_filter_passes_loopback_packets.fail" on:
+Doing that "just mask the index" wouldn't be valid if "size = 0" is an
+option and might mean that we don't have an array at all (ie if "->fd"
+itself could be NULL.
 
-commit: e706cea62528a99bf2a6ea5e420b9726540dde39 ("[PATCH] net: sched: Fix an endian bug in tcf_proto_create")
-url: https://github.com/intel-lab-lkp/linux/commits/Kunwu-Chan/net-sched-Fix-an-endian-bug-in-tcf_proto_create/20231117-173323
-base: https://git.kernel.org/cgit/linux/kernel/git/davem/net-next.git 18de1e517ed37ebaf33e771e46faf052e966e163
-patch link: https://lore.kernel.org/all/20231117093110.1842011-1-chentao@kylinos.cn/
-patch subject: [PATCH] net: sched: Fix an endian bug in tcf_proto_create
+But we never have a completely empty file descriptor array, and
+fdp->fd is never NULL.  At a minimum 'max_fds' is NR_OPEN_DEFAULT.
 
-in testcase: kernel-selftests
-version: kernel-selftests-x86_64-60acb023-1_20230329
-with following parameters:
+(The whole 'tsk->files' could be NULL, but only for kernel threads or
+when exiting, so fget_task() will check for *that*, but it's a
+separate thing)
 
-	group: net
+So that's why it's safe to *entirely* remove the whole
 
+                if (unlikely(fd >= fdt->max_fds))
 
+test, and do it *all* with just "mask the index, and mask the resulting load".
 
-compiler: gcc-12
-test machine: 36 threads 1 sockets Intel(R) Core(TM) i9-10980XE CPU @ 3.00GHz (Cascade Lake) with 32G memory
+Because we can *always* do that load at "fdt->fd[0]", and we want to
+check the result for NULL anyway, so the "mask at the end and check
+for NULL" is both natural and generates very good code.
 
-(please refer to attached dmesg/kmsg for entire log/backtrace)
+Anyway, not a big deal, bit it might be worth noting before somebody
+tries the same trick on some other array that *could* be zero-sized
+and with a NULL base pointer, and where that 'array[0]' access isn't
+necessarily guaranteed to be ok.
 
+> It's a little unpleasant because of the cast-orama going on before we
+> check the file pointer but I don't see that it's in any way wrong.
 
-besides, we also noticed below tests failed upon this patch.
+In my cleanup phase - which was a bit messy - I did wonder if I should
+have some helper for it, since it shows up in both __fget_files_rcu()
+and in files_lookup_fd_raw().
 
-=========================================================================================
-tbox_group/testcase/rootfs/kconfig/compiler/group:
-  lkp-csl-d01/kernel-selftests/debian-12-x86_64-20220629.cgz/x86_64-rhel-8.3-bpf/gcc-12/net
+So I *could* have tried to add something like a
+"masked_rcu_dereference()" that took the base pointer, the index, and
+the mask, and did that whole dance.
 
-commit:
-  18de1e517ed37 ("gve: add gve_features_check()")
-  e706cea62528a ("net: sched: Fix an endian bug in tcf_proto_create")
+Or I could have had just a "mask_pointer()" function, which we do
+occasionally do in other places too (ie we hide data in low bits, and
+then we mask them away when the pointer is used as a pointer).
 
-18de1e517ed37eba e706cea62528a99bf2a6ea5e420
----------------- ---------------------------
-       fail:runs  %reproduction    fail:runs
-           |             |             |
-           :10         100%          10:10    kernel-selftests.net.bareudp.sh.IPv4_packets_over_UDPv4.fail
-           :10         100%          10:10    kernel-selftests.net.bareudp.sh.IPv4_packets_over_UDPv4_multiproto_mode.fail
-           :10         100%          10:10    kernel-selftests.net.bareudp.sh.IPv4_packets_over_UDPv6.fail
-           :10         100%          10:10    kernel-selftests.net.bareudp.sh.IPv4_packets_over_UDPv6_multiproto_mode.fail
-           :10         100%          10:10    kernel-selftests.net.bareudp.sh.IPv6_packets_over_UDPv4.fail
-           :10         100%          10:10    kernel-selftests.net.bareudp.sh.IPv6_packets_over_UDPv4_multiproto_mode.fail
-           :10         100%          10:10    kernel-selftests.net.bareudp.sh.IPv6_packets_over_UDPv6.fail
-           :10         100%          10:10    kernel-selftests.net.bareudp.sh.IPv6_packets_over_UDPv6_multiproto_mode.fail
-           :10         100%          10:10    kernel-selftests.net.bareudp.sh.Unicast_MPLS_packets_over_UDPv4.fail
-           :10         100%          10:10    kernel-selftests.net.bareudp.sh.Unicast_MPLS_packets_over_UDPv6.fail
-           :10         100%          10:10    kernel-selftests.net.bareudp.sh.fail
-           :10         100%          10:10    kernel-selftests.net.drop_monitor_tests.sh..Capturing_active_software_drops.fail
-           :10         100%          10:10    kernel-selftests.net.drop_monitor_tests.sh.fail
-           :10         100%          10:10    kernel-selftests.net.fib_tests.sh.IPv4_rp_filter_tests.rp_filter_passes_local_packets.fail
-           :10         100%          10:10    kernel-selftests.net.fib_tests.sh.IPv4_rp_filter_tests.rp_filter_passes_loopback_packets.fail
-           :10         100%          10:10    kernel-selftests.net.rtnetlink.sh.tc_htb_hierarchy.fail
-           :10         100%          10:10    kernel-selftests.net.test_ingress_egress_chaining.sh.fail
+But with only two users, it seemed to add more conceptual complexity
+than it's worth, and I was not convinced that we'd want to expose that
+pattern and have others use it.
 
+So having a helper might clarify things, but it might also encourage
+wrong users. I dunno.
 
+I suspect the only real use for this ends up being this very special
+"access the fdt->fd[] array using a file descriptor".
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202311271643.12f713c2-oliver.sang@intel.com
+Anyway, that's why I largely just did it with comments, and commented
+both places - and just kept the cast there in the open.
 
-
-
-# timeout set to 1500
-# selftests: net: bareudp.sh
-# TEST: IPv4 packets over UDPv4                                       [FAIL]
-# TEST: IPv4 packets over UDPv6                                       [FAIL]
-# TEST: IPv6 packets over UDPv4                                       [FAIL]
-# TEST: IPv6 packets over UDPv6                                       [FAIL]
-# TEST: IPv4 packets over UDPv4 (multiproto mode)                     [FAIL]
-# TEST: IPv6 packets over UDPv4 (multiproto mode)                     [FAIL]
-# TEST: IPv4 packets over UDPv6 (multiproto mode)                     [FAIL]
-# TEST: IPv6 packets over UDPv6 (multiproto mode)                     [FAIL]
-# TEST: Unicast MPLS packets over UDPv4                               [FAIL]
-# TEST: Unicast MPLS packets over UDPv6                               [FAIL]
-# Some tests failed.
-not ok 49 selftests: net: bareudp.sh # exit=1
-
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20231127/202311271643.12f713c2-oliver.sang@intel.com
-
-
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
+             Linus
