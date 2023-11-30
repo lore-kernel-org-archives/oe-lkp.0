@@ -1,86 +1,84 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 336F523BB
-	for <oe-lkp@lists.linux.dev>; Thu, 30 Nov 2023 01:40:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43EBA4CB2E
+	for <oe-lkp@lists.linux.dev>; Thu, 30 Nov 2023 04:48:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AIXpXHsr"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KgaERLmU"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1701308412; x=1732844412;
+  t=1701319717; x=1732855717;
   h=date:from:to:cc:subject:message-id:in-reply-to:
    mime-version;
-  bh=ouNf5m7gBhw6ZLHS+dbXCY9MmS6J7XMWKEt6vHxJu88=;
-  b=AIXpXHsrAIzaCMMDgm0PrsA6VmLVAtNUhIWGuCk/KXVbdC1CDAYD66DK
-   jMknI3eRTSK/5AijH2b+OtuUvPIkgUpgsgXNsuN1abj4lhP9Eu7HX/UAw
-   7ulWUTjowrCuClHTqbharSK67EFuXbXigYpUCDfPxVr+zcaP7wvfkisl4
-   LW7HhsovyawEiR1/2GQDhGe8xQFtIOehbhA5K2LM+fqkt/PbUekBZ5932
-   gC/lDW1hBteasklk3BhPpV5rHLhIZZDAviqSq8TusGoJcI53nrlN4g70k
-   tBL8mw2zrhdQmHEgsq+zcAfYyU5OrIl5kuk/p6kQgDhFGm/S09/H37rk5
+  bh=yRd1/GZuadyBEenxDKue4QtpRYimGnwXmGcKKtWTX7I=;
+  b=KgaERLmUJzZDSWGg2IZTYz0f4j4Aw1JDsyUTcENgzy8pqNIVeVT7sGwD
+   y7+ORknmdwPw1yLnY8iRnWfXqJzgub+D0GmZitnROERuDO7HkYW2Mr1Ns
+   Trb/s/eLsBnf6AggOmZ4EUl2p2Np1+hYaJNcTRhNmHFQMYTcxdebXkZFh
+   ETq2FoKhy3XTMbtTI0DBFTAbC3P5Lq8hze3t1rxZ8puA/9nGrjZ0yYIpT
+   f7ubCYrpiyb2xWBnyGdmKG69ARySsKkgFI/g1exQ1cWWFy4LXjlDCWuQo
+   zVRa73Zz2sXH0/55tplD1jWlvw1IEay9gq43POn2a5yLb8D2L5MhyCbwc
    Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10909"; a="132413"
+X-IronPort-AV: E=McAfee;i="6600,9927,10909"; a="6540552"
 X-IronPort-AV: E=Sophos;i="6.04,237,1695711600"; 
-   d="scan'208";a="132413"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Nov 2023 17:40:11 -0800
+   d="scan'208";a="6540552"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Nov 2023 20:48:36 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10909"; a="1016471000"
+X-IronPort-AV: E=McAfee;i="6600,9927,10909"; a="762557451"
 X-IronPort-AV: E=Sophos;i="6.04,237,1695711600"; 
-   d="scan'208";a="1016471000"
+   d="scan'208";a="762557451"
 Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmsmga006.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 29 Nov 2023 17:40:09 -0800
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+  by orsmga007.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 29 Nov 2023 20:48:35 -0800
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
  ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34; Wed, 29 Nov 2023 17:40:07 -0800
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ 15.1.2507.34; Wed, 29 Nov 2023 20:48:35 -0800
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.34 via Frontend Transport; Wed, 29 Nov 2023 17:40:07 -0800
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.100)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ 15.1.2507.34 via Frontend Transport; Wed, 29 Nov 2023 20:48:35 -0800
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.41) by
+ edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.34; Wed, 29 Nov 2023 17:40:06 -0800
+ 15.1.2507.34; Wed, 29 Nov 2023 20:48:35 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gsLHFT+iqfkfZm8UBLVk3MGQEuIXs60a3RA5yTEbIVcCZMIh1t/uy66gD5Q5uUqwOXjeJkkWacVQ6DO4Abr5cnI/UvKBzFqSMPR/aDYO3vUKrHTRBEzung+/YXU53BXQ0OWuO//htu4QB2G0RVzqZL8dYyvUnfLQ+sUITGYLYeOzQwjsscmETLojwyrgImW1W3TZFWiw/8Kt35GGThAjN2H5Mmh8mNlv/wUB1vqKdTsJwobMkIxZEqL8TIOzI0ikRZNNGRHEsn6FHq4ZR+so2FqHSdPPH0fpoJMTn91mBshXPKeHduD9f3y7TUcdNw+nAYz/tre0MOITYmzQ66XLWQ==
+ b=LepPcQPA8BjLGUGFh9O3A+HLDEwn1hzHIyh2Qgw8ok22LJrBy1HFjf608GWJZRASmQ/ss/q6FGRK7GgrBt2LC/9GTjek2Z5Wbtt7Uc81AVGnISV89LOkeBNgH+6OM5ZuD32QgXorFwTMRMg8BdKsVyxNTcFdLZaAcZQ4LbySunQnx/GD6meKMHtZdAAETs/S3agiXVZkmgebhcKno9dUfgWPzQue3JlrrMxsMy54KHWdd886to25iHhTeejYY6JdFnsZUhmYrx4Aj2N9Ejm3fhcEwC19Hg5M18rnOng3SAp/94ZxCKy3XJhqq306yFFaCbDBTih5331PNQZEvV3oxg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KrL3hg7b8wf6kBa7teXXM0oM9Zv26QFfCs09xv3qTTQ=;
- b=XoJidYP4KTa28GOGHSDDxrX0Hxy4VDGcdJwJOVqW4FSb5vfYluoBTnQoOsFt06GDjj5Z6YYAqmFbNiq2rn2IgI64ASA+Gpoyo3e5eNMXqy3QSB1iKHHqi6zxDscu8YBFCJjN37qdVQcDSGltQJmwlqTUxF5GOjUnqvbYVUHtWDH9KA7qK6Xcu3hzTqJ65SVtYoeJXkHEsyIMya6yx0N24d5Tm/lUlMmSCVscoKibA41X15bR/LJToTQRKsFIDvPAyMjjGcf0pUhF0FdVmFWvKG3zfgzI/EKWBJSAJsmYUYp4iQ9kmaMwWbXsQ/y1AtoR40iudI09tTQrEE+ZuCn9ig==
+ bh=JCXQc6m9ZLpSAIEzRCb9JYnKcdFCtIKSXhKpfaZz0mM=;
+ b=LuRRxERij1ygxNCS2wLvUA4wMOJUuXk4WBr9+vTtPpkH6Co2ZdDIR5CdQ8SRvPTrUmAsRB+MhUC1990iS8m2Oyc3f0zAdapVsE2FY+sT8kB8eNu3LQeTyfS4rtQ08lVK528EXKkdXRTC+HukGXS7KIWVrZnJSqCvhYpTg7IYybB3sQ6zInXF841s3ziTNtQzZOX9nLoiTN1Rwn6/K2GRl6Ws+/r3bzOKTNUVVJ/4oYethERmRbYzG5gTxjnogW+blWrxeAouL+yMaY6AjI9TirgSIeiTyPybzFtAEs0zxoDy5O31BOEnsNv7jka4oETL6X8wLaTbhQsP/Nbdm+j4IQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by MN2PR11MB4517.namprd11.prod.outlook.com (2603:10b6:208:24e::22) with
+ by CY8PR11MB7393.namprd11.prod.outlook.com (2603:10b6:930:84::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7046.22; Thu, 30 Nov
- 2023 01:40:04 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7046.24; Thu, 30 Nov
+ 2023 04:48:32 +0000
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::1236:9a2e:5acd:a7f]) by LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::1236:9a2e:5acd:a7f%3]) with mapi id 15.20.7025.022; Thu, 30 Nov 2023
- 01:40:04 +0000
-Date: Thu, 30 Nov 2023 09:39:53 +0800
+ 04:48:32 +0000
+Date: Thu, 30 Nov 2023 12:48:22 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: David Howells <dhowells@redhat.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Steve French
-	<sfrench@samba.org>, Shyam Prasad N <nspmangalore@gmail.com>, "Rohith
- Surabattula" <rohiths.msft@gmail.com>, Jeff Layton <jlayton@kernel.org>,
-	<linux-cifs@vger.kernel.org>, <samba-technical@lists.samba.org>,
-	<dhowells@redhat.com>, <linux-kernel@vger.kernel.org>,
-	<oliver.sang@intel.com>
-Subject: Re: [PATCH] cifs: Set the file size after doing copychunk_range
-Message-ID: <202311292134.366c9c0b-oliver.sang@intel.com>
+To: NeilBrown <neilb@suse.de>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-nfs@vger.kernel.org>,
+	Chuck Lever <chuck.lever@oracle.com>, Jeff Layton <jlayton@kernel.org>, "Olga
+ Kornievskaia" <kolga@netapp.com>, Dai Ngo <Dai.Ngo@oracle.com>, Tom Talpey
+	<tom@talpey.com>, <oliver.sang@intel.com>
+Subject: Re: [PATCH 10/11] nfsd: allow delegation state ids to be revoked and
+ then freed
+Message-ID: <202311301059.38a31c59-oliver.sang@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <1297339.1700862676@warthog.procyon.org.uk>
-X-ClientProxiedBy: SG2PR06CA0210.apcprd06.prod.outlook.com
- (2603:1096:4:68::18) To LV3PR11MB8603.namprd11.prod.outlook.com
- (2603:10b6:408:1b6::9)
+In-Reply-To: <20231124002925.1816-11-neilb@suse.de>
+X-ClientProxiedBy: SG2PR04CA0170.apcprd04.prod.outlook.com (2603:1096:4::32)
+ To LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -88,79 +86,80 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|MN2PR11MB4517:EE_
-X-MS-Office365-Filtering-Correlation-Id: d77093b1-345f-4f73-d6a0-08dbf14545d7
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|CY8PR11MB7393:EE_
+X-MS-Office365-Filtering-Correlation-Id: 11ed1192-8183-468c-b9e4-08dbf15f99f6
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: bC4symoDWtE0GPLIU97toC0fIsJ35La57zG6zcvtNSXAeyhcD9hFjfDtmVH7BdhQi6PrB3nWe6x/xzedpLa+ZZqJyBKHAcBT/msxI417Cbqr8X7atjcpZdE9P5vlbZ3yJo926AKqzdfNePW4vUPidiwWVk5N4L4ZJp5T0bro9DvKFux6TZ4MIO9jeL6FiutcT3XgcBJ4f64pTg5cB1MSqFortisupxrVXhCFuGF39mDtqATBwBdiO+VytXzVZeNuIjn71+67NnvDa0mZA8cZJQGGf4OqZGn6ttDJp5/gaZ0Pqean5jjVCavz/hgQNTsNAaRaEgGbeJ8Kvq3KRhbqr8R1e3Ytdk1SeJvLfzn6qVLiXJk+SyObHJHq5DW45DrazS2mfWn7K4MZ1Di1QlXUannmXZnmcGtPu9Xn+SQvAkrIQfFli1ZkYaXAiC79bmEuo4E5zIyPZumhK1FgFNnMxzGMFSyPqEcl3S7+FtdDD+VNYAlIQx+sYPGg9Wkntca+aAfR1o/RQCWRlN3OwOjzPniBEPnNaVMZUSR5EJyRPAlhdi6zQv62q0Ico7hX3f6BDgYM0upB4ZTxp6+tCUGbSQ2DKI1J4X+IIQO3gKkUdOhIM3amtNntrBZkUX0GcnziWDqQol+fm40IoAkQ7/eYMw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(136003)(396003)(366004)(39860400002)(346002)(230922051799003)(186009)(1800799012)(64100799003)(451199024)(6506007)(6666004)(6916009)(38100700002)(41300700001)(8676002)(4326008)(8936002)(36756003)(6512007)(966005)(478600001)(2906002)(6486002)(107886003)(2616005)(1076003)(5660300002)(66946007)(316002)(54906003)(66556008)(66476007)(86362001)(26005)(202311291699003)(82960400001)(83380400001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: IUW2prQtXtP3kd1o4Pnaet6bXxikGLfVkBXcBjMSM9nGpEn1b+a3CF+7iWgEJPpX4wj93XEU8RtU919EdICoEdIpfjhIWhSVOxnlp3SI2yes34L+2l5VDWjWBh/maF/erAPTHx0C7PDkXDPdNpPMAcFdX5+x9SoTvYKCkhMFCSJdwhUqmdd77TAOqqbgB6xOSgP7NnnD8ZDG+4EzXMDtjjYRibRCqfHGDmrvj560EDcJ+gsK7yLlQ4DseA1oUb3BNWVhvYUNAqYrXVrZfiFzCR31gqpLLC2eZg2h53ydWAlk/sGSV3bVP9fd8WCY2KFgkKvEiZr/Gsre3jAUouSZZrFEryqdldr2Ui/nBEROYJQyQ9VLMVQMehhlc6eveVZSQXjGfKOZP4OJtdi6TJhDIzTYJSKlolgpf78Kw/J9Qs688ISvSE0I6Z90lEQdalB/VIZ5cHfiQaPzjUoJIBhWZ4yv+e+3fPDxr+rGxyF0OhGvcMz7YIPLfojYaxdjl1UL20wBi/hWx/XuAcjEfjf9y2a184pzXIvxCMbp67CelccmBYissL2qfLXYfBZJ0bLXXOsPe4ESE7M7FYAiEhbgApUcUAdvEFz4xGs8EH3PIQcQ5trcQambZO1Ud+7uiL2Y5/WdKja5DFKvGDPTgpnNBun9pJZezQqMFXgZWEU2qBIA7DgVkTZQG5F+tpkdLS/j
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(396003)(366004)(346002)(136003)(376002)(230173577357003)(230273577357003)(230922051799003)(1800799012)(186009)(64100799003)(451199024)(1076003)(26005)(83380400001)(107886003)(6506007)(6666004)(2616005)(6512007)(5660300002)(4326008)(8676002)(8936002)(41300700001)(30864003)(2906002)(966005)(6486002)(45080400002)(478600001)(316002)(6916009)(54906003)(66476007)(66556008)(66946007)(202311291699003)(86362001)(36756003)(38100700002)(82960400001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?jNEXdq4/Y4v577BBMo7lt8Dw36Je0Y9LvwANH1O/5gVCmBWDySL/bjiy83/W?=
- =?us-ascii?Q?dJy5BKovY71ug7cj6HGVOh/Ow/0KjLnS6H4PL/kJhJj8VZVIj8jnMcp+YEex?=
- =?us-ascii?Q?5eedrOYmmDYmOv7IPstHkgJbtCmhzWwV80Xr4utOpLWEX98MufcEoz78cZUK?=
- =?us-ascii?Q?BLbcImQUcK7+kEO0u3exZ4BXhKleKT68+wfBpvGSPdr0S3kz16023LWkOn0m?=
- =?us-ascii?Q?sR3BwVVNIZ2Vws/Vrc9QXxd3kK+5SwmL0i1xZX6S1iGaSkc6W7Vz6l3qmBV4?=
- =?us-ascii?Q?XHVW2lNl/PogAF/HOtCLpZzmvm+tQ7UPRTXRbvGZJt6Q/hzdzibs1Y1j5tEv?=
- =?us-ascii?Q?DJ2kXuTCgeDiU79qva7P8K5kkhSpfHTVXnKEWxnnJLoRQghqQmf9jCC9/ZmD?=
- =?us-ascii?Q?JXPn9GqqXeqoobZ7j81NILUAZQdR5y3C7WUj1fLmniHfpQG56h2A+hFBoLyY?=
- =?us-ascii?Q?juOD/ul3x4t05GFkBugoAJreZQkLk8OnXwhcnEpe8KRVtgwPEz/REjeUfj3t?=
- =?us-ascii?Q?+ONw/zbD8CbtIqlovf8DuhE3iYrVk358YSvteO5t3nyp6cpBb0tkw8wQ8s8s?=
- =?us-ascii?Q?+6afQLJhILw5s9/wqjlCc+pjqfE51DTaBkfd9/Uq4UHHxNtS77RRIG/Y2nrw?=
- =?us-ascii?Q?mhVfQ28CBVgB64QiAIXHBj5feTasZ/CdU7sk3urUoLTAlz6II/7A6L4I+6jF?=
- =?us-ascii?Q?tiIdkwfotOUzAP0b2SupOTAaqT3x0k/dh1gKSmhzlU9Lyt7eTLcKMy/rUKYt?=
- =?us-ascii?Q?uuDs2y+5tqJIbQQI26lvYpe/vFOPfgOOE9eUEoZQBx7dJwYFDp+UiBHkjLSo?=
- =?us-ascii?Q?3rOoKuXfDCMLiSy2lBrd+BPoBOAcpPaKo0GzeL9VcuplCFUXcI9t9i0TvhjM?=
- =?us-ascii?Q?kaMlzlkyatfWTjiKDOk676gCQ0CPAcMAm+48AaRaiy+lyMaIjHeZ6gLej+WV?=
- =?us-ascii?Q?RGCGZ1iWPCuI9QouaBzCuY9l2ip6+LtOv6A76K1vLpIyci5NY4xCZY3vRycA?=
- =?us-ascii?Q?nSVoThMeU7gludBotJzQf8W0qP8cKFhXyKSyY7xN4UpWaAe64qKfH8HeOpP0?=
- =?us-ascii?Q?cDhEJDajTajh4aUj2ynv5SxAGFMpNtY6+z5JjMJSelFrT/m09iAdoF/YJlJy?=
- =?us-ascii?Q?Z1EVXx9BzzDdrs1O05s3eMwRg4gvZRNR8gbnARg6TPAOygcB/GmmIiYnSLmi?=
- =?us-ascii?Q?0ocajyh5sUJZHhI1t4TXt0LtykvrTvw65IiILVu9A20Tp9jeCfU0GSMbpYvi?=
- =?us-ascii?Q?MsaQtN6cyAwv2+ZYoAPPooDvYd8k52l4nF7ZIRBrqprJR/jg+853uZDr7OUg?=
- =?us-ascii?Q?RoRAsvC0uCgbuf8Q+DSmV+v0sjJ6JlWLXBW0EwSs13SN0o4+cPOonXPihX1W?=
- =?us-ascii?Q?QHZr4bR2qJ0wZYdaQ2MkoxgssXPD/0FHbHTnseXHrYVy1QYjyRonWrqsCtpi?=
- =?us-ascii?Q?uSV6w0x+qTjHVuI6giKZfsaHO/ijBbCynCkmo1OK8/m4ZpG0rEvdksV0+AIA?=
- =?us-ascii?Q?dVF4nTUyu8IYIjZzQze9IhG9rhcpt8LzgDPj8HCI31GK3Le3+UsQhlGhdeSQ?=
- =?us-ascii?Q?Q2WZiBUpm+S91x3zymeZIlP7db2CWkbLLfGxD2g0sBNybCarvMMRpJJU0z1p?=
- =?us-ascii?Q?6w=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: d77093b1-345f-4f73-d6a0-08dbf14545d7
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?j4bvsE6SlmavQALS314+oH2NqApokdlIu7feANhdb/N4zT5THMY726gbWhX8?=
+ =?us-ascii?Q?15KkVx6EKXiccP3wi/mYClREW3OGvR0AqVzBlIb1WY1VdriuPjB5fduJBiHS?=
+ =?us-ascii?Q?fSKTf5NbB1LN1ZYaiMHHBTd5DuBXWCVwS+nEwhMukoDFaOUhBpLeNo2GXyS1?=
+ =?us-ascii?Q?f5ZqDnB9PUgoQ4RntjfX3Tr8a/AECSCoTqmL4vP/2MTKRa8PYc7ASBCFdAl6?=
+ =?us-ascii?Q?K6aPg3CtfDDmvogJeEZJ3gF0OqOOS9pzPVFizqspV6XU2ji8YyNgcEZyjmZW?=
+ =?us-ascii?Q?7Ho0ULYXEh6V1g/Rl2d7RllHNo5fP6Zh3OLjKu3XJc4etTFXCz3ioGFwbX29?=
+ =?us-ascii?Q?d0SmubFpAU7mZnSHD6D1Tjl9jJ/BD9CO2Uxz4UhDoPuHD65/79cwP8qyd8qD?=
+ =?us-ascii?Q?XyQj8xcpT9vC13av1GXputXSvAzpu6wUhSne6mIxIZV+PWgNsHnlt5rAaGRI?=
+ =?us-ascii?Q?k9AIc0aaaRbLaM7oQyXYeVwLp9qTJFar3Iubj05y8kw8Gg+bHb4OvdlqJ1DT?=
+ =?us-ascii?Q?/ozbbLw51LNAZTUcvKhVVgzM/kXd5vDWkm+MjuDjcW4YWqjJs8O7lI269v9o?=
+ =?us-ascii?Q?usnNp+RavvIqRbqrGYMjwCoBHmg0VqePpsP/QmAN89UB+g1Z95vtgtVbkkVE?=
+ =?us-ascii?Q?7hl5NBJG+gQWKyJHfjNRb4lt4S9CxqZqUMhO0YxddE0k6+tydkUnoJM8KS/O?=
+ =?us-ascii?Q?3Yj5pkRF9a+wunCneqFRePrpc2glELc0ruPYDK3jjgXOhlcoBSNe7Ru2L1YW?=
+ =?us-ascii?Q?8iwWW0gVaxmhwjNZZjKPOadZGuvvRuen0PiZe8CoDP6BylTHQzw5XhU8id1A?=
+ =?us-ascii?Q?GAxCctNU1v6wXIsj6tKCiW36fjKJn9IrC58PBh/xfRH4iapKUL3xxxElxOkx?=
+ =?us-ascii?Q?VVPmf9VpJfqnIW5TGXoTlK7xKCPQdhi1iR/W774yRcpIIXlR4MhH0YUKQP2C?=
+ =?us-ascii?Q?0s2IaOOeoIeaoPzP34nycW7fkfn4fnNj+Awl1pe8SG8Ua2fegR9lKIN3Uw/X?=
+ =?us-ascii?Q?OM0Mr60XzOHlHgkol5qZ3v/0DGCGTiEnPOCt9C7iCp/SArxGdsO0WoGn38vo?=
+ =?us-ascii?Q?+BoScE2nS+OsjmC7Je0WValX3a0PwdULRGhbGgazb3ZQvu22echCPM55qqmY?=
+ =?us-ascii?Q?Q79Yu2pA9lsGyxltKApAROSTNa8DL0mBgYiKAhcs2JCaX22neSWiE1c0ce2y?=
+ =?us-ascii?Q?fO1ocC91tDoYICjoabvuo2pv77vsoRk2dNi57evHr+H0/nLe9quqpwUbeUQe?=
+ =?us-ascii?Q?zBRnXr56PZFL1j8qVVkCKeO+c1xKKmfV1MMtR+DQxQDc/3cl/CRt9zRe34IO?=
+ =?us-ascii?Q?GmWKwikEdcQ39qc6/aHBCEVqLSDyG4CNXCcGYA8DSPaA+K2JFV/++vAwgniE?=
+ =?us-ascii?Q?Y+9lv0/r/bv8Y08M2nderCwRxNYSdT3tWmYKLpadoapZlhEQYzlmI/94ZEpi?=
+ =?us-ascii?Q?iKABdDBDDL5MoyXDCYNCsy8Y0bSE6XTDyAwNnK5aXXyO02nfrGYdiBQCYXZ1?=
+ =?us-ascii?Q?R7nn/CXCZmDjat6q1/DI3oc1RV6u8H37HNe0v3bM8QfKHneNW4UZZfwfRKou?=
+ =?us-ascii?Q?dQ9C/glS9WkvipNg9xQSx8EaKYEuxwWw+1g/CYIii+2ezQ6rA/GNOYJHdYZy?=
+ =?us-ascii?Q?3A=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 11ed1192-8183-468c-b9e4-08dbf15f99f6
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Nov 2023 01:40:03.3150
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Nov 2023 04:48:31.3520
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7Tgwf9VQrepjmVA3d664tAx4WI58wWytl5bDsYh2PgpUndT/g1PRUDG5VpZwQhmLhCwRd7iU/u8i5WW5j6ZOuA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB4517
+X-MS-Exchange-CrossTenant-UserPrincipalName: gHX+W0G7KYMcQEwUXiXaCH1ds+yCZXByini3ZU/l5DrpVZ/ke1SJmEnsH1CmO7wuTM7LamRTHOlcvMgCdIq1iA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR11MB7393
 X-OriginatorOrg: intel.com
 
 
 
 Hello,
 
-kernel test robot noticed "kernel_BUG_at_include/linux/highmem.h" on:
+kernel test robot noticed "WARNING:at_fs/nfsd/nfs4state.c:#nfs4_free_deleg[nfsd]" on:
 
-commit: 7ea84f5cb7518fa39de48aadafa14f129e9463c5 ("[PATCH] cifs: Set the file size after doing copychunk_range")
-url: https://github.com/intel-lab-lkp/linux/commits/David-Howells/cifs-Set-the-file-size-after-doing-copychunk_range/20231125-055345
-base: git://git.samba.org/sfrench/cifs-2.6.git for-next
-patch link: https://lore.kernel.org/all/1297339.1700862676@warthog.procyon.org.uk/
-patch subject: [PATCH] cifs: Set the file size after doing copychunk_range
+commit: 927562a91e483a71dd172f74f070503da5e3d9c0 ("[PATCH 10/11] nfsd: allow delegation state ids to be revoked and then freed")
+url: https://github.com/intel-lab-lkp/linux/commits/NeilBrown/nfsd-hold-cl_lock-for-hash_delegation_locked/20231124-123723
+base: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git f1a09972a45ae63efbd1587337c4be13b1893330
+patch link: https://lore.kernel.org/all/20231124002925.1816-11-neilb@suse.de/
+patch subject: [PATCH 10/11] nfsd: allow delegation state ids to be revoked and then freed
 
-in testcase: xfstests
-version: xfstests-x86_64-11914614-1_20231122
+in testcase: filebench
+version: filebench-x86_64-22620e6-1_20221010
 with following parameters:
 
-	disk: 4HDD
-	fs: ext4
-	fs2: smbv2
-	test: generic-group-11
+	disk: 1HDD
+	fs: xfs
+	fs2: nfsv4
+	test: webserver.f
+	cpufreq_governor: performance
 
 
 
 compiler: gcc-12
-test machine: 4 threads Intel(R) Core(TM) i5-6500 CPU @ 3.20GHz (Skylake) with 32G memory
+test machine: 128 threads 2 sockets Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz (Ice Lake) with 128G memory
 
 (please refer to attached dmesg/kmsg for entire log/backtrace)
 
@@ -169,131 +168,282 @@ test machine: 4 threads Intel(R) Core(TM) i5-6500 CPU @ 3.20GHz (Skylake) with 3
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202311292134.366c9c0b-oliver.sang@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202311301059.38a31c59-oliver.sang@intel.com
 
-
-[  207.421597][ T2704] ------------[ cut here ]------------
-[  207.427162][ T2704] kernel BUG at include/linux/highmem.h:275!
-[  207.433050][ T2704] invalid opcode: 0000 [#1] PREEMPT SMP KASAN PTI
-[  207.439375][ T2704] CPU: 3 PID: 2704 Comm: fsx Tainted: G S                 6.7.0-rc2-00006-g7ea84f5cb751 #1
-[  207.449260][ T2704] Hardware name: Dell Inc. OptiPlex 7040/0Y7WYT, BIOS 1.8.1 12/05/2017
-[ 207.457394][ T2704] RIP: 0010:zero_user_segments (include/linux/mm.h:2069 include/linux/highmem.h:284) 
-[ 207.464138][ T2704] Code: 41 5e 41 5f c3 48 89 df 89 ea 31 f6 4c 29 f7 44 29 e2 48 c1 ff 06 48 c1 e7 0c 4c 01 ef 4c 01 e7 e8 4f 7e 08 02 e9 5a ff ff ff <0f> 0b 48 89 df e8 60 13 1a 00 eb 91 4c 89 ef e8 36 13 1a 00 eb ae
-All code
-========
-   0:	41 5e                	pop    %r14
-   2:	41 5f                	pop    %r15
-   4:	c3                   	retq   
-   5:	48 89 df             	mov    %rbx,%rdi
-   8:	89 ea                	mov    %ebp,%edx
-   a:	31 f6                	xor    %esi,%esi
-   c:	4c 29 f7             	sub    %r14,%rdi
-   f:	44 29 e2             	sub    %r12d,%edx
-  12:	48 c1 ff 06          	sar    $0x6,%rdi
-  16:	48 c1 e7 0c          	shl    $0xc,%rdi
-  1a:	4c 01 ef             	add    %r13,%rdi
-  1d:	4c 01 e7             	add    %r12,%rdi
-  20:	e8 4f 7e 08 02       	callq  0x2087e74
-  25:	e9 5a ff ff ff       	jmpq   0xffffffffffffff84
-  2a:*	0f 0b                	ud2    		<-- trapping instruction
-  2c:	48 89 df             	mov    %rbx,%rdi
-  2f:	e8 60 13 1a 00       	callq  0x1a1394
-  34:	eb 91                	jmp    0xffffffffffffffc7
-  36:	4c 89 ef             	mov    %r13,%rdi
-  39:	e8 36 13 1a 00       	callq  0x1a1374
-  3e:	eb ae                	jmp    0xffffffffffffffee
-
-Code starting with the faulting instruction
-===========================================
-   0:	0f 0b                	ud2    
-   2:	48 89 df             	mov    %rbx,%rdi
-   5:	e8 60 13 1a 00       	callq  0x1a136a
-   a:	eb 91                	jmp    0xffffffffffffff9d
-   c:	4c 89 ef             	mov    %r13,%rdi
-   f:	e8 36 13 1a 00       	callq  0x1a134a
-  14:	eb ae                	jmp    0xffffffffffffffc4
-[  207.483716][ T2704] RSP: 0018:ffffc90008f6f9d0 EFLAGS: 00010297
-[  207.489673][ T2704] RAX: 0000000000001000 RBX: ffffea0004b3fac0 RCX: ffffffff817f36f2
-[  207.497547][ T2704] RDX: 0000000000000000 RSI: 0000000000000008 RDI: ffffea0004b3fac0
-[  207.505421][ T2704] RBP: 00000000fffe35b2 R08: 0000000000000000 R09: fffff94000967f58
-[  207.513295][ T2704] R10: ffffea0004b3fac7 R11: 0000000000000230 R12: 00000000000007f6
-[  207.521168][ T2704] R13: ffff888000000000 R14: ffffea0000000000 R15: 00000000fffe35b2
-[  207.529042][ T2704] FS:  00007f21a955d740(0000) GS:ffff88879c380000(0000) knlGS:0000000000000000
-[  207.537887][ T2704] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  207.544376][ T2704] CR2: 00007f21a94bf000 CR3: 000000012e1f2002 CR4: 00000000003706f0
-[  207.552250][ T2704] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[  207.560125][ T2704] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[  207.568001][ T2704] Call Trace:
-[  207.571162][ T2704]  <TASK>
-[ 207.573971][ T2704] ? die (arch/x86/kernel/dumpstack.c:421 arch/x86/kernel/dumpstack.c:434 arch/x86/kernel/dumpstack.c:447) 
-[ 207.577572][ T2704] ? do_trap (arch/x86/kernel/traps.c:112 arch/x86/kernel/traps.c:153) 
-[ 207.581695][ T2704] ? zero_user_segments (include/linux/mm.h:2069 include/linux/highmem.h:284) 
-[ 207.587832][ T2704] ? do_error_trap (arch/x86/include/asm/traps.h:59 arch/x86/kernel/traps.c:174) 
-[ 207.592317][ T2704] ? zero_user_segments (include/linux/mm.h:2069 include/linux/highmem.h:284) 
-[ 207.598445][ T2704] ? handle_invalid_op (arch/x86/kernel/traps.c:212) 
-[ 207.603265][ T2704] ? zero_user_segments (include/linux/mm.h:2069 include/linux/highmem.h:284) 
-[ 207.609394][ T2704] ? exc_invalid_op (arch/x86/kernel/traps.c:265) 
-[ 207.613953][ T2704] ? asm_exc_invalid_op (arch/x86/include/asm/idtentry.h:568) 
-[ 207.618875][ T2704] ? zero_user_segments (include/linux/instrumented.h:68 include/asm-generic/bitops/instrumented-non-atomic.h:141 include/linux/mm.h:1063 include/linux/mm.h:1300 include/linux/highmem.h:275) 
-[ 207.624919][ T2704] ? zero_user_segments (include/linux/mm.h:2069 include/linux/highmem.h:284) 
-[ 207.631050][ T2704] ? folio_wait_writeback (arch/x86/include/asm/bitops.h:206 arch/x86/include/asm/bitops.h:238 include/asm-generic/bitops/instrumented-non-atomic.h:142 include/linux/page-flags.h:513 mm/page-writeback.c:3063) 
-[ 207.636219][ T2704] truncate_inode_partial_folio (include/linux/page-flags.h:1113 include/linux/page-flags.h:1118 mm/truncate.c:238) 
-[ 207.642001][ T2704] truncate_inode_pages_range (mm/truncate.c:379) 
-[ 207.647609][ T2704] ? truncate_inode_partial_folio (mm/truncate.c:331) 
-[ 207.653570][ T2704] ? _raw_spin_lock (arch/x86/include/asm/atomic.h:115 include/linux/atomic/atomic-arch-fallback.h:2164 include/linux/atomic/atomic-instrumented.h:1296 include/asm-generic/qspinlock.h:111 include/linux/spinlock.h:187 include/linux/spinlock_api_smp.h:134 kernel/locking/spinlock.c:154) 
-[ 207.658139][ T2704] ? filemap_check_errors (arch/x86/include/asm/bitops.h:206 (discriminator 6) arch/x86/include/asm/bitops.h:238 (discriminator 6) include/asm-generic/bitops/instrumented-non-atomic.h:142 (discriminator 6) mm/filemap.c:350 (discriminator 6)) 
-[ 207.663229][ T2704] cifs_file_copychunk_range (fs/smb/client/cifsfs.c:1312) cifs
-[ 207.669432][ T2704] cifs_copy_file_range (fs/smb/client/cifsfs.c:1365) cifs
-[ 207.675110][ T2704] vfs_copy_file_range (fs/read_write.c:1509) 
-[ 207.680199][ T2704] ? generic_file_rw_checks (fs/read_write.c:1478) 
-[ 207.685630][ T2704] ? kernel_write (fs/read_write.c:565) 
-[ 207.690186][ T2704] ? preempt_notifier_dec (kernel/sched/core.c:10106) 
-[ 207.695268][ T2704] ? smb3_llseek (fs/smb/client/smb2ops.c:3770) cifs
-[ 207.700419][ T2704] __do_sys_copy_file_range (fs/read_write.c:1595) 
-[ 207.705863][ T2704] ? vfs_copy_file_range (fs/read_write.c:1561) 
-[ 207.711206][ T2704] ? ksys_write (fs/read_write.c:637) 
-[ 207.715499][ T2704] ? __ia32_sys_read (fs/read_write.c:627) 
-[ 207.720145][ T2704] ? fpregs_restore_userregs (arch/x86/include/asm/bitops.h:75 include/asm-generic/bitops/instrumented-atomic.h:42 include/linux/thread_info.h:94 arch/x86/kernel/fpu/context.h:79) 
-[ 207.725576][ T2704] do_syscall_64 (arch/x86/entry/common.c:51 arch/x86/entry/common.c:82) 
-[ 207.729885][ T2704] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:129) 
-[  207.735664][ T2704] RIP: 0033:0x7f21a9654f29
-[ 207.739958][ T2704] Code: 00 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 37 8f 0d 00 f7 d8 64 89 01 48
-All code
-========
-   0:	00 c3                	add    %al,%bl
-   2:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
-   9:	00 00 00 
-   c:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
-  11:	48 89 f8             	mov    %rdi,%rax
-  14:	48 89 f7             	mov    %rsi,%rdi
-  17:	48 89 d6             	mov    %rdx,%rsi
-  1a:	48 89 ca             	mov    %rcx,%rdx
-  1d:	4d 89 c2             	mov    %r8,%r10
-  20:	4d 89 c8             	mov    %r9,%r8
-  23:	4c 8b 4c 24 08       	mov    0x8(%rsp),%r9
-  28:	0f 05                	syscall 
-  2a:*	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax		<-- trapping instruction
-  30:	73 01                	jae    0x33
-  32:	c3                   	retq   
-  33:	48 8b 0d 37 8f 0d 00 	mov    0xd8f37(%rip),%rcx        # 0xd8f71
-  3a:	f7 d8                	neg    %eax
-  3c:	64 89 01             	mov    %eax,%fs:(%rcx)
-  3f:	48                   	rex.W
-
-Code starting with the faulting instruction
-===========================================
-   0:	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax
-   6:	73 01                	jae    0x9
-   8:	c3                   	retq   
-   9:	48 8b 0d 37 8f 0d 00 	mov    0xd8f37(%rip),%rcx        # 0xd8f47
-  10:	f7 d8                	neg    %eax
-  12:	64 89 01             	mov    %eax,%fs:(%rcx)
-  15:	48                   	rex.W
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20231129/202311292134.366c9c0b-oliver.sang@intel.com
+https://download.01.org/0day-ci/archive/20231130/202311301059.38a31c59-oliver.sang@intel.com
 
+
+[  307.542673][ T3954] ------------[ cut here ]------------
+[  307.548304][ T3954] WARNING: CPU: 43 PID: 3954 at fs/nfsd/nfs4state.c:1075 nfs4_free_deleg+0x68/0xb0 [nfsd]
+[  307.558383][ T3954] Modules linked in: rpcsec_gss_krb5 nfsv4 dns_resolver nfsd auth_rpcgss xfs dm_mod kmem device_dax nd_pmem nd_btt dax_pmem btrfs blake2b_generic xor raid6_pq libcrc32c sd_mod t10_pi crc64_rocksoft_generic crc64_rocksoft crc64 sg intel_rapl_msr intel_rapl_common x86_pkg_temp_thermal intel_powerclamp coretemp kvm_intel kvm irqbypass crct10dif_pclmul crc32_pclmul crc32c_intel ghash_clmulni_intel sha512_ssse3 rapl ast ahci drm_shmem_helper libahci mei_me intel_cstate ipmi_ssif ioatdma i2c_i801 acpi_ipmi libata drm_kms_helper mei intel_uncore i2c_smbus joydev intel_pch_thermal dca dax_hmem wmi ipmi_si ipmi_devintf ipmi_msghandler nfit libnvdimm acpi_pad acpi_power_meter drm fuse ip_tables
+[  307.622302][ T3954] CPU: 43 PID: 3954 Comm: nfsd Tainted: G S                 6.7.0-rc2-00157-g927562a91e48 #1
+[  307.632555][ T3954] Hardware name: Intel Corporation M50CYP2SB1U/M50CYP2SB1U, BIOS SE5C620.86B.01.01.0003.2104260124 04/26/2021
+[  307.644544][ T3954] RIP: 0010:nfs4_free_deleg+0x68/0xb0 [nfsd]
+[  307.650693][ T3954] Code: 75 46 48 8b 3d c9 99 03 00 e8 b4 be f9 bf f0 48 ff 0d a4 99 03 00 c3 cc cc cc cc 0f 0b 48 8b 56 48 48 8d 46 48 48 39 c2 74 be <0f> 0b 48 8b 56 58 48 8d 46 58 48 39 c2 74 bc 0f 0b 48 8b 56 68 48
+[  307.670673][ T3954] RSP: 0018:ffa000000b187ce0 EFLAGS: 00010206
+[  307.676902][ T3954] RAX: ff110001498131b0 RBX: ff11000149813168 RCX: 0000000000000000
+[  307.685072][ T3954] RDX: ff11000220359598 RSI: ff11000149813168 RDI: ff11000149813168
+[  307.693174][ T3954] RBP: ff11001088cca820 R08: ff11001085b73288 R09: ff11001088cca500
+[  307.701270][ T3954] R10: ffa000000b187cb0 R11: ffa000000b187cb8 R12: ff11001088cca4c0
+[  307.709374][ T3954] R13: ff11000220359560 R14: ff110001abf0e028 R15: ffa000000b187d50
+[  307.717474][ T3954] FS:  0000000000000000(0000) GS:ff11001fff4c0000(0000) knlGS:0000000000000000
+[  307.726523][ T3954] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  307.733228][ T3954] CR2: 0000000000451c00 CR3: 000000207e01c005 CR4: 0000000000771ef0
+[  307.741326][ T3954] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  307.749419][ T3954] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  307.757510][ T3954] PKRU: 55555554
+[  307.761182][ T3954] Call Trace:
+[  307.764594][ T3954]  <TASK>
+[  307.767648][ T3954]  ? nfs4_free_deleg+0x68/0xb0 [nfsd]
+[  307.773161][ T3954]  ? __warn+0x81/0x130
+[  307.777344][ T3954]  ? nfs4_free_deleg+0x68/0xb0 [nfsd]
+[  307.782887][ T3954]  ? report_bug+0x15d/0x1b0
+[  307.787494][ T3954]  ? handle_bug+0x3c/0x70
+[  307.791978][ T3954]  ? exc_invalid_op+0x17/0x70
+[  307.796759][ T3954]  ? asm_exc_invalid_op+0x1a/0x20
+[  307.801914][ T3954]  ? nfs4_free_deleg+0x68/0xb0 [nfsd]
+[  307.807407][ T3954]  nfs4_put_stid+0x6e/0xb0 [nfsd]
+[  307.812556][ T3954]  nfsd4_lookup_stateid+0x11b/0x170 [nfsd]
+[  307.818482][ T3954]  nfsd4_delegreturn+0xa8/0x170 [nfsd]
+[  307.824060][ T3954]  nfsd4_proc_compound+0x345/0x630 [nfsd]
+[  307.829931][ T3954]  nfsd_dispatch+0xfd/0x230 [nfsd]
+[  307.835155][ T3954]  ? __pfx_nfsd+0x10/0x10 [nfsd]
+[  307.840194][ T3954]  svc_process_common+0x2f5/0x5f0
+[  307.845298][ T3954]  ? __pfx_nfsd_dispatch+0x10/0x10 [nfsd]
+[  307.851118][ T3954]  ? __pfx_nfsd+0x10/0x10 [nfsd]
+[  307.856149][ T3954]  svc_process+0x131/0x170
+[  307.860636][ T3954]  svc_handle_xprt+0x4b0/0x5b0
+[  307.865468][ T3954]  ? __pfx_nfsd+0x10/0x10 [nfsd]
+[  307.870500][ T3954]  svc_recv+0x17e/0x2f0
+[  307.874720][ T3954]  nfsd+0x77/0xf0 [nfsd]
+[  307.879049][ T3954]  kthread+0xcd/0x130
+[  307.883087][ T3954]  ? __pfx_kthread+0x10/0x10
+[  307.887722][ T3954]  ret_from_fork+0x31/0x70
+[  307.892183][ T3954]  ? __pfx_kthread+0x10/0x10
+[  307.896830][ T3954]  ret_from_fork_asm+0x1b/0x30
+[  307.901627][ T3954]  </TASK>
+[  307.904679][ T3954] ---[ end trace 0000000000000000 ]---
+[  307.910161][ T3954] ------------[ cut here ]------------
+[  307.915636][ T3954] WARNING: CPU: 43 PID: 3954 at fs/nfsd/nfs4state.c:1076 nfs4_free_deleg+0x77/0xb0 [nfsd]
+[  307.925562][ T3954] Modules linked in: rpcsec_gss_krb5 nfsv4 dns_resolver nfsd auth_rpcgss xfs dm_mod kmem device_dax nd_pmem nd_btt dax_pmem btrfs blake2b_generic xor raid6_pq libcrc32c sd_mod t10_pi crc64_rocksoft_generic crc64_rocksoft crc64 sg intel_rapl_msr intel_rapl_common x86_pkg_temp_thermal intel_powerclamp coretemp kvm_intel kvm irqbypass crct10dif_pclmul crc32_pclmul crc32c_intel ghash_clmulni_intel sha512_ssse3 rapl ast ahci drm_shmem_helper libahci mei_me intel_cstate ipmi_ssif ioatdma i2c_i801 acpi_ipmi libata drm_kms_helper mei intel_uncore i2c_smbus joydev intel_pch_thermal dca dax_hmem wmi ipmi_si ipmi_devintf ipmi_msghandler nfit libnvdimm acpi_pad acpi_power_meter drm fuse ip_tables
+[  307.988853][ T3954] CPU: 43 PID: 3954 Comm: nfsd Tainted: G S      W          6.7.0-rc2-00157-g927562a91e48 #1
+[  307.999025][ T3954] Hardware name: Intel Corporation M50CYP2SB1U/M50CYP2SB1U, BIOS SE5C620.86B.01.01.0003.2104260124 04/26/2021
+[  308.010876][ T3954] RIP: 0010:nfs4_free_deleg+0x77/0xb0 [nfsd]
+[  308.016969][ T3954] Code: 48 ff 0d a4 99 03 00 c3 cc cc cc cc 0f 0b 48 8b 56 48 48 8d 46 48 48 39 c2 74 be 0f 0b 48 8b 56 58 48 8d 46 58 48 39 c2 74 bc <0f> 0b 48 8b 56 68 48 8d 46 68 48 39 c2 74 ba 0f 0b eb b6 66 66 2e
+[  308.036795][ T3954] RSP: 0018:ffa000000b187ce0 EFLAGS: 00010283
+[  308.042959][ T3954] RAX: ff110001498131c0 RBX: ff11000149813168 RCX: 0000000000000000
+[  308.050984][ T3954] RDX: ff11000149810388 RSI: ff11000149813168 RDI: ff11000149813168
+[  308.059011][ T3954] RBP: ff11001088cca820 R08: ff11001085b73288 R09: ff11001088cca500
+[  308.067036][ T3954] R10: ffa000000b187cb0 R11: ffa000000b187cb8 R12: ff11001088cca4c0
+[  308.075060][ T3954] R13: ff11000220359560 R14: ff110001abf0e028 R15: ffa000000b187d50
+[  308.083085][ T3954] FS:  0000000000000000(0000) GS:ff11001fff4c0000(0000) knlGS:0000000000000000
+[  308.092068][ T3954] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  308.098710][ T3954] CR2: 0000000000451c00 CR3: 000000207e01c005 CR4: 0000000000771ef0
+[  308.106747][ T3954] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  308.114797][ T3954] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  308.122857][ T3954] PKRU: 55555554
+[  308.126471][ T3954] Call Trace:
+[  308.129852][ T3954]  <TASK>
+[  308.132887][ T3954]  ? nfs4_free_deleg+0x77/0xb0 [nfsd]
+[  308.138353][ T3954]  ? __warn+0x81/0x130
+[  308.142486][ T3954]  ? nfs4_free_deleg+0x77/0xb0 [nfsd]
+[  308.148003][ T3954]  ? report_bug+0x15d/0x1b0
+[  308.152574][ T3954]  ? handle_bug+0x3c/0x70
+[  308.156970][ T3954]  ? exc_invalid_op+0x17/0x70
+[  308.161708][ T3954]  ? asm_exc_invalid_op+0x1a/0x20
+[  308.166817][ T3954]  ? nfs4_free_deleg+0x77/0xb0 [nfsd]
+[  308.172280][ T3954]  nfs4_put_stid+0x6e/0xb0 [nfsd]
+[  308.177393][ T3954]  nfsd4_lookup_stateid+0x11b/0x170 [nfsd]
+[  308.183290][ T3954]  nfsd4_delegreturn+0xa8/0x170 [nfsd]
+[  308.188864][ T3954]  nfsd4_proc_compound+0x345/0x630 [nfsd]
+[  308.194680][ T3954]  nfsd_dispatch+0xfd/0x230 [nfsd]
+[  308.199925][ T3954]  ? __pfx_nfsd+0x10/0x10 [nfsd]
+[  308.204965][ T3954]  svc_process_common+0x2f5/0x5f0
+[  308.210054][ T3954]  ? __pfx_nfsd_dispatch+0x10/0x10 [nfsd]
+[  308.215907][ T3954]  ? __pfx_nfsd+0x10/0x10 [nfsd]
+[  308.220991][ T3954]  svc_process+0x131/0x170
+[  308.225468][ T3954]  svc_handle_xprt+0x4b0/0x5b0
+[  308.230299][ T3954]  ? __pfx_nfsd+0x10/0x10 [nfsd]
+[  308.235327][ T3954]  svc_recv+0x17e/0x2f0
+[  308.239542][ T3954]  nfsd+0x77/0xf0 [nfsd]
+[  308.243909][ T3954]  kthread+0xcd/0x130
+[  308.247959][ T3954]  ? __pfx_kthread+0x10/0x10
+[  308.252594][ T3954]  ret_from_fork+0x31/0x70
+[  308.257057][ T3954]  ? __pfx_kthread+0x10/0x10
+[  308.261686][ T3954]  ret_from_fork_asm+0x1b/0x30
+[  308.266478][ T3954]  </TASK>
+[  308.269533][ T3954] ---[ end trace 0000000000000000 ]---
+[  308.275016][ T3954] ------------[ cut here ]------------
+[  308.280488][ T3954] WARNING: CPU: 43 PID: 3954 at fs/nfsd/nfs4state.c:598 put_nfs4_file+0x5c/0x70 [nfsd]
+[  308.290156][ T3954] Modules linked in: rpcsec_gss_krb5 nfsv4 dns_resolver nfsd auth_rpcgss xfs dm_mod kmem device_dax nd_pmem nd_btt dax_pmem btrfs blake2b_generic xor raid6_pq libcrc32c sd_mod t10_pi crc64_rocksoft_generic crc64_rocksoft crc64 sg intel_rapl_msr intel_rapl_common x86_pkg_temp_thermal intel_powerclamp coretemp kvm_intel kvm irqbypass crct10dif_pclmul crc32_pclmul crc32c_intel ghash_clmulni_intel sha512_ssse3 rapl ast ahci drm_shmem_helper libahci mei_me intel_cstate ipmi_ssif ioatdma i2c_i801 acpi_ipmi libata drm_kms_helper mei intel_uncore i2c_smbus joydev intel_pch_thermal dca dax_hmem wmi ipmi_si ipmi_devintf ipmi_msghandler nfit libnvdimm acpi_pad acpi_power_meter drm fuse ip_tables
+[  308.353356][ T3954] CPU: 43 PID: 3954 Comm: nfsd Tainted: G S      W          6.7.0-rc2-00157-g927562a91e48 #1
+[  308.363522][ T3954] Hardware name: Intel Corporation M50CYP2SB1U/M50CYP2SB1U, BIOS SE5C620.86B.01.01.0003.2104260124 04/26/2021
+[  308.375339][ T3954] RIP: 0010:put_nfs4_file+0x5c/0x70 [nfsd]
+[  308.381204][ T3954] Code: 48 39 c2 75 29 48 8b 43 38 48 8d 7b 38 48 39 c7 75 18 48 c7 c6 90 07 48 c1 5b e9 6f 40 d4 bf be 03 00 00 00 5b e9 e4 fa 2e c0 <0f> 0b eb e4 0f 0b eb d3 66 66 2e 0f 1f 84 00 00 00 00 00 90 90 90
+[  308.401096][ T3954] RSP: 0018:ffa000000b187d00 EFLAGS: 00010206
+[  308.407207][ T3954] RAX: ff110001498131b0 RBX: ff11000220359560 RCX: 00000000000003e7
+[  308.415227][ T3954] RDX: ff110002203595a8 RSI: 00000000cccccccd RDI: ff11000220359598
+[  308.423248][ T3954] RBP: 0000000000000000 R08: 0000000000000000 R09: ffffffffc1480801
+[  308.431277][ T3954] R10: ff11000149813168 R11: 0000000000000001 R12: 0000000000000004
+[  308.439303][ T3954] R13: 000000003f270000 R14: ff110001abf0e028 R15: ffa000000b187d50
+[  308.447330][ T3954] FS:  0000000000000000(0000) GS:ff11001fff4c0000(0000) knlGS:0000000000000000
+[  308.456317][ T3954] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  308.462972][ T3954] CR2: 0000000000451c00 CR3: 000000207e01c005 CR4: 0000000000771ef0
+[  308.471005][ T3954] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  308.479039][ T3954] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  308.487076][ T3954] PKRU: 55555554
+[  308.490692][ T3954] Call Trace:
+[  308.494048][ T3954]  <TASK>
+[  308.497052][ T3954]  ? put_nfs4_file+0x5c/0x70 [nfsd]
+[  308.502340][ T3954]  ? __warn+0x81/0x130
+[  308.506475][ T3954]  ? put_nfs4_file+0x5c/0x70 [nfsd]
+[  308.511782][ T3954]  ? report_bug+0x15d/0x1b0
+[  308.516353][ T3954]  ? handle_bug+0x3c/0x70
+[  308.520742][ T3954]  ? exc_invalid_op+0x17/0x70
+[  308.525477][ T3954]  ? asm_exc_invalid_op+0x1a/0x20
+[  308.530566][ T3954]  ? __pfx_nfs4_free_deleg+0x1/0x10 [nfsd]
+[  308.536460][ T3954]  ? put_nfs4_file+0x5c/0x70 [nfsd]
+[  308.541748][ T3954]  nfsd4_lookup_stateid+0x11b/0x170 [nfsd]
+[  308.547655][ T3954]  nfsd4_delegreturn+0xa8/0x170 [nfsd]
+[  308.553203][ T3954]  nfsd4_proc_compound+0x345/0x630 [nfsd]
+[  308.559015][ T3954]  nfsd_dispatch+0xfd/0x230 [nfsd]
+[  308.564223][ T3954]  ? __pfx_nfsd+0x10/0x10 [nfsd]
+[  308.569255][ T3954]  svc_process_common+0x2f5/0x5f0
+[  308.574345][ T3954]  ? __pfx_nfsd_dispatch+0x10/0x10 [nfsd]
+[  308.580150][ T3954]  ? __pfx_nfsd+0x10/0x10 [nfsd]
+[  308.585177][ T3954]  svc_process+0x131/0x170
+[  308.589661][ T3954]  svc_handle_xprt+0x4b0/0x5b0
+[  308.594494][ T3954]  ? __pfx_nfsd+0x10/0x10 [nfsd]
+[  308.599521][ T3954]  svc_recv+0x17e/0x2f0
+[  308.603735][ T3954]  nfsd+0x77/0xf0 [nfsd]
+[  308.608074][ T3954]  kthread+0xcd/0x130
+[  308.612107][ T3954]  ? __pfx_kthread+0x10/0x10
+[  308.616749][ T3954]  ret_from_fork+0x31/0x70
+[  308.621218][ T3954]  ? __pfx_kthread+0x10/0x10
+[  308.625875][ T3954]  ret_from_fork_asm+0x1b/0x30
+[  308.630667][ T3954]  </TASK>
+[  308.633720][ T3954] ---[ end trace 0000000000000000 ]---
+[  308.639455][ T3954] ------------[ cut here ]------------
+[  308.644956][ T3954] refcount_t: addition on 0; use-after-free.
+[  308.651007][ T3954] WARNING: CPU: 39 PID: 3954 at lib/refcount.c:25 refcount_warn_saturate+0x9b/0x130
+[  308.660431][ T3954] Modules linked in: rpcsec_gss_krb5 nfsv4 dns_resolver nfsd auth_rpcgss xfs dm_mod kmem device_dax nd_pmem nd_btt dax_pmem btrfs blake2b_generic xor raid6_pq libcrc32c sd_mod t10_pi crc64_rocksoft_generic crc64_rocksoft crc64 sg intel_rapl_msr intel_rapl_common x86_pkg_temp_thermal intel_powerclamp coretemp kvm_intel kvm irqbypass crct10dif_pclmul crc32_pclmul crc32c_intel ghash_clmulni_intel sha512_ssse3 rapl ast ahci drm_shmem_helper libahci mei_me intel_cstate ipmi_ssif ioatdma i2c_i801 acpi_ipmi libata drm_kms_helper mei intel_uncore i2c_smbus joydev intel_pch_thermal dca dax_hmem wmi ipmi_si ipmi_devintf ipmi_msghandler nfit libnvdimm acpi_pad acpi_power_meter drm fuse ip_tables
+[  308.723741][ T3954] CPU: 39 PID: 3954 Comm: nfsd Tainted: G S      W          6.7.0-rc2-00157-g927562a91e48 #1
+[  308.733961][ T3954] Hardware name: Intel Corporation M50CYP2SB1U/M50CYP2SB1U, BIOS SE5C620.86B.01.01.0003.2104260124 04/26/2021
+[  308.745793][ T3954] RIP: 0010:refcount_warn_saturate+0x9b/0x130
+[  308.751935][ T3954] Code: 01 01 e8 08 f0 98 ff 0f 0b c3 cc cc cc cc 80 3d 12 3e 9e 01 00 75 a8 48 c7 c7 c8 f7 96 82 c6 05 02 3e 9e 01 01 e8 e5 ef 98 ff <0f> 0b c3 cc cc cc cc 80 3d ee 3d 9e 01 00 75 85 48 c7 c7 f8 f7 96
+[  308.771763][ T3954] RSP: 0018:ffa000000b187c08 EFLAGS: 00010282
+[  308.777918][ T3954] RAX: 0000000000000000 RBX: ff11000149813168 RCX: 0000000000000000
+[  308.785997][ T3954] RDX: ff11001fff3ecd00 RSI: ff11001fff3e0840 RDI: ff11001fff3e0840
+[  308.794022][ T3954] RBP: ff11000220359574 R08: 0000000000000000 R09: ffa000000b187a98
+[  308.802048][ T3954] R10: 0000000000000003 R11: ffffffff82fdd6e8 R12: ff110001c8bf0870
+[  308.810073][ T3954] R13: ff11000220359560 R14: ff1100207a3ad368 R15: 000000010000c13c
+[  308.818102][ T3954] FS:  0000000000000000(0000) GS:ff11001fff3c0000(0000) knlGS:0000000000000000
+[  308.827095][ T3954] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  308.833742][ T3954] CR2: 0000000000451c00 CR3: 000000108649e002 CR4: 0000000000771ef0
+[  308.841794][ T3954] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  308.849859][ T3954] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  308.857943][ T3954] PKRU: 55555554
+[  308.861565][ T3954] Call Trace:
+[  308.864977][ T3954]  <TASK>
+[  308.867982][ T3954]  ? refcount_warn_saturate+0x9b/0x130
+[  308.873503][ T3954]  ? __warn+0x81/0x130
+[  308.877639][ T3954]  ? refcount_warn_saturate+0x9b/0x130
+[  308.883168][ T3954]  ? report_bug+0x15d/0x1b0
+[  308.887734][ T3954]  ? prb_read_valid+0x1b/0x30
+[  308.892481][ T3954]  ? handle_bug+0x3c/0x70
+[  308.896911][ T3954]  ? exc_invalid_op+0x17/0x70
+[  308.901651][ T3954]  ? asm_exc_invalid_op+0x1a/0x20
+[  308.906739][ T3954]  ? refcount_warn_saturate+0x9b/0x130
+[  308.912261][ T3954]  ? refcount_warn_saturate+0x9b/0x130
+[  308.917790][ T3954]  nfsd_break_deleg_cb+0x161/0x170 [nfsd]
+[  308.923605][ T3954]  __break_lease+0x22f/0x6b0
+[  308.928267][ T3954]  vfs_unlink+0xe0/0x2b0
+[  308.932575][ T3954]  nfsd_unlink+0x18a/0x330 [nfsd]
+[  308.937699][ T3954]  nfsd4_remove+0x4f/0xb0 [nfsd]
+[  308.942731][ T3954]  nfsd4_proc_compound+0x345/0x630 [nfsd]
+[  308.948556][ T3954]  nfsd_dispatch+0xfd/0x230 [nfsd]
+[  308.953778][ T3954]  ? __pfx_nfsd+0x10/0x10 [nfsd]
+[  308.958830][ T3954]  svc_process_common+0x2f5/0x5f0
+[  308.963971][ T3954]  ? __pfx_nfsd_dispatch+0x10/0x10 [nfsd]
+[  308.969797][ T3954]  ? __pfx_nfsd+0x10/0x10 [nfsd]
+[  308.974845][ T3954]  svc_process+0x131/0x170
+[  308.979320][ T3954]  svc_handle_xprt+0x4b0/0x5b0
+[  308.984138][ T3954]  ? __pfx_nfsd+0x10/0x10 [nfsd]
+[  308.989149][ T3954]  svc_recv+0x17e/0x2f0
+[  308.993347][ T3954]  nfsd+0x77/0xf0 [nfsd]
+[  308.997647][ T3954]  kthread+0xcd/0x130
+[  309.001664][ T3954]  ? __pfx_kthread+0x10/0x10
+[  309.006277][ T3954]  ret_from_fork+0x31/0x70
+[  309.010720][ T3954]  ? __pfx_kthread+0x10/0x10
+[  309.015325][ T3954]  ret_from_fork_asm+0x1b/0x30
+[  309.020109][ T3954]  </TASK>
+[  309.023141][ T3954] ---[ end trace 0000000000000000 ]---
+[  400.427843][  T786] list_del corruption. prev->next should be ff110001498131b0, but was ff1100108544ea60. (prev=ff11000220359598)
+[  400.439548][  T786] ------------[ cut here ]------------
+[  400.444876][  T786] kernel BUG at lib/list_debug.c:62!
+[  400.450034][  T786] invalid opcode: 0000 [#1] SMP NOPTI
+[  400.455266][  T786] CPU: 4 PID: 786 Comm: kworker/u257:1 Tainted: G S      W          6.7.0-rc2-00157-g927562a91e48 #1
+[  400.465964][  T786] Hardware name: Intel Corporation M50CYP2SB1U/M50CYP2SB1U, BIOS SE5C620.86B.01.01.0003.2104260124 04/26/2021
+[  400.477438][  T786] Workqueue: nfsd4 laundromat_main [nfsd]
+[  400.483084][  T786] RIP: 0010:__list_del_entry_valid_or_report+0xa7/0xf0
+[  400.489791][  T786] Code: a1 ff 0f 0b 48 89 fe 48 89 ca 48 c7 c7 c8 02 97 82 e8 ed 20 a1 ff 0f 0b 48 89 fe 48 89 c2 48 c7 c7 00 03 97 82 e8 d9 20 a1 ff <0f> 0b 48 89 d1 48 c7 c7 50 03 97 82 48 89 f2 48 89 c6 e8 c2 20 a1
+[  400.509242][  T786] RSP: 0018:ffa000000890fdb0 EFLAGS: 00010246
+[  400.515165][  T786] RAX: 000000000000006d RBX: ff11000149813168 RCX: 0000000000000000
+[  400.522992][  T786] RDX: 0000000000000000 RSI: ff1100103f320840 RDI: ff1100103f320840
+[  400.530820][  T786] RBP: ff11000220359574 R08: 0000000000000000 R09: ffa000000890fc58
+[  400.538652][  T786] R10: 0000000000000003 R11: ffffffff82fdd6e8 R12: ff110001498131b0
+[  400.546478][  T786] R13: ff110001498131d0 R14: ff1100012079c4b0 R15: ff1100012079c4b0
+[  400.554307][  T786] FS:  0000000000000000(0000) GS:ff1100103f300000(0000) knlGS:0000000000000000
+[  400.563093][  T786] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  400.569538][  T786] CR2: 0000000000451c00 CR3: 000000207e01c002 CR4: 0000000000771ef0
+[  400.577366][  T786] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  400.585191][  T786] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  400.593018][  T786] PKRU: 55555554
+[  400.596420][  T786] Call Trace:
+[  400.599569][  T786]  <TASK>
+[  400.602365][  T786]  ? die+0x36/0xb0
+[  400.605945][  T786]  ? do_trap+0xda/0x130
+[  400.609959][  T786]  ? __list_del_entry_valid_or_report+0xa7/0xf0
+[  400.616053][  T786]  ? do_error_trap+0x65/0xb0
+[  400.620497][  T786]  ? __list_del_entry_valid_or_report+0xa7/0xf0
+[  400.626592][  T786]  ? exc_invalid_op+0x50/0x70
+[  400.631131][  T786]  ? __list_del_entry_valid_or_report+0xa7/0xf0
+[  400.637223][  T786]  ? asm_exc_invalid_op+0x1a/0x20
+[  400.642102][  T786]  ? __list_del_entry_valid_or_report+0xa7/0xf0
+[  400.648198][  T786]  unhash_delegation_locked+0xb1/0x130 [nfsd]
+[  400.654153][  T786]  nfs4_laundromat+0x54c/0x670 [nfsd]
+[  400.659409][  T786]  laundromat_main+0x19/0x70 [nfsd]
+[  400.664497][  T786]  process_one_work+0x173/0x330
+[  400.669211][  T786]  worker_thread+0x27f/0x3b0
+[  400.673658][  T786]  ? __pfx_worker_thread+0x10/0x10
+[  400.678625][  T786]  kthread+0xcd/0x130
+[  400.682469][  T786]  ? __pfx_kthread+0x10/0x10
+[  400.686918][  T786]  ret_from_fork+0x31/0x70
+[  400.691188][  T786]  ? __pfx_kthread+0x10/0x10
+[  400.695893][  T786]  ret_from_fork_asm+0x1b/0x30
+[  400.700743][  T786]  </TASK>
+[  400.703858][  T786] Modules linked in: rpcsec_gss_krb5 nfsv4 dns_resolver nfsd auth_rpcgss xfs dm_mod kmem device_dax nd_pmem nd_btt dax_pmem btrfs blake2b_generic xor raid6_pq libcrc32c sd_mod t10_pi crc64_rocksoft_generic crc64_rocksoft crc64 sg intel_rapl_msr intel_rapl_common x86_pkg_temp_thermal intel_powerclamp coretemp kvm_intel kvm irqbypass crct10dif_pclmul crc32_pclmul crc32c_intel ghash_clmulni_intel sha512_ssse3 rapl ast ahci drm_shmem_helper libahci mei_me intel_cstate ipmi_ssif ioatdma i2c_i801 acpi_ipmi libata drm_kms_helper mei intel_uncore i2c_smbus joydev intel_pch_thermal dca dax_hmem wmi ipmi_si ipmi_devintf ipmi_msghandler nfit libnvdimm acpi_pad acpi_power_meter drm fuse ip_tables
+[  400.767434][  T786] ---[ end trace 0000000000000000 ]---
+[  400.783218][  T786] pstore: backend (erst) writing error (-28)
+[  400.789259][  T786] RIP: 0010:__list_del_entry_valid_or_report+0xa7/0xf0
+[  400.796164][  T786] Code: a1 ff 0f 0b 48 89 fe 48 89 ca 48 c7 c7 c8 02 97 82 e8 ed 20 a1 ff 0f 0b 48 89 fe 48 89 c2 48 c7 c7 00 03 97 82 e8 d9 20 a1 ff <0f> 0b 48 89 d1 48 c7 c7 50 03 97 82 48 89 f2 48 89 c6 e8 c2 20 a1
+[  400.816092][  T786] RSP: 0018:ffa000000890fdb0 EFLAGS: 00010246
+[  400.822214][  T786] RAX: 000000000000006d RBX: ff11000149813168 RCX: 0000000000000000
+[  400.830249][  T786] RDX: 0000000000000000 RSI: ff1100103f320840 RDI: ff1100103f320840
+[  400.838278][  T786] RBP: ff11000220359574 R08: 0000000000000000 R09: ffa000000890fc58
+[  400.846304][  T786] R10: 0000000000000003 R11: ffffffff82fdd6e8 R12: ff110001498131b0
+[  400.854330][  T786] R13: ff110001498131d0 R14: ff1100012079c4b0 R15: ff1100012079c4b0
+[  400.862357][  T786] FS:  0000000000000000(0000) GS:ff1100103f300000(0000) knlGS:0000000000000000
+[  400.871346][  T786] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  400.877996][  T786] CR2: 0000000000451c00 CR3: 000000207e01c002 CR4: 0000000000771ef0
+[  400.886025][  T786] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  400.894049][  T786] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  400.902072][  T786] PKRU: 55555554
+[  400.905677][  T786] Kernel panic - not syncing: Fatal exception
+[  400.957082][  T786] Kernel Offset: disabled
 
 
 -- 
