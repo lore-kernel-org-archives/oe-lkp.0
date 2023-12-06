@@ -1,96 +1,77 @@
-Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [62.89.141.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 727611D682
-	for <oe-lkp@lists.linux.dev>; Wed,  6 Dec 2023 16:52:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11B5C49F82
+	for <oe-lkp@lists.linux.dev>; Wed,  6 Dec 2023 17:10:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zeniv.linux.org.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ftp.linux.org.uk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZQ6dnUwY"
-Received: by mail-ot1-f51.google.com with SMTP id 46e09a7af769-6d9d307a732so203608a34.1
-        for <oe-lkp@lists.linux.dev>; Wed, 06 Dec 2023 08:52:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1701881563; x=1702486363; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:references:in-reply-to
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=i1au5lbtdhuYhTzxu7K3e1mZkKqka6jLLtZkjNaoKMc=;
-        b=ZQ6dnUwYee6y1OteB8bhIJjRsD16KjP14npvqDZASV2g7lN2h1vbOUz7A6QHOpx1XV
-         q6zJBTeJmdjTQxSky3iHgv+XBHXdKDhkyXBt+kb6J9hRp2rvLtcyF/ZLm9PJ2kl1P6YT
-         TfUlGOVbAnpI9VWCw1DumStFW+8E/YPSnvl0siMXGzbq7+4Q2nWJ32oXV7WSnZdko+zW
-         HHQlowSB2FBRL1Qrf3Pa5NgD8/QtwGqHYzqorGgzeTIspmA8ZePMFuJmXeqhnwqsU5hC
-         mwLQ99GcobspSCOZm5PmnbnP6Sa9/PsuZWMMSRW9jBT4zJFhzoaECazndRg3TIBXoLyo
-         +v8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701881563; x=1702486363;
-        h=cc:to:subject:message-id:date:from:references:in-reply-to
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=i1au5lbtdhuYhTzxu7K3e1mZkKqka6jLLtZkjNaoKMc=;
-        b=JM52Q0XfwDiDgiTSJtFSiYOCsCZr3eu1WxDa6Qu9duA2fyKCbqXkP/YopGcevncH7w
-         nvGgornW0oNKEZPlc/EKQ26kFjBVgGhQj2PDWMUth9enSFzU7m/xL5K1cfQ6tCrPhCrB
-         vFKoT5OVu0GY5YTQz7F7HOANPvFa/pkzRsPnoJCtl6lz03AMgqSW5PzhMJhWttLshWCo
-         rzEyC9NrSxUmRh59f/M7mQdcEn6eI1829nu+RchpYzFl9LYTCpqSN4VDTLWNDbzzf/eT
-         t7iDMA4Dz2W9KcwqMc2nWUIlKLnclu55oehjBtzEsXOA03NkMVWLc7vOBpQUS9evG92p
-         mlog==
-X-Gm-Message-State: AOJu0Yxw+LAKtrGSPwIpe/7XHyEgfhZHEPVh1ALDww0460xEnreQi0TQ
-	u+91EK8Vre5qD1IM2q0w//Ao+wp55u4IMQzPrL0=
-X-Google-Smtp-Source: AGHT+IGZ/Yr5F7fr0x3yUHZ3H8FzlhrdgaoQi9g9SY9SBjIS2V506x0YzxsM95+SBtT/PUWyn/Ecfay+HG2v633hkYE=
-X-Received: by 2002:a05:6870:1711:b0:1fb:75c:3feb with SMTP id
- h17-20020a056870171100b001fb075c3febmr1324530oae.75.1701881563431; Wed, 06
- Dec 2023 08:52:43 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linux.org.uk header.i=@linux.org.uk header.b="iXqyrWov"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=8B0zV/poM1+6RJnq4neUyRen0Ru3/1wbuZ2eoYNBfro=; b=iXqyrWovcaJI4ejYTmnN+QfbAm
+	pEHqcq06ZKFzvmFLBja3d23RsUGzH0WlpOGUBccZexn/yR5DVlx6AsqE6DbV9p9VIcupY/IO9OEVC
+	LCUbY1gCHFZ909YVwK/lrLgFXSWeN/3zrntg59dxHBiWDoY2+Vcl7CGqPWH+hz6oBn4DbGwmGZm+9
+	lL3U70Kffa+lNfpTAzEwq0WduF6i7kXrqPkUvNZP6cF/f/tlNlmT2KyccIv6ZdD+BO3ZzLVRG5FrT
+	hXsPO6mV+6U+Oba77zrERqBFaRiINg9LqCMV1SKikLlCdbQ+5yBZ4Pm8w6vN2BWe3MUo3nCdNsRd4
+	nzxIa9TA==;
+Received: from viro by zeniv.linux.org.uk with local (Exim 4.96 #2 (Red Hat Linux))
+	id 1rAvPK-007qni-0e;
+	Wed, 06 Dec 2023 17:09:58 +0000
+Date: Wed, 6 Dec 2023 17:09:58 +0000
+From: Al Viro <viro@zeniv.linux.org.uk>
+To: Mateusz Guzik <mjguzik@gmail.com>
+Cc: Oliver Sang <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, linux-fsdevel@vger.kernel.org,
+	Christian Brauner <brauner@kernel.org>, linux-doc@vger.kernel.org,
+	ying.huang@intel.com, feng.tang@intel.com, fengwei.yin@intel.com,
+	Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [viro-vfs:work.dcache2] [__dentry_kill()] 1b738f196e:
+ stress-ng.sysinfo.ops_per_sec -27.2% regression
+Message-ID: <20231206170958.GP1674809@ZenIV>
+References: <20231201065602.GP38156@ZenIV>
+ <20231201200446.GA1431056@ZenIV>
+ <ZW3WKV9ut7aFteKS@xsang-OptiPlex-9020>
+ <20231204195321.GA1674809@ZenIV>
+ <ZW/fDxjXbU9CU0uz@xsang-OptiPlex-9020>
+ <20231206054946.GM1674809@ZenIV>
+ <ZXCLgJLy2b5LvfvS@xsang-OptiPlex-9020>
+ <20231206161509.GN1674809@ZenIV>
+ <20231206163010.445vjwmfwwvv65su@f>
+ <CAGudoHF-eXYYYStBWEGzgP8RGXG2+ER4ogdtndkgLWSaboQQwA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Received: by 2002:a05:6802:30f:b0:50c:13ee:b03d with HTTP; Wed, 6 Dec 2023
- 08:52:43 -0800 (PST)
-In-Reply-To: <20231206164513.GO1674809@ZenIV>
-References: <20231201040951.GO38156@ZenIV> <20231201065602.GP38156@ZenIV>
- <20231201200446.GA1431056@ZenIV> <ZW3WKV9ut7aFteKS@xsang-OptiPlex-9020>
- <20231204195321.GA1674809@ZenIV> <ZW/fDxjXbU9CU0uz@xsang-OptiPlex-9020>
- <20231206054946.GM1674809@ZenIV> <ZXCLgJLy2b5LvfvS@xsang-OptiPlex-9020>
- <20231206161509.GN1674809@ZenIV> <20231206163010.445vjwmfwwvv65su@f> <20231206164513.GO1674809@ZenIV>
-From: Mateusz Guzik <mjguzik@gmail.com>
-Date: Wed, 6 Dec 2023 17:52:43 +0100
-Message-ID: <CAGudoHGUDtiRN_AbMHYWPN+ABRkMUG-sZD5J=v0x2Z=HrK+hnw@mail.gmail.com>
-Subject: Re: [viro-vfs:work.dcache2] [__dentry_kill()] 1b738f196e:
- stress-ng.sysinfo.ops_per_sec -27.2% regression
-To: Al Viro <viro@zeniv.linux.org.uk>
-Cc: Oliver Sang <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
-	linux-fsdevel@vger.kernel.org, Christian Brauner <brauner@kernel.org>, 
-	linux-doc@vger.kernel.org, ying.huang@intel.com, feng.tang@intel.com, 
-	fengwei.yin@intel.com, Linus Torvalds <torvalds@linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGudoHF-eXYYYStBWEGzgP8RGXG2+ER4ogdtndkgLWSaboQQwA@mail.gmail.com>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 
-On 12/6/23, Al Viro <viro@zeniv.linux.org.uk> wrote:
-> On Wed, Dec 06, 2023 at 05:30:10PM +0100, Mateusz Guzik wrote:
->
->> > What the hell is going on?  Was ->d_lock on parent serving as a throttle
->> > and reducing
->> > the access rate to something badly contended down the road?  I don't see
->> > anything
->> > of that sort in the profile changes, though...
->
->> Not an outlandish claim would be that after you stopped taking one of
->> them, spinning went down and more traffic was put on locks which *can*
->> put their consumers off cpu (and which *do* do it in this test).
->
-> That's about the only guess I've got (see above), but if that's the case,
-> which lock would
-> that be?
->
->> All that said I think it would help if these reports started including
->> off cpu time (along with bt) at least for spawned threads.
->
+On Wed, Dec 06, 2023 at 05:42:34PM +0100, Mateusz Guzik wrote:
 
-Given backtracs I posted it's at least root->kernfs_iattr_rwsem (see
-kernfs_iop_permission), but there may be more.
+> That is to say your patchset is probably an improvement, but this
+> benchmark uses kernfs which is a total crapper, with code like this in
+> kernfs_iop_permission:
+> 
+>         root = kernfs_root(kn);
+> 
+>         down_read(&root->kernfs_iattr_rwsem);
+>         kernfs_refresh_inode(kn, inode);
+>         ret = generic_permission(&nop_mnt_idmap, inode, mask);
+>         up_read(&root->kernfs_iattr_rwsem);
+> 
+> 
+> Maybe there is an easy way to dodge this, off hand I don't see one.
 
-Ultimately I expect would be easy to answer if one was to rebuild with lockstat.
+At a guess - seqcount on kernfs nodes, bumped on metadata changes
+and a seqretry loop, not that this was the only problem with kernfs
+scalability.
 
-I may end up doing it tomorrow if there is a problem testing this on your end.
-
--- 
-Mateusz Guzik <mjguzik gmail.com>
+That might account for sysinfo side, but not the unixbench - no kernfs
+locks mentioned there.  OTOH, we might be hitting the wall on
+->i_rwsem with what it's doing...
