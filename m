@@ -1,142 +1,102 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f43.google.com (mail-oo1-f43.google.com [209.85.161.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09A4D5690
-	for <oe-lkp@lists.linux.dev>; Fri,  8 Dec 2023 09:59:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0DFB3C68F
+	for <oe-lkp@lists.linux.dev>; Fri,  8 Dec 2023 18:07:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Gka8zrKk"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1702029595; x=1733565595;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=9zfaRLSGxVe8HCog+7PkeW1tTPz6g2OQj7xOLXUigwc=;
-  b=Gka8zrKkzTc4X2Fq/z6cf8Hz2ZigEuwRZ0V8lKkT6D9U0u5vp2bY7U+p
-   xFnq7MrL68+twm+o2UsONaSuGE6pDNoEEZccOvxX4noAMigC4zuhjq6lr
-   wMv1VhzC09MtorbujA+bw0u6jUNh7+kHebvka3LdvQvHor5/gi+riOgfD
-   cXcbPM0y4QHggAe+3H8cZ2S2Vs0e1m5pLztR9ZzjcI/fb/QKu6RUN7kWf
-   euezc9kYpnjKiPbrZjbHye7nuiLuDKAGiocHjc19PfRGIsxVyV0kSa2Fh
-   aM8WIWjU2IfqGL9MPY8MoeSVgGlPmaibhNxm16By6NigSBouv4iGPyaSN
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10917"; a="480581419"
-X-IronPort-AV: E=Sophos;i="6.04,260,1695711600"; 
-   d="scan'208";a="480581419"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2023 01:59:50 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10917"; a="772078541"
-X-IronPort-AV: E=Sophos;i="6.04,260,1695711600"; 
-   d="scan'208";a="772078541"
-Received: from mvafin-mobl2.ger.corp.intel.com (HELO localhost) ([10.252.63.236])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2023 01:59:46 -0800
-From: Jani Nikula <jani.nikula@linux.intel.com>
-To: kernel test robot <oliver.sang@intel.com>, Andrzej Hajda
- <andrzej.hajda@intel.com>
-Cc: intel-gfx@lists.freedesktop.org, Jonathan Cavitt
- <jonathan.cavitt@intel.com>, dri-devel@lists.freedesktop.org,
- oliver.sang@intel.com, oe-lkp@lists.linux.dev, Chris Wilson
- <chris.p.wilson@linux.intel.com>, Nirmoy Das <nirmoy.das@intel.com>,
- "Musial, Ewelina" <ewelina.musial@intel.com>, Juha-Pekka Heikkila
- <juhapekka.heikkila@gmail.com>
-Subject: Re: [Intel-gfx] [drm-intel:drm-intel-gt-next] [drm/i915]
- [confidence: ] 9bb66c179f: assertion_failure
-In-Reply-To: <202312071643.321205c6-oliver.sang@intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <202312071643.321205c6-oliver.sang@intel.com>
-Date: Fri, 08 Dec 2023 11:59:43 +0200
-Message-ID: <87o7f1ypyo.fsf@intel.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jeNM1gKm"
+Received: by mail-oo1-f43.google.com with SMTP id 006d021491bc7-58d08497aa1so1200196eaf.0
+        for <oe-lkp@lists.linux.dev>; Fri, 08 Dec 2023 10:07:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1702058860; x=1702663660; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:references:in-reply-to
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=C77TpInB1zh8d1IAOUInQ6yFu0SRsNtsyD+hY95J9tA=;
+        b=jeNM1gKms3P0+jA27ZxJA3WWQ8isWUGr90feO9kplK6l1IrgIX0h7mnvlWSTmGZmqz
+         NOgilcp4FYUpEnGOCZOD3uR1MWNMZllNW57Zm5lXmiXKJzm/z/Kece0ziSCZ+63TS7mu
+         MOnZZVD6d0jX99fkQL6zswEsEDeXcIxUCFsk4q/hK3juIsC0DB5ciCxIbSjaT8hepyn3
+         jZQ5T/N0FZ5+CNeEaPNWFqjuv+hCndOJJ1z2JM9ynQ+PDpKdAeG6+C7OnAllSzgVqcaA
+         FBno5Ts683UyLQsHWrYsM0guD1RtvVk7ZF0y4TrCl2Xyiczv2iUFT3dp/524xPf4ZDvg
+         fwUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1702058860; x=1702663660;
+        h=cc:to:subject:message-id:date:from:references:in-reply-to
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=C77TpInB1zh8d1IAOUInQ6yFu0SRsNtsyD+hY95J9tA=;
+        b=w2iS3/Qyuh9ff5yNYIngDfmmhL7Q1wBifvy6Wm/RFzXAX1N1L+B74UHy2XElKG4HYM
+         xAUUHgGHSPCBlS5JRIAFddjOHKSo+mfJYTKMMNhpE9wpqRPeAWE3X1FWNxRJKWEzRtZc
+         T1DFhDXvbCJzrUDvrZu6GoajblQV2gwOPB3jpM+Cm1hCvVGGfGZARNT1Jb/lYzLv4gi2
+         RU+F5ctN+TcLxd1vnPS7pyvj/lbJynVJiH5YLnyn1/dMTp5u05AM+plyHPgVcGS9wg9d
+         qH96yofWNRMchreafG7zCoH5ApA6gNifw//HO1bzCemkkLSDSXZJfwsvtZK/Mgn6sBq1
+         XVKg==
+X-Gm-Message-State: AOJu0YwSb+Id3JZu2S44ggrN9HiKM4TZcClb6SYH8fJ9nzJablYP70ol
+	hMuPbtjixHYMh9kvsTnG2L4Zi6Bv3IBCXKXdq3I=
+X-Google-Smtp-Source: AGHT+IFG9Wqckhd8+QJop7BFj37zOIOYAYHFNhLpTmBdHyZL9wutRVFbzd8r3gESFpX+rio/9ui4gOfULAIXNS5mAt0=
+X-Received: by 2002:a4a:9882:0:b0:590:a673:8016 with SMTP id
+ a2-20020a4a9882000000b00590a6738016mr184730ooj.18.1702058859753; Fri, 08 Dec
+ 2023 10:07:39 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Received: by 2002:ac9:7f0d:0:b0:506:9554:eef4 with HTTP; Fri, 8 Dec 2023
+ 10:07:39 -0800 (PST)
+In-Reply-To: <ZXEuBnX4FTDdaqn0@xsang-OptiPlex-9020>
+References: <20231204195321.GA1674809@ZenIV> <ZW/fDxjXbU9CU0uz@xsang-OptiPlex-9020>
+ <20231206054946.GM1674809@ZenIV> <ZXCLgJLy2b5LvfvS@xsang-OptiPlex-9020>
+ <20231206161509.GN1674809@ZenIV> <20231206163010.445vjwmfwwvv65su@f>
+ <CAGudoHF-eXYYYStBWEGzgP8RGXG2+ER4ogdtndkgLWSaboQQwA@mail.gmail.com>
+ <20231206170958.GP1674809@ZenIV> <CAGudoHErh41OB6JDWHd2Mxzh5rFOGrV6PKC7Xh8JvTn0ws3L_A@mail.gmail.com>
+ <CAGudoHGgqH=2mb52T4ZMx9bWtyMm7hV9wPvh+7JbtBq0x4ymYA@mail.gmail.com> <ZXEuBnX4FTDdaqn0@xsang-OptiPlex-9020>
+From: Mateusz Guzik <mjguzik@gmail.com>
+Date: Fri, 8 Dec 2023 19:07:39 +0100
+Message-ID: <CAGudoHFReHsRviEMBwc2uSMkd72bB1b5RsWfBbEvY6HHSDSSuA@mail.gmail.com>
+Subject: Re: [viro-vfs:work.dcache2] [__dentry_kill()] 1b738f196e:
+ stress-ng.sysinfo.ops_per_sec -27.2% regression
+To: Oliver Sang <oliver.sang@intel.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	linux-fsdevel@vger.kernel.org, Christian Brauner <brauner@kernel.org>, 
+	linux-doc@vger.kernel.org, ying.huang@intel.com, feng.tang@intel.com, 
+	fengwei.yin@intel.com, Linus Torvalds <torvalds@linux-foundation.org>
+Content-Type: text/plain; charset="UTF-8"
 
-On Thu, 07 Dec 2023, kernel test robot <oliver.sang@intel.com> wrote:
-> Hello,
+On 12/7/23, Oliver Sang <oliver.sang@intel.com> wrote:
+> hi, Mateusz Guzik,
 >
-> kernel test robot noticed "assertion_failure" on:
+> On Wed, Dec 06, 2023 at 07:30:36PM +0100, Mateusz Guzik wrote:
+>> Can I get instructions how to reproduce the unixbench regression?
 >
-> commit: 9bb66c179f50e61df20ba13c9b34ca17d00b05fb ("drm/i915: Reserve some kernel space per vm")
-> git://anongit.freedesktop.org/drm-intel drm-intel-gt-next
+> I uploaded the reproducer for unixbench in
+> https://download.01.org/0day-ci/archive/20231207/202312070941.6190a04c-oliver.sang@intel.com
 >
-> in testcase: igt
+> as in
+> https://download.01.org/0day-ci/archive/20231207/202312070941.6190a04c-oliver.sang@intel.com/reproduce
+>
+> To reproduce:
+>
+>         git clone https://github.com/intel/lkp-tests.git
+>         cd lkp-tests
+>         sudo bin/lkp install job.yaml           # job file is attached in
+> this email
+>         bin/lkp split-job --compatible job.yaml # generate the yaml file for
+> lkp run
+>         sudo bin/lkp run generated-yaml-file
+>
+>         # if come across any failure that blocks the test,
+>         # please remove ~/.lkp and /lkp dir to run from a clean state.
+>
+>
 
-So the kernel test robot runs igt. I've seen a handful of reports over
-the years, but not a whole lot. If you run it even semi-regularly, I
-would have expected more. What's the deal here?
+thanks
 
-There's clearly overlap with what our CI is doing. Maybe better
-coordination would be useful? Especially wrt reporting. I'm not sure if
-anyone's going to track these mails.
-
-Cc: Ewelina
-
-> version: igt-x86_64-0f075441-1_20230520
-
-That's six months old and more than 1k commits behind. The results are
-going to be useless, I'm afraid.
-
-
-BR,
-Jani.
-
-
-> with following parameters:
->
-> 	group: group-04
->
->
->
-> compiler: gcc-12
-> test machine: 20 threads 1 sockets (Commet Lake) with 16G memory
->
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
->
->
-> we also observed below tests failed upon this commit while pass on parent.
->
-> 8aa519f17512da50 9bb66c179f50e61df20ba13c9b3
-> ---------------- ---------------------------
->        fail:runs  %reproduction    fail:runs
->            |             |             |
->            :6          100%           6:6     igt.api_intel_bb.bb-with-allocator.fail
->            :6          100%           6:6     igt.api_intel_bb.blit-noreloc-keep-cache.fail
->            :6          100%           6:6     igt.api_intel_bb.blit-noreloc-purge-cache.fail
->            :6          100%           6:6     igt.api_intel_bb.blit-reloc-purge-cache.fail
->            :6          100%           6:6     igt.api_intel_bb.delta-check.fail
->            :6          100%           6:6     igt.api_intel_bb.object-noreloc-keep-cache-simple.fail
->            :6          100%           6:6     igt.api_intel_bb.object-noreloc-purge-cache-simple.fail
->            :6           83%           5:6     igt.api_intel_bb.object-reloc-purge-cache.fail
->            :6          100%           6:6     igt.api_intel_bb.simple-bb-ctx.fail
->            :6          100%           6:6     igt.api_intel_bb.simple-bb.fail
->
->
->
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202312071643.321205c6-oliver.sang@intel.com
->
->
-> [   43.922756][  T447]
-> [   43.935008][  T447] IGT-Version: 1.27.1-g0f075441 (x86_64) (Linux: 6.6.0-rc7-01579-g9bb66c179f50 x86_64)
-> [   43.935018][  T447]
-> [   43.947248][  T447] Starting subtest: bb-with-allocator
-> [   43.947258][  T447]
-> [   43.956752][  T447] (api_intel_bb:857) intel_batchbuffer-CRITICAL: Test assertion failure function __intel_bb_add_object, file ../lib/intel_batchbuffer.c:1673:
-> [   43.956762][  T447]
-> [   43.974467][  T447] (api_intel_bb:857) intel_batchbuffer-CRITICAL: Failed assertion: allocated || reserved
-> [   43.974477][  T447]
-> [   43.987691][  T447] (api_intel_bb:857) intel_batchbuffer-CRITICAL: Can't get offset, allocated: 0, reserved: 0
-> [   43.987706][  T447]
->
->
-> The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20231207/202312071643.321205c6-oliver.sang@intel.com
+Looks like this one will require a box with 64 or more cores to run
+on, so my usual test jig is not going to do it. I'll sort it out in
+few days.
 
 -- 
-Jani Nikula, Intel
+Mateusz Guzik <mjguzik gmail.com>
