@@ -1,86 +1,89 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CBA0156DE
-	for <oe-lkp@lists.linux.dev>; Tue, 12 Dec 2023 07:43:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93D35179B2
+	for <oe-lkp@lists.linux.dev>; Tue, 12 Dec 2023 08:09:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AmC1lenp"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="He245tW+"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1702367035; x=1733903035;
+  t=1702368560; x=1733904560;
   h=date:from:to:cc:subject:message-id:references:
    in-reply-to:mime-version;
-  bh=6x4xHN71pLMNq9Kq7lfHbshllATlnf+QnuB6dCakScU=;
-  b=AmC1lenpCStnAmkhuiZvCtsgHVxHwv6kKqeXqRz5g/8TMpwK4DOWajx7
-   anRPfots97haW9NotsRb5FWZ7/2cp6GHZBPeavAqMovwScar7meuOSnqk
-   4KrecUDUDirxwu4BrPS4hIzNyJkkgnX+X70+ka/wkGdqqqssxiYXpxMH/
-   w+RuLGh9d141JgRKexvXVlfX+t+qQv6jh0ns93JdInvVmewgTNAYqe9yE
-   B6Hj4d8pdvrmyQN4D0ZnX7UA1OJJLH+PK+u9lqSHf6KUl3ZAoxe+ailrI
-   +uJNcbC4w3RFmRZXiGJqSqbKEM8k2V4cApQRd9dfSaXWSlyHOsG0zIuTK
+  bh=/k0SjtYjYCNtVovb4FEBZ0eTjUIHmjtL3TsbIXiLLmM=;
+  b=He245tW+EWktulGJgl9KBq2QL+jl+QLpQ0gwPCY+VHqZz27WhFQHuVZB
+   QAH+v/IESTD8V0KJn4Xn9kCquEqO3BvN17NrYi05vAU9TC6WpG2Zuaqa6
+   Jv8u+CRi5OSlpemfVL6QQhKQ72p7VYJVcajddijEykKQSMVoJwMhTnpCz
+   Wkbow+xV5GfTocLJQim27yihELmDhJnADA5s7VkL4Re8qXvOjpM0yqvjh
+   mQbvpm9DiR1FyVLi8S7peH9whMIcGBbNIpKXZv14taaj3sIdb8MpVFl37
+   9mzdT2SSGR8NTuP4AEjZ96qQQGaYtUTpfUn8FD45ZA5wQ6mrDQM78FyhN
    Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10921"; a="394517048"
+X-IronPort-AV: E=McAfee;i="6600,9927,10921"; a="16321317"
 X-IronPort-AV: E=Sophos;i="6.04,269,1695711600"; 
-   d="scan'208";a="394517048"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Dec 2023 23:43:54 -0800
+   d="scan'208";a="16321317"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Dec 2023 00:09:17 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10921"; a="946660054"
+X-IronPort-AV: E=McAfee;i="6600,9927,10921"; a="766712433"
 X-IronPort-AV: E=Sophos;i="6.04,269,1695711600"; 
-   d="scan'208";a="946660054"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by orsmga005.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 11 Dec 2023 23:43:54 -0800
-Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+   d="scan'208";a="766712433"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by orsmga007.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 12 Dec 2023 00:09:17 -0800
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Mon, 11 Dec 2023 23:43:53 -0800
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ 15.1.2507.35; Tue, 12 Dec 2023 00:09:16 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35 via Frontend Transport; Mon, 11 Dec 2023 23:43:53 -0800
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.101)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ 15.1.2507.35 via Frontend Transport; Tue, 12 Dec 2023 00:09:16 -0800
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.169)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Mon, 11 Dec 2023 23:43:53 -0800
+ 15.1.2507.35; Tue, 12 Dec 2023 00:09:14 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gBmOrqk0NHkLG8APVyFOfQlZ305zfdYgofhlWPYt1DYOB5TiPC8A0L2asifKfczDcTTJZ850xxSwFWVwE5/TwASpSCw9j+uysJscpvkovEOyAH1ZxgozP1O7GtkxnfqkAJEo9iwcE9fio7NS+DyDYcQDIafNqtFtcct8PR0Pz9H3ssmQQQYvFHUQkj8wq/jFICNBqP3qvorRHim7YIRIdwM1hbiTI1wwSAnECb8dqkIsA0kX1Wn65gsLYKqqRji0PQKsUXhe1013RAyuw+NXqX370Xh2JeN2ehyWiT79VklvPStQfTANkcwgSrvgYK0x2S3PonJFT53CuJPdF3E2TA==
+ b=DB3yy1fXKJY6apxURG1tQI5PQsMVnfi3WAAXPMidpLlxj9zwnylH6wv5kcgEH6D36SrcmTcjW8FlRagAWMFQD2p8lWAKfdHQMF8UZHztJyLmCNlkEdRW0yep8xgTSNPkH1hzSGkcfPRp2Za/hN19wVwHHixm6lXXEQVVlCuIFCFXLasKo+OUHwgoZepkrGEO7bBuq0Y0ob3PVSfjRhtlT7oIxgqGu+pnQSAZ4aD3uLFoZSx+Nf8vCm0IWFARywv+++HETgA9/YmZZt2g7XSwAePNnocMN5m0+qT3pFwpgqShldCM1mhvbceCr7KQcfRuBNbwyHOPiy1zDufcsTPOvg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jCHsVO84P0oVQn2DtefcDomg6GP9rHNha0oIsBD1Das=;
- b=HH4SGpJkXioGwmFS/pP/aI6++x9DiSiWky8xYRvyVIyLpjpGbBa2uq66VCG2poqX20th5GrSuhItrFOiimzA84VDD+Wvnn11Rb4gTd1uDWWBJBNqT4BcRs1Q8x8oztgfCI9hbOMU5KToSfA53BFdcAT5CIbHrVfZheuQBUgpMTf/i57h8Ntqj8MBkfMnT2VNAGzj9rdGxBMnK6KZeOtR2prQYwJsu79rzBMkx7Q/qI7LFyp9bjaM54bBnAnYD5khJC9lOe/a5aEGLUWMsvciEn0GaqsQToT5uT0GPN9mF4kNoXsHkXOoOlIXE0DiUlcPlfu2bBLgiG5oIhChgbN79A==
+ bh=GiuwIL2GA3PaNa5scKKDCV0LYI+ZgSowAJkpeeEd8zA=;
+ b=gwlKwcVul9bPGmqNly4KoIDo2cW1M3N0s2vzmuFjR28iuF85n5ZR0fbr7Pg7tH6Ie1w3bmRCtUtcwDoob4swFnz9bfEjKOqnzT5nUxc2vHS3HhjyjUCfruolw6TttRpKHt0Pgt4GSrXrVwRERmlQn3+RWDcqI+scPOWfasuZcBJ83AvtSnDCCxuNJ7fRvQF0Cm7aUV9H5d+JCdlKlN5OXSvlYUWmKEkQgUhOZGlxWSLvaRMme1Gu7+u2FYep54O6p56OvUmWPJCcQX7FG8eimdNUyzRbPVaupfrJ8YQe7jbS5YeR1J6c8rzxLK8djZgnx/Len36bUzFypqvCfW9pkQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by CO1PR11MB4947.namprd11.prod.outlook.com (2603:10b6:303:99::11) with
+ by PH7PR11MB6403.namprd11.prod.outlook.com (2603:10b6:510:1f9::9) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7068.33; Tue, 12 Dec
- 2023 07:43:51 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7068.32; Tue, 12 Dec
+ 2023 08:09:12 +0000
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::1236:9a2e:5acd:a7f]) by LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::1236:9a2e:5acd:a7f%3]) with mapi id 15.20.7068.033; Tue, 12 Dec 2023
- 07:43:51 +0000
-Date: Tue, 12 Dec 2023 15:43:44 +0800
+ 08:09:12 +0000
+Date: Tue, 12 Dec 2023 16:09:02 +0800
 From: Oliver Sang <oliver.sang@intel.com>
-To: "Paul E. McKenney" <paulmck@kernel.org>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
-	<oliver.sang@intel.com>
-Subject: Re: [paulmck-rcu:dev.2023.11.08a] [EXP locktorture] 1254a620b4:
- WARNING:at_kernel/rcu/tree_stall.h:#rcu_stall_chain_notifier_register
-Message-ID: <ZXgPMLDAn5ZHqvT6@xsang-OptiPlex-9020>
-References: <202312071506.6eac1bac-oliver.sang@intel.com>
- <2ad1abcc-d82b-406f-a7b7-606224a24813@paulmck-laptop>
- <ZXfALH1TIHSH/7cN@xsang-OptiPlex-9020>
- <4be82070-4cd5-4f31-8eb4-b38853fad865@paulmck-laptop>
+To: Jani Nikula <jani.nikula@linux.intel.com>
+CC: Andrzej Hajda <andrzej.hajda@intel.com>,
+	<intel-gfx@lists.freedesktop.org>, Jonathan Cavitt
+	<jonathan.cavitt@intel.com>, <dri-devel@lists.freedesktop.org>,
+	<oe-lkp@lists.linux.dev>, Chris Wilson <chris.p.wilson@linux.intel.com>,
+	Nirmoy Das <nirmoy.das@intel.com>, "Musial, Ewelina"
+	<ewelina.musial@intel.com>, Juha-Pekka Heikkila
+	<juhapekka.heikkila@gmail.com>, <oliver.sang@intel.com>, <lkp@intel.com>
+Subject: Re: [Intel-gfx] [drm-intel:drm-intel-gt-next] [drm/i915]
+ [confidence: ] 9bb66c179f: assertion_failure
+Message-ID: <ZXgVHko9Zwp9ZeA0@xsang-OptiPlex-9020>
+References: <202312071643.321205c6-oliver.sang@intel.com>
+ <87o7f1ypyo.fsf@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <4be82070-4cd5-4f31-8eb4-b38853fad865@paulmck-laptop>
-X-ClientProxiedBy: SI2PR01CA0051.apcprd01.prod.exchangelabs.com
- (2603:1096:4:193::6) To LV3PR11MB8603.namprd11.prod.outlook.com
+In-Reply-To: <87o7f1ypyo.fsf@intel.com>
+X-ClientProxiedBy: SG2PR01CA0120.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:40::24) To LV3PR11MB8603.namprd11.prod.outlook.com
  (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -89,105 +92,111 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|CO1PR11MB4947:EE_
-X-MS-Office365-Filtering-Correlation-Id: d0a427b9-e732-42d0-5f97-08dbfae61590
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|PH7PR11MB6403:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2a79877a-5847-4633-672e-08dbfae99f88
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Mzta/ElsJUyRC28ZX9gjqHmshFA/x/rJBp9pd4Q+srYs/JYsRYgiwFEFrSj04k3jESh1oCx0wqTi1lpVobNZyKM+KEHW+KJmHbko85a9lxFS7OLeyIpUOzBxPO+vmw7L70mmfpt1YVOUKq9v6AVtrrbfY1gXZKEkEhp4zNrERroEFSJNCue3dKLDF5yT8XcRRSeCWlSlGTjWjSQw6eGJtE3ZUHTa6i4oYxVWbFAATIDk2GocdlZoqow6rE4QbFB7fqBpC20goFtt0Jy9TxQZFuGXofNG3a7NJOCmHg/W/mL/LWl0PvjG7gZ3Lqrt86xOwW8BaTH8RAY26Ut7/+Ws9XwB5w3GmoXejN/rLUk7otKKF/epPudexTQrJsHiqrAqsGl3Iv0npleO7bKNDg+P3xrvSAXBmlW1UMtBI/0hAUH5rb9oOxVZibIhogAqWQWHCmA1/VzZlsd5QY48J/bxk0xHeYtG6U66q0wLV5xonEXxib+pDSg1eNTsz+ygnqLfKHTzFMWwMXgxWMAta3WL5qEhuI5lCcFFmpiLa8XR736uxsWUkHToonZ1bqPdbXh+SRciPhQjQ/OCQ6h1tA2QzI7Lps101uBeIuBwJbMyeZb2kzJDpJQRpB8YSSBbdK0A
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(7916004)(136003)(376002)(39860400002)(346002)(366004)(396003)(230273577357003)(230173577357003)(230922051799003)(64100799003)(1800799012)(451199024)(186009)(38100700002)(86362001)(82960400001)(316002)(66476007)(66556008)(41300700001)(26005)(33716001)(83380400001)(107886003)(6486002)(9686003)(6512007)(6506007)(6666004)(966005)(2906002)(478600001)(66946007)(6916009)(8936002)(4326008)(44832011)(5660300002)(8676002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: YV7uzX2Hr5pbpqrWH8S8zNx7QKpxbsLdkRcuCylyO/gRpb03RZq5D6O5HhwvyXOvwZ9uo0MOoO3OtjistwhkAj5SD8I343guM24UMt3hiH1EDGfn2jlqCVP3wgQb93QEHQ5AvmJoRgHd2wrsziRiZrNDnkLTgRC9ZC/+DP5AluOdK/+WaKOdQYSIvU0jFVwJs8WmsC/MWrwFB0G4l0hFZYyVew2R3gs23YZRINdU/C2HKHA3evGBdmrK9DHeE8+fAPvAhsNM49vaVX/g1gu0QbJb89ulfwJH2g/ogBOk62f4A6ljEh7tAIXwZLu0cpVRVjGm8j03pHiYFf5PCJi0eAyqpngc8qsm3S8bDfQtkyAI8IH+6D0MuUbZEWtqN0omz+scgPzG4oSuIgGiTmzjsjJB/V7fBVAiGayvRQ9ZG4ieP1BbwC3/Wo8hPe9qZWD+XUEY4+DDh3nn74NIzE8fWqSqCoCf70KDOPmKULKs8unU/ouM4p8N/4ycKQangxpfVfSbeLrZgo29GX3fAdG8gsNWr2efHb3KYmYg3cdqk1z98M1eJRDdrAhWymdUCQbp
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(7916004)(376002)(346002)(39860400002)(136003)(396003)(366004)(230922051799003)(451199024)(186009)(64100799003)(1800799012)(66899024)(33716001)(41300700001)(26005)(83380400001)(82960400001)(86362001)(38100700002)(44832011)(5660300002)(316002)(8676002)(8936002)(4326008)(2906002)(6666004)(6512007)(6506007)(6916009)(9686003)(66476007)(54906003)(66556008)(66946007)(6486002)(478600001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?D48sAanrqHU6nPRL8DiSx56PdwYSzrPvPNpDS4LAvc2id4hdDycH7wdJ1bGa?=
- =?us-ascii?Q?eqUcB9DFAvrQKXd4ibTLqBPXhAmf2Q8Ri0EbqzYBFw4bHl2+vX78oi4jLYPl?=
- =?us-ascii?Q?wIOOXptzFPU5gTSS1zfOrvGKizZhMU9q7LDyNQjWpkXv1coOokZ42dcxfDmz?=
- =?us-ascii?Q?rb2hfsIQCbX25D8dlss38v/67fZvAVp0xNxdcaNT4grvBIVF05R1JkCFS4Yo?=
- =?us-ascii?Q?eIYo7HMYaDyYXbcFboIMMgGyd7B9feidSkoyRH0zCTynNixyE1kZ1pB86kZH?=
- =?us-ascii?Q?gZ35gRlIqMoyGV0l2FlLn1bWNyZoSHE2JB3tXqCfkirDT1wQsCZyCEtEdcvS?=
- =?us-ascii?Q?ut50cj68/DGvCsYw9nklIc+rFVIyeaM5kjbBhZMcwa5QLDV65FAUyXj9qza7?=
- =?us-ascii?Q?k/7A0E2FVEtFh3QPlItetKIRmzU4vyYgGENogJljk05oUDQ4ub20L1dA5jn0?=
- =?us-ascii?Q?06uohXjGtLNrP+xB44KYHwmTFskdFWkX5NFcg7okNst7Jy8/elX2ufiQWaOr?=
- =?us-ascii?Q?wSbIyS5WeAAmajCO4gKMdqdgKAKa+VD7ne7vs9TFgP48Cm20dn/sMqbd05BR?=
- =?us-ascii?Q?J/MIKswiDTA9w+L9VPHlhi7aavZw2RCXECv6h9CpU0VrErZOXblhok0gq9ry?=
- =?us-ascii?Q?hffRQdJ3aksVAMqKG1emVsXtNF/KlXR2lV7RDd2XqplpKQ3vfrj6lDYwGjow?=
- =?us-ascii?Q?2Ou0yjsz7qxegCLgcwzQ/ySCU87JDxcM6ykReHJpIAkC09UUoOmE0V4P4EYV?=
- =?us-ascii?Q?hcFNyxop0efp9I+yi5Tf1BZ/XiQ+jf/I6Ee2KOczupSnk1c1j3xVzqEwQrbU?=
- =?us-ascii?Q?iIIjwMwdc15PZa3snVM3aW/3oib/ENBLyHaNhs2lkNV19pMgAaTpdSdx08vd?=
- =?us-ascii?Q?pFQKuhRddyH7lx7iYe9IcIYzI4iEl/iNknDn9ujedklS621XNNCYw9rhWk7e?=
- =?us-ascii?Q?szJP0z7VbdB6v6fHZuUswiMaih48Laa8Usu56Uu9904TnYTmIKa1innVwalT?=
- =?us-ascii?Q?/wjIzb2OKNxpmVVUUQETKT8t85g2YJR9sK0GzAro5DdqWw1ObMDYYeAEpZ95?=
- =?us-ascii?Q?PwSTG0bi74LyURFrkQZN9DZj5wxmrnwmWgjY6IBvL5+6tSqLbDnkCJxW4eww?=
- =?us-ascii?Q?BhvmUw18HIM+z30+Dvd7+/DtJUi4BHc9kVaE1ze/ge8uLMW/+BnVuGyYrDtP?=
- =?us-ascii?Q?i5egz6lpvTPR8KxIAv5o8da9HxNbjWgrJKuT/w6V+WoUyJ3nsTFL4/bGZ6Qp?=
- =?us-ascii?Q?N7K+AqMjn4Fs/DsyG4Ja8ALGgpSGEAnHFDuNw1jFsFlUU7ghW92isIFJghZg?=
- =?us-ascii?Q?FSGhWeTRIj1bDhKM2MRcK4ehqzDsFmmOre0oHBUspvXln3rAX8e7fC9AKPLI?=
- =?us-ascii?Q?sfg/BipCz/mOAIwCoVqSg8sBBpiszWlbBe3YmRLSmdI0Gu28s6ZyuMihidZd?=
- =?us-ascii?Q?Av3a0zTeBY7syvUfabLchs2dad/nHS9gQfRkYfcbHbCJc16ufcCcM+irj5Oi?=
- =?us-ascii?Q?IxVi3ssPEGbGCJiIA0gL5l9k42/Tcr4Gr+DfdFD9zi+lmkuShqpBXmGrVxAk?=
- =?us-ascii?Q?EyLYtWQbCNJfoO7MZeZi9xC+dDwBllV1UOGaSzXM0NUcbk1mIRRAaBYqMRkn?=
- =?us-ascii?Q?Pw=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: d0a427b9-e732-42d0-5f97-08dbfae61590
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4GJ5f3yt2pjlpzFvIHjAftoTMXxGjbVhHmTEprQr/Sfp2NSRgWWockSF8BiD?=
+ =?us-ascii?Q?NI/+YYuPaui990V79AbqiuvSJLXgtS9Xu92O8rL1OB7v+ocD8bDqkYHF1Opl?=
+ =?us-ascii?Q?l2PunhMYViVSvvQ+EqccSy9cmmM8UDfPhc0R9kpWlu+LpdgAdvrqQFv3UPlH?=
+ =?us-ascii?Q?zxlm3jfrUgMJU0AUuhyrpiJCbOjKSl22AaCMGUHniZZJpPH/UY4NbvYLGh+a?=
+ =?us-ascii?Q?vmnE5/+jrZuGMPeo8Bi6m7WE7pN80f4RogVfuEUcJE81SJbOAuw45bKCBRk8?=
+ =?us-ascii?Q?HsebL08PRtK6qRyBfLsFuHjLnfy/TZTqbjJyDe9i4nWtUOYqGa2P1MQjRGNY?=
+ =?us-ascii?Q?blrpRKjrfE2+2cjmM21jja1bCBtyMthzxkJ2YVaygz04xouvpNNRaXwqp06R?=
+ =?us-ascii?Q?dNZU7oNRs8neZO30QX2/Ky+rHGEx9hQS7RGHJn4fUmqduuzLE79gzqjvDsCW?=
+ =?us-ascii?Q?L1mQZALDwVVe1kut0j6J1HAOtxshlmbLnj3YmvIQei/Q2DYf4TP7TKVCmbvY?=
+ =?us-ascii?Q?c+L1N7QvSeOeZk8dYmlWPdQiuum7uPp3M4QKgM/f3XhBuZj/8bGZK3XNp/iJ?=
+ =?us-ascii?Q?Vxks7J+qvx7YKIqZRpFuNONGL3uMy2u/yAbNMk0DT5ruWpEUrrMztNrtNyYA?=
+ =?us-ascii?Q?3EN4Vml2PlZ4qFwezdRCLXuQ9d3OpjMStblLN3P50t+tySAJ7leRMIAGiUAZ?=
+ =?us-ascii?Q?21mZZW8v/Zzw5mpwTwvWsY3wjm6nqa/I8KpUoKVi1Fp8awRoH2RW2s+Txf5h?=
+ =?us-ascii?Q?yse36ANPnN/XA+gIEb8mumXD3+ZWLDwgNOojwvKB5/o2zCQugDCg+CtnLmhY?=
+ =?us-ascii?Q?kU2xqnaiiW8yphddirpuXfnwOzF2L3Z81PeL72RrrJTmhjkoYkHssZDyqRot?=
+ =?us-ascii?Q?fRd1fsHi+jmt1qRbRP7FQl8kukaH7t0W3NXWyy94GJe1sXU5jkBB9MOsf8Ga?=
+ =?us-ascii?Q?cqT3kXeLMYD8oYQW0RdQSHaq0Zv0ymz9SE/Ub5IosUASv4f+Lq2Wfcds1/ms?=
+ =?us-ascii?Q?7FQRmkt/bR43PvrUhfHQHmAy0JGDuHGRN1bZygOjAwFFfGosUiY7GUIBan+x?=
+ =?us-ascii?Q?hZltI9QKHXS7cXuy8NHxD+bdycRZAqSvW0syy/ibUSbxbtQVnRX8mJvlgwTy?=
+ =?us-ascii?Q?nyhQdW27jQVqY4NhayLj9rogWO7DU73ujHybW4AH2DbsFjgaBoI90yCMJlAq?=
+ =?us-ascii?Q?Pdx6d01GP9QFSourt2cajdTYB6aG3vOBk69cYRvZGSKcV9KJ2CHTC2piyFLI?=
+ =?us-ascii?Q?PXxE3qCYk6DBNZmVt5GMmVxKd981mrG0m1QemZEO1UsRHjCre4PVanAahjDA?=
+ =?us-ascii?Q?E4iUSXlMeMqCMFol6RijShGl0jqVO26+HSGajg6fk488o4xsx/wW6OWTTIqQ?=
+ =?us-ascii?Q?YHfzJ2kCEJCLXVDcxp5SGtFUUloLBn0mC6t6dGLlHw8JF9qyGOA0T9cjArK2?=
+ =?us-ascii?Q?v+fDUDEHDc5BtBj+YWFPo03OPhG4KmFF0J2ygqj4lvp88hDtm7ZmIMLny1vf?=
+ =?us-ascii?Q?2MZJCr8Sl34vWEw53OplZqS0K2wiE0NY7wyhSqp8wdcjo6bgDC7gCT8MsPot?=
+ =?us-ascii?Q?cGtPQY1vMJETKsGQHGVRz2aGMDE4rhkpPK3PDpoMKEtT0cGQ9iBOJsOrLUkp?=
+ =?us-ascii?Q?qw=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2a79877a-5847-4633-672e-08dbfae99f88
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Dec 2023 07:43:51.5159
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Dec 2023 08:09:12.1871
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 06nagDYc47nEKL+yKHXXHCmMdIjq0RHndjdJbs5NDlmlXFsjdfwJj364WBLd8F2cwKtdpjRbsIM1KkJb08Ae2w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR11MB4947
+X-MS-Exchange-CrossTenant-UserPrincipalName: 3s7VjGzhBla2+bLE0CE2t3zEeXKiRn6YM1UPqe3F/maWb2EK7O0LH//jX+uUn5pdMhLo/82Mx4Ee+BT2UC528g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB6403
 X-OriginatorOrg: intel.com
 
-hi, Paul,
+hi, Jani,
 
-On Mon, Dec 11, 2023 at 08:26:12PM -0800, Paul E. McKenney wrote:
-> On Tue, Dec 12, 2023 at 10:06:36AM +0800, Oliver Sang wrote:
-> > hi, Paul,
-> > 
-> > On Mon, Dec 11, 2023 at 08:59:16AM -0800, Paul E. McKenney wrote:
-> > > On Thu, Dec 07, 2023 at 04:19:56PM +0800, kernel test robot wrote:
-> > > > 
-> > > > 
-> > > > Hello,
-> > > > 
-> > > > kernel test robot noticed "WARNING:at_kernel/rcu/tree_stall.h:#rcu_stall_chain_notifier_register" on:
-> > > > 
-> > > > commit: 1254a620b4a3832e65ac01bcef769b99e34515b2 ("EXP locktorture: Add RCU CPU stall-warning notifier stub")
-> > > > https://git.kernel.org/cgit/linux/kernel/git/paulmck/linux-rcu.git dev.2023.11.08a
-> > > 
-> > > Thank you for your testing efforts!
-> > > 
-> > > This one is expected behavior by explicit request from Linus Torvalds.
-> > > The concern is that people might use this hook without understanding
-> > > the risks of losing RCU CPU stall warnings.
-> > > 
-> > > One fix would be to never specify the rcupdate.rcu_cpu_stall_notifiers
-> > > kernel boot parameter.  Another would be to forgive this warning when
-> > > that boot parameter was specified.  Your choice!  ;-)
-> > 
-> > Thanks a lot for information!
-> > 
-> > this commit (1254a620b4) is a test for this warning, am I right?
-> > when this warning mechanism goes into upstream, do you want us still report
-> > for similar cases? or we could just ignore them? Thanks!
+On Fri, Dec 08, 2023 at 11:59:43AM +0200, Jani Nikula wrote:
+> On Thu, 07 Dec 2023, kernel test robot <oliver.sang@intel.com> wrote:
+> > Hello,
+> >
+> > kernel test robot noticed "assertion_failure" on:
+> >
+> > commit: 9bb66c179f50e61df20ba13c9b34ca17d00b05fb ("drm/i915: Reserve some kernel space per vm")
+> > git://anongit.freedesktop.org/drm-intel drm-intel-gt-next
+> >
+> > in testcase: igt
 > 
-> This 1254a620b4 ("EXP locktorture: Add RCU CPU stall-warning notifier
-> stub") commit is a debug-only use of this facility that will never go
-> upstream, as signified by the "EXP" at the beginning of the subject line.
+> So the kernel test robot runs igt. I've seen a handful of reports over
+> the years, but not a whole lot. If you run it even semi-regularly, I
+> would have expected more. What's the deal here?
+
+our team merges lots of linux kernel repo/tree in so-called hourly kernels,
+tests these hourly kernels by 80+ tools (including igt) on various platforms,
+if any failure found comparing to some good bases, we will trigger auto-bisect
+to try to catpure fbc (first bad commit) and report. this is the reason you
+see this report.
+
+we cannot gurantee coverage since resource constraints, possible failures
+in different stage such like merging, building, auto-bisect, and so on. this
+means we could fail to capture some issues.
+
 > 
-> Or is there some better way than "EXP" to mark commits that are not
-> intended for mainline?
+> There's clearly overlap with what our CI is doing. Maybe better
+> coordination would be useful? Especially wrt reporting. I'm not sure if
+> anyone's going to track these mails.
 > 
-> 							Thanx, Paul
->
+> Cc: Ewelina
 
-sorry, seems I didn't state it very well. let me clarify.
+for this case we just capture a assertion_failure upon
+branch: drm-intel/drm-intel-gt-next
+on a Commet Lake (with 16G memory). not sure if this is valuable to you,
+say, for some legacy platform regression check?
 
-the 'EXP' and "This not-for-mainline commit" is very good for us to know it
-will not go into mainline.
+we want to seek advices from you:
+(1) if this is still useful, do you want us to limit the receivers of this kind
+    of report?
+(2) or would you suggest there is no need for us to test below repo at all?
+    git://anongit.freedesktop.org/drm-intel
 
-what I asked is if this warning is triggered by other usages (not this
-debug-only test), could we still ignore them by following below guidance you
-gave us?
-> > > One fix would be to never specify the rcupdate.rcu_cpu_stall_notifiers
-> > > kernel boot parameter.  Another would be to forgive this warning when
-> > > that boot parameter was specified.  Your choice!  ;-)
+> 
+> > version: igt-x86_64-0f075441-1_20230520
+> 
+> That's six months old and more than 1k commits behind. The results are
+> going to be useless, I'm afraid.
+
+got it. if you still want us to keep the test upon the repo, we would upgrade
+igt to latest version.
+
+> 
+> 
+> BR,
+> Jani.
+> 
+> 
