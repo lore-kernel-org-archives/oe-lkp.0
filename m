@@ -1,85 +1,99 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.151])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6395679D2
-	for <oe-lkp@lists.linux.dev>; Mon, 18 Dec 2023 07:04:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ED24F9CD
+	for <oe-lkp@lists.linux.dev>; Mon, 18 Dec 2023 08:11:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iM9FpNvz"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lZU0tHAP"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1702883098; x=1734419098;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=4lkMmnt6A3bZNifKCcp0MWCE+trhlyI6xx3j5IRsbvY=;
-  b=iM9FpNvzsHf5Q9wLDWbveEtfI+6sRXenXACXUFFd+RjaXrfGCzM10qIr
-   5ef4ZEvfINRAfOktwphX9LtS+K+JKE3RitUXRPD3bcxjXSehji0wD4a1m
-   S7Nru9adhBKmIfw3BPF9Eq5NDg0x+3j62N0Oi1GjdpJMrfErQ0s9WgSNO
-   nr5D7rdKugYwFvslEkZyrhKCwr1ZmuHoyf9EKPXrTr3YOpndcctNLfPsu
-   LxxJN67aAH25rwtt1UWt0otmbEF8uUOLey2TAbr7NJxfH+wPtbZK2tVHh
-   2Kn6T7dQkgbscP7FFXDI6t7ZmiAMgyZCryXsTVd+yDgiThztAR3/gQkmG
+  t=1702887069; x=1734423069;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   mime-version;
+  bh=07C7Uojy2bVd3mSEpHpfZHkfhVlL/xeNXskzNYPNOMg=;
+  b=lZU0tHAP78l82izePB0jxk6BgCB9kB/glqoWdPjMVQYWCssfeFUK2URP
+   sT9KISqM68qb/rFUSvvdVvZRgAZi8DOir/tCQvTb5qNE+y0sGivW4mqk/
+   NZBce0PsuKNBBnvtq8iXMjR42Tm9J0XC3jsLA+3ipOHO3dtI207UdzXE0
+   tWOkb/dw/H83TMYQaWUTvIN+St6/gom2oCKbIcCQuHfdlvyhK2Y6dl+E6
+   MmDxQGFWLYnj9q8Wi7ExLcQABce7jVo+fRAj+wSn7tO8gloRLLbJi+0uR
+   vl0XoPXjrXi2sPHlKfILQQLrsS1LHLVLO5N1eU3C7hm9y1xNMlRYnCg5b
    g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10927"; a="375619039"
+X-IronPort-AV: E=McAfee;i="6600,9927,10927"; a="17028403"
 X-IronPort-AV: E=Sophos;i="6.04,284,1695711600"; 
-   d="scan'208";a="375619039"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Dec 2023 23:04:57 -0800
+   d="scan'208";a="17028403"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Dec 2023 00:11:08 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10927"; a="778984771"
+X-IronPort-AV: E=McAfee;i="6600,9927,10927"; a="893729385"
 X-IronPort-AV: E=Sophos;i="6.04,284,1695711600"; 
-   d="scan'208";a="778984771"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by fmsmga007.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 17 Dec 2023 23:04:57 -0800
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Sun, 17 Dec 2023 23:04:56 -0800
+   d="scan'208";a="893729385"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by fmsmga002.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 18 Dec 2023 00:11:07 -0800
 Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Sun, 17 Dec 2023 23:04:56 -0800
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ 15.1.2507.35; Mon, 18 Dec 2023 00:11:06 -0800
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Mon, 18 Dec 2023 00:11:06 -0800
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
  orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35 via Frontend Transport; Sun, 17 Dec 2023 23:04:56 -0800
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (104.47.56.40) by
- edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ 15.1.2507.35 via Frontend Transport; Mon, 18 Dec 2023 00:11:06 -0800
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.168)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Sun, 17 Dec 2023 23:04:56 -0800
+ 15.1.2507.35; Mon, 18 Dec 2023 00:11:05 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TX0BqftYU6LuL9cSw+cnoAsmWtU4GelLgqDOI6tbF6YuqfayixmaLPW5i/Q0xLfYN083e8hNxm6qWJgY2AAp0sgzdAWuKrkQNFprwnwDRhVv+h6uKqIAG6VTzh9zmk3rqbkli0m6o67FJq+qIjRDK1wGNyoBpy2wWNjyz3WcBDDZjSDd3Hq3JDlmiLMhkpZGRoMNdVDzHeC+wpQKlnU8pVXqfvyWwvZATHLI6M37J9gUZL44ebuKq1Ee9YYKntZ67YwIM1z+PTs51xEKtuf2C4DZBDFYm0bLak0+cY5i6fUYuW/4GPAAODTENjyLMRrxQz2Kq4iM3H4XG/On+B+Ybw==
+ b=DnI/cEPeCCoKa0ycIbAOTtc0TvdJ2/lGZAac1MuGRlb5bcVNlX7X7uZEm+6mpAGbhlOXmiGe1KwCVVhDFRfYDC/Sj6LZK7mb1xWrY5mu6SJ/7IaFxnxbNvZlEyMk4Z7RH5RA3OAGmAYkx9qjhSxJKEyaNEm8+a/oNwym3yYnNvYH4OINURrtlTyT79gAR/63C2C1MOYkoNRmKL2bgMa3jzA8w/dKWU+QXHbn77Hle+9rrfyqJ4fEpvLp1CnmZ/FnZeTOv6fJ4LBVQdAZxWFX98wMIaQajdxXEjO5xtTAeIt++upFYwhzUJzDNV4CAd1QGLbC9Datyt36sk5MaO48rA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+eeJU3eOkaC93NKpFpiiv2gkb/+MtQxTf+1UaBdcmMg=;
- b=a4qRBnfSS25EI5ZmKTqih+XNJzG9rNNdZ/HmiiH/eg5Wk5tyyAfkui/2l4R+0s7ooVZjh98+QWrGxGeOlELBPCPABu3uQZZo/V1uzLPUvOF/39jqyl1/+MUF0DAH3u2uiwjAyyTej6b2hhhBo+/LWNwawzLUaMTGB4gpMV27g2IPksG+pzeRCoHzllMO9pW+UTpim0Bo1NaVyKBnEApFUHfPCsbAPPsvPXd+r8diG2L/Aagp9CEUR3zfKj/gGz5sl8Wg3DWBEAtHBELnsKJfd0NTXC21g8nG8Qzxb4pVwKeM1dfzh1gcQDTf5rhwZ9v6apWNpVH1XVfecrZQkAoqyg==
+ bh=9zpS7E3owYhWpN1ouF696BD+L6QNMImNiaHatXebI/g=;
+ b=XVb1pw2vUX0XjDYA7wvSoO+0YLUkb4XlE+JdYW8t75oobP4D2clGHqWOox5n/IuvXebihLdGIEXZMOnP/vOH3JOt2UIlSyAB8b59/T/9RXyCrcC6btQ5Lf1VP2L+7rShUX+fCxN0mV/XoBxOlabdvPe73LZu57j/X8bNCIvfHBrgRl5yIFXOHQPMrr+PZCXwXHs/NijkApNp6N7wbTEsOVOYpqFKKH6yMT7RTjMI1QuUCBom3QFFjMnqPdgyRm7DT59VCSsO80LsiKOuxpaPuBgPljjHI/Atx5Fcb8RRpR5lJWycOHX22JDWgTBeRiD+BYbFkjDT84aEtCxTee+CSg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by SA1PR11MB8256.namprd11.prod.outlook.com (2603:10b6:806:253::15) with
+ by SJ0PR11MB4990.namprd11.prod.outlook.com (2603:10b6:a03:2d8::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7091.37; Mon, 18 Dec
- 2023 07:04:54 +0000
+ 2023 08:11:03 +0000
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::1236:9a2e:5acd:a7f]) by LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::1236:9a2e:5acd:a7f%3]) with mapi id 15.20.7091.034; Mon, 18 Dec 2023
- 07:04:54 +0000
-Date: Mon, 18 Dec 2023 15:04:46 +0800
+ 08:11:03 +0000
+Date: Mon, 18 Dec 2023 16:10:49 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Masami Hiramatsu <mhiramat@kernel.org>
+To: Maxime Chevallier <maxime.chevallier@bootlin.com>
 CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
-	<linux-trace-kernel@vger.kernel.org>, <oliver.sang@intel.com>
-Subject: [mhiramat:topic/fprobe-on-fgraph] [function_graph] b92a5e78c3:
- WARNING:at_kernel/trace/trace.c:#run_tracer_selftest
-Message-ID: <202312181100.508f8f48-oliver.sang@intel.com>
+	<netdev@vger.kernel.org>, <davem@davemloft.net>, Maxime Chevallier
+	<maxime.chevallier@bootlin.com>, <thomas.petazzoni@bootlin.com>, Andrew Lunn
+	<andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>, Eric Dumazet
+	<edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, Russell King
+	<linux@armlinux.org.uk>, <linux-arm-kernel@lists.infradead.org>, "Christophe
+ Leroy" <christophe.leroy@csgroup.eu>, Herve Codina
+	<herve.codina@bootlin.com>, Florian Fainelli <f.fainelli@gmail.com>, "Heiner
+ Kallweit" <hkallweit1@gmail.com>, Vladimir Oltean <vladimir.oltean@nxp.com>,
+	=?iso-8859-1?Q?K=F6ry?= Maincent <kory.maincent@bootlin.com>, "Jesse
+ Brandeburg" <jesse.brandeburg@intel.com>, Jonathan Corbet <corbet@lwn.net>,
+	Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>, Piergiorgio Beruto
+	<piergiorgio.beruto@gmail.com>, Oleksij Rempel <o.rempel@pengutronix.de>,
+	=?iso-8859-1?Q?Nicol=F2?= Veronese <nicveronese@gmail.com>,
+	<oliver.sang@intel.com>
+Subject: Re: [PATCH net-next v4 01/13] net: phy: Introduce ethernet link
+ topology representation
+Message-ID: <202312181512.79005cd3-oliver.sang@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-X-ClientProxiedBy: SI2PR01CA0021.apcprd01.prod.exchangelabs.com
- (2603:1096:4:192::19) To LV3PR11MB8603.namprd11.prod.outlook.com
- (2603:10b6:408:1b6::9)
+In-Reply-To: <20231215171237.1152563-2-maxime.chevallier@bootlin.com>
+X-ClientProxiedBy: SG3P274CA0013.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:be::25)
+ To LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -87,176 +101,189 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|SA1PR11MB8256:EE_
-X-MS-Office365-Filtering-Correlation-Id: d2196f7c-5c8a-414d-e0c4-08dbff97a2b4
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|SJ0PR11MB4990:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8fe7e05c-52e1-4080-2652-08dbffa0e03b
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 40vQMVZ5n+OalUnoWNdaWFLyGxRPnKsN9xxyjEv9zv5+kX7dFUI0wg2gicg7hzO8sAm1SVvHmflsy9HTvNszQ0UfcUB4EQhNxIywegKEgtvIwyl/a/7sbgPHJLRNbo5j2UYDm5nBr7l45pHgHAz/g/2AL0ehVSKlI9Tl6ZnWjlO8tjQh9cfhdb7NKTQ/xGcgDpGhYY9H0BEg7VN/jbr/Ulp0AcUVoim5D3MMjQHXfT2EybF57w+c168Mbdk61xlQGSHrrGknhtf4g0iHxrk+MmAsMJ+TiefAo6xSnuJaEHevzOTN3AfbdW+gaEY8rh7KWbt4DmmcZUJa9s1yZNvBCUG/9ifhGnrOTTcHhtWEn7B1uj1sbD6hECS3tmjrDzThGZNWDnBsGjkgvvrv6bNPqkOM8kZ/OwgV5Czm27rT2ezOYM+Lczmj6bbORSnwTBFin5E6P6WNL/kxOROoMEMwabNMM7AzKbpwcSszrSdEdutuIz0qBvP6jLJVnoA+SS2aF9r5cqXkAvaHTkbIWP6blrUNY3W8JvjRMNnHigRSY235S16qz6qysmKwv3d9wyKWCWI/yePZGTLvRN0xvDv58FXwMNDZqQm9iAtAJUp2oUQE004wPQo6bWrrILfSDO/nOtAzBdRKCGY96zO4NUbzlQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(376002)(346002)(396003)(366004)(136003)(230922051799003)(230273577357003)(230173577357003)(64100799003)(186009)(451199024)(1800799012)(107886003)(1076003)(26005)(2616005)(82960400001)(38100700002)(36756003)(86362001)(83380400001)(5660300002)(45080400002)(6512007)(6506007)(6666004)(8676002)(4326008)(8936002)(66946007)(66556008)(6486002)(316002)(6916009)(66476007)(2906002)(41300700001)(478600001)(966005);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: q25aCqfg/X6Cf182j9AUGPG7U+ArYvFFiT1qm+MGt5QjOV3pOZkYlJky+oMeWmfIS1hubzDkJtNV7W5qd6CWn3OikLi9jfRWqcJcjbhH9vLTE/1C2NMFcRvssgJ7c8gv4RFjg15je6xv3wBAeOxjW1j5idfHzte9hjKl9qUiYTiU3emgbOyUDFA2TQlOH4wteqLPPNMuoskFgjLf3h/lo0p6B5eGvP7I64qXCpa9ECgN2YuXPITNfiu7l4ZJKP//X4kllVae7y4Q8nw1zEJpoL06oROrj/RPvk4416mTD5FdbgfEXlGgLlDdA6+OJAoC8YIspRTyylSsWvahL3Fqi83t80x3JZ3+6n3qFc8F20G8dZtBs7qryz4INb6uhwclKkJ9QJLhhIacT5Z0kHuwsCOIUFt6IXKBDnMtH+o3pBV9zsRM2BTLjtqfenuOr2Ay/vwQwCu6HU+gJDEQ9ciqx3UsnKuO50VieGWtBfAerELP1y/8h72H3J7oEPkCFQbkw5Z4K2gOf7UJ8d2323dMkySxjnHX1SJSVKShgs8S8UyVIHLXHzaf5g+h9MayksUBTBXj6UhJVRtFYDn40334AGEjBgE19xANyC6TGPIkfZHkVesLO9yopiCp8bqoNjoztMELJ9SGzi9pGXN4QQNqTA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(376002)(346002)(136003)(39860400002)(396003)(230273577357003)(230173577357003)(230922051799003)(1800799012)(451199024)(186009)(64100799003)(1076003)(26005)(2616005)(107886003)(6666004)(6512007)(6506007)(83380400001)(45080400002)(5660300002)(41300700001)(966005)(2906002)(7416002)(478600001)(54906003)(316002)(4326008)(8676002)(8936002)(66946007)(66556008)(66476007)(6486002)(6916009)(82960400001)(36756003)(86362001)(38100700002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?k9jKyrIf5rT7rve879yss7SilwCLJ1E+6AWRttlnPlaYk+vdjBYDaxvrF9Lt?=
- =?us-ascii?Q?QTK/Q4q23PV3eECeDKz8DPdl6Z63D88oGN5BHJPKJWXXDGitph1JSo5rl7Ng?=
- =?us-ascii?Q?MwB+SrcYdF81IWjy1EeeNH/qJxWuuGXZq/4VVei5Ul5/XXrXvtiNWGj7Q+1m?=
- =?us-ascii?Q?K6yeYGsCvdih+qgbyB5bS1fxUKHdFVWTA4pLLZtqObRGImeJ2MLCjX3QHMTp?=
- =?us-ascii?Q?TvySK29AGwqpoC9RWxnho7wADvjIox6JT7PfhSUDeV1qmMYKdEDRRXkGwdE5?=
- =?us-ascii?Q?47nAGxp5MgFUyD8US/XJCJ5WRsigg5p3cNgDk5db0znNuK7LmQ7twRlX9eWS?=
- =?us-ascii?Q?+Bl7Swrwfx3qrTECT2aOk1XJP6AE9xWNSVssuPHtXR9nc5U9Pe8UitHqBFhH?=
- =?us-ascii?Q?RQ8ngCuPV5N9SMpT4J52FYW0YBUHXcIN8FYTkVmcjRXAz5jeDOVF3QmbaM0i?=
- =?us-ascii?Q?6fXnovmDNOdqrRI1q/8QFPNVZyIh54OBz280rf0DI2batzEiE2ugNfck5z1f?=
- =?us-ascii?Q?ma3xNodxTRzyEcIaJNI++QyjpVHb9EbiUzUQ5QkN6xW6jZu1K+WXc7rq5pS3?=
- =?us-ascii?Q?ZikMcufu19qK//+/WBY+pIatMuY9H8YafNBq2X2JG7RCv9CzQHOTnYw5Cw2B?=
- =?us-ascii?Q?dUdoCB0bc4aXlmFfTcYKwgIvnYSb14uVMQNil5Nbj0mlqw/nij5r9kQEeHZ8?=
- =?us-ascii?Q?g44HgHeOb0GEhfAKcWUwd6HF+/MO/8li0A+gwZevgS+chjNx/TsbScyrW4M7?=
- =?us-ascii?Q?Ugx8xaFFMcWDGD/QYITjORZ1d2X1b4+N0x9/Hj4/muCqGlV55E/Z24HyMKfE?=
- =?us-ascii?Q?c2nRzEv2FrjKaSMz5L9b9fwp6v1yLOMa8UjiFB7Bo92qam0yxbk+RI4iIl0T?=
- =?us-ascii?Q?NOojvR9Dx3VwZmarWCR9gzJcxynkD4ihnJ5kqCmn5uO6QCRRbmTIT9xAOOo/?=
- =?us-ascii?Q?2tOA8x5JGDV1Ze+54l5luFB8h20Lz1ATVyh0ik6cVFK4OVNZEYkrLeEbuDlo?=
- =?us-ascii?Q?YIJXoYzPIV9VvuHEZsp4jYzmYYYFOZAd4yK7zL9T22KKT6rDQHErF5j25pxJ?=
- =?us-ascii?Q?JCleVUtxTy71p2CCxHPBhvruXHm0HRLvD6GMrFRtYQJu5QlE2RYGQitcPfih?=
- =?us-ascii?Q?1ESxFyPChnnWWE0ZEUojUNiN05kyUmFNOgRWYcpaizqerfEcZuwSp7UEZms4?=
- =?us-ascii?Q?jQKG99BtHY4urjMm4nuHT4pH6Ktbw1UAP6sZ2XVzGFfPpkgavfwiPLGrfS+3?=
- =?us-ascii?Q?WpFfk3Q+yQz2Fx6DBbUWFDxuKC9XFNdechf7ytwESNoAwjA2kDRZ5OVj92e0?=
- =?us-ascii?Q?fwms1YK9fv9pxYNZD4SipBfCQaWnwse+YCXPybIvU08lYqYYvzyC507N+I36?=
- =?us-ascii?Q?1Fa4Gowb69D3bNz8IDqQ/jrx09HDS9RZXCZTZO7jBhoAvhMfAxwzOgQB+Esd?=
- =?us-ascii?Q?7C1ZmXA2Ct4kjF3pgdwrZH1WheFt9efZbMsE0MptGXsPMH+ZALky4loBfmHO?=
- =?us-ascii?Q?NHWEaSDUG8/kcJq2c2Ep/c55FdGyQx1tb0jPBCP89anGwFeDqGB9Zvb9k//6?=
- =?us-ascii?Q?6oIsmDn2nCJ+VfbfOrOaXvPmEFJwOEMXCgvIRgi9?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: d2196f7c-5c8a-414d-e0c4-08dbff97a2b4
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?V3LjMyxCYhaJCl2dIIXL3r3QkTZQo2SDk0ZgQpJACcF/ca4IAW5ZtvdJ2HPF?=
+ =?us-ascii?Q?6bH/J70uySRxN4Bp+kgVV8hSYKkLCjFxKEZtjY4GhniWvvUHeVI9jR1J3Qe1?=
+ =?us-ascii?Q?vHITP//UMDekwqm6A0+lu9H4dJrrGIYeZvm5WZ6nipWCjD4TdKh7zGF3jjZm?=
+ =?us-ascii?Q?Wl4HtZWWMKvZqJvGu6YY9+vaXUnFkgNEEMbu/FpVbCaz8QIUf2+/q1kswfDJ?=
+ =?us-ascii?Q?38lyLs5tVkTqAOlptYnL/JmbumwIMFegdxd9ogfcegUmskFijIfPKbGwjOBv?=
+ =?us-ascii?Q?uHT21LXK1gp0AzxrSIEMR8sfimWPSOzQtRwLd8f0P5puJLwRrGVHWjQuCVlT?=
+ =?us-ascii?Q?reBdfpVzj9dspnZQvyaGykjMgSiS52+1jhv40MqnsnmsU36SP0MM84GL66Nh?=
+ =?us-ascii?Q?QzX6nrdVOPVp3EYl6cbLZ0rdytBPuuClLSKsAP16fWBnoywE+DSBo2zRFlac?=
+ =?us-ascii?Q?MjqduIDYgolYEj/7c2e70TZvDWh+Yjzj98Z/maK5/EpNqQCETvIwbIP1ZpTu?=
+ =?us-ascii?Q?Z6qDm1BoZFR7OtzQ8tpf9aOHU5pEHM72jwJCAKZmfyMY/6gJl8UOtAAOHU3p?=
+ =?us-ascii?Q?jFCqqhYX0DtCuoq/6HNR2QV4/OeQSN6XCdyhpZs1D5kk5FtRcF8VDbTH9XMT?=
+ =?us-ascii?Q?LGWW72CW6gU2b1y/N2QV+8iWeqpnTDrBgMZzptwSuJQGX/44n2N6d7pQMKIN?=
+ =?us-ascii?Q?5xsq4vA9uaqIEEuhPkGaFKA3FYFQEQLYNqA2MfkRz/U/JCE5cbEHdiZH0QT6?=
+ =?us-ascii?Q?KIAKf2HZHYlI7b6pHB2U+bv3nZ87mtQZoXyFoKAWKaQeRjtuxJA6R0+VivkQ?=
+ =?us-ascii?Q?1VWemQke82MsMCxhxO89E/a2swFTEkHMb0Zq6bL59UqSZyiGdRiZh+RaMdHX?=
+ =?us-ascii?Q?KEqp6RSxj0CDbt1wrO7+uFGHl7XAC64NkO/f6ppali7fZToq9RGAcjT0TMzA?=
+ =?us-ascii?Q?A/YDVskFh8GhV8PLsuMZK2HNH4+Kg64qwwI8xt5UhNFcYRlOADQN6b4Sgedn?=
+ =?us-ascii?Q?NMtKyWMH/0lbRMRjjbzDFmW/tx5q7nHK8TB7NCl4gF50XVao+0MWUAt5dzp5?=
+ =?us-ascii?Q?kTY2xe53fvaVYPxarnssaw1FvHG9Tfpb3+DmdJWorYkW/nfmdCbFKG9Fu3UP?=
+ =?us-ascii?Q?EB/GhLvLv8wE1uoGdY/zxk2Bx1ajbTmKCvsmDidkbxlIa2gO4TSWLWKrS2Cl?=
+ =?us-ascii?Q?718HwehtxttKdnkpnaH0EG47M4FlVxsvFIWUcZwIzZPbMdbCz7wY2VkA3C0I?=
+ =?us-ascii?Q?Jx69WBfo4XPvWD15ZIvbzbsRVIJN2xfzfCii9oIAQH8T7kHPcM91z5m5bk3R?=
+ =?us-ascii?Q?X0SF0LTp6No57tCJjrTmxIv8PwV6aCltxhEZXS+Q5sWBw9koZvd8Gta1jt1i?=
+ =?us-ascii?Q?wkQdaakSN39HfizTJ1wdAP5qeUwgLV+bqbTW1s41Io7Bsdcdvyy57K4hDVgx?=
+ =?us-ascii?Q?S4YozIywIg1yQtiiPv+wKUJsfqKWGYlfTRUPTr+NN/UJcLQwOah03ZSO9ySr?=
+ =?us-ascii?Q?ZV5fmUrWjzbVFvy+CzjH81dJgPFAEk31lq3AF8qxAXU/6GjPGpXGstAz7RfI?=
+ =?us-ascii?Q?ZQAChrlscanZVVB/ceOjXU5N5SZZfYJGpxEh5Ki6lnplsj8RuF5nEIdNwXGs?=
+ =?us-ascii?Q?Pw=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8fe7e05c-52e1-4080-2652-08dbffa0e03b
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Dec 2023 07:04:53.9437
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Dec 2023 08:11:02.6926
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 36ruuoCpzHTpn43crHh51btqd/9ejpY/5X4TBmwWStPwXrew/3nF6oQvD8K5QGnPzU4bzfSbzoN8jXdEK9yOBQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR11MB8256
+X-MS-Exchange-CrossTenant-UserPrincipalName: lw3tXvdbQdSI9VUY5nMUwon/C/KAWGiCoscfKL/TC07NzWHmomSLf5WLT1QSNgmycblxu90d+3XfG2reab1GLA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB4990
 X-OriginatorOrg: intel.com
 
 
 
 Hello,
 
-kernel test robot noticed "WARNING:at_kernel/trace/trace.c:#run_tracer_selftest" on:
+kernel test robot noticed "assertion_failed" on:
 
-commit: b92a5e78c35fde3c1be7263b39724388482a4bd9 ("function_graph: Add a new entry handler with parent_ip and ftrace_regs")
-https://git.kernel.org/cgit/linux/kernel/git/mhiramat/linux.git topic/fprobe-on-fgraph
+commit: 78b410e5a385c625b85bdfec9acdee79b20f4907 ("[PATCH net-next v4 01/13] net: phy: Introduce ethernet link topology representation")
+url: https://github.com/intel-lab-lkp/linux/commits/Maxime-Chevallier/net-phy-Introduce-ethernet-link-topology-representation/20231216-012641
+base: https://git.kernel.org/cgit/linux/kernel/git/davem/net-next.git e91db1614abae0cca248040c78b2c25f8dd97872
+patch link: https://lore.kernel.org/all/20231215171237.1152563-2-maxime.chevallier@bootlin.com/
+patch subject: [PATCH net-next v4 01/13] net: phy: Introduce ethernet link topology representation
 
-in testcase: trinity
-version: trinity-i386-abe9de86-1_20230429
-with following parameters:
+in testcase: boot
 
-	runtime: 600s
-
-test-description: Trinity is a linux system call fuzz tester.
-test-url: http://codemonkey.org.uk/projects/trinity/
-
-
-compiler: gcc-12
+compiler: gcc-9
 test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
 
 (please refer to attached dmesg/kmsg for entire log/backtrace)
 
 
-+----------------------------------------------------------------------------------+------------+------------+
-|                                                                                  | 26fcffc6d7 | b92a5e78c3 |
-+----------------------------------------------------------------------------------+------------+------------+
-| WARNING:at_kernel/trace/trace.c:#run_tracer_selftest                             | 0          | 8          |
-| EIP:run_tracer_selftest                                                          | 0          | 8          |
-+----------------------------------------------------------------------------------+------------+------------+
++------------------------------------------------------------------------------+------------+------------+
+|                                                                              | e91db1614a | 78b410e5a3 |
++------------------------------------------------------------------------------+------------+------------+
+| assertion_failed                                                             | 0          | 8          |
+| WARNING:at_drivers/net/phy/phy_link_topology.c:#phy_link_topo_add_phy        | 0          | 8          |
+| EIP:phy_link_topo_add_phy                                                    | 0          | 8          |
++------------------------------------------------------------------------------+------------+------------+
 
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202312181100.508f8f48-oliver.sang@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202312181512.79005cd3-oliver.sang@intel.com
 
 
-[    5.502226][    T1] ------------[ cut here ]------------
-[ 5.502226][ T1] WARNING: CPU: 1 PID: 1 at kernel/trace/trace.c:2031 run_tracer_selftest (kernel/trace/trace.c:2031 (discriminator 1)) 
-[    5.502899][    T1] Modules linked in:
-[    5.503348][    T1] CPU: 1 PID: 1 Comm: swapper/0 Not tainted 6.7.0-rc2-00034-gb92a5e78c35f #1
-[    5.504358][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-[ 5.505125][ T1] EIP: run_tracer_selftest (kernel/trace/trace.c:2031 (discriminator 1)) 
-[ 5.505764][ T1] Code: ff ff a3 18 30 4b c2 89 f8 89 15 1c 30 4b c2 e8 cb b1 ff ff 89 f8 e8 58 52 ff ff e9 c1 fe ff ff 68 50 d6 f9 c1 e8 2d 61 f7 ff <0f> 0b b8 ff ff ff ff 5a e9 22 ff ff ff b8 f4 ff ff ff e9 18 ff ff
+[   48.548859][   T36] ------------[ cut here ]------------
+[   48.550106][   T36] RTNL: assertion failed at drivers/net/phy/phy_link_topology.c (35)
+[ 48.552023][ T36] WARNING: CPU: 1 PID: 36 at drivers/net/phy/phy_link_topology.c:35 phy_link_topo_add_phy (drivers/net/phy/phy_link_topology.c:35 (discriminator 3)) 
+[   48.554496][   T36] Modules linked in:
+[   48.555406][   T36] CPU: 1 PID: 36 Comm: kworker/u4:1 Not tainted 6.7.0-rc5-01059-g78b410e5a385 #1 4e624fcd33c509a5c53c7f4349cb3dc9014b8795
+[   48.558523][   T36] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+[   48.560890][   T36] Workqueue: events_unbound deferred_probe_work_func
+[ 48.562460][ T36] EIP: phy_link_topo_add_phy (drivers/net/phy/phy_link_topology.c:35 (discriminator 3)) 
+[ 48.563694][ T36] Code: 26 00 00 00 00 80 3d 39 c7 19 d6 00 0f 85 f0 fe ff ff 6a 23 68 18 3d 99 d5 68 b0 96 88 d5 c6 05 39 c7 19 d6 01 e8 13 1a 3e ff <0f> 0b 83 c4 0c e9 ce fe ff ff bb f4 ff ff ff e9 fe fe ff ff cc cc
 All code
 ========
-   0:	ff                   	(bad)
-   1:	ff a3 18 30 4b c2    	jmp    *-0x3db4cfe8(%rbx)
-   7:	89 f8                	mov    %edi,%eax
-   9:	89 15 1c 30 4b c2    	mov    %edx,-0x3db4cfe4(%rip)        # 0xffffffffc24b302b
-   f:	e8 cb b1 ff ff       	call   0xffffffffffffb1df
-  14:	89 f8                	mov    %edi,%eax
-  16:	e8 58 52 ff ff       	call   0xffffffffffff5273
-  1b:	e9 c1 fe ff ff       	jmp    0xfffffffffffffee1
-  20:	68 50 d6 f9 c1       	push   $0xffffffffc1f9d650
-  25:	e8 2d 61 f7 ff       	call   0xfffffffffff76157
-  2a:*	0f 0b                	ud2		<-- trapping instruction
-  2c:	b8 ff ff ff ff       	mov    $0xffffffff,%eax
-  31:	5a                   	pop    %rdx
-  32:	e9 22 ff ff ff       	jmp    0xffffffffffffff59
-  37:	b8 f4 ff ff ff       	mov    $0xfffffff4,%eax
-  3c:	e9                   	.byte 0xe9
-  3d:	18 ff                	sbb    %bh,%bh
-  3f:	ff                   	.byte 0xff
+   0:	26 00 00             	add    %al,%es:(%rax)
+   3:	00 00                	add    %al,(%rax)
+   5:	80 3d 39 c7 19 d6 00 	cmpb   $0x0,-0x29e638c7(%rip)        # 0xffffffffd619c745
+   c:	0f 85 f0 fe ff ff    	jne    0xffffffffffffff02
+  12:	6a 23                	pushq  $0x23
+  14:	68 18 3d 99 d5       	pushq  $0xffffffffd5993d18
+  19:	68 b0 96 88 d5       	pushq  $0xffffffffd58896b0
+  1e:	c6 05 39 c7 19 d6 01 	movb   $0x1,-0x29e638c7(%rip)        # 0xffffffffd619c75e
+  25:	e8 13 1a 3e ff       	callq  0xffffffffff3e1a3d
+  2a:*	0f 0b                	ud2    		<-- trapping instruction
+  2c:	83 c4 0c             	add    $0xc,%esp
+  2f:	e9 ce fe ff ff       	jmpq   0xffffffffffffff02
+  34:	bb f4 ff ff ff       	mov    $0xfffffff4,%ebx
+  39:	e9 fe fe ff ff       	jmpq   0xffffffffffffff3c
+  3e:	cc                   	int3   
+  3f:	cc                   	int3   
 
 Code starting with the faulting instruction
 ===========================================
-   0:	0f 0b                	ud2
-   2:	b8 ff ff ff ff       	mov    $0xffffffff,%eax
-   7:	5a                   	pop    %rdx
-   8:	e9 22 ff ff ff       	jmp    0xffffffffffffff2f
-   d:	b8 f4 ff ff ff       	mov    $0xfffffff4,%eax
-  12:	e9                   	.byte 0xe9
-  13:	18 ff                	sbb    %bh,%bh
-  15:	ff                   	.byte 0xff
-[    5.508031][    T1] EAX: 00000007 EBX: c1f9fa5b ECX: 00000000 EDX: 00000000
-[    5.508856][    T1] ESI: c25e18e0 EDI: c0109500 EBP: c031bed4 ESP: c031bec4
-[    5.513135][    T1] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068 EFLAGS: 00010286
-[    5.514023][    T1] CR0: 80050033 CR2: 00000000 CR3: 02763000 CR4: 000406d0
-[    5.514855][    T1] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 00000000
-[    5.515688][    T1] DR6: fffe0ff0 DR7: 00000400
-[    5.516235][    T1] Call Trace:
-[ 5.516632][ T1] ? show_regs (arch/x86/kernel/dumpstack.c:479) 
-[ 5.517125][ T1] ? run_tracer_selftest (kernel/trace/trace.c:2031 (discriminator 1)) 
-[ 5.517722][ T1] ? __warn (kernel/panic.c:677) 
-[ 5.518185][ T1] ? run_tracer_selftest (kernel/trace/trace.c:2031 (discriminator 1)) 
-[ 5.518797][ T1] ? report_bug (lib/bug.c:201 lib/bug.c:219) 
-[ 5.519323][ T1] ? exc_overflow (arch/x86/kernel/traps.c:250) 
-[ 5.519844][ T1] ? handle_bug (arch/x86/kernel/traps.c:216) 
-[ 5.520351][ T1] ? exc_invalid_op (arch/x86/kernel/traps.c:258 (discriminator 1)) 
-[ 5.521153][ T1] ? handle_exception (arch/x86/entry/entry_32.S:1049) 
-[ 5.521153][ T1] ? exc_overflow (arch/x86/kernel/traps.c:250) 
-[ 5.521642][ T1] ? run_tracer_selftest (kernel/trace/trace.c:2031 (discriminator 1)) 
-[ 5.522253][ T1] ? exc_overflow (arch/x86/kernel/traps.c:250) 
-[ 5.522776][ T1] ? run_tracer_selftest (kernel/trace/trace.c:2031 (discriminator 1)) 
-[ 5.523386][ T1] register_tracer (kernel/trace/trace.c:2065 kernel/trace/trace.c:2188) 
-[ 5.523932][ T1] ? init_graph_tracefs (kernel/trace/trace_functions_graph.c:1448) 
-[ 5.525126][ T1] init_graph_trace (kernel/trace/trace_functions_graph.c:1462) 
-[ 5.525126][ T1] do_one_initcall (init/main.c:1236) 
-[ 5.525132][ T1] do_initcalls (init/main.c:1297 init/main.c:1314) 
-[ 5.525660][ T1] kernel_init_freeable (init/main.c:1553) 
-[ 5.526271][ T1] ? rest_init (init/main.c:1433) 
-[ 5.526789][ T1] kernel_init (init/main.c:1443) 
-[ 5.527291][ T1] ret_from_fork (arch/x86/kernel/process.c:153) 
-[ 5.527828][ T1] ? rest_init (init/main.c:1433) 
-[ 5.529154][ T1] ret_from_fork_asm (arch/x86/entry/entry_32.S:741) 
-[ 5.529154][ T1] entry_INT80_32 (arch/x86/entry/entry_32.S:947) 
-[    5.529154][    T1] irq event stamp: 2126727
-[ 5.529642][ T1] hardirqs last enabled at (2126735): console_unlock (arch/x86/include/asm/irqflags.h:26 arch/x86/include/asm/irqflags.h:67 arch/x86/include/asm/irqflags.h:127 kernel/printk/printk.c:341 kernel/printk/printk.c:2706 kernel/printk/printk.c:3038) 
-[ 5.530695][ T1] hardirqs last disabled at (2126742): console_unlock (kernel/printk/printk.c:339 kernel/printk/printk.c:2706 kernel/printk/printk.c:3038) 
-[ 5.533126][ T1] softirqs last enabled at (2126476): __do_softirq (arch/x86/include/asm/preempt.h:27 kernel/softirq.c:400 kernel/softirq.c:582) 
-[ 5.533126][ T1] softirqs last disabled at (2126471): do_softirq_own_stack (arch/x86/kernel/irq_32.c:57 arch/x86/kernel/irq_32.c:147) 
-[    5.533126][    T1] ---[ end trace 0000000000000000 ]---
-[    5.534553][    T1] prandom: seed boundary self test passed
-[    5.537152][    T1] prandom: 100 self tests passed
-[    5.537152][    T1] pinctrl core: initialized pinctrl subsystem
+   0:	0f 0b                	ud2    
+   2:	83 c4 0c             	add    $0xc,%esp
+   5:	e9 ce fe ff ff       	jmpq   0xfffffffffffffed8
+   a:	bb f4 ff ff ff       	mov    $0xfffffff4,%ebx
+   f:	e9 fe fe ff ff       	jmpq   0xffffffffffffff12
+  14:	cc                   	int3   
+  15:	cc                   	int3   
+[   48.568132][   T36] EAX: 00000042 EBX: edf5a000 ECX: 00000000 EDX: d5eb634c
+[   48.569726][   T36] ESI: c38c96b8 EDI: 00000000 EBP: c0cf7d0c ESP: c0cf7cf0
+[   48.571374][   T36] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068 EFLAGS: 00010286
+[   48.573237][   T36] CR0: 80050033 CR2: b7d88778 CR3: 16543000 CR4: 00040690
+[   48.574846][   T36] Call Trace:
+[ 48.575546][ T36] ? show_regs (arch/x86/kernel/dumpstack.c:479) 
+[ 48.576634][ T36] ? phy_link_topo_add_phy (drivers/net/phy/phy_link_topology.c:35 (discriminator 3)) 
+[ 48.577915][ T36] ? __warn (kernel/panic.c:677) 
+[ 48.578810][ T36] ? phy_link_topo_add_phy (drivers/net/phy/phy_link_topology.c:35 (discriminator 3)) 
+[ 48.580194][ T36] ? report_bug (lib/bug.c:201 lib/bug.c:219) 
+[ 48.581234][ T36] ? exc_overflow (arch/x86/kernel/traps.c:250) 
+[ 48.582213][ T36] ? handle_bug (arch/x86/kernel/traps.c:216) 
+[ 48.583120][ T36] ? exc_invalid_op (arch/x86/kernel/traps.c:258 (discriminator 1)) 
+[ 48.584185][ T36] ? handle_exception (arch/x86/entry/entry_32.S:1049) 
+[ 48.585295][ T36] ? exc_overflow (arch/x86/kernel/traps.c:250) 
+[ 48.586339][ T36] ? phy_link_topo_add_phy (drivers/net/phy/phy_link_topology.c:35 (discriminator 3)) 
+[ 48.587595][ T36] ? exc_overflow (arch/x86/kernel/traps.c:250) 
+[ 48.588689][ T36] ? phy_link_topo_add_phy (drivers/net/phy/phy_link_topology.c:35 (discriminator 3)) 
+[ 48.589870][ T36] phy_attach_direct (drivers/net/phy/phy_device.c:1504) 
+[ 48.590857][ T36] phylink_connect_phy (drivers/net/phy/phylink.c:1958) 
+[ 48.591949][ T36] dsa_user_create (net/dsa/user.c:2495 net/dsa/user.c:2530 net/dsa/user.c:2668) 
+[ 48.592985][ T36] dsa_port_setup (net/dsa/dsa.c:524) 
+[ 48.593974][ T36] dsa_tree_setup (net/dsa/dsa.c:764 net/dsa/dsa.c:893) 
+[ 48.595049][ T36] dsa_register_switch (net/dsa/dsa.c:1530 net/dsa/dsa.c:1544) 
+[ 48.596350][ T36] dsa_loop_drv_probe (drivers/net/dsa/dsa_loop.c:344) 
+[ 48.597483][ T36] mdio_probe (drivers/net/phy/mdio_device.c:165) 
+[ 48.598357][ T36] really_probe (drivers/base/dd.c:579 drivers/base/dd.c:658) 
+[ 48.599353][ T36] __driver_probe_device (drivers/base/dd.c:800) 
+[ 48.600558][ T36] driver_probe_device (drivers/base/dd.c:830) 
+[ 48.601690][ T36] __device_attach_driver (drivers/base/dd.c:959) 
+[ 48.602883][ T36] bus_for_each_drv (drivers/base/bus.c:457) 
+[ 48.604077][ T36] __device_attach (drivers/base/dd.c:1030) 
+[ 48.605140][ T36] ? driver_probe_device (drivers/base/dd.c:922) 
+[ 48.606221][ T36] device_initial_probe (drivers/base/dd.c:1080) 
+[ 48.607390][ T36] bus_probe_device (drivers/base/bus.c:532) 
+[ 48.608551][ T36] deferred_probe_work_func (drivers/base/dd.c:124) 
+[ 48.609781][ T36] process_one_work (include/linux/jump_label.h:207 include/linux/jump_label.h:207 include/trace/events/workqueue.h:108 kernel/workqueue.c:2632) 
+[ 48.611053][ T36] process_scheduled_works (kernel/workqueue.c:2694) 
+[ 48.612380][ T36] worker_thread (kernel/workqueue.c:2781) 
+[ 48.613437][ T36] kthread (kernel/kthread.c:388) 
+[ 48.614365][ T36] ? rescuer_thread (kernel/workqueue.c:2727) 
+[ 48.616138][ T36] ? kthread_complete_and_exit (kernel/kthread.c:341) 
+[ 48.617344][ T36] ret_from_fork (arch/x86/kernel/process.c:153) 
+[ 48.618342][ T36] ? kthread_complete_and_exit (kernel/kthread.c:341) 
+[ 48.619647][ T36] ret_from_fork_asm (arch/x86/entry/entry_32.S:741) 
+[ 48.620892][ T36] entry_INT80_32 (arch/x86/entry/entry_32.S:947) 
+[   48.622004][   T36] irq event stamp: 35465
+[ 48.622981][ T36] hardirqs last enabled at (35473): console_unlock (arch/x86/include/asm/irqflags.h:42 arch/x86/include/asm/irqflags.h:77 arch/x86/include/asm/irqflags.h:135 kernel/printk/printk.c:341 kernel/printk/printk.c:2706 kernel/printk/printk.c:3038) 
+[ 48.625036][ T36] hardirqs last disabled at (35482): console_unlock (kernel/printk/printk.c:339 kernel/printk/printk.c:2706 kernel/printk/printk.c:3038) 
+[ 48.626997][ T36] softirqs last enabled at (35420): __do_softirq (arch/x86/include/asm/preempt.h:27 kernel/softirq.c:400 kernel/softirq.c:582) 
+[ 48.628965][ T36] softirqs last disabled at (35415): do_softirq_own_stack (arch/x86/kernel/irq_32.c:57 arch/x86/kernel/irq_32.c:147) 
+[   48.631005][   T36] ---[ end trace 0000000000000000 ]---
+[   48.632508][   T36] dsa-loop fixed-0:1f lan1 (uninitialized): PHY [dsa-0.0:00] driver [Generic PHY] (irq=POLL)
+[   48.637526][   T36] dsa-loop fixed-0:1f lan2 (uninitialized): PHY [dsa-0.0:01] driver [Generic PHY] (irq=POLL)
+[   48.654535][   T36] dsa-loop fixed-0:1f lan3 (uninitialized): PHY [dsa-0.0:02] driver [Generic PHY] (irq=POLL)
+[   48.659100][   T36] dsa-loop fixed-0:1f lan4 (uninitialized): PHY [dsa-0.0:03] driver [Generic PHY] (irq=POLL)
+[   48.663920][   T36] DSA: tree 0 setup
+[   48.664854][   T36] dsa-loop fixed-0:1f: DSA mockup driver: 0x1f
 
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20231218/202312181100.508f8f48-oliver.sang@intel.com
+https://download.01.org/0day-ci/archive/20231218/202312181512.79005cd3-oliver.sang@intel.com
 
 
 
