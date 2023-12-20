@@ -1,169 +1,246 @@
-Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB42B482E3
-	for <oe-lkp@lists.linux.dev>; Wed, 20 Dec 2023 20:14:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 139B749F69;
+	Wed, 20 Dec 2023 22:11:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TnomDLnq"
-Received: by mail-pf1-f177.google.com with SMTP id d2e1a72fcca58-6d3165ac96bso79614b3a.0
-        for <oe-lkp@lists.linux.dev>; Wed, 20 Dec 2023 12:14:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1703103263; x=1703708063; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tNiy0jH8FDZZVZiqQIhmWtF+05OpH5cCP9I8S3ulDiA=;
-        b=TnomDLnqjLFFyh69tvdu2uk7IvDX+WLuKX7+j4+dVXcFrcUc2CStaN8/JC8QRpaU1+
-         kUIQaGlYmOZ8o875OrLRlfjqzOwaNS6ouuHEzbZcfu/Qk1NPKSwUrC9pfpwvGahEoIz4
-         Mk3wZ+uIvi9Z5QXITQAhD8Qi8E79T1z4S2zGdkftD0XQaCHlCETazg2sA3uHGt20xCX5
-         330vGdHEf7OkVNjqijetIe9rH9erJEk5ZHv+ThngWYO9gX8L9aKVohZgGuWQ1HqtQh47
-         wkKVTQdyjfIyVudLWvj123dsswWHyqiRUpU5E7+cJ+tA9R7j5O6waHLkiQ9bdYx+WchI
-         +cQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1703103263; x=1703708063;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=tNiy0jH8FDZZVZiqQIhmWtF+05OpH5cCP9I8S3ulDiA=;
-        b=gRW94ZP4HjU5j5fXrEAmYjwlW/nnUSx0GjJYdUXwsYMnw3KajVNKyFrnR/vdlaDwzX
-         lq4jUnxWqHj68NpQtyvtOc6Rtsw1fmNEJJcpbvFfVXH5gwANlrG8MUPX91s92BmaOt5v
-         1mkKxzmaz+gYFSHg4/ktCJhtnaPlyGPWWgvcnBF/xUHUFO6O9sjZDN89cBzlY/ht495v
-         jhyvwm3eyCyiyZllT0LuX3v/Mgk3VD1raIbYa3YAcWd5vvNPjcCpPfeqNH9z3tcCfNoH
-         b5Cu3H7V8B2bodVkwf4L87s85wOQxh6HLf0f4TJcfnU78M7aFJQvArgRVfVFKJJTB5Ef
-         ZlwA==
-X-Gm-Message-State: AOJu0Yx+/qzEEWe3bhndyU7xIbppHE9G9bfvZuX8QbHDsNaA4g2rNacW
-	Tm8wE6OiZCABJwXrym+wVoYSqguiFxFIBJM3uE0=
-X-Google-Smtp-Source: AGHT+IGusGIA0mvPVdXj2/EcSlL518ttyPvZs9uWvMMcGiJH8OVIeaika87ENJk2i+kQmohvy12yM0rSG72JuO/2atQ=
-X-Received: by 2002:a05:6a00:1996:b0:6d9:3981:5903 with SMTP id
- d22-20020a056a00199600b006d939815903mr2452525pfl.0.1703103262693; Wed, 20 Dec
- 2023 12:14:22 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="SUeOlT8k"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89BB7C433C8;
+	Wed, 20 Dec 2023 22:11:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+	s=korg; t=1703110296;
+	bh=sm3RwEnabihgci1zAS1Niy3ded5Q9O5i+QwJLM3T4p8=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=SUeOlT8kEyODlh+nMkRcz8Gnws9xOOdHK/F2sUcbmDICJ1WBWc73DAZP2Y0VphM9v
+	 BAZdlkaZ5ee0vOdS/3usEQTz+7o/AylPPT+f0/c7fhkzzejnkBiwruff533QHJb220
+	 8SFRU2X+onG4eiPNFU6q7MHJT/4ChiWllMRyr8Bg=
+Date: Wed, 20 Dec 2023 14:11:35 -0800
+From: Andrew Morton <akpm@linux-foundation.org>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: Matthew Wilcox <willy@infradead.org>, <oe-lkp@lists.linux.dev>,
+ <lkp@intel.com>, Linux Memory Management List <linux-mm@kvack.org>,
+ "David Hildenbrand" <david@redhat.com>, <linux-kernel@vger.kernel.org>
+Subject: Re: [linux-next:master] [mm]  bbcbf2a3f0: kernel_BUG_at_mm/memory.c
+Message-Id: <20231220141135.cb4241442b657104f0aeae34@linux-foundation.org>
+In-Reply-To: <202312192319.fa8f5709-oliver.sang@intel.com>
+References: <202312192319.fa8f5709-oliver.sang@intel.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-References: <202312192310.56367035-oliver.sang@intel.com> <CAHbLzkogaL-VTuZbBbPp=O8TPZxJmabJLRx1hrD-65rtbRmTtQ@mail.gmail.com>
- <ec48d168-284b-4376-97a7-090273a3ae5e@intel.com> <edb35574-e8be-adc8-a756-96bcbab2f0af@linux.com>
-In-Reply-To: <edb35574-e8be-adc8-a756-96bcbab2f0af@linux.com>
-From: Yang Shi <shy828301@gmail.com>
-Date: Wed, 20 Dec 2023 12:14:09 -0800
-Message-ID: <CAHbLzkrRfOdDx2OTB0kW49FxE+HtntKBihp2Qh-UrKXM7r8C8g@mail.gmail.com>
-Subject: Re: [linux-next:master] [mm] 1111d46b5c: stress-ng.pthread.ops_per_sec
- -84.3% regression
-To: "Christoph Lameter (Ampere)" <cl@linux.com>
-Cc: Yin Fengwei <fengwei.yin@intel.com>, kernel test robot <oliver.sang@intel.com>, 
-	Rik van Riel <riel@surriel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
-	Linux Memory Management List <linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>, 
-	Matthew Wilcox <willy@infradead.org>, ying.huang@intel.com, feng.tang@intel.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, Dec 20, 2023 at 7:42=E2=80=AFAM Christoph Lameter (Ampere) <cl@linu=
-x.com> wrote:
->
-> On Wed, 20 Dec 2023, Yin Fengwei wrote:
->
-> >> Interesting, wasn't the same regression seen last time? And I'm a
-> >> little bit confused about how pthread got regressed. I didn't see the
-> >> pthread benchmark do any intensive memory alloc/free operations. Do
-> >> the pthread APIs do any intensive memory operations? I saw the
-> >> benchmark does allocate memory for thread stack, but it should be just
-> >> 8K per thread, so it should not trigger what this patch does. With
-> >> 1024 threads, the thread stacks may get merged into one single VMA (8M
-> >> total), but it may do so even though the patch is not applied.
-> > stress-ng.pthread test code is strange here:
-> >
-> > https://github.com/ColinIanKing/stress-ng/blob/master/stress-pthread.c#=
-L573
-> >
-> > Even it allocates its own stack, but that attr is not passed
-> > to pthread_create. So it's still glibc to allocate stack for
-> > pthread which is 8M size. This is why this patch can impact
-> > the stress-ng.pthread testing.
->
-> Hmmm... The use of calloc()  for 8M triggers an mmap I guess.
->
-> Why is that memory slower if we align the adress to a 2M boundary? Becaus=
-e
-> THP can act faster and creates more overhead?
+On Tue, 19 Dec 2023 23:46:50 +0800 kernel test robot <oliver.sang@intel.com> wrote:
 
-glibc calls madvise() to free unused stack, that may have higher cost
-due to THP (splitting pmd, deferred split queue, etc).
+> 
+> 
+> Hello,
+> 
+> kernel test robot noticed "kernel_BUG_at_mm/memory.c" on:
+> 
+> commit: bbcbf2a3f05f74f9d268eab57abbdce6a65a94ad ("mm: convert ksm_might_need_to_copy() to work on folios")
 
->
-> > while this time, the hotspot is in (pmd_lock from do_madvise I suppose)=
-:
-> >   - 55.02% zap_pmd_range.isra.0
-> >      - 53.42% __split_huge_pmd
-> >         - 51.74% _raw_spin_lock
-> >            - 51.73% native_queued_spin_lock_slowpath
-> >               + 3.03% asm_sysvec_call_function
-> >         - 1.67% __split_huge_pmd_locked
-> >            - 0.87% pmdp_invalidate
-> >               + 0.86% flush_tlb_mm_range
-> >      - 1.60% zap_pte_range
-> >         - 1.04% page_remove_rmap
-> >              0.55% __mod_lruvec_page_state
->
-> Ok so we have 2M mappings and they are split because of some action on 4K
-> segments? Guess because of the guard pages?
+I assume this is a bisection result, so it's quite repeatable?
 
-It should not relate to guard pages, just due to free unused stack
-which may be partial 2M.
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+> 
+> [test failed on linux-next/master aa4db8324c4d0e67aa4670356df4e9fae14b4d37]
+> 
+> in testcase: vm-scalability
+> version: vm-scalability-x86_64-1.0-0_20220518
+> with following parameters:
+> 
+> 	runtime: 300
+> 	thp_enabled: always
+> 	thp_defrag: always
+> 	nr_task: 32
+> 	nr_ssd: 1
+> 	priority: 1
+> 	test: swap-w-rand
+> 	cpufreq_governor: performance
+> 
+> test-description: The motivation behind this suite is to exercise functions and regions of the mm/ of the Linux kernel which are of interest to us.
+> test-url: https://git.kernel.org/cgit/linux/kernel/git/wfg/vm-scalability.git/
+> 
+> 
+> compiler: gcc-12
+> test machine: 128 threads 2 sockets Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz (Ice Lake) with 128G memory
+> 
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+> 
+> 
+> 
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202312192319.fa8f5709-oliver.sang@intel.com
+> 
+> 
+> [   61.404380][ T5947] ------------[ cut here ]------------
+> [   61.409984][ T5947] kernel BUG at mm/memory.c:3990!
+> [   61.415085][ T5947] invalid opcode: 0000 [#1] SMP NOPTI
 
->
-> >> More time spent in madvise and munmap. but I'm not sure whether this
-> >> is caused by tearing down the address space when exiting the test. If
-> >> so it should not count in the regression.
-> > It's not for the whole address space tearing down. It's for pthread
-> > stack tearing down when pthread exit (can be treated as address space
-> > tearing down? I suppose so).
-> >
-> > https://github.com/lattera/glibc/blob/master/nptl/allocatestack.c#L384
-> > https://github.com/lattera/glibc/blob/master/nptl/pthread_create.c#L576
-> >
-> > Another thing is whether it's worthy to make stack use THP? It may be
-> > useful for some apps which need large stack size?
->
-> No can do since a calloc is used to allocate the stack. How can the kerne=
-l
-> distinguish the allocation?
+This is
 
-Just by VM_GROWSDOWN | VM_GROWSUP. The user space needs to tell kernel
-this area is stack by setting proper flags. For example,
+	BUG_ON(folio_test_anon(folio) && PageAnonExclusive(page));
 
-ffffca1df000-ffffca200000 rw-p 00000000 00:00 0                          [s=
-tack]
-Size:                132 kB
-KernelPageSize:        4 kB
-MMUPageSize:           4 kB
-Rss:                  60 kB
-Pss:                  60 kB
-Pss_Dirty:            60 kB
-Shared_Clean:          0 kB
-Shared_Dirty:          0 kB
-Private_Clean:         0 kB
-Private_Dirty:        60 kB
-Referenced:           60 kB
-Anonymous:            60 kB
-LazyFree:              0 kB
-AnonHugePages:         0 kB
-ShmemPmdMapped:        0 kB
-FilePmdMapped:         0 kB
-Shared_Hugetlb:        0 kB
-Private_Hugetlb:       0 kB
-Swap:                  0 kB
-SwapPss:               0 kB
-Locked:                0 kB
-THPeligible:    0
-VmFlags: rd wr mr mw me gd ac
+and I don't believe that the error path fix
+(https://lkml.kernel.org/r/ZXnPtblC6A1IkyAB@casper.infradead.org) will
+address this.
 
-The "gd" flag means GROWSDOWN. But it totally depends on glibc in
-terms of how it considers about "stack". So glibc just uses calloc()
-to allocate stack area.
+Matthew, have you had a chance to consider?
 
->
->
+Thanks.
+
+> [   61.420506][ T5947] CPU: 32 PID: 5947 Comm: usemem Tainted: G S                 6.7.0-rc4-00252-gbbcbf2a3f05f #1
+> [   61.430881][ T5947] Hardware name: Intel Corporation M50CYP2SB1U/M50CYP2SB1U, BIOS SE5C620.86B.01.01.0003.2104260124 04/26/2021
+> [ 61.442761][ T5947] RIP: 0010:do_swap_page (mm/memory.c:3990 (discriminator 3)) 
+> [ 61.448112][ T5947] Code: 6f 28 31 d2 be 01 00 00 00 4c 89 ff e8 9b 43 03 00 49 c7 47 28 00 00 00 00 4c 89 f9 48 c7 44 24 08 00 00 00 00 e9 cf fb ff ff <0f> 0b 49 8b 45 08 f0 48 83 28 01 0f 85 3f fc ff ff 49 8b 45 08 4c
+> All code
+> ========
+>    0:	6f                   	outsl  %ds:(%rsi),(%dx)
+>    1:	28 31                	sub    %dh,(%rcx)
+>    3:	d2 be 01 00 00 00    	sarb   %cl,0x1(%rsi)
+>    9:	4c 89 ff             	mov    %r15,%rdi
+>    c:	e8 9b 43 03 00       	call   0x343ac
+>   11:	49 c7 47 28 00 00 00 	movq   $0x0,0x28(%r15)
+>   18:	00 
+>   19:	4c 89 f9             	mov    %r15,%rcx
+>   1c:	48 c7 44 24 08 00 00 	movq   $0x0,0x8(%rsp)
+>   23:	00 00 
+>   25:	e9 cf fb ff ff       	jmp    0xfffffffffffffbf9
+>   2a:*	0f 0b                	ud2		<-- trapping instruction
+>   2c:	49 8b 45 08          	mov    0x8(%r13),%rax
+>   30:	f0 48 83 28 01       	lock subq $0x1,(%rax)
+>   35:	0f 85 3f fc ff ff    	jne    0xfffffffffffffc7a
+>   3b:	49 8b 45 08          	mov    0x8(%r13),%rax
+>   3f:	4c                   	rex.WR
+> 
+> Code starting with the faulting instruction
+> ===========================================
+>    0:	0f 0b                	ud2
+>    2:	49 8b 45 08          	mov    0x8(%r13),%rax
+>    6:	f0 48 83 28 01       	lock subq $0x1,(%rax)
+>    b:	0f 85 3f fc ff ff    	jne    0xfffffffffffffc50
+>   11:	49 8b 45 08          	mov    0x8(%r13),%rax
+>   15:	4c                   	rex.WR
+> [   61.468016][ T5947] RSP: 0000:ffa000000bb5fd98 EFLAGS: 00010206
+> [   61.474169][ T5947] RAX: ff11000111a47c99 RBX: ffa000000bb5fe08 RCX: 0000002064ac7000
+> [   61.482233][ T5947] RDX: 0057ffffc00a106d RSI: 0000000000000043 RDI: ffd400008192b1e8
+> [   61.490296][ T5947] RBP: 000000000100c13b R08: 0000000000000000 R09: ffa000000bb5fe08
+> [   61.498366][ T5947] R10: 0000000055555554 R11: ff1100018bebbd0c R12: ffd4000044128000
+> [   61.506438][ T5947] R13: ff1100205d33d800 R14: ff11000130cd2da8 R15: ffd4000044128000
+> [   61.514508][ T5947] FS:  00007f49c900c740(0000) GS:ff11002001000000(0000) knlGS:0000000000000000
+> [   61.523534][ T5947] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   61.530225][ T5947] CR2: 00007f4966b3b6b8 CR3: 00000010af786004 CR4: 0000000000771ef0
+> [   61.538307][ T5947] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> [   61.546387][ T5947] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> [   61.554471][ T5947] PKRU: 55555554
+> [   61.558137][ T5947] Call Trace:
+> [   61.561544][ T5947]  <TASK>
+> [ 61.564599][ T5947] ? die (arch/x86/kernel/dumpstack.c:421 arch/x86/kernel/dumpstack.c:434 arch/x86/kernel/dumpstack.c:447) 
+> [ 61.568429][ T5947] ? do_trap (arch/x86/kernel/traps.c:112 arch/x86/kernel/traps.c:153) 
+> [ 61.572692][ T5947] ? do_swap_page (mm/memory.c:3990 (discriminator 3)) 
+> [ 61.577475][ T5947] ? do_error_trap (arch/x86/include/asm/traps.h:59 arch/x86/kernel/traps.c:174) 
+> [ 61.582172][ T5947] ? do_swap_page (mm/memory.c:3990 (discriminator 3)) 
+> [ 61.586966][ T5947] ? exc_invalid_op (arch/x86/kernel/traps.c:265) 
+> [ 61.591743][ T5947] ? do_swap_page (mm/memory.c:3990 (discriminator 3)) 
+> [ 61.596515][ T5947] ? asm_exc_invalid_op (arch/x86/include/asm/idtentry.h:568) 
+> [ 61.601638][ T5947] ? do_swap_page (mm/memory.c:3990 (discriminator 3)) 
+> [ 61.606412][ T5947] ? do_swap_page (mm/memory.c:3971) 
+> [ 61.611179][ T5947] __handle_mm_fault (mm/memory.c:5274) 
+> [ 61.616203][ T5947] handle_mm_fault (mm/memory.c:5439) 
+> [ 61.621051][ T5947] do_user_addr_fault (arch/x86/mm/fault.c:1365) 
+> [ 61.626151][ T5947] exc_page_fault (arch/x86/include/asm/irqflags.h:37 arch/x86/include/asm/irqflags.h:72 arch/x86/mm/fault.c:1513 arch/x86/mm/fault.c:1561) 
+> [ 61.630824][ T5947] asm_exc_page_fault (arch/x86/include/asm/idtentry.h:570) 
+> [   61.635748][ T5947] RIP: 0033:0x5612d5878ad6
+> [ 61.640229][ T5947] Code: 01 00 00 00 e8 1b f9 ff ff 89 c7 e8 6c ff ff ff bf 00 00 00 00 e8 0a f9 ff ff 85 d2 74 08 48 8d 04 f7 48 8b 00 c3 48 8d 04 f7 <48> 89 30 b8 00 00 00 00 c3 41 54 55 53 48 85 ff 0f 84 21 01 00 00
+> All code
+> ========
+>    0:	01 00                	add    %eax,(%rax)
+>    2:	00 00                	add    %al,(%rax)
+>    4:	e8 1b f9 ff ff       	call   0xfffffffffffff924
+>    9:	89 c7                	mov    %eax,%edi
+>    b:	e8 6c ff ff ff       	call   0xffffffffffffff7c
+>   10:	bf 00 00 00 00       	mov    $0x0,%edi
+>   15:	e8 0a f9 ff ff       	call   0xfffffffffffff924
+>   1a:	85 d2                	test   %edx,%edx
+>   1c:	74 08                	je     0x26
+>   1e:	48 8d 04 f7          	lea    (%rdi,%rsi,8),%rax
+>   22:	48 8b 00             	mov    (%rax),%rax
+>   25:	c3                   	ret
+>   26:	48 8d 04 f7          	lea    (%rdi,%rsi,8),%rax
+>   2a:*	48 89 30             	mov    %rsi,(%rax)		<-- trapping instruction
+>   2d:	b8 00 00 00 00       	mov    $0x0,%eax
+>   32:	c3                   	ret
+>   33:	41 54                	push   %r12
+>   35:	55                   	push   %rbp
+>   36:	53                   	push   %rbx
+>   37:	48 85 ff             	test   %rdi,%rdi
+>   3a:	0f 84 21 01 00 00    	je     0x161
+> 
+> Code starting with the faulting instruction
+> ===========================================
+>    0:	48 89 30             	mov    %rsi,(%rax)
+>    3:	b8 00 00 00 00       	mov    $0x0,%eax
+>    8:	c3                   	ret
+>    9:	41 54                	push   %r12
+>    b:	55                   	push   %rbp
+>    c:	53                   	push   %rbx
+>    d:	48 85 ff             	test   %rdi,%rdi
+>   10:	0f 84 21 01 00 00    	je     0x137
+> [   61.660112][ T5947] RSP: 002b:00007ffd09f037d8 EFLAGS: 00010246
+> [   61.666250][ T5947] RAX: 00007f4966b3b6b8 RBX: 000000000000358f RCX: 00000005deece66d
+> [   61.674295][ T5947] RDX: 0000000000000000 RSI: 000000002fa0f0d7 RDI: 00007f47e9ac3000
+> [   61.682347][ T5947] RBP: 000000002fa0f0d7 R08: 00007ffd09f0386c R09: 0000000000000001
+> [   61.690401][ T5947] R10: 00007ffd09f037c0 R11: 0000000000000000 R12: 000000000001ac78
+> [   61.698449][ T5947] R13: 00007f47e9ac3000 R14: 00007ffd09f0386c R15: 00007ffd09f03970
+> [   61.706500][ T5947]  </TASK>
+> [   61.709607][ T5947] Modules linked in: kmem xfs loop device_dax nd_pmem dax_pmem nd_btt btrfs blake2b_generic xor raid6_pq libcrc32c intel_rapl_msr intel_rapl_common x86_pkg_temp_thermal intel_powerclamp coretemp sd_mod t10_pi crc64_rocksoft_generic crc64_rocksoft crc64 kvm_intel sg kvm irqbypass crct10dif_pclmul crc32_pclmul crc32c_intel ghash_clmulni_intel sha512_ssse3 ahci ipmi_ssif rapl intel_cstate ast libahci mei_me drm_shmem_helper i2c_i801 ioatdma acpi_ipmi libata drm_kms_helper mei intel_uncore joydev i2c_smbus intel_pch_thermal dax_hmem dca wmi ipmi_si ipmi_devintf ipmi_msghandler nfit libnvdimm acpi_power_meter acpi_pad drm fuse ip_tables
+> [   61.768510][ T5947] ---[ end trace 0000000000000000 ]---
+> [   61.786010][ T5947] pstore: backend (erst) writing error (-28)
+> [ 61.792055][ T5947] RIP: 0010:do_swap_page (mm/memory.c:3990 (discriminator 3)) 
+> [ 61.797397][ T5947] Code: 6f 28 31 d2 be 01 00 00 00 4c 89 ff e8 9b 43 03 00 49 c7 47 28 00 00 00 00 4c 89 f9 48 c7 44 24 08 00 00 00 00 e9 cf fb ff ff <0f> 0b 49 8b 45 08 f0 48 83 28 01 0f 85 3f fc ff ff 49 8b 45 08 4c
+> All code
+> ========
+>    0:	6f                   	outsl  %ds:(%rsi),(%dx)
+>    1:	28 31                	sub    %dh,(%rcx)
+>    3:	d2 be 01 00 00 00    	sarb   %cl,0x1(%rsi)
+>    9:	4c 89 ff             	mov    %r15,%rdi
+>    c:	e8 9b 43 03 00       	call   0x343ac
+>   11:	49 c7 47 28 00 00 00 	movq   $0x0,0x28(%r15)
+>   18:	00 
+>   19:	4c 89 f9             	mov    %r15,%rcx
+>   1c:	48 c7 44 24 08 00 00 	movq   $0x0,0x8(%rsp)
+>   23:	00 00 
+>   25:	e9 cf fb ff ff       	jmp    0xfffffffffffffbf9
+>   2a:*	0f 0b                	ud2		<-- trapping instruction
+>   2c:	49 8b 45 08          	mov    0x8(%r13),%rax
+>   30:	f0 48 83 28 01       	lock subq $0x1,(%rax)
+>   35:	0f 85 3f fc ff ff    	jne    0xfffffffffffffc7a
+>   3b:	49 8b 45 08          	mov    0x8(%r13),%rax
+>   3f:	4c                   	rex.WR
+> 
+> Code starting with the faulting instruction
+> ===========================================
+>    0:	0f 0b                	ud2
+>    2:	49 8b 45 08          	mov    0x8(%r13),%rax
+>    6:	f0 48 83 28 01       	lock subq $0x1,(%rax)
+>    b:	0f 85 3f fc ff ff    	jne    0xfffffffffffffc50
+>   11:	49 8b 45 08          	mov    0x8(%r13),%rax
+>   15:	4c                   	rex.WR
+> 
+> 
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20231219/202312192319.fa8f5709-oliver.sang@intel.com
+> 
+> 
+> 
+> -- 
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
+> 
