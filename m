@@ -1,218 +1,112 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f47.google.com (mail-ot1-f47.google.com [209.85.210.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D21E49F91
-	for <oe-lkp@lists.linux.dev>; Wed, 20 Dec 2023 22:29:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 393341EA95
+	for <oe-lkp@lists.linux.dev>; Wed, 20 Dec 2023 23:40:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="eMaZ3mdq"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1703111354;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=biKuMYxWNtLoc9oN17eZQHcrTRic6oxMUpNAggHYZyE=;
-	b=eMaZ3mdqqAn8WorJVxsV6SrUJbpDBHOrKhe7Y7/caD+Ew/7fekzLNvfXWK6ZmDOIV6jJbw
-	AYlmp8yMUNFJpbKH9ntY54v7wuckA/cUvIrlIHct2DW3e7VA7nqx5/MtxvrTgQMbyTZ9Z6
-	V3+q6bLdHns1+vFGte3cdFj4echRdcI=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-561-lxlO2sDtNVedcblc2m-_sg-1; Wed, 20 Dec 2023 17:29:13 -0500
-X-MC-Unique: lxlO2sDtNVedcblc2m-_sg-1
-Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-40c295f59ceso6209615e9.0
-        for <oe-lkp@lists.linux.dev>; Wed, 20 Dec 2023 14:29:12 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1703111351; x=1703716151;
-        h=content-transfer-encoding:in-reply-to:organization:autocrypt:from
-         :references:cc:to:content-language:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="hA6mnn3l"
+Received: by mail-ot1-f47.google.com with SMTP id 46e09a7af769-6dbaf976c80so119163a34.2
+        for <oe-lkp@lists.linux.dev>; Wed, 20 Dec 2023 15:40:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1703115618; x=1703720418; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=biKuMYxWNtLoc9oN17eZQHcrTRic6oxMUpNAggHYZyE=;
-        b=Qp2dVvS/ZN09/dclNK7w+JX3HF5bfJGcb29wkUI8zW1kr3ktyT0W/CeLwh0HBb+VTB
-         QIebUqf5AeUpqJ5c+030UhqPOxPa/hpF7OJNd8G5bs48E9VnCIQtwk2QMNiY2MjkS4fs
-         wJKYZUoyJcv+TwKybb98emBcOwb+ukGdU1acVyTQa5LKkJJEIPr1ZK8aw6niPxZHfWUP
-         vRMzoGFJwHJ+ULXf6oGqrKlubbv07Pw/GD7b57OaZeNsEyA+WKOD3haSAlnrklA3Tq3T
-         6cLwVugy6CRU1DOMX9oVxhzZOnkM5CKSVEgkm8LZtszv2+911FQynDgF9Ny+mRbco09P
-         qcWg==
-X-Gm-Message-State: AOJu0YxLbkea8mJY1kRCfpTksEvsaluXqYp9jF0hutV4yA2jvUIPpRKc
-	av0yZ53PObnnm+CDnghROsnSgbYBJ5LHwS/Lhi2BVVSyjNApLRbv6ieRR9MaIYazIAfHD9S+Bx6
-	IxP7RU++ozeHaDOYy
-X-Received: by 2002:a1c:7414:0:b0:40c:3984:4985 with SMTP id p20-20020a1c7414000000b0040c39844985mr142970wmc.79.1703111351636;
-        Wed, 20 Dec 2023 14:29:11 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IGi5IOCgb2CqyS6TuCGMRfpRLigZ+qyJiYSR7LUTb3R/siOeoAuuH65SXYN0VAKfTOGT2KFRw==
-X-Received: by 2002:a1c:7414:0:b0:40c:3984:4985 with SMTP id p20-20020a1c7414000000b0040c39844985mr142966wmc.79.1703111351182;
-        Wed, 20 Dec 2023 14:29:11 -0800 (PST)
-Received: from ?IPV6:2003:cb:c740:9d00:be3b:a58f:4d39:51e7? (p200300cbc7409d00be3ba58f4d3951e7.dip0.t-ipconnect.de. [2003:cb:c740:9d00:be3b:a58f:4d39:51e7])
-        by smtp.gmail.com with ESMTPSA id u4-20020a05600c138400b0040c03c3289bsm961430wmf.37.2023.12.20.14.29.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Dec 2023 14:29:10 -0800 (PST)
-Message-ID: <b8ecc05f-859e-4710-8c4c-a24ac82bff11@redhat.com>
-Date: Wed, 20 Dec 2023 23:29:09 +0100
+        bh=UT9ddCwESgsBoC0klthrCGoZVKiU2GhW3IYmRpWSVN4=;
+        b=hA6mnn3l2/NGS9aGLlRsvWkA4U6YeThqW2SBJ4tBaC054GE/dvUD0eZVMiC32WLX8I
+         RveWhfazAr22jtSLvOUb9gR5TyzsyczUK1pu75MzOT30GMhCE251cBrIBYOC2ExzA5Er
+         m83IXRtSqhWl11agV0EuTiZ+Z0aot40miu3HoORus08Yung9hRb/MpD4sG3j4Vzg5QtY
+         6yhLZy/KXTQ1d8CaNQMI9lMWeLaFvYYQy4oVXFQ5JC5crCEsYeftZ1cDJO/8P6fIO6XC
+         DaGgPEpX2sWEixl7NKv3OrSizFfodVAhiGhiuaHbCE4NdXOuzhUGf5qsaqBV0vcHxXxN
+         jsAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1703115618; x=1703720418;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=UT9ddCwESgsBoC0klthrCGoZVKiU2GhW3IYmRpWSVN4=;
+        b=fFl1z5qJUPSeeEr4osgLeRHcFQtQYrP+n3iqO6rlt//jPYoOztOBYhRAw/WS8n4K37
+         0kTrD4OD62wKWppHhx4t/5cdJdALgipq1Ue0Qjw/UrVfc3AUMGKfaJw5/QxE1DSK+0yU
+         xlwJm9/ur7/W8HDnwFpkJ028ng/Qd/sVXEl55IRCd4VC6oRGZ6yw4bSnbhDGsiFAbxAJ
+         d3rlf5S8mhaxOpnwkELWlLiwZJwSy7iZOccUEx7efU/RZU3IsM4Pu8sKwUTD97eipepW
+         wzbatWCxFJi63VtC/xu0+1oQW9/kVnw26u66uNQftkvJF2tdW5Bud341vMoeni8kmRyD
+         rfqg==
+X-Gm-Message-State: AOJu0Yw/pOxqQtP9XitjUvEnTchqJN9lzja3LtdgrI+sBG/wNM03XUDw
+	y7kRxcL0F1EwxKE0s0yAs70F/e8d2zKQMA57QN1Vkw==
+X-Google-Smtp-Source: AGHT+IFl1yH9HmEtW/GRt/3W2yqcGB7F1oFfk9bZiSKJ12kXycsrXzJ5TDlaI7WhVRoyr+AHA0ljXKlr1IzXq/x2Slk=
+X-Received: by 2002:a05:6830:18c2:b0:6d9:f031:4e76 with SMTP id
+ v2-20020a05683018c200b006d9f0314e76mr20116594ote.69.1703115618088; Wed, 20
+ Dec 2023 15:40:18 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [linux-next:master] [mm] bbcbf2a3f0: kernel_BUG_at_mm/memory.c
-To: Andrew Morton <akpm@linux-foundation.org>,
- kernel test robot <oliver.sang@intel.com>
-Cc: Matthew Wilcox <willy@infradead.org>, oe-lkp@lists.linux.dev,
- lkp@intel.com, Linux Memory Management List <linux-mm@kvack.org>,
- linux-kernel@vger.kernel.org
-References: <202312192319.fa8f5709-oliver.sang@intel.com>
- <20231220141135.cb4241442b657104f0aeae34@linux-foundation.org>
-From: David Hildenbrand <david@redhat.com>
-Autocrypt: addr=david@redhat.com; keydata=
- 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
- WNyWQQ==
-Organization: Red Hat
-In-Reply-To: <20231220141135.cb4241442b657104f0aeae34@linux-foundation.org>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <202312191507.348721d2-oliver.sang@intel.com> <20231219095821.GAZYFpPUSKexZAcl05@fat_crate.local>
+ <CAHk-=wimbX8UF6ECo53Hm4Vz0tCC7jjN9e3tEhZfoEtsxyfU-A@mail.gmail.com>
+ <87013f74-5828-4bef-848b-ffedde8e86f5@citrix.com> <CAHk-=wh=z-aXw6o8Hi9SiC5-vwP403-ZpDHUOXdXmLbaG93dvQ@mail.gmail.com>
+ <CAHk-=whfpRxuucUL1oguRivq0e7JSxNWC2p_6gvKriNTHmr0UQ@mail.gmail.com>
+In-Reply-To: <CAHk-=whfpRxuucUL1oguRivq0e7JSxNWC2p_6gvKriNTHmr0UQ@mail.gmail.com>
+From: Sami Tolvanen <samitolvanen@google.com>
+Date: Wed, 20 Dec 2023 15:39:40 -0800
+Message-ID: <CABCJKud8PG_ho79it34JxHG07n_Kbe9SLeBkEJwMYP_kS80D_g@mail.gmail.com>
+Subject: Re: [linus:master] [x86/entry] be5341eb0d: WARNING:CPU:#PID:#at_int80_emulation
+To: Linus Torvalds <torvalds@linuxfoundation.org>
+Cc: Andrew Cooper <andrew.cooper3@citrix.com>, Borislav Petkov <bp@alien8.de>, 
+	kernel test robot <oliver.sang@intel.com>, Thomas Gleixner <tglx@linutronix.de>, oe-lkp@lists.linux.dev, 
+	lkp@intel.com, linux-kernel@vger.kernel.org, 
+	Dave Hansen <dave.hansen@linux.intel.com>, 
+	"Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>, xen-devel@lists.xenproject.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 20.12.23 23:11, Andrew Morton wrote:
-> On Tue, 19 Dec 2023 23:46:50 +0800 kernel test robot <oliver.sang@intel.com> wrote:
-> 
->>
->>
->> Hello,
->>
->> kernel test robot noticed "kernel_BUG_at_mm/memory.c" on:
->>
->> commit: bbcbf2a3f05f74f9d268eab57abbdce6a65a94ad ("mm: convert ksm_might_need_to_copy() to work on folios")
-> 
-> I assume this is a bisection result, so it's quite repeatable?
-> 
->> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
->>
->> [test failed on linux-next/master aa4db8324c4d0e67aa4670356df4e9fae14b4d37]
->>
->> in testcase: vm-scalability
->> version: vm-scalability-x86_64-1.0-0_20220518
->> with following parameters:
->>
->> 	runtime: 300
->> 	thp_enabled: always
->> 	thp_defrag: always
->> 	nr_task: 32
->> 	nr_ssd: 1
->> 	priority: 1
->> 	test: swap-w-rand
->> 	cpufreq_governor: performance
->>
->> test-description: The motivation behind this suite is to exercise functions and regions of the mm/ of the Linux kernel which are of interest to us.
->> test-url: https://git.kernel.org/cgit/linux/kernel/git/wfg/vm-scalability.git/
->>
->>
->> compiler: gcc-12
->> test machine: 128 threads 2 sockets Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz (Ice Lake) with 128G memory
->>
->> (please refer to attached dmesg/kmsg for entire log/backtrace)
->>
->>
->>
->> If you fix the issue in a separate patch/commit (i.e. not just a new version of
->> the same patch/commit), kindly add following tags
->> | Reported-by: kernel test robot <oliver.sang@intel.com>
->> | Closes: https://lore.kernel.org/oe-lkp/202312192319.fa8f5709-oliver.sang@intel.com
->>
->>
->> [   61.404380][ T5947] ------------[ cut here ]------------
->> [   61.409984][ T5947] kernel BUG at mm/memory.c:3990!
->> [   61.415085][ T5947] invalid opcode: 0000 [#1] SMP NOPTI
-> 
-> This is
-> 
-> 	BUG_ON(folio_test_anon(folio) && PageAnonExclusive(page));
-> 
-> and I don't believe that the error path fix
-> (https://lkml.kernel.org/r/ZXnPtblC6A1IkyAB@casper.infradead.org) will
-> address this.
-> 
-> Matthew, have you had a chance to consider?
+On Tue, Dec 19, 2023 at 3:15=E2=80=AFPM Linus Torvalds
+<torvalds@linuxfoundation.org> wrote:
+>
+> On Tue, 19 Dec 2023 at 12:17, Linus Torvalds
+> <torvalds@linuxfoundation.org> wrote:
+> >
+> > That said, I still think that just getting rid of this horrid special
+> > case for posix timers is the right thing, and we should just remove
+> > that SYS_NI() alias thing entirely.
+>
+> IOW, something like the attached patch.
+>
+> It's not extensively tested, but hey, the diffstat looks nice:
+>
+>   arch/arm64/include/asm/syscall_wrapper.h |  4 ---
+>   arch/riscv/include/asm/syscall_wrapper.h |  5 ----
+>   arch/s390/include/asm/syscall_wrapper.h  | 13 +--------
+>   arch/x86/include/asm/syscall_wrapper.h   | 34 +++---------------------
+>   kernel/sys_ni.c                          | 14 ++++++++++
+>   kernel/time/posix-stubs.c                | 45 -------------------------=
+-------
+>   6 files changed, 19 insertions(+), 96 deletions(-)
+>
+> and it builds in at least a *couple* of configurations, including with
+> CONFIG_POSIX_TIMERS disabled.
+>
+> I did *not* check whether it might fix the warning, since I doubt my
+> user space would even boot without that posix timer support (actually,
+> honestly, because I'm just lazy and "it _looks_ fine to me" was the
+> main real thing).
 
-Isn't the
-	
-	page = folio_page(folio, 0);
+I tested the patch with the 0-day bot reproducer and it does fix the
+warning. My usual arm64 and riscv configs also seem to build and boot
+just fine.
 
-just wrong?
+> But that SYS_NI() thing really does deserve to die, as it was purely
+> used as a hack for some random timer system calls.
+>
+> Comments?
 
-We must not do that if the folio didn't change, otherwise we're
-in trouble if we had a large folio in the swapcache.
+Removing the SYS_NI bits is definitely a cleaner solution. Looks good to me=
+.
 
+Reviewed-by: Sami Tolvanen <samitolvanen@google.com>
+Tested-by: Sami Tolvanen <samitolvanen@google.com>
 
-Maybe something like the following?
-
-diff --git a/mm/memory.c b/mm/memory.c
-index d995ead7a3933..3aca5e33c6f81 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -3961,7 +3961,8 @@ vm_fault_t do_swap_page(struct vm_fault *vmf)
-                         folio = swapcache;
-                         goto out_page;
-                 }
--               page = folio_page(folio, 0);
-+               if (folio != swapcache)
-+                       page = folio_page(folio, 0);
-  
-                 /*
-                  * If we want to map a page that's in the swapcache writable, we
-
-
-
-
-
--- 
-Cheers,
-
-David / dhildenb
-
+Sami
