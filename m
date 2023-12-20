@@ -1,246 +1,218 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 139B749F69;
-	Wed, 20 Dec 2023 22:11:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D21E49F91
+	for <oe-lkp@lists.linux.dev>; Wed, 20 Dec 2023 22:29:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="SUeOlT8k"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89BB7C433C8;
-	Wed, 20 Dec 2023 22:11:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-	s=korg; t=1703110296;
-	bh=sm3RwEnabihgci1zAS1Niy3ded5Q9O5i+QwJLM3T4p8=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=SUeOlT8kEyODlh+nMkRcz8Gnws9xOOdHK/F2sUcbmDICJ1WBWc73DAZP2Y0VphM9v
-	 BAZdlkaZ5ee0vOdS/3usEQTz+7o/AylPPT+f0/c7fhkzzejnkBiwruff533QHJb220
-	 8SFRU2X+onG4eiPNFU6q7MHJT/4ChiWllMRyr8Bg=
-Date: Wed, 20 Dec 2023 14:11:35 -0800
-From: Andrew Morton <akpm@linux-foundation.org>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: Matthew Wilcox <willy@infradead.org>, <oe-lkp@lists.linux.dev>,
- <lkp@intel.com>, Linux Memory Management List <linux-mm@kvack.org>,
- "David Hildenbrand" <david@redhat.com>, <linux-kernel@vger.kernel.org>
-Subject: Re: [linux-next:master] [mm]  bbcbf2a3f0: kernel_BUG_at_mm/memory.c
-Message-Id: <20231220141135.cb4241442b657104f0aeae34@linux-foundation.org>
-In-Reply-To: <202312192319.fa8f5709-oliver.sang@intel.com>
-References: <202312192319.fa8f5709-oliver.sang@intel.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="eMaZ3mdq"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1703111354;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=biKuMYxWNtLoc9oN17eZQHcrTRic6oxMUpNAggHYZyE=;
+	b=eMaZ3mdqqAn8WorJVxsV6SrUJbpDBHOrKhe7Y7/caD+Ew/7fekzLNvfXWK6ZmDOIV6jJbw
+	AYlmp8yMUNFJpbKH9ntY54v7wuckA/cUvIrlIHct2DW3e7VA7nqx5/MtxvrTgQMbyTZ9Z6
+	V3+q6bLdHns1+vFGte3cdFj4echRdcI=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-561-lxlO2sDtNVedcblc2m-_sg-1; Wed, 20 Dec 2023 17:29:13 -0500
+X-MC-Unique: lxlO2sDtNVedcblc2m-_sg-1
+Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-40c295f59ceso6209615e9.0
+        for <oe-lkp@lists.linux.dev>; Wed, 20 Dec 2023 14:29:12 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1703111351; x=1703716151;
+        h=content-transfer-encoding:in-reply-to:organization:autocrypt:from
+         :references:cc:to:content-language:subject:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=biKuMYxWNtLoc9oN17eZQHcrTRic6oxMUpNAggHYZyE=;
+        b=Qp2dVvS/ZN09/dclNK7w+JX3HF5bfJGcb29wkUI8zW1kr3ktyT0W/CeLwh0HBb+VTB
+         QIebUqf5AeUpqJ5c+030UhqPOxPa/hpF7OJNd8G5bs48E9VnCIQtwk2QMNiY2MjkS4fs
+         wJKYZUoyJcv+TwKybb98emBcOwb+ukGdU1acVyTQa5LKkJJEIPr1ZK8aw6niPxZHfWUP
+         vRMzoGFJwHJ+ULXf6oGqrKlubbv07Pw/GD7b57OaZeNsEyA+WKOD3haSAlnrklA3Tq3T
+         6cLwVugy6CRU1DOMX9oVxhzZOnkM5CKSVEgkm8LZtszv2+911FQynDgF9Ny+mRbco09P
+         qcWg==
+X-Gm-Message-State: AOJu0YxLbkea8mJY1kRCfpTksEvsaluXqYp9jF0hutV4yA2jvUIPpRKc
+	av0yZ53PObnnm+CDnghROsnSgbYBJ5LHwS/Lhi2BVVSyjNApLRbv6ieRR9MaIYazIAfHD9S+Bx6
+	IxP7RU++ozeHaDOYy
+X-Received: by 2002:a1c:7414:0:b0:40c:3984:4985 with SMTP id p20-20020a1c7414000000b0040c39844985mr142970wmc.79.1703111351636;
+        Wed, 20 Dec 2023 14:29:11 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IGi5IOCgb2CqyS6TuCGMRfpRLigZ+qyJiYSR7LUTb3R/siOeoAuuH65SXYN0VAKfTOGT2KFRw==
+X-Received: by 2002:a1c:7414:0:b0:40c:3984:4985 with SMTP id p20-20020a1c7414000000b0040c39844985mr142966wmc.79.1703111351182;
+        Wed, 20 Dec 2023 14:29:11 -0800 (PST)
+Received: from ?IPV6:2003:cb:c740:9d00:be3b:a58f:4d39:51e7? (p200300cbc7409d00be3ba58f4d3951e7.dip0.t-ipconnect.de. [2003:cb:c740:9d00:be3b:a58f:4d39:51e7])
+        by smtp.gmail.com with ESMTPSA id u4-20020a05600c138400b0040c03c3289bsm961430wmf.37.2023.12.20.14.29.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Dec 2023 14:29:10 -0800 (PST)
+Message-ID: <b8ecc05f-859e-4710-8c4c-a24ac82bff11@redhat.com>
+Date: Wed, 20 Dec 2023 23:29:09 +0100
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [linux-next:master] [mm] bbcbf2a3f0: kernel_BUG_at_mm/memory.c
+To: Andrew Morton <akpm@linux-foundation.org>,
+ kernel test robot <oliver.sang@intel.com>
+Cc: Matthew Wilcox <willy@infradead.org>, oe-lkp@lists.linux.dev,
+ lkp@intel.com, Linux Memory Management List <linux-mm@kvack.org>,
+ linux-kernel@vger.kernel.org
+References: <202312192319.fa8f5709-oliver.sang@intel.com>
+ <20231220141135.cb4241442b657104f0aeae34@linux-foundation.org>
+From: David Hildenbrand <david@redhat.com>
+Autocrypt: addr=david@redhat.com; keydata=
+ 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
+ WNyWQQ==
+Organization: Red Hat
+In-Reply-To: <20231220141135.cb4241442b657104f0aeae34@linux-foundation.org>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On Tue, 19 Dec 2023 23:46:50 +0800 kernel test robot <oliver.sang@intel.com> wrote:
+On 20.12.23 23:11, Andrew Morton wrote:
+> On Tue, 19 Dec 2023 23:46:50 +0800 kernel test robot <oliver.sang@intel.com> wrote:
+> 
+>>
+>>
+>> Hello,
+>>
+>> kernel test robot noticed "kernel_BUG_at_mm/memory.c" on:
+>>
+>> commit: bbcbf2a3f05f74f9d268eab57abbdce6a65a94ad ("mm: convert ksm_might_need_to_copy() to work on folios")
+> 
+> I assume this is a bisection result, so it's quite repeatable?
+> 
+>> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+>>
+>> [test failed on linux-next/master aa4db8324c4d0e67aa4670356df4e9fae14b4d37]
+>>
+>> in testcase: vm-scalability
+>> version: vm-scalability-x86_64-1.0-0_20220518
+>> with following parameters:
+>>
+>> 	runtime: 300
+>> 	thp_enabled: always
+>> 	thp_defrag: always
+>> 	nr_task: 32
+>> 	nr_ssd: 1
+>> 	priority: 1
+>> 	test: swap-w-rand
+>> 	cpufreq_governor: performance
+>>
+>> test-description: The motivation behind this suite is to exercise functions and regions of the mm/ of the Linux kernel which are of interest to us.
+>> test-url: https://git.kernel.org/cgit/linux/kernel/git/wfg/vm-scalability.git/
+>>
+>>
+>> compiler: gcc-12
+>> test machine: 128 threads 2 sockets Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz (Ice Lake) with 128G memory
+>>
+>> (please refer to attached dmesg/kmsg for entire log/backtrace)
+>>
+>>
+>>
+>> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+>> the same patch/commit), kindly add following tags
+>> | Reported-by: kernel test robot <oliver.sang@intel.com>
+>> | Closes: https://lore.kernel.org/oe-lkp/202312192319.fa8f5709-oliver.sang@intel.com
+>>
+>>
+>> [   61.404380][ T5947] ------------[ cut here ]------------
+>> [   61.409984][ T5947] kernel BUG at mm/memory.c:3990!
+>> [   61.415085][ T5947] invalid opcode: 0000 [#1] SMP NOPTI
+> 
+> This is
+> 
+> 	BUG_ON(folio_test_anon(folio) && PageAnonExclusive(page));
+> 
+> and I don't believe that the error path fix
+> (https://lkml.kernel.org/r/ZXnPtblC6A1IkyAB@casper.infradead.org) will
+> address this.
+> 
+> Matthew, have you had a chance to consider?
 
-> 
-> 
-> Hello,
-> 
-> kernel test robot noticed "kernel_BUG_at_mm/memory.c" on:
-> 
-> commit: bbcbf2a3f05f74f9d268eab57abbdce6a65a94ad ("mm: convert ksm_might_need_to_copy() to work on folios")
+Isn't the
+	
+	page = folio_page(folio, 0);
 
-I assume this is a bisection result, so it's quite repeatable?
+just wrong?
 
-> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
-> 
-> [test failed on linux-next/master aa4db8324c4d0e67aa4670356df4e9fae14b4d37]
-> 
-> in testcase: vm-scalability
-> version: vm-scalability-x86_64-1.0-0_20220518
-> with following parameters:
-> 
-> 	runtime: 300
-> 	thp_enabled: always
-> 	thp_defrag: always
-> 	nr_task: 32
-> 	nr_ssd: 1
-> 	priority: 1
-> 	test: swap-w-rand
-> 	cpufreq_governor: performance
-> 
-> test-description: The motivation behind this suite is to exercise functions and regions of the mm/ of the Linux kernel which are of interest to us.
-> test-url: https://git.kernel.org/cgit/linux/kernel/git/wfg/vm-scalability.git/
-> 
-> 
-> compiler: gcc-12
-> test machine: 128 threads 2 sockets Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz (Ice Lake) with 128G memory
-> 
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
-> 
-> 
-> 
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202312192319.fa8f5709-oliver.sang@intel.com
-> 
-> 
-> [   61.404380][ T5947] ------------[ cut here ]------------
-> [   61.409984][ T5947] kernel BUG at mm/memory.c:3990!
-> [   61.415085][ T5947] invalid opcode: 0000 [#1] SMP NOPTI
+We must not do that if the folio didn't change, otherwise we're
+in trouble if we had a large folio in the swapcache.
 
-This is
 
-	BUG_ON(folio_test_anon(folio) && PageAnonExclusive(page));
+Maybe something like the following?
 
-and I don't believe that the error path fix
-(https://lkml.kernel.org/r/ZXnPtblC6A1IkyAB@casper.infradead.org) will
-address this.
+diff --git a/mm/memory.c b/mm/memory.c
+index d995ead7a3933..3aca5e33c6f81 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -3961,7 +3961,8 @@ vm_fault_t do_swap_page(struct vm_fault *vmf)
+                         folio = swapcache;
+                         goto out_page;
+                 }
+-               page = folio_page(folio, 0);
++               if (folio != swapcache)
++                       page = folio_page(folio, 0);
+  
+                 /*
+                  * If we want to map a page that's in the swapcache writable, we
 
-Matthew, have you had a chance to consider?
 
-Thanks.
 
-> [   61.420506][ T5947] CPU: 32 PID: 5947 Comm: usemem Tainted: G S                 6.7.0-rc4-00252-gbbcbf2a3f05f #1
-> [   61.430881][ T5947] Hardware name: Intel Corporation M50CYP2SB1U/M50CYP2SB1U, BIOS SE5C620.86B.01.01.0003.2104260124 04/26/2021
-> [ 61.442761][ T5947] RIP: 0010:do_swap_page (mm/memory.c:3990 (discriminator 3)) 
-> [ 61.448112][ T5947] Code: 6f 28 31 d2 be 01 00 00 00 4c 89 ff e8 9b 43 03 00 49 c7 47 28 00 00 00 00 4c 89 f9 48 c7 44 24 08 00 00 00 00 e9 cf fb ff ff <0f> 0b 49 8b 45 08 f0 48 83 28 01 0f 85 3f fc ff ff 49 8b 45 08 4c
-> All code
-> ========
->    0:	6f                   	outsl  %ds:(%rsi),(%dx)
->    1:	28 31                	sub    %dh,(%rcx)
->    3:	d2 be 01 00 00 00    	sarb   %cl,0x1(%rsi)
->    9:	4c 89 ff             	mov    %r15,%rdi
->    c:	e8 9b 43 03 00       	call   0x343ac
->   11:	49 c7 47 28 00 00 00 	movq   $0x0,0x28(%r15)
->   18:	00 
->   19:	4c 89 f9             	mov    %r15,%rcx
->   1c:	48 c7 44 24 08 00 00 	movq   $0x0,0x8(%rsp)
->   23:	00 00 
->   25:	e9 cf fb ff ff       	jmp    0xfffffffffffffbf9
->   2a:*	0f 0b                	ud2		<-- trapping instruction
->   2c:	49 8b 45 08          	mov    0x8(%r13),%rax
->   30:	f0 48 83 28 01       	lock subq $0x1,(%rax)
->   35:	0f 85 3f fc ff ff    	jne    0xfffffffffffffc7a
->   3b:	49 8b 45 08          	mov    0x8(%r13),%rax
->   3f:	4c                   	rex.WR
-> 
-> Code starting with the faulting instruction
-> ===========================================
->    0:	0f 0b                	ud2
->    2:	49 8b 45 08          	mov    0x8(%r13),%rax
->    6:	f0 48 83 28 01       	lock subq $0x1,(%rax)
->    b:	0f 85 3f fc ff ff    	jne    0xfffffffffffffc50
->   11:	49 8b 45 08          	mov    0x8(%r13),%rax
->   15:	4c                   	rex.WR
-> [   61.468016][ T5947] RSP: 0000:ffa000000bb5fd98 EFLAGS: 00010206
-> [   61.474169][ T5947] RAX: ff11000111a47c99 RBX: ffa000000bb5fe08 RCX: 0000002064ac7000
-> [   61.482233][ T5947] RDX: 0057ffffc00a106d RSI: 0000000000000043 RDI: ffd400008192b1e8
-> [   61.490296][ T5947] RBP: 000000000100c13b R08: 0000000000000000 R09: ffa000000bb5fe08
-> [   61.498366][ T5947] R10: 0000000055555554 R11: ff1100018bebbd0c R12: ffd4000044128000
-> [   61.506438][ T5947] R13: ff1100205d33d800 R14: ff11000130cd2da8 R15: ffd4000044128000
-> [   61.514508][ T5947] FS:  00007f49c900c740(0000) GS:ff11002001000000(0000) knlGS:0000000000000000
-> [   61.523534][ T5947] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [   61.530225][ T5947] CR2: 00007f4966b3b6b8 CR3: 00000010af786004 CR4: 0000000000771ef0
-> [   61.538307][ T5947] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> [   61.546387][ T5947] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> [   61.554471][ T5947] PKRU: 55555554
-> [   61.558137][ T5947] Call Trace:
-> [   61.561544][ T5947]  <TASK>
-> [ 61.564599][ T5947] ? die (arch/x86/kernel/dumpstack.c:421 arch/x86/kernel/dumpstack.c:434 arch/x86/kernel/dumpstack.c:447) 
-> [ 61.568429][ T5947] ? do_trap (arch/x86/kernel/traps.c:112 arch/x86/kernel/traps.c:153) 
-> [ 61.572692][ T5947] ? do_swap_page (mm/memory.c:3990 (discriminator 3)) 
-> [ 61.577475][ T5947] ? do_error_trap (arch/x86/include/asm/traps.h:59 arch/x86/kernel/traps.c:174) 
-> [ 61.582172][ T5947] ? do_swap_page (mm/memory.c:3990 (discriminator 3)) 
-> [ 61.586966][ T5947] ? exc_invalid_op (arch/x86/kernel/traps.c:265) 
-> [ 61.591743][ T5947] ? do_swap_page (mm/memory.c:3990 (discriminator 3)) 
-> [ 61.596515][ T5947] ? asm_exc_invalid_op (arch/x86/include/asm/idtentry.h:568) 
-> [ 61.601638][ T5947] ? do_swap_page (mm/memory.c:3990 (discriminator 3)) 
-> [ 61.606412][ T5947] ? do_swap_page (mm/memory.c:3971) 
-> [ 61.611179][ T5947] __handle_mm_fault (mm/memory.c:5274) 
-> [ 61.616203][ T5947] handle_mm_fault (mm/memory.c:5439) 
-> [ 61.621051][ T5947] do_user_addr_fault (arch/x86/mm/fault.c:1365) 
-> [ 61.626151][ T5947] exc_page_fault (arch/x86/include/asm/irqflags.h:37 arch/x86/include/asm/irqflags.h:72 arch/x86/mm/fault.c:1513 arch/x86/mm/fault.c:1561) 
-> [ 61.630824][ T5947] asm_exc_page_fault (arch/x86/include/asm/idtentry.h:570) 
-> [   61.635748][ T5947] RIP: 0033:0x5612d5878ad6
-> [ 61.640229][ T5947] Code: 01 00 00 00 e8 1b f9 ff ff 89 c7 e8 6c ff ff ff bf 00 00 00 00 e8 0a f9 ff ff 85 d2 74 08 48 8d 04 f7 48 8b 00 c3 48 8d 04 f7 <48> 89 30 b8 00 00 00 00 c3 41 54 55 53 48 85 ff 0f 84 21 01 00 00
-> All code
-> ========
->    0:	01 00                	add    %eax,(%rax)
->    2:	00 00                	add    %al,(%rax)
->    4:	e8 1b f9 ff ff       	call   0xfffffffffffff924
->    9:	89 c7                	mov    %eax,%edi
->    b:	e8 6c ff ff ff       	call   0xffffffffffffff7c
->   10:	bf 00 00 00 00       	mov    $0x0,%edi
->   15:	e8 0a f9 ff ff       	call   0xfffffffffffff924
->   1a:	85 d2                	test   %edx,%edx
->   1c:	74 08                	je     0x26
->   1e:	48 8d 04 f7          	lea    (%rdi,%rsi,8),%rax
->   22:	48 8b 00             	mov    (%rax),%rax
->   25:	c3                   	ret
->   26:	48 8d 04 f7          	lea    (%rdi,%rsi,8),%rax
->   2a:*	48 89 30             	mov    %rsi,(%rax)		<-- trapping instruction
->   2d:	b8 00 00 00 00       	mov    $0x0,%eax
->   32:	c3                   	ret
->   33:	41 54                	push   %r12
->   35:	55                   	push   %rbp
->   36:	53                   	push   %rbx
->   37:	48 85 ff             	test   %rdi,%rdi
->   3a:	0f 84 21 01 00 00    	je     0x161
-> 
-> Code starting with the faulting instruction
-> ===========================================
->    0:	48 89 30             	mov    %rsi,(%rax)
->    3:	b8 00 00 00 00       	mov    $0x0,%eax
->    8:	c3                   	ret
->    9:	41 54                	push   %r12
->    b:	55                   	push   %rbp
->    c:	53                   	push   %rbx
->    d:	48 85 ff             	test   %rdi,%rdi
->   10:	0f 84 21 01 00 00    	je     0x137
-> [   61.660112][ T5947] RSP: 002b:00007ffd09f037d8 EFLAGS: 00010246
-> [   61.666250][ T5947] RAX: 00007f4966b3b6b8 RBX: 000000000000358f RCX: 00000005deece66d
-> [   61.674295][ T5947] RDX: 0000000000000000 RSI: 000000002fa0f0d7 RDI: 00007f47e9ac3000
-> [   61.682347][ T5947] RBP: 000000002fa0f0d7 R08: 00007ffd09f0386c R09: 0000000000000001
-> [   61.690401][ T5947] R10: 00007ffd09f037c0 R11: 0000000000000000 R12: 000000000001ac78
-> [   61.698449][ T5947] R13: 00007f47e9ac3000 R14: 00007ffd09f0386c R15: 00007ffd09f03970
-> [   61.706500][ T5947]  </TASK>
-> [   61.709607][ T5947] Modules linked in: kmem xfs loop device_dax nd_pmem dax_pmem nd_btt btrfs blake2b_generic xor raid6_pq libcrc32c intel_rapl_msr intel_rapl_common x86_pkg_temp_thermal intel_powerclamp coretemp sd_mod t10_pi crc64_rocksoft_generic crc64_rocksoft crc64 kvm_intel sg kvm irqbypass crct10dif_pclmul crc32_pclmul crc32c_intel ghash_clmulni_intel sha512_ssse3 ahci ipmi_ssif rapl intel_cstate ast libahci mei_me drm_shmem_helper i2c_i801 ioatdma acpi_ipmi libata drm_kms_helper mei intel_uncore joydev i2c_smbus intel_pch_thermal dax_hmem dca wmi ipmi_si ipmi_devintf ipmi_msghandler nfit libnvdimm acpi_power_meter acpi_pad drm fuse ip_tables
-> [   61.768510][ T5947] ---[ end trace 0000000000000000 ]---
-> [   61.786010][ T5947] pstore: backend (erst) writing error (-28)
-> [ 61.792055][ T5947] RIP: 0010:do_swap_page (mm/memory.c:3990 (discriminator 3)) 
-> [ 61.797397][ T5947] Code: 6f 28 31 d2 be 01 00 00 00 4c 89 ff e8 9b 43 03 00 49 c7 47 28 00 00 00 00 4c 89 f9 48 c7 44 24 08 00 00 00 00 e9 cf fb ff ff <0f> 0b 49 8b 45 08 f0 48 83 28 01 0f 85 3f fc ff ff 49 8b 45 08 4c
-> All code
-> ========
->    0:	6f                   	outsl  %ds:(%rsi),(%dx)
->    1:	28 31                	sub    %dh,(%rcx)
->    3:	d2 be 01 00 00 00    	sarb   %cl,0x1(%rsi)
->    9:	4c 89 ff             	mov    %r15,%rdi
->    c:	e8 9b 43 03 00       	call   0x343ac
->   11:	49 c7 47 28 00 00 00 	movq   $0x0,0x28(%r15)
->   18:	00 
->   19:	4c 89 f9             	mov    %r15,%rcx
->   1c:	48 c7 44 24 08 00 00 	movq   $0x0,0x8(%rsp)
->   23:	00 00 
->   25:	e9 cf fb ff ff       	jmp    0xfffffffffffffbf9
->   2a:*	0f 0b                	ud2		<-- trapping instruction
->   2c:	49 8b 45 08          	mov    0x8(%r13),%rax
->   30:	f0 48 83 28 01       	lock subq $0x1,(%rax)
->   35:	0f 85 3f fc ff ff    	jne    0xfffffffffffffc7a
->   3b:	49 8b 45 08          	mov    0x8(%r13),%rax
->   3f:	4c                   	rex.WR
-> 
-> Code starting with the faulting instruction
-> ===========================================
->    0:	0f 0b                	ud2
->    2:	49 8b 45 08          	mov    0x8(%r13),%rax
->    6:	f0 48 83 28 01       	lock subq $0x1,(%rax)
->    b:	0f 85 3f fc ff ff    	jne    0xfffffffffffffc50
->   11:	49 8b 45 08          	mov    0x8(%r13),%rax
->   15:	4c                   	rex.WR
-> 
-> 
-> The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20231219/202312192319.fa8f5709-oliver.sang@intel.com
-> 
-> 
-> 
-> -- 
-> 0-DAY CI Kernel Test Service
-> https://github.com/intel/lkp-tests/wiki
-> 
+
+
+-- 
+Cheers,
+
+David / dhildenb
+
