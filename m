@@ -1,88 +1,74 @@
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04012634F7
-	for <oe-lkp@lists.linux.dev>; Thu, 21 Dec 2023 18:14:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6190F58224;
+	Thu, 21 Dec 2023 21:58:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="i3CznAUk"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Transfer-Encoding:
-	Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-	Sender:Reply-To:Content-ID:Content-Description;
-	bh=t5HBHPeGSvxeProudUv8xSljJIYtxHfERyQqCNBsYdA=; b=i3CznAUkC0tguY2eRhr9jKfe9e
-	v8rQg+nm0gIKXwMk1UWFgfg6pY5nU7VAQZBqxP4U+wZyERar9MKtds4dCZexSth/ULVqwxmz3RN9O
-	3AEWzkBQHkKLHQ25JEMuPlec6G8yC7cMha1hB8ypGMmfxjVLx0GX28rTmeNDSsLD/k23WmKr6UA7G
-	Q84TX2rWUu09G81xbYFXa9aBN4zUBmYj/O6i2+tSvgewvoy/ZmIFp6OUnmVFUKxuYvmRcOL0SEYjX
-	+gizZCxdNavjzfg9qw7tTlqHyO2D+vaHHPyEoncjMpoI6brE8DNTEWdbLbd2UdMLHln/Pgkb29VCX
-	jaRrCm3w==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-	id 1rGNYg-005pk2-0f; Thu, 21 Dec 2023 18:14:10 +0000
-Date: Thu, 21 Dec 2023 18:14:09 +0000
-From: Matthew Wilcox <willy@infradead.org>
-To: Yang Shi <shy828301@gmail.com>
-Cc: Yin Fengwei <fengwei.yin@intel.com>,
-	kernel test robot <oliver.sang@intel.com>,
-	Rik van Riel <riel@surriel.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, Linux Memory Management List <linux-mm@kvack.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Christopher Lameter <cl@linux.com>, ying.huang@intel.com,
-	feng.tang@intel.com
-Subject: Re: [linux-next:master] [mm] 1111d46b5c:
- stress-ng.pthread.ops_per_sec -84.3% regression
-Message-ID: <ZYSAcThKd/FbH/Bt@casper.infradead.org>
-References: <202312192310.56367035-oliver.sang@intel.com>
- <CAHbLzkogaL-VTuZbBbPp=O8TPZxJmabJLRx1hrD-65rtbRmTtQ@mail.gmail.com>
- <ec48d168-284b-4376-97a7-090273a3ae5e@intel.com>
- <CAHbLzkrAdZ4GrtnH0NUhwPm=gZzkaGT96xVbiyOQaJ3uCFRDnw@mail.gmail.com>
- <CAHbLzkrd-y2=KHS-zreH8FUmQtOaf_FGuyj78zNNH3FbpCQNnA@mail.gmail.com>
- <b1974dc2-0e25-4075-a9ba-5e1face6c0cd@intel.com>
- <ZYPDwCcAjX+r+g6s@casper.infradead.org>
- <CAHbLzkpX29RGTrRwVpK+nh5uWyC9pJnyCjQcjjreEy2N=4QsqA@mail.gmail.com>
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="xNEDNhz5"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78050C433C8;
+	Thu, 21 Dec 2023 21:58:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+	s=korg; t=1703195914;
+	bh=GenD/ytiRuCbl0Hb/SKAjNHtBD9mpn1hrqVXcpK5Xq0=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=xNEDNhz5QlzjnZRZ2nhBDfI7zoTlNezwdFp8dZqLiICEvy7+vFd1kD6XRoQl7MuF1
+	 KmXh1xrzzp6i3wZqWF6wfAnWe6MmxscaVpkqCHEV14iU4XbXXSXUr7watwCyFxq7AZ
+	 aTxGfkZwPa+2sbtytnrbxkQTG9uQLytZxlOrHG2I=
+Date: Thu, 21 Dec 2023 13:58:33 -0800
+From: Andrew Morton <akpm@linux-foundation.org>
+To: David Hildenbrand <david@redhat.com>
+Cc: Oliver Sang <oliver.sang@intel.com>, Matthew Wilcox
+ <willy@infradead.org>, oe-lkp@lists.linux.dev, lkp@intel.com, Linux Memory
+ Management List <linux-mm@kvack.org>, linux-kernel@vger.kernel.org
+Subject: Re: [linux-next:master] [mm] bbcbf2a3f0: kernel_BUG_at_mm/memory.c
+Message-Id: <20231221135833.92b8b2a97b28ad0545977f6c@linux-foundation.org>
+In-Reply-To: <e0e7d631-0af4-46fc-b606-78de07ebb88a@redhat.com>
+References: <202312192319.fa8f5709-oliver.sang@intel.com>
+	<20231220141135.cb4241442b657104f0aeae34@linux-foundation.org>
+	<ZYQgGmYNfF8j4JqL@xsang-OptiPlex-9020>
+	<e0e7d631-0af4-46fc-b606-78de07ebb88a@redhat.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAHbLzkpX29RGTrRwVpK+nh5uWyC9pJnyCjQcjjreEy2N=4QsqA@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Thu, Dec 21, 2023 at 10:07:09AM -0800, Yang Shi wrote:
-> On Wed, Dec 20, 2023 at 8:49 PM Matthew Wilcox <willy@infradead.org> wrote:
-> >
-> > On Thu, Dec 21, 2023 at 08:58:42AM +0800, Yin Fengwei wrote:
-> > > Yes. MAP_STACK is also mentioned in manpage of mmap. I did test to
-> > > filter out of the MAP_STACK mapping based on this patch. The regression
-> > > in stress-ng.pthread was gone. I suppose this is kind of safe because
-> > > the madvise call is only applied to glibc allocated stack.
-> > >
-> > >
-> > > But what I am not sure was whether it's worthy to do such kind of change
-> > > as the regression only is seen obviously in micro-benchmark. No evidence
-> > > showed the other regressionsin this report is related with madvise. At
-> > > least from the perf statstics. Need to check more on stream/ramspeed.
-> >
-> > FWIW, we had a customer report a significant performance problem when
-> > inadvertently using 2MB pages for stacks.  They were able to avoid it by
-> > using 2044KiB sized stacks ...
-> 
-> Thanks for the report. This provided more justification regarding
-> honoring MAP_STACK on Linux. Some applications, for example, pthread,
-> just allocate a fixed size area for stack. This confuses kernel
-> because kernel tell stack by VM_GROWSDOWN | VM_GROWSUP.
-> 
-> But I'm still a little confused by why THP for stack could result in
-> significant performance problems. Unless the applications resize the
-> stack quite often.
+On Thu, 21 Dec 2023 12:32:04 +0100 David Hildenbrand <david@redhat.com> wrote:
 
-We didn't delve into what was causing the problem, only that it was
-happening.  The application had many threads, so it could have been as
-simple as consuming all the available THP and leaving fewer available
-for other uses.  Or it could have been a memory consumption problem;
-maybe the app would only have been using 16-32kB per thread but was
-now using 2MB per thread and if there were, say, 100 threads, that's an
-extra 199MB of memory in use.
+> On 21.12.23 12:23, Oliver Sang wrote:
+> > hi, Andrew Morton,
+> > 
+> > On Wed, Dec 20, 2023 at 02:11:35PM -0800, Andrew Morton wrote:
+> >> On Tue, 19 Dec 2023 23:46:50 +0800 kernel test robot <oliver.sang@intel.com> wrote:
+> >>
+> >>>
+> >>>
+> >>> Hello,
+> >>>
+> >>> kernel test robot noticed "kernel_BUG_at_mm/memory.c" on:
+> >>>
+> >>> commit: bbcbf2a3f05f74f9d268eab57abbdce6a65a94ad ("mm: convert ksm_might_need_to_copy() to work on folios")
+> >>
+> >> I assume this is a bisection result, so it's quite repeatable?
+> > 
+> > yes, we bisect to this commit, it's quite repeatable:
+> > 
+> > ddd06bb63d9793ce bbcbf2a3f05f74f9d268eab57ab
+> > ---------------- ---------------------------
+> >         fail:runs  %reproduction    fail:runs
+> >             |             |             |
+> >             :6          100%           6:6     dmesg.Kernel_panic-not_syncing:Fatal_exception
+> >             :6          100%           6:6     dmesg.RIP:do_swap_page
+> >             :6          100%           6:6     dmesg.invalid_opcode:#[##]
+> >             :6          100%           6:6     dmesg.kernel_BUG_at_mm/memory.c
+> > 
+> > 
+> 
+> Can you try with the snipped I sent? Please let me know if you need a 
+> full patch for testing purposes.
+
+I think a full patch would be better, please.
