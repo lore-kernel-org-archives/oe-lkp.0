@@ -1,93 +1,88 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.126])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83E3DC8CB
-	for <oe-lkp@lists.linux.dev>; Fri, 22 Dec 2023 08:13:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42121D512
+	for <oe-lkp@lists.linux.dev>; Fri, 22 Dec 2023 09:19:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RiR/w/iG"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VSzjxCmz"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1703232836; x=1734768836;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=DEWq8MKvLoFbVOy52/JeSSpJjy4WamNIRCoCy5tcjTs=;
-  b=RiR/w/iGtbFmCBwNMor855eo9p6OMSaBqhdBOJUe0fhQe5WkrMc05afn
-   1Aq/ol4sGBmAAGuU4vY/knAqkS+9ABaHASWTv8aBcgVhaiz7y7hZy4mcz
-   0i7QlczJ+tdTu8RwD49AMyS0vW5j1dE37wyHJHzULzJkwKfi+3YkLyhVP
-   wbalAXr+vfBTi/mCcjvr5PaARYkrfSp2RPqg546xMYvy2hbkd30KZ0R4j
-   RzU6sAYcw+Qv7R43sN4twoJ0zN0bzINmAW38HYeZ4Cg7SLqqm/g+PY3qN
-   OjAJG1gmltNJkjQa1F9iQ0VRSy/caN34aIQvN3rFipsBwcAwSWAHxcA5q
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10931"; a="14773042"
-X-IronPort-AV: E=Sophos;i="6.04,294,1695711600"; 
-   d="scan'208";a="14773042"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Dec 2023 00:13:55 -0800
+  t=1703236755; x=1734772755;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   mime-version;
+  bh=OhSMewe1WYEcQerjm8uONPnME1wpuu7rc7d+g1QNhLs=;
+  b=VSzjxCmzCnRyGPn9izpa72XH/9O92WVPPAXvW09OnCp89zCOaEphfYBL
+   d6Wun/n5WZt/FWRyP8Yd/N6NDF9/ORf/40k6dl3OhWoZvV2osdivcXnJv
+   I81iOeD3LwNMzeLVhVrQ2FXelB3iuPHjnij4v8dTkrWimtWleWDYEVWvw
+   0jfaDwu5luM12o6hQjnq/guXaaDJtGc4KiFE1EVl21AfekyBtm94cjIWa
+   nnIToJmLOhuA1haXQrZJmtqZ/prJ4Hamx/wAjjKRmysVXpSWXLnxxMUqo
+   tqMa9g1BLs1GdAptACtWn21Uu+XrAzxRksIf/q7uqHPx0tzdnqTw9If1c
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10931"; a="381077527"
+X-IronPort-AV: E=Sophos;i="6.04,296,1695711600"; 
+   d="scan'208";a="381077527"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Dec 2023 01:19:14 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10931"; a="770223602"
-X-IronPort-AV: E=Sophos;i="6.04,294,1695711600"; 
-   d="scan'208";a="770223602"
+X-IronPort-AV: E=McAfee;i="6600,9927,10931"; a="726729831"
+X-IronPort-AV: E=Sophos;i="6.04,296,1695711600"; 
+   d="scan'208";a="726729831"
 Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orsmga007.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 22 Dec 2023 00:13:54 -0800
+  by orsmga003.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 22 Dec 2023 01:19:09 -0800
 Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
  fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Fri, 22 Dec 2023 00:13:54 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ 15.1.2507.35; Fri, 22 Dec 2023 01:19:08 -0800
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
  fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Fri, 22 Dec 2023 00:13:53 -0800
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35 via Frontend Transport; Fri, 22 Dec 2023 00:13:53 -0800
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.101)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ 15.1.2507.35 via Frontend Transport; Fri, 22 Dec 2023 01:19:08 -0800
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.100)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Fri, 22 Dec 2023 00:13:52 -0800
+ 15.1.2507.35; Fri, 22 Dec 2023 01:19:08 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=blpnDzyMuQn1ikEymMpYFwa68XlW9+CxlHiCbWvQFFZ0A0mSpv+Tmg32nTXWiiGCx4U4slYLojE/zzmpxtsdUV3hohSrP0SqKKQxjh2yhuSmdtR49zGMt0F0bYkX1kVTqJb+1sRHxJYhHWrweRNHAq/C4Dk6NCVstuqFhD5zqvpllAq+11HxD+uV7fY/x409sXdPkZDiv3G1qq1grPkt/nsmGjbwIKXJe4ApOGQoKg5D00IQ5eqYrFkd/NaxCmKqMbWp0pju+8CmBFvDXx6lBQeOkPcG4PtTT2GcfviqqGy2LNR1sWlg+u/EG6qO796THAiZGWqEwH01HVLO345JOQ==
+ b=Wi23dxzzpKCwx/YI8VVn+ijpuFhRgIdOWpWv1MkWHpjtjie+F0lmT1R7u+loiPonOrJP+mzEz3Gz1F0XWfJ8Vouv1NysII5pbYz5OkYfg+8z72JlO2oGw6hr3k7O19/0HZHdDSQMIGWqFBD2ggbwYtKJTVEK+8ZYdvDJ83qff/o6MaCx/OWP/aWup3/UstmSJUn+r4fkclvMeJ3nqaT7Ulhf9S+EMtwIBoVq/bubBeqcI9aWnFy75/TRTawMLm4oUT19EHslHbjrK3Fh6wLhAlBp53Mxqck3DddTlShARZ3Cyk4U1+0G1cIRwndIzfTidlSh3IBnp/8xNSv5MBKPXw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GlP2R90jozN6LOL3/F730OvpXx4gf6escRueXwRIR8A=;
- b=oNl69nZWCjKGWq3w+8uRbm9dzp8f4Ej5ZN+nnEpk3LGXtPbBHC4dfylOf4wAXEAupuu6Dn5WkJYtPTUg+gbaSQ/5OaTQq1nNRRzD/9i61JNsLGlRCKhzbKexGNXsDIeJtKY9MJVjU/WZ95Q5EOsBigaX8nh6pNvayAr3ozGUA3x+T+Od6d5OZyTpvgJl6CALfCQHawtLYojkv70CAYMagX5rqicL30d4MYBIq21BCdTiLpFXVmXdR9e+IzqdeMuyNRrQrvi6Cg34NOee9xF9WAbTav/H7bIIPTi5IqZiECHLMGBl/LTY9ydMWXTM9cNfur2Ww1KWWv1E/L4vFwh+KQ==
+ bh=ZgFQ77BYWusH/K75gjnjL6YVk/Vv7e4LRfpewysVOHU=;
+ b=m9EU9Wox+nQgpkXzjrAX16ajNgzceGA8tSfaEFMOP/rJx7YH4AzvO9Fs3YlGmF1NZEa2WUYxvbqX3JmBPs5KhuKrf6svN03+iLDmnJ4gC8CW4Uo+O3TWHL2mTN9ipEyKoxGBX2X5H1NIr66jHSUDChAYwivpIMrPYD5A18b7LPUnxKNqmv5D4pvUo0bM3PFJ79AjIE/iaIh1nXK0kbL1bjqmKCynB7hVgi8K+xYE4yIGqCn7JzGDcJ0gHyromhF7rcVdTUfbKit+2yARTVJOeXjZQEDZmGCx+ynLsNzCqM5JBIyHyISftqJ/jKPQxamzmAop4XZd3xm5sYDYybqaXQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by SN7PR11MB6703.namprd11.prod.outlook.com (2603:10b6:806:268::16) with
+ by CY8PR11MB7685.namprd11.prod.outlook.com (2603:10b6:930:73::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7113.18; Fri, 22 Dec
- 2023 08:13:50 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7113.21; Fri, 22 Dec
+ 2023 09:19:06 +0000
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::1236:9a2e:5acd:a7f]) by LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::1236:9a2e:5acd:a7f%3]) with mapi id 15.20.7113.019; Fri, 22 Dec 2023
- 08:13:50 +0000
-Date: Fri, 22 Dec 2023 16:13:42 +0800
-From: Oliver Sang <oliver.sang@intel.com>
-To: David Hildenbrand <david@redhat.com>
-CC: Andrew Morton <akpm@linux-foundation.org>, Matthew Wilcox
-	<willy@infradead.org>, <oe-lkp@lists.linux.dev>, <lkp@intel.com>, "Linux
- Memory Management List" <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-	<oliver.sang@intel.com>
-Subject: Re: [linux-next:master] [mm] bbcbf2a3f0: kernel_BUG_at_mm/memory.c
-Message-ID: <ZYVFNvyG9uX2Q9do@xsang-OptiPlex-9020>
-References: <202312192319.fa8f5709-oliver.sang@intel.com>
- <20231220141135.cb4241442b657104f0aeae34@linux-foundation.org>
- <ZYQgGmYNfF8j4JqL@xsang-OptiPlex-9020>
- <e0e7d631-0af4-46fc-b606-78de07ebb88a@redhat.com>
- <20231221135833.92b8b2a97b28ad0545977f6c@linux-foundation.org>
- <6a8f2110-fa91-4c10-9eae-88315309a6e3@redhat.com>
+ 09:19:05 +0000
+Date: Fri, 22 Dec 2023 17:18:55 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Peter Zijlstra
+	<peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Will Deacon
+	<will@kernel.org>, Waiman Long <longman@redhat.com>, Boqun Feng
+	<boqun.feng@gmail.com>, Maarten Lankhorst <maarten@lankhorst.se>, Christian
+ =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	<linux-kernel@vger.kernel.org>, <intel-xe@lists.freedesktop.org>, Thomas
+ =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
+	<dri-devel@lists.freedesktop.org>, <oliver.sang@intel.com>
+Subject: Re: [PATCH] locking/ww_mutex: Adjust to lockdep nest_lock
+ requirements
+Message-ID: <202312221708.b143534-oliver.sang@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <6a8f2110-fa91-4c10-9eae-88315309a6e3@redhat.com>
-X-ClientProxiedBy: SI1PR02CA0048.apcprd02.prod.outlook.com
- (2603:1096:4:1f5::11) To LV3PR11MB8603.namprd11.prod.outlook.com
+In-Reply-To: <20231219160524.3646-1-thomas.hellstrom@linux.intel.com>
+X-ClientProxiedBy: SI2PR06CA0015.apcprd06.prod.outlook.com
+ (2603:1096:4:186::7) To LV3PR11MB8603.namprd11.prod.outlook.com
  (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -96,134 +91,188 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|SN7PR11MB6703:EE_
-X-MS-Office365-Filtering-Correlation-Id: 945b15b6-0283-46db-16d3-08dc02c5ee07
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|CY8PR11MB7685:EE_
+X-MS-Office365-Filtering-Correlation-Id: b057fe96-4c0c-4df4-5ae5-08dc02cf0b3c
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 70RXtBbfTHhUWeD70eOOUAyBK2b++REY3/ZrzBEbmMrPrdF/SvA5NV9HLyxO+ls5DYTR3pxNyVDsx4eztMvkCK3tTzFCg5cVJpD8rTjCqKVyx1BtFVkY1fzofksNOnWMtQl1RszVOGUGZEl9SOLfY7zM4dmjH/Y9/VAKRsdXp4YyAyR8WJ8kYxsrkITskd47wqvgv0rk9qndn9x4X6liYmMk2Yt8CiVMOncbEYmA2fKlygwm3ri3sgWf7Not4wJcUk0jy7u0OftRva2ur9bxTuvpZRPeuNvNheCO3zFaXcSBsEtNTxKyAI4E0fwXoVDJ2hQ5SrwgY6uCIOPzZFagjCLMqEVLryTYyFDlU2isfDt9sGf9NQ2Kn8oMw+tGZr0118Ot8OwbdGqhdAHvIdjOh7prs37LQNdXqwmVgKxt3ejVkc57pppJEIzX1Hkaxa0Dj78fKiXw6bWVB0CCyy/xOqO0KXR4jHeztJ5ymt3VLHp+RbS+1fs8XwMifP0MviXeDEX1sS6IrYmHYS+HTmt6BU7aAdGvXEOnInHBznHZM9Q=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(7916004)(39860400002)(136003)(366004)(376002)(346002)(396003)(230922051799003)(64100799003)(186009)(451199024)(1800799012)(8936002)(8676002)(82960400001)(5660300002)(66946007)(66476007)(66556008)(54906003)(6916009)(316002)(9686003)(107886003)(26005)(83380400001)(6486002)(38100700002)(966005)(478600001)(4326008)(44832011)(33716001)(2906002)(6506007)(6512007)(53546011)(6666004)(41300700001)(86362001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: rn9KlndM4SP5c8Y+E2RCDG++RZG5cg9yqjLUN+bKqlT7w3zMACo+SzX1bKQsoRMZSOm2AYtVw00fzHqd2hfuykmWi2MrRHp3EWMeDqdfMLkXzWwUFIv3PwuI6tvtL4xGnwTQqHUI8ynE84uVJh/w117XvYGHiMTSWP9z/JHyVLaSYslcRoPgGUPu2uGuvLs+/2cBgZvrkFc5jV86fir2JXJecqLFsuz+aMOQXxTl9JB8r0g/1aTGSe5Qnv0M+BWJoqes5xuQuBIljV+XNRYEhcCWAebe561Q8SKwqgDYlufrkPrqkwoC8jA4zrh+Wv3krRYiU4Qq7ZRcmxltU+JaAAuD947T07erzDwtvU4zJwP/cVoIWYGjqrv8NkzJdX6cywzw1uWC//Fmd+XNOv3Mk0/17CBnTx75edBwUJaBts8KgZaEQhWxzZBCR+6RmixFCiPPDNpALNtT/xvItslVFk4EBIqVT8DMwN8pJyyz1drXBkBt+EsKH7zDUSb761kJBTbpNBPx8HpkuucUJGX1RtY+trB8woF1/+5L/j5I8l67CcD37Us5YrAsnyNal1WMKYgx5fORaw4jgkfl5d4by4G5sJKSaLbO4oWh2S/SS+4tHugWpTQtw2hsiEmMOTyaqYqcvozLgps0WNiJ5yhbMtr/vRpPf8ooupg9WowOAO8=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(396003)(346002)(136003)(39860400002)(366004)(230173577357003)(230922051799003)(230273577357003)(1800799012)(451199024)(186009)(64100799003)(966005)(6486002)(38100700002)(4326008)(478600001)(82960400001)(5660300002)(54906003)(6916009)(316002)(66556008)(66476007)(66946007)(8676002)(8936002)(2616005)(26005)(1076003)(83380400001)(45080400002)(6666004)(6512007)(6506007)(41300700001)(86362001)(36756003)(2906002)(7416002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?8dewVbaUFxCXMNi2IPvV8hv+ghBB0p1tSaBxkAxT78wfawWb0KzDwu9mUT8C?=
- =?us-ascii?Q?VX/dC5K+o0W6MW7sE6dQVa/e7Vln1FU6zZLdi8tMaRbLA+9U10hQveRjJljA?=
- =?us-ascii?Q?OByyZ/nUFulTk6fJzKSsMQxtqAd6BrJkJhU5Ykq3AtDV9PMSkUT+eylDQVjo?=
- =?us-ascii?Q?Gmr3wwivTce4/0Miys9ZWeW1J+ftqD+6Xz/09CDaU+ElwN4n2I9ASveDwIY/?=
- =?us-ascii?Q?bryOqZ8u/cniuR8o439FLS0EsvFvJ18zPIvPNErzxEwaN4AqMgolg/ClSnLc?=
- =?us-ascii?Q?+t3tw8NjtutswiKtURGVWspmWOWDVAK/hccjgBAznkSUv/mwjhQPWW2BTZZp?=
- =?us-ascii?Q?953HSGxdEwrPCxIZzhxEL7Jf8DdNGhcBqECvrZkQODl3D5/2n8KnYLGuWb1w?=
- =?us-ascii?Q?dnBzTAlifwC73pYpxcqh3rnIl7IFosag4NLku6d/8kU39G407Px8qePlGfzC?=
- =?us-ascii?Q?atrZCd2YWD0uIJBRMi9fqtsJf21qs3HBDsUPHlbRVhUgQkpreuvtMHZ/c33B?=
- =?us-ascii?Q?6QLOaXOenQTj/CxeTLudqdQ7EwA63W+2B1BiC28mLvQ9nEmmFjGKmWjluIOV?=
- =?us-ascii?Q?WC+qew2wkFg3fb60gfY1CJzOzSrM0zZHoqxCdMSFRc54bDjSpItpAJbtjWs8?=
- =?us-ascii?Q?SqPgKIOVv4Q/MEPyklLzi+/NXWY6M09o2OUXMSE+JpgX6I1Ad5yrUdiwSx3m?=
- =?us-ascii?Q?Ysxa4CrLeQKWArNJ2e068faxCNykXYwcXS/KwkYRBqA02ki4FIE9bxfJ2mNZ?=
- =?us-ascii?Q?3CP/K3GT3DOLgIx9c03SG3Xxkuda7oSEAIf1SfpZC9G0UBPXeGy40LSiuxXZ?=
- =?us-ascii?Q?JgGhCejDUr+wOS5EsvZXluGECWhhFCcs1H5SKejgkHsvc3srnEE285p/yWyH?=
- =?us-ascii?Q?OOqXgymlOGScfc3jZaHsEa/kenGHIq7DX9ccQyxp5UIIX9l6O7mY2xWjj6f1?=
- =?us-ascii?Q?OV7z4Gp6+3t49mlUZ7XfC1gn51IBkzd7ND57gzwVgBEQ1aSyU7QN5w8jth98?=
- =?us-ascii?Q?C60+g1bjIZsl30q721WZfulh7tYaj4+sy+oNm1xhbUq/Ng+JvaiW1uPyvBTp?=
- =?us-ascii?Q?JdWUC+Dl7FYVU+G9++gldn0UOq+5WBhxLqvlVPx/7HE1EstWO3T75a9uXhTQ?=
- =?us-ascii?Q?f/hK7xxWgqlwzBXGry60uZuHW0MCEdE/FBNdKsjKtFncEQmH7lzAt4CL+eae?=
- =?us-ascii?Q?31WMLO8RBETvWme1fgnStmfUvOLgNtEnIvhy1ZKBIWEdAyokAj7Cr+AiIVYy?=
- =?us-ascii?Q?YNU3H8Y1YROy6K32+0hQmL+3QGQeSxihcmWAIH5LU1RCnvsP8PKQ8G+E+ia/?=
- =?us-ascii?Q?+A+Ew9d8fHXSV+i1OdGtNJy6GfqajUCoC0yKYBMZpjEm292iw0LP+CKjJu5W?=
- =?us-ascii?Q?9NaGU7WXvw8e6yX8eGvAMTNOnCP0JuCyLi4DG7IBr1wlyo6KZAoJgmkQP02J?=
- =?us-ascii?Q?isr10nJA83c8hk+uVEGPxKB+9X8tX8jTBPY7VXY7uP+4tOZnAll7iwWzMC5l?=
- =?us-ascii?Q?sCFGVMvL/JTGsClE/fVTLwdgjJnSqc41h4jjR8M4R4JZVIia6PGUHriqqtls?=
- =?us-ascii?Q?kVi7uVVQ/jPU2WBePQhAk2Tql5Mb6gvIPjCDdb3hC0Qx0Q1b9DoWu+LRp667?=
- =?us-ascii?Q?uw=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 945b15b6-0283-46db-16d3-08dc02c5ee07
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?L7w4jf2BEUQwh5H/bmj/MREScTttjdbV1QJ/I0VY2xthv7opUXd5e50gHNMv?=
+ =?us-ascii?Q?FQM6n7KzliVl3MEQst4xi1IoOpqoN2aR41KEzma+gIhc1LnjcFXs1SOHN6iz?=
+ =?us-ascii?Q?4Bhx4/I08YZoTojSKImE0SrrldDHM6BnEKi1h8CSGSIqQBFfbWLkvo6ZaPx8?=
+ =?us-ascii?Q?qDVTYWWVTseJFBuJCTnBAWfAN2QoA+l/AqCvoktgkuiwCJnBPagtMeMcrmQf?=
+ =?us-ascii?Q?bDimxK66IT1EYQbX8Jr10U5OBc8AAqGAEC1tWbG6JII0nyAcf9d3KFq7+upG?=
+ =?us-ascii?Q?6Vaxt2eNIDjTVpWVDFaP7dZqnyUEu4Cnz7t5Yqltv/xwrFaTdzrYwc4S08WZ?=
+ =?us-ascii?Q?rIWGFhDMru4Va8Am3PvttQilFrIgpwj4s/Vkm3vI6ZIauxPIRSAtQmvDnbVL?=
+ =?us-ascii?Q?fo2CwrMG7QfjCQDTUF1G8RwcPIZkOH5J6498isyDkzTSSnop0rgk6W5RSK6I?=
+ =?us-ascii?Q?1ULgKGw6Fwc8EucD9Rg7accYvoAqmAqsA/zKhiiBH/+sDHhfrpAF8r0XdS1l?=
+ =?us-ascii?Q?4Hbm6zDE4XXGiW9GB4MhTuvSHFQ7M8jw/MxW0jr5LFSRFfhezS1x6lsGb9O+?=
+ =?us-ascii?Q?fBJkZV5jI3ki9YnIg3F4Gb/SKDFpl/fvW7kaDGEoXC8HoAEjcj1R3B0C+fVr?=
+ =?us-ascii?Q?2HHx/xBX56AybeiX0hFwdyFbtOgjnwSxQrcaOD6Zojr5nXXso42d40VKB7nS?=
+ =?us-ascii?Q?q2fgqj9VfrMl5W9G0Lra7HqBN/3roV4RMtAr+mBNZz9LmbedIPQkjpsjZVrO?=
+ =?us-ascii?Q?Dmy442npSMxe/wz55Vai0v08iy1jO+tauNRI4E7LPs7VZs+1dZzhJ4R9flya?=
+ =?us-ascii?Q?//gX5E6vdEXMKvT1cYtYP7OfvS0j4zWg/qBKCeGBFhzds4U/5OFDHGJ/4E26?=
+ =?us-ascii?Q?hRm6gZSKTz8AHq3Dnw1O6hLmGq/RwXOBjOZAPrQntlCAmsSy0gwVVZt0lwML?=
+ =?us-ascii?Q?yIPbIjb8pOytp1gKqLu4WoNwsOwVPqhS7/oXtXjeSMvch0E5Ep/Nj25Nq2V3?=
+ =?us-ascii?Q?wXShiGmiZBY4mcm5utR/kWJwtApDlOP5FWkpnHBtpUpUiYzOPWB8NsFFhUZe?=
+ =?us-ascii?Q?UTwMM3qPK+w5PcShASrzHyUAMk24cQx3eXnKo0DWzyFlcaJAn0WlRgJj3avq?=
+ =?us-ascii?Q?sh3BB5G7thLRd/Y9+pq6ctFRCbcbuMOcEd/kSqPjZVLZzHx6hey6w3N2KU4R?=
+ =?us-ascii?Q?gLvLgllqgA7lDdcXSR9lY7eFHDrlyatBBIrTF06voWk+kqj0g1TUZhAcpnhC?=
+ =?us-ascii?Q?nqn9CL6iRu2n0ym1h6tN1cd4rcvbA0PG7tq06RvRKWjRfcb075RTup+AAZaZ?=
+ =?us-ascii?Q?c3VuBJi289Oxos6rVhR+XlWpi9WeeMfuY6MydupyMhNn5X2tsu7RSmIv1yrc?=
+ =?us-ascii?Q?IdP7+/RG1wXiVeO5YPqX26HOMvhMORHcxqh2AepP52DE1vs55xq3mg3XSRDW?=
+ =?us-ascii?Q?L1Fw6EGu/pUaua4quO/QbvZ9FYTbNislaf+gyZqlFvDL3JnU4O3r8epmAN/v?=
+ =?us-ascii?Q?4hRaw50BjJmgfXXqLUFef6zUwMSnAjLWtGqUHt8gY2TI+Xj9M9lNrs14Deb0?=
+ =?us-ascii?Q?7K4FbKC5nFO2luKCyNI+VHpEX1FuTNyFB9J03JC4bmCacBB7x5Isni80tnmb?=
+ =?us-ascii?Q?ng=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: b057fe96-4c0c-4df4-5ae5-08dc02cf0b3c
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Dec 2023 08:13:50.6299
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Dec 2023 09:19:05.3172
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: fkqmldEUBsyuwkXBXY7ddc1BeTSa895r0dkVIK7bbq/FNEQXsHH57f87/yfQvZZCl8YVTcqTfRWcSk2/pl07Dw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB6703
+X-MS-Exchange-CrossTenant-UserPrincipalName: kb93ywReGzWN4A/diPohpQJX1MAxgdk4bBUAomgS5Z+4YK+zjYcNKBMRz/d1p4IAehCuT85bWey+10iiss61Lg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR11MB7685
 X-OriginatorOrg: intel.com
 
-hi, David,
 
-On Thu, Dec 21, 2023 at 11:07:21PM +0100, David Hildenbrand wrote:
-> On 21.12.23 22:58, Andrew Morton wrote:
-> > On Thu, 21 Dec 2023 12:32:04 +0100 David Hildenbrand <david@redhat.com> wrote:
-> > 
-> > > On 21.12.23 12:23, Oliver Sang wrote:
-> > > > hi, Andrew Morton,
-> > > > 
-> > > > On Wed, Dec 20, 2023 at 02:11:35PM -0800, Andrew Morton wrote:
-> > > > > On Tue, 19 Dec 2023 23:46:50 +0800 kernel test robot <oliver.sang@intel.com> wrote:
-> > > > > 
-> > > > > > 
-> > > > > > 
-> > > > > > Hello,
-> > > > > > 
-> > > > > > kernel test robot noticed "kernel_BUG_at_mm/memory.c" on:
-> > > > > > 
-> > > > > > commit: bbcbf2a3f05f74f9d268eab57abbdce6a65a94ad ("mm: convert ksm_might_need_to_copy() to work on folios")
-> > > > > 
-> > > > > I assume this is a bisection result, so it's quite repeatable?
-> > > > 
-> > > > yes, we bisect to this commit, it's quite repeatable:
-> > > > 
-> > > > ddd06bb63d9793ce bbcbf2a3f05f74f9d268eab57ab
-> > > > ---------------- ---------------------------
-> > > >          fail:runs  %reproduction    fail:runs
-> > > >              |             |             |
-> > > >              :6          100%           6:6     dmesg.Kernel_panic-not_syncing:Fatal_exception
-> > > >              :6          100%           6:6     dmesg.RIP:do_swap_page
-> > > >              :6          100%           6:6     dmesg.invalid_opcode:#[##]
-> > > >              :6          100%           6:6     dmesg.kernel_BUG_at_mm/memory.c
-> > > > 
-> > > > 
-> > > 
-> > > Can you try with the snipped I sent? Please let me know if you need a
-> > > full patch for testing purposes.
-> > 
-> > I think a full patch would be better, please.
-> > 
 
-we cannot reproduce the issue reported previously after applying below patch.
-Thanks
+Hello,
 
-> 
-> From b82e309096abde6c0f24bba50a281e8d3855c132 Mon Sep 17 00:00:00 2001
-> From: David Hildenbrand <david@redhat.com>
-> Date: Thu, 21 Dec 2023 23:04:30 +0100
-> Subject: [PATCH] Fixup: mm: convert ksm_might_need_to_copy() to work on folios
-> 
-> We must only adjust the page if the folio changed. Otherwise, if we
-> had a large folio in the swapcache and the folio didn't change, we'd
-> suddenly change the page to-be-mapped.
-> 
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> Closes: https://lore.kernel.org/oe-lkp/202312192319.fa8f5709-oliver.sang@intel.com
-> Signed-off-by: David Hildenbrand <david@redhat.com>
-> ---
->  mm/memory.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/mm/memory.c b/mm/memory.c
-> index 149f779910fd5..2f9668d357f5c 100644
-> --- a/mm/memory.c
-> +++ b/mm/memory.c
-> @@ -3952,7 +3952,8 @@ vm_fault_t do_swap_page(struct vm_fault *vmf)
->  			folio = swapcache;
->  			goto out_page;
->  		}
-> -		page = folio_page(folio, 0);
-> +		if (folio != swapcache)
-> +			page = folio_page(folio, 0);
->  		/*
->  		 * If we want to map a page that's in the swapcache writable, we
-> -- 
-> 2.43.0
-> 
-> 
-> -- 
-> Cheers,
-> 
-> David / dhildenb
-> 
+kernel test robot noticed "WARNING:at_kernel/locking/lockdep.c:#__lock_acquire" on:
+
+commit: 4f37585fa02f3eaebc72efa1260e6742478c00fa ("[PATCH] locking/ww_mutex: Adjust to lockdep nest_lock requirements")
+url: https://github.com/intel-lab-lkp/linux/commits/Thomas-Hellstr-m/locking-ww_mutex-Adjust-to-lockdep-nest_lock-requirements/20231220-000906
+base: https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git a51749ab34d9e5dec548fe38ede7e01e8bb26454
+patch link: https://lore.kernel.org/all/20231219160524.3646-1-thomas.hellstrom@linux.intel.com/
+patch subject: [PATCH] locking/ww_mutex: Adjust to lockdep nest_lock requirements
+
+in testcase: boot
+
+compiler: gcc-7
+test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+
+(please refer to attached dmesg/kmsg for entire log/backtrace)
+
+
++-----------------------------------------------------+------------+------------+
+|                                                     | a51749ab34 | 4f37585fa0 |
++-----------------------------------------------------+------------+------------+
+| WARNING:at_kernel/locking/lockdep.c:#__lock_acquire | 0          | 6          |
+| EIP:__lock_acquire                                  | 0          | 6          |
++-----------------------------------------------------+------------+------------+
+
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202312221708.b143534-oliver.sang@intel.com
+
+
+[    9.777113][   T10] ------------[ cut here ]------------
+[    9.777784][   T10] DEBUG_LOCKS_WARN_ON(hlock->references < references)
+[ 9.777795][ T10] WARNING: CPU: 0 PID: 10 at kernel/locking/lockdep.c:5055 __lock_acquire (kernel/locking/lockdep.c:5055 (discriminator 9)) 
+[    9.778839][   T10] Modules linked in:
+[    9.778839][   T10] CPU: 0 PID: 10 Comm: kworker/u2:0 Not tainted 6.7.0-rc1-00006-g4f37585fa02f #5
+[    9.778839][   T10] Workqueue: test-ww_mutex stress_inorder_work
+[ 9.778839][ T10] EIP: __lock_acquire (kernel/locking/lockdep.c:5055 (discriminator 9)) 
+[ 9.778839][ T10] Code: e8 ae 10 2e 00 85 c0 0f 84 0e 0f 00 00 8b 1d 94 9c b5 ce 85 db 0f 85 00 0f 00 00 68 64 16 34 ce 68 fe 17 33 ce e8 09 22 fc ff <0f> 0b 58 5a e9 28 12 00 00 a1 90 ef 24 cf 85 c0 74 07 eb 2a 8d 74
+All code
+========
+   0:	e8 ae 10 2e 00       	callq  0x2e10b3
+   5:	85 c0                	test   %eax,%eax
+   7:	0f 84 0e 0f 00 00    	je     0xf1b
+   d:	8b 1d 94 9c b5 ce    	mov    -0x314a636c(%rip),%ebx        # 0xffffffffceb59ca7
+  13:	85 db                	test   %ebx,%ebx
+  15:	0f 85 00 0f 00 00    	jne    0xf1b
+  1b:	68 64 16 34 ce       	pushq  $0xffffffffce341664
+  20:	68 fe 17 33 ce       	pushq  $0xffffffffce3317fe
+  25:	e8 09 22 fc ff       	callq  0xfffffffffffc2233
+  2a:*	0f 0b                	ud2    		<-- trapping instruction
+  2c:	58                   	pop    %rax
+  2d:	5a                   	pop    %rdx
+  2e:	e9 28 12 00 00       	jmpq   0x125b
+  33:	a1 90 ef 24 cf 85 c0 	movabs 0x774c085cf24ef90,%eax
+  3a:	74 07 
+  3c:	eb 2a                	jmp    0x68
+  3e:	8d                   	.byte 0x8d
+  3f:	74                   	.byte 0x74
+
+Code starting with the faulting instruction
+===========================================
+   0:	0f 0b                	ud2    
+   2:	58                   	pop    %rax
+   3:	5a                   	pop    %rdx
+   4:	e9 28 12 00 00       	jmpq   0x1231
+   9:	a1 90 ef 24 cf 85 c0 	movabs 0x774c085cf24ef90,%eax
+  10:	74 07 
+  12:	eb 2a                	jmp    0x3e
+  14:	8d                   	.byte 0x8d
+  15:	74                   	.byte 0x74
+[    9.778839][   T10] EAX: 00000033 EBX: 00000000 ECX: c0245cb4 EDX: ce9da1ac
+[    9.778839][   T10] ESI: c26cb37c EDI: c02569ac EBP: c0245db0 ESP: c0245d60
+[    9.778839][   T10] DS: 007b ES: 007b FS: 0000 GS: 0000 SS: 0068 EFLAGS: 00010002
+[    9.778839][   T10] CR0: 80050033 CR2: ffdda000 CR3: 0ec21000 CR4: 00040690
+[    9.778839][   T10] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 00000000
+[    9.778839][   T10] DR6: fffe0ff0 DR7: 00000400
+[    9.778839][   T10] Call Trace:
+[ 9.778839][ T10] ? show_regs (arch/x86/kernel/dumpstack.c:478) 
+[ 9.778839][ T10] ? __warn (kernel/panic.c:677) 
+[ 9.778839][ T10] ? __lock_acquire (kernel/locking/lockdep.c:5055 (discriminator 9)) 
+[ 9.778839][ T10] ? report_bug (lib/bug.c:201 lib/bug.c:219) 
+[ 9.778839][ T10] ? exc_overflow (arch/x86/kernel/traps.c:250) 
+[ 9.778839][ T10] ? handle_bug (arch/x86/kernel/traps.c:237) 
+[ 9.778839][ T10] ? exc_invalid_op (arch/x86/kernel/traps.c:258 (discriminator 1)) 
+[ 9.778839][ T10] ? handle_exception (arch/x86/entry/entry_32.S:1056) 
+[ 9.778839][ T10] ? __lock_acquire (kernel/locking/lockdep.c:5047) 
+[ 9.778839][ T10] ? exc_overflow (arch/x86/kernel/traps.c:250) 
+[ 9.778839][ T10] ? __lock_acquire (kernel/locking/lockdep.c:5055 (discriminator 9)) 
+[ 9.778839][ T10] ? exc_overflow (arch/x86/kernel/traps.c:250) 
+[ 9.778839][ T10] ? __lock_acquire (kernel/locking/lockdep.c:5055 (discriminator 9)) 
+[ 9.778839][ T10] ? kvm_sched_clock_read (arch/x86/kernel/kvmclock.c:91) 
+[ 9.778839][ T10] lock_acquire (kernel/locking/lockdep.c:467 kernel/locking/lockdep.c:5755) 
+[ 9.778839][ T10] ? stress_inorder_work (kernel/locking/test-ww_mutex.c:457) 
+[ 9.778839][ T10] ? lock_is_held_type (kernel/locking/lockdep.c:5494 kernel/locking/lockdep.c:5824) 
+[ 9.778839][ T10] __ww_mutex_lock+0xb1/0xd84 
+[ 9.778839][ T10] ? stress_inorder_work (kernel/locking/test-ww_mutex.c:457) 
+[ 9.778839][ T10] ww_mutex_lock (kernel/locking/mutex.c:878) 
+[ 9.778839][ T10] stress_inorder_work (kernel/locking/test-ww_mutex.c:457) 
+[ 9.778839][ T10] process_scheduled_works (kernel/workqueue.c:2630 include/linux/jump_label.h:207 include/trace/events/workqueue.h:108 kernel/workqueue.c:2635 kernel/workqueue.c:2703) 
+[ 9.778839][ T10] worker_thread (include/linux/list.h:373 kernel/workqueue.c:841 kernel/workqueue.c:2785) 
+[ 9.778839][ T10] kthread (kernel/kthread.c:390) 
+[ 9.778839][ T10] ? rescuer_thread (kernel/workqueue.c:2730) 
+[ 9.778839][ T10] ? kthread_complete_and_exit (kernel/kthread.c:341) 
+[ 9.778839][ T10] ret_from_fork (arch/x86/kernel/process.c:153) 
+[ 9.778839][ T10] ? kthread_complete_and_exit (kernel/kthread.c:341) 
+[ 9.778839][ T10] ret_from_fork_asm (arch/x86/entry/entry_32.S:741) 
+[ 9.778839][ T10] entry_INT80_32 (arch/x86/entry/entry_32.S:947) 
+[    9.778839][   T10] irq event stamp: 14037
+[ 9.778839][ T10] hardirqs last enabled at (14037): irqentry_exit (kernel/entry/common.c:435) 
+[ 9.778839][ T10] hardirqs last disabled at (14036): common_interrupt (arch/x86/kernel/irq.c:247) 
+[ 9.778839][ T10] softirqs last enabled at (8978): __do_softirq (arch/x86/include/asm/preempt.h:27 kernel/softirq.c:400 kernel/softirq.c:582) 
+[ 9.778839][ T10] softirqs last disabled at (8969): do_softirq_own_stack (arch/x86/kernel/irq_32.c:57 arch/x86/kernel/irq_32.c:147) 
+[    9.778839][   T10] ---[ end trace 0000000000000000 ]---
+[    9.917906][   T36] torture_spin_lock_write_delay: delay = 25 jiffies.
+[   10.273181][   T36] torture_spin_lock_write_delay: delay = 25 jiffies.
+[   10.621916][   T36] torture_spin_lock_write_delay: delay = 25 jiffies.
+[   10.788923][   T36] torture_spin_lock_write_delay: delay = 25 jiffies.
+[   10.919665][   T36] torture_spin_lock_write_delay: delay = 26 jiffies.
+[   11.085916][   T36] torture_spin_lock_write_delay: delay = 25 jiffies.
+[   11.471931][   T35] torture_spin_lock_write_delay: delay = 25 jiffies.
+[   11.784602][    T1] All ww mutex selftests passed
+
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20231222/202312221708.b143534-oliver.sang@intel.com
+
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
