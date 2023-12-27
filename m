@@ -1,50 +1,60 @@
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+Received: from sipsolutions.net (s3.sipsolutions.net [168.119.38.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3E762C866;
-	Wed, 27 Dec 2023 10:17:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0387C46B85;
+	Wed, 27 Dec 2023 19:18:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sipsolutions.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sipsolutions.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="pU5STzj/"
+	dkim=pass (2048-bit key) header.d=sipsolutions.net header.i=@sipsolutions.net header.b="xvc4qGAC"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=wb87vj5TbXVcjrLud3m6t6FnLN5KHCZaLB6pA0oKcNI=; b=pU5STzj/eZVugBvNDEnuG+L5ft
-	A1Fbs7V4YNj9EvGMxlftYxDOwqz2s0JdePzwD6LNRg3q7jOfSAi9jZr2EWq/h/pWkyK9vGY+LDdL5
-	gaQQbyhqWm/8EJS5xsXhjedwNUG8m8JAleBoy7+jYp0xx6WAoknyT0eJ+uzMo1bV2BbQ8je7XWYMy
-	UoSVGDNji4EwDzKX5ngkIM4Ezkz9KKEZoxWuZtB1rI5rfUTtGGasUywCt61tQ1LomgQWwe4jJi8ls
-	YL3RPxi/KLeKMdYrdV75fCMTh8Ft9LTE1eXER1AHQlGY6MyzdPiHwGuHz8oJHdarsFs9Et889doDp
-	i99fhsGw==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-	id 1rIQyO-002cju-Rs; Wed, 27 Dec 2023 10:17:12 +0000
-Date: Wed, 27 Dec 2023 10:17:12 +0000
-From: Matthew Wilcox <willy@infradead.org>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-	Linus Torvalds <torvalds@linux-foundation.org>,
-	Zhenghan Wang <wzhmmmmm@gmail.com>, linux-fsdevel@vger.kernel.org
-Subject: Re: [linus:master] [ida]  af73483f4e: WARNING:at_lib/idr.c:#ida_free
-Message-ID: <ZYv5qLaEMuJ8oTyw@casper.infradead.org>
-References: <202312271025.7f350868-oliver.sang@intel.com>
+	d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+	Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+	Resent-Cc:Resent-Message-ID; bh=u2wnuuLQYT1m8FdbY7tnB65SRTLaJoA6JvL7yUFYK8Y=;
+	t=1703704716; x=1704914316; b=xvc4qGAC2Z+1lxNzocrSdlU4jPyM/c080xqd2eRPcboR2fC
+	SqB8UHFUzSW9y73IsqLPfM/dIZ0RCpkMC+i3F+XAU8PTEftX7GleVAMJiTwADftSrd29F+/cTajED
+	S6HTDiYPmAIgGcqx+949+uBAFj/o9utv54Ee54kh7iSXsIyem0EHj55nz/jUBJfcMJumD+lRpuop7
+	wNJS6Xug6/LEy5Mtj/dij99clWqVb4xYiFcyrvXH29YA+WAEdNlUTCkOCro8CK+/exxIaxD3ZPdNr
+	PTCfLMdbnZkHntLFe6xSiOOTNPGg3SgLv+uHIrmQypiEVzlZcXBzO9l1gegsAOuA==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+	(Exim 4.97)
+	(envelope-from <johannes@sipsolutions.net>)
+	id 1rIZQA-0000000BHAS-2v1t;
+	Wed, 27 Dec 2023 20:18:26 +0100
+Message-ID: <4274b2d3892f548f3a56fd6040d4a9c1109069d8.camel@sipsolutions.net>
+Subject: Re: [linux-next:master] [wifi]  ce10e8653f: hwsim.prefer_eht_20.fail
+From: Johannes Berg <johannes@sipsolutions.net>
+To: kernel test robot <oliver.sang@intel.com>, Miri Korenblit
+	 <miriam.rachel.korenblit@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, Linux Memory Management List
+	 <linux-mm@kvack.org>, Gregory Greenman <gregory.greenman@intel.com>, 
+	linux-wireless@vger.kernel.org
+Date: Wed, 27 Dec 2023 20:18:25 +0100
+In-Reply-To: <202312271555.3fbe1cf4-oliver.sang@intel.com>
+References: <202312271555.3fbe1cf4-oliver.sang@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.50.2 (3.50.2-1.fc39) 
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202312271025.7f350868-oliver.sang@intel.com>
+X-malware-bazaar: not-scanned
 
-On Wed, Dec 27, 2023 at 01:52:42PM +0800, kernel test robot wrote:
+On Wed, 2023-12-27 at 15:41 +0800, kernel test robot wrote:
+>=20
 > Hello,
-> 
-> kernel test robot noticed "WARNING:at_lib/idr.c:#ida_free" on:
-> 
-> commit: af73483f4e8b6f5c68c9aa63257bdd929a9c194a ("ida: Fix crash in ida_free when the bitmap is empty")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>=20
+> kernel test robot noticed "hwsim.prefer_eht_20.fail" on:
+>=20
+> commit: ce10e8653f8b6569ea5d4f96917b5eaee7437072 ("wifi: mac80211_hwsim: =
+support HE 40 MHz in 2.4 GHz band")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+>=20
 
-Oh, ugh.  I didn't think about panic_on_warn.  Is there a way to
-skip tests if panic_on_warn is set?
+Known issue, should be fixed in hostap master.
+
+johannes
