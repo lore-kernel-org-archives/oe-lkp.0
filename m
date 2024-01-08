@@ -1,540 +1,298 @@
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D25835EE4
-	for <oe-lkp@lists.linux.dev>; Fri,  5 Jan 2024 18:50:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 780778BF6
+	for <oe-lkp@lists.linux.dev>; Mon,  8 Jan 2024 07:42:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PmqapfwQ"
-Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-1d4d5b37670so13040145ad.0
-        for <oe-lkp@lists.linux.dev>; Fri, 05 Jan 2024 10:50:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1704480609; x=1705085409; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=JwYeIJWKC49gnwR7+7uK75agb8CulaCFWFO+Qndj7cY=;
-        b=PmqapfwQO6HxRNp0egyPY67oh7g13iVC1Xhp8xlaYMF6FnqYK9NaL3opgyGgeeTWWw
-         /oJNrHaU2BS7pGHjNTL40MGgXHngHHZ3LPZs7Bh3EfUc6aqobPrYzAJl6deldLLH1+7x
-         FYS6TwbosdjifGPFRl2VEP/1SeCnqKkHKB4tlOxwt7U1m+8kF/NhRrQcBGzMylP0HG1r
-         pjIQXMv5b6iCQ784knKJbS9f3pwbxpzRwHvU+m6WJN69hzwdTs8eXN44tvYxi9JME+4k
-         LVRIFOgikdYcZk54FqJk52tE0mjwRyTZHQzlhMVnkL4iXtKtXGE6dGL/lTUSDJDlQbVk
-         SUPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1704480609; x=1705085409;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=JwYeIJWKC49gnwR7+7uK75agb8CulaCFWFO+Qndj7cY=;
-        b=KTwmGd9HgnLYLLHRuaZZpv5sEc3EJAjX7yRAZBA2ieBEMeVBvycFg+drx6Sey5ZnvG
-         nuAytBO8QXbVRGpQm3UIe5Kz9iN2uVP7Hc/+kk+CJdd0dP/2n7ICEGukGALNZQtLUqct
-         +y12pSIRD5eIJoYrKj68YTS6ZWzMXc3vf0WH5zffGKsDyffr/WefQtg8Nv/Z/ygeuvn/
-         LA3/vEolksADgcn3UmVm1tbh0bTjnyVuGEjnZx67UvPzxTjbojD0IpQMhewECuF815hs
-         1w66cYMwQ9PGWLTKvDxDghFormTmiBaOUgiVu55gmCamNCVnB4FcEVJKCRbzBp9RbFHv
-         I7rA==
-X-Gm-Message-State: AOJu0Yx0uw7ghb4bh++WM80DZdb2/I947nZ58XoaMHASnhUDJMm+SqeL
-	ev+a0NSBvI03FCe8Uweg8KEYzpxEmofd/Uymz2sV/S1j
-X-Google-Smtp-Source: AGHT+IF96O2jd5Fm5v/XSoATCsewOJ+30QHxFpdMFWKnQipTqVXII3LMXAM3X1U4lMJOxYusB9G4ggtFAze6Vd/dM0c=
-X-Received: by 2002:a17:90b:4d81:b0:28c:f079:11b0 with SMTP id
- oj1-20020a17090b4d8100b0028cf07911b0mr2093734pjb.61.1704480608651; Fri, 05
- Jan 2024 10:50:08 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EJeQGJQp"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1704699746; x=1736235746;
+  h=date:from:to:cc:subject:message-id:
+   content-transfer-encoding:in-reply-to:mime-version;
+  bh=wZbEHX//35rBOZIZOq3a/D1/T1H+Vi6ESYE8q894X9A=;
+  b=EJeQGJQpoHLeJhFZ+jEs6Vqd0sdwNpx+Ez4ub69LQLBV9my4hCDFMKTK
+   3ZKVewlCDvDEKK9z6fkbXblCxYCRmfQ1U5AtUQ0efkcsoY0UvGxlZSUXS
+   ic6HMbck1i4/J3/B7o5hGrGY+hulWt+vqldiO2cYP13hwxdJs44vCMy5l
+   dl2o0NZGDSHtf1OAhlztDyfZtuw3/xQc39IEyA3cM2aC/We9OvczZTVBe
+   6G+C2N9/tlWeri1FGPgB/3Aei+OxpuOa8PkE8sAl66BRPJEng+3R3hoyo
+   XjcjZQNve/O2QhH/va0NpUokRWQuzsp0ERhkJ6ZlhneyR8q0VvqVS9dEu
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10946"; a="483997661"
+X-IronPort-AV: E=Sophos;i="6.04,340,1695711600"; 
+   d="scan'208";a="483997661"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2024 23:42:25 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10946"; a="1112667112"
+X-IronPort-AV: E=Sophos;i="6.04,340,1695711600"; 
+   d="scan'208";a="1112667112"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by fmsmga005.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 07 Jan 2024 23:42:25 -0800
+Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Sun, 7 Jan 2024 23:42:24 -0800
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35 via Frontend Transport; Sun, 7 Jan 2024 23:42:24 -0800
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.169)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.35; Sun, 7 Jan 2024 23:42:24 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bSY+hVIGU0p+Ecyk0GvYpQY582ufdqQYNxSlXo47mHMLhA3qIwOJYG8TWlMdFHVP/eivCgT3h/xSdNF6dLvqCTvzGtximDF4fAUPH2DcNcy0kDMJk8qmi+lc8iiDJ55K9GSwTWJgrftIRgaAMBB+LRtVZUzucynIZylsPiarlkUnanSIDKF0thiEDlfhVd34/0Knkh+CXL57o7eeJV7WCnVq/lSTE56PFifZfHO92pq7th+jd/mQlppeXevHaOj8kSysVj4t/5Lw0FOyebI1fQBmKrCybR0cLXtKe3nrb9q65iTiWeFo8R8MsSYojYP1GWkaqgRzo5EQYKlGH/ET+w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=322GvMNhw5g2dw4lkBc1XjIqScOZaRT4vFeNsBy2PL0=;
+ b=bsKEh8S8ssVl3ajzpJZLfEYBtAF4o2cJjcrE0KNA5pSGqCsKHfKId1MBW3Mn3hDdfZL6j6OyEu5WRMZSeJEtcdPlw6BKm9GdDKxrsEQ2WfiIBV0uxfs7e6F1R8QMolmViiva4mfD7u+57p6Xq1BP4M7EWIebw4Pc/QLRGXw1wBhv5mu4OqwOs6IV38o09z+1Ym43d+F8FkyQihbhZt577KaU48hh2NvE+Y6lkxhz9g+ZXPfDVAExZE07HxJxbYNUtIAkdyGCEVMxmaC4d6eK+FLgeqs0wEnwGS1RH/hEusxe2xXVQIeQ0QYlytXtGjW6Fhx1VHnn1WvVC0ezQEORFQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by SJ0PR11MB5216.namprd11.prod.outlook.com (2603:10b6:a03:2db::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7159.21; Mon, 8 Jan
+ 2024 07:42:22 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::1236:9a2e:5acd:a7f]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::1236:9a2e:5acd:a7f%3]) with mapi id 15.20.7159.020; Mon, 8 Jan 2024
+ 07:42:22 +0000
+Date: Mon, 8 Jan 2024 15:42:10 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: David Laight <David.Laight@aculab.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, David Laight
+	<david.laight@aculab.com>, <linux-kernel@vger.kernel.org>,
+	<ying.huang@intel.com>, <feng.tang@intel.com>, <fengwei.yin@intel.com>,
+	"'peterz@infradead.org'" <peterz@infradead.org>, "'longman@redhat.com'"
+	<longman@redhat.com>, "'mingo@redhat.com'" <mingo@redhat.com>,
+	"'will@kernel.org'" <will@kernel.org>, "'boqun.feng@gmail.com'"
+	<boqun.feng@gmail.com>, 'Linus Torvalds' <torvalds@linux-foundation.org>,
+	"'virtualization@lists.linux-foundation.org'"
+	<virtualization@lists.linux-foundation.org>, 'Zeng Heng'
+	<zengheng4@huawei.com>, <oliver.sang@intel.com>
+Subject: Re: [PATCH next v2 2/5] locking/osq_lock: Optimise the
+ vcpu_is_preempted() check.
+Message-ID: <202401081557.641738f5-oliver.sang@intel.com>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <3a9d1782cd50436c99ced8c10175bae6@AcuMS.aculab.com>
+X-ClientProxiedBy: SGBP274CA0007.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b0::19)
+ To LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <ec48d168-284b-4376-97a7-090273a3ae5e@intel.com>
- <CAHbLzkrAdZ4GrtnH0NUhwPm=gZzkaGT96xVbiyOQaJ3uCFRDnw@mail.gmail.com>
- <CAHbLzkrd-y2=KHS-zreH8FUmQtOaf_FGuyj78zNNH3FbpCQNnA@mail.gmail.com>
- <b1974dc2-0e25-4075-a9ba-5e1face6c0cd@intel.com> <5753c5cb-62e3-42e6-bf04-b12b4c77b259@intel.com>
- <CAHbLzkqXaGE2RosYSejCU7wTs+p3+SWp25qqWUs8pcSbRp_dHg@mail.gmail.com>
- <988d265a-29a0-4252-9bdc-c47659e336c3@intel.com> <CAHbLzkq-i4A7XOsBfn_kPKixbt2+9HNeS+DzfjxVrTOcME_HSA@mail.gmail.com>
- <368ea00b-c5f6-4e34-b04e-ce587c15f124@intel.com> <ZZZu1s5yAyFr0wtw@xsang-OptiPlex-9020>
- <ZZfL6APUYZ3VuUTv@xsang-OptiPlex-9020>
-In-Reply-To: <ZZfL6APUYZ3VuUTv@xsang-OptiPlex-9020>
-From: Yang Shi <shy828301@gmail.com>
-Date: Fri, 5 Jan 2024 10:49:56 -0800
-Message-ID: <CAHbLzkpp0d=hPcKxprYnVJL=g0dxNcTN5vmg8AHueEXYMvoCCw@mail.gmail.com>
-Subject: Re: [linux-next:master] [mm] 1111d46b5c: stress-ng.pthread.ops_per_sec
- -84.3% regression
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: Yin Fengwei <fengwei.yin@intel.com>, Rik van Riel <riel@surriel.com>, oe-lkp@lists.linux.dev, 
-	lkp@intel.com, Linux Memory Management List <linux-mm@kvack.org>, 
-	Andrew Morton <akpm@linux-foundation.org>, Matthew Wilcox <willy@infradead.org>, 
-	Christopher Lameter <cl@linux.com>, ying.huang@intel.com, feng.tang@intel.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|SJ0PR11MB5216:EE_
+X-MS-Office365-Filtering-Correlation-Id: 32c6ef3e-186e-4655-681e-08dc101d592a
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: FcXCEVP0Xp3ZaLpMBsOFDQHkA1cPBejTShNquDIlUnxjOQvmUN9g0I/wdvephWi5Yx9b0xawDmKkOlUgbo6FH6IkNaZ3BRcfdQEsp12Ysfqn3Y9yf2vjCgDHT6EKPcmpICGYHn496po4mUYO1Q2++D0bpANUn+wVPPCWtyFdBp2cwsK9qGO/D1oAp1HI8EvLwY5y2Ivj2Tljzl9/yjzWys4KkokWtqQSxfxq3WHwLGuLj7bcrBYqT8NDmuWrHY/jURlgzG8aUmozxcU29LApwYv2706NLkWqYF+rokXuAVSu8ZrJ9MUXg8zx+aiYjPcTaNB9YH7rFh/apDWQZbQTycj813QfTWfFZpM/xqLvFyPfezz0X6sl4n9PdLtASaUegTTSqNEsWSMq2LxX5Jhf46Egz1iD+D+IYM/RHTO/3h70fXITJAUhUz2D3sCGwguHaLw7guTt+hfkZdlldRhFzuYfIjsoonEaIlGEKcpWbFmUMvMYDohSUXeTPTvHxpsWGCqWv7dSTBPJgSHnBPUVJyg+is6NqEqi/qgWg7gq+Y8olGnInYZVy5M86vImJXoBVuvlBkVT42zO91lR5CwIXRcKedL7yxmVLZfPDkrWB32og0iMalMzkpzi55crKW1Mg5kfWUSo1Yf8ZCD/CkUB+A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(346002)(396003)(376002)(366004)(136003)(230373577357003)(230922051799003)(230473577357003)(186009)(1800799012)(64100799003)(451199024)(26005)(1076003)(2616005)(478600001)(966005)(6486002)(6506007)(6512007)(6666004)(83380400001)(107886003)(5660300002)(2906002)(41300700001)(7416002)(66476007)(66556008)(54906003)(316002)(8676002)(8936002)(4326008)(66946007)(6916009)(38100700002)(36756003)(86362001)(82960400001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?JsLTPt0qKGOQfHpxOdqua2+JMjnCqMqEV+GZSQH3++8tJs+CyLeaJfdFII?=
+ =?iso-8859-1?Q?DoSV35whSt6cQlF1A7p/R7Rvbv5QqGvf/VzBFIyWsIXkoe2bLgH4pvQ2yM?=
+ =?iso-8859-1?Q?3Qep0Nr3+eZu8n5qnFeBqngT+vFDgByB43b1MgV8vR9lLpz5h0VuRfqp5T?=
+ =?iso-8859-1?Q?IvS2Uxdh8I2RhN3fU4BYzGjM3G5d4i9Q0BirJbp7JYf5+lmIjwGS1E9abI?=
+ =?iso-8859-1?Q?SlinE4T4mqCux1vpL97d0SDx5YWJbRq+pHI6byuwjI8ehrmtZFTGzVXY47?=
+ =?iso-8859-1?Q?/9L7RE3V6LZHprUGlhFu8DFWCX9hL8LbINO5TUjcSmTgDPaTz195wd6mhH?=
+ =?iso-8859-1?Q?c7IzWpGQLMFQXc7WRaA08s49f0+oL898holmzoVJMu8JGyYY2dTBGWikD0?=
+ =?iso-8859-1?Q?oHmY6aWVM4I1bgucgg+yFwkZuZbdABCYr3Ke9SGGMN6nomq4DS5j8Xc5Px?=
+ =?iso-8859-1?Q?EZwBmMp8h0NeYk5+V2C5qHkX2RKHYSLEx6KCWzU7QsFqDaCEf/Ak8+SP6A?=
+ =?iso-8859-1?Q?zMq3kBAHrKisLIfSwFUl8w+c5jkq0DcfP6Gu981f6QorSVOvwOig/RXkrd?=
+ =?iso-8859-1?Q?ZFKYdA242wz/inwx2o7G6KC034V3AY748sZAdq9H9Q5J2ZNbpGHimFh7Er?=
+ =?iso-8859-1?Q?kF8xn8v0qHc8EQU3UOGiMCxwPq1tdYOaiC67n+91tKN9iqnNqFwC9em/sr?=
+ =?iso-8859-1?Q?cBnh8r1KQtCUnd3KoJ42OPYhTGjTRDizsJ11WKaELnt7jHZHnj+DB2KJG9?=
+ =?iso-8859-1?Q?kWs91f0mxxDq5WSkdLmigyfaWzxf7Jm+LrLjhgh3TAqNht+TArUWU7gLhc?=
+ =?iso-8859-1?Q?KdmshZ4bBMu2bYBD8tjttdEyc45YF8CauXF4K4rDGeBaN6jUWCGklqkZzh?=
+ =?iso-8859-1?Q?NVFO76gKhNqf3FjAicvueVJ9pCy6qI3Li3TXMHnWaKJG2ysCOndW6YRhfX?=
+ =?iso-8859-1?Q?kSynDwuSx2gNj9YYTjjV+Bn4NO+uouFZB56m6gNOxQN7mMFrwNx9vswOk0?=
+ =?iso-8859-1?Q?m/n92teXYaU0Rcbs68VZGz2H5KXT1GW5cwivCvhybkdUeXf4qD9gRpBZPv?=
+ =?iso-8859-1?Q?M4hFNYlEArt3gMJzZQPZUV5a6XHOcHXV3i8HndtUeFwftj+UVC/MVOXnvi?=
+ =?iso-8859-1?Q?rM4CF5EvWxftAIdDoEMn5LpCk/jYZdwZ4aeyPchYu3EqaaehlGTaIhZL1U?=
+ =?iso-8859-1?Q?070fJao5whK7EWtn3wtrJb6c+pBBrshkg9nRLxRh0rIPviaA06tBFZ3FLz?=
+ =?iso-8859-1?Q?Xn2BB7nxM04i9ZGuen9R0RCmIO11wi0+iGfq1Q18PLND0KVzyGviyafzJA?=
+ =?iso-8859-1?Q?MLUlmeOHPav+1R1lGmAnZWbqw/ZfvRHH1rj+ipgYM4k47Br3wKDWyULacg?=
+ =?iso-8859-1?Q?nmkdxKgCJmXwCgn+BACQ0j7rkLuZcYP8Sck6vW2pwm1lmEquw+YuJS2kQz?=
+ =?iso-8859-1?Q?WLQo9OXTyA0VBrFflveAWM6+pOjTvxASd61LvhedONnkAqB7smx4j3uBkN?=
+ =?iso-8859-1?Q?Fi/Q+468jiEyvKUPW9DrlGIrooxlsPvgIGNcHbG7dLeaVocFRlkF+49H7i?=
+ =?iso-8859-1?Q?Pn8czCAtSVx/zicZ0TVZLsEPm0G8UV21SPE2kt1Rd4tpSCx5tHAILKxhfR?=
+ =?iso-8859-1?Q?An4ZvnQ20AJ7twrPRCHdrulprShahzMNDyJ1dn6EY14SLXBWMkIBDPGQ?=
+ =?iso-8859-1?Q?=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 32c6ef3e-186e-4655-681e-08dc101d592a
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jan 2024 07:42:21.9664
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: CCCmUQ/1PJbftr7pxNdzVak7W/iRW8j8ppnibO1NHETH+k+NWYTn2ddHd6RgGXnBTxMxB92dbM+mZzwyHjZ+vg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB5216
+X-OriginatorOrg: intel.com
 
-On Fri, Jan 5, 2024 at 1:29=E2=80=AFAM Oliver Sang <oliver.sang@intel.com> =
-wrote:
->
-> hi, Yang Shi,
->
-> On Thu, Jan 04, 2024 at 04:39:50PM +0800, Oliver Sang wrote:
-> > hi, Fengwei, hi, Yang Shi,
-> >
-> > On Thu, Jan 04, 2024 at 04:18:00PM +0800, Yin Fengwei wrote:
-> > >
-> > > On 2024/1/4 09:32, Yang Shi wrote:
-> >
-> > ...
-> >
-> > > > Can you please help test the below patch?
-> > > I can't access the testing box now. Oliver will help to test your pat=
-ch.
-> > >
-> >
-> > since now the commit-id of
-> >   'mm: align larger anonymous mappings on THP boundaries'
-> > in linux-next/master is efa7df3e3bb5d
-> > I applied the patch like below:
-> >
-> > * d8d7b1dae6f03 fix for 'mm: align larger anonymous mappings on THP bou=
-ndaries' from Yang Shi
-> > * efa7df3e3bb5d mm: align larger anonymous mappings on THP boundaries
-> > * 1803d0c5ee1a3 mailmap: add an old address for Naoya Horiguchi
-> >
-> > our auto-bisect captured new efa7df3e3b as fbc for quite a number of re=
-gression
-> > so far, I will test d8d7b1dae6f03 for all these tests. Thanks
-> >
->
 
-Hi Oliver,
 
-Thanks for running the test. Please see the inline comments.
+Hello,
 
-> we got 12 regressions and 1 improvement results for efa7df3e3b so far.
-> (4 regressions are just similar to what we reported for 1111d46b5c).
-> by your patch, 6 of those regressions are fixed, others are not impacted.
->
-> below is a summary:
->
-> No.  testsuite       test                            status-on-efa7df3e3b=
-  fix-by-d8d7b1dae6 ?
-> =3D=3D=3D  =3D=3D=3D=3D=3D=3D=3D=3D=3D       =3D=3D=3D=3D                =
-            =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> (1)  stress-ng       numa                            regression          =
-  NO
-> (2)                  pthread                         regression          =
-  yes (on a Ice Lake server)
-> (3)                  pthread                         regression          =
-  yes (on a Cascade Lake desktop)
-> (4)  will-it-scale   malloc1                         regression          =
-  NO
+kernel test robot noticed a 10.7% improvement of stress-ng.netlink-task.ops_per_sec on:
 
-I think this was reported earlier when Rik submitted the patch in the
-first place. IIRC, Huang Ying did some analysis on this one and
-thought is can be ignored.
 
-> (5)                  page_fault1                     improvement         =
-  no (so still improvement)
-> (6)  vm-scalability  anon-w-seq-mt                   regression          =
-  yes
-> (7)  stream          nr_threads=3D25%                  regression        =
-    yes
-> (8)                  nr_threads=3D50%                  regression        =
-    yes
-> (9)  phoronix        osbench.CreateThreads           regression          =
-  yes (on a Cascade Lake server)
-> (10)                 ramspeed.Add.Integer            regression          =
-  NO (and below 3, on a Coffee Lake desktop)
-> (11)                 ramspeed.Average.FloatingPoint  regression          =
-  NO
-> (12)                 ramspeed.Triad.Integer          regression          =
-  NO
-> (13)                 ramspeed.Average.Integer        regression          =
-  NO
+commit: d93300891f810c9498d09a6ecea2403d7a3546f0 ("[PATCH next v2 2/5] locking/osq_lock: Optimise the vcpu_is_preempted() check.")
+url: https://github.com/intel-lab-lkp/linux/commits/David-Laight/locking-osq_lock-Defer-clearing-node-locked-until-the-slow-osq_lock-path/20240101-055853
+base: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git 610a9b8f49fbcf1100716370d3b5f6f884a2835a
+patch link: https://lore.kernel.org/all/3a9d1782cd50436c99ced8c10175bae6@AcuMS.aculab.com/
+patch subject: [PATCH next v2 2/5] locking/osq_lock: Optimise the vcpu_is_preempted() check.
 
-Not fixing the ramspeed regression is expected. But it seems like both
-I and Fengwei can't reproduce the regression with running ramspeed
-alone.
+testcase: stress-ng
+test machine: 64 threads 2 sockets Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz (Ice Lake) with 256G memory
+parameters:
 
->
->
-> below are details, for those regressions not fixed by d8d7b1dae6, attache=
-d
-> full comparison.
->
->
-> (1) detail comparison is attached as 'stress-ng-regression'
->
-> Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz (Ice Lake) with memory: 256G
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> class/compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test=
-/testcase/testtime:
->   cpu/gcc-12/performance/x86_64-rhel-8.3/100%/debian-11.1-x86_64-20220510=
-.cgz/lkp-icl-2sp7/numa/stress-ng/60s
->
-> 1803d0c5ee1a3bbe efa7df3e3bb5da8e6abbe377274 d8d7b1dae6f0311d528b289cda7
-> ---------------- --------------------------- ---------------------------
->          %stddev     %change         %stddev     %change         %stddev
->              \          |                \          |                \
->     251.12           -48.2%     130.00           -47.9%     130.75       =
- stress-ng.numa.ops
->       4.10           -49.4%       2.08           -49.2%       2.09       =
- stress-ng.numa.ops_per_sec
+	nr_threads: 100%
+	testtime: 60s
+	sc_pid_max: 4194304
+	class: scheduler
+	test: netlink-task
+	cpufreq_governor: performance
 
-This is a new one. I did some analysis, it seems like it is not
-related to the THP patch since I can reproduce it on the kernel (on
-aarch64 VM) w/o the THP patch if I set THP to always.
 
-The profiling showed the regression was caused by move_pages()
-syscall. The test actually calls a bunch of NUMA syscalls, for
-example, set_mempolicy(), mbind(), move_pages(), migrate_pages(), etc,
-with different parameters. When calling move_pages() it tries to move
-pages (at base page granularity) to different nodes in a circular
-list. On my 2-node NUMA VM, it actually moves:
 
-0th page to node #1
-1st page to node #0
-2nd page to node #1
-3rd page to node #0
-....
-1023rd page to node #0
 
-But for THP, it actually bounces the THP between the two nodes for 512 time=
-s.
 
-The pgmigrate_success counter in /proc/vmstat also reflected the case:
 
-For base page, the delta is 1928431, but for THP case the delta is 21846640=
-2.
+Details are as below:
+-------------------------------------------------------------------------------------------------->
 
-The kernel already did the node check to kip move if the page is
-already on the target node, but the test case just do the bounce on
-purpose since it just assumes base page. So I think this case should
-be run with THP disabled.
 
->
->
-> (2)
-> Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz (Ice Lake) with memory: 256G
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> class/compiler/cpufreq_governor/disk/fs/kconfig/nr_threads/rootfs/tbox_gr=
-oup/test/testcase/testtime:
->   os/gcc-12/performance/1HDD/ext4/x86_64-rhel-8.3/10%/debian-11.1-x86_64-=
-20220510.cgz/lkp-icl-2sp7/pthread/stress-ng/60s
->
-> 1803d0c5ee1a3bbe efa7df3e3bb5da8e6abbe377274 d8d7b1dae6f0311d528b289cda7
-> ---------------- --------------------------- ---------------------------
->          %stddev     %change         %stddev     %change         %stddev
->              \          |                \          |                \
->    3272223           -87.8%     400430            +0.5%    3287322       =
- stress-ng.pthread.ops
->      54516           -87.8%       6664            +0.5%      54772       =
- stress-ng.pthread.ops_per_sec
->
->
-> (3)
-> Intel(R) Core(TM) i9-10980XE CPU @ 3.00GHz (Cascade Lake) with memory: 12=
-8G
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> class/compiler/cpufreq_governor/disk/fs/kconfig/nr_threads/rootfs/tbox_gr=
-oup/test/testcase/testtime:
->   os/gcc-12/performance/1HDD/ext4/x86_64-rhel-8.3/1/debian-11.1-x86_64-20=
-220510.cgz/lkp-csl-d02/pthread/stress-ng/60s
->
-> 1803d0c5ee1a3bbe efa7df3e3bb5da8e6abbe377274 d8d7b1dae6f0311d528b289cda7
-> ---------------- --------------------------- ---------------------------
->          %stddev     %change         %stddev     %change         %stddev
->              \          |                \          |                \
->    2250845           -85.2%     332370 =C2=B1  6%      -0.8%    2232820  =
-      stress-ng.pthread.ops
->      37510           -85.2%       5538 =C2=B1  6%      -0.8%      37209  =
-      stress-ng.pthread.ops_per_sec
->
->
-> (4) full comparison attached as 'will-it-scale-regression'
->
-> Intel(R) Xeon(R) Platinum 8380H CPU @ 2.90GHz (Cooper Lake) with memory: =
-192G
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> compiler/cpufreq_governor/kconfig/mode/nr_task/rootfs/tbox_group/test/tes=
-tcase:
->   gcc-12/performance/x86_64-rhel-8.3/process/50%/debian-11.1-x86_64-20220=
-510.cgz/lkp-cpl-4sp2/malloc1/will-it-scale
->
-> 1803d0c5ee1a3bbe efa7df3e3bb5da8e6abbe377274 d8d7b1dae6f0311d528b289cda7
-> ---------------- --------------------------- ---------------------------
->          %stddev     %change         %stddev     %change         %stddev
->              \          |                \          |                \
->      10994           -86.7%       1466           -86.7%       1460       =
- will-it-scale.per_process_ops
->    1231431           -86.7%     164315           -86.7%     163624       =
- will-it-scale.workload
->
->
-> (5)
-> Intel(R) Xeon(R) Platinum 8380H CPU @ 2.90GHz (Cooper Lake) with memory: =
-192G
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> compiler/cpufreq_governor/kconfig/mode/nr_task/rootfs/tbox_group/test/tes=
-tcase:
->   gcc-12/performance/x86_64-rhel-8.3/thread/100%/debian-11.1-x86_64-20220=
-510.cgz/lkp-cpl-4sp2/page_fault1/will-it-scale
->
-> 1803d0c5ee1a3bbe efa7df3e3bb5da8e6abbe377274 d8d7b1dae6f0311d528b289cda7
-> ---------------- --------------------------- ---------------------------
->          %stddev     %change         %stddev     %change         %stddev
->              \          |                \          |                \
->   18858970           +44.8%   27298921           +44.9%   27330479       =
- will-it-scale.224.threads
->      56.06           +13.3%      63.53           +13.8%      63.81       =
- will-it-scale.224.threads_idle
->      84191           +44.8%     121869           +44.9%     122010       =
- will-it-scale.per_thread_ops
->   18858970           +44.8%   27298921           +44.9%   27330479       =
- will-it-scale.workload
->
->
-> (6)
-> Intel(R) Xeon(R) Platinum 8380H CPU @ 2.90GHz (Cooper Lake) with memory: =
-192G
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> compiler/cpufreq_governor/kconfig/rootfs/runtime/size/tbox_group/test/tes=
-tcase:
->   gcc-12/performance/x86_64-rhel-8.3/debian-11.1-x86_64-20220510.cgz/300s=
-/8T/lkp-cpl-4sp2/anon-w-seq-mt/vm-scalability
->
-> 1803d0c5ee1a3bbe efa7df3e3bb5da8e6abbe377274 d8d7b1dae6f0311d528b289cda7
-> ---------------- --------------------------- ---------------------------
->          %stddev     %change         %stddev     %change         %stddev
->              \          |                \          |                \
->     345968            -6.5%     323566            +0.1%     346304       =
- vm-scalability.median
->       1.91 =C2=B1 10%      -0.5        1.38 =C2=B1 20%      -0.2        1=
-.75 =C2=B1 13%  vm-scalability.median_stddev%
->   79708409            -7.4%   73839640            -0.1%   79613742       =
- vm-scalability.throughput
->
->
-> (7)
-> Intel(R) Xeon(R) Platinum 8480CTDX (Sapphire Rapids) with memory: 512G
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> array_size/compiler/cpufreq_governor/iterations/kconfig/loop/nr_threads/o=
-mp/rootfs/tbox_group/testcase:
->   50000000/gcc-12/performance/10x/x86_64-rhel-8.3/100/25%/true/debian-11.=
-1-x86_64-20220510.cgz/lkp-spr-2sp4/stream
->
-> 1803d0c5ee1a3bbe efa7df3e3bb5da8e6abbe377274 d8d7b1dae6f0311d528b289cda7
-> ---------------- --------------------------- ---------------------------
->          %stddev     %change         %stddev     %change         %stddev
->              \          |                \          |                \
->     349414           -16.2%     292854 =C2=B1  2%      -0.4%     348048  =
-      stream.add_bandwidth_MBps
->     347727 =C2=B1  2%     -16.5%     290470 =C2=B1  2%      -0.6%     345=
-750 =C2=B1  2%  stream.add_bandwidth_MBps_harmonicMean
->     332206           -21.6%     260428 =C2=B1  3%      -0.4%     330838  =
-      stream.copy_bandwidth_MBps
->     330746 =C2=B1  2%     -22.6%     255915 =C2=B1  3%      -0.6%     328=
-725 =C2=B1  2%  stream.copy_bandwidth_MBps_harmonicMean
->     301178           -16.9%     250209 =C2=B1  2%      -0.4%     299920  =
-      stream.scale_bandwidth_MBps
->     300262           -17.7%     247151 =C2=B1  2%      -0.6%     298586 =
-=C2=B1  2%  stream.scale_bandwidth_MBps_harmonicMean
->     337408           -12.5%     295287 =C2=B1  2%      -0.3%     336304  =
-      stream.triad_bandwidth_MBps
->     336153           -12.7%     293621            -0.5%     334624 =C2=B1=
-  2%  stream.triad_bandwidth_MBps_harmonicMean
->
->
-> (8)
-> Intel(R) Xeon(R) Platinum 8480CTDX (Sapphire Rapids) with memory: 512G
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> array_size/compiler/cpufreq_governor/iterations/kconfig/loop/nr_threads/o=
-mp/rootfs/tbox_group/testcase:
->   50000000/gcc-12/performance/10x/x86_64-rhel-8.3/100/50%/true/debian-11.=
-1-x86_64-20220510.cgz/lkp-spr-2sp4/stream
->
-> 1803d0c5ee1a3bbe efa7df3e3bb5da8e6abbe377274 d8d7b1dae6f0311d528b289cda7
-> ---------------- --------------------------- ---------------------------
->          %stddev     %change         %stddev     %change         %stddev
->              \          |                \          |                \
->     345632           -19.7%     277550 =C2=B1  3%      +0.4%     347067 =
-=C2=B1  2%  stream.add_bandwidth_MBps
->     342263 =C2=B1  2%     -19.7%     274704 =C2=B1  2%      +0.4%     343=
-609 =C2=B1  2%  stream.add_bandwidth_MBps_harmonicMean
->     343820           -17.3%     284428 =C2=B1  3%      +0.1%     344248  =
-      stream.copy_bandwidth_MBps
->     341759 =C2=B1  2%     -17.8%     280934 =C2=B1  3%      +0.1%     342=
-025 =C2=B1  2%  stream.copy_bandwidth_MBps_harmonicMean
->     343270           -17.8%     282330 =C2=B1  3%      +0.3%     344276 =
-=C2=B1  2%  stream.scale_bandwidth_MBps
->     340812 =C2=B1  2%     -18.3%     278284 =C2=B1  3%      +0.3%     341=
-672 =C2=B1  2%  stream.scale_bandwidth_MBps_harmonicMean
->     364596           -19.7%     292831 =C2=B1  3%      +0.4%     366145 =
-=C2=B1  2%  stream.triad_bandwidth_MBps
->     360643 =C2=B1  2%     -19.9%     289034 =C2=B1  3%      +0.4%     362=
-004 =C2=B1  2%  stream.triad_bandwidth_MBps_harmonicMean
->
->
-> (9)
-> Intel(R) Xeon(R) Gold 6252 CPU @ 2.10GHz (Cascade Lake) with memory: 512G
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> compiler/cpufreq_governor/kconfig/option_a/rootfs/tbox_group/test/testcas=
-e:
->   gcc-12/performance/x86_64-rhel-8.3/Create Threads/debian-x86_64-phoroni=
-x/lkp-csl-2sp7/osbench-1.0.2/phoronix-test-suite
->
-> 1803d0c5ee1a3bbe efa7df3e3bb5da8e6abbe377274 d8d7b1dae6f0311d528b289cda7
-> ---------------- --------------------------- ---------------------------
->          %stddev     %change         %stddev     %change         %stddev
->              \          |                \          |                \
->      26.82         +1348.4%     388.43            +4.0%      27.88       =
- phoronix-test-suite.osbench.CreateThreads.us_per_event
->
->
-> **** for below (10) - (13), full comparison is attached as phoronix-regre=
-ssions
-> (they all happen on a Coffee Lake desktop)
-> (10)
-> Intel(R) Core(TM) i7-8700 CPU @ 3.20GHz (Coffee Lake) with memory: 16G
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> compiler/cpufreq_governor/kconfig/option_a/option_b/rootfs/tbox_group/tes=
-t/testcase:
->   gcc-12/performance/x86_64-rhel-8.3/Add/Integer/debian-x86_64-phoronix/l=
-kp-cfl-d1/ramspeed-1.4.3/phoronix-test-suite
->
-> 1803d0c5ee1a3bbe efa7df3e3bb5da8e6abbe377274 d8d7b1dae6f0311d528b289cda7
-> ---------------- --------------------------- ---------------------------
->          %stddev     %change         %stddev     %change         %stddev
->              \          |                \          |                \
->      20115            -4.5%      19211            -4.5%      19217       =
- phoronix-test-suite.ramspeed.Add.Integer.mb_s
->
->
-> (11)
-> Intel(R) Core(TM) i7-8700 CPU @ 3.20GHz (Coffee Lake) with memory: 16G
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> compiler/cpufreq_governor/kconfig/option_a/option_b/rootfs/tbox_group/tes=
-t/testcase:
->   gcc-12/performance/x86_64-rhel-8.3/Average/Floating Point/debian-x86_64=
--phoronix/lkp-cfl-d1/ramspeed-1.4.3/phoronix-test-suite
->
-> 1803d0c5ee1a3bbe efa7df3e3bb5da8e6abbe377274 d8d7b1dae6f0311d528b289cda7
-> ---------------- --------------------------- ---------------------------
->          %stddev     %change         %stddev     %change         %stddev
->              \          |                \          |                \
->      19960            -2.9%      19378            -3.0%      19366       =
- phoronix-test-suite.ramspeed.Average.FloatingPoint.mb_s
->
->
-> (12)
-> Intel(R) Core(TM) i7-8700 CPU @ 3.20GHz (Coffee Lake) with memory: 16G
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> compiler/cpufreq_governor/kconfig/option_a/option_b/rootfs/tbox_group/tes=
-t/testcase:
->   gcc-12/performance/x86_64-rhel-8.3/Triad/Integer/debian-x86_64-phoronix=
-/lkp-cfl-d1/ramspeed-1.4.3/phoronix-test-suite
->
-> 1803d0c5ee1a3bbe efa7df3e3bb5da8e6abbe377274 d8d7b1dae6f0311d528b289cda7
-> ---------------- --------------------------- ---------------------------
->          %stddev     %change         %stddev     %change         %stddev
->              \          |                \          |                \
->      19667            -6.4%      18399            -6.4%      18413       =
- phoronix-test-suite.ramspeed.Triad.Integer.mb_s
->
->
-> (13)
-> Intel(R) Core(TM) i7-8700 CPU @ 3.20GHz (Coffee Lake) with memory: 16G
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> compiler/cpufreq_governor/kconfig/option_a/option_b/rootfs/tbox_group/tes=
-t/testcase:
->   gcc-12/performance/x86_64-rhel-8.3/Average/Integer/debian-x86_64-phoron=
-ix/lkp-cfl-d1/ramspeed-1.4.3/phoronix-test-suite
->
-> 1803d0c5ee1a3bbe efa7df3e3bb5da8e6abbe377274 d8d7b1dae6f0311d528b289cda7
-> ---------------- --------------------------- ---------------------------
->          %stddev     %change         %stddev     %change         %stddev
->              \          |                \          |                \
->      19799            -3.5%      19106            -3.4%      19117       =
- phoronix-test-suite.ramspeed.Average.Integer.mb_s
->
->
->
-> >
-> >
-> > commit d8d7b1dae6f0311d528b289cda7b317520f9a984
-> > Author: 0day robot <lkp@intel.com>
-> > Date:   Thu Jan 4 12:51:10 2024 +0800
-> >
-> >     fix for 'mm: align larger anonymous mappings on THP boundaries' fro=
-m Yang Shi
-> >
-> > diff --git a/include/linux/mman.h b/include/linux/mman.h
-> > index 40d94411d4920..91197bd387730 100644
-> > --- a/include/linux/mman.h
-> > +++ b/include/linux/mman.h
-> > @@ -156,6 +156,7 @@ calc_vm_flag_bits(unsigned long flags)
-> >         return _calc_vm_trans(flags, MAP_GROWSDOWN,  VM_GROWSDOWN ) |
-> >                _calc_vm_trans(flags, MAP_LOCKED,     VM_LOCKED    ) |
-> >                _calc_vm_trans(flags, MAP_SYNC,       VM_SYNC      ) |
-> > +              _calc_vm_trans(flags, MAP_STACK,      VM_NOHUGEPAGE) |
-> >                arch_calc_vm_flag_bits(flags);
-> >  }
-> >
-> >
-> > >
-> > > Regards
-> > > Yin, Fengwei
-> > >
-> > > >
-> > > > diff --git a/include/linux/mman.h b/include/linux/mman.h
-> > > > index 40d94411d492..dc7048824be8 100644
-> > > > --- a/include/linux/mman.h
-> > > > +++ b/include/linux/mman.h
-> > > > @@ -156,6 +156,7 @@ calc_vm_flag_bits(unsigned long flags)
-> > > >          return _calc_vm_trans(flags, MAP_GROWSDOWN,  VM_GROWSDOWN =
-) |
-> > > >                 _calc_vm_trans(flags, MAP_LOCKED,     VM_LOCKED    =
-) |
-> > > >                 _calc_vm_trans(flags, MAP_SYNC,       VM_SYNC      =
-) |
-> > > > +              _calc_vm_trans(flags, MAP_STACK,      VM_NOHUGEPAGE)=
- |
-> > > >                 arch_calc_vm_flag_bits(flags);
-> > > >   }
-> > > >
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20240108/202401081557.641738f5-oliver.sang@intel.com
+
+=========================================================================================
+class/compiler/cpufreq_governor/kconfig/nr_threads/rootfs/sc_pid_max/tbox_group/test/testcase/testtime:
+  scheduler/gcc-12/performance/x86_64-rhel-8.3/100%/debian-11.1-x86_64-20220510.cgz/4194304/lkp-icl-2sp8/netlink-task/stress-ng/60s
+
+commit: 
+  ff787c1fd0 ("locking/osq_lock: Defer clearing node->locked until the slow osq_lock() path.")
+  d93300891f ("locking/osq_lock: Optimise the vcpu_is_preempted() check.")
+
+ff787c1fd0c13f9b d93300891f810c9498d09a6ecea 
+---------------- --------------------------- 
+         %stddev     %change         %stddev
+             \          |                \  
+      3880 ±  7%     +26.4%       4903 ± 18%  vmstat.system.cs
+      0.48 ±126%     -99.8%       0.00 ±141%  perf-sched.sch_delay.avg.ms.__cond_resched.aa_sk_perm.security_socket_recvmsg.sock_recvmsg.__sys_recvfrom
+      0.16 ± 23%     -38.9%       0.10 ± 32%  perf-sched.sch_delay.avg.ms.schedule_preempt_disabled.__mutex_lock.constprop.0.genl_rcv_msg
+      1.50 ±118%     -99.9%       0.00 ±142%  perf-sched.sch_delay.max.ms.__cond_resched.aa_sk_perm.security_socket_recvmsg.sock_recvmsg.__sys_recvfrom
+      2.55 ± 97%     -83.7%       0.42 ±145%  perf-sched.wait_time.max.ms.__cond_resched.__mutex_lock.constprop.0.genl_rcv_msg
+  32244865           +10.7%   35709040        stress-ng.netlink-task.ops
+    537413           +10.7%     595150        stress-ng.netlink-task.ops_per_sec
+     38094 ± 12%     +42.2%      54160 ± 27%  stress-ng.time.involuntary_context_switches
+     42290 ± 11%     +39.8%      59117 ± 23%  stress-ng.time.voluntary_context_switches
+    143.50 ±  7%     -28.8%     102.17 ± 15%  perf-c2c.DRAM.local
+      4955 ±  3%     -26.4%       3647 ±  4%  perf-c2c.DRAM.remote
+      4038 ±  2%     -18.8%       3277 ±  4%  perf-c2c.HITM.local
+      3483 ±  3%     -21.1%       2747 ±  5%  perf-c2c.HITM.remote
+      7521 ±  2%     -19.9%       6024 ±  4%  perf-c2c.HITM.total
+      0.42 ±  3%     -16.2%       0.35 ±  5%  perf-stat.i.MPKI
+ 1.066e+10            +9.6%  1.169e+10        perf-stat.i.branch-instructions
+     51.90            -2.5       49.42 ±  2%  perf-stat.i.cache-miss-rate%
+  22517746 ±  3%     -13.4%   19503564 ±  5%  perf-stat.i.cache-misses
+      3730 ±  7%     +29.2%       4819 ± 19%  perf-stat.i.context-switches
+      3.99            -3.1%       3.86        perf-stat.i.cpi
+      9535 ±  3%     +15.4%      11003 ±  5%  perf-stat.i.cycles-between-cache-misses
+      0.00 ±  3%      +0.0        0.00 ±  3%  perf-stat.i.dTLB-load-miss-rate%
+ 1.419e+10           -14.9%  1.207e+10        perf-stat.i.dTLB-loads
+ 8.411e+08            +8.4%  9.118e+08        perf-stat.i.dTLB-stores
+  5.36e+10            +3.1%  5.524e+10        perf-stat.i.instructions
+      0.26            +7.0%       0.28 ±  5%  perf-stat.i.ipc
+    837.29 ±  3%      -9.8%     755.30 ±  4%  perf-stat.i.metric.K/sec
+    401.41            -4.1%     385.10        perf-stat.i.metric.M/sec
+   6404966           -23.2%    4920722        perf-stat.i.node-load-misses
+    141818 ±  4%     -22.2%     110404 ±  4%  perf-stat.i.node-loads
+     69.54           +13.8       83.36        perf-stat.i.node-store-miss-rate%
+   3935319           +10.4%    4345724        perf-stat.i.node-store-misses
+   1626033           -52.6%     771187 ±  5%  perf-stat.i.node-stores
+      0.42 ±  3%     -16.0%       0.35 ±  5%  perf-stat.overall.MPKI
+      0.11            -0.0        0.10 ±  8%  perf-stat.overall.branch-miss-rate%
+     51.32            -2.5       48.79 ±  2%  perf-stat.overall.cache-miss-rate%
+      4.06            -3.0%       3.94        perf-stat.overall.cpi
+      9677 ±  3%     +15.6%      11187 ±  5%  perf-stat.overall.cycles-between-cache-misses
+      0.00 ±  3%      +0.0        0.00 ±  4%  perf-stat.overall.dTLB-load-miss-rate%
+      0.25            +3.1%       0.25        perf-stat.overall.ipc
+     70.78           +14.2       84.94        perf-stat.overall.node-store-miss-rate%
+ 1.049e+10            +9.5%  1.149e+10        perf-stat.ps.branch-instructions
+  22167740 ±  3%     -13.4%   19186498 ±  5%  perf-stat.ps.cache-misses
+      3667 ±  7%     +29.1%       4735 ± 19%  perf-stat.ps.context-switches
+ 1.396e+10           -15.0%  1.187e+10        perf-stat.ps.dTLB-loads
+ 8.273e+08            +8.3%  8.963e+08        perf-stat.ps.dTLB-stores
+ 5.274e+10            +3.0%  5.433e+10        perf-stat.ps.instructions
+   6303682           -23.2%    4839978        perf-stat.ps.node-load-misses
+    140690 ±  4%     -22.5%     109023 ±  4%  perf-stat.ps.node-loads
+   3875362           +10.3%    4276026        perf-stat.ps.node-store-misses
+   1599985           -52.6%     758184 ±  5%  perf-stat.ps.node-stores
+ 3.297e+12            +3.0%  3.396e+12        perf-stat.total.instructions
+     96.07            -0.2       95.87        perf-profile.calltrace.cycles-pp.osq_lock.__mutex_lock.genl_rcv_msg.netlink_rcv_skb.genl_rcv
+     97.52            -0.1       97.37        perf-profile.calltrace.cycles-pp.__mutex_lock.genl_rcv_msg.netlink_rcv_skb.genl_rcv.netlink_unicast
+     98.98            -0.1       98.90        perf-profile.calltrace.cycles-pp.netlink_rcv_skb.genl_rcv.netlink_unicast.netlink_sendmsg.__sys_sendto
+     98.99            -0.1       98.92        perf-profile.calltrace.cycles-pp.genl_rcv.netlink_unicast.netlink_sendmsg.__sys_sendto.__x64_sys_sendto
+     98.97            -0.1       98.89        perf-profile.calltrace.cycles-pp.genl_rcv_msg.netlink_rcv_skb.genl_rcv.netlink_unicast.netlink_sendmsg
+     99.09            -0.1       99.04        perf-profile.calltrace.cycles-pp.netlink_unicast.netlink_sendmsg.__sys_sendto.__x64_sys_sendto.do_syscall_64
+     99.47            -0.0       99.43        perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.sendto.stress_netlink_taskstats_monitor.stress_netlink_task
+     99.44            -0.0       99.40        perf-profile.calltrace.cycles-pp.__x64_sys_sendto.do_syscall_64.entry_SYSCALL_64_after_hwframe.sendto.stress_netlink_taskstats_monitor
+     99.35            -0.0       99.32        perf-profile.calltrace.cycles-pp.netlink_sendmsg.__sys_sendto.__x64_sys_sendto.do_syscall_64.entry_SYSCALL_64_after_hwframe
+     99.44            -0.0       99.40        perf-profile.calltrace.cycles-pp.__sys_sendto.__x64_sys_sendto.do_syscall_64.entry_SYSCALL_64_after_hwframe.sendto
+     96.08            -0.2       95.89        perf-profile.children.cycles-pp.osq_lock
+     97.52            -0.1       97.38        perf-profile.children.cycles-pp.__mutex_lock
+     98.98            -0.1       98.90        perf-profile.children.cycles-pp.netlink_rcv_skb
+     99.00            -0.1       98.92        perf-profile.children.cycles-pp.genl_rcv
+     98.97            -0.1       98.89        perf-profile.children.cycles-pp.genl_rcv_msg
+     99.20            -0.0       99.15        perf-profile.children.cycles-pp.netlink_unicast
+      0.13 ±  3%      -0.0        0.08 ±  7%  perf-profile.children.cycles-pp.genl_cmd_full_to_split
+      0.14 ±  4%      -0.0        0.10 ±  5%  perf-profile.children.cycles-pp.genl_get_cmd
+     99.36            -0.0       99.32        perf-profile.children.cycles-pp.netlink_sendmsg
+     99.44            -0.0       99.41        perf-profile.children.cycles-pp.__x64_sys_sendto
+     99.44            -0.0       99.41        perf-profile.children.cycles-pp.__sys_sendto
+     99.59            -0.0       99.56        perf-profile.children.cycles-pp.sendto
+      0.07 ±  5%      +0.0        0.08 ±  5%  perf-profile.children.cycles-pp.genl_family_rcv_msg_attrs_parse
+      0.11            +0.0        0.12 ±  6%  perf-profile.children.cycles-pp.apparmor_capable
+      0.18 ±  3%      +0.0        0.20 ±  4%  perf-profile.children.cycles-pp.netlink_recvmsg
+      0.36            +0.0        0.38        perf-profile.children.cycles-pp.fill_stats
+      0.13 ±  3%      +0.0        0.15 ±  4%  perf-profile.children.cycles-pp.ns_capable
+      0.20 ±  3%      +0.0        0.23 ±  4%  perf-profile.children.cycles-pp.sock_recvmsg
+      0.24 ±  3%      +0.0        0.27 ±  3%  perf-profile.children.cycles-pp.__sys_recvfrom
+      0.24 ±  3%      +0.0        0.27 ±  4%  perf-profile.children.cycles-pp.__x64_sys_recvfrom
+      0.31 ±  3%      +0.0        0.34 ±  3%  perf-profile.children.cycles-pp.recv
+      1.22            +0.0        1.26        perf-profile.children.cycles-pp.genl_family_rcv_msg
+      0.85            +0.1        0.90        perf-profile.children.cycles-pp.cmd_attr_pid
+      0.94            +0.1        1.01        perf-profile.children.cycles-pp.genl_family_rcv_msg_doit
+      1.11            +0.1        1.23        perf-profile.children.cycles-pp.mutex_spin_on_owner
+     95.80            -0.2       95.62        perf-profile.self.cycles-pp.osq_lock
+      0.13 ±  3%      -0.0        0.08 ±  7%  perf-profile.self.cycles-pp.genl_cmd_full_to_split
+      0.11 ±  3%      +0.0        0.12 ±  6%  perf-profile.self.cycles-pp.apparmor_capable
+      1.11            +0.1        1.23        perf-profile.self.cycles-pp.mutex_spin_on_owner
+
+
+
+
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provided
+for informational purposes only. Any difference in system hardware or software
+design or configuration may affect actual performance.
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
