@@ -1,252 +1,290 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f175.google.com (mail-pf1-f175.google.com [209.85.210.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26FC63BB3E
-	for <oe-lkp@lists.linux.dev>; Fri, 19 Jan 2024 09:27:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=134.134.136.65
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705656464; cv=fail; b=Ttw7nbdfgZFCnWtbXpFxX/E/33KanVOnvYdJKL33Kb5DE59HQq2ZxHAaKG/6hF1dufa+R2UH0FyrUIs/wo1VUq2sFFlyVl1pg5VSqGuV7ALaZp4mCL21e+Iawe01VuYPnLzOe0iw9KlCvbtF8VmbXKrFwAKVPUlKfW3aJSj7UU8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705656464; c=relaxed/simple;
-	bh=yNfSFt24U+tGvP+o4jAE9TWtaFfOdvaEF1Uqj6vIULw=;
-	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=fR+pfpYUMntOfoqTXAuh4FyRH7cezDx60yU3V8CBRygi5y7aeLTKpxGMcZnxfPH70RxtBTRvJACbyavEg22bGPhQwE4a38K8EHaN5ZxisQR1i9Lv14AeNQkXfIMCFmwOAJ7ODdcdcqar5Gp1iqMDVP9tLC+vGQCIbdjo210CiT8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RF0CBSPt; arc=fail smtp.client-ip=134.134.136.65
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RF0CBSPt"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1705656462; x=1737192462;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=yNfSFt24U+tGvP+o4jAE9TWtaFfOdvaEF1Uqj6vIULw=;
-  b=RF0CBSPtdAcHRG+RQFxWOI/LW25/2er49Eb/ClVBxcltdEtE0n9Ohxtx
-   +cZYvMR+qYRP1rnk9KEL+lQnqPbkczeWmEE7twHTmOUIzK4BXAaeZsHJP
-   D320Kvv7UKNTJPxcWf5k/0rAP1iZC2kD4976kqR4bBEySwiiymQCxv7Rm
-   fZwF8bW/FZwNRqMq20zytMEBgzAeD83RzeEjxWqOxb1tbamM4VmpRIUYL
-   bb+T5noLfcGwEwTtbGKWYDVPiQU+lzyWIpPVMvhsrY/4GX8xoigMohvTt
-   VGD9aIyk3A2t23p3LradbHR1a4RolLuF3Eyj6y6PrNrgq6IaguPdsAiEX
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10956"; a="404467991"
-X-IronPort-AV: E=Sophos;i="6.05,204,1701158400"; 
-   d="scan'208";a="404467991"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2024 01:27:41 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.05,204,1701158400"; 
-   d="scan'208";a="27010453"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by fmviesa001.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 19 Jan 2024 01:27:40 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Fri, 19 Jan 2024 01:27:40 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Fri, 19 Jan 2024 01:27:39 -0800
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35 via Frontend Transport; Fri, 19 Jan 2024 01:27:39 -0800
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.168)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Fri, 19 Jan 2024 01:27:39 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=c4hTN5DPwZDRowYcBS/DQi2vFvWz01sRqBd6cJv+5XCDPrcOn6M3MzFelLLvqwo7/C3aX1V7t3TpnuLRIlTYkj9P9bjgBCVJLPda53WDQJBwrde3eKyz2lQL/OBFg9b/KzFTOd2qa4Qe+LfZuSbxNsikWKO8+aZwb1LIrOtxBToUF0ewapapuzQ5N3dCKIqZykE8DSJw7AXMHgUrNfZXh/P870+3HEg71R3nyqVAhsbyzFE5zkz0Dv8L0llHlYfAvs7HE65Yxne2a0O2AQenCZ08daZ+7bTyvRpet6upCPN8y75spxKpboJeMpaDjANwtA0zwUEaVMJn6DWRyqFxuA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iLLw/RiJrI+8+3xVO4YtanwiAIkAC0roTgnV+4p6New=;
- b=nwmCdHWH9W9e3z3aO0+ShA0joSc0PtBOH3hyz5xTtcV3dk52iKrQRyEBb8Ip9HkzIIIa+uWiSlhDNVh/XQaaXYo/crcT1gAzGoJMvPKh3sl/4O6yG2CQcefN83OCTOIM29Pq7i6/9RwDnZ9CYfsiYTWBwS3UPqKaGgLzmbrlSqbzDSaSeXGqBbFXren2+bz5x+a0phfMEe+FxE6rzEEQ2J1YPt5kHUOyN2BQnQdI4cs18FYmhJhzwv+jyPG3W1cGK2kG6c8fYrkdsHzQJdyqkR2Das4jUUGDOb4B7qpy44UvVM+d6wDlcde2QPBg4SOUtpEbWqNoaZlqWGM7NHcMCw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by DM4PR11MB6043.namprd11.prod.outlook.com (2603:10b6:8:62::8) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7202.26; Fri, 19 Jan 2024 09:27:37 +0000
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::3230:820:c8c6:de0c]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::3230:820:c8c6:de0c%6]) with mapi id 15.20.7202.024; Fri, 19 Jan 2024
- 09:27:37 +0000
-Date: Fri, 19 Jan 2024 17:27:28 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: Joel Granados <j.granados@samsung.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
-	<linux-fsdevel@vger.kernel.org>, <netdev@vger.kernel.org>,
-	<oliver.sang@intel.com>
-Subject: [joel-granados:jag/sysctl_remove_empty_elem] [sysctl] 15acdfcefd:
- sysctl_table_check_failed
-Message-ID: <202401191627.63051dd8-oliver.sang@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-X-ClientProxiedBy: SI2PR01CA0019.apcprd01.prod.exchangelabs.com
- (2603:1096:4:192::12) To LV3PR11MB8603.namprd11.prod.outlook.com
- (2603:10b6:408:1b6::9)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C625B433C5
+	for <oe-lkp@lists.linux.dev>; Fri, 19 Jan 2024 21:01:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.175
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1705698082; cv=none; b=eD3CnkDNFyY+JwZwSg7LcBwdjT1D6YeddNSGwJ6dLAglibnhXgdZ3CDldSL8mgjiPGAddeL/u0C28R5HU9kKWdmCRSfoRdn3y/ABu2C8HZoQBw3I8hjMmOF+Q5AfArvGjsPYao7Q/3+rHe3ZcynOtg1mj/vg0QI33sffj/qkSa8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1705698082; c=relaxed/simple;
+	bh=v4s0HXJ/I8JQ3heLTrKQMmV7i3OSZG42/QKaEOyi/lU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=dH64xK5RSvWxa2UVx52IlK+NlBpbejlrnQcOzl5+mpA19mjdFEKPj1VM/cm6+8DWp/uMoDLUMgYfVSgOp3/zUN/4eE5XybdlFOmEUGzHcZJmZ5SNXtx4c9JwILsnxjYQZZ9irw3SmW0sA0LVLB+jy3DnbCvrJ9M3gGYzTW/xSjE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.210.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-pf1-f175.google.com with SMTP id d2e1a72fcca58-6dbb003be79so1512272b3a.0
+        for <oe-lkp@lists.linux.dev>; Fri, 19 Jan 2024 13:01:20 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1705698080; x=1706302880;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=7lj50u8kXspOZzoOFdiIZuTON2LhOLKNsOg0lxXWMDQ=;
+        b=ZbwD6al/cGCeK0uQBJ51o/koqx80Muhb1BmOayRKF+WPBL/3FeyG/lM2fX93eE9npP
+         W9o+0y59zhloJU8FxxuqPlMqc5SdPnzLODoLVudjg/kITt08bLyLvw4h5+wgSVyWQ22m
+         MUmGf9Xh8szbc8ag1Bo3vH5/omXzDVdtmgIZQVUYhml0iBqeCCIvLqy2YENnzs715f50
+         NYd866TL2CEAIRm8wKlMZzme+k6nMdPG/HNnrOBl23yTYrhmHNENSaBGYmbQ0jCvVqWK
+         a/Y37UL5FJUg0GKlBATtVYK4hxBqqKzTak8PcrUOnDn27rCVSzcym0Xey3KcMc9PBak8
+         mV0g==
+X-Gm-Message-State: AOJu0Yx99NElDP8apFbX4HlrSr9ijoJMwsbf2JixjKhMhcrGWA/vxOiq
+	dBd9fTm84xbi0/6kDTkDehrm0PBZYTraw8X0p1hEr+6sy0QUbUUifAC6iY0yub2hAHBPQ2Vbc0R
+	tK1InVNMD0MqaVGDsw7SFn3iL0ws=
+X-Google-Smtp-Source: AGHT+IE62CtDRQvCVg1v07ioRTxcJGM1k8mWFDMDqxbK7QUYh05SHUHWNFcXBpKg1rcDfhI2X+X04b436xuCavptkuw=
+X-Received: by 2002:a17:90b:3642:b0:28d:fd67:fa9c with SMTP id
+ nh2-20020a17090b364200b0028dfd67fa9cmr637793pjb.37.1705698079688; Fri, 19 Jan
+ 2024 13:01:19 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|DM4PR11MB6043:EE_
-X-MS-Office365-Filtering-Correlation-Id: 44d9e2f9-a234-45d8-545b-08dc18d0dfca
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: tixWTTM3qojHMMe+raFCL9tR+YPH2ZtbohyUTJQavIBFpIOfEHXaYBNStdAI69EawWiBZRCbn5Jf+aJsuiPTdJZ2SJASp95MC1mx2tIxSjlL284+bnSywLmh7rY8fon0rurSnSrvh6bGc15FV+8/tel1pC2eAeisIFny8ziOORsOQjVBveER9tUCzR/0M4dsBuivRxCwj3sIPNDxV7uUXqfBr6P/R+XcWKJBmdtL+hG9QwfVJTZT3///R+AFCJu7eXVVfJGc1zUSThnhNMwAYn5vvf8kUUY+LFcdq+Mq8ZbdMYHlisqlgiOw52fYjQfRUXph8ZDZmIKuNhy/9QcJVjWhhhK3QpGpCOCtG0axnFCIiosH5BAk2Q85UmGiRyDmWyous4fPgceG27RgHiGCjd3eHfRH8M/dAr15pS6DR1UxvCaIKHqKDyGi2k6BsSwqY+er2FTB30qIFdy3MV9RWrMselXLY3MnAPFYOumOkr1Nr9ooxNQdrUxoBS1E56o9pxyl4iU6XPNaCqu7jUZpMS80kcQO4RwI7AsewDQcoUo94rT4PDvt8nPLtqc2V7SWX4KCNA1ebrofrlX1Lkp4Jw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(396003)(39860400002)(346002)(366004)(136003)(230922051799003)(451199024)(186009)(1800799012)(64100799003)(1076003)(2616005)(478600001)(26005)(6486002)(6506007)(6666004)(45080400002)(6512007)(107886003)(83380400001)(966005)(2906002)(5660300002)(41300700001)(66556008)(66946007)(66476007)(6916009)(316002)(4326008)(8676002)(8936002)(38100700002)(36756003)(86362001)(82960400001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?zsoUxlPPza1pKjtOjDVSENTV59zKuj0c05Mt0OSybFiKJU4Si0rZJUxHr0DO?=
- =?us-ascii?Q?+C19blsXrrPh0/aLORWfaLe3PzbAJ8O/efk2OCV5kcPQCQDfDDGbi4p/0xA4?=
- =?us-ascii?Q?MRIyldAhkucOaQUAHIlUxhCQBRz1W48CoAlYhfBko+1QYpt0NIFKJZbOZbm7?=
- =?us-ascii?Q?tA5hsuVclKrkQCuNzz+D+3wV1hRFKd5NQE3rB3tu3P7nTP8d5bucpNLOc9ra?=
- =?us-ascii?Q?FVVPV35cq6m5LQ7Sd2C9O+LVsMcv1paEGRXGiTbeh+K4yfADbTw5EXJwMn7N?=
- =?us-ascii?Q?SCCUuPpcPMoy51NMQ5qrampBGECXkdtPQv5lYiSqouiwWtA3GEnCOYZ0qwqx?=
- =?us-ascii?Q?AjRVbssutwTN7xoVMapDTUhT8b/Rh53QkcqaZXUf9ZUIvwK9JkHPfjGEqatq?=
- =?us-ascii?Q?exDzjUPT8k+JUeWKRWAI0Vrb7bmkft7vYOVOga1EFMs5C6jX2ph4zBEw5j+R?=
- =?us-ascii?Q?7Z96ldTb1S/MEbmcagJUi42tJviN3YDMg081LqhRFpdp9gOOhpA7HOXfeV6r?=
- =?us-ascii?Q?w+UYeH7klQgiBP2W1ya4CY1/ofbVDxyEYL9js2AtKzF42y5BrDwtVyRFDNY+?=
- =?us-ascii?Q?WN5p2obtOTlWfgqxs0SLoE8VgmN8Vk8+kYIIL/iBzoAriOKts6K22l2Kchm4?=
- =?us-ascii?Q?V3kucC1iKO8+YJ68YeLXgDtRq2xxazT2UJCTNmf1FNdR40PepJskYW7W9/qi?=
- =?us-ascii?Q?WvUr3zBIdQgb/u9btlxiDuiixsCwm5bg2cFwx0mk76repGd3h6nKOWw/6BK4?=
- =?us-ascii?Q?47fjPcQaaidIlbVdv2FXkV0ZKD7rr4rUiDg5Pv5ANrqhmBsojHnfHqVGGylo?=
- =?us-ascii?Q?2sdfUAdmuVTftMX7sZSIuj3Q4zEg15xR9xgMmmS+chrChOKQL8tPnHBObwD7?=
- =?us-ascii?Q?WYJvldHr8IEM+mFaugcg/ypj4s9/UOxDnu9Y8USggp+jCV9kSRiSeSSHYVLV?=
- =?us-ascii?Q?y8FtVBiCcN8B/7UeqGm1E9mw3OX4JtfiztLQxfLI+TRsDpz5EJ4mclyQHXnl?=
- =?us-ascii?Q?bxwr77kZCP2BtXPe98T/70cO9fuuoo1uD70FQpmzFKQQdpeF7e4XZ1XvL8CR?=
- =?us-ascii?Q?A94x8Cv6o/q75v29Ff17NF6Hf8zt3ZG5YWEV77zEe1UXJsS4eeEAjr9gdJbM?=
- =?us-ascii?Q?v/lcmFz/JSSH+5MibMzM77+HgY28uvrvTF5s6fDhNtDwEayHNeobrui6LM0G?=
- =?us-ascii?Q?WQBNiVWSzkBXct6yYpi0oLPG95wGO7cXRWU9B2UpvHBSqNQ17lmjDszgt+6B?=
- =?us-ascii?Q?k4hQ7DTnu2ZoPhOaeMAL2BSjRs/la+vlIWjNgSo4Z0C6YBtl3uyP3Yb7M2PX?=
- =?us-ascii?Q?ZRWpp4GNscgJIAcKa2akB4usm3vMxaGsCh0Thm0s7iOaS47H36CjtOclr/wd?=
- =?us-ascii?Q?cbYrJRr+nhn1ZWZ5ktLRPUhXVyMolxmb6zqlYiWg4ZMsgICPkkPSze+VHF+N?=
- =?us-ascii?Q?2CJZlJNYFpFRzxghmiJprw3xPpPslHtttCQHuMm8UBJH2RSkrXSSyoWBLtax?=
- =?us-ascii?Q?quDWPlHGH/79Zxmaj/boxyYJd/rFvythFOUynk7siAGncaCEouq3/zXc5M0x?=
- =?us-ascii?Q?3yLDS+LuA37vgGr/3a7/JKhJLkoCULduPI/5v/r0uSEH3nSlStJFPjyhLY5y?=
- =?us-ascii?Q?Jg=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 44d9e2f9-a234-45d8-545b-08dc18d0dfca
-X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2024 09:27:36.9742
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: O38Rmhs05mDhfPYrTa6U2ZmviW3/+FqXS44IS6SDjPd8ByUXb4BvhlwbsX8iBxlzUa1d7SE1PmiBqF+/W1QfOQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB6043
-X-OriginatorOrg: intel.com
-
-
+References: <20240111204348.669673-2-namhyung@kernel.org> <202401191023.d52a4ad4-oliver.sang@intel.com>
+In-Reply-To: <202401191023.d52a4ad4-oliver.sang@intel.com>
+From: Namhyung Kim <namhyung@kernel.org>
+Date: Fri, 19 Jan 2024 13:01:08 -0800
+Message-ID: <CAM9d7cjPAB5OpwgeBeuYkPbU6L+0+0FOJyBq=0HL+uOar275mQ@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] perf/core: Reduce PMU access to adjust sample freq
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, Ian Rogers <irogers@google.com>, 
+	Kan Liang <kan.liang@linux.intel.com>, linux-perf-users@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, 
+	Ingo Molnar <mingo@kernel.org>, Mark Rutland <mark.rutland@arm.com>, 
+	Alexander Shishkin <alexander.shishkin@linux.intel.com>, 
+	Arnaldo Carvalho de Melo <acme@kernel.org>, Mingwei Zhang <mizhang@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
 Hello,
 
-kernel test robot noticed "sysctl_table_check_failed" on:
+On Thu, Jan 18, 2024 at 6:41=E2=80=AFPM kernel test robot <oliver.sang@inte=
+l.com> wrote:
+>
+>
+>
+> Hello,
+>
+> kernel test robot noticed "WARNING:at_arch/x86/events/core.c:#x86_pmu_sta=
+rt" on:
+>
+> commit: d6da92786f901cc4ce3588f101182758da295dbb ("[PATCH v2 2/2] perf/co=
+re: Reduce PMU access to adjust sample freq")
+> url: https://github.com/intel-lab-lkp/linux/commits/namhyung-kernel-org/p=
+erf-core-Reduce-PMU-access-to-adjust-sample-freq/20240112-044505
+> base: https://git.kernel.org/cgit/linux/kernel/git/perf/perf-tools-next.g=
+it perf-tools-next
+> patch link: https://lore.kernel.org/all/20240111204348.669673-2-namhyung@=
+kernel.org/
+> patch subject: [PATCH v2 2/2] perf/core: Reduce PMU access to adjust samp=
+le freq
+>
+> in testcase: will-it-scale
+> version: will-it-scale-x86_64-75f66e4-1_20240111
+> with following parameters:
+>
+>         nr_task: 16
+>         mode: thread
+>         test: pipe1
+>         cpufreq_governor: performance
+>
+>
+>
+> compiler: gcc-12
+> test machine: 104 threads 2 sockets (Skylake) with 192G memory
+>
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
 
-commit: 15acdfcefdf6023d165779105b254cc410297526 ("sysctl: remove the check for the end empty element")
-https://git.kernel.org/cgit/linux/kernel/git/joel.granados/linux.git jag/sysctl_remove_empty_elem
+Thanks for the report.  It seems the code calls x86_pmu_stop() without
+PERF_EF_UPDATE so we cannot simply skip the stop callback for
+frequency events.  I'll update it in v3.
 
-in testcase: boot
+Thanks,
+Namhyung
 
-compiler: gcc-12
-test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-+------------------------------------------+------------+------------+
-|                                          | 19bcf4e935 | 15acdfcefd |
-+------------------------------------------+------------+------------+
-| boot_successes                           | 19         | 0          |
-| boot_failures                            | 0          | 25         |
-| sysctl_table_check_failed                | 0          | 25         |
-| kernel_BUG_at_kernel/ucount.c            | 0          | 25         |
-| invalid_opcode:#[##]                     | 0          | 25         |
-| RIP:user_namespace_sysctl_init           | 0          | 25         |
-| Kernel_panic-not_syncing:Fatal_exception | 0          | 25         |
-+------------------------------------------+------------+------------+
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202401191627.63051dd8-oliver.sang@intel.com
-
-
-
-[    0.403101][    T1] sysctl table check failed: user/(null) No proc_handler
-[    0.404663][    T1] ------------[ cut here ]------------
-[    0.405346][    T1] kernel BUG at kernel/ucount.c:371!
-[    0.406217][    T1] invalid opcode: 0000 [#1] SMP PTI
-[    0.406343][    T1] CPU: 1 PID: 1 Comm: swapper/0 Not tainted 6.7.0-rc6-00006-g15acdfcefdf6 #1
-[    0.406343][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-[    0.406343][    T1] RIP: 0010:user_namespace_sysctl_init+0xcb/0xf0
-[    0.406343][    T1] Code: 2d 72 64 4c ff c6 07 00 0f 1f 00 fb ba 01 00 00 00 31 f6 48 c7 c7 20 5c a5 90 e8 00 ab 9b fd 31 c0 5b 5d c3 cc cc cc cc 0f 0b <0f> 0b 66 2e 0f 1f 84 00 00 00 00 00 66 2e 0f 1f 84 00 00 00 00 00
-[    0.406343][    T1] RSP: 0000:ffffb68040013de8 EFLAGS: 00010246
-[    0.406343][    T1] RAX: 0000000000000000 RBX: ffffffff9158f710 RCX: 00000000000000b8
-[    0.406343][    T1] RDX: 0000000000000000 RSI: 0000000000037160 RDI: ffffffff90a4e020
-[    0.406343][    T1] RBP: 0000000000000000 R08: 0000000000000000 R09: ffffb68040013b90
-[    0.406343][    T1] R10: 0000000000000003 R11: ffffffff90ddd6e8 R12: ffff99113fc7a000
-[    0.406343][    T1] R13: ffffb68040013e00 R14: 000000000000040d R15: 0000000000000000
-[    0.406343][    T1] FS:  0000000000000000(0000) GS:ffff99113fd00000(0000) knlGS:0000000000000000
-[    0.406343][    T1] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[    0.406343][    T1] CR2: 0000000000000000 CR3: 0000000433c1c000 CR4: 00000000000406f0
-[    0.406343][    T1] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[    0.406343][    T1] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[    0.406343][    T1] Call Trace:
-[    0.406343][    T1]  <TASK>
-[    0.406343][    T1]  ? die+0x36/0xb0
-[    0.406343][    T1]  ? do_trap+0xda/0x130
-[    0.406343][    T1]  ? user_namespace_sysctl_init+0xcb/0xf0
-[    0.406343][    T1]  ? do_error_trap+0x65/0xb0
-[    0.406343][    T1]  ? user_namespace_sysctl_init+0xcb/0xf0
-[    0.406343][    T1]  ? exc_invalid_op+0x50/0x70
-[    0.406343][    T1]  ? user_namespace_sysctl_init+0xcb/0xf0
-[    0.406343][    T1]  ? asm_exc_invalid_op+0x1a/0x20
-[    0.406343][    T1]  ? __pfx_user_namespace_sysctl_init+0x10/0x10
-[    0.406343][    T1]  ? user_namespace_sysctl_init+0xcb/0xf0
-[    0.406343][    T1]  ? user_namespace_sysctl_init+0x35/0xf0
-[    0.406343][    T1]  ? __pfx_user_namespace_sysctl_init+0x10/0x10
-[    0.406343][    T1]  do_one_initcall+0x5b/0x2f0
-[    0.406343][    T1]  do_initcalls+0xc6/0x170
-[    0.406343][    T1]  kernel_init_freeable+0x25c/0x330
-[    0.406343][    T1]  ? __pfx_kernel_init+0x10/0x10
-[    0.406343][    T1]  kernel_init+0x1a/0x1f0
-[    0.406343][    T1]  ret_from_fork+0x34/0x70
-[    0.406343][    T1]  ? __pfx_kernel_init+0x10/0x10
-[    0.406343][    T1]  ret_from_fork_asm+0x1b/0x30
-[    0.406343][    T1]  </TASK>
-[    0.406343][    T1] Modules linked in:
-[    0.436350][    T1] ---[ end trace 0000000000000000 ]---
-[    0.436931][    T1] RIP: 0010:user_namespace_sysctl_init+0xcb/0xf0
-[    0.437526][    T1] Code: 2d 72 64 4c ff c6 07 00 0f 1f 00 fb ba 01 00 00 00 31 f6 48 c7 c7 20 5c a5 90 e8 00 ab 9b fd 31 c0 5b 5d c3 cc cc cc cc 0f 0b <0f> 0b 66 2e 0f 1f 84 00 00 00 00 00 66 2e 0f 1f 84 00 00 00 00 00
-[    0.439835][    T1] RSP: 0000:ffffb68040013de8 EFLAGS: 00010246
-[    0.440346][    T1] RAX: 0000000000000000 RBX: ffffffff9158f710 RCX: 00000000000000b8
-[    0.441190][    T1] RDX: 0000000000000000 RSI: 0000000000037160 RDI: ffffffff90a4e020
-[    0.441598][    T1] RBP: 0000000000000000 R08: 0000000000000000 R09: ffffb68040013b90
-[    0.442345][    T1] R10: 0000000000000003 R11: ffffffff90ddd6e8 R12: ffff99113fc7a000
-[    0.443229][    T1] R13: ffffb68040013e00 R14: 000000000000040d R15: 0000000000000000
-[    0.444599][    T1] FS:  0000000000000000(0000) GS:ffff99113fd00000(0000) knlGS:0000000000000000
-[    0.445346][    T1] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[    0.446029][    T1] CR2: 0000000000000000 CR3: 0000000433c1c000 CR4: 00000000000406f0
-[    0.446598][    T1] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[    0.447346][    T1] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[    0.448197][    T1] Kernel panic - not syncing: Fatal exception
-
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20240119/202401191627.63051dd8-oliver.sang@intel.com
-
-
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
+>
+>
+>
+> If you fix the issue in a separate patch/commit (i.e. not just a new vers=
+ion of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202401191023.d52a4ad4-oliver.san=
+g@intel.com
+>
+>
+> [  102.087071][   C94] ------------[ cut here ]------------
+> [ 102.092623][ C94] WARNING: CPU: 94 PID: 0 at arch/x86/events/core.c:150=
+7 x86_pmu_start (arch/x86/events/core.c:1507 (discriminator 1))
+> [  102.101826][   C94] Modules linked in: intel_rapl_msr intel_rapl_commo=
+n skx_edac nfit libnvdimm x86_pkg_temp_thermal intel_powerclamp btrfs coret=
+emp blake2b_generic xor kvm_intel kvm raid6_pq libcrc32c irqbypass crct10di=
+f_pclmul crc32_pclmul crc32c_intel ghash_clmulni_intel sha512_ssse3 sd_mod =
+sg rapl ipmi_ssif nvme nvme_core ahci intel_cstate acpi_ipmi t10_pi libahci=
+ ast crc64_rocksoft_generic drm_shmem_helper mei_me ipmi_si crc64_rocksoft =
+i2c_i801 ioatdma libata intel_uncore drm_kms_helper joydev crc64 mei ipmi_d=
+evintf lpc_ich i2c_smbus intel_pch_thermal dca wmi ipmi_msghandler acpi_pad=
+ acpi_power_meter drm fuse ip_tables
+> [  102.158393][   C94] CPU: 94 PID: 0 Comm: swapper/94 Not tainted 6.7.0-=
+rc6-00192-gd6da92786f90 #1
+> [ 102.167472][ C94] RIP: 0010:x86_pmu_start (arch/x86/events/core.c:1507 =
+(discriminator 1))
+> [ 102.172832][ C94] Code: 00 00 4c 0f ab 65 00 48 89 df e8 16 08 01 00 48=
+ 89 df 5b 5d 41 5c e9 4a c6 33 00 0f 0b 5b 5d 41 5c c3 cc cc cc cc 0f 0b eb=
+ f3 <0f> 0b eb b6 66 66 2e 0f 1f 84 00 00 00 00 00 66 66 2e 0f 1f 84 00
+> All code
+> =3D=3D=3D=3D=3D=3D=3D=3D
+>    0:   00 00                   add    %al,(%rax)
+>    2:   4c 0f ab 65 00          bts    %r12,0x0(%rbp)
+>    7:   48 89 df                mov    %rbx,%rdi
+>    a:   e8 16 08 01 00          callq  0x10825
+>    f:   48 89 df                mov    %rbx,%rdi
+>   12:   5b                      pop    %rbx
+>   13:   5d                      pop    %rbp
+>   14:   41 5c                   pop    %r12
+>   16:   e9 4a c6 33 00          jmpq   0x33c665
+>   1b:   0f 0b                   ud2
+>   1d:   5b                      pop    %rbx
+>   1e:   5d                      pop    %rbp
+>   1f:   41 5c                   pop    %r12
+>   21:   c3                      retq
+>   22:   cc                      int3
+>   23:   cc                      int3
+>   24:   cc                      int3
+>   25:   cc                      int3
+>   26:   0f 0b                   ud2
+>   28:   eb f3                   jmp    0x1d
+>   2a:*  0f 0b                   ud2             <-- trapping instruction
+>   2c:   eb b6                   jmp    0xffffffffffffffe4
+>   2e:   66 66 2e 0f 1f 84 00    data16 nopw %cs:0x0(%rax,%rax,1)
+>   35:   00 00 00 00
+>   39:   66                      data16
+>   3a:   66                      data16
+>   3b:   2e                      cs
+>   3c:   0f                      .byte 0xf
+>   3d:   1f                      (bad)
+>   3e:   84 00                   test   %al,(%rax)
+>
+> Code starting with the faulting instruction
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>    0:   0f 0b                   ud2
+>    2:   eb b6                   jmp    0xffffffffffffffba
+>    4:   66 66 2e 0f 1f 84 00    data16 nopw %cs:0x0(%rax,%rax,1)
+>    b:   00 00 00 00
+>    f:   66                      data16
+>   10:   66                      data16
+>   11:   2e                      cs
+>   12:   0f                      .byte 0xf
+>   13:   1f                      (bad)
+>   14:   84 00                   test   %al,(%rax)
+> [  102.192917][   C94] RSP: 0018:ffffc9000ddb0e00 EFLAGS: 00010046
+> [  102.199175][   C94] RAX: 0000000000000001 RBX: ffff88b01d17a290 RCX: 0=
+000000000000349
+> [  102.207339][   C94] RDX: 0000000000002ff0 RSI: 0000000000000002 RDI: f=
+fff88b01d17a290
+> [  102.215509][   C94] RBP: ffff88afa149a220 R08: 0000000000000000 R09: 0=
+000000000000014
+> [  102.223684][   C94] R10: 000000000000000f R11: 00000000000f4240 R12: 0=
+000000000000003
+> [  102.231855][   C94] R13: 0000000000000001 R14: ffff88afa14b9680 R15: 0=
+00000000000005e
+> [  102.240038][   C94] FS:  0000000000000000(0000) GS:ffff88afa1480000(00=
+00) knlGS:0000000000000000
+> [  102.249178][   C94] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [  102.255986][   C94] CR2: 00007f9cdf69ec98 CR3: 000000303e01c002 CR4: 0=
+0000000007706f0
+> [  102.264179][   C94] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0=
+000000000000000
+> [  102.272365][   C94] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0=
+000000000000400
+> [  102.280552][   C94] PKRU: 55555554
+> [  102.284322][   C94] Call Trace:
+> [  102.287830][   C94]  <IRQ>
+> [ 102.290895][ C94] ? x86_pmu_start (arch/x86/events/core.c:1507 (discrim=
+inator 1))
+> [ 102.295695][ C94] ? __warn (kernel/panic.c:677)
+> [ 102.299980][ C94] ? x86_pmu_start (arch/x86/events/core.c:1507 (discrim=
+inator 1))
+> [ 102.304768][ C94] ? report_bug (lib/bug.c:180 lib/bug.c:219)
+> [ 102.309473][ C94] ? handle_bug (arch/x86/kernel/traps.c:237)
+> [ 102.314006][ C94] ? exc_invalid_op (arch/x86/kernel/traps.c:258 (discri=
+minator 1))
+> [ 102.318879][ C94] ? asm_exc_invalid_op (arch/x86/include/asm/idtentry.h=
+:568)
+> [ 102.324101][ C94] ? x86_pmu_start (arch/x86/events/core.c:1507 (discrim=
+inator 1))
+> [ 102.328888][ C94] perf_adjust_freq_unthr_events (kernel/events/core.c:4=
+181 (discriminator 4))
+> [ 102.335069][ C94] perf_adjust_freq_unthr_context (kernel/events/core.c:=
+4216)
+> [ 102.341244][ C94] perf_event_task_tick (arch/x86/include/asm/current.h:=
+41 kernel/events/core.c:4363)
+> [ 102.346458][ C94] scheduler_tick (kernel/sched/core.c:5665)
+> [ 102.351240][ C94] update_process_times (kernel/time/timer.c:2079)
+> [ 102.356442][ C94] tick_sched_handle (kernel/time/tick-sched.c:256)
+> [ 102.361381][ C94] tick_nohz_highres_handler (kernel/time/tick-sched.c:1=
+525)
+> [ 102.367021][ C94] ? __pfx_tick_nohz_highres_handler (kernel/time/tick-s=
+ched.c:1503)
+> [ 102.373345][ C94] __hrtimer_run_queues (kernel/time/hrtimer.c:1688 kern=
+el/time/hrtimer.c:1752)
+> [ 102.378720][ C94] hrtimer_interrupt (kernel/time/hrtimer.c:1817)
+> [ 102.383748][ C94] __sysvec_apic_timer_interrupt (arch/x86/kernel/apic/a=
+pic.c:1065 arch/x86/kernel/apic/apic.c:1082)
+> [ 102.389818][ C94] sysvec_apic_timer_interrupt (arch/x86/kernel/apic/api=
+c.c:1076 (discriminator 14))
+> [  102.395636][   C94]  </IRQ>
+> [  102.398759][   C94]  <TASK>
+> [ 102.401872][ C94] asm_sysvec_apic_timer_interrupt (arch/x86/include/asm=
+/idtentry.h:649)
+> [ 102.408032][ C94] RIP: 0010:cpuidle_enter_state (drivers/cpuidle/cpuidl=
+e.c:291)
+> [ 102.414008][ C94] Code: 00 e8 9e 46 19 ff e8 d9 f1 ff ff 8b 53 04 49 89=
+ c5 0f 1f 44 00 00 31 ff e8 07 2e 18 ff 45 84 ff 0f 85 d2 00 00 00 fb 45 85=
+ f6 <0f> 88 83 01 00 00 49 63 d6 48 8d 04 52 48 8d 04 82 49 8d 0c c4 48
+> All code
+> =3D=3D=3D=3D=3D=3D=3D=3D
+>    0:   00 e8                   add    %ch,%al
+>    2:   9e                      sahf
+>    3:   46 19 ff                rex.RX sbb %r15d,%edi
+>    6:   e8 d9 f1 ff ff          callq  0xfffffffffffff1e4
+>    b:   8b 53 04                mov    0x4(%rbx),%edx
+>    e:   49 89 c5                mov    %rax,%r13
+>   11:   0f 1f 44 00 00          nopl   0x0(%rax,%rax,1)
+>   16:   31 ff                   xor    %edi,%edi
+>   18:   e8 07 2e 18 ff          callq  0xffffffffff182e24
+>   1d:   45 84 ff                test   %r15b,%r15b
+>   20:   0f 85 d2 00 00 00       jne    0xf8
+>   26:   fb                      sti
+>   27:   45 85 f6                test   %r14d,%r14d
+>   2a:*  0f 88 83 01 00 00       js     0x1b3            <-- trapping inst=
+ruction
+>   30:   49 63 d6                movslq %r14d,%rdx
+>   33:   48 8d 04 52             lea    (%rdx,%rdx,2),%rax
+>   37:   48 8d 04 82             lea    (%rdx,%rax,4),%rax
+>   3b:   49 8d 0c c4             lea    (%r12,%rax,8),%rcx
+>   3f:   48                      rex.W
+>
+> Code starting with the faulting instruction
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>    0:   0f 88 83 01 00 00       js     0x189
+>    6:   49 63 d6                movslq %r14d,%rdx
+>    9:   48 8d 04 52             lea    (%rdx,%rdx,2),%rax
+>    d:   48 8d 04 82             lea    (%rdx,%rax,4),%rax
+>   11:   49 8d 0c c4             lea    (%r12,%rax,8),%rcx
+>   15:   48                      rex.W
+>
+>
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20240119/202401191023.d52a4ad4-ol=
+iver.sang@intel.com
+>
+>
+>
+> --
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
+>
