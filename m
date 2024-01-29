@@ -1,59 +1,59 @@
-Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
+Received: from mail-lj1-f170.google.com (mail-lj1-f170.google.com [209.85.208.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0496335B5
-	for <oe-lkp@lists.linux.dev>; Mon, 29 Jan 2024 19:24:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBC066F07F
+	for <oe-lkp@lists.linux.dev>; Mon, 29 Jan 2024 19:52:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706556275; cv=none; b=qhYYwF7zgEKJXTB5Q6c8OYC4G7GGgMIvcd++jbjISChNdS3L4FfOappfNJIAxV8lRGSpuw0LmmogMEMS7K5tvc5yk5wxUQtBT21RwxeCTwRq/+EHYSk0b5DyS1aZCJ/GD0vwVdFXwCKvtJkpVla2MVZcZ8aCSd8GB6Eewx1ytdA=
+	t=1706557935; cv=none; b=LUgRwzv1TqXepOaCGqWwMhfXq5wOYkgfjBEKFviqe6I+5YE3EPP3wwBEyYcSmlbshox/RYCEHk68C3DeQem99xj/RRE0psJAuB0Q4HowOXbPr06eUY5WOhRQaXo4Vp22zQSAtRHCGdXNOqOB/pyh67xeHFcGhIZFNi5z+14EPU4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706556275; c=relaxed/simple;
-	bh=bBpiX78LXMRXA22N7d+TRCKij7xbGDSODZmb19qcTVE=;
+	s=arc-20240116; t=1706557935; c=relaxed/simple;
+	bh=+U42MXYQmyPm0YLTZYN6+NqwTBjYG5RX5rdbE3Yhuts=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=uheDuM0qM9jtol9uYpBqlVTKqRpS1EIPe0C6+KnH/8lLsCvdiUPYLagEL5O3VoJH75QvxVGrt07DiOzn34hwf+DfydLEMOqmLFG00Z9QqqDfKwGqby1mgN9E7C4mGTMW7GC/Wt/3Is1SvOmL+p4HAFZ8Mx+3rmBb7CEEqDfd9IU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=VRkcfbqn; arc=none smtp.client-ip=209.85.167.50
+	 To:Cc:Content-Type; b=PMpFO9BNl9ONUsNPLHlR5/ixzCizgcUlmZ1KVQ42P1svmoN2fgystybiwtNBlZbOXafs3yQjncdEVZp+gupTscMwWgN0UVimHMQQqMbzhiEwwFsHQhwTAQclp7iVtdgtXF0ihX/oT+Rl+CYxzuPpIJ5Tl/uLmrevf1q+W+S7uZ0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=AUFghHuK; arc=none smtp.client-ip=209.85.208.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="VRkcfbqn"
-Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-51028acdcf0so3707663e87.0
-        for <oe-lkp@lists.linux.dev>; Mon, 29 Jan 2024 11:24:33 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="AUFghHuK"
+Received: by mail-lj1-f170.google.com with SMTP id 38308e7fff4ca-2d04fb2f36bso12055871fa.2
+        for <oe-lkp@lists.linux.dev>; Mon, 29 Jan 2024 11:52:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1706556271; x=1707161071; darn=lists.linux.dev;
+        d=linux-foundation.org; s=google; t=1706557931; x=1707162731; darn=lists.linux.dev;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=rcYLqzXF8lziibesGlxqW2Lt27r28IgsPGcFjfsGXTQ=;
-        b=VRkcfbqnIpGlt9XgbKENTdBiyp5u/6OKl3uOJUZW4FAtSAbOD9rzDHJcUBd+PNQJfl
-         Wz3hY3GQNT4nrwPyhXAYm25ZfvrTlic1U2rQ+yOvLH5DuuISXWdaG0K8BbsHEUn04GXi
-         JY1nLvIJoGMie5QHU25/fXyW5sXignbGZoTLw=
+        bh=POvQx/OtzDWk0KpZLv1n2MuJ9LedkHIMhddtK9sWv5M=;
+        b=AUFghHuK5z4ycYdomuboNzlkn9KEirMSprb+wNmDZYwD5xbDIl0+hR3HliAPc9nI1V
+         agNc7+Y9QpkXPaGJ2fSXnS16WBEas8V1R+8+GIWrA/Ik1yrxGoX03HxjOIyyOESjvUfp
+         OcwrXUKfAPDBETFPNYSn1nUqZV/e+4kCF0GwE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706556271; x=1707161071;
+        d=1e100.net; s=20230601; t=1706557931; x=1707162731;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=rcYLqzXF8lziibesGlxqW2Lt27r28IgsPGcFjfsGXTQ=;
-        b=uQ2CfHKin5ofsCa6SfilmeFm6++ggpaAoeD43cBj7k7TGeqHGdqHJBW9bAvRdPl1kT
-         Gb4l4V5UaEQyjBAXitd0ozooMqWO7AQQPDDs+Ve89UATgkPRp4B/Rg4fU7yWgL63Qlo0
-         6PQwOUepy8xWWjkHckQwcdVdZbxZAienFtO8ZMAW2cy3ZY4OQaFkwuEIWlxDK5JNoUch
-         BwgPFMVYqzclFbT48ShqaIgDdsenXQ3/zHIypg9dm6grqFR+nUmN/t8W91JFvAgFrpog
-         xabr7JFQSzbMB1whwEquEuzx7YUy2E9iOKTHTilZL9Z7DJ09dVQYSkhHDTCDNJJNZCIl
-         t3UA==
-X-Gm-Message-State: AOJu0Yz8zArd/g6nRl1xTBuM5McPzG/21wZQvL9CJjdonixEfK74O8qy
-	G6fmOdGMoXJIHLWfACk4fgdiOxx3OPUYOvjeMf1V09jtpZN0l07EYeuvBFbHMxdLH8ze5TA8Qg5
-	7ZSw=
-X-Google-Smtp-Source: AGHT+IFRLvYPPJjYRueyVX7ZN7kw7QvgSnlhuhIukBNmm8Oqoa0K9wPnzXaAt7NXxAbjFJckJaXNSA==
-X-Received: by 2002:a05:6512:314f:b0:510:1bbc:96bb with SMTP id s15-20020a056512314f00b005101bbc96bbmr3913688lfi.24.1706556271636;
-        Mon, 29 Jan 2024 11:24:31 -0800 (PST)
-Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com. [209.85.208.172])
-        by smtp.gmail.com with ESMTPSA id x4-20020a056512046400b005101c7cd4e1sm1195233lfd.4.2024.01.29.11.24.29
+        bh=POvQx/OtzDWk0KpZLv1n2MuJ9LedkHIMhddtK9sWv5M=;
+        b=r4O6sKnm9nT9ze/xZcbX2X2OlGavxwQUf1M+8q/A56Cd3yFXeEd5woUL6FEjr89csy
+         0sOY0KbXxi+M4L1ZNGEv9FSCYBEi3j+Gl7jRYAHvrnU1u+YYk0pUwg6xNxBQJnfDI+Ze
+         Nx4Ph7dsOl4jMNKSt38UDx7/DSpjuuMpJzWPMm3QCx3DyRVJs8MwVFgpGq4Qmx/dmNPN
+         N2Ex9AtwWFLFSfVZkyCIqyfqZSLfavQgTsybFLLBgHz/6oigPctHSQ/2X3efx8BC+jaY
+         7QcZwY5fMACPh1qgxCv5+JacZTtoNKZ7PkxqmxmpO3YRkwbfE9Y8RSCtvbkwYuOY0JXH
+         TJRw==
+X-Gm-Message-State: AOJu0YyqF3JlX7DAuI3xx5E974zOTMO0zZyT2und3PInGkvCzmIUDJ5a
+	pvLAH5pntd/Q8pqkhERBoDNapgx8BZF3I1HdFGmlevZaM1ZOTaqa/PrYvE2nQiqga+LOrl3zz1/
+	xef4=
+X-Google-Smtp-Source: AGHT+IF6util/AyJQuxDqB0JY/i99DDud1HxP1cq05nuOeWUj1U8j8Eh3JIOh+uPEJC46HT1bNuEBQ==
+X-Received: by 2002:a2e:be21:0:b0:2cf:2c54:d8f1 with SMTP id z33-20020a2ebe21000000b002cf2c54d8f1mr6385485ljq.21.1706557930827;
+        Mon, 29 Jan 2024 11:52:10 -0800 (PST)
+Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com. [209.85.208.45])
+        by smtp.gmail.com with ESMTPSA id ss6-20020a170907c00600b00a3533f17981sm3285424ejc.219.2024.01.29.11.52.09
         for <oe-lkp@lists.linux.dev>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Jan 2024 11:24:29 -0800 (PST)
-Received: by mail-lj1-f172.google.com with SMTP id 38308e7fff4ca-2cf328885b4so35925341fa.3
-        for <oe-lkp@lists.linux.dev>; Mon, 29 Jan 2024 11:24:29 -0800 (PST)
-X-Received: by 2002:a2e:8342:0:b0:2cf:433c:b3e with SMTP id
- l2-20020a2e8342000000b002cf433c0b3emr4156643ljh.8.1706556269035; Mon, 29 Jan
- 2024 11:24:29 -0800 (PST)
+        Mon, 29 Jan 2024 11:52:10 -0800 (PST)
+Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-55f13b682d4so1499359a12.1
+        for <oe-lkp@lists.linux.dev>; Mon, 29 Jan 2024 11:52:09 -0800 (PST)
+X-Received: by 2002:a05:6402:51ca:b0:55e:e838:a20e with SMTP id
+ r10-20020a05640251ca00b0055ee838a20emr3923739edd.25.1706557929185; Mon, 29
+ Jan 2024 11:52:09 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -62,11 +62,12 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 References: <202401291043.e62e89dc-oliver.sang@intel.com> <CAHk-=wh0M=e8R=ZXxa4vesLTtvGmYWJ-w1VmXxW5Mva=Nimk4Q@mail.gmail.com>
  <20240129120125.605e97af@gandalf.local.home> <CAHk-=wghx8Abyx_jcSrCDuNj96SuWS0NvNMhfU8VjFGg9bgm_g@mail.gmail.com>
-In-Reply-To: <CAHk-=wghx8Abyx_jcSrCDuNj96SuWS0NvNMhfU8VjFGg9bgm_g@mail.gmail.com>
+ <CAHk-=whb91PWEaEJpRGsuWaQpYZGj98ji8HC2vvHD4xb_TqhJw@mail.gmail.com>
+In-Reply-To: <CAHk-=whb91PWEaEJpRGsuWaQpYZGj98ji8HC2vvHD4xb_TqhJw@mail.gmail.com>
 From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Mon, 29 Jan 2024 11:24:12 -0800
-X-Gmail-Original-Message-ID: <CAHk-=whb91PWEaEJpRGsuWaQpYZGj98ji8HC2vvHD4xb_TqhJw@mail.gmail.com>
-Message-ID: <CAHk-=whb91PWEaEJpRGsuWaQpYZGj98ji8HC2vvHD4xb_TqhJw@mail.gmail.com>
+Date: Mon, 29 Jan 2024 11:51:52 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wgp7UkG31=cCcbSdhMv6-vBJ=orktUOUdiLzw4tQ4gDLg@mail.gmail.com>
+Message-ID: <CAHk-=wgp7UkG31=cCcbSdhMv6-vBJ=orktUOUdiLzw4tQ4gDLg@mail.gmail.com>
 Subject: Re: [linus:master] [eventfs] 852e46e239: BUG:unable_to_handle_page_fault_for_address
 To: Steven Rostedt <rostedt@goodmis.org>
 Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
@@ -74,86 +75,58 @@ Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel
 	Mark Rutland <mark.rutland@arm.com>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, 
 	Christian Brauner <brauner@kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, 
 	Ajay Kaher <ajay.kaher@broadcom.com>, linux-trace-kernel@vger.kernel.org
-Content-Type: multipart/mixed; boundary="00000000000035679f06101a980c"
-
---00000000000035679f06101a980c
 Content-Type: text/plain; charset="UTF-8"
 
-On Mon, 29 Jan 2024 at 09:40, Linus Torvalds
+On Mon, 29 Jan 2024 at 11:24, Linus Torvalds
 <torvalds@linux-foundation.org> wrote:
 >
-> IOW, I think the right fix is really just this:
+> So the patch was completely broken. Here's the one that should
+> actually compile (although still not actually *tested*).
 
-Oh, for some reason I sent out the original patch I had which didn't
-fix the create_dir() case.
+Note that this fixes the d_instantiate() ordering wrt initializing the inode.
 
-So that patch was missing the important hunk that added the
+But as I look up the call chain, I see many more fundamental mistakes.
 
-        ti->flags = TRACEFS_EVENT_INODE;
-        ti->private = ei;
+Steven - the reason you think that the VFS doesn't have documentation
+is that we *do* have tons of documentation, but it's of the kind "Here
+is what you should do".
 
-to create_dir() (to match the removal in eventfs_post_create_dir()).
+It is *not* of the kind that says "You messed up and did something
+else, and how do you recover from it?".
 
-I had incorrectly put it in the create_file() case, that should just
-set ->private to NULL. afaik
+So the fundamental bug I now find is that eventfs_root_lookup() gets a
+target dentry, and for some unfathomable reason it then does
 
-So the patch was completely broken. Here's the one that should
-actually compile (although still not actually *tested*).
+        ret = simple_lookup(dir, dentry, flags);
 
-               Linus
+on it. Which is *completely* broken, because what "simple_lookup()"
+does is just say "oh, you didn't have a dentry of this kind before, so
+clearly a lookup must be a non-existent file". Remember: this is for
+'tmpfs' kinds of filesystems where the dentry cache cotnains *ALL*
+files.
 
---00000000000035679f06101a980c
-Content-Type: text/x-patch; charset="US-ASCII"; 
-	name="0001-eventfsfs-initialize-the-tracefs-inode-properly.patch"
-Content-Disposition: attachment; 
-	filename="0001-eventfsfs-initialize-the-tracefs-inode-properly.patch"
-Content-Transfer-Encoding: base64
-Content-ID: <f_lrzbg76z0>
-X-Attachment-Id: f_lrzbg76z0
+For the tracefs kind of filesystem, it's TOTALLY BOGUS. What the
+"simple_lookup()" will do is just a plain
 
-RnJvbSA2ZTVkYjEwZWJjOTZlYmU2Yjk3MDdjOTkzOGM0NTBmNTFlOWEzYWUwIE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpGcm9tOiBMaW51cyBUb3J2YWxkcyA8dG9ydmFsZHNAbGludXgtZm91bmRh
-dGlvbi5vcmc+CkRhdGU6IE1vbiwgMjkgSmFuIDIwMjQgMTE6MDY6MzIgLTA4MDAKU3ViamVjdDog
-W1BBVENIXSBldmVudGZzZnM6IGluaXRpYWxpemUgdGhlIHRyYWNlZnMgaW5vZGUgcHJvcGVybHkK
-ClRoZSB0cmFjZWZzLXNwZWNpZmljIGZpZWxkcyBpbiB0aGUgaW5vZGUgd2VyZSBub3QgaW5pdGlh
-bGl6ZWQgYmVmb3JlIHRoZQppbm9kZSB3YXMgZXhwb3NlZCB0byBvdGhlcnMgdGhyb3VnaCB0aGUg
-ZGVudHJ5IHdpdGggJ2RfaW5zdGFudGlhdGUoKScuCgpBbmQgdGhlIC0+ZmxhZ3MgZmlsZSB3YXMg
-aW5pdGlhbGl6ZWQgaW5jb3JyZWN0bHkgd2l0aCBhICd8PScsIHdoZW4gdGhlCm9sZCB2YWx1ZSB3
-YXMgc3RhbGUuICBJdCBzaG91bGQgaGF2ZSBqdXN0IGJlZW4gYSBzdHJhaWdodCBhc3NpZ25tZW50
-LgoKTW92ZSB0aGUgZmllbGQgaW5pdGlhbGl6YXRpb25zIHVwIHRvIGJlZm9yZSB0aGUgZF9pbnN0
-YW50aWF0ZSwgYW5kIGZpeAp0aGUgdXNlIG9mIHVuaW5pdGlhbGl6ZWQgZGF0YS4KClNpZ25lZC1v
-ZmYtYnk6IExpbnVzIFRvcnZhbGRzIDx0b3J2YWxkc0BsaW51eC1mb3VuZGF0aW9uLm9yZz4KLS0t
-CiBmcy90cmFjZWZzL2V2ZW50X2lub2RlLmMgfCAxMyArKysrKystLS0tLS0tCiAxIGZpbGUgY2hh
-bmdlZCwgNiBpbnNlcnRpb25zKCspLCA3IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2ZzL3Ry
-YWNlZnMvZXZlbnRfaW5vZGUuYyBiL2ZzL3RyYWNlZnMvZXZlbnRfaW5vZGUuYwppbmRleCAyZDEy
-OGJlZGQ2NTQuLmMwZDk3N2U2YzBmMiAxMDA2NDQKLS0tIGEvZnMvdHJhY2Vmcy9ldmVudF9pbm9k
-ZS5jCisrKyBiL2ZzL3RyYWNlZnMvZXZlbnRfaW5vZGUuYwpAQCAtMzI4LDcgKzMyOCw5IEBAIHN0
-YXRpYyBzdHJ1Y3QgZGVudHJ5ICpjcmVhdGVfZmlsZShjb25zdCBjaGFyICpuYW1lLCB1bW9kZV90
-IG1vZGUsCiAJaW5vZGUtPmlfaW5vID0gRVZFTlRGU19GSUxFX0lOT0RFX0lOTzsKIAogCXRpID0g
-Z2V0X3RyYWNlZnMoaW5vZGUpOwotCXRpLT5mbGFncyB8PSBUUkFDRUZTX0VWRU5UX0lOT0RFOwor
-CXRpLT5mbGFncyA9IFRSQUNFRlNfRVZFTlRfSU5PREU7CisJdGktPnByaXZhdGUgPSBOVUxMOwkJ
-CS8vIERpcmVjdG9yaWVzIGhhdmUgJ2VpJywgZmlsZXMgbm90CisKIAlkX2luc3RhbnRpYXRlKGRl
-bnRyeSwgaW5vZGUpOwogCWZzbm90aWZ5X2NyZWF0ZShkZW50cnktPmRfcGFyZW50LT5kX2lub2Rl
-LCBkZW50cnkpOwogCXJldHVybiBldmVudGZzX2VuZF9jcmVhdGluZyhkZW50cnkpOwpAQCAtMzY3
-LDcgKzM2OSw4IEBAIHN0YXRpYyBzdHJ1Y3QgZGVudHJ5ICpjcmVhdGVfZGlyKHN0cnVjdCBldmVu
-dGZzX2lub2RlICplaSwgc3RydWN0IGRlbnRyeSAqcGFyZW50CiAJaW5vZGUtPmlfaW5vID0gZXZl
-bnRmc19kaXJfaW5vKGVpKTsKIAogCXRpID0gZ2V0X3RyYWNlZnMoaW5vZGUpOwotCXRpLT5mbGFn
-cyB8PSBUUkFDRUZTX0VWRU5UX0lOT0RFOworCXRpLT5mbGFncyA9IFRSQUNFRlNfRVZFTlRfSU5P
-REU7CisJdGktPnByaXZhdGUgPSBlaTsKIAogCWluY19ubGluayhpbm9kZSk7CiAJZF9pbnN0YW50
-aWF0ZShkZW50cnksIGlub2RlKTsKQEAgLTUxMyw3ICs1MTYsNiBAQCBjcmVhdGVfZmlsZV9kZW50
-cnkoc3RydWN0IGV2ZW50ZnNfaW5vZGUgKmVpLCBpbnQgaWR4LAogc3RhdGljIHZvaWQgZXZlbnRm
-c19wb3N0X2NyZWF0ZV9kaXIoc3RydWN0IGV2ZW50ZnNfaW5vZGUgKmVpKQogewogCXN0cnVjdCBl
-dmVudGZzX2lub2RlICplaV9jaGlsZDsKLQlzdHJ1Y3QgdHJhY2Vmc19pbm9kZSAqdGk7CiAKIAls
-b2NrZGVwX2Fzc2VydF9oZWxkKCZldmVudGZzX211dGV4KTsKIApAQCAtNTIzLDkgKzUyNSw2IEBA
-IHN0YXRpYyB2b2lkIGV2ZW50ZnNfcG9zdF9jcmVhdGVfZGlyKHN0cnVjdCBldmVudGZzX2lub2Rl
-ICplaSkKIAkJCQkgc3JjdV9yZWFkX2xvY2tfaGVsZCgmZXZlbnRmc19zcmN1KSkgewogCQllaV9j
-aGlsZC0+ZF9wYXJlbnQgPSBlaS0+ZGVudHJ5OwogCX0KLQotCXRpID0gZ2V0X3RyYWNlZnMoZWkt
-PmRlbnRyeS0+ZF9pbm9kZSk7Ci0JdGktPnByaXZhdGUgPSBlaTsKIH0KIAogLyoqCkBAIC05NDMs
-NyArOTQyLDcgQEAgc3RydWN0IGV2ZW50ZnNfaW5vZGUgKmV2ZW50ZnNfY3JlYXRlX2V2ZW50c19k
-aXIoY29uc3QgY2hhciAqbmFtZSwgc3RydWN0IGRlbnRyeQogCUlOSVRfTElTVF9IRUFEKCZlaS0+
-bGlzdCk7CiAKIAl0aSA9IGdldF90cmFjZWZzKGlub2RlKTsKLQl0aS0+ZmxhZ3MgfD0gVFJBQ0VG
-U19FVkVOVF9JTk9ERSB8IFRSQUNFRlNfRVZFTlRfVE9QX0lOT0RFOworCXRpLT5mbGFncyA9IFRS
-QUNFRlNfRVZFTlRfSU5PREUgfCBUUkFDRUZTX0VWRU5UX1RPUF9JTk9ERTsKIAl0aS0+cHJpdmF0
-ZSA9IGVpOwogCiAJaW5vZGUtPmlfbW9kZSA9IFNfSUZESVIgfCBTX0lSV1hVIHwgU19JUlVHTyB8
-IFNfSVhVR087Ci0tIAoyLjQzLjAuNS5nMzhmYjEzN2JkYgoK
---00000000000035679f06101a980c--
+        d_add(dentry, NULL);
+
+and nothing else. And guess what *that* does? It basically
+instantiates a negative dentry, telling all other lookups that the
+path does not exist.
+
+So if you have two concurrent lookups, one will do that
+simple_lookup(), and the other will then - depending on timing -
+either see the negative dentry and return -ENOENT, or - if it comes in
+a bit later - see the new inode that then later gets added by the
+first lookup with d_instantiate().
+
+See? That simple_lookup() is not just unnecessary, but it's also
+actively completely WRONG. Because it instantiates a NULL pointer,
+other processes that race with the lookup may now end up saying "that
+file doesn't exist", even though it should.
+
+Basically, you can't use *any* of the "simple" filesystem helpers.
+Because they are all designed for that "the dentry tree is all there
+is" case.
+
+                Linus
