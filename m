@@ -1,119 +1,250 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEDD27C08A;
-	Tue, 30 Jan 2024 14:39:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706625572; cv=none; b=I0KwcYdQazS3s7I8A76XQJIl2z+1oY30f56NJEPBuLRufPvTX8DPaP7CIIJmcIXZFPQDZUg+ReRkiE5zijMM5LuSR8Mem+dtDv8Z76ISQJnAZue3TlnB4L4cRkxa928e9sONeJBkJMFwOvmaNnpMQqPXXDy7hfHnFlQzJzhu7rA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706625572; c=relaxed/simple;
-	bh=wqSBbOtqTFhUjK2zJYRQVHTlBD4gJby8xLhIvN0PEhA=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=FZoZuhQ3lXQLkqRL+ZCCLIs90QdQ59UzWTOYVPyvTUb4oyFRuilDYTKy2HeoZfx1D0/2bq9h90P8wXwWGa4GO2SHTPYQLyib5fqPL6BTL2gkGpMzwfNP+HnTCgvzkzhICKHwTaeFKGH4dI7OB6FL6/EipnvKiYcio/DdWv2HBik=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33BA7C433C7;
-	Tue, 30 Jan 2024 14:39:31 +0000 (UTC)
-Date: Tue, 30 Jan 2024 09:39:42 -0500
-From: Steven Rostedt <rostedt@goodmis.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
- lkp@intel.com, linux-kernel@vger.kernel.org, Masami Hiramatsu
- <mhiramat@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Mathieu
- Desnoyers <mathieu.desnoyers@efficios.com>, Christian Brauner
- <brauner@kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, Ajay Kaher
- <ajay.kaher@broadcom.com>, linux-trace-kernel@vger.kernel.org
-Subject: Re: [linus:master] [eventfs] 852e46e239:
- BUG:unable_to_handle_page_fault_for_address
-Message-ID: <20240130093942.56206ff1@gandalf.local.home>
-In-Reply-To: <CAHk-=wi+WbXZcc2Sx1i-MGV2DfG4eS4Ci+mrqi-PBSLSnww6qA@mail.gmail.com>
-References: <202401291043.e62e89dc-oliver.sang@intel.com>
-	<CAHk-=whb91PWEaEJpRGsuWaQpYZGj98ji8HC2vvHD4xb_TqhJw@mail.gmail.com>
-	<CAHk-=wgp7UkG31=cCcbSdhMv6-vBJ=orktUOUdiLzw4tQ4gDLg@mail.gmail.com>
-	<20240129152600.7587d1aa@gandalf.local.home>
-	<CAHk-=wghobf5qCqNUsafkQzNAZBJiS0=7CRjNXNChpoAvTbvUw@mail.gmail.com>
-	<20240129172200.1725f01b@gandalf.local.home>
-	<CAHk-=wjV6+U1FQ8wzQ5ASmqGgby+GZ6wpdh0NrJgA43mc+TEwA@mail.gmail.com>
-	<CAHk-=wgOxTeTi02C=kOXsHzuD6XCrV0L1zk1XP9t+a4Wx--xvA@mail.gmail.com>
-	<20240129174950.5a17a86c@gandalf.local.home>
-	<CAHk-=wjbzw3=nwR5zGH9jqXgB8jj03wxWfdFDn=oAVCoymQQJg@mail.gmail.com>
-	<20240129193549.265f32c8@gandalf.local.home>
-	<CAHk-=whRxcmjvGNBKi9_x59cAedh8SO8wsNDNrEQbAQfM5A8CQ@mail.gmail.com>
-	<CAHk-=wh97AkwaOkXoBgf0z8EP88ePffLnTcmmQXcY+AhFaFrnA@mail.gmail.com>
-	<CAHk-=wi6m7d-nivx10Lo=aGhbdk2qg-8SzjtDd9XW01LxGgAMA@mail.gmail.com>
-	<CAHk-=wi+WbXZcc2Sx1i-MGV2DfG4eS4Ci+mrqi-PBSLSnww6qA@mail.gmail.com>
-X-Mailer: Claws Mail 3.19.1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 918F77CF1B
+	for <oe-lkp@lists.linux.dev>; Tue, 30 Jan 2024 14:53:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.55.52.93
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1706626394; cv=fail; b=BwB8mH4rwYbInIjh+AGW+TyTnGt86/R727Xa519ofjwdsdZGGf63PA2ZOiEf9pvwZr8qWo7qkCTb3ckz4nBlrO0Rv9hWh0+LgwY/o4Km/NpL2gpxdGSvTlZf5V6qivo6LBPZBZsa/88lthcxTECh3B69ojgi3M4MiGowKENmkMA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1706626394; c=relaxed/simple;
+	bh=a/SkKPMAuKnLrx206ip9UCIg38FGr/4ThGNixPInpgc=;
+	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
+	 Content-Disposition:MIME-Version; b=ke7V+u2/RTHT43quYspI98DTbnTxacRV46qYkQuK2bckKMd0hqpKfK785XfewyG7QiJmlPfSkem3rmSh3cj9JEc6GYXoothVEhk/A6eYSzSmpG2M67JpHyWs2pSWQPBpcDYdRccWe0dfzcFQQHV4JEInz7rZ71S+0pxkZNMv9SE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WuPnChZ6; arc=fail smtp.client-ip=192.55.52.93
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WuPnChZ6"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1706626392; x=1738162392;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=a/SkKPMAuKnLrx206ip9UCIg38FGr/4ThGNixPInpgc=;
+  b=WuPnChZ629yDFSwzZM//XPQ1ZlYkaSa3pD6CuN8426YdbB4aiwe+n7DF
+   iGgFIqtlmrfrTpegmMdF5srREDknCTj7TEGPcrgUCRPeoCeAu0h50B1Sy
+   0ZS0LjzHJ8uYiDY+S5Q3sIAmnSvUM+iRnhRwfHFWIsqVmm7tR887SILeh
+   lUbPnp5PSa9Qc1xPm5EzYit4obBbfxLvDFxq3zv/vLWY/bYHSW1MInbxE
+   wV4ALAERx6zFFVambOld56g4oRsxu8w1Dat2wPV/BgcqDCJkk+67pRpMZ
+   UcMzEYpXbfSY4bLYhx+hdhwAP1A+JDAwW5OJtJzcHgAaStaBuhZreANPR
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10968"; a="400438176"
+X-IronPort-AV: E=Sophos;i="6.05,707,1701158400"; 
+   d="scan'208";a="400438176"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2024 06:53:10 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.05,707,1701158400"; 
+   d="scan'208";a="22454521"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by fmviesa002.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 30 Jan 2024 06:53:10 -0800
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Tue, 30 Jan 2024 06:53:09 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35 via Frontend Transport; Tue, 30 Jan 2024 06:53:09 -0800
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.169)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.35; Tue, 30 Jan 2024 06:53:08 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UcF/Lu6jJomzE7bV1rmpXyiHtxWVbKT8cik78wyNxzSUPmZ/bLX7jYBJ7NlpGWZcDuK2cqkUeYLXm0Wj95pw19g7UXsGbBJk11S4Ohdr2dsNdodNG+BqyCiEN5w3Jt1pWJXz70H77iXPhEzF+mCD0CmEjYeBhSJmFXMTIRemxD/vKQUytaraRvICf0YjMDGuOwFkQ28KdUYZ7wgHn0R0IcBbINMSBuLa4NN19odIpGkRLAml6+MMEettLaFS+WmesMq2CX09tyYOArsEiYnvPC+fo/bKeME/DFy+555oJNwDY0i6wGPJbI6lQGJBBp9xIwZI2E1fGsMe98xXlziPUA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=mRpd6PXD+b/IZt5TDdUEHYzWJMn/knt+56O3YroH5ts=;
+ b=TFnZNSLL+dwhS9akVE9z+SrwEbrolRlaGulcA9FOrCw/4+hQk1wb9cNenfpOKEwvUOIfiHqFj2MCz60HBL6bnscloVX4hM/kQY3af/Et66/NOpzeMD0I+pNZHqf3xVrxq0vO8Z/u9VRyguVz4V3qycmixlDuCBhGU1RrntiZeZmS3L8ZFmuskXaIa/Tnzczhk8aTsg7+jbDikHTT5LkgcnyujnDhjtlu4oIveQk8fGPsAnnrB6lulpyTzL0ke6l7rB1wcVn1LIewz5tAnYERaYHzP9HbK+EXu3kuCGavucFkkLo6Gzds42yT+RNwoV+ciO9upUyKCR9d8jctxj3I6w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by MW4PR11MB6690.namprd11.prod.outlook.com (2603:10b6:303:1e8::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7228.34; Tue, 30 Jan
+ 2024 14:53:06 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::a026:574d:dab0:dc8e]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::a026:574d:dab0:dc8e%3]) with mapi id 15.20.7228.029; Tue, 30 Jan 2024
+ 14:53:06 +0000
+Date: Tue, 30 Jan 2024 22:52:56 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: Kees Cook <keescook@chromium.org>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Justin Stitt
+	<justinstitt@google.com>, Miguel Ojeda <ojeda@kernel.org>, Nathan Chancellor
+	<nathan@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>, "Peter
+ Zijlstra" <peterz@infradead.org>, Marco Elver <elver@google.com>, Hao Luo
+	<haoluo@google.com>, Przemek Kitszel <przemyslaw.kitszel@intel.com>,
+	<workflows@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-kbuild@vger.kernel.org>, <oliver.sang@intel.com>
+Subject: [kees:devel/overflow/sanitizers] [overflow] 660787b56e:
+ UBSAN:signed-integer-overflow_in_lib/test_memcat_p.c
+Message-ID: <202401302219.db90a6d5-oliver.sang@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+X-ClientProxiedBy: SG2PR02CA0112.apcprd02.prod.outlook.com
+ (2603:1096:4:92::28) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-
-On Tue, 30 Jan 2024 01:12:05 -0800
-Linus Torvalds <torvalds@linux-foundation.org> wrote:
-
-> On Tue, 30 Jan 2024 at 00:43, Linus Torvalds
-> <torvalds@linux-foundation.org> wrote:
-> >
-> > I'll go back to bed, but I think the fix is something trivial like this:  
-> 
-> Almost.
-> 
-> >   +     result = ERR_PTR(ENOENT);  
-> 
-> That needs a '-' in front of the ENOENT, otherwise you have a positive
-> error number and things go wrong very quickly.
-> 
-> And that does indeed fix the lookup problem, but you end up with the
-> same problem later when you do the eventfs_remove_dir(). Again the
-> eventfs data structure changes, but we don't have a reliable dentry
-> that we can invalidate.
-> 
-> The dentry cache is just very good at caching those old dentries, and
-> the interface for eventfs_create_dir() and eventfs_remove_dir() is
-> just not great.
-> 
-> If those did an actual path lookup (like eventfs_create_events_dir()
-> does), we'd have the dentry, and it's trivial to get from dentry to
-> eventfs_inode.
-> 
-> But going the other way is the broken thing because of how the
-> dentries are just temporary caches.
-> 
-> I suspect the solution is to make eventfs_create_dir() do the same as
-> the events directory case does, and actually pin the directory dentry
-> and save it off.
-
-I rather not have the create do that because that happens for every event
-directory. On my machine that's:
-
-  # find events -type d | wc -l
-  2102
-
-And that's regardless if tracefs is mounted or not. And that's how many are
-also created with every instance creation. And doesn't pinning the dentry
-also require it to be positive? That is, have a full inode allocated with
-it?
-
-I may try something that will still let me get rid of the ei->dentry.
-
-> 
-> Oh well. At least I understand what the problem is.
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|MW4PR11MB6690:EE_
+X-MS-Office365-Filtering-Correlation-Id: e29fd864-8619-46b4-811b-08dc21a32ad0
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: A2simmsqNdv0mjKCM4FTT8g/hxl+rI3UrfFusgpfRgAIJlHQXaMGSrwiyg49SAYjS1qSt6jkTqJnXrLId/8svvAU+PPbqv4sPiHbGdQ1EXKhSaBBQfvnc7sw3QOrOTy6LHQK1B7jpQQLWnyF5Vq006JnhqMwTfLCDxkY3og5aN2nLkz3BuCSmN4U8JLHMoe0XIiY2NaDon3sm1Oos8As7Gk12kmq2bw8FYka/8InoVWgbxDxDKe2Tu1F1GJrWHvPPid3ar90q6QDym9O7R/k15xzA2iqvEz4/Hh6JtfWTgpWB5pJc/dFiMtocJVCMuqkxxTcdN95j7WYD1a+JG9mIFQ78/bh8QDSugH/HqrChs7BNWAxIHpMy1j/+q317HrsdCrb9kxaGAqm03lWU8kI4N2ujaR6zJQ7q5h28uT7KKHfvbQpUTHgfDTkVJ7BXBKPyiqlQ9pgmGadjjFRVT89FKaP2lShWh1DB9EA5aBpfWopLKXwSIwDOxLxAe2qbdXYIH71UxyD7kM8PRfqCKRrpB/4+Dl/JvycE/E7NDWvqF3CRKV2msD6yzqNjwkjlX1CMpR5Z9kKNyVrW57V44nrDg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(136003)(376002)(39860400002)(346002)(366004)(230922051799003)(1800799012)(186009)(451199024)(64100799003)(54906003)(4326008)(8936002)(66946007)(86362001)(7416002)(2906002)(5660300002)(8676002)(316002)(36756003)(6512007)(66556008)(66476007)(478600001)(6916009)(82960400001)(38100700002)(6506007)(6666004)(6486002)(83380400001)(966005)(1076003)(26005)(107886003)(41300700001)(2616005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9U3tyOwb4Nn4k9gphJBipEHG4CfMjgGfpgn0W5peop+94xoWEw/ZJazg2K1L?=
+ =?us-ascii?Q?uhbpmdK8FAMTtUs6VoxOGCK4an6X+icASlDpa1z3Y/m5TGUIooMqn1YuKhPw?=
+ =?us-ascii?Q?jORetmp9ApRYqhMiW/+ea385Bajnw7TgZnyZWOK3jrvRV7JBs4i8SI7v/KxX?=
+ =?us-ascii?Q?NQ3PuQ5M1OeB7Z7v5ltkF8HIXdbuHWbjPcGhSuPmUisebBcZIXHvU2oaXDeS?=
+ =?us-ascii?Q?WnYIATVA0yLZstPTOwBIw+y9AZUldqt8YNiGmGej5mf/+iHHLD0rLgHGxVwM?=
+ =?us-ascii?Q?1ztEjc3LisqwSrZ/eeKG2PmQVCPzwYXePY8qLMly+BJCx/OvkZZnRhmqEQQM?=
+ =?us-ascii?Q?udoC/2DZSxQ4EbEFjG8GfVM+VDdXKHbFqkkBzbmrjbfTO2CmZvlyvbfc+xpv?=
+ =?us-ascii?Q?0suwT2/wz1tWuXd3Z/utsqG4uxc7TrllBHlJO5CBdS9omtj+GN2juBZW0CrL?=
+ =?us-ascii?Q?fqFK4XJzrJWG97h234iefl3z8vckTgI6+D6Lj/LW0KwnAi2jNl76lIXGD0Qo?=
+ =?us-ascii?Q?1vslgchub4oIzW7Dp/k7LXV1yL9tQMc7GjqBtqfT8vWbdT6Mcwe8WrDHWS7x?=
+ =?us-ascii?Q?lh6kysqA8N0uV/bDfwzoLhMsiwkYLZgxd1+4UVqZWeUGSEtAD+VrjFxQoG16?=
+ =?us-ascii?Q?PPa2Elhlz8/wCu0W03NFhTRDzJCEOXveLrB2Fw+FBbWOt9J/sGxsXIYiDOnH?=
+ =?us-ascii?Q?uQTirHEZ0XdROI7yUqRrhlKklOmbImWYsubHRN2fOxC4sXzzdp/0CUnS+Yj4?=
+ =?us-ascii?Q?uxs+n+apO7ehhke4cTEI23lPqCgTplM5e/yC0WZ3fhdzFyA1VEMAYWllRIPS?=
+ =?us-ascii?Q?F4As37qQGNEnewHymJUyIpNR8VxzdetRNo0z05G43RBSkAP5U8erbq6CxABp?=
+ =?us-ascii?Q?QWaHSK6G9bilNXZzHtuRFkCdoR6YOZqEIazyzelDrW/1ok404SUe4C137fs7?=
+ =?us-ascii?Q?6lOHzU6yIZJdfZEZsQWLIbO6YSjYNMIAkiVeQs7ZE9akYqW0Koql5baGlEwb?=
+ =?us-ascii?Q?ZcrYLfXFNKevXdN6ozrR1nWL/k3I5Cqcocc0u1ac5zWNgXx2hxMimIYSZv1x?=
+ =?us-ascii?Q?3oQ9FoH/1+Ew3QNQbCenq0qAmZ1QQwj+Qxw33AipUcCxn/c5/4uF6zBSdjrk?=
+ =?us-ascii?Q?1hb687iLoLdjBYL6O7m2x3gs6rSYEtDYkP0cbHtCOJPozgQBigGSQbQCBKND?=
+ =?us-ascii?Q?58HarP8SU/nffqB0rgdsk3KRMBE0ouDNytk0UMpr2v/YsVrfRjIUt7lYr373?=
+ =?us-ascii?Q?ojB5XxGnB4M7PQWFQhtncu1/v2LYmaes6Wx7ATPGYtu/+nkg6yXmfHVolWze?=
+ =?us-ascii?Q?kA2OAvYALPs4r5rmW0ybLfMBiPbFK+wvuUawFom9stTHeBUYG5B4anVI4FHw?=
+ =?us-ascii?Q?awsDJvf/wa4dsGftcxSda5EXTjhu5YHijHflsuAkXvRxFWVNp0X8Zz/JvDRl?=
+ =?us-ascii?Q?W30YPCD1B7SreF7Sup+0UiJVQLqsUOfReNicnTcD78vM9e5oLk9iXGYmQ65v?=
+ =?us-ascii?Q?vWE3crv8J9xhGrJfzk+6FHaoK1FRLToqnxVnVelWEpP2cp98cAoHBgovL9YK?=
+ =?us-ascii?Q?hbKEs/qXnRu2st57Q8GuwJBB5GOwx/vyCAEwOVCyyinYd2azkZHIsB957qlD?=
+ =?us-ascii?Q?iw=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: e29fd864-8619-46b4-811b-08dc21a32ad0
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jan 2024 14:53:06.5019
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 9vuYNS79P36jjn87r45DgINcfYqdmSmC7GjFtvBQLtE3rhPDdDDC6Ap84OVkPQyw33EVX+WqDK9GnurGatVXNw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR11MB6690
+X-OriginatorOrg: intel.com
 
 
- Yep!
+
+Hello,
+
+kernel test robot noticed "UBSAN:signed-integer-overflow_in_lib/test_memcat_p.c" on:
+
+commit: 660787b56e6e97ddc34c7882cbe1228f4040ef74 ("overflow: Reintroduce signed and unsigned overflow sanitizers")
+https://git.kernel.org/cgit/linux/kernel/git/kees/linux.git devel/overflow/sanitizers
+
+in testcase: boot
+
+compiler: gcc-11
+test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+
+(please refer to attached dmesg/kmsg for entire log/backtrace)
 
 
-> Now I'm going to try to go back to sleep.
+we noticed this commit is reintroducing "signed and unsigned overflow
+sanitizers", there is below config diff between parent and this commit in our
+buildings:
 
-Hope you sleep better than I did. We just bought a new mattress, which felt
-great in the store, but now after 4 or 5 hours sleeping in it, I wake up
-with a sore back and have to sleep on the couch. And we bought the most
-expensive "best" mattress in the store :-p
+--- ea804316c9db5148d2bb0c1f40f70d7a83404638/.config    2024-01-26 22:09:35.046768122 +0800
++++ 660787b56e6e97ddc34c7882cbe1228f4040ef74/.config    2024-01-26 19:53:20.693434428 +0800
+@@ -6706,6 +6706,7 @@ CONFIG_UBSAN_BOUNDS_STRICT=y
+ CONFIG_UBSAN_SHIFT=y
+ # CONFIG_UBSAN_DIV_ZERO is not set
+ CONFIG_UBSAN_UNREACHABLE=y
++CONFIG_UBSAN_SIGNED_WRAP=y
+ # CONFIG_UBSAN_BOOL is not set
+ # CONFIG_UBSAN_ENUM is not set
+ # CONFIG_UBSAN_ALIGNMENT is not set
 
-Oh, and NY State law has it that you can't return in once it is delivered.
+while testing, we observed below different (and same part) between parent and
+this commit:
 
--- Steve
+ea804316c9db5148 660787b56e6e97ddc34c7882cbe
+---------------- ---------------------------
+       fail:runs  %reproduction    fail:runs
+           |             |             |
+          6:6            0%           6:6     dmesg.UBSAN:shift-out-of-bounds_in_arch/x86/kernel/cpu/intel.c
+          6:6            0%           6:6     dmesg.UBSAN:shift-out-of-bounds_in_arch/x86/kernel/cpu/topology.c
+          6:6            0%           6:6     dmesg.UBSAN:shift-out-of-bounds_in_fs/namespace.c
+          6:6            0%           6:6     dmesg.UBSAN:shift-out-of-bounds_in_fs/read_write.c
+          6:6            0%           6:6     dmesg.UBSAN:shift-out-of-bounds_in_include/linux/rhashtable.h
+          6:6            0%           6:6     dmesg.UBSAN:shift-out-of-bounds_in_include/net/tcp.h
+           :6          100%           6:6     dmesg.UBSAN:signed-integer-overflow_in_lib/test_memcat_p.c
+
+
+this looks like the commit uncovered issue. but since it's hard for us to back
+port this commit to each commit while bisecting, we cannot capture the real
+first bad commit. not sure if this report could help somebody to investigate
+the real issue?
+
+
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202401302219.db90a6d5-oliver.sang@intel.com
+
+
+[   42.894536][    T1] ------------[ cut here ]------------
+[   42.895474][    T1] UBSAN: signed-integer-overflow in lib/test_memcat_p.c:47:10
+[   42.897128][    T1] 6570 * 725861 cannot be represented in type 'int'
+[   42.898391][    T1] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 6.8.0-rc1-00007-g660787b56e6e #1
+[   42.899962][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+[   42.901661][    T1] Call Trace:
+[ 42.902009][ T1] dump_stack_lvl (??:?) 
+[ 42.902009][ T1] dump_stack (??:?) 
+[ 42.902009][ T1] handle_overflow (ubsan.c:?) 
+[ 42.902009][ T1] ? kmemleak_alloc (??:?) 
+[ 42.902009][ T1] ? kmalloc_trace (??:?) 
+[ 42.902009][ T1] ? test_memcat_p_init (test_memcat_p.c:?) 
+[ 42.902009][ T1] __ubsan_handle_mul_overflow (??:?) 
+[ 42.902009][ T1] test_memcat_p_init (test_memcat_p.c:?) 
+[ 42.902009][ T1] ? trace_hardirqs_on (??:?) 
+[ 42.902009][ T1] ? _raw_spin_unlock_irqrestore (??:?) 
+[ 42.902009][ T1] ? test_string_helpers_init (test_memcat_p.c:?) 
+[ 42.902009][ T1] do_one_initcall (??:?) 
+[ 42.902009][ T1] ? parameq (??:?) 
+[ 42.902009][ T1] ? parse_args (??:?) 
+[ 42.902009][ T1] do_initcalls (main.c:?) 
+[ 42.902009][ T1] ? rdinit_setup (main.c:?) 
+[ 42.902009][ T1] kernel_init_freeable (main.c:?) 
+[ 42.902009][ T1] ? rest_init (main.c:?) 
+[ 42.902009][ T1] kernel_init (main.c:?) 
+[ 42.902009][ T1] ? schedule_tail (??:?) 
+[ 42.902009][ T1] ret_from_fork (??:?) 
+[ 42.902009][ T1] ? rest_init (main.c:?) 
+[ 42.902009][ T1] ret_from_fork_asm (??:?) 
+[ 42.902009][ T1] entry_INT80_32 (??:?) 
+[   42.924183][    T1] ---[ end trace ]---
+[   42.925743][    T1] test_memcat_p: test passed
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20240130/202401302219.db90a6d5-oliver.sang@intel.com
+
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
