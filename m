@@ -1,20 +1,20 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F553157E98;
-	Tue, 30 Jan 2024 18:23:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76FFF78B42;
+	Tue, 30 Jan 2024 18:36:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706638989; cv=none; b=t5Y9wZivks83UjHMfFkuggFQ24x27YjRzADBSQ9Jfwm/TxtlveMqNZ33yB0oBr9aEDT7xmQ4V8Pil+4tnuB15GfoWUvsXgVoYeJ7GEOMtESSSUG395M8TVQHvG+rGNtD91MpeuCMchPZX9tDssbnKh7caGn9+89LuRGD7iNM6IU=
+	t=1706639788; cv=none; b=u1lMsLoTJltUuwhldH6ca2zwv6SLfQfJPm8E9PmrKYL5fEn85IrDCoH25T0e13KTWC3OAfC0/sA8tAlIHnN9mHSTJLkioliGf4D3lH1+p23DCBpFGUpN3pcqnW+Mug2kyTie1eVMqfYzHsNSOSks9zcn2RKn4ZHSbIROrZT0mjk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706638989; c=relaxed/simple;
-	bh=y1duc/zFuerroIv0zwgnkpk2zK5bc2TgkZVoPSAVmaY=;
+	s=arc-20240116; t=1706639788; c=relaxed/simple;
+	bh=MAq6UTzZ5I8FQRIOgfrKTJJAi0lX50HQeuJa1ZfmREE=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=rB9ZzS91R/XigLvWjqlPkiixZdKVagj9JjoaDJR8sMoMaYpJPGlnDlfa75WNyF/TJ9hFJ34d0u6t5bIDmZiZdbt/Nf628kTi5xRd+8YbdLsoBJC6lENq2yDLAs6Q43sgjRHYIeWykRoBykaLUXTIHbf99unD+q1ifuYbuaV0chA=
+	 MIME-Version:Content-Type; b=CcFDtGonmY5Wg5iMvJ95fPbUjPmeJGAL9wm6lixOeYoD4T+iuwcMVB/AmYaz4usZiloT/CeJWTIDBu2BaCzIaKJ5r9ZRq7bmcKvnTrUw9eUDftfPPsULEwCxle+reLU/XKFrT/nmiVCIOuDdK8LjpaqA7peF6tKhBSNbo98jOlU=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEA18C433A6;
-	Tue, 30 Jan 2024 18:23:07 +0000 (UTC)
-Date: Tue, 30 Jan 2024 13:23:19 -0500
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B028DC433C7;
+	Tue, 30 Jan 2024 18:36:26 +0000 (UTC)
+Date: Tue, 30 Jan 2024 13:36:38 -0500
 From: Steven Rostedt <rostedt@goodmis.org>
 To: Linus Torvalds <torvalds@linux-foundation.org>
 Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
@@ -25,7 +25,7 @@ Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
  <ajay.kaher@broadcom.com>, linux-trace-kernel@vger.kernel.org
 Subject: Re: [linus:master] [eventfs] 852e46e239:
  BUG:unable_to_handle_page_fault_for_address
-Message-ID: <20240130132319.022817e8@gandalf.local.home>
+Message-ID: <20240130133638.2c268b6d@gandalf.local.home>
 In-Reply-To: <CAHk-=wh97AkwaOkXoBgf0z8EP88ePffLnTcmmQXcY+AhFaFrnA@mail.gmail.com>
 References: <202401291043.e62e89dc-oliver.sang@intel.com>
 	<CAHk-=wh0M=e8R=ZXxa4vesLTtvGmYWJ-w1VmXxW5Mva=Nimk4Q@mail.gmail.com>
@@ -56,27 +56,10 @@ Content-Transfer-Encoding: 7bit
 On Mon, 29 Jan 2024 19:56:52 -0800
 Linus Torvalds <torvalds@linux-foundation.org> wrote:
 
-> [0005-eventfs-get-rid-of-dentry-pointers-without-refcounts.patch  text/x-patch (15652 bytes)] 
+> [0001-tracefs-avoid-using-the-ei-dentry-pointer-unnecessar.patch  text/x-patch (3561 bytes)] 
+> 
+> [0002-eventfsfs-initialize-the-tracefs-inode-properly.patch  text/x-patch (2548 bytes)] 
 
-I missed this email when I wrote basically the same thing :-p
-
-It was sent just as I went to bed and this morning I mistaken it as an
-email I already read. When you mentioned that your last patch was on top of
-your other 5, I said to myself, "Wait? there's five?" and went back though
-this thread looking at every email with an attachment. Well, even though I
-duplicated your work, I'll take that as a learning experience.
-
-Anyway, I'm assuming that the other 4 patches are exactly the same as the
-previous version, as applying patches from attachments is a manual process.
-I don't even develop on the machine with my email client, so it either is
-me downloading each and scp'ing them over to my development box or finding
-the lore link and going through them individually one by one.
-
-I know you don't send patches inlined anymore, which is a shame, because
-patchwork takes care of all the administering when patches are inlined, and
-I don't miss patches like I use to.
-
-So, I'll down load patch 5 here and just assume that I already have your
-other 4 patches from the previous email.
+Ah these two are new.
 
 -- Steve
