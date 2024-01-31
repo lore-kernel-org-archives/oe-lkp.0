@@ -1,96 +1,108 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C9313B189;
-	Wed, 31 Jan 2024 19:42:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58154848A;
+	Wed, 31 Jan 2024 21:58:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706730124; cv=none; b=CKDNEWCPbTlXDsTJ4OtvtXoLCc5cbe5Y6nL5fb9NEAzrH9iuqnlFLlu/L+WduBsOLzpFvL6cFY1O5zSB+UlRS6szcs9zaNKNi/vpP+iLsuzgJ3PhmGjNp5mW/RDv+JUkmudYwbJm7SkcPf3L97/Vam5jZE5ZMgMq9R2uyTu5W+o=
+	t=1706738308; cv=none; b=RREqfd1GgoszwjXYTObXfV3FyxQUi2w0oTvivnFvFKVArHCZcB4cE5TneuZYni5hTyF18lBHElydafH4+3WCdFB4/vQdwnJN+TFYNwVYxy/+rKxNjU3sXdfoYBI3QxIg0+F8zChwZcp6SKMsai7kSRnDTEIM41BkQq2GbKe5LPY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706730124; c=relaxed/simple;
-	bh=m8vwoaQsBcdyqdU5wzhrn7icali5QipJmCUL6e3LtlI=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=AgSmmo1X0nnuqNFSqPAi3M/hKaJKl7IXUIznifhU/4sIf7UCf2RTlLxAoH7FaxYO8VjtX+RXqbs7NMsTZ5wrM8OD3OXBOdyubnd9LKepAXAFHWybatEXZbIqjPLEKbRcE+rF7wFNZmxkhh8ln1DMoy/REPoVcAia/L6QjuxnQBk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C73CC433C7;
-	Wed, 31 Jan 2024 19:42:02 +0000 (UTC)
-Date: Wed, 31 Jan 2024 14:42:16 -0500
-From: Steven Rostedt <rostedt@goodmis.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
- lkp@intel.com, linux-kernel@vger.kernel.org, Masami Hiramatsu
- <mhiramat@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Mathieu
- Desnoyers <mathieu.desnoyers@efficios.com>, Christian Brauner
- <brauner@kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, Ajay Kaher
- <ajay.kaher@broadcom.com>, linux-trace-kernel@vger.kernel.org
-Subject: Re: [linus:master] [eventfs] 852e46e239:
- BUG:unable_to_handle_page_fault_for_address
-Message-ID: <20240131144217.0130b517@gandalf.local.home>
-In-Reply-To: <CAHk-=wgh0otaSyV0MNrQpwFDTjT3=TWV94Wit2eUuPdh2KdyVg@mail.gmail.com>
-References: <202401291043.e62e89dc-oliver.sang@intel.com>
-	<CAHk-=wghobf5qCqNUsafkQzNAZBJiS0=7CRjNXNChpoAvTbvUw@mail.gmail.com>
-	<20240129172200.1725f01b@gandalf.local.home>
-	<CAHk-=wjV6+U1FQ8wzQ5ASmqGgby+GZ6wpdh0NrJgA43mc+TEwA@mail.gmail.com>
-	<CAHk-=wgOxTeTi02C=kOXsHzuD6XCrV0L1zk1XP9t+a4Wx--xvA@mail.gmail.com>
-	<20240129174950.5a17a86c@gandalf.local.home>
-	<CAHk-=wjbzw3=nwR5zGH9jqXgB8jj03wxWfdFDn=oAVCoymQQJg@mail.gmail.com>
-	<20240129193549.265f32c8@gandalf.local.home>
-	<CAHk-=whRxcmjvGNBKi9_x59cAedh8SO8wsNDNrEQbAQfM5A8CQ@mail.gmail.com>
-	<CAHk-=wh97AkwaOkXoBgf0z8EP88ePffLnTcmmQXcY+AhFaFrnA@mail.gmail.com>
-	<20240130132319.022817e8@gandalf.local.home>
-	<CAHk-=wiGb2aDbtq2+mYv6C=pYRKmo_iOu9feL9o52iRT8cuh6Q@mail.gmail.com>
-	<20240130143734.31b9b3f1@gandalf.local.home>
-	<CAHk-=whMJgqu2v1_Uopg5NBschGFa_BK1Ct=s7ehwnzPpPi6nQ@mail.gmail.com>
-	<20240131105847.3e9afcb8@gandalf.local.home>
-	<CAHk-=wgh0otaSyV0MNrQpwFDTjT3=TWV94Wit2eUuPdh2KdyVg@mail.gmail.com>
-X-Mailer: Claws Mail 3.19.1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	s=arc-20240116; t=1706738308; c=relaxed/simple;
+	bh=OCJeKfhQ9glNLXX2ntf9uF6fRDRZS3kJloQ6WG9qz+0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Oss+OhbgcqQ1dcGfO9SCkNHAVb2Ex4DaXWA+5i4qzURSoURH9NufE/mfrO5cgfql+iid3GVVBp0lsazN6OPzDRZEpFOXqGx1MPnxSIH0bBlF2qiX0ebp8QzhrWE+UEfwU6REAzsLK0bMN/yX+f3yA8nu2+1+g6OXW5uWS5beEiQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=h5bIouCx; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="h5bIouCx"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=iQfXW37ZK31yG37Afle32aWwrDr+gCC0dupCwANd1vs=; b=h5bIouCxLjtlG+frdiQOFKm2uX
+	U/2ZniW40PsD232UWulNNlEaoHXQ8vL020jg5yOCCTTa2+x+4cp4iN0RKjKmw/OFYhACLIHTwfHrr
+	+OCXquWfqnT2hOYEFwKT6LLOUBLWA2LhvBYQNZ6mEUsnh/xuiGHLX8KHfraUJLSPSPCZ74ckbjL4L
+	P5vpWzCdDLZG1+r+ZaXFv+NzQs/EblX49p6GNr5b3Ps9H8UMa0RrlxLERCzxFBPLMYC6RjWIx12M3
+	DUQzLrOfxDW43HkIUxSepWMBLAeXVqd6+SjoBG1E1Agz2p7Wd/eMuy2VQiUevb74HBKrZx5tEEB4E
+	CXo+TkOA==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.97.1 #2 (Red Hat Linux))
+	id 1rVIbC-00000005dEB-100a;
+	Wed, 31 Jan 2024 21:58:26 +0000
+Date: Wed, 31 Jan 2024 13:58:26 -0800
+From: Luis Chamberlain <mcgrof@kernel.org>
+To: Matthew Wilcox <willy@infradead.org>
+Cc: kernel test robot <oliver.sang@intel.com>,
+	Daniel Gomez <da.gomez@samsung.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, linux-kernel@vger.kernel.org,
+	"gost.dev@samsung.com" <gost.dev@samsung.com>,
+	Pankaj Raghav <p.raghav@samsung.com>
+Subject: Re: [PATCH 1/2] test_xarray: add tests for advanced multi-index use
+Message-ID: <ZbrCglszF4n3BtGA@bombadil.infradead.org>
+References: <20231104005747.1389762-2-da.gomez@samsung.com>
+ <202311152254.610174ff-oliver.sang@intel.com>
+ <ZVfS8fiudvHADtoR@bombadil.infradead.org>
+ <ZVfT3bs9+F0jqIAw@casper.infradead.org>
+ <ZVfUnhzv4UDigZKa@bombadil.infradead.org>
+ <ZbQEA6WIh0HrFTbP@bombadil.infradead.org>
+ <ZbQHWf0Hh04OwoZx@casper.infradead.org>
+ <ZbQQXO5YhKhdr1Ou@bombadil.infradead.org>
+ <ZbQW3PRAIw8e7m0m@casper.infradead.org>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZbQW3PRAIw8e7m0m@casper.infradead.org>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 
-On Wed, 31 Jan 2024 11:35:18 -0800
-Linus Torvalds <torvalds@linux-foundation.org> wrote:
-
-> On Wed, 31 Jan 2024 at 07:58, Steven Rostedt <rostedt@goodmis.org> wrote:
-> >
-> > BTW, I ran my full test suite on your patches with the below updates and it
-> > all passed.  
+On Fri, Jan 26, 2024 at 08:32:28PM +0000, Matthew Wilcox wrote:
+> On Fri, Jan 26, 2024 at 12:04:44PM -0800, Luis Chamberlain wrote:
+> > > We have a perfectly good system for "relaxing":
+> > > 
+> > >         xas_for_each_marked(&xas, page, end, PAGECACHE_TAG_DIRTY) {
+> > >                 xas_set_mark(&xas, PAGECACHE_TAG_TOWRITE);
+> > >                 if (++tagged % XA_CHECK_SCHED)
+> > >                         continue;
+> > > 
+> > >                 xas_pause(&xas);
+> > >                 xas_unlock_irq(&xas);
+> > >                 cond_resched();
+> > >                 xas_lock_irq(&xas);
+> > >         }
+> > 
+> > And yet we can get a soft lockup with order 20 (1,048,576 entries),
+> > granted busy looping over 1 million entries is insane, but it seems it
+> > the existing code may not be enough to avoid the soft lockup. Also
+> > cond_resched() may be eventually removed [0].
 > 
-> Those patch updates all look sane to me.
+> what?  you're in charge of when you sleep.  you can do this:
 > 
-> > I can break up and clean up the patches so that they are bisectable, and if
-> > that passes the bisectable portion of my tests, I can still send them to
-> > you for 6.8.  
+> unsigned i = 0;
+> rcu_read_lock();
+> xas_for_each(...) {
+> 	...
+> 	if (iter++ % XA_CHECK_SCHED)
+> 		continue;
+> 	xas_pause();
+> 	rcu_read_unlock();
+> 	rcu_read_lock();
+> }
+> rcu_read_unlock();
 > 
-> Ack. That series you posted looks fine. I didn't do any actual testing
-> or applying the patches, just looking at them.
-> 
-> The one thing I noticed is that the 'llist' removal still needs to be
-> done. The logical point is that "[PATCH v2 7/7]" where the
-> eventfs_workfn stuff is ripped out.
-> 
-> And the 'rcu' head should now be a union with something that is no
-> longer used after the last kref. The only thing that *is* used after
-> the last kref is the "is_freed" bit, so there's lots of choice. Using
-> the 'struct list_head listl' that is used for the child list would
-> seem to be the obvious choice, but it could be anything (including all
-> of the beginning of that eventfs_inode, but then you would need to
-> group that as another nested unnamed struct, so picking a "big enough"
-> entry like 'list' makes it syntactically simpler.
+> and that will get rid of the rcu warnings.  right?
 
-Yeah, that was what I was talking about in my cover letter with:
+The RCU warning was due to my getting an try call missing an RCU lock,
+I fixed that. The pending issue was a soft lockup that I get on low end systems
+testing test_xarray with higher order but after testing on a 2 vcpus
+with only 2 GiB of RAM I cannot reproduce so we can address this later.
+I forget the exact type of low end system I tested this on... but anyway
+I can't reproduce now. I suspect it may have been similar to the issue
+0-day had found long ago and you noted an overloaded system [0]
 
-  Note, there's more clean ups that can happen. One being cleaning up the
-  eventfs_inode structure. But that's not critical now and can be added
-  later.
+[0] https://lore.kernel.org/all/20190306120843.GI13380@bombadil.infradead.org/
 
-I just want to get the majority of the broken parts done. The clean up of
-the eventfs_inode is something that I'd add a separate patch. Not sure that
-falls in your "fixes" category for 6.8.
-
--- Steve
+  Luis
