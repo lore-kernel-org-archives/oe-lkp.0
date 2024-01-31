@@ -1,94 +1,96 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f182.google.com (mail-pg1-f182.google.com [209.85.215.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EE7712CDA5;
-	Wed, 31 Jan 2024 17:28:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24C8E135412
+	for <oe-lkp@lists.linux.dev>; Wed, 31 Jan 2024 18:17:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706722112; cv=none; b=XyZOdHVjjOlLkFNPrXXYdc//ICmmcERQLdK9UCVeDw4IFI8jRYkIweG1pUrAOw+ARys8a2v1EY3Of974NDJmCBBv8V3vi3e8TbCfIC0d7PKAgLA+3RGLCAJasa6+wZE2xY3Xu3u/mqzyFZUgYyKYz1mGO8IvaDFT0teOemzw2xk=
+	t=1706725034; cv=none; b=UcCIb3VotvfvOstJ70Iin1DOSzEdnY19+25ePnRR2RTqvOqZZpfvYpSmgCwsG4SvaJ/arSdH5hBE2OZlxx4khWqLRDVqvdNg4ClmZssqZA1hxdIw6Hp3MGrSkXwBWVcSzs7c4ERm9j7FSbqfgqCnxDFTEsMQOSamg8xVJKeVa8c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706722112; c=relaxed/simple;
-	bh=pQQF/au8gH11VqcBaEi4I6TkVLn1yjmvYFcQmCHOP48=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=AMz9lg1E6KOSNpoG8/cHdaOzPHDbOZ9aq81cfOoHvIE7/bXOdKxu5ylzf1cy9N4NhKpWExgNP4PeBOav3mk3XvvokUhr2jg1/duKM1S8GXPumn7130iJ6t36o6VR7/zkiZtpPGGL9PpKfjEC6FrUUgxyPnKKMt4gvjoSRjXquQk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D46CC433C7;
-	Wed, 31 Jan 2024 17:28:30 +0000 (UTC)
-Date: Wed, 31 Jan 2024 12:28:44 -0500
-From: Steven Rostedt <rostedt@goodmis.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
- lkp@intel.com, linux-kernel@vger.kernel.org, Masami Hiramatsu
- <mhiramat@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Mathieu
- Desnoyers <mathieu.desnoyers@efficios.com>, Christian Brauner
- <brauner@kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, Ajay Kaher
- <ajay.kaher@broadcom.com>, linux-trace-kernel@vger.kernel.org
-Subject: Re: [linus:master] [eventfs] 852e46e239:
- BUG:unable_to_handle_page_fault_for_address
-Message-ID: <20240131122844.5683dfe0@gandalf.local.home>
-In-Reply-To: <20240131111358.5506645a@gandalf.local.home>
-References: <202401291043.e62e89dc-oliver.sang@intel.com>
-	<20240129152600.7587d1aa@gandalf.local.home>
-	<CAHk-=wghobf5qCqNUsafkQzNAZBJiS0=7CRjNXNChpoAvTbvUw@mail.gmail.com>
-	<20240129172200.1725f01b@gandalf.local.home>
-	<CAHk-=wjV6+U1FQ8wzQ5ASmqGgby+GZ6wpdh0NrJgA43mc+TEwA@mail.gmail.com>
-	<CAHk-=wgOxTeTi02C=kOXsHzuD6XCrV0L1zk1XP9t+a4Wx--xvA@mail.gmail.com>
-	<20240129174950.5a17a86c@gandalf.local.home>
-	<CAHk-=wjbzw3=nwR5zGH9jqXgB8jj03wxWfdFDn=oAVCoymQQJg@mail.gmail.com>
-	<20240129193549.265f32c8@gandalf.local.home>
-	<CAHk-=whRxcmjvGNBKi9_x59cAedh8SO8wsNDNrEQbAQfM5A8CQ@mail.gmail.com>
-	<CAHk-=wh97AkwaOkXoBgf0z8EP88ePffLnTcmmQXcY+AhFaFrnA@mail.gmail.com>
-	<20240130132319.022817e8@gandalf.local.home>
-	<CAHk-=wiGb2aDbtq2+mYv6C=pYRKmo_iOu9feL9o52iRT8cuh6Q@mail.gmail.com>
-	<20240130143734.31b9b3f1@gandalf.local.home>
-	<CAHk-=whMJgqu2v1_Uopg5NBschGFa_BK1Ct=s7ehwnzPpPi6nQ@mail.gmail.com>
-	<20240131105847.3e9afcb8@gandalf.local.home>
-	<20240131111358.5506645a@gandalf.local.home>
-X-Mailer: Claws Mail 3.19.1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	s=arc-20240116; t=1706725034; c=relaxed/simple;
+	bh=LwcvarmvTq0SpQELkGAC4h7wKQTh3jcH3Oq3GOcdYEM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=PUhgVfO34BITB8dCl9o+JS2EezAOwb1c9ouwlahAMtYUJG4br6RhbNxvDC6kJvAS65V9IpHmuJNEQqQ8QddBJ6hoTBGax1cTbvQHMqEB4tcNOPNZqZ390otlA4zXzEu0VHYP3rblI02+O81Qncr5G+/s/i+9T4Okn0sWSNXgo80=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=acm.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.215.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=acm.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-pg1-f182.google.com with SMTP id 41be03b00d2f7-5d4d15ec7c5so111667a12.1
+        for <oe-lkp@lists.linux.dev>; Wed, 31 Jan 2024 10:17:12 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1706725032; x=1707329832;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=PA3XRl0mz498+Ej+1fuhjJ0OgFg4P0iQOiXSgU0TrvU=;
+        b=IuAAHt5mvYwRcok910jju3HGc3LkSJGwwDyD4kvGllKBEeQWpkFCqzj03we40D7KVG
+         ADx5WFEIvwSqOYWg42CzkyJrcI65wGEslJdk9YY78WeoOTAkt3v9XzV5lu5pM2XtFI7g
+         BhmsjK+FERt/vkEkcNzHN8v0ScoNzfjBwUMaOdxHt8d4VSdrVRxIY1kKDBZHUypf1UU+
+         lbdPj7DFi7IHOQBNgQZIhLldeH1koBOQqSLNA4MOJw9m5aB+taWBHtefcaJaMfVUGrDY
+         7C7sfz8HdAwL0+gavvsTg9BI8R4nU8LmLvybYGPHUuZYGmBGdDkwUzc6zPv/eOARpZba
+         TMug==
+X-Gm-Message-State: AOJu0Yx6EBuQJnPv1ZYf3i2ONfOYe4qIq/+Nys/eiVxMDBzlzXJlrzxl
+	a08Snuf8xM48ikQkhR1aFPPMYUjh5fQO5YDcg4JTamXa8BcqqBC9
+X-Google-Smtp-Source: AGHT+IEbCmjom3mOczOnDlhu/2ZFc7jOChtagVDH9vSM6jIJgqxsYqOk6YUHPHpv4JFRsCmP8e326w==
+X-Received: by 2002:a05:6a20:3ca7:b0:19c:997e:c1a7 with SMTP id b39-20020a056a203ca700b0019c997ec1a7mr2745296pzj.9.1706725032196;
+        Wed, 31 Jan 2024 10:17:12 -0800 (PST)
+Received: from ?IPV6:2620:0:1000:8411:1d95:ca94:1cbe:1409? ([2620:0:1000:8411:1d95:ca94:1cbe:1409])
+        by smtp.gmail.com with ESMTPSA id w11-20020a17090aea0b00b00295b93bfb24sm1834779pjy.22.2024.01.31.10.17.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 31 Jan 2024 10:17:11 -0800 (PST)
+Message-ID: <da4c78c1-a9d4-4a57-9765-2e6c35fa1062@acm.org>
+Date: Wed, 31 Jan 2024 10:17:09 -0800
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [linux-next:master] [block/mq] 574e7779cf: fio.write_iops -72.9%
+ regression
+Content-Language: en-US
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
+ Linux Memory Management List <linux-mm@kvack.org>,
+ Jens Axboe <axboe@kernel.dk>, Oleksandr Natalenko
+ <oleksandr@natalenko.name>, Johannes Thumshirn <johannes.thumshirn@wdc.com>,
+ linux-block@vger.kernel.org, ying.huang@intel.com, feng.tang@intel.com,
+ fengwei.yin@intel.com
+References: <202401312320.a335db14-oliver.sang@intel.com>
+From: Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <202401312320.a335db14-oliver.sang@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On Wed, 31 Jan 2024 11:13:58 -0500
-Steven Rostedt <rostedt@goodmis.org> wrote:
+On 1/31/24 07:42, kernel test robot wrote:
+> kernel test robot noticed a -72.9% regression of fio.write_iops on:
+> 
+> 
+> commit: 574e7779cf583171acb5bf6365047bb0941b387c ("block/mq-deadline: use separate insertion lists")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+> 
+> testcase: fio-basic
+> test machine: 64 threads 2 sockets Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz (Ice Lake) with 256G memory
+> parameters:
+> 
+> 	runtime: 300s
+> 	disk: 1HDD
+> 	fs: xfs
+> 	nr_task: 100%
+> 	test_size: 128G
+> 	rw: write
+> 	bs: 4k
+> 	ioengine: io_uring
+> 	direct: direct
+> 	cpufreq_governor: performance
 
-> On Wed, 31 Jan 2024 10:58:47 -0500
-> Steven Rostedt <rostedt@goodmis.org> wrote:
-> 
-> > @@ -788,6 +717,7 @@ static void init_once(void *foo)
-> >  {
-> >  	struct tracefs_inode *ti = (struct tracefs_inode *) foo;
-> >  
-> > +	memset(ti, 0, sizeof(*ti));
-> >  	inode_init_once(&ti->vfs_inode);
-> >  }
-> >    
-> 
-> Note, that inode_init_once() also does a memset on the entire inode, so the
-> initial memset is redundant on the inode portion. But I didn't think it was
-> really worth the time to complicate the code by optimizing it. I guess if I
-> changed the structure to:
-> 
->  struct tracefs_inode {
-> +	struct inode            vfs_inode;
-> 	unsigned long           flags;
-> 	void                    *private;
-> -	struct inode            vfs_inode;
->  };
-> 
-> I could have it do:
-> 
-> 	memset_after(ti, 0, vfs_inode);
-> 
-> But this can be done as a separate clean up and doesn't need to be done now.
-> 
+The actual test is available in this file:
+https://download.01.org/0day-ci/archive/20240131/202401312320.a335db14-oliver.sang@intel.com/repro-script
 
-Hmm, since I need to run all the tests again, I think I'll change this
-patch to do the above.
+I haven't found anything in that file for disabling merging. Merging
+requests decreases IOPS. Does this perhaps mean that this test is
+broken?
 
--- Steve
+Thanks,
+
+Bart.
