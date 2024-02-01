@@ -1,278 +1,283 @@
-Received: from mail-oo1-f43.google.com (mail-oo1-f43.google.com [209.85.161.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90B175CDF6
-	for <oe-lkp@lists.linux.dev>; Thu,  1 Feb 2024 13:59:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.43
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706795954; cv=none; b=iUSnpHXlU3sud+3T98Rrymip8+HQC2CYX56QJj4k3mzKhdrCVIRSB8oouAIT+VKZ3VHgsFLIKDb5jsA1Lmd87HkpGjjq3Mp3bcFnfJvz/QIPH71yWR37YdGcTmFv1mZkQ7O+uSD0gk+SiN0qN1WMybiUzOx4KL7Av1ACnMVOS2Q=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706795954; c=relaxed/simple;
-	bh=grZmON5V2pS5iBkv32N1mWLVplVq2WK7EVWyx82N3PM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=AfNdfgygo5imksHCtaubnEgLXlVlOp6mfiYIexw5ElYIqLBYzp+QNc2RQIAVRug31kQIxwMR3CbCTF1tqBpDis3au9+bUujn7pthCmWjQKOfChPU1HB3puccGMiSZoRuymLb644rjAYh7Zk04UWu7dHC53/7+usEKZ8YcQAkHWU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.161.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-oo1-f43.google.com with SMTP id 006d021491bc7-59584f41f1eso272732eaf.1
-        for <oe-lkp@lists.linux.dev>; Thu, 01 Feb 2024 05:59:12 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706795951; x=1707400751;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=mmjGv0GaBOTQ12K5AbRONMLGMjSiQVl1WcXF4oblEaw=;
-        b=nmIXwur8ii/0KCJUW7Fe31sZ7RlOj4uHVeyq5AxBw6nTuiLCnGY7QJlRhOTFBGs9GX
-         2djhO0CrvJa0mpAlrUi3H1cccwftV81wsIVHjKlH8hKLxs+Wd0Wp4rq084Osii91Ka5K
-         Ie7YZ+StGDVWwABYfcFK9AYA1pY3jTrXMES0dwqhEaTcirjpQTHMnz9TItyoB+mLQvQ3
-         ffWO3Tim7WPuj5mbVkz1/fmjP+9fs9Vdj7SC0taFKU0cNbefOREll5y2T3TUMjguUUFr
-         IrNz0gYvmiR/C99FF0thAQe+aohPOsskz+Rs2ktelUJOmeOhd+FOZmgKd31kBb07MS3i
-         ueDg==
-X-Forwarded-Encrypted: i=0; AJvYcCWP7M7vPryh3XyF1TV6nkcgi8yGyzy/WFT/bXZh9P6WfD7g5Rd+OEA+Nn0kHj+86EzDUx7ggq+Yee5JRNkCw64F3R4+9Ocg
-X-Gm-Message-State: AOJu0Yzu/M1CgD+X4Q6BGUybG42q6aqM9LQE21zyOUkRjOTsGc0f7jfJ
-	OHTOg4Mep+gANfFDqRSBqTlgrym3oEFD2+A+c2yPeXfQ7rsGdEJaQgtpNGMjKbQUV79M16cr/RO
-	EVI+AM/JoTTCdSnbWwoywdhras0g=
-X-Google-Smtp-Source: AGHT+IH7vQIXGCqeFSp/9OtrwVG3NcK9LlW7sW0AUDZ0WvdPl+HQ1s36SytLRPThNUSp89nPcK/6c3Uo+r+eaoIimdQ=
-X-Received: by 2002:a05:6820:2224:b0:59a:127c:bdfe with SMTP id
- cj36-20020a056820222400b0059a127cbdfemr3140773oob.1.1706795951342; Thu, 01
- Feb 2024 05:59:11 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBC675F46B
+	for <oe-lkp@lists.linux.dev>; Thu,  1 Feb 2024 14:03:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.13
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1706796239; cv=fail; b=DbmUB8Ilp58HCj53P2ad3HJJXjv5WSd+vErUEL6qcEeO77eliQkJkiYVCVA6Yhc1Hl9JIrhF9bw6AsDvNt+isPG5uV4efcLKdD6MzY9PaUHu/azv8r6v7J+VPN9pvwqIGdelMbVwywnE4u4LCYqmznFziD/j0u6BHecZpBsGy40=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1706796239; c=relaxed/simple;
+	bh=/2shhSJUzB1nMpadDQDgypLjGa3Y97QYaEUNpzNFqDs=;
+	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=j5vGCqptpIgt5xJ2cIkA8K/HPFp7wpYnXU844mq75QP3ebJf+tl2LDAt5G3hgwGfSFtBU4d85mQT9Vt+gmEq4alvwVl2QO4GUVbOWCnMrGDk+80ICZcy6ttcSP1V9R4TfdzR+4BJbdTU4+MwXIiwawOwstSzepgl6DcZPQvo1TU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OofZEkxc; arc=fail smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OofZEkxc"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1706796238; x=1738332238;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=/2shhSJUzB1nMpadDQDgypLjGa3Y97QYaEUNpzNFqDs=;
+  b=OofZEkxc1VgK8Vq7Th+DEV2MO54P3xjBeIHFjWzCqvW8FZWeJ38wkT/a
+   lNTH3/rybJL2ZjK+eCJiA/RW6yMr3ZxPt5Z/zqGuKC1C95DVJLrypVZwl
+   lGDbRh2vEzE1YHlUkQR5JnSd0abSpxRDSWRflS2/ZROeONvUH6/Pc5v1p
+   FDZCPDen2CZtAWnQq9cTLZxq6+tHOiTEP7Mt0qwkvUIHfQPh3do9GnGjJ
+   JKmnc/iGxEI7qvZAkf6ZRAxjRkoJ9cMUho9XBc8kRG/Y5AldCiDPF8HAS
+   VS8d9O2RTjz7QHcRX64NW6ZoDtA+OIZ93iQcrcmp6vxAB6STpm6rnOSXP
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10969"; a="2835342"
+X-IronPort-AV: E=Sophos;i="6.05,234,1701158400"; 
+   d="task'?scan'208,49,50?gz'208,49,50,50?time'208,49,50,50";a="2835342"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2024 06:03:56 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10969"; a="879111539"
+X-IronPort-AV: E=Sophos;i="6.05,234,1701158400"; 
+   d="task'?scan'208,49,50?gz'208,49,50,50?time'208,49,50,50";a="879111539"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by FMSMGA003.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 01 Feb 2024 06:03:55 -0800
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Thu, 1 Feb 2024 06:03:55 -0800
+Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Thu, 1 Feb 2024 06:03:54 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35 via Frontend Transport; Thu, 1 Feb 2024 06:03:54 -0800
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.168)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.35; Thu, 1 Feb 2024 06:03:54 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bxHO/7MnR2+wXcaJDOgNIf5KFORQLy1pSJ+xKC5GZTKCi53eGwyNp9Cr1FuTNTaE/0mDbnUkUJAnw1dIESlf3NvR57EeZXEp6UT37N8uBGY/bdXEDer9/3kIUSr3j57rUQmdxA80lHLDE6Qv6Hu41fkI0RWYhB2h+wS6x2mr9uKriH3IDdMbx/4Rz5WQQ1Ysyt5citCrl6GeOLaLW5SnV+nbagMeUnnw7yEIEaMZJROQ5BZD52ABIdOHNcCspq3cvl2VbuRaIqUTxIGwGH5S8CwXRd7wuwDlkp4qPEbVuduMpYGmpm1z17PDsbE0HlRJutKrJ3cZB9AHbi3ty/4pXA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Z3M9wNNEfFEl2qMnUrQ310B2bI7CdsK8fqZkH0yzV38=;
+ b=Jc41N/iMsVGY7qPg26IuDMsRb3jixN62QZl2z+EQoaNjcbFFExCMh7eUFImETeE13cq2hCqArDnXGVmNaX/YwU7eXdNSfMRr2UkkIg4o438hUtObxFcwez96ZQCKz44peRKS+L61XWF/4AOFIsMyVDeW4Df4n4G5MsSksj1kBd8ENeFmVkkP3Tb3W0G71NTk8vhYfQOO1RtV25f0OLgpufKe1IlPO518y2+7Ob9hXEjsQJzAbcCIt/XBIyS17dcWC3kIHIj38hp8lzz3DF7TcuRdde/ZJmRarFIZQ4NZG9HH1Scq7ps03yrXMe///PoQhvFjQ8rlMgQuQeCjRtY1/A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by SA1PR11MB8595.namprd11.prod.outlook.com (2603:10b6:806:3a9::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7249.24; Thu, 1 Feb
+ 2024 14:03:51 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::a026:574d:dab0:dc8e]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::a026:574d:dab0:dc8e%3]) with mapi id 15.20.7249.025; Thu, 1 Feb 2024
+ 14:03:50 +0000
+Date: Thu, 1 Feb 2024 22:03:41 +0800
+From: Oliver Sang <oliver.sang@intel.com>
+To: Jens Axboe <axboe@kernel.dk>
+CC: Bart Van Assche <bvanassche@acm.org>, <oe-lkp@lists.linux.dev>,
+	<lkp@intel.com>, Linux Memory Management List <linux-mm@kvack.org>, Oleksandr
+ Natalenko <oleksandr@natalenko.name>, Johannes Thumshirn
+	<johannes.thumshirn@wdc.com>, <linux-block@vger.kernel.org>,
+	<ying.huang@intel.com>, <feng.tang@intel.com>, <fengwei.yin@intel.com>,
+	<oliver.sang@intel.com>
+Subject: Re: [linux-next:master] [block/mq] 574e7779cf: fio.write_iops -72.9%
+ regression
+Message-ID: <ZbukvbmE3K8y+JdJ@xsang-OptiPlex-9020>
+References: <202401312320.a335db14-oliver.sang@intel.com>
+ <da4c78c1-a9d4-4a57-9765-2e6c35fa1062@acm.org>
+ <9d2f99d8-ecd2-413e-b910-18e05239a2b8@kernel.dk>
+ <ZbtFqxCMkItFr6/5@xsang-OptiPlex-9020>
+ <d15a1759-1abf-47aa-8766-88c531023164@kernel.dk>
+Content-Type: multipart/mixed; boundary="j/JWyE4s/jnbj74X"
+Content-Disposition: inline
+In-Reply-To: <d15a1759-1abf-47aa-8766-88c531023164@kernel.dk>
+X-ClientProxiedBy: SI2PR02CA0024.apcprd02.prod.outlook.com
+ (2603:1096:4:195::18) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240109130210.31938-1-vimal.kumar32@gmail.com>
- <202401292109.f115a688-oliver.sang@intel.com> <20240201044437.GA113@DESKTOP-KA7F9LU.localdomain>
-In-Reply-To: <20240201044437.GA113@DESKTOP-KA7F9LU.localdomain>
-From: "Rafael J. Wysocki" <rafael@kernel.org>
-Date: Thu, 1 Feb 2024 14:59:00 +0100
-Message-ID: <CAJZ5v0geH_xn9RDGRUZ1izFt2cOA7_mo8r=8C3HoqZ1icfVKBA@mail.gmail.com>
-Subject: Re: [PATCH v3] PM / sleep: Mechanism to find source aborting kernel
- suspend transition
-To: Vimal Kumar <vimal.kumar32@gmail.com>
-Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
-	Chinmoy Ghosh <chinmoyghosh2001@gmail.com>, Mintu Patel <mintupatel89@gmail.com>, 
-	Vishal Badole <badolevishal1116@gmail.com>, linux-pm@vger.kernel.org, rui.zhang@intel.com, 
-	yu.c.chen@intel.com, "Rafael J. Wysocki" <rafael@kernel.org>, Len Brown <len.brown@intel.com>, 
-	Pavel Machek <pavel@ucw.cz>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|SA1PR11MB8595:EE_
+X-MS-Office365-Filtering-Correlation-Id: 26f5389c-e4bd-4dde-222d-08dc232e9e03
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Fpe4qnPAhayjOHLeSufj2izioJLG9X3piGmL7YG6EMXN5bTiO0kNxCo7y3SIyzY+0rRxBevFYqbk6vYUHbzdBq0cYknKANlB0YzgUtoM8FiyossabjENrFUh1Dp2mTKKChlacqtpjuRKVFxFgqDZkpTf8Yt8pDqbFXEAHHdueHxBmSC1Nt1m4hbgd2pg2KwzsfmvirsH5rWxmyJL0RvXuC+3anxnnCk5/kePbRv7mDFUnf9s3V4I9RTsPaI5tti4r8cMmACDRDoWu4dfMkP07uiXabiOmvBguhLYVzjPuzu1XgpXtZxDL/O6uJV4yvJ0fMCgQqfZvr4O8OMme6cbnZFTUnkXkVwJ70PJ7pytcqqH91PhZ/uHLw1qarr04ZK9C3Z3XEqAv4RoiMqd9Khe8zgVoWjcwYB1FEVLtfA/6LuTBw/MML3ENFM6/VoF7V57mY9805kLDK2xiFXaoqETjzF2PU3mfUBZqFUlE+kWFlSycbdcEnUMM/QwMqGhidRFj1F+ysSyKv9vNCOIEqW+Uzax1oOlIRjAyf70X1vx0+1fbotp6DrYlnQhU7XheNy9
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(7916004)(366004)(39860400002)(376002)(346002)(396003)(136003)(230922051799003)(186009)(64100799003)(1800799012)(451199024)(66476007)(66556008)(5660300002)(2906002)(235185007)(44832011)(8936002)(316002)(6916009)(54906003)(66946007)(8676002)(4326008)(966005)(478600001)(82960400001)(38100700002)(86362001)(6486002)(41300700001)(9686003)(53546011)(6666004)(6506007)(44144004)(26005)(83380400001)(107886003)(33716001)(6512007)(67856001)(2700100001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?TNvWjRSrd8OI2tus2FdLfaKzkGbGL1/JU7D8BaDBeEYiGJvQTufgzfMBior2?=
+ =?us-ascii?Q?MMkolbccVv1E3dqF36DfqJ9YLx5t7+ENe+ru2DEg2S7ksFWzW+TX+pOlqAc/?=
+ =?us-ascii?Q?lWR8vcj++3RWssiZYs5DJKDWG3fXGY8cJ4wZoXCP7xrgTv5sVyYPKegA1Pgw?=
+ =?us-ascii?Q?OqFj5Iy/Q6Md6J2S2SlWj4TBYK8wC3/gsRINNn1tBrK3GaPRDwdHN+kWRRho?=
+ =?us-ascii?Q?Z4ZhGC0ZC0StZwarBEhvp1LT02JZveYHhziEIcPbfE/UnSZREDNdBS8piuOL?=
+ =?us-ascii?Q?x49FMZ88Hjawp+4Su0iPxEGy0XYQdubD/ounHNgiyb63CwEuP394m3DOooac?=
+ =?us-ascii?Q?hBU9IHo7p8LAhHA4p+TkDKQTjRBhO2Gz5O44w2p63pUSNQX+bRX8PSr77T5m?=
+ =?us-ascii?Q?o6P5FqNMPmnjtqw4rZb2dWnCZcejWvmmWCw+CejbceDHSg8eLl7PV8MCIAUz?=
+ =?us-ascii?Q?BllziSPqHHCfQrsSzzYOpVBtdWRD3+isqoA8c1cbyanN6iXwfcOfvtUns7S9?=
+ =?us-ascii?Q?CWQKeON+8/Dpk4/1NRlxNnACbIk7CAwLSMIMazHIDvb0hQmkNRlZk1edlYic?=
+ =?us-ascii?Q?xSbyHU3VQb0mHQAF6H5vJQf2lEAv+kUee0LpfPIQWs/njnHtaNzrV4IrvZxs?=
+ =?us-ascii?Q?Cpakjaj0UEWllOkDdtp5VeKPNuScLJvgHkoGzAVih2DEyOy+C0ty2QbIAGRj?=
+ =?us-ascii?Q?q5jM+SIAT/uVDBjIxAj2tYtXB0i930u3kRjFQoUiaEYy7zhP7ewoV2we90G0?=
+ =?us-ascii?Q?lij1PBeFac8ekGRiF86pkJ470wMrWmEsO9JgID5yHff6/d5YSkTjfd6u99Q4?=
+ =?us-ascii?Q?ihDaEPSp3o391o/XJPAHLYaAJYHsybGh1cSE5tLTHydMKbqIBZE3dku9Zc+3?=
+ =?us-ascii?Q?VcJ0lErSgEU+KS3Db6C0OfZclHPfZ67UQqwZzhMTNN/8aqt8lvtFoH+neEoJ?=
+ =?us-ascii?Q?C6v64qu4yUDRRNSh/wlbt/WAS0uyRMnJln6GfBJpp/1BgK2Bg109Tv+3Gkib?=
+ =?us-ascii?Q?kFYuDm/HzRDOEYzKLfQFAuldCZ4BnUzAUzZwXO+3ZmmAGfFwtQoOsmQZMl1f?=
+ =?us-ascii?Q?FLnppj5+qDVSJN1FOHaefVftU//vq0q+DHQYyjWENEq9FwlXlr3qaNpIWRUV?=
+ =?us-ascii?Q?uTPj2ZGbn13IloBjCU/THgqe9sreN3ohbqMZB7EA4g+7DY4aUqmVWY18x1U6?=
+ =?us-ascii?Q?kzIAialR474cK+o6w9yP+5zJcO0t4xMyNfPloYUA/QoryH9sqqPLyf0iucUS?=
+ =?us-ascii?Q?nqodbCtmgzDbilAAkPEpr+IZEDx1qiRXPY/b/BzWFvrrUndtE8yDyXUvyuOi?=
+ =?us-ascii?Q?hwECYBRJx3MSUzySPlo+8K7qHAflNmOMTInHzJ5pZ7iPzr7iH1bYQwRCPfiO?=
+ =?us-ascii?Q?UCYmWlMT0WvjV48HAwUH6yzqtqmp9yKVFOBwCe4MMrh95yyFe9TyddJUMmbX?=
+ =?us-ascii?Q?UuoY7f3Hoaa4HXMvDkmNvAsuyPHrmm2W0EQ/viWzX7BM4WowgPnAtv3r3K37?=
+ =?us-ascii?Q?LqabsIkokQiX6TlNSU7O9Fg/GYmkerzsglvLpzs0nlto0mZ9pTA9BH6uE6ew?=
+ =?us-ascii?Q?F5QLq5jhBSnwLa2XCoTG5+JLua6B671g99fJujpn5ffhCiCmU3x2Vzk/7RF9?=
+ =?us-ascii?Q?3g=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 26f5389c-e4bd-4dde-222d-08dc232e9e03
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Feb 2024 14:03:50.7945
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: E8c13yPRAUo75aSMIrv6LbZ20hdTRPCfX4Ans4zIhAQSlC7vnvKvybHtbRr7VRYUqTEOnt0QmuVNUJsrgmIK/A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR11MB8595
+X-OriginatorOrg: intel.com
 
-On Thu, Feb 1, 2024 at 5:44=E2=80=AFAM Vimal Kumar <vimal.kumar32@gmail.com=
-> wrote:
->
-> On Mon, Jan 29, 2024 at 10:08:32PM +0800, kernel test robot wrote:
-> >
-> >
-> > Hello,
-> >
-> > kernel test robot noticed "BUG:sleeping_function_called_from_invalid_co=
-ntext_at_include/linux/sched/mm.h" on:
-> >
-> > commit: e2d228456d500f3b00ad746b353fa85eee235b7a ("[PATCH v3] PM / slee=
-p: Mechanism to find source aborting kernel suspend transition")
-> > url: https://github.com/intel-lab-lkp/linux/commits/Vimal-Kumar/PM-slee=
-p-Mechanism-to-find-source-aborting-kernel-suspend-transition/20240109-2105=
-19
-> > base: https://git.kernel.org/cgit/linux/kernel/git/rafael/linux-pm.git =
-linux-next
-> > patch link: https://lore.kernel.org/all/20240109130210.31938-1-vimal.ku=
-mar32@gmail.com/
-> > patch subject: [PATCH v3] PM / sleep: Mechanism to find source aborting=
- kernel suspend transition
-> >
-> > in testcase: suspend-stress
-> > version:
-> > with following parameters:
-> >
-> >       mode: freeze
-> >       iterations: 10
-> >
-> >
-> >
-> > compiler: gcc-12
-> > test machine: 4 threads (Broadwell) with 8G memory
-> >
-> > (please refer to attached dmesg/kmsg for entire log/backtrace)
-> >
-> >
-> >
-> > If you fix the issue in a separate patch/commit (i.e. not just a new ve=
-rsion of
-> > the same patch/commit), kindly add following tags
-> > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> > | Closes: https://lore.kernel.org/oe-lkp/202401292109.f115a688-oliver.s=
-ang@intel.com
-> >
-> >
-> > kern  :err   : [   97.935754] BUG: sleeping function called from invali=
-d context at include/linux/sched/mm.h:306
-> > kern  :err   : [   97.935886] in_atomic(): 1, irqs_disabled(): 1, non_b=
-lock: 0, pid: 0, name: swapper/1
-> > kern  :err   : [   97.936000] preempt_count: 10002, expected: 0
-> > kern  :err   : [   97.936071] RCU nest depth: 0, expected: 0
-> > kern  :warn  : [   97.936138] CPU: 1 PID: 0 Comm: swapper/1 Not tainted=
- 6.7.0-rc8-00169-ge2d228456d50 #1
-> > kern  :warn  : [   97.936255] Hardware name:  /NUC5i3RYB, BIOS RYBDWi35=
-.86A.0363.2017.0316.1028 03/16/2017
-> > kern  :warn  : [   97.936371] Call Trace:
-> > kern  :warn  : [   97.936419]  <IRQ>
-> > kern :warn : [   97.936461] dump_stack_lvl (lib/dump_stack.c:107 (discr=
-iminator 1))
-> > kern :warn : [   97.936529] __might_resched (kernel/sched/core.c:10152)
-> > kern :warn : [   97.936598] ? preempt_notifier_dec (kernel/sched/core.c=
-:10106)
-> > kern :warn : [   97.936672] __kmem_cache_alloc_node (include/linux/kern=
-el.h:107 include/linux/sched/mm.h:306 mm/slab.h:710 mm/slub.c:3460 mm/slub.=
-c:3517)
-> > kern :warn : [   97.936750] ? kasprintf (lib/kasprintf.c:54)
-> > kern :warn : [   97.936812] ? pointer (lib/vsprintf.c:2755)
-> > kern :warn : [   97.936875] ? kasprintf (lib/kasprintf.c:54)
-> > kern :warn : [   97.936936] __kmalloc_node_track_caller (include/linux/=
-kasan.h:198 mm/slab_common.c:1007 mm/slab_common.c:1027)
-> > kern :warn : [   97.937017] kvasprintf (lib/kasprintf.c:25)
-> > kern :warn : [   97.937079] ? bust_spinlocks (lib/kasprintf.c:16)
-> > kern :warn : [   97.937146] ? enqueue_hrtimer (kernel/time/hrtimer.c:10=
-95 (discriminator 3))
-> > kern :warn : [   97.937214] ? tick_nohz_highres_handler (kernel/time/ti=
-ck-sched.c:1530)
-> > kern :warn : [   97.937295] kasprintf (lib/kasprintf.c:54)
-> > kern :warn : [   97.937354] ? kvasprintf_const (lib/kasprintf.c:54)
-> > kern :warn : [   97.937426] ? _raw_spin_lock_irqsave (arch/x86/include/=
-asm/atomic.h:115 include/linux/atomic/atomic-arch-fallback.h:2164 include/l=
-inux/atomic/atomic-instrumented.h:1296 include/asm-generic/qspinlock.h:111 =
-include/linux/spinlock.h:187 include/linux/spinlock_api_smp.h:111 kernel/lo=
-cking/spinlock.c:162)
-> > kern :warn : [   97.937501] ? _raw_read_unlock_irqrestore (kernel/locki=
-ng/spinlock.c:161)
-> > kern :warn : [   97.937581] ? _raw_spin_lock (arch/x86/include/asm/atom=
-ic.h:115 include/linux/atomic/atomic-arch-fallback.h:2164 include/linux/ato=
-mic/atomic-instrumented.h:1296 include/asm-generic/qspinlock.h:111 include/=
-linux/spinlock.h:187 include/linux/spinlock_api_smp.h:134 kernel/locking/sp=
-inlock.c:154)
-> > kern :warn : [   97.937648] ? _raw_write_lock_irq (kernel/locking/spinl=
-ock.c:153)
-> > kern :warn : [   97.937719] ? irq_pm_check_wakeup (kernel/irq/pm.c:24)
-> > kern :warn : [   97.937793] pm_system_wakeup (drivers/base/power/wakeup=
-.c:981)
-> > kern :warn : [   97.937862] irq_pm_check_wakeup (kernel/irq/pm.c:24)
-> > kern :warn : [   97.937933] handle_fasteoi_irq (kernel/irq/chip.c:518 k=
-ernel/irq/chip.c:502 kernel/irq/chip.c:698)
-> > kern :warn : [   97.938006] __common_interrupt (arch/x86/kernel/irq.c:2=
-71 (discriminator 22))
-> > kern :warn : [   97.938078] common_interrupt (arch/x86/kernel/irq.c:247=
- (discriminator 14))
-> > kern  :warn  : [   97.938145]  </IRQ>
-> > kern  :warn  : [   97.938187]  <TASK>
-> > kern :warn : [   97.938230] asm_common_interrupt (arch/x86/include/asm/=
-idtentry.h:640)
-> > kern :warn : [   97.938301] RIP: 0010:cpuidle_enter_s2idle (arch/x86/in=
-clude/asm/irqflags.h:78 drivers/cpuidle/cpuidle.c:199)
-> > kern :warn : [ 97.938384] Code: d9 75 83 85 d2 7f 11 48 83 c4 20 89 d0 =
-5b 5d 41 5c 41 5d 41 5e 41 5f c3 4c 89 c6 48 89 cf 89 14 24 e8 fb 64 9b 00 =
-fb 8b 14 24 <eb> db 31 d2 eb d7 48 89 0c 24 48 89 74 24 08 e8 03 51 9f fe 4=
-c 8b
-> > All code
-> > =3D=3D=3D=3D=3D=3D=3D=3D
-> >    0: d9 75 83                fnstenv -0x7d(%rbp)
-> >    3: 85 d2                   test   %edx,%edx
-> >    5: 7f 11                   jg     0x18
-> >    7: 48 83 c4 20             add    $0x20,%rsp
-> >    b: 89 d0                   mov    %edx,%eax
-> >    d: 5b                      pop    %rbx
-> >    e: 5d                      pop    %rbp
-> >    f: 41 5c                   pop    %r12
-> >   11: 41 5d                   pop    %r13
-> >   13: 41 5e                   pop    %r14
-> >   15: 41 5f                   pop    %r15
-> >   17: c3                      retq
-> >   18: 4c 89 c6                mov    %r8,%rsi
-> >   1b: 48 89 cf                mov    %rcx,%rdi
-> >   1e: 89 14 24                mov    %edx,(%rsp)
-> >   21: e8 fb 64 9b 00          callq  0x9b6521
-> >   26: fb                      sti
-> >   27: 8b 14 24                mov    (%rsp),%edx
-> >   2a:*        eb db                   jmp    0x7              <-- trapp=
-ing instruction
-> >   2c: 31 d2                   xor    %edx,%edx
-> >   2e: eb d7                   jmp    0x7
-> >   30: 48 89 0c 24             mov    %rcx,(%rsp)
-> >   34: 48 89 74 24 08          mov    %rsi,0x8(%rsp)
-> >   39: e8 03 51 9f fe          callq  0xfffffffffe9f5141
-> >   3e: 4c                      rex.WR
-> >   3f: 8b                      .byte 0x8b
-> >
-> > Code starting with the faulting instruction
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> >    0: eb db                   jmp    0xffffffffffffffdd
-> >    2: 31 d2                   xor    %edx,%edx
-> >    4: eb d7                   jmp    0xffffffffffffffdd
-> >    6: 48 89 0c 24             mov    %rcx,(%rsp)
-> >    a: 48 89 74 24 08          mov    %rsi,0x8(%rsp)
-> >    f: e8 03 51 9f fe          callq  0xfffffffffe9f5117
-> >   14: 4c                      rex.WR
-> >   15: 8b                      .byte 0x8b
-> > kern  :warn  : [   97.938632] RSP: 0018:ffffc90000177db8 EFLAGS: 000002=
-86
-> > kern  :warn  : [   97.938717] RAX: 00000000037a402c RBX: 00000000000000=
-09 RCX: 0000000000000000
-> > kern  :warn  : [   97.938823] RDX: 0000000000000008 RSI: 0000000937e23a=
-d2 RDI: 0000000000000000
-> > kern  :warn  : [   97.938927] RBP: ffffffff84f7f680 R08: 00000000000000=
-00 R09: ffffed1021ad5530
-> > kern  :warn  : [   97.939032] R10: ffff88810d6aa987 R11: 00000000000000=
-00 R12: ffff88820decca10
-> > kern  :warn  : [   97.939137] R13: dffffc0000000000 R14: 000000000027ac=
-40 R15: 000000000027ac40
-> > kern :warn : [   97.939244] ? cpuidle_enter_s2idle (arch/x86/include/as=
-m/irqflags.h:42 arch/x86/include/asm/irqflags.h:77 drivers/cpuidle/cpuidle.=
-c:199)
-> > kern :warn : [   97.939319] cpuidle_idle_call (kernel/sched/idle.c:190)
-> > kern :warn : [   97.939389] ? arch_cpu_idle_exit+0x40/0x40
-> > kern :warn : [   97.939459] ? mark_tsc_async_resets (arch/x86/kernel/ts=
-c_sync.c:51)
-> > kern :warn : [   97.939536] do_idle (kernel/sched/idle.c:282)
-> > kern :warn : [   97.939594] cpu_startup_entry (kernel/sched/idle.c:379 =
-(discriminator 1))
-> > kern :warn : [   97.939662] start_secondary (arch/x86/kernel/smpboot.c:=
-224 arch/x86/kernel/smpboot.c:304)
-> > kern :warn : [   97.939731] ? set_cpu_sibling_map (arch/x86/kernel/smpb=
-oot.c:254)
-> > kern :warn : [   97.939808] ? soft_restart_cpu (arch/x86/kernel/head_64=
-.S:485)
-> > kern :warn : [   97.939878] secondary_startup_64_no_verify (arch/x86/ke=
-rnel/head_64.S:448)
-> > kern  :warn  : [   97.939963]  </TASK>
-> > kern :info : [   97.948803] bdw_uncore 0000:00:00.0: PM: calling pci_pm=
-_resume_noirq+0x0/0x390 @ 85, parent: 00
-> > kern :info : [   97.948993] bdw_uncore 0000:00:00.0: PM: pci_pm_resume_=
-noirq+0x0/0x390 returned 0 after 17 usecs
-> >
-> >
-> >
-> > The kernel config and materials to reproduce are available at:
-> > https://download.01.org/0day-ci/archive/20240129/202401292109.f115a688-=
-oliver.sang@intel.com
-> >
-> >
-> >
-> > --
-> > 0-DAY CI Kernel Test Service
-> > https://github.com/intel/lkp-tests/wiki
-> >
->
-> Hi Greg,
->
-> This is an example where "pm_system_wakeup" can be called from atomic con=
-text. It also gives an actual instance where we can utilise this feature to=
- find the source.
->
-> The bug reported due to "GFP_KERNEL" flag, but it will be applicable for =
-using "mutex_lock" as well.
-> I will change to ATOMIC flag in kmalloc, as well as use raw_spin_lock* in=
-stead of mutex_lock.
+--j/JWyE4s/jnbj74X
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
 
-Maybe instead of trying to add bandaids, you could work on making the
-wakeup sources infrastructure suitable for addressing your use case?
+hi, Jens Axboe,
+
+On Thu, Feb 01, 2024 at 06:40:07AM -0700, Jens Axboe wrote:
+> On 2/1/24 12:18 AM, Oliver Sang wrote:
+> > hi, Jens Axboe,
+> > 
+> > On Wed, Jan 31, 2024 at 11:42:46AM -0700, Jens Axboe wrote:
+> >> On 1/31/24 11:17 AM, Bart Van Assche wrote:
+> >>> On 1/31/24 07:42, kernel test robot wrote:
+> >>>> kernel test robot noticed a -72.9% regression of fio.write_iops on:
+> >>>>
+> >>>>
+> >>>> commit: 574e7779cf583171acb5bf6365047bb0941b387c ("block/mq-deadline: use separate insertion lists")
+> >>>> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+> >>>>
+> >>>> testcase: fio-basic
+> >>>> test machine: 64 threads 2 sockets Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz (Ice Lake) with 256G memory
+> >>>> parameters:
+> >>>>
+> >>>>     runtime: 300s
+> >>>>     disk: 1HDD
+> >>>>     fs: xfs
+> >>>>     nr_task: 100%
+> >>>>     test_size: 128G
+> >>>>     rw: write
+> >>>>     bs: 4k
+> >>>>     ioengine: io_uring
+> >>>>     direct: direct
+> >>>>     cpufreq_governor: performance
+> >>>
+> >>> The actual test is available in this file:
+> >>> https://download.01.org/0day-ci/archive/20240131/202401312320.a335db14-oliver.sang@intel.com/repro-script
+> >>>
+> >>> I haven't found anything in that file for disabling merging. Merging
+> >>> requests decreases IOPS. Does this perhaps mean that this test is
+> >>> broken?
+> >>
+> >> It's hard to know as nothing in this email or links include the actual
+> >> output of the job...
+> > 
+> > I attached a dmesg and 2 outputs while running tests on 574e7779cf.
+> > not sure if they are helpful?
+> 
+> Both fio outputs is all I need, but I only see one of them attached?
+
+while we running fio, there are below logs captured:
+fio
+fio.output
+fio.task
+fio.time
+
+I tar them in fio.tar.gz as attached.
+you can get them by 'tar xzvf fio.tar.gz'
+
+
+> 
+> >> But if it's fio IOPS, then those are application side and don't
+> >> necessarily correlate to drive IOPS due to merging. Eg for fio iops,
+> >> if it does 4k sequential and we merge to 128k, then the fio perceived
+> >> iops will be 32 times larger than the device side.
+> >>
+> >> I'll take a look, but seems like there might be something there. By
+> >> inserting into the other list, the request is also not available for
+> >> merging. And the test in question does single IOs at the time.
+> > 
+> > if you have any debug patch want us to run, please just let us know.
+> > it will be our great pleasure!
+> 
+> Thanks, might take you up on that, probably won't have time for this
+> until next week however.
+> 
+> -- 
+> Jens Axboe
+> 
+
+--j/JWyE4s/jnbj74X
+Content-Type: application/gzip
+Content-Disposition: attachment; filename="fio.tar.gz"
+Content-Transfer-Encoding: base64
+
+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
+
+--j/JWyE4s/jnbj74X--
