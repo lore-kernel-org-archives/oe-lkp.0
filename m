@@ -1,108 +1,77 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58154848A;
-	Wed, 31 Jan 2024 21:58:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+Received: from mx10.didiglobal.com (mx10.didiglobal.com [111.202.70.125])
+	by smtp.subspace.kernel.org (Postfix) with SMTP id 07853C8C6
+	for <oe-lkp@lists.linux.dev>; Thu,  1 Feb 2024 01:29:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=111.202.70.125
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706738308; cv=none; b=RREqfd1GgoszwjXYTObXfV3FyxQUi2w0oTvivnFvFKVArHCZcB4cE5TneuZYni5hTyF18lBHElydafH4+3WCdFB4/vQdwnJN+TFYNwVYxy/+rKxNjU3sXdfoYBI3QxIg0+F8zChwZcp6SKMsai7kSRnDTEIM41BkQq2GbKe5LPY=
+	t=1706750990; cv=none; b=rtGnONGn6YFdSMHaO/M8IxVR6leb+YHoX9jtlEIhNaQ8pGNdhr26kmFDLEhf8toEfTEA3c4DvJQaSPTcAgu+5w9paRqNB6XP46WLvIz68cap/oi85oizGuzgUaCbMegxCt4VYVJrQ9tqXFAIR0WK+5eeh6Q4VsCTbLLFo4Q4P8g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706738308; c=relaxed/simple;
-	bh=OCJeKfhQ9glNLXX2ntf9uF6fRDRZS3kJloQ6WG9qz+0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Oss+OhbgcqQ1dcGfO9SCkNHAVb2Ex4DaXWA+5i4qzURSoURH9NufE/mfrO5cgfql+iid3GVVBp0lsazN6OPzDRZEpFOXqGx1MPnxSIH0bBlF2qiX0ebp8QzhrWE+UEfwU6REAzsLK0bMN/yX+f3yA8nu2+1+g6OXW5uWS5beEiQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=h5bIouCx; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="h5bIouCx"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=iQfXW37ZK31yG37Afle32aWwrDr+gCC0dupCwANd1vs=; b=h5bIouCxLjtlG+frdiQOFKm2uX
-	U/2ZniW40PsD232UWulNNlEaoHXQ8vL020jg5yOCCTTa2+x+4cp4iN0RKjKmw/OFYhACLIHTwfHrr
-	+OCXquWfqnT2hOYEFwKT6LLOUBLWA2LhvBYQNZ6mEUsnh/xuiGHLX8KHfraUJLSPSPCZ74ckbjL4L
-	P5vpWzCdDLZG1+r+ZaXFv+NzQs/EblX49p6GNr5b3Ps9H8UMa0RrlxLERCzxFBPLMYC6RjWIx12M3
-	DUQzLrOfxDW43HkIUxSepWMBLAeXVqd6+SjoBG1E1Agz2p7Wd/eMuy2VQiUevb74HBKrZx5tEEB4E
-	CXo+TkOA==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.97.1 #2 (Red Hat Linux))
-	id 1rVIbC-00000005dEB-100a;
-	Wed, 31 Jan 2024 21:58:26 +0000
-Date: Wed, 31 Jan 2024 13:58:26 -0800
-From: Luis Chamberlain <mcgrof@kernel.org>
-To: Matthew Wilcox <willy@infradead.org>
-Cc: kernel test robot <oliver.sang@intel.com>,
-	Daniel Gomez <da.gomez@samsung.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, linux-kernel@vger.kernel.org,
-	"gost.dev@samsung.com" <gost.dev@samsung.com>,
-	Pankaj Raghav <p.raghav@samsung.com>
-Subject: Re: [PATCH 1/2] test_xarray: add tests for advanced multi-index use
-Message-ID: <ZbrCglszF4n3BtGA@bombadil.infradead.org>
-References: <20231104005747.1389762-2-da.gomez@samsung.com>
- <202311152254.610174ff-oliver.sang@intel.com>
- <ZVfS8fiudvHADtoR@bombadil.infradead.org>
- <ZVfT3bs9+F0jqIAw@casper.infradead.org>
- <ZVfUnhzv4UDigZKa@bombadil.infradead.org>
- <ZbQEA6WIh0HrFTbP@bombadil.infradead.org>
- <ZbQHWf0Hh04OwoZx@casper.infradead.org>
- <ZbQQXO5YhKhdr1Ou@bombadil.infradead.org>
- <ZbQW3PRAIw8e7m0m@casper.infradead.org>
+	s=arc-20240116; t=1706750990; c=relaxed/simple;
+	bh=nZD3LuJaWSFHpqmqiJ25akrbol3IuhUCS5Xy5nd0ISY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:From:In-Reply-To:
+	 Content-Type; b=Lz1VuA2Vnbw0r2uPqPOtgo+1WZ+q+aWGDoyXv76Wh9dfgiJnTJ8FmBM4uCEuhYt3ww4gmbZzs1WF1/bNCyKPb7kPbKSENZi0ONz33ODMU/jNEUzysVegjEod68OL/0yM+OxWnslNzYV+iH1OcD2ZP1VLJ/tC6bfe4MEzIBvG3F8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=didichuxing.com; spf=pass smtp.mailfrom=didiglobal.com; arc=none smtp.client-ip=111.202.70.125
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=didichuxing.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=didiglobal.com
+Received: from mail.didiglobal.com (unknown [10.79.64.13])
+	by mx10.didiglobal.com (MailData Gateway V2.8.8) with ESMTPS id 98CBF18660130F;
+	Thu,  1 Feb 2024 09:29:36 +0800 (CST)
+Received: from [172.24.140.10] (10.79.71.101) by
+ ZJY01-ACTMBX-03.didichuxing.com (10.79.64.13) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Thu, 1 Feb 2024 09:29:36 +0800
+Message-ID: <cb384fac-0de0-4c11-8690-ec12c46da34c@didichuxing.com>
+Date: Thu, 1 Feb 2024 09:29:30 +0800
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZbQW3PRAIw8e7m0m@casper.infradead.org>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [linus:master] [sched/eevdf] 2227a957e1:
+ BUG:kernel_NULL_pointer_dereference,address
+To: Oliver Sang <oliver.sang@intel.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>, <aubrey.li@linux.intel.com>,
+	<yu.c.chen@intel.com>, Tiwei Bie <tiwei.btw@antgroup.com>, Abel Wu
+	<wuyun.abel@bytedance.com>
+Content-Language: en-US
+X-MD-Sfrom: wanghonglei@didiglobal.com
+X-MD-SrcIP: 10.79.64.13
+From: Honglei Wang <wanghonglei@didichuxing.com>
+In-Reply-To: <ZbkDIlIR7qzPt7Vk@xsang-OptiPlex-9020>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: ZJY02-PUBMBX-01.didichuxing.com (10.79.65.31) To
+ ZJY01-ACTMBX-03.didichuxing.com (10.79.64.13)
 
-On Fri, Jan 26, 2024 at 08:32:28PM +0000, Matthew Wilcox wrote:
-> On Fri, Jan 26, 2024 at 12:04:44PM -0800, Luis Chamberlain wrote:
-> > > We have a perfectly good system for "relaxing":
-> > > 
-> > >         xas_for_each_marked(&xas, page, end, PAGECACHE_TAG_DIRTY) {
-> > >                 xas_set_mark(&xas, PAGECACHE_TAG_TOWRITE);
-> > >                 if (++tagged % XA_CHECK_SCHED)
-> > >                         continue;
-> > > 
-> > >                 xas_pause(&xas);
-> > >                 xas_unlock_irq(&xas);
-> > >                 cond_resched();
-> > >                 xas_lock_irq(&xas);
-> > >         }
-> > 
-> > And yet we can get a soft lockup with order 20 (1,048,576 entries),
-> > granted busy looping over 1 million entries is insane, but it seems it
-> > the existing code may not be enough to avoid the soft lockup. Also
-> > cond_resched() may be eventually removed [0].
+
+
+On 2024/1/30 22:09, Oliver Sang wrote:
+> hi, Abel,
 > 
-> what?  you're in charge of when you sleep.  you can do this:
-> 
-> unsigned i = 0;
-> rcu_read_lock();
-> xas_for_each(...) {
-> 	...
-> 	if (iter++ % XA_CHECK_SCHED)
-> 		continue;
-> 	xas_pause();
-> 	rcu_read_unlock();
-> 	rcu_read_lock();
-> }
-> rcu_read_unlock();
-> 
-> and that will get rid of the rcu warnings.  right?
+> On Tue, Jan 30, 2024 at 06:13:32PM +0800, Abel Wu wrote:
+>> On 1/30/24 3:24 PM, kernel test robot Wrote:
+>>>
+>>>
+>>> Hello,
+>>>
+>>> (besides a previous performance report),
+>>> kernel test robot noticed "BUG:kernel_NULL_pointer_dereference,address" on:
+>>>
+>>> commit: 2227a957e1d5b1941be4e4207879ec74f4bb37f8 ("sched/eevdf: Sort the rbtree by virtual deadline")
+>>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>>>
+>>> [test failed on linus/master 3a5879d495b226d0404098e3564462d5f1daa33b]
+>>> [test failed on linux-next/master 01af33cc9894b4489fb68fa35c40e9fe85df63dc]
+>>>
+>>> in testcase: trinity
+>>> version: trinity-i386-abe9de86-1_20230429
 
-The RCU warning was due to my getting an try call missing an RCU lock,
-I fixed that. The pending issue was a soft lockup that I get on low end systems
-testing test_xarray with higher order but after testing on a 2 vcpus
-with only 2 GiB of RAM I cannot reproduce so we can address this later.
-I forget the exact type of low end system I tested this on... but anyway
-I can't reproduce now. I suspect it may have been similar to the issue
-0-day had found long ago and you noted an overloaded system [0]
+Hi Oliver,
 
-[0] https://lore.kernel.org/all/20190306120843.GI13380@bombadil.infradead.org/
+I'm a bit curious, did the problem happen on i386 only? Did you hit it 
+on x86_64 or other platform with the same trinity testcases?
 
-  Luis
+Thanks,
+Honglei
