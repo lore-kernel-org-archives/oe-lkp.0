@@ -1,365 +1,247 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52D548F40;
-	Mon,  5 Feb 2024 02:41:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.9
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707100921; cv=fail; b=q0YIAaAQQUE9cGBnuZnBOiZrrK+OzU1HlkmQa6FlAJLtjqyOGCNvtvq5diM2PWRfHrwL8WkW49W800ECJ2jtwUUTtss+jkx9QPFsAP68UZJQnGV14KTRSXgDPw14j8d7D7F5KRklznJj+YLZciP93vR3BaJcK5NUgwO2gD56lqA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707100921; c=relaxed/simple;
-	bh=ycY4hKpYeIZO91CgqNGoNcOUuG0qrRtnbwisMn0Gric=;
-	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=mGlZ5hNgS+AE/P6suF1A/ppN/jeiLu4CLk0//BPpUQHhUY08QueirGrs8dQJf9LHc1Wa5fsvCm/wR8EbS85vlNLZPRw7kxoBX1vkL9aPgaFRFs79oBAEQZ/lKdgPcMv+rCgolddCdTzfwRZyd6dUBMZQSMWw4sYLqNNYu0og8h8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TVXsJFHK; arc=fail smtp.client-ip=192.198.163.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B51FBAD5A
+	for <oe-lkp@lists.linux.dev>; Mon,  5 Feb 2024 04:54:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1707108888; cv=none; b=J1ewxxDrxT8KPE86oJnk1tsXKbJQ6JnEx8gcWqp6Ll/MEivuZiggEAJTtiZbzt7lZ/YMiJWKzJSJD8+ZzBSZGsUK41/XUhPJ9mTZ0V0Dd2DhWkIRaBQ8KBhXsy1Q8uYDvgPzCiSNgycjvJyCkcFfKrcZGWhDltg3QGSJvU/+BSA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1707108888; c=relaxed/simple;
+	bh=nMpSfqi7ZFISY+EjBOdFx+jM4cvPJbCuZ+FU4pDq434=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=by9v2fgUUjUXjvjJtwH8pEdXTTJF1K2Hto25dHBSp5Do0LY9j4yVS3HT+TF392xRDH9vBpozgN7kvSF5qu70a31NdRU4O8XRY9hjL+aQUJUIgPzxxbCAsgkJn6o4uQe8wFipd2wpqUFz+KJ543TvUVmoA1fDCZ3n6dFNjE8ODpQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OuW9MEXt; arc=none smtp.client-ip=209.85.214.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TVXsJFHK"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1707100919; x=1738636919;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   mime-version;
-  bh=ycY4hKpYeIZO91CgqNGoNcOUuG0qrRtnbwisMn0Gric=;
-  b=TVXsJFHKHYpwLC5dUcULpXPaS+wbZ5LQHJUAwcjKfqZ2qsSPAxObWrri
-   8uHWz/tdFfaTnqMLiicYuvg7ZCfpqA6g3Y4tZ9yV7c4W2peAPM0FDAhpY
-   bdSvbsUfd3aS5Iacf7hpnTPvc0FpOzwfqKu7rMsYXHsswHkhMSebTI1Zz
-   AnbYUk4d3Yl9IBkSPzcJwEee1KZ4+NwIz47hkKS/iR0DKJQgzug6q5+YH
-   EvI5JmffqCzFv1sH9qW6YJqtKqlb5Mdfauk3SBj/+7PApzovPv7gZwGJ6
-   mDPdxOsfA59QGakwj1OJ+TW/B8UYRpjnD7a8qiuN97f1t/PiOrSE3g2TU
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10974"; a="11177016"
-X-IronPort-AV: E=Sophos;i="6.05,242,1701158400"; 
-   d="scan'208";a="11177016"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2024 18:41:57 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.05,242,1701158400"; 
-   d="scan'208";a="889155"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by fmviesa006.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 04 Feb 2024 18:41:57 -0800
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Sun, 4 Feb 2024 18:41:57 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Sun, 4 Feb 2024 18:41:56 -0800
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35 via Frontend Transport; Sun, 4 Feb 2024 18:41:56 -0800
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.101)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Sun, 4 Feb 2024 18:41:56 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GzPHhnR6JE5bB6IphjSn1E+7H1kcwsSsNCNBIVnJBHJk614oCsgYxfcuxo8/Tb6htEKBTp7Lp8IxkfL/FkFf0+H8VZP01/va6kNkrzJVeoV/TdtP8XaniYwj9lp4/54GlWgqV//aD3eWQZzoikqN3cHlivK7IXL1GgPsuumUIP0GZeaTMMYCQ5Hm/bt3GNUJdIsVP4beFWssop2iKHKCs/t085lrHeZI8bTwwlyeEj7L8toj1ZxLxzBRdgHHlt4+XU/4hmZm1LbxSCERxiCGeGNaDVnMuh3esbDl9YRZV4N8/Ifj7rCUpJxPVNwcWEuBDcwZT/YgIAkgcMFW2epP3Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=RYcUoBy50ypOiAy6g2auz49a2CAnZaCrr5sccIfAU+Q=;
- b=c/TlGMI+YBZZ5UB8KEdqt79RBgvwe5LVgVEYiW7ONXPVAjBm3+9yQUpDo+UX0EerDj6JpJkw3sGqlCGWNCQ1qESa4uXvHrsrYPbR9fKKQiVG3KM/DJyiaemMahdPAvEctzu2JTPN5ATl1aLbv4ebDo8/bh0hF0snoG/UzmrFvCxJbit9APv4GRFJP23xm6532d5XznGoJTOZtmV5xSzDjwd0kS1opLD+n/VbaCtHBqlcrXW+THQ1M4GcWLF3XbHj8UkImaqalaLCieAtYXgw4EoMzpjSiKWTt/wuw+qUtPr2BhltCaTzdgblMwtwuckBaGuMvVwe9rDVjmOvCTKOpg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by DM8PR11MB5591.namprd11.prod.outlook.com (2603:10b6:8:38::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7249.34; Mon, 5 Feb
- 2024 02:41:54 +0000
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::a026:574d:dab0:dc8e]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::a026:574d:dab0:dc8e%3]) with mapi id 15.20.7249.032; Mon, 5 Feb 2024
- 02:41:54 +0000
-Date: Mon, 5 Feb 2024 10:41:30 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: Daniel Xu <dxu@dxuuu.xyz>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <bpf@vger.kernel.org>,
-	<linux-input@vger.kernel.org>, <fsverity@lists.linux.dev>,
-	<cgroups@vger.kernel.org>, <netdev@vger.kernel.org>,
-	<netfilter-devel@vger.kernel.org>, <coreteam@netfilter.org>,
-	<mhiramat@kernel.org>, <daniel@iogearbox.net>, <edumazet@google.com>,
-	<fw@strlen.de>, <hannes@cmpxchg.org>, <tytso@mit.edu>, <ast@kernel.org>,
-	<eddyz87@gmail.com>, <kuba@kernel.org>, <tj@kernel.org>,
-	<steffen.klassert@secunet.com>, <yonghong.song@linux.dev>, <hawk@kernel.org>,
-	<rostedt@goodmis.org>, <john.fastabend@gmail.com>, <pablo@netfilter.org>,
-	<pabeni@redhat.com>, <jikos@kernel.org>, <davem@davemloft.net>,
-	<alexandre.torgue@foss.st.com>, Herbert Xu <herbert@gondor.apana.org.au>,
-	<song@kernel.org>, <dsahern@kernel.org>, <mcoquelin.stm32@gmail.com>,
-	<corbet@lwn.net>, <lizefan.x@bytedance.com>, <andrii@kernel.org>,
-	<martin.lau@linux.dev>, <benjamin.tissoires@redhat.com>,
-	<ebiggers@kernel.org>, <kadlec@netfilter.org>, <shuah@kernel.org>,
-	<alexei.starovoitov@gmail.com>, <olsajiri@gmail.com>,
-	<quentin@isovalent.com>, <alan.maguire@oracle.com>, <memxor@gmail.com>,
-	<kpsingh@kernel.org>, <sdf@google.com>, <haoluo@google.com>,
-	<jolsa@kernel.org>, <mathieu.desnoyers@efficios.com>, <mykolal@fb.com>,
-	<linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-trace-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-	<linux-stm32@st-md-mailman.stormreply.com>,
-	<linux-arm-kernel@lists.infradead.org>, <oliver.sang@intel.com>
-Subject: Re: [PATCH bpf-next v4 3/3] bpf: treewide: Annotate BPF kfuncs in BTF
-Message-ID: <202402041610.775e7f75-lkp@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <e55150ceecbf0a5d961e608941165c0bee7bc943.1706491398.git.dxu@dxuuu.xyz>
-X-ClientProxiedBy: SI2P153CA0029.APCP153.PROD.OUTLOOK.COM
- (2603:1096:4:190::16) To LV3PR11MB8603.namprd11.prod.outlook.com
- (2603:10b6:408:1b6::9)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OuW9MEXt"
+Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-1d918008b99so29514705ad.3
+        for <oe-lkp@lists.linux.dev>; Sun, 04 Feb 2024 20:54:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1707108886; x=1707713686; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=XnqizP/EpRlVpKir0OkN1dao+NwnPy/m8rTS5fbKrfE=;
+        b=OuW9MEXtjjYZD0d6ppcx2nn0ZW6ErIElgCKXiSexVtGHht0J+XYhURJPLmhIbn361N
+         FhaHXBoHr7oyIwhaRWwBxnDPk4Zes0I7j+0voMWc6lcsaTOLWJEdTFSlfvzU+D6UcPCt
+         zo4iRV25fUeh2SkLOq88HuZow1BgbX7dVwoux/Tho6onO9XqYTPXP2CaaC5nnBm/81vc
+         ANzoIA9DXMCsoXhKx0zC0/Y0hgdG00irxOnXkZufqKxpU+H07VVINkrJRL7BvNfQxZiY
+         qsBOh/XSk6dtqauNYm35viLy4CQcrQiIHbTVAIXtenWNVUyBs4D7UNKsBaHCWhCXDOD4
+         c77w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1707108886; x=1707713686;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=XnqizP/EpRlVpKir0OkN1dao+NwnPy/m8rTS5fbKrfE=;
+        b=AA8F9kFS7cCYquFPxMkTsR312adZXC0xztjNijnTFfRvzmgd2zukOgKSDdAn2KEcWS
+         CDtjui2kEA9De6pai2Ubnpqo1Ujxecztr4yyPUT2tF9/eJa0wQ+Y9GVwydnS92whg5pe
+         Ofy7cpa3DAfpsxw8xo+WRclRV9cnF831cj++KWnheZ8hE2c3y5bbrubf2kjyg107se2e
+         OswSX/L9sVlvayMzcTIwtlHAUumwoNTKNvQ6r1HQ50r1GX+4mOBaJXLBJZosHK/i4ztT
+         /a5qIyVWkhy+AQrQb+zUg2Tis/SN5o48I4dU62gGG9Y4O0GdH5ZMNCNXL7iovAZooUxB
+         fWUw==
+X-Gm-Message-State: AOJu0Yw8xs3fIWenoqTV5tkWQdQA+2PvUExqqMifsvnVmMBfenU87hVi
+	vZLDsMxe1PrbNzu8VlIGW/wPEynMML5ao1NcWVTDw3KvyQ3kMIZa
+X-Google-Smtp-Source: AGHT+IGdZ9Nw6ndgNYJku3ELmOXxUaZunIWT8f4DhM5qEPPYYtPD7anuyhDPQxzkfH1JDGj9cJ9tgw==
+X-Received: by 2002:a17:903:32cb:b0:1d9:6091:6f3b with SMTP id i11-20020a17090332cb00b001d960916f3bmr10636022plr.47.1707108885784;
+        Sun, 04 Feb 2024 20:54:45 -0800 (PST)
+X-Forwarded-Encrypted: i=0; AJvYcCVIA/+b2reYSvJMvM+siPd2sFvQPfuLg75ymFAuYTXPMllItAYb8lkTDY3WJpaLmf2mrolAbjUoYcVpaDUKKrCbjVY/FqAPqCptmNgxKYdRD82eZGRZ/2nY6HIxKM0Rgi0GbGZXkSB+81mC1TUsCM7w0JF0oTXfV2AcSPyteXXmtsp6xLj/EwBMd96uuQn6cum1tISKPNI8RhypSK56rfVz/IaHOmJTUtaAUInNBHx386lRUHKoTBsApFjUE5Id1H59VEruLySkGcQk+o0PYIU2Fl+/bGa85KCjRZlb1OkrIoPKpBZsWP8QEPTLG+Qy4J/E7uUvd76ILT6oMBagEH3/QTKMhWZEBpCtES3WJyTvhn+JPG1jERRBJ0mqeB3Pk75ubjThSxw50aM3PVprFhdMgdRW5QgGftkGGqFfW8cKPVrfjc7rkA==
+Received: from DESKTOP-KA7F9LU.localdomain ([2406:7400:63:bcee:3010:3a5c:b341:6b38])
+        by smtp.gmail.com with ESMTPSA id l4-20020a170903244400b001d9620dd3fdsm5257270pls.206.2024.02.04.20.54.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 04 Feb 2024 20:54:45 -0800 (PST)
+Date: Mon, 5 Feb 2024 10:24:39 +0530
+From: Vimal Kumar <vimal.kumar32@gmail.com>
+To: "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, Chinmoy Ghosh <chinmoyghosh2001@gmail.com>,
+	Mintu Patel <mintupatel89@gmail.com>,
+	Vishal Badole <badolevishal1116@gmail.com>,
+	linux-pm@vger.kernel.org, rui.zhang@intel.com, yu.c.chen@intel.com,
+	Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] PM / sleep: Mechanism to find source aborting kernel
+ suspend transition
+Message-ID: <20240205045439.GA2553@DESKTOP-KA7F9LU.localdomain>
+References: <20240109130210.31938-1-vimal.kumar32@gmail.com>
+ <202401292109.f115a688-oliver.sang@intel.com>
+ <20240201044437.GA113@DESKTOP-KA7F9LU.localdomain>
+ <CAJZ5v0geH_xn9RDGRUZ1izFt2cOA7_mo8r=8C3HoqZ1icfVKBA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|DM8PR11MB5591:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5175dfda-ce58-40ad-aac6-08dc25f40388
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: njr9lqjXR/1kwT6DrvgfWhtUOv4jGh9g/cLQ32lEgEpi2+sRJn5/U90oF/Rrb/iAUZ7SLOhiS9BQ5m83rkfscp7zY/qicAkNm0KGl2C6hjzOTHrdmVuzPMxfRyIX/kkzV7ekEkxO1Ylma//kBZGvMBvv/a8fJPUTT/YGZI90699JeKBaAhEC4hRoNzrL+kNRr4Ciz5VEaDwE5zWU3WgR09EPNTA8XApi7RXeiKMqzYUoYK9PkWjVGsuE033zfPHiEdXzOo0zWHt5HS0l+urN2NmJwCnY5nI7ZSMjg0OAoqzjI522R4PZUY9n6oSPc9U0z7xV3JZJDDo0zHdLWc7Q4KatOn09XbpJL2WNwG1Y6yKFs9YqH6jRKFUzhUff8CT51x0IBd5n2YbseBphOPhwmQYowifBTXjzLBPN/gjX4hf7IosJWBbyYOOAqRJt2dbreuPrMyXlgDc45ePFXhdYDYPiW1D/kHE6/grPV3009LivkiJc1vGJK0vADD4/L5xkMTxt+C3AXgfSy50DRpd/TVJLiIchtt7rToMuVbQT62g=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(396003)(376002)(136003)(366004)(346002)(230273577357003)(230922051799003)(64100799003)(186009)(1800799012)(451199024)(7366002)(7416002)(7406005)(5660300002)(2906002)(41300700001)(8936002)(8676002)(4326008)(66556008)(316002)(66476007)(6916009)(66946007)(36756003)(478600001)(82960400001)(86362001)(45080400002)(6512007)(2616005)(83380400001)(107886003)(6666004)(6506007)(1076003)(26005)(6486002)(966005)(38100700002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?auJoDDvMgJS1SHHNAWfTwPTw5LwYfskwHc1K/dcymG+3hDWEQ7XWAqGoPES5?=
- =?us-ascii?Q?z3TQ40vi6qa8i86vxeEnjp6mqaBm+U/Nel+WYjTEat4mro5y2JuO7v/tDyma?=
- =?us-ascii?Q?3otA5W1ZAt4sJkFX3OycC7UVwk5NrzJbLQn19/OC06ztH+spt17cAvqNwIhS?=
- =?us-ascii?Q?gNIRVV28kwf8K9eqcPTRHNCIKq/qd99MuDDUpB//WUDb1Qbq+NBMSFBOnZZa?=
- =?us-ascii?Q?frUOdxgMtLp54w+RUmXcaQ75SHNcmHJGA8X4xaa3/gxH6Lor616RjgT0T58e?=
- =?us-ascii?Q?NXy499Y57ZsJXLb1a0gH6kXuXwtHXUk+G/a5KmHJ0QtSaCYLw8OrN8gdCPOJ?=
- =?us-ascii?Q?+ACSr2T7Hc2g69ugzY1NqXrmVY2WdOEuTqKedJB2sbTir89dQsH1G4iePqpC?=
- =?us-ascii?Q?lMlzMlEw6wy/ETGz9Tm88JYKmegciyFAJmra4W6BTh7KfCbRkPYuj3m2NaT7?=
- =?us-ascii?Q?Ov5tSf5wl2sliA5Xz5/iszb+nrAsl9bP0msIBdR0tiWOTXq/0iOAkQe4q5PF?=
- =?us-ascii?Q?nSu2YQfiP5dfHwlivLiY6xFXb4Bu2z/hiEhMXWkkVygL/dwRumLo4jDruCul?=
- =?us-ascii?Q?ZmGTII+6Jc5wTQb/a2eswyPTEUDG3UdjSApTTN78I8VlhSTMu5qgpcy/Ri2G?=
- =?us-ascii?Q?IpM+h4+JDVZY/4VDuVfI0jjgk44TVlEXdY5btGNw88wH/3l2lyU+ZALojTsb?=
- =?us-ascii?Q?Kx5BT9f9sO59NXOFy993afc41n0kVuZ5b5W0wySlUQNhkra5TeIfTVdmFTjb?=
- =?us-ascii?Q?i4xlHf/BbixpnfI5kWLIkCXt25fwDVrJMkIya0V60l3YuMih8qLTZFk9SEGd?=
- =?us-ascii?Q?vXw7jPalRtJWky5bw7+z7KSRechIRpsyFrgdq/lLP0Ce/CbPGZ4t3mjMNZF3?=
- =?us-ascii?Q?7ArAny5EoKkgOuQOlwj/EYKIlQu0FkZsa6MMLl/rhr+uJyuiH4evfT+dlDDi?=
- =?us-ascii?Q?VCCBzjkgZhXT5qOoB6kv0cmBidw0RZnMwce3OZjR2aR4BxAVWnm3jsVrx1vM?=
- =?us-ascii?Q?xp0pTVciwiykQaE54SNvz1gurEq7ghdCfzyFT0919tvtxqlnSZXmgvhlCILs?=
- =?us-ascii?Q?OjMm73Kxioa9HYl0+OIGGNjkgiBwwWJg9uX1Vo/l9GVO3igMM4SOVCiOtKTC?=
- =?us-ascii?Q?sGozuULs+pXoE9kMJfftEr9bkx4YOXGej9bromtG1RnEmUMT+mk6DtsJqepE?=
- =?us-ascii?Q?gv5cmkHufzt8GqbsCOaUEVHdDjykKjzBmZiyyPPBGe03acanNwp9+fMMnF1n?=
- =?us-ascii?Q?CjyNUR0+/qMwFku+67zv9jf4jwkrsWRONXcxsxpQHdFx+Bs+akP0wGOr0R5r?=
- =?us-ascii?Q?ETxY6CNAzCP2KAluMfscODK5ayBaGpF4OHcRm/gqsUQZNYryXJggPxt6iqcX?=
- =?us-ascii?Q?egRo1Dek8VrfW2TrvE+gdnkDcVCfTbY4u58X3kXNxQIub3CdqTIdQifSJ9GR?=
- =?us-ascii?Q?hjSXdNBjQjwsIEQ4p0BbuNDYpvNJF9YUsehKZi+EjMR/NPyeCastPY2/PF78?=
- =?us-ascii?Q?ZPCD24jycl1zF+FYnUoJn0+DY+tquk017pwG9a8oF/YHg9D08wPItgLknbVl?=
- =?us-ascii?Q?6r6Yn8poJGAyQ+ymCxrr5pooAAdubhLpLxRVVSkwDZLtXh+2nJEgQAtNQZ4P?=
- =?us-ascii?Q?Rw=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5175dfda-ce58-40ad-aac6-08dc25f40388
-X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Feb 2024 02:41:54.4648
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: WSjhYORdrMxziW80Rys8IUXvPbEXg5W2F3vnd4NC3CfsPymIsJcrOKTCvnXeZq0jPmOrM8ymkNWtvruKwaB/Jw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR11MB5591
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAJZ5v0geH_xn9RDGRUZ1izFt2cOA7_mo8r=8C3HoqZ1icfVKBA@mail.gmail.com>
 
+On Thu, Feb 01, 2024 at 02:59:00PM +0100, Rafael J. Wysocki wrote:
+> On Thu, Feb 1, 2024 at 5:44 AM Vimal Kumar <vimal.kumar32@gmail.com> wrote:
+> >
+> > On Mon, Jan 29, 2024 at 10:08:32PM +0800, kernel test robot wrote:
+> > >
+> > >
+> > > Hello,
+> > >
+B> > > kernel test robot noticed "BUG:sleeping_function_called_from_invalid_context_at_include/linux/sched/mm.h" on:
+> > >
+> > > commit: e2d228456d500f3b00ad746b353fa85eee235b7a ("[PATCH v3] PM / sleep: Mechanism to find source aborting kernel suspend transition")
+> > > url: https://github.com/intel-lab-lkp/linux/commits/Vimal-Kumar/PM-sleep-Mechanism-to-find-source-aborting-kernel-suspend-transition/20240109-210519
+> > > base: https://git.kernel.org/cgit/linux/kernel/git/rafael/linux-pm.git linux-next
+> > > patch link: https://lore.kernel.org/all/20240109130210.31938-1-vimal.kumar32@gmail.com/
+> > > patch subject: [PATCH v3] PM / sleep: Mechanism to find source aborting kernel suspend transition
+> > >
+> > > in testcase: suspend-stress
+> > > version:
+> > > with following parameters:
+> > >
+> > >       mode: freeze
+> > >       iterations: 10
+> > >
+> > >
+> > >
+> > > compiler: gcc-12
+> > > test machine: 4 threads (Broadwell) with 8G memory
+> > >
+> > > (please refer to attached dmesg/kmsg for entire log/backtrace)
+> > >
+> > >
+> > >
+> > > If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> > > the same patch/commit), kindly add following tags
+> > > | Reported-by: kernel test robot <oliver.sang@intel.com>
+> > > | Closes: https://lore.kernel.org/oe-lkp/202401292109.f115a688-oliver.sang@intel.com
+> > >
+> > >
+> > > kern  :err   : [   97.935754] BUG: sleeping function called from invalid context at include/linux/sched/mm.h:306
+> > > kern  :err   : [   97.935886] in_atomic(): 1, irqs_disabled(): 1, non_block: 0, pid: 0, name: swapper/1
+> > > kern  :err   : [   97.936000] preempt_count: 10002, expected: 0
+> > > kern  :err   : [   97.936071] RCU nest depth: 0, expected: 0
+> > > kern  :warn  : [   97.936138] CPU: 1 PID: 0 Comm: swapper/1 Not tainted 6.7.0-rc8-00169-ge2d228456d50 #1
+> > > kern  :warn  : [   97.936255] Hardware name:  /NUC5i3RYB, BIOS RYBDWi35.86A.0363.2017.0316.1028 03/16/2017
+> > > kern  :warn  : [   97.936371] Call Trace:
+> > > kern  :warn  : [   97.936419]  <IRQ>
+> > > kern :warn : [   97.936461] dump_stack_lvl (lib/dump_stack.c:107 (discriminator 1))
+> > > kern :warn : [   97.936529] __might_resched (kernel/sched/core.c:10152)
+> > > kern :warn : [   97.936598] ? preempt_notifier_dec (kernel/sched/core.c:10106)
+> > > kern :warn : [   97.936672] __kmem_cache_alloc_node (include/linux/kernel.h:107 include/linux/sched/mm.h:306 mm/slab.h:710 mm/slub.c:3460 mm/slub.c:3517)
+> > > kern :warn : [   97.936750] ? kasprintf (lib/kasprintf.c:54)
+> > > kern :warn : [   97.936812] ? pointer (lib/vsprintf.c:2755)
+> > > kern :warn : [   97.936875] ? kasprintf (lib/kasprintf.c:54)
+> > > kern :warn : [   97.936936] __kmalloc_node_track_caller (include/linux/kasan.h:198 mm/slab_common.c:1007 mm/slab_common.c:1027)
+> > > kern :warn : [   97.937017] kvasprintf (lib/kasprintf.c:25)
+> > > kern :warn : [   97.937079] ? bust_spinlocks (lib/kasprintf.c:16)
+> > > kern :warn : [   97.937146] ? enqueue_hrtimer (kernel/time/hrtimer.c:1095 (discriminator 3))
+> > > kern :warn : [   97.937214] ? tick_nohz_highres_handler (kernel/time/tick-sched.c:1530)
+> > > kern :warn : [   97.937295] kasprintf (lib/kasprintf.c:54)
+> > > kern :warn : [   97.937354] ? kvasprintf_const (lib/kasprintf.c:54)
+> > > kern :warn : [   97.937426] ? _raw_spin_lock_irqsave (arch/x86/include/asm/atomic.h:115 include/linux/atomic/atomic-arch-fallback.h:2164 include/linux/atomic/atomic-instrumented.h:1296 include/asm-generic/qspinlock.h:111 include/linux/spinlock.h:187 include/linux/spinlock_api_smp.h:111 kernel/locking/spinlock.c:162)
+> > > kern :warn : [   97.937501] ? _raw_read_unlock_irqrestore (kernel/locking/spinlock.c:161)
+> > > kern :warn : [   97.937581] ? _raw_spin_lock (arch/x86/include/asm/atomic.h:115 include/linux/atomic/atomic-arch-fallback.h:2164 include/linux/atomic/atomic-instrumented.h:1296 include/asm-generic/qspinlock.h:111 include/linux/spinlock.h:187 include/linux/spinlock_api_smp.h:134 kernel/locking/spinlock.c:154)
+> > > kern :warn : [   97.937648] ? _raw_write_lock_irq (kernel/locking/spinlock.c:153)
+> > > kern :warn : [   97.937719] ? irq_pm_check_wakeup (kernel/irq/pm.c:24)
+> > > kern :warn : [   97.937793] pm_system_wakeup (drivers/base/power/wakeup.c:981)
+> > > kern :warn : [   97.937862] irq_pm_check_wakeup (kernel/irq/pm.c:24)
+> > > kern :warn : [   97.937933] handle_fasteoi_irq (kernel/irq/chip.c:518 kernel/irq/chip.c:502 kernel/irq/chip.c:698)
+> > > kern :warn : [   97.938006] __common_interrupt (arch/x86/kernel/irq.c:271 (discriminator 22))
+> > > kern :warn : [   97.938078] common_interrupt (arch/x86/kernel/irq.c:247 (discriminator 14))
+> > > kern  :warn  : [   97.938145]  </IRQ>
+> > > kern  :warn  : [   97.938187]  <TASK>
+> > > kern :warn : [   97.938230] asm_common_interrupt (arch/x86/include/asm/idtentry.h:640)
+> > > kern :warn : [   97.938301] RIP: 0010:cpuidle_enter_s2idle (arch/x86/include/asm/irqflags.h:78 drivers/cpuidle/cpuidle.c:199)
+> > > kern :warn : [ 97.938384] Code: d9 75 83 85 d2 7f 11 48 83 c4 20 89 d0 5b 5d 41 5c 41 5d 41 5e 41 5f c3 4c 89 c6 48 89 cf 89 14 24 e8 fb 64 9b 00 fb 8b 14 24 <eb> db 31 d2 eb d7 48 89 0c 24 48 89 74 24 08 e8 03 51 9f fe 4c 8b
+> > > All code
+> > > ========
+> > >    0: d9 75 83                fnstenv -0x7d(%rbp)
+> > >    3: 85 d2                   test   %edx,%edx
+> > >    5: 7f 11                   jg     0x18
+> > >    7: 48 83 c4 20             add    $0x20,%rsp
+> > >    b: 89 d0                   mov    %edx,%eax
+> > >    d: 5b                      pop    %rbx
+> > >    e: 5d                      pop    %rbp
+> > >    f: 41 5c                   pop    %r12
+> > >   11: 41 5d                   pop    %r13
+> > >   13: 41 5e                   pop    %r14
+> > >   15: 41 5f                   pop    %r15
+> > >   17: c3                      retq
+> > >   18: 4c 89 c6                mov    %r8,%rsi
+> > >   1b: 48 89 cf                mov    %rcx,%rdi
+> > >   1e: 89 14 24                mov    %edx,(%rsp)
+> > >   21: e8 fb 64 9b 00          callq  0x9b6521
+> > >   26: fb                      sti
+> > >   27: 8b 14 24                mov    (%rsp),%edx
+> > >   2a:*        eb db                   jmp    0x7              <-- trapping instruction
+> > >   2c: 31 d2                   xor    %edx,%edx
+> > >   2e: eb d7                   jmp    0x7
+> > >   30: 48 89 0c 24             mov    %rcx,(%rsp)
+> > >   34: 48 89 74 24 08          mov    %rsi,0x8(%rsp)
+> > >   39: e8 03 51 9f fe          callq  0xfffffffffe9f5141
+> > >   3e: 4c                      rex.WR
+> > >   3f: 8b                      .byte 0x8b
+> > >
+> > > Code starting with the faulting instruction
+> > > ===========================================
+> > >    0: eb db                   jmp    0xffffffffffffffdd
+> > >    2: 31 d2                   xor    %edx,%edx
+> > >    4: eb d7                   jmp    0xffffffffffffffdd
+> > >    6: 48 89 0c 24             mov    %rcx,(%rsp)
+> > >    a: 48 89 74 24 08          mov    %rsi,0x8(%rsp)
+> > >    f: e8 03 51 9f fe          callq  0xfffffffffe9f5117
+> > >   14: 4c                      rex.WR
+> > >   15: 8b                      .byte 0x8b
+> > > kern  :warn  : [   97.938632] RSP: 0018:ffffc90000177db8 EFLAGS: 00000286
+> > > kern  :warn  : [   97.938717] RAX: 00000000037a402c RBX: 0000000000000009 RCX: 0000000000000000
+> > > kern  :warn  : [   97.938823] RDX: 0000000000000008 RSI: 0000000937e23ad2 RDI: 0000000000000000
+> > > kern  :warn  : [   97.938927] RBP: ffffffff84f7f680 R08: 0000000000000000 R09: ffffed1021ad5530
+> > > kern  :warn  : [   97.939032] R10: ffff88810d6aa987 R11: 0000000000000000 R12: ffff88820decca10
+> > > kern  :warn  : [   97.939137] R13: dffffc0000000000 R14: 000000000027ac40 R15: 000000000027ac40
+> > > kern :warn : [   97.939244] ? cpuidle_enter_s2idle (arch/x86/include/asm/irqflags.h:42 arch/x86/include/asm/irqflags.h:77 drivers/cpuidle/cpuidle.c:199)
+> > > kern :warn : [   97.939319] cpuidle_idle_call (kernel/sched/idle.c:190)
+> > > kern :warn : [   97.939389] ? arch_cpu_idle_exit+0x40/0x40
+> > > kern :warn : [   97.939459] ? mark_tsc_async_resets (arch/x86/kernel/tsc_sync.c:51)
+> > > kern :warn : [   97.939536] do_idle (kernel/sched/idle.c:282)
+> > > kern :warn : [   97.939594] cpu_startup_entry (kernel/sched/idle.c:379 (discriminator 1))
+> > > kern :warn : [   97.939662] start_secondary (arch/x86/kernel/smpboot.c:224 arch/x86/kernel/smpboot.c:304)
+> > > kern :warn : [   97.939731] ? set_cpu_sibling_map (arch/x86/kernel/smpboot.c:254)
+> > > kern :warn : [   97.939808] ? soft_restart_cpu (arch/x86/kernel/head_64.S:485)
+> > > kern :warn : [   97.939878] secondary_startup_64_no_verify (arch/x86/kernel/head_64.S:448)
+> > > kern  :warn  : [   97.939963]  </TASK>
+> > > kern :info : [   97.948803] bdw_uncore 0000:00:00.0: PM: calling pci_pm_resume_noirq+0x0/0x390 @ 85, parent: 00
+> > > kern :info : [   97.948993] bdw_uncore 0000:00:00.0: PM: pci_pm_resume_noirq+0x0/0x390 returned 0 after 17 usecs
+> > >
+> > >
+> > >
+> > > The kernel config and materials to reproduce are available at:
+> > > https://download.01.org/0day-ci/archive/20240129/202401292109.f115a688-oliver.sang@intel.com
+> > >
+> > >
+> > >
+> > > --
+> > > 0-DAY CI Kernel Test Service
+> > > https://github.com/intel/lkp-tests/wiki
+> > >
+> >
+> > Hi Greg,
+> >
+> > This is an example where "pm_system_wakeup" can be called from atomic context. It also gives an actual instance where we can utilise this feature to find the source.
+> >
+> > The bug reported due to "GFP_KERNEL" flag, but it will be applicable for using "mutex_lock" as well.
+> > I will change to ATOMIC flag in kmalloc, as well as use raw_spin_lock* instead of mutex_lock.
+> 
+> Maybe instead of trying to add bandaids, you could work on making the
+> wakeup sources infrastructure suitable for addressing your use case?
 
+Sure, Rafael. Thanks for acknowledging it. We are making a plan to correct wakeup sources infrastructure but this patch will help those products
+which are already released and seeking for "how to debug and fix".
 
-Hello,
+As per my understanding, this current patch will help find the issues in projects that are based on <6.8 mainline, and
+the developer/OEM/ODM can find and fix the issues easily.
 
-kernel test robot noticed "WARNING:at_kernel/bpf/btf.c:#register_btf_kfunc_id_set" on:
-
-commit: 918c4c7dda155568c619b4082fa83ca90ab578a6 ("[PATCH bpf-next v4 3/3] bpf: treewide: Annotate BPF kfuncs in BTF")
-url: https://github.com/intel-lab-lkp/linux/commits/Daniel-Xu/bpf-btf-Support-flags-for-BTF_SET8-sets/20240129-092732
-base: https://git.kernel.org/cgit/linux/kernel/git/bpf/bpf-next.git master
-patch link: https://lore.kernel.org/all/e55150ceecbf0a5d961e608941165c0bee7bc943.1706491398.git.dxu@dxuuu.xyz/
-patch subject: [PATCH bpf-next v4 3/3] bpf: treewide: Annotate BPF kfuncs in BTF
-
-in testcase: boot
-
-compiler: clang-17
-test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-+-----------------------------------------------------------------+------------+------------+
-|                                                                 | 05221438c4 | 918c4c7dda |
-+-----------------------------------------------------------------+------------+------------+
-| WARNING:at_kernel/bpf/btf.c:#register_btf_kfunc_id_set          | 0          | 7          |
-| EIP:register_btf_kfunc_id_set                                   | 0          | 7          |
-| calltrace:do_softirq_own_stack                                  | 0          | 7          |
-+-----------------------------------------------------------------+------------+------------+
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202402041610.775e7f75-lkp@intel.com
-
-
-[   49.044594][    T1] ------------[ cut here ]------------
-[ 49.045857][ T1] WARNING: CPU: 1 PID: 1 at kernel/bpf/btf.c:8048 register_btf_kfunc_id_set (??:?) 
-[   49.048024][    T1] Modules linked in:
-[   49.048925][    T1] CPU: 1 PID: 1 Comm: swapper/0 Tainted: G        W          6.8.0-rc1-00457-g918c4c7dda15 #6
-[   49.051230][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-[ 49.053616][ T1] EIP: register_btf_kfunc_id_set (??:?) 
-[ 49.054969][ T1] Code: 04 01 75 0b b8 ea ff ff ff 83 3a 00 74 1c c3 b9 0d 00 00 00 83 f8 20 77 07 8b 0c 85 28 a2 71 d7 55 89 e5 e8 13 00 00 00 5d c3 <0f> 0b c3 90 90 90 90 90 90 90 90 90 90 90 90 90 90 55 89 e5 53 57
-All code
-========
-   0:	04 01                	add    $0x1,%al
-   2:	75 0b                	jne    0xf
-   4:	b8 ea ff ff ff       	mov    $0xffffffea,%eax
-   9:	83 3a 00             	cmpl   $0x0,(%rdx)
-   c:	74 1c                	je     0x2a
-   e:	c3                   	retq   
-   f:	b9 0d 00 00 00       	mov    $0xd,%ecx
-  14:	83 f8 20             	cmp    $0x20,%eax
-  17:	77 07                	ja     0x20
-  19:	8b 0c 85 28 a2 71 d7 	mov    -0x288e5dd8(,%rax,4),%ecx
-  20:	55                   	push   %rbp
-  21:	89 e5                	mov    %esp,%ebp
-  23:	e8 13 00 00 00       	callq  0x3b
-  28:	5d                   	pop    %rbp
-  29:	c3                   	retq   
-  2a:*	0f 0b                	ud2    		<-- trapping instruction
-  2c:	c3                   	retq   
-  2d:	90                   	nop
-  2e:	90                   	nop
-  2f:	90                   	nop
-  30:	90                   	nop
-  31:	90                   	nop
-  32:	90                   	nop
-  33:	90                   	nop
-  34:	90                   	nop
-  35:	90                   	nop
-  36:	90                   	nop
-  37:	90                   	nop
-  38:	90                   	nop
-  39:	90                   	nop
-  3a:	90                   	nop
-  3b:	55                   	push   %rbp
-  3c:	89 e5                	mov    %esp,%ebp
-  3e:	53                   	push   %rbx
-  3f:	57                   	push   %rdi
-
-Code starting with the faulting instruction
-===========================================
-   0:	0f 0b                	ud2    
-   2:	c3                   	retq   
-   3:	90                   	nop
-   4:	90                   	nop
-   5:	90                   	nop
-   6:	90                   	nop
-   7:	90                   	nop
-   8:	90                   	nop
-   9:	90                   	nop
-   a:	90                   	nop
-   b:	90                   	nop
-   c:	90                   	nop
-   d:	90                   	nop
-   e:	90                   	nop
-   f:	90                   	nop
-  10:	90                   	nop
-  11:	55                   	push   %rbp
-  12:	89 e5                	mov    %esp,%ebp
-  14:	53                   	push   %rbx
-  15:	57                   	push   %rdi
-[   49.059550][    T1] EAX: ffffffea EBX: 00000000 ECX: d9356fb0 EDX: d7c2b154
-[   49.061229][    T1] ESI: 00000000 EDI: 0000019a EBP: c028dc48 ESP: c028dc38
-[   49.062886][    T1] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068 EFLAGS: 00010246
-[   49.064685][    T1] CR0: 80050033 CR2: 00000000 CR3: 189ab000 CR4: 000406f0
-[   49.066358][    T1] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 00000000
-[   49.068020][    T1] DR6: fffe0ff0 DR7: 00000400
-[   49.069132][    T1] Call Trace:
-[ 49.069902][ T1] ? show_regs (??:?) 
-[ 49.070890][ T1] ? register_btf_kfunc_id_set (??:?) 
-[ 49.072187][ T1] ? __warn (??:?) 
-[ 49.073151][ T1] ? register_btf_kfunc_id_set (??:?) 
-[ 49.074480][ T1] ? register_btf_kfunc_id_set (??:?) 
-[ 49.075751][ T1] ? report_bug (??:?) 
-[ 49.076858][ T1] ? exc_overflow (??:?) 
-[ 49.077925][ T1] ? handle_bug (traps.c:?) 
-[ 49.078947][ T1] ? exc_invalid_op (??:?) 
-[ 49.080030][ T1] ? handle_exception (init_task.c:?) 
-[ 49.081174][ T1] ? get_seg_base_limit (insn-eval.c:?) 
-[ 49.082393][ T1] ? mutex_lock_killable_nested (??:?) 
-[ 49.083707][ T1] ? exc_overflow (??:?) 
-[ 49.084782][ T1] ? register_btf_kfunc_id_set (??:?) 
-[ 49.086126][ T1] ? mutex_lock_killable_nested (??:?) 
-[ 49.087468][ T1] ? exc_overflow (??:?) 
-[ 49.088520][ T1] ? register_btf_kfunc_id_set (??:?) 
-[ 49.089864][ T1] ? cubictcp_register (tcp_cubic.c:?) 
-[ 49.090991][ T1] do_one_initcall (??:?) 
-[ 49.092136][ T1] ? pvclock_clocksource_read_nowd (??:?) 
-[ 49.093607][ T1] ? __lock_acquire (lockdep.c:?) 
-[ 49.094756][ T1] ? kvm_sched_clock_read (kvmclock.c:?) 
-[ 49.095985][ T1] ? sched_clock_noinstr (??:?) 
-[ 49.097144][ T1] ? local_clock_noinstr (??:?) 
-[ 49.098393][ T1] ? __lock_acquire (lockdep.c:?) 
-[ 49.099575][ T1] ? sched_clock_noinstr (??:?) 
-[ 49.100746][ T1] ? local_clock_noinstr (??:?) 
-[ 49.101997][ T1] ? pvclock_clocksource_read_nowd (??:?) 
-[ 49.103439][ T1] ? kvm_sched_clock_read (kvmclock.c:?) 
-[ 49.104673][ T1] ? pvclock_clocksource_read_nowd (??:?) 
-[ 49.106095][ T1] ? kvm_sched_clock_read (kvmclock.c:?) 
-[ 49.107310][ T1] ? sched_clock_noinstr (??:?) 
-[ 49.109773][ T1] ? local_clock_noinstr (??:?) 
-[ 49.111018][ T1] ? __this_cpu_preempt_check (??:?) 
-[ 49.112289][ T1] ? irqtime_account_irq (??:?) 
-[ 49.113534][ T1] ? irqtime_account_delta (build_policy.c:?) 
-[ 49.114812][ T1] ? irqentry_exit (??:?) 
-[ 49.115860][ T1] ? __this_cpu_preempt_check (??:?) 
-[ 49.117126][ T1] ? lockdep_hardirqs_on (??:?) 
-[ 49.118370][ T1] ? sysvec_reboot (??:?) 
-[ 49.119450][ T1] ? trace_hardirqs_on (??:?) 
-[ 49.120623][ T1] ? irqentry_exit (??:?) 
-[ 49.121703][ T1] ? sysvec_reschedule_ipi (??:?) 
-[ 49.122962][ T1] ? handle_exception (init_task.c:?) 
-[ 49.124130][ T1] ? strlen (??:?) 
-[ 49.125054][ T1] ? next_arg (??:?) 
-[ 49.126086][ T1] ? parse_args (??:?) 
-[ 49.127134][ T1] ? tcp_diag_init (tcp_cubic.c:?) 
-[ 49.128257][ T1] do_initcall_level (main.c:?) 
-[ 49.129398][ T1] ? kernel_init (main.c:?) 
-[ 49.130474][ T1] do_initcalls (main.c:?) 
-[ 49.131494][ T1] do_basic_setup (main.c:?) 
-[ 49.132558][ T1] kernel_init_freeable (main.c:?) 
-[ 49.133781][ T1] ? rest_init (main.c:?) 
-[ 49.134848][ T1] ? rest_init (main.c:?) 
-[ 49.135885][ T1] kernel_init (main.c:?) 
-[ 49.136958][ T1] ret_from_fork (??:?) 
-[ 49.137979][ T1] ret_from_fork_asm (??:?) 
-[ 49.139078][ T1] entry_INT80_32 (init_task.c:?) 
-[   49.140171][    T1] irq event stamp: 16737757
-[ 49.141202][ T1] hardirqs last enabled at (16737765): console_unlock (??:?) 
-[ 49.143298][ T1] hardirqs last disabled at (16737774): console_unlock (??:?) 
-[ 49.145355][ T1] softirqs last enabled at (16737610): do_softirq_own_stack (??:?) 
-[ 49.147553][ T1] softirqs last disabled at (16737605): do_softirq_own_stack (??:?) 
-[   49.149757][    T1] ---[ end trace 0000000000000000 ]---
-[   49.151671][    T1] NET: Registered PF_INET6 protocol family
-[   49.156896][    T1] Segment Routing with IPv6
-[   49.158068][    T1] In-situ OAM (IOAM) with IPv6
-[   49.159300][    T1] sit: IPv6, IPv4 and MPLS over IPv4 tunneling driver
-[   49.162798][    T1] NET: Registered PF_PACKET protocol family
-[   49.164686][    T1] 9pnet: Installing 9P2000 support
-[   49.166257][    T1] start plist test
-[   49.168281][    T1] end plist test
-[   49.173855][    T1] IPI shorthand broadcast: enabled
-[   49.175165][    C0] ... APIC ID:      00000000 (0)
-[   49.176383][    C0] ... APIC VERSION: 00050014
-[   49.177486][    C0] 0000000000000000000000000000000000000000000000000000000000000000
-[   49.177486][    C0] 0000000000000000000000000000000000000000000000000000000008001000
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20240204/202402041610.775e7f75-lkp@intel.com
-
-
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
+Warm Regards,
+Vimal Kumar
