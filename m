@@ -1,78 +1,126 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-io1-f45.google.com (mail-io1-f45.google.com [209.85.166.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 929537D3EC;
-	Thu,  8 Feb 2024 15:49:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 059E216426
+	for <oe-lkp@lists.linux.dev>; Fri,  9 Feb 2024 21:06:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707407342; cv=none; b=UL1xHc4hzK8tZFRQJ8ZbZgOvYxy+jU8DtHUverjeNxx6C9FmwVzJ3qVfkl/zwjfkpg/YuaiLVTAcMSkkzFltX9dDX0jWMRNg3h15Wr7ciXRnklki4G/9iV0fZo0F9aS4LOPCBzDPRXqS96wM2TFEVDzusVIPJCAQbnPE8gcJGqw=
+	t=1707512770; cv=none; b=ZpTAON3bkwxOIipuUrKYY3GWCGjMLfsbUj/p9GUJKU5/4MDDrc4gz7zn2MmTnxPSya2Hc/FN95oId+Oea8b0tDuezMhhaDllMkGiX5gFV/XZydK/ULbMKBzzqgfSD+zjuIEu6eHdadC0AwyhSEbOsxNqBb966JVmU620K+pU6QA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707407342; c=relaxed/simple;
-	bh=qo0ouGTCY7deTxJNrQ9RKAeZuWz9vdx42ORr8o4UP2Q=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tqEdLmFh6YFh5/xp9OTEQ4dzwAgrpumrwXE1Eq4PhIeF4FVFh8RxXUAO444x/4hRjQj3miE616bSC00qmVQFRrTDQ7tMtAFNoZSC+zJUh73w+zvkc+yKF5KXETOSe5iCjQCOjRfK77H+89FJUxPlS/82DZaZ6wid44WVkBA9CfU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=ZFVSqJ/e; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1707512770; c=relaxed/simple;
+	bh=UO1A3Fct17+/hJd8or2MUtzr0RTkRI4EFJgLeSzlNSE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=njgdUmahzPY1Z6+UyNAhMXcXMafnf6SYtccbHP9HYQvBiJohg6AkUftZ6ftVpCoA2S60kt400XTQhlMwF9GKIDQCaxuz/2A1vVPnN7TV7UaNJne1xbzkTyUrK0aPUAoj2N4UzfZjKyhMTBmO4Lv0dJKjXBuX9VbugCwsm4EL27g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kernel.dk; spf=pass smtp.mailfrom=kernel.dk; dkim=pass (2048-bit key) header.d=kernel-dk.20230601.gappssmtp.com header.i=@kernel-dk.20230601.gappssmtp.com header.b=XYeM3paz; arc=none smtp.client-ip=209.85.166.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kernel.dk
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kernel.dk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="ZFVSqJ/e"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A8CCC433F1;
-	Thu,  8 Feb 2024 15:49:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1707407342;
-	bh=qo0ouGTCY7deTxJNrQ9RKAeZuWz9vdx42ORr8o4UP2Q=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ZFVSqJ/e+AY/vAnlseHFjZt7Q9H4+npCrgL29OQtrfsrwz0MSfZBy2NYleku2YWgh
-	 r5m5vdUkUw2WJ/YijKlOKu9nJXUjCr1YgIZC8K4SO9TAweR1XgRIO38Hw0vZltcAMe
-	 G8cBIKPBUabvHSW8Dfz2UGy/lzheMo+8vkGc+IXY=
-Date: Thu, 8 Feb 2024 15:48:58 +0000
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: Zhen Lei <thunder.leizhen@huawei.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, linux-kernel@vger.kernel.org
-Subject: Re: [linus:master] [kobject]  1b28cb81da: canonical_address#:#[##]
-Message-ID: <2024020840-bladder-service-0341@gregkh>
-References: <202402071403.e302e33a-oliver.sang@intel.com>
+	dkim=pass (2048-bit key) header.d=kernel-dk.20230601.gappssmtp.com header.i=@kernel-dk.20230601.gappssmtp.com header.b="XYeM3paz"
+Received: by mail-io1-f45.google.com with SMTP id ca18e2360f4ac-7bbdd28a52aso25246339f.1
+        for <oe-lkp@lists.linux.dev>; Fri, 09 Feb 2024 13:06:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20230601.gappssmtp.com; s=20230601; t=1707512765; x=1708117565; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=TX8kZJ4jfhuvDuckYH8MKVN4C0WBzbq4xbrMJJT/w90=;
+        b=XYeM3pazgOBHBWwuwGbCDmMPzC1U3WDQAiTuMYNLyR0YOpmEqq4qvTNd8XioqJQRZF
+         PomoeDtubKOJaytxe4huE/D1s7ZLuEE4PCXT8+/Q2JBQGhUN8b5csrcV4D9mYnyVrCle
+         ptlq5vMSaGRzkXQXOlFIayhsYXaY/MRXmzGPPJNCvk166XAZPfOrjzgC+9OoM21fiPSq
+         vTuwrO07pDilsS89/a5RRk/7+tsYRct0+O70x3S3at6OSXD584HD8+ngJBmTdew67+pj
+         p7y7UYksqkX9RguGqd5exr0QDuTEF1JYixIB/6G7DmUzp9t6lCrT79x7pl/KmH+Q3rHI
+         slAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1707512765; x=1708117565;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=TX8kZJ4jfhuvDuckYH8MKVN4C0WBzbq4xbrMJJT/w90=;
+        b=PULidYXvU1WNRkzIxQG5qWiSzrFBgsiHPld+Akjl+U0VHuekcTbtwV0P/Qvdx+Wy8k
+         tJUvPF0qG//CdPnRdP6sZ+8mZGBXZ5d/J0LMQq8WZVtMGRSM5x57zo0UWzejgJF6lg+w
+         gesMN7flpw/6tjp+lAgS+X73Qm3MTFccUrPa6wk96+vU7pZK2+a2iCHcBsTruLFA8ZZC
+         TvcLotIFn5gk6BW+fFUJhshtR3xcK7N4+H3nrCRJsZoW5F08M8hBMF5V3myPYZjQk7f9
+         GhSoV8lXC8hWfQkHB/mWLV9G1wHvkl0Nv6ZvjTbVE+OSE5JYuIJjOL7iiayvj7NftDB0
+         lt9g==
+X-Gm-Message-State: AOJu0Yy0z2WspmtF+KKCuzyJaK9yeodsh4GW8DqQVyilnY1VVmF3ON5Y
+	ydLhsRO0eRo3q7e7sn98QdiqSvMELFDRU3tBp/cZ6wwl5Ewmsli/DbmPbn8KGmJtEIKvl0w1+Ya
+	Hois=
+X-Google-Smtp-Source: AGHT+IG95+JDEa+gHhRbNQy0UP1KGGwCed76qGySgxKJ2T/oR18AoeRQqXBNBZUT4wqRzIG9cGuscA==
+X-Received: by 2002:a6b:3f08:0:b0:7c4:655:6e05 with SMTP id m8-20020a6b3f08000000b007c406556e05mr514508ioa.2.1707512765133;
+        Fri, 09 Feb 2024 13:06:05 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCW07vEn8HZ60Z4H7r5mCWcnVCXKNpcE4FhapsNAyty8vDlL29suKKWuje2252Pawcm034h3sOQ4+Tj7plSU2eol0G+VMUvqLgMSuJtL89jsB3LjjXv7kfgFSjufmRFudTbgNgkiAIKKWWmqhzxJJzXco18yKIUFwR9cfrMP9M0rSOPp1mHDdsU3J1vdpvucWbdzRidA5/V3DaCIpvSBZqaTeObWpGytGSRNcVYpqAIcD6EatbetMt6LKYQKIZAmvFXc78Ou9dT/tJtMfQG4417ma38ogHxJ/WMxLl8xWJwPJeMSQas5CabR+fitrHREYBuUdpeJdnezXwHP
+Received: from [192.168.1.116] ([96.43.243.2])
+        by smtp.gmail.com with ESMTPSA id n8-20020a02a908000000b0047153f09f83sm62054jam.13.2024.02.09.13.06.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 09 Feb 2024 13:06:04 -0800 (PST)
+Message-ID: <35989f82-3c6b-4c91-ae9b-db8791895b19@kernel.dk>
+Date: Fri, 9 Feb 2024 14:06:03 -0700
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202402071403.e302e33a-oliver.sang@intel.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [linux-next:master] [block/mq] 574e7779cf: fio.write_iops -72.9%
+ regression
+Content-Language: en-US
+To: kernel test robot <oliver.sang@intel.com>,
+ Bart Van Assche <bvanassche@acm.org>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
+ Linux Memory Management List <linux-mm@kvack.org>,
+ Oleksandr Natalenko <oleksandr@natalenko.name>,
+ Johannes Thumshirn <johannes.thumshirn@wdc.com>,
+ linux-block@vger.kernel.org, ying.huang@intel.com, feng.tang@intel.com,
+ fengwei.yin@intel.com
+References: <202401312320.a335db14-oliver.sang@intel.com>
+From: Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <202401312320.a335db14-oliver.sang@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Wed, Feb 07, 2024 at 02:42:43PM +0800, kernel test robot wrote:
+On 1/31/24 8:42 AM, kernel test robot wrote:
 > 
 > 
 > Hello,
 > 
-> kernel test robot noticed "canonical_address#:#[##]" on:
-> 
-> commit: 1b28cb81dab7c1eedc6034206f4e8d644046ad31 ("kobject: Remove redundant checks for whether ktype is NULL")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> 
-> [test failed on linus/master 54be6c6c5ae8e0d93a6c4641cb7528eb0b6ba478 (v6.8-rc3)]
-> [test failed on linux-next/master 076d56d74f17e625b3d63cf4743b3d7d02180379]
-> 
-> in testcase: boot
-> 
-> compiler: gcc-11
-> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-> 
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
+> kernel test robot noticed a -72.9% regression of fio.write_iops on:
 > 
 > 
+> commit: 574e7779cf583171acb5bf6365047bb0941b387c ("block/mq-deadline: use separate insertion lists")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
 > 
-> we noticed this issue is very random, as below, observed 4 times out of 68 runs.
-> but we didn't see in on parent.
+> testcase: fio-basic
+> test machine: 64 threads 2 sockets Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz (Ice Lake) with 256G memory
+> parameters:
+> 
+> 	runtime: 300s
+> 	disk: 1HDD
+> 	fs: xfs
+> 	nr_task: 100%
+> 	test_size: 128G
+> 	rw: write
+> 	bs: 4k
+> 	ioengine: io_uring
+> 	direct: direct
+> 	cpufreq_governor: performance
 
-Ok, this is odd, but a good enough reason to revert this for now.  I was
-worried about it, and this confirms my worry that there's some codepath
-we aren't taking into account here that those checks were protecting us
-from doing bad things.
+I looked into this, and I think I see what is happening. We do still do
+insertion merges, but it's now postponed to dispatch time. This means
+that for this crazy case, where you have 64 threads doing sequential
+writes, we run out of tags (which is 64 by default) and hence dispatch
+sooner than we would've before. Before, we would've queued one request,
+then allocated a new one, and queued that. When that queue event
+happened, we would merge with the previous - either upfront, or when the
+request is inserted. In any case, we now have 1 bigger request, rather
+than two smaller ones that still need merging.
 
-thanks for the report, and Zhen, if you want to dig into this and see if
-you can figure out what is happening so that you can submit your change
-again, that would be great.
+This leaves more requests free.
 
-greg k-h
+I think we can solve this by doing smarter merging at insertion time.
+I've dropped the series from my for-next branch for now, will need
+revisiting and then I'll post it again.
+
+-- 
+Jens Axboe
+
