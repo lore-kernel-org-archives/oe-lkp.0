@@ -1,54 +1,54 @@
-Received: from mail-ua1-f52.google.com (mail-ua1-f52.google.com [209.85.222.52])
+Received: from mail-vs1-f47.google.com (mail-vs1-f47.google.com [209.85.217.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A76C3F9E1
-	for <oe-lkp@lists.linux.dev>; Mon, 12 Feb 2024 16:56:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BDB047A7A
+	for <oe-lkp@lists.linux.dev>; Mon, 12 Feb 2024 21:21:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707757003; cv=none; b=YRJdjTFb3d2/caG/c+Hx0yhU27Y2w07q5L0gzPtjlIXFpc1kkDerrFVmDHNmJm1uAuBHR/QUIxfqgwlc1H3hIQqDzWujZhiSWOoRMo7opmgZrrCGtkmQ9KdPKCOWbTglC7LBuQGP1iLhsdFMVZRldC3sg5QJ6IvoEFdTP9YbxEo=
+	t=1707772869; cv=none; b=Xrt2oPDjn7pmWf5P4BDYlw2flZnco/r9NQlYECK4XBCEXyJEhpZnWcETn7ygWODUWJg2/4+fFvQrQu2KiOzkBQa0SNiE7OXwb8BjH4g093X4PQmLLAhlvV6eaboM/dI2PrJ3l2uU/m+dM4XbuXoHL59eSNXCOqffPSbB3Kemjt0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707757003; c=relaxed/simple;
-	bh=h3AcMA2a6EtIrIAD/Um+nsR8fti6f3lN8/dfIY/yweE=;
+	s=arc-20240116; t=1707772869; c=relaxed/simple;
+	bh=sugQKZ6CI31VxqP/5rNr26Vx+C48PCffDxNO4koQ3p0=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=as7TSx4Ud/PU4ffMTkMK6E6xhx3xkLPLYcXoBvzEGmQ5rCwUoPgNiNjzEa9GCRzOjI7Uktps1BX/Ga0c451JIHqydA6O7dG+Dqk8cCLltv+z9qdRonAgnXAnLrkqFHfp5f8KTQ9XyRYPbG81wYBTbwcntzazQNGKNKqk6p3e/1k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl; spf=none smtp.mailfrom=bgdev.pl; dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b=A0kQpOJ9; arc=none smtp.client-ip=209.85.222.52
+	 To:Cc:Content-Type; b=QZq7tr/ThAr7bn9jFbBQeQma0Ds62x2JyyVgOOXmkdMDlDB+PfkUhvy/TNx3xUumE9cTd2KJgf+8u1Et/NSLnFF5SC580MkQVpoKum1bXuaOu7QDQpFY4wPcuDfOLGmk/5D/TvQVXvzVlCRPBJFRDjDeEtMSYC5VWQnpYIlM95U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl; spf=none smtp.mailfrom=bgdev.pl; dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b=MaJdU7do; arc=none smtp.client-ip=209.85.217.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bgdev.pl
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b="A0kQpOJ9"
-Received: by mail-ua1-f52.google.com with SMTP id a1e0cc1a2514c-7d130979108so1179454241.1
-        for <oe-lkp@lists.linux.dev>; Mon, 12 Feb 2024 08:56:40 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b="MaJdU7do"
+Received: by mail-vs1-f47.google.com with SMTP id ada2fe7eead31-46d239a4655so580622137.2
+        for <oe-lkp@lists.linux.dev>; Mon, 12 Feb 2024 13:21:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20230601.gappssmtp.com; s=20230601; t=1707757000; x=1708361800; darn=lists.linux.dev;
+        d=bgdev-pl.20230601.gappssmtp.com; s=20230601; t=1707772865; x=1708377665; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=DXLA/HKEUblBaR45SvZJb+XTYMbTcWaCEZt0vRKw4Cs=;
-        b=A0kQpOJ9x3u6CquA2Nv6Zu9FW8fS71kaaBInZl/kyo2e2+UsREJ6S+OuDELkHmicYy
-         k6jXB9JyEbhE8Y7CfnhOhn+dS0FPcB0TZJ+eJbZju0l+4wvtH6ICLyAE2D+LDBMGd6u8
-         1Ko1Uwsrv9HgQ8hlmCKORFVgyGDLr3Jb0Wgx4cxZbqx5IKN2JxowB52CF2PYytE1i/Ei
-         2osoqe9o8E1K/eis751HfqF+8XKwVSjSFE0Lbak4MNGTHlpYDJK3Z+nr+lAQhZMTFr8L
-         MSQojmhjLHdRtclXx7kcfUi+Ku4kWwCmp/HkZ1ve7gvDLzJ2n+WiZy6pyIddL4V7moQt
-         bxDQ==
+        bh=Ed9q/dTWT4cjCHIaItjeYvOw5uibDZAlFpwB/jaYCCc=;
+        b=MaJdU7do1bx7ooLC3rg/KUuuOlquXcwUdai7U+67c1K5FxmllPKvrgHefeiO0jTKQx
+         K7ao0BIeqH3FsQC4mCiGNDX3w1NvlNgU72Yul4sc2fka8nQnNvOVv/cXc2kn9GT0tPzJ
+         EwHR8YtDHlGKiI2o1r8aktPsWsJ42Mcex/filMbPZnpdOR5lkLv1UvNKF9QX0NZIgO3y
+         2yxN+k01LGoIu/VlVuvIvDI5Ec1UcYqa9Gew5u2f9ijT7aWumwQul7gMSfaquTSf5/C+
+         bAsh9htemPGeqU3attxqBZa9EDJtDHph6Ig9t/u1Th3cKoSTYzad0aYijpEIkiTFwV1L
+         G1AQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707757000; x=1708361800;
+        d=1e100.net; s=20230601; t=1707772865; x=1708377665;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=DXLA/HKEUblBaR45SvZJb+XTYMbTcWaCEZt0vRKw4Cs=;
-        b=jZdXmCLgDUYHmy9v8whNig3hS0Bgn+kk/kRBfz9XOwxeMkHy421rcqK9cmQWwwy2O1
-         nc8ifaPsdtCgKgtuMyFPcLKQQSWsMcAtWIYWrgUA1l2xlIZr1tY6pjYcLvh9WWQ5pboF
-         28L8Q1G8I+oFjmMkRFBMZZHq0t9ufNUD4jbf2o8/DbqWKnNumm3gi7B7WL8JbmXyPPmS
-         Wc/+yzevmqCBAKO8IuwFWGG7qc1ZKcRfvEwK07/yHFijeL3QMHu3nVPTvyMGRExEXYUr
-         VDPm6Sgo2zmz0V1wtWRg3t0gTv6Y5Tu1Ml/Vdc1ptP09mCK+i7Ce3BqGOV9OKsAaRj6a
-         jaZw==
-X-Gm-Message-State: AOJu0Yw83gCG5BpttxlGqIqJZR2SyMvP/ag3iTA4E/Gwm85V4ltwtluj
-	Q0HQaJgApVaYQdQ0HuEJvBxJVDL2ilCK5Wn4rjIA6/2Uj1DaLQJ8lZvsxE7ryskUX/dMLb3zaeU
-	cSPdeybAlYBmyj0LCdisXjMjJqsDx7k2ydPNXCQ==
-X-Google-Smtp-Source: AGHT+IEUqaOuEdqFyjRc9hdKrymyf+2ksJWXSjdyiytMSmudkXoIUXXj/2dXksOWvYfxfS5mgow/2Mcwn31AjL7q8+c=
-X-Received: by 2002:a05:6102:3709:b0:46d:2500:b3f5 with SMTP id
- s9-20020a056102370900b0046d2500b3f5mr4311719vst.35.1707756994833; Mon, 12 Feb
- 2024 08:56:34 -0800 (PST)
+        bh=Ed9q/dTWT4cjCHIaItjeYvOw5uibDZAlFpwB/jaYCCc=;
+        b=DVcmy5dd0WnifrfmS8I9DG3FTT2zqKnqd/bwK4iBwEL9+vSlCxUSj+bbBydKEovIPL
+         0WYv25Af/XxWUUX4XOy9s95HNbX6976Sc76uYBQBP0tMot9ijp7TOdQNvBslgirs9vEN
+         m3GHghmrA8Blq6d/o01+SBOOkTwI/cxm4KxMaKhUWfGFdJYhlsRs+WKhfRxJT3uZSSbr
+         F1bJcihgxYtHu/FASCA3INXOC9C/ux+UT3NrChoZCaCTDIfFRA4sJH4/r+VZqzw2RIVi
+         pA8OS1l3hXYJ9g4OHD7zPDhb6e0wYkNULQEMErwWGC95yjdVQR9pgMRIhbKqjQe8c5Zo
+         wUPw==
+X-Gm-Message-State: AOJu0Yyy0O72B5newGZFw9gVRIJ2dZezeHTT1saOHfmw0Rqd2zaxAuIl
+	FgVmwc+9Gou3NA+AfFLkwCH26N9QxqYjljOIg8lId/QQePJ8If6ZwEPBvYsUqcX/7cMV+yZnI1y
+	jvLGqev59rvjq2WvP2I/4cYS1X8llRmgXSoqA/A==
+X-Google-Smtp-Source: AGHT+IFRuT42LMQZNy71XtRRfuAVN2Wy0YAglkPguTH63k+w/JX5A4su1DL384yv0Dxy7NLB4XH+ZqE+PxBPKe/aLlA=
+X-Received: by 2002:a05:6102:3bc6:b0:46d:3a99:7f0 with SMTP id
+ a6-20020a0561023bc600b0046d3a9907f0mr4899104vsv.2.1707772865173; Mon, 12 Feb
+ 2024 13:21:05 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -58,18 +58,18 @@ MIME-Version: 1.0
 References: <20240208095920.8035-23-brgl@bgdev.pl> <202402122234.d85cca9b-lkp@intel.com>
 In-Reply-To: <202402122234.d85cca9b-lkp@intel.com>
 From: Bartosz Golaszewski <brgl@bgdev.pl>
-Date: Mon, 12 Feb 2024 17:56:23 +0100
-Message-ID: <CAMRc=MesjZVGTHQG0heP2OP8DNHPsiiPOv2JjKDpaTnvkyj6nA@mail.gmail.com>
+Date: Mon, 12 Feb 2024 22:20:54 +0100
+Message-ID: <CAMRc=McrFqa-nS3L0qGZ+eCff79jWrEZLmg-OJiNw6+FQ44i+Q@mail.gmail.com>
 Subject: Re: [PATCH v3 22/24] gpio: protect the pointer to gpio_chip in
  gpio_device with SRCU
-To: kernel test robot <oliver.sang@intel.com>
+To: "Paul E . McKenney" <paulmck@kernel.org>
 Cc: oe-lkp@lists.linux.dev, lkp@intel.com, 
 	Linus Walleij <linus.walleij@linaro.org>, linux-gpio@vger.kernel.org, 
 	Kent Gibson <warthog618@gmail.com>, Alex Elder <elder@linaro.org>, 
-	Geert Uytterhoeven <geert+renesas@glider.be>, "Paul E . McKenney" <paulmck@kernel.org>, 
+	Geert Uytterhoeven <geert+renesas@glider.be>, 
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Wolfram Sang <wsa@the-dreams.de>, 
 	linux-kernel@vger.kernel.org, 
-	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>, kernel test robot <oliver.sang@intel.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -156,10 +156,293 @@ h:153 kernel/locking/lockdep.c:6713)
 r 9))
 > [ 76.461346][ T1] gpiod_hog (drivers/gpio/gpiolib.h:243 drivers/gpio/gpio=
 lib.c:4502)
+> [ 76.462400][ T1] ? of_find_property (drivers/of/base.c:223)
+> [ 76.463671][ T1] of_gpiochip_add_hog (drivers/gpio/gpiolib-of.c:799)
+> [ 76.464933][ T1] ? __pfx_of_gpiochip_add_hog (drivers/gpio/gpiolib-of.c:=
+785)
+> [ 76.466378][ T1] ? lockdep_hardirqs_on_prepare (kernel/locking/lockdep.c=
+:467 kernel/locking/lockdep.c:4360)
+> [ 76.467894][ T1] ? lockdep_hardirqs_on (kernel/locking/lockdep.c:4423)
+> [ 76.469220][ T1] ? _raw_spin_unlock_irqrestore (arch/x86/include/asm/pre=
+empt.h:103 include/linux/spinlock_api_smp.h:152 kernel/locking/spinlock.c:1=
+94)
+> [ 76.470786][ T1] of_gpiochip_add (drivers/gpio/gpiolib-of.c:828 drivers/=
+gpio/gpiolib-of.c:1143)
+> [ 76.472060][ T1] ? fwnode_property_read_int_array (drivers/base/property=
+.c:268 (discriminator 5))
+> [ 76.473692][ T1] gpiochip_add_data_with_key (drivers/gpio/gpiolib.c:989)
+> [ 76.475271][ T1] ? kasan_save_track (arch/x86/include/asm/current.h:42 m=
+m/kasan/common.c:60 mm/kasan/common.c:70)
+> [ 76.476567][ T1] unittest_gpio_probe (drivers/of/unittest.c:1886)
+> [ 76.477928][ T1] platform_probe (drivers/base/platform.c:1404)
+> [ 76.479162][ T1] really_probe (drivers/base/dd.c:579 drivers/base/dd.c:6=
+58)
+> [ 76.480403][ T1] __driver_probe_device (drivers/base/dd.c:800)
+> [ 76.481791][ T1] driver_probe_device (drivers/base/dd.c:830)
+> [ 76.483097][ T1] __driver_attach (drivers/base/dd.c:1217)
+> [ 76.484388][ T1] ? __pfx___driver_attach (drivers/base/dd.c:1157)
+> [ 76.485805][ T1] bus_for_each_dev (drivers/base/bus.c:367)
+> [ 76.487037][ T1] ? lockdep_init_map_type (kernel/locking/lockdep.c:4892)
+> [ 76.488477][ T1] ? __pfx_bus_for_each_dev (drivers/base/bus.c:356)
+> [ 76.489897][ T1] ? bus_add_driver (drivers/base/bus.c:672)
+> [ 76.491195][ T1] bus_add_driver (drivers/base/bus.c:674)
+> [ 76.492463][ T1] driver_register (drivers/base/driver.c:246)
+> [ 76.493723][ T1] of_unittest_overlay_gpio (drivers/of/unittest.c:1969 (d=
+iscriminator 4))
+> [ 76.495167][ T1] of_unittest_overlay (drivers/of/unittest.c:2189 drivers=
+/of/unittest.c:3217)
+> [ 76.496478][ T1] ? __pfx_of_unittest_overlay (drivers/of/unittest.c:3155=
+)
+> [ 76.497886][ T1] ? lockdep_hardirqs_on_prepare (kernel/locking/lockdep.c=
+:467 kernel/locking/lockdep.c:4360)
+> [ 76.499410][ T1] ? lockdep_hardirqs_on (kernel/locking/lockdep.c:4423)
+> [ 76.500744][ T1] of_unittest (drivers/of/unittest.c:4129)
+> [ 76.501862][ T1] ? __pfx_of_unittest (drivers/of/unittest.c:4080)
+> [ 76.503098][ T1] ? add_device_randomness (drivers/char/random.c:918)
+> [ 76.504492][ T1] ? __pfx_of_unittest (drivers/of/unittest.c:4080)
+> [ 76.505807][ T1] do_one_initcall (init/main.c:1236)
+> [ 76.507054][ T1] ? __pfx_do_one_initcall (init/main.c:1227)
+> [ 76.508517][ T1] do_initcalls (init/main.c:1297 init/main.c:1314)
+> [ 76.509731][ T1] kernel_init_freeable (init/main.c:1555)
+> [ 76.511106][ T1] ? __pfx_kernel_init (init/main.c:1433)
+> [ 76.512435][ T1] kernel_init (init/main.c:1443)
+> [ 76.513566][ T1] ? _raw_spin_unlock_irq (arch/x86/include/asm/preempt.h:=
+103 include/linux/spinlock_api_smp.h:160 kernel/locking/spinlock.c:202)
+> [ 76.514947][ T1] ret_from_fork (arch/x86/kernel/process.c:153)
+> [ 76.516125][ T1] ? __pfx_kernel_init (init/main.c:1433)
+> [ 76.517440][ T1] ret_from_fork_asm (arch/x86/entry/entry_64.S:250)
+> [   76.518731][    T1]  </TASK>
+> [   76.519758][    T1]
+> [   76.520477][    T1] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> [   76.521774][    T1] WARNING: suspicious RCU usage
+> [   76.523076][    T1] 6.8.0-rc1-00050-gc21131f83abc #1 Tainted: G       =
+          N
+> [   76.525108][    T1] -----------------------------
+> [   76.526429][    T1] drivers/gpio/gpiolib.h:210 suspicious rcu_derefere=
+nce_check() usage!
+> [   76.528621][    T1]
+> [   76.528621][    T1] other info that might help us debug this:
+> [   76.528621][    T1]
+> [   76.531350][    T1]
+> [   76.531350][    T1] rcu_scheduler_active =3D 2, debug_locks =3D 1
+> [   76.533414][    T1] 2 locks held by swapper/1:
+> [ 76.534616][ T1] #0: ffff88816954f0f0 (&dev->mutex){....}-{3:3}, at: __d=
+river_attach (drivers/base/dd.c:1216)
+> [ 76.537073][ T1] #1: ffff888163afb6d0 (&gdev->srcu){.+.+}-{0:0}, at: gpi=
+od_request_commit (include/linux/srcu.h:116 include/linux/srcu.h:215 driver=
+s/gpio/gpiolib.h:202 drivers/gpio/gpiolib.c:2243)
+> [   76.539703][    T1]
+> [   76.539703][    T1] stack backtrace:
+> [   76.541276][    T1] CPU: 0 PID: 1 Comm: swapper Tainted: G            =
+     N 6.8.0-rc1-00050-gc21131f83abc #1
+> [   76.543890][    T1] Call Trace:
+> [   76.544767][    T1]  <TASK>
+> [ 76.545549][ T1] dump_stack_lvl (lib/dump_stack.c:107 (discriminator 1))
+> [ 76.546740][ T1] lockdep_rcu_suspicious (include/linux/context_tracking.=
+h:153 kernel/locking/lockdep.c:6713)
+> [ 76.548196][ T1] gpiod_request_commit (drivers/gpio/gpiolib.h:202 driver=
+s/gpio/gpiolib.c:2243)
+> [ 76.549584][ T1] ? dump_stack_lvl (lib/dump_stack.c:108)
+> [ 76.550829][ T1] gpiochip_request_own_desc (drivers/gpio/gpiolib.c:2454)
+> [ 76.552354][ T1] gpiod_hog (drivers/gpio/gpiolib.c:4504)
+> [ 76.553556][ T1] of_gpiochip_add_hog (drivers/gpio/gpiolib-of.c:799)
+> [ 76.554948][ T1] ? __pfx_of_gpiochip_add_hog (drivers/gpio/gpiolib-of.c:=
+785)
+> [ 76.556536][ T1] ? lockdep_hardirqs_on_prepare (kernel/locking/lockdep.c=
+:467 kernel/locking/lockdep.c:4360)
+> [ 76.558176][ T1] ? lockdep_hardirqs_on (kernel/locking/lockdep.c:4423)
+> [ 76.559633][ T1] ? _raw_spin_unlock_irqrestore (arch/x86/include/asm/pre=
+empt.h:103 include/linux/spinlock_api_smp.h:152 kernel/locking/spinlock.c:1=
+94)
+> [ 76.561252][ T1] of_gpiochip_add (drivers/gpio/gpiolib-of.c:828 drivers/=
+gpio/gpiolib-of.c:1143)
+> [ 76.562584][ T1] ? fwnode_property_read_int_array (drivers/base/property=
+.c:268 (discriminator 5))
+> [ 76.564302][ T1] gpiochip_add_data_with_key (drivers/gpio/gpiolib.c:989)
+> [ 76.565974][ T1] ? kasan_save_track (arch/x86/include/asm/current.h:42 m=
+m/kasan/common.c:60 mm/kasan/common.c:70)
+> [ 76.567328][ T1] unittest_gpio_probe (drivers/of/unittest.c:1886)
+> [ 76.568780][ T1] platform_probe (drivers/base/platform.c:1404)
+> [ 76.570065][ T1] really_probe (drivers/base/dd.c:579 drivers/base/dd.c:6=
+58)
+> [ 76.571309][ T1] __driver_probe_device (drivers/base/dd.c:800)
+> [ 76.572801][ T1] driver_probe_device (drivers/base/dd.c:830)
+> [ 76.574175][ T1] __driver_attach (drivers/base/dd.c:1217)
+> [ 76.575513][ T1] ? __pfx___driver_attach (drivers/base/dd.c:1157)
+> [ 76.576994][ T1] bus_for_each_dev (drivers/base/bus.c:367)
+> [ 76.578331][ T1] ? lockdep_init_map_type (kernel/locking/lockdep.c:4892)
+> [ 76.579877][ T1] ? __pfx_bus_for_each_dev (drivers/base/bus.c:356)
+> [ 76.581368][ T1] ? bus_add_driver (drivers/base/bus.c:672)
+> [ 76.582799][ T1] bus_add_driver (drivers/base/bus.c:674)
+> [ 76.584128][ T1] driver_register (drivers/base/driver.c:246)
+> [ 76.585452][ T1] of_unittest_overlay_gpio (drivers/of/unittest.c:1969 (d=
+iscriminator 4))
+> [ 76.586969][ T1] of_unittest_overlay (drivers/of/unittest.c:2189 drivers=
+/of/unittest.c:3217)
+> [ 76.588400][ T1] ? __pfx_of_unittest_overlay (drivers/of/unittest.c:3155=
+)
+> [ 76.589958][ T1] ? lockdep_hardirqs_on_prepare (kernel/locking/lockdep.c=
+:467 kernel/locking/lockdep.c:4360)
+> [ 76.591624][ T1] ? lockdep_hardirqs_on (kernel/locking/lockdep.c:4423)
+> [ 76.593071][ T1] of_unittest (drivers/of/unittest.c:4129)
+> [ 76.594323][ T1] ? __pfx_of_unittest (drivers/of/unittest.c:4080)
+> [ 76.595700][ T1] ? add_device_randomness (drivers/char/random.c:918)
+> [ 76.597164][ T1] ? __pfx_of_unittest (drivers/of/unittest.c:4080)
+> [ 76.598482][ T1] do_one_initcall (init/main.c:1236)
+> [ 76.599728][ T1] ? __pfx_do_one_initcall (init/main.c:1227)
+> [ 76.601163][ T1] do_initcalls (init/main.c:1297 init/main.c:1314)
+> [ 76.602389][ T1] kernel_init_freeable (init/main.c:1555)
+> [ 76.603810][ T1] ? __pfx_kernel_init (init/main.c:1433)
+> [ 76.605101][ T1] kernel_init (init/main.c:1443)
+> [ 76.606235][ T1] ? _raw_spin_unlock_irq (arch/x86/include/asm/preempt.h:=
+103 include/linux/spinlock_api_smp.h:160 kernel/locking/spinlock.c:202)
+> [ 76.607627][ T1] ret_from_fork (arch/x86/kernel/process.c:153)
+> [ 76.608797][ T1] ? __pfx_kernel_init (init/main.c:1433)
+> [ 76.610112][ T1] ret_from_fork_asm (arch/x86/entry/entry_64.S:250)
+> [   76.611412][    T1]  </TASK>
+> [   76.612591][    T1] general protection fault, probably for non-canonic=
+al address 0xdffffc000000002f: 0000 [#1] PREEMPT KASAN PTI
+> [   76.615654][    T1] KASAN: null-ptr-deref in range [0x0000000000000178=
+-0x000000000000017f]
+> [   76.617847][    T1] CPU: 0 PID: 1 Comm: swapper Tainted: G            =
+     N 6.8.0-rc1-00050-gc21131f83abc #1
+> [ 76.620463][ T1] RIP: 0010:check_init_srcu_struct (kernel/rcu/srcutree.c=
+:408)
+> [ 76.622072][ T1] Code: 53 48 89 fb 80 3c 02 00 0f 85 fe 00 00 00 48 b8 0=
+0 00 00 00 00 fc ff df 48 8b 6b 38 48 8d bd 78 01 00 00 48 89 fa 48 c1 ea 0=
+3 <80> 3c 02 00 0f 85 ce 00 00 00 48 8b 85 78 01 00 00 a8 03 75 0b 5b
+> All code
+> =3D=3D=3D=3D=3D=3D=3D=3D
+>    0:   53                      push   %rbx
+>    1:   48 89 fb                mov    %rdi,%rbx
+>    4:   80 3c 02 00             cmpb   $0x0,(%rdx,%rax,1)
+>    8:   0f 85 fe 00 00 00       jne    0x10c
+>    e:   48 b8 00 00 00 00 00    movabs $0xdffffc0000000000,%rax
+>   15:   fc ff df
+>   18:   48 8b 6b 38             mov    0x38(%rbx),%rbp
+>   1c:   48 8d bd 78 01 00 00    lea    0x178(%rbp),%rdi
+>   23:   48 89 fa                mov    %rdi,%rdx
+>   26:   48 c1 ea 03             shr    $0x3,%rdx
+>   2a:*  80 3c 02 00             cmpb   $0x0,(%rdx,%rax,1)               <=
+-- trapping instruction
+>   2e:   0f 85 ce 00 00 00       jne    0x102
+>   34:   48 8b 85 78 01 00 00    mov    0x178(%rbp),%rax
+>   3b:   a8 03                   test   $0x3,%al
+>   3d:   75 0b                   jne    0x4a
+>   3f:   5b                      pop    %rbx
+>
+> Code starting with the faulting instruction
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>    0:   80 3c 02 00             cmpb   $0x0,(%rdx,%rax,1)
+>    4:   0f 85 ce 00 00 00       jne    0xd8
+>    a:   48 8b 85 78 01 00 00    mov    0x178(%rbp),%rax
+>   11:   a8 03                   test   $0x3,%al
+>   13:   75 0b                   jne    0x20
+>   15:   5b                      pop    %rbx
+> [   76.627183][    T1] RSP: 0018:ffff888103a6f718 EFLAGS: 00010202
+> [   76.628803][    T1] RAX: dffffc0000000000 RBX: ffff88810ee660f8 RCX: 0=
+000000000000000
+> [   76.630879][    T1] RDX: 000000000000002f RSI: ffff88816976b000 RDI: 0=
+000000000000178
+> [   76.632960][    T1] RBP: 0000000000000000 R08: 692d422d656e696c R09: 0=
+07475706e692d42
+> [   76.635045][    T1] R10: ffff888103a6f750 R11: ffffffff810b3aef R12: f=
+fff88810ee66130
+> [   76.641151][    T1] R13: ffff888163afb6c0 R14: 0000000000000000 R15: f=
+fff888163afb6d0
+> [   76.643224][    T1] FS:  0000000000000000(0000) GS:ffffffff84cd1000(00=
+00) knlGS:0000000000000000
+> [   76.645563][    T1] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   76.647278][    T1] CR2: 00007fab8f4456f4 CR3: 0000000004cac000 CR4: 0=
+0000000000406b0
+> [   76.649355][    T1] Call Trace:
+> [   76.650221][    T1]  <TASK>
+> [ 76.651020][ T1] ? die_addr (arch/x86/kernel/dumpstack.c:421 arch/x86/ke=
+rnel/dumpstack.c:460)
+> [ 76.652132][ T1] ? exc_general_protection (arch/x86/kernel/traps.c:701 a=
+rch/x86/kernel/traps.c:643)
+> [ 76.653604][ T1] ? asm_exc_general_protection (arch/x86/include/asm/idte=
+ntry.h:564)
+> [ 76.655133][ T1] ? ret_from_fork (arch/x86/kernel/process.c:153)
+> [ 76.656355][ T1] ? check_init_srcu_struct (kernel/rcu/srcutree.c:408)
+> [ 76.657792][ T1] synchronize_srcu (kernel/rcu/srcutree.c:1167 kernel/rcu=
+/srcutree.c:1458)
+> [ 76.659048][ T1] gpiod_request_commit (drivers/gpio/gpiolib.c:127 driver=
+s/gpio/gpiolib.c:2273)
+> [ 76.660430][ T1] gpiochip_request_own_desc (drivers/gpio/gpiolib.c:2454)
+> [ 76.661898][ T1] gpiod_hog (drivers/gpio/gpiolib.c:4504)
+> [ 76.663000][ T1] of_gpiochip_add_hog (drivers/gpio/gpiolib-of.c:799)
+> [ 76.664334][ T1] ? __pfx_of_gpiochip_add_hog (drivers/gpio/gpiolib-of.c:=
+785)
+> [ 76.665830][ T1] ? lockdep_hardirqs_on_prepare (kernel/locking/lockdep.c=
+:467 kernel/locking/lockdep.c:4360)
+> [ 76.667387][ T1] ? lockdep_hardirqs_on (kernel/locking/lockdep.c:4423)
+> [ 76.668763][ T1] ? _raw_spin_unlock_irqrestore (arch/x86/include/asm/pre=
+empt.h:103 include/linux/spinlock_api_smp.h:152 kernel/locking/spinlock.c:1=
+94)
+> [ 76.670279][ T1] of_gpiochip_add (drivers/gpio/gpiolib-of.c:828 drivers/=
+gpio/gpiolib-of.c:1143)
+> [ 76.671550][ T1] ? fwnode_property_read_int_array (drivers/base/property=
+.c:268 (discriminator 5))
+> [ 76.673171][ T1] gpiochip_add_data_with_key (drivers/gpio/gpiolib.c:989)
+> [ 76.674714][ T1] ? kasan_save_track (arch/x86/include/asm/current.h:42 m=
+m/kasan/common.c:60 mm/kasan/common.c:70)
+> [ 76.676002][ T1] unittest_gpio_probe (drivers/of/unittest.c:1886)
+> [ 76.677340][ T1] platform_probe (drivers/base/platform.c:1404)
+> [ 76.678544][ T1] really_probe (drivers/base/dd.c:579 drivers/base/dd.c:6=
+58)
+> [ 76.679745][ T1] __driver_probe_device (drivers/base/dd.c:800)
+> [ 76.681126][ T1] driver_probe_device (drivers/base/dd.c:830)
+> [ 76.682411][ T1] __driver_attach (drivers/base/dd.c:1217)
+> [ 76.683679][ T1] ? __pfx___driver_attach (drivers/base/dd.c:1157)
+> [ 76.685074][ T1] bus_for_each_dev (drivers/base/bus.c:367)
+> [ 76.686340][ T1] ? lockdep_init_map_type (kernel/locking/lockdep.c:4892)
+> [ 76.687774][ T1] ? __pfx_bus_for_each_dev (drivers/base/bus.c:356)
+> [ 76.689176][ T1] ? bus_add_driver (drivers/base/bus.c:672)
+> [ 76.690452][ T1] bus_add_driver (drivers/base/bus.c:674)
+> [ 76.691691][ T1] driver_register (drivers/base/driver.c:246)
+> [ 76.692949][ T1] of_unittest_overlay_gpio (drivers/of/unittest.c:1969 (d=
+iscriminator 4))
+> [ 76.694377][ T1] of_unittest_overlay (drivers/of/unittest.c:2189 drivers=
+/of/unittest.c:3217)
+> [ 76.695724][ T1] ? __pfx_of_unittest_overlay (drivers/of/unittest.c:3155=
+)
+> [ 76.697198][ T1] ? lockdep_hardirqs_on_prepare (kernel/locking/lockdep.c=
+:467 kernel/locking/lockdep.c:4360)
+> [ 76.698764][ T1] ? lockdep_hardirqs_on (kernel/locking/lockdep.c:4423)
+> [ 76.700151][ T1] of_unittest (drivers/of/unittest.c:4129)
+> [ 76.701323][ T1] ? __pfx_of_unittest (drivers/of/unittest.c:4080)
+> [ 76.702622][ T1] ? add_device_randomness (drivers/char/random.c:918)
+> [ 76.704050][ T1] ? __pfx_of_unittest (drivers/of/unittest.c:4080)
+> [ 76.705347][ T1] do_one_initcall (init/main.c:1236)
+> [ 76.706572][ T1] ? __pfx_do_one_initcall (init/main.c:1227)
+> [ 76.708227][ T1] do_initcalls (init/main.c:1297 init/main.c:1314)
+>
+>
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20240212/202402122234.d85cca9b-lk=
+p@intel.com
+>
+>
+>
+> --
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
 
-Ah, gpiod_hog() is not taking the SRCU read lock as it should. I'll send a =
-fix.
+Paul,
 
-Bart
+Could you help me out here? It seems that lockdep complains (with
+"suspicious RCU usage") whenever an RCU-protected pointer is passed to
+rcu_dereference() but is not actually dereferenced later - in which
+case switching to rcu_access_pointer() helps. But in the case of the
+of_unittests() it also emits the same warning for
+gpiod_direction_input() where gdev->chip is fetched with
+rcu_dereference() using CLASS(gpio_chip_guard) and later actually
+dereferenced by calling guard.gc->...
 
-[snip]
+Any hints as to what I'm doing wrong?
+
+Thanks,
+Bartosz
