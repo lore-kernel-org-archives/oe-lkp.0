@@ -1,120 +1,187 @@
-Received: from mail-vk1-f170.google.com (mail-vk1-f170.google.com [209.85.221.170])
+Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45B2918AE4
-	for <oe-lkp@lists.linux.dev>; Tue, 13 Feb 2024 08:11:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D65E21CD22
+	for <oe-lkp@lists.linux.dev>; Tue, 13 Feb 2024 19:13:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707811865; cv=none; b=oqECLzb0kaRoIUaFFpeGOYkii/gfTe0Pf6v7gfMpUoHsuEUJFVFPdqX3J0vBYZDdQaWwX2y3+7EdWmY4imkAkLV/kxCJvbVYIOxR2Eh+aNLJK3XD9d4Ase/iHf7aS5sNAH6R0XYZFshaqKDlXObWq8xf5vNoC275/gDQBb21LQU=
+	t=1707851635; cv=none; b=Iv79YcXxzM3+AaGgE6Z+1rPGC5i4SK7AqaF6ubhW0TZ9Xx7UJFWCOqEWqlT2zLM+LxoDiupDVxLoOCOoA7bF8kVd5OQh1qHYK2IivaHUuIfCfFWdNv/GfJ8e84SjdIpccea/3aLre7r8ei3/YjEu7R88RfkHrJrbtO+NBzjqmm0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707811865; c=relaxed/simple;
-	bh=wSCAQBdMfTC+3MndVZbkwv4BtZJdwtzZ+Uis1k9VN7Y=;
+	s=arc-20240116; t=1707851635; c=relaxed/simple;
+	bh=rsk7gPMs4pCAq9FXpk/3ZWpNqzekIHKMuYgjeaBd3V8=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=jHntsamIG870ysHED7daDuW2GMm1XKKRwfGfizSH3akevdppeyuP8ma2MNl3OfQiKfCgBHDa0B6igwZFjxnoF4IH1S1IV7fKdAwY1YWd19gkUXTxbSaY0X5I9xqDu5HbpuqnVPCM8iqo2ayu7vhzvnyfR1AjkMg5kQX33C/P8GQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl; spf=none smtp.mailfrom=bgdev.pl; dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b=t9JV5xhc; arc=none smtp.client-ip=209.85.221.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bgdev.pl
+	 To:Cc:Content-Type; b=beVbuj59HGj9ll90JUCfOySzXgT3ikovGGriKu+28QTzbZGir0DmCh8db0JEmWFNeZmaxlb16zAkw3HeVMTavOCpnNq3slYR6vO1yr+vxy8NVZ9M/BlzWcEXteBxqZ6h3plKV3NlEalWmz+c7ZxHQRhV8n7WXIjQFSeO8kPiTsk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=j6usHdpa; arc=none smtp.client-ip=209.85.210.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b="t9JV5xhc"
-Received: by mail-vk1-f170.google.com with SMTP id 71dfb90a1353d-4affeacaff9so771984e0c.3
-        for <oe-lkp@lists.linux.dev>; Tue, 13 Feb 2024 00:11:03 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="j6usHdpa"
+Received: by mail-ot1-f51.google.com with SMTP id 46e09a7af769-6e2e452c852so1384618a34.3
+        for <oe-lkp@lists.linux.dev>; Tue, 13 Feb 2024 11:13:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20230601.gappssmtp.com; s=20230601; t=1707811863; x=1708416663; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1707851633; x=1708456433; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=vyx00npWeFsll5nwI/taY+6s7E/z5NPem7hxp9luVYI=;
-        b=t9JV5xhcVkhecpfNitkd0VwEaDctbhkSWK+hFyiHL1KbtkFwyMEJNiVCI0Uar0LKak
-         7jwQJRth5n/OORQ6LUK2KUO/QjJdXcsYTpPtGPGiluTCYozBQio5Wklc4gAwodXH+HAM
-         ajz4yqw54ozLGVGNNcwcwx845guI8ilSfxQpQTGeFLi4REYMUHfMh3PxlMZuI5SP+wYG
-         i/xXdP8k0K8+FK2dhmg5dOGdFep+0hbcVCn8pB6LYzW5tdl1Bxk+9zIEgRUXcMu3vI4u
-         u1/FMzwQMMpVrWibHLnkCYftTEOtxR0g5ZAiwYXvVg9bCb69X57yjQj2BRIhqK2h0/Vf
-         NthQ==
+        bh=QgwiYNmIqbIQowFOkt5Hr/Mc/qEeG+RVmCMkf+QqU7A=;
+        b=j6usHdpaZWHvXe8wv2P4NoTn8zZ05hY8C2/B/zr+SpLWyifJVv9zTF1L3YPfaaAsK8
+         R/sjrj3NPmSz8pqk2nknlnt4X1Z3LzEmRY6zKViMOHC0YWjbksCzaRQf/Cs+BfT5pUkC
+         jNevZj9PVRh3TeL8uSTSYaIHpCaoDTmQ1Nos+EHQPKCAe93zYcB6667hRoIR0VUgvOth
+         khxwfrNZ1IDGkg9SUX35iLdemIRHF+JdD9wmRJAEAfmPwjL136jnaG1+7REtRS7hRAO7
+         t5Kx5SrIpDZpj+Le5I5Rp9/AfVByW/J7qQFBc6X0xXi2doJ/+Eb5tKvm5OsiYITaF3rg
+         7YYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707811863; x=1708416663;
+        d=1e100.net; s=20230601; t=1707851633; x=1708456433;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=vyx00npWeFsll5nwI/taY+6s7E/z5NPem7hxp9luVYI=;
-        b=aOqpymA3eUFQ9AoyNugsgLJr8reZOQuZxjCZ4rzF7Gq2U61G7JQOf4OSusD7+f/xJJ
-         2/fWVJxO5GVXKN8hca/9TKph/RBRA6p2IZB1vUxV6n1cQpCuLQsLWA9C8ggUA+fhs2Dh
-         GKsrePxci3ZsswR+AdZJM5UPis0rt4+11Wlr7Y5JCiP2gqmRMY+Ec5Jk0GRoyDZu2eJS
-         Ls7R0zMzoRGZIZGD+9CV06RhXw8Fu/HjNzEuWZQMtyaRGGOsyX+HijzzY+2QUbSDjZzP
-         EcW1WupHJox+Cg9uHKdGpVIwxrbQbAySlYTY3XtyMdV8E0CEE+Bt3Hgia586wosYp8LG
-         edOg==
-X-Gm-Message-State: AOJu0YwHmdvnH6JLqdZH8U8qE+O8CxXPh0o50hHQ84GUUlyYk1ReAMWT
-	o28pne8kQdrdDdW6ZtK8LaQAF9jHUyuxjouFks61ciPhgTMcXuaCU5bIjF5db2CVE+94TGckFQP
-	TKVRnF0b++I5ffwsMcs39FgSlToqCJFrSyPG7Xw==
-X-Google-Smtp-Source: AGHT+IGr0rY+BYn3KFPOnwH21/cIEVqFi5fSMMU1bOGVy5YdyOfJaSi6Db4qCj8odk6BvfgVKZLys2G4N+i1W6bMMBY=
-X-Received: by 2002:a1f:dd84:0:b0:4c0:3cb3:446f with SMTP id
- u126-20020a1fdd84000000b004c03cb3446fmr5048576vkg.4.1707811863050; Tue, 13
- Feb 2024 00:11:03 -0800 (PST)
+        bh=QgwiYNmIqbIQowFOkt5Hr/Mc/qEeG+RVmCMkf+QqU7A=;
+        b=VWmushkjxEdCHP1b23g6VJWjHf9hb6aJYKU0mk/pCJW/3euXPxwum/HQkxh0cO5gfZ
+         JxbJQ9ECK1qxsOwD+MdCViOPq4RkhgIfDTrW33q03DuyDUhFDBbHP+cpgqCz/ZkTsTyL
+         xhEh5iednGJHOw+KqDlS/JLHmfbEopBmVfCTDBPHvWKU+kryUZAH+bKR3omlq8I4J8Sn
+         IukEPPfWf9zC3rU/gmEE2z109+6KGDAfdAlZu5Vkkaxvy4p13MBKsREwzFrH45RRhwQF
+         Jp8By9KI01PePp1/OmgR2P1gL9YvwfNofPS9MQJ6147S1ozvYoBDCtzta37U3eaRgCVJ
+         txMA==
+X-Gm-Message-State: AOJu0YzXQ0y1bIWPnuqbHuvO96ND00eEXHivnFUo0YQ76b+1D/JpKoIj
+	Klgnz6OqwCEI2gyyWVQNSX1K/8TJT50rwLhGfspGejVc/A202u3fwiqM+++/LLcBjFVqcu9udZX
+	47UA/Ok2cSn/OMKevDDN+4oQANRo=
+X-Google-Smtp-Source: AGHT+IG6mNfyxmj56owJMfuuBqaHct2d2rwydQ+T5Y1IoE2NPt/DkI9yrNfNH+k4CNV9rcGKG2x84zT9XuJhH0u+v5I=
+X-Received: by 2002:a05:6830:1e96:b0:6e2:b5e4:30d4 with SMTP id
+ n22-20020a0568301e9600b006e2b5e430d4mr537446otr.26.1707851632850; Tue, 13 Feb
+ 2024 11:13:52 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240208095920.8035-23-brgl@bgdev.pl> <202402122234.d85cca9b-lkp@intel.com>
- <CAMRc=McrFqa-nS3L0qGZ+eCff79jWrEZLmg-OJiNw6+FQ44i+Q@mail.gmail.com>
-In-Reply-To: <CAMRc=McrFqa-nS3L0qGZ+eCff79jWrEZLmg-OJiNw6+FQ44i+Q@mail.gmail.com>
-From: Bartosz Golaszewski <brgl@bgdev.pl>
-Date: Tue, 13 Feb 2024 09:10:52 +0100
-Message-ID: <CAMRc=McLsY47oAk3GWp0Cecb=+fEtRKjJ_L3kyKkxYkEnwME7A@mail.gmail.com>
-Subject: Re: [PATCH v3 22/24] gpio: protect the pointer to gpio_chip in
- gpio_device with SRCU
-To: "Paul E . McKenney" <paulmck@kernel.org>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, 
-	Linus Walleij <linus.walleij@linaro.org>, linux-gpio@vger.kernel.org, 
-	Kent Gibson <warthog618@gmail.com>, Alex Elder <elder@linaro.org>, 
-	Geert Uytterhoeven <geert+renesas@glider.be>, 
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Wolfram Sang <wsa@the-dreams.de>, 
-	linux-kernel@vger.kernel.org, 
-	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>, kernel test robot <oliver.sang@intel.com>
+References: <202402071553.75bfbe67-oliver.sang@intel.com> <CAOQ4uxghgvmSzN_twab00xyUh=+0UJ79_pn-tjW1Ob_s1-zroQ@mail.gmail.com>
+ <ZcR+scdiyu7OZexO@xsang-OptiPlex-9020>
+In-Reply-To: <ZcR+scdiyu7OZexO@xsang-OptiPlex-9020>
+From: Amir Goldstein <amir73il@gmail.com>
+Date: Tue, 13 Feb 2024 21:13:41 +0200
+Message-ID: <CAOQ4uxiF=cr5w987WbOBqotWZfdFesHt+CpnoBD=DnxncLLJ8w@mail.gmail.com>
+Subject: Re: [amir73il:sb_write_barrier] [fsnotify] 9c13a708ef:
+ will-it-scale.per_thread_ops -4.2% regression
+To: Oliver Sang <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, Jan Kara <jack@suse.cz>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Feb 12, 2024 at 10:20=E2=80=AFPM Bartosz Golaszewski <brgl@bgdev.pl=
-> wrote:
+On Thu, Feb 8, 2024 at 9:12=E2=80=AFAM Oliver Sang <oliver.sang@intel.com> =
+wrote:
 >
-
-[snip]
-
+> hi, Amir,
+>
+> On Wed, Feb 07, 2024 at 11:17:36PM +0200, Amir Goldstein wrote:
+> > On Wed, Feb 7, 2024 at 9:37=E2=80=AFAM kernel test robot <oliver.sang@i=
+ntel.com> wrote:
+> > >
+> > >
+> > >
+> > > Hello,
+> > >
+> > > kernel test robot noticed a -4.2% regression of will-it-scale.per_thr=
+ead_ops on:
+> > >
+> > >
+> > > commit: 9c13a708efa02450fb5a50fc02a6eaf060fa00a1 ("fsnotify: introduc=
+e pre-content permission event")
+> > > https://github.com/amir73il/linux sb_write_barrier
+> > >
+> > > testcase: will-it-scale
+> > > test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480CTD=
+X (Sapphire Rapids) with 512G memory
+> > > parameters:
+> > >
+> > >         test: writeseek1
+> > >         cpufreq_governor: performance
+> > >
+> > >
+> > >
+> > >
+> > > If you fix the issue in a separate patch/commit (i.e. not just a new =
+version of
+> > > the same patch/commit), kindly add following tags
+> > > | Reported-by: kernel test robot <oliver.sang@intel.com>
+> > > | Closes: https://lore.kernel.org/oe-lkp/202402071553.75bfbe67-oliver=
+.sang@intel.com
+> > >
+> > >
+> > > Details are as below:
+> > > ---------------------------------------------------------------------=
+----------------------------->
+> > >
+> > >
+> > > The kernel config and materials to reproduce are available at:
+> > > https://download.01.org/0day-ci/archive/20240207/202402071553.75bfbe6=
+7-oliver.sang@intel.com
+> > >
+> > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > > compiler/cpufreq_governor/kconfig/rootfs/tbox_group/test/testcase:
+> > >   gcc-12/performance/x86_64-rhel-8.3/debian-11.1-x86_64-20220510.cgz/=
+lkp-spr-2sp4/writeseek1/will-it-scale
+> > >
+> > > commit:
+> > >   v6.8-rc2
+> > >   9c13a708ef ("fsnotify: introduce pre-content permission event")
+> > >
 > >
+> > Hi Oliver,
 > >
-> > [   76.432519][    T1] gpiochip_find_base_unlocked: found new base at 5=
-12
-> > [   76.434591][    T1]
-> > [   76.435240][    T1] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > [   76.436545][    T1] WARNING: suspicious RCU usage
-> > [   76.437813][    T1] 6.8.0-rc1-00050-gc21131f83abc #1 Tainted: G     =
-            N
-> > [   76.439873][    T1] -----------------------------
-> > [   76.441158][    T1] drivers/gpio/gpiolib.c:219 suspicious rcu_derefe=
-rence_check() usage!
-> > [   76.443364][    T1]
-
-[snip]
-
+> > There is an optimization patch in Jan's fsnotify branch:
+> >
+> > * 082fd1ea1f98 - fsnotify: optimize the case of no parent watcher
+> >
+> > I rebased my development branch over Jan's fsnotify branch.
+> > Can you please re-test the regressing patch.
 >
-> Paul,
->
-> Could you help me out here? It seems that lockdep complains (with
-> "suspicious RCU usage") whenever an RCU-protected pointer is passed to
-> rcu_dereference() but is not actually dereferenced later - in which
-> case switching to rcu_access_pointer() helps. But in the case of the
-> of_unittests() it also emits the same warning for
-> gpiod_direction_input() where gdev->chip is fetched with
-> rcu_dereference() using CLASS(gpio_chip_guard) and later actually
-> dereferenced by calling guard.gc->...
->
-> Any hints as to what I'm doing wrong?
->
-> Thanks,
-> Bartosz
+> this doesn't fix the regression is our tests, still
 
-Seems like these can be silenced with rcu_dereference_protected() so
-I'll use it for now.
+Hi Oliver,
 
-Bart
+Thank you for the feedback.
+It took me some time to come up with a possible solution.
+Pushed it to branch
+ https://github.com/amir73il/linux fsnotify-perf
+
+* 7ca5d81f2ffa - (github/fsnotify-perf) fsnotify: introduce
+pre-content permission event
+* f11cc054af02 - fsnotify: optimize the case of no permission event watcher=
+s
+* 522fcae19571 - fsnotify: use an enum for group priority constants
+* 728ae8e9aa68 - fsnotify: move s_fsnotify_connectors into sb connector
+* d04bf34990ab - fsnotify: attach sb connector for the lifetime of sb
+* dcc32fca414b - fsnotify: count watched object reference only for
+connector with marks
+* 38afb3e6393d - fsnotify: create helper fsnotify_object_sb() to get
+sb from connp
+* 2da381128528 - fsnotify: rename fsnotify_{get,put}_sb_connectors()
+* e1a893090c4b - (github/fsnotify, fsnotify) Merge remote-tracking
+branch 'jack/fsnotify' into fsnotify
+* b7dbaace3971 - (jack/fsnotify) fsnotify: Add fsnotify_sb_has_watchers() h=
+elper
+* 082fd1ea1f98 - fsnotify: optimize the case of no parent watcher
+
+All the work up to:
+
+f11cc054af02 fsnotify: optimize the case of no permission event watchers
+
+should hopefully not make a difference for performance.
+I think that f11cc054af02 is going to improve this will-it-scale benchmark
+(write loop) and possibly other benchmarks (read loop) as well.
+
+When final commit
+
+7ca5d81f2ffa fsnotify: introduce pre-content permission event
+
+is applied on top of this optimization commit, I expect that it will not
+regress the will-it-scale benchmark.
+
+Let me know if this does the job.
+
+Thanks,
+Amir.
