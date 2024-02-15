@@ -1,89 +1,146 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAB5655C10
-	for <oe-lkp@lists.linux.dev>; Wed, 14 Feb 2024 13:58:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA112184E;
+	Thu, 15 Feb 2024 02:15:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707919124; cv=none; b=MCwe25lL1IAwl4CZ4Rh/gcHzSLeXOWPBWjAkXfXZl/F2g2J1cX4QsgDY2gEt0kYnC9d0A1VcuV2Id8mqzezHsBE3O3Cg778a73lAsH+gGWIzMFbBbpxY8KzaAGcw/QbNWAfbLHcweLM5uCxuQSNWYeHiUZ9eMTNkcV3QEQxd8Sk=
+	t=1707963327; cv=none; b=fhoXx8O13Z2VoUBYjWwmrAqZS344/4VSDP3Kqhn4MltZWPWrN3znxULfWOqlgUQxF3yiQj2B1LRmlxYKWZShBnTCFqYM90CWe7eqPUyhFydw1kGgcHUtSqbKTrR2stSD7sdUMj7M/12PusJS4VDzcM5gduPcT7z4qCG5eK6Xzs4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707919124; c=relaxed/simple;
-	bh=4Pe3vIExJ+Y/9rR3njvA6HmgozyDPDe8r2isi4PolHI=;
+	s=arc-20240116; t=1707963327; c=relaxed/simple;
+	bh=Os4e0r0XH5+lXccwqGEMksaDDZuHN+IEX+6a1tIrWfI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=l5k2rQOvrnqv2+nExvl7jBPV+E9mUaLpSsWGjQ71cB7MJHgyuywD3oWd2NxyTeyJ1KcirztGxHTCOz/MwkrCz3t9FMBMQuSAzIEFLZVgrYMzHg9/lJHqNFs5lhG7gX1dbn3ue171RfpYWn/W+4H+hd9d6C87DRmMVDu/y1novHY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=Nw+6JRlp; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=YTGhmh0l; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	 Content-Type:Content-Disposition:In-Reply-To; b=ssNE9/dOuzEO3DrDVGGQyMkFDEARuZkzO1Yd3v7HfQXVxN6vGbS/g6znbhtgFHoLZM7DeIer1IFLmY9QrLh5QssWtmdjK004l4GuIuOC3DHE68+7bchdTgUIWppm3MVIyQHklrraLGtocs2/xJl6IHkY01QNoCZ7R03OLfIA0FM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=i4x4HRTx; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="Nw+6JRlp";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="YTGhmh0l"
-Date: Wed, 14 Feb 2024 14:58:39 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1707919121;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=dIh2qhbjv3JqO52zURCag5iB3IvkUymbfocfibrq3fY=;
-	b=Nw+6JRlpE3lQzGQ1ve5p7fgMU4zcFf+gaqxrzraL8uV3i0ocicttV6HoMsRUjgWU4bgEpM
-	5RLm/VE7uNEROKyLpPBjhq6BKDJ+FQpxYtns8YkvuajeO6wAxFKXKAsU2OMM7FklaK98Xw
-	AY1rRv9mHNhoY8WTXd+M/6ZFySSoDodz1Zuid4WmmNu3a2J3P+G0vwwogWOD2KcGPCDW6L
-	qP4XJf7aDv6BjsChfBZ/rn6ZFzTYpblFadUP8mln94/gP4BCJBIL6tmdkttat7OpE+hxhA
-	shgfsscdLJUDhuFmx3YJLr7XgYlykVZAvaQCANF4eFqWkex0wTU2xouImRy+wg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1707919121;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=dIh2qhbjv3JqO52zURCag5iB3IvkUymbfocfibrq3fY=;
-	b=YTGhmh0lGpnGF7yjPwvvxTo7uf+CjAVn7jLqBlLeuDeqJXOWcqdusoaJTeJ+6zk8InTSXd
-	n3Ghm3gBKT4a1vBg==
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: John Ogness <john.ogness@linutronix.de>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, linux-serial@vger.kernel.org
-Subject: Re: [rt-devel:linux-6.8.y-rt] [serial]  0a81ac5ba5:
- Kernel_panic-not_syncing:No_working_init_found
-Message-ID: <20240214135839.2Dr1E3JM@linutronix.de>
-References: <202402052207.a61afe51-lkp@intel.com>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="i4x4HRTx"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=2xgKFSUqBYBFWruocdjixxesRScsvvle8lCKIAmFZm8=; b=i4x4HRTx6ntolPm6BiLkFfMoz6
+	xcuKPRa7KG+1LPBqJYU6CTf2R/4QlAzv1Ekme00BaPXWJghRpIRnFkvKP6amTPMzNrMramUBDcqPP
+	f2mzYUGmAI+4vkaMUVTun/EdF52LzJrDITLGs6NUxn57zdDW692Im7cHD9rXMugy59fvO5y07S9hJ
+	0W/WQ112MTzZLx5HdXKVg+QHYkWbVPaMT1K9UCpTnpK6AwcPIN6JrgX2csR8iRdgprnXaP0jmdUL9
+	UELBgEeLuJqrj4Tae0pVNFfjneZ3YrAf9NeHiz0jsBGDNlMfaxLFiWPVg+maRFKo2SAqp+rHJy0tT
+	325XYYow==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.97.1 #2 (Red Hat Linux))
+	id 1raRHY-0000000EniA-3gLF;
+	Thu, 15 Feb 2024 02:15:24 +0000
+Date: Wed, 14 Feb 2024 18:15:24 -0800
+From: Luis Chamberlain <mcgrof@kernel.org>
+To: Matthew Wilcox <willy@infradead.org>
+Cc: kernel test robot <oliver.sang@intel.com>,
+	Daniel Gomez <da.gomez@samsung.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, linux-kernel@vger.kernel.org,
+	"gost.dev@samsung.com" <gost.dev@samsung.com>,
+	Pankaj Raghav <p.raghav@samsung.com>
+Subject: Re: [PATCH 1/2] test_xarray: add tests for advanced multi-index use
+Message-ID: <Zc1zvBpL6x1kpsfk@bombadil.infradead.org>
+References: <20231104005747.1389762-2-da.gomez@samsung.com>
+ <202311152254.610174ff-oliver.sang@intel.com>
+ <ZVfS8fiudvHADtoR@bombadil.infradead.org>
+ <ZVfT3bs9+F0jqIAw@casper.infradead.org>
+ <ZVfUnhzv4UDigZKa@bombadil.infradead.org>
+ <ZbQEA6WIh0HrFTbP@bombadil.infradead.org>
+ <ZbQHWf0Hh04OwoZx@casper.infradead.org>
+ <ZbQQXO5YhKhdr1Ou@bombadil.infradead.org>
+ <ZbQW3PRAIw8e7m0m@casper.infradead.org>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <202402052207.a61afe51-lkp@intel.com>
+In-Reply-To: <ZbQW3PRAIw8e7m0m@casper.infradead.org>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 
-On 2024-02-05 22:23:16 [+0800], kernel test robot wrote:
-> kernel test robot noticed "Kernel_panic-not_syncing:No_working_init_found=
-" on:
-=E2=80=A6
-> ---------------- ---------------------------
->        fail:runs  %reproduction    fail:runs
->            |             |             |
->            :20          75%          15:20    dmesg.Kernel_panic-not_sync=
-ing:No_working_init_found
->            :20          75%          15:20    dmesg.boot_failures
-=E2=80=A6
-> [  217.931991][    T1] Kernel panic - not syncing: No working init found.=
-  Try passing init=3D option to kernel. See Linux Documentation/admin-guide=
-/init.rst for guidance.
+On Fri, Jan 26, 2024 at 08:32:28PM +0000, Matthew Wilcox wrote:
+> On Fri, Jan 26, 2024 at 12:04:44PM -0800, Luis Chamberlain wrote:
+> > > We have a perfectly good system for "relaxing":
+> > > 
+> > >         xas_for_each_marked(&xas, page, end, PAGECACHE_TAG_DIRTY) {
+> > >                 xas_set_mark(&xas, PAGECACHE_TAG_TOWRITE);
+> > >                 if (++tagged % XA_CHECK_SCHED)
+> > >                         continue;
+> > > 
+> > >                 xas_pause(&xas);
+> > >                 xas_unlock_irq(&xas);
+> > >                 cond_resched();
+> > >                 xas_lock_irq(&xas);
+> > >         }
+> > 
+> > And yet we can get a soft lockup with order 20 (1,048,576 entries),
+> > granted busy looping over 1 million entries is insane, but it seems it
+> > the existing code may not be enough to avoid the soft lockup. Also
+> > cond_resched() may be eventually removed [0].
+> 
+> what?  you're in charge of when you sleep.  you can do this:
+> 
+> unsigned i = 0;
+> rcu_read_lock();
+> xas_for_each(...) {
+> 	...
+> 	if (iter++ % XA_CHECK_SCHED)
+> 		continue;
+> 	xas_pause();
+> 	rcu_read_unlock();
+> 	rcu_read_lock();
+> }
+> rcu_read_unlock();
+> 
+> and that will get rid of the rcu warnings.  right?
 
-Before that, there is:
-| [  201.601164][  T219] request_module: modprobe binfmt-464c cannot be pro=
-cessed, kmod busy with 50 threads for more than 5 seconds now
-| [  201.790029][    T1] Failed to execute /init (error -8)
-| [  217.930082][    T1] Starting init: /bin/sh exists but couldn't execute=
- it (error -8)
+The RCU splat is long gone on my last iteration merged now on
+linux-next, what's left is just a soft lockup over 22 seconds when you
+enable disable preemption and enable RCU prooving and use 2 vcpus. This
+could happen for instance if we loop over test_get_entry() and don't
+want to use xas_for_each() API, in this case we don't as part of the
+selftest is to not trust the xarray API and test it.
 
-I *think* there is some kind of memory corruption and the init-ELF file
-isn't recognized. I don't think this related to printk.
-Did you see similar reports to this one? This is -rc1 based. I'm going
-to release rc4 based something today with printk mostly unchanged. Will
-be interesting to see if this comes back or not.
+So in the simplest case for instance, this is used:
 
-Sebastian
+check_xa_multi_store_adv_add(xa, base, order, &some_val);               
+                                                                                
+for (i = 0; i < nrpages; i++)                                           
+	XA_BUG_ON(xa, test_get_entry(xa, base + i) != &some_val);  
+
+test_get_entry() will do the RCU locking for us. So while I agree that
+if you are using the xarray API using xas_for_each*() is best, we want
+to not trust the xarray API and prove it. So what do you think about
+something like this, as it does fix the soft lockup.
+
+diff --git a/lib/test_xarray.c b/lib/test_xarray.c
+index d4e55b4867dc..ac162025cc59 100644
+--- a/lib/test_xarray.c
++++ b/lib/test_xarray.c
+@@ -781,6 +781,7 @@ static noinline void *test_get_entry(struct xarray *xa, unsigned long index)
+ {
+ 	XA_STATE(xas, xa, index);
+ 	void *p;
++	static unsigned int i = 0;
+ 
+ 	rcu_read_lock();
+ repeat:
+@@ -790,6 +791,17 @@ static noinline void *test_get_entry(struct xarray *xa, unsigned long index)
+ 		goto repeat;
+ 	rcu_read_unlock();
+ 
++	/*
++	 * This is not part of the page cache, this selftest is pretty
++	 * aggressive and does not want to trust the xarray API but rather
++	 * test it, and for order 20 (4 GiB block size) we can loop over
++	 * over a million entries which can cause a soft lockup. Page cache
++	 * APIs won't be stupid, proper page cache APIs loop over the proper
++	 * order so when using a larger order we skip shared entries.
++	 */
++	if (++i % XA_CHECK_SCHED == 0)
++		schedule();
++
+ 	return p;
+ }
+ 
