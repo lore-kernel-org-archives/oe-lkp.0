@@ -1,88 +1,100 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DE3A20B24
-	for <oe-lkp@lists.linux.dev>; Mon, 19 Feb 2024 08:11:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCC1823741
+	for <oe-lkp@lists.linux.dev>; Mon, 19 Feb 2024 12:35:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.9
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708330285; cv=fail; b=D/ELOU897epU2r9zn3ZSd3yD5AoX+vQUCfTOzjzEDQPCdLPfcoP0heG2kcGDpmHq9n7Jp++HW1BtZrhiDk3USTOnx5RhcU4MJ33wBBRd3vOmyB5/QekM2NvibGfiJPI9Ui/9+SrT/oWbDVzeO1m9K3GXIbxQXbaCO/0ybTuLgCk=
+	t=1708346139; cv=fail; b=ZZiH85vHhVHpijzjsVPAf4UowqG2WPDh9Z5vyZx1JAglR+NUwK9o2iH/tbo2NsFGAThH+hNT+PBOvgTAz/NMl0B7U1ZwL4rFu+0auCZn0DEhXfLf/L7xujI4wj0rAtlnxXyYK45hSyivm8DVLH5JQygEtqCqi92nVYUetkG49y4=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708330285; c=relaxed/simple;
-	bh=XpLshysnF6kMeVFvpXfF0B1Bwi4yR358fTa+qO1oAy8=;
-	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=RfU0qpafDlE04M4WG0HEEli6tkdr1eHRyw1yVo9ljPOHQ8WC2IER2oW3CDFE0jeyvXUA8foFYnhWjpODr+I/NKlXXRxW7MulQeMlqvfUJazjxX9SRf44wv2RCl/lvzYa/83kMohnwPkCEXMP/F2BBPeN6XRrili5Y8A0jjKyit8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KsmeSozB; arc=fail smtp.client-ip=192.198.163.18
+	s=arc-20240116; t=1708346139; c=relaxed/simple;
+	bh=hGipp/Ss72lTQoMCErGV/E9GwjRUh+TA4icL30kCi2c=;
+	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=mplLD6WzBT8fcYfZlcVpn6B/EGd9fu3ustEnKX0DromJjwRN5uk43E2IzrzQGEZtFx7q2sDBsJl6l5EQSLuyUU5/lpaZvvw+TW86+n67uRmQFFG4peTBOM48VTIOBCEOTIfZxIHwbgZ2ZSxy13ovEDosRbWksg5Lk6JFCqFEhpI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Q/+4RPAD; arc=fail smtp.client-ip=198.175.65.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KsmeSozB"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Q/+4RPAD"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1708330283; x=1739866283;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=XpLshysnF6kMeVFvpXfF0B1Bwi4yR358fTa+qO1oAy8=;
-  b=KsmeSozBzAtEHOqXsH+e3TZqCiPoSS0QWyBHCuBT+OruAKQR14Dg/gA5
-   YkdMagVvPJviI8JJ3QPiqwyVaoAB3tXHwGGCoaCfxSOtVT+trHv+uZheM
-   bHhWilWorlDoGpdlxO/BvJJe+9SHXRrTvXuDZq9CJqPTYgHa6uUlpkRr5
-   Jly9sF/1Z34BirqjlEiT9zYmpAc+lPJFFYJ+qyDpiNoxhwLVKlXI1oQX6
-   SKiZrKXYO8Wao1EIvzeqzuxjIhTO+cIjXMio701WZZX0/7RC2mLI8Dmw9
-   LJgquVO2bOi06FFmTSs7AWq8bQpduyONQBzRyOV/WeyDhfEnIcymsuIhs
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10988"; a="2270070"
+  t=1708346138; x=1739882138;
+  h=date:from:to:cc:subject:message-id:references:
+   content-transfer-encoding:in-reply-to:mime-version;
+  bh=hGipp/Ss72lTQoMCErGV/E9GwjRUh+TA4icL30kCi2c=;
+  b=Q/+4RPADqC0uWJfJUbtBVNYvt8aTl2nBut/vTuJbV/9fJdZnU3DLBbCX
+   U6fohXlBI8Z6YA097Sb+Xrn+gtdtzS7ZX2/JPd6kiFIX2QeBE7T0UNluh
+   T2t2nFtSQeYJ3JwaZbLWza9MNrEsKhZMjSVSNTkFKZxBcdpRSCdrTdXts
+   ZSsEK9604y0qnIwR4dP/2PO0bjajeM1KAEMp05SrIKi6GpMWBTDkVGDdC
+   zoTMUF1MJcOKduwn2PF6Jme62QUKMd0IXmdC/sTsh9AGvs7ODv1Atg6Pl
+   i4V0raswWgRmYcKO2yEMbO124KU3gumowuo/+Kb53+DRvTHcyKe6yTrn0
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10988"; a="24880183"
 X-IronPort-AV: E=Sophos;i="6.06,170,1705392000"; 
-   d="scan'208";a="2270070"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2024 00:11:09 -0800
+   d="scan'208";a="24880183"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2024 04:35:37 -0800
 X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10988"; a="912868582"
 X-IronPort-AV: E=Sophos;i="6.06,170,1705392000"; 
-   d="scan'208";a="9030426"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by fmviesa005.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 19 Feb 2024 00:11:09 -0800
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+   d="scan'208";a="912868582"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by fmsmga002.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 19 Feb 2024 04:35:36 -0800
+Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Mon, 19 Feb 2024 00:11:08 -0800
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ 15.1.2507.35; Mon, 19 Feb 2024 04:35:36 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35 via Frontend Transport; Mon, 19 Feb 2024 00:11:08 -0800
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.169)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ 15.1.2507.35 via Frontend Transport; Mon, 19 Feb 2024 04:35:36 -0800
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.100)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Mon, 19 Feb 2024 00:11:08 -0800
+ 15.1.2507.35; Mon, 19 Feb 2024 04:35:35 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZBan62KtJuuDLdFMZVuj+w6oLlCtfL7Vd53Tn2KnXYuDL023shsq1MnFtCGWmTnwgw855NpimTYNNo+hLW5E1EzmXohcnkUy9o9BAAaXCLfFIR5cceANMQTEDeMapXhdEHi4CUM5Ji5DYAfhXqKZH5QIkuLsqYWM7NrhZhKBpeVlOY6eQ4ChNA7e3uEszVHc8kgZwrMtNpxgcsXOwG8nuwa9tZT59/c/bpWF0ouV2vBbpZMxdtZHbwvhXYzqwydWP1qMVxdFmzBjIvqfYEGO6jvxZBPBhGEr8GajBQWV3ZjSPYrKmb6IY57agRkjd/Ta0iq8lZKWrzW8uvVeYV2R4w==
+ b=Q9I+j9gEkOxFOT9fBC5yS5ZEZ9e2430ABcXTge0kovcU28P1fRti24vnFfpcWBitaY6GbexWl4ycGDqV61Hwb/SAkVS3VfjfCk6lwHgV/6nhni99ZuPYdsXNlJ1DBpnkPyRiEZEmb2EUNQcvxWYDZxIT05xKUej+vYtZXu7rkSOSr980zJGP94lwB0Yg7MJBZxsesYizPIifCduROmqOeyKSw0HFd/pLbyuIq8M5hEqxmAJQBzhcfzeBgDiJdcomZt+WT8SW1QUzzanZ9GbVGgLHIWzofSimV3CIeJBw8H6zxAikX208PVubj+Yqc3APsCRqXovuVVY+p4vZewJWcw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/s11AkGAzYF0ZbSpXzJbQ4/VN2W40FVkLPbCvMG6qTY=;
- b=lxcYHZ5wCd11MgHrkPRWFD3Ru3c/AiTIT7HYdVPEdG0sbBRouefEBKj1dbpWsAHb1qx27ry5HlJilSxxVcxJBprlq2gItjUjAHd3ArRzK6BD+adY8SedfeDZpf5pEVnbYtVkDweHx6nSPg3GLrjDO8OptX7UbgmmVSYU5e3T7P9C65fTWI7msLs80mQW9k5C9njhLmf0hphzTR7de+VlqSWW8bjquvO3df0Nc+umSPQaBop1la6MxamgUauqCi7ApKQ2m1trSfngHtzx0OXZYAmLaeOu5gcyTIM0T08nWju1kjFYDMROLfRNXX+nITCKfPMHfbmqAIpMkoraWMDCrg==
+ bh=ZCXiuCzwstxVogLfKfN1XGFWAXfno1OlRcFhdYhlOBo=;
+ b=UFXbcpVgOqSmzbIM3AUqFTZzOMsGp+nTsyIOiLx/gsRrGoqq6fhlc8iwOMiBe/ytDsW93NpwBaJ8tKyeStdvskfsXHhJcK3CLlLQlDMGtPmKdbv/HfB5XBb8MO72dP6l9XFdKvJQ0rKV2vY4hXjYLbrwdIAfj6J4jY+w3stygzDx1bCsNmJTpYrPV+HxUS2O2l/15/FmpMUB6mrxRxsvUu37ISrsHw9Lckm69D4Fhl7L1wKnz3hBV/lVi3XoVIafNNE6jJEXcDVZHeul9uXfhgmykN6rCqcXxx92uHwoxQ3JzgaL8SRy3NNgQnoVCDk8yyeWBIkYfffS6ezFVtoZ6w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by SJ0PR11MB4863.namprd11.prod.outlook.com (2603:10b6:a03:2ae::23) with
+Received: from DM4PR11MB6020.namprd11.prod.outlook.com (2603:10b6:8:61::19) by
+ SN7PR11MB6851.namprd11.prod.outlook.com (2603:10b6:806:2a3::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7292.38; Mon, 19 Feb
- 2024 08:11:06 +0000
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::a026:574d:dab0:dc8e]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::a026:574d:dab0:dc8e%3]) with mapi id 15.20.7292.036; Mon, 19 Feb 2024
- 08:11:05 +0000
-Date: Mon, 19 Feb 2024 16:10:57 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: David Woodhouse <dwmw@amazon.co.uk>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <kvm@vger.kernel.org>,
-	<oliver.sang@intel.com>
-Subject: [dwmw2:pfncache] [KVM]  cc69506d19:
- WARNING:bad_unlock_balance_detected
-Message-ID: <202402191553.bd17cf2a-oliver.sang@intel.com>
-Content-Type: text/plain; charset="us-ascii"
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7292.37; Mon, 19 Feb
+ 2024 12:35:33 +0000
+Received: from DM4PR11MB6020.namprd11.prod.outlook.com
+ ([fe80::a83c:a9dc:f30d:507]) by DM4PR11MB6020.namprd11.prod.outlook.com
+ ([fe80::a83c:a9dc:f30d:507%7]) with mapi id 15.20.7292.036; Mon, 19 Feb 2024
+ 12:35:33 +0000
+Date: Mon, 19 Feb 2024 20:35:21 +0800
+From: Chen Yu <yu.c.chen@intel.com>
+To: Abel Wu <wuyun.abel@bytedance.com>
+CC: Tiwei Bie <tiwei.btw@antgroup.com>, kernel test robot
+	<oliver.sang@intel.com>, <oe-lkp@lists.linux.dev>, <lkp@intel.com>,
+	<linux-kernel@vger.kernel.org>, Peter Zijlstra <peterz@infradead.org>,
+	<aubrey.li@linux.intel.com>, Honglei Wang <wanghonglei@didichuxing.com>,
+	Aaron Lu <aaron.lu@intel.com>
+Subject: Re: Re: [linus:master] [sched/eevdf] 2227a957e1:
+ BUG:kernel_NULL_pointer_dereference,address
+Message-ID: <ZdNLCYnJzPM2Ih2j@chenyu5-mobl2>
+References: <202401301012.2ed95df0-oliver.sang@intel.com>
+ <23cbb613-c8a2-4f07-b83b-fa3104bef642@bytedance.com>
+ <8b21e697-c9b9-49aa-a7ad-e88a5d7f9c92@antgroup.com>
+ <5f8f4222-a706-45b1-8eb2-fd4553cc57d8@bytedance.com>
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
-X-ClientProxiedBy: SG2P153CA0039.APCP153.PROD.OUTLOOK.COM (2603:1096:4:c6::8)
- To LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <5f8f4222-a706-45b1-8eb2-fd4553cc57d8@bytedance.com>
+X-ClientProxiedBy: SI2PR01CA0029.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:192::8) To DM4PR11MB6020.namprd11.prod.outlook.com
+ (2603:10b6:8:61::19)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -90,193 +102,197 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|SJ0PR11MB4863:EE_
-X-MS-Office365-Filtering-Correlation-Id: b8fca41b-4ece-4ef0-0130-08dc312251e8
+X-MS-TrafficTypeDiagnostic: DM4PR11MB6020:EE_|SN7PR11MB6851:EE_
+X-MS-Office365-Filtering-Correlation-Id: a1389e30-9e07-4b67-2d4e-08dc3147440f
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: dD9J0lZb5iTfctpbC+0L6gHk+ZHYBHiCzH4UChuUNRfSD3UTD8YSjBPuIim8mEU1KATA7+g8lj6ydaQeJzY6/whxQGPA/GKREyrlkiUt2qV5yL8sV5uUyu/fb+B0jxbkObGIQa/FzvbpwwKOavIhjj8N0Ln5Jw7Ix2zUvsCRvt68p//8PHKUk9AIc39ig1h18ZOs0u7S43DQb2FhM2FUke5AoGT8UuVV+DAP4d6b9hOjaoUh7eMp2SxRpeZJIOlBwCtKkxupo6dTKvwH9ps7X2tdmrPdx/tGmXQJpXg/HA9pieQfdiqG+hGpp5ZKJTL9OTgSSLSE9tWVZfQnN3Gy+3ZLUlyazkEf3wncxmTPtY+ZOUGcdVK7jfT8BH+aFqXsdWqrTF6OM8Gp9YBkGPGmQ/XSOKOCPfoQbkIsVdgKWgK0EZdMTMkN13EQoQ840HmBTsjDfebv280hoPZwclFq7LhMlHRT0AFXqfCuwP7sKxsqyeJpOeq6XMnpo0dIjWmd2ZzTtRn+HlBVuMtr+6XHMxM//drsLH6fU79bco/HGo9ItL4o0yo1MNLzW2rtYeYh
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(376002)(396003)(366004)(136003)(346002)(230922051799003)(230273577357003)(451199024)(1800799012)(186009)(64100799003)(5660300002)(2906002)(82960400001)(6506007)(83380400001)(478600001)(966005)(6486002)(6512007)(6666004)(26005)(36756003)(107886003)(2616005)(1076003)(8936002)(4326008)(6916009)(8676002)(66556008)(66476007)(86362001)(66946007)(41300700001)(316002)(38100700002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: JLALp+O/NS84AAfVTMVeLQDH65NPJixR7Xawc0dvenr957X6Xh20RH9no38BjEccXQFDV2n0ZEvnGQur7UxkvGj7UerL6n5LMzjazprVxVqsYnOS0iWPo5iT6vrMAnIAFMveEMHej76XtRjU0WizFu17QZmJqjFd6/6aoGLLg89KGFeyd/MunlxeYVUSHD0SZnlxetbGDhkKH60dpCn4RHA0n7nuzlJm73NDB73YAxpqYZfxbT4uixF1RhJf1B7seJbFLtvb2ftBEivhByo+hWdJcrD6u1RPDi1rdv9zsMgU2FqP5gYL6jgKbL2KV6NL0uPb/FO19ugyXx1HxBJrGEVzuuijZAOOJsAelUtouFmekvsaD8MPTTUR996MTdXEl00zJ67g7TdCo36ZsO5ABB8CA87bTR8vIpJRSF8oYY2V2YDOxlQ0VnXnfyC/9NH+h5gfmFB97LlxeJ2OUMZj9+WilsReMIExE07jtMh31kHnICMosIJx+ztcu0Kfqe1DK6I79juo88uqF9QJYIFGVg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB6020.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?aQhWF0bEMuZl+QCWU8CW6bC+TTSGAoAV6zKG1YaHXFrfF5dEdrhDGcZiN8Vu?=
- =?us-ascii?Q?HhwSdy3hd7Jkcf0P6UgISiX0hELcJtNqRS5lvXOEvnKk2juoOhSEWJR+gRQP?=
- =?us-ascii?Q?X2QIsmKpUuKAuUyMwZfnvyPiCbppBAStF9xbeJU0xNhESQcBcc1V4e+TIjl2?=
- =?us-ascii?Q?R80k0IO1/Iqn+seNysaQsOaqqL3+7ZzMG9HX7zvrbZYKKYXYz+XtvITziZKT?=
- =?us-ascii?Q?mCDzjYh6FGBe9m1aaJbSa0RBFGb1kvH2L+xh93g9eNyJw8cPZcBf2Kq4t+jO?=
- =?us-ascii?Q?xEfvx9ZTQoJiLqJQXlrH/G1SCXNmZU07Uq+FtCMn1wljPXT/gf/dX8Te+irZ?=
- =?us-ascii?Q?4mRefgDenBIy1/Wk7c4sT1c0Q04CfLpqUr6K4/zCLYvWnX5QTvvxEWo+l1Cy?=
- =?us-ascii?Q?ZL/fyt0bA3yvdeNQaSzE72LtOD3xK17TcBtI34/logmoVUNgdSysQ9IE8kUY?=
- =?us-ascii?Q?/bKKsGEviwNvqXWsG+42tP4SJr71bkAb5AlW2d2AEeCzl8i+Su51oZacFukr?=
- =?us-ascii?Q?i4JtL0AvMPcqRrY8zcLTcmwAuA0SsnZ7Syo5d8MSH1+3QgQfWXS9cLbkik8h?=
- =?us-ascii?Q?yccs8/7WsovGqsBSvRXZtl2GJTkGRpRcpIdAcC0Xc44fth5AT6XnnU0dh5qp?=
- =?us-ascii?Q?t+QGb0ywvbh972xnTlF70ipT0FAhmnROgSwY9BOfUEx+dvHUgAFCrzslScok?=
- =?us-ascii?Q?1W3Cl+5GqIEcmjNihxkDgZOvgjXs+WknEucp5lACWqMSHaFvDXBbUm74Zs0c?=
- =?us-ascii?Q?g2tgEgRpgOs/HTWSFQ2hprPjERA6VCFCmTpN9+3+K1pZaJ723e0S2Gcskcxe?=
- =?us-ascii?Q?A3mrAKG1aoyDTYG52JTN1hAxmp7utq8Coz755qkETbPrXbk2XjUatjEGDhlx?=
- =?us-ascii?Q?lvdrDJjRjFAGlvxkJgxBeh63LojABuG2134Fg1XjQU7IKOIk+H+MxTYtpch5?=
- =?us-ascii?Q?LJ6f8qFm2+CyCArrfreR6XpXeD4bFSoGYf6pbpXKTkfdFJeP5bgSxXpMUKCT?=
- =?us-ascii?Q?ArAdAuRbfIeoyy6g3VaA1sXfYuFBKGfFJsz1K00F5GPS6zwb2eHRTO0AVmiX?=
- =?us-ascii?Q?G5IgugBM8CPQ/j6iQmxIyM5WESu1ldaUYYG3HqCD3YnTJQZ3yoLtbW3uKfJE?=
- =?us-ascii?Q?p44Sc5dXlTN1lWugoEkCRz9OwelNgiy+fLK0gEBe5W/Ve23nMPvg+ZVAXUmr?=
- =?us-ascii?Q?UbUtmycW7hRC4t+VBIy8YlXL2Af7/iobNe+VMHXuRIKWXrhBnze3qzbqvuEJ?=
- =?us-ascii?Q?tS6HNC3u8FzNPMbA87jdCqSNmUcL2Chq+gua3JO4K7gMEMHys7pnVYFPcKhZ?=
- =?us-ascii?Q?3mj1braVXVlwzR68Msgug1ZV8BDSfFYU8zW8+Ly4pdIYBAdpYSGgoaqrKHWh?=
- =?us-ascii?Q?YOZYQ+EGfe4Wpt3lUNyDSVd+yzQY3JkJHBuhNsKhi3+3tZRs/SDyoC5JypIz?=
- =?us-ascii?Q?0RP0mH0ZeirY5/Qrms5n7kUMkoJ+kpV+3Qc2G759PSKzEy9rmq+ytzXCfWvq?=
- =?us-ascii?Q?r8I1dhqRWBsfmVTzSuFZTJG/eHa/gctUCfaQjWJ8+g4/Gz2328v2peCih1Cs?=
- =?us-ascii?Q?Wi1da0iX0rrckXKbsyE70svr2GCQOvla7ONFByMT+coz8m63BGcEY5vFEHl+?=
- =?us-ascii?Q?Bg=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: b8fca41b-4ece-4ef0-0130-08dc312251e8
-X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?yxdNL2kU1Yur6PBZkD/xKwR+YIzhOiihem/L0oXuMxxJC/MCrQA+vWhHnL?=
+ =?iso-8859-1?Q?bROCCYeySQafhpkRC4DSjYhSgIy0CyBENvMw+4XfKHFuRU/8lk98NMEcVq?=
+ =?iso-8859-1?Q?3aMi0ztweA1KRze07HxsbfOEMy/3AxodoGAmdfMw1y93JYVdKfuvUKHwTL?=
+ =?iso-8859-1?Q?zCuQj5yK65HQ//XvXTssvh58Os1ntpO15KOf1Fx1RgBJ1f+N9ZVrBVXtlU?=
+ =?iso-8859-1?Q?E3Sd2SjKTUjpO+IzvG95hTai77+in3Yxa9d1rdwsSVJH0hEBDm4F+pa1LP?=
+ =?iso-8859-1?Q?VrRT0biIBbePgNS3hFQnibOqlrjHgauE4u2/+78zJzoYhTB+lX94pmlbd0?=
+ =?iso-8859-1?Q?Sug7JPuUb80M38T45lRB74SW7XO2PY/+NhmjxYQzwu16ay53GWn8HjEbVq?=
+ =?iso-8859-1?Q?0oKNIsf5wE/rI07ZFucUkkssNZyZL+rkJbnhdyi6LXI++xrx7L8zqq9oQc?=
+ =?iso-8859-1?Q?h+HKQMexh9yj9tSEuiooucgGmZ86AWIcxuZ2M6+MQYawmnaGRPfTV2xk0r?=
+ =?iso-8859-1?Q?zfUCBW0a42thDO7gqCKOIweL35crf3fHOXO4BhVI7bMgU5SDNAfqsR+Jla?=
+ =?iso-8859-1?Q?lin6uj17zpe67ZEPr8aMJHa5OFOpVuU0n3ZeAyNFk1Uqs3Xeg04tGSqQG5?=
+ =?iso-8859-1?Q?sxFXKw1eljHe/lMWVFhe05fz2f403q4fnTOYxou/KwLJX0SMT9tAbywnWm?=
+ =?iso-8859-1?Q?g1rsqB/dUK9NSQQSeRvhNN86GQDRPqZBNGbuq5MMyaAQ0lIiRg0aAozp5g?=
+ =?iso-8859-1?Q?4D+gCzEjprX9mPRK2dyjXgfRXyRjXCeGg9FDdGnUseOIvXytPk9rn6t48/?=
+ =?iso-8859-1?Q?hXGaDTx25O/rIxGe5XOGSdFWn4n831VICEC0hy+dDqmNYhNQ2VwnrrvZG5?=
+ =?iso-8859-1?Q?p0YeOhdaUqGDTbKw/lVGM3cXVICIrnnrE0R1v43JThH62PbxXmQ91HpGuH?=
+ =?iso-8859-1?Q?01yevoWeIhItuTr+/Hb+9sYLlIfsj0jo+7A2HrxeHOakY7C2GuSyvBvzI5?=
+ =?iso-8859-1?Q?uici6P7zYH/pXIE/ZJI/uJSn7oEnXHxkfUmEQV8ayRkLkp9XYvDmQNOOAB?=
+ =?iso-8859-1?Q?A79hk1+Q5MptHszSbCYNWaAusQKQvKDoAIYeXcNZjAhA23DIF2O60yc7Bz?=
+ =?iso-8859-1?Q?2C7p62H8s4wdaDiy/D8Z84r7trIvQ1nzL0497vhZU4NE4EShpdV+B2utNq?=
+ =?iso-8859-1?Q?XYPhA97vb+rMRwK2tqL74xMJVuskuh2ytLTcrF1DQqo6TLhyJNpADGxys4?=
+ =?iso-8859-1?Q?Ia8aHmvMdl1fEei1nNMdVMN6UFL4ENBVXv68oen6/TVD7hq+Zm01pBCDVg?=
+ =?iso-8859-1?Q?UlHY7O7+arFaVDLfZhtpdDd8ERHEeX17Rhe5sNxbNEeXToXugniR74jGJm?=
+ =?iso-8859-1?Q?h+LQVMqryFXCHI/ykT01iwfarxU22hE1Vya0wBQ9Zrn8FPfLzztkayOz0o?=
+ =?iso-8859-1?Q?24+RKSPHpJNsoZn1Cj5vzu3L2mkaX9enWjG5xzro43WYZQiRtJdmg08BnD?=
+ =?iso-8859-1?Q?HPelnz7i7Ie++QPrHiXa4z5uoZdWsdaQZQJUoxnRy1z5cqYW58WUvlOUjD?=
+ =?iso-8859-1?Q?OaVL7RR/AP6feznQuzk68EzQjEvacztDcOH9+dPsoOzPS/OE37J/G+3duH?=
+ =?iso-8859-1?Q?iJ1tXMjwR9VW989vXWud9EmhjJLi8gDuMS?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: a1389e30-9e07-4b67-2d4e-08dc3147440f
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB6020.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Feb 2024 08:11:05.5063
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Feb 2024 12:35:33.5195
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: OxGhodhWmzWsbIZaabsaYyCrmONIvVki8PpuDZ+0HrwC6h/XMPCD2wyANbLWTDF+2kIjinybYAVcUw/4uQ7YKA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB4863
+X-MS-Exchange-CrossTenant-UserPrincipalName: FTJ4BvVhCSx85cPiQQ9tS9+XXCAiMmaJ7vkfyX6gai2woOBGJaq7QKL6J0CNXsmOckuXfHWiyRwg8QNl5Kj3tw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB6851
 X-OriginatorOrg: intel.com
 
+On 2024-01-31 at 20:28:19 +0800, Abel Wu wrote:
+> On 1/31/24 8:10 PM, Tiwei Bie Wrote:
+> > On 1/30/24 6:13 PM, Abel Wu wrote:
+> > > On 1/30/24 3:24 PM, kernel test robot Wrote:
+> > > > 
+> > > > [  512.079810][ T8305] BUG: kernel NULL pointer dereference, address: 0000002c
+> > > > [  512.080897][ T8305] #PF: supervisor read access in kernel mode
+> > > > [  512.081636][ T8305] #PF: error_code(0x0000) - not-present page
+> > > > [  512.082337][ T8305] *pde = 00000000
+> > > > [  512.082829][ T8305] Oops: 0000 [#1] PREEMPT SMP
+> > > > [  512.083407][ T8305] CPU: 1 PID: 8305 Comm: watchdog Tainted: G        W        N 6.7.0-rc1-00006-g2227a957e1d5 #1 819e6d1a8b887f5f97adb4aed77d98b15504c836
+> > > > [  512.084986][ T8305] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> > > > [ 512.086203][ T8305] EIP: set_next_entity (fair.c:?)
+> > > 
+> > > There was actually a NULL-test in pick_eevdf() before this commit,
+> > > but I removed it by intent as I found it impossible to be NULL after
+> > > examining 'all' the cases.
+> > > 
+> > > Also cc Tiwei who once proposed to add this check back.
+> > > https://lore.kernel.org/all/20231208112100.18141-1-tiwei.btw@antgroup.com/
+> > 
+> > Thanks for cc'ing me. That's the case I worried about and why I thought
+> > it might be worthwhile to add the sanity check back. I just sent out a
+> > new version of the above patch with updated commit log and error message.
+> 
+> I assuming the real problem is why it *can* be NULL at first place.
+> IMHO the NULL check with a fallback selection doesn't solve this, but
+> it indeed avoids kernel panic which is absolutely important.
+
+I tried to reproduce this issue locally but with no luck. It might
+be related to lkp's environment so I'm thinking of adding the following
+change into lkp's test repo to help narrow down: when the pick_eevdf() finds
+an NULL candidate, print the whole rb-tree, including each entity's vruntime,
+min_vruntime, deadline, etc. So we can figure out why we failed to find a proper
+entity, thoughts?
+
+Example output:
+
+[  325.425017] cfs_rq avg_vruntime:-798130176 avg_load:8192 min_vruntime:29296269335
+[  325.425247] current se 0xff11000105858080 is on_rq, deadline:29299081075 min_vruntime:29296537185 vruntime:29297356572, load:1024
+[  325.425514] Traverse rb-tree from left to right
+[  325.425635]  se 0xff11000101a28080 deadline:29293835648 min_vruntime:29290835648 vruntime:29290835648 eligible
+[  325.425876]  se 0xff11000113113000 deadline:29298566205 min_vruntime:29290835648 vruntime:29297726206 non-eligible
+[  325.426121]  se 0xff110001036cb000 deadline:29298613981 min_vruntime:29290835648 vruntime:29297094477 non-eligible
+[  325.426358]  se 0xff11000118148080 deadline:29298616409 min_vruntime:29297255015 vruntime:29297255015 non-eligible
+[  325.426597]  se 0xff11000111523000 deadline:29299066492 min_vruntime:29290835648 vruntime:29296949653 non-eligible
+[  325.426836]  se 0xff11000106173000 deadline:29299152426 min_vruntime:29296537185 vruntime:29296537185 non-eligible
+[  325.427085]  se 0xff11000105f03000 deadline:29299269335 min_vruntime:29296269335 vruntime:29296269335 eligible
+[  325.427322]  se 0xff110001043c0080 deadline:29299707737 min_vruntime:29296707737 vruntime:29296707737 non-eligible
+[  325.427558] Traverse rb-tree from topdown
+[  325.427648]  left se 0xff110001036cb000 deadline:29298613981 min_vruntime:29290835648 vruntime:29297094477 left half eligible
+[  325.427917]  left se 0xff11000113113000 deadline:29298566205 min_vruntime:29290835648 vruntime:29297726206 left half eligible
+[  325.428171]  left se 0xff11000101a28080 deadline:29293835648 min_vruntime:29290835648 vruntime:29290835648 left half eligible
+[  325.428440]  middle se 0xff11000101a28080 deadline:29293835648 min_vruntime:29290835648 vruntime:29290835648 eligible
+[  325.428679] Found best:0xff11000101a28080
 
 
-Hello,
-
-kernel test robot noticed "WARNING:bad_unlock_balance_detected" on:
-
-commit: cc69506d19ada63803c37c09ff910217004db1e8 ("KVM: pfncache: simplify locking and make more self-contained")
-git://git.infradead.org/users/dwmw2/linux pfncache
-
-in testcase: kernel-selftests
-version: kernel-selftests-x86_64-60acb023-1_20230329
-with following parameters:
-
-	group: kvm
-
-
-
-compiler: gcc-12
-test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480+ (Sapphire Rapids) with 256G memory
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202402191553.bd17cf2a-oliver.sang@intel.com
-
-
-[  124.479929][ T5856] WARNING: bad unlock balance detected!
-[  124.487408][ T5856] 6.7.0-rc7-00250-gcc69506d19ad #1 Not tainted
-[  124.495550][ T5856] -------------------------------------
-[  124.503030][ T5856] kvm_clock_test/5856 is trying to release lock (&gpc->refresh_lock) at:
-[ 124.513736][ T5856] __kvm_gpc_activate (arch/x86/kvm/../../../virt/kvm/pfncache.c:384) kvm
-[  124.523274][ T5856] but there are no more locks to release!
-[  124.531003][ T5856]
-[  124.531003][ T5856] other info that might help us debug this:
-[  124.542656][ T5856] 2 locks held by kvm_clock_test/5856:
-[ 124.550015][ T5856] #0: ff1100406be92470 (&vcpu->mutex){+.+.}-{3:3}, at: kvm_vcpu_ioctl (arch/x86/kvm/../../../virt/kvm/kvm_main.c:4418) kvm
-[ 124.562285][ T5856] #1: ffa000003456af10 (&kvm->srcu){.+.+}-{0:0}, at: vcpu_enter_guest+0x19b8/0x3770 kvm
-[  124.575935][ T5856]
-[  124.575935][ T5856] stack backtrace:
-[  124.584919][ T5856] CPU: 207 PID: 5856 Comm: kvm_clock_test Not tainted 6.7.0-rc7-00250-gcc69506d19ad #1
-[  124.596895][ T5856] Call Trace:
-[  124.601723][ T5856]  <TASK>
-[ 124.606141][ T5856] dump_stack_lvl (lib/dump_stack.c:108) 
-[ 124.612299][ T5856] __lock_release+0x2eb/0x440 
-[ 124.619377][ T5856] ? __kvm_gpc_activate (arch/x86/kvm/../../../virt/kvm/pfncache.c:384) kvm
-[ 124.626988][ T5856] ? reacquire_held_locks (kernel/locking/lockdep.c:5405) 
-[ 124.634156][ T5856] ? __mutex_unlock_slowpath (arch/x86/include/asm/atomic64_64.h:109 include/linux/atomic/atomic-arch-fallback.h:4308 include/linux/atomic/atomic-long.h:1499 include/linux/atomic/atomic-instrumented.h:4446 kernel/locking/mutex.c:924) 
-[ 124.641629][ T5856] ? bit_wait_timeout (kernel/locking/mutex.c:902) 
-[ 124.648418][ T5856] ? __kvm_gpc_activate (arch/x86/kvm/../../../virt/kvm/pfncache.c:384) kvm
-[ 124.656056][ T5856] lock_release (kernel/locking/lockdep.c:467 kernel/locking/lockdep.c:5776) 
-[ 124.662187][ T5856] __mutex_unlock_slowpath (include/linux/instrumented.h:68 include/linux/atomic/atomic-instrumented.h:3160 kernel/locking/mutex.c:916) 
-[ 124.669408][ T5856] ? bit_wait_timeout (kernel/locking/mutex.c:902) 
-[ 124.676233][ T5856] ? __kvm_gpc_refresh (arch/x86/kvm/../../../virt/kvm/pfncache.c:97 arch/x86/kvm/../../../virt/kvm/pfncache.c:328) kvm
-[ 124.683867][ T5856] ? lockdep_hardirqs_on_prepare (kernel/locking/lockdep.c:4566) 
-[ 124.692378][ T5856] __kvm_gpc_activate (arch/x86/kvm/../../../virt/kvm/pfncache.c:384) kvm
-[ 124.699751][ T5856] kvm_set_msr_common (arch/x86/kvm/x86.c:4043 arch/x86/kvm/x86.c:4210) kvm
-[ 124.707296][ T5856] ? kvm_write_wall_clock+0x180/0x180 kvm
-[ 124.716209][ T5856] ? __lock_release+0x111/0x440 
-[ 124.723338][ T5856] ? kvm_msr_allowed (include/linux/srcu.h:122 include/linux/srcu.h:287 arch/x86/kvm/x86.c:1831) kvm
-[ 124.730488][ T5856] vmx_set_msr (arch/x86/kvm/vmx/vmx.c:2448) kvm_intel
-[ 124.737687][ T5856] __kvm_set_msr (arch/x86/kvm/x86.c:1845) kvm
-[ 124.744439][ T5856] ? kvm_msr_allowed (include/linux/srcu.h:122 include/linux/srcu.h:287 arch/x86/kvm/x86.c:1831) kvm
-[ 124.751591][ T5856] ? kvm_emulate_monitor (arch/x86/kvm/x86.c:1845) kvm
-[ 124.758933][ T5856] ? lock_release (kernel/locking/lockdep.c:467 kernel/locking/lockdep.c:5776) 
-[ 124.765024][ T5856] ? kvm_msr_allowed (include/linux/srcu.h:288 arch/x86/kvm/x86.c:1831) kvm
-[ 124.772168][ T5856] kvm_emulate_wrmsr (arch/x86/kvm/x86.c:1908 arch/x86/kvm/x86.c:1976 arch/x86/kvm/x86.c:1972 arch/x86/kvm/x86.c:2086) kvm
-[ 124.779208][ T5856] vmx_handle_exit (arch/x86/kvm/vmx/vmx.c:6589) kvm_intel
-[ 124.786608][ T5856] vcpu_enter_guest+0x1ab2/0x3770 kvm
-[ 124.795030][ T5856] ? kvm_check_and_inject_events (arch/x86/kvm/x86.c:10778) kvm
-[ 124.803528][ T5856] ? lock_acquire (include/trace/events/lock.h:24 kernel/locking/lockdep.c:5725) 
-[ 124.809634][ T5856] ? kvm_arch_vcpu_ioctl_run (include/linux/srcu.h:116 include/linux/srcu.h:215 include/linux/kvm_host.h:927 arch/x86/kvm/x86.c:11395) kvm
-[ 124.817682][ T5856] ? lock_sync (kernel/locking/lockdep.c:5722) 
-[ 124.823629][ T5856] ? mark_held_locks (kernel/locking/lockdep.c:4274) 
-[ 124.829965][ T5856] ? vcpu_run (arch/x86/kvm/x86.c:11258) kvm
-[ 124.836441][ T5856] vcpu_run (arch/x86/kvm/x86.c:11258) kvm
-[ 124.842720][ T5856] kvm_arch_vcpu_ioctl_run (arch/x86/kvm/x86.c:11484) kvm
-[ 124.850583][ T5856] ? lock_release (kernel/locking/lockdep.c:467 kernel/locking/lockdep.c:5776) 
-[ 124.856744][ T5856] kvm_vcpu_ioctl (arch/x86/kvm/../../../virt/kvm/kvm_main.c:4442) kvm
-[ 124.863640][ T5856] ? kvm_vcpu_kick (arch/x86/kvm/../../../virt/kvm/kvm_main.c:4397) kvm
-[ 124.870633][ T5856] __x64_sys_ioctl (fs/ioctl.c:52 fs/ioctl.c:871 fs/ioctl.c:857 fs/ioctl.c:857) 
-[ 124.877002][ T5856] do_syscall_64 (arch/x86/entry/common.c:52 arch/x86/entry/common.c:83) 
-[ 124.882981][ T5856] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:129) 
-[  124.890633][ T5856] RIP: 0033:0x7f1046845b5b
-[ 124.896609][ T5856] Code: 00 48 89 44 24 18 31 c0 48 8d 44 24 60 c7 04 24 10 00 00 00 48 89 44 24 08 48 8d 44 24 20 48 89 44 24 10 b8 10 00 00 00 0f 05 <89> c2 3d 00 f0 ff ff 77 1c 48 8b 44 24 18 64 48 2b 04 25 28 00 00
-All code
-========
-   0:	00 48 89             	add    %cl,-0x77(%rax)
-   3:	44 24 18             	rex.R and $0x18,%al
-   6:	31 c0                	xor    %eax,%eax
-   8:	48 8d 44 24 60       	lea    0x60(%rsp),%rax
-   d:	c7 04 24 10 00 00 00 	movl   $0x10,(%rsp)
-  14:	48 89 44 24 08       	mov    %rax,0x8(%rsp)
-  19:	48 8d 44 24 20       	lea    0x20(%rsp),%rax
-  1e:	48 89 44 24 10       	mov    %rax,0x10(%rsp)
-  23:	b8 10 00 00 00       	mov    $0x10,%eax
-  28:	0f 05                	syscall 
-  2a:*	89 c2                	mov    %eax,%edx		<-- trapping instruction
-  2c:	3d 00 f0 ff ff       	cmp    $0xfffff000,%eax
-  31:	77 1c                	ja     0x4f
-  33:	48 8b 44 24 18       	mov    0x18(%rsp),%rax
-  38:	64                   	fs
-  39:	48                   	rex.W
-  3a:	2b                   	.byte 0x2b
-  3b:	04 25                	add    $0x25,%al
-  3d:	28 00                	sub    %al,(%rax)
-	...
-
-Code starting with the faulting instruction
-===========================================
-   0:	89 c2                	mov    %eax,%edx
-   2:	3d 00 f0 ff ff       	cmp    $0xfffff000,%eax
-   7:	77 1c                	ja     0x25
-   9:	48 8b 44 24 18       	mov    0x18(%rsp),%rax
-   e:	64                   	fs
-   f:	48                   	rex.W
-  10:	2b                   	.byte 0x2b
-  11:	04 25                	add    $0x25,%al
-  13:	28 00                	sub    %al,(%rax)
-	...
-[  124.919748][ T5856] RSP: 002b:00007ffed26c1d10 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-[  124.930292][ T5856] RAX: ffffffffffffffda RBX: 00007f10467456c0 RCX: 00007f1046845b5b
-[  124.940347][ T5856] RDX: 0000000000000000 RSI: 000000000000ae80 RDI: 0000000000000007
-[  124.950360][ T5856] RBP: 00000000019c2a70 R08: 00007ffed26c1e40 R09: 0000000000000002
-[  124.960375][ T5856] R10: 8c1ed6746cba2bb1 R11: 0000000000000246 R12: 0000000000427220
-[  124.970373][ T5856] R13: 0000000000000000 R14: 00000000019c0490 R15: 000000008030ae7c
-[  124.980364][ T5856]  </TASK>
-
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20240219/202402191553.bd17cf2a-oliver.sang@intel.com
-
-
-
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 533547e3c90a..ddacb3dc91b9 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -856,6 +856,69 @@ struct sched_entity *__pick_first_entity(struct cfs_rq *cfs_rq)
+ 	return __node_2_se(left);
+ }
+ 
++static void debug_print_eevdf(struct cfs_rq *cfs_rq)
++{
++	struct sched_entity *se, *curr = cfs_rq->curr;
++	struct sched_entity *best = NULL;
++	struct rb_node *node = cfs_rq->tasks_timeline.rb_root.rb_node;
++	struct rb_node *n;
++
++	printk("cfs_rq avg_vruntime:%lld avg_load:%lld min_vruntime:%lld\n",
++		cfs_rq->avg_vruntime, cfs_rq->avg_load, cfs_rq->min_vruntime);
++
++	if (curr && curr->on_rq)
++		printk("current on_rq se 0x%lx, deadline:%lld min_vruntime:%lld vruntime:%lld, load:%ld\n",
++			(unsigned long)curr, curr->deadline, curr->min_vruntime,
++			curr->vruntime, scale_load_down(curr->load.weight));
++
++	printk("Traverse rb-tree from left to right\n");
++	for (n = rb_first(&cfs_rq->tasks_timeline.rb_root); n != NULL; n = rb_next(n)) {
++		bool eli;
++
++		se = __node_2_se(n);
++		eli = entity_eligible(cfs_rq, se);
++		printk(" se 0x%lx deadline:%lld min_vruntime:%lld vruntime:%lld %s\n",
++			(unsigned long)se, se->deadline, se->min_vruntime, se->vruntime,
++			eli ? "eligible" : "non-eligible");
++	}
++	printk("Traverse rb-tree from topdown\n");
++	while (node) {
++		struct rb_node *left = node->rb_left;
++		struct sched_entity *se_left = __node_2_se(left);
++		bool eli = false;
++
++		if (left) {
++			eli = vruntime_eligible(cfs_rq,
++						__node_2_se(left)->min_vruntime);
++
++			printk(" left se 0x%lx deadline:%lld min_vruntime:%lld vruntime:%lld %s\n",
++				(unsigned long)se_left, se_left->deadline, se_left->min_vruntime,
++				se_left->vruntime,
++				eli ? "left half eligible" : "left half non-eligible");
++		}
++
++		if (left && eli) {
++			node = left;
++			continue;
++		}
++
++		se = __node_2_se(node);
++
++		eli = entity_eligible(cfs_rq, se);
++		printk(" middle se 0x%lx deadline:%lld min_vruntime:%lld vruntime:%lld %s\n",
++			(unsigned long)se, se->deadline, se->min_vruntime, se->vruntime,
++			eli ? "eligible" : "non-eligible");
++
++		if (eli) {
++			best = se;
++			break;
++		}
++
++		node = node->rb_right;
++	}
++	printk("Found best:0x%lx\n", (unsigned long)best);
++}
++
+ /*
+  * Earliest Eligible Virtual Deadline First
+  *
+@@ -937,6 +1000,9 @@ static struct sched_entity *pick_eevdf(struct cfs_rq *cfs_rq)
+ 	if (!best || (curr && entity_before(curr, best)))
+ 		best = curr;
+ 
++	if (unlikely(!best))
++		debug_print_eevdf(cfs_rq);
++
+ 	return best;
+ }
+ 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+2.34.1
 
+thanks,
+Chenyu
