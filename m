@@ -1,147 +1,195 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8BCA3EA8B
-	for <oe-lkp@lists.linux.dev>; Wed, 21 Feb 2024 11:14:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708514073; cv=none; b=JMrUKhOoWzhjdY7XK97T+w7PdrNRVbvgwl1PlXtQ5rPwlMYaSeLinbSVaFDPnGaCUdsRtdzC6nPYSLLhbjauv3+4dpFNa3oF9puNEekwwA347zDDHE4whIUo9wvTrmd8Yzo1eCb7P4CR3kXyckIfRecJM+xvyhfeUY/C+TZh/SI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708514073; c=relaxed/simple;
-	bh=X4PKlUGXGUBT6n4ZwlbiScUTkbbHPd6kRM2zdVKwFSk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=d+ufod/G00MvMdC6MVlvAnF+um7aMHQpA9ds+V8LmrT/nplk49/OSdOUfuzQ+7OPDk5ftbtUvmBHjKciCBzsfxjggjyXiI0+xMDppXhAtBFphB2Fa8kpC2WyoeTM1P7HItOMSqt99+q8vTA1XybONHc7EHoQJF07WduSiAFT+so=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=Ga1g4CJY; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=kRcJa/ti; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=Ga1g4CJY; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=kRcJa/ti; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A129D101F1
+	for <oe-lkp@lists.linux.dev>; Thu, 22 Feb 2024 01:35:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.16
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1708565704; cv=fail; b=R+YyebWTDQlw0rbWyGesMr7rVoTOqAvHWPhUO9bqat+Wo6OpLI3qUtlrLXNlDOkPKiQCvYL4cEpOTYFLk415GQvwojJn8b39oYHqdG1XQUHd95kW7pMy6vUtBSLDhINPI7i2kpFKNEzUusk0AvnDAjL807QYIF4LCuh8g7fwnXE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1708565704; c=relaxed/simple;
+	bh=mhYJn5eRFZFujteJ+scAop0/YhibazhfXwk7K0efhko=;
+	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=i0jpZIxBttVNlY7aC96dweayL85kF3SL+tEgd0xLHDk8CCWSJSMQffbtphOczTpuHGea1RM9XooYluiM6+Rt+EoL98216Qtu4zYisTkkAbw7jT76ey+bNLTTcza6RA9fPdDr6qmANZ9MMyV0KNiE0uhsPKIYT+GdvdHyETteFec=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=aqU4z5ew; arc=fail smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="Ga1g4CJY";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="kRcJa/ti";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="Ga1g4CJY";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="kRcJa/ti"
-Received: from imap2.dmz-prg2.suse.org (imap2.dmz-prg2.suse.org [10.150.64.98])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 30AF621EC9;
-	Wed, 21 Feb 2024 11:14:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1708514070; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=LqptqeC63/PQtZVEUM5DP4rj/btQZge0A7Gr5JvYGkA=;
-	b=Ga1g4CJYiXXomuE05WOuqHhnjbhcVdBDeoH5K6B8VkAHddKgoOLrWs1XTCxUwNQQPwl2bj
-	Vx8wMBnOJB9eOCe5M+X2WYcoG3RcjX9rC36ajDViSFpsP+RZ6kA+kVTXZDwWgibpbMuCBA
-	ZEYcYA84xNxoe0mCBiImuAVoQUUbHX0=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1708514070;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=LqptqeC63/PQtZVEUM5DP4rj/btQZge0A7Gr5JvYGkA=;
-	b=kRcJa/tiDAN/1qlRbQTAUIEOltL9Wn5W0tEf2/FUs0YwdWmBcK6EmMF6SP3WCKgmXDrXoS
-	su2LLbcmuKW69JDw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1708514070; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=LqptqeC63/PQtZVEUM5DP4rj/btQZge0A7Gr5JvYGkA=;
-	b=Ga1g4CJYiXXomuE05WOuqHhnjbhcVdBDeoH5K6B8VkAHddKgoOLrWs1XTCxUwNQQPwl2bj
-	Vx8wMBnOJB9eOCe5M+X2WYcoG3RcjX9rC36ajDViSFpsP+RZ6kA+kVTXZDwWgibpbMuCBA
-	ZEYcYA84xNxoe0mCBiImuAVoQUUbHX0=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1708514070;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=LqptqeC63/PQtZVEUM5DP4rj/btQZge0A7Gr5JvYGkA=;
-	b=kRcJa/tiDAN/1qlRbQTAUIEOltL9Wn5W0tEf2/FUs0YwdWmBcK6EmMF6SP3WCKgmXDrXoS
-	su2LLbcmuKW69JDw==
-Received: from imap2.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap2.dmz-prg2.suse.org (Postfix) with ESMTPS id 1BBFA13A25;
-	Wed, 21 Feb 2024 11:14:30 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([10.150.64.162])
-	by imap2.dmz-prg2.suse.org with ESMTPSA
-	id DCLBBhbb1WUDIAAAn2gu4w
-	(envelope-from <jack@suse.cz>); Wed, 21 Feb 2024 11:14:30 +0000
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-	id B9F41A0807; Wed, 21 Feb 2024 12:14:25 +0100 (CET)
-Date: Wed, 21 Feb 2024 12:14:25 +0100
-From: Jan Kara <jack@suse.cz>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: Jan Kara <jack@suse.cz>, oe-lkp@lists.linux.dev, lkp@intel.com,
-	linux-kernel@vger.kernel.org,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Matthew Wilcox <willy@infradead.org>,
-	Guo Xuenan <guoxuenan@huawei.com>, linux-fsdevel@vger.kernel.org,
-	ying.huang@intel.com, feng.tang@intel.com, fengwei.yin@intel.com
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aqU4z5ew"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1708565702; x=1740101702;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=mhYJn5eRFZFujteJ+scAop0/YhibazhfXwk7K0efhko=;
+  b=aqU4z5ew82kgmnwhvhHh7lZ+/Vc0fmtGYOtCuXZMQr9EGcMGEyYjMVaH
+   yIxKVqZzbWanYbGtJ/p67KmItBhIZQrBnN1Gt9Xf0KCLHOJ/VSUUHI1jM
+   ua/iAtw2SBh3U4LmSrn8k8r9XHeIMpTXz4yOMFXDNB/nSjTs0rpbf9wxL
+   nLcajoqEAXLYmfKHNS9Pg3LuyC82aWUIsEoSQP3+edeIZFKYVXB2UUY6o
+   DJeji6XE+iRApJsTQV5RK8WtW6/ACwYVzdlu7BJSv538SoOb/cMAZ1Nyo
+   2ZxzgqsIWCOy2tO6QFGa+Uz4S7IxxTEixGqmLIRjM/oCmmfBK04kpZbVi
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10991"; a="3254114"
+X-IronPort-AV: E=Sophos;i="6.06,177,1705392000"; 
+   d="scan'208";a="3254114"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2024 17:33:28 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.06,177,1705392000"; 
+   d="scan'208";a="5475354"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by fmviesa008.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 21 Feb 2024 17:33:05 -0800
+Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Wed, 21 Feb 2024 17:33:05 -0800
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35 via Frontend Transport; Wed, 21 Feb 2024 17:33:05 -0800
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.169)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.35; Wed, 21 Feb 2024 17:33:03 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=c1mWBRHU30RRwEPj0Cc3+nZY9lVhiHT5yJLYc+S6RFTW3hWLXlFSBYk2iNHa5PznB9FZGvXacJH1dWA+uqsxWtcvKLli3qJz0qNpOjSblIv7T41oRSKJat+qtDjCHQDv2jwmqeCR7Jz634GP64yK6L/+djs9c75Xno16zdJG0d8Bi0yFLvES/byxZC6x7rS1k8qkJ9L8yXKvLywT6h5NqfJ+p8aM/UfT1s6E0iWtyAIkYKxhEhZQr2QzQH4HE/uRCTFlj8HFPMbnUkPttQyI90N7+DHfeRbTj2hfFKM1aa+xt0GGVDq/CV4kV0RiRuSFkzdLHTBAHyTTxJrpJeN05g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=P5QeqV9E5DxPQeU2nT+BKk5sVaDHbYh+OwbdFr4n/a8=;
+ b=BNQd6/nGwmi9CyePeHIiNLU29D9OSa5WUIYMPPSSjKPC3Fpfp+1DMydTmoRuzI/cd/M+JtcvpPVxPpNk2VxjXQ86xKcwpyuEfjKrHOM6O6rXMY0NFIqIx6rMyG+zDQqD6l6Snf7QKjBn/egr3X7sdSma2eKEJ9GVWbvcefpU9h4+iFnrQfXweWAhoh4PWftpBKddBbbuJ1D10OkyqseAWfvGHl+ebObnDvuSHrQya1Fs8/kzrMNWMfm8Do5MkYvGUKy4oPe5+0GotNwUqkGzNPg7JRs0d7yNY7VzV+Tvl69OwyJEqkBFQQkisSkvquBuRdJUtem7E6+wx7L8b16Vyw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by CO6PR11MB5570.namprd11.prod.outlook.com (2603:10b6:303:138::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7339.10; Thu, 22 Feb
+ 2024 01:33:01 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::a026:574d:dab0:dc8e]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::a026:574d:dab0:dc8e%3]) with mapi id 15.20.7292.036; Thu, 22 Feb 2024
+ 01:33:01 +0000
+Date: Thu, 22 Feb 2024 09:32:52 +0800
+From: Oliver Sang <oliver.sang@intel.com>
+To: Jan Kara <jack@suse.cz>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>, Matthew Wilcox
+	<willy@infradead.org>, Guo Xuenan <guoxuenan@huawei.com>,
+	<linux-fsdevel@vger.kernel.org>, <ying.huang@intel.com>,
+	<feng.tang@intel.com>, <fengwei.yin@intel.com>, <oliver.sang@intel.com>
 Subject: Re: [linus:master] [readahead]  ab4443fe3c:
  vm-scalability.throughput -21.4% regression
-Message-ID: <20240221111425.ozdozcbl3konmkov@quack3>
+Message-ID: <ZdakRFhEouIF5o6D@xsang-OptiPlex-9020>
 References: <202402201642.c8d6bbc3-oliver.sang@intel.com>
+ <20240221111425.ozdozcbl3konmkov@quack3>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20240221111425.ozdozcbl3konmkov@quack3>
+X-ClientProxiedBy: SG2PR04CA0185.apcprd04.prod.outlook.com
+ (2603:1096:4:14::23) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202402201642.c8d6bbc3-oliver.sang@intel.com>
-Authentication-Results: smtp-out1.suse.de;
-	none
-X-Spamd-Result: default: False [0.40 / 50.00];
-	 ARC_NA(0.00)[];
-	 RCVD_VIA_SMTP_AUTH(0.00)[];
-	 FROM_HAS_DN(0.00)[];
-	 TO_DN_SOME(0.00)[];
-	 TO_MATCH_ENVRCPT_ALL(0.00)[];
-	 MIME_GOOD(-0.10)[text/plain];
-	 RCVD_COUNT_THREE(0.00)[3];
-	 DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	 RCPT_COUNT_TWELVE(0.00)[12];
-	 DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:email];
-	 FUZZY_BLOCKED(0.00)[rspamd.com];
-	 FROM_EQ_ENVFROM(0.00)[];
-	 MIME_TRACE(0.00)[0:+];
-	 MID_RHS_NOT_FQDN(0.50)[];
-	 RCVD_TLS_ALL(0.00)[];
-	 BAYES_HAM(-0.00)[41.49%]
-X-Spam-Level: 
-X-Spam-Flag: NO
-X-Spam-Score: 0.40
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|CO6PR11MB5570:EE_
+X-MS-Office365-Filtering-Correlation-Id: 67bba0e0-6b41-4371-4586-08dc334634f1
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: v28FGJoTygUYF3K3AdlGLOvQKDRtu72OpOAIR4cKGQynS1z+JXiOj3oqba4dZ/k0qOfB1n0kHnsJv4ctbnPP0ew0FhSj869IXl3opw/wvdtsThA9YiCzAxzhIZxoLcMlALF3hcIluXNPNCyS5JxyC67KeOwcYj711p+0+EeGCkVN2xqx36gQ21vtwGbZCVv2UxSTfqxU0CCq/lG18HQZymxz4CBmZmb0seoOxbmOK8MmxkMjngQskwP6YBf8ySgvmM7qyBJgyM3uITlLWswZ6Cr64IVAbZgmuaEZb8zacaCnvHOT98PwYXkRvTaa+7cEbA4Me2cTtXztjDcdZrAkV6588chfjeuIX2tikOZvVkxEuOI0qM+LCrF3sKdnPM7OGgqIvXTjglAU1JLZB+gGvn9qKoT3D0IDJdZYWi6wTK2ykXrWmBuIZACz8WPJkmy5Z7uY35T6zlFDMgREpggy15g17FEz0o8NPX71AxvVlbRZlQIjMCH8V9mnFi8YEqRny7aERpFCc4BpGW/QcaGmkg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?c5mwCq1hHPTtPfApcfjnBrnc8XhFZDyKhM1+cZlegd+LU1Wt6lE9nlLws0Tm?=
+ =?us-ascii?Q?tOAsOp7xyjnZl1SbTLz6dq3e4fb2q6GiLWY5ljBgmipVI+Cs1EUzpthVxG6e?=
+ =?us-ascii?Q?S4iVfohGMA9qJQ3Q+TaYJRJSaE7MnVh1m8nidBfW+LI2WMKh3TgF3US5ACTw?=
+ =?us-ascii?Q?3tvhajM5r/9vu6IbQa1rsKUrVZVK8HQIEMJcRoN9N9qWuzLF+rkSYfk5FWr5?=
+ =?us-ascii?Q?d/eETlfAr/MQhslfqidAN45X0u3t9ZABtFmIjl9rrlyZxxHFAruWsw9e/tpl?=
+ =?us-ascii?Q?gc+jAnATqYpCgPlWOMeutVLGNOMgZMJCRoC69QJbJECFYaxma8iQoIsQEiFJ?=
+ =?us-ascii?Q?UyeVgaj3OoG8s9ozaXkMzdEVlrpg8phZ1X8XoBcdMRbKbcKczihY2Sb38JzA?=
+ =?us-ascii?Q?JU5DJBHLZAcmYbwAOyVjq9p/ftMfUZn9PiOQ5fKrWlw7EW+hJoadBen0hQ/s?=
+ =?us-ascii?Q?taTVp0+1vqQvWPEGPqjCinE8rS2VqHfmvEqzKJbZ5kdTpecUm1xESEOpvWcv?=
+ =?us-ascii?Q?lRYe6n8fiZXwJM9HwV9M56ZN4CYVJHFvSiM31ujTeLUcXBdRalC6CBzn0RSp?=
+ =?us-ascii?Q?2AgjFH+dYE+FOHjyX7Tjx8LsnfErGI9GfaMypzJeyvzUZjIZK/cYzYfmKFjK?=
+ =?us-ascii?Q?PxjUIu8bRPjU/6zXkfh4bGJjtZqqGd4mbNUiDrtVQ7DHBl3ZZtQiJYGeC6jw?=
+ =?us-ascii?Q?FuQ3qe+5KnsU4rBjXrmdFc1uUMyLYTpjzaaXWau+fUG4mtfMcWEogZTDjYv3?=
+ =?us-ascii?Q?U3XuE3Az2zMUQgdKqlLgg9tkWHgaSUDU4Xs3qU13yZY1FjR6CgAuUGcg2gdQ?=
+ =?us-ascii?Q?qULbV7vUOQgiKfLiQF1ccU8GiGQAYXzlHgdXgVsPNxzbr9drsI/Dp8e7rzP/?=
+ =?us-ascii?Q?Ma1TP+1uMpgKVdHWdC84UhkEUp4UGKWRBdjK1e9+neuE0+xFXYJrNb1/Yqt8?=
+ =?us-ascii?Q?U+TV1kMHZxbrX/2AKJSiDRoQ7Hja1THI8HXtHtwi2FziY2BbMrosNwwTv5r4?=
+ =?us-ascii?Q?SjPZ6ZEKIPNVRhFDOjLDZnakSbq9qq6GxmUiPtVkm2P0NE8Kgo6M9y2DU6e5?=
+ =?us-ascii?Q?8wv5cP15dlwDmtwNGnrrT28FvsXYrWUqhHpBzG7KiLVDIulDUgMWAy4n+snd?=
+ =?us-ascii?Q?sdDVpq24BwommEFwDnc9PsyQPQgNUAzfhPKyE1Ca3+qEnhvmPwClbPq0dda/?=
+ =?us-ascii?Q?QK/rMQcjXQuUWBuLkakvesh0wRLnXfrEYKdHR/674BOr++tBsMDolY8cJYnY?=
+ =?us-ascii?Q?ZUlcij9+GiH9vOexxIQA9F0POA1jiLtaq/DINgC/SFFYF9XVNVacRt6pbqlH?=
+ =?us-ascii?Q?nkKiHBoUtOqtQ72XHoGbE6nXios/gzSyzPTfSAKMXcr6GU28SWkgU3CfO6Fs?=
+ =?us-ascii?Q?P6d+S9mlbulPShxKIytdAT9yW5zi97SNVRBq8spciXvlnCIIEtQmwfmQgTJp?=
+ =?us-ascii?Q?br7b9TSqrcmqQ8Wc5lCwn+etUBQ7CMZTz3zY65Z7RklzqNWd3yIf0+eP8Unv?=
+ =?us-ascii?Q?kwVtsxl395R2gtValyuUrHv78yuyIXYoXiZu3K+GFk0feHPPt0eJNfki90nT?=
+ =?us-ascii?Q?22Z0dV+dazbMyCAI/8qb7LyrGSsitBKuPLQRSBN0PU+Q4xWkMqRswlUMmlEs?=
+ =?us-ascii?Q?Og=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 67bba0e0-6b41-4371-4586-08dc334634f1
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Feb 2024 01:33:01.0384
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: YiP5LqZ+Ym0Cd3KN1vBvaTkSDeVP13YPateJ+Evq+YQ6hOT6E68IuxyksE5pBlSPNYgP2Lz0Emp6L9hhzUT4Nw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR11MB5570
+X-OriginatorOrg: intel.com
 
-On Tue 20-02-24 16:25:37, kernel test robot wrote:
-> Hello,
-> 
-> kernel test robot noticed a -21.4% regression of vm-scalability.throughput on:
-> 
-> 
-> commit: ab4443fe3ca6298663a55c4a70efc6c3ce913ca6 ("readahead: avoid multiple marked readahead pages")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> 
-> testcase: vm-scalability
-> test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480CTDX (Sapphire Rapids) with 512G memory
-> parameters:
-> 
-> 	runtime: 300s
-> 	test: lru-file-readtwice
-> 	cpufreq_governor: performance
+hi, Jan Kara,
 
-JFYI I had a look into this. What the test seems to do is that it creates
-image files on tmpfs, loopmounts XFS there, and does reads over file on
-XFS. But I was not able to find what lru-file-readtwice exactly does,
-neither I was able to reproduce it because I got stuck on some missing Ruby
-dependencies on my test system yesterday.
+On Wed, Feb 21, 2024 at 12:14:25PM +0100, Jan Kara wrote:
+> On Tue 20-02-24 16:25:37, kernel test robot wrote:
+> > Hello,
+> > 
+> > kernel test robot noticed a -21.4% regression of vm-scalability.throughput on:
+> > 
+> > 
+> > commit: ab4443fe3ca6298663a55c4a70efc6c3ce913ca6 ("readahead: avoid multiple marked readahead pages")
+> > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> > 
+> > testcase: vm-scalability
+> > test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480CTDX (Sapphire Rapids) with 512G memory
+> > parameters:
+> > 
+> > 	runtime: 300s
+> > 	test: lru-file-readtwice
+> > 	cpufreq_governor: performance
+> 
+> JFYI I had a look into this. What the test seems to do is that it creates
+> image files on tmpfs, loopmounts XFS there, and does reads over file on
+> XFS. But I was not able to find what lru-file-readtwice exactly does,
+> neither I was able to reproduce it because I got stuck on some missing Ruby
+> dependencies on my test system yesterday.
 
-Given the workload is over tmpfs, I'm not very concerned about what
-readahead does and how it performs but still I'd like to investigate where
-the regression is coming from because it is unexpected.
+what's your OS?
 
-								Honza
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+> 
+> Given the workload is over tmpfs, I'm not very concerned about what
+> readahead does and how it performs but still I'd like to investigate where
+> the regression is coming from because it is unexpected.
+
+Thanks a lot for information!
+it was hard to me to determine the connection, so I rebuilt and rerun tests more
+which still showed stable data.
+
+if you have any patch want us to try, please let us know.
+it's always our great pleasure to supply supports :)
+
+> 
+> 								Honza
+> -- 
+> Jan Kara <jack@suse.com>
+> SUSE Labs, CR
+> 
