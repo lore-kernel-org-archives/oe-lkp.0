@@ -1,194 +1,227 @@
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
+Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7B2114B823
-	for <oe-lkp@lists.linux.dev>; Thu, 22 Feb 2024 18:38:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB0BEDF6C
+	for <oe-lkp@lists.linux.dev>; Sat, 24 Feb 2024 02:55:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708627084; cv=none; b=H9X+XHQqO23iNnVgGDomJXnZIoo2w0AoJXukGkQY+M6yP7LJ+FgHaHs0gx3vSd6X95p2GoLzR4YHh5IqCbordkZ6gmQfZtVaseGfI3g6yXJiSelaiy1Xg0/T2aVtaqgs1YP+DOl+HmveesavW+E0wSWSoI7PkeLt7jLERayiaqQ=
+	t=1708743341; cv=none; b=B5fRA1qlZuGyJU9jHAoS+rCoGC4l7VvKTAg1tItZ5z8SMTmRbIEnDem8nvWf9180tde0OC7HMBOZV38+tLJXt6HI3iXW8zUyEqS1vhh/5BFbELos+CKB11+g3I45ssYj0QrrqMggq5ET0OICXGoc8ilIgKsTTSuqORoMhmgWP5s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708627084; c=relaxed/simple;
-	bh=8vYNCqNNX89BjSsPSWBHrVLZtTK9S9blY5nV8P91NOc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GJr53KgzrvZq+EcOV7oBhbVuYQnKUCoWCZusRB/4iaGjARer6SIgaTXhA0Jps8Vb5I8Ky1qmll/+c6lnl4kBV2so3zZvIIV7Ys9+MXNtlRzFjqQTyPhHFBokF0LJtXzzaK+32E8wc1l0zEpjJM8jwwa13hH5FnsnFyG0k4ihi+M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=N+pn9yTb; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=VgvBuxX7; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=N+pn9yTb; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=VgvBuxX7; arc=none smtp.client-ip=195.135.223.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+	s=arc-20240116; t=1708743341; c=relaxed/simple;
+	bh=s0+7DUkxC9v95WTMsMb6JK4YaSoyruhPTd6puPiPmmo=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=XTJ1iGi9hjZYN815SY4baXBDEakiWJK1a5rYc1DaK0nq+VfMhFSPzycJ3Skc8AxOHzqT9SUMlSf+9sX9vw46sExvWlgq94MdMKsTrxr1iXbk8VHG3y16o40mXT6DNeP8yHYKDGed+Lju3siGHAFCXptuTVLH34+0+MkRSJ2qmnw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ESOlaq+9; arc=none smtp.client-ip=209.85.208.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="N+pn9yTb";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="VgvBuxX7";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="N+pn9yTb";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="VgvBuxX7"
-Received: from imap2.dmz-prg2.suse.org (imap2.dmz-prg2.suse.org [10.150.64.98])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out2.suse.de (Postfix) with ESMTPS id 24AA51F78D;
-	Thu, 22 Feb 2024 18:38:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1708627081; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=dCBA+iiqNypvt9FIAH32F6GqtCLU6aMV152Z2G6fwkA=;
-	b=N+pn9yTbIexOSNFKOOlEUDM0nUL3NCTHnNbebCxq5fOyfc+yPYgOoCxV6KW6OEYfXLx2Xh
-	PbCl65G5UW8ImgLhCf/lfCH02mpKKIvDVoDC2wvsj8O1CVSSBx9DC3P/n/R58IzzWBIqlb
-	3zKlUhaAo5s8ijOxN4PeR3vCjgbqhjU=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1708627081;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=dCBA+iiqNypvt9FIAH32F6GqtCLU6aMV152Z2G6fwkA=;
-	b=VgvBuxX7qt8PJeUdvuYXjjyW31WowyfMW1Jgw31+H9DYlRDJe4WSjse3FFBFl8AxXry0Wx
-	/AKVjSpevgQJdCDQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1708627081; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=dCBA+iiqNypvt9FIAH32F6GqtCLU6aMV152Z2G6fwkA=;
-	b=N+pn9yTbIexOSNFKOOlEUDM0nUL3NCTHnNbebCxq5fOyfc+yPYgOoCxV6KW6OEYfXLx2Xh
-	PbCl65G5UW8ImgLhCf/lfCH02mpKKIvDVoDC2wvsj8O1CVSSBx9DC3P/n/R58IzzWBIqlb
-	3zKlUhaAo5s8ijOxN4PeR3vCjgbqhjU=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1708627081;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=dCBA+iiqNypvt9FIAH32F6GqtCLU6aMV152Z2G6fwkA=;
-	b=VgvBuxX7qt8PJeUdvuYXjjyW31WowyfMW1Jgw31+H9DYlRDJe4WSjse3FFBFl8AxXry0Wx
-	/AKVjSpevgQJdCDQ==
-Received: from imap2.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap2.dmz-prg2.suse.org (Postfix) with ESMTPS id 1376D13419;
-	Thu, 22 Feb 2024 18:38:01 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([10.150.64.162])
-	by imap2.dmz-prg2.suse.org with ESMTPSA
-	id yW14BImU12WrGgAAn2gu4w
-	(envelope-from <jack@suse.cz>); Thu, 22 Feb 2024 18:38:01 +0000
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-	id 7C61DA0807; Thu, 22 Feb 2024 19:37:56 +0100 (CET)
-Date: Thu, 22 Feb 2024 19:37:56 +0100
-From: Jan Kara <jack@suse.cz>
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: Jan Kara <jack@suse.cz>, oe-lkp@lists.linux.dev, lkp@intel.com,
-	linux-kernel@vger.kernel.org,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Matthew Wilcox <willy@infradead.org>,
-	Guo Xuenan <guoxuenan@huawei.com>, linux-fsdevel@vger.kernel.org,
-	ying.huang@intel.com, feng.tang@intel.com, fengwei.yin@intel.com
-Subject: Re: [linus:master] [readahead]  ab4443fe3c:
- vm-scalability.throughput -21.4% regression
-Message-ID: <20240222183756.td7avnk2srg4tydu@quack3>
-References: <202402201642.c8d6bbc3-oliver.sang@intel.com>
- <20240221111425.ozdozcbl3konmkov@quack3>
- <ZdakRFhEouIF5o6D@xsang-OptiPlex-9020>
- <20240222115032.u5h2phfxpn77lu5a@quack3>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ESOlaq+9"
+Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-55f50cf2021so2048076a12.1
+        for <oe-lkp@lists.linux.dev>; Fri, 23 Feb 2024 18:55:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1708743338; x=1709348138; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=dKSTnM2v+jmLIpYPi1kbD+Pb1Qc9BSBN4XGZJPjFFPc=;
+        b=ESOlaq+9co4EC45gKnCXoSQnZzMzq3k2Tcjkv/fqIyttqZg81b4Y6Q0/sPIJ4o4A2g
+         hBV9oPFJBUKkrxrsOyHmaKgjZ/p7y6ySyqj7H854/CzgTJVQBIushK5vhCZ2HsCbRXgl
+         /Xj6P8WegmpfhyHHDYuxUit33TYR4SajJIsYbTqy07b2GXkVY1y/4eEsasri5iXDPi1R
+         em6Iq3n1XcgBkn+qN50DcDL/sejc1WSO22LQtu79ENJT0ik0ALfPOmbZsS2T31VNJjm/
+         jubvcQmrRILKjIdI9h4HhekDAIsEl1YCfUWMyjy8xszrixW+oV0WgwD0JEh8szWDnRf3
+         Ubdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1708743338; x=1709348138;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=dKSTnM2v+jmLIpYPi1kbD+Pb1Qc9BSBN4XGZJPjFFPc=;
+        b=ddgugqMgIkOk7fCjZx31VcN36vIY+sVxsFApaiP5qymDMF5S3fOSWQop5Qz/iXmeZR
+         1v320oFbQWMGhkgVawRQNAyGnHzhW64FPYYswgVy1NBNq66SuNBgrRNGy0YBFMHIBpcq
+         2y+yld3VdOnEA3Nm18hGKi9TbyjngFRufnJ/eBWpSJuG+r4K9MC6Py7QOjljVmo6hoi1
+         2bTXAkkoM76R60faqczX45G2bFT4lp0afmfLfFQka+a9tIKa4PTbhdVwmf3nYcdDISpE
+         0LG+Hh5mma5OR6+KvESRutagJffIeT8xFFfjhtphVvywbSlLGsxx5MAEdOYUrpcoCZ/i
+         4eWg==
+X-Forwarded-Encrypted: i=1; AJvYcCUMlIwhj/s+elmjCWfGqyuvpjoC0BBegeJCyYjnw38o2/8zygE+yypmulYVK6ZGKKOrXMaJ21UyR16OjmA8rYJ77eJe6pf5
+X-Gm-Message-State: AOJu0YyXSGyLUcifg6RRZ5N/e2mePMWqHMuPdiiTzD6gpIo/52gRAlD5
+	zHAFYRkoSWUy00JiPLz84SYhEbfBkXucU0ZIrrjyihV2cJNWPDuuFiv/kWqqlEytdBUfitDifXx
+	INyHSHTIgO982XW4AAj7sjpayGTQ=
+X-Google-Smtp-Source: AGHT+IHqimg10K1/L+NRQXdNA2GGrmNDOmgRLEkO8bWLdybN2k28avxqLXsoB1b3MUY5xGyvrKtcfZlp0iCGclsq5VA=
+X-Received: by 2002:a05:6402:5201:b0:565:a5e1:3a10 with SMTP id
+ s1-20020a056402520100b00565a5e13a10mr183414edd.36.1708743337653; Fri, 23 Feb
+ 2024 18:55:37 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240222115032.u5h2phfxpn77lu5a@quack3>
-Authentication-Results: smtp-out2.suse.de;
-	none
-X-Spam-Level: 
-X-Spam-Score: -7.80
-X-Spamd-Result: default: False [-7.80 / 50.00];
-	 ARC_NA(0.00)[];
-	 RCVD_VIA_SMTP_AUTH(0.00)[];
-	 FROM_HAS_DN(0.00)[];
-	 TO_DN_SOME(0.00)[];
-	 TO_MATCH_ENVRCPT_ALL(0.00)[];
-	 NEURAL_HAM_LONG(-1.00)[-1.000];
-	 MIME_GOOD(-0.10)[text/plain];
-	 REPLY(-4.00)[];
-	 RCVD_COUNT_THREE(0.00)[3];
-	 DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	 NEURAL_HAM_SHORT(-0.20)[-1.000];
-	 RCPT_COUNT_TWELVE(0.00)[12];
-	 DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:email];
-	 FUZZY_BLOCKED(0.00)[rspamd.com];
-	 FROM_EQ_ENVFROM(0.00)[];
-	 MIME_TRACE(0.00)[0:+];
-	 MID_RHS_NOT_FQDN(0.50)[];
-	 RCVD_TLS_ALL(0.00)[];
-	 BAYES_HAM(-3.00)[100.00%]
-X-Spam-Flag: NO
+References: <202402201506.b7e4b9b6-oliver.sang@intel.com> <CANpmjNNGCkfFBNiSsc+DOm1EDzXZoNLQy_jnEZjt9WuxP5aayw@mail.gmail.com>
+In-Reply-To: <CANpmjNNGCkfFBNiSsc+DOm1EDzXZoNLQy_jnEZjt9WuxP5aayw@mail.gmail.com>
+From: Neeraj upadhyay <neeraj.iitr10@gmail.com>
+Date: Sat, 24 Feb 2024 08:25:24 +0530
+Message-ID: <CAFwiDX-tVTsNcbrzd63oCCat5DqzhouA_HQv4sd4xS=c-C01yQ@mail.gmail.com>
+Subject: Re: [linux-next:master] [kasan] 187292be96: WARNING:suspicious_RCU_usage
+To: Marco Elver <elver@google.com>
+Cc: kernel test robot <oliver.sang@intel.com>, "Paul E. McKenney" <paulmck@kernel.org>, RCU <rcu@vger.kernel.org>, 
+	Frederic Weisbecker <frederic@kernel.org>, Neeraj Upadhyay <quic_neeraju@quicinc.com>, 
+	Joel Fernandes <joel@joelfernandes.org>, Josh Triplett <josh@joshtriplett.org>, 
+	Boqun Feng <boqun.feng@gmail.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	Linux Memory Management List <linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>, 
+	Andrey Konovalov <andreyknvl@gmail.com>, Alexander Potapenko <glider@google.com>, 
+	Dmitry Vyukov <dvyukov@google.com>, Andrey Ryabinin <ryabinin.a.a@gmail.com>, 
+	Vincenzo Frascino <vincenzo.frascino@arm.com>, Vlastimil Babka <vbabka@suse.cz>, kasan-dev@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu 22-02-24 12:50:32, Jan Kara wrote:
-> On Thu 22-02-24 09:32:52, Oliver Sang wrote:
-> > On Wed, Feb 21, 2024 at 12:14:25PM +0100, Jan Kara wrote:
-> > > On Tue 20-02-24 16:25:37, kernel test robot wrote:
-> > > > kernel test robot noticed a -21.4% regression of vm-scalability.throughput on:
-> > > > 
-> > > > commit: ab4443fe3ca6298663a55c4a70efc6c3ce913ca6 ("readahead: avoid multiple marked readahead pages")
-> > > > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> > > > 
-> > > > testcase: vm-scalability
-> > > > test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480CTDX (Sapphire Rapids) with 512G memory
-> > > > parameters:
-> > > > 
-> > > > 	runtime: 300s
-> > > > 	test: lru-file-readtwice
-> > > > 	cpufreq_governor: performance
-> > > 
-> > > JFYI I had a look into this. What the test seems to do is that it creates
-> > > image files on tmpfs, loopmounts XFS there, and does reads over file on
-> > > XFS. But I was not able to find what lru-file-readtwice exactly does,
-> > > neither I was able to reproduce it because I got stuck on some missing Ruby
-> > > dependencies on my test system yesterday.
-> > 
-> > what's your OS?
-> 
-> I have SLES15-SP4 installed in my VM. What was missing was 'git' rubygem
-> which apparently is not packaged at all and when I manually installed it, I
-> was still hitting other problems so I rather went ahead and checked the
-> vm-scalability source and wrote my own reproducer based on that.
-> 
-> I'm now able to reproduce the regression in my VM so I'm investigating...
+Hi,
 
-So I was experimenting with this. What the test does is it creates as many
-files as there are CPUs, files are sized so that their total size is 8x the
-amount of available RAM. For each file two tasks are started which
-sequentially read the file from start to end. Trivial repro from my VM with
-8 CPUs and 64GB of RAM is like:
+On Tue, Feb 20, 2024 at 1:33=E2=80=AFPM Marco Elver <elver@google.com> wrot=
+e:
+>
+> On Tue, 20 Feb 2024 at 08:35, kernel test robot <oliver.sang@intel.com> w=
+rote:
+> >
+> >
+> >
+> > Hello,
+> >
+> > we noticed this is a revert commit, below report is for an issue we obs=
+erved
+> > on this commit but not on its parent. just FYI.
+> >
+> > 113edefd366346b3 187292be96ae2be247807fac1c3
+> > ---------------- ---------------------------
+> >        fail:runs  %reproduction    fail:runs
+> >            |             |             |
+> >            :6          100%           6:6     dmesg.WARNING:suspicious_=
+RCU_usage
+> >
+> >
+> > kernel test robot noticed "WARNING:suspicious_RCU_usage" on:
+> >
+> > commit: 187292be96ae2be247807fac1c3a6d89a7cc2a84 ("kasan: revert evicti=
+on of stack traces in generic mode")
+> > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+>
+> This commit didn't touch rcutorture or the rcu subsystem in any way,
+> so I currently don't understand how rcutorture would be affected.
+> While stackdepot has started to use RCU, this already happened in a
+> previous commit, and this particular commit actually reduced RCU usage
+> (no more evictions and re-allocations of stacktraces).
+>
+> The only explanation I have is that it improved performance of a
+> KASAN-enabled kernel (which the config here has enabled) so much that
+> previously undiscovered issues have now become much more likely to
+> occur.
+>
+> [+Cc rcu folks]
+>
+> > in testcase: rcutorture
 
-truncate -s 60000000000 /dev/shm/xfsimg
-mkfs.xfs /dev/shm/xfsimg
-mount -t xfs -o loop /dev/shm/xfsimg /mnt
-for (( i = 0; i < 8; i++ )); do truncate -s 60000000000 /mnt/sparse-file-$i; done
-echo "Ready..."
-sleep 3
-echo "Running..."
-for (( i = 0; i < 8; i++ )); do
-	dd bs=4k if=/mnt/sparse-file-$i of=/dev/null &
-	dd bs=4k if=/mnt/sparse-file-$i of=/dev/null &
-done 2>&1 | grep "copied"
-wait
-umount /mnt
+The rcutorture test type executed here is busted_srcud (torture_type:
+busted_srcud). The busted_srcud torture test creates bad reader critical
+section usages - in this case the rcu reader lock acquired was not
+srcu lock, which subsequently resulted in rcu_dereference_check() to
+cause a splat due to srcu read lock not being held.
 
-The difference between slow and fast runs seems to be in the amount of
-pages reclaimed with direct reclaim - after commit ab4443fe3c we reclaim
-about 10% of pages with direct reclaim, before commit ab4443fe3c only about
-1% of pages is reclaimed with direct reclaim. In both cases we reclaim the
-same amount of pages corresponding to the total size of files so it isn't
-the case that we would be rereading one page twice.
+ So, this is expected behavior, and not a problem in either KASAN or RCU.
 
-I suspect the reclaim difference is because after commit ab4443fe3c we
-trigger readahead somewhat earlier so our effective workingset is somewhat
-larger. This apparently gives harder time to kswapd and we end up with
-direct reclaim more often.
 
-Since this is a case of heavy overload on the system, I don't think the
-throughput here matters that much and AFAICT the readahead code does
-nothing wrong here. So I don't think we need to do anything here.
 
-								Honza
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+Thanks
+Neeraj
+
+> > version:
+> > with following parameters:
+> >
+> >         runtime: 300s
+> >         test: cpuhotplug
+> >         torture_type: busted_srcud
+> >
+> >
+> >
+> > compiler: clang-17
+> > test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m=
+ 16G
+> >
+> > (please refer to attached dmesg/kmsg for entire log/backtrace)
+> >
+> >
+> >
+> > If you fix the issue in a separate patch/commit (i.e. not just a new ve=
+rsion of
+> > the same patch/commit), kindly add following tags
+> > | Reported-by: kernel test robot <oliver.sang@intel.com>
+> > | Closes: https://lore.kernel.org/oe-lkp/202402201506.b7e4b9b6-oliver.s=
+ang@intel.com
+> >
+> >
+> > [  292.513535][  T653] WARNING: suspicious RCU usage
+> > [  292.514923][  T653] 6.8.0-rc4-00126-g187292be96ae #1 Not tainted
+> > [  292.516369][  T653] -----------------------------
+> > [  292.517743][  T653] kernel/rcu/rcutorture.c:1983 suspicious rcu_dere=
+ference_check() usage!
+> > [  292.519310][  T653]
+> > [  292.519310][  T653] other info that might help us debug this:
+> > [  292.519310][  T653]
+> > [  292.523130][  T653]
+> > [  292.523130][  T653] rcu_scheduler_active =3D 2, debug_locks =3D 1
+> > [  292.525644][  T653] no locks held by rcu_torture_rea/653.
+> > [  292.526974][  T653]
+> > [  292.526974][  T653] stack backtrace:
+> > [  292.529271][  T653] CPU: 0 PID: 653 Comm: rcu_torture_rea Not tainte=
+d 6.8.0-rc4-00126-g187292be96ae #1
+> > [  292.530780][  T653] Hardware name: QEMU Standard PC (i440FX + PIIX, =
+1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> > [  292.532329][  T653] Call Trace:
+> > [  292.533524][  T653]  <TASK>
+> > [ 292.534696][ T653] dump_stack_lvl (lib/dump_stack.c:?)
+> > [ 292.535941][ T653] ? __cfi_dump_stack_lvl (lib/dump_stack.c:98)
+> > [ 292.537221][ T653] ? lockdep_rcu_suspicious (kernel/locking/lockdep.c=
+:6712)
+> > [ 292.538523][ T653] rcu_torture_one_read (kernel/rcu/rcutorture.c:?) r=
+cutorture
+> > [ 292.539887][ T653] ? __cfi_lockdep_hardirqs_on_prepare (kernel/lockin=
+g/lockdep.c:4312)
+> > [ 292.541226][ T653] ? rcu_torture_timer (kernel/rcu/rcutorture.c:1955)=
+ rcutorture
+> > [ 292.542621][ T653] ? __cfi_rcu_torture_timer (kernel/rcu/rcutorture.c=
+:2055) rcutorture
+> > [ 292.544012][ T653] ? init_timer_key (include/linux/lockdep.h:135 incl=
+ude/linux/lockdep.h:142 include/linux/lockdep.h:148 kernel/time/timer.c:847=
+ kernel/time/timer.c:867)
+> > [ 292.545262][ T653] rcu_torture_reader (kernel/rcu/rcutorture.c:2093) =
+rcutorture
+> > [ 292.546579][ T653] ? __cfi_rcu_torture_reader (kernel/rcu/rcutorture.=
+c:2076) rcutorture
+> > [ 292.547872][ T653] ? __cfi__raw_spin_unlock_irqrestore (kernel/lockin=
+g/spinlock.c:193)
+> > [ 292.549108][ T653] ? __cfi_rcu_torture_timer (kernel/rcu/rcutorture.c=
+:2055) rcutorture
+> > [ 292.550341][ T653] ? __kthread_parkme (kernel/kthread.c:?)
+> > [ 292.551425][ T653] ? __kthread_parkme (include/linux/instrumented.h:?=
+ include/asm-generic/bitops/instrumented-non-atomic.h:141 kernel/kthread.c:=
+280)
+> > [ 292.552489][ T653] kthread (kernel/kthread.c:390)
+> > [ 292.553504][ T653] ? __cfi_rcu_torture_reader (kernel/rcu/rcutorture.=
+c:2076) rcutorture
+> > [ 292.554689][ T653] ? __cfi_kthread (kernel/kthread.c:341)
+> > [ 292.555749][ T653] ret_from_fork (arch/x86/kernel/process.c:153)
+> > [ 292.556792][ T653] ? __cfi_kthread (kernel/kthread.c:341)
+> > [ 292.557852][ T653] ret_from_fork_asm (arch/x86/entry/entry_64.S:250)
+> > [  292.558920][  T653]  </TASK>
+> >
+> >
+> >
+> > The kernel config and materials to reproduce are available at:
+> > https://download.01.org/0day-ci/archive/20240220/202402201506.b7e4b9b6-=
+oliver.sang@intel.com
+> >
+> >
+> >
+> > --
+> > 0-DAY CI Kernel Test Service
+> > https://github.com/intel/lkp-tests/wiki
+> >
+>
