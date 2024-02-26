@@ -1,227 +1,220 @@
-Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB0BEDF6C
-	for <oe-lkp@lists.linux.dev>; Sat, 24 Feb 2024 02:55:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.54
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708743341; cv=none; b=B5fRA1qlZuGyJU9jHAoS+rCoGC4l7VvKTAg1tItZ5z8SMTmRbIEnDem8nvWf9180tde0OC7HMBOZV38+tLJXt6HI3iXW8zUyEqS1vhh/5BFbELos+CKB11+g3I45ssYj0QrrqMggq5ET0OICXGoc8ilIgKsTTSuqORoMhmgWP5s=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708743341; c=relaxed/simple;
-	bh=s0+7DUkxC9v95WTMsMb6JK4YaSoyruhPTd6puPiPmmo=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=XTJ1iGi9hjZYN815SY4baXBDEakiWJK1a5rYc1DaK0nq+VfMhFSPzycJ3Skc8AxOHzqT9SUMlSf+9sX9vw46sExvWlgq94MdMKsTrxr1iXbk8VHG3y16o40mXT6DNeP8yHYKDGed+Lju3siGHAFCXptuTVLH34+0+MkRSJ2qmnw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ESOlaq+9; arc=none smtp.client-ip=209.85.208.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 135CCFC01;
+	Mon, 26 Feb 2024 02:51:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.12
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1708915882; cv=fail; b=AQyTEV0WIWWMuCMtaKkSvxHmg6GFv+t3n6mJE0x9mZj1VjO2hBo4qjn+a79t6JjsRnVI1UGvfaDOCDoMO4u97JZlUeuYLnXrR4JmCBNV9UnocJ2FErSBo1HqVm9KK+wZix3vr7xP32Q8P2qoQxHzy9ujVdBsYgQ3bVpbBb2zBEQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1708915882; c=relaxed/simple;
+	bh=Pgj01wMzoj/WBuC6kUjE5jPGW0oMlvlp9SVVJfxr7Ak=;
+	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
+	 Content-Disposition:MIME-Version; b=LHu45/1/uFl+BgwQjgQR1FN1T4Y2bjCpV80QRen0fJoqHblv6EnPT5E6ZJDZ4Eu3qdxVjWHnwfU8OH7sZtl5hMU2lAVy5slkF+RxD3a+Rde7G+rUdmONGvw6Tx4UKdrft0YpYaKaZ11qLaD7e5J/VHBRA80ulXQSae8Zrid19bw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TMFbwWdV; arc=fail smtp.client-ip=198.175.65.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ESOlaq+9"
-Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-55f50cf2021so2048076a12.1
-        for <oe-lkp@lists.linux.dev>; Fri, 23 Feb 2024 18:55:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1708743338; x=1709348138; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=dKSTnM2v+jmLIpYPi1kbD+Pb1Qc9BSBN4XGZJPjFFPc=;
-        b=ESOlaq+9co4EC45gKnCXoSQnZzMzq3k2Tcjkv/fqIyttqZg81b4Y6Q0/sPIJ4o4A2g
-         hBV9oPFJBUKkrxrsOyHmaKgjZ/p7y6ySyqj7H854/CzgTJVQBIushK5vhCZ2HsCbRXgl
-         /Xj6P8WegmpfhyHHDYuxUit33TYR4SajJIsYbTqy07b2GXkVY1y/4eEsasri5iXDPi1R
-         em6Iq3n1XcgBkn+qN50DcDL/sejc1WSO22LQtu79ENJT0ik0ALfPOmbZsS2T31VNJjm/
-         jubvcQmrRILKjIdI9h4HhekDAIsEl1YCfUWMyjy8xszrixW+oV0WgwD0JEh8szWDnRf3
-         Ubdg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708743338; x=1709348138;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=dKSTnM2v+jmLIpYPi1kbD+Pb1Qc9BSBN4XGZJPjFFPc=;
-        b=ddgugqMgIkOk7fCjZx31VcN36vIY+sVxsFApaiP5qymDMF5S3fOSWQop5Qz/iXmeZR
-         1v320oFbQWMGhkgVawRQNAyGnHzhW64FPYYswgVy1NBNq66SuNBgrRNGy0YBFMHIBpcq
-         2y+yld3VdOnEA3Nm18hGKi9TbyjngFRufnJ/eBWpSJuG+r4K9MC6Py7QOjljVmo6hoi1
-         2bTXAkkoM76R60faqczX45G2bFT4lp0afmfLfFQka+a9tIKa4PTbhdVwmf3nYcdDISpE
-         0LG+Hh5mma5OR6+KvESRutagJffIeT8xFFfjhtphVvywbSlLGsxx5MAEdOYUrpcoCZ/i
-         4eWg==
-X-Forwarded-Encrypted: i=1; AJvYcCUMlIwhj/s+elmjCWfGqyuvpjoC0BBegeJCyYjnw38o2/8zygE+yypmulYVK6ZGKKOrXMaJ21UyR16OjmA8rYJ77eJe6pf5
-X-Gm-Message-State: AOJu0YyXSGyLUcifg6RRZ5N/e2mePMWqHMuPdiiTzD6gpIo/52gRAlD5
-	zHAFYRkoSWUy00JiPLz84SYhEbfBkXucU0ZIrrjyihV2cJNWPDuuFiv/kWqqlEytdBUfitDifXx
-	INyHSHTIgO982XW4AAj7sjpayGTQ=
-X-Google-Smtp-Source: AGHT+IHqimg10K1/L+NRQXdNA2GGrmNDOmgRLEkO8bWLdybN2k28avxqLXsoB1b3MUY5xGyvrKtcfZlp0iCGclsq5VA=
-X-Received: by 2002:a05:6402:5201:b0:565:a5e1:3a10 with SMTP id
- s1-20020a056402520100b00565a5e13a10mr183414edd.36.1708743337653; Fri, 23 Feb
- 2024 18:55:37 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TMFbwWdV"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1708915881; x=1740451881;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Pgj01wMzoj/WBuC6kUjE5jPGW0oMlvlp9SVVJfxr7Ak=;
+  b=TMFbwWdVufkLBzECVslqus/OrudqGgf6yOlR9iIEsiiTi9mr2MrYNzBH
+   PkoU5fawKIeJw8hm2+X2Xe4tPRxGQRMJ7HNfiZcvJ49bo+5po/SWn9Z/f
+   rzmtsU0YUXyWTnZUxEaa2G+9KQagiUUwyOhWZHbF4P6eg4ClHiI/vCL8R
+   yXlNkY7s/GBav/xg4hpfYdboxQn1zbOvv0itqNsahAs7ecN3/pUQU/te9
+   Or4HuD6kv0Qp8W0wpea4O3m8q5xYBHyaOtlHkwmIRF6ryB+xdAvO1YXn9
+   4hh2hEnuV7l262wVWECs2cYWZE8bb5P05bhJivFgqgzje5WhQBrXeHqj8
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10995"; a="14616141"
+X-IronPort-AV: E=Sophos;i="6.06,185,1705392000"; 
+   d="scan'208";a="14616141"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2024 18:51:21 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.06,185,1705392000"; 
+   d="scan'208";a="43994714"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by orviesa001.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 25 Feb 2024 18:51:21 -0800
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Sun, 25 Feb 2024 18:51:19 -0800
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35 via Frontend Transport; Sun, 25 Feb 2024 18:51:19 -0800
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.169)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.35; Sun, 25 Feb 2024 18:51:19 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IGXcKQhpV1niSSdYYHRNPzKaC/vjslQY8b8RIjcDlyD0BJiWWxlYxC4gPMsOIdIyyrIP87ECRJjDEfeZr8VLmm/R3zoOwDodMPFRwki8egOSuK8RImJKieOfmdiFuu3SURq3rsg278m2L7gKbVaG9CWXcNi9vsfmoIiri+zPjPgK39GJ7p9eMDL7nCOC+Hh/wTnUf64/qmni/kelzeCKUm74ZJW9L851UwyWDoKjF9wbTpXs7Dd8UBeCuWuYQr3mydySQEiLg7M66w7tdvo88VjnPI1tMsZ7KZ8+X20JJsDa12m4F+Jc3bVBZXtfGq7YX26rIscZTV/7i+/hEIewnQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9amZbVITHRl5wloetJ3plw6bmYLYM10MOz5QS9FbiEQ=;
+ b=jt8V5rr4r6TNSdtG+th5QusxuwAt+lG+SwdM0Zj451VaIAZUjjRBiWxr/v7wxmHFV+tjlKz+gyI6HBt6N41pHEsyzN+vYUAOFkgQRUPsm0i8JAobPbHjPhiaJ2j5bxAEWTAphRazyI1SP88Yv90Y7Q+ng1U+GuCECBUFX+l2L66kfcKqxlafZmD4gveg2RVZO1rn6DaC8WdqAQDzaaKwgtSDhrd6xzswjhUMKfTgnGaqHjmjB5iqsOve7xSLeHKV2GzpypiLChmmf+ulYwz8ylBzwSwRQmj7f0DSeF+TQ3Oqj+LTiWIEF6DjpV5j0XXZAK2Dj77xiT5tLF3c3YOHJA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by SA2PR11MB4777.namprd11.prod.outlook.com (2603:10b6:806:115::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7339.21; Mon, 26 Feb
+ 2024 02:51:17 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::58dd:99ca:74a6:2e3e]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::58dd:99ca:74a6:2e3e%3]) with mapi id 15.20.7339.009; Mon, 26 Feb 2024
+ 02:51:17 +0000
+Date: Mon, 26 Feb 2024 10:51:07 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: Johannes Berg <johannes.berg@intel.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Linux Memory Management List
+	<linux-mm@kvack.org>, <linux-wireless@vger.kernel.org>,
+	<wcn36xx@lists.infradead.org>, <linux-arm-kernel@lists.infradead.org>,
+	<b43-dev@lists.infradead.org>, <brcm80211@lists.linux.dev>,
+	<brcm80211-dev-list.pdl@broadcom.com>, <linux-staging@lists.linux.dev>,
+	<oliver.sang@intel.com>
+Subject: [linux-next:master] [wifi]  0a44dfc070: hwsim.ap_vht80_csa.fail
+Message-ID: <202402261039.708d78d3-oliver.sang@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+X-ClientProxiedBy: SG2P153CA0037.APCP153.PROD.OUTLOOK.COM (2603:1096:4:c6::6)
+ To LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202402201506.b7e4b9b6-oliver.sang@intel.com> <CANpmjNNGCkfFBNiSsc+DOm1EDzXZoNLQy_jnEZjt9WuxP5aayw@mail.gmail.com>
-In-Reply-To: <CANpmjNNGCkfFBNiSsc+DOm1EDzXZoNLQy_jnEZjt9WuxP5aayw@mail.gmail.com>
-From: Neeraj upadhyay <neeraj.iitr10@gmail.com>
-Date: Sat, 24 Feb 2024 08:25:24 +0530
-Message-ID: <CAFwiDX-tVTsNcbrzd63oCCat5DqzhouA_HQv4sd4xS=c-C01yQ@mail.gmail.com>
-Subject: Re: [linux-next:master] [kasan] 187292be96: WARNING:suspicious_RCU_usage
-To: Marco Elver <elver@google.com>
-Cc: kernel test robot <oliver.sang@intel.com>, "Paul E. McKenney" <paulmck@kernel.org>, RCU <rcu@vger.kernel.org>, 
-	Frederic Weisbecker <frederic@kernel.org>, Neeraj Upadhyay <quic_neeraju@quicinc.com>, 
-	Joel Fernandes <joel@joelfernandes.org>, Josh Triplett <josh@joshtriplett.org>, 
-	Boqun Feng <boqun.feng@gmail.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
-	Linux Memory Management List <linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>, 
-	Andrey Konovalov <andreyknvl@gmail.com>, Alexander Potapenko <glider@google.com>, 
-	Dmitry Vyukov <dvyukov@google.com>, Andrey Ryabinin <ryabinin.a.a@gmail.com>, 
-	Vincenzo Frascino <vincenzo.frascino@arm.com>, Vlastimil Babka <vbabka@suse.cz>, kasan-dev@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-Hi,
-
-On Tue, Feb 20, 2024 at 1:33=E2=80=AFPM Marco Elver <elver@google.com> wrot=
-e:
->
-> On Tue, 20 Feb 2024 at 08:35, kernel test robot <oliver.sang@intel.com> w=
-rote:
-> >
-> >
-> >
-> > Hello,
-> >
-> > we noticed this is a revert commit, below report is for an issue we obs=
-erved
-> > on this commit but not on its parent. just FYI.
-> >
-> > 113edefd366346b3 187292be96ae2be247807fac1c3
-> > ---------------- ---------------------------
-> >        fail:runs  %reproduction    fail:runs
-> >            |             |             |
-> >            :6          100%           6:6     dmesg.WARNING:suspicious_=
-RCU_usage
-> >
-> >
-> > kernel test robot noticed "WARNING:suspicious_RCU_usage" on:
-> >
-> > commit: 187292be96ae2be247807fac1c3a6d89a7cc2a84 ("kasan: revert evicti=
-on of stack traces in generic mode")
-> > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
->
-> This commit didn't touch rcutorture or the rcu subsystem in any way,
-> so I currently don't understand how rcutorture would be affected.
-> While stackdepot has started to use RCU, this already happened in a
-> previous commit, and this particular commit actually reduced RCU usage
-> (no more evictions and re-allocations of stacktraces).
->
-> The only explanation I have is that it improved performance of a
-> KASAN-enabled kernel (which the config here has enabled) so much that
-> previously undiscovered issues have now become much more likely to
-> occur.
->
-> [+Cc rcu folks]
->
-> > in testcase: rcutorture
-
-The rcutorture test type executed here is busted_srcud (torture_type:
-busted_srcud). The busted_srcud torture test creates bad reader critical
-section usages - in this case the rcu reader lock acquired was not
-srcu lock, which subsequently resulted in rcu_dereference_check() to
-cause a splat due to srcu read lock not being held.
-
- So, this is expected behavior, and not a problem in either KASAN or RCU.
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|SA2PR11MB4777:EE_
+X-MS-Office365-Filtering-Correlation-Id: b209446a-03ad-4f9f-27fc-08dc3675cdd2
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: LOxnyw6EoYTC2BQYceKsBG6BLZMlKeplk+7DcMJq6plYnVlYt+JNs8CoPmFmAxImXaiB7B3+TlZvVyrkx4tYzobumPDrghgWzzMfiFJ446tKNqT+Gch8Mtj+IzdCxjcomfRwCaKNCwCG0bqTYPVL2yITJSjRvUlNMN+qYN2LeFvgtbtuFB9Tt3rGixLHMgWq18RwUnMFmjozfx4OjqNwKzO3p68ZZqAX6OM94YsDW6gwNoV5FTix8TBiUQOSmsVevTUnvD7ha1zOT0Nrl9KUvSDH05PVTKbr6pottUCK/ct8xLMB2eTPdo7A+bLa89u4DjLowfWQxf1aA5Lf8bEFTA5q+4R8MzCXiClFt6lU2pXk5Rcw71VtE3eDG2cnVDidWidsfADafh0keNDVDiyq9tXOvMiRYPN1BGDbkFmZ4wILrIgHfPQQLputVXfyb/O5glDpxU5ue2cegaOyQ767DwTst3nQfd3hNxr4Z49ebFa1VWoXb2RpwbjBvEUR9sPR46JgPcXeWoe7XmlwES3KyerNkn4plsRCurAc+blJhoJZjp3BWH3w5CvD0G9qSBFnCQOCooGOjvk+ZQDUAmpfrHSLV6IrBKyTzYL8rBwiuUyJzxr8TYnYcDR2zZIbzlq7
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?UvMa0XNZBNuQy1yB6pch++W3KAxJSOAk7ZhFot1THawt4ygoErNnqSdFgfcC?=
+ =?us-ascii?Q?FZTNUAQtHsowx14XeFIzCV5zRQzCvsbrpownqd+HuDKrVpDovjcdCSJNmBAh?=
+ =?us-ascii?Q?1pM20DrZq6CwEixPiETYNeptU0T5szm0+US0np59UOqloNdvux/xNyEUvmnV?=
+ =?us-ascii?Q?/MoH1frsQQ7owa8cEKJAjc1kRABp/b1piE93prGE4fQpFU6LV24MKp9S0yMo?=
+ =?us-ascii?Q?hzFxMcCousLW5PLPz1fEq71lOXoA8hoSgeRZYFDTdD6IPSR2bpTIftxY+5qm?=
+ =?us-ascii?Q?1bHNtaAazJ0W5ePbNoHQ/BMZ3eK5XjCDEDVhhdTZHajmbl6mZymINo2ZyfU8?=
+ =?us-ascii?Q?tbfHBMUPt2k6oZ+PLeq00OVirmciN45lH0rr/8BuuQcNnf+SI4frWSi8GY/2?=
+ =?us-ascii?Q?rNGKkv7oxAoaT6qXOGKUnsDgVQclIGA8VxCjiGMO7p34HexgYwcG3utjGYVb?=
+ =?us-ascii?Q?547jD834QErFX99knSUToygiKKyisApORN78/vRL5ZJZyz6e5hPLbaYOUIPG?=
+ =?us-ascii?Q?7aYv9wgOwYt5vxt8THxILVryDymjUX6HWYYWinLHXHsqfeG/PzjFGofuI1N+?=
+ =?us-ascii?Q?Um0/2PHnRT+OEv3zc6tzkvFdPJGrVFr4llDCYJoRnmCVHiq+jPHizs00uKbN?=
+ =?us-ascii?Q?l/00OS9CBzcJVW4Njc+eXKcvzpEA6RcrOBfqdS67Dxi0KpOqCC/nipJ2eO5M?=
+ =?us-ascii?Q?e7QcfVJuGk4f+CJ6+X+qNQW8XtlUeUuSTRpKeoR1Em2i0bErEXqdmhsxDmCK?=
+ =?us-ascii?Q?mQWnbU8p2UExpLsQ+WlB4IRLBSD9xNei5LF+xwT9ecRrVYwwIG8agVQtRWAe?=
+ =?us-ascii?Q?LcTGV3ShPzjXXt/Nj0OCo4LqUJjXkcN3h49cMmmP2mSFogW07pduMsFYXlry?=
+ =?us-ascii?Q?IO/Bvv9klGI1971eQDBZw6ydnVqB/raN9wiu8IkqKQIY/L6LDpNt9BXQAvEo?=
+ =?us-ascii?Q?kRGCDJuTdoPHQZe+OnrSHgMWzKoizG+IjQQmfqSyAqvgRKUpaQNd/ubpnoCW?=
+ =?us-ascii?Q?7ROisFy2xJ7BLukkaj5xxkhtzupYoe8z1WY9LBnHUELM0aHjVToPcsGgCnVd?=
+ =?us-ascii?Q?PNWYopjihgmJBNpS+pIaXFgOa7yVxKyGnY32UruYzg3lBajulm/A1dux5mqH?=
+ =?us-ascii?Q?7nzGDHG22QSckmIKXCRWsXZbr7P0FYynI0LKWd5FkD3vzHOwbZVf4UrEFW0b?=
+ =?us-ascii?Q?HIa0b0CGAsObjelWn9wviMzVAKOYFvlaLitHpaavFdTrJ4E13zUjwhG3AGaI?=
+ =?us-ascii?Q?9z/wRQV/o20MlXfawG4F8WlR7iaGsUBSr3YINoHbwCt+gBn0rRcqTYG8jyVV?=
+ =?us-ascii?Q?U0buOXL/2oTvree1fd35Q+dA+ynwsW1UBXT41e7EjdSHTZNzMOF9UzoeJH+p?=
+ =?us-ascii?Q?L+qz8MS5awWN5Vf8Z20byOWYZCXgU5EokKD6f+7dp28WDtXoYGa93LnDPWRH?=
+ =?us-ascii?Q?NZOjzgXAGlWkIlPjPY6NsqP+Cvc1lYAA2P03UpwTUpJPA/UPjcx6bKK0ceIR?=
+ =?us-ascii?Q?EVFaCseCBJzgBjkr5QcHjkLgTQTbbO1NXobC9geYJv+NxyBIEGBsHAqqzBoY?=
+ =?us-ascii?Q?PWQdPYv3GC7khAnbCqSLb88ACA6torMRMH3S3AJa?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: b209446a-03ad-4f9f-27fc-08dc3675cdd2
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Feb 2024 02:51:17.2722
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: pdzb594IbpXgwYfduuTCMxH65QnK5ek6+dcBZohNn/2WvB/247BgTP91Xe4ATPNZg94cAji1Bh72lmeeOFpA8g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR11MB4777
+X-OriginatorOrg: intel.com
 
 
 
-Thanks
-Neeraj
+Hello,
 
-> > version:
-> > with following parameters:
-> >
-> >         runtime: 300s
-> >         test: cpuhotplug
-> >         torture_type: busted_srcud
-> >
-> >
-> >
-> > compiler: clang-17
-> > test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m=
- 16G
-> >
-> > (please refer to attached dmesg/kmsg for entire log/backtrace)
-> >
-> >
-> >
-> > If you fix the issue in a separate patch/commit (i.e. not just a new ve=
-rsion of
-> > the same patch/commit), kindly add following tags
-> > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> > | Closes: https://lore.kernel.org/oe-lkp/202402201506.b7e4b9b6-oliver.s=
-ang@intel.com
-> >
-> >
-> > [  292.513535][  T653] WARNING: suspicious RCU usage
-> > [  292.514923][  T653] 6.8.0-rc4-00126-g187292be96ae #1 Not tainted
-> > [  292.516369][  T653] -----------------------------
-> > [  292.517743][  T653] kernel/rcu/rcutorture.c:1983 suspicious rcu_dere=
-ference_check() usage!
-> > [  292.519310][  T653]
-> > [  292.519310][  T653] other info that might help us debug this:
-> > [  292.519310][  T653]
-> > [  292.523130][  T653]
-> > [  292.523130][  T653] rcu_scheduler_active =3D 2, debug_locks =3D 1
-> > [  292.525644][  T653] no locks held by rcu_torture_rea/653.
-> > [  292.526974][  T653]
-> > [  292.526974][  T653] stack backtrace:
-> > [  292.529271][  T653] CPU: 0 PID: 653 Comm: rcu_torture_rea Not tainte=
-d 6.8.0-rc4-00126-g187292be96ae #1
-> > [  292.530780][  T653] Hardware name: QEMU Standard PC (i440FX + PIIX, =
-1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-> > [  292.532329][  T653] Call Trace:
-> > [  292.533524][  T653]  <TASK>
-> > [ 292.534696][ T653] dump_stack_lvl (lib/dump_stack.c:?)
-> > [ 292.535941][ T653] ? __cfi_dump_stack_lvl (lib/dump_stack.c:98)
-> > [ 292.537221][ T653] ? lockdep_rcu_suspicious (kernel/locking/lockdep.c=
-:6712)
-> > [ 292.538523][ T653] rcu_torture_one_read (kernel/rcu/rcutorture.c:?) r=
-cutorture
-> > [ 292.539887][ T653] ? __cfi_lockdep_hardirqs_on_prepare (kernel/lockin=
-g/lockdep.c:4312)
-> > [ 292.541226][ T653] ? rcu_torture_timer (kernel/rcu/rcutorture.c:1955)=
- rcutorture
-> > [ 292.542621][ T653] ? __cfi_rcu_torture_timer (kernel/rcu/rcutorture.c=
-:2055) rcutorture
-> > [ 292.544012][ T653] ? init_timer_key (include/linux/lockdep.h:135 incl=
-ude/linux/lockdep.h:142 include/linux/lockdep.h:148 kernel/time/timer.c:847=
- kernel/time/timer.c:867)
-> > [ 292.545262][ T653] rcu_torture_reader (kernel/rcu/rcutorture.c:2093) =
-rcutorture
-> > [ 292.546579][ T653] ? __cfi_rcu_torture_reader (kernel/rcu/rcutorture.=
-c:2076) rcutorture
-> > [ 292.547872][ T653] ? __cfi__raw_spin_unlock_irqrestore (kernel/lockin=
-g/spinlock.c:193)
-> > [ 292.549108][ T653] ? __cfi_rcu_torture_timer (kernel/rcu/rcutorture.c=
-:2055) rcutorture
-> > [ 292.550341][ T653] ? __kthread_parkme (kernel/kthread.c:?)
-> > [ 292.551425][ T653] ? __kthread_parkme (include/linux/instrumented.h:?=
- include/asm-generic/bitops/instrumented-non-atomic.h:141 kernel/kthread.c:=
-280)
-> > [ 292.552489][ T653] kthread (kernel/kthread.c:390)
-> > [ 292.553504][ T653] ? __cfi_rcu_torture_reader (kernel/rcu/rcutorture.=
-c:2076) rcutorture
-> > [ 292.554689][ T653] ? __cfi_kthread (kernel/kthread.c:341)
-> > [ 292.555749][ T653] ret_from_fork (arch/x86/kernel/process.c:153)
-> > [ 292.556792][ T653] ? __cfi_kthread (kernel/kthread.c:341)
-> > [ 292.557852][ T653] ret_from_fork_asm (arch/x86/entry/entry_64.S:250)
-> > [  292.558920][  T653]  </TASK>
-> >
-> >
-> >
-> > The kernel config and materials to reproduce are available at:
-> > https://download.01.org/0day-ci/archive/20240220/202402201506.b7e4b9b6-=
-oliver.sang@intel.com
-> >
-> >
-> >
-> > --
-> > 0-DAY CI Kernel Test Service
-> > https://github.com/intel/lkp-tests/wiki
-> >
->
+kernel test robot noticed "hwsim.ap_vht80_csa.fail" on:
+
+commit: 0a44dfc070749514b804ccac0b1fd38718f7daa1 ("wifi: mac80211: simplify non-chanctx drivers")
+https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+
+[test failed on linux-next/master d37e1e4c52bc60578969f391fb81f947c3e83118]
+
+in testcase: hwsim
+version: hwsim-x86_64-717e5d7-1_20231228
+with following parameters:
+
+	test: ap_vht80_csa
+
+
+
+compiler: gcc-12
+test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4790 v3 @ 3.60GHz (Haswell) with 6G memory
+
+(please refer to attached dmesg/kmsg for entire log/backtrace)
+
+
+
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202402261039.708d78d3-oliver.sang@intel.com
+
+group: group-33, test: ap_vht80_csa
+2024-02-18 10:47:21 export USER=root
+2024-02-18 10:47:21 ./build.sh
+Building TNC testing tools
+Building wlantest
+Building hs20-osu-client
+Building hostapd
+Building wpa_supplicant
+2024-02-18 10:48:15 ./start.sh
+2024-02-18 10:48:17 ./run-tests.py ap_vht80_csa
+DEV: wlan0: 02:00:00:00:00:00
+DEV: wlan1: 02:00:00:00:01:00
+DEV: wlan2: 02:00:00:00:02:00
+APDEV: wlan3
+APDEV: wlan4
+START ap_vht80_csa 1/1
+Test: VHT with 80 MHz channel width and CSA
+Starting AP wlan3
+Connect STA wlan0 to AP
+Country code at the end: 00
+sending data without carrier won't work
+Traceback (most recent call last):
+  File "/lkp/benchmarks/hwsim/tests/hwsim/./run-tests.py", line 537, in main
+    t(dev, apdev)
+  File "/lkp/benchmarks/hwsim/tests/hwsim/test_ap_vht.py", line 805, in test_ap_vht80_csa
+    hwsim_utils.test_connectivity(dev[0], hapd)
+  File "/lkp/benchmarks/hwsim/tests/hwsim/hwsim_utils.py", line 217, in test_connectivity
+    raise Exception(last_err)
+Exception: sending data without carrier won't work
+FAIL ap_vht80_csa 4.501333 2024-02-18 10:48:23.019458
+passed 0 test case(s)
+skipped 0 test case(s)
+failed tests: ap_vht80_csa
+2024-02-18 10:48:23 ./stop.sh
+
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20240226/202402261039.708d78d3-oliver.sang@intel.com
+
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
