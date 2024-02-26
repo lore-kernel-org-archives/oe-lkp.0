@@ -1,97 +1,89 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 447ED129A88
-	for <oe-lkp@lists.linux.dev>; Mon, 26 Feb 2024 14:28:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52DC2132C0A
+	for <oe-lkp@lists.linux.dev>; Mon, 26 Feb 2024 14:35:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.11
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708957688; cv=fail; b=VPXo8Qet5eU7+cRHdsPm2dknHpcIKujYM0sIBRjXwwVHuTWW7Ovm6xsDkQkSrinFQgY7v6ThQMiCFkHq++mzhtUBGGN6tAedSj39yxHA39YbavL2ZdsKxnGdhpi7FE5nhhxXe1WDNDlKn6p91OajpMn6QExOHtgC0rbdy7/b7cs=
+	t=1708958152; cv=fail; b=WRKCGt/0Oh34TnKwfaSxcbJI4FidPZhR4otaFISo1486NykrjfE4z5EdmxlHZU5AdqmDpccvqNM+rNC//zi94EBcqLVGKsMz+cTcIUMRtZ0HybC9tJ6DZlB7ic4n1jAK5BH6hRg+sX8N3JG5CmaWF0nl3QIXstMifeWiXfUVDvg=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708957688; c=relaxed/simple;
-	bh=OJG7hTgbIGJNQAxpJOO+AN1AUigaAGKMMEf1D3GxuLc=;
+	s=arc-20240116; t=1708958152; c=relaxed/simple;
+	bh=WYXZC4aQrNiJr7CZkAvqd640vUqh2SqsCHkl1qzrMQ8=;
 	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=A5reGjz6oX01yiSaKDYDoPcSV4myMqACc92Z74mM1IKpe6v48pYGgJoNH4dXBEgcGPuBe5DbzFv+gx0BI+2MJIzFGLa9ZfleedHQaSXs5D1kmkmibFOw3rr9f0WL5Y3n70+0rNWo6zXALGuZjncXZRYL5CMFycO79SsZAxSifNg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kW2kg/jI; arc=fail smtp.client-ip=192.198.163.13
+	 Content-Disposition:MIME-Version; b=Q9DZVJrh2Bgh92wvbYsb78hjyAKq93VsE2dnhwyTQuQ4tv7YkFF7MbaaT+rVNxH1xoFgEeID7AW4SUHrvmjyGWEVdQMdJ4Pef6HFnUfRDqRMXvNoPhIbUeplNimHcgyAJqFPeMd7Fq7DOqz4WOORZpn4Q8pL//SpwnlGPoWs8Ec=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=N2BmgJUS; arc=fail smtp.client-ip=198.175.65.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kW2kg/jI"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="N2BmgJUS"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1708957686; x=1740493686;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   mime-version;
-  bh=OJG7hTgbIGJNQAxpJOO+AN1AUigaAGKMMEf1D3GxuLc=;
-  b=kW2kg/jIaGGR55nVuh+wGjoKiAaFG25Cbi+k4k6Qxz3XIKa0oysltwRX
-   BXtoDPDJnC/FsEzWbfNOSd2ElcMLj0MoxZHAWpzYpIyFdi+4Pp7sDymmx
-   Lv692e8Oc25eJA8r7ed9KYnW/BRLciN5LgMUhDvRDR1lUDD5T/wuZDQHc
-   M4rig9n3ttum6RJ7Gb3m00wtmfDYvgrqQP9T3hVwH6THVQL8Ujv8JlpEr
-   SrBOPNUaNoxr9hvrVbvh1ViNvQYfDovZkM5Ealnr3tmz1/xYtPpaMCzmY
-   rFLtNlm5N1XpyZEzCaktloj4z8CyzeaMesMY9wYIyAGaMf3SXPxDq0BA1
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10995"; a="6189850"
+  t=1708958149; x=1740494149;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=WYXZC4aQrNiJr7CZkAvqd640vUqh2SqsCHkl1qzrMQ8=;
+  b=N2BmgJUSdsNXPyQny61tVqQgnQ4Shr8Y0khpDd/AmFsSO0eBphJycb8P
+   PYBl8A54tQyjQLI+HXWBkV9kOYDqih/2Kxa5BvuWtBU07GrVSN0ALDMGX
+   DMEzovSRC9cwE0utNmTEWp8WOHlUWCnZyVdPK7niYT7y40rVuugTBLV30
+   gA0McRX3x5cd9+YNSePU+6xySouNy6Og8gb1wQ41gWRyax9W2xxkA/Dfy
+   MrRlnmyka5iXVrEa+xejR1dwWERSQ9Vn3IMl7gzEMsndn8yC99iAV74A7
+   ObfKM73dyQ/u9h0Rw/gVVxSHP6xAeOyW4hlwXkM8SFYVb+wqq63kzz9X7
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10995"; a="13801169"
 X-IronPort-AV: E=Sophos;i="6.06,185,1705392000"; 
-   d="scan'208";a="6189850"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2024 06:27:49 -0800
+   d="scan'208";a="13801169"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2024 06:35:06 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.06,185,1705392000"; 
-   d="scan'208";a="6709873"
+   d="scan'208";a="6571508"
 Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orviesa009.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 26 Feb 2024 06:27:49 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+  by fmviesa007.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 26 Feb 2024 06:35:05 -0800
+Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
  ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Mon, 26 Feb 2024 06:27:48 -0800
+ 15.1.2507.35; Mon, 26 Feb 2024 06:35:04 -0800
 Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35 via Frontend Transport; Mon, 26 Feb 2024 06:27:48 -0800
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.168)
+ 15.1.2507.35 via Frontend Transport; Mon, 26 Feb 2024 06:35:04 -0800
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.101)
  by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Mon, 26 Feb 2024 06:27:46 -0800
+ 15.1.2507.35; Mon, 26 Feb 2024 06:35:04 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EVVJWnnc2QU1M6J+GTyP3lJFwH50XQ4bAGuvnm4yxern0F+FqxphT5tI87XZVEdvM67E9sWtdCWE9yF8e/ixSnCOHRoPoBbi0xltiXO3U3+R1zKbf+VRl7gg1WeCS9ovXgI09ZYp8yWeBR3lONasEGCXgDvi7kVALuLjZYmPVXLg7oQL80y2VfuN2kwEi2QMwSmTS9DY5eqLGFfCBzU8RlP4jT0OJq3BhU8COAz8ZPaXlzc8TFti6mqZmHrNUP/mwemczDCgBRe00G0Aoxufv4JBeigi62OlqUoKKOsfOOy0sNulDdvXG4tsV0Y+xYwFGSgENKL4k3+0M6co1bQAhA==
+ b=iFSQ7BnjgKKuuwJvQJU1sxhSw7hMfQkpwl2FPffYh+ms0f8vhcADZZsfVnTW4wx39qQNxCpPD1eSjb14qfwrhUSPhOQIyIjLpVHCthRu+bfJruR5Mzg1TVucw0Trv1gtQk3fvUElh2MwdB9KLcmD+YJ5uk962XqUBs+3l8HmdWM+wbsuTTgMFKHpz0S+3UWJEHLBVnK8zlaHzY6bL16Ty44Q975ExAGko//nn+boH18DAZi/ZYRWMzaqEBhYmKmCxPngZON/3iyOIfePlDmY6TgNSWjEjqO09bmid4XyiyVxDyLcT2CBC5W1FCTxUx3jJqfh71H7PcrYdDBm+cRFYA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4TuMX5RBwyMNhwd+GGLhzDVczZ1nq+S0ftVfJ3YIYuA=;
- b=QhsYFCIpu0dq0wNVDQ5tghBqIxwnaPiZYKnd2U/2Yx3gD3BbVtL7KwSt3qrLB58xDrUoM0E9OSTk+t2DfqPZsviV5qkJyFMUi/IiId+JLGyR8Z7YUQB3PuGQVivjTsyflNC+DscwI0p1ZGetBxyyZ2XxqLwV6tJk5sFa+p8BOmVvWpcWNZcfY9WDZaPElVOOjhzgosThWH65jlGsuc+x2lL5o/WhYCg4vKqCjdGVuZSxMg2LBQTi5C8+CrW0DdUWllYCtDqGIUDzye6NEn9hb7xLydxjvBySZUBSrOzc72FGAIAWLfslS+F58BB9+yX8csKkxydjrPstOSU6tL651Q==
+ bh=1nFhmxxhcxmzQpToPdUTZi2aShnlkc6tSsYSr9TxLuQ=;
+ b=nv4Y/S94IwtA1w0E5JMtDRP9Vr1/ygZNj9qbkwwtuql/bK8y7nXiYtC8hPQCC0lRRAgVJFaQ4vtt2/U0XYA0rXWfDJ1ijwl5CGLPaRcrtALkoP1yLlKhGF55Rf5Oyntkm5rCMMUOEXxhMCiRLSPoo9a7AUFSg1CSA+nxWywiwrs85PAjv4IYIaq/604SqaAJA/98NZwUuj7zDHJXxKooQpC2ucxz8bBs5vrpS5VpZc5hTsbMwiuA7ipPU2m8MardB8+5yQw3gHEiT5WZVMWp3fvWryqppQ/mP0AHKBLSYUJypaKFipDD65r1qFB6lZO35xDQcC+r3oyaPUfWhGh4Mg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by MN6PR11MB8148.namprd11.prod.outlook.com (2603:10b6:208:472::14) with
+ by IA0PR11MB8353.namprd11.prod.outlook.com (2603:10b6:208:489::20) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7339.22; Mon, 26 Feb
- 2024 14:27:43 +0000
+ 2024 14:35:02 +0000
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::58dd:99ca:74a6:2e3e]) by LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::58dd:99ca:74a6:2e3e%3]) with mapi id 15.20.7339.009; Mon, 26 Feb 2024
- 14:27:43 +0000
-Date: Mon, 26 Feb 2024 22:27:33 +0800
+ 14:35:02 +0000
+Date: Mon, 26 Feb 2024 22:34:52 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Bartosz Golaszewski <brgl@bgdev.pl>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, kernel test robot
-	<oliver.sang@intel.com>, Linus Walleij <linus.walleij@linaro.org>,
-	<linux-gpio@vger.kernel.org>, Kent Gibson <warthog618@gmail.com>, Alex Elder
-	<elder@linaro.org>, Geert Uytterhoeven <geert+renesas@glider.be>, "Paul E .
- McKenney" <paulmck@kernel.org>, Andy Shevchenko
-	<andriy.shevchenko@linux.intel.com>, Wolfram Sang <wsa@the-dreams.de>, "Mark
- Brown" <broonie@kernel.org>, Dan Carpenter <dan.carpenter@linaro.org>,
-	<linux-kernel@vger.kernel.org>, Bartosz Golaszewski
-	<bartosz.golaszewski@linaro.org>
-Subject: Re: [PATCH v2 2/4] gpio: cdev: use correct pointer accessors with
- SRCU
-Message-ID: <202402262225.50983057-lkp@intel.com>
+To: "H. Peter Anvin" <hpa@zytor.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	<x86@kernel.org>, Borislav Petkov <bp@alien8.de>, Xin Li <xin3.li@intel.com>,
+	Thomas Gleixner <tglx@linutronix.de>, Shan Kang <shan.kang@intel.com>,
+	<oliver.sang@intel.com>
+Subject: [tip:x86/fred] [x86/fred]  65c9cc9e2c: WARNING:kernel_stack
+Message-ID: <202402262159.183c2a37-lkp@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20240214084419.6194-3-brgl@bgdev.pl>
-X-ClientProxiedBy: SI1PR02CA0054.apcprd02.prod.outlook.com
- (2603:1096:4:1f5::13) To LV3PR11MB8603.namprd11.prod.outlook.com
+X-ClientProxiedBy: SI2PR02CA0007.apcprd02.prod.outlook.com
+ (2603:1096:4:194::23) To LV3PR11MB8603.namprd11.prod.outlook.com
  (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -100,405 +92,191 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|MN6PR11MB8148:EE_
-X-MS-Office365-Filtering-Correlation-Id: 28ea674a-a239-40ae-093f-08dc36d7184c
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|IA0PR11MB8353:EE_
+X-MS-Office365-Filtering-Correlation-Id: bde75bfa-787f-454c-69df-08dc36d81d85
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 77zrDeDWqm7mx1EFWsynnX80ZUFaoLeUKkM9mdBKns4f167u/hEgBwIsTdEEsOYXAHx0VIDwLa8PhZn6ZZlsUS9pu1g/cNNdXWMSOZgw/jRq7sLECuiDwTdYQdvKV3I18/wgLgdNmyGkxnncn9tmS4tu1a62GHKOsgKKC4A5BxEDvZddGTO8Af7IwkwghbHOi/RikQchlzL2ykr0aQMOrN03QxA4IgGMRN+xiroCe0FK7+A3PghWe4puBmFh+s3k6CaLUd6tQn11v3TGWP9OVXyHFxPw+UQLwQkeeauPiDXOb+S4dSyl2V/+RSOWsYvxlQPaLGBTtqQDVt1Zw8ccC5lxmH6BQ4mzEtFw6V0r2+IZ0YFtT7LZ4dE8T1pixXBzalHy7ZW/lPjDc0XbcZAXS3CRxUppee8GuOlhbGNqCLIyzopjSa+K7B+cWRFDKZ/kfNmZhHB2fd7scGPCNnB/JgUergSgzRqzHiO626JlALbpwgVFomobQBDC7BT5tb/WBl8SfbpnEOovG7KM75YALFlTataJcIc8ZVmYzP463oiGBXnAKl7TseIPBV0liSmgAhhckSp+h6RZIeCzbc3loqUdxPiFTzEdfGCmqF/GShAHZT0u/wRDUdTO9rXrswKQlZIicrkLaQsFGmkbGXyZig==
+X-Microsoft-Antispam-Message-Info: DPSZIcHeAcJH/Q5qHbf2L4SJmfSBH45J0JosXLMw5+RZjKq+NycSLTE1TyNADhXQLSdXcpevrB1zTbJuKQjXus7SvOr8TXtWmQp/QTtfv9t6qBJ8wc9G3LxFPAaQmW9XgJD0rnwjLP8LCZycQe7JuzKOYYgxNYPkXSJiNBiY4Koo3gTv6TcWE48yUwvl8LESSOvCoZw5ncJ1EZVAFrsPzMFU2EfCHN1+f2E2tlWZgDa4K277dqcKZo7VrifRhUQFTmmyuFoFgkjsG1Df+nqniyuiWsqMXTELu7Bs2lFPF6Ib6WLpN2jrL2ytZ4QBbYkQhwCIbQ37bCXADlPkMFFUGhC24Z10LZkSRfTFvDN33S2ivseA+50tFy1J5JOMPwmYp4BZdwP3KMZggmh1uoBJP2zXrketAd/382kSsT4eMeTYAcVMqG9gzpd1Udo2cQEIphQCVDa7Fu+Zxk4Iz8dhbE3XfnJJZaNqNULjOVwT/mO19o+MNBUjUHov3OlHNFXq7F7X9OylxrfGEAXJrwCUstfLXd0D4M3wsEgYx7nT0MYL5gD4vFNbYGCqiRCfIeSx1FRbSr0TLpNwiLNR6PonjS7yKQPbGdggFEcNJm7DClpqqeCthAVgZLT+pbaIV1BElqtFjsyP58/bk274IsZL0Q==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(230273577357003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?XSKM/85Xevsnya00FupU0xMJBGbE1RczE8YW83QgvVR5DlNZM7+IBnNC/kJB?=
- =?us-ascii?Q?8t+dqgLtFd6YIoPuwIw8jFgXSQznCS6ovWHHs++AOb206iV0YhoR0PRIaF2r?=
- =?us-ascii?Q?Wrxk0ypMS0x/p1XUI7GPp4hSstP6o3ynAKDBcWxhGfT1MBlDj19pJ2RveHar?=
- =?us-ascii?Q?7tHZPrXDjdouXQlX67UOhpqukqTPWWoPD9ujEuk3MQHzDz3GElGAdHfcytpI?=
- =?us-ascii?Q?ax6F/6Uh2DMJRUv62pTNYqSQIBXRaH7G8NKMEWVNMFrKo/oAwSzrP996nAs/?=
- =?us-ascii?Q?PAmNp2LLbzIppTG6Y+pZwCQutfslbM7mCLHqSMUQYe7OSac0/vogUykP6ZPx?=
- =?us-ascii?Q?A/y//C8nD9CByQRL/4QRB/ZBOJ6bXl+FwdBy3MgYgAMcG7MT8dEDyqU0Ajyy?=
- =?us-ascii?Q?JZ1i+tjfWwx+Mziv5C1iH0e0RVWriWxMJgBpyQfxdji8LkwoYdgYl+l639du?=
- =?us-ascii?Q?Oto59cj6njUXor8TWQOHQKNf4KsbDokrSn8k5FDwPL6ZegsK4ngbT5E3Ufov?=
- =?us-ascii?Q?YqzI7y1P6v80jB2SlWTzIUMZiNEsJnV5kY7g4BVxf+QKW6LYJ0sG74r0cafG?=
- =?us-ascii?Q?dZbCc69SH31nFbPKBlMDPSbZ0JYbIzAkarXHZdIwtv2kYuXDhBWirhu/E0Kj?=
- =?us-ascii?Q?JVvQwphnZd7Z9N9y/cCZ1JLhyTTzRfC7+Wl9L+rbZ0xr70TmV481BJOipy16?=
- =?us-ascii?Q?UjfmfujRsfkcn42FHUhjqNcv8Y/mrnWM3ztR3Y9AdBSPuFu3WE46ZxXwJWFJ?=
- =?us-ascii?Q?shyOmcyX6Ws2k9dbXWCiVeuWmemIodsG8UusGYHtWEwLQo01MgSFkSeobPX+?=
- =?us-ascii?Q?3OMZ2HbYokQdEZlJ0DK7MCe9gXmjz20UIcSr/dZox1Hm6tZWxkmf3Hf8QD6D?=
- =?us-ascii?Q?QTfKYK3IOg/lC1PWARQnt8qyQ/WGYpQC7VJkQ74Ic1BtpctwUmTSH6LrdPlZ?=
- =?us-ascii?Q?Tq3g2EtScfaUHfMcqjh2cuWqrfU5FT5r1pDwGJ1QANSL0sM6KSOnPfmvMFj1?=
- =?us-ascii?Q?qh9aqdHirSirxKz68fXHZ/koiN6Y6S55V2oywHf9uYZMky1ufHdJ03pn9VvH?=
- =?us-ascii?Q?mOT2xY46gZXH9ekTcvJnptRmd5d9uNH8peAWLwQKI7YVq/H082NjzLWg5JYe?=
- =?us-ascii?Q?k6UiSJwncKOr3+A0Tk1ny4Tc0MpKrMkiPLRLUxFUxJKHIapye/a8+yjsWkpe?=
- =?us-ascii?Q?mRB/y5mo53qMuJFAATrJxjG9QHBoZV2bnqNG39ZXviy7P8LDcL1wVQOYFkAG?=
- =?us-ascii?Q?Ovxm3zF8FpgLkDxzxZuHzBaTKdXJwTQlB9cruXlTb5AZINhd9TQgUUFa3nJy?=
- =?us-ascii?Q?ZDmOCD2GkhEXWHIjPaO3Wm95Nbbslfy514rH8Hr2qT5vItwo7nxSv1NbWequ?=
- =?us-ascii?Q?3E4D8QCnkqKnfCbi1h0U+RXfa2SAhKXtdaWkAI/EtzNQ3Yf1LvTr3YftmdBd?=
- =?us-ascii?Q?842O3A7JFBCqKhpW0LQ7L7RhOcMYoxWs1s+NmVhIdgjVu8EL9afKiQTBDk8c?=
- =?us-ascii?Q?F72rvoXGnP1/s+2zZDFWhGRh2kf3GcI7qK89AqTjz6hxtilsvCBHSlS+X1RE?=
- =?us-ascii?Q?6aox0U68Zaeh7jfxcQ1gJ4eP+pfjidMfXfp8RvqPG7m8zWkJhxDTQqZaN7rW?=
- =?us-ascii?Q?Ww=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 28ea674a-a239-40ae-093f-08dc36d7184c
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?f3GvW+wdHXU/dVC/nU0sMz417FFkprbWdIPq5kkm5E0mRJ0Wmv24x75jPES3?=
+ =?us-ascii?Q?lXR3/Q1IHn7pAQERp/Yoleyr21+B1AgbCVtzirzUAbB8F2KSHz6rlAAsFg1b?=
+ =?us-ascii?Q?3V36cFHwh5aihuNTOVv18ig+8MxjbhzplQocdiM991RLUekXU5hK+Ew2OxIL?=
+ =?us-ascii?Q?gbBNwyzCr8P/Y+mcx2xrg/Z1nK2AzpB+t9Lxi5lyMGOW51Lkf1EJb1b54Q4x?=
+ =?us-ascii?Q?eo0ZFML1Y8aCggGa8dSri+aGTBiFuVXU3W0oGvGIGhG1kb/3ZOPxdPwXWCEz?=
+ =?us-ascii?Q?AzcAxYE8P57ajv2DyxvzBCj6BnZCc/Q6ceEwedVVqvHSa1Fa9yF0Pozc8UQC?=
+ =?us-ascii?Q?/9L+EU8Joy7MLafmwVmglgrpihU3f/56Sr7kh0/qCFsxHy11+Cw2Jfd80z2p?=
+ =?us-ascii?Q?/dcY/UmJtD04XLawOmmnx809VdOQQPLTPuGxfYhSLXyv+FIQl4obLUu+n1SS?=
+ =?us-ascii?Q?doD2KZlfJW8DHJO5H0AgLCAIj65f4g2/6VAlg1Dgq1wjmYHJaP4fe6I0A5HF?=
+ =?us-ascii?Q?TVKQUXY3fZbuZRZ+bKVj2HWnvA8XekQDFs3BAGn5VlbsEF4dNwm0h52IlKgf?=
+ =?us-ascii?Q?5119bhWv5LV08u4Hl84zClT/XFcKZ5sYebr4ohG7VS4Fv2RaV6E7AA8qP+4/?=
+ =?us-ascii?Q?BXKMhQhtccPkFPIjd5HFpKwaNweQGVC0qyhCnaLSkb5oEKODWfmI9rNh4Z4w?=
+ =?us-ascii?Q?SxRKl9lR1jCkGyZ7BcbZ7CsvPcpzCGAEMLprDhtXmT2A5/5ySFTYRgGwFe0U?=
+ =?us-ascii?Q?Fi+DKYbwHHc8/9EJm+daU9w55UDgRMPjrwSIZ+LEd4haYoy7NNpWRPsDuNFA?=
+ =?us-ascii?Q?qr1XYcIPVFUkzmKiibUKo5NQIked46YTl1ReapCHBDJcNpE4aQ9Mc1yArXvP?=
+ =?us-ascii?Q?yV190j6rFVawOoMND5yTFqWLUL66U3M0f/8qAuZDZnrzhiFjglKlOZmpjHx8?=
+ =?us-ascii?Q?SLPfL79SxCXWD5apfi/BECHzRN1kg4soGuS8j8S7tSln1RyQCHLBnZZp51A1?=
+ =?us-ascii?Q?Pt6CvbUYNLaA2pg1sxd+0EJy+AsT2AvzqGjVwLkEFyvNiglZg9HMDWmrj0Ri?=
+ =?us-ascii?Q?kiNDQTvi4haKhYUGUFCg26dgTCphSyTEXTE8+E0Po+FaWdf54+YpAWFGgYi4?=
+ =?us-ascii?Q?09wFu3bnuu2eyRyE354IsZkAMTE12otR/75UOoxGQzHfDYH52HB4Qq63Ljme?=
+ =?us-ascii?Q?2kfDcwuSTtPyobbRhOU6d7pDMEx3GqdL4O8qnkVpWWkfTSiNEaTJjo70BTz2?=
+ =?us-ascii?Q?2p0/8vI34ujfAD6KdHxG6WBXVW/B1mpe4Af8ISG7KUDjMDXqRfTSPvnl9uco?=
+ =?us-ascii?Q?uKSFmztHDcZSzl6vI61KtvPsplmsYkaCA0MZNX1jGG/3Rl65FuyNRkW4Ere8?=
+ =?us-ascii?Q?nbn3453p0fNhhJ7EmOf2iGjZNcPDWNFqF99sQjCGCq+UP1fnVe1lqd1WZKgP?=
+ =?us-ascii?Q?p7rvVLnqgTEq6HgyuU50vDn9kTvSfNu+iQ/Xi3irtcs9EFnkq/iDJYzfQ1q0?=
+ =?us-ascii?Q?mCkaYGSpgt3MuC7pBJNRNSWE8wSahVRNUHUOicIPvASgKnRBPHXW738QEbQ7?=
+ =?us-ascii?Q?wUWG5RNZrxK1ScWxWVr28iYG+3lXR3YNuDCmzwpgGIemcw/COa13UZc2L0Dl?=
+ =?us-ascii?Q?YQ=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: bde75bfa-787f-454c-69df-08dc36d81d85
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Feb 2024 14:27:43.7116
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Feb 2024 14:35:01.9945
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: VlyK4fwq4m4bVjf0YQSm2z2GepgtJVTnWkv4BYPh/B+GsC3UmdBN6m6iFk6x6nQIQPKYlMHX3zykcYWiKQ87Sg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN6PR11MB8148
+X-MS-Exchange-CrossTenant-UserPrincipalName: oDJ8zoPHYuUzqfBbzZohsJjHin6Fy5uVu5kxEQaItqSJNz0CaYHU0jcFXvi0IBid0lyGTaF3KIwE2SZrxi4Buw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR11MB8353
 X-OriginatorOrg: intel.com
 
 
 
 Hello,
 
-kernel test robot noticed "BUG:unable_to_handle_page_fault_for_address" on:
+kernel test robot noticed "WARNING:kernel_stack" on:
 
-commit: ef4aabaa372144b2bfa9c4ddc83255831cff9ebd ("[PATCH v2 2/4] gpio: cdev: use correct pointer accessors with SRCU")
-url: https://github.com/intel-lab-lkp/linux/commits/Bartosz-Golaszewski/gpio-take-the-SRCU-read-lock-in-gpiod_hog/20240214-164752
-base: https://git.kernel.org/cgit/linux/kernel/git/brgl/linux.git gpio/for-next
-patch link: https://lore.kernel.org/all/20240214084419.6194-3-brgl@bgdev.pl/
-patch subject: [PATCH v2 2/4] gpio: cdev: use correct pointer accessors with SRCU
+commit: 65c9cc9e2c14602d98f1ca61c51ac954e9529303 ("x86/fred: Reserve space for the FRED stack frame")
+https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git x86/fred
+
+[test failed on linux-next/master 33e1d31873f87d119e5120b88cd350efa68ef276]
 
 in testcase: boot
 
-compiler: clang-17
+compiler: gcc-12
 test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
 
 (please refer to attached dmesg/kmsg for entire log/backtrace)
 
 
-+----------------------------------------------------------------------------------+------------+------------+
-|                                                                                  | 5c3cf44c4e | ef4aabaa37 |
-+----------------------------------------------------------------------------------+------------+------------+
-| BUG:unable_to_handle_page_fault_for_address                                      | 0          | 14         |
-| Oops:#[##]                                                                       | 0          | 14         |
-| EIP:gpiolib_cdev_register                                                        | 0          | 14         |
-| Kernel_panic-not_syncing:Fatal_exception                                         | 0          | 14         |
-+----------------------------------------------------------------------------------+------------+------------+
++-------------------------------------------------------------+------------+------------+
+|                                                             | 32b09c2303 | 65c9cc9e2c |
++-------------------------------------------------------------+------------+------------+
+| WARNING:kernel_stack                                        | 0          | 14         |
++-------------------------------------------------------------+------------+------------+
 
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202402262225.50983057-lkp@intel.com
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202402262159.183c2a37-lkp@intel.com
 
 
-
-[   57.990853][    T1] gpiochip_find_base_unlocked: found new base at 512
-[   57.991570][    T1]
-[   57.991875][    T1] =============================
-[   57.992480][    T1] WARNING: suspicious RCU usage
-[   57.992993][    T1] 6.8.0-rc4-00057-gef4aabaa3721 #1 Tainted: G                TN
-[   57.993787][    T1] -----------------------------
-[   57.994289][    T1] drivers/gpio/gpiolib.h:205 suspicious rcu_dereference_check() usage!
-[   57.995135][    T1]
-[   57.995135][    T1] other info that might help us debug this:
-[   57.995135][    T1]
-[   57.996198][    T1]
-[   57.996198][    T1] rcu_scheduler_active = 2, debug_locks = 1
-[   57.997073][    T1] 2 locks held by swapper/1:
-[ 57.997559][ T1] #0: ea878e8c (&dev->mutex){....}-{3:3}, at: __driver_attach (drivers/base/dd.c:1216) 
-[ 57.998494][ T1] #1: eb682f3c (&gdev->srcu){.+.+}-{0:0}, at: srcu_lock_acquire (include/linux/srcu.h:115) 
-[   57.999365][    T1]
-[   57.999365][    T1] stack backtrace:
-[   58.000005][    T1] CPU: 0 PID: 1 Comm: swapper Tainted: G                TN 6.8.0-rc4-00057-gef4aabaa3721 #1 10e84cefff2a9bf1626b34c75cc7b6c846de4a3a
-[   58.001317][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-[   58.002330][    T1] Call Trace:
-[ 58.002690][ T1] dump_stack_lvl (lib/dump_stack.c:107) 
-[ 58.003158][ T1] dump_stack (lib/dump_stack.c:113) 
-[ 58.003631][ T1] lockdep_rcu_suspicious (kernel/locking/lockdep.c:6714) 
-[ 58.006180][ T1] gpiod_hog (drivers/gpio/gpiolib.h:?) 
-[ 58.006632][ T1] of_gpiochip_add_hog (drivers/gpio/gpiolib-of.c:799) 
-[ 58.007165][ T1] of_gpiochip_add (drivers/gpio/gpiolib-of.c:829 drivers/gpio/gpiolib-of.c:1144) 
-[ 58.007663][ T1] gpiochip_add_data_with_key (drivers/gpio/gpiolib.c:1013) 
-[ 58.008278][ T1] unittest_gpio_probe (drivers/of/unittest.c:1886) 
-[ 58.008799][ T1] platform_probe (drivers/base/platform.c:1405) 
-[ 58.009268][ T1] really_probe (drivers/base/dd.c:?) 
-[ 58.009738][ T1] __driver_probe_device (drivers/base/dd.c:800) 
-[ 58.010265][ T1] driver_probe_device (drivers/base/dd.c:830) 
-[ 58.010776][ T1] __driver_attach (drivers/base/dd.c:1217) 
-[ 58.011258][ T1] ? driver_attach (drivers/base/dd.c:1157) 
-[ 58.011734][ T1] bus_for_each_dev (drivers/base/bus.c:367) 
-[ 58.012234][ T1] driver_attach (drivers/base/dd.c:1233) 
-[ 58.012692][ T1] ? driver_attach (drivers/base/dd.c:1157) 
-[ 58.013168][ T1] bus_add_driver (drivers/base/bus.c:674) 
-[ 58.013652][ T1] driver_register (drivers/base/driver.c:246) 
-[ 58.014177][ T1] __platform_driver_register (drivers/base/platform.c:867) 
-[ 58.014730][ T1] of_unittest_overlay_gpio (drivers/of/unittest.c:1969) 
-[ 58.015285][ T1] of_unittest_overlay (drivers/of/unittest.c:3217) 
-[ 58.015804][ T1] of_unittest (drivers/of/unittest.c:4129) 
-[ 58.016264][ T1] do_one_initcall (init/main.c:1236) 
-[ 58.016755][ T1] ? dt_alloc_memory (drivers/of/unittest.c:4080) 
-[ 58.017247][ T1] ? kvm_sched_clock_read (arch/x86/kernel/kvmclock.c:91) 
-[ 58.017766][ T1] ? sched_clock_noinstr (arch/x86/kernel/tsc.c:266) 
-[ 58.018269][ T1] ? local_clock_noinstr (kernel/sched/clock.c:269 kernel/sched/clock.c:306) 
-[ 58.018802][ T1] ? rcu_read_lock_any_held (kernel/rcu/update.c:386) 
-[ 58.019348][ T1] ? __lock_acquire (kernel/locking/lockdep.c:3762) 
-[ 58.019864][ T1] ? __lock_acquire (kernel/locking/lockdep.c:3762) 
-[ 58.020382][ T1] ? kvm_sched_clock_read (arch/x86/kernel/kvmclock.c:91) 
-[ 58.020900][ T1] ? sched_clock_noinstr (arch/x86/kernel/tsc.c:266) 
-[ 58.021400][ T1] ? local_clock_noinstr (kernel/sched/clock.c:269 kernel/sched/clock.c:306) 
-[ 58.021931][ T1] ? rcu_read_lock_any_held (kernel/rcu/update.c:386) 
-[ 58.022471][ T1] ? __lock_acquire (kernel/locking/lockdep.c:3762) 
-[ 58.022979][ T1] ? kvm_sched_clock_read (arch/x86/kernel/kvmclock.c:91) 
-[ 58.023496][ T1] ? sched_clock_noinstr (arch/x86/kernel/tsc.c:266) 
-[ 58.024000][ T1] ? local_clock_noinstr (kernel/sched/clock.c:269 kernel/sched/clock.c:306) 
-[ 58.024526][ T1] ? local_clock (arch/x86/include/asm/preempt.h:84 kernel/sched/clock.c:316) 
-[ 58.024982][ T1] ? irqtime_account_irq (kernel/sched/cputime.c:?) 
-[ 58.025553][ T1] ? irqtime_account_delta (include/linux/seqlock.h:444 include/linux/seqlock.h:516 include/linux/u64_stats_sync.h:151 include/linux/u64_stats_sync.h:187 kernel/sched/cputime.c:46) 
-[ 58.026091][ T1] ? trace_hardirqs_on (kernel/trace/trace_preemptirq.c:63) 
-[ 58.026594][ T1] ? irqentry_exit (kernel/entry/common.c:?) 
-[ 58.027070][ T1] ? common_interrupt (arch/x86/kernel/irq.c:247) 
-[ 58.027567][ T1] ? asm_common_interrupt (arch/x86/entry/entry_32.S:640) 
-[ 58.028119][ T1] ? strlen (arch/x86/lib/string_32.c:175) 
-[ 58.028540][ T1] ? next_arg (lib/cmdline.c:273) 
-[ 58.028991][ T1] ? parse_args (kernel/params.c:153) 
-[ 58.029467][ T1] do_initcall_level (init/main.c:1297) 
-[ 58.029957][ T1] ? rest_init (init/main.c:1433) 
-[ 58.030398][ T1] do_initcalls (init/main.c:1311) 
-[ 58.030846][ T1] ? rest_init (init/main.c:1433) 
-[ 58.031299][ T1] do_basic_setup (init/main.c:1334) 
-[ 58.031769][ T1] kernel_init_freeable (init/main.c:1555) 
-[ 58.032283][ T1] kernel_init (init/main.c:1443) 
-[ 58.032732][ T1] ret_from_fork (arch/x86/kernel/process.c:153) 
-[ 58.033192][ T1] ret_from_fork_asm (arch/x86/entry/entry_32.S:741) 
-[ 58.033680][ T1] entry_INT80_32 (arch/x86/entry/entry_32.S:947) 
-[   58.034672][    T1] gpio gpiochip0: Persistence not supported for GPIO 2
-[   58.035366][    T1]
-[   58.035669][    T1] =============================
-[   58.036180][    T1] WARNING: suspicious RCU usage
-[   58.036739][    T1] 6.8.0-rc4-00057-gef4aabaa3721 #1 Tainted: G                TN
-[   58.037546][    T1] -----------------------------
-[   58.038050][    T1] drivers/gpio/gpiolib.c:112 suspicious rcu_dereference_check() usage!
-[   58.038893][    T1]
-[   58.038893][    T1] other info that might help us debug this:
-[   58.038893][    T1]
-[   58.039950][    T1]
-[   58.039950][    T1] rcu_scheduler_active = 2, debug_locks = 1
-[   58.040837][    T1] 3 locks held by swapper/1:
-[ 58.041318][ T1] #0: ea878e8c (&dev->mutex){....}-{3:3}, at: __driver_attach (drivers/base/dd.c:1216) 
-[ 58.042234][ T1] #1: eb682f3c (&gdev->srcu){.+.+}-{0:0}, at: srcu_lock_acquire (include/linux/srcu.h:115) 
-[ 58.043116][ T1] #2: eb6831dc (&desc->srcu){.+.+}-{0:0}, at: srcu_lock_acquire (include/linux/srcu.h:115) 
-[   58.043992][    T1]
-[   58.043992][    T1] stack backtrace:
-[   58.044685][    T1] CPU: 0 PID: 1 Comm: swapper Tainted: G                TN 6.8.0-rc4-00057-gef4aabaa3721 #1 10e84cefff2a9bf1626b34c75cc7b6c846de4a3a
-[   58.046006][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-[   58.047050][    T1] Call Trace:
-[ 58.047417][ T1] dump_stack_lvl (lib/dump_stack.c:107) 
-[ 58.047896][ T1] dump_stack (lib/dump_stack.c:113) 
-[ 58.048430][ T1] lockdep_rcu_suspicious (kernel/locking/lockdep.c:6714) 
-[ 58.048974][ T1] gpiod_get_label (drivers/gpio/gpiolib.c:?) 
-[ 58.049450][ T1] gpiod_hog (drivers/gpio/gpiolib.c:4519) 
-[ 58.049901][ T1] of_gpiochip_add_hog (drivers/gpio/gpiolib-of.c:799) 
-[ 58.050433][ T1] of_gpiochip_add (drivers/gpio/gpiolib-of.c:829 drivers/gpio/gpiolib-of.c:1144) 
-[ 58.050933][ T1] gpiochip_add_data_with_key (drivers/gpio/gpiolib.c:1013) 
-[ 58.051503][ T1] unittest_gpio_probe (drivers/of/unittest.c:1886) 
-[ 58.052013][ T1] platform_probe (drivers/base/platform.c:1405) 
-[ 58.052484][ T1] really_probe (drivers/base/dd.c:?) 
-[ 58.052953][ T1] __driver_probe_device (drivers/base/dd.c:800) 
-[ 58.053480][ T1] driver_probe_device (drivers/base/dd.c:830) 
-[ 58.054001][ T1] __driver_attach (drivers/base/dd.c:1217) 
-[ 58.054482][ T1] ? driver_attach (drivers/base/dd.c:1157) 
-[ 58.054958][ T1] bus_for_each_dev (drivers/base/bus.c:367) 
-[ 58.055451][ T1] driver_attach (drivers/base/dd.c:1233) 
-[ 58.055908][ T1] ? driver_attach (drivers/base/dd.c:1157) 
-[ 58.056386][ T1] bus_add_driver (drivers/base/bus.c:674) 
-[ 58.056871][ T1] driver_register (drivers/base/driver.c:246) 
-[ 58.057348][ T1] __platform_driver_register (drivers/base/platform.c:867) 
-[ 58.057900][ T1] of_unittest_overlay_gpio (drivers/of/unittest.c:1969) 
-[ 58.058450][ T1] of_unittest_overlay (drivers/of/unittest.c:3217) 
-[ 58.058973][ T1] of_unittest (drivers/of/unittest.c:4129) 
-[ 58.059476][ T1] do_one_initcall (init/main.c:1236) 
-[ 58.059967][ T1] ? dt_alloc_memory (drivers/of/unittest.c:4080) 
-[ 58.060472][ T1] ? kvm_sched_clock_read (arch/x86/kernel/kvmclock.c:91) 
-[ 58.060994][ T1] ? sched_clock_noinstr (arch/x86/kernel/tsc.c:266) 
-[ 58.061500][ T1] ? local_clock_noinstr (kernel/sched/clock.c:269 kernel/sched/clock.c:306) 
-[ 58.062037][ T1] ? rcu_read_lock_any_held (kernel/rcu/update.c:386) 
-[ 58.062580][ T1] ? __lock_acquire (kernel/locking/lockdep.c:3762) 
-[ 58.063084][ T1] ? __lock_acquire (kernel/locking/lockdep.c:3762) 
-[ 58.063595][ T1] ? kvm_sched_clock_read (arch/x86/kernel/kvmclock.c:91) 
-[ 58.064122][ T1] ? sched_clock_noinstr (arch/x86/kernel/tsc.c:266) 
-[ 58.064665][ T1] ? local_clock_noinstr (kernel/sched/clock.c:269 kernel/sched/clock.c:306) 
-[ 58.065201][ T1] ? rcu_read_lock_any_held (kernel/rcu/update.c:386) 
-[ 58.065742][ T1] ? __lock_acquire (kernel/locking/lockdep.c:3762) 
-[ 58.066248][ T1] ? kvm_sched_clock_read (arch/x86/kernel/kvmclock.c:91) 
-[ 58.066768][ T1] ? sched_clock_noinstr (arch/x86/kernel/tsc.c:266) 
-[ 58.067271][ T1] ? local_clock_noinstr (kernel/sched/clock.c:269 kernel/sched/clock.c:306) 
-[ 58.067805][ T1] ? local_clock (arch/x86/include/asm/preempt.h:84 kernel/sched/clock.c:316) 
-[ 58.068268][ T1] ? irqtime_account_irq (kernel/sched/cputime.c:?) 
-[ 58.068795][ T1] ? irqtime_account_delta (include/linux/seqlock.h:444 include/linux/seqlock.h:516 include/linux/u64_stats_sync.h:151 include/linux/u64_stats_sync.h:187 kernel/sched/cputime.c:46) 
-[ 58.069333][ T1] ? trace_hardirqs_on (kernel/trace/trace_preemptirq.c:63) 
-[ 58.069836][ T1] ? irqentry_exit (kernel/entry/common.c:?) 
-[ 58.070341][ T1] ? common_interrupt (arch/x86/kernel/irq.c:247) 
-[ 58.070842][ T1] ? asm_common_interrupt (arch/x86/entry/entry_32.S:640) 
-[ 58.071388][ T1] ? strlen (arch/x86/lib/string_32.c:175) 
-[ 58.071812][ T1] ? next_arg (lib/cmdline.c:273) 
-[ 58.072278][ T1] ? parse_args (kernel/params.c:153) 
-[ 58.072756][ T1] do_initcall_level (init/main.c:1297) 
-[ 58.073247][ T1] ? rest_init (init/main.c:1433) 
-[ 58.073693][ T1] do_initcalls (init/main.c:1311) 
-[ 58.074142][ T1] ? rest_init (init/main.c:1433) 
-[ 58.074585][ T1] do_basic_setup (init/main.c:1334) 
-[ 58.075052][ T1] kernel_init_freeable (init/main.c:1555) 
-[ 58.075573][ T1] kernel_init (init/main.c:1443) 
-[ 58.076029][ T1] ret_from_fork (arch/x86/kernel/process.c:153) 
-[ 58.076498][ T1] ret_from_fork_asm (arch/x86/entry/entry_32.S:741) 
-[ 58.076989][ T1] entry_INT80_32 (arch/x86/entry/entry_32.S:947) 
-[   58.077544][    T1] gpio-514 (line-B-input): hogged as input
-[   58.078433][    T1] BUG: unable to handle page fault for address: ffffffff
-[   58.079116][    T1] #PF: supervisor read access in kernel mode
-[   58.079703][    T1] #PF: error_code(0x0000) - not-present page
-[   58.080316][    T1] *pde = 02e00067 *pte = 00000000
-[   58.080829][    T1] Oops: 0000 [#1]
-[   58.081210][    T1] CPU: 0 PID: 1 Comm: swapper Tainted: G                TN 6.8.0-rc4-00057-gef4aabaa3721 #1 10e84cefff2a9bf1626b34c75cc7b6c846de4a3a
-[   58.082492][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-[ 58.083471][ T1] EIP: gpiolib_cdev_register (drivers/gpio/gpiolib-cdev.c:2802) 
-[ 58.084015][ T1] Code: ec e8 7a 10 00 00 89 f8 89 da e8 c1 c8 a5 ff 89 f0 83 c4 0c 5e 5f 5b 5d 31 c9 31 d2 c3 8b 45 f0 c1 e8 14 ff b7 d8 01 00 00 50 <ff> 35 ff ff ff ff 68 7c de 5c c2 ff 35 03 00 00 00 68 3d ad 57 c2
-All code
-========
-   0:	ec                   	in     (%dx),%al
-   1:	e8 7a 10 00 00       	call   0x1080
-   6:	89 f8                	mov    %edi,%eax
-   8:	89 da                	mov    %ebx,%edx
-   a:	e8 c1 c8 a5 ff       	call   0xffffffffffa5c8d0
-   f:	89 f0                	mov    %esi,%eax
-  11:	83 c4 0c             	add    $0xc,%esp
-  14:	5e                   	pop    %rsi
-  15:	5f                   	pop    %rdi
-  16:	5b                   	pop    %rbx
-  17:	5d                   	pop    %rbp
-  18:	31 c9                	xor    %ecx,%ecx
-  1a:	31 d2                	xor    %edx,%edx
-  1c:	c3                   	ret
-  1d:	8b 45 f0             	mov    -0x10(%rbp),%eax
-  20:	c1 e8 14             	shr    $0x14,%eax
-  23:	ff b7 d8 01 00 00    	push   0x1d8(%rdi)
-  29:	50                   	push   %rax
-  2a:*	ff 35 ff ff ff ff    	push   -0x1(%rip)        # 0x2f		<-- trapping instruction
-  30:	68 7c de 5c c2       	push   $0xffffffffc25cde7c
-  35:	ff 35 03 00 00 00    	push   0x3(%rip)        # 0x3e
-  3b:	68 3d ad 57 c2       	push   $0xffffffffc257ad3d
-
-Code starting with the faulting instruction
-===========================================
-   0:	ff 35 ff ff ff ff    	push   -0x1(%rip)        # 0x5
-   6:	68 7c de 5c c2       	push   $0xffffffffc25cde7c
-   b:	ff 35 03 00 00 00    	push   0x3(%rip)        # 0x14
-  11:	68 3d ad 57 c2       	push   $0xffffffffc257ad3d
-[   58.085813][    T1] EAX: 000000fe EBX: 00000000 ECX: 00000000 EDX: 00000000
-[   58.086476][    T1] ESI: ffffffed EDI: eb682c00 EBP: c3e1baec ESP: c3e1bacc
-[   58.087140][    T1] DS: 007b ES: 007b FS: 0000 GS: 0000 SS: 0068 EFLAGS: 00010202
-[   58.087927][    T1] CR0: 80050033 CR2: ffffffff CR3: 02dfd000 CR4: 000406d0
-[   58.088601][    T1] Call Trace:
-[ 58.088950][ T1] ? __die_body (arch/x86/kernel/dumpstack.c:478 arch/x86/kernel/dumpstack.c:420) 
-[ 58.089388][ T1] ? __die (arch/x86/kernel/dumpstack.c:434) 
-[ 58.089790][ T1] ? page_fault_oops (arch/x86/mm/fault.c:703) 
-[ 58.090279][ T1] ? kernelmode_fixup_or_oops (arch/x86/mm/fault.c:761) 
-[ 58.090815][ T1] ? __bad_area_nosemaphore (arch/x86/mm/fault.c:817) 
-[ 58.091344][ T1] ? bad_area_nosemaphore (arch/x86/mm/fault.c:866) 
-[ 58.091846][ T1] ? do_kern_addr_fault (arch/x86/mm/fault.c:1226) 
-[ 58.092347][ T1] ? exc_page_fault (arch/x86/mm/fault.c:?) 
-[ 58.092822][ T1] ? pvclock_clocksource_read_nowd (arch/x86/mm/fault.c:1520) 
-[ 58.093407][ T1] ? handle_exception (arch/x86/entry/entry_32.S:1049) 
-[ 58.093964][ T1] ? pvclock_clocksource_read_nowd (arch/x86/mm/fault.c:1520) 
-[ 58.094556][ T1] ? gpiolib_cdev_register (drivers/gpio/gpiolib-cdev.c:2802) 
-[ 58.095076][ T1] ? pvclock_clocksource_read_nowd (arch/x86/mm/fault.c:1520) 
-[ 58.095666][ T1] ? gpiolib_cdev_register (drivers/gpio/gpiolib-cdev.c:2802) 
-[ 58.096187][ T1] gpiochip_setup_dev (drivers/gpio/gpiolib.c:740) 
-[ 58.096665][ T1] gpiochip_add_data_with_key (drivers/gpio/gpiolib.c:1047) 
-[ 58.099219][ T1] unittest_gpio_probe (drivers/of/unittest.c:1886) 
-[ 58.099744][ T1] platform_probe (drivers/base/platform.c:1405) 
-[ 58.100210][ T1] really_probe (drivers/base/dd.c:?) 
-[ 58.100662][ T1] __driver_probe_device (drivers/base/dd.c:800) 
-[ 58.101172][ T1] driver_probe_device (drivers/base/dd.c:830) 
-[ 58.101667][ T1] __driver_attach (drivers/base/dd.c:1217) 
-[ 58.102131][ T1] ? driver_attach (drivers/base/dd.c:1157) 
-[ 58.102587][ T1] bus_for_each_dev (drivers/base/bus.c:367) 
-[ 58.103061][ T1] driver_attach (drivers/base/dd.c:1233) 
-[ 58.103505][ T1] ? driver_attach (drivers/base/dd.c:1157) 
-[ 58.103962][ T1] bus_add_driver (drivers/base/bus.c:674) 
-[ 58.104431][ T1] driver_register (drivers/base/driver.c:246) 
-[ 58.104902][ T1] __platform_driver_register (drivers/base/platform.c:867) 
-[ 58.105443][ T1] of_unittest_overlay_gpio (drivers/of/unittest.c:1969) 
-[ 58.105976][ T1] of_unittest_overlay (drivers/of/unittest.c:3217) 
-[ 58.106475][ T1] of_unittest (drivers/of/unittest.c:4129) 
-[ 58.106911][ T1] do_one_initcall (init/main.c:1236) 
-[ 58.107384][ T1] ? dt_alloc_memory (drivers/of/unittest.c:4080) 
-[ 58.107860][ T1] ? kvm_sched_clock_read (arch/x86/kernel/kvmclock.c:91) 
-[ 58.108367][ T1] ? sched_clock_noinstr (arch/x86/kernel/tsc.c:266) 
-[ 58.108853][ T1] ? local_clock_noinstr (kernel/sched/clock.c:269 kernel/sched/clock.c:306) 
-[ 58.109364][ T1] ? rcu_read_lock_any_held (kernel/rcu/update.c:386) 
-[ 58.109889][ T1] ? __lock_acquire (kernel/locking/lockdep.c:3762) 
-[ 58.110377][ T1] ? __lock_acquire (kernel/locking/lockdep.c:3762) 
-[ 58.110926][ T1] ? kvm_sched_clock_read (arch/x86/kernel/kvmclock.c:91) 
-[ 58.111428][ T1] ? sched_clock_noinstr (arch/x86/kernel/tsc.c:266) 
-[ 58.111917][ T1] ? local_clock_noinstr (kernel/sched/clock.c:269 kernel/sched/clock.c:306) 
-[ 58.112441][ T1] ? rcu_read_lock_any_held (kernel/rcu/update.c:386) 
-[ 58.112964][ T1] ? __lock_acquire (kernel/locking/lockdep.c:3762) 
-[ 58.113450][ T1] ? kvm_sched_clock_read (arch/x86/kernel/kvmclock.c:91) 
-[ 58.113964][ T1] ? sched_clock_noinstr (arch/x86/kernel/tsc.c:266) 
-[ 58.114454][ T1] ? local_clock_noinstr (kernel/sched/clock.c:269 kernel/sched/clock.c:306) 
-[ 58.114963][ T1] ? local_clock (arch/x86/include/asm/preempt.h:84 kernel/sched/clock.c:316) 
-[ 58.115399][ T1] ? irqtime_account_irq (kernel/sched/cputime.c:?) 
-[ 58.115903][ T1] ? irqtime_account_delta (include/linux/seqlock.h:444 include/linux/seqlock.h:516 include/linux/u64_stats_sync.h:151 include/linux/u64_stats_sync.h:187 kernel/sched/cputime.c:46) 
-[ 58.116430][ T1] ? trace_hardirqs_on (kernel/trace/trace_preemptirq.c:63) 
-[ 58.116929][ T1] ? irqentry_exit (kernel/entry/common.c:?) 
-[ 58.117391][ T1] ? common_interrupt (arch/x86/kernel/irq.c:247) 
-[ 58.117869][ T1] ? asm_common_interrupt (arch/x86/entry/entry_32.S:640) 
-[ 58.118390][ T1] ? strlen (arch/x86/lib/string_32.c:175) 
-[ 58.118799][ T1] ? next_arg (lib/cmdline.c:273) 
-[ 58.119238][ T1] ? parse_args (kernel/params.c:153) 
-[ 58.119689][ T1] do_initcall_level (init/main.c:1297) 
-[ 58.120167][ T1] ? rest_init (init/main.c:1433) 
-[ 58.120596][ T1] do_initcalls (init/main.c:1311) 
-[ 58.121033][ T1] ? rest_init (init/main.c:1433) 
-[ 58.121460][ T1] do_basic_setup (init/main.c:1334) 
-[ 58.121908][ T1] kernel_init_freeable (init/main.c:1555) 
-[ 58.122401][ T1] kernel_init (init/main.c:1443) 
-[ 58.122873][ T1] ret_from_fork (arch/x86/kernel/process.c:153) 
-[ 58.123330][ T1] ret_from_fork_asm (arch/x86/entry/entry_32.S:741) 
-[ 58.123804][ T1] entry_INT80_32 (arch/x86/entry/entry_32.S:947) 
-[   58.124281][    T1] Modules linked in:
-[   58.124686][    T1] CR2: 00000000ffffffff
-[   58.125108][    T1] ---[ end trace 0000000000000000 ]---
-[ 58.125635][ T1] EIP: gpiolib_cdev_register (drivers/gpio/gpiolib-cdev.c:2802) 
-[ 58.126171][ T1] Code: ec e8 7a 10 00 00 89 f8 89 da e8 c1 c8 a5 ff 89 f0 83 c4 0c 5e 5f 5b 5d 31 c9 31 d2 c3 8b 45 f0 c1 e8 14 ff b7 d8 01 00 00 50 <ff> 35 ff ff ff ff 68 7c de 5c c2 ff 35 03 00 00 00 68 3d ad 57 c2
-All code
-========
-   0:	ec                   	in     (%dx),%al
-   1:	e8 7a 10 00 00       	call   0x1080
-   6:	89 f8                	mov    %edi,%eax
-   8:	89 da                	mov    %ebx,%edx
-   a:	e8 c1 c8 a5 ff       	call   0xffffffffffa5c8d0
-   f:	89 f0                	mov    %esi,%eax
-  11:	83 c4 0c             	add    $0xc,%esp
-  14:	5e                   	pop    %rsi
-  15:	5f                   	pop    %rdi
-  16:	5b                   	pop    %rbx
-  17:	5d                   	pop    %rbp
-  18:	31 c9                	xor    %ecx,%ecx
-  1a:	31 d2                	xor    %edx,%edx
-  1c:	c3                   	ret
-  1d:	8b 45 f0             	mov    -0x10(%rbp),%eax
-  20:	c1 e8 14             	shr    $0x14,%eax
-  23:	ff b7 d8 01 00 00    	push   0x1d8(%rdi)
-  29:	50                   	push   %rax
-  2a:*	ff 35 ff ff ff ff    	push   -0x1(%rip)        # 0x2f		<-- trapping instruction
-  30:	68 7c de 5c c2       	push   $0xffffffffc25cde7c
-  35:	ff 35 03 00 00 00    	push   0x3(%rip)        # 0x3e
-  3b:	68 3d ad 57 c2       	push   $0xffffffffc257ad3d
-
-Code starting with the faulting instruction
-===========================================
-   0:	ff 35 ff ff ff ff    	push   -0x1(%rip)        # 0x5
-   6:	68 7c de 5c c2       	push   $0xffffffffc25cde7c
-   b:	ff 35 03 00 00 00    	push   0x3(%rip)        # 0x14
-  11:	68 3d ad 57 c2       	push   $0xffffffffc257ad3d
+[    0.000000][    T0] WARNING: kernel stack frame pointer at (____ptrval____) in swapper:0 has bad value 0000000000000000
+[    0.000000][    T0] unwind stack type:0 next_sp:0000000000000000 mask:0x2 graph_idx:0
+[ 0.000000][ T0] (____ptrval____): ffffffff83e07960 init_stack+0x7960/0x8000 
+[ 0.000000][ T0] (____ptrval____): ffffffff81093000 arch_stack_walk (arch/x86/kernel/stacktrace.c:24) 
+[ 0.000000][ T0] (____ptrval____): ffffffff83e07960 init_stack+0x7960/0x8000 
+[    0.000000][    T0] (____ptrval____): 0000000000000000 ...
+[ 0.000000][ T0] (____ptrval____): ffffffff83e00000 __end_rodata+0x2a000/0x2a000 
+[ 0.000000][ T0] (____ptrval____): ffffffff83e08000 init_stack+0x8000/0x8000 
+[    0.000000][    T0] (____ptrval____): 0000000000000000 ...
+[    0.000000][    T0] (____ptrval____): 0000000000000002 (0x2)
+[ 0.000000][ T0] (____ptrval____): ffffffff83e40080 cpu_loops_per_jiffy+0x9a0/0x9a0 
+[    0.000000][    T0] (____ptrval____): 0000000000000000 ...
+[    0.000000][    T0] (____ptrval____): 0000000000000001 (0x1)
+[ 0.000000][ T0] (____ptrval____): ffffffff83e07f48 init_stack+0x7f48/0x8000 
+[ 0.000000][ T0] (____ptrval____): ffffffff83e078a8 init_stack+0x78a8/0x8000 
+[ 0.000000][ T0] (____ptrval____): ffffffff8100017d secondary_startup_64_no_verify (arch/x86/kernel/head_64.S:461) 
+[    0.000000][    T0] (____ptrval____): 0000000000000000 ...
+[    0.000000][    T0] (____ptrval____): fffffbfff07c0f2e (0xfffffbfff07c0f2e)
+[    0.000000][    T0] (____ptrval____): 0000000000000000 ...
+[ 0.000000][ T0] (____ptrval____): ffffffff83e40968 init_task+0x8e8/0x2660 
+[ 0.000000][ T0] (____ptrval____): ffffffff84fac8e0 stack_trace_hash+0x20020/0x20020 
+[    0.000000][    T0] (____ptrval____): 0000000000000008 (0x8)
+[ 0.000000][ T0] (____ptrval____): ffffffff83e079f8 init_stack+0x79f8/0x8000 
+[ 0.000000][ T0] (____ptrval____): ffffffff813c0492 stack_trace_save (kernel/stacktrace.c:123) 
+[    0.000000][    T0] (____ptrval____): 0000000041b58ab3 (0x41b58ab3)
+[ 0.000000][ T0] (____ptrval____): ffffffff83d45f3b linux_banner+0x21565b/0x26a4f0 
+[ 0.000000][ T0] (____ptrval____): ffffffff813c0400 filter_irq_stacks (kernel/stacktrace.c:114) 
+[    0.000000][    T0] (____ptrval____): 0000000000000000 ...
+[ 0.000000][ T0] (____ptrval____): ffffffff84fac8f8 stack_trace+0x18/0x400020 
+[    0.000000][    T0] (____ptrval____): 000000000007fffd (0x7fffd)
+[    0.000000][    T0] (____ptrval____): 000000000000000a (0xa)
+[    0.000000][    T0] (____ptrval____): dffffc0000000000 (0xdffffc0000000000)
+[    0.000000][    T0] (____ptrval____): 0000000000001fec (0x1fec)
+[ 0.000000][ T0] (____ptrval____): ffffffff85588d48 lock_classes+0x18ff48/0x190020 
+[ 0.000000][ T0] (____ptrval____): ffffffff85588c80 lock_classes+0x18fe80/0x190020 
+[ 0.000000][ T0] (____ptrval____): ffffffff83e07a10 init_stack+0x7a10/0x8000 
+[ 0.000000][ T0] (____ptrval____): ffffffff812e5001 init_data_structures_once+0x81/0x600 
+[    0.000000][    T0] (____ptrval____): 0000000000000000 ...
+[ 0.000000][ T0] (____ptrval____): ffffffff85853620 console_list+0x40/0x40 
+[ 0.000000][ T0] (____ptrval____): ffffffff83e07a88 init_stack+0x7a88/0x8000 
+[ 0.000000][ T0] (____ptrval____): ffffffff812e7250 save_trace (kernel/locking/lockdep.c:582) 
+[ 0.000000][ T0] (____ptrval____): ffffffff85853620 console_list+0x40/0x40 
+[ 0.000000][ T0] (____ptrval____): ffffffff83e07af8 init_stack+0x7af8/0x8000 
+[    0.000000][    T0] (____ptrval____): 0000000000000046 (0x46)
+[    0.000000][    T0] (____ptrval____): 0000000000000000 ...
+[ 0.000000][ T0] (____ptrval____): ffffffff84334800 cgroup_mutex+0x60/0xc0 
+[    0.000000][    T0] (____ptrval____): 0000000000000000 ...
+[ 0.000000][ T0] (____ptrval____): ffffffff8369adc0 cgroup_subsys_name+0x2a0/0x720 
+[ 0.000000][ T0] (____ptrval____): ffffffff84fac8f8 stack_trace+0x18/0x400020 
+[ 0.000000][ T0] (____ptrval____): ffffffff85853620 console_list+0x40/0x40 
+[    0.000000][    T0] (____ptrval____): 0000000000000008 (0x8)
+[ 0.000000][ T0] (____ptrval____): ffffffff83e40968 init_task+0x8e8/0x2660 
+[ 0.000000][ T0] (____ptrval____): ffffffff853f8e00 lock_classes_in_use+0x420/0x420 
+[    0.000000][    T0] (____ptrval____): 0000000000000008 (0x8)
+[ 0.000000][ T0] (____ptrval____): ffffffff83e07ad0 init_stack+0x7ad0/0x8000 
+[ 0.000000][ T0] (____ptrval____): ffffffff812f5d57 mark_lock (kernel/locking/lockdep.c:4673) 
+[    0.000000][    T0] (____ptrval____): 0000000000000000 ...
+[ 0.000000][ T0] (____ptrval____): ffffffff83e40080 cpu_loops_per_jiffy+0x9a0/0x9a0 
+[ 0.000000][ T0] (____ptrval____): ffffffff83e40968 init_task+0x8e8/0x2660 
+[ 0.000000][ T0] (____ptrval____): ffffffff83e40080 cpu_loops_per_jiffy+0x9a0/0x9a0 
+[    0.000000][    T0] (____ptrval____): 0000000000000000 ...
+[    0.000000][    T0] (____ptrval____): 0000000000000004 (0x4)
+[ 0.000000][ T0] (____ptrval____): ffffffff83e4094c init_task+0x8cc/0x2660 
+[ 0.000000][ T0] (____ptrval____): ffffffff83e07af8 init_stack+0x7af8/0x8000 
+[ 0.000000][ T0] (____ptrval____): ffffffff812f729c mark_usage (kernel/locking/lockdep.c:4603) 
+[    0.000000][    T0] (____ptrval____): 0000000000000000 ...
+[ 0.000000][ T0] (____ptrval____): ffffffff83e40080 cpu_loops_per_jiffy+0x9a0/0x9a0 
+[    0.000000][    T0] (____ptrval____): 0000000000000000 ...
+[ 0.000000][ T0] (____ptrval____): ffffffff83e07ba8 init_stack+0x7ba8/0x8000 
+[ 0.000000][ T0] (____ptrval____): ffffffff812f7b4c __lock_acquire (kernel/locking/lockdep.c:5091) 
+[    0.000000][    T0] (____ptrval____): 0000000000000000 ...
+[ 0.000000][ T0] (____ptrval____): ffffffff83e40980 init_task+0x900/0x2660 
+[    0.000000][    T0] (____ptrval____): 0000000000000000 ...
+[ 0.000000][ T0] (____ptrval____): ffffffff83e40988 init_task+0x908/0x2660 
+[ 0.000000][ T0] (____ptrval____): ffffffff83e40960 init_task+0x8e0/0x2660 
+[    0.000000][    T0] (____ptrval____): 0000000000000000 ...
+[    0.000000][    T0] (____ptrval____): 0000000000000001 (0x1)
+[ 0.000000][ T0] (____ptrval____): ffffffff83e40968 init_task+0x8e8/0x2660 
+[    0.000000][    T0] (____ptrval____): 1ffffffff07c0f7e (0x1ffffffff07c0f7e)
+[    0.000000][    T0] (____ptrval____): 0000000000000001 (0x1)
+[    0.000000][    T0] (____ptrval____): 0000000000000000 ...
+[ 0.000000][ T0] (____ptrval____): ffffffff84334800 cgroup_mutex+0x60/0xc0 
+[    0.000000][    T0] (____ptrval____): 0000000000000000 ...
+[ 0.000000][ T0] (____ptrval____): ffffffff83e07cb8 init_stack+0x7cb8/0x8000 
+[ 0.000000][ T0] (____ptrval____): ffffffff812fa85b lock_acquire (kernel/locking/lockdep.c:467 kernel/locking/lockdep.c:5756 kernel/locking/lockdep.c:5719) 
+[    0.000000][    T0] (____ptrval____): 0000000000000000 ...
+[ 0.000000][ T0] (____ptrval____): ffffffff84b39df1 cgroup_init_subsys (include/linux/xarray.h:380 include/linux/idr.h:137 include/linux/idr.h:151 kernel/cgroup/cgroup.c:5986) 
+[    0.000000][    T0] (____ptrval____): 0000000000000000 ...
+[    0.000000][    T0] (____ptrval____): 0000000041b58ab3 (0x41b58ab3)
+[ 0.000000][ T0] (____ptrval____): ffffffff83d42ee6 linux_banner+0x212606/0x26a4f0 
+[ 0.000000][ T0] (____ptrval____): ffffffff812fa6c0 lock_sync (kernel/locking/lockdep.c:5722) 
+[ 0.000000][ T0] (____ptrval____): ffffffff8127aaea __might_resched (kernel/sched/core.c:10138 (discriminator 11)) 
+[    0.000000][    T0] (____ptrval____): 0000000000000000 ...
+[    0.000000][    T0] (____ptrval____): 0000000041b58ab3 (0x41b58ab3)
+[ 0.000000][ T0] (____ptrval____): ffffffff83d41e6f linux_banner+0x21158f/0x26a4f0 
+[ 0.000000][ T0] (____ptrval____): ffffffff8127aa80 trace_raw_output_ipi_send_cpumask (kernel/sched/core.c:10131) 
+[    0.000000][    T0] (____ptrval____): 0000000000000000 ...
+[ 0.000000][ T0] (____ptrval____): ffffffff83665a60 sched_feat_names+0x480/0x960 
+[    0.000000][    T0] (____ptrval____): 0000000000000249 (0x249)
+[ 0.000000][ T0] (____ptrval____): ffffffff83e40080 cpu_loops_per_jiffy+0x9a0/0x9a0 
+[ 0.000000][ T0] (____ptrval____): ffffffff84b39df1 cgroup_init_subsys (include/linux/xarray.h:380 include/linux/idr.h:137 include/linux/idr.h:151 kernel/cgroup/cgroup.c:5986) 
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20240226/202402262225.50983057-lkp@intel.com
+https://download.01.org/0day-ci/archive/20240226/202402262159.183c2a37-lkp@intel.com
 
 
 
