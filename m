@@ -1,96 +1,109 @@
-Received: from mail-il1-f174.google.com (mail-il1-f174.google.com [209.85.166.174])
+Received: from mail-ua1-f49.google.com (mail-ua1-f49.google.com [209.85.222.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10FB312B153
-	for <oe-lkp@lists.linux.dev>; Mon, 26 Feb 2024 15:35:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2DF239FFA
+	for <oe-lkp@lists.linux.dev>; Tue, 27 Feb 2024 16:44:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708961706; cv=none; b=nPaoSLSA7j40pXB4knGt3oQ55tSpCJmW9tIH8dCxPlT9AeyLF4X0YxCnEyWin6599keIMfqZ56+ftnRsez7SqTP99ST7BXCSWya5fCohrJtzKbI6IAmK3/P/xQ+oxuuNfpv4N8hzhPMEmO2q1N0TTJvpGTUA45e8r1G8MjylhQc=
+	t=1709052254; cv=none; b=DtnQ3yB9P2hdNwYyeTVDqsSI/bJ/HL2XJa7720KSadSBPU2aIpk60rP1gZ3gkIDggmTv6uv8O3eket+qacy1vKaLtkYWJ6t5IS6vqMSHQh/+te2CGpwuDxkev49m6St3FeDTh0L3MT8ggAYIAP/5KWmJN0GDPWEawYP1ejsD2/w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708961706; c=relaxed/simple;
-	bh=4kIS4yD8AD4O1b3VnN1F06SOkEVszDZQI8IfD4Uehgk=;
+	s=arc-20240116; t=1709052254; c=relaxed/simple;
+	bh=KIp0rmx+ayKj9IPU67F3Rr4R242hsgywg+SNQZ5dgfk=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=MewVZtiDzL+0XBi7Hu+bbjD2qtUDlOvpMQnaX/OqvRLl9nlCk/QJBXG3qNhuoL+jgwwnMqqCR6yd5F9aiWG2NQlhA5W44aVY3QmYTyAnmij1OehLu2SpWc/ZULhNUe84oaqTZPW4v4fQYgGYqBt7L8KEifvwrVxD6nY5f72BYXY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=brainfault.org; spf=none smtp.mailfrom=brainfault.org; dkim=pass (2048-bit key) header.d=brainfault-org.20230601.gappssmtp.com header.i=@brainfault-org.20230601.gappssmtp.com header.b=jjFISlBa; arc=none smtp.client-ip=209.85.166.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=brainfault.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=brainfault.org
+	 To:Cc:Content-Type; b=Zpnh24bonMm6g4AaF9YxcpZ4AHsFxcNG7tXJwqJv7rzkdQVQahbz7ra5kdqwSyFZkUYScUCPM8CEKd5SUPte0iAHTQpcOGm95TSa1dnuq14G2BvZHO289/mLk4z4JIvGwqwXUoArmq+rnMI5gnMmnhdYv96R4SDv7+7JaV6aC38=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl; spf=none smtp.mailfrom=bgdev.pl; dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b=hMAeUVWO; arc=none smtp.client-ip=209.85.222.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bgdev.pl
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=brainfault-org.20230601.gappssmtp.com header.i=@brainfault-org.20230601.gappssmtp.com header.b="jjFISlBa"
-Received: by mail-il1-f174.google.com with SMTP id e9e14a558f8ab-3650df44657so8417195ab.0
-        for <oe-lkp@lists.linux.dev>; Mon, 26 Feb 2024 07:35:04 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b="hMAeUVWO"
+Received: by mail-ua1-f49.google.com with SMTP id a1e0cc1a2514c-7dad8437347so11533241.3
+        for <oe-lkp@lists.linux.dev>; Tue, 27 Feb 2024 08:44:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=brainfault-org.20230601.gappssmtp.com; s=20230601; t=1708961704; x=1709566504; darn=lists.linux.dev;
+        d=bgdev-pl.20230601.gappssmtp.com; s=20230601; t=1709052251; x=1709657051; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Xa0RbEC99hetXIlkM1dBM7uoCQu/qj03SQaG2EdJOl8=;
-        b=jjFISlBahqnzfDuvonBBdVIcdhkaT6XrEiOd5dn+MbKlMDVnc9EAknr9PFUfaVxChI
-         15taF5d4NcHwp1cPWz2t4gMqGsMGgyl3G0QIenoVh7INAJ46reLpf4gzTbezPhFcF///
-         9rMz9x0rXEhG3+ju7mYJJwF9HJqDp4jtu2fgYoSC4kzSl5CS3vQycxk6uc1Hp6DnVscM
-         fj8nVhAXdVw1IMpAtLqen8oSKduY2WbgRHHokY/uOnbaShzGN6sra0/p0ghchIfPNUr6
-         ieuQtcy/9UL/ahAG6d90+0qIx3asjfMdeL1g1me4LZ1q8XWhWcHmjii9IQdcq/36mO3M
-         tlEQ==
+        bh=KIp0rmx+ayKj9IPU67F3Rr4R242hsgywg+SNQZ5dgfk=;
+        b=hMAeUVWO1r7wpAfCp5H0Pc2JjUZGQoEwwKGWHGkcxUgJi77rTr2+RtRjwu5t1dY0Vo
+         rRioGbxqRGIsVtsVX85EUncKbCDd9F2GLaPQ6BOzOV7XG+eeIzN+GVF7MoG0AdBA70w+
+         OmMuwTk1BiaGfZSPyRJLY8BKOrAinNknRPDSA4Np8g3VkZCgXyOKjI3sOsuSEUmY8ha3
+         9rOwT77lpLIp6E7LD27o3KMVtrOxnd/9K0HEZ+1iYDEF+d5Unr04QYCC310quIRhbZ6K
+         LIArxIMwLuZD6CVOA5I81IhB0XyFOrSDJmXc1EBOpMvMt0DaJ63A5zBY7dcsRlfMimtw
+         09kQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708961704; x=1709566504;
+        d=1e100.net; s=20230601; t=1709052251; x=1709657051;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Xa0RbEC99hetXIlkM1dBM7uoCQu/qj03SQaG2EdJOl8=;
-        b=uunnJMxkMpmPnI32z1zkWxPHP97A0b+PbxHnmA/Ogs0ZwiN+SXRnSQZg36k0kPErza
-         KSGV+ReJsjs+EI3Fi2UoyUha2qG4ApzzbC1QEltEetfR6MoA6KTOHg/d/98HUb7uvqjB
-         kzEBUe2LMY6f+moga0cUvLD48YdiCHgOMmUX4/H+Q21QFARF5kDKYkwtwFnEhI7NYdRL
-         cpeOqtSHODqHQAsrNawl5FkEnBbEW+AoPjf9K/1u/x9WxQNfJr0X/cxx/+j2SuA/qvQL
-         hSM2sdHxBZK9vw7AxfNkXIWQLCCb3oQtJsuyuVg3Q5Z/VOkYfkh/ETS7E2uqwhq7dy7N
-         SDCQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXxTfAp0y40DZgxM57N+7STbPrlBCQQMyS7IHU5G4cZgr+oK3r5OokI2gqanE48JRb23qmwvRlF6l05t3lzCB0of2bZ4mqP
-X-Gm-Message-State: AOJu0YwuE2DMCKrT9V+ZpG7iz51jPFIrnAWNVmjzcOZ3p+rL6i1dU3pH
-	W4pAZBXCWDR/RiyLwUQi69Q1sblmKE0UuBiHeUYnS890rx3e47CW/CqR+WEpLMicQsn9sKt77mE
-	1NZ5LyzT2CEc0I46BgMT8a8+Fk/WnZZ9e6e2Qpw==
-X-Google-Smtp-Source: AGHT+IF9TjRy4O7N4WF2QA0xxbWaFEpVbHdsILnOH+1xQwJc6SUX/exDXTr0QynONQlKKrvr0H8J6FvRFB0LrC01EYA=
-X-Received: by 2002:a05:6e02:13cf:b0:365:1737:d78 with SMTP id
- v15-20020a056e0213cf00b0036517370d78mr6817259ilj.17.1708961703934; Mon, 26
- Feb 2024 07:35:03 -0800 (PST)
+        bh=KIp0rmx+ayKj9IPU67F3Rr4R242hsgywg+SNQZ5dgfk=;
+        b=UqAUUEmKG5ckpmWeJ9+LcELFjnZy5A2ntFS2ufMJM/kcryG47T9k1IjWkV7SvFd8ao
+         0ZxyiA7v2vE2Sfm0AQ1O43TI2z6nogWaU1tUX+0pT0F+0fYmQXuiWHx+XhESZ+y/c3oJ
+         g4C8OpiLuDoZhNkQ9oHjZB5rY1No4nfdW1AvWc7ZTA8WkpT3AFLs+uxmX5QJcwSiPlvY
+         cDjEIM4uihjAeQGRzCnC5uZ0+hBffpoQvL95i2XEqTPlzvmasCdnHwUV4AsOjTde5AC7
+         sHQPNhhju3rmS5UW5XJp0eB5CVBlP8WGuwy23ZrXVrJCOVHmwfNsGPc7U0d3XVQwMRFY
+         N4bQ==
+X-Gm-Message-State: AOJu0YyeUj6HL07z3HjfESs0ISTjTIUmmIt04f4JJ47qz2Od/Y3nLMTV
+	oPd3Dz+eD1caIuq9OMOSC2GDcSmwIwFgANyCTpGBdG1Wyve8UbIdSU/Jh+wwU3JVHsdyvKRmboC
+	9LVtbX9Rpbtqx8FCDhpHdEmc6kI/nOpMTYJAtLA==
+X-Google-Smtp-Source: AGHT+IH2ONdjwwoI0rA5UtAbqRSwSTglngGy8N+DsOjlwARrz+89QUblO+JAMpp5uvf/Fs8kmMiJ+34cMXWkQ0nywbc=
+X-Received: by 2002:a05:6102:3ecd:b0:470:a136:5c00 with SMTP id
+ n13-20020a0561023ecd00b00470a1365c00mr10812685vsv.17.1709052251549; Tue, 27
+ Feb 2024 08:44:11 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202402261004.1e2e3e3e-oliver.sang@intel.com> <87wmqr9s3u.ffs@tglx>
-In-Reply-To: <87wmqr9s3u.ffs@tglx>
-From: Anup Patel <anup@brainfault.org>
-Date: Mon, 26 Feb 2024 21:04:51 +0530
-Message-ID: <CAAhSdy1pGfTLo76QHWj4-1HtUME3+o_83DBwOQcUAr2c5Tr1ow@mail.gmail.com>
-Subject: Re: [avpatel:riscv_aia_v15] [genirq/irqdomain] c3842e43d9: kernel_BUG_at_arch/x86/kernel/apic/io_apic.c
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: kernel test robot <oliver.sang@intel.com>, Marc Zyngier <maz@kernel.org>, oe-lkp@lists.linux.dev, 
-	lkp@intel.com, Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, 
-	Biju Das <biju.das.jz@bp.renesas.com>, linux-kernel@vger.kernel.org
+References: <20240214084419.6194-3-brgl@bgdev.pl> <202402262225.50983057-lkp@intel.com>
+In-Reply-To: <202402262225.50983057-lkp@intel.com>
+From: Bartosz Golaszewski <brgl@bgdev.pl>
+Date: Tue, 27 Feb 2024 17:44:00 +0100
+Message-ID: <CAMRc=Me=sfoimct+YHhhq+1vSY8eb7vNdvON4zibx3a6EhnzJg@mail.gmail.com>
+Subject: Re: [PATCH v2 2/4] gpio: cdev: use correct pointer accessors with SRCU
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, 
+	Linus Walleij <linus.walleij@linaro.org>, linux-gpio@vger.kernel.org, 
+	Kent Gibson <warthog618@gmail.com>, Alex Elder <elder@linaro.org>, 
+	Geert Uytterhoeven <geert+renesas@glider.be>, "Paul E . McKenney" <paulmck@kernel.org>, 
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Wolfram Sang <wsa@the-dreams.de>, 
+	Mark Brown <broonie@kernel.org>, Dan Carpenter <dan.carpenter@linaro.org>, 
+	linux-kernel@vger.kernel.org, 
+	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Feb 26, 2024 at 8:42=E2=80=AFPM Thomas Gleixner <tglx@linutronix.de=
-> wrote:
+On Mon, Feb 26, 2024 at 3:28=E2=80=AFPM kernel test robot <oliver.sang@inte=
+l.com> wrote:
 >
-> On Mon, Feb 26 2024 at 12:57, kernel test robot wrote:
-> > kernel test robot noticed "kernel_BUG_at_arch/x86/kernel/apic/io_apic.c=
-" on:
-> >
-> > commit: c3842e43d9d6b013a40adaea274b663936b14e32 ("genirq/irqdomain: Do=
-n't call ops->select for DOMAIN_BUS_ANY tokens")
-> > https://github.com/avpatel/linux.git riscv_aia_v15
 >
-> Fixed in
 >
->   git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git irq/msi
+> Hello,
 >
-> with commit c147e1ef59d4 ("x86/apic/msi: Use DOMAIN_BUS_GENERIC_MSI for H=
-PET/IO-APIC domain search")
+> kernel test robot noticed "BUG:unable_to_handle_page_fault_for_address" o=
+n:
 >
-> Anup, please update your branch.
+> commit: ef4aabaa372144b2bfa9c4ddc83255831cff9ebd ("[PATCH v2 2/4] gpio: c=
+dev: use correct pointer accessors with SRCU")
+> url: https://github.com/intel-lab-lkp/linux/commits/Bartosz-Golaszewski/g=
+pio-take-the-SRCU-read-lock-in-gpiod_hog/20240214-164752
+> base: https://git.kernel.org/cgit/linux/kernel/git/brgl/linux.git gpio/fo=
+r-next
+> patch link: https://lore.kernel.org/all/20240214084419.6194-3-brgl@bgdev.=
+pl/
+> patch subject: [PATCH v2 2/4] gpio: cdev: use correct pointer accessors w=
+ith SRCU
+>
+> in testcase: boot
+>
+> compiler: clang-17
+> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 1=
+6G
+>
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+>
 
-Done, I have updated my branch.
-(https://github.com/avpatel/linux/commits/riscv_aia_v15/)
+Please disregard this one, the issue is fixed in patch 3/4 which is
+already in next.
 
-Thanks,
-Anup
+Bart
