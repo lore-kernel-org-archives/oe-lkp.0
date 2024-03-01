@@ -1,96 +1,96 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD93042AA7
-	for <oe-lkp@lists.linux.dev>; Fri,  1 Mar 2024 03:30:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 066E569D39
+	for <oe-lkp@lists.linux.dev>; Fri,  1 Mar 2024 08:09:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.21
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709263833; cv=fail; b=hGLMNf/WdgcXsYm1ZvYHI7d6VkYl7a63mDAas6/XcFwvhx1Y5Dxv6Ij1TFo+tZIm8xqN7SUf+IVn7MX6Sg2ISJbPxg3VKBa9I844tDUjAtEIPQwqfsNF+bwvd86sxPP4/uCGyD4Z/TCPOVRbCQA/EO0FDb8ESnRajNrJy+GfeOM=
+	t=1709280580; cv=fail; b=DL05ZL/HoTXOFhoyovz4eSrv2o2w3KW4nxWj97sbr0+eSyFHtmbZyr7tAQTq7CwkO8v30/lOHstTzM/djAWm7U3JgCdd4Fq42ZQ5yMipFXvePdaIbZihtboxJklqi9SgmD5G1+BlY5XUn8YYpPJzV4Nvuj+Ka88Dv7y/aJ1R3j8=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709263833; c=relaxed/simple;
-	bh=LC7VPVFWORGVh3Sl1eSiLW0OdBDSrdVifhbjL5XwKoY=;
-	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=f201egz9IMBTIqoSIEKUbZqZHIWIdhq/QAJw8IuUYJeN31cuYCGZ9d+lzF9uBZqlw/e5k10JnKFlvFRPT2RtFhWXv+Lj4k8HSQE+Bgtu3dqOBFBmjvmoho4rWD0wcyjxlHZvUDGoF5+fToJGbe2tLkD3z0jOBAICDLCwzjwo2ms=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lHy7QNQ3; arc=fail smtp.client-ip=192.198.163.12
+	s=arc-20240116; t=1709280580; c=relaxed/simple;
+	bh=GusJxhianzO04hh0mX0KfvECt94aZCBtsVDJzP/pwSU=;
+	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
+	 Content-Disposition:MIME-Version; b=ciDSm23WjEOc5Vtrf+RqaaFJ5UOD552eruW7CyBHF+3rF9XJWzY3wvh76v74ciUUAHpCEj4HrXLWiCorCI679e8ZEK1D2pNSPi5vEfYpymuFChtGT5hSmyf08GBp+GqftVOofpw7k2hE08OR+X0S1aMhQ8AtDNWU/MrztTIfgVg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RArTSxVP; arc=fail smtp.client-ip=198.175.65.21
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lHy7QNQ3"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RArTSxVP"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1709263831; x=1740799831;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=LC7VPVFWORGVh3Sl1eSiLW0OdBDSrdVifhbjL5XwKoY=;
-  b=lHy7QNQ3B2MA50hBsaTpSXwb392X4N2JBaFNhTZXY2qxDS4RHT+dysSE
-   5jHLNhaE4ATqzT7drufBQO1UVRpOAMIHreZEShQ+h6D3X5/W5VfZU22Zu
-   A1DOo9sJcjcAAnlxts5Ay5oY1zjxD6IxMnGH38tdJiMz3y0hPyI5mSsgO
-   aHrhXtTHg4TpJfk2ILGfXTD7v3J4Jv7CYXTb+88YJfvAWsAa7MzglwM6t
-   ql5ECpF1jDUib+DKZbcyTWtSXcu+p3qjD4cpw4IJFDVErWok1FaEA6UJ/
-   M41/hRfF9RtPCwKQ9csu47tUY8bmBFLhIDRhQwD1WzjpdxfC/4NSVOt/u
+  t=1709280578; x=1740816578;
+  h=date:from:to:cc:subject:message-id:
+   content-transfer-encoding:mime-version;
+  bh=GusJxhianzO04hh0mX0KfvECt94aZCBtsVDJzP/pwSU=;
+  b=RArTSxVP+F6keL8pJR25PJCkmt3SRhpV1qx5FZXlEDHsLiZuoGEMJDZr
+   IAigHqUwTLuGGJsxrZnUgP1VR+7Vlg1uzjeEzKBIuaxUAVUvAdOknppUr
+   WxGHV8OgwtGFAzQ22iPYuqpzLiB5eHlOdxj11u+c2g+o11UlSbP8OFPCY
+   Vt1FvzfUcG70VSCBL8FsLoPK4IwCOtjO0j9fBHRJuqltLUlDYXekrqYdl
+   id9C5XloW6+QSoR2UzIgSo2liBlJJer3hvyZzsX9OsI4YV24ywh1D6Ins
+   LnQ7/dOYD0fT3Nl8JCRRMDVAPFgW+RwyvmiQ2Flch3Iu9ihFQkfzywB9A
    g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10999"; a="7557456"
+X-IronPort-AV: E=McAfee;i="6600,9927,10999"; a="3732464"
 X-IronPort-AV: E=Sophos;i="6.06,195,1705392000"; 
-   d="xz'341?scan'341,208,341";a="7557456"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Feb 2024 19:30:25 -0800
+   d="scan'208";a="3732464"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2024 00:09:37 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.06,195,1705392000"; 
-   d="xz'341?scan'341,208,341";a="39075331"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by fmviesa001.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 29 Feb 2024 19:30:25 -0800
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+   d="scan'208";a="12805278"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orviesa003.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 01 Mar 2024 00:09:37 -0800
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Thu, 29 Feb 2024 19:30:24 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ 15.1.2507.35; Fri, 1 Mar 2024 00:09:37 -0800
+Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Thu, 29 Feb 2024 19:30:23 -0800
+ 15.1.2507.35; Fri, 1 Mar 2024 00:09:36 -0800
 Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35 via Frontend Transport; Thu, 29 Feb 2024 19:30:23 -0800
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.101)
+ 15.1.2507.35 via Frontend Transport; Fri, 1 Mar 2024 00:09:36 -0800
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.100)
  by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Thu, 29 Feb 2024 19:30:23 -0800
+ 15.1.2507.35; Fri, 1 Mar 2024 00:09:36 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CZ9usuLoY6dRDpV4MMQk6P2ZFvv72WiPGGlwPWBQqWZOgFuoYp8twFJuWjYFIjXnKnWHyjOYCtvOogLu3ICV3QiJvzYQES3prVSzFldTmn2vwIQbReVWVwuBdBk6amrtlS/XEjhleuJCL64JNNbH8Bz76ePViqIADad9jZP6Jwquw9gzg1cT8jdxTNnR1Ll3UlAOJdRALW5MZ9kAyQ6SXvZ/6qvWaojtDmcEAWJttQaDOtrHp5JYMyJaYHCfM16CJ4s8ElEoPhHJzf2RmYeT/YXQ94uDhHy3NgtlN+6q+kOFuSNttYs+51aR1AlmtlYXHi8KS7YUpAbSDbv/Le9UFQ==
+ b=G2VxFQyC6mAYMM9ihfhEzVCukQi0BfZizbvcnJnK17POd+RAVmV+sMBk8astzv//WAqYNPhyJyfGJS7v31/KZIcvm4hmX2qx1D2VRSJGXEhoEk6OfRRiXkcEJkUJX9D+77uhkUH4rZVPuuPeoNIIJQg2gd1EhizCfwHrD03gc5zjOw95Xlh8/mgFrjHh9h/PFIyikpjqb9Eg+rPABVqk2461F2LYAv+CTl2bhR4sNy1LlhGQy9iD6YSHaLJ6HUq2AtA7aadGLDUiOkSzDgDkgdtqgsUHDu33m6efYp/e/lhfr1x7sLTrwgppa1op8roiNbqimz/e9/88C5gF9y7L0w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sH5RgZOud7qwgDPPyYRm3jkQNHkmL52kVmeKLnE1DiY=;
- b=KXuh5oU8WxZbqDHHXj5fqhZWFxlL6qhlo3+MIG0NJ3vAO8pXrVkKoouuGnJX81/5ZPwL01+3/jiaopOI8ZfItbU3RfDLfFYxIqBLy88hdqw8VDOy5x5s0GQO0s2HCPHP5FxKf+F2Xb3Fs/mFFnv1salTShEwes7+ZWP1jaKqlFy+Ln/8fuaUxiRiTFzz2piJ9981Qz4CUMDIjh5mNKEa/gEmWueRzR88VQg5a7dyI5brb4lcOsSgug207zehATUhPfULyzx5hbA8ec7ua1oJFUJcrLqMmviEP38f2Njr78BIZK+kuA/7BN47/ZcZcm30rMMIiB8HOuiKH5nBZyjdDA==
+ bh=H6l77PMyNcgtz1qRdC7DC6sXENshfNVZy1smsPJBAuY=;
+ b=gQ4JxcifnrrqdwmcgLcNuQIGw1nLKyn2E2QbgdkUY2+ct3L3KZDYj98ETo/RMS0N3qnA2eOhy+ek0deM+IvREoZBmFaqpT+C0/SKTog9xs4BeyVdrlYyxuINMxzaQg4ERU6XmbVoC8JHaPdnNiUs7L/O44FpJMDUm9Ai+B7N3V2Wg7BuZuumHwU9UCn4yWIb1I4vzNhbqrUTyQJtm6Tc9/+X1VaSmqG6yG+UBj+Tk9wGA26Hv4PdjbmBFQ2Ljc2lNrc5LUeOL9SwsWF1gHhx+wSiaDDkPlAuXTmEY3fSLt7uqukmHU6Nqtgv+Zp8vP7A4bHmSS1jAz5hKeiMtuBtrA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by DM3PR11MB8733.namprd11.prod.outlook.com (2603:10b6:0:40::5) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7339.23; Fri, 1 Mar 2024 03:30:21 +0000
+ by MN2PR11MB4648.namprd11.prod.outlook.com (2603:10b6:208:26f::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7339.25; Fri, 1 Mar
+ 2024 08:09:34 +0000
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::58dd:99ca:74a6:2e3e]) by LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::58dd:99ca:74a6:2e3e%3]) with mapi id 15.20.7339.024; Fri, 1 Mar 2024
- 03:30:21 +0000
-Date: Fri, 1 Mar 2024 11:30:13 +0800
-From: Oliver Sang <oliver.sang@intel.com>
-To: Mark Brown <broonie@kernel.org>
+ 08:09:34 +0000
+Date: Fri, 1 Mar 2024 16:09:24 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: Anna-Maria Behnsen <anna-maria@linutronix.de>
 CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
-	<oliver.sang@intel.com>
-Subject: Re: [broonie-ci:regmap-test-format] [regmap]  af560701e3:
- RIP:__regmap_init
-Message-ID: <ZeFLxcfz5PvHutU/@xsang-OptiPlex-9020>
-References: <202402292329.a1c8a83f-lkp@intel.com>
- <2d5fdeda-868d-457f-b462-8d5552a7fe1b@sirena.org.uk>
- <ZeExUW2XjKjuzd5p@xsang-OptiPlex-9020>
-Content-Type: multipart/mixed; boundary="Pmdi3av8uYQGcgKH"
+	<x86@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Frederic Weisbecker
+	<frederic@kernel.org>, <ying.huang@intel.com>, <feng.tang@intel.com>,
+	<fengwei.yin@intel.com>, <oliver.sang@intel.com>
+Subject: [tip:timers/core] [timers]  7ee9887703:  netperf.Throughput_Mbps
+ -1.2% regression
+Message-ID: <202403011511.24defbbd-oliver.sang@intel.com>
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
-In-Reply-To: <ZeExUW2XjKjuzd5p@xsang-OptiPlex-9020>
-X-ClientProxiedBy: SI2PR04CA0001.apcprd04.prod.outlook.com
- (2603:1096:4:197::12) To LV3PR11MB8603.namprd11.prod.outlook.com
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: SG2PR01CA0115.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:40::19) To LV3PR11MB8603.namprd11.prod.outlook.com
  (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -99,425 +99,346 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|DM3PR11MB8733:EE_
-X-MS-Office365-Filtering-Correlation-Id: 02e11812-8ffc-4b45-eb48-08dc399fec50
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|MN2PR11MB4648:EE_
+X-MS-Office365-Filtering-Correlation-Id: f4deb5b5-8d8a-47ee-f4c9-08dc39c6ee11
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 2SunZaMs90ydkH8gA4+6Arm+OPFJRMO2vs0KjRLclCpADp8AESOFBapTPJEdFKp2s2zvDvpvIvWp+K6myWU7WQGZEs1P1FkVr7WVhJcWK+QyM0loCuMB6x8af1N8BCgD98rIHXoEspLToF8FrUX3L7jrCsiIhoND3uoCDTl9jIcP307fsoxctnARKRG5c35eTD2cRHcnaBD6Pik11rgp/GFe2jHHvHa1Vq6Za1IkmxAxoXuCHs06nmEpVxOZeyfFDwoorkdokWHNjDZ+2uRRwRMWsJkK4pGIqVL7xdWlnKCDykK0WQkwcwBH+TKLgJwXn/ke64B/KApNybm7IsiQvHr3a7tyKDDUIbXWXQdqS0Zf42zeFKH4Mp9AXZS070432FymjeAjN1371L3qg/3P90f7Lz5/iFZfcAUcUidz6UEIBdSYXwE6SDR6fOkBvef/Pruvp1B9ZjQEiZl0NCRqp9xk0yBPEm/naS5tVDxi3U4LtVXiRzDkqhL45mIlo4nQTNnl4erzGdpbV40/cqgXfIf8m8GvkXLC+I3ktrlTB6A3ZVnMLRwPBSps0tapVspjU42zbkol8WJM1MBke5n+SA==
+X-Microsoft-Antispam-Message-Info: AKR4lh+satzR8OIg/8FJXVOfqyyG2RmlEBfyXJ80U32LCjE6pNEXD6cOrWzkReqWOMnQb8jc4iNWbYNG7j+0LNjvs3rwp5aDyk7VfZC3i5a4QbC6lRikvHlWJeikdJ6PaujvYO0P9Oxaastz90a+oRLNP7PkbOwE7AV1aQov4a986E3OYdEgTEVekKJ9g0s3TnjX857CiohWSMxauNvZLjUhJ/Xf21mmUQEAF6rY6KHTdNvRCLJlQ3oAH5wx+R4lmC10p5jtxedXtvXs2stRX+iP/BmUAb9MvWWmw3G/Nz/ADNY7Q2DpWj0nfwp+rLUYeYXZViuUHBEPJCDftGsKXfOoqgTSyTERaNxUMzxHRU940T0ZtzAXK+dhJ5E9REEQi5SMTK2Vf8v2ivZ81tlrNSaTGPhdwOz4FHxHQAgo/f4+W5ZN39MNrmuzeBBGNnxU9hXjQSTghIfb//G6FepjrR+HflywNAx7IIrd4pEM9adKQe6zpqX1db+QhjODM2vnrIkWUO28hJltu+RLAy0fxuudNsWHKnewSWNzx1TgOIr1DwRWPEmQysr34ED4noAPc6ProlBj1ECbrdbhPfDRVvsADEWwIt3WgnyNasdk/gI=
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?h74+6ikG9Kk5znkBRCG7ovuQraUh7oXsWwk1cCeFwScxrh85zG/qQcapfNCm?=
- =?us-ascii?Q?LXkJE4IRgLZQm99UdxoCHQh3KvhslLbDPszjIaCwdcP4H6DEV4L8wHddNMka?=
- =?us-ascii?Q?II+5qQI7adIV16cM9aoS46IfyB8KcGqrYJqMGGMOcsoQ6YyxLIUo5xbQmqGQ?=
- =?us-ascii?Q?zyUZAK+KyNh1UqVrQcWW2QUQK+cXwgcZdeIWTG4xu4Il9qYvrr7l7yipeJ68?=
- =?us-ascii?Q?q+RxT8ZGmB/S2QHXh9mc0xEVNLZY1ohvJFxfsug8LPwKU9/SCKL17l6JdrXs?=
- =?us-ascii?Q?RWPiC80uJBR9pNZooS2AoaquZZw6RXkj8iNeOhfGby3Bz/KOvYvqwwJuGo4T?=
- =?us-ascii?Q?M6wpm1ZCivkWaH6n6qM84GENQHCzV6/26JKKk8Ym5xgOTnwBx/6jbJFhz2OU?=
- =?us-ascii?Q?z7n6NUyPmAIKcBkVLMKhamXLrgh5ZCUGTT0hrWNb8k38jOADzmU8HaxwID/L?=
- =?us-ascii?Q?gprR+xpRgjGaHib1cjW/j5MHlJg4GgCxsN+piotrjveFKiL7hv9NLPAxSqWj?=
- =?us-ascii?Q?DsJ5qfDoO8cDD7VA85Chqwe2Arb4hztbBoXexxV6hpzwcyIoUChGa6JKWbMF?=
- =?us-ascii?Q?EHQCJnpLozElAlnS0rLfQGCrsC/z3dRT0467ZUyLb58Hpl37IT4Rm5t4SMt+?=
- =?us-ascii?Q?/vWNmV3i7bfJIUfvdYhwVan6oUVgwgvHsezA7s7D+v0poo9zpfqIyI7qwpPP?=
- =?us-ascii?Q?CWeA7TrCeNtQQa6h5idHqEJ2JETkpPFh68i5Eyh0gsca5Cdvy7W576fUP7bB?=
- =?us-ascii?Q?wwdakauBHMWT9o7o6W4zAqmHChJYQ53YA8sEBrpH2tLdbatY/OVD6pdzdz85?=
- =?us-ascii?Q?7t6kx4as9HCPno2LUnZuv7U22ZxJO+9P+MZTlZA8TtTqGCJGvBa4O1mgcnl2?=
- =?us-ascii?Q?B8ZUHejyeNupunXnXFmqQ/osLJ49h+djwGTusncbfsrey4DASOhmG57drfPM?=
- =?us-ascii?Q?Vf/TXOPEvURdClnEIzUudS/IkJsJkTUnRgreRBYvVNm9BhbFw12LV8mLGn+h?=
- =?us-ascii?Q?X0W1j+PPZheKWbtnxfGx5TELwJwM1jAfHKN6eZefGZQu6yiIiWJaH1thirtr?=
- =?us-ascii?Q?KpM7WKOPzXC6hEksehO3kHAIyFxeKpxxHEftEBrqC7vO7wAOK6vl8jH1dD7u?=
- =?us-ascii?Q?VJglU8K3OQ41ZTJeXJhyLfp+yCotETYSUMOqgWuswhhwEDb5Y1vhXKaYytJJ?=
- =?us-ascii?Q?ZJtudHvvvXghbxfbyxCSY8zrtpA34dDzNa4StyTPILwF0pBNzWzZjaH0k1yh?=
- =?us-ascii?Q?vA/IX3rh18lMpCWCtI0Qs0cpSsEZ5LZ+/Tnaj77ceQ9oHLEYKKOrxxIQhn7o?=
- =?us-ascii?Q?m1E4Pro/qdCmxo7T0Zi3Ps+y3kKso2uW1U8pWMXJOdM1JtJeDEBxfwXt+7IY?=
- =?us-ascii?Q?b8nHUOu7GQFWQ42a6oLV99Jxb4Ucwzj3ldGDrA+Uh8LUPLITVmkJBWZZ8NbX?=
- =?us-ascii?Q?GC8F2zNZAcqXfRxHabRDjwq18bGhe7JhaxX+ijQ1FwXgjmFoKJ+3nwPL/sNW?=
- =?us-ascii?Q?kzN9wRXNdCdFCflEjOcCuposA6BiOZriOYTOCx7ddlHky2+vz/cl2Hdcsyj6?=
- =?us-ascii?Q?QQ93ZRkaVO74vevlzyiB+0lFkizE+nOwfBso/QN8YLAzO7di6yXy0c36zOhq?=
- =?us-ascii?Q?AA=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 02e11812-8ffc-4b45-eb48-08dc399fec50
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?9m6nh9QGRVKfeZTXPHlLG2SUqZpmUXArbcnk7ptt+IonxIrxfVW2MmKrNi?=
+ =?iso-8859-1?Q?n+wvRCjqEdE8M1IkxrnSnSjXBRaHVEYWxo9yxvpm1A5cqlH0RRj9HC2JHZ?=
+ =?iso-8859-1?Q?U/JTVA/SIrkNqbi2o92aMscZFekatzCW7UDsLjo67L6yGxWBlUmqsFGJJM?=
+ =?iso-8859-1?Q?Lkbj7khk/US8IXC5l3f3Bk+gf9xDVqSutd9UciaLlLzL6pY/W+SlIu1rsm?=
+ =?iso-8859-1?Q?w8r++Y1nuJJuWLkG68Umm/knii3fzkyQkH/fYmwScf8C5fQ6NGEbraIuYb?=
+ =?iso-8859-1?Q?jasytpuZIgbcEZXu7lHtalvew+bR3Um+flB3elYw2hDhX93vUt8xQ1N2RQ?=
+ =?iso-8859-1?Q?uhp5YcDXxDBSsfjyLd/jPLoot8G82/+LcmsD7zM7eyP1VPHpIXYz9IzFMk?=
+ =?iso-8859-1?Q?0DRBBT1fTSLwKeMZJ2j/svMUJgR5PL1qAfSWX/YsYdcw7araUiGJ/4fxb7?=
+ =?iso-8859-1?Q?xT0Ios1sQdt5+Hvi1vOpYml9lOtEJGvcJSzKiqTivviw8lwInk0eBrq8SO?=
+ =?iso-8859-1?Q?CUxDVmZljCgQI45pzb1zxOPQsQQ/NBY6mOLPlm9eWGtpfONDuxrzx/HZiL?=
+ =?iso-8859-1?Q?AVgjqKe3RRVf6ej0XlGU5btAnnwIrcfGJiBrAI7n04Gp7Am8NGQNJm5Awh?=
+ =?iso-8859-1?Q?r39Z+uwsaVZdWmutzy98v6drAiPcAfD84eZcScdPJwzFroMiAJDw3jM6KM?=
+ =?iso-8859-1?Q?PEGDPxhMqdvrByZ21bzbxn9lbu3pPRziqHdFI+KR6pC6gGYGmxDxQIZTWB?=
+ =?iso-8859-1?Q?WfK0Srv/HAxtkHX82gypF75+i9C9rHyElatKTlTiMljtKyB49JQvlTAySo?=
+ =?iso-8859-1?Q?CHbetOeuUmv+sYtRxBEYgJyFtDdiNV06v7s7aruXP0yuh4SMlEWdSFzoAD?=
+ =?iso-8859-1?Q?v63SpGH6NQBhgodwS7Tog1Ef8kYZzA2y5CPUc4PJWfB026y78IfPWpjBDR?=
+ =?iso-8859-1?Q?o4eL73/aRr9YHKl6riKIG4uLip2v8W2YI6y0SuYrWt7DCnFD78SABLHYbC?=
+ =?iso-8859-1?Q?7loyUCCGKWWQIULHOk6F8ytu4yVEaUE2iU8mH8osbPwU90fhxZdYJyURC8?=
+ =?iso-8859-1?Q?pvRGgcpdS2vZfu1KvGJnznsH18tDNlJivcV+mf33BLl08RcsRUJEVsoTm6?=
+ =?iso-8859-1?Q?fWw66Yt9qDpKbUY2i/aiJ3b1BeU2IPaErjmFGE2P1XTN4/ejcObIJrZWja?=
+ =?iso-8859-1?Q?EhmK/AelqtA/MUa/uQxM52gqCW0jyUC5CRGfeDJDxJF0132nF0fppTUNe9?=
+ =?iso-8859-1?Q?pWAVBSCsVU2bIVvFLtMRS/aPG60mRzEoImc8VNh2GMN7CY99gfsnFHJosZ?=
+ =?iso-8859-1?Q?qIAhSn8RjZ2uDS41cjrIBedFB7ew9LhrCgcQbqZaE6fbaXxbrgPwx9S/wB?=
+ =?iso-8859-1?Q?zWyLGOHCNBmjhY12L5geGSqRDkBTMBfzRsQLb9J5zM60rKr4OJor0BW0Ah?=
+ =?iso-8859-1?Q?0Ohq0QN4s8OmlAzsS01udL+Uath1ayRgCWc+Yj358drHvTrbRs9hYL4YYr?=
+ =?iso-8859-1?Q?LFQO/9+wOg2iJ/yz6ZQJT3aztATP/ZR3OxX1Qc6JHU9VqYK55Q515YJWyr?=
+ =?iso-8859-1?Q?wr4B1l+84pHKhDkhKzHS3xi3SKGFEBUAFaIMWVtNSNF+Z2JgXnTORl2mXJ?=
+ =?iso-8859-1?Q?NyiF8LxORslOwj8a376foK7Jvd+bh63OQEc2BkNdz2mhNyW0ONrFoccA?=
+ =?iso-8859-1?Q?=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: f4deb5b5-8d8a-47ee-f4c9-08dc39c6ee11
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Mar 2024 03:30:21.0206
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Mar 2024 08:09:34.3456
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 69Vs/AAKwowf/UKoa+7/gdZlieT/sIxhOo65WWbylsxWu3VLe5oxB9Y9yfdHBo627jk4If5q4eaarODMWRdaPQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM3PR11MB8733
+X-MS-Exchange-CrossTenant-UserPrincipalName: Eyi8AI9OqYxWgm1Te+trqdshWq1oRg2NxphPKPFylLw3mpjt5/xQWTuFvsrO5ZV+btne98AQIjNmoyY00n4+YQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB4648
 X-OriginatorOrg: intel.com
 
---Pmdi3av8uYQGcgKH
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-
-hi, Mark Brown,
-
-On Fri, Mar 01, 2024 at 09:37:21AM +0800, Oliver Sang wrote:
-> hi, Mark Brown,
-> 
-> On Thu, Feb 29, 2024 at 03:47:33PM +0000, Mark Brown wrote:
-> > On Thu, Feb 29, 2024 at 11:43:55PM +0800, kernel test robot wrote:
-> > > 
-> > > 
-
-...
-
-> 
-> and we noticed there is changes in __regmap_init(), we also noticed the issue
-> seems happen before the test even starts to run. not sure if the detail dmesg in
-> https://download.01.org/0day-ci/archive/20240229/202402292329.a1c8a83f-lkp@intel.com/dmesg.xz
-> could supply more information?
-> 
-> if you still think this is a wrong report, or you want us to test any patch,
-> please just let us know. it's always our great pleasure. Thanks!
-> 
-> 
-
-we checked this issue more, and found it could be platform specific.
-
-we just try a simple boot with af560701e3 on below machine which we made origial
-report and reproduced the issue (dmesg is attached).
-
-test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-7700 CPU @ 3.60GHz (Kaby Lake) with 32G memory
 
 
-at the same time, we test this commit with boot jobs on various other platforms
-(Sapphire Rapids, Ice Lake, Cascade Lake, etc.) but didn't reproduce the issue.
+Hello,
 
---Pmdi3av8uYQGcgKH
-Content-Type: application/x-xz
-Content-Disposition: attachment; filename="dmesg.xz"
-Content-Transfer-Encoding: base64
+kernel test robot noticed a -1.2% regression of netperf.Throughput_Mbps on:
 
-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
 
---Pmdi3av8uYQGcgKH--
+commit: 7ee988770326fca440472200c3eb58935fe712f6 ("timers: Implement the hierarchical pull model")
+https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git timers/core
+
+testcase: netperf
+test machine: 128 threads 2 sockets Intel(R) Xeon(R) Gold 6338 CPU @ 2.00GHz (Ice Lake) with 256G memory
+parameters:
+
+	ip: ipv4
+	runtime: 300s
+	nr_threads: 200%
+	cluster: cs-localhost
+	test: SCTP_STREAM
+	cpufreq_governor: performance
+
+
+
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202403011511.24defbbd-oliver.sang@intel.com
+
+
+Details are as below:
+-------------------------------------------------------------------------------------------------->
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20240301/202403011511.24defbbd-oliver.sang@intel.com
+
+=========================================================================================
+cluster/compiler/cpufreq_governor/ip/kconfig/nr_threads/rootfs/runtime/tbox_group/test/testcase:
+  cs-localhost/gcc-12/performance/ipv4/x86_64-rhel-8.3/200%/debian-12-x86_64-20240206.cgz/300s/lkp-icl-2sp2/SCTP_STREAM/netperf
+
+commit: 
+  57e95a5c41 ("timers: Introduce function to check timer base is_idle flag")
+  7ee9887703 ("timers: Implement the hierarchical pull model")
+
+57e95a5c4117dc6a 7ee988770326fca440472200c3e 
+---------------- --------------------------- 
+         %stddev     %change         %stddev
+             \          |                \  
+      5232            +6.8%       5589        vmstat.system.in
+      0.03            +0.0        0.04        mpstat.cpu.all.soft%
+      0.04            +0.0        0.08        mpstat.cpu.all.sys%
+    201.33 ±  3%     -34.1%     132.67 ±  7%  perf-c2c.DRAM.remote
+    187.83 ±  3%     -28.7%     133.83 ± 12%  perf-c2c.HITM.local
+     40.67 ±  7%     -57.4%      17.33 ± 26%  perf-c2c.HITM.remote
+      4984            +4.9%       5227        proc-vmstat.nr_shmem
+    100999            +3.6%     104640        proc-vmstat.nr_slab_unreclaimable
+      8114 ±  2%     +11.0%       9005 ±  2%  proc-vmstat.pgactivate
+     20.00         +1907.5%     401.50 ± 79%  proc-vmstat.unevictable_pgs_culled
+    965754           -10.3%     866147        sched_debug.cpu.avg_idle.avg
+    101797 ± 12%     +41.8%     144376 ±  4%  sched_debug.cpu.avg_idle.stddev
+      0.00 ± 22%     -40.7%       0.00 ± 18%  sched_debug.cpu.next_balance.stddev
+    886.06 ± 18%    +339.7%       3895 ±  8%  sched_debug.cpu.nr_switches.min
+      5474 ± 12%     -23.9%       4164 ± 10%  sched_debug.cpu.nr_switches.stddev
+      4.10            -1.2%       4.05        netperf.ThroughputBoth_Mbps
+      1049            -1.2%       1037        netperf.ThroughputBoth_total_Mbps
+      4.10            -1.2%       4.05        netperf.Throughput_Mbps
+      1049            -1.2%       1037        netperf.Throughput_total_Mbps
+    102.17 ±  8%    +887.4%       1008 ±  3%  netperf.time.involuntary_context_switches
+      2.07 ±  3%    +388.2%      10.11        netperf.time.system_time
+     15.14           +18.8%      17.99        perf-stat.i.MPKI
+ 1.702e+08            +1.6%  1.729e+08        perf-stat.i.branch-instructions
+      1.68            +0.0        1.71        perf-stat.i.branch-miss-rate%
+     18.46            +3.1       21.57        perf-stat.i.cache-miss-rate%
+   4047319           +19.7%    4846291        perf-stat.i.cache-misses
+  22007366            +3.2%   22707969        perf-stat.i.cache-references
+      1.84           +17.0%       2.15        perf-stat.i.cpi
+ 9.159e+08           +10.4%  1.011e+09        perf-stat.i.cpu-cycles
+    161.08          +183.7%     456.91 ±  2%  perf-stat.i.cpu-migrations
+    190.71            -1.6%     187.66        perf-stat.i.cycles-between-cache-misses
+ 8.434e+08            +1.2%  8.535e+08        perf-stat.i.instructions
+      0.61           -10.6%       0.54        perf-stat.i.ipc
+      4.79           +18.4%       5.66        perf-stat.overall.MPKI
+      4.21            -0.1        4.14        perf-stat.overall.branch-miss-rate%
+     18.39            +2.9       21.33        perf-stat.overall.cache-miss-rate%
+      1.09            +9.1%       1.19        perf-stat.overall.cpi
+    227.07            -7.8%     209.29        perf-stat.overall.cycles-between-cache-misses
+      0.92            -8.3%       0.84        perf-stat.overall.ipc
+   1379820            +2.3%    1411871        perf-stat.overall.path-length
+ 1.702e+08            +1.5%  1.728e+08        perf-stat.ps.branch-instructions
+   4035389           +19.7%    4830446        perf-stat.ps.cache-misses
+  21948285            +3.2%   22642774        perf-stat.ps.cache-references
+ 9.163e+08           +10.3%  1.011e+09        perf-stat.ps.cpu-cycles
+    160.61          +183.5%     455.30 ±  2%  perf-stat.ps.cpu-migrations
+ 8.433e+08            +1.1%  8.529e+08        perf-stat.ps.instructions
+ 2.551e+11            +1.5%  2.589e+11        perf-stat.total.instructions
+     31.82 ±  3%     -12.9       18.91 ±  5%  perf-profile.calltrace.cycles-pp.asm_sysvec_apic_timer_interrupt.acpi_safe_halt.acpi_idle_enter.cpuidle_enter_state.cpuidle_enter
+     36.90 ±  2%     -12.1       24.83 ±  7%  perf-profile.calltrace.cycles-pp.acpi_idle_enter.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call.do_idle
+     27.61 ±  3%     -11.9       15.68 ±  8%  perf-profile.calltrace.cycles-pp.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt.acpi_safe_halt.acpi_idle_enter.cpuidle_enter_state
+     31.75 ±  2%     -11.5       20.25 ±  8%  perf-profile.calltrace.cycles-pp.acpi_safe_halt.acpi_idle_enter.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call
+     24.39 ±  3%     -10.0       14.38 ±  8%  perf-profile.calltrace.cycles-pp.irq_exit_rcu.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt.acpi_safe_halt.acpi_idle_enter
+     24.33 ±  3%     -10.0       14.36 ±  8%  perf-profile.calltrace.cycles-pp.__do_softirq.irq_exit_rcu.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt.acpi_safe_halt
+     21.00 ±  3%      -9.2       11.84 ±  9%  perf-profile.calltrace.cycles-pp.net_rx_action.__do_softirq.irq_exit_rcu.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt
+     20.97 ±  3%      -9.1       11.83 ±  9%  perf-profile.calltrace.cycles-pp.process_backlog.__napi_poll.net_rx_action.__do_softirq.irq_exit_rcu
+     20.97 ±  3%      -9.1       11.84 ±  9%  perf-profile.calltrace.cycles-pp.__napi_poll.net_rx_action.__do_softirq.irq_exit_rcu.sysvec_apic_timer_interrupt
+      4.92 ± 10%      -4.0        0.91 ± 28%  perf-profile.calltrace.cycles-pp._nohz_idle_balance.do_idle.cpu_startup_entry.start_secondary.secondary_startup_64_no_verify
+      1.81 ± 13%      -1.5        0.29 ±100%  perf-profile.calltrace.cycles-pp.run_timer_softirq.__do_softirq.irq_exit_rcu.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt
+      9.76 ±  7%      -1.5        8.26 ±  8%  perf-profile.calltrace.cycles-pp.sctp_outq_flush.sctp_cmd_interpreter.sctp_do_sm.sctp_assoc_bh_rcv.sctp_rcv
+      5.08 ±  7%      -1.0        4.12 ± 12%  perf-profile.calltrace.cycles-pp.sctp_outq_flush_data.sctp_outq_flush.sctp_cmd_interpreter.sctp_do_sm.sctp_assoc_bh_rcv
+      2.99 ±  4%      -0.8        2.22 ± 16%  perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe
+      2.98 ±  4%      -0.8        2.22 ± 16%  perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe
+      1.66 ±  7%      -0.7        0.95 ± 11%  perf-profile.calltrace.cycles-pp.__sysvec_apic_timer_interrupt.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt.acpi_safe_halt.acpi_idle_enter
+      1.58 ±  5%      -0.7        0.90 ± 10%  perf-profile.calltrace.cycles-pp.hrtimer_interrupt.__sysvec_apic_timer_interrupt.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt.acpi_safe_halt
+      1.05 ±  9%      -0.5        0.52 ± 49%  perf-profile.calltrace.cycles-pp.sctp_cmd_interpreter.sctp_do_sm.sctp_generate_timeout_event.call_timer_fn.__run_timers
+      0.95 ± 14%      -0.5        0.50 ± 46%  perf-profile.calltrace.cycles-pp.__hrtimer_run_queues.hrtimer_interrupt.__sysvec_apic_timer_interrupt.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt
+      0.90 ± 14%      -0.4        0.53 ± 47%  perf-profile.calltrace.cycles-pp.schedule.smpboot_thread_fn.kthread.ret_from_fork.ret_from_fork_asm
+      0.90 ± 14%      -0.4        0.52 ± 47%  perf-profile.calltrace.cycles-pp.__schedule.schedule.smpboot_thread_fn.kthread.ret_from_fork
+      0.64 ± 17%      -0.4        0.27 ±100%  perf-profile.calltrace.cycles-pp.do_filp_open.do_sys_openat2.__x64_sys_openat.do_syscall_64.entry_SYSCALL_64_after_hwframe
+      0.64 ± 17%      -0.4        0.27 ±100%  perf-profile.calltrace.cycles-pp.path_openat.do_filp_open.do_sys_openat2.__x64_sys_openat.do_syscall_64
+      0.96 ±  8%      -0.3        0.65 ± 45%  perf-profile.calltrace.cycles-pp.__x64_sys_exit_group.do_syscall_64.entry_SYSCALL_64_after_hwframe
+      0.96 ±  8%      -0.3        0.64 ± 45%  perf-profile.calltrace.cycles-pp.do_exit.do_group_exit.__x64_sys_exit_group.do_syscall_64.entry_SYSCALL_64_after_hwframe
+      0.96 ±  8%      -0.3        0.65 ± 45%  perf-profile.calltrace.cycles-pp.do_group_exit.__x64_sys_exit_group.do_syscall_64.entry_SYSCALL_64_after_hwframe
+      1.53 ±  4%      -0.3        1.22 ± 12%  perf-profile.calltrace.cycles-pp.vfs_read.ksys_read.do_syscall_64.entry_SYSCALL_64_after_hwframe.read
+      1.53 ±  4%      -0.3        1.24 ± 12%  perf-profile.calltrace.cycles-pp.ksys_read.do_syscall_64.entry_SYSCALL_64_after_hwframe.read
+      1.62 ±  4%      -0.3        1.33 ± 12%  perf-profile.calltrace.cycles-pp.read
+      1.57 ±  5%      -0.3        1.28 ± 13%  perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.read
+      1.57 ±  5%      -0.3        1.28 ± 13%  perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.read
+      1.23 ±  8%      -0.2        1.03 ± 10%  perf-profile.calltrace.cycles-pp.tick_nohz_stop_tick.tick_nohz_idle_stop_tick.cpuidle_idle_call.do_idle.cpu_startup_entry
+      0.50 ± 45%      +0.4        0.92 ± 14%  perf-profile.calltrace.cycles-pp.rebalance_domains._nohz_idle_balance.__do_softirq.irq_exit_rcu.sysvec_call_function_single
+      0.45 ± 72%      +0.5        0.95 ± 17%  perf-profile.calltrace.cycles-pp.skb_release_data.kfree_skb_reason.sctp_recvmsg.inet_recvmsg.sock_recvmsg
+      0.75 ± 46%      +0.5        1.26 ± 24%  perf-profile.calltrace.cycles-pp.skb_release_data.consume_skb.sctp_chunk_put.sctp_ulpevent_free.sctp_recvmsg
+      0.82 ± 45%      +0.5        1.36 ± 22%  perf-profile.calltrace.cycles-pp.consume_skb.sctp_chunk_put.sctp_ulpevent_free.sctp_recvmsg.inet_recvmsg
+      1.08 ± 12%      +0.6        1.68 ± 14%  perf-profile.calltrace.cycles-pp.irq_exit_rcu.sysvec_call_function_single.asm_sysvec_call_function_single.acpi_safe_halt.acpi_idle_enter
+      1.08 ± 12%      +0.6        1.68 ± 14%  perf-profile.calltrace.cycles-pp._nohz_idle_balance.__do_softirq.irq_exit_rcu.sysvec_call_function_single.asm_sysvec_call_function_single
+      1.08 ± 12%      +0.6        1.68 ± 14%  perf-profile.calltrace.cycles-pp.__do_softirq.irq_exit_rcu.sysvec_call_function_single.asm_sysvec_call_function_single.acpi_safe_halt
+      0.18 ±141%      +0.6        0.83 ± 14%  perf-profile.calltrace.cycles-pp.load_balance.rebalance_domains._nohz_idle_balance.__do_softirq.irq_exit_rcu
+      0.00            +0.7        0.66 ± 18%  perf-profile.calltrace.cycles-pp.sctp_generate_timeout_event.call_timer_fn.__run_timers.timer_expire_remote.tmigr_handle_remote_up
+      0.30 ±101%      +0.7        0.97 ± 28%  perf-profile.calltrace.cycles-pp.__free_pages_ok.skb_release_data.consume_skb.sctp_chunk_put.sctp_ulpevent_free
+      0.00            +0.8        0.77 ± 18%  perf-profile.calltrace.cycles-pp.call_timer_fn.__run_timers.timer_expire_remote.tmigr_handle_remote_up.tmigr_handle_remote
+      0.00            +0.8        0.80 ± 17%  perf-profile.calltrace.cycles-pp.__free_pages_ok.skb_release_data.consume_skb.sctp_chunk_put.sctp_datamsg_put
+      3.45 ± 14%      +0.8        4.26 ± 11%  perf-profile.calltrace.cycles-pp.__memcpy.skb_copy_bits.skb_copy.sctp_make_reassembled_event.sctp_ulpq_tail_data
+      3.46 ± 14%      +0.8        4.28 ± 10%  perf-profile.calltrace.cycles-pp.skb_copy_bits.skb_copy.sctp_make_reassembled_event.sctp_ulpq_tail_data.sctp_cmd_interpreter
+      0.00            +0.8        0.82 ± 18%  perf-profile.calltrace.cycles-pp.__run_timers.timer_expire_remote.tmigr_handle_remote_up.tmigr_handle_remote.__do_softirq
+      0.00            +0.8        0.83 ± 17%  perf-profile.calltrace.cycles-pp.timer_expire_remote.tmigr_handle_remote_up.tmigr_handle_remote.__do_softirq.irq_exit_rcu
+      0.00            +0.8        0.84 ± 31%  perf-profile.calltrace.cycles-pp.free_one_page.__free_pages_ok.skb_release_data.consume_skb.sctp_chunk_put
+      4.44 ± 14%      +0.9        5.36 ± 10%  perf-profile.calltrace.cycles-pp.sctp_make_reassembled_event.sctp_ulpq_tail_data.sctp_cmd_interpreter.sctp_do_sm.sctp_assoc_bh_rcv
+      0.00            +0.9        0.94 ± 16%  perf-profile.calltrace.cycles-pp.skb_release_data.consume_skb.sctp_chunk_put.sctp_datamsg_put.sctp_chunk_free
+      4.33 ± 14%      +0.9        5.27 ± 10%  perf-profile.calltrace.cycles-pp.skb_copy.sctp_make_reassembled_event.sctp_ulpq_tail_data.sctp_cmd_interpreter.sctp_do_sm
+      2.42 ±  9%      +1.1        3.56 ± 17%  perf-profile.calltrace.cycles-pp.do_softirq.__local_bh_enable_ip.__dev_queue_xmit.ip_finish_output2.__ip_queue_xmit
+      2.41 ±  9%      +1.1        3.55 ± 17%  perf-profile.calltrace.cycles-pp.__do_softirq.do_softirq.__local_bh_enable_ip.__dev_queue_xmit.ip_finish_output2
+      2.42 ±  9%      +1.2        3.58 ± 17%  perf-profile.calltrace.cycles-pp.__local_bh_enable_ip.__dev_queue_xmit.ip_finish_output2.__ip_queue_xmit.sctp_packet_transmit
+      2.34 ± 10%      +1.2        3.50 ± 17%  perf-profile.calltrace.cycles-pp.net_rx_action.__do_softirq.do_softirq.__local_bh_enable_ip.__dev_queue_xmit
+      2.56 ±  8%      +1.2        3.74 ± 17%  perf-profile.calltrace.cycles-pp.__dev_queue_xmit.ip_finish_output2.__ip_queue_xmit.sctp_packet_transmit.sctp_outq_flush
+      1.72 ± 15%      +1.2        2.91 ± 19%  perf-profile.calltrace.cycles-pp.ip_finish_output2.__ip_queue_xmit.sctp_packet_transmit.sctp_outq_flush.sctp_assoc_rwnd_increase
+      1.76 ± 14%      +1.2        2.97 ± 18%  perf-profile.calltrace.cycles-pp.__ip_queue_xmit.sctp_packet_transmit.sctp_outq_flush.sctp_assoc_rwnd_increase.sctp_ulpevent_free
+      1.88 ± 13%      +1.2        3.10 ± 18%  perf-profile.calltrace.cycles-pp.sctp_packet_transmit.sctp_outq_flush.sctp_assoc_rwnd_increase.sctp_ulpevent_free.sctp_recvmsg
+      2.34 ±  9%      +1.2        3.57 ± 19%  perf-profile.calltrace.cycles-pp.process_backlog.__napi_poll.net_rx_action.__do_softirq.do_softirq
+      2.34 ± 10%      +1.2        3.57 ± 19%  perf-profile.calltrace.cycles-pp.__napi_poll.net_rx_action.__do_softirq.do_softirq.__local_bh_enable_ip
+      1.98 ± 13%      +1.3        3.23 ± 19%  perf-profile.calltrace.cycles-pp.sctp_outq_flush.sctp_assoc_rwnd_increase.sctp_ulpevent_free.sctp_recvmsg.inet_recvmsg
+      2.23 ± 10%      +1.3        3.50 ± 19%  perf-profile.calltrace.cycles-pp.sctp_assoc_rwnd_increase.sctp_ulpevent_free.sctp_recvmsg.inet_recvmsg.sock_recvmsg
+      0.00            +1.4        1.37 ±  9%  perf-profile.calltrace.cycles-pp.tmigr_handle_remote_up.tmigr_handle_remote.__do_softirq.irq_exit_rcu.sysvec_apic_timer_interrupt
+      0.00            +1.4        1.38 ± 10%  perf-profile.calltrace.cycles-pp.tmigr_handle_remote.__do_softirq.irq_exit_rcu.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt
+      3.52 ±  7%      +1.8        5.30 ± 15%  perf-profile.calltrace.cycles-pp.sctp_ulpevent_free.sctp_recvmsg.inet_recvmsg.sock_recvmsg.____sys_recvmsg
+      4.94 ±  5%      +5.6       10.58 ± 16%  perf-profile.calltrace.cycles-pp.kthread.ret_from_fork.ret_from_fork_asm
+      4.94 ±  5%      +5.6       10.58 ± 16%  perf-profile.calltrace.cycles-pp.ret_from_fork.ret_from_fork_asm
+      4.94 ±  5%      +5.6       10.58 ± 16%  perf-profile.calltrace.cycles-pp.ret_from_fork_asm
+      2.83 ±  9%      +5.9        8.73 ± 18%  perf-profile.calltrace.cycles-pp.smpboot_thread_fn.kthread.ret_from_fork.ret_from_fork_asm
+      1.73 ± 12%      +6.2        7.93 ± 18%  perf-profile.calltrace.cycles-pp.run_ksoftirqd.smpboot_thread_fn.kthread.ret_from_fork.ret_from_fork_asm
+      1.73 ± 12%      +6.2        7.93 ± 18%  perf-profile.calltrace.cycles-pp.__do_softirq.run_ksoftirqd.smpboot_thread_fn.kthread.ret_from_fork
+      1.70 ± 13%      +6.2        7.91 ± 18%  perf-profile.calltrace.cycles-pp.process_backlog.__napi_poll.net_rx_action.__do_softirq.run_ksoftirqd
+      1.70 ± 13%      +6.2        7.91 ± 18%  perf-profile.calltrace.cycles-pp.__napi_poll.net_rx_action.__do_softirq.run_ksoftirqd.smpboot_thread_fn
+      1.70 ± 12%      +6.2        7.92 ± 18%  perf-profile.calltrace.cycles-pp.net_rx_action.__do_softirq.run_ksoftirqd.smpboot_thread_fn.kthread
+      0.00           +10.2       10.24 ± 89%  perf-profile.calltrace.cycles-pp.poll_idle.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call.do_idle
+     36.91 ±  2%     -12.1       24.83 ±  7%  perf-profile.children.cycles-pp.acpi_idle_enter
+     36.80 ±  2%     -12.0       24.80 ±  7%  perf-profile.children.cycles-pp.acpi_safe_halt
+     29.95 ±  3%     -11.8       18.19 ±  7%  perf-profile.children.cycles-pp.asm_sysvec_apic_timer_interrupt
+     27.78 ±  3%     -11.4       16.39 ±  8%  perf-profile.children.cycles-pp.sysvec_apic_timer_interrupt
+     25.75 ±  2%      -9.1       16.65 ±  9%  perf-profile.children.cycles-pp.irq_exit_rcu
+      5.07 ±  3%      -3.4        1.71 ± 12%  perf-profile.children.cycles-pp._raw_spin_lock
+      6.04 ±  8%      -3.3        2.70 ± 17%  perf-profile.children.cycles-pp._nohz_idle_balance
+      2.80 ±  6%      -2.3        0.51 ± 31%  perf-profile.children.cycles-pp.raw_spin_rq_lock_nested
+      1.83 ± 13%      -1.3        0.51 ± 30%  perf-profile.children.cycles-pp.run_timer_softirq
+      5.62 ±  5%      -1.1        4.52 ± 10%  perf-profile.children.cycles-pp.sctp_outq_flush_data
+      1.40 ± 13%      -1.0        0.38 ± 25%  perf-profile.children.cycles-pp.tick_irq_enter
+      1.44 ± 13%      -1.0        0.44 ± 18%  perf-profile.children.cycles-pp.irq_enter_rcu
+      1.77 ± 11%      -1.0        0.78 ± 20%  perf-profile.children.cycles-pp.__mod_timer
+      1.36 ± 15%      -0.9        0.48 ± 24%  perf-profile.children.cycles-pp.get_nohz_timer_target
+      0.97 ± 15%      -0.9        0.10 ± 38%  perf-profile.children.cycles-pp.tick_do_update_jiffies64
+      1.46 ± 11%      -0.9        0.60 ± 23%  perf-profile.children.cycles-pp.sctp_transport_reset_t3_rtx
+      1.53 ±  7%      -0.6        0.92 ± 21%  perf-profile.children.cycles-pp.update_blocked_averages
+      1.00 ± 27%      -0.5        0.45 ± 32%  perf-profile.children.cycles-pp.update_rq_clock_task
+      1.73 ±  7%      -0.5        1.21 ±  7%  perf-profile.children.cycles-pp.__sysvec_apic_timer_interrupt
+      1.65 ±  5%      -0.5        1.14 ±  5%  perf-profile.children.cycles-pp.hrtimer_interrupt
+      1.94 ±  6%      -0.4        1.56 ± 13%  perf-profile.children.cycles-pp.vfs_read
+      1.16 ± 10%      -0.3        0.84 ± 19%  perf-profile.children.cycles-pp.sctp_generate_timeout_event
+      0.66 ± 12%      -0.3        0.37 ± 17%  perf-profile.children.cycles-pp.update_rq_clock
+      0.99 ±  8%      -0.3        0.73 ± 20%  perf-profile.children.cycles-pp.__x64_sys_exit_group
+      0.99 ±  8%      -0.3        0.73 ± 20%  perf-profile.children.cycles-pp.do_group_exit
+      0.99 ±  8%      -0.3        0.73 ± 20%  perf-profile.children.cycles-pp.do_exit
+      0.34 ± 17%      -0.2        0.12 ± 46%  perf-profile.children.cycles-pp.run_rebalance_domains
+      0.28 ± 23%      -0.2        0.07 ± 83%  perf-profile.children.cycles-pp.__release_sock
+      1.24 ±  9%      -0.2        1.03 ± 10%  perf-profile.children.cycles-pp.tick_nohz_stop_tick
+      0.54 ± 17%      -0.2        0.33 ± 20%  perf-profile.children.cycles-pp.idle_cpu
+      0.30 ± 16%      -0.2        0.10 ± 32%  perf-profile.children.cycles-pp.ktime_get_update_offsets_now
+      1.09 ±  5%      -0.2        0.88 ± 15%  perf-profile.children.cycles-pp.seq_read_iter
+      0.26 ± 26%      -0.2        0.07 ± 83%  perf-profile.children.cycles-pp.sctp_backlog_rcv
+      0.35 ± 25%      -0.2        0.15 ± 41%  perf-profile.children.cycles-pp.release_sock
+      0.39 ± 19%      -0.2        0.20 ± 11%  perf-profile.children.cycles-pp.__memcg_slab_free_hook
+      0.72 ± 13%      -0.2        0.54 ± 11%  perf-profile.children.cycles-pp.ktime_get
+      0.50 ± 14%      -0.2        0.33 ± 18%  perf-profile.children.cycles-pp.do_vmi_align_munmap
+      0.39 ± 18%      -0.2        0.23 ± 14%  perf-profile.children.cycles-pp.sctp_inq_pop
+      0.51 ± 15%      -0.2        0.35 ± 20%  perf-profile.children.cycles-pp.do_vmi_munmap
+      0.46 ± 14%      -0.1        0.32 ± 18%  perf-profile.children.cycles-pp.proc_reg_read_iter
+      0.26 ± 20%      -0.1        0.14 ± 29%  perf-profile.children.cycles-pp.tlb_finish_mmu
+      0.46 ± 10%      -0.1        0.34 ± 20%  perf-profile.children.cycles-pp.sched_clock_cpu
+      0.22 ± 17%      -0.1        0.12 ± 13%  perf-profile.children.cycles-pp.should_we_balance
+      0.21 ± 13%      -0.1        0.10 ± 20%  perf-profile.children.cycles-pp.lookup_fast
+      0.36 ± 16%      -0.1        0.25 ± 24%  perf-profile.children.cycles-pp.__split_vma
+      0.29 ± 10%      -0.1        0.20 ± 27%  perf-profile.children.cycles-pp.wp_page_copy
+      0.54 ± 11%      -0.1        0.45 ±  8%  perf-profile.children.cycles-pp.balance_fair
+      0.14 ± 34%      -0.1        0.06 ± 48%  perf-profile.children.cycles-pp.vma_prepare
+      0.21 ± 28%      -0.1        0.13 ± 27%  perf-profile.children.cycles-pp.vsnprintf
+      0.14 ± 31%      -0.1        0.05 ± 75%  perf-profile.children.cycles-pp.irqentry_exit
+      0.15 ± 17%      -0.1        0.07 ± 45%  perf-profile.children.cycles-pp.__x64_sys_munmap
+      0.19 ± 19%      -0.1        0.12 ± 21%  perf-profile.children.cycles-pp.__vm_munmap
+      0.10 ± 22%      -0.1        0.05 ± 72%  perf-profile.children.cycles-pp.dev_attr_show
+      0.10 ± 22%      -0.1        0.05 ± 72%  perf-profile.children.cycles-pp.sysfs_kf_seq_show
+      0.22 ±  8%      -0.0        0.17 ± 17%  perf-profile.children.cycles-pp.diskstats_show
+      0.05 ± 72%      +0.1        0.12 ± 23%  perf-profile.children.cycles-pp.__fdget_pos
+      0.07 ± 52%      +0.1        0.16 ± 44%  perf-profile.children.cycles-pp.local_clock_noinstr
+      0.06 ±106%      +0.1        0.18 ± 32%  perf-profile.children.cycles-pp.timerqueue_add
+      0.00            +0.2        0.17 ± 24%  perf-profile.children.cycles-pp.tmigr_inactive_up
+      0.00            +0.2        0.18 ± 23%  perf-profile.children.cycles-pp.tmigr_cpu_deactivate
+      0.06 ± 23%      +0.2        0.25 ± 15%  perf-profile.children.cycles-pp.task_work_run
+      0.00            +0.2        0.19 ± 19%  perf-profile.children.cycles-pp.tmigr_cpu_activate
+      0.00            +0.2        0.20 ± 20%  perf-profile.children.cycles-pp.task_mm_cid_work
+      0.00            +0.4        0.38 ± 17%  perf-profile.children.cycles-pp.tmigr_update_events
+      0.07 ± 24%      +0.4        0.49 ± 13%  perf-profile.children.cycles-pp.__get_next_timer_interrupt
+      2.29 ±  4%      +0.7        3.02 ± 12%  perf-profile.children.cycles-pp.__kmalloc_large_node
+      2.32 ±  4%      +0.7        3.05 ± 13%  perf-profile.children.cycles-pp.__kmalloc_node_track_caller
+      2.09 ±  8%      +0.7        2.82 ± 13%  perf-profile.children.cycles-pp.get_page_from_freelist
+      0.00            +0.9        0.86 ± 16%  perf-profile.children.cycles-pp.timer_expire_remote
+      1.25 ± 10%      +0.9        2.15 ± 14%  perf-profile.children.cycles-pp.rmqueue
+      1.48 ± 14%      +1.0        2.51 ± 13%  perf-profile.children.cycles-pp.__free_pages_ok
+      0.58 ± 29%      +1.1        1.66 ± 14%  perf-profile.children.cycles-pp.free_one_page
+      3.00 ±  6%      +1.1        4.11 ± 17%  perf-profile.children.cycles-pp.ip_finish_output2
+      2.88 ±  6%      +1.1        4.00 ± 17%  perf-profile.children.cycles-pp.__dev_queue_xmit
+      2.23 ± 10%      +1.3        3.50 ± 19%  perf-profile.children.cycles-pp.sctp_assoc_rwnd_increase
+      0.00            +1.4        1.40 ±  8%  perf-profile.children.cycles-pp.tmigr_handle_remote_up
+      0.00            +1.4        1.43 ±  9%  perf-profile.children.cycles-pp.tmigr_handle_remote
+      2.43 ±  9%      +1.5        3.91 ± 18%  perf-profile.children.cycles-pp.do_softirq
+      2.46 ±  9%      +1.5        3.95 ± 18%  perf-profile.children.cycles-pp.__local_bh_enable_ip
+      2.16 ±  9%      +1.7        3.87 ± 13%  perf-profile.children.cycles-pp._raw_spin_lock_irqsave
+      3.53 ±  7%      +1.8        5.30 ± 14%  perf-profile.children.cycles-pp.sctp_ulpevent_free
+      5.02 ±  5%      +5.6       10.65 ± 15%  perf-profile.children.cycles-pp.ret_from_fork_asm
+      5.00 ±  4%      +5.6       10.64 ± 15%  perf-profile.children.cycles-pp.ret_from_fork
+      4.94 ±  5%      +5.6       10.58 ± 16%  perf-profile.children.cycles-pp.kthread
+      2.83 ±  9%      +5.9        8.74 ± 18%  perf-profile.children.cycles-pp.smpboot_thread_fn
+      1.73 ± 12%      +6.2        7.93 ± 18%  perf-profile.children.cycles-pp.run_ksoftirqd
+      0.02 ±141%     +10.3       10.31 ± 88%  perf-profile.children.cycles-pp.poll_idle
+      2.41 ±  5%      -1.1        1.32 ± 10%  perf-profile.self.cycles-pp._raw_spin_lock
+      1.11 ± 19%      -0.7        0.37 ± 20%  perf-profile.self.cycles-pp.get_nohz_timer_target
+      0.84 ± 28%      -0.5        0.34 ± 30%  perf-profile.self.cycles-pp.update_rq_clock_task
+      0.65 ± 23%      -0.5        0.16 ± 34%  perf-profile.self.cycles-pp._nohz_idle_balance
+      0.29 ± 16%      -0.2        0.07 ± 62%  perf-profile.self.cycles-pp.ktime_get_update_offsets_now
+      0.52 ± 19%      -0.2        0.31 ± 21%  perf-profile.self.cycles-pp.idle_cpu
+      0.43 ±  9%      -0.2        0.23 ± 23%  perf-profile.self.cycles-pp.update_rq_clock
+      0.25 ± 28%      -0.1        0.12 ± 50%  perf-profile.self.cycles-pp.__memcg_slab_free_hook
+      0.16 ± 34%      -0.1        0.03 ±101%  perf-profile.self.cycles-pp.need_update
+      0.16 ± 32%      -0.1        0.06 ± 80%  perf-profile.self.cycles-pp.call_cpuidle
+      0.12 ± 19%      -0.1        0.04 ±101%  perf-profile.self.cycles-pp.sctp_inq_pop
+      0.23 ± 22%      -0.1        0.15 ± 42%  perf-profile.self.cycles-pp.sctp_check_transmitted
+      0.13 ± 47%      -0.1        0.06 ± 55%  perf-profile.self.cycles-pp.all_vm_events
+      0.19 ± 14%      -0.1        0.12 ± 25%  perf-profile.self.cycles-pp.filemap_map_pages
+      0.05 ± 72%      +0.1        0.11 ± 24%  perf-profile.self.cycles-pp.__fdget_pos
+      0.08 ± 54%      +0.1        0.16 ± 22%  perf-profile.self.cycles-pp.sctp_skb_recv_datagram
+      0.00            +0.1        0.09 ± 31%  perf-profile.self.cycles-pp.tmigr_cpu_activate
+      0.00            +0.2        0.18 ± 26%  perf-profile.self.cycles-pp.task_mm_cid_work
+      0.02 ±141%     +10.1       10.08 ± 90%  perf-profile.self.cycles-pp.poll_idle
+
+
+
+
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provided
+for informational purposes only. Any difference in system hardware or software
+design or configuration may affect actual performance.
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
