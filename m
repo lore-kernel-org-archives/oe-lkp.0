@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F39F3EA90;
-	Tue,  5 Mar 2024 10:46:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28B055490A;
+	Tue,  5 Mar 2024 11:21:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709635610; cv=none; b=d+04TYHeqX2Dv43v1gxclOPvbXwCdXFBzkAeOfOzIG6owYzZHf49SMNtLjYmdtq3nIPKgqSkzaNeD8qxRF2+9mIY2Et6BwQItLPHTsUco3XqoeBOjnhVkRY8zrs9KUnjnchgoe0zYoYt8MzwjYqgzblW0IHCHxeSYGXUvRgO2uc=
+	t=1709637666; cv=none; b=Ak4EhkkPETOQqsocnTEtxLkHwu1Q4HpJhVGt1Q8m/8ebFksOHz7vdledz5lyFn58KhG9tOSq/KKvkCyHEksftl9zGHlXhXHcc8yVCpgilaCrbymFhtdKN0A4SCThkWzg/nG0ESDK06ermH77sRpm9zLL3R6TiKoOWnZwyEgl/to=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709635610; c=relaxed/simple;
-	bh=mjAuyuvA9ZdWxFTUqAfiA34ElW/sURoOH878JjpXRBI=;
+	s=arc-20240116; t=1709637666; c=relaxed/simple;
+	bh=B9uXyeIIymQs3DVoAN869AJzTg+k83+bPlFd9fF6PgI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Ose7VtxIfxH51OBVoPY/4h1h244y94v5bE097234Wr+xfFicnyTd+lbrS+VDAqTg/o8NtiAKSGJQmq/DnYmwfTb2ucjh6+6f1YgOCGuprBC1PmQcZW1ImEFID1a01z0GDo8R+/KRMJs8Y83PuJ1m80SKY/d7oBjXqO3una2pQtA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aD1aIHIY; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=sOckfKBOj3xL3lSm9W8iUkGK9Rz7J3NhQMxk1ZUGHJyIRFjmo6Qu0dHUsLiohbD8VeMBAdr2wCZv7uQ10iHgqmruq/sYr/c/lUD93+EUCA4S511r7S7UT1xr1OJIA0v7qs9xD8FgMTBC346pIHVfIclDyfavU3pwU8LsTBzDFBk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iMtDDROV; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aD1aIHIY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AC16C433C7;
-	Tue,  5 Mar 2024 10:46:49 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iMtDDROV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82155C433F1;
+	Tue,  5 Mar 2024 11:21:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1709635609;
-	bh=mjAuyuvA9ZdWxFTUqAfiA34ElW/sURoOH878JjpXRBI=;
+	s=k20201202; t=1709637666;
+	bh=B9uXyeIIymQs3DVoAN869AJzTg+k83+bPlFd9fF6PgI=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=aD1aIHIYiKzuX8QL9/005A26ktUHANdjd2kNLmArfp4csJ7dlQm+MFXbX12UbYit3
-	 Ec9GachpHAngTpeJuqaoV9yAzwWK92JAotuPrWxLny3S+/OEwI63aIt0k74chDuHEt
-	 HkuZF2iGvi5/GZmRt2dN6Y+8/sCi9OQ/6m6cyFvSZYkea1g1xP+yimNFZf3U5EtyMW
-	 0NJM6nfiAmJg3gyLKgopAkgYDTCyTTnzHoUK1f5+4Kyd5c1orm29vcjATct85e/okC
-	 FmVbn3nJvz7VciTEdAUrEyxybcQ0n2U9DytQnDE7TyT6c4DyI4s5rssByOSVQ5t3KW
-	 uG561wm+GjQLw==
-Date: Tue, 5 Mar 2024 11:46:46 +0100
+	b=iMtDDROVB+G3Eg0k5IhfrjGKeh6seSgmffjnkz/RMxUCJ1h+yunP8bat2TwtOKF9a
+	 m3L9qi20WGWcMkTXNsbH07OmC+zzT88VDnYl7HNoGyrrM2aOvVqzjj7iWQ27QY+nug
+	 kcUdAIgKPpN/7Cp/QfI2If+rgCijjIGLO31i0hFFoSSTBiNJGN/IN9aaK+1vmOrvb1
+	 7JCd1+bwfsaY4FkKBUHc9vk2MsBaNUBTejA62Xx2N2S8HzBaXonD/Eg43bsgwUmpti
+	 TOUaDEv/4CnordTxzu1JINJGzp61MQzYtHRmFx46V3ViJTP4RigwD4keVcNdmmVLCh
+	 66rNGUyo9HAHA==
+Date: Tue, 5 Mar 2024 12:21:03 +0100
 From: Frederic Weisbecker <frederic@kernel.org>
 To: Oliver Sang <oliver.sang@intel.com>
 Cc: Anna-Maria Behnsen <anna-maria@linutronix.de>, oe-lkp@lists.linux.dev,
@@ -35,7 +35,7 @@ Cc: Anna-Maria Behnsen <anna-maria@linutronix.de>, oe-lkp@lists.linux.dev,
 	feng.tang@intel.com, fengwei.yin@intel.com
 Subject: Re: [tip:timers/core] [timers]  7ee9887703:  netperf.Throughput_Mbps
  -1.2% regression
-Message-ID: <Zeb4FpYEs/ocJMji@lothringen>
+Message-ID: <ZecAHxE+y6BHVET8@lothringen>
 References: <202403011511.24defbbd-oliver.sang@intel.com>
  <ZeUWreWcp4UWQ081@pavilion.home>
  <ZeUuLPXfLCmB39qq@xsang-OptiPlex-9020>
@@ -53,118 +53,87 @@ Content-Transfer-Encoding: 8bit
 In-Reply-To: <ZeaAx662HfbpMLdg@xsang-OptiPlex-9020>
 
 On Tue, Mar 05, 2024 at 10:17:43AM +0800, Oliver Sang wrote:
-> hi, Frederic Weisbecker,
-> 
-> On Mon, Mar 04, 2024 at 12:28:33PM +0100, Frederic Weisbecker wrote:
-> > Le Mon, Mar 04, 2024 at 10:13:00AM +0800, Oliver Sang a écrit :
-> > > On Mon, Mar 04, 2024 at 01:32:45AM +0100, Frederic Weisbecker wrote:
-> > > > Le Fri, Mar 01, 2024 at 04:09:24PM +0800, kernel test robot a écrit :
-> > > > > commit: 
-> > > > >   57e95a5c41 ("timers: Introduce function to check timer base is_idle flag")
-> > > > >   7ee9887703 ("timers: Implement the hierarchical pull model")
-> > > > 
-> > > > Is this something that is observed also with the commits that follow in this
-> > > > branch?
-> > > 
-> > > when this bisect done, we also tested the tip of timers/core branch at that time
-> > > 8b3843ae3634b vdso/datapage: Quick fix - use asm/page-def.h for ARM64
-> > > 
-> > > the regression still exists on it:
-> > > 
-> > > 57e95a5c4117dc6a 7ee988770326fca440472200c3e 8b3843ae3634b472530fb69c386
-> > > ---------------- --------------------------- ---------------------------
-> > >          %stddev     %change         %stddev     %change         %stddev
-> > >              \          |                \          |                \
-> > >       4.10            -1.2%       4.05            -1.2%       4.05        netperf.ThroughputBoth_Mbps
-> > >       1049            -1.2%       1037            -1.2%       1036        netperf.ThroughputBoth_total_Mbps
-> > >       4.10            -1.2%       4.05            -1.2%       4.05        netperf.Throughput_Mbps
-> > >       1049            -1.2%       1037            -1.2%       1036        netperf.Throughput_total_Mbps
-> > 
-> > Oh, I see... :-/
-> > 
-> > > > Ie: would it be possible to compare instead:
-> > > > 
-> > > >     57e95a5c4117 (timers: Introduce function to check timer base is_idle flag)
-> > > > VS
-> > > >     b2cf7507e186 (timers: Always queue timers on the local CPU)
-> > > > 
-> > > > Because the improvements introduced by 7ee9887703 are mostly relevant after
-> > > > b2cf7507e186.
-> > > 
-> > > got it. will test.
-> > > 
-> > > at the same time, we noticed current tip of timers/core is
-> > > a184d9835a0a6 (tip/timers/core) tick/sched: Fix build failure for
-> > > CONFIG_NO_HZ_COMMON=n
-> > 
-> > Shouldn't be a problem as it fixes an issue introduced after:
-> > 
-> > 	  b2cf7507e186 (timers: Always queue timers on the local CPU)
-> > 
-> > > 
-> > > though it seems irelevant, we will still get data for it.
-> > 
-> > Thanks a lot, this will be very helpful. Especially with all the perf diff
-> > details like in the initial email report.
-> 
-> the regression still exists on b2cf7507e186 and current tip of the branch:
-> 
-> =========================================================================================
-> cluster/compiler/cpufreq_governor/ip/kconfig/nr_threads/rootfs/runtime/tbox_group/test/testcase:
->   cs-localhost/gcc-12/performance/ipv4/x86_64-rhel-8.3/200%/debian-12-x86_64-20240206.cgz/300s/lkp-icl-2sp2/SCTP_STREAM/netperf
-> 
-> commit:
->   57e95a5c4117 (timers: Introduce function to check timer base is_idle flag)
->   b2cf7507e186 (timers: Always queue timers on the local CPU)
->   a184d9835a0a (tick/sched: Fix build failure for CONFIG_NO_HZ_COMMON=n)
->   
->   a184d9835a0a689261ea6a4a8dbc18173a031b77
-> 
 > 57e95a5c4117dc6a b2cf7507e18649a30512515ec0c a184d9835a0a689261ea6a4a8db
 > ---------------- --------------------------- ---------------------------
 >          %stddev     %change         %stddev     %change         %stddev
 >              \          |                \          |                \
->       4.10            -1.4%       4.04            -1.5%       4.04        netperf.ThroughputBoth_Mbps
->       1049            -1.4%       1034            -1.5%       1033        netperf.ThroughputBoth_total_Mbps
->       4.10            -1.4%       4.04            -1.5%       4.04        netperf.Throughput_Mbps
->       1049            -1.4%       1034            -1.5%       1033        netperf.Throughput_total_Mbps
-> 
-> details are in below [1]
+>    1364607           +11.8%    1525991           +10.3%    1504946        cpuidle..usage
 
-Thanks a lot!
+Does it mean more time spent in idle/C-states? That's unclear...
 
-> 
-> > Because I'm having some troubles
-> > running those lkp tests. How is it working BTW? I've seen it downloading
-> > two kernel trees but I haven't noticed a kernel build.
-> 
-> you need build 7ee9887703 and its parent kernel with config in
-> https://download.01.org/0day-ci/archive/20240301/202403011511.24defbbd-oliver.sang@intel.com
-> then boot into kernel.
-> 
-> after that, you could run netperf in each kernel by following
-> https://download.01.org/0day-ci/archive/20240301/202403011511.24defbbd-oliver.sang@intel.com/reproduce
-> to get data.
-> 
-> the results will store in different path according the kernel commit, then you
-> could compare the results from both kernels.
+>      45.86 ±  4%      +8.4%      49.70 ±  5%      +3.5%      47.46 ±  6%  boot-time.boot
+>       5430 ±  5%      +9.0%       5921 ±  5%      +3.8%       5636 ±  6%  boot-time.idle
+>       0.03            +0.0        0.04            +0.0        0.04        mpstat.cpu.all.soft%
+>       0.04            +0.0        0.08            +0.0        0.08 ±  2%  mpstat.cpu.all.sys%
+>       4.14            -8.9%       3.77 ±  2%      -8.3%       3.79 ±  2%  mpstat.max_utilization_pct
+>      20726 ± 63%    +246.1%      71744 ± 53%     +68.2%      34867 ± 72%  numa-numastat.node0.other_node
+>    1431327 ±  7%     +13.9%    1630876 ±  3%     +14.8%    1643375 ±  7%  numa-numastat.node1.numa_hit
+>      37532 ± 35%     +62.1%      60841 ± 63%    +160.8%      97891 ± 25%  numa-numastat.node1.other_node
+>     201.33 ±  3%     -28.5%     144.00 ±  8%     -26.8%     147.40 ± 11%  perf-c2c.DRAM.remote
+>     187.83 ±  3%     -21.4%     147.67 ±  6%     -37.0%     118.40 ± 11%  perf-c2c.HITM.local
+>      40.67 ±  7%     -54.5%      18.50 ± 19%     -59.7%      16.40 ± 11%  perf-c2c.HITM.remote
+>       1.36 ±  4%     +10.7%       1.51 ±  3%     +12.7%       1.53 ±  5%  vmstat.procs.r
+>       5654            -1.9%       5549            -2.8%       5497        vmstat.system.cs
+>       5232           +10.7%       5790            +8.8%       5690        vmstat.system.in
+>      15247 ±  6%      -5.0%      14490 ±  9%      -8.8%      13903 ±  5%  numa-meminfo.node0.PageTables
+>      12499 ±  6%    +115.6%      26951 ±  3%    +118.3%      27288 ±  2%  numa-meminfo.node1.Active
+>      12489 ±  6%    +115.7%      26940 ±  3%    +118.2%      27249 ±  2%  numa-meminfo.node1.Active(anon)
+>      12488 ±  6%    +114.2%      26754 ±  3%    +118.2%      27255 ±  2%  numa-meminfo.node1.Shmem
+>     102.17 ±  8%    +906.2%       1028 ±  5%    +910.1%       1032 ±  5%  time.involuntary_context_switches
 
-Oh I see now.
+There is a lot more involuntary context switches. This could be due to timers
+performing wake ups expiring more often on busy CPUs.
 
-> 
-> what's your OS BTW? we cannot support all distributions so far...
+[...]
+>       4178 ±  2%     +86.3%       7784           +87.3%       7826 ±  2%  proc-vmstat.nr_zone_active_anon
+>    3064698            +4.4%    3200938            +4.2%    3193539        proc-vmstat.numa_hit
+>    3006439            +2.1%    3068397            +1.8%    3060785        proc-vmstat.numa_local
+>      58258          +127.6%     132587          +127.9%     132758        proc-vmstat.numa_other
+>       8114 ±  2%     +63.2%      13244 ±  4%     +62.6%      13190 ±  2%  proc-vmstat.pgactivate
+>     986600            +1.2%     998606            +0.9%     995307        proc-vmstat.pgfault
+>      20.00         +1905.0%     401.00 ± 79%   +2050.0%     430.00 ± 79%  proc-vmstat.unevictable_pgs_culled
+>      15.14           +17.0%      17.72           +17.4%      17.77        perf-stat.i.MPKI
+>  1.702e+08            +3.5%  1.762e+08            +3.3%  1.758e+08        perf-stat.i.branch-instructions
+>       1.68            +0.1        1.80            +0.1        1.81        perf-stat.i.branch-miss-rate%
+>    7174339            +1.2%    7262760            +1.4%    7276699        perf-stat.i.branch-misses
+>      18.46            +3.4       21.86            +3.4       21.87        perf-stat.i.cache-miss-rate%
+>    4047319           +20.6%    4880009           +20.4%    4874638        perf-stat.i.cache-misses
+>   22007366            +2.6%   22586331            +2.5%   22565036        perf-stat.i.cache-references
+>       5620            -1.6%       5532            -2.5%       5482        perf-stat.i.context-switches
+>       1.84           +17.0%       2.15           +16.5%       2.14        perf-stat.i.cpi
+>  9.159e+08           +12.8%  1.033e+09           +12.4%   1.03e+09        perf-stat.i.cpu-cycles
+>     161.08          +193.1%     472.19 ±  2%    +192.1%     470.47 ±  4%  perf-stat.i.cpu-migrations
 
-Opensuse, but it failed to find a lot of equivalent packages.
-Then I tried Ubuntu 22.04.4 LTS but it failed saying perf didn't have the
-"sched" subcommand. Which distro do you recommand using?
+A lot more task migrations. Not sure how to explain that.
 
-> 
-> > Are the two compared
-> > instances running through kvm?
-> 
-> we run performance tests on bare mental. for netperf, we just test on one
-> machine so the test is really upon local net.
+[...]
+>     160.61          +193.0%     470.58 ±  2%    +191.9%     468.79 ±  4%  perf-stat.ps.cpu-migrations
+>  8.433e+08            +3.0%  8.685e+08            +2.7%  8.665e+08        perf-stat.ps.instructions
+>  2.551e+11            +3.3%  2.636e+11            +3.1%  2.631e+11        perf-stat.total.instructions
+>      31.82 ±  3%     -13.0       18.83 ± 12%     -13.2       18.65 ±  6%  perf-profile.calltrace.cycles-pp.asm_sysvec_apic_timer_interrupt.acpi_safe_halt.acpi_idle_enter.cpuidle_enter_state.cpuidle_enter
+>      36.90 ±  2%     -12.6       24.32 ± 10%     -12.3       24.62 ±  5%  perf-profile.calltrace.cycles-pp.acpi_idle_enter.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call.do_idle
+>      27.61 ±  3%     -12.5       15.09 ± 14%     -12.4       15.24 ±  5%  perf-profile.calltrace.cycles-pp.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt.acpi_safe_halt.acpi_idle_enter.cpuidle_enter_state
+>      31.75 ±  2%     -12.0       19.79 ± 12%     -11.6       20.11 ±  5%  perf-profile.calltrace.cycles-pp.acpi_safe_halt.acpi_idle_enter.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call
 
-Ok.
+Fewer C3 entries.
 
-Thanks!
+[...]
+>       4.94 ±  5%      +5.0        9.93 ±  9%      +5.2       10.09 ± 13%  perf-profile.calltrace.cycles-pp.kthread.ret_from_fork.ret_from_fork_asm
+>       4.94 ±  5%      +5.0        9.93 ±  9%      +5.2       10.09 ± 13%  perf-profile.calltrace.cycles-pp.ret_from_fork.ret_from_fork_asm
+>       4.94 ±  5%      +5.0        9.93 ±  9%      +5.2       10.09 ± 13%  perf-profile.calltrace.cycles-pp.ret_from_fork_asm
+>       2.83 ±  9%      +5.3        8.09 ± 13%      +5.4        8.24 ± 15%  perf-profile.calltrace.cycles-pp.smpboot_thread_fn.kthread.ret_from_fork.ret_from_fork_asm
+>       1.70 ± 12%      +5.6        7.28 ± 14%      +5.8        7.54 ± 15%  perf-profile.calltrace.cycles-pp.net_rx_action.__do_softirq.run_ksoftirqd.smpboot_thread_fn.kthread
+>       1.70 ± 13%      +5.6        7.28 ± 14%      +5.8        7.54 ± 15%  perf-profile.calltrace.cycles-pp.__napi_poll.net_rx_action.__do_softirq.run_ksoftirqd.smpboot_thread_fn
+>       1.70 ± 13%      +5.6        7.28 ± 14%      +5.8        7.54 ± 15%  perf-profile.calltrace.cycles-pp.process_backlog.__napi_poll.net_rx_action.__do_softirq.run_ksoftirqd
+>       1.73 ± 12%      +5.6        7.31 ± 14%      +5.8        7.57 ± 15%  perf-profile.calltrace.cycles-pp.run_ksoftirqd.smpboot_thread_fn.kthread.ret_from_fork.ret_from_fork_asm
+>       1.73 ± 12%      +5.6        7.31 ± 14%      +5.8        7.57 ± 15%  perf-profile.calltrace.cycles-pp.__do_softirq.run_ksoftirqd.smpboot_thread_fn.kthread.ret_from_fork
+
+More time spent in ksoftirqd. One theory is that remote timer expiry delay napi
+polling, or the other way around...
+
+>       0.00           +13.2       13.15 ± 49%     +11.3       11.25 ± 55%  perf-profile.calltrace.cycles-pp.poll_idle.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call.do_idle
+
+But a lot more poll_idle time spent. Which is suprising. Also this should impact
+power and not throughput...
+
+Thanks.
