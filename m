@@ -1,220 +1,171 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B8A93FB1B
-	for <oe-lkp@lists.linux.dev>; Tue,  5 Mar 2024 08:04:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.9
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709625882; cv=fail; b=hzhNqRRosxpEJYwz5pWkqGRVEwNK13mOkjmaRrWxSzicNE9j5JRHVFgpt1O/IzFFNvimoxkQ+sLcdBYQLPui0lOARjxB3HEnDnUN5bcWL9nP3B0SfEm8ImR2GS/NmDmcAOHPFolTQQNdmoHMkyVeahl6jgo6DEcXZoc0H4SdNHI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709625882; c=relaxed/simple;
-	bh=FpGBt8e/fhzPwBb00ImftHlguqYByduEd5/FlQ+3YoE=;
-	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=H9HvLaHDxOa9niXOiiB2LRl/LEW7FxhEJ0Zd+2/kRL52zcdHKQUCelD+9YF0HsNgSLdYiMNkjFgFg2gRWxoitSb1fxKt2C4Lvh352O5zXpLSHcxYI1Qf7f4gjvkm5xwaiLbZYBvy+XQV0FIe6/newOmZcFkBfAjF6SfgyVT8udI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BtvKQn4M; arc=fail smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A83C50272
+	for <oe-lkp@lists.linux.dev>; Tue,  5 Mar 2024 09:26:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1709630798; cv=none; b=tjnt0RTCovrlw8u3XMspU07GCuFYXQuyB8Gt2eRx7f61fEmaXIOFH8XvLvQsgXOYuY9JH472srPTs7gckcqEuSvmBsTuuH9GYkp1AehyqSbjVbfH7dFz6n2MMx0sFP4xVPJFzrKXamQ+gRHAsHJvsSk8W7eAb5We6p3mkrDIE10=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1709630798; c=relaxed/simple;
+	bh=1GJ4pLEJiBySr2ubLiSDXv0LJGp0y8MnW0BrFhpcjXY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qOSxffOC+g2FlPyHih5CG4Njp9m3RmGtWTdvWSjCp+IL1wsEXCjCfwcvLhDaYGX3mCPkGFd/9OggMc8ztaz8MM89H22xfWbvG/ivvzlEBKw0yZiz/cRlD016OxpjiYoxQ16lGzUhthSG/tZljqcjG/MsOMOwyk0Bl4KwioIkwjA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=ZWlVZcGN; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=jOQ63t/G; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=ZWlVZcGN; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=jOQ63t/G; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BtvKQn4M"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1709625881; x=1741161881;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=FpGBt8e/fhzPwBb00ImftHlguqYByduEd5/FlQ+3YoE=;
-  b=BtvKQn4Mh58KrbeSoytN9yipQK2jrkcokBZPwLAfDybbyCFAx6ZNXqsS
-   AuJmJ7tW6+rgmd2AxovRWUN2dBkVs/hpSUrqyuDMo1MRDlRj4rvDDRA+q
-   afifaQWg+LGDwy9MlNjrudOr9nJJwwylI2Lo4ZKE5Zmyn/2yIUWQX8ZaK
-   56BUOu6/wQIDWHTYd4gDzNcv1IkH6mTwwuoK2s1m03zD5DBW4NoqhOAc7
-   AXFuItNOG0OyeAkEbYP7QYTbJSABU6EqHNKhp18Icbb1a7n1bRb2IOmiu
-   BxHjubQ3ldfSLu8flMYACaXcPOM8GswasI4AdIn79gs7VtpdOU7b/0wTg
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,11003"; a="26620690"
-X-IronPort-AV: E=Sophos;i="6.06,205,1705392000"; 
-   d="scan'208";a="26620690"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Mar 2024 00:04:36 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.06,205,1705392000"; 
-   d="scan'208";a="13784145"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmviesa005.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 05 Mar 2024 00:04:35 -0800
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Tue, 5 Mar 2024 00:04:34 -0800
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35 via Frontend Transport; Tue, 5 Mar 2024 00:04:34 -0800
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.100)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Tue, 5 Mar 2024 00:04:33 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cK20XOJimuwTvKyVNqhqkJUa7YdasN5RK4nMhdUWtLhVgYl+AfnblEXhDWxV/al9bx1AVeyHW83MZwihSsWYz5tZM3dmUE5SxK8/FW192B+WG+s+LSek/ioOSrdy9IY0K8/WJK2GLf0P/xLEAicTAxt0WeLhvBwGFCj1nM/TKxxNOJXBJVOgpe19zspqyigVi1cRUrwxQF2K+iEbnwXbOJf8uJTWR/iB/SMii37igUL1StEbnLFgndmSGdlWb49ZmExKmflUydo8AThfRagANrV2/kptvM+uUfiHxqUR2zoPSIynrLWZSMkrVU0Vlx2Yml6AbVVSgLSRxeNIIte4KA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QX+XgvetjwcvQjtjzzQkGRLHx5Yx7AEGkvpVro6fzfg=;
- b=avAggRQ5G4QNxxHgl97et4l0/87p2ZQxy7M46GBFFkhov0G1ibna+0UTfpcJdxRTb4nyyTPcnsZ6Er1xXaswgSbOtfWS3fOmrBmTLCVC6jYZ2PLGnJZcoYZv6iiCW80bDrX0U/g1tqjOQauIAeezWi1qdrROMo/gXD5snBNbOqCVyskdCDl9r+3GHvnrMJAA66LpbHVyIBIgE+HKzDjZAsoIDZ1MgeaZ/ZjCanaDb10WDD+h19nXkL7S3iKP1SQqvT4nxSACZXe/0StYHc5vObQgqnAZHsbYpdQpZVV1Q/BgCBvHr/dM7AdbPgEEXMg2tbmxsbn1LyN+P5qvFyfS3Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by SJ0PR11MB5120.namprd11.prod.outlook.com (2603:10b6:a03:2d1::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7362.21; Tue, 5 Mar
- 2024 08:04:31 +0000
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::58dd:99ca:74a6:2e3e]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::58dd:99ca:74a6:2e3e%3]) with mapi id 15.20.7362.019; Tue, 5 Mar 2024
- 08:04:31 +0000
-Date: Tue, 5 Mar 2024 16:04:21 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Linux Memory Management List
-	<linux-mm@kvack.org>, "David S. Miller" <davem@davemloft.net>,
-	=?iso-8859-1?Q?G=FCnther?= Noack <gnoack@google.com>, Shuah Khan
-	<shuah@kernel.org>, Will Drewry <wad@chromium.org>, Kees Cook
-	<keescook@chromium.org>, Jakub Kicinski <kuba@kernel.org>,
-	<linux-kselftest@vger.kernel.org>, <linux-security-module@vger.kernel.org>,
-	<oliver.sang@intel.com>
-Subject: [linux-next:master] [selftests/harness]  0710a1a73f:
- kernel-selftests.seccomp.seccomp_bpf.TRAP.dfl.fail
-Message-ID: <202403051529.cf359aed-oliver.sang@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-X-ClientProxiedBy: SI1PR02CA0017.apcprd02.prod.outlook.com
- (2603:1096:4:1f4::10) To LV3PR11MB8603.namprd11.prod.outlook.com
- (2603:10b6:408:1b6::9)
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="ZWlVZcGN";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="jOQ63t/G";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="ZWlVZcGN";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="jOQ63t/G"
+Received: from imap2.dmz-prg2.suse.org (imap2.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:98])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 24BDA6A9DE;
+	Tue,  5 Mar 2024 09:26:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1709630795; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=ykjUprM07ZrUOHmFkq+k2cT/hagJHglpYa3jkqSqAAE=;
+	b=ZWlVZcGNQw6+JjdmEp1eJLTz2bNCcCtRbE9tOeN8xnxRyMX8iqeePb8m+Szsp7h6g03V1t
+	oLlylabBYPbAS0ogh24jQu8RDLwBs5fQRqNETkhAIIXAt6o8mcHbwDi40EllF64Jth39FX
+	YBvIuBYYtjDyG9CES7FGjsO2wxcbnLY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1709630795;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=ykjUprM07ZrUOHmFkq+k2cT/hagJHglpYa3jkqSqAAE=;
+	b=jOQ63t/Ge+ynva2BjFrpcgVtN6N4O5S23iUgkhiJhwtLUI38w0WT3tx4wggXqloVp0GvOv
+	LxFUYpgusmlv9xDA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1709630795; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=ykjUprM07ZrUOHmFkq+k2cT/hagJHglpYa3jkqSqAAE=;
+	b=ZWlVZcGNQw6+JjdmEp1eJLTz2bNCcCtRbE9tOeN8xnxRyMX8iqeePb8m+Szsp7h6g03V1t
+	oLlylabBYPbAS0ogh24jQu8RDLwBs5fQRqNETkhAIIXAt6o8mcHbwDi40EllF64Jth39FX
+	YBvIuBYYtjDyG9CES7FGjsO2wxcbnLY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1709630795;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=ykjUprM07ZrUOHmFkq+k2cT/hagJHglpYa3jkqSqAAE=;
+	b=jOQ63t/Ge+ynva2BjFrpcgVtN6N4O5S23iUgkhiJhwtLUI38w0WT3tx4wggXqloVp0GvOv
+	LxFUYpgusmlv9xDA==
+Received: from imap2.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap2.dmz-prg2.suse.org (Postfix) with ESMTPS id 6692D13466;
+	Tue,  5 Mar 2024 09:26:34 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([10.150.64.162])
+	by imap2.dmz-prg2.suse.org with ESMTPSA
+	id EwchFUrl5mVsZgAAn2gu4w
+	(envelope-from <osalvador@suse.de>); Tue, 05 Mar 2024 09:26:34 +0000
+Date: Tue, 5 Mar 2024 10:27:52 +0100
+From: Oscar Salvador <osalvador@suse.de>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
+	Linux Memory Management List <linux-mm@kvack.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Vlastimil Babka <vbabka@suse.cz>, Marco Elver <elver@google.com>,
+	Andrey Konovalov <andreyknvl@gmail.com>,
+	Alexander Potapenko <glider@google.com>,
+	Michal Hocko <mhocko@suse.com>, linux-kernel@vger.kernel.org
+Subject: Re: [linux-next:master] [mm,page_owner]  4bedfb314b:
+ BUG:KASAN:null-ptr-deref_in_init_page_owner
+Message-ID: <ZeblmHyVlxl_6HGC@localhost.localdomain>
+References: <202403051032.e2f865a-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|SJ0PR11MB5120:EE_
-X-MS-Office365-Filtering-Correlation-Id: 328dffd8-a29a-403e-8126-08dc3ceae354
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: W8kSbdjX+bksNIXYOoGR8kQy7GFPjjAgzuZjD9VeoYeCdR+CqzByy+kBMx2eSHFejA9nRmI1e4h9G+EK9ypdTUhhbagTRWyWiztNxR78C++D3cV2tWuIoznXoD8I7c/h4AN8hGZFlhHwJl1+cdkMvFrxu4GDmQrk6NF7SJK7oGDTvQTZZfDdGQ1YpFATID6hXSJ9FMcL+yxCbjwepYRvcE+5puEUEyjbGDh8m0GvX8mEHCUc5plaJaYu2qScJjlbIVBs+cfWIY/IH/84r8cmxb41AaXZoZGB5tdgx4RybVuYZS9DurfJ13jm78yzEQapMUWCeI8UGx4U/whOAMGHGFopY6VFHq1wAYbbK3/4JpTRWUAXKN/1qYs/iaHgZZdavTZL/OwYjKUap9uKt5o5O3R+NVYCRf/vLqwKSjWuXWOEFwTx6+ix4amWEnSBjz6ImNveC/bckeBSgaiiUthYPv3yNrKkBb4a4BICbZ67MGAgLhdgGZMWXY4qX7fL0lwauI8/1UmTdZsU8275vk6ZHIGr8JwL5aHUQtyJKBH86N6B7G+ExRJp+QQllsoBwI3RkAYG1sQA3oHOqMXBdGbwFciK6eaKQfMGWX3TVMBLR6F1UDJhtg3NVk2utG5YWqoI
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?gQSCWEsWcpyylLpJnHnAs+PctbpatkFIvYOaok0lgcH6sODswrgdt6qLbaK2?=
- =?us-ascii?Q?ZyAFZKcuK3QnoF3UntHwXLBG2ChbB3ZdNW+MbC7qKUJhOmhjYWCeKUlgZmZv?=
- =?us-ascii?Q?74lSbc2xZsfXLbm4tmw8sPFT0yspWZvQmhXnrUcOu04kIP+voS3liR73AT6t?=
- =?us-ascii?Q?rX7nPLE1+pZhqlZnfJGMYwjBFhA8n5Q5SM/h+Vk+BjkRdiafAvhQ1jT2H8Dh?=
- =?us-ascii?Q?YVOV4drDtZTk4RTcd7Yqj+mjTNtIbKdJ5MFDOspe/mmIhePI1xPpkvT6rrm5?=
- =?us-ascii?Q?TgrTac+ypvDi+s+9Ggz+vUXDIeWifVcLGKzUua+ONek5Fd6AwPW5B5t+bpWc?=
- =?us-ascii?Q?CSlqfBtMlUTA1e92+ZA8Wa4A6lCN2KljYweAYuR1Zlq+0bLaf/n3T7XAeDK4?=
- =?us-ascii?Q?A/WkO+24Emewm/thA2JLCauEKp5aEN91EphUeO9OO7ae3hN80tNC9lItckUP?=
- =?us-ascii?Q?yGgcLl+I9lN0aFJIRthJkBSPmWj19dp/gokrFGHiZzTUaV9UZHzWLl1i121E?=
- =?us-ascii?Q?5g0cFEfLAhTV1xkWXJglqD1JNLQW0oWB6u4sod3hCBTlMjhZbRAopB5dNbR1?=
- =?us-ascii?Q?4LEPmtR4OITxCn2a6Kp79fbLm/cq5LFaRFPjnnJNneWfxE0N8Ju+IjXpKGPr?=
- =?us-ascii?Q?N49GgEGsHoZf4AKopWQhd73LYkKZIlnEwUNNqpCZYF8VJJBiwYvgb1neSXGo?=
- =?us-ascii?Q?l27Y7/qBLZiW9rVSSfj+Pk2iaZukM6CyInsTdOnR84IfHsTPKYFua2clhxro?=
- =?us-ascii?Q?b3BJjPTbxH1sY2FxoIRau7UsFedUM84peHu2V7aQZSCWhQMaYQht0BAwjAf5?=
- =?us-ascii?Q?3AyZndBeuV+or8GXlLjgoZbwBjEPA/1iQ5AbST2MPBHF4hNHIByVhLuXdXPH?=
- =?us-ascii?Q?Ow/Cjsk/upFryA9cb+UD9Q5cfn+ablvtm2SHFxXtK9xImmTfsTZHAM73wWqV?=
- =?us-ascii?Q?a9DyT2Ky8YeR0zdpFojzZ/OLix5iYLjdkw2VXbqFWVvX29s7odOB90n7SVuw?=
- =?us-ascii?Q?reNbo6/t87gR1nkyqmW986ol1Tca+Ds9VQ8W2PRW9riUryWrdEbwrx+f2gT6?=
- =?us-ascii?Q?7sT775IrNLfEj2IevKsJegUyit1zT1IkMmEB8dZL22he0nFnLzn2qJZcHfpY?=
- =?us-ascii?Q?CziX0hiDmvelozM78plBesG19oqI9DzXMd8S8MJ0rE2pZLPaZ+F4BBQdXMrn?=
- =?us-ascii?Q?KfjFFHOTUE8NVEtcjyzyOElgI5C6qlgWtJAp8uPwesU3Z8q99Rv6glUEm4sl?=
- =?us-ascii?Q?24VcYexcDbKm4k0AQ4RwhBgABiXr5OWJmJRJXvGLbs3NKuSd3vidDCKv++64?=
- =?us-ascii?Q?8N+D410Ype9eUU47fAe4aspyapAPrS2Skij85N3KV5RWIgxJNIstcoh6WD8b?=
- =?us-ascii?Q?VZIuponSoiWHPxTPYrP00EDyj8owmLH5fAFUKdRLBTvsM2gaa6wnUAmFeoif?=
- =?us-ascii?Q?6UvdKPvJn8Us9FoRMzhckmdcAXCJ1Aqt08Yx13YRpCdlxGlora3vyMyFUzX0?=
- =?us-ascii?Q?uCWGn1xwQbhi3DMK28Tol7fiu0DHU9cP01Yof7rmwOvQCk+Ckht48Qli0dyS?=
- =?us-ascii?Q?1RQgXur+HduJI8GoTLxTB52fEaNGCtV7f1uLlLIc4xCGPgiRueEztMW7RP8y?=
- =?us-ascii?Q?Kw=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 328dffd8-a29a-403e-8126-08dc3ceae354
-X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Mar 2024 08:04:31.6760
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: skVxizixF2blCs7RmZwEzYBijENbBGMEUgtm7EeWH/9TwrQpg/ER1e7o5DKxW8tBL7gFV7b0OJarVR1lhL35Jg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB5120
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202403051032.e2f865a-lkp@intel.com>
+X-Spam-Level: 
+Authentication-Results: smtp-out1.suse.de;
+	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=ZWlVZcGN;
+	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b="jOQ63t/G"
+X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
+X-Spamd-Result: default: False [-1.63 / 50.00];
+	 ARC_NA(0.00)[];
+	 RCVD_VIA_SMTP_AUTH(0.00)[];
+	 R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	 SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:98:from];
+	 FROM_HAS_DN(0.00)[];
+	 TO_DN_SOME(0.00)[];
+	 FREEMAIL_ENVRCPT(0.00)[gmail.com];
+	 TO_MATCH_ENVRCPT_ALL(0.00)[];
+	 MIME_GOOD(-0.10)[text/plain];
+	 NEURAL_HAM_LONG(-1.00)[-1.000];
+	 RCVD_COUNT_THREE(0.00)[3];
+	 DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	 DKIM_TRACE(0.00)[suse.de:+];
+	 MX_GOOD(-0.01)[];
+	 RCPT_COUNT_SEVEN(0.00)[11];
+	 DBL_BLOCKED_OPENRESOLVER(0.00)[suse.de:dkim,suse.de:email];
+	 FUZZY_BLOCKED(0.00)[rspamd.com];
+	 FROM_EQ_ENVFROM(0.00)[];
+	 MIME_TRACE(0.00)[0:+];
+	 NEURAL_HAM_SHORT(-0.20)[-0.984];
+	 FREEMAIL_CC(0.00)[lists.linux.dev,intel.com,kvack.org,linux-foundation.org,suse.cz,google.com,gmail.com,suse.com,vger.kernel.org];
+	 RCVD_TLS_ALL(0.00)[];
+	 BAYES_HAM(-0.12)[67.19%]
+X-Spam-Score: -1.63
+X-Rspamd-Queue-Id: 24BDA6A9DE
+X-Spam-Flag: NO
+
+On Tue, Mar 05, 2024 at 02:08:23PM +0800, kernel test robot wrote:
+> 
+> [    6.582562][    T0] Node 0, zone    DMA32: page owner found early allocated 0 pages
+> [    6.612136][    T0] Node 0, zone   Normal: page owner found early allocated 73871 pages
+> [    6.612762][    T0] ==================================================================
+> [ 6.613351][ T0] BUG: KASAN: null-ptr-deref in init_page_owner (arch/x86/include/asm/atomic.h:28) 
+> [    6.613893][    T0] Write of size 4 at addr 000000000000001c by task swapper/0
+> [    6.614434][    T0]
+> [    6.614600][    T0] CPU: 0 PID: 0 Comm: swapper Tainted: G                T  6.8.0-rc5-00256-g4bedfb314bdd #1 29e70169ace75ef72d53825e983f3dcb1d5756d9
+> [    6.615605][    T0] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> [    6.616367][    T0] Call Trace:
+> [    6.616604][    T0]  <TASK>
+> [ 6.616816][ T0] ? dump_stack_lvl (lib/dump_stack.c:?) 
+> [ 6.617161][ T0] ? print_report (mm/kasan/report.c:?) 
+> [ 6.617499][ T0] ? init_page_owner (arch/x86/include/asm/atomic.h:28) 
+
+So, we are crashing here:
+
+        /* Initialize dummy and failure stacks and link them to stack_list */
+        dummy_stack.stack_record = __stack_depot_get_stack_record(dummy_handle);
+        failure_stack.stack_record = __stack_depot_get_stack_record(failure_handle);
+        refcount_set(&dummy_stack.stack_record->count, 1);
+        refcount_set(&failure_stack.stack_record->count, 1);
+
+when trying to set the refcount. Allegedly, because dummy_handle is 0.
+I thought we fixed that with 
+
+commit 3ee34eabac2abb6b1b6fcdebffe18870719ad000
+Author: Oscar Salvador <osalvador@suse.de>
+Date:   Thu Feb 15 22:59:01 2024 +0100
+
+    lib/stackdepot: fix first entry having a 0-handle
 
 
+But I guess this is different.
+The obvious way out is to only set the refcount and link the stacks
+if their handles are not 0.
 
-Hello,
-
-kernel test robot noticed "kernel-selftests.seccomp.seccomp_bpf.TRAP.dfl.fail" on:
-
-commit: 0710a1a73fb45033ebb06073e374ab7d44a05f15 ("selftests/harness: Merge TEST_F_FORK() into TEST_F()")
-https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
-
-[test failed on linux-next/master 67908bf6954b7635d33760ff6dfc189fc26ccc89]
-
-in testcase: kernel-selftests
-version: kernel-selftests-x86_64-4306b286-1_20240301
-with following parameters:
-
-	group: group-s
-
-
-
-compiler: gcc-12
-test machine: 36 threads 1 sockets Intel(R) Core(TM) i9-10980XE CPU @ 3.00GHz (Cascade Lake) with 32G memory
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202403051529.cf359aed-oliver.sang@intel.com
-
-
-in fact, we found more tests failed on this commit but can pass on parent:
-
-e74048650eaff667 0710a1a73fb45033ebb06073e37
----------------- ---------------------------
-       fail:runs  %reproduction    fail:runs
-           |             |             |
-           :6          100%           6:6     kernel-selftests.seccomp.seccomp_bpf.TRACE_poke.read_has_side_effects.fail
-           :6          100%           6:6     kernel-selftests.seccomp.seccomp_bpf.TRACE_syscall.ptrace.kill_after.fail
-           :6          100%           6:6     kernel-selftests.seccomp.seccomp_bpf.TRACE_syscall.ptrace.kill_immediate.fail
-           :6          100%           6:6     kernel-selftests.seccomp.seccomp_bpf.TRACE_syscall.ptrace.skip_after.fail
-           :6          100%           6:6     kernel-selftests.seccomp.seccomp_bpf.TRACE_syscall.ptrace.syscall_allowed.fail
-           :6          100%           6:6     kernel-selftests.seccomp.seccomp_bpf.TRACE_syscall.ptrace.syscall_errno.fail
-           :6          100%           6:6     kernel-selftests.seccomp.seccomp_bpf.TRACE_syscall.ptrace.syscall_faked.fail
-           :6          100%           6:6     kernel-selftests.seccomp.seccomp_bpf.TRACE_syscall.ptrace.syscall_redirected.fail
-           :6          100%           6:6     kernel-selftests.seccomp.seccomp_bpf.TRACE_syscall.seccomp.kill_after.fail
-           :6          100%           6:6     kernel-selftests.seccomp.seccomp_bpf.TRACE_syscall.seccomp.kill_immediate.fail
-           :6          100%           6:6     kernel-selftests.seccomp.seccomp_bpf.TRACE_syscall.seccomp.skip_after.fail
-           :6          100%           6:6     kernel-selftests.seccomp.seccomp_bpf.TRACE_syscall.seccomp.syscall_allowed.fail
-           :6          100%           6:6     kernel-selftests.seccomp.seccomp_bpf.TRACE_syscall.seccomp.syscall_errno.fail
-           :6          100%           6:6     kernel-selftests.seccomp.seccomp_bpf.TRACE_syscall.seccomp.syscall_faked.fail
-           :6          100%           6:6     kernel-selftests.seccomp.seccomp_bpf.TRACE_syscall.seccomp.syscall_redirected.fail
-           :6          100%           6:6     kernel-selftests.seccomp.seccomp_bpf.TRAP.dfl.fail
-           :6          100%           6:6     kernel-selftests.seccomp.seccomp_bpf.TRAP.ign.fail
-           :6          100%           6:6     kernel-selftests.seccomp.seccomp_bpf.fail
-           :6          100%           6:6     kernel-selftests.seccomp.seccomp_bpf.precedence.kill_is_highest.fail
-           :6          100%           6:6     kernel-selftests.seccomp.seccomp_bpf.precedence.kill_is_highest_in_any_order.fail
-           :6          100%           6:6     kernel-selftests.seccomp.seccomp_bpf.precedence.trap_is_second.fail
-           :6          100%           6:6     kernel-selftests.seccomp.seccomp_bpf.precedence.trap_is_second_in_any_order.fail
-
-
-more details could be found in 'kernel-selftests' file in below link.
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20240305/202403051529.cf359aed-oliver.sang@intel.com
+Marco, could it be that stackdepot was too overloaded, that by the time
+page_owner gets initialized, there are no more space for its stacks, and
+hence return 0-handles?.
 
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
+Oscar Salvador
+SUSE Labs
