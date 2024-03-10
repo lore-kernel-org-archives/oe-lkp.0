@@ -1,107 +1,103 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61527524D1
-	for <oe-lkp@lists.linux.dev>; Fri,  8 Mar 2024 08:44:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49B0A15C3
+	for <oe-lkp@lists.linux.dev>; Sun, 10 Mar 2024 06:40:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.21
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709887478; cv=fail; b=ZaBXng0bZbIoSa9V4fQrkFaatpv14Iyy3ZMzISBs/OtWLi0QDM7v9I6PHzBHNXgdr1P0XrIB8sSarFOB1HDj8XijwtD3hucTB3Bv/V+3VDcxGJgcJw2lfNdupvCWce1ARVid/cuu72XVrBR/37jFVSRDbKRbAXyWFYx+xQXWXK0=
+	t=1710052823; cv=fail; b=XgmHd8rntSU2iUaofru0tRqPPpvTQnPgZdmM7mtQcD+NaSC6SXk7vurbWvwXofsopyLGYvFi/AKiAHNWpBa/0wzyfzfgS5AgtTkURMwdJnI+vUcYo2rgxmM041nvn9rABlgumbIj4aPoYSiVhSO6Om2iiCupG5ECV+Q6Dpxj7UE=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709887478; c=relaxed/simple;
-	bh=Pzvy7NfSrvRuG22wn1jN1FAojhrbKh8BjR1xsKn4+jY=;
-	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=qTSCeF1p62D4qLleGOceUMVCfMksmxemMDTvPGkOmbpW8FihhMGAU0wCvJyeinvBOJ/BPrYUtYwGU0OYMP7WgYgq6gr28raZSJ8XVKUQfFbaq8uQiA2zRsxEjs4QQVZRxDKRbGBGVvBEtPTODHg7MG0+5jl/La2deKa3KYGasKI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dP29Mz6G; arc=fail smtp.client-ip=198.175.65.15
+	s=arc-20240116; t=1710052823; c=relaxed/simple;
+	bh=1P74SRpaVwSo5sJA0iUra/4bDFejOOHW1Ig7p07HPGI=;
+	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=PuZNDozrvuSjbeGVR4h55IRYKm86hC59d8tL+9+vLIOdDOY1P08xryiZyOcFvp9n01cdnHioN3h9xZ3ELKrA6//fkJeBit7qhalp5VSX8X27ClYwbpVP4yCguj5/vyHYZDwLpiNgDw9jm0Tx9Eca6rGxcRUrZgIw1EoPKaglwws=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jmKSZqLm; arc=fail smtp.client-ip=198.175.65.21
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dP29Mz6G"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jmKSZqLm"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1709887476; x=1741423476;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=Pzvy7NfSrvRuG22wn1jN1FAojhrbKh8BjR1xsKn4+jY=;
-  b=dP29Mz6G+hp1AgCpMiTyVgriTfdm83mhkfyDBimZIjt1/TFfZrEaXdfQ
-   CDSPzU5nKf/v9DqjAGMfBDdyD1RE0HzJx6pKmnx8j0SOY6NnOoYZ2PHgD
-   cVqR1V2HGAXJUvMFl5wxkx2THf+qwkH5IRZEsV4mkI/w/tyLwPwwVZ9sR
-   1dRiP/dquugL39PNXaqoDLECk13UPdr85vAcPTM0568t0PjDadn+VZX6k
-   U9NboeekFm057czYHIHsEBGWjmUcr1HFmCx6ESyQX6fJ4Q8MBSHD3Q4Xm
-   oI+MYUi7vKrMDjwsbCf1VvkgScRfADL5eRaOq6BZTECqe6MspOvFLusAR
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,11006"; a="8417384"
-X-IronPort-AV: E=Sophos;i="6.07,109,1708416000"; 
-   d="scan'208";a="8417384"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2024 00:44:35 -0800
+  t=1710052822; x=1741588822;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=1P74SRpaVwSo5sJA0iUra/4bDFejOOHW1Ig7p07HPGI=;
+  b=jmKSZqLmOmpqwJnPL2nx5QtgBOUABw1Gw85qRIfblQ+z382VaNdNexzV
+   IYv1UKRA+/MN2I6lroivrC7w9T6lsYP6b5GJKEDX7+Pw/JTqpDIJEbSRC
+   MZMWCDRG2H/hBhJ7IJdPbFcH7owwMfK7PgWllrNXBDHidtwRTG6LsRyaF
+   LoRSYqhK/V73Hp4eX/T4oAylEDvAZt8Aq7LwC/awZSqQwdMJZOhJede8q
+   0iWUHdFV00QC9CTPyytgeMAhowtc3JJBNMDmRYdZt4jwqNDBvylYa6j4p
+   KCukFMpR/Tg1FSuKLBx/La6dZ6tjfp6CrlwwuW0tuDtiNGvDizB+oyeJI
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,11008"; a="4658127"
+X-IronPort-AV: E=Sophos;i="6.07,114,1708416000"; 
+   d="scan'208";a="4658127"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2024 22:40:14 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,109,1708416000"; 
-   d="scan'208";a="10294265"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by fmviesa007.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 08 Mar 2024 00:44:35 -0800
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+X-IronPort-AV: E=Sophos;i="6.07,114,1708416000"; 
+   d="scan'208";a="15354997"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by fmviesa005.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 09 Mar 2024 22:40:11 -0800
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Fri, 8 Mar 2024 00:44:35 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ 15.1.2507.35; Sat, 9 Mar 2024 22:40:10 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Fri, 8 Mar 2024 00:44:34 -0800
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35 via Frontend Transport; Fri, 8 Mar 2024 00:44:34 -0800
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.40) by
- edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ 15.1.2507.35 via Frontend Transport; Sat, 9 Mar 2024 22:40:10 -0800
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.100)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Fri, 8 Mar 2024 00:44:34 -0800
+ 15.1.2507.35; Sat, 9 Mar 2024 22:40:10 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=isza9rKHZqAfrtrogW7Io7KE7yKIwwR6g23GIoX6nV6R6BLWniDN7qnexZof3jF8MNGj3tGt9F0yNlEqWzRAZ7M/sm1MN4miora/YTKomH6BT9PGnXIkgn/KDgNo55F8uWinBYNwoCIl4QSbAM+pA3nWwK4nlOYX1Y8lhnnCYJoFZ52JYnDsVrtqY/boCza6eztTpM2N8XJnQ8T5AvRpS8IxKcUFJprEXyhagO40Hbgy6PQq9/j5IHrmRiIYUAFlKWFMKUYtYKShzScyAX3hWvwM1WM0wXrBxrj3SZE0NkuScG/AVbN8cPq9xenCjarWOSgaOeC4m/6+WBCAm0YLww==
+ b=hvZGr7vEkqRlnpgDgG7vkpbfbyp7To9KFxEaF0Ul+FR5M28q3U1CUU3kouIt8dnfn3tWHE7VCimNkkuCCbN639udpzG2MTGlcCX7ub9TaupbkvfBVfMDnG3j3ju5Cm0Qo9y681ungHgmr2eI+Y+1SJZFAlNMBMaNKzppo5BpOCGIPKzOtwB89ttTCrIiQPKgyLoUFlbGrRhTPldD8nOyBzab1xb/x/22nMhDyJHrRuTwLrG+Hti2lLWwdxboJL43SXL08h43PiUjh06Huu/comK0nfrT8kFjWiKcFXxEaNGyNpemtPo0RE15PwgHk4zXMdmYe453fk6yq9V7Brnqpg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CRIidVmaI9df6uMZdmYvO42TUAmLEmA/ktsACHnHRuc=;
- b=JpbSlXS+RJHKbrAHNwOJaMlJ01DezYChuMCxTUmNl/3RMdaVzswybOZQfxojcLsof6ROhN1XKif7tjKidiMqwfAss87WfF+qzb4lgxXVfZDjYnEVZdUmfV7swqaVhv9w4/Da50k8vXkYigT0HoEw0I1DzNO3kqCbEmi7cZbfYtBQaaE8lKcJIs++Wg6fTQVMBIkPYsSmbxTxHJc8TI6xNiCv8IxW3RekNxgX2lIVXv28fljKoCt+7jbVqdG42ufMg8dOr+on/AsTIq004dYdPOqDScWttLpGBttL9Y9yxkMYrwaSXMcZug3SCbPHnWwIS1vtGzgZG/Ry8XmndAgPYA==
+ bh=C8/8kNy0KBXMRVbQQM3+UbP8aS/V9CesLIRQFq+/xCA=;
+ b=LOxFyNkscvhoupqg6WQwPxLhL/2puOjqxCaoNMivT74HAr8pJ7/SM/+905L8eevsccU3DUkga5FiFpUSOm7UPeNzUqodXWH22AT/0Pr9mM29SlkhxcvMJCJrnIE9PMmvqOXzSHqwSdp6DcfzhXRDhe8FnuJXLS8cal0bwtYxnQnsaJ7opT69uOVHGzbYNSLchjCOFHIyRmDAvHXuo7bOnEsOrsetTs8avWcmw9cfb6J350znj/Wz83CgGJ+OobLOCtDVn7rTN/Nc0vnCBLur/g4QkK8VLokYBcDZiNNfqqGImXur3iIXXm2mx9c7MHyHxVyo34CBJPkwYgxuh4nbIQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from CY5PR11MB6392.namprd11.prod.outlook.com (2603:10b6:930:37::15)
- by SJ0PR11MB7704.namprd11.prod.outlook.com (2603:10b6:a03:4e7::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7362.24; Fri, 8 Mar
- 2024 08:44:27 +0000
-Received: from CY5PR11MB6392.namprd11.prod.outlook.com
- ([fe80::7118:c3d4:7001:cf9d]) by CY5PR11MB6392.namprd11.prod.outlook.com
- ([fe80::7118:c3d4:7001:cf9d%5]) with mapi id 15.20.7362.019; Fri, 8 Mar 2024
- 08:44:27 +0000
-Date: Fri, 8 Mar 2024 16:37:37 +0800
-From: Yujie Liu <yujie.liu@intel.com>
-To: Matthew Wilcox <willy@infradead.org>
-CC: Jan Kara <jack@suse.cz>, "Yin, Fengwei" <fengwei.yin@intel.com>, "Oliver
- Sang" <oliver.sang@intel.com>, <oe-lkp@lists.linux.dev>, <lkp@intel.com>,
-	<linux-kernel@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>,
-	Guo Xuenan <guoxuenan@huawei.com>, <linux-fsdevel@vger.kernel.org>,
-	<ying.huang@intel.com>, <feng.tang@intel.com>
+Received: from CO1PR11MB4820.namprd11.prod.outlook.com (2603:10b6:303:6f::8)
+ by DS0PR11MB6399.namprd11.prod.outlook.com (2603:10b6:8:c8::5) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7386.14; Sun, 10 Mar 2024 06:40:08 +0000
+Received: from CO1PR11MB4820.namprd11.prod.outlook.com
+ ([fe80::65ce:9835:2c02:b61b]) by CO1PR11MB4820.namprd11.prod.outlook.com
+ ([fe80::65ce:9835:2c02:b61b%7]) with mapi id 15.20.7386.013; Sun, 10 Mar 2024
+ 06:40:08 +0000
+Message-ID: <561465df-1370-4519-abe3-3998bd78233f@intel.com>
+Date: Sun, 10 Mar 2024 14:40:00 +0800
+User-Agent: Mozilla Thunderbird
 Subject: Re: [linus:master] [readahead] ab4443fe3c: vm-scalability.throughput
  -21.4% regression
-Message-ID: <ZerOUSJap4kAuHX8@yujie-X299>
+To: Jan Kara <jack@suse.cz>
+CC: Yujie Liu <yujie.liu@intel.com>, Oliver Sang <oliver.sang@intel.com>,
+	<oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>, Matthew Wilcox
+	<willy@infradead.org>, Guo Xuenan <guoxuenan@huawei.com>,
+	<linux-fsdevel@vger.kernel.org>, <ying.huang@intel.com>,
+	<feng.tang@intel.com>
 References: <202402201642.c8d6bbc3-oliver.sang@intel.com>
  <20240221111425.ozdozcbl3konmkov@quack3>
  <ZdakRFhEouIF5o6D@xsang-OptiPlex-9020>
  <20240222115032.u5h2phfxpn77lu5a@quack3>
- <20240222183756.td7avnk2srg4tydu@quack3>
- <ZeVVN75kh9Ey4M4G@yujie-X299>
+ <20240222183756.td7avnk2srg4tydu@quack3> <ZeVVN75kh9Ey4M4G@yujie-X299>
  <dee823ca-7100-4289-8670-95047463c09d@intel.com>
  <20240307092308.u54fjngivmx23ty3@quack3>
- <ZeoFQnVYLLBLNL6J@casper.infradead.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <ZeoFQnVYLLBLNL6J@casper.infradead.org>
-X-ClientProxiedBy: SI2PR06CA0013.apcprd06.prod.outlook.com
- (2603:1096:4:186::18) To CY5PR11MB6392.namprd11.prod.outlook.com
- (2603:10b6:930:37::15)
+Content-Language: en-US
+From: "Yin, Fengwei" <fengwei.yin@intel.com>
+In-Reply-To: <20240307092308.u54fjngivmx23ty3@quack3>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SI2PR02CA0047.apcprd02.prod.outlook.com
+ (2603:1096:4:196::14) To CO1PR11MB4820.namprd11.prod.outlook.com
+ (2603:10b6:303:6f::8)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -109,334 +105,126 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY5PR11MB6392:EE_|SJ0PR11MB7704:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3b8ba78e-1b78-4400-e159-08dc3f4bf681
+X-MS-TrafficTypeDiagnostic: CO1PR11MB4820:EE_|DS0PR11MB6399:EE_
+X-MS-Office365-Filtering-Correlation-Id: d4824035-0052-4c6f-b1b9-08dc40cced93
 X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: XOF3oOFb4U0vmYYkvkuXewFYwqeS9Gg8Mx9c7D4M9XMfpi1Xypl61HIpgQ7nnwJfhJvaoVw6iWmsgWrDudjf512CU36Jx4geE/ucjzLxcgLi21KtPNik6x5NIJSIKiTXpHAenyPL9pGY+XxJsZyljaiSbfFpIcxKIhK9SjKzJmSWsNxaB8SnleOzS7iDZs0wQwaPdj+BPg3TghbU5m5MDDbZT1E+ChHZl3CG1uU6zSLK+F5Tj+3oWmyaBTYlq81KL5wzklHMTGWsT2BuQzid88yjOwDfcbOUZsNt6DJEscf6OMkQZHm3xTvRtUch0rlC4uiUTEiDMMddxac6dgchvpGZT9/oL2jaGU+foh2GqJuS954U48dtb8OsM+9Zbwshl8woHih9bBbm6oP94rciuDFJx8QWTk2H2rFM6gFZtx21RxLZOfeYFGyUr+c2tk9bAuWrSKbUut0uw9OczWBzgYySAF3UAZq/ok8KVDBPe46UQuEzmsGTby4N/Dagx7lnH0qFv4aL6+V+C8aVJeFuDMpPa7/SrNHGOeqtVyfCAp0WMXDq5e6h3shzFewiE4ImiLCjHXk5QZJRuh3Nv7PXlQhovuBNymqKzdimf4o+kLdga7j00QSO5mLL1qo2x/1RH5NNP3ORtVX9JnJ4Pfuq7VefXN6HqhhYtkXintsknek=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR11MB6392.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376005)(1800799015);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: M7z6G8S93yRPjDyaBcaP5L1L/4Z1UpF7ZYNtC69IIxjrLQCDJV16yeq8jxnMyzx5O9GAqbZ86RCY8FUrXFB0tq3sLfHxeJeXTED2d1a02Ng9ihE4hJyQmdvRCCyOsnowzaNtIfUvog3WWSMb8nosblCS9Xp7aDXSZ9aeqq7Z9+r3o3zj61gi4ti6QI7/vxC+Z83t94mZeTei8O31QWnRrFO8LSVwQlyh3prGi/aE5Yz9ZP06WUlK5Pq9ijpQr3uygz78ob36+FoGdSf4Qra+FWcLBt0LX+X3iKahkj704RuQjhA6hPb/tMWHFxirZvMc3+ti2FgagEKc00POPIvxtdttGTz7gxIpyoQqhrHX69mNF1kQCN+V1Yn5Ejblbv00nKLsuJqBY/6mkIbtMf74EPicHOcTnjO+hZJF63EzN7ZHKCPQOgYd5l2G6NLtFbC/WIfSvPWC2ZXaHc3dVlT7nazf9vh7x/3JBoaQlJ7MG1E/NImZHQFvcUm7HCG78ux4quBbCuck9/R1Qk980VPnYm3D+F3+05Hg/EbOcdOBiH/H+03wSFUwR895FCWMsmiomp+Q/TFN47BfdHWx22rIxY0lzZBbktY5cPs2b4PGezYjy0dug/mJ5Td/goKLkcDRh0iHM5VUiqiZjsDu1N3khG2LjLrCR710nmSB2gUeJnU=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4820.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(376005);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?IHHb2STvUkyj5/SSEvuDRfSqt5jOdB8wRlKUDAd8WE7ENJsOP6GcRBvrPRa3?=
- =?us-ascii?Q?Snk6sfbcaukbWCnM0PLJVZxmgFvsdBpYOjEsm9NqABApNRv+b3baA+cudBdJ?=
- =?us-ascii?Q?Rorb3Cgkc4b5xzDhKaRddgebQV5rLiFoc5p6g+at90U/BCDOQ/wTHQk9Ud4i?=
- =?us-ascii?Q?JQOi4+IAxC7SAPJ3bJfa57CT7baj02kduMCxS4bdn6t7Hcz+uqaOtcYkGDkv?=
- =?us-ascii?Q?ICeQZVhFSOYzBE48MzbXYfBKe3/bTPls0kPWybUms7nSGBuxLY+T0WFf/pkp?=
- =?us-ascii?Q?JwLbljnj2btmMj2MhJ/qfwDqQgB2buduxlsWVca3UnZLTpM4SiVOF9d+SYUo?=
- =?us-ascii?Q?bY37xDx4/ybBL5QVXR28enabd8v+j4PEbS7LgvmO6EthllQdZ/gBe1tXPHkI?=
- =?us-ascii?Q?wgqrxpy+xvdUa34gya9p1zvD/mJWqdMLe6G2KfSsGa6JRZm3ZAeOOB5yP7X9?=
- =?us-ascii?Q?b8bKj77Q4kPurzJG3v2Gnv/SMhQyalJRNRAjaB4vWJrIPR0iqZpVAsDUyTp6?=
- =?us-ascii?Q?WG6DElAXl+T9FMju2Ni4B45Qx1s8GzlzYTxcPmRDPJqM9VUeObDJdukveu0M?=
- =?us-ascii?Q?ycSJG2jSFrBJwtpHyGxm7seEgcr2RAibI0GOPj3CQL9uJWaQzqkkFuSf1qx4?=
- =?us-ascii?Q?TD84RxvvKdxFZT7KJYn403Nqa0VOXm4rsPa9NnJEGZzL8aq3IBUwcoWuD/3q?=
- =?us-ascii?Q?3RWhAmtEMWkwvvbjNXs5+TfGzzN3opXBPs1MIwFSrOTpGsOW0Z3la7/iiK2j?=
- =?us-ascii?Q?1Zk98TDusmEB4MLvXdZcxWJz1rhyWtBn+Tmoy+1rqnv60MpfZbczu7T1smQ6?=
- =?us-ascii?Q?8E1MW6nX8xNUh7lasOZPGvus3fD3Dlhciuta30e73Og2eQ2/sklSTxPq3ypf?=
- =?us-ascii?Q?YjgwOq2ymFofl2hhXKuDA1W8DVzy1+qTs7RYAwi90gdUJZ5weiwlIyGagW8t?=
- =?us-ascii?Q?rGAqMLka5s2DtTZ40jVDOtyL1ac/fpvc0MmIO+8zb8wwTNGWeHlRnf8paSZi?=
- =?us-ascii?Q?wvmyPR3DKePSTl1gz9X4QwNPKsxbxvgp4l2VL3pCLIuJpjp+7ZFaUz4h0F7Q?=
- =?us-ascii?Q?n2GiYkM4m8ZeEOf74eE/nW9kUSc9Mkhr7NoXUAvSQezFtzNyFLRrZztlLTrz?=
- =?us-ascii?Q?1QtYGwfrLgMwd/n96l3JDkvRtjx7PVPLQhEZ3UkRRv9L22ilqK49KkzMaEA1?=
- =?us-ascii?Q?Wk00KEwqgDaBImGHW0FCVnBuTOfKsVGdu1UTmxpNs2rRc/nUSVOdv8ASbppN?=
- =?us-ascii?Q?3n4YFYFcdmGhG0sMO+O5yxUPGcDo4q9JwIa6zESRLYZzdBQEYmr5pnF/I+3I?=
- =?us-ascii?Q?vrYSpHnnb2TDSAd4ca6t/b04GdhKzjnAzBrZSvQ0+ipx44A6w7xPmyA+0xLW?=
- =?us-ascii?Q?PfSV5FMVsrWD3X9zdz204Pg998YRyn1vVIzRqXSV5vJ+F+jpccarN6D7Zbe4?=
- =?us-ascii?Q?7ZGdK422upHu7uW8OP6VQU8mdIlhF3GKDfiBIO1xksi2Zj+GiB5GrQIt8ZdT?=
- =?us-ascii?Q?OutjkD/HwASaaSltqX3BVhkVmPD3SNAQk7E1HuCdR2Hm/110qAzXa903FncT?=
- =?us-ascii?Q?chrmn7hAaXw/osVcYOJ5BIVnTuyv2+pp54Uzzd9/?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3b8ba78e-1b78-4400-e159-08dc3f4bf681
-X-MS-Exchange-CrossTenant-AuthSource: CY5PR11MB6392.namprd11.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?eE5uWUM2RUo5OUxWK1BSVllpcXJqSENJdjRXNUNCdHREdnVZSUxsc0ZuZmY4?=
+ =?utf-8?B?dU5SNElKQTAxdE5lVys0WnQvQmZBS1FUNGJndlYxdHBTdE1Sa2JtNmwvM2kv?=
+ =?utf-8?B?cXZVZjhCNWlVVjJFbEJ6N2RrY3NEeW1VZWZOK2pxdWcyMlVadHQxTE0vQ1o4?=
+ =?utf-8?B?bFllRjdKV2Y3ZG5hZ0E2Tk5VNUMzREp0dk14N3hTYnI5RTFLdVMwOWVKckFF?=
+ =?utf-8?B?ZkQzWkRhQk1MNjRxd3k4SUpVKzljMjlweXg5TDZnTkhpMjlialFVN0U5Zzg1?=
+ =?utf-8?B?TU5mcW43TzQvbFNYcmkwbzh2OVhmWllwcHFqeFJ5VUlKejRaeld4dVY2a29Y?=
+ =?utf-8?B?UEFsOFlDQ1gzVlJhc3F4aW0rNXY1Y1BXSjV0M1B6SE5zczBjMVpPZmZrcytV?=
+ =?utf-8?B?YUFVMS9UYW96NkgwS1c5VndRKzRxZ2daNTdDSU9uV0FDNHMwK01kSWJYallk?=
+ =?utf-8?B?YitBV0xPbFpTbGlVYkZQK0J2R1JabC85T3hzbzg2NlV4dXoyL2ttaVpRT09y?=
+ =?utf-8?B?MjZReFAxWkVMT3lMZEx0ZjFSa21yRHRqQnFkekVKbTczakVTRncxa3M5cTZY?=
+ =?utf-8?B?MlNOdFlrTlJjZ1FtWmNiTFJxdEJ2TCs3anBTRjBrdEhQUnRvazc4Z2VPRVVX?=
+ =?utf-8?B?Y2R3N21hSVNEWDRWMm5pWWtnaEIzajNtTERRUlZoT1NvZFZjdVNxRit4TFJC?=
+ =?utf-8?B?RGVML0FJdXNtME1CNDNSOW0wTmxhTEMyUkdnc01JTHZkZjhRZHk5U0lDWG01?=
+ =?utf-8?B?KzZHc280aEJKbElCN3padGEyY3cwSGNPWGUxcityUUdmZ3hXclBHbnM2L0hS?=
+ =?utf-8?B?aWF3OTZFVHlhKysxWGd0K29UN0lCUE5mUk9EMHNKWDBkZDVsWXl2b2Vvcjlw?=
+ =?utf-8?B?SUlzQzhxeko5ZXlzRGhtUWVxdjRLbkVCaXd2bUl5V0g5aFZSM1lHM01jeCtT?=
+ =?utf-8?B?UnVzQTdQRDdCZzRGVFlNMGxuU3VaUytuS0k5TlNESWRhTzJEWmdEZUJWMEVC?=
+ =?utf-8?B?ZG1tSlE5M3JBNktlc09xQ0lXQ2FyVW5paVNMeldDOFdMZlRCZzVIWkUxU2lY?=
+ =?utf-8?B?R2xPNWVxaC9UUHFvbkRBcndRcXhqQ0NXbjZ1QjB1VzdiYU9iQVZQK0pBSjNl?=
+ =?utf-8?B?NGF3R0xRMENTYXdBTm5HeS8wcjNVOGxaeUkzN1h5dU00RFdBV2dmY1AwNXNR?=
+ =?utf-8?B?UkI2emdLZkVKRHg4dnlyMWszdGs3MlExb2tpWHNmRVp0a0dabnFvcWhJbzJX?=
+ =?utf-8?B?RkZvUTFsTC80WjhBcGsxNnJOb3JGenlKdnA4V3M3U1JtTmxzc1RpL2FlRzFC?=
+ =?utf-8?B?aVdzc3o5NDE2aXB0QjFmcDhwOG9Jd2ZzbHZXRitIcW9pajZwa25IRk9BTzBK?=
+ =?utf-8?B?VGs3ZkNKemdqQ3JjNHgvZXJtUnNLS3A0RmkzRjVsSHEzVWIwVUdZaExiTGJ2?=
+ =?utf-8?B?U25vNzhtQ0ZvQ3ZOcTlyWjlFM3hhWmNzS0dhYVlyeVQvbU9WbkEyUEtnTFgw?=
+ =?utf-8?B?QlVLVGJoVXZrZFV0b1Z2b20rYnNiZHNpc1Q5QXVBZG43cG82c1F1MURUN2NC?=
+ =?utf-8?B?Tkd1WWVNaEk5bkV1TWMzVjV6Tms4ZjV1RXR4Um1wN3VMVE1ZajlCQ1dmdHdV?=
+ =?utf-8?B?ZXpWMTRxL0xNNjJkSlRvQm1hYWloM2wrMU9FMExqK0dvNEs2MFF3WEhkUHBt?=
+ =?utf-8?B?MGZwSzN1Q3VwSnMxVzFjQ3BONW1vYWpqb29aRXpjbk81TXZUcm1ab0xQM2k5?=
+ =?utf-8?B?dnpqZFcxVVlTazNJWU9EN0JDMVZlaVc2bXNQMzd0REJqMytKOVFiVUFXckRU?=
+ =?utf-8?B?NGhYV0RkZEJUelVvK2VUM2QxKzRUK1RVWDdmWFlkNE9zd1FFZ01rcE1GMFNa?=
+ =?utf-8?B?NXNYUmk3ZXNPd1BOWElaejV1bWpxUUVvMlpsS090LzRyNVl6SXcrTm9WVGFz?=
+ =?utf-8?B?RUdMaUJpTVdnVWY2eTArSFh2VVdtdHBCOU5jNWhTUzhDL1hpZFNSVkpVSzNY?=
+ =?utf-8?B?Z0tFaVVUMDMyNXNQMWRzSmo5b3pkSjZRNDJ2Nk1LVGNuSU5HNDRCK1IwRTR0?=
+ =?utf-8?B?TDIzNHV2dzQ0NnFKbDQySzdINGVQYmJjYjQyaWxwVE5FWTNTbW03bGVKQXVS?=
+ =?utf-8?Q?oSdLeDjtnAIRk1bThXgWhWhwG?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: d4824035-0052-4c6f-b1b9-08dc40cced93
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4820.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2024 08:44:27.2188
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2024 06:40:08.6033
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Vcf4Zn0oZRche6FPU4LimvkRJCxkWl/mOZ1XR6yxNog33nzFbdq+LNIZLy5siVHj7XduG5xptIyvLl/+jsyT2Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB7704
+X-MS-Exchange-CrossTenant-UserPrincipalName: JuV5j1wDH8ZE50Zb227Ffo0ATYccTosrNbXig9xKzVCYLyyRxJBqyHjDSfm35JRuy9h6WOW/rpKCOZQwe/sXIA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB6399
 X-OriginatorOrg: intel.com
 
-On Thu, Mar 07, 2024 at 06:19:46PM +0000, Matthew Wilcox wrote:
-> On Thu, Mar 07, 2024 at 10:23:08AM +0100, Jan Kara wrote:
-> > Thanks for testing! This is an interesting result and certainly unexpected
-> > for me. The readahead code allocates naturally aligned pages so based on
-> > the distribution of allocations it seems that before commit ab4443fe3ca6
-> > readahead window was at least 32 pages (128KB) aligned and so we allocated
-> > order 5 pages. After the commit, the readahead window somehow ended up only
-> > aligned to 20 modulo 32. To follow natural alignment and fill 128KB
-> > readahead window we allocated order 2 page (got us to offset 24 modulo 32),
-> > then order 3 page (got us to offset 0 modulo 32), order 4 page (larger
-> > would not fit in 128KB readahead window now), and order 2 page to finish
-> > filling the readahead window.
-> > 
-> > Now I'm not 100% sure why the readahead window alignment changed with
-> > different rounding when placing readahead mark - probably that's some
-> > artifact when readahead window is tiny in the beginning before we scale it
-> > up (I'll verify by tracing whether everything ends up looking correctly
-> > with the current code). So I don't expect this is a problem in ab4443fe3ca6
-> > as such but it exposes the issue that readahead page insertion code should
-> > perhaps strive to achieve better readahead window alignment with logical
-> > file offset even at the cost of occasionally performing somewhat shorter
-> > readahead. I'll look into this once I dig out of the huge heap of email
-> > after vacation...
+On 3/7/2024 5:23 PM, Jan Kara wrote:
+> Thanks for testing! This is an interesting result and certainly unexpected
+> for me. The readahead code allocates naturally aligned pages so based on
+> the distribution of allocations it seems that before commit ab4443fe3ca6
+> readahead window was at least 32 pages (128KB) aligned and so we allocated
+> order 5 pages. After the commit, the readahead window somehow ended up only
+> aligned to 20 modulo 32. To follow natural alignment and fill 128KB
+> readahead window we allocated order 2 page (got us to offset 24 modulo 32),
+> then order 3 page (got us to offset 0 modulo 32), order 4 page (larger
+> would not fit in 128KB readahead window now), and order 2 page to finish
+> filling the readahead window.
 > 
-> I was surprised by what you said here, so I went and re-read the code
-> and it doesn't work the way I thought it did.  So I had a good long think
-> about how it _should_ work, and I looked for some more corner conditions,
-> and this is what I came up with.
-> 
-> The first thing I've done is separate out the two limits.  The EOF is
-> a hard limit; we will not allocate pages beyond EOF.  The ra->size is
-> a soft limit; we will allocate pages beyond ra->size, but not too far.
-> 
-> The second thing I noticed is that index + ra_size could wrap.  So add
-> a check for that, and set it to ULONG_MAX.  index + ra_size - async_size
-> could also wrap, but this is harmless.  We certainly don't want to kick
-> off any more readahead in this circumstance, so leaving 'mark' outside
-> the range [index..ULONG_MAX] is just fine.
-> 
-> The third thing is that we could allocate a folio which contains a page
-> at ULONG_MAX.  We don't really want that in the page cache; it makes
-> filesystems more complicated if they have to check for that, and we
-> don't allow an order-0 folio at ULONG_MAX, so there's no need for it.
-> This _should_ already be prohibited by the "Don't allocate pages past EOF"
-> check, but let's explicitly prohibit it.
-> 
-> Compile tested only.
+> Now I'm not 100% sure why the readahead window alignment changed with
+> different rounding when placing readahead mark - probably that's some
+> artifact when readahead window is tiny in the beginning before we scale it
+> up (I'll verify by tracing whether everything ends up looking correctly
+> with the current code). So I don't expect this is a problem in ab4443fe3ca6
+> as such but it exposes the issue that readahead page insertion code should
+> perhaps strive to achieve better readahead window alignment with logical
+> file offset even at the cost of occasionally performing somewhat shorter
+> readahead. I'll look into this once I dig out of the huge heap of email
+> after vacation...
+Hi Jan,
+I am also curious to this behavior and add tried add logs to understand
+the behavior here. Here is something difference w/o ab4443fe3ca6:
+  - with ab4443fe3ca6:
+  You are right about the folio order as the readahead window is 0x20.
+  The folio order sequence is like order 2, order 4, order3, order2.
 
-We applied the diff on top of commit ab4443fe3ca6 but got a kernel panic
-when running the dd test:
+  But different thing is always mark the first order 2 folio readahead.
+  So the max order is boosted to 4 in page_cache_ra_order(). The code
+  path always hit
+     if (index == expected || index == (ra->start + ra->size))
+  in ondemand_readahead().
 
-[ 109.259674][ C46] watchdog: BUG: soft lockup - CPU#46 stuck for 22s! [ dd:8616]
-[ 109.268946][ C46] Modules linked in: xfs loop intel_rapl_msr intel_rapl_common x86_pkg_temp_thermal intel_powerclamp coretemp btrfs blake2b_generic kvm_intel xor kvm irqbypass crct10dif_pclmul crc32_pclmul sd_mod raid6_pq ghash_clmulni_intel libcrc32c crc32c_intel sg sha512_ssse3 i915 nvme rapl drm_buddy nvme_core intel_gtt ahci t10_pi drm_display_helper ast intel_cstate libahci ipmi_ssif ttm drm_shmem_helper mei_me i2c_i801 crc64_rocksoft_generic video crc64_rocksoft acpi_ipmi intel_uncore megaraid_sas mei drm_kms_helper joydev libata i2c_ismt i2c_smbus dax_hmem crc64 wmi ipmi_si ipmi_devintf ipmi_msghandler acpi_pad acpi_power_meter drm fuse ip_tables
-[ 109.336216][ C46] CPU: 46 PID: 8616 Comm: dd Tainted: G          I        6.8.0-rc1-00005-g6c6de6e42e46 #1
-[ 109.347892][ C46] Hardware name: NULL NULL/NULL, BIOS 05.02.01 05/12/2023
-[ 109.356324][ C46] RIP: 0010:page_cache_ra_order (mm/readahead.c:521)
-[ 109.363394][ C46] Code: cf 48 89 e8 4c 89 fa 48 d3 e0 48 01 c2 75 09 83 e9 01 48 89 e8 48 d3 e0 49 8d 77 ff 48 01 f0 49 39 c6 73 11 83 e9 01 48 89 e8 <48> d3 e0 48 01 f0 49 39 c6 72 ef 31 c0 83 f9 01 8b 3c 24 0f 44 c8
-All code
-========
-   0:   cf                      iret
-   1:   48 89 e8                mov    %rbp,%rax
-   4:   4c 89 fa                mov    %r15,%rdx
-   7:   48 d3 e0                shl    %cl,%rax
-   a:   48 01 c2                add    %rax,%rdx
-   d:   75 09                   jne    0x18
-   f:   83 e9 01                sub    $0x1,%ecx
-  12:   48 89 e8                mov    %rbp,%rax
-  15:   48 d3 e0                shl    %cl,%rax
-  18:   49 8d 77 ff             lea    -0x1(%r15),%rsi
-  1c:   48 01 f0                add    %rsi,%rax
-  1f:   49 39 c6                cmp    %rax,%r14
-  22:   73 11                   jae    0x35
-  24:   83 e9 01                sub    $0x1,%ecx
-  27:   48 89 e8                mov    %rbp,%rax
-  2a:*  48 d3 e0                shl    %cl,%rax         <-- trapping instruction
-  2d:   48 01 f0                add    %rsi,%rax
-  30:   49 39 c6                cmp    %rax,%r14
-  33:   72 ef                   jb     0x24
-  35:   31 c0                   xor    %eax,%eax
-  37:   83 f9 01                cmp    $0x1,%ecx
-  3a:   8b 3c 24                mov    (%rsp),%edi
-  3d:   0f 44 c8                cmove  %eax,%ecx
+  If just change the round_down() to round_up() in ra_alloc_folio(),
+  the major folio order will be restored to 5.
 
-Code starting with the faulting instruction
-===========================================
-   0:   48 d3 e0                shl    %cl,%rax
-   3:   48 01 f0                add    %rsi,%rax
-   6:   49 39 c6                cmp    %rax,%r14
-   9:   72 ef                   jb     0xfffffffffffffffa
-   b:   31 c0                   xor    %eax,%eax
-   d:   83 f9 01                cmp    $0x1,%ecx
-  10:   8b 3c 24                mov    (%rsp),%edi
-  13:   0f 44 c8                cmove  %eax,%ecx
-[ 109.385897][ C46] RSP: 0018:ffa0000012837c00 EFLAGS: 00000206
-[ 109.393176][ C46] RAX: 0000000000000001 RBX: 0000000000000001 RCX: 0000000020159674
-[ 109.402607][ C46] RDX: 000000000004924c RSI: 0000000000049249 RDI: ff11003f6f3ae7c0
-[ 109.412038][ C46] RBP: 0000000000000001 R08: 0000000000038700 R09: 0000000000000013
-[ 109.421447][ C46] R10: 0000000000022c04 R11: 0000000000000001 R12: ffa0000012837cb0
-[ 109.430868][ C46] R13: ffd400004fee4b40 R14: 0000000000049249 R15: 000000000004924a
-[ 109.440270][ C46] FS:  00007f777e884640(0000) GS:ff11003f6f380000(0000) knlGS:0000000000000000
-[ 109.450756][ C46] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[ 109.458603][ C46] CR2: 00007f2d4d425020 CR3: 00000001b4f84005 CR4: 0000000000f71ef0
-[ 109.468003][ C46] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[ 109.477392][ C46] DR3: 0000000000000000 DR6: 00000000fffe07f0 DR7: 0000000000000400
-[ 109.486794][ C46] PKRU: 55555554
-[ 109.491197][ C46] Call Trace:
-[ 109.495300][ C46]  <IRQ>
-[ 109.498922][ C46] ? watchdog_timer_fn (kernel/watchdog.c:548)
-[ 109.505074][ C46] ? __pfx_watchdog_timer_fn (kernel/watchdog.c:466)
-[ 109.511620][ C46] ? __hrtimer_run_queues (kernel/time/hrtimer.c:1688 kernel/time/hrtimer.c:1752)
-[ 109.518059][ C46] ? hrtimer_interrupt (kernel/time/hrtimer.c:1817)
-[ 109.524088][ C46] ? __sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1065 arch/x86/kernel/apic/apic.c:1082)
-[ 109.531286][ C46] ? sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1076 (discriminator 14))
-[ 109.538190][ C46]  </IRQ>
-[ 109.541867][ C46]  <TASK>
-[ 109.545545][ C46] ? asm_sysvec_apic_timer_interrupt (arch/x86/include/asm/idtentry.h:649)
-[ 109.552832][ C46] ? page_cache_ra_order (mm/readahead.c:521)
-[ 109.559122][ C46] filemap_get_pages (mm/filemap.c:2500)
-[ 109.564935][ C46] filemap_read (mm/filemap.c:2594)
-[ 109.570241][ C46] xfs_file_buffered_read (fs/xfs/xfs_file.c:315) xfs
-[ 109.577202][ C46] xfs_file_read_iter (fs/xfs/xfs_file.c:341) xfs
-[ 109.583749][ C46] vfs_read (include/linux/fs.h:2079 fs/read_write.c:395 fs/read_write.c:476)
-[ 109.588762][ C46] ksys_read (fs/read_write.c:619)
-[ 109.593660][ C46] do_syscall_64 (arch/x86/entry/common.c:52 arch/x86/entry/common.c:83)
-[ 109.599038][ C46] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:129)
-[ 109.605982][ C46] RIP: 0033:0x7f777e78d3ce
-[ 109.611255][ C46] Code: c0 e9 b6 fe ff ff 50 48 8d 3d 6e 08 0b 00 e8 69 01 02 00 66 0f 1f 84 00 00 00 00 00 64 8b 04 25 18 00 00 00 85 c0 75 14 0f 05 <48> 3d 00 f0 ff ff 77 5a c3 66 0f 1f 84 00 00 00 00 00 48 83 ec 28
-All code
-========
-   0:   c0 e9 b6                shr    $0xb6,%cl
-   3:   fe                      (bad)
-   4:   ff                      (bad)
-   5:   ff 50 48                call   *0x48(%rax)
-   8:   8d 3d 6e 08 0b 00       lea    0xb086e(%rip),%edi        # 0xb087c
-   e:   e8 69 01 02 00          call   0x2017c
-  13:   66 0f 1f 84 00 00 00    nopw   0x0(%rax,%rax,1)
-  1a:   00 00
-  1c:   64 8b 04 25 18 00 00    mov    %fs:0x18,%eax
-  23:   00
-  24:   85 c0                   test   %eax,%eax
-  26:   75 14                   jne    0x3c
-  28:   0f 05                   syscall
-  2a:*  48 3d 00 f0 ff ff       cmp    $0xfffffffffffff000,%rax         <-- trapping instruction
-  30:   77 5a                   ja     0x8c
-  32:   c3                      ret
-  33:   66 0f 1f 84 00 00 00    nopw   0x0(%rax,%rax,1)
-  3a:   00 00
-  3c:   48 83 ec 28             sub    $0x28,%rsp
+  - without ab4443fe3ca6:
+  at the beginning, the folio order sequence is same like 2, 4, 3, 2.
+  But besides the first order2 folio, order4 folio will be marked as
+  readahead also. So it's possible the order boosted to 5.
+  Also, not just path
+     if (index == expected || index == (ra->start + ra->size))
+  is hit. but also
+      if (folio) {
+  can be hit (I didn't check other path as this testing is sequential
+  read).
 
-Code starting with the faulting instruction
-===========================================
-   0:   48 3d 00 f0 ff ff       cmp    $0xfffffffffffff000,%rax
-   6:   77 5a                   ja     0x62
-   8:   c3                      ret
-   9:   66 0f 1f 84 00 00 00    nopw   0x0(%rax,%rax,1)
-  10:   00 00
-  12:   48 83 ec 28             sub    $0x28,%rsp
-[ 109.633619][ C46] RSP: 002b:00007ffc78ab2778 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
-[ 109.643392][ C46] RAX: ffffffffffffffda RBX: 0000000000001000 RCX: 00007f777e78d3ce
-[ 109.652686][ C46] RDX: 0000000000001000 RSI: 00005629c0f7c000 RDI: 0000000000000000
-[ 109.661976][ C46] RBP: 00005629c0f7c000 R08: 00005629c0f7bd30 R09: 00007f777e870be0
-[ 109.671251][ C46] R10: 00005629c0f7c000 R11: 0000000000000246 R12: 0000000000000000
-[ 109.680528][ C46] R13: 0000000000000000 R14: 0000000000000000 R15: ffffffffffffffff
-[ 109.689808][ C46]  </TASK>
-[ 109.693512][ C46] Kernel panic - not syncing: softlockup: hung tasks
+  There are some back and forth between 5 and 2,4,3,2, the order is
+  stabilized on 5.
+
+  I didn't fully understand the whole thing and will dig deeper. The
+  above is just what the log showed.
 
 
-# mm/readahead.c
-
-486 void page_cache_ra_order(struct readahead_control *ractl,
-487                 struct file_ra_state *ra, unsigned int new_order)
-488 {
-489         struct address_space *mapping = ractl->mapping;
-490         pgoff_t index = readahead_index(ractl);
-491         pgoff_t last = (i_size_read(mapping->host) - 1) >> PAGE_SHIFT;
-492         pgoff_t limit = index + ra->size;
-493         pgoff_t mark = index + ra->size - ra->async_size;
-494         int err = 0;
-495         gfp_t gfp = readahead_gfp_mask(mapping);
-496
-497         if (!mapping_large_folio_support(mapping) || ra->size < 4)
-498                 goto fallback;
-499
-500         if (new_order < MAX_PAGECACHE_ORDER) {
-501                 new_order += 2;
-502                 if (new_order > MAX_PAGECACHE_ORDER)
-503                         new_order = MAX_PAGECACHE_ORDER;
-504                 while ((1 << new_order) > ra->size)
-505                         new_order--;
-506         }
-507
-508         if (limit < index)
-509                 limit = ULONG_MAX;
-510
-511         filemap_invalidate_lock_shared(mapping);
-512         while (index < limit) {
-513                 unsigned int order = new_order;
-514
-515                 /* Align with smaller pages if needed */
-516                 if (index & ((1UL << order) - 1))
-517                         order = __ffs(index);
-518                 if (index + (1UL << order) == 0)
-519                         order--;
-520                 /* Don't allocate pages past EOF */
-521                 while (index + (1UL << order) - 1 > last)
-522                         order--;
-523                 /* THP machinery does not support order-1 */
-524                 if (order == 1)
-525                         order = 0;
-526                 err = ra_alloc_folio(ractl, index, mark, order, gfp);
-527                 if (err)
-528                         break;
-529                 index += 1UL << order;
-530         }
-531
-532         if (index > limit) {
-533                 ra->size += index - limit - 1;
-534                 ra->async_size += index - limit - 1;
-535         }
-536
-537         read_pages(ractl);
-538         filemap_invalidate_unlock_shared(mapping);
-539
-540         /*
-541          * If there were already pages in the page cache, then we may have
-542          * left some gaps.  Let the regular readahead code take care of this
-543          * situation.
-544          */
-545         if (!err)
-546                 return;
-547 fallback:
-548         do_page_cache_ra(ractl, ra->size, ra->async_size);
-549 }
+Hi Matthew,
+I noticed one thing when readahead folio order is being pushed forward,
+there are several times readahead trying to allocate and add folios to
+page cache. But failed as there is folio inserted to page cache cover
+the requested index already. Once the folio order is correct, there is
+no such case anymore. I suppose this is expected.
 
 
-Regards,
-Yujie
-
-> diff --git a/mm/readahead.c b/mm/readahead.c
-> index 130c0e7df99f..742e1f39035b 100644
-> --- a/mm/readahead.c
-> +++ b/mm/readahead.c
-> @@ -488,7 +488,8 @@ void page_cache_ra_order(struct readahead_control *ractl,
->  {
->  	struct address_space *mapping = ractl->mapping;
->  	pgoff_t index = readahead_index(ractl);
-> -	pgoff_t limit = (i_size_read(mapping->host) - 1) >> PAGE_SHIFT;
-> +	pgoff_t last = (i_size_read(mapping->host) - 1) >> PAGE_SHIFT;
-> +	pgoff_t limit = index + ra->size;
->  	pgoff_t mark = index + ra->size - ra->async_size;
->  	int err = 0;
->  	gfp_t gfp = readahead_gfp_mask(mapping);
-> @@ -496,23 +497,26 @@ void page_cache_ra_order(struct readahead_control *ractl,
->  	if (!mapping_large_folio_support(mapping) || ra->size < 4)
->  		goto fallback;
->  
-> -	limit = min(limit, index + ra->size - 1);
-> -
->  	if (new_order < MAX_PAGECACHE_ORDER) {
->  		new_order += 2;
->  		new_order = min_t(unsigned int, MAX_PAGECACHE_ORDER, new_order);
->  		new_order = min_t(unsigned int, new_order, ilog2(ra->size));
->  	}
->  
-> +	if (limit < index)
-> +		limit = ULONG_MAX;
->  	filemap_invalidate_lock_shared(mapping);
-> -	while (index <= limit) {
-> +	while (index < limit) {
->  		unsigned int order = new_order;
->  
->  		/* Align with smaller pages if needed */
->  		if (index & ((1UL << order) - 1))
->  			order = __ffs(index);
-> +		/* Avoid wrap */
-> +		if (index + (1UL << order) == 0)
-> +			order--;
->  		/* Don't allocate pages past EOF */
-> -		while (index + (1UL << order) - 1 > limit)
-> +		while (index + (1UL << order) - 1 > last)
->  			order--;
->  		err = ra_alloc_folio(ractl, index, mark, order, gfp);
->  		if (err)
+Regards
+Yin, Fengwei
