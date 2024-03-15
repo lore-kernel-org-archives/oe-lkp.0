@@ -1,128 +1,88 @@
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
+Received: from mail-pf1-f202.google.com (mail-pf1-f202.google.com [209.85.210.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA6AE3D0AA
-	for <oe-lkp@lists.linux.dev>; Fri, 15 Mar 2024 14:50:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D34F5647E
+	for <oe-lkp@lists.linux.dev>; Fri, 15 Mar 2024 19:55:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710514203; cv=none; b=egzq370k3kC3CUB/ZsiApqeIdiq6x5FgBQB7YuXkUbsC7rphOmHv++8pUnss637QVT6M1xCb6C1YWnvA11ix/qwoC84ugLj67uVDVktIaEYG4LmTiNjk7vygjJxxqhFEyLpEcx4Za1SlH4B/onqJGsKCjEUZYZmdNcPnmEJDUSE=
+	t=1710532524; cv=none; b=FtLXsNMiwBSxfvx1XI0AvgDXKkm6/dFamFsQ2xlvBKZqD1e3SMxZscgW/RFbuJdNLmmbGNJM+hH9wkMEsLwZ8vZAAbJ8eMAaa0zBd4Fdvc1PNNDTLLnyiSRZu1pKWEoVe4JWgB+gQ7ha/MpfqoVaeRf6YQf/wQjLXUd07TBSVvE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710514203; c=relaxed/simple;
-	bh=pYIocXJzjWQXvaE5A/LvqKx5ijceUidPNLC97XcDslg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=atV7tPYvsb6xWhI3gaiK55yQXLcIjAaC0Q9F9vVh5p2DoOfQS9i6/HUOU7M7lWWz4n84CXrQTSpylYz01UXDC4GSE4UIS+WUXYmQiv50qGoOoIigfawzNtqqm/xHpuiZhQiInDFSotfsjbHoIZL7j3Fn4tCpytQ8f9Ss+T3h8pE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=Ahxv7uPn; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=5q/3pwV4; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=Ahxv7uPn; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=5q/3pwV4; arc=none smtp.client-ip=195.135.223.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+	s=arc-20240116; t=1710532524; c=relaxed/simple;
+	bh=J6PKphrZR06vT6aM+gdKE+v15HtoN6dbFcpt+pGRX+o=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=UyZVGw099on/dDbIyBUvNgCNVUyqZ0rSj8HsPhNE1mbwQg2P/Nm/Unp7B8ncE7QPbx09U5kt8NzDG/TczN029xGc0ZnFeOWosxcP/lebZTSVnUUqXFIz3f7JxjEwdLvXHMLn0D0IpXfx7UbjJ5agBYAJd3qABXBP/cXhNLaBJo0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=sEIwHEwT; arc=none smtp.client-ip=209.85.210.202
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="Ahxv7uPn";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="5q/3pwV4";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="Ahxv7uPn";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="5q/3pwV4"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out2.suse.de (Postfix) with ESMTPS id 2C9EA1FB6F;
-	Fri, 15 Mar 2024 14:50:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1710514200; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=qLns1K/O2DnblFDDOvNNQmCKnW+xm16WB3FqmaAZOVw=;
-	b=Ahxv7uPn0yHUyjnSVGswZtpTD96N/M1Eq5D5oxrO5ZNIc5mCRwUV+uESmU/nnpRJCfJ4QM
-	D/efYwLiIy+ILug7JgYGYHAap4jkfBrvbQu7BDat0RZC3Ewd7P3GLPFbgWyrfWkKtusRXj
-	e6AkBS3oa4Wepby39OGTr/BFbC7Sxjo=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1710514200;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=qLns1K/O2DnblFDDOvNNQmCKnW+xm16WB3FqmaAZOVw=;
-	b=5q/3pwV4Nxs9UtGYE/cVhuZn7fFOdVV5nFHgAsTWRJrxUEnC5aqZaLP20X9Av2BuDSfSAp
-	QF9M5g13ybobxfCg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1710514200; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=qLns1K/O2DnblFDDOvNNQmCKnW+xm16WB3FqmaAZOVw=;
-	b=Ahxv7uPn0yHUyjnSVGswZtpTD96N/M1Eq5D5oxrO5ZNIc5mCRwUV+uESmU/nnpRJCfJ4QM
-	D/efYwLiIy+ILug7JgYGYHAap4jkfBrvbQu7BDat0RZC3Ewd7P3GLPFbgWyrfWkKtusRXj
-	e6AkBS3oa4Wepby39OGTr/BFbC7Sxjo=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1710514200;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=qLns1K/O2DnblFDDOvNNQmCKnW+xm16WB3FqmaAZOVw=;
-	b=5q/3pwV4Nxs9UtGYE/cVhuZn7fFOdVV5nFHgAsTWRJrxUEnC5aqZaLP20X9Av2BuDSfSAp
-	QF9M5g13ybobxfCg==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 0930913931;
-	Fri, 15 Mar 2024 14:50:00 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id GsQAARhg9GVGRgAAD6G6ig
-	(envelope-from <chrubis@suse.cz>); Fri, 15 Mar 2024 14:50:00 +0000
-Date: Fri, 15 Mar 2024 15:49:03 +0100
-From: Cyril Hrubis <chrubis@suse.cz>
-To: Christian Brauner <brauner@kernel.org>
-Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
-	linux-fsdevel@vger.kernel.org, lkp@intel.com, ltp@lists.linux.it,
-	linux-kernel@vger.kernel.org
-Subject: Re: [LTP] [linus:master] [pidfd]  cb12fd8e0d: ltp.readahead01.fail
-Message-ID: <ZfRf36u7CH7bIEZ7@yuki>
-References: <202403151507.5540b773-oliver.sang@intel.com>
- <20240315-neufahrzeuge-kennt-317f2a903605@brauner>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="sEIwHEwT"
+Received: by mail-pf1-f202.google.com with SMTP id d2e1a72fcca58-6e6b6de7383so2116876b3a.1
+        for <oe-lkp@lists.linux.dev>; Fri, 15 Mar 2024 12:55:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1710532522; x=1711137322; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=yxyVTUGycMtYWiSqNQA2N1Tj7Ge76hIQfNcRcR5oHf8=;
+        b=sEIwHEwTSpEVbABoGRMHLSgaSw30iof59AWY0KWQIQUY4r10MA8skBznBqwaelrF4d
+         jzoUNclNz6ZvHxBQWbvk13QG+pRTc8F4j2mK98RQF6vDhYklG9TUBEv6mfyb5yI3HlZz
+         l2UmcxbdPnzE70lSQ4pmrm4fHrlSunqjZ9/0ngaXKw5zEvo1KpdbVRp8XGhQOhm3/zKd
+         Khzl1wnkHhK4LUvgBECVWOH8Tz70BAVVB69RTwFx5xyQQMAtDKPEjlDJInBMb6kTtXAz
+         vLn6u0ZZp0eM2hVwoUeRT5mLHUy95VSOilObNIwISB4zT7EOt/CIyh0tn4vz0PMor/wo
+         n9pw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1710532522; x=1711137322;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=yxyVTUGycMtYWiSqNQA2N1Tj7Ge76hIQfNcRcR5oHf8=;
+        b=UCsDichWJA+0tukJ5URj+70Zj2PNsn7lMe81wkEjKi0ql0ZJErlBhsv2WJFN0ZOjEN
+         wnFnBTEB2PcoClVAAvlbD7GH/Wcijqj9hr0CXRSOEJEmbwEq/L72jCXHWnvcrzLis5ij
+         ylBzAFfwUwb9fnUQHTqGWWQNZFZIUg71mXRuMAf93bQOhlmMvumwUhKg2XhnQkbSzGmN
+         BaoOez0NhBwLq4NrZrBE3qNrhcsg1+JAg+iZztujKo/Poj/yJLZv9W7mUwQf/Y0wgPlK
+         QRg8zcbuF61pc+uzz/ZIuaq9+6Icwf8cZ/INMlYR87c2QRcxcxUC9bTDwAfky+FUkyg0
+         iFyQ==
+X-Gm-Message-State: AOJu0YyV0ZsxXqxw5G3YCy7TkszPLyKv9yFdItPXkuJWb0KkqjkivWcn
+	7q6CrDNZnIa1JgtgiN6zETDwLWh65X65VGqHrDOujtNS40hMtn9Xcp3+/GVvBxm7GbBT8XuwnRS
+	aZQ==
+X-Google-Smtp-Source: AGHT+IEMtCqxevjMlBgShcDqmIvoX0aabbMfq9kTGHCGc9Q0Ud9Vyavfn60pnT3bfVR8zK01ozt0Yd1y/sM=
+X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
+ (user=seanjc job=sendgmr) by 2002:aa7:84c4:0:b0:6e6:985c:987e with SMTP id
+ x4-20020aa784c4000000b006e6985c987emr38651pfn.3.1710532522246; Fri, 15 Mar
+ 2024 12:55:22 -0700 (PDT)
+Date: Fri, 15 Mar 2024 12:55:20 -0700
+In-Reply-To: <202403151639.371a9400-oliver.sang@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240315-neufahrzeuge-kennt-317f2a903605@brauner>
-X-Spam-Level: 
-Authentication-Results: smtp-out2.suse.de;
-	dkim=pass header.d=suse.cz header.s=susede2_rsa header.b=Ahxv7uPn;
-	dkim=pass header.d=suse.cz header.s=susede2_ed25519 header.b="5q/3pwV4"
-X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
-X-Spamd-Result: default: False [-1.76 / 50.00];
-	 ARC_NA(0.00)[];
-	 RCVD_VIA_SMTP_AUTH(0.00)[];
-	 R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	 SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	 FROM_HAS_DN(0.00)[];
-	 TO_DN_SOME(0.00)[];
-	 TO_MATCH_ENVRCPT_ALL(0.00)[];
-	 NEURAL_HAM_LONG(-1.00)[-1.000];
-	 MIME_GOOD(-0.10)[text/plain];
-	 RCVD_COUNT_THREE(0.00)[3];
-	 DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	 DKIM_TRACE(0.00)[suse.cz:+];
-	 MX_GOOD(-0.01)[];
-	 RCPT_COUNT_SEVEN(0.00)[7];
-	 DBL_BLOCKED_OPENRESOLVER(0.00)[suse.cz:dkim,suse.cz:email];
-	 NEURAL_HAM_SHORT(-0.20)[-1.000];
-	 FROM_EQ_ENVFROM(0.00)[];
-	 MIME_TRACE(0.00)[0:+];
-	 MID_RHS_NOT_FQDN(0.50)[];
-	 RCVD_TLS_ALL(0.00)[];
-	 BAYES_HAM(-0.75)[84.05%]
-X-Spam-Score: -1.76
-X-Rspamd-Queue-Id: 2C9EA1FB6F
-X-Spam-Flag: NO
+Mime-Version: 1.0
+References: <202403151639.371a9400-oliver.sang@intel.com>
+Message-ID: <ZfSnqIu3qw_pC7_O@google.com>
+Subject: Re: [sean-jc:x86/disable_adaptive_pebs] [KVM]  ade86174dc: kvm-unit-tests.pmu_pebs.fail
+From: Sean Christopherson <seanjc@google.com>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, Like Xu <like.xu.linux@gmail.com>, 
+	Mingwei Zhang <mizhang@google.com>, Zhenyu Wang <zhenyuw@linux.intel.com>, 
+	Zhang Xiong <xiong.y.zhang@intel.com>, Lv Zhiyuan <zhiyuan.lv@intel.com>, 
+	Dapeng Mi <dapeng1.mi@intel.com>, Jim Mattson <jmattson@google.com>, kvm@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
 
-Hi!
-> So I'd just remove that test. It's meaningless for pseudo fses.
+On Fri, Mar 15, 2024, kernel test robot wrote:
+> 
+> 
+> Hello,
+> 
+> kernel test robot noticed "kvm-unit-tests.pmu_pebs.fail" on:
+> 
+> commit: ade86174dc69254b50a67f836b2b8ac2c5644e11 ("KVM: x86/pmu: Disable support for adaptive PEBS")
+> https://github.com/sean-jc/linux x86/disable_adaptive_pebs
+> 
+> in testcase: kvm-unit-tests
+> version: kvm-unit-tests-x86_64-023002d-1_20230714
+> with following parameters:
 
-Wouldn't it make more sense to actually return EINVAL instead of
-ignoring the request if readahead() is not implemented?
+This is expected, pmu_pebs incorrectly assumes adaptive PEBS is supported in
+certain flows.  It simply wasn't hit until now because all hardware that is
+compatible with the test supports adaptive PEBS.  KUT patches are posted:
 
--- 
-Cyril Hrubis
-chrubis@suse.cz
+https://lore.kernel.org/all/20240306230153.786365-1-seanjc@google.com
