@@ -1,58 +1,59 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DECB0A2A
-	for <oe-lkp@lists.linux.dev>; Sun, 17 Mar 2024 20:36:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1D1028E26;
+	Mon, 18 Mar 2024 08:47:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710707812; cv=none; b=V7Cc4UX/Zl21vSQ85Hw+ulf7A9yY4XDH67NVIaxEI4ON2XCzGc3JuFcUmP9j349JMFMzkQAZB6mkaVmL0VaxvFelpn9ikkAT69Q8a4hmT7LmJSBkZocuHZVbsjUXXNCxvs89SD/W+TcFj4Zp0MHKlMjZrv60HySanctXwknhOQ8=
+	t=1710751670; cv=none; b=AQXh0E9T/HGOEVrCOkyi1uf4L/Uyy+Xl6LtmIpKB9O15neHq9Ib9TT5a6jQalMfjGC5S8w3Ip+x6u3dQNbiER4jdaVPlS1bRVzSSLOP8GHIwtdx9KIjEN0fupHwqbe1gv4zM0eGIZTxMQA/ca33r3ON+RMthUBHPtJCBjHqoI1I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710707812; c=relaxed/simple;
-	bh=Mf2qW8qx1VFkY6exzuZ/MhBPqsKo8S6DE2T7Zs6/dsQ=;
+	s=arc-20240116; t=1710751670; c=relaxed/simple;
+	bh=Ew2uVxn7vsJK/JFcU9zZaMqRiK9DDlzk08Afo0ps6tI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pbbSLYc+q/Xoi602wGCywWAMHyZE7+zcLXBD+Kn8toR/l07f0Q/GJPGTSH7df9EyKV83Rgn6wvW2bHhknCBFSf671SFwOzjyOkKj6UDX6j6+c+FwV33VK3azaaTemPvivfUj07AW0X2nyOfhecZTCUAxU+hetQ/DdIoU+ygTdE0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id A530668C7B; Sun, 17 Mar 2024 21:36:45 +0100 (CET)
-Date: Sun, 17 Mar 2024 21:36:45 +0100
-From: Christoph Hellwig <hch@lst.de>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: Christoph Hellwig <hch@lst.de>, oe-lkp@lists.linux.dev, lkp@intel.com,
-	linux-kernel@vger.kernel.org, Keith Busch <kbusch@kernel.org>,
-	Max Gurtovoy <mgurtovoy@nvidia.com>, linux-nvme@lists.infradead.org,
-	ying.huang@intel.com, feng.tang@intel.com, fengwei.yin@intel.com
-Subject: Re: [linus:master] [nvme]  63dfa10043:  fsmark.files_per_sec 6.4%
- improvement
-Message-ID: <20240317203645.GB5975@lst.de>
-References: <202403151552.e3809b61-oliver.sang@intel.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=p93WRwniWv6hKPAUHh4ZTrZqQy9FBq1d97ZSfsvrUWhTrgJHKcqaicin6t9Sfm7hm+UDoMqMZCMF5Kqpx1xsco0gdnRL1zrTJhHECuFGerwBRD5AQHQBJM+MMeE+e0k/KoFp1nHog4vzrbniVb3TqeN2WIVH4f61sb5af+D/ACs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EzivUTTJ; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EzivUTTJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C5EFC43390;
+	Mon, 18 Mar 2024 08:47:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1710751670;
+	bh=Ew2uVxn7vsJK/JFcU9zZaMqRiK9DDlzk08Afo0ps6tI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=EzivUTTJsOVwzxrrjAi8avkIKYnbjeM4XRGeAWhECQodhvZC8kmFJWqaTzdz0pxWC
+	 P+u23knAXSnKZzwSijQvwcTp1Y6yj9Th6qF11ie0hubBxxB/lbWkBb8wG8INhF5gNt
+	 SD/6DmhfAK68FbBlHwoFcGYdsPbAjZTJXaQyWLRyUrU+DDiNfEIrK2L+dTACporQO1
+	 s0fBVumxqULEsAVUSP5Pg1kqLtxW7KR2VmNF4ZEemUk1fWUFSssa5XNq/GleRsKDdw
+	 aKUJD8WTFNE0x9UTeLrBts8E4bqGm+jegR21ZVPowPivX1mVBWpcVQmkp0orvcL5Oa
+	 eTYI7PqVNFLMw==
+Date: Mon, 18 Mar 2024 09:47:45 +0100
+From: Christian Brauner <brauner@kernel.org>
+To: Cyril Hrubis <chrubis@suse.cz>
+Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, 
+	linux-fsdevel@vger.kernel.org, lkp@intel.com, ltp@lists.linux.it, linux-kernel@vger.kernel.org
+Subject: Re: [LTP] [linus:master] [pidfd]  cb12fd8e0d: ltp.readahead01.fail
+Message-ID: <20240318-fegen-bezaubern-57b0a9c6f78b@brauner>
+References: <202403151507.5540b773-oliver.sang@intel.com>
+ <20240315-neufahrzeuge-kennt-317f2a903605@brauner>
+ <ZfRf36u7CH7bIEZ7@yuki>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <202403151552.e3809b61-oliver.sang@intel.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+In-Reply-To: <ZfRf36u7CH7bIEZ7@yuki>
 
-On Fri, Mar 15, 2024 at 04:21:13PM +0800, kernel test robot wrote:
+On Fri, Mar 15, 2024 at 03:49:03PM +0100, Cyril Hrubis wrote:
+> Hi!
+> > So I'd just remove that test. It's meaningless for pseudo fses.
 > 
-> 
-> Hello,
-> 
-> kernel test robot noticed a 6.4% improvement of fsmark.files_per_sec on:
-> 
-> 
-> commit: 63dfa1004322d596417f23da43cdc43cf6298c71 ("nvme: move NVME_QUIRK_DEALLOCATE_ZEROES out of nvme_config_discard")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> 
-> testcase: fsmark
-> test machine: 96 threads 2 sockets Intel(R) Xeon(R) Platinum 8260L CPU @ 2.40GHz (Cascade Lake) with 128G memory
-> parameters:
+> Wouldn't it make more sense to actually return EINVAL instead of
+> ignoring the request if readahead() is not implemented?
 
-That is kinda odd and unexpected.  Is this system using one of the old
-Intel SSDs that this quirk is actually used for?
-
+It would change the return value for a whole bunch of stuff. I'm not
+sure that wouldn't cause regressions but is in any case a question for
+the readahead maintainers. For now I'd just remove that test for pidfds
+imho.
