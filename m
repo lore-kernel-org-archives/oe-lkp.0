@@ -1,145 +1,99 @@
-Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D04A1514CE
-	for <oe-lkp@lists.linux.dev>; Mon, 25 Mar 2024 10:31:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61F1E58135
+	for <oe-lkp@lists.linux.dev>; Mon, 25 Mar 2024 14:39:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711362716; cv=none; b=g7jNveod2UyZ+Gj9jA+6x1UwzMoJEAXq56IwOpqojh1KRotI9wZ/iQYw7psI0DcQUwNrgqs/HnDPsFf4mHjdZbcFNseXL163IeVSvgCFVmP770LxOBt9egKMfR9oVVSrYiGsbR1YXv60wkkc29LhyngtKSDlkS6owNXcKWzwz4o=
+	t=1711377579; cv=none; b=L0vq7o1tlpiaZckJSPx3z6ZOea6XP0H4J/ue/6EAdgFvUkzAzI7HqqudwW3zc6zQ4omns1jxQP9PaaUhSxy14tfldH7X1F6UU/uulMbOceYD4pwC8C9RgY7LsYfmt9RXwwKBjsDCTrsuIDyaKukoPn4xou9AUKCQEkEk6yLXQ90=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711362716; c=relaxed/simple;
-	bh=Dbdkld9EIn5mxEib8xVsWINte3+ADKN1z1yj3vCs6Rg=;
+	s=arc-20240116; t=1711377579; c=relaxed/simple;
+	bh=PZs0rghxCeYopxbWbw9MtO4OhtjlQGpnCDFbcAELFfE=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=GJwTXvio4ZBH27fKprWevQxm2XuxjABJtFW8ltCxI356jKs1Wv6cDxRATo65q8ZgB+KNTH+gKvmiqV/k3fNHhZ0ceuDQb6MAPvgztc0YaMomdd599klg05Mizs34vonNBRXJwM0CYI8HXEGQfuAFjTCMTv/gJAsi7duE3bvpnrY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lgXpYrK3; arc=none smtp.client-ip=209.85.167.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 To:Cc:Content-Type; b=OUjr5bWhz6HxMkNmELcLfF2TRZFLsiif1764HdFsNM1fdssLo/F2WkPQXEngXIjON+V0Kx2K30FrkZs2vdZNEO4YZGEZ3vLkyECzJiB8miciO55Slsl0pUVCKB0OoIoPerScLgIV6JpdPWTpiZLHWBB+K6KaT2OJqUKlMzl3F3M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WH5TJY26; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lgXpYrK3"
-Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-513d4559fb4so5574857e87.3
-        for <oe-lkp@lists.linux.dev>; Mon, 25 Mar 2024 03:31:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1711362712; x=1711967512; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=Dbdkld9EIn5mxEib8xVsWINte3+ADKN1z1yj3vCs6Rg=;
-        b=lgXpYrK36EglAYgHqmmN88+ZhqJByBIloFJx5ppqerbzjn9ZLh36u0YO0Z7MGO09gS
-         wegpBt7gVOM3tdAgLjWSZwzNWHIrHWNMGT6L/+BtkrANaD0QrQw5wHBsbUbGhnr5+kzv
-         KNjvDAdLnFLIM8pbe8YyGQrMoVvFLs/pOOcXSo2HlHtjAw0XLg5vsVhZxEmdXvxan8g3
-         8s+oG83JSWRqX8EKqIfWY0F1/Mfm15crCOYVyqK4P7UpVdDMRUTH0RtgCrcxj26/My/T
-         pHgL0adtqQgkTt+YysHv4DFRk9MRMnUDL6QwAnoYL8Y6tMFZ5eNgSaznWUOu4UhgVn4S
-         DZiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1711362712; x=1711967512;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Dbdkld9EIn5mxEib8xVsWINte3+ADKN1z1yj3vCs6Rg=;
-        b=YxLjDES4orfgrAdhtdIerxsplbE8/1ZcmgbRnihLsYYEDLTEe/EHVAMYW9VUyXwd33
-         geFao1282C12eb5lOR+vmsY1AkBbrqm2Zv/FmjWrrptVopr2TGTgCGcwqrXChP29ysYe
-         euzz6sa21XM8ZwzVVrfrPhdWAspzCweAljDEQqpN9p17DHqmkBqoOyVH4fZTLOhQRDwT
-         1OpttnWu3mJq+8LgAZ6bFMcJ5ja6d92IVu6zfj+13zKL6wM2wOD3Sk8RG5sR+MjHdb9i
-         6IBoijTint/z8aVxwu6OTRJMBhd9mS0G/6wAkGfdR1JeUt9gyTfDbO71x/7/qde6uCjS
-         uhVA==
-X-Gm-Message-State: AOJu0YwMt/C+HJDJb19QS1L0UbHY8f+ACzmEALOFUwtbkbEG1vdIXGZ+
-	iFec/p5tx+o1fNyBuocJbIKsJb7soODsSGPH1AvekJzZ/13006boRgLE4k0+yuZUM1pEBVYKmfs
-	mtyYj+ph/c1bFb3a7DGWmXBs+Wmk=
-X-Google-Smtp-Source: AGHT+IEZrrW3vOVJicf/LJWc1jJKfh8xwURLN0NHHA7XVSrGGSYNh2jxYmNV4jLkP8w4dTUVhg8Kf7G/bCr+8tPPfmE=
-X-Received: by 2002:a2e:a714:0:b0:2d6:dac4:7d4f with SMTP id
- s20-20020a2ea714000000b002d6dac47d4fmr1068288lje.4.1711362712188; Mon, 25 Mar
- 2024 03:31:52 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WH5TJY26"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C393C43394
+	for <oe-lkp@lists.linux.dev>; Mon, 25 Mar 2024 14:39:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1711377579;
+	bh=PZs0rghxCeYopxbWbw9MtO4OhtjlQGpnCDFbcAELFfE=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=WH5TJY26+0r6af4PCB3nC8dtbN+CiM/zxpxYd3TrNv0IQOlfeie5r7m4xlD5DgJZH
+	 qtyp4yrdJFbG9Q0zQcSxnn1BVB0zmWluyZABlreoMDsCQz16A9FjyG/g7lc4irqEYU
+	 3cJ51nKFUJ3XpWSnD55ZCBEgHExZ/vEM8njiehkxc5ZifPUVbhhIkgOhG6T3JauR3g
+	 stttZqJjYGDvqerngylxCCpvKKJEokwAIX7eUuqVxy2MyHmOm6sXJGo6F9fOAhREIe
+	 r9w+YY5PYnX86qN4sjk8UPXMaBycOd/915XTt+a13oZAAjwDDO6qduAEDh5AsMRFnZ
+	 1CrcjuGadibsA==
+Received: by mail-lj1-f175.google.com with SMTP id 38308e7fff4ca-2d28051376eso83958301fa.0
+        for <oe-lkp@lists.linux.dev>; Mon, 25 Mar 2024 07:39:39 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCWKVJOiYZIviiG7nhQg3k5KaqtHN4Fsw8FcPXwD5ZmJmen2EM0iH4CI/EIy8bVTWBLiRZ1Vc1vwoObotwIOvCiIC+eEmVID
+X-Gm-Message-State: AOJu0Yzu5tIGjMb+GpXqWzUAw2IIkT6Nq5GSMsjtFde7YSmIPG6ZIgCP
+	9e+efpxOrBGF1u/MtYnTuRxNlphOojN2IxKAQVeI8+sH9SNdzvwFm2wE1iaYEm9tKZ6Fva8rhGF
+	ytZof9A41tBz86Ci2P4AWLZDYP+g=
+X-Google-Smtp-Source: AGHT+IHH26cHmmV9SSXvercnOW3q4Z3IV8TeJsgM4tS6cTt2iQbN68nCt0arJtH4KDnq7tOk1RLaXmAqJ/1c9CQYySE=
+X-Received: by 2002:a05:651c:2108:b0:2d6:cd05:1899 with SMTP id
+ a8-20020a05651c210800b002d6cd051899mr5202179ljq.17.1711377577590; Mon, 25 Mar
+ 2024 07:39:37 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202403251658.8e92a8bc-lkp@intel.com>
-In-Reply-To: <202403251658.8e92a8bc-lkp@intel.com>
-From: Uros Bizjak <ubizjak@gmail.com>
-Date: Mon, 25 Mar 2024 11:31:40 +0100
-Message-ID: <CAFULd4bFbhOQ+mx2=pKqLbLznR-UFZamS4HhdUYZF2qFKNcDVg@mail.gmail.com>
-Subject: Re: [linus:master] [x86/percpu] ca42563486: BUG:unable_to_handle_page_fault_for_address
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org, 
-	Ingo Molnar <mingo@kernel.org>, Nadav Amit <namit@vmware.com>, Andy Lutomirski <luto@kernel.org>, 
-	Brian Gerst <brgerst@gmail.com>, Denys Vlasenko <dvlasenk@redhat.com>, 
-	"H. Peter Anvin" <hpa@zytor.com>, Linus Torvalds <torvalds@linux-foundation.org>, 
-	Peter Zijlstra <peterz@infradead.org>, Thomas Gleixner <tglx@linutronix.de>, 
-	Josh Poimboeuf <jpoimboe@redhat.com>, linux-mm@kvack.org
-Content-Type: multipart/mixed; boundary="0000000000008ad00d061479ae18"
-
---0000000000008ad00d061479ae18
+References: <202403221630.2692c998-oliver.sang@intel.com> <20240324142532.GAZgA33M_u1lW_E_1n@fat_crate.local>
+In-Reply-To: <20240324142532.GAZgA33M_u1lW_E_1n@fat_crate.local>
+From: Ard Biesheuvel <ardb@kernel.org>
+Date: Mon, 25 Mar 2024 16:39:26 +0200
+X-Gmail-Original-Message-ID: <CAMj1kXE97o_T61AJ6wRAOpUvzon-45fnsT2dGB0GBP1x7bfGaw@mail.gmail.com>
+Message-ID: <CAMj1kXE97o_T61AJ6wRAOpUvzon-45fnsT2dGB0GBP1x7bfGaw@mail.gmail.com>
+Subject: Re: [linus:master] [x86/sme] 48204aba80: BUG:kernel_failed_in_early-boot_stage,last_printk:Booting_the_kernel(entry_offset:#)
+To: Borislav Petkov <bp@alien8.de>
+Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	linux-kernel@vger.kernel.org, Tom Lendacky <thomas.lendacky@amd.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Mon, Mar 25, 2024 at 9:50=E2=80=AFAM kernel test robot <oliver.sang@inte=
-l.com> wrote:
+On Sun, 24 Mar 2024 at 16:26, Borislav Petkov <bp@alien8.de> wrote:
 >
+> On Fri, Mar 22, 2024 at 05:03:18PM +0800, kernel test robot wrote:
+> >
+> >
+> > Hello,
+> >
+> > kernel test robot noticed "BUG:kernel_failed_in_early-boot_stage,last_printk:Booting_the_kernel(entry_offset:#)" on:
+> >
+> > commit: 48204aba801f1b512b3abed10b8e1a63e03f3dd1 ("x86/sme: Move early SME kernel encryption handling into .head.text")
+> > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> >
+> > [test failed on linus/master 741e9d668aa50c91e4f681511ce0e408d55dd7ce]
+> > [test failed on linux-next/master a1e7655b77e3391b58ac28256789ea45b1685abb]
+> >
+> > in testcase: boot
+> >
+> > compiler: gcc-12
+> > test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
 >
-> hi, Uros Bizjak,
+> My guest boots with your .config and SNB as CPU model:
 >
-> we reported an early crash issue for this commit last Oct.
-> https://lore.kernel.org/all/202310071301.a5113890-oliver.sang@intel.com/
+> ...
+> [    0.373770][    T1] smpboot: CPU0: Intel Xeon E312xx (Sandy Bridge) (family: 0x6, model: 0x2a, stepping: 0x1)
 >
-> as you mentioned at that time
-> "It is KASAN that is not compatible with named address spaces [1]."
+> Artefacts like:
 >
-> now we noticed the commit is merged into mainline, and we observed a diff=
-erent
-> issue related with kcsan_setup_watchpoint. below detail report FYI.
+> -initrd initrd-vm-meta-180.cgz
 >
-> [1] https://lore.kernel.org/lkml/CAHk-=3Dwi6U-O1wdPOESuCE6QO2OaPu0hEzaig0=
-uDOU4L5CREhug@mail.gmail.com/
+> or
+>
+> RESULT_ROOT=/result/boot/1/vm-snb/quantal-x86_64-core-20190426.cgz/x86_64-rhel-8.3-bpf/gcc-12/48204aba801f1b512b3abed10b8e1a63e03f3dd1/3
+>
+> I don't have and don't know how to generate here so I can't run your
+> exact reproducer.
 >
 
-Yes, it is the same issue, but with KCSAN.
+I ran the reproducer using the instructions, and things seem to work fine.
 
-> Hello,
->
-> kernel test robot noticed "BUG:unable_to_handle_page_fault_for_address" o=
-n:
->
-> commit: ca4256348660cb2162668ec3d13d1f921d05374a ("x86/percpu: Use C for =
-percpu read/write accessors")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
->
-> [test failed on linus/master b3603fcb79b1036acae10602bffc4855a4b9af80]
-> [test failed on linux-next/master 226d3c72fcde130a99d760895ebdd20e78e02cb=
-5]
->
-> in testcase: boot
->
-> compiler: gcc-12
-> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 1=
-6G
+https://paste.debian.net/1311951/
 
-We already have the candidate fix for GCC [1], the fix will be in gcc-13.3+=
-.
-
-[1] https://gcc.gnu.org/bugzilla/show_bug.cgi?id=3D111736
-
-Please find attached an emergency patch for mainline that disables
-named address spaces when KCSAN is enabled. I'll post a formal patch
-submission in a moment. The named AS will be re-enabled with KCSAN
-with a patch via -tip tree.
-
-Thanks,
-Uros.
-
---0000000000008ad00d061479ae18
-Content-Type: text/plain; charset="US-ASCII"; name="p.diff.txt"
-Content-Disposition: attachment; filename="p.diff.txt"
-Content-Transfer-Encoding: base64
-Content-ID: <f_lu6t4s5d0>
-X-Attachment-Id: f_lu6t4s5d0
-
-ZGlmZiAtLWdpdCBhL2FyY2gveDg2L0tjb25maWcgYi9hcmNoL3g4Ni9LY29uZmlnCmluZGV4IDM5
-ODg2YmFiOTQzYS4uNGZmZjZlZDQ2ZTkwIDEwMDY0NAotLS0gYS9hcmNoL3g4Ni9LY29uZmlnCisr
-KyBiL2FyY2gveDg2L0tjb25maWcKQEAgLTI0MzksNiArMjQzOSw4IEBAIGNvbmZpZyBVU0VfWDg2
-X1NFR19TVVBQT1JUCiAJIyB3aXRoIG5hbWVkIGFkZHJlc3Mgc3BhY2VzIC0gc2VlIEdDQyBQUiBz
-YW5pdGl6ZXIvMTExNzM2LgogCSMKIAlkZXBlbmRzIG9uICFLQVNBTgorCSMgLWZzYW5pdGl6ZT10
-aHJlYWQgKEtDU0FOKSBpcyBhbHNvIGluY29tcGF0aWJsZS4KKwlkZXBlbmRzIG9uICFLQ1NBTgog
-CiBjb25maWcgQ0NfSEFTX1NMUwogCWRlZl9ib29sICQoY2Mtb3B0aW9uLC1taGFyZGVuLXNscz1h
-bGwpCg==
---0000000000008ad00d061479ae18--
+Could you provide any information regarding the QEMU version and its
+BIOS implementation?
