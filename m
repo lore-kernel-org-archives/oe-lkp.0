@@ -1,99 +1,138 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61F1E58135
-	for <oe-lkp@lists.linux.dev>; Mon, 25 Mar 2024 14:39:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A5F01F19A;
+	Mon, 25 Mar 2024 16:58:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711377579; cv=none; b=L0vq7o1tlpiaZckJSPx3z6ZOea6XP0H4J/ue/6EAdgFvUkzAzI7HqqudwW3zc6zQ4omns1jxQP9PaaUhSxy14tfldH7X1F6UU/uulMbOceYD4pwC8C9RgY7LsYfmt9RXwwKBjsDCTrsuIDyaKukoPn4xou9AUKCQEkEk6yLXQ90=
+	t=1711385891; cv=none; b=uBvvfUHeIAZnpGK1QpRFexRTTdOQg1PgntlfqQbrjTZ97i2K+vbPMDd/izdmje0Gv2RCm2sdEFQuVy2QAgFl0HJGMgUqZzlTwYhJiGodd3W9K/jZ0pK3t2yXfSanKhOaCHHQqJe9+WCMnAzK7F3Z7SWHKo7ZLdFoyZEzKPR4Znw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711377579; c=relaxed/simple;
-	bh=PZs0rghxCeYopxbWbw9MtO4OhtjlQGpnCDFbcAELFfE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=OUjr5bWhz6HxMkNmELcLfF2TRZFLsiif1764HdFsNM1fdssLo/F2WkPQXEngXIjON+V0Kx2K30FrkZs2vdZNEO4YZGEZ3vLkyECzJiB8miciO55Slsl0pUVCKB0OoIoPerScLgIV6JpdPWTpiZLHWBB+K6KaT2OJqUKlMzl3F3M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WH5TJY26; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1711385891; c=relaxed/simple;
+	bh=e/xVjJ+Txpn1jD1gz/wJzBhLRQKHwgW2fvvAbF8e0lI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=hFATnhJ6hxGSNFRJeaf+T1jgnyw5OTqlJYFxPQnZB9aAvbAKoulW7ikAAWMcbkXRXJE4gkSTamFxD9F8EyM4ZIxu/591WOpSVGCePk1r747/2IAw+tBpaR7XpADW4+tD7VZ40RK3Mw5KaoE54Z22Ypx9DfY022UcwZMxFrEShao=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UI8R1bM8; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WH5TJY26"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C393C43394
-	for <oe-lkp@lists.linux.dev>; Mon, 25 Mar 2024 14:39:39 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UI8R1bM8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C9C4C43330;
+	Mon, 25 Mar 2024 16:58:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1711377579;
-	bh=PZs0rghxCeYopxbWbw9MtO4OhtjlQGpnCDFbcAELFfE=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=WH5TJY26+0r6af4PCB3nC8dtbN+CiM/zxpxYd3TrNv0IQOlfeie5r7m4xlD5DgJZH
-	 qtyp4yrdJFbG9Q0zQcSxnn1BVB0zmWluyZABlreoMDsCQz16A9FjyG/g7lc4irqEYU
-	 3cJ51nKFUJ3XpWSnD55ZCBEgHExZ/vEM8njiehkxc5ZifPUVbhhIkgOhG6T3JauR3g
-	 stttZqJjYGDvqerngylxCCpvKKJEokwAIX7eUuqVxy2MyHmOm6sXJGo6F9fOAhREIe
-	 r9w+YY5PYnX86qN4sjk8UPXMaBycOd/915XTt+a13oZAAjwDDO6qduAEDh5AsMRFnZ
-	 1CrcjuGadibsA==
-Received: by mail-lj1-f175.google.com with SMTP id 38308e7fff4ca-2d28051376eso83958301fa.0
-        for <oe-lkp@lists.linux.dev>; Mon, 25 Mar 2024 07:39:39 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCWKVJOiYZIviiG7nhQg3k5KaqtHN4Fsw8FcPXwD5ZmJmen2EM0iH4CI/EIy8bVTWBLiRZ1Vc1vwoObotwIOvCiIC+eEmVID
-X-Gm-Message-State: AOJu0Yzu5tIGjMb+GpXqWzUAw2IIkT6Nq5GSMsjtFde7YSmIPG6ZIgCP
-	9e+efpxOrBGF1u/MtYnTuRxNlphOojN2IxKAQVeI8+sH9SNdzvwFm2wE1iaYEm9tKZ6Fva8rhGF
-	ytZof9A41tBz86Ci2P4AWLZDYP+g=
-X-Google-Smtp-Source: AGHT+IHH26cHmmV9SSXvercnOW3q4Z3IV8TeJsgM4tS6cTt2iQbN68nCt0arJtH4KDnq7tOk1RLaXmAqJ/1c9CQYySE=
-X-Received: by 2002:a05:651c:2108:b0:2d6:cd05:1899 with SMTP id
- a8-20020a05651c210800b002d6cd051899mr5202179ljq.17.1711377577590; Mon, 25 Mar
- 2024 07:39:37 -0700 (PDT)
+	s=k20201202; t=1711385890;
+	bh=e/xVjJ+Txpn1jD1gz/wJzBhLRQKHwgW2fvvAbF8e0lI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=UI8R1bM8qckBeAcjnlUX7Lgl53Io6VRBEFb4dyb/JkoXuYoy+lw58qfSUQPD/9tXa
+	 adf9zddaD6dtBR+CBDJzW4z8uAhi/kbOzH4AoceK0tcA9yw47Z7MVd7hlAghwLxPxf
+	 UH7TI206OX9qQOULEZF50QcJRWHiTNp9mIRfbb/iqCnzwAn9WD/dmaa+bpwFvrTyeW
+	 OGZkfF6iVg4120XyhlmoNa8vsGb687faS2ekMhLG6NIwFjqo2QFRv/zTrjD+jiFRrG
+	 BiEKehUeyaNrJln4unEr15fMRykb5r+gygnHJcdaZAUzHD3zNvj3WTXsVUrOCvBYSt
+	 qu551LF2Metkg==
+Date: Mon, 25 Mar 2024 09:58:09 -0700
+From: "Darrick J. Wong" <djwong@kernel.org>
+To: Christian Brauner <brauner@kernel.org>,
+	Dave Chinner <david@fromorbit.com>
+Cc: kernel test robot <oliver.sang@intel.com>,
+	Taylor Jackson <taylor.a.jackson@me.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, Linux Memory Management List <linux-mm@kvack.org>,
+	linux-fsdevel@vger.kernel.org, xfs <linux-xfs@vger.kernel.org>,
+	fstests <fstests@vger.kernel.org>
+Subject: Re: [linux-next:master] [fs/mnt_idmapping.c]  b4291c7fd9:
+ xfstests.generic.645.fail
+Message-ID: <20240325165809.GA6375@frogsfrogsfrogs>
+References: <202402191416.17ec9160-oliver.sang@intel.com>
+ <20240220-fungieren-nutzen-311ef3e57e8a@brauner>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202403221630.2692c998-oliver.sang@intel.com> <20240324142532.GAZgA33M_u1lW_E_1n@fat_crate.local>
-In-Reply-To: <20240324142532.GAZgA33M_u1lW_E_1n@fat_crate.local>
-From: Ard Biesheuvel <ardb@kernel.org>
-Date: Mon, 25 Mar 2024 16:39:26 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXE97o_T61AJ6wRAOpUvzon-45fnsT2dGB0GBP1x7bfGaw@mail.gmail.com>
-Message-ID: <CAMj1kXE97o_T61AJ6wRAOpUvzon-45fnsT2dGB0GBP1x7bfGaw@mail.gmail.com>
-Subject: Re: [linus:master] [x86/sme] 48204aba80: BUG:kernel_failed_in_early-boot_stage,last_printk:Booting_the_kernel(entry_offset:#)
-To: Borislav Petkov <bp@alien8.de>
-Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
-	linux-kernel@vger.kernel.org, Tom Lendacky <thomas.lendacky@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240220-fungieren-nutzen-311ef3e57e8a@brauner>
 
-On Sun, 24 Mar 2024 at 16:26, Borislav Petkov <bp@alien8.de> wrote:
->
-> On Fri, Mar 22, 2024 at 05:03:18PM +0800, kernel test robot wrote:
-> >
-> >
+On Tue, Feb 20, 2024 at 09:57:30AM +0100, Christian Brauner wrote:
+> On Mon, Feb 19, 2024 at 02:55:42PM +0800, kernel test robot wrote:
+> > 
+> > 
 > > Hello,
-> >
-> > kernel test robot noticed "BUG:kernel_failed_in_early-boot_stage,last_printk:Booting_the_kernel(entry_offset:#)" on:
-> >
-> > commit: 48204aba801f1b512b3abed10b8e1a63e03f3dd1 ("x86/sme: Move early SME kernel encryption handling into .head.text")
-> > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> >
-> > [test failed on linus/master 741e9d668aa50c91e4f681511ce0e408d55dd7ce]
-> > [test failed on linux-next/master a1e7655b77e3391b58ac28256789ea45b1685abb]
-> >
-> > in testcase: boot
-> >
+> > 
+> > kernel test robot noticed "xfstests.generic.645.fail" on:
+> > 
+> > commit: b4291c7fd9e550b91b10c3d7787b9bf5be38de67 ("fs/mnt_idmapping.c: Return -EINVAL when no map is written")
+> > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+> 
+> The test needs to be updated. We now explicitly fail when no map is
+> written.
+
+Has there been any progress on updating generic/645?  6.9-rc1 is out,
+and Dave and I have both noticed this regressing.
+
+--D
+
+> > 
+> > [test failed on linux-next/master d37e1e4c52bc60578969f391fb81f947c3e83118]
+> > 
+> > in testcase: xfstests
+> > version: xfstests-x86_64-c46ca4d1-1_20240205
+> > with following parameters:
+> > 
+> > 	disk: 4HDD
+> > 	fs: f2fs
+> > 	test: generic-645
+> > 
+> > 
+> > 
 > > compiler: gcc-12
-> > test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
->
-> My guest boots with your .config and SNB as CPU model:
->
-> ...
-> [    0.373770][    T1] smpboot: CPU0: Intel Xeon E312xx (Sandy Bridge) (family: 0x6, model: 0x2a, stepping: 0x1)
->
-> Artefacts like:
->
-> -initrd initrd-vm-meta-180.cgz
->
-> or
->
-> RESULT_ROOT=/result/boot/1/vm-snb/quantal-x86_64-core-20190426.cgz/x86_64-rhel-8.3-bpf/gcc-12/48204aba801f1b512b3abed10b8e1a63e03f3dd1/3
->
-> I don't have and don't know how to generate here so I can't run your
-> exact reproducer.
->
-
-I ran the reproducer using the instructions, and things seem to work fine.
-
-https://paste.debian.net/1311951/
-
-Could you provide any information regarding the QEMU version and its
-BIOS implementation?
+> > test machine: 4 threads Intel(R) Core(TM) i5-6500 CPU @ 3.20GHz (Skylake) with 32G memory
+> > 
+> > (please refer to attached dmesg/kmsg for entire log/backtrace)
+> > 
+> > 
+> > 
+> > 
+> > If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> > the same patch/commit), kindly add following tags
+> > | Reported-by: kernel test robot <oliver.sang@intel.com>
+> > | Closes: https://lore.kernel.org/oe-lkp/202402191416.17ec9160-oliver.sang@intel.com
+> > 
+> > 2024-02-17 15:04:19 export TEST_DIR=/fs/sda1
+> > 2024-02-17 15:04:19 export TEST_DEV=/dev/sda1
+> > 2024-02-17 15:04:19 export FSTYP=f2fs
+> > 2024-02-17 15:04:19 export SCRATCH_MNT=/fs/scratch
+> > 2024-02-17 15:04:19 mkdir /fs/scratch -p
+> > 2024-02-17 15:04:19 export SCRATCH_DEV=/dev/sda4
+> > 2024-02-17 15:04:19 export MKFS_OPTIONS=-f
+> > 2024-02-17 15:04:19 echo generic/645
+> > 2024-02-17 15:04:19 ./check generic/645
+> > FSTYP         -- f2fs
+> > PLATFORM      -- Linux/x86_64 lkp-skl-d03 6.8.0-rc1-00033-gb4291c7fd9e5 #1 SMP PREEMPT_DYNAMIC Sat Feb 17 22:11:35 CST 2024
+> > MKFS_OPTIONS  -- -f /dev/sda4
+> > MOUNT_OPTIONS -- -o acl,user_xattr /dev/sda4 /fs/scratch
+> > 
+> > generic/645       [failed, exit status 1]- output mismatch (see /lkp/benchmarks/xfstests/results//generic/645.out.bad)
+> >     --- tests/generic/645.out	2024-02-05 17:37:40.000000000 +0000
+> >     +++ /lkp/benchmarks/xfstests/results//generic/645.out.bad	2024-02-17 15:07:42.613312168 +0000
+> >     @@ -1,2 +1,4 @@
+> >      QA output created by 645
+> >      Silence is golden
+> >     +idmapped-mounts.c: 6671: nested_userns - Invalid argument - failure: sys_mount_setattr
+> >     +vfstest.c: 2418: run_test - Invalid argument - failure: test that nested user namespaces behave correctly when attached to idmapped mounts
+> >     ...
+> >     (Run 'diff -u /lkp/benchmarks/xfstests/tests/generic/645.out /lkp/benchmarks/xfstests/results//generic/645.out.bad'  to see the entire diff)
+> > Ran: generic/645
+> > Failures: generic/645
+> > Failed 1 of 1 tests
+> > 
+> > 
+> > 
+> > 
+> > The kernel config and materials to reproduce are available at:
+> > https://download.01.org/0day-ci/archive/20240219/202402191416.17ec9160-oliver.sang@intel.com
+> > 
+> > 
+> > 
+> > -- 
+> > 0-DAY CI Kernel Test Service
+> > https://github.com/intel/lkp-tests/wiki
+> > 
+> 
