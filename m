@@ -1,138 +1,73 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35C721C698
-	for <oe-lkp@lists.linux.dev>; Tue, 26 Mar 2024 08:59:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3EA525677D;
+	Tue, 26 Mar 2024 11:43:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711443557; cv=none; b=Vai/lBU8cB+JBmsWwkaxRcNcagBX0JR0r/UkFWu0pU5J4Yy8ukFimIusXiIOW+xeRfiDgNxrb9fnh6NfSIsHmmm1W4AIzzH/i4rvBdhwQUrkFHBynAXCdw72kCBTJuJCbZz+IduBxJDi6VvhdG7LIQxUYj07XljR240jgvKBtu0=
+	t=1711453414; cv=none; b=CtZLd9+dtcQaX5c0NIw5Oh4qXepVpm8Q6WRdUVDfFN1vI4j9frGaaaQcRllQMqueajXughwEFNnKrCbX67rPbnoHIF5FBTHoe6UKeLTr1JTFbU6hJxcaBt8xwYNdjqlv1UfYQGJ3DVgTqfOP281+3VajjdoQJltdCFk61RaBLbk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711443557; c=relaxed/simple;
-	bh=JQUcYa55YWe6URT24FF22nspI3258qVvV/c52rDJNis=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=pyX4cgF37Z9mkfEGWcR2An5mo5nMaC2eMNufPGoPwUPnE3KutsWovwsM1XqA0yG25Co6ZQ2NkfhwrrcUzZG2FoRIzr4gOr/8YlWuFrZTLdseMtnPOnp8tSe9fEWBXuNV8iGgI784s2sIQ0ARWoT4AlFd7Ltd7khfWHUD0DRqw2M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Fefla831; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1711453414; c=relaxed/simple;
+	bh=yZ8PGm9pGHgURDAPAaNphQrONNLnTTecpSakMETCtBw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=TVOBF93IocXI3Zvjt2JEgDrznrXQrFHtULbeDRxrMTdH7Q8ZNG8a0iUSjOIrJbe0FVBmW0uPvovVaLYsEjA3tms6euZF7PTfqdsSfZqWWlDrOakhxBU81+cl/vKo9RudLObL61U7dqRGv5aga6tr4oWbr8sFfT18wsrwfFMBkxI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RkSpmVMN; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Fefla831"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8C06C43394
-	for <oe-lkp@lists.linux.dev>; Tue, 26 Mar 2024 08:59:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RkSpmVMN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81667C433F1;
+	Tue, 26 Mar 2024 11:43:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1711443556;
-	bh=JQUcYa55YWe6URT24FF22nspI3258qVvV/c52rDJNis=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=Fefla831+rH2LP7Fj8sBTWvyx0vjtgi7ZwYGDZL6vf7YoqJpKocOZ+6SkddpRF1kP
-	 yLldb0mNEfpytdW/bFV8IO3PN/JzNxw3gjB5xXNJj9FzT9e2XuZBhIlb0NgLEDvJGY
-	 92JiBh0bJ1oEBK/WTpvIXO5QdCQ0oAYB59nlW5e/8B4sCm0dKPKzv7HxnndVa2dbEi
-	 nvEjSPJMwBGYFUUv2pTnRkyW+9DakDKMVNx0J+5folVtlik9byo/UQwncyOkvLDzqy
-	 c95cdNiKp4n8evmoc8PYubJgbfZCNL5z/H6k2LQMfzfIbska6MsFMEkPgFz0lEcSwY
-	 WlxPosPBgGnsg==
-Received: by mail-lj1-f176.google.com with SMTP id 38308e7fff4ca-2d46dd5f222so63336271fa.1
-        for <oe-lkp@lists.linux.dev>; Tue, 26 Mar 2024 01:59:16 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCXZnh7mJwhZSL7j3448ZsnkAOnW5lSCutXgTiFIkpsCBg1tTuUmst/sAhJcCQGTOG7iPwzFm3YUEJdlaHBHMggSM1BgmeN7
-X-Gm-Message-State: AOJu0YxsdM6br31J58VXb4+j8IU5apuWEVsbZVvXZg9j1Q8XYs7HIF1c
-	Zm6n0bM8V6qfG1FLRunxW16E33pZAo2S6IrDh/iw0hlIaxRcKs3uOkGb0ErUpPifPIhwAOxApTh
-	ek63ogDx+oR6uv9ehJ5faZBgYTn8=
-X-Google-Smtp-Source: AGHT+IFfi/2Q8jfll0xvVyaGQD54qbE3f5lDe2sICSST5KdE28QD92QVbSCVl1hvUSwYKBa5Je9BNmg+9az1X4LLAg0=
-X-Received: by 2002:a2e:998b:0:b0:2d4:973e:247f with SMTP id
- w11-20020a2e998b000000b002d4973e247fmr428618lji.23.1711443555065; Tue, 26 Mar
- 2024 01:59:15 -0700 (PDT)
+	s=k20201202; t=1711453413;
+	bh=yZ8PGm9pGHgURDAPAaNphQrONNLnTTecpSakMETCtBw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=RkSpmVMN6OcFSmslNIo12zbQntLVSJQb8he4SpxtXUr0R+ZvxrTftivvDW6SpioFJ
+	 UxmSnrvRHXilbhkWVYQoqFfaPyp7UVb74UHDE+UMYXFxR+u+AQCVbNRmsB/yKvfJEa
+	 ZlEB+1bF78E6Bv+fQ7PRLPTBfJHForxfwTJVulDbUj714M7kH+muOzB+xEovo9FcG0
+	 tF6ydwSsRLBUTP7c1Y1p3VFkUB1tSNfw8m+l8K0qLzzQKgef0w9+NEbcQPihqHxM14
+	 3CXErA4nkMPy3TgQtk5MbVWJ1W5VyKPsCTC/336jyMlnqbtzURZxNqTZSXlVIQBZcd
+	 Ft0KClht0pGRQ==
+Date: Tue, 26 Mar 2024 12:43:27 +0100
+From: Christian Brauner <brauner@kernel.org>
+To: "Darrick J. Wong" <djwong@kernel.org>
+Cc: Dave Chinner <david@fromorbit.com>, 
+	kernel test robot <oliver.sang@intel.com>, Taylor Jackson <taylor.a.jackson@me.com>, oe-lkp@lists.linux.dev, 
+	lkp@intel.com, Linux Memory Management List <linux-mm@kvack.org>, 
+	linux-fsdevel@vger.kernel.org, xfs <linux-xfs@vger.kernel.org>, 
+	fstests <fstests@vger.kernel.org>
+Subject: Re: [linux-next:master] [fs/mnt_idmapping.c]  b4291c7fd9:
+ xfstests.generic.645.fail
+Message-ID: <20240326-dampf-angemacht-35d6993d67fa@brauner>
+References: <202402191416.17ec9160-oliver.sang@intel.com>
+ <20240220-fungieren-nutzen-311ef3e57e8a@brauner>
+ <20240325165809.GA6375@frogsfrogsfrogs>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202403221630.2692c998-oliver.sang@intel.com> <20240324142532.GAZgA33M_u1lW_E_1n@fat_crate.local>
- <CAMj1kXE97o_T61AJ6wRAOpUvzon-45fnsT2dGB0GBP1x7bfGaw@mail.gmail.com> <ZgKH0LbdN0aDyvRe@xsang-OptiPlex-9020>
-In-Reply-To: <ZgKH0LbdN0aDyvRe@xsang-OptiPlex-9020>
-From: Ard Biesheuvel <ardb@kernel.org>
-Date: Tue, 26 Mar 2024 10:59:04 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXG2D8cwtXTqjepm30B9X9KQD_q2XMDAA522mv9z-5_-ug@mail.gmail.com>
-Message-ID: <CAMj1kXG2D8cwtXTqjepm30B9X9KQD_q2XMDAA522mv9z-5_-ug@mail.gmail.com>
-Subject: Re: [linus:master] [x86/sme] 48204aba80: BUG:kernel_failed_in_early-boot_stage,last_printk:Booting_the_kernel(entry_offset:#)
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: Borislav Petkov <bp@alien8.de>, oe-lkp@lists.linux.dev, lkp@intel.com, 
-	linux-kernel@vger.kernel.org, Tom Lendacky <thomas.lendacky@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20240325165809.GA6375@frogsfrogsfrogs>
 
-On Tue, 26 Mar 2024 at 10:31, Oliver Sang <oliver.sang@intel.com> wrote:
->
-> hi, Ard Biesheuvel,
->
-> On Mon, Mar 25, 2024 at 04:39:26PM +0200, Ard Biesheuvel wrote:
-> > On Sun, 24 Mar 2024 at 16:26, Borislav Petkov <bp@alien8.de> wrote:
-> > >
-> > > On Fri, Mar 22, 2024 at 05:03:18PM +0800, kernel test robot wrote:
-> > > >
-> > > >
-> > > > Hello,
-> > > >
-> > > > kernel test robot noticed "BUG:kernel_failed_in_early-boot_stage,last_printk:Booting_the_kernel(entry_offset:#)" on:
-> > > >
-> > > > commit: 48204aba801f1b512b3abed10b8e1a63e03f3dd1 ("x86/sme: Move early SME kernel encryption handling into .head.text")
-> > > > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> > > >
-> > > > [test failed on linus/master 741e9d668aa50c91e4f681511ce0e408d55dd7ce]
-> > > > [test failed on linux-next/master a1e7655b77e3391b58ac28256789ea45b1685abb]
-> > > >
-> > > > in testcase: boot
-> > > >
-> > > > compiler: gcc-12
-> > > > test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-> > >
-> > > My guest boots with your .config and SNB as CPU model:
-> > >
-> > > ...
-> > > [    0.373770][    T1] smpboot: CPU0: Intel Xeon E312xx (Sandy Bridge) (family: 0x6, model: 0x2a, stepping: 0x1)
-> > >
-> > > Artefacts like:
-> > >
-> > > -initrd initrd-vm-meta-180.cgz
-> > >
-> > > or
-> > >
-> > > RESULT_ROOT=/result/boot/1/vm-snb/quantal-x86_64-core-20190426.cgz/x86_64-rhel-8.3-bpf/gcc-12/48204aba801f1b512b3abed10b8e1a63e03f3dd1/3
-> > >
-> > > I don't have and don't know how to generate here so I can't run your
-> > > exact reproducer.
-> > >
-> >
-> > I ran the reproducer using the instructions, and things seem to work fine.
-> >
-> > https://paste.debian.net/1311951/
-> >
-> > Could you provide any information regarding the QEMU version and its
-> > BIOS implementation?
->
-> for QEMU version:
->
-> $ qemu-system-x86_64 --version
-> QEMU emulator version 7.2.9 (Debian 1:7.2+dfsg-7+deb12u5)
-> Copyright (c) 2003-2022 Fabrice Bellard and the QEMU Project developers
->
+On Mon, Mar 25, 2024 at 09:58:09AM -0700, Darrick J. Wong wrote:
+> On Tue, Feb 20, 2024 at 09:57:30AM +0100, Christian Brauner wrote:
+> > On Mon, Feb 19, 2024 at 02:55:42PM +0800, kernel test robot wrote:
+> > > 
+> > > 
+> > > Hello,
+> > > 
+> > > kernel test robot noticed "xfstests.generic.645.fail" on:
+> > > 
+> > > commit: b4291c7fd9e550b91b10c3d7787b9bf5be38de67 ("fs/mnt_idmapping.c: Return -EINVAL when no map is written")
+> > > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+> > 
+> > The test needs to be updated. We now explicitly fail when no map is
+> > written.
+> 
+> Has there been any progress on updating generic/645?  6.9-rc1 is out,
+> and Dave and I have both noticed this regressing.
 
-I tested the exact same version.
-
-Does it reproduce with -cpu host instead of -cpu SandyBridge? When
-running under KVM, I suspect emulating the actual host uarch rather
-than setting a different one is a more reliable strategy. What CPU
-type does the host have?
-
->
-> for BIOS:
->
-> We don't specify bios option for qemu, my understanding is we just run with
-> default bios for qemu (the seabios). Extra info of seabios
->
-
-Today, legacy BIOS boot is only used by a minority of x86 systems in
-the field, so for better coverage, it would make sense to at least
-start testing UEFI as well.
-
-On debian, just install the ovmf package, and pass -bios
-/usr/share/ovmf/OVMF.fd on the QEMU command line.
-
-And given that you are doing virt based boot testing, another very
-important use case is TDX boot (as well as SEV-SNP, but that may be
-more difficult for you to organize). But please explore internally at
-Intel whether TDX can be added to your test matrix as well.
+Iirc, Taylor wanted to fix this but it seems that hasn't happened yet.
+I'll ping again and if nothing's happened until tomorrow I'll send a
+patch.
