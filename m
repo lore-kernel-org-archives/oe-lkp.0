@@ -1,212 +1,138 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E2E6C2E9
-	for <oe-lkp@lists.linux.dev>; Tue, 26 Mar 2024 08:31:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.15
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711441897; cv=fail; b=UhJW3g1CZd+DP1S80i0/Ugh4G6YUjCltROWnspZYI/l+VzyTcj636kQAaWzx4pJ0vLu87BqLB6iFnW81Xk+fLB3cuEUPR2NCCE6ngJbA7UTRUFz2wJ9OqYlLYhg7b1vvfDTV0BQFqkpzIASTclFvA22rbD4M+S6hdfv7e2IgHFQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711441897; c=relaxed/simple;
-	bh=s8387OUOayUETxja4ZeANnsWVXyvjmUCUmBQ1YEgJeY=;
-	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=ed/MwC9DLMrr8FvutYGLF/wzGI2o1hvOKuDP7pGmrUXCv2GWC8wWmoBpRaYQC+CdCUMDbaStD30g9bGmlIjz6KppJrpjy02E1WxzEea9WDNGQFqtujvVfMNY+WYgIozgkcX3uxq65Ur9GYaQ/yDyHtB0WIckMJ0VrcYMzPqwg3w=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VA2Z0UQ3; arc=fail smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35C721C698
+	for <oe-lkp@lists.linux.dev>; Tue, 26 Mar 2024 08:59:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1711443557; cv=none; b=Vai/lBU8cB+JBmsWwkaxRcNcagBX0JR0r/UkFWu0pU5J4Yy8ukFimIusXiIOW+xeRfiDgNxrb9fnh6NfSIsHmmm1W4AIzzH/i4rvBdhwQUrkFHBynAXCdw72kCBTJuJCbZz+IduBxJDi6VvhdG7LIQxUYj07XljR240jgvKBtu0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1711443557; c=relaxed/simple;
+	bh=JQUcYa55YWe6URT24FF22nspI3258qVvV/c52rDJNis=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=pyX4cgF37Z9mkfEGWcR2An5mo5nMaC2eMNufPGoPwUPnE3KutsWovwsM1XqA0yG25Co6ZQ2NkfhwrrcUzZG2FoRIzr4gOr/8YlWuFrZTLdseMtnPOnp8tSe9fEWBXuNV8iGgI784s2sIQ0ARWoT4AlFd7Ltd7khfWHUD0DRqw2M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Fefla831; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VA2Z0UQ3"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1711441896; x=1742977896;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=s8387OUOayUETxja4ZeANnsWVXyvjmUCUmBQ1YEgJeY=;
-  b=VA2Z0UQ3QsYSvNz+FWkKn0uO1Zf6gbNWWIv2B/hx8RhDzatXh3aV6Ufs
-   BxHMIAK9nNBrTfSDLhAfS+h8BBfJpkqPAgFQJDtexW2Xpz7rsh9mAdnnf
-   GlXUYtB4Qlfk/uxk0GaPuNEuHgMm1HMuX7uspH5NpdMC8J0gdjWJG2jLw
-   Jss023MMN6nHEfODqwf4fX1yxw44NC9Y6d1KiJJEpe8byL3xWV8x4fP3S
-   MO/yz3x5gR+fDhKLQ+q7O4EYCc91ABj/DP1nB7ol26w2ilHmv8rpVqBM1
-   iCQsFcmuNiWCuFagLuLNAhMFMIQPfIjj/ubvGYKn8oYVxhSfN0rpSo++F
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,11024"; a="10273376"
-X-IronPort-AV: E=Sophos;i="6.07,155,1708416000"; 
-   d="scan'208";a="10273376"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Mar 2024 01:31:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,155,1708416000"; 
-   d="scan'208";a="15953619"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmviesa006.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 26 Mar 2024 01:31:23 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Tue, 26 Mar 2024 01:31:22 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Tue, 26 Mar 2024 01:31:22 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35 via Frontend Transport; Tue, 26 Mar 2024 01:31:22 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.169)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Tue, 26 Mar 2024 01:31:22 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aoPQR+H3s4JkBIhBHVUfdSCdXlGU+T4IidsCabOA5VEqvqxtkn7rWapHaFsXXu5FSA2CLyNacHARcNYFZ/3DjLHxGaJdttemmVwrMog8P87xbUHdpc6lNrvFjtkJvP9KANITTjcj4eBs4U5qHiWR+kCnjme8Dq7148SgquXTbkW71dlDymfp827oKvhf1XNl1OrcsBDeGfKItCH/6HsGmogPPnkQanKOMDuUCA1QwCxjELh+OoE83nvxEep/4mDcEm5ZOWCh+c4dQaDczO/f0jOzyTa+hzhx9ApxIpT3WD+J0d4obADjHMssy30x2qarSt7IuCqpP/FtMrMy/pJHBg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7ooIfT8z4y4aMPUUf1keFoi04hVNSDFQBMKI49kCm1M=;
- b=iRnE/u3do36rARPrMTmhTICI6gb+SP7ysGW+IMWuwgoPErZSe0nGpLL8dzblGClha1F/u+HKG0zr2IoImXuIPZivMU/CsQhrbxBofLQJsqXnrjBjneNje72wo0yFrShTw4M8R4y9rkbh7TK8WHpWozWBBF8g4wTj7Y2wMHVZv4uLVHgEl39RhvQutvBihoZMgNQQJawvJNBeekChP1jt9hWBNJr5ubKnGzDOfRLTAx45tKGItKqxCgumfYrZX9qS4Roj1J6wAXtEP1KOSUbup0iVEgErbAnEFVTf+xQe/TMqiO3X4yE2rcOTVmqZL6Kg7C/o/KAPBLK+Fh3d6jN2Gw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by PH0PR11MB7447.namprd11.prod.outlook.com (2603:10b6:510:28b::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7362.22; Tue, 26 Mar
- 2024 08:31:20 +0000
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::58dd:99ca:74a6:2e3e]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::58dd:99ca:74a6:2e3e%3]) with mapi id 15.20.7409.031; Tue, 26 Mar 2024
- 08:31:20 +0000
-Date: Tue, 26 Mar 2024 16:31:12 +0800
-From: Oliver Sang <oliver.sang@intel.com>
-To: Ard Biesheuvel <ardb@kernel.org>
-CC: Borislav Petkov <bp@alien8.de>, <oe-lkp@lists.linux.dev>, <lkp@intel.com>,
-	<linux-kernel@vger.kernel.org>, Tom Lendacky <thomas.lendacky@amd.com>,
-	<oliver.sang@intel.com>
-Subject: Re: [linus:master] [x86/sme] 48204aba80:
- BUG:kernel_failed_in_early-boot_stage,last_printk:Booting_the_kernel(entry_offset:#)
-Message-ID: <ZgKH0LbdN0aDyvRe@xsang-OptiPlex-9020>
-References: <202403221630.2692c998-oliver.sang@intel.com>
- <20240324142532.GAZgA33M_u1lW_E_1n@fat_crate.local>
- <CAMj1kXE97o_T61AJ6wRAOpUvzon-45fnsT2dGB0GBP1x7bfGaw@mail.gmail.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <CAMj1kXE97o_T61AJ6wRAOpUvzon-45fnsT2dGB0GBP1x7bfGaw@mail.gmail.com>
-X-ClientProxiedBy: SI2PR04CA0005.apcprd04.prod.outlook.com
- (2603:1096:4:197::16) To LV3PR11MB8603.namprd11.prod.outlook.com
- (2603:10b6:408:1b6::9)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Fefla831"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8C06C43394
+	for <oe-lkp@lists.linux.dev>; Tue, 26 Mar 2024 08:59:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1711443556;
+	bh=JQUcYa55YWe6URT24FF22nspI3258qVvV/c52rDJNis=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=Fefla831+rH2LP7Fj8sBTWvyx0vjtgi7ZwYGDZL6vf7YoqJpKocOZ+6SkddpRF1kP
+	 yLldb0mNEfpytdW/bFV8IO3PN/JzNxw3gjB5xXNJj9FzT9e2XuZBhIlb0NgLEDvJGY
+	 92JiBh0bJ1oEBK/WTpvIXO5QdCQ0oAYB59nlW5e/8B4sCm0dKPKzv7HxnndVa2dbEi
+	 nvEjSPJMwBGYFUUv2pTnRkyW+9DakDKMVNx0J+5folVtlik9byo/UQwncyOkvLDzqy
+	 c95cdNiKp4n8evmoc8PYubJgbfZCNL5z/H6k2LQMfzfIbska6MsFMEkPgFz0lEcSwY
+	 WlxPosPBgGnsg==
+Received: by mail-lj1-f176.google.com with SMTP id 38308e7fff4ca-2d46dd5f222so63336271fa.1
+        for <oe-lkp@lists.linux.dev>; Tue, 26 Mar 2024 01:59:16 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCXZnh7mJwhZSL7j3448ZsnkAOnW5lSCutXgTiFIkpsCBg1tTuUmst/sAhJcCQGTOG7iPwzFm3YUEJdlaHBHMggSM1BgmeN7
+X-Gm-Message-State: AOJu0YxsdM6br31J58VXb4+j8IU5apuWEVsbZVvXZg9j1Q8XYs7HIF1c
+	Zm6n0bM8V6qfG1FLRunxW16E33pZAo2S6IrDh/iw0hlIaxRcKs3uOkGb0ErUpPifPIhwAOxApTh
+	ek63ogDx+oR6uv9ehJ5faZBgYTn8=
+X-Google-Smtp-Source: AGHT+IFfi/2Q8jfll0xvVyaGQD54qbE3f5lDe2sICSST5KdE28QD92QVbSCVl1hvUSwYKBa5Je9BNmg+9az1X4LLAg0=
+X-Received: by 2002:a2e:998b:0:b0:2d4:973e:247f with SMTP id
+ w11-20020a2e998b000000b002d4973e247fmr428618lji.23.1711443555065; Tue, 26 Mar
+ 2024 01:59:15 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|PH0PR11MB7447:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ju55KxJ42uX6m4KXZKDpRe53xBMupDBD3+JdfCxQgQpuAp2WnGyJre6ruWLZ4LpwqIBiNeskd1+4HiUYxJ5AQKB05611D0Xmn4qS46rgsIUaEdsv36r/9HGyf7Km0tWzenz8GPBggu86jQ40EJLVLOju0HkUaiEUk25yCB7nHhTNw7lpYoFeQ+B1m1BKWcvpHPEwufLE8q8ec3RV2PUXmL9aGPnonNcJYXgIlmYP02TiDcVm82+tpLIw6K6FjXPYKeWv73QCmzuMKycQRd15GmhhqPMYZNlFahm0XjzDYTpnVnTQffAHvDxTOCE8f+R3YcCQqCVgMlPbpiYsLPKnHlj1UtCAaCu4D8N1pzwN3n9RPAfdnRK0LqKF3UKc17Xw5mWfzJcX4+4TCQIPm1PTGWj+P3XY6c0gxyg1e3CzvD2h95aD63BXsGqFYP39i53uIh+jJtejqvoYY130IDOeB8X0VV0AZdTHphXGuFaSfzbR3G/BiXtL0Nrd/ywYIngd9Zl36lJwS0IDPCd1mwKxinuDbra6vMt2IKyV8CMQstf7UlXLe7HjI5ygbVcpYuvgJcw6r0bIt0rKu98BG442aRZlGGGkAv7cQMVP/Uj09c4=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376005)(1800799015)(366007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?75lekt+bTPJuijNmYuEzBn0133hS0stZsVPeKHNaYqMFPkgQDcZ7Hx2NpBC2?=
- =?us-ascii?Q?NBK76xuRKitEqSPspOTkEsB/Tjanye2EhxsjbYpTPE5RM9buD9K4QT0WlylH?=
- =?us-ascii?Q?hS/iQle0R/7hX8v4ERLquM2V10Vf2fdBRMbrs8YGmQIoz2lCo4KX9jMGvMXE?=
- =?us-ascii?Q?qydY5BUiaxxrZR+8EfXB0+MlUmwAK/ifZhv6OeV8Ua3LPVQYgJApkWY4bvNI?=
- =?us-ascii?Q?ePwijot4RWm4+PpU3CgNLshxrwBCKmlADvr/ztiuZpEBwQl8ipqLSjJbGdOv?=
- =?us-ascii?Q?VOenRd7oAMkz5i432tEUHRQM/Bj+WWVw/kbuMHQPTwB5o02BZDgmWPiWJ0RR?=
- =?us-ascii?Q?NmJHim5Ko9s4SM169YczlkIh540jlL9NH5W7ttE9fopK0tF48KqsXq2ojLYY?=
- =?us-ascii?Q?fXC8xiyD70z8xn9mVdmhcqkAv2+lw23N9Gtn5A8VOSkJ2cnFYGOmK/Gv+EmW?=
- =?us-ascii?Q?bLPggz9v8t9V9KlFLPYcKNi3mM1ImMoYZJyke0mOJakEkFEbYtBvnmEclo7X?=
- =?us-ascii?Q?FRZ9AzE3JokfBl//6YeuqGLsCdjWp02YWEFyt45LleBh1locbh3466k5SmVF?=
- =?us-ascii?Q?Yxwr83gLvVd3FN2SjeVtr6d659PTMYTK7QMKkZwnsmrTwYrIfy7j9q2RLF4h?=
- =?us-ascii?Q?CkQPQKI0unZ8zy34jr7FbOC8eE5W0yGr4T4VbH733ZK4V+/n0ZseCQm06WIk?=
- =?us-ascii?Q?2VymITehIO28RU/UgtVolOL76cHqWNbFFhQQK2AIbJEBTpUmrW6SQzbV8fvW?=
- =?us-ascii?Q?s+G6P+NYbTltf49CYSHMBAbffwlyuNm+T1KIbajs3xAoxbILbNYw1FL8H9pC?=
- =?us-ascii?Q?zzzOB2YnvU60ZO/wq6ThU5IqHzxz0syxJ5bxrPemYYLPtTAaudCCuB56UrL4?=
- =?us-ascii?Q?CCb9BkftRRxfjWy1fvja4wxyza5o6npoSSSr+0dh9FLzN6a5UmQjX4dqoZrC?=
- =?us-ascii?Q?lh0EVzfKbikj5351TIXXSwL9ftxfCpMR9h/jDJgSPUkMSKeMU0VF51yvQS1Q?=
- =?us-ascii?Q?38tPJO5klnAqvECHEX8bKWJPtvOb92eMpohZOfH/f9zTXNPfnCAkTQyLmNCm?=
- =?us-ascii?Q?bwv+fMb/OtBLfQhScy+Jxx925ZuRhIabuO+CD/ncwDQ3IYSmswPokZhk/RGh?=
- =?us-ascii?Q?aZ+VKL9KkDOnzqT8R1SekpHjkW134OrAkvHryQZt7oXmTT6hyVsG7gZpJflc?=
- =?us-ascii?Q?iE2Rx1HUpYXvCgssOWkvUg/tvuNQShg78/eylaEgsqqGHzowdfsyqPFfeaxz?=
- =?us-ascii?Q?PeGeHWzYTxHEVGH8N7gV2MhMYGf93RqxT1FevSx66MV1QozJ3rAAromZdU61?=
- =?us-ascii?Q?1DliY5Oa2d2DLbK5uyhmrLiq5iyRhswWVCeDTgqrbEtRsB0Q5LTp1gQ3Jf6j?=
- =?us-ascii?Q?Ct0N8WTyCq4W0JlPxBQy0Rjv/fvWd5VX7wgaT1NGjVBK7ZYmEFimKBB50bpO?=
- =?us-ascii?Q?p+hJ5KAZar5fe7VQSoKjei92kJJ71rPxSjAeqW/Q0R+JPz1vzEZ/53TA5TL6?=
- =?us-ascii?Q?iE6AjMyoyN+EuC4OxCLYngmr4ETZVAPgAO1LZ+/028aEHGht0P5tW+fcdEaT?=
- =?us-ascii?Q?Drnk3i+zxj0A/sPOC8VSDd8eyehwp333z97+yxbJ?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 80d14f4e-c576-4ea2-94b4-08dc4d6f1cc5
-X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Mar 2024 08:31:19.9914
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +eO4sQK4LhkLWOnrI590NTCSmAfd8Uk1Wnbi7wZfhWX0IxYw7gKj6tlPv7lYsnBlwjXzlutZ6k83De12G0t2Kw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB7447
-X-OriginatorOrg: intel.com
+References: <202403221630.2692c998-oliver.sang@intel.com> <20240324142532.GAZgA33M_u1lW_E_1n@fat_crate.local>
+ <CAMj1kXE97o_T61AJ6wRAOpUvzon-45fnsT2dGB0GBP1x7bfGaw@mail.gmail.com> <ZgKH0LbdN0aDyvRe@xsang-OptiPlex-9020>
+In-Reply-To: <ZgKH0LbdN0aDyvRe@xsang-OptiPlex-9020>
+From: Ard Biesheuvel <ardb@kernel.org>
+Date: Tue, 26 Mar 2024 10:59:04 +0200
+X-Gmail-Original-Message-ID: <CAMj1kXG2D8cwtXTqjepm30B9X9KQD_q2XMDAA522mv9z-5_-ug@mail.gmail.com>
+Message-ID: <CAMj1kXG2D8cwtXTqjepm30B9X9KQD_q2XMDAA522mv9z-5_-ug@mail.gmail.com>
+Subject: Re: [linus:master] [x86/sme] 48204aba80: BUG:kernel_failed_in_early-boot_stage,last_printk:Booting_the_kernel(entry_offset:#)
+To: Oliver Sang <oliver.sang@intel.com>
+Cc: Borislav Petkov <bp@alien8.de>, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	linux-kernel@vger.kernel.org, Tom Lendacky <thomas.lendacky@amd.com>
+Content-Type: text/plain; charset="UTF-8"
 
-hi, Ard Biesheuvel,
-
-On Mon, Mar 25, 2024 at 04:39:26PM +0200, Ard Biesheuvel wrote:
-> On Sun, 24 Mar 2024 at 16:26, Borislav Petkov <bp@alien8.de> wrote:
-> >
-> > On Fri, Mar 22, 2024 at 05:03:18PM +0800, kernel test robot wrote:
+On Tue, 26 Mar 2024 at 10:31, Oliver Sang <oliver.sang@intel.com> wrote:
+>
+> hi, Ard Biesheuvel,
+>
+> On Mon, Mar 25, 2024 at 04:39:26PM +0200, Ard Biesheuvel wrote:
+> > On Sun, 24 Mar 2024 at 16:26, Borislav Petkov <bp@alien8.de> wrote:
 > > >
+> > > On Fri, Mar 22, 2024 at 05:03:18PM +0800, kernel test robot wrote:
+> > > >
+> > > >
+> > > > Hello,
+> > > >
+> > > > kernel test robot noticed "BUG:kernel_failed_in_early-boot_stage,last_printk:Booting_the_kernel(entry_offset:#)" on:
+> > > >
+> > > > commit: 48204aba801f1b512b3abed10b8e1a63e03f3dd1 ("x86/sme: Move early SME kernel encryption handling into .head.text")
+> > > > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> > > >
+> > > > [test failed on linus/master 741e9d668aa50c91e4f681511ce0e408d55dd7ce]
+> > > > [test failed on linux-next/master a1e7655b77e3391b58ac28256789ea45b1685abb]
+> > > >
+> > > > in testcase: boot
+> > > >
+> > > > compiler: gcc-12
+> > > > test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
 > > >
-> > > Hello,
+> > > My guest boots with your .config and SNB as CPU model:
 > > >
-> > > kernel test robot noticed "BUG:kernel_failed_in_early-boot_stage,last_printk:Booting_the_kernel(entry_offset:#)" on:
+> > > ...
+> > > [    0.373770][    T1] smpboot: CPU0: Intel Xeon E312xx (Sandy Bridge) (family: 0x6, model: 0x2a, stepping: 0x1)
 > > >
-> > > commit: 48204aba801f1b512b3abed10b8e1a63e03f3dd1 ("x86/sme: Move early SME kernel encryption handling into .head.text")
-> > > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> > > Artefacts like:
 > > >
-> > > [test failed on linus/master 741e9d668aa50c91e4f681511ce0e408d55dd7ce]
-> > > [test failed on linux-next/master a1e7655b77e3391b58ac28256789ea45b1685abb]
+> > > -initrd initrd-vm-meta-180.cgz
 > > >
-> > > in testcase: boot
+> > > or
 > > >
-> > > compiler: gcc-12
-> > > test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+> > > RESULT_ROOT=/result/boot/1/vm-snb/quantal-x86_64-core-20190426.cgz/x86_64-rhel-8.3-bpf/gcc-12/48204aba801f1b512b3abed10b8e1a63e03f3dd1/3
+> > >
+> > > I don't have and don't know how to generate here so I can't run your
+> > > exact reproducer.
+> > >
 > >
-> > My guest boots with your .config and SNB as CPU model:
+> > I ran the reproducer using the instructions, and things seem to work fine.
 > >
-> > ...
-> > [    0.373770][    T1] smpboot: CPU0: Intel Xeon E312xx (Sandy Bridge) (family: 0x6, model: 0x2a, stepping: 0x1)
+> > https://paste.debian.net/1311951/
 > >
-> > Artefacts like:
-> >
-> > -initrd initrd-vm-meta-180.cgz
-> >
-> > or
-> >
-> > RESULT_ROOT=/result/boot/1/vm-snb/quantal-x86_64-core-20190426.cgz/x86_64-rhel-8.3-bpf/gcc-12/48204aba801f1b512b3abed10b8e1a63e03f3dd1/3
-> >
-> > I don't have and don't know how to generate here so I can't run your
-> > exact reproducer.
-> >
-> 
-> I ran the reproducer using the instructions, and things seem to work fine.
-> 
-> https://paste.debian.net/1311951/
-> 
-> Could you provide any information regarding the QEMU version and its
-> BIOS implementation?
+> > Could you provide any information regarding the QEMU version and its
+> > BIOS implementation?
+>
+> for QEMU version:
+>
+> $ qemu-system-x86_64 --version
+> QEMU emulator version 7.2.9 (Debian 1:7.2+dfsg-7+deb12u5)
+> Copyright (c) 2003-2022 Fabrice Bellard and the QEMU Project developers
+>
 
-for QEMU version:
+I tested the exact same version.
 
-$ qemu-system-x86_64 --version
-QEMU emulator version 7.2.9 (Debian 1:7.2+dfsg-7+deb12u5)
-Copyright (c) 2003-2022 Fabrice Bellard and the QEMU Project developers
+Does it reproduce with -cpu host instead of -cpu SandyBridge? When
+running under KVM, I suspect emulating the actual host uarch rather
+than setting a different one is a more reliable strategy. What CPU
+type does the host have?
 
+>
+> for BIOS:
+>
+> We don't specify bios option for qemu, my understanding is we just run with
+> default bios for qemu (the seabios). Extra info of seabios
+>
 
-for BIOS:
+Today, legacy BIOS boot is only used by a minority of x86 systems in
+the field, so for better coverage, it would make sense to at least
+start testing UEFI as well.
 
-We don't specify bios option for qemu, my understanding is we just run with
-default bios for qemu (the seabios). Extra info of seabios
+On debian, just install the ovmf package, and pass -bios
+/usr/share/ovmf/OVMF.fd on the QEMU command line.
 
-SeaBios
-QEMU, by default, uses a BIOS called SeaBios. It is a pretty good option and
-most can be used with most bootloaders. 4 And naturally, every guest machine
-is loaded with the SeaBios and you don't have to do anything. However,
-you might want, or need, to use UEFI instead.
-
+And given that you are doing virt based boot testing, another very
+important use case is TDX boot (as well as SEV-SNP, but that may be
+more difficult for you to organize). But please explore internally at
+Intel whether TDX can be added to your test matrix as well.
