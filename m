@@ -1,93 +1,97 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DE4811182
-	for <oe-lkp@lists.linux.dev>; Fri, 29 Mar 2024 02:24:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2F872E62B
+	for <oe-lkp@lists.linux.dev>; Fri, 29 Mar 2024 02:43:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.14
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711679098; cv=fail; b=rtJE8v51jnv218xxZ3SNJGfuE5n4LmZ+tlx7omkD7ZoTmLA0SoP6N17xXdlHVBXKy1IIa5UWngck2v/C6O5/kZjsuzgw+oBeV9vGUIGz/Se7yj4ymrfFZ8tZFdzl+sM2dCuNRZC5epI2EcYulGEhwBZhy9OpwOl/zJeW8Juejgg=
+	t=1711680188; cv=fail; b=UM2UCSJSLxWGDRnsOBMtjK2rpqEXo26Zb2Z3elC0+3giZODK8JfOmXq42veynvS2Efp8pMUTMmAr3jLGw1r75mq1cDx7UxpaAHXUJ9hA7X46IrxDGxXyCUNgRaG+uYw0zFvhN2jSFXwVePIFYl1VmG4cx2qujVU5fjh2+3NBJvQ=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711679098; c=relaxed/simple;
-	bh=FUCTxdMglq/EfDLNShiBREHOGXOUb44wg4C/C8X7vDw=;
+	s=arc-20240116; t=1711680188; c=relaxed/simple;
+	bh=xPsUM2eGtelz6uETpbh7bkTi9YMrj2Jo20fvTvdjpiw=;
 	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=aFoWCKwq1mE0eZA4Nb6KFS970ue073tEACtzJcLqVSuEE9FPrZgqVUN4s0glXqR+kOU3PUsf4tPLmLJGhHj/H3b7J36X1t7SJFEK8IpMs4K9NGQMLbI8yiqw80gCIw0mCkI3qtwhnMNXksKZSuCPEo9TPRsVVuNPZbBdr+y+kLs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PwIyDdyG; arc=fail smtp.client-ip=198.175.65.11
+	 Content-Disposition:MIME-Version; b=Z5o/ESoZ7kMh0QvAH3Zr3JiK3FhAHAgYgwH1xWFgayHizl0lTisP+YMFeVdiazhNM35e5RhjToe+Ja5X78r/VByr844/3gj9IEBeDjSZugyA/Z/+HwelMxlXpva/E5kTSUEkg9KOjEgfYg+xeDidH2cqK+RME/c39arFEY4IFSI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Qi5/uoF/; arc=fail smtp.client-ip=198.175.65.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PwIyDdyG"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Qi5/uoF/"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1711679097; x=1743215097;
+  t=1711680187; x=1743216187;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=FUCTxdMglq/EfDLNShiBREHOGXOUb44wg4C/C8X7vDw=;
-  b=PwIyDdyGvOGHhPbg989N9wFpAFHRfAGxzCnRcoNQCCStkkibQCG3oS5L
-   F6ykCrtDmElp7ur4FS4DwT0AoCuCLIknDOA6JRqzCZsCQkE64gFH8doXI
-   6rC5TVawahn8HJOZ0GCZXwHX5GpFwvmTtXdkX9OB6jAdJJE9/apVMU8Fh
-   zzC0pB/vsaPd93VNyWCHl7EN8e8bDlQ57dhzHNMhliTGRgNcJ7H6BgtlF
-   oUSEjJDA76Ld5RhJzPtDGSOgNfVE6DgjTj0w1PDgpyJpvD8mNp8mHYSX2
-   Q2jowF5fquwGIrguLwTLx88/rsDexFRIqvTSd2gOxVMpr/vY/Mz5U7Znx
-   w==;
-X-CSE-ConnectionGUID: C2CjYpgRR3GbyqTK7U68xw==
-X-CSE-MsgGUID: Y1xTPYSAQ2+6baIkmqTs/g==
-X-IronPort-AV: E=McAfee;i="6600,9927,11027"; a="17419271"
+  bh=xPsUM2eGtelz6uETpbh7bkTi9YMrj2Jo20fvTvdjpiw=;
+  b=Qi5/uoF/r6YsNKZefJUEzV+qjjQ3BGSvr4nWD63jHqJVDI792h9lWQbn
+   feoggCsAjfLpblBJbUpYDzXBGWGzeTROG04fZh5WS/rZ6zabq3Y5OqMWA
+   emso2arY+5tJuI/iBGLzbAquUx5uDizDedBzbvXrSMqr8HHKbQcEKww8l
+   snjuC9zBEMVwy7sD2XxshiiGNU27cESwvHvrPLRTcbxWl5hQ70NwkVpeM
+   J30PbGjhzqxMZyviQUr4ySorFoi7pZ1/wrLsvC6yFnZY3ou2L0nFOLMQ0
+   UMlOGaOYO9vJW7mLe+aGlN/pxhQXTRCz8RB0RESLPxs0P2vkR9N2hjRJh
+   A==;
+X-CSE-ConnectionGUID: UuMEnaSwSZuZsV5pZwRTlA==
+X-CSE-MsgGUID: Ept5PKrVRzCpH/esGh70cQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11027"; a="10671219"
 X-IronPort-AV: E=Sophos;i="6.07,162,1708416000"; 
-   d="scan'208";a="17419271"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2024 19:24:56 -0700
+   d="scan'208";a="10671219"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2024 19:43:06 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,162,1708416000"; 
-   d="scan'208";a="17483550"
+   d="scan'208";a="16808812"
 Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orviesa008.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 28 Mar 2024 19:24:56 -0700
+  by orviesa009.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 28 Mar 2024 19:43:06 -0700
 Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
  ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Thu, 28 Mar 2024 19:24:55 -0700
+ 15.1.2507.35; Thu, 28 Mar 2024 19:43:05 -0700
 Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
  ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Thu, 28 Mar 2024 19:24:55 -0700
+ 15.1.2507.35; Thu, 28 Mar 2024 19:43:05 -0700
 Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
  orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35 via Frontend Transport; Thu, 28 Mar 2024 19:24:55 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.169)
+ 15.1.2507.35 via Frontend Transport; Thu, 28 Mar 2024 19:43:05 -0700
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.168)
  by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Thu, 28 Mar 2024 19:24:54 -0700
+ 15.1.2507.35; Thu, 28 Mar 2024 19:43:04 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iTjqgQ7Brs/gehzrlglZSrPEGBV+i91M+xaCpro2pf4tIQ4thZjSAf4zO+0RJ0zzXDAlcHTzWjjmTLFGU5HSqiY1fETNSaFq0z7ljeOvKwwkzqKk5VbRt++lB6M5f/N9fnAQa9Dn89K3oaZlcUFcq17Xix4jnhp1xxB/e3xngjRNgRtAnzCp1m1EhAOGlZ6cSO2UZbL99HQQgbJkgEDepfeoTfk0q7VgV4GA1nO8/MVQ7yJgEklG+wKLVcWNoojriHvNZ7O3DGCaH0UJp0IRg/jjD368lzuX/7nRsgPgH1duNGG/6fXdBgayZI8zz40L+AlLkcy9ev4ILQcBbmAI+Q==
+ b=M/SG+t76nDPlMdKGOV1M5nc3xDS5VQRrTQYFjHu4NY85gI8dxRKfwXxLayF3lxjXVFouL6QIkKkc2wh4QH4Igt1uqP0LI+AqaKROyzBTF1ikc/H7RyiVfSYrSw+25lMB4xCSZRMGJ5rUvvzcFZaH12+NwgqMLkjRet/SMo2gQoZBJIESGvYc0SLVwlcgDVhVQSkCqo/Ls3zWcrf7X0+sEc3jZ5leBiQcTm4+ObLLyVp1lPD+Zd/87dmaHaXn8wIBx+3VP9YYp5h1WaUUCuhMbqma97HDkpaSSv/TOUSL7YQy/c/VaZbcu1cCZoWOD7D9n27em0D4nRdBIF9Gas+tOg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=d3xpJv/1/K8Qss0ohFCUe18p1tmior5RH4EDGcrd0M4=;
- b=PCYb9OqVwq3XRt/oV7eUpWeLsh+k1ZmAKUHGteM7y0dQKiK5MOC5I/UD0JA2Hy3wEzAAOtvXeNezW2oAMGgYRjzprjAVIrJnr2S6GnQU2SCwSIA/t2tycypWSSbHLfHP6fySGGOe0bBXcBUIGX02CYXlOgQUhji/BALVOXCjdygf8hCEoxWvDwD+4Jz9//Ej3NnHhYB1oQvz84PnOMJOfM4V+a5uyKI/h/XJdHYTtDqnfUbW1PlBK9dmbOoV6Ldrhc7SmvfO1H/GpG37MNe1YJRTuDAmRs+1oFYu0fjCvIyhbhyiq1fOku4BlyHZI3B/w3AVKZryM8UAdb8Z8ViTyA==
+ bh=kt+FO5SozjCYlJahjvba7azpiF0n0F/nmL82Bjtx7Qk=;
+ b=BGxsF0xAvg88ql8kM9DH8VieA70uLlm/XfqnJtpIniYz5q0tzMeSLxapuD8m0BiN+Xi2InMV05GjYKYYC8F+uVxbfsIOur5qAl8a9IayQI9sbguCKpoqdlOATw6gru3qXraRm2GMy/iu2KUiceQHnk1bDUUpK/7ASMUOgVSCT/XhRm0phg8scD9j1Z3J/e3NEp7zOTn4dnNIdGqk+bKDggBbgGuFLpJftKUEO+xhEUyMvx9CPzwa+SJagM2szMHavK0PIpsSDMs4yEHdQmgDqeaHcQMn/3eubeoa5Ct4sQXxI+O35fcI1/JAmQMJ7zp/hIZLAuiOL8WfJrZHzvvnzQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by SJ0PR11MB6575.namprd11.prod.outlook.com (2603:10b6:a03:477::8) with
+ by MW4PR11MB6714.namprd11.prod.outlook.com (2603:10b6:303:20f::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7409.24; Fri, 29 Mar
- 2024 02:24:52 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7409.32; Fri, 29 Mar
+ 2024 02:43:02 +0000
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::58dd:99ca:74a6:2e3e]) by LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::58dd:99ca:74a6:2e3e%3]) with mapi id 15.20.7409.031; Fri, 29 Mar 2024
- 02:24:52 +0000
-Date: Fri, 29 Mar 2024 10:24:43 +0800
+ 02:43:01 +0000
+Date: Fri, 29 Mar 2024 10:42:51 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Johannes Berg <johannes.berg@intel.com>
+To: =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>
 CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
-	Ilan Peer <ilan.peer@intel.com>, Miriam Rachel Korenblit
-	<miriam.rachel.korenblit@intel.com>, <linux-wireless@vger.kernel.org>,
-	<oliver.sang@intel.com>
-Subject: [linus:master] [wifi]  310c8387c6: hwsim.autogo_chan_switch.fail
-Message-ID: <202403291042.d9211733-oliver.sang@intel.com>
+	"David S. Miller" <davem@davemloft.net>, =?iso-8859-1?Q?G=FCnther?= Noack
+	<gnoack@google.com>, Shuah Khan <shuah@kernel.org>, Will Drewry
+	<wad@chromium.org>, Kees Cook <keescook@chromium.org>, Jakub Kicinski
+	<kuba@kernel.org>, <linux-kselftest@vger.kernel.org>,
+	<linux-security-module@vger.kernel.org>, <oliver.sang@intel.com>
+Subject: [linus:master] [selftests/harness]  0710a1a73f:
+ kernel-selftests.pidfd.pidfd_setns_test.fail
+Message-ID: <202403291015.1fcfa957-oliver.sang@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-X-ClientProxiedBy: SGBP274CA0001.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b0::13)
- To LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+X-ClientProxiedBy: SG2PR06CA0213.apcprd06.prod.outlook.com
+ (2603:1096:4:68::21) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -95,75 +99,74 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|SJ0PR11MB6575:EE_
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|MW4PR11MB6714:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: E+XXp22ZBZe/EuSN7es90uOTvemRruUpxARmSMIOpD3gZL8wSla139iSqy1uKB8T+r7Tm/Xxj4uPG4sIWEUt9Z++N3fdZ6a8i/FdTVeb65E5uSLlDGxPnCwsE6yqntCatlnnW5iTb/WCxy6DC036pcK09vTLjufkm8UGEfsMVF/Vd8Dgtbz+hL+OL1F4+f27II9q7U7b7OrbuH8JSAK+B7671uqGJnr5YpPVpSDCbX9boGVfAjqCFJwiPi7pEYx/dNeVcOWL67SL+pIn9ZE57ULScAZwvkbhidPXFhwCl0HrM0b8B+kJHzPRNDmQsfqPQtQXTgSbpc2BmnMmg+wRskHSbGGswkJ3xsGYTT4NsEf7CNurQEzxu3fXCSiU+Ph56QikXces52N0WneI1oGSHTCADL+0Julxh/VXFECaZrsIRNRKGIRYIMC/rwlOYNjbKNQsqfnuZhss67JUwyC+bl/sbtvuAm1ST09iCIOsGPuQh6rg4wHvi6WzOB4jkPiaWcJAR4CUSXdGdiCuW+XNIcMBAopi5COIYQnv5QrgyX1aLdDfqBAiyTmQW4knW6y4PXjdVvwVOLkyqFEGNZiEc+xOZ5mF9Z+Q7Jajiz49ngVPo/U9nUpXzLIw05jK/UCI
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(376005)(1800799015);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: vmtGMTr6Xwn9Ep/6Cc7uUomAIoWrf9XAVlR0NA2hDEq8BV/Hn5qGDi/HHX5RC/Ley4wiF4mVByOQWZ0HQdAckN8lri2iYFhdPfSMkm/RcGUUXc+NB6nLfPLJ5RT0sDaq6VqWpuOFgGle2DauF6WTQUibJ9IBhoZB897mnBv2rUyhyfygFH/h+5RYiun69Zwh8x2ngrH8U77vXo/tz6G+7F0cabwEMWt5CePYmjr7ihsvQHIt8ZTb3Okln6MhkB2eoWm/rgWLSLakJCL8ywq+Xt5o6KSmF6nI/W7+rBT5XMUOU6wXUxSu4foBUwi9lF5U+Zz83KjKJmINPeYZ9AxUJh+ZQkuQvLYP7RukHd4l0O/2lZfLnmq05GsvTLgzkZcXbB7FDAlz/ovDHbDU8DLt8V+p0VjwPH9G35j4YAsnRylXWop3s0Yst4o4wNALslrJF4HrxF3kknN6/UE0YRkDAg3X2/FuqBFQeviAQhuj4MvQX1gjq3uKATVLXAhadtMk65fcCaSL0ZXRxXc/tGR3ENw8Bsht5TU+aADY28Gi8OtElXeF/v6uLKudB/CPHO+aSsbxFf0cIFpsL71A/m/Nich8FnXOFkb2N0YEbSfMCaN0CufXpQXb/IEVR0LVXX6S
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(376005)(1800799015)(7416005);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?stfjbQj2d78jRaVpzGF41Ws+s7IUSwCHNUVfEAmcfVQvE5YP6nnHwz7RfQeS?=
- =?us-ascii?Q?j1DWZWNNbvtYJsjV0rmH981PmPOHsdgiwwjnYexfOuHDVQlc/UnnI65jQpvo?=
- =?us-ascii?Q?XnUZpC799qpXEQ/ATdPfGpev0iXXMginHB1Hg1c0OMyopW4tyfbitpJ0cVtG?=
- =?us-ascii?Q?QBeYTL7HVYX2bx9qa2IGqUn/8J+fIxlB1+jU9U3txE/FyF/syrGtpNFGHqPX?=
- =?us-ascii?Q?0+btzg8b6zvWb5yZ7g4A8Rwwsti2shR78JVAZ+6UCY+rBT09z08hPwadftNO?=
- =?us-ascii?Q?Y/z0sAfpDqjsje2zMyDcSzG1uiwF3ZPuJYcgpR/PutzG1okuLdFcpnEZN1Kx?=
- =?us-ascii?Q?gkFZM19o2hzIKZI4jAtLCIodN5BuG8RcIGuiHSnAEUhyBL9WO5iOPK8/AYbV?=
- =?us-ascii?Q?SR6kfHw3/CrT/1apV2tCp2VxZ2xuaYHaMaKFVZGEFRJQohVrfXciZLQOe86+?=
- =?us-ascii?Q?Zd6g5PEJFPvZNpagmSKl58QqGnWcy/guimhaWMtvG3x+axdE1Sq0uyydk2pq?=
- =?us-ascii?Q?39EQPxCoQFKUn3SbBuMgi4xDVNs1pNUl/DabytHd/XNa0w+t56F4v0TI7JyL?=
- =?us-ascii?Q?Tn4iZaBFTLLdGc1Ex0BT6j1LUXHLIX2mB5LAU8H2tin21O7UAOSx1f+qycH4?=
- =?us-ascii?Q?0kdXJm87SXcjlO96/szMrpqzt04klmu7hje6XbfBXvMkT7U3ens+4JVhzCK5?=
- =?us-ascii?Q?jE6rw9bj1J+8HY4F9+K1+ij/4x7xmXtX8lzxWYu87mLPKJXgV2dpW9jpFaxa?=
- =?us-ascii?Q?oJpdkuVa3Xxe/hu0+nCAujcJxH7VEmWTO1UIU6SdI8JOjD+c4FpHwGZLh4Dz?=
- =?us-ascii?Q?XNlEtZToB6Vbo9ZRavc85bp20GU/1D7J/TJ8EcwWAWKJ+wTLTHhc6ELDvfLw?=
- =?us-ascii?Q?De7Nxkoq+7exS8lwlRKWv0gD9ktiUl6xdseu5pNC3/Y5Nga4qwuqM+qr2APH?=
- =?us-ascii?Q?d1Z3SehVZr3K3gVU6us09tAhpuFOZQWRR8MlYsTd3DsELC6rImDoq8ysl0eD?=
- =?us-ascii?Q?NUOdGV5jVpf3KgpamdJNw21VzNrwCjV4Q3N/gXV9m+TF8+Tmuz7TvQPa7uTB?=
- =?us-ascii?Q?PxfkecVIP5UV1fuaZoR6PQCl6TPCsYTOy6Xd3JB0CExhA+vk+Vl6JfKnp2xS?=
- =?us-ascii?Q?AaQ+YpE4vm4F6ph3oW4LioZwDKz09YISyTCVxedrHvllfZk8qDAhSMZOgLYT?=
- =?us-ascii?Q?Vkur2ag/tHh6q4BNvdZDkQNGJDJa1LhpTvMaa7qbv71qesrSIJGxLX5P0F5N?=
- =?us-ascii?Q?OAN/mdT6kYMWpOZQhVhgMFwVlnokU4KeW9jv/PflHqmoDInvbbJh7QyQ0Nm6?=
- =?us-ascii?Q?DD5scXETBicN0JlD4jyW9E4XMoemlJisvbUuYWPwX7m6FWju2Onnuy0qTUyW?=
- =?us-ascii?Q?Rsk9WJ6XorsJFrfzSaRC8RuVrv7HVQLUv4JVbPf9u4NNr/BvLG+xWHxlJXsx?=
- =?us-ascii?Q?SsG7k9MN9/QlOdOMJvE37xiY3w9IwV5ThiaiJRsLlJgh+4KMLDBT5pTddUh6?=
- =?us-ascii?Q?NHD13mgZrzS6R0RILIMD6xGFTNgf+XEN/htcYh6Q0vl5pLEUV682AkeinkOy?=
- =?us-ascii?Q?8+WPpmG/xSPWkUyZyzPhTJPooVG1IxuY+T0dIGsbbG+5pqJoO0dVp5LyYWi6?=
- =?us-ascii?Q?Ow=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: cfd313d2-d796-4415-296d-08dc4f976a04
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?y2ZYMm5prznj/nWejske8FqZjnlQ8KD3qSbO+68V7gbe2D15fskTIegDKpcI?=
+ =?us-ascii?Q?2SHrfFCB8oeisbPG+uB+v6m9y0In713LNTtUYNJrZTAvOonSuY6pJ4QqNxVe?=
+ =?us-ascii?Q?sQddxzPx4NhEoH3lveti/nPxxeyxMtwmLW9f9C2qkYPgLTd8Wb0AWuPhoNko?=
+ =?us-ascii?Q?XPJGozX7gD0PIEWbKyydPMUVCAvxY/P8cgaX8je9RBvaeQXefbgd2HrKda3P?=
+ =?us-ascii?Q?AymbMHVRhOXEAr7HEV+Yzse/RUOE/La0MFYZJpoBeQQN3h2T9A+9ip1TTLLX?=
+ =?us-ascii?Q?T8jqRZLK22uTtB7TMnCmIWUp6R4t/YsKSzeA5LPo9g3pYGoum92dC2SU1ILV?=
+ =?us-ascii?Q?8tEvl/si3GxJRt1mZLk/t6cz0ii1YtzwgBQnOfewvXrg8VzbhY575eH4r082?=
+ =?us-ascii?Q?Qjg8HdWHDg3+wSvMfrg0ugYqGDcIq2eLnhlGSmt4o+0gAw6Ry0LfyOOa3KWg?=
+ =?us-ascii?Q?qzIn/cpeYrTtGOVcLewp/pNuXVY6sK+KWNjTjz6YhX+iCjaB3gn+NNWr9oT0?=
+ =?us-ascii?Q?ptIEWYVZBqJ7TGAqlblmtIsqvuzOMp+Qu2/hx35zTpxTsHAmP8cTya66R4ix?=
+ =?us-ascii?Q?wvVGF4gxT2+5Ai/nKPqBQ8zpb0SFaoOc9KBrne16OnyH25kRhQMKKNV8hsRp?=
+ =?us-ascii?Q?/Ug3Cs8EsUN4G/Xc/mK13eTnZj3R/qw3+QMB73g+QJMhJ0VMajInbJCbCLPD?=
+ =?us-ascii?Q?D9zsvKrEIC8aP29ojBmGUu7EvIfY8+wu/xi2P+kPmdC64iEgm24okCrLvaXr?=
+ =?us-ascii?Q?G/zem3AQjiHAajFhobr88Xt6A7yaqsndDZtYVlEd1bIp7/3PYStt658XhEwP?=
+ =?us-ascii?Q?BJu/5iBWzwbweKhloeiAVkPeNnZa9IHMtmPkrxWlaNLxwfUhmo/h6S2Qrhei?=
+ =?us-ascii?Q?J1lqmxbDZljdCeq4wtO/ccB2PMoVamls0xbtsZljp2Otg7i6w5FNFj+tInLN?=
+ =?us-ascii?Q?+UNUlUUwJm1jczaiPa6tPTn31rC17h4zR2Q6wEHhapbSDHApA4K1epdvnOeq?=
+ =?us-ascii?Q?hKVBm8AO9J7jZ822Uq3nlofQu9FirmN61wSYryLYVZf9eWY7XZwiOfq+UZ9g?=
+ =?us-ascii?Q?1l3jQl7ZqCKRr+8pKI5E8LUi5laF8GOfOVz5HDvYFZZnQuwQUIpejvSdkUtb?=
+ =?us-ascii?Q?7exyz9OccQ0ySWw+6eKkte96HeOTCGZfTztTJF6MkC2ke/r3ix0nx7gM4u0j?=
+ =?us-ascii?Q?aT1YjRsxAATvDkm8TVhKItlPlHE0Jai4ktRFitqZZ99h1XmsApninUA+U4yr?=
+ =?us-ascii?Q?rxLS7FSlrFTmKvkJnFIobQf+L3skaEY3L0wRpRXlDok8S1D4mvp5/TfPNAAy?=
+ =?us-ascii?Q?1QPOEUyxyT17d1XRxn0s2My7MjT75oddaaRHJapDniPbDOrXJF9LU6SZJTRy?=
+ =?us-ascii?Q?Hpxheg/LYFfjm4AQu01z5wm0kVrSF4R/c9US4FnZMIOwhV25ZBLMDVa4L5jR?=
+ =?us-ascii?Q?9+V0S1zzDPHcl4zSEECGiAR3Um1woufvy7PCbblnQyC18kH8Ab1NMau0BmYs?=
+ =?us-ascii?Q?XTpHT7G5OWiup+n7WdIhkAfjVYIvf/wo3gVbnxBQy5FJsR6yvXbCYEOwUCZ9?=
+ =?us-ascii?Q?6ALxPnQBgBcL8d4ivgxTHsg3LvAJ6++w4hmxhjrn/k4lt7wBY9NgxCfzXCbu?=
+ =?us-ascii?Q?7g=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4634e923-7739-4ae1-37d0-08dc4f99f336
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Mar 2024 02:24:52.0143
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Mar 2024 02:43:01.1677
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: oflyZxvJMiV+O00fKTpun065jULhLCTh4a10DpmNToLBN2DsgeTOG+uSMLUqdHPEhyWsZ4FSlGs+0zTqdnmiDQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB6575
+X-MS-Exchange-CrossTenant-UserPrincipalName: bjGeTQr9UQ51L5fZsSGu+ySDx4pzljbYmv/iFBs9035EatLWYiDegraoyZjK68FeLHGVBcgTTBLMlp8jonTNOA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR11MB6714
 X-OriginatorOrg: intel.com
 
 
 
 Hello,
 
-kernel test robot noticed "hwsim.autogo_chan_switch.fail" on:
+kernel test robot noticed "kernel-selftests.pidfd.pidfd_setns_test.fail" on:
 
-commit: 310c8387c63830bc375827242e0f9fa689f82e21 ("wifi: mac80211: clean up connection process")
+commit: 0710a1a73fb45033ebb06073e374ab7d44a05f15 ("selftests/harness: Merge TEST_F_FORK() into TEST_F()")
 https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-[test failed on linus/master 7033999ecd7b8cf9ea59265035a0150961e023ee]
-[test failed on linux-next/master 26074e1be23143b2388cacb36166766c235feb7c]
+[test failed on linus/master 4cece764965020c22cff7665b18a012006359095]
 
-in testcase: hwsim
-version: hwsim-x86_64-717e5d7-1_20240320
+in testcase: kernel-selftests
+version: kernel-selftests-x86_64-4306b286-1_20240301
 with following parameters:
 
-	test: autogo_chan_switch
+	group: pidfd
 
 
 
 compiler: gcc-12
-test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4790 v3 @ 3.60GHz (Haswell) with 6G memory
+test machine: 36 threads 1 sockets Intel(R) Core(TM) i9-10980XE CPU @ 3.00GHz (Cascade Lake) with 32G memory
 
 (please refer to attached dmesg/kmsg for entire log/backtrace)
 
@@ -173,95 +176,96 @@ test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4790 v3 @ 3.60GHz (Haswel
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202403291042.d9211733-oliver.sang@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202403291015.1fcfa957-oliver.sang@intel.com
 
-group: group-20, test: autogo_chan_switch
-2024-03-22 18:48:55 export USER=root
-2024-03-22 18:48:55 ./build.sh
-Building TNC testing tools
-Building wlantest
-Building hs20-osu-client
-Building hostapd
-Building wpa_supplicant
-2024-03-22 18:49:57 ./start.sh
-2024-03-22 18:49:59 ./run-tests.py autogo_chan_switch
-DEV: wlan0: 02:00:00:00:00:00
-DEV: wlan1: 02:00:00:00:01:00
-DEV: wlan2: 02:00:00:00:02:00
-APDEV: wlan3
-APDEV: wlan4
-START autogo_chan_switch 1/1
-Test: P2P autonomous GO switching channels
-Start autonomous GO wlan0
-Try to connect the client to the GO
-wlan1: Trying to discover peer 02:00:00:00:00:00
-Client connected
-sending data without carrier won't work
-Traceback (most recent call last):
-  File "/lkp/benchmarks/hwsim/tests/hwsim/./run-tests.py", line 593, in main
-    t(dev)
-  File "/lkp/benchmarks/hwsim/tests/hwsim/test_p2p_autogo.py", line 357, in test_autogo_chan_switch
-    run_autogo_chan_switch(dev)
-  File "/lkp/benchmarks/hwsim/tests/hwsim/test_p2p_autogo.py", line 375, in run_autogo_chan_switch
-    hwsim_utils.test_connectivity_p2p(dev[0], dev[1])
-  File "/lkp/benchmarks/hwsim/tests/hwsim/hwsim_utils.py", line 227, in test_connectivity_p2p
-    test_connectivity(dev1, dev2, dscp, tos, dev1group=True, dev2group=True)
-  File "/lkp/benchmarks/hwsim/tests/hwsim/hwsim_utils.py", line 217, in test_connectivity
-    raise Exception(last_err)
-Exception: sending data without carrier won't work
-FAIL autogo_chan_switch 15.072969 2024-03-22 18:50:26.967705
-passed 0 test case(s)
-skipped 0 test case(s)
-failed tests: autogo_chan_switch
-2024-03-22 18:50:27 ./run-tests.py autogo_chan_switch_group_iface
-DEV: wlan0: 02:00:00:00:00:00
-DEV: wlan1: 02:00:00:00:01:00
-DEV: wlan2: 02:00:00:00:02:00
-APDEV: wlan3
-APDEV: wlan4
-START autogo_chan_switch_group_iface 1/1
-Test: P2P autonomous GO switching channels (separate group interface)
-Start autonomous GO wlan0
-Try to connect the client to the GO
-wlan1: Trying to discover peer 02:00:00:00:00:00
-Client connected
-sending data without carrier won't work
-Traceback (most recent call last):
-  File "/lkp/benchmarks/hwsim/tests/hwsim/./run-tests.py", line 593, in main
-    t(dev)
-  File "/lkp/benchmarks/hwsim/tests/hwsim/test_p2p_autogo.py", line 383, in test_autogo_chan_switch_group_iface
-    run_autogo_chan_switch(dev)
-  File "/lkp/benchmarks/hwsim/tests/hwsim/test_p2p_autogo.py", line 375, in run_autogo_chan_switch
-    hwsim_utils.test_connectivity_p2p(dev[0], dev[1])
-  File "/lkp/benchmarks/hwsim/tests/hwsim/hwsim_utils.py", line 227, in test_connectivity_p2p
-    test_connectivity(dev1, dev2, dscp, tos, dev1group=True, dev2group=True)
-  File "/lkp/benchmarks/hwsim/tests/hwsim/hwsim_utils.py", line 217, in test_connectivity
-    raise Exception(last_err)
-Exception: sending data without carrier won't work
-FAIL autogo_chan_switch_group_iface 18.357236 2024-03-22 18:50:57.293385
-passed 0 test case(s)
-skipped 0 test case(s)
-failed tests: autogo_chan_switch_group_iface
-2024-03-22 18:50:57 ./run-tests.py p2p_device_autogo_chan_switch
-DEV: wlan0: 02:00:00:00:00:00
-DEV: wlan1: 02:00:00:00:01:00
-DEV: wlan2: 02:00:00:00:02:00
-APDEV: wlan3
-APDEV: wlan4
-START p2p_device_autogo_chan_switch 1/1
-Test: P2P autonomous GO switching channels with cfg80211 P2P Device
-Start autonomous GO wlan7
-Try to connect the client to the GO
-wlan1: Trying to discover peer 42:00:00:00:07:00
-Client connected
-PASS p2p_device_autogo_chan_switch 25.252863 2024-03-22 18:51:34.497093
-passed all 1 test case(s)
-2024-03-22 18:51:34 ./stop.sh
+
+
+# timeout set to 300
+# selftests: pidfd: pidfd_setns_test
+# TAP version 13
+# 1..7
+# # Starting 7 tests from 2 test cases.
+# #  RUN           global.setns_einval ...
+# #            OK  global.setns_einval
+# ok 1 global.setns_einval
+# #  RUN           current_nsset.invalid_flags ...
+# # pidfd_setns_test.c:161:invalid_flags:Expected self->child_pid_exited (0) > 0 (0)
+# #            OK  current_nsset.invalid_flags
+# ok 2 current_nsset.invalid_flags
+# #  RUN           current_nsset.pidfd_exited_child ...
+# # pidfd_setns_test.c:161:pidfd_exited_child:Expected self->child_pid_exited (0) > 0 (0)
+# #            OK  current_nsset.pidfd_exited_child
+# ok 3 current_nsset.pidfd_exited_child
+# #  RUN           current_nsset.pidfd_incremental_setns ...
+# # pidfd_setns_test.c:161:pidfd_incremental_setns:Expected self->child_pid_exited (0) > 0 (0)
+# # pidfd_setns_test.c:408:pidfd_incremental_setns:Managed to correctly setns to user namespace of 45423 via pidfd 20
+# # pidfd_setns_test.c:408:pidfd_incremental_setns:Managed to correctly setns to mnt namespace of 45423 via pidfd 20
+# # pidfd_setns_test.c:408:pidfd_incremental_setns:Managed to correctly setns to pid namespace of 45423 via pidfd 20
+# # pidfd_setns_test.c:408:pidfd_incremental_setns:Managed to correctly setns to uts namespace of 45423 via pidfd 20
+# # pidfd_setns_test.c:408:pidfd_incremental_setns:Managed to correctly setns to ipc namespace of 45423 via pidfd 20
+# # pidfd_setns_test.c:408:pidfd_incremental_setns:Managed to correctly setns to net namespace of 45423 via pidfd 20
+# # pidfd_setns_test.c:408:pidfd_incremental_setns:Managed to correctly setns to cgroup namespace of 45423 via pidfd 20
+# # pidfd_setns_test.c:408:pidfd_incremental_setns:Managed to correctly setns to pid_for_children namespace of 45423 via pidfd 20
+# # pidfd_setns_test.c:391:pidfd_incremental_setns:Expected setns(self->child_pidfd1, info->flag) (-1) == 0 (0)
+# # pidfd_setns_test.c:392:pidfd_incremental_setns:Too many users - Failed to setns to time namespace of 45423 via pidfd 20
+# # pidfd_incremental_setns: Test terminated by timeout
+# #          FAIL  current_nsset.pidfd_incremental_setns
+# not ok 4 current_nsset.pidfd_incremental_setns
+# #  RUN           current_nsset.nsfd_incremental_setns ...
+# # pidfd_setns_test.c:161:nsfd_incremental_setns:Expected self->child_pid_exited (0) > 0 (0)
+# # pidfd_setns_test.c:444:nsfd_incremental_setns:Managed to correctly setns to user namespace of 45524 via nsfd 19
+# # pidfd_setns_test.c:444:nsfd_incremental_setns:Managed to correctly setns to mnt namespace of 45524 via nsfd 24
+# # pidfd_setns_test.c:444:nsfd_incremental_setns:Managed to correctly setns to pid namespace of 45524 via nsfd 27
+# # pidfd_setns_test.c:444:nsfd_incremental_setns:Managed to correctly setns to uts namespace of 45524 via nsfd 30
+# # pidfd_setns_test.c:444:nsfd_incremental_setns:Managed to correctly setns to ipc namespace of 45524 via nsfd 33
+# # pidfd_setns_test.c:444:nsfd_incremental_setns:Managed to correctly setns to net namespace of 45524 via nsfd 36
+# # pidfd_setns_test.c:444:nsfd_incremental_setns:Managed to correctly setns to cgroup namespace of 45524 via nsfd 39
+# # pidfd_setns_test.c:444:nsfd_incremental_setns:Managed to correctly setns to pid_for_children namespace of 45524 via nsfd 42
+# # pidfd_setns_test.c:427:nsfd_incremental_setns:Expected setns(self->child_nsfds1[i], info->flag) (-1) == 0 (0)
+# # pidfd_setns_test.c:428:nsfd_incremental_setns:Too many users - Failed to setns to time namespace of 45524 via nsfd 45
+# # nsfd_incremental_setns: Test terminated by timeout
+# #          FAIL  current_nsset.nsfd_incremental_setns
+# not ok 5 current_nsset.nsfd_incremental_setns
+# #  RUN           current_nsset.pidfd_one_shot_setns ...
+# # pidfd_setns_test.c:161:pidfd_one_shot_setns:Expected self->child_pid_exited (0) > 0 (0)
+# # pidfd_setns_test.c:462:pidfd_one_shot_setns:Adding user namespace of 45630 to list of namespaces to attach to
+# # pidfd_setns_test.c:462:pidfd_one_shot_setns:Adding mnt namespace of 45630 to list of namespaces to attach to
+# # pidfd_setns_test.c:462:pidfd_one_shot_setns:Adding pid namespace of 45630 to list of namespaces to attach to
+# # pidfd_setns_test.c:462:pidfd_one_shot_setns:Adding uts namespace of 45630 to list of namespaces to attach to
+# # pidfd_setns_test.c:462:pidfd_one_shot_setns:Adding ipc namespace of 45630 to list of namespaces to attach to
+# # pidfd_setns_test.c:462:pidfd_one_shot_setns:Adding net namespace of 45630 to list of namespaces to attach to
+# # pidfd_setns_test.c:462:pidfd_one_shot_setns:Adding cgroup namespace of 45630 to list of namespaces to attach to
+# # pidfd_setns_test.c:462:pidfd_one_shot_setns:Adding pid_for_children namespace of 45630 to list of namespaces to attach to
+# # pidfd_setns_test.c:462:pidfd_one_shot_setns:Adding time namespace of 45630 to list of namespaces to attach to
+# # pidfd_setns_test.c:466:pidfd_one_shot_setns:Expected setns(self->child_pidfd1, flags) (-1) == 0 (0)
+# # pidfd_setns_test.c:467:pidfd_one_shot_setns:Too many users - Failed to setns to namespaces of 45630
+# # pidfd_one_shot_setns: Test terminated by timeout
+# #          FAIL  current_nsset.pidfd_one_shot_setns
+# not ok 6 current_nsset.pidfd_one_shot_setns
+# #  RUN           current_nsset.no_foul_play ...
+# # pidfd_setns_test.c:161:no_foul_play:Expected self->child_pid_exited (0) > 0 (0)
+# # pidfd_setns_test.c:506:no_foul_play:Adding user namespace of 45737 to list of namespaces to attach to
+# # pidfd_setns_test.c:506:no_foul_play:Adding mnt namespace of 45737 to list of namespaces to attach to
+# # pidfd_setns_test.c:506:no_foul_play:Adding pid namespace of 45737 to list of namespaces to attach to
+# # pidfd_setns_test.c:506:no_foul_play:Adding uts namespace of 45737 to list of namespaces to attach to
+# # pidfd_setns_test.c:506:no_foul_play:Adding ipc namespace of 45737 to list of namespaces to attach to
+# # pidfd_setns_test.c:506:no_foul_play:Adding net namespace of 45737 to list of namespaces to attach to
+# # pidfd_setns_test.c:506:no_foul_play:Adding cgroup namespace of 45737 to list of namespaces to attach to
+# # pidfd_setns_test.c:506:no_foul_play:Adding time namespace of 45737 to list of namespaces to attach to
+# # pidfd_setns_test.c:510:no_foul_play:Expected setns(self->child_pidfd1, flags) (-1) == 0 (0)
+# # pidfd_setns_test.c:511:no_foul_play:Too many users - Failed to setns to namespaces of 45737 vid pidfd 20
+# # no_foul_play: Test terminated by timeout
+# #          FAIL  current_nsset.no_foul_play
+# not ok 7 current_nsset.no_foul_play
+# # FAILED: 3 / 7 tests passed.
+# # Totals: pass:3 fail:4 xfail:0 xpass:0 skip:0 error:0
+not ok 7 selftests: pidfd: pidfd_setns_test # exit=1
+make: Leaving directory '/usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-0710a1a73fb45033ebb06073e374ab7d44a05f15/tools/testing/selftests/pidfd'
 
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20240329/202403291042.d9211733-oliver.sang@intel.com
+https://download.01.org/0day-ci/archive/20240329/202403291015.1fcfa957-oliver.sang@intel.com
 
 
 
