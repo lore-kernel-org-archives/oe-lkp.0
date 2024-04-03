@@ -1,84 +1,159 @@
-Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4494E14A62A
-	for <oe-lkp@lists.linux.dev>; Wed,  3 Apr 2024 16:45:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E8F41514D2
+	for <oe-lkp@lists.linux.dev>; Wed,  3 Apr 2024 17:05:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=65.109.113.108
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712162747; cv=none; b=GVNjLyKzbmJW66ORlBLPJhPB7a9gQnqA8mJPO+GJalN5ldXZhq5vuz81lNOim4aPK9eNk6/lMm5dCPwMuHM0DJJlcmSbZW2p+ujpSphVaIK9FQ/+nvLEm21DeInYHx6K/TtrDFskuV5OzM7sNLzLgl3nUAmQQhPaxppo3ZCnfbg=
+	t=1712163960; cv=none; b=H6SUGxgmXKomsvi/yImB7aiOuAN328JW5EK5vFN5cAT+REjUW5H0YSBcptBkPDGhlyTe/a4YlJD4L8zVjPBM8BX4pd4LxFW3IBzObi9sFrDQJ/xHzvBNW8wUAgyS513qBoMqV5cIqYIDVmeRM8RVllre7oK0VVU23cKpVvVu+wI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712162747; c=relaxed/simple;
-	bh=WkOp0jt83v59PmTbpG01/8bMvUonlZp+wBHAUkpikYQ=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=LvcnFbN1RjMi2/sHlBJGvgvmClT5PXyU7Q5RDmPPjBEmiPtn+w/K3nTQyjdm9KeTKIwNcrqqgjrSSbq1o2YqJV2yff44tPToVYiLyz8lgzApUH4BPeR2RDZTn8a15OdhgYUCunWAsx+pzC4PM0yUMK8m/Wb8Bs6hUlIc+GjM5qg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=aKar6QGq; arc=none smtp.client-ip=209.85.218.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
+	s=arc-20240116; t=1712163960; c=relaxed/simple;
+	bh=Jd4BHvRPKqhFeMu5ITAzv/jcjy5QPHwQQaC48cYJc6I=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=lP3YRgSUkzQw0AimYE4+kfKQlh835sb940o64xI1jQA9GEHKw6Ty/2ZAtnZe+1+BbHgXX97nJvCk0W3jSgMOhVjrIZmUbK42+YUosfDmqW2D3EJSTUZT/BFImHdIxcHWhMJvFTZ5XdaAoMa3QaqFJ8j8weXbCDCuVS9X7kCmMho=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de; spf=pass smtp.mailfrom=alien8.de; dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b=aph64/0W; arc=none smtp.client-ip=65.109.113.108
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="aKar6QGq"
-Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-a4715991c32so11929066b.1
-        for <oe-lkp@lists.linux.dev>; Wed, 03 Apr 2024 09:45:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1712162743; x=1712767543; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=BA+iBcOT7cJaTUdOkwv4QgkljAgFbNor67YZYYCKl/4=;
-        b=aKar6QGqceuB3+QKHRlNvTc3h2SlbJFud4wPNz36fPLldEsI7H2TKLOkrh+uzd94Wr
-         eusEj0t52XIHKGTf/loD2YzaF/OI86s6Q130ykTjLSCDiFmY7sLf3N8T3d9SDLQlOyS6
-         W9zoA22vRY+x5DAgQS/vXPmS86ObeP7Iz32Z8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712162743; x=1712767543;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=BA+iBcOT7cJaTUdOkwv4QgkljAgFbNor67YZYYCKl/4=;
-        b=A7M1uu2GIeXSoJ3eTa2ghTVPBg87zcCxFSuUfzHiFa4vgNChRZeW4X0/d+rpgbXFc7
-         KF+uFmriBpdbUV6eLH9Jo0yapGMokW5BSMMvrWssvIqIl+bznIveqQafjuLt4rm0duGn
-         xhY84zSgTqxfOGTEEZ1V+IFJtdeor9GVv1yWUlvh6FCgmh0A5+kwSPSjL61tX393+6ZO
-         CiN9LrSs0jvZAKdWRichhfoooXmAqvrGtS4/ReTBqnmU0naCLtBvReG7CZrLqQW9hEws
-         1xMPZ03Ml07yykJFGOYbLaTyxSDOPQq350+h7uaAnCc9NAIaW0hsyG96qGjInUpF6y+z
-         J7KQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVy1FsFyUnycSQGuzde5D370ZKdmGACxj2KMYNnue5IT+6kobjp1kU9mcF47eIYUElUoMkXeProi/Adnh7gOGsYkBa2+Q6R
-X-Gm-Message-State: AOJu0Yx858AnP/4eCHgg/et+G0NXdyIVcrPCkpIEP9UacUt1QiAAV1RG
-	V1/w+d4rMkfDCtnMPKp0+MXotpIl1bJSQzi8xQydbTlnTp6ce5YV3OCG5Ds6oC6pPAMiIQ8PoE8
-	PNlPdfg==
-X-Google-Smtp-Source: AGHT+IHrZQZAgZInUTAkTRFTm7fIYR1d++3W4phRwFYU2wxV/KaWa+pYjAuEj2vfeHj9q6oMq/LE8w==
-X-Received: by 2002:a17:906:ca0f:b0:a46:f69b:49b1 with SMTP id jt15-20020a170906ca0f00b00a46f69b49b1mr10426229ejb.46.1712162743348;
-        Wed, 03 Apr 2024 09:45:43 -0700 (PDT)
-Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com. [209.85.218.52])
-        by smtp.gmail.com with ESMTPSA id do21-20020a170906c11500b00a455d78be5bsm7941862ejc.9.2024.04.03.09.45.42
-        for <oe-lkp@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 03 Apr 2024 09:45:42 -0700 (PDT)
-Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-a4e61accceaso10297566b.2
-        for <oe-lkp@lists.linux.dev>; Wed, 03 Apr 2024 09:45:42 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCXdoNr7I3OJX47Vc+qkU+9kvfyQPsp1Z0ljrWeR3+nqliL/xjFOU3XiCZWO5G4DDBXRFgD2aVk8/0x2pbm76CCv8tuf9WoJ
-X-Received: by 2002:a17:906:57c2:b0:a47:3b6a:a29b with SMTP id
- u2-20020a17090657c200b00a473b6aa29bmr10816968ejr.13.1712162742304; Wed, 03
- Apr 2024 09:45:42 -0700 (PDT)
+	dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b="aph64/0W"
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id 2CA2640E019B;
+	Wed,  3 Apr 2024 17:05:55 +0000 (UTC)
+X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
+Authentication-Results: mail.alien8.de (amavisd-new); dkim=pass (4096-bit key)
+	header.d=alien8.de
+Received: from mail.alien8.de ([127.0.0.1])
+	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id biapfoup9x9x; Wed,  3 Apr 2024 17:05:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
+	t=1712163949; bh=nlDEmjDrb0uwgRIcCGqAC2jcGn2X53+a7hDmicU3V9M=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=aph64/0WckPYA9dnAiDvGu4Ppewp4aHpRUx7BpG06f9IKeXGf9UrYAtDw2EF549dg
+	 7ywIBR9m8qVelAZZwT+PNkmsR5eW1GQxgjvbnJKJdboegZ+Hc8PtFXKrb5mFjQjnlp
+	 /ABfhIcpSLbMtjCj0qUHSAqU9pChCoLZzvxiQ9Um4pNb1uJNJ7ucOt4kQRjU/3snto
+	 CTmiv4Zkm/vN8zPaT8mDi4tpsyXx2z0H8KglF1T6NTPUzHGPj0v0M5eKyA3XQY65Bd
+	 sJqUC56n5ju0bDa97QfjfVspgilcHOXpcoGaqY/18oQHoZJvZRYzxEe/CxOgXm0ua9
+	 L6ZHy6SnrhIMM5XdZIgRV0T/UO8kPqmVPH90DvYUjLZYQbV2bTfjxydfl/wGN2X9UH
+	 l30TFsjfGki/0m8bF0FV9bqL00q5gVV80IQUXPYUEuRwipIM5R5Th5sPOjst/QEOl/
+	 MVEUSTI+kh2bXD6JybN5Tst8VDPxbPabnSDJhEqtQo0p3R9tsNxj4dLHeO+FNrxFuu
+	 zvbHcao4zz6K5lGu3ZD0vJWLD19d3h7WEC5UbpKGLVc8KpX6AHtIR0JWDSE8kQN/Qt
+	 Cj2pvbqd3CjUh4tSByuTYUNTl9HsKMMPyJJXt9uGDtupCdtNKKlMZ/pz9mb8QM4rWz
+	 h6pWA+QIKkkwgahByGhGp8A4=
+Received: from zn.tnic (p5de8ecf7.dip0.t-ipconnect.de [93.232.236.247])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 7011240E00F4;
+	Wed,  3 Apr 2024 17:05:43 +0000 (UTC)
+Date: Wed, 3 Apr 2024 19:05:34 +0200
+From: Borislav Petkov <bp@alien8.de>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, linux-kernel@vger.kernel.org,
+	Ingo Molnar <mingo@kernel.org>
+Subject: Re: [PATCH] x86/retpoline: Fix a missing return thunk warning (was:
+ Re: [linus:master] [x86/bugs] 4535e1a417:
+ WARNING:at_arch/x86/kernel/alternative.c:#apply_returns)
+Message-ID: <20240403170534.GHZg2MXmwFRv-x8usY@fat_crate.local>
+References: <202404020901.da75a60f-oliver.sang@intel.com>
+ <20240403122350.GEZg1KVvsyc-Z3bwro@fat_crate.local>
+ <CAHk-=wj+Q_LXV0Y5+kBvv-5sTxT3Y7E=8wJ2sX4vzWksd3LWzA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202404020901.da75a60f-oliver.sang@intel.com> <20240403122350.GEZg1KVvsyc-Z3bwro@fat_crate.local>
-In-Reply-To: <20240403122350.GEZg1KVvsyc-Z3bwro@fat_crate.local>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Wed, 3 Apr 2024 09:45:25 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wj+Q_LXV0Y5+kBvv-5sTxT3Y7E=8wJ2sX4vzWksd3LWzA@mail.gmail.com>
-Message-ID: <CAHk-=wj+Q_LXV0Y5+kBvv-5sTxT3Y7E=8wJ2sX4vzWksd3LWzA@mail.gmail.com>
-Subject: Re: [PATCH] x86/retpoline: Fix a missing return thunk warning (was:
- Re: [linus:master] [x86/bugs] 4535e1a417: WARNING:at_arch/x86/kernel/alternative.c:#apply_returns)
-To: Borislav Petkov <bp@alien8.de>
-Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
-	linux-kernel@vger.kernel.org, Ingo Molnar <mingo@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wj+Q_LXV0Y5+kBvv-5sTxT3Y7E=8wJ2sX4vzWksd3LWzA@mail.gmail.com>
 
-On Wed, 3 Apr 2024 at 05:24, Borislav Petkov <bp@alien8.de> wrote:
->
-> Subject: [PATCH] x86/retpoline: Fix a missing return thunk warning
+On Wed, Apr 03, 2024 at 09:45:25AM -0700, Linus Torvalds wrote:
+> On Wed, 3 Apr 2024 at 05:24, Borislav Petkov <bp@alien8.de> wrote:
+> >
+> > Subject: [PATCH] x86/retpoline: Fix a missing return thunk warning
+> 
+> Thanks, applied directly,
 
-Thanks, applied directly,
+Can you pls replace it with the below one?
 
-                Linus
+There's more breakage:
+
+https://bugzilla.kernel.org/show_bug.cgi?id=218679
+
+and I think it needs an __EXPORT_THUNK too.
+
+Yeah, I know. Damn ifdeffery. :-\
+
+I've changed it:
+
+https://bugzilla.kernel.org/attachment.cgi?id=306084&action=diff
+
+and this should be the correct fix(tm). Famous last words.
+
+Thx.
+
+---
+From ca5b34498f997cba9c24d450f7ccab4b37377560 Mon Sep 17 00:00:00 2001
+From: "Borislav Petkov (AMD)" <bp@alien8.de>
+Date: Tue, 2 Apr 2024 16:05:49 +0200
+Subject: [PATCH] x86/retpoline: Do the necessary fixup to the Zen3/4 srso
+ return thunk for !SRSO
+
+The srso_alias_untrain_ret() dummy thunk in the !CONFIG_MITIGATION_SRSO
+case is there only for the altenative in CALL_UNTRAIN_RET to have
+a symbol to resolve.
+
+However, testing with kernels which don't have CONFIG_MITIGATION_SRSO
+enabled, leads to the warning in patch_return() to fire:
+
+  missing return thunk: srso_alias_untrain_ret+0x0/0x10-0x0: eb 0e 66 66 2e
+  WARNING: CPU: 0 PID: 0 at arch/x86/kernel/alternative.c:826 apply_returns (arch/x86/kernel/alternative.c:826
+
+Put in a plain "ret" there so that gcc doesn't put a return thunk in
+in its place which special and gets checked.
+
+In addition:
+
+  ERROR: modpost: "srso_alias_untrain_ret" [arch/x86/kvm/kvm-amd.ko] undefined!
+  make[2]: *** [scripts/Makefile.modpost:145: Module.symvers] Chyba 1
+  make[1]: *** [/usr/src/linux-6.8.3/Makefile:1873: modpost] Chyba 2
+  make: *** [Makefile:240: __sub-make] Chyba 2
+
+since !SRSO builds would use the dummy return thunk as reported by
+petr.pisar@atlas.cz, https://bugzilla.kernel.org/show_bug.cgi?id=218679.
+
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Closes: https://lore.kernel.org/oe-lkp/202404020901.da75a60f-oliver.sang@intel.com
+Signed-off-by: Borislav Petkov (AMD) <bp@alien8.de>
+Link: https://lore.kernel.org/all/202404020901.da75a60f-oliver.sang@intel.com/
+---
+ arch/x86/lib/retpoline.S | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/lib/retpoline.S b/arch/x86/lib/retpoline.S
+index 02cde194a99e..0795b3464058 100644
+--- a/arch/x86/lib/retpoline.S
++++ b/arch/x86/lib/retpoline.S
+@@ -228,8 +228,11 @@ SYM_CODE_END(srso_return_thunk)
+ #else /* !CONFIG_MITIGATION_SRSO */
+ /* Dummy for the alternative in CALL_UNTRAIN_RET. */
+ SYM_CODE_START(srso_alias_untrain_ret)
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ SYM_FUNC_END(srso_alias_untrain_ret)
++__EXPORT_THUNK(srso_alias_untrain_ret)
+ #define JMP_SRSO_UNTRAIN_RET "ud2"
+ #endif /* CONFIG_MITIGATION_SRSO */
+ 
+-- 
+2.43.0
+
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
