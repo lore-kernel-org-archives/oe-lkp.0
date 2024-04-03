@@ -1,98 +1,84 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B77D7148825
-	for <oe-lkp@lists.linux.dev>; Wed,  3 Apr 2024 14:00:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4494E14A62A
+	for <oe-lkp@lists.linux.dev>; Wed,  3 Apr 2024 16:45:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712152853; cv=none; b=R2PtIzjrE2LYgtYgjWdzyQdcNW05umNiycswQ5Euoj0xTe8o5JuahhcUch5ubL99bbEhUNwb/dNECzJYTF155TY88im+vIuwFqMG7hEioaa6jhc3qJcQ3VCwPJA6lJGpTHbr0MsZ5EhVOSddkHTMo6qn053/Tji8GVajdtPSGZA=
+	t=1712162747; cv=none; b=GVNjLyKzbmJW66ORlBLPJhPB7a9gQnqA8mJPO+GJalN5ldXZhq5vuz81lNOim4aPK9eNk6/lMm5dCPwMuHM0DJJlcmSbZW2p+ujpSphVaIK9FQ/+nvLEm21DeInYHx6K/TtrDFskuV5OzM7sNLzLgl3nUAmQQhPaxppo3ZCnfbg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712152853; c=relaxed/simple;
-	bh=BjYkvF7LXg6vWD752aMFoRkrW/2JqvZ+/duQLEBk55o=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nKPUot5/gg+CLMHX1yK3sI/IPTgBOEY3Y3lb/lcT4PHpNBO5I5aMW4Sn45AaBWklcZh1uAqyAEQAAlZ8pLmSQ0KfUne8OqZsr7iuPQtWLKCzS6MDT2ubMTKjjRioz71aU9awhaChEmAMfZkh6rEOwuQA9SoYLOxPzH0ul5FsEfo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VCEL4asg; arc=none smtp.client-ip=198.175.65.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1712162747; c=relaxed/simple;
+	bh=WkOp0jt83v59PmTbpG01/8bMvUonlZp+wBHAUkpikYQ=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=LvcnFbN1RjMi2/sHlBJGvgvmClT5PXyU7Q5RDmPPjBEmiPtn+w/K3nTQyjdm9KeTKIwNcrqqgjrSSbq1o2YqJV2yff44tPToVYiLyz8lgzApUH4BPeR2RDZTn8a15OdhgYUCunWAsx+pzC4PM0yUMK8m/Wb8Bs6hUlIc+GjM5qg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=aKar6QGq; arc=none smtp.client-ip=209.85.218.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VCEL4asg"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712152851; x=1743688851;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=BjYkvF7LXg6vWD752aMFoRkrW/2JqvZ+/duQLEBk55o=;
-  b=VCEL4asgnnEEOD95ZuKkjN2TPMOp2R0+GLPXdnm8xZyOeP26QhW6bvqR
-   2BPJatt/SC+5AZel+iRBBCdjSruglfv8nqUJSfZrK2Ncr4a5E7NyWS2s4
-   CDnVzYJ77HwqngGpHNJeDimNPyoDgV90rfq4b2paPGbB+1OwIwraezZkC
-   2jbGO3VWioD0k006yWmO7O7IsjdcDwis+RLlWUhd/AmgOynHPo0IMbfGy
-   fDn7gAofd3BfsjS8DJnQX6Nl5+6bUvtUY22KxV163mBag3LsxNGPb9Fyw
-   uZYfhPsc8wJcNrQ9qGBwSpezI8ue5+tLPNXIljjumzdEOJ/LJQJyZCLg8
-   w==;
-X-CSE-ConnectionGUID: FYsRqXYNQf6SIgLjbTYYog==
-X-CSE-MsgGUID: dxt9zic+RZq0nCy0nB1tKg==
-X-IronPort-AV: E=McAfee;i="6600,9927,11033"; a="11210593"
-X-IronPort-AV: E=Sophos;i="6.07,177,1708416000"; 
-   d="scan'208";a="11210593"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2024 07:00:45 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,11033"; a="915184273"
-X-IronPort-AV: E=Sophos;i="6.07,177,1708416000"; 
-   d="scan'208";a="915184273"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.72.54])
-  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2024 07:00:42 -0700
-Received: from andy by smile with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rs1AN-000000018aI-09zF;
-	Wed, 03 Apr 2024 17:00:39 +0300
-Date: Wed, 3 Apr 2024 17:00:38 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: Yicong Yang <yangyicong@hisilicon.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, linux-kernel@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	stable <stable@kernel.org>, Tony Lindgren <tony@atomide.com>,
-	linux-serial@vger.kernel.org
-Subject: Re: [linus:master] [serial]  43066e3222:
- BUG:kernel_NULL_pointer_dereference,address
-Message-ID: <Zg1hBvRAxifo50sf@smile.fi.intel.com>
-References: <202404031607.2e92eebe-lkp@intel.com>
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="aKar6QGq"
+Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-a4715991c32so11929066b.1
+        for <oe-lkp@lists.linux.dev>; Wed, 03 Apr 2024 09:45:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google; t=1712162743; x=1712767543; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=BA+iBcOT7cJaTUdOkwv4QgkljAgFbNor67YZYYCKl/4=;
+        b=aKar6QGqceuB3+QKHRlNvTc3h2SlbJFud4wPNz36fPLldEsI7H2TKLOkrh+uzd94Wr
+         eusEj0t52XIHKGTf/loD2YzaF/OI86s6Q130ykTjLSCDiFmY7sLf3N8T3d9SDLQlOyS6
+         W9zoA22vRY+x5DAgQS/vXPmS86ObeP7Iz32Z8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1712162743; x=1712767543;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=BA+iBcOT7cJaTUdOkwv4QgkljAgFbNor67YZYYCKl/4=;
+        b=A7M1uu2GIeXSoJ3eTa2ghTVPBg87zcCxFSuUfzHiFa4vgNChRZeW4X0/d+rpgbXFc7
+         KF+uFmriBpdbUV6eLH9Jo0yapGMokW5BSMMvrWssvIqIl+bznIveqQafjuLt4rm0duGn
+         xhY84zSgTqxfOGTEEZ1V+IFJtdeor9GVv1yWUlvh6FCgmh0A5+kwSPSjL61tX393+6ZO
+         CiN9LrSs0jvZAKdWRichhfoooXmAqvrGtS4/ReTBqnmU0naCLtBvReG7CZrLqQW9hEws
+         1xMPZ03Ml07yykJFGOYbLaTyxSDOPQq350+h7uaAnCc9NAIaW0hsyG96qGjInUpF6y+z
+         J7KQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVy1FsFyUnycSQGuzde5D370ZKdmGACxj2KMYNnue5IT+6kobjp1kU9mcF47eIYUElUoMkXeProi/Adnh7gOGsYkBa2+Q6R
+X-Gm-Message-State: AOJu0Yx858AnP/4eCHgg/et+G0NXdyIVcrPCkpIEP9UacUt1QiAAV1RG
+	V1/w+d4rMkfDCtnMPKp0+MXotpIl1bJSQzi8xQydbTlnTp6ce5YV3OCG5Ds6oC6pPAMiIQ8PoE8
+	PNlPdfg==
+X-Google-Smtp-Source: AGHT+IHrZQZAgZInUTAkTRFTm7fIYR1d++3W4phRwFYU2wxV/KaWa+pYjAuEj2vfeHj9q6oMq/LE8w==
+X-Received: by 2002:a17:906:ca0f:b0:a46:f69b:49b1 with SMTP id jt15-20020a170906ca0f00b00a46f69b49b1mr10426229ejb.46.1712162743348;
+        Wed, 03 Apr 2024 09:45:43 -0700 (PDT)
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com. [209.85.218.52])
+        by smtp.gmail.com with ESMTPSA id do21-20020a170906c11500b00a455d78be5bsm7941862ejc.9.2024.04.03.09.45.42
+        for <oe-lkp@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 Apr 2024 09:45:42 -0700 (PDT)
+Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-a4e61accceaso10297566b.2
+        for <oe-lkp@lists.linux.dev>; Wed, 03 Apr 2024 09:45:42 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCXdoNr7I3OJX47Vc+qkU+9kvfyQPsp1Z0ljrWeR3+nqliL/xjFOU3XiCZWO5G4DDBXRFgD2aVk8/0x2pbm76CCv8tuf9WoJ
+X-Received: by 2002:a17:906:57c2:b0:a47:3b6a:a29b with SMTP id
+ u2-20020a17090657c200b00a473b6aa29bmr10816968ejr.13.1712162742304; Wed, 03
+ Apr 2024 09:45:42 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202404031607.2e92eebe-lkp@intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <202404020901.da75a60f-oliver.sang@intel.com> <20240403122350.GEZg1KVvsyc-Z3bwro@fat_crate.local>
+In-Reply-To: <20240403122350.GEZg1KVvsyc-Z3bwro@fat_crate.local>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Wed, 3 Apr 2024 09:45:25 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wj+Q_LXV0Y5+kBvv-5sTxT3Y7E=8wJ2sX4vzWksd3LWzA@mail.gmail.com>
+Message-ID: <CAHk-=wj+Q_LXV0Y5+kBvv-5sTxT3Y7E=8wJ2sX4vzWksd3LWzA@mail.gmail.com>
+Subject: Re: [PATCH] x86/retpoline: Fix a missing return thunk warning (was:
+ Re: [linus:master] [x86/bugs] 4535e1a417: WARNING:at_arch/x86/kernel/alternative.c:#apply_returns)
+To: Borislav Petkov <bp@alien8.de>
+Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	linux-kernel@vger.kernel.org, Ingo Molnar <mingo@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 
-On Wed, Apr 03, 2024 at 09:43:28PM +0800, kernel test robot wrote:
+On Wed, 3 Apr 2024 at 05:24, Borislav Petkov <bp@alien8.de> wrote:
+>
+> Subject: [PATCH] x86/retpoline: Fix a missing return thunk warning
 
-> kernel test robot noticed "BUG:kernel_NULL_pointer_dereference,address" on:
-> 
-> commit: 43066e32227ecde674e8ae1fcdd4a1ede67680c2 ("serial: port: Don't suspend if the port is still busy")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+Thanks, applied directly,
 
-Ja-ja, I am investigating this issue for a while (not that I spend all my time
-on it, though) on max3100.
-
-The problem seems that we enable PM runtime on all serial ports
-(even if they have no RPM support), but at the same time we enforce
-the common serial_port PM callbacks and that change misses a detail
-on how to check the port status as the real callback may happen
-quite after the port being closed (/dev/ttySx).
-
-Probably we need to check if the port is still open...
-
-P.S. AFAIU the state / xmit is invalid pointer or so.
-
-Culprit line:	serial_out(up, UART_TX, xmit->buf[xmit->tail]);
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+                Linus
