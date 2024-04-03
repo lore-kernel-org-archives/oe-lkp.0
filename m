@@ -1,177 +1,127 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FDBE135A5F
-	for <oe-lkp@lists.linux.dev>; Wed,  3 Apr 2024 11:03:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAFBF141991
+	for <oe-lkp@lists.linux.dev>; Wed,  3 Apr 2024 12:24:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=65.109.113.108
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712142200; cv=none; b=mdS6al31GJ9BDPJzbgp/OF1VvuFgfYkVs5YKuwLpSa18k7u02JPhvj+TZyV/MGsxBgWHPr7HfDyZoB6nP2uiUA9WNoIHy3QNDQFu+VSduqocJTt/564MXRVspZaSJY48LjOPBjc0e4CuWB3CgEU8Ji4uoswslQucpYBBScEEu6g=
+	t=1712147046; cv=none; b=p3eOw4jZWozocDhMMBJLJT5gT9WyOcAPTiE9oEO8B7AC82tsJkI+ZeFYo4emQAHGE0wDuvJkju29J6LHQflGQje9bQOLvF/pBJFIA0L6fhkY13sBeRL7UClHwuxB0s8nrYkBbEcuhAw081DMmAAw9VoqUSbxjuwuY3Z/7o13rp0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712142200; c=relaxed/simple;
-	bh=uMKHnDXTEm+EOZrtndTxFv/QNJgNWVRCusPPKwTHd64=;
+	s=arc-20240116; t=1712147046; c=relaxed/simple;
+	bh=QbayxI9VUByD6j6vldQlMbmK1aQIb/J5bWvg0XtkW6o=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Wze6Qjf6WIwltaIpWMAvsiia1S1+zzwdITfj0+cIfBGjeKak7a+TcQ+5Lm1a4DHOysBvlDtHuABNUev3F+pXTq5Nb5kY4WwHP45WdZ+bUrDxPH2My4QGn1Bc6NlMjgC3he48HJGqdsS+lqqBBQfijFtBVansWMtcwXC88x7bWl0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=rm/vG5mK; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=W6zFCVQ0; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+	 Content-Type:Content-Disposition:In-Reply-To; b=mwserOOsX4zMYKE9pTrakwdWR5PIMUNGq9oqKdlCxc4fVP0XUy1mB6QgI1or5ir6gBJiJ6ZnldB6yxlj3ec73C8iOHgWZ42hmHTWKXOWoMGYvts6W0ytsBJNZ5pi/rajJFHoznyfseFcctLtK391Q+pX0ZwtAPNKcpR/0FuuEOI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de; spf=pass smtp.mailfrom=alien8.de; dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b=eJc8oI9I; arc=none smtp.client-ip=65.109.113.108
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="rm/vG5mK";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="W6zFCVQ0"
-Received: from imap2.dmz-prg2.suse.org (imap2.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:98])
+	dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b="eJc8oI9I"
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id B5A6040E019B;
+	Wed,  3 Apr 2024 12:24:02 +0000 (UTC)
+X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
+Authentication-Results: mail.alien8.de (amavisd-new); dkim=pass (4096-bit key)
+	header.d=alien8.de
+Received: from mail.alien8.de ([127.0.0.1])
+	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id iJtG7bXtJZbz; Wed,  3 Apr 2024 12:23:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
+	t=1712147037; bh=6BfpoqG+6JI54u/oo5Jqh7AiO+q8UY4Ehl8mJ+Yxoho=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=eJc8oI9I6ySxWuh6eBWmEDgVX5d3r3OnFgm2wxx/1gTvxlXBXdgE4xpPNDg2+KQn5
+	 OAFOqYA5l//NoQSEy/rPowLrG2ZGPiBu9/Nb4qGB9qeStKHKqrIQm8m93pBuSwTP7J
+	 WtiarLg4VAzM4sbnylIELyIQ+lwBucRuRVfeyh0HB+9rwa4pSek1nwq4bS12+AoMD3
+	 eoSs8PbvLd+eklEnMvixZF2P3b7W7wrm3EnhlPfhF4PArO97VLqpreWKR0zWaeSyPA
+	 UJJKAEgXwJpXNriTc19xVFMIfm4NhjTZq5QLBzJrQTM2EJ/TliJpNbtnh8RoUf7ytu
+	 8z+IcD58h5XlDfjz7MIvlrInajZsmmHSaNvZupJFKYg2T9JHnf2fFFYHI1Ug3+2Esw
+	 Fzmcn3l90zfDyUONOkMGRua3QxYCrOKBi0cMn4phOi/cz7fkAO+OPE1dksSOMW7PA1
+	 jP6Bm2hMzyJ+e5HWIRnVIc20T3N5Ts3zy2R4vK0LsFq/tBwnoHb1QzCX+xXhFN0A8Z
+	 1zmvrvNx1qIk9I9+LVZ5H+TzXzmbLZ+MLJJU/a83lqezCqk9y6pydFElzFN2oFY9uW
+	 7XLsdQo5ortyU3+egBw2SyylMdDjdWtkcnWSSWuexljAvVBtBaChMZxSzabVHGUvsN
+	 34Zb2GcuMmMnKNL53uYLGE3Q=
+Received: from zn.tnic (p5de8ecf7.dip0.t-ipconnect.de [93.232.236.247])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
 	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id BC81035270;
-	Wed,  3 Apr 2024 11:03:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1712142196; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=pcQEkiDoZSJwCrXrqPil+MhwkFDK8GbPO7YjAbOieLo=;
-	b=rm/vG5mKI5motS3wQle0dgofSHgXQain5VpuEGueEfffm/xtxpALt17FuuFyyMRw1NQPBs
-	84tWRZmmB1D/N4ikPyWKQTBhSmvdizwz58GYEjAyl4Y+3tPjGZvjAj9W5QWacOUUVC/GOD
-	nrIJkqvL0yYoHBsOeR4Wzgtz/sT/8rE=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1712142196;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=pcQEkiDoZSJwCrXrqPil+MhwkFDK8GbPO7YjAbOieLo=;
-	b=W6zFCVQ0QbqGZG82yh1ffhmB4224NDIE5PVvCEN6M6Q9+8oz1SnJEVwvqSIqcSEdVON0lp
-	1KVpt2Cy/S3nDlDw==
-Authentication-Results: smtp-out1.suse.de;
-	dkim=none
-Received: from imap2.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap2.dmz-prg2.suse.org (Postfix) with ESMTPS id AC29013357;
-	Wed,  3 Apr 2024 11:03:16 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap2.dmz-prg2.suse.org with ESMTPSA
-	id EiH8KXQ3DWaIGgAAn2gu4w
-	(envelope-from <jack@suse.cz>); Wed, 03 Apr 2024 11:03:16 +0000
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-	id 6839EA0814; Wed,  3 Apr 2024 13:03:16 +0200 (CEST)
-Date: Wed, 3 Apr 2024 13:03:16 +0200
-From: Jan Kara <jack@suse.cz>
-To: Christian Brauner <brauner@kernel.org>
-Cc: kernel test robot <oliver.sang@intel.com>,
-	syzbot <syzbot+4139435cb1b34cf759c2@syzkaller.appspotmail.com>,
-	Edward Adam Davis <eadavis@qq.com>,
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>,
-	oe-lkp@lists.linux.dev, lkp@intel.com,
-	Linux Memory Management List <linux-mm@kvack.org>,
-	Jan Kara <jack@suse.cz>, linux-fsdevel@vger.kernel.org,
-	linux-nfs@vger.kernel.org, amir73il@gmail.com,
-	chuck.lever@oracle.com, jlayton@kernel.org,
-	linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-	viro@zeniv.linux.org.uk
-Subject: Re: [linux-next:master] [fs]  1b43c46297: kernel_BUG_at_mm/usercopy.c
-Message-ID: <20240403110316.qtmypq2rtpueloga@quack3>
-References: <202404031550.f3de0571-lkp@intel.com>
- <000000000000f075b9061520cbbe@google.com>
- <tencent_A7845DD769577306D813742365E976E3A205@qq.com>
- <20240403-mundgerecht-klopapier-e921ceb787ca@brauner>
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 445EA40E019C;
+	Wed,  3 Apr 2024 12:23:51 +0000 (UTC)
+Date: Wed, 3 Apr 2024 14:23:50 +0200
+From: Borislav Petkov <bp@alien8.de>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+	Linus Torvalds <torvalds@linux-foundation.org>,
+	Ingo Molnar <mingo@kernel.org>
+Subject: [PATCH] x86/retpoline: Fix a missing return thunk warning (was: Re:
+ [linus:master] [x86/bugs]  4535e1a417:
+ WARNING:at_arch/x86/kernel/alternative.c:#apply_returns)
+Message-ID: <20240403122350.GEZg1KVvsyc-Z3bwro@fat_crate.local>
+References: <202404020901.da75a60f-oliver.sang@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20240403-mundgerecht-klopapier-e921ceb787ca@brauner>
-X-Rspamd-Queue-Id: BC81035270
-X-Spamd-Result: default: False [-1.30 / 50.00];
-	BAYES_HAM(-3.00)[100.00%];
-	SUSPICIOUS_RECIPS(1.50)[];
-	MID_RHS_NOT_FQDN(0.50)[];
-	NEURAL_HAM_SHORT(-0.19)[-0.975];
-	MIME_GOOD(-0.10)[text/plain];
-	MX_GOOD(-0.01)[];
-	TAGGED_RCPT(0.00)[4139435cb1b34cf759c2];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	MISSING_XM_UA(0.00)[];
-	RCVD_COUNT_THREE(0.00)[3];
-	ARC_NA(0.00)[];
-	RCPT_COUNT_TWELVE(0.00)[17];
-	MIME_TRACE(0.00)[0:+];
-	R_DKIM_NA(0.00)[];
-	FREEMAIL_ENVRCPT(0.00)[gmail.com,qq.com];
-	TO_DN_SOME(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	FREEMAIL_CC(0.00)[intel.com,syzkaller.appspotmail.com,qq.com,kernel.org,lists.linux.dev,kvack.org,suse.cz,vger.kernel.org,gmail.com,oracle.com,googlegroups.com,zeniv.linux.org.uk];
-	FUZZY_BLOCKED(0.00)[rspamd.com];
-	FROM_EQ_ENVFROM(0.00)[];
-	RCVD_TLS_LAST(0.00)[];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[imap2.dmz-prg2.suse.org:rdns,imap2.dmz-prg2.suse.org:helo,suse.com:email]
-X-Rspamd-Action: no action
-X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
-X-Spam-Score: -1.30
-X-Spam-Level: 
-X-Spam-Flag: NO
+In-Reply-To: <202404020901.da75a60f-oliver.sang@intel.com>
 
-On Wed 03-04-24 10:46:19, Christian Brauner wrote:
-> On Wed, Apr 03, 2024 at 02:54:14PM +0800, Edward Adam Davis wrote:
-> > [Syzbot reported]
-> > BUG: KASAN: slab-out-of-bounds in instrument_copy_from_user_before include/linux/instrumented.h:129 [inline]
-> > BUG: KASAN: slab-out-of-bounds in _copy_from_user+0x7b/0xe0 lib/usercopy.c:22
-> > Write of size 48 at addr ffff88802b8cbc88 by task syz-executor333/5090
-> > 
-> > CPU: 0 PID: 5090 Comm: syz-executor333 Not tainted 6.9.0-rc2-next-20240402-syzkaller #0
-> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 03/27/2024
-> > Call Trace:
-> >  <TASK>
-> >  __dump_stack lib/dump_stack.c:88 [inline]
-> >  dump_stack_lvl+0x241/0x360 lib/dump_stack.c:114
-> >  print_address_description mm/kasan/report.c:377 [inline]
-> >  print_report+0x169/0x550 mm/kasan/report.c:488
-> >  kasan_report+0x143/0x180 mm/kasan/report.c:601
-> >  kasan_check_range+0x282/0x290 mm/kasan/generic.c:189
-> >  instrument_copy_from_user_before include/linux/instrumented.h:129 [inline]
-> >  _copy_from_user+0x7b/0xe0 lib/usercopy.c:22
-> >  copy_from_user include/linux/uaccess.h:183 [inline]
-> >  handle_to_path fs/fhandle.c:203 [inline]
-> >  do_handle_open+0x204/0x660 fs/fhandle.c:226
-> >  do_syscall_64+0xfb/0x240
-> >  entry_SYSCALL_64_after_hwframe+0x72/0x7a
-> > [Fix] 
-> > When copying data to f_handle, the length of the copied data should not include
-> > the length of "struct file_handle".
-> > 
-> > Reported-by: syzbot+4139435cb1b34cf759c2@syzkaller.appspotmail.com
-> > Signed-off-by: Edward Adam Davis <eadavis@qq.com>
-> > ---
-> >  fs/fhandle.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/fs/fhandle.c b/fs/fhandle.c
-> > index 53ed54711cd2..8a7f86c2139a 100644
-> > --- a/fs/fhandle.c
-> > +++ b/fs/fhandle.c
-> > @@ -202,7 +202,7 @@ static int handle_to_path(int mountdirfd, struct file_handle __user *ufh,
-> >  	*handle = f_handle;
-> >  	if (copy_from_user(&handle->f_handle,
-> >  			   &ufh->f_handle,
-> > -			   struct_size(ufh, f_handle, f_handle.handle_bytes))) {
-> > +			   f_handle.handle_bytes)) {
+On Tue, Apr 02, 2024 at 10:14:07AM +0800, kernel test robot wrote:
 > 
-> Groan, of course. What a silly mistake. Thanks for the fix.
-> I'll fold this into:
-> Fixes: 1b43c4629756 ("fs: Annotate struct file_handle with __counted_by() and use struct_size()")
-> because this hasn't hit mainline yet and it doesn't make sense to keep
-> that bug around.
 > 
-> Sorry, that'll mean we drop your patch but I'll give you credit in the
-> commit log of the original patch.
+> Hello,
+> 
+> kernel test robot noticed "WARNING:at_arch/x86/kernel/alternative.c:#apply_returns" on:
+> 
+> commit: 4535e1a4174c4111d92c5a9a21e542d232e0fcaa ("x86/bugs: Fix the SRSO mitigation on Zen3/4")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-Indeed, I should have caught this during review. Sorry for that and thanks
-for fixing this up quickly.
+---
+From: "Borislav Petkov (AMD)" <bp@alien8.de>
+Date: Tue, 2 Apr 2024 16:05:49 +0200
+Subject: [PATCH] x86/retpoline: Fix a missing return thunk warning
 
-								Honza
+The srso_alias_untrain_ret() dummy thunk in the !CONFIG_MITIGATION_SRSO
+case is there only for the altenative in CALL_UNTRAIN_RET to have
+a symbol to resolve.
+
+However, testing with kernels which don't have CONFIG_MITIGATION_SRSO
+enabled, leads to the warning in patch_return() to fire:
+
+  missing return thunk: srso_alias_untrain_ret+0x0/0x10-0x0: eb 0e 66 66 2e
+  WARNING: CPU: 0 PID: 0 at arch/x86/kernel/alternative.c:826 apply_returns (arch/x86/kernel/alternative.c:826
+
+Put in a plain "ret" there so that gcc doesn't put a return thunk in
+in its place which special and gets checked.
+
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Closes: https://lore.kernel.org/oe-lkp/202404020901.da75a60f-oliver.sang@intel.com
+Signed-off-by: Borislav Petkov (AMD) <bp@alien8.de>
+Link: https://lore.kernel.org/all/202404020901.da75a60f-oliver.sang@intel.com/
+---
+ arch/x86/lib/retpoline.S | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/lib/retpoline.S b/arch/x86/lib/retpoline.S
+index 02cde194a99e..440cc58986fa 100644
+--- a/arch/x86/lib/retpoline.S
++++ b/arch/x86/lib/retpoline.S
+@@ -228,7 +228,9 @@ SYM_CODE_END(srso_return_thunk)
+ #else /* !CONFIG_MITIGATION_SRSO */
+ /* Dummy for the alternative in CALL_UNTRAIN_RET. */
+ SYM_CODE_START(srso_alias_untrain_ret)
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ SYM_FUNC_END(srso_alias_untrain_ret)
+ #define JMP_SRSO_UNTRAIN_RET "ud2"
+ #endif /* CONFIG_MITIGATION_SRSO */
 -- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+2.43.0
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
