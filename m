@@ -1,170 +1,116 @@
-Received: from mo-csw-fb.securemx.jp (mo-csw-fb1121.securemx.jp [210.130.202.129])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEB981D556;
-	Fri,  5 Apr 2024 06:47:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.130.202.129
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77F86142E73;
+	Fri,  5 Apr 2024 10:26:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712299645; cv=none; b=M95a2rcJhGMehEVPYOwJCHL6Xo9cqqBo1wDTpOYDfec9HFhrIfirmyuOf2ouhaPijn2SyAAV4YP2WMsT0jHL2Fxh6Uvk3xXqCDeexMk+MakNMnvwtyVETSHxK6EgrrNfYV+8hHhuMAb4ZUiuxjM6AB+MAQz2BkTWXv1lOIx9OX0=
+	t=1712312778; cv=none; b=cKNtQ2gu4jcA/mHhae21izyoC2Aw5ET3vR0eW8Ff6uoTDywHd3bf8ln3GyJ9h4JNYLLDqyo+yS3BeY/cCX5/f8KFRRcqTiz9/NGeb3KS48XwOJiWbkIbTX+4CcYC65FfwjusWcRxNaDAhEwOzf1o1UJpudw99z7vlhupB5LkVds=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712299645; c=relaxed/simple;
-	bh=dJUTKxD4XBA6+hIRAinaK6cEmG7qw63qofZNFG7MDxs=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=fl0/XVUnTyopNqUAxEdTJtrZnjTxPOl6JFJXDm4rdYzm+gej5QlrGiBGDBMhVZavTNx3sFUbgL3HDHF84gYavdkNMKVSEtbIcHyq4+2naPf/Es5KMHN4FuwwqNMA7ILjDaGyo5iztoccZbeq89FYRWf6NQT1Cj6uY/40Lq9VkgY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=kioxia.com; spf=pass smtp.mailfrom=kioxia.com; arc=none smtp.client-ip=210.130.202.129
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=kioxia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kioxia.com
-Received: by mo-csw-fb.securemx.jp (mx-mo-csw-fb1121) id 4355K5I21310389; Fri, 5 Apr 2024 14:20:06 +0900
-Received: by mo-csw.securemx.jp (mx-mo-csw1120) id 4355I7mJ2067497; Fri, 5 Apr 2024 14:18:07 +0900
-X-Iguazu-Qid: 2rWgdkpBO6OePkihnS
-X-Iguazu-QSIG: v=2; s=0; t=1712294286; q=2rWgdkpBO6OePkihnS; m=H8i1jpPUTZXpV+y8ImFQuSpTNChbT1Oq2VpBd65iopU=
-Received: from CNN1EMTA03.test.kioxia.com ([202.248.33.144])
-	by relay.securemx.jp (mx-mr1120) id 4355I5fU1283493
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-	Fri, 5 Apr 2024 14:18:05 +0900
-Received: from Switcher-Post_Send (gateway [10.232.20.1])
-	by CNN1EMTA03.test.kioxia.com (Postfix) with ESMTP id 2FB152F603;
-	Fri,  5 Apr 2024 14:18:05 +0900 (JST)
-Received: from CNN1ESTR04.kioxia.com (localhost [127.0.0.1])
-	by Switcher-Post_Send (Postfix) with ESMTP id E01B01900001F6;
-	Fri,  5 Apr 2024 14:05:31 +0900 (JST)
-Received: from localhost [127.0.0.1] 
-	 by CNN1ESTR04.kioxia.com with ESMTP id 0003QAAAAAA00F34;
-	 Fri, 5 Apr 2024 14:05:31 +0900
-Received: from CNN1EXMB03.r1.kioxia.com (CNN1EXMB03.r1.kioxia.com [10.232.20.152])
-	by Switcher-Pre_Send (Postfix) with ESMTP id D468DA29C5E08;
-	Fri,  5 Apr 2024 14:05:31 +0900 (JST)
-Received: from CNN1EXMB03.r1.kioxia.com (10.232.20.152) by
- CNN1EXMB03.r1.kioxia.com (10.232.20.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Fri, 5 Apr 2024 14:18:04 +0900
-Received: from CNN1EXMB03.r1.kioxia.com ([10.13.100.22]) by
- CNN1EXMB03.r1.kioxia.com ([10.13.100.22]) with mapi id 15.01.2507.035; Fri, 5
- Apr 2024 14:18:04 +0900
-From: tada keisuke <keisuke1.tada@kioxia.com>
-To: kernel test robot <oliver.sang@intel.com>
-CC: "oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>,
-        "lkp@intel.com"
-	<lkp@intel.com>,
-        ohtake toshifumi <toshifumi.ootake@kioxia.com>,
-        "linux-raid@vger.kernel.org" <linux-raid@vger.kernel.org>,
-        "song@kernel.org"
-	<song@kernel.org>,
-        "yukuai3@huawei.com" <yukuai3@huawei.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 09/11] md: add atomic mode switching when removing disk
-Thread-Topic: [PATCH 09/11] md: add atomic mode switching when removing disk
-Thread-Index: AQHagv7ppOhMD1h+V0G2IfGpZUQoObFZG7ZQ
-Date: Fri, 5 Apr 2024 05:18:04 +0000
-Message-ID: <bdffa39d605c4340910640d10ac6a9b4@kioxia.com>
-References: <e95e7cea71d1465496a9502b4de49e75@kioxia.com>
- <202403310746.6c8b0587-oliver.sang@intel.com>
-In-Reply-To: <202403310746.6c8b0587-oliver.sang@intel.com>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-tm-as-product-ver: ISME-14.0.0.2080-9.0.1002-28298.001
-x-tm-as-result: No-10--9.854900-8.000000
-x-tmase-matchedrid: 13nEecSBt9GmagT1k9kBpu5i6weAmSDKQV99ahimM1VYC5LPd7Bvbaso
-	qU8yj7u9HIMkasPj1EKWe6+6619iNKf0QmPqa4keZj7E6vHnuNZpkBMYDn8FeGnes/wd3/vhtMd
-	GzZAls9Y07flFHfXJs1F+SzCZQid2dh9gYos97K2vv6qFlL+SGTVEnbrqmBw7r9t08Ze+Qb+9cy
-	KhdlQvHTtvYiW4KdPqzHj1xOR70ZBSr2+67Jvlw2/6CCblACLhQR7lWMXPA1vWfdTIhX4P841EI
-	8AWiw6UhJtbBPDn7JuOYTH9s0ioWFxxDx5qbkR9gxsfzkNRlfKx5amWK2anSPoLR4+zsDTtw1tM
-	VU7ONTyP4W9NA3FMNEROBxJTpKtE+er4HxlNLTJiqx3X0AgSIg==
-x-tm-as-user-approved-sender: No
-x-tm-as-user-blocked-sender: No
-x-tmase-result: 10--9.854900-8.000000
-x-tmase-version: ISME-14.0.0.2080-9.0.1002-28298.001
-x-tm-snts-smtp: AA4D7E06A98E6AA4E04D8A32D99A7095106733D0D9011490F3E322652644B7292000:8
-Content-Type: text/plain; charset="iso-2022-jp"
-Content-Transfer-Encoding: quoted-printable
+	s=arc-20240116; t=1712312778; c=relaxed/simple;
+	bh=qxvSkouKOtVZUfYflXrpgvGiCmviOJRnuWLFOMraY9Q=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=rF8b4CQyg/L+GnNXfJuyc5/WftlZiVkWIdxoqGaL/8hyUDRi7kxdxgaXYsQ4caHQG5UnlPoWktDm+FXflum3b4FFN4HB0yov+UVRjiewJ7CKyYPplnWa86LZywgGgrYjeWX4dJ7UtPQVd5p1eLFWTQn7QRtxyPtlk5AT4SAuVUg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bINCfElL; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bINCfElL"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1883C433C7;
+	Fri,  5 Apr 2024 10:26:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1712312778;
+	bh=qxvSkouKOtVZUfYflXrpgvGiCmviOJRnuWLFOMraY9Q=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=bINCfElL0YOkSGUGgBWQU1PYTboFoNjPpGUmdkBGEcNqNV3v3DE8rR8UUBoVjXUKZ
+	 SF3gqSACH3hIVgkBpt7V3YnZNoH5beyWwUNr8Nq5rkP6D9jVf7JyAXA06DbOKRiFaP
+	 U7gqB7jS2VVMEbxMNgQUy66/yy6C+qwiHnB+GvSbRkRIQJhQdtWwzmtHEThe3JaVM2
+	 EG6ZC1RLGavidNg6oLm80JqkS+AwnsNa4KT1En63HEr/HvHvWj+wWEiPysX4pQaFVc
+	 rG0fQXqGdn/eUccA8z41XKZgsx8EWC5GxnIb3Tcp/UWA0H6whhyugJB3UprYeVElyk
+	 dZMOI3E9EM+0w==
+Date: Fri, 5 Apr 2024 12:26:10 +0200
+From: Christian Brauner <brauner@kernel.org>
+To: Jan Kara <jack@suse.cz>
+Cc: kernel test robot <oliver.sang@intel.com>, 
+	syzbot <syzbot+4139435cb1b34cf759c2@syzkaller.appspotmail.com>, Edward Adam Davis <eadavis@qq.com>, 
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	Linux Memory Management List <linux-mm@kvack.org>, linux-fsdevel@vger.kernel.org, linux-nfs@vger.kernel.org, 
+	amir73il@gmail.com, chuck.lever@oracle.com, jlayton@kernel.org, 
+	linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk
+Subject: Re: [linux-next:master] [fs]  1b43c46297: kernel_BUG_at_mm/usercopy.c
+Message-ID: <20240405-basisarbeit-kohlenkeller-676735d80a89@brauner>
+References: <202404031550.f3de0571-lkp@intel.com>
+ <000000000000f075b9061520cbbe@google.com>
+ <tencent_A7845DD769577306D813742365E976E3A205@qq.com>
+ <20240403-mundgerecht-klopapier-e921ceb787ca@brauner>
+ <20240403110316.qtmypq2rtpueloga@quack3>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-CrossPremisesHeadersFilteredBySendConnector: CNN1EXMB03.r1.kioxia.com
-X-OrganizationHeadersPreserved: CNN1EXMB03.r1.kioxia.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20240403110316.qtmypq2rtpueloga@quack3>
 
-> kern  :err   : [  118.926307] BUG: sleeping function called from invalid =
-context at lib/percpu-refcount.c:331
-> kern  :err   : [  118.935427] in_atomic(): 0, irqs_disabled(): 0, non_blo=
-ck: 0, pid: 55, name: kworker/6:0
-> kern  :err   : [  118.944338] preempt_count: 0, expected: 0
-> kern  :err   : [  118.949122] RCU nest depth: 1, expected: 0
-> kern  :warn  : [  118.954016] CPU: 6 PID: 55 Comm: kworker/6:0 Tainted: G=
- S
-> 6.8.0-rc3-00236-gff944d1be0fa #1
-> kern  :warn  : [  118.964389] Hardware name: Gigabyte Technology Co., Ltd=
-. Z97X-UD5H/Z97X-UD5H, BIOS F9
-> 04/21/2015
-> kern  :warn  : [  118.973916] Workqueue: md_misc md_start_sync
-> kern  :warn  : [  118.978937] Call Trace:
-> kern  :warn  : [  118.982115]  <TASK>
-> kern :warn : [  118.984943] dump_stack_lvl (lib/dump_stack.c:107 (discrim=
-inator 1))
-> kern :warn : [  118.989337] __might_resched (kernel/sched/core.c:10190)
-> kern :warn : [  118.993989] ? _raw_spin_lock_irqsave (arch/x86/include/as=
-m/atomic.h:115
-> include/linux/atomic/atomic-arch-fallback.h:2164 include/linux/atomic/ato=
-mic-instrumented.h:1296
-> include/asm-generic/qspinlock.h:111 include/linux/spinlock.h:187 include/=
-linux/spinlock_api_smp.h:111
-> kernel/locking/spinlock.c:162)
-> kern :warn : [  118.999243] ? preempt_notifier_dec (kernel/sched/core.c:1=
-0144)
-> kern :warn : [  119.004321] percpu_ref_switch_to_atomic_sync (include/lin=
-ux/kernel.h:107 lib/percpu-refcount.c:331)
-> kern :warn : [  119.010353] ? percpu_ref_reinit (lib/percpu-refcount.c:32=
-9)
-> kern :warn : [  119.015351] ? _raw_spin_lock_irqsave (arch/x86/include/as=
-m/atomic.h:115
-> include/linux/atomic/atomic-arch-fallback.h:2164 include/linux/atomic/ato=
-mic-instrumented.h:1296
-> include/asm-generic/qspinlock.h:111 include/linux/spinlock.h:187 include/=
-linux/spinlock_api_smp.h:111
-> kernel/locking/spinlock.c:162)
-> kern :warn : [  119.020596] ? _raw_read_unlock_irqrestore (kernel/locking=
-/spinlock.c:161)
-> kern :warn : [  119.026282] ? finish_task_switch+0x158/0x730
-> kern :warn : [  119.031969] ? __switch_to (arch/x86/include/asm/bitops.h:=
-55
-> include/asm-generic/bitops/instrumented-atomic.h:29 include/linux/thread_=
-info.h:89
-> arch/x86/include/asm/fpu/sched.h:66 arch/x86/kernel/process_64.c:626)
-> kern :warn : [  119.036435] rdev_removeable (drivers/md/md.c:9282)
-> kern :warn : [  119.041083] md_start_sync (drivers/md/md.c:9339 drivers/m=
-d/md.c:9449)
-> kern :warn : [  119.045462] ? mddev_unlock (drivers/md/md.c:9444)
-> kern :warn : [  119.050021] ? _raw_spin_lock_irq (arch/x86/include/asm/at=
-omic.h:115
-> include/linux/atomic/atomic-arch-fallback.h:2164 include/linux/atomic/ato=
-mic-instrumented.h:1296
-> include/asm-generic/qspinlock.h:111 include/linux/spinlock.h:187 include/=
-linux/spinlock_api_smp.h:120
-> kernel/locking/spinlock.c:170)
-> kern :warn : [  119.054928] ? _raw_spin_lock_bh (kernel/locking/spinlock.=
-c:169)
-> kern :warn : [  119.059739] process_one_work (kernel/workqueue.c:2638)
-> kern :warn : [  119.064476] worker_thread (kernel/workqueue.c:2700 kernel=
-/workqueue.c:2787)
-> kern :warn : [  119.068943] ? process_one_work (kernel/workqueue.c:2733)
-> kern :warn : [  119.073864] kthread (kernel/kthread.c:388)
-> kern :warn : [  119.077815] ? kthread_complete_and_exit (kernel/kthread.c=
-:341)
-> kern :warn : [  119.083321] ret_from_fork (arch/x86/kernel/process.c:153)
-> kern :warn : [  119.087627] ? kthread_complete_and_exit (kernel/kthread.c=
-:341)
-> kern :warn : [  119.093140] ret_from_fork_asm (arch/x86/entry/entry_64.S:=
-250)
-> kern  :warn  : [  119.097786]  </TASK>
+On Wed, Apr 03, 2024 at 01:03:16PM +0200, Jan Kara wrote:
+> On Wed 03-04-24 10:46:19, Christian Brauner wrote:
+> > On Wed, Apr 03, 2024 at 02:54:14PM +0800, Edward Adam Davis wrote:
+> > > [Syzbot reported]
+> > > BUG: KASAN: slab-out-of-bounds in instrument_copy_from_user_before include/linux/instrumented.h:129 [inline]
+> > > BUG: KASAN: slab-out-of-bounds in _copy_from_user+0x7b/0xe0 lib/usercopy.c:22
+> > > Write of size 48 at addr ffff88802b8cbc88 by task syz-executor333/5090
+> > > 
+> > > CPU: 0 PID: 5090 Comm: syz-executor333 Not tainted 6.9.0-rc2-next-20240402-syzkaller #0
+> > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 03/27/2024
+> > > Call Trace:
+> > >  <TASK>
+> > >  __dump_stack lib/dump_stack.c:88 [inline]
+> > >  dump_stack_lvl+0x241/0x360 lib/dump_stack.c:114
+> > >  print_address_description mm/kasan/report.c:377 [inline]
+> > >  print_report+0x169/0x550 mm/kasan/report.c:488
+> > >  kasan_report+0x143/0x180 mm/kasan/report.c:601
+> > >  kasan_check_range+0x282/0x290 mm/kasan/generic.c:189
+> > >  instrument_copy_from_user_before include/linux/instrumented.h:129 [inline]
+> > >  _copy_from_user+0x7b/0xe0 lib/usercopy.c:22
+> > >  copy_from_user include/linux/uaccess.h:183 [inline]
+> > >  handle_to_path fs/fhandle.c:203 [inline]
+> > >  do_handle_open+0x204/0x660 fs/fhandle.c:226
+> > >  do_syscall_64+0xfb/0x240
+> > >  entry_SYSCALL_64_after_hwframe+0x72/0x7a
+> > > [Fix] 
+> > > When copying data to f_handle, the length of the copied data should not include
+> > > the length of "struct file_handle".
+> > > 
+> > > Reported-by: syzbot+4139435cb1b34cf759c2@syzkaller.appspotmail.com
+> > > Signed-off-by: Edward Adam Davis <eadavis@qq.com>
+> > > ---
+> > >  fs/fhandle.c | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > 
+> > > diff --git a/fs/fhandle.c b/fs/fhandle.c
+> > > index 53ed54711cd2..8a7f86c2139a 100644
+> > > --- a/fs/fhandle.c
+> > > +++ b/fs/fhandle.c
+> > > @@ -202,7 +202,7 @@ static int handle_to_path(int mountdirfd, struct file_handle __user *ufh,
+> > >  	*handle = f_handle;
+> > >  	if (copy_from_user(&handle->f_handle,
+> > >  			   &ufh->f_handle,
+> > > -			   struct_size(ufh, f_handle, f_handle.handle_bytes))) {
+> > > +			   f_handle.handle_bytes)) {
+> > 
+> > Groan, of course. What a silly mistake. Thanks for the fix.
+> > I'll fold this into:
+> > Fixes: 1b43c4629756 ("fs: Annotate struct file_handle with __counted_by() and use struct_size()")
+> > because this hasn't hit mainline yet and it doesn't make sense to keep
+> > that bug around.
+> > 
+> > Sorry, that'll mean we drop your patch but I'll give you credit in the
+> > commit log of the original patch.
+> 
+> Indeed, I should have caught this during review. Sorry for that and thanks
+> for fixing this up quickly.
 
-Thanks for reporting.
-I need to execute percpu_ref_switch_to_atomic_sync() when RCU is unlocked.
-I will fix this problem and submit v2.
-
-Thanks,
-Keisuke
-
+Fwiw, it wasn't meant that way. I meant it's a silly mistake in the
+sense that it is so easy to miss because the patch looks so benign. The
+fact is that we will have to live with missing things like this once in
+a while and that is why we have testing bots as well. :)
