@@ -1,92 +1,98 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 787DC15EA6
-	for <oe-lkp@lists.linux.dev>; Sat,  6 Apr 2024 03:25:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E9F05680;
+	Mon,  8 Apr 2024 03:04:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.18
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712373958; cv=fail; b=Sh69QHrQjAxGR1nJvh+Zs8NGy3rja6DtVATmLJzd3cnrZ3vw1JobeLpYhPKRnOBIzNfulpSLpE2zfXTxrFYziyeSnbBHzfc2yVbaKyXkNpHFmskHBlnyaKZfWmrSm3QOqBTHwtuBKLf/fw4bjBQyRycr5AtSjJiLrLpSZ5W1Fns=
+	t=1712545487; cv=fail; b=eEW42N6eskWP4xE+mMeIU98XiTSHhMaGZRr+W/X/nEZm2FXQ6AYoA0AC7Jou5+bDarcQzKwPDPwy4/MRsXokIJAzNDcBkcdSFFr+8mbLW6dC6JhXswBi/veHNnjodP0zpquJXdkAEsXQCEsReYOcjlxX5FTOzGrq/QD3dT9AgDU=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712373958; c=relaxed/simple;
-	bh=oU1xbXgAMZa3qirPexkBv4LYJUpaUek7ax6BVVhqAXA=;
+	s=arc-20240116; t=1712545487; c=relaxed/simple;
+	bh=uYk764/6KaoT/+HlWtJ16G5qV2tOQnw+YbQxzGrDFao=;
 	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=dNZs8L6Ze5IgBuWh2bX9h35M3ZHkzQ6NvG6A75RzPCqcks1LIWP2IPqDFm//Ls8VFV8skom94qQw7LrAJcdW2L8wuQjuhpK8ztFizRDDB2vNoj+kHHn3v1barS4R08M1Go9DGbeDow2nTA9Bo3iIkFmjLWDLKGqmc6nZQfMoExQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LVSCryqd; arc=fail smtp.client-ip=192.198.163.14
+	 Content-Disposition:MIME-Version; b=kcTwR4ADk8Lxs91X5nMCZP5f6LqFUoFpQWVxNxqKKKsIriSUaJ75FD/Q5tRn+7DMLJlFK3WT6jjzO1EZSqzEgnIEmt+85EaBszRU/7vfjtIfFpDpnoJdcTdv50yrKpgcrskrUbCjzEsddzTufXqvCMl4S90NdxU82XAXjbsThkI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Su+jvl/N; arc=fail smtp.client-ip=192.198.163.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LVSCryqd"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Su+jvl/N"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712373955; x=1743909955;
+  t=1712545486; x=1744081486;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=oU1xbXgAMZa3qirPexkBv4LYJUpaUek7ax6BVVhqAXA=;
-  b=LVSCryqdzDvIfCSjRtqgeO6DzyQ/xeNEBY++P+Btev92/4E7T5Z7m0U9
-   U3g2VdHiWTgJbu4mvmXLWS294z2qZYIFl/7iWVoJvHLE6OOXxHCNicrl3
-   WO/m05Zy0/36l1nnPnSq8hACrAZItSqC4rGlLWVype6EXwYhpshuOkopK
-   +X6KY0ZKjwmL+W18/DkRwNW68xjhE4LVx9syIOKY8KbWnMgjyFXL5QVmh
-   XN1qxp+JMlFX7moXW2lEjuEJvJZ3AqRFRVVzDFgbG+Q7GignJQgTTWX2y
-   N5ImfnlyBYxR+lWmZAZOaE47UrlwZ0JvFD8cHtzUXiVDvSPaxjimGK6Kf
-   w==;
-X-CSE-ConnectionGUID: WJbQK6gnTKuWsxXjjnOCow==
-X-CSE-MsgGUID: DqMdtk9rRfSPniGqd9BdQA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11035"; a="7949328"
-X-IronPort-AV: E=Sophos;i="6.07,182,1708416000"; 
-   d="scan'208";a="7949328"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2024 20:25:54 -0700
-X-CSE-ConnectionGUID: oi0xzVRoRW2EpyGP+yISig==
-X-CSE-MsgGUID: RdKmaZ7gQOWMpQLa7GmW7Q==
+  bh=uYk764/6KaoT/+HlWtJ16G5qV2tOQnw+YbQxzGrDFao=;
+  b=Su+jvl/NCt0A+E0c24XmGr9AudW3n8rBY9nP3ZF2wrV53WMQxO/azRLG
+   9V0acP1iGF6/GB+d1/WOFsnLTJNWHWIM/MXrwk6qwflGnCw/gVo5elAKD
+   BUAR9MlkV1R2mhhbpwqh51LyNOA7mikOnNYdAnoxtHzvWAdZMvEjR/L+q
+   NBG3UyJcVU3EGA5gI8tROHBJbYPi4iM4CQlXlSh+B+plr5qrR6DKIcOlT
+   yagdujH1CNnY+q0tGBTG7cPj2+Un8cEkF3EsONWMzn3bgqru9mD8l9DsS
+   86uh3vpUExcUMx/qYiue6D7gNOIBV/pUse9p1xUP1hiXqQltTPT+aB5ys
+   Q==;
+X-CSE-ConnectionGUID: hq3Q3QXGS7qfKvVABbv9AA==
+X-CSE-MsgGUID: EHS7CJFwQQWPdRYkgaYL+w==
+X-IronPort-AV: E=McAfee;i="6600,9927,11037"; a="7642225"
+X-IronPort-AV: E=Sophos;i="6.07,186,1708416000"; 
+   d="scan'208";a="7642225"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2024 20:04:45 -0700
+X-CSE-ConnectionGUID: ArJUln0gTt+bm2jPgRkYUQ==
+X-CSE-MsgGUID: Wt0GdtHLSGqpWDX5vRwpMQ==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,182,1708416000"; 
-   d="scan'208";a="23833273"
+X-IronPort-AV: E=Sophos;i="6.07,186,1708416000"; 
+   d="scan'208";a="19794504"
 Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by fmviesa005.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 05 Apr 2024 20:25:54 -0700
-Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
+  by fmviesa009.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 07 Apr 2024 20:04:44 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
  fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Fri, 5 Apr 2024 20:25:53 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ 15.1.2507.35; Sun, 7 Apr 2024 20:04:44 -0700
+Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35 via Frontend Transport; Fri, 5 Apr 2024 20:25:53 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.168)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ 15.1.2507.35; Sun, 7 Apr 2024 20:04:43 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35 via Frontend Transport; Sun, 7 Apr 2024 20:04:43 -0700
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (104.47.73.169)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Fri, 5 Apr 2024 20:25:53 -0700
+ 15.1.2507.35; Sun, 7 Apr 2024 20:04:43 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MnNNz4l5WN33qgqWmZKrP7baK9LKFFPHA3FnTKfY0B45ALh+9a9DfKk/WxwSmjmVL1+v4hFvzg0jsovLR0wzvAhJMl/JsqgRxJGk1nqL/W2gPqGsjOfvt8ANkWLAVzmF/fNmeWlZYmYpdWtmgSuAa1dRFIkwq/XrUIFyeGlJLrIAg7J7InMTCqYCaD/urdIIBJ/50M2va3HBKlLDAbaHMfNRqYuwY1SXNBhpMT+HhWedmlUDgM0SzqVpJt29Svwk/amBELTZmRWCZx1/b0w0Hw+/jIy6ArtKv93eeemSWTHkgFD6nGfiuQLg3EAOUbGPp8ElcZp/sAdCqbnAGNkgbA==
+ b=kzdjJX4F30OlmG0KeejE3fY3CHyCf866cljBG7WEwJPR/kvytzIZHMtOvCBjMMagung3nXaEzcxZauaPnukWMiLSoREXz/PMo/3aCP4diaV0WAVMJHU8N4VMFt5t98ShGNshY5FGVYiqTn/NEyFcowsKLJHOn2XJcaBsfGQjRS1HPaS9ez8sgTPXPL9j7sw3AaJR+o11CnmpprNxyTlEMicaxFj3Cp7rD+f2QDW03g864ARiQstRDbWYozfFmGssLDcfSRsn8Mv/Y6k65K8jGq2mG7ym6490wHF5zSaC8SpfabLk0FRfTSc3kHSl1UmkJRvqmHcZwLQxT4vGPLkZrg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uG+065KyDOk8K2qC2U2taBTUWZGbHDkTZYxYSd/M/i8=;
- b=Q4f2xSVnOAYjEAfz4J9cGCFNGp9RnNqqHqWZoPHeHKAGJXPvrlZas+IHgh+2sefgDujqZvEbBi1mYq+2QW/2hpLWGfEqVQPW7G38Z+iqUSkuWPYWYbA8Nvbues+IVEo5u7ZPZYHeZ8ItsFUBDLv20s2k5ysTwlFdEbAjISEoS0zjdKdvM77IrPZxTUmnndkjW0dT3p+D2eXKapFw0Npn+uo559xmBaFeb/SiMPRkA0QjYpXiFeWdImpclBFsTrwPR7vNPNC0mo8PpHaDVc2pTSFG6FttDggkKQHcU9pEbQq3diV6cVneDww7edgfVLpSBEcL4W4FSXczhHofQr5S8A==
+ bh=99flzzJk7Izo6OcIMxuky3u7RPlETzfjAWeNU/iODWY=;
+ b=GGwOZg/7cT6Iiyd1418ZqYaUgK7eafwfWkoqSox3g51V01S2SSBxVgMXwAuQ3Tvskt7ne/xPZ+fMgHjf0D5fIa7b26rZtChpvCdxVo4lkYhWRotAkbZuzlgR1K61mtjn0/HMeQWw0NWdulLxYCf0YIJapNrWGkciWVkrl8BIgL+xqvHU+EaIzVDZe0svZ2ev8x5DvinWMyEdLk+PwUmdyieAJc4Tsqx+NO7HUBQw2vreFrRhDaH4Yjp6YD5pIi+gqkzBlOsEDiqYgM19nKcXklMDWB7oZpA7msIgwZK/+LbfjNdCurNcscLqB+tvIHq3dRzMVwOLsFzdC+II4Lr/2A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by SA1PR11MB7131.namprd11.prod.outlook.com (2603:10b6:806:2b0::9) with
+ by CO1PR11MB5060.namprd11.prod.outlook.com (2603:10b6:303:93::5) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7452.26; Sat, 6 Apr
- 2024 03:25:51 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7409.33; Mon, 8 Apr
+ 2024 03:04:42 +0000
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::58dd:99ca:74a6:2e3e]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::58dd:99ca:74a6:2e3e%3]) with mapi id 15.20.7452.019; Sat, 6 Apr 2024
- 03:25:50 +0000
-Date: Sat, 6 Apr 2024 11:25:42 +0800
+ ([fe80::58dd:99ca:74a6:2e3e%3]) with mapi id 15.20.7452.019; Mon, 8 Apr 2024
+ 03:04:42 +0000
+Date: Mon, 8 Apr 2024 11:04:32 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Kairui Song <kasong@tencent.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Linux Memory Management List
-	<linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>, "Matthew
- Wilcox" <willy@infradead.org>, <linux-fsdevel@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <oliver.sang@intel.com>
-Subject: [linux-next:master] [lib/xarray]  5053ab0c89:
- WARNING:suspicious_RCU_usage
-Message-ID: <202404061058.f2256e40-lkp@intel.com>
+To: Jeff Layton <jlayton@kernel.org>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>,
+	<gfs2@lists.linux.dev>, <linux-fsdevel@vger.kernel.org>,
+	<devel@lists.orangefs.org>, <linux-mtd@lists.infradead.org>,
+	<linux-xfs@vger.kernel.org>, <oliver.sang@intel.com>
+Subject: [linus:master] [fs]  541d4c798a:
+ BUG:KCSAN:data-race_in_atime_needs_update/inode_update_timestamps
+Message-ID: <202404081036.56aa7de3-lkp@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-X-ClientProxiedBy: SGXP274CA0009.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b8::21)
- To LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+X-ClientProxiedBy: SI2PR01CA0033.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:192::23) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -94,296 +100,149 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|SA1PR11MB7131:EE_
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|CO1PR11MB5060:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: nQbi1fnAwgb25f/1vDBiOhQyGG6lTvwfu1XKLURxtYrYZ1yU2pCOTJBuKiz2Q5xhc8xvSi1ldng1vAcYwfRagwrs+thpuhdCrrKtwyNRRooAdb3WqWBJT7U06tJ8jPJ1osJDOHNFzDxgAZkFDZs9St9PsYQ2k/sUwDSbSWLETK6eHHpiHh/YC+qOWYdyOwZSorrGWu3Ru0PTEgrJoNanJLwrHfbFAovTy11uAay2X9WsKOiyCkZ2+7J37pQQ9KXAmltqO9z6QiXrUsyv1hCK5tAnrthaed+jgplJvPyUfd4MtaoBV5phhqwFkGanVmv/7sAsaR82qKMc+EGfboBw8MPNBkilUQa7gskKZXclI0GMvOfA/wVV3NxZkdrFzz/13Jnj5YiaYxKtoycfAd0zpGsHYbvoYXkQAgg8UCWESMuPRscRWehz+4ZHQz/A6yjzqGKDk9G0uQX+3dnTKO7cJ+iqcqMtX7sQXXkxmbBvwjUBra9ArcN7wzeq+SWXJxk1KGoPuSi/NtriUaESONX7FUWmQUx0Aemj3/x1bfJdog8brTDxk4LSIOj+aFx11ynYxP8Kei0ByH0/1kvOGP+WMgiif6A7uroJWVIpEoTLcfbgtVgjHctbjbvSUXQgC+dP
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(1800799015)(376005);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: lt6aRq+pr2Ln9qPJPgDbWtCoJFsWooL/R9U7P6y4tNcKEt3bVE7PbtCqaNG7REKszG6JYFx3OarH6q6FsV/Q6GHfe0dqU4XwonBQJIef4ES2ZbGjKxEcSqF9Vw2l/YPfszI6TaDyFHRi9T4HLbNn5uSSSWMAXx2oBwtZlI45qbvue2pe1sl14xqZSzJEstZRt/3i+GUL3j/HI8C0A0l5qUu+0+ldu6l8Z8kAzqumeMakXTi9nzTc18/ASjtYP06rPF4H3eJI7M65Wh+at1xb8W9ftkhJn9byoABawkz9INyrU+Rl8PObXD0wbMeSDGU5oci1LLwcWC02AMENtaUlJQmK5NWWypvF3vlDAHR69Ye8V6D+qHE4jvt1ThQi3q+4TmjZgbE9AEvqRRl23j3uoU1OAp4Fd8K4BaAxkrqBfnQElvZFB5Ybn6uGieo0VHmrr9Z9COPiFcPPxGTSKvEbMUahJ0Y2qd8gKX8MapiUPSfpdGINhFMDmdew6HmXqeApwrWAPiquKHJmf1Ct4atGg/NiORWk10/1tIj9i1O5yBSFLYBkTyZv9YZyMk8Oobf0J+kvk5fJAqeddTP/DUpoGr7QGEfRQ31cHxecO1S5PSEdNaIRQbsnXVC8cd6XUu9v
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(1800799015)(7416005)(376005);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?3DbZQBmbPpeHU9bVw+SIseXjIWofnOfLVd21G61pwtbDjgo6cuCNjs0YTIxk?=
- =?us-ascii?Q?v79WHsObsLI9bVKajUGnzkFz7pFqaFW3mjVxEl0grDWViqqaV2RQVHS12Jj4?=
- =?us-ascii?Q?0cmeELlO3xAB4yTRjavHImR2CRT50eN94KwJGYVMigJcZ/G6nfAOysxJQCQF?=
- =?us-ascii?Q?5dIku1crd8KKYiVeJ+mUiSW8y0NYb5CT36iM7Ni3fA6TvaHdkTllPo4g8QYb?=
- =?us-ascii?Q?cTFjgD1qUmwQ9bnVnXjLDx40XG0qPxJWa5JXZ+GBsMbj7OCmMnzG5pIlWlyk?=
- =?us-ascii?Q?FIFtBW/tSgf1Lm8Ikz+F5IGpWr0yItFVXwc2f8gSyMIY8sBM6i47CnKTBsm+?=
- =?us-ascii?Q?U5vBO6nvOorHfxoebCPJhUsvi4A/4LoAYmcALqjcTkoyhXe8PRu8xCv6+LS0?=
- =?us-ascii?Q?FW7K9dHtJrYjROoo/REhRzbf0A6F9f3dSB49HGcpSs/jIc/wEmtUwMtSNIl6?=
- =?us-ascii?Q?ek8Oyayv3p11vri71qY8q7kbAg78Zymjr0nRAgOqYuG43/T+xKnXkc96HurL?=
- =?us-ascii?Q?6UzzxA8Dan49jheyS7y55Evh7Jgl7og4tp052kP/GzetJgc71aonkxh4gomk?=
- =?us-ascii?Q?m1Kln5c+bIWgxLT9zdCtF7IvXffjqpZqI1q3aRxrQ2188FFk0+E4x9SVT18G?=
- =?us-ascii?Q?6RKqxTr6drPcbnsbvgD/5Ntj2uCjiWdRj1+CoaSvVqLhPauPz4F+1xlattQ+?=
- =?us-ascii?Q?XVvxbE8OmCWc3GxRgnWdk4gcSTmz554Vu41VxwgEfw2OSyNTRaQyy+islPt2?=
- =?us-ascii?Q?yNZcx3fXKdAKj2/oFObGiGCixF5bJIbtK5aSrOZJ0sbnBW+lCM2t3JFx9KvY?=
- =?us-ascii?Q?aTMUqz9DnaRn33eaH0oMCXFV4wD1wOkDIBlqVTR7MYaCZ/mVHyLMEU5qEuAs?=
- =?us-ascii?Q?AyD/W7qF+yGAONaFrJQebZvoqGmkaGt+GH+V6BVLYhfzlMRKG6m1Ow20FHtf?=
- =?us-ascii?Q?44Xdy/il0Z0XPBE2Emk8WqrtEC1jBJb50OswlOJA3PrK0cLtCwBfLKX7ZhCj?=
- =?us-ascii?Q?oQOiTDgmzrPzbg81g0js70uI+frQcZVY00eFEDrNvA6pbEjib38Eo6A+ChHo?=
- =?us-ascii?Q?eTrui//AP/YSAYaCWyRCYt2P2a87UJHVRPTo3eMxPUhH0+WZQVGDYNmgkbQI?=
- =?us-ascii?Q?oYS6jsgkzLoxngp1fbN37slyER/H+vyGx2MA1/AEBooizfGBe1MztuLshxwD?=
- =?us-ascii?Q?HHOagDl0dmR4w2GhaPacStKvorztmh9Gl7qEdN1GrpLwmX4lYzD7FJsm8hVR?=
- =?us-ascii?Q?Ke96L/L3FcNOzYqCex79w3UoKJQ10Y+ykNrfncnDtXZPRPdELJW+ZiMkW/EB?=
- =?us-ascii?Q?t65/Upp4eDTFfL1gdhic1yYwldOLLsCMQLAkdIdwqCGPIt+zdmSsLjtGi3ex?=
- =?us-ascii?Q?FLimzkRVaddLC9nVRa9Lrp5HmTHAMoeLvPwFz0IaU3Gfb6lluSqk/bZTz2he?=
- =?us-ascii?Q?Il361QNjaic5S+oDNFgsaMwOfgoZsKAR0HH5FnBR4J86LPGQX8gTx1DJlFzi?=
- =?us-ascii?Q?IGFWGvO8l+JE/dm89b34o90AtzaXsyLHwMf7ExllW5X7MoiCnaEagHUKUsne?=
- =?us-ascii?Q?xoezbsWors2BBqIY4oKmqU9ZzJrq28MfKakzYatF?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 231b567d-c9a2-42ec-248c-08dc55e94224
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?F2cY3WZHQrY8TJ3uLhzbF2Swjg/rlCzIVE4karWMcCMOSnJZ8eIZNDjUdy+n?=
+ =?us-ascii?Q?9avLQq3tXOMCPQXLJJXKYW0ro0unMNeCWI0H8wjlF+lgiITleNLm8DGx8O1H?=
+ =?us-ascii?Q?mEm8AjWfQcr+mIOvRCEl3HCc3zE6cvCxvt9UvXCjMbGFCR2wSoCmeIC56JxZ?=
+ =?us-ascii?Q?BW1XNc6VAqSBQtozjC6faG0sTSgbiOUfYmDR4ZNs0GSZTY392SLsWDjCkTzd?=
+ =?us-ascii?Q?pHgbpYCZjZhGPnNFgO9U94dj+/DQhiLdoJRl7ove+yCBfga4PqmH4vxYsjn0?=
+ =?us-ascii?Q?QOAiC2+nLBP6Y3/u/gRAFD3dCAhC9wr4jTiiIXeyw5QQxSFShY0uavmetwMQ?=
+ =?us-ascii?Q?X83/28vvb4an509EoqmXdrivEk1dXZy5GQcmovvUu1klHVuwH0KMY6wQyNiI?=
+ =?us-ascii?Q?L2YIgM7zcU8dbi8y3a47cjplO4lEXQkKYJVqrsCA1sNyjK/7JPHBUjsvyXK6?=
+ =?us-ascii?Q?bBM5t3AJDjOw+zFi11xDkGYmN1WxC/yTxT7/FkItFoRClqIv4/ZFUNJFWHZe?=
+ =?us-ascii?Q?EKn9Xwiysp/eIJ8Mw9FVi2XzS/hgrCNUKqzNKaDjqEFCYvLsnxZCdDqCDkTx?=
+ =?us-ascii?Q?jF2PeDiF5Z7PbZ1qkMWJKyUSYwzAiN6KkVAyuZKOC+OxD8XYhiwSUvaUKFhO?=
+ =?us-ascii?Q?JL0D3ehiBYeInSTQl5ux3Hb3IVzuMnCPtml0lrpG03/8GjY1kRAljgd3TEuS?=
+ =?us-ascii?Q?CiG6ZiL5MkXMk49djpqw/h3bobWh11q004jpfpVruqWgNyBqdCky0YuHu4eg?=
+ =?us-ascii?Q?XYAoZ0yEXj+rrVRhjGv51BvEyCPolcE73ulp4UCfd5O5HgfgRwp3LpoZx/ok?=
+ =?us-ascii?Q?W3KVwffCi1oifZyTVRulw8Zyj5S4YAUYaiL89MNXRTfw2lIfK16esL9KNlP0?=
+ =?us-ascii?Q?S/WFwK3XCIkYTkCTLmEfIjKRHDn4LYtBUc2kryVm6hcAe6oRz/STXBuTgWU9?=
+ =?us-ascii?Q?N8uRxTWFdmectvZSqLibDrheTkcbrUQEYAtxZ+vPxiX6zvcBQmW4Y6Wj5X2v?=
+ =?us-ascii?Q?1ZCq6DTRUeGU7Cxx6076hOf/TMoqNxMnMep91Z2venDhUHay78wMcw8V6xrv?=
+ =?us-ascii?Q?up8jxQ75bYeB5PJGaYjonyWwwyt0hsrkyLwTcImtWnWr7ms2FGcWwtOuAuUE?=
+ =?us-ascii?Q?ghLLvtImcXmJOA4X+1L5hnhizsX+cFiSCCXPmXzBOtR4yW/QCjv9E+LpyUdz?=
+ =?us-ascii?Q?K3ADxVc9Zgajsj3G2uD0aP9ROV19Kag3i/Sl2UUvUtOd8h4GQLyCM/KxF2e2?=
+ =?us-ascii?Q?C8Z02u4upvDCxHTcBKiX/ZfdeIYw/Hs0U2rFgtxVYOiafAbrfYljXqUFd5c8?=
+ =?us-ascii?Q?RmY1b5THGxspoaCZ8iJKNQo6JAuCSHDnGzkJlJtB9Vm5ML/E+HZq+BKfdZqp?=
+ =?us-ascii?Q?fNizKe6ifSfns0G/yVNKk/KGheIEE/7iKlTo3gjsjV3aApEyU5PXgACsXKSW?=
+ =?us-ascii?Q?70PFopYdZcY8CZoIXNUCaX+DgM21RfHNYCtkMGsoecoCTIudXrq4rgCo4NrL?=
+ =?us-ascii?Q?SphxXqlgWAOH5x4PNwp9R6RJaTO9pNXxUzTVp81kEcNo695i4JCLTZhwirwF?=
+ =?us-ascii?Q?/h1HsvK0mbrcsewWPzmvPL7FgG3Z32BrfGJJdpIN?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 90ee5022-2534-4f20-6913-08dc5778a2ad
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2024 03:25:50.8311
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2024 03:04:41.9599
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: qTzFEL/V+TJiyQZC8wLTgPVVY7xTOSTlGjzuNyQMB25BRsR2/onsRLPoD2spOBJm/JXUXdUlAAZ9AMyGtV25nw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR11MB7131
+X-MS-Exchange-CrossTenant-UserPrincipalName: LrrXdX/mVHBokcAavil8qtuincZ1J2934ecm+S+2sdkRiZPK0jKWB0cLywzv3rWiDcjUjFOqUyRV+Cqe7/SSoQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR11MB5060
 X-OriginatorOrg: intel.com
 
 
 
 Hello,
 
-kernel test robot noticed "WARNING:suspicious_RCU_usage" on:
+kernel test robot noticed "BUG:KCSAN:data-race_in_atime_needs_update/inode_update_timestamps" on:
 
-commit: 5053ab0c89ee4ba827db6a4453af277321cb1a2e ("lib/xarray: introduce a new helper xas_get_order")
-https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+commit: 541d4c798a598854fcce7326d947cbcbd35701d6 ("fs: drop the timespec64 arg from generic_update_time")
+https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-[test failed on linux-next/master 8568bb2ccc278f344e6ac44af6ed010a90aa88dc]
+in testcase: trinity
+version: trinity-i386-abe9de86-1_20230429
+with following parameters:
 
-in testcase: boot
+	runtime: 300s
+	group: group-04
+	nr_groups: 5
 
-compiler: clang-17
+
+
+compiler: gcc-13
 test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
 
 (please refer to attached dmesg/kmsg for entire log/backtrace)
 
 
-+---------------------------------------------------------------------+------------+------------+
-|                                                                     | cc93de5055 | 5053ab0c89 |
-+---------------------------------------------------------------------+------------+------------+
-| WARNING:suspicious_RCU_usage                                        | 0          | 6          |
-| include/linux/xarray.h:#suspicious_rcu_dereference_check()usage     | 0          | 6          |
-| include/linux/xarray.h:#suspicious_rcu_dereference_protected()usage | 0          | 6          |
-+---------------------------------------------------------------------+------------+------------+
+we noticed this issue does not always happen, and parent has similar ones.
+we don't know if these issues are expected, just report what we found in our
+tests FYI.
+
+
+0d72b92883c651a1 541d4c798a598854fcce7326d94
+---------------- ---------------------------
+       fail:runs  %reproduction    fail:runs
+           |             |             |
+          8:202         -4%            :202   dmesg.BUG:KCSAN:data-race_in_atime_needs_update/generic_update_time
+           :202         11%          22:202   dmesg.BUG:KCSAN:data-race_in_atime_needs_update/inode_update_timestamps
+         48:202        -24%            :202   dmesg.BUG:KCSAN:data-race_in_atime_needs_update/touch_atime
+           :202          7%          14:202   dmesg.BUG:KCSAN:data-race_in_generic_fillattr/inode_update_timestamps
+         21:202        -10%            :202   dmesg.BUG:KCSAN:data-race_in_generic_fillattr/touch_atime
+           :202         12%          24:202   dmesg.BUG:KCSAN:data-race_in_inode_update_timestamps/inode_update_timestamps
 
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202404061058.f2256e40-lkp@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202404081036.56aa7de3-lkp@intel.com
 
 
-[  242.400377][    T1] WARNING: suspicious RCU usage
-[  242.401381][    T1] 6.9.0-rc2-00150-g5053ab0c89ee #1 Tainted: G        W        N
-[  242.402989][    T1] -----------------------------
-[  242.404031][    T1] include/linux/xarray.h:1201 suspicious rcu_dereference_check() usage!
-[  242.405805][    T1]
-[  242.405805][    T1] other info that might help us debug this:
-[  242.405805][    T1]
-[  242.407877][    T1]
-[  242.407877][    T1] rcu_scheduler_active = 2, debug_locks = 1
-[  242.409774][    T1] no locks held by swapper/0/1.
-[  242.410827][    T1]
-[  242.410827][    T1] stack backtrace:
-[  242.412091][    T1] CPU: 0 PID: 1 Comm: swapper/0 Tainted: G        W        N 6.9.0-rc2-00150-g5053ab0c89ee #1
-[  242.413055][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-[  242.413055][    T1] Call Trace:
-[  242.413055][    T1]  <TASK>
-[ 242.413055][ T1] dump_stack_lvl (lib/dump_stack.c:116) 
-[ 242.413055][ T1] lockdep_rcu_suspicious (include/linux/context_tracking.h:122) 
-[ 242.413055][ T1] xas_start (include/linux/xarray.h:?) 
-[ 242.413055][ T1] xas_store (lib/xarray.c:237 lib/xarray.c:789) 
-[ 242.413055][ T1] ? do_raw_spin_unlock (arch/x86/include/asm/atomic.h:23) 
-[ 242.413055][ T1] ? xas_load (lib/xarray.c:237) 
-[ 242.413055][ T1] check_xas_get_order (lib/test_xarray.c:?) 
-[ 242.413055][ T1] xarray_checks (lib/test_xarray.c:2070) 
-[ 242.413055][ T1] do_one_initcall (init/main.c:1238) 
-[ 242.413055][ T1] ? __cfi_xarray_checks (lib/test_xarray.c:2054) 
-[ 242.413055][ T1] ? kasan_save_track (arch/x86/include/asm/current.h:49 mm/kasan/common.c:60 mm/kasan/common.c:69) 
-[ 242.413055][ T1] ? kasan_save_track (mm/kasan/common.c:48 mm/kasan/common.c:68) 
-[ 242.413055][ T1] ? __kasan_kmalloc (mm/kasan/common.c:391) 
-[ 242.413055][ T1] ? __kmalloc_noprof (include/linux/kasan.h:211 mm/slub.c:4186 mm/slub.c:4199) 
-[ 242.413055][ T1] ? do_initcalls (init/main.c:1310) 
-[ 242.432382][ T1] ? kernel_init_freeable (init/main.c:1552) 
-[ 242.432382][ T1] ? kernel_init (init/main.c:1439) 
-[ 242.432382][ T1] ? ret_from_fork (arch/x86/kernel/process.c:153) 
-[ 242.432382][ T1] ? ret_from_fork_asm (arch/x86/entry/entry_64.S:256) 
-[ 242.432382][ T1] ? parameq (kernel/params.c:81) 
-[ 242.432382][ T1] ? parameq (include/linux/fortify-string.h:250 kernel/params.c:99) 
-[ 242.432382][ T1] ? __cfi_ignore_unknown_bootoption (init/main.c:1285) 
-[ 242.432382][ T1] ? parse_args (kernel/params.c:?) 
-[ 242.432382][ T1] ? __kasan_kmalloc (mm/kasan/common.c:391) 
-[ 242.432382][ T1] do_initcall_level (init/main.c:1299) 
-[ 242.432382][ T1] do_initcalls (init/main.c:1313) 
-[ 242.432382][ T1] kernel_init_freeable (init/main.c:1552) 
-[ 242.432382][ T1] ? __cfi_kernel_init (init/main.c:1429) 
-[ 242.432382][ T1] kernel_init (init/main.c:1439) 
-[ 242.432382][ T1] ? __cfi_kernel_init (init/main.c:1429) 
-[ 242.432382][ T1] ret_from_fork (arch/x86/kernel/process.c:153) 
-[ 242.432382][ T1] ? __cfi_kernel_init (init/main.c:1429) 
-[ 242.432382][ T1] ret_from_fork_asm (arch/x86/entry/entry_64.S:256) 
-[  242.432382][    T1]  </TASK>
-[  242.451896][    T1]
-[  242.452554][    T1] =============================
-[  242.453552][    T1] WARNING: suspicious RCU usage
-[  242.454581][    T1] 6.9.0-rc2-00150-g5053ab0c89ee #1 Tainted: G        W        N
-[  242.456217][    T1] -----------------------------
-[  242.457261][    T1] include/linux/xarray.h:1217 suspicious rcu_dereference_check() usage!
-[  242.458920][    T1]
-[  242.458920][    T1] other info that might help us debug this:
-[  242.458920][    T1]
-[  242.461156][    T1]
-[  242.461156][    T1] rcu_scheduler_active = 2, debug_locks = 1
-[  242.462797][    T1] no locks held by swapper/0/1.
-[  242.463791][    T1]
-[  242.463791][    T1] stack backtrace:
-[  242.465126][    T1] CPU: 0 PID: 1 Comm: swapper/0 Tainted: G        W        N 6.9.0-rc2-00150-g5053ab0c89ee #1
-[  242.467116][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-[  242.468617][    T1] Call Trace:
-[  242.468617][    T1]  <TASK>
-[ 242.468617][ T1] dump_stack_lvl (lib/dump_stack.c:116) 
-[ 242.468617][ T1] lockdep_rcu_suspicious (include/linux/context_tracking.h:122) 
-[ 242.468617][ T1] xas_descend (include/linux/xarray.h:?) 
-[ 242.468617][ T1] xas_store (lib/xarray.c:244 lib/xarray.c:789) 
-[ 242.468617][ T1] ? do_raw_spin_unlock (arch/x86/include/asm/atomic.h:23) 
-[ 242.468617][ T1] ? xas_load (lib/xarray.c:244) 
-[ 242.468617][ T1] check_xas_get_order (lib/test_xarray.c:?) 
-[ 242.468617][ T1] xarray_checks (lib/test_xarray.c:2070) 
-[ 242.468617][ T1] do_one_initcall (init/main.c:1238) 
-[ 242.468617][ T1] ? __cfi_xarray_checks (lib/test_xarray.c:2054) 
-[ 242.468617][ T1] ? kasan_save_track (arch/x86/include/asm/current.h:49 mm/kasan/common.c:60 mm/kasan/common.c:69) 
-[ 242.468617][ T1] ? kasan_save_track (mm/kasan/common.c:48 mm/kasan/common.c:68) 
-[ 242.468617][ T1] ? __kasan_kmalloc (mm/kasan/common.c:391) 
-[ 242.468617][ T1] ? __kmalloc_noprof (include/linux/kasan.h:211 mm/slub.c:4186 mm/slub.c:4199) 
-[ 242.468617][ T1] ? do_initcalls (init/main.c:1310) 
-[ 242.468617][ T1] ? kernel_init_freeable (init/main.c:1552) 
-[ 242.468617][ T1] ? kernel_init (init/main.c:1439) 
-[ 242.468617][ T1] ? ret_from_fork (arch/x86/kernel/process.c:153) 
-[ 242.488373][ T1] ? ret_from_fork_asm (arch/x86/entry/entry_64.S:256) 
-[ 242.488373][ T1] ? parameq (kernel/params.c:81) 
-[ 242.488373][ T1] ? parameq (include/linux/fortify-string.h:250 kernel/params.c:99) 
-[ 242.488373][ T1] ? __cfi_ignore_unknown_bootoption (init/main.c:1285) 
-[ 242.488373][ T1] ? parse_args (kernel/params.c:?) 
-[ 242.488373][ T1] ? __kasan_kmalloc (mm/kasan/common.c:391) 
-[ 242.488373][ T1] do_initcall_level (init/main.c:1299) 
-[ 242.488373][ T1] do_initcalls (init/main.c:1313) 
-[ 242.488373][ T1] kernel_init_freeable (init/main.c:1552) 
-[ 242.488373][ T1] ? __cfi_kernel_init (init/main.c:1429) 
-[ 242.488373][ T1] kernel_init (init/main.c:1439) 
-[ 242.488373][ T1] ? __cfi_kernel_init (init/main.c:1429) 
-[ 242.488373][ T1] ret_from_fork (arch/x86/kernel/process.c:153) 
-[ 242.488373][ T1] ? __cfi_kernel_init (init/main.c:1429) 
-[ 242.488373][ T1] ret_from_fork_asm (arch/x86/entry/entry_64.S:256) 
-[  242.488373][    T1]  </TASK>
-[  242.505758][    T1]
-[  242.506807][    T1] =============================
-[  242.507842][    T1] WARNING: suspicious RCU usage
-[  242.508960][    T1] 6.9.0-rc2-00150-g5053ab0c89ee #1 Tainted: G        W        N
-[  242.510512][    T1] -----------------------------
-[  242.511564][    T1] include/linux/xarray.h:1226 suspicious rcu_dereference_protected() usage!
-[  242.513461][    T1]
-[  242.513461][    T1] other info that might help us debug this:
-[  242.513461][    T1]
-[  242.515528][    T1]
-[  242.515528][    T1] rcu_scheduler_active = 2, debug_locks = 1
-[  242.517330][    T1] no locks held by swapper/0/1.
-[  242.518364][    T1]
-[  242.518364][    T1] stack backtrace:
-[  242.519666][    T1] CPU: 0 PID: 1 Comm: swapper/0 Tainted: G        W        N 6.9.0-rc2-00150-g5053ab0c89ee #1
-[  242.520702][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-[  242.520702][    T1] Call Trace:
-[  242.520702][    T1]  <TASK>
-[ 242.520702][ T1] dump_stack_lvl (lib/dump_stack.c:116) 
-[ 242.520702][ T1] lockdep_rcu_suspicious (include/linux/context_tracking.h:122) 
-[ 242.520702][ T1] xas_store (include/linux/xarray.h:?) 
-[ 242.520702][ T1] check_xas_get_order (lib/test_xarray.c:?) 
-[ 242.520702][ T1] xarray_checks (lib/test_xarray.c:2070) 
-[ 242.520702][ T1] do_one_initcall (init/main.c:1238) 
-[ 242.520702][ T1] ? __cfi_xarray_checks (lib/test_xarray.c:2054) 
-[ 242.520702][ T1] ? kasan_save_track (arch/x86/include/asm/current.h:49 mm/kasan/common.c:60 mm/kasan/common.c:69) 
-[ 242.520702][ T1] ? kasan_save_track (mm/kasan/common.c:48 mm/kasan/common.c:68) 
-[ 242.520702][ T1] ? __kasan_kmalloc (mm/kasan/common.c:391) 
-[ 242.520702][ T1] ? __kmalloc_noprof (include/linux/kasan.h:211 mm/slub.c:4186 mm/slub.c:4199) 
-[ 242.520702][ T1] ? do_initcalls (init/main.c:1310) 
-[ 242.520702][ T1] ? kernel_init_freeable (init/main.c:1552) 
-[ 242.520702][ T1] ? kernel_init (init/main.c:1439) 
-[ 242.520702][ T1] ? ret_from_fork (arch/x86/kernel/process.c:153) 
-[ 242.520702][ T1] ? ret_from_fork_asm (arch/x86/entry/entry_64.S:256) 
-[ 242.520702][ T1] ? parameq (kernel/params.c:81) 
-[ 242.520702][ T1] ? parameq (include/linux/fortify-string.h:250 kernel/params.c:99) 
-[ 242.520702][ T1] ? __cfi_ignore_unknown_bootoption (init/main.c:1285) 
-[ 242.520702][ T1] ? parse_args (kernel/params.c:?) 
-[ 242.520702][ T1] ? __kasan_kmalloc (mm/kasan/common.c:391) 
-[ 242.520702][ T1] do_initcall_level (init/main.c:1299) 
-[ 242.520702][ T1] do_initcalls (init/main.c:1313) 
-[ 242.520702][ T1] kernel_init_freeable (init/main.c:1552) 
-[ 242.520702][ T1] ? __cfi_kernel_init (init/main.c:1429) 
-[ 242.520702][ T1] kernel_init (init/main.c:1439) 
-[ 242.520702][ T1] ? __cfi_kernel_init (init/main.c:1429) 
-[ 242.520702][ T1] ret_from_fork (arch/x86/kernel/process.c:153) 
-[ 242.520702][ T1] ? __cfi_kernel_init (init/main.c:1429) 
-[ 242.520702][ T1] ret_from_fork_asm (arch/x86/entry/entry_64.S:256) 
-[  242.520702][    T1]  </TASK>
-[  242.560253][    T1]
-[  242.560872][    T1] =============================
-[  242.561861][    T1] WARNING: suspicious RCU usage
-[  242.562854][    T1] 6.9.0-rc2-00150-g5053ab0c89ee #1 Tainted: G        W        N
-[  242.564501][    T1] -----------------------------
-[  242.565558][    T1] include/linux/xarray.h:1242 suspicious rcu_dereference_protected() usage!
-[  242.567300][    T1]
-[  242.567300][    T1] other info that might help us debug this:
-[  242.567300][    T1]
-[  242.569488][    T1]
-[  242.569488][    T1] rcu_scheduler_active = 2, debug_locks = 1
-[  242.571117][    T1] no locks held by swapper/0/1.
-[  242.572108][    T1]
-[  242.572108][    T1] stack backtrace:
-[  242.573465][    T1] CPU: 0 PID: 1 Comm: swapper/0 Tainted: G        W        N 6.9.0-rc2-00150-g5053ab0c89ee #1
-[  242.575431][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-[  242.576938][    T1] Call Trace:
-[  242.576938][    T1]  <TASK>
-[ 242.576938][ T1] dump_stack_lvl (lib/dump_stack.c:116) 
-[ 242.576938][ T1] lockdep_rcu_suspicious (include/linux/context_tracking.h:122) 
-[ 242.576938][ T1] xas_store (include/linux/xarray.h:?) 
-[ 242.576938][ T1] check_xas_get_order (lib/test_xarray.c:?) 
-[ 242.576938][ T1] xarray_checks (lib/test_xarray.c:2070) 
-[ 242.576938][ T1] do_one_initcall (init/main.c:1238) 
-[ 242.576938][ T1] ? __cfi_xarray_checks (lib/test_xarray.c:2054) 
-[ 242.576938][ T1] ? kasan_save_track (arch/x86/include/asm/current.h:49 mm/kasan/common.c:60 mm/kasan/common.c:69) 
-[ 242.576938][ T1] ? kasan_save_track (mm/kasan/common.c:48 mm/kasan/common.c:68) 
-[ 242.576938][ T1] ? __kasan_kmalloc (mm/kasan/common.c:391) 
-[ 242.576938][ T1] ? __kmalloc_noprof (include/linux/kasan.h:211 mm/slub.c:4186 mm/slub.c:4199) 
-[ 242.576938][ T1] ? do_initcalls (init/main.c:1310) 
-[ 242.576938][ T1] ? kernel_init_freeable (init/main.c:1552) 
-[ 242.576938][ T1] ? kernel_init (init/main.c:1439) 
-[ 242.576938][ T1] ? ret_from_fork (arch/x86/kernel/process.c:153) 
-[ 242.576938][ T1] ? ret_from_fork_asm (arch/x86/entry/entry_64.S:256) 
-[ 242.576938][ T1] ? parameq (kernel/params.c:81) 
-[ 242.576938][ T1] ? parameq (include/linux/fortify-string.h:250 kernel/params.c:99) 
-[ 242.576938][ T1] ? __cfi_ignore_unknown_bootoption (init/main.c:1285) 
-[ 242.576938][ T1] ? parse_args (kernel/params.c:?) 
-[ 242.576938][ T1] ? __kasan_kmalloc (mm/kasan/common.c:391) 
-[ 242.576938][ T1] do_initcall_level (init/main.c:1299) 
-[ 242.576938][ T1] do_initcalls (init/main.c:1313) 
-[ 242.576938][ T1] kernel_init_freeable (init/main.c:1552) 
-[ 242.576938][ T1] ? __cfi_kernel_init (init/main.c:1429) 
-[ 242.576938][ T1] kernel_init (init/main.c:1439) 
-[ 242.576938][ T1] ? __cfi_kernel_init (init/main.c:1429) 
-[ 242.576938][ T1] ret_from_fork (arch/x86/kernel/process.c:153) 
-[ 242.576938][ T1] ? __cfi_kernel_init (init/main.c:1429) 
-[ 242.576938][ T1] ret_from_fork_asm (arch/x86/entry/entry_64.S:256) 
-[  242.576938][    T1]  </TASK>
-[  260.158718][    T1] XArray: 158742827 of 158742827 tests passed
-[  260.160114][    T1]
-[  260.160114][    T1] TEST STARTING
-[  260.160114][    T1]
-BUG: kernel hang in boot stage
+[  179.356355][ T3221] BUG: KCSAN: data-race in atime_needs_update / inode_update_timestamps
+[  179.363113][ T3221]
+[  179.363323][ T3221] write to 0xffffa34c4c66f600 of 8 bytes by task 3222 on cpu 0:
+[ 179.363951][ T3221] inode_update_timestamps (fs/inode.c:1923) 
+[ 179.364410][ T3221] generic_update_time (fs/inode.c:1948) 
+[ 179.364823][ T3221] touch_atime (fs/inode.c:1966 fs/inode.c:2038) 
+[ 179.365207][ T3221] generic_file_mmap (include/linux/fs.h:2245 mm/filemap.c:3616) 
+[ 179.365721][ T3221] mmap_region (mm/mmap.c:2751) 
+[ 179.366104][ T3221] do_mmap (mm/mmap.c:1362) 
+[ 179.366448][ T3221] vm_mmap_pgoff (arch/x86/include/asm/jump_label.h:27 include/linux/jump_label.h:207 include/linux/mmap_lock.h:41 include/linux/mmap_lock.h:127 mm/util.c:545) 
+[ 179.366840][ T3221] vm_mmap (mm/util.c:562) 
+[ 179.367181][ T3221] elf_map (fs/binfmt_elf.c:378) 
+[ 179.367586][ T3221] load_elf_binary (fs/binfmt_elf.c:1187) 
+[ 179.367996][ T3221] search_binary_handler (fs/exec.c:1740) 
+[ 179.368434][ T3221] exec_binprm (fs/exec.c:1781) 
+[ 179.368813][ T3221] bprm_execve (fs/exec.c:279 fs/exec.c:383 fs/exec.c:1533) 
+[ 179.369251][ T3221] bprm_execve (fs/exec.c:1885) 
+[ 179.369784][ T3221] kernel_execve (fs/exec.c:2023) 
+[ 179.370172][ T3221] call_usermodehelper_exec_async (kernel/umh.c:114) 
+[ 179.370673][ T3221] ret_from_fork (arch/x86/entry/entry_64.S:314) 
+[  179.371043][ T3221]
+[  179.371253][ T3221] read to 0xffffa34c4c66f600 of 8 bytes by task 3221 on cpu 1:
+[ 179.371864][ T3221] atime_needs_update (include/linux/time64.h:49 (discriminator 1) fs/inode.c:2008 (discriminator 1)) 
+[ 179.372294][ T3221] touch_atime (fs/inode.c:2020 (discriminator 1)) 
+[ 179.372669][ T3221] generic_file_mmap (include/linux/fs.h:2245 mm/filemap.c:3616) 
+[ 179.373163][ T3221] mmap_region (mm/mmap.c:2751) 
+[ 179.373533][ T3221] do_mmap (mm/mmap.c:1362) 
+[ 179.373950][ T3221] vm_mmap_pgoff (arch/x86/include/asm/jump_label.h:27 include/linux/jump_label.h:207 include/linux/mmap_lock.h:41 include/linux/mmap_lock.h:127 mm/util.c:545) 
+[ 179.374338][ T3221] vm_mmap (mm/util.c:562) 
+[ 179.374673][ T3221] elf_map (fs/binfmt_elf.c:378) 
+[ 179.375070][ T3221] load_elf_binary (fs/binfmt_elf.c:1187) 
+[ 179.375498][ T3221] search_binary_handler (fs/exec.c:1740) 
+[ 179.375941][ T3221] exec_binprm (fs/exec.c:1781) 
+[ 179.376294][ T3221] bprm_execve (fs/exec.c:279 fs/exec.c:383 fs/exec.c:1533) 
+[ 179.376712][ T3221] bprm_execve (fs/exec.c:1885) 
+[ 179.377063][ T3221] kernel_execve (fs/exec.c:2023) 
+[ 179.377452][ T3221] call_usermodehelper_exec_async (kernel/umh.c:114) 
+[ 179.378061][ T3221] ret_from_fork (arch/x86/entry/entry_64.S:314) 
+[  179.378434][ T3221]
+[  179.378635][ T3221] value changed: 0x000000000402a3d1 -> 0x000000000411e611
+[  179.379219][ T3221]
+[  179.379411][ T3221] Reported by Kernel Concurrency Sanitizer on:
+[  179.379920][ T3221] CPU: 1 PID: 3221 Comm: modprobe Tainted: G                 N 6.5.0-rc1-00096-g541d4c798a59 #1
+[  179.380804][ T3221] ==================================================================
 
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20240406/202404061058.f2256e40-lkp@intel.com
+https://download.01.org/0day-ci/archive/20240408/202404081036.56aa7de3-lkp@intel.com
 
 
 
