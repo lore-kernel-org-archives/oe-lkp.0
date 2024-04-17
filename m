@@ -1,152 +1,258 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89DAC1272C9
-	for <oe-lkp@lists.linux.dev>; Tue, 16 Apr 2024 10:18:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713262721; cv=none; b=JZdK/S31y83bOLDYDW0VXQZBw4mkYDMEDyGpJowy2O+TSgEetivCZEXsUBfvIa+oi8SmUlLegy4rkE2I5S/pO7EVKIwZIQq/5bcVdg7b/cuxesQYiyQpbkUGVv3HbyczLw+oRB9o0LnVwaG0jwewopqMUL5kYI1mbc0KdeO3kdM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713262721; c=relaxed/simple;
-	bh=c/hdg7IFl6g4RMrt0XpNJXHqc9aOnGHqeabzKYf9G1k=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=sxfyQVIif7RcTYhn+A/VRZ62FPyHqNkJactObhC4il5ocQ8ur6c6jiqILEV5ixbexsoYsS7FKuX4ab7+uWz/Gg3t8Jc8pKwXPlN9CBW5JQ13dpcVVmr6egYcasRGT8kAPz2NCRbmw1LkLzY8ho0wDekZpO7iO2w9iRrr8cpG0qE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dWNKnT4U; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31BC93BBF7
+	for <oe-lkp@lists.linux.dev>; Wed, 17 Apr 2024 05:06:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1713330393; cv=fail; b=mgKxYAgO95pTCkFr6qpF+Iv3AhYiLgIQrZTfi8FsXR3VM37pBFGtttYkpOCyQsm/yz58ain3Zo8DyFgsHEFIlRdvPiRD9/rXz50cl9rX/BCxJQDJEOWBkRay6fx1OF/+RNcKjhxHOeXU56eHd1L3CbyRGOAay2niFCXJciU58TM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1713330393; c=relaxed/simple;
+	bh=0/yB8IKaMiNwbsBoyXcaCKfYQFab1ZeesNqFG1zcq58=;
+	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=GtIlC1gZLXq61ciHZKjmPQel2U3BVe+OyjHskIYkpiGwyvg5dxzYZNsW4PamE5926CsLk2abqKNeb9JdGRQ/9B3GDKv2GDhKPv2KDqPTEWdoO9tef8m/ieXYLgDQbDbbHmltXFaCWVO309V5RvPSlZVRr4d5CwVURbXELlwAvG4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=YevWvGwj; arc=fail smtp.client-ip=192.198.163.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dWNKnT4U"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YevWvGwj"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713262719; x=1744798719;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=c/hdg7IFl6g4RMrt0XpNJXHqc9aOnGHqeabzKYf9G1k=;
-  b=dWNKnT4UpieEcVwD8J4xNbKgjdlKMm0ERgp283QKVytbqINRHxNZWO8R
-   Wu7AZzTX1Az1s9X9FbMnmek60Y+JobDav+7GCoXtmw+b5LzhwIYBIXb55
-   pLsmkkj9FlLatqay2TXw7Yzo6F7eNoCXV446OwIpm5U670YOTnvY4WTzh
-   eBWiLyDkEThhqLV6CKz0gl3JeQCApuzvGYC6cWofIJa2zzGuSKivK0dKR
-   jd63qbyQKiA46AQJX+fApdZoJTzHLxdNdcQSqRgPfl+xawioQy3QlsDbv
-   PK4QuhYVWc5dsD3qRyekah18hW0ZU45XgqFtIj+DJwCYugYz9IbNohoso
-   g==;
-X-CSE-ConnectionGUID: nlNFnP6rQZy1op9/mWtQEA==
-X-CSE-MsgGUID: thjahvncQPOCXw13ZbAq+Q==
-X-IronPort-AV: E=McAfee;i="6600,9927,11045"; a="8855467"
-X-IronPort-AV: E=Sophos;i="6.07,205,1708416000"; 
-   d="scan'208";a="8855467"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2024 03:18:39 -0700
-X-CSE-ConnectionGUID: DS7/gA9nTAOsgY5OLxPwnw==
-X-CSE-MsgGUID: qBGWO/5DR7yzpSOtsh6aFQ==
+  t=1713330392; x=1744866392;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   mime-version;
+  bh=0/yB8IKaMiNwbsBoyXcaCKfYQFab1ZeesNqFG1zcq58=;
+  b=YevWvGwjqR1lOUKvDfB1koUVn9fpYpOUSWj2agCRBIZkApcykHJaekLE
+   OkiqlVrrjk+07Bzhwcj661kszwf4VSLslVItvHASzdu6qFqPC/AWSe0jV
+   evlY+LAW/aME66SRwzutgTQSXz1OvbnvJgolHoioJ8FFUEMf98/OkfUe1
+   Hytly43/kbRX9C5ffx7TWc2qNn9iN5BNbmfR0zJ8jG2gTfkgn4b/FNvEu
+   qe3RiOvLQWRbA2hRDyHEFQnN5SxhBn5n7ywqadZRG18cFV0NUFKvfHks0
+   u505Cbmwj/6vRxXn5eH5ZT3HCU09LImJdds+4Bi8fljyreK35LdlPAvGQ
+   Q==;
+X-CSE-ConnectionGUID: hjRkQAXgQEiG+ZL2XbxSOg==
+X-CSE-MsgGUID: fm4zEXVNSP6dMkyVhqq/Bg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11046"; a="8664861"
+X-IronPort-AV: E=Sophos;i="6.07,208,1708416000"; 
+   d="scan'208";a="8664861"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2024 22:06:31 -0700
+X-CSE-ConnectionGUID: nxDgt3TLSCefl5Z3jlQTvw==
+X-CSE-MsgGUID: MJUwmSbRRUqujSZV17A7Dg==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,205,1708416000"; 
-   d="scan'208";a="22114286"
-Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.61.239])
-  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2024 03:18:35 -0700
-Message-ID: <cb8ae96c-12a6-4945-96ed-7f68f01d69aa@intel.com>
-Date: Tue, 16 Apr 2024 13:18:31 +0300
+X-IronPort-AV: E=Sophos;i="6.07,208,1708416000"; 
+   d="scan'208";a="22561501"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by fmviesa008.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 16 Apr 2024 22:06:31 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Tue, 16 Apr 2024 22:06:31 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Tue, 16 Apr 2024 22:06:30 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35 via Frontend Transport; Tue, 16 Apr 2024 22:06:30 -0700
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.41) by
+ edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.35; Tue, 16 Apr 2024 22:06:30 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oXXUyku2rjU2VizeK0E9pH81oZLXnV/E2C3L+ZxoIbQ7hurSit3ZjcilXN1mML/mIlrtD8NQuQ2nR19S8g+hcueNKHCuObEmyiUH5k2LH6pZNZd7utXPcN0f4QhXvilhkwZkTuNaKP77T0hyEb0vubKlpbvdNXDFgsXFTHTpYb929QxjQbBa17Xk2IYm87LmRGSdnMVsAgfURe4+SOatAORPDcqesc/EEGKRdDW89g/1/0XIEVQztzsSUjYT21GU/YiohVcQRhT8k+WmB/B9uyR7OGEwankUyQ3aEcZY6w5r4uzzHKGcBPnxj9ZT4wGQ05Y8jLnJay5Ahl7EmpW2jw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=EE7bFgUU31N1dJRB2J1dVLCSGFQzlIprDALlX3jhQnE=;
+ b=lwqFsBlZ7Gq91FCb/6gwDkvrbDc+rw14DOr2FTyUbgjRp4jUEcgkM5nnw1RAP31gZETnwqsG9MUFIAES+YAS2+eVriB5z4k1jaWbQv9QkB/HT9i9VHDiQvlxXaVH153Oe8/qzxnm0ozApAbxJLuM/7GTTVX9wgCU3+jjx2UkKHK/aJSZ+IolyvCOAfnW99SJskYpb/nR+I/Xy6todJh7XsCjsiTW2Qknzem35Xflnl9ZK9ImivvRdJJ4jBY7/Kp2bN2sVJrQIQYyH3wFw2TvOOmAA1kBzbpcrVeiOxwCMtZ3F8CZd0KQdQglZj0kjJ2zBIxZEfwx+76sboly/Byicg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by IA1PR11MB6491.namprd11.prod.outlook.com (2603:10b6:208:3a5::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7472.28; Wed, 17 Apr
+ 2024 05:06:27 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::58dd:99ca:74a6:2e3e]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::58dd:99ca:74a6:2e3e%3]) with mapi id 15.20.7472.025; Wed, 17 Apr 2024
+ 05:06:27 +0000
+Date: Wed, 17 Apr 2024 13:06:19 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: John Groves <John@groves.net>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, John Groves <john@groves.net>,
+	<linux-fsdevel@vger.kernel.org>, Alexander Viro <viro@zeniv.linux.org.uk>,
+	Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>, John Groves
+	<jgroves@micron.com>, <john@jagalactic.com>, <oliver.sang@intel.com>
+Subject: Re: [PATCH 1/1] sget_dev() bug fix: dev_t passed by value but stored
+ via stack address
+Message-ID: <202404171222.628d7c98-oliver.sang@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <7a37d4832e0c2e7cfe8000b0bf47dcc2c50d78d0.1712704849.git.john@groves.net>
+X-ClientProxiedBy: SGAP274CA0010.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b6::22)
+ To LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [tip:timers/core] [timekeeping] e84f43e34f:
- BUG:KCSAN:data-race_in_timekeeping_advance/timekeeping_debug_get_ns
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
- x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, elver@google.com,
- Dmitry Vyukov <dvyukov@google.com>, kasan-dev@googlegroups.com
-References: <202404161050.38f1c92e-lkp@intel.com>
-Content-Language: en-US
-From: Adrian Hunter <adrian.hunter@intel.com>
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
- Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-In-Reply-To: <202404161050.38f1c92e-lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|IA1PR11MB6491:EE_
+X-MS-Office365-Filtering-Correlation-Id: 43e368c6-ab93-402f-edae-08dc5e9c22f3
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: yyT/vH99I6ZEhjekojVedRnCUfDxRN8P2pJ/p+z0EzmRrUS7aFCkjkc9/roZdhX1HU3C2bxrCVgxFL+LuoaEDuVeKaiFrFSQm0lM9v4ZYcJYYXzeiE9nIac+fjLdViRe1mugfsVMLiA9rBZcRJeVbjIUOh01EPRXIsM6rXRZ5ZzOyvXH2Ija2wMzuw1vLYhnA+aVK/GhVXvMlGTn46iR9wUhV/fwx+E/6r+Yvsc51BF5CmQ5/7yjsnmVLa8D+VoYd7jK1UvWaJ8WxFscLpr9gnF2XQBG91Ilv+PGVKiEE6GWSPxcYPgZJ7gQJDHlyopnwR/JEHtjqMXutJ5qZ3mjwGV5DUboqcAQTxzQDsapB1S2uN5MiFxHA32jl5M/vestsFT9ul37SXHL6UPb8aq3LJkvnlLw8gVTuPnN7A4hwLvPaeqfhhUy5DAs58jh39ZwsAkfARZ5HsTrxTX4WgzxC4gGSjVydCR2bIFBeZ2FufuY/6nc0Zkoq4B3xSs7jUknhV47SWDDDVepn1TPMfM3rV81zP2Tm4QIInDn0+hoJ94cm3IyUAuhVxmtaKL0naraAyx8sbIFu60OeemE8zugE8WSVpA4mPH9nnhVieNs/83jex1kmQRID5BtV4OWzops
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(376005)(366007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?tFwEFPqLv4ErX+OKdT3ogm1JQuM3lqs6lgVfC9/a9b0J5KdRPVCq+yJi5oa6?=
+ =?us-ascii?Q?aegGQeGw+BhwFDXOHoIA7IREieM+ga4NGHokdxu9LuBOnji6Vcx9erDBxxMw?=
+ =?us-ascii?Q?5EN8oik4bHNlmhcNsVC3PCZTqqxnvQQ5/ZUN0WjUeijMNAx7AQD4m1hVTzSk?=
+ =?us-ascii?Q?PYzRpcdXMXZ9yimuxp7TsoAME5WgW2gn+i2TWpru1veVl2LyFH5sRzOjOYEc?=
+ =?us-ascii?Q?8tjc5IiB6EhJ+XTNnsfiP7tKJZ4M8HfXpUnooNtCfyNIKhVmJyZL9O4mBsA0?=
+ =?us-ascii?Q?k+5SaNHVjraMWMJY81R+ctpRVQvt4havr9mlLlG9n5LYnvcjeiSvDOH5Xy7g?=
+ =?us-ascii?Q?hZPcEYZ6nv8TPGTXXkUykCkwpi6Jz8DbbVZvq07Shhc/bJrJTuieVgs7/DBS?=
+ =?us-ascii?Q?Em4nz5qhFlwKZ2Fp+jsTJ9m8aQSQ7QubMJUU1MXizTvtW6AXvELH0BuNGZLe?=
+ =?us-ascii?Q?bDU2SWLoTOmmYDFD5ysldMpGxCdPxwX5DS8aRwHdsnibHWjroyyintwZq432?=
+ =?us-ascii?Q?wixj0IlUYVC6q8CFVu29BBPfxk2ORx5mSnLf0FNdlXHIg10u0i1PWjpKRDWD?=
+ =?us-ascii?Q?jWb0sH0xukEfaErH+43DwsAr+E4oca5AGUhDhvBJIt8ZJcgSF8v/26IK98mO?=
+ =?us-ascii?Q?jf1/v5uM8n9xXmnkqrLYLD022N/r1yfzeQczX3oLSmO3cRJhscALPGc+QUGH?=
+ =?us-ascii?Q?8ITVkJRdBeiOiY2LQn5HX+XN4XTtyiwzS89BDzM1woaV8uf7xT5ZKkNZ2ibW?=
+ =?us-ascii?Q?qKS0KdnVyB3OHoBgsiY7fMJ2oRxLEnsZEFEmVz6IWoPyR44dAsFzQiMxIN6v?=
+ =?us-ascii?Q?Z1UH87MxZeQWsbsJxWNHBbuaTVMiX+DX9dMirlONkZlFsycq+6tWM2IzyEYi?=
+ =?us-ascii?Q?BYreK3CqPNnJh5FtIDoynWrlLcdLsVG0OxXBGFTR9k+18nWSeXUADxVXri2d?=
+ =?us-ascii?Q?EV3wLv/ohqtukdjxynHCu68oCSVqfVmImYsnPeSRUPc8H2phb4uZD9wId2dz?=
+ =?us-ascii?Q?QjF+FQiDq52KRwEara6UnNoNZ1DKgEENj+QiMIeHV3BjLySi0UID2wUucO03?=
+ =?us-ascii?Q?Ip9Eta1TlKbnrm3JQQUL5pCBfNSXlrxXhViqCg2VywPB+Nok1wp/v+ejxEfx?=
+ =?us-ascii?Q?6cuiZhv7rM1PXpf5izmhWHJvH2l5AjZWuZD6SXKc3L0x/qiAYCoibTgLfpEX?=
+ =?us-ascii?Q?69x1dvbCRKwncCzkeQw7Ml6DUxhM625im3fDzSjHeDcd2v8gzXZ5vrWSW2Wz?=
+ =?us-ascii?Q?PCvF8NmviEmL6GenT0OhTCvZ9oANFRRL5W0erf/D1nQfuw0zXz2sgs1PZIvF?=
+ =?us-ascii?Q?Mtpce7h97UgsWzsRezEmPIdZH4O9QQrqfsbsT70/wKImyeR83/h89CqIPNud?=
+ =?us-ascii?Q?X+EiQBuZmemM5cwOkDfX3cS7l/5sOCgBKVE/bPfL+2h3kcJnL9T+xbNK1uxh?=
+ =?us-ascii?Q?ZdOESw2USCWpRoWKN7/WQeuoMeJdkAWkGQEe66y15Xy490C21SBjBx1vmMOh?=
+ =?us-ascii?Q?ZL8ruaGNRdz1bR7Opvd+mPlrrD6A2AUXjBh/Wdp4m7C0nINhApLBWrTafJLh?=
+ =?us-ascii?Q?VxRlMoPf8luB0HJkOpO7u1RhkTLrsenS6ymXDiTSHioXqCcZ3CRunbrENn5l?=
+ =?us-ascii?Q?5A=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 43e368c6-ab93-402f-edae-08dc5e9c22f3
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Apr 2024 05:06:27.7403
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5vf5tEVPOEbTEJ1iwpjtsPRRJ2aIr4MesTSH6fsZ3oOPSQx+NwPbwh4Xkvdq//6nP+7dfH7o+fuSWAEw8jDQ6Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB6491
+X-OriginatorOrg: intel.com
 
-On 16/04/24 09:27, kernel test robot wrote:
-> 
-> 
-> Hello,
-> 
-> kernel test robot noticed "BUG:KCSAN:data-race_in_timekeeping_advance/timekeeping_debug_get_ns" on:
-> 
-> commit: e84f43e34faf85816587f80594541ec978449d6e ("timekeeping: Consolidate timekeeping helpers")
-> https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git timers/core
-> 
-> [test failed on linux-next/master 9ed46da14b9b9b2ad4edb3b0c545b6dbe5c00d39]
-> 
-> in testcase: boot
-> 
-> compiler: gcc-13
-> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-> 
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
-> 
-> 
-> we noticed this issue doesn't always happen on this commit (63 times out of
-> 111 runs as below), however, parent keeps clean for this issue, but has other
-> KCSAN:data-race issues which does not happen on e84f43e34f.
-> 
-> e8e9d21a5df655a6 e84f43e34faf85816587f805945
-> ---------------- ---------------------------
->        fail:runs  %reproduction    fail:runs
->            |             |             |
->          16:60         -27%            :111   dmesg.BUG:KCSAN:data-race_in_ktime_get/timekeeping_advance
->           7:60         -12%            :111   dmesg.BUG:KCSAN:data-race_in_ktime_get_update_offsets_now/timekeeping_advance
->            :60         105%          63:111   dmesg.BUG:KCSAN:data-race_in_timekeeping_advance/timekeeping_debug_get_ns
-> 
-> 
-> 
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202404161050.38f1c92e-lkp@intel.com
-> 
-> 
-> [  108.068027][    C1] BUG: KCSAN: data-race in timekeeping_advance / timekeeping_debug_get_ns
-> [  108.069188][    C1]
-> [  108.069511][    C1] write to 0xffffffff95672dc0 of 296 bytes by interrupt on cpu 0:
-> [ 108.070559][ C1] timekeeping_advance (kernel/time/timekeeping.c:2207 (discriminator 1)) 
-> [ 108.071242][ C1] update_wall_time (kernel/time/timekeeping.c:2222 (discriminator 1)) 
-> [ 108.071883][ C1] tick_do_update_jiffies64 (kernel/time/tick-sched.c:149) 
-> [ 108.072638][ C1] tick_nohz_handler (kernel/time/tick-sched.c:229 kernel/time/tick-sched.c:287) 
-> [ 108.073235][ C1] __hrtimer_run_queues (kernel/time/hrtimer.c:1692 kernel/time/hrtimer.c:1756) 
-> [ 108.073840][ C1] hrtimer_interrupt (kernel/time/hrtimer.c:1821) 
-> [ 108.074430][ C1] __sysvec_apic_timer_interrupt (arch/x86/include/asm/jump_label.h:27 include/linux/jump_label.h:207 arch/x86/include/asm/trace/irq_vectors.h:41 arch/x86/kernel/apic/apic.c:1050) 
-> [ 108.075132][ C1] sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1043 (discriminator 2) arch/x86/kernel/apic/apic.c:1043 (discriminator 2)) 
-> [ 108.075821][ C1] asm_sysvec_apic_timer_interrupt (arch/x86/include/asm/idtentry.h:702) 
-> [  108.076657][    C1]
-> [  108.076982][    C1] read to 0xffffffff95672de0 of 8 bytes by interrupt on cpu 1:
-> [ 108.077994][ C1] timekeeping_debug_get_ns (kernel/time/timekeeping.c:373 kernel/time/timekeeping.c:383 kernel/time/timekeeping.c:280) 
 
-Looks like the nested seqlock in timekeeping_debug_get_ns()
-results in premature kcsan_atomic_next(0), so the subsequent
-access via timekeeping_cycles_to_ns(), although still under
-seqlock, does not look that way to KCSAN.
 
-> [ 108.078766][ C1] ktime_get (kernel/time/timekeeping.c:394 kernel/time/timekeeping.c:838) 
-> [ 108.079325][ C1] tick_nohz_handler (kernel/time/tick-sched.c:220 kernel/time/tick-sched.c:287) 
-> [ 108.079995][ C1] __hrtimer_run_queues (kernel/time/hrtimer.c:1692 kernel/time/hrtimer.c:1756) 
-> [ 108.080740][ C1] hrtimer_interrupt (kernel/time/hrtimer.c:1821) 
-> [ 108.081423][ C1] __sysvec_apic_timer_interrupt (arch/x86/include/asm/jump_label.h:27 include/linux/jump_label.h:207 arch/x86/include/asm/trace/irq_vectors.h:41 arch/x86/kernel/apic/apic.c:1050) 
-> [ 108.082241][ C1] sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1043 (discriminator 2) arch/x86/kernel/apic/apic.c:1043 (discriminator 2)) 
-> [ 108.083014][ C1] asm_sysvec_apic_timer_interrupt (arch/x86/include/asm/idtentry.h:702) 
-> [  108.083849][    C1]
-> [  108.084183][    C1] value changed: 0x000e771a64000000 -> 0x000e959ee4000000
-> [  108.085518][    C1]
-> [  108.085775][    C1] Reported by Kernel Concurrency Sanitizer on:
-> [  108.086563][    C1] CPU: 1 PID: 265 Comm: sed Tainted: G        W   E    N 6.9.0-rc3-00015-ge84f43e34faf #1 ddd7212d5d239f10e5f20ca1605d3d23d4ce80eb
-> [  108.088374][    C1] ==================================================================
-> 
-> 
-> 
-> The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20240416/202404161050.38f1c92e-lkp@intel.com
-> 
-> 
-> 
+Hello,
+
+kernel test robot noticed "canonical_address#:#[##]" on:
+
+commit: 22170ab79e39d9675bf9aa8d8e08c28759e14533 ("[PATCH 1/1] sget_dev() bug fix: dev_t passed by value but stored via stack address")
+url: https://github.com/intel-lab-lkp/linux/commits/John-Groves/sget_dev-bug-fix-dev_t-passed-by-value-but-stored-via-stack-address/20240410-073305
+patch link: https://lore.kernel.org/all/7a37d4832e0c2e7cfe8000b0bf47dcc2c50d78d0.1712704849.git.john@groves.net/
+patch subject: [PATCH 1/1] sget_dev() bug fix: dev_t passed by value but stored via stack address
+
+in testcase: xfstests
+version: xfstests-x86_64-e72e052d-1_20240415
+with following parameters:
+
+	disk: 4HDD
+	fs: f2fs
+	test: generic-group-15
+
+
+
+compiler: gcc-13
+test machine: 8 threads Intel(R) Core(TM) i7-6700 CPU @ 3.40GHz (Skylake) with 28G memory
+
+(please refer to attached dmesg/kmsg for entire log/backtrace)
+
+
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202404171222.628d7c98-oliver.sang@intel.com
+
+
+
+[   42.142026][ T1384] general protection fault, probably for non-canonical address 0xdffffc0000100000: 0000 [#1] PREEMPT SMP KASAN PTI
+[   42.153892][ T1384] KASAN: probably user-memory-access in range [0x0000000000800000-0x0000000000800007]
+[   42.163241][ T1384] CPU: 1 PID: 1384 Comm: mount Tainted: G S                 6.9.0-rc3-00001-g22170ab79e39 #1
+[   42.173196][ T1384] Hardware name: Dell Inc. OptiPlex 7040/0Y7WYT, BIOS 1.2.8 01/26/2016
+[ 42.181248][ T1384] RIP: 0010:test_bdev_super (kbuild/src/consumer/fs/super.c:1636 (discriminator 1)) 
+[ 42.186453][ T1384] Code: 8d 7b 10 48 89 fa 48 c1 ea 03 0f b6 04 02 84 c0 74 04 3c 03 7e 3a 48 b8 00 00 00 00 00 fc ff df 48 89 f2 8b 5b 10 48 c1 ea 03 <0f> b6 14 02 48 89 f0 83 e0 07 83 c0 03 38 d0 7c 04 84 d2 75 20 31
+All code
+========
+   0:	8d 7b 10             	lea    0x10(%rbx),%edi
+   3:	48 89 fa             	mov    %rdi,%rdx
+   6:	48 c1 ea 03          	shr    $0x3,%rdx
+   a:	0f b6 04 02          	movzbl (%rdx,%rax,1),%eax
+   e:	84 c0                	test   %al,%al
+  10:	74 04                	je     0x16
+  12:	3c 03                	cmp    $0x3,%al
+  14:	7e 3a                	jle    0x50
+  16:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
+  1d:	fc ff df 
+  20:	48 89 f2             	mov    %rsi,%rdx
+  23:	8b 5b 10             	mov    0x10(%rbx),%ebx
+  26:	48 c1 ea 03          	shr    $0x3,%rdx
+  2a:*	0f b6 14 02          	movzbl (%rdx,%rax,1),%edx		<-- trapping instruction
+  2e:	48 89 f0             	mov    %rsi,%rax
+  31:	83 e0 07             	and    $0x7,%eax
+  34:	83 c0 03             	add    $0x3,%eax
+  37:	38 d0                	cmp    %dl,%al
+  39:	7c 04                	jl     0x3f
+  3b:	84 d2                	test   %dl,%dl
+  3d:	75 20                	jne    0x5f
+  3f:	31                   	.byte 0x31
+
+Code starting with the faulting instruction
+===========================================
+   0:	0f b6 14 02          	movzbl (%rdx,%rax,1),%edx
+   4:	48 89 f0             	mov    %rsi,%rax
+   7:	83 e0 07             	and    $0x7,%eax
+   a:	83 c0 03             	add    $0x3,%eax
+   d:	38 d0                	cmp    %dl,%al
+   f:	7c 04                	jl     0x15
+  11:	84 d2                	test   %dl,%dl
+  13:	75 20                	jne    0x35
+  15:	31                   	.byte 0x31
+[   42.205827][ T1384] RSP: 0018:ffffc90000e1fba8 EFLAGS: 00010206
+[   42.211722][ T1384] RAX: dffffc0000000000 RBX: 0000000000800001 RCX: ffffffff83bf0f85
+[   42.219517][ T1384] RDX: 0000000000100000 RSI: 0000000000800002 RDI: ffff888161ef1010
+[   42.227310][ T1384] RBP: ffffffffc1739580 R08: 0000000000000001 R09: fffff520001c3f6d
+[   42.235103][ T1384] R10: 0000000000000003 R11: ffffffff85fecd94 R12: ffffffff81b413b0
+[   42.242896][ T1384] R13: ffffffff84b229a0 R14: 0000000000800002 R15: ffff888161ef1000
+[   42.250692][ T1384] FS:  00007fed4c83a840(0000) GS:ffff888635080000(0000) knlGS:0000000000000000
+[   42.259435][ T1384] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   42.265846][ T1384] CR2: 0000560fcf853018 CR3: 000000074c9ac001 CR4: 00000000003706f0
+[   42.273641][ T1384] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[   42.281432][ T1384] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[   42.289224][ T1384] Call Trace:
+[   42.292350][ T1384]  <TASK>
+[ 42.295131][ T1384] ? die_addr (kbuild/src/consumer/arch/x86/kernel/dumpstack.c:421 kbuild/src/consumer/arch/x86/kernel/dumpstack.c:460) 
+[ 42.299126][ T1384] ? exc_general_protection (kbuild/src/consumer/arch/x86/kernel/traps.c:702 kbuild/src/consumer/arch/x86/kernel/traps.c:644) 
+[ 42.304501][ T1384] ? asm_exc_general_protection (kbuild/src/consumer/arch/x86/include/asm/idtentry.h:617) 
+[ 42.310049][ T1384] ? __pfx_test_bdev_super (kbuild/src/consumer/fs/super.c:1635) 
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20240417/202404171222.628d7c98-oliver.sang@intel.com
+
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
 
