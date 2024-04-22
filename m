@@ -1,104 +1,100 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07F4E4D108
-	for <oe-lkp@lists.linux.dev>; Mon, 22 Apr 2024 07:45:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86A7818039
+	for <oe-lkp@lists.linux.dev>; Mon, 22 Apr 2024 07:48:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.17
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713771918; cv=fail; b=P7dLM0/TVF8yV+RKE5EVQoSdG1rSlqwnFVB4EwZO/3C3C9PAnY2tJ/OePZ04FtDU2I0Bdt1YH/cpkr4QuOjOXK8CZozNMdWcbFp/jvxhUtXBN4O2mc7KsZ3NR8tRNK0dBv1sSokugzxIYcfGqkD9fnJmMcwHqr9SVNrm/QkprbU=
+	t=1713772089; cv=fail; b=ZrK99nYTosDDqD/KN7n7vQCGbXHDZMsWaqghWe5BoDh8gEWfCawbQ2jm1t3WyvWjn3KrzPDQniAB2jrTocdV8BxXMOmYq+/kJW6eHQX+OGEBjbZOTwWGQP5EkKRchapkGhJnnMHH+MjpM65wORxswOHevvUBhRVJe7nmC6B4VTc=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713771918; c=relaxed/simple;
-	bh=kJOIwCcSaDtPQXoc6iw0rU5AJiiUVIi+RtYL8b7fdpY=;
-	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=B+KZuSY5QmhwkfUIo6jvuJgnTBHYIOvN06T1ftpQ9cE+rG0QANMdgEwJ+epimZPPTFOVuDaBvPPK4XhQhzl4iVAwUg/ABQDcMlATI0BtIXIHCSZfafChxH/+MZAzCGiQZuf2LcPZs+2rf8Rj2MdmzJiXovuzX4ckbxVzGF1Vt3k=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dKEN8tYD; arc=fail smtp.client-ip=198.175.65.14
+	s=arc-20240116; t=1713772089; c=relaxed/simple;
+	bh=Xbl+uG2GhGdvFHKTzAytHepqJAj1S0nwt9iAze2ZdYY=;
+	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=rdiTYwMPbDyT/TCR8mncOLnreJaq5aF1wjImRQfmWdaZIfqTgDCy0qM7CrQxaKeInfAtYXgdq2lL/TXsMdzSipib8viUT0xJv+S1OsUh+T24FeUD3UFh/8N8zY1TRN9KIsX8PTKu6BhQUWe9XVjaOPU6QftcQVxUEp9xl/VdWO4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hXDQ1Wwj; arc=fail smtp.client-ip=192.198.163.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dKEN8tYD"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hXDQ1Wwj"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713771917; x=1745307917;
-  h=date:from:to:cc:subject:message-id:
-   content-transfer-encoding:mime-version;
-  bh=kJOIwCcSaDtPQXoc6iw0rU5AJiiUVIi+RtYL8b7fdpY=;
-  b=dKEN8tYDCsqJv+gs7FOLDtfrkueEW/V/zEs3wN3MDFtnDsKcPkR0KxAq
-   AmtfkSgkwp9fAW1ws8w4lWOnBufOh/vNBWaV+E4cNeK4NXr5l/zijlRpJ
-   OlbfEMS/sFws8C1YAtMLXzaunh4ruoC2KQPYAsqygVRaVnNMB8J3Ydrgw
-   pNg+Lo8/a2LlXZ9vk0K5MWnhuc3kwFdRk+eHl2fbtZKh4VCzxRTSwqWc0
-   N1UJ0XE6Qv2rfNF+vqAjSug3fZ5cDGv9erOEGgXAH46BsCL7C5Nz3z4M4
-   bXfOcqn6TEIDJV/ekNhCxsl5I4uuXmP4jnClj9CvALue2W2LzzeYyEVSU
+  t=1713772087; x=1745308087;
+  h=date:from:to:cc:subject:message-id:references:
+   content-transfer-encoding:in-reply-to:mime-version;
+  bh=Xbl+uG2GhGdvFHKTzAytHepqJAj1S0nwt9iAze2ZdYY=;
+  b=hXDQ1Wwj44vywF3b9chBCt9EirzQi9wv5b0AfQzyFsaStgtRDEYHBEFI
+   DTmK99NBuwzc2BLaBXEc+yUgTjt1o7KbvM/ZTCfuzqibA5DMYwVBB6I1o
+   2N0jvjJ+MB3K3jztdA1+/iPNdI1EaLuE/A5A9BnTLe4ucNTygJ3j8qTy0
+   pHf+6lmXmpRbeVQujHPIvgRtONA6pbgFZYMx9MW7MKRbc6+EfqWVPTQRM
+   vyrvafN2qdAWNbNbp+Ou3GSiYEpoxjusrZOXzOxbW0gEJlAZwzRF+mCuT
+   xLDVRMiGz+QugsM32uyT3aLiJLzx+rPz9AD8A9AfXtPHY2tR+aBIKqEdi
    w==;
-X-CSE-ConnectionGUID: +hui/6RrS/i6G1hlXZehsg==
-X-CSE-MsgGUID: Y+tmXTADQ2qY0ZlYyl7ORQ==
-X-IronPort-AV: E=McAfee;i="6600,9927,11051"; a="13132617"
+X-CSE-ConnectionGUID: +krYqoWiRpK3QvlxUEQAiA==
+X-CSE-MsgGUID: 1sy67W7DQ/6NC25CXnM4qA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11051"; a="9161544"
 X-IronPort-AV: E=Sophos;i="6.07,220,1708416000"; 
-   d="scan'208";a="13132617"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2024 00:45:16 -0700
-X-CSE-ConnectionGUID: mf4Ao4ZlQ/i+M+pcDn5evA==
-X-CSE-MsgGUID: OoooltTFT7O9mSRFDTedRA==
+   d="scan'208";a="9161544"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2024 00:48:06 -0700
+X-CSE-ConnectionGUID: OnEZIHDxSzGpBD1exuaq1g==
+X-CSE-MsgGUID: 8q0RCnmiQHqi8fPupgfjfw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,220,1708416000"; 
-   d="scan'208";a="23959314"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by fmviesa009.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 22 Apr 2024 00:45:16 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+   d="scan'208";a="23985025"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by fmviesa006.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 22 Apr 2024 00:48:05 -0700
+Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Mon, 22 Apr 2024 00:45:15 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ 15.1.2507.35; Mon, 22 Apr 2024 00:48:04 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35 via Frontend Transport; Mon, 22 Apr 2024 00:45:15 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.100)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ 15.1.2507.35 via Frontend Transport; Mon, 22 Apr 2024 00:48:04 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.169)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Mon, 22 Apr 2024 00:45:15 -0700
+ 15.1.2507.35; Mon, 22 Apr 2024 00:48:04 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=abCx6FwmXEnDgdZQSdF0ZKWOxzb1cADj7JI8+qOQ3M8IO4FhqLE7omm1u3pfX92F+bb9mTrKLLBFQA3EUY4RWiW0Z/L/YPrwBXPsRlyuBffpZZXjPMHGJ66d52WN/yHOiFVttIh4QQ2IQ2C/9gbpvwRTjSK9TR48q9SSH6htPO1whTTYKXSvh6vfjmuJy8zIGRcMdK7IbTOxpR/DByOjOeUVLJlJpgvzme1Ex6bU/2kOzCifgmJTKwDtDLVEbclWSoPBiou9fivonKyRysW96PBwRdU34e3bjLImyhBs6mpxVS86pWUy4S1kZNUx0zbKyUFjTf8yI/9pd6po1zedTg==
+ b=fJw+9LTrhdTc0FNUE7gSOKmnUSYKGK/qyf5UnBNY5B362SnTPbktowF76FsTNZ5DJUhaO0ekrWFLjsNWtp/7kNCeU5Qh7OAdOj7Iztno+BUb3Jh2bh+A9H43cddLeyEbO7sOG69DTfMdXopsj6Ou6uSV5Gk5oQsRkkvnba72Q1mIrwxL+hJRZZ1u6Wtxix99CvnmxzpK+DKUdcxYotgGX/iLgya7scKDUTf15UOLP18RmJAAVIi+7lCoYgmNu4pk0YC6wKN0MbpP2r5HYoCF1z8/f0vTQU6RM5HTBVUDAYje+6kllWYdB9JzS5Cj5/imIVL47zWMup5Z9bu0Q3OFZg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PPtUsxqn0pfxrRkWnf7q2dVh/w0IxmwZ0zeAk278wGg=;
- b=TFUQ7e58Kd+QwmDroTUePRrffDUI7lR8A+rpXT5JpW9j3KUny25LZch3YOzWYTH9l1pcSik4lLxtKKUSNmDEU7jfl0k6DAHntcXDyBDxXM5E8wDBHWjZnSyRs8DafmWGTsJo6ywQ6aguJ5STCNg00tJpmUG/M+x1nXUpFe49Yl2lAhMO8D7pWn1MVlhxXg+EC4+U4TxqSF3jTN0o0uzl9c3rdIkzSIBA73XhoDvyNd5/C4QgGidjOD+26Uyu9tv82yHHnrx4vWPVJIEDPbAmUaSi5chE5R3BO8AMzQlbdOugdMUJ1TVlRa/Kyaz+0L3kPREFnIwNmS9jKJzBfQuFwA==
+ bh=nX3bANmC968AzxiQBpIFjhCb3E5SSmYmWaZDs5nnB3s=;
+ b=KYqMWI5ZefXTT8lSQLVqbSW6wDGKjsr+KRXnOih3O612bFq34KnKCXOLBmVjOebYGC+Mr4364DLjPeN32JHsZXrlNfHcaNmkXMYcwaB2rT2c0i9f6KvtuJ4vye2VDjYA4wjvv+9F9PegRdTd5MOh69km1xG5yHs+jDsfeNwgbB2Mb5vRX27e7DdDqCLwzPzI+p+0mH7tb0IkB7lUP1n+y0ZF4LyUbbFhH6ubCWV4O3Riq4VDRL72A1ii6lNSPIzgrfmt9X6ryvw7EITqmhMpvT6/I67QQ0Qsr+UWjol+aJoofnMVcPaDsrmnKufroOkFQk8UQ3OzRuCQ7XtBxfFATA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by CH0PR11MB8168.namprd11.prod.outlook.com (2603:10b6:610:186::20) with
+Received: from SA1PR11MB8393.namprd11.prod.outlook.com (2603:10b6:806:373::21)
+ by DM6PR11MB4753.namprd11.prod.outlook.com (2603:10b6:5:2ac::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7519.20; Mon, 22 Apr
- 2024 07:45:13 +0000
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::58dd:99ca:74a6:2e3e]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::58dd:99ca:74a6:2e3e%3]) with mapi id 15.20.7519.020; Mon, 22 Apr 2024
- 07:45:13 +0000
-Date: Mon, 22 Apr 2024 15:45:00 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: Nam Cao <namcao@linutronix.de>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Linux Memory Management List
-	<linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>,
-	=?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>, Mike Rapoport
-	<rppt@kernel.org>, Andreas Dilger <adilger@dilger.ca>, Arnd Bergmann
-	<arnd@arndb.de>, Changbin Du <changbin.du@huawei.com>, Christophe Leroy
-	<christophe.leroy@csgroup.eu>, Geert Uytterhoeven <geert+renesas@glider.be>,
-	Ingo Molnar <mingo@kernel.org>, Krister Johansen <kjlx@templeofstupid.com>,
-	Luis Chamberlain <mcgrof@kernel.org>, Nick Desaulniers
-	<ndesaulniers@google.com>, Stephen Rothwell <sfr@canb.auug.org.au>, Tejun Heo
-	<tj@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
-	<linux-kernel@vger.kernel.org>, <oliver.sang@intel.com>
-Subject: [linux-next:master] [init]  b8de39bd1b:
- BUG:kernel_failed_in_early-boot_stage,last_printk:early_console_in_setup_code
-Message-ID: <202404221524.4954a009-oliver.sang@intel.com>
-Content-Type: text/plain; charset="us-ascii"
+ 2024 07:48:02 +0000
+Received: from SA1PR11MB8393.namprd11.prod.outlook.com
+ ([fe80::c0cf:689c:129c:4bcd]) by SA1PR11MB8393.namprd11.prod.outlook.com
+ ([fe80::c0cf:689c:129c:4bcd%6]) with mapi id 15.20.7519.018; Mon, 22 Apr 2024
+ 07:48:02 +0000
+Date: Mon, 22 Apr 2024 15:41:27 +0800
+From: Yujie Liu <yujie.liu@intel.com>
+To: Josh Poimboeuf <jpoimboe@kernel.org>
+CC: Linus Torvalds <torvalds@linux-foundation.org>, <oe-lkp@lists.linux.dev>,
+	<lkp@intel.com>, <linux-kernel@vger.kernel.org>, Thomas Gleixner
+	<tglx@linutronix.de>, Daniel Sneddon <daniel.sneddon@linux.intel.com>,
+	<ying.huang@intel.com>, <feng.tang@intel.com>, <fengwei.yin@intel.com>
+Subject: Re: [linus:master] [x86/syscall] 1e3ad78334:
+ will-it-scale.per_process_ops 1.4% improvement
+Message-ID: <ZiYUpxCTyh1uEgeO@yujie-X299>
+References: <202404191333.178a0eed-yujie.liu@intel.com>
+ <20240419073346.xlpx4qaocbo6bhip@treble>
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-X-ClientProxiedBy: SG2PR02CA0070.apcprd02.prod.outlook.com
- (2603:1096:4:54::34) To LV3PR11MB8603.namprd11.prod.outlook.com
- (2603:10b6:408:1b6::9)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20240419073346.xlpx4qaocbo6bhip@treble>
+X-ClientProxiedBy: SI2PR01CA0017.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:191::19) To SA1PR11MB8393.namprd11.prod.outlook.com
+ (2603:10b6:806:373::21)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -106,151 +102,423 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|CH0PR11MB8168:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9e94417e-ae9d-4977-5eaf-08dc62a024c1
+X-MS-TrafficTypeDiagnostic: SA1PR11MB8393:EE_|DM6PR11MB4753:EE_
+X-MS-Office365-Filtering-Correlation-Id: 72af61be-fa08-4c39-adb2-08dc62a08956
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230031|366007|7416005|1800799015|376005;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?xZuKjNb7DeViKbYdklOqFZgdMXH8jSmS8NSHw+2R2J7Tubqd9RUZT4V2nYCY?=
- =?us-ascii?Q?l85d12XUF6tGSI4/6XnUGSzFOCZPJ/ye/eW+KLEBYh41rkgsjv/QDf/v/LOX?=
- =?us-ascii?Q?/P2W1Cah/5rcE1JhuVTVhsI6zJ9MiWgWn1WCu7zmURM37WsOFoqYG8lzggKN?=
- =?us-ascii?Q?TmtVvbIg9jDsaJLw3CV+pMHblNTKvI9ydBIhs6uPkDm19NgAhPnB5i8EHcvF?=
- =?us-ascii?Q?1K8rPr5BeIQml9zq/xnPIIYJjkl3deWCPE2bZ3gpHkL+l5Us95m1J4X6KMri?=
- =?us-ascii?Q?jMsNBtLksnwZ69qOSMvcybwUIBQrRRn3JXDUhrf+Az5cSw0xFWdS1H/YstJM?=
- =?us-ascii?Q?KtoOZHXDPyTlBr6aTP/r4LkC9y6XUEnzhwlw9yJwbdT90QzHy6qM/W+XdQEE?=
- =?us-ascii?Q?K0TK1Mxyr2u4+Gviyh1sWqVZur/qW6z6uF9CWHAtExh7ykWS/xbkq0QHArsc?=
- =?us-ascii?Q?h9aO7VjmPVJB1KE8bbhc289Uz+n7lWZau4v1oQ8gulctlMxMHTULFRWz+qGQ?=
- =?us-ascii?Q?72P7FN5pbrwk2ljEcZjeEZ3obgPWcEMnrq6beTIpHbRGQrS0K5Z5+CIDh6fh?=
- =?us-ascii?Q?gMF9o551icLSsy+1mLixiOsWhSoRzUXhSkyH/x+7odHLbjBZALjshy8v627Q?=
- =?us-ascii?Q?R78Va2+fGVVHXPdh6BOcE0UZFdMlNm2vCan825U+Y3DkbKsb8T8Jb+lyql/+?=
- =?us-ascii?Q?gZYbam+NzlSznr21BFE6f44lpEao/BjW7laPN5poV0hLkECdG0h3M8Tpunu3?=
- =?us-ascii?Q?WgycRJsEk/EbE9BdElT/SaAnKMDCzy5H6L8bLyUb+sRw/0/43/tMsuy3v2Lq?=
- =?us-ascii?Q?k5o4/xgiIuUhJBAb+znEw3toRHcm0PdU0WG0ezI0Ur8INKZ2VG9bzX14wVgd?=
- =?us-ascii?Q?XJigFxGAO8CTFM+NHl5QGapGZhQaudFWoG1xZgOoL7hi+SuyDwkTgTfefn05?=
- =?us-ascii?Q?phSBf5h+9+Wkli75LjooU6RbhTFOb8h63xT9kE2xa0UvQgeiwS60yZyF8OO5?=
- =?us-ascii?Q?EjOrvX97klRTZXe0W5IbtQc39L2fdX1Yzhup32Mxmqv0oG3T2/JZ+AAOLxMc?=
- =?us-ascii?Q?dXEGCy+3yPJgCI6CHlfqCPH34wAk0ppKNv8tx7n8YaNNH7w2cSqNefc85rna?=
- =?us-ascii?Q?DizmYhWrZfGvR9ohmzERmXbFAMNoAi6i7sP1vz9Tg6lxXfkHO1YAlKdrd/dx?=
- =?us-ascii?Q?SnWApN0pfAaVTt4/ObQoiLyESKWLl+0siqy03aq1MJgwEzDjIVW6nM/C9UY?=
- =?us-ascii?Q?=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(7416005)(1800799015)(376005);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230031|366007|376005|1800799015;
+X-Microsoft-Antispam-Message-Info: =?iso-8859-1?Q?J6MtV6+kAEeAgCxa0y3qsnLC2Bp/6L7M0SgzeYvcHpTHxrLn3TBcywcSPA?=
+ =?iso-8859-1?Q?9/R6fcnZAHBJPEBLjo1NSmkg+TE1PxiGmhmJePik7/MzPldsGeRWtNt4hy?=
+ =?iso-8859-1?Q?fCqW48QL2dnJkpgGnI6atglJjfX3/lRd3o1u+K2mjC4o8/WdaI2NjKP56o?=
+ =?iso-8859-1?Q?mm9Qq4WhD4g4Cy6pg/B2YZrtS8wRMM1XN/V+ER7DuCTQKAYSCXQQQXm+v/?=
+ =?iso-8859-1?Q?xa4QVdtkaGrNCueHVsjN8QSeZhMCS5+fmYTUr8ikCbN/lAz5tjGRAqiVsT?=
+ =?iso-8859-1?Q?59yfU1izDfoqE7x30JaRLLRqtv6IUbbzORTns2zwERM/JY5EIBmx3NqjQc?=
+ =?iso-8859-1?Q?T4qBIwoFgDzHgEoC4XoXYvc6EUMdQk5jFwQQKbJ8aTx7LhsTDh3nh+HsY4?=
+ =?iso-8859-1?Q?h2E8wzmOx3A6+wbWhFO2/boLFmCkKKy1h88PGAYV4YDb0RENMfZNpBgmfV?=
+ =?iso-8859-1?Q?fPzbq1z+00DWznBYXjiW6qm3y/hXVdl2ZbmkzM95qZuYzv1MHiX0NVvhzB?=
+ =?iso-8859-1?Q?BiwADokx2AMPI7hoT5LOpGaFn3uj5Tg1w2mlU3kri0RnRCCMIUWjPniwNj?=
+ =?iso-8859-1?Q?kZDReu7q6NIdLpIGjpGCQIAowW1XDjTEJOdy7qnd/igVda9SjPveScKgNu?=
+ =?iso-8859-1?Q?1YhTAVu7PVC9CIXQf75LXRPJBV89qB4po/ZFhDaeloXbooScY3V9vC7Qxq?=
+ =?iso-8859-1?Q?INTuE/bDoQLxCnYV854S2qXY++Rkjdv3fmcCvRIwCtu/cyK6L88uYCNoCk?=
+ =?iso-8859-1?Q?FVGmSuXqIXC/OJaymxE9640rWJd3Sr+1HsuxMWYpchbwD+0NI7Yor4j39C?=
+ =?iso-8859-1?Q?3Cgw38eiKW+WCiP3812Ak0Yfb7RIlCl1AyiAHLgHxgYhHTBQU5/4el2Pra?=
+ =?iso-8859-1?Q?L/P2gMEH0kPFoc+oplE718SAhI0UY+g7/rVqefin0hdd2QCK4oh6zsKfku?=
+ =?iso-8859-1?Q?pnZHmRbODlNirUvyD5Vq9TcGVDZ/j14CbltxMWUECnnISrqL4m91Rj8oCH?=
+ =?iso-8859-1?Q?ZHRxb+GA7jxi5AAMHpnKQiCSU7BxO4X5/ukOgEtkrJsRC0lfj8VIDTVoN3?=
+ =?iso-8859-1?Q?MdGFJYEHeYOSKoJdsv5wh7/XY+MDSKKvG6SOohoIpke03jxJjfTf5e7txD?=
+ =?iso-8859-1?Q?6WuhYi+fCCoGmqWo8kc4ZCxP+Cy2wcimgk5VZofQdHnZIVu7ZzgwUIx2Ym?=
+ =?iso-8859-1?Q?+2GO77wHBeaoT7uGEELVJ/5MT3jzJZIBdf603CwMtzSf8Z/bah090ILG09?=
+ =?iso-8859-1?Q?U9tff9GlE5ubTp+rVwzhDOvt3Lsdoif4ATEQhHUo73qkq2joqcDtLFOlny?=
+ =?iso-8859-1?Q?oM25MFi67Db7sNUpj+KJWxtgsA=3D=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR11MB8393.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(376005)(1800799015);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?rJDNYmxMuLABvHYxf+i7UOHADgGbJzRLhCP2NPz+azNO/jSbe7d7NVVcAe3q?=
- =?us-ascii?Q?mvuxE/6R1jJYaThX4C/4uMQ2oda6wN2lPJHYAfuUKLnYuLlLlCe9hKGUTuat?=
- =?us-ascii?Q?M3wU1IQKhitchbqGkmXGkzrW+2UiVQGkzwWAbZIfLv+LjDj1qRc86NIgQAQH?=
- =?us-ascii?Q?eIHPJL1T/6ZDwvby5UZCeLhb8JEcY+1rbwBuoN3wKVGyKzFZvQDaQI/cg1RG?=
- =?us-ascii?Q?12SwVmHAu5PtjwP5n091P1jy2CiHxiEfRPGEDfwIIag3m6esYinowRMm7QGa?=
- =?us-ascii?Q?umofGUlPoM38LUllMv+BQuo4dF6CAUwiKA3v65TYtRmaQt7Z6tEg1nvv7g/t?=
- =?us-ascii?Q?hWWufUnBFjwTfLYvUp9oQszSsTG1AlL0YqR+y0bENjLInjcY8VmGHAptC82r?=
- =?us-ascii?Q?YahJaqE4dn8DmZATbbRX/TKLFCMtPgK4hF+k5lHNaGHgMqosSpUdoYuTKjIQ?=
- =?us-ascii?Q?AO6zHQbu+f41u1BN6j5H1jITG/Mo9Wc8pC4CYK/B+bEE7AsinYwY3ZmgnlRQ?=
- =?us-ascii?Q?jT2iXN5Msy0ej/pwkG2YxeH2aii2VicRToUoOVZeLq+H8YLljV+2/nocgZxF?=
- =?us-ascii?Q?r8y5bvCt5OeHBauACUKSAJJUJH5XyKqq95E5xIRO/MZNgHRubiJnYuHZS/E3?=
- =?us-ascii?Q?0ESovjK9bbJrppNpwHjiQggzV6NA58SJKqlXADF2Ja1C0Szhbkdd4ZlpjQEN?=
- =?us-ascii?Q?EJvR3z5w6V+Ejv1B2lXqGWv4fhu+9l0MRwaTWONHbPnlVVpbr3o3l/d9GQDo?=
- =?us-ascii?Q?1J9DSG6TRN4ZFLKworZUVJhfcWGibOlCbQW1C4ffmjaVLhJL6hei+IE6hQOY?=
- =?us-ascii?Q?W2i8+fN9hgi1rUvZl9kehB+C4HfYUJLkSnYWA/0XhnT1qjzmqovAbtm/DXsW?=
- =?us-ascii?Q?s7IjnBYUEHK/sltPqtJFFK++1spbXQlQGKQg8zZieXb57mARZtX829WF3G8J?=
- =?us-ascii?Q?dF966vxcqi3iZklQtY6Q8v9KJ//92LAZx16awBotApGc0A7O9/0b7UDvxyIC?=
- =?us-ascii?Q?rmRtA0xzyHVG3rD6W5jgSZmXhwltMEtFFuz8pLj0JRdebqXTIijZue3COD7a?=
- =?us-ascii?Q?7GIWW94JToF64pl3s8uYBc9qMzTHzjkWhK63UdzDLmJJEmDYqtFqb161smyQ?=
- =?us-ascii?Q?uNQODoxJw9YKo/L2tHztPPN5CdMX/rtM4Og9EXzzeluE/OW0pzXqqVVVG0Q3?=
- =?us-ascii?Q?KuosXYMU1mGVdaI8G3JK0hLe39MyHkoVz47dB/Uajtmzft8a1zcLzDoOn0D7?=
- =?us-ascii?Q?VD+3g530zBGC4kLgqxs39v8lfMPHfYSfcowFz9fs3Xhrlao1q999THs3fc0e?=
- =?us-ascii?Q?gU6OkqhXo86WYauanB3V3JThwSPdgpNe3fna2NxQQcQPptKA2eWgZwdUBJV4?=
- =?us-ascii?Q?RR26rY4MnU5gWmQKE14S9oDBRGjVRcJl93SLuHNciFFvgDr2w9xpzTkJH9Ub?=
- =?us-ascii?Q?w+Y4qfKFpVK5OCxtDQIPXEqu2rw9ksD83Mr0yvHOwqp/JCWMlmMGhvNEIisU?=
- =?us-ascii?Q?ragUR4soCFsvZiDLMarN+ddIEbrHD4XBNRmrG6kcguP/IobZCcI2MizLFEne?=
- =?us-ascii?Q?fkH60fhq4uLJ4F4dekpd7C9Wl0j78x6v2VTeQgsMR4UVqsS/JXCnanxl/F4m?=
- =?us-ascii?Q?uA=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9e94417e-ae9d-4977-5eaf-08dc62a024c1
-X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?YfFE90Njw64KXfwuhwcoqCiPnDCSKimpJ4Fn29EU63Rrk6/q1RdA5U1voO?=
+ =?iso-8859-1?Q?4yuZRUwgdv/Em6oPtqgN38Xv7/LQM3ZHD2DV+mE3ofVuCqFle5kQpAIebo?=
+ =?iso-8859-1?Q?V0jNryjGrtw1fZ6P/QRotKgsTHD+bhLBK41kPrBTMsRU3LYjo+iJ4E2IvO?=
+ =?iso-8859-1?Q?bgJOrok9ePcVjGcM9m6F0qevrzTgXlCaeZfA+4CwVMqunvDxshDSkoEpgY?=
+ =?iso-8859-1?Q?g7i5tSKsiz1g/10j3q3hvFazuMdpfkTZi0W+EoFnieQPn8vTfmLMuu+Kxn?=
+ =?iso-8859-1?Q?Y2V0X6qNAuvfUgyxNwrDQfahE/Zm/7kF3VUuTPdFruGKaXsq+H79kG3J/W?=
+ =?iso-8859-1?Q?gXdUCY9eXTO5R8ebQImq62awVURh5OxPLUq3uiNblkI+c6Gdd3xugZZ5a0?=
+ =?iso-8859-1?Q?gvHdU7NedxyUySwGWnKQKoj8KdWTNKIPH27vZlbdC/AI3D3wFxib0b5apV?=
+ =?iso-8859-1?Q?FnFvC5h99msp3m4d0lProVCKzUIoDNRtIuXBY6F+4NlWVgjEl+L+9Rd14e?=
+ =?iso-8859-1?Q?hwNQqenO4DlwTUr8RdVuJV2mkRJeJ9jZD5G5mvuJYxwWU4CfutSpDmhYUr?=
+ =?iso-8859-1?Q?YsUft7GGtD+R9TH/n/8oI0b2mqc87djExTDNVuV12Oz6efUB2+73zeBxiA?=
+ =?iso-8859-1?Q?Iey8rEUJcDiQHoVcw8cxIiJLYbhWjbGGPvpw3RXAs8bDSMc4ZC0LjiCcqm?=
+ =?iso-8859-1?Q?WI//gvlUuhLA0C8UEu/bMFFsvr42dgpHmPEpRn/tPWVDMFxdjaT4CbODhE?=
+ =?iso-8859-1?Q?/sXZ4qEmW8XlTnv7PbuCiMp4Aw7yAA9vW22pBeWqsGE/OWkdgRvH4waq5Q?=
+ =?iso-8859-1?Q?sf4trT1oGZu4JfXhtHGIqTSR3Easm1EhyAt9/F8u9zp1XOwXkEaw15Vm2s?=
+ =?iso-8859-1?Q?TcP/a9ZeoHf4WnL29ViE0qhgjk+NzuNUqQXhQSgO99e/YV7DswJWZct4/6?=
+ =?iso-8859-1?Q?U9mfGN6YaZmfRX5L53y5r3DM0ZWMvxWQ036BHtoCHYfwvNdukGJFCf0gRN?=
+ =?iso-8859-1?Q?TWST3B8Q4M5WFZVdSCk70vAg8jwDYffysgzI8tpJCizdZXscGLo1Zu1uc2?=
+ =?iso-8859-1?Q?7DgRGmyDjroEnZ1EJ2rYcaMkzNXYdirf4n210quCIZjNZmnzTWG7aWkjME?=
+ =?iso-8859-1?Q?0pMvxh4I3f+rSc/Ogjgo8prxaRnJAc1IwFNbvUkSbJfAHdXMLV9K2pHAgL?=
+ =?iso-8859-1?Q?nDAkLr/NOUYfhvoxSjRI2zOlUeoEo29b650N/m1IdeMES2IMtyOKZNn3Is?=
+ =?iso-8859-1?Q?FHvbwwyWHw/9MSGKB9V6MMbMZoyZf6PRpgft31LWAXcvvS+u1GHN9EY6D5?=
+ =?iso-8859-1?Q?/SgA3eKr0aT73+ianofnLzf930cfnJqumnGFwU9l64Qtvlz513HXo0fyg+?=
+ =?iso-8859-1?Q?Zqox/0ffwdgV8FDJsG6ey2kNloqf6u5b6w7Cn64p0dRe50nK0Ae1Jqw012?=
+ =?iso-8859-1?Q?Gvrs8HD0hgOLLm5srfvw42DsmOu3r+ymE7lHXQX66K9ziddK5Ht6nIaQU1?=
+ =?iso-8859-1?Q?LxHkxYU2Y3dgPGel4HDs3xhoEP++b81L4Llq+KizKv3OPAyaRrldAj0sa9?=
+ =?iso-8859-1?Q?JJic5N+PzlAEVse3x3oUzVKQz3v7591P6N5o7mGkk0AhTQj0rE2QQbWTGv?=
+ =?iso-8859-1?Q?6JnLAN9ngm5aQAGwD375lTNz3NUtV0kTVq?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 72af61be-fa08-4c39-adb2-08dc62a08956
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR11MB8393.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Apr 2024 07:45:13.1653
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Apr 2024 07:48:02.2012
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tH+3hF0PbJ3Ihq/PmfHxkl37j/SgLQ6MUMUIiassx/unKAKgdFUNA0FybdK60RCXqOTC/ngiYLkzJS2HV1WN+w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR11MB8168
+X-MS-Exchange-CrossTenant-UserPrincipalName: yQm0SHtYQTmRhnv87JQEDyXfRh7bdDpZBvQmb3ipyBhi1FkMUnB5aqqGDyjOcuKctc3BfZzm/JWATBkNDNJfaA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4753
 X-OriginatorOrg: intel.com
 
+Hi Josh,
+
+On Fri, Apr 19, 2024 at 12:33:46AM -0700, Josh Poimboeuf wrote:
+> On Fri, Apr 19, 2024 at 01:49:26PM +0800, kernel test robot wrote:
+> > Hi Linus,
+> > 
+> > We noticed that commit 1e3ad78334a6 caused performance fluctuations in
+> > various micro benchmarks. The perf stat metrics related with branch
+> > instructions do have noticeable changes, which may be an expected
+> > result of this commit. We are sending this report to provide these data
+> > and hope it can be helpful for the awareness of overall impact or any
+> > further investigation. Thanks.
+> > 
+> > kernel test robot noticed a 1.4% improvement of will-it-scale.per_process_ops on:
+> > 
+> > commit: 1e3ad78334a69b36e107232e337f9d693dcc9df2 ("x86/syscall: Don't force use of indirect calls for system calls")
+> > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> 
+> Thanks, these are significant regressions.
+
+First we need to clarify that by running this specific will-it-scale
+futex4 benchmark on a Skylake machine, we observed a +1.4% performance
+improvement, not a regression.
+
+> Since this is on Skylake (with IBRS enabled, presumably) I'd expect that
+> these regressions are fixed by my "Only harden syscalls when needed"
+> patch.  I'm planning on posting a new version of that tomorrow, but v3
+> [*] should be good enough to fix it.  Could you run these tests on the
+> same Skylake system with my patch added?
+
+The v3 patch [*] cannot be applied on commit 1e3ad78334a6. Seems the
+code base has changed a lot, so we are not able to directly compare
+1e3ad78334a6 and 1e3ad78334a6+v3_patch.
+
+The patch is good to apply on v6.9-rc4, so we tested v6.9-rc4 and
+v6.9-rc4+v3_patch. Here are the test results for your reference:
+
+Skylake
+=========================================================================================
+tbox_group/testcase/rootfs/kconfig/compiler/nr_task/mode/test/cpufreq_governor:
+  lkp-skl-fpga01/will-it-scale/debian-12-x86_64-20240206.cgz/x86_64-rhel-8.3/gcc-13/16/process/futex4/performance
+
+commit:
+  0cd01ac5dcb1 ("x86/bugs: Change commas to semicolons in 'spectre_v2' sysfs file")
+  1e3ad78334a6 ("x86/syscall: Don't force use of indirect calls for system calls")
+  v6.9-rc4
+  v6.9-rc4+v3_patch
+
+    0cd01ac5dcb1                1e3ad78334a6                    v6.9-rc4           v6.9-rc4+v3_patch
+---------------- --------------------------- --------------------------- ---------------------------
+         %stddev     %change         %stddev     %change         %stddev     %change         %stddev
+             \          |                \          |                \          |                \
+   1362315            +1.4%    1381406            +1.5%    1382652            +0.5%    1369778        will-it-scale.per_process_ops
+  21797058            +1.4%   22102512            +1.5%   22122442            +0.5%   21916453        will-it-scale.workload
+      0.04 ±  7%      -7.4%       0.04            -6.1%       0.04 ±  2%      -4.0%       0.04        perf-stat.i.MPKI
+  1.98e+09           +19.2%   2.36e+09           +19.2%  2.359e+09            +1.7%  2.014e+09        perf-stat.i.branch-instructions
+      1.47            -1.2        0.30            -1.2        0.30 ±  3%      -0.0        1.45        perf-stat.i.branch-miss-rate%
+  30820475           -70.4%    9118612           -71.0%    8945551            +0.5%   30985854        perf-stat.i.branch-misses
+   7767463            -1.2%    7676829            -1.0%    7686158            -1.3%    7664542        perf-stat.i.cache-references
+      3.45            -4.4%       3.30            -4.4%       3.30            -0.4%       3.43        perf-stat.i.cpi
+ 1.504e+10            +5.1%   1.58e+10            +5.2%  1.582e+10            +1.2%  1.522e+10        perf-stat.i.instructions
+      0.29            +4.5%       0.31            +4.6%       0.31            +0.4%       0.29        perf-stat.i.ipc
+      1.01 ±100%      -0.6%       1.00 ±100%    +104.1%       2.06            +0.3%       1.01 ±100%  perf-stat.i.metric.K/sec
+      0.05 ±  2%      -4.2%       0.04            -3.9%       0.04 ±  2%      +0.4%       0.05        perf-stat.overall.MPKI
+      1.56            -1.2        0.39            -1.2        0.38            -0.0        1.54        perf-stat.overall.branch-miss-rate%
+      3.43            -4.3%       3.28            -4.4%       3.28            -0.5%       3.41        perf-stat.overall.cpi
+      0.29            +4.5%       0.30            +4.6%       0.30            +0.5%       0.29        perf-stat.overall.ipc
+    208138            +3.4%     215312            +3.5%     215474            +0.5%     209279        perf-stat.overall.path-length
+ 1.973e+09           +19.2%  2.353e+09           +19.1%  2.351e+09            +1.8%  2.008e+09        perf-stat.ps.branch-instructions
+  30729762           -70.4%    9109071           -71.0%    8918595            +0.6%   30911752        perf-stat.ps.branch-misses
+   7745419            -1.1%    7663567            -1.1%    7663740            -1.3%    7647834        perf-stat.ps.cache-references
+ 1.499e+10            +5.1%  1.575e+10            +5.2%  1.577e+10            +1.2%  1.517e+10        perf-stat.ps.instructions
+ 4.537e+12            +4.9%  4.759e+12            +5.1%  4.767e+12            +1.1%  4.587e+12        perf-stat.total.instructions
+     12.23            -0.6       11.60            -0.6       11.64            -0.0       12.21        perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.syscall
+     10.09            -0.6        9.51            -0.5        9.56            -0.1       10.01        perf-profile.calltrace.cycles-pp.__x64_sys_futex.do_syscall_64.entry_SYSCALL_64_after_hwframe.syscall
+     22.31            -0.4       21.88            -0.4       21.94            +0.0       22.36        perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.syscall
+     19.15            +0.2       19.30            +0.2       19.38            -0.1       19.04        perf-profile.calltrace.cycles-pp.syscall_return_via_sysret.syscall
+      9.25            +0.2        9.43            +0.0        9.25            -0.0        9.23        perf-profile.calltrace.cycles-pp.entry_SYSCALL_64.syscall
+      8.79            +0.2        9.02            +0.3        9.07            -0.1        8.72        perf-profile.calltrace.cycles-pp.do_futex.__x64_sys_futex.do_syscall_64.entry_SYSCALL_64_after_hwframe.syscall
+      7.13            +0.2        7.36            +0.3        7.41            -0.1        7.07        perf-profile.calltrace.cycles-pp.__futex_wait.futex_wait.do_futex.__x64_sys_futex.do_syscall_64
+      8.37            +0.3        8.63            +0.3        8.68            -0.1        8.28        perf-profile.calltrace.cycles-pp.futex_wait.do_futex.__x64_sys_futex.do_syscall_64.entry_SYSCALL_64_after_hwframe
+     12.38            -0.6       11.78            -0.5       11.84            -0.0       12.38        perf-profile.children.cycles-pp.do_syscall_64
+     10.12            -0.5        9.57            -0.5        9.63            -0.1       10.04        perf-profile.children.cycles-pp.__x64_sys_futex
+     22.63            -0.4       22.20            -0.4       22.24            +0.0       22.65        perf-profile.children.cycles-pp.entry_SYSCALL_64_after_hwframe
+      0.48 ±  2%      -0.0        0.46            -0.0        0.47 ±  2%      -0.0        0.46        perf-profile.children.cycles-pp.get_futex_key
+     19.34            +0.1       19.49            +0.2       19.57            -0.1       19.24        perf-profile.children.cycles-pp.syscall_return_via_sysret
+      0.00            +0.2        0.18 ±  2%      +0.2        0.18 ±  3%      +0.0        0.00        perf-profile.children.cycles-pp.x64_sys_call
+      9.11            +0.2        9.29            +0.0        9.12            +0.0        9.12        perf-profile.children.cycles-pp.entry_SYSCALL_64
+      8.88            +0.2        9.11            +0.3        9.16            -0.1        8.81        perf-profile.children.cycles-pp.do_futex
+      7.13            +0.2        7.36            +0.3        7.41            -0.1        7.07        perf-profile.children.cycles-pp.__futex_wait
+      8.43            +0.3        8.70            +0.3        8.75            -0.1        8.34        perf-profile.children.cycles-pp.futex_wait
+      1.20            -0.7        0.47            -0.7        0.46 ±  3%      -0.0        1.20 ±  2%  perf-profile.self.cycles-pp.__x64_sys_futex
+      1.46            -0.2        1.27            -0.2        1.26 ±  2%      +0.0        1.48 ±  2%  perf-profile.self.cycles-pp.do_syscall_64
+      0.51            -0.1        0.44            -0.1        0.45 ±  2%      +0.0        0.52        perf-profile.self.cycles-pp.do_futex
+      0.38 ±  5%      -0.1        0.32 ±  4%      -0.1        0.32 ±  5%      +0.0        0.39 ±  7%  perf-profile.self.cycles-pp.syscall_exit_to_user_mode
+      0.48 ±  2%      -0.0        0.45            -0.0        0.45 ±  2%      -0.0        0.46 ±  2%  perf-profile.self.cycles-pp.get_futex_key
+      1.21            +0.0        1.24 ±  2%      +0.0        1.23 ±  3%      -0.0        1.18        perf-profile.self.cycles-pp.futex_wait
+      0.09 ± 14%      +0.0        0.12 ±  8%      +0.0        0.13 ±  6%      +0.0        0.12 ±  5%  perf-profile.self.cycles-pp.syscall_exit_to_user_mode_prepare
+      0.00            +0.1        0.15 ±  2%      +0.2        0.15 ±  3%      +0.0        0.00        perf-profile.self.cycles-pp.x64_sys_call
+      7.97            +0.1        8.12            -0.0        7.95            -0.0        7.96        perf-profile.self.cycles-pp.entry_SYSCALL_64
+     19.28            +0.2       19.44            +0.2       19.53            -0.1       19.21        perf-profile.self.cycles-pp.syscall_return_via_sysret
+     10.43            +0.2       10.60            +0.2       10.59            +0.0       10.46        perf-profile.self.cycles-pp.entry_SYSCALL_64_after_hwframe
+      0.72 ±  3%      +0.2        0.94 ±  3%      +0.2        0.93 ±  4%      +0.0        0.74        perf-profile.self.cycles-pp.__futex_wait
+
+> Also it would be helpful to see the same tests on Cascade/Ice Lake, or
+> some other system for which the 'spectre_v2' sysfs vulnerabilities file
+> shows "BHI: SW loop".  On such a system it shouldn't matter whether my
+> patch is added as it won't disable Linus' syscall change.  But it would
+> be very helpful to see the performance impact of that combination.
+
+The test results on Cascade/Ice Lake are as follows:
+
+Intel Xeon Platinum 8260L (Cascade Lake)
+=========================================================================================
+tbox_group/testcase/rootfs/kconfig/compiler/nr_task/mode/test/cpufreq_governor:
+  lkp-csl-2sp3/will-it-scale/debian-12-x86_64-20240206.cgz/x86_64-rhel-8.3/gcc-13/16/process/futex4/performance
+
+commit:
+  0cd01ac5dcb1 ("x86/bugs: Change commas to semicolons in 'spectre_v2' sysfs file")
+  1e3ad78334a6 ("x86/syscall: Don't force use of indirect calls for system calls")
+  v6.9-rc4
+  v6.9-rc4+v3_patch
+
+    0cd01ac5dcb1                1e3ad78334a6                    v6.9-rc4           v6.9-rc4+v3_patch
+---------------- --------------------------- --------------------------- ---------------------------
+         %stddev     %change         %stddev     %change         %stddev     %change         %stddev
+             \          |                \          |                \          |                \
+   3237910            -0.3%    3229309           -10.1%    2911031           -11.0%    2882769        will-it-scale.per_process_ops
+  51806565            -0.3%   51668961           -10.1%   46576504           -11.0%   46124311        will-it-scale.workload
+      0.02 ±  7%      -6.4%       0.02 ±  3%      -9.5%       0.02 ±  2%      -2.4%       0.02 ± 12%  perf-stat.i.MPKI
+ 4.649e+09           +17.4%  5.459e+09           +76.1%  8.186e+09           +75.4%  8.156e+09        perf-stat.i.branch-instructions
+      0.72            -0.6        0.15 ±  4%      -0.6        0.12            -0.6        0.12 ±  2%  perf-stat.i.branch-miss-rate%
+  34188248           -74.0%    8872232 ±  3%     -69.9%   10285664           -70.0%   10244122        perf-stat.i.branch-misses
+      1.70            -4.2%       1.63            -8.0%       1.56            -8.3%       1.56        perf-stat.i.cpi
+ 3.326e+10            +3.6%  3.444e+10            +9.1%  3.628e+10            +8.2%  3.599e+10        perf-stat.i.instructions
+      0.59            +4.3%       0.61            +8.7%       0.64            +9.0%       0.64        perf-stat.i.ipc
+      0.18 ± 16%     -11.5%       0.16 ± 22%     -33.9%       0.12 ± 46%     -58.6%       0.08 ± 49%  perf-stat.i.major-faults
+      0.02 ±  7%      -6.3%       0.02 ±  4%     -11.0%       0.02 ±  3%      -2.3%       0.02 ± 13%  perf-stat.overall.MPKI
+      0.74            -0.6        0.16 ±  3%      -0.6        0.13            -0.6        0.13        perf-stat.overall.branch-miss-rate%
+      1.70            -4.1%       1.63            -8.0%       1.56            -8.3%       1.56        perf-stat.overall.cpi
+      0.59            +4.3%       0.61            +8.7%       0.64            +9.0%       0.64        perf-stat.overall.ipc
+    193210            +3.9%     200708           +21.4%     234594           +21.5%     234812        perf-stat.overall.path-length
+ 4.633e+09           +17.4%  5.441e+09           +76.1%  8.159e+09           +75.4%  8.129e+09        perf-stat.ps.branch-instructions
+  34084869           -74.0%    8860998 ±  2%     -69.9%   10274305           -70.0%   10220106        perf-stat.ps.branch-misses
+ 3.315e+10            +3.6%  3.433e+10            +9.1%  3.616e+10            +8.2%  3.587e+10        perf-stat.ps.instructions
+      0.18 ± 16%     -11.5%       0.16 ± 22%     -33.8%       0.12 ± 46%     -58.6%       0.08 ± 49%  perf-stat.ps.major-faults
+ 1.001e+13            +3.6%  1.037e+13            +9.2%  1.093e+13            +8.2%  1.083e+13        perf-stat.total.instructions
+     18.55            -0.3       18.23            -1.1       17.45            -1.1       17.46        perf-profile.calltrace.cycles-pp.__x64_sys_futex.do_syscall_64.entry_SYSCALL_64_after_hwframe.syscall
+      1.82            -0.1        1.74            -0.2        1.60            -0.2        1.57        perf-profile.calltrace.cycles-pp.futex_q_unlock.futex_wait_setup.__futex_wait.futex_wait.do_futex
+      3.58            -0.1        3.51            -0.5        3.11            -0.5        3.11        perf-profile.calltrace.cycles-pp.futex_get_value_locked.futex_wait_setup.__futex_wait.futex_wait.do_futex
+     17.39            -0.1       17.32            -1.1       16.32            -1.1       16.30        perf-profile.calltrace.cycles-pp.do_futex.__x64_sys_futex.do_syscall_64.entry_SYSCALL_64_after_hwframe.syscall
+      0.68 ±  2%      -0.0        0.66            -0.1        0.60 ±  2%      -0.1        0.60 ±  2%  perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_safe_stack.syscall
+      2.73            -0.0        2.72            -0.3        2.40            -0.3        2.40        perf-profile.calltrace.cycles-pp.__get_user_nocheck_4.futex_get_value_locked.futex_wait_setup.__futex_wait.futex_wait
+      0.60 ±  2%      +0.0        0.60 ±  2%      -0.0        0.57            -0.0        0.59 ±  2%  perf-profile.calltrace.cycles-pp.hrtimer_interrupt.__sysvec_apic_timer_interrupt.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt.cpuidle_enter_state
+      0.00            +0.0        0.00            +6.3        6.26            +6.2        6.22        perf-profile.calltrace.cycles-pp.clear_bhb_loop.syscall
+      0.61 ±  2%      +0.0        0.61 ±  2%      -0.0        0.58            -0.0        0.60 ±  2%  perf-profile.calltrace.cycles-pp.__sysvec_apic_timer_interrupt.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt.cpuidle_enter_state.cpuidle_enter
+     72.70            +0.0       72.72            +0.1       72.78            +0.1       72.80        perf-profile.calltrace.cycles-pp.syscall
+      1.78            +0.0        1.80            -0.2        1.59            -0.2        1.58        perf-profile.calltrace.cycles-pp._raw_spin_lock.futex_q_lock.futex_wait_setup.__futex_wait.futex_wait
+     16.67            +0.0       16.71            -1.1       15.61            -1.1       15.59        perf-profile.calltrace.cycles-pp.futex_wait.do_futex.__x64_sys_futex.do_syscall_64.entry_SYSCALL_64_after_hwframe
+     20.50            +0.0       20.55            -0.5       20.04            -0.5       20.01        perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.syscall
+     21.76            +0.0       21.81            -0.5       21.22            -0.5       21.24        perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.syscall
+      2.07            +0.1        2.13            -0.2        1.90            -0.2        1.91        perf-profile.calltrace.cycles-pp.futex_hash.futex_q_lock.futex_wait_setup.__futex_wait.futex_wait
+      0.76            +0.1        0.84 ±  3%      -0.0        0.74            -0.0        0.74        perf-profile.calltrace.cycles-pp.syscall_exit_to_user_mode.do_syscall_64.entry_SYSCALL_64_after_hwframe.syscall
+      5.09            +0.1        5.17            -0.5        4.60            -0.5        4.62        perf-profile.calltrace.cycles-pp.futex_q_lock.futex_wait_setup.__futex_wait.futex_wait.do_futex
+      7.85            +0.1        7.94            -0.7        7.10            -0.8        7.07        perf-profile.calltrace.cycles-pp.entry_SYSCALL_64.syscall
+      0.91 ±  2%      +0.1        1.04            +0.0        0.92            +0.0        0.92        perf-profile.calltrace.cycles-pp.get_futex_key.futex_wait_setup.__futex_wait.futex_wait.do_futex
+     39.86            +0.2       40.02            -4.4       35.46            -4.4       35.48        perf-profile.calltrace.cycles-pp.entry_SYSRETQ_unsafe_stack.syscall
+     14.13            +0.2       14.35            -0.9       13.20            -1.0       13.18        perf-profile.calltrace.cycles-pp.__futex_wait.futex_wait.do_futex.__x64_sys_futex.do_syscall_64
+     12.44            +0.3       12.70            -1.1       11.33            -1.1       11.34        perf-profile.calltrace.cycles-pp.futex_wait_setup.__futex_wait.futex_wait.do_futex.__x64_sys_futex
+     18.62            -0.3       18.30            -1.1       17.57            -1.0       17.58        perf-profile.children.cycles-pp.__x64_sys_futex
+     17.59            -0.1       17.46            -1.0       16.54            -1.1       16.52        perf-profile.children.cycles-pp.do_futex
+      1.82            -0.1        1.74            -0.2        1.60            -0.2        1.57        perf-profile.children.cycles-pp.futex_q_unlock
+      3.19            -0.1        3.13            -0.4        2.77            -0.4        2.77        perf-profile.children.cycles-pp.__get_user_nocheck_4
+      0.68 ±  2%      -0.0        0.66            -0.1        0.60 ±  2%      -0.1        0.60 ±  2%  perf-profile.children.cycles-pp.entry_SYSCALL_64_safe_stack
+      3.58            -0.0        3.57            -0.4        3.16            -0.4        3.16        perf-profile.children.cycles-pp.futex_get_value_locked
+      0.80            -0.0        0.79 ±  4%      -0.0        0.76 ±  2%      -0.1        0.75 ±  3%  perf-profile.children.cycles-pp.hrtimer_interrupt
+      0.81            -0.0        0.80 ±  4%      -0.0        0.77 ±  2%      -0.0        0.76 ±  3%  perf-profile.children.cycles-pp.__sysvec_apic_timer_interrupt
+      0.46 ±  2%      -0.0        0.45 ±  5%      -0.0        0.43 ±  2%      -0.0        0.42 ±  4%  perf-profile.children.cycles-pp.tick_nohz_handler
+      0.35            -0.0        0.34            -0.0        0.30 ±  3%      -0.0        0.30 ±  2%  perf-profile.children.cycles-pp.testcase
+      0.66            -0.0        0.65 ±  4%      -0.0        0.62            -0.0        0.62 ±  2%  perf-profile.children.cycles-pp.__hrtimer_run_queues
+      0.38 ±  2%      -0.0        0.38 ±  5%      -0.0        0.36            -0.0        0.35 ±  5%  perf-profile.children.cycles-pp.update_process_times
+      0.14 ±  5%      -0.0        0.14 ±  5%      -0.0        0.12 ±  4%      -0.0        0.12 ±  5%  perf-profile.children.cycles-pp.amd_clear_divider
+      0.00            +0.0        0.00            +6.3        6.32            +6.3        6.29        perf-profile.children.cycles-pp.clear_bhb_loop
+      0.28 ±  6%      +0.0        0.28 ±  4%      -0.0        0.25 ±  3%      -0.0        0.24 ±  2%  perf-profile.children.cycles-pp.syscall_exit_to_user_mode_prepare
+      0.90            +0.0        0.91 ±  3%      -0.1        0.80            -0.1        0.81        perf-profile.children.cycles-pp.syscall_exit_to_user_mode
+      1.88            +0.0        1.90 ±  2%      -0.2        1.69            -0.2        1.68        perf-profile.children.cycles-pp._raw_spin_lock
+      0.17 ±  4%      +0.0        0.20 ±  2%      -0.1        0.12 ±  3%      -0.1        0.12 ±  7%  perf-profile.children.cycles-pp.futex_setup_timer
+     20.64            +0.0       20.69            -0.5       20.18            -0.4       20.21        perf-profile.children.cycles-pp.do_syscall_64
+     21.90            +0.0       21.94            -0.5       21.41            -0.5       21.43        perf-profile.children.cycles-pp.entry_SYSCALL_64_after_hwframe
+      2.07            +0.1        2.13            -0.2        1.90            -0.2        1.91        perf-profile.children.cycles-pp.futex_hash
+      5.13            +0.1        5.20            -0.5        4.64            -0.5        4.64        perf-profile.children.cycles-pp.entry_SYSCALL_64
+     16.84            +0.1       16.91            -1.1       15.73            -1.1       15.71        perf-profile.children.cycles-pp.futex_wait
+      5.30            +0.1        5.37            -0.5        4.79            -0.5        4.80        perf-profile.children.cycles-pp.futex_q_lock
+      0.91 ±  2%      +0.1        1.05            +0.0        0.92            +0.0        0.92        perf-profile.children.cycles-pp.get_futex_key
+     42.79            +0.2       42.98            -4.6       38.15            -4.6       38.18        perf-profile.children.cycles-pp.entry_SYSRETQ_unsafe_stack
+     14.13            +0.2       14.36            -0.9       13.20            -1.0       13.18        perf-profile.children.cycles-pp.__futex_wait
+     12.58            +0.3       12.83            -1.1       11.44            -1.1       11.44        perf-profile.children.cycles-pp.futex_wait_setup
+      0.00            +0.4        0.41 ±  2%      +0.6        0.56 ±  2%      +0.6        0.58 ±  3%  perf-profile.children.cycles-pp.x64_sys_call
+      4.04            -0.3        3.77            -0.7        3.36            -0.7        3.33        perf-profile.self.cycles-pp.syscall
+      1.03 ±  2%      -0.3        0.76 ±  2%      -0.0        1.00            -0.0        1.02        perf-profile.self.cycles-pp.__x64_sys_futex
+      0.88            -0.3        0.62            +0.0        0.91            +0.0        0.91        perf-profile.self.cycles-pp.do_futex
+      2.50            -0.1        2.42            -0.2        2.30            -0.2        2.31        perf-profile.self.cycles-pp.futex_wait
+      1.74            -0.1        1.68            -0.2        1.55            -0.2        1.52        perf-profile.self.cycles-pp.futex_q_unlock
+      3.18            -0.1        3.12            -0.4        2.76            -0.4        2.76        perf-profile.self.cycles-pp.__get_user_nocheck_4
+      0.54            -0.1        0.48 ±  3%      -0.1        0.43            -0.1        0.44 ±  3%  perf-profile.self.cycles-pp.syscall_exit_to_user_mode
+      1.48            -0.0        1.45 ±  2%      +0.2        1.69 ±  2%      +0.2        1.67        perf-profile.self.cycles-pp.__futex_wait
+      0.68 ±  2%      -0.0        0.66            -0.1        0.60 ±  2%      -0.1        0.60 ±  2%  perf-profile.self.cycles-pp.entry_SYSCALL_64_safe_stack
+      0.35            -0.0        0.34            -0.0        0.30 ±  3%      -0.0        0.30 ±  2%  perf-profile.self.cycles-pp.testcase
+      0.00            +0.0        0.00            +6.3        6.26            +6.2        6.22        perf-profile.self.cycles-pp.clear_bhb_loop
+      1.33            +0.0        1.33            -0.1        1.23            -0.1        1.22        perf-profile.self.cycles-pp.entry_SYSCALL_64_after_hwframe
+      1.44            +0.0        1.44            -0.1        1.30            -0.1        1.30        perf-profile.self.cycles-pp.futex_q_lock
+      1.03            +0.0        1.05 ±  2%      +0.2        1.22            +0.3        1.28        perf-profile.self.cycles-pp.do_syscall_64
+      1.80            +0.0        1.84 ±  2%      -0.2        1.62            -0.2        1.62        perf-profile.self.cycles-pp._raw_spin_lock
+      2.42            +0.0        2.46            -0.2        2.19            -0.2        2.20        perf-profile.self.cycles-pp.entry_SYSCALL_64
+      0.38 ±  6%      +0.1        0.44            +0.0        0.38            -0.0        0.38 ±  3%  perf-profile.self.cycles-pp.futex_get_value_locked
+      2.00            +0.1        2.06            -0.2        1.83            -0.2        1.84        perf-profile.self.cycles-pp.futex_hash
+      0.21 ±  6%      +0.1        0.28 ±  4%      +0.0        0.25 ±  3%      +0.0        0.24 ±  2%  perf-profile.self.cycles-pp.syscall_exit_to_user_mode_prepare
+      1.11 ±  3%      +0.1        1.22 ±  3%      -0.0        1.08 ±  2%      -0.0        1.10        perf-profile.self.cycles-pp.futex_wait_setup
+      0.90 ±  2%      +0.1        1.04            +0.0        0.92            +0.0        0.92 ±  2%  perf-profile.self.cycles-pp.get_futex_key
+     42.61            +0.2       42.81            -4.6       38.00            -4.6       38.02        perf-profile.self.cycles-pp.entry_SYSRETQ_unsafe_stack
+      0.00            +0.4        0.41 ±  2%      +0.6        0.55 ±  2%      +0.5        0.52 ±  3%  perf-profile.self.cycles-pp.x64_sys_call
 
 
-Hello,
+Intel Xeon Gold 6346 (Ice Lake)
+=========================================================================================
+tbox_group/testcase/rootfs/kconfig/compiler/nr_task/mode/test/cpufreq_governor:
+  lkp-icl-2sp9/will-it-scale/debian-12-x86_64-20240206.cgz/x86_64-rhel-8.3/gcc-13/16/process/futex4/performance
 
-kernel test robot noticed "BUG:kernel_failed_in_early-boot_stage,last_print=
-k:early_console_in_setup_code" on:
+commit:                                                                                                                   0cd01ac5dcb1 ("x86/bugs: Change commas to semicolons in 'spectre_v2' sysfs file")                                       1e3ad78334a6 ("x86/syscall: Don't force use of indirect calls for system calls")                                        v6.9-rc4                                                                                                                v6.9-rc4+v3_patch
 
-commit: b8de39bd1b76faffe7cd91e148a6d7d9bf4e38f7 ("init: fix allocated page=
- overlapping with PTR_ERR")
-https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+    0cd01ac5dcb1                1e3ad78334a6                    v6.9-rc4           v6.9-rc4+v3_patch
+---------------- --------------------------- --------------------------- ---------------------------
+         %stddev     %change         %stddev     %change         %stddev     %change         %stddev
+             \          |                \          |                \          |                \
+   7907214            -1.8%    7763496           -15.4%    6686457           -15.5%    6678350        will-it-scale.per_process_ops
+ 1.265e+08            -1.8%  1.242e+08           -15.4%   1.07e+08           -15.5%  1.069e+08        will-it-scale.workload
+ 1.112e+10           +16.0%   1.29e+10           +67.3%   1.86e+10           +68.0%  1.868e+10        perf-stat.i.branch-instructions
+      0.06 ±  2%      -0.0        0.06 ±  2%      -0.0        0.05            -0.0        0.05        perf-stat.i.branch-miss-rate%
+   6858604 ±  2%      +0.6%    6900573 ±  2%      +8.4%    7434422            +7.7%    7388238        perf-stat.i.branch-misses
+      0.72            -2.0%       0.71            -2.7%       0.70            -2.7%       0.70        perf-stat.i.cpi
+ 8.004e+10            +2.1%   8.17e+10            +2.8%  8.231e+10            +2.8%  8.232e+10        perf-stat.i.instructions
+      1.38            +2.1%       1.41            +2.8%       1.42            +2.8%       1.42        perf-stat.i.ipc
+      0.06 ±  2%      -0.0        0.05 ±  2%      -0.0        0.04            -0.0        0.04        perf-stat.overall.branch-miss-rate%
+      0.72            -2.0%       0.71            -2.8%       0.70            -2.8%       0.70        perf-stat.overall.cpi
+      1.38            +2.1%       1.41            +2.8%       1.42            +2.8%       1.42        perf-stat.overall.ipc
+    190470            +3.9%     197929           +21.7%     231786           +21.8%     231973        perf-stat.overall.path-length
+ 1.108e+10           +16.0%  1.286e+10           +67.3%  1.854e+10           +68.0%  1.862e+10        perf-stat.ps.branch-instructions
+   6893534 ±  2%      +0.5%    6924998 ±  2%      +8.3%    7462919            +7.5%    7410265        perf-stat.ps.branch-misses
+ 7.978e+10            +2.1%  8.143e+10            +2.8%  8.204e+10            +2.8%  8.205e+10        perf-stat.ps.instructions
+  2.41e+13            +2.0%  2.459e+13            +2.9%   2.48e+13            +2.9%  2.479e+13        perf-stat.total.instructions
+     48.06            -2.8       45.31            -9.9       38.20 ±  3%      -9.1       38.94        perf-profile.calltrace.cycles-pp.__futex_wait.futex_wait.do_futex.__x64_sys_futex.do_syscall_64
+     42.93            -2.5       40.41            -8.8       34.12 ±  4%      -8.1       34.84        perf-profile.calltrace.cycles-pp.futex_wait_setup.__futex_wait.futex_wait.do_futex.__x64_sys_futex
+     56.45            -2.4       54.10           -12.0       44.44           -11.4       45.05        perf-profile.calltrace.cycles-pp.futex_wait.do_futex.__x64_sys_futex.do_syscall_64.entry_SYSCALL_64_after_hwframe
+     58.78            -2.3       56.48           -12.5       46.31           -11.9       46.86        perf-profile.calltrace.cycles-pp.do_futex.__x64_sys_futex.do_syscall_64.entry_SYSCALL_64_after_hwframe.syscall
+     61.14            -2.3       58.86           -12.9       48.20           -12.5       48.67        perf-profile.calltrace.cycles-pp.__x64_sys_futex.do_syscall_64.entry_SYSCALL_64_after_hwframe.syscall
+     71.08            -1.4       69.71           -12.1       58.96           -12.1       58.95        perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.syscall
+     68.07            -1.2       66.88           -11.8       56.28           -11.8       56.26        perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.syscall
+     17.13            -1.1       16.06            -3.8       13.38 ±  7%      -2.9       14.20 ±  5%  perf-profile.calltrace.cycles-pp.futex_q_lock.futex_wait_setup.__futex_wait.futex_wait.do_futex
+    100.03            -0.8       99.22            -1.0       99.01            -1.4       98.60        perf-profile.calltrace.cycles-pp.syscall
+     15.22            -0.8       14.42            -2.7       12.53 ±  5%      -2.7       12.52        perf-profile.calltrace.cycles-pp.futex_get_value_locked.futex_wait_setup.__futex_wait.futex_wait.do_futex
+     12.02            -0.6       11.37            -2.1        9.89 ±  6%      -2.1        9.92        perf-profile.calltrace.cycles-pp.__get_user_nocheck_4.futex_get_value_locked.futex_wait_setup.__futex_wait.futex_wait
+      3.12 ±  9%      -0.5        2.61            -0.9        2.22 ± 10%      -1.0        2.08 ±  7%  perf-profile.calltrace.cycles-pp.syscall_exit_to_user_mode.do_syscall_64.entry_SYSCALL_64_after_hwframe.syscall
+      7.38 ±  2%      -0.4        6.99            -1.9        5.44 ±  5%      -1.6        5.76 ±  5%  perf-profile.calltrace.cycles-pp.futex_hash.futex_q_lock.futex_wait_setup.__futex_wait.futex_wait
+      5.12            -0.3        4.78            -0.9        4.20 ± 10%      -0.6        4.47 ±  5%  perf-profile.calltrace.cycles-pp._raw_spin_lock.futex_q_lock.futex_wait_setup.__futex_wait.futex_wait
+      4.99 ±  2%      -0.3        4.66            -1.0        4.00 ±  5%      -1.2        3.79 ±  6%  perf-profile.calltrace.cycles-pp.futex_q_unlock.futex_wait_setup.__futex_wait.futex_wait.do_futex
+      3.02 ±  3%      -0.2        2.80            -0.9        2.17            -0.8        2.25 ±  3%  perf-profile.calltrace.cycles-pp.get_futex_key.futex_wait_setup.__futex_wait.futex_wait.do_futex
+      1.58 ±  3%      -0.1        1.51            -0.3        1.29 ± 10%      -0.4        1.22 ±  7%  perf-profile.calltrace.cycles-pp.syscall_return_via_sysret.syscall
+      0.94 ±  3%      -0.1        0.87            -0.2        0.75 ±  9%      -0.2        0.70 ±  8%  perf-profile.calltrace.cycles-pp.syscall_exit_to_user_mode_prepare.syscall_exit_to_user_mode.do_syscall_64.entry_SYSCALL_64_after_hwframe.syscall
+      0.69 ±  3%      -0.0        0.65            -0.2        0.47 ± 46%      -0.3        0.36 ± 71%  perf-profile.calltrace.cycles-pp.amd_clear_divider.syscall_exit_to_user_mode.do_syscall_64.entry_SYSCALL_64_after_hwframe.syscall
+      0.68 ±  3%      -0.0        0.66            -0.3        0.38 ± 71%      -0.2        0.45 ± 45%  perf-profile.calltrace.cycles-pp.entry_SYSRETQ_unsafe_stack.syscall
+      0.00            +0.0        0.00           +15.2       15.21 ±  2%     +14.8       14.83        perf-profile.calltrace.cycles-pp.clear_bhb_loop.syscall
+      1.04 ±  2%      +0.1        1.13 ±  2%      -0.1        0.96 ±  3%      -0.0        1.00 ±  5%  perf-profile.calltrace.cycles-pp.testcase
+      1.57            +0.1        1.70            -0.1        1.48 ±  9%      -0.0        1.54 ±  5%  perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_safe_stack.syscall
+      0.00            +1.3        1.29            +1.6        1.62 ±  8%      +1.3        1.34 ±  4%  perf-profile.calltrace.cycles-pp.x64_sys_call.do_syscall_64.entry_SYSCALL_64_after_hwframe.syscall
+     16.18            +1.6       17.80            -0.6       15.63 ±  7%      +0.0       16.22 ±  6%  perf-profile.calltrace.cycles-pp.entry_SYSCALL_64.syscall
+     48.52            -2.8       45.75           -10.0       38.57 ±  2%      -9.2       39.30        perf-profile.children.cycles-pp.__futex_wait
+     44.20            -2.6       41.60            -9.1       35.12 ±  3%      -8.4       35.84        perf-profile.children.cycles-pp.futex_wait_setup
+     57.11            -2.4       54.75           -12.1       44.98           -11.5       45.58        perf-profile.children.cycles-pp.futex_wait
+     59.22            -2.3       56.91           -12.7       46.54           -12.1       47.10        perf-profile.children.cycles-pp.do_futex
+     61.79            -2.3       59.51           -13.0       48.74           -12.6       49.19        perf-profile.children.cycles-pp.__x64_sys_futex
+     69.05            -1.5       67.59           -12.1       56.90           -12.2       56.85        perf-profile.children.cycles-pp.do_syscall_64
+     71.36            -1.4       70.00           -11.9       59.44           -11.9       59.43        perf-profile.children.cycles-pp.entry_SYSCALL_64_after_hwframe
+     17.82            -1.1       16.70            -3.9       13.94 ±  7%      -3.0       14.79 ±  5%  perf-profile.children.cycles-pp.futex_q_lock
+     14.54            -0.8       13.76            -2.6       11.96 ±  5%      -2.6       11.98        perf-profile.children.cycles-pp.futex_get_value_locked
+     13.16            -0.7       12.46            -2.3       10.83 ±  5%      -2.3       10.84        perf-profile.children.cycles-pp.__get_user_nocheck_4
+      3.96 ±  3%      -0.5        3.46            -1.0        2.95 ± 10%      -1.2        2.78 ±  7%  perf-profile.children.cycles-pp.syscall_exit_to_user_mode
+      7.61 ±  2%      -0.4        7.21            -2.0        5.62 ±  4%      -1.6        5.96 ±  5%  perf-profile.children.cycles-pp.futex_hash
+      5.35            -0.4        5.00            -1.0        4.40 ± 10%      -0.7        4.67 ±  5%  perf-profile.children.cycles-pp._raw_spin_lock
+      5.22 ±  2%      -0.3        4.88            -1.0        4.19 ±  5%      -1.3        3.97 ±  6%  perf-profile.children.cycles-pp.futex_q_unlock
+      3.26 ±  3%      -0.2        3.02            -0.9        2.35 ±  2%      -0.8        2.44 ±  3%  perf-profile.children.cycles-pp.get_futex_key
+     98.50            -0.1       98.40            +0.1       98.60            +0.1       98.55        perf-profile.children.cycles-pp.syscall
+      1.81 ±  3%      -0.1        1.73            -0.3        1.47 ± 10%      -0.4        1.40 ±  7%  perf-profile.children.cycles-pp.syscall_return_via_sysret
+      1.17 ±  3%      -0.1        1.09            -0.2        0.94 ±  9%      -0.3        0.87 ±  8%  perf-profile.children.cycles-pp.syscall_exit_to_user_mode_prepare
+      0.93 ±  3%      -0.1        0.86 ±  2%      -0.2        0.73 ± 10%      -0.2        0.70 ±  8%  perf-profile.children.cycles-pp.amd_clear_divider
+      0.16 ±  2%      -0.0        0.15            -0.0        0.15 ±  5%      -0.0        0.15 ±  4%  perf-profile.children.cycles-pp.__sysvec_apic_timer_interrupt
+      0.16 ±  3%      -0.0        0.14 ±  3%      -0.0        0.14 ±  3%      -0.0        0.14 ±  5%  perf-profile.children.cycles-pp.hrtimer_interrupt
+      9.15 ±  2%      -0.0        9.14            -1.5        7.65 ±  7%      -1.6        7.54 ±  3%  perf-profile.children.cycles-pp.entry_SYSRETQ_unsafe_stack
+      0.65 ±  4%      -0.0        0.64            -0.1        0.54 ±  7%      -0.1        0.54 ±  2%  perf-profile.children.cycles-pp.futex_setup_timer
+      0.00            +0.0        0.00           +15.4       15.40 ±  2%     +15.0       15.01        perf-profile.children.cycles-pp.clear_bhb_loop
+      0.62 ±  2%      +0.0        0.66 ±  2%      -0.1        0.56 ±  5%      -0.0        0.58 ±  5%  perf-profile.children.cycles-pp.syscall@plt
+      1.45            +0.1        1.57            -0.1        1.33 ±  2%      -0.1        1.39 ±  5%  perf-profile.children.cycles-pp.testcase
+      1.59            +0.1        1.72            -0.1        1.49 ±  9%      -0.0        1.56 ±  5%  perf-profile.children.cycles-pp.entry_SYSCALL_64_safe_stack
+      9.45            +0.9       10.37            -0.3        9.12 ±  7%      +0.0        9.45 ±  5%  perf-profile.children.cycles-pp.entry_SYSCALL_64
+      0.00            +1.5        1.51            +1.8        1.81 ±  8%      +1.5        1.51 ±  4%  perf-profile.children.cycles-pp.x64_sys_call
+     12.90            -0.7       12.23            -2.3       10.63 ±  5%      -2.3       10.64        perf-profile.self.cycles-pp.__get_user_nocheck_4
+      7.38 ±  2%      -0.4        6.99            -1.9        5.43 ±  5%      -1.6        5.76 ±  5%  perf-profile.self.cycles-pp.futex_hash
+      5.09            -0.4        4.70            -1.0        4.11 ±  8%      -0.7        4.35 ±  6%  perf-profile.self.cycles-pp.futex_q_lock
+      5.11            -0.3        4.78            -0.9        4.21 ± 10%      -0.6        4.47 ±  5%  perf-profile.self.cycles-pp._raw_spin_lock
+      4.86 ±  2%      -0.3        4.54            -0.9        3.92 ±  5%      -1.1        3.71 ±  7%  perf-profile.self.cycles-pp.futex_q_unlock
+      3.68            -0.2        3.45            -0.1        3.62 ±  9%      -0.1        3.56 ±  7%  perf-profile.self.cycles-pp.do_syscall_64
+      3.02 ±  3%      -0.2        2.80            -0.9        2.16 ±  2%      -0.8        2.25 ±  3%  perf-profile.self.cycles-pp.get_futex_key
+      4.33 ±  3%      -0.2        4.14            -0.9        3.45 ±  6%      -0.9        3.45 ±  2%  perf-profile.self.cycles-pp.__futex_wait
+      4.17            -0.2        3.99 ±  3%      -0.9        3.32            -0.9        3.32        perf-profile.self.cycles-pp.futex_wait_setup
+      2.09 ±  3%      -0.2        1.93            -0.4        1.64 ±  9%      -0.5        1.56 ±  7%  perf-profile.self.cycles-pp.syscall_exit_to_user_mode
+      1.39 ±  2%      -0.1        1.29            -0.3        1.13 ±  2%      -0.3        1.12 ±  2%  perf-profile.self.cycles-pp.futex_get_value_locked
+      1.81 ±  3%      -0.1        1.73            -0.3        1.47 ± 10%      -0.4        1.40 ±  7%  perf-profile.self.cycles-pp.syscall_return_via_sysret
+      0.94 ±  3%      -0.1        0.88            -0.2        0.75 ± 10%      -0.2        0.70 ±  8%  perf-profile.self.cycles-pp.syscall_exit_to_user_mode_prepare
+      0.46 ±  2%      -0.0        0.43 ±  2%      -0.1        0.37 ± 11%      -0.1        0.34 ±  6%  perf-profile.self.cycles-pp.amd_clear_divider
+      0.43 ±  4%      +0.0        0.43 ±  2%      -0.1        0.36 ±  7%      -0.1        0.36 ±  2%  perf-profile.self.cycles-pp.futex_setup_timer
+      0.00            +0.0        0.00           +15.2       15.22 ±  2%     +14.8       14.81        perf-profile.self.cycles-pp.clear_bhb_loop
+      8.92 ±  2%      +0.0        8.92            -1.4        7.47 ±  7%      -1.6        7.36 ±  2%  perf-profile.self.cycles-pp.entry_SYSRETQ_unsafe_stack
+      0.20            +0.0        0.22 ±  3%      -0.0        0.18 ±  8%      -0.0        0.20 ±  7%  perf-profile.self.cycles-pp.syscall@plt
+      2.76            +0.0        2.81            -0.4        2.38 ± 10%      -0.5        2.27 ±  7%  perf-profile.self.cycles-pp.__x64_sys_futex
+      1.90 ±  3%      +0.0        1.95            -0.7        1.23 ± 11%      -0.7        1.22 ±  8%  perf-profile.self.cycles-pp.do_futex
+      2.50 ±  2%      +0.1        2.61            +0.1        2.56 ±  8%      +0.1        2.60 ±  4%  perf-profile.self.cycles-pp.entry_SYSCALL_64_after_hwframe
+      1.24            +0.1        1.35 ±  2%      -0.1        1.14 ±  3%      -0.0        1.19 ±  5%  perf-profile.self.cycles-pp.testcase
+      1.59            +0.1        1.72            -0.1        1.49 ±  9%      -0.0        1.56 ±  5%  perf-profile.self.cycles-pp.entry_SYSCALL_64_safe_stack
+      2.72            +0.2        2.94 ±  2%      -0.1        2.61 ±  9%      -0.0        2.69 ±  6%  perf-profile.self.cycles-pp.entry_SYSCALL_64
+      8.15 ±  3%      +0.4        8.56            -2.0        6.18 ± 10%      -2.1        6.04 ±  3%  perf-profile.self.cycles-pp.futex_wait
+     11.95            +1.0       12.92            -1.0       10.97 ±  4%      -0.6       11.35 ±  4%  perf-profile.self.cycles-pp.syscall
+      0.00            +1.3        1.30            +1.6        1.62 ±  8%      +1.3        1.33 ±  4%  perf-profile.self.cycles-pp.x64_sys_call
 
-[test failed on linux-next/master a35e92ef04c07bd473404b9b73d489aea19a60a8]
 
-in testcase: boot
+BTW, we did observe some regressions by running other benchmarks on
+commit 1e3ad78334a6, but these regressions are on Ice Lake, not Skylake.
+Please kindly contact us if you are interested in looking into them.
 
-compiler: gcc-13
-test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+    stress-ng.null.ops_per_sec -4.0% regression on Intel Xeon Gold 6346 (Ice Lake)
+    unixbench.fsbuffer.throughput -1.4% regression on Intel Xeon Gold 6346 (Ice Lake)
 
-(please refer to attached dmesg/kmsg for entire log/backtrace)
+Thanks,
+Yujie
 
-
-+--------------------------------------------------------------------------=
------+------------+------------+
-|                                                                          =
-     | fdb74eb6c7 | b8de39bd1b |
-+--------------------------------------------------------------------------=
------+------------+------------+
-| boot_successes                                                           =
-     | 12         | 0          |
-| boot_failures                                                            =
-     | 0          | 12         |
-| BUG:kernel_failed_in_early-boot_stage,last_printk:early_console_in_setup_=
-code | 0          | 12         |
-+--------------------------------------------------------------------------=
------+------------+------------+
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new versio=
-n of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202404221524.4954a009-oliver.sang@=
-intel.com
-
-
-early console in setup code
-convert early boot stage from hang to failed
-BUG: kernel failed in early-boot stage, last printk: early console in setup=
- code
-Linux version 6.9.0-rc4-00031-gb8de39bd1b76 #1
-Command line: ip=3D::::vm-meta-21::dhcp root=3D/dev/ram0 RESULT_ROOT=3D/res=
-ult/boot/1/vm-snb/yocto-i386-minimal-20190520.cgz/x86_64-randconfig-003-202=
-40419/gcc-13/b8de39bd1b76faffe7cd91e148a6d7d9bf4e38f7/3 BOOT_IMAGE=3D/pkg/l=
-inux/x86_64-randconfig-003-20240419/gcc-13/b8de39bd1b76faffe7cd91e148a6d7d9=
-bf4e38f7/vmlinuz-6.9.0-rc4-00031-gb8de39bd1b76 branch=3Dlinux-next/master j=
-ob=3D/lkp/jobs/scheduled/vm-meta-21/boot-1-yocto-i386-minimal-20190520.cgz-=
-x86_64-randconfig-003-20240419-b8de39bd1b76-20240420-48196-3fymo-3.yaml use=
-r=3Dlkp ARCH=3Dx86_64 kconfig=3Dx86_64-randconfig-003-20240419 commit=3Db8d=
-e39bd1b76faffe7cd91e148a6d7d9bf4e38f7 nmi_watchdog=3D0 intremap=3Dposted_ms=
-i vmalloc=3D256M initramfs_async=3D0 page_owner=3Don max_uptime=3D600 LKP_S=
-ERVER=3Dinternal-lkp-server selinux=3D0 debug apic=3Ddebug sysrq_always_ena=
-bled rcupdate.rcu_cpu_stall_timeout=3D100 net.ifnames=3D0 printk.devkmsg=3D=
-on panic=3D-1 softlockup_panic=3D1 nmi_watchdog=3Dpanic oops=3Dpanic load_r=
-amdisk=3D2 prompt_ramdisk=3D0 drbd.minor_count=3D8 systemd.log_level=3Derr =
-ignore_loglevel console=3Dtty0 earlyprintk=3DttyS0,115200 console=3DttyS0,1=
-15200 vga=3Dnormal rw rcuperf.shutdown=3D0 watchdog_thresh=3D240 audit=3D0
-
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20240422/202404221524.4954a009-oliv=
-er.sang@intel.com
-
-
-
---=20
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
+> 
+> [*] https://lkml.kernel.org/lkml/eda0ec65f4612cc66875aaf76e738643f41fbc01.1713296762.git.jpoimboe@kernel.org
+> 
+> -- 
+> Josh
+> 
