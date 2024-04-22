@@ -1,34 +1,44 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D9E913D297;
-	Mon, 22 Apr 2024 09:20:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97BAA13D623
+	for <oe-lkp@lists.linux.dev>; Mon, 22 Apr 2024 10:18:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713777604; cv=none; b=Oy5WSjBKOhXBj5d7kNr1YKLwoCo9amfoRcgk31b/V8r68AQ5N937amDvcCK2aRgEH62M4MdIrrqWyUuDjCJ4gMogZ0aPBfxlYlkQNxcIAqjH74f3sMbWyAf1gNKeXENBfjyx60AaU8NKU4zYzceNabL63QEaTG6tBZcguZHQrQk=
+	t=1713781093; cv=none; b=N+8TP69cG1ayZ31Sw+c2doQnaUIkmJ/O2kVJ3+ksS1OpYKZkN1tPfy2+VNMfpZP1YsNlUw2ikNhY1mAhXkn9jGY4OEjb0ECtfmcszMLKMjbEVTdDAexj4JsoqoMvinYc0ZeLdGbX1dUR8wy4BC0SwXsB5a6XqzudI10haXjwyCk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713777604; c=relaxed/simple;
-	bh=nZb1WqOKzpgix7JF8C81SkQWvG7tYsydr8OknjFa2/s=;
+	s=arc-20240116; t=1713781093; c=relaxed/simple;
+	bh=5fri6Do1LWefKjpdkdFuwWYG08OOrxumneX2LJURZpM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JAbpt1SHVX5g/wnb3i6EhVeeZbDwL/a+A3thMc+LhBu2VsDOxCuuGkDDfePBJ5CA+LN2i5HM+z6/AsNbcpj/FXB1WJUJZg7lyARmkqcy+eKto159kHG1zpWmtKTtxNsWgZRh/ExpXHVgBCsQ5ItXtMwoXGACWXOlRzCZ1EP/ox0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dnXjpYmU; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=M7WjSJYZQT/ZGRLjYjJjcgc9xnfWTlzX03Am4dCfrCYxoEtVYonDNa/ruYgss91sWjW0XpErRStVzbsPSgcdYdQRhLpairbnX7fgxKdbeDO7A+XHskhKEXQ+h9YCaJYkLxUpOMuI4DM1qXA/J8X+gd32DzOhUUBWOGgIl6D5eWM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=Vz2COdOy; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=g3URnho3; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dnXjpYmU"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA1DEC113CC;
-	Mon, 22 Apr 2024 09:19:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1713777604;
-	bh=nZb1WqOKzpgix7JF8C81SkQWvG7tYsydr8OknjFa2/s=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=dnXjpYmUkjd+sbGilXiYyKMgQijrPvrQxNUMTxQ3sCteoQlQ9gwJrU+mjHtH7VFLF
-	 vI0fWmNdDFGFUTO2uSdbQAgCsgN0TYLHBv4GgxGsDt6Tdjnkf+8BcV5YTK9dKjJi42
-	 xMqJTi+n5IaSYLNCgyWiOBX+FOWNPapwGiYEXWHNQmKNx56SORlAmAAxDM9WAG/8yj
-	 77Z4zt/izUVens3e3PVA4u2ldSvZTEREiEa0FvNE5L4i+Ic8IuJgTuE6mQw4ANKMfT
-	 0h4kVTKQiijNjfUmYt3wyWUFmZ2XZhi6UqafkbOuSAiKbM+MTIgMAhPnIMMXcfw3dd
-	 iRITs0SPZNKOQ==
-Date: Mon, 22 Apr 2024 12:18:46 +0300
-From: Mike Rapoport <rppt@kernel.org>
-To: Nam Cao <namcao@linutronix.de>
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="Vz2COdOy";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="g3URnho3"
+Date: Mon, 22 Apr 2024 12:18:06 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1713781090;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=SEGi5jSmbFvcJ6rHkzMa/iw5xUvXREz8Fj3igLvZIDo=;
+	b=Vz2COdOyzc+1o2jJr+YAgI0Rycu3v4MdsLKfW4ILm+Gd0861D+fGU1NpwDflGutA9bHMiV
+	8R2RkB6JLbkigRAtvztHmQjxGDd5CaSc9Bs2X6Pw6IrwRWOA007Ah5OkHq2Cug/7XxnpR/
+	iSygOCbqsVOryYTogK+YJnRpJIcKWFpC6IpMaqkw31+zFvp1HVLxEJ0IWTw06vt2+g3v9e
+	pTn8bZtFKa+pPTjcGGpIn+u5mMT41jVOBzNaafwE/nVIOtuERIS1VOEHkfNjoY1G3CwCe9
+	tBDBjAikSZaziPbkhPbdHFHMo4wUvU9w5L1FkMzWk8Bw6iYYiL/U+K/WSAq/Iw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1713781090;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=SEGi5jSmbFvcJ6rHkzMa/iw5xUvXREz8Fj3igLvZIDo=;
+	b=g3URnho3e2OuY0PBfqEYJ+v/Dml5TfM0Zc12WW8MjB11O/bwt/LFJImI0ygj8v2X3b7ttV
+	1hIgZ2AXb/KkVwCA==
+From: Nam Cao <namcao@linutronix.de>
+To: Mike Rapoport <rppt@kernel.org>
 Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
 	lkp@intel.com, Linux Memory Management List <linux-mm@kvack.org>,
 	Andrew Morton <akpm@linux-foundation.org>,
@@ -45,9 +55,10 @@ Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
 	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org
 Subject: Re: [linux-next:master] [init]  b8de39bd1b:
  BUG:kernel_failed_in_early-boot_stage,last_printk:early_console_in_setup_code
-Message-ID: <ZiYrdnbw5z1ajeRw@kernel.org>
+Message-ID: <20240422101806.NkNd2Ksz@linutronix.de>
 References: <202404221524.4954a009-oliver.sang@intel.com>
  <20240422082942.B750cniQ@linutronix.de>
+ <ZiYrdnbw5z1ajeRw@kernel.org>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -56,45 +67,25 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240422082942.B750cniQ@linutronix.de>
+In-Reply-To: <ZiYrdnbw5z1ajeRw@kernel.org>
 
-On Mon, Apr 22, 2024 at 10:29:42AM +0200, Nam Cao wrote:
-> On Mon, Apr 22, 2024 at 03:45:00PM +0800, kernel test robot wrote:
-> > kernel test robot noticed "BUG:kernel_failed_in_early-boot_stage,last_printk:early_console_in_setup_code" on:
-> > 
-> > commit: b8de39bd1b76faffe7cd91e148a6d7d9bf4e38f7 ("init: fix allocated page overlapping with PTR_ERR")
-> > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+On Mon, Apr 22, 2024 at 12:18:46PM +0300, Mike Rapoport wrote:
+> The kernel config here has CONFIG_DEBUG_VIRTUAL=y, so __pa translates to
+> __phys_addr() in arch/x86/mm/physaddr.c and __pa(-PAGE_SIZE) triggers
 > 
-> I can reproduce the problem. I rebased this commit onto v6.8.7, I can still
-> observe the problem.
+> 		VIRTUAL_BUG_ON(y >= KERNEL_IMAGE_SIZE);
+
+RISCV also has a similar thing when CONFIG_DEBUG_VIRTUAL=y
+
 > 
-> No immediate idea what is the problem. Backtrace from gdb goes crazy:
+> x86 has __pa_nodebug() that does not do bounds check, but it cannot be used
+> in generic code because no other arch except s390 define it.
 > 
-> (gdb) bt
-> #0  0xffffffffb2074ded in ?? ()
-> #1  0x00000000000000a1 in ?? ()
-> #2  0x00000000000000a1 in ?? ()
-> #3  0x000000007ffff000 in ?? ()
-> #4  0x00000000543ff000 in ?? ()
-> #5  0x0000000000000000 in ?? ()
+> For now I don't have ideas how to make this work in the general case, so
+> probably we should only fix riscv for now.
 
-The kernel config here has CONFIG_DEBUG_VIRTUAL=y, so __pa translates to
-__phys_addr() in arch/x86/mm/physaddr.c and __pa(-PAGE_SIZE) triggers
+Agree, let's just fix riscv for now. This time I will cook up something
+safer, no more __pa() on a potentially invalid address.
 
-		VIRTUAL_BUG_ON(y >= KERNEL_IMAGE_SIZE);
-
-x86 has __pa_nodebug() that does not do bounds check, but it cannot be used
-in generic code because no other arch except s390 define it.
-
-For now I don't have ideas how to make this work in the general case, so
-probably we should only fix riscv for now.
- 
-> @akpm: drop this commit until this is figured out?
-> 
-> Best regards,
-> Nam
-> 
-
--- 
-Sincerely yours,
-Mike.
+Best regards,
+Nam
