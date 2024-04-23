@@ -1,44 +1,93 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C84D1B800;
-	Mon, 22 Apr 2024 21:14:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9AA2135414
+	for <oe-lkp@lists.linux.dev>; Tue, 23 Apr 2024 13:52:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713820443; cv=none; b=pW9FtSJE1aL/jBqA2bicl21gf5fSDfX59t4JKtQQVAlFH8eMFIBr13Nq1OdVSWXZqwZ7ixXiit7SOxzHpc+HkqoiIKKTytbqTJOe/b+pZVxBBS3ll1RndgCKW/LM5Hr47xw52DPrRBKrkkxNPOTZjZpIBw9UxnjfwHDN1IQ6Hes=
+	t=1713880351; cv=none; b=t6iIl307C+jmBOtLgBucIlT3cbMudJ50GBtCblFS5vLsZ6OekfDjRQSmcHBp47tSBptZPSP1t/TvYNbGv233ZvzehKK7s5CvguDsr1FqXIH4++UHyKDeR9ZokxTa6ImSuyAUzV44ZE947Y96zlE2jWzN0/lsHeuYVtvSVt+V5dY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713820443; c=relaxed/simple;
-	bh=M1HU3NcHR+V7z527ipTqnEPQCknH+g/9xmWyg2Vvoxo=;
+	s=arc-20240116; t=1713880351; c=relaxed/simple;
+	bh=S7sUaoldK+ni+3c1FI6B0LC7MkbWSx7hrgafCzLBQh4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WuUNnGjOQe34b9D3iJNDchazh32QRNWa6oXvJyQHNQVsj43+jI3It/zFiGYrOt/BSZWpIf/3aDhWIoE1Iz1Kt4QK6SOhL8UDQaNWqpBTPLsaA/20uwIIIJsYDgOL198aEZRJqWAJdeqeHsM/AS23dUQTbrQKc06tIHth9PI1e+k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lUP6Eqqa; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=X1UJtZvvsmE1BSPocTDzg5/ZLtJybi9l5awT5SVldhlHQRPlfW1eWXHvEnKSuK21WpkDoVk3EsDe5/HjMbO7YFJM+cHBvcJ9ipT3Hd3Y3Uq5Kgviwi0EdmR1Iw/Nx0HxXguPZhz/XEZcWuN9lkKKH0YvWAP6/TQcB6jPsN33ZE8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=rYatyu05; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=kf/COY7l; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=3J4H+zWP; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=mIJh+WXZ; arc=none smtp.client-ip=195.135.223.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lUP6Eqqa"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93D63C113CC;
-	Mon, 22 Apr 2024 21:14:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1713820442;
-	bh=M1HU3NcHR+V7z527ipTqnEPQCknH+g/9xmWyg2Vvoxo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=lUP6EqqaK1g2VTRsK1T8+wMXObCOL4qcohgRtT7xfdxg0ZPQ3okLvY6aQjG+Axx2a
-	 sdu/Nb/rmKjnWlgxiWPeIV/Aex9j/epkHpWHiZ0xkOFL29ALKQBtupIJEXHcKjPMhW
-	 6Vd93m50jJ4TsCcdPwCjvzb7KVXQko3lVw5R6LwIOONumz66JgMTrzxkOrKzBLs4tJ
-	 23GczIIrRxxrQdH9+iuEosODnmKoGlr5OY1+JByV0EP7axXc3TKO1+cu7xu4jb+vyS
-	 YoUEmvZ+YsclHJzNbaafbuS3yst20O12uhbSzwgLHa9+4kzyDMDKFUxE6TDZzv2CgF
-	 GXir3b+q1eiPQ==
-Date: Mon, 22 Apr 2024 14:14:01 -0700
-From: Eric Biggers <ebiggers@kernel.org>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	Karel Balej <balejk@matfyz.cz>,
-	Dimitri John Ledkov <dimitri.ledkov@canonical.com>,
-	keyrings@vger.kernel.org, linux-crypto@vger.kernel.org,
-	linux-modules@vger.kernel.org
-Subject: Re: [linus:master] [crypto]  203a6763ab:
- Kernel_panic-not_syncing:Certs_selftest#:pkcs7_verify()=
-Message-ID: <20240422211401.GA164618@sol.localdomain>
-References: <202404221528.51d75177-lkp@intel.com>
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="rYatyu05";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="kf/COY7l";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="3J4H+zWP";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="mIJh+WXZ"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id B9A0F5FFDE;
+	Tue, 23 Apr 2024 13:52:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1713880348;
+	h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+	 cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=S7sUaoldK+ni+3c1FI6B0LC7MkbWSx7hrgafCzLBQh4=;
+	b=rYatyu05UZ5WqfVfLxuNOAWMy4W+PCssPHr/5n3oIhVfFL64DgPd0Ay5HoUsqmLklmASk0
+	8OoIuI8PnoWMfndsKm+RSUwVdQepQ49bCZ8MsoVBChreIEihIkL+k7BkuVrC0WLyJcDv/2
+	PYh1rQcPsG4G/8bH57kDhgo00wpDexw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1713880348;
+	h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+	 cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=S7sUaoldK+ni+3c1FI6B0LC7MkbWSx7hrgafCzLBQh4=;
+	b=kf/COY7lXjOGh1SP1uOSoH0J1Gjot3A704KY9ffiUAs2Q9LT1OtQP/LLG8z1DQ/KUbcggf
+	k+kB89sdmk6QyhBQ==
+Authentication-Results: smtp-out2.suse.de;
+	dkim=pass header.d=suse.cz header.s=susede2_rsa header.b=3J4H+zWP;
+	dkim=pass header.d=suse.cz header.s=susede2_ed25519 header.b=mIJh+WXZ
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1713880346;
+	h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+	 cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=S7sUaoldK+ni+3c1FI6B0LC7MkbWSx7hrgafCzLBQh4=;
+	b=3J4H+zWPsS0SxnmdTAdUwVpRt8QPEJyJ3CMqNJgNI9RTJl+zewqgIwzP0gHnvwZ/Ber77Q
+	DjASXm6+Bth5b2VEPuO60a++OL/FD0xz5gMhozkpx3TvLat9EZZ8GZUzaei6kCoXPaeQbc
+	LeWLXi8D2X69TJy6tz6Rwhn3J4zHpsI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1713880346;
+	h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+	 cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=S7sUaoldK+ni+3c1FI6B0LC7MkbWSx7hrgafCzLBQh4=;
+	b=mIJh+WXZjqUkXb04mduTycZiYg5xS5Z83Im/3aErIrKZzpAtF4UHO+ifGdWuor8OvXfQGn
+	sDHMfHO6sAdNH/DA==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 7BF7013929;
+	Tue, 23 Apr 2024 13:52:26 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([10.150.64.162])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id 1BinHRq9J2aecAAAD6G6ig
+	(envelope-from <pvorel@suse.cz>); Tue, 23 Apr 2024 13:52:26 +0000
+Date: Tue, 23 Apr 2024 15:52:25 +0200
+From: Petr Vorel <pvorel@suse.cz>
+To: Christian Brauner <brauner@kernel.org>
+Cc: Cyril Hrubis <chrubis@suse.cz>, lkp@intel.com,
+	linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+	kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+	ltp@lists.linux.it, linux-mm@kvack.org,
+	"Matthew Wilcox (Oracle)" <willy@infradead.org>,
+	Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [LTP] [linus:master] [pidfd]  cb12fd8e0d: ltp.readahead01.fail
+Message-ID: <20240423135225.GA195737@pevik>
+Reply-To: Petr Vorel <pvorel@suse.cz>
+References: <202403151507.5540b773-oliver.sang@intel.com>
+ <20240315-neufahrzeuge-kennt-317f2a903605@brauner>
+ <ZfRf36u7CH7bIEZ7@yuki>
+ <20240318-fegen-bezaubern-57b0a9c6f78b@brauner>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -47,14 +96,55 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202404221528.51d75177-lkp@intel.com>
+In-Reply-To: <20240318-fegen-bezaubern-57b0a9c6f78b@brauner>
+X-Spam-Level: 
+X-Spamd-Result: default: False [-3.68 / 50.00];
+	BAYES_HAM(-2.97)[99.85%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	MID_RHS_NOT_FQDN(0.50)[];
+	HAS_REPLYTO(0.30)[pvorel@suse.cz];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	MIME_GOOD(-0.10)[text/plain];
+	MX_GOOD(-0.01)[];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	TO_DN_SOME(0.00)[];
+	MISSING_XM_UA(0.00)[];
+	ARC_NA(0.00)[];
+	FUZZY_BLOCKED(0.00)[rspamd.com];
+	REPLYTO_EQ_FROM(0.00)[];
+	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	RCPT_COUNT_SEVEN(0.00)[11];
+	RCVD_TLS_ALL(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.cz:dkim,suse.cz:replyto,imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns];
+	RCVD_COUNT_TWO(0.00)[2];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	DKIM_TRACE(0.00)[suse.cz:+]
+X-Rspamd-Action: no action
+X-Rspamd-Queue-Id: B9A0F5FFDE
+X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
+X-Spam-Flag: NO
+X-Spam-Score: -3.68
 
-On Mon, Apr 22, 2024 at 04:05:34PM +0800, kernel test robot wrote:
-> [  235.998172][    T1] Kernel panic - not syncing: Certs selftest 0: pkcs7_verify() = -65
+Hi,
 
-Thanks!  The problem is that CONFIG_FIPS_SIGNATURE_SELFTEST is missing
-dependencies on the algorithms it uses.
-https://lore.kernel.org/r/20240422211041.322370-1-ebiggers@kernel.org fixes
-this.
+> On Fri, Mar 15, 2024 at 03:49:03PM +0100, Cyril Hrubis wrote:
+> > Hi!
+> > > So I'd just remove that test. It's meaningless for pseudo fses.
 
-- Eric
+> > Wouldn't it make more sense to actually return EINVAL instead of
+> > ignoring the request if readahead() is not implemented?
+
+> It would change the return value for a whole bunch of stuff. I'm not
+> sure that wouldn't cause regressions but is in any case a question for
+> the readahead maintainers. For now I'd just remove that test for pidfds
+> imho.
+
+@Matthew, any input on Cyril's question please?
+
+Kind regards,
+Petr
