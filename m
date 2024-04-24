@@ -1,150 +1,148 @@
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out30-119.freemail.mail.aliyun.com (out30-119.freemail.mail.aliyun.com [115.124.30.119])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9AA2135414
-	for <oe-lkp@lists.linux.dev>; Tue, 23 Apr 2024 13:52:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68EAF85C46;
+	Wed, 24 Apr 2024 03:23:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.119
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713880351; cv=none; b=t6iIl307C+jmBOtLgBucIlT3cbMudJ50GBtCblFS5vLsZ6OekfDjRQSmcHBp47tSBptZPSP1t/TvYNbGv233ZvzehKK7s5CvguDsr1FqXIH4++UHyKDeR9ZokxTa6ImSuyAUzV44ZE947Y96zlE2jWzN0/lsHeuYVtvSVt+V5dY=
+	t=1713929039; cv=none; b=QJrhXItTe5WCzeVWObJsN0ZnvR7OlUX8cVbHkF1TEsmWecVWkpoLAI7IkPLPtA7XcpiP0PoRlwaM48rwdauSd4g+NuExO0Ku6SkbSmnCYJZHZaFsc1rqLgw/mq7JeYt3Ow/TUVRl/AvIfWprXLx69vFwnNLYp3+db+a1Pd/WJTo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713880351; c=relaxed/simple;
-	bh=S7sUaoldK+ni+3c1FI6B0LC7MkbWSx7hrgafCzLBQh4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=X1UJtZvvsmE1BSPocTDzg5/ZLtJybi9l5awT5SVldhlHQRPlfW1eWXHvEnKSuK21WpkDoVk3EsDe5/HjMbO7YFJM+cHBvcJ9ipT3Hd3Y3Uq5Kgviwi0EdmR1Iw/Nx0HxXguPZhz/XEZcWuN9lkKKH0YvWAP6/TQcB6jPsN33ZE8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=rYatyu05; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=kf/COY7l; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=3J4H+zWP; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=mIJh+WXZ; arc=none smtp.client-ip=195.135.223.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+	s=arc-20240116; t=1713929039; c=relaxed/simple;
+	bh=2ilosTxuAhCUG2qY58ePq0iv0kOfTTUijwPy3GQzft4=;
+	h=Message-ID:Subject:Date:From:To:Cc:References:In-Reply-To; b=Vs6Gv3yZw9Kpjyy7FPV4DRzT9XUUj1CFUqtQbjOMWbTeTHa1pVpgQ3YMz+IDPk+WcE6A3gvqprF4JVikKMwK/qjn4UbbvYNBFs4TkMspw4/tRUfWg/XQcLlNEiW7o+AkFqEvczghLkvHY4aj1m2bpabOiBKWZPI+YkAbpIcQgJc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=U9xwLpBk; arc=none smtp.client-ip=115.124.30.119
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="rYatyu05";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="kf/COY7l";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="3J4H+zWP";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="mIJh+WXZ"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out2.suse.de (Postfix) with ESMTPS id B9A0F5FFDE;
-	Tue, 23 Apr 2024 13:52:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1713880348;
-	h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-	 cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=S7sUaoldK+ni+3c1FI6B0LC7MkbWSx7hrgafCzLBQh4=;
-	b=rYatyu05UZ5WqfVfLxuNOAWMy4W+PCssPHr/5n3oIhVfFL64DgPd0Ay5HoUsqmLklmASk0
-	8OoIuI8PnoWMfndsKm+RSUwVdQepQ49bCZ8MsoVBChreIEihIkL+k7BkuVrC0WLyJcDv/2
-	PYh1rQcPsG4G/8bH57kDhgo00wpDexw=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1713880348;
-	h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-	 cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=S7sUaoldK+ni+3c1FI6B0LC7MkbWSx7hrgafCzLBQh4=;
-	b=kf/COY7lXjOGh1SP1uOSoH0J1Gjot3A704KY9ffiUAs2Q9LT1OtQP/LLG8z1DQ/KUbcggf
-	k+kB89sdmk6QyhBQ==
-Authentication-Results: smtp-out2.suse.de;
-	dkim=pass header.d=suse.cz header.s=susede2_rsa header.b=3J4H+zWP;
-	dkim=pass header.d=suse.cz header.s=susede2_ed25519 header.b=mIJh+WXZ
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1713880346;
-	h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-	 cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=S7sUaoldK+ni+3c1FI6B0LC7MkbWSx7hrgafCzLBQh4=;
-	b=3J4H+zWPsS0SxnmdTAdUwVpRt8QPEJyJ3CMqNJgNI9RTJl+zewqgIwzP0gHnvwZ/Ber77Q
-	DjASXm6+Bth5b2VEPuO60a++OL/FD0xz5gMhozkpx3TvLat9EZZ8GZUzaei6kCoXPaeQbc
-	LeWLXi8D2X69TJy6tz6Rwhn3J4zHpsI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1713880346;
-	h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-	 cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=S7sUaoldK+ni+3c1FI6B0LC7MkbWSx7hrgafCzLBQh4=;
-	b=mIJh+WXZjqUkXb04mduTycZiYg5xS5Z83Im/3aErIrKZzpAtF4UHO+ifGdWuor8OvXfQGn
-	sDHMfHO6sAdNH/DA==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 7BF7013929;
-	Tue, 23 Apr 2024 13:52:26 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([10.150.64.162])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id 1BinHRq9J2aecAAAD6G6ig
-	(envelope-from <pvorel@suse.cz>); Tue, 23 Apr 2024 13:52:26 +0000
-Date: Tue, 23 Apr 2024 15:52:25 +0200
-From: Petr Vorel <pvorel@suse.cz>
-To: Christian Brauner <brauner@kernel.org>
-Cc: Cyril Hrubis <chrubis@suse.cz>, lkp@intel.com,
-	linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-	kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
-	ltp@lists.linux.it, linux-mm@kvack.org,
-	"Matthew Wilcox (Oracle)" <willy@infradead.org>,
-	Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [LTP] [linus:master] [pidfd]  cb12fd8e0d: ltp.readahead01.fail
-Message-ID: <20240423135225.GA195737@pevik>
-Reply-To: Petr Vorel <pvorel@suse.cz>
-References: <202403151507.5540b773-oliver.sang@intel.com>
- <20240315-neufahrzeuge-kennt-317f2a903605@brauner>
- <ZfRf36u7CH7bIEZ7@yuki>
- <20240318-fegen-bezaubern-57b0a9c6f78b@brauner>
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="U9xwLpBk"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1713929035; h=Message-ID:Subject:Date:From:To;
+	bh=TUh+RkRklYBJ+mkvjkcUkywnqg3ifKSp6udIGGXSugo=;
+	b=U9xwLpBkODOtpfajSsuyTw1YcoVaOUpzjNlctdJ3l/DxOZ4YjkV8hyeRcV5D3I9T9iDjpDRzzpgfTAe6dnGWpwFLVG9S2bzm3hIuiUWkXbm+vw2VdaG3kEMEPgERziurc58JdB/+okqM55nnGCQHMCnpjc2mOnu1+dDKdPskkiA=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037067111;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=28;SR=0;TI=SMTPD_---0W5Alh-O_1713929031;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0W5Alh-O_1713929031)
+          by smtp.aliyun-inc.com;
+          Wed, 24 Apr 2024 11:23:52 +0800
+Message-ID: <1713928975.976684-5-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH vhost v8 6/6] virtio_ring: simplify the parameters of the funcs related to vring_create/new_virtqueue()
+Date: Wed, 24 Apr 2024 11:22:55 +0800
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: <oe-lkp@lists.linux.dev>,
+ <lkp@intel.com>,
+ =?utf-8?q?IlpoJ=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Jason Wang <jasowang@redhat.com>,
+ <virtualization@lists.linux.dev>,
+ Richard Weinberger <richard@nod.at>,
+ Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+ Johannes Berg <johannes@sipsolutions.net>,
+ Hans de Goede <hdegoede@redhat.com>,
+ Vadim Pasternak <vadimp@nvidia.com>,
+ Bjorn Andersson <andersson@kernel.org>,
+ Mathieu Poirier <mathieu.poirier@linaro.org>,
+ Cornelia Huck <cohuck@redhat.com>,
+ Halil Pasic <pasic@linux.ibm.com>,
+ Eric Farman <farman@linux.ibm.com>,
+ Heiko Carstens <hca@linux.ibm.com>,
+ Vasily Gorbik <gor@linux.ibm.com>,
+ Alexander Gordeev <agordeev@linux.ibm.com>,
+ Christian Borntraeger <borntraeger@linux.ibm.com>,
+ Sven Schnelle <svens@linux.ibm.com>,
+ "Michael S. Tsirkin" <mst@redhat.com>,
+ David Hildenbrand <david@redhat.com>,
+ <linux-um@lists.infradead.org>,
+ <platform-driver-x86@vger.kernel.org>,
+ <linux-remoteproc@vger.kernel.org>,
+ <linux-s390@vger.kernel.org>,
+ <kvm@vger.kernel.org>,
+ <oliver.sang@intel.com>
+References: <20240411023528.10914-1-xuanzhuo@linux.alibaba.com>
+ <20240411023528.10914-7-xuanzhuo@linux.alibaba.com>
+ <202404221626.b938f1d6-oliver.sang@intel.com>
+In-Reply-To: <202404221626.b938f1d6-oliver.sang@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240318-fegen-bezaubern-57b0a9c6f78b@brauner>
-X-Spam-Level: 
-X-Spamd-Result: default: False [-3.68 / 50.00];
-	BAYES_HAM(-2.97)[99.85%];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	MID_RHS_NOT_FQDN(0.50)[];
-	HAS_REPLYTO(0.30)[pvorel@suse.cz];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	MIME_GOOD(-0.10)[text/plain];
-	MX_GOOD(-0.01)[];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	MIME_TRACE(0.00)[0:+];
-	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	TO_DN_SOME(0.00)[];
-	MISSING_XM_UA(0.00)[];
-	ARC_NA(0.00)[];
-	FUZZY_BLOCKED(0.00)[rspamd.com];
-	REPLYTO_EQ_FROM(0.00)[];
-	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	FROM_EQ_ENVFROM(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	RCPT_COUNT_SEVEN(0.00)[11];
-	RCVD_TLS_ALL(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.cz:dkim,suse.cz:replyto,imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns];
-	RCVD_COUNT_TWO(0.00)[2];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	DKIM_TRACE(0.00)[suse.cz:+]
-X-Rspamd-Action: no action
-X-Rspamd-Queue-Id: B9A0F5FFDE
-X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
-X-Spam-Flag: NO
-X-Spam-Score: -3.68
 
-Hi,
+On Mon, 22 Apr 2024 22:26:23 +0800, kernel test robot <oliver.sang@intel.com> wrote:
+>
+>
+> Hello,
+>
+> kernel test robot noticed "BUG:kernel_reboot-without-warning_in_boot_stage" on:
+>
+> commit: fce2775b7bb39424d5ed656612a1d83fd265b670 ("[PATCH vhost v8 6/6] virtio_ring: simplify the parameters of the funcs related to vring_create/new_virtqueue()")
+> url: https://github.com/intel-lab-lkp/linux/commits/Xuan-Zhuo/virtio_balloon-remove-the-dependence-where-names-is-null/20240411-103822
+> base: git://git.kernel.org/cgit/linux/kernel/git/remoteproc/linux.git rproc-next
+> patch link: https://lore.kernel.org/all/20240411023528.10914-7-xuanzhuo@linux.alibaba.com/
+> patch subject: [PATCH vhost v8 6/6] virtio_ring: simplify the parameters of the funcs related to vring_create/new_virtqueue()
+>
+> in testcase: boot
+>
+> compiler: gcc-13
+> test machine: qemu-system-riscv64 -machine virt -device virtio-net-device,netdev=net0 -netdev user,id=net0 -smp 2 -m 16G
+>
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+>
+>
+> +-------------------------------------------------+------------+------------+
+> |                                                 | 3235a471eb | fce2775b7b |
+> +-------------------------------------------------+------------+------------+
+> | boot_successes                                  | 30         | 2          |
+> | boot_failures                                   | 0          | 28         |
+> | BUG:kernel_reboot-without-warning_in_boot_stage | 0          | 28         |
+> +-------------------------------------------------+------------+------------+
+>
+>
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202404221626.b938f1d6-oliver.sang@intel.com
+>
+>
+> Boot HART PMP Granularity : 4
+> Boot HART PMP Address Bits: 54
+> Boot HART MHPM Count      : 16
+> Boot HART MIDELEG         : 0x0000000000001666
+> Boot HART MEDELEG         : 0x0000000000f0b509
+> BUG: kernel reboot-without-warning in boot stage
+> Linux version  #
+> Command line: ip=::::vm-meta-11::dhcp root=/dev/ram0 RESULT_ROOT=/result/boot/1/vm-snb-riscv64/debian-13-riscv64-20240310.cgz/riscv-defconfig/gcc-13/fce2775b7bb39424d5ed656612a1d83fd265b670/6 BOOT_IMAGE=/pkg/linux/riscv-defconfig/gcc-13/fce2775b7bb39424d5ed656612a1d83fd265b670/vmlinuz-6.9.0-rc1-00009-gfce2775b7bb3 branch=linux-review/Xuan-Zhuo/virtio_balloon-remove-the-dependence-where-names-is-null/20240411-103822 job=/lkp/jobs/scheduled/vm-meta-11/boot-1-debian-13-riscv64-20240310.cgz-fce2775b7bb3-20240417-37917-x2hsv1-16.yaml user=lkp ARCH=riscv kconfig=riscv-defconfig commit=fce2775b7bb39424d5ed656612a1d83fd265b670 nmi_watchdog=0 intremap=posted_msi vmalloc=256M initramfs_async=0 page_owner=on max_uptime=600 LKP_SERVER=internal-lkp-server selinux=0 debug apic=debug sysrq_always_enabled rcupdate.rcu_cpu_stall_timeout=100 net.ifnames=0 printk.devkmsg=on panic=-1 softlockup_panic=1 nmi_watchdog=panic oops=panic load_ramdisk=2 prompt_ramdisk=0 drbd.minor_count=8 systemd.log_level=err ignore_loglevel console=tty0 earlyprintk=ttyS0,115200 console=ttyS0,115200 vga=normal rw rcuperf.shutdown=0 watchdog_thresh=240 audit=0
 
-> On Fri, Mar 15, 2024 at 03:49:03PM +0100, Cyril Hrubis wrote:
-> > Hi!
-> > > So I'd just remove that test. It's meaningless for pseudo fses.
 
-> > Wouldn't it make more sense to actually return EINVAL instead of
-> > ignoring the request if readahead() is not implemented?
+cmd: ~/lkp-tests/bin/lkp qemu -k build_dir/arch/riscv/boot/Image  -m modules.cgz job-script
 
-> It would change the return value for a whole bunch of stuff. I'm not
-> sure that wouldn't cause regressions but is in any case a question for
-> the readahead maintainers. For now I'd just remove that test for pidfds
-> imho.
+Boot HART ID              : 1
+Boot HART Domain          : root
+Boot HART Priv Version    : v1.12
+Boot HART Base ISA        : rv64imafdch
+Boot HART ISA Extensions  : time,sstc
+Boot HART PMP Count       : 16
+Boot HART PMP Granularity : 4
+Boot HART PMP Address Bits: 54
+Boot HART MHPM Count      : 16
+Boot HART MIDELEG         : 0x0000000000001666
+Boot HART MEDELEG         : 0x0000000000f0b509
 
-@Matthew, any input on Cyril's question please?
+I do not encounter this problem.
+Do I miss something?
 
-Kind regards,
-Petr
+Thanks.
+
+
+
+>
+>
+>
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20240422/202404221626.b938f1d6-oliver.sang@intel.com
+>
+>
+>
+> --
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
+>
