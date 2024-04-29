@@ -1,169 +1,128 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0EDD014AB0
-	for <oe-lkp@lists.linux.dev>; Mon, 29 Apr 2024 07:53:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1082C2030B
+	for <oe-lkp@lists.linux.dev>; Mon, 29 Apr 2024 09:26:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714377241; cv=none; b=EAUJQITDfnt8Qgcsy9ljgR/Cq2d1E6LDngteK54U4/eOlehxobIo5Lf8guvkEWYSi5iae7rQytHGuAzjMlVn1N/2y5AQLmCFF5uKNSCM/2KADhxS/AgOqnpWef58dyAEJoNba99PHm/rxCg/8vVHA7XbUATnJiQLf8rz1vJeUWg=
+	t=1714382786; cv=none; b=cpsFDlz4Lc7Ae6mhXW8poFILVK4YImyGmpszCynxidcTqBXznOFXJPPfYRyVftWLDdZvIBt6o8+dCxGOJnhIJnQ8DeIkkbYQZHDMliMedsuqXPwrXqO3Kr1soKjKbWHgSYSRxWDfKUwhygUgnU8onaN4KiQDSdLp28sS50oaaTU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714377241; c=relaxed/simple;
-	bh=qhwQtw+U1S4uCs55SmoK0dXjELgfVw8THmXycVX7OQg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=mecKPps6nvcyT0DPV0OFLj7XS51jf4Bw0cwPv1Y/+n09XS0YGinQokR4Zgc9fo4aod2dGfAvR3Z1vLVx1Uk6+cM9P2MiSflVWhSV2qSRZH13HnpuQifMVGLAqzakSV22fjUks2YEIeCuUAGdtKyUctvKfSELfwA+JCV2GAZxuoY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 47A502F4;
-	Mon, 29 Apr 2024 00:54:25 -0700 (PDT)
-Received: from [10.57.65.146] (unknown [10.57.65.146])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EE3473F73F;
-	Mon, 29 Apr 2024 00:53:55 -0700 (PDT)
-Message-ID: <3aba1a1d-8ebc-4ee0-9caf-d9baae586db7@arm.com>
-Date: Mon, 29 Apr 2024 08:53:54 +0100
+	s=arc-20240116; t=1714382786; c=relaxed/simple;
+	bh=SLVI6Etnc8zMjR1e/ICye9g8Ys1rXumPjVBxuNJ2eEI=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=dMRkNK9J720YKzETtodvZxIc4v1D+6uGzGcN1Rf9rf6zrTmyBaFHfRjYprbJm40JkdhCmfxQOwI215JpsOsZQe+RZAVdXcj076O026nNvJdle5PGz3zJ8vjh3SsALuTGVnS6BlNDPt4x20YAw49kHdRK2DAKs87i4Kgb5vl85i0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=KC3k+dj/; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=H965Peh0; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="KC3k+dj/";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="H965Peh0"
+From: Anna-Maria Behnsen <anna-maria@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1714382783;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=i1GXw1gO6D6nnmB5gtcPpIclvYTx4k8uaGgwcw1GQyI=;
+	b=KC3k+dj/b6aD0OV3B1ZT5L7VLTsrPP4SGcFONuCT/FqFeVqbSNpeC/8g6tbaHE3KAi0SCr
+	gDi96Sl3LqPVhUtN+3WOm2mRJ81cei++NgydMeiUeuotebnQ76qtc9rhaxyU6bKFPlGSe5
+	xCUz7Z5wWje8lX4mwYxS10/QQCGdPrMzVipxxRY3mLksJvIXevEeRl0SuO4wIvqM9d/8oX
+	Wvgsey+KELYBIrINzYybeDcXrM6WVvhOVdhA0/wXcWxhhZbO/dftAf1YJhM8ITW+VVXaB6
+	MQYHf0nXViozVYrWMZy7v3WGL9XZikmcuEVHigDBaCjtYWOdlnZazjlDLabNpQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1714382783;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=i1GXw1gO6D6nnmB5gtcPpIclvYTx4k8uaGgwcw1GQyI=;
+	b=H965Peh0WaXP3WFUroR+JUhgjaFxfYKtKSkheRGeuailliv31YsC89trAD+ZOfxUxYlxkZ
+	5+mvcfkMciDVzpCA==
+To: Lukasz Luba <lukasz.luba@arm.com>, "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: Oliver Sang <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+ lkp@intel.com, linux-kernel@vger.kernel.org, Thomas Gleixner
+ <tglx@linutronix.de>, ying.huang@intel.com, feng.tang@intel.com,
+ fengwei.yin@intel.com, Frederic Weisbecker <frederic@kernel.org>, Daniel
+ Lezcano <daniel.lezcano@linaro.org>, linux-pm@vger.kernel.org
+Subject: Re: [linus:master] [timers] 7ee9887703:
+ stress-ng.uprobe.ops_per_sec -17.1% regression
+In-Reply-To: <3aba1a1d-8ebc-4ee0-9caf-d9baae586db7@arm.com>
+References: <Zgtjdd0C2FzYVBto@xsang-OptiPlex-9020> <87zfth3l6y.fsf@somnus>
+ <CAJZ5v0g_GKF8-QK5UdFCpJapf+MK7EouQ7hMTVtPYRjNNyUt+g@mail.gmail.com>
+ <3aba1a1d-8ebc-4ee0-9caf-d9baae586db7@arm.com>
+Date: Mon, 29 Apr 2024 11:26:22 +0200
+Message-ID: <87zftcy0xt.fsf@somnus>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [linus:master] [timers] 7ee9887703: stress-ng.uprobe.ops_per_sec
- -17.1% regression
-To: "Rafael J. Wysocki" <rafael@kernel.org>,
- Anna-Maria Behnsen <anna-maria@linutronix.de>
-Cc: Oliver Sang <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
- lkp@intel.com, linux-kernel@vger.kernel.org,
- Thomas Gleixner <tglx@linutronix.de>, ying.huang@intel.com,
- feng.tang@intel.com, fengwei.yin@intel.com,
- Frederic Weisbecker <frederic@kernel.org>,
- Daniel Lezcano <daniel.lezcano@linaro.org>, linux-pm@vger.kernel.org
-References: <Zgtjdd0C2FzYVBto@xsang-OptiPlex-9020> <87zfth3l6y.fsf@somnus>
- <CAJZ5v0g_GKF8-QK5UdFCpJapf+MK7EouQ7hMTVtPYRjNNyUt+g@mail.gmail.com>
-Content-Language: en-US
-From: Lukasz Luba <lukasz.luba@arm.com>
-In-Reply-To: <CAJZ5v0g_GKF8-QK5UdFCpJapf+MK7EouQ7hMTVtPYRjNNyUt+g@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Hi,
+
+Lukasz Luba <lukasz.luba@arm.com> writes:
+> On 4/26/24 17:03, Rafael J. Wysocki wrote:
+>> On Thu, Apr 25, 2024 at 10:23=E2=80=AFAM Anna-Maria Behnsen
+>> <anna-maria@linutronix.de> wrote:
+
+[...]
+
+>>> So my assumption here is, that cpuidle governors assume that a deeper
+>>> idle state could be choosen and selecting the deeper idle state makes an
+>>> overhead when returning from idle. But I have to notice here, that I'm
+>>> still not familiar with cpuidle internals... So I would be happy about
+>>> some hints how I can debug/trace cpuidle internals to falsify or verify
+>>> this assumption.
+>>=20
+>> You can look at the "usage" and "time" numbers for idle states in
+>>=20
+>> /sys/devices/system/cpu/cpu*/cpuidle/state*/
+>>=20
+>> The "usage" value is the number of times the governor has selected the
+>> given state and the "time" is the total idle time after requesting the
+>> given state (ie. the sum of time intervals between selecting that
+>> state by the governor and wakeup from it).
+>>=20
+>> If "usage" decreases for deeper (higher number) idle states relative
+>> to its value for shallower (lower number) idle states after applying
+>> the test patch, that will indicate that the theory is valid.
+>
+> I agree with Rafael here, this is the first thing to check, those
+> statistics. Then, when you see difference in those stats in baseline
+> vs. patched version, we can analyze the internal gov decisions
+> with help of tracing.
+>
+> Please also share how many idle states is in those testing platforms.
+
+Thanks Rafael and Lukasz, for the feedback here!
+
+So I simply added the state usage values for all 112 CPUs and calculated
+the diff before and after the stress-ng call. The values are from a
+single run.
+
+		good            bad		bad+patch
+                ----            ---             ---------
+state0          111		68              234
+state1          419774		362549		408681
+state2          3184799		2499565		3185723
 
 
+good:	57e95a5c4117 ("timers: Introduce function to check timer base
+        is_idle flag")
+bad:    v6.9-rc4
+bad+patch: v6.9-rc4 + patch
 
-On 4/26/24 17:03, Rafael J. Wysocki wrote:
-> Hi,
-> 
-> On Thu, Apr 25, 2024 at 10:23 AM Anna-Maria Behnsen
-> <anna-maria@linutronix.de> wrote:
->>
->> Hi,
->>
->> (adding cpuidle/power people to cc-list)
->>
->> Oliver Sang <oliver.sang@intel.com> writes:
->>
->>> hi, Frederic Weisbecker,
->>>
->>> On Tue, Apr 02, 2024 at 12:46:15AM +0200, Frederic Weisbecker wrote:
->>>> Le Wed, Mar 27, 2024 at 04:39:17PM +0800, kernel test robot a écrit :
->>>>>
->>>>>
->>>>> Hello,
->>>>>
->>>>>
->>>>> we reported
->>>>> "[tip:timers/core] [timers]  7ee9887703:  netperf.Throughput_Mbps -1.2% regression"
->>>>> in
->>>>> https://lore.kernel.org/all/202403011511.24defbbd-oliver.sang@intel.com/
->>>>>
->>>>> now we noticed this commit is in mainline and we captured further results.
->>>>>
->>>>> still include netperf results for complete. below details FYI.
->>>>>
->>>>>
->>>>> kernel test robot noticed a -17.1% regression of stress-ng.uprobe.ops_per_sec
->>>>> on:
->>>>
->>>> The good news is that I can reproduce.
->>>> It has made me spot something already:
->>>>
->>>>     https://lore.kernel.org/lkml/ZgsynV536q1L17IS@pavilion.home/T/#m28c37a943fdbcbadf0332cf9c32c350c74c403b0
->>>>
->>>> But that's not enough to fix the regression. Investigation continues...
->>>
->>> Thanks a lot for information! if you want us test any patch, please let us know.
->>
->> Oliver, I would be happy to see, whether the patch at the end of the
->> message restores the original behaviour also in your test setup. I
->> applied it on 6.9-rc4. This patch is not a fix - it is just a pointer to
->> the kernel path, that might cause the regression. I know, it is
->> probable, that a warning in tick_sched is triggered. This happens when
->> the first timer is alredy in the past. I didn't add an extra check when
->> creating the 'defacto' timer thingy. But existing code handles this
->> problem already properly. So the warning could be ignored here.
->>
->> For the cpuidle people, let me explain what I oberserved, my resulting
->> assumption and my request for help:
->>
->> cpuidle governors use expected sleep length values (beside other data)
->> to decide which idle state would be good to enter. The expected sleep
->> length takes the first queued timer of the CPU into account and is
->> provided by tick_nohz_get_sleep_length(). With the timer pull model in
->> place the non pinned timers are not taken into account when there are
->> other CPUs up and running which could handle those timers. This could
->> lead to increased sleep length values. On my system during the stress-ng
->> uprobes test it was in the range of maximum 100us without the patch set
->> and with the patch set the maximum was in a range of 200sec. This is
->> intended behaviour, because timers which could expire on any CPU should
->> expire on the CPU which is busy anyway and the non busy CPU should be
->> able to go idle.
->>
->> Those increased sleep length values were the only anomalies I could find
->> in the traces with the regression.
->>
->> I created the patch below which simply fakes the sleep length values
->> that they take all timers of the CPU into account (also the non
->> pinned). This patch kind of restores the behavoir of
->> tick_nohz_get_sleep_length() before the change but still with the timer
->> pull model in place.
->>
->> With the patch the regression was gone, at least on my system (using
->> cpuidle governor menu but also teo).
->>
->> So my assumption here is, that cpuidle governors assume that a deeper
->> idle state could be choosen and selecting the deeper idle state makes an
->> overhead when returning from idle. But I have to notice here, that I'm
->> still not familiar with cpuidle internals... So I would be happy about
->> some hints how I can debug/trace cpuidle internals to falsify or verify
->> this assumption.
-> 
-> You can look at the "usage" and "time" numbers for idle states in
-> 
-> /sys/devices/system/cpu/cpu*/cpuidle/state*/
-> 
-> The "usage" value is the number of times the governor has selected the
-> given state and the "time" is the total idle time after requesting the
-> given state (ie. the sum of time intervals between selecting that
-> state by the governor and wakeup from it).
-> 
-> If "usage" decreases for deeper (higher number) idle states relative
-> to its value for shallower (lower number) idle states after applying
-> the test patch, that will indicate that the theory is valid.
+I choosed v6.9-rc4 for "bad", to make sure all the timer pull model fixes
+are applied.
 
-I agree with Rafael here, this is the first thing to check, those
-statistics. Then, when you see difference in those stats in baseline
-vs. patched version, we can analyze the internal gov decisions
-with help of tracing.
+If I got Raphael right, the values indicate, that my theory is not
+right...
 
-Please also share how many idle states is in those testing platforms.
+Thanks,
 
-BTW, this stress-ng app looks like is a good candidate for OSPM
-discussion that we (me & Rafael) are going to conduct this year.
-We are going to talk about QoS for frequency and latency for apps.
-Those governors (in idle, cpufreq, devfreq) try hard to 'recognize' what
-should be best platform setup for particular workloads, but it's really
-tough to get it right w/o user-space help.
+	Anna-Maria
 
-Therefore, beside these proposed fixes for new timers model, we need
-something 'newer' in our Linux, since the HW evolves (e.g. L3 cache
-w/ DVFS in phones) IMO.
-
-Regards,
-Lukasz
