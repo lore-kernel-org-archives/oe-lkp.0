@@ -1,64 +1,76 @@
-Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f173.google.com (mail-pf1-f173.google.com [209.85.210.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37E20D518
-	for <oe-lkp@lists.linux.dev>; Tue, 30 Apr 2024 22:33:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=65.109.113.108
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 048941649DE
+	for <oe-lkp@lists.linux.dev>; Wed,  1 May 2024 20:32:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714516412; cv=none; b=PKzcrIyYOWZVMaPn1EwcN7vznoC0qt8SL2+gyhILBaR3h0lc59yFTLp5PFTkqNG+oTKNDA6DjBhsuvPAcb210biNj4bnjV8RrbPxecPVkSciz6U/9PZkTCF7glZiLl51In900YaIU9nOFZVIwu34Tr+e+b6HiahQqbfX9wsHW1U=
+	t=1714595580; cv=none; b=ZM172JgkWU6+Acgv0GK9hpU/wgCMBhs686kULKsFDlVLoGg/vfRzwh3mnFZLCWkQXEv1DFpaJgFnISPu2L3wr592qNZFXkjRtRYT0zpgo9bHBYIlw0hE8j02g8iAkfKpM4AHS8Z1jjHFd+xxlNao7lsr7o6S1JJ4f9MFCdji+Gc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714516412; c=relaxed/simple;
-	bh=qVJzWg+P1aUqzTwhiutG7+knLlfh5JCpEUlUhqGtNbE=;
+	s=arc-20240116; t=1714595580; c=relaxed/simple;
+	bh=7u09dhiLhMiZkNIQVDdsM2vMvd2FkyZDIN6bSmYFGJI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=t0Qei038FGmDwgnTRjxcDEJqkhzWXcMtpDL44Usa3fQscV8xTFiZzJnlVDze31NfhsK33s8PLYMGlTijldouQQAYtXvIX0aKn9D365gATTEgiJo4Yxtob8HONu2zGyL9HAKHJRnRcL9QB9p9ThogCyCMvkQuzWEgTpHDKhW0OoI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de; spf=pass smtp.mailfrom=alien8.de; dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b=Zv3w7/W0; arc=none smtp.client-ip=65.109.113.108
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
+	 Content-Type:Content-Disposition:In-Reply-To; b=h1cpm7K8Y1VFDu8cby9LSWlBRbqJap+5yDCmC38ThJhJR3blKQUEZx0+ER/OgWI/bl4FTEH78QpfaThJFatxGH9RflT6i4PGW1wexzQLIdjYQb41cDb2vFfVaCyW31GXTWc+mXc3Z6JEAoSosVayF3C197xBc7wWy5tbz/BlM48=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=k4Nk772s; arc=none smtp.client-ip=209.85.210.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b="Zv3w7/W0"
-Received: from localhost (localhost.localdomain [127.0.0.1])
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id 202C540E01E8;
-	Tue, 30 Apr 2024 22:33:22 +0000 (UTC)
-X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
-Authentication-Results: mail.alien8.de (amavisd-new); dkim=pass (4096-bit key)
-	header.d=alien8.de
-Received: from mail.alien8.de ([127.0.0.1])
-	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id Lfpg0u3yzQ3G; Tue, 30 Apr 2024 22:33:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
-	t=1714516399; bh=DlvATvaWxygVgSVb7uWjq/ccZzNWV0VAB/UNxxNHk3U=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Zv3w7/W0pMY64ilgG37lz2oezELHaq86PPyeHWJw3n9wA7oad25UbVnPcfCPnU+ok
-	 3dQRsUtD3gCdkkXBUUhHin8/EWbalP85DitVoG4GWMsphM7Y1eu42clmSyAjIyAM6W
-	 Objc6wIV5OlCkjBKP/utzBWIpFd90xcJYmGHLLRvr8Z5XjLayCtL5tgM+1RTmpg0Co
-	 MsRphpUPmv1b17K9uU4a7HXh27mJPWBsnbQUeHCB39/SWuOgLXXOA43IJ/VNHl0Fkk
-	 2TT7kYaSIQjy3UoUe6K1aatPH2IieJNmYYwHq3W1xORY+IOpvlPpPZ/je5he8Jg+1u
-	 otGd5aCs8QOD0S+rLjCpYtZZp8xvUd8NeBMP78UWFVcoy5seHImaeMCqLgU0+ZYtR9
-	 XRLcdJVWQwCqzf5MfbdNTOFhtTusS3yTDZTpoQyyQOpowmqNTqV87I5HjT/Oaxg3vu
-	 3CiTDJ3Wv5xd2JtE3gzPG+SEi4EE16nr5UEUG4uBHElvAiYyli7GozfeTclENXaR6g
-	 bWc/kWwzKJCr/PUIiJJyw2RsM+Ig6eWeAFW/i+VkSPWbKyhxHPkqMTmSAa8Revx9+4
-	 yNVqg3thgtrTix4K+Z9NAuSVskh5jt79/w1nZJERBlKZY66Z4CS6KaNI2hLv9PrURN
-	 byQa7wlfDyxsrYPJK7w42hEY=
-Received: from zn.tnic (pd953020b.dip0.t-ipconnect.de [217.83.2.11])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
-	(No client certificate requested)
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id CA8EB40E0187;
-	Tue, 30 Apr 2024 22:33:10 +0000 (UTC)
-Date: Wed, 1 May 2024 00:33:05 +0200
-From: Borislav Petkov <bp@alien8.de>
-To: Sean Christopherson <seanjc@google.com>
-Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, linux-kernel@vger.kernel.org, x86@kernel.org,
-	Ingo Molnar <mingo@kernel.org>, Srikanth Aithal <sraithal@amd.com>
-Subject: Re: [tip:x86/alternatives] [x86/alternatives] ee8962082a:
- WARNING:at_arch/x86/kernel/cpu/cpuid-deps.c:#do_clear_cpu_cap
-Message-ID: <20240430223305.GFZjFxoSha7S5BYbIu@fat_crate.local>
-References: <202404302233.f27f91b2-oliver.sang@intel.com>
- <20240430172313.GCZjEpAfUECkEZ9S5L@fat_crate.local>
- <ZjE7DkTBSbPlBN8k@google.com>
- <20240430193211.GEZjFHO0ayDXtgvbE7@fat_crate.local>
- <ZjFLpkgI3Zl4dsXs@google.com>
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="k4Nk772s"
+Received: by mail-pf1-f173.google.com with SMTP id d2e1a72fcca58-6f26588dd5eso6101238b3a.0
+        for <oe-lkp@lists.linux.dev>; Wed, 01 May 2024 13:32:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1714595578; x=1715200378; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=Iqz8S2QdA0EJsKIz/4lOvCmgl9u2Epz/damWnWsK8Mg=;
+        b=k4Nk772sAwMo3B6Vl02tC4uTpuHdW8KwfixdJSPxSukYYgRmiu1VMC0rn6uawzG1Iw
+         wagkq+aJKPkDN7/amjTR+0bIePIvekYlPjgHWRM5SC65cfYx6nI8tJ6pDWiczQeTeCgL
+         ISLD+LM6FZRV4lDcw4FceJCI+BPoaZ60DL1t8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1714595578; x=1715200378;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Iqz8S2QdA0EJsKIz/4lOvCmgl9u2Epz/damWnWsK8Mg=;
+        b=GVIj9xDrVJ74KnGQ6OwfTM1FrVM/O5Rx1Sc5zDnLgteEklomJww/xCPYpGAh6FyS/+
+         ut5Ktt4r5SXizdsYMWK/VRW304u4N5G/HedOyflWV5sxd2OhI6pMIo6xwP6r0NJFgl6j
+         y6i8ZMBwYsjdwGu5W5YNDgUlaIRON8Yj0WcyTJERTR9K40Ou/Q9n9A+YR9NLehOlu1AP
+         ZxiXGLLuSwugwwRBrp2qhMTqA4+k3975zQsoPjJowVRhZHy8ZNUCq10lbNXdF1xgUDOU
+         st+uo4FCMOh9N/Hx6itZl29P1CIsqPOolYSUIVJNr9vuPyJc09d7Zk+tfnrx78RgChmy
+         ca3w==
+X-Forwarded-Encrypted: i=1; AJvYcCW5KG2+vLTs++RuCu8FwqOLWDR5iGuD8ErlvfRmbP1/LjlR9meqRwfrcQuRrbwMo7qfE9etS5rjJ+bim7wga/pJcOlTh7KA
+X-Gm-Message-State: AOJu0Yy6RgF28NWRU7zMfZT2Cs3X37dpVG+YC1VR0FTO/bVqJKMC1akj
+	p69xeMR6ATWoB1j33XiThmfxdNATWo1Nw9rLOxxYJPcKz2IqY7etLPETE/JCRQ==
+X-Google-Smtp-Source: AGHT+IGqPLrt1qdSnEoH66ufcC64x4kO88+Homj7/Uv9EXsQgLfCXVYl8bDOr9JM5JLUL69tbhsw2A==
+X-Received: by 2002:a05:6a20:7fa4:b0:1a7:a3ee:5e4a with SMTP id d36-20020a056a207fa400b001a7a3ee5e4amr3685712pzj.33.1714595578310;
+        Wed, 01 May 2024 13:32:58 -0700 (PDT)
+Received: from www.outflux.net ([198.0.35.241])
+        by smtp.gmail.com with ESMTPSA id gq41-20020a056a003be900b006f0da46c019sm20801345pfb.219.2024.05.01.13.32.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 May 2024 13:32:57 -0700 (PDT)
+Date: Wed, 1 May 2024 13:32:57 -0700
+From: Kees Cook <keescook@chromium.org>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: Edward Liaw <edliaw@google.com>, oe-lkp@lists.linux.dev, lkp@intel.com,
+	linux-kernel@vger.kernel.org,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Muhammad Usama Anjum <usama.anjum@collabora.com>,
+	Andy Lutomirski <luto@amacapital.net>,
+	Axel Rasmussen <axelrasmussen@google.com>,
+	Bill Wendling <morbo@google.com>,
+	David Hildenbrand <david@redhat.com>,
+	Justin Stitt <justinstitt@google.com>,
+	"Mike Rapoport (IBM)" <rppt@kernel.org>,
+	Nathan Chancellor <nathan@kernel.org>,
+	Nick Desaulniers <ndesaulniers@google.com>,
+	Peter Xu <peterx@redhat.com>, Shuah Khan <shuah@kernel.org>,
+	Will Drewry <wad@chromium.org>, linux-kselftest@vger.kernel.org,
+	linux-mm@kvack.org
+Subject: Re: [linus:master] [selftests/harness]  8092162335:
+ kernel-selftests.sgx.make.fail
+Message-ID: <202405011330.85D66871E@keescook>
+References: <202404301040.3bea5782-oliver.sang@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -67,39 +79,28 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <ZjFLpkgI3Zl4dsXs@google.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <202404301040.3bea5782-oliver.sang@intel.com>
 
-On Tue, Apr 30, 2024 at 12:51:02PM -0700, Sean Christopherson wrote:
-> But that would just mask the underlying problem, it wouldn't actually fix anything
-> other than making the WARN go away.  Unless I'm misreading the splat+code, the
-> issue isn't that init_ia32_feat_ctl() clears VMX late, it's that the BSP sees
-> VMX as fully enabled, but at least one AP sees VMX as disabled.
-> 
-> I don't see how the kernel can expect to function correctly with divergent feature
-> support across CPUs, i.e. the WARN is a _good_ thing in this case, because it
-> alerts the user that their system is messed up, e.g. has a bad BIOS or something.
+On Tue, Apr 30, 2024 at 11:02:36AM +0800, kernel test robot wrote:
+> version: kernel-selftests-x86_64-c7864053-1_20240419
+> [...]
+> compiler: gcc-13
+> 2024-04-29 15:02:59 make -j16 -C sgx
+> [...]
+> gcc -Wall -Werror -static-pie -nostdlib -ffreestanding -fPIE -fno-stack-protector -mrdrnd -I/usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-8092162335554c8ef5e7f50eff68aa9cfbdbf865/tools/testing/selftests/../../../tools/include test_encl.c test_encl_bootstrap.S -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-8092162335554c8ef5e7f50eff68aa9cfbdbf865/tools/testing/selftests/sgx/test_encl.elf -Wl,-T,test_encl.lds,--build-id=none
+> /usr/bin/ld: warning: /tmp/lkp/cct4g3SV.o: missing .note.GNU-stack section implies executable stack
+> /usr/bin/ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
+> In file included from main.c:21:
+> ../kselftest_harness.h: In function ‘__run_test’:
+> ../kselftest_harness.h:1166:13: error: implicit declaration of function ‘asprintf’; did you mean ‘vsprintf’? [-Werror=implicit-function-declaration]
+>  1166 |         if (asprintf(&test_name, "%s%s%s.%s", f->name,
+>       |             ^~~~~~~~
+>       |             vsprintf
+> cc1: all warnings being treated as errors
 
-Yes, and yes.
-
-There are two issues. Clearing feature flags after alternatives have
-been applied should not happen, and this particular issue with that box.
-
-Lemme cook up something in the coming days for the former.
-
-As to the box having misconfigured VMX settings, dmesg says:
-
-[    0.055225][    T0] x86/cpu: VMX (outside TXT) disabled by BIOS
-
-which means this:
-
-	(!tboot && !(msr & FEAT_CTL_VMX_ENABLED_OUTSIDE_SMX))) {
-
-so... I have no clue what needs to happen here. BIOS update...
-
-I hope we won't try to do some nasty fix for b0rked BIOSes again...
+What environment is this being built in? "asprintf" should be available
+via stdio.h, and "kselftest_harness.h" includes that (and _GNU_SOURCE).
 
 -- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Kees Cook
