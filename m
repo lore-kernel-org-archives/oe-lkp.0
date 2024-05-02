@@ -1,103 +1,187 @@
-Received: from madrid.collaboradmins.com (madrid.collaboradmins.com [46.235.227.194])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 442F1819
-	for <oe-lkp@lists.linux.dev>; Thu,  2 May 2024 06:33:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.235.227.194
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C311C81AC7
+	for <oe-lkp@lists.linux.dev>; Thu,  2 May 2024 12:56:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714631581; cv=none; b=XDQE7Lacmi0NSfx59TjgRa825dcbdRddh/VSMkfD8eAnj/JGiaNRxoOfWRpokgsYg4ry8DwHdkwxj1NOC8CRjmJR6A0mUj7cDsUoNljUvyZxPK1XTKRIAiB0nCV5easM7+tnlXS7R/EYjrHmMICSMtKSAc6RPD0guUzcKOE8LQ8=
+	t=1714654601; cv=none; b=Mhy/QdZClcqgraav8y0NjX+FTo03I56dYZuLAzbaBuUs2FyfuX9YVSTcq9KMALwf9zVwTZm1vKU+D1vlwIxJQNp8aAJQu9nYPuEvmISE53sL22WnIHzobBQhYz0VL9CJyTDojgH/I+T6Hq925J6UskP9F9GiU5+CaA6/ezl0e2A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714631581; c=relaxed/simple;
-	bh=pjIqOJEiOt9KucXTf7b55UJINUUUZE6EEFDyk2OaR6s=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=J3K3pvYPn4nhvDY8+tM9bEk1v2d4YaW7PtGezo3necVBMUeAIZdagyKqgdVL2+9Bg7ofXeDME9QFsw5ebW0oguwSdnVLZFbi1dxG4ajNiMwWoT4gA83cpnsepyRrqGUNt2DPSnLaejTfy4bvahP5o2tm5NqprpHwv76CBi+9UIs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=qOk0oevP; arc=none smtp.client-ip=46.235.227.194
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	s=arc-20240116; t=1714654601; c=relaxed/simple;
+	bh=clVW9mGdBdg9TXlCTlD22bAmTuqBoHagRqQAWZ2rNz4=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=OeBhvgIlQRhvcxik9AhEmZ6wDmt133OnScagF5M/GbyaYreFcBZAjMg4fjvu5wmAfrS9AczPbcFK+AmPL/iCBHhA16c1k9lFr2AsfhORuWzDcAwqPYFI2+F05bxzVnehoODReHEnYuhN7kdmXIT/71aboTtXo8rJsAbT1iPBb4o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=zxQGCFnm; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=BhdXEbAA; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="qOk0oevP"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1714631572;
-	bh=pjIqOJEiOt9KucXTf7b55UJINUUUZE6EEFDyk2OaR6s=;
-	h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
-	b=qOk0oevPJe0LgsiOcWVDLXXHzCvIYoiw1Wsitp25al+Np2Df1aAOdnCuCTASWptDo
-	 nan8oK3KXH1jABC8mPxSjHiIBLj9dMW9qebrP1PX7Pk+XXJBNQxaJ1DE6v2xCL6Rda
-	 FuaY7MhnChhcEoZt2qjErybB/Ezp+OFMbtGDzaWo5SJuCPr60IKfSoFa2VTm5KLElk
-	 t24Fx2hliDxtO8PDOk7tf9P0MtzNAHVZyW+vHO8L9+wSK8AD5CVEvWQ5m94Gg9BooL
-	 w5f3uU5JP2RAe+Ac39q5iEiLzQkQrLyP+mfTqXqS2Ow9FzdIKl4EJJbGr7lLUm1dGg
-	 UAjj6nWFVe0mg==
-Received: from [10.193.1.1] (broslavsky.collaboradmins.com [68.183.210.73])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: usama.anjum)
-	by madrid.collaboradmins.com (Postfix) with ESMTPSA id BE6D3378001E;
-	Thu,  2 May 2024 06:32:47 +0000 (UTC)
-Message-ID: <c9ad463f-cc67-44eb-bf94-449144e3078b@collabora.com>
-Date: Thu, 2 May 2024 11:33:17 +0500
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="zxQGCFnm";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="BhdXEbAA"
+From: Anna-Maria Behnsen <anna-maria@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1714654597;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=BjYDZW6+H5YqCRs45lbwaNsGQFiEJvG9P0BZQGh6L00=;
+	b=zxQGCFnm94zj+aRQ3ZKAyxibSUunF/sH2J9LMisxeROwLoZ8GIr2Vcv66L7vJKjtcdlEtJ
+	MTD+liW84KRiyfvJ3B7FATIl66Drvpzs4L4JFGbTjbwv4pr26cf34h09YwO0qNzTuLDsKW
+	eXzSS5QZvdjMPpI4IeMBZkJPYmwlPhbY8ZqmcJiTFAEzAOnkNAEoC8mSbGhKR48ocue+Sp
+	Z+A/VBUXBTQnuG6wl2z5o69Ze/7GXg9Q3KaGZbn3VMNaZ2fGvQSU8jC8+EMDyDD8Gx1Yba
+	J5wyumXUB3LHNNu0f5enATglrQY3khHighhAnQL0OLLLigjLOq0ubWJCkApCLg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1714654597;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=BjYDZW6+H5YqCRs45lbwaNsGQFiEJvG9P0BZQGh6L00=;
+	b=BhdXEbAA4NhREuQC6Pi3jPT0qUku2RXfJAvtXRZhUjw/BAPE4MSI7oZNTk/FYFr+9jYohU
+	DM8moLEzLDcW2PBQ==
+To: "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: Lukasz Luba <lukasz.luba@arm.com>, "Rafael J. Wysocki"
+ <rafael@kernel.org>, Oliver Sang <oliver.sang@intel.com>,
+ oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+ Thomas Gleixner <tglx@linutronix.de>, ying.huang@intel.com,
+ feng.tang@intel.com, fengwei.yin@intel.com, Frederic Weisbecker
+ <frederic@kernel.org>, Daniel Lezcano <daniel.lezcano@linaro.org>,
+ linux-pm@vger.kernel.org
+Subject: Re: [linus:master] [timers] 7ee9887703:
+ stress-ng.uprobe.ops_per_sec -17.1% regression
+In-Reply-To: <CAJZ5v0iLNWu6K2vhA3j==rbeHjku6eOvuWymRGcux4V9Xx_7Uw@mail.gmail.com>
+References: <Zgtjdd0C2FzYVBto@xsang-OptiPlex-9020> <87zfth3l6y.fsf@somnus>
+ <CAJZ5v0g_GKF8-QK5UdFCpJapf+MK7EouQ7hMTVtPYRjNNyUt+g@mail.gmail.com>
+ <3aba1a1d-8ebc-4ee0-9caf-d9baae586db7@arm.com> <87zftcy0xt.fsf@somnus>
+ <87sez4xxhn.fsf@somnus>
+ <CAJZ5v0iLNWu6K2vhA3j==rbeHjku6eOvuWymRGcux4V9Xx_7Uw@mail.gmail.com>
+Date: Thu, 02 May 2024 14:56:37 +0200
+Message-ID: <87ikzwid8a.fsf@somnus>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: Muhammad Usama Anjum <usama.anjum@collabora.com>,
- Edward Liaw <edliaw@google.com>, oe-lkp@lists.linux.dev, lkp@intel.com,
- linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>,
- Andy Lutomirski <luto@amacapital.net>,
- Axel Rasmussen <axelrasmussen@google.com>, Bill Wendling <morbo@google.com>,
- David Hildenbrand <david@redhat.com>, Justin Stitt <justinstitt@google.com>,
- "Mike Rapoport (IBM)" <rppt@kernel.org>,
- Nathan Chancellor <nathan@kernel.org>,
- Nick Desaulniers <ndesaulniers@google.com>, Peter Xu <peterx@redhat.com>,
- Shuah Khan <shuah@kernel.org>, Will Drewry <wad@chromium.org>,
- linux-kselftest@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [linus:master] [selftests/harness] 8092162335:
- kernel-selftests.sgx.make.fail
-To: Kees Cook <keescook@chromium.org>,
- kernel test robot <oliver.sang@intel.com>
-References: <202404301040.3bea5782-oliver.sang@intel.com>
- <202405011330.85D66871E@keescook>
-Content-Language: en-US
-From: Muhammad Usama Anjum <usama.anjum@collabora.com>
-In-Reply-To: <202405011330.85D66871E@keescook>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On 5/2/24 1:32 AM, Kees Cook wrote:
-> On Tue, Apr 30, 2024 at 11:02:36AM +0800, kernel test robot wrote:
->> version: kernel-selftests-x86_64-c7864053-1_20240419
->> [...]
->> compiler: gcc-13
->> 2024-04-29 15:02:59 make -j16 -C sgx
->> [...]
->> gcc -Wall -Werror -static-pie -nostdlib -ffreestanding -fPIE -fno-stack-protector -mrdrnd -I/usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-8092162335554c8ef5e7f50eff68aa9cfbdbf865/tools/testing/selftests/../../../tools/include test_encl.c test_encl_bootstrap.S -o /usr/src/perf_selftests-x86_64-rhel-8.3-kselftests-8092162335554c8ef5e7f50eff68aa9cfbdbf865/tools/testing/selftests/sgx/test_encl.elf -Wl,-T,test_encl.lds,--build-id=none
->> /usr/bin/ld: warning: /tmp/lkp/cct4g3SV.o: missing .note.GNU-stack section implies executable stack
->> /usr/bin/ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
->> In file included from main.c:21:
->> ../kselftest_harness.h: In function ‘__run_test’:
->> ../kselftest_harness.h:1166:13: error: implicit declaration of function ‘asprintf’; did you mean ‘vsprintf’? [-Werror=implicit-function-declaration]
->>  1166 |         if (asprintf(&test_name, "%s%s%s.%s", f->name,
->>       |             ^~~~~~~~
->>       |             vsprintf
->> cc1: all warnings being treated as errors
-> 
-> What environment is this being built in? "asprintf" should be available
-> via stdio.h, and "kselftest_harness.h" includes that (and _GNU_SOURCE).
-Sometimes the order of include is as following:
+Hi,
+"Rafael J. Wysocki" <rafael@kernel.org> writes:
 
-#inlucde <stdio.h>
-#define _GNU_SOURCE
-#inlucde <stdio.h>
+> On Mon, Apr 29, 2024 at 12:40=E2=80=AFPM Anna-Maria Behnsen
+> <anna-maria@linutronix.de> wrote:
+>>
+>> Anna-Maria Behnsen <anna-maria@linutronix.de> writes:
+>>
+>> > Hi,
+>> >
+>> > Lukasz Luba <lukasz.luba@arm.com> writes:
+>> >> On 4/26/24 17:03, Rafael J. Wysocki wrote:
+>> >>> On Thu, Apr 25, 2024 at 10:23=E2=80=AFAM Anna-Maria Behnsen
+>> >>> <anna-maria@linutronix.de> wrote:
+>> >
+>> > [...]
+>> >
+>> >>>> So my assumption here is, that cpuidle governors assume that a deep=
+er
+>> >>>> idle state could be choosen and selecting the deeper idle state mak=
+es an
+>> >>>> overhead when returning from idle. But I have to notice here, that =
+I'm
+>> >>>> still not familiar with cpuidle internals... So I would be happy ab=
+out
+>> >>>> some hints how I can debug/trace cpuidle internals to falsify or ve=
+rify
+>> >>>> this assumption.
+>> >>>
+>> >>> You can look at the "usage" and "time" numbers for idle states in
+>> >>>
+>> >>> /sys/devices/system/cpu/cpu*/cpuidle/state*/
+>> >>>
+>> >>> The "usage" value is the number of times the governor has selected t=
+he
+>> >>> given state and the "time" is the total idle time after requesting t=
+he
+>> >>> given state (ie. the sum of time intervals between selecting that
+>> >>> state by the governor and wakeup from it).
+>> >>>
+>> >>> If "usage" decreases for deeper (higher number) idle states relative
+>> >>> to its value for shallower (lower number) idle states after applying
+>> >>> the test patch, that will indicate that the theory is valid.
+>> >>
+>> >> I agree with Rafael here, this is the first thing to check, those
+>> >> statistics. Then, when you see difference in those stats in baseline
+>> >> vs. patched version, we can analyze the internal gov decisions
+>> >> with help of tracing.
+>> >>
+>> >> Please also share how many idle states is in those testing platforms.
+>> >
+>> > Thanks Rafael and Lukasz, for the feedback here!
+>> >
+>> > So I simply added the state usage values for all 112 CPUs and calculat=
+ed
+>> > the diff before and after the stress-ng call. The values are from a
+>> > single run.
+>> >
+>>
+>> Now here are the values of the states and the time because I forgot to
+>> track also the time in the first run:
+>>
+>> USAGE           good            bad             bad+patch
+>>                 ----            ---             ---------
+>> state0          115             137             234
+>> state1          450680          354689          420904
+>> state2          3092092         2687410         3169438
+>>
+>>
+>> TIME            good            bad             bad+patch
+>>                 ----            ---             ---------
+>> state0          9347            9683            18378
+>> state1          626029557       562678907       593350108
+>> state2          6130557768      6201518541      6150403441
+>>
+>>
+>> > good: 57e95a5c4117 ("timers: Introduce function to check timer base
+>> >         is_idle flag")
+>> > bad:    v6.9-rc4
+>> > bad+patch: v6.9-rc4 + patch
+>> >
+>> > I choosed v6.9-rc4 for "bad", to make sure all the timer pull model fi=
+xes
+>> > are applied.
+>> >
+>> > If I got Raphael right, the values indicate, that my theory is not
+>> > right...
+>
+> It appears so.
+>
+> However, the hardware may refuse to enter a deeper idle state in some cas=
+es.
+>
+> It would be good to run the test under turbostat and see what happens
+> to hardware C-state residencies.  I would also like to have a look at
+> the CPU frequencies in use in all of the cases above.
+>
 
-The _GNU_SOURCE wasn't defined the first time stdio.h was included hence
-the definition of asprintf isn't present. The second inclusion of stdio.h
-when _GNU_SOURCE is defined is ignored as it was already included.
+	Avg_MHz Busy%   Bzy_MHz TSC_MHz IPC     IRQ     SMI     POLL    C1      C2=
+      POLL%   C1%     C2%     CPU%c1  CPU%c6  CoreTmp CoreThr PkgTmp  PkgWa=
+tt RAMWatt PKG_%   RAM_%
+good:	12      0.66    1842    2095    0.31    3584322 0       48      43991=
+9  3146476 0.00    8.94    90.64   15.80   83.54   38      0       42      =
+69.35   11.64   0.00    0.00
+bad:	10      0.55    1757    2095    0.32    2867259 0       197     381975=
+  2495863 0.00    9.00    90.65   14.94   84.51   38      0       41      6=
+8.80   11.62   0.00    0.00
+bad+p:	14      0.75    1832    2095    0.28    3582503 0       102     4401=
+81  3147744 0.00    9.04    90.45   15.57   83.68   36      0       40     =
+ 69.28   11.54   0.00    0.00
 
-This is being fixed in following series:
-https://lore.kernel.org/all/20240430235057.1351993-1-edliaw@google.com
+I just took the 'summary line' of turbostat output and just used the
+default turbostat settings. Before starting the test, the cpufreq
+governor was set to performance for all CPUs (as the original test does
+as well).
 
--- 
-BR,
-Muhammad Usama Anjum
+Thanks,
+
+	Anna-Maria
