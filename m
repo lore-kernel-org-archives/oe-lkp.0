@@ -1,51 +1,51 @@
 Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74A0218EA5
-	for <oe-lkp@lists.linux.dev>; Mon,  6 May 2024 07:39:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DC301419AA
+	for <oe-lkp@lists.linux.dev>; Mon,  6 May 2024 08:02:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=65.109.113.108
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714981168; cv=none; b=NaRzWVF6ovhsK6QuQDHbvUQPzAXZjEH/ZaeoNCQuwkCW9F3rfBXezhZYNTZwOAN/0VPietySd5y29CLtDQk5ku64IK5M2OctY5hEGNtKIxAhmxku+Bb/Zm3LxtCxPq5Vauf6w2B1To/jfMdPQdEOO/qyA5nhWRYLG1BfR5tSnHA=
+	t=1714982540; cv=none; b=tNLaG9Vk56NEZPJd7DoF2DYjKfOmdmITEF4wUxYUmp9FzFPsL1QOZZaTz+Qnvx4uExa844NprPpq3IgXRVwTvvR8mL4tDRVcXQDpzqCLNMBbb0vIUoMPh3rP1T/W5gOWlVkFEQ2PNN0+OcRCFtZkAfSFtqRLyXqxF5W2XhnBxFc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714981168; c=relaxed/simple;
-	bh=xyxnmqWWSYlgj6H8EbU54BPfhvA1yRIWCx+gjGOZiJQ=;
+	s=arc-20240116; t=1714982540; c=relaxed/simple;
+	bh=Uf4paWgOIqvMSE0fNiE5UNBkS47qJqVrHGJHlBjOH/Y=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cLqxzr8wrtaOtWiVIZtZUHn9DdPWrgTKDISLFd3uQAJ5wXv9aKDiw9y6vuwLvbCS3Gy4ufec+rAffQh8mCcwXebLfklGYv/OIkJlzHi2WuJbFHjleByf04DH6QXEBufe67nlatnPgWIyW7wJztH74yptrWIbAMyZak8dJnvCuqk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de; spf=pass smtp.mailfrom=alien8.de; dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b=QEOvWDyO; arc=none smtp.client-ip=65.109.113.108
+	 Content-Type:Content-Disposition:In-Reply-To; b=slyxit8MqGCXKF6bpg5ccodXPUfuak7bC9L5Jeu6os0fM5lyvPGhslXNZYOp346ydNjOkX3jW/Gn9LGdUMttbjp/oAf9MrLM7g6HFW2gyeV+U1/RXO6FkZDLJ4MPolJbT2/25N5MC/ecM1zKGciCYUDCm4UK3uVgrD4IiX/+tx4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de; spf=pass smtp.mailfrom=alien8.de; dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b=N9aIPZr3; arc=none smtp.client-ip=65.109.113.108
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b="QEOvWDyO"
+	dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b="N9aIPZr3"
 Received: from localhost (localhost.localdomain [127.0.0.1])
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id F1F1340E01A1;
-	Mon,  6 May 2024 07:39:22 +0000 (UTC)
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id 6E7FE40E0187;
+	Mon,  6 May 2024 08:02:15 +0000 (UTC)
 X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
 Authentication-Results: mail.alien8.de (amavisd-new); dkim=pass (4096-bit key)
 	header.d=alien8.de
 Received: from mail.alien8.de ([127.0.0.1])
 	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id pMqRuncUN6u7; Mon,  6 May 2024 07:39:19 +0000 (UTC)
+	with ESMTP id i2Kbl3yc4FJt; Mon,  6 May 2024 08:02:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
-	t=1714981158; bh=njZ0/dlsf3FYOxYPVXuxza8YFGw4Nsa8EdWHjWc6X0A=;
+	t=1714982531; bh=GaT3oEVvy69fU4t49JMQnb0cOcFbN8DHi1q4ekjahE0=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=QEOvWDyOezcm7lK+A5QpHp1aRlW/0+ad04iJQQPjwjdVEW8HXghemVlQyQ5GcPUis
-	 nVbgmQNKBeNHvfYXMjO9RmAweU2EkZ6xAra89ybhJ/lH8+a6dfteH4D1QKp9sJcUkg
-	 S/zYEqFJ5a7dRJf4Mp6YF+w2N3H91XLA88uhKD82YvFlNYe6a1o0paYJhZ8xbPvjI+
-	 gWbT4PNwyNVWhukjdh9D/jZvLdNnQ//kTahiEAbixT+XjBOp0bCIhCnxdus6i+M4QH
-	 rqD4eXh1XZyVPvgwfNl6F1xGEg+R1HaOapZ/nCtS6rLxsNFG8d1/tNhDzEw9ijGJ2r
-	 OIK1LUPD56InScrkD/WEYi2rodQVi1d1malMA6ERj15sp80C/KM+pI+hmfbUPi1QmZ
-	 Y/y/vClyw35b64a9UGcJSkUAcbhoyDzf/w8bCtuoqwPuqIS3UzrvzkXQJUpMUMkCzb
-	 EqrXiZKOeZrBYMIahntZdZVo63OWLMzHqclqqmRlSS1CEw43EfK/N4NzQh+ZClFhN9
-	 AqYmYjuG9zAcuo7596ZijyGMbFACArMEZw1QHuYC2064S8h+bmQNfcptYCg0VMkYBr
-	 yTviHgI0yKiXCOpNmKP/PlFB9uiHOVHnogu4M/cyFZr1M8r1kJgqz6OHlzXBVtq8RJ
-	 rXJ0lwGSlQzkeuc42bvJAqqk=
+	b=N9aIPZr3alfJuI8mXjLutjVbfRm5qigRQMmwzBNOqs/tuQEIJV+gUYAwifK6r0ZOb
+	 AEqWGcmFfBG252F5lk4gtabdjCcKpQiYSEUEhtjT7zxfMoOykoY1EjCYn2ojYHrdGI
+	 73MbjycrY+5IpiUCutw9uW5ooaOZrdO2TdNQz3POskxvPupJUYRrWGJ9hBktEzMP52
+	 5wbAYjzusoj6hRh7B84nIHLqoTCzYMWb09YbgINpB9pyRka6O/kq4MsLgFtcHKENJN
+	 hvB6+AuJ/cSm6/JWeWbSfoUTWCSrkWv/yaGWKhA7FghUOP0zhHLlQTk9Iz08XHu7qO
+	 lNW6v/sWOmo+8X/sqaqhOdOz4GN3yGfTXEeDokDQa1o7S4VofGF2DdRGL551SN+p9s
+	 C2c+MwI8jkwDH2M5egjzDOjgGsnPXkNu0vuowhj7DbJ7gfWTTq70tgVpZU5Rc9lEBG
+	 +VQVMl2bYNtHssFtOCXBf2iefau/Ho6bPQldxohIHSXlXf0TDXXHK0W3Hsua+sV6A3
+	 XDqkXGxK4cZtjW6DU+1VgSn5Aa99pVPKlhPGwaFYatdFrwwxKMRMMWMXAKylAMYq2o
+	 i3G/u6v5yiu3Pt9CUbd7DtQn6eas4QMTSgpQMkj55GCa3urZt2oxdPPeFdNlLGaamt
+	 N3K7bWBH7/wW1FnZmlyEK2GA=
 Received: from zn.tnic (pd953020b.dip0.t-ipconnect.de [217.83.2.11])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
 	(No client certificate requested)
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 8449540E0249;
-	Mon,  6 May 2024 07:39:10 +0000 (UTC)
-Date: Mon, 6 May 2024 09:39:03 +0200
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 3960640E024C;
+	Mon,  6 May 2024 08:02:03 +0000 (UTC)
+Date: Mon, 6 May 2024 10:01:56 +0200
 From: Borislav Petkov <bp@alien8.de>
 To: Oliver Sang <oliver.sang@intel.com>
 Cc: Sean Christopherson <seanjc@google.com>, oe-lkp@lists.linux.dev,
@@ -53,7 +53,7 @@ Cc: Sean Christopherson <seanjc@google.com>, oe-lkp@lists.linux.dev,
 	Ingo Molnar <mingo@kernel.org>, Srikanth Aithal <sraithal@amd.com>
 Subject: Re: [tip:x86/alternatives] [x86/alternatives] ee8962082a:
  WARNING:at_arch/x86/kernel/cpu/cpuid-deps.c:#do_clear_cpu_cap
-Message-ID: <20240506073903.GAZjiJF7BQyjYJQLYx@fat_crate.local>
+Message-ID: <20240506080156.GBZjiOdHjn-NdmbnTw@fat_crate.local>
 References: <202404302233.f27f91b2-oliver.sang@intel.com>
  <20240430172313.GCZjEpAfUECkEZ9S5L@fat_crate.local>
  <ZjE7DkTBSbPlBN8k@google.com>
@@ -62,6 +62,7 @@ References: <202404302233.f27f91b2-oliver.sang@intel.com>
  <20240430223305.GFZjFxoSha7S5BYbIu@fat_crate.local>
  <20240504124822.GAZjYulrGPPX_4w4zK@fat_crate.local>
  <ZjiCJz4myN2DLnZ5@xsang-OptiPlex-9020>
+ <20240506073903.GAZjiJF7BQyjYJQLYx@fat_crate.local>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -70,17 +71,51 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <ZjiCJz4myN2DLnZ5@xsang-OptiPlex-9020>
+In-Reply-To: <20240506073903.GAZjiJF7BQyjYJQLYx@fat_crate.local>
 
-On Mon, May 06, 2024 at 03:09:27PM +0800, Oliver Sang wrote:
-> we confirmed after applying them upon ee8962082a, the WARNING which was reported
-> in our original report cannot be reproduced any longer.
+On Mon, May 06, 2024 at 09:39:03AM +0200, Borislav Petkov wrote:
+> On Mon, May 06, 2024 at 03:09:27PM +0800, Oliver Sang wrote:
+> > we confirmed after applying them upon ee8962082a, the WARNING which was reported
+> > in our original report cannot be reproduced any longer.
+> > 
+> > Tested-by: kernel test robot <oliver.sang@intel.com>
 > 
-> Tested-by: kernel test robot <oliver.sang@intel.com>
+> Thanks a lot for testing - much appreciated.
 
-Thanks a lot for testing - much appreciated.
+Hm, ok, after looking at this more, I think I'm going to go with patch
+2 only.
 
-Lemme queue them.
+And patch 1 is wrong. At least for now, lemme explain:
+
+So before it, we'd do
+
+	if (boot_cpu_has(feature))
+		WARN_ON(alternatives_patched);
+
+when clearing feature flags, meaning: if the flag is set on the BSP,
+that means, alternatives have patched already and we're clearing
+potentially on another CPU and it'll warn because it will be wrong.
+
+If we do:
+
+	if (c && cpu_has(c, feature))
+ 		WARN_ON(alternatives_patched);
+
+then it would warn on *every* CPU but it doesn't need to *BECAUSE* the
+alternatives patching is controlled by the boot_cpu_data checks for the
+BSP - not the AP ones.
+
+So if the BSP doesn't have the feature, we can just as well clear it on
+the APs as it wouldn't have any effect on conditionals further on.
+
+Otherwise, we'll have to go and move every clear_cpu_cap() call after
+alternatives have patched to before that, which would be insane.
+
+I mean, we'll do that eventually but can't now.
+
+Lemme write that as a comment in the function so that we don't forget.
+
+Oh boy, I love our feature flags infra. :-\
 
 -- 
 Regards/Gruss,
