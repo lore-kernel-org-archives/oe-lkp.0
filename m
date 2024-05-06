@@ -1,98 +1,141 @@
-Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f201.google.com (mail-yw1-f201.google.com [209.85.128.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3142D14039A
-	for <oe-lkp@lists.linux.dev>; Mon,  6 May 2024 08:12:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=65.109.113.108
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00E0B13D895
+	for <oe-lkp@lists.linux.dev>; Mon,  6 May 2024 15:28:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714983175; cv=none; b=gX2cYbSewDCCQpKC9NFQ3w1taS5tLER/SwdpNJxIIwyZrrGn/k+5vufBJf9hR8EiIU6FOLiDxW8Xe9Aa7JwbDlz5zCYKczhP53+Z1m3pzLcOWbDIYlzK0yMFD99Mem+Mb278xCCD//JC6O+SOpIzsk9PwCB6JHP8fkzUca4mjW8=
+	t=1715009330; cv=none; b=oPHzbGGKXgFpvTcTOePg8g47SW1t/2kShHVV8e1hqrkknRtMe7eTg8n7F+rPBRCIekj/YPcmGRg7QyJVAohOESLT4AKO4kS4ZpFWjkjao4sa7VHruto9+AbmfaJqGfk5b7sPFGnBaWqkqP3TpF38Qq8AQ7gGv8KprnwZjGG5tu0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714983175; c=relaxed/simple;
-	bh=tlifZld/ZHFHDP1x96eddbXPDbjSerp7vz4ooq3f81Q=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HeTE+avI3Rz94JMlvLooxVV6VybiyXY6PFTaVZRilCQYBKl84qD/hyjHu+ZgY8tsH+ncwOuvy43FkEBTunh6N7XjBidIqEIuWR5FqSUv+Nos+lCP4KSicnJpFWjmYsO/SbcOkVZMkvih+qLwjjczuZncur2nsGRbcSS4g/H5FqE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de; spf=pass smtp.mailfrom=alien8.de; dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b=ieS//Zr5; arc=none smtp.client-ip=65.109.113.108
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
+	s=arc-20240116; t=1715009330; c=relaxed/simple;
+	bh=s2JCz/dxID1s0heeyoyh9Z/VX4F91mpYqgGKTN2Pz14=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=EhPTE52q1Ls5rhvHoZ0T962By0up3bv1IZgGXgaYkKte9LjmNgWa02zZZZ+YBnC9oJV9ByW4FCGOEVy6or5X3o9kPnVypcyUiZ8qDmVhJ2dF2UQeRg4v2qZwZw+0fv8o4e60YCb9rPPH1DLgXiBDx66+c3DXbyljkPLTPCDxxRQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=d385hwdy; arc=none smtp.client-ip=209.85.128.201
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b="ieS//Zr5"
-Received: from localhost (localhost.localdomain [127.0.0.1])
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id 2736040E0249;
-	Mon,  6 May 2024 08:12:52 +0000 (UTC)
-X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
-Authentication-Results: mail.alien8.de (amavisd-new); dkim=pass (4096-bit key)
-	header.d=alien8.de
-Received: from mail.alien8.de ([127.0.0.1])
-	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id KCmLlzc50hcT; Mon,  6 May 2024 08:12:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
-	t=1714983169; bh=Fn+uWTiXlU6mRzHVG81vOdF0e7pbYvi3kVePuR9cVmo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ieS//Zr5/nS/TScQYOATgoiakxb0kMbDAYEfanMgbOqiRUBWMwNSOpwLwH0VVBllN
-	 1rxkWWM51Y1Fb2SErdhl0GWdPgYRpMZ+MNwv00hKi5aWLvxOvq6D49TxBvRyx/iEN4
-	 xZZA+TumXNs4mKa0bJmPu+OyM7J6SWm+nQiqF1ljYQI7XASHsGsyGx95nMTL7D5WwM
-	 qBy6csN56ZTg/W64fx50jdGR0Wzz5QUaivhXBCK6j1pm5MJRGCUEaPHr5kyDiGErhG
-	 sy4qJ5QhO5HfI7zlT77j3GmDf9PbWroho0tQm5/kWh3ghaw8yKNBgGLDFyhnJieHjN
-	 eNVKTW7hwwiWRYjvvRQivs9vDbp4i9ArU83glESsPGmHXOOhZv7gcyAfJUz6JnPvII
-	 jZ45GZvRplXc6Cw32U+ZRxM1lG9kKyUVUyK2IyxA+7N2MRt6Rez11WN6oUOV0R2cE6
-	 cJnEwKqWSUEWQbr/U82cRpCP8/4Ga7ZjiYyqS43ghGUhfgq8RPBitL5qpsKNZUqBP1
-	 5aFJXVV/sZISnuZ0uuyAwSCsJAiY/8F3IIl+CeKffpZ4+SgzdTt7wsz1ks6njGhfkc
-	 HJr8NIkwl1+eZcTDYQAWctN3VUCeK1avKFLlp5cthL9+qUWtMuJ4T+UQXIHEBcuTq0
-	 uwQeqcppAt2f6YdYlmfjAyxs=
-Received: from zn.tnic (pd953020b.dip0.t-ipconnect.de [217.83.2.11])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
-	(No client certificate requested)
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id D8E5740E0187;
-	Mon,  6 May 2024 08:12:40 +0000 (UTC)
-Date: Mon, 6 May 2024 10:12:35 +0200
-From: Borislav Petkov <bp@alien8.de>
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: Sean Christopherson <seanjc@google.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, linux-kernel@vger.kernel.org, x86@kernel.org,
-	Ingo Molnar <mingo@kernel.org>, Srikanth Aithal <sraithal@amd.com>
-Subject: Re: [tip:x86/alternatives] [x86/alternatives] ee8962082a:
- WARNING:at_arch/x86/kernel/cpu/cpuid-deps.c:#do_clear_cpu_cap
-Message-ID: <20240506081235.GCZjiQ8-MC7wL7Ue8z@fat_crate.local>
-References: <202404302233.f27f91b2-oliver.sang@intel.com>
- <20240430172313.GCZjEpAfUECkEZ9S5L@fat_crate.local>
- <ZjE7DkTBSbPlBN8k@google.com>
- <20240430193211.GEZjFHO0ayDXtgvbE7@fat_crate.local>
- <ZjFLpkgI3Zl4dsXs@google.com>
- <20240430223305.GFZjFxoSha7S5BYbIu@fat_crate.local>
- <20240504124822.GAZjYulrGPPX_4w4zK@fat_crate.local>
- <ZjiCJz4myN2DLnZ5@xsang-OptiPlex-9020>
- <20240506073903.GAZjiJF7BQyjYJQLYx@fat_crate.local>
- <20240506080156.GBZjiOdHjn-NdmbnTw@fat_crate.local>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="d385hwdy"
+Received: by mail-yw1-f201.google.com with SMTP id 00721157ae682-61dfa4090c1so35258467b3.3
+        for <oe-lkp@lists.linux.dev>; Mon, 06 May 2024 08:28:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1715009328; x=1715614128; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=SzRKJKTryCwaPCxTu2t8Et86gsCQMDMlHJIYmQAL6Jc=;
+        b=d385hwdy/eF4eq0oCnN7rrkIXAbBkCnSTSyt9JdE/m9uJkqx7F8pijzYXh2lYXcQ6m
+         GY1pD6eBXymBhJRT6LtUt7GhbL9hReTVvhxr+s25BFvhX7L2dSrFuJ+Ih87R72ejNgtd
+         rBbgvB6TE5z56VGpNR8KA+d5OeStd4NdEKx3r1f595eVTVCzCbx/oUNF4K2hrDB+ql9z
+         94527xaryX97+9QkK2V7czp7mPPRE7h8DNGui9DR06Q0wzBSdFpmFtYy2BLPf7mXqpID
+         +nyQYrwOjvXBdYF8NtgazN1DR95qZCEE2w1MPayaSn6QHEaAhNpjDZBvi2On7jfLBB3M
+         MI5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1715009328; x=1715614128;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=SzRKJKTryCwaPCxTu2t8Et86gsCQMDMlHJIYmQAL6Jc=;
+        b=KBIgCdyu5oWtTuJkvyuAVcg0cdjrLV9T6uG4DRSX+ewKQ5ISqbHY2cviziZb2v74LM
+         M0y9r3Vr3atSRG6abeSgNSWPqSi28zVB++BAY4aT6gAlt0QXPMiaY72ahJYVmhJyvinP
+         jILe6LgEPSrsTkcsM2oiIxFwv5w8BOAvUApaUJ1DCw7fLIGHxnVsjUnNKh0gKB8AGApN
+         3X/guPHg6a2DXlhe+Aqs3t/6CmZg52cWO3jhx14llA2w96kDz66ZtdA+ef2zHMapZMmi
+         gfcJ6B8wpZ6ztHLCsfCNihV6xd0xVuunPFEr1d33dB7aZ0va4qfHDF7t9c8FkpMdLWbm
+         0KYw==
+X-Forwarded-Encrypted: i=1; AJvYcCU1GDEhY/Bl16UQ21XoFkKKvhfZOIPqQP682+ZQSVqQ98YHT4JyE2pokfl0EjMwWDXan9+6x1nh71UOibIbzM8TlMajhCIS
+X-Gm-Message-State: AOJu0YwmyK4+I7/ashUA0SsOOyoYNQ+s3WqLskqtKQvpshVYuHF57aOy
+	9+JW2WhX4kcJtXb92EbW1xAYmjT6pdtp8Dkq37KqmX9+Rk1/oOUZVxgraH49iM5FuIMJt54v9Mh
+	PBA==
+X-Google-Smtp-Source: AGHT+IEA1zlfe5rAXt33idOvPm7EGcmGm+2I5fvsX/Rvf4OmmpgXB1xVKI7wf6wSuCMOf0BME2S16N5J/2A=
+X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
+ (user=seanjc job=sendgmr) by 2002:a0d:d817:0:b0:61b:e165:44ba with SMTP id
+ a23-20020a0dd817000000b0061be16544bamr2589268ywe.1.1715009328144; Mon, 06 May
+ 2024 08:28:48 -0700 (PDT)
+Date: Mon, 6 May 2024 08:28:46 -0700
+In-Reply-To: <ZjiCJz4myN2DLnZ5@xsang-OptiPlex-9020>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20240506080156.GBZjiOdHjn-NdmbnTw@fat_crate.local>
+Mime-Version: 1.0
+References: <202404302233.f27f91b2-oliver.sang@intel.com> <20240430172313.GCZjEpAfUECkEZ9S5L@fat_crate.local>
+ <ZjE7DkTBSbPlBN8k@google.com> <20240430193211.GEZjFHO0ayDXtgvbE7@fat_crate.local>
+ <ZjFLpkgI3Zl4dsXs@google.com> <20240430223305.GFZjFxoSha7S5BYbIu@fat_crate.local>
+ <20240504124822.GAZjYulrGPPX_4w4zK@fat_crate.local> <ZjiCJz4myN2DLnZ5@xsang-OptiPlex-9020>
+Message-ID: <Zjj3Lrv2NNHLEzzk@google.com>
+Subject: Re: [tip:x86/alternatives] [x86/alternatives] ee8962082a: WARNING:at_arch/x86/kernel/cpu/cpuid-deps.c:#do_clear_cpu_cap
+From: Sean Christopherson <seanjc@google.com>
+To: Oliver Sang <oliver.sang@intel.com>
+Cc: Borislav Petkov <bp@alien8.de>, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	linux-kernel@vger.kernel.org, x86@kernel.org, Ingo Molnar <mingo@kernel.org>, 
+	Srikanth Aithal <sraithal@amd.com>
+Content-Type: text/plain; charset="us-ascii"
 
-Oliver,
+On Mon, May 06, 2024, Oliver Sang wrote:
+> hi, Boris,
+> 
+> On Sat, May 04, 2024 at 02:48:22PM +0200, Borislav Petkov wrote:
+> > On Wed, May 01, 2024 at 12:33:05AM +0200, Borislav Petkov wrote:
+> > > On Tue, Apr 30, 2024 at 12:51:02PM -0700, Sean Christopherson wrote:
+> > > > But that would just mask the underlying problem, it wouldn't actually fix anything
+> > > > other than making the WARN go away.  Unless I'm misreading the splat+code, the
+> > > > issue isn't that init_ia32_feat_ctl() clears VMX late, it's that the BSP sees
+> > > > VMX as fully enabled, but at least one AP sees VMX as disabled.
+> > > > 
+> > > > I don't see how the kernel can expect to function correctly with divergent feature
+> > > > support across CPUs, i.e. the WARN is a _good_ thing in this case, because it
+> > > > alerts the user that their system is messed up, e.g. has a bad BIOS or something.
+> > > 
+> > > Yes, and yes.
+> > > 
+> > > There are two issues. Clearing feature flags after alternatives have
+> > > been applied should not happen, and this particular issue with that box.
+> > > 
+> > > Lemme cook up something in the coming days for the former.
+> > 
+> > Two simple patches as a reply to this.
+> > 
+> > Oliver, can you run them on your box pls?
+> 
+> we confirmed after applying them upon ee8962082a, the WARNING which was reported
+> in our original report cannot be reproduced any longer.
 
-does the warning go away when you run *only* the second patch?
+I am so confused.  With both patches applied, simulating VMX being disabled by
+BIOS, which is a _legal_ configuration, yields:
 
-I.e., this one:
+ ------------[ cut here ]------------
+ WARNING: CPU: 1 PID: 0 at arch/x86/kernel/cpu/cpuid-deps.c:118 do_clear_cpu_cap+0xf6/0x120
+ Modules linked in:
+ CPU: 1 PID: 0 Comm: swapper/1 Not tainted 6.9.0-rc3-28ed6849f6ae-rev/boris-vm #389
+ Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 0.0.0 02/06/2015
+ RIP: 0010:do_clear_cpu_cap+0xf6/0x120
+ Call Trace:
+  <TASK>
+  init_ia32_feat_ctl+0x133/0x420
+  init_intel+0x11/0x330
+  identify_cpu+0x242/0x670
+  identify_secondary_cpu+0xe/0x40
+  smp_store_cpu_info+0x48/0x60
+  start_secondary+0x73/0x120
+  common_startup_64+0x13b/0x141
+  </TASK>
+ ---[ end trace 0000000000000000 ]---
 
-https://lore.kernel.org/r/20240504125040.GCZjYvIAK9_DzKuHXh@fat_crate.local
+That's completely expected (by me at least), because as I said in the original
+thread, secondary CPUs are identified after alternatives are applied, and when VMX
+is disabled by BIOS, the feature flag will be initially set based on CPUID, and
+then cleared by init_ia32_feat_ctl().  I.e. patch 1 is wrong on multiple levels.
 
-?
+And without _either_ patch applied, no WARN occurs, which is again expected (by
+me), because init_ia32_feat_ctl() runs _before_ alternative_instructions() on the
+boot CPU, i.e. alternatives_patched will be false when do_clear_cpu_cap() is
+called by the boot CPU, and the boot_cpu_has(feature) that guards the WARN will
+be false when do_clear_cpu_cap() is called by secondary CPUs.
 
-I think in this case, it'll make sure that the misconfigured system is
-"reconfigured" properly wrt VMX etc...
+The only way the WARN could have fired without this series is if VMX is enabled
+in BIOS on the boot CPU, but disabled by BIOS on one more secondary CPUs.  And
+_that_ is a bogus setup that (a) the kernel absolutely should WARN about, and
+(b) _still_ occurs with one or both patches applied.
 
-Can you pls send dmesg and /proc/cpuinfo from that run?
-
-Thx.
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+So I don't see how this series could possibly have fixed the issue Oliver
+encountered, nor do I see any value in moving init_ia32_feat_ctl() into
+early_init_intel().
