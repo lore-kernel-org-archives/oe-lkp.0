@@ -1,111 +1,102 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F84053801
-	for <oe-lkp@lists.linux.dev>; Wed,  8 May 2024 08:37:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 023282744E
+	for <oe-lkp@lists.linux.dev>; Wed,  8 May 2024 09:01:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.17
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715157478; cv=fail; b=BxE7N0XZ0+lx7W0TLTOp+YBRK3dsm2e8Sw+s2p36owJRcIcOrxSjQjfqIOoj57FR797JX87jXaK7XEy4G6GDOklHDITMb/lzAETtpy58A5OriT8GoCgroXQJ2GjT3XSChLdaNldTRIVjv5CmHNtCeWQqFgR6f8DFRg6gHyj/918=
+	t=1715158876; cv=fail; b=JCcHBvyPqPoi7XAfqfKpY9IK9pab2n5/QeZ/tcUowk0aRaq67AQG4m9q1xsOI/G2pXJB3lEIVNK3+5nWKzIkVAG9NWNpGNxDnmI2LMFHJr4+CeKRUPPrcPyutr3AXYlVsQVDQSeF/aPF8UVShWrGhOmfdGnogm58nkFfuR+JYnQ=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715157478; c=relaxed/simple;
-	bh=PuS0DnVGNNyV9NqGQHxi5A2MhHuZcko3+2wartNN9kw=;
+	s=arc-20240116; t=1715158876; c=relaxed/simple;
+	bh=/ni6WSI6SY6PPiYFYjrLgSPOBQWKncxMeLwIM9O3zCU=;
 	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=ELutYo0cid3XolFntWd3WkRrmHjjqUVVcnAdsnaU56ocZr+rW5Hn/LXf5GeNqwFWeTzztcRVIjkpIKaMkDA/3fk1WXdvLGXdDkDTz3uxKogEcgTFzZBhZhNbAQ/oxYyxcGWdLm12nVokWhK49qHUnAyAN/sBxz5sC5yZ8Dj2rOI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ahzyW9Nt; arc=fail smtp.client-ip=198.175.65.19
+	 Content-Disposition:In-Reply-To:MIME-Version; b=N5EtkyST8N3YWG5YhX+3BVMeT71dhPp1IyEw9JgiACAaXTJ4VvRWqF57vG5j+5WuL194Jq6eQCh425OdkaBcn5mmwT2ZWnfETn8E548Batra7rWWI51CdpwVxqR6WdiR9WQJJUM3UamB+ngfWKeE/nSvyMYwHW9wRD0QlwA/LZ0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HTsOuRlj; arc=fail smtp.client-ip=198.175.65.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ahzyW9Nt"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HTsOuRlj"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1715157477; x=1746693477;
+  t=1715158874; x=1746694874;
   h=date:from:to:cc:subject:message-id:references:
    in-reply-to:mime-version;
-  bh=PuS0DnVGNNyV9NqGQHxi5A2MhHuZcko3+2wartNN9kw=;
-  b=ahzyW9NtsNy8vwpZ6hYUEIfC8edYznbZmuhGknAMWmcbuevPq65Hklib
-   GOqfZFjX/iZIvYGwspYACS8lThuUFVZjoreURfjGzqg1U7hKqm2lDjN42
-   8Np3QLe9OzCwlQgtT1GHCClv8SL7LxaDXfBz4UGWasCxuKpTu41BKNoRg
-   VoAbBiwRRB3+FVo9AXE925X8lz3gukEsmUZcPSwrghufg8rCLfkIczwIE
-   5pLqXRsGa7c0Tb72L9IVeh6LhDP73M8XIIeOR6xJCT24QhQrTkWDwuNZG
-   AkywrzB1IGAKFpxAGnP2gmKwcE+l8Gm9xKh8a30Io4XK9tfJcrNSYoTi7
-   A==;
-X-CSE-ConnectionGUID: kaIEGon9QJSpSJ8BjEE7Fw==
-X-CSE-MsgGUID: eABOXOrSTTynBgRO/HfcLQ==
-X-IronPort-AV: E=McAfee;i="6600,9927,11066"; a="10855603"
+  bh=/ni6WSI6SY6PPiYFYjrLgSPOBQWKncxMeLwIM9O3zCU=;
+  b=HTsOuRljRo1Dg+9Bya885lDbMaQ914E5lykv0dZDd8yFGYgtfw/Tajs9
+   E3E07rOCBV5Ni/fgk+m8n2DycB6/Di+7YOdCZDDXhaWiBl3mP9+4V3hew
+   XeT8l64rsV0yLPptBHXSNo8f1Y/LTshPmcfTsoxfgjSIMPwt4uUxxauUV
+   iludIA04Kn353BmiWJ8QJbAs67UbNv2fjxU3zyj+SvSXfiZ4qUNAcboFF
+   L98QO5gWG51vedWoCrq1aOUdpuHQNes+HLDZxa3JCYNumQX7cX+g1avbk
+   kuuQit8suHiCRVLMut877XRM0GELIU3Jgjmwb5S5xiKoZc91ZGskS5Ze0
+   Q==;
+X-CSE-ConnectionGUID: Pp+SLrzgTI2eYR8dcHfKYw==
+X-CSE-MsgGUID: PbjNmmyYTLy2uVcNcI+iJg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11066"; a="11130427"
 X-IronPort-AV: E=Sophos;i="6.08,144,1712646000"; 
-   d="scan'208";a="10855603"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2024 01:37:57 -0700
-X-CSE-ConnectionGUID: Ma9hA/HfTM6jr4Cn3pRguw==
-X-CSE-MsgGUID: ok2Muu3sRjCF9vzNkurZMw==
+   d="scan'208";a="11130427"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2024 02:01:14 -0700
+X-CSE-ConnectionGUID: 9EmJBxH3TuSRw6WubHLGBQ==
+X-CSE-MsgGUID: fZZJrtuZQ0m5srkH9hPvqQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.08,144,1712646000"; 
-   d="scan'208";a="66244065"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orviesa001.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 08 May 2024 01:37:57 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+   d="scan'208";a="52029313"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by fmviesa002.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 08 May 2024 02:01:13 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Wed, 8 May 2024 01:37:56 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ 15.1.2507.35; Wed, 8 May 2024 02:01:12 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Wed, 8 May 2024 01:37:56 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ 15.1.2507.35; Wed, 8 May 2024 02:01:12 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35 via Frontend Transport; Wed, 8 May 2024 01:37:56 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.100)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ 15.1.2507.35 via Frontend Transport; Wed, 8 May 2024 02:01:12 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.101)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Wed, 8 May 2024 01:37:53 -0700
+ 15.1.2507.35; Wed, 8 May 2024 02:01:12 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=foq55IU5dBoBeNiuITtqYMvPqdlAzcjsBN6srvmGnuG5QyDdOhPAdx2YsT5yQ8ET4U+qmd2uQcE9y9ESpd4FuJyFBYX2LeRQIjEBOHmFre0fa3iyIA9sRIHsbksHn/g63aUCV2CGoR0IpiKZfYYis50O9WY7SwpjJXHP2Pjkwfef+hwddY2tvhIjV3DPj6TwvUKHS4lCzKrvNBRH38u6xvkU30+DihsLw9iorYSykF36IyOFUTrTSA3YnmEvmsRbVjtitXXwyl/X6VQ55R3Ph9CTRKRcYveSQQyT+YAj7H7cNLjevaremtDIPGLbbNke9HMwYsQLFbPjkYL7/oF29A==
+ b=gTOL3ql0YhoB4IVo2fSFjJvF4uRHG/ijnhIpzZiinu2vVXOBTff351Wm+PAgQ3aoEBeenjKlEINHB7NGPpe3/V/IgLCLfVQeZakiQucPi01d8jrHtdmfFBBKoYO0UTMUobyun1F47NOXvrPCkS67qT0vCoB0CEfavNOFhNw2ecPaOu8qSApg7YuJAbYIpQFXm451jJAo8hRo2QzV3AqlSKKbvZYBV0/NWBgRxV0P/Eox9YB8UM4EXnDAEf2uZ+Naj2XvvIfzK0q47FdL4EKCRMiY2HBl+Wz475qxx4rA1fNqxzJaUDHKiZGK5KiKDbMjcytTQhwGMHIi+q2Z7P3xfA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HZRIE8QP+YJQhiYSLJwDMS2viN5R0wCmbWBCP3GA4ok=;
- b=ijB7nCNFp1yBJ+mKZqPqAF4bwEDPGUrxvwtsrvB47d9QdqrhS15IBHsoof0gcu3cqVN3csBeYuwpqPMNoO7hXrE2cTvrQ6lcXi921kUbae9foW4DsYDallMHqaURaAC/EjHyr4BazjSRTUk6w+m2jR30U0/+THK/lQnYlhSaYjUPb8TxtmpKfIZrMqkF09MTRTvnP4hLTDOKOzkR0Vbz1gG5+jn/HWwcoNcotbLHJm+QE9axFgtlNIn4gGTGgvRdud59AdNnu3bm0YNzTRkb2WgZsLSjD8to9i8mDIObBeCI1S6JA/3Wxf85IP63Ou2bm8w8PvbsVgP426ClA3NimQ==
+ bh=YV2crWyETajLLrkHEWAKJz3FE9E/3/2+5svwH0AVemk=;
+ b=h40HxNegRIwLxxN23R5OyhRK97g+eX9CAe9fo1Jt8bU9Lhv3l4Zo/FgPdmW604NpKV1fXVsMKnXpRHaZRqvHzNWo1SiBxNSzzJwl5w+GQLSm/p0NodEIp/+zmX2652T9DkaOT+jz6l4waWAQTNuZOyzdHgyHzOZ+3MAK7jmRjXfZoYLyxi9qwa6DN9WZ7bbMYyAgOqbiwJOA4Tvqb3o7rPQKrlSl4kwNuNH9Pq4FWP6hC/Bh5m9k+wxxRTKjcz+jspcvGuigN69YXUZmpwUgisOBNBEakc4SZA3O2tmlYe5wtvArFqWJOvomUZU3xxRHfwZZYYTC04eBq+hHY98aLA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by CO1PR11MB5028.namprd11.prod.outlook.com (2603:10b6:303:9a::12) with
+ by SN7PR11MB6996.namprd11.prod.outlook.com (2603:10b6:806:2af::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7544.45; Wed, 8 May
- 2024 08:37:52 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7544.42; Wed, 8 May
+ 2024 09:01:09 +0000
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c%2]) with mapi id 15.20.7544.041; Wed, 8 May 2024
- 08:37:52 +0000
-Date: Wed, 8 May 2024 16:37:42 +0800
+ 09:01:08 +0000
+Date: Wed, 8 May 2024 17:01:00 +0800
 From: Oliver Sang <oliver.sang@intel.com>
-To: Borislav Petkov <bp@alien8.de>
-CC: Sean Christopherson <seanjc@google.com>, <oe-lkp@lists.linux.dev>,
-	<lkp@intel.com>, <linux-kernel@vger.kernel.org>, <x86@kernel.org>, "Ingo
- Molnar" <mingo@kernel.org>, Srikanth Aithal <sraithal@amd.com>,
-	<fengwei.yin@intel.com>, <yujie.liu@intel.com>, <oliver.sang@intel.com>
-Subject: Re: [tip:x86/alternatives] [x86/alternatives] ee8962082a:
- WARNING:at_arch/x86/kernel/cpu/cpuid-deps.c:#do_clear_cpu_cap
-Message-ID: <Zjs51oZWhibDhWa3@xsang-OptiPlex-9020>
-References: <ZjFLpkgI3Zl4dsXs@google.com>
- <20240430223305.GFZjFxoSha7S5BYbIu@fat_crate.local>
- <20240504124822.GAZjYulrGPPX_4w4zK@fat_crate.local>
- <ZjiCJz4myN2DLnZ5@xsang-OptiPlex-9020>
- <Zjj3Lrv2NNHLEzzk@google.com>
- <20240506155759.GOZjj-B_Qrz4DCXwmb@fat_crate.local>
- <ZjnTW4XQwVHEiSaW@xsang-OptiPlex-9020>
- <20240507114814.GBZjoU_u5kYBhLips3@fat_crate.local>
- <Zjsy8v0pZHPMkjPY@xsang-OptiPlex-9020>
- <20240508082438.GBZjs2xsn4diYXU4ud@fat_crate.local>
+To: Z qiang <qiang.zhang1211@gmail.com>
+CC: Frederic Weisbecker <frederic@kernel.org>, <oe-lkp@lists.linux.dev>,
+	<lkp@intel.com>, Linux Memory Management List <linux-mm@kvack.org>, "Paul E.
+ McKenney" <paulmck@kernel.org>, <rcu@vger.kernel.org>, <yujie.liu@intel.com>,
+	<oliver.sang@intel.com>
+Subject: Re: [linux-next:master] [rcu/nocb] 4c66bc7cac:
+ BUG:using_smp_processor_id()in_preemptible
+Message-ID: <Zjs/TEtn/urkKw+m@xsang-OptiPlex-9020>
+References: <202405072252.959dadc4-lkp@intel.com>
+ <CALm+0cViRh07e88uMrRp=5K0TgBVFwmwLiLnejc7puEMXrmFsA@mail.gmail.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20240508082438.GBZjs2xsn4diYXU4ud@fat_crate.local>
-X-ClientProxiedBy: KL1PR02CA0032.apcprd02.prod.outlook.com
- (2603:1096:820:d::19) To LV3PR11MB8603.namprd11.prod.outlook.com
- (2603:10b6:408:1b6::9)
+In-Reply-To: <CALm+0cViRh07e88uMrRp=5K0TgBVFwmwLiLnejc7puEMXrmFsA@mail.gmail.com>
+X-ClientProxiedBy: SG3P274CA0020.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:be::32)
+ To LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -113,123 +104,370 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|CO1PR11MB5028:EE_
-X-MS-Office365-Filtering-Correlation-Id: 15dbf7d0-ab32-47e8-916f-08dc6f3a2626
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|SN7PR11MB6996:EE_
+X-MS-Office365-Filtering-Correlation-Id: 90d9077b-af96-4726-68ae-08dc6f3d66a0
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230031|366007|376005|1800799015;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?d50ABQLw3XRN0MN9yYwBXtiNZ5Yft2a5wgQlXw8lf3WrS0IUbQMDSb47Ejq0?=
- =?us-ascii?Q?rnxvQNcn4J9JtXTZnxjK9VHwqac5bVpE75qln5ms/th8UIi6p3n97JiaNLqr?=
- =?us-ascii?Q?SaJz0XK/PBJRnJ4cvMTa/b7EVVolDaHat+82d5wr/38cytxUkhBESfv8ZJSm?=
- =?us-ascii?Q?wO/ypypl/zE7qNDRNU6OhOjLlK3T6zfsA9U4JtjCJkZQQ/fol6FeGcwV5MDb?=
- =?us-ascii?Q?cPdOTzSxljrAiLbs0jsRLUcqdH5mIcywS0dGxa/fM+pdAI+1K4TElPdvr00H?=
- =?us-ascii?Q?6a6V0NTVBxCXPp5tccxRoB6hQEYlpDMTYSKb9ubmVyohJtANmzfFTyaWZpsJ?=
- =?us-ascii?Q?037RkGGbUGdGK3VyZzQ71YyGtDSRNAjhETV7s+rxQSdvHtAMpntfVnAklrEZ?=
- =?us-ascii?Q?cLoVpiE1zfCE4aSXnWM+JasdAVnm9LNvZC4sBdUx3DqxKDC1str0jNpBvGSq?=
- =?us-ascii?Q?5LptwRI1Mk+zyfsAvNwYjjaJ/gtRrMLBtLuAuV1VQ943qqofqeVpkPpb1WCx?=
- =?us-ascii?Q?hcRj2f1e945vLGe7fPO5GHJuryi1xL18D4GOHVVOBYIAS/4d8PiTfJfVwYmq?=
- =?us-ascii?Q?DacSgtjrLg0ntBpdfp5D1arwmvgRFhzKteFsiXasujlxlFlh5TVqayOB93g4?=
- =?us-ascii?Q?LUBYJMk0o9rGzS5h8AQZ27c6njMtkEkyxKZCd441UVT5h715uOKPU2vCJa2I?=
- =?us-ascii?Q?sqB0tCQ2fcVxuKTo+DtXAmrjY/hLewo94YrGCQxUy5IdM/vdbouEdExwQfJ4?=
- =?us-ascii?Q?hCVkuBgHPWarrFRyvu13djz9sjfM3q2LO/14oDomcTUTBLJWYKM+F6SNLtbY?=
- =?us-ascii?Q?S79A/XsSC+Io13Hji6TUTJbSawqb2wBwbQUNFriV8vaO5H6IbzX6FZIFaVWs?=
- =?us-ascii?Q?g1bsYxQk7si5vsVkGmuY0Hr1YTh/uFWh31x12DgWM/b4VPqFYwttBnNBhMwC?=
- =?us-ascii?Q?BCoBW50D/3vnTgbxXLGv/n0pHhdFxOixUak9iqdV3wYT3DwnIXfRHyC/3INr?=
- =?us-ascii?Q?0I+3Un8lOKO5GDFwbHIHdjp6T47y06+TOjHkr+gnKcL0J9mGExFPkA2aDj5y?=
- =?us-ascii?Q?Laoa1JGv2XBRr1iVKLu/1atJYz/9cQwwKt10Y+kCW9l90zWIL6TgO/hvU3iv?=
- =?us-ascii?Q?RnCSoJdH1TKwmlcvV/+uqUl3NP2HqjWDEhIY8akLy+saBLsTgqRv5EQMrfSR?=
- =?us-ascii?Q?5Dr4nuA6Yy9duUQFWqi1vmR5a+E2JZuqhMpVcxmgD5IEDVdiHbGEOrg13X0?=
+X-Microsoft-Antispam: BCL:0;ARA:13230031|1800799015|376005|366007;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?iNo8JOHbe8KZ5a+CrgtLjURCzpNueW9+oJZECZdQj0fXR5PN45NKXjzh7BKu?=
+ =?us-ascii?Q?QJn3Nm2MjOTCTb7iP1Mdyd2nrIcWsQsPpu5JkqmyAJNNzlVFHPsF0d+GipJ8?=
+ =?us-ascii?Q?8cuLuKR7Din/wFbp24TNnSeYHn5vz75X/YLQBFIRukmmt6btYTDYTCnaytFx?=
+ =?us-ascii?Q?s+M6i5lDKZahZWcSgdP+6XNBQy8LQIsOveb+PErhKQ5k0asieJyppRvmawhf?=
+ =?us-ascii?Q?3qppImK88AQJ+Gtmn48fcfTz/eodVe9kFMkApPTqBosFnfrQh9ydZC7+muRG?=
+ =?us-ascii?Q?IP8QSB685JSDy09Kd8gsp73UWO0AZ/RhgVNZtv6o4OM8M56p5f9YWiqoe3S/?=
+ =?us-ascii?Q?7GlvLmG/NlCzl2tPX7Gt+YWWrXKpfE/koo4zf0radRtRRKi3l5fbELAhCBux?=
+ =?us-ascii?Q?U4YbW1m9I0LQLudrLTjX+y3OVxYpZL+iEO0ViWhNHcFPS2tQHN1WwlLPEWCw?=
+ =?us-ascii?Q?cnisc01Hb12KZVp8y9FzLo98viyRho7t1S97sUJACkA5etONZrOpapQIqCra?=
+ =?us-ascii?Q?uQq3WvOqnpBG4eoBmMDNJJN+bBGHFHpXdPtv/NWaGheiJyHlhvMBK3qhTiih?=
+ =?us-ascii?Q?ItixpUy1BJGtIfuVkcZbDpjYjMwH50414an9099UIUnNBFzd4QsXsR5a41Fp?=
+ =?us-ascii?Q?whdHk2lFWl8IaJCs3x6c2zoQsCRaM3tOQIO4HFgfclUS2ZDkRR67pmzogHmR?=
+ =?us-ascii?Q?0eiY3mQ0c+9cDcKG51yOhyDAQMWx5iMM2uyJme3/P7tiNeq+LgDRvHP+Y9Ky?=
+ =?us-ascii?Q?x5UDO/EXV/DuNqopDsF99lwqP5tziw/lERvFrdI28UaJMEtyO2tHbnUf/Ma/?=
+ =?us-ascii?Q?xUpwrlRoxkslHceF5qKrsboAMh13j41OjdvLmi6NmYVLiEWTaGOjkc5QSmxM?=
+ =?us-ascii?Q?hd/eMUCpfM8SG6UCmvo1z092MrL5l7cfxCNT7RCFv6Riy8PlfQH6yVlGrVyI?=
+ =?us-ascii?Q?Qh4g6rIvN0SVs7/icoNMvSApR9DXy1+fZG57C436FoeXFd7YpvQnD3dZgFfH?=
+ =?us-ascii?Q?rFBxMToE0TFdeNUvjjaoOWfLmzNodKithfDtRg1TrMRsg7NAyRkI+RDxUp1L?=
+ =?us-ascii?Q?7eyr8DQJNlw6RanDAeGKvV2CNXQDBSrENnkNcD1YcFxzCBJMeliUEhR29dpW?=
+ =?us-ascii?Q?xzXNd9CQyNqbgMU3Z7U5G2ckZxTmiajOei6WRpbF8fJKSdxUk2RsKR2Q2d0s?=
+ =?us-ascii?Q?mpdGFy6XWVxOku8XbBn+P8vff8ad6Pp+oPUelsK+7/P56AT3TIP0TsuiFcE?=
  =?us-ascii?Q?=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(376005)(1800799015);DIR:OUT;SFP:1101;
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(376005)(366007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?+RQ4huqoQESBeCtyMSxQbyrP6ULrfFwAxkDE4JaB5Ams4zR6MVbudWDovCRx?=
- =?us-ascii?Q?F8e5E8i1PI9Cqj8S0khDjR+v094ycWGACFoM5gHZGDZflGhCI7NiCjIGla27?=
- =?us-ascii?Q?QJq82qAQSkaqoYLuoIOdMUxPkHNt4abJWylgZihccNUrY7n4r694NP/+2hnk?=
- =?us-ascii?Q?D2AIHrBn0kyq2fKG6diu9EfuhGMdgQ/lf5P2zyNfwmCS5w4Gma4dy/YE9o7k?=
- =?us-ascii?Q?2/1Ds5ZYsIT0f2Ba3w1UvZ/HdLfke24rzJguLpzE/u6n18fRDQG51zbYy96e?=
- =?us-ascii?Q?OtUPKZ1L0bFaw++2ldb9bhqb+gTLiXjEXzUcYnfZHx0FaomDffUGYnv3qpRX?=
- =?us-ascii?Q?GGGgFu43M5RJ9jRaW9LOZkGJnQvQbdXN2tcpCYx+tyx/S7O8nFtTBN4N8zR/?=
- =?us-ascii?Q?0JnmqNl+nkVz4OwceR7CchSeWOaMHQn4Nny0722zvoiGcsY/4JLuCyY+HEsM?=
- =?us-ascii?Q?crA+SsZq8bafucxOUW+Ntmx/Z8rkctAOKfLpEVDmMr6KvTzA8uSNVaSuLRGE?=
- =?us-ascii?Q?x+PqyuEepN3jwj7CoijTBObn2Q7XgWRRdl7WyPMDZDyQEnLfR3x78CGlANRR?=
- =?us-ascii?Q?HAsXWR5snchbHSFAiLhJyPNIYCnClhm/aS/X8QPimVwP5waTVfJOalOFXiJW?=
- =?us-ascii?Q?jX/UGcBrLIRB4fSo+VPY9nXK+dGBQ49RdmOyVHtq6KarEanblL/C8iwtBDWE?=
- =?us-ascii?Q?7VBKagRS12Tp1rLrcsB5AN/qng8oeazMOUX25Hmf0dCH5t/4Yjmj1RP3Dust?=
- =?us-ascii?Q?8SDCZYjP15EfwwCj3TMoWp5ynEMMBJbjbx0xYYZ4XwQIOanxPIED86kILBOr?=
- =?us-ascii?Q?M/2G/lgK6N++ZS51MGE3JeR48ny1cbmvVDss5cmx20lBNKfDon0K6xq1bhkX?=
- =?us-ascii?Q?4TASTsKYI4r/Nkjn9eIaoj3h8X6/gWYQ3LNyDwtUaXWsWkWsaAdZiPufzrWd?=
- =?us-ascii?Q?T/TsC9wJCzjNi6/bprfPn6mEKi+3rN95TmgHqkaQB6qlmPp7BwpJERoz+zIR?=
- =?us-ascii?Q?RXs6GP1MOTY/77yAk4heIKkcbjmhZCfx+kMBuMDM+dNAgqi+44XVm010ksBS?=
- =?us-ascii?Q?6IDTshXrm1P4KpqwGzDkUHhvLyMHaoEdZyoMYI6eKmL5r0eqmxZ/HCLK+ZRp?=
- =?us-ascii?Q?h4rxFtvuLKcAOrDymyL6wYpFagfguNTUikhVDweYc2TuOg9lZzEGV7Bc4Vxb?=
- =?us-ascii?Q?ru0gu7Cl4Be0x5r0SkzBlKiG1xWelQxUPsSjI8xgnO4gAF5SQNPnwo1YJjGl?=
- =?us-ascii?Q?/emkE/gms59K2pbFHUge/JX7lsDDRgiPRFCb4cHVNmhkqQqQjhjVZDciBnd+?=
- =?us-ascii?Q?UOC4RJ0q9eMi0wDZeLBjuAtfLsLuBstgc4rbjGfmfMXS6TsjZTHDNr3lcFu7?=
- =?us-ascii?Q?Blxay5Dvxv8SLCph76awnKJQcuiQx5vg9iQNU3Z1sV9wprJkZrkwGgdEz1iZ?=
- =?us-ascii?Q?q6AON8P0CWAeaAMmYqDalTcTHCCLc72JIYUfwnxOq3eJzQWIJwdJhr13nf3s?=
- =?us-ascii?Q?5qB/NBj5ItF7ImctfcWXkIMQnGKfHuN+ZdJQNj2j40v4dpDcMo1lPPfwvPx0?=
- =?us-ascii?Q?dkfk/yQvtDrzx+URowY9d6E8M+w1wWmyNrpj5UhBYTn2LIVCWwR8zoNzB/cF?=
- =?us-ascii?Q?lg=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 15dbf7d0-ab32-47e8-916f-08dc6f3a2626
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ppfrkBM40s0l+mvgB9Ce/tZE4V2aDE4z2ONsRTuLDIqZsBKNHeWKhElNi+re?=
+ =?us-ascii?Q?N8YY4uKrS0ZqU3m+sYaGSIQ40mnyaS+xvdblFnabUg3EuIsDhSZDgM1L8WlE?=
+ =?us-ascii?Q?Wh1d9glsIU2wb4tlEpiwLy59DZh2iSClECc57F1Vlg0PnHFOBiMKny7DMYi4?=
+ =?us-ascii?Q?zddPaofubwxf/KqE/GxEvthmYwoCpkCtaVisH2wwfy5AJ/ESgJYIdc0UUcMk?=
+ =?us-ascii?Q?L3lb/B914TwMfvS1Tq2ioS+c5U/T/jcUfUxjxv5BwZxLqZinYavbDco7szTo?=
+ =?us-ascii?Q?mvH4j2lniSn7TRzHR/CQnc7mu/i7CiFkm5sVVHKoRxeb9wpmR4F8dr9V8F+6?=
+ =?us-ascii?Q?7lMOhlhmht8zyFktAnom4PlExo0WQa9G408ihYKZ6FOZsYhBorWIcTDvl5Wi?=
+ =?us-ascii?Q?knAiZfBIFPmbwsgeabWaEhR7dRt4S+gZaUM34ZARITltNwG3pR33WZ5nb51D?=
+ =?us-ascii?Q?QJ7+pGaxqR8AUYqKBBhsw/e0CADsP2jG+CENhWDAPV7nj9DZV457Ue240FEJ?=
+ =?us-ascii?Q?bRo8/47ZDfQ5R5SWkmTPwl0mqAwohLyGZjyI1WgwPuP+9sLovifZHgQZ+GLF?=
+ =?us-ascii?Q?UTThjRC7rwPROYGwh+GZh4GQlGwoTJZCNw3IdHMT0ymbCO12ylimM9pUMDJ0?=
+ =?us-ascii?Q?8i9ODuOTD5kksKMB8C0qsbR/D9lv8kUVc4/aa73EIexmyAg9+oGpI1+0YXDZ?=
+ =?us-ascii?Q?ZMdfCRGr9DxSfmyncUxUgOPrWLAqk+PO7n8xNGnW8J6uAQktlO0bmeY/TVQv?=
+ =?us-ascii?Q?6T14UlOD70QDO5JaaEWzFuyydG+JNdZzK0B41PN3ZJl37f5Fu6NXezXYPjGK?=
+ =?us-ascii?Q?nR3nl6mbPqDUZ3OUJK4/u2TK1no0+6YZtpRmwN+dvk1M1JLRbyXwQ2PWOlvv?=
+ =?us-ascii?Q?YSKKHYo/EGvRT+lTVaz5gmUZd4taapPXwMApFdmT9EvgZxT2a62aSqt0EO/q?=
+ =?us-ascii?Q?DmEUJNqGNLoA1AtT5hS032XYUktSplXMtuDnfWPi9rjAy2MvD0CueePSBi5X?=
+ =?us-ascii?Q?Sh8m9hOGcclsmoQzNnE8o+9DjVpAYalMNcvmA3zZrC//Zhpn8d9O0USBOFLi?=
+ =?us-ascii?Q?HTrCQz3yOzf78zWvfDOQNeZxwQtor8VPh0J42b4a1UNZU1AfDQRLB9hGDSNX?=
+ =?us-ascii?Q?eT/Cw5E7i74lfYfJnmdSeGdAC0Aq2QtdDo4zSyyx3UQ4G/6sQE6xl5w4KvWu?=
+ =?us-ascii?Q?i4yD60cpPfudvAt0sAV0VC48YrjniU8TQtSzQRuB1HUCUYS5CFqpgoZ/eS7D?=
+ =?us-ascii?Q?ZF0Fdwi8MRLHSGO/A5g3jDW01Mw19eYbD5zuG+dcjhqVkpYH78QKqFsLNnoy?=
+ =?us-ascii?Q?7zmXFWnEchKqma4h0jPhcr/jb4PeyJh3FyedV3FgrlMcI1YkNCxvV4E1dwzy?=
+ =?us-ascii?Q?F/NUpSIu5XMfYXIncb2+EaC7OsUxYGW+4Ja6Ltvx9QiVqdPfeOopqKAyyu50?=
+ =?us-ascii?Q?4mAx/IoR8vBUWXcmheJkPDZ8XJPfYhtHNXsEUq4FVJU9yPqPO2jwdi/UUAEc?=
+ =?us-ascii?Q?txSzQlOPzOzfnSFw1uRKFJSRId8/xqaO6hE4A6ZDxxUUuifR1qMQVz97+keO?=
+ =?us-ascii?Q?Dh21OSrCRb538nDR2NUVpw6mbDzWvUK5++6R/i7f9PTCr5s57ur6sjLY8JHE?=
+ =?us-ascii?Q?Iw=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 90d9077b-af96-4726-68ae-08dc6f3d66a0
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2024 08:37:51.9510
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2024 09:01:08.9009
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: hI/F4+OjJqy/pGeFSPcDy7eqWMJ+xvTQOyP0hblQLXYNAFwWwJ3AS2vyC9Zh+7RwQ25yCAL7pZfa9sUnUwI/4w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR11MB5028
+X-MS-Exchange-CrossTenant-UserPrincipalName: ZbvWoVJE2x8f/sziDEhftZmwtFChCC/tYjTN3vG0Y0SyLdvoNXKF943Dncjhd7hGRXjH5DGb7B1p9E16ztuAkA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB6996
 X-OriginatorOrg: intel.com
 
-hi, Boris,
+hi, Z qiang,
 
-On Wed, May 08, 2024 at 10:24:38AM +0200, Borislav Petkov wrote:
-> On Wed, May 08, 2024 at 04:08:18PM +0800, Oliver Sang wrote:
-> > we really don't do any manual change recently, however, per your reminding,
-> > we rerun tests on both ee8962082a and its parent v6.9-rc3 again.
-> > 
-> > while we made original report, we always saw below for both commits.
-> > "x86/cpu: VMX (outside TXT) disabled by BIOS"
-> > 
-> > by rerun today, we cannot see it again, on both commits.
+On Wed, May 08, 2024 at 12:55:25PM +0800, Z qiang wrote:
+> >
+> >
+> >
+> > Hello,
+> >
+> > kernel test robot noticed "BUG:using_smp_processor_id()in_preemptible" on:
+> >
+> > commit: 4c66bc7cacc08e8abcf5049d2b90bfd800904336 ("rcu/nocb: Use kthread parking instead of ad-hoc implementation")
+> > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+> >
+> > [test failed on linux-next/master 9221b2819b8a4196eecf5476d66201be60fbcf29]
+> >
+> > in testcase: boot
+> >
+> > compiler: gcc-13
+> > test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+> >
+> > (please refer to attached dmesg/kmsg for entire log/backtrace)
+> >
+> >
+> > +--------------------------------------------------------------+------------+------------+
+> > |                                                              | 6deb20902f | 4c66bc7cac |
+> > +--------------------------------------------------------------+------------+------------+
+> > | BUG:using_smp_processor_id()in_preemptible                   | 0          | 12         |
+> > +--------------------------------------------------------------+------------+------------+
+> >
+> >
+> > If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> > the same patch/commit), kindly add following tags
+> > | Reported-by: kernel test robot <oliver.sang@intel.com>
+> > | Closes: https://lore.kernel.org/oe-lkp/202405072252.959dadc4-lkp@intel.com
+> >
+> >
+> > [    4.099901][   T18] BUG: using smp_processor_id() in preemptible [00000000] code: rcuop/0/18
+> > [ 4.101313][ T18] caller is debug_smp_processor_id (lib/smp_processor_id.c:61)
+> > [    4.102493][   T18] CPU: 0 PID: 18 Comm: rcuop/0 Not tainted 6.9.0-rc2-00079-g4c66bc7cacc0 #1
+> > [    4.104098][   T18] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> > [    4.104398][   T18] Call Trace:
+> > [    4.104398][   T18]  <TASK>
+> > [ 4.104398][ T18] dump_stack_lvl (lib/dump_stack.c:116)
+> > [ 4.104398][ T18] dump_stack (lib/dump_stack.c:124)
+> > [ 4.104398][ T18] check_preemption_disabled (arch/x86/include/asm/preempt.h:84 (discriminator 15) lib/smp_processor_id.c:53 (discriminator 15))
+> > [ 4.104398][ T18] debug_smp_processor_id (lib/smp_processor_id.c:61)
+> > [ 4.104398][ T18] rcu_rdp_is_offloaded (kernel/rcu/tree_plugin.h:27 (discriminator 1))
+> > [ 4.104398][ T18] nocb_cb_wait (kernel/rcu/tree_nocb.h:936 (discriminator 2))
 > 
-> Yeah, from the last dump you shouldn't be seeing it.
 > 
-> > then for ee8962082a, the reported
-> >   WARNING:at_arch/x86/kernel/cpu/cpuid-deps.c:#do_clear_cpu_cap
-> > disappeared also while no "x86/cpu: VMX (outside TXT) disabled by BIOS"
-> 
-> Yeah, it does feel like something underneath the OS has changed/is
-> changing for this to happen.
-> 
-> > we are using kexec to boot into kernel, and the kernel images keep same,
-> > so we are sure this strage phenomenon is not caused by kernel build.
-> 
-> Hmm, kexec won't go through BIOS so I can imagine if the kernel has left
-> FEAT_CTL in some weird state... but then if it has been locked, nothing
-> should change it anymore.
-> 
-> > now we doubt it's really a bios issue, we found another similar machine,
-> > which also show "x86/cpu: VMX (outside TXT) disabled by BIOS", but after
-> > several rounds of cold reboot, the message disappeared, too.
-> 
-> If you see that again, please run my branch with the debug patch - that
-> should at least tell us what's weird in FEAT_CTL.
+> Please try the following modifications:
 
-thanks a lot for education! sure, we will do that.
+
+the issue gone with below patch.
+
+Tested-by: kernel test robot <oliver.sang@intel.com>
 
 > 
-> > we will investigate this BIOS further and avoid this kind of misleading
-> > report in the future.
-> > 
-> > sorry again :(
+> diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h
+> index 340bbefe5f65..b93e40206621 100644
+> --- a/kernel/rcu/tree_plugin.h
+> +++ b/kernel/rcu/tree_plugin.h
+> @@ -28,8 +28,8 @@ static bool rcu_rdp_is_offloaded(struct rcu_data *rdp)
+>                 !(lockdep_is_held(&rcu_state.barrier_mutex) ||
+>                   (IS_ENABLED(CONFIG_HOTPLUG_CPU) && lockdep_is_cpus_held()) ||
+>                   rcu_lockdep_is_held_nocb(rdp) ||
+> -                 (rdp == this_cpu_ptr(&rcu_data) &&
+> -                  !(IS_ENABLED(CONFIG_PREEMPT_COUNT) && preemptible())) ||
+> +                  (!(IS_ENABLED(CONFIG_PREEMPT_COUNT) && preemptible()) &&
+> +                   rdp == this_cpu_ptr(&rcu_data)) ||
+>                   rcu_current_is_nocb_kthread(rdp)),
+>                 "Unsafe read of RCU_NOCB offloaded state"
+>         );
 > 
-> No worries, thanks for testing kernels and thanks Sean too. :-)
+> Thanks
+> Zqiang
 > 
-> -- 
-> Regards/Gruss,
->     Boris.
 > 
-> https://people.kernel.org/tglx/notes-about-netiquette
-> 
+> > [ 4.104398][ T18] ? __this_cpu_preempt_check (lib/smp_processor_id.c:67)
+> > [ 4.104398][ T18] ? lockdep_hardirqs_on (kernel/locking/lockdep.c:4421 (discriminator 16))
+> > [ 4.104398][ T18] rcu_nocb_cb_kthread (kernel/rcu/tree_nocb.h:983 (discriminator 1))
+> > [ 4.104398][ T18] ? nocb_cb_wait (kernel/rcu/tree_nocb.h:976)
+> > [ 4.104398][ T18] kthread (kernel/kthread.c:388)
+> > [ 4.104398][ T18] ? kthread (kernel/kthread.c:373 (discriminator 2))
+> > [ 4.104398][ T18] ? kthread_complete_and_exit (kernel/kthread.c:341)
+> > [ 4.104398][ T18] ret_from_fork (arch/x86/kernel/process.c:153)
+> > [ 4.104398][ T18] ? kthread_complete_and_exit (kernel/kthread.c:341)
+> > [ 4.104398][ T18] ret_from_fork_asm (arch/x86/entry/entry_64.S:256)
+> > [    4.104398][   T18]  </TASK>
+> > [    4.106221][   T18] BUG: using smp_processor_id() in preemptible [00000000] code: rcuop/0/18
+> > [ 4.107796][ T18] caller is debug_smp_processor_id (lib/smp_processor_id.c:61)
+> > [    4.108547][   T18] CPU: 0 PID: 18 Comm: rcuop/0 Not tainted 6.9.0-rc2-00079-g4c66bc7cacc0 #1
+> > [    4.109667][   T18] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> > [    4.111064][   T18] Call Trace:
+> > [    4.111064][   T18]  <TASK>
+> > [ 4.111064][ T18] dump_stack_lvl (lib/dump_stack.c:116)
+> > [ 4.111064][ T18] dump_stack (lib/dump_stack.c:124)
+> > [ 4.111064][ T18] check_preemption_disabled (arch/x86/include/asm/preempt.h:84 (discriminator 15) lib/smp_processor_id.c:53 (discriminator 15))
+> > [ 4.111064][ T18] debug_smp_processor_id (lib/smp_processor_id.c:61)
+> > [ 4.111064][ T18] rcu_rdp_is_offloaded (kernel/rcu/tree_plugin.h:27 (discriminator 1))
+> > [ 4.111064][ T18] nocb_cb_wait (kernel/rcu/tree_nocb.h:936 (discriminator 2))
+> > [ 4.111064][ T18] rcu_nocb_cb_kthread (kernel/rcu/tree_nocb.h:983 (discriminator 1))
+> > [ 4.111064][ T18] ? nocb_cb_wait (kernel/rcu/tree_nocb.h:976)
+> > [ 4.111064][ T18] kthread (kernel/kthread.c:388)
+> > [ 4.111064][ T18] ? kthread (kernel/kthread.c:373 (discriminator 2))
+> > [ 4.111064][ T18] ? kthread_complete_and_exit (kernel/kthread.c:341)
+> > [ 4.111064][ T18] ret_from_fork (arch/x86/kernel/process.c:153)
+> > [ 4.111064][ T18] ? kthread_complete_and_exit (kernel/kthread.c:341)
+> > [ 4.111064][ T18] ret_from_fork_asm (arch/x86/entry/entry_64.S:256)
+> > [    4.111064][   T18]  </TASK>
+> > [    4.132677][    T1] NMI watchdog: Perf NMI watchdog permanently disabled
+> > [    4.135331][   T18] BUG: using smp_processor_id() in preemptible [00000000] code: rcuop/0/18
+> > [ 4.137454][ T18] caller is debug_smp_processor_id (lib/smp_processor_id.c:61)
+> > [    4.137849][   T18] CPU: 0 PID: 18 Comm: rcuop/0 Not tainted 6.9.0-rc2-00079-g4c66bc7cacc0 #1
+> > [    4.139414][   T18] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> > [    4.141064][   T18] Call Trace:
+> > [    4.141064][   T18]  <TASK>
+> > [ 4.141064][ T18] dump_stack_lvl (lib/dump_stack.c:116)
+> > [ 4.141064][ T18] dump_stack (lib/dump_stack.c:124)
+> > [ 4.141064][ T18] check_preemption_disabled (arch/x86/include/asm/preempt.h:84 (discriminator 15) lib/smp_processor_id.c:53 (discriminator 15))
+> > [ 4.141064][ T18] debug_smp_processor_id (lib/smp_processor_id.c:61)
+> > [ 4.141064][ T18] rcu_rdp_is_offloaded (kernel/rcu/tree_plugin.h:27 (discriminator 1))
+> > [ 4.141064][ T18] nocb_cb_wait (kernel/rcu/tree_nocb.h:936 (discriminator 2))
+> > [ 4.141064][ T18] rcu_nocb_cb_kthread (kernel/rcu/tree_nocb.h:983 (discriminator 1))
+> > [ 4.141064][ T18] ? nocb_cb_wait (kernel/rcu/tree_nocb.h:976)
+> > [ 4.141064][ T18] kthread (kernel/kthread.c:388)
+> > [ 4.141064][ T18] ? kthread (kernel/kthread.c:373 (discriminator 2))
+> > [ 4.141064][ T18] ? kthread_complete_and_exit (kernel/kthread.c:341)
+> > [ 4.141064][ T18] ret_from_fork (arch/x86/kernel/process.c:153)
+> > [ 4.141064][ T18] ? kthread_complete_and_exit (kernel/kthread.c:341)
+> > [ 4.141064][ T18] ret_from_fork_asm (arch/x86/entry/entry_64.S:256)
+> > [    4.141064][   T18]  </TASK>
+> > [    4.141391][   T18] BUG: using smp_processor_id() in preemptible [00000000] code: rcuop/0/18
+> > [ 4.143427][ T18] caller is debug_smp_processor_id (lib/smp_processor_id.c:61)
+> > [    4.144497][   T18] CPU: 0 PID: 18 Comm: rcuop/0 Not tainted 6.9.0-rc2-00079-g4c66bc7cacc0 #1
+> > [    4.146055][   T18] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> > [    4.147731][   T18] Call Trace:
+> > [    4.147731][   T18]  <TASK>
+> > [ 4.147731][ T18] dump_stack_lvl (lib/dump_stack.c:116)
+> > [ 4.147731][ T18] dump_stack (lib/dump_stack.c:124)
+> > [ 4.147731][ T18] check_preemption_disabled (arch/x86/include/asm/preempt.h:84 (discriminator 15) lib/smp_processor_id.c:53 (discriminator 15))
+> > [ 4.147731][ T18] debug_smp_processor_id (lib/smp_processor_id.c:61)
+> > [ 4.147731][ T18] rcu_rdp_is_offloaded (kernel/rcu/tree_plugin.h:27 (discriminator 1))
+> > [ 4.147731][ T18] nocb_cb_wait (kernel/rcu/tree_nocb.h:936 (discriminator 2))
+> > [ 4.147731][ T18] rcu_nocb_cb_kthread (kernel/rcu/tree_nocb.h:983 (discriminator 1))
+> > [ 4.147731][ T18] ? nocb_cb_wait (kernel/rcu/tree_nocb.h:976)
+> > [ 4.147731][ T18] kthread (kernel/kthread.c:388)
+> > [ 4.147731][ T18] ? kthread (kernel/kthread.c:373 (discriminator 2))
+> > [ 4.147731][ T18] ? kthread_complete_and_exit (kernel/kthread.c:341)
+> > [ 4.147731][ T18] ret_from_fork (arch/x86/kernel/process.c:153)
+> > [ 4.147731][ T18] ? kthread_complete_and_exit (kernel/kthread.c:341)
+> > [ 4.147731][ T18] ret_from_fork_asm (arch/x86/entry/entry_64.S:256)
+> > [    4.147731][   T18]  </TASK>
+> > [    4.148538][   T18] BUG: using smp_processor_id() in preemptible [00000000] code: rcuop/0/18
+> > [ 4.150537][ T18] caller is debug_smp_processor_id (lib/smp_processor_id.c:61)
+> > [    4.151144][   T18] CPU: 0 PID: 18 Comm: rcuop/0 Not tainted 6.9.0-rc2-00079-g4c66bc7cacc0 #1
+> > [    4.152635][   T18] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> > [    4.154398][   T18] Call Trace:
+> > [    4.154398][   T18]  <TASK>
+> > [ 4.154398][ T18] dump_stack_lvl (lib/dump_stack.c:116)
+> > [ 4.154398][ T18] dump_stack (lib/dump_stack.c:124)
+> > [ 4.154398][ T18] check_preemption_disabled (arch/x86/include/asm/preempt.h:84 (discriminator 15) lib/smp_processor_id.c:53 (discriminator 15))
+> > [ 4.154398][ T18] debug_smp_processor_id (lib/smp_processor_id.c:61)
+> > [ 4.154398][ T18] rcu_rdp_is_offloaded (kernel/rcu/tree_plugin.h:27 (discriminator 1))
+> > [ 4.154398][ T18] nocb_cb_wait (kernel/rcu/tree_nocb.h:936 (discriminator 2))
+> > [ 4.154398][ T18] rcu_nocb_cb_kthread (kernel/rcu/tree_nocb.h:983 (discriminator 1))
+> > [ 4.154398][ T18] ? nocb_cb_wait (kernel/rcu/tree_nocb.h:976)
+> > [ 4.154398][ T18] kthread (kernel/kthread.c:388)
+> > [ 4.154398][ T18] ? kthread (kernel/kthread.c:373 (discriminator 2))
+> > [ 4.154398][ T18] ? kthread_complete_and_exit (kernel/kthread.c:341)
+> > [ 4.154398][ T18] ret_from_fork (arch/x86/kernel/process.c:153)
+> > [ 4.154398][ T18] ? kthread_complete_and_exit (kernel/kthread.c:341)
+> > [ 4.154398][ T18] ret_from_fork_asm (arch/x86/entry/entry_64.S:256)
+> > [    4.154398][   T18]  </TASK>
+> > [    4.156100][    T1] smp: Bringing up secondary CPUs ...
+> > [    4.159421][   T18] BUG: using smp_processor_id() in preemptible [00000000] code: rcuop/0/18
+> > [ 4.161134][ T18] caller is debug_smp_processor_id (lib/smp_processor_id.c:61)
+> > [    4.162569][   T18] CPU: 0 PID: 18 Comm: rcuop/0 Not tainted 6.9.0-rc2-00079-g4c66bc7cacc0 #1
+> > [    4.164398][   T18] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> > [    4.164398][   T18] Call Trace:
+> > [    4.164398][   T18]  <TASK>
+> > [ 4.164398][ T18] dump_stack_lvl (lib/dump_stack.c:116)
+> > [ 4.164398][ T18] dump_stack (lib/dump_stack.c:124)
+> > [ 4.164398][ T18] check_preemption_disabled (arch/x86/include/asm/preempt.h:84 (discriminator 15) lib/smp_processor_id.c:53 (discriminator 15))
+> > [ 4.164398][ T18] debug_smp_processor_id (lib/smp_processor_id.c:61)
+> > [ 4.164398][ T18] rcu_rdp_is_offloaded (kernel/rcu/tree_plugin.h:27 (discriminator 1))
+> > [ 4.164398][ T18] nocb_cb_wait (kernel/rcu/tree_nocb.h:936 (discriminator 2))
+> > [ 4.164398][ T18] rcu_nocb_cb_kthread (kernel/rcu/tree_nocb.h:983 (discriminator 1))
+> > [ 4.164398][ T18] ? nocb_cb_wait (kernel/rcu/tree_nocb.h:976)
+> > [ 4.164398][ T18] kthread (kernel/kthread.c:388)
+> > [ 4.164398][ T18] ? kthread (kernel/kthread.c:373 (discriminator 2))
+> > [ 4.164398][ T18] ? kthread_complete_and_exit (kernel/kthread.c:341)
+> > [ 4.164398][ T18] ret_from_fork (arch/x86/kernel/process.c:153)
+> > [ 4.164398][ T18] ? kthread_complete_and_exit (kernel/kthread.c:341)
+> > [ 4.164398][ T18] ret_from_fork_asm (arch/x86/entry/entry_64.S:256)
+> > [    4.164398][   T18]  </TASK>
+> > [    4.168016][   T18] BUG: using smp_processor_id() in preemptible [00000000] code: rcuop/0/18
+> > [ 4.170139][ T18] caller is debug_smp_processor_id (lib/smp_processor_id.c:61)
+> > [    4.171170][   T18] CPU: 0 PID: 18 Comm: rcuop/0 Not tainted 6.9.0-rc2-00079-g4c66bc7cacc0 #1
+> > [    4.173242][   T18] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> > [    4.174398][   T18] Call Trace:
+> > [    4.174398][   T18]  <TASK>
+> > [ 4.174398][ T18] dump_stack_lvl (lib/dump_stack.c:116)
+> > [ 4.174398][ T18] dump_stack (lib/dump_stack.c:124)
+> > [ 4.174398][ T18] check_preemption_disabled (arch/x86/include/asm/preempt.h:84 (discriminator 15) lib/smp_processor_id.c:53 (discriminator 15))
+> > [ 4.174398][ T18] debug_smp_processor_id (lib/smp_processor_id.c:61)
+> > [ 4.174398][ T18] rcu_rdp_is_offloaded (kernel/rcu/tree_plugin.h:27 (discriminator 1))
+> > [ 4.174398][ T18] nocb_cb_wait (kernel/rcu/tree_nocb.h:936 (discriminator 2))
+> > [ 4.174398][ T18] rcu_nocb_cb_kthread (kernel/rcu/tree_nocb.h:983 (discriminator 1))
+> > [ 4.174398][ T18] ? nocb_cb_wait (kernel/rcu/tree_nocb.h:976)
+> > [ 4.174398][ T18] kthread (kernel/kthread.c:388)
+> > [ 4.174398][ T18] ? kthread (kernel/kthread.c:373 (discriminator 2))
+> > [ 4.174398][ T18] ? kthread_complete_and_exit (kernel/kthread.c:341)
+> > [ 4.174398][ T18] ret_from_fork (arch/x86/kernel/process.c:153)
+> > [ 4.174398][ T18] ? kthread_complete_and_exit (kernel/kthread.c:341)
+> > [ 4.174398][ T18] ret_from_fork_asm (arch/x86/entry/entry_64.S:256)
+> > [    4.174398][   T18]  </TASK>
+> > [    4.189949][    T1] smpboot: x86: Booting SMP configuration:
+> > [    4.191158][    T1] .... node  #0, CPUs:      #1
+> > [    1.668906][    T0] masked ExtINT on CPU#1
+> > [    4.202955][   T29] BUG: using smp_processor_id() in preemptible [00000000] code: rcuop/1/29
+> > [ 4.204471][ T29] caller is debug_smp_processor_id (lib/smp_processor_id.c:61)
+> > [    4.205845][   T29] CPU: 0 PID: 29 Comm: rcuop/1 Not tainted 6.9.0-rc2-00079-g4c66bc7cacc0 #1
+> > [    4.207731][   T29] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> > [    4.207731][   T29] Call Trace:
+> > [    4.207731][   T29]  <TASK>
+> > [ 4.207731][ T29] dump_stack_lvl (lib/dump_stack.c:116)
+> > [ 4.207731][ T29] dump_stack (lib/dump_stack.c:124)
+> > [ 4.207731][ T29] check_preemption_disabled (arch/x86/include/asm/preempt.h:84 (discriminator 15) lib/smp_processor_id.c:53 (discriminator 15))
+> > [ 4.207731][ T29] debug_smp_processor_id (lib/smp_processor_id.c:61)
+> > [ 4.207731][ T29] rcu_rdp_is_offloaded (kernel/rcu/tree_plugin.h:27 (discriminator 1))
+> > [ 4.207731][ T29] nocb_cb_wait (kernel/rcu/tree_nocb.h:936 (discriminator 2))
+> > [ 4.207731][ T29] ? __this_cpu_preempt_check (lib/smp_processor_id.c:67)
+> > [ 4.207731][ T29] ? lockdep_hardirqs_on (kernel/locking/lockdep.c:4421 (discriminator 16))
+> > [ 4.207731][ T29] rcu_nocb_cb_kthread (kernel/rcu/tree_nocb.h:983 (discriminator 1))
+> > [ 4.207731][ T29] ? nocb_cb_wait (kernel/rcu/tree_nocb.h:976)
+> > [ 4.207731][ T29] kthread (kernel/kthread.c:388)
+> > [ 4.207731][ T29] ? kthread (kernel/kthread.c:373 (discriminator 2))
+> > [ 4.207731][ T29] ? kthread_complete_and_exit (kernel/kthread.c:341)
+> > [ 4.207731][ T29] ret_from_fork (arch/x86/kernel/process.c:153)
+> > [ 4.207731][ T29] ? kthread_complete_and_exit (kernel/kthread.c:341)
+> > [ 4.207731][ T29] ret_from_fork_asm (arch/x86/entry/entry_64.S:256)
+> > [    4.207731][   T29]  </TASK>
+> > [    4.207989][   T18] BUG: using smp_processor_id() in preemptible [00000000] code: rcuop/0/18
+> > [ 4.209997][ T18] caller is debug_smp_processor_id (lib/smp_processor_id.c:61)
+> > [    4.211188][   T18] CPU: 0 PID: 18 Comm: rcuop/0 Not tainted 6.9.0-rc2-00079-g4c66bc7cacc0 #1
+> > [    4.212898][   T18] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> > [    4.214398][   T18] Call Trace:
+> > [    4.214398][   T18]  <TASK>
+> > [ 4.214398][ T18] dump_stack_lvl (lib/dump_stack.c:116)
+> > [ 4.214398][ T18] dump_stack (lib/dump_stack.c:124)
+> > [ 4.214398][ T18] check_preemption_disabled (arch/x86/include/asm/preempt.h:84 (discriminator 15) lib/smp_processor_id.c:53 (discriminator 15))
+> > [ 4.214398][ T18] debug_smp_processor_id (lib/smp_processor_id.c:61)
+> > [ 4.214398][ T18] rcu_rdp_is_offloaded (kernel/rcu/tree_plugin.h:27 (discriminator 1))
+> > [ 4.214398][ T18] nocb_cb_wait (kernel/rcu/tree_nocb.h:936 (discriminator 2))
+> > [ 4.214398][ T18] rcu_nocb_cb_kthread (kernel/rcu/tree_nocb.h:983 (discriminator 1))
+> > [ 4.214398][ T18] ? nocb_cb_wait (kernel/rcu/tree_nocb.h:976)
+> > [ 4.214398][ T18] kthread (kernel/kthread.c:388)
+> > [ 4.214398][ T18] ? kthread (kernel/kthread.c:373 (discriminator 2))
+> > [ 4.214398][ T18] ? kthread_complete_and_exit (kernel/kthread.c:341)
+> > [ 4.214398][ T18] ret_from_fork (arch/x86/kernel/process.c:153)
+> > [ 4.214398][ T18] ? kthread_complete_and_exit (kernel/kthread.c:341)
+> > [ 4.214398][ T18] ret_from_fork_asm (arch/x86/entry/entry_64.S:256)
+> > [    4.214398][   T18]  </TASK>
+> > [    4.215399][   T18] BUG: using smp_processor_id() in preemptible [00000000] code: rcuop/0/18
+> > [ 4.217064][ T18] caller is debug_smp_processor_id (lib/smp_processor_id.c:61)
+> > [    4.217772][   T18] CPU: 0 PID: 18 Comm: rcuop/0 Not tainted 6.9.0-rc2-00079-g4c66bc7cacc0 #1
+> > [    4.219363][   T18] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> > [    4.221064][   T18] Call Trace:
+> > [    4.221064][   T18]  <TASK>
+> > [ 4.221064][ T18] dump_stack_lvl (lib/dump_stack.c:116)
+> > [ 4.221064][ T18] dump_stack (lib/dump_stack.c:124)
+> > [ 4.221064][ T18] check_preemption_disabled (arch/x86/include/asm/preempt.h:84 (discriminator 15) lib/smp_processor_id.c:53 (discriminator 15))
+> > [ 4.221064][ T18] debug_smp_processor_id (lib/smp_processor_id.c:61)
+> > [ 4.221064][ T18] rcu_rdp_is_offloaded (kernel/rcu/tree_plugin.h:27 (discriminator 1))
+> > [ 4.221064][ T18] nocb_cb_wait (kernel/rcu/tree_nocb.h:936 (discriminator 2))
+> > [ 4.221064][ T18] rcu_nocb_cb_kthread (kernel/rcu/tree_nocb.h:983 (discriminator 1))
+> > [ 4.221064][ T18] ? nocb_cb_wait (kernel/rcu/tree_nocb.h:976)
+> > [ 4.221064][ T18] kthread (kernel/kthread.c:388)
+> > [ 4.221064][ T18] ? kthread (kernel/kthread.c:373 (discriminator 2))
+> > [ 4.221064][ T18] ? kthread_complete_and_exit (kernel/kthread.c:341)
+> > [ 4.221064][ T18] ret_from_fork (arch/x86/kernel/process.c:153)
+> > [ 4.221064][ T18] ? kthread_complete_and_exit (kernel/kthread.c:341)
+> > [ 4.221064][ T18] ret_from_fork_asm (arch/x86/entry/entry_64.S:256)
+> > [    4.221064][   T18]  </TASK>
+> >
+> >
+> >
+> > The kernel config and materials to reproduce are available at:
+> > https://download.01.org/0day-ci/archive/20240507/202405072252.959dadc4-lkp@intel.com
+> >
+> >
+> >
+> > --
+> > 0-DAY CI Kernel Test Service
+> > https://github.com/intel/lkp-tests/wiki
+> >
+> >
