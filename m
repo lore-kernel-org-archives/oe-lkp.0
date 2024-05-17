@@ -1,103 +1,99 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15F11125AE
-	for <oe-lkp@lists.linux.dev>; Fri, 17 May 2024 05:56:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B96E914F65
+	for <oe-lkp@lists.linux.dev>; Fri, 17 May 2024 07:06:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.10
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715925411; cv=fail; b=fwdGbIVPF3OtQ6kcvPnEYbm+YAkXeU5ZtQNtpV6iKaL3Imsmuo/UQKIWV/XJJ1/Qc/nJut6hVb0XBsmHaazDd+q2h13fJF/PR9wcsSzqw+byjFEcLjGNgOYb4aA+X8pjjvts6mMyiykSFr2pEX3fQw7QVhal5l9kpPuMp3R1GY4=
+	t=1715929571; cv=fail; b=g+x8YVOIY57YLz/ay7TBi2LFZLfxI81wg58KAViKMsJr1w20ZlIBueh7DYBJlnOT3RL/OBlZ7wCjjudyFrvTUuJVp0gq4KjEZLqzRR1gw5+uOsS2DdGXJpn4YUTghBJsO/+rNt8ARgJIjrUydOiaLqmXtkc2TPWgoy3sIWUybcc=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715925411; c=relaxed/simple;
-	bh=EZ3/xTihuufB0hLoZ+ANEpdamAkna1M5Z4yTc12q38Y=;
+	s=arc-20240116; t=1715929571; c=relaxed/simple;
+	bh=2oEmcArWbqq3+ALEJ0Z1hP3UjNqGcLLs5cRm0AajHeo=;
 	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=gttHFx3krWmYQRU3L/Wh9ywiD2lu1hSH5qWe/muasWoedGoq1fJT6MQdNhtGX48lUOe93h3rPGZakvU34RDC4UGMog1tMQoMdyUvpLLGU5srdn3W9JrkaWbPPVM8cT44ZR6tYggHQQKlTWFQXCEZp+gXnVLxNieshSYMyfeo+5k=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=YTdTVIJR; arc=fail smtp.client-ip=192.198.163.12
+	 Content-Disposition:In-Reply-To:MIME-Version; b=jlexjedOZjJHK/Oa8fuVVNBxxhHmXLsjLeaCTqR7FMpx/JeSzd2JQ3lPKEwrfY26j8mlQhmvda3SF/MsR+k0iTFfpXN8G+l6FNW6tp/v+X8IEYewNAZpIeHzAemHK4cxvjE0PKN0QCXNy7XLa5R1p8u6ClR+RyitCtRBQqjIeT4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MDGJyLKN; arc=fail smtp.client-ip=198.175.65.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YTdTVIJR"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MDGJyLKN"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1715925408; x=1747461408;
-  h=date:from:to:cc:subject:message-id:
-   content-transfer-encoding:mime-version;
-  bh=EZ3/xTihuufB0hLoZ+ANEpdamAkna1M5Z4yTc12q38Y=;
-  b=YTdTVIJRKmfozU6EYzqJ97j9JOI7HTFdCzhui5MGvYkrEoNLacRez6Kj
-   XDG2apBXK9IfcAC2jowI5pi9Gr4k/urPXWxqeIAO1bOKtemT1RIELol7K
-   vtm+1/pLttUulgbJR6dvL6K4vjAIzDo2em1XY1tdNncNqtsTObk+ISKPp
-   Xk6vj6Vo5je3EJSyWdod8V7sYlfoG7JwrqZUBOT7hOXt3Sb3+i/TTtzSM
-   8SOKAC33Mj7DManOkaVrdWebMfIx9J4ixiCncgSuDVFWJqcPkkaRjgK5U
-   93/qWf9SNiWkCEbn7WSFbtt+yyhgkR5rwqFRyAAqikJNZh2+Q8ehqLVx/
-   Q==;
-X-CSE-ConnectionGUID: FzvKCLkLR+qIewEGvMXRHQ==
-X-CSE-MsgGUID: /sYBU9FgQDCbhlI1MtoUEQ==
-X-IronPort-AV: E=McAfee;i="6600,9927,11074"; a="15908849"
-X-IronPort-AV: E=Sophos;i="6.08,166,1712646000"; 
-   d="scan'208";a="15908849"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2024 22:56:47 -0700
-X-CSE-ConnectionGUID: WW/0ymcySOagcp8C9LleZg==
-X-CSE-MsgGUID: ILn7mecQSX2nVXDOxRKXkA==
+  t=1715929569; x=1747465569;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   mime-version;
+  bh=2oEmcArWbqq3+ALEJ0Z1hP3UjNqGcLLs5cRm0AajHeo=;
+  b=MDGJyLKNavdp2m2H8jHDgyok2jKh2fQdq9/SjxU6S6eRZJCet0yKPnQu
+   avlZz8eLy7khN/j/UF5zBXEIo3tbsr8jRodn5TfkChoyLuzXrdz7rZc6J
+   Ck2PStqocXO7Lviw2XW++shXin6Y4/XvX8NjQhPIMldpCn5lkKlZOeoyy
+   EJbGcRvhfbW2AeTmgSwHSWnmYutKeDqQAWqWjFwV0zPZIskxULJBsZE2H
+   yVE1bbAx9925r218nmpPytzr0DMaPx+A13QeSyA0C4MqyLXEbAMq31jRp
+   8fjoPNdmVtl6IVirIIOY8KIWFnoSuiGy0lZPStbB1wyYzdgXR1WSLl6FO
+   g==;
+X-CSE-ConnectionGUID: 0puj275MSdWC6w6GKJkQ3A==
+X-CSE-MsgGUID: A6G5GJw2Rq2eTEvkbA1CSA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11074"; a="29591167"
+X-IronPort-AV: E=Sophos;i="6.08,167,1712646000"; 
+   d="scan'208";a="29591167"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2024 00:06:06 -0700
+X-CSE-ConnectionGUID: Tpc10Rx5Tl2Y6ZLPDOwQrQ==
+X-CSE-MsgGUID: 0gT9MMVfTSWlbu76wa0iFQ==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,166,1712646000"; 
-   d="scan'208";a="32283829"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orviesa007.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 16 May 2024 22:56:47 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+X-IronPort-AV: E=Sophos;i="6.08,167,1712646000"; 
+   d="scan'208";a="36601547"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by orviesa004.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 17 May 2024 00:06:06 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Thu, 16 May 2024 22:56:46 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ 15.1.2507.39; Fri, 17 May 2024 00:06:02 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Thu, 16 May 2024 22:56:46 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ 15.1.2507.39; Fri, 17 May 2024 00:04:33 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Thu, 16 May 2024 22:56:46 -0700
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (104.47.56.40) by
- edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ 15.1.2507.39 via Frontend Transport; Fri, 17 May 2024 00:04:33 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.101)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Thu, 16 May 2024 22:56:45 -0700
+ 15.1.2507.35; Fri, 17 May 2024 00:03:32 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JY2KBK0rmkGE2uYQKWYvQPasjxaGDjO6YOA/SGF43mahp5T1S89QKyLDe05Rj6GGTgiQ9H2SB7j3Owh6j/kYBpZsDYhJXQ2dxHHI0VtdZ8YwfBLlW7fKku570KGTAzWM/xWRULlUhWFmcraMRLw8D37kGrsgTXBgBH1aR0Hn3ujnTUlD/kQVY++s0tx5gYTYeDynAv4UB9Uln9P28RkZS7+H3uh8eS3mpjqi8asneS+/ySplr2hbZsIgmj+YIwwzrf2W90WVbgzhEE4lMA64SXQ/qm8P62KvsZzx+3QHsl2xqOFq0eQYbcsqV42zzd14OynAq9HmLLFOWusSlEpKPg==
+ b=Ftqq4CHLVrSU6WvonIsqNZRhxyH5B3yItqU9sxGifGsjZrr9KH2Jo7o1GpANP99wqE12Cscqqi7xsGddUcbiojWiHdsdqaufNaajhRl1h9J5FsS/eQnYsrxSRYslxALs5oOVGKZb/W4hteYFs2WYis5LV0NCEViQpH46IL0uQegNfOzUYuxzug3rcaZQmqaAUxQiBDQ3ueJMmpUU3//mUsbWwm0UTo1FCFoL3bdbE/6BTZJTcZqBGj7BtE5j+Xu4wEy7tnf0VEds9h1YJ0qbpbX/JUPz8gHFxk8zDdgo7ibZpRr+NPHLM+ZSgU7UaNBB6YSMl8FPprQ9Frs7SDT02g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=LlLW2Z1pTQtBAoHKVww5Q0eyeAwWSfyKRvtHx/JVHJk=;
- b=m8y/p2S+YMwokdi+TDlaoZEscn7e4dqoCfFvqRuwe5jF0ocrI+cROI+xWtwxjs3kd7S2ggHh62UU1bm1UOZ221HDf5SU1qCm6KSdk/wW2KY5sk+yXZUMbgrX2VMBr0p0eQ/wnbJAluAmHOknXR2izbaaunhmrAzXxzsGXPuJGv8D7EetCRaKk4F7k8iaxVJjMEyVBPLi6Dq9rGTDkMcLSvfxvYGIskLzuITCybt3qqgZ7ISF++Um0tRD+NlLWeuzDPJPPnI/zhyy4xWHuPeFqsG1filz2buIYtOp60dW6ZsXuJJWIoi5niGq02Ien39GVv0dXTLu/db3hzWFr9/RoQ==
+ bh=kjF+ODJVL5/Kw5T3fuSOo0meDpTmRTYvSE+WxlPAwB4=;
+ b=ecaUgrzt6xFwiYWrx5nbQvUj3FW/Gl/z5crNpuKF+dXYRAA9koW98PPY5vq7XSlr7efL7zzPN8gEV80SfE4RF0zhVurLp9cJYy+n+lLi9BfSGLii8qbPRMn47757bdlMCFtr2aMhbx38kzi0fU9V6X+HpRfL3FCDdgxKZJ0OObs0UJywOFI/0oWp5pW8ByN78THGudGwDMbC09V83JjdF6b5NZi+hOgH5AAgmdCDx+bNHlTfuKG4jo/34ltDOPi86gOCYCZXALKGDmxl9gC28YpbbnmYHSm1T+F7TeNbYd9sgtpGaw48a7Oqvdq18TZwMP1RuEKMdJigzSTdzbYVRQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by SA0PR11MB4557.namprd11.prod.outlook.com (2603:10b6:806:96::7) with
+ by MW3PR11MB4522.namprd11.prod.outlook.com (2603:10b6:303:2d::8) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7587.28; Fri, 17 May
- 2024 05:56:43 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7587.27; Fri, 17 May
+ 2024 07:03:30 +0000
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c%2]) with mapi id 15.20.7544.052; Fri, 17 May 2024
- 05:56:43 +0000
-Date: Fri, 17 May 2024 13:56:30 +0800
+ 07:03:30 +0000
+Date: Fri, 17 May 2024 15:03:20 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Shakeel Butt <shakeel.butt@linux.dev>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Linux Memory Management List
-	<linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>, Yosry Ahmed
-	<yosryahmed@google.com>, "T.J. Mercier" <tjmercier@google.com>, "Roman
- Gushchin" <roman.gushchin@linux.dev>, Johannes Weiner <hannes@cmpxchg.org>,
-	Michal Hocko <mhocko@kernel.org>, Muchun Song <muchun.song@linux.dev>,
-	<cgroups@vger.kernel.org>, <ying.huang@intel.com>, <feng.tang@intel.com>,
-	<fengwei.yin@intel.com>, <oliver.sang@intel.com>
-Subject: [linux-next:master] [memcg]  70a64b7919:
- will-it-scale.per_process_ops -11.9% regression
-Message-ID: <202405171353.b56b845-oliver.sang@intel.com>
-Content-Type: text/plain; charset="iso-8859-1"
+To: Miaohe Lin <linmiaohe@huawei.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-mm@kvack.org>,
+	<akpm@linux-foundation.org>, <shy828301@gmail.com>,
+	<nao.horiguchi@gmail.com>, <xuyu@linux.alibaba.com>, <linmiaohe@huawei.com>,
+	<linux-kernel@vger.kernel.org>, <oliver.sang@intel.com>
+Subject: Re: [PATCH -rc7] mm/huge_memory: mark huge_zero_page reserved
+Message-ID: <202405171417.1bb0856a-lkp@intel.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SI2P153CA0006.APCP153.PROD.OUTLOOK.COM
- (2603:1096:4:140::22) To LV3PR11MB8603.namprd11.prod.outlook.com
+In-Reply-To: <20240511035435.1477004-1-linmiaohe@huawei.com>
+X-ClientProxiedBy: KL1PR0401CA0003.apcprd04.prod.outlook.com
+ (2603:1096:820:f::8) To LV3PR11MB8603.namprd11.prod.outlook.com
  (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -106,371 +102,237 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|SA0PR11MB4557:EE_
-X-MS-Office365-Filtering-Correlation-Id: 023af5dc-aff9-46d6-5063-08dc763620e9
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|MW3PR11MB4522:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9193af58-f4d1-4b6a-45fb-08dc763f7548
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230031|1800799015|7416005|366007|376005;
-X-Microsoft-Antispam-Message-Info: =?iso-8859-1?Q?g5nZKNVgdnq35Es1lYM5UxRdNZ0+K3DZQ3oHUwBI6iQsMc8gw1IUqJhMwL?=
- =?iso-8859-1?Q?sSeZr6y8+vGbw/s2OLVlDsIdECJSOYJCc5phK1Izm6evSjxQBy2//bli9Z?=
- =?iso-8859-1?Q?GqDCdioiWM+SOcLRgC0yGWgoKOSVb8c1xPGkngPoPE+OJAUEbz4WwCAUtZ?=
- =?iso-8859-1?Q?Sj23oZemI3707zVCm7R+VaPifDd7DCu/Rbeo3GBa1CV8GFdbWTVyoac/IV?=
- =?iso-8859-1?Q?3w9uVM3PbYYMiS+qqoCsLJ5D7LZqF/fnz+roQpreliZGMnM1gJSFihFLY/?=
- =?iso-8859-1?Q?6qhR1WjFX5BgoNu8oVaF2aEsG0k3ODoJ/FOcr+Kypx5/131qKRcA/UTuQ8?=
- =?iso-8859-1?Q?fZP3bpnboeD8gLTG1o/hf8XNiMZ8xnbYxxlhrV7equikrwdq9UIeaQINJM?=
- =?iso-8859-1?Q?dplZEhnuDcG4MPTyJx7TXD5EeyU6k7TvD5rM2SoJjW9jtkZ/ooQOfEBZ+r?=
- =?iso-8859-1?Q?TYt2h/H/I13Y4r5a/A2HD40gnbTX5xvNLbJ26IHIQ5JbLgZtmg4VJqybGr?=
- =?iso-8859-1?Q?lkV8NEOZ97tRyovjkLcRS/Q0fnWKD5Xc+jiBXXdyUubeHdV78EiyX5PYJI?=
- =?iso-8859-1?Q?FrnzAa46sgXTrbOAIodIEx9p1VmTAa/YKHuffNjOkM+4TyuTyuvidQq+9l?=
- =?iso-8859-1?Q?k/qr/iUQx68Ar1SagYSGnq61V3hA588T/TIbo9nUFNTw18tN8RQd4+OkSv?=
- =?iso-8859-1?Q?rQt590pjJojYWxNBjdK3UP5j7rCA6Ha+kBv07Ut+j8LHWZ4cOwks4zPRrw?=
- =?iso-8859-1?Q?vcfwfrAf18BWao8dj5O4dqdBab4S0Rq2cx3BePtSVauF2m9yuNPd193MiK?=
- =?iso-8859-1?Q?gcxCXsVzOHJdxPQICCuDWAbbvplFKzZ3xc5NW2tx3CdC+dIxAYdQ4P70A3?=
- =?iso-8859-1?Q?OPE3jPOz1Dv1wUfkHrGYLcFN1TKSAEamJq40kvHt7CnZHnr4381jwwtc/T?=
- =?iso-8859-1?Q?JyiNnLmXoTJ58cPhWbf1DzCGwWINvV5qAve8Lt/spzIRcjrFR7ey7c040Q?=
- =?iso-8859-1?Q?IOIv9x62a6XPV+/U6Cy3r6akisfmhlASSWmvW5VrmFKe80EYBxI9PCvpRB?=
- =?iso-8859-1?Q?/jOLGV6WXoKv6So1dCX8JTSoEY+5NGUEst+7lklEQHtc4bewXBq1W4uAaJ?=
- =?iso-8859-1?Q?V+4g77ObO37Fq9b/8knYiOJif/QWqT1l4EfUkd+3pb0X0FSIBB1NUzqkda?=
- =?iso-8859-1?Q?uAQnXCbhqu4PZ98kdr7kQRqeCJA/2eZ+mPoy7/jrotm96uXsoH6utDOFc4?=
- =?iso-8859-1?Q?4GR/dZc2fW2CUxW0FIIE0ILtZDltaksd6T00DBWZc=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(7416005)(366007)(376005);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230031|366007|1800799015|376005;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?ipHMleD6VPGf1PLqmyEy25qxIbc5qOHnt8kEC7eosbNsXLjGwF35kjFUPx14?=
+ =?us-ascii?Q?GEJlX4ogx7X8086qLuWNms8AJ1b/xfAeoDRecXtaI0QybbYaxw7LpFLB4fRw?=
+ =?us-ascii?Q?+12HHcHivG0BzI7jCY7i8MuRO7wY1wEKQAOpl8huD/WdeE8teejZpk+UpM3I?=
+ =?us-ascii?Q?gZ5sjxw8vrDcGCKlGyEujXyWNLyL/r8/7m6nyjHWcuftzEH1U8QzYH1rLxQh?=
+ =?us-ascii?Q?DPLeK+Oy9g/dJ5tkD4XNbESq8x05/0rd0vEtIeeayAvvkxL8uACEJkWBupal?=
+ =?us-ascii?Q?aFpFDhbM4X5Z1z+UoBeCKeaVvg0327UQ7poENk9CD2BT/kjuulHuwB4OIgz6?=
+ =?us-ascii?Q?IKAclShTI2XnbpWg4JZb6BSV/zZFAOwE+DrW1jpMIi8kNfIhvABgododvbmJ?=
+ =?us-ascii?Q?EZZ0Qi93htMjsk7LWwbbofvjhUciNfhRcP4Z9z6RUl+hbkKBUR6mdB7C/opc?=
+ =?us-ascii?Q?Xz4D/5znICfXqCOm0lTFc5VZfJGoHthr/zEStgjyKLJzaesGExF/7D54qBUf?=
+ =?us-ascii?Q?ZGzHPn0RmWdMQRF99YcPqSk8f+hE39KMcz/LTOOHp/DpBYe/sFD5WmnZztRm?=
+ =?us-ascii?Q?o/Jbqi5jMNqcykNroPB+8R3kwkY+gbmiWQdtPuSgFtoyKGWuGZhpFzET75aC?=
+ =?us-ascii?Q?/U7TZEL0yRDvkCeBHviox97qqv74mS28YTEhgJwcSBP6jg7kaiB7ToxRU3Am?=
+ =?us-ascii?Q?WvOc2ID8EPDaF9+d6KN4qcWa8SXd8dVD/lTQt4YxXtk4C1VvumoOuqg1Dv+l?=
+ =?us-ascii?Q?Tu5+f0VxbizYiTXumY/VUvJnz7ZreXTPTwaRbRry7W5TPY1BaGBpjEcZ01jp?=
+ =?us-ascii?Q?29VL4HLUM31o8dyo8Ae0nekRGk5cs/Ki/T6h+DrZSKzzYn1iZUW1/uhbf3Rm?=
+ =?us-ascii?Q?m4+5ZwbuEY6DpbKLxBLa+LhLYrXzfo+wTZBp5wQbsfMHMa8vs0lm8Nrsemb/?=
+ =?us-ascii?Q?RviqIQ8lUzgpCnUkdtnhNAZIMLj+2CDMI2h64aMdd90c5od7uG2mMGrg/9v6?=
+ =?us-ascii?Q?j+Y65GFhe/Rm+M/kwGbmWqIyGZiTxPC2EIuHQXwrh6t7AwLbRV8QeJ0LfA/t?=
+ =?us-ascii?Q?59OS//nNqVfyjR4HeHVeaygsmzPbuoAIBjqTktv0WXC/SRtfIglzn7SpE2LD?=
+ =?us-ascii?Q?XzPE5M5cvjK5g5ZdwjRWFQmNuAJlfVylvjkTvU6yqGdyGyTpnhilqVoVkXPC?=
+ =?us-ascii?Q?PHLMP893O8bCYoa/mmpAq8GRusMIBucNaXtSfyKl7SCn+jGHcQec3yfP2xk?=
+ =?us-ascii?Q?=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(1800799015)(376005);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?dIdaNkelZZ+hyazVSYhvAdaEfzr2lQaiPha/XxjrBu7MTjqVxYAwjaGEbd?=
- =?iso-8859-1?Q?h6Up/1aqgVXXw0Hf1YNmwm1qJQhA9yeEf/QcogYhscehocp2ICn3aQz817?=
- =?iso-8859-1?Q?rxc7gfT44S0ocQ9KY4CnYNbWJpig3e1pBW6RQlR1elJ6Nk098S+ox2b30j?=
- =?iso-8859-1?Q?SpxD2bVk8aEwM0aF35K/V8od3Z2FI6TtgW6rBvrM0h0F+GrC/KKLvVHX6D?=
- =?iso-8859-1?Q?Lt3oN85+J5e6I7STGxzB/WR/xW7+KE6gtE7q8yv7fvfrMU5UN6W6OeUWBu?=
- =?iso-8859-1?Q?j7HxFqtz1aqEZotZYYvTxO4ixco8oSz4E0tE0LjLZj6teR2vwe+h+HJEvt?=
- =?iso-8859-1?Q?G5p8ubcHkB0Jnf9upRIXRwGJmpjopAnH8hnMJ+BQYlmgx8TiO70Hya8GtM?=
- =?iso-8859-1?Q?I7v6pd9X/6R+iBl4lAAa0EZHuSspVL6MwHqE19V1Q0L2+aB1vwgcECIFvd?=
- =?iso-8859-1?Q?yfw+xFP++aJlkGhLJYfauvozWyy6BNQAYfNfB002j7qRTWrYphS7u4Qa3S?=
- =?iso-8859-1?Q?fT8sVEsIMkWbWgl/xYDN71F9ZobheuDkt4Rkrqu1Ig0fAd8+QT9UJyue7I?=
- =?iso-8859-1?Q?j9uPF5Fhp8MTJVf/5mdzfBAXZEUeivDj6g0I+cWbVpMIaxqk8iTGnHUd+w?=
- =?iso-8859-1?Q?a5fo8N2qtPol5iaW7E5IM9U4YHCNsyHDqJdtjWNhaqzvGruTNUio7d5oiv?=
- =?iso-8859-1?Q?KtEhTv9nQugeMlK1XwTJDLgImtgjEDW757bK5AxbaqcMpDO7iE5FDMbEjn?=
- =?iso-8859-1?Q?MdxM7R5Kaqjnq88VopuZ9w5yqYw5UxWqjlbd7lX1XWD+xMPS+9b6MBZ3Ni?=
- =?iso-8859-1?Q?TjposXRt5lwhgYWs5/DJqodgTt8WZxO6d03slG4nZRsuWLLNdV7uzH5EIY?=
- =?iso-8859-1?Q?0JIqDFCw1eap/zYKujWBaxoGxbPPNPVKyQzLg3AUV8RV+ZGDfQxcdtPuXv?=
- =?iso-8859-1?Q?Y/4z/+6lODigq1Fa2IQ7aT2rrGMc3E+VF3Gi187DFbnOjMUBHdL2VbfRk3?=
- =?iso-8859-1?Q?nWda8lhBPztDpF9fjOvBK/rQC6VADbKI4yMs1ApUoJwSgtq+16TSYk3Wob?=
- =?iso-8859-1?Q?SmxTKAQhx1rrfuCjYIovyo+OO580R5ERJWpBAI94ZcECVtUQemAEPpH6eN?=
- =?iso-8859-1?Q?3XB7tf9SAroSuRr/drL+R/FC+NxjtJLchSz0WLKh3KetN5hwKoSMfzMkXS?=
- =?iso-8859-1?Q?AuzTCPZ1jnmy326vfdlY16sOPeQ1jiV+9amBXGMCeYUuvNy0YOMzQmIhE4?=
- =?iso-8859-1?Q?VOSibZ8plD5uPaj/mMze/SIdo2wpV/iceKMleZ2wQUjyRGFqOrtYU8yC9A?=
- =?iso-8859-1?Q?pRbbY3GPbqnSZ8n7Hzp5of/QkLFvT/Tmfe2hbML0feRHwJPUcjiDip1mjp?=
- =?iso-8859-1?Q?+EDDFmBTPPyJjgmZwlTdPktFlX0ioAyS1/gmyE5EJZ2+G1RrKFbrGO4Osz?=
- =?iso-8859-1?Q?V8MXr9/Z+aAr1infzpKil3aFdGTPhb9ejWS8GWZi2VX4kQjLDshuVZFuKB?=
- =?iso-8859-1?Q?EYaqsNEA9h9oVBpS2N2mhKbRgrDHIrwqDUBPdj1M7rKBo2NBzjc53TYiHp?=
- =?iso-8859-1?Q?KQCKfgGShqFAl/U3Kno3KdssKWwG9B18GlH6EeKFowl4beNDdJGpuCD+rP?=
- =?iso-8859-1?Q?Xf3tf3ba9DFuJpJNbCbiRljNy/O9CO+SlFVzPtl/LhhEHMi6bvs8JyOA?=
- =?iso-8859-1?Q?=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 023af5dc-aff9-46d6-5063-08dc763620e9
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?6UYB99OLUX0plfsc1aC6xSMJ5B2Pd6t6/Rimi7ftK0/uCBAO2IRs63Meuoky?=
+ =?us-ascii?Q?srCT/o7PKlK/dEdKaNoC+hloDFB4n4AhpzbUoMMW0NKAef2GNsfAhFL2D+zj?=
+ =?us-ascii?Q?HuWojbAWhqGLBe8gDbQNdh/DvZviL5u/F+wPnGmBgVFf4E0HE/vTLkeK3VJK?=
+ =?us-ascii?Q?AeIEFiCo3x6IFBXWMkJs3yx92hhA7vRY87iid3YAhrn8dCLSq9+X1aRS+nL0?=
+ =?us-ascii?Q?Bs4W96DYPGhUUm0fPuON97KtxRJWdJbi19vWmXsTwLKtJ7kqIwDdjHB/4dWy?=
+ =?us-ascii?Q?bK2kLXE/PceNWOTKEzAjMbKPxPs7RHiiI9uv0zF/EyuSL9Vkpqpdl/IVVNze?=
+ =?us-ascii?Q?GEG4RGy2LPJeBmXGjyKPAl+aPjGZdeezBed/xOHxZqkdZv87JLMNei7o3zb5?=
+ =?us-ascii?Q?WNUFI58GV69P/c/QUT7WrVXpoJvh1TDIFgbUPIFvJvm6PsGrdaqfYedlf/Vy?=
+ =?us-ascii?Q?XqJ0Rr02xEHGHx3IravI8BtY979jCiI3oDyFChUf95cJDfkxBRO6chsZE4QE?=
+ =?us-ascii?Q?JxyYGvR90VCbZ2nevZf6AHyTH+HiBQ/F56QI+AizSgnMFiYctrjWlFy4CWV8?=
+ =?us-ascii?Q?2VK8SimMBB+Od9grKNsY5mukhaWLgRQ2wHyIKaYjFNrB1iJL3DJZnsxZt0lb?=
+ =?us-ascii?Q?5GTHbctYqpIRFQWCs1NvTBDAyOJe0uk9qxnNe5SIu9xCp3vqI/IPTNlHFAtr?=
+ =?us-ascii?Q?sMGfbbAHutvRZyn2vjSVfMOOvlTmBXP1LMqt/YTGzrKer+9oZMNFTC67xC5v?=
+ =?us-ascii?Q?VCVEPSSfdK96xH45dLli9uGPT6PJI+cHluUj/d+qlpmkbNAGuWgwly0xM1uL?=
+ =?us-ascii?Q?Vkd/T/KO0DHi87THbXFaz42zZZbQ8zxpmBhbZEhnxsFdUKDNwHHgoeG/MLyK?=
+ =?us-ascii?Q?DeDO2ziOTauFnUbRqixKOp+u4UoEWQD+L1p6PKRr+J4HAqCyXNsAszCJpl3G?=
+ =?us-ascii?Q?ve8Di3ICd8waYdPmADnR06raTCgdgMw1fYn+AvagumvuLTo0sUecnt4W4d8E?=
+ =?us-ascii?Q?TVK0BvIlBqytcMO+a1Z3xMfavDurmuQTYEySdVQWC/J9nTqq60y2W2u/mOHI?=
+ =?us-ascii?Q?VCk97d+VhitrNUtc0W3gLJAg0ywS0uD6tu21RrudkxbeJhBZr4VD9TdLRAal?=
+ =?us-ascii?Q?XzpRR6IUkLHqGRSYldZanvqSGzRaZVhlL+pF8wmXWWCVYxsQe+d3NrSAHYRZ?=
+ =?us-ascii?Q?v8s4URseLeyPhe0KkgvJwQiaPXdGsz64dE6YxQ7p49U3BLCuxRl8S5zrtPQB?=
+ =?us-ascii?Q?ZvmVpyMWCkqpawkqyy/BZpNShgRWNtQoGw2FFII7/jAATykQT2uGZNF2fMDZ?=
+ =?us-ascii?Q?4X50TLP2Jb/JFMQGDYjuhX0W5lhhC1ASpbP5CtRV+TdNalmjs97OfbHH6M/3?=
+ =?us-ascii?Q?u1dmj+0p9KX4f6x+z7MektS62fjwM2MTIYx+4B+ZbJwTFqt/gYU39n+obQIU?=
+ =?us-ascii?Q?OWpSBl9KdPsKtUeWKHWeCQJPa2S9PCFTv9HjYwuNrmgl6jgdb6XkL6UT1BA0?=
+ =?us-ascii?Q?aUcQBicipWSU8VR7Kjqt4c33lfaoVj7et1QrGp/NpDBLLu3Da6ENyDDOHoBL?=
+ =?us-ascii?Q?Gx5zOFf0BhbGG33eQJ6JMUs9YyAoxj8tE+nst/Hrv96Z0pQEEQO9hA2ukahd?=
+ =?us-ascii?Q?pg=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9193af58-f4d1-4b6a-45fb-08dc763f7548
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2024 05:56:43.5351
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2024 07:03:30.4222
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: pzFf6e7w9rSLzLC4cQvafl+X2nf30t1zVFqh13i/xEUVQ/8WDiHzR2CKOko/3C8pwHhOcQVVhavFe6Zfj/C8tg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR11MB4557
+X-MS-Exchange-CrossTenant-UserPrincipalName: WqcKu5vR6oy3uMadNOVC4pxQA+mWeexhTnwE6HH4zIL/Q1J2eEB5VxY0tTHALm9dkllNz6RoTrj6hzzHzJwFIg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR11MB4522
 X-OriginatorOrg: intel.com
 
 
 
 Hello,
 
-kernel test robot noticed a -11.9% regression of will-it-scale.per_process_ops on:
+kernel test robot noticed "kernel_BUG_at_include/linux/page-flags.h" on:
+
+commit: 8e6ff9c4aad2c677c53f70d9e193c35cbbafcb88 ("[PATCH -rc7] mm/huge_memory: mark huge_zero_page reserved")
+url: https://github.com/intel-lab-lkp/linux/commits/Miaohe-Lin/mm-huge_memory-mark-huge_zero_page-reserved/20240511-115840
+base: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git cf87f46fd34d6c19283d9625a7822f20d90b64a4
+patch link: https://lore.kernel.org/all/20240511035435.1477004-1-linmiaohe@huawei.com/
+patch subject: [PATCH -rc7] mm/huge_memory: mark huge_zero_page reserved
+
+in testcase: trinity
+version: trinity-i386-abe9de86-1_20230429
+with following parameters:
+
+	runtime: 300s
+	group: group-03
+	nr_groups: 5
 
 
-commit: 70a64b7919cbd6c12306051ff2825839a9d65605 ("memcg: dynamically allocate lruvec_stats")
-https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
 
-testcase: will-it-scale
-test machine: 104 threads 2 sockets (Skylake) with 192G memory
-parameters:
+compiler: gcc-13
+test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
 
-	nr_task: 100%
-	mode: process
-	test: page_fault2
-	cpufreq_governor: performance
+(please refer to attached dmesg/kmsg for entire log/backtrace)
 
 
++------------------------------------------+------------+------------+
+|                                          | cf87f46fd3 | 8e6ff9c4aa |
++------------------------------------------+------------+------------+
+| kernel_BUG_at_include/linux/page-flags.h | 0          | 11         |
+| invalid_opcode:#[##]                     | 0          | 11         |
+| RIP:get_huge_zero_page                   | 0          | 11         |
+| Kernel_panic-not_syncing:Fatal_exception | 0          | 11         |
++------------------------------------------+------------+------------+
 
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202405171353.b56b845-oliver.sang@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202405171417.1bb0856a-lkp@intel.com
 
 
-Details are as below:
--------------------------------------------------------------------------------------------------->
+[  272.633454][ T3838] ------------[ cut here ]------------
+[  272.634362][ T3838] kernel BUG at include/linux/page-flags.h:540!
+[  272.635422][ T3838] invalid opcode: 0000 [#1] PREEMPT SMP KASAN PTI
+[  272.636518][ T3838] CPU: 0 PID: 3838 Comm: trinity-c2 Not tainted 6.9.0-rc7-00184-g8e6ff9c4aad2 #1
+[  272.638008][ T3838] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+[ 272.639707][ T3838] RIP: 0010:get_huge_zero_page (include/linux/page-flags.h:540 (discriminator 1) mm/huge_memory.c:211 (discriminator 1)) 
+[ 272.650951][ T3838] Code: 04 02 00 00 00 65 ff 0d 0a 0b 75 7e 74 1e 65 48 ff 05 50 e5 74 7e e9 5c fe ff ff 48 c7 c6 a0 bb 52 83 48 89 df e8 64 89 f2 ff <0f> 0b 0f 1f 44 00 00 eb db 48 c7 c6 40 bc 52 83 48 89 df e8 4c 89
+All code
+========
+   0:	04 02                	add    $0x2,%al
+   2:	00 00                	add    %al,(%rax)
+   4:	00 65 ff             	add    %ah,-0x1(%rbp)
+   7:	0d 0a 0b 75 7e       	or     $0x7e750b0a,%eax
+   c:	74 1e                	je     0x2c
+   e:	65 48 ff 05 50 e5 74 	incq   %gs:0x7e74e550(%rip)        # 0x7e74e566
+  15:	7e 
+  16:	e9 5c fe ff ff       	jmp    0xfffffffffffffe77
+  1b:	48 c7 c6 a0 bb 52 83 	mov    $0xffffffff8352bba0,%rsi
+  22:	48 89 df             	mov    %rbx,%rdi
+  25:	e8 64 89 f2 ff       	call   0xfffffffffff2898e
+  2a:*	0f 0b                	ud2		<-- trapping instruction
+  2c:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+  31:	eb db                	jmp    0xe
+  33:	48 c7 c6 40 bc 52 83 	mov    $0xffffffff8352bc40,%rsi
+  3a:	48 89 df             	mov    %rbx,%rdi
+  3d:	e8                   	.byte 0xe8
+  3e:	4c                   	rex.WR
+  3f:	89                   	.byte 0x89
+
+Code starting with the faulting instruction
+===========================================
+   0:	0f 0b                	ud2
+   2:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+   7:	eb db                	jmp    0xffffffffffffffe4
+   9:	48 c7 c6 40 bc 52 83 	mov    $0xffffffff8352bc40,%rsi
+  10:	48 89 df             	mov    %rbx,%rdi
+  13:	e8                   	.byte 0xe8
+  14:	4c                   	rex.WR
+  15:	89                   	.byte 0x89
+[  272.654159][ T3838] RSP: 0000:ffffc90001507988 EFLAGS: 00010246
+[  272.655196][ T3838] RAX: 0000000000000000 RBX: ffffea00068d8000 RCX: 0000000000000000
+[  272.656504][ T3838] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+[  272.657799][ T3838] RBP: ffff8881b94fdf08 R08: 0000000000000000 R09: 0000000000000000
+[  272.659142][ T3838] R10: 0000000000000000 R11: 0000000000000000 R12: ffffea00043fb100
+[  272.660533][ T3838] R13: ffff888109ecdb08 R14: ffffc90001507a70 R15: 0000000000100173
+[  272.661849][ T3838] FS:  0000000000000000(0000) GS:ffff8883af200000(0063) knlGS:00000000f7f1a280
+[  272.663303][ T3838] CS:  0010 DS: 002b ES: 002b CR0: 0000000080050033
+[  272.664430][ T3838] CR2: 00000000ff7fffff CR3: 00000001ba4ca000 CR4: 00000000000406b0
+[  272.665759][ T3838] Call Trace:
+[  272.666325][ T3838]  <TASK>
+[ 272.666824][ T3838] ? die (arch/x86/kernel/dumpstack.c:421 arch/x86/kernel/dumpstack.c:434 arch/x86/kernel/dumpstack.c:447) 
+[ 272.667483][ T3838] ? do_trap (arch/x86/kernel/traps.c:114 arch/x86/kernel/traps.c:155) 
+[ 272.668253][ T3838] ? get_huge_zero_page (include/linux/page-flags.h:540 (discriminator 1) mm/huge_memory.c:211 (discriminator 1)) 
+[ 272.669128][ T3838] ? get_huge_zero_page (include/linux/page-flags.h:540 (discriminator 1) mm/huge_memory.c:211 (discriminator 1)) 
+[ 272.669985][ T3838] ? do_error_trap (arch/x86/kernel/traps.c:176) 
+[ 272.670793][ T3838] ? get_huge_zero_page (include/linux/page-flags.h:540 (discriminator 1) mm/huge_memory.c:211 (discriminator 1)) 
+[ 272.671731][ T3838] ? handle_invalid_op (arch/x86/kernel/traps.c:214) 
+[ 272.672551][ T3838] ? get_huge_zero_page (include/linux/page-flags.h:540 (discriminator 1) mm/huge_memory.c:211 (discriminator 1)) 
+[ 272.673411][ T3838] ? exc_invalid_op (arch/x86/kernel/traps.c:267) 
+[ 272.674224][ T3838] ? asm_exc_invalid_op (arch/x86/include/asm/idtentry.h:621) 
+[ 272.675064][ T3838] ? get_huge_zero_page (include/linux/page-flags.h:540 (discriminator 1) mm/huge_memory.c:211 (discriminator 1)) 
+[ 272.679035][ T3838] ? get_huge_zero_page (include/linux/page-flags.h:540 (discriminator 1) mm/huge_memory.c:211 (discriminator 1)) 
+[ 272.679922][ T3838] mm_get_huge_zero_page (mm/huge_memory.c:235 (discriminator 1)) 
+[ 272.680764][ T3838] do_huge_pmd_anonymous_page (mm/huge_memory.c:1020) 
+[ 272.681694][ T3838] ? mt_find (include/linux/rcupdate.h:339 (discriminator 1) include/linux/rcupdate.h:814 (discriminator 1) lib/maple_tree.c:6954 (discriminator 1)) 
+[ 272.682432][ T3838] __handle_mm_fault (mm/memory.c:5175 mm/memory.c:5412) 
+[ 272.683260][ T3838] ? handle_pte_fault (mm/memory.c:5352) 
+[ 272.684150][ T3838] ? find_vma (mm/mmap.c:1889) 
+[ 272.684891][ T3838] ? vma_link_file (mm/mmap.c:1889) 
+[ 272.685676][ T3838] ? handle_mm_fault (mm/memory.c:5576) 
+[ 272.686461][ T3838] handle_mm_fault (mm/memory.c:5466 mm/memory.c:5622) 
+[ 272.687265][ T3838] do_user_addr_fault (arch/x86/mm/fault.c:1384) 
+[ 272.688116][ T3838] exc_page_fault (arch/x86/include/asm/irqflags.h:26 arch/x86/include/asm/irqflags.h:67 arch/x86/include/asm/irqflags.h:127 arch/x86/mm/fault.c:1482 arch/x86/mm/fault.c:1532) 
+[ 272.689202][ T3838] asm_exc_page_fault (arch/x86/include/asm/idtentry.h:623) 
+[ 272.690523][ T3838] RIP: 0010:rep_movs_alternative (arch/x86/lib/copy_user_64.S:57) 
+[ 272.692228][ T3838] Code: 83 f9 08 73 25 85 c9 74 0f 8a 06 88 07 48 ff c7 48 ff c6 48 ff c9 75 f1 c3 cc cc cc cc 66 66 2e 0f 1f 84 00 00 00 00 00 66 90 <48> 8b 06 48 89 07 48 83 c6 08 48 83 c7 08 83 e9 08 74 db 83 f9 08
+All code
+========
+   0:	83 f9 08             	cmp    $0x8,%ecx
+   3:	73 25                	jae    0x2a
+   5:	85 c9                	test   %ecx,%ecx
+   7:	74 0f                	je     0x18
+   9:	8a 06                	mov    (%rsi),%al
+   b:	88 07                	mov    %al,(%rdi)
+   d:	48 ff c7             	inc    %rdi
+  10:	48 ff c6             	inc    %rsi
+  13:	48 ff c9             	dec    %rcx
+  16:	75 f1                	jne    0x9
+  18:	c3                   	ret
+  19:	cc                   	int3
+  1a:	cc                   	int3
+  1b:	cc                   	int3
+  1c:	cc                   	int3
+  1d:	66 66 2e 0f 1f 84 00 	data16 cs nopw 0x0(%rax,%rax,1)
+  24:	00 00 00 00 
+  28:	66 90                	xchg   %ax,%ax
+  2a:*	48 8b 06             	mov    (%rsi),%rax		<-- trapping instruction
+  2d:	48 89 07             	mov    %rax,(%rdi)
+  30:	48 83 c6 08          	add    $0x8,%rsi
+  34:	48 83 c7 08          	add    $0x8,%rdi
+  38:	83 e9 08             	sub    $0x8,%ecx
+  3b:	74 db                	je     0x18
+  3d:	83 f9 08             	cmp    $0x8,%ecx
+
+Code starting with the faulting instruction
+===========================================
+   0:	48 8b 06             	mov    (%rsi),%rax
+   3:	48 89 07             	mov    %rax,(%rdi)
+   6:	48 83 c6 08          	add    $0x8,%rsi
+   a:	48 83 c7 08          	add    $0x8,%rdi
+   e:	83 e9 08             	sub    $0x8,%ecx
+  11:	74 db                	je     0xffffffffffffffee
+  13:	83 f9 08             	cmp    $0x8,%ecx
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20240517/202405171353.b56b845-oliver.sang@intel.com
+https://download.01.org/0day-ci/archive/20240517/202405171417.1bb0856a-lkp@intel.com
 
-=========================================================================================
-compiler/cpufreq_governor/kconfig/mode/nr_task/rootfs/tbox_group/test/testcase:
-  gcc-13/performance/x86_64-rhel-8.3/process/100%/debian-12-x86_64-20240206.cgz/lkp-skl-fpga01/page_fault2/will-it-scale
-
-commit: 
-  59142d87ab ("memcg: reduce memory size of mem_cgroup_events_index")
-  70a64b7919 ("memcg: dynamically allocate lruvec_stats")
-
-59142d87ab03b8ff 70a64b7919cbd6c12306051ff28 
----------------- --------------------------- 
-         %stddev     %change         %stddev
-             \          |                \  
-      7.14            -0.8        6.32        mpstat.cpu.all.usr%
-    245257 ±  7%     -13.8%     211354 ±  4%  sched_debug.cfs_rq:/.avg_vruntime.stddev
-    245258 ±  7%     -13.8%     211353 ±  4%  sched_debug.cfs_rq:/.min_vruntime.stddev
-     21099 ±  5%     -14.9%      17946 ±  5%  perf-c2c.DRAM.local
-      4025 ±  2%     +29.1%       5197 ±  3%  perf-c2c.HITM.local
-    105.17 ±  8%     -12.7%      91.83 ±  6%  perf-c2c.HITM.remote
-   9538291           -11.9%    8402170        will-it-scale.104.processes
-     91713           -11.9%      80789        will-it-scale.per_process_ops
-   9538291           -11.9%    8402170        will-it-scale.workload
- 1.438e+09           -11.2%  1.276e+09        numa-numastat.node0.local_node
-  1.44e+09           -11.3%  1.278e+09        numa-numastat.node0.numa_hit
-     83001 ± 15%     -68.9%      25774 ± 34%  numa-numastat.node0.other_node
- 1.453e+09           -12.5%  1.271e+09        numa-numastat.node1.local_node
- 1.454e+09           -12.5%  1.272e+09        numa-numastat.node1.numa_hit
-     24752 ± 51%    +230.9%      81910 ± 10%  numa-numastat.node1.other_node
-  1.44e+09           -11.3%  1.278e+09        numa-vmstat.node0.numa_hit
- 1.438e+09           -11.3%  1.276e+09        numa-vmstat.node0.numa_local
-     83001 ± 15%     -68.9%      25774 ± 34%  numa-vmstat.node0.numa_other
- 1.454e+09           -12.5%  1.272e+09        numa-vmstat.node1.numa_hit
- 1.453e+09           -12.5%  1.271e+09        numa-vmstat.node1.numa_local
-     24752 ± 51%    +230.9%      81910 ± 10%  numa-vmstat.node1.numa_other
-     14952            -3.2%      14468        proc-vmstat.nr_mapped
- 2.894e+09           -11.9%   2.55e+09        proc-vmstat.numa_hit
- 2.891e+09           -11.9%  2.548e+09        proc-vmstat.numa_local
-  2.88e+09           -11.8%  2.539e+09        proc-vmstat.pgalloc_normal
- 2.869e+09           -11.9%  2.529e+09        proc-vmstat.pgfault
-  2.88e+09           -11.8%  2.539e+09        proc-vmstat.pgfree
-     17.51            -2.6%      17.05        perf-stat.i.MPKI
- 9.457e+09            -9.2%  8.585e+09        perf-stat.i.branch-instructions
-  45022022            -8.2%   41340795        perf-stat.i.branch-misses
-     84.38            -4.9       79.51        perf-stat.i.cache-miss-rate%
- 8.353e+08           -12.1%  7.345e+08        perf-stat.i.cache-misses
- 9.877e+08            -6.7%  9.216e+08        perf-stat.i.cache-references
-      6.06           +10.8%       6.72        perf-stat.i.cpi
-    136.25            -1.2%     134.59        perf-stat.i.cpu-migrations
-    348.56           +13.9%     396.93        perf-stat.i.cycles-between-cache-misses
- 4.763e+10            -9.7%  4.302e+10        perf-stat.i.instructions
-      0.17            -9.6%       0.15        perf-stat.i.ipc
-    182.56           -11.9%     160.88        perf-stat.i.metric.K/sec
-   9494393           -11.9%    8368012        perf-stat.i.minor-faults
-   9494393           -11.9%    8368012        perf-stat.i.page-faults
-     17.54            -2.6%      17.08        perf-stat.overall.MPKI
-      0.47            +0.0        0.48        perf-stat.overall.branch-miss-rate%
-     84.57            -4.9       79.71        perf-stat.overall.cache-miss-rate%
-      6.07           +10.8%       6.73        perf-stat.overall.cpi
-    346.33           +13.8%     393.97        perf-stat.overall.cycles-between-cache-misses
-      0.16            -9.7%       0.15        perf-stat.overall.ipc
-   1503802            +2.6%    1542599        perf-stat.overall.path-length
- 9.424e+09            -9.2%  8.553e+09        perf-stat.ps.branch-instructions
-  44739120            -8.3%   41034189        perf-stat.ps.branch-misses
- 8.326e+08           -12.1%  7.321e+08        perf-stat.ps.cache-misses
- 9.846e+08            -6.7%  9.185e+08        perf-stat.ps.cache-references
-    134.98            -1.3%     133.26        perf-stat.ps.cpu-migrations
- 4.747e+10            -9.7%  4.286e+10        perf-stat.ps.instructions
-   9463902           -11.9%    8339836        perf-stat.ps.minor-faults
-   9463902           -11.9%    8339836        perf-stat.ps.page-faults
- 1.434e+13            -9.6%  1.296e+13        perf-stat.total.instructions
-     64.15            -2.4       61.72        perf-profile.calltrace.cycles-pp.testcase
-     58.30            -1.9       56.41        perf-profile.calltrace.cycles-pp.asm_exc_page_fault.testcase
-     52.64            -1.4       51.28        perf-profile.calltrace.cycles-pp.exc_page_fault.asm_exc_page_fault.testcase
-     52.50            -1.3       51.16        perf-profile.calltrace.cycles-pp.do_user_addr_fault.exc_page_fault.asm_exc_page_fault.testcase
-     50.81            -1.0       49.86        perf-profile.calltrace.cycles-pp.handle_mm_fault.do_user_addr_fault.exc_page_fault.asm_exc_page_fault.testcase
-     49.86            -0.8       49.02        perf-profile.calltrace.cycles-pp.__handle_mm_fault.handle_mm_fault.do_user_addr_fault.exc_page_fault.asm_exc_page_fault
-      9.27            -0.8        8.45 ±  3%  perf-profile.calltrace.cycles-pp.copy_page.do_fault.__handle_mm_fault.handle_mm_fault.do_user_addr_fault
-     49.21            -0.8       48.43        perf-profile.calltrace.cycles-pp.do_fault.__handle_mm_fault.handle_mm_fault.do_user_addr_fault.exc_page_fault
-      5.15            -0.5        4.68        perf-profile.calltrace.cycles-pp.__irqentry_text_end.testcase
-      3.24            -0.5        2.77        perf-profile.calltrace.cycles-pp.folio_prealloc.do_fault.__handle_mm_fault.handle_mm_fault.do_user_addr_fault
-      0.82            -0.3        0.51        perf-profile.calltrace.cycles-pp.lock_vma_under_rcu.do_user_addr_fault.exc_page_fault.asm_exc_page_fault.testcase
-      1.68            -0.3        1.42        perf-profile.calltrace.cycles-pp.vma_alloc_folio_noprof.folio_prealloc.do_fault.__handle_mm_fault.handle_mm_fault
-      2.52            -0.2        2.28        perf-profile.calltrace.cycles-pp.error_entry.testcase
-      1.50 ±  2%      -0.2        1.30        perf-profile.calltrace.cycles-pp.__mem_cgroup_charge.folio_prealloc.do_fault.__handle_mm_fault.handle_mm_fault
-      1.85            -0.1        1.70 ±  3%  perf-profile.calltrace.cycles-pp.__pte_offset_map_lock.finish_fault.do_fault.__handle_mm_fault.handle_mm_fault
-      0.68            -0.1        0.55 ±  2%  perf-profile.calltrace.cycles-pp.lru_add_fn.folio_batch_move_lru.folio_add_lru_vma.set_pte_range.finish_fault
-      1.55            -0.1        1.44 ±  3%  perf-profile.calltrace.cycles-pp._raw_spin_lock.__pte_offset_map_lock.finish_fault.do_fault.__handle_mm_fault
-      0.55            -0.1        0.43 ± 44%  perf-profile.calltrace.cycles-pp.get_page_from_freelist.__alloc_pages_noprof.alloc_pages_mpol_noprof.vma_alloc_folio_noprof.folio_prealloc
-      1.07            -0.1        0.98        perf-profile.calltrace.cycles-pp.alloc_pages_mpol_noprof.vma_alloc_folio_noprof.folio_prealloc.do_fault.__handle_mm_fault
-      0.90            -0.1        0.81        perf-profile.calltrace.cycles-pp.sync_regs.asm_exc_page_fault.testcase
-      0.89            -0.0        0.86        perf-profile.calltrace.cycles-pp.__alloc_pages_noprof.alloc_pages_mpol_noprof.vma_alloc_folio_noprof.folio_prealloc.do_fault
-      1.00            +0.1        1.05        perf-profile.calltrace.cycles-pp.zap_present_ptes.zap_pte_range.zap_pmd_range.unmap_page_range.unmap_vmas
-      3.85            +0.2        4.10        perf-profile.calltrace.cycles-pp.tlb_finish_mmu.unmap_region.do_vmi_align_munmap.do_vmi_munmap.__vm_munmap
-      3.85            +0.2        4.10        perf-profile.calltrace.cycles-pp.__tlb_batch_free_encoded_pages.tlb_finish_mmu.unmap_region.do_vmi_align_munmap.do_vmi_munmap
-      3.85            +0.2        4.10        perf-profile.calltrace.cycles-pp.free_pages_and_swap_cache.__tlb_batch_free_encoded_pages.tlb_finish_mmu.unmap_region.do_vmi_align_munmap
-      3.82            +0.3        4.07        perf-profile.calltrace.cycles-pp.folios_put_refs.free_pages_and_swap_cache.__tlb_batch_free_encoded_pages.tlb_finish_mmu.unmap_region
-      3.68            +0.3        3.94        perf-profile.calltrace.cycles-pp.__page_cache_release.folios_put_refs.free_pages_and_swap_cache.__tlb_batch_free_encoded_pages.tlb_finish_mmu
-      0.83            +0.3        1.10 ±  2%  perf-profile.calltrace.cycles-pp.__lruvec_stat_mod_folio.set_pte_range.finish_fault.do_fault.__handle_mm_fault
-      0.00            +0.5        0.54        perf-profile.calltrace.cycles-pp.__lruvec_stat_mod_folio.folio_remove_rmap_ptes.zap_present_ptes.zap_pte_range.zap_pmd_range
-      0.00            +0.7        0.66        perf-profile.calltrace.cycles-pp.folio_remove_rmap_ptes.zap_present_ptes.zap_pte_range.zap_pmd_range.unmap_page_range
-     32.87            +0.7       33.62        perf-profile.calltrace.cycles-pp.set_pte_range.finish_fault.do_fault.__handle_mm_fault.handle_mm_fault
-     29.54            +2.3       31.80        perf-profile.calltrace.cycles-pp.__tlb_batch_free_encoded_pages.tlb_flush_mmu.zap_pte_range.zap_pmd_range.unmap_page_range
-     29.54            +2.3       31.80        perf-profile.calltrace.cycles-pp.tlb_flush_mmu.zap_pte_range.zap_pmd_range.unmap_page_range.unmap_vmas
-     29.53            +2.3       31.80        perf-profile.calltrace.cycles-pp.free_pages_and_swap_cache.__tlb_batch_free_encoded_pages.tlb_flush_mmu.zap_pte_range.zap_pmd_range
-     30.66            +2.3       32.93        perf-profile.calltrace.cycles-pp.unmap_page_range.unmap_vmas.unmap_region.do_vmi_align_munmap.do_vmi_munmap
-     30.66            +2.3       32.93        perf-profile.calltrace.cycles-pp.unmap_vmas.unmap_region.do_vmi_align_munmap.do_vmi_munmap.__vm_munmap
-     30.66            +2.3       32.93        perf-profile.calltrace.cycles-pp.zap_pmd_range.unmap_page_range.unmap_vmas.unmap_region.do_vmi_align_munmap
-     30.66            +2.3       32.93        perf-profile.calltrace.cycles-pp.zap_pte_range.zap_pmd_range.unmap_page_range.unmap_vmas.unmap_region
-     29.26            +2.3       31.60        perf-profile.calltrace.cycles-pp.folios_put_refs.free_pages_and_swap_cache.__tlb_batch_free_encoded_pages.tlb_flush_mmu.zap_pte_range
-     28.41            +2.4       30.78        perf-profile.calltrace.cycles-pp.__page_cache_release.folios_put_refs.free_pages_and_swap_cache.__tlb_batch_free_encoded_pages.tlb_flush_mmu
-     34.56            +2.5       37.08        perf-profile.calltrace.cycles-pp.__munmap
-     34.56            +2.5       37.08        perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.__munmap
-     34.56            +2.5       37.08        perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.__munmap
-     34.55            +2.5       37.07        perf-profile.calltrace.cycles-pp.unmap_region.do_vmi_align_munmap.do_vmi_munmap.__vm_munmap.__x64_sys_munmap
-     34.55            +2.5       37.08        perf-profile.calltrace.cycles-pp.__vm_munmap.__x64_sys_munmap.do_syscall_64.entry_SYSCALL_64_after_hwframe.__munmap
-     34.55            +2.5       37.08        perf-profile.calltrace.cycles-pp.__x64_sys_munmap.do_syscall_64.entry_SYSCALL_64_after_hwframe.__munmap
-     34.55            +2.5       37.08        perf-profile.calltrace.cycles-pp.do_vmi_align_munmap.do_vmi_munmap.__vm_munmap.__x64_sys_munmap.do_syscall_64
-     34.55            +2.5       37.08        perf-profile.calltrace.cycles-pp.do_vmi_munmap.__vm_munmap.__x64_sys_munmap.do_syscall_64.entry_SYSCALL_64_after_hwframe
-     31.41            +2.8       34.20        perf-profile.calltrace.cycles-pp._raw_spin_lock_irqsave.folio_lruvec_lock_irqsave.__page_cache_release.folios_put_refs.free_pages_and_swap_cache
-     31.42            +2.8       34.23        perf-profile.calltrace.cycles-pp.folio_lruvec_lock_irqsave.__page_cache_release.folios_put_refs.free_pages_and_swap_cache.__tlb_batch_free_encoded_pages
-     31.38            +2.8       34.19        perf-profile.calltrace.cycles-pp.native_queued_spin_lock_slowpath._raw_spin_lock_irqsave.folio_lruvec_lock_irqsave.__page_cache_release.folios_put_refs
-     65.26            -2.5       62.73        perf-profile.children.cycles-pp.testcase
-     56.09            -1.7       54.41        perf-profile.children.cycles-pp.asm_exc_page_fault
-     52.66            -1.4       51.30        perf-profile.children.cycles-pp.exc_page_fault
-     52.52            -1.3       51.18        perf-profile.children.cycles-pp.do_user_addr_fault
-     50.83            -1.0       49.88        perf-profile.children.cycles-pp.handle_mm_fault
-     49.87            -0.8       49.02        perf-profile.children.cycles-pp.__handle_mm_fault
-      9.35            -0.8        8.53 ±  3%  perf-profile.children.cycles-pp.copy_page
-     49.23            -0.8       48.45        perf-profile.children.cycles-pp.do_fault
-      5.15            -0.5        4.68        perf-profile.children.cycles-pp.__irqentry_text_end
-      3.27            -0.5        2.80        perf-profile.children.cycles-pp.folio_prealloc
-      0.82            -0.3        0.52        perf-profile.children.cycles-pp.lock_vma_under_rcu
-      0.57            -0.3        0.32        perf-profile.children.cycles-pp.mas_walk
-      1.69            -0.3        1.43        perf-profile.children.cycles-pp.vma_alloc_folio_noprof
-      2.54            -0.2        2.30        perf-profile.children.cycles-pp.error_entry
-      1.52 ±  2%      -0.2        1.31        perf-profile.children.cycles-pp.__mem_cgroup_charge
-      0.95            -0.2        0.79 ±  4%  perf-profile.children.cycles-pp.__mod_memcg_lruvec_state
-      1.87            -0.2        1.72 ±  3%  perf-profile.children.cycles-pp.__pte_offset_map_lock
-      0.60 ±  4%      -0.1        0.46 ±  6%  perf-profile.children.cycles-pp.get_mem_cgroup_from_mm
-      0.70            -0.1        0.56 ±  2%  perf-profile.children.cycles-pp.lru_add_fn
-      1.57            -0.1        1.45 ±  3%  perf-profile.children.cycles-pp._raw_spin_lock
-      1.16            -0.1        1.04        perf-profile.children.cycles-pp.native_irq_return_iret
-      1.12            -0.1        1.01        perf-profile.children.cycles-pp.alloc_pages_mpol_noprof
-      0.44            -0.1        0.35        perf-profile.children.cycles-pp.get_vma_policy
-      0.94            -0.1        0.85        perf-profile.children.cycles-pp.sync_regs
-      0.96            -0.1        0.87        perf-profile.children.cycles-pp.__perf_sw_event
-      0.43            -0.1        0.34 ±  2%  perf-profile.children.cycles-pp.free_unref_folios
-      0.21 ±  3%      -0.1        0.13 ±  3%  perf-profile.children.cycles-pp._compound_head
-      0.75            -0.1        0.68        perf-profile.children.cycles-pp.___perf_sw_event
-      0.31            -0.1        0.25        perf-profile.children.cycles-pp.__mem_cgroup_uncharge_folios
-      0.94            -0.0        0.90        perf-profile.children.cycles-pp.__alloc_pages_noprof
-      0.41 ±  4%      -0.0        0.37 ±  4%  perf-profile.children.cycles-pp.mem_cgroup_commit_charge
-      0.44 ±  5%      -0.0        0.40 ±  5%  perf-profile.children.cycles-pp.__count_memcg_events
-      0.17 ±  2%      -0.0        0.13 ±  4%  perf-profile.children.cycles-pp.uncharge_batch
-      0.57            -0.0        0.53 ±  2%  perf-profile.children.cycles-pp.get_page_from_freelist
-      0.13 ±  2%      -0.0        0.09 ±  5%  perf-profile.children.cycles-pp.__mod_zone_page_state
-      0.19 ±  3%      -0.0        0.16 ±  6%  perf-profile.children.cycles-pp.cgroup_rstat_updated
-      0.15 ±  2%      -0.0        0.12 ±  3%  perf-profile.children.cycles-pp.free_unref_page_commit
-      0.10 ±  3%      -0.0        0.07 ±  5%  perf-profile.children.cycles-pp.mem_cgroup_update_lru_size
-      0.08            -0.0        0.05        perf-profile.children.cycles-pp.policy_nodemask
-      0.13 ±  3%      -0.0        0.10 ±  3%  perf-profile.children.cycles-pp.page_counter_uncharge
-      0.32 ±  3%      -0.0        0.30 ±  2%  perf-profile.children.cycles-pp.__mod_node_page_state
-      0.17 ±  2%      -0.0        0.15 ±  3%  perf-profile.children.cycles-pp.percpu_counter_add_batch
-      0.16 ±  2%      -0.0        0.14 ±  2%  perf-profile.children.cycles-pp.shmem_get_policy
-      0.16            -0.0        0.14 ±  2%  perf-profile.children.cycles-pp.handle_pte_fault
-      0.16 ±  4%      -0.0        0.14 ±  4%  perf-profile.children.cycles-pp.__pte_offset_map
-      0.09            -0.0        0.07 ±  5%  perf-profile.children.cycles-pp.get_pfnblock_flags_mask
-      0.12 ±  3%      -0.0        0.10 ±  4%  perf-profile.children.cycles-pp.uncharge_folio
-      0.36            -0.0        0.34        perf-profile.children.cycles-pp.asm_sysvec_apic_timer_interrupt
-      0.10 ±  3%      -0.0        0.08 ±  5%  perf-profile.children.cycles-pp.pte_offset_map_nolock
-      0.30            -0.0        0.28 ±  2%  perf-profile.children.cycles-pp.__sysvec_apic_timer_interrupt
-      0.09 ±  4%      -0.0        0.08        perf-profile.children.cycles-pp.down_read_trylock
-      0.08            -0.0        0.07 ±  5%  perf-profile.children.cycles-pp.folio_unlock
-      0.40            +0.0        0.43        perf-profile.children.cycles-pp.__mod_lruvec_state
-      1.02            +0.0        1.06        perf-profile.children.cycles-pp.zap_present_ptes
-      0.47            +0.2        0.67        perf-profile.children.cycles-pp.folio_remove_rmap_ptes
-      3.87            +0.3        4.12        perf-profile.children.cycles-pp.tlb_finish_mmu
-      1.17            +0.5        1.71 ±  2%  perf-profile.children.cycles-pp.__lruvec_stat_mod_folio
-     32.88            +0.8       33.63        perf-profile.children.cycles-pp.set_pte_range
-     29.54            +2.3       31.80        perf-profile.children.cycles-pp.tlb_flush_mmu
-     30.66            +2.3       32.93        perf-profile.children.cycles-pp.zap_pte_range
-     30.66            +2.3       32.94        perf-profile.children.cycles-pp.unmap_page_range
-     30.66            +2.3       32.94        perf-profile.children.cycles-pp.zap_pmd_range
-     30.66            +2.3       32.94        perf-profile.children.cycles-pp.unmap_vmas
-     33.41            +2.5       35.92        perf-profile.children.cycles-pp.__tlb_batch_free_encoded_pages
-     33.40            +2.5       35.92        perf-profile.children.cycles-pp.free_pages_and_swap_cache
-     34.56            +2.5       37.08        perf-profile.children.cycles-pp.__munmap
-     34.56            +2.5       37.08        perf-profile.children.cycles-pp.__vm_munmap
-     34.56            +2.5       37.08        perf-profile.children.cycles-pp.__x64_sys_munmap
-     34.56            +2.5       37.09        perf-profile.children.cycles-pp.do_vmi_munmap
-     34.56            +2.5       37.09        perf-profile.children.cycles-pp.do_vmi_align_munmap
-     34.67            +2.5       37.20        perf-profile.children.cycles-pp.do_syscall_64
-     34.67            +2.5       37.20        perf-profile.children.cycles-pp.entry_SYSCALL_64_after_hwframe
-     34.56            +2.5       37.09        perf-profile.children.cycles-pp.unmap_region
-     33.22            +2.6       35.80        perf-profile.children.cycles-pp.folios_put_refs
-     32.12            +2.6       34.75        perf-profile.children.cycles-pp.__page_cache_release
-     61.97            +3.3       65.27        perf-profile.children.cycles-pp._raw_spin_lock_irqsave
-     61.94            +3.3       65.26        perf-profile.children.cycles-pp.native_queued_spin_lock_slowpath
-     61.98            +3.3       65.30        perf-profile.children.cycles-pp.folio_lruvec_lock_irqsave
-      9.32            -0.8        8.49 ±  3%  perf-profile.self.cycles-pp.copy_page
-      5.15            -0.5        4.68        perf-profile.self.cycles-pp.__irqentry_text_end
-      0.56            -0.3        0.31        perf-profile.self.cycles-pp.mas_walk
-      2.58            -0.2        2.33        perf-profile.self.cycles-pp.testcase
-      2.53            -0.2        2.30        perf-profile.self.cycles-pp.error_entry
-      0.60 ±  4%      -0.2        0.44 ±  6%  perf-profile.self.cycles-pp.get_mem_cgroup_from_mm
-      0.85            -0.1        0.71 ±  4%  perf-profile.self.cycles-pp.__mod_memcg_lruvec_state
-      1.54            -0.1        1.43 ±  3%  perf-profile.self.cycles-pp._raw_spin_lock
-      1.15            -0.1        1.04        perf-profile.self.cycles-pp.native_irq_return_iret
-      0.94            -0.1        0.85        perf-profile.self.cycles-pp.sync_regs
-      0.20 ±  3%      -0.1        0.13 ±  3%  perf-profile.self.cycles-pp._compound_head
-      0.27 ±  3%      -0.1        0.20 ±  3%  perf-profile.self.cycles-pp.free_pages_and_swap_cache
-      0.26            -0.1        0.18 ±  2%  perf-profile.self.cycles-pp.get_vma_policy
-      0.26            -0.1        0.19 ±  2%  perf-profile.self.cycles-pp.__page_cache_release
-      0.16            -0.1        0.09 ±  5%  perf-profile.self.cycles-pp.vma_alloc_folio_noprof
-      0.28 ±  2%      -0.1        0.22 ±  3%  perf-profile.self.cycles-pp.zap_present_ptes
-      0.66            -0.1        0.60        perf-profile.self.cycles-pp.___perf_sw_event
-      0.32            -0.1        0.27 ±  5%  perf-profile.self.cycles-pp.lru_add_fn
-      0.47            -0.0        0.43 ±  2%  perf-profile.self.cycles-pp.__handle_mm_fault
-      0.16 ±  4%      -0.0        0.12        perf-profile.self.cycles-pp.lock_vma_under_rcu
-      0.20            -0.0        0.16 ±  4%  perf-profile.self.cycles-pp.free_unref_folios
-      0.30            -0.0        0.26        perf-profile.self.cycles-pp.handle_mm_fault
-      0.10 ±  4%      -0.0        0.07        perf-profile.self.cycles-pp.zap_pte_range
-      0.09 ±  5%      -0.0        0.06 ±  6%  perf-profile.self.cycles-pp.mem_cgroup_update_lru_size
-      0.14 ±  2%      -0.0        0.11 ±  4%  perf-profile.self.cycles-pp.mem_cgroup_commit_charge
-      0.14 ±  3%      -0.0        0.12 ±  4%  perf-profile.self.cycles-pp.folio_remove_rmap_ptes
-      0.12 ±  4%      -0.0        0.09 ±  7%  perf-profile.self.cycles-pp.__mod_zone_page_state
-      0.10 ±  4%      -0.0        0.08 ±  6%  perf-profile.self.cycles-pp.alloc_pages_mpol_noprof
-      0.11            -0.0        0.08 ±  5%  perf-profile.self.cycles-pp.free_unref_page_commit
-      0.22 ±  2%      -0.0        0.19        perf-profile.self.cycles-pp.__pte_offset_map_lock
-      0.21            -0.0        0.18 ±  2%  perf-profile.self.cycles-pp.__perf_sw_event
-      0.21            -0.0        0.18 ±  2%  perf-profile.self.cycles-pp.do_user_addr_fault
-      0.31 ±  2%      -0.0        0.29        perf-profile.self.cycles-pp.__mod_node_page_state
-      0.16 ±  2%      -0.0        0.14 ±  5%  perf-profile.self.cycles-pp.cgroup_rstat_updated
-      0.17 ±  2%      -0.0        0.15 ±  2%  perf-profile.self.cycles-pp.percpu_counter_add_batch
-      0.11            -0.0        0.09 ±  4%  perf-profile.self.cycles-pp.page_counter_uncharge
-      0.09            -0.0        0.07        perf-profile.self.cycles-pp.get_pfnblock_flags_mask
-      0.28 ±  2%      -0.0        0.26 ±  2%  perf-profile.self.cycles-pp.xas_load
-      0.16 ±  2%      -0.0        0.14 ±  3%  perf-profile.self.cycles-pp.get_page_from_freelist
-      0.12            -0.0        0.10 ±  3%  perf-profile.self.cycles-pp.uncharge_folio
-      0.16 ±  4%      -0.0        0.14 ±  3%  perf-profile.self.cycles-pp.__pte_offset_map
-      0.20 ±  2%      -0.0        0.19 ±  2%  perf-profile.self.cycles-pp.shmem_get_folio_gfp
-      0.16 ±  3%      -0.0        0.14 ±  3%  perf-profile.self.cycles-pp.shmem_get_policy
-      0.14 ±  3%      -0.0        0.12 ±  4%  perf-profile.self.cycles-pp.do_fault
-      0.08            -0.0        0.07 ±  7%  perf-profile.self.cycles-pp.folio_unlock
-      0.12 ±  3%      -0.0        0.11        perf-profile.self.cycles-pp.folio_add_new_anon_rmap
-      0.09            -0.0        0.08        perf-profile.self.cycles-pp.down_read_trylock
-      0.07            -0.0        0.06        perf-profile.self.cycles-pp.folio_prealloc
-      0.38 ±  2%      +0.0        0.42 ±  3%  perf-profile.self.cycles-pp.filemap_get_entry
-      0.26            +0.1        0.36        perf-profile.self.cycles-pp.folios_put_refs
-      0.33            +0.1        0.44 ±  3%  perf-profile.self.cycles-pp.folio_batch_move_lru
-      0.40 ±  5%      +0.6        0.98        perf-profile.self.cycles-pp.__lruvec_stat_mod_folio
-     61.94            +3.3       65.26        perf-profile.self.cycles-pp.native_queued_spin_lock_slowpath
-
-
-
-
-Disclaimer:
-Results have been estimated based on internal Intel analysis and are provided
-for informational purposes only. Any difference in system hardware or software
-design or configuration may affect actual performance.
 
 
 -- 
