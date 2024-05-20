@@ -1,111 +1,250 @@
-Received: from szxga06-in.huawei.com (szxga06-in.huawei.com [45.249.212.32])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D10C3C136
-	for <oe-lkp@lists.linux.dev>; Mon, 20 May 2024 01:47:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.32
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716169671; cv=none; b=E/ho1t5bULl0X9D7PK5VsPtN6nnrUVB9LcRLS6mAUQ4KgKSAjd7ifyh8fwOj7njAHF5g63PJ53jJu2GxdkRWoVj1olL7/GO+lBN8OXx68yGB9iiRUwSITSMfckiHCy9YlO/JBe7jcKoDtHAY5uwtmJbWEAfUyEDg8jsvsDP9Hr8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716169671; c=relaxed/simple;
-	bh=qpXZyW+NEeL2MCm77eZBO0fz7eYvCpAkOHbsTO+X6EA=;
-	h=Subject:To:CC:References:From:Message-ID:Date:MIME-Version:
-	 In-Reply-To:Content-Type; b=IrONfTzEiLHaX9PkCTEu0mygXyIT8kz5+rs4lOAODUb8vomB9gRXIPC/Sz7Gv8HLWLoPS4WZNhtLVZ0gNikzIf0pNmqhvNcplaa+7sONgbqa3Z5yaAiKd+CZQ6zj/+EfqgJ7q93zbNqv6GnOhsRWdyEsaMQib3neVFle1O8d9tI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.163.17])
-	by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4VjL5H4GTcz1xmdr;
-	Mon, 20 May 2024 09:46:27 +0800 (CST)
-Received: from canpemm500002.china.huawei.com (unknown [7.192.104.244])
-	by mail.maildlp.com (Postfix) with ESMTPS id 8A01C1A0188;
-	Mon, 20 May 2024 09:47:40 +0800 (CST)
-Received: from [10.173.135.154] (10.173.135.154) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FC1817F5
+	for <oe-lkp@lists.linux.dev>; Mon, 20 May 2024 02:43:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.10
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1716173033; cv=fail; b=GybOtDOLJtRpue1/wX0sXd1E1oLUB+wT0BP2BXsdzfIvtT/L3oasPIEowRKkj3HbuSNi8VXvlZkf6svqEWPz6waMj6gximcgCD0ILWnkhG+zA2Mu7F+G5BbDPDic51y58zTXoIwvzSBUUJRRi+jrL3dqgRgwDO4dgy5LQ9OWjtA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1716173033; c=relaxed/simple;
+	bh=D5F4hQDvFO0pABdP+uQbteSKNSM2k2cUiotweapDTMU=;
+	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=hD7rNWoIsop1c5+W+1ijaCc7td6UyDF2zpjM57E9Jdyr0w6JU75tdmkXin+7l4ObOe4wbyZO8KjOT65LmWil2pACF+yX5lp666wu/5m2PcFpp6Rxq2tkQV9I3rf7PNfWYWn9nIHBgFoLlmgeivUKGQC6C+EY4o/kQY70VMhWn2k=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jcDCnGgK; arc=fail smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jcDCnGgK"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1716173031; x=1747709031;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=D5F4hQDvFO0pABdP+uQbteSKNSM2k2cUiotweapDTMU=;
+  b=jcDCnGgKDL4jGdehLWBHpGBF5999ZLjHUWDyxncND9NanyFXqA9N7kTJ
+   5ZXfX0ThK32L8lPSXFlj2cgJ6TEAFbXSYXMRhSt2b//Bjrz4BIJRaV6My
+   OvW1O5iW23p8dw3XH+2Afie9gLucY+R+m6/fimQSRMreQTPTPdOksoinF
+   C1pcXx6akF2pLsVQKGrZrlqYbi5PrRRoynDxLra/qm6oJhGMi5ExRjsN1
+   Igb8z3AQdOm/GmNg3CHXgnAnyeYguVBFWyXQZO+vuWqb6/GQzg4s4m1Qv
+   oDC2LR2pte0zPuODmel7WLhG5WR80QwTDL5mmYuuO645ZFlp83tFFm9FO
+   g==;
+X-CSE-ConnectionGUID: 11hV7xMWQHKQyQ3q8JUtkA==
+X-CSE-MsgGUID: HSgK3wP+SQi9hnFI3usKwg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11077"; a="29793654"
+X-IronPort-AV: E=Sophos;i="6.08,174,1712646000"; 
+   d="scan'208";a="29793654"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2024 19:43:51 -0700
+X-CSE-ConnectionGUID: Hmlult42SnSH4CVMqflnqQ==
+X-CSE-MsgGUID: yMLWvDVwT0yHhdm/uimFlA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,174,1712646000"; 
+   d="scan'208";a="36798339"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by fmviesa005.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 19 May 2024 19:43:50 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39; Sun, 19 May 2024 19:43:50 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39; Sun, 19 May 2024 19:43:49 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39 via Frontend Transport; Sun, 19 May 2024 19:43:49 -0700
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.168)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Mon, 20 May 2024 09:47:40 +0800
-Subject: Re: [PATCH -rc7] mm/huge_memory: mark huge_zero_page reserved
-To: kernel test robot <oliver.sang@intel.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-mm@kvack.org>,
-	<akpm@linux-foundation.org>, <shy828301@gmail.com>,
-	<nao.horiguchi@gmail.com>, <xuyu@linux.alibaba.com>,
-	<linux-kernel@vger.kernel.org>
-References: <202405171417.1bb0856a-lkp@intel.com>
-From: Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <1872dc30-01ff-008c-aedb-9a83c57a6bc7@huawei.com>
-Date: Mon, 20 May 2024 09:47:39 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+ 15.1.2507.35; Sun, 19 May 2024 19:43:49 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nH++CZtZNLig9PJaZ4+txfntjd7w5NJGZfcLjJiV3eHAnYC9oncGBwXb5qjRMP1WdRZVo672t4OIOkQWs0O7Y1zHtaKjcfLzmxm3GEjbBiXKGd9cj4yEFo9l4XWDSzrUqOpN3uUfW/rQCBK8nwefBuxkao5pTGpG++oz4kyLCe0hZCWp/1RxIwaME3gN3PmY1QhTJPJrtuhjJ8lxh19nwPGeU+Sz9rSIHQb6v5VXnGafj57ApSv8VuuSRDIGMy6mQg3QHgUwee+FRiPy6L9SSLIAb3udyKpoMOMErsvKDR819dqxQAaRx24WpaZ0EpxU2FOMTzHRWDZK6FTxzrLIdg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=QBSSV7B442wsIyMD1KBRGIdVDSkiThYXGjSNKaInJPU=;
+ b=F0U8z1TEJpe/OciIvoq/ERjK27fQNbJBR9ZYhcWVi9p4Hd2wqLjUWfsUIVnX+JhlBShDpOek/6nG4FMoYQpLmGdf7tC3bgUdxvhxPV+HnE7p9I1+m+ZGQ59CJc/i89HPisxKE2EY5vOLJUSSnOk+U2Sna3KYTLbr5C5uL+RTm4Wn1wYqFE5xfGWNvuXpFIuQQwNTxcodN2MT3elvGOah1nDw6F2SmBm4zGpO7xmAeIpvigT4y224SunKjpJ8pYg6vt1pFTGYwaCAG1QXTfrPUtJ76KnIkMgTqWwS8rRB3gmpUrcrOx/amPjNuzpfxYk+Jb0o+F15SFCx2zz6JX/H4Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by SJ2PR11MB8500.namprd11.prod.outlook.com (2603:10b6:a03:574::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7587.34; Mon, 20 May
+ 2024 02:43:47 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c%2]) with mapi id 15.20.7587.030; Mon, 20 May 2024
+ 02:43:46 +0000
+Date: Mon, 20 May 2024 10:43:35 +0800
+From: Oliver Sang <oliver.sang@intel.com>
+To: Shakeel Butt <shakeel.butt@linux.dev>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Linux Memory Management List
+	<linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>, Yosry Ahmed
+	<yosryahmed@google.com>, "T.J. Mercier" <tjmercier@google.com>, "Roman
+ Gushchin" <roman.gushchin@linux.dev>, Johannes Weiner <hannes@cmpxchg.org>,
+	Michal Hocko <mhocko@kernel.org>, Muchun Song <muchun.song@linux.dev>,
+	<cgroups@vger.kernel.org>, <ying.huang@intel.com>, <feng.tang@intel.com>,
+	<fengwei.yin@intel.com>, <oliver.sang@intel.com>
+Subject: Re: [linux-next:master] [memcg]  70a64b7919:
+ will-it-scale.per_process_ops -11.9% regression
+Message-ID: <Zkq41w8YKCaKQAGk@xsang-OptiPlex-9020>
+References: <202405171353.b56b845-oliver.sang@intel.com>
+ <pdfcrrgqz6vy6xarsw6gswtoa32wjd2gpcagmreh7ksuy66i63@dowfkmloe37q>
+ <ZknC/xjryN0sxOWB@xsang-OptiPlex-9020>
+ <jg2rpsollyfck5drndajpxtqbjtigtuxql4j5s66egygfrcjqa@okdilkpx5v5e>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <jg2rpsollyfck5drndajpxtqbjtigtuxql4j5s66egygfrcjqa@okdilkpx5v5e>
+X-ClientProxiedBy: KU1PR03CA0042.apcprd03.prod.outlook.com
+ (2603:1096:802:19::30) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <202405171417.1bb0856a-lkp@intel.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500002.china.huawei.com (7.192.104.244)
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|SJ2PR11MB8500:EE_
+X-MS-Office365-Filtering-Correlation-Id: b2bca993-6ce8-47a3-1f6a-08dc7876abcd
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230031|366007|376005|1800799015|7416005;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?wFvOpJYtAy3fj3uKmoWvB8Oe2UO0rJFxTlX9sXLBHQ7mk7eUBb/HGsVQ/iZB?=
+ =?us-ascii?Q?7F/U+nw46BtRPJhYJnh1ZvmAGZjPGPKCh5UaV2CzYf1RQHAeWV9Zgy+f2wML?=
+ =?us-ascii?Q?/yWxlcDKiPKK1hkEwCeBMD9y0AMhM2kpaPg5pD1pS5MYzGHUYa7hMaPdr10c?=
+ =?us-ascii?Q?FxgG8KS+h2V8UVYv//WnlcZeYyYkALb3p/EeSOv2RILugW62uQ5eeW3JdLfR?=
+ =?us-ascii?Q?MVBSQHZoOv/OHMfWxA9L9Q5V2brZtwkd7Js+OcTLzpGnEt4o4qH8ItyZadOI?=
+ =?us-ascii?Q?qyAjT3G0jawIcrVIiP1GGRyEUBHWAkE4vJJKORM5lV7u93luVKxId9Sbb/mr?=
+ =?us-ascii?Q?1e5SqxVK1mb8J4GVGzYDZYcRbQNHIQkiw/gj7ADg0w4zBVZfXiKgTN+ThYG9?=
+ =?us-ascii?Q?Ne4pYMWoX8OGNs8FyHABscJ1djsC384QJZkRkpwyqTphdCBRw3vBXxDXn1E3?=
+ =?us-ascii?Q?3r1sahhO5x5xQM4GuKayk4c0K7SDZXeceMB9abRentUizXIXa3LuoXWxaxV0?=
+ =?us-ascii?Q?3F45ISI187Pj66oDkF7hTvouT1PstR3Q/DFvferB6AcV11ma4u4Abbu9USi5?=
+ =?us-ascii?Q?T1tu65YkSlDE47YJugsdsvLH5Osay5ROlnGby/iaOvJ6VvjPNIqy5aR+hqlY?=
+ =?us-ascii?Q?D+a0WMp0sHnB0XfI5oeNEcY99+7GFWDv+6PQP5agJTZqP9pCYOx2LcaIlRsr?=
+ =?us-ascii?Q?m4PvJntJ8SFUh/+RZJW0bXoKKr0I4/HxfK2OWQ7uZhkQWNBsdRv5GEcxfIK0?=
+ =?us-ascii?Q?MZEINfjU/NqLHdplBu87/uYEg1LeKNc9Hn3giVSbb3lJefZxlH7j2hSrBnpz?=
+ =?us-ascii?Q?z5cF+ONEI0Wu21LWlJN3BNDPiIIuReORESRSMon4VgZTfC3CF+TqDzDO4b7s?=
+ =?us-ascii?Q?/eXq9D4ETglRyUT+8YVetK9Aetbtj62QkQikH6KS5ggOTfvsdkS9dUsx85t6?=
+ =?us-ascii?Q?IZWOhg7SfVWYyctVfVJVsgr10OgXV1gh4T5iFh3wNtny9EPs/mINb4J8DtbH?=
+ =?us-ascii?Q?xggDKu2Feijz7DxXtI6Zjp/XxhrO+uzySn85dEDTeKGRJiH4RBJpRA7eWKZL?=
+ =?us-ascii?Q?RKMrS71OKYn87pxm0h9lTPuuzrMcBlGniYkrFkb+y1rBdJzcnhWTJ3/voUUV?=
+ =?us-ascii?Q?02vA620SHZBkh+Um8vlquR4PDhLfhGxfk6QrTqrZ66HE3blKJtPXFMMFc5my?=
+ =?us-ascii?Q?Npc6EBf9xV7SbVm+LjAV5WjUK7oZquXF+pskK+fLmjsIVoIqTjcL8RFsFf4?=
+ =?us-ascii?Q?=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(376005)(1800799015)(7416005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?X5XBJ9VTf4ehy73hwRytVAnH32PWclntfY3nopgy4mbmXIcUkCf5JGA9mofF?=
+ =?us-ascii?Q?zgdbS6lumZBx5VCPybmP/6lL6JGiJiSTp4EfEzaa8hlVn9RKsOfKjnMFRs2x?=
+ =?us-ascii?Q?YMzACgcwro8ZLHsdojqoyf50b84TwzylMzqyejE3YTxJZ5mCTWF09BpUMw/f?=
+ =?us-ascii?Q?tM7HcpoI4+uKX/e7JneuvrF/KdRrkpE1OS5hYIfbvBe3b3JAyvFVF2sR+xyz?=
+ =?us-ascii?Q?VAxRFKuqqRzCilyMDcO+qosatarJAkggvh9XdCie2UXb0re090aag1CyuKC3?=
+ =?us-ascii?Q?nZV0qN5eKnatyis9409LGyrSLkneuQmjrsGkCVyuYROqUDo67x6eEna3kV0V?=
+ =?us-ascii?Q?GEarDQkjpz/DaI+TtOoOEYwXlJZ4B13r0sJu0C6zoZ3HW73R3Z3jxbPFGhlN?=
+ =?us-ascii?Q?47iC+l/pxIvDdeSkUIp44N9eE/VPI24qoh6L/YRziUQ9pYo08zg200XpMcwo?=
+ =?us-ascii?Q?GZvjCAvKK9gs7e/JdTbNci38ZsvrzTVwInlnaEL30NLZKqDNCRiFGeY04D4V?=
+ =?us-ascii?Q?UibBEL+5mmtmVIJfTN6fP7cnHjLsTaUHK93qgd9PmuOTPsVnG+flk8GMKT/Z?=
+ =?us-ascii?Q?H4bk8jD7euPYoU224Tow1O32gDZdR8Y8l8FzI034b2rQ4JyrC5yGQpV19Zoe?=
+ =?us-ascii?Q?9HmmOKhqxCRbiVVHvKOMIVLVa8MKMUxXVvwvsYVeZFSYu77Lx6smglBoR06x?=
+ =?us-ascii?Q?w5/xpvqqI8ZaJefSPBxTQe81Krj9M9mJzc4yiUl3jUnpAyuyG+Efr4X+YBRv?=
+ =?us-ascii?Q?h23LhewZ7TcjxGgmpzTmP/1R7gqmsMYXlhWgVU9+PpP2pAm5K8Ho/SnZzBNK?=
+ =?us-ascii?Q?HKkL/pbFBAnbbtXkjFOnH3RU8M+SmLpjEgErW8uqcwfg4Yef5eGKK5/qPjzX?=
+ =?us-ascii?Q?lyZZAthETcZs79Gj1A9X2QFs64oiVb35aXgoEvMns74HxelopHe03F93hRP/?=
+ =?us-ascii?Q?NirAiD048o9i4nOJUp1WKghEUfQAigOLbw/LoD/y0t2m46hniTYqvIWUAsQA?=
+ =?us-ascii?Q?zM5m/zdLo6CMLF71ee88Cv10HipXrkI5shUk0dEpeD6QrIJZ3Vq2e1ZDsxDB?=
+ =?us-ascii?Q?F7KJbD2AaQUwNaR6PkE/I6fwBbXWy9qsZijEjpH3L5VKhNgBfzkX/RXgp680?=
+ =?us-ascii?Q?NI73/cfK/wPfDTL6FwifPt8bghbhSVhNsN2a1YQtn7V/wzwk1F4tjI8oXGCf?=
+ =?us-ascii?Q?dK3tHqCQ+vGLL67rJIOUyPNGs7R+/Qn1y7Tsbsnampg136v2x3QiknqVJ2Wg?=
+ =?us-ascii?Q?RTXNyoDE9HEDnpn2J2bNwq64wtFTDuzZWfblzm910+zk+GzQzXmEUUBxQqJb?=
+ =?us-ascii?Q?Mf7kJiSwbVhtsXirupwYsP+xTk5U+f+1lutTuX1ze5btvANV6mgWN9bfHWHX?=
+ =?us-ascii?Q?D4m9UiTpA4XCCtHQFx1FNTzbupPwB/Q61VZY3hMnw5dvphJADalJ+81hLBBW?=
+ =?us-ascii?Q?HWLVOt9TbkzBL79sQJGiVgRfAOGlVMhF+ZddN58YsQsy6gImmiaougbS3Wh0?=
+ =?us-ascii?Q?Z7NApZWs768NcHr4Xlnm1gOsLnjqM15RLdaD1LbIolqSZoxzsTPf6uM0hmCO?=
+ =?us-ascii?Q?HA0WsC0OOUOUjm1w9SoCCb16omi2ZnpkSBovvYM4sQszNzgPGYdTpZfrDCmv?=
+ =?us-ascii?Q?rg=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: b2bca993-6ce8-47a3-1f6a-08dc7876abcd
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 May 2024 02:43:46.6819
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: yGynRG2j4MgJusy90xUpNHanhm/0iKDKnBUtMKN7nAR1BSxCopmswI5tDcGy8IA+e1PxZYlmU6FXYpsUSfHmXg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR11MB8500
+X-OriginatorOrg: intel.com
 
-On 2024/5/17 15:03, kernel test robot wrote:
-> 
-> 
-> Hello,
-> 
-> kernel test robot noticed "kernel_BUG_at_include/linux/page-flags.h" on:
-> 
-> commit: 8e6ff9c4aad2c677c53f70d9e193c35cbbafcb88 ("[PATCH -rc7] mm/huge_memory: mark huge_zero_page reserved")
-> url: https://github.com/intel-lab-lkp/linux/commits/Miaohe-Lin/mm-huge_memory-mark-huge_zero_page-reserved/20240511-115840
-> base: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git cf87f46fd34d6c19283d9625a7822f20d90b64a4
-> patch link: https://lore.kernel.org/all/20240511035435.1477004-1-linmiaohe@huawei.com/
-> patch subject: [PATCH -rc7] mm/huge_memory: mark huge_zero_page reserved
-> 
-> in testcase: trinity
-> version: trinity-i386-abe9de86-1_20230429
-> with following parameters:
-> 
-> 	runtime: 300s
-> 	group: group-03
-> 	nr_groups: 5
-> 
-> 
-> 
-> compiler: gcc-13
-> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-> 
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
-> 
-> 
-> +------------------------------------------+------------+------------+
-> |                                          | cf87f46fd3 | 8e6ff9c4aa |
-> +------------------------------------------+------------+------------+
-> | kernel_BUG_at_include/linux/page-flags.h | 0          | 11         |
-> | invalid_opcode:#[##]                     | 0          | 11         |
-> | RIP:get_huge_zero_page                   | 0          | 11         |
-> | Kernel_panic-not_syncing:Fatal_exception | 0          | 11         |
-> +------------------------------------------+------------+------------+
-> 
+hi, Shakeel,
 
-Thanks for your report.
+On Sun, May 19, 2024 at 10:20:28AM -0700, Shakeel Butt wrote:
+> On Sun, May 19, 2024 at 05:14:39PM +0800, Oliver Sang wrote:
+> > hi, Shakeel,
+> > 
+> > On Fri, May 17, 2024 at 11:28:10PM -0700, Shakeel Butt wrote:
+> > > On Fri, May 17, 2024 at 01:56:30PM +0800, kernel test robot wrote:
+> > > > 
+> > > > 
+> > > > Hello,
+> > > > 
+> > > > kernel test robot noticed a -11.9% regression of will-it-scale.per_process_ops on:
+> > > > 
+> > > > 
+> > > > commit: 70a64b7919cbd6c12306051ff2825839a9d65605 ("memcg: dynamically allocate lruvec_stats")
+> > > > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+> > > > 
+> > > 
+> > > Thanks for the report. Can you please run the same benchmark but with
+> > > the full series (of 8 patches) or at least include the ff48c71c26aa
+> > > ("memcg: reduce memory for the lruvec and memcg stats").
+> > 
+> > while this bisect, ff48c71c26aa has been checked. it has silimar data as
+> > 70a64b7919 (a little worse actually)
+> > 
+> > 59142d87ab03b8ff 70a64b7919cbd6c12306051ff28 ff48c71c26aaefb090c108d8803
+> > ---------------- --------------------------- ---------------------------
+> >          %stddev     %change         %stddev     %change         %stddev
+> >              \          |                \          |                \
+> >      91713           -11.9%      80789           -13.2%      79612        will-it-scale.per_process_ops
+> > 
+> > 
+> > ok, we will run tests on tip of the series which should be below if I understand
+> > it correctly.
+> > 
+> > * a94032b35e5f9 memcg: use proper type for mod_memcg_state
+> > 
+> > 
+> 
+> Thanks a lot Oliver. One question: what is the filesystem mounted at
+> /tmp on your test machine? I just wanted to make sure I run the test
+> with minimal changes from your setup.
+
+we don't have specific partition for /tmp, just use tmpfs
+
+tmp on /tmp type tmpfs (rw,relatime)
+
+
+BTW, the test on a94032b35e5f9 finished, still have similar score to 70a64b7919
+
+=========================================================================================
+compiler/cpufreq_governor/kconfig/mode/nr_task/rootfs/tbox_group/test/testcase:
+  gcc-13/performance/x86_64-rhel-8.3/process/100%/debian-12-x86_64-20240206.cgz/lkp-skl-fpga01/page_fault2/will-it-scale
+
+59142d87ab03b8ff 70a64b7919cbd6c12306051ff28 ff48c71c26aaefb090c108d8803 a94032b35e5f97dc1023030d929
+---------------- --------------------------- --------------------------- ---------------------------
+         %stddev     %change         %stddev     %change         %stddev     %change         %stddev
+             \          |                \          |                \          |                \
+     91713           -11.9%      80789           -13.2%      79612           -13.0%      79833        will-it-scale.per_process_ops
+
+
 
 > 
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202405171417.1bb0856a-lkp@intel.com
-> 
-> 
-> [  272.633454][ T3838] ------------[ cut here ]------------
-> [  272.634362][ T3838] kernel BUG at include/linux/page-flags.h:540!
-> [  272.635422][ T3838] invalid opcode: 0000 [#1] PREEMPT SMP KASAN PTI
-> [  272.636518][ T3838] CPU: 0 PID: 3838 Comm: trinity-c2 Not tainted 6.9.0-rc7-00184-g8e6ff9c4aad2 #1
-> [  272.638008][ T3838] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-> [ 272.639707][ T3838] RIP: 0010:get_huge_zero_page (include/linux/page-flags.h:540 (discriminator 1) mm/huge_memory.c:211 (discriminator 1)) 
-
-I think the root cause is that PG_reserved is inhibited on compound pages. So my original version of patch breaks the assumption.
-But since PG_reserved is to be removed, I have dropped this patch.
-Thanks.
-.
-
+> > > 
+> > > thanks,
+> > > Shakeel
+> > > 
