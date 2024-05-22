@@ -1,78 +1,121 @@
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 563D1762FF;
-	Wed, 22 May 2024 17:14:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39E853716D
+	for <oe-lkp@lists.linux.dev>; Wed, 22 May 2024 18:12:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716398046; cv=none; b=jtP/uYM0b6f/Le1yLNyWb4OT9x9ZRxxgl4pksG5SldqkxUeY1/AgqmcLbMu/TbuAtyiQbM6LbdHCmCPYXqJoW06Spp3Yl4Px0NEuASAIV6UDiYyii7UvTq+5J9rL5ksK7KYd4rBq/iE/WILgWt8DLOBBpezEWNWlUuzp26KMkTo=
+	t=1716401536; cv=none; b=p6X27fUD+/SIVYhq+nUaPKeMeRQAIGJQYNrXaJ/4FrlLqeaDD8G2gy4oWLl6jZVhly+nmOnsEnz42seToAsZeKzLq/8++Z4IjiHz5hWvGVMzwfhQzcg/a1ExAwGd/F7FDhnJzqORsW/cN2A8J/Rmk2qaXsnfblxExNWONA5U/c8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716398046; c=relaxed/simple;
-	bh=mbmrUgoWc/irdBq3b+5a3FMGIAtSnhpi9AUa/pCz9n0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=oUOMtXyi48Gc0HnOn/QFZlor6CYGfN1UZ2xcqKezycv6hmQJnuHeAH+GbFvNfcE4CXZ4Yaa2TlIMDDoVpLKE5JFAzVg7zfPYcBlEWzRFkmyqOOV0Ae7UnoIRTIEfFiWLqJ1IZpcIO7RMLLf2VD8Am77TG8AE2WWfiLTwKiiWt+I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=VBh336lN; arc=none smtp.client-ip=90.155.50.34
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	s=arc-20240116; t=1716401536; c=relaxed/simple;
+	bh=ayimWCKkgfYo+0x6XeVSOVgCcBa5dhPMekRUmdgIThw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=less80FqskwangWwAQ2E9cvvNSh3fTMXM/Ac8KBL8smJSweY7LjPEiccDBtLP8Ay4n4k3kA64Wft36QoJ1KRVp/BYunwF8fESDroVMhOhJBpBm9TaFKi1c3gNfEFB6Qu6y/Jd5rFa+YIuvc+eExa0o2Ynnr5flbxbV+nd76a/Nc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=BfG56D6p; arc=none smtp.client-ip=209.85.167.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="VBh336lN"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=tTs5GqkH792WkQ5uou1WjI1GQqIun7xt5FNmVzrUoKY=; b=VBh336lNsDVUCmD5sKjJynTTOh
-	g791d7gHmi1Fk0v2aqXU+C+DyODxr3tIORHuNoGSbhfb2slTVoVTl2uFIPrn37YqWi26hN0KsDqw5
-	2KhmSp9dzPE6HM0kh+R41fRhe5dpes8HAKZWjx6tw8sHax/GhqN7JpQ52k1wurVhMys2G3lgtaNAP
-	SdQxtE6X4eDiXexmnCf0GIyqNKg4hDO5hJdvkRGrRYfTlf/EUctSuaRAb2URt58u+IE9aoCOh50Mv
-	fkyNht8QFQCvA/o06TuCmu/IQoWdWf0GJCCuAZJoCUtsKKsXpe8raiRvAJevNdylYnxyZTPPRp2k+
-	Ui/x+jiQ==;
-Received: from willy by casper.infradead.org with local (Exim 4.97.1 #2 (Red Hat Linux))
-	id 1s9pXJ-00000000rO0-2wvS;
-	Wed, 22 May 2024 17:13:57 +0000
-Date: Wed, 22 May 2024 18:13:57 +0100
-From: Matthew Wilcox <willy@infradead.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: kernel test robot <oliver.sang@intel.com>,
-	Yafang Shao <laoar.shao@gmail.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, Al Viro <viro@zeniv.linux.org.uk>,
-	Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>,
-	Waiman Long <longman@redhat.com>, Wangkai <wangkai86@huawei.com>,
-	Colin Walters <walters@verbum.org>, linux-fsdevel@vger.kernel.org,
-	ying.huang@intel.com, feng.tang@intel.com, fengwei.yin@intel.com,
-	linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] vfs: Delete the associated dentry when deleting a file
-Message-ID: <Zk4n1eXLXkbKWFs2@casper.infradead.org>
-References: <20240515091727.22034-1-laoar.shao@gmail.com>
- <202405221518.ecea2810-oliver.sang@intel.com>
- <CAHk-=wg2jGRLWhT1-Od3A74Cr4cSM9H+UhOD46b3_-mAfyf1gw@mail.gmail.com>
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="BfG56D6p"
+Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-51f0b6b682fso7455244e87.1
+        for <oe-lkp@lists.linux.dev>; Wed, 22 May 2024 11:12:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google; t=1716401532; x=1717006332; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=AugUKhaYwKDJ/9b03MK/LG9RwwxS/6pxd40CuSzPjmc=;
+        b=BfG56D6pzoiqF5NSaBQRWW42bxdaTiMIFTA+hw1GxsIaXy7FOaOp5HK6lfTEXBmQ6p
+         F7Xfy9M9kv7S1AoPBYuna1HJBCf+gxEHP3gOSEL3TU9Ajp7xinGjb26AOgr2MIeBP6PG
+         kZUsJ9wn9qbHuu8c7nrLDTJAIRoLsx8xJSNZM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1716401532; x=1717006332;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=AugUKhaYwKDJ/9b03MK/LG9RwwxS/6pxd40CuSzPjmc=;
+        b=UA+xJKiIzEYtOQNTIuPON5yLXlIkSMnjKTAMPcjD5esYlsOS7peIiPQvUg+ys8jX6x
+         JfiVriMyLSCIJ5YF86rHLp7iFIae6iZ5XOabSWG+m8bvcwOu5oz8Q73MmpfHF7j0q9lP
+         CrfUKzqgun/39L65L2VVPR2DjnWl9G4F61wZ2Y0fqNLZgan0dgTRP1y/TIkQaE4iO40n
+         JHOCxoN0Uj7sYUcevRRddUCi+ZCESCxF1U6DP4c6LlkyB5DCpQI4/lYUzhLdrvWALdpP
+         KNwgC6LbgI7U3ttdjLDF+eJBNkYMPidNdNXUFHZ2R7ghZfFRwU6mBP4r0bJEqxjQ8JUy
+         qb/A==
+X-Forwarded-Encrypted: i=1; AJvYcCXdfziMsuNSPibYj3X4fZ0h3UW9EW6gi1O4/bb3BS4hS8YERQSii7+wXwplWrM+oeYSY8yPAmRaJmRzjT/HbYV4Kgjd4VIp
+X-Gm-Message-State: AOJu0YyVdTCDiRVs2g9XmKoaQ2zOX95FrRBorFp15m7hRvf3ufEceXFV
+	XFE5jRIb+nRPnwXsbcBVyBVZ9Uej7NWe4wE0u4ERjHP5Xbb6hHS1P5h1WU+1lXCMdw8NuD+e9u7
+	f3Fe1bg==
+X-Google-Smtp-Source: AGHT+IFUSfqO6cLCD8ngz7FKUfF0Nqv8hePrUmvEKl/4QQMG8mXylsFj1uBgcWmP07HuzQdMaLw8qg==
+X-Received: by 2002:ac2:5312:0:b0:524:473f:8da5 with SMTP id 2adb3069b0e04-526bf922032mr2382674e87.40.1716401532210;
+        Wed, 22 May 2024 11:12:12 -0700 (PDT)
+Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com. [209.85.208.51])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a5a179c7d7csm1833647366b.140.2024.05.22.11.12.10
+        for <oe-lkp@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 May 2024 11:12:10 -0700 (PDT)
+Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-572a93890d1so11701810a12.3
+        for <oe-lkp@lists.linux.dev>; Wed, 22 May 2024 11:12:10 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCWEGeOIWpEd8oJbX2F0VhTmXplAk23zgZpJ7AYTlnB85Y/u27VT+bACO3Hj/COetkSz3/XU6JCMlg32cmoYyMttAOqkD4T9
+X-Received: by 2002:a17:906:488:b0:a59:b1cf:fea0 with SMTP id
+ a640c23a62f3a-a62280d5059mr234104266b.19.1716401530325; Wed, 22 May 2024
+ 11:12:10 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wg2jGRLWhT1-Od3A74Cr4cSM9H+UhOD46b3_-mAfyf1gw@mail.gmail.com>
+References: <20240515091727.22034-1-laoar.shao@gmail.com> <202405221518.ecea2810-oliver.sang@intel.com>
+ <CAHk-=wg2jGRLWhT1-Od3A74Cr4cSM9H+UhOD46b3_-mAfyf1gw@mail.gmail.com> <Zk4n1eXLXkbKWFs2@casper.infradead.org>
+In-Reply-To: <Zk4n1eXLXkbKWFs2@casper.infradead.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Wed, 22 May 2024 11:11:54 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgdm4SN_ofM1gFuF7CTRgVcbAGuopgS3NWP04zRCn_SKw@mail.gmail.com>
+Message-ID: <CAHk-=wgdm4SN_ofM1gFuF7CTRgVcbAGuopgS3NWP04zRCn_SKw@mail.gmail.com>
+Subject: Re: [PATCH] vfs: Delete the associated dentry when deleting a file
+To: Matthew Wilcox <willy@infradead.org>
+Cc: kernel test robot <oliver.sang@intel.com>, Yafang Shao <laoar.shao@gmail.com>, oe-lkp@lists.linux.dev, 
+	lkp@intel.com, Al Viro <viro@zeniv.linux.org.uk>, 
+	Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>, Waiman Long <longman@redhat.com>, 
+	Wangkai <wangkai86@huawei.com>, Colin Walters <walters@verbum.org>, linux-fsdevel@vger.kernel.org, 
+	ying.huang@intel.com, feng.tang@intel.com, fengwei.yin@intel.com, 
+	linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, May 22, 2024 at 09:00:03AM -0700, Linus Torvalds wrote:
-> Of course, if you do billions of lookups of different files that do
-> not exist in the same directory, I suspect you just have yourself to
-> blame, so the "lots of negative lookups" load doesn't sound
-> particularly realistic.
+On Wed, 22 May 2024 at 10:14, Matthew Wilcox <willy@infradead.org> wrote:
+>
+> On Wed, May 22, 2024 at 09:00:03AM -0700, Linus Torvalds wrote:
+> > Of course, if you do billions of lookups of different files that do
+> > not exist in the same directory, I suspect you just have yourself to
+> > blame, so the "lots of negative lookups" load doesn't sound
+> > particularly realistic.
+>
+> Oh no.  We have real customers that this hits and it's not even stupid.
 
-Oh no.  We have real customers that this hits and it's not even stupid.
+Oh, negative dentries exist, and yes, they are a major feature on some
+loads. Exactly because of the kinds of situations you describe.
 
-Every time an "event" happens, they look up something like a hash in three
-different directories (like $PATH or multiple -I flags to the compiler).
-Order is important, so they can't just look it up in the directory that
-it's most likely to exist in.  It usually fails to exist in directory A
-and B, so we create dentries that say it doesn't.  And those dentries are
-literally never referenced again.  Then directory C has the file they're
-looking for (or it doesn't and it gets created because the process has
-write access to C and not A or B).
+In fact, that's the _point_. Things like PATH lookup require negative
+dentries for good performance, because otherwise all the missed cases
+would force a lookup all the way out to the filesystem.
 
-plan9 handles this so much better because it has that union-mount stuff
-instead of search paths.  So it creates one dentry that tells it which of
-those directories it actually exists in.  But we're stuck with unix-style
-search paths, so life is pain.
+So having thousands of negative dentries is normal and expected. And
+it will grow for bigger machines and loads, of course.
+
+That said, I don't think we've had people on real loads complain about
+them being in the hundreds of millions like Yafang's case.
+
+> plan9 handles this so much better because it has that union-mount stuff
+> instead of search paths.  So it creates one dentry that tells it which of
+> those directories it actually exists in.  But we're stuck with unix-style
+> search paths, so life is pain.
+
+I suspect you are just not as aware of the downsides of the plan9 models.
+
+People tend to think plan9 was great. It had huge and fundamental
+design mistakes.
+
+Union mounts =C3=A0 la plan9 aren't hugely wonderful, and there's a reason
+overlayfs does things differently (not that that is hugely wonderful
+either).
+
+             Linus
