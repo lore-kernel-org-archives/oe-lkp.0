@@ -1,233 +1,138 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+Received: from out-189.mta0.migadu.com (out-189.mta0.migadu.com [91.218.175.189])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C76CB8593B
-	for <oe-lkp@lists.linux.dev>; Fri, 24 May 2024 10:14:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.11
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716545698; cv=fail; b=hQ0Nqzm6kgVixTTqkKRiX3qiEO/FimHBf43AQHNTZJhnmQ24KfGLWT1Mj8Q7VQcWMTWCB4zL7P7yurxNmhF4VKUg7Kst0ELUD25u1Y1dZQ7Y5hmYu8JuI65qPAv1+t0fBSHnagN5qJ7HGLp2sF58xXmaEp2x6Q5y96nJ7FAbwyw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716545698; c=relaxed/simple;
-	bh=+r7MznVugleUz6KEp136UUq7JkJGOhRvu9/UEOkb0bY=;
-	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=ONlThwlK47wTPEf8FNeN012K5jIYsVkf1+xGGNzuM8zmHcniYF2HeIPcWoc2eBCTy5cY4BIBE+vTmpWORNJNva4KxBjQrqOYz1w1TqHqL9xu1YwQqyD1SRhdUK8n25dbJezsxnn5t4u5N4kLCv0YFy9py6MgIpcUCTausCZCmqE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eUB9klHo; arc=fail smtp.client-ip=192.198.163.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5812C3B1A3
+	for <oe-lkp@lists.linux.dev>; Fri, 24 May 2024 18:07:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.189
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1716574025; cv=none; b=JJ8m7fNSMCPVpJmKX7eBsQYylYKWz9YuWhj8l1yw66wXcgpZ3I5ar02P1irHOAg+S5+dbdU56A7hXDrRrYnmoTSo9dIJZgFVZt/Jo3C9QlOo9W1LItw80yyKobfVFpAim7yrwnkZUsBafIcRgdUkOV6dWpIoznXDpYPn7Q2wd9c=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1716574025; c=relaxed/simple;
+	bh=+yalLxB4yvGtdiSeqqSVRqVwmlqPZu8e/vNX5Nr/pDE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=E2Bo+MKhIexC1YzBdVbg8HBQjUQWPXJggarNEO/3cwlcq+PIZSbbehmIQ3skX3S+BKiK6er/jN47py6M6RVYCJ+LY1GbQ/AgdpF3DSTNDTVQ9yoYbcxSWnKB9P0PrL3bXb7+QJHsthc/7I9lo0YIxwt6REhr+qsEjU/zJH2OonM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=CzCYRIqk; arc=none smtp.client-ip=91.218.175.189
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eUB9klHo"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1716545697; x=1748081697;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=+r7MznVugleUz6KEp136UUq7JkJGOhRvu9/UEOkb0bY=;
-  b=eUB9klHo+Avlct7A+sfmVLlatkN4YGOF9b0BUetLCJrLIhfqeF2U4QgV
-   16pTdKq/AnQ5MkFxuBrLNRBagSZkWGcf7wgXGKj9+S94uu686jOx5VBck
-   c1JAizrR5WVwN6DnF5l3quwHTBlLYKQcZl1G/91Kh4acnGwwQlWqTC3Xa
-   VVqsB3lyhOhK4jW+XbRbgHXLjJLuBfgzRVGmh7j3398ed+xqm3fWbUdJX
-   eMSa0brsM5/TF0Jb0W26hD9scFJenLW0UynpI58NPQLUNcOXOsIDwF6hd
-   dXCjPcpYkFAbXEMw/Q53wDceIqoVT8L0SzGt30QCxhYGLin7iVq3hZm8n
-   A==;
-X-CSE-ConnectionGUID: sBjQfz/eSEmzaRS8909rKA==
-X-CSE-MsgGUID: 4b/nqkKYQu+lVevergBYVg==
-X-IronPort-AV: E=McAfee;i="6600,9927,11081"; a="23524589"
-X-IronPort-AV: E=Sophos;i="6.08,185,1712646000"; 
-   d="scan'208";a="23524589"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2024 03:14:55 -0700
-X-CSE-ConnectionGUID: vBVWMPSnTq+rrh7Lc7ql1w==
-X-CSE-MsgGUID: Z+x7soISSqOxm1g58Nn9ag==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,185,1712646000"; 
-   d="scan'208";a="34069614"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by fmviesa009.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 24 May 2024 03:14:54 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Fri, 24 May 2024 03:14:54 -0700
-Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Fri, 24 May 2024 03:14:53 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Fri, 24 May 2024 03:14:53 -0700
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (104.47.74.41) by
- edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Fri, 24 May 2024 03:14:53 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mIIlyAWoD93ZG40KIH99YqMapJ+PrysNamq8JAnGwxR6idUNJ1DrW0kn+wn/W3SRrZAvzDbfCxDceiYcpqayLeQMI79uxeNvK1nvM65kvnm5lU0EahuJ+XuaYyCVaQ4kkpOil47ZC5StaAEEIQh3d0zGsaP7ZW58ZwMVy4sAvGxIRSLjm649KBzQ6IK/7PXFLzYvHHBYUEpHnBET170TeUqLv8gnuNVNEx3wwrxLmcaOqEJ1G4yLUZfSeC/UU7wcQ1/snJa1qbLqZj5LzLuWWZ0lMGysFX6JDTR8dmum/w9thtYMaJnyQvRc+OVekOJSD+6m1Dnw0BdRgyyqZcHd/g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mAK0Iw8E3Bk5kdz2PNnz42/yXzVNJxvY0uDsJW8Ut+I=;
- b=RGOYJ/1vFc0uXlAedbNTmu5u0BCVxoy7t7gyDWZ6QqjxF8na5xnfaet4E3wxk0RD7yy78K+rO7wExe5ImzOIEG9K9nnu14jZ0Pg7/U5zvEYphK6GqXipeHyiL7Mx4A8tXWQ2Z1sl3v1UpaACfdOQA4eS6BB/e/DMHIvGphBBjIF/GKYJZ0XrheX5vfHoFSJrKHrA8tzwqrtjpWgMyiPLgSTQLFu4+P3rsgIbdLFYFiMwzA/j6020+XvqPlPFQWaqizXPpyM9pUbZtt2m8PXpBd4qZPQ3+ZGXZwNVrPwoR8Gq/yJ4NtURP85YQqahGH+Df6Co+ZqiiMjxBIaPATZ+Vw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by DS0PR11MB6518.namprd11.prod.outlook.com (2603:10b6:8:d2::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7611.22; Fri, 24 May
- 2024 10:14:49 +0000
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c%2]) with mapi id 15.20.7611.016; Fri, 24 May 2024
- 10:14:49 +0000
-Date: Fri, 24 May 2024 18:14:41 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
-	Shuah Khan <skhan@linuxfoundation.org>, Brendan Higgins
-	<brendanhiggins@google.com>, "Eric W. Biederman" <ebiederm@xmission.com>,
-	Kees Cook <keescook@chromium.org>, David Gow <davidgow@google.com>, Rae Moar
-	<rmoar@google.com>, <linux-kselftest@vger.kernel.org>,
-	<kunit-dev@googlegroups.com>, <oliver.sang@intel.com>
-Subject: [linus:master] [kunit]  3a35c13007:
- kunit.VCAP_API_DebugFS_Testsuite.vcap_api_show_admin_raw_test.fail
-Message-ID: <202405241710.148db8b0-oliver.sang@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-X-ClientProxiedBy: TYAPR04CA0020.apcprd04.prod.outlook.com
- (2603:1096:404:15::32) To LV3PR11MB8603.namprd11.prod.outlook.com
- (2603:10b6:408:1b6::9)
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="CzCYRIqk"
+X-Envelope-To: oliver.sang@intel.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1716574020;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=IDgNlxcmbX6SMIrBizByyCwxnmHxeA7yY8zL5+NMTsw=;
+	b=CzCYRIqkeylIyXvDionKYbCNCGay0hGXS99GHgIWwd5C1jk5WaZbGpZtxmm3noUHV9XG2k
+	mgDWUyTmEjb329zjGJQLfbvwnEOC1eETy7qHmDXsHb1RaRUfQ6gJdEqM+tI3KCRe4qWLVu
+	ddJny1VrghI8tNtIKYq1S192KtbQpqU=
+X-Envelope-To: oe-lkp@lists.linux.dev
+X-Envelope-To: lkp@intel.com
+X-Envelope-To: linux-mm@kvack.org
+X-Envelope-To: akpm@linux-foundation.org
+X-Envelope-To: yosryahmed@google.com
+X-Envelope-To: tjmercier@google.com
+X-Envelope-To: roman.gushchin@linux.dev
+X-Envelope-To: hannes@cmpxchg.org
+X-Envelope-To: mhocko@kernel.org
+X-Envelope-To: muchun.song@linux.dev
+X-Envelope-To: cgroups@vger.kernel.org
+X-Envelope-To: ying.huang@intel.com
+X-Envelope-To: feng.tang@intel.com
+X-Envelope-To: fengwei.yin@intel.com
+Date: Fri, 24 May 2024 11:06:54 -0700
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Shakeel Butt <shakeel.butt@linux.dev>
+To: Oliver Sang <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, 
+	Linux Memory Management List <linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>, 
+	Yosry Ahmed <yosryahmed@google.com>, "T.J. Mercier" <tjmercier@google.com>, 
+	Roman Gushchin <roman.gushchin@linux.dev>, Johannes Weiner <hannes@cmpxchg.org>, 
+	Michal Hocko <mhocko@kernel.org>, Muchun Song <muchun.song@linux.dev>, cgroups@vger.kernel.org, 
+	ying.huang@intel.com, feng.tang@intel.com, fengwei.yin@intel.com
+Subject: Re: [linux-next:master] [memcg]  70a64b7919:
+ will-it-scale.per_process_ops -11.9% regression
+Message-ID: <uzqh6xvoe6xgef3i6743m7gld5tlqp6h2krcqgjre3nzfcogwz@gsllvs77r57a>
+References: <pdfcrrgqz6vy6xarsw6gswtoa32wjd2gpcagmreh7ksuy66i63@dowfkmloe37q>
+ <ZknC/xjryN0sxOWB@xsang-OptiPlex-9020>
+ <jg2rpsollyfck5drndajpxtqbjtigtuxql4j5s66egygfrcjqa@okdilkpx5v5e>
+ <Zkq41w8YKCaKQAGk@xsang-OptiPlex-9020>
+ <20240520034933.wei3dffiuhq7uxhv@linux.dev>
+ <ZkwKRH0Oc1S7r2LP@xsang-OptiPlex-9020>
+ <gpkpq3r3e7wxi6d7hbysfvg6chmuysluogsy47ifgm55d5ypy3@bs3kcqfgyxgp>
+ <Zk702CrvXpE6P8fy@xsang-OptiPlex-9020>
+ <k2ohfxhpt73n5vdumctrarrit2cmzctougtbnupd4onjy4kbbd@tenjl3mucikh>
+ <ZlBFskeX3Wj3UGYJ@xsang-OptiPlex-9020>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|DS0PR11MB6518:EE_
-X-MS-Office365-Filtering-Correlation-Id: d55d69aa-0884-446a-cb79-08dc7bda5802
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230031|376005|366007|1800799015|7416005;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?pdDcbLfvTNyvrRWEWPwkDaCYxPu0JS7vjhtZ2ufWkJjJboRJfCc5IK4tVWoz?=
- =?us-ascii?Q?zk16JKKJOkJqv7eEr+2Zu8uT4LYdcsq1i2aXQ0S74XM2rXHN4X+lDxe9gwan?=
- =?us-ascii?Q?89PGplCIdIe6PHS/SPdMozvsgP5tV8/iIfYE1m6tOc5LXlQUR3WHMQiBYqhF?=
- =?us-ascii?Q?1JqqQ2EIFmk4k6mGWpgIfOwSdwotVw3eveaXxSqR64PjarYiGqA7NDbaYG6v?=
- =?us-ascii?Q?DoSZtiewVnrVilJdEzUtmYNS+C8Jh9S3LTloQdJYgMg9HqcdVRDL3glFv9Jg?=
- =?us-ascii?Q?eCCv9TNB+iQ1FkPGiKxOFN1qf1SvbREfpF8CAxk35/VddTceWCA4l38W22x8?=
- =?us-ascii?Q?HP1+y3z+6EDQYyo8Z1ikPxMuat5V8gsgAa8QVNOquvC2xjjTQVF33SPyJ79V?=
- =?us-ascii?Q?7Q6RnfkZGQkkWg0IOGZJElZPXy2Urae6mIouYwNv+AZ26S5SVdQm77O0lANe?=
- =?us-ascii?Q?xlpr+3rJMCUjuwpKkm+RxCMljzLaJOuVolY19hV3VZNviynyLna/i1//fkRi?=
- =?us-ascii?Q?YV9Q47oUQH+1uINiERcWHYzx3Vg/7ApAYV4BF45QT5i7+3ryUycnDkQNNmSQ?=
- =?us-ascii?Q?Z34xR4wQU16YqIdcmkhrD6JN/7fH5U31o0t3vz7k61GOAl1AEjGjWx9zPMfM?=
- =?us-ascii?Q?xI5WGPZMhvZQu9O5sueB1SauDoaJ1rHZ7lfRTUTVI5bSGK66lENyzriAUsXU?=
- =?us-ascii?Q?6Bts5+J47LYdgATrOvXYl/63AWQvm2U9h9BLfphLQ2sXVud+5lxBIGZpc+RZ?=
- =?us-ascii?Q?IfhPD8VsqX3ETrJzvw8Jgq/xoLugD1MtMB6aCGqJ+LodQx0FKpltNTEU5RJE?=
- =?us-ascii?Q?+wqRM5IjpEu6UuZnoAv2czyx/1g+WKKb+79vgsjzfV0uNkf4ebhiTTFSdQUy?=
- =?us-ascii?Q?PCN/KiIl/IeitlSHyi/dHempTATB9HG1h2xthr5bv/f+/0asggqi8A6yEXB0?=
- =?us-ascii?Q?OByvSPgtiFjJ/fGCAOG49deExNgIWF4FMZhKr5d04fGq3AhsAubxmnZH/j7J?=
- =?us-ascii?Q?ZHos0bKb808ovKu+rjfyo2nj5hej4+q/L4DMzjgcvJ8QSOkdBxizOtgq709q?=
- =?us-ascii?Q?IubSR3piQWmXYBfCJEZGDR/OhLj9RGOdoJeh93PWZIHLc+qek/7WVr+p72vf?=
- =?us-ascii?Q?f6Zoa2CsaKYYKNS77V5BaKopkXPmNrfFAbwlKOAYd/FYdt6zEGYwAcEaingI?=
- =?us-ascii?Q?K3aW3BNn/NpTWDM9roJPN0XYnHcG9SiIW36FpNF/Og1CHSNvsv5y8CB88H4?=
- =?us-ascii?Q?=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376005)(366007)(1800799015)(7416005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sRyXzldtocaYCd0CI1BYrqfXXpApS4UygJJjfy7w6tJPDE7B0LlXgWq9EHrA?=
- =?us-ascii?Q?ERokxMGo1FqyWY/jfxkfDNLVv5azemG+basDj4afGgEnB/bIKKERn9j57dwI?=
- =?us-ascii?Q?KKvktVHyg354jGs43KrHesiGW0jh6OgCUw1UmNZNsQyWZ2LcUKvXie/FA0TG?=
- =?us-ascii?Q?WMkJPWLUpPGLz9c6srHEgH9zoy53Fc6522RagkdsyuJXDMqx0hwmDczOs6wv?=
- =?us-ascii?Q?u2c7O5wBB86XGfZk6KlPWQ8rg/puQBt0mHgLCYDSjbewwiL0oqJSgRxbvEE4?=
- =?us-ascii?Q?5JZcPpbiM2xhkTHB6d+9YutJYBxuZKQ3hWIvpMpTnFLenH3L9T4ZMC3FuFYt?=
- =?us-ascii?Q?HmcEDUhEvNMRM0OO0omk6sx/hL7Z7wZZoTLnAnzGpgMeUYQAPH73MZLMQmfv?=
- =?us-ascii?Q?dpX752yd8M5D4biDUy2GcennPadtbgP8HaKYRb0c3QDNlg2KrlcUKbB5Maw4?=
- =?us-ascii?Q?/05YLtmn67gNL8HNRgZaOFbxWFzEmSRG0o0ZZ34xqjBS/OygCCUaMzrR8FFU?=
- =?us-ascii?Q?UjI5v6TELuvgvQ582oop4WLVHGV4RsygOGYM0LFqRmu6JtAxOo5pOlneYbvo?=
- =?us-ascii?Q?m+NfiEmsYux+NSG+h+19Kp+wfFZpk0isbe+La7V6r/aeGavN9xatKu1kyTLx?=
- =?us-ascii?Q?wGJ7i4WLfQP3sfWqZJKPg4nmOTmg4pTegniW5DZx6488DFfkp0EG3bfOVJ2X?=
- =?us-ascii?Q?IQvxQAwgbsO1P0ImSt/UMI1XVtdp7KWt6vBBDH3HrECGMcjg+r9CVdPUdr75?=
- =?us-ascii?Q?8YU7WdmK7fBn3bQdPUckPW+aPNUh06oimb4HkLTmq4qejvJ24f+hSBzmyrTx?=
- =?us-ascii?Q?+SWPKAyVBUHhj0Aec38ZZZamgIxBVInUUma0k8a4oVgFz1phXO+fVNBIIzBO?=
- =?us-ascii?Q?y8F8piUbZGaEm7qMC8md/BoUScmzzuAiOJ30tSWemPwtvlB7aGcOR1ePMtBo?=
- =?us-ascii?Q?Dy88muUApkM3A8GF2xXeCOyr0TdeBKeP3LDS+oCwyLvlM2gXaRU5qfR+PXLk?=
- =?us-ascii?Q?xKCDSqSmFgT5dHJPBULPF5vMgWtkS1VHmqjwXQJFFVDlkSi8Lg0ivmXyCGFA?=
- =?us-ascii?Q?wsGQ65nQ/wa/Xv8mVNJcHLfGssKM6KVYxLpwXR5/CyHQmLCHxYeU18jqszpj?=
- =?us-ascii?Q?2Bhy/nKGCiAlnq4PQf0QrQrP4NoXB4oXu5q54DVaL4+d+02Zk5ezgBm5AX0X?=
- =?us-ascii?Q?if3bH+nDgeiUkv0mFiPogg/G7cPNu06gjI/Uq54SFomzGKwu2ujiNENG/xWb?=
- =?us-ascii?Q?rRXnH0hvjckruOGgzBuJs+FdtjwhjfaR9dR4pkUUubGKMDPAQFiI6Dx3WE1U?=
- =?us-ascii?Q?qs/Qa9XZwx/9vAzPWLB+nq4BtHzjn9KCsMajKx34AqRzJCwvHahF6BoFZT3O?=
- =?us-ascii?Q?VOYF5PO1RYZ7xovbFKCYGFuppZtYXICWCUIJMRV5Zb5X9d2sMw19R59EiYLg?=
- =?us-ascii?Q?Pz8P+BCcKPgXjmahOynhT9Xd+5AIjjMSEcuPzsvJSCWxZoOHecBqdkQrhdaq?=
- =?us-ascii?Q?wR8/Yf7yJgoByEm4b17tx6exeQbHDufxRbBU6TL93hT4mhh9D4D/2KWdkZZ/?=
- =?us-ascii?Q?vovbyfbIaxnVByr0GCugsKVuMwy+qI8sf5R3Ax9zt2dq60zuAv6HjKRgGXQJ?=
- =?us-ascii?Q?IA=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: d55d69aa-0884-446a-cb79-08dc7bda5802
-X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 May 2024 10:14:49.0248
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: JVTo3nHfSiEygmtrHu2FvjV3dtzoFjqzs8eHpGvAmNgaYpH3QMPM/o3xi11250YhSmWt959LFrL61hX57aVVFw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB6518
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZlBFskeX3Wj3UGYJ@xsang-OptiPlex-9020>
+X-Migadu-Flow: FLOW_OUT
 
+On Fri, May 24, 2024 at 03:45:54PM +0800, Oliver Sang wrote:
+> hi, Shakeel,
+> 
+[...]
+> 
+> > 
+> > 1. What is the baseline kernel you are using? Is it linux-next or linus?
+> > If linux-next, which one specifically?
+> 
+> base is just 59142d87ab03b, which is in current linux-next/master,
+> and is already merged into linus/master now.
+> 
+> linux$ git rev-list linux-next/master | grep 59142d87ab03b
+> 59142d87ab03b8ff969074348f65730d465f42ee
+> 
+> linux$ git rev-list linus/master | grep 59142d87ab03b
+> 59142d87ab03b8ff969074348f65730d465f42ee
+> 
+> 
+> the data for it is the first column in the tables we supplied.
+> 
+> I just applied your patch upon a94032b35e5f9, so:
+> 
+> linux$ git log --oneline --graph fd2296741e2686ed6ecd05187e4
+> * fd2296741e268 fix for 70a64b7919 from Shakeel  <----- your fix patch
+> * a94032b35e5f9 memcg: use proper type for mod_memcg_state   <--- patch-set tip, I believe
+> * acb5fe2f1aff0 memcg: warn for unexpected events and stats
+> * 4715c6a753dcc mm: cleanup WORKINGSET_NODES in workingset
+> * 0667c7870a186 memcg: cleanup __mod_memcg_lruvec_state
+> * ff48c71c26aae memcg: reduce memory for the lruvec and memcg stats
+> * aab6103b97f1c mm: memcg: account memory used for memcg vmstats and lruvec stats
+> * 70a64b7919cbd memcg: dynamically allocate lruvec_stats   <--- we reported this as 'fbc' in original report
+> * 59142d87ab03b memcg: reduce memory size of mem_cgroup_events_index   <--- base
+> 
 
+Cool, let's stick to the linus tree. I was actually taking next-20240521
+and reverting all the patches in the series to treat as the base. One
+request I have would be to make the base the patch previous to the
+59142d87ab03b i.e. not 59142d87ab03b.
 
-Hello,
+> 
+> > 
+> > 2. What is the cgroup hierarchy where the workload is running? Is it
+> > running in the root cgroup?
+> 
+> Our test system uses systemd from the distribution (debian-12). The workload is
+> automatically assigned to a specific cgroup by systemd which is in the
+> sub-hierarchy of root, so it is not directly running in the root cgroup.
+> 
+> > 
+> > 3. For the followup experiments when needed, can you please remove the
+> > whole series (including 59142d87ab03b8ff) for the base numbers.
+> 
+> I cannot understand this very well, if the patch is to fix the regression
+> cause by this series, seems to me the best way is to apply this patch on top
+> of the series. anything I misunderstood here?
+> 
 
-this was reported in https://lore.kernel.org/all/202404151340.5b152d96-lkp@intel.com/
+Sorry I just meant to make the 'base' case to compare against the commit
+previous to 59142d87ab03b as I said above.
 
-since we still observed same failure after the commit is merged in mainline,
-we just report again FYI.
-
-
-kernel test robot noticed "kunit.VCAP_API_DebugFS_Testsuite.vcap_api_show_admin_raw_test.fail" on:
-
-commit: 3a35c13007dea132a65f07de05c26b87837fadc2 ("kunit: Handle test faults")
-https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-
-[test failed in linus/master      6e51b4b5bbc07e52b226017936874715629932d1]
-[test failed on linux-next/master 632483ea8004edfadd035de36e1ab2c7c4f53158]
-
-in testcase: kunit
-version: 
-with following parameters:
-
-	group: group-03
-
-
-
-compiler: gcc-13
-test machine: 4 threads 1 sockets Intel(R) Core(TM) i3-3220 CPU @ 3.30GHz (Ivy Bridge) with 8G memory
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202405241710.148db8b0-oliver.sang@intel.com
-
-
-
-[  116.216583]     # vcap_api_show_admin_raw_test: EXPECTATION FAILED at drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c:377
-                   Expected test_expected == test_pr_buffer[0], but
-                       test_expected == "  addr: 786, X6 rule, keysets: VCAP_KFS_MAC_ETYPE
-               "
-                       test_pr_buffer[0] == ""
-[  116.222467]     not ok 2 vcap_api_show_admin_raw_test
-
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20240524/202405241710.148db8b0-oliver.sang@intel.com
-
-
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
+I will re-run my experiments on linus tree and report back.
