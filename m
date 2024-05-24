@@ -1,348 +1,233 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DE2483CCC
-	for <oe-lkp@lists.linux.dev>; Fri, 24 May 2024 10:02:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716544973; cv=none; b=QzE9VLHH2xNGW2EFHOejjILGplyco3mcEyzpDMDiP5ApIqMUY5DSEydfIrep+W85Do+mKNzd/V6UYPEzeyI9B9sBWPBwg1xwGO2PiAIbjHahZuLXitNXRH+Bn9kh9YhkrV6VhEDw+NC7E4zxzFCsA3mHzDGZ52ylGaKhkAzwZaY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716544973; c=relaxed/simple;
-	bh=VUu5Pay3EO3zPdwqRprm8VMWydnN34K4Iz8Y0oqkzmk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=tiX2aWieJO6QZPRgv/RRECcQ4p81DhwGubSVc6iO5T1IpNzhvLTWAQGk21ge5aPkuIPadmsmVDIi70cdges9tnmPDIttvroxsw59ULGpZZFN/XcpXIApS9SdXiFr1hoyoObkFEHHBQde/ul79dtsA0lwupIRD8xZkPb/PLv7IqE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=P/YqjomP; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C76CB8593B
+	for <oe-lkp@lists.linux.dev>; Fri, 24 May 2024 10:14:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.11
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1716545698; cv=fail; b=hQ0Nqzm6kgVixTTqkKRiX3qiEO/FimHBf43AQHNTZJhnmQ24KfGLWT1Mj8Q7VQcWMTWCB4zL7P7yurxNmhF4VKUg7Kst0ELUD25u1Y1dZQ7Y5hmYu8JuI65qPAv1+t0fBSHnagN5qJ7HGLp2sF58xXmaEp2x6Q5y96nJ7FAbwyw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1716545698; c=relaxed/simple;
+	bh=+r7MznVugleUz6KEp136UUq7JkJGOhRvu9/UEOkb0bY=;
+	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
+	 Content-Disposition:MIME-Version; b=ONlThwlK47wTPEf8FNeN012K5jIYsVkf1+xGGNzuM8zmHcniYF2HeIPcWoc2eBCTy5cY4BIBE+vTmpWORNJNva4KxBjQrqOYz1w1TqHqL9xu1YwQqyD1SRhdUK8n25dbJezsxnn5t4u5N4kLCv0YFy9py6MgIpcUCTausCZCmqE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eUB9klHo; arc=fail smtp.client-ip=192.198.163.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="P/YqjomP"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eUB9klHo"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1716544970; x=1748080970;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=VUu5Pay3EO3zPdwqRprm8VMWydnN34K4Iz8Y0oqkzmk=;
-  b=P/YqjomPTL6Rr4gHUe4lvKp4OTCa+THG3D+i5lmqACmAzSi8UkmSQbl4
-   ehZFUXpAZOiytTnZ2Eh7XJrWOK7I5N35WWfPVn3bQvp+mO9Bvnfu3TW9g
-   DhLi1KgWvZQfJVxow/jgx16LfmB82IUoxBEEKqf+9AivbpzzpHTDLt1s6
-   /QShxeiEtMvpwvoH7N9AVm02vdp+YWiEa4qKcI8TmOuerkW6rLgN70ugP
-   d2Lgpat98/rYNRnK5/fRyXf16qSROFId+MGxXgeS933vry0DFPFTC4TMy
-   4vmEznJOYHtGgry/OFnK7XZH2TlMfZDqRFzej8veRyyqu8c0pD8kjI3D3
-   Q==;
-X-CSE-ConnectionGUID: ovc54P6CQaadinJ8bIKNUA==
-X-CSE-MsgGUID: I+iLBOSsR4icPwnqOvFChg==
-X-IronPort-AV: E=McAfee;i="6600,9927,11081"; a="23523257"
+  t=1716545697; x=1748081697;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=+r7MznVugleUz6KEp136UUq7JkJGOhRvu9/UEOkb0bY=;
+  b=eUB9klHo+Avlct7A+sfmVLlatkN4YGOF9b0BUetLCJrLIhfqeF2U4QgV
+   16pTdKq/AnQ5MkFxuBrLNRBagSZkWGcf7wgXGKj9+S94uu686jOx5VBck
+   c1JAizrR5WVwN6DnF5l3quwHTBlLYKQcZl1G/91Kh4acnGwwQlWqTC3Xa
+   VVqsB3lyhOhK4jW+XbRbgHXLjJLuBfgzRVGmh7j3398ed+xqm3fWbUdJX
+   eMSa0brsM5/TF0Jb0W26hD9scFJenLW0UynpI58NPQLUNcOXOsIDwF6hd
+   dXCjPcpYkFAbXEMw/Q53wDceIqoVT8L0SzGt30QCxhYGLin7iVq3hZm8n
+   A==;
+X-CSE-ConnectionGUID: sBjQfz/eSEmzaRS8909rKA==
+X-CSE-MsgGUID: 4b/nqkKYQu+lVevergBYVg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11081"; a="23524589"
 X-IronPort-AV: E=Sophos;i="6.08,185,1712646000"; 
-   d="scan'208";a="23523257"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2024 03:02:50 -0700
-X-CSE-ConnectionGUID: 9aLuoKRSQAGD6ECmK24pqA==
-X-CSE-MsgGUID: Syj9UzUwTkGRyAopLCNsMQ==
+   d="scan'208";a="23524589"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2024 03:14:55 -0700
+X-CSE-ConnectionGUID: vBVWMPSnTq+rrh7Lc7ql1w==
+X-CSE-MsgGUID: Z+x7soISSqOxm1g58Nn9ag==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.08,185,1712646000"; 
-   d="scan'208";a="38769660"
-Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.246.48.38])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2024 03:02:48 -0700
-Message-ID: <85229f77-e5d1-498f-900a-e10b4de5f358@intel.com>
-Date: Fri, 24 May 2024 13:02:42 +0300
+   d="scan'208";a="34069614"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by fmviesa009.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 24 May 2024 03:14:54 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39; Fri, 24 May 2024 03:14:54 -0700
+Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39; Fri, 24 May 2024 03:14:53 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39 via Frontend Transport; Fri, 24 May 2024 03:14:53 -0700
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (104.47.74.41) by
+ edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.39; Fri, 24 May 2024 03:14:53 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mIIlyAWoD93ZG40KIH99YqMapJ+PrysNamq8JAnGwxR6idUNJ1DrW0kn+wn/W3SRrZAvzDbfCxDceiYcpqayLeQMI79uxeNvK1nvM65kvnm5lU0EahuJ+XuaYyCVaQ4kkpOil47ZC5StaAEEIQh3d0zGsaP7ZW58ZwMVy4sAvGxIRSLjm649KBzQ6IK/7PXFLzYvHHBYUEpHnBET170TeUqLv8gnuNVNEx3wwrxLmcaOqEJ1G4yLUZfSeC/UU7wcQ1/snJa1qbLqZj5LzLuWWZ0lMGysFX6JDTR8dmum/w9thtYMaJnyQvRc+OVekOJSD+6m1Dnw0BdRgyyqZcHd/g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=mAK0Iw8E3Bk5kdz2PNnz42/yXzVNJxvY0uDsJW8Ut+I=;
+ b=RGOYJ/1vFc0uXlAedbNTmu5u0BCVxoy7t7gyDWZ6QqjxF8na5xnfaet4E3wxk0RD7yy78K+rO7wExe5ImzOIEG9K9nnu14jZ0Pg7/U5zvEYphK6GqXipeHyiL7Mx4A8tXWQ2Z1sl3v1UpaACfdOQA4eS6BB/e/DMHIvGphBBjIF/GKYJZ0XrheX5vfHoFSJrKHrA8tzwqrtjpWgMyiPLgSTQLFu4+P3rsgIbdLFYFiMwzA/j6020+XvqPlPFQWaqizXPpyM9pUbZtt2m8PXpBd4qZPQ3+ZGXZwNVrPwoR8Gq/yJ4NtURP85YQqahGH+Df6Co+ZqiiMjxBIaPATZ+Vw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by DS0PR11MB6518.namprd11.prod.outlook.com (2603:10b6:8:d2::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7611.22; Fri, 24 May
+ 2024 10:14:49 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c%2]) with mapi id 15.20.7611.016; Fri, 24 May 2024
+ 10:14:49 +0000
+Date: Fri, 24 May 2024 18:14:41 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	Shuah Khan <skhan@linuxfoundation.org>, Brendan Higgins
+	<brendanhiggins@google.com>, "Eric W. Biederman" <ebiederm@xmission.com>,
+	Kees Cook <keescook@chromium.org>, David Gow <davidgow@google.com>, Rae Moar
+	<rmoar@google.com>, <linux-kselftest@vger.kernel.org>,
+	<kunit-dev@googlegroups.com>, <oliver.sang@intel.com>
+Subject: [linus:master] [kunit]  3a35c13007:
+ kunit.VCAP_API_DebugFS_Testsuite.vcap_api_show_admin_raw_test.fail
+Message-ID: <202405241710.148db8b0-oliver.sang@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+X-ClientProxiedBy: TYAPR04CA0020.apcprd04.prod.outlook.com
+ (2603:1096:404:15::32) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [linus:master] [timekeeping] e84f43e34f:
- BUG:KCSAN:data-race_in_timekeeping_advance/timekeeping_debug_get_ns
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
- Thomas Gleixner <tglx@linutronix.de>
-References: <202405241607.d3fd7eb0-lkp@intel.com>
-Content-Language: en-US
-From: Adrian Hunter <adrian.hunter@intel.com>
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
- Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-In-Reply-To: <202405241607.d3fd7eb0-lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|DS0PR11MB6518:EE_
+X-MS-Office365-Filtering-Correlation-Id: d55d69aa-0884-446a-cb79-08dc7bda5802
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230031|376005|366007|1800799015|7416005;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?pdDcbLfvTNyvrRWEWPwkDaCYxPu0JS7vjhtZ2ufWkJjJboRJfCc5IK4tVWoz?=
+ =?us-ascii?Q?zk16JKKJOkJqv7eEr+2Zu8uT4LYdcsq1i2aXQ0S74XM2rXHN4X+lDxe9gwan?=
+ =?us-ascii?Q?89PGplCIdIe6PHS/SPdMozvsgP5tV8/iIfYE1m6tOc5LXlQUR3WHMQiBYqhF?=
+ =?us-ascii?Q?1JqqQ2EIFmk4k6mGWpgIfOwSdwotVw3eveaXxSqR64PjarYiGqA7NDbaYG6v?=
+ =?us-ascii?Q?DoSZtiewVnrVilJdEzUtmYNS+C8Jh9S3LTloQdJYgMg9HqcdVRDL3glFv9Jg?=
+ =?us-ascii?Q?eCCv9TNB+iQ1FkPGiKxOFN1qf1SvbREfpF8CAxk35/VddTceWCA4l38W22x8?=
+ =?us-ascii?Q?HP1+y3z+6EDQYyo8Z1ikPxMuat5V8gsgAa8QVNOquvC2xjjTQVF33SPyJ79V?=
+ =?us-ascii?Q?7Q6RnfkZGQkkWg0IOGZJElZPXy2Urae6mIouYwNv+AZ26S5SVdQm77O0lANe?=
+ =?us-ascii?Q?xlpr+3rJMCUjuwpKkm+RxCMljzLaJOuVolY19hV3VZNviynyLna/i1//fkRi?=
+ =?us-ascii?Q?YV9Q47oUQH+1uINiERcWHYzx3Vg/7ApAYV4BF45QT5i7+3ryUycnDkQNNmSQ?=
+ =?us-ascii?Q?Z34xR4wQU16YqIdcmkhrD6JN/7fH5U31o0t3vz7k61GOAl1AEjGjWx9zPMfM?=
+ =?us-ascii?Q?xI5WGPZMhvZQu9O5sueB1SauDoaJ1rHZ7lfRTUTVI5bSGK66lENyzriAUsXU?=
+ =?us-ascii?Q?6Bts5+J47LYdgATrOvXYl/63AWQvm2U9h9BLfphLQ2sXVud+5lxBIGZpc+RZ?=
+ =?us-ascii?Q?IfhPD8VsqX3ETrJzvw8Jgq/xoLugD1MtMB6aCGqJ+LodQx0FKpltNTEU5RJE?=
+ =?us-ascii?Q?+wqRM5IjpEu6UuZnoAv2czyx/1g+WKKb+79vgsjzfV0uNkf4ebhiTTFSdQUy?=
+ =?us-ascii?Q?PCN/KiIl/IeitlSHyi/dHempTATB9HG1h2xthr5bv/f+/0asggqi8A6yEXB0?=
+ =?us-ascii?Q?OByvSPgtiFjJ/fGCAOG49deExNgIWF4FMZhKr5d04fGq3AhsAubxmnZH/j7J?=
+ =?us-ascii?Q?ZHos0bKb808ovKu+rjfyo2nj5hej4+q/L4DMzjgcvJ8QSOkdBxizOtgq709q?=
+ =?us-ascii?Q?IubSR3piQWmXYBfCJEZGDR/OhLj9RGOdoJeh93PWZIHLc+qek/7WVr+p72vf?=
+ =?us-ascii?Q?f6Zoa2CsaKYYKNS77V5BaKopkXPmNrfFAbwlKOAYd/FYdt6zEGYwAcEaingI?=
+ =?us-ascii?Q?K3aW3BNn/NpTWDM9roJPN0XYnHcG9SiIW36FpNF/Og1CHSNvsv5y8CB88H4?=
+ =?us-ascii?Q?=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376005)(366007)(1800799015)(7416005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sRyXzldtocaYCd0CI1BYrqfXXpApS4UygJJjfy7w6tJPDE7B0LlXgWq9EHrA?=
+ =?us-ascii?Q?ERokxMGo1FqyWY/jfxkfDNLVv5azemG+basDj4afGgEnB/bIKKERn9j57dwI?=
+ =?us-ascii?Q?KKvktVHyg354jGs43KrHesiGW0jh6OgCUw1UmNZNsQyWZ2LcUKvXie/FA0TG?=
+ =?us-ascii?Q?WMkJPWLUpPGLz9c6srHEgH9zoy53Fc6522RagkdsyuJXDMqx0hwmDczOs6wv?=
+ =?us-ascii?Q?u2c7O5wBB86XGfZk6KlPWQ8rg/puQBt0mHgLCYDSjbewwiL0oqJSgRxbvEE4?=
+ =?us-ascii?Q?5JZcPpbiM2xhkTHB6d+9YutJYBxuZKQ3hWIvpMpTnFLenH3L9T4ZMC3FuFYt?=
+ =?us-ascii?Q?HmcEDUhEvNMRM0OO0omk6sx/hL7Z7wZZoTLnAnzGpgMeUYQAPH73MZLMQmfv?=
+ =?us-ascii?Q?dpX752yd8M5D4biDUy2GcennPadtbgP8HaKYRb0c3QDNlg2KrlcUKbB5Maw4?=
+ =?us-ascii?Q?/05YLtmn67gNL8HNRgZaOFbxWFzEmSRG0o0ZZ34xqjBS/OygCCUaMzrR8FFU?=
+ =?us-ascii?Q?UjI5v6TELuvgvQ582oop4WLVHGV4RsygOGYM0LFqRmu6JtAxOo5pOlneYbvo?=
+ =?us-ascii?Q?m+NfiEmsYux+NSG+h+19Kp+wfFZpk0isbe+La7V6r/aeGavN9xatKu1kyTLx?=
+ =?us-ascii?Q?wGJ7i4WLfQP3sfWqZJKPg4nmOTmg4pTegniW5DZx6488DFfkp0EG3bfOVJ2X?=
+ =?us-ascii?Q?IQvxQAwgbsO1P0ImSt/UMI1XVtdp7KWt6vBBDH3HrECGMcjg+r9CVdPUdr75?=
+ =?us-ascii?Q?8YU7WdmK7fBn3bQdPUckPW+aPNUh06oimb4HkLTmq4qejvJ24f+hSBzmyrTx?=
+ =?us-ascii?Q?+SWPKAyVBUHhj0Aec38ZZZamgIxBVInUUma0k8a4oVgFz1phXO+fVNBIIzBO?=
+ =?us-ascii?Q?y8F8piUbZGaEm7qMC8md/BoUScmzzuAiOJ30tSWemPwtvlB7aGcOR1ePMtBo?=
+ =?us-ascii?Q?Dy88muUApkM3A8GF2xXeCOyr0TdeBKeP3LDS+oCwyLvlM2gXaRU5qfR+PXLk?=
+ =?us-ascii?Q?xKCDSqSmFgT5dHJPBULPF5vMgWtkS1VHmqjwXQJFFVDlkSi8Lg0ivmXyCGFA?=
+ =?us-ascii?Q?wsGQ65nQ/wa/Xv8mVNJcHLfGssKM6KVYxLpwXR5/CyHQmLCHxYeU18jqszpj?=
+ =?us-ascii?Q?2Bhy/nKGCiAlnq4PQf0QrQrP4NoXB4oXu5q54DVaL4+d+02Zk5ezgBm5AX0X?=
+ =?us-ascii?Q?if3bH+nDgeiUkv0mFiPogg/G7cPNu06gjI/Uq54SFomzGKwu2ujiNENG/xWb?=
+ =?us-ascii?Q?rRXnH0hvjckruOGgzBuJs+FdtjwhjfaR9dR4pkUUubGKMDPAQFiI6Dx3WE1U?=
+ =?us-ascii?Q?qs/Qa9XZwx/9vAzPWLB+nq4BtHzjn9KCsMajKx34AqRzJCwvHahF6BoFZT3O?=
+ =?us-ascii?Q?VOYF5PO1RYZ7xovbFKCYGFuppZtYXICWCUIJMRV5Zb5X9d2sMw19R59EiYLg?=
+ =?us-ascii?Q?Pz8P+BCcKPgXjmahOynhT9Xd+5AIjjMSEcuPzsvJSCWxZoOHecBqdkQrhdaq?=
+ =?us-ascii?Q?wR8/Yf7yJgoByEm4b17tx6exeQbHDufxRbBU6TL93hT4mhh9D4D/2KWdkZZ/?=
+ =?us-ascii?Q?vovbyfbIaxnVByr0GCugsKVuMwy+qI8sf5R3Ax9zt2dq60zuAv6HjKRgGXQJ?=
+ =?us-ascii?Q?IA=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: d55d69aa-0884-446a-cb79-08dc7bda5802
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 May 2024 10:14:49.0248
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: JVTo3nHfSiEygmtrHu2FvjV3dtzoFjqzs8eHpGvAmNgaYpH3QMPM/o3xi11250YhSmWt959LFrL61hX57aVVFw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB6518
+X-OriginatorOrg: intel.com
 
-On 24/05/24 11:36, kernel test robot wrote:
-> 
-> hi Adrian Hunter,
-> 
-> we sent the similar report
->   "[tip:timers/core] [timekeeping]  e84f43e34f: BUG:KCSAN:data-race_in_timekeeping_advance/timekeeping_debug_get_ns"
-> when this commit is in tip:timers/core [1]
-> 
-> we noticed you made some comments, but we don't have enough knowledge it there
-> will be or need some fix.
 
-AFAICT, it is a false positive.
 
-KCSAN requires annotation to know where a seqlock critical section
-is.  This annotation does not work if a seqlock is nested within
-another seqlock because KCSAN considers that the critical section
-finishes after the inner seqlock.
+Hello,
 
-Marco Elver was cc'ed because they introduced the annotations:
+this was reported in https://lore.kernel.org/all/202404151340.5b152d96-lkp@intel.com/
 
-	commit 88ecd153be9519f259b87a9f6f4c8383a8b3bbf1
-	Author: Marco Elver <elver@google.com>
-	Date:   Thu Nov 14 19:02:59 2019 +0100
+since we still observed same failure after the commit is merged in mainline,
+we just report again FYI.
 
-	    seqlock, kcsan: Add annotations for KCSAN
 
-But neither they nor Dmitry Vyukov <dvyukov@google.com> nor anyone
-on the kasan-dev@googlegroups.com, seem to have taken an interest.
+kernel test robot noticed "kunit.VCAP_API_DebugFS_Testsuite.vcap_api_show_admin_raw_test.fail" on:
 
-They should be the ones to know best how to fix the annotation.
+commit: 3a35c13007dea132a65f07de05c26b87837fadc2 ("kunit: Handle test faults")
+https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-Would you be willing to follow this up?  Perhaps reply to
+[test failed in linus/master      6e51b4b5bbc07e52b226017936874715629932d1]
+[test failed on linux-next/master 632483ea8004edfadd035de36e1ab2c7c4f53158]
 
-	https://lore.kernel.org/all/cb8ae96c-12a6-4945-96ed-7f68f01d69aa@intel.com/
+in testcase: kunit
+version: 
+with following parameters:
 
-and ask explicitly if they can help.
+	group: group-03
 
-> 
-> now the commit is in mainline now, we just report again FYI.
-> 
-> similar as mentioned in [1], we only observed the
->   dmesg.BUG:KCSAN:data-race_in_timekeeping_advance/timekeeping_debug_get_ns
-> upon e84f43e34f at the ~50% rate.
-> 
-> but parent has other KCSAN issues (also ~50% rate) which doesn't happen on
-> e84f43e34f.
-> 
-> e8e9d21a5df655a6 e84f43e34faf85816587f805945
-> ---------------- ---------------------------
->        fail:runs  %reproduction    fail:runs
->            |             |             |
->           9:20         -45%            :20    dmesg.BUG:KCSAN:data-race_in_ktime_get/timekeeping_advance
->           9:20         -45%            :20    dmesg.BUG:KCSAN:data-race_in_ktime_get_update_offsets_now/timekeeping_advance
->            :20          55%          11:20    dmesg.BUG:KCSAN:data-race_in_timekeeping_advance/timekeeping_debug_get_ns
-> 
-> 
-> [1] https://lore.kernel.org/all/202404161050.38f1c92e-lkp@intel.com/
-> 
-> 
-> below is the full report.
-> 
-> 
-> Hello,
-> 
-> kernel test robot noticed "BUG:KCSAN:data-race_in_timekeeping_advance/timekeeping_debug_get_ns" on:
-> 
-> commit: e84f43e34faf85816587f80594541ec978449d6e ("timekeeping: Consolidate timekeeping helpers")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> 
-> [test failed on linus/master      0450d2083be6bdcd18c9535ac50c55266499b2df]
-> [test failed on linux-next/master c75962170e49f24399141276ae119e6a879f36dc]
-> 
-> in testcase: boot
-> 
-> compiler: gcc-13
-> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-> 
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
-> 
-> 
-> 
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202405241607.d3fd7eb0-lkp@intel.com
-> 
-> 
-> [  106.344081][    C0] BUG: KCSAN: data-race in timekeeping_advance / timekeeping_debug_get_ns
-> [  106.345565][    C0]
-> [  106.346110][    C0] write to 0xffffffff83dfe578 of 296 bytes by interrupt on cpu 1:
-> [ 106.347495][ C0] timekeeping_advance (kernel/time/timekeeping.c:2207 (discriminator 1)) 
-> [ 106.348455][ C0] update_wall_time (kernel/time/timekeeping.c:2222 (discriminator 1)) 
-> [ 106.349310][ C0] tick_do_update_jiffies64 (kernel/time/tick-sched.c:149) 
-> [ 106.350321][ C0] tick_nohz_lowres_handler (kernel/time/tick-sched.c:229 kernel/time/tick-sched.c:287 kernel/time/tick-sched.c:1492) 
-> [ 106.351343][ C0] __sysvec_apic_timer_interrupt (arch/x86/include/asm/atomic.h:23 include/linux/atomic/atomic-arch-fallback.h:457 include/linux/jump_label.h:260 include/linux/jump_label.h:270 arch/x86/include/asm/trace/irq_vectors.h:41 arch/x86/kernel/apic/apic.c:1050) 
-> [ 106.352397][ C0] sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1043 (discriminator 47) arch/x86/kernel/apic/apic.c:1043 (discriminator 47)) 
-> [ 106.353427][ C0] asm_sysvec_apic_timer_interrupt (arch/x86/include/asm/idtentry.h:702) 
-> [ 106.354479][ C0] _raw_spin_unlock_irqrestore (arch/x86/include/asm/preempt.h:94 (discriminator 1) include/linux/spinlock_api_smp.h:152 (discriminator 1) kernel/locking/spinlock.c:194 (discriminator 1)) 
-> [ 106.355503][ C0] get_partial_node+0xaf/0x300 
-> [ 106.356480][ C0] get_partial (mm/slub.c:2702) 
-> [ 106.357291][ C0] ___slab_alloc (mm/slub.c:3506) 
-> [ 106.358162][ C0] kmem_cache_alloc (mm/slub.c:3610 mm/slub.c:3663 mm/slub.c:3835 mm/slub.c:3852) 
-> [ 106.359084][ C0] getname_flags (fs/namei.c:140 (discriminator 1)) 
-> [ 106.359916][ C0] getname (fs/namei.c:219) 
-> [ 106.360669][ C0] do_sys_openat2 (fs/open.c:1400) 
-> [ 106.361540][ C0] __ia32_compat_sys_openat (fs/open.c:1479) 
-> [ 106.362526][ C0] __do_fast_syscall_32 (arch/x86/entry/common.c:165 (discriminator 1) arch/x86/entry/common.c:321 (discriminator 1)) 
-> [ 106.363487][ C0] do_fast_syscall_32 (arch/x86/entry/common.c:346 (discriminator 1)) 
-> [ 106.364392][ C0] do_SYSENTER_32 (arch/x86/entry/common.c:385) 
-> [ 106.365229][ C0] entry_SYSENTER_compat_after_hwframe (arch/x86/entry/entry_64_compat.S:121) 
-> [  106.366347][    C0]
-> [  106.366895][    C0] read to 0xffffffff83dfe598 of 8 bytes by interrupt on cpu 0:
-> [ 106.368257][ C0] timekeeping_debug_get_ns (kernel/time/timekeeping.c:373 kernel/time/timekeeping.c:383 kernel/time/timekeeping.c:280) 
-> [ 106.369256][ C0] ktime_get (kernel/time/timekeeping.c:394 kernel/time/timekeeping.c:838) 
-> [ 106.370061][ C0] tick_nohz_lowres_handler (kernel/time/tick-sched.c:220 kernel/time/tick-sched.c:287 kernel/time/tick-sched.c:1492) 
-> [ 106.371062][ C0] __sysvec_apic_timer_interrupt (arch/x86/include/asm/atomic.h:23 include/linux/atomic/atomic-arch-fallback.h:457 include/linux/jump_label.h:260 include/linux/jump_label.h:270 arch/x86/include/asm/trace/irq_vectors.h:41 arch/x86/kernel/apic/apic.c:1050) 
-> [ 106.372099][ C0] sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1043 (discriminator 47) arch/x86/kernel/apic/apic.c:1043 (discriminator 47)) 
-> [ 106.373091][ C0] asm_sysvec_apic_timer_interrupt (arch/x86/include/asm/idtentry.h:702) 
-> [ 106.374155][ C0] __tsan_read8 (kernel/kcsan/core.c:787 (discriminator 1) kernel/kcsan/core.c:1025 (discriminator 1)) 
-> [ 106.375033][ C0] __d_lookup_rcu (fs/dcache.c:2172) 
-> [ 106.375897][ C0] d_alloc_parallel (fs/dcache.c:2473) 
-> [ 106.376807][ C0] lookup_open+0x5f1/0x8a0 
-> [ 106.377759][ C0] open_last_lookups (fs/namei.c:3566) 
-> [ 106.378687][ C0] path_openat (fs/namei.c:3796) 
-> [ 106.379520][ C0] do_filp_open (fs/namei.c:3826) 
-> [ 106.380375][ C0] do_sys_openat2 (fs/open.c:1406) 
-> [ 106.381236][ C0] __ia32_compat_sys_openat (fs/open.c:1479) 
-> [ 106.382243][ C0] __do_fast_syscall_32 (arch/x86/entry/common.c:165 (discriminator 1) arch/x86/entry/common.c:321 (discriminator 1)) 
-> [ 106.388006][ C0] do_fast_syscall_32 (arch/x86/entry/common.c:346 (discriminator 1)) 
-> [ 106.388925][ C0] do_SYSENTER_32 (arch/x86/entry/common.c:385) 
-> [ 106.389787][ C0] entry_SYSENTER_compat_after_hwframe (arch/x86/entry/entry_64_compat.S:121) 
-> [  106.391298][    C0]
-> [  106.392364][    C0] value changed: 0x0014811664800000 -> 0x00149f9ae4800000
-> [  106.394806][    C0]
-> [  106.396026][    C0] Reported by Kernel Concurrency Sanitizer on:
-> [  106.398293][    C0] CPU: 0 PID: 126 Comm: (mount) Tainted: G            E    N 6.9.0-rc3-00015-ge84f43e34faf #1
-> [  106.401465][    C0] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-> [  106.404332][    C0] ==================================================================
-> Mounting Kernel Configuration File System...
-> Starting Load/Save Random Seed...
-> Starting Apply Kernel Variables...
-> Starting Create System Users...
-> [  OK  ] Started Journal Service.
-> [  OK  ] Mounted FUSE Control File System.
-> [  OK  ] Mounted Kernel Configuration File System.
-> [  OK  ] Finished Load/Save Random Seed.
-> [  OK  ] Finished Apply Kernel Variables.
-> Starting Flush Journal to Persistent Storage...
-> [  OK  ] Finished Create System Users.
-> Starting Create Static Device Nodes in /dev...
-> [  OK  ] Finished Flush Journal to Persistent Storage.
-> [  OK  ] Finished Create Static Device Nodes in /dev.
-> [  OK  ] Reached target Local File Systems (Pre).
-> [  OK  ] Reached target Local File Systems.
-> Starting Preprocess NFS configuration...
-> Starting Create Volatile Files and Directories...
-> [  OK  ] Finished Preprocess NFS configuration.
-> [  OK  ] Started Rule-based Manager for Device Events and Files.
-> [  OK  ] Finished Create Volatile Files and Directories.
-> Starting RPC bind portmap service...
-> Starting Update UTMP about System Boot/Shutdown...
-> [  OK  ] Started RPC bind portmap service.
-> [  OK  ] Finished Update UTMP about System Boot/Shutdown.
-> [  OK  ] Reached target Remote File Systems (Pre).
-> [  OK  ] Reached target Remote File Systems.
-> [  OK  ] Reached target RPC Port Mapper.
-> [*     ] A start job is running for Coldplug All udev Devices (6s / no limit)
-> [  113.764048][  T153] parport_pc 00:03: reported by Plug and Play ACPI
-> [  113.776436][  T153] parport0: PC-style at 0x378, irq 7 [PCSPP(,...)]
-> [  113.952514][  T139] Linux agpgart interface v0.103
-> [  114.090513][    C1] ==================================================================
-> [  114.091583][    C1] BUG: KCSAN: data-race in timekeeping_advance / timekeeping_debug_get_ns
-> [  114.092597][    C1]
-> [  114.092970][    C1] write to 0xffffffff83dfe578 of 296 bytes by interrupt on cpu 0:
-> [ 114.093933][ C1] timekeeping_advance (kernel/time/timekeeping.c:2207 (discriminator 1)) 
-> [ 114.094583][ C1] update_wall_time (kernel/time/timekeeping.c:2222 (discriminator 1)) 
-> [ 114.095166][ C1] tick_do_update_jiffies64 (kernel/time/tick-sched.c:149) 
-> [ 114.095849][ C1] tick_nohz_lowres_handler (kernel/time/tick-sched.c:229 kernel/time/tick-sched.c:287 kernel/time/tick-sched.c:1492) 
-> [ 114.096537][ C1] __sysvec_apic_timer_interrupt (arch/x86/include/asm/atomic.h:23 include/linux/atomic/atomic-arch-fallback.h:457 include/linux/jump_label.h:260 include/linux/jump_label.h:270 arch/x86/include/asm/trace/irq_vectors.h:41 arch/x86/kernel/apic/apic.c:1050) 
-> [ 114.097280][ C1] sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1043 (discriminator 47) arch/x86/kernel/apic/apic.c:1043 (discriminator 47)) 
-> [ 114.097994][ C1] asm_sysvec_apic_timer_interrupt (arch/x86/include/asm/idtentry.h:702) 
-> [ 114.098736][ C1] __orc_find (arch/x86/kernel/unwind_orc.c:100 (discriminator 3)) 
-> [ 114.099285][ C1] unwind_next_frame (arch/x86/kernel/unwind_orc.c:494 (discriminator 4)) 
-> [ 114.099925][ C1] arch_stack_walk (arch/x86/kernel/stacktrace.c:24 (discriminator 1)) 
-> [ 114.100549][ C1] stack_trace_save (kernel/stacktrace.c:123) 
-> [ 114.101154][ C1] set_track_prepare (mm/slub.c:886) 
-> [ 114.101768][ C1] __alloc_object (mm/kmemleak.c:681 (discriminator 1)) 
-> [ 114.102377][ C1] __create_object (mm/kmemleak.c:750) 
-> [ 114.102967][ C1] __kmalloc_node (include/linux/kmemleak.h:42 mm/slub.c:3802 mm/slub.c:3845 mm/slub.c:3965 mm/slub.c:3973) 
-> [ 114.103566][ C1] kvmalloc_node (mm/util.c:662) 
-> [ 114.104150][ C1] seq_read_iter (fs/seq_file.c:210 (discriminator 1)) 
-> [ 114.104748][ C1] kernfs_fop_read_iter (fs/kernfs/file.c:281) 
-> [ 114.105388][ C1] vfs_read (include/linux/fs.h:2104 fs/read_write.c:395 fs/read_write.c:476) 
-> [ 114.105938][ C1] ksys_read (fs/read_write.c:619) 
-> [ 114.106485][ C1] __ia32_sys_read (fs/read_write.c:627) 
-> [ 114.107082][ C1] __do_fast_syscall_32 (arch/x86/entry/common.c:165 (discriminator 1) arch/x86/entry/common.c:321 (discriminator 1)) 
-> [ 114.107729][ C1] do_fast_syscall_32 (arch/x86/entry/common.c:346 (discriminator 1)) 
-> [ 114.108364][ C1] do_SYSENTER_32 (arch/x86/entry/common.c:385) 
-> [ 114.108943][ C1] entry_SYSENTER_compat_after_hwframe (arch/x86/entry/entry_64_compat.S:121) 
-> [  114.109697][    C1]
-> [  114.110062][    C1] read to 0xffffffff83dfe588 of 8 bytes by interrupt on cpu 1:
-> [ 114.110988][ C1] timekeeping_debug_get_ns (kernel/time/timekeeping_internal.h:21 kernel/time/timekeeping.c:381 kernel/time/timekeeping.c:280) 
-> [ 114.111685][ C1] ktime_get (kernel/time/timekeeping.c:394 kernel/time/timekeeping.c:838) 
-> [ 114.112236][ C1] tick_nohz_lowres_handler (kernel/time/tick-sched.c:220 kernel/time/tick-sched.c:287 kernel/time/tick-sched.c:1492) 
-> [ 114.112924][ C1] __sysvec_apic_timer_interrupt (arch/x86/include/asm/atomic.h:23 include/linux/atomic/atomic-arch-fallback.h:457 include/linux/jump_label.h:260 include/linux/jump_label.h:270 arch/x86/include/asm/trace/irq_vectors.h:41 arch/x86/kernel/apic/apic.c:1050) 
-> [ 114.113647][ C1] sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1043 (discriminator 47) arch/x86/kernel/apic/apic.c:1043 (discriminator 47)) 
-> [ 114.114332][ C1] asm_sysvec_apic_timer_interrupt (arch/x86/include/asm/idtentry.h:702) 
-> [ 114.115063][ C1] _raw_spin_unlock_irqrestore (arch/x86/include/asm/preempt.h:94 (discriminator 1) include/linux/spinlock_api_smp.h:152 (discriminator 1) kernel/locking/spinlock.c:194 (discriminator 1)) 
-> [ 114.115753][ C1] __create_object (mm/kmemleak.c:756) 
-> [ 114.116355][ C1] kmem_cache_alloc (include/linux/kmemleak.h:42 mm/slub.c:3802 mm/slub.c:3845 mm/slub.c:3852) 
-> [ 114.116993][ C1] skb_clone (net/core/skbuff.c:2063) 
-> [ 114.117535][ C1] do_one_broadcast (net/netlink/af_netlink.c:1466 (discriminator 1)) 
-> [ 114.118170][ C1] netlink_broadcast_filtered (net/netlink/af_netlink.c:1543 (discriminator 11)) 
-> [ 114.118883][ C1] netlink_broadcast (net/netlink/af_netlink.c:1568 (discriminator 1)) 
-> [ 114.119493][ C1] kobject_uevent_net_broadcast (lib/kobject_uevent.c:331 (discriminator 1) lib/kobject_uevent.c:410 (discriminator 1)) 
-> [ 114.120211][ C1] kobject_uevent_env (lib/kobject_uevent.c:593) 
-> [ 114.120844][ C1] kobject_uevent (lib/kobject_uevent.c:642) 
-> [ 114.121414][ C1] driver_register (drivers/base/driver.c:255) 
-> [ 114.122024][ C1] __parport_register_driver (drivers/parport/share.c:289) parport
-> [ 114.122833][ C1] ppdev_init (drivers/char/ppdev.c:811) ppdev
-> [ 114.123470][ C1] do_one_initcall (arch/x86/include/asm/atomic.h:23 include/linux/atomic/atomic-arch-fallback.h:457 include/linux/jump_label.h:260 include/linux/jump_label.h:270 include/trace/events/initcall.h:48 init/main.c:1239) 
-> [ 114.124079][ C1] do_init_module (kernel/module/main.c:2538) 
-> [ 114.124700][ C1] load_module (kernel/module/main.c:3001) 
-> [ 114.125281][ C1] init_module_from_file (kernel/module/main.c:3169) 
-> [ 114.125945][ C1] idempotent_init_module (kernel/module/main.c:3185) 
-> [ 114.126610][ C1] __ia32_sys_finit_module (include/linux/file.h:47 kernel/module/main.c:3207 kernel/module/main.c:3189 kernel/module/main.c:3189) 
-> [ 114.127271][ C1] __do_fast_syscall_32 (arch/x86/entry/common.c:165 (discriminator 1) arch/x86/entry/common.c:321 (discriminator 1)) 
-> [ 114.127912][ C1] do_fast_syscall_32 (arch/x86/entry/common.c:346 (discriminator 1)) 
-> [ 114.128530][ C1] do_SYSENTER_32 (arch/x86/entry/common.c:385) 
-> [ 114.129117][ C1] entry_SYSENTER_compat_after_hwframe (arch/x86/entry/entry_64_compat.S:121) 
-> [  114.129880][    C1]
-> [  114.130247][    C1] value changed: 0x0000001ac6927aaf -> 0x0000001ac6cf83af
-> [  114.131074][    C1]
-> [  114.131445][    C1] Reported by Kernel Concurrency Sanitizer on:
-> [  114.132179][    C1] CPU: 1 PID: 144 Comm: systemd-udevd Tainted: G            E    N 6.9.0-rc3-00015-ge84f43e34faf #1
-> [  114.133442][    C1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-> [  114.134654][    C1] ==================================================================
-> [  114.141741][  T144] ppdev: user-space parallel port driver
-> [  114.556211][  T153] RAPL PMU: API unit is 2^-32 Joules, 0 fixed counters, 10737418240 ms ovfl timer
-> [  114.791100][   T95] input: ImExPS/2 Generic Explorer Mouse as /devices/platform/i8042/serio1/input/input4
-> [  114.842626][  T139] bochs-drm 0000:00:02.0: vgaarb: deactivate vga console
-> [  114.849602][  T139] Console: switching to colour dummy device 80x25
-> [  114.934666][  T139] [drm] Found bochs VGA, ID 0xb0c5.
-> [  114.934674][  T139] [drm] Framebuffer size 16384 kB @ 0xfd000000, mmio @ 0xfebf0000.
-> [  115.023240][  T139] [drm] Found EDID data blob.
-> [  115.104489][  T139] [drm] Initialized bochs-drm 1.0.0 20130925 for 0000:00:02.0 on minor 0
-> [  115.223445][  T158] mousedev: PS/2 mouse device common for all mice
-> [K[  OK  ] Reached target System Initialization.
-> [  OK  ] Started Daily apt download activities.
-> [  OK  ] Started Daily apt upgrade and clean activities.
-> [  OK  ] Started Discard unused blocks once a week.
-> [  OK  ] Started Daily rotation of log files.
-> [  OK  ] Started Daily Cleanup of Temporary Directories.
-> [  OK  ] Reached target Timers.
-> [  OK  ] Listening on D-Bus System Message Bus Socket.
-> [  OK  ] Reached target Sockets.
-> [  OK  ] Reached target Basic System.
-> [  OK  ] Started Regular background program processing daemon.
-> [  OK  ] Started D-Bus System Message Bus.
-> Starting Helper to synchronize boot up for ifupdown...
-> Starting LSB: OpenIPMI Driver init script...
-> Starting System Logging Service...
-> Starting User Login Management...
-> [  OK  ] Finished Helper to synchronize boot up for ifupdown.
-> Starting Raise network interfaces...
-> Starting LSB: Load kernel image with kexec...
-> [  120.559025][  T225] IPMI message handler: version 39.2
-> [  OK  ] Started LSB: Load kernel image with kexec.
-> [  120.991196][  T239] ipmi_si: IPMI System Interface driver
-> [  121.000344][  T239] ipmi_si: Unable to find any System Interface(s)
-> [  OK  ] Finished Raise network interfaces.
-> [  OK  ] Started User Login Management.
-> 
-> 
-> The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20240524/202405241607.d3fd7eb0-lkp@intel.com
-> 
-> 
-> 
+
+
+compiler: gcc-13
+test machine: 4 threads 1 sockets Intel(R) Core(TM) i3-3220 CPU @ 3.30GHz (Ivy Bridge) with 8G memory
+
+(please refer to attached dmesg/kmsg for entire log/backtrace)
+
+
+
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202405241710.148db8b0-oliver.sang@intel.com
+
+
+
+[  116.216583]     # vcap_api_show_admin_raw_test: EXPECTATION FAILED at drivers/net/ethernet/microchip/vcap/vcap_api_debugfs_kunit.c:377
+                   Expected test_expected == test_pr_buffer[0], but
+                       test_expected == "  addr: 786, X6 rule, keysets: VCAP_KFS_MAC_ETYPE
+               "
+                       test_pr_buffer[0] == ""
+[  116.222467]     not ok 2 vcap_api_show_admin_raw_test
+
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20240524/202405241710.148db8b0-oliver.sang@intel.com
+
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
 
