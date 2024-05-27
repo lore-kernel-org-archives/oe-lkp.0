@@ -1,99 +1,100 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 597ED14A90
-	for <oe-lkp@lists.linux.dev>; Mon, 27 May 2024 06:37:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78DE13A260
+	for <oe-lkp@lists.linux.dev>; Mon, 27 May 2024 08:09:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.19
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716791854; cv=fail; b=nRbbgi3kIGf2N6IhNxEhqDxPnJchcuFOkuXO+9XvDS7GHIkeNVKzMZXMD95hwiploayzTDNBn8DkpcQ2aCX8qd3VYTTQHaCJXFz+voAJlIUUb8R7R26Pxwj7aFptjSbtWDIznvsS6C1MOwDyWkY13epmli+ylKoomX2vRvy7uGc=
+	t=1716797386; cv=fail; b=bP44E2OMTFR4cEU8DLpKTuuQ4f9FHAUrGHtH8t5tarc7qLhRJsRGyqKlCgx99Xy3hLqvmMElFa8ssFUxuro1wzM7o1rzSfu9K5KKfYEVlqlYoH9eEkWzScNJHFrHKlI+1WaS/zVrXxzrXj/s4l7gsQM/GEubOftVfpDOmnBwEwA=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716791854; c=relaxed/simple;
-	bh=dAezSRRP9ch7G0ZgGy+/l0y6amUG40FMqh7eKhsir9s=;
+	s=arc-20240116; t=1716797386; c=relaxed/simple;
+	bh=jHtcg2Hh9iWzPNT7JV7ScTHm9+lHemptRbC66qxnYdg=;
 	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=rCHsO9NFrelDyUbvw7O0tJLtQzZKeU4l7aawJygQ9p7tRVfc1h4CA2sfEnk5hGt+zv+9JGcojuwYNlSE/h0zyQRsbIg4fj1b9UvOSEV5JeWip5Wzvbj+gHZLftq4Xr2a2F8jE/ZRhF2WQnKz5u8iDuk1PY+ojJJ1J7ZtrklugF0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ndcTtwpj; arc=fail smtp.client-ip=198.175.65.15
+	 Content-Disposition:MIME-Version; b=tiTefEJvRJcZLuuJUTWlUf6rydmYUyuLgSGHaI0w6lhMRXKXQZljQLSCn8p7at+qk63PoT+8z5RvXgAtWm1lwznfyrjbm7aOZCJildSb7FDH42WWFofMJbnraXUmvA4mTr8qFv0HSaGOKIPY4dLG7UAF/ukDnsUraEeOzKOCkqY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=g/KZ+m8+; arc=fail smtp.client-ip=192.198.163.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ndcTtwpj"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="g/KZ+m8+"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1716791853; x=1748327853;
+  t=1716797384; x=1748333384;
   h=date:from:to:cc:subject:message-id:
-   content-transfer-encoding:in-reply-to:mime-version;
-  bh=dAezSRRP9ch7G0ZgGy+/l0y6amUG40FMqh7eKhsir9s=;
-  b=ndcTtwpjtGH5WGM65NkFFEN2aIwKV+90j1446jhnnlSWdfaWHSzDQSBQ
-   ggltn608lOGXqziVdfsrxSEdBO9y5N82lTCcAVRQgo/h/9i3+Mpzy7XAD
-   aBp6JIoJEf9bFOcY4WC5FrFQa0TerLyDZAxMu+byGM11+B4kgPWhMQRBX
-   93Ic2xYI5/fNFDnCqxQJ5XT961GGFSZip/9A1GoW/dWr3cU1IOXd+qtRL
-   SfC3iDfPgIcOj7Lj5ih+T9tK9m0QZ7tkRbVG6/HO3c95JTloIu7VbnQbG
-   ttTDTQlUcdvSKx5M/zE225x+2VIXF01vpR00n6ChOlI71jqAJmUIG0lOO
-   Q==;
-X-CSE-ConnectionGUID: uqU2lXG6S8WP71hSvXsmHw==
-X-CSE-MsgGUID: m8VNXlJCQQO6wm0/8ZWWxg==
-X-IronPort-AV: E=McAfee;i="6600,9927,11084"; a="16882040"
-X-IronPort-AV: E=Sophos;i="6.08,191,1712646000"; 
-   d="scan'208";a="16882040"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2024 23:37:32 -0700
-X-CSE-ConnectionGUID: CSeUlY9wSfCvT/NF5KaVdg==
-X-CSE-MsgGUID: 7Ydq7jc7RJ2nEw+zVWyGww==
+   content-transfer-encoding:mime-version;
+  bh=jHtcg2Hh9iWzPNT7JV7ScTHm9+lHemptRbC66qxnYdg=;
+  b=g/KZ+m8+WfBLmn7UteW7Lc5YgM5GVju8VA38m3khm7syN1SnPc+17DhD
+   BAF+GVL3ZeJMHGBM8lQVbI/L7LqtcBcOvRMjRsL3lMwk8bDblZe/u9nLC
+   fDAf3YoQJ9NeUAqfr7YjliWXe0B7Td8ii+d48G3RsUrELXfYAdmONVdAW
+   bfgl2TSJ1VbLT1YNrqirVDcNecVezRA1W8LOckFCD28AEGJh2bEsdt2jd
+   zv7/laoakzO8/d7W4Y9dX22+uN7pR2dPTAVcMy1wKwuNsAwmIHXOtUQ82
+   ejXDMNMcKcZV+1DFglixnfdAFx6nBAtRveNJEoZWvbBZn7RWakzfuZ0tv
+   g==;
+X-CSE-ConnectionGUID: dWpxKqFqQOqXae+bVM5Y5A==
+X-CSE-MsgGUID: uT97a0UyRJWl3Oj9SPpZiA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11084"; a="12923981"
+X-IronPort-AV: E=Sophos;i="6.08,192,1712646000"; 
+   d="scan'208";a="12923981"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2024 01:09:43 -0700
+X-CSE-ConnectionGUID: 91gGvaNLQR2TIC4WY18PPw==
+X-CSE-MsgGUID: XgaSdPCSSHWLXsh23uXQ8A==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,191,1712646000"; 
-   d="scan'208";a="39507901"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by orviesa005.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 26 May 2024 23:37:32 -0700
-Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+X-IronPort-AV: E=Sophos;i="6.08,192,1712646000"; 
+   d="scan'208";a="34691305"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by fmviesa006.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 27 May 2024 01:09:44 -0700
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Sun, 26 May 2024 23:37:31 -0700
+ 15.1.2507.39; Mon, 27 May 2024 01:09:43 -0700
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39; Mon, 27 May 2024 01:09:42 -0700
 Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Sun, 26 May 2024 23:37:31 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.169)
+ 15.1.2507.39 via Frontend Transport; Mon, 27 May 2024 01:09:42 -0700
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (104.47.73.169)
  by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Sun, 26 May 2024 23:37:31 -0700
+ 15.1.2507.39; Mon, 27 May 2024 01:09:42 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VlR+oXXlgM11rhSKXl58JaK5bA2qJnvHFG7FKMXt6fO/Ndq7lC9MiaMM4nfMRyJuNR+T9E0RVnqWXfzUG/lJICiOr4eNZgtd51IrtIJKnhfE8FxF60yBJtavFgCljY5Z3lvwdpRTIroSfk67IhNBVE9Hjj3GqDx7+tON1/lOu1dsVgVfhpWDeLVjNZ+Xl++FmiaEHzpUqFYnyCw24+CASM99VHTG9t7L8jZYEZSJr5rws2KptsF91+eFlJJVrZ18Li2SeZpeEr17a2mMbokxeCSL6r3WJmKjbHvJDyHDiJjCrj5ad2cctKDrCiL8xUnXR2mzCPZvPb4RPdIZUqahFA==
+ b=L91pfQ6WO0k71u3iFfIHmcUuNTRBVBWxVkZO034DUUtYztgyG/IIBAGV2uWm5LMNvIAuiemimZdFSudMCIE6O88HAZ0okHI/2UdW9Z4QemLvasvHdm6ASXmMouVBC491ltpCPYk72Lbfik649qA2QI63rGhCQfXFU/cwiWXOnBnz1uFntE4JchxbogyuK5i6MHHbHLOnnMjNHG4TlG1csvE/Z6kf+r4mZpgOeMWAm+jMJNY0UBXnzBqGDhkQOgjuR7FD7/7Wlc35etCgQPptfB1FTx3lzfunMMv5kKDDvcsI4oeloxtmfjqkNbsFF6GupZEAWoSElTUzcLjNX4TIPQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KiOQS7MsbVMFWXn1KVR+6ygeO8ySHez25iBg6X+qCUE=;
- b=LwgBPP+b9oqiqAaTXqTe96c2qhAlNzDK//uagz2gU0p7BOEyuh+DIZ2vBkixdz0gbKllG/Ib0RY9DRcxPDlW26T2TEyY7/zSpSfKgeCWRTBhFQfhUHRofTeFp7kPpce43givNiRMG0dDvpDCKPSJSO7x6+hp8c9Bww7tytrsdapQoA569K0hbuvsb6BgZDnTtVVO3fezzWlkBZepVL1BkjeTt0ypx/CU9C2bLMacN/P/C+3ChVCw3w9td6fMa/mR3EVu6cQ6Wp6lWzBYYvR6d1oFVBggBxpX4aqUxJ2Uzq0KRr4GSpGF83KkFx6lWGzlQXjbuYmJHFYBC+BxFWsKGA==
+ bh=QgzylRTnflbcQojCxTqB8yWvDsTtD4tToIDGsmp72qE=;
+ b=hkymKyFp4rkPR3U5LJIxxWtrd8fL3lundIgA1q5HlhXmB48xr8NefsJFuHNos1OPBG++RSYPoRSAYD98KMUyKeFJDnbjpRDQ/2WMVKwfdoF76M4zwVS2soDCEoW+DNm8tzbxLAUc9Iz8Tzngcq4VN3KKG8gGivkwej/Zz5N348mWnLQjD9/jJakKbZSeVroc6sXWhteVPP6r2wmzEouR8I57A0izifukxuF9JT/EReCTr+3gdPmGlz9EDwWq+nZH74Id1Z7M5P4SCDKO9IO0M14B/9jRfmmnkIdSl+TNdfuKw1soX5WrNgSXbRUiRqPqDY1IdAmo3nVq81BqIvY2Hw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by DS0PR11MB7287.namprd11.prod.outlook.com (2603:10b6:8:13f::19) with
+ by PH7PR11MB6954.namprd11.prod.outlook.com (2603:10b6:510:205::8) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7611.29; Mon, 27 May
- 2024 06:37:29 +0000
+ 2024 08:09:40 +0000
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c%2]) with mapi id 15.20.7611.025; Mon, 27 May 2024
- 06:37:29 +0000
-Date: Mon, 27 May 2024 14:37:17 +0800
+ 08:09:40 +0000
+Date: Mon, 27 May 2024 16:09:31 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Zhang Yi <yi.zhang@huaweicloud.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Dave Chinner
-	<david@fromorbit.com>, <linux-ext4@vger.kernel.org>, <ying.huang@intel.com>,
-	<feng.tang@intel.com>, <fengwei.yin@intel.com>,
-	<linux-fsdevel@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<tytso@mit.edu>, <adilger.kernel@dilger.ca>, <jack@suse.cz>,
-	<ritesh.list@gmail.com>, <yi.zhang@huawei.com>, <yi.zhang@huaweicloud.com>,
-	<chengzhihao1@huawei.com>, <yukuai3@huawei.com>, <oliver.sang@intel.com>
-Subject: Re: [PATCH] ext4/jbd2: drop jbd2_transaction_committed()
-Message-ID: <202405271406.9b9763f6-oliver.sang@intel.com>
+To: Eric Biggers <ebiggers@google.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	Herbert Xu <herbert@gondor.apana.org.au>, <linux-crypto@vger.kernel.org>,
+	<ying.huang@intel.com>, <feng.tang@intel.com>, <fengwei.yin@intel.com>,
+	<oliver.sang@intel.com>
+Subject: [linus:master] [crypto]  996f4dcbd2:  stress-ng.sockfd.ops_per_sec
+ 11.0% improvement
+Message-ID: <202405271558.f424aa27-oliver.sang@intel.com>
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20240513072119.2335346-1-yi.zhang@huaweicloud.com>
-X-ClientProxiedBy: SI1PR02CA0023.apcprd02.prod.outlook.com
- (2603:1096:4:1f4::19) To LV3PR11MB8603.namprd11.prod.outlook.com
+X-ClientProxiedBy: KL1PR01CA0032.apcprd01.prod.exchangelabs.com
+ (2603:1096:820:1::20) To LV3PR11MB8603.namprd11.prod.outlook.com
  (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -102,99 +103,94 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|DS0PR11MB7287:EE_
-X-MS-Office365-Filtering-Correlation-Id: 99765554-82cc-482d-690e-08dc7e177aa7
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|PH7PR11MB6954:EE_
+X-MS-Office365-Filtering-Correlation-Id: e70390f8-6604-4bee-2fa0-08dc7e245bbf
 X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230031|366007|1800799015|7416005|376005;
-X-Microsoft-Antispam-Message-Info: =?iso-8859-1?Q?8KkgyvDbeWN7t6Vvd28lPp0V97ieu6UeuUVwr2vNPoyiY3o593nKyqvMqm?=
- =?iso-8859-1?Q?baha05lb8/dCLJmWHsE4ynyphLn2EWfHqIFrdPgVZHuw3UvPB9VlGJFe0P?=
- =?iso-8859-1?Q?P/vL0pTqt00LbpCvmlWQmUb/9Hs09vJa0Vyr23bkTblNawVHb1+XlxLFW/?=
- =?iso-8859-1?Q?uqGjDlzLK98s5nupWmiX6a/N0HPwPl9+GNgvNCjkH9pCLmr5G9FF7o0aQ+?=
- =?iso-8859-1?Q?SKj6xIMFfd+6nSgUETx22LK8ERrtZagRPi0CRDqDXvLc9rq9aiDLlVaL5p?=
- =?iso-8859-1?Q?7DqrDXBCAebJ53P0EcY5ARqZ9uW/JUF+45XE45HCcRU0LwNkI/lFm6J3yf?=
- =?iso-8859-1?Q?0kMSr6/UjcwUgJ00xXQFC8uGR4qqoj8qwAKhWy8anZ11ZGbrt5jCCJX5K9?=
- =?iso-8859-1?Q?wRt7a+vMrBgqfFlYtmC7J2NpJcB8IqNAtX5sfu+LPEkm/eX0HV1KhgcRyi?=
- =?iso-8859-1?Q?ol7bCD3UL5qSutmPMW4E/E0lcN8I+yfvVW5N6Mt/WYp9OUWInpaasD+Yor?=
- =?iso-8859-1?Q?+av1veyZ04o+sLst7WvgcurI6Qnjm5jzDd8gEG9b6aFdFBw4In5slZEtgY?=
- =?iso-8859-1?Q?GY97fxJU3waSHfD5K5NkweqC1MU8mTGDp1NNvt6YHoQQOTllWyR0Hyz6v+?=
- =?iso-8859-1?Q?/FSnddIdOVu1OKkfYO/bXl84fj7fTWd1yy2yk11C7PR+X3WZvSPfgN/EAk?=
- =?iso-8859-1?Q?YM3OtTJ4LO5iXtJLEwPfy69td2NelPul/XcETPRak/ESlnJRvhjM5dWzdp?=
- =?iso-8859-1?Q?XIq+08u2a08Z0izMGQ/RX0FBIRv5oe14aXh5vQioVjDKnYF7B0uQH7T86s?=
- =?iso-8859-1?Q?fkIR1JEJLBpAMuFIWH7QfsKICgjbdP54Yv1y1dEjQwoK+VNCE9ie0hdTJk?=
- =?iso-8859-1?Q?U5/D/XQA6Zz14o0VLK44c1R6HYvb6hkA+Cq+GD4I53WJbV7BBGCftoqSvX?=
- =?iso-8859-1?Q?xoyaT03ixEpOrKHXqzDXTK5EN0HKDKTYdJ3gMcXpUScnaHVAxh6b1CFVmn?=
- =?iso-8859-1?Q?IILBOIWv3njIKoTyV8ak/5FNAVu2Urg6JFca7tcb+Ft0zP4hlEqFKAlh+R?=
- =?iso-8859-1?Q?kpIVBtX2uIin4obItHcWSjVEMCDhWB2t2nrjLUcHDmeChNUDVyLN1l30qe?=
- =?iso-8859-1?Q?57QmCq7l9JEeLX6+JIzY7kwAA/gcnnjc/zKpD27itukatoiSqC6GIGeBrb?=
- =?iso-8859-1?Q?iRNVo2ZkEfdL3sfE0ho30jlAiPKokgtZNmQ18BGQ3psRSmCTTDsDWZbxl1?=
- =?iso-8859-1?Q?09CJFUH7M5Smyr+em2ICvOSvaJDNCaCWhXtzjv8lo=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(1800799015)(7416005)(376005);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230031|376005|366007|1800799015;
+X-Microsoft-Antispam-Message-Info: =?iso-8859-1?Q?lxk/rm0+92xIsy3zY5JyODNof3poOSrWBIuXlahf3fTMCPJkN/umlRBI8E?=
+ =?iso-8859-1?Q?BuU89ZCr/VRZeG3ELYa6pkprFE+pYrOWiwHjXKl1LZ6dCc3yIDhEN+U+Fd?=
+ =?iso-8859-1?Q?X2NLIi/p/vXoQ1TzrCM/VdQMZJlJMMumrVTMsHV8JDaYAL2+b0loFg2oCD?=
+ =?iso-8859-1?Q?xMyMKNuxhZgTK13aZ5s6ItAC/1loJ9TBwusVJ2k8nQqgwS7F3+gHGCAJnA?=
+ =?iso-8859-1?Q?6X8YpY4pJk2Yg7aXTDycAlKwFgej0hSc8ZCuiQjpxW+MInFkho476STx24?=
+ =?iso-8859-1?Q?bezKgk5FlH6pqfx+iPfwcu9E847CRuZFSMxvZ+hJBRUnCYac4/pQhbToY/?=
+ =?iso-8859-1?Q?1FHUKDu3AXaIsIaYmHzxyNSNFhRvwrFaHH5qKFwjQf6iuaSt/o/0cbYtSk?=
+ =?iso-8859-1?Q?MmEA8fzxSVSD82pk6DWvL2R7iiSKBimzc0T4wmymPSr/ygttwCZuXMRujv?=
+ =?iso-8859-1?Q?tzgP+4q70msCsA9thQAsXAEURO6P55QU0ZTHZ/AcVE403Hc+2XKQl1KWCR?=
+ =?iso-8859-1?Q?qWJw1VMY7jFaU+ZvuidgelsHS5birHCAmW8GeoTzsAAvaHxrypw+9xRfk5?=
+ =?iso-8859-1?Q?wMWIlxI/hatFYzjYl1/Sgw9NlTk+kzIJ/Wig7bfmnC4s+c0ynD37yFE9u3?=
+ =?iso-8859-1?Q?jVWYRRjqXUrSWkXpwFvlU9EAblCbiGj4V4xiOFkPd4TmQKxHz4SFEpuIq5?=
+ =?iso-8859-1?Q?ZB2ksrc1BFIR4x8vIlaiS93At9007SHy3MtmKY8lVDoskmh0DooahXp7FQ?=
+ =?iso-8859-1?Q?raaaf7AnSlTsInxhdodNIEwG/Llyk4Bggs/a266+VSrGUC4rLdBLic1nHp?=
+ =?iso-8859-1?Q?+UB+Mg4AmZ/flSvIwalV7ct2GdL+7Fy5m/MU9xTfCBjqzPqr9ZUiiEKIY6?=
+ =?iso-8859-1?Q?TWOjTYieRFUapToM9FR1oCZ2Zo7InXvJCDERr+ZocYdXyPIwvaFK44wfc5?=
+ =?iso-8859-1?Q?7sjdUowrEXgmpLtE+NndAz8GIUMLcTSzNtd4S4uS0IM56tyWWrlRtxL1WJ?=
+ =?iso-8859-1?Q?Z4GwSvEHbO2c32fHQSbgWFsEx8t3AKpeZRd+2lB8kjKeybVMi/1N2ugvuo?=
+ =?iso-8859-1?Q?j6qxRCYY/pKd9/p63e+E8Hictgb08lbLTAk+zmL9HjEe6r37nf2xNF3s9N?=
+ =?iso-8859-1?Q?IEex8r2jL4H9FyxtUUYwM+PU0Y4VTiJLd5nonuI18IlXXgm3cYGzBdjydr?=
+ =?iso-8859-1?Q?3aW/wMqqlVCSOG0OnwowhKHmOOxbFY7E9zzPgB26h74WB8V6aTYmUwB2bd?=
+ =?iso-8859-1?Q?6zWvQBEABj8SS4Y39DL6v1+oYovVTgIu6j25Wdfg0=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376005)(366007)(1800799015);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?Y4AU1RVR6pSvgmxLKs7bxB7WENPH5N9KOXjr11WqkFA0qzCXUfGPJl6Ykg?=
- =?iso-8859-1?Q?A3L+nFANIyyqEG+83+IDXqgSQZHYWkirxBVXklr+D8w22Uu4Jh4Sr0d1pD?=
- =?iso-8859-1?Q?ohCpwsTNgQ8F7LyfjWYbemJUf72YiIVFmndzVMIv3D8VbaXe3J0CeMrbWJ?=
- =?iso-8859-1?Q?TuHKJ4E7uwIv61aDR1djCKeuVQj0Hjt5nx3KiK1tihypY8PTxcbPmHKQZp?=
- =?iso-8859-1?Q?fgWr3O/g7ZRnXYGqsNqNe7S7RJzDJR8CohdJfp/YB9PKDxXFPA8OXEfCXl?=
- =?iso-8859-1?Q?KJjyCpCCdUrBO02OcxiUpAjEKZSquxd66bI1CwqLYXXRFrZXX6yfPxCPVl?=
- =?iso-8859-1?Q?g2Ja0t8WcsLYX/URoGRnxOa3JcV412k/AsnshYdnbufhnGtootPDrfXW7w?=
- =?iso-8859-1?Q?shuEb6VZBPj4/1ZKYeNDJBm5TRcJGo7by2w8x/lBDZUYC5wHeKOzC3GdIN?=
- =?iso-8859-1?Q?r9Ir+y7mW2sFdyEsLuQCNGAdHBHFAqZ97sg0liDjFUfvEzXVqPp3V4ygwA?=
- =?iso-8859-1?Q?WA8vZBEdr45BAXwjYaaOZnmoDAgF8CKxz9WccheM+raMlTS17qdOYPKuOf?=
- =?iso-8859-1?Q?6XAZK+j5HCPxGeEeZb5kp/YOiZibM4FJoqhs0LraJIlXRmt7vS8BvtQpqL?=
- =?iso-8859-1?Q?Y3EPnjl5XSJEzjri7iiDKojB4HvDsz7a9b74NrD3lmqk3wee4qFozZJvf/?=
- =?iso-8859-1?Q?mRXDsGMOJ52bHunAf9OgLEdhgynEt5ZfXLdnxemL5LEJZ/HewMkdZEZsKX?=
- =?iso-8859-1?Q?ExbC4Uwxu0Wl376wprTf39AcndWLy8BGwVKGteH7LSVfDvbgHMkE+dA6E0?=
- =?iso-8859-1?Q?4bpXy4NV6oyItlkrIETQ5KzavQBx7aHURSkHZdt35I+HBVx44oJ/gboNsR?=
- =?iso-8859-1?Q?PO5RR4NLVIsO36mJSyYqiFuFv3XscyDERKYmgsDpPetndfo6GgtVsKRwRR?=
- =?iso-8859-1?Q?RlNZ650BGhE78IE/PGX2qaGgfG3QJ4u+PYepMtSArlu9tLv2ZJGXwkjfyz?=
- =?iso-8859-1?Q?9VR65HKnLHbJuLNTBFg9s72GlPE4TTwc8JMbZ0sEmgYOTO6+w3c3JqOMnc?=
- =?iso-8859-1?Q?B/drT5qZ+hrUKusDa/SjCNxK8jKaau1tlniMA7q85TKid68F8/q3zfMWFx?=
- =?iso-8859-1?Q?J4PKf/CuU4K2S5XbKT9bQlIWmcGxcyNODzDRFj9ASsiUwA6YhYOIWl+DiA?=
- =?iso-8859-1?Q?QgEmwbQd/LsS2p6u7IKUj5Sb7UmT9zHoO87zfbXYh4F3ijThDqzzEdgLgK?=
- =?iso-8859-1?Q?q03R7x7SiQoUnfwH7ES1z34wET7oNMmsrc0nFih7m7ruO/u5PoHIxu36me?=
- =?iso-8859-1?Q?qVH5bcepGSt3J7oXGhiOttLUaZgCTJVJ0vfUexVDZT9EC5yKPjcD3JVqA0?=
- =?iso-8859-1?Q?27kuoBc1xv/SDm1aursLZ7Qjrybde1g2YuKCisZ6l/xbi7rCxjsGACsYun?=
- =?iso-8859-1?Q?VQr+5wIq+iQYuem1fpb97HGiV0R2fphu0WOwQSDhgz4h2oCB/W82LMLX2S?=
- =?iso-8859-1?Q?p8wVhFlWuhv7sQIo5v3Og/u4HARQChFGAJT4Eq6DxWu6F5jayWYhGlXQiI?=
- =?iso-8859-1?Q?Di8RUAaAyW3pFo+ZqvSz3rOTOPI6LqBbVL85QJoKAq6m2HBzp4XoTqv5TK?=
- =?iso-8859-1?Q?XGAcg+HH3+Frr181n7OVAOo9rmH6QUqCvtWkh2A9A9T46fqxKLe4UENQ?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?cD83qDAXNovrV8mkvVcBiyq3Rwq0bJUwWFlfw/bKZILDRkulu8DpGgFieB?=
+ =?iso-8859-1?Q?knvUUdb0Om/iq6TlQWXvOfqWRZI47da06q0sFJ5tSmV2cxXVU0ck12s8sL?=
+ =?iso-8859-1?Q?x/5yEhfLRnzLPfUvw3BdM2YpBWqX5pVr9/mf5FlJhS80JLIYiln6Ukio6e?=
+ =?iso-8859-1?Q?iDYc8G6chL+58F0/spxbA6+Bmcs6hIxGeG5n2ajSXQEYvehIM0rl5NloFG?=
+ =?iso-8859-1?Q?MRc1qt7O5wYNniYe9P7C4GpYtzr1MZUD+KOSSs7B55bEeTCTw8trWq9AX8?=
+ =?iso-8859-1?Q?UN+8USAtEhYobg5Xoqk1uIE0yym5FpPGeLjX63n0DhjiJjFsGjiKRQMLSQ?=
+ =?iso-8859-1?Q?Q9GTnW64cFt1lxdbiBOBgFyOZciPW+MwZ7kOTJDDUFKsMXLe/DRtE9hYml?=
+ =?iso-8859-1?Q?UJFxPMDrq/x5PDlSdqbEse7q3Qseo+TOVXqufi8Kp9KmYMkMJrNQNYoRFN?=
+ =?iso-8859-1?Q?+rnUErUWANVz1k1oBkOI+GrsnJ7e+x21W02kL+one7n4Z6Y9MG+j1fUdW/?=
+ =?iso-8859-1?Q?ymCA7rBrUi+F9Bwx3wJxKbS1g27UK0+cnq6MK0GMlfaFY9VF5yZlhZ8eb8?=
+ =?iso-8859-1?Q?6hkk1z9dc4phy6xSrQNL1RxaiNTbkiZHdcLRWlOuoBtdsBPvgJaUTzeAnJ?=
+ =?iso-8859-1?Q?96/vrNTsjOPOr61lzx1oy8jtNVkoCvNYmNPbIMSV0kS56ic/hgUaFVIxxz?=
+ =?iso-8859-1?Q?zZ/f65vvnL1GOObWBNefsEu3apO6QjkAoO9PQ9KioeNPI4olmpcgQXXTrC?=
+ =?iso-8859-1?Q?oBY8DoqhhAVja2OYICbzSUPtIvU9oCZQGAu08BBvidKT8FNZfuaUKk6EYD?=
+ =?iso-8859-1?Q?zKlGczEGFTV3TdEslB2DC8W1CzjtQ1BulxZK4Y4vqPv9ZOwSta6JcIEl8v?=
+ =?iso-8859-1?Q?xCDej4rQ/dralWLxj0+49GBEMDnPkTBZzjjjnMosLAn2fq0iMmVLo6bZl/?=
+ =?iso-8859-1?Q?73AU1RYRb8LZL0EVZwJ4ycVGi58FHbPtjDO9PQpJ5fzKEOCFV3d3Bn7FVe?=
+ =?iso-8859-1?Q?vlcAeaEhcdjbHYpQnYbVtpivy/uFgjZ8PcXi7QJ/8oKi43/r377MkRixy1?=
+ =?iso-8859-1?Q?AvGc1PJ5ucGdoARuJlSPe3JG4vRSxdPB9rie41fRXpSJfzq80YAytKEg7I?=
+ =?iso-8859-1?Q?R6qv18KD6Bt5XKOv2VtndCqK7UOz2NFho8yYo2oZq6yIGlzedl7wea2Urr?=
+ =?iso-8859-1?Q?D0YLGTuyhxu0EKnM/DLNFVrMEYXtkYE5FwTbT3vH57vzRtQE+R1PxP9Zis?=
+ =?iso-8859-1?Q?TdstV6wENtfVCWmSfDhzSasZuFZEGgn8PrIXdvxnKXIMIuL8ZzTU148eUu?=
+ =?iso-8859-1?Q?0nbG1CBHvURiESfIyMB27L5lNSF1UpRQVWpkIcGCmObXfzSJ1yu3lJVqgi?=
+ =?iso-8859-1?Q?+eGuVku3ZX1dXBYIAI86zcqMI81945E1u31VL0cVu7NEhOl+QaTBLGZusW?=
+ =?iso-8859-1?Q?E7nJOkzKiY7elL5OPvQA4KDchGe6GIUcswqK/6o+5tDCj7nZwz0kxVkX3F?=
+ =?iso-8859-1?Q?ycJDU9xG7BBVD5JvkyZwm+3tknVyfkkQRdUpa10ai+ivWQaCvVxGgMSMKS?=
+ =?iso-8859-1?Q?DQ/Rsp9791mQoXluFzySLtDf64keGe1efmzXg/l9Sbk0oOE2mKh9R3dmPy?=
+ =?iso-8859-1?Q?bWMQEM6kKubRrNxP5upV6yOacwKtZaFntPsgnOCV6dC5Kp63p0xkZnow?=
  =?iso-8859-1?Q?=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 99765554-82cc-482d-690e-08dc7e177aa7
+X-MS-Exchange-CrossTenant-Network-Message-Id: e70390f8-6604-4bee-2fa0-08dc7e245bbf
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 May 2024 06:37:29.1110
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 May 2024 08:09:40.6210
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Jbc1GeCvK70Pw/1LLtjP9YmOvjWUD94725mzCtdE0qJ9elh3SapTp5/PEJ4C9JC6lcQDDzilJsOvqrG+IGeNPg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB7287
+X-MS-Exchange-CrossTenant-UserPrincipalName: bdICaZO2Vjh7iIhKa3HWlxpUqKkpFQ3JY7s/fxlPNL9v1CcM/jiCnR9Z1WHi63myUpfiHhiOxxvcWjZB043XQg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB6954
 X-OriginatorOrg: intel.com
 
 
 
 Hello,
 
-kernel test robot noticed a 674.0% improvement of stress-ng.fiemap.ops_per_sec on:
+kernel test robot noticed a 11.0% improvement of stress-ng.sockfd.ops_per_sec on:
 
 
-commit: 8a7952dd64b38f3ac2754ca550b52ac3ca921c1a ("[PATCH] ext4/jbd2: drop jbd2_transaction_committed()")
-url: https://github.com/intel-lab-lkp/linux/commits/Zhang-Yi/ext4-jbd2-drop-jbd2_transaction_committed/20240513-153311
-base: https://git.kernel.org/cgit/linux/kernel/git/tytso/ext4.git dev
-patch link: https://lore.kernel.org/all/20240513072119.2335346-1-yi.zhang@huaweicloud.com/
-patch subject: [PATCH] ext4/jbd2: drop jbd2_transaction_committed()
+commit: 996f4dcbd231ec022f38a3c27e7fc45727e4e875 ("crypto: x86/aes-xts - wire up AESNI + AVX implementation")
+https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
 testcase: stress-ng
-test machine: 64 threads 2 sockets Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz (Ice Lake) with 256G memory
+test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480CTDX (Sapphire Rapids) with 256G memory
 parameters:
 
 	nr_threads: 100%
-	disk: 1HDD
 	testtime: 60s
-	fs: ext4
-	test: fiemap
+	test: sockfd
 	cpufreq_governor: performance
 
 
@@ -207,230 +203,111 @@ Details are as below:
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20240527/202405271406.9b9763f6-oliver.sang@intel.com
+https://download.01.org/0day-ci/archive/20240527/202405271558.f424aa27-oliver.sang@intel.com
 
 =========================================================================================
-compiler/cpufreq_governor/disk/fs/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
-  gcc-13/performance/1HDD/ext4/x86_64-rhel-8.3/100%/debian-12-x86_64-20240206.cgz/lkp-icl-2sp8/fiemap/stress-ng/60s
+compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
+  gcc-13/performance/x86_64-rhel-8.3/100%/debian-12-x86_64-20240206.cgz/lkp-spr-r02/sockfd/stress-ng/60s
 
 commit: 
-  26770a717c ("jbd2: add prefix 'jbd2' for 'shrink_type'")
-  8a7952dd64 ("ext4/jbd2: drop jbd2_transaction_committed()")
+  d637168810 ("crypto: x86/aes-xts - add AES-XTS assembly macro for modern CPUs")
+  996f4dcbd2 ("crypto: x86/aes-xts - wire up AESNI + AVX implementation")
 
-26770a717cac5704 8a7952dd64b38f3ac2754ca550b 
+d6371688101223a3 996f4dcbd231ec022f38a3c27e7 
 ---------------- --------------------------- 
          %stddev     %change         %stddev
              \          |                \  
-      1.13 ±  5%     +52.7%       1.73 ±  3%  iostat.cpu.user
-      0.01 ± 47%      +0.0        0.04 ± 44%  mpstat.cpu.all.iowait%
-      0.02 ±  4%      -0.0        0.01 ± 15%  mpstat.cpu.all.soft%
-      1.15 ±  5%      +0.6        1.75 ±  3%  mpstat.cpu.all.usr%
-    100427 ± 42%     -59.1%      41106 ± 66%  numa-vmstat.node0.nr_anon_pages
-    149979 ± 34%    +205.2%     457720 ± 31%  numa-vmstat.node1.nr_inactive_anon
-    149980 ± 34%    +205.2%     457720 ± 31%  numa-vmstat.node1.nr_zone_inactive_anon
-    402376 ± 42%     -59.1%     164453 ± 66%  numa-meminfo.node0.AnonPages
-    424656 ± 39%     -57.6%     180029 ± 58%  numa-meminfo.node0.AnonPages.max
-    620453 ± 33%    +198.4%    1851452 ± 30%  numa-meminfo.node1.Inactive
-    601997 ± 34%    +204.4%    1832749 ± 31%  numa-meminfo.node1.Inactive(anon)
-      2387 ±  2%     +12.8%       2693 ±  4%  vmstat.io.bo
-     10.17 ± 13%     +83.8%      18.69 ±  3%  vmstat.procs.b
-    201402 ±  9%    +631.9%    1474068 ±  6%  vmstat.system.cs
-    167899            +5.5%     177141        vmstat.system.in
-    347.50 ± 16%     +53.4%     533.00 ± 10%  perf-c2c.DRAM.local
-      4232 ± 48%    +166.1%      11262 ± 24%  perf-c2c.DRAM.remote
-     23484 ± 10%    +119.8%      51621 ±  7%  perf-c2c.HITM.local
-      3377 ± 56%    +179.0%       9424 ± 27%  perf-c2c.HITM.remote
-     26861 ±  7%    +127.3%      61046 ±  5%  perf-c2c.HITM.total
-   7612782 ±  7%    +676.3%   59099460 ±  6%  stress-ng.fiemap.ops
-    124734 ±  8%    +674.0%     965466 ±  6%  stress-ng.fiemap.ops_per_sec
-  12752270 ± 10%    +643.8%   94847653 ±  5%  stress-ng.time.involuntary_context_switches
-     19.02 ±  6%    +124.6%      42.70 ±  5%  stress-ng.time.user_time
-     62295           +17.8%      73411 ±  4%  stress-ng.time.voluntary_context_switches
-    262799 ±  5%     +90.1%     499700 ± 43%  meminfo.Active
-   3750501           +38.7%    5203048 ±  2%  meminfo.Cached
-   3989040           +36.2%    5432649 ±  2%  meminfo.Committed_AS
-   1154859 ±  3%    +105.8%    2376633 ± 12%  meminfo.Inactive
-   1118790 ±  3%    +109.2%    2340758 ± 12%  meminfo.Inactive(anon)
-    362491 ±  7%    +153.0%     917217 ± 19%  meminfo.Mapped
-   5902699           +25.8%    7426870        meminfo.Memused
-    546333 ±  3%    +265.7%    1998111 ±  5%  meminfo.Shmem
-   5963280           +25.0%    7456799        meminfo.max_used_kB
-      0.92 ± 16%     -21.5%       0.72 ±  8%  sched_debug.cfs_rq:/.h_nr_running.stddev
-    809.29 ±  9%     -15.5%     683.50 ±  7%  sched_debug.cfs_rq:/.runnable_avg.stddev
-    567.16 ± 10%    +123.7%       1268 ±  9%  sched_debug.cfs_rq:/.util_est.avg
-      2015 ±  8%     +41.9%       2859 ± 11%  sched_debug.cfs_rq:/.util_est.max
-      0.75 ±223%  +23377.8%     176.08 ± 20%  sched_debug.cfs_rq:/.util_est.min
-    447.08 ±  8%     +19.1%     532.35 ± 12%  sched_debug.cfs_rq:/.util_est.stddev
-      0.92 ± 16%     -22.1%       0.71 ±  8%  sched_debug.cpu.nr_running.stddev
-    101043 ±  9%    +621.7%     729210 ±  5%  sched_debug.cpu.nr_switches.avg
-    176826 ± 18%    +423.9%     926474 ±  5%  sched_debug.cpu.nr_switches.max
-     17586 ± 35%    +762.4%     151656 ± 44%  sched_debug.cpu.nr_switches.min
-     54968 ± 44%    +170.9%     148885 ±  5%  sched_debug.cpu.nr_switches.stddev
-      5712            +5.1%       6002 ±  2%  proc-vmstat.nr_active_file
-    939938           +38.6%    1302470 ±  2%  proc-vmstat.nr_file_pages
-    280225 ±  3%    +108.7%     584958 ± 12%  proc-vmstat.nr_inactive_anon
-     91383 ±  8%    +149.7%     228197 ± 19%  proc-vmstat.nr_mapped
-    136324 ±  3%    +265.7%     498577 ±  5%  proc-vmstat.nr_shmem
-     25123            +2.8%      25834        proc-vmstat.nr_slab_reclaimable
-      5712            +5.1%       6002 ±  2%  proc-vmstat.nr_zone_active_file
-    280225 ±  3%    +108.7%     584958 ± 12%  proc-vmstat.nr_zone_inactive_anon
-     15324 ± 30%    +359.4%      70400 ±  9%  proc-vmstat.numa_hint_faults
-     10098 ± 24%    +283.5%      38729 ± 19%  proc-vmstat.numa_hint_faults_local
-    604637           +86.4%    1127295 ±  4%  proc-vmstat.numa_hit
-    538359           +97.1%    1061202 ±  4%  proc-vmstat.numa_local
-    532388           +13.4%     603511 ±  3%  proc-vmstat.numa_pte_updates
-    723145           +72.1%    1244321 ±  3%  proc-vmstat.pgalloc_normal
-    383685 ±  2%     +21.4%     465726 ±  2%  proc-vmstat.pgfault
-    152450           +13.4%     172900 ±  4%  proc-vmstat.pgpgout
- 2.951e+09 ±  6%    +571.9%  1.983e+10 ±  2%  perf-stat.i.branch-instructions
-      0.64 ±  4%      -0.2        0.40 ±  2%  perf-stat.i.branch-miss-rate%
-  19046341 ±  4%    +291.2%   74517781        perf-stat.i.branch-misses
-   9666270 ± 31%    +318.8%   40484483 ± 19%  perf-stat.i.cache-misses
-  70884859 ±  6%    +367.8%  3.316e+08 ±  2%  perf-stat.i.cache-references
-    213832 ±  9%    +623.2%    1546476 ±  6%  perf-stat.i.context-switches
-     15.20 ±  7%     -84.9%       2.30 ±  2%  perf-stat.i.cpi
-    414.63 ±  5%     +10.9%     459.73 ±  8%  perf-stat.i.cpu-migrations
-     26710 ± 31%     -77.7%       5960 ± 22%  perf-stat.i.cycles-between-cache-misses
- 1.501e+10 ±  6%    +556.2%  9.849e+10 ±  2%  perf-stat.i.instructions
-      0.07 ±  6%    +515.9%       0.44 ±  2%  perf-stat.i.ipc
-      3.33 ±  9%    +626.6%      24.22 ±  6%  perf-stat.i.metric.K/sec
-      4908 ±  3%     +26.6%       6216 ±  3%  perf-stat.i.minor-faults
-      4908 ±  3%     +26.6%       6216 ±  3%  perf-stat.i.page-faults
-      0.65 ±  5%      -0.3        0.38 ±  2%  perf-stat.overall.branch-miss-rate%
-     15.14 ±  6%     -84.8%       2.30 ±  2%  perf-stat.overall.cpi
-     25496 ± 29%     -77.2%       5824 ± 21%  perf-stat.overall.cycles-between-cache-misses
-      0.07 ±  6%    +556.1%       0.44 ±  2%  perf-stat.overall.ipc
-   2.9e+09 ±  6%    +572.3%   1.95e+10 ±  2%  perf-stat.ps.branch-instructions
-  18850245 ±  4%    +289.0%   73330498        perf-stat.ps.branch-misses
-   9571442 ± 31%    +315.9%   39805993 ± 19%  perf-stat.ps.cache-misses
-  70175556 ±  6%    +365.5%  3.267e+08 ±  2%  perf-stat.ps.cache-references
-    205492 ±  9%    +636.9%    1514212 ±  6%  perf-stat.ps.context-switches
-    405.62 ±  5%     +10.8%     449.30 ±  8%  perf-stat.ps.cpu-migrations
- 1.475e+10 ±  6%    +556.5%  9.684e+10 ±  2%  perf-stat.ps.instructions
-      4823 ±  3%     +25.8%       6069 ±  4%  perf-stat.ps.minor-faults
-      4823 ±  3%     +25.8%       6069 ±  4%  perf-stat.ps.page-faults
- 9.213e+11 ±  6%    +555.4%  6.038e+12 ±  2%  perf-stat.total.instructions
-     85.73           -85.7        0.00        perf-profile.calltrace.cycles-pp.jbd2_transaction_committed.ext4_set_iomap.ext4_iomap_begin_report.iomap_iter.iomap_fiemap
-     86.11           -84.1        1.99 ±  2%  perf-profile.calltrace.cycles-pp.ext4_set_iomap.ext4_iomap_begin_report.iomap_iter.iomap_fiemap.do_vfs_ioctl
-     50.51 ±  3%     -50.5        0.00        perf-profile.calltrace.cycles-pp._raw_read_lock.jbd2_transaction_committed.ext4_set_iomap.ext4_iomap_begin_report.iomap_iter
-     96.50           -12.4       84.06        perf-profile.calltrace.cycles-pp.ext4_iomap_begin_report.iomap_iter.iomap_fiemap.do_vfs_ioctl.__x64_sys_ioctl
-     97.49            -5.6       91.94        perf-profile.calltrace.cycles-pp.iomap_iter.iomap_fiemap.do_vfs_ioctl.__x64_sys_ioctl.do_syscall_64
-     98.08            -1.5       96.62        perf-profile.calltrace.cycles-pp.iomap_fiemap.do_vfs_ioctl.__x64_sys_ioctl.do_syscall_64.entry_SYSCALL_64_after_hwframe
-     98.13            -1.1       96.99        perf-profile.calltrace.cycles-pp.do_vfs_ioctl.__x64_sys_ioctl.do_syscall_64.entry_SYSCALL_64_after_hwframe.ioctl
-     98.14            -1.1       97.05        perf-profile.calltrace.cycles-pp.__x64_sys_ioctl.do_syscall_64.entry_SYSCALL_64_after_hwframe.ioctl
-     98.18            -1.1       97.12        perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.ioctl
-     98.19            -1.0       97.14        perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.ioctl
-     98.22            -0.9       97.31        perf-profile.calltrace.cycles-pp.ioctl
-      0.62 ±  9%      +0.3        0.94        perf-profile.calltrace.cycles-pp.__schedule.schedule.__x64_sys_sched_yield.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      0.62 ±  9%      +0.3        0.96        perf-profile.calltrace.cycles-pp.schedule.__x64_sys_sched_yield.do_syscall_64.entry_SYSCALL_64_after_hwframe.__sched_yield
-      0.70 ±  9%      +0.5        1.18        perf-profile.calltrace.cycles-pp.__x64_sys_sched_yield.do_syscall_64.entry_SYSCALL_64_after_hwframe.__sched_yield
-      0.87 ±  8%      +0.7        1.58        perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.__sched_yield
-      0.87 ±  8%      +0.7        1.59        perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.__sched_yield
-      0.00            +1.0        1.00 ±  4%  perf-profile.calltrace.cycles-pp.ext4_sb_block_valid.__check_block_validity.ext4_map_blocks.ext4_iomap_begin_report.iomap_iter
-      0.94 ±  8%      +1.0        1.98 ±  2%  perf-profile.calltrace.cycles-pp.__sched_yield
-      0.00            +1.1        1.10 ±  2%  perf-profile.calltrace.cycles-pp._copy_to_user.fiemap_fill_next_extent.iomap_fiemap.do_vfs_ioctl.__x64_sys_ioctl
-      0.00            +1.3        1.35 ±  8%  perf-profile.calltrace.cycles-pp.native_queued_spin_lock_slowpath._raw_spin_lock.percpu_counter_add_batch.ext4_es_lookup_extent.ext4_map_blocks
-      0.00            +1.5        1.48 ±  2%  perf-profile.calltrace.cycles-pp.__check_block_validity.ext4_map_blocks.ext4_iomap_begin_report.iomap_iter.iomap_fiemap
-      0.00            +1.6        1.58 ±  7%  perf-profile.calltrace.cycles-pp._raw_spin_lock.percpu_counter_add_batch.ext4_es_lookup_extent.ext4_map_blocks.ext4_iomap_begin_report
-      0.00            +3.2        3.22 ±  2%  perf-profile.calltrace.cycles-pp.fiemap_fill_next_extent.iomap_fiemap.do_vfs_ioctl.__x64_sys_ioctl.do_syscall_64
-      4.96 ±  6%      +4.8        9.72 ±  2%  perf-profile.calltrace.cycles-pp._raw_read_lock.ext4_es_lookup_extent.ext4_map_blocks.ext4_iomap_begin_report.iomap_iter
-      0.78 ±  7%      +5.4        6.22 ±  2%  perf-profile.calltrace.cycles-pp.iomap_iter_advance.iomap_iter.iomap_fiemap.do_vfs_ioctl.__x64_sys_ioctl
-      0.62 ±  6%     +50.6       51.27        perf-profile.calltrace.cycles-pp.percpu_counter_add_batch.ext4_es_lookup_extent.ext4_map_blocks.ext4_iomap_begin_report.iomap_iter
-      9.55 ±  7%     +66.3       75.88        perf-profile.calltrace.cycles-pp.ext4_es_lookup_extent.ext4_map_blocks.ext4_iomap_begin_report.iomap_iter.iomap_fiemap
-     10.12 ±  7%     +69.9       79.98        perf-profile.calltrace.cycles-pp.ext4_map_blocks.ext4_iomap_begin_report.iomap_iter.iomap_fiemap.do_vfs_ioctl
-     85.84           -85.8        0.00        perf-profile.children.cycles-pp.jbd2_transaction_committed
-     86.14           -84.0        2.10 ±  2%  perf-profile.children.cycles-pp.ext4_set_iomap
-     55.59 ±  3%     -45.8        9.83 ±  2%  perf-profile.children.cycles-pp._raw_read_lock
-     96.56           -12.1       84.50        perf-profile.children.cycles-pp.ext4_iomap_begin_report
-     97.54            -5.3       92.26        perf-profile.children.cycles-pp.iomap_iter
-     98.11            -1.3       96.84        perf-profile.children.cycles-pp.iomap_fiemap
-     98.14            -1.1       97.00        perf-profile.children.cycles-pp.do_vfs_ioctl
-     98.14            -1.1       97.06        perf-profile.children.cycles-pp.__x64_sys_ioctl
-     98.22            -0.9       97.34        perf-profile.children.cycles-pp.ioctl
-     99.42            -0.7       98.76        perf-profile.children.cycles-pp.do_syscall_64
-     99.43            -0.6       98.81        perf-profile.children.cycles-pp.entry_SYSCALL_64_after_hwframe
-      0.39 ± 21%      -0.1        0.25 ±  6%  perf-profile.children.cycles-pp.asm_sysvec_apic_timer_interrupt
-      0.14 ± 24%      -0.1        0.03 ±105%  perf-profile.children.cycles-pp.build_id__mark_dso_hit
-      0.19 ±  5%      +0.0        0.21 ±  6%  perf-profile.children.cycles-pp.__sysvec_apic_timer_interrupt
-      0.08 ± 13%      +0.0        0.11        perf-profile.children.cycles-pp.switch_fpu_return
-      0.09 ±  7%      +0.0        0.12 ±  5%  perf-profile.children.cycles-pp.update_process_times
-      0.11 ±  5%      +0.0        0.14 ±  6%  perf-profile.children.cycles-pp.__hrtimer_run_queues
-      0.10 ±  5%      +0.0        0.14 ±  5%  perf-profile.children.cycles-pp.tick_nohz_handler
-      0.00            +0.1        0.05        perf-profile.children.cycles-pp.__fdget
-      0.00            +0.1        0.05 ±  7%  perf-profile.children.cycles-pp.__update_load_avg_se
-      0.00            +0.1        0.06 ±  9%  perf-profile.children.cycles-pp.entry_SYSRETQ_unsafe_stack
-      0.00            +0.1        0.06 ±  6%  perf-profile.children.cycles-pp.syscall_return_via_sysret
-      0.00            +0.1        0.06        perf-profile.children.cycles-pp.___perf_sw_event
-      0.00            +0.1        0.06        perf-profile.children.cycles-pp.__dequeue_entity
-      0.00            +0.1        0.06 ±  6%  perf-profile.children.cycles-pp.__switch_to_asm
-      0.00            +0.1        0.06 ±  7%  perf-profile.children.cycles-pp.pick_eevdf
-      0.00            +0.1        0.07        perf-profile.children.cycles-pp.__switch_to
-      0.00            +0.1        0.08 ±  6%  perf-profile.children.cycles-pp.entry_SYSCALL_64
-      0.00            +0.1        0.08 ±  4%  perf-profile.children.cycles-pp.rseq_ip_fixup
-      0.00            +0.1        0.09 ±  4%  perf-profile.children.cycles-pp.restore_fpregs_from_fpstate
-      0.27 ± 22%      +0.1        0.37 ±  9%  perf-profile.children.cycles-pp.perf_session__process_events
-      0.27 ± 22%      +0.1        0.37 ±  9%  perf-profile.children.cycles-pp.record__finish_output
-      0.26 ± 25%      +0.1        0.36 ±  9%  perf-profile.children.cycles-pp.reader__read_event
-      0.00            +0.1        0.11 ±  3%  perf-profile.children.cycles-pp.set_next_entity
-      0.00            +0.1        0.12 ±  4%  perf-profile.children.cycles-pp.update_load_avg
-      0.08 ±  6%      +0.1        0.20        perf-profile.children.cycles-pp.do_sched_yield
-      0.00            +0.1        0.12 ±  4%  perf-profile.children.cycles-pp.put_prev_entity
-      0.02 ±141%      +0.1        0.15 ±  2%  perf-profile.children.cycles-pp.update_curr
-      0.09 ± 36%      +0.1        0.23 ± 18%  perf-profile.children.cycles-pp.process_simple
-      0.00            +0.1        0.15 ±  3%  perf-profile.children.cycles-pp.__rseq_handle_notify_resume
-      0.07 ± 57%      +0.1        0.22 ± 19%  perf-profile.children.cycles-pp.queue_event
-      0.00            +0.1        0.15 ±  4%  perf-profile.children.cycles-pp.clear_bhb_loop
-      0.00            +0.1        0.15 ±  4%  perf-profile.children.cycles-pp.stress_fiemap
-      0.07 ± 57%      +0.2        0.22 ± 19%  perf-profile.children.cycles-pp.ordered_events__queue
-      0.00            +0.2        0.16 ±  2%  perf-profile.children.cycles-pp.yield_task_fair
-      0.00            +0.2        0.16 ±  3%  perf-profile.children.cycles-pp.ext4_inode_block_valid
-      0.20 ±  5%      +0.2        0.41        perf-profile.children.cycles-pp.syscall_exit_to_user_mode
-      0.09 ± 10%      +0.3        0.38 ±  2%  perf-profile.children.cycles-pp.pick_next_task_fair
-      0.62 ±  9%      +0.3        0.95        perf-profile.children.cycles-pp.__schedule
-      0.63 ± 10%      +0.3        0.97        perf-profile.children.cycles-pp.schedule
-      0.06 ± 11%      +0.4        0.48 ±  3%  perf-profile.children.cycles-pp.iomap_to_fiemap
-      0.70 ±  9%      +0.5        1.18        perf-profile.children.cycles-pp.__x64_sys_sched_yield
-      0.13 ±  8%      +0.9        1.05 ±  3%  perf-profile.children.cycles-pp.ext4_sb_block_valid
-      0.94 ±  8%      +1.1        2.03 ±  2%  perf-profile.children.cycles-pp.__sched_yield
-      0.16 ±  7%      +1.1        1.27 ±  2%  perf-profile.children.cycles-pp._copy_to_user
-      0.20 ±  8%      +1.4        1.59 ±  2%  perf-profile.children.cycles-pp.__check_block_validity
-      0.20 ±  7%      +1.4        1.64 ±  7%  perf-profile.children.cycles-pp._raw_spin_lock
-      0.41 ±  7%      +2.9        3.30 ±  2%  perf-profile.children.cycles-pp.fiemap_fill_next_extent
-      0.80 ±  7%      +5.6        6.35 ±  2%  perf-profile.children.cycles-pp.iomap_iter_advance
-      0.64 ±  7%     +50.8       51.40        perf-profile.children.cycles-pp.percpu_counter_add_batch
-      9.60 ±  7%     +66.7       76.28        perf-profile.children.cycles-pp.ext4_es_lookup_extent
-     10.16 ±  7%     +70.2       80.39        perf-profile.children.cycles-pp.ext4_map_blocks
-     55.43 ±  3%     -45.7        9.70 ±  2%  perf-profile.self.cycles-pp._raw_read_lock
-     34.41 ±  6%     -34.4        0.00        perf-profile.self.cycles-pp.jbd2_transaction_committed
-      0.10 ± 10%      -0.0        0.07 ±  5%  perf-profile.self.cycles-pp.prepare_task_switch
-      0.08 ± 11%      +0.0        0.12 ±  4%  perf-profile.self.cycles-pp.__schedule
-      0.00            +0.1        0.05        perf-profile.self.cycles-pp.___perf_sw_event
-      0.00            +0.1        0.05        perf-profile.self.cycles-pp.__update_load_avg_se
-      0.00            +0.1        0.05        perf-profile.self.cycles-pp.update_curr
-      0.00            +0.1        0.05 ±  7%  perf-profile.self.cycles-pp.entry_SYSRETQ_unsafe_stack
-      0.00            +0.1        0.06 ±  9%  perf-profile.self.cycles-pp.entry_SYSCALL_64_after_hwframe
-      0.00            +0.1        0.06 ± 13%  perf-profile.self.cycles-pp.__sched_yield
-      0.00            +0.1        0.06 ±  6%  perf-profile.self.cycles-pp.__switch_to_asm
-      0.00            +0.1        0.07        perf-profile.self.cycles-pp.__switch_to
-      0.20 ±  7%      +0.1        0.28 ±  4%  perf-profile.self.cycles-pp._raw_spin_lock
-      0.00            +0.1        0.09 ±  4%  perf-profile.self.cycles-pp.restore_fpregs_from_fpstate
-      0.00            +0.1        0.11 ±  4%  perf-profile.self.cycles-pp.ext4_inode_block_valid
-      0.00            +0.1        0.13 ±  5%  perf-profile.self.cycles-pp.stress_fiemap
-      0.07 ± 57%      +0.1        0.22 ± 19%  perf-profile.self.cycles-pp.queue_event
-      0.00            +0.1        0.15 ±  4%  perf-profile.self.cycles-pp.clear_bhb_loop
-      0.05 ± 45%      +0.3        0.38 ±  2%  perf-profile.self.cycles-pp.__check_block_validity
-      0.03 ± 70%      +0.3        0.38 ±  3%  perf-profile.self.cycles-pp.iomap_to_fiemap
-      0.13 ±  7%      +0.9        1.00 ±  4%  perf-profile.self.cycles-pp.ext4_sb_block_valid
-      0.13 ±  7%      +0.9        1.05 ±  2%  perf-profile.self.cycles-pp.iomap_fiemap
-      0.16 ±  7%      +1.1        1.24 ±  2%  perf-profile.self.cycles-pp._copy_to_user
-      0.19 ±  7%      +1.3        1.52 ±  2%  perf-profile.self.cycles-pp.iomap_iter
-      0.29 ± 11%      +1.6        1.88 ±  2%  perf-profile.self.cycles-pp.ext4_set_iomap
-      0.25 ±  8%      +1.8        2.04 ±  2%  perf-profile.self.cycles-pp.fiemap_fill_next_extent
-      0.27 ±  8%      +1.9        2.21 ±  2%  perf-profile.self.cycles-pp.ext4_iomap_begin_report
-      0.38 ± 13%      +2.3        2.70 ±  4%  perf-profile.self.cycles-pp.ext4_map_blocks
-      0.78 ±  7%      +5.4        6.23 ±  2%  perf-profile.self.cycles-pp.iomap_iter_advance
-      3.98 ±  8%     +11.1       15.12 ±  2%  perf-profile.self.cycles-pp.ext4_es_lookup_extent
-      0.56 ±  7%     +48.9       49.48        perf-profile.self.cycles-pp.percpu_counter_add_batch
+    730290 ± 11%     +26.2%     921636 ± 13%  meminfo.Mapped
+     24673 ±  2%      +8.1%      26682 ±  3%  perf-c2c.HITM.total
+     61893            +3.6%      64151        vmstat.system.cs
+      0.28 ±  8%     -11.6%       0.25 ±  9%  sched_debug.cfs_rq:/.h_nr_running.stddev
+    196.71 ±  6%     -11.8%     173.53 ± 11%  sched_debug.cfs_rq:/.util_est.stddev
+  46304617           +11.0%   51404735        stress-ng.sockfd.ops
+    771591           +11.0%     856468        stress-ng.sockfd.ops_per_sec
+   2336146            -3.1%    2263883        stress-ng.time.involuntary_context_switches
+   1365039 ±  2%     +15.8%    1580362        stress-ng.time.voluntary_context_switches
+    183309 ± 11%     +26.1%     231069 ± 13%  proc-vmstat.nr_mapped
+   1843540            +2.4%    1888288        proc-vmstat.numa_hit
+   1611479            +2.8%    1656095        proc-vmstat.numa_local
+   2952001 ±  3%      +5.1%    3103307        proc-vmstat.pgalloc_normal
+   2282989 ±  4%      +7.5%    2454018 ±  2%  proc-vmstat.pgfree
+      0.42 ±  2%      +6.2%       0.44        perf-stat.i.MPKI
+ 1.487e+10            +1.8%  1.513e+10        perf-stat.i.branch-instructions
+  25452853            +9.2%   27794083        perf-stat.i.cache-misses
+  85628078            +8.2%   92619680        perf-stat.i.cache-references
+     63603 ±  2%      +4.2%      66264        perf-stat.i.context-switches
+     10.03            -1.7%       9.86        perf-stat.i.cpi
+     26278            -9.1%      23887        perf-stat.i.cycles-between-cache-misses
+  6.35e+10            +2.2%  6.488e+10        perf-stat.i.instructions
+      0.10            +1.5%       0.10        perf-stat.i.ipc
+      0.06 ± 46%    +140.8%       0.14 ± 40%  perf-stat.i.major-faults
+      0.40            +7.8%       0.43        perf-stat.overall.MPKI
+     10.18            -2.0%       9.97        perf-stat.overall.cpi
+     25755            -9.1%      23420        perf-stat.overall.cycles-between-cache-misses
+      0.10            +2.0%       0.10        perf-stat.overall.ipc
+ 1.423e+10            +1.3%  1.442e+10        perf-stat.ps.branch-instructions
+  49502972        +8.1e+05%  3.998e+11 ±223%  perf-stat.ps.branch-misses
+  23994964            +9.7%   26326983        perf-stat.ps.cache-misses
+  82930036            +8.2%   89756764        perf-stat.ps.cache-references
+     61357            +3.3%      63381        perf-stat.ps.context-switches
+ 6.072e+10            +1.8%   6.18e+10        perf-stat.ps.instructions
+      0.04 ± 46%    +137.6%       0.11 ± 37%  perf-stat.ps.major-faults
+ 3.653e+12            +1.6%  3.712e+12        perf-stat.total.instructions
+     48.81            -0.2       48.59        perf-profile.calltrace.cycles-pp.unix_inflight.unix_scm_to_skb.unix_stream_sendmsg.____sys_sendmsg.___sys_sendmsg
+     48.45            -0.2       48.29        perf-profile.calltrace.cycles-pp.native_queued_spin_lock_slowpath._raw_spin_lock.unix_notinflight.unix_stream_read_generic.unix_stream_recvmsg
+     48.57            -0.2       48.42        perf-profile.calltrace.cycles-pp.unix_notinflight.unix_stream_read_generic.unix_stream_recvmsg.sock_recvmsg.____sys_recvmsg
+     48.53            -0.2       48.38        perf-profile.calltrace.cycles-pp._raw_spin_lock.unix_notinflight.unix_stream_read_generic.unix_stream_recvmsg.sock_recvmsg
+     49.02            -0.1       48.88        perf-profile.calltrace.cycles-pp.unix_stream_recvmsg.sock_recvmsg.____sys_recvmsg.___sys_recvmsg.__sys_recvmsg
+     49.01            -0.1       48.87        perf-profile.calltrace.cycles-pp.unix_stream_read_generic.unix_stream_recvmsg.sock_recvmsg.____sys_recvmsg.___sys_recvmsg
+     49.02            -0.1       48.88        perf-profile.calltrace.cycles-pp.sock_recvmsg.____sys_recvmsg.___sys_recvmsg.__sys_recvmsg.do_syscall_64
+     49.04            -0.1       48.90        perf-profile.calltrace.cycles-pp.____sys_recvmsg.___sys_recvmsg.__sys_recvmsg.do_syscall_64.entry_SYSCALL_64_after_hwframe
+     49.11            -0.1       48.97        perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.recvmsg.stress_sockfd
+     49.14            -0.1       49.00        perf-profile.calltrace.cycles-pp.recvmsg.stress_sockfd
+     49.08            -0.1       48.95        perf-profile.calltrace.cycles-pp.__sys_recvmsg.do_syscall_64.entry_SYSCALL_64_after_hwframe.recvmsg.stress_sockfd
+     49.07            -0.1       48.94        perf-profile.calltrace.cycles-pp.___sys_recvmsg.__sys_recvmsg.do_syscall_64.entry_SYSCALL_64_after_hwframe.recvmsg
+     49.11            -0.1       48.98        perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.recvmsg.stress_sockfd
+      0.56 ±  3%      +0.1        0.65 ±  3%  perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.open64
+      0.56 ±  3%      +0.1        0.65 ±  3%  perf-profile.calltrace.cycles-pp.__x64_sys_openat.do_syscall_64.entry_SYSCALL_64_after_hwframe.open64
+      0.58 ±  2%      +0.1        0.67 ±  3%  perf-profile.calltrace.cycles-pp.open64
+      0.55 ±  3%      +0.1        0.64 ±  3%  perf-profile.calltrace.cycles-pp.do_sys_openat2.__x64_sys_openat.do_syscall_64.entry_SYSCALL_64_after_hwframe.open64
+      0.56 ±  3%      +0.1        0.65 ±  3%  perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.open64
+      0.17 ±141%      +0.4        0.57 ±  3%  perf-profile.calltrace.cycles-pp.path_openat.do_filp_open.do_sys_openat2.__x64_sys_openat.do_syscall_64
+      0.17 ±141%      +0.4        0.58 ±  4%  perf-profile.calltrace.cycles-pp.do_filp_open.do_sys_openat2.__x64_sys_openat.do_syscall_64.entry_SYSCALL_64_after_hwframe
+     97.19            -0.4       96.83        perf-profile.children.cycles-pp.native_queued_spin_lock_slowpath
+     97.49            -0.4       97.13        perf-profile.children.cycles-pp._raw_spin_lock
+     48.81            -0.2       48.59        perf-profile.children.cycles-pp.unix_inflight
+     48.57            -0.2       48.42        perf-profile.children.cycles-pp.unix_notinflight
+     49.02            -0.1       48.88        perf-profile.children.cycles-pp.unix_stream_read_generic
+     49.02            -0.1       48.88        perf-profile.children.cycles-pp.unix_stream_recvmsg
+     49.03            -0.1       48.89        perf-profile.children.cycles-pp.sock_recvmsg
+     49.04            -0.1       48.90        perf-profile.children.cycles-pp.____sys_recvmsg
+     49.09            -0.1       48.95        perf-profile.children.cycles-pp.__sys_recvmsg
+     49.07            -0.1       48.94        perf-profile.children.cycles-pp.___sys_recvmsg
+     49.15            -0.1       49.02        perf-profile.children.cycles-pp.recvmsg
+      0.09            +0.0        0.10        perf-profile.children.cycles-pp.__memcg_slab_free_hook
+      0.06            +0.0        0.07        perf-profile.children.cycles-pp.sock_alloc_send_pskb
+      0.12 ±  3%      +0.0        0.14 ±  2%  perf-profile.children.cycles-pp.alloc_empty_file
+      0.07 ±  8%      +0.0        0.09 ± 11%  perf-profile.children.cycles-pp.dput
+      0.07 ± 11%      +0.0        0.09 ± 12%  perf-profile.children.cycles-pp.lockref_put_return
+      0.12 ±  3%      +0.0        0.15 ±  7%  perf-profile.children.cycles-pp.__fput
+      0.22 ±  2%      +0.0        0.24 ±  5%  perf-profile.children.cycles-pp.syscall_exit_to_user_mode
+      0.17 ±  2%      +0.0        0.20 ±  6%  perf-profile.children.cycles-pp.task_work_run
+      0.18 ±  3%      +0.0        0.21 ±  6%  perf-profile.children.cycles-pp.syscall
+      0.17 ±  6%      +0.0        0.21 ±  7%  perf-profile.children.cycles-pp.do_dentry_open
+      0.02 ±141%      +0.0        0.06 ± 28%  perf-profile.children.cycles-pp.generic_perform_write
+      0.09 ±  5%      +0.0        0.14 ± 37%  perf-profile.children.cycles-pp.cmd_record
+      0.09 ±  5%      +0.0        0.14 ± 37%  perf-profile.children.cycles-pp.record__mmap_read_evlist
+      0.26 ±  5%      +0.0        0.31 ±  6%  perf-profile.children.cycles-pp.do_open
+      0.08 ±  8%      +0.0        0.13 ± 34%  perf-profile.children.cycles-pp.perf_mmap__push
+      0.09 ±  5%      +0.1        0.14 ± 35%  perf-profile.children.cycles-pp.main
+      0.09 ±  5%      +0.1        0.14 ± 35%  perf-profile.children.cycles-pp.run_builtin
+      0.50 ±  3%      +0.1        0.58 ±  3%  perf-profile.children.cycles-pp.do_filp_open
+      0.49 ±  3%      +0.1        0.57 ±  4%  perf-profile.children.cycles-pp.path_openat
+      0.56 ±  3%      +0.1        0.64 ±  3%  perf-profile.children.cycles-pp.do_sys_openat2
+      0.56 ±  3%      +0.1        0.65 ±  3%  perf-profile.children.cycles-pp.__x64_sys_openat
+      0.59 ±  2%      +0.1        0.69 ±  3%  perf-profile.children.cycles-pp.open64
+     96.75            -0.3       96.40        perf-profile.self.cycles-pp.native_queued_spin_lock_slowpath
+      0.07 ± 11%      +0.0        0.09 ± 12%  perf-profile.self.cycles-pp.lockref_put_return
 
 
 
