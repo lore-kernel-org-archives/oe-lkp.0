@@ -1,358 +1,261 @@
-Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B775313D63E
-	for <oe-lkp@lists.linux.dev>; Fri, 31 May 2024 16:51:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92551446D1
+	for <oe-lkp@lists.linux.dev>; Fri, 31 May 2024 17:46:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717174264; cv=none; b=Jmz9s25lZyx0MDyMz0FWrDgg5C1+7NgBGPP3+3jSsngfRJee0CNE4jExgWFHa4cg05o54s/zJ3Oqpij4nivAkkBYHlOPTtpOf4r/D1qIVqJ3IeiRXRB/YiCacuBenfSnsHwl6H9zAwQ7LKrVcGla+oVzuCcOrw68p28RFn5eTro=
+	t=1717177610; cv=none; b=GAK2PYMBfFDRzI1N/7gLblbbw++BfZI1bAG+15bQrlsaF/eu5ppyaKNg/FaQO9z46nkv+sI6ZgeZl40LMgDB1FDSEFfgpBqVTKKfSu1tapkMoJ40P+0tJwlqpTEY4BCzv9iJExSYVsA5xKH4hDGiCCw2KxMWSyg3tiavC4SQxn8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717174264; c=relaxed/simple;
-	bh=zFDlnUOABzbm0Y8IJoia/HMlDqx62L8DjNoj5BXjoIg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=tLtD+Dbm1OUSPnyZZHwaYd48KEXNh5T/DFiQQzrt5pHLzx8ambVJRAWbrRQQzyOFP+pWH8xV5u6uq2QZnwPFgNpEct2K24wRFtCGJ0Otf8iPcsteR7jkRqHqyDQjFn8OaCJCmXuTVcnRw2CLs6igFyD1Dc+5VgM8QLNv3vVlksA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=e2+f69ag; arc=none smtp.client-ip=209.85.167.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1717177610; c=relaxed/simple;
+	bh=mlY035+nOIiycwD3JGVb0o5bgfKibo7U33O9gnjT0VM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=LFnBfYr/bft8Jxt+YzubHwUXAdWFoLWESQdj/tsgZ96GQQ/cvC6ATRv7ZvWucg0a6kMDx0FJNmgb3CQYX7qtQBQlDbpL0Zq+jNrURvqsaGTjoVWqJJx61zNBqq1PTNBlP1zIYSJizQzD1ymsJ+N76RAswWLbJfS3jVJi/RVuYZY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=W7cGeBuj; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="e2+f69ag"
-Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-52b86cfcbcaso2267692e87.1
-        for <oe-lkp@lists.linux.dev>; Fri, 31 May 2024 09:51:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1717174261; x=1717779061; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=pTdBaIoL0Lzn6UKudMwOpLD6UeAtQ4Fc8a6qF5F/gao=;
-        b=e2+f69agJR9oRSxwQhqecY1w1qjXzrUprGftv95kuSv0BlJZ1qryVzPlNS4yNDIj/9
-         Bbdd1luD1snODwzaVyag5ujXbWgHy6DKqbVgJwxtHnsr7BofpBKrkGkIoH9jDQsfDu3V
-         AV1VAu/POuMwHYKzFy3Z4BN8EykXz97tKm1VB0JO5w5k3YqgEx9Idyxpu/CodZFpoTfV
-         JCu7/eXhGrD3QbP/gA/K4//6GUFNr3Yphpc98UYCHhjcckDs5PpyT9CvVvYhNMaerPeU
-         LCMgUcXMq+c2SxaDKMLNPyFDtEYgxKxqhHgSlxI7ZPMm9c0a/+lhtSAbTEk3VEDFNXZG
-         I1pA==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="W7cGeBuj"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1717177607;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=a1fq5u2Uv/jhpAmOMhgb6AcykR228pl7Ui+mLl+ARFQ=;
+	b=W7cGeBujBDJB2oVd8uimawbVgl37JeZOMkQm/TeIKkQlioaMYKApMemV7vA621N6g8r3wP
+	f0sxXj+Z0XrqBj6LDndnD9gElo5GxKZ5TVE8OHgBd/WbFa7lmSEsnmzOVmug/VEX8+Ph4h
+	cv+6P6nbeYKlepSlfU/LSKUPLmLDEZA=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-680-QWo71RcAPDCxAIT5hH0wDg-1; Fri, 31 May 2024 13:46:44 -0400
+X-MC-Unique: QWo71RcAPDCxAIT5hH0wDg-1
+Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-421331537d4so3503775e9.2
+        for <oe-lkp@lists.linux.dev>; Fri, 31 May 2024 10:46:44 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1717174261; x=1717779061;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=pTdBaIoL0Lzn6UKudMwOpLD6UeAtQ4Fc8a6qF5F/gao=;
-        b=fiMhXa2ZoArizU2bZb62f/67c1vKfmabaBr2N19l9eyPWPOwaOQQJaCIRtbI58DDMZ
-         1Af9zEMNiIX0ci6SDqzAblGoq8ri9/0Lenkd12BmvsoyLCXhbaPYDuAxDo08cGYdueW+
-         xCZvCfm3i9ohyy9p3TULPlr34v0Zntmmsk98UXgw6NlJgH+Y/Jw7MmlvxZGVEV6t4HGB
-         M49bwMuxTb49bcpF7za42bk+lx7cR4f8FdG/lyqJbpwzFkgRbb/d8i47zBY6d9zsyZMi
-         hbtAMYySjYRfcmJQ+OYB4PdT9ygTvb3WI3gSFKpdx+8OtvYTw7zyvi27b81mmXFvxThQ
-         4Yug==
-X-Forwarded-Encrypted: i=1; AJvYcCWFh+q8A7QLZP8iDdGwPPJmpvrCCYfhdot8IrANRoLg/mQoRcjjPC5AfGQEJ8dI5CyYmlh/JMVVJSp5fqgqeICRpVxZyJqV
-X-Gm-Message-State: AOJu0YxzLqxwujxawWVoPpZYPNjbclwuuuKMJCOdRaNRmhgxvdK+n6Bu
-	MiFJ8bkjSq8cyHYa3MiMLyKDEXJIt12/Ov5Fu4rOJX0Byh/QoKE5kkxZS6udeZ6w5an4sZ5DnJ2
-	4qFEnC4AXp1pSzM43YenfQzCWLrI=
-X-Google-Smtp-Source: AGHT+IFscK86GJQnejKA+fHrKfVDFcA+gtglkE7K7XUBHRhgjdLQUPphF2OOH9DGbQIlMY5cl0NyIVRmf/39yrAWInw=
-X-Received: by 2002:ac2:4e91:0:b0:522:2ada:c02e with SMTP id
- 2adb3069b0e04-52b896aeb75mr2014316e87.53.1717174260555; Fri, 31 May 2024
- 09:51:00 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1717177603; x=1717782403;
+        h=content-transfer-encoding:in-reply-to:organization:autocrypt
+         :content-language:from:references:cc:to:subject:user-agent
+         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=a1fq5u2Uv/jhpAmOMhgb6AcykR228pl7Ui+mLl+ARFQ=;
+        b=kU25KhLBd7W16PXk9lLSu2s9SeIiY3R6/jCwGjy23/DmtqPGvUEQjMICIOuugpR60t
+         UplMteOjoKqS5N7Pa80PecMjwbjp8rM9tRuEq7SopR6SAjo83ROfrr3AjOChHF2HyVuK
+         Io6SLrAjkxRuZioBg2cVvWBemdDuon2Li7DYeuvlxLb5USb4Yeqz/uNOqhK1JGDq+oYg
+         FoKt/D6vWIUZMzjpO5jM+ko7D7hMARpnpbJzQ4cnHOdNRrna4jQuUFaaBqVGHjacAGP3
+         3T0/vPl2hpSVde02oZw7Up8S0Sz5gue+khULY3eAMFnT8O7xLxkVLsKkBEZJhqPwxoYS
+         XhdQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWM8FVrkJLP8Ye6G7SeEjLCYaAnd5yR8p9AuaXwgX3oGa5jxcRTqwPLQWpXPxQgF80THkyr/X725Wfb7ehYp5GQGOWol5ap
+X-Gm-Message-State: AOJu0YwMt/ja0l49av8B8Re131e3v3PEMAjCZ+QHypm/7zorl2SMjt0e
+	W9Hu/he7q4FiCKFb/na6TMkQLxlvpOzVzOJ1GfffPMvXuVoYjpFoN809k3xtz0p/zHg2XGkQM3o
+	jzFtii5ezWtV9T7rBu5/oTd+BTQhCoXO+IttP/q5TxiAUJ54FfpVt2Q==
+X-Received: by 2002:a05:600c:4684:b0:420:2a22:bd3e with SMTP id 5b1f17b1804b1-4212e075641mr22424785e9.18.1717177603371;
+        Fri, 31 May 2024 10:46:43 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IHs18RxxcGCy9EFxbER9iLoqJC/2KwoQ4QwwX5uBVf2gu7EBHWSYPMWkiWRqlbJHCMNPBBxbQ==
+X-Received: by 2002:a05:600c:4684:b0:420:2a22:bd3e with SMTP id 5b1f17b1804b1-4212e075641mr22424585e9.18.1717177602878;
+        Fri, 31 May 2024 10:46:42 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c717:a000:d4df:4b8f:37d4:59e4? (p200300cbc717a000d4df4b8f37d459e4.dip0.t-ipconnect.de. [2003:cb:c717:a000:d4df:4b8f:37d4:59e4])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4212705515bsm62714235e9.1.2024.05.31.10.46.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 31 May 2024 10:46:42 -0700 (PDT)
+Message-ID: <890e5a79-8574-4a24-90ab-b9888968d5e5@redhat.com>
+Date: Fri, 31 May 2024 19:46:41 +0200
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [linus:master] [mm] efa7df3e3b:
+ kernel_BUG_at_include/linux/page_ref.h
+To: Yang Shi <shy828301@gmail.com>, kernel test robot
+ <oliver.sang@intel.com>, Peter Xu <peterx@redhat.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, Peter Xu <peterx@redhat.com>,
+ Vivek Kasireddy <vivek.kasireddy@intel.com>
+Cc: Rik van Riel <riel@surriel.com>, oe-lkp@lists.linux.dev, lkp@intel.com,
+ linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>,
+ Matthew Wilcox <willy@infradead.org>, Christopher Lameter <cl@linux.com>,
+ linux-mm@kvack.org
 References: <202405311534.86cd4043-lkp@intel.com>
-In-Reply-To: <202405311534.86cd4043-lkp@intel.com>
-From: Yang Shi <shy828301@gmail.com>
-Date: Fri, 31 May 2024 09:50:48 -0700
-Message-ID: <CAHbLzkpMhEuGkQDGWrK1LhvZ-ZxTJkV1xjmn-nRGZMH4U+F5ZA@mail.gmail.com>
-Subject: Re: [linus:master] [mm] efa7df3e3b: kernel_BUG_at_include/linux/page_ref.h
-To: kernel test robot <oliver.sang@intel.com>, Peter Xu <peterx@redhat.com>, 
-	David Hildenbrand <david@redhat.com>, Jason Gunthorpe <jgg@nvidia.com>
-Cc: Rik van Riel <riel@surriel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
-	linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, 
-	Matthew Wilcox <willy@infradead.org>, Christopher Lameter <cl@linux.com>, linux-mm@kvack.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+ <CAHbLzkpMhEuGkQDGWrK1LhvZ-ZxTJkV1xjmn-nRGZMH4U+F5ZA@mail.gmail.com>
+From: David Hildenbrand <david@redhat.com>
+Autocrypt: addr=david@redhat.com; keydata=
+ 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
+ WNyWQQ==
+Organization: Red Hat
+In-Reply-To: <CAHbLzkpMhEuGkQDGWrK1LhvZ-ZxTJkV1xjmn-nRGZMH4U+F5ZA@mail.gmail.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Fri, May 31, 2024 at 1:24=E2=80=AFAM kernel test robot <oliver.sang@inte=
-l.com> wrote:
+On 31.05.24 18:50, Yang Shi wrote:
+> On Fri, May 31, 2024 at 1:24 AM kernel test robot <oliver.sang@intel.com> wrote:
+>>
+>>
+>>
+>> Hello,
+>>
+>> kernel test robot noticed "kernel_BUG_at_include/linux/page_ref.h" on:
+>>
+>> commit: efa7df3e3bb5da8e6abbe37727417f32a37fba47 ("mm: align larger anonymous mappings on THP boundaries")
+>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>>
+>> [test failed on linus/master      e0cce98fe279b64f4a7d81b7f5c3a23d80b92fbc]
+>> [test failed on linux-next/master 6dc544b66971c7f9909ff038b62149105272d26a]
+>>
+>> in testcase: trinity
+>> version: trinity-x86_64-6a17c218-1_20240527
+>> with following parameters:
+>>
+>>          runtime: 300s
+>>          group: group-00
+>>          nr_groups: 5
+>>
+>>
+>>
+>> compiler: gcc-13
+>> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+>>
+>> (please refer to attached dmesg/kmsg for entire log/backtrace)
+>>
+>>
+>> we noticed the issue does not always happen. 34 times out of 50 runs as below.
+>> the parent is clean.
+>>
+>> 1803d0c5ee1a3bbe efa7df3e3bb5da8e6abbe377274
+>> ---------------- ---------------------------
+>>         fail:runs  %reproduction    fail:runs
+>>             |             |             |
+>>             :50          68%          34:50    dmesg.Kernel_panic-not_syncing:Fatal_exception
+>>             :50          68%          34:50    dmesg.RIP:try_get_folio
+>>             :50          68%          34:50    dmesg.invalid_opcode:#[##]
+>>             :50          68%          34:50    dmesg.kernel_BUG_at_include/linux/page_ref.h
+>>
+>>
+>>
+>> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+>> the same patch/commit), kindly add following tags
+>> | Reported-by: kernel test robot <oliver.sang@intel.com>
+>> | Closes: https://lore.kernel.org/oe-lkp/202405311534.86cd4043-lkp@intel.com
+>>
+>>
+>> [  275.267158][ T4335] ------------[ cut here ]------------
+>> [  275.267949][ T4335] kernel BUG at include/linux/page_ref.h:275!
+>> [  275.268526][ T4335] invalid opcode: 0000 [#1] KASAN PTI
+>> [  275.269001][ T4335] CPU: 0 PID: 4335 Comm: trinity-c3 Not tainted 6.7.0-rc4-00061-gefa7df3e3bb5 #1
+>> [  275.269787][ T4335] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+>> [ 275.270679][ T4335] RIP: 0010:try_get_folio (include/linux/page_ref.h:275 (discriminator 3) mm/gup.c:79 (discriminator 3))
+>> [ 275.271159][ T4335] Code: c3 cc cc cc cc 44 89 e6 48 89 df e8 e4 54 11 00 eb ae 90 0f 0b 90 31 db eb d5 9c 58 0f 1f 40 00 f6 c4 02 0f 84 46 ff ff ff 90 <0f> 0b 48 c7 c6 a0 54 d2 87 48 89 df e8 a9 e9 ff ff 90 0f 0b be 04
+> 
+> If I read this BUG correctly, it is:
+> 
+> VM_BUG_ON(!in_atomic() && !irqs_disabled());
 >
->
->
-> Hello,
->
-> kernel test robot noticed "kernel_BUG_at_include/linux/page_ref.h" on:
->
-> commit: efa7df3e3bb5da8e6abbe37727417f32a37fba47 ("mm: align larger anony=
-mous mappings on THP boundaries")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
->
-> [test failed on linus/master      e0cce98fe279b64f4a7d81b7f5c3a23d80b92fb=
-c]
-> [test failed on linux-next/master 6dc544b66971c7f9909ff038b62149105272d26=
-a]
->
-> in testcase: trinity
-> version: trinity-x86_64-6a17c218-1_20240527
-> with following parameters:
->
->         runtime: 300s
->         group: group-00
->         nr_groups: 5
->
->
->
-> compiler: gcc-13
-> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 1=
-6G
->
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
->
->
-> we noticed the issue does not always happen. 34 times out of 50 runs as b=
-elow.
-> the parent is clean.
->
-> 1803d0c5ee1a3bbe efa7df3e3bb5da8e6abbe377274
-> ---------------- ---------------------------
->        fail:runs  %reproduction    fail:runs
->            |             |             |
->            :50          68%          34:50    dmesg.Kernel_panic-not_sync=
-ing:Fatal_exception
->            :50          68%          34:50    dmesg.RIP:try_get_folio
->            :50          68%          34:50    dmesg.invalid_opcode:#[##]
->            :50          68%          34:50    dmesg.kernel_BUG_at_include=
-/linux/page_ref.h
->
->
->
-> If you fix the issue in a separate patch/commit (i.e. not just a new vers=
-ion of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202405311534.86cd4043-lkp@intel.=
-com
->
->
-> [  275.267158][ T4335] ------------[ cut here ]------------
-> [  275.267949][ T4335] kernel BUG at include/linux/page_ref.h:275!
-> [  275.268526][ T4335] invalid opcode: 0000 [#1] KASAN PTI
-> [  275.269001][ T4335] CPU: 0 PID: 4335 Comm: trinity-c3 Not tainted 6.7.=
-0-rc4-00061-gefa7df3e3bb5 #1
-> [  275.269787][ T4335] Hardware name: QEMU Standard PC (i440FX + PIIX, 19=
-96), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-> [ 275.270679][ T4335] RIP: 0010:try_get_folio (include/linux/page_ref.h:2=
-75 (discriminator 3) mm/gup.c:79 (discriminator 3))
-> [ 275.271159][ T4335] Code: c3 cc cc cc cc 44 89 e6 48 89 df e8 e4 54 11 =
-00 eb ae 90 0f 0b 90 31 db eb d5 9c 58 0f 1f 40 00 f6 c4 02 0f 84 46 ff ff =
-ff 90 <0f> 0b 48 c7 c6 a0 54 d2 87 48 89 df e8 a9 e9 ff ff 90 0f 0b be 04
 
-If I read this BUG correctly, it is:
+Yes, that seems to be the one.
+  
+> try_grab_folio() actually assumes it is in an atomic context (irq
+> disabled or preempt disabled) for this call path. This is achieved by
+> disabling irq in gup fast or calling it in rcu critical section in
+> page cache lookup path
 
-VM_BUG_ON(!in_atomic() && !irqs_disabled());
+try_grab_folio()->try_get_folio()->folio_ref_try_add_rcu()
 
-try_grab_folio() actually assumes it is in an atomic context (irq
-disabled or preempt disabled) for this call path. This is achieved by
-disabling irq in gup fast or calling it in rcu critical section in
-page cache lookup path.
+Is called (mm-unstable) from:
 
-And try_grab_folio() is used when the folio is a large folio. The
-bisected commit made the fuzzy test get PMD aligned address and large
-folio more likely than before, and process_vm_readv/writev actually
-doesn't take care of the large folio case at all. A properly aligned
-address, for example, allocated by posix_memalign, should be able to
-trigger this BUG even though the bisected commit doesn't exist.
+(1) gup_fast function, here IRQs are disable
+(2) gup_hugepte(), possibly problematic
+(3) memfd_pin_folios(), possibly problematic
+(4) __get_user_pages(), likely problematic
 
-We can't call pin_user_pages_remote() in rcu critical section since it
-may sleep, and I don't think we have GUP fast remote either if I
-remember correctly. It also doesn't make sense to disallow large folio
-for process_vm_readv/writev either.
+(1) should be fine.
 
-Maybe a new GUP flag or just use FOLL_LONGTERM to let GUP call
-try_glab_folio() in rcu critical section? Added more GUP folks in this
-loop.
+(2) is possibly problematic on the !fast path. If so, due to commit
+     a12083d721d7 ("mm/gup: handle hugepd for follow_page()") ? CCing Peter.
+
+(3) is possibly wrong. CCing Vivek.
+
+(4) is what we hit here
+
+> 
+> And try_grab_folio() is used when the folio is a large folio. The
 
 
-> All code
-> =3D=3D=3D=3D=3D=3D=3D=3D
->    0:   c3                      ret
->    1:   cc                      int3
->    2:   cc                      int3
->    3:   cc                      int3
->    4:   cc                      int3
->    5:   44 89 e6                mov    %r12d,%esi
->    8:   48 89 df                mov    %rbx,%rdi
->    b:   e8 e4 54 11 00          call   0x1154f4
->   10:   eb ae                   jmp    0xffffffffffffffc0
->   12:   90                      nop
->   13:   0f 0b                   ud2
->   15:   90                      nop
->   16:   31 db                   xor    %ebx,%ebx
->   18:   eb d5                   jmp    0xffffffffffffffef
->   1a:   9c                      pushf
->   1b:   58                      pop    %rax
->   1c:   0f 1f 40 00             nopl   0x0(%rax)
->   20:   f6 c4 02                test   $0x2,%ah
->   23:   0f 84 46 ff ff ff       je     0xffffffffffffff6f
->   29:   90                      nop
->   2a:*  0f 0b                   ud2             <-- trapping instruction
->   2c:   48 c7 c6 a0 54 d2 87    mov    $0xffffffff87d254a0,%rsi
->   33:   48 89 df                mov    %rbx,%rdi
->   36:   e8 a9 e9 ff ff          call   0xffffffffffffe9e4
->   3b:   90                      nop
->   3c:   0f 0b                   ud2
->   3e:   be                      .byte 0xbe
->   3f:   04                      .byte 0x4
->
-> Code starting with the faulting instruction
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->    0:   0f 0b                   ud2
->    2:   48 c7 c6 a0 54 d2 87    mov    $0xffffffff87d254a0,%rsi
->    9:   48 89 df                mov    %rbx,%rdi
->    c:   e8 a9 e9 ff ff          call   0xffffffffffffe9ba
->   11:   90                      nop
->   12:   0f 0b                   ud2
->   14:   be                      .byte 0xbe
->   15:   04                      .byte 0x4
-> [  275.272813][ T4335] RSP: 0018:ffffc90005dcf650 EFLAGS: 00010202
-> [  275.273346][ T4335] RAX: 0000000000000246 RBX: ffffea00066e0000 RCX: 0=
-000000000000000
-> [  275.274032][ T4335] RDX: fffff94000cdc007 RSI: 0000000000000004 RDI: f=
-fffea00066e0034
-> [  275.274719][ T4335] RBP: ffffea00066e0000 R08: 0000000000000000 R09: f=
-ffff94000cdc006
-> [  275.275404][ T4335] R10: ffffea00066e0037 R11: 0000000000000000 R12: 0=
-000000000000136
-> [  275.276106][ T4335] R13: ffffea00066e0034 R14: dffffc0000000000 R15: f=
-fffea00066e0008
-> [  275.276790][ T4335] FS:  00007fa2f9b61740(0000) GS:ffffffff89d0d000(00=
-00) knlGS:0000000000000000
-> [  275.277570][ T4335] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  275.278143][ T4335] CR2: 00007fa2f6c00000 CR3: 0000000134b04000 CR4: 0=
-0000000000406f0
-> [  275.278833][ T4335] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0=
-000000000000000
-> [  275.279521][ T4335] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0=
-000000000000400
-> [  275.280201][ T4335] Call Trace:
-> [  275.280499][ T4335]  <TASK>
-> [ 275.280751][ T4335] ? die (arch/x86/kernel/dumpstack.c:421 arch/x86/ker=
-nel/dumpstack.c:434 arch/x86/kernel/dumpstack.c:447)
-> [ 275.281087][ T4335] ? do_trap (arch/x86/kernel/traps.c:112 arch/x86/ker=
-nel/traps.c:153)
-> [ 275.281463][ T4335] ? try_get_folio (include/linux/page_ref.h:275 (disc=
-riminator 3) mm/gup.c:79 (discriminator 3))
-> [ 275.281884][ T4335] ? try_get_folio (include/linux/page_ref.h:275 (disc=
-riminator 3) mm/gup.c:79 (discriminator 3))
-> [ 275.282300][ T4335] ? do_error_trap (arch/x86/kernel/traps.c:174)
-> [ 275.282711][ T4335] ? try_get_folio (include/linux/page_ref.h:275 (disc=
-riminator 3) mm/gup.c:79 (discriminator 3))
-> [ 275.283129][ T4335] ? handle_invalid_op (arch/x86/kernel/traps.c:212)
-> [ 275.283561][ T4335] ? try_get_folio (include/linux/page_ref.h:275 (disc=
-riminator 3) mm/gup.c:79 (discriminator 3))
-> [ 275.283990][ T4335] ? exc_invalid_op (arch/x86/kernel/traps.c:264)
-> [ 275.284415][ T4335] ? asm_exc_invalid_op (arch/x86/include/asm/idtentry=
-.h:568)
-> [ 275.284859][ T4335] ? try_get_folio (include/linux/page_ref.h:275 (disc=
-riminator 3) mm/gup.c:79 (discriminator 3))
-> [ 275.285278][ T4335] try_grab_folio (mm/gup.c:148)
-> [ 275.285684][ T4335] __get_user_pages (mm/gup.c:1297 (discriminator 1))
-> [ 275.286111][ T4335] ? __pfx___get_user_pages (mm/gup.c:1188)
-> [ 275.286579][ T4335] ? __pfx_validate_chain (kernel/locking/lockdep.c:38=
-25)
-> [ 275.287034][ T4335] ? mark_lock (kernel/locking/lockdep.c:4656 (discrim=
-inator 1))
-> [ 275.287416][ T4335] __gup_longterm_locked (mm/gup.c:1509 mm/gup.c:2209)
-> [ 275.288192][ T4335] ? __pfx___gup_longterm_locked (mm/gup.c:2204)
-> [ 275.288697][ T4335] ? __pfx_lock_acquire (kernel/locking/lockdep.c:5722=
-)
-> [ 275.289135][ T4335] ? __pfx___might_resched (kernel/sched/core.c:10106)
-> [ 275.289595][ T4335] pin_user_pages_remote (mm/gup.c:3350)
-> [ 275.290041][ T4335] ? __pfx_pin_user_pages_remote (mm/gup.c:3350)
-> [ 275.290545][ T4335] ? find_held_lock (kernel/locking/lockdep.c:5244 (di=
-scriminator 1))
-> [ 275.290961][ T4335] ? mm_access (kernel/fork.c:1573)
-> [ 275.291353][ T4335] process_vm_rw_single_vec+0x142/0x360
-> [ 275.291900][ T4335] ? __pfx_process_vm_rw_single_vec+0x10/0x10
-> [ 275.292471][ T4335] ? mm_access (kernel/fork.c:1573)
-> [ 275.292859][ T4335] process_vm_rw_core+0x272/0x4e0
-> [ 275.293384][ T4335] ? hlock_class (arch/x86/include/asm/bitops.h:227 ar=
-ch/x86/include/asm/bitops.h:239 include/asm-generic/bitops/instrumented-non=
--atomic.h:142 kernel/locking/lockdep.c:228)
-> [ 275.293780][ T4335] ? __pfx_process_vm_rw_core+0x10/0x10
-> [ 275.294350][ T4335] process_vm_rw (mm/process_vm_access.c:284)
-> [ 275.294748][ T4335] ? __pfx_process_vm_rw (mm/process_vm_access.c:259)
-> [ 275.295197][ T4335] ? __task_pid_nr_ns (include/linux/rcupdate.h:306 (d=
-iscriminator 1) include/linux/rcupdate.h:780 (discriminator 1) kernel/pid.c=
-:504 (discriminator 1))
-> [ 275.295634][ T4335] __x64_sys_process_vm_readv (mm/process_vm_access.c:=
-291)
-> [ 275.296139][ T4335] ? syscall_enter_from_user_mode (kernel/entry/common=
-.c:94 kernel/entry/common.c:112)
-> [ 275.296642][ T4335] do_syscall_64 (arch/x86/entry/common.c:51 (discrimi=
-nator 1) arch/x86/entry/common.c:82 (discriminator 1))
-> [ 275.297032][ T4335] ? __task_pid_nr_ns (include/linux/rcupdate.h:306 (d=
-iscriminator 1) include/linux/rcupdate.h:780 (discriminator 1) kernel/pid.c=
-:504 (discriminator 1))
-> [ 275.297470][ T4335] ? lockdep_hardirqs_on_prepare (kernel/locking/lockd=
-ep.c:4300 kernel/locking/lockdep.c:4359)
-> [ 275.297988][ T4335] ? do_syscall_64 (arch/x86/include/asm/cpufeature.h:=
-171 arch/x86/entry/common.c:97)
-> [ 275.298389][ T4335] ? lockdep_hardirqs_on_prepare (kernel/locking/lockd=
-ep.c:4300 kernel/locking/lockdep.c:4359)
-> [ 275.298906][ T4335] ? do_syscall_64 (arch/x86/include/asm/cpufeature.h:=
-171 arch/x86/entry/common.c:97)
-> [ 275.299304][ T4335] ? do_syscall_64 (arch/x86/include/asm/cpufeature.h:=
-171 arch/x86/entry/common.c:97)
-> [ 275.299703][ T4335] ? do_syscall_64 (arch/x86/include/asm/cpufeature.h:=
-171 arch/x86/entry/common.c:97)
-> [ 275.300115][ T4335] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entr=
-y_64.S:129)
-> [  275.300622][ T4335] RIP: 0033:0x7fa2f9c65719
-> [ 275.301011][ T4335] Code: 08 89 e8 5b 5d c3 66 2e 0f 1f 84 00 00 00 00 =
-00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 =
-0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d b7 06 0d 00 f7 d8 64 89 01 48
-> All code
-> =3D=3D=3D=3D=3D=3D=3D=3D
->    0:   08 89 e8 5b 5d c3       or     %cl,-0x3ca2a418(%rcx)
->    6:   66 2e 0f 1f 84 00 00    cs nopw 0x0(%rax,%rax,1)
->    d:   00 00 00
->   10:   90                      nop
->   11:   48 89 f8                mov    %rdi,%rax
->   14:   48 89 f7                mov    %rsi,%rdi
->   17:   48 89 d6                mov    %rdx,%rsi
->   1a:   48 89 ca                mov    %rcx,%rdx
->   1d:   4d 89 c2                mov    %r8,%r10
->   20:   4d 89 c8                mov    %r9,%r8
->   23:   4c 8b 4c 24 08          mov    0x8(%rsp),%r9
->   28:   0f 05                   syscall
->   2a:*  48 3d 01 f0 ff ff       cmp    $0xfffffffffffff001,%rax         <=
--- trapping instruction
->   30:   73 01                   jae    0x33
->   32:   c3                      ret
->   33:   48 8b 0d b7 06 0d 00    mov    0xd06b7(%rip),%rcx        # 0xd06f=
-1
->   3a:   f7 d8                   neg    %eax
->   3c:   64 89 01                mov    %eax,%fs:(%rcx)
->   3f:   48                      rex.W
->
-> Code starting with the faulting instruction
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->    0:   48 3d 01 f0 ff ff       cmp    $0xfffffffffffff001,%rax
->    6:   73 01                   jae    0x9
->    8:   c3                      ret
->    9:   48 8b 0d b7 06 0d 00    mov    0xd06b7(%rip),%rcx        # 0xd06c=
-7
->   10:   f7 d8                   neg    %eax
->   12:   64 89 01                mov    %eax,%fs:(%rcx)
->   15:   48                      rex.W
->
->
-> The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20240531/202405311534.86cd4043-lk=
-p@intel.com
->
->
->
-> --
-> 0-DAY CI Kernel Test Service
-> https://github.com/intel/lkp-tests/wiki
->
+We come via process_vm_rw()->pin_user_pages_remote()->__get_user_pages()->try_grab_folio()
+
+That code was added in
+
+commit 57edfcfd3419b4799353d8cbd6ce49da075cfdbd
+Author: Peter Xu <peterx@redhat.com>
+Date:   Wed Jun 28 17:53:07 2023 -0400
+
+     mm/gup: accelerate thp gup even for "pages != NULL"
+     
+     The acceleration of THP was done with ctx.page_mask, however it'll be
+     ignored if **pages is non-NULL.
+
+
+Likely the try_grab_folio() in __get_user_pages() is wrong?
+
+As documented, we already hold a refcount. Likely we should better do a
+folio_ref_add() and sanity check the refcount.
+
+
+In essence, I think: try_grab_folio() should only be called from GUP-fast where
+IRQs are disabled.
+
+(2), (3) and (4) are possible offenders of that.
+
+
+Or am I getting it all wrong? :)
+
+-- 
+Cheers,
+
+David / dhildenb
+
