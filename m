@@ -1,226 +1,326 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com [209.85.219.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54D2617BD2
-	for <oe-lkp@lists.linux.dev>; Sat,  1 Jun 2024 06:22:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16EEA2D03B
+	for <oe-lkp@lists.linux.dev>; Sat,  1 Jun 2024 23:42:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717222949; cv=none; b=kfIovmSgNeCYmdYYhlPSYAjtvcPCTtf1xeO6A0iFBpZ46OBa2VWn98MRPLIQXabbgHzb4v80Ta4SRkxaFh0Ckqcgd4ixi4poeYjd05f11gntv4lNgt0DtDf+/aM9OKlSkGgABkA/0aWl6gFYO1gPTkUE7yTKeYpXpLC5FPWWvPU=
+	t=1717285337; cv=none; b=dxtOAOxT1iZbp3phub3D+U5n3+L5sNwl2hshVMUGCm0S4mC5uXgc6JVsz9hJ5YSUIjFJXxtpuhKmfHlhhM0PPV/uOS3hW1ivUNcj6FTIZiCE/Dv97NgJizHLvLDGRVhj38nMC32wDWuZlLmUXz44y5xmZwt2fHta1KaHB9edGd8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717222949; c=relaxed/simple;
-	bh=9R0GwhLMUtDLNu11sHRuqL9wVIgpXOud9USldFRHMZw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=b6vGKdIq9pDBd2GUldDtXBPvNLJVheO7EBB0892Fy33JJadiVsX0rD9rypZVASxQnFRVDeFGM4zjzKzt4AA8jwd35kIC8KL5Qt4tD5V1pkE4oEchmhVjcDYVIHGv71V0U4iPTT9iejflL7uLxbWYre2VbC65sf8Gz9nPM4AwSjM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=AoLKSGmo; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1717285337; c=relaxed/simple;
+	bh=C2Q025JMLBUpEvDub0Jr4L+GYZtY0NIqdi04qiUDKj4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=fKeq0Dj6rs25CUXEIQ54T3+UBsNEOllt97SQnntDnZVGyPE0J2siR10RqxvgaIHPO/BhJraIuQnWy1IDZT/XSPEpyasZzfT/jSFlwCzMquLLRuZj+YGfxFU9dGGy59ikef+yUm9jxiZ5L4j4ljyMoMtTTR8OeDCpEwGR1cKBW/Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ea6E7rCA; arc=none smtp.client-ip=209.85.219.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="AoLKSGmo"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1717222946;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=eiYnCvpjwIKcLljPRoGCKOH7KaPQrgqBq24D873qOM0=;
-	b=AoLKSGmonJfhpL9Mu1IGgIKKjx9tDpCpHNm/3Pazp96/OiWRylC6C6Tu2q12phcGECmmMS
-	LV4+jSEtv5ErB6IdrkcDWOQPaTKWnoLOxKaz2A/FmM7cF+esEVA8/bQNzdoslToIGMp7Sk
-	W8ZtV8D8T0kV5cpAmQGon8urn+ODCok=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-315-pKwwPfz1MpSdSBISuVN5Gg-1; Sat, 01 Jun 2024 02:22:25 -0400
-X-MC-Unique: pKwwPfz1MpSdSBISuVN5Gg-1
-Received: by mail-wr1-f72.google.com with SMTP id ffacd0b85a97d-35dc0949675so1949715f8f.3
-        for <oe-lkp@lists.linux.dev>; Fri, 31 May 2024 23:22:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ea6E7rCA"
+Received: by mail-yb1-f171.google.com with SMTP id 3f1490d57ef6-df7722171bcso3140003276.3
+        for <oe-lkp@lists.linux.dev>; Sat, 01 Jun 2024 16:42:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1717285335; x=1717890135; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=P2VjXVhUCGCHmfFYj3yySMRcvIBBQycaqVGy43LOv5E=;
+        b=ea6E7rCAp3bRZTh6qxy5OUvoZv4UpwJ7OX9UznVDmaMMBvxtHDCh9yOPwq0g6G58zN
+         xBvVFZ6r2bfNtMyNoKp8YNv3164R4XKoPjbklCzSN4ZVeFz4YEtXVeRIwSJv6LE6yAaT
+         qx1xMJuS1kq/WleEdDHnTmeLcgJvQtP+gGqwmSL6haFXKSG8p+QL7JRsqDqAcJr0rgeL
+         MBM1LhpIYvvDt4cGzUzO6CNTVonh2E8UuvCt1S/z/udAbfWBk/WR5tfD1WDijKzRhtWv
+         ZpmJxxSmzSX+xe8Kv9K1nlcArtNkSepKa76YioRPAx9WOgj26juThr0HclE3Jzpyzqvv
+         MRUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1717222944; x=1717827744;
-        h=content-transfer-encoding:in-reply-to:organization:autocrypt
-         :content-language:from:references:cc:to:subject:user-agent
-         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=eiYnCvpjwIKcLljPRoGCKOH7KaPQrgqBq24D873qOM0=;
-        b=jDrl2xztywf33hn1jtVMxVeratrxhOBtXBO80i4Y7T4dswgcZ+0yEyeMpkr+Vt4V+E
-         GyQ1EVoEdAQCaHScbAxmwlHW9Tn6BPcSYphYfVUw6gBWUWP+ZK8qvkCxCaYV6M13kzgn
-         yEHI2T3C27ZvioXMNpTRm994Tgi7Gvb42AZF20pPSHUtCg1XLYa2FWo821r77SJ8MTUn
-         FRcUmKNDd5N73KnQpub/Z6TjEkLhe4mQtmmRlJEKCW7z+pQDIOUSwPBf/dC48zBxo65r
-         Oxbchtf+5ELIVyuHzkMwxCltrtoFbRw+7gJDn02PaAvKQjc1A/b6gQMt4WyU4spyY9kV
-         c3hQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVbf+ajoxLC/yk4xYwFMbE9EVgFVDjR+PgKmeAaWnlE5gj2UW2adH79MaRIpOyfjJOdHU0H7M4PFmd15sa3qNI0UHEbkuwF
-X-Gm-Message-State: AOJu0Yy6Ju6Cmh5zQF6Ym1Mk6mkcKKRLB/Y3ecEZFwwgROEcLk0La9lR
-	70yabbWi5D8d3254d4SLDN35LJZhEeU8TZ9fM9PEeO6cCfhTFhmjJyUazD7L5iffx94R144jyae
-	jBfKVOrN0th+roWJUY729IGHR/sON8FOAT0hcnvUzGDhcyj9QZB3prA==
-X-Received: by 2002:a5d:6d05:0:b0:35a:62e3:7103 with SMTP id ffacd0b85a97d-35e0f25521fmr4327241f8f.2.1717222943778;
-        Fri, 31 May 2024 23:22:23 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IEaOZFW6+LxVmLGXLmLET3wO4/zBB4fe1NK7hEUUUH8rESWKPiVrmjbp6JPB0vZQPESSGUAGQ==
-X-Received: by 2002:a5d:6d05:0:b0:35a:62e3:7103 with SMTP id ffacd0b85a97d-35e0f25521fmr4327216f8f.2.1717222943250;
-        Fri, 31 May 2024 23:22:23 -0700 (PDT)
-Received: from [192.168.3.108] (p5b0c6b24.dip0.t-ipconnect.de. [91.12.107.36])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42127062f0dsm74640675e9.17.2024.05.31.23.22.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 31 May 2024 23:22:22 -0700 (PDT)
-Message-ID: <0edfcfed-e8c4-4c46-bbce-528c07084792@redhat.com>
-Date: Sat, 1 Jun 2024 08:22:21 +0200
+        d=1e100.net; s=20230601; t=1717285335; x=1717890135;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=P2VjXVhUCGCHmfFYj3yySMRcvIBBQycaqVGy43LOv5E=;
+        b=I/Kd+xm7yCZZwvD5AQijWyq/IdLf0tj3M53D+Dd4nLqzWdiK2R872Qx6etHK9zwkJ3
+         jYRSZS/nem55WvMyDw+IcVaf3gTbNlmciaJx/GrcldAhxxsYhNrHypQi4/Dpy1tQ1Qgm
+         0ABIMK3vYd20vZRMixVy0l13NQH+evhNNejnnX1u4V4iLEVRzeZ4YqNeVNBD563tQaYA
+         GfVAHhpcnaOl+9DgNKBzdMkCLoyYaernIX90c3khp4JG90FmaO2idpSTh8WhvKqO+BPE
+         Xe+Rq9+7s4GpKu0G2arcc/rt6RQv4RRH+9TY9h2Gf568HR/Wj8Mf4c6lfA8FtRBYRJrU
+         us8Q==
+X-Gm-Message-State: AOJu0Yz4L6vQhu2wrB+2oaMdyPrmkCUjc3QmQXfojnxJ09kL7hT1/tZH
+	uVLsRyD7GDGpyAUB7uXEOcYLRkiK/Tb2h2FYo53AGARVRopbMWTuGIxYkkbDRYUP79yQ2o4vlcB
+	bemHMyygAv4puUAZlsB7hin7m3l/KjvYAV/FZ
+X-Google-Smtp-Source: AGHT+IEl4vnZ3pzG1hXqHO2yqb4gyLo7eBZ2QoeXYV/IxwRNnYdGLHckW+xfm36exV4q/JFhnT+rgPF0y38W3UruBkM=
+X-Received: by 2002:a25:c5c8:0:b0:dfa:498d:cd7c with SMTP id
+ 3f1490d57ef6-dfa73bfad46mr5834958276.18.1717285334817; Sat, 01 Jun 2024
+ 16:42:14 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [linus:master] [mm] efa7df3e3b:
- kernel_BUG_at_include/linux/page_ref.h
-To: Yang Shi <shy828301@gmail.com>, Peter Xu <peterx@redhat.com>
-Cc: kernel test robot <oliver.sang@intel.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Vivek Kasireddy
- <vivek.kasireddy@intel.com>, Rik van Riel <riel@surriel.com>,
- oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
- Andrew Morton <akpm@linux-foundation.org>,
- Matthew Wilcox <willy@infradead.org>, Christopher Lameter <cl@linux.com>,
- linux-mm@kvack.org
-References: <202405311534.86cd4043-lkp@intel.com>
- <CAHbLzkpMhEuGkQDGWrK1LhvZ-ZxTJkV1xjmn-nRGZMH4U+F5ZA@mail.gmail.com>
- <890e5a79-8574-4a24-90ab-b9888968d5e5@redhat.com> <ZlpcRnuZUEYJJ0JA@x1n>
- <CAHbLzkrRw-xf819gYJwRQ=-u971LQYnB2FNJMkN=s6u-pJ4Z8g@mail.gmail.com>
- <CAHbLzkoB+oFTxtVYpeXQvko2q9HUVzUYrr83S6M6PUmXDQpkag@mail.gmail.com>
-From: David Hildenbrand <david@redhat.com>
-Autocrypt: addr=david@redhat.com; keydata=
- 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
- WNyWQQ==
-Organization: Red Hat
-In-Reply-To: <CAHbLzkoB+oFTxtVYpeXQvko2q9HUVzUYrr83S6M6PUmXDQpkag@mail.gmail.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <202405271029.6d2f9c4c-lkp@intel.com>
+In-Reply-To: <202405271029.6d2f9c4c-lkp@intel.com>
+From: Suren Baghdasaryan <surenb@google.com>
+Date: Sat, 1 Jun 2024 16:42:03 -0700
+Message-ID: <CAJuCfpHjMWj+SEUpFKk+p39NVmK1QEUhTh-g6VQciDC_jQR2Tg@mail.gmail.com>
+Subject: Re: [linus:master] [mm] cc92eba1c8: WARNING:at_kernel/rcu/tree_plugin.h:#__rcu_read_unlock
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org, 
+	Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>, 
+	Kees Cook <keescook@chromium.org>, Alexander Viro <viro@zeniv.linux.org.uk>, 
+	Alex Gaynor <alex.gaynor@gmail.com>, Alice Ryhl <aliceryhl@google.com>, 
+	Andreas Hindborg <a.hindborg@samsung.com>, Benno Lossin <benno.lossin@proton.me>, 
+	=?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
+	Boqun Feng <boqun.feng@gmail.com>, Christoph Lameter <cl@linux.com>, Dennis Zhou <dennis@kernel.org>, 
+	Gary Guo <gary@garyguo.net>, Kent Overstreet <kent.overstreet@linux.dev>, 
+	Miguel Ojeda <ojeda@kernel.org>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
+	Peter Zijlstra <peterz@infradead.org>, Tejun Heo <tj@kernel.org>, 
+	Wedson Almeida Filho <wedsonaf@gmail.com>, linux-mm@kvack.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 01.06.24 02:59, Yang Shi wrote:
-> On Fri, May 31, 2024 at 5:01 PM Yang Shi <shy828301@gmail.com> wrote:
->>
->> On Fri, May 31, 2024 at 4:25 PM Peter Xu <peterx@redhat.com> wrote:
->>>
->>> On Fri, May 31, 2024 at 07:46:41PM +0200, David Hildenbrand wrote:
->>>> try_grab_folio()->try_get_folio()->folio_ref_try_add_rcu()
->>>>
->>>> Is called (mm-unstable) from:
->>>>
->>>> (1) gup_fast function, here IRQs are disable
->>>> (2) gup_hugepte(), possibly problematic
->>>> (3) memfd_pin_folios(), possibly problematic
->>>> (4) __get_user_pages(), likely problematic
->>>>
->>>> (1) should be fine.
->>>>
->>>> (2) is possibly problematic on the !fast path. If so, due to commit
->>>>      a12083d721d7 ("mm/gup: handle hugepd for follow_page()") ? CCing Peter.
->>>>
->>>> (3) is possibly wrong. CCing Vivek.
->>>>
->>>> (4) is what we hit here
->>>
->>> I guess it was overlooked because try_grab_folio() didn't have any comment
->>> or implication on RCU or IRQ internal helpers being used, hence a bit
->>> confusing.  E.g. it has different context requirement on try_grab_page(),
->>> even though they look like sister functions.  It might be helpful to have a
->>> better name, something like try_grab_folio_rcu() in this case.
->>>
->>> Btw, none of above cases (2-4) have real bug, but we're looking at some way
->>> to avoid triggering the sanity check, am I right?  I hope besides the host
->>> splash I didn't overlook any other side effect this issue would cause, and
->>> the splash IIUC should so far be benign, as either gup slow (2,4) or the
->>> newly added memfd_pin_folios() (3) look like to have the refcount stablized
->>> anyway.
->>>
->>> Yang's patch in the other email looks sane to me, just that then we'll add
->>> quite some code just to avoid this sanity check in paths 2-4 which seems
->>> like an slight overkill.
->>>
->>> One thing I'm thinking is whether folio_ref_try_add_rcu() can get rid of
->>> its RCU limitation. It boils down to whether we can use atomic_add_unless()
->>> on TINY_RCU / UP setup too?  I mean, we do plenty of similar things
->>> (get_page_unless_zero, etc.) in generic code and I don't understand why
->>> here we need to treat folio_ref_try_add_rcu() specially.
->>>
->>> IOW, the assertions here we added:
->>>
->>>          VM_BUG_ON(!in_atomic() && !irqs_disabled());
->>>
->>> Is because we need atomicity of below sequences:
->>>
->>>          VM_BUG_ON_FOLIO(folio_ref_count(folio) == 0, folio);
->>>          folio_ref_add(folio, count);
->>>
->>> But atomic ops avoids it.
->>
->> Yeah, I didn't think of why atomic can't do it either. But is it
->> written in this way because we want to catch the refcount == 0 case
->> since it means a severe bug? Did we miss something?
-> 
-> Thought more about it and disassembled the code. IIUC, this is an
-> optimization for non-SMP kernel. When in rcu critical section or irq
-> is disabled, we just need an atomic add instruction.
-> folio_ref_add_unless() would yield more instructions, including branch
-> instruction. But I'm wondering how useful it would be nowadays. Is it
-> really worth the complexity? AFAIK, for example, ARM64 has not
-> supported non-SMP kernel for years.
-> 
-> My patch actually replaced all folio_ref_add_unless() to
-> folio_ref_add() for slow paths, so it is supposed to run faster, but
-> we are already in slow path, it may be not measurable at all. So
-> having more simple and readable code may outweigh the potential slight
-> performance gain in this case?
+On Sun, May 26, 2024 at 7:57=E2=80=AFPM kernel test robot <oliver.sang@inte=
+l.com> wrote:
+>
+>
+>
+> Hello,
+>
+> kernel test robot noticed "WARNING:at_kernel/rcu/tree_plugin.h:#__rcu_rea=
+d_unlock" on:
+>
+> commit: cc92eba1c88b1f74e0f044df2738f4e4b22f1e4e ("mm: fix non-compound m=
+ulti-order memory accounting in __free_pages")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>
+> [test failed on linus/master      6d69b6c12fce479fde7bc06f686212451688a10=
+2]
+> [test failed on linux-next/master 3689b0ef08b70e4e03b82ebd37730a03a672853=
+a]
+>
+> in testcase: boot
+>
+> compiler: clang-18
+> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 1=
+6G
+>
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+>
+>
+>
+> If you fix the issue in a separate patch/commit (i.e. not just a new vers=
+ion of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202405271029.6d2f9c4c-lkp@intel.=
+com
 
-Yes, we don't want to use atomic RMW that return values where we can use 
-atomic RMW that don't return values. The former is slower and implies a 
-memory barrier, that can be optimized out on some arcitectures (arm64 IIRC)
+Fix is posted at
+https://lore.kernel.org/all/20240601233840.617458-1-surenb@google.com/
 
-We should clean that up here, and make it clearer that the old function 
-is only for grabbing a folio if it can be freed concurrently -- GUP-fast.
-
--- 
-Cheers,
-
-David / dhildenb
-
+>
+>
+> [    2.504179][    C0] ------------[ cut here ]------------
+> [ 2.506222][ C0] WARNING: CPU: 0 PID: 1 at kernel/rcu/tree_plugin.h:431 _=
+_rcu_read_unlock (kernel/rcu/tree_plugin.h:431)
+> [    2.508117][    C0] Modules linked in:
+> [    2.509538][    C0] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 6.9.0-rc=
+4-00080-gcc92eba1c88b #1 1899fb0438e1349d8761ad4016a94aaeaa8a37df
+> [    2.512111][    C0] Hardware name: QEMU Standard PC (i440FX + PIIX, 19=
+96), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> [ 2.518194][ C0] RIP: 0010:__rcu_read_unlock (kernel/rcu/tree_plugin.h:43=
+1)
+> [ 2.520109][ C0] Code: 00 00 41 83 3e 00 75 26 43 0f b6 04 3c 84 c0 75 5f=
+ 8b 03 3d 00 00 00 40 73 10 5b 41 5c 41 5d 41 5e 41 5f 5d c3 cc cc cc cc cc=
+ <0f> 0b eb ec e8 8d 00 00 00 eb d3 89 d9 80 e1 07 80 c1 03 38 c1 7c
+> All code
+> =3D=3D=3D=3D=3D=3D=3D=3D
+>    0:   00 00                   add    %al,(%rax)
+>    2:   41 83 3e 00             cmpl   $0x0,(%r14)
+>    6:   75 26                   jne    0x2e
+>    8:   43 0f b6 04 3c          movzbl (%r12,%r15,1),%eax
+>    d:   84 c0                   test   %al,%al
+>    f:   75 5f                   jne    0x70
+>   11:   8b 03                   mov    (%rbx),%eax
+>   13:   3d 00 00 00 40          cmp    $0x40000000,%eax
+>   18:   73 10                   jae    0x2a
+>   1a:   5b                      pop    %rbx
+>   1b:   41 5c                   pop    %r12
+>   1d:   41 5d                   pop    %r13
+>   1f:   41 5e                   pop    %r14
+>   21:   41 5f                   pop    %r15
+>   23:   5d                      pop    %rbp
+>   24:   c3                      ret
+>   25:   cc                      int3
+>   26:   cc                      int3
+>   27:   cc                      int3
+>   28:   cc                      int3
+>   29:   cc                      int3
+>   2a:*  0f 0b                   ud2             <-- trapping instruction
+>   2c:   eb ec                   jmp    0x1a
+>   2e:   e8 8d 00 00 00          call   0xc0
+>   33:   eb d3                   jmp    0x8
+>   35:   89 d9                   mov    %ebx,%ecx
+>   37:   80 e1 07                and    $0x7,%cl
+>   3a:   80 c1 03                add    $0x3,%cl
+>   3d:   38 c1                   cmp    %al,%cl
+>   3f:   7c                      .byte 0x7c
+>
+> Code starting with the faulting instruction
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>    0:   0f 0b                   ud2
+>    2:   eb ec                   jmp    0xfffffffffffffff0
+>    4:   e8 8d 00 00 00          call   0x96
+>    9:   eb d3                   jmp    0xffffffffffffffde
+>    b:   89 d9                   mov    %ebx,%ecx
+>    d:   80 e1 07                and    $0x7,%cl
+>   10:   80 c1 03                add    $0x3,%cl
+>   13:   38 c1                   cmp    %al,%cl
+>   15:   7c                      .byte 0x7c
+> [    2.524112][    C0] RSP: 0000:ffff8883ae809db8 EFLAGS: 00010286
+> [    2.526188][    C0] RAX: 00000000ffffffff RBX: ffff888100ac04ac RCX: d=
+ffffc0000000000
+> [    2.528109][    C0] RDX: dffffc0000000000 RSI: 0000000000000008 RDI: f=
+fff888100ac0040
+> [    2.530810][    C0] RBP: 00000000ffffffff R08: ffffffff878bc007 R09: 1=
+ffffffff0f17800
+> [    2.532116][    C0] R10: dffffc0000000000 R11: fffffbfff0f17801 R12: 1=
+ffff11020158095
+> [    2.534888][    C0] R13: dffffc0000000000 R14: ffffea0004037400 R15: d=
+ffffc0000000000
+> [    2.536108][    C0] FS:  0000000000000000(0000) GS:ffff8883ae800000(00=
+00) knlGS:0000000000000000
+> [    2.539082][    C0] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [    2.540110][    C0] CR2: ffff88843ffff000 CR3: 00000000056ce000 CR4: 0=
+0000000000406f0
+> [    2.542812][    C0] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0=
+000000000000000
+> [    2.544109][    C0] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0=
+000000000000400
+> [    2.546833][    C0] Call Trace:
+> [    2.548013][    C0]  <IRQ>
+> [ 2.548772][ C0] ? __warn (kernel/panic.c:240 kernel/panic.c:694)
+> [ 2.550219][ C0] ? __rcu_read_unlock (kernel/rcu/tree_plugin.h:431)
+> [ 2.551982][ C0] ? __rcu_read_unlock (kernel/rcu/tree_plugin.h:431)
+> [ 2.553266][ C0] ? report_bug (lib/bug.c:?)
+> [ 2.555068][ C0] ? handle_bug (arch/x86/kernel/traps.c:239)
+> [ 2.556133][ C0] ? exc_invalid_op (arch/x86/kernel/traps.c:260)
+> [ 2.557753][ C0] ? asm_exc_invalid_op (arch/x86/include/asm/idtentry.h:62=
+1)
+> [ 2.559780][ C0] ? __rcu_read_unlock (kernel/rcu/tree_plugin.h:431)
+> [ 2.561383][ C0] page_ext_put (include/linux/rcupdate.h:339 include/linux=
+/rcupdate.h:814 mm/page_ext.c:537)
+> [ 2.562887][ C0] __free_pages (include/linux/page_ref.h:210 include/linux=
+/mm.h:1135 mm/page_alloc.c:4669)
+> [ 2.564182][ C0] ? __pfx_thread_stack_free_rcu (kernel/fork.c:346)
+> [ 2.566080][ C0] ? rcu_core (kernel/rcu/tree.c:?)
+> [ 2.567681][ C0] rcu_core (include/linux/rcupdate.h:339 kernel/rcu/tree.c=
+:2198 kernel/rcu/tree.c:2471)
+> [ 2.569661][ C0] __do_softirq (arch/x86/include/asm/jump_label.h:27 inclu=
+de/linux/jump_label.h:207 include/trace/events/irq.h:142 kernel/softirq.c:5=
+55)
+> [ 2.571612][ C0] ? __irq_exit_rcu (kernel/softirq.c:613 kernel/softirq.c:=
+635)
+> [ 2.573327][ C0] __irq_exit_rcu (kernel/softirq.c:613 kernel/softirq.c:63=
+5)
+> [ 2.574888][ C0] irq_exit_rcu (kernel/softirq.c:647)
+> [ 2.576112][ C0] sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c=
+:1043)
+> [    2.578091][    C0]  </IRQ>
+> [    2.579130][    C0]  <TASK>
+> [ 2.580154][ C0] asm_sysvec_apic_timer_interrupt (arch/x86/include/asm/id=
+tentry.h:702)
+> [ 2.582143][ C0] RIP: 0010:clear_page_rep (arch/x86/lib/clear_page_64.S:2=
+0)
+> [ 2.583920][ C0] Code: 1f 46 c0 fd e9 26 ff ff ff cc cc cc cc cc cc cc cc=
+ cc cc 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 b9 00 02 00 00 31 c0=
+ <f3> 48 ab c3 cc cc cc cc 90 90 90 90 90 90 90 90 90 90 90 90 90 90
+> All code
+> =3D=3D=3D=3D=3D=3D=3D=3D
+>    0:   1f                      (bad)
+>    1:   46 c0 fd e9             rex.RX sar $0xe9,%bpl
+>    5:   26 ff                   es (bad)
+>    7:   ff                      (bad)
+>    8:   ff cc                   dec    %esp
+>    a:   cc                      int3
+>    b:   cc                      int3
+>    c:   cc                      int3
+>    d:   cc                      int3
+>    e:   cc                      int3
+>    f:   cc                      int3
+>   10:   cc                      int3
+>   11:   cc                      int3
+>   12:   cc                      int3
+>   13:   90                      nop
+>   14:   90                      nop
+>   15:   90                      nop
+>   16:   90                      nop
+>   17:   90                      nop
+>   18:   90                      nop
+>   19:   90                      nop
+>   1a:   90                      nop
+>   1b:   90                      nop
+>   1c:   90                      nop
+>   1d:   90                      nop
+>   1e:   90                      nop
+>   1f:   90                      nop
+>   20:   90                      nop
+>   21:   90                      nop
+>   22:   90                      nop
+>   23:   b9 00 02 00 00          mov    $0x200,%ecx
+>   28:   31 c0                   xor    %eax,%eax
+>   2a:*  f3 48 ab                rep stos %rax,%es:(%rdi)                <=
+-- trapping instruction
+>   2d:   c3                      ret
+>   2e:   cc                      int3
+>   2f:   cc                      int3
+>   30:   cc                      int3
+>   31:   cc                      int3
+>   32:   90                      nop
+>   33:   90                      nop
+>   34:   90                      nop
+>   35:   90                      nop
+>   36:   90                      nop
+>   37:   90                      nop
+>   38:   90                      nop
+>   39:   90                      nop
+>   3a:   90                      nop
+>   3b:   90                      nop
+>   3c:   90                      nop
+>   3d:   90                      nop
+>   3e:   90                      nop
+>   3f:   90                      nop
+>
+> Code starting with the faulting instruction
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>    0:   f3 48 ab                rep stos %rax,%es:(%rdi)
+>    3:   c3                      ret
+>    4:   cc                      int3
+>    5:   cc                      int3
+>    6:   cc                      int3
+>    7:   cc                      int3
+>    8:   90                      nop
+>    9:   90                      nop
+>    a:   90                      nop
+>    b:   90                      nop
+>    c:   90                      nop
+>    d:   90                      nop
+>    e:   90                      nop
+>    f:   90                      nop
+>   10:   90                      nop
+>   11:   90                      nop
+>   12:   90                      nop
+>   13:   90                      nop
+>   14:   90                      nop
+>   15:   90                      nop
+>
+>
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20240527/202405271029.6d2f9c4c-lk=
+p@intel.com
+>
+>
+>
+> --
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
+>
