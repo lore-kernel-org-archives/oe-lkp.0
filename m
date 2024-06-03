@@ -1,299 +1,192 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F1468289B
-	for <oe-lkp@lists.linux.dev>; Mon,  3 Jun 2024 14:19:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.16
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717424387; cv=fail; b=LOVJMjE17ykwaL3Uuf8XRuEgssCHOlPvY9Jlc1d/Lw1NSlu2Db7huZaVvEbKR3BuaMCR3UMkad3Sm9YXXaK33EvjL93JcHVNnbtFT0yGYc+qbEzHof0koaGbPkkFV9cC94ItfZ5yRhXzkPzJMVYzeXCStwXh55OaMK/ZPtiriZo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717424387; c=relaxed/simple;
-	bh=ybnGd2hPIRPGzRlOSfnKFDeioJoUwX9dp4z6wxrWTd4=;
-	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=tYsqgdTeIys5jqvQgrp/lYBPQWvjJ9iE0+/3mK+wn04HrvjEXADkuGfaA1Iall3m+R7KUGfrhhVcV9NR6Zn4qFrcXu3AGLtLNUnjP06xHgQOHCT5RQxR8P2pL9FLC154ko41Tg0Jcrs3I1rMjgtbqiJz391uk8owcAQMUDpQTrY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lPKi+JX+; arc=fail smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B46112CDBA
+	for <oe-lkp@lists.linux.dev>; Mon,  3 Jun 2024 15:08:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1717427316; cv=none; b=DT4kjXUztLkd/I6RbaaDDZTfIQgQD5S/WLiMeRYo4DqyUQfZKZQseOfSVk3cB2qyBV5tmSrBYcURigWBE8LuNLlfIl1dtuLNOeJgQB7bNIxxMT0dL5Nl3sngNBf0a1SIuWxEEQUSCoP6W+cmrozw3F7orUKzABHShSR63XGwCIg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1717427316; c=relaxed/simple;
+	bh=7U7MTjMVkjA4JwIdG6Syu2QJBVQhOPBbxFJHqeAc4NQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 In-Reply-To:Content-Type:Content-Disposition; b=UDc6OxvBuxQzHCF4xPLhf1siuyqr7/r2z46/6wlpcBEPcVWau9GYk1ss9wyhZxUSTTeLZchztluaXnLGKqnARrTfaAjGLxaFQoDEEk/YR7VWjIemSTqW7dRRfG6rDeyfLwY99c83yCogwqdb04JFv8JBzYDN6nPQIUT83vDFfj4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=YZurQI7a; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lPKi+JX+"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1717424385; x=1748960385;
-  h=date:from:to:cc:subject:message-id:references:
-   content-transfer-encoding:in-reply-to:mime-version;
-  bh=ybnGd2hPIRPGzRlOSfnKFDeioJoUwX9dp4z6wxrWTd4=;
-  b=lPKi+JX+rktdJoc58ZmH7dupnkAImNDP+Q8vKhrpWZoIchRim2n5iZwd
-   FopsNveCM7a7D2saCHKP4R1y3T+eu/u92iokPiBqI2+Zkmzc3sjoxpcfR
-   3CWA0s55HYo8yvBXxZlr8t6kjyMzOoJAV3ySiYIeHgFQ43JciroTHOxEn
-   W4LFZJon4ZAxs2Pe6hQhFTnT/oIZcRX0NnrT47IFXmhmOkMVKjS0WB4JQ
-   vetUv59EXAVJwmKMYImtIKKeGwApFopopbhAcY89L09hMb9ajj43tWV99
-   fsi566TGsXbBQhyAal0//I9ibGsRABAx03w+3W5x9r2AgiWUkfrbBiy4p
-   Q==;
-X-CSE-ConnectionGUID: 4pCBAJG2TVSaCTe1CsGAxQ==
-X-CSE-MsgGUID: YpOHyJ+/Q7ivc3EyUNYuag==
-X-IronPort-AV: E=McAfee;i="6600,9927,11092"; a="11874243"
-X-IronPort-AV: E=Sophos;i="6.08,211,1712646000"; 
-   d="scan'208";a="11874243"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2024 07:19:45 -0700
-X-CSE-ConnectionGUID: 5IdQDcQsQu2+z1CtWjuD2g==
-X-CSE-MsgGUID: vlMYRpyOTPOYs18B6qLypg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,211,1712646000"; 
-   d="scan'208";a="37350604"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orviesa006.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 03 Jun 2024 07:19:45 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Mon, 3 Jun 2024 07:19:44 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Mon, 3 Jun 2024 07:19:43 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Mon, 3 Jun 2024 07:19:43 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.168)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Mon, 3 Jun 2024 07:19:43 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Nu0SBgQd+f0wCCJHqewPWan/2oAiKkRr84Q9GuSSj1Uzh+7TX8ijZmf/KXEgJw3KGPmIaf/iODV00dnHfWuIxSxffzdVtPsgs/3I+au43kXDaz0AginEjjmt4Fo0nRJbc5dFBVzFS2lJHFuEQLg83sqNQ06pQEyxOkkU2JNI5YlP94qx0vfbzXzyjIQc6DNGasmPyXZBE+RJqscNGTH+7jhj43mo/pcElif76Vi/Jv4/Alo/wxGxvTD2NUlSfeA8TTguip1MASDwfs8Vyy4954nS0LD9JkHBD9SiWDcYwjKXkP9rJtCz7HiB/fNbg88j5X42mmaY0AmbyADlibaIcg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Cz0ACSvCbf4KEpVSu2o1jQNZuZh5UDgW9N7fESv85Sw=;
- b=ajt0BbmBx49XSniPICsg6rYzIvneeR/m+kUh9a2bpVxC58c23lwZ8oV9CnObnPUaKQR2YzjgO1DBteg72MmWKpSLjpnlHsAwhrgCneCXi65I3bkf5ufESdwIXETnVo9KFlWBiUfp96ZOZ/L8GE9t6TMmrN0MjO1S17a1ftWdqt5XLxSf3zf+x2MQn1DlgJGIOcIGDg+BFP4a65MFWL1lRXb6oHw7iWIJVNwJ2FBjilAr/q75Ud96RuXBvuwXCIXzjR9L7PiMta7GhnwYvpCSgJ8a3RuS+oPid/R1OZuSUl9HwXbYlkZhaUr2Y9BAtnEBmi0507HtJgznEaugS1eqFg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by CYYPR11MB8430.namprd11.prod.outlook.com (2603:10b6:930:c6::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7633.21; Mon, 3 Jun
- 2024 14:19:36 +0000
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c%2]) with mapi id 15.20.7633.021; Mon, 3 Jun 2024
- 14:19:36 +0000
-Date: Mon, 3 Jun 2024 22:19:24 +0800
-From: Oliver Sang <oliver.sang@intel.com>
-To: Ian Rogers <irogers@google.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>,
-	<linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>, "Weilin
- Wang" <weilin.wang@intel.com>, Peter Zijlstra <peterz@infradead.org>, "Ingo
- Molnar" <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>,
-	Namhyung Kim <namhyung@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
-	Alexander Shishkin <alexander.shishkin@linux.intel.com>, Jiri Olsa
-	<jolsa@kernel.org>, Adrian Hunter <adrian.hunter@intel.com>, Kan Liang
-	<kan.liang@linux.intel.com>, Jing Zhang <renyu.zj@linux.alibaba.com>, "John
- Garry" <john.g.garry@oracle.com>, Sandipan Das <sandipan.das@amd.com>,
-	<oliver.sang@intel.com>
-Subject: Re: [PATCH v2 2/2] perf jevents: Autogenerate empty-pmu-events.c
-Message-ID: <Zl3Q7AtOWY8ZCcg8@xsang-OptiPlex-9020>
-References: <20240525013021.436430-2-irogers@google.com>
- <202405311548.1e881dea-oliver.sang@intel.com>
- <CAP-5=fX7ZyT82=W8uSZbT7c76E5+1JaoR5-y_gcj7A_=Js1YfA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAP-5=fX7ZyT82=W8uSZbT7c76E5+1JaoR5-y_gcj7A_=Js1YfA@mail.gmail.com>
-X-ClientProxiedBy: SG2PR01CA0195.apcprd01.prod.exchangelabs.com
- (2603:1096:4:189::17) To LV3PR11MB8603.namprd11.prod.outlook.com
- (2603:10b6:408:1b6::9)
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="YZurQI7a"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1717427314;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=7WTDKaHtkHDNxGHyLp1oUvN+cHT5VenD6c5Rq/FFi44=;
+	b=YZurQI7a4efG9PmRkbEGTprWjmnROzDzFlX3S7+AcGhXO9cfeEIZFkeEknVhG8LIH1pSuN
+	1FTVy6myNCO0txNALmhksEItbSPb/li0+o8kBDiV/d9+Xbf5U+gh1ZiAVrrAFolZy/0kpc
+	jkjJ91Vsmvx3E1arVaCXRVcehakrqeE=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-18-y3vxm1cNNA-RFvvuMxO89Q-1; Mon, 03 Jun 2024 11:08:31 -0400
+X-MC-Unique: y3vxm1cNNA-RFvvuMxO89Q-1
+Received: by mail-qk1-f200.google.com with SMTP id af79cd13be357-795041d6c8bso6480685a.1
+        for <oe-lkp@lists.linux.dev>; Mon, 03 Jun 2024 08:08:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1717427310; x=1718032110;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=7WTDKaHtkHDNxGHyLp1oUvN+cHT5VenD6c5Rq/FFi44=;
+        b=skGuQRWpQJ0l3gzDWm+NfHy4MpH3kI4Bto5lqxuY2vaUR+AsGc0SUV+2N7sJ38T3un
+         ddxw7/4AOdKjfZdqV8Si9C8/WhQtZvm70UnVj/FE34jxU3tv/WPa5a9qAVnP851AysW9
+         AAuchKnB2gD7VUmK2mgSt0VCtjobYaWLIVanF6BV94OPNXECG0m3ocXZEb+GZOD/QHhs
+         rY6QdEJ/AIQfDpo9tiEPfXHwiCWMAn2F+6UqPil76fyBd6mHVX1Z7ba0JEhCnSOgQ9rq
+         CHpigRxspJEd91ynR1ZiTCor0DfYzi5hTy/LEe2DMBleGnlpakgWDubSlNf0lEI0lMn/
+         Xvjg==
+X-Forwarded-Encrypted: i=1; AJvYcCXImzpqr+dpF8MR+d32M9qSixrLBF2RV14Rl7oCUXYq7QYIFfLGtLQU9cSNfPDWryVW/S7pmkRCwTLjX/NMKs7w4GyHeCws
+X-Gm-Message-State: AOJu0YxaWg2adC+7ooz+lHv0xml1PT7Ct+iwoLR79js62BkQbpwWotc4
+	ePiAXF6QExVMviXYoqrivgM47xuWxlt/XrnAXeBpm4MtK4728eIih1Up7+RiZ9RiX9DmvQFgXbn
+	UBT9LOVSqYuIHQacL04Gcx+ziRcV3emFGb4ZGovMO/qOielHk+SYA2Q==
+X-Received: by 2002:a05:620a:2603:b0:794:c6a0:258a with SMTP id af79cd13be357-794f5cd378cmr1002215085a.4.1717427310244;
+        Mon, 03 Jun 2024 08:08:30 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IHzP9CEiIlpxklGaIH1jTwQZOdprD5lMjaARwntIlugqLv198+69+4KsoerwcBYSxj6OBsDvQ==
+X-Received: by 2002:a05:620a:2603:b0:794:c6a0:258a with SMTP id af79cd13be357-794f5cd378cmr1002207985a.4.1717427309501;
+        Mon, 03 Jun 2024 08:08:29 -0700 (PDT)
+Received: from x1n (pool-99-254-121-117.cpe.net.cable.rogers.com. [99.254.121.117])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-794f3172d94sm289850185a.99.2024.06.03.08.08.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 03 Jun 2024 08:08:29 -0700 (PDT)
+Date: Mon, 3 Jun 2024 11:08:26 -0400
+From: Peter Xu <peterx@redhat.com>
+To: David Hildenbrand <david@redhat.com>
+Cc: Yang Shi <shy828301@gmail.com>,
+	kernel test robot <oliver.sang@intel.com>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Vivek Kasireddy <vivek.kasireddy@intel.com>,
+	Rik van Riel <riel@surriel.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, linux-kernel@vger.kernel.org,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Matthew Wilcox <willy@infradead.org>,
+	Christopher Lameter <cl@linux.com>, linux-mm@kvack.org
+Subject: Re: [linus:master] [mm] efa7df3e3b:
+ kernel_BUG_at_include/linux/page_ref.h
+Message-ID: <Zl3cakfiRsPQDb8q@x1n>
+References: <202405311534.86cd4043-lkp@intel.com>
+ <CAHbLzkpMhEuGkQDGWrK1LhvZ-ZxTJkV1xjmn-nRGZMH4U+F5ZA@mail.gmail.com>
+ <890e5a79-8574-4a24-90ab-b9888968d5e5@redhat.com>
+ <ZlpcRnuZUEYJJ0JA@x1n>
+ <CAHbLzkrRw-xf819gYJwRQ=-u971LQYnB2FNJMkN=s6u-pJ4Z8g@mail.gmail.com>
+ <CAHbLzkoB+oFTxtVYpeXQvko2q9HUVzUYrr83S6M6PUmXDQpkag@mail.gmail.com>
+ <0edfcfed-e8c4-4c46-bbce-528c07084792@redhat.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|CYYPR11MB8430:EE_
-X-MS-Office365-Filtering-Correlation-Id: f9cb178b-4d20-41f8-bf6a-08dc83d83245
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230031|1800799015|7416005|366007|376005;
-X-Microsoft-Antispam-Message-Info: =?utf-8?B?b2VSZkhmYkp4a0NKYzN4SmFLR2FLZnJHVW1hbFdFOFZEelQzR3NNNHJIdFcr?=
- =?utf-8?B?QmtEcllOaFhLQTY1MmZyQmxNMjZOaWJXVjFnOWRwRmFMakJobW5KNmZvMzBs?=
- =?utf-8?B?cEJmZVJaTmt1K291SmdrbXNlUWtNcUJUTzhyakZGODMwQ0JRQkVtR0RjMkhQ?=
- =?utf-8?B?WHdkZ3FXMU0rZGt3b1Qvc2hnQjYrS0JLRlhDTThBMGhZRXJLWXFJV2ZaYklQ?=
- =?utf-8?B?dGZwa1FlOUtweHQwSHdIQmN6MFJ5bkFFTjVBblc3anhIeWVRSU9LQnl0Umhl?=
- =?utf-8?B?ZFBQWFJRQlc0V2lYajhQVU1HUkZpNjZZQmhiNE43c2NudjFhUzRSd0ZVdita?=
- =?utf-8?B?WUo3UERZY3F6QjZINU9OT3Rramo0WG9iQUtEZjhWRkluMzExd3NJb09leTJl?=
- =?utf-8?B?Wmp5S2Q0S1ZvUjlsWjRCYk5xa1pyM2FpZ3RXZW0zKzJZSE85cUdKbElQVS8y?=
- =?utf-8?B?TnRtYTAvbUVHWUYvZGMwOXpSN21SS0tXdWhWMGJqNFRrOVhRc0pYaUVVSUVx?=
- =?utf-8?B?Q2l2OGtpdk9vQXdWUEVaUGVWZXU4bWplVnVPOWZVSElhZ0FIditFTHhkaXoy?=
- =?utf-8?B?cHFRYWV6eG9PNlIvY0hFYTZuWVhhN2FzVVRxZ2diWmVHelprdjB4SzZRa0NR?=
- =?utf-8?B?Z1JWQUsrajZ1ZUhpOG1jRXl5UlYydVZFZE1EME85c2Z5dUJ1SUdLcnpDK255?=
- =?utf-8?B?NDdkZVo4R3lkOXdlOFk5WDVqMi9QNzlxbDc5ZWp5VHpXSUFnSTZiV0tIVHhi?=
- =?utf-8?B?Qk04YWRRZlRveTlGN053WDh1WjFNZzFIZ1o4c2JNZDRmSzBES01GeXR0M3NV?=
- =?utf-8?B?Y1l5bzBSWG9URjlUMUZSVlMrNkRzc0JKSHZPR1BOR0NRazBYVXhjZXFsVW93?=
- =?utf-8?B?dlVhR0x0dk9SR3l5b21ZcVZubEg1SDk1RmxhRmhWU1AvSExZYjNuUjZQQXJm?=
- =?utf-8?B?aHRBT3ZCM0U5YTBnUUVtcjBJU2ZlbjdhMUdtSjdZaFV0bS9rdFlVU3E3MXJi?=
- =?utf-8?B?Mm10czVkMFV2dmowdThDbTMwUFoyN2J0WHpRdG5jMmJlUTFuMGFHaCtxTDAy?=
- =?utf-8?B?MEdBcjZIcGphWXlla0pscUxXcVR4cnAvU2tGS3REVUdUMnNOMklRMTMrQ1NV?=
- =?utf-8?B?R3NyZ1hWUVByclo5aGZMK3dpZnR4K3AyVnRpSXoyUHpLYk1TSnVvUjRRaGdv?=
- =?utf-8?B?REhrcG9ySXJVUnpiRkIyb0R0cC9RWDBGUE5FMEpqMWFvTEpqSXczMXZtU3hs?=
- =?utf-8?B?bmdDMFBlTFA5YlVCUlJxV2FkTU95Tyt4TEQ5bnVEeXFSc2xyTHN3bzJUVEh1?=
- =?utf-8?B?MzlMdnJsVFp1V0owR3A2WTJ3OGFKM28yWW5BcXIrSW93MmZoaksvS3FrejNI?=
- =?utf-8?B?TFdoR3l2UWNrQm1Lb0VvdTJNbTRIYURvNjlKc2FqMkJGbGhwNFFWa010Y3Q4?=
- =?utf-8?B?dnhBQzZtN1dvc1dOY0RDUTlFNzV0cWpnMXAyckxkazVYRlBEN2pTK1F2STB2?=
- =?utf-8?B?dHNOQnh4cTV5MEtsYTROMlR5SjUxRzFoZEhpb1gyZWxJTVhmbVpKb1hOMjFl?=
- =?utf-8?B?RGx0UTlaNTd3UGZvWE5ZZlhwZEVXNWxZRkVkaGZLbWFsN0NhQkdUcVRqRkJn?=
- =?utf-8?Q?C0vWt5EK5rZFe5+HnxkQsp7QetWIjt/MK7KA0Ln5hgOE=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(7416005)(366007)(376005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?bEhlWEIwOThlRmZodlVKK1Z5dHhGNHBjT203WkJIOWdGK0NLbldBa0pSclBs?=
- =?utf-8?B?WktHWkwrd0VwMTE0bXFrZVVuaUtNY3hEYzF4MjNQMTlOQ1owUVV2TkNTZmxH?=
- =?utf-8?B?RU1LR2VXZWZoSEJVRWZtd1c4azhDa0E0MURHQXk0WDFQYmU4K2VkQkRkM1FI?=
- =?utf-8?B?cFFmV2NGRVJ0aGlyYVh1M1JTMjkrK1lpS1pOWUxUZUk1OEpkbmxEYXhhVWRt?=
- =?utf-8?B?cmp0S1JnaVlNVmc3ZHQvcjNwb1FDSmIwcFlNYUxHUzJWQSsyQjUzbTNsS0Ry?=
- =?utf-8?B?OVJ5enJiMEJVVWhEMndYY2E0ZzJteHc5emQzNjdzUk1tUzRKaG12M1pWVVVZ?=
- =?utf-8?B?NGU4eXhMT25iRWJqZnR1NjRNdGVRNE1hR2pBTkJzQXRwUkJHYnQxVUE2bW5z?=
- =?utf-8?B?UkRFakdteVlxUWdERVdscit5UCtBVU9nZFQ3RmNOa2Z0Qks1eGRVMDV0NUZQ?=
- =?utf-8?B?RHAvOHpSSFFheVlSYW9UVHBOaUNwa050SURLZEE1TFRmeHB2aklRUTl5NFlL?=
- =?utf-8?B?VGJudlozZ0I4V0pGZERkeVFlWTdaTmk3dk9BYXMrODN6VzFCZ3hqeldlRkY0?=
- =?utf-8?B?S29jei8xV1ZTcXIyZ0xPZG1JTVJZUVBGWDRyRFNmQUJSRGhyRnhRaXlVQU9w?=
- =?utf-8?B?ZnUrS2NWNzJXQ0VwT2pCamdZdmdoNEd2VTZuZEp4WER1bWkxN290K2VQaGQy?=
- =?utf-8?B?VHU5R2N4YXNzbFhoWER2Yk1FazN5cW5USzJPeEMvVmxXNHNPbWhDTEEzNnhu?=
- =?utf-8?B?UFpNaTRZVk1uRnJYKytwanUzSEQrN2s2TXFyUWYvZEszOCtQUC94Tit0OTdU?=
- =?utf-8?B?M1JST0xaNVg0NmZYLzhYNVIrbUhkblArYURjU0RZQzZqY1djTUthOEVuWG5k?=
- =?utf-8?B?dzd4R2Z4N2hTbWZ1eCttSnI3MHpMN01vTGR0d2hhZ3hUYnFXZGwvM2M1NXdJ?=
- =?utf-8?B?aFowVWs2cGZNSWZlbE5UZ2cwUGVVSSt6MlNKZldycDRQeWwvbUhab1ErcWll?=
- =?utf-8?B?cEs0MlYrTTgzWkQ5akc0QzdDNGswRXVrZUhEQVRvWDFDQWFrWTRLY09DUnNp?=
- =?utf-8?B?QmxKdnNsVE1aaUlCRW80LzdPNHZmNFplOVNHVHE0bDBtZTVtRUhOS1hKMXN4?=
- =?utf-8?B?WCtod1czWWJFNzZjYklMMDY5MFNaRkYvRFd2SHN3d05VUno4dFM1dUUyYzc1?=
- =?utf-8?B?bHYrSCtRakplcElLWVJjUEE4d2pabzFaVDVqd1N2YjNxTWpzdS8vVWJiZnkx?=
- =?utf-8?B?a2NIRm1Jbi9Sb1ZLcHNzQWxTZmg5eVAyYTVpUVNWbUwxMUFjQ1dPZ29NYUoy?=
- =?utf-8?B?ZldHTjdwUnJ6clNadUFMMzg2a3VtbFFUTGRzeTQ4Q1NvaVVjSWkvc3BtNnRD?=
- =?utf-8?B?WlA2T0ZJdDBvbVFvd0xhbkVXL25GWktjcElHSmVLTVdaaFoxdnBGNUdaTElZ?=
- =?utf-8?B?dHZNL2NQQTh3aWo3S2JwWW51ZXNYRzFNZkgxbGZtbjNYeVEzQkpoa1p2d2Jv?=
- =?utf-8?B?K00rV012ajlwbVNmczFMYXMyankwY08zTWg0WHpCMDhUb2szQWhZS3NyTVN1?=
- =?utf-8?B?RUJsVE1FaGVycFdkcFNrNS9GNHJKc0crYmNIbk1xb2JyZUdadDJjc2NteCsr?=
- =?utf-8?B?ZWw0K2U0OXd3VDlEOG0xbWMzWVNlUWlYVEJ5RHBNTXQ3SGVsQ0ZCQXFwcjRm?=
- =?utf-8?B?K1ZwWW5DbUlBa2FmSjRBbmVmRDVwMHBtdGk2SjkwcmFkd2FIYjV4cjJXWVNs?=
- =?utf-8?B?YVNiVjJZY2t3QUNUR1FlWkxRTThxZkU1cHB2U0EwdU1XcDhaalVwcjFiWWUz?=
- =?utf-8?B?T3BNTi8ra1lrb0g5MkNsMzh5R0NsRmJCVHFuTWFtRE9YRUpueExhVHRGcnU5?=
- =?utf-8?B?aTVnS3c3UWl3KzVwbTFKdGdCVWtnc0wzQ1Bid1BvQWNsOGF4M0J6V3EwOWRn?=
- =?utf-8?B?dEw4YjdqeTMrMEkzYmc4a0J3cm91a2FsOG5LZWp0WnhJWENnRGlEVXp3OUJP?=
- =?utf-8?B?V0dSN0ZFNVhzVERjUlBUM0RyaVFXaDVGbUFnektXRmJsRWR4ZHd1K29QdWp3?=
- =?utf-8?B?ZHNsNzE0c1kwNThobmpmbDUycWdSOGRiTmRvVitISURIUlFkdDB5cVhVUkFP?=
- =?utf-8?B?WXZscy9YV3VSMy9rM0JFRnVQOVRBQ2FiT05vY0J4NEY2alFkUWVudjdxblk0?=
- =?utf-8?B?TGc9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: f9cb178b-4d20-41f8-bf6a-08dc83d83245
-X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jun 2024 14:19:36.2494
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: x57F2UGLeffCWT/STguFLpbw3iZwy3khYZWJ2z9LSPbf6Om1/cZaAMpDSKMsGOZXmgTmmT5/BjVlNOjBIEZQlw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CYYPR11MB8430
-X-OriginatorOrg: intel.com
+In-Reply-To: <0edfcfed-e8c4-4c46-bbce-528c07084792@redhat.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
-hi, Ian,
-
-On Fri, May 31, 2024 at 09:38:01AM -0700, Ian Rogers wrote:
-> On Fri, May 31, 2024 at 1:16 AM kernel test robot <oliver.sang@intel.com> wrote:
-> >
-> >
-> > hi, Ian Rogers,
-> >
-> > we actually want to seek your advice. in our env, there is no problem to build
-> > parent.
-> >
-> > * 3249f8b84526d (linux-review/Ian-Rogers/perf-jevents-Autogenerate-empty-pmu-events-c/20240525-093240) perf jevents: Autogenerate empty-pmu-events.c
-> > * 7d88bd0d22746 perf jevents: Use name for special find value   <--- parent
-> >
-> > however, failed to build perf upon 3249f8b84526d. but there is not many useful
-> > information in below detail log.
-> >
-> > is there any dependency or env setting for us to build this commit? Thanks!
+On Sat, Jun 01, 2024 at 08:22:21AM +0200, David Hildenbrand wrote:
+> On 01.06.24 02:59, Yang Shi wrote:
+> > On Fri, May 31, 2024 at 5:01 PM Yang Shi <shy828301@gmail.com> wrote:
+> > > 
+> > > On Fri, May 31, 2024 at 4:25 PM Peter Xu <peterx@redhat.com> wrote:
+> > > > 
+> > > > On Fri, May 31, 2024 at 07:46:41PM +0200, David Hildenbrand wrote:
+> > > > > try_grab_folio()->try_get_folio()->folio_ref_try_add_rcu()
+> > > > > 
+> > > > > Is called (mm-unstable) from:
+> > > > > 
+> > > > > (1) gup_fast function, here IRQs are disable
+> > > > > (2) gup_hugepte(), possibly problematic
+> > > > > (3) memfd_pin_folios(), possibly problematic
+> > > > > (4) __get_user_pages(), likely problematic
+> > > > > 
+> > > > > (1) should be fine.
+> > > > > 
+> > > > > (2) is possibly problematic on the !fast path. If so, due to commit
+> > > > >      a12083d721d7 ("mm/gup: handle hugepd for follow_page()") ? CCing Peter.
+> > > > > 
+> > > > > (3) is possibly wrong. CCing Vivek.
+> > > > > 
+> > > > > (4) is what we hit here
+> > > > 
+> > > > I guess it was overlooked because try_grab_folio() didn't have any comment
+> > > > or implication on RCU or IRQ internal helpers being used, hence a bit
+> > > > confusing.  E.g. it has different context requirement on try_grab_page(),
+> > > > even though they look like sister functions.  It might be helpful to have a
+> > > > better name, something like try_grab_folio_rcu() in this case.
+> > > > 
+> > > > Btw, none of above cases (2-4) have real bug, but we're looking at some way
+> > > > to avoid triggering the sanity check, am I right?  I hope besides the host
+> > > > splash I didn't overlook any other side effect this issue would cause, and
+> > > > the splash IIUC should so far be benign, as either gup slow (2,4) or the
+> > > > newly added memfd_pin_folios() (3) look like to have the refcount stablized
+> > > > anyway.
+> > > > 
+> > > > Yang's patch in the other email looks sane to me, just that then we'll add
+> > > > quite some code just to avoid this sanity check in paths 2-4 which seems
+> > > > like an slight overkill.
+> > > > 
+> > > > One thing I'm thinking is whether folio_ref_try_add_rcu() can get rid of
+> > > > its RCU limitation. It boils down to whether we can use atomic_add_unless()
+> > > > on TINY_RCU / UP setup too?  I mean, we do plenty of similar things
+> > > > (get_page_unless_zero, etc.) in generic code and I don't understand why
+> > > > here we need to treat folio_ref_try_add_rcu() specially.
+> > > > 
+> > > > IOW, the assertions here we added:
+> > > > 
+> > > >          VM_BUG_ON(!in_atomic() && !irqs_disabled());
+> > > > 
+> > > > Is because we need atomicity of below sequences:
+> > > > 
+> > > >          VM_BUG_ON_FOLIO(folio_ref_count(folio) == 0, folio);
+> > > >          folio_ref_add(folio, count);
+> > > > 
+> > > > But atomic ops avoids it.
+> > > 
+> > > Yeah, I didn't think of why atomic can't do it either. But is it
+> > > written in this way because we want to catch the refcount == 0 case
+> > > since it means a severe bug? Did we miss something?
+> > 
+> > Thought more about it and disassembled the code. IIUC, this is an
+> > optimization for non-SMP kernel. When in rcu critical section or irq
+> > is disabled, we just need an atomic add instruction.
+> > folio_ref_add_unless() would yield more instructions, including branch
+> > instruction. But I'm wondering how useful it would be nowadays. Is it
+> > really worth the complexity? AFAIK, for example, ARM64 has not
+> > supported non-SMP kernel for years.
+> > 
+> > My patch actually replaced all folio_ref_add_unless() to
+> > folio_ref_add() for slow paths, so it is supposed to run faster, but
+> > we are already in slow path, it may be not measurable at all. So
+> > having more simple and readable code may outweigh the potential slight
+> > performance gain in this case?
 > 
-> Hi Oliver,
+> Yes, we don't want to use atomic RMW that return values where we can use
+> atomic RMW that don't return values. The former is slower and implies a
+> memory barrier, that can be optimized out on some arcitectures (arm64 IIRC)
 > 
-> Thanks for the report and the work testing! Seeing the output:
-> 
-> [..snip..]
-> > --- pmu-events/empty-pmu-events.c       2024-05-30 08:20:10.000000000 +0000
-> > +++ pmu-events/test-empty-pmu-events.c  2024-05-30 15:55:37.332495538 +0000
-> > @@ -136,7 +136,7 @@
-> >  { 2623 }, /* M3\000\0001 / M3\000\000\000\000\000\000\000\00000 */
-> >  { 2078 }, /* cache_miss_cycles\000group1\000dcache_miss_cpi + icache_miss_cycles\000\000\000\000\000\000\000\00000 */
-> >  { 1947 }, /* dcache_miss_cpi\000\000l1d\\-loads\\-misses / inst_retired.any\000\000\000\000\000\000\000\00000 */
-> > -{ 2011 }, /* icache_miss_cycles\000\000l1i\\-loads\\-misses / inst_retiredany\000\000\000\000\000\000\000\00000 */
-> > +{ 2011 }, /* icache_miss_cycles\000\000l1i\\-loads\\-misses / inst_retired.any\000\000\000\000\000\000\000\00000 */
-> >
-> >  };
-> >
-> > @@ -373,7 +373,7 @@
-> [..snip..]
-> 
-> It appears the version of empty-pmu-events.c the patch adds and the
-> version generated in your test configuration are differing because of
-> whitespace. Perhaps a hex editor will show what the exact difference
-> is, it must relate to locales or something. Like you mention this
-> could be resolved by an env change.
-> 
-> > The kernel config and materials to reproduce are available at:
-> > https://download.01.org/0day-ci/archive/20240531/202405311548.1e881dea-oliver.sang@intel.com
-> 
-> I didn't see the generated test-empty-pmu-events.c there and so
-> couldn't follow up on the locale/env exploration. I wonder that a
-> suitable workaround is to change from the patch:
-> 
-> +$(EMPTY_PMU_EVENTS_TEST_LOG): $(EMPTY_PMU_EVENTS_C) $(TEST_EMPTY_PMU_EVENTS_C)
-> +       $(call rule_mkdir)
-> +       $(Q)$(call echo-cmd,test)diff -u $? 2> $@ || (cat $@ && false)
-> 
-> to instead of invoking "diff -u" to invoke "diff -w -u", that is to
-> ignore whitespace. I can send a v3 with this.
+> We should clean that up here, and make it clearer that the old function is
+> only for grabbing a folio if it can be freed concurrently -- GUP-fast.
 
-I tried below patch
+Note again that this only affects TINY_RCU, which mostly implies
+!PREEMPTION and UP.  It's a matter of whether we prefer adding these bunch
+of code to optimize that.
 
-commit a79a41133a41adc2d69c8f603c7d880b3796cbf7 
-Author: 0day robot <lkp@intel.com>
-Date:   Mon Jun 3 16:35:45 2024 +0800
+Also we didn't yet measure that in a real workload and see how that
+"unless" plays when buried in other paths, but then we'll need a special
+kernel build first, and again I'm not sure whether it'll be worthwhile.
 
-    fix from Ian Rogers: invoke "diff -w -u" instead of "diff -u"
+Thanks,
 
-diff --git a/tools/perf/pmu-events/Build b/tools/perf/pmu-events/Build
-index c3fa43c497069..54d19b492db5c 100644
---- a/tools/perf/pmu-events/Build
-+++ b/tools/perf/pmu-events/Build
-@@ -39,7 +39,7 @@ $(TEST_EMPTY_PMU_EVENTS_C): $(JSON) $(JSON_TEST) $(JEVENTS_PY) $(METRIC_PY) $(ME
+-- 
+Peter Xu
 
- $(EMPTY_PMU_EVENTS_TEST_LOG): $(EMPTY_PMU_EVENTS_C) $(TEST_EMPTY_PMU_EVENTS_C)
-        $(call rule_mkdir)
--       $(Q)$(call echo-cmd,test)diff -u $? 2> $@ || (cat $@ && false)
-+       $(Q)$(call echo-cmd,test)diff -w -u $? 2> $@ || (cat $@ && false)
-
- $(PMU_EVENTS_C): $(JSON) $(JSON_TEST) $(JEVENTS_PY) $(METRIC_PY) $(METRIC_TEST_LOG) $(EMPTY_PMU_EVENTS_TEST_LOG)
-        $(call rule_mkdir)
-
-
-but make still failed. I still saw below in our build log
-
---- pmu-events/empty-pmu-events.c       2024-06-03 08:41:16.000000000 +0000
-+++ pmu-events/test-empty-pmu-events.c  2024-06-03 13:47:19.522463482 +0000
-@@ -136,7 +136,7 @@
- { 2623 }, /* M3\000\0001 / M3\000\000\000\000\000\000\000\00000 */
- { 2078 }, /* cache_miss_cycles\000group1\000dcache_miss_cpi + icache_miss_cycles\000\000\000\000\000\000\000\00000 */
- { 1947 }, /* dcache_miss_cpi\000\000l1d\\-loads\\-misses / inst_retired.any\000\000\000\000\000\000\000\00000 */
--{ 2011 }, /* icache_miss_cycles\000\000l1i\\-loads\\-misses / inst_retiredany\000\000\000\000\000\000\000\00000 */
-+{ 2011 }, /* icache_miss_cycles\000\000l1i\\-loads\\-misses / inst_retired.any\000\000\000\000\000\000\000\00000 */
-
- };
-
-
-I will try to get generated test-empty-pmu-events.c tomorrow.
-
-> 
-> Thanks,
-> Ian
