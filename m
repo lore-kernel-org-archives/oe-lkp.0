@@ -1,209 +1,112 @@
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
+Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 665FE12D74F
-	for <oe-lkp@lists.linux.dev>; Mon,  3 Jun 2024 15:47:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EA224A0A
+	for <oe-lkp@lists.linux.dev>; Mon,  3 Jun 2024 16:54:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717429624; cv=none; b=SjGI+/7bmKIWDkRt1rSuzYUitQSDjSSQlHREBNcvUoLBS9qlHjG98dRM8ydQJurpk5lSzE62uctuGHhv69DrV1kM6edbO3t8dvuPqhn2Po7AoTPzF1/tv+1AMIux5OLRv100ILydQDdcS+GcWTcxbtAOWKaJ3CC+fUs/YOiCwI0=
+	t=1717433674; cv=none; b=sRvAhV7Klt6p9VdXhXgTGh/DnyrLyok+qrR4wvIdBWLeEvLIIKgA8WNmqmtYvHYKCR/6cxzt/6r2c7poILLXOEaLbsFjFYYSTFeS6pNppAdIJG3+Tl2FKlkbQiM/m1ciKsYEGgsFX26GPHxKLpFfkZV1kqs2gXVV3wa9nEKPwwo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717429624; c=relaxed/simple;
-	bh=Mg80o7H5UIDnH0+H3rB9+Jub8DUPORLjLI+9sQNkiek=;
+	s=arc-20240116; t=1717433674; c=relaxed/simple;
+	bh=9uaWDRDuJpCiADdyudSPKqt6qyaBHx3becUI8L3KqVQ=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=KsJdAzK97ifn2kXdA4pIiRXqxBZA1hHwbyRhuL8q06JO3ZKKlc6Aj8rze4bP+W/STFxzKNRhK4W+qc7W/ajrJIJhfYLmqYk2NtRGrJRWCCYUfK6tVgzK/pLmnBPYGEuSq9PvkjYbki/TkZRG2XyuY+QInDjrHedn/dnfCKx9Sq0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=docRL4mY; arc=none smtp.client-ip=209.85.214.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 To:Cc:Content-Type; b=gwwVWo5fy11lBJZHu2482/uBm80aFqiX8glepMJv4Vn1dNmVmqKl8yYeDW8trth8wFSqZPub5e116qTfOuTOKwGzru0lY9EmdHwQ0V39ogsxboyxCZRQ3kIZPlso2Dy2W1ybCOz/ygoj/dz9fFR9mPqGjXmu+Roysjgr6+mycpQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TjJm9KCZ; arc=none smtp.client-ip=209.85.218.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="docRL4mY"
-Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-1f66ad03847so206745ad.1
-        for <oe-lkp@lists.linux.dev>; Mon, 03 Jun 2024 08:47:03 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TjJm9KCZ"
+Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-a691bbb7031so133712066b.1
+        for <oe-lkp@lists.linux.dev>; Mon, 03 Jun 2024 09:54:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1717429623; x=1718034423; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1717433672; x=1718038472; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=VzGMCbAEFz7sST5Tw3h9EtKJ91Jm/r9MvFW6MwnVD2I=;
-        b=docRL4mY+zprxlOIEpQqC/lMUUccUHZGhpj+SLN5cYVPkwkqK4wOrnC1tZJ+k5zU55
-         lrIfSNAN/OuKhTrTSQQGxkJPgSbeOPI5R35kQyUms8/rcxmxNO8VkB3lAcj+h5ig9mxa
-         TgZJbVuEeQpfRkSvGPLBVLqGosUZa5aBuxc6t1qOXEumFUd0I89D+CsA4pTJN7qy7cpq
-         D2lB0nRWQXVwzA2SqhKGvJQyKrmex0Bz54OqGcSSu664Q052X6f2BsrK/ArSfnLyFTU1
-         Z2fGJOTj5OG387eq9feaCHYDG/AwtuJWWSSk5l/cY0VLXh3vEDcEYmEc5/bHjsR/YA4s
-         bYMg==
+        bh=9uaWDRDuJpCiADdyudSPKqt6qyaBHx3becUI8L3KqVQ=;
+        b=TjJm9KCZp6hvCSRvi6BNrH7OVQ+Bekuw16W8G8r3jwxF1Cc0JG3wpuMLNkF/sh8TaJ
+         p2QKIqAY93CnLy8Y+eV14/DsXU5V9WfQKht7nY05D3RRkk+VVya3ZbVsxM06vI3wRc/k
+         HuLz8RLTZkyWVaOlVk1poDlLSUDg/4A20G26fxb/gdjnHkXehWuKY4K4dNp4FYEXurxk
+         KN0ASyul2DqxrdLy7WovcildIm6tgWVH75YEAKr60GC2f0vJqKHQk1XwNTkJyO+/0YbN
+         PlDqb6Zer0RNLgUOPieOn3mgOVb+vD8JN9Tbh48/HKofmgs4TBBl2knKshvWbbP3qF3k
+         Yk9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1717429623; x=1718034423;
+        d=1e100.net; s=20230601; t=1717433672; x=1718038472;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=VzGMCbAEFz7sST5Tw3h9EtKJ91Jm/r9MvFW6MwnVD2I=;
-        b=NtGERxRh4B47y0GdJfDINQF3lMdKGcb6qK5Es8rvnIE8dQbKsho5cgAxNllXbS0M74
-         N+ZqsGVpfokMxfMdEi77FKZ1f3VPsq0iFhG4r9rTyhsBoeBzsHdK7nuyps5XMPgGjtvq
-         m88msg5MjEr/0hrKs4cJjuvsuVQf/Xi4g2EeqWAeGxmA0wtbdXtlwPdPEuRkgLMMmLO8
-         YeHeX6SQ0D4/N6sQzhAQ0d3+PVccE6S6QN2TKzPBk3xMjii67Cv7aMuspTqch/j4flPm
-         tDi7NHQjCcRpZsTBTKUP/WEer+92te1ciwD4VZjpWqe4xMbCAxu6AjrfEswrM6kxWIq/
-         Vb0Q==
-X-Gm-Message-State: AOJu0YyR+CzBLCByaVoMckI+ymYaPxOWAZ16Ohsx56eUYaukJck0CByx
-	xLi5MDm29xGIK7tH0H2OiE2Zy+PVgr1+7RqMUxtTFTGKAwk6/BMXqcKUlPu1I5uhFdQVTuuYl9z
-	KAZONTfrb6ZZSc15s/zsvY2gAMsrrnVZrHxFh
-X-Google-Smtp-Source: AGHT+IGiaIqxFOuAXfvlbUeMJ3aKV5pmlWuVLlqoe9vC8Z08hp5YfriujSTu0Z3xC8eUVOOrEjdr4z5zKMjLC//6ixs=
-X-Received: by 2002:a17:903:24a:b0:1f4:95dc:bc61 with SMTP id
- d9443c01a7336-1f64f3a6e94mr3735205ad.15.1717429622232; Mon, 03 Jun 2024
- 08:47:02 -0700 (PDT)
+        bh=9uaWDRDuJpCiADdyudSPKqt6qyaBHx3becUI8L3KqVQ=;
+        b=K7JcXkhE0WxNY3M2mxzdH6tfJDNnOSlO0TCrrHab+eJLtzM3rnWVbL0W+n15w3I6SY
+         lE0GnnGIquZYEc8KFEIZnk2GRs2mXVOddBTh4ze6QsB8ydD8UMQQL4I6B4G4j0w5b5C1
+         Zo+XHCuvUDPA318Fapg5JMuAbVJdJ5f+T/CJ8rcgPMUix3P7Omad/gxI7qMRdNQtdeCW
+         5Ev+ktIK6YtkJHqF7WKp939oXS8GHmzewbFNiaH4GtQsjjDzY5RvU0e0l8S9wC4y9iIC
+         vaL1diZCCgfqTaMw6D+iXrSLZzwr+k/6WP1hNLWCBG3zwypLo282hSj7Oqsf2Es4gVLp
+         IjNQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWyXp7DBnm6lOg0/I1DzYXd2SLfp64W69qvD3/AGF6h/Icmm/qN8y4ZprcY/y8w6yKHFW9fRVQp+EhfA8vQJHiW/8jEayMy
+X-Gm-Message-State: AOJu0Yx4SgM8RMsJYYhpFQzQ7pCAEop9MeAiidfbCCXTbGqOFVI5UOgB
+	ESUQG/F83LYv+ELjJKXP4+4Vz4Hg3PtLLhSKctSyZk/J4GqmcrVFYu1nvVGvPPbvj1cOwFJalYc
+	5JmazXuf8hm3+XuGXsJkNnQXmi0495I9a
+X-Google-Smtp-Source: AGHT+IEDqulxph1OA4imszzJwE86zTngn5eZ0gB/XB0ChXYnaAOsSniC1qdfyLOF1SBhF9erk2zgSPNTxtULf9lX7R8=
+X-Received: by 2002:a17:906:d153:b0:a68:e7f3:7ed6 with SMTP id
+ a640c23a62f3a-a68e7f38368mr358544466b.21.1717433671524; Mon, 03 Jun 2024
+ 09:54:31 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240525013021.436430-2-irogers@google.com> <202405311548.1e881dea-oliver.sang@intel.com>
- <CAP-5=fX7ZyT82=W8uSZbT7c76E5+1JaoR5-y_gcj7A_=Js1YfA@mail.gmail.com> <Zl3Q7AtOWY8ZCcg8@xsang-OptiPlex-9020>
-In-Reply-To: <Zl3Q7AtOWY8ZCcg8@xsang-OptiPlex-9020>
-From: Ian Rogers <irogers@google.com>
-Date: Mon, 3 Jun 2024 08:46:49 -0700
-Message-ID: <CAP-5=fU=UPpZTULuyZm=Ep0Ri6SdTciL5kqpciUfnWyDvz6HZg@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] perf jevents: Autogenerate empty-pmu-events.c
+References: <202405311534.86cd4043-lkp@intel.com> <CAHbLzkpMhEuGkQDGWrK1LhvZ-ZxTJkV1xjmn-nRGZMH4U+F5ZA@mail.gmail.com>
+ <890e5a79-8574-4a24-90ab-b9888968d5e5@redhat.com> <CAHbLzkqphyX473LBCXXf8rWEr-8m2PB--CT0cwCax3mUyZPGhA@mail.gmail.com>
+ <CAHbLzkqG=9VmAcOgFr-50ZdZtf7xj2PqpfD3UHUsMX3jR=+snw@mail.gmail.com>
+ <f4599bd2-72af-4e8d-a0fe-153b69816133@redhat.com> <CAHbLzkrOspjVuQw=BN2+RZmV_Ydpz_50yY7FEakJw8Zm14Y9-Q@mail.gmail.com>
+ <a088b5cf-503e-4ed7-b427-f17a9ec5d1a8@redhat.com> <CAHbLzkpnDPYWq=HnaJcKhKnppdNikX4YG+1Ysu8Z+XJCoKK4SQ@mail.gmail.com>
+ <CAHbLzkr5K=4Shiyb5KgPTQ20jE2Zo08wK=mT3Ez9ADEdJe0Z9A@mail.gmail.com> <Zl3M7iniPQaPFDrW@xsang-OptiPlex-9020>
+In-Reply-To: <Zl3M7iniPQaPFDrW@xsang-OptiPlex-9020>
+From: Yang Shi <shy828301@gmail.com>
+Date: Mon, 3 Jun 2024 09:54:19 -0700
+Message-ID: <CAHbLzkrOTAaYahG4JYMNrJDhQNZZxW9u+2n71J=v1XYJEVpUdw@mail.gmail.com>
+Subject: Re: [linus:master] [mm] efa7df3e3b: kernel_BUG_at_include/linux/page_ref.h
 To: Oliver Sang <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-perf-users@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, Weilin Wang <weilin.wang@intel.com>, 
-	Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, 
-	Arnaldo Carvalho de Melo <acme@kernel.org>, Namhyung Kim <namhyung@kernel.org>, 
-	Mark Rutland <mark.rutland@arm.com>, 
-	Alexander Shishkin <alexander.shishkin@linux.intel.com>, Jiri Olsa <jolsa@kernel.org>, 
-	Adrian Hunter <adrian.hunter@intel.com>, Kan Liang <kan.liang@linux.intel.com>, 
-	Jing Zhang <renyu.zj@linux.alibaba.com>, John Garry <john.g.garry@oracle.com>, 
-	Sandipan Das <sandipan.das@amd.com>
+Cc: David Hildenbrand <david@redhat.com>, Peter Xu <peterx@redhat.com>, 
+	Jason Gunthorpe <jgg@nvidia.com>, Vivek Kasireddy <vivek.kasireddy@intel.com>, 
+	Rik van Riel <riel@surriel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, 
+	Matthew Wilcox <willy@infradead.org>, Christopher Lameter <cl@linux.com>, linux-mm@kvack.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jun 3, 2024 at 7:19=E2=80=AFAM Oliver Sang <oliver.sang@intel.com> =
+On Mon, Jun 3, 2024 at 7:02=E2=80=AFAM Oliver Sang <oliver.sang@intel.com> =
 wrote:
 >
-> hi, Ian,
+> hi, Yang Shi,
 >
-> On Fri, May 31, 2024 at 09:38:01AM -0700, Ian Rogers wrote:
-> > On Fri, May 31, 2024 at 1:16=E2=80=AFAM kernel test robot <oliver.sang@=
-intel.com> wrote:
-> > >
-> > >
-> > > hi, Ian Rogers,
-> > >
-> > > we actually want to seek your advice. in our env, there is no problem=
- to build
-> > > parent.
-> > >
-> > > * 3249f8b84526d (linux-review/Ian-Rogers/perf-jevents-Autogenerate-em=
-pty-pmu-events-c/20240525-093240) perf jevents: Autogenerate empty-pmu-even=
-ts.c
-> > > * 7d88bd0d22746 perf jevents: Use name for special find value   <--- =
-parent
-> > >
-> > > however, failed to build perf upon 3249f8b84526d. but there is not ma=
-ny useful
-> > > information in below detail log.
-> > >
-> > > is there any dependency or env setting for us to build this commit? T=
-hanks!
-> >
+> On Fri, May 31, 2024 at 01:57:06PM -0700, Yang Shi wrote:
 > > Hi Oliver,
 > >
-> > Thanks for the report and the work testing! Seeing the output:
-> >
-> > [..snip..]
-> > > --- pmu-events/empty-pmu-events.c       2024-05-30 08:20:10.000000000=
- +0000
-> > > +++ pmu-events/test-empty-pmu-events.c  2024-05-30 15:55:37.332495538=
- +0000
-> > > @@ -136,7 +136,7 @@
-> > >  { 2623 }, /* M3\000\0001 / M3\000\000\000\000\000\000\000\00000 */
-> > >  { 2078 }, /* cache_miss_cycles\000group1\000dcache_miss_cpi + icache=
-_miss_cycles\000\000\000\000\000\000\000\00000 */
-> > >  { 1947 }, /* dcache_miss_cpi\000\000l1d\\-loads\\-misses / inst_reti=
-red.any\000\000\000\000\000\000\000\00000 */
-> > > -{ 2011 }, /* icache_miss_cycles\000\000l1i\\-loads\\-misses / inst_r=
-etiredany\000\000\000\000\000\000\000\00000 */
-> > > +{ 2011 }, /* icache_miss_cycles\000\000l1i\\-loads\\-misses / inst_r=
-etired.any\000\000\000\000\000\000\000\00000 */
-> > >
-> > >  };
-> > >
-> > > @@ -373,7 +373,7 @@
-> > [..snip..]
-> >
-> > It appears the version of empty-pmu-events.c the patch adds and the
-> > version generated in your test configuration are differing because of
-> > whitespace. Perhaps a hex editor will show what the exact difference
-> > is, it must relate to locales or something. Like you mention this
-> > could be resolved by an env change.
-> >
-> > > The kernel config and materials to reproduce are available at:
-> > > https://download.01.org/0day-ci/archive/20240531/202405311548.1e881de=
-a-oliver.sang@intel.com
-> >
-> > I didn't see the generated test-empty-pmu-events.c there and so
-> > couldn't follow up on the locale/env exploration. I wonder that a
-> > suitable workaround is to change from the patch:
-> >
-> > +$(EMPTY_PMU_EVENTS_TEST_LOG): $(EMPTY_PMU_EVENTS_C) $(TEST_EMPTY_PMU_E=
-VENTS_C)
-> > +       $(call rule_mkdir)
-> > +       $(Q)$(call echo-cmd,test)diff -u $? 2> $@ || (cat $@ && false)
-> >
-> > to instead of invoking "diff -u" to invoke "diff -w -u", that is to
-> > ignore whitespace. I can send a v3 with this.
+> > I just came up with a quick patch (just build test) per the discussion
+> > and attached, can you please to give it a try? Once it is verified, I
+> > will refine the patch and submit for review.
 >
-> I tried below patch
->
-> commit a79a41133a41adc2d69c8f603c7d880b3796cbf7
-> Author: 0day robot <lkp@intel.com>
-> Date:   Mon Jun 3 16:35:45 2024 +0800
->
->     fix from Ian Rogers: invoke "diff -w -u" instead of "diff -u"
->
-> diff --git a/tools/perf/pmu-events/Build b/tools/perf/pmu-events/Build
-> index c3fa43c497069..54d19b492db5c 100644
-> --- a/tools/perf/pmu-events/Build
-> +++ b/tools/perf/pmu-events/Build
-> @@ -39,7 +39,7 @@ $(TEST_EMPTY_PMU_EVENTS_C): $(JSON) $(JSON_TEST) $(JEVE=
-NTS_PY) $(METRIC_PY) $(ME
->
->  $(EMPTY_PMU_EVENTS_TEST_LOG): $(EMPTY_PMU_EVENTS_C) $(TEST_EMPTY_PMU_EVE=
-NTS_C)
->         $(call rule_mkdir)
-> -       $(Q)$(call echo-cmd,test)diff -u $? 2> $@ || (cat $@ && false)
-> +       $(Q)$(call echo-cmd,test)diff -w -u $? 2> $@ || (cat $@ && false)
->
->  $(PMU_EVENTS_C): $(JSON) $(JSON_TEST) $(JEVENTS_PY) $(METRIC_PY) $(METRI=
-C_TEST_LOG) $(EMPTY_PMU_EVENTS_TEST_LOG)
->         $(call rule_mkdir)
->
->
-> but make still failed. I still saw below in our build log
->
-> --- pmu-events/empty-pmu-events.c       2024-06-03 08:41:16.000000000 +00=
-00
-> +++ pmu-events/test-empty-pmu-events.c  2024-06-03 13:47:19.522463482 +00=
-00
-> @@ -136,7 +136,7 @@
->  { 2623 }, /* M3\000\0001 / M3\000\000\000\000\000\000\000\00000 */
->  { 2078 }, /* cache_miss_cycles\000group1\000dcache_miss_cpi + icache_mis=
-s_cycles\000\000\000\000\000\000\000\00000 */
->  { 1947 }, /* dcache_miss_cpi\000\000l1d\\-loads\\-misses / inst_retired.=
-any\000\000\000\000\000\000\000\00000 */
-> -{ 2011 }, /* icache_miss_cycles\000\000l1i\\-loads\\-misses / inst_retir=
-edany\000\000\000\000\000\000\000\00000 */
-> +{ 2011 }, /* icache_miss_cycles\000\000l1i\\-loads\\-misses / inst_retir=
-ed.any\000\000\000\000\000\000\000\00000 */
->
->  };
->
->
-> I will try to get generated test-empty-pmu-events.c tomorrow.
+> what's the base of this patch? I tried to apply it upon efa7df3e3b or
+> v6.10-rc2. both failed.
 
-Thanks Oliver, if you could get the environment variables that would
-probably also be useful.
+Its base is mm-unstable. The head commit is 8e06d6b9274d ("mm: add
+swappiness=3D arg to memory.reclaim"). Sorry for the confusion, I should
+have mentioned this.
 
-Ian
-
+>
 > >
 > > Thanks,
-> > Ian
+> > Yang
+> >
+> > >
+> > > >
+> > > >
+> > > > --
+> > > > Cheers,
+> > > >
+> > > > David / dhildenb
+> > > >
+>
+>
