@@ -1,244 +1,118 @@
-Received: from mail-qk1-f175.google.com (mail-qk1-f175.google.com [209.85.222.175])
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53310145B2F
-	for <oe-lkp@lists.linux.dev>; Tue,  4 Jun 2024 12:33:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEA1814A4E9
+	for <oe-lkp@lists.linux.dev>; Tue,  4 Jun 2024 17:35:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717504436; cv=none; b=NWp3WlL5gS/lKG0OJcBUmHp+RCnvxiVflhBkyhLxDv7znheTAiv0UVTYQrWdO2QMAhq4db1VcBzJxS1Ejzlkb8Oai70mQN9Rbvuk9DKSDwozxLUZl1KpTLplhc1z2GY5YxopoapViSpSWpU3glo2BPEHiQtx7VOYyyXN6+ZeWvo=
+	t=1717522519; cv=none; b=hf9mNynJU5AfEx49hwNca5+thG5iigt6i8GUfN2LFJkPj0aczcOQuFOdP9VQ6JgCwwSDet+kk2x2Ayh31Vg9nNVAJcoYH6eoFE3ZqogZLfUn4Fh03XRnhhsDN5TVBMvauoVmBZaM4f22TtrzFiA+koIpLGD911giUhYv68BnaW8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717504436; c=relaxed/simple;
-	bh=xqnBwRGzTKgCg/TmJnWXo/heCPZ+iwsVPbRShoufNjM=;
+	s=arc-20240116; t=1717522519; c=relaxed/simple;
+	bh=lxElhNb6+LLAOwSRzJUjOlUE1gCjxcVourbCmwIjDc0=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=suMMlL3nkUgkNUDwm4QOevHIvpqoEDlSdp5qa8eJwZ8eHxy6X20Iq0qP7BjGaz6igYEttdbK6dpuiVhCkbq1//Vy3Z+uZG97uZf/Udo66zHS1hHDktf5vr6riz3UfSf57YFWzcp9XtDBoyIxsvtfqejyV3nSGAs2wPIrVQydn3g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ViFYZL5/; arc=none smtp.client-ip=209.85.222.175
+	 To:Cc:Content-Type; b=lc+vlXvY3R3aItql1my6aHv0UK2KjSjpP4bGwuotKtsl+6zSt4CT/0Mhy+H0DPRLoIsZ9ezfsT2aH0oO2OT4UYSZe5q5vZplmkcWQfEfKFupvOuFHVC9E6bHJdbzfSDT9YJhRhIjBdOdYst9mBL2w5a0Oj54hp6I7Fnl+sUJuBs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WBua7nzm; arc=none smtp.client-ip=209.85.208.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ViFYZL5/"
-Received: by mail-qk1-f175.google.com with SMTP id af79cd13be357-794ab4480beso395308285a.1
-        for <oe-lkp@lists.linux.dev>; Tue, 04 Jun 2024 05:33:54 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WBua7nzm"
+Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-572c65cea55so108777a12.0
+        for <oe-lkp@lists.linux.dev>; Tue, 04 Jun 2024 10:35:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1717504433; x=1718109233; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Yfjn3msxw1rw+8Ne+8eKdnft2hOA5kAhDChZxq/ytLc=;
-        b=ViFYZL5/W0lx8BKv+nlailmDGS4xmVRJlBmqbYGYoDErwMECcMLdp0ZBFL31+BVacR
-         nWZp7ubR8sU7jaObmkDhATaQ/EoiKPhbHyu+Dx8useKC+XqpA1TN+U0WUCKQaXqM6Usd
-         HlK9IW+GC3kbgaVdxXNZnsayyFy4AiMjrSj6+ylVAEJRfFML5QoxJpa8tvKDnwf+7Oty
-         u+qB7vO0z/xOtf/IV+ZDiIdPW4ES2u8gvktFg8ZXDUW2BoOZRMUULerF/q6sIgfCXATa
-         PnaLDQL8em/vGQlj/kmQ1B9uXVWzCrbilywFCYqbesdKaYNuxPlR6dXDnQafY+2LRKjZ
-         6WDQ==
+        d=gmail.com; s=20230601; t=1717522516; x=1718127316; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=QnqJOAf1Q2Nckvls20fL4xWcgC3Wkf+wvlijKAtyrII=;
+        b=WBua7nzmVrfHc13endcHWx0Jty1ZWq5DxthmD1ZitBCKQLR6dejHTJAdSD+TR2WsiC
+         h2AhWxkHeSJETnmKftVEVgusWhDnqUku+SLfD7Od1Lm0Hp9FQETCVLNL1qhGJaROhYka
+         M/8yKVtMh1TRogebC13VBgisbd4nC655AuC9k9Gb22AuiQV5vjjDLncvtYpPouWWNFGJ
+         jORT41N1dpS5DtqGOK9Ysq5k6VihUQiH1kFtwoS9EvAvrnhtEP66QbVBCLukd4LmGwA4
+         itbw71jL9JOKLMdLl2oCHBZ7q9lhdaFaAlinchwMFGg2J0wPUVv2GIzOo4lsstFpehxN
+         GOUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1717504433; x=1718109233;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Yfjn3msxw1rw+8Ne+8eKdnft2hOA5kAhDChZxq/ytLc=;
-        b=b5AZo9LF3hwce4PTLIPbo/BMAKAnc6hsX7u5AexLLg/nYED0kPU2DhHWZ7I0V1aJaX
-         HGYEMQsip6m5BHq/gFFyQJOK5X2u7hUlsDtAr8ny1GxcZP/VAlLL71o5JMBBaQOchvdk
-         oVSGneNQX352cuJB4Y7ztAA3VD7Q3VLkU6vulWgjhTMn3z8QGcIeXfPf3xvaauYDDTxu
-         U9qI+0mXdQPkEQmeI6d6smPrOvPA2CpR2TpgMFpDCrnQQVVIDKukoKn9gjV2JqMqYMw+
-         bBpcucPvKTo3XHMrb0d//N5LXI8fMbfCybywhXSoUpWd60gWWcr2IagDNb3N/4KB+qVX
-         wmFA==
-X-Forwarded-Encrypted: i=1; AJvYcCVN/SN8kolUhoQIzwcVmkLxzQdUONBkSN4zLc3IYRA93Y8xk7FRPHIGSxFCT3hzwlWfimE/Vow7n01W175IoqKBWHeY+8ve
-X-Gm-Message-State: AOJu0YyNUWDisV1OI/fFkza1FmZRmZxNexVeKANT9eQ0sIm880lcoinI
-	j+AyLVWbQC9mGBrEPOfwzEuic2Go4ZtREx0ZJKppb85eTxDrv2RaB8Mbya/ddlZMt0Ro7I5afza
-	lbP8ct2Rg/vAdGzGB2YukucMmRzA=
-X-Google-Smtp-Source: AGHT+IFcmxQxXrJR3t2nYvvfmepS+XAbNAzkIIfBdfZklGlMqGRmd6k9t51wvDB+J+8t8MMGLMaZaOsrYFkOvZ+kaVs=
-X-Received: by 2002:a05:620a:200f:b0:794:f293:de23 with SMTP id
- af79cd13be357-794f5ed08fdmr1174276585a.62.1717504433003; Tue, 04 Jun 2024
- 05:33:53 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1717522516; x=1718127316;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=QnqJOAf1Q2Nckvls20fL4xWcgC3Wkf+wvlijKAtyrII=;
+        b=coaGHmXKWTOQdPZo75Ct5VgkYURGwcGPf6o/HZ5CK4sWhdhR2nGASceIx1cLGgvdXO
+         2TwUH9hZ7VBqjEuXMxuFTOipamhPLrwFked4IKoPHlssGaryPUxyNL+rTkgiH65ElWgI
+         /nAGGORhJh3LFrNZKX+NZ6tV2+HQz5hH4OTyoaKYCLcG1OkfPPF4WXkwchcGIPmiZkxV
+         79jJKZdAAvy+vTaqUqrr/JEKAAKV1K/WFIDRBTmZXrZ6ivPKkVJtg/JW6ne1pyYR9nGE
+         geSi2G47fNVDO/s/nonyVk/oZ4EefrY0WIbhXL5gvRynFCDVDbx+cSXUeGbd39HuHT7/
+         ikZA==
+X-Forwarded-Encrypted: i=1; AJvYcCWeum/SAXvh7yUk2+VVjsFgS/YUrsyWAQuKnXsugFtoO6smcnqQFwrpjYwlLg8IX8yR8opI+b1V4NZnVOdnJae9WhkWvCed
+X-Gm-Message-State: AOJu0YyBhDZ7oBHzI+KESH7DbkQDPr0l7+8exSXpCzq0sDLtpwwIqbb8
+	cXHuSlkuhzg4DItnlEbTm0I4jcOp7L1RWFleuORAJg+MdW1h0G+Dqc8oLhBMzjpEIcSqOwvO8ZP
+	aA839s0ku4rdfdGTq88xhdcA9HfQ=
+X-Google-Smtp-Source: AGHT+IHXpNuf2BcjrXTd+QUegb227fWnqENFLc7DunocDDJ5GF80C+wRoVoBVJRNKJ8qmzJC/IrELCqiSRzMfhrbbvQ=
+X-Received: by 2002:a50:a414:0:b0:579:c37c:1b36 with SMTP id
+ 4fb4d7f45d1cf-57a8bcc896emr242557a12.17.1717522515985; Tue, 04 Jun 2024
+ 10:35:15 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202405291640.2016ebfe-oliver.sang@intel.com> <CAOQ4uxiu_1QQMEH5OJ+vjA0K-y9TycYb8W=+nFQMTKJz6ZONhg@mail.gmail.com>
- <ZllA260+kaBSKrPD@xsang-OptiPlex-9020> <CAOQ4uxjtM0ptu5SLA0c9VpRqvSLX8_Z+QAxa_ztrgy=aiV2DXQ@mail.gmail.com>
- <Zl17GT2kWZw1EZTA@xsang-OptiPlex-9020>
-In-Reply-To: <Zl17GT2kWZw1EZTA@xsang-OptiPlex-9020>
-From: Amir Goldstein <amir73il@gmail.com>
-Date: Tue, 4 Jun 2024 15:33:39 +0300
-Message-ID: <CAOQ4uxhCfAvn0L-Ej5bSZXgFBYA3fbpBxRhURqv3bYu9=kw_Aw@mail.gmail.com>
-Subject: Re: [amir73il:sb_write_barrier] [fanotify] 9d1fd61f1d:
- unixbench.throughput -7.9% regression
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: Jan Kara <jack@suse.cz>, oe-lkp@lists.linux.dev, lkp@intel.com
+References: <ZlpcRnuZUEYJJ0JA@x1n> <CAHbLzkrRw-xf819gYJwRQ=-u971LQYnB2FNJMkN=s6u-pJ4Z8g@mail.gmail.com>
+ <CAHbLzkoB+oFTxtVYpeXQvko2q9HUVzUYrr83S6M6PUmXDQpkag@mail.gmail.com>
+ <0edfcfed-e8c4-4c46-bbce-528c07084792@redhat.com> <Zl3cakfiRsPQDb8q@x1n>
+ <8da12503-839d-459f-a2fa-4abd6d21935d@redhat.com> <Zl4m-sAhZknHOHdb@x1n>
+ <9d9a5730-161b-4a9d-a696-1cf6d0c5123c@redhat.com> <Zl4vlGJsbHiahYil@x1n>
+ <54ce029f-b16f-4607-bdf1-a1efe904029a@redhat.com> <821cf1d6-92b9-4ac4-bacc-d8f2364ac14f@paulmck-laptop>
+In-Reply-To: <821cf1d6-92b9-4ac4-bacc-d8f2364ac14f@paulmck-laptop>
+From: Yang Shi <shy828301@gmail.com>
+Date: Tue, 4 Jun 2024 10:35:04 -0700
+Message-ID: <CAHbLzkpuZx7cHoY6vLyetJ9T+KJrTKi1vt=wFv8YMhab7awDxQ@mail.gmail.com>
+Subject: Re: [linus:master] [mm] efa7df3e3b: kernel_BUG_at_include/linux/page_ref.h
+To: paulmck@kernel.org
+Cc: David Hildenbrand <david@redhat.com>, Peter Xu <peterx@redhat.com>, 
+	kernel test robot <oliver.sang@intel.com>, Jason Gunthorpe <jgg@nvidia.com>, 
+	Vivek Kasireddy <vivek.kasireddy@intel.com>, Rik van Riel <riel@surriel.com>, oe-lkp@lists.linux.dev, 
+	lkp@intel.com, linux-kernel@vger.kernel.org, 
+	Andrew Morton <akpm@linux-foundation.org>, Matthew Wilcox <willy@infradead.org>, 
+	Christopher Lameter <cl@linux.com>, linux-mm@kvack.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jun 3, 2024 at 11:13=E2=80=AFAM Oliver Sang <oliver.sang@intel.com>=
- wrote:
->
-> hi, Amir,
->
-> On Fri, May 31, 2024 at 08:18:09AM +0300, Amir Goldstein wrote:
-> > On Fri, May 31, 2024 at 6:15=E2=80=AFAM Oliver Sang <oliver.sang@intel.=
-com> wrote:
-> > >
-> > > hi, Amir,
-> > >
-> > > On Wed, May 29, 2024 at 02:17:55PM +0300, Amir Goldstein wrote:
-> > > > On Wed, May 29, 2024 at 11:26=E2=80=AFAM kernel test robot
-> > > > <oliver.sang@intel.com> wrote:
-> > > > >
-> > > > >
-> > > > >
-> > > > > Hello,
-> > > > >
-> > > > > kernel test robot noticed a -7.9% regression of unixbench.through=
-put on:
-> > > > >
-> > > > >
-> > > > > commit: 9d1fd61f1d9bb74e44bdcc8767ba7008a08c6075 ("fanotify: pass=
- optional file access range in pre-content event")
-> > > > > https://github.com/amir73il/linux sb_write_barrier
-> > > > >
-> > > >
-> > > > Jan,
-> > > >
-> > > > I speculate that the regression is due to the fact that we store an=
-d pass the
-> > > > path information on struct file_range on the stack before the optim=
-izations
-> > > > in fsnotify_parent(), so rw_verify_area() pays some price for the s=
-tores
-> > > > and __fsnotify_parent() pays a bigger price for fetches?
-> > > >
-> > > > Luckily, we already have the way to check
-> > > > fsnotify_sb_has_priority_watchers(inode->i_sb,
-> > > >                                                FSNOTIFY_PRIO_PRE_CO=
-NTENT))
-> > > > so now I used it to optimize out the fsnotify_file_range() inline
-> > > > code entirely.
-> > > >
-> > > > Oliver,
-> > > >
-> > > > Can you please re-test with fixed branch (also rebased on v6.10-rc1=
-):
-> > > >
-> > > > * a82fd282befc - (fan_pre_content) fanotify: report file range info
-> > > > with pre-content events
-> > > > * f301cd18006c - fanotify: rename a misnamed constant
-> > > > * 64108c0b47db - fanotify: pass optional file access range in pre-c=
-ontent event
-> > > > * 94167e071109 - fanotify: introduce FAN_PRE_MODIFY permission even=
-t
-> > > > * 68e04c2451ba - fanotify: introduce FAN_PRE_ACCESS permission even=
-t
-> > > > * 83af0c89527a - fsnotify: generate pre-content permission event on=
- exec
-> > > > * aca408421327 - fsnotify: generate pre-content permission event on=
- open
-> > > > * 93656e196b00 - fsnotify: introduce pre-content permission event
-> > > >
-> > > > The optimization was done in the first commit (fsnotify: introduce
-> > > > pre-content permission event),
-> > > > but impacts the regressing commit (fanotify: pass optional file acc=
-ess
-> > > > range in pre-content event).
-> > > > no need to test all middle commits.
-> > >
-> > > I directly compare the tip with v6.10-rc1, still a regression but bet=
-ter now
-> > >
-> > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > > compiler/cpufreq_governor/kconfig/nr_task/rootfs/runtime/tbox_group/t=
-est/testcase:
-> > >   gcc-13/performance/x86_64-rhel-8.3/100%/debian-12-x86_64-20240206.c=
-gz/300s/lkp-spr-r02/fsbuffer-w/unixbench
-> > >
-> > > commit:
-> > >   v6.10-rc1
-> > >   a82fd282befc7 ("fanotify: report file range info with pre-content e=
-vents")
-> > >
-> > >        v6.10-rc1 a82fd282befc71d99106bf31066
-> > > ---------------- ---------------------------
-> > >          %stddev     %change         %stddev
-> > >              \          |                \
-> > >  1.216e+08            -3.9%  1.168e+08        unixbench.throughput
-> > >
-> > > full data is as below [1]
-> > >
-> > >
-> > > then I checked new "64108c0b47db - fanotify: pass optional file acces=
-s range in pre-content event"
-> > >
-> > > it also has a small regression comparing to its parent, but better al=
-so.
-> > >
-> > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > > compiler/cpufreq_governor/kconfig/nr_task/rootfs/runtime/tbox_group/t=
-est/testcase:
-> > >   gcc-13/performance/x86_64-rhel-8.3/100%/debian-12-x86_64-20240206.c=
-gz/300s/lkp-spr-r02/fsbuffer-w/unixbench
-> > >
-> > > commit:
-> > >   94167e071109d ("fanotify: introduce FAN_PRE_MODIFY permission event=
-")
-> > >   64108c0b47db9 ("fanotify: pass optional file access range in pre-co=
-ntent event")
-> > >
-> > > 94167e071109d573 64108c0b47db91b20d658a89969
-> > > ---------------- ---------------------------
-> > >          %stddev     %change         %stddev
-> > >              \          |                \
-> > >  1.163e+08            -2.4%  1.135e+08        unixbench.throughput
-> > >
-> > > full data is as below [2]
-> > >
 > >
-> > Ok, this looks sane, the small overhead in the write path makes sense.
-
-On second look, while a small regression from 64108c0b47db9 could make
-sense, because it changes the inline fsnotify hooks, the extra regression f=
-rom
-the tip of the branch a82fd282befc7 makes no sense at all, as it does not
-touch any code that affects the executed functions, so I have to wonder how
-reliable are those results.
-
-Could you re-test the commits 94167e071109d..a82fd282befc7?
-
-> > It may have been a "tactic mistake" merging this optimization to v6.10-=
-rc1
-> > a5e57b4d370c ("fsnotify: optimize the case of no permission event watch=
-ers")
-> > before the rest of the pre-content infrastructure, because together the=
-y
-> > would still be a performance win.
+> > I chased it further to:
 > >
-> > Can you please compare this branch to v6.9?
+> > commit 8375ad98cc1defc36adf4a77d9ea1e71db51a371
+> > Author: Paul E. McKenney <paulmck@kernel.org>
+> > Date:   Mon Apr 29 15:06:13 2013 -0700
+> >
+> >     vm: adjust ifdef for TINY_RCU
+> >     There is an ifdef in page_cache_get_speculative() that checks for !SMP
+> >     and TREE_RCU, which has been an impossible combination since the advent
+> >     of TINY_RCU.  The ifdef enables a fastpath that is valid when preemption
+> >     is disabled by rcu_read_lock() in UP systems, which is the case when
+> >     TINY_RCU is enabled.  This commit therefore adjusts the ifdef to
+> >     generate the fastpath when TINY_RCU is enabled.
+> >
+> >
+> > Where Paul explicitly restored that fastpath for TINY_RCU instead of removing that code.
+> >
+> > So maybe Paul can comment if that is still worth having. CCing him.
 >
-> there is no obvious diff between v6.9 and v6.10-rc1 for this test in our =
-tests.
+> It is currently an atomic operation either way, though the folio_ref_add()
+> avoids full ordering, but that is immaterial on x86.  Some say that it is
+> in the noise on server-class ARMv8 as well, though they have also said
+> a great many things in the past.  But if that is true, the big benefit
+> of the TINY_RCU check is that folio_ref_try_add_rcu() is guaranted not
+> to fail in that case (single CPU with preemption disabled).  Except that
+> everyone has to check the return value anyway, right?
 >
+> So the usual advice, unsatisfying though it might be, is to remove that
+> #ifdef and see if anyone notices.
+>
+> After all, both 2013 and 2008 were quite some time ago.  ;-)
 
-This is a bit surprising to me, because a5e57b4d370c should have been a pre=
-tty
-big performance win for the common case.
+Thanks, Paul.
 
-Especially, considering that here [1] you reported in pre-merge testing tha=
-t an
-identical commit has improved the fstime-r/unixbench workload
-(although with gcc-12):
-[1] https://lore.kernel.org/oe-lkp/Zfj3wxDHolB1qCGO@xsang-OptiPlex-9020/
-and here [2] that a similar commit had improved writeseek1/will-it-scale
-[2] https://lore.kernel.org/all/Zc7KmlQ1cYVrPMQ+@xsang-OptiPlex-9020/
+I will submit a patch to remove the #ifdef as the fix for the bug
+report. And do the clean up in a separate patch which is preferred by
+David.
 
-Judging by simple_write_begin() in this regression perf report, and
-shmem_file_write_iter in the reports above, may I assume that this report
-was with a kernel with non-default config !CONFIG_SHMEM?
-Is that correct? Is this an intended config change?
-
-Thanks,
-Amir.
+>
+>                                                         Thanx, Paul
