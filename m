@@ -1,246 +1,309 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from APC01-TYZ-obe.outbound.protection.outlook.com (mail-tyzapc01on2043.outbound.protection.outlook.com [40.107.117.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB4071386BB;
-	Mon,  3 Jun 2024 22:43:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717454624; cv=none; b=fxW+da5OVa8Zp/6wyaZh310m0ay78nolQxpdvKwl8G3l+p1bML8xaFm033N//BHbtf20bVR40V91Bn4UHCPatBfYeBSixckRvmOvF/Vp5aL9TFKghcb4HYqjG3kVRfDNzm+VdoPGHdhXY65iekv+hnUoHVrvxv37FANPkVxk4iY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717454624; c=relaxed/simple;
-	bh=1yw7gSqbFSXrARpAS72usJpHUWEMMH2uFpKbrQr3PJA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QpKWXD7s3euVkbOAYZBGFgICmjYytzDINhaDD3IJoJeMeInbOBKsGDK0YlzABP0pkqE3iJjUisvw3HRAciMaDbIL9lmMItRUJZrnGIvMfc2ktVaXz5LTc3J1dRv7cHRm6m2O5YQxeuNfVEAnDbBfx07d9pueq2IhbYgpki4dM8c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=q+eJNPLo; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82CD313D60B
+	for <oe-lkp@lists.linux.dev>; Tue,  4 Jun 2024 01:57:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.117.43
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1717466279; cv=fail; b=Z7L8xE9yogU8rb8bagud2oJhGmGcacyJuzB80WSGwqCGh1fcudf/0AUnLjy4iR620H1iHZNAu2B9YaqpV25gNuO2cwz20v7Dq2wZkynzZwqnk84x4yESXAqyqc5Yj5/FpbPRFW6emvwCaUN7/PVbkIvUMX1I1YH4iNy4qVT0dZc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1717466279; c=relaxed/simple;
+	bh=pjc6eZDKTul8tS5dbmekI5ZRJ1LY+56OvbDzQCmoj5Y=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=ntSTrfuJb31Rogdot8/WFwMOyhmTwzwwLhKfg/LcG0Oct0JTrRXVmQbOtUoxiofZTHvFyvtSOQ4UINT0OWa046V1kspdTKLRKY0hpdm8Xn7Y0sgRYTZZfN5Oactc2T7X7Jbu6W1oRqb+L49gTn8wSVXW0qrU/z5kOnEDuw85XuY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=oppo.com; spf=pass smtp.mailfrom=oppo.com; dkim=pass (1024-bit key) header.d=oppo.com header.i=@oppo.com header.b=SvfviJmt; arc=fail smtp.client-ip=40.107.117.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=oppo.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oppo.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="q+eJNPLo"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BC41C2BD10;
-	Mon,  3 Jun 2024 22:43:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1717454624;
-	bh=1yw7gSqbFSXrARpAS72usJpHUWEMMH2uFpKbrQr3PJA=;
-	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-	b=q+eJNPLoIR7Uk/hOs9/yOZFaVZO3lc7QatTXswLXf8C/hdw7RSWU4J5bpBj8teu4m
-	 ulMPnuPREUGbtkdDcQu3ve2Z3GCfbQs4qxOWJWc9rfhLai9R/kUztsnEmi7XimGU5d
-	 /eL3EYpUXsFc8BXesjqGGXe42ZMGfdmmVwd6majcTc1rtN4Cfdq1ijIo0DQIfdEsVL
-	 L28HG8ZxYV2GXHJ2N55NQsRs0+evGSyO8Gum1lmbssqWGi2FR0AdCRt+u4O3xRiggr
-	 EUMu7FWmMkhnjQWEmoJnA+MJvYQQrmgkkisyyGTLjZOecQ8h2Fsj7hFhsip+PDxc+n
-	 voL+70dpAvRHA==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-	id E15ECCE0886; Mon,  3 Jun 2024 15:43:43 -0700 (PDT)
-Date: Mon, 3 Jun 2024 15:43:43 -0700
-From: "Paul E. McKenney" <paulmck@kernel.org>
-To: David Hildenbrand <david@redhat.com>
-Cc: Peter Xu <peterx@redhat.com>, Yang Shi <shy828301@gmail.com>,
-	kernel test robot <oliver.sang@intel.com>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Vivek Kasireddy <vivek.kasireddy@intel.com>,
-	Rik van Riel <riel@surriel.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, linux-kernel@vger.kernel.org,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Matthew Wilcox <willy@infradead.org>,
-	Christopher Lameter <cl@linux.com>, linux-mm@kvack.org
-Subject: Re: [linus:master] [mm] efa7df3e3b:
- kernel_BUG_at_include/linux/page_ref.h
-Message-ID: <821cf1d6-92b9-4ac4-bacc-d8f2364ac14f@paulmck-laptop>
-Reply-To: paulmck@kernel.org
-References: <ZlpcRnuZUEYJJ0JA@x1n>
- <CAHbLzkrRw-xf819gYJwRQ=-u971LQYnB2FNJMkN=s6u-pJ4Z8g@mail.gmail.com>
- <CAHbLzkoB+oFTxtVYpeXQvko2q9HUVzUYrr83S6M6PUmXDQpkag@mail.gmail.com>
- <0edfcfed-e8c4-4c46-bbce-528c07084792@redhat.com>
- <Zl3cakfiRsPQDb8q@x1n>
- <8da12503-839d-459f-a2fa-4abd6d21935d@redhat.com>
- <Zl4m-sAhZknHOHdb@x1n>
- <9d9a5730-161b-4a9d-a696-1cf6d0c5123c@redhat.com>
- <Zl4vlGJsbHiahYil@x1n>
- <54ce029f-b16f-4607-bdf1-a1efe904029a@redhat.com>
+	dkim=pass (1024-bit key) header.d=oppo.com header.i=@oppo.com header.b="SvfviJmt"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RYh5Rv5JE1rzripT9I2saiLQeFUyZxp8232oQPKd1QAuUjKqwwqsOXSXyKF7YeQu2ehctTiKlmuWZKCxvVyBFtaEeX+PjbEWotmIn4/CziEggUesOJoyku3GLpefYn1W2mKWa8Lg0tCje5VXWk/fkQk3SyJZeWKeVpSh3iQ5bLMg4iMnMsicj9/qQHSfs391RTayJ5bnQHnn5v0uT0qWvu9qW788FliZZMRrvgMjpoYK0RwbqqrXAgeP+OUlrJDdfeJoiTS+3Bx84sMbJjlNH7V/gMnfsvYRNX5S6MeXtZLgDPUJALtOViv/A0EkmZMfHE6qLfhFBXiv5LbxunHULA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=pjc6eZDKTul8tS5dbmekI5ZRJ1LY+56OvbDzQCmoj5Y=;
+ b=SJt96pCc5lwoEc2B75DsxSq5lnwP5vfXmgUGIH56ue8UgzlaoNhfjmxjiYLyHFE2HbFQU2WwyvaYAxYUji5tWX1dhxXJ3ncVxAKYHwvSBB6m3s0apLxcIhagpwPcA9Hmb7wn/CYcmrxdQmM+xzOb7F51SXvhX2enNMJ/s4uBxnqd+1EDJSSbUHxul7AX4Q024YdLpbqoavI6Vp39VQ6/hj2EraiMqEg4wlImOigOeUvF0FOs6mV8U4hOobrJ6Ipo6I2VfdYOur0YuzBQkiMoVx9SPyU1fpomWstow8MkC9V+0p7R+8cfq+cYP/KbjfentJOAbJGdGld4kmWDSiFdvQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oppo.com; dmarc=pass action=none header.from=oppo.com;
+ dkim=pass header.d=oppo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oppo.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pjc6eZDKTul8tS5dbmekI5ZRJ1LY+56OvbDzQCmoj5Y=;
+ b=SvfviJmt5FzZDEGfeI89hmDzt9Wc/a0Jm2AY1ja0kvT+HbNA9x2VZ7hZlOBkc1YdkrFXW4QQvG/fekS9lLtbDnz1V4ok6ZGHWtYUjd4rtSUE/dTUhBTSBMoz2tC2gwjG81UZpHrxLRisfOSRywV9Lk6FAUF2MmoyrXSpfaQzPfE=
+Received: from SEYPR02MB8152.apcprd02.prod.outlook.com (2603:1096:101:206::6)
+ by SEYPR02MB7518.apcprd02.prod.outlook.com (2603:1096:101:1d4::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7633.30; Tue, 4 Jun
+ 2024 01:57:53 +0000
+Received: from SEYPR02MB8152.apcprd02.prod.outlook.com
+ ([fe80::6bae:c194:2032:70d7]) by SEYPR02MB8152.apcprd02.prod.outlook.com
+ ([fe80::6bae:c194:2032:70d7%4]) with mapi id 15.20.7633.018; Tue, 4 Jun 2024
+ 01:57:53 +0000
+From: =?gb2312?B?xtW4386wKGt1cm9reSk=?= <pugaowei@oppo.com>
+To: kernel test robot <oliver.sang@intel.com>
+CC: "oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>, "lkp@intel.com"
+	<lkp@intel.com>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "aubrey.li@linux.intel.com"
+	<aubrey.li@linux.intel.com>, "yu.c.chen@intel.com" <yu.c.chen@intel.com>,
+	"mingo@redhat.com" <mingo@redhat.com>, "peterz@infradead.org"
+	<peterz@infradead.org>, "juri.lelli@redhat.com" <juri.lelli@redhat.com>,
+	"vincent.guittot@linaro.org" <vincent.guittot@linaro.org>,
+	"dietmar.eggemann@arm.com" <dietmar.eggemann@arm.com>, "rostedt@goodmis.org"
+	<rostedt@goodmis.org>, "bsegall@google.com" <bsegall@google.com>,
+	"mgorman@suse.de" <mgorman@suse.de>, "bristot@redhat.com"
+	<bristot@redhat.com>, "vschneid@redhat.com" <vschneid@redhat.com>
+Subject:
+ =?gb2312?B?tPC4tDogW1BBVENIXSBzY2hlZC9mYWlyOiB1cGRhdGVzIHdlaWdodCBvZiBj?=
+ =?gb2312?B?ZnNfcnEgYmVmb3JlIHVwZGF0ZV9jZnNfZ3JvdXAoKSBpbiBlbnF1ZXVlX2Vu?=
+ =?gb2312?Q?tity()?=
+Thread-Topic: [PATCH] sched/fair: updates weight of cfs_rq before
+ update_cfs_group() in enqueue_entity()
+Thread-Index: AQHaswfZEeY1ZNIhtUqkDTZZjSHP9LG1jgeAgAFPpAA=
+Date: Tue, 4 Jun 2024 01:57:53 +0000
+Message-ID:
+ <SEYPR02MB81525E1502FE46D8EAE6834EA2F82@SEYPR02MB8152.apcprd02.prod.outlook.com>
+References: <20240531030833.3375-1-pugaowei@oppo.com>
+ <202406031240.f2476e94-oliver.sang@intel.com>
+In-Reply-To: <202406031240.f2476e94-oliver.sang@intel.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oppo.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SEYPR02MB8152:EE_|SEYPR02MB7518:EE_
+x-ms-office365-filtering-correlation-id: 01b09a40-2c77-4dd9-8ac7-08dc8439bf11
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam:
+ BCL:0;ARA:13230031|366007|7416005|376005|1800799015|38070700009;
+x-microsoft-antispam-message-info:
+ =?gb2312?B?TUg4QkVwelV0N2tXSjA3NnAzMmdDWWVlbHYrVE1ScmdvZHhoM1RKSzc5UzBn?=
+ =?gb2312?B?TVdaYnRSamhkMW10MFErazNBd3JHTzNUbnl1MkpmcnU3Qm1jemRBSFc0RmxZ?=
+ =?gb2312?B?RVpaWE1iRkZQREd0SXgrdzJ0NmJYd3BYMjJuV2hBT043UlVuaGh1eUhUYklr?=
+ =?gb2312?B?b2xZNnFHU2MxaEd6YTR4YzU4MjM0MklnNjUrdEZpY1UzendUVCtaT05Jc0xM?=
+ =?gb2312?B?YWY0eVZBT1doWmc4NWVjRGVCMXJkLzVSSWxOMExFZ29iQzduNFpEam5hOFpX?=
+ =?gb2312?B?dlVIUE5WanNlNUUrTnNodW4zeU85SnNHQ1VxcENxS09peUZ0YkZTZ3phbWxX?=
+ =?gb2312?B?NktILzdGcTlDcnlsMk9DVDA5OXh6QTQ3THBqRnVxcnY4alZ5VDlwdzExclpH?=
+ =?gb2312?B?Z3lGVnFCamxRQ0dUSC9MUXUxMThrUE9USVV3TkI0WjBxa25makptZnJuMklQ?=
+ =?gb2312?B?VHdZZWdIYUtyc3M1eXVZcGRvQTI1VDJzbC8xc0ZibndKNGNzZWZBK2VXZEYx?=
+ =?gb2312?B?elZweFdDNzR0Z3NCVVZwREo3YVkzUGgzMEp6UnRlRlpSV3NwRXB2czY2RlJj?=
+ =?gb2312?B?Tkl4ZUJ2N01XbkpvR2hRcndJdmZldk1kcjhqRCtWRTdqY2xrWXlOVU81WHpl?=
+ =?gb2312?B?dkVKek0wZ09ZZ2JISVBtM0FTQnNHMzh1c2hiVSsvcGJmNFo1SzVHaCswMFdr?=
+ =?gb2312?B?MkxDckZNeUJBUys2UmhWVDQxVDk1d3puYUh0bk5FRmR5WWdua0hWMThnbzgv?=
+ =?gb2312?B?b3U1RjVtTHVaYVhrbDJIUkU4S0xSTUxTb0VwYkc4U3pINUVtZFFmeE9RcFBP?=
+ =?gb2312?B?UkNvYmNRS3g4ekFrUXoyamFkVGh4NUZWZmhNV3R4Mlp2WkhKZS9uSzBDRUg2?=
+ =?gb2312?B?NFdGc0FhRXJMYlRIR2RkR3lnMnU2eGpvMk9ZVEFicVNNc24za0hhOEtwWXNp?=
+ =?gb2312?B?a1dqcTVQdkkxYnJ3eFdQK0d0YU9KNTRSK0I4MG5GUjRLUVJsa3BWREhYU0dz?=
+ =?gb2312?B?OVFjdVdGYkpObm5VRlREanVxTjloa3hsS2xqNFMyUENuQmJtWlhDcmdZYWE3?=
+ =?gb2312?B?d3htV3NOSzU1cFdabWcrZDM5LzRISk84b3ora0hCeHViazNsWGx2OU80ZkMx?=
+ =?gb2312?B?aGxHK3dPT1dJclp2ZTBVVzJvWG9wRFQ3S2djQThNekhxaHloRDJ0TUh1Zlpk?=
+ =?gb2312?B?WjRHVmZDUzBwaTduVDB5ejR0bGl2am9CQ2UyYzJmUEg5K1VBWjlIdWo4SUQw?=
+ =?gb2312?B?R21vdHZUZ0FIOFdUektPdkNITUQ2NFhoUzNaY0V6NWY3YVZSM2RROTJoOXdT?=
+ =?gb2312?B?WnhTaGtjaWk3cVVTaFZ5SjVNZFBZWVlBdFk1QzRxSEJCV2JOOHYxV2FpMTRT?=
+ =?gb2312?B?ZlY2cUppbjFDVVFrSnFCb1JMZU0ybFpBMlQwV0tSNDRUUE9XbzArekNGWnE2?=
+ =?gb2312?B?dzdjSE9IejdudVBPZ015T1UwdTBENEpEbXV5QnpLTDNqdy8rS2dsbGtGd3Jt?=
+ =?gb2312?B?akk0RDRXYzFreEFMcUw0T05ZVys2TkxPVDBqV2FoSW11YWpIYkRxYXBlNHow?=
+ =?gb2312?B?dE9KbXllc1NqMGx4VTJPanhrOSs5aHBld25vWWlMOU5MTEpDOWR1bWhNWU43?=
+ =?gb2312?B?NHVyRTBGWnd5TXdJa1d5cWw0Z1FVZndFcCtzOGo4RzRTYzdJUEhyaER3Wk4r?=
+ =?gb2312?B?M08yeVVqWEVadDRmb3EwajRsRUh6SUk0V1F4RzkzbU9FcHFmekh0VUlQeit2?=
+ =?gb2312?Q?Fh+7jcDUmT06hcmZL2nNV9CCCtiImsTBgQgbi3I?=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:zh-cn;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SEYPR02MB8152.apcprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(7416005)(376005)(1800799015)(38070700009);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?gb2312?B?RThaOThsblR2ZUlRZS90TFhkTXMzR1dSUFVGZnZCelhlVWpyV20yK2RrYkRU?=
+ =?gb2312?B?OWJ1ZmZWNnlHTzJNdWthN1lEdnhyS2FmbVRwSC9vK0g2NlUzSy93Yk12aHdz?=
+ =?gb2312?B?a2Z3bDU4QnNZSlJFcnBwdTJMSXFuWHBRMkJVTS84ZmMxNGtyQldrQTdGeFpE?=
+ =?gb2312?B?aEQ4UjZNZ1BLSTRjVWJoNUU3bU95WCtSWTdpTXdCT1Y3Q05Vek9sMmRtSlJF?=
+ =?gb2312?B?ZEdlWHlZMEJOYWpqbEh5bEZzNUcxdHpLVlJtY1Q5bllLOXBRUm5IWnB5WndO?=
+ =?gb2312?B?Q2pBcUttUlNVVmE2eFFqQ1lCUnIyUnNHSUYwL05sL0VmZjZDRTNZeGJNMUVH?=
+ =?gb2312?B?blNvSVZWMnBiVFVJNFZtcElmdFRkOEdjZUxjUlhjRWV2S2tkWU9xQm0wSlUw?=
+ =?gb2312?B?bGFwTTFoOGlXTCt1dkNqcUZwenhNekQxUit2SGJESFBFb043M3p2SDJNWG9Y?=
+ =?gb2312?B?UC8vbW05TFR2ejlxVHlzSnU3Mm84SmRHQWVVTmd2NW54bzkzd09TQkRIWDRv?=
+ =?gb2312?B?YVlUR3pZdm96dUhldE96bitMejZTWUlJdWJrNnFKR09OSFFXVUdJMlpkZWlj?=
+ =?gb2312?B?R21NWmYzU29Uc2diTkwzRW16YTBMN1hPOTVEdGR3d21CUnM5QStiYTR2Z0Ju?=
+ =?gb2312?B?VDBNbmhoc0hoMFE3bkk1ZzI5MkVaUWpYbnBHYlc5b0FpYnA4REduM0UwNnE1?=
+ =?gb2312?B?Y0dtejArRlRRVHVyZFlpUDdUVmt2ZkVwTFBmQ2prRExPZXdlNWdjWmNqVXRP?=
+ =?gb2312?B?bXR3ZWYxWEV0MlVaYnBSM2JoZVlNM3F2enlNQThxdkJTY2ZhdDlJK2piR2Fl?=
+ =?gb2312?B?dDJwdUJNNkVxVXJmQm5TcXgvUU90VXZ0bTh4cC94eWhPem1pU09zY1pjMVl3?=
+ =?gb2312?B?c0x0ZjMwZXFqRFJJSzdObmJXVk82R0lYVWFqSndURTBnbUlNZFJhMmNxdEwr?=
+ =?gb2312?B?WUh5YW1BUXlBc0hpaTk0WnQrZG1UOTNia25QbzcvMmVleGFuN2Fha1ZIMHFv?=
+ =?gb2312?B?TUdsTENISU9EWkU0RFBhYmljQmdXQ0dQZk0rQmc4V3VNRzhENFlteExFVlJv?=
+ =?gb2312?B?dWNZdVRqQmR4VjNmZ2tlQkRuL3ViRkFlNkl3OFl6Kzk1bkw5bGoxYndraWVl?=
+ =?gb2312?B?ekVQc0xvYWJseWlnaENZd0h5anczeGQ0UXVqME96RzBKbDNtOEl2eXJxbzVo?=
+ =?gb2312?B?ajk1aHBaWDJoYUkyN2dJb2ZHNFEwYkEvNjNnMGtMa3gvaHJ3TGEwazZUNU1w?=
+ =?gb2312?B?Nk13c0VmRytjN1lxNUdjeVVxZnNtdlBYTnlpUTIrUmVCTk5hMXM0RVV6em1j?=
+ =?gb2312?B?QlBabnI0VHFVNUdQazhUVDlneXlmSkx0YXMzSDNockJiN3hhTVQ3QWVqSHNC?=
+ =?gb2312?B?V2NNYitqMXB5VGczbU1UdW16RytKdjgrakxRU3Z2V2hJNjZyZEhqRnVTMDlq?=
+ =?gb2312?B?VGhWeEgrNzBGejNsZFFNSUFuL0JGaEcyMVAwTkwrT3FueDhiWnhxblVZWGtH?=
+ =?gb2312?B?UklNOVFRMkhPUlptZ3FNVkdYYWl6VUE3bG5NZE5MeUp4QXdCeEtobUZsTGxj?=
+ =?gb2312?B?MlR3UUFiSEhCV29ZUEk3VzRoUGpHb2FXMk9xc3NCcldvUDVXQnpUcWxEdkhq?=
+ =?gb2312?B?aUxYZFZzWm5IWDg4QXZ6ejJMYTRDc2hMV0oyL0tYdXlHZGtlVGZzdk9ZRFRv?=
+ =?gb2312?B?ajRiV1dsTW1uMm8vWlk5SERPUEk5WXJMbzlXcVZDak9teFJ2OEptWHFqRFdN?=
+ =?gb2312?B?aGNaNmJrMytDakNwMXI0ODM5UUcrWUI3TGxtNDdFTm15cWJsRnBJQm96TFNw?=
+ =?gb2312?B?MEFhaGhCZXJ2STJwdUxBREpPRmIxcVpJVzRDSFkvdTN4UkNydnMzWHhUWUhn?=
+ =?gb2312?B?elJQdTh3REprTFR3UDlNczF1d0NKOElaNlBoaTZjelV3MDVrbm1ZUERnakpT?=
+ =?gb2312?B?NFR6UTZGL094OHc0KzNvV0FWRDFwQlFGQ0ZOQ1ZZdFllTEgwaEdTbjVTc1lL?=
+ =?gb2312?B?a1F5VWhGV2JPZ1JoTUt3YkhKZ29sdEVqQVI5UlNnbXZwNkpRQnRuc00rbytW?=
+ =?gb2312?B?a3U1dlprcTR4cDBoQWJ5a3hBaHRVR1VyVkJ1c1g4anpZRzdWZTVxT0d5Nnlv?=
+ =?gb2312?Q?3+O9cYiWsKyQznI9KCpCVHrM8?=
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <54ce029f-b16f-4607-bdf1-a1efe904029a@redhat.com>
+X-OriginatorOrg: oppo.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SEYPR02MB8152.apcprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 01b09a40-2c77-4dd9-8ac7-08dc8439bf11
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Jun 2024 01:57:53.3256
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: f1905eb1-c353-41c5-9516-62b4a54b5ee6
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: oMJ+sXzsoRFSJTLNKdvnNeM+TWtiIvXtg8/bBh19D8uKnrBkIh0UGPw3toxeBvw3Yt2v/8AllN4DyyW9RAh64w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SEYPR02MB7518
 
-On Mon, Jun 03, 2024 at 11:05:44PM +0200, David Hildenbrand wrote:
-> On 03.06.24 23:03, Peter Xu wrote:
-> > On Mon, Jun 03, 2024 at 10:37:55PM +0200, David Hildenbrand wrote:
-> > > > > try_get_folio() is all about grabbing a folio that might get freed
-> > > > > concurrently. That's why it calls folio_ref_try_add_rcu() and does
-> > > > > complicated stuff.
-> > > > 
-> > > > IMHO we can define it.. e.g. try_get_page() wasn't defined as so.
-> > > > 
-> > > > If we want to be crystal clear on that and if we think that's what we want,
-> > > > again I would suggest we rename it differently from try_get_page() to avoid
-> > > > future misuses, then add documents. We may want to also even assert the
-> > > 
-> > > Yes, absolutely.
-> > > 
-> > > > rcu/irq implications in try_get_folio() at entrance, then that'll be
-> > > > detected even without TINY_RCU config.
-> > > > 
-> > > > > 
-> > > > > On !CONFIG_TINY_RCU, it performs a folio_ref_add_unless(). That's
-> > > > > essentially a atomic_add_unless(), which in the worst case ends up being a
-> > > > > cmpxchg loop.
-> > > > > 
-> > > > > 
-> > > > > Stating that we should be using try_get_folio() in paths where we are sure
-> > > > > the folio refcount is not 0 is the same as using folio_try_get() where
-> > > > > folio_get() would be sufficient.
-> > > > > 
-> > > > > The VM_BUG_ON in folio_ref_try_add_rcu() really tells us here that we are
-> > > > > using a function in the wrong context, although in our case, it is safe to
-> > > > > use (there is now BUG). Which is true, because we know we have a folio
-> > > > > reference and can simply use a simple folio_ref_add().
-> > > > > 
-> > > > > Again, just like we have folio_get() and folio_try_get(), we should
-> > > > > distinguish in GUP whether we are adding more reference to a folio (and
-> > > > > effectively do what folio_get() would), or whether we are actually grabbing
-> > > > > a folio that could be freed concurrently (what folio_try_get() would do).
-> > > > 
-> > > > Yes we can.  Again, IMHO it's a matter of whether it will worth it.
-> > > > 
-> > > > Note that even with SMP and even if we keep this code, the
-> > > > atomic_add_unless only affects gup slow on THP only, and even with that
-> > > > overhead it is much faster than before when that path was introduced.. and
-> > > > per my previous experience we don't care too much there, really.
-> > > > 
-> > > > So it's literally only three paths that are relevant here on the "unless"
-> > > > overhead:
-> > > > 
-> > > >     - gup slow on THP (I just added it; used to be even slower..)
-> > > > 
-> > > >     - vivik's new path
-> > > > 
-> > > >     - hugepd (which may be gone for good in a few months..)
-> > > > IMHO none of them has perf concerns.  The real perf concern paths is
-> > > > gup-fast when pgtable entry existed, but that must use atomic_add_unless()
-> > > > anyway.  Even gup-slow !thp case won't regress as that uses try_get_page().
-> > > 
-> > > My point is primarily that we should be clear that the one thing is
-> > > GUP-fast, and the other is for GUP-slow.
-> > 
-> > Yes, understood.
-> > 
-> > > 
-> > > Sooner or later we'll see more code that uses try_grab_page() to be
-> > > converted to folios, and people might naturally use try_grab_folio(), just
-> > > like we did with Vivik's code.
-> > > 
-> > > And I don't think we'll want to make GUP-slow in general using
-> > > try_grab_folio() in the future.
-> > > 
-> > > So ...
-> > > 
-> > > > 
-> > > > So again, IMHO the easist way to fix this WARN is we drop the TINY_RCU bit,
-> > > > if nobody worries on UP perf.
-> > > > 
-> > > > I don't have a strong opinion, if any of us really worry about above three
-> > > > use cases on "unless" overhead, and think it worthwhile to add the code to
-> > > > support it, I won't object. But to me it's adding pain with no real benefit
-> > > > we could ever measure, and adding complexity to backport too since we'll
-> > > > need a fix for as old as 6.6.
-> > > 
-> > > ... for the sake of fixing this WARN, I don't primarily care. Adjusting the
-> > > TINY_RCU feels wrong because I suspect somebody had good reasons to do it
-> > > like that, and it actually reported something valuable (using the wrong
-> > > function for the job).
-> > > 
-> > > In any case, if we take the easy route to fix the WARN, I'll come back and
-> > > clean the functions here up properly.
-> > 
-> > Definitely, then there can also be some measurements which will be even
-> > better.  I mean, if the diff is minimal, we can be clearer on the path we
-> > choose; while if it shows improvements we have more solid results than
-> > predictions and discussions.
-> > 
-> > Yes I do worry about the UP change too, hence I sincerely was trying to
-> > collect some feedback.  My current guess is the UP was still important in
-> > 2008 when the code first wrote, and maybe it changed over the 16 years. I
-> > just notice Nicolas wrote it; I know he's still active so I've added him
-> > into the loop too.
-> > 
-> > Just for easier reference, the commit introduced the UP change is:
-> > 
-> > commit e286781d5f2e9c846e012a39653a166e9d31777d
-> > Author: Nicholas Piggin <npiggin@gmail.com>
-> > Date:   Fri Jul 25 19:45:30 2008 -0700
-> > 
-> >      mm: speculative page references
-> > 
-> > +static inline int page_cache_get_speculative(struct page *page)
-> > +{
-> > +       VM_BUG_ON(in_interrupt());
-> > +
-> > +#if !defined(CONFIG_SMP) && defined(CONFIG_CLASSIC_RCU)
-> > +# ifdef CONFIG_PREEMPT
-> > +       VM_BUG_ON(!in_atomic());
-> > +# endif
-> > +       /*
-> > +        * Preempt must be disabled here - we rely on rcu_read_lock doing
-> > +        * this for us.
-> > +        *
-> > +        * Pagecache won't be truncated from interrupt context, so if we have
-> > +        * found a page in the radix tree here, we have pinned its refcount by
-> > +        * disabling preempt, and hence no need for the "speculative get" that
-> > +        * SMP requires.
-> > +        */
-> > +       VM_BUG_ON(page_count(page) == 0);
-> > +       atomic_inc(&page->_count);
-> > +
-> > +#else
-> > +       if (unlikely(!get_page_unless_zero(page))) {
-> > +               /*
-> > +                * Either the page has been freed, or will be freed.
-> > +                * In either case, retry here and the caller should
-> > +                * do the right thing (see comments above).
-> > +                */
-> > +               return 0;
-> > +       }
-> > +#endif
-> > +       VM_BUG_ON(PageTail(page));
-> > +
-> > +       return 1;
-> > +}
-> > 
-> > Thanks,
-> > 
-> 
-> I chased it further to:
-> 
-> commit 8375ad98cc1defc36adf4a77d9ea1e71db51a371
-> Author: Paul E. McKenney <paulmck@kernel.org>
-> Date:   Mon Apr 29 15:06:13 2013 -0700
-> 
->     vm: adjust ifdef for TINY_RCU
->     There is an ifdef in page_cache_get_speculative() that checks for !SMP
->     and TREE_RCU, which has been an impossible combination since the advent
->     of TINY_RCU.  The ifdef enables a fastpath that is valid when preemption
->     is disabled by rcu_read_lock() in UP systems, which is the case when
->     TINY_RCU is enabled.  This commit therefore adjusts the ifdef to
->     generate the fastpath when TINY_RCU is enabled.
-> 
-> 
-> Where Paul explicitly restored that fastpath for TINY_RCU instead of removing that code.
-> 
-> So maybe Paul can comment if that is still worth having. CCing him.
-
-It is currently an atomic operation either way, though the folio_ref_add()
-avoids full ordering, but that is immaterial on x86.  Some say that it is
-in the noise on server-class ARMv8 as well, though they have also said
-a great many things in the past.  But if that is true, the big benefit
-of the TINY_RCU check is that folio_ref_try_add_rcu() is guaranted not
-to fail in that case (single CPU with preemption disabled).  Except that
-everyone has to check the return value anyway, right?
-
-So the usual advice, unsatisfying though it might be, is to remove that
-#ifdef and see if anyone notices.
-
-After all, both 2013 and 2008 were quite some time ago.  ;-)
-
-							Thanx, Paul
+SSBoYXZlIHN1Ym1pdHRlZCBhIFYyIHRvIGZpeCB0aGlzIHdhcm5pbmcgeWVzdGVyZGF5Og0KaHR0
+cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbGludXgta2VybmVsLzIwMjQwNjAzMDkxODA1Ljg1OC0xLXB1
+Z2Fvd2VpQG9wcG8uY29tL1QvDQoNCnRrcy4NCg0KLS0tLS3Tyrz+1K28/i0tLS0tDQq3orz+yMs6
+IGtlcm5lbCB0ZXN0IHJvYm90IDxvbGl2ZXIuc2FuZ0BpbnRlbC5jb20+IA0Kt6LLzcqxvOQ6IDIw
+MjTE6jbUwjPI1SAxMzo1MQ0KytW8/sjLOiDG1bjfzrAoa3Vyb2t5KSA8cHVnYW93ZWlAb3Bwby5j
+b20+DQqzrcvNOiBvZS1sa3BAbGlzdHMubGludXguZGV2OyBsa3BAaW50ZWwuY29tOyBsaW51eC1r
+ZXJuZWxAdmdlci5rZXJuZWwub3JnOyBhdWJyZXkubGlAbGludXguaW50ZWwuY29tOyB5dS5jLmNo
+ZW5AaW50ZWwuY29tOyBtaW5nb0ByZWRoYXQuY29tOyBwZXRlcnpAaW5mcmFkZWFkLm9yZzsganVy
+aS5sZWxsaUByZWRoYXQuY29tOyB2aW5jZW50Lmd1aXR0b3RAbGluYXJvLm9yZzsgZGlldG1hci5l
+Z2dlbWFubkBhcm0uY29tOyByb3N0ZWR0QGdvb2RtaXMub3JnOyBic2VnYWxsQGdvb2dsZS5jb207
+IG1nb3JtYW5Ac3VzZS5kZTsgYnJpc3RvdEByZWRoYXQuY29tOyB2c2NobmVpZEByZWRoYXQuY29t
+OyDG1bjfzrAoa3Vyb2t5KSA8cHVnYW93ZWlAb3Bwby5jb20+OyBvbGl2ZXIuc2FuZ0BpbnRlbC5j
+b20NCtb3zOI6IFJlOiBbUEFUQ0hdIHNjaGVkL2ZhaXI6IHVwZGF0ZXMgd2VpZ2h0IG9mIGNmc19y
+cSBiZWZvcmUgdXBkYXRlX2Nmc19ncm91cCgpIGluIGVucXVldWVfZW50aXR5KCkNCg0KDQoNCkhl
+bGxvLA0KDQprZXJuZWwgdGVzdCByb2JvdCBub3RpY2VkICJXQVJOSU5HOmF0X2tlcm5lbC9zY2hl
+ZC9mYWlyLmM6I3BsYWNlX2VudGl0eSIgb246DQoNCmNvbW1pdDogMDZkMGMyOWM1MzNlNzdjZWY0
+ZjE3OTMzNDNjNzgxODBiMzI2NDVlMCAoIltQQVRDSF0gc2NoZWQvZmFpcjogdXBkYXRlcyB3ZWln
+aHQgb2YgY2ZzX3JxIGJlZm9yZSB1cGRhdGVfY2ZzX2dyb3VwKCkgaW4gZW5xdWV1ZV9lbnRpdHko
+KSIpDQp1cmw6IGh0dHBzOi8vZ2l0aHViLmNvbS9pbnRlbC1sYWItbGtwL2xpbnV4L2NvbW1pdHMv
+cHVnYW93ZWkvc2NoZWQtZmFpci11cGRhdGVzLXdlaWdodC1vZi1jZnNfcnEtYmVmb3JlLXVwZGF0
+ZV9jZnNfZ3JvdXAtaW4tZW5xdWV1ZV9lbnRpdHkvMjAyNDA1MzEtMTExMDEwDQpiYXNlOiBodHRw
+czovL2dpdC5rZXJuZWwub3JnL2NnaXQvbGludXgva2VybmVsL2dpdC90aXAvdGlwLmdpdCA0MDJk
+ZTdmYzg4MGZlZjA1NWJjOTg0OTU3NDU0YjUzMjk4N2U5YWQwDQpwYXRjaCBsaW5rOiBodHRwczov
+L2xvcmUua2VybmVsLm9yZy9hbGwvMjAyNDA1MzEwMzA4MzMuMzM3NS0xLXB1Z2Fvd2VpQG9wcG8u
+Y29tLw0KcGF0Y2ggc3ViamVjdDogW1BBVENIXSBzY2hlZC9mYWlyOiB1cGRhdGVzIHdlaWdodCBv
+ZiBjZnNfcnEgYmVmb3JlIHVwZGF0ZV9jZnNfZ3JvdXAoKSBpbiBlbnF1ZXVlX2VudGl0eSgpDQoN
+CmluIHRlc3RjYXNlOiBib290DQoNCmNvbXBpbGVyOiBnY2MtMTMNCnRlc3QgbWFjaGluZTogcWVt
+dS1zeXN0ZW0teDg2XzY0IC1lbmFibGUta3ZtIC1jcHUgU2FuZHlCcmlkZ2UgLXNtcCAyIC1tIDE2
+Rw0KDQoocGxlYXNlIHJlZmVyIHRvIGF0dGFjaGVkIGRtZXNnL2ttc2cgZm9yIGVudGlyZSBsb2cv
+YmFja3RyYWNlKQ0KDQoNCistLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tKy0tLS0tLS0tLS0tLSstLS0tLS0tLS0tLS0rDQp8ICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgIHwgNDAyZGU3ZmM4OCB8IDA2ZDBjMjljNTMgDQp8IHwN
+CistLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tKy0tLS0tLS0t
+LS0tLSstLS0tLS0tLS0tLS0rDQp8IFdBUk5JTkc6YXRfa2VybmVsL3NjaGVkL2ZhaXIuYzojcGxh
+Y2VfZW50aXR5IHwgMCAgICAgICAgICB8IDggICAgICAgICAgfA0KfCBSSVA6cGxhY2VfZW50aXR5
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8IDAgICAgICAgICAgfCA4ICAgICAgICAgIHwN
+CistLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tKy0tLS0tLS0t
+LS0tLSstLS0tLS0tLS0tLS0rDQoNCg0KSWYgeW91IGZpeCB0aGUgaXNzdWUgaW4gYSBzZXBhcmF0
+ZSBwYXRjaC9jb21taXQgKGkuZS4gbm90IGp1c3QgYSBuZXcgdmVyc2lvbiBvZiB0aGUgc2FtZSBw
+YXRjaC9jb21taXQpLCBraW5kbHkgYWRkIGZvbGxvd2luZyB0YWdzDQp8IFJlcG9ydGVkLWJ5OiBr
+ZXJuZWwgdGVzdCByb2JvdCA8b2xpdmVyLnNhbmdAaW50ZWwuY29tPg0KfCBDbG9zZXM6IA0KfCBo
+dHRwczovL2xvcmUua2VybmVsLm9yZy9vZS1sa3AvMjAyNDA2MDMxMjQwLmYyNDc2ZTk0LW9saXZl
+ci5zYW5nQGludGVsDQp8IC5jb20NCg0KDQpbICAgIDAuNDAwNDA5XVsgICAgVDBdIC0tLS0tLS0t
+LS0tLVsgY3V0IGhlcmUgXS0tLS0tLS0tLS0tLQ0KWyAwLjQwMDYwM11bIFQwXSBXQVJOSU5HOiBD
+UFU6IDAgUElEOiAwIGF0IGtlcm5lbC9zY2hlZC9mYWlyLmM6NTI1NiBwbGFjZV9lbnRpdHkgKGtl
+cm5lbC9zY2hlZC9mYWlyLmM6NTI1NiAoZGlzY3JpbWluYXRvciAxKSkgDQpbICAgIDAuNDAwNjAz
+XVsgICAgVDBdIE1vZHVsZXMgbGlua2VkIGluOg0KWyAgICAwLjQwMDYwM11bICAgIFQwXSBDUFU6
+IDAgUElEOiAwIENvbW06IHN3YXBwZXIvMCBOb3QgdGFpbnRlZCA2LjEwLjAtcmMxLTAwMDAzLWcw
+NmQwYzI5YzUzM2UgIzENClsgICAgMC40MDA2MDNdWyAgICBUMF0gSGFyZHdhcmUgbmFtZTogUUVN
+VSBTdGFuZGFyZCBQQyAoaTQ0MEZYICsgUElJWCwgMTk5NiksIEJJT1MgMS4xNi4yLWRlYmlhbi0x
+LjE2LjItMSAwNC8wMS8yMDE0DQpbIDAuNDAwNjAzXVsgVDBdIFJJUDogMDAxMDpwbGFjZV9lbnRp
+dHkgKGtlcm5lbC9zY2hlZC9mYWlyLmM6NTI1NiAoZGlzY3JpbWluYXRvciAxKSkgWyAwLjQwMDYw
+M11bIFQwXSBDb2RlOiAyOSBjNSBlYiA4MiBiOSAwMiAwMCAwMCAwMCA0OSBjMSBlZSAwYSA0OSAz
+OSBjZSA0YyAwZiA0MiBmMSA0OSA4ZCAwYyAxNiBlYiBkNCA0OCA4OSBkZSBlOCBhMCA1YyBmZiBm
+ZiA0OCA4OSBjNyBlOSA1MCBmZiBmZiBmZiA8MGY+IDBiIGViIGQxIDBmIDFmIDQwIDAwIDkwIDkw
+IDkwIDkwIDkwIDkwIDkwIDkwIDkwIDkwIDkwIDkwIDkwIDkwIEFsbCBjb2RlID09PT09PT09DQog
+ICAwOgkyOSBjNSAgICAgICAgICAgICAgICAJc3ViICAgICVlYXgsJWVicA0KICAgMjoJZWIgODIg
+ICAgICAgICAgICAgICAgCWptcCAgICAweGZmZmZmZmZmZmZmZmZmODYNCiAgIDQ6CWI5IDAyIDAw
+IDAwIDAwICAgICAgIAltb3YgICAgJDB4MiwlZWN4DQogICA5Ogk0OSBjMSBlZSAwYSAgICAgICAg
+ICAJc2hyICAgICQweGEsJXIxNA0KICAgZDoJNDkgMzkgY2UgICAgICAgICAgICAgCWNtcCAgICAl
+cmN4LCVyMTQNCiAgMTA6CTRjIDBmIDQyIGYxICAgICAgICAgIAljbW92YiAgJXJjeCwlcjE0DQog
+IDE0Ogk0OSA4ZCAwYyAxNiAgICAgICAgICAJbGVhICAgICglcjE0LCVyZHgsMSksJXJjeA0KICAx
+ODoJZWIgZDQgICAgICAgICAgICAgICAgCWptcCAgICAweGZmZmZmZmZmZmZmZmZmZWUNCiAgMWE6
+CTQ4IDg5IGRlICAgICAgICAgICAgIAltb3YgICAgJXJieCwlcnNpDQogIDFkOgllOCBhMCA1YyBm
+ZiBmZiAgICAgICAJY2FsbHEgIDB4ZmZmZmZmZmZmZmZmNWNjMg0KICAyMjoJNDggODkgYzcgICAg
+ICAgICAgICAgCW1vdiAgICAlcmF4LCVyZGkNCiAgMjU6CWU5IDUwIGZmIGZmIGZmICAgICAgIAlq
+bXBxICAgMHhmZmZmZmZmZmZmZmZmZjdhDQogIDJhOioJMGYgMGIgICAgICAgICAgICAgICAgCXVk
+MiAgICAJCTwtLSB0cmFwcGluZyBpbnN0cnVjdGlvbg0KICAyYzoJZWIgZDEgICAgICAgICAgICAg
+ICAgCWptcCAgICAweGZmZmZmZmZmZmZmZmZmZmYNCiAgMmU6CTBmIDFmIDQwIDAwICAgICAgICAg
+IAlub3BsICAgMHgwKCVyYXgpDQogIDMyOgk5MCAgICAgICAgICAgICAgICAgICAJbm9wDQogIDMz
+Ogk5MCAgICAgICAgICAgICAgICAgICAJbm9wDQogIDM0Ogk5MCAgICAgICAgICAgICAgICAgICAJ
+bm9wDQogIDM1Ogk5MCAgICAgICAgICAgICAgICAgICAJbm9wDQogIDM2Ogk5MCAgICAgICAgICAg
+ICAgICAgICAJbm9wDQogIDM3Ogk5MCAgICAgICAgICAgICAgICAgICAJbm9wDQogIDM4Ogk5MCAg
+ICAgICAgICAgICAgICAgICAJbm9wDQogIDM5Ogk5MCAgICAgICAgICAgICAgICAgICAJbm9wDQog
+IDNhOgk5MCAgICAgICAgICAgICAgICAgICAJbm9wDQogIDNiOgk5MCAgICAgICAgICAgICAgICAg
+ICAJbm9wDQogIDNjOgk5MCAgICAgICAgICAgICAgICAgICAJbm9wDQogIDNkOgk5MCAgICAgICAg
+ICAgICAgICAgICAJbm9wDQogIDNlOgk5MCAgICAgICAgICAgICAgICAgICAJbm9wDQogIDNmOgk5
+MCAgICAgICAgICAgICAgICAgICAJbm9wDQoNCkNvZGUgc3RhcnRpbmcgd2l0aCB0aGUgZmF1bHRp
+bmcgaW5zdHJ1Y3Rpb24gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PQ0KICAgMDoJMGYgMGIgICAgICAgICAgICAgICAgCXVkMiAgICANCiAgIDI6CWViIGQxICAgICAg
+ICAgICAgICAgIAlqbXAgICAgMHhmZmZmZmZmZmZmZmZmZmQ1DQogICA0OgkwZiAxZiA0MCAwMCAg
+ICAgICAgICAJbm9wbCAgIDB4MCglcmF4KQ0KICAgODoJOTAgICAgICAgICAgICAgICAgICAgCW5v
+cA0KICAgOToJOTAgICAgICAgICAgICAgICAgICAgCW5vcA0KICAgYToJOTAgICAgICAgICAgICAg
+ICAgICAgCW5vcA0KICAgYjoJOTAgICAgICAgICAgICAgICAgICAgCW5vcA0KICAgYzoJOTAgICAg
+ICAgICAgICAgICAgICAgCW5vcA0KICAgZDoJOTAgICAgICAgICAgICAgICAgICAgCW5vcA0KICAg
+ZToJOTAgICAgICAgICAgICAgICAgICAgCW5vcA0KICAgZjoJOTAgICAgICAgICAgICAgICAgICAg
+CW5vcA0KICAxMDoJOTAgICAgICAgICAgICAgICAgICAgCW5vcA0KICAxMToJOTAgICAgICAgICAg
+ICAgICAgICAgCW5vcA0KICAxMjoJOTAgICAgICAgICAgICAgICAgICAgCW5vcA0KICAxMzoJOTAg
+ICAgICAgICAgICAgICAgICAgCW5vcA0KICAxNDoJOTAgICAgICAgICAgICAgICAgICAgCW5vcA0K
+ICAxNToJOTAgICAgICAgICAgICAgICAgICAgCW5vcA0KWyAgICAwLjQwMDYwM11bICAgIFQwXSBS
+U1A6IDAwMDA6ZmZmZmZmZmY4ZjQwM2QzOCBFRkxBR1M6IDAwMDEwMDQ2DQpbICAgIDAuNDAwNjAz
+XVsgICAgVDBdIFJBWDogMDAwMDAwMDAwMDAwMDAwMCBSQlg6IGZmZmY5YTNlNDAyNmE4ODAgUkNY
+OiAwMDAwMDAwMDAwMDAwNDAwDQpbICAgIDAuNDAwNjAzXVsgICAgVDBdIFJEWDogMDAwMDAwMDAw
+MDAwMDAwMCBSU0k6IGZmZmZmZmZmZmZmMDAwMDAgUkRJOiAwMDAwMDAwMDAwMGI3MWIwDQpbICAg
+IDAuNDAwNjAzXVsgICAgVDBdIFJCUDogZmZmZmZmZmZmZmYwMDAwMCBSMDg6IDAwMDAwMDAwMDAw
+MDAwMDEgUjA5OiAwMDAwMDAwMDAwMDAwMDAwDQpbICAgIDAuNDAwNjAzXVsgICAgVDBdIFIxMDog
+MDAwMDAwMDAwMDAwMDAwMCBSMTE6IDAwMDAwMDAwOTRmNGVmYTggUjEyOiBmZmZmOWE0MTZmYzM0
+OGMwDQpbICAgIDAuNDAwNjAzXVsgICAgVDBdIFIxMzogMDAwMDAwMDAwMDAwMDAwOCBSMTQ6IDAw
+MDAwMDAwMDAwMDA0MDAgUjE1OiAwMDAwMDAwMDAwMDAwMDAxDQpbICAgIDAuNDAwNjAzXVsgICAg
+VDBdIEZTOiAgMDAwMDAwMDAwMDAwMDAwMCgwMDAwKSBHUzpmZmZmOWE0MTZmYzAwMDAwKDAwMDAp
+IGtubEdTOjAwMDAwMDAwMDAwMDAwMDANClsgICAgMC40MDA2MDNdWyAgICBUMF0gQ1M6ICAwMDEw
+IERTOiAwMDAwIEVTOiAwMDAwIENSMDogMDAwMDAwMDA4MDA1MDAzMw0KWyAgICAwLjQwMDYwM11b
+ICAgIFQwXSBDUjI6IGZmZmY5YTQxN2ZmZmYwMDAgQ1IzOiAwMDAwMDAwMWU0YTFjMDAwIENSNDog
+MDAwMDAwMDAwMDA0MDZmMA0KWyAgICAwLjQwMDYwM11bICAgIFQwXSBEUjA6IDAwMDAwMDAwMDAw
+MDAwMDAgRFIxOiAwMDAwMDAwMDAwMDAwMDAwIERSMjogMDAwMDAwMDAwMDAwMDAwMA0KWyAgICAw
+LjQwMDYwM11bICAgIFQwXSBEUjM6IDAwMDAwMDAwMDAwMDAwMDAgRFI2OiAwMDAwMDAwMGZmZmUw
+ZmYwIERSNzogMDAwMDAwMDAwMDAwMDQwMA0KWyAgICAwLjQwMDYwM11bICAgIFQwXSBDYWxsIFRy
+YWNlOg0KWyAgICAwLjQwMDYwM11bICAgIFQwXSAgPFRBU0s+DQpbIDAuNDAwNjAzXVsgVDBdID8g
+X193YXJuIChrZXJuZWwvcGFuaWMuYzo2OTMpIFsgMC40MDA2MDNdWyBUMF0gPyBwbGFjZV9lbnRp
+dHkgKGtlcm5lbC9zY2hlZC9mYWlyLmM6NTI1NiAoZGlzY3JpbWluYXRvciAxKSkgWyAwLjQwMDYw
+M11bIFQwXSA/IHJlcG9ydF9idWcgKGxpYi9idWcuYzoxODAgbGliL2J1Zy5jOjIxOSkgWyAwLjQw
+MDYwM11bIFQwXSA/IGhhbmRsZV9idWcgKGFyY2gveDg2L2tlcm5lbC90cmFwcy5jOjIzOSkgWyAw
+LjQwMDYwM11bIFQwXSA/IGV4Y19pbnZhbGlkX29wIChhcmNoL3g4Ni9rZXJuZWwvdHJhcHMuYzoy
+NjAgKGRpc2NyaW1pbmF0b3IgMSkpIFsgMC40MDA2MDNdWyBUMF0gPyBhc21fZXhjX2ludmFsaWRf
+b3AgKGFyY2gveDg2L2luY2x1ZGUvYXNtL2lkdGVudHJ5Lmg6NjIxKQ0KWyAwLjQwMDYwM11bIFQw
+XSA/IHBsYWNlX2VudGl0eSAoa2VybmVsL3NjaGVkL2ZhaXIuYzo1MjU2IChkaXNjcmltaW5hdG9y
+IDEpKSBbIDAuNDAwNjAzXVsgVDBdID8gcGxhY2VfZW50aXR5IChrZXJuZWwvc2NoZWQvZmFpci5j
+OjUxODIpIFsgMC40MDA2MDNdWyBUMF0gZW5xdWV1ZV9lbnRpdHkgKGtlcm5lbC9zY2hlZC9mYWly
+LmM6NTMyOCkgWyAwLjQwMDYwM11bIFQwXSBlbnF1ZXVlX3Rhc2tfZmFpciAoa2VybmVsL3NjaGVk
+L2ZhaXIuYzo2Nzg1KSBbIDAuNDAwNjAzXVsgVDBdIHdha2VfdXBfbmV3X3Rhc2sgKGtlcm5lbC9z
+Y2hlZC9jb3JlLmM6MjAxNSAoZGlzY3JpbWluYXRvciAyKSBrZXJuZWwvc2NoZWQvY29yZS5jOjQ2
+OTMgKGRpc2NyaW1pbmF0b3IgMikpIFsgMC40MDA2MDNdWyBUMF0ga2VybmVsX2Nsb25lIChrZXJu
+ZWwvZm9yay5jOjI4MzEgKGRpc2NyaW1pbmF0b3IgMSkpIFsgMC40MDA2MDNdWyBUMF0gdXNlcl9t
+b2RlX3RocmVhZCAoa2VybmVsL2ZvcmsuYzoyODc2KSBbIDAuNDAwNjAzXVsgVDBdID8gX19wZnhf
+a2VybmVsX2luaXQgKGluaXQvbWFpbi5jOjE0NTkpIFsgMC40MDA2MDNdWyBUMF0gcmVzdF9pbml0
+IChpbml0L21haW4uYzo3MTIpIFsgMC40MDA2MDNdWyBUMF0gc3RhcnRfa2VybmVsIChpbmNsdWRl
+L3RyYWNlL2V2ZW50cy9pbml0Y2FsbC5oOjI3IGluaXQvbWFpbi5jOjEyMzQgaW5pdC9tYWluLmM6
+MTAwMSkgWyAwLjQwMDYwM11bIFQwXSB4ODZfNjRfc3RhcnRfcmVzZXJ2YXRpb25zIChhcmNoL3g4
+Ni9rZXJuZWwvaGVhZDY0LmM6NDk1KSBbIDAuNDAwNjAzXVsgVDBdIHg4Nl82NF9zdGFydF9rZXJu
+ZWwgKGFyY2gveDg2L2tlcm5lbC9oZWFkNjQuYzo0MzcgKGRpc2NyaW1pbmF0b3IgNSkpIFsgMC40
+MDA2MDNdWyBUMF0gY29tbW9uX3N0YXJ0dXBfNjQgKGFyY2gveDg2L2tlcm5lbC9oZWFkXzY0LlM6
+NDIxKSANClsgICAgMC40MDA2MDNdWyAgICBUMF0gIDwvVEFTSz4NClsgICAgMC40MDA2MDNdWyAg
+ICBUMF0gLS0tWyBlbmQgdHJhY2UgMDAwMDAwMDAwMDAwMDAwMCBdLS0tDQoNCg0KDQpUaGUga2Vy
+bmVsIGNvbmZpZyBhbmQgbWF0ZXJpYWxzIHRvIHJlcHJvZHVjZSBhcmUgYXZhaWxhYmxlIGF0Og0K
+aHR0cHM6Ly9kb3dubG9hZC4wMS5vcmcvMGRheS1jaS9hcmNoaXZlLzIwMjQwNjAzLzIwMjQwNjAz
+MTI0MC5mMjQ3NmU5NC1vbGl2ZXIuc2FuZ0BpbnRlbC5jb20NCg0KDQoNCi0tDQowLURBWSBDSSBL
+ZXJuZWwgVGVzdCBTZXJ2aWNlDQpodHRwczovL2dpdGh1Yi5jb20vaW50ZWwvbGtwLXRlc3RzL3dp
+a2kNCg0K
