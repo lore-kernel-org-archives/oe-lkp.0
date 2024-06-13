@@ -1,140 +1,278 @@
-Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E2A584E07
-	for <oe-lkp@lists.linux.dev>; Wed, 12 Jun 2024 21:46:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.175
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718228817; cv=none; b=ZKcUty7ZHDrMXdlBK7gk1ijAt+yWSlxcehgOKwmeY+VvNRN/LTIlWTuv+QZHWFlVRMw3z8rw1AJvac0u8ll3s4wDntWdEHrLYb5+49ypnSTi8tXACrn482qd6o3qWxcCd6IaKAFTmcRbX3twggu4vyVWd0G29qnZyqYUYN46Q2U=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718228817; c=relaxed/simple;
-	bh=+InWqwc59WaX46vE5AxcsSfl1jFryAeQ5J5u3z8pMrY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=YqRfA8GZzllZuDE6AtF9UMcIuZiMXUXK3eVFrPZFLhQ5LTVJ56TlZiremVRVY4giYRNBLiGX7zpYCRYteQMw6LBP9WHQRa76d5oLhATQZIvE8ZNI7akdpKscGTisGk27oNwSy/DBlG/+xla4BDlP/2TqF1kA+NFHQxRhOANoAPU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Ngnk/4tp; arc=none smtp.client-ip=209.85.160.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CE067F9
+	for <oe-lkp@lists.linux.dev>; Thu, 13 Jun 2024 01:55:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.15
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1718243746; cv=fail; b=gH3oHG75nCObjh67OFOAHi9lMQAZFx1lKiD85/44e4rJQ4pXarAJNo4RX6gm5xEN+NH7xvo00FaEWwHCNUvRk3Ks27I6WStlsbOwyXY4M4Qki1q82Cd//1kyPlTk0jdw0JoLF/A8oY9Nkg2N/H3EkaY5cF4iaOr4E1F7KpCY4Fs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1718243746; c=relaxed/simple;
+	bh=QyRdAI4TAbaLHa3wHdLDIXl4IGACHlVezpReSKxdI4g=;
+	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
+	 Content-Disposition:MIME-Version; b=HySZAUYObYGnbKNfsywVpj5D8BBSAfcjufsvdkctCl1n29b1Ysj0yB9eDt8+kH//PpBdKLE112fPDYGdZAuuSL4XyOcOP+Yf8IFyBXVBCvnFuXTHSwQZBaiEELlDkSZeaM0aDPwypLfkn4e7Eu8EHM4osU8YYITFvfe2ktskOQs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RLUlFf7g; arc=fail smtp.client-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Ngnk/4tp"
-Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-44056f72257so106471cf.0
-        for <oe-lkp@lists.linux.dev>; Wed, 12 Jun 2024 14:46:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1718228815; x=1718833615; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XGFO/gWpjWxRc6zdNFKUtA+WWgn2yoVFVUtmjvc0LMM=;
-        b=Ngnk/4tpjj+BKrgUY768Dw6s4BmYukfx61U+w71lIrl8XRDwZEGFxv9Y1dDLJIu9uU
-         eJQA1yxh3gnC2zWlGBk6QFPuMMYsPbsMflWKk6/q1MlxiHHPlmg0AJzKS5herb99VzDo
-         urBSraaJmfg4/8GZjGoJS99f5elRFs9Fva0hkf2GGLJDtZ1hcNnVXVCHAOF1o2kK6PdW
-         tvKx/wIbpSahFHl9JFESKyWrZ3gguliDmIi1N+4mpeE61KqXQsfhVPqIN2Fa8hKv0h5n
-         8tB20YLRAr1STGLaq9gm3HdOFHGYm329fq0NCx5ZFoBF/iAufTYUI+Svc/S9FuhxfZFI
-         /ZhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718228815; x=1718833615;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=XGFO/gWpjWxRc6zdNFKUtA+WWgn2yoVFVUtmjvc0LMM=;
-        b=rXGgx8vIQ9VOVif5N+QhfS4dG7+B6ApHpioQN1/km7VxvExO4b8ImzFuQMza4dEZT+
-         IcMmdjpPorCtdqB7fwhcNn+7Qn63MU9tOER3/bnN7arI51b1Vh9tg9rfsvws8D8ad68p
-         zwlR5KpDdlDc2YPEZTkab/xYwsESV3ZOrv0TIDh0rMNCP4e8Hso6xtIlTTjYJbnGO5OT
-         2ZBeHgrTpJeGp/w6Rbe7W6IB1u6H6p4Ofzj/qOnNosDr5L1hO5jnKYAUiZWDbbxOIEqw
-         LZ36jbk0fqU6QJIdL9ET8NUbX9G2sEfdqUqXH/mixmOR9B2BGtN8mD4vJcns+PbrTDvF
-         r6IA==
-X-Gm-Message-State: AOJu0Ywr16Aaj735qbd1//03UjDW+c3OSSbVScfJ42BF2+UD57CBU8n2
-	s+a51H2l23WhUFGz3Z5FPkIxMQs96LxpMtAblr3HZhRd3UrIM6UdAnJ76JXwr+iD7UUGURAAn4l
-	SqSGxoxhipuAFMqZYux530fL9q1SoWrzF3uAr
-X-Google-Smtp-Source: AGHT+IF7kA7jzJbe/avrLLkOmazBUAeVUG1MPaJsw0sfB3QphtF3xLPAgEAF+B2A3ZPJawxP8BglPYnijgmcaHbwINE=
-X-Received: by 2002:a05:622a:1b17:b0:43e:cb4:1d10 with SMTP id
- d75a77b69052e-441a1272b40mr740741cf.14.1718228814988; Wed, 12 Jun 2024
- 14:46:54 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RLUlFf7g"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1718243745; x=1749779745;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=QyRdAI4TAbaLHa3wHdLDIXl4IGACHlVezpReSKxdI4g=;
+  b=RLUlFf7g8MCux2YlDM1n5tZ9w7HUFMlhRKVtjm8TlEmQp9WLlOJNydh+
+   O7hz03nKrUnpmOPmdMcqN2AdMM4F7c2x37ZOXAn2+HhXzTDZ4J2ZVinSx
+   WZYAa7qPoxmqvytNbiV7PyH3+4YeipHTjTVC8IjvEfjKoZeEJnwD9x1ML
+   BuVuPWSh8MmLVA3KRQiLNgT73ZDBuhPp5adEfMWSod1NrVeKR1onNo4s+
+   4H6nki2Vu7B0hUo2T4IEeu+5GZGjZGxgd3qMEPZsySxxkSV69PM7pze6X
+   OOdzk6YG5Kyt5GM+qlUY/PQ3qd4PkvgRebUfOZH9Sww3rhJ4m8V4jcXVc
+   w==;
+X-CSE-ConnectionGUID: 3qRQRh6+QRao5D2KaZ6sVw==
+X-CSE-MsgGUID: /rIswDLLSi6e+4AC2HQkRg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11101"; a="18821240"
+X-IronPort-AV: E=Sophos;i="6.08,234,1712646000"; 
+   d="scan'208";a="18821240"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2024 18:55:44 -0700
+X-CSE-ConnectionGUID: TvP27yPQTfe0cOgOGxR1fw==
+X-CSE-MsgGUID: Fotk3TprRvuJBUelIEBT4g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,234,1712646000"; 
+   d="scan'208";a="44880602"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by orviesa003.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 12 Jun 2024 18:55:44 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39; Wed, 12 Jun 2024 18:55:43 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39 via Frontend Transport; Wed, 12 Jun 2024 18:55:43 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.45) by
+ edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.39; Wed, 12 Jun 2024 18:55:43 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IhPSHQZCVyZF5sZ5b6Dr6UHOwNbPuhAZe7KRNwBgMCs/QAKqrkHap87htPNcorg6D4ePzOO85wpoGB3a8p87orZD0ZmQ7G4EOn4y6UsmFAEmt/cj9hSVi5bo649L07z0P6AIfhU8V3uo0qfn52OqLvNdgfq6CP3fxyT0RyQQGr7Zj+UVXFc2uc7jqCq0FVgfAr9Cy5N1/td4xinLYtPJIC+yO2vfyUPi/lb9AuZzHITWcoeGaM5STD8n7i4WUKcvJ0rlXH8eWCoX3+KtejIpwUYuBacJ9ZWwP173TDwSzS58noVSBJufFxmqfxc7zxLRDR1UprNM6mTor2iYKHR+6w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=wC2m8EmJ72mT2tgD4kBBzmQm5acX0s7VEC1QOYCQYj8=;
+ b=HsW1xrGkDemk6E+FTwi3TD9A614iqYZToCelpXRJDypBoWmt8RdNq9yVL9FMJVh9fMJaYSii2o3Wix5jlMpqHKvk+XXTqx5X5IzaJEXomLZmkaa1gy9s246+qxOZztUXLpV0d9yRDguJ313DdDk6yoYg3QRYyQ52ZSJxtbtZRePtmoCc+DDVZapGNoYW5bo+wladrRxn+idLXC2jyxQjoPIZwDq3+E9MLPYE3JaO4PeXWcVmT4UJ/IB58UQk2xv6tDqdy0BuQF6LfcHS7gHpj4p0D+AKY31N2X1RvZzVooENiOn2h76nOQ34HiXygVt1MLzNzX/CnSmzc8x/h4tAww==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by PH8PR11MB8037.namprd11.prod.outlook.com (2603:10b6:510:25d::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7677.21; Thu, 13 Jun
+ 2024 01:55:41 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c%2]) with mapi id 15.20.7633.037; Thu, 13 Jun 2024
+ 01:55:41 +0000
+Date: Thu, 13 Jun 2024 09:55:32 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: Golan Ben Ami <golan.ben.ami@intel.com>, Michael Golant
+	<michael.golant@intel.com>, Johannes Berg <johannes.berg@intel.com>,
+	"Emmanuel Grumbach" <emmanuel.grumbach@intel.com>, Miri Korenblit
+	<miriam.rachel.korenblit@intel.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <oliver.sang@intel.com>
+Subject: [iwlwifi-chromeos:chromeos-5.10__release/core59-42] [ANDROID]
+ dc5104c1e9:
+  UBSAN:array-index-out-of-bounds_in_drivers/cpufreq/cpufreq_times.c
+Message-ID: <202406121648.3131bad6-oliver.sang@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+X-ClientProxiedBy: SG2PR01CA0140.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:8f::20) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240525013021.436430-2-irogers@google.com> <202405311548.1e881dea-oliver.sang@intel.com>
- <CAP-5=fX7ZyT82=W8uSZbT7c76E5+1JaoR5-y_gcj7A_=Js1YfA@mail.gmail.com>
- <Zl3Q7AtOWY8ZCcg8@xsang-OptiPlex-9020> <CAP-5=fU=UPpZTULuyZm=Ep0Ri6SdTciL5kqpciUfnWyDvz6HZg@mail.gmail.com>
-In-Reply-To: <CAP-5=fU=UPpZTULuyZm=Ep0Ri6SdTciL5kqpciUfnWyDvz6HZg@mail.gmail.com>
-From: Ian Rogers <irogers@google.com>
-Date: Wed, 12 Jun 2024 14:46:43 -0700
-Message-ID: <CAP-5=fV5Qdu5iH_DKeAXQfEmQN9SmxCViSgbOCvAmN529WoeOw@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] perf jevents: Autogenerate empty-pmu-events.c
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-perf-users@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, Weilin Wang <weilin.wang@intel.com>, 
-	Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, 
-	Arnaldo Carvalho de Melo <acme@kernel.org>, Namhyung Kim <namhyung@kernel.org>, 
-	Mark Rutland <mark.rutland@arm.com>, 
-	Alexander Shishkin <alexander.shishkin@linux.intel.com>, Jiri Olsa <jolsa@kernel.org>, 
-	Adrian Hunter <adrian.hunter@intel.com>, Kan Liang <kan.liang@linux.intel.com>, 
-	Jing Zhang <renyu.zj@linux.alibaba.com>, John Garry <john.g.garry@oracle.com>, 
-	Sandipan Das <sandipan.das@amd.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|PH8PR11MB8037:EE_
+X-MS-Office365-Filtering-Correlation-Id: fef4e5aa-8544-4972-d10e-08dc8b4bedc9
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230034|376008|1800799018|366010;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?Zp9GUH1Pw7fKZOYa/2dwJA1pGUCQgc1e1Iaopvq1IqnDe3skidfLgzHICjhZ?=
+ =?us-ascii?Q?7aPL237BnxDfl6XnWdFsDJ27bnRpLKU8cTDe6nXysFjoHjbIyqTjFDG/MszZ?=
+ =?us-ascii?Q?L6PERxZiJvOz/eeRhAmSNuhng5g57KIPhQgWrk7VJI4i8kCIxwQYPy0FOlG9?=
+ =?us-ascii?Q?yd8CLOhDiBQ7MqBVqDqXfVR3+++LyJorNvNZD7jC6xls4clVnvHBfObY/8UI?=
+ =?us-ascii?Q?jrBW+8/7cQ58tAQ9Psjqqq6Co+lDm2ORzQ4Po+TWl4fmp/PIoM6LScNdaMxZ?=
+ =?us-ascii?Q?gPnWJmw2NzlXt/12ct7op3uniyHkcReHwv41RjLTScRDiUnhMXKLVCtMcfVz?=
+ =?us-ascii?Q?70rb0QwVhI45Y/yt6LXzp9c6dH92PEeIN9gtAfiAqsfqDMqonLe+7FeLltzy?=
+ =?us-ascii?Q?LBxDLOLGaTJCkn4UqybJclYGQRLhHLw6J3pMovCC3zXYkjdkwuqIlge88D9w?=
+ =?us-ascii?Q?0xXn9o0aK4L2lDX5gUkue1QHpKcAYIsmUiEbAzyKZQ7ipNawvqDYp1n2MpNT?=
+ =?us-ascii?Q?XxUJQJI9bhVLzi0rgiRWGL7EqgiEd3U3PU/aeljlBUqPNX0y9gQpXAySJnB2?=
+ =?us-ascii?Q?JytAnkUJZffpzftO5olXPf976lAxrLgGgckUjBgc5oT2AK4FFKnloo9Jj3IM?=
+ =?us-ascii?Q?Lkrpds8avb86W5s4gsCaGaH0a69Kc9YcT0l4att0uWhFqDOHHavJ5kW65/F+?=
+ =?us-ascii?Q?yYpkqeZZ/QbsPZTFaZccv0ZVxQgHYozwnUiodhhKaWMtuz077ifmL59rH/O4?=
+ =?us-ascii?Q?qELtftRG+JmYHbbjqrTFLNKP3dzcUYpoelwvaWXQc95exiH1pn1kW+gEVDvK?=
+ =?us-ascii?Q?K6at3VMvUrFtFEymlSn0Oniai647FRbJTujzNTafzCdNwpPg39MUS9rHqvvU?=
+ =?us-ascii?Q?RQ5hRxdrV5qmQenYnFVed9zYo+4LIaMrQiq5zfpj0dXvEBXALVHSUe6/ZLtO?=
+ =?us-ascii?Q?licxv4Owx2bcuKjTeG4OQJjuP2f88AQd2zgWi9sdPmgVqEi6W9fMZmde5RVt?=
+ =?us-ascii?Q?a0bHlVeCMruxJqSMafwoTj/4Y+JAIrNjNmg0cySRVNBH1yUxDHkPK52O6frg?=
+ =?us-ascii?Q?M7o4HELddbjTWHp1rqwGmZNKbo+ZdbeN4QIw3w3f/VIONcO3chNaX46maOby?=
+ =?us-ascii?Q?SDazcyVlp+bsoJVQ7wfGeExms+BPjq1QvE72f3gq3Qbo2QTgc8rEBEAj4+PV?=
+ =?us-ascii?Q?utvQsxUQBWDXZxR/IsTt8iNUbVXfnYioKkqCmd3wH6g5K+nusL7KgR6yw2zs?=
+ =?us-ascii?Q?xhepCuSkIKLVx+kSZjlbPEn2JwAkWjjk2sOSEHKENA=3D=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230034)(376008)(1800799018)(366010);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?1x9KyWSkALKvXqJuIGHah/Zg3NF3mqis+ReB74fonfPqo0QlCG5SVuoC0Czq?=
+ =?us-ascii?Q?2yjRXgBMvgN3bA81CT3Fs3ju+ozz6verEbthn075dTMdykTx6ieJNweIwLdi?=
+ =?us-ascii?Q?Uv3rdpMmDH/2rJN/F0vLGRjBFqxVeq/fvKpVHStJ9I468gI0sKUOMO5nVLvw?=
+ =?us-ascii?Q?ulCHRzMTj7RSokYrEhCH3NmD/4Kt1Yq2DG5ElIxZhomMxhM+MmsWBzUmV9Ow?=
+ =?us-ascii?Q?EIO9yfPmMlk6VWaFR1lsdUrZb6B5Uoq9QTDYWhCw0m17xaZpxmnMWpubyRIE?=
+ =?us-ascii?Q?mLeLzQ8m1ghAgb4XJwI4Jgj84Pg6sPXf+JPRq4fA5khNr5fxwzwCoqhgXvdO?=
+ =?us-ascii?Q?Pd7wi7/laWS7HGOIrJLVvyVEFmdtP3LcdQFYVSPPkzULha8Ty5O0WYYm2HR4?=
+ =?us-ascii?Q?jwJ76XkuEuQerAtN9KMHVoPFsDmLxK4DiW7q4ovh7u+DX0YTUNDRUdZDK63b?=
+ =?us-ascii?Q?GXIbQPi2I63WgdXLbhdWlz522sSx+akZnu8rCbpBT4qI1NZcqwWBgnuZqyPq?=
+ =?us-ascii?Q?BpzibS5tUla2ov7iKCA5SmZPnu0Wc1f9qAKREFvFmtK1T2eVc66ZzN8gugSh?=
+ =?us-ascii?Q?fRLq5g4/bKzFw9hUv2bLITAPQXaiqB+asd7+zl4sIgnnunVss5aMpE/nFjI3?=
+ =?us-ascii?Q?ipgFr6WT5HaMh2mgMlxoQIAg/GBScJi0OdGVgrHYZe2mJY0YohHJnMd78NZH?=
+ =?us-ascii?Q?BrsPr9PjVWC0pYtMt9Vvqhlhn3+rEsPhoyARwOgJu0iCb4uaojAjDAmpjb/K?=
+ =?us-ascii?Q?uCP6/e2XLlBTSdjZiocQna0a604uMwTBNCZ6btMTyLKM7AEhjGJwwGjZfvm5?=
+ =?us-ascii?Q?zN9IvR3Lk2dRfXbq570N40m6rEWL9d9OBK8a+qza2gnIAPAYgLI/QjnvdxlF?=
+ =?us-ascii?Q?nuVB3iINEuZbdyi3Mg05d7j11LyzOycq8DkBwsFd9p0fIT6GmqJg7XKUj++Q?=
+ =?us-ascii?Q?QOlu7ptLXvv7k+DCxPG1lduo1hPEcNsq5URfUdH6iMmdGdYHJMFfcPN/iCme?=
+ =?us-ascii?Q?4c8tca4te+APIq6i1s87xCP+nhB73iPYWF+t9tOK8RqKFYB43V2AOHtMnGmM?=
+ =?us-ascii?Q?bRo8nCPzSZqKgOO+N2y6HgAyWohuDBQ16FcANAqz/5zNfAhXuTM6kjDArOa0?=
+ =?us-ascii?Q?3G+7sNYa2cQwx+NxlpevrFtFxi5nnt5FBXAaP8qNdwDdealK4vxIMvb7HFiT?=
+ =?us-ascii?Q?MTr+ZsW2BdIrxGmK1PseSE2wQFVcUfrUVkir97W9qb1xzuhgDyyvx5FXLFIX?=
+ =?us-ascii?Q?lZaRLi7rWSOQVlda7CsrVG3gJvX9WH6d8qLhqWJT7WafX8GBtLzAbzZMceIB?=
+ =?us-ascii?Q?jhJTM7idc1pMN3NN/kQrZGiNb0ngYY+LP9fDN/z8o60GD1544z9zybr4E4VB?=
+ =?us-ascii?Q?hQDInEotgwlpP1HJOZnwHA3YFDFCogjelZ/jn5jMZK1PVLa+f/i0oWhyAX9Y?=
+ =?us-ascii?Q?N5o+Z6PtMdTBR9B3fr3CKbRyeyIqDaZqv7seXN1WhRXDh4SW+Vhwwro9GoDL?=
+ =?us-ascii?Q?1vMs/G/0/mtq6/j9lEeRwTQ3eWdFAuNZzIg5Zj+gXC46KMpayqnlt+Zqqtpz?=
+ =?us-ascii?Q?NY3o6j4ySIRzsI86EwniOgJMHXQZPE5v6XYuozeO7xJQcmB5RDtoWh/KE8tl?=
+ =?us-ascii?Q?PQ=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: fef4e5aa-8544-4972-d10e-08dc8b4bedc9
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jun 2024 01:55:41.1157
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: pYylkfaPi7gxkiMZQuj1yVp4EbBhV1rLSh9IIDhbH3UFERCHNN4WsCfJscTanWQdVOyv4UPN/MypPsXLIJyGBQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR11MB8037
+X-OriginatorOrg: intel.com
 
-On Mon, Jun 3, 2024 at 8:46=E2=80=AFAM Ian Rogers <irogers@google.com> wrot=
-e:
->
-> On Mon, Jun 3, 2024 at 7:19=E2=80=AFAM Oliver Sang <oliver.sang@intel.com=
-> wrote:
-[...]
-> > I tried below patch
-> >
-> > commit a79a41133a41adc2d69c8f603c7d880b3796cbf7
-> > Author: 0day robot <lkp@intel.com>
-> > Date:   Mon Jun 3 16:35:45 2024 +0800
-> >
-> >     fix from Ian Rogers: invoke "diff -w -u" instead of "diff -u"
-> >
-> > diff --git a/tools/perf/pmu-events/Build b/tools/perf/pmu-events/Build
-> > index c3fa43c497069..54d19b492db5c 100644
-> > --- a/tools/perf/pmu-events/Build
-> > +++ b/tools/perf/pmu-events/Build
-> > @@ -39,7 +39,7 @@ $(TEST_EMPTY_PMU_EVENTS_C): $(JSON) $(JSON_TEST) $(JE=
-VENTS_PY) $(METRIC_PY) $(ME
-> >
-> >  $(EMPTY_PMU_EVENTS_TEST_LOG): $(EMPTY_PMU_EVENTS_C) $(TEST_EMPTY_PMU_E=
-VENTS_C)
-> >         $(call rule_mkdir)
-> > -       $(Q)$(call echo-cmd,test)diff -u $? 2> $@ || (cat $@ && false)
-> > +       $(Q)$(call echo-cmd,test)diff -w -u $? 2> $@ || (cat $@ && fals=
-e)
-> >
-> >  $(PMU_EVENTS_C): $(JSON) $(JSON_TEST) $(JEVENTS_PY) $(METRIC_PY) $(MET=
-RIC_TEST_LOG) $(EMPTY_PMU_EVENTS_TEST_LOG)
-> >         $(call rule_mkdir)
-> >
-> >
-> > but make still failed. I still saw below in our build log
-> >
-> > --- pmu-events/empty-pmu-events.c       2024-06-03 08:41:16.000000000 +=
-0000
-> > +++ pmu-events/test-empty-pmu-events.c  2024-06-03 13:47:19.522463482 +=
-0000
-> > @@ -136,7 +136,7 @@
-> >  { 2623 }, /* M3\000\0001 / M3\000\000\000\000\000\000\000\00000 */
-> >  { 2078 }, /* cache_miss_cycles\000group1\000dcache_miss_cpi + icache_m=
-iss_cycles\000\000\000\000\000\000\000\00000 */
-> >  { 1947 }, /* dcache_miss_cpi\000\000l1d\\-loads\\-misses / inst_retire=
-d.any\000\000\000\000\000\000\000\00000 */
-> > -{ 2011 }, /* icache_miss_cycles\000\000l1i\\-loads\\-misses / inst_ret=
-iredany\000\000\000\000\000\000\000\00000 */
-> > +{ 2011 }, /* icache_miss_cycles\000\000l1i\\-loads\\-misses / inst_ret=
-ired.any\000\000\000\000\000\000\000\00000 */
-> >
-> >  };
-> >
-> >
-> > I will try to get generated test-empty-pmu-events.c tomorrow.
->
-> Thanks Oliver, if you could get the environment variables that would
-> probably also be useful.
 
-Hi Oliver, any update on this?
 
-Thanks,
-Ian
+Hello,
+
+kernel test robot noticed "UBSAN:array-index-out-of-bounds_in_drivers/cpufreq/cpufreq_times.c" on:
+
+commit: dc5104c1e9120632e66bf34df3cd450f3252bf7c ("ANDROID: cpufreq: create dummy cpufreq driver")
+https://git.kernel.org/cgit/linux/kernel/git/iwlwifi/chromeos.git chromeos-5.10__release/core59-42
+
+in testcase: boot
+
+compiler: gcc-13
+test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+
+(please refer to attached dmesg/kmsg for entire log/backtrace)
+
+
+we noticed there are various UBSAN:array-index-out-of-bounds issues for both
+dc5104c1e9 and its parent, but
+UBSAN:array-index-out-of-bounds_in_drivers/cpufreq/cpufreq_times.c
+only shows on this commit
+
+
+f9e26868187498e4 dc5104c1e9120632e66bf34df3c
+---------------- ---------------------------
+       fail:runs  %reproduction    fail:runs
+           |             |             |
+         20:20           0%          20:20    dmesg.UBSAN:array-index-out-of-bounds_in_drivers/acpi/pci_link.c
+           :20         100%          20:20    dmesg.UBSAN:array-index-out-of-bounds_in_drivers/cpufreq/cpufreq_times.c
+         20:20           0%          20:20    dmesg.UBSAN:array-index-out-of-bounds_in_include/linux/memcontrol.h
+         20:20           0%          20:20    dmesg.UBSAN:array-index-out-of-bounds_in_include/net/netns/generic.h
+         20:20           0%          20:20    dmesg.UBSAN:array-index-out-of-bounds_in_mm/memcontrol.c
+         20:20           0%          20:20    dmesg.UBSAN:array-index-out-of-bounds_in_mm/mmu_gather.c
+         20:20           0%          20:20    dmesg.UBSAN:array-index-out-of-bounds_in_net/core/net_namespace.c
+         20:20           0%          20:20    dmesg.UBSAN:array-index-out-of-bounds_in_net/ipv4/fib_trie.c
+
+
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202406121648.3131bad6-oliver.sang@intel.com
+
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20240612/202406121648.3131bad6-oliver.sang@intel.com
+
+
+[   14.315440][    T1] ================================================================================
+[   14.317241][    T1] UBSAN: array-index-out-of-bounds in drivers/cpufreq/cpufreq_times.c:188:20
+[   14.319143][    T1] index 0 is out of range for type 'unsigned int [*]'
+[   14.320380][    T1] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.10.0-00030-gdc5104c1e912 #1
+[   14.321918][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+[   14.323105][    T1] Call Trace:
+[   14.323105][    T1]  dump_stack+0xb2/0xe9
+[   14.323105][    T1]  ubsan_epilogue+0x5/0x3e
+[   14.323105][    T1]  __ubsan_handle_out_of_bounds.cold+0x40/0x45
+[   14.323105][    T1]  cpufreq_times_create_policy+0x222/0x5a0
+[   14.323105][    T1]  cpufreq_online+0x593/0x10d0
+[   14.323105][    T1]  cpufreq_add_dev+0x133/0x1a0
+[   14.323105][    T1]  subsys_interface_register+0x25a/0x3d0
+[   14.323105][    T1]  ? subsys_register+0x1b0/0x1b0
+[   14.323105][    T1]  ? __ww_mutex_check_kill+0x510/0x510
+[   14.323105][    T1]  cpufreq_register_driver+0x307/0x590
+[   14.323105][    T1]  ? CPU_FREQ_GOV_CONSERVATIVE_init+0x10/0x10
+[   14.323105][    T1]  do_one_initcall+0xb9/0x3e0
+[   14.323105][    T1]  ? perf_trace_initcall_level+0x410/0x410
+[   14.323105][    T1]  ? rcu_tasks_kthread+0x670/0x670
+[   14.323105][    T1]  do_initcalls+0x260/0x28a
+[   14.323105][    T1]  kernel_init_freeable+0x217/0x241
+[   14.323105][    T1]  ? rest_init+0x32e/0x32e
+[   14.323105][    T1]  kernel_init+0xb/0x122
+[   14.323105][    T1]  ? rest_init+0x32e/0x32e
+[   14.323105][    T1]  ret_from_fork+0x1f/0x30
+[   14.347822][    T1] ================================================================================
+[   14.349494][    T1] ================================================================================
+[   14.351171][    T1] UBSAN: array-index-out-of-bounds in drivers/cpufreq/cpufreq_times.c:155:24
+[   14.352988][    T1] index 0 is out of range for type 'unsigned int [*]'
+[   14.354270][    T1] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.10.0-00030-gdc5104c1e912 #1
+[   14.355853][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+[   14.357687][    T1] Call Trace:
+[   14.358240][    T1]  dump_stack+0xb2/0xe9
+[   14.358598][    T1]  ubsan_epilogue+0x5/0x3e
+[   14.358598][    T1]  __ubsan_handle_out_of_bounds.cold+0x40/0x45
+[   14.358598][    T1]  cpufreq_times_create_policy+0x2f2/0x5a0
+[   14.358598][    T1]  cpufreq_online+0x593/0x10d0
+[   14.358598][    T1]  cpufreq_add_dev+0x133/0x1a0
+[   14.358598][    T1]  subsys_interface_register+0x25a/0x3d0
+[   14.358598][    T1]  ? subsys_register+0x1b0/0x1b0
+[   14.358598][    T1]  ? __ww_mutex_check_kill+0x510/0x510
+[   14.358598][    T1]  cpufreq_register_driver+0x307/0x590
+[   14.358598][    T1]  ? CPU_FREQ_GOV_CONSERVATIVE_init+0x10/0x10
+[   14.358598][    T1]  do_one_initcall+0xb9/0x3e0
+[   14.358598][    T1]  ? perf_trace_initcall_level+0x410/0x410
+[   14.358598][    T1]  ? rcu_tasks_kthread+0x670/0x670
+[   14.358598][    T1]  do_initcalls+0x260/0x28a
+[   14.358598][    T1]  kernel_init_freeable+0x217/0x241
+[   14.358598][    T1]  ? rest_init+0x32e/0x32e
+[   14.358598][    T1]  kernel_init+0xb/0x122
+[   14.358598][    T1]  ? rest_init+0x32e/0x32e
+[   14.358598][    T1]  ret_from_fork+0x1f/0x30
+[   14.377576][    T1] ================================================================================
+[   14.385687][    T1] intel_pstate: CPU model not supported
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
