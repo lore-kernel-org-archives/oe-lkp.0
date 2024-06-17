@@ -1,165 +1,72 @@
-Received: from wfout8-smtp.messagingengine.com (wfout8-smtp.messagingengine.com [64.147.123.151])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57B3715B566
-	for <oe-lkp@lists.linux.dev>; Mon, 17 Jun 2024 14:39:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=64.147.123.151
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D8B8161B6A;
+	Mon, 17 Jun 2024 16:58:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718635174; cv=none; b=NXnqpJbPE4dgIvhfkGqLWGExvN6SvA1sEKm7UlKiwaFbC90Wx+oAxyoWBg+4pWes9CUpcLbmO7xg/sIN7zPaQFFgwfOp1DKhw+WGnorT6HqYHB0uov7196lQSBY46r98yIlDibKlrINZ1h8JA3gG8p2xlABVYXYyCxZxfyD+j2A=
+	t=1718643534; cv=none; b=BPrPES3pSQC2ttlG3ACSdPiNwoADt+QsE5APeW8Tyc7LhlGie0vKIO06M3tAH17rU82jOogAVKcfIbOzFFSvQb+zimtbGenquSgj04hmt2Kcl7uYoPWqW8hhNxtg63/hzkM/Oa+tQRgJukNs0yzWV8k7njpkumjB082rBl/7COE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718635174; c=relaxed/simple;
-	bh=KjGx90/Mk44guEnUP4Jppy6Thcm4cwsS4n/mldWQzAE=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=rOGJSUC/IybE7NFGTEYxlvNJ1iifhiHtwgkdeULaV3uMxf2QK24gzHHUJ6aiIr0Hbqrnn+wVfryxefAQLmOTbhZNxxEAGWaGKOvrLtFdHIFpvAm5+bL6Jrv+4J5puWEkkz6IHeLPIpP8+KaBphVfIFiUHyUXEYuIW46/c1H9GB8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sent.com; spf=pass smtp.mailfrom=sent.com; dkim=pass (2048-bit key) header.d=sent.com header.i=@sent.com header.b=SwoQeyQD; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=RfrE+bpW; arc=none smtp.client-ip=64.147.123.151
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sent.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sent.com
+	s=arc-20240116; t=1718643534; c=relaxed/simple;
+	bh=dpdVP1VDv8kFRM0EqSc1BHPLy5nCZCtoPOXrRCz7Db0=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=cHccduKR86KFf5JRyPgLlFVdoklFYi1hiyVHxOau0tBVokhGMhdOr1yWOgWT5NUqteQrmS/pz/rYjR11k8u6IHy3s+wh3tEEAm31UoERPzPweaizGXoeLEDvBQ3PWRj92/2cK0dOGARSEQeditWJQhegPcBPK1iM0xP5pMwk8Y0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=djttx0PR; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sent.com header.i=@sent.com header.b="SwoQeyQD";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="RfrE+bpW"
-Received: from compute7.internal (compute7.nyi.internal [10.202.2.48])
-	by mailfout.west.internal (Postfix) with ESMTP id B53E31C00067;
-	Mon, 17 Jun 2024 10:39:30 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute7.internal (MEProxy); Mon, 17 Jun 2024 10:39:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sent.com; h=cc
-	:cc:content-transfer-encoding:content-type:date:date:from:from
-	:in-reply-to:message-id:mime-version:reply-to:reply-to:subject
-	:subject:to:to; s=fm1; t=1718635170; x=1718721570; bh=YTcVxGJJSi
-	tBHmI81csUD7sOdb3OERyqcoYJY7uvHYk=; b=SwoQeyQD79h0J0zshDT6H5OPdO
-	8i2aO3luQk1ijzRDHHZFe04KOiSxfomStah3hZZEv5lANnsX7BLBJrgyYKhzf0P9
-	dZCsa4IL6dFy3jZP7vd8pUFsPoI1cYS1tTbiXWpYoVXxXcee8Nbc/08rM290LFN7
-	F9dFwXSPOxWAF/7g1EpNwPjKbbmV9DUf+xexxN8sVhU3gb2XN1mKxSSTO0JzKjcg
-	/zIFOA4BU+cyytieWov0Rm5DleLitafnEH2+2ZSXTr9rM53cW8Gz8N7Z1UBwDAcR
-	sH5cxP8po9wJcWpAWoBFHUkR+8RxJM8b6X7TpOKSXQb7ot96PAERXU9R4E9Q==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:date:date:feedback-id:feedback-id:from:from
-	:in-reply-to:message-id:mime-version:reply-to:reply-to:subject
-	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-	:x-sasl-enc; s=fm1; t=1718635170; x=1718721570; bh=YTcVxGJJSitBH
-	mI81csUD7sOdb3OERyqcoYJY7uvHYk=; b=RfrE+bpWFhIRKjaGeNT1S2KQjzRs+
-	xdifj1Z3+ekeqXh6br9x6VMq1A8zBijVlqf5CIbS3hhGahKURIDB36oDRpXWOmTn
-	sOKlgiEb+xY8MbT5MfhgSqHxx7hm2c+uwmupfJ+AxPnok25cCskaZKwHEhchM7hK
-	A/mnhNwfCYivmWlFOBcZWrNwRZZSNZEiXc7AcTqp5a+zOEkUmBQorGi7UkqMRHtO
-	CY/ErRaU0e7x1ey6aqAKe87JgMvfWurkYHEycFhSitjarP2DTtTE2azCPOxxbeuk
-	3TqgXE5tsu6iAB8kSUCQqDMAu3ATXvkVJt8YNR/tPP4geDrwpX0Yh4OLQ==
-X-ME-Sender: <xms:oUpwZlCHMA5BUvqXf0FDRWyuQ4tc0M-49VT0rmIh06K8rQWDhX85GQ>
-    <xme:oUpwZjiZ8Qku-kzQrp9k_EhqV-KFYOPNOCn3XbVz1y13N0lMYXvnw0HxJtGGoB92Q
-    iCcnjB1zdDN4SasmQ>
-X-ME-Received: <xmr:oUpwZgnlhhJh0KtIKBAmf-4-IaXre7cTg9u_lUEPaV9-ohmmOjYk0p7JkX-tO5Kjo_ntalgOeKXqrgxxU6OR2ULttvE5gwH_6g0IW5iTdH4ilVavY6_lk1tI>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvledrfedvhedgjeekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvvefufffkofhrggfgsedtkeertdertddtnecuhfhrohhmpegkihcujggr
-    nhcuoeiiihdrhigrnhesshgvnhhtrdgtohhmqeenucggtffrrghtthgvrhhnpeeigeffgf
-    egkeetudelueejveefieeuieffheduteetudeuffejkeffhfettdeihfenucffohhmrghi
-    nhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpe
-    hmrghilhhfrhhomhepiihirdihrghnsehsvghnthdrtghomh
-X-ME-Proxy: <xmx:okpwZvwGZUyBLJIhwtFsOlIorZbV_bdkOKsupFRucH-g0W4Jn2j_eA>
-    <xmx:okpwZqQl3n-NjMYN4e5qWZllQNHMwjMefRQz37qxHWt-KAkTCmb5wA>
-    <xmx:okpwZib7fXMGOYdJT_iXa31wO4b-hRxRhSxgHUn3K-Re-KHETmq9bg>
-    <xmx:okpwZrSk7UkCMB8s2rzqxBZBXr1e45CFVBgNXTYe5-NF9QmtrWBunA>
-    <xmx:okpwZkBh6hBbaCR-5qs4n3l7dDymLS2GD3CdQb8dpMcCkZQgFmDwoGlJ>
-Feedback-ID: iccd040f4:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 17 Jun 2024 10:39:29 -0400 (EDT)
-From: Zi Yan <zi.yan@sent.com>
-To: Andrew Morton <akpm@linux-foundation.org>,
-	Hugh Dickins <hughd@google.com>,
-	"Huang, Ying" <ying.huang@intel.com>,
-	linux-mm@kvack.org
-Cc: Zi Yan <ziy@nvidia.com>,
-	oe-lkp@lists.linux.dev,
-	lkp@intel.com,
-	kernel test robot <oliver.sang@intel.com>,
-	"Matthew Wilcox (Oracle)" <willy@infradead.org>,
-	Yang Shi <shy828301@gmail.com>,
-	David Hildenbrand <david@redhat.com>,
-	Yin Fengwei <fengwei.yin@intel.com>,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] mm/migrate: fix BUG_ON in migrate_misplaced_folio() and compact_zone()
-Date: Mon, 17 Jun 2024 10:39:25 -0400
-Message-ID: <20240617143926.1511227-1-zi.yan@sent.com>
-X-Mailer: git-send-email 2.43.0
-Reply-To: Zi Yan <ziy@nvidia.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="djttx0PR"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C86AC2BD10;
+	Mon, 17 Jun 2024 16:58:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1718643533;
+	bh=dpdVP1VDv8kFRM0EqSc1BHPLy5nCZCtoPOXrRCz7Db0=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=djttx0PRC8yBOwLGknH4Jf64hsQKYt3iWpc7lnf+cmYDTi9QR6bAljomlKRIgyLoU
+	 AVBhGb2HRR8nIwb6/l+sF6FV6PKgoeMdDsIeoCQ2pmXDcly4BTms6rnbz87Oac1DVg
+	 H+YHXP4DwesJ68s9HWUXqOzqDVXUmcL0KUB2pix2crXdJ8e9kSTEOSzYccBqYAGsMA
+	 9x4mhBVQZjzwB2yyFMOt9YxzvSL2pG2nrGDcxNqw5heNfpurw21TNz33UG3uXuwFB6
+	 A9DP54TEYSATYnPNuX7sU7F6dGG6shdNhbfef+Nn3TZOe2GatA0Ohf5EF0lRl8nesZ
+	 Olik7aORC1MLg==
+Date: Mon, 17 Jun 2024 09:58:52 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Sagi Grimberg <sagi@grimberg.me>
+Cc: Matthew Wilcox <willy@infradead.org>, kernel test robot
+ <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com,
+ netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>, David Howells
+ <dhowells@redhat.com>
+Subject: Re: [PATCH] net: micro-optimize skb_datagram_iter
+Message-ID: <20240617095852.66c96be9@kernel.org>
+In-Reply-To: <033294ee-e6e6-4dca-b60c-019cb72a6857@grimberg.me>
+References: <202406161539.b5ff7b20-oliver.sang@intel.com>
+	<4937ffd4-f30a-4bdb-9166-6aebb19ca950@grimberg.me>
+	<Zm9fju2J6vBvl-E0@casper.infradead.org>
+	<033294ee-e6e6-4dca-b60c-019cb72a6857@grimberg.me>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-From: Zi Yan <ziy@nvidia.com>
+On Mon, 17 Jun 2024 09:29:53 +0300 Sagi Grimberg wrote:
+> > Probably because kmap() returns page_address() for non-highmem pages
+> > while kmap_local_page() actually returns a kmap address:
+> >
+> >          if (!IS_ENABLED(CONFIG_DEBUG_KMAP_LOCAL_FORCE_MAP) && !PageHighMem(page))
+> >                  return page_address(page);
+> >          return __kmap_local_pfn_prot(page_to_pfn(page), prot);
+> >
+> > so if skb frags are always lowmem (are they?) this is a false positive.  
+> 
+> AFAIR these buffers are coming from the RX ring, so they should be 
+> coming from a page_frag_cache,
+> so I want to say always low memory?
+> 
+> > if they can be highmem, then you've uncovered a bug that nobody's
+> > noticed because nobody's testing on 32-bit any more.  
+> 
+> Not sure, Jakub? Eric?
 
-Both Hugh Dickins and kernel test bot hit an issue that migrate_pages()
-reports success but still leaves unmigrated pages on from list. It
-triggers BUG_ON in migrate_misplaced_folio() and compact_zone().
-
-Our convention is that if migrate_pages() reports complete success (0),
-then the migratepages list will be empty; but if it reports an error or
-some pages remaining, then its caller must putback_movable_pages().
-
-There's a new case in which migrate_pages() has been reporting complete
-success, but returning with pages left on the migratepages list: when
-migrate_pages_batch() successfully split a folio on the deferred list,
-but then the "Failure isn't counted" call does not dispose of them all.
-
-Since that block is expecting the large folio to have been counted as 1
-failure already, and since the return code is later adjusted to success
-whenever the returned list is found empty, the simple way to fix this
-safely is to count splitting the deferred folio as "a failure".
-
-This patch is based on Hugh's fix and suggestions from Huang, Ying.
-
-[Hugh's version]
-Link: https://lore.kernel.org/linux-mm/46c948b4-4dd8-6e03-4c7b-ce4e81cfa536@google.com/
-[Additional stats change suggested by Huang, Ying]
-Link: https://lore.kernel.org/linux-mm/87msnq7key.fsf@yhuang6-desk2.ccr.corp.intel.com/
-Suggested-by: "Huang, Ying" <ying.huang@intel.com>
-Fixes: 7262f208ca68 ("mm/migrate: split source folio if it is on deferred split list")
-Reported-by: Hugh Dickins <hughd@google.com>
-Closes: https://lore.kernel.org/linux-mm/46c948b4-4dd8-6e03-4c7b-ce4e81cfa536@google.com/
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Closes: https://lore.kernel.org/oe-lkp/202406171436.a30c129-oliver.sang@intel.com
-Signed-off-by: Zi Yan <ziy@nvidia.com>
----
- mm/migrate.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
-
-diff --git a/mm/migrate.c b/mm/migrate.c
-index dd04f578c19c..30f9a61598ea 100644
---- a/mm/migrate.c
-+++ b/mm/migrate.c
-@@ -1654,7 +1654,16 @@ static int migrate_pages_batch(struct list_head *from,
- 
- 			/*
- 			 * The rare folio on the deferred split list should
--			 * be split now. It should not count as a failure.
-+			 * be split now. It should not count as a failure:
-+			 * but increment nr_failed, because, without
-+			 * doing so, migrate_pages() may report success with
-+			 * (split but unmigrated) pages still on its fromlist;
-+			 * whereas it always reports success when its fromlist
-+			 * is empty. stats->nr_thp_failed should be increased
-+			 * too, otherwise stats inconsistency will happen when
-+			 * migrate_pages_batch is called via migrate_pages()
-+			 * with MIGRATE_SYNC and MIGRATE_ASYNC.
-+			 *
- 			 * Only check it without removing it from the list.
- 			 * Since the folio can be on deferred_split_scan()
- 			 * local list and removing it can cause the local list
-@@ -1669,6 +1678,8 @@ static int migrate_pages_batch(struct list_head *from,
- 			if (nr_pages > 2 &&
- 			   !list_empty(&folio->_deferred_list)) {
- 				if (try_split_folio(folio, split_folios) == 0) {
-+					nr_failed++;
-+					stats->nr_thp_failed += is_thp;
- 					stats->nr_thp_split += is_thp;
- 					stats->nr_split++;
- 					continue;
-
-base-commit: 6ba59ff4227927d3a8530fc2973b80e94b54d58f
--- 
-2.43.0
-
+My uneducated guess would be that until recent(ish) sendpage rework
+from David Howells all high mem pages would have been single pages.
