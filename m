@@ -1,105 +1,206 @@
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAD1773452;
-	Sun, 16 Jun 2024 21:56:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718574995; cv=none; b=T74YUCSgGQndvrqgDaRLsELndsKWTVT6yMa0p0zEUfQ7xH/GHIlg8vHXF/lbflD3znFK2YQmc1XJCXRbdI1VaCnDJY8nBdigj9NwJ063FPDhr175GmAHde/od25o4zCmmFsaJGaufecYCixrpS4rD/hCugeCvqG4OS1DY1sVC7M=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718574995; c=relaxed/simple;
-	bh=1CDTFfS1jwiAXhkGCFOhEM8WIUVdsGhoUumhvMDzAFQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mlw/Iq/BPeBNhhwMpn/C+AZ1nSqaOVuT9c2kB7lOW3BzTfKXZp/rYssEKvg5DqWhF5Vn4W0FLexA6Mit5GqqZEWNCPq4EVx2meTngiCeP0lgVmgODsqPreXLMF3nEWw9iEdIXZbiVBOapGW8Hzhe9IevDT5wfSakbEmT4HhrQvQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=QXAiNAUl; arc=none smtp.client-ip=90.155.50.34
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9A15187345
+	for <oe-lkp@lists.linux.dev>; Mon, 17 Jun 2024 06:12:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.12
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1718604770; cv=fail; b=sh/2swhu5bVCroOKkJoZcyNB2bUVYOGp1wlTvRS8Y/ik/dFWD1WXbzBU96FSdh4kDn+4cXt4h/HdBE11usRTkNjoJ4wBG8dQtQ9S53BKhQAkdww8j4uAAPl52lTxzoGGNB32HZZ2cndA7sHYKSLgGdfrfHmFYYJivGFbTJsbFVc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1718604770; c=relaxed/simple;
+	bh=u/qWkdoqMvQzRCI42ZtUl16h95oMgj7E/Kt0ytaAsjI=;
+	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=Dm7N5awQSOT8/wLFQrrV3IMk3g6kM2MKikzXRutBHo5/R2gm4770cnPx4CZ8eaQ6eqxnD/5L6q6KvXwtjiEaJEmeQT5e/QdN5wpmtgaXHgsuKJt/fw9c51YZfIwATOsnMhsMXjS+hj2XlT93YDMvUFdOT7RF/ac+TLCMNdRtwbU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=F2Y9yvSR; arc=fail smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="QXAiNAUl"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Transfer-Encoding:
-	Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-	Sender:Reply-To:Content-ID:Content-Description;
-	bh=QF+UPGbMrJOYseNtgY++ZYSrOvt8njcmF1sGqllQ8SM=; b=QXAiNAUlk5wcKgem5RJeg0fmGt
-	ofGBWkJZgIBOU4G+OaQ133vdqngsO71MdNYeBRgrXGhhKzWJFlDul/paFtl07e3pim3/5/NetXCuG
-	G3sxKh5xQV9tlt1K4Usubnoa/+m29IjmC4FnVI/+2yGi94bjnpKRNUKFYeM4+FwBT+EZbzoWzDwGV
-	+M619dK24SqXUuUlCob9nJ4208ujKIT6hFsAzYazXq609C9WDZFg45GHcDgcOU4HOeQmgkLqEp+SR
-	o1TsvSR4Zc8Z9Ys5JTS+Fu/MyY8JhBzbLYEWNfjj2r+LY7ekfQHFko0pGOALcwWM++LYB+9t36J8m
-	plPq2jeQ==;
-Received: from willy by casper.infradead.org with local (Exim 4.97.1 #2 (Red Hat Linux))
-	id 1sIxrS-00000001UxS-1rXM;
-	Sun, 16 Jun 2024 21:56:30 +0000
-Date: Sun, 16 Jun 2024 22:56:30 +0100
-From: Matthew Wilcox <willy@infradead.org>
-To: Sagi Grimberg <sagi@grimberg.me>
-Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, netdev@vger.kernel.org,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH] net: micro-optimize skb_datagram_iter
-Message-ID: <Zm9fju2J6vBvl-E0@casper.infradead.org>
-References: <202406161539.b5ff7b20-oliver.sang@intel.com>
- <4937ffd4-f30a-4bdb-9166-6aebb19ca950@grimberg.me>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="F2Y9yvSR"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1718604768; x=1750140768;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=u/qWkdoqMvQzRCI42ZtUl16h95oMgj7E/Kt0ytaAsjI=;
+  b=F2Y9yvSRZDkCIaCsKOCYiG5ekVikwr+f98J7AVIJehSaI4Vx1x/a7aGo
+   UJGIdJbZc2OTifzBZ0c8N8G4ntNHGhGS6S+F2Bjl8rmBaVqyzZv7/dX/k
+   gTrebm9uQIM5wF3a2/Y77IecfJVcHMPXzSry59J6D12lg+sSc0bFDVrLc
+   f5nopdlIHRfY9ZllT0CPbDjjqsJiZ2ylETFm1wieEss4DTiwzooV4Zuny
+   IJ//W2/0/JD/ucnR4xlwm9oLSshgBzVVdS8m+GNJg9TDRHw5ikXsbvTFV
+   HljQbcAerh4gWf9qCQGzXuoigH+9KnEhT8hIguTOhH1SwfrfqxHcD5QYz
+   A==;
+X-CSE-ConnectionGUID: PBeHkLFCSomcFbcqtWBIRg==
+X-CSE-MsgGUID: M9rLoADWQJ+BdY7VeKqekQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11105"; a="19275113"
+X-IronPort-AV: E=Sophos;i="6.08,244,1712646000"; 
+   d="scan'208";a="19275113"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2024 23:12:47 -0700
+X-CSE-ConnectionGUID: 4EIQYrQXSrG+395nd/bntw==
+X-CSE-MsgGUID: 5drlR5BiTgOivbxIxNTw1g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,244,1712646000"; 
+   d="scan'208";a="41231406"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orviesa009.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 16 Jun 2024 23:12:47 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39; Sun, 16 Jun 2024 23:12:46 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39 via Frontend Transport; Sun, 16 Jun 2024 23:12:46 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.168)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.39; Sun, 16 Jun 2024 23:12:46 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jNlFKEm5U1EBIEPXi33Cpk094+AVMd7kVUeXLeSk0zz223bd5nUP5THxsRDhSQhMUmHyo3KOOmIZ9+nj4Ih3K6mxo6UdZZnEjwFOQsvA9UPRGElUbfjUTk/lHqTUKPyGdrLnjw5JxuhTXahIGepS5u9HjKveep3VFOH4x8eAi3DvfGPp/mduxLpq4UTSIpWi+oJpA5GT3smtvzNYp25cI4M9lE0nzIvLxXAAGSnGeaCs9Rz5o7STALS4o9Spw9xkVQlhKVoi8voN2797oz27exN4i9bRASydpl1kse+isxmNRODUtjnNgp65ip/CT0ZTHbgUsucFu714U7HIriGzpw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=psY9uzJO7gh2heoVxd3doPk8WatVUX08NrFWuWvlA0w=;
+ b=cyER6lERyAFMnNA7gAWMOeA4W9LnGIhDUApC17p+BiHoEEURqvmqQs64ggglyqC7wgqBLqyVB43U/UroQ7d09q2ilx2cIEhUQL/nNPRRJyDHxuwrqOnBWiCOXFovt2xgye5KeSczkwJJqHBTD3gY/z2aQaH4jGKA2dp+tvtGKM1MSm4Gahcj+9JcdDjjZH7u8YN3irRyhGg9KZdYdMP3mOHf0F9XOlHneq87q6dy50b32Rt64D6/f4YW3m3xm/2zHfiPqkr7iFRLjRNg0gBe6AHdW6wSccjT/noMi/LRBbA6gdl4gSg5aomoc4PDMchDRpUUuAjEFuHzB+bSBEVjGQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by DM6PR11MB4739.namprd11.prod.outlook.com (2603:10b6:5:2a0::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7677.30; Mon, 17 Jun
+ 2024 06:12:44 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c%2]) with mapi id 15.20.7677.030; Mon, 17 Jun 2024
+ 06:12:44 +0000
+Date: Mon, 17 Jun 2024 14:12:27 +0800
+From: Oliver Sang <oliver.sang@intel.com>
+To: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Linux Memory Management List
+	<linux-mm@kvack.org>, <netdev@vger.kernel.org>, <oliver.sang@intel.com>
+Subject: Re: [linux-next:master] [rtnetlink] 8c6540cb2d:
+ hwsim.mesh_sae_failure.fail
+Message-ID: <Zm/TyyfZqtSI911M@xsang-OptiPlex-9020>
+References: <202406141644.c05809af-oliver.sang@intel.com>
+ <ea30d016-a163-4a0e-81c7-46d6645440aa@I-love.SAKURA.ne.jp>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <ea30d016-a163-4a0e-81c7-46d6645440aa@I-love.SAKURA.ne.jp>
+X-ClientProxiedBy: SG2PR02CA0103.apcprd02.prod.outlook.com
+ (2603:1096:4:92::19) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <4937ffd4-f30a-4bdb-9166-6aebb19ca950@grimberg.me>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|DM6PR11MB4739:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3a33a22f-ffa4-487b-2825-08dc8e948081
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230037|366013|1800799021|376011;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?6dl/3wpCwBqXwgwni8/TlykdXCZNf50peJjPnDv0XcBnEstFWMOhK1eFGABu?=
+ =?us-ascii?Q?SKZN1e2Ei+u3YLNuX1T27wNYbK06YW4CQGw/8DshXEI6vXE7IbA5rDQCbvV7?=
+ =?us-ascii?Q?AKejUVVLnKcsE0EbMVaK1IhHXZRXCPibuJwulKoAfLh9EUtTxGBydAfF53Lo?=
+ =?us-ascii?Q?rvbrom35KWzfJ3q6SXgrWyMxhD5ZydFlN8oLBnlAmwasgNqpuHYnE3Bbpohk?=
+ =?us-ascii?Q?zXFQMTz1Yzv6LVERLAEZ/IeXuBCuWMhW3iwfCk/0FI8X+x+McgbSTBwEB2X/?=
+ =?us-ascii?Q?NXDir0c/hogG1DZLsBnzquJRxNQFNXPiYhvVYVcCXYS9umKZYocuGgJy2A+N?=
+ =?us-ascii?Q?LA//DwSLFmzCZv0qIV8+GsgxRUGmjCF4l3JwelLCN3/F+BDv7sJp4cttqY4x?=
+ =?us-ascii?Q?VWQzAOHdWCeJntnEZ1N2/svKDh1dLyY+KlfI4lPaH6m1By72VTxqWl/vldt4?=
+ =?us-ascii?Q?bhwfW21/wxBx61OdMhcBEXcgrr29hWhkZ2NpZ4fd1ot+kd41D4LKfM2XU2wj?=
+ =?us-ascii?Q?1rx+V85hj3jZHj0R6lXZLoQ4yM463LN8mB0bUKoQrFuKAgocSWVSyi7IoNsV?=
+ =?us-ascii?Q?hXYQrF3mFIFFxhgAL/gjryUastICIiWGL+yVWSaBeNXpp3wWc3YUXb3y14gF?=
+ =?us-ascii?Q?3TLIdNt2n27QXTft2yhIbJSGMIB6fEAHfj+jNSpMbzHH7n08s1fX9QDfEm2m?=
+ =?us-ascii?Q?oCavVN6FKrkJYKg6wyhwgBYCWbM42xQDtY2XjxGtwUMpTDJ2NvWFecvsNrDl?=
+ =?us-ascii?Q?0mng/UQc7Rty35m8OA6UwOtUpBOUlc7K1N1+VpBnXgYF2tJlFgHTIXBpV6sG?=
+ =?us-ascii?Q?rXdD/Wwm99/kLcY/JnJtb0dllDGDHf4Q8Hk3ww3zsdJC7c4+lPQ50jBXotQP?=
+ =?us-ascii?Q?pMUt/JXiM8D9rS2cBe4qXn7TeFyN0ia7+Y8P5LNvWMlktqzzLDMuFcnr7Axj?=
+ =?us-ascii?Q?CYrsjdTZ8jkpTQFF9MvMQzmDnqdOJFKp75IgR4l7IBAEpl0FcOGiADpltoIV?=
+ =?us-ascii?Q?dwiQsfTwkkykhxx/S5t6ms21+E8FGHRfQur/haAvqIgLXFYxNLePAg42EGd+?=
+ =?us-ascii?Q?zhefEl/1aqBkriDuVkBUcXjKgI7V302sJxg+uCdEgI31HHSZE68WDhXkR/vZ?=
+ =?us-ascii?Q?YLhfrdW3wSZ/GojtJaMORHLWKgY2pCwQkkpPH1TZgZ84atIzlQ+EwmHRrA8G?=
+ =?us-ascii?Q?5cY628R4ScltqTg922NRn+yDeE4JfFqNOdbgYTmGOlOzCJY8/Q1Ul7e49hvK?=
+ =?us-ascii?Q?ChCWaZNvz0NgpzX1Tq0B?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230037)(366013)(1800799021)(376011);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?jRgReXFiCrQ1Su2qCUPaITL4FBO1LTQAvBLKqypHLqzF42ssLVVPP38wjEVR?=
+ =?us-ascii?Q?F9ahZg0M/H3A63iHJSN48FN7oDe4jyYeKqkhooUUidxgWalceuiNHR1Wm2fU?=
+ =?us-ascii?Q?+r9NATGkuJJ/o5irAr0EEM+Vw3MQW2A58NNz0PKH7dJb6sq9mitGvV/iT5nc?=
+ =?us-ascii?Q?67Ac37mOQZyFqUUG7+Cuy2LjdhFxP+uQx4hvz/HETYrooGB42izezHyO2gY9?=
+ =?us-ascii?Q?oP8AAPclM2hKYaOnUeRJ/k8+6X6+ProRb47FKaGAvM9q0ZSzIkblDAqKoawH?=
+ =?us-ascii?Q?bSQAOhlDE9rCB/hqjsouR74Fg+V/Qs+ddE3SfvjEUYl4CGsRotocNdtAQYTU?=
+ =?us-ascii?Q?gJyBW52+3xCguNYI1zE5Tn4ahnTOCI7o72zYt/nysxIFXUGq8W/1ejk1qtnk?=
+ =?us-ascii?Q?vkQ5REB9Lj7HuyWyzEpTtlvv8dzXDlaEQEf0lLPMW0eV1TU+Y0HZv31RpDgB?=
+ =?us-ascii?Q?7RJwdVnXX0KH928/Wh27Yq11RvkeobCyq7+osTeqrtwzsCpE56ZFZKKqYTqk?=
+ =?us-ascii?Q?PowiYueJH187RTnnDIp4uX15hsGpq82Ub4F7apNGWiL+w6Mj5XeoFYIU2xId?=
+ =?us-ascii?Q?eHv6Ms0/Uw7v1IW8+Q9KOxcYMk27eRmvo+eHKVacJDsBmNyblM17uNDlpWRz?=
+ =?us-ascii?Q?39zmFYtupvv2/XWNHK/Ffej9apm3VZUsMqW2hyZElcXwUimA0JRsafehH6i0?=
+ =?us-ascii?Q?VUBsZtqYphbQ7VithMRyZy9UG5ekLLvoQXkBJiKb8/qfEIObkHxVsVxOCOe6?=
+ =?us-ascii?Q?rLMOeBZ34uEad4dCRUyabx7vvWDtxLkWjB8NSJkoiS+elE+7VYZgAyyARe6K?=
+ =?us-ascii?Q?yE2hY+2dZU2+GShAi0xq3L4gbSNxLILsYTZkmVj6SfTgO3OvQoEfFRBe4/9w?=
+ =?us-ascii?Q?wq2eSbg6i5SnvODPvTrhIAqHJcq7DE68wVG3p9cRXrEXmCLDysmFbDWUn5bH?=
+ =?us-ascii?Q?DLgzr8C51zcc2Xf3bZWeX6vRgYrsutPCmqFs4ZxIduvwLGGY4Zh2d8DL6PwT?=
+ =?us-ascii?Q?oPBD80zjKXZz4ycwXsSIraCH8xwyFWVmRy8NIjmFOflK+UL5F3CMvuRPCmLa?=
+ =?us-ascii?Q?H7fgqrF5BBAqotqqy/C5BPH6WpbBa9fdMj3ujy0eCN53tR1IS1vZU1T1Pbia?=
+ =?us-ascii?Q?ac3N40IK93A914CAiRTYzg52oPyDrc4DO5r/c6aa2prRoCKpoyceUaog6mVB?=
+ =?us-ascii?Q?jHCnXdvO16M+oIjX2uuKqBQbRl43ATJwyOE0dUYRynzN1SnkQBUaWkRWm8lI?=
+ =?us-ascii?Q?h8b9NKaWBgV7RU27baoZaSoUZXw1ikTFWojYdvlYOFmk/5ZA7AdhXXEmysMi?=
+ =?us-ascii?Q?DweWv+emM6wjS/ouvfbhBTOycPBZDTEj14xqMMH3gdqvco4GrWjHG+Y8EHIv?=
+ =?us-ascii?Q?5Ko60wL/We7OxQQzXCQvHfNDu8lCyYGZ0UbvFQBzIqC2kbznWXtkcJJ2C1bI?=
+ =?us-ascii?Q?TmXlK9t2PgVyNqSI2ijtsf2xsj7Ir0zIgUoE6B8f3ho4PeelSqgn4xYw9bgB?=
+ =?us-ascii?Q?B6eOJxzP0VhhOQGxs9kAPKS8iTVCXOGghjGx38zfVe2iK3bvWaqKHGKhtp5Z?=
+ =?us-ascii?Q?uR1j0LkcA4Iiwdigu/tnKtFyDLbV0tmewSWC7kHg7qAlSoFnekZTK/rdz6RX?=
+ =?us-ascii?Q?Cw=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3a33a22f-ffa4-487b-2825-08dc8e948081
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jun 2024 06:12:44.5018
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: FnTX+b8zhiyp1MdsiV99MMe/eD7cPdvr32IWmT25gGHRFCdu68Ojbf5xxuqjKz7qEnyTnZxAnryK72Yh9X37/g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4739
+X-OriginatorOrg: intel.com
 
-On Sun, Jun 16, 2024 at 12:24:28PM +0300, Sagi Grimberg wrote:
-> > [   13.495377][  T189] ------------[ cut here ]------------
-> > [   13.495862][  T189] kernel BUG at mm/usercopy.c:102!
-> > [   13.496372][  T189] Oops: invalid opcode: 0000 [#1] PREEMPT SMP
-> > [   13.496927][  T189] CPU: 0 PID: 189 Comm: systemctl Not tainted 6.10.0-rc2-00258-g18f0423b9ecc #1
-> > [   13.497741][  T189] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-> > [ 13.498663][ T189] EIP: usercopy_abort (mm/usercopy.c:102 (discriminator 12))
-> > [   13.499424][  T194] usercopy: Kernel memory exposure attempt detected from kmap (offset 0, size 8192)!
-> 
-> Hmm, not sure I understand exactly why changing kmap() to kmap_local_page()
-> expose this,
-> but it looks like mm/usercopy does not like size=8192 when copying for the
-> skb frag.
-> 
-> quick git browse directs to:
-> --
-> commit 4e140f59d285c1ca1e5c81b4c13e27366865bd09
-> Author: Matthew Wilcox (Oracle) <willy@infradead.org>
-> Date:   Mon Jan 10 23:15:27 2022 +0000
-> 
->     mm/usercopy: Check kmap addresses properly
-> 
->     If you are copying to an address in the kmap region, you may not copy
->     across a page boundary, no matter what the size of the underlying
->     allocation.  You can't kmap() a slab page because slab pages always
->     come from low memory.
-> 
->     Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
->     Acked-by: Kees Cook <keescook@chromium.org>
->     Signed-off-by: Kees Cook <keescook@chromium.org>
->     Link:
-> https://lore.kernel.org/r/20220110231530.665970-2-willy@infradead.org
-> --
-> 
-> CCing willy.
-> 
-> The documentation suggest that under single-context usage kmap() can be
-> freely converted
-> to kmap_local_page()? But seems that when using kmap() the size is not an
-> issue, still trying to
-> understand why.
+hi, Tetsuo Handa,
 
-Probably because kmap() returns page_address() for non-highmem pages
-while kmap_local_page() actually returns a kmap address:
+On Fri, Jun 14, 2024 at 06:34:13PM +0900, Tetsuo Handa wrote:
+> On 2024/06/14 17:48, kernel test robot wrote:
+> > kernel test robot noticed "hwsim.mesh_sae_failure.fail" on:
+> > 
+> > commit: 8c6540cb2d020c59b6f7013a2e8a13832906eee0 ("rtnetlink: print rtnl_mutex holder/waiter for debug purpose")
+> > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+> > 
+> > [test failed on linux-next/master 6906a84c482f098d31486df8dc98cead21cce2d0]
+> > 
+> > in testcase: hwsim
+> > version: hwsim-x86_64-07c9f183e-1_20240402
+> > with following parameters:
+> > 
+> > 	test: mesh_sae_failure
+> > 
+> 
+> That patch adds debug printk(). But dmesg.xz does not include printk() messages from
+> that patch nor any oops-like messages. What went wrong?
+> 
 
-        if (!IS_ENABLED(CONFIG_DEBUG_KMAP_LOCAL_FORCE_MAP) && !PageHighMem(page))
-                return page_address(page);
-        return __kmap_local_pfn_prot(page_to_pfn(page), prot);
+sorr that we don't have enough knowledge to connect the issue with code change.
+we just rebuild kernels for this commit and its parent, confirmed they are still
+built with the config we shared in the link in our original report, then rerun
+the tests, found still clean on parent, but reproduciable on this commit.
 
-so if skb frags are always lowmem (are they?) this is a false positive.
-if they can be highmem, then you've uncovered a bug that nobody's
-noticed because nobody's testing on 32-bit any more.
+this is just FYI what we observed in our tests. if you want to look at this
+further and you have a debug patch, we could do more tests with it. Thanks
+
+9dcaf7df2635eb1c 8c6540cb2d020c59b6f7013a2e8
+---------------- ---------------------------
+       fail:runs  %reproduction    fail:runs
+           |             |             |
+           :15          87%          15:15    hwsim.mesh_sae_failure.fail
+
