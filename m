@@ -1,106 +1,79 @@
-Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com [209.85.128.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 151D5163A97
-	for <oe-lkp@lists.linux.dev>; Mon, 17 Jun 2024 23:28:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB640322B;
+	Tue, 18 Jun 2024 00:55:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718666934; cv=none; b=Y4AdkLt5JFoLhxaZPzpZbEefqiNogknVUhT73jC7M7MHrz+m+zAhfv8KiI2D4HAp1Zp1Y2oCH9ZaihuigZnZrMQ9wkN2upDNtkYUlGgdwh6KgnAAYlXr016NvoJbu4tpXTmEFRZWncnMxjWFFGdmGAZzGnsGCUfm2QFWEcjdc+M=
+	t=1718672102; cv=none; b=U9/a58w18KHkf1NaLAFxDZFhdT/ENwt8w8a7MZqc1DL/x28qhqfG0nrCVshbi0GPlTxWQA7NzDlrp4z8ae+unZD67S8Qos40MrGp4rsAeZEh3xc8TdoEbKyDB3AmSuHgMGMRKpUj70ajCUXs20qG6DpAy5/bMcCQXPZVSk6F/o8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718666934; c=relaxed/simple;
-	bh=/j//LN7tYdATyYatMOpxy80uiLNxtsvGRZR1fKxIRtA=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=Wk5JvEmZk2CDjTAcxfqAy6juZ549d2mbzan7HmUIQW7Xbe33Mgh8pm/NFUEVK8zf+rmOyB/oS+rX5IWn+AaQuqjA0wnyD/08O4K237Cf2slAFEkfbCQ3dAJNmhBAUsscKDEFHzR3LPYMixD4akOwIfCPm1fuiio5gOKlHhq0+SU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=i5+NDGBx; arc=none smtp.client-ip=209.85.128.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1718672102; c=relaxed/simple;
+	bh=B2/b1isobI7kYHVmPp0Ow8YfRNx6sz9Sbr08YhjCMF0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=CGYMkGsVxtCH6Lhit1M5/fbVKhI9K1NGEmAfJyTKi8ZT75O6CegYwuVMUnYPArq6JX9vZYMZM3BejhbpwrQY92y+PHtHU4llEbTLH7MeleYTmSQYs5HzUWalkvYw6GfLpIzjAY3/7uekY5I5HiBXmK6FRFEdLdOxnVr6jD5a6Uk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Vu4K7UAE; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="i5+NDGBx"
-Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-632843cff4fso32991367b3.3
-        for <oe-lkp@lists.linux.dev>; Mon, 17 Jun 2024 16:28:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1718666932; x=1719271732; darn=lists.linux.dev;
-        h=mime-version:references:message-id:in-reply-to:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=VAB39G3/EEy29AwXsRYdDzEcSOFINWe7KYOlv3bA8Os=;
-        b=i5+NDGBxuefIwsH8qm9f7tbGSUmMht6/jcBsEJMgmd4b5q+z8P1xwhQ7duQAV48vWG
-         i2chg3yHE2znl+mT7MakHRcD0Pnasd+FwZdsRdTKqznlQ5CmsFmOAlr/O2V5a8ZkOmfl
-         6DgM31pfNIvas4UskucwkYiPUuV1cwTa7iI5UhYaKrWjbtJIsT/8Xslmj/n2bLROxPi+
-         TPzYdtKd77UMqhoLN2nW5xahkrCWOJ5LWEYulVTngTdUG5PP9YPQf8Yw6YanW//vWB70
-         s3r6Oz6Ibgji28d4P3eAsRhVzObxiPxgPQ9QxPOTqi1cObx0Z7mp+O4AuaVi+8AkjSpT
-         zvHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718666932; x=1719271732;
-        h=mime-version:references:message-id:in-reply-to:subject:cc:to:from
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=VAB39G3/EEy29AwXsRYdDzEcSOFINWe7KYOlv3bA8Os=;
-        b=KwSZPwo+hNBlT0wvnaZkZgHBNvUnskcEYh9y4i3BP0EcGxnuqyk4WNOcrqxoODbqrf
-         RRNeCJusXXiLEkkICePrFxVyxI5yugkJblAr83sljprt9mX50HILOl6vRyy4KbIPJQm1
-         qj66Y/ETRoDHhD5zP+hJRH1wZmRRj9lf7uitGQ7AOobQlLWmMtur7cisRwLGCVcCx5CJ
-         lmPOoM4aVpOdXv2q1WpWVmmVEELA73tW83xOVxuzdf1bHC05nRYEgEm/GEtNEo3SAKon
-         093HNBrGDNzSboO9z3Pymj1CCwVZJFDQ7jvXb/P3fxr2IQ45l6P1rcxibaP3KktbBt/2
-         8Mpw==
-X-Forwarded-Encrypted: i=1; AJvYcCWCkuvdEi+fEIjuMlrAy/sg1Z6Lupb1HXOPTXbxf73hB9BQwOTZ+6D8nqalH5MOQfS4ouSWm0fVbobVDBx9+/d/ZBM+BkJT
-X-Gm-Message-State: AOJu0Yy18LehDUQasOOJUfSVzTdgJYdqyFk5W2Vb9HWCcEu6nOaE6hkq
-	YfYp9bQmyJya6SErlDdNIm2EWmUCwq5JzpNw5NdnHl3+6bZTTH/ZC702OnMKrw==
-X-Google-Smtp-Source: AGHT+IEVhqpFFYTb+8knJrW1OLetMn73OD3PiJAx+bHYk+bqCr2VJvW63nSHseMRk9KggRjygPCKGA==
-X-Received: by 2002:a0d:d6c7:0:b0:62a:2a7d:b512 with SMTP id 00721157ae682-6322206f588mr112744437b3.10.1718666931694;
-        Mon, 17 Jun 2024 16:28:51 -0700 (PDT)
-Received: from darker.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-63118e9917asm15870257b3.60.2024.06.17.16.28.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Jun 2024 16:28:50 -0700 (PDT)
-Date: Mon, 17 Jun 2024 16:28:39 -0700 (PDT)
-From: Hugh Dickins <hughd@google.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Vu4K7UAE"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 593DAC2BD10;
+	Tue, 18 Jun 2024 00:55:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1718672101;
+	bh=B2/b1isobI7kYHVmPp0Ow8YfRNx6sz9Sbr08YhjCMF0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Vu4K7UAEeExW/FiIT+KEFVU/fc0I5fcJWixzELeSpJBTLCM0l99lGBlIIv3OClb41
+	 pCg6W+tKBtwj/ARWfX3u7Ju4o1rantrXFOot4GaXUvcFc8l3e/iQi8AtIH0xjp8Wfn
+	 acTqilFZBkRoDfUHflOn47eLPiH0Yn1vCXNzkCv+qzBgzWQc1skmFJaKkcfGwuha+5
+	 AdRo+xHNcJZmLGtH28E5hapxzQYOd8Jzdh2CvEriUXmfLb1SGYLRaQK+uGhTpXWBBB
+	 2lqdYnmVevryPcwT5vVflI2trX/YArzze38nn1M9yes8LIC3ZUcKin7EpfnNVikEoK
+	 jsgZ/XwWypsUA==
+Date: Mon, 17 Jun 2024 17:55:00 -0700
+From: "Darrick J. Wong" <djwong@kernel.org>
 To: kernel test robot <oliver.sang@intel.com>
-cc: Zi Yan <ziy@nvidia.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
-    linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, 
-    Baolin Wang <baolin.wang@linux.alibaba.com>, 
-    David Hildenbrand <david@redhat.com>, "Huang, Ying" <ying.huang@intel.com>, 
-    "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>, 
-    Matthew Wilcox <willy@infradead.org>, Ryan Roberts <ryan.roberts@arm.com>, 
-    SeongJae Park <sj@kernel.org>, Yang Shi <shy828301@gmail.com>, 
-    Yin Fengwei <fengwei.yin@intel.com>, linux-mm@kvack.org
-Subject: Re: [linus:master] [mm/migrate]  7262f208ca:
- kernel_BUG_at_mm/migrate.c
-In-Reply-To: <202406171436.a30c129-oliver.sang@intel.com>
-Message-ID: <8a3aa391-d3f1-200f-fa5a-82352b1cc161@google.com>
-References: <202406171436.a30c129-oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+	Chandan Babu R <chandanbabu@kernel.org>,
+	Christoph Hellwig <hch@lst.de>, linux-xfs@vger.kernel.org
+Subject: Re: [linus:master] [xfs]  38de567906: xfstests.xfs.348.fail
+Message-ID: <20240618005500.GC103057@frogsfrogsfrogs>
+References: <202406171629.fa23d1c3-oliver.sang@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202406171629.fa23d1c3-oliver.sang@intel.com>
 
-On Mon, 17 Jun 2024, kernel test robot wrote:
-
+On Mon, Jun 17, 2024 at 04:49:07PM +0800, kernel test robot wrote:
 > 
 > 
 > Hello,
 > 
-> kernel test robot noticed "kernel_BUG_at_mm/migrate.c" on:
+> kernel test robot noticed "xfstests.xfs.348.fail" on:
 > 
-> commit: 7262f208ca681385d133844be8a58d9b4ca185f7 ("mm/migrate: split source folio if it is on deferred split list")
+> commit: 38de567906d95c397d87f292b892686b7ec6fbc3 ("xfs: allow symlinks with short remote targets")
 > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+
+Known bug in fstests, will send patch asap...
+
+--D
+
+> [test failed on linus/master      8a92980606e3585d72d510a03b59906e96755b8a]
+> [test failed on linux-next/master d35b2284e966c0bef3e2182a5c5ea02177dd32e4]
 > 
-> [test failed on linus/master      32f88d65f01bf6f45476d7edbe675e44fb9e1d58]
-> [test failed on linux-next/master 234cb065ad82915ff8d06ce01e01c3e640b674d2]
-> 
-> in testcase: vm-scalability
-> version: vm-scalability-x86_64-6f4ef16-0_20240303
+> in testcase: xfstests
+> version: xfstests-x86_64-98379713-1_20240603
 > with following parameters:
 > 
-> 	runtime: 300s
-> 	size: 8T
-> 	test: anon-cow-seq
-> 	cpufreq_governor: performance
+> 	disk: 4HDD
+> 	fs: xfs
+> 	test: xfs-348
 > 
 > 
 > 
 > compiler: gcc-13
-> test machine: 96 threads 2 sockets Intel(R) Xeon(R) Platinum 8260L CPU @ 2.40GHz (Cascade Lake) with 128G memory
+> test machine: 4 threads Intel(R) Xeon(R) CPU E3-1225 v5 @ 3.30GHz (Skylake) with 16G memory
 > 
 > (please refer to attached dmesg/kmsg for entire log/backtrace)
 > 
@@ -109,151 +82,48 @@ On Mon, 17 Jun 2024, kernel test robot wrote:
 > If you fix the issue in a separate patch/commit (i.e. not just a new version of
 > the same patch/commit), kindly add following tags
 > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202406171436.a30c129-oliver.sang@intel.com
+> | Closes: https://lore.kernel.org/oe-lkp/202406171629.fa23d1c3-oliver.sang@intel.com
 > 
-> 
-> [   84.214952][ T6581] ------------[ cut here ]------------
-> [   84.219158][ T1289] 781916337 bytes / 1533701 usecs = 497874 KB/s
-> [   84.219928][ T6581] kernel BUG at mm/migrate.c:2634!
-> [   84.225273][ T1289]
-> [   84.226742][ T1289] 781916337 bytes / 1533702 usecs = 497873 KB/s
-> [   84.231379][ T6581] invalid opcode: 0000 [#1] SMP NOPTI
-> [   84.236360][ T1289]
-> [   84.238534][ T6581] CPU: 15 PID: 6581 Comm: usemem Tainted: G S                 6.9.0-rc4-00136-g7262f208ca68 #1
-> [   84.238538][ T6581] Hardware name: Intel Corporation S2600WFD/S2600WFD, BIOS SE5C620.86B.0D.01.0286.011120190816 01/11/2019
-> [   84.246187][ T1289] 781916337 bytes / 1533701 usecs = 497874 KB/s
-> [ 84.249854][ T6581] RIP: 0010:migrate_misplaced_folio (mm/migrate.c:2634 (discriminator 1)) 
-> [   84.252050][ T1289]
-> [ 84.262214][ T6581] Code: a0 b4 1b 83 e8 a8 23 f6 ff 48 89 df e8 a0 3f f5 ff 45 31 e4 8b 44 24 1c 85 c0 75 10 48 8b 44 24 20 48 39 e8 0f 84 27 fe ff ff <0f> 0b 41 89 c5 65 4c 01 2d ba 1d bf 7e 48 8b 3b 48 c1 ef 36 e8 2e
-> All code
-> ========
->    0:	a0 b4 1b 83 e8 a8 23 	movabs 0xfff623a8e8831bb4,%al
->    7:	f6 ff 
->    9:	48 89 df             	mov    %rbx,%rdi
->    c:	e8 a0 3f f5 ff       	callq  0xfffffffffff53fb1
->   11:	45 31 e4             	xor    %r12d,%r12d
->   14:	8b 44 24 1c          	mov    0x1c(%rsp),%eax
->   18:	85 c0                	test   %eax,%eax
->   1a:	75 10                	jne    0x2c
->   1c:	48 8b 44 24 20       	mov    0x20(%rsp),%rax
->   21:	48 39 e8             	cmp    %rbp,%rax
->   24:	0f 84 27 fe ff ff    	je     0xfffffffffffffe51
->   2a:*	0f 0b                	ud2    		<-- trapping instruction
->   2c:	41 89 c5             	mov    %eax,%r13d
->   2f:	65 4c 01 2d ba 1d bf 	add    %r13,%gs:0x7ebf1dba(%rip)        # 0x7ebf1df1
->   36:	7e 
->   37:	48 8b 3b             	mov    (%rbx),%rdi
->   3a:	48 c1 ef 36          	shr    $0x36,%rdi
->   3e:	e8                   	.byte 0xe8
->   3f:	2e                   	cs
-> 
-> Code starting with the faulting instruction
-> ===========================================
->    0:	0f 0b                	ud2    
->    2:	41 89 c5             	mov    %eax,%r13d
->    5:	65 4c 01 2d ba 1d bf 	add    %r13,%gs:0x7ebf1dba(%rip)        # 0x7ebf1dc7
->    c:	7e 
->    d:	48 8b 3b             	mov    (%rbx),%rdi
->   10:	48 c1 ef 36          	shr    $0x36,%rdi
->   14:	e8                   	.byte 0xe8
->   15:	2e                   	cs
-> [   84.262217][ T6581] RSP: 0000:ffffc9002080fd08 EFLAGS: 00010206
-> [   84.262221][ T6581] RAX: ffffea01487467c8 RBX: ffffea0148740000 RCX: 0000000000000000
-> [   84.262223][ T6581] RDX: 000000000000027f RSI: 00000000000001ff RDI: 0000000000000001
-> [   84.262225][ T6581] RBP: ffffc9002080fd28 R08: 0000000000000000 R09: 0000000000000001
-> [   84.262226][ T6581] R10: 000000000000080c R11: 0000000000000000 R12: 0000000000000001
-> [   84.274946][ T1289] 781916337 bytes / 1533699 usecs = 497874 KB/s
-> [   84.279439][ T6581] R13: 00000000000001ff R14: 0000000000000200 R15: ffff88907ffd5000
-> [   84.279441][ T6581] FS:  00007f1b11213740(0000) GS:ffff88903f9c0000(0000) knlGS:0000000000000000
-> [   84.285537][ T1289]
-> [   84.287725][ T6581] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [   84.287728][ T6581] CR2: 00007f1b0fe00000 CR3: 0000005f54c9e003 CR4: 00000000007706f0
-> [   84.287730][ T6581] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> [   84.287731][ T6581] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> [   84.308684][ T1289] 781916337 bytes / 1533744 usecs = 497860 KB/s
-> [   84.313094][ T6581] PKRU: 55555554
-> [   84.313097][ T6581] Call Trace:
-> [   84.313100][ T6581]  <TASK>
-> [   84.320929][ T1289]
-> [ 84.328756][ T6581] ? die (arch/x86/kernel/dumpstack.c:421 arch/x86/kernel/dumpstack.c:434 arch/x86/kernel/dumpstack.c:447) 
-> [   84.337626][ T1289] 781916337 bytes / 1533702 usecs = 497873 KB/s
-> [ 84.344414][ T6581] ? do_trap (arch/x86/kernel/traps.c:114 arch/x86/kernel/traps.c:155) 
-> [   84.350509][ T1289]
-> [ 84.358331][ T6581] ? migrate_misplaced_folio (mm/migrate.c:2634 (discriminator 1)) 
-> [   84.368158][ T1289] 781916337 bytes / 1533806 usecs = 497840 KB/s
-> [ 84.369304][ T6581] ? do_error_trap (arch/x86/include/asm/traps.h:58 arch/x86/kernel/traps.c:176) 
-> [ 84.369306][ T6581] ? migrate_misplaced_folio (mm/migrate.c:2634 (discriminator 1)) 
-> [   84.375745][ T1289]
-> [ 84.383566][ T6581] ? exc_invalid_op (arch/x86/kernel/traps.c:267) 
-> [   84.392383][ T1289] 781916337 bytes / 1537066 usecs = 496784 KB/s
-> [ 84.399219][ T6581] ? migrate_misplaced_folio (mm/migrate.c:2634 (discriminator 1)) 
-> [ 84.399222][ T6581] ? asm_exc_invalid_op (arch/x86/include/asm/idtentry.h:621) 
-> [   84.405314][ T1289]
-> [ 84.408718][ T6581] ? migrate_misplaced_folio (mm/migrate.c:2634 (discriminator 1)) 
-> [ 84.408721][ T6581] ? migrate_misplaced_folio (mm/migrate.c:2630 (discriminator 2)) 
-> [   84.412861][ T1289] 781916337 bytes / 1533702 usecs = 497873 KB/s
-> [ 84.414661][ T6581] do_huge_pmd_numa_page (mm/huge_memory.c:1759) 
-> [   84.416855][ T1289]
-> [ 84.420436][ T6581] __handle_mm_fault (mm/memory.c:5429) 
-> [   84.427485][ T1289] 781916337 bytes / 1545381 usecs = 494111 KB/s
-> [ 84.430542][ T6581] handle_mm_fault (mm/memory.c:5608) 
-> [   84.432735][ T1289]
-> [ 84.438220][ T6581] do_user_addr_fault (arch/x86/mm/fault.c:1364) 
-> [   84.445291][ T1289] 781916337 bytes / 1545380 usecs = 494111 KB/s
-> [ 84.448765][ T6581] exc_page_fault (arch/x86/include/asm/irqflags.h:37 arch/x86/include/asm/irqflags.h:72 arch/x86/mm/fault.c:1514 arch/x86/mm/fault.c:1564) 
-> [   84.454252][ T1289]
-> [ 84.456445][ T6581] asm_exc_page_fault (arch/x86/include/asm/idtentry.h:623) 
-> [   84.456448][ T6581] RIP: 0033:0x561f6c00dad4
-> [   84.461953][ T1289] 781916337 bytes / 1545382 usecs = 494110 KB/s
-> [ 84.467077][ T6581] Code: 01 00 00 00 e8 0d f9 ff ff 89 c7 e8 6c ff ff ff bf 00 00 00 00 e8 fc f8 ff ff 85 d2 74 08 48 8d 04 f7 48 8b 00 c3 48 8d 04 f7 <48> 89 30 b8 00 00 00 00 c3 41 54 55 53 48 85 ff 0f 84 23 01 00 00
-> All code
-> ========
->    0:	01 00                	add    %eax,(%rax)
->    2:	00 00                	add    %al,(%rax)
->    4:	e8 0d f9 ff ff       	callq  0xfffffffffffff916
->    9:	89 c7                	mov    %eax,%edi
->    b:	e8 6c ff ff ff       	callq  0xffffffffffffff7c
->   10:	bf 00 00 00 00       	mov    $0x0,%edi
->   15:	e8 fc f8 ff ff       	callq  0xfffffffffffff916
->   1a:	85 d2                	test   %edx,%edx
->   1c:	74 08                	je     0x26
->   1e:	48 8d 04 f7          	lea    (%rdi,%rsi,8),%rax
->   22:	48 8b 00             	mov    (%rax),%rax
->   25:	c3                   	retq   
->   26:	48 8d 04 f7          	lea    (%rdi,%rsi,8),%rax
->   2a:*	48 89 30             	mov    %rsi,(%rax)		<-- trapping instruction
->   2d:	b8 00 00 00 00       	mov    $0x0,%eax
->   32:	c3                   	retq   
->   33:	41 54                	push   %r12
->   35:	55                   	push   %rbp
->   36:	53                   	push   %rbx
->   37:	48 85 ff             	test   %rdi,%rdi
->   3a:	0f 84 23 01 00 00    	je     0x163
-> 
-> Code starting with the faulting instruction
-> ===========================================
->    0:	48 89 30             	mov    %rsi,(%rax)
->    3:	b8 00 00 00 00       	mov    $0x0,%eax
->    8:	c3                   	retq   
->    9:	41 54                	push   %r12
->    b:	55                   	push   %rbp
->    c:	53                   	push   %rbx
->    d:	48 85 ff             	test   %rdi,%rdi
->   10:	0f 84 23 01 00 00    	je     0x139
 > 
 > 
 > The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20240617/202406171436.a30c129-oliver.sang@intel.com
+> https://download.01.org/0day-ci/archive/20240617/202406171629.fa23d1c3-oliver.sang@intel.com
 > 
 > 
+> 2024-06-07 08:32:34 export TEST_DIR=/fs/sda1
+> 2024-06-07 08:32:34 export TEST_DEV=/dev/sda1
+> 2024-06-07 08:32:34 export FSTYP=xfs
+> 2024-06-07 08:32:34 export SCRATCH_MNT=/fs/scratch
+> 2024-06-07 08:32:34 mkdir /fs/scratch -p
+> 2024-06-07 08:32:34 export SCRATCH_DEV=/dev/sda4
+> 2024-06-07 08:32:34 export SCRATCH_LOGDEV=/dev/sda2
+> 2024-06-07 08:32:34 export SCRATCH_XFS_LIST_METADATA_FIELDS=u3.sfdir3.hdr.parent.i4
+> 2024-06-07 08:32:34 export SCRATCH_XFS_LIST_FUZZ_VERBS=random
+> 2024-06-07 08:32:34 echo xfs/348
+> 2024-06-07 08:32:34 ./check xfs/348
+> FSTYP         -- xfs (debug)
+> PLATFORM      -- Linux/x86_64 lkp-skl-d06 6.10.0-rc1-00005-g38de567906d9 #1 SMP PREEMPT_DYNAMIC Fri Jun  7 04:48:02 CST 2024
+> MKFS_OPTIONS  -- -f /dev/sda4
+> MOUNT_OPTIONS -- /dev/sda4 /fs/scratch
+> 
+> xfs/348       - output mismatch (see /lkp/benchmarks/xfstests/results//xfs/348.out.bad)
+>     --- tests/xfs/348.out	2024-06-03 12:10:00.000000000 +0000
+>     +++ /lkp/benchmarks/xfstests/results//xfs/348.out.bad	2024-06-07 08:33:19.134137710 +0000
+>     @@ -240,7 +240,7 @@
+>      would have junked entry "EMPTY" in directory PARENT_INO
+>      would have junked entry "FIFO" in directory PARENT_INO
+>      stat: cannot statx 'SCRATCH_MNT/test/DIR': Structure needs cleaning
+>     -stat: cannot statx 'SCRATCH_MNT/test/DATA': Structure needs cleaning
+>     +stat: 'SCRATCH_MNT/test/DATA' is a symbolic link
+>      stat: cannot statx 'SCRATCH_MNT/test/EMPTY': Structure needs cleaning
+>      stat: 'SCRATCH_MNT/test/SYMLINK' is a symbolic link
+>     ...
+>     (Run 'diff -u /lkp/benchmarks/xfstests/tests/xfs/348.out /lkp/benchmarks/xfstests/results//xfs/348.out.bad'  to see the entire diff)
+> Ran: xfs/348
+> Failures: xfs/348
+> Failed 1 of 1 tests
 > 
 > -- 
 > 0-DAY CI Kernel Test Service
 > https://github.com/intel/lkp-tests/wiki
-
-7262f208ca68:mm/migrate.c line 2634 is BUG_ON(!list_empty(&migratepages)):
-in a different caller of migrate_pages() than the VM_BUG_ON I hit, but
-8e279f970b5c ("mm/migrate: fix kernel BUG at mm/compaction.c:2761!"),
-which went into Linus's tree today, is very likely to fix it.
-
-Hugh
+> 
