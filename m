@@ -1,134 +1,116 @@
-Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B19F9446AB
-	for <oe-lkp@lists.linux.dev>; Wed, 19 Jun 2024 14:56:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81BCC1422A2
+	for <oe-lkp@lists.linux.dev>; Wed, 19 Jun 2024 15:25:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718808990; cv=none; b=ClH5pxKp6M5oCzEIAnm1BxDJ+ueCy/T0jXm1eO1Y2/spssTjE/IuawkdwT3q0dqRouIEnVoXpZ1lLwM0MriOXwHVVY35Syude1UI8biF05rPZ3C5rl2XmrZbK6wskCkCTkdNucPbzd/a6WUVq/tvr1JUMt5i3MQhZjOoTyMWiGI=
+	t=1718810737; cv=none; b=YdQMNBudQhPNuVmJCK0CamAGH26aY4MpvGLVcgoXowQTeSujG5qs+iqCCgR9T972YMlNrj6Ur2T8+dAl/AGcmHsfN+yCxEie/BNNmQUrjC5RI0vVb9gAkuhkFau6WQMMYv8x2cNXmN8lMM9DygqOske+mmQfPgPJbcYIrMYObBw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718808990; c=relaxed/simple;
-	bh=mW5+fCVHeybh0B32xcWiOOoTMwWpS8c0Mq/7VYHU2Co=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=KhmrTO+maO1KTUSE/I/YN8C0IoQ6wA2/2QgOfitIY+eCaLeILrX772QtRkurLfB7iC8UyhRlTzZqqa6pA434yrRK6a21gQ9+EyuxrZpxdY6k6d7bmhfXGOA8PpM6ef5jgyewKrBmDwLwOjwMkoxI/BDIecTfkc7x/znn5VZUD/c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=rYNGXSxV; arc=none smtp.client-ip=209.85.208.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="rYNGXSxV"
-Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-57d119fddd9so8509a12.1
-        for <oe-lkp@lists.linux.dev>; Wed, 19 Jun 2024 07:56:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1718808987; x=1719413787; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Dscl6UrpkREHEcEax9S2VtvCljdvXW5W5V5gZgFuc7Y=;
-        b=rYNGXSxVBfKnkRLWXuurVuk8aSsItpLpXxXExxjXqBa2cmY7TzVaLccLWGWjIpy0k0
-         vKCII5B1hUyGBnflhuBQGVcydwZKWcGxFhOHirCrSAGbRoKzorMay3/W3FXTML802Rwd
-         eO4+jHmi8vDKtIEoVqLXCqZPq5Qj3ZtoYg8mIZHT6w5O9hq7fVhpN8FGfTUhHlSefqH7
-         sVNfmIXi2S2cm+AtXVagFrJCLHdYXATZvOA72xYbbr1u3Z4GX0/3HmX+jVTri4Ubd9oU
-         jlbl43Hj0+MzozeCvjU3zTZ4ImmglwWApNoL+8PyrDtGUPtm+hyne3JZo1NIJS5BICPv
-         daRw==
+	s=arc-20240116; t=1718810737; c=relaxed/simple;
+	bh=7lLHL7WbtmnVTokudSZCsjF75Xj14OPUUSGO5t3o/W0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=A2SdI1kZMSEHNxGUh9fxF96ptuncc7fXGrE8+9za9+wf8cU8B1HDE4f97M00Y/6Dd7WN2LyVY5Ke4i3B7TUiTidJWdVtobsRVkUjNoDYDNn3UQQ9ULc0YEOSxbyd9fCs2WzzOEAYi9CIWUUiRhSCASl6IT7eimgreeQz/A5zGeo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=grimberg.me; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=grimberg.me
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-35f1c7d1286so510511f8f.3
+        for <oe-lkp@lists.linux.dev>; Wed, 19 Jun 2024 08:25:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718808987; x=1719413787;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Dscl6UrpkREHEcEax9S2VtvCljdvXW5W5V5gZgFuc7Y=;
-        b=kj5x+WPCMTU2AFcs94DHwQO3gbj1CTqZBeiX4pYr9HCztFXgQyc+IWZVRU50SPREeK
-         rjUW7OQ65TpxHNte2j9ica3RtHKVfQVNn99xyjd76mV1l7+b8MVmyqWAPFJR4IPYv4ng
-         zPvtcsk9Nj/0Nd3ubBavihQzfWGQh/YOjv4q8ddqOdcIEPHMd512H/N8Jk0z9fjFL+mp
-         iNY5e76HiW9L6MKWVRAFfuHJN1Fhb/AJ/pnMzC9tzc7MTu5RbkMeMksUaG5xfZr0ZytG
-         V3DjnX6ZjDQhL1fL5LlD/wNSe/i3qotobNd4zybq2Xu+NG8IjWQrowc+lqsyZbZr/5Yu
-         PslA==
-X-Forwarded-Encrypted: i=1; AJvYcCU0+OIjxaSGCd98qjr5FSguu8mMYkFcNOcplj+9Ag6weFElJobCH+S5BhbRDzVDnV6ke9Rv1dI/DLwReJtgs5PMtgVknXt3
-X-Gm-Message-State: AOJu0YwBdz5nMQ9SATH/0uFNRkgU1TiskB/ZHo/e0Yuk8AIiesqIGo18
-	pxelU3i5G7DTcM+YkSv4sG7BS9CbbuGhb3MtKHl+m/zt6JDd7tzs+WScCSRW25/IIxp1p0uFhhR
-	lTEV8uTz6fdYaz9Ab//MHQDJoSJSD6emTulv2
-X-Google-Smtp-Source: AGHT+IHRc1QplqwYcX+VFOj/+h1rSrrKLd2FNFrokx2G8bh3D2DzsdBKUJmVOIzynujozvQFogwYWDtnO+ie71qDhxo=
-X-Received: by 2002:a05:6402:4304:b0:57c:b80b:b2f4 with SMTP id
- 4fb4d7f45d1cf-57d0d6d1871mr207302a12.6.1718808986678; Wed, 19 Jun 2024
- 07:56:26 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1718810734; x=1719415534;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=uzIZgoUq63mX73VxCwwJIV3CEA76deHPFGsC3cFCI3w=;
+        b=sNPy1PJeCvS0yNFmOi2zOpnArGSew4a1pR8BfaALU4aihato2PxjXL0AB/zourJD4m
+         Jad+d4d1Ggc6FcLp2fHBKTBtJKeTuaOhgcp4gU6Zcd3Rh+ktXDfmS8ZKRhkw5ZN2W34H
+         ZH7mx3UfXttziEJtXZmJDfizXbRG09JsJWqWQh4uKW2y5k62H+/7GMoLdMq3PixPXGXI
+         OmeqiPBVjlKD0c0Ky4jajrbnK7G//uoRhEbmZfle7xmlsvigTx5YFMNJeARKB561E8xu
+         D9LmS4x4wV0Qc5VjVJ9mFSI6Os7SevDHpZwCrl9BWdZuSGoF4cTbLQPkdTiil4m19CuN
+         RXrA==
+X-Forwarded-Encrypted: i=1; AJvYcCVb30PiIDbAtNrg6Azz8eUmrU4wdZFakxMN4TQM7ZmLeUj79RxRkp5l81ImULyC+5CYDH7BNDoiNZFGJviJG3bf+8H20pyu
+X-Gm-Message-State: AOJu0YyYA2pMAkjqG2j6raFhzjTIqQXEdI4kxpZK2YBsJ7Pnzck/9DMR
+	tX5KSoKbTUpurfiepYpcC7gGiieP4OjUfpzgPdxWMNHHt4fLNkRf
+X-Google-Smtp-Source: AGHT+IEf3sBjCXzX93lySh/7g4Tm+IBr0zNaAnkDAVMjgUhsUo+S1T8n1ms7EyN4QACfrLyfXjDyrg==
+X-Received: by 2002:a05:6000:18a2:b0:35f:2584:76e9 with SMTP id ffacd0b85a97d-36316ff7978mr2237855f8f.2.1718810733768;
+        Wed, 19 Jun 2024 08:25:33 -0700 (PDT)
+Received: from [10.50.4.180] (bzq-84-110-32-226.static-ip.bezeqint.net. [84.110.32.226])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-422f5f33bcfsm230292215e9.1.2024.06.19.08.25.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 19 Jun 2024 08:25:33 -0700 (PDT)
+Message-ID: <e26bf274-8600-4862-ab3c-9ce6df7d86e9@grimberg.me>
+Date: Wed, 19 Jun 2024 18:25:32 +0300
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240617095852.66c96be9@kernel.org> <202406161539.b5ff7b20-oliver.sang@intel.com>
- <4937ffd4-f30a-4bdb-9166-6aebb19ca950@grimberg.me> <Zm9fju2J6vBvl-E0@casper.infradead.org>
- <033294ee-e6e6-4dca-b60c-019cb72a6857@grimberg.me> <407790.1718801177@warthog.procyon.org.uk>
- <0aaaeabc-6f65-4e5d-bdb1-aa124ed08e8b@grimberg.me> <CANn89iLQ+9GYYn0pQpueFP+aYHnoWhqZSws6t6VCNoxs8pwL7w@mail.gmail.com>
-In-Reply-To: <CANn89iLQ+9GYYn0pQpueFP+aYHnoWhqZSws6t6VCNoxs8pwL7w@mail.gmail.com>
-From: Eric Dumazet <edumazet@google.com>
-Date: Wed, 19 Jun 2024 16:56:15 +0200
-Message-ID: <CANn89iKukukmyL_FERQ25bBhkfv-_oUpOW_WFd4=GUFNsJN6OQ@mail.gmail.com>
+User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH] net: micro-optimize skb_datagram_iter
-To: Sagi Grimberg <sagi@grimberg.me>
-Cc: David Howells <dhowells@redhat.com>, Jakub Kicinski <kuba@kernel.org>, 
-	Matthew Wilcox <willy@infradead.org>, kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, 
-	lkp@intel.com, netdev@vger.kernel.org, Willem de Bruijn <willemb@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+To: Eric Dumazet <edumazet@google.com>
+Cc: David Howells <dhowells@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
+ Matthew Wilcox <willy@infradead.org>,
+ kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+ lkp@intel.com, netdev@vger.kernel.org
+References: <20240617095852.66c96be9@kernel.org>
+ <202406161539.b5ff7b20-oliver.sang@intel.com>
+ <4937ffd4-f30a-4bdb-9166-6aebb19ca950@grimberg.me>
+ <Zm9fju2J6vBvl-E0@casper.infradead.org>
+ <033294ee-e6e6-4dca-b60c-019cb72a6857@grimberg.me>
+ <407790.1718801177@warthog.procyon.org.uk>
+ <0aaaeabc-6f65-4e5d-bdb1-aa124ed08e8b@grimberg.me>
+ <CANn89iLQ+9GYYn0pQpueFP+aYHnoWhqZSws6t6VCNoxs8pwL7w@mail.gmail.com>
+Content-Language: en-US
+From: Sagi Grimberg <sagi@grimberg.me>
+In-Reply-To: <CANn89iLQ+9GYYn0pQpueFP+aYHnoWhqZSws6t6VCNoxs8pwL7w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Wed, Jun 19, 2024 at 4:51=E2=80=AFPM Eric Dumazet <edumazet@google.com> =
-wrote:
->
-> On Wed, Jun 19, 2024 at 3:54=E2=80=AFPM Sagi Grimberg <sagi@grimberg.me> =
-wrote:
-> >
-> >
-> >
-> > On 19/06/2024 15:46, David Howells wrote:
-> > > Jakub Kicinski <kuba@kernel.org> wrote:
-> > >
-> > >> On Mon, 17 Jun 2024 09:29:53 +0300 Sagi Grimberg wrote:
-> > >>>> Probably because kmap() returns page_address() for non-highmem pag=
-es
-> > >>>> while kmap_local_page() actually returns a kmap address:
-> > >>>>
-> > >>>>           if (!IS_ENABLED(CONFIG_DEBUG_KMAP_LOCAL_FORCE_MAP) && !P=
-ageHighMem(page))
-> > >>>>                   return page_address(page);
-> > >>>>           return __kmap_local_pfn_prot(page_to_pfn(page), prot);
-> > >>>>
-> > >>>> so if skb frags are always lowmem (are they?) this is a false posi=
-tive.
-> > >>> AFAIR these buffers are coming from the RX ring, so they should be
-> > >>> coming from a page_frag_cache,
-> > >>> so I want to say always low memory?
-> > >>>
-> > >>>> if they can be highmem, then you've uncovered a bug that nobody's
-> > >>>> noticed because nobody's testing on 32-bit any more.
-> > >>> Not sure, Jakub? Eric?
-> > >> My uneducated guess would be that until recent(ish) sendpage rework
-> > >> from David Howells all high mem pages would have been single pages.
-> > > Um.  I touched the Tx side, not the Rx side.
-> > >
-> > > I also don't know whether all high mem pages would be single pages.  =
-I'll have
-> > > to defer that one to the MM folks.
-> >
-> > What prevents from gro to expand frags from crossing PAGE_SIZE?
-> >
-> > btw, at least from the code in skb_gro_receive() it appears that
-> > page_address() is called directly,
-> > which suggest that these netmem pages are lowmem?
->
+
+
+On 19/06/2024 17:51, Eric Dumazet wrote:
+> On Wed, Jun 19, 2024 at 3:54 PM Sagi Grimberg <sagi@grimberg.me> wrote:
+>>
+>>
+>> On 19/06/2024 15:46, David Howells wrote:
+>>> Jakub Kicinski <kuba@kernel.org> wrote:
+>>>
+>>>> On Mon, 17 Jun 2024 09:29:53 +0300 Sagi Grimberg wrote:
+>>>>>> Probably because kmap() returns page_address() for non-highmem pages
+>>>>>> while kmap_local_page() actually returns a kmap address:
+>>>>>>
+>>>>>>            if (!IS_ENABLED(CONFIG_DEBUG_KMAP_LOCAL_FORCE_MAP) && !PageHighMem(page))
+>>>>>>                    return page_address(page);
+>>>>>>            return __kmap_local_pfn_prot(page_to_pfn(page), prot);
+>>>>>>
+>>>>>> so if skb frags are always lowmem (are they?) this is a false positive.
+>>>>> AFAIR these buffers are coming from the RX ring, so they should be
+>>>>> coming from a page_frag_cache,
+>>>>> so I want to say always low memory?
+>>>>>
+>>>>>> if they can be highmem, then you've uncovered a bug that nobody's
+>>>>>> noticed because nobody's testing on 32-bit any more.
+>>>>> Not sure, Jakub? Eric?
+>>>> My uneducated guess would be that until recent(ish) sendpage rework
+>>>> from David Howells all high mem pages would have been single pages.
+>>> Um.  I touched the Tx side, not the Rx side.
+>>>
+>>> I also don't know whether all high mem pages would be single pages.  I'll have
+>>> to defer that one to the MM folks.
+>> What prevents from gro to expand frags from crossing PAGE_SIZE?
+>>
+>> btw, at least from the code in skb_gro_receive() it appears that
+>> page_address() is called directly,
+>> which suggest that these netmem pages are lowmem?
 > GRO should only be fed with lowmem pages.
 >
 > But the trace involves af_unix, not GRO ?
 >
-> I guess that with splice games, it is possible to add high order pages to=
- skbs.
+> I guess that with splice games, it is possible to add high order pages to skbs.
 >
 > I think skb_frag_foreach_page() could be used to fix this issue.
 
-For reference, please look at
+Thanks Eric, that is indeed the missing piece.
 
-commit c613c209c3f351d47158f728271d0c73b6dd24c6
-Author: Willem de Bruijn <willemb@google.com>
-Date:   Mon Jul 31 08:15:47 2017 -0400
-
-    net: add skb_frag_foreach_page and use with kmap_atomic
+I'll give it go.
