@@ -1,116 +1,141 @@
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+Received: from mail-pj1-f51.google.com (mail-pj1-f51.google.com [209.85.216.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81BCC1422A2
-	for <oe-lkp@lists.linux.dev>; Wed, 19 Jun 2024 15:25:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C614652F7A
+	for <oe-lkp@lists.linux.dev>; Wed, 19 Jun 2024 18:34:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718810737; cv=none; b=YdQMNBudQhPNuVmJCK0CamAGH26aY4MpvGLVcgoXowQTeSujG5qs+iqCCgR9T972YMlNrj6Ur2T8+dAl/AGcmHsfN+yCxEie/BNNmQUrjC5RI0vVb9gAkuhkFau6WQMMYv8x2cNXmN8lMM9DygqOske+mmQfPgPJbcYIrMYObBw=
+	t=1718822082; cv=none; b=r8yLZt2qUNcGLhmIOJ0+Elpea1HvSU9t0UF/W/2X0imB/TJP/OnL0ytMBEpBNS3kR400T9Dfs5xF6ZjZux7Ej2PXVpXZhT3W0/IE0OtLHucd4oqlXyxeaJdIsA4Wo4O15M5AuRKGClSk85MVzkYaU+RN9jrg2K5Uwab7eHIIZb4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718810737; c=relaxed/simple;
-	bh=7lLHL7WbtmnVTokudSZCsjF75Xj14OPUUSGO5t3o/W0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=A2SdI1kZMSEHNxGUh9fxF96ptuncc7fXGrE8+9za9+wf8cU8B1HDE4f97M00Y/6Dd7WN2LyVY5Ke4i3B7TUiTidJWdVtobsRVkUjNoDYDNn3UQQ9ULc0YEOSxbyd9fCs2WzzOEAYi9CIWUUiRhSCASl6IT7eimgreeQz/A5zGeo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=grimberg.me; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=grimberg.me
+	s=arc-20240116; t=1718822082; c=relaxed/simple;
+	bh=aYq8ts7r2hqXTEgmYmj2kRfmaCSGl9nv/6MI1VsrbPQ=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=FZWkLU1sXoAmgfhf1wOtEQoAG/uTjyn30JPWNoilzVM35wAh3JYlV+0j37rw3FO3X+LahjgICNwgUTcriYBae/CcNNTzm95KsKjGukHQ10XdBWlKisqz/b77TGNT2Iw4yus5ZENGnEQEUyNfjCPEkIGKIb1yN3qPoveVqQdFS8M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.216.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-35f1c7d1286so510511f8f.3
-        for <oe-lkp@lists.linux.dev>; Wed, 19 Jun 2024 08:25:35 -0700 (PDT)
+Received: by mail-pj1-f51.google.com with SMTP id 98e67ed59e1d1-2c7dd54d3d2so108457a91.2
+        for <oe-lkp@lists.linux.dev>; Wed, 19 Jun 2024 11:34:40 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718810734; x=1719415534;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=uzIZgoUq63mX73VxCwwJIV3CEA76deHPFGsC3cFCI3w=;
-        b=sNPy1PJeCvS0yNFmOi2zOpnArGSew4a1pR8BfaALU4aihato2PxjXL0AB/zourJD4m
-         Jad+d4d1Ggc6FcLp2fHBKTBtJKeTuaOhgcp4gU6Zcd3Rh+ktXDfmS8ZKRhkw5ZN2W34H
-         ZH7mx3UfXttziEJtXZmJDfizXbRG09JsJWqWQh4uKW2y5k62H+/7GMoLdMq3PixPXGXI
-         OmeqiPBVjlKD0c0Ky4jajrbnK7G//uoRhEbmZfle7xmlsvigTx5YFMNJeARKB561E8xu
-         D9LmS4x4wV0Qc5VjVJ9mFSI6Os7SevDHpZwCrl9BWdZuSGoF4cTbLQPkdTiil4m19CuN
-         RXrA==
-X-Forwarded-Encrypted: i=1; AJvYcCVb30PiIDbAtNrg6Azz8eUmrU4wdZFakxMN4TQM7ZmLeUj79RxRkp5l81ImULyC+5CYDH7BNDoiNZFGJviJG3bf+8H20pyu
-X-Gm-Message-State: AOJu0YyYA2pMAkjqG2j6raFhzjTIqQXEdI4kxpZK2YBsJ7Pnzck/9DMR
-	tX5KSoKbTUpurfiepYpcC7gGiieP4OjUfpzgPdxWMNHHt4fLNkRf
-X-Google-Smtp-Source: AGHT+IEf3sBjCXzX93lySh/7g4Tm+IBr0zNaAnkDAVMjgUhsUo+S1T8n1ms7EyN4QACfrLyfXjDyrg==
-X-Received: by 2002:a05:6000:18a2:b0:35f:2584:76e9 with SMTP id ffacd0b85a97d-36316ff7978mr2237855f8f.2.1718810733768;
-        Wed, 19 Jun 2024 08:25:33 -0700 (PDT)
-Received: from [10.50.4.180] (bzq-84-110-32-226.static-ip.bezeqint.net. [84.110.32.226])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-422f5f33bcfsm230292215e9.1.2024.06.19.08.25.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 19 Jun 2024 08:25:33 -0700 (PDT)
-Message-ID: <e26bf274-8600-4862-ab3c-9ce6df7d86e9@grimberg.me>
-Date: Wed, 19 Jun 2024 18:25:32 +0300
+        d=1e100.net; s=20230601; t=1718822080; x=1719426880;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=BxySTycZsV5/gu9Q2STkld6/1Kd4spXPuJywcLrjDw0=;
+        b=PFpG6Kcde/xnfKdbXbeMHCvc1+L3xpcynlWbfwYuham+FaI5P8Roxkc80yev7YPt+J
+         LeMN7nlgZ7X8lil6xrSPxFj0PIk7Di/QDqwjzo8BqgaWvbFkNTFu8bTcqriZ8oKZM61e
+         QZ7KJpXHPIoRMyjRgUyre4QqRDw26XBrihEgBVkUGGkL6hFSaPyR7MrsNCG5Cmc46Xhh
+         BosdHhEFmJvdgV/m1TRN99ERpXI1mz0NgCpnu0nnDFDhvnoVs4n9tGGM6bgzDt8jNhew
+         CXK5qV/uM+Oh3CTOJO395wiPldB1uoAwg3YNfxkgn8jNzG13gEPCoXJ+0RNG6ZyDFGsA
+         bKdA==
+X-Forwarded-Encrypted: i=1; AJvYcCVIZyZFhwUf1LUZBrcXd25L32GHnIDmLY7gEmx/zFhd8ZeNedg8c8aAlhmWhipicP7gbSmaoPuZEpBu7lRELq2uJPIixADh
+X-Gm-Message-State: AOJu0YyOqyBwlXeIbuCoExOL7r9nqNRnsl3BDY6LSydai78KUI2tDWqS
+	lEKJrnAEO6cVcuvvZCnLc7sA1dQcLMCOC92hl8KMLsHaZibbDxhVDS/8sp5S7FvsroLom0ISDxl
+	zAiPBssv3V17xoc9jXptONMaroxE=
+X-Google-Smtp-Source: AGHT+IGflNTYqNvfUrwzj5dURA9uEGLLubwGlo5ntHYvn/Px4PEA3BmGfCoXDuPCbfqwk8lS+0I/TYLrTtitt+xeFng=
+X-Received: by 2002:a17:90a:9c6:b0:2c7:aba6:d32f with SMTP id
+ 98e67ed59e1d1-2c7b5c8a1b1mr3335068a91.22.1718822079910; Wed, 19 Jun 2024
+ 11:34:39 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] net: micro-optimize skb_datagram_iter
-To: Eric Dumazet <edumazet@google.com>
-Cc: David Howells <dhowells@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
- Matthew Wilcox <willy@infradead.org>,
- kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
- lkp@intel.com, netdev@vger.kernel.org
-References: <20240617095852.66c96be9@kernel.org>
- <202406161539.b5ff7b20-oliver.sang@intel.com>
- <4937ffd4-f30a-4bdb-9166-6aebb19ca950@grimberg.me>
- <Zm9fju2J6vBvl-E0@casper.infradead.org>
- <033294ee-e6e6-4dca-b60c-019cb72a6857@grimberg.me>
- <407790.1718801177@warthog.procyon.org.uk>
- <0aaaeabc-6f65-4e5d-bdb1-aa124ed08e8b@grimberg.me>
- <CANn89iLQ+9GYYn0pQpueFP+aYHnoWhqZSws6t6VCNoxs8pwL7w@mail.gmail.com>
-Content-Language: en-US
-From: Sagi Grimberg <sagi@grimberg.me>
-In-Reply-To: <CANn89iLQ+9GYYn0pQpueFP+aYHnoWhqZSws6t6VCNoxs8pwL7w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <202406181535.eacba363-oliver.sang@intel.com>
+In-Reply-To: <202406181535.eacba363-oliver.sang@intel.com>
+From: Namhyung Kim <namhyung@kernel.org>
+Date: Wed, 19 Jun 2024 14:34:28 -0400
+Message-ID: <CAM9d7cgDUQL82ToJN5kXJpdEm0aTEJmU1iuxCwSK5Vhi2jnpPQ@mail.gmail.com>
+Subject: Re: [linux-next:master] [perf test] 658a8805cb: perf-sanity-tests.perf_annotate_basic_tests.fail
+To: kernel test robot <oliver.sang@intel.com>
+Cc: Thomas Richter <tmricht@linux.ibm.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	Linux Memory Management List <linux-mm@kvack.org>, linux-perf-users@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+Hello,
 
-
-On 19/06/2024 17:51, Eric Dumazet wrote:
-> On Wed, Jun 19, 2024 at 3:54 PM Sagi Grimberg <sagi@grimberg.me> wrote:
->>
->>
->> On 19/06/2024 15:46, David Howells wrote:
->>> Jakub Kicinski <kuba@kernel.org> wrote:
->>>
->>>> On Mon, 17 Jun 2024 09:29:53 +0300 Sagi Grimberg wrote:
->>>>>> Probably because kmap() returns page_address() for non-highmem pages
->>>>>> while kmap_local_page() actually returns a kmap address:
->>>>>>
->>>>>>            if (!IS_ENABLED(CONFIG_DEBUG_KMAP_LOCAL_FORCE_MAP) && !PageHighMem(page))
->>>>>>                    return page_address(page);
->>>>>>            return __kmap_local_pfn_prot(page_to_pfn(page), prot);
->>>>>>
->>>>>> so if skb frags are always lowmem (are they?) this is a false positive.
->>>>> AFAIR these buffers are coming from the RX ring, so they should be
->>>>> coming from a page_frag_cache,
->>>>> so I want to say always low memory?
->>>>>
->>>>>> if they can be highmem, then you've uncovered a bug that nobody's
->>>>>> noticed because nobody's testing on 32-bit any more.
->>>>> Not sure, Jakub? Eric?
->>>> My uneducated guess would be that until recent(ish) sendpage rework
->>>> from David Howells all high mem pages would have been single pages.
->>> Um.  I touched the Tx side, not the Rx side.
->>>
->>> I also don't know whether all high mem pages would be single pages.  I'll have
->>> to defer that one to the MM folks.
->> What prevents from gro to expand frags from crossing PAGE_SIZE?
->>
->> btw, at least from the code in skb_gro_receive() it appears that
->> page_address() is called directly,
->> which suggest that these netmem pages are lowmem?
-> GRO should only be fed with lowmem pages.
+On Tue, Jun 18, 2024 at 3:54=E2=80=AFAM kernel test robot <oliver.sang@inte=
+l.com> wrote:
 >
-> But the trace involves af_unix, not GRO ?
 >
-> I guess that with splice games, it is possible to add high order pages to skbs.
 >
-> I think skb_frag_foreach_page() could be used to fix this issue.
+> Hello,
+>
+> kernel test robot noticed "perf-sanity-tests.perf_annotate_basic_tests.fa=
+il" on:
+>
+> commit: 658a8805cb604260ae9f35ae5e50012e3d1ed5e3 ("perf test: Speed up te=
+st case 70 annotate basic tests")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+>
+> [test failed on linux-next/master 6906a84c482f098d31486df8dc98cead21cce2d=
+0]
+>
+> in testcase: perf-sanity-tests
+> version:
+> with following parameters:
+>
+>         perf_compiler: gcc
+>
+>
+>
+> compiler: gcc-13
+> test machine: 4 threads Intel(R) Core(TM) i5-6500 CPU @ 3.20GHz (Skylake)=
+ with 32G memory
+>
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+>
+>
+> we didn't observed the issue on parent.
+>
+> f5803651b4a4b67d 658a8805cb604260ae9f35ae5e5
+> ---------------- ---------------------------
+>        fail:runs  %reproduction    fail:runs
+>            |             |             |
+>            :6          100%           6:6     perf-sanity-tests.perf_anno=
+tate_basic_tests.fail
 
-Thanks Eric, that is indeed the missing piece.
+Hmm.. strange.  The only change in the commit is to save
+the output of perf annotate into a file.  I'm not sure if it'd affect
+the test result.  Maybe because of sanitizers..?
 
-I'll give it go.
+Thanks,
+Namhyung
+
+>
+>
+>
+> If you fix the issue in a separate patch/commit (i.e. not just a new vers=
+ion of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202406181535.eacba363-oliver.san=
+g@intel.com
+>
+>
+> 2024-06-14 20:09:34 sudo /usr/src/linux-perf-x86_64-rhel-8.3-bpf-658a8805=
+cb604260ae9f35ae5e50012e3d1ed5e3/tools/perf/perf test 76
+>  76: perf annotate basic tests                                       : FA=
+ILED!
+> 2024-06-14 20:12:46 sudo /usr/src/linux-perf-x86_64-rhel-8.3-bpf-658a8805=
+cb604260ae9f35ae5e50012e3d1ed5e3/tools/perf/perf test 77
+>  77: Add 'perf probe's, list and remove them                         : Ok
+> 2024-06-14 20:12:46 sudo /usr/src/linux-perf-x86_64-rhel-8.3-bpf-658a8805=
+cb604260ae9f35ae5e50012e3d1ed5e3/tools/perf/perf test 78
+>  78: build id cache operations                                       : Ok
+>
+>
+>
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20240618/202406181535.eacba363-ol=
+iver.sang@intel.com
+>
+>
+>
+> --
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
+>
