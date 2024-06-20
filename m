@@ -1,122 +1,197 @@
-Received: from out30-124.freemail.mail.aliyun.com (out30-124.freemail.mail.aliyun.com [115.124.30.124])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 187DE1AB366
-	for <oe-lkp@lists.linux.dev>; Thu, 20 Jun 2024 11:13:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CE7B1B9AD5;
+	Thu, 20 Jun 2024 20:16:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718882037; cv=none; b=H44+ievDsiPvp3hMfiLqKILsTaGOIYMCPOAWJRKkGEIUGMFFBh8A2PpLCGhfb6Xm7RQB3XDkKURb1LoezWuQqb/097BvxSOAFBr2XcN9vXlg8yE9xUXSBKgJI6uLvELxoXfulhVLtmf2qgjZ6tpFLv92CP4y+vvXXqRnjKrzJZs=
+	t=1718914593; cv=none; b=C12CruI8mj+r9gXZADqy89YqtMDhsqFuWzdMwMk3TyTDN4O/GcCeH4tEkxI4mfD5Pfa1zfm/Mnh49l6gohud4MbpUisLkQIVs0wuG2PjnRzFCRTacDiu72NhP6w57l3apqBxgakv3ohBViuNo7+XTZzHlHAdVFXG2kjWZBeP3Fw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718882037; c=relaxed/simple;
-	bh=1/4NRcgT6efYLc+Gjxe48ItNJG5eN+Wre6lr446Pc8U=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=mk+Nin1D8r2Rkmu0f9W6ExoADYfMb4sOrOB6BweFKiOUeFJ+RBlSXZd6BWEibkMS+YTqyNbttDvoIXtKwxPE+QYr1CXOZkxHXXnlGmHV8jRI8lAh/7zZeBiJm56bvBu3k8bdzCmZP417KEoiyg1Zz1FN2tg1P3wp1M2Xakq+G/c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=h2zLYkst; arc=none smtp.client-ip=115.124.30.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	s=arc-20240116; t=1718914593; c=relaxed/simple;
+	bh=ESFIsO/6+1t0rvV4TuCX/D42GeSKFILy5wzyqrjkb0o=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=Tibwstmz7GhL5a7qORBeE30KjTYZbZJ0MBjWlbiJGO0qUq6H1iRRAOOrJDn9geluYIGGIZqSyPnqGnNVnMU+a4khqJHfv83HVBYFhj4PU/C6V7Jom3WSNi0au+Ozd3+yAEfe6sfV2BekyHl6VbfKw5M9S4vdscf/FmFFR0/mj/g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Vg6z74DG; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="h2zLYkst"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1718882031; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
-	bh=2IBQqo2wdt4w9E1pQCBcfo/63oBXu3c5JBnJg0KVLSg=;
-	b=h2zLYkst8eeTGsDiuv5jfCzMM24/tnzmphoJjpvQDLOMW0YDWUmpRJHwNSGR3r/At5zpsyInQKyF4uR8rB6aNuzLOqVu4P6c1xObh7Yh7e7u+9fHiHf9ObjmU2xTTMXZrit1EBfya2TFCkvH1d28Bn+uFxaJvqVe01FgWRMN3es=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033068173054;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=14;SR=0;TI=SMTPD_---0W8sD9SO_1718882030;
-Received: from 30.97.56.69(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0W8sD9SO_1718882030)
-          by smtp.aliyun-inc.com;
-          Thu, 20 Jun 2024 19:13:51 +0800
-Message-ID: <fab6f79f-3fb5-471a-8995-7f683a199769@linux.alibaba.com>
-Date: Thu, 20 Jun 2024 19:13:49 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Vg6z74DG"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB636C32781;
+	Thu, 20 Jun 2024 20:16:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1718914592;
+	bh=ESFIsO/6+1t0rvV4TuCX/D42GeSKFILy5wzyqrjkb0o=;
+	h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+	b=Vg6z74DGjQ9QCg7RvM7dppRxM97sZTtUhls+ILXsfMCrQrUbVg7QSKEhxqi46ScYl
+	 PfWTJNxZfXZOmWoMfmha1OY+Yzn5n4B+Cf5G++alClsk3JN/ydQLsHvkeM6DDbnll8
+	 nqYNmc+tL1xBATH15uOBIUcUQnL0R2o9N/8R0aOJ8itDF8RlQ3deuu4nUS0Hg1XE88
+	 hRcFYFoQTQUL2/LTfqHk5+Kg4QeUWMQdSU5/oLafgW5PwD8kFMEoEJUg2AhO8ILOys
+	 xfa34lpoIoIIFXgcO1X7bWJTaCNLe2NygDd6nM8hCGhwVw8DiAAMB4IJk0VJ6cXWlx
+	 RZw5E+GkntKoQ==
+Message-ID: <44cb23219682cf29b1a8b33b886738389eee7557.camel@kernel.org>
+Subject: Re: [jlayton:mgtime] [xfs]  4edee232ed:  fio.write_iops -34.9%
+ regression
+From: Jeff Layton <jlayton@kernel.org>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-xfs@vger.kernel.org, 
+	ying.huang@intel.com, feng.tang@intel.com, fengwei.yin@intel.com
+Date: Thu, 20 Jun 2024 16:16:30 -0400
+In-Reply-To: <202406141453.7a44f956-oliver.sang@intel.com>
+References: <202406141453.7a44f956-oliver.sang@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+User-Agent: Evolution 3.50.4 (3.50.4-1.fc39) 
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [linus:master] [mm] d2136d749d: vm-scalability.throughput -7.1%
- regression
-To: "Huang, Ying" <ying.huang@intel.com>
-Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
- lkp@intel.com, linux-kernel@vger.kernel.org,
- Andrew Morton <akpm@linux-foundation.org>,
- David Hildenbrand <david@redhat.com>, John Hubbard <jhubbard@nvidia.com>,
- Kefeng Wang <wangkefeng.wang@huawei.com>,
- Mel Gorman <mgorman@techsingularity.net>, Ryan Roberts
- <ryan.roberts@arm.com>, linux-mm@kvack.org, feng.tang@intel.com,
- fengwei.yin@intel.com
-References: <202406201010.a1344783-oliver.sang@intel.com>
- <24a985cf-1bbf-41f9-b234-24f000164fa6@linux.alibaba.com>
- <87bk3w2he5.fsf@yhuang6-desk2.ccr.corp.intel.com>
-From: Baolin Wang <baolin.wang@linux.alibaba.com>
-In-Reply-To: <87bk3w2he5.fsf@yhuang6-desk2.ccr.corp.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
 
+T24gRnJpLCAyMDI0LTA2LTE0IGF0IDE0OjI0ICswODAwLCBrZXJuZWwgdGVzdCByb2JvdCB3cm90
+ZToKPiAKPiAKPiBIZWxsbywKPiAKPiBrZXJuZWwgdGVzdCByb2JvdCBub3RpY2VkIGEgLTM0Ljkl
+IHJlZ3Jlc3Npb24gb2YgZmlvLndyaXRlX2lvcHMgb246Cj4gCj4gCj4gY29tbWl0OiA0ZWRlZTIz
+MmVkNWQwYWJiOWYyNGFmN2FmNTVlM2E5YWEyNzFmOTkzICgieGZzOiBzd2l0Y2ggdG8gbXVsdGln
+cmFpbiB0aW1lc3RhbXBzIikKPiBodHRwczovL2dpdC5rZXJuZWwub3JnL2NnaXQvbGludXgva2Vy
+bmVsL2dpdC9qbGF5dG9uL2xpbnV4LmdpdMKgbWd0aW1lCj4gCj4gdGVzdGNhc2U6IGZpby1iYXNp
+Ywo+IHRlc3QgbWFjaGluZTogNjQgdGhyZWFkcyAyIHNvY2tldHMgSW50ZWwoUikgWGVvbihSKSBH
+b2xkIDYzNDYgQ1BVIEAgMy4xMEdIeiAoSWNlIExha2UpIHdpdGggMjU2RyBtZW1vcnkKPiBwYXJh
+bWV0ZXJzOgo+IAo+IAlydW50aW1lOiAzMDBzCj4gCWRpc2s6IDFIREQKPiAJZnM6IHhmcwo+IAlu
+cl90YXNrOiAxCj4gCXRlc3Rfc2l6ZTogMTI4Rwo+IAlydzogd3JpdGUKPiAJYnM6IDRrCj4gCWlv
+ZW5naW5lOiBmYWxsb2MKPiAJY3B1ZnJlcV9nb3Zlcm5vcjogcGVyZm9ybWFuY2UKPiAKPiAKPiAK
+PiAKPiBJZiB5b3UgZml4IHRoZSBpc3N1ZSBpbiBhIHNlcGFyYXRlIHBhdGNoL2NvbW1pdCAoaS5l
+LiBub3QganVzdCBhIG5ldyB2ZXJzaW9uIG9mCj4gdGhlIHNhbWUgcGF0Y2gvY29tbWl0KSwga2lu
+ZGx5IGFkZCBmb2xsb3dpbmcgdGFncwo+ID4gUmVwb3J0ZWQtYnk6IGtlcm5lbCB0ZXN0IHJvYm90
+IDxvbGl2ZXIuc2FuZ0BpbnRlbC5jb20+Cj4gPiBDbG9zZXM6IGh0dHBzOi8vbG9yZS5rZXJuZWwu
+b3JnL29lLWxrcC8yMDI0MDYxNDE0NTMuN2E0NGY5NTYtb2xpdmVyLnNhbmdAaW50ZWwuY29tCj4g
+Cj4gCj4gRGV0YWlscyBhcmUgYXMgYmVsb3c6Cj4gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0+Cj4gCj4gCj4gVGhlIGtlcm5lbCBjb25maWcgYW5kIG1hdGVyaWFscyB0
+byByZXByb2R1Y2UgYXJlIGF2YWlsYWJsZSBhdDoKPiBodHRwczovL2Rvd25sb2FkLjAxLm9yZy8w
+ZGF5LWNpL2FyY2hpdmUvMjAyNDA2MTQvMjAyNDA2MTQxNDUzLjdhNDRmOTU2LW9saXZlci5zYW5n
+QGludGVsLmNvbQo+IAo+ID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09Cj4gYnMvY29t
+cGlsZXIvY3B1ZnJlcV9nb3Zlcm5vci9kaXNrL2ZzL2lvZW5naW5lL2tjb25maWcvbnJfdGFzay9y
+b290ZnMvcnVudGltZS9ydy90Ym94X2dyb3VwL3Rlc3Rfc2l6ZS90ZXN0Y2FzZToKPiDCoCA0ay9n
+Y2MtMTMvcGVyZm9ybWFuY2UvMUhERC94ZnMvZmFsbG9jL3g4Nl82NC1yaGVsLTguMy8xL2RlYmlh
+bi0xMi14ODZfNjQtMjAyNDAyMDYuY2d6LzMwMHMvd3JpdGUvbGtwLWljbC0yc3A5LzEyOEcvZmlv
+LWJhc2ljCj4gCj4gY29tbWl0OiAKPiDCoCA2MTY1MTIyMGUwICgiZnM6IGhhdmUgc2V0YXR0cl9j
+b3B5IGhhbmRsZSBtdWx0aWdyYWluIHRpbWVzdGFtcHMgYXBwcm9wcmlhdGVseSIpCj4gwqAgNGVk
+ZWUyMzJlZCAoInhmczogc3dpdGNoIHRvIG11bHRpZ3JhaW4gdGltZXN0YW1wcyIpCj4gCj4gNjE2
+NTEyMjBlMGI5MTA4NyA0ZWRlZTIzMmVkNWQwYWJiOWYyNGFmN2FmNTUgCj4gLS0tLS0tLS0tLS0t
+LS0tLSAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0gCj4gwqDCoMKgwqDCoMKgwqDCoCAlc3Rk
+ZGV2wqDCoMKgwqAgJWNoYW5nZcKgwqDCoMKgwqDCoMKgwqAgJXN0ZGRldgo+IMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoCBcwqDCoMKgwqDCoMKgwqDCoMKgIHzCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqAgXMKgIAo+IMKgwqDCoMKgwqAgMC45NyDCscKgIDMlwqDCoMKgwqAgLTMwLjclwqDC
+oMKgwqDCoMKgIDAuNjcgwrHCoCAyJcKgIGlvc3RhdC5jcHUudXNlcgo+IMKgMi45OTZlKzA5wqDC
+oMKgwqDCoMKgwqDCoMKgwqAgKzUxLjUlwqDCoCA0LjU0ZSswOcKgwqDCoMKgwqDCoMKgIGNwdWlk
+bGUuLnRpbWUKPiDCoMKgwqAgMjIyMjgwIMKxwqAgNCXCoMKgwqDCoCArNDQuNyXCoMKgwqDCoCAz
+MjE1OTUgwrHCoCA0JcKgIGNwdWlkbGUuLnVzYWdlCj4gwqDCoMKgwqDCoCAwLjAxIMKxwqAgNSXC
+oMKgwqDCoMKgIC0wLjDCoMKgwqDCoMKgwqDCoCAwLjAxIMKxwqAgNiXCoCBtcHN0YXQuY3B1LmFs
+bC5pcnElCj4gwqDCoMKgwqDCoCAwLjk3IMKxwqAgMyXCoMKgwqDCoMKgIC0wLjPCoMKgwqDCoMKg
+wqDCoCAwLjY2IMKxwqAgMiXCoCBtcHN0YXQuY3B1LmFsbC51c3IlCj4gwqDCoMKgwqAgODguODbC
+oMKgwqDCoMKgwqDCoMKgwqDCoCArMjcuMyXCoMKgwqDCoCAxMTMuMTPCoMKgwqDCoMKgwqDCoCB1
+cHRpbWUuYm9vdAo+IMKgwqDCoMKgwqAgNTM4N8KgwqDCoMKgwqDCoMKgwqDCoMKgICsyOC40JcKg
+wqDCoMKgwqDCoCA2OTE2wqDCoMKgwqDCoMKgwqAgdXB0aW1lLmlkbGUKPiDCoMKgwqDCoMKgIDIu
+OTggwrHCoCAzJcKgwqDCoMKgIC0xMC45JcKgwqDCoMKgwqDCoCAyLjY1IMKxwqAgMiXCoCB2bXN0
+YXQucHJvY3Mucgo+IMKgwqDCoMKgwqAgMzQ3NSDCsSAxMCXCoMKgwqDCoCAtMTguNiXCoMKgwqDC
+oMKgwqAgMjgzMCDCscKgIDYlwqAgdm1zdGF0LnN5c3RlbS5jcwo+IMKgwqDCoMKgwqAgNC42NSDC
+sSA0MyXCoMKgwqDCoMKgIC0yLjfCoMKgwqDCoMKgwqDCoCAxLjk3IMKxMTQzJcKgIHBlcmYtcHJv
+ZmlsZS5jYWxsdHJhY2UuY3ljbGVzLXBwLl9mcmVlX2V2ZW50LnBlcmZfZXZlbnRfcmVsZWFzZV9r
+ZXJuZWwucGVyZl9yZWxlYXNlLl9fZnB1dC50YXNrX3dvcmtfcnVuCj4gwqDCoMKgwqDCoCA0LjY1
+IMKxIDQzJcKgwqDCoMKgwqAgLTIuN8KgwqDCoMKgwqDCoMKgIDEuOTcgwrExNDMlwqAgcGVyZi1w
+cm9maWxlLmNoaWxkcmVuLmN5Y2xlcy1wcC5fZnJlZV9ldmVudAo+IMKgwqDCoMKgwqAgMy4zMyDC
+sSA3NiXCoMKgwqDCoMKgIC0yLjTCoMKgwqDCoMKgwqDCoCAwLjkwIMKxMTQxJcKgIHBlcmYtcHJv
+ZmlsZS5jaGlsZHJlbi5jeWNsZXMtcHAuYXNtX3N5c3ZlY19hcGljX3RpbWVyX2ludGVycnVwdAo+
+IMKgwqDCoMKgwqAgMy4zMyDCsSA3NiXCoMKgwqDCoMKgIC0yLjTCoMKgwqDCoMKgwqDCoCAwLjkw
+IMKxMTQxJcKgIHBlcmYtcHJvZmlsZS5jaGlsZHJlbi5jeWNsZXMtcHAuc3lzdmVjX2FwaWNfdGlt
+ZXJfaW50ZXJydXB0Cj4gwqDCoMKgIDc2OS45M8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgKzkuNCXC
+oMKgwqDCoCA4NDIuMTDCoMKgwqDCoMKgwqDCoCBwcm9jLXZtc3RhdC5ucl9hY3RpdmVfYW5vbgo+
+IMKgwqDCoMKgwqAgMzkzNsKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgKzIuMSXCoMKgwqDCoMKgwqAg
+NDAyMMKgwqDCoMKgwqDCoMKgIHByb2Mtdm1zdGF0Lm5yX3NobWVtCj4gwqDCoMKgIDc2OS45M8Kg
+wqDCoMKgwqDCoMKgwqDCoMKgwqAgKzkuNCXCoMKgwqDCoCA4NDIuMTDCoMKgwqDCoMKgwqDCoCBw
+cm9jLXZtc3RhdC5ucl96b25lX2FjdGl2ZV9hbm9uCj4gwqDCoMKgIDI2OTMyOMKgwqDCoMKgwqDC
+oMKgwqDCoMKgICsyMC44JcKgwqDCoMKgIDMyNTMyNSDCsSAxMSXCoCBwcm9jLXZtc3RhdC5udW1h
+X2hpdAo+IMKgwqDCoCAyMDMwNTQgwrHCoCAyJcKgwqDCoMKgICsyNy42JcKgwqDCoMKgIDI1OTAw
+OCDCsSAxNCXCoCBwcm9jLXZtc3RhdC5udW1hX2xvY2FsCj4gwqDCoMKgIDI5NzkyM8KgwqDCoMKg
+wqDCoMKgwqDCoMKgICsxNi4zJcKgwqDCoMKgIDM0NjQ1OcKgwqDCoMKgwqDCoMKgIHByb2Mtdm1z
+dGF0LnBnYWxsb2Nfbm9ybWFsCj4gwqDCoMKgIDE4MTg2OCDCscKgIDIlwqDCoMKgwqAgKzMwLjIl
+wqDCoMKgwqAgMjM2ODY4wqDCoMKgwqDCoMKgwqAgcHJvYy12bXN0YXQucGdmYXVsdAo+IMKgwqDC
+oCAxNzMyNjggwrHCoCAzJcKgwqDCoMKgICsyNy4yJcKgwqDCoMKgIDIyMDMxMsKgwqDCoMKgwqDC
+oMKgIHByb2Mtdm1zdGF0LnBnZnJlZQo+IMKgwqDCoMKgwqAgOTE0MSDCscKgIDclwqDCoMKgwqAg
+KzIzLjUlwqDCoMKgwqDCoCAxMTI4OCDCscKgIDQlwqAgcHJvYy12bXN0YXQucGdyZXVzZQo+IMKg
+wqDCoMKgwqAgMC4wMiDCsSAyNiXCoMKgwqDCoMKgICswLjHCoMKgwqDCoMKgwqDCoCAwLjEwIMKx
+wqAgNiXCoCBmaW8ubGF0ZW5jeV8xMHVzJQo+IMKgwqDCoMKgIDk5Ljg3wqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoCAtOC40wqDCoMKgwqDCoMKgIDkxLjQzwqDCoMKgwqDCoMKgwqAgZmlvLmxhdGVuY3lf
+MnVzJQo+IMKgwqDCoMKgwqAgMC4xMSDCsSAyMCXCoMKgwqDCoMKgICs4LjTCoMKgwqDCoMKgwqDC
+oCA4LjQ3wqDCoMKgwqDCoMKgwqAgZmlvLmxhdGVuY3lfNHVzJQo+IMKgwqDCoMKgIDQ2LjE2wqDC
+oMKgwqDCoMKgwqDCoMKgwqAgKzUzLjMlwqDCoMKgwqDCoCA3MC43OMKgwqDCoMKgwqDCoMKgIGZp
+by50aW1lLmVsYXBzZWRfdGltZQo+IMKgwqDCoMKgIDQ2LjE2wqDCoMKgwqDCoMKgwqDCoMKgwqAg
+KzUzLjMlwqDCoMKgwqDCoCA3MC43OMKgwqDCoMKgwqDCoMKgIGZpby50aW1lLmVsYXBzZWRfdGlt
+ZS5tYXgKPiDCoMKgwqDCoCAzNS42OMKgwqDCoMKgwqDCoMKgwqDCoMKgICs2Ni43JcKgwqDCoMKg
+wqAgNTkuNTDCoMKgwqDCoMKgwqDCoCBmaW8udGltZS5zeXN0ZW1fdGltZQo+IMKgwqDCoMKgwqAg
+NDk0MMKgwqDCoMKgwqDCoMKgwqDCoMKgICs1Mi42JcKgwqDCoMKgwqDCoCA3NTM4wqDCoMKgwqDC
+oMKgwqAgZmlvLnRpbWUudm9sdW50YXJ5X2NvbnRleHRfc3dpdGNoZXMKPiDCoMKgwqDCoMKgIDI4
+NTfCoMKgwqDCoMKgwqDCoMKgwqDCoCAtMzQuOSXCoMKgwqDCoMKgwqAgMTg1OcKgwqDCoMKgwqDC
+oMKgIGZpby53cml0ZV9id19NQnBzCj4gwqDCoMKgwqDCoCAxMTc2wqDCoMKgwqDCoMKgwqDCoMKg
+wqAgKzY0LjQlwqDCoMKgwqDCoMKgIDE5MzPCoMKgwqDCoMKgwqDCoCBmaW8ud3JpdGVfY2xhdF85
+MCVfbnMKPiDCoMKgwqDCoMKgIDEyMDDCoMKgwqDCoMKgwqDCoMKgwqDCoCArODMuMSXCoMKgwqDC
+oMKgwqAgMjE5N8KgwqDCoMKgwqDCoMKgIGZpby53cml0ZV9jbGF0Xzk1JV9ucwo+IMKgwqDCoMKg
+wqAgMTUyOMKgwqDCoMKgwqDCoMKgwqDCoMKgICs0Ni42JcKgwqDCoMKgwqDCoCAyMjQwwqDCoMKg
+wqDCoMKgwqAgZmlvLndyaXRlX2NsYXRfOTklX25zCj4gwqDCoMKgwqDCoCAxMTY3wqDCoMKgwqDC
+oMKgwqDCoMKgwqAgKzYyLjIlwqDCoMKgwqDCoMKgIDE4OTPCoMKgwqDCoMKgwqDCoCBmaW8ud3Jp
+dGVfY2xhdF9tZWFuX25zCj4gwqDCoMKgIDczMTUzN8KgwqDCoMKgwqDCoMKgwqDCoMKgIC0zNC45
+JcKgwqDCoMKgIDQ3NjAwMsKgwqDCoMKgwqDCoMKgIGZpby53cml0ZV9pb3BzCgpJJ3ZlIGJlZW4g
+dHJ5aW5nIGZvciBzZXZlcmFsIGRheXMgdG8gcmVwcm9kdWNlIHRoaXMsIGFuZCBoYXZlIGJlZW4K
+dW5hYmxlIHNvIGZhci4gSXMgdGhpcyB0aGUgc2FtZSB2YWx1ZSBhcyAid3JpdGUuaW9wcyIgaW4g
+dGhlIGpzb24Kb3V0cHV0PyBUaGF0J3MgYmVlbiBteSBhc3N1bXB0aW9uLCBidXQgSSB3YW50ZWQg
+dG8gY2hlY2sgdGhhdCBmaXJzdC4KClRoYXQgc2FpZCwgSSdtIG9ubHkgZ2V0dGluZyB+NTAwayBp
+b3BzIGF0IGJlc3QgaW4gdGhpcyB0ZXN0IHdpdGggdGhlCnJpZyBJIGhhdmUsIHNvIGl0J3MgcG9z
+c2libGUgSSBuZWVkIHNvbWV0aGluZyBmYXN0ZXIgdG8gc2hvdyBpdC4KCgo+IMKgwqDCoMKgwqAg
+MC4wNiDCscKgIDYlwqDCoMKgwqAgLTI1LjUlwqDCoMKgwqDCoMKgIDAuMDQgwrHCoCA1JcKgIHBl
+cmYtc3RhdC5pLk1QS0kKPiDCoMKgwqDCoMKgIDAuOTEgwrHCoCAzJcKgwqDCoMKgwqAgLTAuMsKg
+wqDCoMKgwqDCoMKgIDAuNjcgwrHCoCAzJcKgIHBlcmYtc3RhdC5pLmJyYW5jaC1taXNzLXJhdGUl
+Cj4gwqAgMjc2NTkwNjkgwrHCoCAzJcKgwqDCoMKgIC0yOC4wJcKgwqAgMTk5MjA4MzYgwrHCoCA0
+JcKgIHBlcmYtc3RhdC5pLmJyYW5jaC1taXNzZXMKPiDCoMKgwqAgODIyNTA0IMKxwqAgNSXCoMKg
+wqDCoCAtMjUuMiXCoMKgwqDCoCA2MTUxMTEgwrHCoCA2JcKgIHBlcmYtc3RhdC5pLmNhY2hlLW1p
+c3Nlcwo+IMKgwqAgNzUyNzE1OSDCscKgIDYlwqDCoMKgwqAgLTI2LjklwqDCoMKgIDU0OTk3NTAg
+wrHCoCAzJcKgIHBlcmYtc3RhdC5pLmNhY2hlLXJlZmVyZW5jZXMKPiDCoMKgwqDCoMKgIDMzOTQg
+wrEgMTElwqDCoMKgwqAgLTE4LjglwqDCoMKgwqDCoMKgIDI3NTYgwrHCoCA3JcKgIHBlcmYtc3Rh
+dC5pLmNvbnRleHQtc3dpdGNoZXMKPiDCoMKgwqDCoMKgIDAuNDYgwrHCoCAyJcKgwqDCoMKgIC0x
+My4wJcKgwqDCoMKgwqDCoCAwLjQwwqDCoMKgwqDCoMKgwqAgcGVyZi1zdGF0LmkuY3BpCj4gwqA1
+LjcyN2UrMDkgwrHCoCAyJcKgwqDCoMKgIC0xMi4zJcKgwqAgNS4wMmUrMDnCoMKgwqDCoMKgwqDC
+oCBwZXJmLXN0YXQuaS5jcHUtY3ljbGVzCj4gwqDCoMKgwqAgNzQuMzHCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgIC0zLjAlwqDCoMKgwqDCoCA3Mi4wNcKgwqDCoMKgwqDCoMKgIHBlcmYtc3RhdC5pLmNw
+dS1taWdyYXRpb25zCj4gwqDCoMKgwqDCoCAyLjMxwqDCoMKgwqDCoMKgwqDCoMKgwqAgKzEzLjEl
+wqDCoMKgwqDCoMKgIDIuNjHCoMKgwqDCoMKgwqDCoCBwZXJmLXN0YXQuaS5pcGMKPiDCoMKgwqDC
+oMKgIDI5MDUgwrHCoCAyJcKgwqDCoMKgwqAgLTcuMiXCoMKgwqDCoMKgwqAgMjY5NSDCscKgIDIl
+wqAgcGVyZi1zdGF0LmkubWlub3ItZmF1bHRzCj4gwqDCoMKgwqDCoCAyOTA1IMKxwqAgMiXCoMKg
+wqDCoMKgIC03LjIlwqDCoMKgwqDCoMKgIDI2OTUgwrHCoCAyJcKgIHBlcmYtc3RhdC5pLnBhZ2Ut
+ZmF1bHRzCj4gwqDCoMKgwqDCoCAwLjA3IMKxwqAgNiXCoMKgwqDCoCAtMjUuNyXCoMKgwqDCoMKg
+wqAgMC4wNSDCscKgIDUlwqAgcGVyZi1zdGF0Lm92ZXJhbGwuTVBLSQo+IMKgwqDCoMKgwqAgMS4x
+OCDCscKgIDMlwqDCoMKgwqDCoCAtMC4zwqDCoMKgwqDCoMKgwqAgMC44NyDCscKgIDIlwqAgcGVy
+Zi1zdGF0Lm92ZXJhbGwuYnJhbmNoLW1pc3MtcmF0ZSUKPiDCoMKgwqDCoMKgIDAuNDggwrHCoCAy
+JcKgwqDCoMKgIC0xMi45JcKgwqDCoMKgwqDCoCAwLjQywqDCoMKgwqDCoMKgwqAgcGVyZi1zdGF0
+Lm92ZXJhbGwuY3BpCj4gwqDCoMKgwqDCoCA2OTkyIMKxwqAgNiXCoMKgwqDCoCArMTcuMSXCoMKg
+wqDCoMKgwqAgODE5MCDCscKgIDUlwqAgcGVyZi1zdGF0Lm92ZXJhbGwuY3ljbGVzLWJldHdlZW4t
+Y2FjaGUtbWlzc2VzCj4gwqDCoMKgwqDCoCAyLjA5IMKxwqAgMiXCoMKgwqDCoCArMTQuNyXCoMKg
+wqDCoMKgwqAgMi40MMKgwqDCoMKgwqDCoMKgIHBlcmYtc3RhdC5vdmVyYWxsLmlwYwo+IMKgwqDC
+oMKgIDE2NjQwwqDCoMKgwqDCoMKgwqDCoMKgwqAgKzUzLjMlwqDCoMKgwqDCoCAyNTUwNMKgwqDC
+oMKgwqDCoMKgIHBlcmYtc3RhdC5vdmVyYWxsLnBhdGgtbGVuZ3RoCj4gwqAgMjcwOTAxOTcgwrHC
+oCAzJcKgwqDCoMKgIC0yNy40JcKgwqAgMTk2NjYyNDYgwrHCoCA0JcKgIHBlcmYtc3RhdC5wcy5i
+cmFuY2gtbWlzc2VzCj4gwqDCoMKgIDgwNTk2MyDCscKgIDUlwqDCoMKgwqAgLTI0LjYlwqDCoMKg
+wqAgNjA3NDEzIMKxwqAgNiXCoCBwZXJmLXN0YXQucHMuY2FjaGUtbWlzc2VzCj4gwqDCoCA3NDAy
+OTcxIMKxwqAgNiXCoMKgwqDCoCAtMjYuNCXCoMKgwqAgNTQ0NjYyMiDCscKgIDMlwqAgcGVyZi1z
+dGF0LnBzLmNhY2hlLXJlZmVyZW5jZXMKPiDCoMKgwqDCoMKgIDMzMjkgwrEgMTElwqDCoMKgwqAg
+LTE4LjIlwqDCoMKgwqDCoMKgIDI3MjMgwrHCoCA3JcKgIHBlcmYtc3RhdC5wcy5jb250ZXh0LXN3
+aXRjaGVzCj4gwqA1LjYxNmUrMDkgwrHCoCAyJcKgwqDCoMKgIC0xMS43JcKgIDQuOTU2ZSswOcKg
+wqDCoMKgwqDCoMKgIHBlcmYtc3RhdC5wcy5jcHUtY3ljbGVzCj4gwqDCoMKgwqDCoCAyODQzIMKx
+wqAgMiXCoMKgwqDCoMKgIC02LjUlwqDCoMKgwqDCoMKgIDI2NTcgwrHCoCAyJcKgIHBlcmYtc3Rh
+dC5wcy5taW5vci1mYXVsdHMKPiDCoMKgwqDCoMKgIDI4NDMgwrHCoCAyJcKgwqDCoMKgwqAgLTYu
+NSXCoMKgwqDCoMKgwqAgMjY1NyDCscKgIDIlwqAgcGVyZi1zdGF0LnBzLnBhZ2UtZmF1bHRzCj4g
+wqA1LjU4NGUrMTHCoMKgwqDCoMKgwqDCoMKgwqDCoCArNTMuMyXCoCA4LjU1OGUrMTHCoMKgwqDC
+oMKgwqDCoCBwZXJmLXN0YXQudG90YWwuaW5zdHJ1Y3Rpb25zCj4gCj4gCj4gCj4gCj4gRGlzY2xh
+aW1lcjoKPiBSZXN1bHRzIGhhdmUgYmVlbiBlc3RpbWF0ZWQgYmFzZWQgb24gaW50ZXJuYWwgSW50
+ZWwgYW5hbHlzaXMgYW5kIGFyZSBwcm92aWRlZAo+IGZvciBpbmZvcm1hdGlvbmFsIHB1cnBvc2Vz
+IG9ubHkuIEFueSBkaWZmZXJlbmNlIGluIHN5c3RlbSBoYXJkd2FyZSBvciBzb2Z0d2FyZQo+IGRl
+c2lnbiBvciBjb25maWd1cmF0aW9uIG1heSBhZmZlY3QgYWN0dWFsIHBlcmZvcm1hbmNlLgo+IAo+
+IAoKVGhhbmtzIQotLSAKSmVmZiBMYXl0b24gPGpsYXl0b25Aa2VybmVsLm9yZz4K
 
-
-On 2024/6/20 15:38, Huang, Ying wrote:
-> Baolin Wang <baolin.wang@linux.alibaba.com> writes:
-> 
->> On 2024/6/20 10:39, kernel test robot wrote:
->>> Hello,
->>> kernel test robot noticed a -7.1% regression of
->>> vm-scalability.throughput on:
->>> commit: d2136d749d76af980b3accd72704eea4eab625bd ("mm: support
->>> multi-size THP numa balancing")
->>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
->>> [still regression on linus/master
->>> 92e5605a199efbaee59fb19e15d6cc2103a04ec2]
->>> testcase: vm-scalability
->>> test machine: 128 threads 2 sockets Intel(R) Xeon(R) Gold 6338 CPU @ 2.00GHz (Ice Lake) with 256G memory
->>> parameters:
->>> 	runtime: 300s
->>> 	size: 512G
->>> 	test: anon-cow-rand-hugetlb
->>> 	cpufreq_governor: performance
->>
->> Thanks for reporting. IIUC numa balancing will not scan hugetlb VMA,
->> I'm not sure how this patch affects the performance of hugetlb cow,
->> but let me try to reproduce it.
->>
->>
->>> If you fix the issue in a separate patch/commit (i.e. not just a new version of
->>> the same patch/commit), kindly add following tags
->>> | Reported-by: kernel test robot <oliver.sang@intel.com>
->>> | Closes: https://lore.kernel.org/oe-lkp/202406201010.a1344783-oliver.sang@intel.com
->>> Details are as below:
->>> -------------------------------------------------------------------------------------------------->
->>> The kernel config and materials to reproduce are available at:
->>> https://download.01.org/0day-ci/archive/20240620/202406201010.a1344783-oliver.sang@intel.com
->>> =========================================================================================
->>> compiler/cpufreq_governor/kconfig/rootfs/runtime/size/tbox_group/test/testcase:
->>>     gcc-13/performance/x86_64-rhel-8.3/debian-12-x86_64-20240206.cgz/300s/512G/lkp-icl-2sp2/anon-cow-rand-hugetlb/vm-scalability
->>> commit:
->>>     6b0ed7b3c7 ("mm: factor out the numa mapping rebuilding into a new helper")
->>>     d2136d749d ("mm: support multi-size THP numa balancing")
->>> 6b0ed7b3c77547d2 d2136d749d76af980b3accd7270
->>> ---------------- ---------------------------
->>>            %stddev     %change         %stddev
->>>                \          |                \
->>>        12.02            -1.3       10.72 ±  4%  mpstat.cpu.all.sys%
->>>      1228757            +3.0%    1265679        proc-vmstat.pgfault
-> 
-> Also from other proc-vmstat stats,
-> 
->       21770  36%      +6.1%      23098  28%  proc-vmstat.numa_hint_faults
->        6168 107%     +48.8%       9180  18%  proc-vmstat.numa_hint_faults_local
->      154537  15%     +23.5%     190883  17%  proc-vmstat.numa_pte_updates
-> 
-> After your patch, more hint page faults occurs, I think this is expected.
-> 
-> Then, tasks may be moved between sockets because of that, so that some
-> hugetlb page access becomes remote?
-
-After trying to reproduce this case, I also find that more hint page 
-faults occur. And I think that is casued by changing 
-"folio_ref_count(folio) != 1" to "folio_likely_mapped_shared(folio)", 
-which results in scanning more exclusive pages, so I think this is 
-expected from the previous discussion.
-
-Yes, I think your analysis is correct, some hugetlb page accesses become 
-remote due to task migration.
