@@ -1,112 +1,78 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15A6C13A889
-	for <oe-lkp@lists.linux.dev>; Mon, 24 Jun 2024 13:19:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E46613B2B0;
+	Mon, 24 Jun 2024 13:46:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719235170; cv=none; b=t1d3MD+9vaBgymzkJYzC+e1L0hAC9pn89eqC8h17mGLfe8qgMkkbJlpw+//2m3JaUCuj62RYrkTDSR5vmBGXKAQFhTjGx+jsGtG4jFHENdJdJYug+rw1o0dm4X1oiHaR9AbvE6XhuzOzqL6S0Vciyek/V+vSnlERLWmL7WM4JvA=
+	t=1719236766; cv=none; b=SpF5axdLEp9AzpzBeURIZBR3CmA1dxfsGR1X+Hr0sv7f/SWUKDyr9C+mN9/WF/FC1Lt2dOJFjXtjyE+ygf0V048HQcSI4jE9ADlvkPI4N3ryie3J9ypnw8TEDA04UFD6EOk90tvJGx+OnwAoaOlprPqpJlm8RGidJl0+ZrpFucA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719235170; c=relaxed/simple;
-	bh=Jo7FN8PZZfU3wYqvnE4Sde5fBlaTUIlJtITuXHbLVMI=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=Ph2ak+q/xdmb66o0/PM8AYajhZvNkvLURfYbKlXdMDhYrzUnwMPpHWfLq/QGJtrH4lnabvII8dyOaT1sdPYKQ5+E9DJEwUqw0y1TOc/F8mLK+/t052OCL6fD8p8nPM1YukcD28BRtOZPVnwoDAAeeRSLfHWiTjO1QDzV2oscGXU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=M2zdx745; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=EqOxUKcl; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1719236766; c=relaxed/simple;
+	bh=nEbRkmLliGbrhN7a0dFrrROolzsUWf2ymgDG1frRQgc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=eEW8Wz1MLztNVP6xhib0ihhmR+XMABexFlF4485GT1pTkzreghBz9inI4U0UsXaI/XA0U9+Nv+/Ec/2SW1+/KwDV9bHYXLCUj5nAw/9kRKwrPpG9nvdNxwIhK/iO9NnER2s1cGBNSAfkAtsxgGbGQJPxs3L6iEP16W/KCC+mcRg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HPvBUv03; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="M2zdx745";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="EqOxUKcl"
-From: Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1719235164;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=sN+LBb66eM8b0W3aoSlv/AXVA+hQdwSwIferK2dDOUE=;
-	b=M2zdx745yT9xzMJKUkHwvgZIpZEQ7Ivblrav1JJmkg0WkEwwv3KFA5ujlyxicR/Ikn5IX6
-	l1kTLKN/RxUErfxqds4tcpcOaLsgGAHC7yWsEKal0oL8SVPA4Jcnt15qHcaOpyinkZs9nP
-	3vKHjxAUWf3BF6ve6jhCByt2/1A+dFn2GaCdeJV6UmJjMxR6N38DDR2IhR5ahdJfF5KOz+
-	jr9EMx7sm3mLTg+EVmZFeZPE/K0J7NiwaCulXT5rshCC9ve4+P4Vw327kuw2I9ZM7mCOsD
-	VqAOzX4Na5sRwzsQT27Vfe56ihSm/YHodjtiYrYDFd83T/4y6RFRi5vzBvIsog==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1719235164;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=sN+LBb66eM8b0W3aoSlv/AXVA+hQdwSwIferK2dDOUE=;
-	b=EqOxUKclsl840xyR1Zx+ZDj2r+Volbz8vJgiqTQJSEwAweHSWqHWHIZJp2Y00Zvk6xToLU
-	1VuheovmJWWHefBg==
-To: Marcello Sylvester Bauer <marcello.bauer@9elements.com>,
- linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org, x86@kernel.org,
- syzbot+c793a7eca38803212c61@syzkaller.appspotmail.com,
- syzbot+5127feb52165f8ab165b@syzkaller.appspotmail.com,
- oe-lkp@lists.linux.dev, bp@alien8.de, dave.hansen@linux.intel.com,
- syzkaller-bugs@googlegroups.com
-Cc: Anna-Maria Behnsen <anna-maria@linutronix.de>, Frederic Weisbecker
- <frederic@kernel.org>, Uwe
- Kleine-Koenig <u.kleine-koenig@pengutronix.de>, gregkh@linuxfoundation.org,
- hpa@zytor.com, mingo@redhat.com, stern@rowland.harvard.edu, Alan Stern
- <stern@rowland.harvard.edu>, Matthias Stoeckl
- <matthias.stoeckl@secunet.com>
-Subject: Re: Needed help: dummy_hcd: Fix stalls/inconsistent_lock_state due
- to hrtimer migration
-In-Reply-To: <0eee9b08bf1f1889b3455099a68f9eed7f71c50e.camel@9elements.com>
-References: <000000000000f8112e0618995e6e@google.com>
- <46cbe0a914065917ea1024636e864a1e2c982145.camel@9elements.com>
- <0eee9b08bf1f1889b3455099a68f9eed7f71c50e.camel@9elements.com>
-Date: Mon, 24 Jun 2024 15:19:23 +0200
-Message-ID: <87y16u8omc.ffs@tglx>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HPvBUv03"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C6A4C32782;
+	Mon, 24 Jun 2024 13:45:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1719236766;
+	bh=nEbRkmLliGbrhN7a0dFrrROolzsUWf2ymgDG1frRQgc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=HPvBUv03t5fHmHl5Vdhl5NNvWh/1rmgJmDIUT78BrhNjkekMyiHBemsXBtITKK+pk
+	 Ph9y6SGv/k+x5Jl2xhlIMX2sddEfv5ScOkESPGjMaDvg1ZXM5kaST/YeMPDuDVXpgg
+	 iH6h0sucNAo73sjXdAnuoapZ6RfRXTSWnSxyRGyPeNDve4kUinDBuUenLUefA9rCqX
+	 54StG+jluCv5aLHX9mMsHCk5XhZuGMG20N2tbjRRxE9agT2YFzShKRFvN/weyUUZ99
+	 p5MaDhc41zpO0i44wkIP3EtvIWnOiXRYHg0365/uFE0+rIV0Jq+m7pwvM4OmoBjW+O
+	 CdaoXjn9E8fNg==
+Date: Mon, 24 Jun 2024 15:45:57 +0200
+From: Niklas Cassel <cassel@kernel.org>
+To: Christoph Hellwig <hch@lst.de>
+Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, Jens Axboe <axboe@kernel.dk>,
+	Damien Le Moal <dlemoal@kernel.org>, Hannes Reinecke <hare@suse.de>,
+	linux-m68k@lists.linux-m68k.org, linux-um@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
+	drbd-dev@lists.linbit.com, nbd@other.debian.org,
+	linuxppc-dev@lists.ozlabs.org, ceph-devel@vger.kernel.org,
+	virtualization@lists.linux.dev, xen-devel@lists.xenproject.org,
+	linux-bcache@vger.kernel.org, dm-devel@lists.linux.dev,
+	linux-raid@vger.kernel.org, linux-mmc@vger.kernel.org,
+	linux-mtd@lists.infradead.org, nvdimm@lists.linux.dev,
+	linux-nvme@lists.infradead.org, linux-s390@vger.kernel.org,
+	linux-scsi@vger.kernel.org, ying.huang@intel.com,
+	feng.tang@intel.com, fengwei.yin@intel.com
+Subject: Re: [axboe-block:for-next] [block]  bd4a633b6f: fsmark.files_per_sec
+ -64.5% regression
+Message-ID: <Znl4lXRmK2ukDB7r@ryzen.lan>
+References: <202406241546.6bbd44a7-oliver.sang@intel.com>
+ <20240624083537.GA19941@lst.de>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240624083537.GA19941@lst.de>
 
-On Mon, Jun 24 2024 at 12:25, Marcello Sylvester Bauer wrote:
-> I need some help evaluating and fixing a regression due to migration to
-> hztimer scheduler in dummy_hcd.
->
-> About two months ago I was investigating poor performance for the mass
-> storage gadget (g_mass_storage) due to slow timings in the loopback hcd
-> driver (dummy_hcd). One of the reasons was that dummy_hcd used the old
-> timer API, where the interval is tied to the internal kernel timer
-> frequency. So I submitted the patch to migrate to the hrtimer API[^1],
-> which was quickly approved.
->
-> Since then, syzbot[^2][^3] and intel's kernel test bot[^4] are
-> detecting rcu stalls/inconsistent_lock_state due to my patch, and I'm
-> trying to figure out how to fix it.
->
-> Both bots indicate that the problem is around the usb_hcd_giveback_urb
-> function call and it's locking mechanism. 
->
-> My patch just replaces the timer API calls without changing anything
-> else in the code, so I'm not sure if my patch is actually the root
-> cause here. And following the instructions to reproduce syzbot
-> regressions[^5] even with the provided assets (bzImage, disk image,
-> repro.c) it is quite inconsistent to cause this stall. I have also
-> tried to follow Alex Stern's advice, but have not been able to cause a
-> stall manually.
->
-> So I don't know what to do next. Can someone with more expertise in
-> timers look into this?
-> Any hints or help in investigating or fixing this regression would be
-> greatly appreciated.
+On Mon, Jun 24, 2024 at 10:35:37AM +0200, Christoph Hellwig wrote:
+> This is odd to say at least.  Any chance you can check the value
+> of /sys/block/$DEVICE/queue/rotational for the relevant device before
+> and after this commit?  And is this an ATA or NVMe SSD?
+> 
 
-The main difference between the timer list timer and the hrtimer is that
-the timer list timer callback runs in soft interrupt context, but the
-hrtimer callback runs in hard interrupt context.
+Seems to be ATA SSD:
+https://download.01.org/0day-ci/archive/20240624/202406241546.6bbd44a7-oliver.sang@intel.com/job.yaml
 
-I really don't know whether it matters, but you can make the hrtimer
-expire in soft interrupt context with HRTIMER_MODE_REL_SOFT instead of
-HRTIMER_MODE_REL. If you have a reproducer then that should tell you
-quickly.
+ssd_partitions: "/dev/disk/by-id/ata-INTEL_SSDSC2BG012T4_BTHC428201ZX1P2OGN-part1"
 
-Thanks,
-
-        tglx
+Most likely btrfs does something different depending on the nonrot flag
+being set or not. (And like you are suggesting, most likely the value of
+the nonrot flag is somehow different after commit bd4a633b6f)
 
 
+Kind regards,
+Niklas
