@@ -1,113 +1,72 @@
-Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com [209.85.167.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D6E62556F
-	for <oe-lkp@lists.linux.dev>; Mon, 24 Jun 2024 18:54:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A60A819F482;
+	Mon, 24 Jun 2024 18:56:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719255276; cv=none; b=mlFjis4H7cQrNEItzVy+y9TJlHrT8lNNckqZRf+8Y5bvZDjgvdo6X0a2pP9pgX7Iml24Rx4d8yA5YvZvF3LUjFFmnAZUFk4a9pnf0nuw9mBtxU3XJvSRaJtxGhiSpehsobcnzqWgur6FWtyKMJF0hmDujlPI6DznmOeOQ3FxY0o=
+	t=1719255385; cv=none; b=rhoZNTEcZ3hyFrqxSuYc+PunOySJvl30TxRi7J9e1sbHUq6AmlwVontxH1pOpyMxzeVnMwQhzPjPZ6os4Nkj1Y0WjgpXIjBc39WEpSpUUyXfpklDN0lghTEOOAaOP+ya8aleGcaDbHAEhrzROmyVhC1DkItVE6Jfo4okp+mH1Iw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719255276; c=relaxed/simple;
-	bh=+aHo+RDnT/WvmjPAgH8TsZySNNBozthwDDf/TaQIdEc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=rtYCGWfXi5/55XPkqQZi/rN1UlIpSZw6n0Qv/fICbKvXwIty+yQR5ZDU0vcWHqr7djncrfxc+QhebjJBXR7n7k2h9IlzACd1od3PLz7jt1MmRj8VyLEJj+Fl5NofTwaH1kphgMoqFAXMFHUwe7B93GuC4VE/qDpOhCn9ja4cIm0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=grnO4Qr5; arc=none smtp.client-ip=209.85.167.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1719255385; c=relaxed/simple;
+	bh=3L+b7Z9ucGhuYrpsuLqxpNySOov7ijAdVucNB3GT/4I=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=iDl29iEfEGF6OmHY41fO2QGpWcbuD5x9jxLwjbF11mWFD2HkS5tqNdbngpf82TUZBGZV1cGfwSrUW7zM8BPRwOzDbaZ46kxdA59GzhWtGQFH/BFtbMfemg4LUQS43/ERf7FUh/oLzRKmTBVDR4uirF8wp8aTljDFNixODI6jWGg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=cwp3yrx8; arc=none smtp.client-ip=90.155.50.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="grnO4Qr5"
-Received: by mail-lf1-f45.google.com with SMTP id 2adb3069b0e04-52cd717ec07so3710795e87.0
-        for <oe-lkp@lists.linux.dev>; Mon, 24 Jun 2024 11:54:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1719255273; x=1719860073; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+aHo+RDnT/WvmjPAgH8TsZySNNBozthwDDf/TaQIdEc=;
-        b=grnO4Qr5iRVK5DFAuSNEgFVPDDLICwt7K3nFMTQmEFWvge9PFey2zoAMJ/A18ys+XZ
-         fA0M3qKAtdyvveDHcl92eraWpjogrGkuk51buvruMqP5h2vUPfcnCJAL14Prsj8LF5wQ
-         VlwE3tTtaY9FT+1pSB0hLvtHYpoF1az90kTbXfsl0UUJx8VMUtxyXC7HUhbVuJg1FvYe
-         ZdACV+vw6uZVcN5AHwJGhjMIi3rlBpQJsOzIG3m8Njt/lbXWc48PmAvD7zKHFLUJWt6P
-         pgvysuRLmgPLdwZrEN18yrKr6s/l9MFsV1I8Kh/odN7EEpW/HOXRyd3yN50yFeuv+Ut6
-         Wjgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719255273; x=1719860073;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=+aHo+RDnT/WvmjPAgH8TsZySNNBozthwDDf/TaQIdEc=;
-        b=deu2BIoWwfqsX4HkHWo/nxg9I7nIN2AqQqTc+kTkkziLZ66C+ACp91NCoI4XKGl1vL
-         JWI5lYeGamrfur48FTEB7VoBmearJGhgp5RkOPMWOsThDNkD2yhD7uwRSLEZZsX1U7jk
-         na8tmVwJzLlfmca/uR9olySTVXWlcZcvwGdTlEYOWLcAMPVp3M7x0RWMf+pegNqd4B5Q
-         K/wNvfAbMn8idaKzacZ5giSYf+gbO9DXXoB/RBNBV3WvNQScswJFnL4PLlQGF7KjCnIM
-         AyhImwL+z4/sTAxx97/qMTU6VW7a1a4SQrEgJQQKfEncTsBzEiPjaQcpA69XzVTDdtZZ
-         Tvtw==
-X-Forwarded-Encrypted: i=1; AJvYcCURNSygrlhL/q4mz9Z3Y5uc+dGNIraCO5Df0XWjvRVu26KoRSqqct6rSS3GhDAn0uWdNVuk/LzZhOdqQ70FWgRKvWMuWSlI
-X-Gm-Message-State: AOJu0YxmI5YsHvQm7dpvwohdcrozOB4rWTeVQxQBh5W3uO3ha6eEQJkC
-	BL+6vaaFsWUPfNKlOvw46Zeo0UzADr739X7f7clbjQCMxW3YNAq9XxiZh8ZELUMIYtjAu2o/4G+
-	HL3sdCbwrpv8RDqcwyt3JAXaWkfCPyXM8WsTs
-X-Google-Smtp-Source: AGHT+IG2Ylwf4qP53KT8n9LuQFgtOaFeplGVLRIskw5ThK8EM33Q7t3846sahBbOoJlS7aJZoeVlMm+NykS0UDg32fQ=
-X-Received: by 2002:a05:6512:1cd:b0:52c:859c:91dd with SMTP id
- 2adb3069b0e04-52ce18327aamr3287502e87.5.1719255272205; Mon, 24 Jun 2024
- 11:54:32 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="cwp3yrx8"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=BMTLXpb48lqB4H2o7jAA2KG7ULb3l4ZNE6T9+BrgCYE=; b=cwp3yrx8APpmDUuKC7Sk7YVK4G
+	CyMEyYnFYmpa/KNibnHnR0bZD0DO/9/IQXwOlytTtv95xkhAzk8bDb/88Hf8TKqrIqop6bH29ZZ7v
+	G7t0sISpix4HY4SB0DQahM2+6BGysYSa7TAP+ta6R299utvgC2HkZwuH1BhUFeyG/zs3aoI4sf9hI
+	jnyHCJs1gwtfnTML2IX8sQKX5jfkwsNJgmXJ/W3fQP2Wp1if+feot/ajWt6KRiiwk84DIENefgoer
+	2lf3bT9NwRVJQuynRnrDHOwxilTrqOiAvhCZRs53zlDWcU7MQAhSJFhDIi2IPiDiTkbrKQ1a6/A9c
+	lII6MfRg==;
+Received: from willy by casper.infradead.org with local (Exim 4.97.1 #2 (Red Hat Linux))
+	id 1sLorU-0000000ALgu-2jlA;
+	Mon, 24 Jun 2024 18:56:20 +0000
+Date: Mon, 24 Jun 2024 19:56:20 +0100
+From: Matthew Wilcox <willy@infradead.org>
+To: Yosry Ahmed <yosryahmed@google.com>
+Cc: kernel test robot <oliver.sang@intel.com>,
+	Usama Arif <usamaarif642@gmail.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, Linux Memory Management List <linux-mm@kvack.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Chengming Zhou <chengming.zhou@linux.dev>,
+	Nhat Pham <nphamcs@gmail.com>, David Hildenbrand <david@redhat.com>,
+	"Huang, Ying" <ying.huang@intel.com>,
+	Hugh Dickins <hughd@google.com>,
+	Johannes Weiner <hannes@cmpxchg.org>,
+	Shakeel Butt <shakeel.butt@linux.dev>,
+	Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org
+Subject: Re: [linux-next:master] [mm] 0fa2857d23:
+ WARNING:at_mm/page_alloc.c:#__alloc_pages_noprof
+Message-ID: <ZnnBVBItTNWZE42u@casper.infradead.org>
+References: <202406241651.963e3e78-oliver.sang@intel.com>
+ <CAJD7tkbqHyNUzQg_Qh+-ZryrKtMzdf5RE-ndT+4iURTqEo3o6A@mail.gmail.com>
+ <Znm74wW3xARhR2qN@casper.infradead.org>
+ <CAJD7tkbF9NwKa4q5J0xq1oG6EkTDLz8UcbekSfP+DYfoDSqRhQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202406241651.963e3e78-oliver.sang@intel.com> <CAJD7tkbqHyNUzQg_Qh+-ZryrKtMzdf5RE-ndT+4iURTqEo3o6A@mail.gmail.com>
- <Znm74wW3xARhR2qN@casper.infradead.org> <ad18c6fb-7d00-494b-a1f6-3d4acfbd2323@gmail.com>
-In-Reply-To: <ad18c6fb-7d00-494b-a1f6-3d4acfbd2323@gmail.com>
-From: Yosry Ahmed <yosryahmed@google.com>
-Date: Mon, 24 Jun 2024 11:53:55 -0700
-Message-ID: <CAJD7tka3FZuMhmmt_FJ9yHWRnr_JS3FSbsNKmSSatp8qPL2QZg@mail.gmail.com>
-Subject: Re: [linux-next:master] [mm] 0fa2857d23: WARNING:at_mm/page_alloc.c:#__alloc_pages_noprof
-To: Usama Arif <usamaarif642@gmail.com>
-Cc: Matthew Wilcox <willy@infradead.org>, kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, 
-	lkp@intel.com, Linux Memory Management List <linux-mm@kvack.org>, 
-	Andrew Morton <akpm@linux-foundation.org>, Chengming Zhou <chengming.zhou@linux.dev>, 
-	Nhat Pham <nphamcs@gmail.com>, David Hildenbrand <david@redhat.com>, 
-	"Huang, Ying" <ying.huang@intel.com>, Hugh Dickins <hughd@google.com>, 
-	Johannes Weiner <hannes@cmpxchg.org>, Shakeel Butt <shakeel.butt@linux.dev>, 
-	Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJD7tkbF9NwKa4q5J0xq1oG6EkTDLz8UcbekSfP+DYfoDSqRhQ@mail.gmail.com>
 
-On Mon, Jun 24, 2024 at 11:50=E2=80=AFAM Usama Arif <usamaarif642@gmail.com=
-> wrote:
->
->
-> On 24/06/2024 21:33, Matthew Wilcox wrote:
-> > On Mon, Jun 24, 2024 at 05:05:56AM -0700, Yosry Ahmed wrote:
-> >> On Mon, Jun 24, 2024 at 1:49=E2=80=AFAM kernel test robot <oliver.sang=
-@intel.com> wrote:
-> >>> kernel test robot noticed "WARNING:at_mm/page_alloc.c:#__alloc_pages_=
-noprof" on:
-> >>>
-> >>> commit: 0fa2857d23aa170e5e28d13c467b303b0065aad8 ("mm: store zero pag=
-es to be swapped out in a bitmap")
-> >>> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git mast=
-er
-> >> This is coming from WARN_ON_ONCE_GFP(order > MAX_PAGE_ORDER, gfp), and
-> >> is triggered by the new bitmap_zalloc() call in the swapon path. For a
-> >> sufficiently large swapfile, bitmap_zalloc() (which uses kmalloc()
-> >> under the hood) cannot be used to allocate the bitmap.
-> > Do we need to use a bitmap?
-> >
-> > We could place a special entry in the swapcache instead (there's
-> > XA_ZERO_ENTRY already defined, and if we need a different entry that's
-> > not XA_ZERO_ENTRY, there's room for a few hundred more special entries)=
-.
->
-> I was going for the most space-efficient and simplest data structure,
-> which is bitmap. I believe xarray is either pointer or integer between 0
-> and LONG_MAX? We could convert the individual bits into integer and
-> store them, and have another function to extract the integer stored in
-> xarray to a bit, but I think thats basically a separate bitmap_xarray
-> API (which would probably take more space than a traditional bitmap API,
-> and I dont want to make this series dependent on something like that),
-> so I would prefer to use bitmap.
+On Mon, Jun 24, 2024 at 11:53:30AM -0700, Yosry Ahmed wrote:
+> After a page is swapped out during reclaim, __remove_mapping() will
+> call __delete_from_swap_cache() to replace the swap cache entry with a
+> shadow entry (which is an xa_value).
 
-I believe Matthew meant reusing the xarray used by the existing
-swapcache, not adding a new one for this purpose. See my response.
+Special entries are disjoint from shadow entries.  Shadow entries have
+the last two bits as 01 or 11 (are congruent to 1 or 3 modulo 4).
+Special entries have values below 4096 which end in 10 (are congruent
+to 2 modulo 4).
+
