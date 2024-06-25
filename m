@@ -1,140 +1,199 @@
-Received: from mail-oo1-f44.google.com (mail-oo1-f44.google.com [209.85.161.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C32C5148307
-	for <oe-lkp@lists.linux.dev>; Tue, 25 Jun 2024 08:25:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DCB113A252;
+	Tue, 25 Jun 2024 08:57:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719303908; cv=none; b=U9gDOE/Y3YjPM0VRME632smTv3SSnNdclaZPt8CIMqyXC84Lyh5DIczX9kX+FC+vRp4/GY6uyV1NOhDEb6gGmuYOiXjM8MYXQaS43mkcyiQCZXaOSKQfRsR8eO2U/2bV0QUwtGVwB+iDoFxj8pRcQ5w5mfLQn5+MOLA8xGiniqs=
+	t=1719305861; cv=none; b=cF7E2A/kjxISS89jPxfu+/gzYf1p44wOsKgGIxJaFuDV01ifrmm/dZ/CcspaeJogErQZDnI2Qcn4oR6uPb2e5NXOOzMhMnkyig/LY1x13nmQ0T1AB3pellaWj+OVmTV+QJQG2/glTvtV+7/7XFlXli2KVnhLJTxWAFOJWeEShfE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719303908; c=relaxed/simple;
-	bh=x9Xq4nJRhjjFa5IMN1qjncFsaG0ztpmFcergDKd1o2U=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=azMfQZuE3kMzKdD5bSwGSjQaLTt/ICpDyVKCPh936VpCg7Jr7ZcsFeYQH+JlY5fk+i6qE9LF9m+wYRlSAWWKNRC8IZ4X07wzlQil7WU7wOobXV7kPpMfC3nutwwVtnYs12KywcHTd3dzteilICk4ScM3QRI5OGUtj/DnH3VAuMY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LHJ3KlE4; arc=none smtp.client-ip=209.85.161.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1719305861; c=relaxed/simple;
+	bh=Z+RrsOLEVITIAl7yw5ohC8SHpoKA4nCfk4Q+CLDwT68=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=OOVPNa7fp3JPJC46igY5ZTNixgyP0dS/1p0jVZaa83Yj+Q/A/zrCNk4JwfjVuMXAH1oSgRnOrYzDRzBwEjoElWJNY3kyn64cDLtoMEGwhTedrxyB5rdWyVBfnjXybJVuVfAPrCg+/4IUfeT+ZGztqu8ICYsOP+/8UqY1ykk4Jmw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=iT2Kf8Ts; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LHJ3KlE4"
-Received: by mail-oo1-f44.google.com with SMTP id 006d021491bc7-5c1b27e0a34so2541840eaf.2
-        for <oe-lkp@lists.linux.dev>; Tue, 25 Jun 2024 01:25:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1719303905; x=1719908705; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ic0gR8lv1bzgi74/8//kPAW6gA0eMoG+p7FcgAs/fPw=;
-        b=LHJ3KlE4w1FB2uKk/HmWvCaTQKCu2khYzV8ZzyIoEaAyMx9mDCfBKXVNh1eKz3EfEK
-         gBSEWIgYLHyV9lTwtS94xGhnM5oByM6GHtpY2lHflJF+a8aBntLpP/1DhnLD4DEZIak4
-         OHESBl73NQAPzBXXjMLXpqOA2v1KK6U/JLn1R+B29fb+Dy3Q7HWw8uqYH9uwAX97Ccoc
-         NPEtsw4H59zekmghl7gRuIZeVwPYUPIQlXg6oDxpvxflmL7NL54ncu+vXqxqWHO7vxyw
-         fw+J6+VFfMCTqfrXeugfCpV4ntrFm8Hd8gUzwJXvWkXz3L+fuWrbu6tzUsICXj65hFMX
-         wufQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719303905; x=1719908705;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ic0gR8lv1bzgi74/8//kPAW6gA0eMoG+p7FcgAs/fPw=;
-        b=gIoPVAQSfUfpcsg6czdrZc1L3tQRUPpac2OKkkgRELj+Mw68SGDBMwKVh5q1mVcPhh
-         orgxnzVuK3KeUlM1GmK0Zf8NwEDNTq66suOn3c1z1eq9QZTSCVkXx7OJXP4i8QWUIg1E
-         jR8wWYFS/2FTPflMPv1ACwSKBWEmQSq3qQqSKli+OVpuaJtzj9Ztgbw2Kf86U0BAzVCc
-         1lNmFYRaK4CzekAsN15VeIIEAGUSe9uaGzJOt9052LEtWTIm3ZZG0K0+EAxD9PnZnK3O
-         7q6E2LHbx3V+DTe+jTJ8GfUXokDjgYBW5wkiYclh1VJb2XJQoUYK3K4r53m3+yjzxZhj
-         Y1mg==
-X-Gm-Message-State: AOJu0YxTPijBOuPzxDpIkXK1DJh5xaiSQ74Z22ZjUZ3VK8V8maWbfeiR
-	GsnunGPjz86gtA8qkS4L3v5TUn0RPUCR2UN4rW7ySlbludZgU3MK
-X-Google-Smtp-Source: AGHT+IHHtCpPitKeFignih/Zbj7MxleXlHtKMu6APKY8FCO4SUGxC+GN7Lm7vSGr6hOFkVSmcD67Fw==
-X-Received: by 2002:a05:6358:7e88:b0:1a4:617d:6fea with SMTP id e5c5f4694b2df-1a4617d7377mr119874755d.6.1719303904573;
-        Tue, 25 Jun 2024 01:25:04 -0700 (PDT)
-Received: from [10.22.68.7] ([122.11.166.8])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-716bb041180sm6664845a12.80.2024.06.25.01.25.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jun 2024 01:25:03 -0700 (PDT)
-Message-ID: <ac402815-923c-49ec-b027-4f99b55c895e@gmail.com>
-Date: Tue, 25 Jun 2024 16:25:00 +0800
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="iT2Kf8Ts"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=THcdDm0A+7qsrmlgD/s5mbaI1bo21sJBUVFRJUuckjU=; b=iT2Kf8Ts7SV0ZMpN1tnhXxPtMH
+	Ffv8ZJFKB4PVB/IdNXjk7V0C/EqzT+g2n4rI1ZqlvQji9lJIwZfjHfG1Y7Cb5TXIeVGCM4nTH9crp
+	4zyWvlsKZ4WoJ7XDaIrgLwNl3YRoXD5zh+VKywveOkw7i38S3zZmoxTmQHKWk7riwSg6VmFiReOf7
+	0vMD17gabcLDjQNIftPl8VaQ0ZrC/qk7EH/0G/IiWcIA8u56veyp3C42DoJVrtu8OAb3RerYCYvx8
+	kxEfDPsLLm6uiPifVX8Lcu0WzNjdMGJQI+mys12zLdW5z+VY7pu7ChDIbK8PMhXWCu88C5Voy7C5+
+	gU8eTZWA==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.97.1 #2 (Red Hat Linux))
+	id 1sM1zb-00000002Btq-1pcn;
+	Tue, 25 Jun 2024 08:57:35 +0000
+Date: Tue, 25 Jun 2024 01:57:35 -0700
+From: Christoph Hellwig <hch@infradead.org>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: Christoph Hellwig <hch@lst.de>, oe-lkp@lists.linux.dev, lkp@intel.com,
+	Jens Axboe <axboe@kernel.dk>, Ulf Hansson <ulf.hansson@linaro.org>,
+	Damien Le Moal <dlemoal@kernel.org>, Hannes Reinecke <hare@suse.de>,
+	linux-block@vger.kernel.org, linux-um@lists.infradead.org,
+	drbd-dev@lists.linbit.com, nbd@other.debian.org,
+	linuxppc-dev@lists.ozlabs.org, virtualization@lists.linux.dev,
+	xen-devel@lists.xenproject.org, linux-bcache@vger.kernel.org,
+	dm-devel@lists.linux.dev, linux-raid@vger.kernel.org,
+	linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+	nvdimm@lists.linux.dev, linux-nvme@lists.infradead.org,
+	linux-scsi@vger.kernel.org, ying.huang@intel.com,
+	feng.tang@intel.com, fengwei.yin@intel.com
+Subject: Re: [axboe-block:for-next] [block]  1122c0c1cc:  aim7.jobs-per-min
+ 22.6% improvement
+Message-ID: <ZnqGf49cvy6W-xWf@infradead.org>
+References: <202406250948.e0044f1d-oliver.sang@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [linux-next:master] [bpf, x64] f663a03c8e:
- test-bpf.Tail_call_count_preserved_across_function_calls.fail
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
- Linux Memory Management List <linux-mm@kvack.org>,
- Alexei Starovoitov <ast@kernel.org>, bpf@vger.kernel.org
-References: <202406251415.c51865bc-oliver.sang@intel.com>
-Content-Language: en-US
-From: Leon Hwang <hffilwlqm@gmail.com>
-In-Reply-To: <202406251415.c51865bc-oliver.sang@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202406250948.e0044f1d-oliver.sang@intel.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
+Hi Oliver,
 
+can you test the patch below?  It restores the previous behavior if
+the device did not have a volatile write cache.  I think at least
+for raid0 and raid1 without bitmap the new behavior actually is correct
+and better, but it will need fixes for other modes.  If the underlying
+devices did have a volatile write cache I'm a bit lost what the problem
+was and this probably won't fix the issue.
 
-On 25/6/24 14:55, kernel test robot wrote:
-> 
-> 
-> Hello,
-> 
-> kernel test robot noticed "test-bpf.Tail_call_count_preserved_across_function_calls.fail" on:
-> 
-> commit: f663a03c8e35c5156bad073a4a8f5e673d656e3f ("bpf, x64: Remove tail call detection")
-> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
-> 
-> [test failed on linux-next/master 62c97045b8f720c2eac807a5f38e26c9ed512371]
-> 
-> in testcase: test-bpf
-> version: 
-> with following parameters:
-> 
-> 	test: non-jit
-> 
-> 
-> 
-> compiler: gcc-13
-> test machine: 36 threads 1 sockets Intel(R) Core(TM) i9-10980XE CPU @ 3.00GHz (Cascade Lake) with 32G memory
-> 
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
-> 
-> 
-> 
-> 
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202406251415.c51865bc-oliver.sang@intel.com
-> 
-> 
-> 
-> [   43.913560] test_bpf: #0 Tail call leaf jited:1 5 PASS
-> [   43.913572] test_bpf: #1 Tail call 2 jited:1 ret -1 != 3 FAIL
-> [   43.914138] test_bpf: #2 Tail call 3 jited:1 ret -1 != 6 FAIL
-> [   43.914756] test_bpf: #3 Tail call 4 jited:1 ret -1 != 10 FAIL
-> [   43.915374] test_bpf: #4 Tail call load/store leaf jited:1 5 PASS
-> [   43.915993] test_bpf: #5 Tail call load/store jited:1 ret -1 != 0 FAIL
-> [   43.916636] test_bpf: #6 Tail call error path, max count reached jited:1 ret 1000 != 34000 FAIL
-> [   43.917319] test_bpf: #7 Tail call count preserved across function calls jited:1 ret 1000 != 34000 FAIL
-> [   43.918799] test_bpf: #8 Tail call error path, NULL target jited:1 5 PASS
-> [   43.919720] test_bpf: #9 Tail call error path, index out of range jited:1 5 PASS
-> [   43.920474] test_bpf: test_tail_calls: Summary: 4 PASSED, 6 FAILED, [10/10 JIT'ed]
-> 
+---
+From 81c816827197f811e14add7a79220ed9eef6af02 Mon Sep 17 00:00:00 2001
+From: Christoph Hellwig <hch@lst.de>
+Date: Tue, 25 Jun 2024 08:48:18 +0200
+Subject: md: set md-specific flags for all queue limits
 
-Hi,
+The md driver wants to enforce a number of flags to an all devices, even
+when not inheriting them from the underlying devices.  To make sure these
+flags survive the queue_limits_set calls that md uses to update the
+queue limits without deriving them form the previous limits add a new
+md_init_stacking_limits helper that calls blk_set_stacking_limits and sets
+these flags.
 
-May I request the source code of these test cases?
-I do not find them in lkp-tests.
+Fixes: 1122c0c1cc71 ("block: move cache control settings out of queue->flags")
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ drivers/md/md.c     | 13 ++++++++-----
+ drivers/md/md.h     |  1 +
+ drivers/md/raid0.c  |  2 +-
+ drivers/md/raid1.c  |  2 +-
+ drivers/md/raid10.c |  2 +-
+ drivers/md/raid5.c  |  2 +-
+ 6 files changed, 13 insertions(+), 9 deletions(-)
 
-Thanks,
-Leon
+diff --git a/drivers/md/md.c b/drivers/md/md.c
+index 69ea54aedd99a1..8368438e58e989 100644
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -5853,6 +5853,13 @@ static void mddev_delayed_delete(struct work_struct *ws)
+ 	kobject_put(&mddev->kobj);
+ }
+ 
++void md_init_stacking_limits(struct queue_limits *lim)
++{
++	blk_set_stacking_limits(lim);
++	lim->features = BLK_FEAT_WRITE_CACHE | BLK_FEAT_FUA |
++			BLK_FEAT_IO_STAT | BLK_FEAT_NOWAIT;
++}
++
+ struct mddev *md_alloc(dev_t dev, char *name)
+ {
+ 	/*
+@@ -5871,10 +5878,6 @@ struct mddev *md_alloc(dev_t dev, char *name)
+ 	int shift;
+ 	int unit;
+ 	int error;
+-	struct queue_limits lim = {
+-		.features		= BLK_FEAT_WRITE_CACHE | BLK_FEAT_FUA |
+-					  BLK_FEAT_IO_STAT | BLK_FEAT_NOWAIT,
+-	};
+ 
+ 	/*
+ 	 * Wait for any previous instance of this device to be completely
+@@ -5914,7 +5917,7 @@ struct mddev *md_alloc(dev_t dev, char *name)
+ 		 */
+ 		mddev->hold_active = UNTIL_STOP;
+ 
+-	disk = blk_alloc_disk(&lim, NUMA_NO_NODE);
++	disk = blk_alloc_disk(NULL, NUMA_NO_NODE);
+ 	if (IS_ERR(disk)) {
+ 		error = PTR_ERR(disk);
+ 		goto out_free_mddev;
+diff --git a/drivers/md/md.h b/drivers/md/md.h
+index c4d7ebf9587d07..28cb4b0b6c1740 100644
+--- a/drivers/md/md.h
++++ b/drivers/md/md.h
+@@ -893,6 +893,7 @@ extern int strict_strtoul_scaled(const char *cp, unsigned long *res, int scale);
+ 
+ extern int mddev_init(struct mddev *mddev);
+ extern void mddev_destroy(struct mddev *mddev);
++void md_init_stacking_limits(struct queue_limits *lim);
+ struct mddev *md_alloc(dev_t dev, char *name);
+ void mddev_put(struct mddev *mddev);
+ extern int md_run(struct mddev *mddev);
+diff --git a/drivers/md/raid0.c b/drivers/md/raid0.c
+index 62634e2a33bd0f..32d58752477847 100644
+--- a/drivers/md/raid0.c
++++ b/drivers/md/raid0.c
+@@ -379,7 +379,7 @@ static int raid0_set_limits(struct mddev *mddev)
+ 	struct queue_limits lim;
+ 	int err;
+ 
+-	blk_set_stacking_limits(&lim);
++	md_init_stacking_limits(&lim);
+ 	lim.max_hw_sectors = mddev->chunk_sectors;
+ 	lim.max_write_zeroes_sectors = mddev->chunk_sectors;
+ 	lim.io_min = mddev->chunk_sectors << 9;
+diff --git a/drivers/md/raid1.c b/drivers/md/raid1.c
+index 1a0eba65b8a92b..04a0c2ca173245 100644
+--- a/drivers/md/raid1.c
++++ b/drivers/md/raid1.c
+@@ -3194,7 +3194,7 @@ static int raid1_set_limits(struct mddev *mddev)
+ 	struct queue_limits lim;
+ 	int err;
+ 
+-	blk_set_stacking_limits(&lim);
++	md_init_stacking_limits(&lim);
+ 	lim.max_write_zeroes_sectors = 0;
+ 	err = mddev_stack_rdev_limits(mddev, &lim, MDDEV_STACK_INTEGRITY);
+ 	if (err) {
+diff --git a/drivers/md/raid10.c b/drivers/md/raid10.c
+index 3334aa803c8380..2a9c4ee982e023 100644
+--- a/drivers/md/raid10.c
++++ b/drivers/md/raid10.c
+@@ -3974,7 +3974,7 @@ static int raid10_set_queue_limits(struct mddev *mddev)
+ 	struct queue_limits lim;
+ 	int err;
+ 
+-	blk_set_stacking_limits(&lim);
++	md_init_stacking_limits(&lim);
+ 	lim.max_write_zeroes_sectors = 0;
+ 	lim.io_min = mddev->chunk_sectors << 9;
+ 	lim.io_opt = lim.io_min * raid10_nr_stripes(conf);
+diff --git a/drivers/md/raid5.c b/drivers/md/raid5.c
+index 0192a6323f09ba..10219205160bbf 100644
+--- a/drivers/md/raid5.c
++++ b/drivers/md/raid5.c
+@@ -7708,7 +7708,7 @@ static int raid5_set_limits(struct mddev *mddev)
+ 	 */
+ 	stripe = roundup_pow_of_two(data_disks * (mddev->chunk_sectors << 9));
+ 
+-	blk_set_stacking_limits(&lim);
++	md_init_stacking_limits(&lim);
+ 	lim.io_min = mddev->chunk_sectors << 9;
+ 	lim.io_opt = lim.io_min * (conf->raid_disks - conf->max_degraded);
+ 	lim.features |= BLK_FEAT_RAID_PARTIAL_STRIPES_EXPENSIVE;
+-- 
+2.43.0
 
-> 
-> 
-> The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20240625/202406251415.c51865bc-oliver.sang@intel.com
-> 
-> 
-> 
