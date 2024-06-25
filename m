@@ -1,209 +1,162 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91C9F176254
-	for <oe-lkp@lists.linux.dev>; Tue, 25 Jun 2024 20:41:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3C3017F4EA
+	for <oe-lkp@lists.linux.dev>; Tue, 25 Jun 2024 20:53:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719348078; cv=none; b=akiV8HlytcXGxq/UonbdZEDljgvfxVzQXwoFEAbf+MjGwJv19U4YvLnBSf9OaOaLd7y9ND0mlrO0jimXaVtPtG8Pz8yMLs1lAyhT/pejoFx3eYzy/+HvEYebcvw7gIkapW1Vx6SRSlC5qPqwmfFKepU8Dt1ykJJcVnqFhZHULL8=
+	t=1719348831; cv=none; b=IkIkSZcRo4/qPAssrPopON1vOAaFGp4+NFMOVwpbcqcO0xf1yElvMIUpvkwPXPUQEJY8R468cpHxEW8LL0SZh04mvXhzfNTkw5YecbLxvyqGA5oYc3VkrVA8OmjJrS0QTmcPHF1mgOSPvxXpDZDCKjSzpbR/Xte3wuLDp+zc8Fo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719348078; c=relaxed/simple;
-	bh=SAo3jCAA3Q0QHEz348ac/3Eb0PL2wRnp76/hMdfz4mE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=fPmg1HHDnca1INbC4AXbgYqJa4im6jNPPldHw8WV70JkXt9IL+PoR3hgS7J2E01CELj4CQnZ/568/jWI1v245Qs7cC2Mr4Cph34/XEnmqpxkqP74tL3jdjCoDE/JyhqET+XF58aPL6v0AuFTvtGoiHy9n4UrN/H4PxaxHPaOAnQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=dAj4M7hm; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1719348831; c=relaxed/simple;
+	bh=z4ZGx+eUj/88bsn4q/UdsOuUZ9dGZXmFOAmGCk7pgPY=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=KS9vHJen89z/UMXkuhvkaWaNrMbm3qXV6/dvcIgVaCH2oYgo1EEwVKtBQxCIxu4YbBB5EXnccItykUZg1CHqYie2Uti5gbVj3vBivDBl2yG7EYivmsMCwtGjQ1o9RUzIRGo40Ez/0XZG7MGaIPtYiOo2YrZaec9wbT4XCOUh068=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lvy/vNNY; arc=none smtp.client-ip=209.85.208.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="dAj4M7hm"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1719348075;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=8o/LZltz2Srf/59+hcmhRn1Z8GI9CbfzhFVCfFTqJko=;
-	b=dAj4M7hmkYT3MbYdHoeCx5Li6WJK7S21pzaSh6cOzGuNgNe9PUtJ744+VurznPOrXGB3I9
-	24qxOayATJlXgfcG5dXHa7Il7zeTF1gMRQb9J/mwsqRJsJLF4Zy/cGNzT+N0PQJwxPrz5g
-	4mRnsBCyVlZH0PEzWs5U5tnmuchiomk=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-401-KowNzSHNMGaYeRTpATJ9KQ-1; Tue, 25 Jun 2024 16:41:13 -0400
-X-MC-Unique: KowNzSHNMGaYeRTpATJ9KQ-1
-Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-42196394b72so36387715e9.0
-        for <oe-lkp@lists.linux.dev>; Tue, 25 Jun 2024 13:41:13 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lvy/vNNY"
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-57d0eca877cso7249723a12.2
+        for <oe-lkp@lists.linux.dev>; Tue, 25 Jun 2024 13:53:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1719348828; x=1719953628; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=z4ZGx+eUj/88bsn4q/UdsOuUZ9dGZXmFOAmGCk7pgPY=;
+        b=lvy/vNNY3C7GLoWCZb8Ni+mfEqzSyLY4whhW/BN2BkMMMghuMcF3iKhBkU3DXCyR76
+         MDcS9NFByTcoaYMoDrKwLmOHw5CAX89wjlCzSs5B0ahsRF7xFM9vCtfBhtI4O01m/bhp
+         nPjQ0dEoiqp48TUCV5VQveXQTK1fdAwIoZkLCHJwJDmmDlby+rIlIPa23alSoBtxGKl0
+         yxfiC+bbXZh84TMyomm5au9et24wwEbxNNM21r0K7pQbuAN9ZSoFnQjAFTyKPLg4+JHC
+         dUYCYlyfkc8ofyoA1yuueVimGYPI7ifBZqCsU9II1QKmfihdyJqrDKNUVIHXjk4sA6GA
+         jq0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719348073; x=1719952873;
-        h=content-transfer-encoding:in-reply-to:organization:autocrypt
-         :content-language:from:references:cc:to:subject:user-agent
-         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=8o/LZltz2Srf/59+hcmhRn1Z8GI9CbfzhFVCfFTqJko=;
-        b=ZSmmAmmzBlN5qtHjy9IO+wzlklbg2Ata+DTpyl6Jc/kwy9k7IQ0e6xbSccJQiRZxMW
-         jll7c01CaqUiaHfsGj7O9QAJLdE/RZIRrlyFRd/83PsScASkHIoLMzH7sDU8mnTiO+Jn
-         xkU7S9RLgmeEwFoFE09QC+jNFHMPUylpbx7+JCnHbu98bsFlazenfznfGJYBBXbN8IF6
-         Yh9BiWaZPNf+Aly3dNTc1kmlJxScCqXc2Aoq1oDm2n8x7434PUqqsq+jqimXuKfAuRWA
-         oC7ZJohHQyOmuFAYBCG7G3wodPSnbjHS5n7wJ673VXxbhdqBsi+leyVSxbsAXOeeACWE
-         osuA==
-X-Forwarded-Encrypted: i=1; AJvYcCWM3GeeULI4dYoUJDWY40iWbGZPkBDv/tX5Idfe/thEOjImJ7Sr+VASnRvV7X1h+3+nAurWDCzXusQ46FCKVsxYz0P1rGao
-X-Gm-Message-State: AOJu0Yy9P/64ZIcF/YyxnZyWALOBMfuuJnVRbbFKOUCusP4b8ZTkY9CW
-	ynjSJ27yCsCdrzP9yxYZd1ZAdSfVvbX5/ThSLSz3pkAbenDye2jyHA14QTqsRtckge5QiCkBTld
-	9mSP77FYc8XU1BHTO4RrnJTsW0EyKy/9FfagZ9npZATdO99ib3aoalg==
-X-Received: by 2002:a5d:61c2:0:b0:35f:10a0:9b7 with SMTP id ffacd0b85a97d-366e95db2f1mr4875833f8f.46.1719348072790;
-        Tue, 25 Jun 2024 13:41:12 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IGPWXWs96hXpRVsd/M233FSA1Wm/ro0WOYYwz6ZNo6zROmWfLhjGHJalzTa8m7E6AVV00Dkcw==
-X-Received: by 2002:a5d:61c2:0:b0:35f:10a0:9b7 with SMTP id ffacd0b85a97d-366e95db2f1mr4875817f8f.46.1719348072290;
-        Tue, 25 Jun 2024 13:41:12 -0700 (PDT)
-Received: from [192.168.1.34] (p548825e3.dip0.t-ipconnect.de. [84.136.37.227])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-424c823c28asm712865e9.5.2024.06.25.13.41.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jun 2024 13:41:11 -0700 (PDT)
-Message-ID: <fc16f6d0-9605-43c6-8199-179029dac6d4@redhat.com>
-Date: Tue, 25 Jun 2024 22:41:10 +0200
+        d=1e100.net; s=20230601; t=1719348828; x=1719953628;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=z4ZGx+eUj/88bsn4q/UdsOuUZ9dGZXmFOAmGCk7pgPY=;
+        b=GZtmuFNanFWyQuRsolmVs0H3KITECCBWvdVcWQAJG1+3nFkV/qfkaRseT2h3pioEYT
+         Kc/1HVPfp1sjSmq7IZN1buoVlAkI+0HNHFsIrHIXjKoWrQUoLp3a/KzGhwLgo3G3ZgP0
+         jbA4FyL/cwzx15vXLWJ9DGTK2nZ0e5rw7T2GayHif9Imaf6IabkSdeQmNPk1ZyVrAIG5
+         15GtaOXxMXDJFe3O0LqSTwQrmynIQgwVBU3mx3OSF2I0sgzKPDdAocMK2H/cOwpgtAQx
+         WkgXseV2yTmFBciJO85s7fOcGQOBzzEGrbxdBJh3fIwHnKlJ5OUx26xxm74Kw/9HyFyX
+         oRAw==
+X-Forwarded-Encrypted: i=1; AJvYcCUku5xrpWxpiJRYMxR+LvKaNd7NuWoicoMkDKnc5g3ai5cXrpkFb0Y5X8HEGI+Ltv3fsf/GEwU835TT+IdUfPIlgNvM/3hY
+X-Gm-Message-State: AOJu0YwfQ9UkuBcoj1MKSZDbzj0OOy07MApaU6BqTXK0v10Q9LyHguW4
+	IrqVgQRt/i+UNSzaYfJuRhiuLchPib/byAJMEeh3uzLWFUZZTwYroUGIdmISMgJpZi2sZWnoy+C
+	8gYWFK78CYOujnk77Tm8DNfzAQcA=
+X-Google-Smtp-Source: AGHT+IH5PQs9YzD9mfM0POb5kScQniP/tipBmiBdJrOxOGBmxDIsHGit04FrMCXY53ICfWyLw0tLbXeTFUVpmqdI2fE=
+X-Received: by 2002:a50:c056:0:b0:57c:5eed:4ebf with SMTP id
+ 4fb4d7f45d1cf-57d4bd79d81mr8081097a12.19.1719348827856; Tue, 25 Jun 2024
+ 13:53:47 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [linus:master] [mm] efa7df3e3b:
- kernel_BUG_at_include/linux/page_ref.h
-To: Yang Shi <shy828301@gmail.com>, Oliver Sang <oliver.sang@intel.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>,
- Christopher Lameter <cl@linux.com>, Jason Gunthorpe <jgg@nvidia.com>,
- Matthew Wilcox <willy@infradead.org>, Peter Xu <peterx@redhat.com>,
- Rik van Riel <riel@surriel.com>, Vivek Kasireddy
- <vivek.kasireddy@intel.com>, linux-kernel@vger.kernel.org,
- linux-mm@kvack.org, lkp@intel.com, oe-lkp@lists.linux.dev
 References: <f4599bd2-72af-4e8d-a0fe-153b69816133@redhat.com>
  <CAHbLzkrOspjVuQw=BN2+RZmV_Ydpz_50yY7FEakJw8Zm14Y9-Q@mail.gmail.com>
- <a088b5cf-503e-4ed7-b427-f17a9ec5d1a8@redhat.com>
- <CAHbLzkpnDPYWq=HnaJcKhKnppdNikX4YG+1Ysu8Z+XJCoKK4SQ@mail.gmail.com>
+ <a088b5cf-503e-4ed7-b427-f17a9ec5d1a8@redhat.com> <CAHbLzkpnDPYWq=HnaJcKhKnppdNikX4YG+1Ysu8Z+XJCoKK4SQ@mail.gmail.com>
  <CAHbLzkr5K=4Shiyb5KgPTQ20jE2Zo08wK=mT3Ez9ADEdJe0Z9A@mail.gmail.com>
- <Zl3M7iniPQaPFDrW@xsang-OptiPlex-9020>
- <CAHbLzkrOTAaYahG4JYMNrJDhQNZZxW9u+2n71J=v1XYJEVpUdw@mail.gmail.com>
+ <Zl3M7iniPQaPFDrW@xsang-OptiPlex-9020> <CAHbLzkrOTAaYahG4JYMNrJDhQNZZxW9u+2n71J=v1XYJEVpUdw@mail.gmail.com>
  <CAHbLzkr16YZ80ES5U4BEWJ+ueL22nDJtgH=eOztdHfy080diPw@mail.gmail.com>
- <ZmEb2mdAbBQ/9PMP@xsang-OptiPlex-9020>
- <CAHbLzkqORuPjr3p7aZGPKSLfdptrg=z1624rcxjud_zs3+HnCA@mail.gmail.com>
- <Zmk5xAF+vHYLwzoG@xsang-OptiPlex-9020>
- <CAHbLzkp3bEE50n1DKfXUYHoGivOzdhwQsLF=s64QVJUEaWCG8Q@mail.gmail.com>
-From: David Hildenbrand <david@redhat.com>
-Autocrypt: addr=david@redhat.com; keydata=
- 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
- WNyWQQ==
-Organization: Red Hat
-In-Reply-To: <CAHbLzkp3bEE50n1DKfXUYHoGivOzdhwQsLF=s64QVJUEaWCG8Q@mail.gmail.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+ <ZmEb2mdAbBQ/9PMP@xsang-OptiPlex-9020> <CAHbLzkqORuPjr3p7aZGPKSLfdptrg=z1624rcxjud_zs3+HnCA@mail.gmail.com>
+ <Zmk5xAF+vHYLwzoG@xsang-OptiPlex-9020> <CAHbLzkp3bEE50n1DKfXUYHoGivOzdhwQsLF=s64QVJUEaWCG8Q@mail.gmail.com>
+ <fc16f6d0-9605-43c6-8199-179029dac6d4@redhat.com>
+In-Reply-To: <fc16f6d0-9605-43c6-8199-179029dac6d4@redhat.com>
+From: Yang Shi <shy828301@gmail.com>
+Date: Tue, 25 Jun 2024 13:53:35 -0700
+Message-ID: <CAHbLzkqfwKg584RniHfxk_Pp+iVUvazQv082P0x=CVg+5inMRQ@mail.gmail.com>
+Subject: Re: [linus:master] [mm] efa7df3e3b: kernel_BUG_at_include/linux/page_ref.h
+To: David Hildenbrand <david@redhat.com>
+Cc: Oliver Sang <oliver.sang@intel.com>, Andrew Morton <akpm@linux-foundation.org>, 
+	Christopher Lameter <cl@linux.com>, Jason Gunthorpe <jgg@nvidia.com>, Matthew Wilcox <willy@infradead.org>, 
+	Peter Xu <peterx@redhat.com>, Rik van Riel <riel@surriel.com>, 
+	Vivek Kasireddy <vivek.kasireddy@intel.com>, linux-kernel@vger.kernel.org, 
+	linux-mm@kvack.org, lkp@intel.com, oe-lkp@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 25.06.24 22:34, Yang Shi wrote:
-> On Tue, Jun 11, 2024 at 11:01 PM Oliver Sang <oliver.sang@intel.com> wrote:
->>
->> hi, Yang Shi,
->>
->> On Wed, Jun 05, 2024 at 08:44:37PM -0700, Yang Shi wrote:
->>> Oliver Sang <oliver.sang@intel.com>于2024年6月5日 周三19:16写道：
->>>
->>>> hi, Yang Shi,
->>>>
->>>> On Tue, Jun 04, 2024 at 04:53:56PM -0700, Yang Shi wrote:
->>>>> On Mon, Jun 3, 2024 at 9:54 AM Yang Shi <shy828301@gmail.com> wrote:
->>>>>>
->>>>>> On Mon, Jun 3, 2024 at 7:02 AM Oliver Sang <oliver.sang@intel.com>
->>>> wrote:
->>>>>>>
->>>>>>> hi, Yang Shi,
->>>>>>>
->>>>>>> On Fri, May 31, 2024 at 01:57:06PM -0700, Yang Shi wrote:
->>>>>>>> Hi Oliver,
->>>>>>>>
->>>>>>>> I just came up with a quick patch (just build test) per the
->>>> discussion
->>>>>>>> and attached, can you please to give it a try? Once it is
->>>> verified, I
->>>>>>>> will refine the patch and submit for review.
->>>>>>>
->>>>>>> what's the base of this patch? I tried to apply it upon efa7df3e3b or
->>>>>>> v6.10-rc2. both failed.
->>>>>>
->>>>>> Its base is mm-unstable. The head commit is 8e06d6b9274d ("mm: add
->>>>>> swappiness= arg to memory.reclaim"). Sorry for the confusion, I should
->>>>>> have mentioned this.
->>>>>
->>>>> I just figured out a bug in the patch. Anyway, we are going to take a
->>>>> different approach to fix the issue per the discussion. I already sent
->>>>> the series to the mailing list. Please refer to
->>>>>
->>>> https://lore.kernel.org/linux-mm/20240604234858.948986-1-yang@os.amperecomputing.com/
->>>>
->>>> got it. seems you will submit v2? should we wait v2 to do the tests?
->>>
->>>
->>> The real fix is patch #1, that doesn’t need v2. So you just need to test
->>> that.
->>
->> we've finished tests and confirmed patch #1 fixed the issue.
->> we also tested upon patch #2, still clean.
-> 
-> Thanks for testing. Sorry for the late reply, just came back from
-> vacation. It seems like Andrew didn't take the fix yet. I will resend
-> the patch with your tested-by tag. And I will drop the patch #2 since
-> it is just a clean up and I didn't receive any review comments. In
-> addition, the undergoing hugepd clean up may make this clean up
-> easier, so I will put the clean up on the back burner for now.
+On Tue, Jun 25, 2024 at 1:41=E2=80=AFPM David Hildenbrand <david@redhat.com=
+> wrote:
+>
+> On 25.06.24 22:34, Yang Shi wrote:
+> > On Tue, Jun 11, 2024 at 11:01=E2=80=AFPM Oliver Sang <oliver.sang@intel=
+.com> wrote:
+> >>
+> >> hi, Yang Shi,
+> >>
+> >> On Wed, Jun 05, 2024 at 08:44:37PM -0700, Yang Shi wrote:
+> >>> Oliver Sang <oliver.sang@intel.com>=E4=BA=8E2024=E5=B9=B46=E6=9C=885=
+=E6=97=A5 =E5=91=A8=E4=B8=8919:16=E5=86=99=E9=81=93=EF=BC=9A
+> >>>
+> >>>> hi, Yang Shi,
+> >>>>
+> >>>> On Tue, Jun 04, 2024 at 04:53:56PM -0700, Yang Shi wrote:
+> >>>>> On Mon, Jun 3, 2024 at 9:54=E2=80=AFAM Yang Shi <shy828301@gmail.co=
+m> wrote:
+> >>>>>>
+> >>>>>> On Mon, Jun 3, 2024 at 7:02=E2=80=AFAM Oliver Sang <oliver.sang@in=
+tel.com>
+> >>>> wrote:
+> >>>>>>>
+> >>>>>>> hi, Yang Shi,
+> >>>>>>>
+> >>>>>>> On Fri, May 31, 2024 at 01:57:06PM -0700, Yang Shi wrote:
+> >>>>>>>> Hi Oliver,
+> >>>>>>>>
+> >>>>>>>> I just came up with a quick patch (just build test) per the
+> >>>> discussion
+> >>>>>>>> and attached, can you please to give it a try? Once it is
+> >>>> verified, I
+> >>>>>>>> will refine the patch and submit for review.
+> >>>>>>>
+> >>>>>>> what's the base of this patch? I tried to apply it upon efa7df3e3=
+b or
+> >>>>>>> v6.10-rc2. both failed.
+> >>>>>>
+> >>>>>> Its base is mm-unstable. The head commit is 8e06d6b9274d ("mm: add
+> >>>>>> swappiness=3D arg to memory.reclaim"). Sorry for the confusion, I =
+should
+> >>>>>> have mentioned this.
+> >>>>>
+> >>>>> I just figured out a bug in the patch. Anyway, we are going to take=
+ a
+> >>>>> different approach to fix the issue per the discussion. I already s=
+ent
+> >>>>> the series to the mailing list. Please refer to
+> >>>>>
+> >>>> https://lore.kernel.org/linux-mm/20240604234858.948986-1-yang@os.amp=
+erecomputing.com/
+> >>>>
+> >>>> got it. seems you will submit v2? should we wait v2 to do the tests?
+> >>>
+> >>>
+> >>> The real fix is patch #1, that doesn=E2=80=99t need v2. So you just n=
+eed to test
+> >>> that.
+> >>
+> >> we've finished tests and confirmed patch #1 fixed the issue.
+> >> we also tested upon patch #2, still clean.
+> >
+> > Thanks for testing. Sorry for the late reply, just came back from
+> > vacation. It seems like Andrew didn't take the fix yet. I will resend
+> > the patch with your tested-by tag. And I will drop the patch #2 since
+> > it is just a clean up and I didn't receive any review comments. In
+> > addition, the undergoing hugepd clean up may make this clean up
+> > easier, so I will put the clean up on the back burner for now.
+>
+> Sorry, was expecting a v2 of the second patch. But agreed that posting
+> the second patch separately is reasonable -- possibly after the hugepd
+> stuff is gone for good.
 
-Sorry, was expecting a v2 of the second patch. But agreed that posting 
-the second patch separately is reasonable -- possibly after the hugepd 
-stuff is gone for good.
+I can revisit the cleanup once the hugepd stuff is done.
 
--- 
-Cheers,
-
-David / dhildenb
-
+>
+> --
+> Cheers,
+>
+> David / dhildenb
+>
