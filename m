@@ -1,156 +1,93 @@
-Received: from mail-oo1-f44.google.com (mail-oo1-f44.google.com [209.85.161.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC5992B9C0
-	for <oe-lkp@lists.linux.dev>; Wed, 26 Jun 2024 02:43:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82D0F61FE8;
+	Wed, 26 Jun 2024 03:39:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719369832; cv=none; b=KSIq1UoV/7sYcwNubY9QgNnfEVfJ1mwlBItbJdejt6jr62yXvYfKnyiYqkwhjresWPgjoE/bJvpx+KiririDSWyzQOnteOAfSY+coOQHoFXBpFjK+eTRRQZgYyx+bmX0WGnCeBpdYH1eEjZcbeasrfLsImfj+49xkUvDl5P3tXE=
+	t=1719373197; cv=none; b=r8lU6K0IVDQwqeDtwIHaq2MVFxdmscqKToyPbhTjN0ORvnQejCJisFpz8F0rUTai8G1MuR4+fj5Oar16oaiadBRy8F1eTs6paE8Kh4thwL7W+CXDUWRE0BQGwoKrKRDgGPp4B3+odwTMcGBkHXwUO/seQHzx3bQeIdACYGUEgC4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719369832; c=relaxed/simple;
-	bh=TzY9oXfU4TeXQZB7XaW00qJcluE2fxDXhq6G00qJFl8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=UqZqHBu3ZHdzeWUMGqhQ3wL6XkMbVPSor7gCw2rtSXbp4GjJ8w0BjwWPxLvOg0IqgUy0QkbmkFML4P42q6/IEPfmUh6MjT7WRFPF18awIoesPze+QC4MGAlmZHd7bruiPR8xum8mVGBTa+ikC8E+ScjMncXhE5YqZ1R1QEWlD3A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Aeh/3v/N; arc=none smtp.client-ip=209.85.161.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1719373197; c=relaxed/simple;
+	bh=3Sqem+lMn+S52efuvN21xdPnqe1u52xD6z7JDEdxua8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=OKol9UXbZTbOWPXQZk1EPyVzbPBMeTyZvzDH7024sObyKuMqttJLzEuX8u+W3pSnPBwLnRurzoQYgZc2Fh5MjVC8ST6ylpjsda0Pbyr3CQFJ3kzOe/zRQNFSUvl9nsCVaFIx4RsxqAV3aIMYwwectaDCFWW4wLBtFxwnmgLG5bU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=v38aUgEx; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Aeh/3v/N"
-Received: by mail-oo1-f44.google.com with SMTP id 006d021491bc7-5c20995d038so1149031eaf.3
-        for <oe-lkp@lists.linux.dev>; Tue, 25 Jun 2024 19:43:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1719369830; x=1719974630; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=rG3w2INBk5u/Jo1IIm6PkNLzmbMpq9WYWJppu8bUdBY=;
-        b=Aeh/3v/NsPrBBxEUMbtmQD+Os50Jukyafpi5MTKOaWrOnN0cjjLPG4OQpOOcDzisk+
-         q94qDsnlm5T7kMynKDostadnAulPlRB0eH5ubBMYzm7hdXw3KpqWiCsz0dAhNuBN+9CG
-         ZSNFupgXu5rJ4gQbDfkGh3hWy5HwmlOfKXXRM1xJTPbXXLVxZyFOHTtc4fWmXMu7VBw/
-         YiR477oZS6r/59Mb9JYErcargK1nFHBHb31W0Uej4lyEvBeUsnZm2UYhfIJFcFjii66b
-         JoNX+EPPNnuYJqFi3PnJpTQBZKYQRAKpcL42HLjEnnTZgkhd8pPGVkcuXFK6wUfDycw4
-         m9UA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719369830; x=1719974630;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=rG3w2INBk5u/Jo1IIm6PkNLzmbMpq9WYWJppu8bUdBY=;
-        b=I8ygYEXTLLw7zdZMgAahPzPpZkN/MHnhWr/j0VhTjBp6xCbDhMh21gLouzx3K4J4sY
-         faXXG+krgs8k+Djo4yCcAclR0OCGHiRZlteg8rGOeRrdl1EcfkyuiLKK+nyphJQLfhgt
-         i8LZuUOhyXprTmiNYFzPUXxLsFwR37IUS7ucVUwoq/N6Wo71IS+T9O4h+EqwJutdz5sd
-         8EYCMJNqlQiy0rTvX/kbgMXFk03KNa0Zz0rDnqUy6IDeYhm37U/iv9+1a8MAWatv8U+J
-         fLODw1bNjvoYMPikoSsAky8Kl5qWvIWDyULqr46LD4cVVQ95s8BLzPTqtxrQxAqDHWx+
-         C4Aw==
-X-Gm-Message-State: AOJu0YzHs++DMsCfw1r8ES+eIqRSKHVvZLgxDoX+po74hngwPtLkHIF3
-	zzVZ/9D0LjRUlXOXw8jSo/CEPGsMpbSXL2OFkJwLqKZi6vO4Ku9V
-X-Google-Smtp-Source: AGHT+IEjxmrGj+JcppGKsHuvAml5K0hl12hsilsm8VxYcrA9SLuZHhJ4SZn30SN7L3TgCQBWYTWv2A==
-X-Received: by 2002:a05:6359:5fa9:b0:1a5:b0f7:259 with SMTP id e5c5f4694b2df-1a5b0f706b4mr62750055d.21.1719369829652;
-        Tue, 25 Jun 2024 19:43:49 -0700 (PDT)
-Received: from [10.22.68.7] ([122.11.166.8])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-716b36487a9sm7856921a12.2.2024.06.25.19.43.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jun 2024 19:43:49 -0700 (PDT)
-Message-ID: <e84c7233-70cf-42d8-87f6-6ed6e40087c7@gmail.com>
-Date: Wed, 26 Jun 2024 10:43:45 +0800
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="v38aUgEx"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=q35hat2STPhlr4DAn4+ABXn/NxJWaK5wgb5DlM6xpCg=; b=v38aUgExch/0roE+EfRJ2Glql8
+	NJM5fN+YEIB1TYrzijSpWBKOBPz4ePJWBmxAeIq8Vy0dgCM+B8D7e2Uu/8N8Um6Vr/QojQ2rgIn5c
+	kZ0Qn4LEY3fOdOmfyKwMWEDOh9Ymv1GdTyRuFBajkXiPOidtU70du4sEE9xKuUof+3qQcWAWRaj21
+	Q277QHf25k5Hs4ZG2a3z7KhsZxdHv16NmcJJI6IIXWv8/dTL6K+es5s2mnReHc51vjem7WfsNQ2Oh
+	GFZANqqhPdUBbop3nLGkV+BdHz5dumNmTIDB8b0TUPLkhRAW/U3MN14I64qofM3LTvdEoRKFoAPJn
+	ZHT0K0YA==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.97.1 #2 (Red Hat Linux))
+	id 1sMJVe-00000005Ecx-3HCZ;
+	Wed, 26 Jun 2024 03:39:50 +0000
+Date: Tue, 25 Jun 2024 20:39:50 -0700
+From: Christoph Hellwig <hch@infradead.org>
+To: Oliver Sang <oliver.sang@intel.com>
+Cc: Christoph Hellwig <hch@infradead.org>, Christoph Hellwig <hch@lst.de>,
+	oe-lkp@lists.linux.dev, lkp@intel.com, Jens Axboe <axboe@kernel.dk>,
+	Ulf Hansson <ulf.hansson@linaro.org>,
+	Damien Le Moal <dlemoal@kernel.org>, Hannes Reinecke <hare@suse.de>,
+	linux-block@vger.kernel.org, linux-um@lists.infradead.org,
+	drbd-dev@lists.linbit.com, nbd@other.debian.org,
+	linuxppc-dev@lists.ozlabs.org, virtualization@lists.linux.dev,
+	xen-devel@lists.xenproject.org, linux-bcache@vger.kernel.org,
+	dm-devel@lists.linux.dev, linux-raid@vger.kernel.org,
+	linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
+	nvdimm@lists.linux.dev, linux-nvme@lists.infradead.org,
+	linux-scsi@vger.kernel.org, ying.huang@intel.com,
+	feng.tang@intel.com, fengwei.yin@intel.com
+Subject: Re: [axboe-block:for-next] [block]  1122c0c1cc:  aim7.jobs-per-min
+ 22.6% improvement
+Message-ID: <ZnuNhkH26nZi8fz6@infradead.org>
+References: <202406250948.e0044f1d-oliver.sang@intel.com>
+ <ZnqGf49cvy6W-xWf@infradead.org>
+ <Znt4qTr/NdeIPyNp@xsang-OptiPlex-9020>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [linux-next:master] [bpf, x64] f663a03c8e:
- test-bpf.Tail_call_count_preserved_across_function_calls.fail
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
- Linux Memory Management List <linux-mm@kvack.org>,
- Alexei Starovoitov <ast@kernel.org>, bpf@vger.kernel.org
-References: <202406251415.c51865bc-oliver.sang@intel.com>
- <ac402815-923c-49ec-b027-4f99b55c895e@gmail.com>
- <Znt6wPH24lQlbYrO@xsang-OptiPlex-9020>
-Content-Language: en-US
-From: Leon Hwang <hffilwlqm@gmail.com>
-In-Reply-To: <Znt6wPH24lQlbYrO@xsang-OptiPlex-9020>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Znt4qTr/NdeIPyNp@xsang-OptiPlex-9020>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
+On Wed, Jun 26, 2024 at 10:10:49AM +0800, Oliver Sang wrote:
+> I'm not sure I understand this test request. as in title, we see a good
+> improvement of aim7 for 1122c0c1cc, and we didn't observe other issues for
+> this commit.
 
+The improvement suggests we are not sending cache flushes when we should
+send them, or at least just handle them in md.
 
-On 26/6/24 10:19, Oliver Sang wrote:
-> hi, Leon Hwang,
+> do you mean this improvement is not expected or exposes some problems instead?
+> then by below patch, should the performance back to the level of parent of
+> 1122c0c1cc?
 > 
-> On Tue, Jun 25, 2024 at 04:25:00PM +0800, Leon Hwang wrote:
->>
->>
->> On 25/6/24 14:55, kernel test robot wrote:
->>>
->>>
->>> Hello,
->>>
->>> kernel test robot noticed "test-bpf.Tail_call_count_preserved_across_function_calls.fail" on:
->>>
->>> commit: f663a03c8e35c5156bad073a4a8f5e673d656e3f ("bpf, x64: Remove tail call detection")
->>> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
->>>
->>> [test failed on linux-next/master 62c97045b8f720c2eac807a5f38e26c9ed512371]
->>>
->>> in testcase: test-bpf
->>> version: 
->>> with following parameters:
->>>
->>> 	test: non-jit
->>>
->>>
->>>
->>> compiler: gcc-13
->>> test machine: 36 threads 1 sockets Intel(R) Core(TM) i9-10980XE CPU @ 3.00GHz (Cascade Lake) with 32G memory
->>>
->>> (please refer to attached dmesg/kmsg for entire log/backtrace)
->>>
->>>
->>>
->>>
->>> If you fix the issue in a separate patch/commit (i.e. not just a new version of
->>> the same patch/commit), kindly add following tags
->>> | Reported-by: kernel test robot <oliver.sang@intel.com>
->>> | Closes: https://lore.kernel.org/oe-lkp/202406251415.c51865bc-oliver.sang@intel.com
->>>
->>>
->>>
->>> [   43.913560] test_bpf: #0 Tail call leaf jited:1 5 PASS
->>> [   43.913572] test_bpf: #1 Tail call 2 jited:1 ret -1 != 3 FAIL
->>> [   43.914138] test_bpf: #2 Tail call 3 jited:1 ret -1 != 6 FAIL
->>> [   43.914756] test_bpf: #3 Tail call 4 jited:1 ret -1 != 10 FAIL
->>> [   43.915374] test_bpf: #4 Tail call load/store leaf jited:1 5 PASS
->>> [   43.915993] test_bpf: #5 Tail call load/store jited:1 ret -1 != 0 FAIL
->>> [   43.916636] test_bpf: #6 Tail call error path, max count reached jited:1 ret 1000 != 34000 FAIL
->>> [   43.917319] test_bpf: #7 Tail call count preserved across function calls jited:1 ret 1000 != 34000 FAIL
->>> [   43.918799] test_bpf: #8 Tail call error path, NULL target jited:1 5 PASS
->>> [   43.919720] test_bpf: #9 Tail call error path, index out of range jited:1 5 PASS
->>> [   43.920474] test_bpf: test_tail_calls: Summary: 4 PASSED, 6 FAILED, [10/10 JIT'ed]
->>>
->>
->> Hi,
->>
->> May I request the source code of these test cases?
->> I do not find them in lkp-tests.
+> sure! it's our great pleasure to test your patches. I noticed there are
+> [1]
+> https://lore.kernel.org/all/20240625110603.50885-2-hch@lst.de/
+> which includes "[PATCH 1/7] md: set md-specific flags for all queue limits"
+> [2]
+> https://lore.kernel.org/all/20240625145955.115252-2-hch@lst.de/
+> which includes "[PATCH 1/8] md: set md-specific flags for all queue limits"
 > 
-> test-bpf doesn't have source code.
-> 
-> you could refer to
-> https://github.com/intel/lkp-tests/blob/master/programs/test-bpf/run
-> to see how it runs.
-> 
-> then
-> https://github.com/intel/lkp-tests/blob/master/programs/test-bpf/parse
-> to see how the results are parsed.
-> 
+> which one you suggest us to test?
+> do we only need to apply the first patch "md: set md-specific flags for all queue limits"
+> upon 1122c0c1cc?
+> then is the expectation the performance back to parent of 1122c0c1cc?
 
-I found their source code. Then I fixed it by "bpf: Fix tailcall cases
-in test_bpf"[0].
+Either just the patch in reply or the entire [2] series would be fine.
 
-[0] https://lore.kernel.org/bpf/20240625145351.40072-1-hffilwlqm@gmail.com/
+Thanks!
 
-Thanks,
-Leon
