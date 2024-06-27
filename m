@@ -1,271 +1,145 @@
-Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com [209.85.208.181])
+Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23D3D14A604
-	for <oe-lkp@lists.linux.dev>; Thu, 27 Jun 2024 11:05:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12E5019754D
+	for <oe-lkp@lists.linux.dev>; Thu, 27 Jun 2024 16:32:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719486336; cv=none; b=gcQ0WVpOsJuy37k47TP7az411oxUZAPFrqc6POrOfdCkn6lpxIjai3xzVGOZEenuudgLzfWJIbsiZIFu78nqMc5hsF/WG2EV2oSC6Dw4F78sxiRdsziWu2gxw+z3mvyhmBHbivcpvO6PWBP5jEjoJD4g/yg+YmVrsy6GHKVNALQ=
+	t=1719505944; cv=none; b=DdB6NpNwHOyrEYmBd35pKygSmxz7ni08RiV7C0JhSQExVqhTnL9kW0lepPZXMcqLiQ5mtHC5xjTxaa749EXj1HPeUIlYWv3vi0L8N1aHdkzMYCc6pX3dSN8LIducsctk7BDA04l85+3foYwdozMecykvKEjSPJUbssMKx0+0Cos=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719486336; c=relaxed/simple;
-	bh=t6HMNYsgetPlyxim1FyU13ZaHtyIu+XzuSJOLwbROgU=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=Q7l4IH0W9GWIB5iwh+LiVzMjb74l5njv3FG7tr6gWiK+2sel2GKiAwARgc7XY6fgscNOy3YoAU5vwZImyDY6/GVs9z1X2yEVgIQEUWm0qnawavKG1TvP3EV2IpIvEDY29WlQKuHX+atMSfIVr/vXOHk9p9lccCc8t4TLJqsijcY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mbywravC; arc=none smtp.client-ip=209.85.208.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1719505944; c=relaxed/simple;
+	bh=prDkbAgooKAcK1vTJuLjMcPZfqon387HpjmxbgTD8eA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=tNKxUCoikuIUZbCorF9mKqhLFKRvjl7GmR7QRhivaa82sLTZWjvNxFVuib9DblFJnGpnixx3of1z15YOl+AjkGR64WEcJvK98XCkrJAMULG51432LSuSCmJg0t4y8BU65DfCTlZltdDqDvigvJgTOjPYmYUgp+uy17RdRttUzT0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=CeMV+2VX; arc=none smtp.client-ip=209.85.167.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mbywravC"
-Received: by mail-lj1-f181.google.com with SMTP id 38308e7fff4ca-2ec4eefbaf1so70479001fa.1
-        for <oe-lkp@lists.linux.dev>; Thu, 27 Jun 2024 04:05:34 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="CeMV+2VX"
+Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-52cd8897c73so7293014e87.2
+        for <oe-lkp@lists.linux.dev>; Thu, 27 Jun 2024 09:32:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1719486333; x=1720091133; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=OuPCN0p+/jjkvq2AdK3Vr7mCaGV2v3Y7d+UowOaYEYE=;
-        b=mbywravCh8vBPGJuMfkk6owojNPlDxu1kCJgStEsHbccTlYFx12looJODBn78id6vh
-         2l3ZGMwieIYFlHkpV2awuL05vzrOZ6ep8u78ZIFR2Iu1yptEd16/nRQBJv3g/SaetcpT
-         z3xFOCltwT1b0EO/eRkZkry9fu5RNGW5c5dKZzwRmEY4KV/JXrLsq6ocAfwoWhm3Kq9q
-         BYXy7GrPD/OF12v4MEpSm3izdMXxU+yW6jKp/LZBt1Jy1WHNDHLU/SQ7lXn0FUquokNN
-         cIIkpBbipRBCqLenVR/y0iLR5Qa37FAK2FLLdWzeVqMJJmSkKA1BdQWPSKCKceuj0g8W
-         y9sg==
+        d=linux-foundation.org; s=google; t=1719505940; x=1720110740; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=7ycSebCrQAPdM5kjmLyRXlbDvO9GJ9QZljEbMZ/M6I8=;
+        b=CeMV+2VXAh+HVoQKGQyKR2DpuKR/tiAYCd7cbbCg7LcCYKNUfnH9dqCJoXeKvxdnZ4
+         yo04iDAsL5Rg/oayzwgV0vGhov2q8+sBIBOYc0vpxKlQ5QSu3ODacwYTjoSiWHZDayAv
+         Btqmx6sbIMOLBdaIH8JEX2faFHMKieQSlkHbw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719486333; x=1720091133;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:from:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=OuPCN0p+/jjkvq2AdK3Vr7mCaGV2v3Y7d+UowOaYEYE=;
-        b=tB9NzNwEZxDnLTpKFpfCHJJBcnotmrlcMIx8R7AiQInIYWeQ3jwvZgIyEUPV4r9RzL
-         1GHhfQ3Qe/AB+a4yjMRsahGZ5MNYfuS+NczwccjznJhZHxysMKy1ddEd/GgO2i8EBq25
-         JHY6oL1F1uZRAfd3djzO33C8X8ORO+wTF1sCnjry04mvot6X6f7weYTfGtxl7u/6brCS
-         FPp4Bp9U3gIhTjMBILGf02NLLi6PeabR1d0vOGcpR1gfJLo6KqtpcsPlxnWtUJptrnVQ
-         Kdxtoo4UGTvo2MNoZDjyzCAFVZ2+Exj+S5/Ptsb8JWz0Dmfkx4e1urLPq0gaR1FwCBB5
-         XQeg==
-X-Forwarded-Encrypted: i=1; AJvYcCVh6JF8S0t1ahTycYFfMx38+yIhlQT9wgW7E69d0HoodUxvhRQSE4CdC4AdWLqSADrfLBgyP06xo6iYMqiaODN5BRTckJ2o
-X-Gm-Message-State: AOJu0YwGi8QTL9iGRsXlNNUxE9AgL2FxBFy+/aNU0My+ySPO4TkmMqX6
-	/YYrLs/UKAnBhB1jn2SD9cYc2b7IrcimIkCMyElOG1Yp/5vPKlBl
-X-Google-Smtp-Source: AGHT+IGWpicF5CW0nfsyxA6FMihNzXykHpD3P/VlaBPhPnHqccGxX3TRaC1MfI9a7OuvOaoI3J10Dw==
-X-Received: by 2002:a2e:8297:0:b0:2ec:174b:75bb with SMTP id 38308e7fff4ca-2ec5b38ad36mr76185751fa.28.1719486332948;
-        Thu, 27 Jun 2024 04:05:32 -0700 (PDT)
-Received: from ?IPV6:2001:16a2:df29:7e00:184b:b632:a7dc:1c99? ([2001:16a2:df29:7e00:184b:b632:a7dc:1c99])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42564b65637sm21293475e9.12.2024.06.27.04.05.30
+        d=1e100.net; s=20230601; t=1719505940; x=1720110740;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=7ycSebCrQAPdM5kjmLyRXlbDvO9GJ9QZljEbMZ/M6I8=;
+        b=PC1OAO+zQXsP0Rf47ybEpp87tukoYe1VIv1EK4Zo+ewzHz8DHFeCTgMlBkeHrjqZUK
+         +IdO27mEmzNJo1B4RXk+oHKE+bHNpOff/fUyzfK8UPlWIJ2rzPJ02UCUaLQfohxZnq4u
+         TNgvAgWOCz3hZt7u1e5XOCVMEX8JwHBvncai3AlPSWm/Jg0kfTstIe92bxx7YEMtc0YP
+         l1BQq6imZnj1NXFBqdSVd/P1MycYmXyg1f/4Hr5OSXdx2p87RTyJZWxAK/6EYozvy8n1
+         jUgwPe2psycS1p0pOn3yYMda7lle6D9SEP/7sndmZRQ5L4ntf2QjnvYGNZ0nvWNsEHWM
+         ziTA==
+X-Forwarded-Encrypted: i=1; AJvYcCUjDLTfnlzKL853lsmo+FbhJdYHLcLLDl1QX+prPQHZiAEghEQJBDymtacAOoTRncC3EzsYzMN4J48H0fc6pc1/kiDvY0uo
+X-Gm-Message-State: AOJu0Yyuew2xtMtmIphBRXZ5iE3Ap/Gi3L1rzviwiefwVXc1pXecHbTN
+	aymS0ZYHVhk/GY5xh9ZxwxqDuXh3dqbrqr2Z4O3psaT8tDfsdFbd888zNLEAC31AFP7ZfamvKCI
+	5iIgAfw==
+X-Google-Smtp-Source: AGHT+IHKnOTqeZLiwXxUxWxwp1g4Sp9QkNC+TjEbWUf5f6PJj4g6YZSlrrXNdyNFFoUF3aZiXnh9Dg==
+X-Received: by 2002:a05:6512:3a2:b0:52c:dc70:ebf8 with SMTP id 2adb3069b0e04-52ce1834fb5mr8144006e87.19.1719505939771;
+        Thu, 27 Jun 2024 09:32:19 -0700 (PDT)
+Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com. [209.85.208.174])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-52e71327ef7sm253634e87.278.2024.06.27.09.32.18
+        for <oe-lkp@lists.linux.dev>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 27 Jun 2024 04:05:32 -0700 (PDT)
-Message-ID: <159061bc-27b5-4127-a85d-223bed0ddfd5@gmail.com>
-Date: Thu, 27 Jun 2024 14:05:29 +0300
+        Thu, 27 Jun 2024 09:32:18 -0700 (PDT)
+Received: by mail-lj1-f174.google.com with SMTP id 38308e7fff4ca-2ec1620a956so96838021fa.1
+        for <oe-lkp@lists.linux.dev>; Thu, 27 Jun 2024 09:32:18 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCVloce5/KbgVILPaUM1LvZC7P4CEjNjmxuGoAnV4wOH+Z4gLs8R+CXMPNcEEcc4S3hUpKoqYmhPBlQkYICXOMYUEvxHoXic
+X-Received: by 2002:ac2:5639:0:b0:52c:deb3:e3cf with SMTP id
+ 2adb3069b0e04-52ce183504bmr8087314e87.24.1719505938254; Thu, 27 Jun 2024
+ 09:32:18 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [linux-next:master] [mm] 0fa2857d23:
- WARNING:at_mm/page_alloc.c:#__alloc_pages_noprof
-From: Usama Arif <usamaarif642@gmail.com>
-To: Yosry Ahmed <yosryahmed@google.com>, Hugh Dickins <hughd@google.com>,
- Yury Norov <yury.norov@gmail.com>,
- Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
- lkp@intel.com, Linux Memory Management List <linux-mm@kvack.org>,
- Andrew Morton <akpm@linux-foundation.org>,
- Chengming Zhou <chengming.zhou@linux.dev>, Nhat Pham <nphamcs@gmail.com>,
- David Hildenbrand <david@redhat.com>, "Huang, Ying" <ying.huang@intel.com>,
- Johannes Weiner <hannes@cmpxchg.org>, Matthew Wilcox <willy@infradead.org>,
- Shakeel Butt <shakeel.butt@linux.dev>, Andi Kleen <ak@linux.intel.com>,
- linux-kernel@vger.kernel.org, "Vlastimil Babka (SUSE)" <vbabka@kernel.org>
-References: <202406241651.963e3e78-oliver.sang@intel.com>
- <CAJD7tkbqHyNUzQg_Qh+-ZryrKtMzdf5RE-ndT+4iURTqEo3o6A@mail.gmail.com>
- <12fb19d1-3e57-4880-be59-0e83cdc4b7f1@gmail.com>
- <61d19ec8-2ba7-e156-7bb7-f746dae8e120@google.com>
- <5b3e732c-d23d-41ef-ae5c-947fa3e866ab@gmail.com>
- <CAJD7tkYJVa=dd=hwqhJ8_-uzxFDaP6-GcTk3RdG_3DJouJ61AQ@mail.gmail.com>
- <cacd14a9-01fc-4844-9ac6-2e797af13c36@gmail.com>
- <CAJD7tkbYbJHWQtC8+nsyfgS2jq7S5Qyy3-1NJWa4m80VAR9GXA@mail.gmail.com>
- <167b2f11-a013-440f-b196-5d8c0ea5d9b3@gmail.com>
-Content-Language: en-US
-In-Reply-To: <167b2f11-a013-440f-b196-5d8c0ea5d9b3@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <202406270912.633e6c61-oliver.sang@intel.com> <CAGudoHF7ys8bTCE0G6vLzEbo+_NyQXmAEEGPJ4hx1yoYmBsoUA@mail.gmail.com>
+ <CAGudoHFrMkdo1CoVxJUiEvQ_DyW3hzaCz18GjvLi4ny=o-q9ZQ@mail.gmail.com>
+In-Reply-To: <CAGudoHFrMkdo1CoVxJUiEvQ_DyW3hzaCz18GjvLi4ny=o-q9ZQ@mail.gmail.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Thu, 27 Jun 2024 09:32:01 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wg7PXo_QbBo8gv27OpbMgAwLh9H46kJRxAmp0FL0QD7HA@mail.gmail.com>
+Message-ID: <CAHk-=wg7PXo_QbBo8gv27OpbMgAwLh9H46kJRxAmp0FL0QD7HA@mail.gmail.com>
+Subject: Re: [linux-next:master] [lockref] d042dae6ad: unixbench.throughput
+ -33.7% regression
+To: Mateusz Guzik <mjguzik@gmail.com>
+Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	Linux Memory Management List <linux-mm@kvack.org>, Christian Brauner <brauner@kernel.org>, linux-kernel@vger.kernel.org, 
+	ying.huang@intel.com, feng.tang@intel.com, fengwei.yin@intel.com
+Content-Type: text/plain; charset="UTF-8"
 
+On Thu, 27 Jun 2024 at 00:00, Mateusz Guzik <mjguzik@gmail.com> wrote:
+>
+> I'm arranging access to a 128-way machine to prod, will report back
+> after I can profile on it.
 
-On 24/06/2024 21:26, Usama Arif wrote:
->
-> On 24/06/2024 20:31, Yosry Ahmed wrote:
->> On Mon, Jun 24, 2024 at 10:26 AM Usama Arif <usamaarif642@gmail.com> 
->> wrote:
->>>
->>> On 24/06/2024 19:56, Yosry Ahmed wrote:
->>>> [..]
->>>>>>> -       p->zeromap = bitmap_zalloc(maxpages, GFP_KERNEL);
->>>>>>> +       p->zeromap = kvzalloc(DIV_ROUND_UP(maxpages, 8), 
->>>>>>> GFP_KERNEL);
->>>>>> No, 8 is not right for 32-bit kernels. I think you want
->>>>>>         p->zeromap = kvzalloc(BITS_TO_LONGS(maxpages), GFP_KERNEL);
->>>>>> but please check it carefully, I'm easily confused by such 
->>>>>> conversions.
->>>>>>
->>>>>> Hugh
->>>>> Ah yes, didnt take into account 32-bit kernel. I think its 
->>>>> supposed to be
->>>>>
->>>>>     p->zeromap = kvzalloc(BITS_TO_LONGS(maxpages) * 
->>>>> sizeof(unsigned long),
->>>>> GFP_KERNEL);
->>>> You can do something similar to bitmap_zalloc() and use:
->>>>
->>>> kvmalloc_array(BITS_TO_LONGS(nbits), sizeof(unsigned long), GFP_KERNEL
->>>> | __GFP_ZERO)
->>>>
->>>> I don't see a kvzalloc_array() variant to use directly, but it should
->>>> be trivial to add it. I can see other users of kvmalloc_array() that
->>>> pass in __GFP_ZERO (e.g. fs/ntfs3/bitmap.c).
->>>>
->>>> , or you could take it a step further and add bitmap_kvzalloc(),
->>>> assuming the maintainers are open to that.
->>> Thanks! bitmap_kvzalloc makes most sense to me. It doesnt make sense
->>> that bitmap should only be limited to MAX_PAGE_ORDER size. I can add
->>> this patch below at the start of the series and use it in the patch for
->>> zeropage swap optimization.
->>>
->>>
->>>       bitmap: add support for virtually contiguous bitmap
->>>
->>>       The current bitmap_zalloc API limits the allocation to 
->>> MAX_PAGE_ORDER,
->>>       which prevents larger order bitmap allocations. Introduce
->>>       bitmap_kvzalloc that will allow larger allocations of bitmap.
->>>       kvmalloc_array still attempts to allocate physically 
->>> contiguous memory,
->>>       but upon failure, falls back to non-contiguous (vmalloc) 
->>> allocation.
->>>
->>>       Suggested-by: Yosry Ahmed <yosryahmed@google.com>
->>>       Signed-off-by: Usama Arif <usamaarif642@gmail.com>
->>>
->> LGTM with a small fix below.
->>
->>> diff --git a/include/linux/bitmap.h b/include/linux/bitmap.h
->>> index 8c4768c44a01..881c2ff2e834 100644
->>> --- a/include/linux/bitmap.h
->>> +++ b/include/linux/bitmap.h
->>> @@ -131,9 +131,11 @@ struct device;
->>>     */
->>>    unsigned long *bitmap_alloc(unsigned int nbits, gfp_t flags);
->>>    unsigned long *bitmap_zalloc(unsigned int nbits, gfp_t flags);
->>> +unsigned long *bitmap_kvzalloc(unsigned int nbits, gfp_t flags);
->>>    unsigned long *bitmap_alloc_node(unsigned int nbits, gfp_t flags, 
->>> int
->>> node);
->>>    unsigned long *bitmap_zalloc_node(unsigned int nbits, gfp_t 
->>> flags, int
->>> node);
->>>    void bitmap_free(const unsigned long *bitmap);
->>> +void bitmap_kvfree(const unsigned long *bitmap);
->>>
->>>    DEFINE_FREE(bitmap, unsigned long *, if (_T) bitmap_free(_T))
->>>
->>> diff --git a/lib/bitmap.c b/lib/bitmap.c
->>> index b97692854966..eabbfb85fb45 100644
->>> --- a/lib/bitmap.c
->>> +++ b/lib/bitmap.c
->>> @@ -727,6 +727,13 @@ unsigned long *bitmap_zalloc(unsigned int nbits,
->>> gfp_t flags)
->>>    }
->>>    EXPORT_SYMBOL(bitmap_zalloc);
->>>
->>> +unsigned long *bitmap_kvzalloc(unsigned int nbits, gfp_t flags)
->>> +{
->>> +       return kvmalloc_array(BITS_TO_LONGS(nbits), sizeof(unsigned 
->>> long),
->>> +                             flags | __GFP_ZERO);
->>> +}
->>> +EXPORT_SYMBOL(bitmap_zalloc);
->> EXPORT_SYMBOL(bitmap_kvzalloc)*
->
->
-> Actually, does it make more sense to change the behaviour of the 
-> current APIs like below instead of above patch? Or is there an 
-> expectation that the current bitmap API is supposed to work only on 
-> physically contiguous bits?
->
-> I believe in the kernel if the allocation/free starts with 'k' its 
-> physically contiguous and with "kv" its physically contiguous if 
-> possible, otherwise virtually contiguous. The bitmap functions dont 
-> have either, so we could change the current implementation. I believe 
-> it would not impact the current users of the functions as the first 
-> attempt is physically contiguous which is how it works currently, and 
-> only upon failure it would be virtual and it would increase the use of 
-> current bitmap API to greater than MAX_PAGE_ORDER size allocations.
->
-> Yury Norov and Rasmus Villemoes, any views on this?
->
-> Thanks
->
-> diff --git a/include/linux/slab.h b/include/linux/slab.h
-> index 7247e217e21b..ad771dc81afa 100644
-> --- a/include/linux/slab.h
-> +++ b/include/linux/slab.h
-> @@ -804,6 +804,7 @@ kvmalloc_array_node_noprof(size_t n, size_t size, 
-> gfp_t flags, int node)
->  #define kvcalloc_node_noprof(_n,_s,_f,_node) 
-> kvmalloc_array_node_noprof(_n,_s,(_f)|__GFP_ZERO,_node)
->  #define kvcalloc_noprof(...) kvcalloc_node_noprof(__VA_ARGS__, 
-> NUMA_NO_NODE)
->
-> +#define kvmalloc_array_node(...) 
-> alloc_hooks(kvmalloc_array_node_noprof(__VA_ARGS__))
->  #define kvmalloc_array(...) 
-> alloc_hooks(kvmalloc_array_noprof(__VA_ARGS__))
->  #define kvcalloc_node(...) 
-> alloc_hooks(kvcalloc_node_noprof(__VA_ARGS__))
->  #define kvcalloc(...) alloc_hooks(kvcalloc_noprof(__VA_ARGS__))
-> diff --git a/lib/bitmap.c b/lib/bitmap.c
-> index b97692854966..272164dcbef1 100644
-> --- a/lib/bitmap.c
-> +++ b/lib/bitmap.c
-> @@ -716,7 +716,7 @@ void bitmap_fold(unsigned long *dst, const 
-> unsigned long *orig,
->
->  unsigned long *bitmap_alloc(unsigned int nbits, gfp_t flags)
->  {
-> -       return kmalloc_array(BITS_TO_LONGS(nbits), sizeof(unsigned long),
-> +       return kvmalloc_array(BITS_TO_LONGS(nbits), sizeof(unsigned 
-> long),
->                              flags);
->  }
->  EXPORT_SYMBOL(bitmap_alloc);
-> @@ -729,7 +729,7 @@ EXPORT_SYMBOL(bitmap_zalloc);
->
->  unsigned long *bitmap_alloc_node(unsigned int nbits, gfp_t flags, int 
-> node)
->  {
-> -       return kmalloc_array_node(BITS_TO_LONGS(nbits), 
-> sizeof(unsigned long),
-> +       return kvmalloc_array_node(BITS_TO_LONGS(nbits), 
-> sizeof(unsigned long),
->                                   flags, node);
->  }
->  EXPORT_SYMBOL(bitmap_alloc_node);
-> @@ -742,7 +742,7 @@ EXPORT_SYMBOL(bitmap_zalloc_node);
->
->  void bitmap_free(const unsigned long *bitmap)
->  {
-> -       kfree(bitmap);
-> +       kvfree(bitmap);
->  }
->  EXPORT_SYMBOL(bitmap_free);
->
+Note that the bigger problem is probably not the 128-way part, but the
+"two socket" part.
 
-I decided to go with just using simple kvmalloc_array for v7 [1] with 
-__GFP_ZERO instead of adding a new API to bitmap or changing the 
-existing API to kvmalloc/kvfree as I didnt want to make this series 
-dependent of bitmap API changes and there are other places where its 
-done using kvmalloc_array like ceph and ntfs3. I am happy to send a 
-follow up patch after this series that changes the existing API to be kv 
-if thats something the bitmap maintainers think makes sense.
+From a quick look at the profile data, we have for self-cycles:
 
-[1] 
-https://lore.kernel.org/all/20240627105730.3110705-1-usamaarif642@gmail.com/
+  shell1 subtest:
+      +4.2   lockref_get_not_dead
+      +4.5   lockref_put_return
+     +16.8   native_queued_spin_lock_slowpath
 
+  getdent subtest:
+      +4.1   lockref_put_return
+      +5.7   lockref_get_not_dead
+     +68.0   native_queued_spin_lock_slowpath
+
+which means that the spin lock got much more expensive, _despite_ the
+"fast path" in lockref being more aggressive.
+
+Which in turn implies that the problem may be at least partly simply
+due to much more cacheline ping-pong. In particular, the lockref
+routines may be "fast", but they hit that one cacheline over and over
+again and have a thundering herd issue, while the queued spinlocks on
+their own actually try to avoid that for multiple CPU's.
+
+IOW, the queue in the queued spinlocks isn't primarily about fairness
+(although that is a thing), it's about not having all CPU cores
+accessing the same spinlock cacheline.
+
+Note that a lot of the other numbers seem "incidental". For example,
+for the getdents subtest we have a lot of the numbers going down by
+~55%, but while that looks like a big change, it's actually just a
+direct result of this:
+
+     -56.5%  stress-ng.getdent.ops
+
+iow, the benchmark fundamentally did 56% less work.
+
+IOW, I think this may all be fundamental, and we just can't do the
+"wait for spinlock" thing, because that whole loop with a cpu_relax()
+is just deadly.
+
+And we've seen those kinds of busy-loops be huge problems before. When
+you have this kind of busy-loop:
+
+    old.lock_count = READ_ONCE(lockref->lock_count);
+    do {
+        if (lockref_locked(old)) {
+            cpu_relax();
+            old.lock_count = READ_ONCE(lockref->lock_count);
+            continue;
+        }
+
+the "cpu_relax()" is horrendously expensive, but not having it is not
+really an option either, since it will just cause a tight core-only
+loop.
+
+I suspect removing the cpu_relax() would help performance, but I
+suspect the main help would come from it effectively cutting down the
+wait cycles to practically nothing.
+
+               Linus
