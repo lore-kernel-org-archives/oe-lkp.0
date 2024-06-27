@@ -1,55 +1,61 @@
-Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
+Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0C43198A09
-	for <oe-lkp@lists.linux.dev>; Thu, 27 Jun 2024 16:55:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B6A7199EA8
+	for <oe-lkp@lists.linux.dev>; Thu, 27 Jun 2024 16:57:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719507318; cv=none; b=KwNaJbUl4hyJZ2B8L/a4sObnTyclCCAIHa8AOL41Cg+SNtVoTOwFGwtzcpHswFy2s2ALaq593TraNkwTRv6mEO8a6kfMuTKug6/ziQKEuMvTXoaBR/HRTi+bO+kbgZfLX5amn/X5otKMiBGVfdh0HHu1m8swwvfwIA+0uLMpRxs=
+	t=1719507454; cv=none; b=QuW4lEk91NuH9nS4isNCdk2nqIdEsdwFmVcF87qgRL+sBMQtYthQ6UCbJMyMaaR1lON2QrfiVP1FgflTtD81BbGXMALgtyl50vH8FHD4EvqXkFGMgdHFaFTE0L3WpgPHdhiFpFM9KEwoO6EbKX0rNnHN+s7q/dkrZWrq2/lTqQo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719507318; c=relaxed/simple;
-	bh=TWpfBUkrmZcTYP6kalJEGUrCqZR0g9FhtBW0ShSfuI0=;
+	s=arc-20240116; t=1719507454; c=relaxed/simple;
+	bh=FnYTNd4VoG6yJv0fKqSCNSDjS/xt3cKCDoPqBxS46PQ=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=BBKlZVRVglQRHbOtgP8K/36pVt8QR0rzVCPAFbETrSvBdv/bYU9qOrREUH8KRf7BwWSUhdB8KCISaAP45OvFrwRr8sh2xNeuSaHr0kvShfPyndsHtFn+rVb+l7gDa8+nQ97L+rAGFJUdQkliE7cGYsWOz7fPEW+AQqxrF6XLN3c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jxF3Y8ZV; arc=none smtp.client-ip=209.85.218.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 To:Cc:Content-Type; b=H47phBX93wmHx+2oGetj7lpj7oAFZhrMb4oxEbTXpe5sEIwRvI0mb7x2IpRZcHtMTXGwpDBfEHARNVH1S7xMB2pzjCbAERIqcgz0Kgekt5zAKR6KE9DTARdR5UkEFT0MPeXK1TB9lx2dID+ngE1C4F3wSz9bX1DhyJ8X7TdTQmg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=BQNpg26E; arc=none smtp.client-ip=209.85.208.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jxF3Y8ZV"
-Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-a725a918edaso473328766b.3
-        for <oe-lkp@lists.linux.dev>; Thu, 27 Jun 2024 09:55:16 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="BQNpg26E"
+Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-2eaae2a6dc1so8642481fa.0
+        for <oe-lkp@lists.linux.dev>; Thu, 27 Jun 2024 09:57:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1719507315; x=1720112115; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=niteNh3TbVLu7eb0D9sBMdcI9GkHgkcpq+/w6gXTGSU=;
-        b=jxF3Y8ZVMUKH8QpXwoTXy30Hr5sZqwmA75Kx2i5PYzUTF291qm8q5wrq3EsOjgiNRU
-         bCb89w3gUtIBNYxsVV5RJowpl2OXsFBMhxft/vtp75HAgaquagp7r2yrTg60t6gQnO1o
-         bsHQl4sYfojVbNfqU966BfLZ223qUqq8Id2PtAzrXQLp3jtUPW7HUVfXFca+DSz5Z/7y
-         NJuWZGY13Gd0NMQqaQoNhtptZtI/d6kTehwNJg/mVseK7qhfh+VQKV14Sez4wmc5Iutn
-         DYHVxOBUYz+jaDse29TRvbG8CZ046E2IvyFdxMcf6PlwVhT6vv721XcUhq7uZd+51Kj6
-         y+FQ==
+        d=linux-foundation.org; s=google; t=1719507450; x=1720112250; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=i9kjtJnq6QUCFXqe7TVzsRwtJHG6pu+RYcniY0xGCVQ=;
+        b=BQNpg26Exbkq6j+gXr9k8difmDiPU2AoTi83BU7hkjuKwD5iqszMWGrVhzx/t0zV6F
+         V+SPPY/wxL8EwVaIcTq1naRCCI6rOlIdIqVRPROEMiGVuqKlAqoG1aZNykoDZjho7TYl
+         0xMm4H4QaOk5XM2l4cLw72UMmDYCdCRk9b45M=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719507315; x=1720112115;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=niteNh3TbVLu7eb0D9sBMdcI9GkHgkcpq+/w6gXTGSU=;
-        b=GAuJ3w3OwfxFHkb9jSSS4yuNNXhoXoeJMZ/SEqYoe//t7iFn/1tfIrR9dZbQFExFko
-         TPnEvX1T8Vj/V5l4KwXTP3OSskviM6zX7OsFDAW2TPxtbGb6iTUMJAT9CBlGhYg/VGcy
-         b6ZX/SrBnut4RddfByFZ2PgjVp0HvH2JSp3cJOWYciyMgJdEjTqXrrXFroMTLgLjo3Sw
-         HmzHfoJaLkqP/JrY70Ja62JSPLhKl/QCMeEhraquDDVPM+jh96o9vZsW+hK/d+9NnzPz
-         GTQURj6Z7DpBlSilzGj7TyVKMj0zRgypb7jSujDRpqGTmXgPyZ9nwo54rFwACzV5W4WN
-         pluQ==
-X-Forwarded-Encrypted: i=1; AJvYcCW5VYCWkPSQRvmPGe2825EhmjqbsdSBjWF13peJbN4ercSELEcKcJ5paxq5B2yjGmnxwIdX42nwphAv/i6V692OQBwIdxpN
-X-Gm-Message-State: AOJu0YwG+RguDQNvrG6oRC5Tf0PKx3MT8Aen4g7aJsi/m8cY2b38f1qC
-	AN014bymNadefjBhhPEQxV/KD93fWHsaFiTpfgnJ4J+OKCUlTxnhkkce9nmkMn2vwkOzA+qsIrA
-	X6xqDUy27rF5pbk908fDH3yGqb38=
-X-Google-Smtp-Source: AGHT+IH0dIKUR/haFbE60cInxlDg0jpKpfwKboTD7Ew46GpSk6YvqS7ECQ1CFI021YcGgAHu64qodhxqduXhre2e1pk=
-X-Received: by 2002:a17:906:6a22:b0:a72:a206:ddc2 with SMTP id
- a640c23a62f3a-a72a206df24mr160444366b.36.1719507314776; Thu, 27 Jun 2024
- 09:55:14 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1719507450; x=1720112250;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=i9kjtJnq6QUCFXqe7TVzsRwtJHG6pu+RYcniY0xGCVQ=;
+        b=FaYaQvmQePHyFL5Fy0IKQ92DT5EcmRoDEfIXx799ZZvj7jp67lOuV3mjQwS0jmqqKQ
+         GBEXIJZFXT+DULVhkfj3VIW4e8Fsp530Bitj7tw6rgC3TtfD+Xw+sofYtg9s92VdeOTv
+         HAcSeknIbObFfuukr5jG0bSBK3FIq6CREc+ZMschicRBq/xbgH4hw9w0NwucWrL8CQF7
+         m2EDQn4fATCqm8UPEneWxQokS6afHxZNanoR4NUV3sBqIQSOfLdZ10ku2mRareMnI0sk
+         yKj4l+MS/zRqXxpruztMAOHJLkLk7qvgs/tsjAGSpFlJR0PJNY++PcQf0QQs4guYrfvb
+         gEVQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUiad23VxDkVjQXgu8LbGWXNqRhcwaPF2w/rrJQeAvzpHYwx8QNLQVuFvSHZcbiVYUaqHt8aHkdB7+TN5eLBGEhlVxhCNZb
+X-Gm-Message-State: AOJu0YzSON3ZC2hcAzjiS87+wJVre6g/5WDPFrUXWLnXY7P1iBH2USe2
+	a9odOmN/umWeWFrRHdXkWR1p2Kyy4/mdN4/LqVm9IDUT1gIyV9ludrBAd7dyUliSAuQSats0kZa
+	h723/dA==
+X-Google-Smtp-Source: AGHT+IEZgyeXiFL1i8SxRK0pAiLfjMrfTdxKJ7RM5pfVUDuI6RQWZQ4x9bBaoeIkXoJHAvMwXKgp5g==
+X-Received: by 2002:a2e:8242:0:b0:2ec:597f:664 with SMTP id 38308e7fff4ca-2ec5b2c4fa1mr102781301fa.2.1719507450582;
+        Thu, 27 Jun 2024 09:57:30 -0700 (PDT)
+Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com. [209.85.208.175])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-2ee4a350e89sm3130611fa.55.2024.06.27.09.57.29
+        for <oe-lkp@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 27 Jun 2024 09:57:29 -0700 (PDT)
+Received: by mail-lj1-f175.google.com with SMTP id 38308e7fff4ca-2eaae2a6dc1so8642021fa.0
+        for <oe-lkp@lists.linux.dev>; Thu, 27 Jun 2024 09:57:29 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCVY7LYbFD8UfJLRSSinr6C5bmAZTkjcrE9mvpn8FOTQpX00VitS06RxS8txeT+Kld+llylM8ki4PAfKM918jc/bjYHnnKSq
+X-Received: by 2002:a2e:6a12:0:b0:2ed:5af6:e846 with SMTP id
+ 38308e7fff4ca-2ed5af6ea7dmr41715831fa.50.1719507449392; Thu, 27 Jun 2024
+ 09:57:29 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -59,116 +65,42 @@ MIME-Version: 1.0
 References: <202406270912.633e6c61-oliver.sang@intel.com> <CAGudoHF7ys8bTCE0G6vLzEbo+_NyQXmAEEGPJ4hx1yoYmBsoUA@mail.gmail.com>
  <CAGudoHFrMkdo1CoVxJUiEvQ_DyW3hzaCz18GjvLi4ny=o-q9ZQ@mail.gmail.com> <CAHk-=wg7PXo_QbBo8gv27OpbMgAwLh9H46kJRxAmp0FL0QD7HA@mail.gmail.com>
 In-Reply-To: <CAHk-=wg7PXo_QbBo8gv27OpbMgAwLh9H46kJRxAmp0FL0QD7HA@mail.gmail.com>
-From: Mateusz Guzik <mjguzik@gmail.com>
-Date: Thu, 27 Jun 2024 18:55:02 +0200
-Message-ID: <CAGudoHFfH7d2AnWOeTNWF_BvF8qizxp+FMK6e1CyeOfTk0fLGQ@mail.gmail.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Thu, 27 Jun 2024 09:57:13 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wjkn=yL6vy5s7ZFgBfDybD3Gjg9C72zXchy-JF0Tp+a+A@mail.gmail.com>
+Message-ID: <CAHk-=wjkn=yL6vy5s7ZFgBfDybD3Gjg9C72zXchy-JF0Tp+a+A@mail.gmail.com>
 Subject: Re: [linux-next:master] [lockref] d042dae6ad: unixbench.throughput
  -33.7% regression
-To: Linus Torvalds <torvalds@linux-foundation.org>
+To: Mateusz Guzik <mjguzik@gmail.com>
 Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
 	Linux Memory Management List <linux-mm@kvack.org>, Christian Brauner <brauner@kernel.org>, linux-kernel@vger.kernel.org, 
 	ying.huang@intel.com, feng.tang@intel.com, fengwei.yin@intel.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jun 27, 2024 at 6:32=E2=80=AFPM Linus Torvalds
+On Thu, 27 Jun 2024 at 09:32, Linus Torvalds
 <torvalds@linux-foundation.org> wrote:
->
-> On Thu, 27 Jun 2024 at 00:00, Mateusz Guzik <mjguzik@gmail.com> wrote:
-> >
-> > I'm arranging access to a 128-way machine to prod, will report back
-> > after I can profile on it.
->
-> Note that the bigger problem is probably not the 128-way part, but the
-> "two socket" part.
->
-
-I know mate, I'm painfully aware of NUMA realities.
-
-The bigger stuff I have intermittent access to is all multi socket,
-the above is basically "need to use something bigger than my usual
-trusty small core setup".
-
-> From a quick look at the profile data, we have for self-cycles:
->
->   shell1 subtest:
->       +4.2   lockref_get_not_dead
->       +4.5   lockref_put_return
->      +16.8   native_queued_spin_lock_slowpath
 >
 >   getdent subtest:
 >       +4.1   lockref_put_return
 >       +5.7   lockref_get_not_dead
 >      +68.0   native_queued_spin_lock_slowpath
->
-> which means that the spin lock got much more expensive, _despite_ the
-> "fast path" in lockref being more aggressive.
->
-> Which in turn implies that the problem may be at least partly simply
-> due to much more cacheline ping-pong. In particular, the lockref
-> routines may be "fast", but they hit that one cacheline over and over
-> again and have a thundering herd issue, while the queued spinlocks on
-> their own actually try to avoid that for multiple CPU's.
->
-> IOW, the queue in the queued spinlocks isn't primarily about fairness
-> (although that is a thing), it's about not having all CPU cores
-> accessing the same spinlock cacheline.
->
-> Note that a lot of the other numbers seem "incidental". For example,
-> for the getdents subtest we have a lot of the numbers going down by
-> ~55%, but while that looks like a big change, it's actually just a
-> direct result of this:
->
->      -56.5%  stress-ng.getdent.ops
->
-> iow, the benchmark fundamentally did 56% less work.
->
-> IOW, I think this may all be fundamental, and we just can't do the
-> "wait for spinlock" thing, because that whole loop with a cpu_relax()
-> is just deadly.
->
-> And we've seen those kinds of busy-loops be huge problems before. When
-> you have this kind of busy-loop:
->
->     old.lock_count =3D READ_ONCE(lockref->lock_count);
->     do {
->         if (lockref_locked(old)) {
->             cpu_relax();
->             old.lock_count =3D READ_ONCE(lockref->lock_count);
->             continue;
->         }
->
-> the "cpu_relax()" is horrendously expensive, but not having it is not
-> really an option either, since it will just cause a tight core-only
-> loop.
->
-> I suspect removing the cpu_relax() would help performance, but I
-> suspect the main help would come from it effectively cutting down the
-> wait cycles to practically nothing.
->
 
-As far as lockref goes I had 2 ideas to test:
-1. cpu_relax more than once, backoff style. Note the the total spin
-count would still be bound before the routine gives up and locks. this
-should reduce pulling
-2. check how many spins would be needed to wait for before lockref
-decides to fall back to locking
+For this getdents load, the main call chains that terminate in the
+queued spinlock case seem to be
 
-When messing around not automatically taking the lock I measured spin
-counts with an artificially high limit. It was something like < 300 to
-cover the cases I ran into (not this benchmark). For all I know the
-limit can be bumped to -- say 256 -- and numerous acquires will
-disappear at that scale, which should be good enough for
-everybody(tm). All while forward progress is guaranteed.
+.lockref_get_not_dead.__legitimize_path.try_to_unlazy_next.lookup_fast
+.lockref_get_not_dead.__legitimize_path.try_to_unlazy.lookup_fast
+.lockref_get_not_dead.__legitimize_path.try_to_unlazy.link_path_walk
+.dput.terminate_walk.path_openat.do_filp_open
 
-That aside even that getdent thing uses mutexes and there is something
-odd going on there. I verified workers go to sleep when it is
-avoidable, which disfigures the result. I don't know the scale of it,
-it may be it is a tiny fraction of consumers, but I do see them on
-offcpu tracing.
+which is interesting because I would have expected the readdir() code
+itself to show up.
 
-That's that for handwaving. I'm going to get the hw and get hard
-profiling data + results.
+But the proc_pident_readdir profiles have all gone down, presumably
+because there's just much fewer of them. That part shows no spinlock
+in the profile at all.
 
---=20
-Mateusz Guzik <mjguzik gmail.com>
+WTH is that benchmark doing? The only readdir that shows up is for
+what looks like some /proc filesystem thing.
+
+            Linus
