@@ -1,101 +1,115 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D01137406D
-	for <oe-lkp@lists.linux.dev>; Mon,  1 Jul 2024 07:42:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D564B1804A;
+	Mon,  1 Jul 2024 08:22:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.9
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719819762; cv=fail; b=TrEa2VJT6aBV0Vaku6Q0xfR45l10izsv05H/aUj04I9LDe5qba7yQ6JLMSzcig6Hi+0oTVDclzEvPapIDzuniE9AWWJ6Frhwom5m/ebvIv03CJ8CdmdBPPYK3a3oAIsxgsDr1OlQZxHQiGtr4o5K+ZtsahX/4efuW4XPsN/RwGk=
+	t=1719822163; cv=fail; b=EhwfRbWXth2Wrtto5tRdVDH9NY4OvOLAD4570bzFXV78ivTNgTnetWFLwNEthLae4CAx9cai2BYP305z5K7cPk5NGpjO3q0TWDSW4M27JjW3Kj26APmLvW/YnEHWFcnaA7DvkmoKa9bEcB9UNZkGukTHZc/twwKzq7ivvO8zuCM=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719819762; c=relaxed/simple;
-	bh=Fb4Ie0FvZYi5s9LbDhXwqgeKgE3eJ8xGAyIWR1LCcLY=;
+	s=arc-20240116; t=1719822163; c=relaxed/simple;
+	bh=MFcVXUwoUwE+MZo1Atwoe6rRlxKOPawCw+svxWuKTtk=;
 	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=j00FqmSnjNGlsSMdBTokQP7OZGCs7co/8eN0+Xtp3BPSzCetaMywTa3aAzZK14AXJBo1uDY4V732zleuCBTiiMmQ3MWbIoOw0eNgehBux+8P4N1SedrWTKIM4cBxYHTWARoxlQS9OlE6xSNB/btQt/t0WMnS9YKUks7qhGlWJz0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=X6eAfIJv; arc=fail smtp.client-ip=192.198.163.10
+	 Content-Disposition:In-Reply-To:MIME-Version; b=gMURpePAKoqUknACEfqPN9EVOzXmDELBdemJp8VIaTjoOuTciVKAMXQYHsyLCM/gHtTEtJSF2lRG1gv/fyIFHqVokCZxIxccKd9nROYjsFzIZHwBoIsw8vann2o3dyJszT9PhiWY8V6w+QTsB3VEnr02Gjf5gfRoiUzKXse4ONc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XQOrG6Dc; arc=fail smtp.client-ip=198.175.65.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="X6eAfIJv"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XQOrG6Dc"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1719819760; x=1751355760;
+  t=1719822162; x=1751358162;
   h=date:from:to:cc:subject:message-id:references:
-   content-transfer-encoding:in-reply-to:mime-version;
-  bh=Fb4Ie0FvZYi5s9LbDhXwqgeKgE3eJ8xGAyIWR1LCcLY=;
-  b=X6eAfIJvTaHVT9J2RfD9cl5Y+/DP4k+H/O/zu2jtiLWHeLyunDmodIlT
-   lX9xjbsi/CBsTvVZRxHd/II0VqV6PESfoqhgmJSajDND+2KqtxCkrj93G
-   M+TtXYsZ9XbrpOFU8DMMmFXjsjej/zfa5fZJ+3jgtQ34ZradH4gjGiprd
-   7eIQKqdFgciJXVR4Ts1yj1YZi+B7PC6Fx6cg59MQm3VicDc7+xdEySBjj
-   1UQiKSphIYTFJ/auAdbrcHIX3suav3zoFr2XAwRBBTYYxnMb89X+lbyWd
-   QC/kBbXN+GACnSVZfvxQsmr0ORtmTBRqSg5iq9hO6R+ponm08QWxWIC4e
-   w==;
-X-CSE-ConnectionGUID: Z+bNN8NvQ6uJkpQRrkQdmw==
-X-CSE-MsgGUID: 4UhdvUJ8QW643GKJmQuWoQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11119"; a="28325721"
+   in-reply-to:mime-version;
+  bh=MFcVXUwoUwE+MZo1Atwoe6rRlxKOPawCw+svxWuKTtk=;
+  b=XQOrG6DcCpQ/riUvVKggthtRCdy4kQVMqbxjLlF3avVqORM/uzwtuoGS
+   tVILX91Q0sMxKhMkl3VU9Zax9Rl5EMAnI1yjrNZKbBzUaIXMxJ/nskP4G
+   y+u29pt5huoJCCdZwrORUJHZ6D9FrI31WNq2NShLv1Nx5ANB9jorawszE
+   o/OKUVKlFQDFWgE8eT4n8S865eFz0AqYS4Xvg0bvxeyoTpdj+27Luvib1
+   ShGcBWqrcsiLYjFRxpfK5BLxiFgaWB72Ggdh93SGLGjcwYYIp0OT1UOqL
+   P/C9BinXmvh8kYjih2lx7zs7UZA5+WcURcHrFHGESMWZkkY/yoCsFXDGx
+   Q==;
+X-CSE-ConnectionGUID: s1B0fhXvSi21cGeSgwIcQg==
+X-CSE-MsgGUID: IUMmO+BQQ+uHXbTQwBjryg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11119"; a="39439696"
 X-IronPort-AV: E=Sophos;i="6.09,175,1716274800"; 
-   d="scan'208";a="28325721"
+   d="scan'208";a="39439696"
 Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2024 00:42:39 -0700
-X-CSE-ConnectionGUID: EuEQxFedSge/bjrEZavo5Q==
-X-CSE-MsgGUID: ztX8ilaRSxSQ2XRegW+JcA==
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2024 01:22:42 -0700
+X-CSE-ConnectionGUID: 1q7LWps/TdKknyhkLjxNYA==
+X-CSE-MsgGUID: 0/zSkuBlTrqDtIZdaV2zlg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.09,175,1716274800"; 
-   d="scan'208";a="50311922"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orviesa003.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 01 Jul 2024 00:42:38 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+   d="scan'208";a="50321254"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by orviesa003.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 01 Jul 2024 01:22:41 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Mon, 1 Jul 2024 00:42:38 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ 15.1.2507.39; Mon, 1 Jul 2024 01:22:40 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Mon, 1 Jul 2024 00:42:38 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.100)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ 15.1.2507.39; Mon, 1 Jul 2024 01:22:39 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39 via Frontend Transport; Mon, 1 Jul 2024 01:22:39 -0700
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.169)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Mon, 1 Jul 2024 00:42:38 -0700
+ 15.1.2507.39; Mon, 1 Jul 2024 01:22:39 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lJxmzbiQVFmygH2jOrxAWhxzPjSLw6kZ906hGZBZ7sSirbUQTcNFCtYYrosdTcC1pCpdt+bOOWeDLw7RwI5fnRH58GTtJKWr/QtDeBHnZIYuNlFJUrhBEsiwKkjNi0V/VqbicK+1EIDFttQD/GI5eN95Z1wvKZEJLiWEHVDPlxaRSUzMPP2Qx4WhUOpoRWUrppf9QuBqsZq4Zq/+oZZTYeyL7y4CqO/270yszRTSLBlj6BfK0K5AHijrqJO5E4tXGV7tq2HQiw/Ylon+TUtjbfNJ/n78PpLduhP1pM91d4iUJ88IGfebmN7wN+ip+Pqkta74GkRUBPs7nz8ycKAwwg==
+ b=lXin0o5m2b3EmPrOtdqn3BtydlwQJZtcO7HEtW/Wz9tqIUviLn9XO8Sf0W2DTxT4G2YxsNOIJ52ARhofhxFGNsV3mKohFXiC4WOy10E5bi9vKxhxx8zYe+dSbEPYxvbjoTsaL/u4gM5LouF2LxpyXPxdDTxTKcNOcUkXlbt3EnRYr3oFec9ZtOrFXETSfrDlZxjjfBPdRuM7V2Kgl5xuXmqoWMjDrHvjqS7ebDK85gi205XZapOejPrDF9MRZznABvrzzBr2OBqoY5O6coQI5ILxm6rN4PVZRhAKlLp3HOsiPZyQG4TKylXMdB+PrhAF3F62YiEzFtGNCWAgh3vmCA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sw17ThhkJAltBjf6l3GFGlLijBdXEW8CVt11EFIROcs=;
- b=Wtgau1keUmjapILP+5K/wXqkvo3NSACA4una8n6n+fDhtusEKc9PsFetgCi+LTJLAONCoBJdcNeVXuoonI8zi0UM3b5GY4mRGsIzqxlSQkFuFkoEsaTgc3hWGsfzY575Evu8M7Tu3/HhU/L2M5S6qlm1chgOUwYM8fdUTggfgr3yjXDzsFsPHKu8SfMDUKzg8fEFSkOSPDvJFX82b0eqBqvxxcu24HehLm+cFJqAo+6m/lJWj4rWI27fL06GmCvLETOh3MoarP7SdfuTVd953SS82l7LhmwN1xOyvD86J9jD1pWHP34YsUASRmitnEZOmpm3TPA3um142sGsORsSoQ==
+ bh=Bo4XGzN3eeUO9cndA08KgF2hORIOMKadIdOFygq1Lhg=;
+ b=H187AIGhdgC0dLBOgJmfLf0cAPL5e+UIP/grUyvyG50L0wlMxfEb7cg3PztvX4ti6T5TLevO8mCIoDv/Z1n3Wg/8oYfD2GzdFGfutI6mwDucFE/b6BUlk0B2B4NtqQN5DOsKFay0edq4W3azc4Iua6IlzWpebciZCWlJHQZgdvqHveAgSrSs2zD4ld+UgSYaB6Z12hBIsN2yoiYKBGf7JXTjP9qDDairqHg3ItrjafB7Gam4WlWntK9rLTzWK1YrZewavHP5YBvFfTgUulTeognT+HHWws/shea3FXRja+FT0ZqIJejdYjOOERBD2/fBA5HaAEf+vR1u7CeWFbPzoQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by SJ0PR11MB4830.namprd11.prod.outlook.com (2603:10b6:a03:2d7::8) with
+ by BL1PR11MB5301.namprd11.prod.outlook.com (2603:10b6:208:309::9) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7719.29; Mon, 1 Jul
- 2024 07:42:35 +0000
+ 2024 08:22:37 +0000
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c%2]) with mapi id 15.20.7719.029; Mon, 1 Jul 2024
- 07:42:35 +0000
-Date: Mon, 1 Jul 2024 15:42:26 +0800
+ 08:22:35 +0000
+Date: Mon, 1 Jul 2024 16:22:19 +0800
 From: Oliver Sang <oliver.sang@intel.com>
-To: Amir Goldstein <amir73il@gmail.com>
-CC: Jan Kara <jack@suse.cz>, <oe-lkp@lists.linux.dev>, <lkp@intel.com>,
+To: Christoph Hellwig <hch@infradead.org>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Jens Axboe <axboe@kernel.dk>,
+	Ulf Hansson <ulf.hansson@linaro.org>, Damien Le Moal <dlemoal@kernel.org>,
+	Hannes Reinecke <hare@suse.de>, <linux-block@vger.kernel.org>,
+	<linux-um@lists.infradead.org>, <drbd-dev@lists.linbit.com>,
+	<nbd@other.debian.org>, <linuxppc-dev@lists.ozlabs.org>,
+	<virtualization@lists.linux.dev>, <xen-devel@lists.xenproject.org>,
+	<linux-bcache@vger.kernel.org>, <dm-devel@lists.linux.dev>,
+	<linux-raid@vger.kernel.org>, <linux-mmc@vger.kernel.org>,
+	<linux-mtd@lists.infradead.org>, <nvdimm@lists.linux.dev>,
+	<linux-nvme@lists.infradead.org>, <linux-scsi@vger.kernel.org>,
+	<ying.huang@intel.com>, <feng.tang@intel.com>, <fengwei.yin@intel.com>,
 	<oliver.sang@intel.com>
-Subject: Re: [amir73il:sb_write_barrier] [fanotify] 9d1fd61f1d:
- unixbench.throughput -7.9% regression
-Message-ID: <ZoJd4ujlJ/fY137y@xsang-OptiPlex-9020>
-References: <202405291640.2016ebfe-oliver.sang@intel.com>
- <CAOQ4uxiu_1QQMEH5OJ+vjA0K-y9TycYb8W=+nFQMTKJz6ZONhg@mail.gmail.com>
- <ZllA260+kaBSKrPD@xsang-OptiPlex-9020>
- <CAOQ4uxjtM0ptu5SLA0c9VpRqvSLX8_Z+QAxa_ztrgy=aiV2DXQ@mail.gmail.com>
- <Zl17GT2kWZw1EZTA@xsang-OptiPlex-9020>
- <CAOQ4uxhCfAvn0L-Ej5bSZXgFBYA3fbpBxRhURqv3bYu9=kw_Aw@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+Subject: Re: [axboe-block:for-next] [block]  1122c0c1cc:  aim7.jobs-per-min
+ 22.6% improvement
+Message-ID: <ZoJnO09LBj6kApY7@xsang-OptiPlex-9020>
+References: <202406250948.e0044f1d-oliver.sang@intel.com>
+ <ZnqGf49cvy6W-xWf@infradead.org>
+ <Znt4qTr/NdeIPyNp@xsang-OptiPlex-9020>
+ <ZnuNhkH26nZi8fz6@infradead.org>
+ <ZnzP+nUrk8+9bANK@xsang-OptiPlex-9020>
+ <ZnzwbYSaIlT0SIEy@infradead.org>
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAOQ4uxhCfAvn0L-Ej5bSZXgFBYA3fbpBxRhURqv3bYu9=kw_Aw@mail.gmail.com>
-X-ClientProxiedBy: SG2P153CA0023.APCP153.PROD.OUTLOOK.COM (2603:1096:4:c7::10)
- To LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+In-Reply-To: <ZnzwbYSaIlT0SIEy@infradead.org>
+X-ClientProxiedBy: SG2PR01CA0196.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:189::23) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -103,290 +117,168 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|SJ0PR11MB4830:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5f691d40-cc1f-47bd-012f-08dc99a15fb2
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|BL1PR11MB5301:EE_
+X-MS-Office365-Filtering-Correlation-Id: f8750f7a-deaa-4246-f7e0-08dc99a6f60f
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
-X-Microsoft-Antispam-Message-Info: =?utf-8?B?M0FIOUJUY1M2SkxXZldkUk5SdnlYYk1vR25SK1dvRjVaWlFqVTJKOVQxNnFs?=
- =?utf-8?B?SUF5aUUwdy9naGcxaHRXcFhLTTdZK0FGMmlmNklYWnF3ekJBQ0xwRVYycVd5?=
- =?utf-8?B?U3dDUDNBcU1WYnVkQTFQcEhUMlVJMlhneXFiN2ladytzUVRWUkRsdXQyODBG?=
- =?utf-8?B?eXU1VU9TVzkrUnJ5SWkvK1h1cmFpQUhtWXVLbllXQUpaRi9wbVYxRGMxVkpz?=
- =?utf-8?B?eVVXZ0pNL253ZFpQZWpYbE9KWXNEa2Z2SW1BcVZ2RXAyemtPMXk0NFh2YU9P?=
- =?utf-8?B?WnM4dkpnaU5VbFljcnBtbk54aHJvQzMvVS9SQmxmZ1JGWjdGdUJUdy9IZjZu?=
- =?utf-8?B?Rk5paUd5cEFtcjlFaklDZS8wcFM0UkJKYWJrNXR2bU9Ia3NaR1ZyMVp1c0hB?=
- =?utf-8?B?eEFzaWdHUUQva0ZDUHMvYmtBNDA5N2hPYWZJTzRkU3FSeEV5amlrdGhVYlVJ?=
- =?utf-8?B?K0FjNXZUV1hLc1dBN0Z4VVhQdXNScWVvdFNibjg5QVMrNG1odUsxb0gvanBC?=
- =?utf-8?B?RUs0WnRRWTZSQW4vTEJDVC8yUWxEbUE0VWl1Yy9LYTZoMmYxV0NaYXF1dXN0?=
- =?utf-8?B?NDAvUzcvb0JmMVp6MmRnSWMwb0NQNEN6cldsNjZuSXMrVmIwdm9XRzdNT25S?=
- =?utf-8?B?QTVETUFNYnZvNVA0VDJpdHBKZTIrVWd1Tm14TW45bWh0bkZCZXg1ZDFWQWtF?=
- =?utf-8?B?NUxGd3NxUFdKVzJtN0VJaXVjU2hyV1l4RDhNblZIZWVSWEVPU2JGSnpwUDJL?=
- =?utf-8?B?dDFoNHNLN0lCNVhDa2huR1dIblE5b1hKcmQzcmVpbldGYlR2enZFWnFxMnlS?=
- =?utf-8?B?LzJJcllNenBPWGphVWdTOXVBN21MTXhvNnhGU3NWb1RmVGQrZkdPaDZ1L3hx?=
- =?utf-8?B?WGVyeG1qNTdmQmVLbWtFa0dWUmFpVWRZcXdja1RIK0JGRFNySDNnVS9Kbkdp?=
- =?utf-8?B?dnU1c1cxeHVZTjNTeHVWWitiTjlPVnl2TGUrRERFbFplVUtDa1lCR0c4Y2w0?=
- =?utf-8?B?RGxoNDhFay9Kd0ZPaW9rTWZ3OGZtZHRKOE1QQjErSFZDS3FoclNpQys0WEM5?=
- =?utf-8?B?VkxlZENhdGIwYTJ3VTNCYW9SUzM4YlFmRWlhSVk1OTZPVTA3bDVyWWUyaSth?=
- =?utf-8?B?cjFBT2xBMy9oS1dSL0Q3WTlJaHRkbVJoM1g0Z0ZpcFJFRU5MaWdyWTJtQ2lq?=
- =?utf-8?B?aWxWTnQ4bW5CU2tlUUdtSWhJZmZkbWRpc1hIb3lVUFhvcjJjUlg0eG4rdUh0?=
- =?utf-8?B?bndFOE13S0lIZ0RTODhMaFVQcEJuZzZUelgzZHVDV0FMcHZVOU1oMHNFMUU4?=
- =?utf-8?B?VHdwSldvb2hYR3hjRTRHQnd1c20xcEtGMzNYWjF3KzVseW5RbytvVENvWWZl?=
- =?utf-8?B?OXNYcE9kS2loUk9IanRDRGZWckRSRXpjdXN1dVJjdW1NUFJJbkduQzhOZGwv?=
- =?utf-8?B?SGx6SUJuYUovdlQ5YkxkQjV3VG15cE9ZMkpUY3doeGFtSXlKZGxTc0F6SDZW?=
- =?utf-8?B?OFVrRGlzRVlqa0FPY0pqNzF0MjZpenJvY05aWk9tMkFuZXhEcjVXYmtybm5Z?=
- =?utf-8?B?K2VTemMvRWw0dlZXUjN0NDZTUFhwWXN0ZmpLT3NIY0tKcnJUNzhJVUl3Yk85?=
- =?utf-8?B?VkhpRmdZR1R2RGYwdWZLaGlJQkNhcnF1T0s4UE1xVFFCR1Z1V1kxeFNjeTR1?=
- =?utf-8?B?dmFwaDRaVjU3RVg4TWhNNFcxMmpORzdJa2xpb3pKUjNhYXJNRmRGeWlDV3p4?=
- =?utf-8?Q?mk130H6qUjP2hFywbkF8fwMWYShrPbYhN/xKi3+?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|376014|366016|1800799024;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?lAbrgDi/pIjh+6U0H0ujoJ9UWRpXetFUz8NjAWECuvih3NlawwHt5+kWIuLL?=
+ =?us-ascii?Q?XAn5GTLeOmqnwDwCLMQeA1ZcS73SQorY6WteoB3CaEhJPqDB80FqP/yLjRAA?=
+ =?us-ascii?Q?mXCiN1gRcNre58Z9Bq6EadccYUC7yV2qqbFd2v5e1dt9YcrUdEugVm2kZifb?=
+ =?us-ascii?Q?u99Fu6SvFGdg3XPd2JUDNQVpyZi7R44skrlOYEbuEVjwauVqkLaixKpZ5qTY?=
+ =?us-ascii?Q?pIsEKuzQvSMToijPpZ3JRZoBwAnAnjFzz/m2FsartjUvleDTIDDnft7gDSt2?=
+ =?us-ascii?Q?n8I83IphqNcsxK5k5c8/l5sMm2r4Pqhv/a3Kfd6FWYfYWzGUV/yxCRI4gD+l?=
+ =?us-ascii?Q?9ojyf5FarqIlRvL+N9P59MR6Pw7zqpta2XNz2usQLT5sqdFc+BfuVymmlpFQ?=
+ =?us-ascii?Q?A3O9KpplVKh+0YJFOSLnJXgq9Kk4SVeGFkOp/Zt6spQGKSA7cLfZgflWyhDZ?=
+ =?us-ascii?Q?0mYsv82HPe43ExpLg5/hxSksez64RtXvYr/g/+yTYn4UZJDR9/6Q3S5+D+Y3?=
+ =?us-ascii?Q?jC/icAUn93mlWIMqtHGZtNwaeHwWuWYz6RePXoQqKVwfTIPIZM4epbtX7fkG?=
+ =?us-ascii?Q?qAzfP7aRyzglOKvpp9K1NTWoMhcJ5VUVtivxxZbQoeYyUKDbMJgiqU97il+z?=
+ =?us-ascii?Q?vEx0b8/P3cRroEWloqTaXcPZEGMPGXrHz1FZXc8RiJcjk2rPlpYx7Rz1HDoh?=
+ =?us-ascii?Q?8K3ehq/dvz9L1x07ILHlktkpC6Z8+5sV4BoJeIdrDOlV7Omq9VKkoDoAH2Um?=
+ =?us-ascii?Q?1YTE/VY6+7L2bmCUlvH7MPBUFYibw9k5KNV1FxKZG8eAEMhAJGe5ynpcNAbI?=
+ =?us-ascii?Q?9Jm12D/Xsh98FO/xvT4FXcG3wFvZfxp0nZBIsJDTR2KzYXxbbWrSizA95bQ1?=
+ =?us-ascii?Q?RnJ99+O6y9cglp9ZNZqHtZASoDsvUk/ct0hSgk8RlPnHsqDCJsLDQLBhfMqN?=
+ =?us-ascii?Q?zzQJE3oKLgF4nnJn/mV+1ViLGMykVdGckkgkMUdwzVrZ2en33wVBYA5XZo0u?=
+ =?us-ascii?Q?Qof6QSzZlHjV2dxu2VsUFN+sxb6vJrOrg7AFcsjZnqE0+vcLFpGWUTbE8eyC?=
+ =?us-ascii?Q?DV1nyYT4oIjn1/3n+MVCIE6YHGbHr7d8ix2p01tGznvZQV1d3smR6Q0CO32I?=
+ =?us-ascii?Q?iUwZ1jehJ/WP4uRIze+1rzzCV0yTMLQPPhCiJXD1sUeiZkvYJnLw5tNMPaiS?=
+ =?us-ascii?Q?aV6y6T/tQ9aOjSQwfTydyQUVsEjriyDN1SPqAx2Y449KKThc5RdRO0DKAYAn?=
+ =?us-ascii?Q?ppE1voNOEN9fBJ9+VvbCqCFNL//7T/E35AQ2JWdREwMw6nEwOmAljHDIo/zh?=
+ =?us-ascii?Q?bys=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SENOQ0xHdk5nR29VU25NVy9WajEzN1d5cUd6M2tXSU82VUNkVUlPcmNrWHJB?=
- =?utf-8?B?VTlLM2pRRy9Jakc2NTBhSkZpSmNVelF1dFZJY2xkTGdLT3EzMlJjckJwR1hU?=
- =?utf-8?B?UjFyR1hhbzkxdVhrMjhhTUZLSU9WVGNzRzk3WVJ3OGUxbnFQQmhFOHdKcWZE?=
- =?utf-8?B?d20vQStJRzBpeWJEUlU1b1BRQUU2UEE4OEVsR0pUTEl0dmU1Rm04ZWw0MjFx?=
- =?utf-8?B?T09vK1JLK3JsSW1pRmZ4L0hpOStiMDNmWWRhbmNSRVhFeVRRdmVGVlJ5Q281?=
- =?utf-8?B?Q2hQajBZVi9JcmtVVnJ3YzBqZ3pvYVg1OU5FakxGd2ZUSzBVd0VORk1Tc1Vu?=
- =?utf-8?B?M2xyMWdTK3pLUkRGc1BLa2R5R0pxbzRMZTM3dU9aVExSYzJsZ2ZpUDg0N2ZW?=
- =?utf-8?B?ZVplM0RBVUhoQWI1OWpJRS9jVkxPMjRBeEt6T2JiSUxvWkFRL0plOG52UG1Z?=
- =?utf-8?B?bHVOUG5NZlNBUG9GTTFyS25sK0RNV09tWEErbWhnT3BxMER4Z2hTSE9PQ09i?=
- =?utf-8?B?Y09UUFhZZmhhSHkwOFkvRHR4N2VydENwK0pBS3R2NUdvc21MbFZsQ29hb0hi?=
- =?utf-8?B?eFo3dnE0MDhKVndUVVZhMGhDVWlBVTYwSk9kc3B3cm56cUx5SUJFNDBPNlpF?=
- =?utf-8?B?cTRGRnNxby8vK2hrSUNnWlYrblR5TVB2L1pXWXQ2MlFrNWVoeDNLTEcxUlZl?=
- =?utf-8?B?d3crckNZbzlPMXFsdXprbTE1TWJpTC9jWndRaTkwWTlwK2Q0SElReENTbU94?=
- =?utf-8?B?blRvbUh5MW9pZWJ4REx4cEtmdEE5cHk0emNKdk96ZkJJVU5lNVZlQzVnRDJM?=
- =?utf-8?B?L3NVdDNwQWJDZmx0VHM4QTk2cWtvSE9jb0pLKzNrOXpvUFVZdlREZFV5cHZl?=
- =?utf-8?B?S0JzSTAvdWRaemJUeEZWeDJXdkRDOWNkc3d3bEFkeVZSN3dtTlQ2VGJRR2kx?=
- =?utf-8?B?aTZyN2ZuOTRpYW1SNkIzbVBsc3lCVzFPSzhSWXQ3blJVb2VFZXFhWFh1R29r?=
- =?utf-8?B?MzZlZTR6UEV2NHBaU3NTQmVuc3hHdjBUN1ZqL3RCKzNjQVZqb21Ca2ZOd0dp?=
- =?utf-8?B?d3dXK3NpcEJWVkQrN1E1bVpPblZYRnBBSyt0cEpreFZrYndGVktnQ2FUOUVK?=
- =?utf-8?B?d2FQczhzT0RVZFJIRDJ0SnFITnVFWHdDZXRVK0Z1NVVFZXZKaC9lTzZqWlRv?=
- =?utf-8?B?QXpCMUJIemg1OEpvZnNpYjMvVUJBRUhZZXA1dm10MStoUkh1aVpWU3VRUjFR?=
- =?utf-8?B?QnZMczdsei9mMExKMGlUYmNFbG1mMERwVGlzTTJBaVR5Sld1emM4aDlqVllN?=
- =?utf-8?B?b2NJVnptclQxZW5UMWl2enFJc2FXUlMrYXZXRGU5Qjh3alJvNGlNekZEbTQv?=
- =?utf-8?B?dUpTNHJWOCtBcTdteFF4YktzbFpnSkliaElFR0VTSUZWZnAzcS9GZmM5Zmxu?=
- =?utf-8?B?T0RSbWF3Zkhkd0dOUElOSzRRU3RGY1VyQ2hqTzBVeCs2S3A3WUxTQTlQbCt5?=
- =?utf-8?B?QVdHYXN0VnBucjJyRit3TFhYYTZSZm14ckdSNEpxUWc5dlJXbnRLMmxGMVBW?=
- =?utf-8?B?ZFdmQ1lpMWJvRDVyZ3BVZURtTVJyNjNOaU1UK1dDZ0YrbVlmNlROWVd2QzNN?=
- =?utf-8?B?T0EvNkIwZ0pZVE9PRjB3K2ZQc0RNdVMxT3N6dVlTekc5NzlYWHlNdEZoY2Zt?=
- =?utf-8?B?cTBiS3QxSU1nZmhhQURqb1JNSXROUVdhWkpNZ1pKemh5TG9Ua1phajZmUloy?=
- =?utf-8?B?YkFUSEtpL25HcXFqNlNXZUVmRi9wN2laTjZMQmlrVnk0a3lIdStqYWVNc0I0?=
- =?utf-8?B?aVVERzVZSzlMcVF1enJYRWlMcFVtY3FYZlppRmFVQVI1bXdtS1BOcEFMZlNF?=
- =?utf-8?B?LzRHOTh0YlUvM2paTFg4WUp6QzVtM29PU0gzS081WHpxRm13aFovVUFUN3Y1?=
- =?utf-8?B?ZURuVVVBWDlRa2tIb09jaG5XcGZzV1dOYXErQlJvYUxDVXNTTHJHT2llcDRj?=
- =?utf-8?B?bGFaci9BNVBwRkJKd1hYZko1bVh5RW1xSUFZaGNxZVg1L0tvQWpPbjBKOFBZ?=
- =?utf-8?B?cTREYms0VW13K1R2ZmVHMy9LTnUwWWF1dUlSb0xnZlhyRTlYSytmMFhkZCtR?=
- =?utf-8?B?UE5KK1VyTW11ZWs3T3lkamw2M1ZCQkIxa3YyM2tMWVdGdXZqMERUVWRjQnpR?=
- =?utf-8?B?c0E9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5f691d40-cc1f-47bd-012f-08dc99a15fb2
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?BHXQ0tud/VLmoZu5Vh1R4afLEky2csE+fU7LE6wcyUHCFuk7QS4lCXVCIJbW?=
+ =?us-ascii?Q?cJUL3/2rT98nOQxKO0TLPdriSuEcvRENm5+yDBA3/TP8MCRKkYsXBwnsxOpe?=
+ =?us-ascii?Q?9IvZUITlj9PRis6MEutJcF0tSzVKNS+2MqdQxpAnt+ELytYcSszyaTTd2UTP?=
+ =?us-ascii?Q?G1IWtmLt1vZ71kpdi5qFrPNc/lOYJLZcP/KrHOucvR8hse2Go4+fm+gKEkVS?=
+ =?us-ascii?Q?DgQwWYwft33PVnUy7faLgNQ4vS4SFptp1fHD1gjNeCZnSX75ilawGPQ4jUsd?=
+ =?us-ascii?Q?Mk97MoJt+/HVCnVDbQW3WT9NdaM0R6xLgj6spfWcIPnC1RHGT1172GiLph1T?=
+ =?us-ascii?Q?SH1vM/3ZQPW3/NpiBBDuBijofnVqzeetITH+Nd2vywzHqtnZ4nC+MR9S/r+x?=
+ =?us-ascii?Q?EG16H5E0s8sDnxhbYvUl+DNvIqyXFtT3TMi8sYJkOKC1rnsSDyNpUpcCcmfc?=
+ =?us-ascii?Q?VO8UYhi4GrdKykGKJ4rsT3IJIj6Xgu5/xo34KQPLC3UuUbbl0CxPnilDJMrA?=
+ =?us-ascii?Q?mPEgPz1xZGYLwSj8cyPItS+NGuXkY5UrSu/ON3sh8JqqOix8o3nPLcwcm3L/?=
+ =?us-ascii?Q?kzewfuuNag+8Q6jFKtBVdii3s2yXEM+jExUJhdEEL0EZASc2cDVFK2uyIfrw?=
+ =?us-ascii?Q?Ge36ZvJJpK7QgrScAlElGtK72KcNlI3sc5jDz336d92xyY/hpHpAn7yENtqe?=
+ =?us-ascii?Q?z5NTJITAr4c2ptB36ggWqfQBDoN9J6ou+Te9ImeqAV6iWV6mUMAcXOKOpb8l?=
+ =?us-ascii?Q?1FTGHroZJttb/we3E75WdTpG+PYB7fa8woiCRqN4RF42eXlvsniH7lKI/77z?=
+ =?us-ascii?Q?fs5DAv6pR+pExPY8MdAZpNb0StQmxhHL/nAV24qbIbL6CUsujrxe4bocKMRl?=
+ =?us-ascii?Q?8EDcpwFuZMYJUIvbwQ9rSvPGS4x5VN1y+bjFZeHIZJBAwbNRgtRwFFDMU5wR?=
+ =?us-ascii?Q?90fAuhomphD2qE61jEA0adJR1VBuOzvbRsbQHOyZ037sVtjF7VMYfgr25SMm?=
+ =?us-ascii?Q?r+xyCqmC8I56cFe0uQTpPjZBfUUNjGubzshElE7He+9kxiLV65azqnFvoa1M?=
+ =?us-ascii?Q?tFIT3ZMvH5mPDU1wR1C4/fH/8nX7UF4LA0yz3QBsOIS7QZfPQ+YC+TXulUND?=
+ =?us-ascii?Q?ID2rZ26eG+cOi/T31m9+PN+BTdK1w1xrwAy9sDMF2D/UHTxoIFG2OaJBPNJD?=
+ =?us-ascii?Q?jycK5CWedEGQ4WSCuPzA1q+xg3R09glCVGdftvhGDT2kAbbcrmFsV5NMi9MC?=
+ =?us-ascii?Q?hRchM4pmUWLVstTOFGO2q6NKzANuabta2qKcaeQUxwOnjU7WqgfmzBI0ug0X?=
+ =?us-ascii?Q?LLr1yHB3+XN4DdHhFTe8hKZznmU76zyn6NUm2vK2mVkWg4p0nVGvBAUzsVcQ?=
+ =?us-ascii?Q?1FlQgfNcfiDs1FQ2Bz73vKvm1C4ZyKM+IE9hjvwmD+/D19q6GdambGd2Ov7y?=
+ =?us-ascii?Q?MNyn5VVgwKS7jnGiBAWnKtETxKNLRLywot3xIjjs3kbFVOWiYO8TOUKeJgs2?=
+ =?us-ascii?Q?zyG7CLeRoXeUexNriW3BgXJ8oW5GQD+/lxNDCuXvAr/n4YdTVOFiHKXX4jFZ?=
+ =?us-ascii?Q?72W47yPvvx7fBOKnpIEPPg1OjHEeYenNd0gALkkHw5cD06pOl/V6eDt+B9sr?=
+ =?us-ascii?Q?Pw=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: f8750f7a-deaa-4246-f7e0-08dc99a6f60f
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jul 2024 07:42:35.7030
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jul 2024 08:22:35.6234
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: y3AXopqeBdGnPCh8zRlHTGBdL9wzzpOdnQ0QI6odjxBbCHGW+1fv1GUmS+75Tq8pfAspUdqtyUWWy2TIOn5N0w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB4830
+X-MS-Exchange-CrossTenant-UserPrincipalName: hoAUe/v3DmtzV8cKInT0I62Jy+Kv79UMUXBa+5EQZ/S/Plwbvm1L4f9nXoa5Aa4Vfqw0JjFtv85N3J3C3ZYjwQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR11MB5301
 X-OriginatorOrg: intel.com
 
-hi, Amir,
+hi, Christoph Hellwig,
 
-sorry for quite late.
-
-On Tue, Jun 04, 2024 at 03:33:39PM +0300, Amir Goldstein wrote:
-> On Mon, Jun 3, 2024 at 11:13 AM Oliver Sang <oliver.sang@intel.com> wrote:
-> >
-> > hi, Amir,
-> >
-> > On Fri, May 31, 2024 at 08:18:09AM +0300, Amir Goldstein wrote:
-> > > On Fri, May 31, 2024 at 6:15 AM Oliver Sang <oliver.sang@intel.com> wrote:
-> > > >
-> > > > hi, Amir,
-> > > >
-> > > > On Wed, May 29, 2024 at 02:17:55PM +0300, Amir Goldstein wrote:
-> > > > > On Wed, May 29, 2024 at 11:26 AM kernel test robot
-> > > > > <oliver.sang@intel.com> wrote:
-> > > > > >
-> > > > > >
-> > > > > >
-> > > > > > Hello,
-> > > > > >
-> > > > > > kernel test robot noticed a -7.9% regression of unixbench.throughput on:
-> > > > > >
-> > > > > >
-> > > > > > commit: 9d1fd61f1d9bb74e44bdcc8767ba7008a08c6075 ("fanotify: pass optional file access range in pre-content event")
-> > > > > > https://github.com/amir73il/linux sb_write_barrier
-> > > > > >
-> > > > >
-> > > > > Jan,
-> > > > >
-> > > > > I speculate that the regression is due to the fact that we store and pass the
-> > > > > path information on struct file_range on the stack before the optimizations
-> > > > > in fsnotify_parent(), so rw_verify_area() pays some price for the stores
-> > > > > and __fsnotify_parent() pays a bigger price for fetches?
-> > > > >
-> > > > > Luckily, we already have the way to check
-> > > > > fsnotify_sb_has_priority_watchers(inode->i_sb,
-> > > > >                                                FSNOTIFY_PRIO_PRE_CONTENT))
-> > > > > so now I used it to optimize out the fsnotify_file_range() inline
-> > > > > code entirely.
-> > > > >
-> > > > > Oliver,
-> > > > >
-> > > > > Can you please re-test with fixed branch (also rebased on v6.10-rc1):
-> > > > >
-> > > > > * a82fd282befc - (fan_pre_content) fanotify: report file range info
-> > > > > with pre-content events
-> > > > > * f301cd18006c - fanotify: rename a misnamed constant
-> > > > > * 64108c0b47db - fanotify: pass optional file access range in pre-content event
-> > > > > * 94167e071109 - fanotify: introduce FAN_PRE_MODIFY permission event
-> > > > > * 68e04c2451ba - fanotify: introduce FAN_PRE_ACCESS permission event
-> > > > > * 83af0c89527a - fsnotify: generate pre-content permission event on exec
-> > > > > * aca408421327 - fsnotify: generate pre-content permission event on open
-> > > > > * 93656e196b00 - fsnotify: introduce pre-content permission event
-> > > > >
-> > > > > The optimization was done in the first commit (fsnotify: introduce
-> > > > > pre-content permission event),
-> > > > > but impacts the regressing commit (fanotify: pass optional file access
-> > > > > range in pre-content event).
-> > > > > no need to test all middle commits.
-> > > >
-> > > > I directly compare the tip with v6.10-rc1, still a regression but better now
-> > > >
-> > > > =========================================================================================
-> > > > compiler/cpufreq_governor/kconfig/nr_task/rootfs/runtime/tbox_group/test/testcase:
-> > > >   gcc-13/performance/x86_64-rhel-8.3/100%/debian-12-x86_64-20240206.cgz/300s/lkp-spr-r02/fsbuffer-w/unixbench
-> > > >
-> > > > commit:
-> > > >   v6.10-rc1
-> > > >   a82fd282befc7 ("fanotify: report file range info with pre-content events")
-> > > >
-> > > >        v6.10-rc1 a82fd282befc71d99106bf31066
-> > > > ---------------- ---------------------------
-> > > >          %stddev     %change         %stddev
-> > > >              \          |                \
-> > > >  1.216e+08            -3.9%  1.168e+08        unixbench.throughput
-> > > >
-> > > > full data is as below [1]
-> > > >
-> > > >
-> > > > then I checked new "64108c0b47db - fanotify: pass optional file access range in pre-content event"
-> > > >
-> > > > it also has a small regression comparing to its parent, but better also.
-> > > >
-> > > > =========================================================================================
-> > > > compiler/cpufreq_governor/kconfig/nr_task/rootfs/runtime/tbox_group/test/testcase:
-> > > >   gcc-13/performance/x86_64-rhel-8.3/100%/debian-12-x86_64-20240206.cgz/300s/lkp-spr-r02/fsbuffer-w/unixbench
-> > > >
-> > > > commit:
-> > > >   94167e071109d ("fanotify: introduce FAN_PRE_MODIFY permission event")
-> > > >   64108c0b47db9 ("fanotify: pass optional file access range in pre-content event")
-> > > >
-> > > > 94167e071109d573 64108c0b47db91b20d658a89969
-> > > > ---------------- ---------------------------
-> > > >          %stddev     %change         %stddev
-> > > >              \          |                \
-> > > >  1.163e+08            -2.4%  1.135e+08        unixbench.throughput
-> > > >
-> > > > full data is as below [2]
-> > > >
-> > >
-> > > Ok, this looks sane, the small overhead in the write path makes sense.
+On Wed, Jun 26, 2024 at 09:54:05PM -0700, Christoph Hellwig wrote:
+> On Thu, Jun 27, 2024 at 10:35:38AM +0800, Oliver Sang wrote:
+> > 
+> > I failed to apply patch in your previous reply to 1122c0c1cc or current tip
+> > of axboe-block/for-next:
+> > c1440ed442a58 (axboe-block/for-next) Merge branch 'for-6.11/block' into for-next
 > 
-> On second look, while a small regression from 64108c0b47db9 could make
-> sense, because it changes the inline fsnotify hooks, the extra regression from
-> the tip of the branch a82fd282befc7 makes no sense at all, as it does not
-> touch any code that affects the executed functions, so I have to wonder how
-> reliable are those results.
-> 
-> Could you re-test the commits 94167e071109d..a82fd282befc7?
+> That already includes it.
 
-since the branch is:
+for the patch in your previous reply [1]
+the bot applied it automatically as:
+* 5c683739f6c2f patch in [1]
+* 0fc4bfab2cd45 (tag: next-20240625) Add linux-next specific files for 20240625
 
-* a82fd282befc7 (amir73il/fan_pre_content) fanotify: report file range info with pre-content events  <---
-* f301cd18006c3 fanotify: rename a misnamed constant
-* 64108c0b47db9 fanotify: pass optional file access range in pre-content event
-* 94167e071109d fanotify: introduce FAN_PRE_MODIFY permission event           <---
-* 68e04c2451ba0 fanotify: introduce FAN_PRE_ACCESS permission event           <--- parent of 94167e071109d
-* 83af0c89527ab fsnotify: generate pre-content permission event on exec
-* aca4084213276 fsnotify: generate pre-content permission event on open
-* 93656e196b006 fsnotify: introduce pre-content permission event
-* 1613e604df0cd (tag: v6.10-rc1,
+for patch set [2], the bot applied it as:
+* 6490f979767736 block: move dma_pad_mask into queue_limits
+* 278817f42e219b block: remove the fallback case in queue_dma_alignment
+* 81afb19d619a04 block: remove disk_update_readahead
+* 037d85402b8b83 block: conding style fixup for blk_queue_max_guaranteed_bio
+* 4fe67425ae31a8 block: convert features and flags to __bitwise types
+* e3c2d2ad4136f2 block: rename BLK_FLAG_MISALIGNED
+* 33ead159243d1c block: correctly report cache type
+* 6725109120e0ba md: set md-specific flags for all queue limits
+*   e6d130064a02f5 Merge branch 'for-6.11/block' into for-next
 
 
-I made below comparison, which shows little difference among 3 commits:
+but both build failed with the error:
+  - "ERROR: modpost: \"md_init_stacking_limits\" [drivers/md/raid456.ko] undefined!"
+  - "ERROR: modpost: \"md_init_stacking_limits\" [drivers/md/raid1.ko] undefined!"
+  - "ERROR: modpost: \"md_init_stacking_limits\" [drivers/md/raid0.ko] undefined!"
+  - "ERROR: modpost: \"md_init_stacking_limits\" [drivers/md/raid10.ko] undefined!"
+
+
+since you mentioned the axboe-block/for-next branch has already includes the
+patch-set, I got a snapshot of the branch as below several days ago:
+
+*   bc512ae8cb934 (axboe-block/for-next) Merge branch 'for-6.11/block' into for-next   <-----------
+|\
+| * 18048c1af7836 (axboe-block/for-6.11/block) loop: Fix a race between loop detach and loop open
+| * 63db4a1f795a1 block: Delete blk_queue_flag_test_and_set()
+* | e21d05740862c Merge branch 'for-6.11/block' into for-next
+|\|
+| * e269537e491da block: clean up the check in blkdev_iomap_begin()
+* | 9c6e1f8702d51 Merge branch 'for-6.11/block' into for-next
+|\|
+| * 69b6517687a4b block: use the right type for stub rq_integrity_vec()
+* | c1440ed442a58 Merge branch 'for-6.11/block' into for-next
+|\|
+| * e94b45d08b5d1 block: move dma_pad_mask into queue_limits          <----------------
+| * abfc9d810926d block: remove the fallback case in queue_dma_alignment
+| * 73781b3b81e76 block: remove disk_update_readahead
+| * 3302f6f090522 block: conding style fixup for blk_queue_max_guaranteed_bio
+| * fcf865e357f80 block: convert features and flags to __bitwise types
+| * ec9b1cf0b0ebf block: rename BLK_FEAT_MISALIGNED
+| * 78887d004fb2b block: correctly report cache type
+| * 573d5abf3df00 md: set md-specific flags for all queue limits       <----------------
+* | 72e9cd924fccc Merge branch 'for-6.11/block' into for-next
+|\|
+| * cf546dd289e0f block: change rq_integrity_vec to respect the iterator  <-------------
+
+from below, it seems the patchset doesn't introduce any performance improvement
+but a regression now. is this expected?
 
 =========================================================================================
-compiler/cpufreq_governor/kconfig/nr_task/rootfs/runtime/tbox_group/test/testcase:
-  gcc-13/performance/x86_64-rhel-8.3/100%/debian-12-x86_64-20240206.cgz/300s/lkp-spr-r02/fsbuffer-w/unixbench
+compiler/cpufreq_governor/disk/fs/kconfig/load/md/rootfs/tbox_group/test/testcase:
+  gcc-13/performance/4BRD_12G/xfs/x86_64-rhel-8.3/300/RAID0/debian-12-x86_64-20240206.cgz/lkp-csl-2sp3/sync_disk_rw/aim7
 
-commit:
-  68e04c2451ba0 fanotify: introduce FAN_PRE_ACCESS permission event
-  94167e071109d fanotify: introduce FAN_PRE_MODIFY permission event
-  a82fd282befc7 fanotify: report file range info with pre-content events
-
-68e04c2451ba03a1 94167e071109d573a5fc1ff3061 a82fd282befc71d99106bf31066
----------------- --------------------------- ---------------------------
-         %stddev     %change         %stddev     %change         %stddev
-             \          |                \          |                \
- 1.174e+08            -0.9%  1.163e+08            -0.5%  1.168e+08        unixbench.throughput
-
-
-> 
-> > > It may have been a "tactic mistake" merging this optimization to v6.10-rc1
-> > > a5e57b4d370c ("fsnotify: optimize the case of no permission event watchers")
-> > > before the rest of the pre-content infrastructure, because together they
-> > > would still be a performance win.
-> > >
-> > > Can you please compare this branch to v6.9?
-> >
-> > there is no obvious diff between v6.9 and v6.10-rc1 for this test in our tests.
-> >
-> 
-> This is a bit surprising to me, because a5e57b4d370c should have been a pretty
-> big performance win for the common case.
-
-in our this unixbench tests, a5e57b4d370c introduce a small regression comparing
-to its parent (477cf917dd028).
-
-=========================================================================================
-compiler/cpufreq_governor/kconfig/nr_task/rootfs/runtime/tbox_group/test/testcase:
-  gcc-13/performance/x86_64-rhel-8.3/100%/debian-12-x86_64-20240206.cgz/300s/lkp-spr-r02/fsbuffer-w/unixbench
-
-commit:
-  v6.9
-  477cf917dd028 fsnotify: use an enum for group priority constants
-  a5e57b4d370c6 fsnotify: optimize the case of no permission event watchers
-  v6.10-rc1
-
-            v6.9 477cf917dd02853ba78a73cdeb6 a5e57b4d370c6d320e5bfb0c919                   v6.10-rc1
+cf546dd289e0f6d2 573d5abf3df00c879fbd25774e4 e94b45d08b5d1c230c0f59c3eed bc512ae8cb934ac31470bc825fa
 ---------------- --------------------------- --------------------------- ---------------------------
          %stddev     %change         %stddev     %change         %stddev     %change         %stddev
              \          |                \          |                \          |                \
- 1.219e+08            +2.8%  1.253e+08            +0.4%  1.224e+08            -0.2%  1.216e+08        unixbench.throughput
+     21493           -19.6%      17278           -19.2%      17371           -19.7%      17264        aim7.jobs-per-min
 
 
-BTW, for a5e57b4d370c, there is another regression report in
-https://lore.kernel.org/all/202404101624.85684be8-oliver.sang@intel.com/
-which also includes some unixbench improvement results, but different sub-tests
-on different platform.
 
+[1] https://lore.kernel.org/all/ZnqGf49cvy6W-xWf@infradead.org/
+[2] https://lore.kernel.org/all/20240625145955.115252-2-hch@lst.de/
 
 > 
-> Especially, considering that here [1] you reported in pre-merge testing that an
-> identical commit has improved the fstime-r/unixbench workload
-> (although with gcc-12):
-> [1] https://lore.kernel.org/oe-lkp/Zfj3wxDHolB1qCGO@xsang-OptiPlex-9020/
-> and here [2] that a similar commit had improved writeseek1/will-it-scale
-> [2] https://lore.kernel.org/all/Zc7KmlQ1cYVrPMQ+@xsang-OptiPlex-9020/
+> > 
+> > but it's ok to apply upon next:
+> > * 0fc4bfab2cd45 (tag: next-20240625) Add linux-next specific files for 20240625
+> > 
+> > I've already started the test based on this applyment.
+> > is the expectation that patch should not introduce performance change comparing
+> > to 0fc4bfab2cd45?
+> > 
+> > or if this applyment is not ok, please just give me guidance. Thanks!
 > 
-> Judging by simple_write_begin() in this regression perf report, and
-> shmem_file_write_iter in the reports above, may I assume that this report
-> was with a kernel with non-default config !CONFIG_SHMEM?
-> Is that correct? Is this an intended config change?
-
-we always set CONFIG_SHMEM.
-
+> The expectation is that the latest block branch (and thus linux-next)
+> doesn't see this performance change.
 > 
-> Thanks,
-> Amir.
