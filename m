@@ -1,66 +1,67 @@
-Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
+Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3949714EC7F
-	for <oe-lkp@lists.linux.dev>; Tue,  2 Jul 2024 21:15:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5B6641C77
+	for <oe-lkp@lists.linux.dev>; Tue,  2 Jul 2024 22:15:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719954959; cv=none; b=QMYjQR2QqJYxLXn5OOcr7mWGDc+TRYkjY6fRQC/UknqhNGE0lQXuc+FzyDDLcCWkmIWKdRpHc5cPFkmWsqHTSOdE6WBBijpYQ7kjAyvB0TcVfWuyhRYeLE4F8ndOn+cfCARUOLg2r2F8bwRPfB2w1Z1bZVVmsVVjE4go7xdHugw=
+	t=1719958516; cv=none; b=rh1AHa2z46kWS/cN5jOWlnrFDVrJDksWq2OvVYeysK7KZWpITXmoGcvmYL3VbVn/9jiwuX2xgMcl9HetssYy9OrePiaY4bB+gNoXE0rp4o5u6vEPOurgKX8/xQGlvukcDBz2eKSkfVmY5KIJTV5ZpcyrHUyHJDuVrRgaimPBQBw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719954959; c=relaxed/simple;
-	bh=Z53qQlIZsVbeOjfncqkv72fJDhuWFnhGQH+Ptt1okOM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=t3ZUk1m1jZTPjWaG3M257l6CxAt8Ugt/FJ2Gi7Ydqwd4LIL5ghYwKRvWImmbu/m/6eTShdMERn6nw7F5znRwLQyyRYzVLKnfw43oO6ItHe9zEzUyvEse7zES2H3g4JlTUa1bk9Baqkv9lu+fEznOZ3ucd26DfeMuGddNv1382Oo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ERuyc6XO; arc=none smtp.client-ip=209.85.208.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1719958516; c=relaxed/simple;
+	bh=ZjF9gVm+hnPGJTQrV1NhQloS/3+JlMk1M9zOF/E95/I=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=oPvimHTr/aO5vXgQgq/HfZLLkAw39EZvLg5pH3YfuT0jYH5AsOE0y4PB4iUO5MzccEwWXb0yV1z0PZplEGSA2I+RAjMVbOfOo+OuzgfOldLtnZsfUIBnt0HCe9JPewt1GE4j9wnmhYcVsWBpNmqAz5KiNyRc+hES9PdXPCUheWQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=A/Rg8+pf; arc=none smtp.client-ip=209.85.218.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ERuyc6XO"
-Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-58b0dddab63so2660794a12.3
-        for <oe-lkp@lists.linux.dev>; Tue, 02 Jul 2024 14:15:57 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="A/Rg8+pf"
+Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-a72477a60fbso568145266b.2
+        for <oe-lkp@lists.linux.dev>; Tue, 02 Jul 2024 15:15:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1719954956; x=1720559756; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=PLK9aj4vFqWhZL5t10A0/zYFTcmHZM8OXrcD4U0TrDc=;
-        b=ERuyc6XO2Yn86IU2e/vN6K34xqLkHgenmtFKVbHj6VAQ1Ivy0rLAgVZlGpzurkArgl
-         yH9EP0nAwPf//QUa22EOiWi01crbquyZTzmkBZOHO79CeS5soMlgbpzUNe5VWmUEsL+v
-         85pgzXNO7+uzI7Yvt8lTyXZWztcv/wqTXP2b5K65rDKynID4+HTp9PI7ZNkF+EIo59bU
-         te5WDf7yC+Tqw5XmvpEn1oq0fmi4HVGrPZaqpAvIT/5tFGH8C43BIP17+Y4TRGJ49FnK
-         SYZWuy5d6IVZur9Sh198H6Qs1NKkvgvXKwF9d8unmyeg37BOQP6Ey08cTp8aFkQNR0kk
-         qe5g==
+        d=linux-foundation.org; s=google; t=1719958513; x=1720563313; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=yV7nDkLq2boIMByXflMHOo0LFkkVyBsyXcyeGHYPWNQ=;
+        b=A/Rg8+pfx9CpJxXFAyehcHq0XRWEKLwynuTmXD8DIQbOwDuBROidEXJCA5mSY+m0gH
+         SmC5uBR9ewVs63UdpbgonFlWCkKUkqRhbELSlqWhgbSzvVOLW2Rliq6PbpDNHZ+yKxJ5
+         j5j9cW7u8JzsR0vPsFXRikBziFb++hQCRhxcw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719954956; x=1720559756;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=PLK9aj4vFqWhZL5t10A0/zYFTcmHZM8OXrcD4U0TrDc=;
-        b=STBBOcOWoUYcfCxPqkye6P+ZwBWOCmWYedMnxC+ZWqBHubBHkP52CYzWL+FnxuYnDn
-         D5ighXimVHtkVfeQNE5NGZF138SghpoDvhCtxA5GSTNo+rLD2KW8wRlltdybqzGFTu4b
-         ewkwNSvZtvIZyNPmSGvfHs6o8PMzfG6fUOv/J8zbI6rOc/Dw4NuhnsABrZ/Er7OGbJe7
-         /+qH7FvaXHkpsChQs8oeuk30uDvALXo3LaouOLiXXTcY1NAc0b2sovFaZSX+efhNRwDN
-         zHYhZgPN2hoLOFahfGQv+b7Q/sBGyPKW0CzFgYg2dO7R89x6a4LiDKTXbaQchJtiTRNb
-         1gIw==
-X-Forwarded-Encrypted: i=1; AJvYcCXECQw/nI2p6Q5cVR4d022VfumUy+jn8icFzM/lV3yKvAnKWL54xirBJb6W0chbSNLBTlbIFDjmgcE/2w0NM9KvaEsE7ebU
-X-Gm-Message-State: AOJu0YwaQbEtw5vmZKFfnOpGyMUw1UdclB17CmFxo3jKymqt4/WFqH69
-	b7/sKkeEoKBJXLQLOxHDgPLnOUAGwUgd5xLrowQYGV0lPNryFqgQ
-X-Google-Smtp-Source: AGHT+IGCT4ZcS2hWBpqR73pLxAO1+F3bfc5uZOtzmRlNvQB2X8vmqHx3H6TNdYR0k2Aqy7zatnWdXg==
-X-Received: by 2002:a05:6402:354c:b0:57d:5c96:72aa with SMTP id 4fb4d7f45d1cf-5879be9a1a7mr7914346a12.0.1719954956486;
-        Tue, 02 Jul 2024 14:15:56 -0700 (PDT)
-Received: from f (cst-prg-31-46.cust.vodafone.cz. [46.135.31.46])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-58614f3d415sm6196769a12.85.2024.07.02.14.15.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Jul 2024 14:15:55 -0700 (PDT)
-Date: Tue, 2 Jul 2024 23:15:44 +0200
-From: Mateusz Guzik <mjguzik@gmail.com>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Christian Brauner <brauner@kernel.org>, 
-	kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
-	Linux Memory Management List <linux-mm@kvack.org>, linux-kernel@vger.kernel.org, ying.huang@intel.com, 
-	feng.tang@intel.com, fengwei.yin@intel.com
-Subject: Re: [linux-next:master] [lockref] d042dae6ad: unixbench.throughput
- -33.7% regression
-Message-ID: <6knlkefvujkry65gx6636u6e7rivqrn5kqjovs4ctjg7xtzrmo@2zd4wjx6zcym>
+        d=1e100.net; s=20230601; t=1719958513; x=1720563313;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=yV7nDkLq2boIMByXflMHOo0LFkkVyBsyXcyeGHYPWNQ=;
+        b=LvbweikncL+il4QE5/6GwJWKenAXqFrDzXQXWIg9o10+Ow+q9UO9ym3clxZPEcirGz
+         MaKjn8AFPqEuVjnaYrzLAoMStwsEmJaqyGVRXsgN2o4GXIbRwR5uK94CxpXH1yJnxXDy
+         UtjhWqmnZdqFaSFIIHnYeIH8A/7L2n0msaSEQghnlF3J1f0gnlO0vuGjRe5YDG99GIxk
+         6hig4id4+KG4EKkL3aq/giRPX7MM1S3qnkt6b89f++nKzw4tqEtZN55Hg4QIUrfzb2OJ
+         zBr58Lrwb9yjL1BcOS9VHaroal2f9CY0++LJaOrIbOiafBi4lEnq4P3DmzRk3IHhZhyz
+         Rfxg==
+X-Forwarded-Encrypted: i=1; AJvYcCUbxflhHDzgfMB80KfIMRerwRa0YQXOfvHm7KK+aYAHRdcaZLemoM7UbbO+/3J4qQoqwFhaoqTJbQUaPmFfkbb3+EQG0Awm
+X-Gm-Message-State: AOJu0YzKPbkxj5P99dIKpESlVETabpWh4mOmgqt2cYIiZnmzV0Wey27b
+	KFJ7IaOYCbaZhFJGWOvwRhBwAOxEegljIcFE4G36d/Ysc+gSy/rn71uVxIM1hudBZjlhrp01Xyd
+	ksos7Qg==
+X-Google-Smtp-Source: AGHT+IGKPlpPMmuZyy+yAg6QEEV5iVaFMr5ULR7gaoLDRtAK1qgZTKNN7eW+hvLesKEO8XaA9ECR2w==
+X-Received: by 2002:a17:906:6a15:b0:a72:5bb9:b13c with SMTP id a640c23a62f3a-a75144bae99mr881310266b.75.1719958512886;
+        Tue, 02 Jul 2024 15:15:12 -0700 (PDT)
+Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com. [209.85.208.41])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a751561bb1bsm321146266b.37.2024.07.02.15.15.12
+        for <oe-lkp@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 Jul 2024 15:15:12 -0700 (PDT)
+Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-57cb9a370ddso2807816a12.1
+        for <oe-lkp@lists.linux.dev>; Tue, 02 Jul 2024 15:15:12 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCU1duutfZhkSGadd3YU91ykECEVB+ZcrkvL9JK7o55gAw20ESNFkNIKS3HNknc9Z/UOUjZymSSwVxBTy4VjICRNKX5HDMem
+X-Received: by 2002:a17:906:6d8:b0:a6f:309d:ec23 with SMTP id
+ a640c23a62f3a-a75144b9d16mr658615466b.72.1719958511691; Tue, 02 Jul 2024
+ 15:15:11 -0700 (PDT)
+Precedence: bulk
+X-Mailing-List: oe-lkp@lists.linux.dev
+List-Id: <oe-lkp.lists.linux.dev>
+List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
+List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
 References: <lv7ykdnn2nrci3orajf7ev64afxqdw2d65bcpu2mfaqbkvv4ke@hzxat7utjnvx>
  <vgg45kxk2fiyznm44w2saz3qjiwrjp3spvpswsl4ovd2jl5c5g@54dlbd4kdlh4>
  <CAHk-=wgnDSS7yqNbQQ9R6Zt7gzg6SKs6myW1AfkvhApXKgUg4A@mail.gmail.com>
@@ -70,97 +71,173 @@ References: <lv7ykdnn2nrci3orajf7ev64afxqdw2d65bcpu2mfaqbkvv4ke@hzxat7utjnvx>
  <CAGudoHHg-T+ZOTm0fSpW0Hztfxn=fpfnksz5Q3=3YeCeEPo7LQ@mail.gmail.com>
  <CAHk-=wiBGSLNW6GGbnec-dCbn0kWvD+OXAa5VNXPBKLXYy5KOQ@mail.gmail.com>
  <3g3arsrwnyvv562v2rsfv2ms4ht4mk45vwdkvssxkrjhfjtpdz@umyx5tl2du7o>
- <CAHk-=wg6e8QMaBOyFaGon7pik_C1COrkmEz37mtUqpBoq=R44w@mail.gmail.com>
-Precedence: bulk
-X-Mailing-List: oe-lkp@lists.linux.dev
-List-Id: <oe-lkp.lists.linux.dev>
-List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
-List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wg6e8QMaBOyFaGon7pik_C1COrkmEz37mtUqpBoq=R44w@mail.gmail.com>
+ <CAHk-=wg6e8QMaBOyFaGon7pik_C1COrkmEz37mtUqpBoq=R44w@mail.gmail.com> <6knlkefvujkry65gx6636u6e7rivqrn5kqjovs4ctjg7xtzrmo@2zd4wjx6zcym>
+In-Reply-To: <6knlkefvujkry65gx6636u6e7rivqrn5kqjovs4ctjg7xtzrmo@2zd4wjx6zcym>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Tue, 2 Jul 2024 15:14:54 -0700
+X-Gmail-Original-Message-ID: <CAHk-=whagTfq=EgwpuywUUu0ti7PPQuE_ftVjZOVrjnLwtS0Ng@mail.gmail.com>
+Message-ID: <CAHk-=whagTfq=EgwpuywUUu0ti7PPQuE_ftVjZOVrjnLwtS0Ng@mail.gmail.com>
+Subject: Re: [linux-next:master] [lockref] d042dae6ad: unixbench.throughput
+ -33.7% regression
+To: Mateusz Guzik <mjguzik@gmail.com>
+Cc: Christian Brauner <brauner@kernel.org>, kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, 
+	lkp@intel.com, Linux Memory Management List <linux-mm@kvack.org>, linux-kernel@vger.kernel.org, 
+	ying.huang@intel.com, feng.tang@intel.com, fengwei.yin@intel.com
+Content-Type: text/plain; charset="UTF-8"
 
-On Tue, Jul 02, 2024 at 01:42:48PM -0700, Linus Torvalds wrote:
-> On Tue, 2 Jul 2024 at 13:33, Mateusz Guzik <mjguzik@gmail.com> wrote:
-> >
-> > If you are politely by lkml standards suggesting I should probably drop
-> > the idea due to unforseen complexities
-> 
-> Oh, absolutely not. I'd love to see how nasty - or not nasty - the
-> patch would end up being. I think it would be very interesting.
-> 
-> I'm just explaining why _I_ never got around to it.
-> 
+On Tue, 2 Jul 2024 at 14:15, Mateusz Guzik <mjguzik@gmail.com> wrote:
+>
+> I asked you something in the previous e-mail though (with some nastiness
+> of the problem pointed out) concerning handling of slow vs fastpath,
+> here it is again:
+>
+> [..]for example did you know xfs does not honor rcu grace periods when
+> recycling inodes?
 
-ye I get it, but the above by me was a passing remark anyway :>
+I don't think it should matter.
 
-I asked you something in the previous e-mail though (with some nastiness
-of the problem pointed out) concerning handling of slow vs fastpath,
-here it is again:
+Yes, the vfs layer will access the inode, but then the sequence number
+checks should always verify that whatever access we did is then
+validated after-the-fact.
 
-[..]for example did you know xfs does not honor rcu grace periods when
-recycling inodes?
+And yes, any "stat under RCU" will obviously have to do the sequence
+number check after having copied the data, the same way we now do it
+after the "lockref_get_not_dead()".
 
-https://lore.kernel.org/all/20231205113833.1187297-1-alexjlzheng@tencent.com/
+So the RCU part just means that at least the allocation still exists.
+But it might not have been the *right* inode, and that's the sequence
+number check.
 
-So this would have to be opt-in per filesystem, probably stuffed
-somewhere within the inode or dentry. I am definitely not reviewing all
-the other filesystems for sanity on this front.
+Or do you see something I'm missing? I'm not loving how we deal with
+dentry->d_inode, but considering that the whole point of the RCU
+lookup is that we don't hold any locks, I think it's almost
+unavoidable.
 
-Rather, one could look over tmpfs, ext4, btrfs and maybe ask Kent to
-sort out bcachefs (if necessary) and call it a day.
+> Sounds like you are deadset on the callback approach.
 
-Sounds like you are deadset on the callback approach. I'm not going to
-die on the inline hill, but I will spell it out so that we are on the
-same page (and I have a question too).
+Hey, I happen to think that it's the easiest model, but you can easily
+prove me wrong.
 
-In pseudo-code my stuff would like this (names are for ilustrative
-purposes):
+Almost all of my worries can probably be handled by just having a
+separate "do this after the operation" helper function.
 
-struct rcunameidata {
-	....
-	bool in_rcu;
-};
+Also, maybe the "callback" model is the wrong one, and instead the
+right one is to just say "the only thing that wants this is the 'stat'
+family", and simply have a "path_statx()" function that is all inside
+fs/namei.c, and that doesn't take any callbacks, but instead just
+fills in the 'struct kstat'.
 
-...
+But if you have better ideas, go wild.
 
-struct rcunameidata *rnd;
+The only thing I really *don't* want is some kind of expansion on the
+new "filename_lookup()" function that takes a new flag, and that then
+random people can start using, and that is so fragile that everybody
+will get it wrong.
 
-error = vfs_rcu_magic_lookup(&rnd, ....);
-if (error)
-	return error;
-if (rnd->in_rcu) {
-	/*
-	 * fast path goes here, callback code would be identical up to
-	 * the point below
-	 */
-	 /*
-	  * Now validate
-	  */
-	 error = vfs_rcu_magic_lookup_validate_or_drop(&rnd, ....))
-	 if (error == 0) /* things worked out */
-	 	return export_stuff_to_the_user(....);
-	 if (error < 0) /* fail */
-	 	return error;
-}
-/*
- * slowpath goes here
- */
- /*
-  * all done, now whack the lookup state. the routine returns void
-  */
-vfs_rcu_magic_lookup_finish(&rnd, ....);
-if (!error)
-	error = export_stuff_to_the_user(....); 
-....
+Your 'vfs_rcu_magic_lookup()' looks like it would work, and we'd just
+have to make the rule that it's never exported to modules or anything
+like that, simply because I don't trust random drivers or vendor
+modules to get it right.
 
-Can you pseudo-code how would the consumer look like in your case? Do
-you want the callback to execute for both slow and fastpath and switch
-on the flag? It is rather unclear what you are proposing here.
+> Can you pseudo-code how would the consumer look like in your case? Do
+> you want the callback to execute for both slow and fastpath and switch
+> on the flag? It is rather unclear what you are proposing here.
 
-fwiw I think the above would serve as an easy to copy-paste idiom for
-the few consumers which want it. All the complexity in their case is the
-in_rcu block which wont go away with a callback. If you still want the
-callback, callback it is.
+So what my half-aresed thinking was on how I'd do it is roughly:
 
+ - add a new "rcu_callback" function pointer to ' struct nameidata'
+(or, if deciding to just fill in 'struct kstat', just the pointer to
+that).
+
+ - in complete_walk(), where we currently do that
+
+        if (!try_to_unlazy(nd))
+                return -ECHILD;
+
+   instead do something like this:
+
+        if (nd->rcu_callback) {
+                int ret = nd->rcu_callback(nd);
+                if (ret) {
+                        if (!validate_sequence_counts(nd))
+                                ret = -ECHILD;
+                        nd->path.mnt = NULL;
+                        nd->path.dentry = NULL;
+                        leave_rcu(nd);
+                        return ret;
+                }
+        }
+        if (!try_to_unlazy(nd))
+                return -ECHILD;
+
+ - add a new version of filename_lookup() that takes that enw
+callback, and just sets in in nameidata before it does that
+
+        retval = path_lookupat(&nd, flags | LOOKUP_RCU, path);
+
+    thing.
+
+IOW, the point is that the callback can decide that it has gathered
+enough information, and to basically "abort" the RCU path walk by
+returning an error.
+
+And if it does *not* return an error to abort (or if we never even get
+there, because something else caused us to exit RCU mode), we act
+exactly like we used to, and nothing has changed.
+
+But if it *does* return an error, we stop walking, never take the refs
+on the path, and we validate the sequence count.
+
+Again, if the sequence count validation failed, we turn the error into
+ECHILD, so that the path walking just gets re-done without RCU. So a
+sequence point failure means that we did end up calling the callback
+function, but we basically discard the result.
+
+End result: the path walking will return that new error only if the
+callback (a) existed, (b) returned that error and (c) the sequence
+counts still validated properly afterwards.
+
+And if for some reason it *cannot* fill in stat data (say, because the
+filesystem is one that doesn't support "stat under RCU" or whatever),
+the callback returns zero, and we do all the things we used to do.
+
+And the *user* of this would basically just put in a "stat_rcu()"
+callback that fills in the stat data and returns some error code that
+path walking can't return, which then informs the caller that the stat
+data has already been filled in and can be used as-is.
+
+So now the caller can look something like this:
+
+        ret = filename_lookup_with_callback(... callback);
+        if (ret == -ECALLBACK) {
+                // this means that the stat info has already been
+filled in, copy it to user mode
+                copy_stat_to_user(..);
+                return 0;
+        }
+        // "Real" error
+        if (ret)
+                 return ret;
+        // Ok, we have a path, we do what we used to do before
+        error = vfs_getattr(&path, stat, request_mask, flags);
+        ...
+        path_put(&path);
+
+Anyway, that was my thinking. It *feels* fairly minimal. But no, I
+never did the patch, and I might not have thought of some
+complication, and it is all pretty messy, and no, I do not want to
+force you into this kind of model if you hate it.
+
+I don't think your vfs_rcu_magic_lookup() function is all that
+fundamentally different, but the advantage of the callback model is
+that I *think* the above would be a fairly surgical and minimal
+addition to the path walk.
+
+I _think_ your vfs_rcu_magic_lookup() model would require a fair
+amount of moving code around to break into that
+
+  path_lookupat -> complete_walk -> try_to_unlazy
+
+place and be able to restart etc. But maybe you have a clever plan.
+
+               Linus
