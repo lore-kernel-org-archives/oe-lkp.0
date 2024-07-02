@@ -1,61 +1,55 @@
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14464BE5A
-	for <oe-lkp@lists.linux.dev>; Tue,  2 Jul 2024 16:47:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21E221BD02F
+	for <oe-lkp@lists.linux.dev>; Tue,  2 Jul 2024 17:03:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719938852; cv=none; b=Yh25NXFZO+7uVyS4Q0oYKXRL+WeK9ex6laBMlznqwvFwAm6mQXE8TDhVrhmAjWfUruZEnhwhEsTtbLQV3fe8ql9ltdUXtg5WanyJ9Bd+4GaVMJ1COFSq9/LbSoD58pUw7WLNP8R/C/83/Yg8to0RO0fgeo6HRvFC16lpcLaRyx8=
+	t=1719939792; cv=none; b=q/smnuQKa/F2SOiv61rrNcvPkMlsx+qykzKKCExoGYpsho1g8OrZLtTsoGoq5094Sj60C2lyCY+nWYgVKDWAl8wwv8f1wWXu9XEDXEBIcae0/6ffjkJdWL9VYXXmH/aMZSgUiTVkrRd3Qit6CdyVpvrg/7a8t63AOweFKGsuOOM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719938852; c=relaxed/simple;
-	bh=JJCfUnxAyde8Pswp5C9S3wRVqYZag4IPQp284yiV5vU=;
+	s=arc-20240116; t=1719939792; c=relaxed/simple;
+	bh=SJjrYGYHHwZ61PnvF9q5/p7fpSWQxsDabX0KAL9mp38=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=AWHQjSW1NFdSbzfVIuTzMMD0RVCuj++TfNUsUecSjD2dldmC1QDm4+Q5Y402kaeJSss5Ntm6YJeW81nDEMrj++olHRj2dw4nj2Sbtn3mdPF3eYTuTBs+stB1G7wYhVmc691WJy1dQBhueC2joy6kjwu9C5PiBByXvyyRBMJIgIo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=RMIry4zu; arc=none smtp.client-ip=209.85.218.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
+	 To:Cc:Content-Type; b=MkNUlPvLk9/fNoiIeYEl28R4FIieVqchxOamoYnHC3pxK6mVcH4J70dkn0Zebuz2TTrYF5fkLoHm5eFcO8I6AkCeagWiKb4s9LUMhYQoNihRa5zSJluuvODOtKYdUV+jy9raF+CbyT5a0i/VVYYPD3b0LOAilkYAKwGNPhNTCZg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bWGmSRwX; arc=none smtp.client-ip=209.85.218.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="RMIry4zu"
-Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-a72510ebc3fso660672166b.2
-        for <oe-lkp@lists.linux.dev>; Tue, 02 Jul 2024 09:47:30 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bWGmSRwX"
+Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-a72af03ebdfso634215366b.3
+        for <oe-lkp@lists.linux.dev>; Tue, 02 Jul 2024 10:03:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1719938849; x=1720543649; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=UuomGKlgZ/JCx5qkaXWQw7kYZlgSwRcXF7z8kwqPXBk=;
-        b=RMIry4zuXut0tNmG6ZbZfULzxuFq1/apI0BQ6hxufI/ILL48WXmvBIjF7drPhWVa9p
-         MQ6yWk/JLq8qivWv9BOw8KlrtBzgISa6ZC8gdkFKcTG0bvdpzl6/brzTVLH5Kq61gOHb
-         SmdG5zvy+EIUvKG0utaiasWPpanv9XlZyD6cc=
+        d=gmail.com; s=20230601; t=1719939789; x=1720544589; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=SJjrYGYHHwZ61PnvF9q5/p7fpSWQxsDabX0KAL9mp38=;
+        b=bWGmSRwXvivrZKk0tR9V5gAP9bDkhf3sqMuOBXJ7L+CZh24zB8nDj0OwRc2zeUF4yi
+         yYnm/HGRPQUmN+2BXdgfCxYYgZbsASFZe73vPgBXBMA7E3clc90V/2yAFPpKIR+vm8fI
+         fVjSXtY6AH9+165MmeZyCyzcbOAQ2GyNRDzy0Cg+iqx1jGGyAXsZ2ZFidt2Kba3sIrrG
+         b8lYK+Xj9Piy3guiHgIj//AaWhM4Y+2xzeLo2c+I16H3OmkzTYikaLRaK3wxnPhd7Uof
+         KPIiHfg/9IKZgy8aKTGzynw+L0BNW0nAjw+UTk48C1BHqv65X4cTYkKdJg0NgPlYqNTz
+         2zLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719938849; x=1720543649;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=UuomGKlgZ/JCx5qkaXWQw7kYZlgSwRcXF7z8kwqPXBk=;
-        b=Z2VFPz2XhBFMxlwW9DrOvmvHBaffiU0E5l11xr3JxtrNukvLE47frMJK0avzFGyLH3
-         qFOHJ69HzGLkHYahQNzXWYE+VMXjasdHFZajdItGUEJkaw6Q0FOtYZdwCbJF2O6Gf2R1
-         JZUBKN9uDy5H+2LPgLPGyH2bIEMpAlefZgpWgjyeOlvUcLRCo17sSufrgYP0bQpWqb0W
-         3aR5pGTbCDjUVb5RVFzCRbkPb3iip/2FXomrtqzbBtXMNPaxHhOi0opgGqUPzMkvsJU7
-         tFSb1lmi2JSx3ecSc96PCW/mGFCX7igKMWNsZuZ8y16x6OJct8ewevQEq4N3fW+8umb5
-         +9MQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUCJI6dDgXGoh0Nh3AvMMFFF8TdQEyCr4rnptBt314EzWGe4qOX6V6koergANJhPS/44wPbOObVglOZ3B/HnW1ebx6AaVzP
-X-Gm-Message-State: AOJu0YxeQMNDWTEiFIRQMcoF9r+BLRBcMCTpHBkM67MVId3G2hf7ahVW
-	1z02SQ3GjV10anNZncVtcxN2GCnsAkklsCbdsQcVuWzbrBzuZEb4rd9PtmFXyfZtjT2eX1tDxwb
-	T+Onzug==
-X-Google-Smtp-Source: AGHT+IHt1J/5dUbec+udX4SPjKEEuoHNasoMcRlijPbnrv8/zNqKsx9fhjy8TyHVPDPsBYplArWf3Q==
-X-Received: by 2002:a17:906:f58b:b0:a72:536c:fd4c with SMTP id a640c23a62f3a-a75144de2d5mr829440966b.66.1719938849236;
-        Tue, 02 Jul 2024 09:47:29 -0700 (PDT)
-Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com. [209.85.218.45])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a72ab08cea1sm435816566b.156.2024.07.02.09.47.28
-        for <oe-lkp@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 02 Jul 2024 09:47:28 -0700 (PDT)
-Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-a72510ebc3fso660669766b.2
-        for <oe-lkp@lists.linux.dev>; Tue, 02 Jul 2024 09:47:28 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCWTOFAt/oIMvmVVbf5dClUcTMLtA2QKuPn+ER1N/KRdNGQkuPu5K+ml84sJY1R557AFf4mzwAg+tFnzeI4I13bYpwOFs+7+
-X-Received: by 2002:a17:906:c2ce:b0:a6f:493d:5b9f with SMTP id
- a640c23a62f3a-a7514474146mr573370666b.35.1719938848162; Tue, 02 Jul 2024
- 09:47:28 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1719939789; x=1720544589;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=SJjrYGYHHwZ61PnvF9q5/p7fpSWQxsDabX0KAL9mp38=;
+        b=ikFnE7wKD7Bpg41kpdYrSVK8V/MpmrCr4nxaDsg4ZDOeAd/heH8rCXvMbX+ElBAiB1
+         /yDUaqEHIkLWyPHWS0/rNBkTJyxBHG5AhsRv9PVQE2M14PSQUW83ue196kpMcPD3Sk4Y
+         iAHMuTERgFdpu75zrzFdL17bWdSIajBgjlkvNOUx2hg0inj8AvOUkAkcCLzUH88/EbU4
+         9hXFV8HUOUhjd8HGqdseZFXNwMQJS+7t+kKtDc+RyYZh7qdshDC2ZgyVlG3XRXDThVQU
+         292MilXNmqjdMv6LEVFrAZCh3m3PzSOiruV+e8JuMfb47Y5j1sgvDMlS5Wz7o44OAVmj
+         yKbA==
+X-Forwarded-Encrypted: i=1; AJvYcCWKMC9OIkOYbN94hFmLMcGOgXFQaFoBKEgwbghYbx7ttVbGPKa/TR98OGofpNWEat/U2ozRjiAwVSWQAnDOd9NavWdhE2zn
+X-Gm-Message-State: AOJu0YzDiznTGeF+ZXWuDRs1zITOYmiJ5G01MlGAIs3hlQM7mx1zlipH
+	WRD+xnR3vyYtZDCA6L+C0XtvO16RcQwtq3iee4jDSgBxQZDWj7A/TpmVRxo1rb2/jLUCtt5sqXu
+	IiN04LJMS2lObWvUu/eewPD2h1gedyg==
+X-Google-Smtp-Source: AGHT+IGXNQd+0tJLmUXddHIo1j/DHEEZvybJUyBGUresmYG9sx1mdFAY7nd0ymNHYdn+8GtUly3OiEWyux7bo0SKJ2Q=
+X-Received: by 2002:a17:906:3183:b0:a75:1069:5b94 with SMTP id
+ a640c23a62f3a-a75143e700emr545024766b.21.1719939789328; Tue, 02 Jul 2024
+ 10:03:09 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -63,49 +57,85 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 References: <202406270912.633e6c61-oliver.sang@intel.com> <lv7ykdnn2nrci3orajf7ev64afxqdw2d65bcpu2mfaqbkvv4ke@hzxat7utjnvx>
- <vgg45kxk2fiyznm44w2saz3qjiwrjp3spvpswsl4ovd2jl5c5g@54dlbd4kdlh4>
-In-Reply-To: <vgg45kxk2fiyznm44w2saz3qjiwrjp3spvpswsl4ovd2jl5c5g@54dlbd4kdlh4>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Tue, 2 Jul 2024 09:47:12 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wgnDSS7yqNbQQ9R6Zt7gzg6SKs6myW1AfkvhApXKgUg4A@mail.gmail.com>
-Message-ID: <CAHk-=wgnDSS7yqNbQQ9R6Zt7gzg6SKs6myW1AfkvhApXKgUg4A@mail.gmail.com>
+ <vgg45kxk2fiyznm44w2saz3qjiwrjp3spvpswsl4ovd2jl5c5g@54dlbd4kdlh4> <CAHk-=wgnDSS7yqNbQQ9R6Zt7gzg6SKs6myW1AfkvhApXKgUg4A@mail.gmail.com>
+In-Reply-To: <CAHk-=wgnDSS7yqNbQQ9R6Zt7gzg6SKs6myW1AfkvhApXKgUg4A@mail.gmail.com>
+From: Mateusz Guzik <mjguzik@gmail.com>
+Date: Tue, 2 Jul 2024 19:02:56 +0200
+Message-ID: <CAGudoHGuTP-nv=zwXdQs38OEqb=BD=i-vA-9xjZ0UOyvWuXP_w@mail.gmail.com>
 Subject: Re: [linux-next:master] [lockref] d042dae6ad: unixbench.throughput
  -33.7% regression
-To: Mateusz Guzik <mjguzik@gmail.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>
 Cc: Christian Brauner <brauner@kernel.org>, kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, 
 	lkp@intel.com, Linux Memory Management List <linux-mm@kvack.org>, linux-kernel@vger.kernel.org, 
 	ying.huang@intel.com, feng.tang@intel.com, fengwei.yin@intel.com
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, 2 Jul 2024 at 05:10, Mateusz Guzik <mjguzik@gmail.com> wrote:
+On Tue, Jul 2, 2024 at 6:47=E2=80=AFPM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
 >
-> Well there is also the option of going full RCU in the fast path, which
-> I mentioned last time around lockref.
+> On Tue, 2 Jul 2024 at 05:10, Mateusz Guzik <mjguzik@gmail.com> wrote:
+> >
+> > Well there is also the option of going full RCU in the fast path, which
+> > I mentioned last time around lockref.
+> >
+> > This would be applicable at least for stat, fstatx, readlink and access
+> > syscalls.
 >
-> This would be applicable at least for stat, fstatx, readlink and access
-> syscalls.
+> Yes. That would be the optimal thing - have some "don't take a lockref
+> on the last component at all, because we will finish the use of it
+> under RCU".
+>
+> I looked at that some time ago, and it didn't look _horrendous_ from a
+> conceptual standpoint, but the details just got to be nasty.
+>
+> What I wanted to do was to hook into the "we're still in RCU mode"
+> with a callback that stat could set.
+>
+> And we'd call it at complete_walk() -> try_to_unlazy() ->
+> legitimize_path() time just before we do that lockref_get_not_dead()
+> thing.
+>
+> So then the path walkers that are ok with RCU state (ie mostly just
+> 'stat()' and friends) could set that callback, and get a callback
+> while the path walk is still in RCU mode, and could fill in the stat
+> data then and say "I'm done" and we'd never actually finalize the path
+> at all, and never do the final lockref_get_not_dead().
+>
+> Sounds simple in theory. And then when I looked at doing the actual
+> code patch, I ended up just running away scared.
 
-Yes. That would be the optimal thing - have some "don't take a lockref
-on the last component at all, because we will finish the use of it
-under RCU".
+I was thinking a different approach.
 
-I looked at that some time ago, and it didn't look _horrendous_ from a
-conceptual standpoint, but the details just got to be nasty.
+A lookup variant which resolves everything and returns the dentry + an
+information whether this is rcu mode.
 
-What I wanted to do was to hook into the "we're still in RCU mode"
-with a callback that stat could set.
+if not the regular handling + path_put sort it out.
 
-And we'd call it at complete_walk() -> try_to_unlazy() ->
-legitimize_path() time just before we do that lockref_get_not_dead()
-thing.
+If yes then the fast path handling gets involved. If a filesystem can
+provide a custom callback for the regular usage above, there would be
+an optional callback for rcu mode as well (and it would be illegal to
+only have one). Should this run into any trouble it can return -AGAIN
+at which point try_to_get_actual_full_ref() (but better named) routine
+is called and it tries to get the actual ref.
 
-So then the path walkers that are ok with RCU state (ie mostly just
-'stat()' and friends) could set that callback, and get a callback
-while the path walk is still in RCU mode, and could fill in the stat
-data then and say "I'm done" and we'd never actually finalize the path
-at all, and never do the final lockref_get_not_dead().
+Suppose the callback or in-place handling worked out. Then a routine
+to validate nothing changed (at least dentry seq?) is called. Should
+it succeed that's it, otherwise the entire thing redos the work the
+old fashioned way.
 
-Sounds simple in theory. And then when I looked at doing the actual
-code patch, I ended up just running away scared.
+I have not looked to closely yet but I think this is very much doable
+without much swearing, I am going to look into it after I find some
+time, maybe this weekend.
 
-           Linus
+Regardless of the above I think decoupling actual dentry ref from the
+d_lock is a valuable step anyway, I am going to take a stab at that
+too. Most of the work is kind of already done with the 1->0 transition
+already handled. Just need to replace non-atomic updates with atomics
+and cmpcxhg with a flag to whack new additions.
+
+All that aside, the lockref patch reported here needs to get dropped
+from the tree and I don't think a lockref-specific replacement is
+viable.
+--=20
+Mateusz Guzik <mjguzik gmail.com>
