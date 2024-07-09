@@ -1,88 +1,176 @@
-Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f44.google.com (mail-pj1-f44.google.com [209.85.216.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25695154444
-	for <oe-lkp@lists.linux.dev>; Tue,  9 Jul 2024 09:03:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=65.109.113.108
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33E2F14D702
+	for <oe-lkp@lists.linux.dev>; Tue,  9 Jul 2024 10:03:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720515825; cv=none; b=lP0RXLdY8gxz/SDeiCVtZLpwGuy5PkRGcB3LXBrL73YVc0mNiZIXJqwmEX1l7/TWY1BrYgN9XNTMTDWPojn+R+AqlMNnkv8umTf2QEeIufz57hLK8NhrotNakx5Yksm4mV/eTmgdWy53vcp3LD/I2V54bkos4wQRryUw449KYCo=
+	t=1720519438; cv=none; b=LBsMV6Ev38mVfu5zN/Wm7ruaKglticmY8vhzho/9jVpM8gzDvOjPfAwpSyJamKXN5nKb1iDJIqeMH3272hshODIz4PJtzGszfytec3hYGMNC7xz0CIB8De81ghDC3Mk1kOCNumCbpb95duKSc35bl6Z+iecj47Ou9yQX5W7hK38=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720515825; c=relaxed/simple;
-	bh=Be0OxpiF4l0g2Nx0Zup/E/OnO4lWax7/UPJwkt/ZAj8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=e1b2rwHjGTbhhUAPM/ErSH0TrlhGpqwXNJyQf5Nq3Gi0zz0N8rPh9xoY0IZWmD5tr7bI8xiYnNHdEr8cg0o3mulqKMIIuVyP26qzfGIEjGa254gdAwDc/EKhWOc2V8n4O/412tTA5CT2xHBaA0kbywMFcmMdTEehwxFPsyzHpug=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de; spf=pass smtp.mailfrom=alien8.de; dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b=bXSSD5Zy; arc=none smtp.client-ip=65.109.113.108
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
+	s=arc-20240116; t=1720519438; c=relaxed/simple;
+	bh=pfWeRQ9z63xXUzwl68xoKfmthMSvSUY0TsePVfQ6Sz0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=QSvPp7ckhaNsuba1eTGGe8QTs18g4Djm+FlWzGDnK8/uAx711OQ3RzDLiLlfx8vrptt9ZU05BsZDa3wZJl+yMmJg7F92bEbRbkXkGc1XNMFa0FfLOzRq5wm44ZryHXeOttg8dmyUveRIqh1jbJhqvkCHTG4c4RiXOkpml/h5Uxo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=ghtaLpC5; arc=none smtp.client-ip=209.85.216.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b="bXSSD5Zy"
-Received: from localhost (localhost.localdomain [127.0.0.1])
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id B2A7640E0185;
-	Tue,  9 Jul 2024 09:03:40 +0000 (UTC)
-X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
-Authentication-Results: mail.alien8.de (amavisd-new); dkim=pass (4096-bit key)
-	header.d=alien8.de
-Received: from mail.alien8.de ([127.0.0.1])
-	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id VZLJ0jV_8muB; Tue,  9 Jul 2024 09:03:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
-	t=1720515816; bh=xFWAiSJukpl6RZf0FetnsddcwaTvZjDXqv9fR7Y10Sk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=bXSSD5ZyqmN1v2/WtDpOXiJpUno2brEr2I++pBjkEZAF1G+sq5gaes6WBfz0cR6hw
-	 Jsh3Oo1TrSUuL70AI1M1ghI636uq88Bp1x/x9938Bl5tKPd8y257TVuCjEdFa5Y5dv
-	 s0YPM7UX/t4T6mDYZpqLaOsarWdAaTCuR1b+XuM0sn1OJvp+fHvRimCWUwCr7rpFEc
-	 +ey8TzNaivj/zUhzyA0oopysfOtGO2fG+Et6NHXpuAnanYjgxhFOpPhf4ejEvxUX1v
-	 i7dNB4sNoIvhO9qKwUCiG4rFh899A6QyiqX+tCBD81LKOBUogOTDyHhy9rAgULsK9X
-	 wGMP+sgUFKHLsepQn6XCCFkmM+axvUp/BRowPi/Ch5CizD+/DVOeEx/nX1oNbgl2wd
-	 R6tzveXkTqEXuK7yVkbe+MaaKcv4l1HTgq9Uij+6VnRZR+GXokPYKSBY8msIO33VAH
-	 y9GEj4DiNrKNukZOOfsCLL9f83jdAIYqchMPIJMqy3quK+6rOYFeV7xg1Ee+qEtGIL
-	 ypD96JBlGOSbOgsOvCmDCX6IxNxp0eIYQx9/pJREefAGe6uKK4Bk+UQEoeksFdqtQa
-	 6DpUKRwLVlRiXHzwZor+JiUognWy1iALSs1EYndRhqNigw99E+3NQ2uPIyLuajJ4Og
-	 kFkmz5dD5Y3OLBd06LnQQxnQ=
-Received: from zn.tnic (p5de8ee85.dip0.t-ipconnect.de [93.232.238.133])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
-	(No client certificate requested)
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id C8D3640E0192;
-	Tue,  9 Jul 2024 09:03:29 +0000 (UTC)
-Date: Tue, 9 Jul 2024 11:03:23 +0200
-From: Borislav Petkov <bp@alien8.de>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-	x86@kernel.org, Nikunj A Dadhania <nikunj@amd.com>,
-	Ashish Kalra <ashish.kalra@amd.com>
-Subject: Re: [tip:x86/sev] [x86/sev]  06685975c2:
- BUG:kernel_failed_in_early-boot_stage,last_printk:Booting_the_kernel(entry_offset:#)
-Message-ID: <20240709090323.GAZoz822G64Mr9M9lV@fat_crate.local>
-References: <202407091342.46d7dbb-oliver.sang@intel.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ghtaLpC5"
+Received: by mail-pj1-f44.google.com with SMTP id 98e67ed59e1d1-2c9d161affbso1656239a91.2
+        for <oe-lkp@lists.linux.dev>; Tue, 09 Jul 2024 03:03:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1720519434; x=1721124234; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=6VJWwLEBYOh8xzQaO4F0YcqWYlZ7zC32Ge3nPh9wVd4=;
+        b=ghtaLpC5rp9QqOKEWWGwNK4BV8GjEeQxWCrU2oxl97ru7JU3bwK2LvmZNzE/cNjU9p
+         MogyOkTJL4dg51Ui/ayJgzpybivbZh2ggc9I0a4z8WM+1vSYCtM6y1zvlEY+KW5Bzluq
+         sSTztzELaEPr3K846nHYV8Xja3a3n3JTy+oDOMcdICa0u6FdBR7yZbMgl4TSBrQl5NN4
+         zMDewInxp27vMICC4DEiCimVRYHQ2rc02Hnn/Th97LGI2JzDhhh/hpGyhsaSBVOLHGtZ
+         gdwF+FGwv6xP8OG+a6NtssW+1N/tUS8z75EKoyHN3Wg0CfEcAxRmxk/nBb6L/jmuk0+k
+         VRaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1720519434; x=1721124234;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=6VJWwLEBYOh8xzQaO4F0YcqWYlZ7zC32Ge3nPh9wVd4=;
+        b=Xu5M+hAqmzDV8Q3KI6iGpmXvCctCp7BTqKnDBJ9OxeiDgE0mhFRmcD5NMxWao5HnfG
+         yKijE3p2PJ5rOuSZoEqP34mAKRBnONAxccAB06DGG1knE9eGWaMlD1B825S3t2geJHSp
+         ut9KnnHXC50S/0YStK97IZevU0lpeiurr7zACZyC1QVrJcMc2+LriuucRxM5A+5U2MME
+         RmU6a4Sw7hFCqUggmzO4+E0gzsyW/RyRyay1HHrETXKKwIb+6i54Vnrxc1BjeXzNGTqO
+         9BL4iWSdNHLTzyaos60m7p2/u2cS071/A323ZMjvAPdpuD7bQxVnKkvIQ3LIePhsz7cz
+         MMIw==
+X-Gm-Message-State: AOJu0YyJdMygWNcFGfVQj70l2wTeyorDh4qx+TuAfNYm5yTbPV7VI+/J
+	PUIoT+eZOajR1MG9LY1ubvVfyasTIX4pXejnyIqvxyhgZL5lqLImrPNh8hEhClX5hpzd3+F/2p9
+	x/879VZR7iKjvJ2o5JcAJmGM0jzqqMic4zVTqcA==
+X-Google-Smtp-Source: AGHT+IH6N7ahlaBsr4KPKwt7WQks8di0GBh2UIN+q2pZe8ruW+aeLRFepm/Osqh25kkPLPTml7o0GZkHEA5hSa5uKBA=
+X-Received: by 2002:a17:90b:2284:b0:2c8:647:1600 with SMTP id
+ 98e67ed59e1d1-2ca35bde67bmr1826628a91.9.1720519434459; Tue, 09 Jul 2024
+ 03:03:54 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <202407091342.46d7dbb-oliver.sang@intel.com>
+References: <202407091527.bb0be229-lkp@intel.com>
+In-Reply-To: <202407091527.bb0be229-lkp@intel.com>
+From: Vincent Guittot <vincent.guittot@linaro.org>
+Date: Tue, 9 Jul 2024 12:03:42 +0200
+Message-ID: <CAKfTPtBMdLRN8WVUmvXXZQK5fE_rZEFJenujrxpqWYAQ7b-jBw@mail.gmail.com>
+Subject: Re: [linus:master] [sched/pelt] 97450eb909: INFO:task_blocked_for_more_than#seconds
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org, 
+	Ingo Molnar <mingo@kernel.org>, Lukasz Luba <lukasz.luba@arm.com>, 
+	Qais Yousef <qyousef@layalina.io>, linux-doc@vger.kernel.org, aubrey.li@linux.intel.com, 
+	yu.c.chen@intel.com
+Content-Type: text/plain; charset="UTF-8"
 
-On Tue, Jul 09, 2024 at 02:43:29PM +0800, kernel test robot wrote:
-> kernel test robot noticed "BUG:kernel_failed_in_early-boot_stage,last_printk:Booting_the_kernel(entry_offset:#)" on:
-> 
-> commit: 06685975c2090e180851a0ff175c140188b6b54a ("x86/sev: Move SEV compilation units")
-> https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git x86/sev
+On Tue, 9 Jul 2024 at 09:22, kernel test robot <oliver.sang@intel.com> wrote:
+>
+>
+>
+> Hello,
+>
+> kernel test robot noticed "INFO:task_blocked_for_more_than#seconds" on:
+>
+> commit: 97450eb909658573dcacc1063b06d3d08642c0c1 ("sched/pelt: Remove shift of thermal clock")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-Does it go away when you try two patches after it:
+First, I'm surprised that an Intel platform is impacted by this patch
+because Intel doesn't use it AFAIK.
+Then, this patch mainly remove a right shift i.e.:
+instead of:
+  return rq_clock_task(rq) >> sched_hw_decay_shift
+we are now doing:
+  return rq_clock_task(rq)
 
-a7e7185ccd2a ("x86/sev: Move the instrumentation exclusion bits too")
+Could it be a false positive ?
 
-?
 
-I might have to merge the two if so.
-
-Thx.
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+>
+> [test failed on linus/master      22f902dfc51eb3602ff9b505ac3980f6ff77b1df]
+> [test failed on linux-next/master 0b58e108042b0ed28a71cd7edf5175999955b233]
+>
+> in testcase: rcutorture
+> version:
+> with following parameters:
+>
+>         runtime: 300s
+>         test: cpuhotplug
+>         torture_type: tasks
+>
+>
+>
+> compiler: gcc-13
+> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+>
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+>
+>
+> we noticed the issue is random, 86 times out of 500 runs as below, while
+> keeping clean on parent.
+>
+>
+> d4dbc991714eefcb 97450eb909658573dcacc1063b0
+> ---------------- ---------------------------
+>        fail:runs  %reproduction    fail:runs
+>            |             |             |
+>            :500         17%          86:500   dmesg.INFO:task_blocked_for_more_than#seconds
+>
+>
+>
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202407091527.bb0be229-lkp@intel.com
+>
+>
+> [  996.963402][   T17] INFO: task swapper:1 blocked for more than 491 seconds.
+> [  996.973637][   T17]       Tainted: G        W          6.9.0-rc1-00051-g97450eb90965 #1
+> [  996.983009][   T17] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+> [  996.992369][   T17] task:swapper         state:D stack:5680  pid:1     tgid:1     ppid:0      flags:0x00004000
+> [  997.003585][   T17] Call Trace:
+> [ 997.022071][ T17] __schedule (kernel/sched/core.c:5412 kernel/sched/core.c:6746)
+> [ 997.032795][ T17] ? schedule (kernel/sched/core.c:6804 kernel/sched/core.c:6837)
+> [ 997.051350][ T17] schedule (arch/x86/include/asm/preempt.h:84 (discriminator 13) kernel/sched/core.c:6824 (discriminator 13) kernel/sched/core.c:6838 (discriminator 13))
+> [ 997.061394][ T17] async_synchronize_cookie_domain (kernel/async.c:317 (discriminator 9) kernel/async.c:310 (discriminator 9))
+> [ 997.071656][ T17] ? add_wait_queue (kernel/sched/wait.c:383)
+> [ 997.084201][ T17] wait_for_initramfs (init/initramfs.c:757)
+> [ 997.093158][ T17] ? do_header (init/initramfs.c:761)
+> [ 997.104204][ T17] populate_rootfs (init/initramfs.c:768)
+> [ 997.113736][ T17] do_one_initcall (init/main.c:1238)
+> [ 997.122668][ T17] ? parameq (kernel/params.c:90 (discriminator 1) kernel/params.c:99 (discriminator 1))
+> [ 997.133272][ T17] ? rdinit_setup (init/main.c:1286)
+> [ 997.142176][ T17] ? parse_args (kernel/params.c:142 (discriminator 1) kernel/params.c:186 (discriminator 1))
+> [ 997.172210][ T17] ? do_initcalls (init/main.c:1298 init/main.c:1316)
+> [ 997.183570][ T17] do_initcalls (init/main.c:1299 (discriminator 1) init/main.c:1316 (discriminator 1))
+> [ 997.194241][ T17] ? rest_init (init/main.c:1429)
+> [ 997.204290][ T17] kernel_init_freeable (init/main.c:1552)
+> [ 997.214432][ T17] kernel_init (init/main.c:1439)
+> [ 997.223979][ T17] ret_from_fork (arch/x86/kernel/process.c:153)
+> [ 997.232870][ T17] ? rest_init (init/main.c:1429)
+> [ 997.244227][ T17] ret_from_fork_asm (arch/x86/entry/entry_32.S:737)
+> [ 997.254412][ T17] entry_INT80_32 (arch/x86/entry/entry_32.S:944)
+> [  997.831274][   T17]
+> [  997.831274][   T17] Showing all locks held in the system:
+> [  997.840770][   T17] 4 locks held by kworker/u4:1/16:
+> [  997.844292][   T17] 1 lock held by khungtaskd/17:
+> [ 997.853205][ T17] #0: c26e50c8 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks (kernel/locking/lockdep.c:6612)
+> [  997.880625][   T17]
+> [  997.883881][   T17] =============================================
+> [  997.883881][   T17]
+> BUG: kernel hang in boot stage
+>
+>
+>
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20240709/202407091527.bb0be229-lkp@intel.com
+>
+>
+>
+> --
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
+>
