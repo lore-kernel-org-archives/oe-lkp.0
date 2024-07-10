@@ -1,116 +1,122 @@
-Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com [209.85.208.172])
+Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com [209.85.128.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D23F19347B
-	for <oe-lkp@lists.linux.dev>; Wed, 10 Jul 2024 19:02:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE96219415C
+	for <oe-lkp@lists.linux.dev>; Wed, 10 Jul 2024 19:15:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720638160; cv=none; b=XiiJ4VItfYJk9EE8bMhHQWsEO+NOMH9FBJtvd6IkobOKAwusHM82HFC4NKnmUajjYrGJ2uU8hKTGuAnDNtb2pMKCYxNrfZ6//jzKv9XHyg6YlUJBm7SXFQtNhFP7RngY9hne5LBfnsjrzRICxOF03v5kLxC3atv86ahFDzkmP78=
+	t=1720638910; cv=none; b=QXJ/kQRePbkUlLUuk8EwYKvLDwAQgNjFyqk3zNBKFkrnday8OrRtMb9B3j2tKqRzmYILkOfuUijB53YfTAQ/Am+Wmbf9eaW9nv5xpj67GpPTyrzrWj/awLGvEQNdRuSSxAVATCgjDbkg0K6BYEoMJJ7zYBFTOOUups2QUQpv+kU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720638160; c=relaxed/simple;
-	bh=PswQct0HzHiKHP29eqvg8c9/qemV3myFQvNJF13f+H0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=c+4EvSKmGPs2vqk/9awPXi/hP2YVSQJZftYg93NDGWjGHrZkV/1pMkkhYOgytNckoBFfa+wqAgAYBHu4l9iE1He/KkkXm7iFSy2UO0UQmUcg6kOcR492SYFI4zn+AnljhvBwyn1HJ69BMvMZaR6bxOrk49vX6DeYTpa/IlnQyG0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ki8UiFri; arc=none smtp.client-ip=209.85.208.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1720638910; c=relaxed/simple;
+	bh=J4aNViHux4qP/o52knB7g/6ZzUmCLkg1Jd1N2W1AC0M=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=sUYqgNhdPdOr87evKNWtIDswstNuQoyzmddHmaTWUInKBW7HxlCPePmJK8TNSBzKi124JfihQdDiLQxMTOa4aPh6W9uQdnK9QaM+E07BYNrh3Eo4ocE6AVHQOTPCqDipP35/74R9GH0VawtgTa3z+W8K6jqxrcSNFYmSrxBHDvk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=b/lqHEn3; arc=none smtp.client-ip=209.85.128.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ki8UiFri"
-Received: by mail-lj1-f172.google.com with SMTP id 38308e7fff4ca-2ee920b0781so786971fa.1
-        for <oe-lkp@lists.linux.dev>; Wed, 10 Jul 2024 12:02:38 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="b/lqHEn3"
+Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-64f4c11d2c9so830737b3.2
+        for <oe-lkp@lists.linux.dev>; Wed, 10 Jul 2024 12:15:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1720638157; x=1721242957; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=mPZ60RuL6ih0QLl/o8/14hY+krd4EK1oz7htgw57d1A=;
-        b=ki8UiFriiYFhqHZasrVQ9IQvUvQPEQLLvNnq/nY+lYypDwnlVh2x5aD4aYVPewSVut
-         p4my0ubobiAhNM6zeHD4VxptXkosXY+Z6VYeWwLX7CFQMreaCOMYNfB6vPhvun5UAHox
-         MexwClfZUMGQWYHf3uuybW6Q0IbEfSFSP8WeixaYCatWMwhvrpn4Yjl4iJVHjCVWcohK
-         IUTmfM7esrUCioW1OCAgHzLermBZG9QYcT7o2EH4vhHLvVijtz3FjNGQH8TWT1bgxgnH
-         dxoexMJW2D86+PviYjM8zJj+c/i9h6QfNmOJBO1RDNbQ0d4o2+4vw98tuFrSf1CefQrh
-         hkCg==
+        d=google.com; s=20230601; t=1720638908; x=1721243708; darn=lists.linux.dev;
+        h=mime-version:references:message-id:in-reply-to:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=xpJH7O0IK+mWa36m8icY/tzE/YoR+c7Wf4G7xE5ZzLM=;
+        b=b/lqHEn3BIrJm5hYGsv4TieRrE2Rj0oeamUs0n6BlCugb9x+UVmPiEdQvMsusX45NC
+         FwLOYXqfmV4wL0U3WV3dcWwVlAiUaUzlbkbfN3Pj7d2HVvkktR8d5yPEBypvGGGsFHMk
+         FQkJsBNbG0+UDxwm2dyDpvaxu7jmm6NHkNrr5phEhLIJJS8Od81BRfZ6fDMPHgWSXICs
+         L61IXEdcX2uB2GHzSdFyrcWSrj4dh7eP2BQQ1Q2chBVRG8GmvYlnljeJVZqQuWlZl7Ai
+         V/0K8LMBkc3l5mfJsqvr2qpeUODecEpHgE2Xm1qKLe1p24kOqNVdE+hj5yvitxVeZzL3
+         ApTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1720638157; x=1721242957;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=mPZ60RuL6ih0QLl/o8/14hY+krd4EK1oz7htgw57d1A=;
-        b=ULM1NcktraK2RSam2ptyZbZGd6ojPAtudwUJPF+bFn03WPmzXWHHshrEiJECD05m/N
-         EZCyUI4nZw0s7lujYpzR3Kf+4XJ0IRZ9IXx/NBldeMFPAvalYaPS64MEYDgQsco3KPo6
-         /pJZ4Q3IhUqoPSI75hjUiLFB1binu2cmuJqWT2/bUm6JTyA06j9tOf01s7gFhOw58o5D
-         axYR6AhSOiU2g3nV02KT3ihXQFSrI8OeP1oYIU5uvwWTU8CiWgm0u7iQszeVdgFkHbA/
-         QyF/RiQPqD5VfStuC1V+2DUcefwme0vFA1jOjjMpzEOxXiFsd3BLU+LvIoF+NjJXhTqW
-         QMYw==
-X-Forwarded-Encrypted: i=1; AJvYcCVTpOfguZTSgAKP61GzrSi3bkpC2aOGo6yDp/Cm8lZ+3xBnzze0H1587iaqgKXz4pILD2tf0r7hvh+7N/nf3XSdru1rLFXT
-X-Gm-Message-State: AOJu0YzGVfM+XNT1bPzYg44GNX6dNrCp1l2flT8p8c9MfmvYbhe5nvnp
-	COt0iMzTl0yWXuR7DbsmqXyzsBHmy88+Ax+zxnwNkDbeIoOCA0uI
-X-Google-Smtp-Source: AGHT+IG1L8BlhXFrRo5w/hZ2v8OTkzJw0dc162nd8YCUmtKMgy4icMkIxWKQCufiuhXBIwUNvFBW+Q==
-X-Received: by 2002:a2e:80cd:0:b0:2ee:974c:596f with SMTP id 38308e7fff4ca-2eeb30feba0mr38435041fa.28.1720638156546;
-        Wed, 10 Jul 2024 12:02:36 -0700 (PDT)
-Received: from ?IPV6:2a01:4b00:b211:ad00:1490:6cc2:4d06:940f? ([2a01:4b00:b211:ad00:1490:6cc2:4d06:940f])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-426615876bbsm178014455e9.6.2024.07.10.12.02.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Jul 2024 12:02:36 -0700 (PDT)
-Message-ID: <2fe63ea9-613a-4904-8b68-134442c43261@gmail.com>
-Date: Wed, 10 Jul 2024 20:02:35 +0100
+        d=1e100.net; s=20230601; t=1720638908; x=1721243708;
+        h=mime-version:references:message-id:in-reply-to:subject:cc:to:from
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=xpJH7O0IK+mWa36m8icY/tzE/YoR+c7Wf4G7xE5ZzLM=;
+        b=G4ExAlgwZHGyoJ4hb+j2/JVLpEI5VvijnTpGm8lzlcIBWUA1Ntf6mh8R5NfQe+ynL4
+         oaH4X9+b9qQ8JsJ7mYaDB1lrlBWx5woDcVBXMMAE7ykhqqtaC5JpC7KpQvWopvlvJYaw
+         TaYJIczcvtcew4YSe3RK9NG7/EMfSLSxab09MTAJb1cQ57AYim/iH/OoTmTiOHvrBE/n
+         7zO8vleaNIoNosEbwH+bzj8C0jo9xHHhAk+KULmcHUD6p15gw4vx2chW2eFf5cFQuyse
+         ofo3ESrGzYhMeA9yCABjBe3m9eGppX9aLEzA0RZWsx8xWC7mAQnisYkNRuWZQ7zbGrH2
+         LUkg==
+X-Forwarded-Encrypted: i=1; AJvYcCUp1C1zFnKt71GaM0Tj1N6gdjcdhljpWjuV9VMBqEgpoZOQ3Z6M+zkEMpBEah+/dQCpoDtdY9EXaKvXyIHWdFtLV3Py9tma
+X-Gm-Message-State: AOJu0Yz0zsYzY4t++aIrrGrO2BLgqSEzMaW44f0xyfms513BYSF6D6X5
+	DFofD/sNU8OjMoaMo6n5rFuqiYkgaqH6By203A1H6tC4rwHIo3WxnglIlRCovQ==
+X-Google-Smtp-Source: AGHT+IFWZTHBjlwLdnh07cjhHTC+j0sZPJwKS9lkD9EQ+SwBth2W8WJCPyjo5BJ/hREJijMn9wPueA==
+X-Received: by 2002:a05:690c:ec5:b0:630:de2f:79b8 with SMTP id 00721157ae682-658eed5ebd3mr74295227b3.13.1720638907584;
+        Wed, 10 Jul 2024 12:15:07 -0700 (PDT)
+Received: from darker.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-658e4d2d5d1sm8308867b3.55.2024.07.10.12.15.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Jul 2024 12:15:07 -0700 (PDT)
+Date: Wed, 10 Jul 2024 12:14:55 -0700 (PDT)
+From: Hugh Dickins <hughd@google.com>
+To: Usama Arif <usamaarif642@gmail.com>
+cc: Hugh Dickins <hughd@google.com>, kernel test robot <oliver.sang@intel.com>, 
+    Andrew Morton <akpm@linux-foundation.org>, 
+    Johannes Weiner <hannes@cmpxchg.org>, oe-lkp@lists.linux.dev, 
+    lkp@intel.com, Linux Memory Management List <linux-mm@kvack.org>, 
+    Chengming Zhou <chengming.zhou@linux.dev>, 
+    Yosry Ahmed <yosryahmed@google.com>, Nhat Pham <nphamcs@gmail.com>, 
+    David Hildenbrand <david@redhat.com>, "Huang, Ying" <ying.huang@intel.com>, 
+    Matthew Wilcox <willy@infradead.org>, 
+    Shakeel Butt <shakeel.butt@linux.dev>, Andi Kleen <ak@linux.intel.com>, 
+    linux-kernel@vger.kernel.org, ltp@lists.linux.it
+Subject: Re: [linux-next:master] [mm] 47325a5c88:
+ WARNING:at_mm/slub.c:#free_large_kmalloc
+In-Reply-To: <2fe63ea9-613a-4904-8b68-134442c43261@gmail.com>
+Message-ID: <75bc4bf4-afe0-a1e0-36bb-1fad7ecee210@google.com>
+References: <202407101031.c6c3c651-lkp@intel.com> <dd08adbb-6df5-4556-9fc4-cf37b6234aa1@gmail.com> <053bd429-ae19-4beb-a733-a7a838b1e010@gmail.com> <4bc6400e-6199-4147-9399-4a54c94613fd@gmail.com> <612af749-0a59-f91d-693a-43d6217ffebb@google.com>
+ <2fe63ea9-613a-4904-8b68-134442c43261@gmail.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [linux-next:master] [mm] 47325a5c88:
- WARNING:at_mm/slub.c:#free_large_kmalloc
-To: Hugh Dickins <hughd@google.com>
-Cc: kernel test robot <oliver.sang@intel.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- Johannes Weiner <hannes@cmpxchg.org>, oe-lkp@lists.linux.dev, lkp@intel.com,
- Linux Memory Management List <linux-mm@kvack.org>,
- Chengming Zhou <chengming.zhou@linux.dev>,
- Yosry Ahmed <yosryahmed@google.com>, Nhat Pham <nphamcs@gmail.com>,
- David Hildenbrand <david@redhat.com>, "Huang, Ying" <ying.huang@intel.com>,
- Matthew Wilcox <willy@infradead.org>, Shakeel Butt <shakeel.butt@linux.dev>,
- Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
- ltp@lists.linux.it
-References: <202407101031.c6c3c651-lkp@intel.com>
- <dd08adbb-6df5-4556-9fc4-cf37b6234aa1@gmail.com>
- <053bd429-ae19-4beb-a733-a7a838b1e010@gmail.com>
- <4bc6400e-6199-4147-9399-4a54c94613fd@gmail.com>
- <612af749-0a59-f91d-693a-43d6217ffebb@google.com>
-Content-Language: en-US
-From: Usama Arif <usamaarif642@gmail.com>
-In-Reply-To: <612af749-0a59-f91d-693a-43d6217ffebb@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
 
-
-
-On 10/07/2024 21:49, Hugh Dickins wrote:
-> It's a long time since I was active hereabouts, but the bot report
-> and your flurry of updates make me think that you should step back,
-> slow down, and look more carefully at the precedents here.
+On Wed, 10 Jul 2024, Usama Arif wrote:
+> On 10/07/2024 21:49, Hugh Dickins wrote:
+> > It's a long time since I was active hereabouts, but the bot report
+> > and your flurry of updates make me think that you should step back,
+> > slow down, and look more carefully at the precedents here.
+> > 
+> > IIRC, the main problem is that parts of the swap_info_struct can
+> > still be in use from before while you're wanting to set up new values.
+> > Observe how alloc_swap_info() may return a fresh or an old allocation.
+> > Observe how enable_swap_info() is called after getting swapon_mutex
+> > late in swapon(), once past all possiblities of error.
+> > 
+> > I expect that your new zeromap needs to be taking the same care as is
+> > taken with swap_map and cluster_info: to be safe, follow their example
+> > in both swapon() and swapoff().
+> > 
+> > Hugh
 > 
-> IIRC, the main problem is that parts of the swap_info_struct can
-> still be in use from before while you're wanting to set up new values.
-> Observe how alloc_swap_info() may return a fresh or an old allocation.
-> Observe how enable_swap_info() is called after getting swapon_mutex
-> late in swapon(), once past all possiblities of error.
+> Thanks, yeah sent too many in quick succession :). Will be more careful next time.
 > 
-> I expect that your new zeromap needs to be taking the same care as is
-> taken with swap_map and cluster_info: to be safe, follow their example
-> in both swapon() and swapoff().
+> Both the 2nd and 3rd version are careful to solve the problem of using old allocation
+> which you described.
 > 
-> Hugh
+> The 2nd one takes care of it in the same way as swap_map.
 
-Thanks, yeah sent too many in quick succession :). Will be more careful next time.
+It didn't look like that: it set "p->zeromap = zeromap" as soon as
+zeromap had been allocated; whereas swap_map is only installed later
+via enable_swap_info().
 
-Both the 2nd and 3rd version are careful to solve the problem of using old allocation
-which you described.
+> 
+> But I believe its unnecessary to do all that change in the 2nd version, when you can just
+> set it to NULL after kvfree, which is a much smaller change and takes care of reusing old
+> allocation equally well.
 
-The 2nd one takes care of it in the same way as swap_map.
+It's possible that there's a good reason why zeromap does not need the
+same care as swap_map; and it's possible that things have changed down
+the years and swap_map itself doesn't even need all that care.
 
-But I believe its unnecessary to do all that change in the 2nd version, when you can just
-set it to NULL after kvfree, which is a much smaller change and takes care of reusing old
-allocation equally well.
+But you haven't persuaded me: I repeat, step back, slow down,
+think carefully about why the existing sequence is as it is
+(and please don't respond without doing so).
+
+Hugh
