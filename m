@@ -1,42 +1,121 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from out-184.mta0.migadu.com (out-184.mta0.migadu.com [91.218.175.184])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF84B139D05
-	for <oe-lkp@lists.linux.dev>; Sun, 14 Jul 2024 15:58:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1806DDC5
+	for <oe-lkp@lists.linux.dev>; Mon, 15 Jul 2024 02:41:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.184
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720972690; cv=none; b=QMzrcYxi1KcsJHfl8etFUxRIhwXcDyWS0bBnDIiZQyTd6c2LBdlk7nm2wgfe25B98qvyeE5N9Vckt/2TXNWSI+Z40eIlt9q2fj8GcgVfRx8q5Cw5D7h9GUxKC/dcU90ila6sHPClYFEm3sxOmRQoTNBXhprI+gIcdagwL39Updk=
+	t=1721011295; cv=none; b=J7bMy+3g4fF0Bs93/u07o+X2XsRjyzMGD9J22lWwJ/XC6RfPhOCREk0N5KJNhppZ20gTunzqExhesxIHC257jsVgtEwGThqMgMP4Wskvq1Xzm97x3NPRqLnRvzQuKnNJpHFOInJVTv0TKDiq3szSLQetK8liLu6GfbzZtV8J+QM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720972690; c=relaxed/simple;
-	bh=dV5nzCcAd/fdw8c23QNtbYqmMkxlUt5hYKKDA59RRUM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=H88xmEZ1FDS6Ov07/p2Io9IwxGS55n/yq+FY9F1GD9G/YFLfW+KmmBzs2eEpYQeP6XDC7JL/BDTTsWnZIK3fI25lX+pliEs7SzV0io7UHVRPOluBC/7DG/Mid3+GaYoT+bgH71zVOYA737v7d7zBcWn4Nq/bURr/UnulC2Uw6tE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 3D4E268B05; Sun, 14 Jul 2024 17:57:58 +0200 (CEST)
-Date: Sun, 14 Jul 2024 17:57:58 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: Dave Chinner <dchinner@redhat.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, Linux Memory Management List <linux-mm@kvack.org>,
-	Chandan Babu R <chandanbabu@kernel.org>,
-	"Darrick J. Wong" <djwong@kernel.org>,
-	Christoph Hellwig <hch@lst.de>, linux-xfs@vger.kernel.org
-Subject: Re: [linux-next:master] [xfs]  c1220522ef: xfstests.xfs.011.fail
-Message-ID: <20240714155757.GA19089@lst.de>
-References: <202407142151.a0d44fbb-oliver.sang@intel.com>
+	s=arc-20240116; t=1721011295; c=relaxed/simple;
+	bh=snMf7HzH7J2dr+IDOBFDYmYluvIOXw6b/0NlGy93V+s=;
+	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
+	 Message-Id:References:To; b=UPBAreDl68FzBum3Xjt51TU0hh9cT/U+hC5G6j3jGYnVaWXhnY6ONIFR2nEYvvhIJKQ14mvs4QzUIg00gAIf42U5ZSmk3FcKv7i9g+NpFTOQVNnvxp+/o6LqRva+aO7fZqqzMyum3AKOQWygI/hf8+2LadDzpCdobC1eMBSGWTg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=EhiVEr1s; arc=none smtp.client-ip=91.218.175.184
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="EhiVEr1s"
+X-Envelope-To: oliver.sang@intel.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1721011289;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=snMf7HzH7J2dr+IDOBFDYmYluvIOXw6b/0NlGy93V+s=;
+	b=EhiVEr1s1uBJO3KUGzG42t0vzhixEhQL9Cc5s24YTX/YL0uw4hKXhPGRYHFs33PioDKT1M
+	LhTm+FjmNe4HiZTSSrBWyeJIqbkXN6DVAVK6zXVSl74dZwtXGhSOLt/Y1PhPlz96E1F0S5
+	SP2pEL/Wl0Z67rv7j6WOswnpMKJyOi8=
+X-Envelope-To: yuzhao@google.com
+X-Envelope-To: oe-lkp@lists.linux.dev
+X-Envelope-To: lkp@intel.com
+X-Envelope-To: linux-mm@kvack.org
+X-Envelope-To: akpm@linux-foundation.org
+X-Envelope-To: david@redhat.com
+X-Envelope-To: fvdl@google.com
+X-Envelope-To: willy@infradead.org
+X-Envelope-To: peterx@redhat.com
+X-Envelope-To: yang@os.amperecomputing.com
+X-Envelope-To: linux-kernel@vger.kernel.org
+X-Envelope-To: ying.huang@intel.com
+X-Envelope-To: feng.tang@intel.com
+X-Envelope-To: fengwei.yin@intel.com
+Content-Type: text/plain;
+	charset=utf-8
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202407142151.a0d44fbb-oliver.sang@intel.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3774.600.62\))
+Subject: Re: [linux-next:master] [mm/hugetlb_vmemmap] 875fa64577:
+ vm-scalability.throughput -34.3% regression
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Muchun Song <muchun.song@linux.dev>
+In-Reply-To: <ZpPD4Mz3t5xT87aN@xsang-OptiPlex-9020>
+Date: Mon, 15 Jul 2024 10:40:43 +0800
+Cc: Yu Zhao <yuzhao@google.com>,
+ oe-lkp@lists.linux.dev,
+ kernel test robot <lkp@intel.com>,
+ Linux Memory Management List <linux-mm@kvack.org>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ David Hildenbrand <david@redhat.com>,
+ Frank van der Linden <fvdl@google.com>,
+ Matthew Wilcox <willy@infradead.org>,
+ Peter Xu <peterx@redhat.com>,
+ Yang Shi <yang@os.amperecomputing.com>,
+ LKML <linux-kernel@vger.kernel.org>,
+ Huang Ying <ying.huang@intel.com>,
+ Feng Tang <feng.tang@intel.com>,
+ Yin Fengwei <fengwei.yin@intel.com>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <CB8E06DE-0DB7-4605-AB19-19CF4F0F17B9@linux.dev>
+References: <202407091001.1250ad4a-oliver.sang@intel.com>
+ <CAOUHufYdGbgnqNprKVUH8woMR_R5Wcc=281vcmm3+NRO-=+-jw@mail.gmail.com>
+ <ZpPD4Mz3t5xT87aN@xsang-OptiPlex-9020>
+To: Oliver Sang <oliver.sang@intel.com>
+X-Migadu-Flow: FLOW_OUT
 
-Yes, this is a known change the log internals exposed through sysfs.
-We have a patch for xfstests for it, that I'll resend tomorrow.
+
+
+> On Jul 14, 2024, at 20:26, Oliver Sang <oliver.sang@intel.com> wrote:
+>=20
+> hi, Yu Zhao,
+>=20
+> On Wed, Jul 10, 2024 at 12:22:40AM -0600, Yu Zhao wrote:
+>> On Mon, Jul 8, 2024 at 11:11=E2=80=AFPM kernel test robot =
+<oliver.sang@intel.com> wrote:
+>>>=20
+>>> Hello,
+>>>=20
+>>> kernel test robot noticed a -34.3% regression of =
+vm-scalability.throughput on:
+>>>=20
+>>>=20
+>>> commit: 875fa64577da9bc8e9963ee14fef8433f20653e7 =
+("mm/hugetlb_vmemmap: fix race with speculative PFN walkers")
+>>=20
+>> This is likely caused by synchronize_rcu() wandering into the
+>> allocation path. I'll patch that up soon.
+>>=20
+>=20
+> we noticed this commit has already been merged into mainline
+>=20
+> [bd225530a4c717714722c3731442b78954c765b3] mm/hugetlb_vmemmap: fix =
+race with speculative PFN walkers
+> branch: linus/master
+
+Did you test with HVO enabled (there are two ways to enable HVO: 1) =
+adding cmdline with "hugetlb_free_vmemmap=3Don"
+or 2) write 1 to /proc/sys/vm/hugetlb_optimize_vmemmap)? I want to =
+confirm if the regression is related
+to HVO routine.
+
+Thanks.
+
+>=20
+> and the regression still exists in our tests. do you want us to test =
+your
+> patch? Thanks!
+
