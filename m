@@ -1,61 +1,45 @@
-Received: from out-182.mta0.migadu.com (out-182.mta0.migadu.com [91.218.175.182])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57E4813AA5F
-	for <oe-lkp@lists.linux.dev>; Mon, 15 Jul 2024 22:18:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0670E20DF4;
+	Mon, 15 Jul 2024 23:14:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721081929; cv=none; b=eaBOposZVF9c6+egeJQ+XEJ8V8vDw48VRPvsQqiMtbAHbDHz14Zf4aHz2/Jo2J0Uh5JfThndkSs54Co9+Y5KY12KqwDca7o8kLihoNJqKKtqFAtpSKCK8Zw4zhPNIaYMp538P9WEoibkYVTfTUTwQnxamyRjY86Yy2qAjmDZtWo=
+	t=1721085292; cv=none; b=PvP8onAddDty+PsXbXnxJHUunpb4m1QKBsUUNLLa21BP5n2EUFb1jVsM6g9MxQhEY+IOYJczODkg1FSbeIoLQVx+/FWrFoZPRXQstDqFKjejGN4Zq1hYjuYgZ+mmG24sGWM9X1M1B1N78y8xXxlbrLeV4eFcTt4+UjDCCperetc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721081929; c=relaxed/simple;
-	bh=uUDJlFQNtryZCyjLm2hTdZxko2VvJirRXSKkH/hzgS8=;
+	s=arc-20240116; t=1721085292; c=relaxed/simple;
+	bh=ritWV+OYVcHsKyTDrpQbx04dlvrJNLYOqNN467NHmNA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CnhuhgVEi8RPbNMD3eUZvvGHHh028LAhIvMIcZ7mttMzX4Cc9PD3ovHel8ucQd7nadxAVW9bObj+GcCg3jAsL1FhZZUiwrvgHf1LJfo61fqUkCJX15ijlz2HLMtkcTUPkeHmk6/0asWqvuqhFbs5oTnQWhpE5TBjucJuJllZ1Ks=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=GGceJGDY; arc=none smtp.client-ip=91.218.175.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	 Content-Type:Content-Disposition:In-Reply-To; b=T5+x8Xq18RR3UEKW+fmmr6L3BM6aXTa9WSmNNzHDTmuBBu+cFAtBYq9cfWTcnVQEVYKQ4kFcyrN1mPizgL/9XhFfdcAz+z7V5jnXYq/Hzw4NJpNxlun7nqDsUfbN5YS38MJAy98wYRIsfmxYt4axocj8Z9FtjYmMsi2/SPEBM8Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OlmMJ+dM; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="GGceJGDY"
-X-Envelope-To: oliver.sang@intel.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1721081925;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=X7bEFxNiJqRfyC/mXt6ygUCHixC1nCej/Q7vGVmvLrw=;
-	b=GGceJGDYQ/HGmUtPaoTlyt96ECaP1FIhIW0AY3LKqmjh4Q9yhl4Zj7AY/FDB+vi/7SAExK
-	a4pqcAtHvmdSImaH3nCx721Eqy/xNaljA/ym5F8sht88enRNAOGHQu8Bo5V97612h9ELFP
-	IP9Yq5cjcXyv6qDDX/bLbv1T5AUpNGE=
-X-Envelope-To: oe-lkp@lists.linux.dev
-X-Envelope-To: lkp@intel.com
-X-Envelope-To: linux-mm@kvack.org
-X-Envelope-To: akpm@linux-foundation.org
-X-Envelope-To: shakeel.butt@linux.dev
-X-Envelope-To: hannes@cmpxchg.org
-X-Envelope-To: mhocko@kernel.org
-X-Envelope-To: muchun.song@linux.dev
-X-Envelope-To: cgroups@vger.kernel.org
-X-Envelope-To: ying.huang@intel.com
-X-Envelope-To: feng.tang@intel.com
-X-Envelope-To: fengwei.yin@intel.com
-Date: Mon, 15 Jul 2024 22:18:39 +0000
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Roman Gushchin <roman.gushchin@linux.dev>
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
-	Linux Memory Management List <linux-mm@kvack.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Shakeel Butt <shakeel.butt@linux.dev>,
-	Johannes Weiner <hannes@cmpxchg.org>,
-	Michal Hocko <mhocko@kernel.org>,
-	Muchun Song <muchun.song@linux.dev>, cgroups@vger.kernel.org,
-	ying.huang@intel.com, feng.tang@intel.com, fengwei.yin@intel.com
-Subject: Re: [linux-next:master] [mm]  98c9daf5ae:  aim7.jobs-per-min -29.4%
- regression
-Message-ID: <ZpWgP-h5X7GKj1ay@google.com>
-References: <202407121335.31a10cb6-oliver.sang@intel.com>
- <ZpF-A9rl8TiuZJPZ@google.com>
- <ZpUux8bvpL8ARYDE@xsang-OptiPlex-9020>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OlmMJ+dM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E52CC4AF0C;
+	Mon, 15 Jul 2024 23:14:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1721085291;
+	bh=ritWV+OYVcHsKyTDrpQbx04dlvrJNLYOqNN467NHmNA=;
+	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+	b=OlmMJ+dMZeiZsplKWLrmbF3HUv2aBGYXEFtu5wDQgM4Hmsp2cIZJ00KqPVjGLwjmI
+	 7dDqvqRd828pif2k2zgs8W5cPR5400RhsS3gUZvR81F4pVOsFw/1lGtLb8BUkcJpo8
+	 0cKlPQkZrySmssUwk7kxotNB5glZMTLJ/Pp5RsUe6hvFMgMpnH1XqO3H6P9eVlSkSM
+	 Jvgd9+hcbh3Op2dysmGVyLT282mb8aNAh0pPPXmHg2aSIpH39Rk16yRLrQQqR5mJvO
+	 mFkodRqL3ob1R06uXKMKufr/cqnuxX1u0EOWdwrMS7uLTzqgSjCjPC4xNRrnKYk+Od
+	 smQ6xPuV8HBiQ==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+	id 184A7CE134B; Mon, 15 Jul 2024 16:14:51 -0700 (PDT)
+Date: Mon, 15 Jul 2024 16:14:51 -0700
+From: "Paul E. McKenney" <paulmck@kernel.org>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: Anna-Maria Behnsen <anna-maria@linutronix.de>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, linux-kernel@vger.kernel.org, x86@kernel.org,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Frederic Weisbecker <frederic@kernel.org>
+Subject: Re: [tip:timers/urgent] [timers/migration]  8cdb61838e:
+ WARNING:at_kernel/time/timer_migration.c:#tmigr_connect_child_parent
+Message-ID: <68204aba-dc0a-47dc-902b-76d6553e17de@paulmck-laptop>
+Reply-To: paulmck@kernel.org
+References: <202407101636.d9d4e8be-oliver.sang@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -64,55 +48,144 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZpUux8bvpL8ARYDE@xsang-OptiPlex-9020>
-X-Migadu-Flow: FLOW_OUT
+In-Reply-To: <202407101636.d9d4e8be-oliver.sang@intel.com>
 
-On Mon, Jul 15, 2024 at 10:14:31PM +0800, Oliver Sang wrote:
-> hi, Roman Gushchin,
+On Wed, Jul 10, 2024 at 04:37:00PM +0800, kernel test robot wrote:
 > 
-> On Fri, Jul 12, 2024 at 07:03:31PM +0000, Roman Gushchin wrote:
-> > On Fri, Jul 12, 2024 at 02:04:48PM +0800, kernel test robot wrote:
-> > > 
-> > > 
-> > > Hello,
-> > > 
-> > > kernel test robot noticed a -29.4% regression of aim7.jobs-per-min on:
-> > > 
-> > > 
-> > > commit: 98c9daf5ae6be008f78c07b744bcff7bcc6e98da ("mm: memcg: guard memcg1-specific members of struct mem_cgroup_per_node")
-> > > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
-> > 
-> > Hello,
-> > 
-> > thank you for the report!
-> > 
-> > I'd expect that the regression should be fixed by the commit
-> > "mm: memcg: add cache line padding to mem_cgroup_per_node".
-> > 
-> > Can you, please, confirm that it's not the case?
-> > 
-> > Thank you!
 > 
-> in our this aim7 test, we found the performance partially recovered by
-> "mm: memcg: add cache line padding to mem_cgroup_per_node" but not fully
+> Hello,
+> 
+> kernel test robot noticed "WARNING:at_kernel/time/timer_migration.c:#tmigr_connect_child_parent" on:
+> 
+> commit: 8cdb61838ee5c63556773ea2eed24deab6b15257 ("timers/migration: Move hierarchy setup into cpuhotplug prepare callback")
+> https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git timers/urgent
 
-Thank you for providing the detailed information!
+For whatever it is worth, I am also seeing this on refscale runs on
+recent -next.
 
-Can you, please, check if the following patch resolves the regression entirely?
+The reproducer is to clone perfbook [1] in your ~/git directory
+(as in ~/git/perfboot), then run this from your Linux source tree,
+preferably on a system with few CPUs:
 
-Thanks,
-Roman
+bash ~/git/perfbook/CodeSamples/defer/rcuscale.sh
 
---
+The output will have "FAIL" in it, which indicates that the corresponding
+guest OS splatted.  If it would be useful, I would be happy to produce
+a one-liner that runs the guest OS only once and leaves the console
+output around.  Otherwise, I will continue being lazy.  ;-)
 
-diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-index 60418934827c..3aae347cda09 100644
---- a/include/linux/memcontrol.h
-+++ b/include/linux/memcontrol.h
-@@ -110,6 +110,7 @@ struct mem_cgroup_per_node {
-        /* Fields which get updated often at the end. */
-        struct lruvec           lruvec;
-        unsigned long           lru_zone_size[MAX_NR_ZONES][NR_LRU_LISTS];
-+       CACHELINE_PADDING(_pad2_);
-        struct mem_cgroup_reclaim_iter  iter;
- };
+							Thanx, Paul
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/perfbook.git
+
+> [test failed on linux-next/master 82d01fe6ee52086035b201cfa1410a3b04384257]
+> 
+> in testcase: filebench
+> version: filebench-x86_64-22620e6-1_20240224
+> with following parameters:
+> 
+> 	disk: 1HDD
+> 	fs: xfs
+> 	test: randomwrite.f
+> 	cpufreq_governor: performance
+> 
+> 
+> 
+> compiler: gcc-13
+> test machine: 128 threads 2 sockets Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz (Ice Lake) with 128G memory
+> 
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+> 
+> 
+> 
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202407101636.d9d4e8be-oliver.sang@intel.com
+> 
+> 
+> [   16.306955][  T209] ------------[ cut here ]------------
+> [ 16.312287][ T209] WARNING: CPU: 32 PID: 209 at kernel/time/timer_migration.c:1620 tmigr_connect_child_parent (kernel/time/timer_migration.c:1620 (discriminator 7)) 
+> [   16.323148][  T209] Modules linked in:
+> [   16.326901][  T209] CPU: 32 PID: 209 Comm: cpuhp/32 Not tainted 6.10.0-rc6-00002-g8cdb61838ee5 #1
+> [ 16.335766][ T209] RIP: 0010:tmigr_connect_child_parent (kernel/time/timer_migration.c:1620 (discriminator 7)) 
+> [ 16.341945][ T209] Code: c6 07 00 0f 1f 00 fb 66 90 0f b6 45 60 48 89 e2 48 89 ee 48 89 df 88 44 24 18 e8 ec fc ff ff 84 c0 75 09 48 83 7b 08 00 74 02 <0f> 0b 48 8b 44 24 20 65 48 2b 04 25 28 00 00 00 75 36 48 83 c4 28
+> All code
+> ========
+>    0:	c6 07 00             	movb   $0x0,(%rdi)
+>    3:	0f 1f 00             	nopl   (%rax)
+>    6:	fb                   	sti    
+>    7:	66 90                	xchg   %ax,%ax
+>    9:	0f b6 45 60          	movzbl 0x60(%rbp),%eax
+>    d:	48 89 e2             	mov    %rsp,%rdx
+>   10:	48 89 ee             	mov    %rbp,%rsi
+>   13:	48 89 df             	mov    %rbx,%rdi
+>   16:	88 44 24 18          	mov    %al,0x18(%rsp)
+>   1a:	e8 ec fc ff ff       	callq  0xfffffffffffffd0b
+>   1f:	84 c0                	test   %al,%al
+>   21:	75 09                	jne    0x2c
+>   23:	48 83 7b 08 00       	cmpq   $0x0,0x8(%rbx)
+>   28:	74 02                	je     0x2c
+>   2a:*	0f 0b                	ud2    		<-- trapping instruction
+>   2c:	48 8b 44 24 20       	mov    0x20(%rsp),%rax
+>   31:	65 48 2b 04 25 28 00 	sub    %gs:0x28,%rax
+>   38:	00 00 
+>   3a:	75 36                	jne    0x72
+>   3c:	48 83 c4 28          	add    $0x28,%rsp
+> 
+> Code starting with the faulting instruction
+> ===========================================
+>    0:	0f 0b                	ud2    
+>    2:	48 8b 44 24 20       	mov    0x20(%rsp),%rax
+>    7:	65 48 2b 04 25 28 00 	sub    %gs:0x28,%rax
+>    e:	00 00 
+>   10:	75 36                	jne    0x48
+>   12:	48 83 c4 28          	add    $0x28,%rsp
+> [   16.361382][  T209] RSP: 0000:ffa0000007587da0 EFLAGS: 00010286
+> [   16.367302][  T209] RAX: 0000000000000000 RBX: ff11002000b56b00 RCX: 0000000000010101
+> [   16.375130][  T209] RDX: 0000000000010101 RSI: ff11002000b56b00 RDI: ff11002000b56b50
+> [   16.382955][  T209] RBP: ff11002000b57500 R08: 0000000000000101 R09: ffa0000007587da0
+> [   16.390782][  T209] R10: 0000000000000001 R11: 00000000c5672a10 R12: 0000000000000001
+> [   16.398608][  T209] R13: ff11001084311240 R14: 0000000000000020 R15: 0000000000000002
+> [   16.406433][  T209] FS:  0000000000000000(0000) GS:ff11001fffe00000(0000) knlGS:0000000000000000
+> [   16.415213][  T209] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   16.421650][  T209] CR2: 0000000000000000 CR3: 000000207de1c001 CR4: 0000000000771ef0
+> [   16.429477][  T209] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> [   16.437301][  T209] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> [   16.445128][  T209] PKRU: 55555554
+> [   16.448535][  T209] Call Trace:
+> [   16.451680][  T209]  <TASK>
+> [ 16.454479][ T209] ? __warn (kernel/panic.c:693) 
+> [ 16.458405][ T209] ? tmigr_connect_child_parent (kernel/time/timer_migration.c:1620 (discriminator 7)) 
+> [ 16.463980][ T209] ? report_bug (lib/bug.c:180 lib/bug.c:219) 
+> [ 16.468338][ T209] ? handle_bug (arch/x86/kernel/traps.c:239) 
+> [ 16.472523][ T209] ? exc_invalid_op (arch/x86/kernel/traps.c:260 (discriminator 1)) 
+> [ 16.477055][ T209] ? asm_exc_invalid_op (arch/x86/include/asm/idtentry.h:621) 
+> [ 16.481936][ T209] ? tmigr_connect_child_parent (kernel/time/timer_migration.c:1620 (discriminator 7)) 
+> [ 16.487507][ T209] tmigr_setup_groups+0x1e6/0x430 
+> [ 16.492993][ T209] ? __pfx_tmigr_cpu_prepare (kernel/time/timer_migration.c:1727) 
+> [ 16.498305][ T209] tmigr_cpu_prepare (kernel/time/timer_migration.c:1721 kernel/time/timer_migration.c:1737) 
+> [ 16.502927][ T209] cpuhp_invoke_callback (kernel/cpu.c:194) 
+> [ 16.507980][ T209] ? __pfx_smpboot_thread_fn (kernel/smpboot.c:107) 
+> [ 16.513291][ T209] cpuhp_thread_fun (kernel/cpu.c:1092 (discriminator 1)) 
+> [ 16.517910][ T209] smpboot_thread_fn (kernel/smpboot.c:164) 
+> [ 16.522615][ T209] kthread (kernel/kthread.c:389) 
+> [ 16.526367][ T209] ? __pfx_kthread (kernel/kthread.c:342) 
+> [ 16.530814][ T209] ret_from_fork (arch/x86/kernel/process.c:147) 
+> [ 16.535088][ T209] ? __pfx_kthread (kernel/kthread.c:342) 
+> [ 16.539533][ T209] ret_from_fork_asm (arch/x86/entry/entry_64.S:257) 
+> [   16.544153][  T209]  </TASK>
+> [   16.547039][  T209] ---[ end trace 0000000000000000 ]---
+> [   16.562459][    T1] Timer migration setup failed
+> 
+> 
+> 
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20240710/202407101636.d9d4e8be-oliver.sang@intel.com
+> 
+> 
+> 
+> -- 
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
+> 
