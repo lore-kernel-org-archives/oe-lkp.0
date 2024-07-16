@@ -1,47 +1,40 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from lobo.ruivo.org (lobo.ruivo.org [173.14.175.98])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EE09197A72;
-	Tue, 16 Jul 2024 13:41:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C658D1DDCE
+	for <oe-lkp@lists.linux.dev>; Tue, 16 Jul 2024 15:51:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=173.14.175.98
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721137308; cv=none; b=a2GHmYP5ryhmdETEyAOPqKXbgnPe9BUtxYpdkZwPg9s3UmYAQWjOKcCf3xDMBoDraGGvbSJQ/APUF7EEezXgDgYkBUysjohLCIaGOoEzFtoLlMpeg5TkRefDFYvYthsw+12wcnih2u0s3lfXmjFpOSyQ9QeqAZgjweacA5nudbg=
+	t=1721145072; cv=none; b=cWFuM5H3x0fL5wG5+iJwkfDgjvmXNdfohCOYStpt3td+OZaqJBcWgIfKuw+dB1NDBbT9ZisDWJ0eHRqrbcL5ZKLFIDHVDo9V9SW9cOTKPlFL0m6UnTtOKjN5mbj+H/y5h82napnwRuES++ZqM4v9Ov1ZRWoywIq05gqwUZZBqgs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721137308; c=relaxed/simple;
-	bh=IWkCAz89d6Km4WiT5t373st9cdv3rsIIWAfS6Bz9G1c=;
+	s=arc-20240116; t=1721145072; c=relaxed/simple;
+	bh=6vooZs8JDGVvFBhUVlXJezG61siwwbvbwOx78jNrCE8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ss7coxYvY3ydVMwWFvrafB1lrg9BO2WiR+jBpAkx4J53OcSOoSdM0QxlLoOSYOBqsAL7Dpi2j55/iPxHLuMKc/sqS4isgkKgYHEqcR9GkqTRaCn8VainO+vCFQifEF2wRuvdgnFv685PjKYvjx96xdXxFJOIG2opLHDulQwRyM4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=h9G0QIny; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="h9G0QIny"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93FE4C116B1;
-	Tue, 16 Jul 2024 13:41:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1721137307;
-	bh=IWkCAz89d6Km4WiT5t373st9cdv3rsIIWAfS6Bz9G1c=;
-	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-	b=h9G0QInyiSRxryWTKGC+6E5jn9W/3fT2NydlGJ/i4rBX/rhqR2q/GxMqss9YUwFyh
-	 w8kN9Cun2oZz0MYcaToDw50KvgCEKlp5j7gCkZO/uM3nz39MSGk3JqXyFEOCeJM4YC
-	 igqCkhH/E+F6urAPDhmqnIS+d7KtvFWJjT2nx5eNvh3wVj5ueglVNqmaMzC4O7BOEo
-	 xqAvU3HZG7CigS6aQAYBXBvjX/tT40Sb9CxZLqn1EgkbzXmUklNUqrBZZpGrVMnIQ8
-	 Ysh739R5KWrF8vELIA4kNppRruTU7fwms10C44eVHbBdoJEk5QnY3C980357LpM2C0
-	 W6wlqS921cdZA==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-	id 3B75BCE0A70; Tue, 16 Jul 2024 06:41:47 -0700 (PDT)
-Date: Tue, 16 Jul 2024 06:41:47 -0700
-From: "Paul E. McKenney" <paulmck@kernel.org>
-To: Anna-Maria Behnsen <anna-maria@linutronix.de>
-Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, linux-kernel@vger.kernel.org, x86@kernel.org,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Frederic Weisbecker <frederic@kernel.org>
-Subject: Re: [tip:timers/urgent] [timers/migration]  8cdb61838e:
- WARNING:at_kernel/time/timer_migration.c:#tmigr_connect_child_parent
-Message-ID: <75673424-69b3-4774-a647-d41a259f9a55@paulmck-laptop>
-Reply-To: paulmck@kernel.org
-References: <202407101636.d9d4e8be-oliver.sang@intel.com>
- <68204aba-dc0a-47dc-902b-76d6553e17de@paulmck-laptop>
- <87ikx53i0g.fsf@somnus>
+	 Content-Type:Content-Disposition:In-Reply-To; b=dYFp34X83ycH+zRh0d3ypLkA/DDK/VIviH9wX3DhtLrgfBSfc5UVqUULX5Y5njE8mNQRiinVxGmAeFN21pXJ9GmlxS+DgRa9FIAATP5gKG6mZ976aVDSaZ/MWkBJ7+O2VSPYA3fc5t77a29oOjbsrHPrt6zV9GCA48fvuJgUjSA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ruivo.org; spf=pass smtp.mailfrom=ruivo.org; arc=none smtp.client-ip=173.14.175.98
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ruivo.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ruivo.org
+Received: by lobo.ruivo.org (Postfix, from userid 1011)
+	id 68A65102555; Tue, 16 Jul 2024 11:44:30 -0400 (EDT)
+X-Spam-Level: 
+Received: from jake.ruivo.org (bob.qemu.ruivo [192.168.72.19])
+	by lobo.ruivo.org (Postfix) with ESMTPSA id 1BCB4102549;
+	Tue, 16 Jul 2024 11:44:27 -0400 (EDT)
+Received: by jake.ruivo.org (Postfix, from userid 1000)
+	id 09B97120D91; Tue, 16 Jul 2024 11:44:27 -0400 (EDT)
+Date: Tue, 16 Jul 2024 11:44:27 -0400
+From: Aristeu Rozanski <aris@ruivo.org>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: Aristeu Rozanski <aris@redhat.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, Linux Memory Management List <linux-mm@kvack.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Muchun Song <muchun.song@linux.dev>,
+	David Hildenbrand <david@redhat.com>,
+	Vishal Moola <vishal.moola@gmail.com>
+Subject: Re: [linux-next:master] [hugetlb]  003af997c8:
+ libhugetlbfs-test.32/64bit.counters_sh.fail
+Message-ID: <20240716154427.GI844599@cathedrallabs.org>
+References: <202407162105.5eab5c8f-oliver.sang@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -50,47 +43,11 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87ikx53i0g.fsf@somnus>
+In-Reply-To: <202407162105.5eab5c8f-oliver.sang@intel.com>
+User-Agent: Mutt/2.2.12 (2023-09-09)
 
-On Tue, Jul 16, 2024 at 09:36:47AM +0200, Anna-Maria Behnsen wrote:
-> Hi Paul,
-> 
-> "Paul E. McKenney" <paulmck@kernel.org> writes:
-> 
-> > On Wed, Jul 10, 2024 at 04:37:00PM +0800, kernel test robot wrote:
-> >> 
-> >> 
-> >> Hello,
-> >> 
-> >> kernel test robot noticed "WARNING:at_kernel/time/timer_migration.c:#tmigr_connect_child_parent" on:
-> >> 
-> >> commit: 8cdb61838ee5c63556773ea2eed24deab6b15257 ("timers/migration: Move hierarchy setup into cpuhotplug prepare callback")
-> >> https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git timers/urgent
-> >
-> > For whatever it is worth, I am also seeing this on refscale runs on
-> > recent -next.
-> >
-> > The reproducer is to clone perfbook [1] in your ~/git directory
-> > (as in ~/git/perfboot), then run this from your Linux source tree,
-> > preferably on a system with few CPUs:
-> >
-> > bash ~/git/perfbook/CodeSamples/defer/rcuscale.sh
-> >
-> > The output will have "FAIL" in it, which indicates that the corresponding
-> > guest OS splatted.  If it would be useful, I would be happy to produce
-> > a one-liner that runs the guest OS only once and leaves the console
-> > output around.  Otherwise, I will continue being lazy.  ;-)
-> 
-> Thanks for the report. I found the root cause for it and I am working on
-> a fix as the commit which triggers the warning also has another
-> problem... And I already requested to drop the tip timers/urgent patches
-> (at least my patches).
-> 
-> So, enjoy being lazy!
+Taking a look on this.
 
-Glad that you are on it, thank you!
+-- 
+Aristeu
 
-And yes, the option of being lazy seems to be increasingly attractive
-as the years rush by...  ;-)
-
-							Thanx, Paul
