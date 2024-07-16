@@ -1,262 +1,292 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC5EC19AD4D
-	for <oe-lkp@lists.linux.dev>; Tue, 16 Jul 2024 12:46:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.11
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721134016; cv=fail; b=bUYuxMwVDadXcl5+mY3Xc6+u8teFHUcV/TJezk7KqxusHnfLIEMYQKm8yM7gEJXCYYPyEI2oN8yAN4dM3QR2445TtanogQbEGsg003zweiDmJHUYuOWyQZ6uKPYnGzQLlHitpvXDjBMKJpjcqKhIqOtPqwqu5Zd9fRbIGhRDikE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721134016; c=relaxed/simple;
-	bh=vHttqJ3ugLzrh/8urGBB3OynS37HdA5THb7yoLLGiJ4=;
-	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=YaGq1iZDf2rUsQ6tCRBhCY2e7RZ0C+xBVOvvshiNtuidMg2QTL6/9ed3Vnw/nW51w0rQLt/ZJOcOfnqTlmrzOyVc8PTTYm47H8ZDY37T6Ppp7dRwyMGdI4JPBY/fKLrUzI0AYpdGUZllRQSiTd/Msyk+wE5eVvnIr3VmcRw+NF4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DHL6Q7qy; arc=fail smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8778613CABC
+	for <oe-lkp@lists.linux.dev>; Tue, 16 Jul 2024 12:52:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1721134381; cv=none; b=WFgn1O7Q3jDUyEmFwy6bLeQ5y9YdnJ231OVu/RMj2WtGbKrso+orCyecILp5617WiOL8R16UygI0MM546nsdhNp8X1uCcOnrVuiDsv6KCtn9Od86g7IJXup8jUe70Ko/CU9/XgKN6ckIF1SKUoY3jq+M7VnxAh6jCF5dXZRA/5Y=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1721134381; c=relaxed/simple;
+	bh=SSgUscryii1clarjrDEuWe0oAR9tIv+UZaWDyL8CiQM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=uQt78nawFzrl1/c2nLVjy26npLPElNY+gGkXoINw/TLer51ck+XQGc0fbhjgWD2atpDzlMuCZnpM1n2wpIkmDDKWXNlKqo9T3+c5P5aYPbfBdWmco7C4r3pyfFQZ7Mpk+ztbg0UHJ66jkx76E5uuHbO3xhi8fDZJQw63qv2wXSE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=m0fDHM7m; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DHL6Q7qy"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="m0fDHM7m"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1721134014; x=1752670014;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   mime-version;
-  bh=vHttqJ3ugLzrh/8urGBB3OynS37HdA5THb7yoLLGiJ4=;
-  b=DHL6Q7qycgP8FzO7Sk2ugS8F7+1t3pU/rP5wjAk7/sF0BZTWpbj+OTdB
-   khElLzwO6XvRrZf257Lh7D8NK34UpFSPfovzf3A+UdkMnYpNJZjwFQLyT
-   Dc5qFPonQcCXLaFaJBTit09OOAo9SF8z9Nmg/eoH8jel9nX3ke7Md2nno
-   VO43Lp1jaZMfsb18Anaz5wwbLyQbDrR4X5rxsVXYfGveTwOlGcfjDt/b4
-   iBgKNtidvMRElWc0vFkFpc+LCXz0iVwWX6UGMA3uBJ89UjYYyGoXDIrOE
-   YvTsZK9j1bNXYoFQA5Fvrq5IpY9xnn+f1qhDlCnuBuSfNXdeZA0WnnxTb
-   Q==;
-X-CSE-ConnectionGUID: fq7yBY9qQTy7T13vTwADEw==
-X-CSE-MsgGUID: sh3W1nRLRZekbuTJ28xJFQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11134"; a="29158699"
+  t=1721134380; x=1752670380;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=SSgUscryii1clarjrDEuWe0oAR9tIv+UZaWDyL8CiQM=;
+  b=m0fDHM7meuyiqw5PIdfQXzrC0QrPVscaW7Vpvl7zHoeodfi/cnZrAvoB
+   cENFF0I9CI/jw1p372cV0zVJ0ojLe+qTGjROGd3Z/CB0DqltE/Gr0tE0z
+   GH7NvVKe4QJnDk+dkeIWd4XoyQCGhrwBBLl0IWK9cjRvw7b9LrCv/5vqW
+   K3AjDuil8/QWYy9kslgk2V1TO1is6zOEvdRG4y0+hUE6DtJ/Ll4Cu2vZ3
+   KtMfjkQmYcPO/sPjXwLBiUFhYKDWLxORuFueYV65fuKSOTOmjWy0/q3ME
+   guCvIAtZloG3Rgk8DSqaNpmMVvg6S7ryKhuSya65Kko2KXqI6sXVpuPxM
+   A==;
+X-CSE-ConnectionGUID: cmJVZDyMQzSWofCGPvrbpg==
+X-CSE-MsgGUID: FjbegxUuTkKBqoVPqTFIkA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11134"; a="18700723"
 X-IronPort-AV: E=Sophos;i="6.09,211,1716274800"; 
-   d="scan'208";a="29158699"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2024 05:46:53 -0700
-X-CSE-ConnectionGUID: i9Y662a2RBC8tEpRR7M9FA==
-X-CSE-MsgGUID: DY0nd4IjTOC7O6oeWC/AmA==
+   d="scan'208";a="18700723"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2024 05:52:59 -0700
+X-CSE-ConnectionGUID: CyQTy01RQ4S4qOmeiA/5sA==
+X-CSE-MsgGUID: 9koCZ61vTuW6piZp7MQsJg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.09,211,1716274800"; 
-   d="scan'208";a="49881617"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orviesa010.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 16 Jul 2024 05:46:53 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Tue, 16 Jul 2024 05:46:52 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Tue, 16 Jul 2024 05:46:52 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.172)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Tue, 16 Jul 2024 05:46:52 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=JAmsNBpTyasrhOvufd/UaEzfW6T4Bh2vCOp/rYfr6Fe7Zk0dyesEE3BF/UayFP1UQurGLyZISegEm5b04wCu5aNFFZmJrFLpdSNxwgL9CtUppmeNqtJvIpy5GqITaPtmQpqID+TMjdM6KLmBr4J+JunIE//nbFLxr3YSGqU3z1PTX0jeRRsdzcq05CV2DQvvsU+le6Zk8qVwcnQ+btH6gmySvnA6K5E93+YEd400+TWl6wI0QrzOZMns3tDdQSbJkXVXmpRFriGic2/ZOETXjv7FvV4RgHNsGe6mCsLLxyQ7q/tQYkTXi6Vni59tdlbyVM6Yl+msqUbOvi9nk/b/tw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/Kc7XjzCnfGpfWlLisSA6Rmfk9y1YyCOHYmJ/hUVgbo=;
- b=eiGLKt7mwKT1OBpjqbEzO6nhSYBlUhpJrgX96WmeWKmoCI6jK/SF/HWaUXnAxwA8SEUPgHntquUDIrSvNBxKbc0lbhBx5QEq6PW+VvHIgkGsmZnNIG3B7f6UobBvgkuh2dQPAjqqZt7MpkYTFc/oLgTlz3NajiHvmgpKeTTSi5QJCuGD4a1w7cJmf5LGAJ/lSsr5CYqCB6C0rpxuNh/BEHx/xHmg8EVw3thuLLJmpW7Ym2HPDKdV/AjTbHNN8N/nw6cx7DS++mT7hY9YQ1Ho8KAMQNRBKphrCz0NJXmSkos+njLoMSyD2tZAJ3AoeXH/Vn3dT3i0xEUnw3iwiAB2ig==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by IA0PR11MB7813.namprd11.prod.outlook.com (2603:10b6:208:402::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7762.28; Tue, 16 Jul
- 2024 12:46:49 +0000
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.7762.027; Tue, 16 Jul 2024
- 12:46:49 +0000
-Date: Tue, 16 Jul 2024 20:46:25 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: "Liam R. Howlett" <Liam.Howlett@oracle.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-mm@kvack.org>,
-	<ltp@lists.linux.it>, Andrew Morton <akpm@linux-foundation.org>, "Suren
- Baghdasaryan" <surenb@google.com>, Vlastimil Babka <vbabka@suse.cz>, "Lorenzo
- Stoakes" <lstoakes@gmail.com>, Matthew Wilcox <willy@infradead.org>,
-	<sidhartha.kumar@oracle.com>, "Paul E . McKenney" <paulmck@kernel.org>, "Bert
- Karwatzki" <spasswolf@web.de>, Jiri Olsa <olsajiri@gmail.com>,
-	<linux-kernel@vger.kernel.org>, Kees Cook <kees@kernel.org>, "Liam R.
- Howlett" <Liam.Howlett@oracle.com>, <oliver.sang@intel.com>
-Subject: Re: [PATCH v4 14/21] mm/mmap: Avoid zeroing vma tree in mmap_region()
-Message-ID: <202407162022.5a730c37-oliver.sang@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20240710192250.4114783-15-Liam.Howlett@oracle.com>
-X-ClientProxiedBy: KL1PR02CA0032.apcprd02.prod.outlook.com
- (2603:1096:820:d::19) To LV3PR11MB8603.namprd11.prod.outlook.com
- (2603:10b6:408:1b6::9)
+   d="scan'208";a="50062034"
+Received: from linux.intel.com ([10.54.29.200])
+  by orviesa009.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2024 05:52:59 -0700
+Received: from [10.213.174.231] (kliang2-mobl1.ccr.corp.intel.com [10.213.174.231])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by linux.intel.com (Postfix) with ESMTPS id 4883E20B8CD6;
+	Tue, 16 Jul 2024 05:52:57 -0700 (PDT)
+Message-ID: <7491af6f-7be8-4a7a-8f48-249d26440bbc@linux.intel.com>
+Date: Tue, 16 Jul 2024 08:52:55 -0400
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|IA0PR11MB7813:EE_
-X-MS-Office365-Filtering-Correlation-Id: 396aa120-8f02-4d90-27ef-08dca5955c0a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014|7416014;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?FNa6J3+EqEFxzD0uNun+/HmbS5FVrTnx58fVD3GityfBuNoUpzifSkzgORTl?=
- =?us-ascii?Q?LzvQKdiKk8wCMg0jHjxnIMR0zhWgdJkHYHkhsercOXBoEp/m1fAk2+ys+XrG?=
- =?us-ascii?Q?WaMZucOiH0i2CJrGXML2tq8uXjq7mb3VE+BsmV4igOsoCogHDP/CBHLT4aPm?=
- =?us-ascii?Q?jbk0CA7W2wmPrCeVuLkfdnl9OJKCornZqpslGsoCjRrU2QXAuBReUQj5gOd6?=
- =?us-ascii?Q?w4MaFhy20vijcJM98p8/ZnqNcdw+7khLk5b7Dj00PROKFLFc6TZd90sTO3wz?=
- =?us-ascii?Q?6666C5jzFzcoc+CWTaCXdr3JOHUffz82cucqELv9xnQRZmxZ0WusZS0GM8DK?=
- =?us-ascii?Q?5A9OAponLQyOgu9yq/OmDugNJ36ddlU1SFibhjNfKXN7Wp5c8SB85mh9yuuI?=
- =?us-ascii?Q?zHI/6PGWaw9+g6UsUiqWtqID2j5gmQi7GaS19okFteYM3Ijf7yP+BhEtgqKj?=
- =?us-ascii?Q?3OBQdGJwmnsj6ZFZApkX03avfGDgnmU8dVkMLGlEnobCtEUQHLvLI/f/axLp?=
- =?us-ascii?Q?qeBLoeUdE71fjo9gxWrmi7JDAgkiqmy5a9DPLGDHRJUK5wAXE8Nzig4MEfpU?=
- =?us-ascii?Q?0ACMjO13uVKOcE1qUJJu2JR8DSCP5Y8dqY7VNwFYpVkOsCP4RXgn397ce/5W?=
- =?us-ascii?Q?BOo3dYkpsdUwELbPLzlK0g/vXbJXyH52NCPLIOw1Rx/t8BGMXxv6U6GmO9ax?=
- =?us-ascii?Q?DVtUBy2RjFuLPapsSG+OCBWfq1h2Nvy7mrrv/vdssyEaIdlDFrEK3eqMm4hl?=
- =?us-ascii?Q?kPHu18UgnuS1jLVoGFkoANP2M0dEAtFeN/XhHywJuDNZr+v0xksRcIIfKOTr?=
- =?us-ascii?Q?L4lcQRXd7ZlJA/niAR8aKwp6XkUifphd8wqSWLQMhJf5+lqyjkNLtT32pVny?=
- =?us-ascii?Q?naR5IMBG3H0rzjhoJS4TndgpDqQ2QDSt5mhIUSvgzKKpgrb2OO+K4diAl4Sb?=
- =?us-ascii?Q?hNqXgNuWSB8SOq/AOE5roqYO9G33SSjeA2yyJ2kIT0l59yUYJeA9X8TA6YqB?=
- =?us-ascii?Q?IzhU/aldQX03GI9TQ5rBCbU/qo3wfBWrcz+Qn4QjqM8orn1kk6vZ/tfcGCUe?=
- =?us-ascii?Q?vutBdLsL6o2jypyyhHE8ilAQJ23sc3/t4hycAQ4RcsRXufcM4dXwO6EzqeNP?=
- =?us-ascii?Q?anDDklcceD7+70Deic/7v3Tfe+m7sZ4DzFHE5uAh43wYJLI8BooxJTqRcN37?=
- =?us-ascii?Q?ozx3RXMVn4cyEh8vTitUtpWGVSLAYHQqe8nhjdLdeXMuCZsYQzxre+IzGldX?=
- =?us-ascii?Q?vj9D1pxoNjnT7HLo5RxgqvaJKC3I3O95Xw88la8hW/ma8odzpxJMTVvJTpVf?=
- =?us-ascii?Q?8Oo=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(7416014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0yhzuHX+cOUO71iwJ1ba93dTaa6WPa1+orzPIAatLgQsEgAdSECYezJt3/Nw?=
- =?us-ascii?Q?yvZIuJSihqSmKsTr2p4nL+gDf0i571nIKpCDMsJiZ22+Jq4KdaUH288rkO6z?=
- =?us-ascii?Q?dayrZ3C28byKgw77Jn/G21Tur/WqhvIaELfxFYHw8PqzufI3kRtNYHc7OwqI?=
- =?us-ascii?Q?hAxZktNQIZmnt4NuJuSXCL2ckc2Bm7COyDjrC6VStFpPF6NvyLkz0/QIy61I?=
- =?us-ascii?Q?iOrC6bwMm+e1npAUczgjQhJvqPy5atOG8CV4t+PhYK8B/1dXRusMnMIrrqNW?=
- =?us-ascii?Q?URBSjQLFvaWLZ3gSKuTzhynlETpKAP+TEl0WwTiD/jBUC+yt6KrxFtnGsUWk?=
- =?us-ascii?Q?plPaOYidJhAmGo96IAg/alxdcygz5tlYxKbrPegCd4wPAFDe0CUaA6oZSLFa?=
- =?us-ascii?Q?VUd8Ct44B3XE7zfUaWR0aEdx0sqYLpw0MYJsCEXPZBiC7zpoDvka6Xr98xgm?=
- =?us-ascii?Q?ZOgEHDy+kXpB7prg22w64HkC5BZg63s7rb+BowCc1eiN+sIFJf6e/tuuQ62N?=
- =?us-ascii?Q?5ocyqGHtHfA0YzWiywJ6cZWFdOXoN9cysHgJe6qZx8BezypgDpVaGiD6SSFs?=
- =?us-ascii?Q?/W4f6R94d8pFmnt4c6+NiKIzPoISQ6KuuW4H73LHR5USRT+muUXD7SLe8UgT?=
- =?us-ascii?Q?BgP/khv4dUomFY1l23DDeK4KLZJTulW/oxIxPRMzmEDGurNY6PmrRKYQDOr7?=
- =?us-ascii?Q?cbhVtMLosTA8lHsxpPM0CtbjRGEi9m8Y+9Dd1Y4fW83jwNS7MPne6GNkOoU5?=
- =?us-ascii?Q?JS5N5cbwSBl0oZJHG/TQL11CHHZsbrx9mQYKOhc07cGu4tlrCvSraRj29SAu?=
- =?us-ascii?Q?dSae/I9APyRWlzO3PQJnlgTg9BEJibDChMhr3XWIWqHcgkYjv76hLSBFjWu8?=
- =?us-ascii?Q?1WzgOXDYvSGCiaEweXQwRn6o1qb+9QSUHl7+Y9YwmUbX655GHFD4SQ+ehNbE?=
- =?us-ascii?Q?YTRvheFB5MmIuN5qvAwPW5QifpE8BjnQEqst9lAWiOhbuPwk8BJDRV37rokT?=
- =?us-ascii?Q?aAbMQpAc3N0WdlQKzcdIw6b6KwyNAw3QkIjQSaE5qCYKRRe2j6GZLyHYjTpI?=
- =?us-ascii?Q?XYPtxmxEpaMrbDMqCkoyoUqO+6hJdtiLepvvCyqET5L0fuDHmfdfnjR6sdRZ?=
- =?us-ascii?Q?cpAIOHXLjXCubTr2FTxkGmiUXS9vpLvqjiau82shwR/YO9ap8mAT2vfHprRn?=
- =?us-ascii?Q?HkZvj6Z0ygIAjdKJgvJR6GERBVRJS2Sse2J5oWiWxmlyJ3igyVgzMr2m5rsQ?=
- =?us-ascii?Q?vAj4UjyRhoeff2MuDPa2sjIYzelfZbcqY/WJN724hhQEmWfmOO37PJzOGrWM?=
- =?us-ascii?Q?O6/cUzSNYM7ytaBaIDBcXXMcQhSh0NBqSkEByAyN6dDUm5PwcXBgcNFCGDuK?=
- =?us-ascii?Q?OeOG3UrWZTaf+40BZ0qVkG7+CEqVw39cWy6+vqaT4FkgTsN13oJEEDsaZfea?=
- =?us-ascii?Q?fxCRsDGf32pePlB3NUHIM5UyEz1csOCUYtt9yNGUZslmyqmv0Q+pfRVkIueC?=
- =?us-ascii?Q?p04yNMxKAGkq2oei6HIidCTzqdS/vGrjIr68g2sIrGhGmgnaspBovPKex2wJ?=
- =?us-ascii?Q?ESrwlxyviGIAVpeFlda89PpC33Oe7mNcaQT1KBeNia22URWWpdVUdHXp3D3R?=
- =?us-ascii?Q?nA=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 396aa120-8f02-4d90-27ef-08dca5955c0a
-X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jul 2024 12:46:49.4015
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: U7BIWGJo7nGZhgehJFmERkHh5B9SpohyvBYpcLrc6D3XKa86qqQV+Z753CsDNjkiYO+F1YKdm3UzqQUwbBqd2w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR11MB7813
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Subject: Re: [linux-next:master] [perf vendor events] e2641db83f:
+ perf-sanity-tests.perf_all_PMU_test.fail
+To: Ian Rogers <irogers@google.com>
+Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+ lkp@intel.com, Linux Memory Management List <linux-mm@kvack.org>,
+ Namhyung Kim <namhyung@kernel.org>, Weilin Wang <weilin.wang@intel.com>,
+ Caleb Biggers <caleb.biggers@intel.com>,
+ Alexandre Torgue <alexandre.torgue@foss.st.com>,
+ Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+ linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <202407101021.2c8baddb-oliver.sang@intel.com>
+ <ec744c86-b73e-417a-8e3a-c07142bf37d1@linux.intel.com>
+ <CAP-5=fUqGcnGvB71jHHTecLqcky6+TrFo+hWb=eBxZjxfe_m-g@mail.gmail.com>
+ <48b4bfb0-d0c7-4d1f-9e52-06e873646366@linux.intel.com>
+ <CAP-5=fV2YTD5ZWcZgYN+cX7atdoiM2G2=xN=c_q5UmXyQzEkRQ@mail.gmail.com>
+Content-Language: en-US
+From: "Liang, Kan" <kan.liang@linux.intel.com>
+In-Reply-To: <CAP-5=fV2YTD5ZWcZgYN+cX7atdoiM2G2=xN=c_q5UmXyQzEkRQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 
 
-Hello,
+On 2024-07-15 5:48 p.m., Ian Rogers wrote:
+> On Mon, Jul 15, 2024 at 2:41 PM Liang, Kan <kan.liang@linux.intel.com> wrote:
+>>
+>>
+>>
+>> On 2024-07-15 4:11 p.m., Ian Rogers wrote:
+>>> On Mon, Jul 15, 2024 at 1:05 PM Liang, Kan <kan.liang@linux.intel.com> wrote:
+>>>>
+>>>> Hi Ian,
+>>>>
+>>>> On 2024-07-10 12:59 a.m., kernel test robot wrote:
+>>>>>
+>>>>>
+>>>>> Hello,
+>>>>>
+>>>>> kernel test robot noticed "perf-sanity-tests.perf_all_PMU_test.fail" on:
+>>>>>
+>>>>> commit: e2641db83f18782f57a0e107c50d2d1731960fb8 ("perf vendor events: Add/update skylake events/metrics")
+>>>>> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+>>>>>
+>>>>> [test failed on linux-next/master 82d01fe6ee52086035b201cfa1410a3b04384257]
+>>>>>
+>>>>> in testcase: perf-sanity-tests
+>>>>> version:
+>>>>> with following parameters:
+>>>>>
+>>>>>       perf_compiler: gcc
+>>>>>
+>>>>>
+>>>>>
+>>>>> compiler: gcc-13
+>>>>> test machine: 16 threads 1 sockets Intel(R) Xeon(R) E-2278G CPU @ 3.40GHz (Coffee Lake) with 32G memory
+>>>>>
+>>>>> (please refer to attached dmesg/kmsg for entire log/backtrace)
+>>>>>
+>>>>>
+>>>>> we also observed two cases which also failed on parent can pass on this commit.
+>>>>> FYI.
+>>>>>
+>>>>>
+>>>>> caccae3ce7b988b6 e2641db83f18782f57a0e107c50
+>>>>> ---------------- ---------------------------
+>>>>>        fail:runs  %reproduction    fail:runs
+>>>>>            |             |             |
+>>>>>            :6          100%           6:6     perf-sanity-tests.perf_all_PMU_test.fail
+>>>>>            :6          100%           6:6     perf-sanity-tests.perf_all_metricgroups_test.pass
+>>>>>            :6          100%           6:6     perf-sanity-tests.perf_all_metrics_test.pass
+>>>>>
+>>>>>
+>>>>>
+>>>>>
+>>>>>
+>>>>> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+>>>>> the same patch/commit), kindly add following tags
+>>>>> | Reported-by: kernel test robot <oliver.sang@intel.com>
+>>>>> | Closes: https://lore.kernel.org/oe-lkp/202407101021.2c8baddb-oliver.sang@intel.com
+>>>>>
+>>>>>
+>>>>>
+>>>>> 2024-07-09 07:09:53 sudo /usr/src/linux-perf-x86_64-rhel-8.3-bpf-e2641db83f18782f57a0e107c50d2d1731960fb8/tools/perf/perf test 105
+>>>>> 105: perf all metricgroups test                                      : Ok
+>>>>> 2024-07-09 07:10:11 sudo /usr/src/linux-perf-x86_64-rhel-8.3-bpf-e2641db83f18782f57a0e107c50d2d1731960fb8/tools/perf/perf test 106
+>>>>> 106: perf all metrics test                                           : Ok
+>>>>> 2024-07-09 07:10:23 sudo /usr/src/linux-perf-x86_64-rhel-8.3-bpf-e2641db83f18782f57a0e107c50d2d1731960fb8/tools/perf/perf test 107
+>>>>> 107: perf all libpfm4 events test                                    : Ok
+>>>>> 2024-07-09 07:10:47 sudo /usr/src/linux-perf-x86_64-rhel-8.3-bpf-e2641db83f18782f57a0e107c50d2d1731960fb8/tools/perf/perf test 108
+>>>>> 108: perf all PMU test                                               : FAILED!
+>>>>>
+>>>>
+>>>> The failure is caused by the below change in the e2641db83f18.
+>>>>
+>>>> +    {
+>>>> +        "BriefDescription": "This 48-bit fixed counter counts the UCLK
+>>>> cycles",
+>>>> +        "Counter": "FIXED",
+>>>> +        "EventCode": "0xff",
+>>>> +        "EventName": "UNC_CLOCK.SOCKET",
+>>>> +        "PerPkg": "1",
+>>>> +        "PublicDescription": "This 48-bit fixed counter counts the UCLK
+>>>> cycles.",
+>>>> +        "Unit": "cbox_0"
+>>>>      }
+>>>>
+>>>> The other cbox events have the unit name "CBOX", while the fixed counter
+>>>> has a unit name "cbox_0". So the events_table will maintain separate
+>>>> entries for cbox and cbox_0.
+>>>>
+>>>> The perf_pmus__print_pmu_events() calculate the total number of events,
+>>>> allocate an aliases buffer, store all the events into the buffer, sort,
+>>>> and print all the aliases one by one.
+>>>>
+>>>> The problem is that the calculated total number of events doesn't match
+>>>> the stored events on the SKL machine.
+>>>>
+>>>> The perf_pmu__num_events() is used to calculate the number of events. It
+>>>> invokes the pmu_events_table__num_events() to go through the entire
+>>>> events_table to find all events. Because of the
+>>>> pmu_uncore_alias_match(), the suffix of uncore PMU will be ignored. So
+>>>> the events for cbox and cbox_0 are all counted.
+>>>>
+>>>> When storing events into the aliases buffer, the
+>>>> perf_pmu__for_each_event() only process the events for cbox.
+>>>>
+>>>> Since a bigger buffer was allocated, the last entry are all 0.
+>>>> When printing all the aliases, null will be outputed.
+>>>>
+>>>> $ perf list pmu
+>>>>
+>>>> List of pre-defined events (to be used in -e or -M):
+>>>>
+>>>>   (null)                                             [Kernel PMU event]
+>>>>   branch-instructions OR cpu/branch-instructions/    [Kernel PMU event]
+>>>>   branch-misses OR cpu/branch-misses/                [Kernel PMU event]
+>>>>
+>>>>
+>>>> I'm thinking of two ways to address it.
+>>>> One is to only print all the stored events. The below patch can fix it.
+>>>>
+>>>> diff --git a/tools/perf/util/pmus.c b/tools/perf/util/pmus.c
+>>>> index 3fcabfd8fca1..2b2f5117ff84 100644
+>>>> --- a/tools/perf/util/pmus.c
+>>>> +++ b/tools/perf/util/pmus.c
+>>>> @@ -485,6 +485,7 @@ void perf_pmus__print_pmu_events(const struct
+>>>> print_callbacks *print_cb, void *p
+>>>>                 perf_pmu__for_each_event(pmu, skip_duplicate_pmus, &state,
+>>>>                                         perf_pmus__print_pmu_events__callback);
+>>>>         }
+>>>> +       len = state.index;
+>>>>         qsort(aliases, len, sizeof(struct sevent), cmp_sevent);
+>>>>         for (int j = 0; j < len; j++) {
+>>>>                 /* Skip duplicates */
+>>>>
+>>>> The only drawback is that perf list will not show the new cbox_0 event.
+>>>> (But the event name still works. Users can still apply perf stat -e
+>>>> unc_clock.socket.)
+>>>>
+>>>> Since the cbox_0 event is only available on old machines (SKL and
+>>>> earlier), people should already use the equivalent kernel event. It
+>>>> doesn't sounds a big issue for me. I prefer this simple fix.
+>>>>
+>>>> I think the other way would be to modify the perf_pmu__for_each_event()
+>>>> to go through all the possible PMUs.
+>>>> It seems complicated and may impact others ARCHs (e.g., S390). I haven't
+>>>> tried it yet.
+>>>>
+>>>> What do you think?
+>>>> Do you see any other ways to address the issue?
+>>>
+>>> Ugh. It seems the sizing and then iterating approach is just prone to
+>>> keep breaking. Perhaps we can switch to realloc-ed arrays to avoid the
+>>> need for perf_pmu__num_events, which seems to be the source of the
+>>> problems.
+>>>
+>>
+>> I think a realloc-ed array should have the same drawback as the first
+>> way, but bad performance.
+>> Because the pmu_add_cpu_aliases() in the perf_pmu__for_each_event() only
+>> add the events from the first matched PMU. If we don't fix it, the
+>> UNC_CLOCK.SOCKET of cbox_0 will never be displayed.
+> 
+> Ok, but I don't think we need to optimize `perf list` for speed. Fwiw,
+> I think this was the fix for the last bug in this code:
+> https://lore.kernel.org/r/20240511003601.2666907-1-irogers@google.com
 
-kernel test robot noticed "ltp.hugemmap06.fail" on:
+That seems a different issue.
+The root cause of this issue should be that different methods are used
+between calculating the total number of events and adding the events.
+A realloc-ed array should just hide the problem. There will still be an
+issue if anyone use the pair of perf_pmu__num_events() and
+pmu_add_cpu_aliases() somewhere else later.
 
-commit: d793398401db9fb81084bd4fe2f782342201df18 ("[PATCH v4 14/21] mm/mmap: Avoid zeroing vma tree in mmap_region()")
-url: https://github.com/intel-lab-lkp/linux/commits/Liam-R-Howlett/mm-mmap-Correctly-position-vma_iterator-in-__split_vma/20240711-075019
-base: https://git.kernel.org/cgit/linux/kernel/git/akpm/mm.git mm-everything
-patch link: https://lore.kernel.org/all/20240710192250.4114783-15-Liam.Howlett@oracle.com/
-patch subject: [PATCH v4 14/21] mm/mmap: Avoid zeroing vma tree in mmap_region()
+It looks like the difference is introduced from the commit 	e3edd6cf6399
+("perf pmu-events: Reduce processed events by passing PMU").
 
-in testcase: ltp
-version: ltp-x86_64-14c1f76-1_20240706
-with following parameters:
+The pmu_events_table__for_each_event() stops immediately once a pmu is
+set. But for uncore, especially this case, the method is wrong and
+mismatch what perf does in the perf_pmu__num_events().
 
-	test: hugetlb/hugemmap06
+The below patch can fix it.
 
+diff --git a/tools/perf/pmu-events/jevents.py
+b/tools/perf/pmu-events/jevents.py
+index ac9b7ca41856..97a3b018f865 100755
+--- a/tools/perf/pmu-events/jevents.py
++++ b/tools/perf/pmu-events/jevents.py
+@@ -923,7 +923,7 @@ int pmu_events_table__for_each_event(const struct
+pmu_events_table *table,
+ 			continue;
 
+ 		ret = pmu_events_table__for_each_event_pmu(table, table_pmu, fn, data);
+-		if (pmu || ret)
++		if (ret)
+ 			return ret;
+ 	}
+ 	return 0;
 
-compiler: gcc-13
-test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-3770K CPU @ 3.50GHz (Ivy Bridge) with 16G memory
+The event can be displayed by the perf list pmu with the patch.
 
-(please refer to attached dmesg/kmsg for entire log/backtrace)
+$ perf list pmu | grep -A 1 clock.socket
+   unc_clock.socket
+        [This 48-bit fixed counter counts the UCLK cycles. Unit:
+uncore_cbox_0
+& perf test "perf all PMU test"
+  107: perf all PMU test                                               : Ok
 
+I will send the patch shortly.
 
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202407162022.5a730c37-oliver.sang@intel.com
-
-
-Running tests.......
-<<<test_start>>>
-tag=hugemmap06 stime=1721029963
-cmdline="hugemmap06"
-contacts=""
-analysis=exit
-<<<test_output>>>
-tst_hugepage.c:84: TINFO: 255 hugepage(s) reserved
-tst_test.c:1803: TINFO: LTP version: 20240524-71-g361f6ad13
-tst_test.c:1647: TINFO: Timeout per run is 0h 00m 30s
-hugemmap06.c:114: TPASS: No regression found
-hugemmap06.c:114: TPASS: No regression found
-hugemmap06.c:114: TPASS: No regression found
-hugemmap06.c:114: TPASS: No regression found
-hugemmap06.c:100: TFAIL: mmap failed: ENOMEM (12)
-
-HINT: You _MAY_ be missing kernel fixes:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f522c3ac00a4
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=9119a41e9091
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=7b24d8616be3
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=1406ec9ba6c6
-
-Summary:
-passed   4
-failed   1
-broken   0
-skipped  0
-warnings 0
-incrementing stop
-<<<execution_status>>>
-initiation_status="ok"
-duration=10 termination_type=exited termination_id=1 corefile=no
-cutime=2 cstime=629
-<<<test_end>>>
-INFO: ltp-pan reported some tests FAIL
-LTP Version: 20240524-71-g361f6ad13
-
-       ###############################################################
-
-            Done executing testcases.
-            LTP Version:  20240524-71-g361f6ad13
-       ###############################################################
-
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20240716/202407162022.5a730c37-oliver.sang@intel.com
-
-
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
+Thanks,
+Kan
