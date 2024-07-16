@@ -1,292 +1,253 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8778613CABC
-	for <oe-lkp@lists.linux.dev>; Tue, 16 Jul 2024 12:52:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721134381; cv=none; b=WFgn1O7Q3jDUyEmFwy6bLeQ5y9YdnJ231OVu/RMj2WtGbKrso+orCyecILp5617WiOL8R16UygI0MM546nsdhNp8X1uCcOnrVuiDsv6KCtn9Od86g7IJXup8jUe70Ko/CU9/XgKN6ckIF1SKUoY3jq+M7VnxAh6jCF5dXZRA/5Y=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721134381; c=relaxed/simple;
-	bh=SSgUscryii1clarjrDEuWe0oAR9tIv+UZaWDyL8CiQM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=uQt78nawFzrl1/c2nLVjy26npLPElNY+gGkXoINw/TLer51ck+XQGc0fbhjgWD2atpDzlMuCZnpM1n2wpIkmDDKWXNlKqo9T3+c5P5aYPbfBdWmco7C4r3pyfFQZ7Mpk+ztbg0UHJ66jkx76E5uuHbO3xhi8fDZJQw63qv2wXSE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=m0fDHM7m; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0527E199E91
+	for <oe-lkp@lists.linux.dev>; Tue, 16 Jul 2024 13:23:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.11
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1721136195; cv=fail; b=OOKWXxH8D8QDQ190TX7A62FEMrtzKxt+ds4BilTbZ6gJfBAoLV+BFPyWDKNToIhMzxF9M+3cDQ+b38gYz4GCVd4p/B2Q4D1KWWUVjAi/WcmWK7UwFTFPmotW3gGIFvnz2xsBYBPS9hC/5ePrAys/ZDtQCGSFww+183ce92F6C8U=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1721136195; c=relaxed/simple;
+	bh=Dj6g7UhqqhSC9tBY+h+MUdynzqXxFbW4tQipRVmOc3g=;
+	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
+	 Content-Disposition:MIME-Version; b=dmVbAibFOlzxDTHCyGb9Zw5Fer+w4NgvhZvGQqMP88vc209BHIv3MU24aCNuwoigAtAzPHFE8ksGZcxeuZfy1potImTGFaFTRxLi9qWea9VAsnFbwshqRT31EBt2WRhEf0ETUlzSEkuNG9W+pfjvTm03G8of2cQUgm1rc5O9dvI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=J5FrBOep; arc=fail smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="m0fDHM7m"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="J5FrBOep"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1721134380; x=1752670380;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=SSgUscryii1clarjrDEuWe0oAR9tIv+UZaWDyL8CiQM=;
-  b=m0fDHM7meuyiqw5PIdfQXzrC0QrPVscaW7Vpvl7zHoeodfi/cnZrAvoB
-   cENFF0I9CI/jw1p372cV0zVJ0ojLe+qTGjROGd3Z/CB0DqltE/Gr0tE0z
-   GH7NvVKe4QJnDk+dkeIWd4XoyQCGhrwBBLl0IWK9cjRvw7b9LrCv/5vqW
-   K3AjDuil8/QWYy9kslgk2V1TO1is6zOEvdRG4y0+hUE6DtJ/Ll4Cu2vZ3
-   KtMfjkQmYcPO/sPjXwLBiUFhYKDWLxORuFueYV65fuKSOTOmjWy0/q3ME
-   guCvIAtZloG3Rgk8DSqaNpmMVvg6S7ryKhuSya65Kko2KXqI6sXVpuPxM
+  t=1721136194; x=1752672194;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Dj6g7UhqqhSC9tBY+h+MUdynzqXxFbW4tQipRVmOc3g=;
+  b=J5FrBOepNfCH6QAG59DEkwrvHZXnsqAhx1uUeM6kwvq/TwSJe0C/bau3
+   l0k3ityF1or5eCgko82yPLsw9gLHpfVbBjgR5FLOUB3mfNE5RItZclxXF
+   CtjxZJAuKFxI9gih/XGpI1Fy0pHSnOKRqxY1W4BrPGWDJWV7tk5qZE/Bc
+   eyBMQHf58IvY9UNyB3rpra/hEBjgdBs25QuHqPuIN+RAqWjalXbqBP+q4
+   mfni3D1j3KIsEw2L+JgCCqmH9NYUaroQuRe93yU+uUG/N/o1Ty7qdUBlz
+   WsX0EcnjKBornmeE6WZS/CB2BZ6kXxi5uoSnc5yB2nd+lLTGrZBCbl4MQ
    A==;
-X-CSE-ConnectionGUID: cmJVZDyMQzSWofCGPvrbpg==
-X-CSE-MsgGUID: FjbegxUuTkKBqoVPqTFIkA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11134"; a="18700723"
+X-CSE-ConnectionGUID: 47A7RhwRSjOKbGHpeIXZQw==
+X-CSE-MsgGUID: /ErMVsPUQquhiMN3iaNHvA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11135"; a="29179050"
 X-IronPort-AV: E=Sophos;i="6.09,211,1716274800"; 
-   d="scan'208";a="18700723"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2024 05:52:59 -0700
-X-CSE-ConnectionGUID: CyQTy01RQ4S4qOmeiA/5sA==
-X-CSE-MsgGUID: 9koCZ61vTuW6piZp7MQsJg==
+   d="scan'208";a="29179050"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2024 06:23:13 -0700
+X-CSE-ConnectionGUID: ddNOd6iGRA2FlIkVvcPqOA==
+X-CSE-MsgGUID: +AbU9L1SQsa6V+H8QeU/LQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.09,211,1716274800"; 
-   d="scan'208";a="50062034"
-Received: from linux.intel.com ([10.54.29.200])
-  by orviesa009.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2024 05:52:59 -0700
-Received: from [10.213.174.231] (kliang2-mobl1.ccr.corp.intel.com [10.213.174.231])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by linux.intel.com (Postfix) with ESMTPS id 4883E20B8CD6;
-	Tue, 16 Jul 2024 05:52:57 -0700 (PDT)
-Message-ID: <7491af6f-7be8-4a7a-8f48-249d26440bbc@linux.intel.com>
-Date: Tue, 16 Jul 2024 08:52:55 -0400
+   d="scan'208";a="54859371"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by orviesa003.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 16 Jul 2024 06:23:14 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39; Tue, 16 Jul 2024 06:23:12 -0700
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39; Tue, 16 Jul 2024 06:23:12 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39 via Frontend Transport; Tue, 16 Jul 2024 06:23:12 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.101)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.39; Tue, 16 Jul 2024 06:23:12 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=AwXSK83OD1B+8KwxX+32oQCOZJYuJ+NU97ZH6fRsTPqP3SHq2jvEWz+C1zWxa1y7y2MDnepI2HOvKMosgIFB0qmPr29X8T3FNcL8xUewG70BWeflx2M5p7YzlnJL0EGvhhZY9kKFRHFINuTiwXsdRsAx5LnoR8Z0TalnLCr0xcZLRfy/dowiTKX/WGiTGHK6XrT6Q8A3eipDVohkxw9EfD/i5kr7TtvzqZ7LKi9ztC+OYQGjYx0VlTIrsRkTCjwVOK2f7rRWF0kPY3Gx/CtMRc7QeDTo2eUuhge6NNdEx6CBMszPFYQP9uIFplkOt+EZhmMABENuZ3Xe/fOXYDWuGQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=QdbnV6kZoJtuXzAlKMAt/yPG7WC5749+S8teHbcWSvk=;
+ b=mnD4pTDpaLhzOCGrQ2kRqi4wDgVtZXXckxyXOXbXs1nxNa1rBYTolqYg8vrDF9jBmagv9wIc5v5sDrhSmCU/L1vTA2ZVChYvFH1UjOUI2r7lrY8vegdbYvSRG9U7Qn2fJB4H6qPeX+moHRQ5qo9pFESpF+oAbv3jtFeKg/UMqtNPYFVA4+T1ymvfKQPnyU7I5/tVUIcDcjGz503DewsiKrJpABLbB/fROOvHL3/Mw0EDV+9sKgmj33jKPy+mXd3Xn7q50IvASNWGR+k97ov0fr3i7ad/zZDsR+QKZyGJ7Y1gnCh+Isqzz0ghMeJkP5lUM20LWpWKJrpB7g3PsK2uJA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by MN2PR11MB4695.namprd11.prod.outlook.com (2603:10b6:208:260::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7762.29; Tue, 16 Jul
+ 2024 13:23:10 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.7762.027; Tue, 16 Jul 2024
+ 13:23:10 +0000
+Date: Tue, 16 Jul 2024 21:22:59 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: Christian Brauner <brauner@kernel.org>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	Josef Bacik <josef@toxicpanda.com>, <linux-mm@kvack.org>,
+	<ltp@lists.linux.it>, <oliver.sang@intel.com>
+Subject: [linus:master] [fs]  2a010c4128: ltp.execve04.fail
+Message-ID: <202407162117.7730986d-oliver.sang@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+X-ClientProxiedBy: KL1PR01CA0153.apcprd01.prod.exchangelabs.com
+ (2603:1096:820:149::11) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [linux-next:master] [perf vendor events] e2641db83f:
- perf-sanity-tests.perf_all_PMU_test.fail
-To: Ian Rogers <irogers@google.com>
-Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
- lkp@intel.com, Linux Memory Management List <linux-mm@kvack.org>,
- Namhyung Kim <namhyung@kernel.org>, Weilin Wang <weilin.wang@intel.com>,
- Caleb Biggers <caleb.biggers@intel.com>,
- Alexandre Torgue <alexandre.torgue@foss.st.com>,
- Maxime Coquelin <mcoquelin.stm32@gmail.com>,
- linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <202407101021.2c8baddb-oliver.sang@intel.com>
- <ec744c86-b73e-417a-8e3a-c07142bf37d1@linux.intel.com>
- <CAP-5=fUqGcnGvB71jHHTecLqcky6+TrFo+hWb=eBxZjxfe_m-g@mail.gmail.com>
- <48b4bfb0-d0c7-4d1f-9e52-06e873646366@linux.intel.com>
- <CAP-5=fV2YTD5ZWcZgYN+cX7atdoiM2G2=xN=c_q5UmXyQzEkRQ@mail.gmail.com>
-Content-Language: en-US
-From: "Liang, Kan" <kan.liang@linux.intel.com>
-In-Reply-To: <CAP-5=fV2YTD5ZWcZgYN+cX7atdoiM2G2=xN=c_q5UmXyQzEkRQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|MN2PR11MB4695:EE_
+X-MS-Office365-Filtering-Correlation-Id: 64ef066b-b3b9-4d2c-1521-08dca59a6fe5
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?55ZyPHsP6Hh0uiC1AJSswPVB8fnsXNSt2N+RSYlFilVB+giwATeKRCfWr25v?=
+ =?us-ascii?Q?kPkGj0S/fi/ZIvEHhxYr2gF5GoCXV1QTL+OsCJQbQiTf82OBH8VfD0xwHkHx?=
+ =?us-ascii?Q?2r/CyL/zALbhORLVAEK2Zrv4En6O08u0INFoWq9IS8Ttl6PXdn2mRgP/ckls?=
+ =?us-ascii?Q?V9S31CFyJSqmy4Derae2ERAckoZg69GMSvUXXG8A4aq5LMo+xB4ueVXQvqy3?=
+ =?us-ascii?Q?1SAneaP/7XOWmHEd6Ao7OTbpKRdH1s82FJsn870tGhBwpbkkD7PFG0GOyX5Y?=
+ =?us-ascii?Q?miayPZoQkzVsdIxPp5jC0nR5mHkA9hMCdKLiSzJBdKS62z2Nupj/kypVyPrN?=
+ =?us-ascii?Q?7emRBA9ipwOVzPLe0766VjaNQJqpY6mYECzNnc2MckhaO4OWs/cEm/rAxcET?=
+ =?us-ascii?Q?oR6OKsKRF/hPkbGUGZlChdGZqLdKop4CSv7VOUGXfdJoK6br1f+Dl8EepDrG?=
+ =?us-ascii?Q?5Ooql4bc99/3zSrvkLtxI9K+OXGHlMjm0crSIN8uGKi0AxDCsMi1tTqYsRuh?=
+ =?us-ascii?Q?A1sVJZtRfPjgFwZHrWw0Cgq3jN5Q8jkKcvhWpeGDHrMmGYJUDITUNxK+rGFw?=
+ =?us-ascii?Q?Ac8qfTxnAd+4PyyTU7TUhVv6wrzk7m9qc7tJjGy+xvx0IWSdLJz9w6PTqo5x?=
+ =?us-ascii?Q?UkCFtXpPFpNT4DzGfUGlpz714ps9sw6IW5pgBK0rJEqIXDyO64uZ1akEWRtV?=
+ =?us-ascii?Q?MTaFS2CGr+QuXjCiLTG064yszJ6kROpnJ2hf581fCCb4iNV9OrZFdJeFoCnh?=
+ =?us-ascii?Q?h+xyc+vBSCdfH8lHSYgJJwRfmQa/cVKy8cpFdyhRibUfhK4tlWufVv51YndE?=
+ =?us-ascii?Q?JpDcU//TCs4pRt9OddkKqQ16t046X177JW6D8leP6xTDTw+6o91GZos4MtE+?=
+ =?us-ascii?Q?lJ8LHL8x2IYj/U11N2c2dDhSI43c6reNgGcx6cxk9Dyi/3VnwsLovJwO8Xxg?=
+ =?us-ascii?Q?8dcJ4dswvfB99oL6aIaXmS80LNbcDn+Ppcyb7IrWzC7zKPe0CLVg8TLgQ9TY?=
+ =?us-ascii?Q?Pjp7xJ521fmmtwGMc0NegDrcGqKIYiBNx4Cfc5VN2jIGxYXSR9B1DbcUeq3o?=
+ =?us-ascii?Q?WfvxYQKSUjEjJhzoxQtyAFbVLaXyRsQR3W6+nAgTO2JfR6NMwTvNm6sNA87W?=
+ =?us-ascii?Q?9j0ASwJrSQB95+q7wRH5qakXc7hXlnIU6R3fIngeAmw8hp421BBywVfRqh/p?=
+ =?us-ascii?Q?BJF/LS2X3Kce8cSuuG/V1p3jSo0PWeXq7YIZcCqEFC10Ts0UHlTciPMfNdSt?=
+ =?us-ascii?Q?35xfvLZDJ5NqH61hGb0SJktvPpTGqLNWS32GhtD8KFDetVEF6s6FS9RwjzCR?=
+ =?us-ascii?Q?4gE=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?pxSslu4Zhhc3HKeEc0CqISyuskqzrshZ0c/HJycBAIbodz5F7NnLrKAmNLVb?=
+ =?us-ascii?Q?fv2tdJPe4PcQM+WL0YsFv68IQEZ1AhaHNgudDBpEeVFHyoJE7AEfYcnFq800?=
+ =?us-ascii?Q?vd+LE549GrkS4SdJCc1XIefi9ybDu22ZLYS2E8XvMwVbgZTHM3KQSyz4Jfdk?=
+ =?us-ascii?Q?t77qpYCdolQxD9hgqd3UphomrOz9Se2iOrVG2vk0UM8gUEKtuDij/xi4yH2C?=
+ =?us-ascii?Q?51RGNkDP40h94QDj6zXGo81emWYdRHic8KxqL+f0X/0ViZrQtZAfdw9xiJOE?=
+ =?us-ascii?Q?yBpsob9kLZPKr5aQZPerApacThG4uF80k+dt+U/L0qlUB6eHlPl6IAQQP5lP?=
+ =?us-ascii?Q?7rWBs6aWJ5v1U5RDqk7ufEclWqrLWTtckpbZLHQZXtF0rVg862VHWPbrTZur?=
+ =?us-ascii?Q?l6ovi0c80LpNywTXB66d//2r9lOuCXPDlmh7zR5Fb9Z+qMGM8PqwkTelYC7o?=
+ =?us-ascii?Q?XNpE45Uvih8aOwM1EjVLCr83/P5cLMV7xUX1E3iO55yE8nT1kcPtbjNdolF0?=
+ =?us-ascii?Q?g1Ler979XfqSJCf38YpXS4IHVy5xJZ+oBCB56PpnmP5LyhCS017pYhKHiaaw?=
+ =?us-ascii?Q?xicBpI8rUybpK4Zb5rl13WtbcXCtBZxaCHMIhLU0VNmqRUQIVoALMQn6Z0Xg?=
+ =?us-ascii?Q?tC4AaLQ+tNwiAqf5cGkNs8Kv2bYweft/1hIVx0eqmJSppX+zLRut+Svx1RbT?=
+ =?us-ascii?Q?azkuGOr3FhUGCfLwjQG/J2KwTqOD0cEl6dIRMHJWkbs7nC676rVKah8sC9br?=
+ =?us-ascii?Q?4uoALIi4W8GiFX/E8YhtOJf9ZUpP1XH01DNpLrrvoaGhm8fOKpnM5xRXAh9d?=
+ =?us-ascii?Q?cqZV+DeFkaQQxMcT6jXJbgOe2SpCEOOmZbbGo5zluptj2pV4oXFVCibMh+zH?=
+ =?us-ascii?Q?qwNLIAkuh20UelBShylWXYMaGK70X/8G3j9oJs3JsroVh8xSN/c3sjzUVII8?=
+ =?us-ascii?Q?ZcUd74QnkSxIGAZ8FAc5cxSf9s9+3lXXGw90bk0cqsFTk8j9I/5MtbnBtR1z?=
+ =?us-ascii?Q?J4LpOvGuHF1BXwk2BTmBCslXwo75aHSATAV/46xJTOrK/Z0FSUSjT9P3PGzw?=
+ =?us-ascii?Q?7XrDQKaj6pRFJjWtSmcZWVHJVF6tQut7aSXFyLNMlbqQE8onvQwqVG0xK7vG?=
+ =?us-ascii?Q?BdZkIi7hkm66BSlJgI5rDUvgpurxMVjgy8UiEn9n45fSLe5Avf7aMMslrIKV?=
+ =?us-ascii?Q?R4XoyVlJuqHcu9C12eOUmKOq9FuPmrRMEc2qF9zsQeYirC6SDGiF2OVARcgK?=
+ =?us-ascii?Q?jBjHp+UgWhCutfKuN1EI+9dKd5X4vr4sWxx+5X7ahPMI70JTpVBe6Cbp4GMC?=
+ =?us-ascii?Q?y0qsJ8Tbvbwoa1/Gw6Zc1e8dt1Z7ZxK6DRX983ZBKKOukG7ebrVVUBujux+e?=
+ =?us-ascii?Q?Twzp5ZJSSYMPUfUjFm/1isdKqhXDlWf27OPk2KOkxG5T8gax9WPyBh90nmPj?=
+ =?us-ascii?Q?nHH/bot/bODVjFvXN8fV0dqtck7T6OX83MYnr18B7/JLXT4J6OIcSPWtgrmS?=
+ =?us-ascii?Q?HzPsRV0GDHwKNQAPoO7PhN5PMyec03ON3/1sjdbiyIFKDUilCnG0+ugbxDPT?=
+ =?us-ascii?Q?5f1YXbZLQ1UA31ig/f4UEOU5F4ywE8bhqpY635uswqfrnycIwvwDWjLkLG1C?=
+ =?us-ascii?Q?hQ=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 64ef066b-b3b9-4d2c-1521-08dca59a6fe5
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jul 2024 13:23:10.1529
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: vFznl/ebzdRJlwAzGfEYaxXZgByNRaxlZVlAq8I5KNFt6bLuBqy/Kpunx0IBuTNJHL/9zXm9QPljPLZ8OmQ89w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB4695
+X-OriginatorOrg: intel.com
 
 
 
-On 2024-07-15 5:48 p.m., Ian Rogers wrote:
-> On Mon, Jul 15, 2024 at 2:41 PM Liang, Kan <kan.liang@linux.intel.com> wrote:
->>
->>
->>
->> On 2024-07-15 4:11 p.m., Ian Rogers wrote:
->>> On Mon, Jul 15, 2024 at 1:05 PM Liang, Kan <kan.liang@linux.intel.com> wrote:
->>>>
->>>> Hi Ian,
->>>>
->>>> On 2024-07-10 12:59 a.m., kernel test robot wrote:
->>>>>
->>>>>
->>>>> Hello,
->>>>>
->>>>> kernel test robot noticed "perf-sanity-tests.perf_all_PMU_test.fail" on:
->>>>>
->>>>> commit: e2641db83f18782f57a0e107c50d2d1731960fb8 ("perf vendor events: Add/update skylake events/metrics")
->>>>> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
->>>>>
->>>>> [test failed on linux-next/master 82d01fe6ee52086035b201cfa1410a3b04384257]
->>>>>
->>>>> in testcase: perf-sanity-tests
->>>>> version:
->>>>> with following parameters:
->>>>>
->>>>>       perf_compiler: gcc
->>>>>
->>>>>
->>>>>
->>>>> compiler: gcc-13
->>>>> test machine: 16 threads 1 sockets Intel(R) Xeon(R) E-2278G CPU @ 3.40GHz (Coffee Lake) with 32G memory
->>>>>
->>>>> (please refer to attached dmesg/kmsg for entire log/backtrace)
->>>>>
->>>>>
->>>>> we also observed two cases which also failed on parent can pass on this commit.
->>>>> FYI.
->>>>>
->>>>>
->>>>> caccae3ce7b988b6 e2641db83f18782f57a0e107c50
->>>>> ---------------- ---------------------------
->>>>>        fail:runs  %reproduction    fail:runs
->>>>>            |             |             |
->>>>>            :6          100%           6:6     perf-sanity-tests.perf_all_PMU_test.fail
->>>>>            :6          100%           6:6     perf-sanity-tests.perf_all_metricgroups_test.pass
->>>>>            :6          100%           6:6     perf-sanity-tests.perf_all_metrics_test.pass
->>>>>
->>>>>
->>>>>
->>>>>
->>>>>
->>>>> If you fix the issue in a separate patch/commit (i.e. not just a new version of
->>>>> the same patch/commit), kindly add following tags
->>>>> | Reported-by: kernel test robot <oliver.sang@intel.com>
->>>>> | Closes: https://lore.kernel.org/oe-lkp/202407101021.2c8baddb-oliver.sang@intel.com
->>>>>
->>>>>
->>>>>
->>>>> 2024-07-09 07:09:53 sudo /usr/src/linux-perf-x86_64-rhel-8.3-bpf-e2641db83f18782f57a0e107c50d2d1731960fb8/tools/perf/perf test 105
->>>>> 105: perf all metricgroups test                                      : Ok
->>>>> 2024-07-09 07:10:11 sudo /usr/src/linux-perf-x86_64-rhel-8.3-bpf-e2641db83f18782f57a0e107c50d2d1731960fb8/tools/perf/perf test 106
->>>>> 106: perf all metrics test                                           : Ok
->>>>> 2024-07-09 07:10:23 sudo /usr/src/linux-perf-x86_64-rhel-8.3-bpf-e2641db83f18782f57a0e107c50d2d1731960fb8/tools/perf/perf test 107
->>>>> 107: perf all libpfm4 events test                                    : Ok
->>>>> 2024-07-09 07:10:47 sudo /usr/src/linux-perf-x86_64-rhel-8.3-bpf-e2641db83f18782f57a0e107c50d2d1731960fb8/tools/perf/perf test 108
->>>>> 108: perf all PMU test                                               : FAILED!
->>>>>
->>>>
->>>> The failure is caused by the below change in the e2641db83f18.
->>>>
->>>> +    {
->>>> +        "BriefDescription": "This 48-bit fixed counter counts the UCLK
->>>> cycles",
->>>> +        "Counter": "FIXED",
->>>> +        "EventCode": "0xff",
->>>> +        "EventName": "UNC_CLOCK.SOCKET",
->>>> +        "PerPkg": "1",
->>>> +        "PublicDescription": "This 48-bit fixed counter counts the UCLK
->>>> cycles.",
->>>> +        "Unit": "cbox_0"
->>>>      }
->>>>
->>>> The other cbox events have the unit name "CBOX", while the fixed counter
->>>> has a unit name "cbox_0". So the events_table will maintain separate
->>>> entries for cbox and cbox_0.
->>>>
->>>> The perf_pmus__print_pmu_events() calculate the total number of events,
->>>> allocate an aliases buffer, store all the events into the buffer, sort,
->>>> and print all the aliases one by one.
->>>>
->>>> The problem is that the calculated total number of events doesn't match
->>>> the stored events on the SKL machine.
->>>>
->>>> The perf_pmu__num_events() is used to calculate the number of events. It
->>>> invokes the pmu_events_table__num_events() to go through the entire
->>>> events_table to find all events. Because of the
->>>> pmu_uncore_alias_match(), the suffix of uncore PMU will be ignored. So
->>>> the events for cbox and cbox_0 are all counted.
->>>>
->>>> When storing events into the aliases buffer, the
->>>> perf_pmu__for_each_event() only process the events for cbox.
->>>>
->>>> Since a bigger buffer was allocated, the last entry are all 0.
->>>> When printing all the aliases, null will be outputed.
->>>>
->>>> $ perf list pmu
->>>>
->>>> List of pre-defined events (to be used in -e or -M):
->>>>
->>>>   (null)                                             [Kernel PMU event]
->>>>   branch-instructions OR cpu/branch-instructions/    [Kernel PMU event]
->>>>   branch-misses OR cpu/branch-misses/                [Kernel PMU event]
->>>>
->>>>
->>>> I'm thinking of two ways to address it.
->>>> One is to only print all the stored events. The below patch can fix it.
->>>>
->>>> diff --git a/tools/perf/util/pmus.c b/tools/perf/util/pmus.c
->>>> index 3fcabfd8fca1..2b2f5117ff84 100644
->>>> --- a/tools/perf/util/pmus.c
->>>> +++ b/tools/perf/util/pmus.c
->>>> @@ -485,6 +485,7 @@ void perf_pmus__print_pmu_events(const struct
->>>> print_callbacks *print_cb, void *p
->>>>                 perf_pmu__for_each_event(pmu, skip_duplicate_pmus, &state,
->>>>                                         perf_pmus__print_pmu_events__callback);
->>>>         }
->>>> +       len = state.index;
->>>>         qsort(aliases, len, sizeof(struct sevent), cmp_sevent);
->>>>         for (int j = 0; j < len; j++) {
->>>>                 /* Skip duplicates */
->>>>
->>>> The only drawback is that perf list will not show the new cbox_0 event.
->>>> (But the event name still works. Users can still apply perf stat -e
->>>> unc_clock.socket.)
->>>>
->>>> Since the cbox_0 event is only available on old machines (SKL and
->>>> earlier), people should already use the equivalent kernel event. It
->>>> doesn't sounds a big issue for me. I prefer this simple fix.
->>>>
->>>> I think the other way would be to modify the perf_pmu__for_each_event()
->>>> to go through all the possible PMUs.
->>>> It seems complicated and may impact others ARCHs (e.g., S390). I haven't
->>>> tried it yet.
->>>>
->>>> What do you think?
->>>> Do you see any other ways to address the issue?
->>>
->>> Ugh. It seems the sizing and then iterating approach is just prone to
->>> keep breaking. Perhaps we can switch to realloc-ed arrays to avoid the
->>> need for perf_pmu__num_events, which seems to be the source of the
->>> problems.
->>>
->>
->> I think a realloc-ed array should have the same drawback as the first
->> way, but bad performance.
->> Because the pmu_add_cpu_aliases() in the perf_pmu__for_each_event() only
->> add the events from the first matched PMU. If we don't fix it, the
->> UNC_CLOCK.SOCKET of cbox_0 will never be displayed.
-> 
-> Ok, but I don't think we need to optimize `perf list` for speed. Fwiw,
-> I think this was the fix for the last bug in this code:
-> https://lore.kernel.org/r/20240511003601.2666907-1-irogers@google.com
+Hello,
 
-That seems a different issue.
-The root cause of this issue should be that different methods are used
-between calculating the total number of events and adding the events.
-A realloc-ed array should just hide the problem. There will still be an
-issue if anyone use the pair of perf_pmu__num_events() and
-pmu_add_cpu_aliases() somewhere else later.
+kernel test robot noticed "ltp.execve04.fail" on:
 
-It looks like the difference is introduced from the commit 	e3edd6cf6399
-("perf pmu-events: Reduce processed events by passing PMU").
+commit: 2a010c41285345da60cece35575b4e0af7e7bf44 ("fs: don't block i_writecount during exec")
+https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-The pmu_events_table__for_each_event() stops immediately once a pmu is
-set. But for uncore, especially this case, the method is wrong and
-mismatch what perf does in the perf_pmu__num_events().
+[test failed on linus/master      d67978318827d06f1c0fa4c31343a279e9df6fde]
+[test failed on linux-next/master 4f40be61af99a67d5580c1448acd9b74c0376389]
 
-The below patch can fix it.
+in testcase: ltp
+version: ltp-x86_64-14c1f76-1_20240706
+with following parameters:
 
-diff --git a/tools/perf/pmu-events/jevents.py
-b/tools/perf/pmu-events/jevents.py
-index ac9b7ca41856..97a3b018f865 100755
---- a/tools/perf/pmu-events/jevents.py
-+++ b/tools/perf/pmu-events/jevents.py
-@@ -923,7 +923,7 @@ int pmu_events_table__for_each_event(const struct
-pmu_events_table *table,
- 			continue;
+	disk: 1HDD
+	fs: f2fs
+	test: syscalls-05/execve04
 
- 		ret = pmu_events_table__for_each_event_pmu(table, table_pmu, fn, data);
--		if (pmu || ret)
-+		if (ret)
- 			return ret;
- 	}
- 	return 0;
 
-The event can be displayed by the perf list pmu with the patch.
 
-$ perf list pmu | grep -A 1 clock.socket
-   unc_clock.socket
-        [This 48-bit fixed counter counts the UCLK cycles. Unit:
-uncore_cbox_0
-& perf test "perf all PMU test"
-  107: perf all PMU test                                               : Ok
+compiler: gcc-13
+test machine: 36 threads 1 sockets Intel(R) Core(TM) i9-10980XE CPU @ 3.00GHz (Cascade Lake) with 128G memory
 
-I will send the patch shortly.
+(please refer to attached dmesg/kmsg for entire log/backtrace)
 
-Thanks,
-Kan
+
+
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202407162117.7730986d-oliver.sang@intel.com
+
+
+
+Running tests.......
+<<<test_start>>>
+tag=execve04 stime=1721093644
+cmdline="execve04"
+contacts=""
+analysis=exit
+<<<test_output>>>
+tst_test.c:1803: TINFO: LTP version: 20240524-71-g361f6ad13
+tst_test.c:1647: TINFO: Timeout per run is 0h 02m 30s
+execve_child.c:27: TFAIL: execve_child shouldn't be executed
+tst_test.c:1695: TINFO: Killed the leftover descendant processes
+
+Summary:
+passed   0
+failed   1
+broken   0
+skipped  0
+warnings 0
+incrementing stop
+<<<execution_status>>>
+initiation_status="ok"
+duration=0 termination_type=exited termination_id=1 corefile=no
+cutime=0 cstime=6
+<<<test_end>>>
+INFO: ltp-pan reported some tests FAIL
+LTP Version: 20240524-71-g361f6ad13
+
+       ###############################################################
+
+            Done executing testcases.
+            LTP Version:  20240524-71-g361f6ad13
+       ###############################################################
+
+
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20240716/202407162117.7730986d-oliver.sang@intel.com
+
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
