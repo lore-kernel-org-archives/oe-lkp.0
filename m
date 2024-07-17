@@ -1,123 +1,181 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A914122EE5
-	for <oe-lkp@lists.linux.dev>; Wed, 17 Jul 2024 07:59:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5433A10953
+	for <oe-lkp@lists.linux.dev>; Wed, 17 Jul 2024 08:37:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721203181; cv=none; b=Q/xg5x06ZOZRJgAFnvH+JK81c7ML6d3lYuNYSmp90y7CSK9vqKtg3CvvNGxLX4u0wGQAh8ZYQN/RXSHkq9eiYr3QneOot04utiSO9gzVnHdBzMIeblA/5WCgTiibtWyGwEU525QzLrz9qrhwhe5RLOLhorctZjVYcvoIbvjfjpk=
+	t=1721205440; cv=none; b=P+sQMNRY6CQ5K8P9wmCXQ1ecS6Z+QDVhvdRDYqhDpRr29na+glJzKA4qQb2E56IiThlLKMhVilpZdoM6pkQZ92qTdVSwl/rqk39L2PDXxHZYl44bBvokvzMKO33vRTA/B5djZw7njyFp1rIiJhTP9Cag4zIksW+jouQCMTWjSoo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721203181; c=relaxed/simple;
-	bh=4kdHFUV5KnPKH1AMa9NEHHGe0CJaGYqG5YhtmXf9DYQ=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=BUDIW9WN9KPAERO2tdOywXRFhxTPUpJsxazLTl16SKvAZYzqHpmzpkz0fSAVPj3KJPBdtjRG61y0aHP3yMkFlbwTZifbgvSqNv4oVLO//7zowy9gV2FHMeGV4K5rqa+m1SVYcsKOQZHVrGcaupDpfQPQXG5W5s02xY1b4zUvbgQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=OLa17FhX; arc=none smtp.client-ip=148.163.158.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	s=arc-20240116; t=1721205440; c=relaxed/simple;
+	bh=hoQpFhzvy/0Y1D1v33lPjhtmyeKl0Rs0H4Mgj3xz5AQ=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=lilYRHKyRV4k84MP/RqfTVxUnbL+wYvbxK++7YLW0eTbTq72/8dZeaRVhngKKSXSMxcOagtD/AdZqjJQHbP1B67QVYisiLXO/7kpjGgLyoVlL4TiuYHqpphn9+LKIbl+Mx+mLQWZzGhQC6SS1j7eXVoTUmSyBhSYWycvWBgu2Xw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=1YkExaZo; arc=none smtp.client-ip=209.85.160.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="OLa17FhX"
-Received: from pps.filterd (m0353725.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 46H7R1uq008170;
-	Wed, 17 Jul 2024 07:59:21 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=
-	message-id:date:subject:to:cc:references:from:in-reply-to
-	:content-type:content-transfer-encoding:mime-version; s=pp1; bh=
-	4kdHFUV5KnPKH1AMa9NEHHGe0CJaGYqG5YhtmXf9DYQ=; b=OLa17FhX3qlrnloU
-	zCQGQPKN2tnK9a6URbmmfVUik6d4q+/8t3ErcKwsuhpJaOpKVtnMBPsxe1qPLQ6i
-	pA6nATcnA3e8c6SD9QzCVgLgGuLEAO/2VA+U5EXwU7Xam21anjmjhLtL14Ozz0IS
-	VXL1DVlzR21OT1w+Kv6GSQe+v0xRLIZkil0182wLD5s/wj1LCldr1LKDOUd2Ixvu
-	EVpLbimdqsnxBawReYk5zgu2rWJU2cTbuz2Z64joUwrNJVEX/r2T6VzzzPs3XjXD
-	i3Srzjwdu9aztWOBZDUrr9xrHrCkBx1BtFFx/1D+pOGm/te+6GOS6dTDhOsavpDi
-	qPJ7Hg==
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 40e0urs341-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 17 Jul 2024 07:59:20 +0000 (GMT)
-Received: from m0353725.ppops.net (m0353725.ppops.net [127.0.0.1])
-	by pps.reinject (8.18.0.8/8.18.0.8) with ESMTP id 46H7xKdw023023;
-	Wed, 17 Jul 2024 07:59:20 GMT
-Received: from ppma21.wdc07v.mail.ibm.com (5b.69.3da9.ip4.static.sl-reverse.com [169.61.105.91])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 40e0urs33y-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 17 Jul 2024 07:59:20 +0000 (GMT)
-Received: from pps.filterd (ppma21.wdc07v.mail.ibm.com [127.0.0.1])
-	by ppma21.wdc07v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 46H5OHmS028837;
-	Wed, 17 Jul 2024 07:59:19 GMT
-Received: from smtprelay04.fra02v.mail.ibm.com ([9.218.2.228])
-	by ppma21.wdc07v.mail.ibm.com (PPS) with ESMTPS id 40dwkmu53h-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 17 Jul 2024 07:59:19 +0000
-Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
-	by smtprelay04.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 46H7xDCj31195884
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 17 Jul 2024 07:59:15 GMT
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 9514C2004B;
-	Wed, 17 Jul 2024 07:59:13 +0000 (GMT)
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id B336F20040;
-	Wed, 17 Jul 2024 07:59:12 +0000 (GMT)
-Received: from [9.171.86.104] (unknown [9.171.86.104])
-	by smtpav05.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Wed, 17 Jul 2024 07:59:12 +0000 (GMT)
-Message-ID: <3976e7a9-b6a2-450c-a891-483644ee88ba@linux.ibm.com>
-Date: Wed, 17 Jul 2024 09:59:12 +0200
-User-Agent: Mozilla Thunderbird
-Subject: Re: [linux-next:master] [mm/hugetlb_vmemmap] 875fa64577:
- vm-scalability.throughput -34.3% regression
-To: Janosch Frank <frankja@linux.ibm.com>, Yu Zhao <yuzhao@google.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Muchun Song <muchun.song@linux.dev>,
-        David Hildenbrand <david@redhat.com>,
-        Frank van der Linden <fvdl@google.com>,
-        Matthew Wilcox
- <willy@infradead.org>, Peter Xu <peterx@redhat.com>,
-        Yang Shi <yang@os.amperecomputing.com>, linux-kernel@vger.kernel.org,
-        ying.huang@intel.com, feng.tang@intel.com, fengwei.yin@intel.com,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        Marc Hartmayer <mhartmay@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>
-References: <202407091001.1250ad4a-oliver.sang@intel.com>
- <3acefad9-96e5-4681-8014-827d6be71c7a@linux.ibm.com>
-Content-Language: en-US
-From: Christian Borntraeger <borntraeger@linux.ibm.com>
-In-Reply-To: <3acefad9-96e5-4681-8014-827d6be71c7a@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 8yuVJUFm8pcrV-ZSY9Q1gErcAlT68eLo
-X-Proofpoint-ORIG-GUID: -Nx7rkw7jfYrNy8hcw7tnbrPOG_Up27z
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="1YkExaZo"
+Received: by mail-qt1-f179.google.com with SMTP id d75a77b69052e-447f8aa87bfso285731cf.0
+        for <oe-lkp@lists.linux.dev>; Wed, 17 Jul 2024 01:37:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1721205437; x=1721810237; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=hoQpFhzvy/0Y1D1v33lPjhtmyeKl0Rs0H4Mgj3xz5AQ=;
+        b=1YkExaZolpVuUL9B3zzaiy2L31VEKLAk8k1j86qsWeHuuSybdoEqHpfTgKrjhh0DL8
+         w5fHt1QL6uZCBvZwsTkZ4K3p1+7XcRjr7xshYagPzHfa2LRQ6f2BIAMxSWhRFkHVYux9
+         fXChWanMu04UpYXQCxc5CkemfNZzkvHftSDieFk0sTwiWH+ZRjBPPbgG3dOfgVDWWgxY
+         f9Z3ZhThAoVaupg9pgVWIMU9O/5jZzzQdQVUnSCKjv0I4TIoOoTUeRZjlIVfoC2JiVvx
+         FcB/QaEPpithyoVjsLabiVC/DEg521BFFTq94c7RnHddk74Js23pjtx8zwhNXTimv5rp
+         JVZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1721205437; x=1721810237;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=hoQpFhzvy/0Y1D1v33lPjhtmyeKl0Rs0H4Mgj3xz5AQ=;
+        b=SwhUX+GfCiuTgsPQBRfgvpwn7ADRtFRM13cY6wKs13wWeLOBnLoBcaS4KF2zHUwDrf
+         euMsk+om0bIwt/Sinsd8rYrpII9brWII7Q6NRelNPDc1KxK8kM6rDzi+xxuqtDQcfMWA
+         HbuGMQ+HkujvNteMAdXk8kWIXEiljRU+PmM3T7qrDo1qSUvJeQ7TdNZwoFjVmZCyooca
+         VGb7V2qVVLShEruZ7EQaHTFoOrpy1ya1SM+WQJVnFirQlgPEoGKKvjfx9N7TibwNlKp8
+         OVBFNaA+BeyGkMQutCuvZzDqmWWAZgU6Vpkleh0aVKNytFRzrSfZx5wz/1ceTaQI8yOR
+         a7MA==
+X-Gm-Message-State: AOJu0Ywi0Bl2pMHa8xKwfcMLLzua/svp2uFZw/Gfsvtf0S0RNy9C7ocg
+	oUdC6dmGUgcvrZ1Qehz6SkwnDT34jqOFYasvxyYl+GbZh6Hu7IayFTziVEkgTEqvMs83dRmhTm0
+	tibkbHE3c1h2FzNcVoGXjtloueBUlPp5DLAIU
+X-Google-Smtp-Source: AGHT+IFgdSyQXDeCUVnvsTnCVDQKPFyFEiIEFNjsUZk/tofwfYbEg+HsOrs49U/TvQZCb+rEiPokGRFChuLdQ3/vG4M=
+X-Received: by 2002:a05:622a:228f:b0:447:daca:4b25 with SMTP id
+ d75a77b69052e-44f83aae05bmr2569851cf.28.1721205437062; Wed, 17 Jul 2024
+ 01:37:17 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-07-17_04,2024-07-16_02,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- bulkscore=0 mlxscore=0 adultscore=0 impostorscore=0 spamscore=0
- mlxlogscore=826 priorityscore=1501 suspectscore=0 malwarescore=0
- clxscore=1011 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2407110000 definitions=main-2407170059
+References: <202407091001.1250ad4a-oliver.sang@intel.com> <3acefad9-96e5-4681-8014-827d6be71c7a@linux.ibm.com>
+In-Reply-To: <3acefad9-96e5-4681-8014-827d6be71c7a@linux.ibm.com>
+From: Yu Zhao <yuzhao@google.com>
+Date: Wed, 17 Jul 2024 02:36:37 -0600
+Message-ID: <CAOUHufYvCeiGGa+3PbPDfFx__aV2XxyS7TMHMicws4aNTg4qmQ@mail.gmail.com>
+Subject: Re: [linux-next:master] [mm/hugetlb_vmemmap] 875fa64577:
+ vm-scalability.throughput -34.3% regression
+To: Janosch Frank <frankja@linux.ibm.com>, kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, 
+	Linux Memory Management List <linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>, 
+	Muchun Song <muchun.song@linux.dev>, David Hildenbrand <david@redhat.com>, 
+	Frank van der Linden <fvdl@google.com>, Matthew Wilcox <willy@infradead.org>, Peter Xu <peterx@redhat.com>, 
+	Yang Shi <yang@os.amperecomputing.com>, linux-kernel@vger.kernel.org, 
+	ying.huang@intel.com, feng.tang@intel.com, fengwei.yin@intel.com, 
+	Christian Borntraeger <borntraeger@linux.ibm.com>, Claudio Imbrenda <imbrenda@linux.ibm.com>, 
+	Marc Hartmayer <mhartmay@linux.ibm.com>, Heiko Carstens <hca@linux.ibm.com>
+Content-Type: multipart/mixed; boundary="000000000000aa9733061d6d5e40"
 
-Am 17.07.24 um 09:52 schrieb Janosch Frank:
+--000000000000aa9733061d6d5e40
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+Hi Janosch and Oliver,
+
+On Wed, Jul 17, 2024 at 1:57=E2=80=AFAM Janosch Frank <frankja@linux.ibm.co=
+m> wrote:
+>
 > On 7/9/24 07:11, kernel test robot wrote:
->> Hello,
->>
->> kernel test robot noticed a -34.3% regression of vm-scalability.throughput on:
->>
->>
->> commit: 875fa64577da9bc8e9963ee14fef8433f20653e7 ("mm/hugetlb_vmemmap: fix race with speculative PFN walkers")
->> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
->>
->> [still regression on linux-next/master 0b58e108042b0ed28a71cd7edf5175999955b233]
->>
+> > Hello,
+> >
+> > kernel test robot noticed a -34.3% regression of vm-scalability.through=
+put on:
+> >
+> >
+> > commit: 875fa64577da9bc8e9963ee14fef8433f20653e7 ("mm/hugetlb_vmemmap: =
+fix race with speculative PFN walkers")
+> > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+> >
+> > [still regression on linux-next/master 0b58e108042b0ed28a71cd7edf517599=
+9955b233]
+> >
 > This has hit s390 huge page backed KVM guests as well.
-> Our simple start/stop test case went from ~5 to over 50 seconds of runtime.
+> Our simple start/stop test case went from ~5 to over 50 seconds of runtim=
+e.
 
-Could this be one of the synchronize_rcu calls? This patch adds lots of them. On s390 with HZ=100 those are really expensive.
+Could you try the attached patch please? Thank you.
+
+--000000000000aa9733061d6d5e40
+Content-Type: application/octet-stream; name="hugetlb-fix.patch"
+Content-Disposition: attachment; filename="hugetlb-fix.patch"
+Content-Transfer-Encoding: base64
+Content-ID: <f_lypl92k50>
+X-Attachment-Id: f_lypl92k50
+
+ZGlmZiAtLWdpdCBhL21tL2h1Z2V0bGJfdm1lbW1hcC5jIGIvbW0vaHVnZXRsYl92bWVtbWFwLmMK
+aW5kZXggODE5MzkwNjUxNWM2Li45ZTZmYzRjZThkMmIgMTAwNjQ0Ci0tLSBhL21tL2h1Z2V0bGJf
+dm1lbW1hcC5jCisrKyBiL21tL2h1Z2V0bGJfdm1lbW1hcC5jCkBAIC00Myw2ICs0Myw4IEBAIHN0
+cnVjdCB2bWVtbWFwX3JlbWFwX3dhbGsgewogI2RlZmluZSBWTUVNTUFQX1NQTElUX05PX1RMQl9G
+TFVTSAlCSVQoMCkKIC8qIFNraXAgdGhlIFRMQiBmbHVzaCB3aGVuIHdlIHJlbWFwIHRoZSBQVEUg
+Ki8KICNkZWZpbmUgVk1FTU1BUF9SRU1BUF9OT19UTEJfRkxVU0gJQklUKDEpCisvKiBzeW5jaHJv
+bml6ZV9yY3UoKSB0byBhdm9pZCB3cml0ZXMgZnJvbSBwYWdlX3JlZl9hZGRfdW5sZXNzKCkgKi8K
+KyNkZWZpbmUgVk1FTU1BUF9TWU5DSFJPTklaRV9SQ1UJCUJJVCgyKQogCXVuc2lnbmVkIGxvbmcJ
+CWZsYWdzOwogfTsKIApAQCAtNDUxLDYgKzQ1Myw5IEBAIHN0YXRpYyBpbnQgX19odWdldGxiX3Zt
+ZW1tYXBfcmVzdG9yZV9mb2xpbyhjb25zdCBzdHJ1Y3QgaHN0YXRlICpoLAogCWlmICghZm9saW9f
+dGVzdF9odWdldGxiX3ZtZW1tYXBfb3B0aW1pemVkKGZvbGlvKSkKIAkJcmV0dXJuIDA7CiAKKwlp
+ZiAoZmxhZ3MgJiBWTUVNTUFQX1NZTkNIUk9OSVpFX1JDVSkKKwkJc3luY2hyb25pemVfcmN1KCk7
+CisKIAl2bWVtbWFwX2VuZAk9IHZtZW1tYXBfc3RhcnQgKyBodWdldGxiX3ZtZW1tYXBfc2l6ZSho
+KTsKIAl2bWVtbWFwX3JldXNlCT0gdm1lbW1hcF9zdGFydDsKIAl2bWVtbWFwX3N0YXJ0CSs9IEhV
+R0VUTEJfVk1FTU1BUF9SRVNFUlZFX1NJWkU7CkBAIC00ODMsMTAgKzQ4OCw3IEBAIHN0YXRpYyBp
+bnQgX19odWdldGxiX3ZtZW1tYXBfcmVzdG9yZV9mb2xpbyhjb25zdCBzdHJ1Y3QgaHN0YXRlICpo
+LAogICovCiBpbnQgaHVnZXRsYl92bWVtbWFwX3Jlc3RvcmVfZm9saW8oY29uc3Qgc3RydWN0IGhz
+dGF0ZSAqaCwgc3RydWN0IGZvbGlvICpmb2xpbykKIHsKLQkvKiBhdm9pZCB3cml0ZXMgZnJvbSBw
+YWdlX3JlZl9hZGRfdW5sZXNzKCkgd2hpbGUgdW5mb2xkaW5nIHZtZW1tYXAgKi8KLQlzeW5jaHJv
+bml6ZV9yY3UoKTsKLQotCXJldHVybiBfX2h1Z2V0bGJfdm1lbW1hcF9yZXN0b3JlX2ZvbGlvKGgs
+IGZvbGlvLCAwKTsKKwlyZXR1cm4gX19odWdldGxiX3ZtZW1tYXBfcmVzdG9yZV9mb2xpbyhoLCBm
+b2xpbywgVk1FTU1BUF9TWU5DSFJPTklaRV9SQ1UpOwogfQogCiAvKioKQEAgLTUwOSwxNCArNTEx
+LDEzIEBAIGxvbmcgaHVnZXRsYl92bWVtbWFwX3Jlc3RvcmVfZm9saW9zKGNvbnN0IHN0cnVjdCBo
+c3RhdGUgKmgsCiAJc3RydWN0IGZvbGlvICpmb2xpbywgKnRfZm9saW87CiAJbG9uZyByZXN0b3Jl
+ZCA9IDA7CiAJbG9uZyByZXQgPSAwOwotCi0JLyogYXZvaWQgd3JpdGVzIGZyb20gcGFnZV9yZWZf
+YWRkX3VubGVzcygpIHdoaWxlIHVuZm9sZGluZyB2bWVtbWFwICovCi0Jc3luY2hyb25pemVfcmN1
+KCk7CisJdW5zaWduZWQgbG9uZyBmbGFncyA9IFZNRU1NQVBfUkVNQVBfTk9fVExCX0ZMVVNIIHwg
+Vk1FTU1BUF9TWU5DSFJPTklaRV9SQ1U7CiAKIAlsaXN0X2Zvcl9lYWNoX2VudHJ5X3NhZmUoZm9s
+aW8sIHRfZm9saW8sIGZvbGlvX2xpc3QsIGxydSkgewogCQlpZiAoZm9saW9fdGVzdF9odWdldGxi
+X3ZtZW1tYXBfb3B0aW1pemVkKGZvbGlvKSkgewotCQkJcmV0ID0gX19odWdldGxiX3ZtZW1tYXBf
+cmVzdG9yZV9mb2xpbyhoLCBmb2xpbywKLQkJCQkJCQkgICAgICBWTUVNTUFQX1JFTUFQX05PX1RM
+Ql9GTFVTSCk7CisJCQlyZXQgPSBfX2h1Z2V0bGJfdm1lbW1hcF9yZXN0b3JlX2ZvbGlvKGgsIGZv
+bGlvLCBmbGFncyk7CisJCQlmbGFncyAmPSBWTUVNTUFQX1NZTkNIUk9OSVpFX1JDVTsKKwogCQkJ
+aWYgKHJldCkKIAkJCQlicmVhazsKIAkJCXJlc3RvcmVkKys7CkBAIC01NjQsNiArNTY1LDkgQEAg
+c3RhdGljIGludCBfX2h1Z2V0bGJfdm1lbW1hcF9vcHRpbWl6ZV9mb2xpbyhjb25zdCBzdHJ1Y3Qg
+aHN0YXRlICpoLAogCQlyZXR1cm4gcmV0OwogCiAJc3RhdGljX2JyYW5jaF9pbmMoJmh1Z2V0bGJf
+b3B0aW1pemVfdm1lbW1hcF9rZXkpOworCisJaWYgKGZsYWdzICYgVk1FTU1BUF9TWU5DSFJPTkla
+RV9SQ1UpCisJCXN5bmNocm9uaXplX3JjdSgpOwogCS8qCiAJICogVmVyeSBTdWJ0bGUKIAkgKiBJ
+ZiBWTUVNTUFQX1JFTUFQX05PX1RMQl9GTFVTSCBpcyBzZXQsIFRMQiBmbHVzaGluZyBpcyBub3Qg
+cGVyZm9ybWVkCkBAIC02MTEsMTAgKzYxNSw3IEBAIHZvaWQgaHVnZXRsYl92bWVtbWFwX29wdGlt
+aXplX2ZvbGlvKGNvbnN0IHN0cnVjdCBoc3RhdGUgKmgsIHN0cnVjdCBmb2xpbyAqZm9saW8pCiB7
+CiAJTElTVF9IRUFEKHZtZW1tYXBfcGFnZXMpOwogCi0JLyogYXZvaWQgd3JpdGVzIGZyb20gcGFn
+ZV9yZWZfYWRkX3VubGVzcygpIHdoaWxlIGZvbGRpbmcgdm1lbW1hcCAqLwotCXN5bmNocm9uaXpl
+X3JjdSgpOwotCi0JX19odWdldGxiX3ZtZW1tYXBfb3B0aW1pemVfZm9saW8oaCwgZm9saW8sICZ2
+bWVtbWFwX3BhZ2VzLCAwKTsKKwlfX2h1Z2V0bGJfdm1lbW1hcF9vcHRpbWl6ZV9mb2xpbyhoLCBm
+b2xpbywgJnZtZW1tYXBfcGFnZXMsIFZNRU1NQVBfU1lOQ0hST05JWkVfUkNVKTsKIAlmcmVlX3Zt
+ZW1tYXBfcGFnZV9saXN0KCZ2bWVtbWFwX3BhZ2VzKTsKIH0KIApAQCAtNjQxLDYgKzY0Miw3IEBA
+IHZvaWQgaHVnZXRsYl92bWVtbWFwX29wdGltaXplX2ZvbGlvcyhzdHJ1Y3QgaHN0YXRlICpoLCBz
+dHJ1Y3QgbGlzdF9oZWFkICpmb2xpb19sCiB7CiAJc3RydWN0IGZvbGlvICpmb2xpbzsKIAlMSVNU
+X0hFQUQodm1lbW1hcF9wYWdlcyk7CisJdW5zaWduZWQgbG9uZyBmbGFncyA9IFZNRU1NQVBfUkVN
+QVBfTk9fVExCX0ZMVVNIIHwgVk1FTU1BUF9TWU5DSFJPTklaRV9SQ1U7CiAKIAlsaXN0X2Zvcl9l
+YWNoX2VudHJ5KGZvbGlvLCBmb2xpb19saXN0LCBscnUpIHsKIAkJaW50IHJldCA9IGh1Z2V0bGJf
+dm1lbW1hcF9zcGxpdF9mb2xpbyhoLCBmb2xpbyk7CkBAIC02NTcsMTQgKzY1OSwxMSBAQCB2b2lk
+IGh1Z2V0bGJfdm1lbW1hcF9vcHRpbWl6ZV9mb2xpb3Moc3RydWN0IGhzdGF0ZSAqaCwgc3RydWN0
+IGxpc3RfaGVhZCAqZm9saW9fbAogCiAJZmx1c2hfdGxiX2FsbCgpOwogCi0JLyogYXZvaWQgd3Jp
+dGVzIGZyb20gcGFnZV9yZWZfYWRkX3VubGVzcygpIHdoaWxlIGZvbGRpbmcgdm1lbW1hcCAqLwot
+CXN5bmNocm9uaXplX3JjdSgpOwotCiAJbGlzdF9mb3JfZWFjaF9lbnRyeShmb2xpbywgZm9saW9f
+bGlzdCwgbHJ1KSB7CiAJCWludCByZXQ7CiAKLQkJcmV0ID0gX19odWdldGxiX3ZtZW1tYXBfb3B0
+aW1pemVfZm9saW8oaCwgZm9saW8sICZ2bWVtbWFwX3BhZ2VzLAotCQkJCQkJICAgICAgIFZNRU1N
+QVBfUkVNQVBfTk9fVExCX0ZMVVNIKTsKKwkJcmV0ID0gX19odWdldGxiX3ZtZW1tYXBfb3B0aW1p
+emVfZm9saW8oaCwgZm9saW8sICZ2bWVtbWFwX3BhZ2VzLCBmbGFncyk7CisJCWZsYWdzICY9IH5W
+TUVNTUFQX1NZTkNIUk9OSVpFX1JDVTsKIAogCQkvKgogCQkgKiBQYWdlcyB0byBiZSBmcmVlZCBt
+YXkgaGF2ZSBiZWVuIGFjY3VtdWxhdGVkLiAgSWYgd2UKQEAgLTY3OCw4ICs2NzcsNyBAQCB2b2lk
+IGh1Z2V0bGJfdm1lbW1hcF9vcHRpbWl6ZV9mb2xpb3Moc3RydWN0IGhzdGF0ZSAqaCwgc3RydWN0
+IGxpc3RfaGVhZCAqZm9saW9fbAogCQkJZmx1c2hfdGxiX2FsbCgpOwogCQkJZnJlZV92bWVtbWFw
+X3BhZ2VfbGlzdCgmdm1lbW1hcF9wYWdlcyk7CiAJCQlJTklUX0xJU1RfSEVBRCgmdm1lbW1hcF9w
+YWdlcyk7Ci0JCQlfX2h1Z2V0bGJfdm1lbW1hcF9vcHRpbWl6ZV9mb2xpbyhoLCBmb2xpbywgJnZt
+ZW1tYXBfcGFnZXMsCi0JCQkJCQkJIFZNRU1NQVBfUkVNQVBfTk9fVExCX0ZMVVNIKTsKKwkJCV9f
+aHVnZXRsYl92bWVtbWFwX29wdGltaXplX2ZvbGlvKGgsIGZvbGlvLCAmdm1lbW1hcF9wYWdlcywg
+ZmxhZ3MpOwogCQl9CiAJfQogCg==
+--000000000000aa9733061d6d5e40--
