@@ -1,239 +1,162 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EDCD1DFF0;
-	Tue, 16 Jul 2024 16:37:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D81AC22EE5
+	for <oe-lkp@lists.linux.dev>; Wed, 17 Jul 2024 07:57:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721147852; cv=none; b=MdpTuTFUjxyMNrEX/cnVRVETlVq3uo4xAVf6b2jAj/qEVGcqVjx0Nve4J4MmqfTfGwLoBoF2DgVNN4usEp4ugY6AC0odsZJO0Wl0EazZzO8T2iPoPju/6Vgmt25J3Kp4+6KW6mVI1TA3CDnmCvx1tLIgkimWVsiLNp8bMZ5Xfro=
+	t=1721203060; cv=none; b=i17GKfAmSvI0pjheHagZja16Zr3SQTs7G+O2BBWQGIGSdxaF9OxCWDYsFbsdnP8etqR7sglLumxLAZ5NbyC1zFOdyAb3CfG6y9eL/Eu44zXT7p4vluukmsq3m2ujJJl1KUlLoTJ0Qomey/VwjZKSt4nAFU0OYKFL7h7ZRlqsxtc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721147852; c=relaxed/simple;
-	bh=vK7Gyxxt2pqmgNDEvXOM+qGxAkW9bXhQSQBiN5GtWFo=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=aqoDyozOI662UE2VB7U9KBFxs7UL3vaNjmQE5UAQbnuj72cSewIFPBdO7plUAU1WW8fBI40SB9IQbMVp+GgIbskp+0AEyzW0A1xb0c6MAKlso8Yqsw28rVT3iuFYo71V36xUurSD247Ju+VjZGG8VpzjyK1etyA79WJW4KMrVuU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Y8p1OCvj; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1721203060; c=relaxed/simple;
+	bh=iic8ojSP+0t4ll27e93zCMgo6+t0CvX/Y9jGf966pns=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=RM9eZKHx2L0FDme1grOg+eHGASZ9lsuL5hM0khs5zd/O5whpx0m5lIEDgCbujoq1Az6ZI5KG6lj0EmpLr89BI9tU65ZBhY9huuKWE+Wun96GuF6/4BCyDRBc4i8fjrjrVmD44RZ1mvrBiGgnAd9e3qZlv0ZXp63x8R4neoXbnuo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=O4X4irp9; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Y8p1OCvj"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04514C116B1;
-	Tue, 16 Jul 2024 16:37:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1721147852;
-	bh=vK7Gyxxt2pqmgNDEvXOM+qGxAkW9bXhQSQBiN5GtWFo=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Y8p1OCvjiMLG5mQY3dWb54Zh8iTNLFBxMGZg3SFx+x2ecNBsslAkPksPz0KHgULuZ
-	 XdTACUQvwbRBsh7m+iHmjjc86Nyt4InNWsDTKk9QteTVxunpH1Fga/YDUUm/+k3tJN
-	 vDnF7Ygs6C+KtW8Fi5glY+SL245X96Bq9GhOhU0gAq2Qgxul24cPXPDP68FWy5Jzuu
-	 cErXlOfRpLaAK8QlSLEBrTE5OFckAmn4f9QeZoMDNrwGYnGmdPD9p+Hu36Sn1263il
-	 JErILZ6Rmaw0j+PQBlFQYrthk/zE1QwdAe8vg/bygFs3ujTYuD4WLySJKA2hTq4te4
-	 i7UJsyb3dEA4w==
-Date: Tue, 16 Jul 2024 17:37:22 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: Nuno Sa <nuno.sa@analog.com>, <oe-lkp@lists.linux.dev>, <lkp@intel.com>,
- Linux Memory Management List <linux-mm@kvack.org>, Jonathan Cameron
- <Jonathan.Cameron@huawei.com>, <linux-iio@vger.kernel.org>, "Borislav
- Petkov (AMD)" <bp@alien8.de>, Paul Menzel <pmenzel@molgen.mpg.de>, Marco
- Elver <elver@google.com>, Masahiro Yamada <masahiroy@kernel.org>
-Subject: Re: [linux-next:master] [iio]  8d61d01cde:
- WARNING:at_arch/x86/kernel/cpu/bugs.c:#__warn_thunk
-Message-ID: <20240716173722.5e582581@jic23-huawei>
-In-Reply-To: <202407161520.ee3d9347-lkp@intel.com>
-References: <202407161520.ee3d9347-lkp@intel.com>
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="O4X4irp9"
+Received: from pps.filterd (m0356517.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 46H7pZ11003490;
+	Wed, 17 Jul 2024 07:57:20 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=
+	message-id:date:subject:to:cc:references:from:in-reply-to
+	:content-type:content-transfer-encoding:mime-version; s=pp1; bh=
+	kg3X/gQZ+64/knLBvK9Em5RKJ2OZYom21tihi25c4A0=; b=O4X4irp9af7WIYF0
+	SHKDVNM/+EwFgA6uChKrVSrZiumY9F8lV9Trfg7dqxAJtrBq6/AdaDgra18Rtnix
+	bLYUL8wuKcHn9IbXPJ8wwYAQ0uDYTsI6MU4wQbaK3+JjjIF5S6OH+uoI9ou6qYKk
+	8BjNM4th7oXcBqcxNH5f0SnyebL77lutHlUY12aHVldBGZ4geDtePDC1lBlAVFjH
+	3pZqXrHdwEirnWiRN0kpAtIUKgpdcfpT/uReskqwN8VziQxlwHepLS795uyFpA71
+	iycdtWkZhmYRsB3CWvjgQ6IOdd0z22YIlqSAalGRF3XnMbVt36APf+rlM1/HXRp5
+	D6PRjA==
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 40e9kp01q3-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 17 Jul 2024 07:57:19 +0000 (GMT)
+Received: from m0356517.ppops.net (m0356517.ppops.net [127.0.0.1])
+	by pps.reinject (8.18.0.8/8.18.0.8) with ESMTP id 46H7vJqs009999;
+	Wed, 17 Jul 2024 07:57:19 GMT
+Received: from ppma12.dal12v.mail.ibm.com (dc.9e.1632.ip4.static.sl-reverse.com [50.22.158.220])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 40e9kp01py-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 17 Jul 2024 07:57:19 +0000 (GMT)
+Received: from pps.filterd (ppma12.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma12.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 46H5VOlx009173;
+	Wed, 17 Jul 2024 07:52:58 GMT
+Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
+	by ppma12.dal12v.mail.ibm.com (PPS) with ESMTPS id 40dwkmk4sd-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 17 Jul 2024 07:52:58 +0000
+Received: from smtpav06.fra02v.mail.ibm.com (smtpav06.fra02v.mail.ibm.com [10.20.54.105])
+	by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 46H7qq4W27001466
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 17 Jul 2024 07:52:54 GMT
+Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id AE23B2004B;
+	Wed, 17 Jul 2024 07:52:52 +0000 (GMT)
+Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 9FE1820040;
+	Wed, 17 Jul 2024 07:52:51 +0000 (GMT)
+Received: from [9.171.6.148] (unknown [9.171.6.148])
+	by smtpav06.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Wed, 17 Jul 2024 07:52:51 +0000 (GMT)
+Message-ID: <3acefad9-96e5-4681-8014-827d6be71c7a@linux.ibm.com>
+Date: Wed, 17 Jul 2024 09:52:51 +0200
+User-Agent: Mozilla Thunderbird
+Subject: Re: [linux-next:master] [mm/hugetlb_vmemmap] 875fa64577:
+ vm-scalability.throughput -34.3% regression
+To: Yu Zhao <yuzhao@google.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Muchun Song <muchun.song@linux.dev>,
+        David Hildenbrand <david@redhat.com>,
+        Frank van der Linden <fvdl@google.com>,
+        Matthew Wilcox
+ <willy@infradead.org>, Peter Xu <peterx@redhat.com>,
+        Yang Shi <yang@os.amperecomputing.com>, linux-kernel@vger.kernel.org,
+        ying.huang@intel.com, feng.tang@intel.com, fengwei.yin@intel.com,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Marc Hartmayer <mhartmay@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>
+References: <202407091001.1250ad4a-oliver.sang@intel.com>
+Content-Language: en-US
+From: Janosch Frank <frankja@linux.ibm.com>
+Autocrypt: addr=frankja@linux.ibm.com; keydata=
+ xsFNBFubpD4BEADX0uhkRhkj2AVn7kI4IuPY3A8xKat0ihuPDXbynUC77mNox7yvK3X5QBO6
+ qLqYr+qrG3buymJJRD9xkp4mqgasHdB5WR9MhXWKH08EvtvAMkEJLnqxgbqf8td3pCQ2cEpv
+ 15mH49iKSmlTcJ+PvJpGZcq/jE42u9/0YFHhozm8GfQdb9SOI/wBSsOqcXcLTUeAvbdqSBZe
+ zuMRBivJQQI1esD9HuADmxdE7c4AeMlap9MvxvUtWk4ZJ/1Z3swMVCGzZb2Xg/9jZpLsyQzb
+ lDbbTlEeyBACeED7DYLZI3d0SFKeJZ1SUyMmSOcr9zeSh4S4h4w8xgDDGmeDVygBQZa1HaoL
+ Esb8Y4avOYIgYDhgkCh0nol7XQ5i/yKLtnNThubAcxNyryw1xSstnKlxPRoxtqTsxMAiSekk
+ 0m3WJwvwd1s878HrQNK0orWd8BzzlSswzjNfQYLF466JOjHPWFOok9pzRs+ucrs6MUwDJj0S
+ cITWU9Rxb04XyigY4XmZ8dywaxwi2ZVTEg+MD+sPmRrTw+5F+sU83cUstuymF3w1GmyofgsU
+ Z+/ldjToHnq21MNa1wx0lCEipCCyE/8K9B9bg9pUwy5lfx7yORP3JuAUfCYb8DVSHWBPHKNj
+ HTOLb2g2UT65AjZEQE95U2AY9iYm5usMqaWD39pAHfhC09/7NQARAQABzSVKYW5vc2NoIEZy
+ YW5rIDxmcmFua2phQGxpbnV4LmlibS5jb20+wsF3BBMBCAAhBQJbm6Q+AhsjBQsJCAcCBhUI
+ CQoLAgQWAgMBAh4BAheAAAoJEONU5rjiOLn4p9gQALjkdj5euJVI2nNT3/IAxAhQSmRhPEt0
+ AmnCYnuTcHRWPujNr5kqgtyER9+EMQ0ZkX44JU2q7OWxTdSNSAN/5Z7qmOR9JySvDOf4d3mS
+ bMB5zxL9d8SbnSs1uW96H9ZBTlTQnmLfsiM9TetAjSrR8nUmjGhe2YUhJLR1v1LguME+YseT
+ eXnLzIzqqpu311/eYiiIGcmaOjPCE+vFjcXL5oLnGUE73qSYiujwhfPCCUK0850o1fUAYq5p
+ CNBCoKT4OddZR+0itKc/cT6NwEDwdokeg0+rAhxb4Rv5oFO70lziBplEjOxu3dqgIKbHbjza
+ EXTb+mr7VI9O4tTdqrwJo2q9zLqqOfDBi7NDvZFLzaCewhbdEpDYVu6/WxprAY94hY3F4trT
+ rQMHJKQENtF6ZTQc9fcT5I3gAmP+OEvDE5hcTALpWm6Z6SzxO7gEYCnF+qGXqp8sJVrweMub
+ UscyLqHoqdZC2UG4LQ1OJ97nzDpIRe0g6oJ9ZIYHKmfw5jjwH6rASTld5MFWajWdNsqK15k/
+ RZnHAGICKVIBOBsq26m4EsBlfCdt3b/6emuBjUXR1pyjHMz2awWzCq6/6OWs5eANZ0sdosNq
+ dq2v0ULYTazJz2rlCXV89qRa7ukkNwdBSZNEwsD4eEMicj1LSrqWDZMAALw50L4jxaMD7lPL
+ jJbazsFNBFubpD4BEADAcUTRqXF/aY53OSH7IwIK9lFKxIm0IoFkOEh7LMfp7FGzaP7ANrZd
+ cIzhZi38xyOkcaFY+npGEWvko7rlIAn0JpBO4x3hfhmhBD/WSY8LQIFQNNjEm3vzrMo7b9Jb
+ JAqQxfbURY3Dql3GUzeWTG9uaJ00u+EEPlY8zcVShDltIl5PLih20e8xgTnNzx5c110lQSu0
+ iZv2lAE6DM+2bJQTsMSYiwKlwTuv9LI9Chnoo6+tsN55NqyMxYqJgElk3VzlTXSr3+rtSCwf
+ tq2cinETbzxc1XuhIX6pu/aCGnNfuEkM34b7G1D6CPzDMqokNFbyoO6DQ1+fW6c5gctXg/lZ
+ 602iEl4C4rgcr3+EpfoPUWzKeM8JXv5Kpq4YDxhvbitr8Dm8gr38+UKFZKlWLlwhQ56r/zAU
+ v6LIsm11GmFs2/cmgD1bqBTNHHcTWwWtRTLgmnqJbVisMJuYJt4KNPqphTWsPY8SEtbufIlY
+ HXOJ2lqUzOReTrie2u0qcSvGAbSfec9apTFl2Xko/ddqPcZMpKhBiXmY8tJzSPk3+G4tqur4
+ 6TYAm5ouitJsgAR61Cu7s+PNuq/pTLDhK+6/Njmc94NGBcRA4qTuysEGE79vYWP2oIAU4Fv6
+ gqaWHZ4MEI2XTqH8wiwzPdCQPYsSE0fXWiYu7ObeErT6iLSTZGx4rQARAQABwsFfBBgBCAAJ
+ BQJbm6Q+AhsMAAoJEONU5rjiOLn4DDEP/RuyckW65SZcPG4cMfNgWxZF8rVjeVl/9PBfy01K
+ 8R0hajU40bWtXSMiby7j0/dMjz99jN6L+AJHJvrLz4qYRzn2Ys843W+RfXj62Zde4YNBE5SL
+ jJweRCbMWKaJLj6499fctxTyeb9+AMLQS4yRSwHuAZLmAb5AyCW1gBcTWZb8ON5BmWnRqeGm
+ IgC1EvCnHy++aBnHTn0m+zV89BhTLTUal35tcjUFwluBY39R2ux/HNlBO1GY3Z+WYXhBvq7q
+ katThLjaQSmnOrMhzqYmdShP1leFTVbzXUUIYv/GbynO/YrL2gaQpaP1bEUEi8lUAfXJbEWG
+ dnHFkciryi092E8/9j89DJg4mmZqOau7TtUxjRMlBcIliXkzSLUk+QvD4LK1kWievJse4mte
+ FBdkWHfP4BH/+8DxapRcG1UAheSnSRQ5LiO50annOB7oXF+vgKIaie2TBfZxQNGAs3RQ+bga
+ DchCqFm5adiSP5+OT4NjkKUeGpBe/aRyQSle/RropTgCi85pje/juYEn2P9UAgkfBJrOHvQ9
+ Z+2Sva8FRd61NJLkCJ4LFumRn9wQlX2icFbi8UDV3do0hXJRRYTWCxrHscMhkrFWLhYiPF4i
+ phX7UNdOWBQ90qpHyAxHmDazdo27gEjfvsgYMdveKknEOTEb5phwxWgg7BcIDoJf9UMC
+In-Reply-To: <202407091001.1250ad4a-oliver.sang@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: WpRHZNUOp-d1yiemm_h1X64chn01kdDW
+X-Proofpoint-GUID: F44QKF79l9BXAn0yGTHmj6MWJPGMRfYe
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
+ definitions=2024-07-17_04,2024-07-16_02,2024-05-17_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ spamscore=0 phishscore=0 mlxscore=0 bulkscore=0 adultscore=0
+ lowpriorityscore=0 suspectscore=0 clxscore=1011 malwarescore=0
+ mlxlogscore=569 impostorscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.19.0-2407110000 definitions=main-2407170059
 
-On Tue, 16 Jul 2024 15:59:12 +0800
-kernel test robot <oliver.sang@intel.com> wrote:
-
+On 7/9/24 07:11, kernel test robot wrote:
 > Hello,
 > 
-> kernel test robot noticed "WARNING:at_arch/x86/kernel/cpu/bugs.c:#__warn_thunk" on:
+> kernel test robot noticed a -34.3% regression of vm-scalability.throughput on:
 > 
-> commit: 8d61d01cdec275719b70295e98e4d45c5f284f29 ("iio: gyro: adis16260: make use of the new lock helpers")
+> 
+> commit: 875fa64577da9bc8e9963ee14fef8433f20653e7 ("mm/hugetlb_vmemmap: fix race with speculative PFN walkers")
 > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
 > 
-> [test failed on linux-next/master 91e3b24eb7d297d9d99030800ed96944b8652eaf]
-> 
-> in testcase: rcutorture
-> version: 
-> with following parameters:
-> 
-> 	runtime: 300s
-> 	test: cpuhotplug
-> 	torture_type: trivial
-> 
-> 
-> 
-> compiler: clang-18
-> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-> 
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
-> 
-> 
-> +-----------------------------------------------------+------------+------------+
-> |                                                     | ccd52641f9 | 8d61d01cde |
-> +-----------------------------------------------------+------------+------------+
-> | WARNING:at_arch/x86/kernel/cpu/bugs.c:#__warn_thunk | 0          | 30         |
-> | RIP:__warn_thunk                                    | 0          | 30         |
-> +-----------------------------------------------------+------------+------------+
-
-Hi All.
-
-I'm struggling to have any idea what this is reporting.
-The code is question must be the use of adis_dev_autoscoped_lock()
-which is very straight forward.
-
-		adis_dev_auto_scoped_lock(adis) {
-			if (t >= 0x0A)
-				adis->spi->max_speed_hz = ADIS16260_SPI_SLOW;
-			else
-				adis->spi->max_speed_hz = ADIS16260_SPI_FAST;
-			return __adis_write_reg_8(adis, ADIS16260_SMPL_PRD, t);
-		}
-		unreachable();
-		//needed because not all compilers seem to be able to tell
-		//that a scoped_guard() always runs.
-
-where the definition is simply 
-
-#define adis_dev_auto_scoped_lock(adis) \
-	scoped_guard(mutex, &(adis)->state_lock)
-
-Looks like there was some fun with ksan earlier in the year that smells superficially
-similar but that is long resolved? (+CC some of the folk involved in solving that).
-
-Any thoughts?
-
-Jonathan
-
-> 
-> 
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202407161520.ee3d9347-lkp@intel.com
-> 
-> 
-> [    6.698254][    T1] ------------[ cut here ]------------
-> [    6.698774][    T1] Unpatched return thunk in use. This should not happen!
-> [ 6.699377][ T1] WARNING: CPU: 0 PID: 1 at arch/x86/kernel/cpu/bugs.c:3023 __warn_thunk (arch/x86/kernel/cpu/bugs.c:3023) 
-> [    6.699604][    T1] Modules linked in:
-> [    6.699937][    T1] CPU: 0 PID: 1 Comm: swapper Not tainted 6.10.0-rc4-00198-g8d61d01cdec2 #1
-> [    6.700668][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-> [ 6.701548][ T1] RIP: 0010:__warn_thunk (arch/x86/kernel/cpu/bugs.c:3023) 
-> [ 6.701983][ T1] Code: 1f 44 00 00 80 3d dd fb e3 03 00 74 08 31 ff c3 cc cc cc cc cc c6 05 cc fb e3 03 01 90 48 c7 c7 40 b0 a1 83 e8 76 c6 13 00 90 <0f> 0b 90 90 31 ff c3 cc cc cc cc cc cc cc cc cc cc cc cc cc cc b8
-> All code
-> ========
->    0:	1f                   	(bad)
->    1:	44 00 00             	add    %r8b,(%rax)
->    4:	80 3d dd fb e3 03 00 	cmpb   $0x0,0x3e3fbdd(%rip)        # 0x3e3fbe8
->    b:	74 08                	je     0x15
->    d:	31 ff                	xor    %edi,%edi
->    f:	c3                   	ret
->   10:	cc                   	int3
->   11:	cc                   	int3
->   12:	cc                   	int3
->   13:	cc                   	int3
->   14:	cc                   	int3
->   15:	c6 05 cc fb e3 03 01 	movb   $0x1,0x3e3fbcc(%rip)        # 0x3e3fbe8
->   1c:	90                   	nop
->   1d:	48 c7 c7 40 b0 a1 83 	mov    $0xffffffff83a1b040,%rdi
->   24:	e8 76 c6 13 00       	call   0x13c69f
->   29:	90                   	nop
->   2a:*	0f 0b                	ud2		<-- trapping instruction
->   2c:	90                   	nop
->   2d:	90                   	nop
->   2e:	31 ff                	xor    %edi,%edi
->   30:	c3                   	ret
->   31:	cc                   	int3
->   32:	cc                   	int3
->   33:	cc                   	int3
->   34:	cc                   	int3
->   35:	cc                   	int3
->   36:	cc                   	int3
->   37:	cc                   	int3
->   38:	cc                   	int3
->   39:	cc                   	int3
->   3a:	cc                   	int3
->   3b:	cc                   	int3
->   3c:	cc                   	int3
->   3d:	cc                   	int3
->   3e:	cc                   	int3
->   3f:	b8                   	.byte 0xb8
-> 
-> Code starting with the faulting instruction
-> ===========================================
->    0:	0f 0b                	ud2
->    2:	90                   	nop
->    3:	90                   	nop
->    4:	31 ff                	xor    %edi,%edi
->    6:	c3                   	ret
->    7:	cc                   	int3
->    8:	cc                   	int3
->    9:	cc                   	int3
->    a:	cc                   	int3
->    b:	cc                   	int3
->    c:	cc                   	int3
->    d:	cc                   	int3
->    e:	cc                   	int3
->    f:	cc                   	int3
->   10:	cc                   	int3
->   11:	cc                   	int3
->   12:	cc                   	int3
->   13:	cc                   	int3
->   14:	cc                   	int3
->   15:	b8                   	.byte 0xb8
-> [    6.703602][    T1] RSP: 0000:ffffc9000001fe88 EFLAGS: 00010246
-> [    6.704116][    T1] RAX: 0000000000000000 RBX: ffffffff856a96a0 RCX: 0000000000000000
-> [    6.704787][    T1] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-> [    6.705462][    T1] RBP: ffffc9000001fed8 R08: 0000000000000000 R09: 0000000000000000
-> [    6.706134][    T1] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-> [    6.706804][    T1] R13: 0000000000000000 R14: dffffc0000000000 R15: ffffffff856a96a0
-> [    6.707476][    T1] FS:  0000000000000000(0000) GS:ffffffff844a7000(0000) knlGS:0000000000000000
-> [    6.707601][    T1] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [    6.708157][    T1] CR2: ffff88843ffff000 CR3: 000000000446c000 CR4: 00000000000406f0
-> [    6.708834][    T1] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> [    6.709505][    T1] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> [    6.710174][    T1] Call Trace:
-> [    6.710452][    T1]  <TASK>
-> [ 6.710701][ T1] ? __warn (kernel/panic.c:239 kernel/panic.c:693) 
-> [ 6.711054][ T1] ? __warn_thunk (arch/x86/kernel/cpu/bugs.c:3023) 
-> [ 6.711434][ T1] ? __warn_thunk (arch/x86/kernel/cpu/bugs.c:3023) 
-> [ 6.711604][ T1] ? report_bug (lib/bug.c:?) 
-> [ 6.711991][ T1] ? handle_bug (arch/x86/kernel/traps.c:239) 
-> [ 6.712357][ T1] ? exc_invalid_op (arch/x86/kernel/traps.c:260) 
-> [ 6.712759][ T1] ? asm_exc_invalid_op (arch/x86/include/asm/idtentry.h:621) 
-> [ 6.713193][ T1] ? __warn_thunk (arch/x86/kernel/cpu/bugs.c:3023) 
-> [ 6.713575][ T1] ? __warn_thunk (arch/x86/kernel/cpu/bugs.c:3023) 
-> [ 6.713956][ T1] warn_thunk_thunk (arch/x86/entry/entry.S:48) 
-> [ 6.714352][ T1] ? __cfi_asan.module_ctor (main.c:?) 
-> [ 6.714810][ T1] do_basic_setup (init/main.c:1126 init/main.c:1363) 
-> [ 6.715194][ T1] kernel_init_freeable (init/main.c:1582) 
-> [ 6.715602][ T1] ? __cfi_kernel_init (init/main.c:1459) 
-> [ 6.716022][ T1] kernel_init (init/main.c:1469) 
-> [ 6.716389][ T1] ret_from_fork (arch/x86/kernel/process.c:153) 
-> [ 6.716769][ T1] ? __cfi_kernel_init (init/main.c:1459) 
-> [ 6.717187][ T1] ret_from_fork_asm (arch/x86/entry/entry_64.S:257) 
-> [    6.717600][    T1]  </TASK>
-> [    6.717856][    T1] irq event stamp: 14123
-> [ 6.718213][ T1] hardirqs last enabled at (14131): console_unlock (arch/x86/include/asm/irqflags.h:42 arch/x86/include/asm/irqflags.h:77 arch/x86/include/asm/irqflags.h:135 kernel/printk/printk.c:341 kernel/printk/printk.c:2746 kernel/printk/printk.c:3065) 
-> [ 6.719011][ T1] hardirqs last disabled at (14138): console_unlock (kernel/printk/printk.c:339) 
-> [ 6.719601][ T1] softirqs last enabled at (2244): irq_exit_rcu (kernel/softirq.c:651) 
-> [ 6.720366][ T1] softirqs last disabled at (2235): irq_exit_rcu (kernel/softirq.c:651) 
-> [    6.721120][    T1] ---[ end trace 0000000000000000 ]---
-> 
-> 
-> 
-> The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20240716/202407161520.ee3d9347-lkp@intel.com
-> 
-> 
-> 
-
+> [still regression on linux-next/master 0b58e108042b0ed28a71cd7edf5175999955b233]
+>
+This has hit s390 huge page backed KVM guests as well.
+Our simple start/stop test case went from ~5 to over 50 seconds of runtime.
