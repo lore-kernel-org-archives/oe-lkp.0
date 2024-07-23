@@ -1,176 +1,108 @@
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
+Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF1242E83F;
-	Tue, 23 Jul 2024 06:13:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F18B614E2DA
+	for <oe-lkp@lists.linux.dev>; Tue, 23 Jul 2024 08:23:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721715198; cv=none; b=qg1ktdaKIlPjgwkwXiGTB6A8WYUdAO0oBtH3/9ffq+uwZIdripikWmTBB9FO2e5XQWAvqYfYYU66uBuMhgoI9KjiKVFCFfjAwK42DK2JlauoFEVW/iuQSH74n7eEYlwSwdOhLkZTiiIhoq6DucPoKdjjzjSsBepQqBJ3XAHmzk0=
+	t=1721722988; cv=none; b=jOUDfHQWkvEGNE3BkPNJ7YxdKMqzfR/571ZNSHgYkVKvpNUuD0Dw77oPd/5JHcgtU+Ec+wfa+ZE+9dNQ3e43a138Lsbu7d7Rx4ImX2Qe26SrY/kDTw89KcyH+5P59MIXgW7jfTzMz1VdxzyD9QbYD6J4FcaCkSxPOWgoL/TEdTQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721715198; c=relaxed/simple;
-	bh=VQJqynMJxzrsZAD1nG5keT3FGlcpHAyjrPHZQw64PEM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Jz3aHBaslJaxn275YuG3E71ul4rpuk6A0IR50maDWeYB7zN9B2B3rMgR1HO4rAoRfEZXuC9s58gBecu0vsc9sfTYCIMKOxHr5A7Dbg/xD2dUA9H4/GjkA0P6M7ktsz1lmJTfvAC4tvlpJgL92g25skihTui783J50utuBipWPpY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.214.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	s=arc-20240116; t=1721722988; c=relaxed/simple;
+	bh=yiD1Yvi1ZE9QNvroZdUc1EcHgOWM7mxmMWLED8Vy1ts=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=YQF5aZ51Kmz5P2kgmmLuTKdTcLaSjW/bIYT/uAHsN7dezKZ9P9PezHdVwPmBI0SrQu1tRoMUAvHip5BGI0SPUJLtGDUTrXkfoHYQI+u95hbENDz6RU3TlS624r0DSMvIBTydbpzwEGfeq06NFhOr78s1H5dL7h2i6kwaDUBpjBY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZfvmtAgZ; arc=none smtp.client-ip=209.85.216.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-1fc587361b6so38607895ad.2;
-        Mon, 22 Jul 2024 23:13:16 -0700 (PDT)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZfvmtAgZ"
+Received: by mail-pj1-f54.google.com with SMTP id 98e67ed59e1d1-2cb50bcabd1so2799343a91.2
+        for <oe-lkp@lists.linux.dev>; Tue, 23 Jul 2024 01:23:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1721722986; x=1722327786; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=GQRavVjrAVA/k1fD3x96f9wCcknVkCt9b/ogig2zTSQ=;
+        b=ZfvmtAgZuhSsMPLhYoe2E1vIeX43PqoCihZPRrV0t5AHiOwwv2TvgFguWIfDnPzdO6
+         KwAbaarbsx8oYeXwzlTVMs+grKqzkJ6sve+YqMzGLr9TM+Nc+c8vPnjyD6nrwJE2e/6J
+         nIz0K0wnvvwPhy5zSH5ZmI1rXBmKBbzBPr3nbCE5Wiue/1yFtoh5Zz0d185ePESXZW1o
+         Ga8XO3e+ZL/IUcECfXIvLVEGfqLr1lHhVz+FI1ySXqz9g+smGykt8ZrwDacvl5WnLDi5
+         cd0be7o6btY9iJHSu13O8qz0oLI2DJlIcFCzl/59XEDyrz3GkME5BUVh1zlm0roMo88K
+         mXyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1721715196; x=1722319996;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=veqI8JpWND9x/vrna5uBQjtmH0anUTbMAymlouU2IIA=;
-        b=GHSucX631SBdFShIIEGzIeEszeecQDHi0jIHJU6b1ZwC2gr9VxFRMDUG+Z6QB5hgGp
-         lCSvWRqz2HgdM06P3gsyuhPI8e2OJpBuylXeR/XPpP1hQmnroKJgVdX4jYBsaRTavnwh
-         UYjYXHtDoy7Pf4p1mWWJa49AyELNjAvff0t/OJ+Mk/5ypu2+BKgRoVupFHrw5KwL5w7y
-         tvyS2RDcreU2i+n/KoMZRQ20wMkZrfncvlcOiH/AB+8SgTmz+5bwtzeDN7lxLKyua+Q3
-         YyF7aO+ZHE+YrRaiAKgxvTiFKpxUkfHeSXHJ23TLVNifIDU58VgxFOrJ79rDiIkc4qlz
-         lSgg==
-X-Forwarded-Encrypted: i=1; AJvYcCUt+VkiS6VjtfxDyfmmYZBHme8wy9WMjsI7+aaU1P9L4tDT3LN3heUt3x6veJ7y/9Bh2r7pOgrx3WhuKEhH5DSU9rkR4A9pwRTBFtWwc+B4hl8b9QyZineuGPCjDw==
-X-Gm-Message-State: AOJu0YwhMux1MeyB5z7fJ0MsKNw+YxcrSWIOYGnTj6tNht5tXi9AoMYS
-	FUZMz2hqdYF02l52sT5t8YFDD1mX2O85rva3khHoJEAQHQLpzC/V
-X-Google-Smtp-Source: AGHT+IFokcuiNQpmIx+LeDifSxdr+eQv/RRynQlUmI+tAfEfDwliz2LL7xMK+H5ow8Cc9glZnTEo8w==
-X-Received: by 2002:a17:903:190:b0:1fd:93d2:fba4 with SMTP id d9443c01a7336-1fd93d30202mr37575885ad.48.1721715196030;
-        Mon, 22 Jul 2024 23:13:16 -0700 (PDT)
-Received: from snowbird ([136.25.84.117])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1fd6f44c7b2sm65785955ad.218.2024.07.22.23.13.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Jul 2024 23:13:15 -0700 (PDT)
-Date: Mon, 22 Jul 2024 23:13:10 -0700
-From: Dennis Zhou <dennis@kernel.org>
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: Boqun Feng <boqun.feng@gmail.com>, Tejun Heo <tj@kernel.org>,
-	Suren Baghdasaryan <surenb@google.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, linux-kernel@vger.kernel.org,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Kent Overstreet <kent.overstreet@linux.dev>,
-	Kees Cook <keescook@chromium.org>,
-	Alexander Viro <viro@zeniv.linux.org.uk>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Alice Ryhl <aliceryhl@google.com>,
-	Andreas Hindborg <a.hindborg@samsung.com>,
-	Benno Lossin <benno.lossin@proton.me>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Christoph Lameter <cl@linux.com>, Gary Guo <gary@garyguo.net>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Vlastimil Babka <vbabka@suse.cz>,
-	Wedson Almeida Filho <wedsonaf@gmail.com>, linux-mm@kvack.org,
-	lkmm@lists.linux.dev
-Subject: Re: [linus:master] [mm]  24e44cc22a:
- BUG:KCSAN:data-race_in_pcpu_alloc_noprof/pcpu_block_update_hint_alloc
-Message-ID: <Zp9J9t-KP17P-OFR@snowbird>
-References: <202407191651.f24e499d-oliver.sang@intel.com>
- <Zp6bMoDnUMxNrKos@boqun-archlinux>
- <Zp6cVgXJlzF4VOwl@slm.duckdns.org>
- <Zp6e1PWZbz4pkh9Z@boqun-archlinux>
- <Zp6kpCcQRPTGk1LK@V92F7Y9K0C.lan>
- <Zp7G4EfISRwlmmIT@boqun-archlinux>
- <Zp9EvUTqni5wMDlC@snowbird>
- <Zp9JIvoRVaa+w5OT@xsang-OptiPlex-9020>
+        d=1e100.net; s=20230601; t=1721722986; x=1722327786;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=GQRavVjrAVA/k1fD3x96f9wCcknVkCt9b/ogig2zTSQ=;
+        b=PI54TcbwnW+Dc9sE71zXpnrj42crRHVSCRP6Hf5zOcc2HbdOrkM9c8RBDl+X1Y7tVR
+         i53zwuBLJ60FGy18Nk5baPAlsbPPnB78a8xJ0IoJ4XI5nPK3NyBMSMJKgqStSf+ZYL37
+         SlPO/Pyvw3MYlPLXCwwczVy8s1Nr/FWcK6HdwXb4ooI9zPXvzZ65CvYRfUz4JYkBeNDH
+         kQIjxaRAwKw+VX155/OXd2iu0ayzMPqAuoX5asm7IgnlxGlsXarsK4LIlHalangdN+la
+         rabFi8JjZ6YyxY+PxpyPWMeEz/7iLOe9vfSAYsOSajfUCG/Pr9amMQG2PVsuSCsU4em3
+         XtOw==
+X-Forwarded-Encrypted: i=1; AJvYcCXdnHqyhwUQdfrOjFGM+iGSQ2hTu4lvPG9IZ681zUkRZQ7U1xaHR5XMd7L3v6324kDJh+XjMVIc/DtUnOEu5C1pP7cf9y9j
+X-Gm-Message-State: AOJu0Yy0/EVttr+tQXujJfnA6kefa9IaaXDi9NiFOnmsc3hSS10oHqKD
+	1C46/wmiRC7b4nD9kvZm92KSLR1G3YCuzT/JFWwfiOTm4Fc11DQr
+X-Google-Smtp-Source: AGHT+IE3SkgRs2aAwGEYJvvZ8DOocvL0c1mLCviVpZrLrYMDwLE14oS1NHUWcTOkKb5cr0jYDal9aA==
+X-Received: by 2002:a17:90a:d711:b0:2c8:820:71c4 with SMTP id 98e67ed59e1d1-2cd274a8b13mr5370453a91.29.1721722986119;
+        Tue, 23 Jul 2024 01:23:06 -0700 (PDT)
+Received: from [192.168.255.10] (23.105.223.42.16clouds.com. [23.105.223.42])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2cb7754a888sm9530824a91.57.2024.07.23.01.23.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Jul 2024 01:23:05 -0700 (PDT)
+Message-ID: <bd36db00-5464-4eb5-adb1-0ddfd3be1cfa@gmail.com>
+Date: Tue, 23 Jul 2024 16:23:00 +0800
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Zp9JIvoRVaa+w5OT@xsang-OptiPlex-9020>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [alexshi:mmunstable2] 934c05f8c5:
+ BUG:unable_to_handle_page_fault_for_address
+To: Oliver Sang <oliver.sang@intel.com>
+Cc: Alex Shi <alexs@kernel.org>, oe-lkp@lists.linux.dev, lkp@intel.com,
+ linux-kernel@vger.kernel.org, linux-mm@kvack.org
+References: <202407221607.49138a71-oliver.sang@intel.com>
+ <a634bf58-9195-4c6f-b3d8-468d47e71033@gmail.com>
+ <Zp8h/ZZTQ0lwmcJa@xsang-OptiPlex-9020>
+Content-Language: en-US
+From: Alex Shi <seakeel@gmail.com>
+In-Reply-To: <Zp8h/ZZTQ0lwmcJa@xsang-OptiPlex-9020>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Hi Oliver,
 
-On Tue, Jul 23, 2024 at 02:09:38PM +0800, Oliver Sang wrote:
-> hi, Dennis Zhou,
+
+On 7/23/24 11:22 AM, Oliver Sang wrote:
+> hi, Alex,
 > 
-> On Mon, Jul 22, 2024 at 10:50:53PM -0700, Dennis Zhou wrote:
-> > On Mon, Jul 22, 2024 at 01:53:52PM -0700, Boqun Feng wrote:
-> > > On Mon, Jul 22, 2024 at 11:27:48AM -0700, Dennis Zhou wrote:
-> > > > Hello,
-> > > > 
-> > > > On Mon, Jul 22, 2024 at 11:03:00AM -0700, Boqun Feng wrote:
-> > > > > On Mon, Jul 22, 2024 at 07:52:22AM -1000, Tejun Heo wrote:
-> > > > > > On Mon, Jul 22, 2024 at 10:47:30AM -0700, Boqun Feng wrote:
-> > > > > > > This looks like a data race because we read pcpu_nr_empty_pop_pages out
-> > > > > > > of the lock for a best effort checking, @Tejun, maybe you could confirm
-> > > > > > > on this?
-> > > > > > 
-> > > > > > That does sound plausible.
-> > > > > > 
-> > > > > > > -       if (pcpu_nr_empty_pop_pages < PCPU_EMPTY_POP_PAGES_LOW)
-> > > > > > > +       /*
-> > > > > > > +        * Checks pcpu_nr_empty_pop_pages out of the pcpu_lock, data races may
-> > > > > > > +        * occur but this is just a best-effort checking, everything is synced
-> > > > > > > +        * in pcpu_balance_work.
-> > > > > > > +        */
-> > > > > > > +       if (data_race(pcpu_nr_empty_pop_pages) < PCPU_EMPTY_POP_PAGES_LOW)
-> > > > > > >                 pcpu_schedule_balance_work();
-> > > > > > 
-> > > > > > Would it be better to use READ/WRITE_ONCE() for the variable?
-> > > > > > 
-> > > > > 
-> > > > > For READ/WRITE_ONCE(), we will need to replace all write accesses and
-> > > > > all out-of-lock read accesses to pcpu_nr_empty_pop_pages, like below.
-> > > > > It's better in the sense that it doesn't rely on compiler behaviors on
-> > > > > data races, not sure about the performance impact though.
-> > > > > 
-> > > > 
-> > > > I think a better alternative is we can move it up into the lock under
-> > > > area_found. The value gets updated as part of pcpu_alloc_area() as the
-> > > > code above populates percpu memory that is already allocated.
-> > > > 
-> > > 
-> > > Not sure I followed what exactly you suggested here because I'm not
-> > > familiar with the logic, but a simpler version would be:
-> > > 
-> > > 
-> > 
-> > I believe that's the only naked access of pcpu_nr_empty_pop_pages. So
-> > I was thinking this'll fix this problem.
-> > 
-> > I also don't know how to rerun this CI tho..
+> On Tue, Jul 23, 2024 at 09:58:25AM +0800, Alex Shi wrote:
+>>
+>> On 7/23/24 9:05 AM, kernel test robot wrote:
+>>> hi, Alex Shi,
+>>>
+>>> we noticed there is a mmunstable3 branch now, but there is no same title patch
+>>> there. not sure if this report is still useful, below report just FYI.
+>> Hi Oliver,
+>>
+>> Thanks a lot for your testing and founding on my unreleased code branch!
+>> The problem should be resolved on my latest code yesterday.
+>> But multiple archs maybe still are fragile in the branch. Are there bootable in virtual machine, like arm, s390, etc?
+> we did boot test in vm, but only for x86_64 or i386.
 > 
-> we could test this patch. what's the base? could we apply it directly upon
-> 24e44cc22a?
+> you may notice we also send another report
+> "[alexshi:mmunstable3] [mm/memory]  f6ba7ce983: kernel_BUG_at_mm/page_alloc.c"
+
+this problem was fixed too. Anyway thanks a lot notice me of this.
+
 > 
-> BTW, our bot is not so clever so far to auto test fix patches, so this is kind
-> of manual effort. due to resource constraint, it will be hard for us to test
-> each patch (we saw several patches in this thread already) or test very fast.
-> 
+> for both commit, we made some further check and cofirmed they cannot boot
+> successfully on both vm/bm, again, we only test x86_64/i386 for now.
 
-Ah yeah that makes sense. If you don't mind testing the last one I sent,
-the one below, that applies cleanly to 24e44cc22a.
+Thanks a lot for the info!
 
-Thanks,
-Dennis
-
-> > 
-> > ---
-> > diff --git a/mm/percpu.c b/mm/percpu.c
-> > index 20d91af8c033..325fb8412e90 100644
-> > --- a/mm/percpu.c
-> > +++ b/mm/percpu.c
-> > @@ -1864,6 +1864,10 @@ void __percpu *pcpu_alloc_noprof(size_t size, size_t align, bool reserved,
-> >  
-> >  area_found:
-> >  	pcpu_stats_area_alloc(chunk, size);
-> > +
-> > +	if (pcpu_nr_empty_pop_pages < PCPU_EMPTY_POP_PAGES_LOW)
-> > +		pcpu_schedule_balance_work();
-> > +
-> >  	spin_unlock_irqrestore(&pcpu_lock, flags);
-> >  
-> >  	/* populate if not all pages are already there */
-> > @@ -1891,9 +1895,6 @@ void __percpu *pcpu_alloc_noprof(size_t size, size_t align, bool reserved,
-> >  		mutex_unlock(&pcpu_alloc_mutex);
-> >  	}
-> >  
-> > -	if (pcpu_nr_empty_pop_pages < PCPU_EMPTY_POP_PAGES_LOW)
-> > -		pcpu_schedule_balance_work();
-> > -
-> >  	/* clear the areas and return address relative to base address */
-> >  	for_each_possible_cpu(cpu)
-> >  		memset((void *)pcpu_chunk_addr(chunk, cpu, 0) + off, 0, size);
+Alex
