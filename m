@@ -1,42 +1,54 @@
-Received: from lobo.ruivo.org (lobo.ruivo.org [173.14.175.98])
+Received: from out-188.mta1.migadu.com (out-188.mta1.migadu.com [95.215.58.188])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56A9415F318
-	for <oe-lkp@lists.linux.dev>; Wed, 24 Jul 2024 19:48:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=173.14.175.98
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FC6161FCA
+	for <oe-lkp@lists.linux.dev>; Wed, 24 Jul 2024 22:15:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.188
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721850535; cv=none; b=QZ0yEiZYW6LrXR0sTiYRIdUUrH3ftewNyW/RAlv7Tf3r0UIi257XBfeYOVnrCHw0AYGS0l9Fz5arlx3CzSlHjx8s5qcj6pxB1RT5fMA1LBjIoM2j5O82+fo/MWDtHa8AFtO7YHCvo9V+NUHtq5TIp1TPiPrFgHmOswSMxaHxOgQ=
+	t=1721859329; cv=none; b=UXzn/M5ZvRZhA6e7BgJ2sDAlgNFYq/o92gLU9JOimGtGc9Ifw3sFkO7+egHAhJdHBf6UqxpMns4Op8tFt5D+nJH0vLZHTfegAnFrFSqbRHgio0bEc6Awuv58un8eZoFovHyIQkl7XgpPLK6O62wqz8YBtjQpdciRjnz9h+LAtwk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721850535; c=relaxed/simple;
-	bh=BxOiQmBbD/8tHbQFmWSZNNA6eO3f+nRkJPHxF5ULa9k=;
+	s=arc-20240116; t=1721859329; c=relaxed/simple;
+	bh=u2np71yq+1G9WizZLsp1n4+ydiTLdn5jwfWYGD3WPzI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=f/oV2N2nQA2fB/gW/kEVJfCHGje3AamXUFUXPquzg76eYqfYlkKe369qoQZNjwcw3+HVClDKmRKQl5Io4MGX/aBfa3pqTw6uBOuH9JkyVBWOM2UwbLELN9H7fQuxBtFUk3/WJ6Nfyye20rYYcNeVAxPN3w7x9PEE8XMjVP04hNA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ruivo.org; spf=pass smtp.mailfrom=ruivo.org; arc=none smtp.client-ip=173.14.175.98
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ruivo.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ruivo.org
-Received: by lobo.ruivo.org (Postfix, from userid 1011)
-	id AB958102559; Wed, 24 Jul 2024 15:48:37 -0400 (EDT)
-X-Spam-Level: 
-Received: from jake.ruivo.org (bob.qemu.ruivo [192.168.72.19])
-	by lobo.ruivo.org (Postfix) with ESMTPSA id 6D8DB5325A;
-	Wed, 24 Jul 2024 15:48:34 -0400 (EDT)
-Received: by jake.ruivo.org (Postfix, from userid 1000)
-	id 5CD4E120BB1; Wed, 24 Jul 2024 15:48:34 -0400 (EDT)
-Date: Wed, 24 Jul 2024 15:48:34 -0400
-From: Aristeu Rozanski <aris@ruivo.org>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: Aristeu Rozanski <aris@redhat.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, Linux Memory Management List <linux-mm@kvack.org>,
+	 Content-Type:Content-Disposition:In-Reply-To; b=edGrfq4vknQ7xIP4eLj/V1+k2Wy+S/rl6GV1e8pcvI9QCiiod6KYA3hrKQBo1IrH6sSx7PIDYc+z/VUp99+DhGI4HEbZgskmiPSru3d9cyR/q4qoLeBgB/spDH1Qrq5RDIo7HsGIeryhMaSV2LASHF02mYvbrMe+H97djKeLAPc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=eHadiCjB; arc=none smtp.client-ip=95.215.58.188
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="eHadiCjB"
+Date: Wed, 24 Jul 2024 22:15:17 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1721859325;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=j36qx1vlc4eJgLuKEjO4bAeumQszgxwbVfIt3GwMYuI=;
+	b=eHadiCjBCn9ve/g3AQ/i0M34skHrCjioV9AVLBHBpo7TeMxGy0AN6Ey81EO3ElF2Wujwvu
+	kS3zVPOA1RmKaCZvCuLuG64jP2WIk7YB3jJLZC9JnqL1UdScEM9FnTtvtkNpDI62/8TdqI
+	tKIQpcxkwBJoUN3C2gPF7W6r/wvDK6Y=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Roman Gushchin <roman.gushchin@linux.dev>
+To: Oliver Sang <oliver.sang@intel.com>
+Cc: "oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>, lkp <lkp@intel.com>,
+	Linux Memory Management List <linux-mm@kvack.org>,
 	Andrew Morton <akpm@linux-foundation.org>,
+	Shakeel Butt <shakeel.butt@linux.dev>,
+	Johannes Weiner <hannes@cmpxchg.org>,
+	Michal Hocko <mhocko@kernel.org>,
 	Muchun Song <muchun.song@linux.dev>,
-	David Hildenbrand <david@redhat.com>,
-	Vishal Moola <vishal.moola@gmail.com>
-Subject: Re: [linux-next:master] [hugetlb]  003af997c8:
- libhugetlbfs-test.32/64bit.counters_sh.fail
-Message-ID: <20240724194834.GM844599@cathedrallabs.org>
-References: <202407162105.5eab5c8f-oliver.sang@intel.com>
- <20240716154427.GI844599@cathedrallabs.org>
- <20240717204507.GJ844599@cathedrallabs.org>
+	"cgroups@vger.kernel.org" <cgroups@vger.kernel.org>,
+	"Huang, Ying" <ying.huang@intel.com>,
+	"Tang, Feng" <feng.tang@intel.com>,
+	"Yin, Fengwei" <fengwei.yin@intel.com>
+Subject: Re: [linux-next:master] [mm]  :  aim7.jobs-per-min -29.4% regression
+Message-ID: <ZqF89Z4uIwnSbpAe@google.com>
+References: <202407121335.31a10cb6-oliver.sang@intel.com>
+ <ZpF-A9rl8TiuZJPZ@google.com>
+ <ZpUux8bvpL8ARYDE@xsang-OptiPlex-9020>
+ <ZpWgP-h5X7GKj1ay@google.com>
+ <ZpYm9clw/f8f/tEj@xsang-OptiPlex-9020>
+ <Zpqe6NSVBQGiS86m@google.com>
+ <Zp8mqTnJN7VJZ/C/@xsang-OptiPlex-9020>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -45,46 +57,74 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240717204507.GJ844599@cathedrallabs.org>
-User-Agent: Mutt/2.2.12 (2023-09-09)
+In-Reply-To: <Zp8mqTnJN7VJZ/C/@xsang-OptiPlex-9020>
+X-Migadu-Flow: FLOW_OUT
 
-On Wed, Jul 17, 2024 at 04:45:07PM -0400, Aristeu Rozanski wrote:
-> On Tue, Jul 16, 2024 at 11:44:27AM -0400, Aristeu Rozanski wrote:
-> > Taking a look on this.
+On Tue, Jul 23, 2024 at 11:42:33AM +0800, Oliver Sang wrote:
+> hi, Roman,
 > 
-> So it looks like to be a timing issue. While spreading some code to figure out
-> exactly which exact sequence is causing the issue, it makes the error go away
-> in the 'counters' test. More specifically one of the sequences:
+> On Sat, Jul 20, 2024 at 01:14:16AM +0800, Roman Gushchin wrote:
+> > On Tue, Jul 16, 2024 at 03:53:25PM +0800, Oliver Sang wrote:
+> > > hi, Roman,
+> > > 
+> > > On Mon, Jul 15, 2024 at 10:18:39PM +0000, Roman Gushchin wrote:
+> > > > On Mon, Jul 15, 2024 at 10:14:31PM +0800, Oliver Sang wrote:
+> > > > > hi, Roman Gushchin,
+> > > > > 
+> > > > > On Fri, Jul 12, 2024 at 07:03:31PM +0000, Roman Gushchin wrote:
+> > > > > > On Fri, Jul 12, 2024 at 02:04:48PM +0800, kernel test robot wrote:
+> > > > > > > 
+> > > > > > > 
+> > > > > > > Hello,
+> > > > > > > 
+> > > > > > > kernel test robot noticed a -29.4% regression of aim7.jobs-per-min on:
+> > > > > > > 
+> > > > > > > 
+> > > > > > > commit: 98c9daf5ae6be008f78c07b744bcff7bcc6e98da ("mm: memcg: guard memcg1-specific members of struct mem_cgroup_per_node")
+> > > > > > > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+> > > > > > 
+> > > > > > Hello,
+> > > > > > 
+> > > > > > thank you for the report!
+> > > > > > 
+> > > > > > I'd expect that the regression should be fixed by the commit
+> > > > > > "mm: memcg: add cache line padding to mem_cgroup_per_node".
+> > > > > > 
+> > > > > > Can you, please, confirm that it's not the case?
+> > > > > > 
+> > > > > > Thank you!
+> > > > > 
+> > > > > in our this aim7 test, we found the performance partially recovered by
+> > > > > "mm: memcg: add cache line padding to mem_cgroup_per_node" but not fully
+> > > > 
+> > > > Thank you for providing the detailed information!
+> > > > 
+> > > > Can you, please, check if the following patch resolves the regression entirely?
+> > > 
+> > > no. in our tests, the following patch has little impact.
+> > > I directly apply it upon 6df13230b6 (if this is not the proper applyment, please
+> > > let me know, thanks)
+> > 
+> > Hm, interesting. And thank you for the confirmation, you did everything correct.
+> > Because the only thing the original patch did was a removal of few fields from
+> > the mem_cgroup_per_node struct, there are not many options left here.
+> > Would you mind to try the following patch?
+> > 
+> > Thank you and really appreciate your help!
 > 
->         /* touched, shared mmap */
-> 	map(SL_TEST, 1, MAP_SHARED);
-> 	touch(SL_TEST, 1, MAP_SHARED);
-> 	unmap(SL_TEST, 1, MAP_SHARED);
+> you are welcome!
 > 
-> fails because it's expecting:
+> though we saw there are further discussions, we still share our test results to
+> you.
 > 
-> 	HugePages_{Total,Free} = 1
-> 	HugePages_Surp = 0
-> 
-> but gets:
-> 
-> 	HugePages_{Total,Free} = 2
-> 	HugePages_Surp = 1
-> 
-> which seems caused by a surplus page taking too long to be freed, thus
-> timing making difference here.
-> 
-> I'm not sure as why it'd take longer with my patch applied but will keep
-> digging.
+> in our tests, by your new version patch, the regression is entirely resoloved.
 
-It really seems to be a matter of small timing difference. Even poking with
-perf is enough to not be able to reproduce the problem anymore. Will get in
-contact with the libhugetlbfs folks, might need to implement on the counters
-test intelligence to when there're surplus pages around wait for a little bit
-to give a chance for it to be freed. I believe we're good to go.
+Hi Oliver,
 
-Comments?
+perfect!
 
--- 
-Aristeu
+A patch with a fix landed to the mm tree (you're cc'ed).
 
+Once again thank you for the report and for the collaboration on testing fixes!
+
+Roman
