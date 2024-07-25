@@ -1,279 +1,219 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 441C919D8B6
-	for <oe-lkp@lists.linux.dev>; Thu, 25 Jul 2024 13:41:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721914887; cv=none; b=AH1958+cne43jSRWLKjCvK1oxWHMjEhL+KxalQtNBrauX7k6r4i2YyCRBjESeZfagKyg22sqKtYDDNiS8/r11RjOcQqMjgIqV7ryOytvJa/gSaQ6fm2rLNnLRBFInNejGIM6oPvKLhKG1x5a2OtroG4oY+h0iOgijXkVrYE8Sxw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721914887; c=relaxed/simple;
-	bh=dNjbDtlzxfkTLfd5C4CwT1o+BZfVkjvBs8d0fn7OWyo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MxdQ+k5jFiDmUIDieUUoMNRIa3jDTRuoZzYDNsdKDMpq7rxDw+DA1TOFytsqK1rlOumik6EzRYLp365snslIHgAzbTGLWVyh/47fMJmBEyWPj3FeQGXSU8HxrGFvY/cC0f/fVKWZRt+okALjDp+DVv58YC7EyL3RQApvwV+Q53o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=AgXPNrXo; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=jX6ba0Jh; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=AgXPNrXo; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=jX6ba0Jh; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D14B1199396
+	for <oe-lkp@lists.linux.dev>; Thu, 25 Jul 2024 13:55:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.21
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1721915721; cv=fail; b=aqGPw7jGd4Ea7iLXpXmP1aITWaqD3ZOUmHx1tGsucdlSI0NgkkIedSFbut8eWu6QFYWBgdIKN95f47jHufokbqlPXxLuLEYF13DvxxAWFmkyI2L2KWJc1alGHdS0nhZ6RwyrUCsKNVDxbbg7AZORed64+q74T6XdgNA+j7Mg04U=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1721915721; c=relaxed/simple;
+	bh=lZQZ63baFoVHZAwKrm1hWxye0/izfDa3Ob8XkXtkZyU=;
+	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=QHBQJL94NkmUG4NAlGwdU9hrsuG7XdGk/F6sR0wXYNoxT60k4qOBA3F/5b5ZYYqc6bVei4RG7u9V0P57AFXloGJrT1gl5oWctDYmDXLvCsd3BxTS/vzZSyhDchlaqmbCiNnlY3W/3evL/4wB1effMPVyXowC0C9uQHAbGdUkoGM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gDrZi5EH; arc=fail smtp.client-ip=198.175.65.21
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="AgXPNrXo";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="jX6ba0Jh";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="AgXPNrXo";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="jX6ba0Jh"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 1B5DD21A4D;
-	Thu, 25 Jul 2024 13:41:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1721914883; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=UfftK064woyy3AgbOLqIQpSFYeF78EThl6YZNku8S/M=;
-	b=AgXPNrXoWYv5pLweM+MByljX8Sl0sA0AW3fWy3tXA8echcu81lSk1jiphmAbk8j8V/GSCx
-	HJT3pOTWghZgxFNbsQQ8SPmSse8A1hLlby7D4/IeeruUMKfntKIIjWiuQT3S+6ssRGnL0r
-	qCQHyzZw5GGEq5BzBt9nppCa2W1kfLQ=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1721914883;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=UfftK064woyy3AgbOLqIQpSFYeF78EThl6YZNku8S/M=;
-	b=jX6ba0Jh0Hzzhje2taUYx2mDK5Kh/JkzbwnOZ1LQ74TK4PuPXDAP+zwbd3NIMZ1MUfYo8a
-	gb/baAdZBt2PhNCw==
-Authentication-Results: smtp-out1.suse.de;
-	dkim=pass header.d=suse.cz header.s=susede2_rsa header.b=AgXPNrXo;
-	dkim=pass header.d=suse.cz header.s=susede2_ed25519 header.b=jX6ba0Jh
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1721914883; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=UfftK064woyy3AgbOLqIQpSFYeF78EThl6YZNku8S/M=;
-	b=AgXPNrXoWYv5pLweM+MByljX8Sl0sA0AW3fWy3tXA8echcu81lSk1jiphmAbk8j8V/GSCx
-	HJT3pOTWghZgxFNbsQQ8SPmSse8A1hLlby7D4/IeeruUMKfntKIIjWiuQT3S+6ssRGnL0r
-	qCQHyzZw5GGEq5BzBt9nppCa2W1kfLQ=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1721914883;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=UfftK064woyy3AgbOLqIQpSFYeF78EThl6YZNku8S/M=;
-	b=jX6ba0Jh0Hzzhje2taUYx2mDK5Kh/JkzbwnOZ1LQ74TK4PuPXDAP+zwbd3NIMZ1MUfYo8a
-	gb/baAdZBt2PhNCw==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 10F7013874;
-	Thu, 25 Jul 2024 13:41:23 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id GvAeBANWomb9BgAAD6G6ig
-	(envelope-from <jack@suse.cz>); Thu, 25 Jul 2024 13:41:23 +0000
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-	id A96DAA0996; Thu, 25 Jul 2024 15:41:07 +0200 (CEST)
-Date: Thu, 25 Jul 2024 15:41:07 +0200
-From: Jan Kara <jack@suse.cz>
-To: Amir Goldstein <amir73il@gmail.com>
-Cc: Oliver Sang <oliver.sang@intel.com>, Jan Kara <jack@suse.cz>,
-	oe-lkp@lists.linux.dev, lkp@intel.com
-Subject: Re: [amir73il:sb_write_barrier] [fanotify] 9d1fd61f1d:
- unixbench.throughput -7.9% regression
-Message-ID: <20240725134107.4wkkx4huw5r2ngol@quack3>
-References: <ZllA260+kaBSKrPD@xsang-OptiPlex-9020>
- <CAOQ4uxjtM0ptu5SLA0c9VpRqvSLX8_Z+QAxa_ztrgy=aiV2DXQ@mail.gmail.com>
- <Zl17GT2kWZw1EZTA@xsang-OptiPlex-9020>
- <CAOQ4uxhCfAvn0L-Ej5bSZXgFBYA3fbpBxRhURqv3bYu9=kw_Aw@mail.gmail.com>
- <ZoJd4ujlJ/fY137y@xsang-OptiPlex-9020>
- <CAOQ4uxhsdiR_CtYxu4FchWVCO6OpzkdtQksJrzsehhXeG2gp1w@mail.gmail.com>
- <ZoT78AZAoscvNZTv@xsang-OptiPlex-9020>
- <CAOQ4uxgk1mGf20=XVkJ6x-YTPaoww6d=v-ViD4Espu7EE+yQcg@mail.gmail.com>
- <ZodVyZd2esYH/tFu@xsang-OptiPlex-9020>
- <CAOQ4uxitXLvHgug08zbYRgyy+wNnd_aw8Kr1zcFWwsRLeFf7SA@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gDrZi5EH"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1721915720; x=1753451720;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=lZQZ63baFoVHZAwKrm1hWxye0/izfDa3Ob8XkXtkZyU=;
+  b=gDrZi5EH8QbmVVOQOj8ySCeG1zRdEWCcG9UmzyXxVTedmXM+p1oFT+Nw
+   iq990BDTLGVA+hvv/loYn0nwkRZ7El6YGjdSpNfZt28SdRUQDLv7D2ksr
+   kv4rdIE5tmRmikT3Gz4g5abaKVG84yu7LwwTRs/z9a37H1Be4yC3/MaJq
+   PFuLXTP8clGyoMtftWabKqicHIDLxTLgIzaAXmbmH8fDkOBB9FplocbaQ
+   DkApglE3ppHfz7ood+d0+Oqm7IKYj4wFxFdUtp821GYJIFesGmRhpqWOG
+   lKEbsDln1O+GgrAUopAoSE7xdvzD3UOmUP+3pd6qa+xx52tONLVrGNpWW
+   w==;
+X-CSE-ConnectionGUID: CB/8VecYTuuG4EUiVQ41tw==
+X-CSE-MsgGUID: T53oCyMsTB2wrV3ABsOhmA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11144"; a="19610435"
+X-IronPort-AV: E=Sophos;i="6.09,236,1716274800"; 
+   d="scan'208";a="19610435"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2024 06:55:19 -0700
+X-CSE-ConnectionGUID: OmxfL+ypQbCAmen4TllR9Q==
+X-CSE-MsgGUID: 4x1MCdBySbSw+6ekr3KG0Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.09,236,1716274800"; 
+   d="scan'208";a="57509057"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by fmviesa004.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 25 Jul 2024 06:55:15 -0700
+Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39; Thu, 25 Jul 2024 06:55:15 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39 via Frontend Transport; Thu, 25 Jul 2024 06:55:15 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.169)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.39; Thu, 25 Jul 2024 06:55:14 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=chPB9ewQSX8QmEkQr3DQlDtLJPPUY6g1oBKs7R3Mr+Ljj0/bEM7ZsIpJgJ63cYicfcYsqtyUBAeCkAcnclSYNi8++u5lhJxzft2l1vOqog08BtCGi2oxmRkMfTVuPW2fOmCiKzdOYbiVebfNGNLk71fUGyUgHGID9rN6q/jjT+tGQh4ajbBtvwHGXSoFLguKRGb6sUGrk+5ihfSHZiLMzsQLwmKyXNbgK9opxnGYFgSR8TcDslTR9PL+em+4ny8zHT7S1EZlgLZIdkdKEDId67g3z6bXeuZOuoS/QPq6LdQGbab1pHgZ/TbbgS+umF1N3MQ/i9Zmztpkhe0Dxy9pdg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8vL9Gt4IXmRwP8d+CeKITqYQtbFZP9hE6aGLw5+4YPc=;
+ b=YlnZvVjBx9CnWWRDx+VJr2qJUK0Fj7qyewCBhAAUKdAB5aboOfuv5kpNqpqwhWsdsD4IscdEBTtwHQvCyRigMlCPcnEm+uG5SERtbOyVXnOoCg8ZXpjschHItMhaIxEfaXTIYhBaOzRRGGNYU0hAII7OzluJgN619eJLjeMwE1zw7AIA+SNcqPqxDoyOEp9I1lomBikT0DSr9fw67VsKQ8gWlO0UZjY/y1cZfvQGzQWF2HHe1I58Z5IulJQ9CO/ChtDq1eUfVSoRREqe8A4hgtM6b2omnQICPvndVFhyWBHT5jVQKFlx8V4ms6bSh+IhnHa85aHTEX/AWYhWM2RKWQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by CH3PR11MB7843.namprd11.prod.outlook.com (2603:10b6:610:124::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7784.20; Thu, 25 Jul
+ 2024 13:55:12 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.7784.020; Thu, 25 Jul 2024
+ 13:55:12 +0000
+Date: Thu, 25 Jul 2024 21:55:02 +0800
+From: Oliver Sang <oliver.sang@intel.com>
+To: Alex Shi <seakeel@gmail.com>
+CC: Alex Shi <alexs@kernel.org>, <oe-lkp@lists.linux.dev>, <lkp@intel.com>,
+	<linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>, <oliver.sang@intel.com>
+Subject: Re: [alexshi:mmunstable2] 934c05f8c5:
+ BUG:unable_to_handle_page_fault_for_address
+Message-ID: <ZqJZNqq74NSAI8vS@xsang-OptiPlex-9020>
+References: <202407221607.49138a71-oliver.sang@intel.com>
+ <a634bf58-9195-4c6f-b3d8-468d47e71033@gmail.com>
+ <Zp8h/ZZTQ0lwmcJa@xsang-OptiPlex-9020>
+ <bd36db00-5464-4eb5-adb1-0ddfd3be1cfa@gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <bd36db00-5464-4eb5-adb1-0ddfd3be1cfa@gmail.com>
+X-ClientProxiedBy: SI2PR04CA0013.apcprd04.prod.outlook.com
+ (2603:1096:4:197::6) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAOQ4uxitXLvHgug08zbYRgyy+wNnd_aw8Kr1zcFWwsRLeFf7SA@mail.gmail.com>
-X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
-X-Rspamd-Action: no action
-X-Rspamd-Queue-Id: 1B5DD21A4D
-X-Spam-Score: -3.81
-X-Spam-Level: 
-X-Spam-Flag: NO
-X-Spamd-Result: default: False [-3.81 / 50.00];
-	BAYES_HAM(-3.00)[100.00%];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	MID_RHS_NOT_FQDN(0.50)[];
-	R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	MIME_GOOD(-0.10)[text/plain];
-	MX_GOOD(-0.01)[];
-	FREEMAIL_TO(0.00)[gmail.com];
-	RCVD_COUNT_THREE(0.00)[3];
-	FUZZY_BLOCKED(0.00)[rspamd.com];
-	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	MIME_TRACE(0.00)[0:+];
-	ARC_NA(0.00)[];
-	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	TO_DN_SOME(0.00)[];
-	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	FREEMAIL_ENVRCPT(0.00)[gmail.com];
-	RCVD_TLS_LAST(0.00)[];
-	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
-	FROM_EQ_ENVFROM(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	RCPT_COUNT_FIVE(0.00)[5];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	DKIM_TRACE(0.00)[suse.cz:+];
-	MISSING_XM_UA(0.00)[];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:email,suse.cz:dkim]
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|CH3PR11MB7843:EE_
+X-MS-Office365-Filtering-Correlation-Id: bebb0c47-c3a2-45dd-6fea-08dcacb16747
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?JUFI+0hwS4uHdqNtAicIaxNDGZNnpGLjOkfQReoE9rFP1RnxRX2hXYh766go?=
+ =?us-ascii?Q?O6LqxaOLqyYdIOAAjSio1CdwHpu0r4yqTqrx33RVH5xFmmOpwq6rcCZVP23e?=
+ =?us-ascii?Q?XYFC0A+iYOxS71Gr/FGfAulscGQOKZU/Ynfs4zR6ToDRIHt+kgEn6KIh1b0T?=
+ =?us-ascii?Q?oZUhL77ahECjY9rFpCekmMCgzEnX7Kh5r2YEjdvjBExKMd3cQFluWmRYrpDA?=
+ =?us-ascii?Q?Ouhv7X9JUpn0/y8KrwblpzvJboTuT1A6NMeM5yQhloMLhpPauXmaH5DIb2mB?=
+ =?us-ascii?Q?Vd5xajfSGs3NodDSgtipAxHNwFvnDraGyhebs01KIEguwDHcFawaOc3w1JM4?=
+ =?us-ascii?Q?hScWXjZoj+Hurir3uCPWJwLoL9Sk5HGlsn5uFzbm/AIYzdAGg9F+4KNfBlBz?=
+ =?us-ascii?Q?PHBCYXvrW6HnnKPMosOnkugkDh+YvChK26Bbc+zRkbRl9oWMGoNRcQShW+xa?=
+ =?us-ascii?Q?QJ3nhqFcOlwM1BunViO2kIQTQjYR4JpJsGeg5ZBS/Ux0faj2TReKVemLt0U2?=
+ =?us-ascii?Q?vwPB110VYMx9xE/uOIG1Yjp5adMg8CQnbQyXfBRpdcFNlcyFydL3Ahbwoy1q?=
+ =?us-ascii?Q?RZm/nyjuHzf1qUWv/b/mQo9sSJulda5A9E8xfe7ekXZUV7/lmogG3ipqUeJP?=
+ =?us-ascii?Q?cwM4TcCF8YONigsL5JXD4temOgjjReQIecjq2G5QiuwRNDP7gemsl/LRQkHd?=
+ =?us-ascii?Q?gBOZPoud0rQYvW6fInG7xsWjBAGAbxGXfRc/PYr3TSU5D98BYYpec6lJFydZ?=
+ =?us-ascii?Q?qx/2kM9zobpzeQ6JPTQrx28qzWVXOY7g7d3J1tJVMOqmf73HWfhC/ZD4m2oI?=
+ =?us-ascii?Q?qtJ0Vh84muXSiL9ABhU86xSp1EiycLn/NSLYCfrZxlmqEKpdzX3WS0LSl6Mf?=
+ =?us-ascii?Q?rB0E5tzJLXDBOUFSLT03EckxZK/AY71LtHyR71YB7TKbzk1bnEIZ/NFoMvn3?=
+ =?us-ascii?Q?Dt9zi5MqqmOjq110TGLclvB51EUnTJeWcp5mAeITFbYeVnxcMLoCbVIJ3U6D?=
+ =?us-ascii?Q?UONzEh7IbNQvRhAwecgndiAMTGeq+7G6yL74b5y6azg6+UEIPGqP/k99OP0n?=
+ =?us-ascii?Q?APF/6eJZ9BSkYllNsQY+gtqmZ6poasZF6/uYuSXSqypv3lsN6CJxSGWMsbGD?=
+ =?us-ascii?Q?GfuDz3zQbcfNd5GvuPPMmh9G+10L911pnrFgzPEh9eeKmbjTNh41NGCnrr/+?=
+ =?us-ascii?Q?/mvJhg4CZM3+XwfXbtJjCPpoBxiJLyiX9jvAg9z5wEAzbxxu+1s40CHoB/TX?=
+ =?us-ascii?Q?Z1lJQKH2k09sJZs8EG10HBtR5a3cu+D08/WwGpfmMHBbsjxvXDGcKDilZ3Jn?=
+ =?us-ascii?Q?G9M=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?y9J7+BDYbpV5+B8QYobDCc29mjQ2gm3tsCWj5djlqS059u7QmKkI/YyJjkNw?=
+ =?us-ascii?Q?urc9zJ1gUXIxjhxqtpGh0PZZyIbU5gz6+2e2bXkaZ4wrf/2XfN5vHYHU5Yd9?=
+ =?us-ascii?Q?tOKVwiS3mzCZaib78VkXkJNW+oPKxoX1ya/HeECp2n7dx63MvuCxhY+NBzlB?=
+ =?us-ascii?Q?ziKsM1dwQF+NyzTq5Fj84D2z4vjLGvSC1vQDbCd2ci9Ko/UhTa2HuD7s7SRG?=
+ =?us-ascii?Q?YAKJMhv4rwDQsiyyp8wii3GqZq0k5P/LoXS19XJHaymhVxcjJqGZot+XZX+U?=
+ =?us-ascii?Q?vQGFhXctF6yQTikf6qS9iqRrcsTW9dpEGp6fzpJcK9bEb62eHMBSOTwcHZW6?=
+ =?us-ascii?Q?UgPg91tLZQK/QCqt7xUT7dTyTHzCXu+P/f9JrZbOtFibs2pIFQjnl1sOBefP?=
+ =?us-ascii?Q?p0Kg7nVfZ5dThKHuKTKgMBMdUQEFqw7slvpGx6dXjxgdwnJ8CZ+FhSb+KMYb?=
+ =?us-ascii?Q?ZsDDmBI07LrKLJ6DS6ZCL2zL08sH33HBV6mCxnMwKiNRUMMaFK/Q4jDIpUiv?=
+ =?us-ascii?Q?yrir+DYnxDdl34v2mqyTgWJ7d+rb5D454+0Zb4bVTq67OZvfRerFlEfreSIY?=
+ =?us-ascii?Q?qYA4AN5/df6Q2Qmq5qgCR6yAw8uFr7Sfx8jV34cy2Vsd8AOZo7+Az+zKTxsF?=
+ =?us-ascii?Q?/7iD54SuBVTSj/JMAV6WUbrk9ULKBsQfO5oEyh9UlrYjbBt17hfldNOY31HO?=
+ =?us-ascii?Q?fkDvFMYfTSkrafqT1YMJXTY/BwObC9dQjvVTQxWoFi2D/UbnhdSVhOJUWsP7?=
+ =?us-ascii?Q?754+WsY8sp0d3CwnhFKAdqMvslw7Vfg57krzy8FO5/usKZ3yezYARuvcyCVg?=
+ =?us-ascii?Q?vTRuW8Axht7fbgZV9NVJP5b6yTfQbode013wt+1Z490tpwJ3TWt20tIXyLog?=
+ =?us-ascii?Q?W6oq+VFteJAD1YCJM2vitci9IcomUwA7HRM+XEcxmjz0Bj2C5l1nh28bKdWk?=
+ =?us-ascii?Q?kI74VbdUnFmfCZb0QRyltnMWKdQeaf9JHAKnSMMpdo9siWrLBkyH1peaYPy/?=
+ =?us-ascii?Q?bV6aHTE/GtW7NyxWsO8Z/N0B+AjIYdA1fuBHUM/5vDRvtdDpbd8u/tm31aFX?=
+ =?us-ascii?Q?43HqIisqbx6B+9sW4kOfQ5xKVkeSNveRCnFDB5QndJ/4+h6b2bRIyqkHLd8P?=
+ =?us-ascii?Q?tHx3oD/oKvXNt8XnfInofVzzI+rRfQWpoFl7ixwiFb8uKQX8Z/K1sb4azcIb?=
+ =?us-ascii?Q?1JrgWxWKV/KSaM6qMPfsJS9+sy5r1U0NAm3niB+ErZ/o/q4HnDjxX/JanWrO?=
+ =?us-ascii?Q?Pr4vh6TamxaT63J6kfkpLCt3lyQPcS56PSf2WaiUefqlmWu6TumJoxwWrrDQ?=
+ =?us-ascii?Q?Vt1mgPpdG/ujFaAo2izwFyzZcGvlgkXSkpuwhcQGFZ84nhhRy8EwnkDc1A7M?=
+ =?us-ascii?Q?ErGDc9F9I2rApwhZbAh42niMZolAlEqXCtYy5LA29dOdCrM1DicUXeBVQ+wA?=
+ =?us-ascii?Q?H2hlvFXisbr8/ppUtWLSBAts2VWJV2vtMGq/G5PdcwkpsxmA7C/SoRc5ha+L?=
+ =?us-ascii?Q?kQy6YtQJiTNrRKgdBjNF8CvEFmMZIShbu7oouz9/0SAYHIKYDWayKq+C8QOQ?=
+ =?us-ascii?Q?CdMxM3U7iRs7aMtgsQh6Jjurg1JlHku2OmFxsPZleB7gGPgfwq4agzlUphg/?=
+ =?us-ascii?Q?BA=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: bebb0c47-c3a2-45dd-6fea-08dcacb16747
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jul 2024 13:55:12.2456
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: REmiDwdzNI2YP9Es8Y8c4PKxW5s1HxwL38ztnVeG5DqYxnlOL9gndmEdQkCylPJpdeBUgDt8KcV+og545gmcdA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR11MB7843
+X-OriginatorOrg: intel.com
 
-On Fri 05-07-24 08:48:28, Amir Goldstein wrote:
-> On Fri, Jul 5, 2024 at 5:09 AM Oliver Sang <oliver.sang@intel.com> wrote:
-> >
-> > hi, Amir,
-> >
-> > On Wed, Jul 03, 2024 at 07:20:49PM +0300, Amir Goldstein wrote:
-> >
-> > [...]
-> >
-> > > > the data in our tests seem quite stable for a commit, such like for v6.10-rc1:
-> > > >   "unixbench.throughput": [
-> > > >     121545292.8,
-> > > >     121629889.4,
-> > > >     121598992.0,
-> > > >     121492095.5,
-> > > >     121645038.1,
-> > > >     121556286.9
-> > > >   ],
-> > > >
-> > >
-> > > Are all those runs from the same boot?
-> >
-> > no. we reboot machine before each run.
-> >
-> > >
-> > > > for the branch tip a82fd282befc7:
-> > > >   "unixbench.throughput": [
-> > > >     116675606.7,
-> > > >     116840611.2,
-> > > >     116738966.0,
-> > > >     116956953.1,
-> > > >     116704901.9,
-> > > >     116997628.3,
-> > > >     117141733.7,
-> > > >     116660495.4
-> > > >   ],
-> > > >
-> > >
-> > > And these run?
-> >
-> > same.
-> >
-> > >
-> > > Otherwise, we might have a fluctuation that happens at boot time
-> > > or at mount time or something.
-> > >
-> > > >
-> > > > let me combine the results from this branch together:
-> > > >
-> > > > =========================================================================================
-> > > > compiler/cpufreq_governor/kconfig/nr_task/rootfs/runtime/tbox_group/test/testcase:
-> > > >   gcc-13/performance/x86_64-rhel-8.3/100%/debian-12-x86_64-20240206.cgz/300s/lkp-spr-r02/fsbuffer-w/unixbench
-> > > >
-> > > > commit:
-> > > >   v6.10-rc1
-> > > >   68e04c2451ba0 fanotify: introduce FAN_PRE_ACCESS permission event
-> > > >   94167e071109d fanotify: introduce FAN_PRE_MODIFY permission event
-> > > >   64108c0b47db9 fanotify: pass optional file access range in pre-content event
-> > > >   a82fd282befc7 fanotify: report file range info with pre-content
-> > > >
-> > > >        v6.10-rc1 68e04c2451ba03a18ccb1192890 94167e071109d573a5fc1ff3061 64108c0b47db91b20d658a89969 a82fd282befc71d99106bf31066
-> > > > ---------------- --------------------------- --------------------------- --------------------------- ---------------------------
-> > > >          %stddev     %change         %stddev     %change         %stddev     %change         %stddev     %change         %stddev
-> > > >              \          |                \          |                \          |                \          |                \
-> > > >  1.216e+08            -3.5%  1.174e+08            -4.3%  1.163e+08            -6.6%  1.135e+08            -3.9%  1.168e+08        unixbench.throughput
-> > > >
-> > > >
-> > > > one thing I want to mention is the "%change" is always comparing to the first
-> > > > column (v6.10-rc1 here). so 68e04c2451ba0 has a -3.5% regression comparing to
-> > > > v6.10-rc1; 94167e071109d has a -4.3% regression also comparing to v6.10-rc1,
-> > > > and so on.
-> > >
-> > > Thanks for clarifying - I did not read it this way.
-> > >
-> > > >
-> > > > then if just comparing 94167e071109d and 64108c0b47db9, 64108c0b47db9 has about
-> > > > -2.4% regression compareing to 94167e071109d.
-> > > >
-> > > > from above table, along the branch, the performance is kind of fluctuating,
-> > > > dropped most on 64108c0b47db9, but then recovered a little on tip.
-> > > >
-> > >
-> > > I can understand why 64108c0b47db91b would regress performance, but I
-> > > cannot think
-> > > of any possible explanation why a82fd282befc should improve performance,
-> > > so I have to wonder if the regression to -6.6% is not a fluke of some
-> > > specific boot/mount?
-> > >
-> > > I pushed a test branch to
-> > > https://github.com/amir73il/linux/commits/fsnotify_for_lkp
-> > > with an extra patch that un-inlines some helpers to help bisect the
-> > > perf report better.
-> > > Maybe produce the report with this commit and it sheds some light.
-> >
-> > since
-> >
-> > * 388baed2ddef7 (amir73il/fsnotify_for_lkp) fsnotify: un-inline fsnotify helpers
-> > * a82fd282befc7 (amir73il/fan_pre_content) fanotify: report file range info with pre-content events
-> > * f301cd18006c3 fanotify: rename a misnamed constant
-> > * 64108c0b47db9 fanotify: pass optional file access range in pre-content event
-> > * 94167e071109d fanotify: introduce FAN_PRE_MODIFY permission event
-> > * 68e04c2451ba0 fanotify: introduce FAN_PRE_ACCESS permission event
-> > * 83af0c89527ab fsnotify: generate pre-content permission event on exec
-> > * aca4084213276 fsnotify: generate pre-content permission event on open
-> > * 93656e196b006 fsnotify: introduce pre-content permission event
-> > * 1613e604df0cd (tag: v6.10-rc1,
-> >
-> > we run tests upon new commit. summary report is as below:
-> >
-> > =========================================================================================
-> > compiler/cpufreq_governor/kconfig/nr_task/rootfs/runtime/tbox_group/test/testcase:
-> >   gcc-13/performance/x86_64-rhel-8.3/100%/debian-12-x86_64-20240206.cgz/300s/lkp-spr-r02/fsbuffer-w/unixbench
-> >
-> > commit:
-> >   v6.10-rc1
-> >   a82fd282befc7 (amir73il/fan_pre_content) fanotify: report file range info with pre-content events
-> >   388baed2ddef7 (amir73il/fsnotify_for_lkp) fsnotify: un-inline fsnotify helpers
-> >
-> >        v6.10-rc1 a82fd282befc71d99106bf31066 388baed2ddef701fe2f07ea0360
-> > ---------------- --------------------------- ---------------------------
-> >          %stddev     %change         %stddev     %change         %stddev
-> >              \          |                \          |                \
-> >  1.216e+08            -3.9%  1.168e+08            -4.1%  1.166e+08        unixbench.throughput
-> >:
-> >
-> > since Jan mentioned in a later mail that perf profiles are useful, I put details
-> > as below
+hi, Alex,
+
+On Tue, Jul 23, 2024 at 04:23:00PM +0800, Alex Shi wrote:
 > 
-> Thanks.
-> That clarifies that the cycles are spent in the "optimization code" itself.
+> 
+> On 7/23/24 11:22 AM, Oliver Sang wrote:
+> > hi, Alex,
+> > 
+> > On Tue, Jul 23, 2024 at 09:58:25AM +0800, Alex Shi wrote:
+> >>
+> >> On 7/23/24 9:05 AM, kernel test robot wrote:
+> >>> hi, Alex Shi,
+> >>>
+> >>> we noticed there is a mmunstable3 branch now, but there is no same title patch
+> >>> there. not sure if this report is still useful, below report just FYI.
+> >> Hi Oliver,
+> >>
+> >> Thanks a lot for your testing and founding on my unreleased code branch!
+> >> The problem should be resolved on my latest code yesterday.
+> >> But multiple archs maybe still are fragile in the branch. Are there bootable in virtual machine, like arm, s390, etc?
+> > we did boot test in vm, but only for x86_64 or i386.
+> > 
+> > you may notice we also send another report
+> > "[alexshi:mmunstable3] [mm/memory]  f6ba7ce983: kernel_BUG_at_mm/page_alloc.c"
+> 
+> this problem was fixed too. Anyway thanks a lot notice me of this.
 
-BTW, Amir how did you decide that the time is spent in the "optimization
-code"? I've seen in the perf output there are more cache misses, smaller
-IPC, but didn't see a particular place where this would be happening...
+thanks a lot for information! just was wondering which branch contains the fixes?
 
-								Honza
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+I ask this because we still have some bisect results pointing the commits in
+  mmunstable
+  mmunstable2
+  mmunstable3
+branches in https://github.com/alexshi/linux.git
+
+are they still useful? if they are out-of-date branches, we won't send reports
+to you upon them. thanks
+
+> 
+> > 
+> > for both commit, we made some further check and cofirmed they cannot boot
+> > successfully on both vm/bm, again, we only test x86_64/i386 for now.
+> 
+> Thanks a lot for the info!
+> 
+> Alex
