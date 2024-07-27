@@ -1,185 +1,186 @@
-Received: from mail-ua1-f51.google.com (mail-ua1-f51.google.com [209.85.222.51])
+Received: from mail-pg1-f171.google.com (mail-pg1-f171.google.com [209.85.215.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3C5A18AEA
-	for <oe-lkp@lists.linux.dev>; Fri, 26 Jul 2024 14:40:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEFAE10FA;
+	Sat, 27 Jul 2024 03:15:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722004813; cv=none; b=jh26LPARV0WOnF7bhq0TLNKyzYBfwDtE2MJ1aBZxRDYgocHtUoriNtteixtMjir7pomTx9DJ7wt1kmEoO2/ScS/I+l73Osi1gugvGhsQYc7q50J7ueWlpozsNYqwlhuk9Vomd0HcD8jeTNddeAuRa0MrR9SupMFavh/63rgRUN0=
+	t=1722050113; cv=none; b=RDUZLp/K3u1UbcXt1Af44FQXNEoU1RJO4kozlou/WSw1VOjT0H23vBAmqXVtrsWfyzYUcuiF0UpWOs/lhmoSRqpdhRNVf2QiwJng/8CQco2cOwrb+CIe956NIs68ptUZzLTzfZcY/LwhKOQOpMJV6WvHzEwgN0aSEuTsH5UTqYQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722004813; c=relaxed/simple;
-	bh=ulwwnhc+mAkGKfWxF/MrC5J/i0p/2VPb4E/VhhmcdpQ=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Sdb+EMw3S0injwvrBs0WXOhCifCMcvsPfYZahUwAzzDhkHCc7tHY5hQhObB0KzApXhhp9Q0S+FzdQyzn8RAdl7/QhW6esSH1b864VXh989hEynH55ddSAfiYoMYbqRWsUErbJTZYtURrEFjh/8Cz/ox1UYAOf7sCSKzq7T8IgHc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=DpfSMYRW; arc=none smtp.client-ip=209.85.222.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="DpfSMYRW"
-Received: by mail-ua1-f51.google.com with SMTP id a1e0cc1a2514c-823423e3accso212463241.2
-        for <oe-lkp@lists.linux.dev>; Fri, 26 Jul 2024 07:40:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1722004810; x=1722609610; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tV65IQg54aPZMNaUSM01ngj5YogaBYHcYLA+LYcxGps=;
-        b=DpfSMYRWhBMmaKJss6jThzlYhUWON9WqCFqwYmBZ4vfDU/oBiO0eXzOteazPlxYEsN
-         /yjxfSXZQWumJQTS1OA8ijdcP4bqPYMMNJ9ZuHD1qlvwbDorVgZnGzKR/lZRF6zOhtWU
-         L1nLeWQQeq4Qe4sAiGSBV82z6gc7HuvRLHEl7Rbzj5DPys6/T0uk7PFzultTK3rSXwT9
-         R4/0TXXM/NXGuirkap6yY3T69hQRhjLN6R3v6i49N8zerVeqK1DkoPKlhBU72kVl7opa
-         oXXtaRmn5zv0+wg3ocAfGnV78Pgtw1M2xObuWR8DA0qK9TIDzxHHiEr8gb4clZOWvsoh
-         0fZA==
+	s=arc-20240116; t=1722050113; c=relaxed/simple;
+	bh=vfWLMUCNQqdCjzCDTMhi+pl6nCwaPxvVUzyCErSQoDo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=iGxoIGfeKM1bs8Lc0V1OapSxOP4htO6oNZTQmmKw5Hj5U6WPIuBqH4KRlm/p54N11wf4uPQV1jhYzz8NZmmvVGmlHkVgBR+rsA4azH9k3hkcVbKTQq0Xq3D8AHcAcetuhUpk/KqDJh7cLac8Ifcnwsd60W/NL9fyizdJ8hHKsp4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.215.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-pg1-f171.google.com with SMTP id 41be03b00d2f7-76cb5b6b3e4so1086451a12.1;
+        Fri, 26 Jul 2024 20:15:11 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1722004810; x=1722609610;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=tV65IQg54aPZMNaUSM01ngj5YogaBYHcYLA+LYcxGps=;
-        b=pX9cmBRf7UtInPxZkFSjKpfwDFUIPy4WM6Uax3ZMIw/z2oGEi6ihM9mBqbncy0WbTc
-         tp+uLjncNa+9O0NppnjfF4yjVPo7m3oxNA5TPc7ofY7jISZ1MtEizI0Gips6O0r6HmXM
-         CmAFNlK/wqXsq3HiqrlyLlkoZ0Iwxw+EPlAGU8ncwcs1HKplm3I2b1TuM89n9+M6lsdl
-         ghuBHeEtbyeoI1lIQa97Pf7acAkhrS9B363jNxGWzRnDaLh/EwYsIDpRPmAKXxBxc0+/
-         wlnUraUSqYlcWLGZbs+Bi+55zT2gRBYdYfhJ2RPLgdx/9qqFkN3nVreUWXgNRNirQvuc
-         IBHQ==
-X-Forwarded-Encrypted: i=1; AJvYcCU3OhuiNEoi7btF6uTNizSL4qNQnFoFb3s8qJTaEL90RhoJPtblYr7ncx3dyBl6RuOhdTLn3KN000+ugGRHDNvhid5AIUlu
-X-Gm-Message-State: AOJu0YzoOEf09Gt397n2ZLxIXqvrh6vQbqmSf0OFn9nSjSKL1PqoG7HK
-	rP5tkDn/FZ75eN0Fv+6e3gsm6LZok36fvSh7MFUITGPQhXbsfX5DJZB5cyHfFhOvco7JecYi8t/
-	UB7Qj4IB+zEtm6WRrYhLAToUJB8zSd8S7Y9+D
-X-Google-Smtp-Source: AGHT+IHNPh2FVgbB2r/p8bmQoYBQ59fCoxJ02nk4FCnb5rGKbLefzEPA9Uzesrxeg4pBgpeiiqkRiQzpb/qNkxIFni8=
-X-Received: by 2002:a05:6102:50aa:b0:493:badb:74ef with SMTP id
- ada2fe7eead31-493d6527a1bmr7693288137.26.1722004810317; Fri, 26 Jul 2024
- 07:40:10 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1722050111; x=1722654911;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=GLRbFlYw1y7KC9S4hQ5ZFyFBozLVkK+PnMW946p6k3U=;
+        b=jT9P5P93D3TqHdn+XFXdXoT2OJslMUxpY3aNVatl/6NRcfJBU+0OwEYB1TrLjSRJa2
+         NEgHZGv2RfdJEqFVSl0kAXELEhMszvUBzksTAUqdmGHcQmnvHAtbxIvcVzvTpDpy/jcn
+         hW7WTfzfYd1wNjYb1q/UpBQ5vB48gyIFDVmhGzxrKlyNcCg3HVbG+PkiyfYpGZmDXuux
+         XIV6XAqrbucSv97VtG5/0bEg3G0uQTWNFgZfCTx4xao6MTkjNsNV0uHPGtJesB5HqAWJ
+         uOndEBkJIMKI9EtZVA7z3fXFEfztaAqAzSL24R4K0lfywM/gzEshtYBdHDXnm8UYBLsh
+         mrnA==
+X-Forwarded-Encrypted: i=1; AJvYcCX4FfMfZMhYsQb6Bqhtfi5tFsBYrIiaT+4uq+cqlm4qrTGOZNdEF0DDe15UT6Xz+YziVUsPHbCD66IdyOnXizuzvC2gefH3xevfb/UGdOGyuy4sFPTCID1970ndog==
+X-Gm-Message-State: AOJu0YyPPI7iDQRoIjd1qFXVL1VjhnbW6eZnXQ/VfUKfMzsC9EuqXGB2
+	3lFsRfkVHSzeRbYPLFs1znAEKoD+ZR7kYrh55j1MUz5Gut3aOB/q
+X-Google-Smtp-Source: AGHT+IEh0vRQcYCjKacpBe+tlN5TG/wqG8G56zuBfhH316hJWOb2texq/hSHkLPuAMlU+eKcHwai8g==
+X-Received: by 2002:a17:903:228c:b0:1fd:6766:6848 with SMTP id d9443c01a7336-1ff0481b9d3mr18339475ad.17.1722050111104;
+        Fri, 26 Jul 2024 20:15:11 -0700 (PDT)
+Received: from snowbird ([136.25.84.117])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1fed7c7f62fsm40488975ad.19.2024.07.26.20.15.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Jul 2024 20:15:10 -0700 (PDT)
+Date: Fri, 26 Jul 2024 20:15:07 -0700
+From: Dennis Zhou <dennis@kernel.org>
+To: Boqun Feng <boqun.feng@gmail.com>
+Cc: Tejun Heo <tj@kernel.org>, kernel test robot <oliver.sang@intel.com>,
+	Suren Baghdasaryan <surenb@google.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, linux-kernel@vger.kernel.org,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Kent Overstreet <kent.overstreet@linux.dev>,
+	Kees Cook <keescook@chromium.org>,
+	Alexander Viro <viro@zeniv.linux.org.uk>,
+	Alex Gaynor <alex.gaynor@gmail.com>,
+	Alice Ryhl <aliceryhl@google.com>,
+	Andreas Hindborg <a.hindborg@samsung.com>,
+	Benno Lossin <benno.lossin@proton.me>,
+	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Christoph Lameter <cl@linux.com>, Gary Guo <gary@garyguo.net>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Vlastimil Babka <vbabka@suse.cz>,
+	Wedson Almeida Filho <wedsonaf@gmail.com>, linux-mm@kvack.org,
+	lkmm@lists.linux.dev
+Subject: Re: [linus:master] [mm]  24e44cc22a:
+ BUG:KCSAN:data-race_in_pcpu_alloc_noprof/pcpu_block_update_hint_alloc
+Message-ID: <ZqRmO6LNol6S65dm@snowbird>
+References: <202407191651.f24e499d-oliver.sang@intel.com>
+ <Zp6bMoDnUMxNrKos@boqun-archlinux>
+ <Zp6cVgXJlzF4VOwl@slm.duckdns.org>
+ <Zp6e1PWZbz4pkh9Z@boqun-archlinux>
+ <Zp6kpCcQRPTGk1LK@V92F7Y9K0C.lan>
+ <Zp7G4EfISRwlmmIT@boqun-archlinux>
+ <Zp9EvUTqni5wMDlC@snowbird>
+ <ZqAdGAD01kZPms2J@Boquns-Mac-mini.home>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202407251053.618edf56-oliver.sang@intel.com> <CANn89i+Bia9PdGhAVfRbbubYo37+g+ej68qp32JmU88tsLLuRQ@mail.gmail.com>
-In-Reply-To: <CANn89i+Bia9PdGhAVfRbbubYo37+g+ej68qp32JmU88tsLLuRQ@mail.gmail.com>
-From: Neal Cardwell <ncardwell@google.com>
-Date: Fri, 26 Jul 2024 10:39:51 -0400
-Message-ID: <CADVnQynLaT0rGcLDBB+T237x6aHx7K74kNPZz4hLFTK7U=CVwA@mail.gmail.com>
-Subject: Re: [linus:master] [tcp] 23e89e8ee7: packetdrill.packetdrill/gtests/net/tcp/fastopen/client/simultaneous-fast-open_ipv4-mapped-v6.fail
-To: Eric Dumazet <edumazet@google.com>
-Cc: kernel test robot <oliver.sang@intel.com>, Kuniyuki Iwashima <kuniyu@amazon.com>, oe-lkp@lists.linux.dev, 
-	lkp@intel.com, linux-kernel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>, 
-	netdev@vger.kernel.org, Matthieu Baerts <matttbe@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZqAdGAD01kZPms2J@Boquns-Mac-mini.home>
 
-On Thu, Jul 25, 2024 at 4:07=E2=80=AFAM Eric Dumazet <edumazet@google.com> =
-wrote:
->
-> On Thu, Jul 25, 2024 at 6:55=E2=80=AFAM kernel test robot <oliver.sang@in=
-tel.com> wrote:
-> >
-> >
-> >
-> > Hello,
-> >
-> > kernel test robot noticed "packetdrill.packetdrill/gtests/net/tcp/fasto=
-pen/client/simultaneous-fast-open_ipv4-mapped-v6.fail" on:
-> >
-> > commit: 23e89e8ee7be73e21200947885a6d3a109a2c58d ("tcp: Don't drop SYN+=
-ACK for simultaneous connect().")
-> > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> >
-> > [test failed on linus/master      68b59730459e5d1fe4e0bbeb04ceb9df0f002=
-270]
-> > [test failed on linux-next/master 73399b58e5e5a1b28a04baf42e321cfcfc663=
-c2f]
-> >
-> > in testcase: packetdrill
-> > version: packetdrill-x86_64-31fbbb7-1_20240226
-> > with following parameters:
-> >
-> >
-> > compiler: gcc-13
-> > test machine: 16 threads 1 sockets Intel(R) Xeon(R) E-2278G CPU @ 3.40G=
-Hz (Coffee Lake) with 32G memory
-> >
-> > (please refer to attached dmesg/kmsg for entire log/backtrace)
-> >
-> >
-> > we also noticed other failed cases that can pass on parent.
-> >
-> >
-> > 42ffe242860c401c 23e89e8ee7be73e21200947885a
-> > ---------------- ---------------------------
-> >        fail:runs  %reproduction    fail:runs
-> >            |             |             |
-> >            :9           67%           6:6     packetdrill.packetdrill/g=
-tests/net/tcp/fastopen/client/simultaneous-fast-open_ipv4-mapped-v6.fail
-> >            :9           67%           6:6     packetdrill.packetdrill/g=
-tests/net/tcp/fastopen/client/simultaneous-fast-open_ipv4.fail
-> >            :9           67%           6:6     packetdrill.packetdrill/g=
-tests/net/tcp/fastopen/client/simultaneous-fast-open_ipv6.fail
-> >            :9           67%           6:6     packetdrill.packetdrill/g=
-tests/net/tcp/fastopen/server/basic-cookie-not-reqd_ipv4-mapped-v6.fail
-> >            :9           67%           6:6     packetdrill.packetdrill/g=
-tests/net/tcp/fastopen/server/basic-cookie-not-reqd_ipv4.fail
-> >            :9           67%           6:6     packetdrill.packetdrill/g=
-tests/net/tcp/fastopen/server/basic-zero-payload_ipv4-mapped-v6.fail
-> >            :9           67%           6:6     packetdrill.packetdrill/g=
-tests/net/tcp/fastopen/server/basic-zero-payload_ipv4.fail
-> >            :9           67%           6:6     packetdrill.packetdrill/g=
-tests/net/tcp/fastopen/server/opt34/basic-cookie-not-reqd_ipv4-mapped-v6.fa=
-il
-> >            :9           67%           6:6     packetdrill.packetdrill/g=
-tests/net/tcp/fastopen/server/opt34/basic-cookie-not-reqd_ipv4.fail
-> >            :9           67%           6:6     packetdrill.packetdrill/g=
-tests/net/tcp/fastopen/server/opt34/basic-zero-payload_ipv4-mapped-v6.fail
-> >            :9           67%           6:6     packetdrill.packetdrill/g=
-tests/net/tcp/fastopen/server/opt34/basic-zero-payload_ipv4.fail
-> >
-> >
-> >
-> > If you fix the issue in a separate patch/commit (i.e. not just a new ve=
-rsion of
-> > the same patch/commit), kindly add following tags
-> > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> > | Closes: https://lore.kernel.org/oe-lkp/202407251053.618edf56-oliver.s=
-ang@intel.com
-> >
-> >
-> >
-> > FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/fastopen/client/simult=
-aneous-fast-open.pkt (ipv6)]
-> >
-> > ...
-> >
-> > FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/fastopen/client/simult=
-aneous-fast-open.pkt (ipv4)]
-> >
-> > ...
-> >
-> > FAIL [/lkp/benchmarks/packetdrill/gtests/net/tcp/fastopen/client/simult=
-aneous-fast-open.pkt (ipv4-mapped-v6)]
-> >
-> > ...
-> >
-> >
-> > The kernel config and materials to reproduce are available at:
-> > https://download.01.org/0day-ci/archive/20240725/202407251053.618edf56-=
-oliver.sang@intel.com
-> >
-> >
-> >
-> > --
-> > 0-DAY CI Kernel Test Service
-> > https://github.com/intel/lkp-tests/wiki
-> >
->
-> This has been discussed recently in netdev mailing list, one ACK will
-> get more precise information.
+On Tue, Jul 23, 2024 at 02:14:00PM -0700, Boqun Feng wrote:
+> On Mon, Jul 22, 2024 at 10:50:53PM -0700, Dennis Zhou wrote:
+> > On Mon, Jul 22, 2024 at 01:53:52PM -0700, Boqun Feng wrote:
+> > > On Mon, Jul 22, 2024 at 11:27:48AM -0700, Dennis Zhou wrote:
+> > > > Hello,
+> > > > 
+> > > > On Mon, Jul 22, 2024 at 11:03:00AM -0700, Boqun Feng wrote:
+> > > > > On Mon, Jul 22, 2024 at 07:52:22AM -1000, Tejun Heo wrote:
+> > > > > > On Mon, Jul 22, 2024 at 10:47:30AM -0700, Boqun Feng wrote:
+> > > > > > > This looks like a data race because we read pcpu_nr_empty_pop_pages out
+> > > > > > > of the lock for a best effort checking, @Tejun, maybe you could confirm
+> > > > > > > on this?
+> > > > > > 
+> > > > > > That does sound plausible.
+> > > > > > 
+> > > > > > > -       if (pcpu_nr_empty_pop_pages < PCPU_EMPTY_POP_PAGES_LOW)
+> > > > > > > +       /*
+> > > > > > > +        * Checks pcpu_nr_empty_pop_pages out of the pcpu_lock, data races may
+> > > > > > > +        * occur but this is just a best-effort checking, everything is synced
+> > > > > > > +        * in pcpu_balance_work.
+> > > > > > > +        */
+> > > > > > > +       if (data_race(pcpu_nr_empty_pop_pages) < PCPU_EMPTY_POP_PAGES_LOW)
+> > > > > > >                 pcpu_schedule_balance_work();
+> > > > > > 
+> > > > > > Would it be better to use READ/WRITE_ONCE() for the variable?
+> > > > > > 
+> > > > > 
+> > > > > For READ/WRITE_ONCE(), we will need to replace all write accesses and
+> > > > > all out-of-lock read accesses to pcpu_nr_empty_pop_pages, like below.
+> > > > > It's better in the sense that it doesn't rely on compiler behaviors on
+> > > > > data races, not sure about the performance impact though.
+> > > > > 
+> > > > 
+> > > > I think a better alternative is we can move it up into the lock under
+> > > > area_found. The value gets updated as part of pcpu_alloc_area() as the
+> > > > code above populates percpu memory that is already allocated.
+> > > > 
+> > > 
+> > > Not sure I followed what exactly you suggested here because I'm not
+> > > familiar with the logic, but a simpler version would be:
+> > > 
+> > > 
+> > 
+> > I believe that's the only naked access of pcpu_nr_empty_pop_pages. So
+> > I was thinking this'll fix this problem.
+> > 
+> > I also don't know how to rerun this CI tho..
+> > 
+> > ---
+> > diff --git a/mm/percpu.c b/mm/percpu.c
+> > index 20d91af8c033..325fb8412e90 100644
+> > --- a/mm/percpu.c
+> > +++ b/mm/percpu.c
+> > @@ -1864,6 +1864,10 @@ void __percpu *pcpu_alloc_noprof(size_t size, size_t align, bool reserved,
+> >  
+> >  area_found:
+> >  	pcpu_stats_area_alloc(chunk, size);
+> > +
+> > +	if (pcpu_nr_empty_pop_pages < PCPU_EMPTY_POP_PAGES_LOW)
+> > +		pcpu_schedule_balance_work();
+> > +
+> 
+> But the pcpu_chunk_populated() afterwards could modify the
+> pcpu_nr_empty_pop_pages again, wouldn't this be a behavior changing?
+> 
 
-This should be fixed from this packetdrill test update from Matthieu
-Baerts that I just merged:
-  https://github.com/google/packetdrill/pull/87
+It does, but really at this point it's a mixed bag because the lock
+isn't permanently held at all while we do all these operations. The
+value is read at best effort.
 
-(For our internal versions of the tests, Eric provided an equivalent patch.=
-)
+Ultimately the code below is populating backing pages for non-atomic
+allocations. At this point the ideal situation is we're using an already
+populated page. There are caveats but I can't say the prior is any
+better than this version.
 
-neal
+The code you mentioned pairs with the comment on line 916 below.
+
+	/*
+	 * If the allocation is not atomic, some blocks may not be
+	 * populated with pages, while we account it here.  The number
+	 * of pages will be added back with pcpu_chunk_populated()
+	 * when populating pages.
+	 */
+
+Thanks,
+Dennis
+
+> Regards,
+> Boqun
+> 
+> >  	spin_unlock_irqrestore(&pcpu_lock, flags);
+> >  
+> >  	/* populate if not all pages are already there */
+> > @@ -1891,9 +1895,6 @@ void __percpu *pcpu_alloc_noprof(size_t size, size_t align, bool reserved,
+> >  		mutex_unlock(&pcpu_alloc_mutex);
+> >  	}
+> >  
+> > -	if (pcpu_nr_empty_pop_pages < PCPU_EMPTY_POP_PAGES_LOW)
+> > -		pcpu_schedule_balance_work();
+> > -
+> >  	/* clear the areas and return address relative to base address */
+> >  	for_each_possible_cpu(cpu)
+> >  		memset((void *)pcpu_chunk_addr(chunk, cpu, 0) + off, 0, size);
