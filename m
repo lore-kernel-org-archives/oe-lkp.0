@@ -1,76 +1,42 @@
-Received: from mail-pg1-f171.google.com (mail-pg1-f171.google.com [209.85.215.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEFAE10FA;
-	Sat, 27 Jul 2024 03:15:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 816CEA35;
+	Sun, 28 Jul 2024 16:34:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722050113; cv=none; b=RDUZLp/K3u1UbcXt1Af44FQXNEoU1RJO4kozlou/WSw1VOjT0H23vBAmqXVtrsWfyzYUcuiF0UpWOs/lhmoSRqpdhRNVf2QiwJng/8CQco2cOwrb+CIe956NIs68ptUZzLTzfZcY/LwhKOQOpMJV6WvHzEwgN0aSEuTsH5UTqYQ=
+	t=1722184485; cv=none; b=DFxKM/7QCNwwxRXeeLPq9TFWKfS9LRJdzXOeCRXPJfPYsBAgGVkUbYnfn7BEoefc8OUT1HcJT/PPJsUJcvu6+J66ZhpyJbAJvcY3MPSd1bsZFh+XlX5K31CA/cV3OmCz9CDFiUs/XeIWpsFM/TMiOUt+UeGiyfpbZAorC4rY+9w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722050113; c=relaxed/simple;
-	bh=vfWLMUCNQqdCjzCDTMhi+pl6nCwaPxvVUzyCErSQoDo=;
+	s=arc-20240116; t=1722184485; c=relaxed/simple;
+	bh=ofb1nSJ0RL/j+KBYl6x8fMvCbBUsX1OAVlBXjganODg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iGxoIGfeKM1bs8Lc0V1OapSxOP4htO6oNZTQmmKw5Hj5U6WPIuBqH4KRlm/p54N11wf4uPQV1jhYzz8NZmmvVGmlHkVgBR+rsA4azH9k3hkcVbKTQq0Xq3D8AHcAcetuhUpk/KqDJh7cLac8Ifcnwsd60W/NL9fyizdJ8hHKsp4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.215.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pg1-f171.google.com with SMTP id 41be03b00d2f7-76cb5b6b3e4so1086451a12.1;
-        Fri, 26 Jul 2024 20:15:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1722050111; x=1722654911;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=GLRbFlYw1y7KC9S4hQ5ZFyFBozLVkK+PnMW946p6k3U=;
-        b=jT9P5P93D3TqHdn+XFXdXoT2OJslMUxpY3aNVatl/6NRcfJBU+0OwEYB1TrLjSRJa2
-         NEgHZGv2RfdJEqFVSl0kAXELEhMszvUBzksTAUqdmGHcQmnvHAtbxIvcVzvTpDpy/jcn
-         hW7WTfzfYd1wNjYb1q/UpBQ5vB48gyIFDVmhGzxrKlyNcCg3HVbG+PkiyfYpGZmDXuux
-         XIV6XAqrbucSv97VtG5/0bEg3G0uQTWNFgZfCTx4xao6MTkjNsNV0uHPGtJesB5HqAWJ
-         uOndEBkJIMKI9EtZVA7z3fXFEfztaAqAzSL24R4K0lfywM/gzEshtYBdHDXnm8UYBLsh
-         mrnA==
-X-Forwarded-Encrypted: i=1; AJvYcCX4FfMfZMhYsQb6Bqhtfi5tFsBYrIiaT+4uq+cqlm4qrTGOZNdEF0DDe15UT6Xz+YziVUsPHbCD66IdyOnXizuzvC2gefH3xevfb/UGdOGyuy4sFPTCID1970ndog==
-X-Gm-Message-State: AOJu0YyPPI7iDQRoIjd1qFXVL1VjhnbW6eZnXQ/VfUKfMzsC9EuqXGB2
-	3lFsRfkVHSzeRbYPLFs1znAEKoD+ZR7kYrh55j1MUz5Gut3aOB/q
-X-Google-Smtp-Source: AGHT+IEh0vRQcYCjKacpBe+tlN5TG/wqG8G56zuBfhH316hJWOb2texq/hSHkLPuAMlU+eKcHwai8g==
-X-Received: by 2002:a17:903:228c:b0:1fd:6766:6848 with SMTP id d9443c01a7336-1ff0481b9d3mr18339475ad.17.1722050111104;
-        Fri, 26 Jul 2024 20:15:11 -0700 (PDT)
-Received: from snowbird ([136.25.84.117])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1fed7c7f62fsm40488975ad.19.2024.07.26.20.15.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Jul 2024 20:15:10 -0700 (PDT)
-Date: Fri, 26 Jul 2024 20:15:07 -0700
-From: Dennis Zhou <dennis@kernel.org>
-To: Boqun Feng <boqun.feng@gmail.com>
-Cc: Tejun Heo <tj@kernel.org>, kernel test robot <oliver.sang@intel.com>,
-	Suren Baghdasaryan <surenb@google.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, linux-kernel@vger.kernel.org,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Kent Overstreet <kent.overstreet@linux.dev>,
-	Kees Cook <keescook@chromium.org>,
-	Alexander Viro <viro@zeniv.linux.org.uk>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Alice Ryhl <aliceryhl@google.com>,
-	Andreas Hindborg <a.hindborg@samsung.com>,
-	Benno Lossin <benno.lossin@proton.me>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Christoph Lameter <cl@linux.com>, Gary Guo <gary@garyguo.net>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Vlastimil Babka <vbabka@suse.cz>,
-	Wedson Almeida Filho <wedsonaf@gmail.com>, linux-mm@kvack.org,
-	lkmm@lists.linux.dev
-Subject: Re: [linus:master] [mm]  24e44cc22a:
- BUG:KCSAN:data-race_in_pcpu_alloc_noprof/pcpu_block_update_hint_alloc
-Message-ID: <ZqRmO6LNol6S65dm@snowbird>
-References: <202407191651.f24e499d-oliver.sang@intel.com>
- <Zp6bMoDnUMxNrKos@boqun-archlinux>
- <Zp6cVgXJlzF4VOwl@slm.duckdns.org>
- <Zp6e1PWZbz4pkh9Z@boqun-archlinux>
- <Zp6kpCcQRPTGk1LK@V92F7Y9K0C.lan>
- <Zp7G4EfISRwlmmIT@boqun-archlinux>
- <Zp9EvUTqni5wMDlC@snowbird>
- <ZqAdGAD01kZPms2J@Boquns-Mac-mini.home>
+	 Content-Type:Content-Disposition:In-Reply-To; b=NDVj/4mqByZgYhBqPlEqLF8fQdwqyfZd2LoGoQslNMrlCUvYkWDC59ZY28NK6wF3jOAVGDzDtDmlPwzHnjNaKHObAhSERzGi0crxvtR/prtgRwI2YQcKyTz4T5nihV/cb+Q6xzzQQZUsDgETMboWdu2lcD5IkIQAyf/VslXZ3Lk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=psZWwkNO; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="psZWwkNO"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08CE9C116B1;
+	Sun, 28 Jul 2024 16:34:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1722184485;
+	bh=ofb1nSJ0RL/j+KBYl6x8fMvCbBUsX1OAVlBXjganODg=;
+	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+	b=psZWwkNOvhJwsJiOXiWpSagIhDWZ3U99X2wUuT8Yl/N7+M/dSH3Bm0WAM+/M1OI6o
+	 nlVn4AtWkC3QSJYwpmscpXD8f6W2cdOz+/yWyqmAV2VmGNm82+siDW3k0DwF6fBJT+
+	 ldKlM3BaEQ2yQAVTsqXHWPnrpNoW0PBYsD4WBsZE0xPjjlwJ8fMEsOc+OGAMVV7eY0
+	 epMwuCUiiaeVLidTcb2BiMMmZuRJ8VAexkunIKyqJ1jnQcCbADKlQ7uc7D9eClS2cW
+	 BUZ1Dln9WAm1NCR/S8P4C43dpuRF0WiBL80jeI8FcEQrrXKpiVkEvrbbpH6qt5yzks
+	 uyC39h5ojVkJg==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+	id 937A0CE0A6E; Sun, 28 Jul 2024 09:34:44 -0700 (PDT)
+Date: Sun, 28 Jul 2024 09:34:44 -0700
+From: "Paul E. McKenney" <paulmck@kernel.org>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org
+Subject: Re: [paulmck-rcu:dev.2024.07.17a] [EXP rcuscale] 9e146da3f3:
+ WARNING:at_lib/alloc_tag.c:#alloc_tag_module_unload
+Message-ID: <20ca1e96-6b79-4533-96a9-41932f997679@paulmck-laptop>
+Reply-To: paulmck@kernel.org
+References: <202407251351.f65c33a0-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -79,108 +45,195 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZqAdGAD01kZPms2J@Boquns-Mac-mini.home>
+In-Reply-To: <202407251351.f65c33a0-lkp@intel.com>
 
-On Tue, Jul 23, 2024 at 02:14:00PM -0700, Boqun Feng wrote:
-> On Mon, Jul 22, 2024 at 10:50:53PM -0700, Dennis Zhou wrote:
-> > On Mon, Jul 22, 2024 at 01:53:52PM -0700, Boqun Feng wrote:
-> > > On Mon, Jul 22, 2024 at 11:27:48AM -0700, Dennis Zhou wrote:
-> > > > Hello,
-> > > > 
-> > > > On Mon, Jul 22, 2024 at 11:03:00AM -0700, Boqun Feng wrote:
-> > > > > On Mon, Jul 22, 2024 at 07:52:22AM -1000, Tejun Heo wrote:
-> > > > > > On Mon, Jul 22, 2024 at 10:47:30AM -0700, Boqun Feng wrote:
-> > > > > > > This looks like a data race because we read pcpu_nr_empty_pop_pages out
-> > > > > > > of the lock for a best effort checking, @Tejun, maybe you could confirm
-> > > > > > > on this?
-> > > > > > 
-> > > > > > That does sound plausible.
-> > > > > > 
-> > > > > > > -       if (pcpu_nr_empty_pop_pages < PCPU_EMPTY_POP_PAGES_LOW)
-> > > > > > > +       /*
-> > > > > > > +        * Checks pcpu_nr_empty_pop_pages out of the pcpu_lock, data races may
-> > > > > > > +        * occur but this is just a best-effort checking, everything is synced
-> > > > > > > +        * in pcpu_balance_work.
-> > > > > > > +        */
-> > > > > > > +       if (data_race(pcpu_nr_empty_pop_pages) < PCPU_EMPTY_POP_PAGES_LOW)
-> > > > > > >                 pcpu_schedule_balance_work();
-> > > > > > 
-> > > > > > Would it be better to use READ/WRITE_ONCE() for the variable?
-> > > > > > 
-> > > > > 
-> > > > > For READ/WRITE_ONCE(), we will need to replace all write accesses and
-> > > > > all out-of-lock read accesses to pcpu_nr_empty_pop_pages, like below.
-> > > > > It's better in the sense that it doesn't rely on compiler behaviors on
-> > > > > data races, not sure about the performance impact though.
-> > > > > 
-> > > > 
-> > > > I think a better alternative is we can move it up into the lock under
-> > > > area_found. The value gets updated as part of pcpu_alloc_area() as the
-> > > > code above populates percpu memory that is already allocated.
-> > > > 
-> > > 
-> > > Not sure I followed what exactly you suggested here because I'm not
-> > > familiar with the logic, but a simpler version would be:
-> > > 
-> > > 
-> > 
-> > I believe that's the only naked access of pcpu_nr_empty_pop_pages. So
-> > I was thinking this'll fix this problem.
-> > 
-> > I also don't know how to rerun this CI tho..
-> > 
-> > ---
-> > diff --git a/mm/percpu.c b/mm/percpu.c
-> > index 20d91af8c033..325fb8412e90 100644
-> > --- a/mm/percpu.c
-> > +++ b/mm/percpu.c
-> > @@ -1864,6 +1864,10 @@ void __percpu *pcpu_alloc_noprof(size_t size, size_t align, bool reserved,
-> >  
-> >  area_found:
-> >  	pcpu_stats_area_alloc(chunk, size);
-> > +
-> > +	if (pcpu_nr_empty_pop_pages < PCPU_EMPTY_POP_PAGES_LOW)
-> > +		pcpu_schedule_balance_work();
-> > +
+On Thu, Jul 25, 2024 at 02:49:28PM +0800, kernel test robot wrote:
 > 
-> But the pcpu_chunk_populated() afterwards could modify the
-> pcpu_nr_empty_pop_pages again, wouldn't this be a behavior changing?
+> hi, Paul E. McKenney,
 > 
-
-It does, but really at this point it's a mixed bag because the lock
-isn't permanently held at all while we do all these operations. The
-value is read at best effort.
-
-Ultimately the code below is populating backing pages for non-atomic
-allocations. At this point the ideal situation is we're using an already
-populated page. There are caveats but I can't say the prior is any
-better than this version.
-
-The code you mentioned pairs with the comment on line 916 below.
-
-	/*
-	 * If the allocation is not atomic, some blocks may not be
-	 * populated with pages, while we account it here.  The number
-	 * of pages will be added back with pcpu_chunk_populated()
-	 * when populating pages.
-	 */
-
-Thanks,
-Dennis
-
-> Regards,
-> Boqun
+> we noticed in commit message "Not for mainline in its current form".
 > 
-> >  	spin_unlock_irqrestore(&pcpu_lock, flags);
-> >  
-> >  	/* populate if not all pages are already there */
-> > @@ -1891,9 +1895,6 @@ void __percpu *pcpu_alloc_noprof(size_t size, size_t align, bool reserved,
-> >  		mutex_unlock(&pcpu_alloc_mutex);
-> >  	}
-> >  
-> > -	if (pcpu_nr_empty_pop_pages < PCPU_EMPTY_POP_PAGES_LOW)
-> > -		pcpu_schedule_balance_work();
-> > -
-> >  	/* clear the areas and return address relative to base address */
-> >  	for_each_possible_cpu(cpu)
-> >  		memset((void *)pcpu_chunk_addr(chunk, cpu, 0) + off, 0, size);
+> we saw below commits in the branch:
+> cdd5ddaa17fe fixup! EXP rcuscale: Dump debug info
+> 4f60b8b679fd squash! EXP rcuscale: Dump debug info
+> 
+> but we still observed same issue on the branch tip:
+> fe09f037acf7 (dev.2024.07.17a) rcuscale: Make rcu_scale_writer() tolerate repeated GFP_KERNEL failure
+> 
+> at the same time, we noticed there is no same title commit in newer branch:
+> dev.2024.07.18a
+> 
+> just still made below formal report to you since we are not sure if it could
+> supply any useful information. if not, please just ignore. Thanks!
+
+I believe that I have fixed this in the current "dev" branch by fusing
+a half-fix with the remainder of the fix.  Please let me know if I am
+mistaken, and thank you for your testing work!
+
+							Thanx, Paul
+
+> Hello,
+> 
+> kernel test robot noticed "WARNING:at_lib/alloc_tag.c:#alloc_tag_module_unload" on:
+> 
+> commit: 9e146da3f351c0eaf66756cc3a6c6a5845b81187 ("EXP rcuscale: Dump debug info")
+> https://git.kernel.org/cgit/linux/kernel/git/paulmck/linux-rcu.git dev.2024.07.17a
+> 
+> in testcase: rcuscale
+> version: 
+> with following parameters:
+> 
+> 	runtime: 300s
+> 	scale_type: tasks-tracing
+> 
+> 
+> 
+> compiler: gcc-13
+> test machine: qemu-system-i386 -enable-kvm -cpu SandyBridge -smp 2 -m 4G
+> 
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+> 
+> 
+> +-----------------------------------------------------+------------+------------+
+> |                                                     | e136892a8e | 9e146da3f3 |
+> +-----------------------------------------------------+------------+------------+
+> | WARNING:at_lib/alloc_tag.c:#alloc_tag_module_unload | 0          | 12         |
+> | EIP:alloc_tag_module_unload                         | 0          | 12         |
+> +-----------------------------------------------------+------------+------------+
+> 
+> 
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <lkp@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202407251351.f65c33a0-lkp@intel.com
+> 
+> 
+> [  439.356638][ T1799] ------------[ cut here ]------------
+> [  439.357183][ T1799] kernel/rcu/rcuscale.c:1037 module rcuscale func:rcu_scale_init has 8 allocated at module unload
+> [ 439.357225][ T1799] WARNING: CPU: 0 PID: 1799 at lib/alloc_tag.c:168 alloc_tag_module_unload (lib/alloc_tag.c:168 (discriminator 1)) 
+> [  439.358903][ T1799] Modules linked in: rcuscale(-) torture [last unloaded: rcuscale]
+> [  439.359632][ T1799] CPU: 0 PID: 1799 Comm: rmmod Not tainted 6.10.0-rc5-00110-g9e146da3f351 #1 308a8ed8688556473cf6c28b678fa76bc00dc1d7
+> [  439.360679][ T1799] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> [ 439.361546][ T1799] EIP: alloc_tag_module_unload (lib/alloc_tag.c:168 (discriminator 1)) 
+> [ 439.361993][ T1799] Code: 92 ff ff ff 8b 55 e8 8b 45 e4 85 d2 75 04 85 c0 74 21 52 50 ff 73 0c ff 73 08 ff 73 04 ff 73 10 68 d8 2f cb c2 e8 ec 39 9f ff <0f> 0b c6 45 d3 00 83 c4 1c 8d 45 d4 e8 2e fc ff ff 89 c3 eb b2 8a
+> All code
+> ========
+>    0:	92                   	xchg   %eax,%edx
+>    1:	ff                   	(bad)
+>    2:	ff                   	(bad)
+>    3:	ff 8b 55 e8 8b 45    	decl   0x458be855(%rbx)
+>    9:	e4 85                	in     $0x85,%al
+>    b:	d2 75 04             	shlb   %cl,0x4(%rbp)
+>    e:	85 c0                	test   %eax,%eax
+>   10:	74 21                	je     0x33
+>   12:	52                   	push   %rdx
+>   13:	50                   	push   %rax
+>   14:	ff 73 0c             	push   0xc(%rbx)
+>   17:	ff 73 08             	push   0x8(%rbx)
+>   1a:	ff 73 04             	push   0x4(%rbx)
+>   1d:	ff 73 10             	push   0x10(%rbx)
+>   20:	68 d8 2f cb c2       	push   $0xffffffffc2cb2fd8
+>   25:	e8 ec 39 9f ff       	call   0xffffffffff9f3a16
+>   2a:*	0f 0b                	ud2		<-- trapping instruction
+>   2c:	c6 45 d3 00          	movb   $0x0,-0x2d(%rbp)
+>   30:	83 c4 1c             	add    $0x1c,%esp
+>   33:	8d 45 d4             	lea    -0x2c(%rbp),%eax
+>   36:	e8 2e fc ff ff       	call   0xfffffffffffffc69
+>   3b:	89 c3                	mov    %eax,%ebx
+>   3d:	eb b2                	jmp    0xfffffffffffffff1
+>   3f:	8a                   	.byte 0x8a
+> 
+> Code starting with the faulting instruction
+> ===========================================
+>    0:	0f 0b                	ud2
+>    2:	c6 45 d3 00          	movb   $0x0,-0x2d(%rbp)
+>    6:	83 c4 1c             	add    $0x1c,%esp
+>    9:	8d 45 d4             	lea    -0x2c(%rbp),%eax
+>    c:	e8 2e fc ff ff       	call   0xfffffffffffffc3f
+>   11:	89 c3                	mov    %eax,%ebx
+>   13:	eb b2                	jmp    0xffffffffffffffc7
+>   15:	8a                   	.byte 0x8a
+> [  439.363599][ T1799] EAX: 00000000 EBX: efbf9040 ECX: 00000000 EDX: 00000000
+> [  439.364218][ T1799] ESI: c4215290 EDI: ebdfdedc EBP: ebdfdee8 ESP: ebdfde9c
+> [  439.364818][ T1799] DS: 007b ES: 007b FS: 0000 GS: 0033 SS: 0068 EFLAGS: 00210246
+> [  439.365471][ T1799] CR0: 80050033 CR2: b71fd210 CR3: 04026300 CR4: 000406b0
+> [  439.366083][ T1799] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 00000000
+> [  439.366676][ T1799] DR6: fffe0ff0 DR7: 00000400
+> [  439.367170][ T1799] Call Trace:
+> [ 439.367451][ T1799] ? show_regs (arch/x86/kernel/dumpstack.c:479 arch/x86/kernel/dumpstack.c:465) 
+> [ 439.367803][ T1799] ? alloc_tag_module_unload (lib/alloc_tag.c:168 (discriminator 1)) 
+> [ 439.368264][ T1799] ? __warn (kernel/panic.c:693) 
+> [ 439.368604][ T1799] ? report_bug (lib/bug.c:201 lib/bug.c:219) 
+> [ 439.368992][ T1799] ? alloc_tag_module_unload (lib/alloc_tag.c:168 (discriminator 1)) 
+> [ 439.369435][ T1799] ? exc_overflow (arch/x86/kernel/traps.c:252) 
+> [ 439.369807][ T1799] ? handle_bug (arch/x86/kernel/traps.c:239) 
+> [ 439.370162][ T1799] ? exc_invalid_op (arch/x86/kernel/traps.c:260 (discriminator 1)) 
+> [ 439.370549][ T1799] ? handle_exception (arch/x86/entry/entry_32.S:1047) 
+> [ 439.371024][ T1799] ? exc_overflow (arch/x86/kernel/traps.c:252) 
+> [ 439.371397][ T1799] ? alloc_tag_module_unload (lib/alloc_tag.c:168 (discriminator 1)) 
+> [ 439.371843][ T1799] ? exc_overflow (arch/x86/kernel/traps.c:252) 
+> [ 439.372238][ T1799] ? alloc_tag_module_unload (lib/alloc_tag.c:168 (discriminator 1)) 
+> [ 439.372693][ T1799] codetag_unload_module (lib/codetag.c:238 (discriminator 1)) 
+> [ 439.373112][ T1799] free_module (kernel/module/main.c:1266) 
+> [ 439.373470][ T1799] __do_sys_delete_module+0x1b9/0x206 
+> [ 439.373968][ T1799] __ia32_sys_delete_module (kernel/module/main.c:700) 
+> [ 439.374397][ T1799] ia32_sys_call (kbuild/obj/consumer/i386-randconfig-061-20240719/./arch/x86/include/generated/asm/syscalls_32.h:130) 
+> [ 439.374780][ T1799] do_int80_syscall_32 (arch/x86/entry/common.c:165 (discriminator 1) arch/x86/entry/common.c:339 (discriminator 1)) 
+> [ 439.375225][ T1799] entry_INT80_32 (arch/x86/entry/entry_32.S:944) 
+> [  439.375611][ T1799] EIP: 0xb7f79092
+> [ 439.375910][ T1799] Code: 00 00 00 e9 90 ff ff ff ff a3 24 00 00 00 68 30 00 00 00 e9 80 ff ff ff ff a3 f8 ff ff ff 66 90 00 00 00 00 00 00 00 00 cd 80 <c3> 8d b4 26 00 00 00 00 8d b6 00 00 00 00 8b 1c 24 c3 8d b4 26 00
+> All code
+> ========
+>    0:	00 00                	add    %al,(%rax)
+>    2:	00 e9                	add    %ch,%cl
+>    4:	90                   	nop
+>    5:	ff                   	(bad)
+>    6:	ff                   	(bad)
+>    7:	ff                   	(bad)
+>    8:	ff a3 24 00 00 00    	jmp    *0x24(%rbx)
+>    e:	68 30 00 00 00       	push   $0x30
+>   13:	e9 80 ff ff ff       	jmp    0xffffffffffffff98
+>   18:	ff a3 f8 ff ff ff    	jmp    *-0x8(%rbx)
+>   1e:	66 90                	xchg   %ax,%ax
+> 	...
+>   28:	cd 80                	int    $0x80
+>   2a:*	c3                   	ret		<-- trapping instruction
+>   2b:	8d b4 26 00 00 00 00 	lea    0x0(%rsi,%riz,1),%esi
+>   32:	8d b6 00 00 00 00    	lea    0x0(%rsi),%esi
+>   38:	8b 1c 24             	mov    (%rsp),%ebx
+>   3b:	c3                   	ret
+>   3c:	8d                   	.byte 0x8d
+>   3d:	b4 26                	mov    $0x26,%ah
+> 	...
+> 
+> Code starting with the faulting instruction
+> ===========================================
+>    0:	c3                   	ret
+>    1:	8d b4 26 00 00 00 00 	lea    0x0(%rsi,%riz,1),%esi
+>    8:	8d b6 00 00 00 00    	lea    0x0(%rsi),%esi
+>    e:	8b 1c 24             	mov    (%rsp),%ebx
+>   11:	c3                   	ret
+>   12:	8d                   	.byte 0x8d
+>   13:	b4 26                	mov    $0x26,%ah
+> 	...
+> [  439.377475][ T1799] EAX: ffffffda EBX: 00e4333c ECX: 00000800 EDX: 00484939
+> [  439.378043][ T1799] ESI: 00e43300 EDI: 00e43300 EBP: bfbcdc46 ESP: bfbcccc4
+> [  439.378610][ T1799] DS: 007b ES: 007b FS: 0000 GS: 0033 SS: 007b EFLAGS: 00200202
+> [  439.379237][ T1799] irq event stamp: 5473
+> [ 439.379574][ T1799] hardirqs last enabled at (5483): console_unlock (arch/x86/include/asm/irqflags.h:42 arch/x86/include/asm/irqflags.h:77 arch/x86/include/asm/irqflags.h:135 kernel/printk/printk.c:341 kernel/printk/printk.c:2746 kernel/printk/printk.c:3065) 
+> [ 439.380336][ T1799] hardirqs last disabled at (5494): console_unlock (kernel/printk/printk.c:339 (discriminator 3) kernel/printk/printk.c:2746 (discriminator 3) kernel/printk/printk.c:3065 (discriminator 3)) 
+> [ 439.381023][ T1799] softirqs last enabled at (5142): handle_softirqs (kernel/softirq.c:401 (discriminator 2) kernel/softirq.c:582 (discriminator 2)) 
+> [ 439.381726][ T1799] softirqs last disabled at (5133): __do_softirq (kernel/softirq.c:589) 
+> [  439.382384][ T1799] ---[ end trace 0000000000000000 ]---
+> 
+> 
+> 
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20240725/202407251351.f65c33a0-lkp@intel.com
+> 
+> 
+> 
+> -- 
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
+> 
