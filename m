@@ -1,65 +1,65 @@
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A1371A7F97
-	for <oe-lkp@lists.linux.dev>; Wed, 31 Jul 2024 08:28:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A191117C8D
+	for <oe-lkp@lists.linux.dev>; Wed, 31 Jul 2024 09:28:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722414526; cv=none; b=T94/5IKyIApXlRM1VOhFRfvmUubBeL4aOpOQK8Q+sS7CLsuOdFVciQyc/hWfOApx05yL9WzBiLzHmHKP9eXr4NhlSXL9eDbnbZ+4zKH3ylB1LTCB/eA6op1aHrEp+/6DuBcaCo32ZVzyVJAdzl3QEpboysUhXQsmaivILldyY5M=
+	t=1722418102; cv=none; b=tv6CNH6UCO/YrH59pJ9q6OTkR+2eXQVrTqCfWn1I7gasNFnmkbQgFA8tAfT4mzgCEHP3/k0QLaKcZF+VcoV/suxfMEr/FIEBtb5epI3i0S+JFhtQ08Q508yJGMYAqiLmj2/dNYcVB0QjuSHV4mRCtdbITTSaCHtaP+Y7Hi3PIso=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722414526; c=relaxed/simple;
-	bh=t8Mg7dT3zsmtyc2Kg0bD1G0T5+u6kj3SZR1yfhyTZMs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=RHZQ2ip5aEO6SdSuZ3HrF4TlAENEGP2w7C2Tlre0xmhhTPc979q7ZBHYHLcC/MSghKQfr2BV+80FYGUqwOMLEfCFILJdrpF8TKzA43nDq0bejXQ8vPa4B5g//c3qalsk7qxtvn4Y0oP1/UuWqcVyKEhbPURDIDyS3E5zbTgIc7k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=EvDFhtTD; arc=none smtp.client-ip=170.10.129.124
+	s=arc-20240116; t=1722418102; c=relaxed/simple;
+	bh=qv2nwhj7U/OiP6BVbQ73+ZiFeHRct+dunqA1ezLOCOc=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=YM/GVIBjYYSe+m1V5vjBx23zTYTKs3e+mgu/A11PC6vuGVhAUnDCzFLuvlKfFNpulwpo1VH/0I7xMBDywWRYDUcxjdk+9MGyHCJlsAG1LjTG9NsEXiRMr2Hwhsy60CI6BaY9Q7KzjOcgH39Uw4kplnSs4PSDMD8PWjcr/TkzEpM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=GP6MTvvx; arc=none smtp.client-ip=170.10.129.124
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="EvDFhtTD"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="GP6MTvvx"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1722414522;
+	s=mimecast20190719; t=1722418099;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=7FXx9e2g6+4lmfpaFilTaodapGlOI50WrsJmmU4Kav0=;
-	b=EvDFhtTD0lv9BdaDuhI0RaV+UtB7KyVYnjPMDkKH4YReRv92bvnhrhrQYs1UU6Hg/WOZ+W
-	I8Z6nZarziNyGJd57gu8RRk9P5wo3oHYPAbMnbAt0eE3eYVa02FerXLopxnQSzO+Hule1F
-	VEY7kz8eb5Uv+REjVxOZZtVaOYQuEHM=
-Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
- [209.85.208.198]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=VpTMUS09ftb/4qluTJ9EvUAPoyCn6CFe8JGmUrpF4bo=;
+	b=GP6MTvvxoftxIHj9RVQVJyG25a6k6sGjPN9dfXxOgsWNm181EkfGQaEEkt2bgakrpEtGL4
+	rAouu0cn0L+Ee6o/JjUlzCk0ivo8CZfpEVNxcVEcws+K1RlT8i8u9QHAiKd4k/P8AiRhF9
+	W7/PsrzClp/kJOCMyL+pgJe1ERjyNOU=
+Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
+ [209.85.208.197]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-673-BXlyTQPvMEaE8Z7TFApBYQ-1; Wed, 31 Jul 2024 04:28:41 -0400
-X-MC-Unique: BXlyTQPvMEaE8Z7TFApBYQ-1
-Received: by mail-lj1-f198.google.com with SMTP id 38308e7fff4ca-2ef22e62457so52364001fa.2
-        for <oe-lkp@lists.linux.dev>; Wed, 31 Jul 2024 01:28:40 -0700 (PDT)
+ us-mta-663-05ebLLCvODyYrGWyxUTTBQ-1; Wed, 31 Jul 2024 05:28:17 -0400
+X-MC-Unique: 05ebLLCvODyYrGWyxUTTBQ-1
+Received: by mail-lj1-f197.google.com with SMTP id 38308e7fff4ca-2ef22e62457so52966101fa.2
+        for <oe-lkp@lists.linux.dev>; Wed, 31 Jul 2024 02:28:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1722414519; x=1723019319;
+        d=1e100.net; s=20230601; t=1722418096; x=1723022896;
         h=content-transfer-encoding:in-reply-to:organization:autocrypt
-         :content-language:from:references:cc:to:subject:user-agent
+         :content-language:references:cc:to:from:subject:user-agent
          :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=7FXx9e2g6+4lmfpaFilTaodapGlOI50WrsJmmU4Kav0=;
-        b=voargr1P62XQL2iRRB2HLEnMMlCtwu5AdVwLCTw+FFFNY61TWaDc1gQA84mGl58R7K
-         JeEta607s/XtAH3njup28wfsCkbZst6EevqmiZhZrTzUIUXoky0tNYszGv+aOFJGlQir
-         XKTI52wpFuYOVKd4JopL/8blzhiBxpiUr6xHVYxxVFgy+uv1XK09GXphhAIRZVOSbJbb
-         j1yT4GKPcnWW0BFogJeZ4eO31nvs8BUVmGF/94BxzAwuSRdpTnkN02YcN52y6KdtNwPq
-         uYxbGI8fN3ztMBifoB/BS1ph2eQ1I/lKRjNyqhLkGXYW1DRY7zzTjIDXqU89L7KfE5OM
-         tIYg==
-X-Gm-Message-State: AOJu0Yw0L/R5HlMKZrNOX33aFESMCXLVfhbZ9gTXQOg0UL2r4ZA1p4Lw
-	tNzzartHlb5zM+M2Oj+ChOigPqKZwrP28Cl8GgzQKS4QCZPOg33O1XZQuUL5fB9IMejbF36KDp8
-	pAsM+xfrpfay9OR4ufE/olGwazzd0x9htwHFhw5m6Ux23nxweg2ciMQ==
-X-Received: by 2002:a2e:8519:0:b0:2ef:296d:1dda with SMTP id 38308e7fff4ca-2f12ebcb00bmr89313781fa.1.1722414519417;
-        Wed, 31 Jul 2024 01:28:39 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IEsmJH9xeIzqjk9X2J+9IIJ02bm+A5dTvX0oHI2D69pIB8QyE4M7SSnGeCNV75WAo1sy5Dn2g==
-X-Received: by 2002:a2e:8519:0:b0:2ef:296d:1dda with SMTP id 38308e7fff4ca-2f12ebcb00bmr89313651fa.1.1722414518903;
-        Wed, 31 Jul 2024 01:28:38 -0700 (PDT)
+        bh=VpTMUS09ftb/4qluTJ9EvUAPoyCn6CFe8JGmUrpF4bo=;
+        b=fqL5zfbCqVhWxaC5JA3CIIZ0T0OuOAVu0MctysIqnTMkDE3B1+yR4N8GoTUbJ4L6XD
+         0/FIcKOuLrn67v5ZrSHte+y0P00Vz2Wgurtbo2dzG2+HiuJlh/ZT/oEUvdtmZ3RwmFC9
+         cfyq0ZsI83FcqhMLu4sVXStx2xhX86/gRFDQaZfRl7a/lnyPUeOQp7xspFwKYxoolnkP
+         /aWXmj6GTHcsZdGkCj1h+EcRaebDbRDICe+hJBOmw0aF0/hOFLNcagpInGR5iPC8QH6j
+         1S3NWSIKAuTZzFdpSfgOWMfZAIyu4fZWRxVVE8Uyrm4jSFqnl3i54tjWxVU6Uxmx2eWY
+         9/WQ==
+X-Gm-Message-State: AOJu0Yyb5kUTjbGMqgL9Njo4mHa1DtVUOLKBj4W2B2Gbv012K1lONl02
+	gbGTJw7kgPEoydJMMAayki5Ue0otIM2mNmjmQqDxlp1um2/UaNdpo3jUGL436Z0AHx7XJUz9tRp
+	/LBvDJYqA6kgHgV4qzNX4P8+HJR7oJ3hLyp7pydZA3KUvR3r2XlAmCA==
+X-Received: by 2002:a2e:988f:0:b0:2ef:2eb9:5e55 with SMTP id 38308e7fff4ca-2f12ecd2b00mr87831061fa.13.1722418096106;
+        Wed, 31 Jul 2024 02:28:16 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IEJKUrWgAAn+2JH41gfvTiJBSJnqmkyAb+SRANFwb0V3rJr/jEWJxcJTWRHDVv/KC90opYRcQ==
+X-Received: by 2002:a2e:988f:0:b0:2ef:2eb9:5e55 with SMTP id 38308e7fff4ca-2f12ecd2b00mr87830881fa.13.1722418095587;
+        Wed, 31 Jul 2024 02:28:15 -0700 (PDT)
 Received: from ?IPV6:2003:cb:c70b:5f00:9b61:28a2:eea1:fa49? (p200300cbc70b5f009b6128a2eea1fa49.dip0.t-ipconnect.de. [2003:cb:c70b:5f00:9b61:28a2:eea1:fa49])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4282bac69desm12692435e9.26.2024.07.31.01.28.38
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4282bb226a5sm14626665e9.47.2024.07.31.02.28.14
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 31 Jul 2024 01:28:38 -0700 (PDT)
-Message-ID: <a4776a8d-7036-4142-ba01-db7ab7389d0b@redhat.com>
-Date: Wed, 31 Jul 2024 10:28:37 +0200
+        Wed, 31 Jul 2024 02:28:15 -0700 (PDT)
+Message-ID: <30eed7f9-19bb-4b45-a9ce-52acbe10024e@redhat.com>
+Date: Wed, 31 Jul 2024 11:28:14 +0200
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -67,16 +67,16 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [linux-next:pending-fixes] [mm] e98970a1d2:
- kernel_BUG_at_arch/x86/mm/physaddr.c
+Subject: Re: [linux-next:pending-fixes] [mm/hugetlb] d3fe1a0a02:
+ WARNING:at_include/linux/hugetlb.h:#huge_pte_lockptr
+From: David Hildenbrand <david@redhat.com>
 To: kernel test robot <oliver.sang@intel.com>
 Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
  Linux Memory Management List <linux-mm@kvack.org>,
- Andrew Morton <akpm@linux-foundation.org>,
- Muchun Song <muchun.song@linux.dev>, Oscar Salvador <osalvador@suse.de>,
- Peter Xu <peterx@redhat.com>
-References: <202407311033.939d4064-lkp@intel.com>
-From: David Hildenbrand <david@redhat.com>
+ Andrew Morton <akpm@linux-foundation.org>, Peter Xu <peterx@redhat.com>,
+ Muchun Song <muchun.song@linux.dev>, Oscar Salvador <osalvador@suse.de>
+References: <202407311421.95f5c759-lkp@intel.com>
+ <ff8619f5-7506-455d-ae13-124a4e87aa02@redhat.com>
 Autocrypt: addr=david@redhat.com; keydata=
  xsFNBFXLn5EBEAC+zYvAFJxCBY9Tr1xZgcESmxVNI/0ffzE/ZQOiHJl6mGkmA1R7/uUpiCjJ
  dBrn+lhhOYjjNefFQou6478faXE6o2AhmebqT4KiQoUQFV4R7y1KMEKoSyy8hQaK1umALTdL
@@ -122,29 +122,71 @@ Autocrypt: addr=david@redhat.com; keydata=
  jPrnvUsUUsjRoRNJjKKA/REq+sAnhkNPPZ/NNMjaZ5b8Tovi8C0tmxiCHaQYqj7G2rgnT0kt
  WNyWQQ==
 Organization: Red Hat
-In-Reply-To: <202407311033.939d4064-lkp@intel.com>
+In-Reply-To: <ff8619f5-7506-455d-ae13-124a4e87aa02@redhat.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 31.07.24 07:36, kernel test robot wrote:
+On 31.07.24 10:16, David Hildenbrand wrote:
+> On 31.07.24 09:20, kernel test robot wrote:
+>>
+>>
+>> Hello,
+>>
+>> kernel test robot noticed "WARNING:at_include/linux/hugetlb.h:#huge_pte_lockptr" on:
+>>
+>> commit: d3fe1a0a0272723474056e3000717d69923ad901 ("mm/hugetlb: fix hugetlb vs. core-mm PT locking")
+>> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git pending-fixes
+>>
+>> [test failed on linux-next/master cd19ac2f903276b820f5d0d89de0c896c27036ed]
+>>
+>> in testcase: trinity
+>> version: trinity-i386-abe9de86-1_20230429
+>> with following parameters:
+>>
+>> 	runtime: 300s
+>> 	group: group-00
+>> 	nr_groups: 5
+>>
+>>
+>>
+>> compiler: gcc-11
+>> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+>>
+>> (please refer to attached dmesg/kmsg for entire log/backtrace)
+>>
+>>
+>> +------------------------------------------------------+------------+------------+
+>> |                                                      | e98970a1d2 | d3fe1a0a02 |
+>> +------------------------------------------------------+------------+------------+
+>> | WARNING:at_include/linux/hugetlb.h:#huge_pte_lockptr | 0          | 12         |
+>> | EIP:huge_pte_lockptr                                 | 0          | 12         |
+>> +------------------------------------------------------+------------+------------+
+>>
+>>
+>> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+>> the same patch/commit), kindly add following tags
+>> | Reported-by: kernel test robot <oliver.sang@intel.com>
+>> | Closes: https://lore.kernel.org/oe-lkp/202407311421.95f5c759-lkp@intel.com
+>>
+>>
+>> [   39.570466][ T3479] ------------[ cut here ]------------
+>> [ 39.570921][ T3479] WARNING: CPU: 0 PID: 3479 at include/linux/hugetlb.h:948 huge_pte_lockptr (include/linux/hugetlb.h:948 (discriminator 1))
 > 
-> 
-> Hello,
-> 
-> kernel test robot noticed "kernel_BUG_at_arch/x86/mm/physaddr.c" on:
-> 
-> commit: e98970a1d2d45750526f30a7874206bace63ba42 ("mm: let pte_lockptr() consume a pte_t pointer")
-> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git pending-fixes
-> 
-> [test failed on linux-next/master cd19ac2f903276b820f5d0d89de0c896c27036ed]
-> 
-> in testcase: boot
+> Helpful! Likely triggers because in that kernel cfg P4D_SIZE is 0.
 
-Thanks, known issue with HIGHPTE. Patch has been dropped for now from 
-mm-unstable.
+Hm, with !CONFIG_X86_5LEVEL we should have
+
+#define PGDIR_SHIFT 39
+#define P4D_SHIFT PGDIR_SHIFT
+#define P4D_SIZE (1UL << P4D_SHIFT)
+
+... getting a hugepage size >= P4D_SIZE seems pretty much impossible.
+
+Anyhow, taking the easy route to be done with his hugetlb crap and live 
+a happy live, I'll drop the warning and just handle it explicitly.
 
 -- 
 Cheers,
