@@ -1,272 +1,119 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 012B62E3FE
-	for <oe-lkp@lists.linux.dev>; Thu,  1 Aug 2024 08:52:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.9
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722502344; cv=fail; b=ozOIj0dlbr8tTMINF2El1Snu5OSDA3PqpVGAAEadnpJ1tY59e5kZkzBOidIw/n9GemRwH5RAC8VTxFgmBA6DjwJGAWHy1iiwD2KFbj0RF9NLuwJJaVkWsggKeqdc2FhCN7keH8YyrrN3UjRI6sZ+fGQDJHcahnFLLDW+nMFERcY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722502344; c=relaxed/simple;
-	bh=Xe6cagUaSsnUmZ2nULpf+0caIxIOlVrkaZC5Rqx1FdQ=;
-	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=g8aTsls7MoNWmm1fLTmylDU8UD8ffmjd7Lgi1xmqecRh8AIREIOqZABPKAbhd5B0tjxOeDp9XXe2ojvbBG/Ta2pfk/tW97nhZkpoQkp1Tik6VgUR2F6zbJy3Hds157Ajkd4LQmcGEqZozs51XXtuav8lmYLVwgSZmMlMZj+cfw8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VDsNAsn1; arc=fail smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66E8316DECD
+	for <oe-lkp@lists.linux.dev>; Thu,  1 Aug 2024 13:31:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.48
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1722519065; cv=none; b=FxUsCk0h1XZ7RA5R+hlL89PDp3XKaVUk3PGtDzdwhUureRvRDc3zXghQ1VaCQk4fFwo/UWIzYwavcgjM0VNOPUOPV9CROrh+HID+aKl6waIxGWLcj15lg/5H5OeIIHz6sgjloJrZ30SQWdN6fQZ6ie4wlowzQMW6WESvdiR65Cw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1722519065; c=relaxed/simple;
+	bh=5JQrkiP0uOjwss1rpQy/l3A+rpzTZUsAeWqATieGYNY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=lX+3/U3Q47ae651HPzzunTrXlsjMWvnuvECBHPxnw/Wt9ODCTaTdhxsb0ytyZU27YAXJXOH5c3UsSTmGstf3Nv9ZnH0vYAkAxAc+XOQlEUe2+fco33lsKEKOa11dT4sfNV8fbhtDVq2ydYZb58mGblRalaU7Iah2F3GNeI10QM0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=l4usHrs8; arc=none smtp.client-ip=209.85.208.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VDsNAsn1"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1722502341; x=1754038341;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Xe6cagUaSsnUmZ2nULpf+0caIxIOlVrkaZC5Rqx1FdQ=;
-  b=VDsNAsn1MA3qWhgJPZNvuW1qm5phfLXJM/gVSZu9YRr26JTRLlwWT2pW
-   zISqWTBUuQxASgwi3GmK3BljXgwfXar3ggq/M6R+F3wNa/ClZ9E+exJ4B
-   ZxO4locHhOU+soSPDqm3FK21C+DtDne+nlhgDu9szkOKWw7n7rNs1n9We
-   6E9qd15cmbDLloFMj5pj7I3dRUlJ17a7zBJ/FwGk5DhI2soP9LjBx+Qlf
-   cilAQ9qSVZKEFKtfqArdwKULqJG80XNPUkh40FQj36bbdlc7AXPGdX0mI
-   ITCG95naXVLUpL4CLO8KHOUkVtERBdC/qn7Of9iMOf5kV9xsdjx4hGZx9
-   Q==;
-X-CSE-ConnectionGUID: VvPJiLAXTJ62W3XRs8dIzg==
-X-CSE-MsgGUID: E2D5ZpjES7GZWtWe1ILehw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11150"; a="42963943"
-X-IronPort-AV: E=Sophos;i="6.09,254,1716274800"; 
-   d="scan'208";a="42963943"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Aug 2024 01:52:17 -0700
-X-CSE-ConnectionGUID: gXRI0ZWaTmyTv503zsy1bQ==
-X-CSE-MsgGUID: 1F3icHGzQweLE1kJz1yVcg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.09,254,1716274800"; 
-   d="scan'208";a="54621893"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by fmviesa007.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 01 Aug 2024 01:52:16 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Thu, 1 Aug 2024 01:52:15 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Thu, 1 Aug 2024 01:52:15 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Thu, 1 Aug 2024 01:52:15 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.170)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Thu, 1 Aug 2024 01:52:15 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=TGV4zb5fQWvf/bSXS16UTWDviMvbWlW+U/LC0y/0g8zAE3RaoV3YKeGhXi4vU0CtBktdtPXBlAiAm+ism4Ww14qGKyuMY7VctirbFPkQIvMWZg6vIyx0wK8+dJiM7ongYQVExYvDvw3U28i+BRjcEozYHQQSUePb33SiILfdSKaEVRT00wP5kE4kjYZwwX+oCeyOlfT5UdZqP7OSeHqsqMim9HUaBkVfGp/OsBZQzD/KGOrINusilsoACRRpB87rMngrgmZmAYJJOXLsrvf0Dsc036WImcb1x7jMbzM+VOG/yDH7DA9RI28NxnmI5Rn6buBcVDTqLGrM+tckgn2ocA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wCnaQQTBCnlPG2m3jfGmM9ec06DjMVhh94CZnpCKptQ=;
- b=Z+GfIil5UGb/pRjW5KByfZn2T4yl18RYX+TRgyCyxADCPT1u5zK7bn9c6lyh/jixytwDdoJjG1XPHRVZrppIR8XKIwzF6aGeA4/bskd7+YRcoJHx5aF9c7M6a8Me/O47tAvE4QH5MCOb3zQbGNgTQnkw7S+iie70iTBLehNf60Vf0ZrLB/oa58nykI15aJ9mx3UrGTzh5oxYfTRJ6TtGqjhF2LUVYrSfwHQJb1ZRuw2o6qs2C3blBfK5TpXuMDnIDbvYFY1UznR4vkAoojKjhgMAIEgtLLy4InKfGEeitC4bvwhRZG5yC8gIi1hJDQGrQ2NJn1SbJy9tJw4rfXkIXQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by IA1PR11MB7320.namprd11.prod.outlook.com (2603:10b6:208:424::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7807.28; Thu, 1 Aug
- 2024 08:52:11 +0000
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.7807.026; Thu, 1 Aug 2024
- 08:52:11 +0000
-Date: Thu, 1 Aug 2024 16:52:00 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: Peter Zijlstra <peterz@infradead.org>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Daniel Bristot de Oliveira
-	<bristot@kernel.org>, "Vineeth Pillai (Google)" <vineeth@bitbyteword.org>,
-	Juri Lelli <juri.lelli@redhat.com>, <linux-kernel@vger.kernel.org>,
-	<ltp@lists.linux.it>, <aubrey.li@linux.intel.com>, <yu.c.chen@intel.com>,
-	<oliver.sang@intel.com>
-Subject: [peterz-queue:sched/scx] [sched/rt]  2d46cf7c51:
- WARNING:at_kernel/sched/deadline.c:#task_contending
-Message-ID: <202408011634.26449d4-oliver.sang@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-X-ClientProxiedBy: SI2PR02CA0040.apcprd02.prod.outlook.com
- (2603:1096:4:196::6) To LV3PR11MB8603.namprd11.prod.outlook.com
- (2603:10b6:408:1b6::9)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="l4usHrs8"
+Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-5b391c8abd7so5892573a12.2
+        for <oe-lkp@lists.linux.dev>; Thu, 01 Aug 2024 06:31:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1722519062; x=1723123862; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=tv4iB82yfscVGFR90a765Fg0rBGgnQwJipeiUQwNkUo=;
+        b=l4usHrs8aAy2qwYJFlegzNvvGBr1PEnTaZ+CvtzbgjRtaeLXKjs/RKzeDW4e9avSHo
+         s5cy3op/K0vvQZC9pMzAoxb7BBuTtD+8X3TecyNJZFcvkb2iQovvMSR8G9NVq8VxOY0q
+         wCZ5h2dQrxgj9Rxxh3eaRwQb8XvhU+nICf4d6h02ZbK/zD+rViJNTlS0WlDJYXYk0isb
+         IX4gm9F5XQE+Ig/QIsRY46I8KPBI7xHO6fMeMsO/eHxcxcUvIgokrmPu7T1jwxanCpp2
+         V/6929UU93Dn1alNUXo1KTNgdgCtGE04v2rE0C+EimqdEbzsIZp3p1NLdMIDnAbJpR7g
+         U/GQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1722519062; x=1723123862;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=tv4iB82yfscVGFR90a765Fg0rBGgnQwJipeiUQwNkUo=;
+        b=hyYhiOMMFwlY8B+ytVUKLJYflrFwMjRLjw+oXx7dGDKovLEpCniJj4NXseeVmzl62d
+         KGfgyICF+cAVVnFKMZYjN4IGGU1UmWG1TQw5i28erPzCf6gRULz3l/tEzaaCPLwsV/83
+         6rsa95Wcfg56X0Zvlo5h/NyfSslohNo66ZdEE+fxeMsHa+myDNbprVIZ/w8iFe9olgRo
+         HMjOJg3AY9DI2HHao9+bPvvd+pWm4a5wqb3TqTlZ0YrfAxkI9kcBdV4wrDshqmJbuV0w
+         2TOEYTmlFVluaJG80st8Va0+7u4GynPbJOMb2g1CilGeBCaauo6bEuHAdx18dA5oof+q
+         OkRw==
+X-Forwarded-Encrypted: i=1; AJvYcCU9Ktq/cuShikCLRrfPTRg+OLdeB27XwE2wgDBL7tu/MZrW/1wg0UnN98GGPKvHxFdj5k+bWyYld4Di+XfK7UHPOLl822m/
+X-Gm-Message-State: AOJu0YyXWu+s4ZtYbJkjRf+mh8v53oASV/y2Sdr5eFBIfkiW0zlVBtDg
+	+OCgahzuaayWOiKP8cyTHBGpZWmjYj/LH8bHWm2Kv6Sk2wRJ14GO
+X-Google-Smtp-Source: AGHT+IElO9v+4Isd9ZaN2clcpXml/1imltaATSqt4uv4tE5W6CFLpI3ysrDPJAq4DaCky1y+YsIR6w==
+X-Received: by 2002:a50:ee8d:0:b0:5a1:a447:9f9b with SMTP id 4fb4d7f45d1cf-5b7f54136b9mr201616a12.27.1722519061241;
+        Thu, 01 Aug 2024 06:31:01 -0700 (PDT)
+Received: from f (cst-prg-90-207.cust.vodafone.cz. [46.135.90.207])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5af959990c9sm8749591a12.47.2024.08.01.06.30.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Aug 2024 06:30:59 -0700 (PDT)
+Date: Thu, 1 Aug 2024 15:30:49 +0200
+From: Mateusz Guzik <mjguzik@gmail.com>
+To: David Hildenbrand <david@redhat.com>
+Cc: "Yin, Fengwei" <fengwei.yin@intel.com>, 
+	kernel test robot <oliver.sang@intel.com>, Peter Xu <peterx@redhat.com>, oe-lkp@lists.linux.dev, 
+	lkp@intel.com, linux-kernel@vger.kernel.org, 
+	Andrew Morton <akpm@linux-foundation.org>, Huacai Chen <chenhuacai@kernel.org>, 
+	Jason Gunthorpe <jgg@nvidia.com>, Matthew Wilcox <willy@infradead.org>, 
+	Nathan Chancellor <nathan@kernel.org>, Ryan Roberts <ryan.roberts@arm.com>, 
+	WANG Xuerui <kernel@xen0n.name>, linux-mm@kvack.org, ying.huang@intel.com, feng.tang@intel.com
+Subject: Re: [linus:master] [mm] c0bff412e6: stress-ng.clone.ops_per_sec
+ -2.9% regression
+Message-ID: <6uxnuf2gysgabyai2r77xrqegb7t7cc2dlzjz6upwsgwrnfk3x@cjj6on3wqm4x>
+References: <202407301049.5051dc19-oliver.sang@intel.com>
+ <193e302c-4401-4756-a552-9f1e07ecedcf@redhat.com>
+ <439265d8-e71e-41db-8a46-55366fdd334e@intel.com>
+ <90477952-fde2-41d7-8ff4-2102c45e341d@redhat.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|IA1PR11MB7320:EE_
-X-MS-Office365-Filtering-Correlation-Id: 751ee4d4-0ccf-4b4e-3222-08dcb2073b8d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?Rtencyo2Wrpad+1zzH0GBYUW5ZJ801L4V8+HXrRbg5yeXEJVOAVqLGSxSgKF?=
- =?us-ascii?Q?mTvh5QYSnTCvmGBr9tl4ZGMAn7Aiyd/o9mqc8I065cTfQ8ZFyqtpKVyXEVZS?=
- =?us-ascii?Q?sLZFoRdFbuUiUotWh4kJCYCyM+xYjm7ZA9VlstzGmQcbFYH0P18HSIlF/mP8?=
- =?us-ascii?Q?GnAh5ZpOIYY9IQxt7MaVIiSsSEEoegXnDeFOIAXajeu6jIPXKWHuiIRNnShS?=
- =?us-ascii?Q?ZEh94dROHiE+VPkGmJfv+p3q3bQrI8Hrs70gnbuw89I1uRDBh1BeADPGULNA?=
- =?us-ascii?Q?vf9Df+mVRlpC5ZtE5bV5Y+g+q1KdYV1j8XTQGr7x3GJguQVA2MgRdF/ySxTR?=
- =?us-ascii?Q?/xx1qf83fB9HKQRlxdHX3p4lDGNgm+DE/rfCHHMJfbw35fE6UvweAxzOToJ9?=
- =?us-ascii?Q?u//gATjEznDg4YHAoey6Ujv8b4i2Inbv0cMWoHUY4w/Opml+M23mi2NW1f7M?=
- =?us-ascii?Q?nfch6+1a59FrzqojCGnfmAEi631hdf1BUAz1aDliEq2kTkEHofNchjhoon5k?=
- =?us-ascii?Q?Z5PxxqlUlQQ1Vmc/9eX+IWLS98rtGEP1/H6Ued46OzskpBuL1ua87RZjWUnD?=
- =?us-ascii?Q?Imxzq6yHB5L/9bSsbUo0CuGM2iqwOzwMplX59jUJcfCsfGtx+D6gt/GJeZiX?=
- =?us-ascii?Q?lUyetkCugkHaYE7VR4hdmMcuq0LX+0LmNcz1jR7s0V3AJ3J7lan67dMC4EVR?=
- =?us-ascii?Q?kKBmNzJY/QhBu38m4aa8eWETqLLszIegAvgTWauQlWI2SSQF2oiAJ+7rbp0k?=
- =?us-ascii?Q?5q6xjWaX2KilbllClnSyNp5kud/zE4oPNu+2TC8FEl2CeJQzv1H5g3FkjVXg?=
- =?us-ascii?Q?L44Q2SzoxFnKIvuwocC60N5BbRm59u616svDuroC1NsEzIE6SWtfU7yrVJqt?=
- =?us-ascii?Q?pGXEayOPvcIO5b6WFM/+SDOT1r3BeF0nix0ZsjMnp6/afbeu0Ngwrot0imGd?=
- =?us-ascii?Q?DOcrbdLGVMzrNxWnlMysryMp+IDvcZyCf+XJmASyjCFos6B5YXaTRxzpzllW?=
- =?us-ascii?Q?AOOoyppCzZR5a8iIwS3HdBKXnCnKRznziSDVxOZ7A//Q8+8oG6OY0FWLUCs6?=
- =?us-ascii?Q?sPJnU3N+xPSNjm40jn2heBncFfd1OnLvc+1WZHqe4uce8p2sLXS0He8YFGOv?=
- =?us-ascii?Q?yCdTgsvRwmgSrm6jYLM8EZOL3vUTwq753RAp/hIIvCJe+bYabkpWbrtsvju5?=
- =?us-ascii?Q?V1UmLU2xNZT1p59+QP/KwxxXexUpDM3oJY/FPixna+jX/lb/qoin8Zh3alOn?=
- =?us-ascii?Q?ON/3hFKDOlB7xukX8UxHWTwX4C/OKJiXSFbM7g4CRPn+DNqx1pXZ2MBlolAH?=
- =?us-ascii?Q?nDo=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?L7S1vuOVLtyePXrlCxeabyjgzVuMljtLmo5peU8UeRbMzJeRc//QbsfxxKla?=
- =?us-ascii?Q?FEn7ofu/mEwc/yAMuEjBd3WYfXniGGYq6QHPtz4LNUedEwAz4CAGEuggqyKs?=
- =?us-ascii?Q?WOXW0wCqVexZi6tKDQlwmKzgmAL6aOuRr0uHJD2adeKunoydv8Iw3sDCgwiL?=
- =?us-ascii?Q?8LEB1p0xEnJFL0BGxwXG/aQshuGpu0t72O6PGOgALLH0pwO+sd8wHJt54F/r?=
- =?us-ascii?Q?ex6jOBYoR+GdOvYgUgWbvXetybfa3rAI8QWpR2MqZu0GPTJLOgLp+0crQjZp?=
- =?us-ascii?Q?SCI086y73j8qJ51Q0IwQe1HWFycq2TbSJggJ5LCf78I3NAQw8maUm6vOD8Gt?=
- =?us-ascii?Q?vcqOWDvBFqIBpwQjE2ADeC89Qb+gbBrQBWCYN0gh+EFlj8f2gTT8LtTk9n5N?=
- =?us-ascii?Q?klmXsXOmJyXj762yv7SeltanUA3p3sOPk8MycUVz5pKtpuA/XJG8/spfXtTy?=
- =?us-ascii?Q?rL9nAAwYrUJX9SEMMDo+Nd2DvXfPM0uR9WGKhHG6HlSviyKnUCVAm0CgFIvg?=
- =?us-ascii?Q?AL1b/xNHaswEG6qt49mr/GB2QiI66LIn3ViqrmRBzI1UQ2MilL+Sk5xABKB8?=
- =?us-ascii?Q?fB8Gg+pdBKy7LehaMCsBQrz/ixwFNp4vjesFsysmJ9cz3Wp6qc01NckTZamK?=
- =?us-ascii?Q?YXqsdlIDJf2JCIHpU+lSv+WIsSXlUlYO8jdiHVgD1CXKjJDVoNo9IN3rd19b?=
- =?us-ascii?Q?oTWfmYD4SPz+MKSL0jPtB6hMzcgTiMXrjKL3YgD7CQKCgaYrnJNYeA9IZtRA?=
- =?us-ascii?Q?m69CI2ULfjbuYcxvjUI+1UyPQbqoZIU0ZYerKkduSW7FW2DvNGsxlnjaywCX?=
- =?us-ascii?Q?iE3RRFV/Rg3iIsxHFS7skrCk3orAVormcYVYfdRp7rcQorkLHBcAb13syJtB?=
- =?us-ascii?Q?xOh+Du8XMf2fQIrxBaErWqiOwc4lLe+QclUHevEk9jnVGgRvPTlojpCQtyFt?=
- =?us-ascii?Q?ApS1qOOQucGEwvkWUl/VuiqrdDhnpl5IB2BJr8bQno010UCl/jeH+OjaNsya?=
- =?us-ascii?Q?//pLX8U7k/8IFKOkvlQwN+2Rk0TuruzsVEDaHOFSUROMim9DIezdKrmCGVow?=
- =?us-ascii?Q?Qyo4qguInLPWypsaJqKxIgFh/AS8gT6qO3jWp1/ccx96dAeoe/A2sGePz4cb?=
- =?us-ascii?Q?72doRZ/2LxOdzNB0/mfAVsGzyLCJhmZcHIttWnNQJ9VRNuPciP0eM45gOMQU?=
- =?us-ascii?Q?ME5XbFXTsc0dB8JVlWpEipIxFQCMmLaIea0I7ydLroHI8WzswEwjG/R3RqPb?=
- =?us-ascii?Q?ePiqcjVqC5Yx7GLp7U21KTwI9kR5jxnvXiituqsmCwRq47h+QBPfqo6oE9dz?=
- =?us-ascii?Q?apXyXSrM/2EyFKZ8Af0SU7NniKxauac4AZh7Wt8bH71T+5cZYzknG2a/K4ig?=
- =?us-ascii?Q?DCmkrekrD3HzkLHsKAtJpq/q83hmTp6N1sTgoKv4XCgK4jAw6tK2C9ogO+dA?=
- =?us-ascii?Q?wS0yS26Y3sdtPb7qNZVGYp/onhi+avNZ1d07rl+/zuA3jtokqKEmiVuqisYe?=
- =?us-ascii?Q?hsOYJuqdquT729fNOijwfe1Vvoy7e9WnrCIAYRbr+1R+3TJtmvgUOAorwX2S?=
- =?us-ascii?Q?/mFBZ9kKm3IGLFA0fJYQSVGDRbT6aKBizrKOP4dr/lHaiknWsxyQeWsakIJV?=
- =?us-ascii?Q?zg=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 751ee4d4-0ccf-4b4e-3222-08dcb2073b8d
-X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Aug 2024 08:52:11.6493
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: XWgFrgvPwHIepLafv+j+RTg/Sb716z/y+r0wSz3dgOiJMq0on4mFXi6VPoUO8FuiXYm3MKvAAjPTI0KIY0/Plg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB7320
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <90477952-fde2-41d7-8ff4-2102c45e341d@redhat.com>
 
+On Thu, Aug 01, 2024 at 08:49:27AM +0200, David Hildenbrand wrote:
+> Yes indeed. fork() can be extremely sensitive to each added instruction.
+> 
+> I even pointed out to Peter why I didn't add the PageHuge check in there
+> originally [1].
+> 
+> "Well, and I didn't want to have runtime-hugetlb checks in
+> PageAnonExclusive code called on certainly-not-hugetlb code paths."
+> 
+> 
+> We now have to do a page_folio(page) and then test for hugetlb.
+> 
+> 	return folio_test_hugetlb(page_folio(page));
+> 
+> Nowadays, folio_test_hugetlb() will be faster than at c0bff412e6 times, so
+> maybe at least part of the overhead is gone.
+> 
 
+I'll note page_folio expands to a call to _compound_head.
 
-Hello,
+While _compound_head is declared as an inline, it ends up being big
+enough that the compiler decides to emit a real function instead and
+real func calls are not particularly cheap.
 
-kernel test robot noticed "WARNING:at_kernel/sched/deadline.c:#task_contending" on:
+I had a brief look with a profiler myself and for single-threaded usage
+the func is quite high up there, while it manages to get out with the
+first branch -- that is to say there is definitely performance lost for
+having a func call instead of an inlined branch.
 
-commit: 2d46cf7c51bdf9bdda81c6e876abf36a6492f37d ("sched/rt: Remove default bandwidth control")
-https://git.kernel.org/cgit/linux/kernel/git/peterz/queue.git sched/scx
+The routine is deinlined because of a call to page_fixed_fake_head,
+which itself is annotated with always_inline.
 
-in testcase: ltp
-version: ltp-x86_64-14c1f76-1_20240727
-with following parameters:
+This is of course patchable with minor shoveling.
 
-	test: sched/cfs_bandwidth01
+I did not go for it because stress-ng results were too unstable for me
+to confidently state win/loss.
 
-
-
-compiler: gcc-13
-test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-3770K CPU @ 3.50GHz (Ivy Bridge) with 16G memory
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202408011634.26449d4-oliver.sang@intel.com
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20240801/202408011634.26449d4-oliver.sang@intel.com
-
-
-kern  :warn  : [  186.240751] ------------[ cut here ]------------
-kern  :warn  : [  186.241064] dl_rq->running_bw > dl_rq->this_bw
-kern  :warn  : [  186.241083] WARNING: CPU: 2 PID: 3614 at kernel/sched/deadline.c:253 task_contending+0x533/0x6b0
-kern  :warn  : [  186.241705] Modules linked in: netconsole btrfs blake2b_generic xor zstd_compress raid6_pq libcrc32c intel_rapl_msr intel_rapl_common x86_pkg_temp_thermal intel_powerclamp coretemp kvm_intel sd_mod sg ipmi_devintf ipmi_msghandler i915 kvm crct10dif_pclmul crc32_pclmul crc32c_intel ghash_clmulni_intel sha512_ssse3 drm_buddy rapl intel_gtt intel_cstate ahci mxm_wmi drm_display_helper libahci firewire_ohci ttm firewire_core intel_uncore i2c_i801 libata i2c_smbus crc_itu_t lpc_ich drm_kms_helper video wmi binfmt_misc fuse loop drm dm_mod ip_tables
-kern  :warn  : [  186.243203] CPU: 2 UID: 0 PID: 3614 Comm: cfs_bandwidth01 Not tainted 6.10.0-12040-g2d46cf7c51bd #1
-kern  :warn  : [  186.243566] Hardware name:  /DZ77BH-55K, BIOS BHZ7710H.86A.0097.2012.1228.1346 12/28/2012
-kern  :warn  : [  186.243898] RIP: 0010:task_contending+0x533/0x6b0
-kern  :warn  : [  186.244170] Code: e8 c2 57 78 00 e9 29 fd ff ff 80 3d 72 fa 78 04 00 0f 85 ed fc ff ff 48 c7 c7 80 00 09 84 c6 05 5e fa 78 04 01 e8 dd cb ec ff <0f> 0b e9 d3 fc ff ff 80 3d 4c fa 78 04 00 0f 85 97 fc ff ff 48 c7
-kern  :warn  : [  186.244724] RSP: 0018:ffffc90001ccf918 EFLAGS: 00010086
-kern  :warn  : [  186.245001] RAX: 0000000000000000 RBX: ffff88833b745568 RCX: 0000000000000027
-kern  :warn  : [  186.245320] RDX: 0000000000000027 RSI: 0000000000000004 RDI: ffff88833b730b08
-kern  :warn  : [  186.245631] RBP: ffff88833b744c00 R08: 0000000000000001 R09: ffffed10676e6161
-kern  :warn  : [  186.245939] R10: ffff88833b730b0b R11: 0000000000000001 R12: 0000000000019998
-kern  :warn  : [  186.246248] R13: 0000000000000000 R14: 0000000000000001 R15: 0000000000000071
-kern  :warn  : [  186.246552] FS:  00007f9528db6740(0000) GS:ffff88833b700000(0000) knlGS:0000000000000000
-kern  :warn  : [  186.246885] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-kern  :warn  : [  186.247168] CR2: 000055d5006f9588 CR3: 000000011e3cc003 CR4: 00000000001706f0
-kern  :warn  : [  186.247473] Call Trace:
-kern  :warn  : [  186.247683]  <TASK>
-kern  :warn  : [  186.247882]  ? __warn+0xcc/0x260
-kern  :warn  : [  186.248113]  ? task_contending+0x533/0x6b0
-kern  :warn  : [  186.248364]  ? report_bug+0x261/0x2c0
-kern  :warn  : [  186.248615]  ? handle_bug+0x3a/0x90
-kern  :warn  : [  186.248848]  ? exc_invalid_op+0x17/0x40
-kern  :warn  : [  186.249095]  ? asm_exc_invalid_op+0x1a/0x20
-kern  :warn  : [  186.249353]  ? task_contending+0x533/0x6b0
-kern  :warn  : [  186.249605]  ? task_contending+0x533/0x6b0
-kern  :warn  : [  186.249851]  enqueue_dl_entity+0xaa6/0x3370
-kern  :warn  : [  186.250099]  dl_server_start+0xbe/0x7c0
-kern  :warn  : [  186.250344]  ? dl_server_update_idle_time+0x131/0x340
-kern  :warn  : [  186.250620]  enqueue_task_fair+0x57b/0xb40
-kern  :warn  : [  186.250874]  activate_task+0x63/0xd0
-kern  :warn  : [  186.251115]  sched_balance_rq+0x667/0x13d0
-kern  :warn  : [  186.251363]  ? __pfx_sched_balance_rq+0x10/0x10
-kern  :warn  : [  186.251630]  sched_balance_newidle+0x5b3/0xdd0
-kern  :warn  : [  186.251886]  ? __pfx_sched_balance_newidle+0x10/0x10
-kern  :warn  : [  186.252152]  ? sched_clock_cpu+0x6d/0x4f0
-kern  :warn  : [  186.252394]  ? __pfx_sched_clock_cpu+0x10/0x10
-kern  :warn  : [  186.252652]  pick_next_task_fair+0x8c/0x1420
-kern  :warn  : [  186.252924]  __schedule+0x372/0x1990
-kern  :warn  : [  186.253168]  ? __pfx___schedule+0x10/0x10
-kern  :warn  : [  186.253408]  ? put_timespec64+0xad/0x100
-kern  :warn  : [  186.253646]  ? __pfx_put_timespec64+0x10/0x10
-kern  :warn  : [  186.253900]  ? __x64_sys_clock_gettime+0x18b/0x210
-kern  :warn  : [  186.254173]  schedule+0x79/0x1c0
-kern  :warn  : [  186.254415]  syscall_exit_to_user_mode+0x1d5/0x200
-kern  :warn  : [  186.254680]  do_syscall_64+0x6b/0x170
-kern  :warn  : [  186.254921]  entry_SYSCALL_64_after_hwframe+0x76/0x7e
-kern  :warn  : [  186.255189] RIP: 0033:0x7f9528eba719
-kern  :warn  : [  186.255424] Code: 08 89 e8 5b 5d c3 66 2e 0f 1f 84 00 00 00 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d b7 06 0d 00 f7 d8 64 89 01 48
-kern  :warn  : [  186.255990] RSP: 002b:00007ffdbdd3b388 EFLAGS: 00000246 ORIG_RAX: 00000000000000e4
-kern  :warn  : [  186.256325] RAX: 0000000000000000 RBX: 00007ffdbdd3b3f0 RCX: 00007f9528eba719
-kern  :warn  : [  186.256631] RDX: 00000000000b2cf4 RSI: 000055d5006f9588 RDI: 0000000000000004
-kern  :warn  : [  186.256939] RBP: 000055d5006c2040 R08: 00007ffdbdd3b3f0 R09: 00007ffdbdd3b3f0
-kern  :warn  : [  186.257247] R10: 0000000000000001 R11: 0000000000000246 R12: 0000000000000004
-kern  :warn  : [  186.257553] R13: 000055d5006cd069 R14: 000055d5006dfc98 R15: 0000000000000000
-kern  :warn  : [  186.257867]  </TASK>
-kern  :warn  : [  186.258077] ---[ end trace 0000000000000000 ]---
-
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
+But should you want to whack the regression, this is what I would look
+into.
