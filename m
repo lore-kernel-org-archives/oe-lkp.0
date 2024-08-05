@@ -1,51 +1,51 @@
-Received: from mail-oa1-f46.google.com (mail-oa1-f46.google.com [209.85.160.46])
+Received: from mail-oo1-f48.google.com (mail-oo1-f48.google.com [209.85.161.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09F58482FA
-	for <oe-lkp@lists.linux.dev>; Mon,  5 Aug 2024 13:56:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F56F15C14F
+	for <oe-lkp@lists.linux.dev>; Mon,  5 Aug 2024 16:58:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722866191; cv=none; b=adNDqId9FRaskFkbiHq3/k1JdurEdp52R0f9NlLPuXFIq88Crm5yn1hXBUwqSsjZEoh883AabONfKjJ+5Z2zyFqDLnSu5Z/1Y02s7KoLgW1FILjfCsBodvJafDeuzQC+DKN7gKWzmsOUNKTEoBbVxZeqhZ3EyTRoFlc4yg2l9fE=
+	t=1722877130; cv=none; b=DYSMDeqoCLgfnDeghO+VJyUoIPH3lDuvWJLT0InByQpqY505d5k3ScAiT6/qxVKHz99CWMeR+BV9NmMwt/p17o9op9WsOine0n7uLw6I5XUoJa1J9VXLK1+ekk8xD/elNLcwPIzW/BAUA/UHHs/EWl6HkPkGWIOKlZK8hpUvRaY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722866191; c=relaxed/simple;
-	bh=qMZmmFKfgUh/4u7eiX5zf6/54NRJE/8eb8tiuNq5Wvc=;
+	s=arc-20240116; t=1722877130; c=relaxed/simple;
+	bh=6P7RATJtfpr4x9vwPooxcpS9WQT23cQ9BkDDETt9dHg=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=auxWAQVZeP60RigvKbEJD1ji6PrfAAE4R+bwQLnYgni0jdJolLfAK38Y8nPc6m4eb6Zu09b7e3kwX/HOXquISKq4yBMFL8wMQSkxvUTmctAqtHZvCQt4rRJXkY2wGOHXafCfxJCDRAyOnjJsIxz8YADVUP8ZtHNehDdfvB3wmKM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=afKzcFYV; arc=none smtp.client-ip=209.85.160.46
+	 To:Cc:Content-Type; b=R/oO0wSxOi/QWTa7UBKIU76Gu0+MWsY2SaJDIv7eyOPxNsTBv4yMrbaokUej6jN8nPpSdWDnxEQNi7SHzPr1lzgxaEWR3eOISD8huIiha6T6hV1LcBU7F9p/09VazPcccYBLfBViWX+FzYvV6brLxpJImga1fr9ptOIp6MgwGvo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=IhmBOmmw; arc=none smtp.client-ip=209.85.161.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="afKzcFYV"
-Received: by mail-oa1-f46.google.com with SMTP id 586e51a60fabf-26119999171so7307096fac.2
-        for <oe-lkp@lists.linux.dev>; Mon, 05 Aug 2024 06:56:27 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="IhmBOmmw"
+Received: by mail-oo1-f48.google.com with SMTP id 006d021491bc7-5d80752933bso1423322eaf.1
+        for <oe-lkp@lists.linux.dev>; Mon, 05 Aug 2024 09:58:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1722866187; x=1723470987; darn=lists.linux.dev;
+        d=chromium.org; s=google; t=1722877126; x=1723481926; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=YuVJ4LawaHPZOrDIj/fWzPJvIjOhg8ROZilCjC4yrAU=;
-        b=afKzcFYVQqdS81YbsZvjsWKnPODNM5n13r/FQ2uWsXViyFOX9ek2y5WS468xyYLYqj
-         7VadqqGDpX972mPwImukY6Msfyg7ODhDL0Zha3nSGIGTYRiDymWb7sT6am5nSf+WoDdZ
-         W+4l+WN7yTveBHU7jyVGXk9KsWzACPSDEUx2U=
+        bh=DmZFGw6x2XnauggBIOWGJH6eCk7i2++PahpN20+gqWc=;
+        b=IhmBOmmwd76wZghhkbgrWBe4uArit030MNw8l9rGaML1O3y3tIC5Q1Jx2fN9QQm6xP
+         m0la5LUBBjpdwkZCQtVNFYoQPYpIJevvjUHqTI8FZOn+kinA9rq1uHi7+mFms0QiZ56F
+         ybJtSikN5m2JM6Cuv5LFdPD/PfJGQ35O36F00=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1722866187; x=1723470987;
+        d=1e100.net; s=20230601; t=1722877126; x=1723481926;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=YuVJ4LawaHPZOrDIj/fWzPJvIjOhg8ROZilCjC4yrAU=;
-        b=aWd2cGpfl23+ehd5AXXQ6K6nLLm7b+fXyIuEOtWh8kHTycaQwTxvCr7rFys5siMn/D
-         odN84tz8hChI9Hv+p8Rx5lPkc6zG4sk5je42S9c8CcqHi6fboKaBdLB6TIVLREi7+ewd
-         AvHIdDOs7DU2ex1Laxsg/lYKyYX/jy80UEFw+XTXvmsHjB+wgwMPZ4oNFraO2asSmfcn
-         6zoqu8+zrgffBGkyou5jufSheZikFOnpFsgxdWE/tXZCgXaIi35/fJXFlzvfqjatCeWn
-         kQlO7YgGttN5kuDT22kzNjnnp67lJMMWX5hL2V4YJPYxvnKv11OPYVsjrqMKTDyKfgx9
-         XisA==
-X-Gm-Message-State: AOJu0YzcnTPxnMCfsmEShahbfERIpdkLd68KpCLe0DW32P7tfT/iScec
-	d7bBQhcLlhmZdZFXFtGOc3jFRdg39Ppg5YxKz9MGQnvkZ2A2McgNJvRQcvYrfw7SSFmZBxjZe3m
-	uWrdPo9RadegqqnlGhlLBMzevBWZIK6FDZI+E
-X-Google-Smtp-Source: AGHT+IGeMYulT05u4/apPqsJ3h1kW+uuHrps8e6flG6PkeUlcxrLi+fgHkb74vrUjOUyQ3X+qY9U4ooweqEfEJ7IGUY=
-X-Received: by 2002:a05:6870:7011:b0:25e:1aec:1949 with SMTP id
- 586e51a60fabf-26891f3eedcmr13505967fac.44.1722866186712; Mon, 05 Aug 2024
- 06:56:26 -0700 (PDT)
+        bh=DmZFGw6x2XnauggBIOWGJH6eCk7i2++PahpN20+gqWc=;
+        b=e8WNAqTQx3i/i/4eYFT/dd66LBjXh4uakPIcMipO0+kLQxYjEVgDcW4mMZX1IbsGgH
+         5cj+oREjqzakefwMpHThxGSIgShSDuVAPx0SjZd9S0EiulAxo7AiAc6HezJ5HBddvako
+         WBa2d++D2JdyDr77KWPbE0NnpzjTK5BJhPkgvSFSPCWerVsmTSENSEX3qHYv4nRUakYa
+         34HIrFCTdrEVTmIOMZkqDLiM4JUtK35P9hqUPBMx9/ALHLcay/rENi/WsPXOoYGnkcUK
+         1Ct9l+t0oTt4JJr5kkRWuGhYreYk0uy3PS27im6B4iIKVVEnW2WAUndYeZG7z5/BXfj5
+         VXQA==
+X-Gm-Message-State: AOJu0YwefFFEBnQFGQWAAgavcboAso2v9tHo9dba4MtgyKrmthfC9ewn
+	MbXnhzImBlEwAWa1/CYTwlWTXCi4jU5lERHbwMecvcJa/F0LMmi6/6LVsNRO9wdvd3+zvVymfow
+	CJsHyo6IGgSuaTx2SJ04gYB8a4FDbxzcC/vOf
+X-Google-Smtp-Source: AGHT+IFcdU/4JUja9dNJXSdzgyNGDhy8xKgDIQ5dwkjqraypTDTRgJEs1nqq5gfan2k/x7ao6JFtLMDOxFOVYz7JrDQ=
+X-Received: by 2002:a05:6870:c192:b0:261:1339:1cb8 with SMTP id
+ 586e51a60fabf-26891e6789cmr16009079fac.35.1722877125503; Mon, 05 Aug 2024
+ 09:58:45 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -55,8 +55,8 @@ MIME-Version: 1.0
 References: <202408041602.caa0372-oliver.sang@intel.com>
 In-Reply-To: <202408041602.caa0372-oliver.sang@intel.com>
 From: Jeff Xu <jeffxu@chromium.org>
-Date: Mon, 5 Aug 2024 06:56:14 -0700
-Message-ID: <CABi2SkUyvMhiZBWFJwYCB+Loyat0ioffD5vtYjUhgwb49D5+9g@mail.gmail.com>
+Date: Mon, 5 Aug 2024 09:58:33 -0700
+Message-ID: <CABi2SkWco0svzUqCK8OsTmivXTvoWUHrE6AJxpm=NaT2uMb=WA@mail.gmail.com>
 Subject: Re: [linus:master] [mseal] 8be7258aad: stress-ng.pagemove.page_remaps_per_sec
  -4.4% regression
 To: kernel test robot <oliver.sang@intel.com>
@@ -85,9 +85,6 @@ On Sun, Aug 4, 2024 at 1:59=E2=80=AFAM kernel test robot <oliver.sang@intel=
 > kernel test robot noticed a -4.4% regression of stress-ng.pagemove.page_r=
 emaps_per_sec on:
 >
-Looking.
-I'm setting up the environment so I can repro. .
-
 >
 > commit: 8be7258aad44b5e25977a98db136f677fa6f4370 ("mseal: add mseal sysca=
 ll")
@@ -142,6 +139,31 @@ ion of
 > https://download.01.org/0day-ci/archive/20240804/202408041602.caa0372-oli=
 ver.sang@intel.com
 >
+There is an error when I try to reproduce the test:
+
+bin/lkp install job.yaml
+
+--------------------------------------------------------
+Some packages could not be installed. This may mean that you have
+requested an impossible situation or if you are using the unstable
+distribution that some required packages have not yet been created
+or been moved out of Incoming.
+The following information may help to resolve the situation:
+
+The following packages have unmet dependencies:
+ libdw1 : Depends: libelf1 (=3D 0.190-1+b1)
+ libdw1t64 : Breaks: libdw1 (< 0.191-2)
+E: Unable to correct problems, you have held broken packages.
+Cannot install some packages of perf-c2c depends
+---------------------------------------------------------------------------=
+--------------
+
+And where is stress-ng.pagemove.page_remaps_per_sec test implemented,
+is that part of lkp-tests ?
+
+Thanks
+-Jeff
+
 > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
