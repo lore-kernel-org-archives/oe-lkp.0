@@ -1,190 +1,259 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA1981D540;
-	Mon,  5 Aug 2024 18:48:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F39315E5BE
+	for <oe-lkp@lists.linux.dev>; Mon,  5 Aug 2024 18:55:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722883689; cv=none; b=E1FTxW0ulzwCph93+M2YylsOFl9nZ4L+an3ARr7jYbpXeXRjcS1DRDRDMzultmlvun+IFcQKQKarPDDA+bu/TYeILZ4vgLDYW37ybSHnPWPobcfJ0dTtMsYHcMzf6nBYz7i2Vbp0mDt7ZGaIvLHjm0tSYfaxZaZ5vj3185bxA/c=
+	t=1722884148; cv=none; b=C+vVzzmKh2jBHT3TRNiSGwOWEpkzre7y35FIvNpZfl0DuOszDiUdMa74iTWZiLtqnUXz1Z9A5QwY6I89z6kJy2cxwrCOtUgB1Ra9Su1AGBnOT5oeukrA5pfmTUMoWwbujVl5qDR2Gezkt3gszS0y5HNjlwEBlEHbVAJAkEzKFdo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722883689; c=relaxed/simple;
-	bh=gCxE2ILZu/MZn8MJmOuCe1pY1ZdE8L6T6mNlTA3+9UU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UC4sSrwj5G8irdZw0mJL+rSJLqaEohZXbICmCBFi6nH3LYZFyZOa8ENRELv0dCx0V9oayRqibtdMFcP8vycz/foiZsFIZM7ng7ozdiUaL6ZuxcZJ1qLvd9d/W7/JyKAo4L1uV5suf2+TCqOsbn3BOB5gOtBAi58srf11ITE1cjM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IZ5wGsLq; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1722884148; c=relaxed/simple;
+	bh=+RXiaX3iYK0UfkU6Mzxlq6Aau3UDy+Ror9Grq5rFShU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=m3GnvvY4u1YCzRywLH6ZylU4nTslkbNWi+O7fvTOLKde792zweQgzX4mPs6B3JFfI8jF0oZeqhAcdgZ51Ogj45aU3mTvZVPZKmw9pZyeIJBbLSXmAeqUVUKxhfdaokqJoHxWog1MW73ldjkIwK8qt5y3DzsogWCFznj+77/RtaA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=ZZq44VHc; arc=none smtp.client-ip=209.85.167.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IZ5wGsLq"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F1ADC32782;
-	Mon,  5 Aug 2024 18:48:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1722883688;
-	bh=gCxE2ILZu/MZn8MJmOuCe1pY1ZdE8L6T6mNlTA3+9UU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=IZ5wGsLqwEnVtg1eyDn6NkY3kOF8/UGW6shwEqIg+jVUjkGSeU8hOlxSPwDe8kEX1
-	 JgKZzpv5XgfoYiJqfyNaiRdGydEbCx4uPIblho2bju39euWIt2TxdJlpVlsR/VrxEN
-	 ji4G6JBJvqKwo4bm/6r0I7ji6rTfvIpRC9K4CNr0ZYegQg8c1IRH274cZElSw5CXcD
-	 dwtdtNnZ0VhwOtf/9U1U8Zt1I2zhhfk0RVn3Va7Xfp1FG/xCWBQ0VE6zaovbJaWRFS
-	 XAnEnQjfMVMf7KG96hakM/e2jwj9i1kWVaIkpnU7CP0WLlKldCvF8UpHb1NvpMlZw1
-	 3DLvP3khdhyxg==
-Date: Mon, 5 Aug 2024 11:48:07 -0700
-From: Kees Cook <kees@kernel.org>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-	Vlastimil Babka <vbabka@suse.cz>, linux-mm@kvack.org,
-	Dave Airlie <airlied@redhat.com>,
-	Jani Nikula <jani.nikula@linux.intel.com>,
-	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	Tvrtko Ursulin <tursulin@ursulin.net>,
-	intel-gfx@lists.freedesktop.org, linux-hardening@vger.kernel.org
-Subject: Too large alloc in gem_exec_reloc test? (was Re: [linus:master]
- [mm/slab] 2e8000b826: WARNING:at_mm/util.c:#__kvmalloc_node_noprof)
-Message-ID: <202408051141.7FB8D9C98@keescook>
-References: <202408041614.dbe4b7fd-lkp@intel.com>
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="ZZq44VHc"
+Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-52f01993090so14963014e87.2
+        for <oe-lkp@lists.linux.dev>; Mon, 05 Aug 2024 11:55:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google; t=1722884143; x=1723488943; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=tyvQPXOot/jroH3JmT/WaEXHZ1voWo5O/ydZzohEKJQ=;
+        b=ZZq44VHcp+QepUMpBXhwyZoCOTxNlP4xP4zzNgr6eaMSglKUJqoUFoFH2BQTt50rhR
+         04p+yX7W6pf9cto4nKmye6nHdpnNpcyjdM0jSu32l0hgtND8pyk6EOHNXZGtjpy49lZ2
+         ZPWxRG2nJPwuOxCjqkUrz5tVW0l69fv7ztK+g=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1722884143; x=1723488943;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=tyvQPXOot/jroH3JmT/WaEXHZ1voWo5O/ydZzohEKJQ=;
+        b=CNpmyl2whxxxuGZmod94QnEoeHy9sUf22GlLhSI6kejmCKFuWk4li0GHf//Pbp0lgw
+         aBhjbcjKDhAu/tTm5r548neJxVUN4SXuKSKdLITb2LvjgsWxJ+QChuxycCwE/0oQGN9v
+         gj6gheTy5YHmiAtRWOyE/Yf/NwimAdXJU5aKDeU4IAij8by52oTxCKgvXhrfPrI7UhxE
+         mbF3gAhGQAoQF1pJo5/ejJxwZv4Bcl1VtpSuZ1Gh2OJdGAWxB98t1CTiWUNsRme1D4n7
+         gZsITJleuMoyG7iLhMInOA6/huhLAIIn6vaVoFnmsDSVoJrTiqw/0Jy/3Cyrr1qq1EjT
+         mNJA==
+X-Forwarded-Encrypted: i=1; AJvYcCV9QBxhc857PmB9TTDI82YdBe1Rsp+CUX/pbIz4Fmn2ZPSc1mKGjzsLV1ei5UD8HrauPSab+NYonCe3feri9ARf1OA3vx7w
+X-Gm-Message-State: AOJu0YzVZ2awCIhWxyBfufD8je0JqXiyyBSxsh0V93dYjiQJNjmx+1EH
+	OCsZomoTyq6sUL/2fIkEpoM7x31wEtvVTcV+UmUsweozyArtoIjUK+S5muN3ZARWB3TDGH//jkX
+	giNA=
+X-Google-Smtp-Source: AGHT+IGY8riSD5PAha5GTTicsBbTBRO7mUB+XdnBxG+eN30UDQMX67qHIZC8lqA9+Kg3Pxmp+bJ0GA==
+X-Received: by 2002:a05:6512:3b96:b0:52c:caa6:13b4 with SMTP id 2adb3069b0e04-530bb36999cmr6937184e87.3.1722884143162;
+        Mon, 05 Aug 2024 11:55:43 -0700 (PDT)
+Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com. [209.85.208.42])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5b83bf3b99dsm5175981a12.91.2024.08.05.11.55.42
+        for <oe-lkp@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 05 Aug 2024 11:55:42 -0700 (PDT)
+Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-5af6a1afa7bso12592109a12.1
+        for <oe-lkp@lists.linux.dev>; Mon, 05 Aug 2024 11:55:42 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCXlrXJkgemZZZkI5M1gINYSe3R+l60yViwD1uVRFTjmdvxe8qpFiUZ+5fGIFlrRDAaWfClQ40ntuJdZTPT1j0lqsi3E8ork
+X-Received: by 2002:aa7:d34e:0:b0:5a2:7f47:c729 with SMTP id
+ 4fb4d7f45d1cf-5b7f3bcfee4mr9218233a12.9.1722884141890; Mon, 05 Aug 2024
+ 11:55:41 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202408041614.dbe4b7fd-lkp@intel.com>
+References: <202408041602.caa0372-oliver.sang@intel.com> <CAHk-=whbxLj0thXPzN9aW4CcX1D2_dntNu+x9-8uBakamBggLA@mail.gmail.com>
+ <CAKbZUD3B03Zjex4STW8J_1VJhpsYb=1mnZL2-vSaW-CaZdzLiA@mail.gmail.com> <CALmYWFuXVCvAfrcDOCAR72z2_rmnm09QeVVqdhzqjF-fZ9ndUA@mail.gmail.com>
+In-Reply-To: <CALmYWFuXVCvAfrcDOCAR72z2_rmnm09QeVVqdhzqjF-fZ9ndUA@mail.gmail.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Mon, 5 Aug 2024 11:55:25 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgPHCJ0vZMfEP50VPjSVi-CzL0fhTGXgNLQn=Pp9W0DVA@mail.gmail.com>
+Message-ID: <CAHk-=wgPHCJ0vZMfEP50VPjSVi-CzL0fhTGXgNLQn=Pp9W0DVA@mail.gmail.com>
+Subject: Re: [linus:master] [mseal] 8be7258aad: stress-ng.pagemove.page_remaps_per_sec
+ -4.4% regression
+To: Jeff Xu <jeffxu@google.com>, Michael Ellerman <mpe@ellerman.id.au>, 
+	Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc: Pedro Falcato <pedro.falcato@gmail.com>, kernel test robot <oliver.sang@intel.com>, 
+	Jeff Xu <jeffxu@chromium.org>, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, 
+	Kees Cook <keescook@chromium.org>, "Liam R. Howlett" <Liam.Howlett@oracle.com>, 
+	Dave Hansen <dave.hansen@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Guenter Roeck <groeck@chromium.org>, Jann Horn <jannh@google.com>, Jonathan Corbet <corbet@lwn.net>, 
+	Jorge Lucangeli Obes <jorgelo@chromium.org>, Matthew Wilcox <willy@infradead.org>, 
+	Muhammad Usama Anjum <usama.anjum@collabora.com>, =?UTF-8?Q?Stephen_R=C3=B6ttger?= <sroettger@google.com>, 
+	Suren Baghdasaryan <surenb@google.com>, Amer Al Shanawany <amer.shanawany@gmail.com>, 
+	Javier Carrasco <javier.carrasco.cruz@gmail.com>, Shuah Khan <shuah@kernel.org>, 
+	linux-api@vger.kernel.org, linux-mm@kvack.org, ying.huang@intel.com, 
+	feng.tang@intel.com, fengwei.yin@intel.com
+Content-Type: multipart/mixed; boundary="00000000000044bb81061ef439ea"
 
-This seems like some kind of pre-existing issue in the igt test, reachable
-via eb_copy_relocations(). The only warning in kvmalloc_node_noprof() is:
+--00000000000044bb81061ef439ea
+Content-Type: text/plain; charset="UTF-8"
 
-        /* Don't even allow crazy sizes */
-        if (unlikely(size > INT_MAX)) {
-                WARN_ON_ONCE(!(flags & __GFP_NOWARN));
-                return NULL;
-        }
+On Mon, 5 Aug 2024 at 11:11, Jeff Xu <jeffxu@google.com> wrote:
+>
+> One thing that you can't walk around is that can_modify_mm must be
+> called prior to arch_unmap, that means in-place check for the munmap
+> is not possible.
 
-So, something is too big in the test?
+Actually, we should move 'arch_unmap()'.
 
--Kees
+There is only one user of it, and it's pretty pointless.
 
-On Sun, Aug 04, 2024 at 04:56:40PM +0800, kernel test robot wrote:
-> 
-> hi, Kees Cook,
-> 
-> as we understand, this commit is not the root cause of WARNING. the WARNING just
-> changes the form from (2) to (1) due to this commit.
-> 
-> 67f2df3b82d091ed 2e8000b826fcd2716449d09753d
-> ---------------- ---------------------------
->        fail:runs  %reproduction    fail:runs
->            |             |             |
->            :6          100%           6:6     dmesg.WARNING:at_mm/util.c:#__kvmalloc_node_noprof  <--- (1)
->           6:6          -67%            :6     dmesg.WARNING:at_mm/util.c:#kvmalloc_node_noprof    <--- (2)
-> 
-> however, we failed to bisect (2). so below report is FYI what we observed in our
-> tests. not sure if it can give any hint to some real issues.
-> 
-> 
-> 
-> Hello,
-> 
-> kernel test robot noticed "WARNING:at_mm/util.c:#__kvmalloc_node_noprof" on:
-> 
-> commit: 2e8000b826fcd2716449d09753d5ed843067881e ("mm/slab: Introduce kvmalloc_buckets_node() that can take kmem_buckets argument")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> 
-> [test failed on linus/master      786c8248dbd33a5a7a07f7c6e55a7bfc68d2ca48]
-> [test failed on linux-next/master 9ec6ec93f2c1e6cd2911e2a4acd5ac85e13bb3e2]
-> 
-> in testcase: igt
-> version: igt-x86_64-73e21b2bb-1_20240623
-> with following parameters:
-> 
-> 	group: gem_exec_reloc
-> 
-> 
-> 
-> compiler: gcc-13
-> test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-7700 CPU @ 3.60GHz (Kaby Lake) with 32G memory
-> 
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
-> 
-> 
-> 
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202408041614.dbe4b7fd-lkp@intel.com
-> 
-> 
-> 
-> The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20240804/202408041614.dbe4b7fd-lkp@intel.com
-> 
-> 
-> [  928.741334][ T5136] ------------[ cut here ]------------
-> [  928.747005][ T5136] WARNING: CPU: 2 PID: 5136 at mm/util.c:650 __kvmalloc_node_noprof+0x142/0x190
-> [  928.755967][ T5136] Modules linked in: btrfs blake2b_generic xor zstd_compress raid6_pq libcrc32c intel_rapl_msr intel_rapl_common x86_pkg_temp_thermal ipmi_devintf ipmi_msghandler sd_mod intel_powerclamp t10_pi coretemp crc64_rocksoft_generic crc64_rocksoft crc64 kvm_intel sg i915 kvm crct10dif_pclmul crc32_pclmul crc32c_intel drm_buddy ghash_clmulni_intel intel_gtt sha512_ssse3 drm_display_helper mei_wdt ttm rapl drm_kms_helper ahci wmi_bmof libahci mei_me video intel_cstate intel_uncore idma64 libata mei i2c_designware_platform i2c_i801 i2c_designware_core i2c_smbus pinctrl_sunrisepoint wmi acpi_pad binfmt_misc loop drm fuse dm_mod ip_tables
-> [  928.812981][ T5136] CPU: 2 PID: 5136 Comm: gem_exec_reloc Tainted: G S                 6.10.0-rc1-00009-g2e8000b826fc #1
-> [  928.823924][ T5136] Hardware name: Dell Inc. OptiPlex 7050/062KRH, BIOS 1.2.0 12/22/2016
-> [  928.832080][ T5136] RIP: 0010:__kvmalloc_node_noprof+0x142/0x190
-> [  928.838186][ T5136] Code: c4 06 0e 00 48 83 c4 18 48 83 c4 08 5b 5d 41 5c 41 5d 41 5e c3 cc cc cc cc 49 be 00 00 00 00 00 20 00 00 eb 9f 80 e7 20 75 de <0f> 0b eb da 48 c7 c7 f0 fe cf 84 e8 5e 2c 19 00 e9 3f ff ff ff 48
-> [  928.857727][ T5136] RSP: 0018:ffffc9000e82f6f8 EFLAGS: 00010246
-> [  928.863744][ T5136] RAX: 0000000000000000 RBX: 00000000000000c0 RCX: 0000000000000013
-> [  928.871647][ T5136] RDX: 000000000007ffff RSI: ffffffff81a13806 RDI: 0000000000000000
-> [  928.879565][ T5136] RBP: 0000000080000000 R08: 0000000000000001 R09: 0000000000000000
-> [  928.887466][ T5136] R10: ffffc9000e82f6f8 R11: 0000000000000000 R12: 00000000ffffffff
-> [  928.895375][ T5136] R13: 0000000000000000 R14: 0000000004000000 R15: ffffc9000e82f9b0
-> [  928.903288][ T5136] FS:  00007f0ff830d8c0(0000) GS:ffff88879db00000(0000) knlGS:0000000000000000
-> [  928.912151][ T5136] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  928.918679][ T5136] CR2: 00007f0ff8100000 CR3: 00000008162e0004 CR4: 00000000003706f0
-> [  928.926595][ T5136] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> [  928.934489][ T5136] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> [  928.942382][ T5136] Call Trace:
-> [  928.945631][ T5136]  <TASK>
-> [  928.948499][ T5136]  ? __warn+0xcc/0x260
-> [  928.952503][ T5136]  ? __kvmalloc_node_noprof+0x142/0x190
-> [  928.957994][ T5136]  ? report_bug+0x261/0x2c0
-> [  928.962429][ T5136]  ? handle_bug+0x6d/0x90
-> [  928.966692][ T5136]  ? exc_invalid_op+0x17/0x40
-> [  928.971327][ T5136]  ? asm_exc_invalid_op+0x1a/0x20
-> [  928.976295][ T5136]  ? __kmalloc_node_noprof+0x3b6/0x4e0
-> [  928.981709][ T5136]  ? __kvmalloc_node_noprof+0x142/0x190
-> [  928.987199][ T5136]  ? __kvmalloc_node_noprof+0x53/0x190
-> [  928.992590][ T5136]  eb_copy_relocations+0x166/0x450 [i915]
-> [  928.998467][ T5136]  eb_relocate_parse_slow+0xd5/0x860 [i915]
-> [  929.004513][ T5136]  i915_gem_do_execbuffer+0xaa5/0x2420 [i915]
-> [  929.010657][ T5136]  ? unwind_get_return_address+0x5e/0xa0
-> [  929.016135][ T5136]  ? arch_stack_walk+0xac/0x100
-> [  929.020836][ T5136]  ? __pfx_i915_gem_do_execbuffer+0x10/0x10 [i915]
-> [  929.027424][ T5136]  ? kasan_save_track+0x14/0x30
-> [  929.032147][ T5136]  ? __kasan_kmalloc+0x8f/0xa0
-> [  929.036759][ T5136]  ? __pfx___might_resched+0x10/0x10
-> [  929.041892][ T5136]  ? check_heap_object+0x6f/0x4b0
-> [  929.046766][ T5136]  i915_gem_execbuffer2_ioctl+0x2b2/0x680 [i915]
-> [  929.053171][ T5136]  ? __pfx_i915_gem_execbuffer2_ioctl+0x10/0x10 [i915]
-> [  929.060100][ T5136]  drm_ioctl_kernel+0x16f/0x2e0 [drm]
-> [  929.065417][ T5136]  ? __pfx_drm_ioctl_kernel+0x10/0x10 [drm]
-> [  929.071239][ T5136]  drm_ioctl+0x4d0/0xad0 [drm]
-> [  929.075948][ T5136]  ? __pfx_i915_gem_execbuffer2_ioctl+0x10/0x10 [i915]
-> [  929.082882][ T5136]  ? __pfx_drm_ioctl+0x10/0x10 [drm]
-> [  929.088119][ T5136]  ? __fget_light+0x57/0x420
-> [  929.092587][ T5136]  __x64_sys_ioctl+0x137/0x1b0
-> [  929.097212][ T5136]  do_syscall_64+0x5f/0x170
-> [  929.101572][ T5136]  entry_SYSCALL_64_after_hwframe+0x76/0x7e
-> [  929.107321][ T5136] RIP: 0033:0x7f0ffa6b7c5b
-> [  929.111603][ T5136] Code: 00 48 89 44 24 18 31 c0 48 8d 44 24 60 c7 04 24 10 00 00 00 48 89 44 24 08 48 8d 44 24 20 48 89 44 24 10 b8 10 00 00 00 0f 05 <89> c2 3d 00 f0 ff ff 77 1c 48 8b 44 24 18 64 48 2b 04 25 28 00 00
-> [  929.131013][ T5136] RSP: 002b:00007ffda154ae00 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-> [  929.139261][ T5136] RAX: ffffffffffffffda RBX: 0000000000000004 RCX: 00007f0ffa6b7c5b
-> [  929.147077][ T5136] RDX: 00007ffda154af10 RSI: 0000000040406469 RDI: 0000000000000004
-> [  929.154890][ T5136] RBP: 00007ffda154af10 R08: 0000000000000004 R09: 0000000100000000
-> [  929.162704][ T5136] R10: 00007f0ffa7a8298 R11: 0000000000000246 R12: 0000000040406469
-> [  929.170515][ T5136] R13: 0000000000000004 R14: 00007f0f78200000 R15: 0000000000000002
-> [  929.178329][ T5136]  </TASK>
-> [  929.181207][ T5136] ---[ end trace 0000000000000000 ]---
-> 
-> 
-> -- 
-> 0-DAY CI Kernel Test Service
-> https://github.com/intel/lkp-tests/wiki
-> 
+(Ok, there are two users - x86 also has an 'arch_unmap()', but it's empty).
 
--- 
-Kees Cook
+The reason I say that the current user of arch_unmap() is pointless is
+because this is what the powerpc user does:
+
+  static inline void arch_unmap(struct mm_struct *mm,
+                                unsigned long start, unsigned long end)
+  {
+        unsigned long vdso_base = (unsigned long)mm->context.vdso;
+
+        if (start <= vdso_base && vdso_base < end)
+                mm->context.vdso = NULL;
+  }
+
+and that would make sense if we didn't have an actual 'vma' that
+matched the vdso. But we do.
+
+I think this code may predate the whole "create a vma for the vdso"
+code. Or maybe it was just always confused.
+
+Anyway, what the code *should* do is that we should just have a
+->close() function for special mappings, and call that in
+special_mapping_close().
+
+This is an ENTIRELY UNTESTED patch that gets rid of this horrendous wart.
+
+Michael / Nick / Christophe? Note that I didn't even compile-test this
+on x86-64, much less on powerpc.
+
+So please consider this a "maybe something like this" patch, but that
+'arch_unmap()' really is pretty nasty.
+
+Oh, and there was a bug in the error path of the powerpc vdso setup
+code anyway. The patch fixes that too, although considering the
+entirely untested nature of it, the "fixes" is laughably optimistic.
+
+                 Linus
+
+--00000000000044bb81061ef439ea
+Content-Type: text/x-patch; charset="US-ASCII"; name="patch.diff"
+Content-Disposition: attachment; filename="patch.diff"
+Content-Transfer-Encoding: base64
+Content-ID: <f_lzhcoox80>
+X-Attachment-Id: f_lzhcoox80
+
+IGFyY2gvcG93ZXJwYy9pbmNsdWRlL2FzbS9tbXVfY29udGV4dC5oIHwgIDkgLS0tLS0tLS0tCiBh
+cmNoL3Bvd2VycGMva2VybmVsL3Zkc28uYyAgICAgICAgICAgICB8IDEyICsrKysrKysrKysrLQog
+YXJjaC94ODYvaW5jbHVkZS9hc20vbW11X2NvbnRleHQuaCAgICAgfCAgNSAtLS0tLQogaW5jbHVk
+ZS9hc20tZ2VuZXJpYy9tbV9ob29rcy5oICAgICAgICAgfCAxMSArKystLS0tLS0tLQogaW5jbHVk
+ZS9saW51eC9tbV90eXBlcy5oICAgICAgICAgICAgICAgfCAgMiArKwogbW0vbW1hcC5jICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgfCAxNSArKysrKystLS0tLS0tLS0KIDYgZmlsZXMgY2hh
+bmdlZCwgMjIgaW5zZXJ0aW9ucygrKSwgMzIgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvYXJj
+aC9wb3dlcnBjL2luY2x1ZGUvYXNtL21tdV9jb250ZXh0LmggYi9hcmNoL3Bvd2VycGMvaW5jbHVk
+ZS9hc20vbW11X2NvbnRleHQuaAppbmRleCAzN2JmZmEwZjc5MTguLmEzMzRhMTM2ODg0OCAxMDA2
+NDQKLS0tIGEvYXJjaC9wb3dlcnBjL2luY2x1ZGUvYXNtL21tdV9jb250ZXh0LmgKKysrIGIvYXJj
+aC9wb3dlcnBjL2luY2x1ZGUvYXNtL21tdV9jb250ZXh0LmgKQEAgLTI2MCwxNSArMjYwLDYgQEAg
+c3RhdGljIGlubGluZSB2b2lkIGVudGVyX2xhenlfdGxiKHN0cnVjdCBtbV9zdHJ1Y3QgKm1tLAog
+CiBleHRlcm4gdm9pZCBhcmNoX2V4aXRfbW1hcChzdHJ1Y3QgbW1fc3RydWN0ICptbSk7CiAKLXN0
+YXRpYyBpbmxpbmUgdm9pZCBhcmNoX3VubWFwKHN0cnVjdCBtbV9zdHJ1Y3QgKm1tLAotCQkJICAg
+ICAgdW5zaWduZWQgbG9uZyBzdGFydCwgdW5zaWduZWQgbG9uZyBlbmQpCi17Ci0JdW5zaWduZWQg
+bG9uZyB2ZHNvX2Jhc2UgPSAodW5zaWduZWQgbG9uZyltbS0+Y29udGV4dC52ZHNvOwotCi0JaWYg
+KHN0YXJ0IDw9IHZkc29fYmFzZSAmJiB2ZHNvX2Jhc2UgPCBlbmQpCi0JCW1tLT5jb250ZXh0LnZk
+c28gPSBOVUxMOwotfQotCiAjaWZkZWYgQ09ORklHX1BQQ19NRU1fS0VZUwogYm9vbCBhcmNoX3Zt
+YV9hY2Nlc3NfcGVybWl0dGVkKHN0cnVjdCB2bV9hcmVhX3N0cnVjdCAqdm1hLCBib29sIHdyaXRl
+LAogCQkJICAgICAgIGJvb2wgZXhlY3V0ZSwgYm9vbCBmb3JlaWduKTsKZGlmZiAtLWdpdCBhL2Fy
+Y2gvcG93ZXJwYy9rZXJuZWwvdmRzby5jIGIvYXJjaC9wb3dlcnBjL2tlcm5lbC92ZHNvLmMKaW5k
+ZXggN2EyZmY5MDEwZjE3Li40ZGU4YWY0M2Y5MjAgMTAwNjQ0Ci0tLSBhL2FyY2gvcG93ZXJwYy9r
+ZXJuZWwvdmRzby5jCisrKyBiL2FyY2gvcG93ZXJwYy9rZXJuZWwvdmRzby5jCkBAIC04MSwxMiAr
+ODEsMjAgQEAgc3RhdGljIGludCB2ZHNvNjRfbXJlbWFwKGNvbnN0IHN0cnVjdCB2bV9zcGVjaWFs
+X21hcHBpbmcgKnNtLCBzdHJ1Y3Qgdm1fYXJlYV9zdHIKIAlyZXR1cm4gdmRzb19tcmVtYXAoc20s
+IG5ld192bWEsICZ2ZHNvNjRfZW5kIC0gJnZkc282NF9zdGFydCk7CiB9CiAKK3N0YXRpYyBpbnQg
+dnZhcl9jbG9zZShjb25zdCBzdHJ1Y3Qgdm1fc3BlY2lhbF9tYXBwaW5nICpzbSwKKwkJICAgICAg
+c3RydWN0IHZtX2FyZWFfc3RydWN0ICp2bWEpCit7CisJc3RydWN0IG1tX3N0cnVjdCAqbW0gPSB2
+bWEtPnZtX21tOworCW1tLT5jb250ZXh0LnZkc28gPSBOVUxMOworfQorCiBzdGF0aWMgdm1fZmF1
+bHRfdCB2dmFyX2ZhdWx0KGNvbnN0IHN0cnVjdCB2bV9zcGVjaWFsX21hcHBpbmcgKnNtLAogCQkJ
+ICAgICBzdHJ1Y3Qgdm1fYXJlYV9zdHJ1Y3QgKnZtYSwgc3RydWN0IHZtX2ZhdWx0ICp2bWYpOwog
+CiBzdGF0aWMgc3RydWN0IHZtX3NwZWNpYWxfbWFwcGluZyB2dmFyX3NwZWMgX19yb19hZnRlcl9p
+bml0ID0gewogCS5uYW1lID0gIlt2dmFyXSIsCiAJLmZhdWx0ID0gdnZhcl9mYXVsdCwKKwkuY2xv
+c2UgPSB2dmFyX2Nsb3NlLAogfTsKIAogc3RhdGljIHN0cnVjdCB2bV9zcGVjaWFsX21hcHBpbmcg
+dmRzbzMyX3NwZWMgX19yb19hZnRlcl9pbml0ID0gewpAQCAtMjA3LDggKzIxNSwxMCBAQCBzdGF0
+aWMgaW50IF9fYXJjaF9zZXR1cF9hZGRpdGlvbmFsX3BhZ2VzKHN0cnVjdCBsaW51eF9iaW5wcm0g
+KmJwcm0sIGludCB1c2VzX2ludAogCXZtYSA9IF9pbnN0YWxsX3NwZWNpYWxfbWFwcGluZyhtbSwg
+dmRzb19iYXNlLCB2dmFyX3NpemUsCiAJCQkJICAgICAgIFZNX1JFQUQgfCBWTV9NQVlSRUFEIHwg
+Vk1fSU8gfAogCQkJCSAgICAgICBWTV9ET05URFVNUCB8IFZNX1BGTk1BUCwgJnZ2YXJfc3BlYyk7
+Ci0JaWYgKElTX0VSUih2bWEpKQorCWlmIChJU19FUlIodm1hKSkgeworCQltbS0+Y29udGV4dC52
+ZHNvID0gTlVMTDsKIAkJcmV0dXJuIFBUUl9FUlIodm1hKTsKKwl9CiAKIAkvKgogCSAqIG91ciB2
+bWEgZmxhZ3MgZG9uJ3QgaGF2ZSBWTV9XUklURSBzbyBieSBkZWZhdWx0LCB0aGUgcHJvY2VzcyBp
+c24ndApkaWZmIC0tZ2l0IGEvYXJjaC94ODYvaW5jbHVkZS9hc20vbW11X2NvbnRleHQuaCBiL2Fy
+Y2gveDg2L2luY2x1ZGUvYXNtL21tdV9jb250ZXh0LmgKaW5kZXggOGRhYzQ1YTJjN2ZjLi44MGYy
+YTMxODdhYTYgMTAwNjQ0Ci0tLSBhL2FyY2gveDg2L2luY2x1ZGUvYXNtL21tdV9jb250ZXh0LmgK
+KysrIGIvYXJjaC94ODYvaW5jbHVkZS9hc20vbW11X2NvbnRleHQuaApAQCAtMjMyLDExICsyMzIs
+NiBAQCBzdGF0aWMgaW5saW5lIGJvb2wgaXNfNjRiaXRfbW0oc3RydWN0IG1tX3N0cnVjdCAqbW0p
+CiB9CiAjZW5kaWYKIAotc3RhdGljIGlubGluZSB2b2lkIGFyY2hfdW5tYXAoc3RydWN0IG1tX3N0
+cnVjdCAqbW0sIHVuc2lnbmVkIGxvbmcgc3RhcnQsCi0JCQkgICAgICB1bnNpZ25lZCBsb25nIGVu
+ZCkKLXsKLX0KLQogLyoKICAqIFdlIG9ubHkgd2FudCB0byBlbmZvcmNlIHByb3RlY3Rpb24ga2V5
+cyBvbiB0aGUgY3VycmVudCBwcm9jZXNzCiAgKiBiZWNhdXNlIHdlIGVmZmVjdGl2ZWx5IGhhdmUg
+bm8gYWNjZXNzIHRvIFBLUlUgZm9yIG90aGVyCmRpZmYgLS1naXQgYS9pbmNsdWRlL2FzbS1nZW5l
+cmljL21tX2hvb2tzLmggYi9pbmNsdWRlL2FzbS1nZW5lcmljL21tX2hvb2tzLmgKaW5kZXggNGRi
+YjE3N2QxMTUwLi42ZWVhM2IzYzFlNjUgMTAwNjQ0Ci0tLSBhL2luY2x1ZGUvYXNtLWdlbmVyaWMv
+bW1faG9va3MuaAorKysgYi9pbmNsdWRlL2FzbS1nZW5lcmljL21tX2hvb2tzLmgKQEAgLTEsOCAr
+MSw4IEBACiAvKiBTUERYLUxpY2Vuc2UtSWRlbnRpZmllcjogR1BMLTIuMCAqLwogLyoKLSAqIERl
+ZmluZSBnZW5lcmljIG5vLW9wIGhvb2tzIGZvciBhcmNoX2R1cF9tbWFwLCBhcmNoX2V4aXRfbW1h
+cAotICogYW5kIGFyY2hfdW5tYXAgdG8gYmUgaW5jbHVkZWQgaW4gYXNtLUZPTy9tbXVfY29udGV4
+dC5oIGZvciBhbnkKLSAqIGFyY2ggRk9PIHdoaWNoIGRvZXNuJ3QgbmVlZCB0byBob29rIHRoZXNl
+LgorICogRGVmaW5lIGdlbmVyaWMgbm8tb3AgaG9va3MgZm9yIGFyY2hfZHVwX21tYXAgYW5kIGFy
+Y2hfZXhpdF9tbWFwCisgKiB0byBiZSBpbmNsdWRlZCBpbiBhc20tRk9PL21tdV9jb250ZXh0Lmgg
+Zm9yIGFueSBhcmNoIEZPTyB3aGljaAorICogZG9lc24ndCBuZWVkIHRvIGhvb2sgdGhlc2UuCiAg
+Ki8KICNpZm5kZWYgX0FTTV9HRU5FUklDX01NX0hPT0tTX0gKICNkZWZpbmUgX0FTTV9HRU5FUklD
+X01NX0hPT0tTX0gKQEAgLTE3LDExICsxNyw2IEBAIHN0YXRpYyBpbmxpbmUgdm9pZCBhcmNoX2V4
+aXRfbW1hcChzdHJ1Y3QgbW1fc3RydWN0ICptbSkKIHsKIH0KIAotc3RhdGljIGlubGluZSB2b2lk
+IGFyY2hfdW5tYXAoc3RydWN0IG1tX3N0cnVjdCAqbW0sCi0JCQl1bnNpZ25lZCBsb25nIHN0YXJ0
+LCB1bnNpZ25lZCBsb25nIGVuZCkKLXsKLX0KLQogc3RhdGljIGlubGluZSBib29sIGFyY2hfdm1h
+X2FjY2Vzc19wZXJtaXR0ZWQoc3RydWN0IHZtX2FyZWFfc3RydWN0ICp2bWEsCiAJCWJvb2wgd3Jp
+dGUsIGJvb2wgZXhlY3V0ZSwgYm9vbCBmb3JlaWduKQogewpkaWZmIC0tZ2l0IGEvaW5jbHVkZS9s
+aW51eC9tbV90eXBlcy5oIGIvaW5jbHVkZS9saW51eC9tbV90eXBlcy5oCmluZGV4IDQ4NTQyNDk3
+OTI1NC4uZWYzMmQ4N2EzYWRjIDEwMDY0NAotLS0gYS9pbmNsdWRlL2xpbnV4L21tX3R5cGVzLmgK
+KysrIGIvaW5jbHVkZS9saW51eC9tbV90eXBlcy5oCkBAIC0xMzEzLDYgKzEzMTMsOCBAQCBzdHJ1
+Y3Qgdm1fc3BlY2lhbF9tYXBwaW5nIHsKIAogCWludCAoKm1yZW1hcCkoY29uc3Qgc3RydWN0IHZt
+X3NwZWNpYWxfbWFwcGluZyAqc20sCiAJCSAgICAgc3RydWN0IHZtX2FyZWFfc3RydWN0ICpuZXdf
+dm1hKTsKKwl2b2lkICgqY2xvc2UpKGNvbnN0IHN0cnVjdCB2bV9zcGVjaWFsX21hcHBpbmcgKnNt
+LAorCQkgICAgICBzdHJ1Y3Qgdm1fYXJlYV9zdHJ1Y3QgKnZtYSk7CiB9OwogCiBlbnVtIHRsYl9m
+bHVzaF9yZWFzb24gewpkaWZmIC0tZ2l0IGEvbW0vbW1hcC5jIGIvbW0vbW1hcC5jCmluZGV4IGQw
+ZGZjODViMjA5Yi4uYWRhYWYxZWYxOTdhIDEwMDY0NAotLS0gYS9tbS9tbWFwLmMKKysrIGIvbW0v
+bW1hcC5jCkBAIC0yNzg5LDcgKzI3ODksNyBAQCBkb192bWlfYWxpZ25fbXVubWFwKHN0cnVjdCB2
+bWFfaXRlcmF0b3IgKnZtaSwgc3RydWN0IHZtX2FyZWFfc3RydWN0ICp2bWEsCiAgKgogICogVGhp
+cyBmdW5jdGlvbiB0YWtlcyBhIEBtYXMgdGhhdCBpcyBlaXRoZXIgcG9pbnRpbmcgdG8gdGhlIHBy
+ZXZpb3VzIFZNQSBvciBzZXQKICAqIHRvIE1BX1NUQVJUIGFuZCBzZXRzIGl0IHVwIHRvIHJlbW92
+ZSB0aGUgbWFwcGluZyhzKS4gIFRoZSBAbGVuIHdpbGwgYmUKLSAqIGFsaWduZWQgYW5kIGFueSBh
+cmNoX3VubWFwIHdvcmsgd2lsbCBiZSBwcmVmb3JtZWQuCisgKiBhbGlnbmVkLgogICoKICAqIFJl
+dHVybjogMCBvbiBzdWNjZXNzIGFuZCBkcm9wcyB0aGUgbG9jayBpZiBzbyBkaXJlY3RlZCwgZXJy
+b3IgYW5kIGxlYXZlcyB0aGUKICAqIGxvY2sgaGVsZCBvdGhlcndpc2UuCkBAIC0yODA5LDE2ICsy
+ODA5LDEyIEBAIGludCBkb192bWlfbXVubWFwKHN0cnVjdCB2bWFfaXRlcmF0b3IgKnZtaSwgc3Ry
+dWN0IG1tX3N0cnVjdCAqbW0sCiAJCXJldHVybiAtRUlOVkFMOwogCiAJLyoKLQkgKiBDaGVjayBp
+ZiBtZW1vcnkgaXMgc2VhbGVkIGJlZm9yZSBhcmNoX3VubWFwLgotCSAqIFByZXZlbnQgdW5tYXBw
+aW5nIGEgc2VhbGVkIFZNQS4KKwkgKiBDaGVjayBpZiBtZW1vcnkgaXMgc2VhbGVkLCBwcmV2ZW50
+IHVubWFwcGluZyBhIHNlYWxlZCBWTUEuCiAJICogY2FuX21vZGlmeV9tbSBhc3N1bWVzIHdlIGhh
+dmUgYWNxdWlyZWQgdGhlIGxvY2sgb24gTU0uCiAJICovCiAJaWYgKHVubGlrZWx5KCFjYW5fbW9k
+aWZ5X21tKG1tLCBzdGFydCwgZW5kKSkpCiAJCXJldHVybiAtRVBFUk07CiAKLQkgLyogYXJjaF91
+bm1hcCgpIG1pZ2h0IGRvIHVubWFwcyBpdHNlbGYuICAqLwotCWFyY2hfdW5tYXAobW0sIHN0YXJ0
+LCBlbmQpOwotCiAJLyogRmluZCB0aGUgZmlyc3Qgb3ZlcmxhcHBpbmcgVk1BICovCiAJdm1hID0g
+dm1hX2ZpbmQodm1pLCBlbmQpOwogCWlmICghdm1hKSB7CkBAIC0zMjMyLDE0ICszMjI4LDEyIEBA
+IGludCBkb192bWFfbXVubWFwKHN0cnVjdCB2bWFfaXRlcmF0b3IgKnZtaSwgc3RydWN0IHZtX2Fy
+ZWFfc3RydWN0ICp2bWEsCiAJc3RydWN0IG1tX3N0cnVjdCAqbW0gPSB2bWEtPnZtX21tOwogCiAJ
+LyoKLQkgKiBDaGVjayBpZiBtZW1vcnkgaXMgc2VhbGVkIGJlZm9yZSBhcmNoX3VubWFwLgotCSAq
+IFByZXZlbnQgdW5tYXBwaW5nIGEgc2VhbGVkIFZNQS4KKwkgKiBDaGVjayBpZiBtZW1vcnkgaXMg
+c2VhbGVkLCBwcmV2ZW50IHVubWFwcGluZyBhIHNlYWxlZCBWTUEuCiAJICogY2FuX21vZGlmeV9t
+bSBhc3N1bWVzIHdlIGhhdmUgYWNxdWlyZWQgdGhlIGxvY2sgb24gTU0uCiAJICovCiAJaWYgKHVu
+bGlrZWx5KCFjYW5fbW9kaWZ5X21tKG1tLCBzdGFydCwgZW5kKSkpCiAJCXJldHVybiAtRVBFUk07
+CiAKLQlhcmNoX3VubWFwKG1tLCBzdGFydCwgZW5kKTsKIAlyZXR1cm4gZG9fdm1pX2FsaWduX211
+bm1hcCh2bWksIHZtYSwgbW0sIHN0YXJ0LCBlbmQsIHVmLCB1bmxvY2spOwogfQogCkBAIC0zNjI0
+LDYgKzM2MTgsOSBAQCBzdGF0aWMgdm1fZmF1bHRfdCBzcGVjaWFsX21hcHBpbmdfZmF1bHQoc3Ry
+dWN0IHZtX2ZhdWx0ICp2bWYpOwogICovCiBzdGF0aWMgdm9pZCBzcGVjaWFsX21hcHBpbmdfY2xv
+c2Uoc3RydWN0IHZtX2FyZWFfc3RydWN0ICp2bWEpCiB7CisJY29uc3Qgc3RydWN0IHZtX3NwZWNp
+YWxfbWFwcGluZyAqc20gPSB2bWEtPnZtX3ByaXZhdGVfZGF0YTsKKwlpZiAoc20tPmNsb3NlKQor
+CQlzbS0+Y2xvc2Uoc20sIHZtYSk7CiB9CiAKIHN0YXRpYyBjb25zdCBjaGFyICpzcGVjaWFsX21h
+cHBpbmdfbmFtZShzdHJ1Y3Qgdm1fYXJlYV9zdHJ1Y3QgKnZtYSkK
+--00000000000044bb81061ef439ea--
