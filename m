@@ -1,55 +1,61 @@
-Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
+Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA7C674059
-	for <oe-lkp@lists.linux.dev>; Mon,  5 Aug 2024 19:38:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 558C8166F3B
+	for <oe-lkp@lists.linux.dev>; Mon,  5 Aug 2024 19:48:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722886722; cv=none; b=W9Njop5tgM0h/gPv4aWudlPeRsFDEB0+oKJBc2MkHgjA0DJdksMXFlRH5QyPX1USCKfMl5ktZowK42KieNEAWRa58Sxd+Z76RLh6KufJ2EAp72mDHCqAg6MMbo9+Zf6FA24vS8jVs94L4+Y8z95/jAI+upCRpywztQjFvXNV5ck=
+	t=1722887305; cv=none; b=edyu1Igub5onaxdSfrpEtYr7Z3raUOoMqvStzKYSSbDLQRNWp403oJX0YWegHXw7EZFi1+HDL0Lkzpqgumuiu99hxPl4azKPX2JbSDcSk6UJfFfR/rz5GUl/4xw61mFVHorQ7LgdoaeOvGH5Gq2f4g+nfBEK1Xjvi1KeY07v7kU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722886722; c=relaxed/simple;
-	bh=c5jQCeWyHX0pjMU/idg7/nAZxHs69Nv+EOqEv9HtygQ=;
+	s=arc-20240116; t=1722887305; c=relaxed/simple;
+	bh=mgZkO49kXrbYPJTqfPbU/zGoDP6KaGhqgEz+BOKxzbM=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=eHpk+igfVhliWSWPDnYdbAOavTA7omvky+Ak2aoLE1dra1jy+mpoPokjf2NNROvQ3McET8DoiwLYD0RP2jQWDm/aYuGd+1oDqvFiBue41oKx9uWJtEafp7eXTMSQGDSJ00VJpvmucp1ffvjzCrzi0rRpeMFNVPc/LfCzHSIfG6c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Tax01rfG; arc=none smtp.client-ip=209.85.208.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 To:Cc:Content-Type; b=eaVIx5+VCPeVQ5b/SiY1ZTKdgh5n2zpdJJjYQ4nle5d/rZqLKoa2+BjNZXDvjdd2aWicaHCM82CZ7jjio5CTdSi18mPtzkX+HQEtnm+Uri27qgZk+UFegc1XplM3vj65uBi5tkPx/8ZGFfYuVX3ujKQcD5WGv8leR4u7nrn233o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=UpPeTqLl; arc=none smtp.client-ip=209.85.218.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Tax01rfG"
-Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-5a1b073d7cdso4112a12.0
-        for <oe-lkp@lists.linux.dev>; Mon, 05 Aug 2024 12:38:40 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="UpPeTqLl"
+Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-a77ec5d3b0dso1232702766b.0
+        for <oe-lkp@lists.linux.dev>; Mon, 05 Aug 2024 12:48:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1722886719; x=1723491519; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=SGFLA8u5kVy9wXjCmZIlQqKbRlxt+hHLnh+5Z8PTNyQ=;
-        b=Tax01rfGOnoUwMrZg+9jV0LRCITY3aTQYwmtev/6SoOYxYdbGYEB87SAUCUn7CGdg0
-         N24dzFnEiU2BUrQwUt40qvbpEawfdBAQnYTdWZTUtJslpSmYkcvwf4W2VznIrUVZ/4mL
-         Mgc83KVp+HBfAbHZhtVcF39LGw23fHmskSL+yQHrwI5auKSU38pDQvLm21nnTp56la8x
-         WMHADtv/oFe9gGZ8PFQRHxuYZR7kin2TXc99j6UW5WoEc7gPyAiyTjOcgwLXRMqIjXOB
-         vMb4T/uG7QHmLSbT4XPIJOacW8j5xflL+tum/4mGTKlq9rorvC5AG5B44EgCO/HVAQKc
-         Yd0w==
+        d=linux-foundation.org; s=google; t=1722887301; x=1723492101; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=wlI56xvrJ7x2cg4LdNK/30BBgdmdk2xf+663DeBt1mg=;
+        b=UpPeTqLlYCTBydwgpJt2H3+zBVE4GdJv4L8wdYETTF4KrzcS4bOnCUhp1RxbnWyV4A
+         KsvILoIpJM/yRZ+1Cutv0OEPetJGBnAIVAhjEiiNpAeGtSMOTWFNqZS/hePue1cXKQAF
+         dYJuAnMvQwi0cpuccC+t/FPYthIvbzwBdnbJI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1722886719; x=1723491519;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=SGFLA8u5kVy9wXjCmZIlQqKbRlxt+hHLnh+5Z8PTNyQ=;
-        b=Yn+yxmTyfIqs9i+OuilEpd25UZ1b/N1hMtIj1BonaS+Ws1CKzRdS53y2UBhRfxcd0V
-         g188KYO6a0ZjUqVS18lbDI8Il5A+QsUw8eDYknOcmJqV+MJ0kivKKOFYMu3SYMXAaI4l
-         eC7q28P2WQOGK86ulFHoM32W+weKU8NbQ3pCgzAH1MBtJ52Nn7ySxMO6iUd5KE4DokOq
-         /kgr39eTs0zXGNNXnF6eWsr9c5llxReNF3oEs9a1BEhS20vkw+NxTJ15wSXyJ0B+RePj
-         HelimlctA8mrHOBeWuoFOUpqRT9vi1qzHxWckmnQGF8GF9bz1FeEs2BSM1jUveqCiEyM
-         ueKw==
-X-Forwarded-Encrypted: i=1; AJvYcCVh+fly6ApsBVewhM1lN/DQW4mUUkzRjqhWYxyWDvjn1PcxVMLgTFd7cTKpKX26Bzo7JvJ+1F2OtqTZzJjA7reblDD2N25O
-X-Gm-Message-State: AOJu0Yzb+Kek8lDx5+Pdbr59vZe/hYaxamdcnGLoCF8oZ6uitiEn6UWu
-	bFUPOZaoa8Ycn6S6EEo58TM/UPpwzuBiWgFDpvEvc5uc9bfX79Q+2ESqsNmOdJNsLeKQ9oke0Aj
-	IZ6ndvrGL3rUWZMkg/hnyU1KGy3mTnbPd5a+uownE7tbvrXuEfBssh9Y=
-X-Google-Smtp-Source: AGHT+IGmnVv7No8+G2Cs5AvUBwMA5qb7rdRi/0cz257O9aMxeMc8HSPoAnLiEuwYAJwbFjE867spVvmZ03q036DH4uc=
-X-Received: by 2002:a05:6402:40c5:b0:57d:436b:68d6 with SMTP id
- 4fb4d7f45d1cf-5bb98397eecmr19552a12.7.1722886718833; Mon, 05 Aug 2024
- 12:38:38 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1722887301; x=1723492101;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=wlI56xvrJ7x2cg4LdNK/30BBgdmdk2xf+663DeBt1mg=;
+        b=Tgj6ZS6H6DjKICb6FugQMNQyhF4ZfSkULe+Slf33GiQS+tO7iHPJ6L9ZVtf6bB4lvv
+         3Da5yzYD7wcVEhqId4CqOjMqx0IT1mLjf7yVlQlaBwkTIN1A5g2yGOz7Wu++j+U3VNbN
+         aNZTntSfjmeTyH5KBJwOMGOgVtSBeeZRobbPeanRURSGcYLuVHGmqme8Y1Q0vEqJTvyJ
+         QUsRnXl/UYXlet7ywc6ofOi2viai67O9g8RNHWJMKBgjExihQiEwcg1ytGckshKBUhDP
+         UziY+aaAnIKA6Iu0UeaowkUmLwA8dGkFzQS3h1X8/b4/PtwhYTo/nCGlOpgv1ldeQ5EM
+         edHA==
+X-Forwarded-Encrypted: i=1; AJvYcCXEs7OwlIuCPsIh8jRD3JwwXD8S/l9ww+qmK9alvhi/u9KDere+FE8tdFXNLQaBI+Ml9dMo26+Lj/uPwBT3dyUYd959srLA
+X-Gm-Message-State: AOJu0Ywpy9IzmePNRvQocjmbNUZbwJmBPGoS7RBs66bngOfnEmBLbAqO
+	+C/T4ll2FdMAuN7QFx1CMKpF0ToP6pE6NQ15zp5WzCWNSHIniQNep1Gmf86CUaXddZIiXey/T4O
+	pHCSCPw==
+X-Google-Smtp-Source: AGHT+IE7Qq0jY5q5/Y3lvwFU8FFvPrQ6YObWZR75VHbGtxmHKB7/egmeG/yHrkd4u0hhoeNidaPkgQ==
+X-Received: by 2002:a17:907:3208:b0:a7a:c083:8578 with SMTP id a640c23a62f3a-a7dc50989e2mr788034666b.52.1722887301468;
+        Mon, 05 Aug 2024 12:48:21 -0700 (PDT)
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com. [209.85.208.53])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a7dc9e85286sm491620566b.171.2024.08.05.12.48.20
+        for <oe-lkp@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 05 Aug 2024 12:48:20 -0700 (PDT)
+Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-5a156556fb4so14880818a12.3
+        for <oe-lkp@lists.linux.dev>; Mon, 05 Aug 2024 12:48:20 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCXwXkUTANT41sw3wq1T2scmmxzmzG8WijR99LejWfLiE0jzvyXPd8e/qvn0w5AXFe0clw70J14ILiaM54FRCFE7rzi3AyYC
+X-Received: by 2002:a17:907:3f8b:b0:a7a:9954:1fc1 with SMTP id
+ a640c23a62f3a-a7dc4ea981cmr878526366b.24.1722887300410; Mon, 05 Aug 2024
+ 12:48:20 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -58,14 +64,16 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 References: <202408041602.caa0372-oliver.sang@intel.com> <CAHk-=whbxLj0thXPzN9aW4CcX1D2_dntNu+x9-8uBakamBggLA@mail.gmail.com>
  <CAKbZUD3B03Zjex4STW8J_1VJhpsYb=1mnZL2-vSaW-CaZdzLiA@mail.gmail.com>
- <CALmYWFuXVCvAfrcDOCAR72z2_rmnm09QeVVqdhzqjF-fZ9ndUA@mail.gmail.com> <CAHk-=wgPHCJ0vZMfEP50VPjSVi-CzL0fhTGXgNLQn=Pp9W0DVA@mail.gmail.com>
-In-Reply-To: <CAHk-=wgPHCJ0vZMfEP50VPjSVi-CzL0fhTGXgNLQn=Pp9W0DVA@mail.gmail.com>
-From: Jeff Xu <jeffxu@google.com>
-Date: Mon, 5 Aug 2024 12:37:59 -0700
-Message-ID: <CALmYWFuCvphvLQOuQHBbFq0G8Ekyze=q45Tt4dATOt-GhO2RGg@mail.gmail.com>
+ <CALmYWFuXVCvAfrcDOCAR72z2_rmnm09QeVVqdhzqjF-fZ9ndUA@mail.gmail.com>
+ <CAHk-=wgPHCJ0vZMfEP50VPjSVi-CzL0fhTGXgNLQn=Pp9W0DVA@mail.gmail.com> <CALmYWFuCvphvLQOuQHBbFq0G8Ekyze=q45Tt4dATOt-GhO2RGg@mail.gmail.com>
+In-Reply-To: <CALmYWFuCvphvLQOuQHBbFq0G8Ekyze=q45Tt4dATOt-GhO2RGg@mail.gmail.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Mon, 5 Aug 2024 12:48:03 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgySgXXkZtx49Xq70X2CmSizM8siacYKncMmFWRzKjs5Q@mail.gmail.com>
+Message-ID: <CAHk-=wgySgXXkZtx49Xq70X2CmSizM8siacYKncMmFWRzKjs5Q@mail.gmail.com>
 Subject: Re: [linus:master] [mseal] 8be7258aad: stress-ng.pagemove.page_remaps_per_sec
  -4.4% regression
-To: Linus Torvalds <torvalds@linux-foundation.org>
+To: Jeff Xu <jeffxu@google.com>
 Cc: Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
 	Christophe Leroy <christophe.leroy@csgroup.eu>, Pedro Falcato <pedro.falcato@gmail.com>, 
 	kernel test robot <oliver.sang@intel.com>, Jeff Xu <jeffxu@chromium.org>, oe-lkp@lists.linux.dev, 
@@ -81,72 +89,20 @@ Cc: Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
 	linux-api@vger.kernel.org, linux-mm@kvack.org, ying.huang@intel.com, 
 	feng.tang@intel.com, fengwei.yin@intel.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Mon, Aug 5, 2024 at 12:01=E2=80=AFPM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
+On Mon, 5 Aug 2024 at 12:38, Jeff Xu <jeffxu@google.com> wrote:
 >
-> On Mon, 5 Aug 2024 at 11:11, Jeff Xu <jeffxu@google.com> wrote:
-> >
-> > One thing that you can't walk around is that can_modify_mm must be
-> > called prior to arch_unmap, that means in-place check for the munmap
-> > is not possible.
->
-> Actually, we should move 'arch_unmap()'.
->
-I think you meant "remove"
+> I'm curious, why does ppc need to unmap vdso ? ( other archs don't
+> have unmap logic.)
 
-> There is only one user of it, and it's pretty pointless.
->
-> (Ok, there are two users - x86 also has an 'arch_unmap()', but it's empty=
-).
->
-> The reason I say that the current user of arch_unmap() is pointless is
-> because this is what the powerpc user does:
->
->   static inline void arch_unmap(struct mm_struct *mm,
->                                 unsigned long start, unsigned long end)
->   {
->         unsigned long vdso_base =3D (unsigned long)mm->context.vdso;
->
->         if (start <=3D vdso_base && vdso_base < end)
->                 mm->context.vdso =3D NULL;
->   }
->
-> and that would make sense if we didn't have an actual 'vma' that
-> matched the vdso. But we do.
->
-> I think this code may predate the whole "create a vma for the vdso"
-> code. Or maybe it was just always confused.
->
-Agree it is best to remove.
+I have no idea. There are comments about 'perf' getting confused about
+mmap counts when 'context.vdso' isn't set up.
 
-> Anyway, what the code *should* do is that we should just have a
-> ->close() function for special mappings, and call that in
-> special_mapping_close().
->
-I'm curious, why does ppc need to unmap vdso ? ( other archs don't
-have unmap logic.)
+But x86 has the same context.vdso logic, and does *not* set the
+pointer before installing the vma, for example. Also does not zero it
+out on munmap(), although it does have the mremap logic.
 
-vdso has .remap, iiuc, that is for CHECKPOINT_RESTORE feature, i.e.
-during restore, vdso might get relocated after taking from dump. [1]
-IIUC, vdso mapping doesn't change during the lifetime of the process.
-Or does it in some user cases ?
+For all I know it may all be entirely unnecessary, and could be
+removed entirely.
 
-[1] https://lore.kernel.org/linux-mm/20161101172214.2938-1-dsafonov@virtuoz=
-zo.com/
-
-
-> This is an ENTIRELY UNTESTED patch that gets rid of this horrendous wart.
->
-> Michael / Nick / Christophe? Note that I didn't even compile-test this
-> on x86-64, much less on powerpc.
->
-> So please consider this a "maybe something like this" patch, but that
-> 'arch_unmap()' really is pretty nasty.
->
-> Oh, and there was a bug in the error path of the powerpc vdso setup
-> code anyway. The patch fixes that too, although considering the
-> entirely untested nature of it, the "fixes" is laughably optimistic.
->
->                  Linus
+          Linus
