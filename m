@@ -1,61 +1,55 @@
 Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF101625
-	for <oe-lkp@lists.linux.dev>; Tue,  6 Aug 2024 00:13:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2BBB64A
+	for <oe-lkp@lists.linux.dev>; Tue,  6 Aug 2024 01:23:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722903236; cv=none; b=P7ctgvkhbJdU5ZNpq5ZlUuAQS7vOMWrFQ/oECkvWCOPuqTFminsuaHfQBM81z9V05LbOwvdpGd5wGUIjyrSatJ9uqBd6cB8PUGSlcMGf0fEBKTWskHz7GieH00G/vLPD+p/yy6AEacmOwJBChyk912rOGaqrkcauU1rCH/FFxUo=
+	t=1722907414; cv=none; b=BwjRO8GDpqy0DenhY1+ug/vk0zcXR0wMu45f7DS+nDGzysoK2FN3ketswp4srrrCO1DEVkQ8YKORod7JClNqQSg72+69ADxjN/PJapkFGMmvi2wcowCLE8YL+byNSRWmjEPJb2Jcpv/cOyid4NeJLTl1+j8df7ySjQIwQLM/Zkc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722903236; c=relaxed/simple;
-	bh=KhE7wem6k7+mMBHOIKFkuNlqunhQlQKQ2o5ffgZbY9I=;
+	s=arc-20240116; t=1722907414; c=relaxed/simple;
+	bh=vA4qaSs5vwrQoFaoWs6qaP6dAmPJ7PdCG5HHaDna8EA=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=NDSQ2Zn9mFCkFHWCq6LEkLebFudP3Btha8LnxhaEH0UdkWjIG35LN2mG8iOepw4RHmUE8oY5hIGIA3zQdzUpCswuzkq2SmlvgQ7PZE2WCgh46VqYKy3thy/qo4NLOG04tqnpIoTfWCZ0YbB0cUBJAHpV/9wXhdkreotp/ovJjPk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=foo9xNVu; arc=none smtp.client-ip=209.85.167.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
+	 To:Cc:Content-Type; b=cF/xYDFH+d8QbOC9j5+2doIMP3O3EMiGw9UbBE0Ralexi2qDNxEKr/21qpBYThTrnMfWrw5hDkfxklq7Ojlk016YalckEi0Npc9FRLEQjsyll1bWxK8WBd9j48AXDgHOo5La8WbDrybtq4hNUPjzk2zFts6MjWiwTE/5NtV7O8E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=WQL/Nhda; arc=none smtp.client-ip=209.85.167.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="foo9xNVu"
-Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-52f04b4abdcso114552e87.2
-        for <oe-lkp@lists.linux.dev>; Mon, 05 Aug 2024 17:13:54 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="WQL/Nhda"
+Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-52efc82c872so1080e87.1
+        for <oe-lkp@lists.linux.dev>; Mon, 05 Aug 2024 18:23:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1722903233; x=1723508033; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=s/w/R50dzf1u4Y5vhvcxV6m9BvUcW7XkQaFxdwQ7Gmk=;
-        b=foo9xNVuUagSjKV+uXTMLx6XiMX+I85xVOxPxRxbMlscckI6pv2638OzElLmHiuv5b
-         ZWXmNbbj2J1xJ03OZeKHAI0GXcLguahwlvbcAesMRgacB1tid0h0SWhg4ummzksZqia/
-         bfNeiAx/Dm0inqa2aRRuKU71glVy923r/Hu2E=
+        d=google.com; s=20230601; t=1722907411; x=1723512211; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=y2zr5Jw8aSSrppFuky4osrxPL34Y2hdQ6m0LCpom6O0=;
+        b=WQL/NhdaE3F8rY53rg5x7O7Zl+68XPHHrueh+SU6Mmr948emRfiQ6wjKX4mB786m8T
+         n8wByJG1Ov65L4Av+xtr9gbaL+Dh1Nq3dEogwZIdr29oqFQj+6PHyJLdMmnSiRrqu/O0
+         jS4fxNl9nz7lXZouvnx+3hn1yIshE5n1vBht1q8/JCL/7u8o3LmAJGVxSOuV0wue7p2n
+         qWjuk98z53tYBTLsWRy0jDnVfA8BzPBbB607a8dJHWtjJYGG6t7MM6s61BmUyggjJKFl
+         RCTQYod1lPz2IJy+l3keuDSft6HtJ890i3USnXVkmZ8OgHWDR5piktegueTl3VrGXi6D
+         01aw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1722903233; x=1723508033;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=s/w/R50dzf1u4Y5vhvcxV6m9BvUcW7XkQaFxdwQ7Gmk=;
-        b=CbOrzImB4JwnU8zi8r8Rq/oKkcoAHJ+YT472GZxrqhtthtfoBk4FFuk1JxRjaWSeIY
-         XcBCYURdzgU5NEU9WiC9SPTo4Gn54oHl40+P/ebrknvTs2NZ0Tha07oZ8R2FnlCEBlcM
-         s3jkwdA5VMnnmcGURyTfdqpvw2ND6eoT5FqSF8/7IVzON1F2jE/x0tYFaQEG7yzrsUHC
-         TPLeRiQqMhhAAsksSFJD7zXdOKDukhHJqJh9gYKJ2g4LK2U9bE8T8B4NnvRPVo8f0gpJ
-         RmKlF2d9Mp+qTPUq5YJ30OY72jKi55OMIzgN31d9Ou7FhbVlNfGdR0UucPXn6HMjQqL/
-         6Vow==
-X-Forwarded-Encrypted: i=1; AJvYcCXawrfG1TqhE7QrmTtJFBNYRCgQvs2ag+Yj+uqIu8YMjgUbUJt5fYmQqzFKovtXblZH3HeZSUrdNc630yVtr/fkMJSXneBP
-X-Gm-Message-State: AOJu0YzDDIS1SLk1DNxq7XiHvReTmfH5veBFSI2+luAWOCZdzAx61/FR
-	zae2xQciUTioZwLpiS5zKRv1VC2UyXmllzjrMP/2tfoMzlp2KiJWlA91rq1G+7MD7CEa85VEMeM
-	XMbDpzg==
-X-Google-Smtp-Source: AGHT+IF8jZSlrlSOcc3zfWD7TPAO9FFkl8j3pL9ur23naZEMpxBPPwlCF1dMzMisjmPUgriArYASYw==
-X-Received: by 2002:a05:6512:a96:b0:52c:e0db:5fc2 with SMTP id 2adb3069b0e04-530bb395eaemr9822329e87.38.1722903232750;
-        Mon, 05 Aug 2024 17:13:52 -0700 (PDT)
-Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com. [209.85.208.45])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a7dc9ec8dafsm500715066b.220.2024.08.05.17.13.50
-        for <oe-lkp@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 05 Aug 2024 17:13:51 -0700 (PDT)
-Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-5a1c49632deso56749a12.2
-        for <oe-lkp@lists.linux.dev>; Mon, 05 Aug 2024 17:13:50 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCVT4v7znZuuB8vpw4NN39IqP6zcP83pjSqHgDWVew4BySfYzrnifUwZJBO+OpC0kpffX+W85MtG7lDswz+N3PkLCyHDvyN8
-X-Received: by 2002:aa7:cd69:0:b0:58c:804a:6ee2 with SMTP id
- 4fb4d7f45d1cf-5b7f4294a1emr9353286a12.20.1722903230289; Mon, 05 Aug 2024
- 17:13:50 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1722907411; x=1723512211;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=y2zr5Jw8aSSrppFuky4osrxPL34Y2hdQ6m0LCpom6O0=;
+        b=dGfRGb2ic0ejZmpKNU19IqLYIcWkIR5Ks+4H/pIV9TlvqUgR3W67zjjuH4PI4cnaC1
+         m1IpfwJs4gpHHFYc/9QZC5EGQLK8UKXKrKu5k8blumZvceONbXaIcqckvh9wddFHAYpx
+         3ldq+9cSibythnj1DWz6I8ujr4aC3pgXSWq9lvSfSQ0hh51zOYwijXvS84JtOiMx101i
+         o8R2nsYuBcXoEU9gA1Zdajtw4iNg1HwYLUI5O+Bmw24u4eUyew8QJtHktyvs8yhBrQH5
+         cJbTW4oN4Jpyu2yv/SxxSmKPaCGVktv+Tqkl05Gx7lLhn58K8XwBinlFiiqYzpcELuhe
+         8xkA==
+X-Forwarded-Encrypted: i=1; AJvYcCV//LdukwIk5IGuxswQ1JLJ/qDCTriO93YMpTZsQI9bqNrGBS1A1n7T2yFwHQYKLXcJLvH8cz+77V+0apIUWatbCnpOWnbo
+X-Gm-Message-State: AOJu0Yw7g1YYHHA1LKUSXb8SzdtGtncInR2wq9giGNqbwrkf01gMb7Uo
+	oPRhfo9K9/fh+7Z6CKM92Zug3BGUePbUWDBW0tYYbA2BnyaRjwrPTomJSTzma+9c9TrN4hVG70P
+	2uuunbeSmcPjcZhqkgchZ0Xw6S2Npz7ceVZCN
+X-Google-Smtp-Source: AGHT+IHDKybFd7xjBRooCMWNn/w6NoQhtyT6dyera+RHZ8++MzQjx2qRg4C4mrmTqvpJKMndQwKboNUTLGvAKAJR9gQ=
+X-Received: by 2002:a05:6512:b94:b0:52c:b243:cd02 with SMTP id
+ 2adb3069b0e04-530d593c470mr35192e87.1.1722907410501; Mon, 05 Aug 2024
+ 18:23:30 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -67,16 +61,16 @@ References: <202408041602.caa0372-oliver.sang@intel.com> <CAHk-=whbxLj0thXPzN9aW
  <CALmYWFuXVCvAfrcDOCAR72z2_rmnm09QeVVqdhzqjF-fZ9ndUA@mail.gmail.com>
  <CAHk-=wgPHCJ0vZMfEP50VPjSVi-CzL0fhTGXgNLQn=Pp9W0DVA@mail.gmail.com>
  <CALmYWFuCvphvLQOuQHBbFq0G8Ekyze=q45Tt4dATOt-GhO2RGg@mail.gmail.com>
- <CAHk-=wgySgXXkZtx49Xq70X2CmSizM8siacYKncMmFWRzKjs5Q@mail.gmail.com> <D38D6LJZOIQK.2GV58PGVL5K85@gmail.com>
-In-Reply-To: <D38D6LJZOIQK.2GV58PGVL5K85@gmail.com>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Mon, 5 Aug 2024 17:13:34 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wjeWqr+0Ktzbwqrw17aESe5dZm5Kt6nwqtKJX00VsDqWg@mail.gmail.com>
-Message-ID: <CAHk-=wjeWqr+0Ktzbwqrw17aESe5dZm5Kt6nwqtKJX00VsDqWg@mail.gmail.com>
+ <CAHk-=wgySgXXkZtx49Xq70X2CmSizM8siacYKncMmFWRzKjs5Q@mail.gmail.com>
+ <D38D6LJZOIQK.2GV58PGVL5K85@gmail.com> <CAHk-=wjeWqr+0Ktzbwqrw17aESe5dZm5Kt6nwqtKJX00VsDqWg@mail.gmail.com>
+In-Reply-To: <CAHk-=wjeWqr+0Ktzbwqrw17aESe5dZm5Kt6nwqtKJX00VsDqWg@mail.gmail.com>
+From: Jeff Xu <jeffxu@google.com>
+Date: Mon, 5 Aug 2024 18:22:51 -0700
+Message-ID: <CALmYWFuXTd5qYLa=rEkoFbzSk07PjdKExgKsUkgMkT2E1Pjrtg@mail.gmail.com>
 Subject: Re: [linus:master] [mseal] 8be7258aad: stress-ng.pagemove.page_remaps_per_sec
  -4.4% regression
-To: Nicholas Piggin <npiggin@gmail.com>
-Cc: Jeff Xu <jeffxu@google.com>, Michael Ellerman <mpe@ellerman.id.au>, 
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Nicholas Piggin <npiggin@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, 
 	Christophe Leroy <christophe.leroy@csgroup.eu>, Pedro Falcato <pedro.falcato@gmail.com>, 
 	kernel test robot <oliver.sang@intel.com>, Jeff Xu <jeffxu@chromium.org>, oe-lkp@lists.linux.dev, 
 	lkp@intel.com, linux-kernel@vger.kernel.org, 
@@ -91,29 +85,41 @@ Cc: Jeff Xu <jeffxu@google.com>, Michael Ellerman <mpe@ellerman.id.au>,
 	linux-api@vger.kernel.org, linux-mm@kvack.org, ying.huang@intel.com, 
 	feng.tang@intel.com, fengwei.yin@intel.com
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, 5 Aug 2024 at 16:25, Nicholas Piggin <npiggin@gmail.com> wrote:
+On Mon, Aug 5, 2024 at 5:13=E2=80=AFPM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
 >
-> Can userspace on other archs not unmap their vdsos?
+> On Mon, 5 Aug 2024 at 16:25, Nicholas Piggin <npiggin@gmail.com> wrote:
+> >
+> > Can userspace on other archs not unmap their vdsos?
+>
+> I think they can, and nobody cares. The "context.vdso" value stays at
+> some stale value, and anybody who tries to use it will just fail.
+>
+I want to seal the vdso :-), so I also care (not having it changeable
+from userspace)
 
-I think they can, and nobody cares. The "context.vdso" value stays at
-some stale value, and anybody who tries to use it will just fail.
+For the restore scenario, if vdso is sealed,  I guess CRIU won't be
+able to relocate the vdso from userspace, I 'm interested in hearing
+vdso dev's input on this , e.g. is that possible to make CRIU
+compatible with memory sealing.
 
-So what makes powerpc special is not "you can unmap the vdso", but
-"powerpc cares".
-
-I just don't quite know _why_ powerpc cares.
-
-Judging by the comments and a quick 'grep', the reason may be
-
-    arch/powerpc/perf/callchain_32.c
-
-which seems to have some vdso knowledge.
-
-But x86 does something kind of like that at signal frame generation
-time, and doesn't care.
-
-I really think it's an issue of "if you screw with the vdso, you get
-to keep both broken pieces".
-
-           Linus
+> So what makes powerpc special is not "you can unmap the vdso", but
+> "powerpc cares".
+>
+> I just don't quite know _why_ powerpc cares.
+>
+> Judging by the comments and a quick 'grep', the reason may be
+>
+>     arch/powerpc/perf/callchain_32.c
+>
+> which seems to have some vdso knowledge.
+>
+> But x86 does something kind of like that at signal frame generation
+> time, and doesn't care.
+>
+> I really think it's an issue of "if you screw with the vdso, you get
+> to keep both broken pieces".
+>
+>            Linus
