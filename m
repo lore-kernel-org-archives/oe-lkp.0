@@ -1,94 +1,97 @@
-Received: from mail.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB3721C9DD6
-	for <oe-lkp@lists.linux.dev>; Wed,  7 Aug 2024 12:26:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=150.107.74.76
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90E171E3CBE
+	for <oe-lkp@lists.linux.dev>; Wed,  7 Aug 2024 12:55:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723033598; cv=none; b=ex7fMOY0h1+qmsqp8VnojAl3ce/6Tb/BfK6PNwkhMEKQlMmM1ZEOBCUR0IXLo7bXhtadCw7Dr25UFI7cdy/x71QifFhElSMIp0mg5zPIbeU+f41LVUo/q9MJ9B6um9m+fzlcxbk7oJ9O7kRmyJGTWuKUCiud+IJH/pFRGZMNRHw=
+	t=1723035334; cv=none; b=OyR2qLZ/0ziLUB0+hkEETukHY7W2sD1CDNE2ymopYZxmuNdn2WdPZhPtFP7NxwM0ctATH5jzFsWP3TKFQX12DJtSZ8ppJxnyuodUuowWUPQl50oomIicxQ5ReaVk2Zp/1pngcB6NyqG/BnVfQRQqCtzqLk2f22NrstewDSUgVuU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723033598; c=relaxed/simple;
-	bh=OdSt8Tt/U2n9w379ApL8F4qbwce1h8QlEm0Nmuegrok=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=WJcked0XNzt/QRff44cAjhFz8XoBV37tjZDaV2s9Dgo089JaJW6cGeX1IdVp2MbWohljoaFbNqoHMf8B0jIEbZoU/RPVsNPMXEGETZxaGYj9vtucBNqUIPlKUZDuK25Bxry6QiD60NgKzDQ50y1nyUvRXvgmDhHKHgNEXcYDCfM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ellerman.id.au; spf=pass smtp.mailfrom=ellerman.id.au; dkim=pass (2048-bit key) header.d=ellerman.id.au header.i=@ellerman.id.au header.b=YnW/rQyo; arc=none smtp.client-ip=150.107.74.76
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ellerman.id.au
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ellerman.id.au
+	s=arc-20240116; t=1723035334; c=relaxed/simple;
+	bh=T0FMpysHiCok2rPZDxNM3hR5ykKAgKtyNJKDi4Mfg6Q=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=YOeD6C5H5fwUlUea/kIRiHu51KC1JIP82Faawm9gJODTfuHLuX70OXPXrv6Qzj9Q5t0Ww3wR4BL3/Nk1FOgctPBRfibkIM6V0rQX7xSX53gZBMxys5DhmtD/qdLzFeFt4rZQixGSQWMflUc5Tmg2QHACy3cq74aQ90Z2ML/X53c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=qmH5GeUq; arc=none smtp.client-ip=209.85.208.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ellerman.id.au header.i=@ellerman.id.au header.b="YnW/rQyo"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-	s=201909; t=1723033593;
-	bh=OdSt8Tt/U2n9w379ApL8F4qbwce1h8QlEm0Nmuegrok=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=YnW/rQyoOAweXydm9V9Sx4BR5bWp3A63VMYTQOpI6d+m0m2ffd7dxUELQRLPFMqm/
-	 Mw6qICJkyvvkG/kmwzJnV4GB9zVM3iI8pmVrycRYA4D5KJJGgDH3NkZTBwdsS3E/kj
-	 EQiAekjjIpIrbD/h1ce2NPPaFtT66mIGyfR7UT+GZCUtZGI59/LL+0d7e1IF0s+5Sy
-	 sAwNOzdXEoDeUrH2fZa6bVmu4nVUajRSs9G8pgOr8IdBQW+rdINjVU1j5SF8xKI77g
-	 yuxwSVbW0ttpngBkzDHghMP153gkq3dmrCWyqqUyzSIrD7jLrKRbU+EKonFk5XQi0x
-	 WDAy6902F5RPQ==
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(Client did not present a certificate)
-	by mail.ozlabs.org (Postfix) with ESMTPSA id 4Wf8YL6FV0z4w2Q;
-	Wed,  7 Aug 2024 22:26:30 +1000 (AEST)
-From: Michael Ellerman <mpe@ellerman.id.au>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Jeff Xu <jeffxu@google.com>, Nicholas Piggin <npiggin@gmail.com>,
- Christophe Leroy <christophe.leroy@csgroup.eu>, Pedro Falcato
- <pedro.falcato@gmail.com>, kernel test robot <oliver.sang@intel.com>, Jeff
- Xu <jeffxu@chromium.org>, oe-lkp@lists.linux.dev, lkp@intel.com,
- linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>,
- Kees Cook <keescook@chromium.org>, "Liam R. Howlett"
- <Liam.Howlett@oracle.com>, Dave Hansen <dave.hansen@intel.com>, Greg
- Kroah-Hartman <gregkh@linuxfoundation.org>, Guenter Roeck
- <groeck@chromium.org>, Jann Horn <jannh@google.com>, Jonathan Corbet
- <corbet@lwn.net>, Jorge Lucangeli Obes <jorgelo@chromium.org>, Matthew
- Wilcox <willy@infradead.org>, Muhammad Usama Anjum
- <usama.anjum@collabora.com>, Stephen =?utf-8?Q?R=C3=B6ttger?=
- <sroettger@google.com>, Suren
- Baghdasaryan <surenb@google.com>, Amer Al Shanawany
- <amer.shanawany@gmail.com>, Javier Carrasco
- <javier.carrasco.cruz@gmail.com>, Shuah Khan <shuah@kernel.org>,
- linux-api@vger.kernel.org, linux-mm@kvack.org, ying.huang@intel.com,
- feng.tang@intel.com, fengwei.yin@intel.com
-Subject: Re: [linus:master] [mseal] 8be7258aad:
- stress-ng.pagemove.page_remaps_per_sec -4.4% regression
-In-Reply-To: <CAHk-=whQ4x+ZgG7txteY70fvmHkuvRstMZj06XscmKfDL+RBCg@mail.gmail.com>
-References: <202408041602.caa0372-oliver.sang@intel.com>
- <CAHk-=whbxLj0thXPzN9aW4CcX1D2_dntNu+x9-8uBakamBggLA@mail.gmail.com>
- <CAKbZUD3B03Zjex4STW8J_1VJhpsYb=1mnZL2-vSaW-CaZdzLiA@mail.gmail.com>
- <CALmYWFuXVCvAfrcDOCAR72z2_rmnm09QeVVqdhzqjF-fZ9ndUA@mail.gmail.com>
- <CAHk-=wgPHCJ0vZMfEP50VPjSVi-CzL0fhTGXgNLQn=Pp9W0DVA@mail.gmail.com>
- <CAHk-=wgdTWpCqTMgM9SJxG2=oYwhAueU_fDHMPifjpH5eHG8qw@mail.gmail.com>
- <87o766iehy.fsf@mail.lhotse>
- <CAHk-=whQwJaS=jVWVvvvf0R=45EGMb0itmhhSpa7_xWJXQY71Q@mail.gmail.com>
- <87bk25j1sx.fsf@mail.lhotse>
- <CAHk-=whQ4x+ZgG7txteY70fvmHkuvRstMZj06XscmKfDL+RBCg@mail.gmail.com>
-Date: Wed, 07 Aug 2024 22:26:29 +1000
-Message-ID: <87v80c8qoa.fsf@mail.lhotse>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="qmH5GeUq"
+Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-5a1b073d7cdso33820a12.0
+        for <oe-lkp@lists.linux.dev>; Wed, 07 Aug 2024 05:55:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1723035330; x=1723640130; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=T0FMpysHiCok2rPZDxNM3hR5ykKAgKtyNJKDi4Mfg6Q=;
+        b=qmH5GeUqVWXN2NPWCkvOSzM7FYKY0tHqOCSAEq2/elXTlXc4jtzgBTx+F0h/Aur5m+
+         4oTgLPdUvs7C5fVOh3qBpCt/clhTdZq3Fo820U12UZ6mub3OqeNRmnoZqGWZi5aGreoq
+         LqMty38CEu6S1CaSiDdx4okqFtccWe93TK1oiVN/xHilDs7y4wjIaMZFXrcQFwzjIOkN
+         gP72ELHHFhxiJ1bdVP2HyuMbtIg9F+0bOnhue41MnM/UZb1dSvyJ3cWgVi9Dy6/moU0x
+         hRPA02fL3Y4Uk8UzwqGBZRMWQYIV1XpyoZK+HJro0qOmNiRaRKPvnkMie6BdApoA7TFW
+         qPTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1723035330; x=1723640130;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=T0FMpysHiCok2rPZDxNM3hR5ykKAgKtyNJKDi4Mfg6Q=;
+        b=DaBvc8iD5QZsFktAc8rfKsfmIOxeZyBgXl3pExuRvL8EekuB69RISvHWOTIUx16WUy
+         QTEjM1shsuw39ddtDsRcEAxwm7uxs2+4ChdlJehRtxrfSyR69OalCIwXurDe536PAA2g
+         qW+fzO6tJ9Z/8PoKt5m+9CVOGqCOB0hFfntJyUj+mVeUFLnWPEqBXmldTCcyqdJDXbD7
+         OicIAGuqR+R93lRypZkcdQs9RZPcxzxHwsaM2BjnmYQitIZgy0qLTboxcP+t66d0JwZ0
+         SVNifcyAYHAb6wKNeVRKFoOStadRM+shMUrNHFl+FKWKlybdAR2CNZZpjrSEuV4pdw32
+         vJsA==
+X-Gm-Message-State: AOJu0YwN3uuu3VixEw8v9Cz6YaF7rbpwOO5Ik3c94mVe3a5sJ9aWNEtV
+	tG24IHtsPhGQ8auFODxY3k0Z24SrRJ6DZmdvpPbEn0sXlV8M9RMan7XGUw3RI3VD2IuxnVdB3x3
+	rUj6yMc4jMEX0Uqr74jhBf6cmWFRi2ZvrVwVzwm5jCyU989MwyOKmHE8=
+X-Google-Smtp-Source: AGHT+IHgukcefutx9sinCh379YuXQ81jKS9f06CI6Cgq+JpWyVbcyaOC5AGtbTillGrKY7STc613grub6WxXVKB/59c=
+X-Received: by 2002:a05:6402:84c:b0:59f:9f59:9b07 with SMTP id
+ 4fb4d7f45d1cf-5bba28bb22amr186027a12.4.1723035328829; Wed, 07 Aug 2024
+ 05:55:28 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <202408071606.258f19a0-oliver.sang@intel.com>
+In-Reply-To: <202408071606.258f19a0-oliver.sang@intel.com>
+From: Jann Horn <jannh@google.com>
+Date: Wed, 7 Aug 2024 14:54:52 +0200
+Message-ID: <CAG48ez1if0dEpL9kdby=5=PcFfnwSP+xn_kKO2aibGpqNNqm6Q@mail.gmail.com>
+Subject: Re: [linux-next:master] [slub] b82c7add4c: WARNING:at_mm/slub.c:#slab_free_after_rcu_debug
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, 
+	Linux Memory Management List <linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>, 
+	Alexander Potapenko <glider@google.com>, Andrey Konovalov <andreyknvl@gmail.com>, 
+	Andrey Ryabinin <ryabinin.a.a@gmail.com>, Christoph Lameter <cl@linux.com>, 
+	David Rientjes <rientjes@google.com>, Dmitry Vyukov <dvyukov@google.com>, 
+	Hyeonggon Yoo <42.hyeyoo@gmail.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, 
+	Marco Elver <elver@google.com>, Pekka Enberg <penberg@kernel.org>, 
+	Roman Gushchin <roman.gushchin@linux.dev>, Vincenzo Frascino <vincenzo.frascino@arm.com>, 
+	kasan-dev@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Linus Torvalds <torvalds@linux-foundation.org> writes:
-> On Tue, 6 Aug 2024 at 05:03, Michael Ellerman <mpe@ellerman.id.au> wrote:
->>
->> Or should I turn it into a series and post it?
+Hi!
+
+On Wed, Aug 7, 2024 at 10:42=E2=80=AFAM kernel test robot <oliver.sang@inte=
+l.com> wrote:
+> hi, Jann Horn,
 >
-> I think post it as a single working patch rather than as a series that
-> breaks things and then fixes it.
+> as you educated me last time, I know this b82c7add4c is v5:)
+> the CONFIG_SLUB_RCU_DEBUG is really enabled, and we saw lots of WARNING i=
+n dmesg
+> https://download.01.org/0day-ci/archive/20240807/202408071606.258f19a0-ol=
+iver.sang@intel.com/dmesg.xz
+>
+> not sure if it's expected? below report (parsed one of WARNING) just FYI.
 
-It splits nicely with no breakage along the way.
+Thanks a lot, and sorry that my series is creating so much work for you...
 
-> And considering that you did all the testing and found the problems,
-> just take ownership of it and make it a "Suggested-by: Linus" or
-> something.
+Okay, all these warnings at mm/slub.c:4550 are for the "if
+(WARN_ON(is_kfence_address(rcu_head)))" check, which was wrong up to
+v5 and fixed in v6. syzbot had also encountered that bug...
 
-Sure.
-
-cheers
+Thanks for letting me know, and have a nice day!
