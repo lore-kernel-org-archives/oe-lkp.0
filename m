@@ -1,132 +1,91 @@
-Received: from mail-vk1-f182.google.com (mail-vk1-f182.google.com [209.85.221.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BD6B82863
-	for <oe-lkp@lists.linux.dev>; Tue,  6 Aug 2024 21:37:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 879001A269;
+	Wed,  7 Aug 2024 03:46:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722980242; cv=none; b=JQb9FVIsng4214+1z6NVPorleVYmRy3EQgqcEN8X6r8SNgq9ATGTre+/ZFD68ldn8Azj79zeKNmygyZ1sXE/ujohFE3uxTxDlY0W8miM4JXP8E0cqV3aQ896qvUy/z0Iu6EmgE/RbN+2LEUk334Ghqvkqv0a8RjNK7q2vhwK+4o=
+	t=1723002383; cv=none; b=d+oXrm4eGJTsTMXQ2RqhY79GEMDWhXj5HG/Zo0RQdQ2sWKJvc4NSNgCIs3OldNS96zMDFFqhKe0Oi+bAZp2/1M2xUNh20RzbKTC1pblivQbimA/SrsNyqQqtS0zLsR60JLTd+zZkHahRymC2xlmGTuZXyGq+69NzkjlcQahH85E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722980242; c=relaxed/simple;
-	bh=8kHm+ac+kygNQxYV5Z1B1h2y1ADNWsDkiwXd93UvjBw=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=MBfMT3YfFk4XX8RdcIHi6Xdo2yZwK0untn2J94fFq2rhClsTV/5JfnNwqzNwt3PiKp6cCG55BbcBXQSBPOk2UP8kLgph7PM57SCBvMNuPpDMt3EsWiuD+2tOJAPDQAEg4Bi+7jDnz39HnWdMDYLcYyAlYFDqQ8YnJyxaRFbxb9c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GGYMOhRF; arc=none smtp.client-ip=209.85.221.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1723002383; c=relaxed/simple;
+	bh=S7xTj1+BRrFzibxP14qb9afX2Rlcc7Yzirv1sNhukC4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=r35b0so3qFIjK2gQC4RJydfRZCD3att8F6kgWZ9yFNloc9sqTHdBSYbttKQ4PSFkeOf0+PJMuXYMuuhm5WiJlM/frXCteqFGAQ3eUZtE1U8p3Efn4QCnjhxQ27+USrURN5v3GOEN/o4/Cdm6xCoLOfCQc3/cvrDAB15fhumu5Xk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=kBpsMhbZ; arc=none smtp.client-ip=90.155.50.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GGYMOhRF"
-Received: by mail-vk1-f182.google.com with SMTP id 71dfb90a1353d-4f8b5e5671bso475559e0c.0
-        for <oe-lkp@lists.linux.dev>; Tue, 06 Aug 2024 14:37:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1722980240; x=1723585040; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=uFsMpJ+I7X97hoFlRtZ+H2DXn3COcJ95N+qj7lA/TOQ=;
-        b=GGYMOhRFdnx1OfVpM7GFB6u6lwpW0n9oKhyzrbpR+3muLpBLIkU0JfihfKrIVQw7pD
-         QaVWRNjzNDuSpDVBwwuQ1oKyANEUFzvMpN8TSyk5tXebyrSWIuCaSOJuX+CX9N/B3sQ9
-         TaSVq9i/zhlEOHptYda2+na+IaCYzmZ20F26fBBteshNUxI7ZUg/VmKpNhvIwfgxg6gZ
-         VHLG6BvygEzlfcbJMcqrVlWLlW8KWHKOhmvJjeKN5wFQC+WtzlD6Jmlgs6mLaaPVGaXw
-         1iTrqQggy/0nial8wromA3rA66mQpsCWcdXjwbPpLv9DOZohQtsBvkQzQAMHeb6aK1So
-         4kAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1722980240; x=1723585040;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=uFsMpJ+I7X97hoFlRtZ+H2DXn3COcJ95N+qj7lA/TOQ=;
-        b=ZT3nQQmk2EDg+02v23M0uOSBs+qyGLlgrZLKNDmkQnPL8RHldyhArUEz+RmlacZeQw
-         EmH5L1AmAHNj45DKCXDqvqP+MJCuuDIJqnLWby7GNfIELhm0dJ5Xajqx/0/IXAeqEwRh
-         FWmHvnZijvMtYshxfN5bKnuQthdzPI1ABoaQiP0L/f2MftZF1+VgabHFdQ8Ux1ih9RC6
-         VC3tDxHwTzDiXt/KPVYo1V0mtTljCk5j40pdjqtGr9rZsOHBFfqYP8IeZq8HpDXkkGAX
-         g/VjNO8o5eqqxjB4uH4O5SyOUXJP6llZ3pmFX72YVfnKXfUq5PBUVY+m5c+QEzFHhKmL
-         jz7w==
-X-Forwarded-Encrypted: i=1; AJvYcCUGX/VkA7MaOBw41N5ixsOSxAHhsotZ2soXTxSNMATT2TVLEbGSF/4LVYRdVFeJyVJU92GPxzFNHIxnmd6ZcWXb/t/NLay/
-X-Gm-Message-State: AOJu0Yw2QLmXB0GNpVM8x0i2fbcbWl8YGSFCJaMM05FJ914yJVrtGN0l
-	LrGhXmiwHXnJucmTjqs0874zfOyYLt/aCHVE8KTEXiX6OidpAYsCBsCHLmZ3tDpY26lc+Chzzrk
-	cD6F4rD4GvapqWPLDEd5t87IOwRE=
-X-Google-Smtp-Source: AGHT+IFrQ8JTwjxVQvgV4t1UWu1mNosEjtPutyaa5+3W6qYS/JH+h8DUFz1dPxmoFFh/1Vhlg23Q+IHOeKLj0hAoGlA=
-X-Received: by 2002:a05:6122:2191:b0:4f5:1b58:acd9 with SMTP id
- 71dfb90a1353d-4f89ff4c58fmr14470832e0c.2.1722980240246; Tue, 06 Aug 2024
- 14:37:20 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="kBpsMhbZ"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=Jy5sBXXGr2voNP18guOdqKk17MKFMl8ptCuzk1nlp0Q=; b=kBpsMhbZ+1Pgy99WHBD3YzI4XG
+	Hqy0KiWbREOfNTGd4D85Ztw2vyfymYiId0v/fTjNdlVAQK/i5x/NoKEy/QsyytCQ29qGuUAPcq9Qm
+	vjWq9+4BtI6nienJ8u7m7JMTT8t8SpdKlmHFaOFuyV61i2voDWVr/HNRi6uBFNEFEKkv5wF5jsRT4
+	QsFXi0/Oqo98Wx1ic4RCpOZYs5IrLeuD9EiwRoO7eiq16UpiiqcAEe8uXB9oQygLNDqEwGOxHUSal
+	larh/IiUtXsxc/JN3FDf2sNmqYdwc6o9DNqJ+ZGljoforqQ0namjXayDrOo23zksSQNAh0C4Om5cd
+	UgGbrBrg==;
+Received: from willy by casper.infradead.org with local (Exim 4.97.1 #2 (Red Hat Linux))
+	id 1sbXct-00000006gRT-3Off;
+	Wed, 07 Aug 2024 03:46:16 +0000
+Date: Wed, 7 Aug 2024 04:46:15 +0100
+From: Matthew Wilcox <willy@infradead.org>
+To: kernel test robot <oliver.sang@intel.com>,
+	Ryan Roberts <ryan.roberts@arm.com>,
+	Christian Brauner <brauner@kernel.org>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
+	Linux Memory Management List <linux-mm@kvack.org>,
+	linux-fsdevel@vger.kernel.org, linux-block@vger.kernel.org,
+	intel-gfx@lists.freedesktop.org, linux-bcachefs@vger.kernel.org,
+	ceph-devel@vger.kernel.org, ecryptfs@vger.kernel.org,
+	linux-ext4@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net,
+	linux-um@lists.infradead.org, linux-mtd@lists.infradead.org,
+	jfs-discussion@lists.sourceforge.net, linux-nfs@vger.kernel.org,
+	linux-nilfs@vger.kernel.org, ntfs3@lists.linux.dev,
+	ocfs2-devel@lists.linux.dev,
+	linux-karma-devel@lists.sourceforge.net, devel@lists.orangefs.org,
+	reiserfs-devel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [linux-next:master] [fs]  cdc4ad36a8:
+ kernel_BUG_at_include/linux/page-flags.h
+Message-ID: <ZrLuBz1eBdgFzIyC@casper.infradead.org>
+References: <202408062249.2194d51b-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202408041602.caa0372-oliver.sang@intel.com> <CAHk-=whbxLj0thXPzN9aW4CcX1D2_dntNu+x9-8uBakamBggLA@mail.gmail.com>
- <CAKbZUD3B03Zjex4STW8J_1VJhpsYb=1mnZL2-vSaW-CaZdzLiA@mail.gmail.com>
- <CALmYWFuXVCvAfrcDOCAR72z2_rmnm09QeVVqdhzqjF-fZ9ndUA@mail.gmail.com>
- <CAHk-=wgPHCJ0vZMfEP50VPjSVi-CzL0fhTGXgNLQn=Pp9W0DVA@mail.gmail.com>
- <CAHk-=wgdTWpCqTMgM9SJxG2=oYwhAueU_fDHMPifjpH5eHG8qw@mail.gmail.com> <ZrG8+/1YjxN/Hsb7@xsang-OptiPlex-9020>
-In-Reply-To: <ZrG8+/1YjxN/Hsb7@xsang-OptiPlex-9020>
-From: Pedro Falcato <pedro.falcato@gmail.com>
-Date: Tue, 6 Aug 2024 22:37:08 +0100
-Message-ID: <CAKbZUD1278Bq+5QwjH=LeYSgcugZ3JbvkLeoB3whei_gkEXV+w@mail.gmail.com>
-Subject: Re: [linus:master] [mseal] 8be7258aad: stress-ng.pagemove.page_remaps_per_sec
- -4.4% regression
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Jeff Xu <jeffxu@google.com>, 
-	Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
-	Christophe Leroy <christophe.leroy@csgroup.eu>, Jeff Xu <jeffxu@chromium.org>, 
-	oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org, 
-	Andrew Morton <akpm@linux-foundation.org>, Kees Cook <keescook@chromium.org>, 
-	"Liam R. Howlett" <Liam.Howlett@oracle.com>, Dave Hansen <dave.hansen@intel.com>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Guenter Roeck <groeck@chromium.org>, 
-	Jann Horn <jannh@google.com>, Jonathan Corbet <corbet@lwn.net>, 
-	Jorge Lucangeli Obes <jorgelo@chromium.org>, Matthew Wilcox <willy@infradead.org>, 
-	Muhammad Usama Anjum <usama.anjum@collabora.com>, =?UTF-8?Q?Stephen_R=C3=B6ttger?= <sroettger@google.com>, 
-	Suren Baghdasaryan <surenb@google.com>, Amer Al Shanawany <amer.shanawany@gmail.com>, 
-	Javier Carrasco <javier.carrasco.cruz@gmail.com>, Shuah Khan <shuah@kernel.org>, 
-	linux-api@vger.kernel.org, linux-mm@kvack.org, ying.huang@intel.com, 
-	feng.tang@intel.com, fengwei.yin@intel.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202408062249.2194d51b-lkp@intel.com>
 
-On Tue, Aug 6, 2024 at 7:05=E2=80=AFAM Oliver Sang <oliver.sang@intel.com> =
-wrote:
->
-> hi, Linus,
->
-> On Mon, Aug 05, 2024 at 12:33:58PM -0700, Linus Torvalds wrote:
-> > On Mon, 5 Aug 2024 at 11:55, Linus Torvalds
-> > <torvalds@linux-foundation.org> wrote:
-> > >
-> > > So please consider this a "maybe something like this" patch, but that
-> > > 'arch_unmap()' really is pretty nasty
-> >
-> > Actually, the whole powerpc vdso code confused me. It's not the vvar
-> > thing that wants this close thing, it's the other ones that have the
-> > remap thing.
-> >
-> > .. and there were two of those error cases that needed to reset the
-> > vdso pointer.
-> >
-> > That all shows just how carefully I was reading this code.
-> >
-> > New version - still untested, but now I've read through it one more
-> > time - attached.
->
-> we tested this version by applying it directly upon 8be7258aad,  but seem=
-s it
-> have little impact to performance. still similar regression if comparing =
-to
-> ff388fe5c4.
+On Tue, Aug 06, 2024 at 10:26:17PM +0800, kernel test robot wrote:
+> kernel test robot noticed "kernel_BUG_at_include/linux/page-flags.h" on:
+> 
+> commit: cdc4ad36a871b7ac43fcc6b2891058d332ce60ce ("fs: Convert aops->write_begin to take a folio")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+> 
+> [test failed on linux-next/master 1e391b34f6aa043c7afa40a2103163a0ef06d179]
+> 
+> in testcase: boot
 
-Hi,
+This patch should fix it.
 
-I've just sent out a patch set[1] that should alleviate (or hopefully
-totally fix) these performance regressions. It'd be great if you could
-test it.
+Christian, can you squash the fix in?
 
-For everyone: Apologies if you're in the CC list and I didn't CC you,
-but I tried to keep my patch set's CC list relatively short and clean
-(and I focused on the active participants).
-Everyone's comments are very welcome.
 
-[1]: https://lore.kernel.org/all/20240806212808.1885309-1-pedro.falcato@gma=
-il.com/
---=20
-Pedro
+diff --git a/mm/shmem.c b/mm/shmem.c
+index 7d28304aea0f..66ff87417090 100644
+--- a/mm/shmem.c
++++ b/mm/shmem.c
+@@ -2904,7 +2904,8 @@ shmem_write_begin(struct file *file, struct address_space *mapping,
+ 	if (ret)
+ 		return ret;
+ 
+-	if (folio_test_has_hwpoisoned(folio)) {
++	if (folio_test_hwpoison(folio) ||
++	    (folio_test_large(folio) && folio_test_has_hwpoisoned(folio))) {
+ 		folio_unlock(folio);
+ 		folio_put(folio);
+ 		return -EIO;
