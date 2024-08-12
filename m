@@ -1,229 +1,185 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBA2213DDA3
-	for <oe-lkp@lists.linux.dev>; Mon, 12 Aug 2024 08:12:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AE3115443B
+	for <oe-lkp@lists.linux.dev>; Mon, 12 Aug 2024 08:18:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723450378; cv=none; b=CQfdledt1YldNlaa4x6ewDu4QPExqqHhPMQriFdSrHrcsjeA6ewwPHwUmsGtiv+5BLirpF/3XsLWucdN0i6bnkLIR85At8MaOWsdHK6FxGA5Q3HqYKWV+A8jOgMLAZ0rjUhtGAcbn1GNS7k32CsyshyCbBs5j/NZMpzgremZO5Y=
+	t=1723450731; cv=none; b=SqA6iVaSiaIKDHY8W48tx86Bdmy9UwNfEz+NPUCPt7SxbOQ0cjF6ezo1x51noi5CQ5xiQSQdlLmFBGiqKb4GB1juRwl8KacsVuZrMS/YDxtC4VQpitVKQSiUOlNZZHJOKuiFeajf+7dm9TzO17iaATLMwXaK1GepaCswim7FnUw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723450378; c=relaxed/simple;
-	bh=dz0V9NTqFz4sCd1B4mGAfWC+Mya5ZLb4ZlISM9Ufunk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=rwyG/UuwGWYdC365RQOfQnoXeoM5F5XcfbNjyjz6zROmz48t7ayP1IIRmD2pDXx0OD026PHygmw2fNWlawzjPyLy8M0d0cApLLXtzFQiHqh6Tcl3cqKhCte7h/jYZjuBzEYaq7P70RtHwusTEfhmTfM7baNroZ6ohQZNidLxnRU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=QNoyHL4W; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1723450731; c=relaxed/simple;
+	bh=cgR/NMQRYOgSzF3Qy2yoC4x+t/mql++VHase+Lz5Mpw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=d0fyRxHsblWrapAZV6nKkfQZi7/KpY8TBvUdJnRonIucBU065Y4qZrxSZc3hs70cmX5EzV4a7/wBg34aysXWbt8o5nzkCxS1NmTLiAc0x6ynTPthupEZTWZiC6QEJ/m8X+zK+9ug4Vkt1frv7xCbyNSCa/e3Jt6PcpznytpJqBo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JnCNk/lo; arc=none smtp.client-ip=209.85.208.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="QNoyHL4W"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1723450374;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=9/O94cIOAubUcCnH22HxzTXBVG3wCdY9CNBpRnC+1gc=;
-	b=QNoyHL4WIZ95uFnyStdQYn0/e3tDjDpaDttDDYrKJO0rAAuc7ugwv+dFZYNQb6q810/pxN
-	tcwWJ0Fupboy1c6ZFF2Clze9rlf2rAdPeFHva708XwZJY1qOp3zYDEiV1cbKSK+j3Id23d
-	wX1f6d2qt98L4lQmsuxgPQq2XmbucL4=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-114-ckaeuqRiNMa0QcgW2d36Qw-1; Mon, 12 Aug 2024 04:12:52 -0400
-X-MC-Unique: ckaeuqRiNMa0QcgW2d36Qw-1
-Received: by mail-wm1-f70.google.com with SMTP id 5b1f17b1804b1-4281d0d1c57so23655145e9.1
-        for <oe-lkp@lists.linux.dev>; Mon, 12 Aug 2024 01:12:52 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JnCNk/lo"
+Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-5b5b67d0024so4640335a12.0
+        for <oe-lkp@lists.linux.dev>; Mon, 12 Aug 2024 01:18:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1723450728; x=1724055528; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=VT64ovfrCU9Zee9Y2QVyAPt/J2QcowfwSWdbeJCRYUs=;
+        b=JnCNk/loDAV9frjfidwKdQnjgnZ63eeORPPZy0PzZexF/XYv+6lpFT5dBbNSuXGyTV
+         x6fxx6XursWfJOw6qrTpDgiQbt8Yz15bltLz3E4pmBjmJS8xd/3pWIsh9m6o6/5UtkcI
+         2mLHJ90IATkR6fic7jkiwPmxrHrRtgAF+g2li1OfHP9jtPKpqol9zlBDIemMMPIFa4m1
+         RVTPW8CV7fcXkw0rDgOCpoe2+XY7eYDbckeWHZrmAMzspU0ccRI4gNYBj7EHxhLZNXs3
+         UTArDaMUOnA783nQqndUPMwJcLT3PLwLI8iy9h+J5x8kgsowzD6teB6zDq5HGccKe8fR
+         EJWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723450371; x=1724055171;
-        h=content-transfer-encoding:in-reply-to:organization:autocrypt
-         :content-language:from:references:cc:to:subject:user-agent
-         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=9/O94cIOAubUcCnH22HxzTXBVG3wCdY9CNBpRnC+1gc=;
-        b=pb7TUS8dwl070ybu3WpVvsbmjdpmRFlokwHUZqSFQjWlOkUjXu2za3o7SfmetSFWZz
-         cZ7UNQ6gEus6OYoTErtuUnrFtjVBQlFF7gLHUUc94QV+aEA2KrAGp5P+0H4FzMernLEj
-         2aTgAazCsjmFd/Hv7KTJO6qZucGYHfUl5tDrA3EE7VWOVHx185szYU4nbN/UB0CQnQvI
-         uUWkeOkxbhl4HVkdcQ74UhgUPZa5+wvnuqacDf78ufvKK5e0LOhmn5IdHvF6wVEeQZ9x
-         mfi+mGBR/zP2I/sF+ckuZh1USAvWtMjWDtTM5PZwOK+icX6RbMjEq+Rkf1y+btEEaFsz
-         XJ5g==
-X-Forwarded-Encrypted: i=1; AJvYcCWAOd6ohe5ubd+m18NbAmd9B+qcrxya5XkySWZmqpCsfRqITCU+NEh75rzqykf8J7ooBNT9vLWX1+NZ+1sM0LmpJak4hGrn
-X-Gm-Message-State: AOJu0YxIj17DGDLVd2+30ag7lQqmLq53F9CGIVmN4O2E33WDB5heHk5b
-	HvXTCHrbIlID2oxta748W1T0NcQtyez/d6JdUtca2JG9hb99c3J53LHwT/g3uZU9O6kTTyUiVlv
-	BV+yLTc1zSYG8CGB5GkxMIXhd948POwsrlH/TH7HCYbT0mYCdDXf+3g==
-X-Received: by 2002:a05:600c:511e:b0:426:5b19:d2b3 with SMTP id 5b1f17b1804b1-4290b8ac120mr100753815e9.14.1723450371442;
-        Mon, 12 Aug 2024 01:12:51 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IFd3yKp/oTOh03eeBsVmUJqgm6/TVCyV/bHHfaZTKDIWPgHeZDHDYWlPuryu+8SyGv4Uop/sw==
-X-Received: by 2002:a05:600c:511e:b0:426:5b19:d2b3 with SMTP id 5b1f17b1804b1-4290b8ac120mr100753625e9.14.1723450370951;
-        Mon, 12 Aug 2024 01:12:50 -0700 (PDT)
-Received: from ?IPV6:2003:d8:2f09:3f00:d228:bd67:7baa:d604? (p200300d82f093f00d228bd677baad604.dip0.t-ipconnect.de. [2003:d8:2f09:3f00:d228:bd67:7baa:d604])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-429c74ffb1esm92390395e9.5.2024.08.12.01.12.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 12 Aug 2024 01:12:50 -0700 (PDT)
-Message-ID: <66c4fcc5-47f6-438c-a73a-3af6e19c3200@redhat.com>
-Date: Mon, 12 Aug 2024 10:12:49 +0200
+        d=1e100.net; s=20230601; t=1723450728; x=1724055528;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=VT64ovfrCU9Zee9Y2QVyAPt/J2QcowfwSWdbeJCRYUs=;
+        b=cTO+FqW9B6Mx05EIiWZtDs9JuX6nWw2Piyw31lL+4kC7hDrVlwuVOQZPYcwrvIlpxF
+         EUonR5Lh1dwK96IfCxDury5IJnfnkazFJfXaHQZe/84GFsX+iPHFzgpLkhIYAE8vyKhk
+         B5pvYiZpz+78xq/VvNupNWPRG/Kbs1l00PyjWmHhIEITJMXwY+ScxA2B7inAbwE32RFw
+         YUhzgFxvavSEHlLAfRwRO2kqHlb7n0nN/cvsQaZELkKV91aziv6vpsHva73yWpSdRsqM
+         UFLitcxkoRCpLUe/OyHGfQ1nuxpAj4qk3VIAy3bUvLdH+H3wBlKlYH5IPUHiaoFEAKRC
+         4T9Q==
+X-Forwarded-Encrypted: i=1; AJvYcCWFJt7nM9oEy/KM1y+9mU7YAiTcZc8H/EwxLA9dt745sBL0+AXPEFmtf8PIOLl/TOWMR4VH/5gAIjhaMzZtHyRp4g1ehqWg
+X-Gm-Message-State: AOJu0Yxni3toLXg4Q3J8Fn8Fn6fv+Djft4vqCSmlsRN4QtNhzdSNdHqv
+	EPdlnerbbHGQhlf7YmclaG3t5/XOT7YSbTQVXDpPWkVOZOkDNOpllTVDrgf0u4nNS7DzDwJRASP
+	77c3Mv3FmD0l2HQGFULlXAN+Z5wE=
+X-Google-Smtp-Source: AGHT+IE8dvVEEZMCdEXUQaeQ55ANsM3WcSwuZwJERb8mL0HdgQ+W3IPYqLGwGaFdlIv2R8tMEBJcxVOXFQKK5nETx5U=
+X-Received: by 2002:a17:907:f1e9:b0:a7a:8d73:c2c6 with SMTP id
+ a640c23a62f3a-a80aa595ca3mr592758066b.18.1723450727316; Mon, 12 Aug 2024
+ 01:18:47 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [linus:master] [mm] c0bff412e6: stress-ng.clone.ops_per_sec -2.9%
- regression
-To: Mateusz Guzik <mjguzik@gmail.com>, Yin Fengwei <fengwei.yin@intel.com>
-Cc: kernel test robot <oliver.sang@intel.com>, Peter Xu <peterx@redhat.com>,
- oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
- Andrew Morton <akpm@linux-foundation.org>,
- Huacai Chen <chenhuacai@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>,
- Matthew Wilcox <willy@infradead.org>, Nathan Chancellor <nathan@kernel.org>,
- Ryan Roberts <ryan.roberts@arm.com>, WANG Xuerui <kernel@xen0n.name>,
- linux-mm@kvack.org, ying.huang@intel.com, feng.tang@intel.com
-References: <202407301049.5051dc19-oliver.sang@intel.com>
- <193e302c-4401-4756-a552-9f1e07ecedcf@redhat.com>
- <439265d8-e71e-41db-8a46-55366fdd334e@intel.com>
- <90477952-fde2-41d7-8ff4-2102c45e341d@redhat.com>
+References: <202407301049.5051dc19-oliver.sang@intel.com> <193e302c-4401-4756-a552-9f1e07ecedcf@redhat.com>
+ <439265d8-e71e-41db-8a46-55366fdd334e@intel.com> <90477952-fde2-41d7-8ff4-2102c45e341d@redhat.com>
  <6uxnuf2gysgabyai2r77xrqegb7t7cc2dlzjz6upwsgwrnfk3x@cjj6on3wqm4x>
- <5a67c103-1d9d-440d-8bed-bbfa7d3ecf71@redhat.com>
- <CAGudoHH4NGgPdTe2yL33TNNFriPM9mVM=0_iuh5dLuesZXQMAQ@mail.gmail.com>
- <5c0979a2-9a56-4284-82d2-42da62bda4a5@redhat.com>
- <c7e0d029-0a64-4b27-bd62-cf9a3577d7ff@intel.com>
- <wbbieqyyjqy7ulbta6muzepxwxi6galwvhjdxpqaqbeljzpcer@dpeoqrbkl5p2>
-From: David Hildenbrand <david@redhat.com>
-Autocrypt: addr=david@redhat.com; keydata=
- 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
- WNyWQQ==
-Organization: Red Hat
-In-Reply-To: <wbbieqyyjqy7ulbta6muzepxwxi6galwvhjdxpqaqbeljzpcer@dpeoqrbkl5p2>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+ <5a67c103-1d9d-440d-8bed-bbfa7d3ecf71@redhat.com> <CAGudoHH4NGgPdTe2yL33TNNFriPM9mVM=0_iuh5dLuesZXQMAQ@mail.gmail.com>
+ <5c0979a2-9a56-4284-82d2-42da62bda4a5@redhat.com> <c7e0d029-0a64-4b27-bd62-cf9a3577d7ff@intel.com>
+ <wbbieqyyjqy7ulbta6muzepxwxi6galwvhjdxpqaqbeljzpcer@dpeoqrbkl5p2> <66c4fcc5-47f6-438c-a73a-3af6e19c3200@redhat.com>
+In-Reply-To: <66c4fcc5-47f6-438c-a73a-3af6e19c3200@redhat.com>
+From: Mateusz Guzik <mjguzik@gmail.com>
+Date: Mon, 12 Aug 2024 10:18:35 +0200
+Message-ID: <CAGudoHGVc+=w5b8wKc=tt4FTOP3wN-3Ts9DCwRg_caZ8dfUNDg@mail.gmail.com>
+Subject: Re: [linus:master] [mm] c0bff412e6: stress-ng.clone.ops_per_sec -2.9% regression
+To: David Hildenbrand <david@redhat.com>
+Cc: Yin Fengwei <fengwei.yin@intel.com>, kernel test robot <oliver.sang@intel.com>, 
+	Peter Xu <peterx@redhat.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, 
+	Huacai Chen <chenhuacai@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>, 
+	Matthew Wilcox <willy@infradead.org>, Nathan Chancellor <nathan@kernel.org>, 
+	Ryan Roberts <ryan.roberts@arm.com>, WANG Xuerui <kernel@xen0n.name>, linux-mm@kvack.org, 
+	ying.huang@intel.com, feng.tang@intel.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 12.08.24 06:49, Mateusz Guzik wrote:
-> On Mon, Aug 12, 2024 at 12:43:08PM +0800, Yin Fengwei wrote:
->> Hi David,
->>
->> On 8/1/24 09:44, David Hildenbrand wrote:
->>> On 01.08.24 15:37, Mateusz Guzik wrote:
->>>> On Thu, Aug 1, 2024 at 3:34 PM David Hildenbrand <david@redhat.com>
->>>> wrote:
->>>>>
->>>>> On 01.08.24 15:30, Mateusz Guzik wrote:
->>>>>> On Thu, Aug 01, 2024 at 08:49:27AM +0200, David Hildenbrand wrote:
->>>>>>> Yes indeed. fork() can be extremely sensitive to each
->>>>>>> added instruction.
->>>>>>>
->>>>>>> I even pointed out to Peter why I didn't add the
->>>>>>> PageHuge check in there
->>>>>>> originally [1].
->>>>>>>
->>>>>>> "Well, and I didn't want to have runtime-hugetlb checks in
->>>>>>> PageAnonExclusive code called on certainly-not-hugetlb code paths."
->>>>>>>
->>>>>>>
->>>>>>> We now have to do a page_folio(page) and then test for hugetlb.
->>>>>>>
->>>>>>>        return folio_test_hugetlb(page_folio(page));
->>>>>>>
->>>>>>> Nowadays, folio_test_hugetlb() will be faster than at
->>>>>>> c0bff412e6 times, so
->>>>>>> maybe at least part of the overhead is gone.
->>>>>>>
->>>>>>
->>>>>> I'll note page_folio expands to a call to _compound_head.
->>>>>>
->>>>>> While _compound_head is declared as an inline, it ends up being big
->>>>>> enough that the compiler decides to emit a real function instead and
->>>>>> real func calls are not particularly cheap.
->>>>>>
->>>>>> I had a brief look with a profiler myself and for single-threaded usage
->>>>>> the func is quite high up there, while it manages to get out with the
->>>>>> first branch -- that is to say there is definitely performance lost for
->>>>>> having a func call instead of an inlined branch.
->>>>>>
->>>>>> The routine is deinlined because of a call to page_fixed_fake_head,
->>>>>> which itself is annotated with always_inline.
->>>>>>
->>>>>> This is of course patchable with minor shoveling.
->>>>>>
->>>>>> I did not go for it because stress-ng results were too unstable for me
->>>>>> to confidently state win/loss.
->>>>>>
->>>>>> But should you want to whack the regression, this is what I would look
->>>>>> into.
->>>>>>
->>>>>
->>>>> This might improve it, at least for small folios I guess:
->> Do you want us to test this change? Or you have further optimization
->> ongoing? Thanks.
-> 
-> I verified the thing below boots, I have no idea about performance. If
-> it helps it can be massaged later from style perspective.
+On Mon, Aug 12, 2024 at 10:12=E2=80=AFAM David Hildenbrand <david@redhat.co=
+m> wrote:
+>
+> On 12.08.24 06:49, Mateusz Guzik wrote:
+> > On Mon, Aug 12, 2024 at 12:43:08PM +0800, Yin Fengwei wrote:
+> >> Hi David,
+> >>
+> >> On 8/1/24 09:44, David Hildenbrand wrote:
+> >>> On 01.08.24 15:37, Mateusz Guzik wrote:
+> >>>> On Thu, Aug 1, 2024 at 3:34=E2=80=AFPM David Hildenbrand <david@redh=
+at.com>
+> >>>> wrote:
+> >>>>>
+> >>>>> On 01.08.24 15:30, Mateusz Guzik wrote:
+> >>>>>> On Thu, Aug 01, 2024 at 08:49:27AM +0200, David Hildenbrand wrote:
+> >>>>>>> Yes indeed. fork() can be extremely sensitive to each
+> >>>>>>> added instruction.
+> >>>>>>>
+> >>>>>>> I even pointed out to Peter why I didn't add the
+> >>>>>>> PageHuge check in there
+> >>>>>>> originally [1].
+> >>>>>>>
+> >>>>>>> "Well, and I didn't want to have runtime-hugetlb checks in
+> >>>>>>> PageAnonExclusive code called on certainly-not-hugetlb code paths=
+."
+> >>>>>>>
+> >>>>>>>
+> >>>>>>> We now have to do a page_folio(page) and then test for hugetlb.
+> >>>>>>>
+> >>>>>>>        return folio_test_hugetlb(page_folio(page));
+> >>>>>>>
+> >>>>>>> Nowadays, folio_test_hugetlb() will be faster than at
+> >>>>>>> c0bff412e6 times, so
+> >>>>>>> maybe at least part of the overhead is gone.
+> >>>>>>>
+> >>>>>>
+> >>>>>> I'll note page_folio expands to a call to _compound_head.
+> >>>>>>
+> >>>>>> While _compound_head is declared as an inline, it ends up being bi=
+g
+> >>>>>> enough that the compiler decides to emit a real function instead a=
+nd
+> >>>>>> real func calls are not particularly cheap.
+> >>>>>>
+> >>>>>> I had a brief look with a profiler myself and for single-threaded =
+usage
+> >>>>>> the func is quite high up there, while it manages to get out with =
+the
+> >>>>>> first branch -- that is to say there is definitely performance los=
+t for
+> >>>>>> having a func call instead of an inlined branch.
+> >>>>>>
+> >>>>>> The routine is deinlined because of a call to page_fixed_fake_head=
+,
+> >>>>>> which itself is annotated with always_inline.
+> >>>>>>
+> >>>>>> This is of course patchable with minor shoveling.
+> >>>>>>
+> >>>>>> I did not go for it because stress-ng results were too unstable fo=
+r me
+> >>>>>> to confidently state win/loss.
+> >>>>>>
+> >>>>>> But should you want to whack the regression, this is what I would =
+look
+> >>>>>> into.
+> >>>>>>
+> >>>>>
+> >>>>> This might improve it, at least for small folios I guess:
+> >> Do you want us to test this change? Or you have further optimization
+> >> ongoing? Thanks.
+> >
+> > I verified the thing below boots, I have no idea about performance. If
+> > it helps it can be massaged later from style perspective.
+>
+> As quite a lot of setups already run with the vmemmap optimization enable=
+d, I
+> wonder how effective this would be (might need more fine tuning, did not =
+look
+> at the generated code):
+>
+>
+> diff --git a/include/linux/page-flags.h b/include/linux/page-flags.h
+> index 085dd8dcbea2..7ddcdbd712ec 100644
+> --- a/include/linux/page-flags.h
+> +++ b/include/linux/page-flags.h
+> @@ -233,7 +233,7 @@ static __always_inline int page_is_fake_head(const st=
+ruct page *page)
+>          return page_fixed_fake_head(page) !=3D page;
+>   }
+>
+> -static inline unsigned long _compound_head(const struct page *page)
+> +static __always_inline unsigned long _compound_head(const struct page *p=
+age)
+>   {
+>          unsigned long head =3D READ_ONCE(page->compound_head);
+>
+>
 
-As quite a lot of setups already run with the vmemmap optimization enabled, I
-wonder how effective this would be (might need more fine tuning, did not look
-at the generated code):
+Well one may need to justify it with bloat-o-meter which is why I did
+not just straight up inline the entire thing.
 
-
-diff --git a/include/linux/page-flags.h b/include/linux/page-flags.h
-index 085dd8dcbea2..7ddcdbd712ec 100644
---- a/include/linux/page-flags.h
-+++ b/include/linux/page-flags.h
-@@ -233,7 +233,7 @@ static __always_inline int page_is_fake_head(const struct page *page)
-         return page_fixed_fake_head(page) != page;
-  }
-  
--static inline unsigned long _compound_head(const struct page *page)
-+static __always_inline unsigned long _compound_head(const struct page *page)
-  {
-         unsigned long head = READ_ONCE(page->compound_head);
-  
-
-
--- 
-Cheers,
-
-David / dhildenb
-
+But if you are down to fight opposition of the sort I agree this is
+the patch to benchmark. :)
+--=20
+Mateusz Guzik <mjguzik gmail.com>
