@@ -1,74 +1,58 @@
-Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CD701DFFD
-	for <oe-lkp@lists.linux.dev>; Mon, 12 Aug 2024 10:45:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C12E4171099
+	for <oe-lkp@lists.linux.dev>; Mon, 12 Aug 2024 11:21:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723459520; cv=none; b=MMRFxiMqKPmu3FTZ7PvTuu1ycqwZx9po2Y2LtNg0On3N5qnU3BwJiMO2By+hgjLajPumFDAfk4wSn2CEipF2+LT99AsJNZVArd1wWY5AcB45tW/UFshXvX/wfSL7Np1qrVa6gi5RK+BESMcpAe7jXOfoAGB31osKFZ0RapKTFSo=
+	t=1723461711; cv=none; b=QucA4zIBet+HJ8SHHEaKW2vANKwQdOBV05ZF061cR/GRt2XaHH/OPJEKnDXyrPr0d/HwewkVQZMK9gmT7cXwImxr2Lx5LVASDi8jVH/aVBhpTEt6f1M8zIluaz1W5rKlCP0lbv89LjYkICqGL97rqBeElEXaR4EvHiI3mj5s8Vs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723459520; c=relaxed/simple;
-	bh=aXSYPpDYjkMiRfx9cPDO9/PqAFMpNe5tJmzUcQcHCCE=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=Q4iX/CF28uSNhnciubMhXg8fJxPv9CERH6u8nv1xxHO2RZiJDwbUwo2hHCuvn35cYOqsaVeLI+J3Z/9/o27d6vB+FIivRaaO4zl4+G2thUe9Yr0QEGbByrqJ5A8pb0/qGaAFTwtevVmh2eMezjsCPsidI6APjDazwGI95uI11qM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iMIQ2Q/D; arc=none smtp.client-ip=209.85.218.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iMIQ2Q/D"
-Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-a7ab76558a9so590617566b.1
-        for <oe-lkp@lists.linux.dev>; Mon, 12 Aug 2024 03:45:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1723459518; x=1724064318; darn=lists.linux.dev;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=aXSYPpDYjkMiRfx9cPDO9/PqAFMpNe5tJmzUcQcHCCE=;
-        b=iMIQ2Q/DLX9G4CFlczx61CtdAYh4eKGkLQPvW0xiZaZE0jHwMPa1jhIaHRSHZ5tbCu
-         AiEaql8fAED4Rnk0ynVEeNPMWexfIS9po5Lt8oP0AyG4JmVh4UNS4SpjfNGO68jeUyEh
-         2Fa/Rn5y8DddYSqwVK+7ukuF7sV0bxhJ+Ugh48qMYF2cnxTFKRv13Qlgm5EhoxROrYKD
-         ySYKfZXDE2CP/f7YpcdeyEAEMQOVHpoNWTGbaD8+yMB81C5ko6Mya9l+pGLupzM2H84j
-         hlPTVwl+Ih3IuENZhIQaJ45kwjbG2F6WyPp4SVsqq557Jb5X0pvVXGd0XBKv9FrmyWlV
-         YSyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723459518; x=1724064318;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=aXSYPpDYjkMiRfx9cPDO9/PqAFMpNe5tJmzUcQcHCCE=;
-        b=c4oJKUQG7lnL34spC2LvYYHhDmASEmKyvntLkDC0PJvqgxHe1zR90numPzTZmtZ9Pm
-         KFah9I2e4Ov9UmJTDxKT0HhpwYwbxO0ta9pIEwMpDam7uhE+f1xok42XuwGY2l0qrMAC
-         anyfG2kB8CFoqw19d+ejdkQrGILEX/suH/ofnrEFMWnovs3Sb7VzeqXVDSB77EnMQVdk
-         58U0tig9I+sABav0V+NyMpk7ycJMBmrkVZxdy5gsnSqvQtUz9ytHWjH3V0QoT2cG69I8
-         hC0TJgWS+K9Sks+zjB5aOwIzLfer9P8VDoix+HlK/DSaXfUIlSOC/d1rd5Q8jgIff+4R
-         8rSA==
-X-Gm-Message-State: AOJu0YwONp9Y7PFJwbF4rarYTcRZSEJa8QrZqEoFtO/JlclAMWvi+CF6
-	TGx5c2z5TZktaOOiEnFSfW3E1Y+i+QZWTZzRFYQquWTfzp+PAvFm
-X-Google-Smtp-Source: AGHT+IGw9kcm4V5e6XucUG4dMiWzIgK21S3t3dTAmwMy33GDpEMFmbAghNy61vNWHlx9aZssiPZrYQ==
-X-Received: by 2002:a17:907:7ba1:b0:a7a:8284:c8d6 with SMTP id a640c23a62f3a-a80ab958547mr901598166b.24.1723459517327;
-        Mon, 12 Aug 2024 03:45:17 -0700 (PDT)
-Received: from f (cst-prg-72-52.cust.vodafone.cz. [46.135.72.52])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a80bb09007asm216513966b.4.2024.08.12.03.45.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Aug 2024 03:45:16 -0700 (PDT)
-Date: Mon, 12 Aug 2024 12:45:04 +0200
-From: Mateusz Guzik <mjguzik@gmail.com>
-To: oliver.sang@intel.com
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com
-Subject: are complete benchmark results available somewhere?
-Message-ID: <ahhsblwfjo6he4xnxdztjcscvuc7zhevbx4nnxneyh7qstietr@oei4nio6223d>
+	s=arc-20240116; t=1723461711; c=relaxed/simple;
+	bh=JEAcUDiiRJfm7r4BogGFwgYSGu9zFNqbBUn/yER2DZY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=fqJnrTJd4CuuX3yDbHBUCpHXIoK6nax1V3fQ9f5FN3pqzCCCepZ8pHQYWTJJuffFqTzvmQQJvW2k458ShYTECY4rLO8mlfI0hBWf0Gy38cHSLL91KdbMD+CupbhFFNzfYAzgByK92qUMfIMTrCMeAkfAMB2wstf2rQA/XqdKYqk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 23445227A87; Mon, 12 Aug 2024 13:21:46 +0200 (CEST)
+Date: Mon, 12 Aug 2024 13:21:45 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: Christoph Hellwig <hch@lst.de>, oe-lkp@lists.linux.dev, lkp@intel.com,
+	linux-kernel@vger.kernel.org,
+	Anna Schumaker <Anna.Schumaker@netapp.com>,
+	Sagi Grimberg <sagi@grimberg.me>, linux-nfs@vger.kernel.org,
+	ying.huang@intel.com, feng.tang@intel.com, fengwei.yin@intel.com
+Subject: Re: [linus:master] [nfs]  49b29a573d:  filebench.sum_operations/s
+ -85.6% regression
+Message-ID: <20240812112145.GA15197@lst.de>
+References: <202408081514.106c770e-oliver.sang@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <202408081514.106c770e-oliver.sang@intel.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-I only found results for performance changes, nothing abut the current
-state of things for any particular kernel and/or machine.
+On Thu, Aug 08, 2024 at 03:35:20PM +0800, kernel test robot wrote:
+> 
+> 
+> Hello,
+> 
+> kernel test robot noticed a -85.6% regression of filebench.sum_operations/s on:
 
-If this info is not pubicly available as is, can you do me a favor and a
-one off send me a set of results + profiles for the biggest machine you
-test on?
+I'm not sure what operations this measures.  But if it is what I think it
+might be, does this regression go away with the following commit (which
+already is in mainline)?
 
-thanks
+commit 39c910a430370fd25d5b5e4b2f4b24581a705499
+Author: Christoph Hellwig <hch@lst.de>
+Date:   Fri Jul 5 07:42:51 2024 +0200
+
+    nfs: do not extend writes to the entire folio
+
