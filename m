@@ -1,321 +1,207 @@
-Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57B2D47F5B
-	for <oe-lkp@lists.linux.dev>; Tue, 13 Aug 2024 07:14:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.44
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723533259; cv=none; b=B+900ZDXKCt/KtAdIhVZd7PHESxsqjWt075Zm7MXfJzqmm07iuMPYUJhHeE6jcm1BU8/NUCzi2NhF50Q+IjZfXiFJz7VnkaZbpWEB5vfrA9m9SljKnwXsJm7Ct7n0Y1IUtjYDiu2djHd87WtPZswWadVjdhoXWPZ8cyqNkuuXFg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723533259; c=relaxed/simple;
-	bh=uj/oOXaufCtIi6AXT1hGaE54GfqBdQ9mROxzHsrl6Gw=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=XBMmwoM/W996GECGTsUcz3o1aGBn4aZJNGZxG7be5T4ynt7dZx+/dc0NfsxOX0oCG0FpLcguYdACQridSmX6p/4NF3qwo3m4lXqiH6tM8f2bywxexryTK6ro16U1AognkYsqJt5DJKBxUxc0bncWrcSkng1a5r6ywmoELr2++bw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HczhHuSa; arc=none smtp.client-ip=209.85.218.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9BEC58ABF
+	for <oe-lkp@lists.linux.dev>; Tue, 13 Aug 2024 07:32:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.15
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1723534348; cv=fail; b=A+M2NnIzyLVkP2PydczV96Aa1moKJ5WgiLyIjzLI1WODbM5dgBQnR+pfPJySd+n7csPGz24joqIi/ZQoQH3viDVwDqijNds3EcFq7Fs91cNB4kUxNrkeGAKYUckhElk4TorWOLrOoW0Z+wQwZJTEOFPoIZW2v0olUU0T3I79nKA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1723534348; c=relaxed/simple;
+	bh=Bm79zl73gWrfTgiIJCKZ0RTMAVXauNKyx7SrxoxezlE=;
+	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=hcek/xewSrb7OyN58HXrffwmvFd8Z79a/blE7orEhiRrSoFEn0rcRAuHQNVJWLRQynqp75TfFOZlL+oz5MBBNh0QL2jPe7HSdB9Obm54ZCsmSbpxqJBTK6I2sT/AoPry0EfGiwFYozXJg+kzGV3pammvZaE24kENFqdxHgvxUUg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=YJI9/8rE; arc=fail smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HczhHuSa"
-Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-a80eab3945eso119385866b.1
-        for <oe-lkp@lists.linux.dev>; Tue, 13 Aug 2024 00:14:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1723533256; x=1724138056; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=jyz3DK8dqgTmgnmWwpr2k8InrcG4osaLvAAxFacRPCg=;
-        b=HczhHuSa577CWtlwmx0rNj5PJO1lYuAyMcHbhjr6ayUTzsVo2GhCcGxlZ0NOjrOd0e
-         nZMk8SxRPflKNlrt5VRa66+i1QpSlMJ4fLPBD1BRfzGkzsUfEZZyq3kf1fIW2ydEZ3Ja
-         0bezlspUU98QwRC4KCH6Thc9JV7O1uUDUifmPDeOEsZqo9H5F9cgjIOu3u380pofVmbX
-         cDjIkrgRnMPy0bQ7uKlUYVPj2OTUHs9LNiAOsVXr+XnUTuTEEP1gD5qIyYN2BN5s6EJk
-         oRhuaT9MsFKvv5zzQL1A++wEh71SvESzk52DdgoajXfIprI1lBy9EwdSxCJanSdtfDak
-         MUaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723533256; x=1724138056;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=jyz3DK8dqgTmgnmWwpr2k8InrcG4osaLvAAxFacRPCg=;
-        b=JOMfZmXOWwe1uVNRRyv9xN+ZLel/R5tTcA5lbshvT7aPnPll53G2hq5AiJBXyEXxfS
-         lh2aK2U0N3yHG5mziaS/9UmREb2M6ykaREDrquXRLJW3ebLTkINNyM2hx8nP8hc+WfxZ
-         IMXbK1u8PI0D0P9pdFxsyBZYf0I4N4whzDTUf8lliZb5aB1dGlcYBoxIp8T3yDyLRd3a
-         Mr+U3ETPF4rbG/lIq0aKssWTBjJP4/zP6crnvOp6bSDKOjhzQV9ip3UmMyaL7It0TYw3
-         hyTgY0hZNBdCsMPoOFbWpl0XDvZ3wCm5bmg02oK0IY5ml+q75MiOnQw0YtmaKW48OvGa
-         MWPQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUM2pFnAL5hnYrXOkFZyJNvig5wJQSXmR8hYl0hZLGWVYW7IxlGtmQJu6bOUohGQgdPi3WD3azHh5qMpBZT7UvjzpDuyeiZ
-X-Gm-Message-State: AOJu0YxvbbZPmdEeJz0jYCCZKRGdpkWvMyYQZzzVKAYrwBLihhGpf3WX
-	/DWrcjRKBSgzqV61ElfiLqZi35cpO+gZbrwo/i22ME0JPMd/Bt7MGHiQERIFMkRVsw/rbj15zR2
-	zSFXMW9ZP2heRP3dAaUzV6sqpZJY=
-X-Google-Smtp-Source: AGHT+IEC6XO8vsLlXfWHSMDSyKsREiX+qwPLaicCQ1BlMeJyYZyVAL5hPQq9CLrVz05m6L+b8AKGJ/S4ZxgHnzO/6U8=
-X-Received: by 2002:a17:907:2d09:b0:a7d:34bf:600e with SMTP id
- a640c23a62f3a-a80ed2d7c6fmr136669266b.60.1723533255327; Tue, 13 Aug 2024
- 00:14:15 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YJI9/8rE"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1723534347; x=1755070347;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=Bm79zl73gWrfTgiIJCKZ0RTMAVXauNKyx7SrxoxezlE=;
+  b=YJI9/8rEMVt67PUZr24rP1XGTPEFwMqjL+mBKDImVoFvZXZs5OviKYRt
+   NsRgKkvNYCP5x8mGZsBwghX+C6w+lAPY8a7FTNdjo6thoA73zFrMgkOd9
+   Gby5FLlAakR9P9R+hUYdRIqUgBUdbVaOvwFiihclNLZRFsQYzzWHyHfNd
+   2ze1lDucdxFyby+j/W/BIlQbFiCoLwTaogmLKSeRNol3NCWjQF6aWnmQq
+   D5CUz674VDV6VsrDuMXFR1oIL6e5nKEH8u6yWa00ch9G/HOJwxYYwRbAe
+   d9cX60GjaO1ZFX7XT62jMKKqLKYIS26LmV+I+FcQV7OQ7xVs557VhayaK
+   A==;
+X-CSE-ConnectionGUID: +jItnuEpSiSp5V81L4+Mvw==
+X-CSE-MsgGUID: eiIZ4/T+SPW9wQt4elSbsQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11162"; a="21837754"
+X-IronPort-AV: E=Sophos;i="6.09,285,1716274800"; 
+   d="scan'208";a="21837754"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2024 00:32:25 -0700
+X-CSE-ConnectionGUID: gktUJz9WRiWJssJR8stwug==
+X-CSE-MsgGUID: BJaeo3/YRaypWS+nFFuyCw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.09,285,1716274800"; 
+   d="scan'208";a="89238206"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by orviesa002.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 13 Aug 2024 00:32:25 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39; Tue, 13 Aug 2024 00:32:21 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39 via Frontend Transport; Tue, 13 Aug 2024 00:32:21 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.101)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.39; Tue, 13 Aug 2024 00:31:42 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Nfe3EfLlrm1qpas/yZJ90zBm85gvEw9w7E4EUh+yR9Moo33EvDQrOT5aRUobpK25YSsd773qMDy0jFuFFCTKmNY0YzRIGcAq0QkE2FV23sxz6/daKkiCWjUkyHEFJG6uG3OxaNkZYthoMbDKQgWNlMb1kwEXAQcmOhV9YGaF1IUfSU4um6WK5x3qEGKjPXqd+5ag7Elff7Whi/mwXH3t+fF4yZS/5WdBrMz8Y+0aVcv3IfAqtBlno2utWRKFc0tdGGIAzhmHmhKhcDuplEpw2T14Sl5v9b41WDloOeGpz6dCt0ioaLF7AyUYS0byu+5V2OPrAvvildAAL98ERYl9SQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=WBejm1/prXoU5q1pr6Yh6Gw2uYH6AL14uJdqnu4SrfA=;
+ b=IfcmXXYwgHL9la1mncJqWv7cIgq5EixzX4k24KURkyM+U/1eE/2I30taU4XYC4L6BE3S3iOzMgDXIpOQUs95GfzjLR29wHHUxJKQ9cyfHUqyCacVSyU57fYFUn8tdAZOavo4prXwYbAmlNtlnIjRjG03d2xIkjAYRc59KZjZVfdnWHlaqUtWCSC/ID4itRJbPzLU0O/4FtVfbpUf5rCdZvxQS/xdSFoc4SFrBUqoPJ+XTwziPvaV9EAeCUUMiRduISs6JMkEuanc4NRAv36c2l4HcRX3s0PacY1SUn5PmHfyurn9Fv3+MncIOjcjJUMnOloeGGDjx+cNjO9SMNR3rA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by SJ0PR11MB5790.namprd11.prod.outlook.com (2603:10b6:a03:422::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7828.31; Tue, 13 Aug
+ 2024 07:31:40 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.7828.023; Tue, 13 Aug 2024
+ 07:31:40 +0000
+Date: Tue, 13 Aug 2024 15:31:32 +0800
+From: Oliver Sang <oliver.sang@intel.com>
+To: Mateusz Guzik <mjguzik@gmail.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <oliver.sang@intel.com>
+Subject: Re: are complete benchmark results available somewhere?
+Message-ID: <ZrsL1LqUHjPT0ZkE@xsang-OptiPlex-9020>
+References: <ahhsblwfjo6he4xnxdztjcscvuc7zhevbx4nnxneyh7qstietr@oei4nio6223d>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <ahhsblwfjo6he4xnxdztjcscvuc7zhevbx4nnxneyh7qstietr@oei4nio6223d>
+X-ClientProxiedBy: SI2PR02CA0026.apcprd02.prod.outlook.com
+ (2603:1096:4:195::19) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202407301049.5051dc19-oliver.sang@intel.com> <193e302c-4401-4756-a552-9f1e07ecedcf@redhat.com>
- <439265d8-e71e-41db-8a46-55366fdd334e@intel.com> <90477952-fde2-41d7-8ff4-2102c45e341d@redhat.com>
- <6uxnuf2gysgabyai2r77xrqegb7t7cc2dlzjz6upwsgwrnfk3x@cjj6on3wqm4x>
- <5a67c103-1d9d-440d-8bed-bbfa7d3ecf71@redhat.com> <CAGudoHH4NGgPdTe2yL33TNNFriPM9mVM=0_iuh5dLuesZXQMAQ@mail.gmail.com>
- <5c0979a2-9a56-4284-82d2-42da62bda4a5@redhat.com> <c7e0d029-0a64-4b27-bd62-cf9a3577d7ff@intel.com>
- <wbbieqyyjqy7ulbta6muzepxwxi6galwvhjdxpqaqbeljzpcer@dpeoqrbkl5p2> <817150f2-abf7-430f-9973-540bd6cdd26f@intel.com>
-In-Reply-To: <817150f2-abf7-430f-9973-540bd6cdd26f@intel.com>
-From: Mateusz Guzik <mjguzik@gmail.com>
-Date: Tue, 13 Aug 2024 09:14:03 +0200
-Message-ID: <CAGudoHG1=p0GEVaSASA1C+iVYbfA5rryozAPPEoxr5uKtM=ghw@mail.gmail.com>
-Subject: Re: [linus:master] [mm] c0bff412e6: stress-ng.clone.ops_per_sec -2.9% regression
-To: Yin Fengwei <fengwei.yin@intel.com>
-Cc: David Hildenbrand <david@redhat.com>, kernel test robot <oliver.sang@intel.com>, 
-	Peter Xu <peterx@redhat.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
-	linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, 
-	Huacai Chen <chenhuacai@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>, 
-	Matthew Wilcox <willy@infradead.org>, Nathan Chancellor <nathan@kernel.org>, 
-	Ryan Roberts <ryan.roberts@arm.com>, WANG Xuerui <kernel@xen0n.name>, linux-mm@kvack.org, 
-	ying.huang@intel.com, feng.tang@intel.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|SJ0PR11MB5790:EE_
+X-MS-Office365-Filtering-Correlation-Id: f912e6b9-b8b7-49fe-5067-08dcbb69f8e9
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?0mwVYJwLX3uUCm1W1/u+uJGYMP17457EpC8YP3Ksesd8sYkyF0rcXEdExmDU?=
+ =?us-ascii?Q?p6g7gXnnM21VIwNsPsWldDToW9fJzCB7YXymuFhSozgZnv04a3nmjtP27aUr?=
+ =?us-ascii?Q?1175MzsUP3SVGi3uDhvH1Orx1cgcMsRicsoNHvtrV6ZfXBcwTQKoCQq6CHPF?=
+ =?us-ascii?Q?R+Zl5nc6qMELivSgdxVfsn5970w68xKvGVT5j950WMtDXEkepHgf8c5XYa46?=
+ =?us-ascii?Q?nmrlof6cfabbS0t0Eghw3GjGoHvbW6te3cvU0d7L/jQJGIbtjHbjZZetsnsS?=
+ =?us-ascii?Q?VdNYBPkU7kNqBYU/TJipSFAZllIMqkgREdhbbldzO943nw6HfdiJX1Dj+HRf?=
+ =?us-ascii?Q?Ut05B6CuncvpURO8eEbOvnUN3rsqBBoFHlwelBqfEXF59nQJJHcZZov/IMsC?=
+ =?us-ascii?Q?sC61gIGOcwXabN88pU4SFLUAX/xe3C/C2ctYOEbH4RhDYb1nrpSgJAIf7M8Y?=
+ =?us-ascii?Q?Vz1691jsrw8Jj2Yj6LvDFLx6VZF7c/1nWkpUGBDLtmGaTdf5HVIPr5IbPz7M?=
+ =?us-ascii?Q?JeQYaftXeV6MU3+gWmDxBXpbxMc4XsjG2dPj3XEteA11VIXLqOO9uvORQLD7?=
+ =?us-ascii?Q?7FPTAHq07Q8oiszsLOvN9Enp8tnXTf2mO/8KhLNb0OIESk/bLlJIpa2hm4AO?=
+ =?us-ascii?Q?UwjeKsshBndboogkq2iI0jolbinCdUIqDWxSKhbKmoed+arGHBau0vAbbX+G?=
+ =?us-ascii?Q?DRozRPwKsDps7XolEcM445IzZ50fbDsLaB5CCeLPIdvPH5ENpD4DH/Pst18K?=
+ =?us-ascii?Q?uUQY5uZAMvSciElorEw0s4MHI4fNvF9LlVJfX0bNeXi8OYaeCMsLsDmWCyCM?=
+ =?us-ascii?Q?SCkKHS484P8uTsLZs1g4RpGuzcpTbflA7RWM3br0csM3dhiehht8jcTmSJ/x?=
+ =?us-ascii?Q?5pQ0M2SqQfwX7m1IwqvCE+Ws83s+ga6R1Ztvup+VvH8qFojelUdqq3RSZBk9?=
+ =?us-ascii?Q?TXU2SHiDMBu6H42L4vyIeFpD4Ass7X9BQOtDYKyiPsPk7nO3lsly20HuiYs2?=
+ =?us-ascii?Q?Y67RjSb2PkkVUFUFGp1eoMKnhD9Uvu+6YFSI2tlV6LX3eS088LS+rm4rYlm9?=
+ =?us-ascii?Q?R5eqW0E/nt+gw0fiYZvNiCDfETdot3vqCUR1fZuxhl+hMneGtZ+HKvkJc3L2?=
+ =?us-ascii?Q?+GvEsg1trRgDW0IRWBbHZ/g0gigO51A6gxJknpGU5p1HZ/tVi++oCC9mrcpu?=
+ =?us-ascii?Q?caSX05UwoSMzUw8Y6vMpLTzghRn41B4q5s3XYugbIsNW2LQQE2z/MZGDi1kX?=
+ =?us-ascii?Q?Opn3WDzgddB/MIMXTkaw85KSei/NHDR8t7LY30w5m4ZXVKFAd91A6hGO6jJ6?=
+ =?us-ascii?Q?CnM=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?dRUlUbKDQ3MKM26hcCv0/E6Z6V0nSYg3GXO9JMU65aJU8b+LWEec58x/AP/3?=
+ =?us-ascii?Q?52SuWIDDeDqd/angphY0e8WAttbggbRHDdMfDedw0ltqCeSQVV5Z5655kZSM?=
+ =?us-ascii?Q?e0kjPYwIZEfVgp/Zt1L6yOuoOZoiEbK5o5NH3Ja6RqkEvJYKfuZYa+DVy4VM?=
+ =?us-ascii?Q?rtBBlsKkk7FdBNaD1Tmd9I9SZ/wsFX9xetrG3O7TAzy01X6GBqb6zY4V/CGw?=
+ =?us-ascii?Q?ynYeYg/3T/j8euDGmKYGoKrQ+kk9ZA80sJP4a4wjtuKZo8bSSjyUGlNiUpXE?=
+ =?us-ascii?Q?+rurck9kew7Iy4C1HjMEdAgVHntAqS+lBhd0bYIA7Ii4s2kAAUDNhI9fP/t2?=
+ =?us-ascii?Q?jUoToiyFvts8z+dZaM3fjhBHsgzbenMvSDNq/sYORKvQoSOJNUFKEfl9lDaY?=
+ =?us-ascii?Q?gZfqONfXqcWM2Ol56LT50lcVNfuYjnS1jpuLRJPezEzsDC722tObUtJPjaMU?=
+ =?us-ascii?Q?JvczCKnqXhfuQ1cIAyl45QHPv9q/L8oDvC44OkmrXnpnGJm8ikfaKnEwtrRv?=
+ =?us-ascii?Q?P9qp6PbG7ZR/C1wH+sVb/Oux7+5SWQ3Jr5hiB16PDfXf/S3aOPKSAPRDLmoL?=
+ =?us-ascii?Q?+Ti+tC9ujzVeFkoaPA/bAIkwjwP7kdh5T1LoVoi0mPh7HiahSsOiVimBVlOz?=
+ =?us-ascii?Q?/nCn+z9i0oC8m7g3RwYSNj1hjP0ozwne5CsH3iNBJphLpNaqIh4sdfmXyIy8?=
+ =?us-ascii?Q?2nje9NontAET5SFMqbgVvceDuIRGiml2wjZO05mXhxC1f9VpPUt2IKuSy2Jb?=
+ =?us-ascii?Q?3hU5DSUjeGl2r2tJgg9ZBRtrcQKup9bokU0v8gLqYvHMjdRUWVRNN9Ry3/au?=
+ =?us-ascii?Q?6WyoFnjOiPu37RLF05YyqLRFlYMBcMkv0FokT3I17Cjf/D+4Zz7AuZl7LjC0?=
+ =?us-ascii?Q?Ufl2rpJQr+DPP3LECIlWz44fk444/Az6zk8wLjyNEzkY93zpoRX0vvSqPDwl?=
+ =?us-ascii?Q?j0DXaq0Nx5GXpuy/1faq/Kf73xKeAL9JJPaXzRmQBDeLLk7RYA4n5Y9FG22Q?=
+ =?us-ascii?Q?l4cMoUnwTjBsF4Coh304q75xTajEzkaZ+mFEXFNvzabbAb0ka/7B85hWKK+P?=
+ =?us-ascii?Q?34pWrOZZ491XG+jISaXgDx22JZA0geDC/IXEDw0FzcjvHgNEByBT66ITzPsG?=
+ =?us-ascii?Q?5wyO1Y/qRGXnht16zziexjmpmO8SSgpx23xUMZO2cmFmeA347W2ayVVWNTCx?=
+ =?us-ascii?Q?8UkxiKZUdeDuyU4FNTvcoXzP1uur4kRfL2tmL89Q1T24cdw2SUcik4LLAwu7?=
+ =?us-ascii?Q?ajbEctGnG/ioEiy40DQoi5KuVdPB6LvYWtlcJT0g8VRc4BuixEyYIpSW44wY?=
+ =?us-ascii?Q?QpA8+tV71DJMVziF63O+6DEv7zU/QkuCwym6ubYqYDh73VHloFWFb8dz2LwU?=
+ =?us-ascii?Q?hnlrjm9W5pk8c1LyXzwlWy4jrnY5kxjsCFV6q6NmHhlWUnI1NNFBAcT04tAW?=
+ =?us-ascii?Q?LnN6cdoA/ODLAwxMIOIoCnL+HYQQ+k9LPyHDv3AoBQrITngTI+xktJFRHSdx?=
+ =?us-ascii?Q?hKqHk19cL9tvI5qQxIzFkF3bTCSDKVDLEpopz2KTKrR8czPp1rtnMi1oMFo2?=
+ =?us-ascii?Q?sZNhAMV6dgIK/4upZEc86nJmMuML5SQYVBOb/t2o4RfSofzF8zd3so9nDS0O?=
+ =?us-ascii?Q?Rg=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: f912e6b9-b8b7-49fe-5067-08dcbb69f8e9
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Aug 2024 07:31:40.2747
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: N2b1Uy7/SeYcem3NaBNy4roN7D9fpmnJvzo07+1EYXjYsSETPm4eYDcHKugcIqQFcRovJYkWJwYdmawqzz1hSA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB5790
+X-OriginatorOrg: intel.com
 
-On Tue, Aug 13, 2024 at 9:09=E2=80=AFAM Yin Fengwei <fengwei.yin@intel.com>=
- wrote:
->
-> On 8/12/24 00:49, Mateusz Guzik wrote:
-> > On Mon, Aug 12, 2024 at 12:43:08PM +0800, Yin Fengwei wrote:
-> >> Hi David,
-> >>
-> >> On 8/1/24 09:44, David Hildenbrand wrote:
-> >>> On 01.08.24 15:37, Mateusz Guzik wrote:
-> >>>> On Thu, Aug 1, 2024 at 3:34=E2=80=AFPM David Hildenbrand <david@redh=
-at.com>
-> >>>> wrote:
-> >>>>>
-> >>>>> On 01.08.24 15:30, Mateusz Guzik wrote:
-> >>>>>> On Thu, Aug 01, 2024 at 08:49:27AM +0200, David Hildenbrand wrote:
-> >>>>>>> Yes indeed. fork() can be extremely sensitive to each
-> >>>>>>> added instruction.
-> >>>>>>>
-> >>>>>>> I even pointed out to Peter why I didn't add the
-> >>>>>>> PageHuge check in there
-> >>>>>>> originally [1].
-> >>>>>>>
-> >>>>>>> "Well, and I didn't want to have runtime-hugetlb checks in
-> >>>>>>> PageAnonExclusive code called on certainly-not-hugetlb code paths=
-."
-> >>>>>>>
-> >>>>>>>
-> >>>>>>> We now have to do a page_folio(page) and then test for hugetlb.
-> >>>>>>>
-> >>>>>>>        return folio_test_hugetlb(page_folio(page));
-> >>>>>>>
-> >>>>>>> Nowadays, folio_test_hugetlb() will be faster than at
-> >>>>>>> c0bff412e6 times, so
-> >>>>>>> maybe at least part of the overhead is gone.
-> >>>>>>>
-> >>>>>>
-> >>>>>> I'll note page_folio expands to a call to _compound_head.
-> >>>>>>
-> >>>>>> While _compound_head is declared as an inline, it ends up being bi=
-g
-> >>>>>> enough that the compiler decides to emit a real function instead a=
-nd
-> >>>>>> real func calls are not particularly cheap.
-> >>>>>>
-> >>>>>> I had a brief look with a profiler myself and for single-threaded =
-usage
-> >>>>>> the func is quite high up there, while it manages to get out with =
-the
-> >>>>>> first branch -- that is to say there is definitely performance los=
-t for
-> >>>>>> having a func call instead of an inlined branch.
-> >>>>>>
-> >>>>>> The routine is deinlined because of a call to page_fixed_fake_head=
-,
-> >>>>>> which itself is annotated with always_inline.
-> >>>>>>
-> >>>>>> This is of course patchable with minor shoveling.
-> >>>>>>
-> >>>>>> I did not go for it because stress-ng results were too unstable fo=
-r me
-> >>>>>> to confidently state win/loss.
-> >>>>>>
-> >>>>>> But should you want to whack the regression, this is what I would =
-look
-> >>>>>> into.
-> >>>>>>
-> >>>>>
-> >>>>> This might improve it, at least for small folios I guess:
-> >> Do you want us to test this change? Or you have further optimization
-> >> ongoing? Thanks.
-> >
-> > I verified the thing below boots, I have no idea about performance. If
-> > it helps it can be massaged later from style perspective.
-> >
-> > diff --git a/include/linux/page-flags.h b/include/linux/page-flags.h
-> > index 5769fe6e4950..2d5d61ab385b 100644
-> > --- a/include/linux/page-flags.h
-> > +++ b/include/linux/page-flags.h
-> > @@ -194,34 +194,13 @@ enum pageflags {
-> >   #ifdef CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
-> >   DECLARE_STATIC_KEY_FALSE(hugetlb_optimize_vmemmap_key);
-> >
-> > -/*
-> > - * Return the real head page struct iff the @page is a fake head page,=
- otherwise
-> > - * return the @page itself. See Documentation/mm/vmemmap_dedup.rst.
-> > - */
-> > +const struct page *_page_fixed_fake_head(const struct page *page);
-> > +
-> >   static __always_inline const struct page *page_fixed_fake_head(const =
-struct page *page)
-> >   {
-> >       if (!static_branch_unlikely(&hugetlb_optimize_vmemmap_key))
-> >               return page;
-> > -
-> > -     /*
-> > -      * Only addresses aligned with PAGE_SIZE of struct page may be fa=
-ke head
-> > -      * struct page. The alignment check aims to avoid access the fiel=
-ds (
-> > -      * e.g. compound_head) of the @page[1]. It can avoid touch a (pos=
-sibly)
-> > -      * cold cacheline in some cases.
-> > -      */
-> > -     if (IS_ALIGNED((unsigned long)page, PAGE_SIZE) &&
-> > -         test_bit(PG_head, &page->flags)) {
-> > -             /*
-> > -              * We can safely access the field of the @page[1] with PG=
-_head
-> > -              * because the @page is a compound page composed with at =
-least
-> > -              * two contiguous pages.
-> > -              */
-> > -             unsigned long head =3D READ_ONCE(page[1].compound_head);
-> > -
-> > -             if (likely(head & 1))
-> > -                     return (const struct page *)(head - 1);
-> > -     }
-> > -     return page;
-> > +     return _page_fixed_fake_head(page);
-> >   }
-> >   #else
-> >   static inline const struct page *page_fixed_fake_head(const struct pa=
-ge *page)
-> > @@ -235,7 +214,7 @@ static __always_inline int page_is_fake_head(const =
-struct page *page)
-> >       return page_fixed_fake_head(page) !=3D page;
-> >   }
-> >
-> > -static inline unsigned long _compound_head(const struct page *page)
-> > +static __always_inline unsigned long _compound_head(const struct page =
-*page)
-> >   {
-> >       unsigned long head =3D READ_ONCE(page->compound_head);
-> >
-> > diff --git a/mm/hugetlb_vmemmap.c b/mm/hugetlb_vmemmap.c
-> > index 829112b0a914..3fbc00db607a 100644
-> > --- a/mm/hugetlb_vmemmap.c
-> > +++ b/mm/hugetlb_vmemmap.c
-> > @@ -19,6 +19,33 @@
-> >   #include <asm/tlbflush.h>
-> >   #include "hugetlb_vmemmap.h"
-> >
-> > +/*
-> > + * Return the real head page struct iff the @page is a fake head page,=
- otherwise
-> > + * return the @page itself. See Documentation/mm/vmemmap_dedup.rst.
-> > + */
-> > +const struct page *_page_fixed_fake_head(const struct page *page)
-> > +{
-> > +     /*
-> > +      * Only addresses aligned with PAGE_SIZE of struct page may be fa=
-ke head
-> > +      * struct page. The alignment check aims to avoid access the fiel=
-ds (
-> > +      * e.g. compound_head) of the @page[1]. It can avoid touch a (pos=
-sibly)
-> > +      * cold cacheline in some cases.
-> > +      */
-> > +     if (IS_ALIGNED((unsigned long)page, PAGE_SIZE) &&
-> > +         test_bit(PG_head, &page->flags)) {
-> > +             /*
-> > +              * We can safely access the field of the @page[1] with PG=
-_head
-> > +              * because the @page is a compound page composed with at =
-least
-> > +              * two contiguous pages.
-> > +              */
-> > +             unsigned long head =3D READ_ONCE(page[1].compound_head);
-> > +
-> > +             if (likely(head & 1))
-> > +                     return (const struct page *)(head - 1);
-> > +     }
-> > +     return page;
-> > +}
-> > +
-> >   /**
-> >    * struct vmemmap_remap_walk - walk vmemmap page table
-> >    *
-> >
->
-> The change can resolve the regression (from -3% to 0.5%):
->
+hi, Mateusz Guzik,
 
-thanks for testing
+On Mon, Aug 12, 2024 at 12:45:04PM +0200, Mateusz Guzik wrote:
+> I only found results for performance changes, nothing abut the current
+> state of things for any particular kernel and/or machine.
 
-would you mind benchmarking the change which merely force-inlines _compund_=
-page?
+do you mean for [1]?
 
-https://lore.kernel.org/linux-mm/66c4fcc5-47f6-438c-a73a-3af6e19c3200@redha=
-t.com/
+do you mean lastest mainline data for this test when you mentioned "current
+state of things"?
 
-> Please note:
->    9cb28da54643ad464c47585cd5866c30b0218e67 is the parent commit
->    3f16e4b516ef02d9461b7e0b6c50e05ba0811886 is the commit with above
->                                             patch
->    c0bff412e67b781d761e330ff9578aa9ed2be79e is the commit which
->                                             introduced regression
->
->
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> tbox_group/testcase/rootfs/kconfig/compiler/nr_threads/testtime/test/cpuf=
-req_governor/debug-setup:
->
-> lkp-icl-2sp8/stress-ng/debian-12-x86_64-20240206.cgz/x86_64-rhel-8.3/gcc-=
-12/100%/60s/clone/performance/yfw_test2
->
-> commit:
->    9cb28da54643ad464c47585cd5866c30b0218e67
->    3f16e4b516ef02d9461b7e0b6c50e05ba0811886
->    c0bff412e67b781d761e330ff9578aa9ed2be79e
->
-> 9cb28da54643ad46 3f16e4b516ef02d9461b7e0b6c5 c0bff412e67b781d761e330ff95
-> ---------------- --------------------------- ---------------------------
->         fail:runs  %reproduction    fail:runs  %reproduction    fail:runs
->             |             |             |             |             |
->            3:3            0%           3:3            0%           3:3
->    stress-ng.clone.microsecs_per_clone.pass
->            3:3            0%           3:3            0%           3:3
->    stress-ng.clone.pass
->           %stddev     %change         %stddev     %change         %stddev
->               \          |                \          |                \
->        2904            -0.6%       2886            +3.7%       3011
->    stress-ng.clone.microsecs_per_clone
->      563520            +0.5%     566296            -3.1%     546122
->    stress-ng.clone.ops
->        9306            +0.5%       9356            -3.0%       9024
->    stress-ng.clone.ops_per_sec
->
->
-> BTW, the change needs to export symbol _page_fixed_fake_head otherwise
-> some modules hit build error.
->
+when we finished the bisect for this regression, we also tested head of
+mainline at that time, confirmed regression still exists.
 
-ok, I'll patch that up if this approach will be the thing to do
+# extra tests on head commit of linus/master
+# bad: [2c9b3512402ed192d1f43f4531fb5da947e72bd0] Merge tag 'for-linus' of git://git.kernel.org/pub/scm/virt/kvm/kvm
 
---=20
-Mateusz Guzik <mjguzik gmail.com>
+
+> 
+> If this info is not pubicly available as is, can you do me a favor and a
+> one off send me a set of results + profiles for the biggest machine you
+> test on?
+
+what do you mean 'biggest machine'? the Ice Lake machine we used for origial
+report is a reletively powerful machine in our test machine pool.
+
+due to resource constraint, we cannot run all tests on all machines, just allot
+different tests to different machines. sorry that it's hard for us to allocate
+lots of resources for one test upon one commit.
+
+BTW, if your request is really for [1], Fengwei has already tested your patch
+and replied you, is that well enough?
+
+> 
+> thanks
+
+[1]
+"[linus:master] [mm]  c0bff412e6:  stress-ng.clone.ops_per_sec -2.9% regression"
+https://lore.kernel.org/all/202407301049.5051dc19-oliver.sang@intel.com/
