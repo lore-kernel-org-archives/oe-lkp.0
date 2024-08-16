@@ -1,250 +1,278 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+Received: from out-171.mta0.migadu.com (out-171.mta0.migadu.com [91.218.175.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BC3C25622
-	for <oe-lkp@lists.linux.dev>; Fri, 16 Aug 2024 04:18:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.16
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723781929; cv=fail; b=ceCLUXtwzdJ4zCA7JCrH4OnOdmUpxMxsjK6khUqHpOKYiNg9uuOrZOMfLQKHnzny1IKZnPueVSBTq9jrabayoCKaDvARYkW3pczpMrh69++EIAbzTox7BdMb1hTFpljHUQlOE7dPUKMl9xSoSof5QInHCPOf1swtg1i1x+aW6Jo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723781929; c=relaxed/simple;
-	bh=oxtpqBfM0+mn68ZyJ2eyNUGnXQcYdB1N4wM5VNJMgVs=;
-	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=R0cX+W9fU/loHqf3GH8wu8M4JduZJmgfz3X2e94gDCsxg29BhjBidKj1ExQYn8wS3n5/saCmL9zxNtr2Drs6482hJjm0FkLJQb1mGrMN13KGchx80V1sP7BoqIKDnm+UG5f/YC+RJBJZ6lk1pqxRzz242CODBPiZke1PLR4L848=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hKNOMGF9; arc=fail smtp.client-ip=198.175.65.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E8627D08F
+	for <oe-lkp@lists.linux.dev>; Fri, 16 Aug 2024 05:27:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.171
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1723786061; cv=none; b=ADX+DAc5GIyJIurWBOimh/H9PPtWhB2KcnqrfC2WfkyNvoLQyMh0slroavurJrw+QJXBO+QvSlyA9nJLlG7despVN34tKK/wJ8KZ7NFmjSx4kTVrQqj8WvdgNYuzzKhtQVz3M6jHHs7uXtdBmHtMv8UjtBH1bpmp/urtlVm+Usk=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1723786061; c=relaxed/simple;
+	bh=aTzQxHcq17xaLPsNM9+5kXko1CrQIC6Ft4OukYHadrA=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=kWRgRqw6uAiKsvOdUzRYc5WCIkjqNEoTsh/4RZSjo9VBmmKQVW3dnCFiIcG4mNdFM/y3Nq2IL2LKqYTxv7o2h3hZwtqAXjsk9zwrJ5t9MqvW2dCF33dktYli3rr7AnU3Iq3RT+DA++9tmbIsIQQJU+O85DpRY6GVHzepF7+SN74=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=UDNXRt5X; arc=none smtp.client-ip=91.218.175.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hKNOMGF9"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1723781927; x=1755317927;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   mime-version;
-  bh=oxtpqBfM0+mn68ZyJ2eyNUGnXQcYdB1N4wM5VNJMgVs=;
-  b=hKNOMGF9zENDKlmmLeQsP8caE7+6hygrXqhbmVNoyYO4OlbNy/RKudwA
-   mSY+YJqTMbZUjSg8s6of0c8+0+rgvLVda7Xk/15wqlzJsqBACgFd7LtZB
-   VhMPi92yp2XGowwyqA2VxikZLrgBu/vwGf8DAWTcXKDaCrbZ7cKzWSofn
-   Gziy/vRfnJV3zbSbe1tFW41kCt/nggIcXi6yw3TdAw5ylXYVU7KzBKP7g
-   iQ5s0KNNP6CdkNfD36kn0heq7Or37jalXb5e8aWraPsUtQzouCV0qgttZ
-   mqCttpvyW5tZpNVfc+VQ1IvMobp7e+CPjJ/hScrc0AXhB5pBgZZfySIyV
-   g==;
-X-CSE-ConnectionGUID: k1R1fbTCT8SRzf+jHyXILQ==
-X-CSE-MsgGUID: ZRl/RTzARi2Q/aEStBZneA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11165"; a="22213102"
-X-IronPort-AV: E=Sophos;i="6.10,150,1719903600"; 
-   d="scan'208";a="22213102"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2024 21:18:47 -0700
-X-CSE-ConnectionGUID: 8AcE+9xORJ6h3zG1qedH8w==
-X-CSE-MsgGUID: T+0RNzHpSuaybkUvCEJNFA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,150,1719903600"; 
-   d="scan'208";a="63745683"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by fmviesa003.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 15 Aug 2024 21:18:46 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Thu, 15 Aug 2024 21:18:46 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Thu, 15 Aug 2024 21:18:46 -0700
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.57.40) by
- edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Thu, 15 Aug 2024 21:18:45 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=PdI8nXAr0XR2IsAKsSxNRKfsVAt66tvmfOstuK5wb8YElGMsyw0fAQ6pMnPLXm7RnqqFpvAIHTsbIG8U5DDOQanVSHxdALvH34Q1XzuC6HumFxil3fIAL2o6aBD2vYRj8k0fvIZXPuABMdk+HMRQkyJ+KLC4sJaEH1dlDH05gi3SY6vr81GxcCEhB8ZhfRpzv6qNu1DPrPXKV1sw4MyiT8SjiXY2J/D3qFMhjw0C0XRVUuTmyuusFuEbgE55tI7tdYcrauapM0pbVOy31hIke2720cJbbi4/xiwJz2Z/UpN23qs94lR2A+719QDZ+llV1OaMujBzQeMuVKmmD7nUHA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wsoAlaF0j2EQsNrNHDbW3haQD7mTbWYgHrOMYSEOzlw=;
- b=fXinJo5pmPEq0s6D0C4d+jQUcCgbGXZhKV4l7sNgnQm/Dxtvqv4zqQ6o4TrQsxsyXMZp2fHfxLBnt74hpOCW0xKtgIvEOJsB9H588+T2UXKjvp8w7PnYf4hk3+G83SrU21owgvnoaLxN+MewxUxKPfByeJbBzCnWhP60IBBrAcwrSmTFSPO7u8DBzdxkovHikzyLejegOx1ssRodr60DdGjDPEnEDzE6tD3+UWCbJToIz1s/L8PLsZQSYFhq2XNMHqOERDN708n4Q55HVsjCMFPnZ0y9bGHX6noeb0n2Rb24vC4vNEiLYrsyB1ZXzZwpevQSAlxV6x40sOszB6ev0w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from SJ2PR11MB8587.namprd11.prod.outlook.com (2603:10b6:a03:568::21)
- by PH0PR11MB5191.namprd11.prod.outlook.com (2603:10b6:510:3e::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7875.19; Fri, 16 Aug
- 2024 04:18:42 +0000
-Received: from SJ2PR11MB8587.namprd11.prod.outlook.com
- ([fe80::4050:8bc7:b7c9:c125]) by SJ2PR11MB8587.namprd11.prod.outlook.com
- ([fe80::4050:8bc7:b7c9:c125%3]) with mapi id 15.20.7875.016; Fri, 16 Aug 2024
- 04:18:42 +0000
-Date: Fri, 16 Aug 2024 12:18:33 +0800
-From: kenel test robot <oliver.sang@intel.com>
-To: Zizhi Wo <wozizhi@huawei.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-xfs@vger.kernel.org>,
-	<chandan.babu@oracle.com>, <djwong@kernel.org>, <dchinner@redhat.com>,
-	<osandov@fb.com>, <john.g.garry@oracle.com>, <linux-kernel@vger.kernel.org>,
-	<wozizhi@huawei.com>, <yangerkun@huawei.com>, <oliver.sang@intel.com>
-Subject: Re: [PATCH V2] xfs: Make the fsmap more precise
-Message-ID: <202408161111.8e30613b-oliver.sang@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20240808144759.1330237-1-wozizhi@huawei.com>
-X-ClientProxiedBy: SI2PR04CA0002.apcprd04.prod.outlook.com
- (2603:1096:4:197::17) To SJ2PR11MB8587.namprd11.prod.outlook.com
- (2603:10b6:a03:568::21)
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="UDNXRt5X"
+Message-ID: <4254277c-2037-44bc-9756-c32b41c01bdf@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1723786056;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=/gTtWjkvrzP07/15t/7VwvkJr9zd2YYKh4iTWos35Vk=;
+	b=UDNXRt5XjUDx4p6ubiZXDZTI8CQVL08GzM9olKRD6dRLNCMMRu4tHq/CGtswddPN7Y3k/G
+	1WhXNVBs7IPh5BxCeAtsVp8/+5QimPy3XGP8Bzq0o5bD/Zgx9s8YgbThAeT99NH8l5K6J/
+	I51DRq9JMgxfGg4XkDFY5P43TcbXnfY=
+Date: Fri, 16 Aug 2024 13:27:26 +0800
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ2PR11MB8587:EE_|PH0PR11MB5191:EE_
-X-MS-Office365-Filtering-Correlation-Id: 630a0e55-4953-4a0b-26f9-08dcbdaa835a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|7416014|1800799024;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?iBY8oGgAnEykWP0aLaPI5TcBlpEsHQJHv8mxXJq8evIBLnHRItig/OtFhUex?=
- =?us-ascii?Q?+rhAqBoFBYAQDybLW1rhTMaX/vp0WutofQ8MNXXa6X1YrEyPAMHcrkveJNgL?=
- =?us-ascii?Q?sARsOIDgpAaM4tF0GsxBI8Y94I10Zut31lAl0KRLNzjqhgnmQuhNpwpFh29K?=
- =?us-ascii?Q?rZtTo8blamit+EI/n2qa8UevVypngia7p19Yku1q4BvLJICFhg5k0tWTPbO4?=
- =?us-ascii?Q?wPId6HbXRTi0fpWFi7ufnzo/Q9fwewATHDgk9WltcuJCx4092nRw3WaWWymH?=
- =?us-ascii?Q?C5Ta12kfMl8clvv1dfre1vKKCeJzSh+Lpwkkld6iWGwKDSS6ZreEVZ1RH0ZX?=
- =?us-ascii?Q?vqqREDBc51Lv39QcY1PFAuKRwrMyIZKsZFwur2mE0Qk75Isg1zw6WZp1I+Aa?=
- =?us-ascii?Q?Q0aEtxcHgxhRVrRgqDFvaxCCBy21Q19j+PwCPn9H38uiWjluEqPAgnPqo8TA?=
- =?us-ascii?Q?HC/4m5hrQjMC4E+pPtnJoV/gLvVcLYdt6Eki1wtQZgg6SOpxi7PB0VU6uQoJ?=
- =?us-ascii?Q?tkpNE2kcIv+ZXKa0vSh9JGGmRCMfnLsVtEGKp6U+Kj6TanAhsMMSjtPnUvoT?=
- =?us-ascii?Q?vVCmhW5/lQVl5dQYbzYutI3jwm6zyYSfcShkWD3hCGkUbeSoeB9Pk5PtyyrC?=
- =?us-ascii?Q?1H2Pja1kzJGFqAb19ZMa/xR0qfJr9uIaxVi+CHkyykwF75/L7TrH6aoPdcUb?=
- =?us-ascii?Q?aEYaUzrOQ6pG/3jKQlNC6/8rE7EnJzwSfu8K5pmVuJb0Y5UMHCLuyrv5qFOJ?=
- =?us-ascii?Q?yBl1y0dxJdwQ7SMVA8AZClWpDyTzL3RK5XvAHxeueZLa0s3J4PlMxfeYDp52?=
- =?us-ascii?Q?z9vYAEyvCS9CxdShULT2X/vp1XbEwR0IcRs7XXRSLTx8xp+SambG8iLNmS7A?=
- =?us-ascii?Q?ZqCUOLHHSDOMDgiU0CFfvnVpc9k2H5dyXIdlm4cN/Z7y64IOZrwIXLRtosjd?=
- =?us-ascii?Q?rspmZCVQ1UUaA1h2rBjpApBtLKe3+Mky04Jc8faI9iIHz07EysmlOYCJMEHq?=
- =?us-ascii?Q?H8fzv2YtofW96GKPHW4/trOgO2keNS31Jo0PgpfDyzg1SywQYuuVj/YkP2k7?=
- =?us-ascii?Q?BkuH3/kG4tCsxkShzZC6A0gVe7JnBmzr86ps0WHxeLCPPlMl8VerX6UhxUED?=
- =?us-ascii?Q?0eHTcAOXALfisDJoliufr0KXrpJfqIaviD9wXMC/8/3Kc4MSRoWfMjSGyAoI?=
- =?us-ascii?Q?Gs+gKmgcNJ/Y9CK+Cxy7zyVUOe5jcewA6EFBQpEhYZcPejaCsyrtloottndw?=
- =?us-ascii?Q?+thT6MlhsoOvn1I9EHYz1IKvuUiIeeb0qqpDf8GmFvmPxtFm0WMvR5tbSfIc?=
- =?us-ascii?Q?vdZZ4BJvYc18XlIVeYP4CI6r?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ2PR11MB8587.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(7416014)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?2TMiyPExHq6fXTzAWhVCxdZOWgJ1oVDAiJhpx0h4oYkTI6j3hNwEDPP4r+4f?=
- =?us-ascii?Q?J6ypTd0kQxoU0PX/HE9U/Qk4cMMQ5eF+xpYGY7T3a6JTVFVRf9sqyRNLaMNh?=
- =?us-ascii?Q?6A5XGm3MkeIXECkSSysjkvAiO05NeO7iR1u7fWCa5+3cp2NRIzP1zXZoI9KG?=
- =?us-ascii?Q?X3IvVq0abr7X8fAIhrJbAP2xygekHTHgHFlY/r4hxRc2tErES5ilglVnOMTA?=
- =?us-ascii?Q?rMnHfgZgXgyVZ1Thz6bjoy0n55108jK/JMHsOu9PKtELf5Ql5A7lDiefPHNz?=
- =?us-ascii?Q?cwo5gUQmR5JWeuXOcuA1/ench8m8GTUqDbS8bwa8on/be2PS+SA0ELcFzjwv?=
- =?us-ascii?Q?kisIJoBGjOR/FLp4FQrDjMElkFv0Q3h87T6kHlNRBQZtnWbtlZG0m11EMWAo?=
- =?us-ascii?Q?KxoFeYQNjI4MaVEa+MEuPyxnNKbeHueKp8XiJaiR7uxBwq7dczk8K1HzNS1A?=
- =?us-ascii?Q?/EEJw2InZkUQO6lW4jngJWqmDafaCdxNXSfd75wW99Jm/KU/yTsuKb+ukJdl?=
- =?us-ascii?Q?N9ifH0UHi+H0DffGUqSZjjhXda+ljGykYn8Sdk213eaQj612T2YebPKMaCme?=
- =?us-ascii?Q?wdwKYuFkoc3G8iEt25PhiUrlUwOGJcaVTFxyp0Xt3Xsr6y/1VMmonj7se19T?=
- =?us-ascii?Q?/YW9oQEIMm07RGljBZ/0aIIuS3YRZ9vNIOsPoK9S4why3GXeXv0n17IC1bak?=
- =?us-ascii?Q?20ZkJQFsh4djzKgAdtz3IGYFyan7jt6skav/ugdfvBUCzWvRi1Gg1L2hBcQD?=
- =?us-ascii?Q?KoJbSDif3v300qepuXHLqB09xq/oGmXRMhSX5hCBEB2/cG8H6JbVVO09TxmO?=
- =?us-ascii?Q?ubqsir9u1ID63U6nQ6iezKWxdBW/wKAq+/2l3q30nGq1ojZ+RPkb6YmR0DZm?=
- =?us-ascii?Q?fAjOcgXbiAa1ZqgIkfrmIxrSPffApbpQxfzbi+C6ykCsCsvkuOZnzJ08F+3S?=
- =?us-ascii?Q?Iq074+rqcNypEmP+Oo03rCkD58MYy778Vvq7l1wqqNvE7UadaCv3olpx0R+M?=
- =?us-ascii?Q?Wow1b5kZ6x/gqyHk8qQBEtUg0EDIISbMDcxuD6+Gc1n3x3XtQ6/Kp4bbn8UM?=
- =?us-ascii?Q?EZsEubijTtuCEc5pQD1uYff5faCqLeEEwcVuCxNmmV67qMnS2wM2hEsy06f8?=
- =?us-ascii?Q?qhQTQclXrLwwwBA4HAJIodocDGeBYWz7G3Zfp7XZRuRSRQRF+4NL7YpsJHXm?=
- =?us-ascii?Q?MBpLxlOI/5iTcw6HLV/8igN1tYGzwOaQemIFtFXoIShMecyz5zOXiyC6p+bH?=
- =?us-ascii?Q?yglSR1duOkr1WcHon/B8wz58vm+ZmOwNdUjaY+dw4k0VUo0BPToJ7y7d8RTs?=
- =?us-ascii?Q?tIaRmgkzm/PzJLlbFtd1mqtQucuQeYGhP/1dln9DC6G6vSUtLBX6k5KAJSyC?=
- =?us-ascii?Q?LhlphNZXs/Nn5voXQxpsX15xOe+gt/poP1Wibkz2lXrMMzeZdPxVy81CrXh6?=
- =?us-ascii?Q?tUgmIyEfRjKOmfBJEeKmNe4j+JIUbvfUokgAsYYd84EtDGm4vUn0EfjY2ETj?=
- =?us-ascii?Q?pIA51ZroU5duoBVfmlB6hFmo8g0URG/skUgzEbSB7DfXW+hRzMLAWghx9ia+?=
- =?us-ascii?Q?KZdB6oN2PPXU7y6Q3rIYJkBAAQ2B8NTAy12jbgVkUoE9NavmYODZFFHcn1L4?=
- =?us-ascii?Q?Sw=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 630a0e55-4953-4a0b-26f9-08dcbdaa835a
-X-MS-Exchange-CrossTenant-AuthSource: SJ2PR11MB8587.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2024 04:18:42.8086
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +fbRu33lGv9t1nEZr3CL4A7Sfngq7NeN++23V/PG7UZv8QS/2+S0iOn6PynoRKR6Yh3LgZoPxgxthehhViycLA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5191
-X-OriginatorOrg: intel.com
+Subject: Re: [linus:master] [RDMA/iwcm] aee2424246:
+ WARNING:at_kernel/workqueue.c:#check_flush_dependency
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Zhu Yanjun <yanjun.zhu@linux.dev>
+To: kernel test robot <oliver.sang@intel.com>,
+ Bart Van Assche <bvanassche@acm.org>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+ Leon Romanovsky <leon@kernel.org>,
+ Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>,
+ linux-rdma@vger.kernel.org
+References: <202408151633.fc01893c-oliver.sang@intel.com>
+ <c64a2f6e-ea18-4e8d-b808-0f1732c6d004@linux.dev>
+In-Reply-To: <c64a2f6e-ea18-4e8d-b808-0f1732c6d004@linux.dev>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
 
 
+在 2024/8/16 12:14, Zhu Yanjun 写道:
+>
+> 在 2024/8/16 9:07, kernel test robot 写道:
+>>
+>> Hello,
+>>
+>> kernel test robot noticed 
+>> "WARNING:at_kernel/workqueue.c:#check_flush_dependency" on:
+>>
+>> commit: aee2424246f9f1dadc33faa78990c1e2eb7826e4 ("RDMA/iwcm: Fix a 
+>> use-after-free related to destroying CM IDs")
+>> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>>
+>> [test failed on linus/master 5189dafa4cf950e675f02ee04b577dfbbad0d9b1]
+>> [test failed on linux-next/master 
+>> 61c01d2e181adfba02fe09764f9fca1de2be0dbe]
+>>
+>> in testcase: blktests
+>> version: blktests-x86_64-775a058-1_20240702
+>> with following parameters:
+>>
+>>     disk: 1SSD
+>>     test: nvme-group-01
+>>     nvme_trtype: rdma
+>
+> Hi, Bart && Jason && Leon
+>
+> It seems that it is related with WQ_MEM_RECLAIM.
+>
+> Not sure if adding WQ_MEM_RECLAIM to iw_cm_wq can fix this or not.
 
-Hello,
+The commit is as below.
 
-kernel test robot noticed "xfstests.xfs.556.fail" on:
+diff --git a/drivers/infiniband/core/iwcm.c b/drivers/infiniband/core/iwcm.c
+index 1a6339f3a63f..7e3a55349e10 100644
+--- a/drivers/infiniband/core/iwcm.c
++++ b/drivers/infiniband/core/iwcm.c
+@@ -1182,7 +1182,7 @@ static int __init iw_cm_init(void)
+         if (ret)
+                 return ret;
 
-commit: afef0c6f182dcaa5858b95edb6df46b7e4a54824 ("[PATCH V2] xfs: Make the fsmap more precise")
-url: https://github.com/intel-lab-lkp/linux/commits/Zizhi-Wo/xfs-Make-the-fsmap-more-precise/20240809-005729
-base: https://git.kernel.org/cgit/fs/xfs/xfs-linux.git for-next
-patch link: https://lore.kernel.org/all/20240808144759.1330237-1-wozizhi@huawei.com/
-patch subject: [PATCH V2] xfs: Make the fsmap more precise
+-       iwcm_wq = alloc_ordered_workqueue("iw_cm_wq", 0);
++       iwcm_wq = alloc_ordered_workqueue("iw_cm_wq", WQ_MEM_RECLAIM);
+         if (!iwcm_wq)
+                 goto err_alloc;
 
-in testcase: xfstests
-version: xfstests-x86_64-f5ada754-1_20240812
-with following parameters:
+Zhu Yanjun
 
-	disk: 4HDD
-	fs: xfs
-	test: xfs-556
-
-
-
-compiler: gcc-12
-test machine: 4 threads Intel(R) Xeon(R) CPU E3-1225 v5 @ 3.30GHz (Skylake) with 16G memory
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202408161111.8e30613b-oliver.sang@intel.com
-
-2024-08-16 01:01:52 export TEST_DIR=/fs/sda1
-2024-08-16 01:01:52 export TEST_DEV=/dev/sda1
-2024-08-16 01:01:52 export FSTYP=xfs
-2024-08-16 01:01:52 export SCRATCH_MNT=/fs/scratch
-2024-08-16 01:01:52 mkdir /fs/scratch -p
-2024-08-16 01:01:52 export SCRATCH_DEV=/dev/sda4
-2024-08-16 01:01:52 export SCRATCH_LOGDEV=/dev/sda2
-2024-08-16 01:01:52 export SCRATCH_XFS_LIST_METADATA_FIELDS=u3.sfdir3.hdr.parent.i4
-2024-08-16 01:01:52 export SCRATCH_XFS_LIST_FUZZ_VERBS=random
-2024-08-16 01:01:52 echo xfs/556
-2024-08-16 01:01:52 ./check xfs/556
-FSTYP         -- xfs (debug)
-PLATFORM      -- Linux/x86_64 lkp-skl-d06 6.11.0-rc1-00007-gafef0c6f182d #1 SMP PREEMPT_DYNAMIC Fri Aug 16 02:37:27 CST 2024
-MKFS_OPTIONS  -- -f /dev/sda4
-MOUNT_OPTIONS -- /dev/sda4 /fs/scratch
-
-xfs/556       - output mismatch (see /lkp/benchmarks/xfstests/results//xfs/556.out.bad)
-    --- tests/xfs/556.out	2024-08-12 20:11:27.000000000 +0000
-    +++ /lkp/benchmarks/xfstests/results//xfs/556.out.bad	2024-08-16 01:02:14.357396417 +0000
-    @@ -1,12 +1,21 @@
-     QA output created by 556
-     Scrub for injected media error (single threaded)
-    +Corruption: disk offset 106496: media error in unknown owner. (phase6.c line 400)
-     Unfixable Error: SCRATCH_MNT/a: media error at data offset 2FSB length 1FSB.
-     SCRATCH_MNT: unfixable errors found: 1
-    +SCRATCH_MNT: corruptions found: 1
-    +SCRATCH_MNT: Unmount and run xfs_repair.
-    ...
-    (Run 'diff -u /lkp/benchmarks/xfstests/tests/xfs/556.out /lkp/benchmarks/xfstests/results//xfs/556.out.bad'  to see the entire diff)
-Ran: xfs/556
-Failures: xfs/556
-Failed 1 of 1 tests
-
-
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20240816/202408161111.8e30613b-oliver.sang@intel.com
-
-
-
+>
+> Best Regards,
+>
+> Zhu Yanjun
+>
+>>
+>>
+>>
+>> compiler: gcc-12
+>> test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480+ 
+>> (Sapphire Rapids) with 256G memory
+>>
+>> (please refer to attached dmesg/kmsg for entire log/backtrace)
+>>
+>>
+>>
+>> If you fix the issue in a separate patch/commit (i.e. not just a new 
+>> version of
+>> the same patch/commit), kindly add following tags
+>> | Reported-by: kernel test robot <oliver.sang@intel.com>
+>> | Closes: 
+>> https://lore.kernel.org/oe-lkp/202408151633.fc01893c-oliver.sang@intel.com
+>>
+>>
+>> [  125.048981][ T1430] ------------[ cut here ]------------
+>> [  125.056856][ T1430] workqueue: WQ_MEM_RECLAIM 
+>> nvme-reset-wq:nvme_rdma_reset_ctrl_work [nvme_rdma] is flushing 
+>> !WQ_MEM_RECLAIM iw_cm_wq:0x0
+>> [ 125.056873][ T1430] WARNING: CPU: 2 PID: 1430 at 
+>> kernel/workqueue.c:3706 check_flush_dependency 
+>> (kernel/workqueue.c:3706 (discriminator 9))
+>> [  125.085014][ T1430] Modules linked in: siw ib_uverbs nvmet_rdma 
+>> nvmet nvme_rdma nvme_fabrics rdma_cm iw_cm ib_cm ib_core dimlib 
+>> dm_multipath btrfs blake2b_generic intel_rapl_msr xor 
+>> intel_rapl_common zstd_compress intel_uncore_frequency 
+>> intel_uncore_frequency_common raid6_pq libcrc32c x86_pkg_temp_thermal 
+>> intel_powerclamp coretemp nvme nvme_core ast t10_pi kvm_intel 
+>> qat_4xxx drm_shmem_helper mei_me kvm crct10dif_pclmul crc32_pclmul 
+>> crc32c_intel ghash_clmulni_intel sha512_ssse3 rapl intel_cstate 
+>> intel_uncore dax_hmem intel_th_gth intel_qat crc64_rocksoft_generic 
+>> dh_generic intel_th_pci idxd crc8 i2c_i801 crc64_rocksoft mei 
+>> intel_vsec idxd_bus drm_kms_helper intel_th authenc crc64 i2c_smbus 
+>> i2c_ismt ipmi_ssif wmi acpi_power_meter ipmi_si acpi_ipmi 
+>> ipmi_devintf ipmi_msghandler acpi_pad binfmt_misc loop fuse drm 
+>> dm_mod ip_tables [last unloaded: ib_uverbs]
+>> [  125.176472][ T1430] CPU: 2 PID: 1430 Comm: kworker/u898:26 Not 
+>> tainted 6.10.0-rc1-00015-gaee2424246f9 #1
+>> [  125.188840][ T1430] Workqueue: nvme-reset-wq 
+>> nvme_rdma_reset_ctrl_work [nvme_rdma]
+>> [ 125.199152][ T1430] RIP: 0010:check_flush_dependency 
+>> (kernel/workqueue.c:3706 (discriminator 9))
+>> [ 125.207527][ T1430] Code: fa 48 c1 ea 03 80 3c 02 00 0f 85 a8 00 00 
+>> 00 49 8b 54 24 18 49 8d b5 c0 00 00 00 49 89 e8 48 c7 c7 20 46 08 84 
+>> e8 ed 8b f9 ff <0f> 0b e9 93 fd ff ff e8 a1 bf 82 00 e9 80 fd ff ff 
+>> e8 97 bf 82 00
+>> All code
+>> ========
+>>     0:    fa                       cli
+>>     1:    48 c1 ea 03              shr    $0x3,%rdx
+>>     5:    80 3c 02 00              cmpb   $0x0,(%rdx,%rax,1)
+>>     9:    0f 85 a8 00 00 00        jne    0xb7
+>>     f:    49 8b 54 24 18           mov    0x18(%r12),%rdx
+>>    14:    49 8d b5 c0 00 00 00     lea    0xc0(%r13),%rsi
+>>    1b:    49 89 e8                 mov    %rbp,%r8
+>>    1e:    48 c7 c7 20 46 08 84     mov $0xffffffff84084620,%rdi
+>>    25:    e8 ed 8b f9 ff           callq  0xfffffffffff98c17
+>>    2a:*    0f 0b                    ud2            <-- trapping 
+>> instruction
+>>    2c:    e9 93 fd ff ff           jmpq   0xfffffffffffffdc4
+>>    31:    e8 a1 bf 82 00           callq  0x82bfd7
+>>    36:    e9 80 fd ff ff           jmpq   0xfffffffffffffdbb
+>>    3b:    e8 97 bf 82 00           callq  0x82bfd7
+>>
+>> Code starting with the faulting instruction
+>> ===========================================
+>>     0:    0f 0b                    ud2
+>>     2:    e9 93 fd ff ff           jmpq   0xfffffffffffffd9a
+>>     7:    e8 a1 bf 82 00           callq  0x82bfad
+>>     c:    e9 80 fd ff ff           jmpq   0xfffffffffffffd91
+>>    11:    e8 97 bf 82 00           callq  0x82bfad
+>> [  125.231266][ T1430] RSP: 0018:ffa000001375fb88 EFLAGS: 00010282
+>> [  125.239626][ T1430] RAX: 0000000000000000 RBX: ff11000341233c00 
+>> RCX: 0000000000000027
+>> [  125.250304][ T1430] RDX: 0000000000000027 RSI: 0000000000000004 
+>> RDI: ff110017fc930b08
+>> [  125.260878][ T1430] RBP: 0000000000000000 R08: 0000000000000001 
+>> R09: ffe21c02ff926161
+>> [  125.271664][ T1430] R10: ff110017fc930b0b R11: 0000000000000010 
+>> R12: ff1100208d2a4000
+>> [  125.282387][ T1430] R13: ff1100020d87a000 R14: 0000000000000000 
+>> R15: ff11000341233c00
+>> [  125.292984][ T1430] FS:  0000000000000000(0000) 
+>> GS:ff110017fc900000(0000) knlGS:0000000000000000
+>> [  125.304552][ T1430] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>> [  125.313446][ T1430] CR2: 00007fa84066aa1c CR3: 000000407c85a005 
+>> CR4: 0000000000f71ef0
+>> [  125.324080][ T1430] DR0: 0000000000000000 DR1: 0000000000000000 
+>> DR2: 0000000000000000
+>> [  125.334584][ T1430] DR3: 0000000000000000 DR6: 00000000fffe07f0 
+>> DR7: 0000000000000400
+>> [  125.345252][ T1430] PKRU: 55555554
+>> [  125.350876][ T1430] Call Trace:
+>> [  125.356281][ T1430]  <TASK>
+>> [ 125.361285][ T1430] ? __warn (kernel/panic.c:693)
+>> [ 125.367640][ T1430] ? check_flush_dependency 
+>> (kernel/workqueue.c:3706 (discriminator 9))
+>> [ 125.375689][ T1430] ? report_bug (lib/bug.c:180 lib/bug.c:219)
+>> [ 125.382505][ T1430] ? handle_bug (arch/x86/kernel/traps.c:239)
+>> [ 125.388987][ T1430] ? exc_invalid_op (arch/x86/kernel/traps.c:260 
+>> (discriminator 1))
+>> [ 125.395831][ T1430] ? asm_exc_invalid_op 
+>> (arch/x86/include/asm/idtentry.h:621)
+>> [ 125.403125][ T1430] ? check_flush_dependency 
+>> (kernel/workqueue.c:3706 (discriminator 9))
+>> [ 125.410984][ T1430] ? check_flush_dependency 
+>> (kernel/workqueue.c:3706 (discriminator 9))
+>> [ 125.418764][ T1430] __flush_workqueue (kernel/workqueue.c:3970)
+>> [ 125.426021][ T1430] ? __pfx___might_resched 
+>> (kernel/sched/core.c:10151)
+>> [ 125.433431][ T1430] ? destroy_cm_id 
+>> (drivers/infiniband/core/iwcm.c:375) iw_cm
+>> [  125.440844][ T2411] /usr/bin/wget -q --timeout=3600 --tries=1 
+>> --local-encoding=UTF-8 
+>> http://internal-lkp-server:80/~lkp/cgi-bin/lkp-jobfile-append-var?job_file=/lkp/jobs/scheduled/lkp-spr-2sp1/blktests-1SSD-rdma-nvme-group-01-debian-12-x86_64-20240206.cgz-aee2424246f9-20240809-69442-1dktaed-4.yaml&job_state=running 
+>> -O /dev/null
+>> [ 125.441209][ T1430] ? __pfx___flush_workqueue 
+>> (kernel/workqueue.c:3910)
+>> [  125.441215][ T2411]
+>> [ 125.473900][ T1430] ? _raw_spin_lock_irqsave 
+>> (arch/x86/include/asm/atomic.h:107 
+>> include/linux/atomic/atomic-arch-fallback.h:2170 
+>> include/linux/atomic/atomic-instrumented.h:1302 
+>> include/asm-generic/qspinlock.h:111 include/linux/spinlock.h:187 
+>> include/linux/spinlock_api_smp.h:111 kernel/locking/spinlock.c:162)
+>> [ 125.473909][ T1430] ? __pfx__raw_spin_lock_irqsave 
+>> (kernel/locking/spinlock.c:161)
+>> [  125.480265][ T2411] target ucode: 0x2b0004b1
+>> [ 125.482537][ T1430] _destroy_id 
+>> (drivers/infiniband/core/cma.c:2044) rdma_cm
+>> [  125.488511][ T2411]
+>> [ 125.495072][ T1430] nvme_rdma_free_queue 
+>> (drivers/nvme/host/rdma.c:656 drivers/nvme/host/rdma.c:650) nvme_rdma
+>> [  125.500747][ T2411] LKP: stdout: 2876: current_version: 2b0004b1, 
+>> target_version: 2b0004b1
+>> [ 125.505827][ T1430] nvme_rdma_reset_ctrl_work 
+>> (drivers/nvme/host/rdma.c:2180) nvme_rdma
+>> [ 125.505831][ T1430] process_one_work (kernel/workqueue.c:3231)
+>> [  125.508377][ T2411]
+>> [ 125.515122][ T1430] worker_thread (kernel/workqueue.c:3306 
+>> kernel/workqueue.c:3393)
+>> [ 125.515127][ T1430] ? __pfx_worker_thread (kernel/workqueue.c:3339)
+>> [  125.524642][ T2411] check_nr_cpu
+>> [ 125.531837][ T1430] kthread (kernel/kthread.c:389)
+>> [  125.537327][ T2411]
+>> [ 125.539864][ T1430] ? __pfx_kthread (kernel/kthread.c:342)
+>> [  125.545392][ T2411] CPU(s):                               224
+>> [ 125.550628][ T1430] ret_from_fork (arch/x86/kernel/process.c:147)
+>> [  125.554342][ T2411]
+>> [ 125.558840][ T1430] ? __pfx_kthread (kernel/kthread.c:342)
+>> [ 125.558844][ T1430] ret_from_fork_asm (arch/x86/entry/entry_64.S:257)
+>> [  125.561843][ T2411] On-line CPU(s) list: 0-223
+>> [  125.566487][ T1430]  </TASK>
+>> [  125.566488][ T1430] ---[ end trace 0000000000000000 ]---
+>>
+>>
+>>
+>> The kernel config and materials to reproduce are available at:
+>> https://download.01.org/0day-ci/archive/20240815/202408151633.fc01893c-oliver.sang@intel.com 
+>>
+>>
+>>
+>>
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Best Regards,
+Yanjun.Zhu
 
