@@ -1,84 +1,90 @@
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+Received: from out-170.mta1.migadu.com (out-170.mta1.migadu.com [95.215.58.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23BB91AC8BE;
-	Fri, 16 Aug 2024 17:51:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4ED4D2F23
+	for <oe-lkp@lists.linux.dev>; Sat, 17 Aug 2024 06:51:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723830689; cv=none; b=s4SqDLcY8g7GZv2huM40m3Q/sVkFYCri3w14aBByp4OIdu2t47Benz+IZhSrnNmNRftl6fJityR+BNqmspo46KQ61GAGnmb4QVmfOOly2zt2dOeDZ1wP2dViewNYwP61bD+WwNEtD5hPALMwQkxZzabmF4RbUAm7cuyNq972Zro=
+	t=1723877499; cv=none; b=JtO72RHyB3ydXjy66z3NO5H5J7Z0YRSHZiQYt3e5Xdh3zqnwnL/Js7DXQD0qlL5+b/ZQdVxhtFZhmseQmCk4Tn4bG2Jo3Vg54q2oyICE1nYuYdNeQ96WGTPtcWNtpldnaTB+K3QEIYu0zhTI01zCITTC5t6SBe0khYHGB8/z5yE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723830689; c=relaxed/simple;
-	bh=P03NoRPWOew/zEckFq6H56iG7PE+QKUMOpQAR0woiL4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fOqg/BP1u9o9fjWKN8IG+/giZZdlIehPsXq06wVMNhvupX2GhjWIk7wTjORoaSSFpW+3//JpgoErAQkMxosqN+Kf9o97bcJxvCxzT0AKY7EdL+TjfLa+tslQVjLxH+ZZgk+80CebTG6SAg8a8OpQHoNZJHdnA9lVpKSdMs4FenU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=EBiccx3l; arc=none smtp.client-ip=90.155.50.34
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	s=arc-20240116; t=1723877499; c=relaxed/simple;
+	bh=gjPfS0o1eSrCiNE+IyL7BL3nfcBNE/eWu+Hgp89atGY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=FQiyGk1ukf28qLF/BnmIjm0q2n3xMOk8d1N5nImh5TbiK7d91TIBSsVW9JVVmeiWAVzce7DvWsReZ2LVng0G8/jipuXaLx4gvYWrnbzCNR2Jzk9XlrNu9RNFOXPMqC5tPPf/P/fsHvpm16BdbWn6tBVo/NVzlM5UXdPmAfQxc8I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=HdUbmn1k; arc=none smtp.client-ip=95.215.58.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="EBiccx3l"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=IOOLI9WKFRs4gfl6He/jq3lJinZdUeEYeTDVswuAvyo=; b=EBiccx3lTHuQMq/USiLorIxKXp
-	8r340NPpPWyctZD636zkEfIxlBVjjQ217KtE5bAhDsn8TOkGl6hdKtxzP5hQSFWmC5tgbtIMhJEmC
-	ZJud3UHOTuAdA30oTpS8GqNwjw+GZqVV9joZ00mg77PlxhZamSdhF8T/U7BCwmMjPLsrZmZUZ7goh
-	BJmwUY3XeAcw90DUXSRJb05wkwoEElSRS24eXjpM+mu8Yz2cX0t6GhTZgZUiaQpz2VLyQ9hJk9Y64
-	jhJnmOZAQPcT2dYFVtUP7LNQVvF9pV1Cc1MnuRqkgUwDyGwXAb/rYxulil4NqjxRzG+Meh1Eozmr8
-	NllZyL8A==;
-Received: from willy by casper.infradead.org with local (Exim 4.97.1 #2 (Red Hat Linux))
-	id 1sf16h-00000003uWG-2dmY;
-	Fri, 16 Aug 2024 17:51:23 +0000
-Date: Fri, 16 Aug 2024 18:51:23 +0100
-From: Matthew Wilcox <willy@infradead.org>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-perf-users@vger.kernel.org,
-	linux-kernel@vger.kernel.org, ying.huang@intel.com,
-	feng.tang@intel.com, fengwei.yin@intel.com,
-	Peter Zijlstra <peterz@infradead.org>,
-	Ingo Molnar <mingo@redhat.com>,
-	Arnaldo Carvalho de Melo <acme@kernel.org>,
-	Namhyung Kim <namhyung@kernel.org>
-Subject: Re: [PATCH] perf: Remove setting of page->index and ->mapping
-Message-ID: <Zr-Rm14B5AHZ4_UB@casper.infradead.org>
-References: <20240809201038.2648058-1-willy@infradead.org>
- <202408161305.a3a5158a-oliver.sang@intel.com>
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="HdUbmn1k"
+Message-ID: <3ca021d4-9cce-4402-8a4e-104df6459bc2@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1723877495;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=McP28WfNwniewkfzNc6RfLqw1V/Rhkl3Ejq5OhUSXCQ=;
+	b=HdUbmn1kPJ0Vx98cmOJHhc0lpi6iHBfwmPksAa48UGrXiA8iXpApfwUQtmkyaBbEQ8XBL3
+	CMReN/w+NgzTGZdI9yU2+hSvcPXUbhjZoSYRANaypKBWfT2xgwzFOOFxJaTdB6EzYtCyZO
+	Jk+e0LOsETkLD9pGVN2cFjwtJvarTOE=
+Date: Sat, 17 Aug 2024 14:51:16 +0800
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202408161305.a3a5158a-oliver.sang@intel.com>
+Subject: Re: [linus:master] [RDMA/iwcm] aee2424246:
+ WARNING:at_kernel/workqueue.c:#check_flush_dependency
+To: Bart Van Assche <bvanassche@acm.org>,
+ kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+ Leon Romanovsky <leon@kernel.org>,
+ Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>,
+ linux-rdma@vger.kernel.org
+References: <202408151633.fc01893c-oliver.sang@intel.com>
+ <c64a2f6e-ea18-4e8d-b808-0f1732c6d004@linux.dev>
+ <4254277c-2037-44bc-9756-c32b41c01bdf@linux.dev>
+ <d698161b-f9f4-490b-98a5-b51d739d4136@acm.org>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Zhu Yanjun <yanjun.zhu@linux.dev>
+In-Reply-To: <d698161b-f9f4-490b-98a5-b51d739d4136@acm.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
 
-On Fri, Aug 16, 2024 at 02:35:39PM +0800, kernel test robot wrote:
-> from commit message, it seems just some useless setting have been removed.
-> but quite some performance regression bisect by our bot finally point to this
-> change (already removed some not so significant changes to avoid this report
-> mail is too long).
-> 
-> we don't have enough knowledge to explain these, so just report FYI.
-> if you have any suggestion for our tests or need us run more tests, please
-> just let us know. thanks a lot!
 
-Can you try this replacement patch?
+在 2024/8/17 1:09, Bart Van Assche 写道:
+> On 8/15/24 10:27 PM, Zhu Yanjun wrote:
+>> diff --git a/drivers/infiniband/core/iwcm.c 
+>> b/drivers/infiniband/core/iwcm.c
+>> index 1a6339f3a63f..7e3a55349e10 100644
+>> --- a/drivers/infiniband/core/iwcm.c
+>> +++ b/drivers/infiniband/core/iwcm.c
+>> @@ -1182,7 +1182,7 @@ static int __init iw_cm_init(void)
+>>          if (ret)
+>>                  return ret;
+>>
+>> -       iwcm_wq = alloc_ordered_workqueue("iw_cm_wq", 0);
+>> +       iwcm_wq = alloc_ordered_workqueue("iw_cm_wq", WQ_MEM_RECLAIM);
+>>          if (!iwcm_wq)
+>>                  goto err_alloc;
+>
+> This change looks good go me. Do you plan to post this as a proper patch?
 
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index c973e3c11e03..bc12f4fb7fa9 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -6221,10 +6221,9 @@ static vm_fault_t perf_mmap_fault(struct vm_fault *vmf)
- 		goto unlock;
- 
- 	get_page(vmf->page);
--	vmf->page->mapping = vmf->vma->vm_file->f_mapping;
--	vmf->page->index   = vmf->pgoff;
-+	lock_page(vmf->page);
- 
--	ret = 0;
-+	ret = VM_FAULT_LOCKED;
- unlock:
- 	rcu_read_unlock();
- 
+Hi, Bart
+
+Thanks a lot for your review. I will post the patch ASAP.
+
+Zhu Yanjun
+
+
+>
+> Thanks,
+>
+> Bart.
+>
+-- 
+Best Regards,
+Yanjun.Zhu
+
