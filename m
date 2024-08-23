@@ -1,96 +1,62 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2054.outbound.protection.outlook.com [40.107.255.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C76337144
-	for <oe-lkp@lists.linux.dev>; Fri, 23 Aug 2024 02:33:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6B5C18BB9D
+	for <oe-lkp@lists.linux.dev>; Fri, 23 Aug 2024 14:01:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.255.54
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724380407; cv=fail; b=Td4uXo2VHsH1fzIpuRHY5GnssJ3mW3Oe7vEYzDU6i/+9GIrGSFIHH+mZ5XXB49dpW9iVySzxE+nSuIl0WGXgfhRjIv0BExnv5AfjImZIbfJM1sUf8I6Wa6pNBkpS3d3UOe+p2aK2PRH/83fpHXKEboZTv/JvviJtfnkNsnX3COc=
+	t=1724421715; cv=fail; b=ov24fuWtGdXtNGYM+QbLuTokpyZXqh2wDCXUmLDtAZep8slMDkQZQGaVD+yHRkbtV3qyOhYybttJE/aauIl+QotGl8gtXGG8QxHOEYO27d18+GT+v2FXqrYOfwuOtLBMjyXbgAu1GksXiw52X7ov/BzrAO7MzCNdYqUotaDomG8=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724380407; c=relaxed/simple;
-	bh=hI4sIHA7upAaEvqf+mHwA+glxaBi1w3oh6nzeuIADGc=;
-	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=FIyIDbTp9+8Whuiacl8+RaEc3VkyfUurjRAEZ/RCEeNNLu8befLtQcJtldZmnCzVn5EfT8OD4q5m/Fjn91QfavrTeOOq23NM69kzk2ozsbyTVULPb5+pRnMW48Eouac/K+jRONJzO3sh54XBnVkCgN8iklOPbffpVTxwPxYTuPA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=D3N1DPLR; arc=fail smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1724421715; c=relaxed/simple;
+	bh=kSchDAPbiY4TPfWYxv1cmuRJYUGpwxDdi+9adZQs0S4=;
+	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=FF6kCj6zxtWxHp0+STuh5Xqup4mtdBCKdLDikTZTZ5b1Kl3w2dBfddSqTRwCZVgGM9ByQknqgkfxq//NEcoU6GeRxeZGCIJPjCzB5Uy+GDvAU6VCXyvtp4P6J858B9X3lLKMrZR9A7lLI8CvNnYFSFQAIKEQVVVvKaVntn9tI9A=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vivo.com; spf=pass smtp.mailfrom=vivo.com; dkim=pass (2048-bit key) header.d=vivo.com header.i=@vivo.com header.b=JsKSWHrm; arc=fail smtp.client-ip=40.107.255.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vivo.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vivo.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="D3N1DPLR"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1724380404; x=1755916404;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   mime-version;
-  bh=hI4sIHA7upAaEvqf+mHwA+glxaBi1w3oh6nzeuIADGc=;
-  b=D3N1DPLRpPLmQ68LGgwj05MkzVTxXrVCgBmtZBmpnE04ks+hPK+IQWQN
-   08B/Ie2fRbpX5yOQMKdRt1dip88+YcAPVJ3ETkeUpWjW3drCPeqnRPAHU
-   4SlvYZYtEVztGPDwHu3JJfzoyoQqJ37zv/0Tkg6OT4nCdiGkJmST7sYKY
-   h/mErLNnbihQF/oqWIwp1aDKNb+4/MpIfPYz+6te5Irvm/7jUFEokcEtg
-   aC+VihpuT6S7EdazQ8R7oSPR4yJFM/eIXZ/OifdrFX70kVXyacUDwVVwI
-   Acduq0E/r/xB4nDoyOTbdu/26lhFxNobkTyCHAzMpjS4biIeOFmy5oX3K
-   A==;
-X-CSE-ConnectionGUID: hdDdtbdQQV+Sj4nccHAc9Q==
-X-CSE-MsgGUID: SVlGhvoYQ+elLRYaXk++kQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11172"; a="48227200"
-X-IronPort-AV: E=Sophos;i="6.10,169,1719903600"; 
-   d="scan'208";a="48227200"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2024 19:33:24 -0700
-X-CSE-ConnectionGUID: VaM9SG6YSSCUx3lZ+E5P8w==
-X-CSE-MsgGUID: amuDXAZATDejHPk6tKxJpA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,169,1719903600"; 
-   d="scan'208";a="61678857"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by fmviesa009.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 22 Aug 2024 19:33:23 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Thu, 22 Aug 2024 19:33:23 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Thu, 22 Aug 2024 19:33:23 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.169)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Thu, 22 Aug 2024 19:33:22 -0700
+	dkim=pass (2048-bit key) header.d=vivo.com header.i=@vivo.com header.b="JsKSWHrm"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=yxkbRoi6A91PNzOD0Rt2NY1ktPYA16HlZuM5KUDCUcj6gqsdl1BbK5I5To5M/6tauQYkY/LqHewFU6WMz6LhrXtbkvwa1a+p7aR0b998KjznANL6VwBLVLy0BLSefB1L8zJEPmXWhu5uJm7RDhEJOto5HzP9OPSkzoaM9pze3ZL9xMnorhyufjNF07oILkTo2LXoYl1Sb3BQvtw3BlhOFz+L29plVlYoGsnNg1+4+Wj6dkXtkiigKyseul/Wbpv94lwLEFqtN2N1rXv1nKXgPX5i1cVK6xfD1eWLUAn2xbcPVy0u3wlg8cq0+AVhzWrs1ck8MFZzm9cfHNp7vluvTA==
+ b=uPLBN9uOIsvRgKUQdtxZPbr/f7jyta+kq/n/G0I7FXYxdU1BsduEKj4+XQL4GIQJ/MHijMQa3rOX3AnEA2lMU3amWSAHuQ+qVKAH80gDDYYpNrcw7o8hzf6vGm4yJHd1tDcZUPLcMFcxC7Kz/K/fRp+k1ijyYmkr6PbQMlfoq6qTSY2HYs/0UMWTpEBY5ULM48uq8WMTGR9jxS6CVFpghF7JYC0hVSboQyD+ySNCSSrcfB7XIxPutzOy7fP7itYkgvWlB3oG63tmr43FWE+vA2/ogrPQPQ/NCm6ko2RQJPh5rakSWeE7VOqYfukDoatuz2H89Xub6QkRqCqIBwkhPA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ibOZ6Fyw+C8kOflTIXgHQPozEtwuhNATMM6VKZ+3bKw=;
- b=PR90XnQyiojpPkH6xxoiV0U0275oNNo5pUjSOZYTSKyTAEc9Npxvy+wEWSOUsKrPUdGkANLMt4eZOV0aDfV3leQxVIRxsOFBuzEt1ZLLZKlj0nMri5HPOMG+DNuTxraZIYYO5ErDWa3ks9O3/beoqeqcrjwSOcxSt+IFjHwktTpjPnO7Zgz8ovwVV5oBrLra4zlYwF9JT0XSxsJDQ47D+o2lhoOcOHwImCB5ycoNbmHvQSpsLHJnsWfKuOG0OCj/N5IFqFC3XCV8BeGR7dpxrMJYi+OZi2JgamX6c3OfFe5q+Beu27h4CSSCaj6loIoEdsGIOlUzKOZh32GH9OxdhQ==
+ bh=QXYoMV2Du+s+82HmC1q3+f3kEqfji82ljdp88SSmQ0g=;
+ b=IFlRXg7Kzi/4QQl4JnX7Ib51PhCcqwr01IoS84xUa9dYtAQ0HxTh6FKoniVj4mqW4W17+MUAU/QPFIzjOaIMtO5u5osY26WSIubbHYVb6A6VVvwshDxd/FI/4U6w8xmDniA2R+tP8KhInfewHO4/l6cttxn/me7ZCWTFLjjVFXCMLwzAljNgfHqD9i0QuD2Q3bZfOz4H4RnhB8UhYCcw2GY3c9L7OYYONZV22MOHDgzekAR78HJblELOQHNoAN3UXJYA5zPnHRg8tZW/WhYqavx//sd5RQ4dQg7UHzZ4vu42hF52W+mf4YWMiGcui6nMh5dplf6uiMGrITCpcGN0ng==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QXYoMV2Du+s+82HmC1q3+f3kEqfji82ljdp88SSmQ0g=;
+ b=JsKSWHrmMitjGj1bswyqimpNZ79yKoXJ8dse1v0NDz206/wNYCOQRfWAvLPZ7/AbA0IFhRZcTMPh8qTG+mREULU4fOFxQuagEUu5bIpnWH2aQeONgpeRvsalE6+Ke3mlZzwg+nlfSeO465qq61ZN2wH/yZfVNUuQzIrBhWbRM7mJpaOJfCCCB4xQk4FpP87j41PYIGqTxQjZE3uKjYO3hrGfH1Zpr1jU7YlpofQYh5+o43AkxL2lg3FF/oZcSSo2pK1MnNrOENr3IbAA2R2y878PttkTJyQIYTBoZFb/W0DTiK5Uht6U2c5cg5tiBDBp08cuf4C5N7TrFjUFG+jS5A==
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by BN9PR11MB5307.namprd11.prod.outlook.com (2603:10b6:408:118::9) with
+ header.d=none;dmarc=none action=none header.from=vivo.com;
+Received: from JH0PR06MB6849.apcprd06.prod.outlook.com (2603:1096:990:47::12)
+ by TY0PR06MB5458.apcprd06.prod.outlook.com (2603:1096:400:329::10) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7897.18; Fri, 23 Aug
- 2024 02:33:20 +0000
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.7897.014; Fri, 23 Aug 2024
- 02:33:20 +0000
-Date: Fri, 23 Aug 2024 10:33:10 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: Zhiguo Jiang <justinjiang@vivo.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-mm@kvack.org>, "Andrew
- Morton" <akpm@linux-foundation.org>, <linux-kernel@vger.kernel.org>,
-	<opensource.kernel@vivo.com>, Zhiguo Jiang <justinjiang@vivo.com>,
-	<oliver.sang@intel.com>
-Subject: Re: [PATCH] mm: vma remove the redundant avc binded with old folio
-Message-ID: <202408230938.43f55b4-lkp@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20240820143359.199-1-justinjiang@vivo.com>
-X-ClientProxiedBy: SG2PR02CA0025.apcprd02.prod.outlook.com
- (2603:1096:3:18::13) To LV3PR11MB8603.namprd11.prod.outlook.com
- (2603:10b6:408:1b6::9)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7875.20; Fri, 23 Aug
+ 2024 14:01:47 +0000
+Received: from JH0PR06MB6849.apcprd06.prod.outlook.com
+ ([fe80::ed24:a6cd:d489:c5ed]) by JH0PR06MB6849.apcprd06.prod.outlook.com
+ ([fe80::ed24:a6cd:d489:c5ed%3]) with mapi id 15.20.7875.019; Fri, 23 Aug 2024
+ 14:01:47 +0000
+From: Zhiguo Jiang <justinjiang@vivo.com>
+To: Andrew Morton <akpm@linux-foundation.org>,
+	linux-mm@kvack.org,
+	linux-kernel@vger.kernel.org,
+	oe-lkp@lists.linux.dev,
+	oliver.sang@intel.com
+Cc: opensource.kernel@vivo.com,
+	Zhiguo Jiang <justinjiang@vivo.com>
+Subject: [PATCH v2] vma remove the unneeded avc bound with non-CoWed folio
+Date: Fri, 23 Aug 2024 22:01:39 +0800
+Message-ID: <20240823140139.263-1-justinjiang@vivo.com>
+X-Mailer: git-send-email 2.41.0.windows.3
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SI1PR02CA0033.apcprd02.prod.outlook.com
+ (2603:1096:4:1f6::14) To JH0PR06MB6849.apcprd06.prod.outlook.com
+ (2603:1096:990:47::12)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -98,228 +64,202 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|BN9PR11MB5307:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1913e411-c171-434d-9477-08dcc31bf3fa
+X-MS-TrafficTypeDiagnostic: JH0PR06MB6849:EE_|TY0PR06MB5458:EE_
+X-MS-Office365-Filtering-Correlation-Id: 06d981a2-47e0-4b6e-4b31-08dcc37c20f6
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?2Xtr0+/YAwizv9jC2NtdCDgsGOTEFSIuFCL38PsHNUygXKjdwbNEMOjY5y1l?=
- =?us-ascii?Q?CEPooz4TVtOljjetK5XgrlO56YPT7oj46+EOewxYleHBY1nSnDCI0IJ7lReY?=
- =?us-ascii?Q?g6i1TmJE4PqlZ4Vvj8PD6e7rYLQDYHTuc71WGDZaR//IuoEZuwFrcQGOSdZm?=
- =?us-ascii?Q?8+P797EHZgnaOhazeiMDWR1vdHj/7ic1ZGLmgQtwvTWTYFvgDrfPq69bKN3u?=
- =?us-ascii?Q?wNpC2m7ENrKlzflZBcC5U0gEqtn5Xnx2NBVRi8TaDdrrkkYsRGn3XK6F6dnz?=
- =?us-ascii?Q?EVII8SR2lUxzWLs16cBGBc78D3Bjx/5UAgIUVUQhndl+j3Dto0q7Okkt2Z9o?=
- =?us-ascii?Q?6I0tD61p4jChBUjAyoC7QgMw1d1rewTbZOu9Bit1DCvDqoVE2FogeN7vES3L?=
- =?us-ascii?Q?9nGqfOPgEMMso26f6lsQ7MESpSg2Jmf+8gUNmfFA/OABR5EU3EHSiWfWU55q?=
- =?us-ascii?Q?yD8zoy5omajP2NxmMPU2LgUzHPYsD54d5PfJPYtA2R7mmSWPlLdasKrb1MEh?=
- =?us-ascii?Q?JNllnZxgGFGtf/fgxm8Wwqz2ZNbCMyfeyRdMKMSiTDz1b9wvxIOr1nGM47un?=
- =?us-ascii?Q?Z9k4JVLrvs1XYuLNvchG7XH4ikDdEEBYOHe/q8YSb2OrYZtRAAwy8GvkvzOz?=
- =?us-ascii?Q?V3Vulp8hiy+xZKUN4Xks2rjIEinkgV/9MjyIS8JcEoXZmTx50DO/b+qSwyuL?=
- =?us-ascii?Q?8jxla0+HQAbkQF9aZUdns97c+49T5Qr9NeNdWsHwh7WHclW18H4XpJQfuFNU?=
- =?us-ascii?Q?NJCwIf4+s5ynWr2S91yB7txfTEE1MirxyJ+JHj33W8HoLAObw5PEWl7C5/Mu?=
- =?us-ascii?Q?DD5o3/6a+t3ulEHY8B+1VMlpgQX3Hbioj/ztXF/BgvfUuWjYq2z0HoHUaZVQ?=
- =?us-ascii?Q?nJUNMn6/laPnR8qPYI1CcbwP3FYUlnTrTB3phIDUIL90cJ1AirKxw+BTo3tF?=
- =?us-ascii?Q?ZULcQqwE9KenkSfecHX3rhXZqVqUF5iL7KxMNlQ/pfpCtJpFROzTQez5FUaZ?=
- =?us-ascii?Q?OdwOUnYQgk2jP8hYmPxtiI4rD7stLV8ZYtNaUfA7TyUD3HlHIfluNC7az+r2?=
- =?us-ascii?Q?fYG2HMUPuImocaYiDXXanX+N6UPidti+xmFTVfooQF/d+h7TSa4F6OJ6wb7w?=
- =?us-ascii?Q?84LrrtgNy/CsxqJKFkfYpoLuecjyurVcGQC2zvxgqSJq4AtydEQ8cZVI05rD?=
- =?us-ascii?Q?NCJNpHgoZNxHFbfYmv4u0MZqIQkhARAVzXYuKXjcbj1ByJBXPhburEktuymQ?=
- =?us-ascii?Q?RyPlELxKV11UQPtcohxBU/CvQij9RUXwdgfXok3kXAcVy811UnkjPl8s6Czr?=
- =?us-ascii?Q?6zw/amw9ZzS9fbMahifvYIgl?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|52116014|376014|366016|38350700014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?pGJzcnQk/WyzBpgOeAsJ+HizYvditsQV0CWQY799cPxR7RJXrpRDkLORNiPd?=
+ =?us-ascii?Q?Kw2v48biug1/dXpJMJcLsWivSXd81+YWQY/N51e/taqixgHuFuKxtv6CUEGM?=
+ =?us-ascii?Q?lKANAzDS79z/d2Vau0HbdjFQwYE+dH8+9TGjbVsynQfB+uDCRTxvpHfnec8X?=
+ =?us-ascii?Q?rKBNhZyj2/RaWRey830+MsEnK2OzDQmMngf1h60PNQmfJ9QWs/4Lzs6aoCfO?=
+ =?us-ascii?Q?ooHsqm0AgmZRA+q47gMEw80bZv0NOJVawRyzjez4StAHS7ZrjJj0ES2YU0YS?=
+ =?us-ascii?Q?YzYgECW1+qdKeMscHrnFNxMIfi2TJzRfsaolQUJBtPLQUI0V620CEMldmhxq?=
+ =?us-ascii?Q?GlbCPN4YK3xkrXilIXVhT2u9P29pJ941tgA4/AuWn7lqLfsLrDiDm1sUoXPl?=
+ =?us-ascii?Q?xdLPdyk1kmKLuB7YARCZc+1rNWuzl1d2o/4GN2VF9OFkrmRhkzh8CMk2c1GB?=
+ =?us-ascii?Q?yDwrah62K4reHdqqrfe4P+gGZMj2+V2dtze+QEPNwXbQV0XhMycLB/eCck/r?=
+ =?us-ascii?Q?6Y8uiVRKFBYHHxFw116/nnLviJe6PX/0XIIUak9mBeO1JPtsGugB6sUmyt1c?=
+ =?us-ascii?Q?RJj6EnQNC/1NYzDrvSZFF8hkhjtGA9cgOe4AJWkABG9k8jSFataTQlHOY69w?=
+ =?us-ascii?Q?8J0GNFEN7+hrkyqn4McuY2+3QnWC8mOFYZr2KtBOWMD3ZKsndYpXE3UN2X+c?=
+ =?us-ascii?Q?Y/1uzupFTYA1NcYYe72zy88vxD4pQ700O/0l/lQExpmO1sFnWH6Li/cfn9k5?=
+ =?us-ascii?Q?/OatD1Zc45swnURB5V1MhZvv2s7JsSkQvN4FFcUwOYTt9WVrCLxF+S1NKQjq?=
+ =?us-ascii?Q?i++9eOsiXmAfVAbn8Sj47XPoONfiUwEqH0X1QMOJPrAFeXmTz+g7YPOC5+dV?=
+ =?us-ascii?Q?+CnCet9ON62j1P7hxkljJS7OPkca+tA+f5XGI6vESBHH4IyiXtinY+JyD37Z?=
+ =?us-ascii?Q?nXJtpBoelolBk3UtmKeqEnWm927IBlLzC1/2rvVkm7pEO6kXgTPWtla1mGnM?=
+ =?us-ascii?Q?wTDRY9CIhE7cNnMOlXZkTvX3Hb01/cmvwal5L4fsdAvJYdsyzzDoaGbqNkwk?=
+ =?us-ascii?Q?040CgJt3mPdhcSVsJmhiNLPfx6VZ0x89RSp1CQiOk0OBJqIuOsOd3hxKOvo9?=
+ =?us-ascii?Q?PjXcKYc5+2yYoPVCYuy7qqZy2T8MGjDaFJvMset8wHAtP4Pt6GdELaixmNey?=
+ =?us-ascii?Q?JLfL5dLetBMsG4H2ux2LmQav8B8ykj0OVtjWteNOICFAHUsSiG5XqEje0Foy?=
+ =?us-ascii?Q?ZFXi2F46TP5qPerBrUNFbocNe+bcamcbprt+Ib3tq/HF4oibv8xJlH5WtstD?=
+ =?us-ascii?Q?nrK7Pid/Ea8NOF7EW6u02FUsdq/rguHF1kbFGDE610tkGaAIbYzhT+fSTxfJ?=
+ =?us-ascii?Q?+anWMtc=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:JH0PR06MB6849.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(52116014)(376014)(366016)(38350700014);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?PaBhT1ovlNsgp90WxV0qak7Kgbv8wny8mmokhNcxuMho+f753u+WnsF63w1V?=
- =?us-ascii?Q?aO8YPvDKW9ZDk7ta1vCqpSui3DC1GeIAempyXW4URbv9lSebEowiFF2hs3pM?=
- =?us-ascii?Q?rakM1HNMueoDowcxerSb7FNurz+X9ZNLPwCAnsTNC7RO7uNKC5zk9yHvFYV1?=
- =?us-ascii?Q?mU6oG+xD2H6qxKQ6d70zgWZCASmHVYAZPpIpwfEtWDMZV/ZDtKU1smAsMtES?=
- =?us-ascii?Q?zR39krEqmbm74BhuOHmJPebw8MB3vIrG3T9p4oKzEfh6vIUgwZIHHFVINpty?=
- =?us-ascii?Q?KTeBBGfRT49KIM9GGfRo4qatX9r8T6/gyO8lObj2xnDTyN0LK54tJRsfrfRc?=
- =?us-ascii?Q?/q5QK1F8iu2h7qj4OIZcRiWGq5iOHFbbbXuLPQFeNVcNQFGhxoDnX83Gs69u?=
- =?us-ascii?Q?mZJMXv+3czrCz43teV3k0mm6RjNqrh42RwCeVXuHVto8voZMZyMItTKaxp5m?=
- =?us-ascii?Q?UWPFlqpOuCECdOW3JLl2d1vNpWu5A5AplRjrWQng60cxltOPwlhfyIdldVR9?=
- =?us-ascii?Q?3n6BFoQ3uox9u2AeWaNpZcHOwdakvtiMX5mlpql3NB/cqwFWwl8D4FAOGPcH?=
- =?us-ascii?Q?AE6cEmdxGl1QVYB9zt3rY2z0SBZqdPrvlYYOAQJl63TcWDWXRkxSKKuTpjKB?=
- =?us-ascii?Q?r+8z/qbRCRMtXfQcfiuLCaH/lxaXsuP5+T1t/Kh2muJihVwDAyJh3FE43WbP?=
- =?us-ascii?Q?Qb8bPciNvjAU1o8WCJZQbTmRhIwYT0wpPcpzg5PVK5UK5gjH2rH87YeRjv26?=
- =?us-ascii?Q?0XCiU/m5HVMkDUHkft8/o9HplCYEtt9fL5x/U74DmINOtG2pD/zZJgP3Roaq?=
- =?us-ascii?Q?eBLfftiSK45/J53aMutFYIcv7fay7otkExCH41TZd6zvNZxC9B42h3m1bOLr?=
- =?us-ascii?Q?v6LxhHEkoizy2u5oLjab7Q3nml6BNu12P61HHh/0khCeaflckHaQrFr0NkaO?=
- =?us-ascii?Q?mPjHz3RH+zPxvGcln116uKjS6MrJLSYj1JJiVut8V1U0W1a58XdzhvlbdBUJ?=
- =?us-ascii?Q?xmQg/o2+ud8dJVubkzX8Z76UUrlpVgxUnnDDVqiqxRpQj4mdsXIotATaNHiA?=
- =?us-ascii?Q?wYNf/Lcuxa6/xzQJTHvFjXgSWNouGBxQvQ4HqFB77j4Ovv9adDKGYMhvklgr?=
- =?us-ascii?Q?Db57VYaNzNf53JfaMUWZ0J6WmdnDkbvryIc27G/jYcBVia9Ihoauv7kARP6/?=
- =?us-ascii?Q?VNP28drgN84qJ1RjSgowY+zIP/3w7+bZQvDmY/oM/m1Sx47A2x1Qxpd6ELeO?=
- =?us-ascii?Q?bJW2cgSsb736TSv9SeF8aqnrNlg6NkOUk0/H3utm1BxRrWGUrcwUVOejXBIN?=
- =?us-ascii?Q?GcGqTug5AyG1SgmVLInQozcHySTDKcBLn2NDe4xhnvBd4j8c2Xlli/K0ZWXa?=
- =?us-ascii?Q?JHiTYBKw34ubIDyTIOir0IMT244jSgUl2Dg9o8rH+Wrd0IuL0z+FuNxPATMW?=
- =?us-ascii?Q?XTzGDOowxporsnglZZoEu8Bo2YzKznZbGPMkmvU3Jhlc6WsfUInR3JkJZeUg?=
- =?us-ascii?Q?g7F4qz990E7Ux0OUlKh1ncd5X44rNYXErqEyGBTUR1CRldm+PaCpVd3hhcT3?=
- =?us-ascii?Q?ejFFsbbTrk7jO7a8h/Oey9XIQHr00a5XUXd0tPy3ePmOtEZr5ieyu9/wgLik?=
- =?us-ascii?Q?xw=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1913e411-c171-434d-9477-08dcc31bf3fa
-X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?Nf1OKzOQDbttDWAyNybyY7L1f9R6MmvzAwxDALq6AxtNa7iqC5AVaFGgHcZe?=
+ =?us-ascii?Q?COS45G2wNrf9tCQ0Ty4VcYFEdSror0ghg4r9UCjyvqbIHhLVGpc74O3W/Rsb?=
+ =?us-ascii?Q?PrkS3ERmBaDpZFqS/2Y9jsRrhFzJsBPln1COOxPB37svTPwmbeVeOqLWdVET?=
+ =?us-ascii?Q?2qlUc8hXYvvovv12lLBUDCK0akrAS7X9/bZLPSimNoil8K7OJrtm6XlKg8vL?=
+ =?us-ascii?Q?DImz9+ynye7L002LKYtJ251wK6QEEPwM40h/K9VLzJCx7QgI5KGa75ITkXvU?=
+ =?us-ascii?Q?J5xEgFJyvjrJbICR/lRaKgPSA9afg9vaK9sALKrc1UbhYFF9WmllmJnHM2fq?=
+ =?us-ascii?Q?BPqxSpfVNtMv7ofjRQYvy98UevwG22lQgUxlRlAuFqXrzxe2n10TB5iws8+7?=
+ =?us-ascii?Q?xZdKKgKyhHMiEHVMKJiIChRFs0kzLFswEmcHpIGVrbz+5VxM+B0Ym5cxyaQr?=
+ =?us-ascii?Q?DNlxxVQR1DABs6dTZ5e0lFmeD/Ycdbpyx4nolqYznpJTPbPbzz0QoYnO0S0y?=
+ =?us-ascii?Q?RtJoeXVIcUSdRiRSm1R0KkGIbdNN5TSDu8UFc8iJvic7okcvJ7kbT5cr8qR1?=
+ =?us-ascii?Q?6VVM5zqeLXmsB3No/KZBlbAYk47k1wm+RxnWPBQC0M51FXmBAKhQ/Cn1ePQn?=
+ =?us-ascii?Q?1DwgHnRKBGeG/7ZoiumepMS2d/8T/KWU23/erFTkimmsZ94eQojiBxT6Fvsn?=
+ =?us-ascii?Q?rMJILRrXorltrDU/lyr44F0ckpp4aBzouPwTytRklmsonqPwmNsCwGGTgHUL?=
+ =?us-ascii?Q?qmM4jfPHcXi0Qd0s56UeR8apZ1vM1xIXL6CDDMk7MVmOKcOd1A88hOk6Q5M2?=
+ =?us-ascii?Q?anu17GfwgItJ+eJZkN5SpcAl7BqxKC3OxkSnbULCMDGPw1WLSQcEAAi0CLv6?=
+ =?us-ascii?Q?nssYN96i8jLw7lkOMdHX+5fkXKvE6e8Su9YEqgypgPVFl47kQJ9HgZifdVRU?=
+ =?us-ascii?Q?uF/2e6xkM1a5hXJY0sfqTd1oOgFziXCogQ1ZUeAbuMqu6MeT+Qez0UnkI26H?=
+ =?us-ascii?Q?q5Dr/HqNx52AHJIUjuadIeymVpmoNsrbZ905Z/Wps8gPCJ8tPVJvGjoWokMD?=
+ =?us-ascii?Q?I5PpSJ1pcc78XlUILcTLC3l+zpxJpiS+Jp/4gZRcCCi7q4udjz73ysI54nSj?=
+ =?us-ascii?Q?bEKfdZXkz5t9PVbggE18qcAaI3UH5YOw+HbqgWI8MNMEQAmmMab2l8FkZRsU?=
+ =?us-ascii?Q?rMVO8iWz6Bpj7cOqBfgB3y+8AeCNB5lkoKjvsaXCanp9Rw8faEnu/fuX4Ipj?=
+ =?us-ascii?Q?iEMdQzvKRKF/JnFjRndwAXYGluPo9+StYwM4NWgWcfUsHvArGaxChGtvWxDS?=
+ =?us-ascii?Q?QRcGdiTZmDBkAIt4B7baMxTvtoznk8JVmjH9SF3Op6py3CJBidWaa2vGmYLY?=
+ =?us-ascii?Q?DvRY0y3+kKHwfBKZUTlSyU3WghXMXW6GRr3xQdJ6OyLXu2R1wfEBEZ+V0M6e?=
+ =?us-ascii?Q?AXIzRh5WfqwxFKsh31rB3himDohTCWRPYPXrvHcAnPIQY+3S5jDApN+2brtg?=
+ =?us-ascii?Q?yYeqhAgXtcCdXOimE6UHKP2vOmtw6u03XOjBL910n9bgM5nfeTchnChz64Tv?=
+ =?us-ascii?Q?I5RagnPL2AKjntj5TFEOTqEwfyPmC5Zr99qIFkgh?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 06d981a2-47e0-4b6e-4b31-08dcc37c20f6
+X-MS-Exchange-CrossTenant-AuthSource: JH0PR06MB6849.apcprd06.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2024 02:33:20.6099
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2024 14:01:47.7181
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: oHyp/NXAoY+H68HtG/rypznfH39lGO+gMiHK4mCdGsXfAK6Ix2kMWvDXxl3ctz3MsVw6L7LJ/LeHDqbo6s1N+A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR11MB5307
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-UserPrincipalName: OAwoFbyNH1+rUlHs8jHGVm+giW5LE17RP/2zNqh0GuBzkLcW/ieFJK96/GoXjemFUAZa4xZWQ3LqVVfBRz6HIw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY0PR06MB5458
 
+After CoWed by do_wp_page, the vma established a new mapping relationship
+with the CoWed folio instead of the non-CoWed folio. However, regarding
+the situation where vma->anon_vma and the non-CoWed folio's anon_vma are
+not same, the avc binding relationship between them will no longer be
+needed, so it is issue for the avc binding relationship still existing
+between them.
 
+This patch will remove the avc binding relationship between vma and the
+non-CoWed folio's anon_vma, which each has their own independent
+anon_vma. It can also alleviates rmap overhead simultaneously.
 
-Hello,
+Signed-off-by: Zhiguo Jiang <justinjiang@vivo.com>
+---
+-v2:
+ * Solve the kernel test robot noticed "WARNING"
+   Reported-by: kernel test robot <oliver.sang@intel.com>
+   Closes: https://lore.kernel.org/oe-lkp/202408230938.43f55b4-lkp@intel.com
+ * Update comments to more accurately describe this patch.
 
-kernel test robot noticed "WARNING:at_mm/rmap.c:#unlink_anon_vmas" on:
+-v1:
+ https://lore.kernel.org/linux-mm/20240820143359.199-1-justinjiang@vivo.com/
 
-commit: ae307233d6efc18c3d6015b127b099450ca8588e ("[PATCH] mm: vma remove the redundant avc binded with old folio")
-url: https://github.com/intel-lab-lkp/linux/commits/Zhiguo-Jiang/mm-vma-remove-the-redundant-avc-binded-with-old-folio/20240820-223531
-base: https://git.kernel.org/cgit/linux/kernel/git/akpm/mm.git mm-everything
-patch link: https://lore.kernel.org/all/20240820143359.199-1-justinjiang@vivo.com/
-patch subject: [PATCH] mm: vma remove the redundant avc binded with old folio
+ include/linux/rmap.h |  1 +
+ mm/memory.c          |  8 +++++++
+ mm/rmap.c            | 53 ++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 62 insertions(+)
 
-in testcase: boot
-
-compiler: gcc-12
-test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-+----------------------------------------+------------+------------+
-|                                        | 75bee94793 | ae307233d6 |
-+----------------------------------------+------------+------------+
-| WARNING:at_mm/rmap.c:#unlink_anon_vmas | 0          | 6          |
-| RIP:unlink_anon_vmas                   | 0          | 6          |
-+----------------------------------------+------------+------------+
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202408230938.43f55b4-lkp@intel.com
-
-
-[   36.655884][  T197] ------------[ cut here ]------------
-[ 36.656843][ T197] WARNING: CPU: 1 PID: 197 at mm/rmap.c:443 unlink_anon_vmas (mm/rmap.c:443 (discriminator 1)) 
-[   36.658183][  T197] Modules linked in: sg ata_piix libata crc32_pclmul crc32c_intel scsi_mod polyval_clmulni polyval_generic ghash_clmulni_intel sha512_ssse3 aesni_intel scsi_common cmdlinepart
-[   36.660508][  T197] CPU: 1 UID: 0 PID: 197 Comm: lkp-bootstrap Tainted: G                T  6.11.0-rc3-00378-gae307233d6ef #1 5ff8330b382acbcd2719e520175822ac6c64d0eb
-[   36.662685][  T197] Tainted: [T]=RANDSTRUCT
-[ 36.663288][ T197] RIP: 0010:unlink_anon_vmas (mm/rmap.c:443 (discriminator 1)) 
-[ 36.668434][ T197] Code: 7f fe ff ff 48 83 c4 28 5b 5d 41 5c 41 5d 41 5e 41 5f 31 c0 31 d2 31 c9 31 f6 31 ff 45 31 c0 45 31 c9 c3 90 0f 0b 90 eb ad 90 <0f> 0b 90 eb 82 90 0f 0b 90 48 8d 7e 08 e8 2d a2 bf ff e9 ca fc ff
-All code
-========
-   0:	7f fe                	jg     0x0
-   2:	ff                   	(bad)
-   3:	ff 48 83             	decl   -0x7d(%rax)
-   6:	c4                   	(bad)
-   7:	28 5b 5d             	sub    %bl,0x5d(%rbx)
-   a:	41 5c                	pop    %r12
-   c:	41 5d                	pop    %r13
-   e:	41 5e                	pop    %r14
-  10:	41 5f                	pop    %r15
-  12:	31 c0                	xor    %eax,%eax
-  14:	31 d2                	xor    %edx,%edx
-  16:	31 c9                	xor    %ecx,%ecx
-  18:	31 f6                	xor    %esi,%esi
-  1a:	31 ff                	xor    %edi,%edi
-  1c:	45 31 c0             	xor    %r8d,%r8d
-  1f:	45 31 c9             	xor    %r9d,%r9d
-  22:	c3                   	ret
-  23:	90                   	nop
-  24:	0f 0b                	ud2
-  26:	90                   	nop
-  27:	eb ad                	jmp    0xffffffffffffffd6
-  29:	90                   	nop
-  2a:*	0f 0b                	ud2		<-- trapping instruction
-  2c:	90                   	nop
-  2d:	eb 82                	jmp    0xffffffffffffffb1
-  2f:	90                   	nop
-  30:	0f 0b                	ud2
-  32:	90                   	nop
-  33:	48 8d 7e 08          	lea    0x8(%rsi),%rdi
-  37:	e8 2d a2 bf ff       	call   0xffffffffffbfa269
-  3c:	e9                   	.byte 0xe9
-  3d:	ca fc ff             	lret   $0xfffc
-
-Code starting with the faulting instruction
-===========================================
-   0:	0f 0b                	ud2
-   2:	90                   	nop
-   3:	eb 82                	jmp    0xffffffffffffff87
-   5:	90                   	nop
-   6:	0f 0b                	ud2
-   8:	90                   	nop
-   9:	48 8d 7e 08          	lea    0x8(%rsi),%rdi
-   d:	e8 2d a2 bf ff       	call   0xffffffffffbfa23f
-  12:	e9                   	.byte 0xe9
-  13:	ca fc ff             	lret   $0xfffc
-[   36.671148][  T197] RSP: 0000:ffffc900019ffad8 EFLAGS: 00010202
-[   36.671931][  T197] RAX: 1ffff1102e73f0bf RBX: ffff888173c55ab0 RCX: 0000000000000000
-[   36.672880][  T197] RDX: 1ffff110241d68e2 RSI: 0000000000000000 RDI: ffff8881739f85f8
-[   36.673933][  T197] RBP: ffff888120eb4700 R08: 0000000000000000 R09: 0000000000000000
-[   36.675002][  T197] R10: 0000000000000000 R11: 0000000000000000 R12: ffff8881739f8550
-[   36.676082][  T197] R13: ffff888173c55aa0 R14: dffffc0000000000 R15: ffff888120eb4710
-[   36.677134][  T197] FS:  0000000000000000(0000) GS:ffff8883af300000(0000) knlGS:0000000000000000
-[   36.678328][  T197] CS:  0010 DS: 002b ES: 002b CR0: 0000000080050033
-[   36.679207][  T197] CR2: 000000005663e33c CR3: 000000012021c000 CR4: 00000000000406b0
-[   36.680251][  T197] Call Trace:
-[   36.680681][  T197]  <TASK>
-[ 36.681079][ T197] ? __warn (kernel/panic.c:735) 
-[ 36.681682][ T197] ? unlink_anon_vmas (mm/rmap.c:443 (discriminator 1)) 
-[ 36.682312][ T197] ? report_bug (lib/bug.c:180 lib/bug.c:219) 
-[ 36.682920][ T197] ? handle_bug (arch/x86/kernel/traps.c:239) 
-[ 36.683494][ T197] ? exc_invalid_op (arch/x86/kernel/traps.c:260 (discriminator 1)) 
-[ 36.684125][ T197] ? asm_exc_invalid_op (arch/x86/include/asm/idtentry.h:621) 
-[ 36.684804][ T197] ? unlink_anon_vmas (mm/rmap.c:443 (discriminator 1)) 
-[ 36.685501][ T197] ? unlink_anon_vmas (mm/rmap.c:400) 
-[ 36.686185][ T197] free_pgtables (mm/memory.c:410) 
-[ 36.686819][ T197] ? free_pgd_range (mm/memory.c:367) 
-[ 36.687466][ T197] ? preempt_count_add (include/linux/ftrace.h:976 kernel/sched/core.c:5634 kernel/sched/core.c:5659) 
-[ 36.688179][ T197] exit_mmap (mm/mmap.c:1934) 
-[ 36.688758][ T197] ? trace_contention_end (include/trace/events/lock.h:122 (discriminator 52)) 
-[ 36.689496][ T197] ? do_vma_munmap (mm/mmap.c:1895) 
-[ 36.690125][ T197] ? __mutex_lock (arch/x86/include/asm/preempt.h:103 kernel/locking/mutex.c:618 kernel/locking/mutex.c:752) 
-[ 36.690779][ T197] ? __mutex_unlock_slowpath (arch/x86/include/asm/atomic64_64.h:101 include/linux/atomic/atomic-arch-fallback.h:4329 include/linux/atomic/atomic-long.h:1506 include/linux/atomic/atomic-instrumented.h:4481 kernel/locking/mutex.c:929) 
-[ 36.691585][ T197] __mmput (kernel/fork.c:1346) 
-[ 36.692143][ T197] exit_mm (kernel/exit.c:572) 
-[ 36.692699][ T197] do_exit (arch/x86/include/asm/jump_label.h:27 include/linux/jump_label.h:207 include/trace/events/sched.h:333 kernel/exit.c:930) 
-[ 36.693256][ T197] ? do_raw_spin_lock (arch/x86/include/asm/atomic.h:107 include/linux/atomic/atomic-arch-fallback.h:2170 include/linux/atomic/atomic-instrumented.h:1302 include/asm-generic/qspinlock.h:111 kernel/locking/spinlock_debug.c:116) 
-[ 36.693947][ T197] ? stack_not_used (kernel/exit.c:878) 
-[ 36.694605][ T197] ? _raw_spin_unlock_irq (arch/x86/include/asm/irqflags.h:42 arch/x86/include/asm/irqflags.h:97 include/linux/spinlock_api_smp.h:159 kernel/locking/spinlock.c:202) 
-[ 36.695304][ T197] do_group_exit (kernel/exit.c:1069) 
-[ 36.695908][ T197] __ia32_sys_exit_group (kernel/exit.c:1097) 
-[ 36.696561][ T197] ia32_sys_call (??:?) 
-[ 36.697142][ T197] do_int80_emulation (arch/x86/entry/common.c:165 arch/x86/entry/common.c:253) 
-[ 36.697852][ T197] asm_int80_emulation (arch/x86/include/asm/idtentry.h:626) 
-[   36.698504][  T197] RIP: 0023:0xf7f03092
-[ 36.699039][ T197] Code: Unable to access opcode bytes at 0xf7f03068.
-
-Code starting with the faulting instruction
-===========================================
-[   36.699967][  T197] RSP: 002b:00000000ffcfddd8 EFLAGS: 00000296 ORIG_RAX: 00000000000000fc
-[   36.701055][  T197] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 0000000003323d2f
-[   36.702120][  T197] RDX: 00000000ffcfde00 RSI: 0000000056633734 RDI: 00000000f7ef8000
-[   36.703147][  T197] RBP: 00000000ffcfdef8 R08: 0000000000000000 R09: 0000000000000000
-[   36.704165][  T197] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-[   36.705185][  T197] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-[   36.706281][  T197]  </TASK>
-[   36.706698][  T197] irq event stamp: 10051
-[ 36.707257][ T197] hardirqs last enabled at (10059): console_unlock (arch/x86/include/asm/irqflags.h:26 arch/x86/include/asm/irqflags.h:87 arch/x86/include/asm/irqflags.h:147 kernel/printk/printk.c:341 kernel/printk/printk.c:2801 kernel/printk/printk.c:3120) 
-[ 36.708455][ T197] hardirqs last disabled at (10066): console_unlock (kernel/printk/printk.c:339 kernel/printk/printk.c:2801 kernel/printk/printk.c:3120) 
-[ 36.709660][ T197] softirqs last enabled at (10006): handle_softirqs (arch/x86/include/asm/preempt.h:26 kernel/softirq.c:401 kernel/softirq.c:582) 
-[ 36.710805][ T197] softirqs last disabled at (9997): irq_exit_rcu (kernel/softirq.c:589 kernel/softirq.c:428 kernel/softirq.c:637 kernel/softirq.c:649) 
-[   36.711941][  T197] ---[ end trace 0000000000000000 ]---
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20240823/202408230938.43f55b4-lkp@intel.com
-
-
-
+diff --git a/include/linux/rmap.h b/include/linux/rmap.h
+index 91b5935e8485..8607d28a3146
+--- a/include/linux/rmap.h
++++ b/include/linux/rmap.h
+@@ -257,6 +257,7 @@ void folio_remove_rmap_ptes(struct folio *, struct page *, int nr_pages,
+ 	folio_remove_rmap_ptes(folio, page, 1, vma)
+ void folio_remove_rmap_pmd(struct folio *, struct page *,
+ 		struct vm_area_struct *);
++void folio_remove_anon_avc(struct folio *, struct vm_area_struct *);
+ 
+ void hugetlb_add_anon_rmap(struct folio *, struct vm_area_struct *,
+ 		unsigned long address, rmap_t flags);
+diff --git a/mm/memory.c b/mm/memory.c
+index 93c0c25433d0..4c89cb1cb73e
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -3428,6 +3428,14 @@ static vm_fault_t wp_page_copy(struct vm_fault *vmf)
+ 			 * old page will be flushed before it can be reused.
+ 			 */
+ 			folio_remove_rmap_pte(old_folio, vmf->page, vma);
++
++			/*
++			 * If the new_folio's anon_vma is different from the
++			 * old_folio's anon_vma, the avc binding relationship
++			 * between vma and the old_folio's anon_vma is removed,
++			 * avoiding rmap redundant overhead.
++			 */
++			folio_remove_anon_avc(old_folio, vma);
+ 		}
+ 
+ 		/* Free the old page.. */
+diff --git a/mm/rmap.c b/mm/rmap.c
+index 1103a536e474..4c339c571ea6
+--- a/mm/rmap.c
++++ b/mm/rmap.c
+@@ -1522,6 +1522,59 @@ void folio_add_file_rmap_pmd(struct folio *folio, struct page *page,
+ #endif
+ }
+ 
++/**
++ * folio_remove_anon_avc - remove the avc binding relationship between
++ * folio and vma with different anon_vmas.
++ * @folio:	The folio with anon_vma to remove the binded avc from
++ * @vma:	The vm area to remove the binded avc with folio's anon_vma
++ *
++ * The caller is currently used for CoWed scene.
++ */
++void folio_remove_anon_avc(struct folio *folio,
++		struct vm_area_struct *vma)
++{
++	struct anon_vma *anon_vma = folio_anon_vma(folio);
++	pgoff_t pgoff_start, pgoff_end;
++	struct anon_vma_chain *avc;
++
++	/*
++	 * Ensure that the vma's anon_vma and the folio's
++	 * anon_vma exist and are not same.
++	 */
++	if (!folio_test_anon(folio) || unlikely(!anon_vma) ||
++	    anon_vma == vma->anon_vma)
++		return;
++
++	pgoff_start = folio_pgoff(folio);
++	pgoff_end = pgoff_start + folio_nr_pages(folio) - 1;
++
++	if (!anon_vma_trylock_write(anon_vma))
++		return;
++
++	anon_vma_interval_tree_foreach(avc, &anon_vma->rb_root,
++			pgoff_start, pgoff_end) {
++		/*
++		 * Find the avc associated with vma from the folio's
++		 * anon_vma and remove it.
++		 */
++		if (avc->vma == vma) {
++			anon_vma_interval_tree_remove(avc, &anon_vma->rb_root);
++			/*
++			 * When removing the avc with anon_vma that is
++			 * different from the parent anon_vma from parent
++			 * anon_vma->rb_root, the parent->num_children
++			 * count value is needed to reduce one.
++			 */
++			anon_vma->parent->num_children--;
++
++			list_del(&avc->same_vma);
++			anon_vma_chain_free(avc);
++			break;
++		}
++	}
++	anon_vma_unlock_write(anon_vma);
++}
++
+ static __always_inline void __folio_remove_rmap(struct folio *folio,
+ 		struct page *page, int nr_pages, struct vm_area_struct *vma,
+ 		enum rmap_level level)
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+2.39.0
 
