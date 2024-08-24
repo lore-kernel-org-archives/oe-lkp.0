@@ -1,83 +1,84 @@
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0475529A1;
-	Sat, 24 Aug 2024 16:28:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.165.32
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCF553D967;
+	Sat, 24 Aug 2024 18:04:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.177.32
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724516884; cv=fail; b=PwtWZIkJ28MrRjLNgRyGVIH7Toil7heGGElLyURMzFAYqE8Dr90dXGCQ4p7X5rTo5p4Kkldl4i/ogQdNMsec6Nl8E/4aEZQ5pr7tl4k9GN1YAtziimc7KxNs4QQnGT48mGb6G0ubz/YeyNM2vMB5XvvOvYgAKHfVx6pO6Kr8w5s=
+	t=1724522669; cv=fail; b=rApPY5biymSdGzd9Et/WPxpHN9urmUYrsB7UeUw//kTHQuw5DUZ0MQFoZPhFLRRMmln/gY4EMMFTHs+8sh878iJtFevg28NeQ23MwTqo/T6oNduf0fh4LowQzlmth8J57P9/Ap4EP6TPaA8maw3ssg/b3RJYxoNSAxuKt7DQMCc=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724516884; c=relaxed/simple;
-	bh=atQ/ufU7AyeNLPCu3i5IreSTLGmMkZTiM7wJSg/ccxQ=;
+	s=arc-20240116; t=1724522669; c=relaxed/simple;
+	bh=XE/Aki4wyqnmVzV/FBBcSARrhZTy5FYJ+8hpGWGa8Y4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=GQpMag8sO5ZDIJSsGuj9+2ReY0zwWRWaUsOI48d6K1Xq+SBRkWf8RgW1fA7q4pxoF3SsUyNn8XmkWtlPtN/RgsERsAM1iuIY6As9ydN3dIsh8nXWHK8PmhK7otBOTRF0451IuImhXN0zmG6cO6Jq+s4trWSn5RCarKWUEIAiqac=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=FmatzDsG; dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b=pT+cXQWo; arc=fail smtp.client-ip=205.220.165.32
+	 Content-Disposition:In-Reply-To:MIME-Version; b=rWnhRH4waBRLCtbseDNBDoWTgEEbykFK68rJmaXca+VaUL1xVd85TXFndAA9CsL0KsDqYj5i0dgkkEux46IaG64Z1SxSBBpgRS94r3JnQbtp9aZ+LOqoqs0jT23jsPvok6rSL9uSoRarFW6j0Gm445AeL6h4Sd2EmC9LAgWT+ds=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=CjvZtSPY; dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b=VGFZlBS5; arc=fail smtp.client-ip=205.220.177.32
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="FmatzDsG";
-	dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="pT+cXQWo"
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47OEpoj1021529;
-	Sat, 24 Aug 2024 16:27:55 GMT
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="CjvZtSPY";
+	dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="VGFZlBS5"
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47OGDLlS029227;
+	Sat, 24 Aug 2024 18:04:19 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=
 	date:from:to:cc:subject:message-id:references:content-type
-	:in-reply-to:mime-version; s=corp-2023-11-20; bh=5+M0Y7xB+V0oSRr
-	4ZUxqzTM6fhiA3oo80g2vq6gpr88=; b=FmatzDsGMHGEdjD4SiXvmB1QZnwcPV3
-	0lYoUMJ+9K/TDPUwVABwPJHIUobmGfgR3RwWRoC4nqWOGX1SUVsZ1kdL6+Gf+bdF
-	mL9z7zYxInu2mbH9XhETyDu6tf//Vy1DSvdTsIVWT7eBSVGmp0cWvvWoI2UayKgT
-	SAKLO6K7zrbC/XOHDnNEJvAxZV01a0l5LZ15Th3QKXp8UmBme0ZET7o8L0WRWziE
-	XrbPM9i5Z15la00wk19fB3SURJkHXpJk7z1jFjksG/SdyMJpxHFtuy6HchhPHdMY
-	ZSkF3OfcD6x9L0a/I1flARkOBp5q5fXqNsa48AzJRPaTzFi7IeYE3gg==
+	:in-reply-to:mime-version; s=corp-2023-11-20; bh=b6m0MEm8J+k6XJH
+	qN/rsgcrJ1Jdk5YcGb+HEoFQJzzM=; b=CjvZtSPYJI7b8j+npA8AvZC1BqLrH+w
+	XhviXt6VHx8QjHsPnRL4wdi1fhMke5XqnkN7tLASd76KXrdIkpMu4tgejKSiiIwv
+	PDt4w4synrm5Z1v/qAFh+bf9ZzZSZ5ezDlqveQ8u3znN3UECQMoRamfs/06+//Qt
+	nuO1LsslRI5JZn/NBClgw7fOUw5A1ZEzvF3/norwRgwUWRhX4m1P/kGBfhpS6kQc
+	qoUhuQHYVwGnEWBgyJ701ylFmV7wWL7oG/7PTfHoZMyHcAP7qM8Fi7ncvxUaX6IU
+	I2OAhlrpmJsgqsBgGq6OFFhGdhCK0Beo7iLZHi37fdEtdLg7Gh2YQzg==
 Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 41782srdsb-1
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 4177nw0j9k-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Sat, 24 Aug 2024 16:27:54 +0000 (GMT)
+	Sat, 24 Aug 2024 18:04:19 +0000 (GMT)
 Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 47OGJcZL020016;
-	Sat, 24 Aug 2024 16:27:53 GMT
-Received: from nam02-sn1-obe.outbound.protection.outlook.com (mail-sn1nam02lp2040.outbound.protection.outlook.com [104.47.57.40])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 417jxkg2jt-1
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 47OHiOnd007147;
+	Sat, 24 Aug 2024 18:04:18 GMT
+Received: from nam02-bn1-obe.outbound.protection.outlook.com (mail-bn1nam02lp2048.outbound.protection.outlook.com [104.47.51.48])
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 417m688ay6-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Sat, 24 Aug 2024 16:27:53 +0000
+	Sat, 24 Aug 2024 18:04:18 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Vb+Z5dVmn2SdEa9vxGHOdppyj3bAjaAx2nLYraqRLk0Y6THyVefYedq5agnjzBEHa/LJccMczeN7GDq1dyGyU4mO2twllRXnC7NzBL8xvviU47CY3lDIg+y55TLtASu4y0t79OFv8Rbna6yiChoLRoZvbRxD3dyp4GyWd3hdDLQRUepIn+vVSiq4p8ODEFBFhFCSVg78Tv14u3idFjRP8/U0V0zvxQm6Mq36bm6NkKXOaib2X4pS7Vv7P4ya3zDjkkSAAe79rApCxwPj5w7Ozl2XK4fsXNaa8tzX+uEDuGjg64cCwHef//J3oHT+P2DO9yJF4UMcJVOrqCeYN+YQ3w==
+ b=Bz3mNQ6b1KrLXNbwZnuVtSfTfwN9P+/1agU8IHJhlg5Dh3H3Q27o4zU97SzgS/TacFdYItxsbeOsBOfknhyfzkQujzSm9WkSiu1mzzr+wkl7pmy6rPL9FcFQqkR1YV2272fkM/YvEykFyFavRaNCl4APeeB6Vc+FWE/a/FEKpTQTGYT4ADLKUOylkWICJFIVwsThLNRQ3LZHYSClDHbC0dVu6PKfWvJM9u1gWILFOGcc/+9Mmq0cY2w+U6E4KJHvJFm8tiNbywSsINBkv7sH3Znw32gCXc3No4W86qCTTeKOIOLi8Hqt5BK3o5QAosc22g0s3FuGIcorad80SBM2/g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5+M0Y7xB+V0oSRr4ZUxqzTM6fhiA3oo80g2vq6gpr88=;
- b=NahMtqviR+NyVg+4Ji/UK0knb02CA3b7SBgJPRBOoLQyxtLyFgiVytv4uvXmwRtjrSpnD+eo8GXrv6NyvS31ZSfgIHgPQ2brnSY2ouRWUNT7Qp82WppTqBJMf52ch6XvuUYIiyM6oskToI24pidzf/Lww5B/1NwlsRC9ZPcnq4Le1gGSCLaRtDhdVDTMDBebbqOPf9tDrDhAqlCUI5TBBMukrSQIaBxhEJAhrHFQMvXlMH02m+JpTlZBHcGXoe4+N4pTtAKzSRC2+fFYdT6NYgoJtX/a7IhJaL6SnVm0b5yR30hhXbGRI2GUpofr23MHidt1s5AVrFUGFH4bvdpweA==
+ bh=b6m0MEm8J+k6XJHqN/rsgcrJ1Jdk5YcGb+HEoFQJzzM=;
+ b=F4UZ3yCtCCkoySFxV+caQtsN9+PSGAx6kz2k/jC98ixqddHua8cBzSM2sdySdr7jmTFBArduB2qb2GSRiPpGZPuwkQgbgWYDG/PrwUyHd9rVWpSXM/yTnLsJUy+Qmk6myTU81VDo8f7qOV1bmBHvGcS7wgeQWlbu2anHWIzyAS9EZLTzGgL+ALkHvxUo0cP78NukwXqGw6rQk3MHLWo1gOS5LtQzKM1AH/XghIjo+mhSpGeN+nVe2MkRdb4PiYLCy/ou63zIMN4SYw4KnV+pIAXHc8lr7CwPJdlXsMdPFWgGGUX+gItErx9/70ZIGJP9cqDxMfEnwM//splwHp3ApQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
  dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5+M0Y7xB+V0oSRr4ZUxqzTM6fhiA3oo80g2vq6gpr88=;
- b=pT+cXQWoECwh9yWs3C5Zyb8YxbIImesmI0yFRx14ngtrWEa4EyM76j0gt2MGbrFue1nhNsQDPuM4bRXPB5HgSp4cyMT9PueobE2J0wwBVP9gO+AUEG1yHZOiKjdt+VTgj8Pt5X+tVRKtw5WbSjp+1LyIXVGkpc9nANMVEZ0FXYk=
+ bh=b6m0MEm8J+k6XJHqN/rsgcrJ1Jdk5YcGb+HEoFQJzzM=;
+ b=VGFZlBS5ck8j/eUIS2dkToCa3/WTe9slzs7gRiqCq8DiduruVs7vS8as4Fvza2CV9VFUQ08voNR4BARIYkwI0CBag/WsrdAuHcBbbqWoBCcdwmCo2Hy8zvS507XxrbnfTJSFX4qV8e4pan/K0nX0zG9x5fU10NBM6+2H0trx/P0=
 Received: from SJ0PR10MB5613.namprd10.prod.outlook.com (2603:10b6:a03:3d0::5)
- by SJ2PR10MB7598.namprd10.prod.outlook.com (2603:10b6:a03:540::22) with
+ by BLAPR10MB4980.namprd10.prod.outlook.com (2603:10b6:208:334::12) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7897.19; Sat, 24 Aug
- 2024 16:26:50 +0000
+ 2024 18:04:16 +0000
 Received: from SJ0PR10MB5613.namprd10.prod.outlook.com
  ([fe80::4239:cf6f:9caa:940e]) by SJ0PR10MB5613.namprd10.prod.outlook.com
  ([fe80::4239:cf6f:9caa:940e%6]) with mapi id 15.20.7897.014; Sat, 24 Aug 2024
- 16:26:50 +0000
-Date: Sat, 24 Aug 2024 17:26:46 +0100
+ 18:04:15 +0000
+Date: Sat, 24 Aug 2024 19:04:11 +0100
 From: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
 To: Zhiguo Jiang <justinjiang@vivo.com>
 Cc: Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org, oe-lkp@lists.linux.dev, lkp@intel.com,
         opensource.kernel@vivo.com
 Subject: Re: [PATCH v2] vma remove the unneeded avc bound with non-CoWed folio
-Message-ID: <73ad9540-3fb8-4154-9a4f-30a0a2b03d41@lucifer.local>
+Message-ID: <aba1cad3-ab23-4b42-8ce8-0ed662919c99@lucifer.local>
 References: <20240823150206.565-1-justinjiang@vivo.com>
-Content-Type: text/plain; charset=us-ascii
+ <73ad9540-3fb8-4154-9a4f-30a0a2b03d41@lucifer.local>
+Content-Type: multipart/mixed; boundary="vpqxaifkk44w6k3q"
 Content-Disposition: inline
-In-Reply-To: <20240823150206.565-1-justinjiang@vivo.com>
-X-ClientProxiedBy: LO4P123CA0277.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:195::12) To SJ0PR10MB5613.namprd10.prod.outlook.com
+In-Reply-To: <73ad9540-3fb8-4154-9a4f-30a0a2b03d41@lucifer.local>
+X-ClientProxiedBy: LO4P265CA0208.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:33a::6) To SJ0PR10MB5613.namprd10.prod.outlook.com
  (2603:10b6:a03:3d0::5)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -86,377 +87,310 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ0PR10MB5613:EE_|SJ2PR10MB7598:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0d37ec49-a197-418b-4cb7-08dcc4598e8e
+X-MS-TrafficTypeDiagnostic: SJ0PR10MB5613:EE_|BLAPR10MB4980:EE_
+X-MS-Office365-Filtering-Correlation-Id: f93c240b-c2a6-4e78-4e76-08dcc4672a38
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?c40wOOInOzpj8Fig3bRgB17IiRwnyW2Z3uu+ZLXUy+70nhW7J9jdjzb9AymL?=
- =?us-ascii?Q?aLNlYNn01b+rsWDS5BMHlGF6qigbCCVY51uK02h32eWvelvtfqz+oW7Momr0?=
- =?us-ascii?Q?GqKVe893ZEB63GbD7KKimibOvM5YYpFBcm8NUr/h666DLxS4U0uhc4jCwL4z?=
- =?us-ascii?Q?hQTDVcHrtrLETAdCieNe7u4MNGMByScGUfTCQzupm8PRVdpkiQCFEXzaB569?=
- =?us-ascii?Q?UIJJrCOdqhK3mPa/FrxVgNsv7gkqEAQr8Q13vrX4iNNrCILmlI8ZzSP5OoAD?=
- =?us-ascii?Q?50AqVviYhymBK6iWJIK5AdvcWxjdfMHNAVK96z9vDkIhUixmPwjBz3eAI2wx?=
- =?us-ascii?Q?mFvJQ4rHDHNWkrgJRRu5VGGdbL3yhD1oEZyDqCRX2kLp/cuIkqd64gGfDe14?=
- =?us-ascii?Q?Mn6hQC4qlkHBapWYDvw4QXI20eRtfUMUO9K9vn4nvj4y+uGxsSGYgbSF75HH?=
- =?us-ascii?Q?JsQ7PlHx6nzkRxm7V2vHy1CDsQlWJJV3Z3t7WoLopRYfJAKed/6vZfD8Ogbs?=
- =?us-ascii?Q?4QTeXa8kj81nsGWume56sEW44N4X/QDy+ZXavzeGNFqC5TrfvNg21dcdMZ73?=
- =?us-ascii?Q?D0dI3t1lA3DyZBHQF3q7GyX92HbsyNtdZ2DwYnpUXJvtWIAk3kfGRyoTIlif?=
- =?us-ascii?Q?Whn9Ky1ZMjZsb+lIlm3VMdd6P1UTAfiXb9lF/McM5jH3E1EsYJ5qf0c2BZae?=
- =?us-ascii?Q?YqH0Cx9//wrR7nmscHrpGGhUNLOkC96d3452ovrpXBGJWjcBws4sJ9iz9Jca?=
- =?us-ascii?Q?b3yEguc6Hf0hJGswOGwDGVyD7bgSOjXk4uGr+diWjcSDN8mpnDDvlcxL2xxt?=
- =?us-ascii?Q?QgW7rxvQ60AxrvWb5YSXzZd1Oz4/WVuszXPyCZ2F0P4+ekxC73cOn9qdLeGc?=
- =?us-ascii?Q?JKMgIzKHjCTYo/fuMWOq71utWVKfTK7J9PBaWwNGm8C6nDMIHNf92SX91/n6?=
- =?us-ascii?Q?BEN3sDjH26H7RkZ8aYF2BifZwJ0Vedp4sU6Oidq28KHtkE4x2/APsFW+Excm?=
- =?us-ascii?Q?QiqSWYdq8pN+TDnA01LGlAvJFeHbh48jlVc/QumJPlsdSy9OwMc0obyEK01x?=
- =?us-ascii?Q?1AnozcQTRywWSLWU9Cj7gVWxbA5YD6OSfzDE8ySb7/Ih0slWL2mVML6d446x?=
- =?us-ascii?Q?qd8v62TDlfZ2n0l2rhOkJBA4xQuSWT0SofX1zGyPU9zhnPKgCjBBuwi22MWP?=
- =?us-ascii?Q?YEDjc4jyZJkudWZDHDkw0AjTy7n1TLiH1wd3vkP6YTkiq+PvwHdrM75y7K63?=
- =?us-ascii?Q?CpO4bm76dy69Kc07rCRFEuqc40O6k14R21VOGvHnyPF/CpUSBkUhwD7gfjUi?=
- =?us-ascii?Q?p3mvHTCYatSPJBKqLcckoSUS?=
+	=?us-ascii?Q?FVTNSRvTR8Y61X+PDtAUHZh6M0XYXTnOTcDLjI2aF55s+wCUOXs/MzOaATM5?=
+ =?us-ascii?Q?ll3EcvlDPvkh4d0TRS348zsS9Nuys1TzgqIoWKLEQ7YwfCwvUtabqif7es05?=
+ =?us-ascii?Q?js4P/kxGSx3G5LaN6WMLmux0zXf4CbuHE1Cv91UAVHfiywmDLWlj0NDLZGCN?=
+ =?us-ascii?Q?4SAH6Dz6ceSwAQesOQh0/acTFnWJDU6n9xW9obVuCuZGN/DPEP9e+CRWElRn?=
+ =?us-ascii?Q?8dUegPePAhMm3RbRJ6GG2c/8qPR64f01DBevff5uzyf2nlWuDlC5/0uwn4qU?=
+ =?us-ascii?Q?MGJSOoY6ZubmYt0zeVBzc42zYLFxrYWzLX5NhTVhd4iJA8yWJY1dXWHD/SWp?=
+ =?us-ascii?Q?lzk1Nzfe0rkaJuIYe5RyKuJTKN+FSCH9M7xnm/U/SWYY4qXZeuwiePb3td89?=
+ =?us-ascii?Q?UMb7Z5CDGnsa8u2izup49Ug7ku8JGWPIXyKIuKYpydT60kdv4f/VgX/GHp+R?=
+ =?us-ascii?Q?N8C8dEpoYwGxhSS06ls7CDIyPpu52JP5vzpaqcY+PZVQ8d6H9Z6xy64kFWji?=
+ =?us-ascii?Q?RmFv9qCzEf3lb7X56cNgq5IWciI+zPHThk2VOLJ9eFdxUBQoxS3iq2OCIFJV?=
+ =?us-ascii?Q?q2xiYeA6ys4MtV5XIvP5PmixW7OGoHvL2kYosvudNgN48FHj+lKR6BXLCCvQ?=
+ =?us-ascii?Q?MvQ/5yeQLnolmco07DN9Sfp87C92Fz5C1zXzp8ITL33KPT9kwAt6ZWGHIUpU?=
+ =?us-ascii?Q?fL9vX1158BBYPa6tXdSk82x6SqueIkbTM76KjCoiXQr0oxAKCDktvFNweTUz?=
+ =?us-ascii?Q?Rr0iPvBidkadyKwV7A4u0Oo0Cou9d/1kFOR8/VBEK/y00dRWurO+ak0P6vkP?=
+ =?us-ascii?Q?SV8p5K9V3MOzERTkMrF1Ui9ysgl3ZU2UNQ0d9AVXO8jUSR+nf+sq5Sj+/VM+?=
+ =?us-ascii?Q?E+FBDj9J5SFofN9R2jxLWoPWraOL6cr7JrUXY+K5SkdWMsSFWAmR5VR506eH?=
+ =?us-ascii?Q?P6ahckAkvEjr8IKwPZFRdMQX3NGcMiR+ZSkiUVpW8dL3MvBHiwzJFwsDLuwF?=
+ =?us-ascii?Q?r6xKoy07mnjCJWhloZ6RxpVy4fwgapAJdsE3zqZ0WAVT8m0YEpPm9RgrLTPu?=
+ =?us-ascii?Q?tioZkEqRb5Go9VGFT1zaszOBD0HckXEBnzu2FNsUV4pT5fZwtQOXNbOc5nmw?=
+ =?us-ascii?Q?nWR/HTSUR5P4bAzgvyIZW3bLT4378u6p4+Ec5H3ShjseO8bOzbUQQjHAa2Z5?=
+ =?us-ascii?Q?dDHL5ddE8QNuPvMT9navUGF9U8WpcsAQpqYBENaJCT7N6camUXt4ME8x74Uv?=
+ =?us-ascii?Q?VWYIeI1eQ4SAcIbLsqUHbyKGM5mts1tJVEQSx2las29XdhFdGbApiQ7YyC9o?=
+ =?us-ascii?Q?HM5aabjZhRyc+qAKEV6mS98+fmXFaJxY71gXvPkIMLUPug=3D=3D?=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR10MB5613.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR10MB5613.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?jJASQCQ9ug6diNI68IFmoJHYe+cyHoki/2HuNiQTHtG31DU4FjnARHjN7omA?=
- =?us-ascii?Q?s3ajwzthrJ0ZGR1nTCTQROFO8c7hUqL2VocEbHjniXgS8fxWVD8aVLCiLdHe?=
- =?us-ascii?Q?fN4YraKpimQRNdaxlrj0ZO7EQt4cVCIC2aOeNni6RNgo+z0YtOeCvGTLCy9y?=
- =?us-ascii?Q?ePSyk+zyPJ8GpVopv7QcuMnHa/YyNTs21+inJnlEE4XYhbfBEmVYWB3Mwu8j?=
- =?us-ascii?Q?U+N7P32b1tT/sTFrQyN1DLpuWu11MLEa6CHOOToTt+3wg4dsqfEufkeFqTel?=
- =?us-ascii?Q?jZyeD1ice10ULOEohuwcANy2QE1e3g7w2w9Dst6fkh3ZFvomwI9QkF9AxcrV?=
- =?us-ascii?Q?wXLXjCwjx2pbq1t8JVaBVo3Puh77WtB8CFoUaCakitVwaZ+p341rb/Msdwyk?=
- =?us-ascii?Q?IvE1yr7Uy8lWBtdu/Nugn5ekJ0yCNvsbVLVpFSasZ/SsSeipEQBjzzyeZK8S?=
- =?us-ascii?Q?oSM7SN/7Nzgnt/5Z4UzKRGg6lc6NBXJIW6JqjKYT+f1uUdHpg7lt0zOq4RF0?=
- =?us-ascii?Q?Qs5E/H/xOI/8jIQ5+jz7LH2GOjuCCrvK4uj2F/wwVoQb3dD2ws2iUnu4Ch78?=
- =?us-ascii?Q?jya8Tw0cwHFqnhVb6WYDh8X69t+Jh8ACQPzVmLbJF2ROV126/F2I1uSoWQRq?=
- =?us-ascii?Q?XeiwWSH+dHGY5ZecFLA5DVPvsee5hxPPU4denMer4r6SZB9ZwUhtYux2V+9A?=
- =?us-ascii?Q?FnaxHZ4HBtC26WI3p0pW7J4wG1oSp9qf3IJUfvUXAvU6R2gTj0z43chfnsND?=
- =?us-ascii?Q?o5JfBNgRMl0bPaeDB1fyv8Lv5sytts1jPDQxA7h9zAvVjZAZI7A4Nup6lZXs?=
- =?us-ascii?Q?FwE6xrKx2LAELOZUfzYzjOTaeiKGeKlV2uW2TYGc1hgLdfNENgR12EChW+Jj?=
- =?us-ascii?Q?JzxyX/rsbajthEwo+PNHyWg5va+jItfoaR4fwWf3q9cdIt0agJpqjRhn/y7r?=
- =?us-ascii?Q?ViULSfeqXzceZPPhRwijXZa/DfTW+ZIfwTmR4cDMvAb1DO44JNpyqejkRBIV?=
- =?us-ascii?Q?Mezug/OyaoVFViL1lXl5FRpub+FOZEZojYyIEVw15xNdYBPE4USakWjN8MMH?=
- =?us-ascii?Q?4hfTH4b/ZnXm8Ih1SAp7PNrEjMTqXg9phB7zvbDRKACGuP+VQoTTrMm1jzcz?=
- =?us-ascii?Q?MLJf/CsNoAfow0Tf4fN8mEF4EWPnROWc35HYM8JWpJriXdszYr2EbQLAeK4l?=
- =?us-ascii?Q?4rkYY60nKP1/VbhjiD4WFqKa9CXpyJegVC8wt57gyArz8DPGkAIxBWYtR3KI?=
- =?us-ascii?Q?7J/fiXEjVf7SRsm3BH1zmlqvY/ojBXhUtL0hyRUy6usHTWQcM3Jx9UkqMpVe?=
- =?us-ascii?Q?LmuHrA/oJR9MP/kmJ1eid/rbRCI5KR0gDmWMl/5Vj0ptqB0LPdAR4DIaYhef?=
- =?us-ascii?Q?F3BENuoIfTu4PoTBHrZ+ZtR5Hxxh15EdnkF5+jec2Lx/w8Jw1QJetrGexuZi?=
- =?us-ascii?Q?6XC1YmFW2SFQOxv6a9s86+FuVpZXPgyM60OPAjtGvLlG4Lg0ky0q3qxvoWbj?=
- =?us-ascii?Q?2Tjmg2LRfM3bEJs7881KCdk4xu6nZrA6Odk/6L9jUQ5HnFN1ptpVdZXN3/P+?=
- =?us-ascii?Q?QiIVhH4fv3MxI1lbChwAFJtOpL94nx8p8MN7Al3lDbFtXhbhjexz4JuPajAm?=
- =?us-ascii?Q?0g=3D=3D?=
+	=?us-ascii?Q?qkN83OLzzDlcusCHaNHCNVEe3jKpSRCTJS+bo2fiVOhxAbCXe8cgQWBaWDSO?=
+ =?us-ascii?Q?sMLvWBQiWU03mSlddTLNaCOt6of8HXOmbBF2DX5eBLubd+5RXEGEVfiuhI1r?=
+ =?us-ascii?Q?d6jy3Oyl9dSklFmY/oLx5EYoB/pQ/Ose90BDfXrIUGekj6asLOX7jiywBeKX?=
+ =?us-ascii?Q?8p+EhukUFRyyHoBjwhd84uiD5qeWIdm2+3fx3g+9gvIgYVsyTaZFi/4yrox5?=
+ =?us-ascii?Q?oomZgUPtWyR0mjQpZJDVRfy7ATtkkWl2TZIN7fJej3N6RjA1qJacYDS7j8/B?=
+ =?us-ascii?Q?E/dZmyzRkO8ms+n+JzOLCtzWltSn8OOSXPeQCMmxilkKl6zu8DoMIOW40Sp4?=
+ =?us-ascii?Q?Fh44rpl4ANI8ypr4A7funnH3EVUGjMug54200E2ceU6WEk9haS8fbuKF+mKz?=
+ =?us-ascii?Q?smiTrEIJRZowiXWvjs2+ufh5kvLR2PYYzUieUFKi2+NlpckpE0/jGo96ngh/?=
+ =?us-ascii?Q?dVwdUbAx0YHaPISQEmZ3gc+EsQ8vd50hSsHG1sdvonJqgWW8wc0xD8fVKhT2?=
+ =?us-ascii?Q?WzxWkJT+QS+a0P6lsI+l+fe1rqQ78XZp9e20tJFSYmZBVE8rTcvja5mCyQ2b?=
+ =?us-ascii?Q?Ir/axGqV3ONLmsww9tlLj9Q6qAyfCRh3pPm549U1oHPpzqKMkLUCdsbUG4cV?=
+ =?us-ascii?Q?Tz0dqI9bPtR7NA0BFB8oDV1eO6rwn/p5cX/V25G5JC19Io13jSuCmWCov0D1?=
+ =?us-ascii?Q?/FKcZsyPjgRXJea42cB0p0iZZdirGtQ2PZjl+AU0c2pu75N9cTLKROpn3phU?=
+ =?us-ascii?Q?ttfp+dMmd/2SU2I7oSK2ufMYHHDcxugXiZdhRD+7wgWR1NHDKPxDrHKpQaPx?=
+ =?us-ascii?Q?akfoKPsn35w8m9ua/TD/TlWwNTZvQvlZMeyESrKVb5P2h9G27Hfr5hAVEAjw?=
+ =?us-ascii?Q?9+9O4/MhyGRViznNjTSHILHC7Fm/Fi7I1qlUD7U7bXvzQ+AHj+3B/2QljvxZ?=
+ =?us-ascii?Q?t/T9iMSQELvsiGMmjh076k33xZr1v7etVEoImlZH1/TAMBg4gqjJhO1/zCvX?=
+ =?us-ascii?Q?DJo628JKhtUrkomnGmWN37kiufPEIrLIONZM4Y7NA2eEPQ0Ii0H8ZP5SAcu0?=
+ =?us-ascii?Q?WTY2WgCfk+EHMHOdMCmyMJOtBERiv8K2q4E2GGJPjSvb6TL87ecs4Cr4AiuS?=
+ =?us-ascii?Q?MTn0oAaShqE/hpR3huccVlBmGpiEke7ZvsxzE8w9qgSUMu8YuI8YYZhX9cGm?=
+ =?us-ascii?Q?qsqskMH4afyX/FMYknS3MPEY3oZm5oVv+ymA9ZlfF1kCiM1SgRdXAsgTiKZk?=
+ =?us-ascii?Q?oKILQq4MVQzW+nUaCDFBEXjUDiJB0GHmgWrfgoGtnh12pkvwtMXbDriUu796?=
+ =?us-ascii?Q?RtQnJu3u/tYDpzYKeraESxWpKAynOdHeT9BIJCljYEHAdwmk4JwN+fgg/0pX?=
+ =?us-ascii?Q?bMLlF/BHyugVVSlqqfxT2BJBc+JizwU7tas6kMPlKoaxCRs3hVBaNDEc2KfM?=
+ =?us-ascii?Q?snCjFhQUKwz5CJFDmna7bz2OSiVKrfLPV/6CF6zwmHTo5VpXdmpOwzJmAwjG?=
+ =?us-ascii?Q?FlVSqjbmzJnbZ0qvdHXqvd2WO7gXsd2SAUxj6ottFE5gCeBQD8f5BaLJiY9i?=
+ =?us-ascii?Q?zZnqFZNEpafgOT/2mOQ/OedPLvBfTz8GspUYUyK2jlTvY5bn0FzqgQnU3s1Q?=
+ =?us-ascii?Q?mQ=3D=3D?=
 X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
-	SyIncQj8Cj4SULsdHRCqjjeXr9Pk5R+cRlMF8xXVKGrmdQRwyzIvzl+H7DFtfGnShmEEAYfyYWutPh628NOjpoi3tjTwwmMLW4z8oOM9R2izmFRC0smfRlgDZ/Dsy48dNB080jTbEnZaWSFvpRgMJNuBVudMFYhu9xo+LxV7KW0rKaT8fA734ZH45oxCdACEiOn0Nf7MQvD5vOPLs37JU2Q67YQZ8G1uFCqPGntpbQLmQ6Ulsvr/8dbWFI+pVStOOuCCPbJBg4hCl4xhYewI4fHBGMV7HtORXhcA2yaZvfFFSSTFvsCG57bJyoSKa4eWFUrPXxVhDyFeU9deTxB6H/cp2XLn7vPKkh+MY/F20Er+qza+fwCDNJkuw5BF5wH1/AT1iVrP3czTVLY+JGo8iC9I+5FQFPPTlMc4AXLfb8R3XCvN5nRPKD7eOWb6xHweaJ+PO3oICyAxTINaY1+2qcCbhy6s8TaK0O50dqB48DpYUjj9NUhQ99BPzWhP/HNN7fakbGlL2ZRYHoM2RMQWd889FidLFTcTFUqM5nWBU6A3DSFkFtB/Zm7YXIkEt1LHDA3+ZBqR3FoklSmOWox51gr1ygrlwalFzFGvlUUM+7E=
+	T/9P5eGSrtHochEKwZ3pU4yJU4FRhPwKp3AFSYaOiEFriFNEkcsFXbkHtibwnuKS6EeU7KcdgA3QFvHPFaij/ZrGzLeLMmILwYTLPcFKoOLGQk/SClKIV7P1Kdr63EC7BgwoVx0sVcLI2E4yqqP/FVFNqD7NmvVj95KLEwjewRYm+zl4DcQpeihpuq2pTM0oeJEIfORcvhVKM7zAmA+vKEdadXbmUQ8OizfCmaLwevqnjUmFA4ztCk2fM1/Ac1qFr3sCbu8Bt5qo/3uH4PuJpvMKOg0RU3GeFhv9KH/CGjfeHrUMqfzeFXkLyukkxNHYWa2lSeqdub1UMVOudOf6rg4lkF2IXzWg6/XmWK7GWk7N2Ri6kEOH3dg5eUBQBP4Z1CgveyVOiPrF8QilYcrfSU9f6VQwqaUiP6rKrq8eo/syuB7R3ty/yncr31o1wgcrtgi4+L9V9RGxxcC92oQJY6p6wNuW0MNV/wK1IvLliTYUR3TIAoBWZE2onNaBWPjo/2uhY95Oz70Ys5oO44XKnrpM1FjC1+w4JtChjRoGZrwtIL/ah3btLvpqEcFVEob5uWn0R8zhXTVuYH3i+T0WJLPS1MTvadKJV/k+F/ucEp8=
 X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0d37ec49-a197-418b-4cb7-08dcc4598e8e
+X-MS-Exchange-CrossTenant-Network-Message-Id: f93c240b-c2a6-4e78-4e76-08dcc4672a38
 X-MS-Exchange-CrossTenant-AuthSource: SJ0PR10MB5613.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Aug 2024 16:26:50.4124
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Aug 2024 18:04:15.1161
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sfYzjrevC/2S2dDoxTmrEglynI64KDWp190Ok/rZSHDLA8K4U8CCyAd5mmTXdaLxjj2EPC+u8A/wV0bDnsCf93cVQBdYwqwMMgq0D2mPkHA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR10MB7598
+X-MS-Exchange-CrossTenant-UserPrincipalName: W5z9Hx71qZz4o8pWNXYbO2DJKTZWTYgSULmdy7UPEmnII2LxmBwI01MtTykF6b5nb7au/0DZF+gvFpv4eZgeca/RC+GdhLR7vQ8xul4OoIs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BLAPR10MB4980
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
  definitions=2024-08-24_12,2024-08-23_01,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 malwarescore=0 adultscore=0
- phishscore=0 spamscore=0 mlxscore=0 suspectscore=0 mlxlogscore=999
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 phishscore=0 suspectscore=0
+ malwarescore=0 adultscore=0 mlxscore=0 spamscore=0 mlxlogscore=838
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2407110000
- definitions=main-2408240104
-X-Proofpoint-GUID: 6i3URlFYD2hJXRwG7gZkMK9_4szKheia
-X-Proofpoint-ORIG-GUID: 6i3URlFYD2hJXRwG7gZkMK9_4szKheia
+ definitions=main-2408240117
+X-Proofpoint-GUID: bYsoH0L1Qqksf7km1210te7gWjrjnRo3
+X-Proofpoint-ORIG-GUID: bYsoH0L1Qqksf7km1210te7gWjrjnRo3
 
-On Fri, Aug 23, 2024 at 11:02:06PM GMT, Zhiguo Jiang wrote:
-> After CoWed by do_wp_page, the vma established a new mapping relationship
-> with the CoWed folio instead of the non-CoWed folio. However, regarding
-> the situation where vma->anon_vma and the non-CoWed folio's anon_vma are
-> not same, the avc binding relationship between them will no longer be
-> needed, so it is issue for the avc binding relationship still existing
-> between them.
+--vpqxaifkk44w6k3q
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+On Sat, Aug 24, 2024 at 05:26:46PM GMT, Lorenzo Stoakes wrote:
+> On Fri, Aug 23, 2024 at 11:02:06PM GMT, Zhiguo Jiang wrote:
+> > After CoWed by do_wp_page, the vma established a new mapping relationship
+> > with the CoWed folio instead of the non-CoWed folio. However, regarding
+> > the situation where vma->anon_vma and the non-CoWed folio's anon_vma are
+> > not same, the avc binding relationship between them will no longer be
+> > needed, so it is issue for the avc binding relationship still existing
+> > between them.
+> >
+> > This patch will remove the avc binding relationship between vma and the
+> > non-CoWed folio's anon_vma, which each has their own independent
+> > anon_vma. It can also alleviates rmap overhead simultaneously.
+> >
+> > Signed-off-by: Zhiguo Jiang <justinjiang@vivo.com>
 >
-> This patch will remove the avc binding relationship between vma and the
-> non-CoWed folio's anon_vma, which each has their own independent
-> anon_vma. It can also alleviates rmap overhead simultaneously.
 >
-> Signed-off-by: Zhiguo Jiang <justinjiang@vivo.com>
-
-
-NACK (until fixed). This is broken (see below).
-
-
-I'm not seeing any numbers to back anything up here as to why we want to
-make changes to this incredibly sensitive code?
-
-Also anon_vma logic is very complicated and confusing, this commit message
-feels about 3 paragraphs too light.
-
-Under what circumstances will vma->anon_vma be different from
-folio_anon_vma(non_cowed_folio)? etc.
-
-Confusing topics strongly require explanations that help (somewhat)
-compensate. This is one of them.
-
-> ---
->
-> -v2:
->  * Solve the kernel test robot noticed "WARNING"
->    Reported-by: kernel test robot <oliver.sang@intel.com>
->    Closes: https://lore.kernel.org/oe-lkp/202408230938.43f55b4-lkp@intel.com
-
-It doesn't.
-
-Saw a bunch of warning output in dmesg when running in qemu, bisected it to
-this commit. The below assert is being fired (did you build this kernel
-with CONFIG_DEBUG_VM?):
-
-	VM_WARN_ON(anon_vma->num_children);
-
-From what I saw, these appear to all be cases where anon_vma->num_children == 0...
-
-
-[    1.905603] ------------[ cut here ]------------
-[    1.905604] WARNING: CPU: 2 PID: 231 at mm/rmap.c:443 unlink_anon_vmas+0x181/0x1c0
-[    1.905605] Modules linked in:
-[    1.905605] CPU: 2 UID: 1000 PID: 231 Comm: zsh Tainted: G        W          6.11.0-rc4+ #49
-[    1.905606] Tainted: [W]=WARN
-[    1.905606] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS Arch Linux 1.16.3-1-1 04/01/2014
-[    1.905607] RIP: 0010:unlink_anon_vmas+0x181/0x1c0
-[    1.905608] Code: 48 83 7f 40 00 75 1c f0 ff 4f 30 75 ab e8 d7 fd ff ff eb a4 5b 5d 41 5c 41 5d 41 5e 41 5f c3 cc cc cc cc 90 0f 0b 90 eb de 90 <0f> 0b 90 eb d1 90 0f 0b 90 48 83 c7 08 e8 4d 7c ea ff e9 fc fe ff
-[    1.905608] RSP: 0018:ffffc90000547cb0 EFLAGS: 00010286
-[    1.905609] RAX: ffff88817b265390 RBX: ffff88817b265380 RCX: ffff88817b2cb790
-[    1.905609] RDX: ffff88817b265380 RSI: ffff88817b2cb790 RDI: ffff888179e08888
-[    1.905610] RBP: dead000000000122 R08: 000000000000000c R09: 0000000000000010
-[    1.905610] R10: 0000000000000001 R11: 0000000000000000 R12: ffff88817b2cb790
-[    1.905611] R13: dead000000000100 R14: ffff88817b2cb780 R15: ffff888179e08888
-00000000000
-[    1.905613] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[    1.905613] CR2: 0000555bc5d97390 CR3: 000000017c12c000 CR4: 0000000000750ef0
-[    1.905614] PKRU: 55555554
-[    1.905614] Call Trace:
-[    1.905614]  <TASK>
-[    1.905615]  ? unlink_anon_vmas+0x181/0x1c0
-[    1.905615]  ? __warn.cold+0x8e/0xe8
-[    1.905616]  ? unlink_anon_vmas+0x181/0x1c0
-[    1.905617]  ? report_bug+0xff/0x140
-[    1.905618]  ? handle_bug+0x3b/0x70
-[    1.905619]  ? exc_invalid_op+0x17/0x70
-[    1.905620]  ? asm_exc_invalid_op+0x1a/0x20
-[    1.905621]  ? unlink_anon_vmas+0x181/0x1c0
-[    1.905622]  free_pgtables+0x11f/0x250
-[    1.905622]  exit_mmap+0x15e/0x380
-[    1.905624]  mmput+0x54/0x110
-[    1.905625]  do_exit+0x27e/0xa10
-[    1.905626]  ? __x64_sys_close+0x37/0x80
-[    1.905626]  do_group_exit+0x2b/0x80
-[    1.905628]  __x64_sys_exit_group+0x13/0x20
-[    1.905629]  x64_sys_call+0x14af/0x14b0
-[    1.905630]  do_syscall_64+0x9e/0x1a0
-[    1.905630]  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-[    1.905631] RIP: 0033:0x7f4416ae33ad
-[    1.905632] Code: Unable to access opcode bytes at 0x7f4416ae3383.
-000e7
-[    1.905633] RAX: ffffffffffffffda RBX: 00007f4416d5e3c0 RCX: 00007f4416ae33ad
-[    1.905633] RDX: 00000000000000e7 RSI: ffffffffffffff88 RDI: 0000000000000000
-[    1.905633] RBP: 0000555b8eed1378 R08: 0000000000000000 R09: 0000000000000007
-[    1.905634] R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000001
-[    1.905634] R13: 0000000000000000 R14: 00007ffe7dbe9190 R15: 00007ffe7dbe9110
-[    1.905635]  </TASK>
-[    1.905635] ---[ end trace 0000000000000000 ]---
-[    1.905638] ------------[ cut here ]------------
-
-
->  * Update comments to more accurately describe this patch.
->
-> -v1:
->  https://lore.kernel.org/linux-mm/20240820143359.199-1-justinjiang@vivo.com/
->
->  include/linux/rmap.h |  1 +
->  mm/memory.c          |  8 +++++++
->  mm/rmap.c            | 53 ++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 62 insertions(+)
->
-> diff --git a/include/linux/rmap.h b/include/linux/rmap.h
-> index 91b5935e8485..8607d28a3146
-> --- a/include/linux/rmap.h
-> +++ b/include/linux/rmap.h
-> @@ -257,6 +257,7 @@ void folio_remove_rmap_ptes(struct folio *, struct page *, int nr_pages,
->  	folio_remove_rmap_ptes(folio, page, 1, vma)
->  void folio_remove_rmap_pmd(struct folio *, struct page *,
->  		struct vm_area_struct *);
-> +void folio_remove_anon_avc(struct folio *, struct vm_area_struct *);
->
->  void hugetlb_add_anon_rmap(struct folio *, struct vm_area_struct *,
->  		unsigned long address, rmap_t flags);
-> diff --git a/mm/memory.c b/mm/memory.c
-> index 93c0c25433d0..4c89cb1cb73e
-> --- a/mm/memory.c
-> +++ b/mm/memory.c
-> @@ -3428,6 +3428,14 @@ static vm_fault_t wp_page_copy(struct vm_fault *vmf)
->  			 * old page will be flushed before it can be reused.
->  			 */
->  			folio_remove_rmap_pte(old_folio, vmf->page, vma);
-> +
-> +			/*
-> +			 * If the new_folio's anon_vma is different from the
-> +			 * old_folio's anon_vma, the avc binding relationship
-> +			 * between vma and the old_folio's anon_vma is removed,
-> +			 * avoiding rmap redundant overhead.
-
-What overhead? Worth spelling out for instance if it's unnecessary to
-traverse avc's.
-
-> +			 */
-> +			folio_remove_anon_avc(old_folio, vma);
->  		}
->
->  		/* Free the old page.. */
-> diff --git a/mm/rmap.c b/mm/rmap.c
-> index 1103a536e474..56fc16fcf2a9
-> --- a/mm/rmap.c
-> +++ b/mm/rmap.c
-> @@ -1522,6 +1522,59 @@ void folio_add_file_rmap_pmd(struct folio *folio, struct page *page,
->  #endif
->  }
->
-> +/**
-> + * folio_remove_anon_avc - remove the avc binding relationship between
-> + * folio and vma with different anon_vmas.
-> + * @folio:	The folio with anon_vma to remove the binded avc from
-> + * @vma:	The vm area to remove the binded avc with folio's anon_vma
-> + *
-> + * The caller is currently used for CoWed scene.
-
-Strange turn of phrase,
-
-> + */
-> +void folio_remove_anon_avc(struct folio *folio,
-
-I think this should be 'oldfolio'. You're not looking at the copied folio,
-but the unCoW'd original folio.
-
-> +		struct vm_area_struct *vma)
-> +{
-> +	struct anon_vma *anon_vma = folio_anon_vma(folio);
-> +	pgoff_t pgoff_start, pgoff_end;
-> +	struct anon_vma_chain *avc;
-> +
-> +	/*
-> +	 * Ensure that the vma's anon_vma and the folio's
-> +	 * anon_vma exist and are not same.
-> +	 */
-> +	if (!folio_test_anon(folio) || unlikely(!anon_vma) ||
-
-The folio_test_anon() is already implied by folio_anon_vma() != NULL and
-doesn't preclude KSM.
-
-> +	    anon_vma == vma->anon_vma)
-> +		return;
-
-This is all super confusing, the 'parent' is actually anon_vma
-(oldfolio). The newly created 'child' anon_vma is vma->anon_vma. Should
-probably rename each accordingly.
-
-
-> +
-> +	pgoff_start = folio_pgoff(folio);
-> +	pgoff_end = pgoff_start + folio_nr_pages(folio) - 1;
-> +
-> +	if (!anon_vma_trylock_write(anon_vma))
-> +		return;
-> +
-> +	anon_vma_interval_tree_foreach(avc, &anon_vma->rb_root,
-> +			pgoff_start, pgoff_end) {
-> +		/*
-> +		 * Find the avc associated with vma from the folio's
-> +		 * anon_vma and remove it.
-> +		 */
-
-This is a meaningless comment.
-
-This should be something like 'anon_vma_chain objects bind VMAs and
-anon_vma's. Find the avc binding the unCoW'd folio's anon_vma to the new
-VMA, and remove it, as it is now redundant.'
-
-> +		if (avc->vma == vma) {
-
-In testing I found that a lot of the time this isn't found at all... is
-that expected?
-
-> +			anon_vma_interval_tree_remove(avc, &anon_vma->rb_root);
-> +			/*
-> +			 * When removing the avc with anon_vma that is
-> +			 * different from the parent anon_vma from parent
-> +			 * anon_vma->rb_root, the parent num_children
-> +			 * count value is needed to reduce one.
-> +			 */
-
-This is a really confusing comment. You're not explaining the 'why' you're
-just essentially asserting that you need to do this, and clearly this is
-broken.
-
-> +			anon_vma->num_children--;
-
-So we know this is broken to start due to VM_WARN_ON() failures.
-
-As per above dmesg analysis, sometimes this is zero, so you're
-underflowing. We definitely need a:
-
-	VM_WARN_ON(anon_vma->num_children == 0);
-
-At least.
-
-But also the naming is broken here too, anon_vma is actually the parent
-(oldfolio's) anon_vma...
-
-
-This is also just not correct on any level - the anon_vma->num_children
-field indicates how many child anon_vma objects point at it via
-anon_vma->parent, NOT avc.
-
-You're removing an avc, not disconnecting an anon_vma.
-
-So it seems to me you should have logic to remove the avc AND logic to
-disconnect vma->anon_vma from (parent) anon_vma if it points to it.
-
-You'll need to be careful about locking when you do that too, as anon_vma's
-lock on the root anon_vma, but in isolating the child anon_vma you'd lose
-this lock.
-
-I've tried to write code to fix this but haven't been able to yet, this is
-fiddly stuff.
-
-(I think this might have seemed to work at some point in testing because
-unlink_anon_vmas() uses the avc list to determine what to unlink, rather
-than looking at individual anon_vma's but still).
-
-> +
-> +			list_del(&avc->same_vma);
-> +			anon_vma_chain_free(avc);
-> +			break;
-> +		}
-> +	}
-> +	anon_vma_unlock_write(anon_vma);
-> +}
-> +
->  static __always_inline void __folio_remove_rmap(struct folio *folio,
->  		struct page *page, int nr_pages, struct vm_area_struct *vma,
->  		enum rmap_level level)
-> --
-> 2.39.0
+> NACK (until fixed). This is broken (see below).
 >
 
-Again I question the value of this change. Are we REALLY seeing a big
-problem due to unneeded avc's hanging around? This is very sensitive,
-fiddly, confusing code, do we REALLY want to be playing with it?
+[snip]
 
-It'd be good to get some tests though unless you move this to vma.c with
-its userland testing (probably a good idea actually as Andrew suggested)
-this might be tricky.
+I enclose a patch that fixes the issue, but leaves a LOT still
+broken/resolved/todo including locking of the reparented anon_vma (that'll
+really need re-rooting too).
 
-NACK until the issues are fixed and the approach at least seems more
-correct.
+I still seriously doubt the value of this patch given the complexity risks,
+but since I got bored and looked into this it's useful to examine something
+that works, and which might be helpful to you in testing.
+
+--vpqxaifkk44w6k3q
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment;
+	filename="0001-mm-fixup-orphan-avc-cleanup-logic.patch"
+
+From 973ce5f0aea78196088cd527905cc0fad40edb29 Mon Sep 17 00:00:00 2001
+From: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
+Date: Sat, 24 Aug 2024 18:55:31 +0100
+Subject: [RFC PATCH] mm: fixup orphan avc cleanup logic
+
+Existing logic failed to reparent the anon_vma whose avc was removed which
+resulted in assertion failures.
+
+This patch corrects this, fixes up some comments, and does some other
+cleanups.
+
+We also do not do anything relating to anon_vma->parent manipulation if no
+orphaned AVC is found.
+
+I still feel this logic is highly dubious, but this does fix the issue with
+anon_vma->num_children accounting.
+
+This doesn't correctly handle locking of the reparented anon_vma.
+
+Signed-off-by: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
+---
+ include/linux/rmap.h |   2 +-
+ mm/memory.c          |   2 +-
+ mm/rmap.c            | 101 ++++++++++++++++++++++++++++---------------
+ 3 files changed, 68 insertions(+), 37 deletions(-)
+
+diff --git a/include/linux/rmap.h b/include/linux/rmap.h
+index 8607d28a3146..f1a835f54064 100644
+--- a/include/linux/rmap.h
++++ b/include/linux/rmap.h
+@@ -257,7 +257,7 @@ void folio_remove_rmap_ptes(struct folio *, struct page *, int nr_pages,
+ 	folio_remove_rmap_ptes(folio, page, 1, vma)
+ void folio_remove_rmap_pmd(struct folio *, struct page *,
+ 		struct vm_area_struct *);
+-void folio_remove_anon_avc(struct folio *, struct vm_area_struct *);
++void cleanup_orphan_avc(struct folio *, struct vm_area_struct *);
+ 
+ void hugetlb_add_anon_rmap(struct folio *, struct vm_area_struct *,
+ 		unsigned long address, rmap_t flags);
+diff --git a/mm/memory.c b/mm/memory.c
+index 4c89cb1cb73e..989b078dd860 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -3435,7 +3435,7 @@ static vm_fault_t wp_page_copy(struct vm_fault *vmf)
+ 			 * between vma and the old_folio's anon_vma is removed,
+ 			 * avoiding rmap redundant overhead.
+ 			 */
+-			folio_remove_anon_avc(old_folio, vma);
++			cleanup_orphan_avc(old_folio, vma);
+ 		}
+ 
+ 		/* Free the old page.. */
+diff --git a/mm/rmap.c b/mm/rmap.c
+index 56fc16fcf2a9..3ac264962917 100644
+--- a/mm/rmap.c
++++ b/mm/rmap.c
+@@ -1523,56 +1523,87 @@ void folio_add_file_rmap_pmd(struct folio *folio, struct page *page,
+ }
+ 
+ /**
+- * folio_remove_anon_avc - remove the avc binding relationship between
+- * folio and vma with different anon_vmas.
+- * @folio:	The folio with anon_vma to remove the binded avc from
+- * @vma:	The vm area to remove the binded avc with folio's anon_vma
++ * cleanup_orphan_avc - remove the avc binding relationship between a parent
++ * folio and child vma with different anon_vmas which, due to an operation such
++ * as CoW'ing a folio, is no longer meaningful.
+  *
+- * The caller is currently used for CoWed scene.
++ * (insert ASCII diagrams and explanation here...)
++ *
++ * @old_folio:  The folio which contains the parent anon_vma which has an unneeded
++ *              avc binding.
++ * @new_vma:	The VMA which is unnecessarily bound to folio.
+  */
+-void folio_remove_anon_avc(struct folio *folio,
+-		struct vm_area_struct *vma)
++void cleanup_orphan_avc(struct folio *old_folio, struct vm_area_struct *new_vma)
+ {
+-	struct anon_vma *anon_vma = folio_anon_vma(folio);
++	struct anon_vma *parent_anon_vma = folio_anon_vma(old_folio);
++	struct anon_vma *child_anon_vma = new_vma->anon_vma;
+ 	pgoff_t pgoff_start, pgoff_end;
+ 	struct anon_vma_chain *avc;
++	bool removed = false;
+ 
+ 	/*
+-	 * Ensure that the vma's anon_vma and the folio's
+-	 * anon_vma exist and are not same.
++	 * If this folio were not anonymous, folio_anon_vma() would have
++	 * returned NULL. Equally, if the parent and child anon_vma objects are
++	 * the same, then we have nothing to do here.
+ 	 */
+-	if (!folio_test_anon(folio) || unlikely(!anon_vma) ||
+-	    anon_vma == vma->anon_vma)
++	if (!parent_anon_vma || parent_anon_vma == child_anon_vma)
+ 		return;
+ 
+-	pgoff_start = folio_pgoff(folio);
+-	pgoff_end = pgoff_start + folio_nr_pages(folio) - 1;
++	pgoff_start = folio_pgoff(old_folio);
++	pgoff_end = pgoff_start + folio_nr_pages(old_folio) - 1;
+ 
+-	if (!anon_vma_trylock_write(anon_vma))
++	/* This is an optimistic attempt. */
++	if (!anon_vma_trylock_write(parent_anon_vma))
+ 		return;
+ 
+-	anon_vma_interval_tree_foreach(avc, &anon_vma->rb_root,
+-			pgoff_start, pgoff_end) {
+-		/*
+-		 * Find the avc associated with vma from the folio's
+-		 * anon_vma and remove it.
+-		 */
+-		if (avc->vma == vma) {
+-			anon_vma_interval_tree_remove(avc, &anon_vma->rb_root);
+-			/*
+-			 * When removing the avc with anon_vma that is
+-			 * different from the parent anon_vma from parent
+-			 * anon_vma->rb_root, the parent num_children
+-			 * count value is needed to reduce one.
+-			 */
+-			anon_vma->num_children--;
++	/*
++	 * Iterate through all AVC's tied to the old folio, looking for the
++	 * redundant one pointing at the new VMA.
++	 */
++	anon_vma_interval_tree_foreach(avc, &parent_anon_vma->rb_root,
++				       pgoff_start, pgoff_end) {
++		if (avc->vma != new_vma)
++			continue;
+ 
+-			list_del(&avc->same_vma);
+-			anon_vma_chain_free(avc);
+-			break;
+-		}
++		/* Remove the unneeded avc. */
++		anon_vma_interval_tree_remove(avc, &parent_anon_vma->rb_root);
++		list_del(&avc->same_vma);
++		anon_vma_chain_free(avc);
++
++		removed = true;
++		break;
+ 	}
+-	anon_vma_unlock_write(anon_vma);
++
++	if (!removed)
++		goto unlock;
++
++	/*
++	 * Removing an avc implies that the associated avc MAY no longer need
++	 * to point to its parent, and we need to reparent it.
++	 */
++
++	/*
++	 * If somehow we aren't already the child of the parent anon_vma, we
++	 * have nothing to do here.
++	 */
++	if (child_anon_vma->parent != parent_anon_vma)
++		goto unlock;
++
++	/* OK, we abandon our parent, and reparent to ourselves. */
++
++	parent_anon_vma->num_children--;
++
++	child_anon_vma->parent = child_anon_vma;
++	child_anon_vma->num_children++;
++
++	/*
++	 * Here we should probably reset the anon_vma->root, as per
++	 * anon_vma_ctor() but this feels icky and horrible. Bit weird to share
++	 * a lock with the old parent's root.
++	 */
++
++unlock:
++	anon_vma_unlock_write(parent_anon_vma);
+ }
+ 
+ static __always_inline void __folio_remove_rmap(struct folio *folio,
+-- 
+2.46.0
+
+
+--vpqxaifkk44w6k3q--
