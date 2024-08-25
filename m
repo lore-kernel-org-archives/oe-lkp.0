@@ -1,314 +1,456 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C30BC626CB
-	for <oe-lkp@lists.linux.dev>; Sun, 25 Aug 2024 09:45:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.20
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724579116; cv=fail; b=AzXh2iPaxI0iVyaI+4sZucjzCTvLVeaLwHEEL+UIDplQo94ycTOog4MkS9AZJvTpOGKUlWrgIhv8N09fctPktdG8VJJBrr1xuTXGV1WdgNYdYNnEUOB/Oyp2iX+SIUun35QlxL+w4HmJDAKbfy9JdMt1fvM1jUVALZ74D2g+r5U=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724579116; c=relaxed/simple;
-	bh=Xyrks/VwWEMi18iY3RpdqCp3Y0nov6bkFykSMPUZH4A=;
-	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=TKcvQd5K1cIXkq9DI/HiFqgRVuy50ydZucjFg5bQ1YuN2wEpOdihvdnsSWIntCxLc5w080Za+9MmGXfnXyjgVJjRxYdW6kq+vtQgvo976SRoh/edwuABcCwlmuJYM7FQeOSFFn0xJbGWv7KlM5akzl+bXdESdgrWJYXu1DyDrEc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cvIcyEVH; arc=fail smtp.client-ip=198.175.65.20
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 037F41448C5
+	for <oe-lkp@lists.linux.dev>; Sun, 25 Aug 2024 18:13:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1724609619; cv=none; b=BFba99yaOq58R7y0AkVOko4E5OENE0b3Bx+DfGeZp32vOKXY4gz47Zz3J6n29E1X6YoTacr6SdNKTl/BqpIEGz+FxXROlpejtH8lJ81LLWOsrhJz+TdbcQBGG/C7aKCvmVckGgpqtG1MMc1JvRYvCjQ+daH4hOQDjMrLtmY5Bns=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1724609619; c=relaxed/simple;
+	bh=+YgeY5+8TAqttBip0IqoXis2nQ6+ZcEbNRn5v+P2qhE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ECTrPJLegnSfspocMLYBgoW4z7qhSu6Fy3+xAmi5jV5AYBREGv3Lw9bAn59uQllhO0BawPoMLjQQCn5snoVIKjMYDh3Y4Wb4ziMvI4aGC3wKKPdQ8bSwuhjrSBk3FezUrC9OT7CnyYevYeG//48RRRdJ1vReVzrX0D3kCuZAJ2I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=dQ5T+PFV; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cvIcyEVH"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1724579114; x=1756115114;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Xyrks/VwWEMi18iY3RpdqCp3Y0nov6bkFykSMPUZH4A=;
-  b=cvIcyEVHpeKOIW4OfxBYVE1+3/p1PnrouFb9UdcxMgYalOJ64DMTwkqJ
-   HfNymGp1TcU6rDmLQSi7NDTHBEAMJCcjBYC/w6U26R4Jo5oU4wao3ZmyS
-   CX3jFQVQjNztv6+FLxMiGWoEqa/8qIBXIXYb2wSnKkysMyNT9r+RdqHNK
-   aKJXmMB0n9aw4UdczwYc6mNYMABFIiGD/+WkwMt9T86mMWd82ap2UwqDa
-   2gDb+FpEXdPYgTBJpkCkQCJtjSd1dyig7UQ9hO0oDMd1PWoxC3ODDdisa
-   1xUOooGF6iMJj1NiksVcs0582DnZRCEKJrlyjJqHJqKi9vMnmHTHy8y0z
-   Q==;
-X-CSE-ConnectionGUID: QsHEX4ixSuuOSuStycTv2w==
-X-CSE-MsgGUID: AtGRM+EeSSStOVVlDCRJvQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11173"; a="22817579"
-X-IronPort-AV: E=Sophos;i="6.10,175,1719903600"; 
-   d="scan'208";a="22817579"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2024 02:45:13 -0700
-X-CSE-ConnectionGUID: OWOzRlPXS2Gztf6IXVs2vw==
-X-CSE-MsgGUID: ajM0izvWSVKmnW6phYzvQA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,175,1719903600"; 
-   d="scan'208";a="66552365"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by fmviesa005.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 25 Aug 2024 02:45:13 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Sun, 25 Aug 2024 02:45:12 -0700
-Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Sun, 25 Aug 2024 02:45:12 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Sun, 25 Aug 2024 02:45:12 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.40) by
- edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Sun, 25 Aug 2024 02:45:12 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=IW+iyc1iMaNXun9r7UKOTM5OusL/up4RA7D393lfqbfJKGfMLY2PcQ2O19vFuOyvSZerF+HjB0wltPj214WhOOkBofs0RA0ixU/IZbAEDYUMJBExm3rAatMn2SN2Bqy+mbzhTJ2ub8/pD3uZJm3QXovv4H7bC5lpCkMS/Dd3YMkYSMX1Ip2VPuFjbctRQB7YJaFQ5Cq5wmBvW9ZEdRB7CmSlguSWdN0FMayggSAKB1ZaPLEghxkWukpfOEKVrIWmjl8gW2/o+yw2wp+ut6wPaaHXe9l/CZWIDrAiLEqH5QgGdWi094uYXGNk7WV3rtTlmqBtOCCy29PDyOeD1MmSZA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iji2xY/KUUjRiIXzQJVHWpqe2B8ZzMZufptWsgeQEzI=;
- b=scc4l0n8YtJVMEQzxXoFP7DIIvH52G6TwCNS0VNUH9KdpZ6TKPJpiJusD53kB17/QAghbmswUsupzhshSeVIplI9zsJymMl3BGXIVpq5fnBgacTIZyVEppGk0EBIVoFoFW2NiAeWxqT7fSOBpZStFv//CgDmk6RiQiT+zXnFLkkMxsdFLphxtPe4zjR+Do1fMV2sjmG/RmzxmBLU3wjxCeOL/Hu+5MoipTsvVniCnT2EN/IFScs/IxMGFdAc9eiIuf8cug3HJYSBzK6YC8SGy84hBU1iih2i7nmdHBtVN4fPGO5VNGj5dnPK083wwHxfH0gIx9fLLXk27ppPPwnjMg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by MN2PR11MB4584.namprd11.prod.outlook.com (2603:10b6:208:264::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7875.19; Sun, 25 Aug
- 2024 09:45:10 +0000
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.7897.021; Sun, 25 Aug 2024
- 09:45:10 +0000
-Date: Sun, 25 Aug 2024 17:45:00 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: Jann Horn <jannh@google.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Linux Memory Management List
-	<linux-mm@kvack.org>, Vlastimil Babka <vbabka@suse.cz>, Andrey Konovalov
-	<andreyknvl@gmail.com>, Marco Elver <elver@google.com>,
-	<kasan-dev@googlegroups.com>, <oliver.sang@intel.com>
-Subject: [linux-next:master] [slub]  3a34e8ea62:
- BUG:KASAN:slab-use-after-free_in_kmem_cache_rcu_uaf
-Message-ID: <202408251741.4ce3b34e-oliver.sang@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-X-ClientProxiedBy: SG2PR03CA0125.apcprd03.prod.outlook.com
- (2603:1096:4:91::29) To LV3PR11MB8603.namprd11.prod.outlook.com
- (2603:10b6:408:1b6::9)
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="dQ5T+PFV"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1724609615;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=HpzimypYeW2jy5h2Eod+8sUv/qG+cw9+tfG5E2CVlko=;
+	b=dQ5T+PFVZBazKzKz5f9Z1OQJKn3Ca49gInVyIGBnd/RI8ItpJMr2YLgHXHk8iIY5D9Kno1
+	ysdxxvCYSGjomSIRjncv45bYTQkgPIDroSaECl+YXSSwtxBCaaEF/+O0juD1k1L8TRZzuu
+	BsIEBWlo4gqCT/lAA5Mvb6UII0uyzn0=
+Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
+ [209.85.208.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-86-aRc9omWpNaWxIIJ_lcgasA-1; Sun, 25 Aug 2024 14:13:34 -0400
+X-MC-Unique: aRc9omWpNaWxIIJ_lcgasA-1
+Received: by mail-lj1-f198.google.com with SMTP id 38308e7fff4ca-2f3f56876e3so34314931fa.0
+        for <oe-lkp@lists.linux.dev>; Sun, 25 Aug 2024 11:13:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1724609613; x=1725214413;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=HpzimypYeW2jy5h2Eod+8sUv/qG+cw9+tfG5E2CVlko=;
+        b=nICHx9bDhDOcd6dU3i96FUh/NOvWKXQYa2l3zLdhjGij5Umd1oreW7T6jEnVKAfkFb
+         n08ChV6XghkqfmptjzCwgP1ZF0+RncvbbThUO/n8QMYAVMxb0AvTlL98AWN/2JGrCs/n
+         EF6A610ChgP6Mq7YNms9KFXDFlxxSulvY2EjzaFb8VGmFacEgnNStS7udsLdSIVSzcJu
+         KKrgwtO0/nCGDsjbzrWz/h/KnP8b9rXM29XU6ubZokubrtKCTHkHGXQkIekHZzetI3z3
+         qD7xUGGcQ8hmUWeNVqeWC4PpId7ysusj7mOXKAqVdWhmyT1LktjqbEx1LD6++VxHk3Lq
+         6A/Q==
+X-Forwarded-Encrypted: i=1; AJvYcCWuWhRqPcRUQVgfB8DZydSVo7vFeB7ZzO27yrObsR8eQWkMCU/wlB+Ft/DxIidIbzlQ+/8wWbY=@lists.linux.dev
+X-Gm-Message-State: AOJu0YyGaZjNqmRA0PMzf3XY6OPlC3X7WnZe8mecSiDXL8WEi6vZ4v4L
+	Q877cvWbc0DiuLlsCghlG7eRj9ADybYoF03JUplDlrajWSMdLj3Ar6oKdaMwzmAfq873x0laCBc
+	0UJEFzphLq+Zz33tro86EuO/ILGUrcw0oKETL6DmpO4qQIXd7eqQt
+X-Received: by 2002:a2e:8709:0:b0:2ee:8ea4:d649 with SMTP id 38308e7fff4ca-2f4f4904a3amr49880211fa.16.1724609612587;
+        Sun, 25 Aug 2024 11:13:32 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IE3eoe1EKuc3udMYYR2OlLdyuWgFFmF7cfm4+P0EkctqPkvzqf4EbncigpAnXCDWW3mXooD2g==
+X-Received: by 2002:a2e:8709:0:b0:2ee:8ea4:d649 with SMTP id 38308e7fff4ca-2f4f4904a3amr49879911fa.16.1724609610943;
+        Sun, 25 Aug 2024 11:13:30 -0700 (PDT)
+Received: from [192.168.1.86] (82-181-87-79.bb.dnainternet.fi. [82.181.87.79])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-2f4047c5ab6sm10694241fa.48.2024.08.25.11.13.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 25 Aug 2024 11:13:30 -0700 (PDT)
+Message-ID: <48854609-290d-4868-a1cc-fbb2920af80b@redhat.com>
+Date: Sun, 25 Aug 2024 21:13:29 +0300
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|MN2PR11MB4584:EE_
-X-MS-Office365-Filtering-Correlation-Id: 66542325-5e10-4d01-361d-08dcc4ea9c04
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?nVCzJQTM4O7KsiQO/hxityRWJwDQ0n7bWLOauuDlrHPnQNl+A9uMEMjROWHQ?=
- =?us-ascii?Q?bWZaBmD0nso2bB3H+VmEROAmaeOkdBdyn4uIelnWI68+5M2zVXHVbwab4/KB?=
- =?us-ascii?Q?iLDy/pmzfvIQ8Bd1A9L7J0/IoDtdJPHHILO5KNo3n8VFHhcXNtzcEIKzM/AN?=
- =?us-ascii?Q?mjA6Y+kBv5MksWIYwYJX1A8LXG2oZvXIgIHYmVyQwNKuzHfMj4UlXoUYLGMF?=
- =?us-ascii?Q?OC6uIuB9EsKYkYVu3UfpMmaVVShfdOwfmJyA7GeiYpNqI2OiBcSobaMNw2nA?=
- =?us-ascii?Q?NdkhsD5u9nu8+86jFD4wgrg1uIIS8Rp7MK1kl03yifaWvsmpLQEU5aY6Oxpw?=
- =?us-ascii?Q?mQNmvGGhoc0+mf6xv9EJnmDP3lp3ziH0UZ1s6N/k1mQqwfcVASgKisHUG4PZ?=
- =?us-ascii?Q?Kb/yjyy4wuZOd7s/Kg1IuYNKsFoQF6Xn2hDOzhZznGS8gksz8iKhJNLThmpE?=
- =?us-ascii?Q?tLpkXpQ7pqwKXP5bVzX3uNmiR+aU56VVZ/FyPeUja8bfvSHk/hcmIe097x2s?=
- =?us-ascii?Q?I6Jpf4JOKl0NuefjRadYpPdnksTf98YX4H75EZ9cRqgk98Hk/Ue99swTVa0H?=
- =?us-ascii?Q?Qa6IRfIAXljflPRsJRd2mp1QGdNjz1mmAssY/hrr+sB0d54x+v+Vnj5m9RWx?=
- =?us-ascii?Q?TwBYsgv1Dc3cnAAAej3RgIQRR72QOT92ZM7NWOnC+b2M94dL3NZBh+HKScLS?=
- =?us-ascii?Q?dPebs0yFdAdjoc0CFZRiUc0Km3zKWqLvMa42HBiT6a6G73N9vb8h4kWU5jvc?=
- =?us-ascii?Q?tOCTyILTji5g2Rtif518rfd0Z0j17R8WHB168XADzTs6Shzhp9TTsb/y5pmv?=
- =?us-ascii?Q?+xBIO5qeZDdAJxpqJPktykQWRzcdi287DlTG4CrqepAYHE0JoHKhzisNEGSW?=
- =?us-ascii?Q?P1AD1rr8kV3HrqL+VQ2GoWGAmv6us6NiIvqVJ0jz63oBUGk05QmZNPp8KLQA?=
- =?us-ascii?Q?vWN4KEXyxh4C+iRURc+eblHVBMP+9BZVJKypvYYFvWRcR69TjL6jA1gz0sWs?=
- =?us-ascii?Q?0lOlACFOLLGuQI58UdneHSIBFY9ulUDt27S5jlP9yPBJSRkDAIuV7rLEhvwy?=
- =?us-ascii?Q?vmNymXOMKp5u2aDDCqwSL+XjCG9iY0ipLAx5XaJKEXj0ua9jn3W35XzqqUDj?=
- =?us-ascii?Q?FaKYZge98PUp/Ts9NWJSezHVigSGvjgTiq46YpVj0g/EdvRHq5DZdI67y4Yh?=
- =?us-ascii?Q?2C29jx4d0QWzP80XCrFWq+6L74uBQhvujdXYdTTV3HMWccpQJ0XwsQBCy6OU?=
- =?us-ascii?Q?avLwbrmgKB8xPVoZBAwCpSBesi+xS0O3ClQFxB4MXRFErigBLQjjYh6pOx7P?=
- =?us-ascii?Q?l95vhn6xzbQm7jjvZDgVLi40?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?HLMUqhj6VsfXU1Wp31RonDRVKXjXkN7QPqibN8BdTxpiNBTDw+X+6MZCHu0p?=
- =?us-ascii?Q?826ZAxasNjT4TZFiw8nD7/ppwBmNE4koKvhyLYQkJitgw5Dc2WyZzfCY3Nrg?=
- =?us-ascii?Q?I45RwVZaF0473UkchO9PaDl8Sk+cKXF7JT4T1cAvYPILLxDZFJAOY+EuTfC/?=
- =?us-ascii?Q?STOS1wa6Gg/gdsS9Qa3++Ar/9ocsZPgALHWp7ltbG6+0gHxXvk74sbuMV3mC?=
- =?us-ascii?Q?YWgm8bQ4U0zml9JrrZzfwCUiw1r5Bn6pPVsMhTaTDW3D7rBTHSmVuwZY7MDi?=
- =?us-ascii?Q?Cp0VeCK2+n1BLVfX5AKPSNljOUqSBDijUU2wR0hf8DFuw4k2HTp/iUhoWZOj?=
- =?us-ascii?Q?T3ijaUQ+uAHdGv7NrTr9u6GLvjPYotK2kQfWwpgvF/jM+AFh3GtAC+YTWIOK?=
- =?us-ascii?Q?HEksIvxJhV1n0EkuztlPdiUDqE5MFmbQbah2XDLEfO9Zn+brY8n0JxcI/TV1?=
- =?us-ascii?Q?keTrOGQWS//QoGzqB5hg6hsDyTBx4wOqSn4V1yK5PalFcVZli0bSLL7xD70+?=
- =?us-ascii?Q?iqbhjPYZKSitIHd9qaGmtPBcIcehqheCTSa1q82MPNJwz4kGEyqbz0QbXXPJ?=
- =?us-ascii?Q?ujVzKqZT+ELovSPIR2jPoBjH9IfQbQ90215UJdi5mgXzs6WZA//NgRAMz4Oe?=
- =?us-ascii?Q?uYQq1bIyaoFLuin+EN3p2C74sw9DVgO2a1jbS+U85L0k/EfCbEWukYgY8Zdw?=
- =?us-ascii?Q?P1ObRnkNqfb2IZrYWhSrL0uJOLldC2T+YJg2y8GHVAQv8lkEFT/b6FlNRrwF?=
- =?us-ascii?Q?mJQNhxv5v0Jx63baO/7SY3ezgzdZoztU0p1BlDbi1pMAc+9Ztj/dw7t6YB+0?=
- =?us-ascii?Q?X/883nt8a4WGolvGEW62VQou1IELwBGoXPl1B7GmF+864VVdZ7IGooD98ZHB?=
- =?us-ascii?Q?9EzNdcdFsaj8xukOXzZTV4fMfIFdmAHi6oseqYZblS1jhXZAr0DREkuct01L?=
- =?us-ascii?Q?QcGT6g78/SRHXVTEuRZEiQr4YlCrzg1mK1HfjP5L9+7IrQmZGvIcGw/7ouOP?=
- =?us-ascii?Q?ehHDzgNtEvy7Iu8cP5Zf7bTEiHG2ABA/1Y8gkIoOvww88zp+2bXMKMDEmH7K?=
- =?us-ascii?Q?DgZhOS+Z2Ltd6ZHvu5deC0djdI85AMia1D83ZAs82bqxDQsPee89qgBAM5TL?=
- =?us-ascii?Q?vyn/7BvQyJH9nt+Mg1KlCuYWC0Q0k4GqWt10PAVzZhyGcflqRKBL1azsZ0yf?=
- =?us-ascii?Q?/ZzLk7argwl3T6LD+sEsGPfYtBfjhujR8vcL4JwmgwaN/uMZWfstODJkdOQG?=
- =?us-ascii?Q?HrqGq71aiW3Jb60ox1fEgv+I+pRdAaxc9DswffAmgGb2vzLw1jzB/iqTRm/5?=
- =?us-ascii?Q?FDi9JMqGupKQajJ58HsndjeQxogE72QhqMwWD5Wn+fIRYycOGSamXgMHOy+t?=
- =?us-ascii?Q?+4ob19i/CsuEyOY6MTMPQviNPmX0DU/aUCOvrR7HzkGItxL+rhA4mmVm1S/T?=
- =?us-ascii?Q?HgXvnkcGKzImWyTC6wOVf8fsIv8EktpOb6NXh0dzoU7lrbuzmWyx1O0I+nNM?=
- =?us-ascii?Q?Q2O1XePgmcJYYb7nma1DmBIlLaD4VZnX8NLFUAR5kYXjIgjfoPrAkO6rFYM0?=
- =?us-ascii?Q?4V4jyhjes6AguGmf49RnIAF56PDbUhsW7U3xEZI7SNmUbmJ6bv3aJb54coM0?=
- =?us-ascii?Q?jA=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 66542325-5e10-4d01-361d-08dcc4ea9c04
-X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2024 09:45:10.0099
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: oAxS6OZqmP8N+8QWVrWLoo2c7GaRQBAotGTqXqGIRXoXcIyc6ZpJr100oFsSQ0coP3hAypUVRA6Q4ykZVXBK8g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB4584
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] vma remove the unneeded avc bound with non-CoWed folio
+To: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
+ zhiguojiang <justinjiang@vivo.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+ linux-kernel@vger.kernel.org, oe-lkp@lists.linux.dev, lkp@intel.com,
+ opensource.kernel@vivo.com
+References: <20240823150206.565-1-justinjiang@vivo.com>
+ <73ad9540-3fb8-4154-9a4f-30a0a2b03d41@lucifer.local>
+ <4dd13a4c-e968-4a3a-98e5-97f28036deff@vivo.com>
+ <ccd9b00b-1f36-4f2c-bd48-47f7a7187772@lucifer.local>
+From: =?UTF-8?Q?Mika_Penttil=C3=A4?= <mpenttil@redhat.com>
+In-Reply-To: <ccd9b00b-1f36-4f2c-bd48-47f7a7187772@lucifer.local>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Hi,
+
+On 8/25/24 09:39, Lorenzo Stoakes wrote:
+
+> On Sun, Aug 25, 2024 at 01:06:40PM GMT, zhiguojiang wrote:
+>>
+>> 在 2024/8/25 0:26, Lorenzo Stoakes 写道:
+>>> [Some people who received this message don't often get email from lorenzo.stoakes@oracle.com. Learn why this is important at https://aka.ms/LearnAboutSenderIdentification ]
+>>>
+>>> On Fri, Aug 23, 2024 at 11:02:06PM GMT, Zhiguo Jiang wrote:
+>>>> After CoWed by do_wp_page, the vma established a new mapping relationship
+>>>> with the CoWed folio instead of the non-CoWed folio. However, regarding
+>>>> the situation where vma->anon_vma and the non-CoWed folio's anon_vma are
+>>>> not same, the avc binding relationship between them will no longer be
+>>>> needed, so it is issue for the avc binding relationship still existing
+>>>> between them.
+>>>>
+>>>> This patch will remove the avc binding relationship between vma and the
+>>>> non-CoWed folio's anon_vma, which each has their own independent
+>>>> anon_vma. It can also alleviates rmap overhead simultaneously.
+>>>>
+>>>> Signed-off-by: Zhiguo Jiang <justinjiang@vivo.com>
+>>> NACK (until fixed). This is broken (see below).
+>>>
+>> Hi Lorenzo Stoakes,
+>>
+>> Thank you for your comments.
+>>> I'm not seeing any numbers to back anything up here as to why we want to
+>>> make changes to this incredibly sensitive code?
+>> I added a debug trace log (as follows) in wp_page_copy() and observed
+>> that a large number of these orphan avc-objects still exist. I believe
+>> this will have a certain redundant overhead impact on anonymous folios'
+>> rmap avcs, so I want to remove it, which is also the most essential
+>> value of this patch.
+> Sorry nack to that idea unless you can provide actual _data_ to demonstrate
+> an overhead.
+>
+> And even if you did, given the original patch was so completely broken, and
+> in such a sensitive area, I'm going to need to be VERY confident you didn't
+> break anything, so we're going to need tests.
+>
+>> -- the vital part of debug trace patch:
+> Thanks for providing! Will snip for sake of making it easier to reply.
+>
+>>> Also anon_vma logic is very complicated and confusing, this commit message
+>>> feels about 3 paragraphs too light.
+>>>
+>>> Under what circumstances will vma->anon_vma be different from
+>>> folio_anon_vma(non_cowed_folio)? etc.
+>> In anon_vma_fork() --> anon_vma_clone(), child vma is bound with parent
+>> vma's anon_vma firstly.
+>>     /*
+>>      * First, attach the new VMA to the parent VMA's anon_vmas,
+>>      * so rmap can find non-COWed pages in child processes.
+>>      */
+>>     error = anon_vma_clone(vma, pvma);
+>>
+>> When child vma->anon_vma is NULL in anon_vma_fork(),
+>>     /* An existing anon_vma has been reused, all done then. */
+>>     if (vma->anon_vma)
+>>         return 0;
+>>
+>>     /* Then add our own anon_vma. */
+>>     anon_vma = anon_vma_alloc();
+>>
+>> new anon_vma will be alloced and filled in this child vma->anon_vma.
+>> Then during CoWed in do_wp_page() --> wp_page_copy(), this child vma's
+>> new anon_vma will be different from folio_anon_vma(non_cowed_folio).
+> Thanks for the explanation, but I was suggesting you have to put this in
+> the commit message rather than in repy to me :)
 
 
+You still have to locate the mappings of the other, non cow'ed folios in
+the child's vma *by* the parent's anon_vma,
+so don't think you can delete, on cow,  the avc, which presents the
+whole vma?
 
-Hello,
+But I could be missing something, it has been long since I went thru
+this code last time...
 
-kernel test robot noticed "BUG:KASAN:slab-use-after-free_in_kmem_cache_rcu_uaf" on:
+>>> Confusing topics strongly require explanations that help (somewhat)
+>>> compensate. This is one of them.
+>>>
+>>>> ---
+>>>>
+>>>> -v2:
+>>>>   * Solve the kernel test robot noticed "WARNING"
+>>>>     Reported-by: kernel test robot <oliver.sang@intel.com>
+>>>>     Closes: https://lore.kernel.org/oe-lkp/202408230938.43f55b4-lkp@intel.com
+>>> It doesn't.
+>>>
+>>> Saw a bunch of warning output in dmesg when running in qemu, bisected it to
+>>> this commit. The below assert is being fired (did you build this kernel
+>>> with CONFIG_DEBUG_VM?):
+>>>
+>>>          VM_WARN_ON(anon_vma->num_children);
+>>>
+>>>  From what I saw, these appear to all be cases where anon_vma->num_children == 0...
+>>>
+>>>
+>>> [    1.905603] ------------[ cut here ]------------
+>>> [    1.905604] WARNING: CPU: 2 PID: 231 at mm/rmap.c:443 unlink_anon_vmas+0x181/0x1c0
+>>> [    1.905605] Modules linked in:
+>>> [    1.905605] CPU: 2 UID: 1000 PID: 231 Comm: zsh Tainted: G        W          6.11.0-rc4+ #49
+>>> [    1.905606] Tainted: [W]=WARN
+>>> [    1.905606] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS Arch Linux 1.16.3-1-1 04/01/2014
+>>> [    1.905607] RIP: 0010:unlink_anon_vmas+0x181/0x1c0
+>>> [    1.905608] Code: 48 83 7f 40 00 75 1c f0 ff 4f 30 75 ab e8 d7 fd ff ff eb a4 5b 5d 41 5c 41 5d 41 5e 41 5f c3 cc cc cc cc 90 0f 0b 90 eb de 90 <0f> 0b 90 eb d1 90 0f 0b 90 48 83 c7 08 e8 4d 7c ea ff e9 fc fe ff
+>>> [    1.905608] RSP: 0018:ffffc90000547cb0 EFLAGS: 00010286
+>>> [    1.905609] RAX: ffff88817b265390 RBX: ffff88817b265380 RCX: ffff88817b2cb790
+>>> [    1.905609] RDX: ffff88817b265380 RSI: ffff88817b2cb790 RDI: ffff888179e08888
+>>> [    1.905610] RBP: dead000000000122 R08: 000000000000000c R09: 0000000000000010
+>>> [    1.905610] R10: 0000000000000001 R11: 0000000000000000 R12: ffff88817b2cb790
+>>> [    1.905611] R13: dead000000000100 R14: ffff88817b2cb780 R15: ffff888179e08888
+>>> 00000000000
+>>> [    1.905613] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>>> [    1.905613] CR2: 0000555bc5d97390 CR3: 000000017c12c000 CR4: 0000000000750ef0
+>>> [    1.905614] PKRU: 55555554
+>>> [    1.905614] Call Trace:
+>>> [    1.905614]  <TASK>
+>>> [    1.905615]  ? unlink_anon_vmas+0x181/0x1c0
+>>> [    1.905615]  ? __warn.cold+0x8e/0xe8
+>>> [    1.905616]  ? unlink_anon_vmas+0x181/0x1c0
+>>> [    1.905617]  ? report_bug+0xff/0x140
+>>> [    1.905618]  ? handle_bug+0x3b/0x70
+>>> [    1.905619]  ? exc_invalid_op+0x17/0x70
+>>> [    1.905620]  ? asm_exc_invalid_op+0x1a/0x20
+>>> [    1.905621]  ? unlink_anon_vmas+0x181/0x1c0
+>>> [    1.905622]  free_pgtables+0x11f/0x250
+>>> [    1.905622]  exit_mmap+0x15e/0x380
+>>> [    1.905624]  mmput+0x54/0x110
+>>> [    1.905625]  do_exit+0x27e/0xa10
+>>> [    1.905626]  ? __x64_sys_close+0x37/0x80
+>>> [    1.905626]  do_group_exit+0x2b/0x80
+>>> [    1.905628]  __x64_sys_exit_group+0x13/0x20
+>>> [    1.905629]  x64_sys_call+0x14af/0x14b0
+>>> [    1.905630]  do_syscall_64+0x9e/0x1a0
+>>> [    1.905630]  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+>>> [    1.905631] RIP: 0033:0x7f4416ae33ad
+>>> [    1.905632] Code: Unable to access opcode bytes at 0x7f4416ae3383.
+>>> 000e7
+>>> [    1.905633] RAX: ffffffffffffffda RBX: 00007f4416d5e3c0 RCX: 00007f4416ae33ad
+>>> [    1.905633] RDX: 00000000000000e7 RSI: ffffffffffffff88 RDI: 0000000000000000
+>>> [    1.905633] RBP: 0000555b8eed1378 R08: 0000000000000000 R09: 0000000000000007
+>>> [    1.905634] R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000001
+>>> [    1.905634] R13: 0000000000000000 R14: 00007ffe7dbe9190 R15: 00007ffe7dbe9110
+>>> [    1.905635]  </TASK>
+>>> [    1.905635] ---[ end trace 0000000000000000 ]---
+>>> [    1.905638] ------------[ cut here ]------------
+>>>
+>>>
+>>>>   * Update comments to more accurately describe this patch.
+>>>>
+>>>> -v1:
+>>>>   https://lore.kernel.org/linux-mm/20240820143359.199-1-justinjiang@vivo.com/
+>>>>
+>>>>   include/linux/rmap.h |  1 +
+>>>>   mm/memory.c          |  8 +++++++
+>>>>   mm/rmap.c            | 53 ++++++++++++++++++++++++++++++++++++++++++++
+>>>>   3 files changed, 62 insertions(+)
+>>>>
+>>>> diff --git a/include/linux/rmap.h b/include/linux/rmap.h
+>>>> index 91b5935e8485..8607d28a3146
+>>>> --- a/include/linux/rmap.h
+>>>> +++ b/include/linux/rmap.h
+>>>> @@ -257,6 +257,7 @@ void folio_remove_rmap_ptes(struct folio *, struct page *, int nr_pages,
+>>>>        folio_remove_rmap_ptes(folio, page, 1, vma)
+>>>>   void folio_remove_rmap_pmd(struct folio *, struct page *,
+>>>>                struct vm_area_struct *);
+>>>> +void folio_remove_anon_avc(struct folio *, struct vm_area_struct *);
+>>>>
+>>>>   void hugetlb_add_anon_rmap(struct folio *, struct vm_area_struct *,
+>>>>                unsigned long address, rmap_t flags);
+>>>> diff --git a/mm/memory.c b/mm/memory.c
+>>>> index 93c0c25433d0..4c89cb1cb73e
+>>>> --- a/mm/memory.c
+>>>> +++ b/mm/memory.c
+>>>> @@ -3428,6 +3428,14 @@ static vm_fault_t wp_page_copy(struct vm_fault *vmf)
+>>>>                         * old page will be flushed before it can be reused.
+>>>>                         */
+>>>>                        folio_remove_rmap_pte(old_folio, vmf->page, vma);
+>>>> +
+>>>> +                     /*
+>>>> +                      * If the new_folio's anon_vma is different from the
+>>>> +                      * old_folio's anon_vma, the avc binding relationship
+>>>> +                      * between vma and the old_folio's anon_vma is removed,
+>>>> +                      * avoiding rmap redundant overhead.
+>>> What overhead? Worth spelling out for instance if it's unnecessary to
+>>> traverse avc's.
+>> I think this will have a certain redundant overhead impact on anonymous
+>> folios rmap traverse avcs process.
+> This is again nowhere near detailed enough, and again I'm asking you to
+> write this _IN THE COMMENT_ not in review.
+>
+> I already understand what you're trying to do (I think the fact I provided
+> a _working_ version of your patch as an attachment in this thread should
+> give a clue ;), this is for the benefit of people coming to read this code.
+>
+>>>> +                      */
+>>>> +                     folio_remove_anon_avc(old_folio, vma);
+>>>>                }
+>>>>
+>>>>                /* Free the old page.. */
+>>>> diff --git a/mm/rmap.c b/mm/rmap.c
+>>>> index 1103a536e474..56fc16fcf2a9
+>>>> --- a/mm/rmap.c
+>>>> +++ b/mm/rmap.c
+>>>> @@ -1522,6 +1522,59 @@ void folio_add_file_rmap_pmd(struct folio *folio, struct page *page,
+>>>>   #endif
+>>>>   }
+>>>>
+>>>> +/**
+>>>> + * folio_remove_anon_avc - remove the avc binding relationship between
+>>>> + * folio and vma with different anon_vmas.
+>>>> + * @folio:   The folio with anon_vma to remove the binded avc from
+>>>> + * @vma:     The vm area to remove the binded avc with folio's anon_vma
+>>>> + *
+>>>> + * The caller is currently used for CoWed scene.
+>>> Strange turn of phrase,
+>>>
+>>>> + */
+>>>> +void folio_remove_anon_avc(struct folio *folio,
+>>> I think this should be 'oldfolio'. You're not looking at the copied folio,
+>>> but the unCoW'd original folio.
+>> Yes, thanks.
+>>>> +             struct vm_area_struct *vma)
+>>>> +{
+>>>> +     struct anon_vma *anon_vma = folio_anon_vma(folio);
+>>>> +     pgoff_t pgoff_start, pgoff_end;
+>>>> +     struct anon_vma_chain *avc;
+>>>> +
+>>>> +     /*
+>>>> +      * Ensure that the vma's anon_vma and the folio's
+>>>> +      * anon_vma exist and are not same.
+>>>> +      */
+>>>> +     if (!folio_test_anon(folio) || unlikely(!anon_vma) ||
+>>> The folio_test_anon() is already implied by folio_anon_vma() != NULL and
+>>> doesn't preclude KSM.
+>>>
+>>>> +         anon_vma == vma->anon_vma)
+>>>> +             return;
+>>> This is all super confusing, the 'parent' is actually anon_vma
+>>> (oldfolio). The newly created 'child' anon_vma is vma->anon_vma. Should
+>>> probably rename each accordingly.
+>> OK.
+>>>
+>>>> +
+>>>> +     pgoff_start = folio_pgoff(folio);
+>>>> +     pgoff_end = pgoff_start + folio_nr_pages(folio) - 1;
+>>>> +
+>>>> +     if (!anon_vma_trylock_write(anon_vma))
+>>>> +             return;
+>>>> +
+>>>> +     anon_vma_interval_tree_foreach(avc, &anon_vma->rb_root,
+>>>> +                     pgoff_start, pgoff_end) {
+>>>> +             /*
+>>>> +              * Find the avc associated with vma from the folio's
+>>>> +              * anon_vma and remove it.
+>>>> +              */
+>>> This is a meaningless comment.
+>>>
+>>> This should be something like 'anon_vma_chain objects bind VMAs and
+>>> anon_vma's. Find the avc binding the unCoW'd folio's anon_vma to the new
+>>> VMA, and remove it, as it is now redundant.'
+>>>
+>>>> +             if (avc->vma == vma) {
+>>> In testing I found that a lot of the time this isn't found at all... is
+>>> that expected?
+>>>
+>>>> +                     anon_vma_interval_tree_remove(avc, &anon_vma->rb_root);
+>>>> +                     /*
+>>>> +                      * When removing the avc with anon_vma that is
+>>>> +                      * different from the parent anon_vma from parent
+>>>> +                      * anon_vma->rb_root, the parent num_children
+>>>> +                      * count value is needed to reduce one.
+>>>> +                      */
+>>> This is a really confusing comment. You're not explaining the 'why' you're
+>>> just essentially asserting that you need to do this, and clearly this is
+>>> broken.
+>>>
+>>>> +                     anon_vma->num_children--;
+>>> So we know this is broken to start due to VM_WARN_ON() failures.
+>>>
+>>> As per above dmesg analysis, sometimes this is zero, so you're
+>>> underflowing. We definitely need a:
+>>>
+>>>          VM_WARN_ON(anon_vma->num_children == 0);
+>>>
+>>> At least.
+>>>
+>>> But also the naming is broken here too, anon_vma is actually the parent
+>>> (oldfolio's) anon_vma...
+>>>
+>>>
+>>> This is also just not correct on any level - the anon_vma->num_children
+>>> field indicates how many child anon_vma objects point at it via
+>>> anon_vma->parent, NOT avc.
+>>>
+>>> You're removing an avc, not disconnecting an anon_vma.
+>>>
+>>> So it seems to me you should have logic to remove the avc AND logic to
+>>> disconnect vma->anon_vma from (parent) anon_vma if it points to it.
+>>>
+>>> You'll need to be careful about locking when you do that too, as anon_vma's
+>>> lock on the root anon_vma, but in isolating the child anon_vma you'd lose
+>>> this lock.
+>>>
+>>> I've tried to write code to fix this but haven't been able to yet, this is
+>>> fiddly stuff.
+>>>
+>>> (I think this might have seemed to work at some point in testing because
+>>> unlink_anon_vmas() uses the avc list to determine what to unlink, rather
+>>> than looking at individual anon_vma's but still).
+>>>
+>>>> +
+>>>> +                     list_del(&avc->same_vma);
+>>>> +                     anon_vma_chain_free(avc);
+>>>> +                     break;
+>>>> +             }
+>>>> +     }
+>>>> +     anon_vma_unlock_write(anon_vma);
+>>>> +}
+>>>> +
+>>>>   static __always_inline void __folio_remove_rmap(struct folio *folio,
+>>>>                struct page *page, int nr_pages, struct vm_area_struct *vma,
+>>>>                enum rmap_level level)
+>>>> --
+>>>> 2.39.0
+>>>>
+>>> Again I question the value of this change. Are we REALLY seeing a big
+>>> problem due to unneeded avc's hanging around? This is very sensitive,
+>>> fiddly, confusing code, do we REALLY want to be playing with it?
+>> Thank you for helping to identify mang issues with this patch. However,
+>> I think this will have a certain benefits for anonymous folio rmap
+>> traverse avc overhead.
+>>> It'd be good to get some tests though unless you move this to vma.c with
+>>> its userland testing (probably a good idea actually as Andrew suggested)
+>>> this might be tricky.
+>> This patch belongs to anon_vma rmap's content, and it seems more
+>> appropriate in mm/rmap.c?
+>>> NACK until the issues are fixed and the approach at least seems more
+>>> correct.
+>> Thanks
+>> Zhiguo
+>>
+> Please see the attachment in thread for an example of a working version of
+> this, this is sadly fundamentally broken.
+>
+> But you're going to really need to sell this a lot better, provide some
+> numbers, and provide extensive testing and a much, much better test for
+> this to stand any chance.
+>
+> I appreciate what you're trying to do here, and it's not totally crazy, but
+> we have to be so, so careful around this code.
+>
+> anon_vma code is horrendously subtle and confusing (I actually had to
+> reference my unpublished book to remind myself how this stuff works :)), so
+> we have to tread very carefully.
+>
+> I definitely think we need ASCII diagrams if we were to go ahead with a new
+> version of this. But then again I'm a bit of a fan of ASCII diagrams...
+>
+> Please cc- me on future revisions of this series, thanks :)
+>
+Thanks,
 
-commit: 3a34e8ea62cdeba64a66fa4489059c59ba4ec285 ("slub: Introduce CONFIG_SLUB_RCU_DEBUG")
-https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+Mika
 
-[test failed on linux-next/master c79c85875f1af04040fe4492ed94ce37ad729c4d]
-
-in testcase: kunit
-version: 
-with following parameters:
-
-	group: group-00
-
-
-
-compiler: gcc-12
-test machine: 36 threads 1 sockets Intel(R) Core(TM) i9-10980XE CPU @ 3.00GHz (Cascade Lake) with 128G memory
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
-
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202408251741.4ce3b34e-oliver.sang@intel.com
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20240825/202408251741.4ce3b34e-oliver.sang@intel.com
-
-
-kern  :err   : [  359.476745] ==================================================================
-kern  :err   : [  359.479027] BUG: KASAN: slab-use-after-free in kmem_cache_rcu_uaf+0x377/0x490 [kasan_test]
-kern  :err   : [  359.480349] Read of size 1 at addr ffff888361948840 by task kunit_try_catch/4608
-
-kern  :err   : [  359.482361] CPU: 29 UID: 0 PID: 4608 Comm: kunit_try_catch Tainted: G    B            N 6.11.0-rc2-00010-g3a34e8ea62cd #1
-kern  :err   : [  359.484487] Tainted: [B]=BAD_PAGE, [N]=TEST
-kern  :err   : [  359.485478] Hardware name: Gigabyte Technology Co., Ltd. X299 UD4 Pro/X299 UD4 Pro-CF, BIOS F8a 04/27/2021
-kern  :err   : [  359.486969] Call Trace:
-kern  :err   : [  359.487837]  <TASK>
-kern  :err   : [  359.488673]  dump_stack_lvl+0x53/0x70
-kern  :err   : [  359.489634]  print_address_description+0x2c/0x3a0
-kern  :err   : [  359.490788]  ? kmem_cache_rcu_uaf+0x377/0x490 [kasan_test]
-kern  :err   : [  359.491900]  print_report+0xb9/0x2b0
-kern  :err   : [  359.492830]  ? kasan_addr_to_slab+0xd/0xb0
-kern  :err   : [  359.493806]  ? kmem_cache_rcu_uaf+0x377/0x490 [kasan_test]
-kern  :err   : [  359.494882]  kasan_report+0xe8/0x120
-kern  :err   : [  359.495797]  ? kmem_cache_rcu_uaf+0x377/0x490 [kasan_test]
-kern  :err   : [  359.496862]  kmem_cache_rcu_uaf+0x377/0x490 [kasan_test]
-kern  :err   : [  359.497927]  ? __pfx_kmem_cache_rcu_uaf+0x10/0x10 [kasan_test]
-kern  :err   : [  359.499020]  ? __schedule+0x7ec/0x1950
-kern  :err   : [  359.499929]  ? ktime_get_ts64+0x7f/0x230
-kern  :err   : [  359.500843]  kunit_try_run_case+0x1b0/0x490
-kern  :err   : [  359.501772]  ? __pfx_kunit_try_run_case+0x10/0x10
-kern  :err   : [  359.502735]  ? set_cpus_allowed_ptr+0x85/0xc0
-kern  :err   : [  359.503662]  ? __pfx_set_cpus_allowed_ptr+0x10/0x10
-kern  :err   : [  359.504629]  ? __pfx_kunit_try_run_case+0x10/0x10
-kern  :err   : [  359.505579]  ? __pfx_kunit_generic_run_threadfn_adapter+0x10/0x10
-kern  :err   : [  359.506640]  kunit_generic_run_threadfn_adapter+0x7d/0xe0
-kern  :err   : [  359.507642]  kthread+0x2d8/0x3c0
-kern  :err   : [  359.508468]  ? __pfx_kthread+0x10/0x10
-kern  :err   : [  359.509337]  ret_from_fork+0x31/0x70
-kern  :err   : [  359.510185]  ? __pfx_kthread+0x10/0x10
-kern  :err   : [  359.511042]  ret_from_fork_asm+0x1a/0x30
-kern  :err   : [  359.511912]  </TASK>
-
-kern  :err   : [  359.513276] Allocated by task 4608:
-kern  :warn  : [  359.514082]  kasan_save_stack+0x33/0x60
-kern  :warn  : [  359.514917]  kasan_save_track+0x14/0x30
-kern  :warn  : [  359.515748]  __kasan_slab_alloc+0x89/0x90
-kern  :warn  : [  359.516595]  kmem_cache_alloc_noprof+0x10e/0x380
-kern  :warn  : [  359.517499]  kmem_cache_rcu_uaf+0x10d/0x490 [kasan_test]
-kern  :warn  : [  359.518464]  kunit_try_run_case+0x1b0/0x490
-kern  :warn  : [  359.519323]  kunit_generic_run_threadfn_adapter+0x7d/0xe0
-kern  :warn  : [  359.520274]  kthread+0x2d8/0x3c0
-kern  :warn  : [  359.521040]  ret_from_fork+0x31/0x70
-kern  :warn  : [  359.521825]  ret_from_fork_asm+0x1a/0x30
-
-kern  :err   : [  359.523201] Freed by task 0:
-kern  :warn  : [  359.523891]  kasan_save_stack+0x33/0x60
-kern  :warn  : [  359.524646]  kasan_save_track+0x14/0x30
-kern  :warn  : [  359.525384]  kasan_save_free_info+0x3b/0x60
-kern  :warn  : [  359.526154]  __kasan_slab_free+0x51/0x70
-kern  :warn  : [  359.526901]  slab_free_after_rcu_debug+0xf8/0x2a0
-kern  :warn  : [  359.527711]  rcu_do_batch+0x388/0xde0
-kern  :warn  : [  359.528433]  rcu_core+0x419/0xea0
-kern  :warn  : [  359.529120]  handle_softirqs+0x1d3/0x630
-kern  :warn  : [  359.529858]  __irq_exit_rcu+0x125/0x170
-kern  :warn  : [  359.530584]  sysvec_apic_timer_interrupt+0x6f/0x90
-kern  :warn  : [  359.531389]  asm_sysvec_apic_timer_interrupt+0x1a/0x20
-
-kern  :err   : [  359.532754] Last potentially related work creation:
-kern  :warn  : [  359.533562]  kasan_save_stack+0x33/0x60
-kern  :warn  : [  359.534283]  __kasan_record_aux_stack+0xad/0xc0
-kern  :warn  : [  359.535063]  kmem_cache_free+0x337/0x4c0
-kern  :warn  : [  359.535794]  kmem_cache_rcu_uaf+0x14b/0x490 [kasan_test]
-kern  :warn  : [  359.536644]  kunit_try_run_case+0x1b0/0x490
-kern  :warn  : [  359.537394]  kunit_generic_run_threadfn_adapter+0x7d/0xe0
-kern  :warn  : [  359.538244]  kthread+0x2d8/0x3c0
-kern  :warn  : [  359.538917]  ret_from_fork+0x31/0x70
-kern  :warn  : [  359.539616]  ret_from_fork_asm+0x1a/0x30
-
-kern  :err   : [  359.540850] The buggy address belongs to the object at ffff888361948840
-                               which belongs to the cache test_cache of size 200
-kern  :err   : [  359.542668] The buggy address is located 0 bytes inside of
-                               freed 200-byte region [ffff888361948840, ffff888361948908)
-
-kern  :err   : [  359.545021] The buggy address belongs to the physical page:
-kern  :warn  : [  359.545911] page: refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x361948
-kern  :warn  : [  359.547012] head: order:1 mapcount:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
-kern  :warn  : [  359.548094] flags: 0x17ffffc0000040(head|node=0|zone=2|lastcpupid=0x1fffff)
-kern  :warn  : [  359.549131] page_type: 0xfdffffff(slab)
-kern  :warn  : [  359.549918] raw: 0017ffffc0000040 ffff88821419ca00 dead000000000122 0000000000000000
-kern  :warn  : [  359.551034] raw: 0000000000000000 00000000801f001f 00000001fdffffff 0000000000000000
-kern  :warn  : [  359.552151] head: 0017ffffc0000040 ffff88821419ca00 dead000000000122 0000000000000000
-kern  :warn  : [  359.553278] head: 0000000000000000 00000000801f001f 00000001fdffffff 0000000000000000
-kern  :warn  : [  359.554406] head: 0017ffffc0000001 ffffea000d865201 ffffffffffffffff 0000000000000000
-kern  :warn  : [  359.555532] head: 0000000000000002 0000000000000000 00000000ffffffff 0000000000000000
-kern  :warn  : [  359.556660] page dumped because: kasan: bad access detected
-
-kern  :err   : [  359.558233] Memory state around the buggy address:
-kern  :err   : [  359.559130]  ffff888361948700: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-kern  :err   : [  359.560238]  ffff888361948780: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-kern  :err   : [  359.561344] >ffff888361948800: fc fc fc fc fc fc fc fc fa fb fb fb fb fb fb fb
-kern  :err   : [  359.562451]                                            ^
-kern  :err   : [  359.563410]  ffff888361948880: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-kern  :err   : [  359.564535]  ffff888361948900: fb fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-kern  :err   : [  359.565661] ==================================================================
-kern  :info  : [  359.982162]     ok 38 kmem_cache_rcu_uaf
-
-
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
 
