@@ -1,88 +1,65 @@
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+Received: from APC01-TYZ-obe.outbound.protection.outlook.com (mail-tyzapc01on2042.outbound.protection.outlook.com [40.107.117.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF37428F1;
-	Sun, 25 Aug 2024 06:42:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.165.32
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 490473B78D
+	for <oe-lkp@lists.linux.dev>; Sun, 25 Aug 2024 07:09:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.117.42
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724568147; cv=fail; b=pjfG9LFwCiJvx7ypzMmLVeA9b500ufk3Jlvo2NxcHSsITDMvVPKrRO0iz5IKSaAzY32W1NGeJMywvaLRHvMGqrknwNEdh0AC8i8vZ5jc1+2+R6sVDQ6mdPwgP+GAvk0Z8nJrGCDxy9/gU7YDYfmKa1aMy2BOaH93cXACZUD7e84=
+	t=1724569747; cv=fail; b=XnOE3DZXEcRoGMDlDPOUywG8bnRuGA7NgNNF9az7UrCM5Dn7Nq1FqpNG6yWLDQoLd3xjMCw6571080gIg+AFPGG4LKbQtRR0WjMXVEWK3fFr5FPzmSHEDoqVTNe0EUqq1QpbjlhwJnllK3N2Hd8hV87cVz3VIHorTMbQnLxJ6vk=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724568147; c=relaxed/simple;
-	bh=hMMHXoVklacpMkSum0eagT5awNH4BsDyoyoE7o96IQg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=cVMAe25X6bT2oUt0zP84dMbRah9aJFCUv1ZuKWKiLNe5I2sZPprfVzavYxvcKS1CCHuqEJ0e7m6fx9ot+4Q5/dSe451DX/3XeryyDRrdEXG43oiTSo9MvOO1NTiwAlG4+2mtC5ITI+pxJyXB5CKcArfquvFVsSnm+NRdXoW95Bs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=k2qX4x0V; dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b=iJVba8rm; arc=fail smtp.client-ip=205.220.165.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
+	s=arc-20240116; t=1724569747; c=relaxed/simple;
+	bh=wB671p//g6mqH3XBC2mJlkG6pYpyC7ivaOl5Bm4iao4=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=OjtSuJwgwuSs8rIGOcHKmsVAyT5RGt3JXYSfQS5KHuwo6lmExKTgfUbo4qdQ10sebtfYHD4nuInThzfyQIK4S0/PaAdgtuZHaalqMq/VToZlT82TolM1echC/DrQez+luH788qfHBXkwNQgEC7FVmMLZOt69LDjL0FatRohSu1s=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vivo.com; spf=pass smtp.mailfrom=vivo.com; dkim=pass (2048-bit key) header.d=vivo.com header.i=@vivo.com header.b=TCh9UJG9; arc=fail smtp.client-ip=40.107.117.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vivo.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vivo.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="k2qX4x0V";
-	dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="iJVba8rm"
-Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47P4qx1d001586;
-	Sun, 25 Aug 2024 06:42:18 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=
-	date:from:to:cc:subject:message-id:references:content-type
-	:content-transfer-encoding:in-reply-to:mime-version; s=
-	corp-2023-11-20; bh=Pxn/PMLdU/i9VGCaIrzPUyPIFPlZccGcgjDX+R5mYfE=; b=
-	k2qX4x0VBzF2pX+u2uHDP7D/t0X56y/oDWFwe7O7OpTfcJjr52OvcmYlZ46iHIZV
-	F0K+3xqgZd9nEBQcaDeF5ajeJBUciv+Qv4hldt1jfI/i0MjVsOThY52Fi+85Ztcj
-	83I2GSmPCdIMKRl12KieMgWU3gn0bW2aem+q3riJT4xhRG/8v7cpD2H+CN0c126D
-	DklIjObcg3kSGuTVoOh3qKbz6MvuOhY4cAQGT0dt+Hfgs+BhUMOX3qvUc2lkNfEc
-	Gr/c9PJTVRKi2B86aXotT/AW9Tc3tArGVzvBypLc+Eqe1MdAicPQOZQXxk1Zp4VR
-	YkmtqhMP76Cp08J/QIXgTA==
-Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 4177hwh1s8-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Sun, 25 Aug 2024 06:42:17 +0000 (GMT)
-Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 47P5WIlw021512;
-	Sun, 25 Aug 2024 06:42:16 GMT
-Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2041.outbound.protection.outlook.com [104.47.66.41])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 417xj712pt-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Sun, 25 Aug 2024 06:42:16 +0000
+	dkim=pass (2048-bit key) header.d=vivo.com header.i=@vivo.com header.b="TCh9UJG9"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=S/ILtrnMlX/nCdQI/k2FLn2wxMWGHl+mEG43e3NbUcijRJe9kyx0RmXCDmezW4luTp7YVnU4VDB7pP8Wwe/nebABrBhOeP9vLMPmHRuwRiCeSHyzHiKXcPqhGeMTBsFXOdy+LHm8h9U/2Je8FyqMRsmg15/XXB4giWhj94Bjku56o40zT+UYAAiIkqi/4Aw1mOYzXpURVaHsg31wpxaaId46SxHNefrP9eWKiNiT9uggvm2UfHXiyJS1A7gYx14Eal+32C/xHcjBQPfTrBbLBydBCG9jfJxAgunwlPrlPYew9SNeN3zHr4FrC49WX/iDG+0WGQfg3beTHXlXx7njXA==
+ b=bRqU3nboiqDXPSLoD3vp2lWZnrxWji9H+yZvI+DmniAe1Wb+rGK8QoP1oyrvPpdvsu23615N+W1lO9i7lcHSuByHd+JMuVyl1XHTfMAE45D/q+GS/TEOS57C/96CQ3m6foGhSLu39amjksNoe+oFVH82trP0b2OF1fhkM5syHCnxjfYGxrmSzfZ5Dw0R23ZnB7M5mc8+nPfIYi1BiR7/WhJLkjS2YgWmk8ojPUo2IzYTc6qTPqH5NZKLqk435SjDqFvEYd52d1q2FKZ03hV5rfOyXf+2hh0cY+Q/Zkdo7t1r0D8CoMwcOyS/h57GNGI+2Eb+FYf4I6ESo50va4idtA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Pxn/PMLdU/i9VGCaIrzPUyPIFPlZccGcgjDX+R5mYfE=;
- b=x6neS5JlMvezgdkeaVasghF4B9GAVwbXMuiD4B3eqSdPZUNqhDSeDdgIH/qR2iU50UeKF95ImNeaDnEYkuQ3f97R9LRmJ7914n74JyJMmknAxrC6iMzXH+Y4xW1bzM6tbCqEiAxI++BwyWjkedxwMlPxQRLN2iRVEJcPqgR4jgwiUwX1vbRpGsb4HmO8BS55UJvfauTe6rTFJbp/s8YoM/kcQ8ho2lKP747EG8kmVPyqkpCaA6ytCOgPSXeQx3NeKz+GPV0GUqj7RH6AFmhQ0oDPhtXvuier/rIyPeg47TI2KR8KcbWDnm1+tkbktjWJr2/ou9K0Q9uxpWSUzweW+A==
+ bh=OLG13tXoPQe/6GKh2OqJj+PWRVwR0obyZAepoTqMmJU=;
+ b=IWyPL4ubPLRTBFvb2/st2KwAHNqODWzEvkkg4JCeCLpa6be+B+sI/4Gx4rF9zWH947Emb5n73PLLI+4ZD+KBq89p7OZwyBptUhl8Tb60HD00LtMvW4TXENLEH4w62Bb1UhK+2dLmx0xs7znqWCT9bBUbW0/4BPkD9BTS+baaxJcw5k743DqPx2Qo2toZUYjrmwvlZsuRHZeBGsaUhT5CAIUnGBKFYWUOVZ6mOhnc8MgUrns/eoLiHq7YftY9vcHe8A2tJXkwdSD/r93GnomyAD6JS0KrQ8ktsR9+BZkmsMq3ZwrcnfoGu+VWqLLf9JK26hC5hb1Q3wFOGYTTJP7Pdg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Pxn/PMLdU/i9VGCaIrzPUyPIFPlZccGcgjDX+R5mYfE=;
- b=iJVba8rmaQd3Cv2Jg2/B8VXNWCDCOshJyVFONaB3gU03g0pr/dhjrSRDf2gawCKXlTxvnoOCrkFHsPYUYPwG8/IfzoV77g3VI1t4z6sXGc0lD/56s2akreKHj6p73Qe47XgkUx0mmO86SUiUAYThyizgKH9GbACxpkQ8IqJVPAI=
-Received: from PH0PR10MB5611.namprd10.prod.outlook.com (2603:10b6:510:f9::16)
- by MN0PR10MB5957.namprd10.prod.outlook.com (2603:10b6:208:3cf::19) with
+ bh=OLG13tXoPQe/6GKh2OqJj+PWRVwR0obyZAepoTqMmJU=;
+ b=TCh9UJG9dEx9X6PatymZpkHot23AHQmx97o1d+l8rGeqHYnlAAfp3u+EBxWcFjyggtE878GGOK5Vzql6EJN7J1q6fuWZbR5VKS/DX+O/qWtliDUh8LSTuhmzzGRfJCGjtmiUTxgL8/0h5Yq/fybeCsLTrBlu/QMzUPPZrP47jM5quoKCsUADy7YYH1ZfjUhdQlkowzsiZaiPjj9Ro0XwMry+CnCNojrXD36bSuYxBFcXx01dVRIMxVKHWg2CLj+H3edz/LZHwjgMRKe3q/Zs71CHImaD007Hpkd0ac6XTH5q8+dXT0R+7awhrgJI/lkIPSjn2UHC4IO5R7hfHXdp5A==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vivo.com;
+Received: from JH0PR06MB6849.apcprd06.prod.outlook.com (2603:1096:990:47::12)
+ by SI2PR06MB5114.apcprd06.prod.outlook.com (2603:1096:4:1a9::8) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7918.9; Sun, 25 Aug
- 2024 06:42:13 +0000
-Received: from PH0PR10MB5611.namprd10.prod.outlook.com
- ([fe80::d513:a871:bbf9:fce2]) by PH0PR10MB5611.namprd10.prod.outlook.com
- ([fe80::d513:a871:bbf9:fce2%6]) with mapi id 15.20.7918.006; Sun, 25 Aug 2024
- 06:42:13 +0000
-Date: Sun, 25 Aug 2024 07:42:11 +0100
-From: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
-To: zhiguojiang <justinjiang@vivo.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, oe-lkp@lists.linux.dev, lkp@intel.com,
-        opensource.kernel@vivo.com
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7897.23; Sun, 25 Aug
+ 2024 07:08:57 +0000
+Received: from JH0PR06MB6849.apcprd06.prod.outlook.com
+ ([fe80::ed24:a6cd:d489:c5ed]) by JH0PR06MB6849.apcprd06.prod.outlook.com
+ ([fe80::ed24:a6cd:d489:c5ed%3]) with mapi id 15.20.7875.019; Sun, 25 Aug 2024
+ 07:08:57 +0000
+Message-ID: <5a17754a-162f-48e0-93a5-19b043d29c37@vivo.com>
+Date: Sun, 25 Aug 2024 15:08:54 +0800
+User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v2] vma remove the unneeded avc bound with non-CoWed folio
-Message-ID: <1109aeab-fd4a-4c83-a110-04d01177d72d@lucifer.local>
+To: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+ linux-kernel@vger.kernel.org, oe-lkp@lists.linux.dev, lkp@intel.com,
+ opensource.kernel@vivo.com
 References: <20240823150206.565-1-justinjiang@vivo.com>
  <73ad9540-3fb8-4154-9a4f-30a0a2b03d41@lucifer.local>
  <4dd13a4c-e968-4a3a-98e5-97f28036deff@vivo.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+ <1109aeab-fd4a-4c83-a110-04d01177d72d@lucifer.local>
+From: zhiguojiang <justinjiang@vivo.com>
+In-Reply-To: <1109aeab-fd4a-4c83-a110-04d01177d72d@lucifer.local>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <4dd13a4c-e968-4a3a-98e5-97f28036deff@vivo.com>
-X-ClientProxiedBy: LO4P123CA0653.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:296::23) To PH0PR10MB5611.namprd10.prod.outlook.com
- (2603:10b6:510:f9::16)
+X-ClientProxiedBy: SI2PR02CA0033.apcprd02.prod.outlook.com
+ (2603:1096:4:195::20) To JH0PR06MB6849.apcprd06.prod.outlook.com
+ (2603:1096:990:47::12)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -90,250 +67,241 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR10MB5611:EE_|MN0PR10MB5957:EE_
-X-MS-Office365-Filtering-Correlation-Id: eac8ad0c-5467-4f88-8552-08dcc4d10da5
+X-MS-TrafficTypeDiagnostic: JH0PR06MB6849:EE_|SI2PR06MB5114:EE_
+X-MS-Office365-Filtering-Correlation-Id: 772b23ef-e2ed-456b-6b06-08dcc4d4c938
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024|43062017;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?b3g3aTJ4ays4NXN1Z1Y0cjFBWENPcnJPOEJBaFFtZ1lhQUNOQm1OZlFFZVI1?=
- =?utf-8?B?TmdPay9JSFdVMUxLQU9BekJwZVRUNmZ6Mk52Uk93T0xjelJPdFlBNlVtaDVF?=
- =?utf-8?B?am92TWszeFQxc1I4U1F1aXdsdGY4R3BiWWlpanorbFZwRzBhYVdXQjBRdktm?=
- =?utf-8?B?M25pdzZIUmFxbThVV1BSZFI4Z0crcFM4MDc0b2d1YnFKTUU2cGpqMkpNUEhX?=
- =?utf-8?B?VkdCUDh1WEtBSzE1eHZJMEZ6ak0ycjJpZU1Tb2xkb2VocDhOb0I5bSs3aGdC?=
- =?utf-8?B?WXRPa1lLRzVTaGg1UmZVTXVoSzhyUFYzbWM1Slg5UHlVM0ljRm5DL0VaYWtH?=
- =?utf-8?B?NFlPQUlWcDYxaHZPZXY4Q2FUZlFLSjFBTzRSVzZRSmhJS3RkVzZWSEFIRG01?=
- =?utf-8?B?bzRFV3p4dHlRQlp4MXQ1VzN5VFcwWkVTaWpzem1uUnhUVVhPbHI3R09rdmQ0?=
- =?utf-8?B?OEZ2VDUzcUUveXVaZXJlSzhYMzVhcWJ0ckFBQTRuRW1jTDBaVWwvNFZMT2tp?=
- =?utf-8?B?dTVwaFJycGs0R3F0UlNKZzgwM3MrQjB5dFJNQTVkRVcvUjR4L1BLYlNrRzFp?=
- =?utf-8?B?SjQvZUhacHFFaXVEdThCTlhzd0NsM245amhPRjEweDZTWUZDd2h1QXhPQWsz?=
- =?utf-8?B?R0JiaVZOQm5qVXl3aXYraFpMelJTMVJTQzlONVorVktaeWYzb0Y2WDkybERz?=
- =?utf-8?B?WTB3RW5NWUdhRTF5WWt0Z0VnRHR6ZVlqajZwaWR5NE5wWGZXWE9jQmVZbk1r?=
- =?utf-8?B?K001K2x3MHZkc3VKamk0dDJZUVpRSXVQcmZnZE9yVXBWMU0rSGNWczVVRFlX?=
- =?utf-8?B?RTV6UTU4bnBqZ0Z0dHZ5OFprSU5CQ3kvbnJlTDQyZ2tGcUticXIxb0hNR3d6?=
- =?utf-8?B?TGEvekIyRkxXdnl4Z3R1YXZBdHdFaElvbjRsOGZrMmFPd295djBCNklUbFUy?=
- =?utf-8?B?Yy9wZS93YVpZM2RPM1k2ZmZUUGt1c0ZpM1ZjTmtudHJLTnJwSEtNOVNoNDIy?=
- =?utf-8?B?dG1vdGo2RnlSU04rTm4xdXdxSmFzWE5FNjhwOFRxTjMwaENJNkpUdEkyV0dE?=
- =?utf-8?B?UFlwYlZVSXhnMWJuSmpNRU8veW4yZXRNMFhyMm5ubjZoTStwY094QnVkSlBl?=
- =?utf-8?B?QzNsYzlQdll2SzJmSEhhVjdLY2lVYTZZYy9sVnpMOHVEcTdCK2xUQWwwZFJG?=
- =?utf-8?B?L3pwNXVqNVRYZXBXYzV3Zkk2VTA0YitGclRDbFRzUUFIV25OTlJyc0N4SHEv?=
- =?utf-8?B?dTltRGoybTZXQTRNbjhTNUxkVjZQS1hRZlNJWVdtWk5TZjdQNytxSnlpWmJ5?=
- =?utf-8?B?OW5LblhiM3BKZVVRQXZwNkZCZWpuaDkvVUt1cEFudUFINlNnN2RVWjVibEVx?=
- =?utf-8?B?TG5GTUpSVmVPMUhkbWtFNTNQYVc0eEhvd040d3VhNkVJOS9RMGN2TW9ZTjM4?=
- =?utf-8?B?VC9qOFVXY0dRR1FocXhOR2ZQVlB5RGF2S0todVVLMmFUYjVCUThHZWwyM2Fr?=
- =?utf-8?B?ald3d25qQS8xenpsK3FHVjdEajU0S1o3czNUVFFjY0VtU3d5MytpWC9wLzF3?=
- =?utf-8?B?WW0xVFFIN2VhSjBLTUw4eXdGRkhReHg4OElJVEVvSkNlMDFRK0h6V0Rtd1Ro?=
- =?utf-8?B?UW83S09kaFd3UGZPeXluWXBVL01vSVJrMlo2d1JIMVdXQVhkQjQrQktCN0pP?=
- =?utf-8?B?VVVwcHF3WllyMENJdFpDL2JwMVhUN29ZeFlONG8rNlpBMTlhbHptckpCLy8x?=
- =?utf-8?B?aG1nZDVZZk1UN2Z6MkJISHoxTWxqcmQxUmFORnJ4ZDAvYVVyZXdwRVY2TjA3?=
- =?utf-8?B?dnVDU1JTMFMrSWJDMXRxZz09?=
+	=?utf-8?B?Ujc5MFdBTmVCclVHdjBiVXVSU2dib1lVd1NSWEoyOTNxaXo4ZkRlVk9RQm03?=
+ =?utf-8?B?VXJnbFBMcjBCNTkyQlFPRS9sMW5hcG05WUxxZjlsckZxemp1U2xPMysrNFRH?=
+ =?utf-8?B?QUE0UVNodUd3SzFVd251QWJ3RFdaWW5JaG41TW1vOTFoVHdpTk9MZy9IUDlU?=
+ =?utf-8?B?YzR0a1JoWXJ2OGNaVHhOcy93eDlMQ0RtK3luV29JakZuYkd3ZmNwNjJ2bjNl?=
+ =?utf-8?B?VkVvT1lFYnRCcTlobDA4NVA1Rm5sOEI4MFI1Y1FWLytkc1Q5eEphVmgxZUdG?=
+ =?utf-8?B?QWdMUDl6aGIzdmpieEVCQkVvK0Vyb2VrRjd6bVlKUUhoUW9ERE4ybktEdnZI?=
+ =?utf-8?B?UENXRXY4dHE3OTdsN1BvRlNaLzBwNEZya3NPbkI4MWtWQVNubzI3ak5ZM3Jy?=
+ =?utf-8?B?M0dMSGp2cmUxNDVZUzNBeWtXTjVzeW9JaHkwSXZUTlNCMmtXVXB2cWRXZlEz?=
+ =?utf-8?B?ZFVOQzVncnNhM01lanlTSUdxL21VNDFLVEJZWmVPWUUrTVlHSzRyZW1TajhR?=
+ =?utf-8?B?TmtSTnlQM0VIT1l3cUg3NW80RXdnMjIraUFldFA4b2hNbmRBbVpqcUpPTmda?=
+ =?utf-8?B?cXlYbWdVSitMV3RZeC9jaWNzTG5Ddm9Zd25VUjdEcFFkUTFGUGRkd0lkVEYz?=
+ =?utf-8?B?bURMMFpFREQ1b3pUTGhrcmtGa2tYVFNodVdFYXRJUXl6L0IrQ2ZXbGZBQ1Ju?=
+ =?utf-8?B?cG1WR3hYaWxSWXo4N0d4SG9hQTRGSlEyMlZuNzhiaXd2OFhFcEx6VExUUWkv?=
+ =?utf-8?B?NkVlWUNkSWIxcElHWHVHUTdoTWcxSlcwNjlhS2NSeXBwVzNFeCsvYmphd3U1?=
+ =?utf-8?B?V3pWYnlLc0VlTmUycUliQW1YVy96Qi9vVTBkSytEdTV6d082UGZZOTgvNTF0?=
+ =?utf-8?B?Z3FaUk1kd0VONGp2dkZDVStXcWNjMXdpYzgrL2dFQmZJRnY4M25ib1lmcnd4?=
+ =?utf-8?B?VWd1Um9JM0ZNbG0yRUVIRzZUR0FHbGV6UVViOUZmeFpVenRRUitob0lZaUVk?=
+ =?utf-8?B?eWVQbUJYS3FJZTUraUxJNitJckpJUVNnNDJkendhWEYyVE1iZGlQNHRJajRo?=
+ =?utf-8?B?UkhZVWF4VDAzR2VDZmNCRitGbzlWVVkrZWNESDJ3T1BKdzZlV0l1QkU0OERF?=
+ =?utf-8?B?U2tWNEI0VzcvOEozQ1Z1bTFsQ1BzWXVGbXcyZzJ0S3VsR2RrOXMrbHF4NXFX?=
+ =?utf-8?B?a3cwd0dBY3J1K09VUEZzdXlETU54Z2lOa00rMDdMQmJpcEJ4N1Z2QTVkWHNy?=
+ =?utf-8?B?UWdNbWU4NjFHd1pXbnUvOStyRzJxd1dKeldCMjJjeXpsZTlwVUNHaTlVQStF?=
+ =?utf-8?B?R0Q0ZG5GK2s2cWlvTWpJbDNUSnBObkhuM3F4eHhmWUs2TldXdEM0RHVpOHNF?=
+ =?utf-8?B?YTI4UE5Nbm8vT3NvbEgwSFNQU2tNVHVvSVhzdkc5S0I2aFBjQjhDTmRVNEdF?=
+ =?utf-8?B?dzNmTGNkcXd0S3AzTTM1WTJXMW1od0dVcmZYSTUyUlc1a2pOa0pQWTVyYlEy?=
+ =?utf-8?B?UWhTUDVJUTJONUpIejZQZHBNcTNGYzRLUUp6M1docmwyVTFZRS94bXBMMzFs?=
+ =?utf-8?B?aGpIcWJKdnZCM2xkcy9xMVNxR2QzeFBCK0xGd1hBcThFNGVDKzhpdzZoSEZi?=
+ =?utf-8?B?KzYwem10dmtRY3VaWVFHOUhxM0tRU1I5bHQxMHE0RTNiTDlrTDc3cXlBcU5X?=
+ =?utf-8?B?b1R1RGtFanVzSXk3Z0NhTjZ6anlieWhmS0g3N3NmNkl1SC9TMjZncUNTRDFW?=
+ =?utf-8?B?b2dHQ2lqZnBUNWJKT2w1VHdBMzdreDNrUXEveGtSaXo0YXBwUVJBK21pd243?=
+ =?utf-8?B?dG1RK01nUWo0ZmFja3lJZHUrTGw5eFZwTDcrbXdQNXhHR3dxejUrK21lNENt?=
+ =?utf-8?B?b1BsYXpwU05IRDBoTmVNNFNhYVRuR09mYXAvWG9hREZsOVE9PQ==?=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR10MB5611.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:JH0PR06MB6849.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(43062017);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?cFJNRUlZemlhMDBQRGR1R2lqNHJPazBSWWpaK0V1Y3dlV1B6Rmg2MWpJcXN2?=
- =?utf-8?B?T24yaHlNYnJCdzg1VVNtUnBIVmIzYURvRWduMVowM21jMTltakE4a1NmOEJi?=
- =?utf-8?B?OFVWdUh6M1JROXFlZmV6ODN4TEg1bG9lS3h2eWtuaXh6S2tmUTFjSWpNcUhq?=
- =?utf-8?B?cG94Z0pwdWZ5d2hoMVFjM0JxRnR1a1dNZjJwcVR4ZTNXc2kxeGRYNFQrQWVJ?=
- =?utf-8?B?d0s2cFY5VDVmamRPUkFmVHY3S1d0MUdqcUVSRW1xazJZdTBYZ25WeUErWmNj?=
- =?utf-8?B?RkQvVkx3MkVMZmlpR3hsMHJWYlBFTjBGdXZ0K0pZclVhL0RsS3U4VXUybk5H?=
- =?utf-8?B?R3ZuV2dwTjZJYTFQVUg2ZWFZcE4vN3lxWFZJVVYzWVdUaXZxQUw5VFpXQjhi?=
- =?utf-8?B?MFVMYzc1b01oVkJ5REl4V2c3a2FsYWthRFp0eTJSUGlWZllsZ3l4OElRMFBO?=
- =?utf-8?B?Q1dCM1BJaE5TSEZmalY3V0dhc1M3alRrSEZrVG4xMTJQdW41QkFTa25JU2I1?=
- =?utf-8?B?VHhiQnIrTnJibDMwSm1VVWhsQzZzUGJBVGtGMk8zSm1HdUFqeVdkVVp1Tnc0?=
- =?utf-8?B?NkxXby9XM1JkSU1adWxJanZDMjJ0OFFkbGNCeGxMWGF4WFcxS1FGWWpPWkJo?=
- =?utf-8?B?d3J3QnpLYTFYRVJYRXkzSkNLRnkybHFYQ09pSFo2cXZHU0t3V1FqR0U5Q1I1?=
- =?utf-8?B?Qzh6dmo1NHk1S0hNVzJJdGIwbnZMM2I0OVdwazBKQmRnSnlJUzRFQzVwcUx2?=
- =?utf-8?B?cUlvWElmRmR5WG5WeXZLYU0zQzIxem1tcWtpa1lKMWFHcnA2ajJiS3NhSHhy?=
- =?utf-8?B?MUtlZ2hUL3pVTEpTbHc2V3JBLzB1bmdLdURVRUN2ejBCYnNIV3h3ekZWOXc4?=
- =?utf-8?B?V1BhMUNIaFI2MXI4T3BjUkNrd3ptOU5CLzBQMmdNNDdHY2VvTFV6QW05ekRX?=
- =?utf-8?B?M0Z1MWlXQ2lpWTRCeWpIT0pPWWhQTGFHN01PWmgvVzJIOHk3ZElMTFVFZ3hj?=
- =?utf-8?B?U0JQSWV2azNTTzdZS2UxWWFmSDduUXFCNThidTBmSTI2S05jSjhOT05kMStN?=
- =?utf-8?B?QUdwR2NZT2ZDRWtVWGdNVXFLYTc1VWpOcjlBdE5KOVBtRWhGNnJjdTMvQ1VK?=
- =?utf-8?B?d1l2V2c4clNtL1ZUL3JCUXNwZEVXNGU1ZDAvTkJESC8vcEJSTGRFcW5sSnNV?=
- =?utf-8?B?ZVY5d1V6dG5PZXJHSjRXKy94TFZrYnBHQThYa3JIZ1p0blBaQVMybUo5dGFT?=
- =?utf-8?B?S2dScjJIYUdhZVJDTS9XVHAvYmdBb1FiaHloSkNFaWJVdDRKM1RENk9BbTVQ?=
- =?utf-8?B?dm5sdUNrZkVVS01zMzFZTE1Db1AvT3NGcVYrUTZEbnd0UTNxNVF3WEJxNG9K?=
- =?utf-8?B?MVY1OFRISUVXbnphWkhxaGRMS1RKSlZkZ3JCWFRsQlRnc0ZyaXFHU0hZbUNj?=
- =?utf-8?B?MGVwNCtUVFVUMHFtQ3J4aWZ1UUgrbGhNVUpEek5saHFqc1B1Y2VHODdvTmZW?=
- =?utf-8?B?N1A0cGQ2Nlk5aHQrdUQ4U1RaQXE3ZU45dDRSN0RNWXA3Vk4zMDNkY2VLcDA4?=
- =?utf-8?B?M3BJS3NSbXM4WGxjdGU5cHdJOEJaL2dVMU5PdElLSXlIcGsxT1BGbzdYTE1T?=
- =?utf-8?B?ZWdPQjdkV0lPcm54L3ZoTWsxS0FWSGFsUXU5V091bTRZQmdrYjNwQXdXM0pB?=
- =?utf-8?B?RXZEUW81ZlFaSXFNQ09HTklQcmJiY3NHNXgydy9hb1pkY1ZtNkRtV3R1bDAx?=
- =?utf-8?B?L3VWUW5uekN3UjZVcmFVamxLZTRTOS90TWdhZStPK3NOQ2JDa2JJeUpxYVE4?=
- =?utf-8?B?Q2szN1QvUG9KVDFnc3lzdEVJMkpyQVdzRjJ1bkUvWnBWdUV5N3YyZHcxSVdo?=
- =?utf-8?B?U000TDM4eEI4RUkyQlJ1V2ZLdHA4dWNiVmZNNi9XZXlIakJpSnF4S3VQM3Az?=
- =?utf-8?B?cUk3V0FoMXpqYmM0dHJkOS9KRWU3ZnVzN0d6UFhWaE9neEdPSytBM1FDcnVE?=
- =?utf-8?B?d0ZGUmFqZlBlUWtsczR1WEdEVWtyd3pPbitvWkNQTmJxRENhSlUwZXRrVDhz?=
- =?utf-8?B?ZVArTFRadnZmcFVjVUdWOTZoR0xWczd1ZkMwMXZvOXpGQ2ZXQzZtTWZqcSsx?=
- =?utf-8?B?SUlrUGUzTkVoZ2M3b2FhMzF3Mi9ucjZyaU1EVkUwc2FzUld3aHAyVmc3eU8w?=
- =?utf-8?B?M2c9PQ==?=
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
-	S416get0kH6bxTCg7PaDCs4UOjQouY6TDhJHVym5MmomRQYLwLuTEis3JkpUqI9vVcE0M6HHoXd0ooTDkQG/O5TOThhfzBi8q8CvLkJXgJbhQNnekas5j11jbRccNpBA910aV3/Xw5dKtVHOtWAe+UEgZxVDbKCDjTmHJ5O0myXleI0YIgY9xuYGtftmVssDhQFdH6zxYvR1xyptCA0PGhVm8Dw8st8GWLcswXz/XBXCs1+xJk22A3XGlnwJRT5N9v/F77UWLdlkIZKtPJM4KcZ+MIL+mPn6SYXk7khH0hd29EUYPPSJkHPkEHy0ySp4Xo3YVxao1qXvGDug32uA8Tmc6tKE5qCVgV1xSpmeLHUWdl/cmIHamyMDBwbq3XaYUWi8PiC3jscVlMHl5bZopIKom0Eot5aFEo75gj4BKQwNgnqytHT4BAweRMjKrpbZYJTNiSSlSO4xoG2p+5JFXuBxhI8LVafCY52e7FlMFvNCs9zFk5zC7zZPHwPI4T3qoFo/VWmvIq2p4m+Z30E9DWrGEK09mUrb+Z55ccuKfsKSb8wo5WdC+06VgNHvlU3JiKSBZK/rjAUz2+OK9ZLfD6Hbrlbj6Z8NRfsJK3KK3Wo=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: eac8ad0c-5467-4f88-8552-08dcc4d10da5
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR10MB5611.namprd10.prod.outlook.com
+	=?utf-8?B?SGZ5WTM5UEZWbDlkYTFlelM5ZUJiK3hPSS96cDRGck9wRHBUc2hMdm9tUnZr?=
+ =?utf-8?B?dkZRdDQyb1F2cWxwV2c1dzVxZ3FjMXlZckMvVjdncjNDUURZODFxaE5oUGRO?=
+ =?utf-8?B?MVBJUmRVZ2VFRVh1VnU3cUxrL2FwSEtzeCtHKzVtdjBXTENDc05xc01GNUFG?=
+ =?utf-8?B?TWJxdDBMZkRUUHoxYUl4VkJWT09ScElnSXU0R01Rem03Wng0OWE0c2o3SGE0?=
+ =?utf-8?B?RnViZlk3cXp3N3R4bEFqcVEyTEZPWERpZVRMR3BHTE03TlpDMnVUWk40dHBG?=
+ =?utf-8?B?N2I1RUZaMFhUS0tMQ3RqNWoxOWNXNHl6ZitiVEsxc0RHOTkwTWUzbC9QTzhY?=
+ =?utf-8?B?NHE4NlF4UTZTVU5TRExFR1lyU2ZOUjhUUWJzVEJITnpEUGlLVEhOdHlCWjhj?=
+ =?utf-8?B?Yi9SL0xCYlRkM2tSV0tnR092MHY1Y29XL201NGNCb3pFdThlOFRhdU9DT25N?=
+ =?utf-8?B?VGQwYys3RitYSEkvcUFsYkd5R2lXYjl2cHprdkdidjJtMWFwK1hPYmZ1UWFj?=
+ =?utf-8?B?Si9PYVVwazVPQVdUL0FldjBmSU1yQmFQTWh6bGh6Vmc1SU5SWUxPbmV2c2Qy?=
+ =?utf-8?B?MjBsSHVyM2lWOHVDZXJiOWpoTEIrNjBUVUswQ0Z3Y3hPbGZrQ2N3NVRwSTZ2?=
+ =?utf-8?B?ejFMV0h1M0F2WUZmVGJmTWZJdWFtcWUvRmhvTDRLSGhFdjgxT0ZKMlRHTWM4?=
+ =?utf-8?B?NkJpS25oMTNKWGVQaUtCM0MrNStPa1FJUkJGeVY5S2orc0l2VDduZi93SWlk?=
+ =?utf-8?B?NFZUUHRlaW5UQ3hlU05ORGJ6QUZwR2wyc1poR0tsWEFvUWpKcnBtOWExRDVP?=
+ =?utf-8?B?SUpNZlpFZ095NU9HaHFldkRtd1ZqZlZyK0FJY2VXTUpINzYwMGtBSzQvRlJQ?=
+ =?utf-8?B?VERoSVFVaXJRYUtsM3pFeWxqV05aamQrMFNlNHduSG5HbDFMWis0V0kxM21K?=
+ =?utf-8?B?eldPMnNCYkZ2dFIvbmNHQXBTbWxDZ0hVdzc2clBDVHFLbzFPbWFQU2xhMGp0?=
+ =?utf-8?B?alMzbVhRMXl6elVndHcyMWQ3c1lXZzVtbGpiWldjVlZxNG4wRDJlbmovZ3Br?=
+ =?utf-8?B?ZTE5WmZ2cUhPWkJMRXBhQUNIVU9VVzczQWhaQVF5SVpKYlp1eVZTeGswMVZx?=
+ =?utf-8?B?bloxM0ZUYVd6eW83UDNUNnoxZnZsTHZOMWNWWGdoVkNtQ3JWOU5YbmxaZThC?=
+ =?utf-8?B?UlRHLytIdTg2S01OQU1yaHVwRHZzZXdpYVBZTmk4c2JiVjhlMGlreXNmaFU3?=
+ =?utf-8?B?Q0RaRVBqUTFsMXdtOGhmcTlKMFdmQnJMMDJTdW1SL2laMFVKa0I1ZjhaWDJk?=
+ =?utf-8?B?OVZhWE1NbXNFUmNKT29Ec2hPNEZ5cUdwMVcvdUhHQzdpcnkweWNjanZnMDJh?=
+ =?utf-8?B?Nm5YSWFXWHdFTGVodE9OQ08xRnphWHJHaEgxZTh2NnBTYVFoL2ZCS3VlR2t4?=
+ =?utf-8?B?WVlSR0NEcXhNTU0vYmh0U0d1ZmhUSDhCSmd5SFJEbGFkc2FaYlQzTU5waGNT?=
+ =?utf-8?B?UFRSVlY2bGU2U29RRStVWkRydWtzYVBOaFVxRHRKcS9IaFFOeUNMUWRVdFZU?=
+ =?utf-8?B?cDBqUUp2S05IM0R2UW1NYmZTTlg3QVAwaXRXTW9VTWkyampPQmxjWWllNENH?=
+ =?utf-8?B?d2FKODBVWFU5TUZYVWYxZFl5MVlGT3FuWXdmckhlNlg3dmNlUEJ3U2VURC9T?=
+ =?utf-8?B?TEN5U0o1dVpFKzhQV0FaVmxkUEU0UHhLYjdlYklVWVdJTXo4Y3RvaVFaRjRF?=
+ =?utf-8?B?Mko1KzAvNlZKR0Rla3FVa1RKQWdpOU04SllBNWw3TVBzQjYwODg1TW93b0Zk?=
+ =?utf-8?B?NGZLYjY5ZUlhbmFhRzRGYUc1dk5vVDRaMVFBRVdET2p5TEIyeVg0Wm5uZ3Aw?=
+ =?utf-8?B?V2J0Y2N4OVBwRGRqWTFhVFN0WUFBVEVrcXRRalE5VkdBVkdDbGJmcTFNMlVZ?=
+ =?utf-8?B?WFlEajk1dUpaeGhMVmhNK3JOTmMwQmtlb1d0VTVHS0NoYUF3RnFzaEhrRzRI?=
+ =?utf-8?B?ODJHU1lacUQwL3A4ekIxNWVrd1F0Z200UVIzcytrWnJXRVJsZGEyazdFVk5F?=
+ =?utf-8?B?UnNXK0JMR1pKU2lQVU01NEZNZ3l5OXFHa3dHMFVBUytjTkJ2QUh5SUxBcGlr?=
+ =?utf-8?Q?+B5ZYQDa3A4Yh7ET8EOv+svpK?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 772b23ef-e2ed-456b-6b06-08dcc4d4c938
+X-MS-Exchange-CrossTenant-AuthSource: JH0PR06MB6849.apcprd06.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2024 06:42:13.8159
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2024 07:08:56.8707
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Yzla+CHDM7qjL1qzSV/eKrB/1PBrUkgRZizubBcFcjg+Y30a7BFuPK+ic5OGG7mooNV6mvEXn6bdCrP/njSCbAcxrk6nK02KS0eTnVkBr3E=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR10MB5957
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-08-25_03,2024-08-23_01,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 suspectscore=0
- adultscore=0 mlxscore=0 spamscore=0 mlxlogscore=999 bulkscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2407110000 definitions=main-2408250048
-X-Proofpoint-GUID: hzNQV3afMRO2NTJcWUyG0uMmzqU6gdRu
-X-Proofpoint-ORIG-GUID: hzNQV3afMRO2NTJcWUyG0uMmzqU6gdRu
+X-MS-Exchange-CrossTenant-UserPrincipalName: GHf20ZIc2FeqUb6WZW30E6isp2xgF4jRgjFAu9gPiv7DvD8Cc2qweHxOjv0rQSIut/8d9xs8zrJSuZiCazKpkQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SI2PR06MB5114
 
-On Sun, Aug 25, 2024 at 01:06:40PM GMT, zhiguojiang wrote:
+
+
+在 2024/8/25 14:42, Lorenzo Stoakes 写道:
+> [Some people who received this message don't often get email from lorenzo.stoakes@oracle.com. Learn why this is important at https://aka.ms/LearnAboutSenderIdentification ]
 >
+> On Sun, Aug 25, 2024 at 01:06:40PM GMT, zhiguojiang wrote:
+>>
+>> 在 2024/8/25 0:26, Lorenzo Stoakes 写道:
+>>> [Some people who received this message don't often get email from lorenzo.stoakes@oracle.com. Learn why this is important at https://aka.ms/LearnAboutSenderIdentification ]
+>>>
+>>> On Fri, Aug 23, 2024 at 11:02:06PM GMT, Zhiguo Jiang wrote:
+>>>> After CoWed by do_wp_page, the vma established a new mapping relationship
+>>>> with the CoWed folio instead of the non-CoWed folio. However, regarding
+>>>> the situation where vma->anon_vma and the non-CoWed folio's anon_vma are
+>>>> not same, the avc binding relationship between them will no longer be
+>>>> needed, so it is issue for the avc binding relationship still existing
+>>>> between them.
+>>>>
+>>>> This patch will remove the avc binding relationship between vma and the
+>>>> non-CoWed folio's anon_vma, which each has their own independent
+>>>> anon_vma. It can also alleviates rmap overhead simultaneously.
+>>>>
+>>>> Signed-off-by: Zhiguo Jiang <justinjiang@vivo.com>
+>>> NACK (until fixed). This is broken (see below).
+>>>
+>> Hi Lorenzo Stoakes,
+>>
+>> Thank you for your comments.
+>>> I'm not seeing any numbers to back anything up here as to why we want to
+>>> make changes to this incredibly sensitive code?
+>> I added a debug trace log (as follows) in wp_page_copy() and observed
+>> that a large number of these orphan avc-objects still exist. I believe
+>> this will have a certain redundant overhead impact on anonymous folios'
+>> rmap avcs, so I want to remove it, which is also the most essential
+>> value of this patch.
+> Sorry nack to that idea unless you can provide actual _data_ to demonstrate
+> an overhead.
 >
-> 在 2024/8/25 0:26, Lorenzo Stoakes 写道:
-> > [Some people who received this message don't often get email from lorenzo.stoakes@oracle.com. Learn why this is important at https://aka.ms/LearnAboutSenderIdentification ]
-> >
-> > On Fri, Aug 23, 2024 at 11:02:06PM GMT, Zhiguo Jiang wrote:
-> > > After CoWed by do_wp_page, the vma established a new mapping relationship
-> > > with the CoWed folio instead of the non-CoWed folio. However, regarding
-> > > the situation where vma->anon_vma and the non-CoWed folio's anon_vma are
-> > > not same, the avc binding relationship between them will no longer be
-> > > needed, so it is issue for the avc binding relationship still existing
-> > > between them.
-> > >
-> > > This patch will remove the avc binding relationship between vma and the
-> > > non-CoWed folio's anon_vma, which each has their own independent
-> > > anon_vma. It can also alleviates rmap overhead simultaneously.
-> > >
-> > > Signed-off-by: Zhiguo Jiang <justinjiang@vivo.com>
-> >
-> > NACK (until fixed). This is broken (see below).
-> >
-> Hi Lorenzo Stoakes,
+> And even if you did, given the original patch was so completely broken, and
+> in such a sensitive area, I'm going to need to be VERY confident you didn't
+> break anything, so we're going to need tests.
 >
-> Thank you for your comments.
-> > I'm not seeing any numbers to back anything up here as to why we want to
-> > make changes to this incredibly sensitive code?
-> I added a debug trace log (as follows) in wp_page_copy() and observed
-> that a large number of these orphan avc-objects still exist. I believe
-> this will have a certain redundant overhead impact on anonymous folios'
-> rmap avcs, so I want to remove it, which is also the most essential
-> value of this patch.
-
-Sorry nack to that idea unless you can provide actual _data_ to demonstrate
-an overhead.
-
-And even if you did, given the original patch was so completely broken, and
-in such a sensitive area, I'm going to need to be VERY confident you didn't
-break anything, so we're going to need tests.
-
+>> -- the vital part of debug trace patch:
+> Thanks for providing! Will snip for sake of making it easier to reply.
 >
-> -- the vital part of debug trace patch:
-
-Thanks for providing! Will snip for sake of making it easier to reply.
-
-[snip]
-
-> >
-> > Also anon_vma logic is very complicated and confusing, this commit message
-> > feels about 3 paragraphs too light.
-> >
-> > Under what circumstances will vma->anon_vma be different from
-> > folio_anon_vma(non_cowed_folio)? etc.
-> In anon_vma_fork() --> anon_vma_clone(), child vma is bound with parent
-> vma's anon_vma firstly.
->     /*
->      * First, attach the new VMA to the parent VMA's anon_vmas,
->      * so rmap can find non-COWed pages in child processes.
->      */
->     error = anon_vma_clone(vma, pvma);
+> [snip]
 >
-> When child vma->anon_vma is NULL in anon_vma_fork(),
->     /* An existing anon_vma has been reused, all done then. */
->     if (vma->anon_vma)
->         return 0;
+>>> Also anon_vma logic is very complicated and confusing, this commit message
+>>> feels about 3 paragraphs too light.
+>>>
+>>> Under what circumstances will vma->anon_vma be different from
+>>> folio_anon_vma(non_cowed_folio)? etc.
+>> In anon_vma_fork() --> anon_vma_clone(), child vma is bound with parent
+>> vma's anon_vma firstly.
+>>      /*
+>>       * First, attach the new VMA to the parent VMA's anon_vmas,
+>>       * so rmap can find non-COWed pages in child processes.
+>>       */
+>>      error = anon_vma_clone(vma, pvma);
+>>
+>> When child vma->anon_vma is NULL in anon_vma_fork(),
+>>      /* An existing anon_vma has been reused, all done then. */
+>>      if (vma->anon_vma)
+>>          return 0;
+>>
+>>      /* Then add our own anon_vma. */
+>>      anon_vma = anon_vma_alloc();
+>>
+>> new anon_vma will be alloced and filled in this child vma->anon_vma.
+>> Then during CoWed in do_wp_page() --> wp_page_copy(), this child vma's
+>> new anon_vma will be different from folio_anon_vma(non_cowed_folio).
+> Thanks for the explanation, but I was suggesting you have to put this in
+> the commit message rather than in repy to me :)
+Ok, I will update it in next version patch.
 >
->     /* Then add our own anon_vma. */
->     anon_vma = anon_vma_alloc();
+>>> Confusing topics strongly require explanations that help (somewhat)
+>>> compensate. This is one of them.
+> [snip]
 >
-> new anon_vma will be alloced and filled in this child vma->anon_vma.
-> Then during CoWed in do_wp_page() --> wp_page_copy(), this child vma's
-> new anon_vma will be different from folio_anon_vma(non_cowed_folio).
-
-Thanks for the explanation, but I was suggesting you have to put this in
-the commit message rather than in repy to me :)
-
-> > Confusing topics strongly require explanations that help (somewhat)
-> > compensate. This is one of them.
-
-[snip]
-
-> > > index 93c0c25433d0..4c89cb1cb73e
-> > > --- a/mm/memory.c
-> > > +++ b/mm/memory.c
-> > > @@ -3428,6 +3428,14 @@ static vm_fault_t wp_page_copy(struct vm_fault *vmf)
-> > >                         * old page will be flushed before it can be reused.
-> > >                         */
-> > >                        folio_remove_rmap_pte(old_folio, vmf->page, vma);
-> > > +
-> > > +                     /*
-> > > +                      * If the new_folio's anon_vma is different from the
-> > > +                      * old_folio's anon_vma, the avc binding relationship
-> > > +                      * between vma and the old_folio's anon_vma is removed,
-> > > +                      * avoiding rmap redundant overhead.
-> > What overhead? Worth spelling out for instance if it's unnecessary to
-> > traverse avc's.
-> I think this will have a certain redundant overhead impact on anonymous
-> folios rmap traverse avcs process.
-
-This is again nowhere near detailed enough, and again I'm asking you to
-write this _IN THE COMMENT_ not in review.
-
-I already understand what you're trying to do (I think the fact I provided
-a _working_ version of your patch as an attachment in this thread should
-give a clue ;), this is for the benefit of people coming to read this code.
-
-[snip]
-
-> > Again I question the value of this change. Are we REALLY seeing a big
-> > problem due to unneeded avc's hanging around? This is very sensitive,
-> > fiddly, confusing code, do we REALLY want to be playing with it?
-> Thank you for helping to identify mang issues with this patch. However,
-> I think this will have a certain benefits for anonymous folio rmap
-> traverse avc overhead.
-> >
-> > It'd be good to get some tests though unless you move this to vma.c with
-> > its userland testing (probably a good idea actually as Andrew suggested)
-> > this might be tricky.
-> This patch belongs to anon_vma rmap's content, and it seems more
-> appropriate in mm/rmap.c?
-> >
-> > NACK until the issues are fixed and the approach at least seems more
-> > correct.
-> Thanks
-> Zhiguo
+>>>> index 93c0c25433d0..4c89cb1cb73e
+>>>> --- a/mm/memory.c
+>>>> +++ b/mm/memory.c
+>>>> @@ -3428,6 +3428,14 @@ static vm_fault_t wp_page_copy(struct vm_fault *vmf)
+>>>>                          * old page will be flushed before it can be reused.
+>>>>                          */
+>>>>                         folio_remove_rmap_pte(old_folio, vmf->page, vma);
+>>>> +
+>>>> +                     /*
+>>>> +                      * If the new_folio's anon_vma is different from the
+>>>> +                      * old_folio's anon_vma, the avc binding relationship
+>>>> +                      * between vma and the old_folio's anon_vma is removed,
+>>>> +                      * avoiding rmap redundant overhead.
+>>> What overhead? Worth spelling out for instance if it's unnecessary to
+>>> traverse avc's.
+>> I think this will have a certain redundant overhead impact on anonymous
+>> folios rmap traverse avcs process.
+> This is again nowhere near detailed enough, and again I'm asking you to
+> write this _IN THE COMMENT_ not in review.
+Ok, I will try to test and update it in next version patch.
 >
+> I already understand what you're trying to do (I think the fact I provided
+> a _working_ version of your patch as an attachment in this thread should
+> give a clue ;), this is for the benefit of people coming to read this code.
+>
+> [snip]
+>
+>>> Again I question the value of this change. Are we REALLY seeing a big
+>>> problem due to unneeded avc's hanging around? This is very sensitive,
+>>> fiddly, confusing code, do we REALLY want to be playing with it?
+>> Thank you for helping to identify mang issues with this patch. However,
+>> I think this will have a certain benefits for anonymous folio rmap
+>> traverse avc overhead.
+>>> It'd be good to get some tests though unless you move this to vma.c with
+>>> its userland testing (probably a good idea actually as Andrew suggested)
+>>> this might be tricky.
+>> This patch belongs to anon_vma rmap's content, and it seems more
+>> appropriate in mm/rmap.c?
+>>> NACK until the issues are fixed and the approach at least seems more
+>>> correct.
+>> Thanks
+>> Zhiguo
+>>
+> Please see the attachment in thread for an example of a working version of
+> this, this is sadly fundamentally broken.
+Yes, I have seen the attachment you provided and thank you very much for
+your help. I will update it based on your modifications in next version.
+Currently I am thinking about how to implement the anon_vma->root code.
+> But you're going to really need to sell this a lot better, provide some
+> numbers, and provide extensive testing and a much, much better test for
+> this to stand any chance.
+Ok, I will try to do some tests.
+>
+> I appreciate what you're trying to do here, and it's not totally crazy, but
+> we have to be so, so careful around this code.
+>
+> anon_vma code is horrendously subtle and confusing (I actually had to
+> reference my unpublished book to remind myself how this stuff works :)), so
+> we have to tread very carefully.
+You are right, anon_vma code is indeed complex and sensitive.
+> I definitely think we need ASCII diagrams if we were to go ahead with a new
+> version of this. But then again I'm a bit of a fan of ASCII diagrams...
+>
+> Please cc- me on future revisions of this series, thanks :)
+Ok.
 
-Please see the attachment in thread for an example of a working version of
-this, this is sadly fundamentally broken.
+Thanks
+Zhiguo
 
-But you're going to really need to sell this a lot better, provide some
-numbers, and provide extensive testing and a much, much better test for
-this to stand any chance.
-
-I appreciate what you're trying to do here, and it's not totally crazy, but
-we have to be so, so careful around this code.
-
-anon_vma code is horrendously subtle and confusing (I actually had to
-reference my unpublished book to remind myself how this stuff works :)), so
-we have to tread very carefully.
-
-I definitely think we need ASCII diagrams if we were to go ahead with a new
-version of this. But then again I'm a bit of a fan of ASCII diagrams...
-
-Please cc- me on future revisions of this series, thanks :)
