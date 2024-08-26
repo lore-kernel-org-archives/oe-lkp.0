@@ -1,66 +1,66 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFC3D198A28
-	for <oe-lkp@lists.linux.dev>; Mon, 26 Aug 2024 17:03:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B58A19412F
+	for <oe-lkp@lists.linux.dev>; Mon, 26 Aug 2024 17:24:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724691831; cv=none; b=XKTdzAHsMsQAnrD3O+fc+kehc6fieptrVm7bI5R10P+HZMVI2lmKUbSzIPVEHLHT3KsNrXOUIHYsEZ3evDSnx6MA5sbnYGnAjguS5yC/tYKS7OG+pmtmSG0xUcKQaM+osIktf7mqxdB1TCV61OwDluvSPqBwUX8d9EiL9gPXkZs=
+	t=1724693093; cv=none; b=eGST0A+4j1vTylArebHyrefdyhQwELkdBZBQdbWnBBnCKkfmYUzblvurfrhupbNGJ5Enhj5GiVAb3LBgp3zXIkf+jm7Cg1UHlgNhP8CGWCuFBW2XqvPQO5FSFfwT8ufOr+dAIUSw4+y30tWpUzelD1BScezyfzaJqsuvE9M9+N0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724691831; c=relaxed/simple;
-	bh=Wpvxfsl/xKIsB/r3un3pYadBMwRn5bfSxhS+Vdj8uoo=;
+	s=arc-20240116; t=1724693093; c=relaxed/simple;
+	bh=ejJtFVCnON3GffDopatlLjODagv8cgjQQWc0CRP0AHM=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=rqTZgjSmyE1VoSXBBGPUzmrt3L9Z9p06+tiOzify8tLMd326yeyhKwIGYYjiv+5T8rfUJ+UUMDqelmsVZ9IeKhyUaw6cI5LWR903EuAgGsV9ckQZUZzDe47l9+HVyhA9sydxRjfHNWEhwKVzErKoDkDu9TOCRxnTwBFZUF5G2kA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=MgbAOvZO; arc=none smtp.client-ip=170.10.129.124
+	 In-Reply-To:Content-Type; b=HKG7TDk8HMS0z+YBxI7y6lucqVnCdvAz5BH11TP3zkv1D6fDeB6ugP6OFdzZ5ck0TQqvadt4IjBgmuO19+FcBtgc2pLIsvoC4r49fICpk28Vl09qNKZ/G+B4IdekP0Cukt1qn3cmHYpuc3KAF+PNOyI0P0ONVZ5tTQxp/uV4bJE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=OLLUKoiC; arc=none smtp.client-ip=170.10.133.124
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="MgbAOvZO"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="OLLUKoiC"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1724691829;
+	s=mimecast20190719; t=1724693090;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=kFsu14f4i4LlQVERSc8Pt6nldSMLT5wVXv/WD9oSBYc=;
-	b=MgbAOvZOX1XDAiLc++uidOFAVqZ6OK7en+JPly9YepVDPZRN4+SJPWmHdd6Jr9kTAz07u4
-	9c4GsJhibcQpzTl8d47/hlQ7J6EUSIoHs8S4SMNsvmnGDDYi4fyOjZP6iUVVs2ZNo3xx04
-	JElIHeuqjb1yGmr2H+Jz44C0qrgjcjc=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=obXt6F5Wn0Jv9CB8/5Hu+bkdqaGb4CXTsjwCY9uX+1A=;
+	b=OLLUKoiC/hDA3wCvjGPAZuR6RKRrPB7QtUr1e2968cPOFbVWQgYe17MQyrZ0c7/O0PQJD1
+	OU34KTDf7rqYUZmo1gkoY7j8ji84pvGhxCJb3M1XZdR2JGSWPUKyiP+8KEvwxcjtHvz82Y
+	NO013Zsoyd2Tu9obe7398UELtfsVmMA=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-217-0vZodfjsP4GfUJwOz0zYwA-1; Mon, 26 Aug 2024 13:03:47 -0400
-X-MC-Unique: 0vZodfjsP4GfUJwOz0zYwA-1
-Received: by mail-wm1-f70.google.com with SMTP id 5b1f17b1804b1-4280645e3e0so41691985e9.1
-        for <oe-lkp@lists.linux.dev>; Mon, 26 Aug 2024 10:03:47 -0700 (PDT)
+ us-mta-8-MwpsMhifPIKaLEBQkJgCKw-1; Mon, 26 Aug 2024 13:24:49 -0400
+X-MC-Unique: MwpsMhifPIKaLEBQkJgCKw-1
+Received: by mail-wr1-f69.google.com with SMTP id ffacd0b85a97d-3718d9d9267so2648383f8f.0
+        for <oe-lkp@lists.linux.dev>; Mon, 26 Aug 2024 10:24:49 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724691826; x=1725296626;
+        d=1e100.net; s=20230601; t=1724693088; x=1725297888;
         h=content-transfer-encoding:in-reply-to:organization:autocrypt
          :content-language:from:references:cc:to:subject:user-agent
          :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=kFsu14f4i4LlQVERSc8Pt6nldSMLT5wVXv/WD9oSBYc=;
-        b=WmYFvR6Nwqi/J2gpEh/0T3R/8nQ7qLL9AtqGlwgvwBwCWlfv1SKkwf18kUV70z8arU
-         UErS7vISmuCbJEkQrgcbfATB9eC13ZZlB/fIj3wNZlL4Nfn5FE7JwKIo80uDeh0Pp46g
-         dtkL+yjYSQCdFgfv2ja5jRR5PQTy+A3/A5OP7jv/2Sw+LK1rnydqJHx31TSLE/FP6UMl
-         WkWifVvgD5zlSkP+o+nVhQoXy33DJmyt3HFR2qSO2jk5DaJfmKykicV5fDtlsOmFDxvi
-         ZzPxMyKAGL4l/RHJtt7vfclbtpfp2EEAIId+iRmUONjeSl6qjs+j9Wf95YIzDEaSBd8p
-         LI+Q==
-X-Forwarded-Encrypted: i=1; AJvYcCUakgbnh+0UPpSBL6lQRMmZk/7OcvjsyGZ4gSZJN+FrJY84DAIG934LcqSfAQVK4UgVBptqqBE=@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw9TKs7/G3XkM9qfX4K6HcDXkfcyyXwLoR8vUtsEWZWieRL3ddl
-	1MVqurYH2GuR74vR+M2kQkbAE1G1TzX6zDs1oYcTRmQ8PNXed/AU+OhIXZJ6NnuJnPpR9ON5Dvb
-	Y+bNdbpnc2kV9ZgqWtVj3TSpuRs+Z5msU37xaXhDpJI5vGywJLVvG3A==
-X-Received: by 2002:a05:600c:4ec6:b0:426:6153:5318 with SMTP id 5b1f17b1804b1-42acc8dd87amr70862405e9.19.1724691826452;
-        Mon, 26 Aug 2024 10:03:46 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IFw0uS9vEu6BBNlQmGLpFGxf9J44mEDsF3d6bu7BGQEnYzWfUlzaaAKoGAE30FgbsvLO6D+9g==
-X-Received: by 2002:a05:600c:4ec6:b0:426:6153:5318 with SMTP id 5b1f17b1804b1-42acc8dd87amr70862145e9.19.1724691825621;
-        Mon, 26 Aug 2024 10:03:45 -0700 (PDT)
+        bh=obXt6F5Wn0Jv9CB8/5Hu+bkdqaGb4CXTsjwCY9uX+1A=;
+        b=sPQw3NrJXZAVwJk6dO0lUpaHfCBP6nI7OYhyQHkke72V4OuEC0SMHjHlIg2F5FHDuY
+         EKUqqtrk3dK9dpSzoxB+aergwYAruM23Uwh46y1J5cix4zQmfEx4XtOA3IJSRHlu6vCE
+         qDuSXzpRefatgPp5O3Ho7fHK6xJTsOKeHREl1q8izyAy5HWmu0jsarlx3GXErgZDNQmB
+         e9yL9LMkhb1KuEo1wW7lzV5kzvXAxJcCKUi0fucR7r4Z3F3D1ukJwoQhsX6UDVa7fRRK
+         MZwpnBwiALAIJdjcRF55o58OoovE1AHMKBZDwmJB+RT4dqZBDUyAZQatktPzXTjDRIM5
+         JCFw==
+X-Forwarded-Encrypted: i=1; AJvYcCW5GkpLgYJUfoVPEFLNHO6SI3KF3i1ylFDLwdcUNHiIiJ0uUVjPf21t6Iq3rSQN5W5zCV48AzY=@lists.linux.dev
+X-Gm-Message-State: AOJu0YzVQaOCqVmVQ99iRPj8jIt7s+uHJ854lxyMFzV8GgyK8SCno9b8
+	IlRzM6wHLiD2OKvF812NzjbgzH5Sw0298fQTGpPWqo5rp4aR6WDyFaxASZe1Nv+nVNwzJZxbISb
+	hXjKYgLU0zpxh2RBy8iQ1au9XuUOQgaWOQ4125S9m8cCQiSk0Tk+y7g==
+X-Received: by 2002:adf:facc:0:b0:371:93eb:78a4 with SMTP id ffacd0b85a97d-37311840eaamr7150042f8f.9.1724693087882;
+        Mon, 26 Aug 2024 10:24:47 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IGDo7bJqArpktgD9WBbejrA8BU79+6UmIN/MzzEst31a93fSbdYgdU+3cv+jmEriVxDoNuoxQ==
+X-Received: by 2002:adf:facc:0:b0:371:93eb:78a4 with SMTP id ffacd0b85a97d-37311840eaamr7150025f8f.9.1724693086996;
+        Mon, 26 Aug 2024 10:24:46 -0700 (PDT)
 Received: from ?IPV6:2003:cb:c737:1900:16b0:8dc:77e:31af? (p200300cbc737190016b008dc077e31af.dip0.t-ipconnect.de. [2003:cb:c737:1900:16b0:8dc:77e:31af])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42b8a351d3asm100411805e9.13.2024.08.26.10.03.44
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-37307c0c9c7sm11307672f8f.0.2024.08.26.10.24.46
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 26 Aug 2024 10:03:45 -0700 (PDT)
-Message-ID: <6f3020e7-f7e8-4d40-b9ce-32a02932a656@redhat.com>
-Date: Mon, 26 Aug 2024 19:03:44 +0200
+        Mon, 26 Aug 2024 10:24:46 -0700 (PDT)
+Message-ID: <2f19c2ff-66b2-4860-a870-a1bffe73320c@redhat.com>
+Date: Mon, 26 Aug 2024 19:24:45 +0200
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -69,15 +69,11 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v2] vma remove the unneeded avc bound with non-CoWed folio
-To: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
- zhiguojiang <justinjiang@vivo.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
- linux-kernel@vger.kernel.org, oe-lkp@lists.linux.dev, lkp@intel.com,
- opensource.kernel@vivo.com
-References: <20240823150206.565-1-justinjiang@vivo.com>
- <73ad9540-3fb8-4154-9a4f-30a0a2b03d41@lucifer.local>
- <4dd13a4c-e968-4a3a-98e5-97f28036deff@vivo.com>
- <1109aeab-fd4a-4c83-a110-04d01177d72d@lucifer.local>
+To: Zhiguo Jiang <justinjiang@vivo.com>,
+ Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+ linux-kernel@vger.kernel.org, oe-lkp@lists.linux.dev, oliver.sang@intel.com
+Cc: opensource.kernel@vivo.com
+References: <20240823140139.263-1-justinjiang@vivo.com>
 From: David Hildenbrand <david@redhat.com>
 Autocrypt: addr=david@redhat.com; keydata=
  xsFNBFXLn5EBEAC+zYvAFJxCBY9Tr1xZgcESmxVNI/0ffzE/ZQOiHJl6mGkmA1R7/uUpiCjJ
@@ -124,51 +120,73 @@ Autocrypt: addr=david@redhat.com; keydata=
  jPrnvUsUUsjRoRNJjKKA/REq+sAnhkNPPZ/NNMjaZ5b8Tovi8C0tmxiCHaQYqj7G2rgnT0kt
  WNyWQQ==
 Organization: Red Hat
-In-Reply-To: <1109aeab-fd4a-4c83-a110-04d01177d72d@lucifer.local>
+In-Reply-To: <20240823140139.263-1-justinjiang@vivo.com>
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 25.08.24 08:42, Lorenzo Stoakes wrote:
-> On Sun, Aug 25, 2024 at 01:06:40PM GMT, zhiguojiang wrote:
->>
->>
->> 在 2024/8/25 0:26, Lorenzo Stoakes 写道:
->>> [Some people who received this message don't often get email from lorenzo.stoakes@oracle.com. Learn why this is important at https://aka.ms/LearnAboutSenderIdentification ]
->>>
->>> On Fri, Aug 23, 2024 at 11:02:06PM GMT, Zhiguo Jiang wrote:
->>>> After CoWed by do_wp_page, the vma established a new mapping relationship
->>>> with the CoWed folio instead of the non-CoWed folio. However, regarding
->>>> the situation where vma->anon_vma and the non-CoWed folio's anon_vma are
->>>> not same, the avc binding relationship between them will no longer be
->>>> needed, so it is issue for the avc binding relationship still existing
->>>> between them.
->>>>
->>>> This patch will remove the avc binding relationship between vma and the
->>>> non-CoWed folio's anon_vma, which each has their own independent
->>>> anon_vma. It can also alleviates rmap overhead simultaneously.
->>>>
->>>> Signed-off-by: Zhiguo Jiang <justinjiang@vivo.com>
->>>
->>> NACK (until fixed). This is broken (see below).
->>>
->> Hi Lorenzo Stoakes,
->>
->> Thank you for your comments.
->>> I'm not seeing any numbers to back anything up here as to why we want to
->>> make changes to this incredibly sensitive code?
->> I added a debug trace log (as follows) in wp_page_copy() and observed
->> that a large number of these orphan avc-objects still exist. I believe
->> this will have a certain redundant overhead impact on anonymous folios'
->> rmap avcs, so I want to remove it, which is also the most essential
->> value of this patch.
+On 23.08.24 16:01, Zhiguo Jiang wrote:
+> After CoWed by do_wp_page, the vma established a new mapping relationship
+> with the CoWed folio instead of the non-CoWed folio. However, regarding
+> the situation where vma->anon_vma and the non-CoWed folio's anon_vma are
+> not same, the avc binding relationship between them will no longer be
+> needed, so it is issue for the avc binding relationship still existing
+> between them.
 > 
-> Sorry nack to that idea unless you can provide actual _data_ to demonstrate
-> an overhead.
+> This patch will remove the avc binding relationship between vma and the
+> non-CoWed folio's anon_vma, which each has their own independent
+> anon_vma. It can also alleviates rmap overhead simultaneously.
+> 
+> Signed-off-by: Zhiguo Jiang <justinjiang@vivo.com>
+> ---
+> -v2:
+>   * Solve the kernel test robot noticed "WARNING"
+>     Reported-by: kernel test robot <oliver.sang@intel.com>
+>     Closes: https://lore.kernel.org/oe-lkp/202408230938.43f55b4-lkp@intel.com
+>   * Update comments to more accurately describe this patch.
+> 
+> -v1:
+>   https://lore.kernel.org/linux-mm/20240820143359.199-1-justinjiang@vivo.com/
+> 
+>   include/linux/rmap.h |  1 +
+>   mm/memory.c          |  8 +++++++
+>   mm/rmap.c            | 53 ++++++++++++++++++++++++++++++++++++++++++++
+>   3 files changed, 62 insertions(+)
+> 
+> diff --git a/include/linux/rmap.h b/include/linux/rmap.h
+> index 91b5935e8485..8607d28a3146
+> --- a/include/linux/rmap.h
+> +++ b/include/linux/rmap.h
+> @@ -257,6 +257,7 @@ void folio_remove_rmap_ptes(struct folio *, struct page *, int nr_pages,
+>   	folio_remove_rmap_ptes(folio, page, 1, vma)
+>   void folio_remove_rmap_pmd(struct folio *, struct page *,
+>   		struct vm_area_struct *);
+> +void folio_remove_anon_avc(struct folio *, struct vm_area_struct *);
+>   
+>   void hugetlb_add_anon_rmap(struct folio *, struct vm_area_struct *,
+>   		unsigned long address, rmap_t flags);
+> diff --git a/mm/memory.c b/mm/memory.c
+> index 93c0c25433d0..4c89cb1cb73e
+> --- a/mm/memory.c
+> +++ b/mm/memory.c
+> @@ -3428,6 +3428,14 @@ static vm_fault_t wp_page_copy(struct vm_fault *vmf)
+>   			 * old page will be flushed before it can be reused.
+>   			 */
+>   			folio_remove_rmap_pte(old_folio, vmf->page, vma);
+> +
+> +			/*
+> +			 * If the new_folio's anon_vma is different from the
+> +			 * old_folio's anon_vma, the avc binding relationship
+> +			 * between vma and the old_folio's anon_vma is removed,
+> +			 * avoiding rmap redundant overhead.
+> +			 */
+> +			folio_remove_anon_avc(old_folio, vma);
 
-Agreed.
+... by increasing write fault latency, introducing an RMAP walk (!)? Hmm?
+
+On the reuse path, we do a folio_move_anon_rmap(), to optimize that.
 
 -- 
 Cheers,
