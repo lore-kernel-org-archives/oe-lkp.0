@@ -1,63 +1,94 @@
-Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2054.outbound.protection.outlook.com [40.107.255.54])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0062F747F
-	for <oe-lkp@lists.linux.dev>; Tue, 27 Aug 2024 01:50:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.255.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A717B4C92
+	for <oe-lkp@lists.linux.dev>; Tue, 27 Aug 2024 05:05:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.7
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724723444; cv=fail; b=G+cs1WFa9M6Angro7tAGghVgYwH5cmB6T03T1UrzgSuTdbg4xR22gFeR7uq/7fAxSKvjfRL39LYUkvIiSM7MPT/VmddbJGXosoj67gO7GZkAC7NKWVPFrE1uNrbX+kOTqmU/nkCdpiVxRHNIviVtBI5gA3UiI1en2SEnrIQxtZ0=
+	t=1724735152; cv=fail; b=JKJcptc8aIyLS/+1Zij7jUrx5XhMrHasFq7Y7dlSaRPQ92lZlY02Hjk2szzuM4lBa4cOdZj6zEAp5NZt24MxvNmBuzaLZMhQxmo7rFS9SQma5No9H100jPcrhzHURqwx2h/JgUXu1IHG0IXhmxZje2yl0VMfK5iEyFQlEcDiCv0=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724723444; c=relaxed/simple;
-	bh=UyiIcL4N7F7h+F1p1aCUm+RCNETdhU4gOc9uEvsA1hc=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=Cv1m+MQqF8QI9chFAYA/wmZNi9pL4mRaD06K16fOZGPrkv3wyTmUn8E2/Q3/66lzDRwMAeJq6GRZZWvXZD6EFgqpZ4PWJUr4g/1+Z274tJ9ku07hJGGpZtHPa3Znfhcqfy2KZqgWr654vdZYt6BRqGgXTZTJ/rgHlk2ZXoFbkos=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vivo.com; spf=pass smtp.mailfrom=vivo.com; dkim=pass (2048-bit key) header.d=vivo.com header.i=@vivo.com header.b=l+BcpFU8; arc=fail smtp.client-ip=40.107.255.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vivo.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vivo.com
+	s=arc-20240116; t=1724735152; c=relaxed/simple;
+	bh=/ReXcGw+880NSciLX17cOJYd47j4UnsDj80TwhYZmwM=;
+	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
+	 Content-Disposition:MIME-Version; b=gLbADeh55yBrbx9WT6V5QcDBYi3j+IUqlDEyRRj/nzS719xJl/UlSe98Y5mP9edy9bW34GEnAJaoNkFKrsB+7GrDJGpMzxk5BoUM9Tv/ba9sca28QZl+WBfYUT8TfVj8WSBn9UbXkOaMdIDNRbTCCGeWOsoLr6FFO1imSQvgQMQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=U7QI7pyE; arc=fail smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=vivo.com header.i=@vivo.com header.b="l+BcpFU8"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="U7QI7pyE"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1724735150; x=1756271150;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=/ReXcGw+880NSciLX17cOJYd47j4UnsDj80TwhYZmwM=;
+  b=U7QI7pyEthVcttjVspy0L+dFAhIGWAk6p75c+u7/nshD3dubXo0OBs1e
+   kYNFfQeBXG9dbI6TeEy6FnQbepJSNvW+ocKqn/Bo7ZptWN5lgLJgQbQAk
+   ktt195y3ztLrORh9qpyesN/vP373ujbQxqqOdrSU3xt7h/MXS4grtK+2l
+   wQ4lIvRfR2ybQi4sz0ck32SsNtFmA5J+QpteIKQ9Cfm4xfj72quewDjM7
+   h9JlBpUOBeB0FYHylu50kZkfuyIgImOGTpjBLMQ2WDpZMHgsbnEYVbsYl
+   b2nPQ7uSbb9moZ3bacpzEvuaAv1O8qIireUOFnndms8/x94GI1CTV+5sI
+   g==;
+X-CSE-ConnectionGUID: uVwnl8PXScKG7cpkO4YdVw==
+X-CSE-MsgGUID: DAf69J45QtCSyB7H8+SjXA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11176"; a="48577877"
+X-IronPort-AV: E=Sophos;i="6.10,179,1719903600"; 
+   d="scan'208";a="48577877"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2024 22:05:50 -0700
+X-CSE-ConnectionGUID: JKFpMhv0S6a1DR2eaDA5DQ==
+X-CSE-MsgGUID: CNJE1vzcTnWrmtsgU8UOTQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.10,179,1719903600"; 
+   d="scan'208";a="62904772"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by fmviesa010.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 26 Aug 2024 22:05:50 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39; Mon, 26 Aug 2024 22:05:49 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39 via Frontend Transport; Mon, 26 Aug 2024 22:05:49 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.49) by
+ edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.39; Mon, 26 Aug 2024 22:05:48 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=N3LjjkXXnJok39yZfKjV69ZiVzXK5qhn0TDGXqMQrLN7Es2d00Wd5o7IrqCnj5in/FMLq9XrCeqfFrJwXpse83fZfmfAgnDeRWqbh+QCHPFNQezuAOh+N7pxHW3Z4KQlpvnQL5jrt2lPu/ru+PidQECxtce5uhwjzq96ZymDjdEjIHydGx287+tNNKaFbIYIeN1rTmHWZI3RbPgzhiv5LD8E76JwC2sLOBRUNVMQOVQnY9xcPmohQy8kpMEMlF5GA+b2EwbEgMtYQeGN8KHwAz7HSIdrKth86qE8agS21Blp7MxPnM18m0tZF/jIyeIsSUYy1DvZ3EZNSky61UHqkQ==
+ b=TJC/66fUCkpb7/RABtaUZRHuPVUrFoslgnA2HtTexEMC0Q3XBun4lxXiDqyw7/bKBgP29IBCM76URfCTlBKbw9fh722W8EKdWUqsiCZgQm89VMARAH3ebXQQVp0hnjUfFTwCvIRTFjCbB6QV8UaJBwI+xhJNOUJhjM2ksiXCIsMSlm3HHE94bZ+tf8cpBEeI13yXcg4G4ZvoMsaStrRMspqSpo1r336V4V2dC5hBM/Iobil2+azkl5+Y/u0C0rK2eEJU0t7EHU4zCxgHT6fUsQuJGE2U7K/iX6+nfJCb0WWdILm6X7s9tv+EHsYpegKO0LlCs0MLPKcWbX37Go6rOA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uNKXxOu+ZNzeyrp3ZPenMLgkgadEaol2oYRtEb/Wbz0=;
- b=mYIFB/OfOe4MoCqpgtC+RTTGBvQcL7qs/Jk85GWIRy/9AS4A6O5c47xM9IbqJjazV/gOGvbnmOX6TyGDb2dN/PCxAPDeDC1emaQ0sx7tbzReMhpGxY+aNtq43JuNpKJYJ8H/eDXsiLketzp3CbUMfHbuJSEuCwVNBUR9eRy8VWF5AuYeZwiLSiQy6NNVSM4V16eG4dtnfS6Dz8+g/IN3wfnRpuxZedm1h/UdKcPeTpTsNhoAhABw9T7DNirnRwCDjZedJJQhx/KA0fqFwwdGm0kRqnpVc0B+MrBU40dy+EmxxIlwe/XHBbF38rbsyTJZYsrFGJuJpxPDfmuvG/JfmA==
+ bh=WgVdGsRswO3rdJA9O7HvIv7s4EbYU+SvwYuEuk/GtMU=;
+ b=YlJXiaQZRTwl4AbiOs0yTM6H6O5v0lMeeKjSNVk9fAYMQwXqyKNnNU/eI357mJhR9k3OI0uBJ61uli8CcJVuZMnZXN9Ed+3C8bczxCdVc+XOgLuGZaqN5N/WQq4AMT3C0Y0WZaFcAmMSC6XXm2CNG8Nf/0qKHxOHBJ999qXxpvHTaLqooFsnB+963s3HMmibW4vf9taCBnctxlhRsFeqoRdwE1E8vDLJSrkoiiQjEkIY1cQgLGf7FtwN8a5j9dTJv2NfNzDF/EWDFeHfi1Ha4yjM6oXpaW2TSkLxJfxb5zwqb9MWX/r6UJbDbs5Z9pafxT+J87l7J/xPP8xt5UQDEQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uNKXxOu+ZNzeyrp3ZPenMLgkgadEaol2oYRtEb/Wbz0=;
- b=l+BcpFU8/fQ3mqAxiv22U/p2iJezt6vlnjWgVQ9s01gR0BEtHMs7oEaM2LrqnHNv5tD+E7MMh0uoe+E2JMQVqQuwuU1HlHv6KEE48zusElOB/OMW0tVL9KmMjLCoHJYrffzdYWjKtCYW/nE1zf/TgCAUJpGqhZsEvM2pF8iva0UOPaSb8SUahREAlq3c7KAhtRtvBo2PLd8F4jlws0gc5cCpnG9MzL0kOr9G6qFjxkAr3dsZfNOC61RqfPNb/KpQdNM1o6G+WEbgryRkQSSm83pI0IKxLjfPFIoFVSVQ9iCRpQOekZDX6Ld/HjLU0zYpLtWQ/pnW7oVWQcybJn4e6A==
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from JH0PR06MB6849.apcprd06.prod.outlook.com (2603:1096:990:47::12)
- by JH0PR06MB7081.apcprd06.prod.outlook.com (2603:1096:990:6a::13) with
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by PH0PR11MB4823.namprd11.prod.outlook.com (2603:10b6:510:43::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7897.25; Tue, 27 Aug
- 2024 01:50:35 +0000
-Received: from JH0PR06MB6849.apcprd06.prod.outlook.com
- ([fe80::ed24:a6cd:d489:c5ed]) by JH0PR06MB6849.apcprd06.prod.outlook.com
- ([fe80::ed24:a6cd:d489:c5ed%3]) with mapi id 15.20.7897.021; Tue, 27 Aug 2024
- 01:50:34 +0000
-Message-ID: <d7978429-7875-423e-8c95-f81137a4e6cd@vivo.com>
-Date: Tue, 27 Aug 2024 09:50:28 +0800
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] vma remove the unneeded avc bound with non-CoWed folio
-To: David Hildenbrand <david@redhat.com>,
- Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
- linux-kernel@vger.kernel.org, oe-lkp@lists.linux.dev, oliver.sang@intel.com
-Cc: opensource.kernel@vivo.com
-References: <20240823140139.263-1-justinjiang@vivo.com>
- <2f19c2ff-66b2-4860-a870-a1bffe73320c@redhat.com>
-From: zhiguojiang <justinjiang@vivo.com>
-In-Reply-To: <2f19c2ff-66b2-4860-a870-a1bffe73320c@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SG2PR02CA0089.apcprd02.prod.outlook.com
- (2603:1096:4:90::29) To JH0PR06MB6849.apcprd06.prod.outlook.com
- (2603:1096:990:47::12)
+ 2024 05:05:45 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.7897.021; Tue, 27 Aug 2024
+ 05:05:45 +0000
+Date: Tue, 27 Aug 2024 13:05:36 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: Chao Yu <chao@kernel.org>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Linux Memory Management List
+	<linux-mm@kvack.org>, Jaegeuk Kim <jaegeuk@kernel.org>,
+	<linux-f2fs-devel@lists.sourceforge.net>, <ltp@lists.linux.it>,
+	<oliver.sang@intel.com>
+Subject: [linux-next:fs-next] [f2fs]  96cfeb0389:
+ INFO:task_blocked_for_more_than#seconds
+Message-ID: <202408271015.5b4de2c5-oliver.sang@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+X-ClientProxiedBy: SG3P274CA0003.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:be::15)
+ To LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -65,169 +96,334 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: JH0PR06MB6849:EE_|JH0PR06MB7081:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4f388ce0-f9bc-43e8-2730-08dcc63aa436
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|PH0PR11MB4823:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4f502b55-bd41-45d0-d211-08dcc655e868
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016|43062017;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?TTRtWXR3T2lDZnRLbE41UGY3RnFpS0Y1T0ZENGZ4dlk2cHFhdno2UFR6ZlV0?=
- =?utf-8?B?UmsrZHdsZ3dmS1FibzZ1VTRtT1pqaU52WTF2UnNQc0ZVWGgzUElPb1NpV2Rs?=
- =?utf-8?B?Y21Uam13djZIUUlCeVI4SU4wWnFaazhHMXM4L0N4Z1I2VDJpWXNsRTZ3dS8r?=
- =?utf-8?B?QzNKVm0zRWNaN3NPK0xPcUFabUpQb3lSU1RpWVR3VWkwTEI3YlRnZDVYNTc1?=
- =?utf-8?B?OGVwS3k0WTU0cXBFV0JBNThER0dVTUtKWmFkdzlTMkRCZUJZQVp6bjh2bVBn?=
- =?utf-8?B?azRYaDJUbWhzaHhDQnl0WDh4TW1LWFlUSUZpWWg0UlN0eC93MWpPTVRldThh?=
- =?utf-8?B?K21xSVFUb1BiS0FxUjVPamgrZlc5SlBZaXE5dFdKK1BiZVU5SjFpNXZnR29p?=
- =?utf-8?B?aVpaVmNBeGFBSjJrTWNLMTRKWVcrajZLZlIxSEZ3Uy8yQVlWaXFYVkQ1czdx?=
- =?utf-8?B?Y2hxRHFtNk5PQ0xYL3JEc0J2eTdYVXIyc0hlT1dIblNkdklsRGIyaC93OGdC?=
- =?utf-8?B?ZkcwN25WZHB3dWZTRFNWczMyZ21pbmlrMDN5RE4zcE4zeG9WenA3RmgxTVhv?=
- =?utf-8?B?ZjZ6WlJPNTJyV2ZRcjFaS0VyNmxWdXBSSUN6dDZCa0x6ejYxNHRNOUtyVXFt?=
- =?utf-8?B?WTJOblU2MllINWJOQkdHSjV6T09lcmh3UHd5dHJJeG1NSnBaSGR0cEpjRHRl?=
- =?utf-8?B?V25qeXk4Y2YzOTY3a0VUUnlzcTAya1U1K0s0QkJVQkZDNlNSRDFvdWdYejJm?=
- =?utf-8?B?aVZDQ3dqMVRlajVqTVdFaE15OUdGY0tiWGJpWG1ZQ3I2bE1iL0NQdjl0STVj?=
- =?utf-8?B?VVM1cTNmTFBEcnM1dFVJNUY3aEZhdWE3VDdnNE1KcEt0eTZxd1JHRlNXU2pa?=
- =?utf-8?B?dndyZXBWYmtKUU5OZUd5SzlVczh2R3dBRTd1aHlnMjBheERtZGJ0dWNZNUJZ?=
- =?utf-8?B?eVNJQUxacUo5cmdQLzBwMnVQVHlFWmFuR0d0Unk1cXFyMVVxWk1ScVJHL3pS?=
- =?utf-8?B?aStzS0FRZDNVMXFsTXlydjVsWlZTN3JlWmE2aGVQRUZzQVNRUE9JSG9yQklh?=
- =?utf-8?B?TVcyL0ZJT1NUdkdGY3lia3ZCMGxTcE9WUURiWGNPQTJUSGNZZHk1a3JyOTJl?=
- =?utf-8?B?WXBaVm01QnVKdjAzeFB6cHk4MVRBdG02SEhVK1EwK0xyOVhtRlkxSVRmNHU1?=
- =?utf-8?B?Nkt5THhaNFRjNWpucXIvdUVRYTBFaEc1WUl4K3BpRFAzZjdOZzhSWVg3dlJo?=
- =?utf-8?B?MDJiVEgrbktJSGVYMnFBZXhlZFdzN2daazBZNisrd1dGZWVNdUNjSE1HTWJ0?=
- =?utf-8?B?bWh0WnFpbDBsQ09LakFoS1lPeUJOMEFQQ2pHVWZjemQxL25tWGpOWEV1NVQ2?=
- =?utf-8?B?OFpzS0x5UkwzVFhDbFRTM0wvY1VqQzM3V3BPWmhsYzJ3OEVtOUszWGc2VkRs?=
- =?utf-8?B?eDIzMStGOUpKVi9iNmdEU1lmaUR6TGxldm0yVDFSM2hzbyszSEd4c1VPM3ZU?=
- =?utf-8?B?MlNmeHROSVFVTDgvcDk4QTVyOCtBQ0x4UkhPT003cmh1SzgwK1BwaUR6b2kw?=
- =?utf-8?B?cnd2NkkwWUh4ZmRzYnRTQU42K3FJajlZc0Q1R3IvVi93MGxoUEZwK0V0QVZH?=
- =?utf-8?B?N3BZWlhWYy9yaVFkYUlvbXBlUjZGMUpQNW5IUVNnMXg5ZGViMVNmQnBBQlZv?=
- =?utf-8?B?akt0UVJTOHVINVc1bGxIcGloRHVNOXBjaDl6a21udVg2K3FpdXA3ajJqa0Zw?=
- =?utf-8?B?cmM4NFFoTkVhNlROOUpOR0FMeUhzREcrY0hBdHdNUmRvUGNpZk5XZkdQQS8w?=
- =?utf-8?B?WDhxeGJEcGt1aXZueVdJUT09?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:JH0PR06MB6849.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(43062017);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?SXtFv1TvNyqnbKSHwqGbFLp7hX1Xd9znrqaKMtlHaoyYt5uXARpq++AqqwZa?=
+ =?us-ascii?Q?b7dxFk4YOUekLH8mJoSPolca8jhFxxu5sco7mDrvVBW2tBRoW2bi+jWyo2Uq?=
+ =?us-ascii?Q?vryFGj0TIAPI61wkbtqPElCUS6j5F3Z1TeXG6hCRtOS50pW4ielcgcx+Djny?=
+ =?us-ascii?Q?peR/W6cVeSY7ounXUKx07vOP9+0udejcjypV9IHlm3p5nH4gkxIGhFc91VLb?=
+ =?us-ascii?Q?3Qntj5UAy+twzY1Ru9ylXPW+FjerCOZFgGsECZHg7Ukwl0N6GupGfiJt5hzY?=
+ =?us-ascii?Q?t2/EER+45q7OXEFVEJekEzMkS6gj5ScYRBkV4EJ0YPiAvEcSEntpxrSHdckc?=
+ =?us-ascii?Q?OxgBheCQRlB2ikHaLnemuPqzynbQI1UlNTipDyk9se/CfO732Pt/Y1bkMXJn?=
+ =?us-ascii?Q?1/Q7vCa3fGinIrOpPXuuOY/vs1nia+lZ2Z8HoB7ybIHcRtVi6xUA3X4G+k93?=
+ =?us-ascii?Q?9Q7UlPx0jLW4YKssElJ1VnIz/dR0Up+m+damGiPvaJkXGOi9eWy2eQwcSWz1?=
+ =?us-ascii?Q?xfgTwR2sUunYH0IT4MDvvc4lty4MwNyjHfXtip1OyZAwJFUCdJH1k7HMJEYo?=
+ =?us-ascii?Q?DDWGLFnFKfjFv0Cg2kjEG0fBQT5P19T9gHT9O+quN2rgBbT7PZVDH9ZMkMsW?=
+ =?us-ascii?Q?TD+yXYtsQ8XsyjjZ+04cKn8h6QwftprHIpVfXZXzg7Z88bC7VcxmSZyGqffg?=
+ =?us-ascii?Q?tSsbhaQ3rcoa+skzQIUjgYf4SYNTdImF1V+jwETNnZ8Qa3R41F+JrUiSZVq2?=
+ =?us-ascii?Q?mjceW6FqstQDgzUZmi5GavRvzxGaPpANu2COJIciJwNplJ+L4cJXsa1l00uh?=
+ =?us-ascii?Q?ZEUnnZAwPCya3x0xj7lmHP2QQvi2A4MclfHgBhD4ACVx2Yz6Z9WK1BeGsv6/?=
+ =?us-ascii?Q?d+9dAe7CoPbJW099RpZk46tIZ7RyCsAiescklJGmCKsHrHNTW1GIep/DVXZC?=
+ =?us-ascii?Q?1WvYXJUEsprTjz/I2mxKmrFlMzOtHaMmiLJiyBbDYquKuP3FnyWrsVxjYH7f?=
+ =?us-ascii?Q?2nfUpM3zglA2YClhlaUs5LwFwLLAzFW0iRDdKwayd3ZHaGGImjfKX2wheHmO?=
+ =?us-ascii?Q?mJBZyng+IcGjmwbRlPkezS29uOTPemqz+NeTaEKrbO49vkLt2KOcpm89tjYO?=
+ =?us-ascii?Q?bdhqIhXW/JiuAnM8+A8xupdjqe8VFq7YkvOneGypA3T0ur7zUPNS5o9F4ycP?=
+ =?us-ascii?Q?L8OhyGxiAtLuFlBwdcwV5kKJpayyJl9aBj1/pSf1hYanoKDyolwIiY+TUnDg?=
+ =?us-ascii?Q?hHlFLbvc/nv6Ye7Fgh+WQG9NmKrQj2yF+p+bd8oRjHEwK7qK9XjTShgXE9l7?=
+ =?us-ascii?Q?apc=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?UzFENWN0L2VpRExVeXYvOVRYQjZzQ2xKL0RZbW9EbDNPa2NpYkZ4QWlJS2Zi?=
- =?utf-8?B?eXhSa0N2R1Q4T0xEYVQza3MrSFF3QkJxZEJSWnNWZVdPbzM4WDVlMno3NjFS?=
- =?utf-8?B?V3RMZ3g5Y3VjOVVDb05vNnczL2JOU1JkQWUzaFBOKzd0R0ttMFh6R0xsdFRt?=
- =?utf-8?B?WWUwSlhrdFpIWDZubUM5T3htVkZDYy9LNjcwZG95Nm5pcTg2SDdlOGlFS0p1?=
- =?utf-8?B?SVl0dFVjODNlS3BkVmlqa2xZT2JMQ0pLWkxWdDRVNSt1bGQrNDBIMkNUbmFS?=
- =?utf-8?B?MzdCeVg4L0QvM2QwYk92eHYwelBQMnF2WHJJQ1pQeWh4ZTFJTFB3Q2xjaC9q?=
- =?utf-8?B?bW1rVGlCVklKaVR2UFZ1cWludEtnY0dUOElXY1VaZ0s2QmNNbW5NZ09KbWZQ?=
- =?utf-8?B?QllqNTZFaWRqTUNRR3lBVFRseVJjT25SY2JJUSs0aGlXTDlWYWR6dXkzZ3Ur?=
- =?utf-8?B?SFdudm53Sk9memVEQjk3OHErbkpwZ1VEMG5XWTVJNU1HNXM4SStFNWFLaFNZ?=
- =?utf-8?B?Y0ZOWUNkNXBsUU9CcFphTWVyTXFLbE5pNEJMRXFkaWRYQ2k1ck1qTUZRTjlv?=
- =?utf-8?B?OVJDWXBUblJXNWdBU3pBTDRObXpiMnoyNnJDdXl4YmtxTW9BUGpPYjZ2eFZm?=
- =?utf-8?B?T3V1c2U3T2FnOWhKUnpTdkNYNFVnUy9LUHFHOFd0Y1V2TUdDc2xLQjBiVmlY?=
- =?utf-8?B?S0hmK1V5eUowb1o5dTV0SWRsM2t4a09vZ1NQeE5RQ2RoNk50c3JSdkJrcHVT?=
- =?utf-8?B?K2syV3F6VUFjL3Nnb05kUUk3MlRKaktCRDFrdkNjeFVzbVFubHhXUzh0a3Fj?=
- =?utf-8?B?b0dnZzRXMGljQ0Z3UEZkQWJwVGlINEJTVmpjVmFnb09ublhyb2YvMFY0dkpo?=
- =?utf-8?B?NldzNmFWZ1pleG9MbVBoOGVDZ1RhMzhUakR0OXhBbkJ5eElIbDZ6eWJMZ202?=
- =?utf-8?B?dWs1VUVzZDVMcWNRUnJJZ1Z5eWplS2Y4U3Fndmk3ZTcxYUtJZWFKek5nY1Rn?=
- =?utf-8?B?emlEVkNvbmxvNWJ3cjd3WkIwdWhkc3R3WkMrQVdkdEFncjNTWmlOT0VhUFNX?=
- =?utf-8?B?eVJndThERnVlSHk2YmlKaHBEWGdXdHNsMWV3M21FS0tPRXB5VlhIdC9UZnVP?=
- =?utf-8?B?NlN0VHdzaWtpL2M5anBuZjdtMHpWZjgrRFJ3SDBxWkgzM205d0V3QWxvQ0Mv?=
- =?utf-8?B?Qy9sd1I5ZWVFckRacEVSd2FZa3VtY2JiSGJKSnVHOG9KSUlCbXZ0VEdPSGRt?=
- =?utf-8?B?WTRGY0Ixb0gxYitMSWFGeEd6Um9Qd2hZdGtjeFFRazQyNlhaNzU3bTdvNktO?=
- =?utf-8?B?Zi9takxkWmgwUlJuMU5GSFZPdVl1eXpOdW93UVJxcUh5bjRjb0ZLSG1CZm5y?=
- =?utf-8?B?K0ZsS25VYWNsZTZ4WVZDYmtqNHpITGE5R1ZWNlZseFdWNnIySHI4T045Qzdv?=
- =?utf-8?B?ekJSTHpzSjh0Tk1CVFVwM09JL2pWMjRaa3lkbTBGdlFpVFpvWmYrL3RwbkRE?=
- =?utf-8?B?QXdpcmlSQk9YYzJOSzgrTTNMcWRiUXNGdGVxTVZHMEt5SHRVNzd6eWprZEJx?=
- =?utf-8?B?eGhwMWp5TGxIMGk2L3dPNlVVTEx2RVI1MUU3NGg2WFBWUE5ZV2JOTWkrTUd1?=
- =?utf-8?B?YmlMUmN3a05zQXp3NTBRSEFYTnF0TGNMeTBzRUlBczVXY21jalpuWVZXOTVy?=
- =?utf-8?B?L2s0NjJpcHYxdlVQcEMvK1ZYUUxNd0krckkyRWNsRy80R0tEcWxURkxPc3BX?=
- =?utf-8?B?WEhqZ0w4L0NwS1JGb0hyc2UxWkl2RmtMcjM2MFk3SUpzaGI3YWE2V2FKMFRJ?=
- =?utf-8?B?dXpSZWxuU29abmpaNUkzbEFDbkc5cXVoRDNML2EwMHhrU2ZsV1E4UEwxbjdH?=
- =?utf-8?B?UTltQW9FaU1mRFprcmJaZ0ZKL24xM3k3REkrQmg2bzh3QTVPT0MzQ1Z4U3lm?=
- =?utf-8?B?S05WbUZmUGxVY1FRYTVCbnlEeGI0UHV1Q0VMeFp4THFNaTAxZlJKUmpFL1ow?=
- =?utf-8?B?M1Y2aHZtOWIwVGJic0ZPODlDb25UcVdITU84MVVkOUc3N2lVTDFqSUZEQnNC?=
- =?utf-8?B?UEpob2FMWjRUZC9FQ1Y3Uk9LT1l6RHhlYkNWRDd4bmExRkpuRy91UXZwTmsy?=
- =?utf-8?Q?44kUL/ncEf2Q7iizcdJ4XtAs9?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4f388ce0-f9bc-43e8-2730-08dcc63aa436
-X-MS-Exchange-CrossTenant-AuthSource: JH0PR06MB6849.apcprd06.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0/4C07FrqcP0YS62Rg02f2dX/aK/vo9Yv1EJSjwSLlTr4UVI/+UHD16V7uMK?=
+ =?us-ascii?Q?cn2KnWy+2IDy/xCjQnaLxdUbRkk4+wt+7AvkvzVDCpDjEeJwgQrRA/4AC+Ih?=
+ =?us-ascii?Q?KlyLcqlLosCasatAbVrLGectz6fZ9mj84aBjHgBcfTPFCXaBJ4ePLWRf6Egc?=
+ =?us-ascii?Q?xVxn7aC1KyIOONjuJdsFJXrMcPtC4/p+4ycs8zQLXPDATwkY2R7WPzHYCVTT?=
+ =?us-ascii?Q?8/ygz4oq4FQu2yWbzS58f90nTQ0Rvd4W3x9CI9XJ0gVKwLL886qO+JDxw6ag?=
+ =?us-ascii?Q?9PKQZcsZAaAT1ur9DHlMcgiHPmAwOOoPIgawyi+3mZJLtP95yl3gf9mDVdW1?=
+ =?us-ascii?Q?wcVoURUesi2KPON0nHg6RAnC7x3hea0Q26NH/vKAfQFr0i4g0AdwQOrBEZnV?=
+ =?us-ascii?Q?/sPwfwUQYg9taVAFLYBcv6ayG6LsUpdlYv8ZzxMqKaAoeKtZErHek3jBkNfX?=
+ =?us-ascii?Q?VhX7frwIy7D43J+ywPWsQ5N32gAyyFrMOEcXTtfD8QkCGRyb2eOu44P5+94C?=
+ =?us-ascii?Q?CdHH2Tt/KXG5ybOWZIPEgqPGA9MtBT5Ib8QF1NFJvslUSlZuUIyk5LXqAdxb?=
+ =?us-ascii?Q?8jIAmcZ0OAOgNsAq6aQKwWTgeQASrCh848vrJul9Yx2L9Ch2PLaf9IJKP7nI?=
+ =?us-ascii?Q?yR5AFg95DdOwQF8t7G/fIVXZMSof48Bb4ixLitPCUS3a4Lbug3GFlPYNXniU?=
+ =?us-ascii?Q?PcvKIDrqXKB8f0Zty82sfrg+TqAxbSbndsseYIO2TnOAe+dAtD+4RyoyeoSI?=
+ =?us-ascii?Q?vLzWV5YP/YKyz4ERSs7Q7N6rKbjPV5E0bFQ4SNi9Z/dkBBx8gbDfDHWfptcU?=
+ =?us-ascii?Q?irOVDoW7pAUD1WpVzn4FGUeyAAX+9P0u72Ha7vZZCj+bF5ooNzlq6yBdbVgr?=
+ =?us-ascii?Q?+htOs16tXcyqa6+8zP1vgAgkrYK/NrQdPvszFVdODSd/c3ShLrHsTWMjYzIM?=
+ =?us-ascii?Q?9uNk5a8xMeO24/RtOWTKxKcOgQjymjgmRdW+DRy3sDIi8sy5nYCUUrUJzMG1?=
+ =?us-ascii?Q?/oPQcVfK4X5D1TURUNGjf1BPcmruxwWdbfmoSSF+sTBAfyYMG/hqUMn+60Xw?=
+ =?us-ascii?Q?ktk5oQ8QyDIkiUHzq7goWpCd/QrWeaCBGmB5YmNkWEj3CpCmRYK5LyZM1ROw?=
+ =?us-ascii?Q?Hw5v40RyyIfKHpt8rkIU57xnXtEfyOUX36AaLP3guhKiV1nww1qK3Mq/dytl?=
+ =?us-ascii?Q?Kgne2iaFP94e9Z9fcp7BDr5fWFEepmTumICW8DAPB6OPOqTbQdNRyirhCMEq?=
+ =?us-ascii?Q?qiCB3lFeiXORI4TBvqSpoTelFjY9OUT2u/IA7je4m6xNkQaHf/buMhBVoCfF?=
+ =?us-ascii?Q?5l9Vd9JpTLrD3TIlwdOENDdf/HpcdcLUqKX/QEm+gsMv0zbfd/6AnW3jXybs?=
+ =?us-ascii?Q?qW7gh3cGGBdk0Un/OpNS9bY0kGjqUVQ1qKJIerSzIJ8+llVLpypBVY0YCCA2?=
+ =?us-ascii?Q?yqT1ALmihU54uxzLRxRX0cBOEE0PYu4iypzo+oot2ec+dNsCPp7yv81KOpMM?=
+ =?us-ascii?Q?VT+2BQ7kVSq9+t5rRcE/FOpaZgJXOhgE2m45IpI8Up76j6pV6Awu1cE3rqGa?=
+ =?us-ascii?Q?CP7W5PmDEFNcfJF0+7w7v5gM10eDUDZgho2OE0LD?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4f502b55-bd41-45d0-d211-08dcc655e868
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Aug 2024 01:50:34.6220
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Aug 2024 05:05:45.4839
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Apk3aqCFDafmydC5YEtLSGf5Ck8G8MWFP/EB2zcQ+YXQabKYy4oD/PmaS4f8GfoeutPt/PUipu4U7/xHY/BoNA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: JH0PR06MB7081
+X-MS-Exchange-CrossTenant-UserPrincipalName: MONy9kRbcoo9z8QGMjIVmbLEUTEY90yzaCQtTmqcW81QBNsSTUFrKVCcc4H3K6QspW1MAcHvskE5Fb+EQ7bPTQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB4823
+X-OriginatorOrg: intel.com
 
 
 
-在 2024/8/27 1:24, David Hildenbrand 写道:
-> On 23.08.24 16:01, Zhiguo Jiang wrote:
->> After CoWed by do_wp_page, the vma established a new mapping 
->> relationship
->> with the CoWed folio instead of the non-CoWed folio. However, regarding
->> the situation where vma->anon_vma and the non-CoWed folio's anon_vma are
->> not same, the avc binding relationship between them will no longer be
->> needed, so it is issue for the avc binding relationship still existing
->> between them.
->>
->> This patch will remove the avc binding relationship between vma and the
->> non-CoWed folio's anon_vma, which each has their own independent
->> anon_vma. It can also alleviates rmap overhead simultaneously.
->>
->> Signed-off-by: Zhiguo Jiang <justinjiang@vivo.com>
->> ---
->> -v2:
->>   * Solve the kernel test robot noticed "WARNING"
->>     Reported-by: kernel test robot <oliver.sang@intel.com>
->>     Closes: 
->> https://lore.kernel.org/oe-lkp/202408230938.43f55b4-lkp@intel.com
->>   * Update comments to more accurately describe this patch.
->>
->> -v1:
->> https://lore.kernel.org/linux-mm/20240820143359.199-1-justinjiang@vivo.com/
->>
->>   include/linux/rmap.h |  1 +
->>   mm/memory.c          |  8 +++++++
->>   mm/rmap.c            | 53 ++++++++++++++++++++++++++++++++++++++++++++
->>   3 files changed, 62 insertions(+)
->>
->> diff --git a/include/linux/rmap.h b/include/linux/rmap.h
->> index 91b5935e8485..8607d28a3146
->> --- a/include/linux/rmap.h
->> +++ b/include/linux/rmap.h
->> @@ -257,6 +257,7 @@ void folio_remove_rmap_ptes(struct folio *, 
->> struct page *, int nr_pages,
->>       folio_remove_rmap_ptes(folio, page, 1, vma)
->>   void folio_remove_rmap_pmd(struct folio *, struct page *,
->>           struct vm_area_struct *);
->> +void folio_remove_anon_avc(struct folio *, struct vm_area_struct *);
->>     void hugetlb_add_anon_rmap(struct folio *, struct vm_area_struct *,
->>           unsigned long address, rmap_t flags);
->> diff --git a/mm/memory.c b/mm/memory.c
->> index 93c0c25433d0..4c89cb1cb73e
->> --- a/mm/memory.c
->> +++ b/mm/memory.c
->> @@ -3428,6 +3428,14 @@ static vm_fault_t wp_page_copy(struct vm_fault 
->> *vmf)
->>                * old page will be flushed before it can be reused.
->>                */
->>               folio_remove_rmap_pte(old_folio, vmf->page, vma);
->> +
->> +            /*
->> +             * If the new_folio's anon_vma is different from the
->> +             * old_folio's anon_vma, the avc binding relationship
->> +             * between vma and the old_folio's anon_vma is removed,
->> +             * avoiding rmap redundant overhead.
->> +             */
->> +            folio_remove_anon_avc(old_folio, vma);
->
-> ... by increasing write fault latency, introducing an RMAP walk (!)? Hmm?
->
-> On the reuse path, we do a folio_move_anon_rmap(), to optimize that.
->
-Thanks for your comments. This may not be a good fixup patch. The
-resue patch folio_move_anon_rmap() seems to be exclusive or
-_refcount = 1 folios. The fork() path seems to clear exclusive flag
-in copy_page_range() --> ... --> __folio_try_dup_anon_rmap(). However,
-I observed lots of orphan avcs by the above debug trace logs in
-wp_page_copy(). But they may be not removed by discussing with Mika.
+Hello,
 
-Thanks
-Zhiguo
+kernel test robot noticed "INFO:task_blocked_for_more_than#seconds" on:
+
+commit: 96cfeb0389530ae32ade8a48ae3ae1ac3b6c009d ("f2fs: fix to wait dio completion")
+https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git fs-next
+
+[test failed on linux-next/master 1ca4237ad9ce29b0c66fe87862f1da54ac56a1e8]
+
+in testcase: ltp
+version: ltp-x86_64-14c1f76-1_20240824
+with following parameters:
+
+	disk: 1HDD
+	fs: f2fs
+	test: ltp-aiodio.part4-01
+
+
+
+compiler: gcc-12
+test machine: 36 threads 1 sockets Intel(R) Core(TM) i9-10980XE CPU @ 3.00GHz (Cascade Lake) with 128G memory
+
+(please refer to attached dmesg/kmsg for entire log/backtrace)
+
+
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202408271015.5b4de2c5-oliver.sang@intel.com
+
+
+kern  :err   : [ 1975.160382] INFO: task dio_truncate:7499 blocked for more than 491 seconds.
+kern  :err   : [ 1975.162291]       Not tainted 6.11.0-rc2-00012-g96cfeb038953 #1
+kern  :err   : [ 1975.163937] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+kern  :info  : [ 1975.165896] task:dio_truncate    state:D stack:0     pid:7499  tgid:7499  ppid:7498   flags:0x00000002
+kern  :info  : [ 1975.168012] Call Trace:
+kern  :info  : [ 1975.169513]  <TASK>
+kern :info : [ 1975.170940] __schedule (kernel/sched/core.c:5188 kernel/sched/core.c:6529) 
+kern :info : [ 1975.172569] ? __pfx___schedule (kernel/sched/core.c:6399) 
+kern :info : [ 1975.174128] ? stack_trace_save (kernel/stacktrace.c:123) 
+kern :info : [ 1975.175713] schedule (arch/x86/include/asm/preempt.h:84 kernel/sched/core.c:6607 kernel/sched/core.c:6621) 
+kern :info : [ 1975.177213] inode_dio_wait (fs/inode.c:2478 fs/inode.c:2496) 
+kern :info : [ 1975.178732] ? __pfx_inode_dio_wait (fs/inode.c:2494) 
+kern :info : [ 1975.180360] ? kasan_save_track (arch/x86/include/asm/current.h:49 mm/kasan/common.c:60 mm/kasan/common.c:69) 
+kern :info : [ 1975.181888] ? __pfx_wake_bit_function (kernel/sched/wait_bit.c:22) 
+kern :info : [ 1975.183478] ? setattr_prepare (fs/attr.c:173) 
+kern :info : [ 1975.185017] f2fs_setattr (fs/f2fs/file.c:1063) f2fs
+kern :info : [ 1975.186637] notify_change (fs/attr.c:495) 
+kern :info : [ 1975.188160] ? __pfx_down_write (kernel/locking/rwsem.c:1577) 
+kern :info : [ 1975.189645] ? do_truncate (fs/open.c:66) 
+kern :info : [ 1975.191087] do_truncate (fs/open.c:66) 
+kern :info : [ 1975.192582] ? __pfx_do_truncate (fs/open.c:41) 
+kern :info : [ 1975.194037] ? inode_permission (fs/namei.c:536 fs/namei.c:510) 
+kern :info : [ 1975.195518] vfs_truncate (fs/open.c:111) 
+kern :info : [ 1975.196955] __x64_sys_truncate (fs/open.c:135 fs/open.c:146 fs/open.c:144 fs/open.c:144) 
+kern :info : [ 1975.198393] ? __pfx___x64_sys_truncate (fs/open.c:144) 
+kern :info : [ 1975.199920] ? kmem_cache_free (mm/slub.c:4474 mm/slub.c:4548) 
+kern :info : [ 1975.201350] do_syscall_64 (arch/x86/entry/common.c:52 arch/x86/entry/common.c:83) 
+kern :info : [ 1975.202723] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130) 
+kern  :info  : [ 1975.204281] RIP: 0033:0x7fb415adaf17
+kern  :info  : [ 1975.205651] RSP: 002b:00007fff6e0f8e28 EFLAGS: 00000206 ORIG_RAX: 000000000000004c
+kern  :info  : [ 1975.207385] RAX: ffffffffffffffda RBX: 000055bd20741074 RCX: 00007fb415adaf17
+kern  :info  : [ 1975.209091] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 000055bd2074103d
+kern  :info  : [ 1975.210765] RBP: 000055bd4dc17000 R08: 0000000000000001 R09: 0000000000010000
+kern  :info  : [ 1975.212511] R10: 00007fb4159ea390 R11: 0000000000000206 R12: 0000000000000004
+kern  :info  : [ 1975.214171] R13: 0000000000000064 R14: 0000000000010000 R15: 0000000000000064
+kern  :info  : [ 1975.215872]  </TASK>
+kern  :err   : [ 2466.680277] INFO: task dio_truncate:7499 blocked for more than 983 seconds.
+kern  :err   : [ 2466.682130]       Not tainted 6.11.0-rc2-00012-g96cfeb038953 #1
+kern  :err   : [ 2466.683485] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+kern  :info  : [ 2466.685152] task:dio_truncate    state:D stack:0     pid:7499  tgid:7499  ppid:7498   flags:0x00000002
+kern  :info  : [ 2466.686743] Call Trace:
+kern  :info  : [ 2466.687916]  <TASK>
+kern :info : [ 2466.689140] __schedule (kernel/sched/core.c:5188 kernel/sched/core.c:6529) 
+kern :info : [ 2466.690254] ? __pfx___schedule (kernel/sched/core.c:6399) 
+kern :info : [ 2466.691533] ? stack_trace_save (kernel/stacktrace.c:123) 
+kern :info : [ 2466.692815] schedule (arch/x86/include/asm/preempt.h:84 kernel/sched/core.c:6607 kernel/sched/core.c:6621) 
+kern :info : [ 2466.694022] inode_dio_wait (fs/inode.c:2478 fs/inode.c:2496) 
+kern :info : [ 2466.695258] ? __pfx_inode_dio_wait (fs/inode.c:2494) 
+kern :info : [ 2466.696491] ? kasan_save_track (arch/x86/include/asm/current.h:49 mm/kasan/common.c:60 mm/kasan/common.c:69) 
+kern :info : [ 2466.697829] ? __pfx_wake_bit_function (kernel/sched/wait_bit.c:22) 
+kern :info : [ 2466.699156] ? setattr_prepare (fs/attr.c:173) 
+kern :info : [ 2466.700333] f2fs_setattr (fs/f2fs/file.c:1063) f2fs
+kern :info : [ 2466.701756] notify_change (fs/attr.c:495) 
+kern :info : [ 2466.702975] ? __pfx_down_write (kernel/locking/rwsem.c:1577) 
+kern :info : [ 2466.704241] ? do_truncate (fs/open.c:66) 
+kern :info : [ 2466.705436] do_truncate (fs/open.c:66) 
+kern :info : [ 2466.706641] ? __pfx_do_truncate (fs/open.c:41) 
+kern :info : [ 2466.707775] ? inode_permission (fs/namei.c:536 fs/namei.c:510) 
+kern :info : [ 2466.709133] vfs_truncate (fs/open.c:111) 
+kern :info : [ 2466.710229] __x64_sys_truncate (fs/open.c:135 fs/open.c:146 fs/open.c:144 fs/open.c:144) 
+kern :info : [ 2466.711485] ? __pfx___x64_sys_truncate (fs/open.c:144) 
+kern :info : [ 2466.712728] ? kmem_cache_free (mm/slub.c:4474 mm/slub.c:4548) 
+kern :info : [ 2466.714005] do_syscall_64 (arch/x86/entry/common.c:52 arch/x86/entry/common.c:83) 
+kern :info : [ 2466.715220] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130) 
+kern  :info  : [ 2466.716486] RIP: 0033:0x7fb415adaf17
+kern  :info  : [ 2466.717758] RSP: 002b:00007fff6e0f8e28 EFLAGS: 00000206 ORIG_RAX: 000000000000004c
+kern  :info  : [ 2466.719330] RAX: ffffffffffffffda RBX: 000055bd20741074 RCX: 00007fb415adaf17
+kern  :info  : [ 2466.720811] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 000055bd2074103d
+kern  :info  : [ 2466.722359] RBP: 000055bd4dc17000 R08: 0000000000000001 R09: 0000000000010000
+kern  :info  : [ 2466.723766] R10: 00007fb4159ea390 R11: 0000000000000206 R12: 0000000000000004
+kern  :info  : [ 2466.725408] R13: 0000000000000064 R14: 0000000000010000 R15: 0000000000000064
+kern  :info  : [ 2466.726816]  </TASK>
+kern  :err   : [ 2958.200311] INFO: task dio_truncate:7499 blocked for more than 1474 seconds.
+kern  :err   : [ 2958.202114]       Not tainted 6.11.0-rc2-00012-g96cfeb038953 #1
+kern  :err   : [ 2958.203466] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+kern  :info  : [ 2958.205053] task:dio_truncate    state:D stack:0     pid:7499  tgid:7499  ppid:7498   flags:0x00000002
+kern  :info  : [ 2958.206833] Call Trace:
+kern  :info  : [ 2958.207970]  <TASK>
+kern :info : [ 2958.209063] __schedule (kernel/sched/core.c:5188 kernel/sched/core.c:6529) 
+kern :info : [ 2958.210370] ? __pfx___schedule (kernel/sched/core.c:6399) 
+kern :info : [ 2958.211614] ? stack_trace_save (kernel/stacktrace.c:123) 
+kern :info : [ 2958.212856] schedule (arch/x86/include/asm/preempt.h:84 kernel/sched/core.c:6607 kernel/sched/core.c:6621) 
+kern :info : [ 2958.214029] inode_dio_wait (fs/inode.c:2478 fs/inode.c:2496) 
+kern :info : [ 2958.215341] ? __pfx_inode_dio_wait (fs/inode.c:2494) 
+kern :info : [ 2958.216584] ? kasan_save_track (arch/x86/include/asm/current.h:49 mm/kasan/common.c:60 mm/kasan/common.c:69) 
+kern :info : [ 2958.217788] ? __pfx_wake_bit_function (kernel/sched/wait_bit.c:22) 
+kern :info : [ 2958.219114] ? setattr_prepare (fs/attr.c:173) 
+kern :info : [ 2958.220297] f2fs_setattr (fs/f2fs/file.c:1063) f2fs
+kern :info : [ 2958.221567] notify_change (fs/attr.c:495) 
+kern :info : [ 2958.222775] ? __pfx_down_write (kernel/locking/rwsem.c:1577) 
+kern :info : [ 2958.223964] ? do_truncate (fs/open.c:66) 
+kern :info : [ 2958.225108] do_truncate (fs/open.c:66) 
+kern :info : [ 2958.226262] ? __pfx_do_truncate (fs/open.c:41) 
+kern :info : [ 2958.227498] ? inode_permission (fs/namei.c:536 fs/namei.c:510) 
+kern :info : [ 2958.228670] vfs_truncate (fs/open.c:111) 
+kern :info : [ 2958.229803] __x64_sys_truncate (fs/open.c:135 fs/open.c:146 fs/open.c:144 fs/open.c:144) 
+kern :info : [ 2958.231062] ? __pfx___x64_sys_truncate (fs/open.c:144) 
+kern :info : [ 2958.232296] ? kmem_cache_free (mm/slub.c:4474 mm/slub.c:4548) 
+kern :info : [ 2958.233460] do_syscall_64 (arch/x86/entry/common.c:52 arch/x86/entry/common.c:83) 
+kern :info : [ 2958.234650] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130) 
+kern  :info  : [ 2958.235930] RIP: 0033:0x7fb415adaf17
+kern  :info  : [ 2958.237063] RSP: 002b:00007fff6e0f8e28 EFLAGS: 00000206 ORIG_RAX: 000000000000004c
+kern  :info  : [ 2958.238601] RAX: ffffffffffffffda RBX: 000055bd20741074 RCX: 00007fb415adaf17
+kern  :info  : [ 2958.240081] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 000055bd2074103d
+kern  :info  : [ 2958.241545] RBP: 000055bd4dc17000 R08: 0000000000000001 R09: 0000000000010000
+kern  :info  : [ 2958.243099] R10: 00007fb4159ea390 R11: 0000000000000206 R12: 0000000000000004
+kern  :info  : [ 2958.244574] R13: 0000000000000064 R14: 0000000000010000 R15: 0000000000000064
+kern  :info  : [ 2958.246040]  </TASK>
+kern  :err   : [ 3449.721200] INFO: task dio_truncate:7499 blocked for more than 1966 seconds.
+kern  :err   : [ 3449.722637]       Not tainted 6.11.0-rc2-00012-g96cfeb038953 #1
+kern  :err   : [ 3449.724151] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+kern  :info  : [ 3449.725677] task:dio_truncate    state:D stack:0     pid:7499  tgid:7499  ppid:7498   flags:0x00000002
+kern  :info  : [ 3449.727394] Call Trace:
+kern  :info  : [ 3449.728500]  <TASK>
+kern :info : [ 3449.729661] __schedule (kernel/sched/core.c:5188 kernel/sched/core.c:6529) 
+kern :info : [ 3449.730915] ? __pfx___schedule (kernel/sched/core.c:6399) 
+kern :info : [ 3449.732183] ? stack_trace_save (kernel/stacktrace.c:123) 
+kern :info : [ 3449.733409] schedule (arch/x86/include/asm/preempt.h:84 kernel/sched/core.c:6607 kernel/sched/core.c:6621) 
+kern :info : [ 3449.734677] inode_dio_wait (fs/inode.c:2478 fs/inode.c:2496) 
+kern :info : [ 3449.735922] ? __pfx_inode_dio_wait (fs/inode.c:2494) 
+kern :info : [ 3449.737184] ? kasan_save_track (arch/x86/include/asm/current.h:49 mm/kasan/common.c:60 mm/kasan/common.c:69) 
+kern :info : [ 3449.738465] ? __pfx_wake_bit_function (kernel/sched/wait_bit.c:22) 
+kern :info : [ 3449.739717] ? setattr_prepare (fs/attr.c:173) 
+kern :info : [ 3449.740912] f2fs_setattr (fs/f2fs/file.c:1063) f2fs
+kern :info : [ 3449.742231] notify_change (fs/attr.c:495) 
+kern :info : [ 3449.743426] ? __pfx_down_write (kernel/locking/rwsem.c:1577) 
+kern :info : [ 3449.744606] ? do_truncate (fs/open.c:66) 
+kern :info : [ 3449.745832] do_truncate (fs/open.c:66) 
+kern :info : [ 3449.747038] ? __pfx_do_truncate (fs/open.c:41) 
+kern :info : [ 3449.748280] ? inode_permission (fs/namei.c:536 fs/namei.c:510) 
+kern :info : [ 3449.749532] vfs_truncate (fs/open.c:111) 
+kern :info : [ 3449.750754] __x64_sys_truncate (fs/open.c:135 fs/open.c:146 fs/open.c:144 fs/open.c:144) 
+kern :info : [ 3449.751994] ? __pfx___x64_sys_truncate (fs/open.c:144) 
+kern :info : [ 3449.753303] ? kmem_cache_free (mm/slub.c:4474 mm/slub.c:4548) 
+kern :info : [ 3449.754537] do_syscall_64 (arch/x86/entry/common.c:52 arch/x86/entry/common.c:83) 
+kern :info : [ 3449.755749] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130) 
+kern  :info  : [ 3449.757070] RIP: 0033:0x7fb415adaf17
+kern  :info  : [ 3449.758277] RSP: 002b:00007fff6e0f8e28 EFLAGS: 00000206 ORIG_RAX: 000000000000004c
+kern  :info  : [ 3449.759822] RAX: ffffffffffffffda RBX: 000055bd20741074 RCX: 00007fb415adaf17
+kern  :info  : [ 3449.761364] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 000055bd2074103d
+kern  :info  : [ 3449.762868] RBP: 000055bd4dc17000 R08: 0000000000000001 R09: 0000000000010000
+kern  :info  : [ 3449.764421] R10: 00007fb4159ea390 R11: 0000000000000206 R12: 0000000000000004
+kern  :info  : [ 3449.765958] R13: 0000000000000064 R14: 0000000000010000 R15: 0000000000000064
+kern  :info  : [ 3449.767521]  </TASK>
+kern  :err   : [ 3941.240221] INFO: task dio_truncate:7499 blocked for more than 2457 seconds.
+kern  :err   : [ 3941.241971]       Not tainted 6.11.0-rc2-00012-g96cfeb038953 #1
+kern  :err   : [ 3941.243381] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+kern  :info  : [ 3941.244968] task:dio_truncate    state:D stack:0     pid:7499  tgid:7499  ppid:7498   flags:0x00000002
+kern  :info  : [ 3941.246768] Call Trace:
+kern  :info  : [ 3941.247927]  <TASK>
+kern :info : [ 3941.249017] __schedule (kernel/sched/core.c:5188 kernel/sched/core.c:6529) 
+kern :info : [ 3941.250267] ? __pfx___schedule (kernel/sched/core.c:6399) 
+kern :info : [ 3941.251521] ? stack_trace_save (kernel/stacktrace.c:123) 
+kern :info : [ 3941.252708] schedule (arch/x86/include/asm/preempt.h:84 kernel/sched/core.c:6607 kernel/sched/core.c:6621) 
+kern :info : [ 3941.253986] inode_dio_wait (fs/inode.c:2478 fs/inode.c:2496) 
+kern :info : [ 3941.255231] ? __pfx_inode_dio_wait (fs/inode.c:2494) 
+kern :info : [ 3941.256422] ? kasan_save_track (arch/x86/include/asm/current.h:49 mm/kasan/common.c:60 mm/kasan/common.c:69) 
+kern :info : [ 3941.257705] ? __pfx_wake_bit_function (kernel/sched/wait_bit.c:22) 
+kern :info : [ 3941.258954] ? setattr_prepare (fs/attr.c:173) 
+kern :info : [ 3941.260125] f2fs_setattr (fs/f2fs/file.c:1063) f2fs
+kern :info : [ 3941.261391] notify_change (fs/attr.c:495) 
+kern :info : [ 3941.262601] ? __pfx_down_write (kernel/locking/rwsem.c:1577) 
+kern :info : [ 3941.263779] ? do_truncate (fs/open.c:66) 
+kern :info : [ 3941.264917] do_truncate (fs/open.c:66) 
+kern :info : [ 3941.266044] ? __pfx_do_truncate (fs/open.c:41) 
+kern :info : [ 3941.267257] ? inode_permission (fs/namei.c:536 fs/namei.c:510) 
+kern :info : [ 3941.268451] vfs_truncate (fs/open.c:111) 
+kern :info : [ 3941.269581] __x64_sys_truncate (fs/open.c:135 fs/open.c:146 fs/open.c:144 fs/open.c:144) 
+kern :info : [ 3941.270861] ? __pfx___x64_sys_truncate (fs/open.c:144) 
+kern :info : [ 3941.272111] ? kmem_cache_free (mm/slub.c:4474 mm/slub.c:4548) 
+kern :info : [ 3941.273240] do_syscall_64 (arch/x86/entry/common.c:52 arch/x86/entry/common.c:83) 
+kern :info : [ 3941.274502] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130) 
+kern  :info  : [ 3941.275872] RIP: 0033:0x7fb415adaf17
+kern  :info  : [ 3941.277068] RSP: 002b:00007fff6e0f8e28 EFLAGS: 00000206 ORIG_RAX: 000000000000004c
+kern  :info  : [ 3941.278608] RAX: ffffffffffffffda RBX: 000055bd20741074 RCX: 00007fb415adaf17
+kern  :info  : [ 3941.280150] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 000055bd2074103d
+kern  :info  : [ 3941.281582] RBP: 000055bd4dc17000 R08: 0000000000000001 R09: 0000000000010000
+kern  :info  : [ 3941.283213] R10: 00007fb4159ea390 R11: 0000000000000206 R12: 0000000000000004
+kern  :info  : [ 3941.284655] R13: 0000000000000064 R14: 0000000000010000 R15: 0000000000000064
+kern  :info  : [ 3941.286229]  </TASK>
+kern  :err   : [ 4432.760118] INFO: task dio_truncate:7499 blocked for more than 2949 seconds.
+kern  :err   : [ 4432.761567]       Not tainted 6.11.0-rc2-00012-g96cfeb038953 #1
+kern  :err   : [ 4432.763073] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+kern  :info  : [ 4432.764652] task:dio_truncate    state:D stack:0     pid:7499  tgid:7499  ppid:7498   flags:0x00000002
+kern  :info  : [ 4432.766420] Call Trace:
+kern  :info  : [ 4432.767606]  <TASK>
+kern :info : [ 4432.768695] __schedule (kernel/sched/core.c:5188 kernel/sched/core.c:6529) 
+kern :info : [ 4432.769905] ? __pfx___schedule (kernel/sched/core.c:6399) 
+kern :info : [ 4432.771267] ? stack_trace_save (kernel/stacktrace.c:123) 
+kern :info : [ 4432.772514] schedule (arch/x86/include/asm/preempt.h:84 kernel/sched/core.c:6607 kernel/sched/core.c:6621) 
+kern :info : [ 4432.773699] inode_dio_wait (fs/inode.c:2478 fs/inode.c:2496) 
+kern :info : [ 4432.774910] ? __pfx_inode_dio_wait (fs/inode.c:2494) 
+kern :info : [ 4432.776269] ? kasan_save_track (arch/x86/include/asm/current.h:49 mm/kasan/common.c:60 mm/kasan/common.c:69) 
+kern :info : [ 4432.777469] ? __pfx_wake_bit_function (kernel/sched/wait_bit.c:22) 
+kern :info : [ 4432.778706] ? setattr_prepare (fs/attr.c:173) 
+kern :info : [ 4432.779958] f2fs_setattr (fs/f2fs/file.c:1063) f2fs
+kern :info : [ 4432.781241] notify_change (fs/attr.c:495) 
+kern :info : [ 4432.782379] ? __pfx_down_write (kernel/locking/rwsem.c:1577) 
+kern :info : [ 4432.783604] ? do_truncate (fs/open.c:66) 
+kern :info : [ 4432.784772] do_truncate (fs/open.c:66) 
+kern :info : [ 4432.785973] ? __pfx_do_truncate (fs/open.c:41) 
+kern :info : [ 4432.787198] ? inode_permission (fs/namei.c:536 fs/namei.c:510) 
+kern :info : [ 4432.788514] vfs_truncate (fs/open.c:111) 
+kern :info : [ 4432.789655] __x64_sys_truncate (fs/open.c:135 fs/open.c:146 fs/open.c:144 fs/open.c:144) 
+kern :info : [ 4432.790909] ? __pfx___x64_sys_truncate (fs/open.c:144) 
+kern :info : [ 4432.792413] ? kmem_cache_free (mm/slub.c:4474 mm/slub.c:4548) 
+kern :info : [ 4432.793602] do_syscall_64 (arch/x86/entry/common.c:52 arch/x86/entry/common.c:83) 
+kern :info : [ 4432.794814] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130) 
+kern  :info  : [ 4432.796255] RIP: 0033:0x7fb415adaf17
+kern  :info  : [ 4432.797402] RSP: 002b:00007fff6e0f8e28 EFLAGS: 00000206 ORIG_RAX: 000000000000004c
+kern  :info  : [ 4432.798963] RAX: ffffffffffffffda RBX: 000055bd20741074 RCX: 00007fb415adaf17
+kern  :info  : [ 4432.800493] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 000055bd2074103d
+kern  :info  : [ 4432.802033] RBP: 000055bd4dc17000 R08: 0000000000000001 R09: 0000000000010000
+kern  :info  : [ 4432.803557] R10: 00007fb4159ea390 R11: 0000000000000206 R12: 0000000000000004
+kern  :info  : [ 4432.805121] R13: 0000000000000064 R14: 0000000000010000 R15: 0000000000000064
+kern  :info  : [ 4432.806589]  </TASK>
+
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20240827/202408271015.5b4de2c5-oliver.sang@intel.com
+
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
 
