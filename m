@@ -1,237 +1,261 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA86516CD0A
-	for <oe-lkp@lists.linux.dev>; Fri, 30 Aug 2024 08:21:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.10
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725006110; cv=fail; b=lvNxtiKT0MCwjITW46t9pOy3tY3sSy10rQC0s8emvxW0yhP1BKrCqjCf9xF3NWJc/s5x+KkGi/g3/C+v1tlsSw4T8+OFk2tQdSSEgFSIaYo+zd0OCK1TpS81wlD6d4tgjbxYoXoSrKEkXhDP6Tv9WamrDhtynWw3FhoWkoTjp3w=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725006110; c=relaxed/simple;
-	bh=fpin4V04ijaeZy2yu0xZ8c1D6uXFkE9/MAapBJaSf1w=;
-	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=K57X7mo9bzchs/b30GOQRq/VYp0sgsIiJiX7lrWbnXof4BfJt2DeKXbh0EjIq3d+J69TOH8dqGR6NfxZdV9qWSWx0sSUlkjf5FgzFfFUX6wH7gpf28aBvW5pSV6iCwIHfWvMg8FXFrsCWsuJpirYkK8vYzoGpIXfg9EujbiROuc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DDtjRjoZ; arc=fail smtp.client-ip=192.198.163.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04FF814E2E9;
+	Fri, 30 Aug 2024 17:51:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1725040317; cv=none; b=MG6KmruHkZfiCwhxfW2tZVl7ldzE3ebpXiMVVj8UhkrQ6umnNZsoEH/x9G2XJTBGciehsDS/apfsfMgsWCs4y4WlpCyhcWFXrq7I46ztTERyrmrRjsHdRLRFntUpP5enK4mjZVgnXTsN8RHHaX8lYJ/RJGULzsx09TS/XhRlMh8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1725040317; c=relaxed/simple;
+	bh=uWhMmjJ50H1qYWLeYvBQd6Nv7WH9zgHdxdtD0x/kJv8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GbdOMHFlWjFPbzDxnnR33T+su+XS18wjor7mZmdgvUSUyYb/uxRc6ytj0NYD5QCNhVmlHMWayjrbxacvjkE+Qsitg+n/Lk/fypBiY3ik9Qgs3p1MyCfF7c96SuL+SNNHXcTk8NSNBwTvghCaxJDfXIfMGaLuUwGOUlUH5DCJZng=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lRgzNm8+; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DDtjRjoZ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1725006109; x=1756542109;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=fpin4V04ijaeZy2yu0xZ8c1D6uXFkE9/MAapBJaSf1w=;
-  b=DDtjRjoZJ4k/jFQ9mY8XtQQsOr6r3Cyp/XB3A3yjMkoww8dWYaEmWakL
-   dMIj9VKgGIkMXGFFPoxG/VYHNDA6BCwGqWby2NRZ3HfQOOPmG4EEj9u3i
-   p02gqkkdeN7xiGOmbQGj2143Czzw76iT2zzXJAhkn4qZMx41LF4+0IM2k
-   Gt8QBqxYORlJYB6lklgx/kHqBGmsISYAxocLdFuzXYrEWul+HE2bXgnMS
-   Gr/HWePQnZCGbH9SgFOuPR0eNGJYFK+IL8x8nO9GapM2Tk+c9TyMaqIS1
-   plv5s1/qZHc2vPOeJwol7CRHriSpiTAv2Dc0PAXjWUntcgX4R1KmdVaE+
-   A==;
-X-CSE-ConnectionGUID: im1YhQxdQQOD6OGuosi+KA==
-X-CSE-MsgGUID: 5zI5JuYTREyFLLpr/vmeRA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11179"; a="35044323"
-X-IronPort-AV: E=Sophos;i="6.10,188,1719903600"; 
-   d="scan'208";a="35044323"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2024 01:21:48 -0700
-X-CSE-ConnectionGUID: HFhJwdMPQDCyvypDJxvNuA==
-X-CSE-MsgGUID: lg/DoGXiQOqHbtgpWRV2HQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,188,1719903600"; 
-   d="scan'208";a="94565352"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by orviesa002.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 30 Aug 2024 01:21:49 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Fri, 30 Aug 2024 01:21:47 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Fri, 30 Aug 2024 01:21:47 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.100)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Fri, 30 Aug 2024 01:21:47 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=gvu5xwAza0cOXiSZqDd8Qx8b6RP1SMcu11P+9PhB47s+waiygfnCPf6+bxYhbrV6cI554guir0q0ah8mqR6cZLJfIUejfGE7ElO2dhLMlIcetaPO3IZMAuwktRX2a3/hKSkFp1fiBsLDQmARH/gWHqmKB6k+ezMA37elatkNKBYpSEMKd6tTebY4BZEyQUvK/XKArCOuhfbX76zquSILP2lCGw0IcVj5P1irf1kRlPXzuW4R/fdVPwqhndcZY/XSArOLlfM6asAZ43EXdEvhBjGxTIVnL3aGS1aNrF5z54AZ9ByKxVejRhArYnZSHPpbOknwjEay8/NKz/4vQ+lqVw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6z10zV+q9GGnIi2igc+Nkqx/ehPS6nKpVHL7wyTWVLM=;
- b=EP90YyPZ7L1Az5L90BAImotO2OAGVcugsq7NmR5fR8qC327YFxfe4N7pz4VmLR7cPlT5vyCuqmP412InzcUsrLQcB/CgbW7agmKFB74nNb/HNi65uoFu8I63XksXRg2qKIUzAAZjvyScSgMpxIL4E7qTv/hiDcYirUfDrkXnzYUcQxnGxemlNzLfhHMHObIWyacEGWSbDjxnaL2e2MVja4tQGZBSzkjreN3+AhsxcVflyRDWynPnlqkN3Akv4ux5zIVmBQEAqUsIv1sQgl6Pvzw97MvSEeo46DLWyJwG/nvUD9mR954uRv/37gL+71i66XrA0ZGJYOt/z5EN5axmrQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by SJ0PR11MB5894.namprd11.prod.outlook.com (2603:10b6:a03:42a::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7918.20; Fri, 30 Aug
- 2024 08:21:44 +0000
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.7918.019; Fri, 30 Aug 2024
- 08:21:44 +0000
-Date: Fri, 30 Aug 2024 16:21:34 +0800
-From: Oliver Sang <oliver.sang@intel.com>
-To: Kefeng Wang <wangkefeng.wang@huawei.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Linux Memory Management List
-	<linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>, "David
- Hildenbrand" <david@redhat.com>, Miaohe Lin <linmiaohe@huawei.com>, "Jonathan
- Cameron" <Jonathan.Cameron@huawei.com>, Naoya Horiguchi
-	<nao.horiguchi@gmail.com>, Oscar Salvador <osalvador@suse.de>,
-	<linux-kernel@vger.kernel.org>, <ltp@lists.linux.it>, <oliver.sang@intel.com>
-Subject: Re: [linux-next:master] [mm] f1295af16a: ltp.madvise11.fail
-Message-ID: <ZtGBDptkaptGRhh/@xsang-OptiPlex-9020>
-References: <202408291314.bdbfa468-oliver.sang@intel.com>
- <dfeb5f5f-2b21-4b8f-bb8b-7170ef001773@huawei.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <dfeb5f5f-2b21-4b8f-bb8b-7170ef001773@huawei.com>
-X-ClientProxiedBy: SG2PR01CA0126.apcprd01.prod.exchangelabs.com
- (2603:1096:4:40::30) To LV3PR11MB8603.namprd11.prod.outlook.com
- (2603:10b6:408:1b6::9)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lRgzNm8+"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F24AC4CEC2;
+	Fri, 30 Aug 2024 17:51:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1725040316;
+	bh=uWhMmjJ50H1qYWLeYvBQd6Nv7WH9zgHdxdtD0x/kJv8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=lRgzNm8+2G8pziDOMsiYugWgkPs3lXCnFeOZogB2bmerJAFS9ATZvAU8Z0LncZdq8
+	 +Y9jqkfu43WNnJ9SzKGrlfsatf6adScShb6fEHaLPjljMxUEc6jXfMYMv/eQcJE2sw
+	 zBAtitYvz+WV/aUZjNrXJZ3+IJ7xVsGEg9gY6QGfWBSvVslPRuTNq9is9BkxQtccTC
+	 Y/evok2+IS081uo4qn941Gc87BEoBnsvLznvdeY8eyaVh6qx5kuG5jkzPG3qyV1gMS
+	 frgFuWmkUbGn6t6HK68/vUqeV3fBNdtl6Ku79+5H4S0L7w77k4C/Y/CBpSkwjtcbUQ
+	 Y0PvzhYWctVPQ==
+Date: Fri, 30 Aug 2024 10:51:54 -0700
+From: Eric Biggers <ebiggers@kernel.org>
+To: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, linux-crypto@vger.kernel.org, ltp@lists.linux.it,
+	Linus Torvalds <torvalds@linux-foundation.org>,
+	"Russell King (Oracle)" <linux@armlinux.org.uk>,
+	Horia =?utf-8?Q?Geant=C4=83?= <horia.geanta@nxp.com>,
+	Ard Biesheuvel <ardb@kernel.org>,
+	"David S. Miller" <davem@davemloft.net>
+Subject: Re: [v3 PATCH 3/3] crypto: simd - Do not call crypto_alloc_tfm
+ during registration
+Message-ID: <20240830175154.GA48019@sol.localdomain>
+References: <ZrbTUk6DyktnO7qk@gondor.apana.org.au>
+ <202408161634.598311fd-oliver.sang@intel.com>
+ <ZsBJs_C6GdO_qgV7@gondor.apana.org.au>
+ <ZsBJ5H4JExArHGVw@gondor.apana.org.au>
+ <ZsBKG0la0m69Dyq3@gondor.apana.org.au>
+ <20240827184839.GD2049@sol.localdomain>
+ <Zs6SiBOdasO9Thd1@gondor.apana.org.au>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|SJ0PR11MB5894:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4e737496-7437-40db-358c-08dcc8ccc8be
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|7416014|376014|1800799024;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?EN2HfQWR/5EbfS3+ZjBTnh2QI1fUzsJrQMZG2qbIJglPGn9Xwy5aXmB+aXmu?=
- =?us-ascii?Q?8jvS69RzKMrtP2OHbH3YUFeRIXxpps1hrwMBc6yxfA/LtNtODLHeb3fQlFf2?=
- =?us-ascii?Q?3m3HdvYB0FPiKFA7gSZJt7/SifOs3cRQjSJiEuekqK7617mr501I7cSqKvYA?=
- =?us-ascii?Q?zKiehrJM2X3Jn1ZW6l8tt+bqrIzO2FIQ5DVn9cdsKfSIWSdAroO7R0yRQK2P?=
- =?us-ascii?Q?95vLlcxYMzjKIKkvRJZf+7DJwHVTH3j/+Lr8Ia7YzSMXnqRReLsdku7u6Zok?=
- =?us-ascii?Q?2arZ+y2BDwsWaLU5K+SWSiT/B4Z0Tsn/Lt7m+8oiMnyADmQYnxQhiiTH3+xE?=
- =?us-ascii?Q?LbE3hAGw0lO+XrZZct3h3KFbBCwxCkhOV4GMtx3QnV8y68cnLDLy/SyVz31j?=
- =?us-ascii?Q?4oqi9SXasuZPSWGShZhRAUH86qU1PgFm6LEh9x3jGtpW+pCxE1E9iAqr4ze3?=
- =?us-ascii?Q?0CIB5hp0lMQUDTOxDyluSJRfBJiI/IUmsg1vlfi01iuLRQKTnqKVqGyRbwnR?=
- =?us-ascii?Q?R++ZGkbg5VmSWTYLYIMMEHHSHQymZ+eubrFUgcFW81Rigk5eygijvBYD1gyJ?=
- =?us-ascii?Q?8fh4dc2L4RhladZsjrKyynB89jSbIORCgERdLk4aDvVliCmMYwC50BmzNcOA?=
- =?us-ascii?Q?qMTiLbU+FUGXmW59x8ieAM7woFb2NbvI8/EeHUC6sKcBB2xy9pZWjL9KL0Dj?=
- =?us-ascii?Q?yIgXEyvpIeewfa5vOPs0uD8Jakb/F653yvkHNP++B1y/fYlyDRL7oWQmgWcW?=
- =?us-ascii?Q?3kLS2Nh+WOu2/jicaWFaw3EKgYhj+0DrSsCEfY4YOe5o9oYtT3u32urvzlfP?=
- =?us-ascii?Q?nNQTJesFotYlF4Bj6AJbAd7Z2YDYrx2PIo3bs0gt0d5H0w7yMYtPzbEcCo5L?=
- =?us-ascii?Q?jjawnPViLtQMm/WFArkUfsH+6NuJX3JTA3Ogny/Kay/QFQQgpmID8HU4JtVj?=
- =?us-ascii?Q?UeMxv12lYoHCrKcRKUSJPmPVPHok8YzrYPeqklScorgEtMv2ZGjyd+BhcnZv?=
- =?us-ascii?Q?lioodo1a1PFwppCbHq/2XHNgqbDSzKFV6sSjSfQbYhOMkaFF8Ujrb9Xk0rkk?=
- =?us-ascii?Q?m+N3G5qy87s2JMaB1TQJDQhTlDskAb3BhZbHg/zDpvZTRCzgYEJB4+VeozXw?=
- =?us-ascii?Q?OxTCZ/NP+H+J8XvuKo6OwW7+tHCkat4+RmcVJXhlRilTPodTep5ut/LjaQsX?=
- =?us-ascii?Q?yLBj7GBTY0SMtfd9WoNCX/AsN8FZLPgoDksyJRHTdgrNkpVWxi8TEvsdMsq6?=
- =?us-ascii?Q?8K72XHyXfmHb0BNonYSrIG5/YTih5GRQ+9xfU6sp3N5vK/BY3Fuj0SUtAEcZ?=
- =?us-ascii?Q?TRkqhP+2lKOUaGDohB2SRQjEg7CozxciuhrZbSP6StNY70lmQX5CO/gs8rvr?=
- =?us-ascii?Q?4/TcBuM=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?VMLp3o7AxNFn810er18kxmaqKbeoiIBU+y5y/+c2IBxdsPzgNzJcNnG3XIg/?=
- =?us-ascii?Q?qY62AX7q8VJ9k8yOhDy7ibiMuMBFeL8/qbY/So2Xord7Uy851LtsRG6fZowe?=
- =?us-ascii?Q?h/7DqGVpiTZmz5Csub9oPN11TsXCB9JTViU16aJK6rAXHKG4nEmKbwU2I9YM?=
- =?us-ascii?Q?uTozVgP9i5ESxfw60mc0JjXgL5MxWP+qq7jCm92SOrYZ1wlxcIAmLT6O3EbP?=
- =?us-ascii?Q?fslRWvr9F97Os9Pv0JL7uc/+0NZJbXlyvE7GMSfEZ4KMBAIoa69t9UqVCh//?=
- =?us-ascii?Q?DP08XFJlC9a27QE4rBFFudm/FKF8tMABwlidzAXRi8q+tep+tkvQFEmmc6wx?=
- =?us-ascii?Q?8nOexlXc+cxnusljI6zmDpJ/3FiRCYnH9H6WgflOtAocPVrbRDgTxsNIl8Em?=
- =?us-ascii?Q?JY8ICYxxwYJ8RBBpkziKmbw8iUxVz+ougx3uSfiVq2eYFm1M3j8KslBPR3On?=
- =?us-ascii?Q?+lZa2lrFUZaOdJvQMlR+OnS0QPzxAl4oFQlm9JRFwL3/ZJ8hucv+81T2LY//?=
- =?us-ascii?Q?J2QHOEwLNqlwWC7+MG/lelqevoS53z+/ml/BInKnxC1I84iMUzGXviv4bz8J?=
- =?us-ascii?Q?JHUiBO2FLUKE0+24yaxu+aK0Ysti9GgU0OblnJPXHCeZFxmiGY5b2Bqegcvv?=
- =?us-ascii?Q?jqnraTsNRAlT7jlW2fw49nYZw8d2BgPGkMPMmfv/VU0Xrxlt+zpV4RgvuBD9?=
- =?us-ascii?Q?2bHIiHp0cXtkdxmWJmicOZZaOvuQXTnMyMtW4GSGkjUav1bw3HMN6/E1y/2Z?=
- =?us-ascii?Q?mhh21T0S9BfJMry/gAZJ9VRYbZCSKIs1zghuo9FHS4daenESX9/zux/z71GD?=
- =?us-ascii?Q?UBOaR2d+kecNRZ7Meswr41faray/2ottJFkMfT8Eu32yYyMT9LeZ6FabvbHd?=
- =?us-ascii?Q?GecTbwPYUtWlilhDdvUPlei8n/2QPInXVoIim3Rp9tzq7aDnWUnD6UTx5+98?=
- =?us-ascii?Q?TNmoZh/QdANgyPiQl/Wgnrpnj710s1A2RrIjeLYST3r3DCkP69BKIx3X+tjN?=
- =?us-ascii?Q?9cgxP/lvcBN3qaml1GZRmN7XTgwNG+5KyB0DyTpPkU/fKACnWeL5RmDXD2dT?=
- =?us-ascii?Q?WX5S3jWHzZczIzAhjHKQsfuAzXGGAxf6OBsX9EnagVi+vKKe+irMCpRsi76J?=
- =?us-ascii?Q?eT6axsC8lbl01HDBUkEaEI3I5OFs5b8SLSv+UwbsCyuSPb2CuqvslmX54ouP?=
- =?us-ascii?Q?8b+/Fk6ySlG6VdyQ7F2AFsMDABAzTroQHkCxjw+DFjqyLPIwxh5WT28C/3Nc?=
- =?us-ascii?Q?TzEZygKmXd8QW9G9Dtym/RasulQbOBNaGpl3w2FrAjoR86zAELaUcAVWo6fP?=
- =?us-ascii?Q?fniN5wHjY4vkjatSny1wvPu+T3FFtnIp3jFN5bO+pgGuTGk0fEa2YdBfK+Qj?=
- =?us-ascii?Q?AYBzYyhdHQ6ppE8mZhh3I59kxgWkAhEgWKaxKFhjExSx42Uaox+pwRxQN8kn?=
- =?us-ascii?Q?dKb690dG79j9DbrQ+neMm2vrF//D2IXGhJpAmC/MX75choFw9BNn/8tDZUoS?=
- =?us-ascii?Q?VgA+ugFz1dx3E+064lpaSrLm6RR/dRdzNM2nHAYjDmiVQW8IloM6UhdVMPvb?=
- =?us-ascii?Q?ShD0poI7zIXKzB4ykqTEpfCi3azJ5r7H+k3TYeUjOsyqKxGbaIUj9TgLI9qo?=
- =?us-ascii?Q?mw=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4e737496-7437-40db-358c-08dcc8ccc8be
-X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Aug 2024 08:21:44.7384
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: k8l8ZXBU90Uxfb/4fZpUrnfXeoPxGFXV7MG0496SNTc+szta7YxJdBd5Jr6EYmTsTzKSQ3V1jMla9bOwVpp+Ew==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB5894
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Zs6SiBOdasO9Thd1@gondor.apana.org.au>
 
-hi, Kefeng Wang,
+On Wed, Aug 28, 2024 at 10:59:20AM +0800, Herbert Xu wrote:
+> On Tue, Aug 27, 2024 at 11:48:39AM -0700, Eric Biggers wrote:
+> > On Sat, Aug 17, 2024 at 02:58:35PM +0800, Herbert Xu wrote:
+> > > Algorithm registration is usually carried out during module init,
+> > > where as little work as possible should be carried out.  The SIMD
+> > > code violated this rule by allocating a tfm, this then triggers a
+> > > full test of the algorithm which may dead-lock in certain cases.
+> > > 
+> > > SIMD is only allocating the tfm to get at the alg object, which is
+> > > in fact already available as it is what we are registering.  Use
+> > > that directly and remove the crypto_alloc_tfm call.
+> > > 
+> > > Also remove some obsolete and unused SIMD API.
+> > > 
+> > > Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+> > > ---
+> > >  arch/arm/crypto/aes-ce-glue.c     |  2 +-
+> > >  arch/arm/crypto/aes-neonbs-glue.c |  2 +-
+> > >  crypto/simd.c                     | 76 ++++++-------------------------
+> > >  include/crypto/internal/simd.h    | 12 +----
+> > >  4 files changed, 19 insertions(+), 73 deletions(-)
+> > > 
+> > 
+> > I'm getting a test failure with this series applied:
+> > 
+> > [    0.383128] alg: aead: failed to allocate transform for gcm_base(ctr(aes-generic),ghash-generic): -2
+> > [    0.383500] alg: self-tests for gcm(aes) using gcm_base(ctr(aes-generic),ghash-generic) failed (rc=-2)
+> > 
+> > This is on x86_64 with CONFIG_CRYPTO_MANAGER_EXTRA_TESTS=y.
+> 
+> Could you please send me your config file?
+> 
+> Thanks,
 
-On Thu, Aug 29, 2024 at 04:20:56PM +0800, Kefeng Wang wrote:
-> 
-> 
-> On 2024/8/29 16:13, kernel test robot wrote:
-> > 
-> > 
-> > Hello,
-> > 
-> > kernel test robot noticed "ltp.madvise11.fail" on:
-> > 
-> > commit: f1295af16abee075de68400c58550cffacc29eb1 ("mm: migrate: add isolate_folio_to_list()")
-> 
-> 
-> f1295af16abee075de68400c58550cffacc29eb1 tags/next-20240828~164^2~86
-> 
-> on next-20240828, it was fixed in the next patch,
-> 
-> f1295af16abe mm: migrate: add isolate_folio_to_list()
-> 4e3a04695e25 mm-migrate-add-isolate_folio_to_list-fix // this should fix the
-> issue.
-> 
-> or please test next-20240829
+Given below in defconfig form, use 'make olddefconfig' to apply.  The failures
+are nondeterministic and sometimes there are different ones, for example:
 
-thanks a lot for information! yes, it was fixed.
+[    0.358017] alg: skcipher: failed to allocate transform for cbc(twofish-generic): -2
+[    0.358365] alg: self-tests for cbc(twofish) using cbc(twofish-generic) failed (rc=-2)
+[    0.358535] alg: skcipher: failed to allocate transform for cbc(camellia-generic): -2
+[    0.358918] alg: self-tests for cbc(camellia) using cbc(camellia-generic) failed (rc=-2)
+[    0.371533] alg: skcipher: failed to allocate transform for xts(ecb(aes-generic)): -2
+[    0.371922] alg: self-tests for xts(aes) using xts(ecb(aes-generic)) failed (rc=-2)
 
-normally our kernel test bot will check if the issue still exist on latest
-tip of the branch. for this case, unfortunately, the check was missed by
-accident.
+Modules are not enabled, maybe that matters (I haven't checked yet).
 
-sorry for the noise.
-
-
-> 
-> Thanks.
-> 
-> > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
-> > 
-> > in testcase: ltp
-> > version: ltp-x86_64-14c1f76-1_20240824
-> > with following parameters:
-> > 
-> > 	disk: 1HDD
-> > 	fs: btrfs
-> > 	test: syscalls-01/madvise11
-> > 
-> > 
-> > 
-> > compiler: gcc-12
-> > test machine: 4 threads 1 sockets Intel(R) Core(TM) i3-3220 CPU @ 3.30GHz (Ivy Bridge) with 8G memory
-> > 
-> > (please refer to attached dmesg/kmsg for entire log/backtrace)
-> > 
-> > 
-> > 
-> > 
-> > If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> > the same patch/commit), kindly add following tags
-> > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> > | Closes: https://lore.kernel.org/oe-lkp/202408291314.bdbfa468-oliver.sang@intel.com
-> > 
+CONFIG_SYSVIPC=y
+CONFIG_POSIX_MQUEUE=y
+CONFIG_NO_HZ=y
+CONFIG_HIGH_RES_TIMERS=y
+CONFIG_IKCONFIG=y
+CONFIG_IKCONFIG_PROC=y
+CONFIG_CGROUPS=y
+CONFIG_USER_NS=y
+CONFIG_BLK_DEV_INITRD=y
+CONFIG_SMP=y
+CONFIG_X86_X2APIC=y
+CONFIG_HYPERVISOR_GUEST=y
+CONFIG_PARAVIRT=y
+CONFIG_MCORE2=y
+CONFIG_NR_CPUS=48
+CONFIG_NUMA=y
+CONFIG_HZ_300=y
+# CONFIG_RANDOMIZE_BASE is not set
+CONFIG_IA32_EMULATION=y
+CONFIG_JUMP_LABEL=y
+CONFIG_NET=y
+CONFIG_PACKET=y
+CONFIG_PACKET_DIAG=y
+CONFIG_UNIX=y
+CONFIG_UNIX_DIAG=y
+CONFIG_INET=y
+CONFIG_PCI=y
+CONFIG_PCI_MSI=y
+CONFIG_DEVTMPFS=y
+CONFIG_BLK_DEV_LOOP=y
+CONFIG_VIRTIO_BLK=y
+CONFIG_NETDEVICES=y
+CONFIG_VIRTIO_NET=y
+CONFIG_SERIAL_8250=y
+CONFIG_SERIAL_8250_CONSOLE=y
+CONFIG_SERIAL_8250_NR_UARTS=32
+CONFIG_SERIAL_8250_RUNTIME_UARTS=32
+CONFIG_HW_RANDOM_VIRTIO=y
+CONFIG_VIRT_DRIVERS=y
+CONFIG_VIRTIO_PCI=y
+CONFIG_VIRTIO_MMIO=y
+CONFIG_EXT4_FS=y
+CONFIG_EXT4_FS_POSIX_ACL=y
+CONFIG_EXT4_FS_SECURITY=y
+CONFIG_AUTOFS_FS=y
+CONFIG_TMPFS=y
+CONFIG_TMPFS_POSIX_ACL=y
+CONFIG_CRYPTO_USER=y
+# CONFIG_CRYPTO_MANAGER_DISABLE_TESTS is not set
+CONFIG_CRYPTO_MANAGER_EXTRA_TESTS=y
+CONFIG_CRYPTO_PCRYPT=y
+CONFIG_CRYPTO_DH_RFC7919_GROUPS=y
+CONFIG_CRYPTO_ECDH=y
+CONFIG_CRYPTO_ECDSA=y
+CONFIG_CRYPTO_ECRDSA=y
+CONFIG_CRYPTO_CURVE25519=y
+CONFIG_CRYPTO_AES_TI=y
+CONFIG_CRYPTO_ANUBIS=y
+CONFIG_CRYPTO_BLOWFISH=y
+CONFIG_CRYPTO_CAMELLIA=y
+CONFIG_CRYPTO_DES=y
+CONFIG_CRYPTO_FCRYPT=y
+CONFIG_CRYPTO_KHAZAD=y
+CONFIG_CRYPTO_SEED=y
+CONFIG_CRYPTO_TEA=y
+CONFIG_CRYPTO_TWOFISH=y
+CONFIG_CRYPTO_ADIANTUM=y
+CONFIG_CRYPTO_ARC4=y
+CONFIG_CRYPTO_HCTR2=y
+CONFIG_CRYPTO_KEYWRAP=y
+CONFIG_CRYPTO_LRW=y
+CONFIG_CRYPTO_PCBC=y
+CONFIG_CRYPTO_AEGIS128=y
+CONFIG_CRYPTO_SEQIV=y
+CONFIG_CRYPTO_ECHAINIV=y
+CONFIG_CRYPTO_ESSIV=y
+CONFIG_CRYPTO_BLAKE2B=y
+CONFIG_CRYPTO_MD4=y
+CONFIG_CRYPTO_RMD160=y
+CONFIG_CRYPTO_SM3_GENERIC=y
+CONFIG_CRYPTO_VMAC=y
+CONFIG_CRYPTO_WP512=y
+CONFIG_CRYPTO_XXHASH=y
+CONFIG_CRYPTO_CRC32=y
+CONFIG_CRYPTO_DEFLATE=y
+CONFIG_CRYPTO_LZO=y
+CONFIG_CRYPTO_842=y
+CONFIG_CRYPTO_LZ4=y
+CONFIG_CRYPTO_LZ4HC=y
+CONFIG_CRYPTO_ZSTD=y
+CONFIG_CRYPTO_ANSI_CPRNG=y
+CONFIG_CRYPTO_DRBG_HASH=y
+CONFIG_CRYPTO_DRBG_CTR=y
+CONFIG_CRYPTO_USER_API_HASH=y
+CONFIG_CRYPTO_USER_API_SKCIPHER=y
+CONFIG_CRYPTO_USER_API_RNG=y
+CONFIG_CRYPTO_USER_API_RNG_CAVP=y
+CONFIG_CRYPTO_USER_API_AEAD=y
+CONFIG_CRYPTO_CURVE25519_X86=y
+CONFIG_CRYPTO_AES_NI_INTEL=y
+CONFIG_CRYPTO_BLOWFISH_X86_64=y
+CONFIG_CRYPTO_CAMELLIA_AESNI_AVX2_X86_64=y
+CONFIG_CRYPTO_CAST5_AVX_X86_64=y
+CONFIG_CRYPTO_CAST6_AVX_X86_64=y
+CONFIG_CRYPTO_DES3_EDE_X86_64=y
+CONFIG_CRYPTO_SERPENT_SSE2_X86_64=y
+CONFIG_CRYPTO_SERPENT_AVX2_X86_64=y
+CONFIG_CRYPTO_SM4_AESNI_AVX2_X86_64=y
+CONFIG_CRYPTO_TWOFISH_AVX_X86_64=y
+CONFIG_CRYPTO_ARIA_GFNI_AVX512_X86_64=y
+CONFIG_CRYPTO_CHACHA20_X86_64=y
+CONFIG_CRYPTO_AEGIS128_AESNI_SSE2=y
+CONFIG_CRYPTO_NHPOLY1305_SSE2=y
+CONFIG_CRYPTO_NHPOLY1305_AVX2=y
+CONFIG_CRYPTO_BLAKE2S_X86=y
+CONFIG_CRYPTO_POLYVAL_CLMUL_NI=y
+CONFIG_CRYPTO_POLY1305_X86_64=y
+CONFIG_CRYPTO_SHA1_SSSE3=y
+CONFIG_CRYPTO_SHA256_SSSE3=y
+CONFIG_CRYPTO_SHA512_SSSE3=y
+CONFIG_CRYPTO_SM3_AVX_X86_64=y
+CONFIG_CRYPTO_GHASH_CLMUL_NI_INTEL=y
+CONFIG_CRYPTO_CRC32C_INTEL=y
+CONFIG_CRYPTO_CRC32_PCLMUL=y
+CONFIG_CRYPTO_CRCT10DIF_PCLMUL=y
+CONFIG_CRYPTO_DEV_PADLOCK=y
+CONFIG_CRYPTO_DEV_PADLOCK_AES=y
+CONFIG_CRYPTO_DEV_PADLOCK_SHA=y
+CONFIG_CRYPTO_DEV_CCP=y
+CONFIG_CRYPTO_DEV_NITROX_CNN55XX=y
+CONFIG_CRYPTO_DEV_QAT_DH895xCC=y
+CONFIG_CRYPTO_DEV_QAT_C3XXX=y
+CONFIG_CRYPTO_DEV_QAT_C62X=y
+CONFIG_CRYPTO_DEV_QAT_4XXX=y
+CONFIG_CRYPTO_DEV_QAT_DH895xCCVF=y
+CONFIG_CRYPTO_DEV_QAT_C3XXXVF=y
+CONFIG_CRYPTO_DEV_QAT_C62XVF=y
+CONFIG_CRYPTO_DEV_VIRTIO=y
+CONFIG_CRYPTO_DEV_SAFEXCEL=y
+CONFIG_CRYPTO_DEV_AMLOGIC_GXL=y
+CONFIG_CRYPTO_DEV_AMLOGIC_GXL_DEBUG=y
+CONFIG_CRYPTO_LIB_CURVE25519=y
+CONFIG_CRYPTO_LIB_CHACHA20POLY1305=y
+CONFIG_CRC_CCITT=y
+CONFIG_CRC_T10DIF=y
+CONFIG_CRC64_ROCKSOFT=y
+CONFIG_CRC_ITU_T=y
+CONFIG_CRC32_SELFTEST=y
+CONFIG_CRC32_SLICEBY4=y
+CONFIG_CRC4=y
+CONFIG_CRC7=y
+CONFIG_LIBCRC32C=y
+CONFIG_PRINTK_TIME=y
+CONFIG_DEBUG_KERNEL=y
+CONFIG_DEBUG_FS=y
+CONFIG_PANIC_TIMEOUT=5
+CONFIG_UNWINDER_FRAME_POINTER=y
