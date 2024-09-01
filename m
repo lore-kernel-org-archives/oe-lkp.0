@@ -1,275 +1,172 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from abb.hmeau.com (abb.hmeau.com [144.6.53.87])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8D6A1BC49
-	for <oe-lkp@lists.linux.dev>; Sat, 31 Aug 2024 13:53:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.17
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725112387; cv=fail; b=Fv5bB/Oh4olgSGN5RPgarWhNxU1Rew4tmsqMZxDRPPe+gch/YGT3nbY3NX7WUu/UMFbENFSAVYDYLdD2aH7kxo21mddMf/cHSrTvmq/Gj7YX0vmUe265kFMWUctuZMkMhvJFUsezmWFU6nNzkEZs2bD7kAcWIZqb53SGoPe/dso=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725112387; c=relaxed/simple;
-	bh=+KEfdIqIkhA2zcQFfqSsmSoxtwA/oh8RhNk8b3t4ZlQ=;
-	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=pEhkr8SiEcvyzsoSHdT/XWF/3Ywpno3T4pASGIXXntVil1d9iTouboWn4KVrFC4ZsVDLCikuwrFeV8bIiAL5CS3sQftEiBQ/kQ/gFOpLfxSpR4dYs/Io1opMCqPAi4RZas0DYjqwkOTlq0oVOu5pfw9wk7bhPwXxiobxgmyk7c4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=U3IjbnAt; arc=fail smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="U3IjbnAt"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1725112386; x=1756648386;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=+KEfdIqIkhA2zcQFfqSsmSoxtwA/oh8RhNk8b3t4ZlQ=;
-  b=U3IjbnAtX5MqWspgkB3112UGUbzxgDrHqp91TIC5xL5iBuir20eH/buC
-   +AN0vsVTfGLjw+M89Xrz9YiyzaeWw07mq1GceA3htI1YPcN2iWsUfhyMa
-   lYeiC3QHbsfg4i11ABfYZcSl9NdGwToZTUB2fS25Ercvn0UzgQKRDCm0z
-   ymoGKTaN7HIdQF/wFKObWc8o5wLNkaH63ykGvwbvq6Vkh7w+MyJDp9PnU
-   pbA7DDXmdbKNa1eqXA1wH6GrfXMWOmzThs5MwCGHrcTYx7s2y8acvUjys
-   bdE2kss76v0ZR9YdFNktWCnQ1n1jtq1m7C04wE+SXh9e/MXS5cwkZ1s8n
-   w==;
-X-CSE-ConnectionGUID: b/V6b1kJQCCwaG2jukEvrg==
-X-CSE-MsgGUID: uzAC7/uiQkyfKrsYIadF5Q==
-X-IronPort-AV: E=McAfee;i="6700,10204,11181"; a="23628109"
-X-IronPort-AV: E=Sophos;i="6.10,192,1719903600"; 
-   d="scan'208";a="23628109"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2024 06:53:05 -0700
-X-CSE-ConnectionGUID: rnDCrSFiS4qPJr6I++dykQ==
-X-CSE-MsgGUID: CpLgSln5TxGM8x3bPayCVw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,192,1719903600"; 
-   d="scan'208";a="64514061"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by orviesa006.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 31 Aug 2024 06:53:05 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Sat, 31 Aug 2024 06:53:04 -0700
-Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
- ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Sat, 31 Aug 2024 06:53:04 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Sat, 31 Aug 2024 06:53:04 -0700
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.46) by
- edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Sat, 31 Aug 2024 06:53:04 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=HuS+j4GevxxEpu3Hf3CgusDjiD3rt6Buv4rqIBAUDV9g/hK5EwEAHNzjjdwFHsEctMBZkRFeUM2jAe7D5HuMPs0Rw+2WDNayeV6WyTGWTdroObqOhqO0c+ZDzbOHdGkngCvIXvP0hobIA9oP6rLRMZsUIoTg/25N5F8urMiVXJFIQ2Yz9aOISBDtr9/yzokb+EebOGsLYpHs0yW71FKo55w7Eu4NPHqjDGjWk2NaDwItoaMqEY8QG7Aw3PcgtcqOwvo8EHCg9KbCECfOwpfKTLXZB3fQ5Zf9c0j+BPuoJO85P6f+oJaVryz+la7mtNjtd8MzBfX7C9EwURVKRHsweQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DYsiCDIXeo9jcvHKYwQnNMMGAGzWQui70E4JMk0QxDI=;
- b=pQ1ncDe1mTSe6a77qAq7JlJ+8D17SEF0Fiak/dmSQxGyWEc0I5iEZtPectt+j2V1BSzJ9Os5jEXP1l91U3Vfp5rzEci+4xDJ6A9FzxTuLeRjcKdDMcay2KbOfkgOoWu64Xa6v1ilxmP3LZhDPSpuvAmG0RMG/Ss588LA2ASGj5FhOjmDFGY5wa+d2rnJvZ71ep7efto5qrW5XYKeYmTREV8Q5XdmKTb84FqXnY//XqqlB1Cr+JJyE7E8I70gWYquxZ0XAEhYOmqRlp4VxWqWZzHwwG4evEYWs+PUnNkJeT3KHcZaw/Bz7dFqM8bI/V7otOsf4J6KnKuOJlLmyhw8Tw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from SJ2PR11MB8587.namprd11.prod.outlook.com (2603:10b6:a03:568::21)
- by SN7PR11MB6875.namprd11.prod.outlook.com (2603:10b6:806:2a6::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7897.28; Sat, 31 Aug
- 2024 13:52:56 +0000
-Received: from SJ2PR11MB8587.namprd11.prod.outlook.com
- ([fe80::4050:8bc7:b7c9:c125]) by SJ2PR11MB8587.namprd11.prod.outlook.com
- ([fe80::4050:8bc7:b7c9:c125%3]) with mapi id 15.20.7918.019; Sat, 31 Aug 2024
- 13:52:55 +0000
-Date: Sat, 31 Aug 2024 21:52:44 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: "Liam R. Howlett" <Liam.Howlett@oracle.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Linux Memory Management List
-	<linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>, "Lorenzo
- Stoakes" <lorenzo.stoakes@oracle.com>, Bert Karwatzki <spasswolf@web.de>,
-	Jiri Olsa <olsajiri@gmail.com>, Kees Cook <kees@kernel.org>, "Lorenzo
- Stoakes" <lstoakes@gmail.com>, Matthew Wilcox <willy@infradead.org>, "Paul E.
- McKenney" <paulmck@kernel.org>, Paul Moore <paul@paul-moore.com>, "Sidhartha
- Kumar" <sidhartha.kumar@oracle.com>, Suren Baghdasaryan <surenb@google.com>,
-	Vlastimil Babka <vbabka@suse.cz>, <ltp@lists.linux.it>,
-	<oliver.sang@intel.com>
-Subject: [linux-next:master] [mm/vma]  c2eb22189b: ltp.mseal01.fail
-Message-ID: <202408312155.fd26a58c-oliver.sang@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-X-ClientProxiedBy: SG2PR02CA0071.apcprd02.prod.outlook.com
- (2603:1096:4:54::35) To SJ2PR11MB8587.namprd11.prod.outlook.com
- (2603:10b6:a03:568::21)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA5E838F97;
+	Sun,  1 Sep 2024 08:05:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=144.6.53.87
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1725177960; cv=none; b=rCey6oRa5AHCazj30tAbsWeKGgEDsUZYyEcaTRqqY7LXZ1HgSiT9JiYeAfuIHGjlQxVYaeUKk68vPKmE9RCtxskY9cfTdpX0cC9X9gNveQx33kgJ4WrYE00fRRhm6aGBTdzBNEF8HQN+UtitySq0Lh3/VUdbBu2lX7Cuop7tWSo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1725177960; c=relaxed/simple;
+	bh=S9hbHthucJpN28Os4zB8wkhuRUyEcaQaVhH2kdHX3QY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=M5r+9T9m2kt7WGLlyRlD92OUA7cdQudpgvTbRKbmrBU2ge2kv1+3yxMsxlYcLl+mzoD+kvrq/ooGGLdNruUTeOSJ9UBEIXr+gGxWna/H9W6X4woxp9E+tsmaFbabrpaVp6PCiQdkbHXGt7awsl+hh1jupSD1cebCAPIN+5A7BY4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gondor.apana.org.au; spf=pass smtp.mailfrom=gondor.apana.org.au; arc=none smtp.client-ip=144.6.53.87
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gondor.apana.org.au
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gondor.apana.org.au
+Received: from loth.rohan.me.apana.org.au ([192.168.167.2])
+	by formenos.hmeau.com with smtp (Exim 4.96 #2 (Debian))
+	id 1skfSB-008rgH-2v;
+	Sun, 01 Sep 2024 16:05:42 +0800
+Received: by loth.rohan.me.apana.org.au (sSMTP sendmail emulation); Sun, 01 Sep 2024 16:05:40 +0800
+Date: Sun, 1 Sep 2024 16:05:40 +0800
+From: Herbert Xu <herbert@gondor.apana.org.au>
+To: Eric Biggers <ebiggers@kernel.org>
+Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, linux-crypto@vger.kernel.org, ltp@lists.linux.it,
+	Linus Torvalds <torvalds@linux-foundation.org>,
+	"Russell King (Oracle)" <linux@armlinux.org.uk>,
+	Horia =?utf-8?Q?Geant=C4=83?= <horia.geanta@nxp.com>,
+	Ard Biesheuvel <ardb@kernel.org>,
+	"David S. Miller" <davem@davemloft.net>
+Subject: [PATCH] crypto: api - Fix generic algorithm self-test races
+Message-ID: <ZtQgVOnK6WzdIDlU@gondor.apana.org.au>
+References: <ZrbTUk6DyktnO7qk@gondor.apana.org.au>
+ <202408161634.598311fd-oliver.sang@intel.com>
+ <ZsBJs_C6GdO_qgV7@gondor.apana.org.au>
+ <ZsBJ5H4JExArHGVw@gondor.apana.org.au>
+ <ZsBKG0la0m69Dyq3@gondor.apana.org.au>
+ <20240827184839.GD2049@sol.localdomain>
+ <Zs6SiBOdasO9Thd1@gondor.apana.org.au>
+ <20240830175154.GA48019@sol.localdomain>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ2PR11MB8587:EE_|SN7PR11MB6875:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3b58dfdf-328c-44e9-a40b-08dcc9c436bb
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014|7416014;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?bmhFpD2iCWcYtO2nhJTugRFVDNOpjiX/Nx9vJzNrY+FMdttuIfgyIN8MTUGw?=
- =?us-ascii?Q?tDGeVe3oiTmx8RUmuC0TIhYFXgYKaHVN7WtD3rA2ntOPFzyhPyXI8A4+/C6d?=
- =?us-ascii?Q?iWZQXsMSAyU4S+MCkRzPFQ0XOXUmGnYgcl83L0ISlabKOX5zeIgBbKYk9y9O?=
- =?us-ascii?Q?u81DKdMXMJervkCE0gHhIRDtbul0Rk4SbbqLyk7eYTJ0Y6OTN3fpUJAiNUSS?=
- =?us-ascii?Q?UgcHKwTLuNs6GgGqLLZlaend4jgdTb6vY3DGAGz3ypRw0Pa69UOuabhQ04X4?=
- =?us-ascii?Q?I/mBItSnkTp09IBHX1Poo355L/k4jskncBk8rOVNtoANlPCx1JwC85mejDIK?=
- =?us-ascii?Q?LaZwgoqduaiA0ExmBifeQ1QxSB7lOKm2kIpiISxLEGcNPcfg58LZPqLwFMN6?=
- =?us-ascii?Q?nTIaMrOsRQiCICVdXogmX474Int+SOFxckBKv+kVvGdnfYrcFg5iR1HeE7br?=
- =?us-ascii?Q?dPsBM+WTOlUwbUAdOn6kL7+6429UugsWZ8CdbtnKmZqvO/KF3wgAYvFV9d4S?=
- =?us-ascii?Q?TgRE/Ulit+Q8Z6zMjcR6ANO8BbN/1262K/BYHMjSDQJ4AKNP4qLeA8HARaLZ?=
- =?us-ascii?Q?u3XLa1Cm/BsRcioJ5r3YKgi7jSzKwYiM0oiZ3tBNyVZ7deV1QMont6zNwOhk?=
- =?us-ascii?Q?v6XmQAIFrCrj1aMVEmjK7cOKAJP/Lagu0UrIHrLoiQ+UifxIUC4SzEMeLyZ8?=
- =?us-ascii?Q?6u/jzZF7c1tKARk5B9K5HyVVixr3L9u7oIs9q4HT9KzHjZ/aD30tS03yY0Dj?=
- =?us-ascii?Q?0lgsIvtoyINHEOcJJ8tqP8cQEO3FWUcH0lziegGoFOi8A3BA4BjItJJLwRq9?=
- =?us-ascii?Q?IaWbxt9I6ZvoX3hJy6W+bkA0Ohqw/TdwdIL1hVU0IocgohfJ42KWg2guPZ9w?=
- =?us-ascii?Q?A8WqyckfYADFfmuat7DPAan42b2fX//iBm904aS6t/SwIHEjGAPEZm/pRhUr?=
- =?us-ascii?Q?1W4O7jJGPV6XuesXaTwiJUa40kahMOnwKUjUkBxIj63TEkXUoRKDWY/42FhU?=
- =?us-ascii?Q?bVCXHiuJLeXpSxeIA/tXLOPBJuU7j38MzBv7REPqgehpe+NThmveCHVwtBOV?=
- =?us-ascii?Q?t964f9q2WthJvbNccuYwbOlHlCTatIWq9BJEvF67PpYAiXx63Y9J3OoYpcVD?=
- =?us-ascii?Q?DnCJc0fD3ojUE7I/bq6q9N7j7j6xu0dqkxl8INIWYP22kg4xTRQ89CH4aZRO?=
- =?us-ascii?Q?PQ5DyGWIJ57W5KYuRK8ynTuLgEazxERdIIzxoDIlKFm7xk10Vpl7W0jwufDg?=
- =?us-ascii?Q?KYyfzPL57sutk8khP6TH/rUp6baED7C0VS3TK62HAjZ04tvHjpYHXywSGw0r?=
- =?us-ascii?Q?XJ2Nx06r1wlR5xNSnYlXiIlW?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ2PR11MB8587.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(7416014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?wo1Rwkwr6aSidNUnm3wdWb8SjFHnt08I4mkDNVQrJSqUNUxZsVLyj6jtm0aN?=
- =?us-ascii?Q?bLAKIdHaZR6yQUQmfHTun2LPrwwFDuZXIMR0oHaClvbhfC+q9MfDQuiIwnsT?=
- =?us-ascii?Q?CMuvw20ee3/fcn4g6UgMK5aw4KhiXtb7f3P7VEu0BOD4UNwx1+wB0h8GIYbb?=
- =?us-ascii?Q?BITXuipjyBQp/GwtJU2Ykof5AaRkB7CWs/lqWpxmhXDni9EpaEOLBgPKH35c?=
- =?us-ascii?Q?K9v3Gg9Zjp07RnCANrEfxkru5uZn4otHEIoYfhIyE+e6FhjzXukVM6fAKGZd?=
- =?us-ascii?Q?R4qHbKncFWU2EWTtfjAW0a6QWuqyaMDD+inD3v3ZRafLzCfLqbgR350niLak?=
- =?us-ascii?Q?l73TzbgLLpmA8Cwj0bvW0a0y1dAb8/COfNZPa+8dJNtUihasAUDjbSkimDFN?=
- =?us-ascii?Q?5fSUE3NeUtSknDSGvh326U/XWywUAW5HdPw8pNdydfHwjiWVi8BsOZkJUbLZ?=
- =?us-ascii?Q?xjgoftSkQOCDaMh+kXXSCLuzRO+a8CtKDgk/1BL25c6NIzC3KpOxTX3YUEuS?=
- =?us-ascii?Q?lYmvMfXXfBonnWREJ8NK658JvvCUKkP1rKDF+SuCw2OkZynVU1AvPVOiv1jh?=
- =?us-ascii?Q?hRXz/oBAJokjg84a864MGe+NAOLUjlTRSQSJgbL42SXq/TJUze1Zfddy0OD4?=
- =?us-ascii?Q?iq9Nz/Poc4mA6BY1Xzg+IVc1PYaWkxeMqRJsMlWRTJJuPutn7XJPVIybdMJe?=
- =?us-ascii?Q?IuvaPJKltjGzBdG2qWs8nHL8rw8BrtKEpowKq/tiqJkY3Jg8h3L+aFa9gjtj?=
- =?us-ascii?Q?6n7hvYPV0iPpnf6xYT+CdVFWkq4O6DAz0vCEyEWQ/l1vPq8Zs91y1OU6P1Lb?=
- =?us-ascii?Q?K1rt3n5JZSS01e/EfXDYcMBqM2G4v8jCe5xJ/Gy0P+riTd8J7QkR9ZE+VkWH?=
- =?us-ascii?Q?+GU81RxMf1WQ9eldz1bR22Emf1DiK1zTj0+b7Ir/bmEEtdh1qkljBHB48O+1?=
- =?us-ascii?Q?YOZzYf+eIuW+oxDJ1KgqUOWu0e9gR/T1Hzkh9qkJOYTfN96G+NGAZjYwrw3a?=
- =?us-ascii?Q?mluMJD3ZNn1SDTViz9du3sYjmnfFGflLFTs8KoYD1a2eHPHDGAUKcZavatPG?=
- =?us-ascii?Q?4zCalhrsBJRXQpQ+ifjYMKSzW8lieyV88pX4nJa0Xypkv+HP8A9FckO6v9RA?=
- =?us-ascii?Q?rodEYdVCSO9Qp+Ah/7ld1/eHRHPB7NJ3szorH7UTRUoG4UwNpGQIt2wwMaQU?=
- =?us-ascii?Q?vZCVovfk6YxlA/vNFpEIFz/Cw8gDEwflmwbSptmlD/DI0wAqUwfMWB3mW1aS?=
- =?us-ascii?Q?s/42r2o3ICL3LHLqoMDTVC8lXWTWdZbFgDQvc89lHFRjW1Bi/vask3TvdI4b?=
- =?us-ascii?Q?jCngk3Y7Dd7fsEC3Op/jsPJ3Ox1Y8wV0l4a/ytuW3+6InIpHkZYTVzwNU9bM?=
- =?us-ascii?Q?QPiUQZl4krxz9hccwmJkMwcm2cbXM4TLArW0sKuUEwAbNgYEPRQCDRmYQoQa?=
- =?us-ascii?Q?JK3ZsQUASkQV/c0l6Y62YX7Hb2qrfBW50hWBcomkcbe6KdkxWhpyeEdbhlQc?=
- =?us-ascii?Q?Bwje/rswbUh1woZVBEAYGQjItKISI1jk0twxNA1xF6MM56Fka5EPFX/l/Fwn?=
- =?us-ascii?Q?Uif+oaCsdTI/7JPevoLoJEG8ntxELn4tVBTTe8ZHWNiOoJXqG0JZRdXNiX+r?=
- =?us-ascii?Q?Yg=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3b58dfdf-328c-44e9-a40b-08dcc9c436bb
-X-MS-Exchange-CrossTenant-AuthSource: SJ2PR11MB8587.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Aug 2024 13:52:55.1327
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: BJI2CaAg9O6TPNiSvmgkoh7GZwWjMPcChXmH4zVH8i4CSD5+mpXSyar7ahTNX/AGmcCBVWY3Vyty2rm/GBKYJg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB6875
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240830175154.GA48019@sol.localdomain>
 
+On Fri, Aug 30, 2024 at 10:51:54AM -0700, Eric Biggers wrote:
+>
+> Given below in defconfig form, use 'make olddefconfig' to apply.  The failures
+> are nondeterministic and sometimes there are different ones, for example:
+> 
+> [    0.358017] alg: skcipher: failed to allocate transform for cbc(twofish-generic): -2
+> [    0.358365] alg: self-tests for cbc(twofish) using cbc(twofish-generic) failed (rc=-2)
+> [    0.358535] alg: skcipher: failed to allocate transform for cbc(camellia-generic): -2
+> [    0.358918] alg: self-tests for cbc(camellia) using cbc(camellia-generic) failed (rc=-2)
+> [    0.371533] alg: skcipher: failed to allocate transform for xts(ecb(aes-generic)): -2
+> [    0.371922] alg: self-tests for xts(aes) using xts(ecb(aes-generic)) failed (rc=-2)
+> 
+> Modules are not enabled, maybe that matters (I haven't checked yet).
 
+Yes I think that was the key.  This triggers a massive self-test
+run which executes in parallel and reveals a few race conditions
+in the system.  I think it boils down to the following scenario:
 
-Hello,
+Base algorithm X-generic, X-optimised
+Template Y
+Optimised algorithm Y-X-optimised
 
-kernel test robot noticed "ltp.mseal01.fail" on:
+Everything gets registered, and then the self-tests are started.
+When Y-X-optimised gets tested, it requests the creation of the
+generic Y(X-generic).  Which then itself undergoes testing.
 
-commit: c2eb22189bbc920cdc667dfaf939878031194bb6 ("mm/vma: inline munmap operation in mmap_region()")
-https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+The race is that after Y(X-generic) gets registered, but just
+before it gets tested, X-optimised finally finishes self-testing
+which then causes all spawns of X-generic to be destroyed.  So
+by the time the self-test for Y(X-generic) comes along, it can
+no longer find the algorithm.  This error then bubbles up all
+the way up to the self-test of Y-X-optimised which then fails.
 
-[test failed on linux-next/master 985bf40edf4343dcb04c33f58b40b4a85c1776d4]
+Note that there is some complexity that I've omitted here because
+when the generic self-test fails to find Y(X-generic) it actually
+triggers the construction of it again which then fails for various
+other reasons (these are not important because the construction
+should *not* be triggered at this point).
 
-in testcase: ltp
-version: ltp-x86_64-14c1f76-1_20240824
-with following parameters:
+So in a way the error is expected, and we should probably remove
+the pr_err for the case where ENOENT is returned for the algorithm
+that we're currently testing.
 
-	disk: 1HDD
-	fs: btrfs
-	test: syscalls-02/mseal01
+The solution is two-fold.  First when an algorithm undergoes
+self-testing it should not trigger its construction.  Secondly
+if an instance larval fails to materialise due to it being destroyed
+by a more optimised algorithm coming along, it should obviously
+retry the construction.
 
+Remove the check in __crypto_alg_lookup that stops a larval from
+matching new requests based on differences in the mask.  It is better
+to block new requests even if it is wrong and then simply retry the
+lookup.  If this ends up being the wrong larval it will sort iself
+out during the retry.
 
+Reduce the CRYPTO_ALG_TYPE_MASK bits in type during larval creation
+as otherwise LSKCIPHER algorithms may not match SKCIPHER larvals.
 
-compiler: gcc-12
-test machine: 4 threads 1 sockets Intel(R) Core(TM) i3-3220 CPU @ 3.30GHz (Ivy Bridge) with 8G memory
+Also block the instance creation during self-testing in the function
+crypto_larval_lookup by checking for CRYPTO_ALG_TESTED in the mask
+field.
 
-(please refer to attached dmesg/kmsg for entire log/backtrace)
+Finally change the return value when crypto_alg_lookup fails in
+crypto_larval_wait to EAGAIN to redo the lookup.
 
+Fixes: 37da5d0ffa7b ("crypto: api - Do not wait for tests during registration")
+Reported-by: Eric Biggers <ebiggers@kernel.org>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202408312155.fd26a58c-oliver.sang@intel.com
-
-
-
-Running tests.......
-<<<test_start>>>
-tag=mseal01 stime=1725009411
-cmdline="mseal01"
-contacts=""
-analysis=exit
-<<<test_output>>>
-tst_test.c:1809: TINFO: LTP version: 20240524-199-g2b319e3dc
-tst_test.c:1813: TINFO: Tested kernel: 6.11.0-rc4-00355-gc2eb22189bbc #1 SMP PREEMPT_DYNAMIC Thu Aug 29 21:27:00 CST 2024 x86_64
-tst_test.c:1652: TINFO: Timeout per run is 0h 02m 30s
-mseal01.c:132: TINFO: Testing mprotect() availability
-mseal01.c:134: TPASS: sys_mseal(mem_addr + mem_offset, mem_alignment) passed
-mseal01.c:47: TPASS: mprotect(mem_addr, mem_size, PROT_NONE) : EPERM (1)
-mseal01.c:132: TINFO: Testing pkey_mprotect() availability
-mseal01.c:134: TPASS: sys_mseal(mem_addr + mem_offset, mem_alignment) passed
-../../../../include/lapi/pkey.h:49: TCONF: pku is not supported on this CPU
-mseal01.c:132: TINFO: Testing madvise() availability
-mseal01.c:134: TPASS: sys_mseal(mem_addr + mem_offset, mem_alignment) passed
-mseal01.c:72: TPASS: madvise(mem_addr, mem_size, MADV_DONTNEED) : EPERM (1)
-mseal01.c:132: TINFO: Testing munmap() availability from child
-mseal01.c:134: TPASS: sys_mseal(mem_addr + mem_offset, mem_alignment) passed
-mseal01.c:77: TPASS: munmap(mem_addr, mem_size) : EPERM (1)
-mseal01.c:132: TINFO: Testing mremap() address move/resize
-mseal01.c:134: TPASS: sys_mseal(mem_addr + mem_offset, mem_alignment) passed
-mseal01.c:90: TPASS: mremap(mem_addr, mem_size, new_size, MREMAP_MAYMOVE | MREMAP_FIXED, new_addr) : EPERM (1)
-mseal01.c:132: TINFO: Testing mmap() protection change
-mseal01.c:134: TPASS: sys_mseal(mem_addr + mem_offset, mem_alignment) passed
-mseal01.c:100: TFAIL: mmap(mem_addr, mem_size, PROT_READ, MAP_ANONYMOUS | MAP_PRIVATE | MAP_FIXED, -1, 0) expected EPERM: ENOMEM (12)
-
-Summary:
-passed   10
-failed   1
-broken   0
-skipped  1
-warnings 0
-incrementing stop
-<<<execution_status>>>
-initiation_status="ok"
-duration=0 termination_type=exited termination_id=1 corefile=no
-cutime=0 cstime=2
-<<<test_end>>>
-INFO: ltp-pan reported some tests FAIL
-LTP Version: 20240524-199-g2b319e3dc
-
-       ###############################################################
-
-            Done executing testcases.
-            LTP Version:  20240524-199-g2b319e3dc
-       ###############################################################
-
-
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20240831/202408312155.fd26a58c-oliver.sang@intel.com
-
-
-
+diff --git a/crypto/api.c b/crypto/api.c
+index bbe29d438815..bfd177a4313a 100644
+--- a/crypto/api.c
++++ b/crypto/api.c
+@@ -70,11 +70,6 @@ static struct crypto_alg *__crypto_alg_lookup(const char *name, u32 type,
+ 		if ((q->cra_flags ^ type) & mask)
+ 			continue;
+ 
+-		if (crypto_is_larval(q) &&
+-		    !crypto_is_test_larval((struct crypto_larval *)q) &&
+-		    ((struct crypto_larval *)q)->mask != mask)
+-			continue;
+-
+ 		exact = !strcmp(q->cra_driver_name, name);
+ 		fuzzy = !strcmp(q->cra_name, name);
+ 		if (!exact && !(fuzzy && q->cra_priority > best))
+@@ -113,6 +108,8 @@ struct crypto_larval *crypto_larval_alloc(const char *name, u32 type, u32 mask)
+ 	if (!larval)
+ 		return ERR_PTR(-ENOMEM);
+ 
++	type &= ~CRYPTO_ALG_TYPE_MASK | (mask ?: CRYPTO_ALG_TYPE_MASK);
++
+ 	larval->mask = mask;
+ 	larval->alg.cra_flags = CRYPTO_ALG_LARVAL | type;
+ 	larval->alg.cra_priority = -1;
+@@ -229,7 +226,7 @@ static struct crypto_alg *crypto_larval_wait(struct crypto_alg *alg)
+ 		type = alg->cra_flags & ~(CRYPTO_ALG_LARVAL | CRYPTO_ALG_DEAD);
+ 		mask = larval->mask;
+ 		alg = crypto_alg_lookup(alg->cra_name, type, mask) ?:
+-		      ERR_PTR(-ENOENT);
++		      ERR_PTR(-EAGAIN);
+ 	} else if (IS_ERR(alg))
+ 		;
+ 	else if (crypto_is_test_larval(larval) &&
+@@ -308,8 +305,12 @@ static struct crypto_alg *crypto_larval_lookup(const char *name, u32 type,
+ 
+ 	if (!IS_ERR_OR_NULL(alg) && crypto_is_larval(alg))
+ 		alg = crypto_larval_wait(alg);
+-	else if (!alg)
++	else if (alg)
++		;
++	else if (!(mask & CRYPTO_ALG_TESTED))
+ 		alg = crypto_larval_add(name, type, mask);
++	else
++		alg = ERR_PTR(-ENOENT);
+ 
+ 	return alg;
+ }
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
