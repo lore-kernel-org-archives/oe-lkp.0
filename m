@@ -1,105 +1,142 @@
-Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5910E157480;
-	Wed, 11 Sep 2024 09:45:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.92.199
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12AD31A76D1
+	for <oe-lkp@lists.linux.dev>; Wed, 11 Sep 2024 14:35:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726047943; cv=none; b=EZi1uRSoXMzxxy8HvMwYKJGxB3w34SlTWNjwyIdjlxKN3Usd1S9zm0Qp4xQMw67ijYDVwOZN/20DRaEpnmC06Y8hdyedZyCPSLsvznOH5jEyqHNim96G/2lg9x1hEM+RSCWdaS5yWwPVa0hj8zEqHPTZgyYzg/1BbcYaqjrXy58=
+	t=1726065324; cv=none; b=IWo4F9IeZE1JW8h81LGJ1EjtmxjvBpIOrOaq6ZfrY2aONUX0odCn98dzcbVUHvnWuqtUcCHJnWt0j263S8V/98s295EXOKOFTK6KxgwgTEpg1r463bJQFQtCqarfGAkbNtFleGsYCxFr+OyH3D/2M5ZsgVNV1bZM+1+eK6mGkxU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726047943; c=relaxed/simple;
-	bh=M9xzdKCV528AWjyhxcpr9fldRzcHF3Zr3CcpVRKx+yw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=a6eqDJKntfAWt/x6cryYQgEPYfEnb63X65QuUGhqBr04e+BDNpe+jVUAxkUksR+XSvSLxuptxguMpc2KcK8r/ZFm65JdHZropw2+c4agrcL6eZpaCEiMhbnhgHxj8RNlNqDHHpi5Dnwq+kUPjCRlbOGIpYHbUd0Asm8HvylQJD8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=Zq/iawNy; arc=none smtp.client-ip=90.155.92.199
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	s=arc-20240116; t=1726065324; c=relaxed/simple;
+	bh=zZVJ/jn55FdYP64LtELXOS80f+yzBjWduO1V5u3oLxk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=LCdwBVBRi2So2FRM/xs8kED+qPiuQRX5BPiwugkRTXPVRYnU1MFDW2CagQh5Ahuhb8r4/CEoP9kz39PiubuqXRrs4V45sRIaXw0HsbP5RRCe8nB1F/+wiQ2Y9ldT/AGQ7tGhDVOZRZszzLKZpVWJybvQ31Brgw8PW4ZHY3Yz4KA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mGrHBvHW; arc=none smtp.client-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="Zq/iawNy"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=IA1WLHJ84fTYPUbImP/w8EfdJseyVFaHxMOtPtkiN0k=; b=Zq/iawNyJsiXYutpv6il/K1pgs
-	KYbYJz8RdrllwHMPBicQPdp14mXv3TA4D0z8u0pRzpoQTXzUrY5TAMkJiOJD9mJNAcXf9lgZ+rkqJ
-	BcL1t1CLbEpeDIxF5tWnR3USOlwwMCbfH9IAQFNtu/pB9UH4ayiTVUElLqm2h+HeHNoyDUz9/Lxs3
-	0R++3DYeLHbDij8KscM0iq+uNy9FjyatNxSDiWJBiCuXfsUhiYS8Kj10lYjV1z7qoNBLNxT6RDkOA
-	VfvOrwDNuk1BqsYH7Yd5XRFKy8nBM3SCR8BM9pcejKUDEvxgbWig1G5xWu+No3a6ktnWiHVbWk9MD
-	9BiAEEIg==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-	by desiato.infradead.org with esmtpsa (Exim 4.98 #2 (Red Hat Linux))
-	id 1soJur-000000009IO-0JQf;
-	Wed, 11 Sep 2024 09:45:37 +0000
-Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
-	id 82FC0300642; Wed, 11 Sep 2024 11:45:36 +0200 (CEST)
-Date: Wed, 11 Sep 2024 11:45:36 +0200
-From: Peter Zijlstra <peterz@infradead.org>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: Kan Liang <kan.liang@linux.intel.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, linux-perf-users@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [peterz-queue:perf/core] [perf/x86/rapl]  90942140bb:
- UBSAN:array-index-out-of-bounds_in_arch/x86/events/rapl.c
-Message-ID: <20240911094536.GP4723@noisy.programming.kicks-ass.net>
-References: <202409111521.c7c6d56f-lkp@intel.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mGrHBvHW"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1726065322; x=1757601322;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=zZVJ/jn55FdYP64LtELXOS80f+yzBjWduO1V5u3oLxk=;
+  b=mGrHBvHWqTW1Klm/iS0SzIaEATh33WObPAwKyL0SpFMxyZzmPRe4kNNe
+   csGzswMih8HG5X578/P56KDkV8svqogNWn03R2nkXHuowCpQAXEN5OKeX
+   Mtb4t+ftu+kQ1gxtw9FFrF99X/vgaSgDUzSJ1gHmoaACdHvL00Ui2rUQu
+   9FDtuElGAdRNLE98UQnqxzRkcuswTD/p/moFql495mv+fln9Lrci+kd1T
+   04UQ6yUsib+yDNUH2XZVX7G/TaPrMZ0wKYysYG05bPhLMe0H7jXENv2+C
+   t5JMQc58UJCgFpER/C4YFtE2LSP13U0IYIeqTbWh+fjPaEk1n9w7z1rOT
+   A==;
+X-CSE-ConnectionGUID: nvzN7L2bQx+18i6nP1y9hA==
+X-CSE-MsgGUID: moYlkAMlSaGwdWAdTun9bQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11192"; a="42384878"
+X-IronPort-AV: E=Sophos;i="6.10,220,1719903600"; 
+   d="scan'208";a="42384878"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2024 07:35:21 -0700
+X-CSE-ConnectionGUID: 9NB8H6ayTn6Q2ECakrgXog==
+X-CSE-MsgGUID: WVpFtfsPR6CVhSVVGDJIEg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.10,220,1719903600"; 
+   d="scan'208";a="67327019"
+Received: from linux.intel.com ([10.54.29.200])
+  by orviesa009.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2024 07:35:21 -0700
+Received: from [10.212.119.193] (kliang2-mobl1.ccr.corp.intel.com [10.212.119.193])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by linux.intel.com (Postfix) with ESMTPS id 8698620CFED7;
+	Wed, 11 Sep 2024 07:35:20 -0700 (PDT)
+Message-ID: <7730b925-eb2c-4908-9c48-e016701f2901@linux.intel.com>
+Date: Wed, 11 Sep 2024 10:35:19 -0400
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202409111521.c7c6d56f-lkp@intel.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [peterz-queue:perf/core] [perf/x86/rapl] 90942140bb:
+ UBSAN:array-index-out-of-bounds_in_arch/x86/events/rapl.c
+To: Peter Zijlstra <peterz@infradead.org>,
+ kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-perf-users@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <202409111521.c7c6d56f-lkp@intel.com>
+ <20240911094536.GP4723@noisy.programming.kicks-ass.net>
+Content-Language: en-US
+From: "Liang, Kan" <kan.liang@linux.intel.com>
+In-Reply-To: <20240911094536.GP4723@noisy.programming.kicks-ass.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Wed, Sep 11, 2024 at 04:32:13PM +0800, kernel test robot wrote:
-> 
-> 
-> Hello,
-> 
-> kernel test robot noticed "UBSAN:array-index-out-of-bounds_in_arch/x86/events/rapl.c" on:
-> 
-> commit: 90942140bb6cc7e9a41d5927c7617ee522896f7a ("perf/x86/rapl: Move the pmu allocation out of CPU hotplug")
-> https://git.kernel.org/cgit/linux/kernel/git/peterz/queue.git perf/core
-> 
-> in testcase: boot
-> 
-> compiler: clang-18
-> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-> 
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
-> 
-> 
-> +-----------------------------------------------------------+------------+------------+
-> |                                                           | c206df6d69 | 90942140bb |
-> +-----------------------------------------------------------+------------+------------+
-> | UBSAN:array-index-out-of-bounds_in_arch/x86/events/rapl.c | 0          | 12         |
-> +-----------------------------------------------------------+------------+------------+
-> 
-> 
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202409111521.c7c6d56f-lkp@intel.com
-> 
-> 
-> [   22.115286][    T1] ------------[ cut here ]------------
-> [   22.115957][    T1] UBSAN: array-index-out-of-bounds in arch/x86/events/rapl.c:685:3
 
-That is:
 
-		rapl_pmus->pmus[topology_logical_die_id(cpu)] = pmu;
+On 2024-09-11 5:45 a.m., Peter Zijlstra wrote:
+> On Wed, Sep 11, 2024 at 04:32:13PM +0800, kernel test robot wrote:
+>>
+>>
+>> Hello,
+>>
+>> kernel test robot noticed "UBSAN:array-index-out-of-bounds_in_arch/x86/events/rapl.c" on:
+>>
+>> commit: 90942140bb6cc7e9a41d5927c7617ee522896f7a ("perf/x86/rapl: Move the pmu allocation out of CPU hotplug")
+>> https://git.kernel.org/cgit/linux/kernel/git/peterz/queue.git perf/core
+>>
+>> in testcase: boot
+>>
+>> compiler: clang-18
+>> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+>>
+>> (please refer to attached dmesg/kmsg for entire log/backtrace)
+>>
+>>
+>> +-----------------------------------------------------------+------------+------------+
+>> |                                                           | c206df6d69 | 90942140bb |
+>> +-----------------------------------------------------------+------------+------------+
+>> | UBSAN:array-index-out-of-bounds_in_arch/x86/events/rapl.c | 0          | 12         |
+>> +-----------------------------------------------------------+------------+------------+
+>>
+>>
+>> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+>> the same patch/commit), kindly add following tags
+>> | Reported-by: kernel test robot <oliver.sang@intel.com>
+>> | Closes: https://lore.kernel.org/oe-lkp/202409111521.c7c6d56f-lkp@intel.com
+>>
+>>
+>> [   22.115286][    T1] ------------[ cut here ]------------
+>> [   22.115957][    T1] UBSAN: array-index-out-of-bounds in arch/x86/events/rapl.c:685:3
+> 
+> That is:
+> 
+> 		rapl_pmus->pmus[topology_logical_die_id(cpu)] = pmu;
+> 
+> Which is scaled like:
+> 
+> 	int nr_rapl_pmu = topology_max_packages() * topology_max_dies_per_package();
+> 
+> And that isn't new in that patch, just moved around.
+>
 
-Which is scaled like:
+The error commit is still the old one which doesn't include the fix of
+the issue reported by Dhananjay.
+https://lore.kernel.org/lkml/88fa2064-c054-4833-872c-0cf5ff1e3609@amd.com/
 
-	int nr_rapl_pmu = topology_max_packages() * topology_max_dies_per_package();
+I think it should be the same issue.
 
-And that isn't new in that patch, just moved around.
+> Kan, as it happens these two patches got zapped by Ingo because they
+> conflict with that rapl patch from perf/urgent and he merged perf/urgent
+> into perf/core.
+> 
+> I was going to rebase these two patches on top, but given the above, can
+> you have a look instead?
+> 
+> 
 
-Kan, as it happens these two patches got zapped by Ingo because they
-conflict with that rapl patch from perf/urgent and he merged perf/urgent
-into perf/core.
+Sure, I will work with Oliver on the issue, and resend the patch to
+support rapl.
 
-I was going to rebase these two patches on top, but given the above, can
-you have a look instead?
-
+Thanks,
+Kan
