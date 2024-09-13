@@ -1,82 +1,129 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B4811A288
-	for <oe-lkp@lists.linux.dev>; Thu, 12 Sep 2024 14:30:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E80C34A21;
+	Fri, 13 Sep 2024 01:54:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726151422; cv=none; b=d+WU4kdmjNJAVMjhnSxNwpUkUWBqTRtM4esUHXk4ik+PxOnmlM4A4JUNiXagwiVSrLXi2sR0dgd3UPyF/UXKXTI36AG70wAwUA41/R5WtsSi4GzkFztBNxFEJgJ3Evi6euCwz5Lt4HVio3xrl1yyA0vOXo6rQq6kc//p48RgLhQ=
+	t=1726192470; cv=none; b=b5ShlNIbXR0yk5e35IKnGNdA1hdxXJuiHsDJ8aSrV96pL2VbSvFJYIpGXMp3LnTfGyWZbalxugdV/6Xid0u81SyHEcFmXEM3oagYWu14tNItqboAB4Yf4P/mwbddKt9A+i3JN2NZJVut4JMAfPhGNjN2d0byo+BIrOweOnAxsWU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726151422; c=relaxed/simple;
-	bh=UC3lMubzbPDpKJQjNX8t1MIoec/d268RF96jy3oWT+4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gbDmolY+A952QMuaF67GkWdqShqDg6clTI1spfqI5gOdcKICcob/jHv19i8rIxMR4DBENIBSdB4wUT0cpW6h+x/wr3ltOygdEcoX64meiA4SV2gEJEG/+4UPe7nP5wl6ebCFyIszkORhwoGpZ4JHsA7AXwwGICsxTtHpCn1iR7M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id A390221B09;
-	Thu, 12 Sep 2024 14:30:19 +0000 (UTC)
-Authentication-Results: smtp-out1.suse.de;
-	none
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 8344113AD8;
-	Thu, 12 Sep 2024 14:30:19 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id Z+LBD/v64maDBQAAD6G6ig
-	(envelope-from <chrubis@suse.cz>); Thu, 12 Sep 2024 14:30:19 +0000
-Date: Thu, 12 Sep 2024 16:29:13 +0200
-From: Cyril Hrubis <chrubis@suse.cz>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: Chao Yu <chao@kernel.org>, lkp@intel.com, linux-kernel@vger.kernel.org,
-	linux-f2fs-devel@lists.sourceforge.net, oe-lkp@lists.linux.dev,
-	Jaegeuk Kim <jaegeuk@kernel.org>, ltp@lists.linux.it
-Subject: Re: [LTP] [linus:master] [f2fs]  9f0f6bf427:  ltp.ADSP069.fail
-Message-ID: <ZuL6uRAuIhAFTfJe@yuki.lan>
-References: <202409122103.e45aa13b-oliver.sang@intel.com>
+	s=arc-20240116; t=1726192470; c=relaxed/simple;
+	bh=mft9FtluiUsNO+9kFzODvOo8dIa6ktLqqwZBmeJrdcs=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=O3TLymhI4ABD5bkXlHkEKBusVvQ1N5zHMb19GiphA9I3qNPc0cOCQYRY/HmJAhxfwN9dPQsKY0e0TYfl5daQBqFTBoSpiw2mE8jkp9Q4PANiRd6RVTUU+JhdRovgB6l6bEedi3B3vhVhfTqJc4WSusHR4Am5GUtNH7o8Ot7ryj8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GlsFXUGI; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GlsFXUGI"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA799C4CEC3;
+	Fri, 13 Sep 2024 01:54:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1726192469;
+	bh=mft9FtluiUsNO+9kFzODvOo8dIa6ktLqqwZBmeJrdcs=;
+	h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+	b=GlsFXUGINl89AIv1C6rvqRudlda4DMG0gy1hhRbPY8zpkptnxahawEGtsr/tDOAxi
+	 E8lMCwkX9L7OUg3gUL/Hq0puQxMunt/1RBm92n8Su9c8kn7uBqlnRqeDWEpVp9uTFt
+	 R5/rivfTLGYXW8n2hgC2gKG4ridkZYUNc7dxgA7X0uFw9TfuoC0WbKuJ3MttKnGcJk
+	 e1QKrCA1pD8zP4unHxAmfPkJ/WNxG8g+EiSkH6yk+5AcPm384HIvf8rJ2PoRiPr42g
+	 y7u22WxFtns0P+OXWapXkGwpIPiKx5z6Q/57Fc8e9QHjXJNqH+v8eGZheL2bT5tXqL
+	 S5fG2aRK1/LSg==
+Message-ID: <f617ac0c-5ac8-439d-8283-41a68086ff63@kernel.org>
+Date: Fri, 13 Sep 2024 09:54:25 +0800
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202409122103.e45aa13b-oliver.sang@intel.com>
-X-Rspamd-Pre-Result: action=no action;
-	module=replies;
-	Message is reply to one we originated
-X-Spam-Level: 
-X-Spamd-Result: default: False [-4.00 / 50.00];
-	REPLY(-4.00)[]
-X-Spam-Score: -4.00
-X-Spam-Flag: NO
-X-Rspamd-Queue-Id: A390221B09
-X-Rspamd-Pre-Result: action=no action;
-	module=replies;
-	Message is reply to one we originated
-X-Rspamd-Action: no action
-X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
+User-Agent: Mozilla Thunderbird
+Cc: chao@kernel.org, oe-lkp@lists.linux.dev, lkp@intel.com,
+ linux-kernel@vger.kernel.org, Jaegeuk Kim <jaegeuk@kernel.org>,
+ Barry Song <v-songbaohua@oppo.com>, linux-f2fs-devel@lists.sourceforge.net
+Subject: Re: [linus:master] [f2fs] 5c8764f867: xfstests.generic.091.fail
+To: kernel test robot <oliver.sang@intel.com>
+References: <202409122131.d6e2f8c1-oliver.sang@intel.com>
+Content-Language: en-US
+From: Chao Yu <chao@kernel.org>
+In-Reply-To: <202409122131.d6e2f8c1-oliver.sang@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi!
-So what the test does is:
+On 2024/9/12 21:50, kernel test robot wrote:
+> 
+> 
+> Hello,
+> 
+> kernel test robot noticed "xfstests.generic.091.fail" on:
+> 
+> commit: 5c8764f8679e659c5cb295af7d32279002d13735 ("f2fs: fix to force buffered IO on inline_data inode")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-- creates a sparse file (truncates an empty file to non-zero size)
-- starts N child processes that open the file and read it in chunks
-  while they expect zeros to be read
-- starts a single writer child that opens the file with O_DIRECT
-  and writes zeros to the file starting at some offset
+Can you please try below fix for xfstests?
 
-And if the test fails it means that at some point one of the reader
-children have seen inconsistent state.
+https://lore.kernel.org/fstests/20240911035333.364961-1-chao@kernel.org/
 
--- 
-Cyril Hrubis
-chrubis@suse.cz
+Thanks,
+
+> 
+> in testcase: xfstests
+> version: xfstests-x86_64-b1465280-1_20240909
+> with following parameters:
+> 
+> 	disk: 4HDD
+> 	fs: f2fs
+> 	test: generic-091
+> 
+> 
+> 
+> compiler: gcc-12
+> test machine: 8 threads Intel(R) Core(TM) i7-6700 CPU @ 3.40GHz (Skylake) with 28G memory
+> 
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+> 
+> 
+> 
+> 
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202409122131.d6e2f8c1-oliver.sang@intel.com
+> 
+> 2024-09-11 03:13:26 export TEST_DIR=/fs/sda1
+> 2024-09-11 03:13:26 export TEST_DEV=/dev/sda1
+> 2024-09-11 03:13:26 export FSTYP=f2fs
+> 2024-09-11 03:13:26 export SCRATCH_MNT=/fs/scratch
+> 2024-09-11 03:13:26 mkdir /fs/scratch -p
+> 2024-09-11 03:13:26 export SCRATCH_DEV=/dev/sda4
+> 2024-09-11 03:13:26 export MKFS_OPTIONS="-f"
+> 2024-09-11 03:13:27 echo generic/091
+> 2024-09-11 03:13:27 ./check generic/091
+> FSTYP         -- f2fs
+> PLATFORM      -- Linux/x86_64 lkp-skl-d01 6.10.0-rc3-00027-g5c8764f8679e #1 SMP PREEMPT_DYNAMIC Wed Sep 11 10:37:47 CST 2024
+> MKFS_OPTIONS  -- -f /dev/sda4
+> MOUNT_OPTIONS -- -o acl,user_xattr /dev/sda4 /fs/scratch
+> 
+> generic/091       [failed, exit status 1]- output mismatch (see /lkp/benchmarks/xfstests/results//generic/091.out.bad)
+>      --- tests/generic/091.out	2024-09-09 16:31:23.000000000 +0000
+>      +++ /lkp/benchmarks/xfstests/results//generic/091.out.bad	2024-09-11 03:14:07.468026185 +0000
+>      @@ -1,7 +1,55 @@
+>       QA output created by 091
+>       fsx -N 10000 -l 500000 -r PSIZE -t BSIZE -w BSIZE -Z -R -W
+>      -fsx -N 10000 -o 8192 -l 500000 -r PSIZE -t BSIZE -w BSIZE -Z -R -W
+>      -fsx -N 10000 -o 32768 -l 500000 -r PSIZE -t BSIZE -w BSIZE -Z -R -W
+>      -fsx -N 10000 -o 8192 -l 500000 -r PSIZE -t BSIZE -w BSIZE -Z -R -W
+>      -fsx -N 10000 -o 32768 -l 500000 -r PSIZE -t BSIZE -w BSIZE -Z -R -W
+>      -fsx -N 10000 -o 128000 -l 500000 -r PSIZE -t BSIZE -w BSIZE -Z -W
+>      ...
+>      (Run 'diff -u /lkp/benchmarks/xfstests/tests/generic/091.out /lkp/benchmarks/xfstests/results//generic/091.out.bad'  to see the entire diff)
+> Ran: generic/091
+> Failures: generic/091
+> Failed 1 of 1 tests
+> 
+> 
+> 
+> 
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20240912/202409122131.d6e2f8c1-oliver.sang@intel.com
+> 
+> 
+> 
+
