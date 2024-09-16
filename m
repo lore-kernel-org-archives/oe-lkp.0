@@ -1,93 +1,103 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5E884C62A
-	for <oe-lkp@lists.linux.dev>; Mon, 16 Sep 2024 07:21:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F22E13AA5F
+	for <oe-lkp@lists.linux.dev>; Mon, 16 Sep 2024 08:12:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.14
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726471269; cv=fail; b=savVPZrsbg2vRchcTj6M7H/6CKogbzCcaeW2u8+c+/GPuhclav7is/dAQKu40vNRvsSeMjQNtsRQU3R0T+G6qwZUXKwNvW8rPNBY8HPdvZRBg4kspCS3uKRwxtCtwf919bM1yEdVl5ZPUo6M64L0Uq2UX7DvXFASJIFI0V7QBuI=
+	t=1726474336; cv=fail; b=Tx+p7/vTubJlk0Fmr9bNvaVCFile4gwgpuboeQWjwfZxcD/p93Oj1CUHLh9GT14GchgHMhAkRJfnsTIueUyUei87loNTJdbHx+ETK3MfY44tREPpXBylZCF2CMEzzWM9y7gboxEroKwNn3c+wIntnimj16b9F+5HNMRt3AoTxgs=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726471269; c=relaxed/simple;
-	bh=FZ2GjZ5TUlKeB7jz/Dkl7geRzbroECyY10pBgN8aBTI=;
+	s=arc-20240116; t=1726474336; c=relaxed/simple;
+	bh=oFzt7lN/3Ir6QuV2O3bsL4ZQzVCKfXprLnrNCnsi3+o=;
 	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=u2DtFAXd5tpG/9idKqzLY7WGZfd8ZUeUtxJ8jnt03D2+EvHIWT7wX8c6QyKvg3cp17fnhmLnJpi3vaj6RcUcmViHuQ1kDOGRwz0BOSkl7Wp9Wn2gp5oUe+coqciELIeAs3Mjacuzbd4c7zN9cuK8T76yvTBbQIdMjqbWa5orod8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=P6SwUMg3; arc=fail smtp.client-ip=192.198.163.15
+	 Content-Disposition:MIME-Version; b=VqUlWw4pdY/mav9tpljXT93018MR8cmLaAjzFkAO800UBFC4XoCqcgfklQCPvwGagnNXgHV53YqErsuHhKrLkZZgWyLLA3POdHC3uWzZh9S8X6dKoRPRzoCXpERNfgvyUusZuWAqGvNPp74itAIKL0v/dGQ02pOPctEfMOqaZJE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RNhlOJYS; arc=fail smtp.client-ip=198.175.65.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="P6SwUMg3"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RNhlOJYS"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1726471268; x=1758007268;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=FZ2GjZ5TUlKeB7jz/Dkl7geRzbroECyY10pBgN8aBTI=;
-  b=P6SwUMg30zsWoAHOckzZ3gJDmiAoOzhcFUW1/8m9gp01jb3DmCfERJiV
-   zttOd6w39Jp5787rFQKBVjWL/hIXx/J3IVsrlapS4cq5e3eAQDQAZYiAq
-   04pPz6dLt4EWQe5pOJJj0VimwtxmBgFAB82F2Vg71VuYbqYPxo3a1z6Y7
-   vg0cwFSxtS3zNqc1ifMnzWOvkr/e7EEqxOG9NnFI5rxsG7VlhwpgrRmwW
-   G+1lhkBzLr+hZwRqBXQWSsXap+FLz0vZLln4u3MIzQcebgqQxaIZAIQH1
-   HIm1BLLVOACIR4ZCeroev5+zi3CRAZUBu5FJxh1ZY7TcKoPtTXMAnVPeW
-   g==;
-X-CSE-ConnectionGUID: 7EgMLn/6R1mv87iW3L00TQ==
-X-CSE-MsgGUID: 6HZyn0aaR9GdZFk/lzbxPA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11196"; a="25446426"
+  t=1726474333; x=1758010333;
+  h=date:from:to:cc:subject:message-id:
+   content-transfer-encoding:mime-version;
+  bh=oFzt7lN/3Ir6QuV2O3bsL4ZQzVCKfXprLnrNCnsi3+o=;
+  b=RNhlOJYSoZHU2yYfuf45gPtfN1WIgzH7s/dxLPweZNgfaJj/0NWxQO/T
+   lgzanXli0YtJrvuODyC4u9dXUtYL3lQUWrdW72n+ZkvtF3Gw1gpupB2XN
+   WU3cS39nt78n9hGmNv81lj1ybA3krWlCAABMkUkNzLsQFeruYjgb/o4mw
+   OSBzgT2f70mq0WFD2pZu9qWu67nI/lz36UpH575SPXzvKy4rOH/z4jXi8
+   YVhiSI11szjZHeh0/vKS9649H88bCSklU8lKzv2qkbPBjnA5HTZkG7yHu
+   BCRNPp+tueNFhRtjEWWKKaopV6ujg1Wq++uzjGXqMzv2V//c/LEN25s8W
+   Q==;
+X-CSE-ConnectionGUID: p1zB6R8DS5mkVnXjzZ4KMg==
+X-CSE-MsgGUID: J6pRqrCITsK3VC4waanOAQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11196"; a="29079791"
 X-IronPort-AV: E=Sophos;i="6.10,232,1719903600"; 
-   d="scan'208";a="25446426"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2024 00:21:07 -0700
-X-CSE-ConnectionGUID: 2pu5MsbzThSBZG3y0KEjxQ==
-X-CSE-MsgGUID: poDR43a9ROuL5zkjbtsyxA==
+   d="scan'208";a="29079791"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2024 01:12:12 -0700
+X-CSE-ConnectionGUID: WVwXGiHrRRisdpys46hzMA==
+X-CSE-MsgGUID: hgwzPTR0Tri3iV2JqvIQ9g==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.10,232,1719903600"; 
-   d="scan'208";a="68664655"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orviesa010.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 16 Sep 2024 00:21:07 -0700
-Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+   d="scan'208";a="99482599"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orviesa002.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 16 Sep 2024 01:12:13 -0700
+Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Mon, 16 Sep 2024 00:21:06 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ 15.1.2507.39; Mon, 16 Sep 2024 01:12:11 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Mon, 16 Sep 2024 00:21:06 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.169)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ 15.1.2507.39 via Frontend Transport; Mon, 16 Sep 2024 01:12:11 -0700
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.172)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Mon, 16 Sep 2024 00:21:05 -0700
+ 15.1.2507.39; Mon, 16 Sep 2024 01:12:11 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=cSWL7BWWfuAxzUJ6QmUoqoSB5qUPulX8igEyPFjlVBimmXPw72VpCH1Dfrqsssnow1Ky4zZ7yvKHXlQccMpOXrylt55esMqreCyp2kxQ6Zn2j2uhD+TwXGTS1kXxqRb+YvGPm+OlAoXJvIFe+L4e4IswOegV1mt+4Z6XAwzRpfwCiUuhRFGX7aDaEiUHuuxJJB78qzMpsjdnGeDOYsXQhplyw1x3xoqsNxGNLbObZzOjRNwUYJ7LHughhTo3AmVnYGYvWcsCVhXi2upG5Orf8IV2b209Rhb8LwMU/YfUnrDRx9C9HsJYOK2h6hGLYDQ4vK1DYL3pWFj6G0s2FIecvA==
+ b=N7MNkKuL26NjS3GaEYXH9n6tbbLuGHDJsuZHyT3RvqDpZDmIa2gP1rhAFXF5fdjBuAdydF/7/+BSf1RSznPMLCh9VFiGwR8gqmfeqI4g9eQYK62qr+cWBx44OJhnY28RGCFvsCG0Rpc6He7gJv+DM6vhxQv7WS68IYCryeVdgSe1mMgdmZkmehi4jEIHL8mEaPZWbS1Z0nFUmd41GTDSVZhbGjQJqnpO0p45B2IlEK5qs31Azur2uovwUer8x4bv3u6WNqyb1TtK3atrOdkzx5zoqCm7cIWSiBEuuVQCueIWo5OoF13eFvdGT6mEVmBv9cibY83gL8HGJbmpo2QdXA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=I6i6EKwyBiOPxpySNgAzVOBwIoQCyElLA/DVh+nyIgg=;
- b=aR8BMLURO6suP/zaAmtGgXHjW5FPCMY/dpHkcQI4qKxdcBM4qNcksJlktJIGIUEtY04aaxr6tR8loshmM6eAIPDxllxVs0CEbySb16FXAmBBqjzcbOs3edU1pXHpH4FbfK5AxPhHGbbKhyLcTMDq1oizyvgWUTnIm1uftQtsOr327g5H2+wMFTz1TlqGXIslG+/XEHf4nwz9QUZI3a/aUtx7ZouVsAStvryqQSn3qePZkMFPzTWpuFRZRtjEXPkYZf7kv5PU3qg8//35r+YotqOXomj0P3wgVFWL6v80bJIMkVdv13Y3VWEAcak0JvzmMDm9Lro38SAayvlJjOe9Uw==
+ bh=b+GKzFuNvqU0leZVlI2MgQJSJHly/7569mn/8AJCVq4=;
+ b=wzYnoYSWo8vX6QDf0o+5z3m9zHMkv3Swm9hGFbLh9b6Z2epRv04Tmn8BK+v12yn+iKRP5RBU8ls3W5G/6NK0++GDta7de/hw9NOqIuU9DNDsDuoSduH3TjVmYD6eHrPN6/rziFBzMrEF60rb+r3Sg4qsyCFOJVUzmuzPhOiDVj5AJS4WvMShVNzsPSJg97YUyp56xxspkaciSR/u8MB55fwCSRTCxX65tWMur0OcVNERtlV8F+nlSzh8uKyv/htzZw7KTrR9odnvpdDVhl0k8ykaw/M8c+/aor1WGCuSrJxIb2IWslMCcf8ZQrnGiY9/nAg/suPOlKZhZStvx3J/Tg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by PH7PR11MB6426.namprd11.prod.outlook.com (2603:10b6:510:1f6::12) with
+ by PH0PR11MB5783.namprd11.prod.outlook.com (2603:10b6:510:128::13) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7962.23; Mon, 16 Sep
- 2024 07:21:00 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7962.24; Mon, 16 Sep
+ 2024 08:12:03 +0000
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.7962.022; Mon, 16 Sep 2024
- 07:21:00 +0000
-Date: Mon, 16 Sep 2024 15:20:50 +0800
+ 08:12:03 +0000
+Date: Mon, 16 Sep 2024 16:11:48 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: I Hsin Cheng <richard120310@gmail.com>
+To: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
 CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Linux Memory Management List
-	<linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>, David Gow
-	<davidgow@google.com>, <linux-kselftest@vger.kernel.org>,
-	<kunit-dev@googlegroups.com>, <oliver.sang@intel.com>
-Subject: [linux-next:master] [list]  17640748eb: kunit.list-kunit-test.fail
-Message-ID: <202409161554.6c3e8d5d-oliver.sang@intel.com>
-Content-Type: text/plain; charset="us-ascii"
+	<linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>, "Liam R.
+ Howlett" <Liam.Howlett@oracle.com>, Mark Brown <broonie@kernel.org>,
+	Vlastimil Babka <vbabka@suse.cz>, Bert Karwatzki <spasswolf@web.de>, Jeff Xu
+	<jeffxu@chromium.org>, Jiri Olsa <olsajiri@gmail.com>, Kees Cook
+	<kees@kernel.org>, Lorenzo Stoakes <lstoakes@gmail.com>, Matthew Wilcox
+	<willy@infradead.org>, "Paul E. McKenney" <paulmck@kernel.org>, Paul Moore
+	<paul@paul-moore.com>, Sidhartha Kumar <sidhartha.kumar@oracle.com>, "Suren
+ Baghdasaryan" <surenb@google.com>, <linux-kernel@vger.kernel.org>,
+	<ying.huang@intel.com>, <feng.tang@intel.com>, <fengwei.yin@intel.com>,
+	<oliver.sang@intel.com>
+Subject: [linux-next:master] [mm]  cc8cb3697a:  stress-ng.pkey.ops_per_sec
+ 4.4% improvement
+Message-ID: <202409161559.af0a1b99-oliver.sang@intel.com>
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
-X-ClientProxiedBy: SI2P153CA0026.APCP153.PROD.OUTLOOK.COM
- (2603:1096:4:190::18) To LV3PR11MB8603.namprd11.prod.outlook.com
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: SI1PR02CA0001.apcprd02.prod.outlook.com
+ (2603:1096:4:1f7::15) To LV3PR11MB8603.namprd11.prod.outlook.com
  (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -96,186 +106,224 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|PH7PR11MB6426:EE_
-X-MS-Office365-Filtering-Correlation-Id: eef50329-4704-408d-6dec-08dcd6201d3f
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|PH0PR11MB5783:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9f7680a4-37c8-4d2c-5c1e-08dcd6273efd
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?8NhZFgPEF1dJSsKHaw4OuiNE99yWXBNA1PRLqpOPA/kDkieCC29PvaS4pmCC?=
- =?us-ascii?Q?43BCLiGSfkgpHdgvr0RLMj/Ysunpcn9/+c9dqa3/UD3s1r+94S0XmIMVY9B3?=
- =?us-ascii?Q?ve+c6qgTVSboznEBovqE5A/b2F4EryOkmnRE3S44qdFdZBH3OweZQzRZMHzc?=
- =?us-ascii?Q?xiG6/Xf56N/4IPgt//u7TGB4hBDQAGMPpRv1O2oizo49feQMur/ITtGquDfm?=
- =?us-ascii?Q?eNwmslrpxnH/KLyYPd1uhQcDk+eFD1224jTdCDg3Mr0S157vzm2duVSiZmEg?=
- =?us-ascii?Q?ClFKXWJAT5x/lr7b+/ZaPOi4HPx33aNqHmINJg5ULDE7vANF0eaZYcKU+A2c?=
- =?us-ascii?Q?bj6FRvyM/uPtdmpoMPTmghgoRdAhQ3R/NLcaW3/dg+1x0Dc9xs8EO/auJom9?=
- =?us-ascii?Q?PItbnriEm8V09uXUBTnbZHqkQo58b20S8pQFgVl2WLs+Gmn58IFS9Pyv1LSR?=
- =?us-ascii?Q?q47DBkzothm1OJrvcqHQoCtOmgf/JxQu9iP/Ja3BaWn931ezuH0a4DroXvmc?=
- =?us-ascii?Q?oKlE3RjhIIFS2YP/AXe7meubam9sOw03Z8QMhXj2QMneYO8zoC77cvdc8EP7?=
- =?us-ascii?Q?Pdj7aLs015uS/vnzGl7fsj33QCMVZIeb3P2pqsBU+EpWww/LpRROd0OSAz3x?=
- =?us-ascii?Q?2QDbmfLv93m65HSolMhtX0GyUtJTB+2SR9JAS83K6/ZmoGiTmTDdniBhKuIh?=
- =?us-ascii?Q?uYrmfbgnb4tXLT2zNDybqczgDxY3secU7y4a2U8G+bFwxRMeIY9jjsYCVzeU?=
- =?us-ascii?Q?3VWiN9PYxQhjMEy0XEjszIMEHm7KHTP61vcZaEjIgG2VyQFulVG8q/8j04MN?=
- =?us-ascii?Q?2nKAxhl/I39ZE5RSQr0eH3xnT1yBMaqXDWF/2yo0uaod9E/hXR1VEaIGNBSs?=
- =?us-ascii?Q?c62KiQgtgU33p3rPoCiGq4WFCw/3uAWTFLFeLmbdQysZxeMvZuTP++WTwLu7?=
- =?us-ascii?Q?uBSjwZzsVoy5Et21EtDpZE8F40Fd1n0ZIhaigdD6kUYeTiGsBB6TkJsmf3cl?=
- =?us-ascii?Q?HO0nqEqjhtxCFV3rCyqXfxM50AuvT7x+4mh3uBzS0EbNoqr88eSw3k3qcKnk?=
- =?us-ascii?Q?QhgJlu26n6i2eNJepsN/W+Bs1/bp5yMUeNo0NLz1fM4crkJ7r1eGc3ZbuFkn?=
- =?us-ascii?Q?KWuFmAWOb2qGZt8TtHXA2lxtCfp/XCOUqnLCfJhkxWwnRFJvjcbnXJoEwu9n?=
- =?us-ascii?Q?cP7APXaQyv4hvUqE241Q2EkaRsqUq9zcRM/6OrZFRjjM2MQ1r5jvtQs2ozNX?=
- =?us-ascii?Q?19Yhaed6tXREkQLEzuHInXJKCBgU3vZr4B7FI9TjI91/dk9Wl0g+9ib/lxJf?=
- =?us-ascii?Q?pkFDq4g2nibGJ/oyFm7PDyehNY9JEPeOFiOZzHC4QpqjEQZ1EZZ99YQqs3DL?=
- =?us-ascii?Q?W5GWdXo=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|376014|366016|1800799024;
+X-Microsoft-Antispam-Message-Info: =?iso-8859-1?Q?oRP18e8WMT2DzwFS0TGHeOugr9/z3Vg0XE4XAVCTSkKqC8feYSzxiC/Crs?=
+ =?iso-8859-1?Q?tV1VBPu2rzGFitvdWWLMXoxaDggyWuoPbQj3xve0tTgEY0mCEZJe48kfs/?=
+ =?iso-8859-1?Q?Gz/sYdH5oMfptqq3LfdzvTH8foFFXyFCmC3fRVrrz9fQ9m/Hk52wAKJztq?=
+ =?iso-8859-1?Q?4a6fXxvBV9rvpjWjYKyvmjyP55A+NrZ1FfE2jg/pUJZ/V/Y4Tx8EgdXMCQ?=
+ =?iso-8859-1?Q?2Nuiy1s7eTd+Jg/Kyo45is4Jqn1I/bJJMnuXm1/fOSGGS4xhOKa673eQNi?=
+ =?iso-8859-1?Q?tlofUhuMfM+4eFqB8tMcFytwR8i3XIHpizC25Xobjuf4Gr1RGjFmEwC/xX?=
+ =?iso-8859-1?Q?rxGIcerXt6PKRx37OShi3kHEOJGEmUAFqHU31WHye595xFKkU03BrQffE+?=
+ =?iso-8859-1?Q?YH5UmdGRnD3OKuztpYZat/KDHtg6tCmoxUopEmt9kgMly/8ZjRj1JwNWkD?=
+ =?iso-8859-1?Q?McO+UYNO/BV1jcvrWVTwyLqmqAUv2XlKfWThoB5nY7+46nLC7DF1Fryjy1?=
+ =?iso-8859-1?Q?uouI8xlBFgJu9zZsUOrrb4rp63DK0TvsC8zpfhRPNa9o7+sieOPomt3ycn?=
+ =?iso-8859-1?Q?5fzbxrnR1wi+0vwFHY/3IbDnQGfhxZsBOgEtvmNVYtaV47uRZTz7x6+nDG?=
+ =?iso-8859-1?Q?2Fj732jW1vOcwFgvTW4J7K/+dbuC1jv8oyA12Y0IZSBRPZRmXVeoaJAWef?=
+ =?iso-8859-1?Q?k63GSxmrC0Eq7R07EvwB4zFrMKVl3KxwXMoyOM9G0TFBTIIwvC/9aTYDpb?=
+ =?iso-8859-1?Q?kybBN9NU0d5Cqi12lESdaMYu1VlXbB6G7/k6h1bknKlTx8H0/edMOPErPk?=
+ =?iso-8859-1?Q?gKs8ivkIcwyJCgKLBksyIieyHLR08hf6jZlCVLPALm7jtTlijof1cZ78Zs?=
+ =?iso-8859-1?Q?/E76ekCZy2O1/DfS7PrR/9e09+mvGivAUI4HjA5bPqzC50qcxEmjZDPdEY?=
+ =?iso-8859-1?Q?SbN8xuHDEKwQiKbgoHKCE05GOFVlNQsVnQASEj2un6fHhXteo9b1P+JxC6?=
+ =?iso-8859-1?Q?g+5gdlyTzWCokVF0QrTXx1JU2GyjNDNycvst4wracigTsQOkjlmfhtD3Dk?=
+ =?iso-8859-1?Q?oN1oR7cR2iI8Utxd55SteD0ScUR98JEsw0D3Ve5Ppuk1P3899njOqVzAwn?=
+ =?iso-8859-1?Q?NtAXO3hONsVzyVs4M/94Sq6D0Tdy9aRQIXAf83SYv+AEbiif+DAxHRUpuD?=
+ =?iso-8859-1?Q?EoIwBrs9jSjeVT65Ha2CsnikGNvCb28AdwbnYs5ZHmT6bfbIxggaNdqJ3I?=
+ =?iso-8859-1?Q?x5UVqjgOLahcskZlQcYc03K6XHm+Ks0LHunsuF/NuCs4tyhJfQw9CLSE8Y?=
+ =?iso-8859-1?Q?eMGGHGHLpsilrjCtWzKOjbNTILek5+UYehJ4Oc+SqZE6r9pweDiVvGRHA0?=
+ =?iso-8859-1?Q?49WmdgG3LFPPgfrQPjB7SxrDcakUfd0zZ0bkk3hqN7vxib/BUY/hY=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?YAHJMYkSX6XY8hGYsz3tYa9jdmjne/tVfCLaXErMp5tJPnS2MgROI4Y1MjcJ?=
- =?us-ascii?Q?ypUK0JLKHyNkarOTU86SkjFENd7YeCl8AmqCyWN+/D3wxmLANh04JtaxkmW9?=
- =?us-ascii?Q?dZVpIiISluUmy7uC3h5LqNB0oXq0nGqmDIfeuWYtSPFmJOrM2P9ybAwySGuA?=
- =?us-ascii?Q?ZujJQVE8ZrqCZu/zs2l9uE0Rj7ktEidmr84VhzsQmofb3+tug889Xg7BBEz4?=
- =?us-ascii?Q?SaJx39lYlVeNK3GkOvSh5vaQuSac8Ss+96cioppNCxLddywb1t4gitu/zWAX?=
- =?us-ascii?Q?Z0o7Y3NYT0Ajk+H4v/MKuHXwmiVmlAm5ykhf4900/MAd1egNl3yingXOZoqb?=
- =?us-ascii?Q?i3XhI5znN0MFehf5LgyYjLrTFoYmAHjZlrpF+9nZ5DdoIGEkVTGDDN5mlFhO?=
- =?us-ascii?Q?JIWFt1v+4mLRYsjZMT20OnLOQlFxOXSkzeYisZBlNMDVVWgFSYheGXzeqGyC?=
- =?us-ascii?Q?zNq5rkB09RrBisZ1dHRrm5Rn4Qi1dKYiYxbs3iVZxk67Gcc1o1n0hBbctjBD?=
- =?us-ascii?Q?qktY7Q6rs8wtMhqSnS/Q7IKK4766UMxHuy6Goc+tIqZztN+jOYNecHm/bv0f?=
- =?us-ascii?Q?HTuxMaS5FEqhfdqK3ttvMCZNsr6QyCL24L4z1YQMI9+p2i1GllspS8zyBF7x?=
- =?us-ascii?Q?aOVcagmdEWMejjfWopnNLMivVNf002lVjbW0Dh7HYGeajD59BYeI04jjYaxn?=
- =?us-ascii?Q?NfcCVZCMmYXvlXuUBPO/BVJJoJNg02JkhU7ro+ZLfA6hzdJoq6w1m1pMWkjx?=
- =?us-ascii?Q?tV9Y+C8nuF2rDc8UGhGnLbCqkKiU7kMuwUosRVwXMLnxxwvuR0z9qJ1lxMiV?=
- =?us-ascii?Q?aTBJMt9g9pd9Z9Og+SAPxnEJqRxUbWXmaE023mvlDxmRCAJWncH6SIOMFd0K?=
- =?us-ascii?Q?TQ99muklt49nYWChBnnFZTmBjoRngswDV0o2Yi/tSbOuOK8ANxJk2et3JB2S?=
- =?us-ascii?Q?B6RnGLnpquLZ9y8GIpb5P0FQTTP5HRsyaxX2FderAOsnWnHw1+aJgwD/0FKK?=
- =?us-ascii?Q?ljfMWKFH+k132c5Q8AVUwwp6ivlAZheMcw44wBsn5uATQkTmjA4BSKha/xbC?=
- =?us-ascii?Q?uaQzBMMmgTGttLIopz/kTQViAgDx42gywWrM5r9VATNn1h87KNAEzgacIaL/?=
- =?us-ascii?Q?vR2bDsOMxO18sxbDePh2GSRc/R5/X+KiEMDfIHYowpUh/uSVOzzpnkTjP+hd?=
- =?us-ascii?Q?JIETWB7qeSqS8NORBL6hG8DrdbQmrILhUAeeX6FY3fymRbyTO/7oZWeTK8Nu?=
- =?us-ascii?Q?4wKG2JHmi89JXLhvaqEeOeXDQblyWjV/nmSt0Xc/usatWn6gF4d+WYBWsiPL?=
- =?us-ascii?Q?e3d0JroTg/cBaWOWiSxnnHQqyXQTN8eZN1LK+dpOziPSqpIPjI3yW4jU0ryd?=
- =?us-ascii?Q?KplZIGNa6qhoSIZe4gr1cpN0Wh5q37MGl+hOngYkIjjL75S4ZM9fNRZjHeKe?=
- =?us-ascii?Q?hCnxaGmey8t/NSIuwp9uWskKjcdUs19MJGn4V1Rmj73vn5IYPq37WObIv4Km?=
- =?us-ascii?Q?Cgfie7U5pc9BFx+RzTERFCqTB65NgJacprNYijvCifqbwt3yAMvT3MRzoB5+?=
- =?us-ascii?Q?huaJQWIaldhLNZY+TSImWCglpRQZdmSbFe2au+x/GMWQQfP4XcMlJUNpMf6u?=
- =?us-ascii?Q?0A=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: eef50329-4704-408d-6dec-08dcd6201d3f
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?7p+wme6sGA6EI0iypeYuiqpeb9L/Oq4t8jaKNgH+B+2qKzPOlfeKZmG0jq?=
+ =?iso-8859-1?Q?JQqbL5yD+iORqEdciI39XdKsl3xgZJnB5UdXr1n1lYarbiUmUxs/gCYqAe?=
+ =?iso-8859-1?Q?qU3Cr66eK9pNM6jnvQ9XINT2sjdTdZDMQZMqaUtxZX14cK2QvihSEDxepi?=
+ =?iso-8859-1?Q?3ZmeckwDizDSxt+3pkLEGFvGFY1NMI0Fdn8XCWgdYVeVFv9mWHaQIkH5vw?=
+ =?iso-8859-1?Q?tFKbp9yF1IRiIxygwYXnRlmHJueDS/6Ig4KbLJHj6It4eGN/yA8ctCv8tU?=
+ =?iso-8859-1?Q?BMqm6Dv8pMUB0Jd6fxRWQj4R2HNny9eFtPn92rW7/GoMSn8iSLI+PRGXkB?=
+ =?iso-8859-1?Q?+L7/e0vU3/FwoUQeBFMCkcJ5bfjrOKBePfjKrBqmil+Z54vnaciKCmZS+7?=
+ =?iso-8859-1?Q?XNv5a/tGFPNmp7+lXL6mClCvCnILvlR/PPnpXDYyAhRNX4sWWeHoVB7jTz?=
+ =?iso-8859-1?Q?pyx9VhuA//RbSQly27++27q/i7sdUmJjf9Rx+AXkjrFm9XTeoVXtO7kCvq?=
+ =?iso-8859-1?Q?kR6th6G9Kp+ohhQkhrMil7hYb5yWUobPD8UWFp1naxKhXaYtzDMhDj1X/R?=
+ =?iso-8859-1?Q?hNztNR5DEBRZHd8woiFMhGkaDw94wCwtDvGpGXlUTrf9GTcyGwNtWxU+D5?=
+ =?iso-8859-1?Q?l45INSQQRL+uQA/5LbAXD+XKsmi9IBeYmVH3JOJ18nduj5heZMmqKL5c4C?=
+ =?iso-8859-1?Q?SD2bnV8Pb92UwlfAnlGOurPRCpPtfctqFgNNFPMuY5NlzJ5l2WziNv+1tc?=
+ =?iso-8859-1?Q?zmzScLwkTugaXi/UoWmE3ubN3yK9XjmCv7GibCxDyTZkqUtwSFtr3EOMtw?=
+ =?iso-8859-1?Q?7R0NV3bC+xg3YV9tJVJWiIpomRYuDR5/QZ10tknHJlQMn+mwiS5iCpkRyF?=
+ =?iso-8859-1?Q?7RtEMjcIRHnOJsNxtfGHmitPkTE7ry451kG/IZSO35y0ZRRuvid02/oL0o?=
+ =?iso-8859-1?Q?Giu9Vg5QpwUWEHUvs51HiQFDkQx9POjCjpcHQtXv7dvsBB918DQ8qOjHwZ?=
+ =?iso-8859-1?Q?iKKR41FxUp947INyQif5/v0eEmNvOcsDFMwLleImvsZT0k3OjjOn30wjw4?=
+ =?iso-8859-1?Q?LCPfnDH5PY0A08XbSHH1WXSc6QKzZZwmqUEgaLa2cD3RVWYCSDlI0CJGRE?=
+ =?iso-8859-1?Q?75Zh960oW3G8yIvMg7sUizj46qYjil0dNJnv3Z+T1yZWT36BHLD97xU/DX?=
+ =?iso-8859-1?Q?QQbUs5B9BqK6Hr9NjghZHV63VZW9Yi6hbzbo4Ujq2KibZx3f1VRvCfMD47?=
+ =?iso-8859-1?Q?Y7SIkYTwg8I6OpqzRVvUAjuJwRUeG5L3G6QzGKqlgy/cvojTW05iqrJ2TS?=
+ =?iso-8859-1?Q?pGpGZF1SJpRm/XoA8S8v+RpEkrbJhQ/TWcZdXxoAMqXjHAIrPQE4YVWHWl?=
+ =?iso-8859-1?Q?OlrzwPCWEiQEgVIcqCf4ukIzTbtcoikGA9kZpMJLZgOJoC7qA25eohPxC3?=
+ =?iso-8859-1?Q?IuwL2CcQER5zbtPalABuOETg44+OrtQFdHgSSeqLQuD+Ss7H8gQ4QnFtA4?=
+ =?iso-8859-1?Q?3LwzHtQscsEQ6AA6sp+NkW4RMcCZbjM2oBGxT2Ef4RCZEvxw/VO/Mb8bR8?=
+ =?iso-8859-1?Q?oPaw+zLNvVR5bhdBkfgpx83+XvJVf7ixvHL7PZv4T/B+U4+RIHn+/CqTAl?=
+ =?iso-8859-1?Q?mO3/5uaAzvMDWVSr8UPDVivhrnziUpKTOaalMCGSroiYvWZ/09aNgoVw?=
+ =?iso-8859-1?Q?=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9f7680a4-37c8-4d2c-5c1e-08dcd6273efd
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Sep 2024 07:21:00.0801
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Sep 2024 08:12:03.0767
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sTcGqWcK3cEIg8jP5Hm1O8htqlkGBpMiV7f1sKi1Lqm5ACbEcOgw8E0agPLbG6mVWoVuyH08z3/nQYJXin9XLg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB6426
+X-MS-Exchange-CrossTenant-UserPrincipalName: D52genBc3FRRVf6Z5Z62tSE5BGfuSOas6W3qCjFpnh28QMxdg/2lsMl5b7Yoo/DjCiaKianksZMJrkFi0+x47Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5783
 X-OriginatorOrg: intel.com
 
 
 
 Hello,
 
-kernel test robot noticed "kunit.list-kunit-test.fail" on:
+kernel test robot noticed a 4.4% improvement of stress-ng.pkey.ops_per_sec on:
 
-commit: 17640748eb3875e486805e2d98ca1044a3a69b93 ("list: test: fix tests for list_cut_position()")
+
+commit: cc8cb3697a8d8eabe1fb9acb8768b11c1ab607d8 ("mm: refactor vma_merge() into modify-only vma_merge_existing_range()")
 https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
 
-[test failed on linux-next/master 5acd9952f95fb4b7da6d09a3be39195a80845eb6]
+testcase: stress-ng
+test machine: 64 threads 2 sockets Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz (Ice Lake) with 256G memory
+parameters:
 
-in testcase: kunit
-version: 
-with following parameters:
-
-	group: group-00
-
-
-
-compiler: gcc-12
-test machine: 8 threads Intel(R) Core(TM) i7-6700 CPU @ 3.40GHz (Skylake) with 16G memory
-
-(please refer to attached dmesg/kmsg for entire log/backtrace)
+	nr_threads: 100%
+	testtime: 60s
+	test: pkey
+	cpufreq_governor: performance
 
 
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202409161554.6c3e8d5d-oliver.sang@intel.com
-
-
-below 2 cases can pass on parent but fail on this commit.
-
-13a6473783aaced3 17640748eb3875e486805e2d98c
----------------- ---------------------------
-       fail:runs  %reproduction    fail:runs
-           |             |             |
-           :9           67%           6:6     kunit.list-kunit-test.list_test_list_cut_before.fail
-           :9           67%           6:6     kunit.list-kunit-test.list_test_list_cut_position.fail
 
 
 
-[  143.881460] KTAP version 1
-[  143.884865] 1..3
-[  143.887802]     KTAP version 1
-[  143.891541]     # Subtest: list-kunit-test
-[  143.896316]     # module: list_test
-[  143.896336]     1..39
-[  143.904046]     ok 1 list_test_list_init
-[  143.904607]     ok 2 list_test_list_add
-[  143.909698]     ok 3 list_test_list_add_tail
-[  143.915034]     ok 4 list_test_list_del
-[  143.920415]     ok 5 list_test_list_replace
-[  143.925428]     ok 6 list_test_list_replace_init
-[  143.930900]     ok 7 list_test_list_swap
-[  143.936712]     ok 8 list_test_list_del_init
-[  143.941952]     ok 9 list_test_list_del_init_careful
-[  143.947363]     ok 10 list_test_list_move
-[  143.953422]     ok 11 list_test_list_move_tail
-[  143.958536]     ok 12 list_test_list_bulk_move_tail
-[  143.964192]     ok 13 list_test_list_is_head
-[  143.970279]     ok 14 list_test_list_is_first
-[  143.975777]     ok 15 list_test_list_is_last
-[  143.981871]     ok 16 list_test_list_empty
-[  143.987375]     ok 17 list_test_list_empty_careful
-[  143.992611]     ok 18 list_test_list_rotate_left
-[  143.998511]     ok 19 list_test_list_rotate_to_front
-[  144.004367]     ok 20 list_test_list_is_singular
-[  144.010375]     # list_test_list_cut_position: EXPECTATION FAILED at lib/list-test.c:409
-                   Expected cur == &entries[i], but
-                       cur == ffffc9000126fd70
-                       &entries[i] == ffffc9000126fd50
-[  144.016196]     not ok 21 list_test_list_cut_position
-[  144.040950]     # list_test_list_cut_before: EXPECTATION FAILED at lib/list-test.c:440
-                   Expected cur == &entries[i], but
-                       cur == ffffc9000129fd60
-                       &entries[i] == ffffc9000129fd50
-[  144.047033]     # list_test_list_cut_before: EXPECTATION FAILED at lib/list-test.c:440
-                   Expected cur == &entries[i], but
-                       cur == ffffc9000129fd70
-                       &entries[i] == ffffc9000129fd60
-[  144.071616]     not ok 22 list_test_list_cut_before
-[  144.096387]     ok 23 list_test_list_splice
-[  144.102425]     ok 24 list_test_list_splice_tail
-[  144.107897]     ok 25 list_test_list_splice_init
-[  144.113704]     ok 26 list_test_list_splice_tail_init
-[  144.119664]     ok 27 list_test_list_entry
-[  144.126022]     ok 28 list_test_list_entry_is_head
-[  144.131275]     ok 29 list_test_list_first_entry
-[  144.137246]     ok 30 list_test_list_last_entry
-[  144.143084]     ok 31 list_test_list_first_entry_or_null
-[  144.148823]     ok 32 list_test_list_next_entry
-[  144.155283]     ok 33 list_test_list_prev_entry
-[  144.161048]     ok 34 list_test_list_for_each
-[  144.166792]     ok 35 list_test_list_for_each_prev
-[  144.172318]     ok 36 list_test_list_for_each_safe
-[  144.178278]     ok 37 list_test_list_for_each_prev_safe
-[  144.184235]     ok 38 list_test_list_for_each_entry
-[  144.190607]     ok 39 list_test_list_for_each_entry_reverse
-[  144.196199] # list-kunit-test: pass:37 fail:2 skip:0 total:39
-[  144.202470] # Totals: pass:37 fail:2 skip:0 total:39
-[  144.208908] not ok 1 list-kunit-test
-
+Details are as below:
+-------------------------------------------------------------------------------------------------->
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20240916/202409161554.6c3e8d5d-oliver.sang@intel.com
+https://download.01.org/0day-ci/archive/20240916/202409161559.af0a1b99-oliver.sang@intel.com
 
+=========================================================================================
+compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
+  gcc-12/performance/x86_64-rhel-8.3/100%/debian-12-x86_64-20240206.cgz/lkp-icl-2sp7/pkey/stress-ng/60s
+
+commit: 
+  65e0aa64df ("mm: introduce commit_merge(), abstracting final commit of merge")
+  cc8cb3697a ("mm: refactor vma_merge() into modify-only vma_merge_existing_range()")
+
+65e0aa64df916861 cc8cb3697a8d8eabe1fb9acb876 
+---------------- --------------------------- 
+         %stddev     %change         %stddev
+             \          |                \  
+    159916 ±  5%     +14.9%     183809 ± 10%  meminfo.DirectMap4k
+     15.42 ± 23%     +46.5%      22.58 ± 17%  sched_debug.cpu.nr_uninterruptible.max
+ 2.158e+08            +4.4%  2.253e+08        stress-ng.pkey.ops
+   3596484            +4.4%    3755565        stress-ng.pkey.ops_per_sec
+    196.30            +4.9%     205.86        stress-ng.time.user_time
+  25782400            +3.4%   26666903        proc-vmstat.numa_hit
+  25707363            +3.5%   26600006        proc-vmstat.numa_local
+  44223158            +3.4%   45721027        proc-vmstat.pgalloc_normal
+  39763569            +3.5%   41151044        proc-vmstat.pgfree
+ 3.568e+10            +1.4%  3.619e+10        perf-stat.i.branch-instructions
+  87058419 ±  2%      +3.1%   89795461        perf-stat.i.branch-misses
+ 1.482e+08            +2.7%  1.521e+08        perf-stat.i.cache-references
+      1854            -2.2%       1813        perf-stat.i.cycles-between-cache-misses
+  1.68e+11            +1.1%  1.699e+11        perf-stat.i.instructions
+      0.64            +1.8%       0.65        perf-stat.overall.MPKI
+      1812            -2.5%       1766        perf-stat.overall.cycles-between-cache-misses
+ 1.045e+08            +2.6%  1.073e+08        perf-stat.ps.cache-misses
+ 1.446e+08            +2.8%  1.486e+08        perf-stat.ps.cache-references
+     25.66 ±116%     -96.6%       0.86 ±168%  perf-sched.sch_delay.avg.ms.__cond_resched.__kmalloc_node_noprof.alloc_slab_obj_exts.allocate_slab.___slab_alloc
+      9.35 ± 40%    -100.0%       0.00        perf-sched.sch_delay.avg.ms.__cond_resched.down_write.unlink_anon_vmas.vma_complete.vma_merge
+      9.63 ± 36%    -100.0%       0.00        perf-sched.sch_delay.avg.ms.__cond_resched.down_write.vma_merge.constprop.0
+      3.87 ± 38%    -100.0%       0.00        perf-sched.sch_delay.avg.ms.__cond_resched.down_write.vma_prepare.vma_merge.constprop
+     10.81 ± 36%     -76.2%       2.57 ±142%  perf-sched.sch_delay.avg.ms.__cond_resched.down_write_killable.do_mprotect_pkey.__x64_sys_pkey_mprotect.do_syscall_64
+      3.74 ± 55%    -100.0%       0.00        perf-sched.sch_delay.avg.ms.__cond_resched.khugepaged.kthread.ret_from_fork.ret_from_fork_asm
+      2.32 ± 34%    -100.0%       0.00        perf-sched.sch_delay.avg.ms.__cond_resched.kmem_cache_alloc_noprof.mas_alloc_nodes.mas_preallocate.vma_merge
+      1.32 ±104%     -80.1%       0.26 ±221%  perf-sched.sch_delay.avg.ms.__x64_sys_pause.do_syscall_64.entry_SYSCALL_64_after_hwframe.[unknown]
+     19.81 ±188%     -99.3%       0.14 ±142%  perf-sched.sch_delay.avg.ms.do_wait.kernel_wait4.__do_sys_wait4.do_syscall_64
+      0.39 ± 57%     -81.6%       0.07 ±153%  perf-sched.sch_delay.avg.ms.irqentry_exit_to_user_mode.asm_sysvec_reschedule_ipi.[unknown]
+    180.87 ±203%     -99.1%       1.55 ±153%  perf-sched.sch_delay.avg.ms.schedule_hrtimeout_range_clock.ep_poll.do_epoll_wait.__x64_sys_epoll_wait
+      0.36 ±108%     -96.5%       0.01 ±187%  perf-sched.sch_delay.avg.ms.schedule_timeout.kcompactd.kthread.ret_from_fork
+      1.44 ± 19%     -85.8%       0.20 ±171%  perf-sched.sch_delay.avg.ms.wait_for_partner.fifo_open.do_dentry_open.vfs_open
+     40.94 ±115%     -99.8%       0.10 ±143%  perf-sched.sch_delay.avg.ms.worker_thread.kthread.ret_from_fork.ret_from_fork_asm
+    112.73 ±118%     -98.9%       1.19 ±142%  perf-sched.sch_delay.max.ms.__cond_resched.__kmalloc_node_noprof.alloc_slab_obj_exts.allocate_slab.___slab_alloc
+    335.83 ± 29%    -100.0%       0.00        perf-sched.sch_delay.max.ms.__cond_resched.down_write.unlink_anon_vmas.vma_complete.vma_merge
+    301.19 ± 35%    -100.0%       0.00        perf-sched.sch_delay.max.ms.__cond_resched.down_write.vma_merge.constprop.0
+     22.34 ± 98%    -100.0%       0.00        perf-sched.sch_delay.max.ms.__cond_resched.down_write.vma_prepare.vma_merge.constprop
+    473.14 ± 21%     -76.2%     112.54 ±144%  perf-sched.sch_delay.max.ms.__cond_resched.down_write_killable.do_mprotect_pkey.__x64_sys_pkey_mprotect.do_syscall_64
+      6.84 ± 51%    -100.0%       0.00        perf-sched.sch_delay.max.ms.__cond_resched.khugepaged.kthread.ret_from_fork.ret_from_fork_asm
+      7.07 ± 72%    -100.0%       0.00        perf-sched.sch_delay.max.ms.__cond_resched.kmem_cache_alloc_noprof.mas_alloc_nodes.mas_preallocate.vma_merge
+      0.42 ±147%     -98.1%       0.01 ±141%  perf-sched.sch_delay.max.ms.irq_thread.kthread.ret_from_fork.ret_from_fork_asm
+      2373 ± 40%     -78.6%     507.50 ±152%  perf-sched.sch_delay.max.ms.pipe_read.vfs_read.ksys_read.do_syscall_64
+      1.70 ±111%     -96.7%       0.06 ±212%  perf-sched.sch_delay.max.ms.schedule_timeout.kcompactd.kthread.ret_from_fork
+      1309 ± 77%     -99.6%       5.06 ±165%  perf-sched.sch_delay.max.ms.worker_thread.kthread.ret_from_fork.ret_from_fork_asm
+      2745 ± 25%     -81.5%     507.97 ±152%  perf-sched.total_sch_delay.max.ms
+     10044 ±  4%     -74.3%       2576 ±141%  perf-sched.total_wait_and_delay.count.ms
+      6234 ± 21%     -77.2%       1421 ±141%  perf-sched.total_wait_and_delay.max.ms
+     18.71 ± 40%    -100.0%       0.00        perf-sched.wait_and_delay.avg.ms.__cond_resched.down_write.unlink_anon_vmas.vma_complete.vma_merge
+     19.26 ± 36%    -100.0%       0.00        perf-sched.wait_and_delay.avg.ms.__cond_resched.down_write.vma_merge.constprop.0
+     21.62 ± 36%     -76.2%       5.15 ±142%  perf-sched.wait_and_delay.avg.ms.__cond_resched.down_write_killable.do_mprotect_pkey.__x64_sys_pkey_mprotect.do_syscall_64
+    885.96 ± 42%     -79.1%     185.28 ±142%  perf-sched.wait_and_delay.avg.ms.schedule_hrtimeout_range_clock.ep_poll.do_epoll_wait.__x64_sys_epoll_wait
+    144.50 ± 24%     -86.4%      19.67 ±145%  perf-sched.wait_and_delay.count.__cond_resched.__alloc_pages_noprof.alloc_pages_mpol_noprof.folio_alloc_mpol_noprof.shmem_alloc_folio
+    131.83 ±  9%     -73.7%      34.67 ±141%  perf-sched.wait_and_delay.count.__cond_resched.__wait_for_common.affine_move_task.__set_cpus_allowed_ptr.__sched_setaffinity
+    159.83 ±  8%     -75.8%      38.67 ±144%  perf-sched.wait_and_delay.count.__cond_resched.change_pmd_range.isra.0.change_pud_range
+    227.83 ±  9%     -77.0%      52.33 ±141%  perf-sched.wait_and_delay.count.__cond_resched.change_pud_range.isra.0.change_protection_range
+     75.00 ±  8%     -71.6%      21.33 ±143%  perf-sched.wait_and_delay.count.__cond_resched.down_write.__x64_sys_pkey_free.do_syscall_64.entry_SYSCALL_64_after_hwframe
+     82.00 ±  9%     -76.4%      19.33 ±141%  perf-sched.wait_and_delay.count.__cond_resched.down_write.anon_vma_clone.__split_vma.vma_modify
+    412.67 ±  7%     -82.6%      71.83 ±141%  perf-sched.wait_and_delay.count.__cond_resched.down_write.mprotect_fixup.do_mprotect_pkey.__x64_sys_pkey_mprotect
+    125.83 ±  9%    -100.0%       0.00        perf-sched.wait_and_delay.count.__cond_resched.down_write.unlink_anon_vmas.vma_complete.vma_merge
+     86.83 ± 14%    -100.0%       0.00        perf-sched.wait_and_delay.count.__cond_resched.down_write.vma_merge.constprop.0
+    225.33 ±  7%     -76.1%      53.83 ±142%  perf-sched.wait_and_delay.count.__cond_resched.down_write_killable.do_mprotect_pkey.__x64_sys_pkey_mprotect.do_syscall_64
+    314.67 ± 31%     -87.1%      40.50 ±142%  perf-sched.wait_and_delay.count.__cond_resched.generic_perform_write.shmem_file_write_iter.vfs_write.ksys_write
+    118.17 ± 12%     -80.0%      23.67 ±143%  perf-sched.wait_and_delay.count.__cond_resched.kmem_cache_alloc_noprof.mas_alloc_nodes.mas_preallocate.__split_vma
+    206.50 ±  8%     -77.2%      47.17 ±141%  perf-sched.wait_and_delay.count.__cond_resched.kmem_cache_alloc_noprof.vm_area_dup.__split_vma.vma_modify
+     76.33 ± 23%     -90.6%       7.17 ±223%  perf-sched.wait_and_delay.count.__cond_resched.shmem_inode_acct_blocks.shmem_alloc_and_add_folio.shmem_get_folio_gfp.shmem_write_begin
+     45.33 ± 21%     -83.1%       7.67 ±148%  perf-sched.wait_and_delay.count.__cond_resched.smpboot_thread_fn.kthread.ret_from_fork.ret_from_fork_asm
+    626.00 ± 66%     -92.6%      46.17 ±142%  perf-sched.wait_and_delay.count.irqentry_exit_to_user_mode.asm_sysvec_apic_timer_interrupt.[unknown].[unknown]
+     10.33 ± 14%     -83.9%       1.67 ±223%  perf-sched.wait_and_delay.count.schedule_hrtimeout_range_clock.do_poll.constprop.0.do_sys_poll
+     54.17 ± 27%     -70.2%      16.17 ±141%  perf-sched.wait_and_delay.count.schedule_timeout.__wait_for_common.wait_for_completion_state.kernel_clone
+      1976 ±  7%     -77.3%     447.67 ±141%  perf-sched.wait_and_delay.count.smpboot_thread_fn.kthread.ret_from_fork.ret_from_fork_asm
+      1760 ± 10%     -74.8%     443.33 ±147%  perf-sched.wait_and_delay.count.syscall_exit_to_user_mode.do_syscall_64.entry_SYSCALL_64_after_hwframe.[unknown]
+    195.50 ±  9%     -75.9%      47.17 ±141%  perf-sched.wait_and_delay.count.worker_thread.kthread.ret_from_fork.ret_from_fork_asm
+    671.66 ± 29%    -100.0%       0.00        perf-sched.wait_and_delay.max.ms.__cond_resched.down_write.unlink_anon_vmas.vma_complete.vma_merge
+    602.38 ± 35%    -100.0%       0.00        perf-sched.wait_and_delay.max.ms.__cond_resched.down_write.vma_merge.constprop.0
+    946.28 ± 21%     -76.2%     225.08 ±144%  perf-sched.wait_and_delay.max.ms.__cond_resched.down_write_killable.do_mprotect_pkey.__x64_sys_pkey_mprotect.do_syscall_64
+      4225 ± 39%     -75.8%       1022 ±141%  perf-sched.wait_and_delay.max.ms.pipe_read.vfs_read.ksys_read.do_syscall_64
+      2837 ± 31%     -88.2%     334.64 ±223%  perf-sched.wait_and_delay.max.ms.schedule_hrtimeout_range_clock.do_poll.constprop.0.do_sys_poll
+      4535 ± 33%     -74.1%       1173 ±143%  perf-sched.wait_and_delay.max.ms.worker_thread.kthread.ret_from_fork.ret_from_fork_asm
+     25.66 ±116%     -96.6%       0.86 ±168%  perf-sched.wait_time.avg.ms.__cond_resched.__kmalloc_node_noprof.alloc_slab_obj_exts.allocate_slab.___slab_alloc
+      9.36 ± 40%    -100.0%       0.00        perf-sched.wait_time.avg.ms.__cond_resched.down_write.unlink_anon_vmas.vma_complete.vma_merge
+      9.63 ± 36%    -100.0%       0.00        perf-sched.wait_time.avg.ms.__cond_resched.down_write.vma_merge.constprop.0
+      3.87 ± 38%    -100.0%       0.00        perf-sched.wait_time.avg.ms.__cond_resched.down_write.vma_prepare.vma_merge.constprop
+     10.81 ± 36%     -76.2%       2.57 ±142%  perf-sched.wait_time.avg.ms.__cond_resched.down_write_killable.do_mprotect_pkey.__x64_sys_pkey_mprotect.do_syscall_64
+      2.32 ± 34%    -100.0%       0.00        perf-sched.wait_time.avg.ms.__cond_resched.kmem_cache_alloc_noprof.mas_alloc_nodes.mas_preallocate.vma_merge
+    286.97 ±115%     -99.8%       0.71 ±182%  perf-sched.wait_time.avg.ms.do_nanosleep.hrtimer_nanosleep.common_nsleep.__x64_sys_clock_nanosleep
+      0.39 ± 57%     -81.6%       0.07 ±153%  perf-sched.wait_time.avg.ms.irqentry_exit_to_user_mode.asm_sysvec_reschedule_ipi.[unknown]
+    705.09 ± 56%     -73.9%     183.73 ±142%  perf-sched.wait_time.avg.ms.schedule_hrtimeout_range_clock.ep_poll.do_epoll_wait.__x64_sys_epoll_wait
+    112.73 ±118%     -98.9%       1.19 ±142%  perf-sched.wait_time.max.ms.__cond_resched.__kmalloc_node_noprof.alloc_slab_obj_exts.allocate_slab.___slab_alloc
+    335.83 ± 29%    -100.0%       0.00        perf-sched.wait_time.max.ms.__cond_resched.down_write.unlink_anon_vmas.vma_complete.vma_merge
+    301.19 ± 35%    -100.0%       0.00        perf-sched.wait_time.max.ms.__cond_resched.down_write.vma_merge.constprop.0
+     22.34 ± 98%    -100.0%       0.00        perf-sched.wait_time.max.ms.__cond_resched.down_write.vma_prepare.vma_merge.constprop
+    473.14 ± 21%     -76.2%     112.54 ±144%  perf-sched.wait_time.max.ms.__cond_resched.down_write_killable.do_mprotect_pkey.__x64_sys_pkey_mprotect.do_syscall_64
+      7.07 ± 72%    -100.0%       0.00        perf-sched.wait_time.max.ms.__cond_resched.kmem_cache_alloc_noprof.mas_alloc_nodes.mas_preallocate.vma_merge
+    835.83 ±107%     -99.8%       1.31 ±200%  perf-sched.wait_time.max.ms.do_nanosleep.hrtimer_nanosleep.common_nsleep.__x64_sys_clock_nanosleep
+      1536 ± 83%     -77.9%     339.71 ±141%  perf-sched.wait_time.max.ms.do_wait.kernel_wait4.__do_sys_wait4.do_syscall_64
+      2836 ± 31%     -88.2%     334.51 ±223%  perf-sched.wait_time.max.ms.schedule_hrtimeout_range_clock.do_poll.constprop.0.do_sys_poll
+
+
+
+
+Disclaimer:
+Results have been estimated based on internal Intel analysis and are provided
+for informational purposes only. Any difference in system hardware or software
+design or configuration may affect actual performance.
 
 
 -- 
