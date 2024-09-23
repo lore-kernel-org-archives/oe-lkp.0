@@ -1,81 +1,94 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 969DA34CDE
-	for <oe-lkp@lists.linux.dev>; Mon, 23 Sep 2024 07:09:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24DB83D556
+	for <oe-lkp@lists.linux.dev>; Mon, 23 Sep 2024 07:54:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727075350; cv=none; b=Psgzj3UZkBYL9k+kqiNFLQHZuUrmETz60tTSuRpRwVRfz54XKhYU+4NSOgnSZ+QN6VuwxuIzSjJpKp8/DHvj0sncvhGQqLOIaDTPyd88BUbJM22hwjQZ77XxO+mXblg5GdnR759T85PkSLVo7LCYo03gX9HshwHrPQjVWjpIzCY=
+	t=1727078094; cv=none; b=qBWXFfhR1/ujGua3N1FKzAkMzIsyPNTctl8mndBskPR+NfviLIbvNFy69KbjbhTXAcQqLL9mFxCk9CSBtvzr3dsiQPQJI5WAiph0gAEMogYibuDXsWHGE6eA0TZHZblz4ibZ1is1k+y2fmkpwcZpkEMR+8zDuvjq1aP+wDvmTYA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727075350; c=relaxed/simple;
-	bh=hZH13fAXbYrHAr50QAy+Lg/Y6fOdPgqVNG/4BceNtg8=;
-	h=From:In-Reply-To:References:To:Cc:Subject:MIME-Version:
-	 Content-Type:Date:Message-ID; b=u+LhdVQA/vRdvlQKTxOJbmJo8DcNZqlfz+5iV4fA1qJHXThOfI1G7sq8YFher+/E1PVprbqq8U+ywfp6t0uo6YNIZZ+n5TxNlj8CTKwCdiJ01MTHBdxehE87rDfi56nShoRp3bkq71bjFRTh0je9aGxnVPUrsxmm8XRPUM3GZ1Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=W/0QgyXc; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1727078094; c=relaxed/simple;
+	bh=kQLqvXxfar13/dE2X992gYRg93pcxmdGvjFLCvO3qSA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=GaZ0v1n9N69+rQnXCavz4M/LJ+QzM8RoKLWQF10G+4f8O0h33QY6AmAez0SOVNmlnb9NDPSQDKw4TvAzsXM3K5SdaQUMrA1JOpc7efSfBt1JBRbSfi+wkJeSHQi64vti2OJVCdCK3j4t+PivgvVFz6uXBwRm8LxKgYEf4Qn0rEM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=icorBNNh; arc=none smtp.client-ip=209.85.221.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="W/0QgyXc"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1727075347;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=2lDimM0Uis4sHfBgBpHSwx2c5/VL/mJyvDIOhdl/yb8=;
-	b=W/0QgyXcr6HIHJb7tHzCYXTDnar5iTJzf6l1xabOSDwtEp0if9z60TsmCVs5vRbTLGfK44
-	giOOCKmC/vjnCE9LWhgEf/LrdRYjTO3IPTBHRWNpRZyrLNf9BJu7am76vruXX8zK4zcfYL
-	gatHwsT4Qqf6agxItVWNRoboFmo2lMA=
-Received: from mx-prod-mc-04.mail-002.prod.us-west-2.aws.redhat.com
- (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-682-BUxCkdedMSymFuojPHzqnQ-1; Mon,
- 23 Sep 2024 03:09:03 -0400
-X-MC-Unique: BUxCkdedMSymFuojPHzqnQ-1
-Received: from mx-prod-int-05.mail-002.prod.us-west-2.aws.redhat.com (unknown [10.30.177.17])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mx-prod-mc-04.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 7142C19054EE;
-	Mon, 23 Sep 2024 07:09:01 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.42.28.145])
-	by mx-prod-int-05.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTP id 1AA241956052;
-	Mon, 23 Sep 2024 07:08:56 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-	Kingdom.
-	Registered in England and Wales under Company Registration No. 3798903
-From: David Howells <dhowells@redhat.com>
-In-Reply-To: <202409221711.b537f7a8-oliver.sang@intel.com>
-References: <202409221711.b537f7a8-oliver.sang@intel.com>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: dhowells@redhat.com, oe-lkp@lists.linux.dev, lkp@intel.com,
-    linux-kernel@vger.kernel.org,
-    Linus Torvalds <torvalds@linux-foundation.org>,
-    Steve French <stfrench@microsoft.com>,
-    Paulo Alcantara <pc@manguebit.com>,
-    "Christian
- Brauner" <brauner@kernel.org>,
-    Jeff Layton <jlayton@kernel.org>, linux-cifs@vger.kernel.org,
-    samba-technical@lists.samba.org
-Subject: Re: [linus:master] [cifs] 43a64bd02f: xfstests.generic.465.fail
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="icorBNNh"
+Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-374c962e5adso2379624f8f.1
+        for <oe-lkp@lists.linux.dev>; Mon, 23 Sep 2024 00:54:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1727078091; x=1727682891; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=kQLqvXxfar13/dE2X992gYRg93pcxmdGvjFLCvO3qSA=;
+        b=icorBNNhIxzYRD07Zbw9Q3z7SFrwzfLTtRFqh13HfA3ern5P7pPn6/QtJUQQ+SieBP
+         /kQmtFKjXpd6RlomC2V3yktoprU+fvQC/kt1s8X/dyW/RqAjLpCC9UIQYdaAyK5QRc4t
+         t8meVWfZK2NVWUFBGy6EvHiWc4OesxXj3zrVkQH2vF11BVhWb9uKWc9JJ7NY3xBgWd9G
+         ndH1TMafpTY39xLarxstmpJur8rCs5QM/DrQQbt8TnhvxTGCV2JBZ8FdKolL0briR4Vn
+         rV2T9AOZ8LRLvHm8WNfan+7nWoY7zej8KNjTF0uODZeMmTp25y8D6EOH+vri8ZiVMknC
+         0OBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1727078091; x=1727682891;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=kQLqvXxfar13/dE2X992gYRg93pcxmdGvjFLCvO3qSA=;
+        b=Z5PUp9HPYsBTUVhPD4NQSy9hZNXRhWF3+OfQIYAEmEFTMeuLRcne0WArAhe5nIhdcZ
+         bH0J+zbrwSp1fjHwp2V7B0CBCBAh3UwK5bekzY1f911/RVBSMavkWdrXzfMy6ZkE9oCJ
+         b3NwIIx6kXWdXHCMIKeiUiSCVCLFPNxaVhHgSCjQ/pqwZe5Q0V+DhKR6lTibe62JmUd2
+         UD1sb3W8y2bM4/WyIAPusbgOy16muZ1nk6mLK1zdBNU3kSUbT0Q7mj3EXmFORfp3+31j
+         K1kNVd2TMiTv6rdpUrHh58kpTJA/R3LyjySdQlwNw4TfgN1KNFNEB+QdCx8dVlMqTE19
+         T19g==
+X-Gm-Message-State: AOJu0YzjLfZ6lZnNXy/8VxgLuoSp97Chek4yhsJNA8FZEwXK7JmKcgHn
+	r+d06EPhZm8Nwz+q5fDByIfveFhp9RFVzbibxPYxe6jeUfysgeKH+mRvMfkX4kz3U6+4Dofuqe3
+	VH75eVYyktWhT9qPxeMMv+DsdcdyKkZUh9N9e
+X-Google-Smtp-Source: AGHT+IGcu1iI3RhvLnQNs/RGwGpVv2dlXLHZmLTZXX5UKuX8D+yStN7YFyEeRfi9inoJZgWZ2+Vu6eGAVRkYgMRGeTE=
+X-Received: by 2002:a5d:4f05:0:b0:374:d006:ffae with SMTP id
+ ffacd0b85a97d-37a41497226mr6751368f8f.6.1727078091332; Mon, 23 Sep 2024
+ 00:54:51 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <743743.1727075336.1@warthog.procyon.org.uk>
-Date: Mon, 23 Sep 2024 08:08:56 +0100
-Message-ID: <743744.1727075336@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.0 on 10.30.177.17
+References: <202409231044.4f064459-oliver.sang@intel.com>
+In-Reply-To: <202409231044.4f064459-oliver.sang@intel.com>
+From: Alice Ryhl <aliceryhl@google.com>
+Date: Mon, 23 Sep 2024 09:54:38 +0200
+Message-ID: <CAH5fLghbP3KZjkBbQe_MMJrnRpk4M0Hn0nu=uRtKWKqmKz6OeQ@mail.gmail.com>
+Subject: Re: [linux-next:master] [cfi] ce4a262098: CFI_failure_at_do_basic_setup
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, 
+	Linux Memory Management List <linux-mm@kvack.org>, Miguel Ojeda <ojeda@kernel.org>, 
+	Sami Tolvanen <samitolvanen@google.com>, Gatlin Newhouse <gatlin.newhouse@gmail.com>, 
+	Kees Cook <kees@kernel.org>, Peter Zijlstra <peterz@infradead.org>, linux-kbuild@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-kernel test robot <oliver.sang@intel.com> wrote:
+On Mon, Sep 23, 2024 at 4:35=E2=80=AFAM kernel test robot <oliver.sang@inte=
+l.com> wrote:
+>
+> Hello,
+>
+> kernel test robot noticed "CFI_failure_at_do_basic_setup" on:
+>
+> commit: ce4a2620985cdf06c200ec0b6dce80374237697c ("cfi: add CONFIG_CFI_IC=
+ALL_NORMALIZE_INTEGERS")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+>
+> [test failed on linux-next/master 62f92d634458a1e308bb699986b9147a6d67045=
+7]
 
-> kernel test robot noticed "xfstests.generic.465.fail" on:
+This failure is due to an LLVM bug that causes
+CFI_ICALL_NORMALIZE_INTEGERS to be incompatible with KASAN and GCOV.
+It has already been fixed upstream:
+https://github.com/llvm/llvm-project/pull/104826 (thanks Sami!)
 
-It works fine for me.  Can you grab the contents of /proc/fs/netfs/stats after
-it has failed?
+However, we may want to look into having Kconfig detect this case.
 
-David
-
+Alice
