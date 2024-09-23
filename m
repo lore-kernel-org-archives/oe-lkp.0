@@ -1,102 +1,98 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 568981FA4
-	for <oe-lkp@lists.linux.dev>; Mon, 23 Sep 2024 04:31:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD28723D7
+	for <oe-lkp@lists.linux.dev>; Mon, 23 Sep 2024 04:38:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.16
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727065883; cv=fail; b=oEJaf/3+AFL8/Y2DW2wCFyYiqb0zpDu9qqEGjYRdzgdVgRP5uzF0CiNJntcRaF5v17gp4hILU7Dr4DF5/MyAuwmWODUTTwJAt7PRvXeZijMQB/Bf6sdAkDcnrQuLnuyPZbmquz8QQLx1E1UilYiHLEBnzbeFJV9voHgn95y3uZ8=
+	t=1727066327; cv=fail; b=qjBGKKGF47vfGBgQ3f5l6fy1yMh5c/5WH8PoDRclij8oSG45VCLVpa3juLGKqKotz4aaXIa/Bf1gExpdaenVwpW3G5dHtxFWMQG6tNOrlUk91QFrXMF5jCbhhetiKBBRyorMaiXWpVSp7t1dFROlxwYcXdqQWP7JVDI77nC195Q=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727065883; c=relaxed/simple;
-	bh=ANsagW38LT8nHhYhpPzPdpDfWClVw6dugX4vGfTzaaQ=;
-	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=I+JDfr8R0kwOofQh+v5oGtLRMQaZJk/IjaPSmBDJhuS737TE6GUVDIWZer7LYuocum3KQ9r/Eq1alwIua59wBBGSWBtVnwjrd32p2GPyfSacMoSGwijBBJqIjvAITnKvI8SIQH4bGDM8utsSMQK9CE1+IAaiSM/GKpmXmYpQh2Q=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kQ4YJ9Rd; arc=fail smtp.client-ip=192.198.163.11
+	s=arc-20240116; t=1727066327; c=relaxed/simple;
+	bh=UO7RPi9YGc/z79Ls/y5051OS0HHTBvOcnI6QZMQBD08=;
+	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
+	 Content-Disposition:MIME-Version; b=tYvptC0CBmFLjAeDMmZyJhsZmpAO8Qzt8i0b/pQktOyqGGeLjbsoOvtFJiVzYaMSckmb57Vf2VnJKnMgC3QMb+iWBPGGNQQJWg4ZqAHLw/Kvl6DLx+EsLWKwrqEXffbn9Jpju6ckCimnkdhXaTrD0PYAsZvKBj+jBli4aLDSOzw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HXQA0ilS; arc=fail smtp.client-ip=192.198.163.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kQ4YJ9Rd"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HXQA0ilS"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1727065881; x=1758601881;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=ANsagW38LT8nHhYhpPzPdpDfWClVw6dugX4vGfTzaaQ=;
-  b=kQ4YJ9Rdr8asGi8iC3sXHLXHDKLETUxg/nZQ5bKyHjeqkgjnHpCjOwf3
-   x7Z+Vgl1iAsghjpGtp4Y2bdKOs7xhwn2mxV/75yHz1WmQGnR6F3rjiDsU
-   9YTSWMz93dXMTNfw8dJy3PRW0DdIfZ7PH+Epgixip6O4dKW7FGbaeSL2j
-   q2elpxMfuftTejlNnlIXsQDnq8euIF8BKQ5j0hmtlFTO1P34u+8iQsjtI
-   fMMQByK1PO3PMEp6EVXv9t/QScZbkMYir7RzhI2iU1t8LZcD8DhAOLccG
-   pT3Mjw1URxQ/uq/ZCk+Vmbv8H6BIxcUrwiJ1ag4lZUKbWTzwJiSxP0VB0
+  t=1727066326; x=1758602326;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=UO7RPi9YGc/z79Ls/y5051OS0HHTBvOcnI6QZMQBD08=;
+  b=HXQA0ilSFy9Xn2TdxPEsTg0OjVaV/bordnUeD4EeufurIS9Oat8lhRep
+   5fiTu5tTEl5xy9d2fd6rLbS96csiCB7Eke/YCHuwSIhKVmRLjFwQMefEb
+   NSiB4iKxHFzwngt4tTK2JHNw5CuIJvp5qLvR2uVdV72iyd4jI6yy/e5Hq
+   E5XydKJJSCuksuMtEh1QJNEXD8VmKuCF0x8OnEj7HMJX6rEUtu/3oNsBF
+   +KL6El7pPyDE2cAeSwVuOxbNsXhtDm4vuaGlfNPLJd1um79L6YWJr2KN0
+   3i7Eo6F/hiErmrvHxGm6ubZ+1XE/+vVMBH7vF5p6iIEvPE5D7jhjcmLF6
    g==;
-X-CSE-ConnectionGUID: yyfvHPGdQkyc8wO5feh3iA==
-X-CSE-MsgGUID: uDacuDVdTO2KjFplY0gF0g==
-X-IronPort-AV: E=McAfee;i="6700,10204,11202"; a="36581930"
+X-CSE-ConnectionGUID: 2lFEKGJHSQ2XVR0TkCFYyg==
+X-CSE-MsgGUID: T0qYa5R5RJKA10EZzXubzQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11202"; a="13632777"
 X-IronPort-AV: E=Sophos;i="6.10,250,1719903600"; 
-   d="log'?scan'208";a="36581930"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Sep 2024 21:31:21 -0700
-X-CSE-ConnectionGUID: jRWdhXURSFiRmzt+2Iw8Xw==
-X-CSE-MsgGUID: 4py/7OA/RkiDJWSz4dZVwg==
+   d="scan'208";a="13632777"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Sep 2024 21:38:45 -0700
+X-CSE-ConnectionGUID: 2X5wLNddSOeFeP7VRwhFgg==
+X-CSE-MsgGUID: PzkwGV+8Sd6OP9hGFIfFgg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.10,250,1719903600"; 
-   d="log'?scan'208";a="75889081"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by orviesa004.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 22 Sep 2024 21:31:21 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+   d="scan'208";a="71380927"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by orviesa007.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 22 Sep 2024 21:38:45 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Sun, 22 Sep 2024 21:31:20 -0700
-Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ 15.1.2507.39; Sun, 22 Sep 2024 21:38:44 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Sun, 22 Sep 2024 21:31:19 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ 15.1.2507.39; Sun, 22 Sep 2024 21:38:43 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Sun, 22 Sep 2024 21:31:19 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.46) by
- edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ 15.1.2507.39 via Frontend Transport; Sun, 22 Sep 2024 21:38:43 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.173)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Sun, 22 Sep 2024 21:31:19 -0700
+ 15.1.2507.39; Sun, 22 Sep 2024 21:38:43 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=K8wQqXsxO9wI88j68E0aNYgNpm9imDLOvWhpQFyAS1LzGoxToETrtNrPm+Y/vbi51xeklY1xEj9uN6+HleUnUN3ipiDrpFdynootlfSLSLPon9ZLVJLzr5eBeOIgoCdI/FQ4/wiBqgatgEGH/Kg+JRdAIJf7e/vsQCJ6Rd6WaeFdHlStYZK3sk7j04XS0sa87E7FihgrVzZwfqtw/oIMu1+HsG0AOKUzRJfEMbFUw/iSmPkkRfTp18aSj1ZMo3hOQfYpJPTHeOcb4QLC53Dlg1oe1j9rRaPmFns8P979x88S/CniiktP5QoGiB5wQEuCCAw+gIUmLCRejqFI5azzkA==
+ b=YvLQEogTbq481pOE38tiI3aLBeqlA8v7Ku+3VD4DXq4hR/tMH+VL7ihyEjuMDEXSuPEXY3WTMTgc12crYJo/etcOw8EVQ0OxZcurmpJepGlWaoumMz22Sl2l3my/ip/WxPzw69W0SwP02zc1ER4em6jCMY9Jwu2ralkpm+HqV+k6yAb61pqFFvkW4SyKsglgx5amArPerkYWioXrN+t4dxSVh/AFq0U+xVAYHjJwc0m0Sj/noTXZvAJ7gVKuDUe60e5quWpgPq1yn14xKJ4rATwYoOEI7iVwk6xVgfCZfYkEGKmQ18AMJ5MwcLntek6phyf2nqwg9iBdVdoKMenGTA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Rb8SqQCM5Az6wVZhLU2tIudX4G0YI+YpmArOcqPD0yg=;
- b=A/ziX+vE+c4GRG5RTb6f6fD0fsSFIeCrTToXPiMd1F7XiNI2jCwfjNrPpFSPvC3G+cwQba30jlW6Bm7vnA7f8PSoWMPPmcTkKvVEBeBDX+GUHkmeFDMBjjNEB5rYacD7iK0Y8199GCCocWOrxtC1ZHoQKGOW0CBNtJCjQ8TcVg0babaQoFPPAfAhxpr03qxp72NiVeCKJKlqqlSF4AeBqsQGoo7OXyiDWhtA4jsFh3WyCgtlrGbGZCdXIVAiMRMKlx0P5SpdCUGZDVUrkJNlR8y+PGlKfHGLtPMhP3LbB7bfIlMS3V9OVvWLcaeOV17pDo2w+UFoTjwQetTXupIbQg==
+ bh=G1SqjdMqJ9BeY3SKAeSNZ7IY71gkTeEbHDDwX+KSqxY=;
+ b=ZOkig0hoSpkTw8is0nBjQC1ilOB2bhx4/sAMFZdSMQW8wnN+BAjcfRxrIhMZY0UpRnD8TdyHDZFJL613OjP8dqVlyznAKUWjGrr89NwlSYlVxW0gYPrBSSQd6EhXpTu2C1QRfT5bSH0Pj+gf4uiotXPcI8+hM8SPujXWfrqaT+aw4tIlQH+tkyETRdXW/CzmNZEDt7ASDHA4unJ8H+57LlvpfmGmH7edbSY7V4q0iPszzkoH3Vz41upsiZgfbyv8bb/9e7pXHdyCbCWV4l64NEmimiaACDyne0njw2IaqcKugWNMRjY7efjJM95jbOPro2lucU7VolN9Fa0snriLCA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by CO1PR11MB5170.namprd11.prod.outlook.com (2603:10b6:303:91::21) with
+ by SA3PR11MB8021.namprd11.prod.outlook.com (2603:10b6:806:2fd::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7982.25; Mon, 23 Sep
- 2024 04:31:12 +0000
+ 2024 04:38:40 +0000
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.7982.022; Mon, 23 Sep 2024
- 04:31:12 +0000
-Date: Mon, 23 Sep 2024 12:31:03 +0800
-From: Oliver Sang <oliver.sang@intel.com>
-To: "Liang, Kan" <kan.liang@linux.intel.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
-	Thomas Gleixner <tglx@linutronix.de>, Li Huafei <lihuafei1@huawei.com>,
-	<linux-perf-users@vger.kernel.org>, Dapeng Mi <dapeng1.mi@linux.intel.com>,
-	<oliver.sang@intel.com>
-Subject: Re: [linus:master] [perf/x86/intel] 25dfc9e357:
- kvm-unit-tests-qemu.pmu.fail
-Message-ID: <ZvDvB98DW10Au8lo@xsang-OptiPlex-9020>
-References: <202409201525.4877023e-oliver.sang@intel.com>
- <f272389f-8565-4bdc-8727-8b37eaa82821@linux.intel.com>
-Content-Type: multipart/mixed; boundary="wdyGV4FNiAvJ62eC"
+ 04:38:40 +0000
+Date: Mon, 23 Sep 2024 12:38:31 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: "Paul E. McKenney" <paulmck@kernel.org>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, kernel test robot
+	<oliver.sang@intel.com>, Alexei Starovoitov <ast@kernel.org>, Andrii Nakryiko
+	<andrii@kernel.org>, Peter Zijlstra <peterz@infradead.org>, Kent Overstreet
+	<kent.overstreet@linux.dev>, <rcu@vger.kernel.org>
+Subject: [paulmckrcu:dev] [srcu]  26cb612c43:
+ BUG:using__this_cpu_read()in_preemptible
+Message-ID: <202409231124.358fed11-lkp@intel.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <f272389f-8565-4bdc-8727-8b37eaa82821@linux.intel.com>
-X-ClientProxiedBy: SI1PR02CA0060.apcprd02.prod.outlook.com
- (2603:1096:4:1f5::17) To LV3PR11MB8603.namprd11.prod.outlook.com
+X-ClientProxiedBy: SI2PR02CA0006.apcprd02.prod.outlook.com
+ (2603:1096:4:194::8) To LV3PR11MB8603.namprd11.prod.outlook.com
  (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -105,300 +101,207 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|CO1PR11MB5170:EE_
-X-MS-Office365-Filtering-Correlation-Id: 62388fd9-ce14-47f4-baa2-08dcdb888dd7
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|SA3PR11MB8021:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1eaae9b1-555e-4106-faef-08dcdb899922
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?A4wjsULp3JzK8W92u6i+zf7Cqc4T0P0Pjyu0xqIAWx5WqtDGVmOClfG9UNCv?=
- =?us-ascii?Q?dFNqGkG5QYXNL2qZOUzuDOIt7lsD52FXpXDeFcIwg6VBb2lZ3JPwYz5Sb/+p?=
- =?us-ascii?Q?affCYGu7JsiovlKFhQiQHFhIvHgzXxD0Y2gBRFBhziySApJVP/HhMO0/3wO6?=
- =?us-ascii?Q?jwJ+kJSh+2ZWyfeNYXAccDMyr8nBL0Lu7j+tlPA9w8GYhkB2zZT46Gowow8X?=
- =?us-ascii?Q?n2A4Mx+LWlTegptt300x265sCwiq6IbF7VIXjWqyl0TB8bAYaxP4UZb84FJn?=
- =?us-ascii?Q?O0NH+p+j+4OKJeqTzZ9KyagBiuD/qO5aNc9jZ0efwZJ5KTWCX2VR1xFxsM8z?=
- =?us-ascii?Q?WoxygobNC9787+zIGO3W7rJnOYsPTgpPyNi9K7+46NxDeq3J3Hyls218cjM4?=
- =?us-ascii?Q?JwEVioN/SIB3qRB0fHJdQue+sUVYL7HW02Lg/2phm/g30Z4oZY7OZ36+vVvj?=
- =?us-ascii?Q?2k7nSoMBy0A4S5OYF3CgBD6eZIyvtvMKh0IQuS/D/aicjBNdxvm0JBTsokH2?=
- =?us-ascii?Q?YlvyIFMFUey+QeuGH/ekMoLCrWbW+h1apc/JCVsQfVLEIenEvlXFSEPJlZLl?=
- =?us-ascii?Q?tje6z5H7uZwB99mPXtooZXb+emdkLOPq/l5YvsUlTTp7LfSoK7Fmlfklgsyy?=
- =?us-ascii?Q?1BMufKW0RjUN4Nvt02ySXdxYWzdOZHMvK24PaTQ1ZF6WoW06yt+vXd1Yc7cE?=
- =?us-ascii?Q?fK/U/cz36Win1VHpyrIaYmXYh4cyO/iQpuc6vOCLkSmiPpAxpfZ7LPZVGTOq?=
- =?us-ascii?Q?V5sL5sib5h9p8wBx4Cu1JLWXwEiQBRhse25hwtLYVtHhyWpZ2ERr91By/+sK?=
- =?us-ascii?Q?rY5Q/Fk+mbVYGW5aFZoBQIgyJXtAKpxjvuSGbW1hbycVZAxX7Geyr9TS1/EF?=
- =?us-ascii?Q?wbx9Eir60hkbclCjihWp050ymUt1ganrDaS3QFZpDMlzlZoT8WszdjCHHPiP?=
- =?us-ascii?Q?c5EIwBexmzxQq03zpV2s9+sQVW8q+0ezw83IvT8iCeIW/sHjGqXFkv3nVGwN?=
- =?us-ascii?Q?ed62cfSz2r2oByaza2jPMRVMm8NFlBqvF2LeWqTYAN0fiqJhgPDXR3v5/LY9?=
- =?us-ascii?Q?b4g8ND4j2h/Wvk+8y9kgk5lffRiKoJdLXhmpRkfA8Q62LMLUGogIMPXjvg4a?=
- =?us-ascii?Q?eMBQeZFmWWbe+D+nBfkMusg81lArMHBfbf8IdyKEbu9ZSNUeKHVyL7h3FbE4?=
- =?us-ascii?Q?htcl8FJAV2qhskV4Lev/JpDo+CuvizcOq2U+5wonL0191WELgzXjCCX9lZUz?=
- =?us-ascii?Q?KjuYzEVw5z1w0VHOBSL5bc6M1dogczc8n3juqTazDMerepzzYq83M+h+ORSa?=
- =?us-ascii?Q?XC9bqvYXTd3fk2jH/2Cuwj/Cml7KDYTA7Lt7GzfgkWlLrg=3D=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?VSvqPGSkbQrlZaF/6rqzPjFMfByi9aX6UCWZQEGhUqkUgu5Q+CoRT1i4ElEV?=
+ =?us-ascii?Q?nBaI/DSAaujyR3ZME7+mF+2ZNh9TCp+AX3HptO8+VZt3gicdRnEjo8/43bzN?=
+ =?us-ascii?Q?sfhSMoZ9kFpXTaBZ4gXRajMojvgJpCpzOYStptmqUusEviKKCrnmrwfb1YA3?=
+ =?us-ascii?Q?f1hXfdqBm5AhnsZWEddmq2yl63vpyqSwk6bUPWTBgmydgE1H97z8zobLENh/?=
+ =?us-ascii?Q?DCbRJSTG56KWP4jEIXq6dHU58nfAuqv8lgXJZsaH4beH0BJxxo/P8QdI2+Xx?=
+ =?us-ascii?Q?ssCjs/8DKLa4wPNVQyxrvSDwcSplf8py6xsEyceCOoWJI6y5ZTeu5dXTbAGS?=
+ =?us-ascii?Q?kcxCILL0o9QNPLSVYeZm9HN1DaPmaOCQp4Jc6HOLTGfdA1wjtyxGN0qG3Zw1?=
+ =?us-ascii?Q?rkqRekIE1SOzPWbrcbS3XrqeUcPNlX9gTzEXA5NjiCbo3ZdV14fFKmEkIRpP?=
+ =?us-ascii?Q?xH/HBRLBaUo6Kkzi1WmNaxbd9hoFWQnbJXxceNsxXarm+PyJiKLg3+iIB+dN?=
+ =?us-ascii?Q?jeVgQinSlMXnJP7f6BFbty7iByYXtCRvHXmAC6xRLD+1717Ob21jGSaDoSgZ?=
+ =?us-ascii?Q?/sRzuKIb1xSWiVfSDSmwujCRXsZvBwfHTZ55uORGadJ/tyaORH/Gwze4P7p2?=
+ =?us-ascii?Q?Der78tnVCF3HmD+jtXnY7FHMjWn2HDmGABGI22sj1NvcJzlygTZpob70Gpcr?=
+ =?us-ascii?Q?TmaH5NKSu98MS6SwIJ+R6PZ+QIiOyBjuNTJWRZkm6D4hU2YZXF/XwUNNUpYp?=
+ =?us-ascii?Q?ANloTfLB+zBqX6vsmQ789em5IeQvgXVIqLlz7GunHweH5n7ReC0AQ0f8kz/l?=
+ =?us-ascii?Q?mT3Vt1ZpBua/DG5tKmLiRdVFM90D3T/h78Euo4Ph1JA/elrOY+77b7OIK5WM?=
+ =?us-ascii?Q?pax3/0D7uCi7FiRJNAq5vE2T5UKA/sna2ZBIhiVj8szL/g615t3ca+vIv50t?=
+ =?us-ascii?Q?b8TPvgkNRFIykXu+oUaImo3Dl/I2HGXnrHc8alHhlUI0diKwRrAZqBUPsn18?=
+ =?us-ascii?Q?0MSXQMfDqr9noDIuoq4A3jQqbb8ul9fc1hPVq27ZxZCPWm7ViLx06hNN++17?=
+ =?us-ascii?Q?qIDVNK6K+E5k8QK9OdYJFJfCAyQeaWYIQy5yj54iw+iWgjZn6Xculn66UxKu?=
+ =?us-ascii?Q?B2iTugnyHUJH5tdzy5zu69JONBLGwwu6z1zZWh2ilJl4Yhnxt0+bY3zf+dZC?=
+ =?us-ascii?Q?Yj5yCQ9aSsSZF6KPZpNr7Nzu2B1EPz4tkg/ILn0CWepvyOtTBSg2DI/LJ8HC?=
+ =?us-ascii?Q?pk0rwkWDMcUisUBRDWFuw2ZQZWWeQOYWchX0HvsfOgbN3q1L3xdYumYoVIPG?=
+ =?us-ascii?Q?s6AI3gLHUnvgIIzpaF345lW+qNuZcDTKaV4bsGIewqO4afLwqXtMqb70bnML?=
+ =?us-ascii?Q?iZSS4uY=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?DequulURlG9/lXKq0hYfsbHMq4JUj8VYJKDcofZmjRD5LqlvzgyXJOhD6pIs?=
- =?us-ascii?Q?WdZYOs5mgPe0ZGJm0CCH7dXZ1lE4okqPYy8+B7KUzSIJ1n8TCz7970jO13X6?=
- =?us-ascii?Q?lacQ5gVUZidl2aU2FIurhj4s/lBf9XV4A8mquBcdxoUaBaPr2pb7E6uSGOjn?=
- =?us-ascii?Q?AFOW1IY77ul6Z6OkswHXBDh8zkb6pZc2GNxS5S2AjPPdKKbbqg+vQjiAmFe+?=
- =?us-ascii?Q?n1WWxAgkHeQ/IKUR9BQB989bs2L+FuPdyrByqQyqO+vvZj3PaGlib/tJKqhX?=
- =?us-ascii?Q?swlzFYeaOqa2927xMrXiJEnXBiQLxrS8Y1qaBhXjS6wwvlJVfYnIGgG1rYra?=
- =?us-ascii?Q?6BtBC2/59KcA94VI0dZn31jFytSaTRqglMnUScNi5RivJ+OVLkfPVqo0Xvfg?=
- =?us-ascii?Q?VOhd5gxl2pr7XQPs6sP8G0j6U+3LtggD2V10rnS0B6OSNviIJBtKWX+YA7Dy?=
- =?us-ascii?Q?FzAMzw20A8pYB3XQQ4ySnN7hD9wxPFxuOhx+nlKTHlwDW3S87qkap8E+92Ts?=
- =?us-ascii?Q?oQMKbpgpbWf/2bQmnOJJ/M/8Rw3v+LDjxOC0lKlzPr19VQBGwnoDlGA3Nyb7?=
- =?us-ascii?Q?gtD2rfzqiMothCofu9JZ3CPZAPxJrIBmOHx4pfKh4tVjTHuDKizDpKhwYyP2?=
- =?us-ascii?Q?WaGc5HUPX0GnXU0AtN64XAQKsgpX33xG/C/7dh2oXeUo9xr17+mkWQ1P3pEL?=
- =?us-ascii?Q?pG1KfaxVYSGtHo25moTFKrzGMWl7f9KsLHMFgFEO60+ON5P2qZIWhAzZ/qJs?=
- =?us-ascii?Q?gexGNH4hurtyq0GUSroQHlr4X8aEeE0MYlOv0EYSSjbtepsvEDR10bTdmlmS?=
- =?us-ascii?Q?NmL9Y0WaIg5VIuJU5BrHeGdqbY0nD/smCmZFfmC69ygTdpSWOQ3M02LDYqN9?=
- =?us-ascii?Q?Ou5lnDkZQBAVKvGJAZdK8GOF0oJrbzgRx6mkg7XGZlwqFTiNcKw77LWB9COs?=
- =?us-ascii?Q?yFtU6a7vOX8W0VxQftu3E5LNN1lc0WfCf/jWXUxPFBrJIttiqm+96hsg5gzP?=
- =?us-ascii?Q?07IVyjOJO82N8Ls3YhnuoMMGk31kJtzJnj7+Ctxz3UDgoVF3qTob+Jiq69kZ?=
- =?us-ascii?Q?tl29D0nCsybx2rkc9eOg2SnDxrhsN76d/wKTw13eYLXfnvkeNBmufQz6oNH1?=
- =?us-ascii?Q?phlgHlrsG3dmbS9dbzewqLmWuUMjNpiHBdUYU9xR3/x22NubNHlRx/HnEbV1?=
- =?us-ascii?Q?A2TKCO6+stFFTWj2LXHlYXf6tXGHpbDiiRaH6pOyMz/aStrHqpqOJ+npZdov?=
- =?us-ascii?Q?FiWDGdiOA6VMaeWVQ7zwBUtV03ngM9NH/Lfs8CuHunvYoK3tjNyBt+GGKfXK?=
- =?us-ascii?Q?0/OiQMWqzfEm1M0tTj988M2fZkA1w1DTaa/Pr27ruUxSzS3gRwmcnpUzX8yC?=
- =?us-ascii?Q?8bih/gtkEV6LCMZOEx3iWO1tA3dhqENcehcf7Ol3sjRui6Ro1sfiMTtMXOvg?=
- =?us-ascii?Q?UBY+GGmY082rYxN5egKWwces5xBHdMKzN7l+1v1UDN5FZtELBgolOjKB58rH?=
- =?us-ascii?Q?6pxQHSqWDXzUrWzCM3xvSVCIu/jfDUTXcwbXB2A4ig23yvUyMHZkx9oRGyKP?=
- =?us-ascii?Q?dTjuIGkHU7jJPP8LZPJ75y57bdwM/UZ/UdX8hBWUPOiR0yzqLWhtAE+9N4Dz?=
- =?us-ascii?Q?5A=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 62388fd9-ce14-47f4-baa2-08dcdb888dd7
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?6eEdFavQjDtrSDx58eMfX1CKUgpcLD+JtiKxhElIcTuThSMSHw8qQ9uVPXKM?=
+ =?us-ascii?Q?TikwEsbf3kwaObzwF60AbQAyXyQlKFgWF7vn1xrQDII2Vie9v3l0bvqiUNCL?=
+ =?us-ascii?Q?VL2Mq3CFSGokaU4ws8zAK14j0CRtkr6JElW6PCdxIUfJvc1f0NRwjpbqlu34?=
+ =?us-ascii?Q?gOUXM94blmBqGf5XwV4uZuGJu7VirrAwYDpOkLPW2UiFqQ7OkKH/ZA8LAK99?=
+ =?us-ascii?Q?9y0gp7gKPY9jzJbqmPbi3es/g3ADaF2QcQF3mU23s/039f65gOPrRyFn9vT7?=
+ =?us-ascii?Q?YFsBa5KA21whL8FDWu0ebz4kkdJd7+huC595vKv0hbh1G+nXM19ype4L2WHN?=
+ =?us-ascii?Q?hOUkVgUgCUvmf3U9juolnlf8WaEYs1Ui7OElzGNC/h3tlFW1NrPP1Skuwkgl?=
+ =?us-ascii?Q?zJBd9428TF5wtqLonnsvYV5Q+1bjT5b0C2npT13UKeZpTDu3R+nb9Kcj+1YZ?=
+ =?us-ascii?Q?sFh4JuGHXc1ZJlKkQE7XuIZxkVzjYjkECqVWRnOfFLTd1Ehf9ha1dVGs9ud9?=
+ =?us-ascii?Q?R3HuIG475GmW/v9F2kHHdWsVNaGvdWQfRq1txm2qB2lUeMquWQTOt35TRrDq?=
+ =?us-ascii?Q?jjGfOMBtFvW4vLrqfnbwUQo/YVlwQsTd6+F9zc+TQW0hlUBijN/QXd/nVpa0?=
+ =?us-ascii?Q?EnLb0KHt25edix/OItcaAhOJAbJUk+/PJSvcHrwFBoTvZ77dxCCa+MEZ7OVk?=
+ =?us-ascii?Q?aei/wUNQX6vbwalTCMvNZYnwXwnI5azLqczjmn+vGxc9yahTOquDjIdN+yZq?=
+ =?us-ascii?Q?hfBDQvSlVdj/t5g+m7aAvvGH7x3uf5ZcsC3ECfm+9R3Mpr2v/shm4rfCJP35?=
+ =?us-ascii?Q?O9vqdfMW+Su1Sw980uhjpEnRrLQV5Q5Et1OmjWWso9IpQyZ6wYmtZDh8CEwz?=
+ =?us-ascii?Q?Pk6y6EUB2T1aHJZfwPkF7DTbyPu07kFaJLVvxe95weGq0uwWOMqXjoYDw98b?=
+ =?us-ascii?Q?0uvZMdtVb8oGNb9lVDdedTyPdzvEom4vZOAqFNjuCRfOGc5ndSyS/BhgdQw7?=
+ =?us-ascii?Q?wVlJIexrsOK7pV6ezbWg0EQ4qmt8Y7sLhXPIfyzM3e8mET4ZRF+IZEgeL1Yu?=
+ =?us-ascii?Q?TgReT+fZXb/zd3Et7yvCqZBLKbNbp958+BbLQVmqUgNOCXmWK0GqejLnoTU4?=
+ =?us-ascii?Q?VH6k2WhHfo6GEBt5sEqv8wIAWkRF1hCR3o1B8CtfF/j2gc2AZdbMZoMpJBSj?=
+ =?us-ascii?Q?C/MhxjvV/rVrpK9RjFWDcmqWoCOAmW0f5mtuvyihaD0CHOnO36BvmleJHwU9?=
+ =?us-ascii?Q?rqQxVBkRDfTg29TUb2y3d9yu7cKa7UYu06YjRfsjnTsV1PYmkjkcO66Dpc5d?=
+ =?us-ascii?Q?5TqVoHgbE/bpe4SD8H9pGyCOZ+05SCNZYaAlpdYIeu8Bfj4w0gYQx480LVRh?=
+ =?us-ascii?Q?6UKDCMDsBQyfRV4znVjfN5Vrauk8rvSyGqYgTnKJYPsmBHYYbsYUOWd6snUs?=
+ =?us-ascii?Q?7e+JunvCd0OAaTAk4alEe/PSC/wvLnEobcXuHtWMCPRYpPu8KeqgsB1hlyCp?=
+ =?us-ascii?Q?17EGbjfUSPeSygx1bOfRYCntKbmv0kiExrl9ITeVql9W3amaFNbBffHCFaoy?=
+ =?us-ascii?Q?2VhbElGX9EfGP/nwR4qZwuVu4pg4WLnmRkexpMR+PklLLp8WssBAZHphQyoC?=
+ =?us-ascii?Q?ug=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1eaae9b1-555e-4106-faef-08dcdb899922
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2024 04:31:12.3181
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2024 04:38:40.7471
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ibJmwAzvINVlOcQQUXJhT9xTP5xNwCSTOwQ+RwlXK84SKuNJ584DW/w4q+K23IfvbIQARlyQBOoEIVg2DK2VQQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR11MB5170
+X-MS-Exchange-CrossTenant-UserPrincipalName: icsb9DgfKKc7hzeizgVIf28/34JD3FRy3dsQsB4uqMAmenCrNBmFU14EHWN3N91bYHx1PqDsl4zeUxlMGsSf5g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR11MB8021
 X-OriginatorOrg: intel.com
 
---wdyGV4FNiAvJ62eC
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-hi, Kan,
-
-On Fri, Sep 20, 2024 at 09:27:06AM -0400, Liang, Kan wrote:
-
-> > ...
-> > =1B[32mPASS=1B[0m msr (1836 tests)
-> > =1B[31mFAIL=1B[0m pmu (143 tests, 24 unexpected failures, 14 skipped)  =
-<---
->=20
-> Is there a list to show which checks are failed?
-
-I attached a pmu.log.
-
-below failed which can pass on parent (v6.11-rc5)
-
-FAIL: Intel: overflow: cntr-0
-FAIL: Intel: overflow: status-0
-FAIL: Intel: overflow: cntr-1
-FAIL: Intel: overflow: status-1
-FAIL: Intel: overflow: irq-1
-FAIL: Intel: overflow: cntr-2
-FAIL: Intel: overflow: status-2
-FAIL: Intel: overflow: cntr-3
-FAIL: Intel: overflow: status-3
-FAIL: Intel: overflow: irq-3
-FAIL: Intel: overflow: cntr-4
-FAIL: Intel: overflow: status-4
-FAIL: Intel: full-width writes: overflow: cntr-0
-FAIL: Intel: full-width writes: overflow: status-0
-FAIL: Intel: full-width writes: overflow: cntr-1
-FAIL: Intel: full-width writes: overflow: status-1
-FAIL: Intel: full-width writes: overflow: irq-1
-FAIL: Intel: full-width writes: overflow: cntr-2
-FAIL: Intel: full-width writes: overflow: status-2
-FAIL: Intel: full-width writes: overflow: cntr-3
-FAIL: Intel: full-width writes: overflow: status-3
-FAIL: Intel: full-width writes: overflow: irq-3
-FAIL: Intel: full-width writes: overflow: cntr-4
-FAIL: Intel: full-width writes: overflow: status-4
 
 
->=20
-> Thanks,
-> Kan
->=20
-> > =1B[32mPASS=1B[0m pmu_lbr (3 tests)
-> > =1B[33mSKIP=1B[0m pmu_pebs (1 tests, 1 skipped)
-> > ...
-> >=20
-> >=20
-> >=20
-> > The kernel config and materials to reproduce are available at:
-> > https://download.01.org/0day-ci/archive/20240920/202409201525.4877023e-=
-oliver.sang@intel.com
-> >=20
-> >=20
-> >=20
+Hello,
 
---wdyGV4FNiAvJ62eC
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: attachment; filename="pmu.log"
+kernel test robot noticed "BUG:using__this_cpu_read()in_preemptible" on:
 
-timeout -k 1s --foreground 90s /lkp/benchmarks/qemu/build/qemu-system-x86_64 --no-reboot -nodefaults -device pc-testdev -device isa-debug-exit,iobase=0xf4,iosize=0x4 -vnc none -serial stdio -device pci-testdev -machine accel=kvm -kernel x86/pmu.flat -smp 1 -cpu max # -initrd /tmp/tmp.WgbBni4GGX
-enabling apic
-smp: waiting for 0 APs
-paging enabled
-cr0 = 80010011
-cr3 = 1007000
-cr4 = 20
-PASS: Expected #GP on RDPMC(64)
-PMU version:         2
-GP counters:         4
-GP counter width:    48
-Mask length:         7
-Fixed counters:      3
-Fixed counter width: 48
-PASS: Intel: core cycles-0
-PASS: Intel: core cycles-1
-PASS: Intel: core cycles-2
-PASS: Intel: core cycles-3
-PASS: Intel: instructions-0
-PASS: Intel: instructions-1
-PASS: Intel: instructions-2
-PASS: Intel: instructions-3
-PASS: Intel: ref cycles-0
-PASS: Intel: ref cycles-1
-PASS: Intel: ref cycles-2
-PASS: Intel: ref cycles-3
-PASS: Intel: llc references-0
-PASS: Intel: llc references-1
-PASS: Intel: llc references-2
-PASS: Intel: llc references-3
-PASS: Intel: llc misses-0
-PASS: Intel: llc misses-1
-PASS: Intel: llc misses-2
-PASS: Intel: llc misses-3
-PASS: Intel: branches-0
-PASS: Intel: branches-1
-PASS: Intel: branches-2
-PASS: Intel: branches-3
-PASS: Intel: branch misses-0
-PASS: Intel: branch misses-1
-PASS: Intel: branch misses-2
-PASS: Intel: branch misses-3
-PASS: Intel: fixed-0
-PASS: Intel: fixed-1
-PASS: Intel: fixed-2
-PASS: Intel: rdpmc: cntr-0
-SKIP: Intel: rdpmc: fast-0
-PASS: Intel: rdpmc: cntr-1
-SKIP: Intel: rdpmc: fast-1
-PASS: Intel: rdpmc: cntr-2
-SKIP: Intel: rdpmc: fast-2
-PASS: Intel: rdpmc: cntr-3
-SKIP: Intel: rdpmc: fast-3
-PASS: Intel: rdpmc: fixed cntr-0
-SKIP: Intel: rdpmc: fixed fast-0
-PASS: Intel: rdpmc: fixed cntr-1
-SKIP: Intel: rdpmc: fixed fast-1
-PASS: Intel: rdpmc: fixed cntr-2
-SKIP: Intel: rdpmc: fixed fast-2
-PASS: Intel: all counters
-FAIL: Intel: overflow: cntr-0
-FAIL: Intel: overflow: status-0
-PASS: Intel: overflow: status clear-0
-PASS: Intel: overflow: irq-0
-FAIL: Intel: overflow: cntr-1
-FAIL: Intel: overflow: status-1
-PASS: Intel: overflow: status clear-1
-FAIL: Intel: overflow: irq-1
-FAIL: Intel: overflow: cntr-2
-FAIL: Intel: overflow: status-2
-PASS: Intel: overflow: status clear-2
-PASS: Intel: overflow: irq-2
-FAIL: Intel: overflow: cntr-3
-FAIL: Intel: overflow: status-3
-PASS: Intel: overflow: status clear-3
-FAIL: Intel: overflow: irq-3
-FAIL: Intel: overflow: cntr-4
-FAIL: Intel: overflow: status-4
-PASS: Intel: overflow: status clear-4
-PASS: Intel: overflow: irq-4
-PASS: Intel: cmask
-PASS: Intel: running counter wrmsr: cntr
-PASS: Intel: running counter wrmsr: status msr bit
-PASS: Intel: full-width writes: core cycles-0
-PASS: Intel: full-width writes: core cycles-1
-PASS: Intel: full-width writes: core cycles-2
-PASS: Intel: full-width writes: core cycles-3
-PASS: Intel: full-width writes: instructions-0
-PASS: Intel: full-width writes: instructions-1
-PASS: Intel: full-width writes: instructions-2
-PASS: Intel: full-width writes: instructions-3
-PASS: Intel: full-width writes: ref cycles-0
-PASS: Intel: full-width writes: ref cycles-1
-PASS: Intel: full-width writes: ref cycles-2
-PASS: Intel: full-width writes: ref cycles-3
-PASS: Intel: full-width writes: llc references-0
-PASS: Intel: full-width writes: llc references-1
-PASS: Intel: full-width writes: llc references-2
-PASS: Intel: full-width writes: llc references-3
-PASS: Intel: full-width writes: llc misses-0
-PASS: Intel: full-width writes: llc misses-1
-PASS: Intel: full-width writes: llc misses-2
-PASS: Intel: full-width writes: llc misses-3
-PASS: Intel: full-width writes: branches-0
-PASS: Intel: full-width writes: branches-1
-PASS: Intel: full-width writes: branches-2
-PASS: Intel: full-width writes: branches-3
-PASS: Intel: full-width writes: branch misses-0
-PASS: Intel: full-width writes: branch misses-1
-PASS: Intel: full-width writes: branch misses-2
-PASS: Intel: full-width writes: branch misses-3
-PASS: Intel: full-width writes: fixed-0
-PASS: Intel: full-width writes: fixed-1
-PASS: Intel: full-width writes: fixed-2
-PASS: Intel: full-width writes: rdpmc: cntr-0
-SKIP: Intel: full-width writes: rdpmc: fast-0
-PASS: Intel: full-width writes: rdpmc: cntr-1
-SKIP: Intel: full-width writes: rdpmc: fast-1
-PASS: Intel: full-width writes: rdpmc: cntr-2
-SKIP: Intel: full-width writes: rdpmc: fast-2
-PASS: Intel: full-width writes: rdpmc: cntr-3
-SKIP: Intel: full-width writes: rdpmc: fast-3
-PASS: Intel: full-width writes: rdpmc: fixed cntr-0
-SKIP: Intel: full-width writes: rdpmc: fixed fast-0
-PASS: Intel: full-width writes: rdpmc: fixed cntr-1
-SKIP: Intel: full-width writes: rdpmc: fixed fast-1
-PASS: Intel: full-width writes: rdpmc: fixed cntr-2
-SKIP: Intel: full-width writes: rdpmc: fixed fast-2
-PASS: Intel: full-width writes: all counters
-FAIL: Intel: full-width writes: overflow: cntr-0
-FAIL: Intel: full-width writes: overflow: status-0
-PASS: Intel: full-width writes: overflow: status clear-0
-PASS: Intel: full-width writes: overflow: irq-0
-FAIL: Intel: full-width writes: overflow: cntr-1
-FAIL: Intel: full-width writes: overflow: status-1
-PASS: Intel: full-width writes: overflow: status clear-1
-FAIL: Intel: full-width writes: overflow: irq-1
-FAIL: Intel: full-width writes: overflow: cntr-2
-FAIL: Intel: full-width writes: overflow: status-2
-PASS: Intel: full-width writes: overflow: status clear-2
-PASS: Intel: full-width writes: overflow: irq-2
-FAIL: Intel: full-width writes: overflow: cntr-3
-FAIL: Intel: full-width writes: overflow: status-3
-PASS: Intel: full-width writes: overflow: status clear-3
-FAIL: Intel: full-width writes: overflow: irq-3
-FAIL: Intel: full-width writes: overflow: cntr-4
-FAIL: Intel: full-width writes: overflow: status-4
-PASS: Intel: full-width writes: overflow: status clear-4
-PASS: Intel: full-width writes: overflow: irq-4
-PASS: Intel: full-width writes: cmask
-PASS: Intel: full-width writes: running counter wrmsr: cntr
-PASS: Intel: full-width writes: running counter wrmsr: status msr bit
-PASS: Intel: full-width writes: writing unsupported width to MSR_IA32_PMC0 raises #GP
-PASS: Intel: full-width writes: writing unsupported width to MSR_IA32_PMC1 raises #GP
-PASS: Intel: full-width writes: writing unsupported width to MSR_IA32_PMC2 raises #GP
-PASS: Intel: full-width writes: writing unsupported width to MSR_IA32_PMC3 raises #GP
-SUMMARY: 143 tests, 24 unexpected failures, 14 skipped
+commit: 26cb612c431de5093ae6a3a67ecaa0363f5b8829 ("srcu: Add srcu_read_lock_lite() and srcu_read_unlock_lite()")
+https://github.com/paulmckrcu/linux dev
+
+in testcase: rcutorture
+version: 
+with following parameters:
+
+	runtime: 300s
+	test: cpuhotplug
+	torture_type: srcud
 
 
---wdyGV4FNiAvJ62eC--
+
+compiler: gcc-12
+test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+
+(please refer to attached dmesg/kmsg for entire log/backtrace)
+
+
+in our tests, this issue doesn't always happen, but with a not small rate.
+
+daf812f27d6bbe4c 26cb612c431de5093ae6a3a67ec
+---------------- ---------------------------
+       fail:runs  %reproduction    fail:runs
+           |             |             |
+           :50          66%          33:50    dmesg.BUG:using__this_cpu_read()in_preemptible
+
+
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202409231124.358fed11-lkp@intel.com
+
+
+[  169.560380][   T76] BUG: using __this_cpu_read() in preemptible [00000000] code: kworker/1:2/76
+[ 169.561229][ T76] caller is try_check_zero (kernel/rcu/srcutree.c:485 kernel/rcu/srcutree.c:1149) 
+[  169.561657][   T76] CPU: 0 UID: 0 PID: 76 Comm: kworker/1:2 Not tainted 6.11.0-rc1-00125-g26cb612c431d #1
+[  169.562369][   T76] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+[  169.563120][   T76] Workqueue: rcu_gp process_srcu
+[  169.563518][   T76] Call Trace:
+[  169.563789][   T76]  <TASK>
+[ 169.564031][ T76] dump_stack_lvl (lib/dump_stack.c:122) 
+[ 169.564418][ T76] check_preemption_disabled (lib/smp_processor_id.c:52) 
+[ 169.564842][ T76] ? try_check_zero (kernel/rcu/srcutree.c:485 kernel/rcu/srcutree.c:1149) 
+[ 169.565219][ T76] ? process_one_work (kernel/workqueue.c:3206) 
+[ 169.565592][ T76] ? srcu_advance_state (kernel/rcu/srcutree.c:1784) 
+[ 169.565994][ T76] ? process_srcu (kernel/rcu/srcutree.c:1893) 
+[ 169.566373][ T76] ? process_one_work (kernel/workqueue.c:3236) 
+[ 169.566790][ T76] ? __pfx_process_one_work (kernel/workqueue.c:3133) 
+[ 169.567199][ T76] ? __list_add (include/linux/list.h:83 include/linux/list.h:150) 
+[ 169.567559][ T76] ? process_scheduled_works (kernel/workqueue.c:3312) 
+[ 169.567990][ T76] ? worker_thread (include/linux/list.h:373 kernel/workqueue.c:948 kernel/workqueue.c:3391) 
+[ 169.568361][ T76] ? __kthread_parkme (arch/x86/include/asm/current.h:49 kernel/kthread.c:293) 
+[ 169.568761][ T76] ? __pfx_worker_thread (kernel/workqueue.c:3339) 
+[ 169.569156][ T76] ? kthread (kernel/kthread.c:389) 
+[ 169.569474][ T76] ? __pfx_kthread (kernel/kthread.c:342) 
+[ 169.569848][ T76] ? ret_from_fork (arch/x86/kernel/process.c:153) 
+[ 169.570212][ T76] ? __pfx_kthread (kernel/kthread.c:342) 
+[ 169.570563][ T76] ? ret_from_fork_asm (arch/x86/entry/entry_64.S:257) 
+[  169.570954][   T76]  </TASK>
+[  169.652036][   T76] BUG: using __this_cpu_read() in preemptible [00000000] code: kworker/1:2/76
+[ 169.652785][ T76] caller is try_check_zero (kernel/rcu/srcutree.c:485 kernel/rcu/srcutree.c:1149) 
+[  169.653204][   T76] CPU: 0 UID: 0 PID: 76 Comm: kworker/1:2 Not tainted 6.11.0-rc1-00125-g26cb612c431d #1
+[  169.653945][   T76] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+[  169.654710][   T76] Workqueue: rcu_gp process_srcu
+[  169.655095][   T76] Call Trace:
+[  169.655357][   T76]  <TASK>
+[ 169.655591][ T76] dump_stack_lvl (lib/dump_stack.c:122) 
+[ 169.655958][ T76] check_preemption_disabled (lib/smp_processor_id.c:52) 
+[ 169.656392][ T76] ? try_check_zero (kernel/rcu/srcutree.c:485 kernel/rcu/srcutree.c:1149) 
+[ 169.656771][ T76] ? process_one_work (kernel/workqueue.c:3206) 
+[ 169.657162][ T76] ? srcu_advance_state (kernel/rcu/srcutree.c:1765) 
+[ 169.657559][ T76] ? process_srcu (kernel/rcu/srcutree.c:1893) 
+[ 169.657909][ T76] ? process_one_work (kernel/workqueue.c:3236) 
+[ 169.658263][ T76] ? __pfx_process_one_work (kernel/workqueue.c:3133) 
+[ 169.658623][ T76] ? __list_add (include/linux/list.h:83 include/linux/list.h:150) 
+[ 169.658911][ T76] ? process_scheduled_works (kernel/workqueue.c:3312) 
+[ 169.659254][ T76] ? worker_thread (include/linux/list.h:373 kernel/workqueue.c:948 kernel/workqueue.c:3391) 
+[ 169.659554][ T76] ? __kthread_parkme (arch/x86/include/asm/current.h:49 kernel/kthread.c:293) 
+[ 169.659885][ T76] ? __pfx_worker_thread (kernel/workqueue.c:3339) 
+[ 169.660211][ T76] ? kthread (kernel/kthread.c:389) 
+[ 169.660480][ T76] ? __pfx_kthread (kernel/kthread.c:342) 
+[ 169.660773][ T76] ? ret_from_fork (arch/x86/kernel/process.c:153) 
+[ 169.661069][ T76] ? __pfx_kthread (kernel/kthread.c:342) 
+[ 169.661363][ T76] ? ret_from_fork_asm (arch/x86/entry/entry_64.S:257) 
+[  169.661693][   T76]  </TASK>
+[  169.662140][   T76] BUG: using __this_cpu_read() in preemptible [00000000] code: kworker/1:2/76
+[ 169.662810][ T76] caller is try_check_zero (kernel/rcu/srcutree.c:485 kernel/rcu/srcutree.c:1149) 
+[  169.663222][   T76] CPU: 0 UID: 0 PID: 76 Comm: kworker/1:2 Not tainted 6.11.0-rc1-00125-g26cb612c431d #1
+[  169.663934][   T76] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+[  169.664696][   T76] Workqueue: rcu_gp process_srcu
+[  169.665091][   T76] Call Trace:
+[  169.665353][   T76]  <TASK>
+[ 169.665586][ T76] dump_stack_lvl (lib/dump_stack.c:122) 
+[ 169.665959][ T76] check_preemption_disabled (lib/smp_processor_id.c:52) 
+[ 169.666369][ T76] ? try_check_zero (kernel/rcu/srcutree.c:485 kernel/rcu/srcutree.c:1149) 
+[ 169.666727][ T76] ? preempt_count_sub (kernel/sched/core.c:5685) 
+[ 169.667127][ T76] ? process_one_work (kernel/workqueue.c:3206) 
+[ 169.667519][ T76] ? srcu_advance_state (kernel/rcu/srcutree.c:1784) 
+[ 169.667938][ T76] ? process_srcu (kernel/rcu/srcutree.c:1893) 
+[ 169.668310][ T76] ? process_one_work (kernel/workqueue.c:3236) 
+[ 169.668719][ T76] ? __pfx_process_one_work (kernel/workqueue.c:3133) 
+[ 169.669150][ T76] ? __list_add (include/linux/list.h:83 include/linux/list.h:150) 
+[ 169.669517][ T76] ? process_scheduled_works (kernel/workqueue.c:3312) 
+[ 169.669954][ T76] ? worker_thread (include/linux/list.h:373 kernel/workqueue.c:948 kernel/workqueue.c:3391) 
+[ 169.670303][ T76] ? __kthread_parkme (arch/x86/include/asm/current.h:49 kernel/kthread.c:293) 
+[ 169.670692][ T76] ? __pfx_worker_thread (kernel/workqueue.c:3339) 
+[ 169.671077][ T76] ? kthread (kernel/kthread.c:389) 
+[ 169.671412][ T76] ? __pfx_kthread (kernel/kthread.c:342) 
+[ 169.671761][ T76] ? ret_from_fork (arch/x86/kernel/process.c:153) 
+[ 169.672114][ T76] ? __pfx_kthread (kernel/kthread.c:342) 
+[ 169.672463][ T76] ? ret_from_fork_asm (arch/x86/entry/entry_64.S:257) 
+[  169.672861][   T76]  </TASK>
+[  169.690595][   T75] smpboot: CPU 1 is now offline
+
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20240923/202409231124.358fed11-lkp@intel.com
+
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
