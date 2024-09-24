@@ -1,151 +1,371 @@
-Received: from mail-43166.protonmail.ch (mail-43166.protonmail.ch [185.70.43.166])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D16C1DFFB
-	for <oe-lkp@lists.linux.dev>; Tue, 24 Sep 2024 17:40:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.43.166
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E36813B792
+	for <oe-lkp@lists.linux.dev>; Tue, 24 Sep 2024 21:40:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727199653; cv=none; b=tjvkimRzIvlXgpaoHG7J1jDzhHCahMQuR0KcobNBlERNWNNqdmMqVZMzpPnlNKqbw3pvel7Uj8biXYagACegVUJu4J5wa55OL1NHNmoaUSo6cyEaeb0zQtoX94eIGGgroHeyiYLo5UzzAqNtG90MLIbEpFN/tB2pkGvBHy8tBjU=
+	t=1727214019; cv=none; b=P2vZ96mQs3oZ6uPT8enbwxhMycyvsyMJUKo8v/w5LTLIkEAwzd1YM7UoA9JsbKG9WmbMb91UzGU/LGPh7OIKygYBFOMev0fD7fskARYpzkGnbDvsnl80jDOTsdKfXgbLWnrfzFc4amUrRUjnnBLzUK23OJ1EKT6P8AlRjts5XmY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727199653; c=relaxed/simple;
-	bh=XAZ0n7me/6NPjiNvYD8nNQcWE0/mBtl5dFitgfUhxhQ=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=km/cZW2JbJ+c3/b83eDf1da0oaW56T9n7QzKKyYE/aTAKGZyuwgjp2OZygba5ydZwd/Qvw8wErl+o57hR1Ma43yoBHRG96ze677jAKD8LI9/U/OtZRT/1t9TG/Y4ttz6teCH+ZeMP8yL6oaAfHiQwVu1B+nQxW2Ut+vPr5zJjx0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=proton.me; spf=pass smtp.mailfrom=proton.me; dkim=pass (2048-bit key) header.d=proton.me header.i=@proton.me header.b=hgeKtJwS; arc=none smtp.client-ip=185.70.43.166
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=proton.me
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=proton.me
+	s=arc-20240116; t=1727214019; c=relaxed/simple;
+	bh=NOCzssKF1ltxpw8jzkk2cHKivIBjlFOK0IasGaWzmUw=;
+	h=From:In-Reply-To:References:To:Cc:Subject:MIME-Version:
+	 Content-Type:Date:Message-ID; b=bEPiKI2EHRK3dmMRRo9tYikkYtNhe1RfRlfSdYrGSyEv2au4xC78NhWEs/XIbScxVp5fN6NqfLSkYrGYncgOBWVEwVfVlKK7qlMLOFdpTFftNPbgVscL6REJBH2KhPX9bhebDpcP5JafqU/lNWToA5PS6MnLhs1+KC6RuASkXw4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=LBq39K0u; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=proton.me header.i=@proton.me header.b="hgeKtJwS"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=proton.me;
-	s=protonmail; t=1727199642; x=1727458842;
-	bh=dbdxFo/zq070cXxVD/uDF6R4O2yzs/xwmmWLCvvKMOI=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-	 Message-ID:BIMI-Selector;
-	b=hgeKtJwSzA+8k3B42nJA9HBWZzeP35dDOA5101vs67lkfPdwnzyenxltnJ9Lq/9va
-	 6YLqdo28O3BCFI4M2LgIfWS998Vvrr4eU6AuPRd+Df0RVn3HHPCRkbXeEzWSzLsK6W
-	 D3Jzvpc2m9Gixv2GY8FNHFTMfx7miSXURxzVxdD2IHWslgj33rXL3odlW4xuWHna8P
-	 yBDTecKSxwgY2/ETvMKCxFvOh48vUNNb5U8bVnYePG996DTHrYm58h/QFUfSdr82YJ
-	 4tSen88TLYSQPXf/d0mhdlBdwsMzSK9qDsxtOM0uhdGocLEHPFjuV6B1m/qo6KVKx1
-	 aTARj1zLwC3ug==
-Date: Tue, 24 Sep 2024 17:40:36 +0000
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="LBq39K0u"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1727214016;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=sDHykGRLveHtmjkJOROB9PdK3BCI4esypIvCqt4ILLo=;
+	b=LBq39K0uFp68EaJdhGOvB3W/R00bcya6Xqq3i+a4W1AGvmjWCFKS0QfzLZofmShWp3VnDs
+	W7zhnAwCwDBRsoGJLuE7vyKNWy29qiL12b5m4sQIs7FWtjGhT+9Si/eGuB2mk5KIeQdMDm
+	genWkmeLp93pLirC4fCVHqJ8VN35SlQ=
+Received: from mx-prod-mc-02.mail-002.prod.us-west-2.aws.redhat.com
+ (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-586-fAWq3_5DNxer3aWWs1T-EQ-1; Tue,
+ 24 Sep 2024 17:40:12 -0400
+X-MC-Unique: fAWq3_5DNxer3aWWs1T-EQ-1
+Received: from mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com (unknown [10.30.177.40])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mx-prod-mc-02.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 19B4B1945114;
+	Tue, 24 Sep 2024 21:40:11 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.42.28.145])
+	by mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTP id C84E319560AA;
+	Tue, 24 Sep 2024 21:40:08 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+	Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+	Kingdom.
+	Registered in England and Wales under Company Registration No. 3798903
+From: David Howells <dhowells@redhat.com>
+In-Reply-To: <202409180928.f20b5a08-oliver.sang@intel.com>
+References: <202409180928.f20b5a08-oliver.sang@intel.com>
 To: kernel test robot <oliver.sang@intel.com>
-From: John <therealgraysky@proton.me>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, Unknown <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>
-Subject: Re: [PATCH] x86: add more x86-64 micro-architecture levels
-Message-ID: <4_u6ZNYPbaK36xkLt8ApRhiRTyWp_-NExHCH_tTFO_fanDglEmcbfowmiB505heI4md2AuR9hS-VSkf4s90sXb5--AnNTOwvPaTmcgzRYSY=@proton.me>
-In-Reply-To: <202409241436.b37a069e-oliver.sang@intel.com>
-References: <202409241436.b37a069e-oliver.sang@intel.com>
-Feedback-ID: 47473199:user:proton
-X-Pm-Message-ID: 95154c7c9cfeaff9d0db5c7987d82ecfb85c9d89
+Cc: dhowells@redhat.com, oe-lkp@lists.linux.dev, lkp@intel.com,
+    linux-kernel@vger.kernel.org, Christian Brauner <brauner@kernel.org>,
+    Jeff Layton <jlayton@kernel.org>, netfs@lists.linux.dev,
+    linux-fsdevel@vger.kernel.org
+Subject: Re: [linus:master] [netfs] cd0277ed0c: BUG:KASAN:slab-use-after-free_in_copy_from_iter
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="b1_9XyeUgEfIWwwNaqU6g6Bs8aSo79lqIO9p4wecrpCc"
-
-This is a multi-part message in MIME format.
-
---b1_9XyeUgEfIWwwNaqU6g6Bs8aSo79lqIO9p4wecrpCc
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1191670.1727214007.1@warthog.procyon.org.uk>
 Content-Transfer-Encoding: quoted-printable
+Date: Tue, 24 Sep 2024 22:40:07 +0100
+Message-ID: <1191671.1727214007@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.0 on 10.30.177.40
 
-On Tuesday, September 24th, 2024 at 3:00 AM, kernel test robot <oliver.sang=
-@intel.com> wrote:
+Hi Oliver,
 
-> early crash happens 70 times out of 500 runs.
-> for parent, keeps clean when we run same tests almost 1000 times.
+Can you try the attached?
 
-Many thanks for this rigorous testing.  Would you mind using the current re=
-vision of this patch (attached) or accessible at my github linked below?
+Thanks,
+David
+---
+netfs: Fix write oops in generic/346 (9p) and maybe generic/074 (cifs)
 
-https://github.com/graysky2/kernel_compiler_patch
---b1_9XyeUgEfIWwwNaqU6g6Bs8aSo79lqIO9p4wecrpCc
-Content-Type: text/x-patch; name=lite-more-x86-64-ISA-levels-for-kernel-6.8-rc4+.patch
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename=lite-more-x86-64-ISA-levels-for-kernel-6.8-rc4+.patch
+In netfslib, a buffered writeback operation has a 'write queue' of folios
+that are being written, held in a linear sequence of folio_queue structs.
+The 'issuer' adds new folio_queues on the leading edge of the queue and
+populates each one progressively; the 'collector' pops them off the
+trailing edge and discards them and the folios they point to as they are
+consumed.
 
-RnJvbSA3MTgxNTVlNjE2NGI0YmVjNDViY2JhODgxNGMzZjgyZTg0ZjM2ZGIwIE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpGcm9tOiBncmF5c2t5IDx0aGVyZWFsZ3JheXNreSBBVCBwcm90b24gRE9U
-IG1lPgpEYXRlOiBNb24sIDE2IFNlcCAyMDI0IDE0OjQ3OjAzIC0wNDAwCgpGRUFUVVJFUwpUaGlz
-IHBhdGNoIGFkZHMgYWRkaXRpb25hbCB0dW5pbmdzIHZpYSBuZXcgeDg2LTY0IElTQSBsZXZlbHMg
-dG8gdGhlCkxpbnV4IGtlcm5lbC4KClRoZXNlIGFyZSBzZWxlY3RhYmxlIHVuZGVyOgoJUHJvY2Vz
-c29yIHR5cGUgYW5kIGZlYXR1cmVzIC0tLT4geDg2LTY0IGNvbXBpbGVyIElTQSBsZXZlbAoK4oCi
-IHg4Ni02NCAgICAgQSB2YWx1ZSBvZiAoMSkgaXMgdGhlIGRlZmF1bHQK4oCiIHg4Ni02NC12MiAg
-QSB2YWx1ZSBvZiAoMikgYnJpbmdzIHN1cHBvcnQgZm9yIHZlY3RvcgogICAgICAgICAgICAgaW5z
-dHJ1Y3Rpb25zIHVwIHRvIFN0cmVhbWluZyBTSU1EIEV4dGVuc2lvbnMgNC4yIChTU0U0LjIpCgkg
-ICAgIGFuZCBTdXBwbGVtZW50YWwgU3RyZWFtaW5nIFNJTUQgRXh0ZW5zaW9ucyAzIChTU1NFMyks
-IHRoZQoJICAgICBQT1BDTlQgaW5zdHJ1Y3Rpb24sIGFuZCBDTVBYQ0hHMTZCLgrigKIgeDg2LTY0
-LXYzICBBIHZhbHVlIG9mICgzKSBhZGRzIHZlY3RvciBpbnN0cnVjdGlvbnMgdXAgdG8gQVZYMiwg
-TU9WQkUsCiAgICAgICAgICAgICBhbmQgYWRkaXRpb25hbCBiaXQtbWFuaXB1bGF0aW9uIGluc3Ry
-dWN0aW9ucy4KClRoZXJlIGlzIGFsc28geDg2LTY0LXY0IGJ1dCBpbmNsdWRpbmcgdGhpcyBtYWtl
-cyBsaXR0bGUgc2Vuc2UgYXMKdGhlIGtlcm5lbCBkb2VzIG5vdCB1c2UgYW55IG9mIHRoZSBBVlg1
-MTIgaW5zdHJ1Y3Rpb25zIGFueXdheS4KClVzZXJzIG9mIGdsaWJjIDIuMzMgYW5kIGFib3ZlIGNh
-biBzZWUgd2hpY2ggbGV2ZWwgaXMgc3VwcG9ydGVkIGJ5IHJ1bm5pbmc6CgkvbGliL2xkLWxpbnV4
-LXg4Ni02NC5zby4yIC0taGVscCB8IGdyZXAgc3VwcG9ydGVkCk9yCgkvbGliNjQvbGQtbGludXgt
-eDg2LTY0LnNvLjIgLS1oZWxwIHwgZ3JlcCBzdXBwb3J0ZWQKCkJFTkVGSVRTClNtYWxsIGJ1dCBy
-ZWFsIHNwZWVkIGluY3JlYXNlcyBhcmUgbWVhc3VyYWJsZSB1c2luZyBhIG1ha2UgZW5kcG9pbnQg
-Y29tcGFyaW5nCmEgZ2VuZXJpYyBrZXJuZWwgdG8gb25lIGJ1aWx0IHdpdGggb25lIG9mIHRoZSBy
-ZXNwZWN0aXZlIG1pY3JvYXJjaHMuCgpTZWUgdGhlIGZvbGxvd2luZyBleHBlcmltZW50YWwgZXZp
-ZGVuY2Ugc3VwcG9ydGluZyB0aGlzIHN0YXRlbWVudDoKaHR0cHM6Ly9naXRodWIuY29tL2dyYXlz
-a3kyL2tlcm5lbF9jb21waWxlcl9wYXRjaD90YWI9cmVhZG1lLW92LWZpbGUjYmVuY2htYXJrcwoK
-UkVRVUlSRU1FTlRTCmxpbnV4IHZlcnNpb24gNi44LXJjMysKZ2NjIHZlcnNpb24gPj05LjAgb3Ig
-Y2xhbmcgdmVyc2lvbiA+PTkuMAoKQUNLTk9XTEVER01FTlRTClRoaXMgcGF0Y2ggYnVpbGRzIG9u
-IHRoZSBzZW1pbmFsIHdvcmsgYnkgSmVyb2VuLlsyXQoKUkVGRVJFTkNFUwoxLiAgaHR0cHM6Ly9n
-aXRsYWIuY29tL3g4Ni1wc0FCSXMveDg2LTY0LUFCSS8tL2NvbW1pdC83NzU2NmViMDNiYzZhMzI2
-ODExY2I3ZTkKMi4gIGh0dHA6Ly93d3cubGludXhmb3JnZS5uZXQvZG9jcy9saW51eC9saW51eC1n
-Y2MucGhwCgotLS0KIGFyY2gveDg2L0tjb25maWcuY3B1IHwgMjQgKysrKysrKysrKysrKysrKysr
-KysrKysrCiBhcmNoL3g4Ni9NYWtlZmlsZSAgICB8IDExICsrKysrKysrKy0tCiAyIGZpbGVzIGNo
-YW5nZWQsIDMzIGluc2VydGlvbnMoKyksIDIgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvYXJj
-aC94ODYvS2NvbmZpZy5jcHUgYi9hcmNoL3g4Ni9LY29uZmlnLmNwdQppbmRleCAyYTcyNzlkODA0
-NjAuLjU2MmEyNzNiZTIyMiAxMDA2NDQKLS0tIGEvYXJjaC94ODYvS2NvbmZpZy5jcHUKKysrIGIv
-YXJjaC94ODYvS2NvbmZpZy5jcHUKQEAgLTMwOCw2ICszMDgsMzAgQEAgY29uZmlnIFg4Nl9HRU5F
-UklDCiAJICBUaGlzIGlzIHJlYWxseSBpbnRlbmRlZCBmb3IgZGlzdHJpYnV0b3JzIHdobyBuZWVk
-IG1vcmUKIAkgIGdlbmVyaWMgb3B0aW1pemF0aW9ucy4KCitjb25maWcgWDg2XzY0X1ZFUlNJT04K
-KwlpbnQgIng4Ni02NCBjb21waWxlciBJU0EgbGV2ZWwiCisJcmFuZ2UgMSAzCisJZGVwZW5kcyBv
-biAoQ0NfSVNfR0NDICYmIEdDQ19WRVJTSU9OID4gMTEwMDAwKSB8fCAoQ0NfSVNfQ0xBTkcgJiYg
-Q0xBTkdfVkVSU0lPTiA+PSAxMjAwMDApCisJZGVwZW5kcyBvbiBYODZfNjQgJiYgR0VORVJJQ19D
-UFUKKwloZWxwCisJICBTcGVjaWZ5IGEgc3BlY2lmaWMgeDg2LTY0IGNvbXBpbGVyIElTQSBsZXZl
-bC4KKworCSAgVGhlcmUgYXJlIHRocmVlIHg4Ni02NCBJU0EgbGV2ZWxzIHRoYXQgd29yayBvbiB0
-b3Agb2YKKwkgIHRoZSB4ODYtNjQgYmFzZWxpbmUsIG5hbWVseTogeDg2LTY0LXYyLCB4ODYtNjQt
-djMsIGFuZCB4ODYtNjQtdjQuCisKKwkgIHg4Ni02NC12MiBicmluZ3Mgc3VwcG9ydCBmb3IgdmVj
-dG9yIGluc3RydWN0aW9ucyB1cCB0byBTdHJlYW1pbmcgU0lNRAorCSAgRXh0ZW5zaW9ucyA0LjIg
-KFNTRTQuMikgYW5kIFN1cHBsZW1lbnRhbCBTdHJlYW1pbmcgU0lNRCBFeHRlbnNpb25zIDMKKwkg
-IChTU1NFMyksIHRoZSBQT1BDTlQgaW5zdHJ1Y3Rpb24sIGFuZCBDTVBYQ0hHMTZCLgorCisJICB4
-ODYtNjQtdjMgYWRkcyB2ZWN0b3IgaW5zdHJ1Y3Rpb25zIHVwIHRvIEFWWDIsIE1PVkJFLCBhbmQg
-YWRkaXRpb25hbAorCSAgYml0LW1hbmlwdWxhdGlvbiBpbnN0cnVjdGlvbnMuCisKKwkgIHg4Ni02
-NC12NCBpcyBub3QgaW5jbHVkZWQgc2luY2UgdGhlIGtlcm5lbCBkb2VzIG5vdCB1c2UgQVZYNTEy
-IGluc3RydWN0aW9ucworCisJICBZb3UgY2FuIGZpbmQgdGhlIGJlc3QgdmVyc2lvbiBmb3IgeW91
-ciBDUFUgYnkgcnVubmluZyBvbmUgb2YgdGhlIGZvbGxvd2luZzoKKwkgIC9saWIvbGQtbGludXgt
-eDg2LTY0LnNvLjIgLS1oZWxwIHwgZ3JlcCBzdXBwb3J0ZWQKKwkgIC9saWI2NC9sZC1saW51eC14
-ODYtNjQuc28uMiAtLWhlbHAgfCBncmVwIHN1cHBvcnRlZAorCiAjCiAjIERlZmluZSBpbXBsaWVk
-IG9wdGlvbnMgZnJvbSB0aGUgQ1BVIHNlbGVjdGlvbiBoZXJlCiBjb25maWcgWDg2X0lOVEVSTk9E
-RV9DQUNIRV9TSElGVApkaWZmIC0tZ2l0IGEvYXJjaC94ODYvTWFrZWZpbGUgYi9hcmNoL3g4Ni9N
-YWtlZmlsZQppbmRleCA4MDFmZDg1YzNlZjYuLmUxZjg4Zjg0NmJlZCAxMDA2NDQKLS0tIGEvYXJj
-aC94ODYvTWFrZWZpbGUKKysrIGIvYXJjaC94ODYvTWFrZWZpbGUKQEAgLTE3OCwxNCArMTc4LDIx
-IEBAIGVsc2UKICAgICAgICAgY2ZsYWdzLSQoQ09ORklHX01QU0MpCQkrPSAtbWFyY2g9bm9jb25h
-CiAgICAgICAgIGNmbGFncy0kKENPTkZJR19NQ09SRTIpCQkrPSAtbWFyY2g9Y29yZTIKICAgICAg
-ICAgY2ZsYWdzLSQoQ09ORklHX01BVE9NKQkJKz0gLW1hcmNoPWF0b20KLSAgICAgICAgY2ZsYWdz
-LSQoQ09ORklHX0dFTkVSSUNfQ1BVKQkrPSAtbXR1bmU9Z2VuZXJpYworICAgICAgICBpZmVxICgk
-KENPTkZJR19YODZfNjRfVkVSU0lPTiksMSkKKyAgICAgICAgICBjZmxhZ3MtJChDT05GSUdfR0VO
-RVJJQ19DUFUpCQkrPSAtbXR1bmU9Z2VuZXJpYworICAgICAgICAgIHJ1c3RmbGFncy0kKENPTkZJ
-R19HRU5FUklDX0NQVSkJKz0gLVp0dW5lLWNwdT1nZW5lcmljCisgICAgICAgIGVsc2UKKyAgICAg
-ICAgICBjZmxhZ3MtJChDT05GSUdfR0VORVJJQ19DUFUpCQkrPSAtbWFyY2g9eDg2LTY0LXYkKENP
-TkZJR19YODZfNjRfVkVSU0lPTikKKyAgICAgICAgICBydXN0ZmxhZ3MtJChDT05GSUdfR0VORVJJ
-Q19DUFUpCSs9IC1DdGFyZ2V0LWNwdT14ODYtNjQtdiQoQ09ORklHX1g4Nl82NF9WRVJTSU9OKQor
-ICAgICAgICBlbmRpZgorICAgICAgICBjZmxhZ3MtJChDT05GSUdfTUFUT00pIAkrPSAtbWFyY2g9
-Ym9ubmVsbAorICAgICAgICBjZmxhZ3MtJChDT05GSUdfTUNPUkUyKSAJKz0gLW1hcmNoPWNvcmUy
-CiAgICAgICAgIEtCVUlMRF9DRkxBR1MgKz0gJChjZmxhZ3MteSkKCiAgICAgICAgIHJ1c3RmbGFn
-cy0kKENPTkZJR19NSzgpCQkrPSAtQ3RhcmdldC1jcHU9azgKICAgICAgICAgcnVzdGZsYWdzLSQo
-Q09ORklHX01QU0MpCSs9IC1DdGFyZ2V0LWNwdT1ub2NvbmEKICAgICAgICAgcnVzdGZsYWdzLSQo
-Q09ORklHX01DT1JFMikJKz0gLUN0YXJnZXQtY3B1PWNvcmUyCiAgICAgICAgIHJ1c3RmbGFncy0k
-KENPTkZJR19NQVRPTSkJKz0gLUN0YXJnZXQtY3B1PWF0b20KLSAgICAgICAgcnVzdGZsYWdzLSQo
-Q09ORklHX0dFTkVSSUNfQ1BVKQkrPSAtWnR1bmUtY3B1PWdlbmVyaWMKICAgICAgICAgS0JVSUxE
-X1JVU1RGTEFHUyArPSAkKHJ1c3RmbGFncy15KQoKICAgICAgICAgS0JVSUxEX0NGTEFHUyArPSAt
-bW5vLXJlZC16b25lCi0tCjIuNDYuMQoK
+The queue is required to always retain at least one folio_queue structure.
+This allows the queue to be accessed without locking and with just a bit o=
+f
+barriering.
 
---b1_9XyeUgEfIWwwNaqU6g6Bs8aSo79lqIO9p4wecrpCc--
+When a new subrequest is prepared, its ->io_iter iterator is pointed at th=
+e
+current end of the write queue and then the iterator is extended as more
+data is added to the queue until the subrequest is committed.
+
+Now, the problem is that the folio_queue at the leading edge of the write
+queue when a subrequest is prepared might have been entirely consumed - bu=
+t
+not yet removed from the queue as it is the only remaining one and is
+preventing the queue from collapsing.
+
+So, what happens is that subreq->io_iter is pointed at the spent
+folio_queue, then a new folio_queue is added, and, at that point, the
+collector is at entirely at liberty to immediately delete the spent
+folio_queue.
+
+This leaves the subreq->io_iter pointing at a freed object.  If the system
+is lucky, iterate_folioq() sees ->io_iter, sees the as-yet uncorrupted
+freed object and advances to the next folio_queue in the queue.
+
+In the case seen, however, the freed object gets recycled and put back ont=
+o
+the queue at the tail and filled to the end.  This confuses
+iterate_folioq() and it tries to step ->next, which may be NULL - resultin=
+g
+in an oops.
+
+Fix this by the following means:
+
+ (1) When preparing a write subrequest, make sure there's a folio_queue
+     struct with space in it at the leading edge of the queue.  A function
+     to make space is split out of the function to append a folio so that
+     it can be called for this purpose.
+
+ (2) If the request struct iterator is pointing to a completely spent
+     folio_queue when we make space, then advance the iterator to the newl=
+y
+     allocated folio_queue.  The subrequest's iterator will then be set
+     from this.
+
+Whilst we're at it, also split out the function to allocate a folio_queue,
+initialise it and do the accounting.
+
+The oops could be triggered using the generic/346 xfstest with a filesyste=
+m
+on9P over TCP with cache=3Dloose.  The oops looked something like:
+
+ BUG: kernel NULL pointer dereference, address: 0000000000000008
+ #PF: supervisor read access in kernel mode
+ #PF: error_code(0x0000) - not-present page
+ ...
+ RIP: 0010:_copy_from_iter+0x2db/0x530
+ ...
+ Call Trace:
+  <TASK>
+ ...
+  p9pdu_vwritef+0x3d8/0x5d0
+  p9_client_prepare_req+0xa8/0x140
+  p9_client_rpc+0x81/0x280
+  p9_client_write+0xcf/0x1c0
+  v9fs_issue_write+0x87/0xc0
+  netfs_advance_write+0xa0/0xb0
+  netfs_write_folio.isra.0+0x42d/0x500
+  netfs_writepages+0x15a/0x1f0
+  do_writepages+0xd1/0x220
+  filemap_fdatawrite_wbc+0x5c/0x80
+  v9fs_mmap_vm_close+0x7d/0xb0
+  remove_vma+0x35/0x70
+  vms_complete_munmap_vmas+0x11a/0x170
+  do_vmi_align_munmap+0x17d/0x1c0
+  do_vmi_munmap+0x13e/0x150
+  __vm_munmap+0x92/0xd0
+  __x64_sys_munmap+0x17/0x20
+  do_syscall_64+0x80/0xe0
+  entry_SYSCALL_64_after_hwframe+0x71/0x79
+
+This may also fix a similar-looking issue with cifs and generic/074.
+
+  | Reported-by: kernel test robot <oliver.sang@intel.com>
+  | Closes: https://lore.kernel.org/oe-lkp/202409180928.f20b5a08-oliver.sa=
+ng@intel.com
+
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Eric Van Hensbergen <ericvh@kernel.org>
+cc: Latchesar Ionkov <lucho@ionkov.net>
+cc: Dominique Martinet <asmadeus@codewreck.org>
+cc: Christian Schoenebeck <linux_oss@crudebyte.com>
+cc: Steve French <sfrench@samba.org>
+cc: Paulo Alcantara <pc@manguebit.com>
+cc: Jeff Layton <jlayton@kernel.org>
+cc: v9fs@lists.linux.dev
+cc: linux-cifs@vger.kernel.org
+cc: netfs@lists.linux.dev
+cc: linux-fsdevel@vger.kernel.org
+---
+ fs/netfs/internal.h    |    2 +
+ fs/netfs/misc.c        |   72 ++++++++++++++++++++++++++++++++++---------=
+------
+ fs/netfs/objects.c     |   12 ++++++++
+ fs/netfs/write_issue.c |   12 +++++++-
+ 4 files changed, 76 insertions(+), 22 deletions(-)
+
+diff --git a/fs/netfs/internal.h b/fs/netfs/internal.h
+index c7f23dd3556a..79c0ad89affb 100644
+--- a/fs/netfs/internal.h
++++ b/fs/netfs/internal.h
+@@ -58,6 +58,7 @@ static inline void netfs_proc_del_rreq(struct netfs_io_r=
+equest *rreq) {}
+ /*
+  * misc.c
+  */
++struct folio_queue *netfs_buffer_make_space(struct netfs_io_request *rreq=
+);
+ int netfs_buffer_append_folio(struct netfs_io_request *rreq, struct folio=
+ *folio,
+ 			      bool needs_put);
+ struct folio_queue *netfs_delete_buffer_head(struct netfs_io_request *wre=
+q);
+@@ -76,6 +77,7 @@ void netfs_clear_subrequests(struct netfs_io_request *rr=
+eq, bool was_async);
+ void netfs_put_request(struct netfs_io_request *rreq, bool was_async,
+ 		       enum netfs_rreq_ref_trace what);
+ struct netfs_io_subrequest *netfs_alloc_subrequest(struct netfs_io_reques=
+t *rreq);
++struct folio_queue *netfs_folioq_alloc(struct netfs_io_request *rreq, gfp=
+_t gfp);
+ =
+
+ static inline void netfs_see_request(struct netfs_io_request *rreq,
+ 				     enum netfs_rreq_ref_trace what)
+diff --git a/fs/netfs/misc.c b/fs/netfs/misc.c
+index 0ad0982ce0e2..a743e8963247 100644
+--- a/fs/netfs/misc.c
++++ b/fs/netfs/misc.c
+@@ -9,34 +9,64 @@
+ #include "internal.h"
+ =
+
+ /*
+- * Append a folio to the rolling queue.
++ * Make sure there's space in the rolling queue.
+  */
+-int netfs_buffer_append_folio(struct netfs_io_request *rreq, struct folio=
+ *folio,
+-			      bool needs_put)
++struct folio_queue *netfs_buffer_make_space(struct netfs_io_request *rreq=
+)
+ {
+-	struct folio_queue *tail =3D rreq->buffer_tail;
+-	unsigned int slot, order =3D folio_order(folio);
++	struct folio_queue *tail =3D rreq->buffer_tail, *prev;
++	unsigned int prev_nr_slots =3D 0;
+ =
+
+ 	if (WARN_ON_ONCE(!rreq->buffer && tail) ||
+ 	    WARN_ON_ONCE(rreq->buffer && !tail))
+-		return -EIO;
+-
+-	if (!tail || folioq_full(tail)) {
+-		tail =3D kmalloc(sizeof(*tail), GFP_NOFS);
+-		if (!tail)
+-			return -ENOMEM;
+-		netfs_stat(&netfs_n_folioq);
+-		folioq_init(tail);
+-		tail->prev =3D rreq->buffer_tail;
+-		if (tail->prev)
+-			tail->prev->next =3D tail;
+-		rreq->buffer_tail =3D tail;
+-		if (!rreq->buffer) {
+-			rreq->buffer =3D tail;
+-			iov_iter_folio_queue(&rreq->io_iter, ITER_SOURCE, tail, 0, 0, 0);
++		return ERR_PTR(-EIO);
++
++	prev =3D tail;
++	if (prev) {
++		if (!folioq_full(tail))
++			return tail;
++		prev_nr_slots =3D folioq_nr_slots(tail);
++	}
++
++	tail =3D netfs_folioq_alloc(rreq, GFP_NOFS);
++	if (!tail)
++		return ERR_PTR(-ENOMEM);
++	tail->prev =3D prev;
++	if (prev)
++		/* [!] NOTE: After we set prev->next, the consumer is entirely
++		 * at liberty to delete prev.
++		 */
++		WRITE_ONCE(prev->next, tail);
++
++	rreq->buffer_tail =3D tail;
++	if (!rreq->buffer) {
++		rreq->buffer =3D tail;
++		iov_iter_folio_queue(&rreq->io_iter, ITER_SOURCE, tail, 0, 0, 0);
++	} else {
++		/* Make sure we don't leave the master iterator pointing to a
++		 * block that might get immediately consumed.
++		 */
++		if (rreq->io_iter.folioq =3D=3D prev &&
++		    rreq->io_iter.folioq_slot =3D=3D prev_nr_slots) {
++			rreq->io_iter.folioq =3D tail;
++			rreq->io_iter.folioq_slot =3D 0;
+ 		}
+-		rreq->buffer_tail_slot =3D 0;
+ 	}
++	rreq->buffer_tail_slot =3D 0;
++	return tail;
++}
++
++/*
++ * Append a folio to the rolling queue.
++ */
++int netfs_buffer_append_folio(struct netfs_io_request *rreq, struct folio=
+ *folio,
++			      bool needs_put)
++{
++	struct folio_queue *tail;
++	unsigned int slot, order =3D folio_order(folio);
++
++	tail =3D netfs_buffer_make_space(rreq);
++	if (IS_ERR(tail))
++		return PTR_ERR(tail);
+ =
+
+ 	rreq->io_iter.count +=3D PAGE_SIZE << order;
+ =
+
+diff --git a/fs/netfs/objects.c b/fs/netfs/objects.c
+index d32964e8ca5d..dd8241bc996b 100644
+--- a/fs/netfs/objects.c
++++ b/fs/netfs/objects.c
+@@ -250,3 +250,15 @@ void netfs_put_subrequest(struct netfs_io_subrequest =
+*subreq, bool was_async,
+ 	if (dead)
+ 		netfs_free_subrequest(subreq, was_async);
+ }
++
++struct folio_queue *netfs_folioq_alloc(struct netfs_io_request *rreq, gfp=
+_t gfp)
++{
++	struct folio_queue *fq;
++
++	fq =3D kmalloc(sizeof(*fq), gfp);
++	if (fq) {
++		netfs_stat(&netfs_n_folioq);
++		folioq_init(fq);
++	}
++	return fq;
++}
+diff --git a/fs/netfs/write_issue.c b/fs/netfs/write_issue.c
+index 04e66d587f77..0929d9fd4ce7 100644
+--- a/fs/netfs/write_issue.c
++++ b/fs/netfs/write_issue.c
+@@ -153,12 +153,22 @@ static void netfs_prepare_write(struct netfs_io_requ=
+est *wreq,
+ 				loff_t start)
+ {
+ 	struct netfs_io_subrequest *subreq;
++	struct iov_iter *wreq_iter =3D &wreq->io_iter;
++
++	/* Make sure we don't point the iterator at a used-up folio_queue
++	 * struct being used as a placeholder to prevent the queue from
++	 * collapsing.  In such a case, extend the queue.
++	 */
++	if (iov_iter_is_folioq(wreq_iter) &&
++	    wreq_iter->folioq_slot >=3D folioq_nr_slots(wreq_iter->folioq)) {
++		netfs_buffer_make_space(wreq);
++	}
+ =
+
+ 	subreq =3D netfs_alloc_subrequest(wreq);
+ 	subreq->source		=3D stream->source;
+ 	subreq->start		=3D start;
+ 	subreq->stream_nr	=3D stream->stream_nr;
+-	subreq->io_iter		=3D wreq->io_iter;
++	subreq->io_iter		=3D *wreq_iter;
+ =
+
+ 	_enter("R=3D%x[%x]", wreq->debug_id, subreq->debug_index);
+ =
 
