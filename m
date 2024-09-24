@@ -1,91 +1,101 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB3CD8C07
-	for <oe-lkp@lists.linux.dev>; Tue, 24 Sep 2024 05:02:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32F18126C0B
+	for <oe-lkp@lists.linux.dev>; Tue, 24 Sep 2024 07:01:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.13
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727154169; cv=fail; b=hqi6iK1FiC123kjBo9Hk8ybYrDZiAHFqMieY09SceqYGy1+N5CNAdaoG6NRC9J0YSeKLYQgl9Cx8OeabHkQRiA/jfirg/2/R0ALDhpA/VgzoI0Zg8kZNinwYT3ojeNNb8wuscDF+6Mdj1RgcqNoAZKq/j9SUo56XWG6QmxVuJ6c=
+	t=1727161295; cv=fail; b=A+1H6WbcmmvycftqgumVIsAemRbMCBq6vJqJKt+Z8lqB/eXabF9efaFXG/Dsb/7oA9oY0+Ti0eJagQZqC0q9m6+AaJfJ84nWdDmOeBxbeCc+HWUOw5hKy0TQYsazmGDKIq5BMUrnV8ZsaRSBHL9Rtgg7vkRUSCLMB0ont+/CGv8=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727154169; c=relaxed/simple;
-	bh=nkcaoBoH+5twns+GwYPqP8UqKD/2uyZHqVEUw5bS8Zg=;
+	s=arc-20240116; t=1727161295; c=relaxed/simple;
+	bh=IxwDQLZtkmi4yJzIfbYlW8ahRMU95LmI8+tLoNQPyFM=;
 	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=kK1npu2faCn7mbbgJLld8PbG3YMOcp3s1JNGszWp7NeLoEIJGBX0IhPfByUpj9nG19BrxSWB+N0OyHgGTqnqa8JepGnnOZKibjA4hMWl2RP5BD37/OXvSc/dB3dkZQgHLWEL/6AX8/uczFJ96OF8/naty+bRHAxypoPs8kUjeGU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=B4f31OI1; arc=fail smtp.client-ip=198.175.65.9
+	 Content-Disposition:In-Reply-To:MIME-Version; b=YBqdlzckHUcZUgQTLb1kuxD93164Ik23VO92Zqb4dYd90cobswI+3FsNJ+odRzaqvU8MTe/3CLMDgmAvUfXRecKPxM4SAYPnZ0hDkSrKEarzbCey71FnqwC0aAqSrhsKTJBoCIMcvLZ23QenNzFyNP+oKCGF36FT/ObE4ZwH0k4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BHwi+5+0; arc=fail smtp.client-ip=192.198.163.13
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="B4f31OI1"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BHwi+5+0"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1727154167; x=1758690167;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=nkcaoBoH+5twns+GwYPqP8UqKD/2uyZHqVEUw5bS8Zg=;
-  b=B4f31OI1cQ1igYHbpTB9D6+MajA/GcMIq0h2R22dk+7dYi72SxYCjHTd
-   6HU4c+TyPQM7f0McbP3Asrlj/ImfK2qsKKqQfIwSj6E1R+wpncG8JEibS
-   BUMg1kTqycYCZ9O+kuoP+bfrVVoE9ottoTjmfnCDTFbK/H+8zrIOeEjNT
-   FA3yFusF2wEB1GfH+Ox7BEqB7nyFJ3Vv3CR3eoUaeHBzA4OvqnA0eGKAv
-   7HFX+07kDBS7SjTFjKsABUHTPbLf8ygKwPcv2TjHWpkSwOiYEDFnaNpYx
-   vBoF5i6dUrOdDkZQN7XBiD13U7pygSZOXKg7d+7uq2obAYvF8cZsW/ym/
+  t=1727161293; x=1758697293;
+  h=date:from:to:cc:subject:message-id:
+   content-transfer-encoding:in-reply-to:mime-version;
+  bh=IxwDQLZtkmi4yJzIfbYlW8ahRMU95LmI8+tLoNQPyFM=;
+  b=BHwi+5+0t2WiEXtIKnpcgh9NYiKHQNStJEiUM1s+tBxOoK0eXXdvh/oN
+   f80QMVS2qC1HKSWFnG2gAtGrVr7JufefwBkwk5thzMN+O9JQfNvuSxYVh
+   7Flnq3CujyvbXx1fd81zCHsO6KAnrheOeCW2nzY9u35QEhME8LJ5iuADh
+   yrL072INEiH2dcQp6gw4b1F+ZY6XQG/BpxT5yYSgsfR3370AP3ZlHumI/
+   sI2nT6VHpckzIis58Kyy32u7z6VOxywuSHJxXfA/nG6PUfuY/PRtVkkMW
+   6PuRrF3tM83qAaKT6QJyLwF6H7oqB2emtdiPQRz2xyywVp6COSRZ1uYBW
    w==;
-X-CSE-ConnectionGUID: +To/JpJJQW2goJza7pki9Q==
-X-CSE-MsgGUID: cBrusLyPRaq46C0made6Zg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11204"; a="48661291"
+X-CSE-ConnectionGUID: 38OvKLtdSQuGPZ2lqfQzcA==
+X-CSE-MsgGUID: AkcJ5p4cTw+qQDRwjlt4NQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11204"; a="29032694"
 X-IronPort-AV: E=Sophos;i="6.10,253,1719903600"; 
-   d="scan'208";a="48661291"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Sep 2024 22:02:45 -0700
-X-CSE-ConnectionGUID: Kl++vKuBRmCJlJbjU7r5Tg==
-X-CSE-MsgGUID: Yk5L7XeAQheuj/VB0uG4QQ==
+   d="scan'208";a="29032694"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2024 00:01:28 -0700
+X-CSE-ConnectionGUID: 6RoirQ3ASuOT+EMVLtzsAw==
+X-CSE-MsgGUID: 9nkp2mAASESovYAh7lcPHQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.10,253,1719903600"; 
-   d="scan'208";a="76065719"
+   d="scan'208";a="75420129"
 Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orviesa003.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 23 Sep 2024 22:02:43 -0700
+  by fmviesa003.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 24 Sep 2024 00:00:49 -0700
 Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
  ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Mon, 23 Sep 2024 22:02:42 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ 15.1.2507.39; Tue, 24 Sep 2024 00:00:48 -0700
+Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
+ ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Mon, 23 Sep 2024 22:02:42 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.169)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ 15.1.2507.39; Tue, 24 Sep 2024 00:00:47 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39 via Frontend Transport; Tue, 24 Sep 2024 00:00:47 -0700
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (104.47.56.47) by
+ edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Mon, 23 Sep 2024 22:02:42 -0700
+ 15.1.2507.39; Tue, 24 Sep 2024 00:00:41 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=UV3EsHbdckSxc+zxl/w/TECEa3tncaOsUhOVqJZdfzknaDTp+rVZNVGZuCUAzMJr9RrD7Rh86I5r6i7cRoXjP9nHs/60vOOp14FSdbgWZAEbeYnP1P3J9uAHeJNe5/NYV9WPI7Z5m1PM9HL5saQBkUS2p4nta5qSfDJcLLxRQKrNhqz/oBLDAnX2XTTSiefEEO1F/ivbSovifPzOHPCZTSST/3lBOt6Ulk4FnWTSHFsAxbhWxVOnqgF2CG/M++nkktlT6gTG+aYsm6VTgw4yDGnk2dLsnuB96325dTKXFBjDVXv7CgGLQecgGm5sg1foY6kx2QYT6oD2GJXrI4o9ow==
+ b=L5puXpXOVvFsq3olv1kvvM0HK8BvlqfL6tt4Amgzeq/M5nVap0L+/8YByfi4sRaBQM8GnnDIHCrvBQugg8TW4jSiNCrqcM1IGNO1o7Oz8qD7PXcXZA6oGfdjwOwhwyYvIM7cbo5cjj4n7BCG+5laJIHBK6K38w9uXww8tIgNt3A3Pbee8he2rMUyhd6VuU6sD7IeADJElVpWnkhVH1B8TRVm9Rhl+dCa8RW1BOrEOOJxRdMm1M/zy9CdzJfntiyxFLqi7G08kD5yRHZmke7r5WCJYnD/yop4NH5KUj9rmGJnZUblqQdiKviTJPwp1TfeUdZCxRsWsjRLG/8qQ6zcBw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Rb5ls3Lvra0nVQMaKaS096dQGvJC4fLpCak6/qXETdQ=;
- b=oW1xEL+vH73bgEAxZCViVZ+6Uq80D3luN3Jc7aXkay+ZVJ72BscyeI34g9TbRizE6lpka21agUpw3AU9N/VHXB5yPhLSMzGEBbigUGDtFbcHgFhjLZgFFCN8SUcftHXO5MEN/hmjxUJuAfW7PYYsKpqIV1T7OVKRORHbsoQYT5Rv2W0j1SQ1JPJCFOwhqtlBqgqmhXVzLOjl/GLoa/NIDnlyNXOsTLEinr0/9qzX6ZiyYEDWb4cKifSvp+liY75PpsNHtrMAQU4Z4/FMoW1pz0JXw5X2xPUN3PfF7G/JkYZ6vp2QvR1aXv+5GHxvkEtD7YU/6Gtz0NAG5aWpyAxsPg==
+ bh=tOI5/c/+FnFotOBlmjdSSysEr+YrbBIsLR7NV4ed9aE=;
+ b=hK4YHMNoVYBfUAPKQvVFP46XtQojvnxwUFB9GPOiu49Vd19I0bxtxjygsfOKOxfof1miarNfRdiOh9xM7kCz4ikxb8q3HCJ58hOC6NnNgijP/D+FbLovYfE3EMNOeBptoaiK48UQbP9Ral7BzFLHdVj8WNae346kJnqJq4aYsT7TqzPOh15ffptxaFa+oI5bDlNoyRUQu/MAU/IaL8sPNrvlSm+y4hbI0PJGD8VLhy6Wn6BABEi+g2zvCFx5Fj6ZWiH5L+Z180Cco7nNueGfCMkamlndVYiKFYLx9idxwSuejw0x5f62sjbSkIl3wiG6iatpijXOfew1ZaX+gvONAg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by MW4PR11MB6715.namprd11.prod.outlook.com (2603:10b6:303:20e::15) with
+ by CY8PR11MB7169.namprd11.prod.outlook.com (2603:10b6:930:90::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7982.25; Tue, 24 Sep
- 2024 05:02:40 +0000
+ 2024 07:00:39 +0000
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.7982.022; Tue, 24 Sep 2024
- 05:02:39 +0000
-Date: Tue, 24 Sep 2024 13:02:30 +0800
+ 07:00:39 +0000
+Date: Tue, 24 Sep 2024 15:00:29 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Leon Romanovsky <leon@kernel.org>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <oliver.sang@intel.com>
-Subject: [leon-rdma:dma-split-wip] [nvme]  63cdbb87e1:
- INFO:task_blocked_for_more_than#seconds
-Message-ID: <202409241232.1ba3a04e-oliver.sang@intel.com>
+To: John <therealgraysky@proton.me>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>,
+	Unknown <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>,
+	<oliver.sang@intel.com>
+Subject: Re: [PATCH] x86: add more x86-64 micro-architecture levels
+Message-ID: <202409241436.b37a069e-oliver.sang@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-X-ClientProxiedBy: SI1PR02CA0026.apcprd02.prod.outlook.com
- (2603:1096:4:1f4::11) To LV3PR11MB8603.namprd11.prod.outlook.com
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <W22JX8eWQctCiWIDKGjx4IUU4ZgYmKa1zPOZSKHHVZ74zpUEmVV1VoPMMNcyc-zhraUayW0d4d7OIUYZHuiEqllnAc1tB8DthZahsHZuw0Y=@proton.me>
+X-ClientProxiedBy: SI2PR02CA0033.apcprd02.prod.outlook.com
+ (2603:1096:4:195::20) To LV3PR11MB8603.namprd11.prod.outlook.com
  (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -94,232 +104,204 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|MW4PR11MB6715:EE_
-X-MS-Office365-Filtering-Correlation-Id: 10bb3085-8c61-4ed5-f081-08dcdc561cd5
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|CY8PR11MB7169:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3c1e6c69-1739-4671-f191-08dcdc669920
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?yGCr4hibONrcEmmN+AnxPfeDt+Gq5WwxdHI+s2SAnNVaaDy89BTHxMu+qRy6?=
- =?us-ascii?Q?GDeBS6DhRSVrMEnhf4ny9/Mjn5ensO+vjoZS8CV2AInnj+4Qa/p5+aqoSuAx?=
- =?us-ascii?Q?1516nEPWpcQRV4Q0cmSN0OUg4E0b6yN3iMP8ZZrP9Mpw7brixJn5CWhPu9Vo?=
- =?us-ascii?Q?PGK6AlpxpI4SojiWLmUTmHToCAAZGpWofuVB1IeZWVAsZ04niaVIKKoyntyf?=
- =?us-ascii?Q?6++sKP9996b1qQt3hbLA5IULgjPtcJgRpitbQi9oXGA55QzgdVq+yNlbOmOl?=
- =?us-ascii?Q?Bp5IIMiL6JHGm01kAHN3UWe3ao8wHOEevpgorpCJHmfSbCR7dzdGfZa8APrM?=
- =?us-ascii?Q?wDxaNmflNWUwOiE+YBHUTLk7VL/FQGFTvkFUaSnDLLkFulNdbzBOV+VJZVBh?=
- =?us-ascii?Q?YJYFRjHKL0hxxnRpyG/FuNrGL6M+0+4T1v74Gpj8BtZCEVIms9MfkD29v6RU?=
- =?us-ascii?Q?eC+LIoBkqNXZXcDLvcqjut+h7iJ1AnBsBW7uJMOPj8C5nxTuMYYmRZ+zI6bd?=
- =?us-ascii?Q?8FsgQvwXFgnR3ZhN4hpVTw1aH2WEpXrjGyPg6gssJ0ilyyut51/IN+bFW/7J?=
- =?us-ascii?Q?P9AuqWg00tTKMrvdRzbYHo5E7dDae9ecBjEYFwzsYkYzRVYSLGJ/EioE6cln?=
- =?us-ascii?Q?Tz/3tFJuageTsGiBAtBEW3DILT/PSkDTz4OcSBKPsls4iEGfoXqfGbaOCLxu?=
- =?us-ascii?Q?8E1k2CkC1S7AkUq8lAMRYToaK/9ht4m8uNX1NmA2Dn8INIWpQUY8QjzOCU5b?=
- =?us-ascii?Q?IPmNUoFS+K9eXMlIPbrs5Z52aOjWM6KbZOB77ug0hSkgeUiJPEzsVcHdL7cP?=
- =?us-ascii?Q?WLe/A8tK+GQTjZS9HzsQ3fakzpzl6umx1SL9jL9dIZri2oNY9KE1zWa5fPVn?=
- =?us-ascii?Q?O/rqHWGyrgGRPm5MEKYvzDeib0RO+spz53OE6de5wY7BeUm5QDSEH7H86X42?=
- =?us-ascii?Q?0Jfxd+/FDa3gfB7g+DxphiCt0ZdP4wV6f+3fy9NgmSnnPKl2xM+hRLRt4UrU?=
- =?us-ascii?Q?xWaA4UAc7dffC3siG6SzqnjwpQ5oQhQgoPkfJcL+/RsJl41xaRN6lVwaIHPZ?=
- =?us-ascii?Q?3BvOx6Ihb8zeZqrqjzr9zxpzdfhxzVNG9LsQvdkaSJSH0CwOHkWqZe1crluC?=
- =?us-ascii?Q?6PaJ5EPPMuag4bjYSgYPc30Zm5CKbjiAHpS1+wQyj2u3qZ+PQE0XYWWen2rC?=
- =?us-ascii?Q?WjhK5wsfl5YAw15sYB0M7W2uXfrJtWbH2oer3/1UGhejbEmDRR5Ey9nzUJ7j?=
- =?us-ascii?Q?2rKw3ub1nEeUzSrIS3XhSlM1zVj1MIQcDbXJD4q+HuC1qsAI8SuzK1dpptYA?=
- =?us-ascii?Q?r5aGVKCe4WSgZZQdnLlRd1rBU6M+k6PVPtklBUTcE+MrfNg8NlVjk8mN6pGG?=
- =?us-ascii?Q?AV2kx+E=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?yPqr/Nh+MhfHGIYnhu0Gs3Snfcnp8GDtszW1Kyw5z62UJhIVAQOpyAMFuE4F?=
+ =?us-ascii?Q?Hs6K55NSGFsPY2s18dr4sLl0oOoFcKv/iZPu9sDhI1ejPaOMPk9V+2I77TKa?=
+ =?us-ascii?Q?Gwo6TLuG+W6iJ+AfVmN2BFc+CC97rNWzsylQVq9PEnLnCj1+oMc9ty+FH6dX?=
+ =?us-ascii?Q?RUpZNSUtkABal6xHiKclcsBnurX3GMi0lYZHqmYKrRaIv+sqIFhlJpq0y0R8?=
+ =?us-ascii?Q?qI6ParMqikpWeAy2qUP9pAJWrZKUfVYjbLn99+bz3d/k0HEQurW+xFaGtqMZ?=
+ =?us-ascii?Q?F2bbC8ppKgsceoO2jTKafM6hxzoBCxGDxmYkyCqMKzbu2lifGYsr7igGivQW?=
+ =?us-ascii?Q?B20tKahSRgSv/rtnhtiisQaNqAGsdFZln3iNfy/FKRMtTM7VwDSQ7/LgYOLB?=
+ =?us-ascii?Q?KR7+LGMY7a+ctocWit08PrC/4n7YVSS1HNjM88fx6JkVd5vhHnWGQc+a5wfo?=
+ =?us-ascii?Q?r/ZZ4Iq8w4exKS2UF1skjvZrjKO/EDGPrQGPvgP0uXeZAKxb9Kz+BM2DoL/w?=
+ =?us-ascii?Q?Tr8+K222VHRbnsUaAMwsBg61aKTEl75BNs5YrMgv7hQ9uPgloftMkakLZIJN?=
+ =?us-ascii?Q?raRixlwPxuBSooxOjLGt4qKdFYMb/2aPnIY0+cftXmmBvYKoX9F3jWEq7eB0?=
+ =?us-ascii?Q?g2RSJjSD1LxDLNI9pmIiUMbLTwvHfomRb+SvF/7RMCeNrT8g/kp/tnk/znT9?=
+ =?us-ascii?Q?Z49YcbZ3Tm4guuFTi9FTvL04hU7hGhn0QwpeG1TAs48RRDHNe0YqFi88uj/t?=
+ =?us-ascii?Q?k2RcXclnkCx4Knn8+CtIsfutf5JtN7QAFl7dER+xIyoLYpO1ySchD00cVIyp?=
+ =?us-ascii?Q?8peZS4C1F3d48/mDzw6zpUm/bQoP+p8bNFfXWnGy4FtMdRj615c4a1B5pOU4?=
+ =?us-ascii?Q?X2ywarCNqgSbBy68gsdjmxNJkuQFVFGLPesD2peZNPAzMGRI87mYUeS/J+dm?=
+ =?us-ascii?Q?00Ixz6Bxk6OAheBd/YG9NoRxFXROD80lxMl8N7DsYB4v9p0o/ANgifsAsVcd?=
+ =?us-ascii?Q?Lle6iTQUeh9Bp7HIgrl5pC1UCuYBjncZ8BZRtzIEPSlJHXaUo97Um9w8Kmj1?=
+ =?us-ascii?Q?qExIJhg0yyaZP6bx+Q3CWjwe4ViWfzutDtSkPxESdUqOHIohAW1JY1mVktIj?=
+ =?us-ascii?Q?Jmxq5xo1+1lnl3nik24Zg9whuf4xXVCT5W/pTk2qMDl1M7jyhg7XBCAjWQFI?=
+ =?us-ascii?Q?dWeZkMSDnBL1U9aoLfcu/p8a1Pa3alrASBrTq75AM2Vm4npbHxVRMahBxqFz?=
+ =?us-ascii?Q?WJ+LNXDBOd74SML0X1+0U4TixFTl/jSWCK7MbULct0CejPMqn/XhyqBk/QEM?=
+ =?us-ascii?Q?DL8=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?VMiFfahnCKta8drYU2J2uyH3avL2PJ6t8M5MNvBnDAU2O7dk0viHbPEptQWI?=
- =?us-ascii?Q?Rk8jFNeiD2sutBQnL2qDqcmjZTY1ehLnWEkUCyhGgXHes7DoKiPgwUixDTIx?=
- =?us-ascii?Q?u7m7V1fqUavyGbgph5htdS0uNpyl2hyTSeuP80pxRpgkKa+8IbCPBUeqe0QI?=
- =?us-ascii?Q?WO4/JCr8DNkin3Fc4wY6TeC/QM7LCa3fPG5+liZIJS1xTxHPYeRDxTSZeXvx?=
- =?us-ascii?Q?rFYT3S/lH4eV6ORcDpF3jVgR2nTFvyfWMe76+p6lJLyMoX2IhMiY+0TJ4fFu?=
- =?us-ascii?Q?B5fX73MAO+drQxcNbXzo02qJT6wEf40s8vqxRKwBwYMc0PRCxXqUn9AHY/jt?=
- =?us-ascii?Q?k1WLl6GK47AeFHrgdowoS0/1bCh0E7EI7AUaYTUcjkJ8cj8JXlEKnzfvz5WW?=
- =?us-ascii?Q?9WfU1dnqur6NLPjVn15KUMRYtn5lZItuKcjCjgH0jGlYRd48QkI2ahMH4ps2?=
- =?us-ascii?Q?JV1OO9gnZ0T9uNarZ9cDRr7QHUQm3pNkoO7m8M2IxsLyq+PRm9C3LZPkTkWI?=
- =?us-ascii?Q?gEgu/+H54VAAJjgoE+SMVRlWIU6MYng/7NVfl1LlgptyeSe0isnQeNAhkcyg?=
- =?us-ascii?Q?Jdlwi4S5R6atDDElq+cBSmXNGpAHkuhGhmRmxhpmEXgjECEgjDRCOzdETywe?=
- =?us-ascii?Q?y4R+N3w15eFN20YbJmCnsBBRxp5yE3IQS8yGf00BtYNikhNWHK8vDBTc8oz/?=
- =?us-ascii?Q?z2uDfecZnO59n+gr9Lyz1pNRIP7sgttsEKMaA4n+LJ33pE/jLEsv1ddlVORW?=
- =?us-ascii?Q?EBuYLFsrYs+jnsGOq3fpR9RlsByft9zHLMtV3z+QYvEnxVgm1IqvFYNIad1a?=
- =?us-ascii?Q?rGuQdZtiMS0uoboTzJ65wBZRO1r8ioajSuN0dcGhbUl7FW2SaqaxDIQm8JSJ?=
- =?us-ascii?Q?PbxvPIQNcXoxVccOmIErAhgT4RzFlIulvMClLuQTUWG7y9PGU100FBCgPE+u?=
- =?us-ascii?Q?r9uCXIxU2efep5iFJEnc1Y/PhNdZVofBpxH//pTMhjxQoihUOTCd8ncxbNIy?=
- =?us-ascii?Q?yudzSNCjSlsYHj89CwgyX49vfgcoQtpRJ7u3Ebj1pt1hIYukGM/0DuDJ25CL?=
- =?us-ascii?Q?q28tc094Uv1aWSMnnpqg5NvnJDp+VrjN5bH/WvBbEYiieBZatkFOH89xPlD/?=
- =?us-ascii?Q?/O7Z87XziXcfpssG31i1wL8bxRj3NdnZfuKx0bBWlIR6p+wyHe1/Apm9zSxH?=
- =?us-ascii?Q?EFYFjoKV7yZTlhojQBN4GoqAAG55wRbXB2e/6Tjtjjzv40Rv71OgV5Jz/vSa?=
- =?us-ascii?Q?7ZEQiyXInyESMD0MVe5HJaB3e3SHrYRPFclY/0nlZX9T/7qwj7R3fzV4PLpb?=
- =?us-ascii?Q?nc5mSddXO3R1tb2NdCqGBQ0P2RfrcMEEGVZARqXkN1LzFdE6T6OytmpG4wXF?=
- =?us-ascii?Q?BqLMRPv1HEFDX1gv+jNuzFqrhOrQA/lzotCJodGeZCv+uxxJWnB/r9EgNJXz?=
- =?us-ascii?Q?6w5R+0GX5n6QJGNm3fNRrdRI7lk7Vf9PDMsW992Z2AkT+3RrIOAqBeebwlBB?=
- =?us-ascii?Q?q3RLF2SpkFxAs+m7xqoPMpSfC7mznHnc+JTNyAE+L2Uvt91KBLDGhiILOchl?=
- =?us-ascii?Q?lzNABVOBLu2jZ7fYMJR4F/KVom441oId4ohJqM7rSCzYs2UIRqe/L0YQUFWo?=
- =?us-ascii?Q?0w=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 10bb3085-8c61-4ed5-f081-08dcdc561cd5
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0AkLx543BRuDvvyoMfR93ITfxg838c7rnX/3xc7rTVKS+U8Pru6RELCT36L8?=
+ =?us-ascii?Q?0zr/FzPEKqhAWWWDwd2dMDqOeQFif5GUd2w5z4VkfuM1Hmx4SruFEAz6nT5d?=
+ =?us-ascii?Q?Ojco2XsJP3vki3TrRow/EcVt6LJIs3vIGK2jUOOZjuVmRQxwHf2qx5OB8QMO?=
+ =?us-ascii?Q?VJUDDVFWMM4wPbY085m4mKjmdY2NY2AMW1AxsRAX/V9BX5MgKXwRi2A9Chgu?=
+ =?us-ascii?Q?OcHVbOJuQsMZhfb2+g2UB0KUO1Md0JyK8QDVnr1ONJhgSe1rRotvFO4h98gR?=
+ =?us-ascii?Q?/I6aNv17UfVLGXgUeRrtjlFqkGTsm/23esYrwRv0vknJXzx3VeZWDLXvemKM?=
+ =?us-ascii?Q?A4EUdn8MK3MHgxN809yc8e7xWBMjLY8bvemXTpZxeYpHAkaUotLNwiMY9dzR?=
+ =?us-ascii?Q?yPi+5CYcUcYNpVvHRml6lIFYrZr1jqSFRzyUBB/YNGRpnE5o84oLnbmQ3XEn?=
+ =?us-ascii?Q?8H4OPjzLk4Hil4djCaVQj0wZ5JAgFwbiUu9JoHBV+EvELo5Dj0uZkpD+qvYP?=
+ =?us-ascii?Q?O+EVb6GIAKL2InKqJKbIyONZjomPo2SEpBQEi3bUSrPuuF5hKdHiPL5KWLie?=
+ =?us-ascii?Q?D6c0VZRJcPKSEq2yeYaa6TP5RPnlOr0VsMgdlv1p9hCr6KUkwKgAvNKf3b/F?=
+ =?us-ascii?Q?TC6hbS3ZJMYObzOOpiHpzqezrgQuUfd7JCW6CLe6Qz4CUH2mbXAQSNFJSQYj?=
+ =?us-ascii?Q?UM4YjI1cm99YJc625Pf4bHvBh9uLHY0m4f8vGFwJZeUIA7axg2sHkZ+NE7c0?=
+ =?us-ascii?Q?mz8M+fd+H4GdIJm0FcwcE/hRKhK59RBh7h42HunRAJsEmLl5lq1pj4oUFs8o?=
+ =?us-ascii?Q?mm9u9hKvV9G6Yf9htaE7K+2nBU7r3uwVGFXsNy/bIeKW4yqsGOp493aAZkMu?=
+ =?us-ascii?Q?W3jZ3TYPJ2zhqG3etNLZiVAhJTAgl8o1Fv08cZaaTCwfKYLMqtqr3GX7EHta?=
+ =?us-ascii?Q?w0iXjM5wOFvw7U2z8N6YeSFYO6aTk8QzDPdtTGFLt0y26zQqOIX7BJ2uy8sy?=
+ =?us-ascii?Q?OV52LYU9DpCpqKfpVvE6gadCOCdXM5+qCmolMeb0NtUT2PpPc3xwrq5+zQ4M?=
+ =?us-ascii?Q?ZhbDWyqr90qFU9mKDLYZ12GQSQ4suvi049HUuC3frwHKh/jYkQKfaLOVwmN3?=
+ =?us-ascii?Q?DWtIa4JPfnc5zyiSDBdfPPK3oSywu86zW0qyE4//ZUXzvjentlPtRfl1IirH?=
+ =?us-ascii?Q?ZCIIY0NDiZRMCF5fXtBOQKIW+svIL1665ivcMnGAz7zXS5E1mD7pz+gP5eh7?=
+ =?us-ascii?Q?ErCXoN43HNVsxz1fMPv7Erwysytr+zhakW9T4GgrI9im0M0E8mBGGAtohAjg?=
+ =?us-ascii?Q?nGKk46HHNHllWYgddPLXPY5EYzi13l/DxzSKvFFsrjnJlwQPAOcnv9M77GU7?=
+ =?us-ascii?Q?64Ie54ranLge2d33sTbe3+oj6xrJxNM3SkO3D37a1b3mT6IeDnIg+caoa0PP?=
+ =?us-ascii?Q?SsJOmNkeN8bfg5DaoNSFdaFk8JhxPWoJaJn3NDg1N6xOqY7uWfAIhdb8BDg0?=
+ =?us-ascii?Q?Q91YHh+z0Byu7t6bI5QESCHPnxoyHaMHc0GknM4XlwSIhI8t1hlkLfFQb4/H?=
+ =?us-ascii?Q?g5EmTbpjESri+Kj19a2XhTh99bIjDqnf1dfiYerLqNJzj7RAkKFcfFtNarSU?=
+ =?us-ascii?Q?cw=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3c1e6c69-1739-4671-f191-08dcdc669920
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Sep 2024 05:02:39.0204
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Sep 2024 07:00:39.6978
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MAgl0/DIb5T3f/3QhHZjgiNcBiOlJi+iIu53tzMxBI8utviglZ0KV2lM2YP598xtkh2i4+NraVICrDGDmks2Qg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR11MB6715
+X-MS-Exchange-CrossTenant-UserPrincipalName: qNutle8I3m05nbIoaxsfUa2m89YKvbSgTtUFjQBc34ZTapE4qp+xNSnY0l/dHyM3N7YKgT4Ab0o5J+4j1ue80w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR11MB7169
 X-OriginatorOrg: intel.com
+
+
+hi,
+
+we don't have enough knowledge how this commit causing the random early cra=
+sh
+issue as report below.
+
+we noticed the config has below diff comparing to parent.
+
+--- /pkg/linux/x86_64-randconfig-016-20240921/clang-18/70ad4cfb4d4a9f97afd7=
+ba12ae5c4a62e719aa44/.config 2024-09-23 14:10:14.423097567 +0800
++++ /pkg/linux/x86_64-randconfig-016-20240921/clang-18/178c2862ab0388f7de1c=
+a23b7b4718e09d8acc24/.config 2024-09-23 13:13:36.831871815 +0800
+@@ -350,14 +350,19 @@ CONFIG_PVH=3Dy
+ CONFIG_PARAVIRT_CLOCK=3Dy
+ # CONFIG_JAILHOUSE_GUEST is not set
+ CONFIG_ACRN_GUEST=3Dy
+-CONFIG_MK8=3Dy
++# CONFIG_MK8 is not set
+ # CONFIG_MPSC is not set
+ # CONFIG_MCORE2 is not set
+ # CONFIG_MATOM is not set
+ # CONFIG_GENERIC_CPU is not set
++# CONFIG_MAMD_CPU_V2 is not set
++# CONFIG_MAMD_CPU_V3 is not set
++CONFIG_MAMD_CPU_V4=3Dy
++# CONFIG_MINTEL_CPU_V2 is not set
++# CONFIG_MINTEL_CPU_V3 is not set
++# CONFIG_MINTEL_CPU_V4 is not set
+ CONFIG_X86_INTERNODE_CACHE_SHIFT=3D6
+ CONFIG_X86_L1_CACHE_SHIFT=3D6
+-CONFIG_X86_INTEL_USERCOPY=3Dy
+ CONFIG_X86_USE_PPRO_CHECKSUM=3Dy
+ CONFIG_X86_TSC=3Dy
+ CONFIG_X86_HAVE_PAE=3Dy
+
+
+early crash happens 70 times out of 500 runs.
+for parent, keeps clean when we run same tests almost 1000 times.
+
+70ad4cfb4d4a9f97 178c2862ab0388f7de1ca23b7b4
+---------------- ---------------------------
+       fail:runs  %reproduction    fail:runs
+           |             |             |
+           :991          7%          70:500   dmesg.BUG:kernel_failed_in_ea=
+rly-boot_stage,last_printk:early_console_in_setup_code
+
+just FYI what we observed in our tests.
 
 
 
 Hello,
 
-kernel test robot noticed "INFO:task_blocked_for_more_than#seconds" on:
+kernel test robot noticed "BUG:kernel_failed_in_early-boot_stage,last_print=
+k:early_console_in_setup_code" on:
 
-commit: 63cdbb87e1b08464705fa343b65e561eb3abd5f9 ("nvme-pci: don't allow mapping of bvecs with offset")
-https://git.kernel.org/cgit/linux/kernel/git/leon/linux-rdma.git dma-split-wip
+commit: 178c2862ab0388f7de1ca23b7b4718e09d8acc24 ("[PATCH] x86: add more x8=
+6-64 micro-architecture levels")
+url: https://github.com/intel-lab-lkp/linux/commits/John/x86-add-more-x86-6=
+4-micro-architecture-levels/20240915-190636
+base: https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git 70ad4cfb4d4a=
+9f97afd7ba12ae5c4a62e719aa44
+patch link: https://lore.kernel.org/all/W22JX8eWQctCiWIDKGjx4IUU4ZgYmKa1zPO=
+ZSKHHVZ74zpUEmVV1VoPMMNcyc-zhraUayW0d4d7OIUYZHuiEqllnAc1tB8DthZahsHZuw0Y=3D=
+@proton.me/
+patch subject: [PATCH] x86: add more x86-64 micro-architecture levels
 
-in testcase: will-it-scale
-version: will-it-scale-x86_64-75f66e4-1_20240303
+in testcase: trinity
+version: trinity-i386-abe9de86-1_20230429
 with following parameters:
 
-	nr_task: 100%
-	mode: process
-	test: read4
-	cpufreq_governor: performance
+	runtime: 300s
+	group: group-04
+	nr_groups: 5
 
 
 
-compiler: gcc-12
-test machine: 104 threads 2 sockets (Skylake) with 192G memory
+compiler: clang-18
+test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
 
 (please refer to attached dmesg/kmsg for entire log/backtrace)
 
 
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
+If you fix the issue in a separate patch/commit (i.e. not just a new versio=
+n of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202409241232.1ba3a04e-oliver.sang@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202409241436.b37a069e-oliver.sang@=
+intel.com
 
 
-[  991.214711][  T716] INFO: task (udev-worker):1511 blocked for more than 491 seconds.
-[  991.222522][  T716]       Tainted: G S                 6.11.0-rc6-00026-g63cdbb87e1b0 #1
-[  991.230626][  T716] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-[  991.239176][  T716] task:(udev-worker)   state:D stack:0     pid:1511  tgid:1511  ppid:991    flags:0x00004006
-[  991.249205][  T716] Call Trace:
-[  991.252377][  T716]  <TASK>
-[ 991.255185][ T716] __schedule (kernel/sched/core.c:5188 kernel/sched/core.c:6529) 
-[ 991.259410][ T716] schedule (arch/x86/include/asm/bitops.h:206 arch/x86/include/asm/bitops.h:238 include/linux/thread_info.h:184 include/linux/sched.h:2084 kernel/sched/core.c:6608 kernel/sched/core.c:6621) 
-[ 991.263263][ T716] io_schedule (kernel/sched/core.c:7376 kernel/sched/core.c:7402) 
-[ 991.267373][ T716] folio_wait_bit_common (mm/filemap.c:1299) 
-[ 991.272548][ T716] ? __pfx_wake_page_function (mm/filemap.c:1115) 
-[ 991.277965][ T716] truncate_inode_pages_range (mm/truncate.c:398) 
-[ 991.283576][ T716] blkdev_flush_mapping (block/bdev.c:48 block/bdev.c:65 block/bdev.c:665) 
-[ 991.288484][ T716] blkdev_put_whole (block/bdev.c:671) 
-[ 991.293024][ T716] bdev_release (block/bdev.c:1097) 
-[ 991.297305][ T716] blkdev_release (block/fops.c:640) 
-[ 991.301675][ T716] __fput (fs/file_table.c:422) 
-[ 991.305443][ T716] task_work_run (kernel/task_work.c:228 (discriminator 1)) 
-[ 991.309725][ T716] do_exit (kernel/exit.c:883) 
-[ 991.313661][ T716] do_group_exit (kernel/exit.c:1013) 
-[ 991.317940][ T716] get_signal (kernel/signal.c:2917) 
-[ 991.322135][ T716] ? vfs_read (include/linux/sched/xacct.h:14 fs/read_write.c:481) 
-[ 991.326328][ T716] arch_do_signal_or_restart (arch/x86/kernel/signal.c:310) 
-[ 991.331743][ T716] syscall_exit_to_user_mode (kernel/entry/common.c:111 include/linux/entry-common.h:328 kernel/entry/common.c:207 kernel/entry/common.c:218) 
-[ 991.337244][ T716] do_syscall_64 (arch/x86/entry/common.c:102) 
-[ 991.341618][ T716] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130) 
-[  991.347383][  T716] RIP: 0033:0x7fa1618f619d
-[  991.351669][  T716] RSP: 002b:00007ffc004d8bf8 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
-[  991.359942][  T716] RAX: 0000000000001000 RBX: 000055de2c05e2f0 RCX: 00007fa1618f619d
-[  991.367785][  T716] RDX: 0000000000040000 RSI: 00007fa1604fc038 RDI: 000000000000000f
-[  991.375623][  T716] RBP: 0000000000040000 R08: 00000000ffffffff R09: 0000000000000000
-[  991.383465][  T716] R10: 0000000000000022 R11: 0000000000000246 R12: 00007fa1604fc010
-[  991.391307][  T716] R13: 0000000000040000 R14: 000055de2c05e348 R15: 00007fa1604fc028
-[  991.399143][  T716]  </TASK>
-[  991.403369][  T716] INFO: task sync:13135 blocked for more than 491 seconds.
-[  991.410753][  T716]       Tainted: G S                 6.11.0-rc6-00026-g63cdbb87e1b0 #1
-[  991.419177][  T716] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-[  991.428027][  T716] task:sync            state:D stack:0     pid:13135 tgid:13135 ppid:2334   flags:0x00000002
-[  991.438340][  T716] Call Trace:
-[  991.441798][  T716]  <TASK>
-[ 991.444898][ T716] __schedule (kernel/sched/core.c:5188 kernel/sched/core.c:6529) 
-[ 991.449387][ T716] schedule (arch/x86/include/asm/bitops.h:206 arch/x86/include/asm/bitops.h:238 include/linux/thread_info.h:184 include/linux/sched.h:2084 kernel/sched/core.c:6608 kernel/sched/core.c:6621) 
-[ 991.453520][ T716] schedule_preempt_disabled (kernel/sched/core.c:6680) 
-[ 991.459128][ T716] __mutex_lock+0x33e/0x630 
-[ 991.464812][ T716] sync_bdevs (arch/x86/include/asm/atomic.h:23 include/linux/atomic/atomic-arch-fallback.h:457 include/linux/atomic/atomic-instrumented.h:33 block/bdev.c:1241) 
-[ 991.469185][ T716] ksys_sync (fs/sync.c:106) 
-[ 991.473377][ T716] __do_sys_sync (fs/sync.c:115) 
-[ 991.477826][ T716] do_syscall_64 (arch/x86/entry/common.c:52 arch/x86/entry/common.c:83) 
-[ 991.482447][ T716] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130) 
-[  991.488449][  T716] RIP: 0033:0x7f5cc5aaeb97
-[  991.492981][  T716] RSP: 002b:00007fffc8136128 EFLAGS: 00000206 ORIG_RAX: 00000000000000a2
-[  991.501501][  T716] RAX: ffffffffffffffda RBX: 00007fffc8136288 RCX: 00007f5cc5aaeb97
-[  991.509576][  T716] RDX: 00007f5cc5b8a201 RSI: 00007fffc8136288 RDI: 00007f5cc5b47794
-[  991.517653][  T716] RBP: 0000000000000001 R08: 0000000000000000 R09: 0000000000000000
-[  991.525729][  T716] R10: 00007f5cc59b9278 R11: 0000000000000206 R12: 0000000000000000
-[  991.533817][  T716] R13: 00005655151e00fb R14: 0000000000000000 R15: 00005655151e2ce0
-[  991.541895][  T716]  </TASK>
-[ 1482.734605][  T716] INFO: task (udev-worker):1511 blocked for more than 983 seconds.
-[ 1482.742610][  T716]       Tainted: G S                 6.11.0-rc6-00026-g63cdbb87e1b0 #1
-[ 1482.750947][  T716] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-[ 1482.759741][  T716] task:(udev-worker)   state:D stack:0     pid:1511  tgid:1511  ppid:991    flags:0x00004006
-[ 1482.770014][  T716] Call Trace:
-[ 1482.773412][  T716]  <TASK>
-[ 1482.776471][ T716] __schedule (kernel/sched/core.c:5188 kernel/sched/core.c:6529) 
-[ 1482.780905][ T716] schedule (arch/x86/include/asm/bitops.h:206 arch/x86/include/asm/bitops.h:238 include/linux/thread_info.h:184 include/linux/sched.h:2084 kernel/sched/core.c:6608 kernel/sched/core.c:6621) 
-[ 1482.785018][ T716] io_schedule (kernel/sched/core.c:7376 kernel/sched/core.c:7402) 
-[ 1482.789370][ T716] folio_wait_bit_common (mm/filemap.c:1299) 
-[ 1482.794787][ T716] ? __pfx_wake_page_function (mm/filemap.c:1115) 
-[ 1482.800466][ T716] truncate_inode_pages_range (mm/truncate.c:398) 
-[ 1482.806331][ T716] blkdev_flush_mapping (block/bdev.c:48 block/bdev.c:65 block/bdev.c:665) 
-[ 1482.811491][ T716] blkdev_put_whole (block/bdev.c:671) 
-[ 1482.816296][ T716] bdev_release (block/bdev.c:1097) 
-[ 1482.820838][ T716] blkdev_release (block/fops.c:640) 
-[ 1482.825465][ T716] __fput (fs/file_table.c:422) 
-[ 1482.829501][ T716] task_work_run (kernel/task_work.c:228 (discriminator 1)) 
-[ 1482.834038][ T716] do_exit (kernel/exit.c:883) 
-[ 1482.838202][ T716] do_group_exit (kernel/exit.c:1013) 
-[ 1482.842717][ T716] get_signal (kernel/signal.c:2917) 
-[ 1482.847159][ T716] ? vfs_read (include/linux/sched/xacct.h:14 fs/read_write.c:481) 
-[ 1482.851597][ T716] arch_do_signal_or_restart (arch/x86/kernel/signal.c:310) 
-[ 1482.857258][ T716] syscall_exit_to_user_mode (kernel/entry/common.c:111 include/linux/entry-common.h:328 kernel/entry/common.c:207 kernel/entry/common.c:218) 
-[ 1482.862997][ T716] do_syscall_64 (arch/x86/entry/common.c:102) 
-[ 1482.867607][ T716] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130) 
-[ 1482.873606][  T716] RIP: 0033:0x7fa1618f619d
-[ 1482.878124][  T716] RSP: 002b:00007ffc004d8bf8 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
-[ 1482.886629][  T716] RAX: 0000000000001000 RBX: 000055de2c05e2f0 RCX: 00007fa1618f619d
-[ 1482.894694][  T716] RDX: 0000000000040000 RSI: 00007fa1604fc038 RDI: 000000000000000f
-[ 1482.902765][  T716] RBP: 0000000000040000 R08: 00000000ffffffff R09: 0000000000000000
-[ 1482.910837][  T716] R10: 0000000000000022 R11: 0000000000000246 R12: 00007fa1604fc010
-[ 1482.918914][  T716] R13: 0000000000040000 R14: 000055de2c05e348 R15: 00007fa1604fc028
-[ 1482.926993][  T716]  </TASK>
-[ 1482.930120][  T716] INFO: task sync:13135 blocked for more than 983 seconds.
-[ 1482.937434][  T716]       Tainted: G S                 6.11.0-rc6-00026-g63cdbb87e1b0 #1
-[ 1482.945782][  T716] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-[ 1482.954571][  T716] task:sync            state:D stack:0     pid:13135 tgid:13135 ppid:2334   flags:0x00000002
-[ 1482.964844][  T716] Call Trace:
-[ 1482.968271][  T716]  <TASK>
-[ 1482.971340][ T716] __schedule (kernel/sched/core.c:5188 kernel/sched/core.c:6529) 
-[ 1482.975802][ T716] schedule (arch/x86/include/asm/bitops.h:206 arch/x86/include/asm/bitops.h:238 include/linux/thread_info.h:184 include/linux/sched.h:2084 kernel/sched/core.c:6608 kernel/sched/core.c:6621) 
-[ 1482.979901][ T716] schedule_preempt_disabled (kernel/sched/core.c:6680) 
-[ 1482.985483][ T716] __mutex_lock+0x33e/0x630 
-[ 1482.991147][ T716] sync_bdevs (arch/x86/include/asm/atomic.h:23 include/linux/atomic/atomic-arch-fallback.h:457 include/linux/atomic/atomic-instrumented.h:33 block/bdev.c:1241) 
-[ 1482.995515][ T716] ksys_sync (fs/sync.c:106) 
-[ 1482.999703][ T716] __do_sys_sync (fs/sync.c:115) 
-[ 1483.004143][ T716] do_syscall_64 (arch/x86/entry/common.c:52 arch/x86/entry/common.c:83) 
-[ 1483.008751][ T716] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130) 
-[ 1483.014751][  T716] RIP: 0033:0x7f5cc5aaeb97
-[ 1483.019271][  T716] RSP: 002b:00007fffc8136128 EFLAGS: 00000206 ORIG_RAX: 00000000000000a2
-[ 1483.027786][  T716] RAX: ffffffffffffffda RBX: 00007fffc8136288 RCX: 00007f5cc5aaeb97
-[ 1483.035864][  T716] RDX: 00007f5cc5b8a201 RSI: 00007fffc8136288 RDI: 00007f5cc5b47794
-[ 1483.043934][  T716] RBP: 0000000000000001 R08: 0000000000000000 R09: 0000000000000000
-[ 1483.052014][  T716] R10: 00007f5cc59b9278 R11: 0000000000000206 R12: 0000000000000000
-[ 1483.060095][  T716] R13: 00005655151e00fb R14: 0000000000000000 R15: 00005655151e2ce0
-[ 1483.068176][  T716]  </TASK>
+early console in setup code
+convert early boot stage from hang to failed
+BUG: kernel failed in early-boot stage, last printk: early console in setup=
+ code
+Linux version 6.11.0-rc7-00546-g178c2862ab03 #1
+Command line: ip=3D::::vm-meta-98::dhcp root=3D/dev/ram0 RESULT_ROOT=3D/res=
+ult/trinity/group-04-5-300s/vm-snb/debian-11.1-i386-20220923.cgz/x86_64-ran=
+dconfig-016-20240921/clang-18/178c2862ab0388f7de1ca23b7b4718e09d8acc24/454 =
+BOOT_IMAGE=3D/pkg/linux/x86_64-randconfig-016-20240921/clang-18/178c2862ab0=
+388f7de1ca23b7b4718e09d8acc24/vmlinuz-6.11.0-rc7-00546-g178c2862ab03 branch=
+=3Dlinux-devel/devel-hourly-20240921-005829 job=3D/lkp/jobs/scheduled/vm-me=
+ta-98/trinity-group-04-5-300s-debian-11.1-i386-20220923.cgz-x86_64-randconf=
+ig-016-20240921-178c2862ab03-20240923-37395-1iv09pj-434.yaml user=3Dlkp ARC=
+H=3Dx86_64 kconfig=3Dx86_64-randconfig-016-20240921 commit=3D178c2862ab0388=
+f7de1ca23b7b4718e09d8acc24 intremap=3Dposted_msi vmalloc=3D256M initramfs_a=
+sync=3D0 page_owner=3Don carrier_timeout=3D60 max_uptime=3D1200 LKP_SERVER=
+=3Dinternal-lkp-server selinux=3D0 debug apic=3Ddebug sysrq_always_enabled =
+rcupdate.rcu_cpu_stall_timeout=3D100 net.ifnames=3D0 printk.devkmsg=3Don pa=
+nic=3D-1 softlockup_panic=3D1 nmi_watchdog=3Dpanic oops=3Dpanic load_ramdis=
+k=3D2 prompt_ramdisk=3D0 drbd.minor_count=3D8 systemd.log_level=3Derr ignor=
+e_loglevel console=3Dtty0 earlyprintk=3DttyS0,115200 console=3DttyS0,115200=
+ vga=3Dnormal rw rcuperf.shutdown=3D0 rcuscale.shutdown=3D0 refscale.shutdo=
+wn=3D0 watchdog_thresh=3D240 audit=3D0 kunit.enable=3D0 ia32_emulation=3Don=
+ riscv_isa_fallback=3D1
+
+Kboot worker: lkp-worker22
+Elapsed time: 600
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20240924/202409241232.1ba3a04e-oliver.sang@intel.com
+https://download.01.org/0day-ci/archive/20240924/202409241436.b37a069e-oliv=
+er.sang@intel.com
 
 
 
--- 
+--=20
 0-DAY CI Kernel Test Service
 https://github.com/intel/lkp-tests/wiki
 
