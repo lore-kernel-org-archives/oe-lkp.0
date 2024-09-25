@@ -1,390 +1,212 @@
-Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DE9D13CABC;
-	Tue, 24 Sep 2024 23:19:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B794139579;
+	Wed, 25 Sep 2024 08:57:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727219985; cv=none; b=a7UhdRhF1Bk2v/l4E23WvDYS5Q9p63RIIgP2QZbwe9pDzGZj7Qw6uF/eBPQB0/XJj7yDwPBZgaz5nmHkb7o//TAOZmOi0Rj8AXqq45+9gMzAEKiCE9GXjc47+RbvIpW136TuFk8uFHxqa5PoYBd9XTOEdOS837ypridNeJb14SI=
+	t=1727254668; cv=none; b=sDvC7ulaeYe4Z+1yQ8cmNW8HRCKIUBfgxHhZNw/OsazWDM89itl2UXheXxyKnOIvWqMgmCMFMmobYSR4S23VxHEVSTwvKMYKk4XIMX7svy3pYNooEDNKCH3U87aPBHEYCmH8UVWVtjw+ml5QV+r78DenZTWAJ1k5MQT3CglSOUk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727219985; c=relaxed/simple;
-	bh=D0J4El+jf0Gg3JAGsNbKAHpgLLeU9H2tpzo8EArf3cM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=C3r+NM1z8wfYOwAeOzwAN7i/vNxOmANDnlV5YiR6Px1VpECpux4qohlKibz7IvayPBLelp0VprMK6hwipUkJHjgUAd0a9DKG/tfL4P07FTg4vk5b3VYcngQq2qZ1Mci9UgZc6KGN1jyOhT2hzi5s71ecX+bPmsaQrXflAflWz/g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SqsEWqNO; arc=none smtp.client-ip=209.85.167.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1727254668; c=relaxed/simple;
+	bh=TjqXMgitC9Pb+7QWCcSVpW7ReibhPwGxQoiUmqKDXp0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DU9hrOvZb5Y5N0cyGh5sdJsdyRV/9cWtCMzAU3+0j/hty4/tTnJPayWR9rgLEPOU1y+F2m760c/5+uy1+kczK2gg3I32ErGszB2EexLpZZXyp5EUddyyU537m/Ng2zJKiYJYhSfNI4RQ7CBMnUz8FpURThEffUvZGdLFa51CGoA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WHPJJiQ5; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SqsEWqNO"
-Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-5365c060f47so7205667e87.2;
-        Tue, 24 Sep 2024 16:19:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1727219981; x=1727824781; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=zqgkO9umAcljezxbBhTinw4cVNyUsl7JtTdhMvNKcDM=;
-        b=SqsEWqNOIjoEnavXCoRjvMAQAeWPksGSfw8dtrBJO5JpEPrOatOc8niZlCjg1Qvsgb
-         m6zt5IPrry3kOFgzZI0gEk4ToMKuI5ULOr/YHpsgD55mC/9eL2HC4B41lZulq+2kbFZ3
-         HFYNjIglWt2HNY+UkATm9jKPidnK82dOTUvaNbTlk1mlzcu+Uk3ArvcIx9+ww4fZJryV
-         YqQ+0Vvr/sbiZdseFs7A/VN83273U5CkYGxLibNYoJndo6qKvjNHWuizh9LFUz2tSAHg
-         aG3/+d4zfghpl2pxrxyfQagaaMdQpGP9vwaDVGGidEEHCd2EyU2lzBbBj9iHvhFHWzpY
-         zhUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1727219981; x=1727824781;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=zqgkO9umAcljezxbBhTinw4cVNyUsl7JtTdhMvNKcDM=;
-        b=nYLbm6SnM5wo8pWo+NkD7C9rIH0QCVMpj6XDxCHLmrq5EGeVcPuV5RbbYIca7F8jBi
-         bIJN/pcRxw3jzf4ZCfswEmmtZakCfgeLe8EZjHyCHxEkGhkq+FKfsVFYOFlWL+aZpSzL
-         Qrfj7YNCNLKDF3XOl1ilQ70g6tvf9OxnTjg3wR5pq9dzNowV/70iGbmG3DlsW927QM8a
-         rrnJpk1NJne2k7azxUVKuqEF0clXYBzDVAnapUhQfjQ39rfK3WGg0rfKyc6nqhP2s0Eu
-         H/PfY+5oUcZdSJXNPB1iVk/Rx/+GAwdUgsZ5o/K41Z6woY6eBMkaK4iCTWnDwYaIrVwD
-         d0pg==
-X-Forwarded-Encrypted: i=1; AJvYcCV+3tmtX4K3iD4FxXMnrWukbZUQve5urSDFildvOHU9bCKuHlpUyvCf+vQxBrlacvgL2c3DbIJ1@lists.linux.dev, AJvYcCWN3IM+5wioUNcE3Fnz7QcaU5L8jzCX5E2qjrMRjsfQ1l7DbvN5d4laBg5DJpEdOykYJnp7sQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxVZ39plgi/AR7ZpOJ1zm8UYa6AuspQQCMf9OJN4Re/d3QrAAqu
-	FR9RUkIFzJM/imnEt4JKymI3hlfg9NG1CRJNgIHsIwGJNtorqKp59W5vDYONhAIK1M7qb12iwdM
-	ivoM7H9lZg4ivEYexpRxhRhJoMuw=
-X-Google-Smtp-Source: AGHT+IEs6SrkoESjM16ll3jZm1hG9iEgirZxprDayiTWCubQB6bBwgWo565ZxYCvymE4dc3N9ZbWjILkkC0/lhIUGyI=
-X-Received: by 2002:a05:6512:114b:b0:531:4c6d:b8ef with SMTP id
- 2adb3069b0e04-5387048b8e9mr332583e87.6.1727219981129; Tue, 24 Sep 2024
- 16:19:41 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WHPJJiQ5"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58007C4CEC3;
+	Wed, 25 Sep 2024 08:57:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1727254667;
+	bh=TjqXMgitC9Pb+7QWCcSVpW7ReibhPwGxQoiUmqKDXp0=;
+	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+	b=WHPJJiQ5ZmjK3RzTJ4zqVnbu7vvi1fu1Bfq9YGMsmYyH61cTAijqblvGKEiebqyRv
+	 EjdtOyfeCuUbXKzdb+ndFNo0+Ki8J5ghoxG+n0UkL9kgk6Mb4L8uH7XhY3ZT5q0/fi
+	 EtifeyNsBw58Pf8AEcrwyRdgBhy1xOequxKlJd1IU6Z2iawADXlO3FVsG0yqdIySHI
+	 yc8sxtorckIanzXvRgjwoqtbA8zE5j2RVpQLMSX3YkLd2zccm1fF4caXCbwywvYZVg
+	 ijYmuEF0YIlkB1Z78KwQSl0nTaMX3jip55VY9SD7Iulk8kPF97yn/yJDa3fU6dVArP
+	 DW7qmvZPGAzfw==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+	id 2FCCECE0E55; Wed, 25 Sep 2024 01:57:45 -0700 (PDT)
+Date: Wed, 25 Sep 2024 01:57:45 -0700
+From: "Paul E. McKenney" <paulmck@kernel.org>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com,
+	Alexei Starovoitov <ast@kernel.org>,
+	Andrii Nakryiko <andrii@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Kent Overstreet <kent.overstreet@linux.dev>, rcu@vger.kernel.org
+Subject: Re: [paulmckrcu:dev] [srcu]  26cb612c43:
+ BUG:using__this_cpu_read()in_preemptible
+Message-ID: <ff495e02-dcd4-4310-8806-58fad0dad794@paulmck-laptop>
+Reply-To: paulmck@kernel.org
+References: <202409231124.358fed11-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202409131438.3f225fbf-oliver.sang@intel.com> <1191933.1727214450@warthog.procyon.org.uk>
-In-Reply-To: <1191933.1727214450@warthog.procyon.org.uk>
-From: Steve French <smfrench@gmail.com>
-Date: Tue, 24 Sep 2024 18:19:29 -0500
-Message-ID: <CAH2r5msFnqU-wCn4QRv1Tjh4dtomA6QbtAGmONhx5C0mduxLVg@mail.gmail.com>
-Subject: Re: [linux-next:master] [netfs] a05b682d49: BUG:KASAN:slab-use-after-free_in_copy_from_iter
-To: David Howells <dhowells@redhat.com>
-Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
-	Linux Memory Management List <linux-mm@kvack.org>, Christian Brauner <brauner@kernel.org>, 
-	Jeff Layton <jlayton@kernel.org>, netfs@lists.linux.dev, linux-fsdevel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202409231124.358fed11-lkp@intel.com>
 
-Yes - I can confirm that this fixes the recent netfs regression in generic/=
-075
+On Mon, Sep 23, 2024 at 12:38:31PM +0800, kernel test robot wrote:
+> 
+> 
+> Hello,
+> 
+> kernel test robot noticed "BUG:using__this_cpu_read()in_preemptible" on:
+> 
+> commit: 26cb612c431de5093ae6a3a67ecaa0363f5b8829 ("srcu: Add srcu_read_lock_lite() and srcu_read_unlock_lite()")
+> https://github.com/paulmckrcu/linux dev
+> 
+> in testcase: rcutorture
+> version: 
+> with following parameters:
+> 
+> 	runtime: 300s
+> 	test: cpuhotplug
+> 	torture_type: srcud
+> 
+> 
+> 
+> compiler: gcc-12
+> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+> 
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+> 
+> 
+> in our tests, this issue doesn't always happen, but with a not small rate.
+> 
+> daf812f27d6bbe4c 26cb612c431de5093ae6a3a67ec
+> ---------------- ---------------------------
+>        fail:runs  %reproduction    fail:runs
+>            |             |             |
+>            :50          66%          33:50    dmesg.BUG:using__this_cpu_read()in_preemptible
+> 
+> 
+> 
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202409231124.358fed11-lkp@intel.com
+> 
+> 
+> [  169.560380][   T76] BUG: using __this_cpu_read() in preemptible [00000000] code: kworker/1:2/76
+> [ 169.561229][ T76] caller is try_check_zero (kernel/rcu/srcutree.c:485 kernel/rcu/srcutree.c:1149) 
 
-http://smb311-linux-testing.southcentralus.cloudapp.azure.com/#/builders/3/=
-builds/239
+Does this diff fix things for you?  Here the per-CPU access is a
+heuristic that reduces overhead once the bulk of the CPUs have done
+srcu_read_lock_lite().  So it is OK to get migrated just after the check.
 
-You can add:
-Tested-by: Steve French <stfrench@microsoft.com>
+							Thanx, Paul
 
-On Tue, Sep 24, 2024 at 4:47=E2=80=AFPM David Howells <dhowells@redhat.com>=
- wrote:
->
-> Does the attached fix the problem?
->
-> David
-> ---
-> netfs: Fix write oops in generic/346 (9p) and maybe generic/074 (cifs)
->
-> In netfslib, a buffered writeback operation has a 'write queue' of folios
-> that are being written, held in a linear sequence of folio_queue structs.
-> The 'issuer' adds new folio_queues on the leading edge of the queue and
-> populates each one progressively; the 'collector' pops them off the
-> trailing edge and discards them and the folios they point to as they are
-> consumed.
->
-> The queue is required to always retain at least one folio_queue structure=
-.
-> This allows the queue to be accessed without locking and with just a bit =
-of
-> barriering.
->
-> When a new subrequest is prepared, its ->io_iter iterator is pointed at t=
-he
-> current end of the write queue and then the iterator is extended as more
-> data is added to the queue until the subrequest is committed.
->
-> Now, the problem is that the folio_queue at the leading edge of the write
-> queue when a subrequest is prepared might have been entirely consumed - b=
-ut
-> not yet removed from the queue as it is the only remaining one and is
-> preventing the queue from collapsing.
->
-> So, what happens is that subreq->io_iter is pointed at the spent
-> folio_queue, then a new folio_queue is added, and, at that point, the
-> collector is at entirely at liberty to immediately delete the spent
-> folio_queue.
->
-> This leaves the subreq->io_iter pointing at a freed object.  If the syste=
-m
-> is lucky, iterate_folioq() sees ->io_iter, sees the as-yet uncorrupted
-> freed object and advances to the next folio_queue in the queue.
->
-> In the case seen, however, the freed object gets recycled and put back on=
-to
-> the queue at the tail and filled to the end.  This confuses
-> iterate_folioq() and it tries to step ->next, which may be NULL - resulti=
-ng
-> in an oops.
->
-> Fix this by the following means:
->
->  (1) When preparing a write subrequest, make sure there's a folio_queue
->      struct with space in it at the leading edge of the queue.  A functio=
-n
->      to make space is split out of the function to append a folio so that
->      it can be called for this purpose.
->
->  (2) If the request struct iterator is pointing to a completely spent
->      folio_queue when we make space, then advance the iterator to the new=
-ly
->      allocated folio_queue.  The subrequest's iterator will then be set
->      from this.
->
-> Whilst we're at it, also split out the function to allocate a folio_queue=
-,
-> initialise it and do the accounting.
->
-> The oops could be triggered using the generic/346 xfstest with a filesyst=
-em
-> on9P over TCP with cache=3Dloose.  The oops looked something like:
->
->  BUG: kernel NULL pointer dereference, address: 0000000000000008
->  #PF: supervisor read access in kernel mode
->  #PF: error_code(0x0000) - not-present page
->  ...
->  RIP: 0010:_copy_from_iter+0x2db/0x530
->  ...
->  Call Trace:
->   <TASK>
->  ...
->   p9pdu_vwritef+0x3d8/0x5d0
->   p9_client_prepare_req+0xa8/0x140
->   p9_client_rpc+0x81/0x280
->   p9_client_write+0xcf/0x1c0
->   v9fs_issue_write+0x87/0xc0
->   netfs_advance_write+0xa0/0xb0
->   netfs_write_folio.isra.0+0x42d/0x500
->   netfs_writepages+0x15a/0x1f0
->   do_writepages+0xd1/0x220
->   filemap_fdatawrite_wbc+0x5c/0x80
->   v9fs_mmap_vm_close+0x7d/0xb0
->   remove_vma+0x35/0x70
->   vms_complete_munmap_vmas+0x11a/0x170
->   do_vmi_align_munmap+0x17d/0x1c0
->   do_vmi_munmap+0x13e/0x150
->   __vm_munmap+0x92/0xd0
->   __x64_sys_munmap+0x17/0x20
->   do_syscall_64+0x80/0xe0
->   entry_SYSCALL_64_after_hwframe+0x71/0x79
->
-> This may also fix a similar-looking issue with cifs and generic/074.
->
->   | Reported-by: kernel test robot <oliver.sang@intel.com>
->   | Closes: https://lore.kernel.org/oe-lkp/202409180928.f20b5a08-oliver.s=
-ang@intel.com
->
-> Signed-off-by: David Howells <dhowells@redhat.com>
-> cc: Eric Van Hensbergen <ericvh@kernel.org>
-> cc: Latchesar Ionkov <lucho@ionkov.net>
-> cc: Dominique Martinet <asmadeus@codewreck.org>
-> cc: Christian Schoenebeck <linux_oss@crudebyte.com>
-> cc: Steve French <sfrench@samba.org>
-> cc: Paulo Alcantara <pc@manguebit.com>
-> cc: Jeff Layton <jlayton@kernel.org>
-> cc: v9fs@lists.linux.dev
-> cc: linux-cifs@vger.kernel.org
-> cc: netfs@lists.linux.dev
-> cc: linux-fsdevel@vger.kernel.org
-> ---
->  fs/netfs/internal.h    |    2 +
->  fs/netfs/misc.c        |   72 ++++++++++++++++++++++++++++++++++--------=
--------
->  fs/netfs/objects.c     |   12 ++++++++
->  fs/netfs/write_issue.c |   12 +++++++-
->  4 files changed, 76 insertions(+), 22 deletions(-)
->
-> diff --git a/fs/netfs/internal.h b/fs/netfs/internal.h
-> index c7f23dd3556a..79c0ad89affb 100644
-> --- a/fs/netfs/internal.h
-> +++ b/fs/netfs/internal.h
-> @@ -58,6 +58,7 @@ static inline void netfs_proc_del_rreq(struct netfs_io_=
-request *rreq) {}
->  /*
->   * misc.c
->   */
-> +struct folio_queue *netfs_buffer_make_space(struct netfs_io_request *rre=
-q);
->  int netfs_buffer_append_folio(struct netfs_io_request *rreq, struct foli=
-o *folio,
->                               bool needs_put);
->  struct folio_queue *netfs_delete_buffer_head(struct netfs_io_request *wr=
-eq);
-> @@ -76,6 +77,7 @@ void netfs_clear_subrequests(struct netfs_io_request *r=
-req, bool was_async);
->  void netfs_put_request(struct netfs_io_request *rreq, bool was_async,
->                        enum netfs_rreq_ref_trace what);
->  struct netfs_io_subrequest *netfs_alloc_subrequest(struct netfs_io_reque=
-st *rreq);
-> +struct folio_queue *netfs_folioq_alloc(struct netfs_io_request *rreq, gf=
-p_t gfp);
->
->  static inline void netfs_see_request(struct netfs_io_request *rreq,
->                                      enum netfs_rreq_ref_trace what)
-> diff --git a/fs/netfs/misc.c b/fs/netfs/misc.c
-> index 0ad0982ce0e2..a743e8963247 100644
-> --- a/fs/netfs/misc.c
-> +++ b/fs/netfs/misc.c
-> @@ -9,34 +9,64 @@
->  #include "internal.h"
->
->  /*
-> - * Append a folio to the rolling queue.
-> + * Make sure there's space in the rolling queue.
->   */
-> -int netfs_buffer_append_folio(struct netfs_io_request *rreq, struct foli=
-o *folio,
-> -                             bool needs_put)
-> +struct folio_queue *netfs_buffer_make_space(struct netfs_io_request *rre=
-q)
->  {
-> -       struct folio_queue *tail =3D rreq->buffer_tail;
-> -       unsigned int slot, order =3D folio_order(folio);
-> +       struct folio_queue *tail =3D rreq->buffer_tail, *prev;
-> +       unsigned int prev_nr_slots =3D 0;
->
->         if (WARN_ON_ONCE(!rreq->buffer && tail) ||
->             WARN_ON_ONCE(rreq->buffer && !tail))
-> -               return -EIO;
-> -
-> -       if (!tail || folioq_full(tail)) {
-> -               tail =3D kmalloc(sizeof(*tail), GFP_NOFS);
-> -               if (!tail)
-> -                       return -ENOMEM;
-> -               netfs_stat(&netfs_n_folioq);
-> -               folioq_init(tail);
-> -               tail->prev =3D rreq->buffer_tail;
-> -               if (tail->prev)
-> -                       tail->prev->next =3D tail;
-> -               rreq->buffer_tail =3D tail;
-> -               if (!rreq->buffer) {
-> -                       rreq->buffer =3D tail;
-> -                       iov_iter_folio_queue(&rreq->io_iter, ITER_SOURCE,=
- tail, 0, 0, 0);
-> +               return ERR_PTR(-EIO);
-> +
-> +       prev =3D tail;
-> +       if (prev) {
-> +               if (!folioq_full(tail))
-> +                       return tail;
-> +               prev_nr_slots =3D folioq_nr_slots(tail);
-> +       }
-> +
-> +       tail =3D netfs_folioq_alloc(rreq, GFP_NOFS);
-> +       if (!tail)
-> +               return ERR_PTR(-ENOMEM);
-> +       tail->prev =3D prev;
-> +       if (prev)
-> +               /* [!] NOTE: After we set prev->next, the consumer is ent=
-irely
-> +                * at liberty to delete prev.
-> +                */
-> +               WRITE_ONCE(prev->next, tail);
-> +
-> +       rreq->buffer_tail =3D tail;
-> +       if (!rreq->buffer) {
-> +               rreq->buffer =3D tail;
-> +               iov_iter_folio_queue(&rreq->io_iter, ITER_SOURCE, tail, 0=
-, 0, 0);
-> +       } else {
-> +               /* Make sure we don't leave the master iterator pointing =
-to a
-> +                * block that might get immediately consumed.
-> +                */
-> +               if (rreq->io_iter.folioq =3D=3D prev &&
-> +                   rreq->io_iter.folioq_slot =3D=3D prev_nr_slots) {
-> +                       rreq->io_iter.folioq =3D tail;
-> +                       rreq->io_iter.folioq_slot =3D 0;
->                 }
-> -               rreq->buffer_tail_slot =3D 0;
->         }
-> +       rreq->buffer_tail_slot =3D 0;
-> +       return tail;
-> +}
-> +
-> +/*
-> + * Append a folio to the rolling queue.
-> + */
-> +int netfs_buffer_append_folio(struct netfs_io_request *rreq, struct foli=
-o *folio,
-> +                             bool needs_put)
-> +{
-> +       struct folio_queue *tail;
-> +       unsigned int slot, order =3D folio_order(folio);
-> +
-> +       tail =3D netfs_buffer_make_space(rreq);
-> +       if (IS_ERR(tail))
-> +               return PTR_ERR(tail);
->
->         rreq->io_iter.count +=3D PAGE_SIZE << order;
->
-> diff --git a/fs/netfs/objects.c b/fs/netfs/objects.c
-> index d32964e8ca5d..dd8241bc996b 100644
-> --- a/fs/netfs/objects.c
-> +++ b/fs/netfs/objects.c
-> @@ -250,3 +250,15 @@ void netfs_put_subrequest(struct netfs_io_subrequest=
- *subreq, bool was_async,
->         if (dead)
->                 netfs_free_subrequest(subreq, was_async);
->  }
-> +
-> +struct folio_queue *netfs_folioq_alloc(struct netfs_io_request *rreq, gf=
-p_t gfp)
-> +{
-> +       struct folio_queue *fq;
-> +
-> +       fq =3D kmalloc(sizeof(*fq), gfp);
-> +       if (fq) {
-> +               netfs_stat(&netfs_n_folioq);
-> +               folioq_init(fq);
-> +       }
-> +       return fq;
-> +}
-> diff --git a/fs/netfs/write_issue.c b/fs/netfs/write_issue.c
-> index 04e66d587f77..0929d9fd4ce7 100644
-> --- a/fs/netfs/write_issue.c
-> +++ b/fs/netfs/write_issue.c
-> @@ -153,12 +153,22 @@ static void netfs_prepare_write(struct netfs_io_req=
-uest *wreq,
->                                 loff_t start)
->  {
->         struct netfs_io_subrequest *subreq;
-> +       struct iov_iter *wreq_iter =3D &wreq->io_iter;
-> +
-> +       /* Make sure we don't point the iterator at a used-up folio_queue
-> +        * struct being used as a placeholder to prevent the queue from
-> +        * collapsing.  In such a case, extend the queue.
-> +        */
-> +       if (iov_iter_is_folioq(wreq_iter) &&
-> +           wreq_iter->folioq_slot >=3D folioq_nr_slots(wreq_iter->folioq=
-)) {
-> +               netfs_buffer_make_space(wreq);
-> +       }
->
->         subreq =3D netfs_alloc_subrequest(wreq);
->         subreq->source          =3D stream->source;
->         subreq->start           =3D start;
->         subreq->stream_nr       =3D stream->stream_nr;
-> -       subreq->io_iter         =3D wreq->io_iter;
-> +       subreq->io_iter         =3D *wreq_iter;
->
->         _enter("R=3D%x[%x]", wreq->debug_id, subreq->debug_index);
->
->
+------------------------------------------------------------------------
 
+diff --git a/kernel/rcu/srcutree.c b/kernel/rcu/srcutree.c
+index f3db4d42e70ab..07147efcb64d3 100644
+--- a/kernel/rcu/srcutree.c
++++ b/kernel/rcu/srcutree.c
+@@ -482,7 +482,7 @@ static unsigned long srcu_readers_unlock_idx(struct srcu_struct *ssp, int idx)
+  */
+ static bool srcu_readers_active_idx_check(struct srcu_struct *ssp, int idx)
+ {
+-	bool did_gp = !!(__this_cpu_read(ssp->sda->srcu_reader_flavor) & SRCU_READ_FLAVOR_LITE);
++	bool did_gp = !!(raw_cpu_read(ssp->sda->srcu_reader_flavor) & SRCU_READ_FLAVOR_LITE);
+ 	unsigned long unlocks;
+ 
+ 	unlocks = srcu_readers_unlock_idx(ssp, idx);
 
---=20
-Thanks,
+------------------------------------------------------------------------
 
-Steve
+> [  169.561657][   T76] CPU: 0 UID: 0 PID: 76 Comm: kworker/1:2 Not tainted 6.11.0-rc1-00125-g26cb612c431d #1
+> [  169.562369][   T76] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> [  169.563120][   T76] Workqueue: rcu_gp process_srcu
+> [  169.563518][   T76] Call Trace:
+> [  169.563789][   T76]  <TASK>
+> [ 169.564031][ T76] dump_stack_lvl (lib/dump_stack.c:122) 
+> [ 169.564418][ T76] check_preemption_disabled (lib/smp_processor_id.c:52) 
+> [ 169.564842][ T76] ? try_check_zero (kernel/rcu/srcutree.c:485 kernel/rcu/srcutree.c:1149) 
+> [ 169.565219][ T76] ? process_one_work (kernel/workqueue.c:3206) 
+> [ 169.565592][ T76] ? srcu_advance_state (kernel/rcu/srcutree.c:1784) 
+> [ 169.565994][ T76] ? process_srcu (kernel/rcu/srcutree.c:1893) 
+> [ 169.566373][ T76] ? process_one_work (kernel/workqueue.c:3236) 
+> [ 169.566790][ T76] ? __pfx_process_one_work (kernel/workqueue.c:3133) 
+> [ 169.567199][ T76] ? __list_add (include/linux/list.h:83 include/linux/list.h:150) 
+> [ 169.567559][ T76] ? process_scheduled_works (kernel/workqueue.c:3312) 
+> [ 169.567990][ T76] ? worker_thread (include/linux/list.h:373 kernel/workqueue.c:948 kernel/workqueue.c:3391) 
+> [ 169.568361][ T76] ? __kthread_parkme (arch/x86/include/asm/current.h:49 kernel/kthread.c:293) 
+> [ 169.568761][ T76] ? __pfx_worker_thread (kernel/workqueue.c:3339) 
+> [ 169.569156][ T76] ? kthread (kernel/kthread.c:389) 
+> [ 169.569474][ T76] ? __pfx_kthread (kernel/kthread.c:342) 
+> [ 169.569848][ T76] ? ret_from_fork (arch/x86/kernel/process.c:153) 
+> [ 169.570212][ T76] ? __pfx_kthread (kernel/kthread.c:342) 
+> [ 169.570563][ T76] ? ret_from_fork_asm (arch/x86/entry/entry_64.S:257) 
+> [  169.570954][   T76]  </TASK>
+> [  169.652036][   T76] BUG: using __this_cpu_read() in preemptible [00000000] code: kworker/1:2/76
+> [ 169.652785][ T76] caller is try_check_zero (kernel/rcu/srcutree.c:485 kernel/rcu/srcutree.c:1149) 
+> [  169.653204][   T76] CPU: 0 UID: 0 PID: 76 Comm: kworker/1:2 Not tainted 6.11.0-rc1-00125-g26cb612c431d #1
+> [  169.653945][   T76] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> [  169.654710][   T76] Workqueue: rcu_gp process_srcu
+> [  169.655095][   T76] Call Trace:
+> [  169.655357][   T76]  <TASK>
+> [ 169.655591][ T76] dump_stack_lvl (lib/dump_stack.c:122) 
+> [ 169.655958][ T76] check_preemption_disabled (lib/smp_processor_id.c:52) 
+> [ 169.656392][ T76] ? try_check_zero (kernel/rcu/srcutree.c:485 kernel/rcu/srcutree.c:1149) 
+> [ 169.656771][ T76] ? process_one_work (kernel/workqueue.c:3206) 
+> [ 169.657162][ T76] ? srcu_advance_state (kernel/rcu/srcutree.c:1765) 
+> [ 169.657559][ T76] ? process_srcu (kernel/rcu/srcutree.c:1893) 
+> [ 169.657909][ T76] ? process_one_work (kernel/workqueue.c:3236) 
+> [ 169.658263][ T76] ? __pfx_process_one_work (kernel/workqueue.c:3133) 
+> [ 169.658623][ T76] ? __list_add (include/linux/list.h:83 include/linux/list.h:150) 
+> [ 169.658911][ T76] ? process_scheduled_works (kernel/workqueue.c:3312) 
+> [ 169.659254][ T76] ? worker_thread (include/linux/list.h:373 kernel/workqueue.c:948 kernel/workqueue.c:3391) 
+> [ 169.659554][ T76] ? __kthread_parkme (arch/x86/include/asm/current.h:49 kernel/kthread.c:293) 
+> [ 169.659885][ T76] ? __pfx_worker_thread (kernel/workqueue.c:3339) 
+> [ 169.660211][ T76] ? kthread (kernel/kthread.c:389) 
+> [ 169.660480][ T76] ? __pfx_kthread (kernel/kthread.c:342) 
+> [ 169.660773][ T76] ? ret_from_fork (arch/x86/kernel/process.c:153) 
+> [ 169.661069][ T76] ? __pfx_kthread (kernel/kthread.c:342) 
+> [ 169.661363][ T76] ? ret_from_fork_asm (arch/x86/entry/entry_64.S:257) 
+> [  169.661693][   T76]  </TASK>
+> [  169.662140][   T76] BUG: using __this_cpu_read() in preemptible [00000000] code: kworker/1:2/76
+> [ 169.662810][ T76] caller is try_check_zero (kernel/rcu/srcutree.c:485 kernel/rcu/srcutree.c:1149) 
+> [  169.663222][   T76] CPU: 0 UID: 0 PID: 76 Comm: kworker/1:2 Not tainted 6.11.0-rc1-00125-g26cb612c431d #1
+> [  169.663934][   T76] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> [  169.664696][   T76] Workqueue: rcu_gp process_srcu
+> [  169.665091][   T76] Call Trace:
+> [  169.665353][   T76]  <TASK>
+> [ 169.665586][ T76] dump_stack_lvl (lib/dump_stack.c:122) 
+> [ 169.665959][ T76] check_preemption_disabled (lib/smp_processor_id.c:52) 
+> [ 169.666369][ T76] ? try_check_zero (kernel/rcu/srcutree.c:485 kernel/rcu/srcutree.c:1149) 
+> [ 169.666727][ T76] ? preempt_count_sub (kernel/sched/core.c:5685) 
+> [ 169.667127][ T76] ? process_one_work (kernel/workqueue.c:3206) 
+> [ 169.667519][ T76] ? srcu_advance_state (kernel/rcu/srcutree.c:1784) 
+> [ 169.667938][ T76] ? process_srcu (kernel/rcu/srcutree.c:1893) 
+> [ 169.668310][ T76] ? process_one_work (kernel/workqueue.c:3236) 
+> [ 169.668719][ T76] ? __pfx_process_one_work (kernel/workqueue.c:3133) 
+> [ 169.669150][ T76] ? __list_add (include/linux/list.h:83 include/linux/list.h:150) 
+> [ 169.669517][ T76] ? process_scheduled_works (kernel/workqueue.c:3312) 
+> [ 169.669954][ T76] ? worker_thread (include/linux/list.h:373 kernel/workqueue.c:948 kernel/workqueue.c:3391) 
+> [ 169.670303][ T76] ? __kthread_parkme (arch/x86/include/asm/current.h:49 kernel/kthread.c:293) 
+> [ 169.670692][ T76] ? __pfx_worker_thread (kernel/workqueue.c:3339) 
+> [ 169.671077][ T76] ? kthread (kernel/kthread.c:389) 
+> [ 169.671412][ T76] ? __pfx_kthread (kernel/kthread.c:342) 
+> [ 169.671761][ T76] ? ret_from_fork (arch/x86/kernel/process.c:153) 
+> [ 169.672114][ T76] ? __pfx_kthread (kernel/kthread.c:342) 
+> [ 169.672463][ T76] ? ret_from_fork_asm (arch/x86/entry/entry_64.S:257) 
+> [  169.672861][   T76]  </TASK>
+> [  169.690595][   T75] smpboot: CPU 1 is now offline
+> 
+> 
+> 
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20240923/202409231124.358fed11-lkp@intel.com
+> 
+> 
+> 
+> -- 
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
+> 
