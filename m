@@ -1,104 +1,97 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02C703C39
-	for <oe-lkp@lists.linux.dev>; Mon, 30 Sep 2024 02:21:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1BB9165F1E
+	for <oe-lkp@lists.linux.dev>; Mon, 30 Sep 2024 08:22:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.165.32
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727662910; cv=fail; b=QtMq+f03Dd/9OXcrOo371SB5mLEW7TMgQ0QWiXq6E/GvQlK0XkktqtbDFKhbt9uiz/ei4lQ4Y7xJyMm7f9f4HRy+vzcG64Rqlg1wXelcjjbmh2FsxZ/KeUllHbXD8iDnQmPNxzJGJHgn+8DOMArMxZskw46ettmaYhdpCxl/eeU=
+	t=1727684536; cv=fail; b=uxQaTkY1kN0HEWTworPVlCR5fpgLaayO9ybTLh/1Dndy6XP8E9CfCmrLC/Dti+/hqm7nxoFOD4yibpnZfo9IZLJ0BPBVVYmiceiurZlGTGe/UVx1kLixJuKRFDqMzUbu9ZJKnoFtT3C9kcanMj4Hj0L1j0AxQqUeqymYZ3x2ckw=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727662910; c=relaxed/simple;
-	bh=5o2eRUrfu1N1pE5/qtTBwCai3DnG37tfLE5AUhEK+WA=;
-	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=gz88RRowhYf7NivVlMDvCdVu30ywK0MqXDxsYjaIbz1jmm4MqXQv0Tll8ZRmfi5QOnBIRd5dVOCHL5ymoYSsrLmPVBFi1jpOJx/hUgI+Dd3OKBu50b2jSCW3HyJN5YjxpVtP0MQl5Ute9fAehr+XyMxEnXnEltMmpgTTVV1umaU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iMW5bdgu; arc=fail smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1727684536; c=relaxed/simple;
+	bh=b4lmiqPTolop3P6XNwBNgF28uqM+i7RF9n4UuoW2CSs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=QFtdHgGi9X5Od1XZES+XWO1Bz+HqN/BjtEhvsQd6R7OdSvqI/Q2PG4VZGxBimvwekB0fI/yEhmr2a8SqtzsovdpM2m7UJd86BaX5omHEtpGKRliQYrxutKQuBkZgeq7EIIAIvBkZa0VUPrlLh0T5/BWIMPT4kNi2EL2If0vjBIc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=j3m3pgHu; dkim=fail (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b=CT7va0VU reason="signature verification failed"; arc=fail smtp.client-ip=205.220.165.32
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iMW5bdgu"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1727662909; x=1759198909;
-  h=date:from:to:cc:subject:message-id:
-   content-transfer-encoding:mime-version;
-  bh=5o2eRUrfu1N1pE5/qtTBwCai3DnG37tfLE5AUhEK+WA=;
-  b=iMW5bdguIX27p/bCKW9UmDhkvjsTdsW1IVFD47mrdKH3eb75SqktYguj
-   3P5FM6Ae7F1wOtm/tDQUnA+7/EEpezlqg6zh+xj/PYCfSQk2mlm8z4dQa
-   FSpFNdspRodREtnI75vSZLQ2qHPi21XA4MDyI3URrSzsQXI/n5R4el36w
-   gi1k0ycxmcrt/afcW87VZbW2GUnnwbXlqXWujW7vgRovx6fyofF4lUcDe
-   iF9ve9GnMQaQCQfUaaPlIflroDL+20PRTrMH0t6k9rahbzWMVr9U+nJKj
-   99AB4s1FeYWdv36+nErXAZtQ7RfiMPyk2MT4GqRtgUYIfwrJTSrfFjM6M
-   w==;
-X-CSE-ConnectionGUID: 9TTK+sawRJKrfcybdNO0cA==
-X-CSE-MsgGUID: ssGUjUevQIO8wCywx3QhQQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11210"; a="14357053"
-X-IronPort-AV: E=Sophos;i="6.11,164,1725346800"; 
-   d="scan'208";a="14357053"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2024 19:21:45 -0700
-X-CSE-ConnectionGUID: PUsH+DM1SBaoycncVKNtsQ==
-X-CSE-MsgGUID: D+1gg+f+RhSvPwD3O0BoSQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,164,1725346800"; 
-   d="scan'208";a="103933178"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by orviesa002.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 29 Sep 2024 19:21:44 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Sun, 29 Sep 2024 19:21:44 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Sun, 29 Sep 2024 19:21:44 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.49) by
- edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Sun, 29 Sep 2024 19:21:43 -0700
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="j3m3pgHu";
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="CT7va0VU"
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 48U2txe1015690;
+	Mon, 30 Sep 2024 08:22:00 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=
+	date:from:to:cc:subject:message-id:references:content-type
+	:content-transfer-encoding:in-reply-to:mime-version; s=
+	corp-2023-11-20; bh=KEH2Z58AkSnyu9R9k+SUgvnPjP8QZm7QnIwBHWplU/M=; b=
+	j3m3pgHuodX/jOLJI+cFEuurIQT4LJW/S2rrrocL3dnhwaFAWLDHU6oX1XVLehLV
+	/Ak4pTMvAVE5Tj228+2xcds9iwdlJ5L+al3i5JPqnya9qHZTZamApYrBrFshJMku
+	znKdGfbpNwJe2YUg0oLv3K6aj10gPFvvKwHOayTfuAC24iTIPplwqwd7rH4f1eSg
+	QeEZ2TjpGkeBI0AkSH66eeTp//lXlU960LQFbEYlnlSo7nJhx/NP3vcr7GV+fJLe
+	ySHDNRd+1IwkiXneMQ90e7LnK7/WjhCfnY8Ux/Rq6hXwXAyIb7tQTKZqp83n4FN9
+	vnTJ7X9LbNX73McBKUM3MA==
+Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 41x8d1apey-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 30 Sep 2024 08:21:59 +0000 (GMT)
+Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 48U7GqiT026192;
+	Mon, 30 Sep 2024 08:21:58 GMT
+Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2169.outbound.protection.outlook.com [104.47.57.169])
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 41x885r2nw-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 30 Sep 2024 08:21:58 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=BskSWEMbDpaA8aHVzxI+24HiiBuE7BmV/e/UfTDIAOp+sgWa0Vq1CXBTkzQz79cN2RL2l5KU62jFMa5v5o9xLEbD5c7OqGF5y1loIlHyhL/f+P05zEn9VCSwO7ppW9YcfaHUU204ebz0rXTyc4XzZwzxqWZe+tOxhfA07xT0hmC+ih2WC6hDAAWcV/jtibRjOl8xZvOZlPhg6fRdMe/8dbqQBa3irOm+ZDXze0TUopV55S7HLlQ6EHhbr36jlvjpGUZMN4lsHmD7amKtxz65XIHrsh3klD0zSz5obuTcbxQyPHzmXuI9BGcAu22HDu2JFBdD8gg1ZuJrtwmbyoV8BQ==
+ b=HBtp7nvwDPZec18MK4neiGe99TEAoaXDIEwo6YfD0OF67P4WQZ3zcelWU0pcgsysi1scIoDCXH2M0X0QFVqM9lThCI5Vwl2Fm8HIKGDjiHxPQuTA7Be2hpTWljwxRHqB2JTw26wPTfaKqzlIYju1fu9NWiT7r/j1iRPlfgteUs0DaZ61mVn/tR890iSc8OPGqnpChnaQVcqzFUS7AYrTRrfwFX3N2dftnyuMGO2fECeDbViGkLCegD9rJGgVce7W8HI3wLojnXecsfs2Szyz7v5ZCVvdLOOEYjXHcLjeeLBlqtlUKYuTi/uySihDOHQTh+NcpzPlTby5Az8HjM0t/Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zhTD58rlJz9hJZGNC0DmIUH9Kz09Cb1DUl7HvC1TP3w=;
- b=VhdSh2RQB6S7rBCK3tdo5qNbnqOBjrGwK5lVqOJATL3ZGOAAgvi+f5JmZXJ9Z/S26cWDFWf/64c3xC+nbWsy/bua408RvDAL7VCMgZpTGsVl/kvUEWWX/rKpDM6T7sxuC1aeRFvjMaukJW8m0Miq4ypipqT9+PLupQ8wEzPs7ilWZNeMFoNtXwcF0cSy10froubwvlH36mmnBiLbA9nTsYhvg5p5k995tAOfT+f4sMHv6f6F1tGvY0QUKr1A+NvlD5CQRLd7xhqUHSo70PQUH4eHNOPTst80wkzlMQ3IDW89cHuIRMSc6xHnl/PwlYyEVs61uQqaSigRYCX2PGR0Kw==
+ bh=YRwYY7vDiq12VqLpVyAzcApYiqp79ZgQFFLFArz7UAo=;
+ b=WRht3ujMLascoBG0O7D2e5u+EtE9i9PjAprl4bBrTCoshkofWMfDGH4bO7xBjQ5SA1AP27eA/1KwaIduazOlnMNppuoBz7s6QbImoQ/+Z20pydDnV3LVHE9C8k3KeOnKndUtanWOrxQRAjnz0hZqG8MRS1OW00MTeE0V9Zu539T+En5Ezz6IsbBiyLRZPbSpFDFAN5nedYw72LvJYkZBxf//cth7DVPE7J5AG8tfXfLpARX5apH4T5gEmMvuj751JROZT2CJf5M/DpnF9Sx9TW+PiHd6krcyG4t87z3N1NwHLtH+VA6lyxnOrbcDXFgcfoLgib3nBpy8CLwgv8tTCA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by DM4PR11MB6382.namprd11.prod.outlook.com (2603:10b6:8:be::18) with
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YRwYY7vDiq12VqLpVyAzcApYiqp79ZgQFFLFArz7UAo=;
+ b=CT7va0VUKaPmg1ByPMlvcvuKsSG3M+P/z0q4X25bn3cLs8IwKrpgKCRvB72qHtoli7k3m+99RFM0blV2x69Y8m6cJmYBpRoXZdmllTKczuAm89y1pdV9btr6+jtCiDnDO5MKydMEekhN1uKS5CNZPJ1KGvkDR/uRA6woagD3WD0=
+Received: from SJ0PR10MB5613.namprd10.prod.outlook.com (2603:10b6:a03:3d0::5)
+ by SA1PR10MB6661.namprd10.prod.outlook.com (2603:10b6:806:2b8::22) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8005.26; Mon, 30 Sep
- 2024 02:21:41 +0000
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.8005.024; Mon, 30 Sep 2024
- 02:21:41 +0000
-Date: Mon, 30 Sep 2024 10:21:27 +0800
-From: kernel test robot <oliver.sang@intel.com>
-To: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
-	Andrew Morton <akpm@linux-foundation.org>, Mark Brown <broonie@kernel.org>,
-	"Liam R. Howlett" <Liam.Howlett@oracle.com>, Vlastimil Babka
-	<vbabka@suse.cz>, Bert Karwatzki <spasswolf@web.de>, Jeff Xu
-	<jeffxu@chromium.org>, Jiri Olsa <olsajiri@gmail.com>, Kees Cook
-	<kees@kernel.org>, Lorenzo Stoakes <lstoakes@gmail.com>, Matthew Wilcox
-	<willy@infradead.org>, "Paul E. McKenney" <paulmck@kernel.org>, Paul Moore
-	<paul@paul-moore.com>, Sidhartha Kumar <sidhartha.kumar@oracle.com>, "Suren
- Baghdasaryan" <surenb@google.com>, <linux-mm@kvack.org>,
-	<ying.huang@intel.com>, <feng.tang@intel.com>, <fengwei.yin@intel.com>,
-	<oliver.sang@intel.com>
-Subject: [linus:master] [mm]  cacded5e42:  aim9.brk_test.ops_per_sec -5.0%
- regression
-Message-ID: <202409301043.629bea78-oliver.sang@intel.com>
-Content-Type: text/plain; charset="iso-8859-1"
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8026.13; Mon, 30 Sep
+ 2024 08:21:55 +0000
+Received: from SJ0PR10MB5613.namprd10.prod.outlook.com
+ ([fe80::4239:cf6f:9caa:940e]) by SJ0PR10MB5613.namprd10.prod.outlook.com
+ ([fe80::4239:cf6f:9caa:940e%5]) with mapi id 15.20.8026.014; Mon, 30 Sep 2024
+ 08:21:55 +0000
+Date: Mon, 30 Sep 2024 09:21:52 +0100
+From: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mark Brown <broonie@kernel.org>,
+        "Liam R. Howlett" <Liam.Howlett@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>, Bert Karwatzki <spasswolf@web.de>,
+        Jeff Xu <jeffxu@chromium.org>, Jiri Olsa <olsajiri@gmail.com>,
+        Kees Cook <kees@kernel.org>, Lorenzo Stoakes <lstoakes@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Paul Moore <paul@paul-moore.com>,
+        Sidhartha Kumar <sidhartha.kumar@oracle.com>,
+        Suren Baghdasaryan <surenb@google.com>, linux-mm@kvack.org,
+        ying.huang@intel.com, feng.tang@intel.com, fengwei.yin@intel.com
+Subject: Re: [linus:master] [mm]  cacded5e42:  aim9.brk_test.ops_per_sec
+ -5.0% regression
+Message-ID: <77321196-5812-4e5b-be4c-20930e6f22bc@lucifer.local>
+References: <202409301043.629bea78-oliver.sang@intel.com>
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SG2PR01CA0131.apcprd01.prod.exchangelabs.com
- (2603:1096:4:40::35) To LV3PR11MB8603.namprd11.prod.outlook.com
- (2603:10b6:408:1b6::9)
+In-Reply-To: <202409301043.629bea78-oliver.sang@intel.com>
+X-ClientProxiedBy: LO4P123CA0624.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:294::8) To SJ0PR10MB5613.namprd10.prod.outlook.com
+ (2603:10b6:a03:3d0::5)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -106,201 +99,240 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|DM4PR11MB6382:EE_
-X-MS-Office365-Filtering-Correlation-Id: 73dd8d70-a410-41f8-c95d-08dce0f69eed
+X-MS-TrafficTypeDiagnostic: SJ0PR10MB5613:EE_|SA1PR10MB6661:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4d9c45be-f338-43ee-8c66-08dce128f1f8
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014|7416014;
-X-Microsoft-Antispam-Message-Info: =?iso-8859-1?Q?lS0rmZwzfXMNxGIuiABqnXtxusjOXT1AZSrOhtmPsWWAks1XmJzwhWGlAm?=
- =?iso-8859-1?Q?JX41EwaKRyd6gkZpxRsacMIZsWNpb5R9YWHwl3XaGkORKN5xNNSgkmHLBD?=
- =?iso-8859-1?Q?ghY1RRHduxvMYEG0LTopJilCqN541ESF6/fB3hiuzsG51uoRpN3vrhehZW?=
- =?iso-8859-1?Q?GRgbYbA7DUi6sQ5DwQVIApgzO6AuInzjUJhTH+9o8HfONHVvBDmTZx9Bkl?=
- =?iso-8859-1?Q?t5tlu0RmCoAYBA8v/TJ5t/jf2RpsU1He9epMnZUarwbD5/v2wke1jNH14F?=
- =?iso-8859-1?Q?L7goCQFdVXJpYNITXJlcAahmnYlK1/ahZPwviP1B0bD8XSejaOv6qpoXnj?=
- =?iso-8859-1?Q?gcVdjpRnsZvoq3MEla6KR6Rj4MvrqiHKMYAN+mWsjEVPio64nD4Q53EKKR?=
- =?iso-8859-1?Q?ttF5GDNd/h1OLzlDjynXG+kFPkUmNdLGPEe4HKDYQeCqHvIXrJZSH6Hqmf?=
- =?iso-8859-1?Q?W3OVhIk9F+Cas45/x4XQh6ICbbgCpHmyYpHOwrHlzv8xJZGdIdhwgtse7Y?=
- =?iso-8859-1?Q?UaegQOistWzrvfWXWCgVC0JrMrK/y8ectIn44Zlc4yMHhN8GMzFtTX/YIf?=
- =?iso-8859-1?Q?ekD2aQq2wjcbbRPcltOPj+5Kcc6sH/OCs0qbPx0l7r8dM+yHZp4G78/NY9?=
- =?iso-8859-1?Q?iI5qA3Gmwe1dU0eP+q1Wgs4jluaaPtOnDNe4RI4kB4fFmeVg/s+M6NJoss?=
- =?iso-8859-1?Q?vX6+SF7rq37CGsANztJXBxchtI3Pry2EYQyP5VIuzfxNGEzi/IKKOq/cdy?=
- =?iso-8859-1?Q?lNPHoNDxl0hhY4dwlgIptscbYikqRz6CO1FCvsBm8ji0fstB6Dtr+1ym+K?=
- =?iso-8859-1?Q?QRKVVW0O2k16NMVGRv5RxpWyOqG4xglnvIQNP4XXivQB/JwhP29xX55HhY?=
- =?iso-8859-1?Q?ouzEnm0nNazy4jm9UMePODgZhYAsgExTmZxfhvA+bA6PS7qCgq+3yR9l6j?=
- =?iso-8859-1?Q?cZIPqhcMz+Z0RS35SHU0YC/hpngSl97rf2FQB6ZIyCWO+/5Jq60SNRCOM1?=
- =?iso-8859-1?Q?HOeXSrdyNk4wUodj4SEI+ece0jRktwy0iCOHzRFUgkg5NBLg/k57aHizh3?=
- =?iso-8859-1?Q?nZ3FvlnEgd5mZq/hWK0GFBqMPLunwHuYpBcykcEAHbI/RbJRojy+aDl8dh?=
- =?iso-8859-1?Q?qCnjeEI5ddBpaXT0GDTohnGlUEJ6n6HKkgBADbewzaWn9DVRIhV0cHsQ/Y?=
- =?iso-8859-1?Q?BUiNiy5Xgds581frX7mpNxWYLOpSdF1t3JMTzq59RS0kxO3C/P55AWTbzt?=
- =?iso-8859-1?Q?e98D4uqUSYdMXdH9gAdNKt7JXetgZ5AQxVMnIWwr1xhLanMGWlJibWOrqD?=
- =?iso-8859-1?Q?H0Tk0VmKxphNBP6fWHBOjSO4qE5jN8fT9pkKq2YkUU92/pQ=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7416014);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|376014|1800799024|366016;
+X-Microsoft-Antispam-Message-Info:
+	=?iso-8859-1?Q?fEFWJLr9pM5+EvOQf29OW2svI+uf56fx0I1H7vH7+NNf4IOfrQrKG2l8sY?=
+ =?iso-8859-1?Q?+OvVQhzEh8Ft1P01h7TB+R2UMW2OJ75/gFRKu2H4g8j51wNOoU+FDozf5q?=
+ =?iso-8859-1?Q?hojb1hUWWPdmYFpkKs+Fu3LzskIUt+ivo4pKLr3iRoN2e+7OvloAktptgF?=
+ =?iso-8859-1?Q?tHeeypIWVQTFQygMsgcYCwuxIqU4BD2LgYEyO5XdjziFMVxjcqWcrEIl0W?=
+ =?iso-8859-1?Q?u8fiCa6VOUVPPBA8Mtcm6Y+ej/2BpBd0avZDBWuw1YN046mWO+3+Uvrn5E?=
+ =?iso-8859-1?Q?kohTqjrXKpjbKf/1V7DW8PiORbQ3aT0Ggj+oNWIoc4HbLq/502OkFJz+3z?=
+ =?iso-8859-1?Q?zcmXKivAt1dNLpWJgb6EonX6AEYi1A3pfb5ux+TKjaBbnIj2oyRJ1tUbuV?=
+ =?iso-8859-1?Q?iVuUOASbJFLXQ8oENrVXUUI82dOPaamTPTuRyz8dN1z8skOWiRUf0fEdFL?=
+ =?iso-8859-1?Q?fIHLHVYK8D7dUnv05qZihYewvvazDjmDaKXVXeihwusnCMLFSISljtf1Cp?=
+ =?iso-8859-1?Q?UYMj3bHmkydotsCM3yC1jt2kdwNEcGl5BvKbKbgcPaHQIgMxAJeb+P2AiF?=
+ =?iso-8859-1?Q?XF4hs91h7JaY9alI7T8cP9HVouHwtViyNk7UEPcNVJwd3/GmYizi4nI6TF?=
+ =?iso-8859-1?Q?jZOzsOboqydVfsH2j+BTMJAIarQcYPz/ACvwiDVkVH1DtV4ufAAs5h8o1C?=
+ =?iso-8859-1?Q?OKsfL5in6WFRS61NzkQrpAgpGKoZnbvB3JB4V4iOrbbekuZsiAOp1ButlF?=
+ =?iso-8859-1?Q?4VpxkHPZKVluAKALexGvbNt0OX+fZEknNtiBgj7+qkDB/4sNT4Buym4gQD?=
+ =?iso-8859-1?Q?7OlCeJ4zYYCRPv+ZmDQhcMuv1YL4Y2vIJEWBQbQ+R6bomI9iT7euL+Qfvx?=
+ =?iso-8859-1?Q?OiclTWwLRAA9g3wOM7xJ6S6epFNn3zgnMfJo4evNhruDWgLgoaAuVWJh2w?=
+ =?iso-8859-1?Q?usOi3fVP1uodt7qSWiF2C5rnf/G5QFbc2mbB7XTidl8YPm2SwadLr/G6s2?=
+ =?iso-8859-1?Q?EAoHLWDQow/YmoW1tMmvoWv1ttKD4EsbiiEdg2hC8N5WZJfkk3363N3Xe0?=
+ =?iso-8859-1?Q?jSUQlg+9NHE43BcBTR1w71PA+Rhw0gcmzb1q7DCHfGTa8/bP0ifeOFmWP3?=
+ =?iso-8859-1?Q?j2uMIASBBx8DywS+JrD17FmHA6PtrMBS0QmSfBou3ThOr/OQ4DrhaFd4R2?=
+ =?iso-8859-1?Q?o0SxCRnxLmoapFkBjnHRvk2L5JSfTiL+GyiaU1nKt9ivS5idTD61V/DKj+?=
+ =?iso-8859-1?Q?Wms5cMvUwjYBtBDjaUc6UTejsJWKVVNdZEmBp1opEDsbr0Omtmgk2Ho8o4?=
+ =?iso-8859-1?Q?AGu0A0O1gPOq70MeLA9RLJJrLXw8JS2vbk0YKQ1eQaG7OLU=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR10MB5613.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?ifSMkxBkzmKsgSqpxpVw5ItIH6jvwO2k1+SaefyyWyOGIh2XZkQv9nHJOM?=
- =?iso-8859-1?Q?ESBXxPtooT/ezVDida2PQnlMwn+Bcm1GYWGtvM1RgE4i4gfg+ElcaORrPv?=
- =?iso-8859-1?Q?UOGhuv4sFXzswDJaEyDaVEKaS6wR8krnO40MvLOjBPsihkn1MUP3Ws7sLQ?=
- =?iso-8859-1?Q?rH6j/WSzlnHM1kNAgQUc3np753U/+Czs84wqwmSt0sMPc44waD6+QjBKEa?=
- =?iso-8859-1?Q?i+T4lWzeg93Cj8NFIgQSG5vzoYtwj3zDB9x7EZ7ftQ6jEMK6sV0ZTQHcfp?=
- =?iso-8859-1?Q?mlGLR4Oa9LsUhs7TupCIyOFhiF6HaxGyoV/REbOmsmhLc4ObzGkYaItcBV?=
- =?iso-8859-1?Q?1DOjrt74w69/kxYpEfs3m6K9YL0I87S/WV4npzpSD3+M5hMep/d0RB8PGh?=
- =?iso-8859-1?Q?4OSHS8qOwDHh/4EMpmWTsHsm7Hhss78IiIszmzeeitTCFkGpTVWPnp7MGa?=
- =?iso-8859-1?Q?c34E8lHga7dYJx82II5u9bb7SYc2bQIX58MDk+c1CYUKdnkT//o/0RcYic?=
- =?iso-8859-1?Q?EYNmYhC7x3sSbzR2MvQ5vQWI+Wgqy4a5TYB+WtKvEtNzmcEaStpkMq6spe?=
- =?iso-8859-1?Q?/qBtEFQ3vEI2W2pSB+ikuEpjBH8KCQ1XOt5bqrpTxW/E118GLOB266ngaY?=
- =?iso-8859-1?Q?Hj9wjWp0vMdUiOz3M28BnHwjAaCP6QvuUML9i7UbebUnbeNW1wC7Ry8Wb/?=
- =?iso-8859-1?Q?VQ/ZuCLiHjc95/PY/EnhQCZP4cwT7ZPfJ1ztLHxZPiu++RWXuoySFGL0JE?=
- =?iso-8859-1?Q?SDl02tILP43co/DCXZi2yq83gvKKK7FBVjELgEkCJId0oAIkv0IMw5sq2E?=
- =?iso-8859-1?Q?pgxtGVWi+3wx6InYmsdia5UwtBp5J9xQETB8/dlgXWP4rhai9J0KdM/HJb?=
- =?iso-8859-1?Q?ehEYWgSCVeu6KLMgjHyOTRehxqjyySjk7VuDOqpqV7txcY16DOFoWleKHH?=
- =?iso-8859-1?Q?JNwizcxZ25E2MffwGEtju9fpi/xqvD7zyGw7gGbaehOIzeTRczr61EfVlR?=
- =?iso-8859-1?Q?M7sSPcLx0H1VUDH0ETjyk92hrW+HtSpDrKbkAOXmSAo+IV3XPd+cTq/H9l?=
- =?iso-8859-1?Q?d1dmCa8iFtP7HUZexdytjfT1l+yPFENs3xjDwkNWPBEzf97ax09ZMgu9l5?=
- =?iso-8859-1?Q?qoPJQtEVwu1tiVl6ckw5ZkJb4HpmuKI2YcdsscWPNYHUR5WJXSz/VDMk9s?=
- =?iso-8859-1?Q?hc49QBxkg63ytDcR7RgnGQDSsVKqQR4RYQ0sQNrh+1M5oNfOJFP2ZVpdel?=
- =?iso-8859-1?Q?E2LAd9abmb9GCZuCRLvMmbuyA3J0A8B5ihhCyfArMKi7PJwbkNYkgpdkFp?=
- =?iso-8859-1?Q?c8JZOV/drs6o29k+f7Zq19BKuu20cmslziXi4Rq/u4asEWp8E18HiGbR5l?=
- =?iso-8859-1?Q?KXI9B8mwNJFfsO4c+O0WzzPNAGR963zXps7zErjfXlnAj+cQsLOK1bP7L7?=
- =?iso-8859-1?Q?gtxM7+0pF5BBfYXqbBNXWzFppZzx5vmBWUx+3pHPxaHB+Jv+PRQ3soNa9z?=
- =?iso-8859-1?Q?CXHA7Kg1KiqAsQREdVMUBY7eM4kzsum82Y0e8jAwbU0cPWP6HPvbApKcOJ?=
- =?iso-8859-1?Q?sfhrSgVmoQjNCPaIblZIzZBfAbqjEWwPIMVsrIr5vjTp7Tvhm9TTSbpiHZ?=
- =?iso-8859-1?Q?teaqcoXWP/XMYyW7Vm1TYYxb29QqekeeUCgf/rudMow0Glav0T47sQQw?=
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?iso-8859-1?Q?F1y1Z5xg3A5epFj9uqMZmEH0zy5g6lm4F3M1NIK/P8yQP8eQ9SqPqfHOjB?=
+ =?iso-8859-1?Q?XokCoDw0hLx4hRcSuWEkZ+vI0FZ2Bb0YTNJei5hGI9DnlDvfAru9XpPPKl?=
+ =?iso-8859-1?Q?p+GSExORnZtgsgI/c0QUX0UQRvHaeFXfg6U2Xp0A7yA5Lkr98oTUYGj/Ur?=
+ =?iso-8859-1?Q?J3R87wZTaeAXhm2N/QhkWZ9Ab061SqC0eCerdIvAV9C58smIIvbqjtIOaf?=
+ =?iso-8859-1?Q?p6r8dJncFw6c2hj7Yl+waXlaLmzWJHqb9QL92s27zxVs/fDl1ElqTZCC67?=
+ =?iso-8859-1?Q?pGnAe5jcDSUUVQw1ILyODcky5h1pTTp/h+vADJxMYYoPuRnLV9qKCaw0mk?=
+ =?iso-8859-1?Q?sKZoaxIgIyCfAFZnqjodQCz19ZHZr0ITb9s3nr/1y3Bq9cA1w5+8QTJ6nW?=
+ =?iso-8859-1?Q?Oqqw9Xg2CoTLL4kX8yI5VmoM/w4axDfPTm2wJo5IYIM5nks1jL4tKb4+cV?=
+ =?iso-8859-1?Q?SEm13n3gKJBPQJe7MGW/s7ezMgRN38zjev1QAOz4aKVb+Gty7x3GJISYGT?=
+ =?iso-8859-1?Q?ofoPAei6lyb2mP5J6FUD+fMRtll25SkA2+DkdyvBAPn8LvaxN/KVXwqH1G?=
+ =?iso-8859-1?Q?7R4wDtGM7BRjqTV0Q9/DsQZZuCpr3QRLC1xdFZEJf1QlB8RI0q/h3gGgYU?=
+ =?iso-8859-1?Q?TLc5d1CEHaC/Q+bosvgvyNw5vNAQU8s3yJ4Tg6ddPqv4QeAOUq0yMUaFwA?=
+ =?iso-8859-1?Q?f/Qx116k8d82mjC+JXvhNEkV25kQJo2F0gDwWm6jOqZ7BBE9ZjPlzU/dry?=
+ =?iso-8859-1?Q?YT2aMq+JKiqh/tdzLfF4rt3Quvq9YXNgnHyW2NfEJHzuKud5RX2NmPtHcV?=
+ =?iso-8859-1?Q?TlGh7sLAlEDMNq8y3ktDRFgywmHVez9XjTfqeylcaELrVeIzPXH2WsRX1I?=
+ =?iso-8859-1?Q?3Ep/+EhS5wNoHjGodsLSasSqb7noUnGssQIxUcmfz/MlMIWtwq2lgW8CcU?=
+ =?iso-8859-1?Q?IZESk7bQKt1rxbDdCE1lVqDn63+0izO804myjknVAMJXt1d3BxZnGuQYHW?=
+ =?iso-8859-1?Q?75HAh0h6DaXTfR6LEqzNo0EcYxwA17rHM0XExM0bPrOwaaSfhW+gD0Q596?=
+ =?iso-8859-1?Q?hUIv1YNgtnclsj6eeFJh1Ua1LNNQJRK3VLUw1YCbxkgVlLNrqiJm9holyc?=
+ =?iso-8859-1?Q?RxDfKtprtPfpj6JdNfcCJpjy5fW6gj1EFWIyddKa85DktO9SGmwBOlm+Qe?=
+ =?iso-8859-1?Q?j28itSgcf6OsLUPZLFdSL0rrdAzahztUgiw+YbbjtaSQb/IxGByyVC1mqM?=
+ =?iso-8859-1?Q?Y7RAwlrsf0l/NJ16HXhBilUJd94B4hWK6brIB9HjEPkGIg4nnpTOleZwhU?=
+ =?iso-8859-1?Q?m7i7vNAEFfze6DNcoEUq4+M3pkLf8ZT0Qn4cTlwEUSbQ6o/BL00FS5bgAW?=
+ =?iso-8859-1?Q?r1ITVYDbJ9vsLa5SwP3Z/bFQZUNhf9/alg5i6yWqAXpsGILo/lnkRB4Ezw?=
+ =?iso-8859-1?Q?/WMZAefMsCkZYMJtoZPOmxo6PfLsq0aFMLM2V4GB6F3NvjZg1veQeBBlqA?=
+ =?iso-8859-1?Q?3/19ebvX1tyZjy4rGfpLpk+b6tYNhN2lh9zYegGvkLbm0dxWQ3/Ha6SGgs?=
+ =?iso-8859-1?Q?xzWcas0orDyoL5BuU0zlAA1ws7JT5MnL2W1lMR4vzENBEUPxMlDtjia3Rq?=
+ =?iso-8859-1?Q?Eucevc8onWbazaxT1s/f7EVRQ5L6HMzv6cWhZmbxyIlve/okOu+43hdA?=
  =?iso-8859-1?Q?=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 73dd8d70-a410-41f8-c95d-08dce0f69eed
-X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
+	00prbTb007JXisDF/StEX4NwDXWJzBcy0LYdxml4paT1iJ4sxcj+0glFdboaVnJ1fWYfmTKtRVkdqMZ3KTrTSetHew8V7Dfv7J5iS5MgRiQ7D0IKhV+ULhlfWQcWcHC5Y5tdh4dw6h9kGH1NN+qcpw2vK7hZi1NImQzULSwglSQL8amG7OAntzr290u0MV6oXFvTJxqYW3eLNDzUO4Ns6BrZ8b65IipT0dgVYZfBY/Sv9arJrDX6CL4oNwrko8FgTXsMP1Vz/5XIJR7No86bHZOY3FwKklCRFnRrBncYE3BVtouxGDRPOBsywt4TPxZ0pceo7M2o6osxkPMeMbfNDU5pOXTrJF2yzYGelikhtnG/bOAvcIEoEqVG14IPOJELF1nB1zwtd11oqjaLpxkUjLn6FN98UckTUHza+WRs9TdFvXU8hpDKv9wjW7/cC2s/SF+6DJBtSCQbl3s5fdDMgRov7mzrk2eIiEzpojh3W9A8hr0XGNuTt9KS/YPZxaRInyY1Zucr7lThDOE4wPMJOPS3Zpm01E2OMaOTUilWCaveMPa24cgzispIpVJkfUQY8CclEAYKDIztx1TPGt1nIh6/VvjrBQr01fah3J1zcHs=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4d9c45be-f338-43ee-8c66-08dce128f1f8
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR10MB5613.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Sep 2024 02:21:41.5761
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Sep 2024 08:21:55.5640
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: b30sxE5+MLKSQfvbAgtFGcRdVB+JQe8zlhEXZQP/WcI30dvbmLYoOQPDR1cODli0dO8oZOHAPQwlPJ9bodOeIA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB6382
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-UserPrincipalName: ukAx2Ysu47RYBmtASPf0wXxr3vvZrRlD5xHIobM82eZmjtHOTk4Al3dXKTG8JKkvn4C0RmX6gBpHgnGdp1jBNH0+8jnlR9LcL1uk9rTtl8E=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR10MB6661
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1051,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-30_07,2024-09-27_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 bulkscore=0 suspectscore=0
+ malwarescore=0 mlxlogscore=999 phishscore=0 spamscore=0 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2408220000
+ definitions=main-2409300059
+X-Proofpoint-ORIG-GUID: XM1QAKukRV0xEC3wncShbcc_U8DLmcyj
+X-Proofpoint-GUID: XM1QAKukRV0xEC3wncShbcc_U8DLmcyj
 
+On Mon, Sep 30, 2024 at 10:21:27AM GMT, kernel test robot wrote:
+>
+>
+> Hello,
+>
+> kernel test robot noticed a -5.0% regression of aim9.brk_test.ops_per_sec on:
+>
+>
+> commit: cacded5e42b9609b07b22d80c10f0076d439f7d1 ("mm: avoid using vma_merge() for new VMAs")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>
+> testcase: aim9
+> test machine: 48 threads 2 sockets Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GHz (Ivy Bridge-EP) with 64G memory
 
+Hm, quite an old microarchitecture no?
 
-Hello,
+Would it be possible to try this on a range of uarch's, especially more
+recent noes, with some repeated runs to rule out statistical noise? Much
+appreciated!
 
-kernel test robot noticed a -5.0% regression of aim9.brk_test.ops_per_sec on:
+> parameters:
+>
+> 	testtime: 300s
+> 	test: brk_test
+> 	cpufreq_governor: performance
+>
+>
+>
+>
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202409301043.629bea78-oliver.sang@intel.com
+>
+>
+> Details are as below:
+> -------------------------------------------------------------------------------------------------->
+>
+>
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20240930/202409301043.629bea78-oliver.sang@intel.com
+>
+> =========================================================================================
+> compiler/cpufreq_governor/kconfig/rootfs/tbox_group/test/testcase/testtime:
+>   gcc-12/performance/x86_64-rhel-8.3/debian-12-x86_64-20240206.cgz/lkp-ivb-2ep2/brk_test/aim9/300s
+>
+> commit:
+>   fc21959f74 ("mm: abstract vma_expand() to use vma_merge_struct")
+>   cacded5e42 ("mm: avoid using vma_merge() for new VMAs")
 
+Yup this results in a different code path for brk(), but local testing
+indicated no regression (a prior revision of the series had encountered
+one, so I carefully assessed this, found the bug, and noted no clear
+regression after this - but a lot of variance in the numbers).
 
-commit: cacded5e42b9609b07b22d80c10f0076d439f7d1 ("mm: avoid using vma_merge() for new VMAs")
-https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+>
+> fc21959f74bc1138 cacded5e42b9609b07b22d80c10
+> ---------------- ---------------------------
+>          %stddev     %change         %stddev
+>              \          |                \
+>    1322908            -5.0%    1256536        aim9.brk_test.ops_per_sec
 
-testcase: aim9
-test machine: 48 threads 2 sockets Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GHz (Ivy Bridge-EP) with 64G memory
-parameters:
+Unfortunate there's no stddev figure here, and 5% feels borderline on noise
+- as above it'd be great to get some multiple runs going to rule out
+noise. Thanks!
 
-	testtime: 300s
-	test: brk_test
-	cpufreq_governor: performance
+>     201.54            +2.9%     207.44        aim9.time.system_time
+>      97.58            -6.0%      91.75        aim9.time.user_time
+>       0.04 ± 82%    -100.0%       0.00        perf-sched.sch_delay.avg.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
+>       0.10 ± 60%    -100.0%       0.00        perf-sched.sch_delay.max.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
+>       0.04 ± 82%    -100.0%       0.00        perf-sched.wait_time.avg.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
+>       0.10 ± 60%    -100.0%       0.00        perf-sched.wait_time.max.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
+>   8.33e+08            +3.9%  8.654e+08        perf-stat.i.branch-instructions
+>       1.15            -0.1        1.09        perf-stat.i.branch-miss-rate%
+>   12964626            -1.9%   12711922        perf-stat.i.branch-misses
+>       1.11            -7.4%       1.03        perf-stat.i.cpi
+>  3.943e+09            +6.0%   4.18e+09        perf-stat.i.instructions
+>       0.91            +7.9%       0.98        perf-stat.i.ipc
+>       0.29 ±  2%      -9.1%       0.27 ±  4%  perf-stat.overall.MPKI
+>       1.56            -0.1        1.47        perf-stat.overall.branch-miss-rate%
+>       1.08            -6.8%       1.01        perf-stat.overall.cpi
+>       0.92            +7.2%       0.99        perf-stat.overall.ipc
+>  8.303e+08            +3.9%  8.627e+08        perf-stat.ps.branch-instructions
+>   12931205            -2.0%   12678170        perf-stat.ps.branch-misses
+>   3.93e+09            +6.0%  4.167e+09        perf-stat.ps.instructions
+>  1.184e+12            +6.1%  1.256e+12        perf-stat.total.instructions
+>       7.16 ±  2%      -0.4        6.76 ±  4%  perf-profile.calltrace.cycles-pp.entry_SYSRETQ_unsafe_stack.brk
+>       5.72 ±  2%      -0.4        5.35 ±  3%  perf-profile.calltrace.cycles-pp.perf_event_mmap_event.perf_event_mmap.do_brk_flags.__do_sys_brk.do_syscall_64
+>       6.13 ±  2%      -0.3        5.84 ±  3%  perf-profile.calltrace.cycles-pp.perf_event_mmap.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
+>       0.83 ± 11%      -0.1        0.71 ±  5%  perf-profile.calltrace.cycles-pp.__vm_enough_memory.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
+>       0.00            +0.6        0.58 ±  5%  perf-profile.calltrace.cycles-pp.mas_leaf_max_gap.mas_update_gap.mas_store_prealloc.vma_expand.vma_merge_new_range
+>      16.73 ±  2%      +0.6       17.34        perf-profile.calltrace.cycles-pp.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
+>       0.00            +0.7        0.66 ±  6%  perf-profile.calltrace.cycles-pp.mas_wr_store_type.mas_preallocate.vma_expand.vma_merge_new_range.do_brk_flags
+>      24.21            +0.7       24.90        perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
+>      23.33            +0.7       24.05 ±  2%  perf-profile.calltrace.cycles-pp.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
+>       0.00            +0.8        0.82 ±  4%  perf-profile.calltrace.cycles-pp.vma_complete.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
+>       0.00            +0.9        0.87 ±  5%  perf-profile.calltrace.cycles-pp.mas_update_gap.mas_store_prealloc.vma_expand.vma_merge_new_range.do_brk_flags
+>       0.00            +1.1        1.07 ±  9%  perf-profile.calltrace.cycles-pp.vma_prepare.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
+>       0.00            +1.1        1.10 ±  6%  perf-profile.calltrace.cycles-pp.mas_preallocate.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
+>       0.00            +2.3        2.26 ±  5%  perf-profile.calltrace.cycles-pp.mas_store_prealloc.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
+>       0.00            +7.6        7.56 ±  3%  perf-profile.calltrace.cycles-pp.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk.do_syscall_64
+>       0.00            +8.6        8.62 ±  4%  perf-profile.calltrace.cycles-pp.vma_merge_new_range.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
+>       7.74 ±  2%      -0.4        7.30 ±  4%  perf-profile.children.cycles-pp.entry_SYSRETQ_unsafe_stack
+>       5.81 ±  2%      -0.4        5.43 ±  3%  perf-profile.children.cycles-pp.perf_event_mmap_event
+>       6.18 ±  2%      -0.3        5.88 ±  3%  perf-profile.children.cycles-pp.perf_event_mmap
+>       3.93            -0.2        3.73 ±  3%  perf-profile.children.cycles-pp.perf_iterate_sb
+>       0.22 ± 29%      -0.1        0.08 ± 17%  perf-profile.children.cycles-pp.may_expand_vm
+>       0.96 ±  3%      -0.1        0.83 ±  4%  perf-profile.children.cycles-pp.vma_complete
+>       0.61 ± 14%      -0.1        0.52 ±  7%  perf-profile.children.cycles-pp.percpu_counter_add_batch
+>       0.15 ±  7%      -0.1        0.08 ± 20%  perf-profile.children.cycles-pp.brk_test
+>       0.08 ± 11%      +0.0        0.12 ± 14%  perf-profile.children.cycles-pp.mas_prev_setup
+>       0.17 ± 12%      +0.1        0.27 ± 10%  perf-profile.children.cycles-pp.mas_wr_store_entry
+>       0.00            +0.2        0.15 ± 11%  perf-profile.children.cycles-pp.mas_next_range
+>       0.19 ±  8%      +0.2        0.38 ± 10%  perf-profile.children.cycles-pp.mas_next_slot
+>       0.34 ± 17%      +0.3        0.64 ±  6%  perf-profile.children.cycles-pp.mas_prev_slot
+>      23.40            +0.7       24.12 ±  2%  perf-profile.children.cycles-pp.__do_sys_brk
+>       0.00            +7.6        7.59 ±  3%  perf-profile.children.cycles-pp.vma_expand
+>       0.00            +8.7        8.66 ±  4%  perf-profile.children.cycles-pp.vma_merge_new_range
+>       1.61 ± 10%      -0.9        0.69 ±  8%  perf-profile.self.cycles-pp.do_brk_flags
+>       7.64 ±  2%      -0.4        7.20 ±  4%  perf-profile.self.cycles-pp.entry_SYSRETQ_unsafe_stack
+>       0.22 ± 30%      -0.1        0.08 ± 17%  perf-profile.self.cycles-pp.may_expand_vm
+>       0.57 ± 15%      -0.1        0.46 ±  6%  perf-profile.self.cycles-pp.percpu_counter_add_batch
+>       0.15 ±  7%      -0.1        0.08 ± 20%  perf-profile.self.cycles-pp.brk_test
+>       0.20 ±  5%      -0.0        0.18 ±  4%  perf-profile.self.cycles-pp.anon_vma_interval_tree_insert
+>       0.07 ± 18%      +0.0        0.10 ± 18%  perf-profile.self.cycles-pp.mas_prev_setup
+>       0.00            +0.1        0.09 ± 12%  perf-profile.self.cycles-pp.mas_next_range
+>       0.36 ±  8%      +0.1        0.45 ±  6%  perf-profile.self.cycles-pp.perf_event_mmap
+>       0.15 ± 13%      +0.1        0.25 ± 14%  perf-profile.self.cycles-pp.mas_wr_store_entry
+>       0.17 ± 11%      +0.2        0.37 ± 11%  perf-profile.self.cycles-pp.mas_next_slot
+>       0.34 ± 17%      +0.3        0.64 ±  6%  perf-profile.self.cycles-pp.mas_prev_slot
+>       0.00            +0.3        0.33 ±  5%  perf-profile.self.cycles-pp.vma_merge_new_range
+>       0.00            +0.8        0.81 ±  9%  perf-profile.self.cycles-pp.vma_expand
+>
+>
+>
+>
+> Disclaimer:
+> Results have been estimated based on internal Intel analysis and are provided
+> for informational purposes only. Any difference in system hardware or software
+> design or configuration may affect actual performance.
+>
+>
+> --
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
+>
 
-
-
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202409301043.629bea78-oliver.sang@intel.com
-
-
-Details are as below:
--------------------------------------------------------------------------------------------------->
-
-
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20240930/202409301043.629bea78-oliver.sang@intel.com
-
-=========================================================================================
-compiler/cpufreq_governor/kconfig/rootfs/tbox_group/test/testcase/testtime:
-  gcc-12/performance/x86_64-rhel-8.3/debian-12-x86_64-20240206.cgz/lkp-ivb-2ep2/brk_test/aim9/300s
-
-commit: 
-  fc21959f74 ("mm: abstract vma_expand() to use vma_merge_struct")
-  cacded5e42 ("mm: avoid using vma_merge() for new VMAs")
-
-fc21959f74bc1138 cacded5e42b9609b07b22d80c10 
----------------- --------------------------- 
-         %stddev     %change         %stddev
-             \          |                \  
-   1322908            -5.0%    1256536        aim9.brk_test.ops_per_sec
-    201.54            +2.9%     207.44        aim9.time.system_time
-     97.58            -6.0%      91.75        aim9.time.user_time
-      0.04 ± 82%    -100.0%       0.00        perf-sched.sch_delay.avg.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.10 ± 60%    -100.0%       0.00        perf-sched.sch_delay.max.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.04 ± 82%    -100.0%       0.00        perf-sched.wait_time.avg.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.10 ± 60%    -100.0%       0.00        perf-sched.wait_time.max.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
-  8.33e+08            +3.9%  8.654e+08        perf-stat.i.branch-instructions
-      1.15            -0.1        1.09        perf-stat.i.branch-miss-rate%
-  12964626            -1.9%   12711922        perf-stat.i.branch-misses
-      1.11            -7.4%       1.03        perf-stat.i.cpi
- 3.943e+09            +6.0%   4.18e+09        perf-stat.i.instructions
-      0.91            +7.9%       0.98        perf-stat.i.ipc
-      0.29 ±  2%      -9.1%       0.27 ±  4%  perf-stat.overall.MPKI
-      1.56            -0.1        1.47        perf-stat.overall.branch-miss-rate%
-      1.08            -6.8%       1.01        perf-stat.overall.cpi
-      0.92            +7.2%       0.99        perf-stat.overall.ipc
- 8.303e+08            +3.9%  8.627e+08        perf-stat.ps.branch-instructions
-  12931205            -2.0%   12678170        perf-stat.ps.branch-misses
-  3.93e+09            +6.0%  4.167e+09        perf-stat.ps.instructions
- 1.184e+12            +6.1%  1.256e+12        perf-stat.total.instructions
-      7.16 ±  2%      -0.4        6.76 ±  4%  perf-profile.calltrace.cycles-pp.entry_SYSRETQ_unsafe_stack.brk
-      5.72 ±  2%      -0.4        5.35 ±  3%  perf-profile.calltrace.cycles-pp.perf_event_mmap_event.perf_event_mmap.do_brk_flags.__do_sys_brk.do_syscall_64
-      6.13 ±  2%      -0.3        5.84 ±  3%  perf-profile.calltrace.cycles-pp.perf_event_mmap.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      0.83 ± 11%      -0.1        0.71 ±  5%  perf-profile.calltrace.cycles-pp.__vm_enough_memory.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      0.00            +0.6        0.58 ±  5%  perf-profile.calltrace.cycles-pp.mas_leaf_max_gap.mas_update_gap.mas_store_prealloc.vma_expand.vma_merge_new_range
-     16.73 ±  2%      +0.6       17.34        perf-profile.calltrace.cycles-pp.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
-      0.00            +0.7        0.66 ±  6%  perf-profile.calltrace.cycles-pp.mas_wr_store_type.mas_preallocate.vma_expand.vma_merge_new_range.do_brk_flags
-     24.21            +0.7       24.90        perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
-     23.33            +0.7       24.05 ±  2%  perf-profile.calltrace.cycles-pp.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
-      0.00            +0.8        0.82 ±  4%  perf-profile.calltrace.cycles-pp.vma_complete.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +0.9        0.87 ±  5%  perf-profile.calltrace.cycles-pp.mas_update_gap.mas_store_prealloc.vma_expand.vma_merge_new_range.do_brk_flags
-      0.00            +1.1        1.07 ±  9%  perf-profile.calltrace.cycles-pp.vma_prepare.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +1.1        1.10 ±  6%  perf-profile.calltrace.cycles-pp.mas_preallocate.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +2.3        2.26 ±  5%  perf-profile.calltrace.cycles-pp.mas_store_prealloc.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +7.6        7.56 ±  3%  perf-profile.calltrace.cycles-pp.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.00            +8.6        8.62 ±  4%  perf-profile.calltrace.cycles-pp.vma_merge_new_range.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      7.74 ±  2%      -0.4        7.30 ±  4%  perf-profile.children.cycles-pp.entry_SYSRETQ_unsafe_stack
-      5.81 ±  2%      -0.4        5.43 ±  3%  perf-profile.children.cycles-pp.perf_event_mmap_event
-      6.18 ±  2%      -0.3        5.88 ±  3%  perf-profile.children.cycles-pp.perf_event_mmap
-      3.93            -0.2        3.73 ±  3%  perf-profile.children.cycles-pp.perf_iterate_sb
-      0.22 ± 29%      -0.1        0.08 ± 17%  perf-profile.children.cycles-pp.may_expand_vm
-      0.96 ±  3%      -0.1        0.83 ±  4%  perf-profile.children.cycles-pp.vma_complete
-      0.61 ± 14%      -0.1        0.52 ±  7%  perf-profile.children.cycles-pp.percpu_counter_add_batch
-      0.15 ±  7%      -0.1        0.08 ± 20%  perf-profile.children.cycles-pp.brk_test
-      0.08 ± 11%      +0.0        0.12 ± 14%  perf-profile.children.cycles-pp.mas_prev_setup
-      0.17 ± 12%      +0.1        0.27 ± 10%  perf-profile.children.cycles-pp.mas_wr_store_entry
-      0.00            +0.2        0.15 ± 11%  perf-profile.children.cycles-pp.mas_next_range
-      0.19 ±  8%      +0.2        0.38 ± 10%  perf-profile.children.cycles-pp.mas_next_slot
-      0.34 ± 17%      +0.3        0.64 ±  6%  perf-profile.children.cycles-pp.mas_prev_slot
-     23.40            +0.7       24.12 ±  2%  perf-profile.children.cycles-pp.__do_sys_brk
-      0.00            +7.6        7.59 ±  3%  perf-profile.children.cycles-pp.vma_expand
-      0.00            +8.7        8.66 ±  4%  perf-profile.children.cycles-pp.vma_merge_new_range
-      1.61 ± 10%      -0.9        0.69 ±  8%  perf-profile.self.cycles-pp.do_brk_flags
-      7.64 ±  2%      -0.4        7.20 ±  4%  perf-profile.self.cycles-pp.entry_SYSRETQ_unsafe_stack
-      0.22 ± 30%      -0.1        0.08 ± 17%  perf-profile.self.cycles-pp.may_expand_vm
-      0.57 ± 15%      -0.1        0.46 ±  6%  perf-profile.self.cycles-pp.percpu_counter_add_batch
-      0.15 ±  7%      -0.1        0.08 ± 20%  perf-profile.self.cycles-pp.brk_test
-      0.20 ±  5%      -0.0        0.18 ±  4%  perf-profile.self.cycles-pp.anon_vma_interval_tree_insert
-      0.07 ± 18%      +0.0        0.10 ± 18%  perf-profile.self.cycles-pp.mas_prev_setup
-      0.00            +0.1        0.09 ± 12%  perf-profile.self.cycles-pp.mas_next_range
-      0.36 ±  8%      +0.1        0.45 ±  6%  perf-profile.self.cycles-pp.perf_event_mmap
-      0.15 ± 13%      +0.1        0.25 ± 14%  perf-profile.self.cycles-pp.mas_wr_store_entry
-      0.17 ± 11%      +0.2        0.37 ± 11%  perf-profile.self.cycles-pp.mas_next_slot
-      0.34 ± 17%      +0.3        0.64 ±  6%  perf-profile.self.cycles-pp.mas_prev_slot
-      0.00            +0.3        0.33 ±  5%  perf-profile.self.cycles-pp.vma_merge_new_range
-      0.00            +0.8        0.81 ±  9%  perf-profile.self.cycles-pp.vma_expand
-
-
-
-
-Disclaimer:
-Results have been estimated based on internal Intel analysis and are provided
-for informational purposes only. Any difference in system hardware or software
-design or configuration may affect actual performance.
-
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
-
+Overall, previously we special-cased brk() to avoid regression, but the
+special-casing is horribly duplicative and bug-prone so, while we can
+revert to doing that again, I'd really, really like to avoid it if we
+possibly can :)
