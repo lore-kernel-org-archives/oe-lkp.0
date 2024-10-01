@@ -1,44 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C081199EBB;
-	Mon, 30 Sep 2024 18:21:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7D1C1A00D1;
+	Tue,  1 Oct 2024 12:44:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727720493; cv=none; b=n2qsGdf/RBIWlzwGRj80u66R6zdooNq4fu/4ozZrl0TQnzey++kBngSSb1auqgiO1OZ1J5N5bAK+mZ3Dv5SqsppkuUo+NpNzYG71n2Y/nxi6YmZ8aQSu6md6pHXhwNHsPKFVwZXCkJQf281PdMBmgnuE6squGReFlyTESWyswog=
+	t=1727786686; cv=none; b=P4kQFvfrbyv3cH+15oG1KzILqXjr77qGDALygyau0kGCMETjT3RgOWsw3LWUpI6h0FBS2kTlHclocxgRWbIUk7D1cX35rMs+9uWdmkQf4auCw7BDXWKgdTzr9qXEdZ8cf0mLx/7Gfw2FWR089tggNZfSYQhNaVqLj0MKaZWDJVc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727720493; c=relaxed/simple;
-	bh=V7cddzF/pQRz4rqcxRBIlpqzQgQoi45u5QXiGwaYqc0=;
+	s=arc-20240116; t=1727786686; c=relaxed/simple;
+	bh=r3HlHQ7n8ImYsTzE4cFA107MpU4F5zeRaCuRYroHzBI=;
 	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=ll68GV6K3u+6Z6jHob4+1/Ezx9fNKx/rv5VdUuknxwZ2iJkS2qr5NXDecnCkUo6XII5ftkvxl7RHSK/Ud+UD9ELNW90xhLPC6HWy/w29g/aFWty6eb8of3wlxGbNxsIVXHUDjUOAKGI1sr5t3lvLds/nwuwZiP/4SgHPflVDXDg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DHSESOg3; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:MIME-Version; b=R2IpjBooqw6Rw7OcyGaMrhO6zllQOoa1BRZOcOKUXhf5LVKx/ETzNiNM+zZc6ptSQZwXzRkIA9866+mcidni8kytogrgU+YhM5l1XpLhcVP+TxEO0XiqxcdBI8oJjx96JLel/2GEQdHxkZfSUnGa713z718x90p5kOs2AA6I8yw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JWLCGX0d; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DHSESOg3"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D447C4CEC7;
-	Mon, 30 Sep 2024 18:21:31 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JWLCGX0d"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2AD2C4CEC6;
+	Tue,  1 Oct 2024 12:44:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1727720493;
-	bh=V7cddzF/pQRz4rqcxRBIlpqzQgQoi45u5QXiGwaYqc0=;
+	s=k20201202; t=1727786685;
+	bh=r3HlHQ7n8ImYsTzE4cFA107MpU4F5zeRaCuRYroHzBI=;
 	h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-	b=DHSESOg3fnQFakKPORpVkRH2y9YC7O0xLgGTnoAefxCTqIxXKiyaikWECLxyRMaWr
-	 aKHOEIGLGrN7+27eU3dPfcFH0RWF0mI7tX792ACOecdW3U2aibFpo5/5J0LE3lyQrN
-	 9oiW6gVdxu/wLerizb5n0W3OhQ01ILlsH/ICCnRTsSaGLR33KRu9QR5yk4hPh3QF1W
-	 Ivow0hcN3PgbFV1l6PhZ4/mTiegmsO4BAl+stJo6thFsk075iJE/zaobcHLyIg2LhY
-	 VjG6pOGe/okpDnrkJbnQKhzySfgOMT9Y87ODdCyppGC1WqzD7S7+ACAGInSaNgT26g
-	 BIxq44fajpctA==
-Message-ID: <3ae3693f35018e73cc6f629cb88c0a5e305e3137.camel@kernel.org>
-Subject: Re: [linux-next:master] [xfs]  3062a738d7: 
- filebench.sum_operations/s -85.0% regression
+	b=JWLCGX0dkaKDOoY6/5kaicnqwvBRd8cr3PJs96xHK6JxRJ5s/c14As6X2Go7jGRL9
+	 LBSh0Ch9LKYCobwG2a40EBtboxjIshPna5U92UjuDQXiKmpCiwDNq+a0k2Ml4TzHdG
+	 tqxkOyDJDbdcY9/oZCsYIYfZILyThHkg6bovMo2EDA96BcRwsrcsxI5Lq+CLq6D9KO
+	 G/OMRKUPBaaRe9NM1jboodHp+1LphSSLn6alC/OeefZmmZHPHxdvwy/l0rc6f2OVh6
+	 cBTTzidNvtrDX5yvayoMN1nVcsQN4gm1M1TelvlyjQ8dKtKNrcqXRLMa9o2Tl+dXgD
+	 DjKj2VxTjCcIw==
+Message-ID: <70ce1781c9fb39d974d38b7426194ead97926ed3.camel@kernel.org>
+Subject: Re: [linux-next:master] [nfsd]  8cb33389f6:  fsmark.app_overhead
+ 81.6% regression
 From: Jeff Layton <jlayton@kernel.org>
 To: kernel test robot <oliver.sang@intel.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>, oe-lkp@lists.linux.dev,
- lkp@intel.com,  Linux Memory Management List <linux-mm@kvack.org>,
- Christian Brauner <brauner@kernel.org>, Josef Bacik <josef@toxicpanda.com>,
- "Darrick J. Wong" <djwong@kernel.org>,  linux-xfs@vger.kernel.org,
- ying.huang@intel.com, feng.tang@intel.com,  fengwei.yin@intel.com
-Date: Mon, 30 Sep 2024 14:21:30 -0400
-In-Reply-To: <202409292200.d8132f52-oliver.sang@intel.com>
-References: <202409292200.d8132f52-oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, Linux Memory Management List
+	 <linux-mm@kvack.org>, Chuck Lever <chuck.lever@oracle.com>, 
+	linux-nfs@vger.kernel.org, ying.huang@intel.com, feng.tang@intel.com, 
+	fengwei.yin@intel.com
+Date: Tue, 01 Oct 2024 08:44:43 -0400
+In-Reply-To: <202409161645.d44bced5-oliver.sang@intel.com>
+References: <202409161645.d44bced5-oliver.sang@intel.com>
 Autocrypt: addr=jlayton@kernel.org; prefer-encrypt=mutual;
  keydata=mQINBE6V0TwBEADXhJg7s8wFDwBMEvn0qyhAnzFLTOCHooMZyx7XO7dAiIhDSi7G1NPxw
  n8jdFUQMCR/GlpozMFlSFiZXiObE7sef9rTtM68ukUyZM4pJ9l0KjQNgDJ6Fr342Htkjxu/kFV1Wv
@@ -123,52 +122,31 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 
-This is a known problem.
-
-I have a fix that moves the floor handing into the timekeeper, but
-Thomas said he had a better way to do this, so I haven't resent them
-yet.
-
-The patches in Christian's tree are out of date, so it may be best to
-just drop them for now until I have the newer set ready.
-
-Thanks,
-Jeff
-
-On Sun, 2024-09-29 at 22:36 +0800, kernel test robot wrote:
-> hi, Jeff Layton,
->=20
-> we reported
-> "[jlayton:mgtime] [xfs]  4edee232ed:  fio.write_iops -34.9% regression"
-> in
-> https://lore.kernel.org/all/202406141453.7a44f956-oliver.sang@intel.com/
->=20
-> you asked us to supply further information at that time.
->=20
-> now we noticed this commit is in linux-next/master, and we observed the
-> regression for a different test - filebench. FYI.
->=20
->=20
+On Mon, 2024-09-16 at 16:41 +0800, kernel test robot wrote:
 >=20
 > Hello,
 >=20
-> kernel test robot noticed a -85.0% regression of filebench.sum_operations=
-/s on:
+> kernel test robot noticed a 81.6% regression of fsmark.app_overhead on:
 >=20
 >=20
-> commit: 3062a738d73c866bf50df13bc47a2223b7b47d87 ("xfs: switch to multigr=
-ain timestamps")
+> commit: 8cb33389f66441dc4e54b28fe0d9bd4bcd9b796d ("nfsd: implement OPEN_A=
+RGS_SHARE_ACCESS_WANT_OPEN_XOR_DELEGATION")
 > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
 >=20
-> testcase: filebench
-> test machine: 96 threads 2 sockets Intel(R) Xeon(R) Platinum 8260L CPU @ =
-2.40GHz (Cascade Lake) with 128G memory
+> testcase: fsmark
+> test machine: 128 threads 2 sockets Intel(R) Xeon(R) Platinum 8358 CPU @ =
+2.60GHz (Ice Lake) with 128G memory
 > parameters:
 >=20
+> 	iterations: 1x
+> 	nr_threads: 1t
 > 	disk: 1HDD
-> 	fs: xfs
+> 	fs: btrfs
 > 	fs2: nfsv4
-> 	test: filemicro_rwritefsync.f
+> 	filesize: 4K
+> 	test_size: 40M
+> 	sync_method: fsyncBeforeClose
+> 	nr_files_per_directory: 1fpd
 > 	cpufreq_governor: performance
 >=20
 >=20
@@ -178,7 +156,7 @@ ain timestamps")
 ion of
 > the same patch/commit), kindly add following tags
 > > Reported-by: kernel test robot <oliver.sang@intel.com>
-> > Closes: https://lore.kernel.org/oe-lkp/202409292200.d8132f52-oliver.san=
+> > Closes: https://lore.kernel.org/oe-lkp/202409161645.d44bced5-oliver.san=
 g@intel.com
 >=20
 >=20
@@ -188,180 +166,136 @@ g@intel.com
 >=20
 >=20
 > The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20240929/202409292200.d8132f52-ol=
+> https://download.01.org/0day-ci/archive/20240916/202409161645.d44bced5-ol=
 iver.sang@intel.com
 >=20
 > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> compiler/cpufreq_governor/disk/fs2/fs/kconfig/rootfs/tbox_group/test/test=
-case:
->   gcc-12/performance/1HDD/nfsv4/xfs/x86_64-rhel-8.3/debian-12-x86_64-2024=
-0206.cgz/lkp-csl-2sp3/filemicro_rwritefsync.f/filebench
+> compiler/cpufreq_governor/disk/filesize/fs2/fs/iterations/kconfig/nr_file=
+s_per_directory/nr_threads/rootfs/sync_method/tbox_group/test_size/testcase=
+:
+>   gcc-12/performance/1HDD/4K/nfsv4/btrfs/1x/x86_64-rhel-8.3/1fpd/1t/debia=
+n-12-x86_64-20240206.cgz/fsyncBeforeClose/lkp-icl-2sp6/40M/fsmark
 >=20
 > commit:=20
->   42ba4ae657 ("Documentation: add a new file documenting multigrain times=
-tamps")
->   3062a738d7 ("xfs: switch to multigrain timestamps")
+>   e29c78a693 ("nfsd: add support for FATTR4_OPEN_ARGUMENTS")
+>   8cb33389f6 ("nfsd: implement OPEN_ARGS_SHARE_ACCESS_WANT_OPEN_XOR_DELEG=
+ATION")
 >=20
-> 42ba4ae65752b8cb 3062a738d73c866bf50df13bc47=20
+> e29c78a6936e7422 8cb33389f66441dc4e54b28fe0d=20
 > ---------------- ---------------------------=20
 >          %stddev     %change         %stddev
 >              \          |                \ =20
->       1.48           -13.5%       1.28 =C2=B1  5%  iostat.cpu.iowait
->  4.302e+10 =C2=B1  2%     -21.9%  3.361e+10 =C2=B1  2%  cpuidle..time
->    2316977           -10.5%    2072537        cpuidle..usage
->     763659 =C2=B1 17%     -33.4%     508644 =C2=B1 15%  numa-numastat.nod=
-e1.local_node
->     817625 =C2=B1 14%     -30.4%     568838 =C2=B1 11%  numa-numastat.nod=
-e1.numa_hit
->       0.32 =C2=B1 12%      -0.0        0.27 =C2=B1  6%  perf-profile.chil=
-dren.cycles-pp.idle_cpu
->       0.31 =C2=B1 12%      -0.0        0.26 =C2=B1  6%  perf-profile.self=
-.cycles-pp.idle_cpu
->       0.03 =C2=B1 88%    +128.5%       0.08 =C2=B1  6%  perf-sched.sch_de=
-lay.avg.ms.schedule_timeout.transaction_kthread.kthread.ret_from_fork
->       0.03 =C2=B1 88%    +128.5%       0.08 =C2=B1  6%  perf-sched.sch_de=
-lay.max.ms.schedule_timeout.transaction_kthread.kthread.ret_from_fork
->     523.13           -18.9%     424.32 =C2=B1  2%  uptime.boot
->      48962           -18.9%      39691 =C2=B1  2%  uptime.idle
->     208.10 =C2=B1  7%     -67.4%      67.75 =C2=B1 52%  numa-vmstat.node0=
-.nr_mlock
->     816180 =C2=B1 14%     -30.4%     567697 =C2=B1 11%  numa-vmstat.node1=
-.numa_hit
->     762194 =C2=B1 17%     -33.4%     507502 =C2=B1 15%  numa-vmstat.node1=
-.numa_local
->    4823448           +10.8%    5344826        meminfo.Cached
->     244108 =C2=B1  6%     -41.9%     141806 =C2=B1 29%  meminfo.Dirty
->    2242446           +23.2%    2763206        meminfo.Inactive
->    1552268           +34.0%    2080318        meminfo.Inactive(file)
->       1.49            -0.2        1.29 =C2=B1  5%  mpstat.cpu.all.iowait%
->       0.10 =C2=B1  2%      +0.0        0.12 =C2=B1  4%  mpstat.cpu.all.ir=
-q%
->       0.01 =C2=B1  4%      +0.0        0.02 =C2=B1  2%  mpstat.cpu.all.so=
-ft%
->       0.03 =C2=B1  2%      +0.0        0.04 =C2=B1  2%  mpstat.cpu.all.us=
-r%
->       2603 =C2=B1  2%     +16.6%       3036 =C2=B1  2%  vmstat.io.bo
->       1.43           -13.6%       1.23 =C2=B1  7%  vmstat.procs.b
->       2058           -14.7%       1756        vmstat.system.cs
->       5528           +21.9%       6738 =C2=B1  2%  vmstat.system.in
->       2.10           -84.9%       0.32 =C2=B1 21%  filebench.sum_bytes_mb=
-/s
->      16385           -85.0%       2456 =C2=B1 13%  filebench.sum_operatio=
-ns
->     273.04           -85.0%      40.94 =C2=B1 13%  filebench.sum_operatio=
-ns/s
->       0.00 =C2=B1 14%  +7.2e+05%      24.14 =C2=B1 13%  filebench.sum_tim=
-e_ms/op
->     273.00           -85.0%      41.00 =C2=B1 13%  filebench.sum_writes/s
->     447.44 =C2=B1  2%     -21.9%     349.26 =C2=B1  2%  filebench.time.el=
-apsed_time
->     447.44 =C2=B1  2%     -21.9%     349.26 =C2=B1  2%  filebench.time.el=
-apsed_time.max
->    2343344          +207.9%    7214762 =C2=B1  9%  filebench.time.file_sy=
-stem_outputs
->       8762 =C2=B1  2%     -80.1%       1747 =C2=B1  6%  filebench.time.vo=
-luntary_context_switches
->     269483 =C2=B1  6%     -17.0%     223745 =C2=B1  8%  sched_debug.cpu.c=
-lock.avg
->     269496 =C2=B1  6%     -17.0%     223755 =C2=B1  8%  sched_debug.cpu.c=
-lock.max
->     269474 =C2=B1  6%     -17.0%     223735 =C2=B1  8%  sched_debug.cpu.c=
-lock.min
->     268974 =C2=B1  6%     -17.0%     223268 =C2=B1  8%  sched_debug.cpu.c=
-lock_task.avg
->     269263 =C2=B1  6%     -17.0%     223549 =C2=B1  8%  sched_debug.cpu.c=
-lock_task.max
->     261595 =C2=B1  6%     -17.5%     215932 =C2=B1  8%  sched_debug.cpu.c=
-lock_task.min
->       8873 =C2=B1  4%     -12.9%       7731 =C2=B1  5%  sched_debug.cpu.c=
-urr->pid.max
->       1033 =C2=B1  3%      -9.4%     936.02 =C2=B1  5%  sched_debug.cpu.c=
-urr->pid.stddev
->       6038 =C2=B1  5%     -27.7%       4366 =C2=B1  7%  sched_debug.cpu.n=
-r_switches.avg
->     977.53 =C2=B1  7%     -17.2%     809.02 =C2=B1  8%  sched_debug.cpu.n=
-r_switches.min
->     269486 =C2=B1  6%     -17.0%     223746 =C2=B1  8%  sched_debug.cpu_c=
-lk
->     268914 =C2=B1  6%     -17.0%     223174 =C2=B1  8%  sched_debug.ktime
->     270076 =C2=B1  6%     -16.9%     224334 =C2=B1  8%  sched_debug.sched=
-_clk
->      15708            -6.1%      14746 =C2=B1  2%  proc-vmstat.nr_active_=
-anon
->     817011          +120.3%    1799485 =C2=B1  9%  proc-vmstat.nr_dirtied
->      61152 =C2=B1  6%     -42.0%      35491 =C2=B1 30%  proc-vmstat.nr_di=
-rty
->    1206117           +10.8%    1335949        proc-vmstat.nr_file_pages
->     388315           +33.9%     519818        proc-vmstat.nr_inactive_fil=
-e
->      18531            +1.0%      18721        proc-vmstat.nr_kernel_stack
->      16540            -3.8%      15909        proc-vmstat.nr_mapped
->     213.82 =C2=B1  4%     -53.7%      99.00 =C2=B1 14%  proc-vmstat.nr_ml=
-ock
->      25295            -6.6%      23625        proc-vmstat.nr_shmem
->      24447            -1.6%      24066        proc-vmstat.nr_slab_reclaim=
-able
->     817011          +120.3%    1799485 =C2=B1  9%  proc-vmstat.nr_written
->      15708            -6.1%      14746 =C2=B1  2%  proc-vmstat.nr_zone_ac=
-tive_anon
->     388315           +33.9%     519818        proc-vmstat.nr_zone_inactiv=
-e_file
->     139175           -19.7%     111713 =C2=B1  7%  proc-vmstat.nr_zone_wr=
-ite_pending
->    1299984           -13.1%    1129235        proc-vmstat.numa_hit
->    1200290           -14.2%    1029746        proc-vmstat.numa_local
->    2273118 =C2=B1  2%     -10.2%    2042156        proc-vmstat.pgalloc_no=
-rmal
->    1203036           -18.6%     979402 =C2=B1  2%  proc-vmstat.pgfault
->    1743917 =C2=B1  2%     -13.4%    1509546        proc-vmstat.pgfree
->    1171848            -8.8%    1069087        proc-vmstat.pgpgout
->      56737           -18.4%      46304 =C2=B1  2%  proc-vmstat.pgreuse
->       2.40 =C2=B1  2%      +7.8%       2.59 =C2=B1  3%  perf-stat.i.MPKI
->   49439015           +14.9%   56804851 =C2=B1  2%  perf-stat.i.branch-ins=
-tructions
->       4.34            +0.1        4.47        perf-stat.i.branch-miss-rat=
-e%
->    2634429           +20.4%    3171479 =C2=B1  2%  perf-stat.i.branch-mis=
-ses
->       5.07 =C2=B1  2%      +0.4        5.46 =C2=B1  3%  perf-stat.i.cache=
--miss-rate%
->     545304 =C2=B1  4%     +22.0%     665397 =C2=B1  5%  perf-stat.i.cache=
--misses
->    7567339           +11.9%    8468261        perf-stat.i.cache-reference=
+>      24388 =C2=B1 20%     -32.8%      16400 =C2=B1 18%  numa-vmstat.node0=
+.nr_slab_reclaimable
+>      61.50 =C2=B1  4%     -10.6%      55.00 =C2=B1  6%  perf-c2c.HITM.loc=
+al
+>       0.20 =C2=B1  3%     +23.0%       0.24 =C2=B1 13%  perf-sched.sch_de=
+lay.max.ms.__cond_resched.__wait_for_common.affine_move_task.__set_cpus_all=
+owed_ptr.__sched_setaffinity
+>       2977            -6.1%       2796        vmstat.system.cs
+>    2132466 =C2=B1  2%     +81.6%    3871852        fsmark.app_overhead
+
+I have been unable to reproduce this result with fs_mark. I've run a
+number of repeated tests, and I can create files just as fast with or
+without this patch (roughly ~46 files/s on my test machine).
+
+I'm particularly suspicious of the fsmark.app_overhead value above. The
+fsmark output says:
+
+#       App overhead is time in microseconds spent in the test not doing fi=
+le writing related system calls.
+
+That seems outside the purview of anything we're altering here, so I
+have to wonder if something else is going on. Oliver, can you rerun
+this test and see if this regression is reproducible?
+
+Thanks,
+
+>      53442           -17.3%      44172        fsmark.time.voluntary_conte=
+xt_switches
+>       2907            -5.7%       2742        perf-stat.i.context-switche=
 s
->       2021           -15.8%       1702        perf-stat.i.context-switche=
-s
->       2.24            +3.8%       2.33        perf-stat.i.cpi
->  4.391e+08           +14.4%  5.022e+08 =C2=B1  2%  perf-stat.i.cpu-cycles
->     102.06            +1.4%     103.52        perf-stat.i.cpu-migrations
->  2.401e+08           +15.0%  2.761e+08 =C2=B1  2%  perf-stat.i.instructio=
-ns
->       0.01 =C2=B1  6%    -100.0%       0.00        perf-stat.i.metric.K/s=
-ec
->       5.33            +0.3        5.58        perf-stat.overall.branch-mi=
-ss-rate%
->       7.21 =C2=B1  4%      +0.7        7.86 =C2=B1  5%  perf-stat.overall=
-.cache-miss-rate%
->   49259568           +14.8%   56567448 =C2=B1  2%  perf-stat.ps.branch-in=
-structions
->    2625073           +20.3%    3158787 =C2=B1  2%  perf-stat.ps.branch-mi=
-sses
->     543464 =C2=B1  4%     +22.0%     662949 =C2=B1  5%  perf-stat.ps.cach=
-e-misses
->    7540908           +11.8%    8433223        perf-stat.ps.cache-referenc=
+>       2902            -5.7%       2737        perf-stat.ps.context-switch=
 es
->       2017           -15.8%       1697        perf-stat.ps.context-switch=
-es
->  4.373e+08           +14.3%  4.999e+08 =C2=B1  2%  perf-stat.ps.cpu-cycle=
-s
->     101.82            +1.4%     103.21        perf-stat.ps.cpu-migrations
->  2.392e+08           +14.9%   2.75e+08 =C2=B1  2%  perf-stat.ps.instructi=
-ons
->  1.072e+11           -10.2%  9.632e+10        perf-stat.total.instruction=
-s
+>    1724787            -1.0%    1706808        proc-vmstat.numa_hit
+>    1592345            -1.1%    1574310        proc-vmstat.numa_local
+>      24.87 =C2=B1 33%     -38.9%      15.20 =C2=B1 12%  sched_debug.cpu.n=
+r_uninterruptible.max
+>       4.36 =C2=B1  9%     -17.1%       3.61 =C2=B1 10%  sched_debug.cpu.n=
+r_uninterruptible.stddev
+>      97541 =C2=B1 20%     -32.7%      65610 =C2=B1 18%  numa-meminfo.node=
+0.KReclaimable
+>      97541 =C2=B1 20%     -32.7%      65610 =C2=B1 18%  numa-meminfo.node=
+0.SReclaimable
+>     256796 =C2=B1  9%     -18.7%     208805 =C2=B1 13%  numa-meminfo.node=
+0.Slab
+>    2307911 =C2=B1 52%     +68.5%    3888971 =C2=B1  5%  numa-meminfo.node=
+1.MemUsed
+>     193326 =C2=B1 12%     +24.7%     241049 =C2=B1 12%  numa-meminfo.node=
+1.Slab
+>       0.90 =C2=B1 27%      -0.5        0.36 =C2=B1103%  perf-profile.call=
+trace.cycles-pp.evsel__read_counter.read_counters.process_interval.dispatch=
+_events.cmd_stat
+>       0.36 =C2=B1 70%      +0.2        0.58 =C2=B1  3%  perf-profile.call=
+trace.cycles-pp.btrfs_commit_transaction.btrfs_sync_file.btrfs_do_write_ite=
+r.do_iter_readv_writev.vfs_iter_write
+>       0.52 =C2=B1 47%      +0.3        0.78 =C2=B1  8%  perf-profile.call=
+trace.cycles-pp.vfs_write.ksys_write.do_syscall_64.entry_SYSCALL_64_after_h=
+wframe.write
+>       1.62 =C2=B1 12%      +0.3        1.93 =C2=B1  9%  perf-profile.call=
+trace.cycles-pp.__handle_mm_fault.handle_mm_fault.do_user_addr_fault.exc_pa=
+ge_fault.asm_exc_page_fault
+>       1.22 =C2=B1 21%      -0.3        0.89 =C2=B1 10%  perf-profile.chil=
+dren.cycles-pp.readn
+>       0.46 =C2=B1 32%      -0.2        0.24 =C2=B1 34%  perf-profile.chil=
+dren.cycles-pp.__close
+>       0.45 =C2=B1 32%      -0.2        0.22 =C2=B1 15%  perf-profile.chil=
+dren.cycles-pp.__x64_sys_close
+>       0.40 =C2=B1 29%      -0.2        0.18 =C2=B1 38%  perf-profile.chil=
+dren.cycles-pp.__fput
+>       0.31 =C2=B1 23%      -0.2        0.16 =C2=B1 33%  perf-profile.chil=
+dren.cycles-pp.irq_work_tick
+>       0.17 =C2=B1 51%      -0.1        0.03 =C2=B1111%  perf-profile.chil=
+dren.cycles-pp.nfs_file_release
+>       0.16 =C2=B1 43%      -0.1        0.03 =C2=B1111%  perf-profile.chil=
+dren.cycles-pp.__put_nfs_open_context
+>       0.26 =C2=B1 18%      -0.1        0.15 =C2=B1 34%  perf-profile.chil=
+dren.cycles-pp.perf_event_task_tick
+>       0.15 =C2=B1 41%      -0.1        0.03 =C2=B1108%  perf-profile.chil=
+dren.cycles-pp.get_free_pages_noprof
+>       0.18 =C2=B1 55%      -0.1        0.06 =C2=B1 32%  perf-profile.chil=
+dren.cycles-pp.native_apic_mem_eoi
+>       0.18 =C2=B1 32%      -0.1        0.07 =C2=B1 81%  perf-profile.chil=
+dren.cycles-pp.flush_end_io
+>       0.17 =C2=B1 41%      -0.1        0.07 =C2=B1 93%  perf-profile.chil=
+dren.cycles-pp.mas_store_gfp
+>       0.52 =C2=B1  5%      +0.1        0.58 =C2=B1  3%  perf-profile.chil=
+dren.cycles-pp.btrfs_commit_transaction
+>       0.02 =C2=B1141%      +0.1        0.08 =C2=B1 42%  perf-profile.chil=
+dren.cycles-pp.uptime_proc_show
+>       0.02 =C2=B1141%      +0.1        0.08 =C2=B1 44%  perf-profile.chil=
+dren.cycles-pp.get_zeroed_page_noprof
+>       0.02 =C2=B1141%      +0.1        0.09 =C2=B1 35%  perf-profile.chil=
+dren.cycles-pp.__rmqueue_pcplist
+>       0.14 =C2=B1 12%      +0.1        0.28 =C2=B1 29%  perf-profile.chil=
+dren.cycles-pp.hrtimer_next_event_without
+>       0.47 =C2=B1 27%      +0.2        0.67 =C2=B1 19%  perf-profile.chil=
+dren.cycles-pp.__mmap
+>       0.70 =C2=B1 21%      +0.2        0.91 =C2=B1  7%  perf-profile.chil=
+dren.cycles-pp.vfs_write
+>       0.74 =C2=B1 20%      +0.2        0.96 =C2=B1  9%  perf-profile.chil=
+dren.cycles-pp.ksys_write
+>       0.73 =C2=B1 21%      +0.3        1.00 =C2=B1  7%  perf-profile.chil=
+dren.cycles-pp.copy_process
+>       1.05 =C2=B1 13%      +0.3        1.38 =C2=B1 10%  perf-profile.chil=
+dren.cycles-pp.kernel_clone
+>       0.28 =C2=B1 22%      -0.1        0.13 =C2=B1 35%  perf-profile.self=
+.cycles-pp.irq_work_tick
+>       0.18 =C2=B1 55%      -0.1        0.06 =C2=B1 32%  perf-profile.self=
+.cycles-pp.native_apic_mem_eoi
 >=20
 >=20
 >=20
