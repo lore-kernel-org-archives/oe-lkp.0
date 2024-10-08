@@ -1,103 +1,106 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B0961EF925
-	for <oe-lkp@lists.linux.dev>; Tue,  8 Oct 2024 08:03:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E6EA12C484
+	for <oe-lkp@lists.linux.dev>; Tue,  8 Oct 2024 08:32:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.7
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728374617; cv=fail; b=YbyqllOe3VGw793oVx5hBEmxlGjobUxcRpjlTArBJbyi27tvi0csMPY6lb6SQAnzKCc+HjxXd4Ubtj6ub54UkrPemhdJArPiGBDDbfUvu+wLZFxv2/bts4sN/s03y/xt9RokBF84TJu6H8AkLwZn5dWXKBwN0eNYes4CiMaQbCE=
+	t=1728376338; cv=fail; b=KbAeFTyeNlP80Ya++W+bFWkutV70jFhTSgwbJ7Gt1anKBM34wKYv62HpNaJjG4dijWf6rrvucNRRLFIt9GTazwy/AbEoKeOxsESxgqY/mQgx98IGsH5M2d43l+hDs1iVjb+Dn+jaBH8xu2SnZfbd2U3vBgMKAhYUJ/qJYeulJCk=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728374617; c=relaxed/simple;
-	bh=IHhZJjsmW50fPe0VW7dhLzZok4S3qCyeH9PBHkY5vXI=;
+	s=arc-20240116; t=1728376338; c=relaxed/simple;
+	bh=uZJAHyQcndsgmX0dKS9kbvqX6o2ZiGz/0VxbSEV7XTQ=;
 	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=dILYtB72JgilCwBfwujchlLvSzb2cU4ayg+jAZ+QCZpT8Or05E+9JZSldYdzCF7MmJq7OcFv/elmxd54garPfRHDyOtfEEjt7+Yea7/GbPqFLVUf9jSXy3n6nFvDUATVJbFak05I0TicKOMXfq6J6c2bzsCsEN2SD0AD9Iy0QvI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gflpx0KJ; arc=fail smtp.client-ip=198.175.65.12
+	 Content-Disposition:In-Reply-To:MIME-Version; b=O+A1F28iVNhNGxRC6amInSxEIqJQEmtKMlwzbfRBJXu0DZSMUPMG275MKInJ8AmhdCrDiqtgie6HxyMJbHPaVYRObYP+kgkM0/3G1rnuDQabvdZLzvA9y75e0LF45fQuAR6eAEeR81yFJW4H8MrM2mC4J1BNELh/eN7wU3+QZlo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iJIA2apc; arc=fail smtp.client-ip=192.198.163.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gflpx0KJ"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iJIA2apc"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1728374614; x=1759910614;
+  t=1728376336; x=1759912336;
   h=date:from:to:cc:subject:message-id:references:
    content-transfer-encoding:in-reply-to:mime-version;
-  bh=IHhZJjsmW50fPe0VW7dhLzZok4S3qCyeH9PBHkY5vXI=;
-  b=gflpx0KJMWpB2Pzckunw3oYmFqNqN5i3FCdmYwRJg7Mv+hvxCulTlzhj
-   7Vrz4zHghB09w7m8PppVKIY3GnV+vib+Pt007xZHE2MXrT/Ug1V0NLSiz
-   SDQcWSKeCzuHTgQ6cccf0mrzCB01RbAjSts/ZPI/MlkPP49/XsVzFNrEW
-   Tq92fsFmHPQpwXS2eDF8hzHcO08hNBjIhRnN3/ZMzwU2EHGv6qjPMTh9o
-   kSzDvg2BXfRS97tRWbjYpa6yYCkvGDTCs5IroZVSWnJJv+yEZVcqRFpt3
-   VeAfDa8SN2D4lcuAh9sxURWThaDv4mTkwDoTUVacebGaYy8C1/p/77/Uv
-   Q==;
-X-CSE-ConnectionGUID: Lk0w6sQOTx+cIiAEV00Mjg==
-X-CSE-MsgGUID: DhZy8zOsT2CcZ+6RcozDuw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11218"; a="38942414"
+  bh=uZJAHyQcndsgmX0dKS9kbvqX6o2ZiGz/0VxbSEV7XTQ=;
+  b=iJIA2apcY8zSdinhyWZdeBxih3sfiaJn5oSWlW43imY/juh6zm4eicKP
+   XKW6tajXC2FpRqQ6hF2KFPGW82tBp7Xt1bArkSJYpSiVkIeYxD+R7Wml8
+   TuiTQ1Pr5Sa0I6mpUA31NFcwtuJR0GMnZ5MmH9qo5y+1i+dJUpqKVmvBJ
+   a3YycMXXhJ/8A0gndwOsSGrzIqGc8sWS0jkLtdON/tdwt7Ebl3eN27YxG
+   pMUPwzq9vDACqmHFS3mJVb4lnX720ppPdi9078PL5fzbdBRcjlJM7FZbT
+   Gl0RldYoP47ul5C5TnLyIgUMo92HqtZ1GcuHi/kT0g15E4jK7HoAcHZLw
+   A==;
+X-CSE-ConnectionGUID: jgAWUaaFQMKBuqmLqaBvpQ==
+X-CSE-MsgGUID: MoYMj5G+Qs27ENuu2reiUQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11218"; a="52960781"
 X-IronPort-AV: E=Sophos;i="6.11,186,1725346800"; 
-   d="scan'208";a="38942414"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Oct 2024 01:03:26 -0700
-X-CSE-ConnectionGUID: sG7X5capQZ+/Y0Vy3klTVA==
-X-CSE-MsgGUID: 72CWuAC8RrmkS3ifRlSBqQ==
+   d="scan'208";a="52960781"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Oct 2024 01:32:15 -0700
+X-CSE-ConnectionGUID: Fa0w/2SDTe6HhClWunfUTA==
+X-CSE-MsgGUID: E6uB2DaZTPm8SDFPeMQNRA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.11,186,1725346800"; 
-   d="scan'208";a="80170267"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by fmviesa005.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 08 Oct 2024 01:01:54 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+   d="scan'208";a="80592453"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by orviesa003.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 08 Oct 2024 01:32:15 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Tue, 8 Oct 2024 01:01:53 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ 15.1.2507.39; Tue, 8 Oct 2024 01:32:14 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Tue, 8 Oct 2024 01:01:53 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Tue, 8 Oct 2024 01:01:53 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.173)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ 15.1.2507.39 via Frontend Transport; Tue, 8 Oct 2024 01:32:14 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.46) by
+ edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Tue, 8 Oct 2024 01:01:53 -0700
+ 15.1.2507.39; Tue, 8 Oct 2024 01:32:14 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=FPBWimY873T3WxhSJiWhzM6SZOtB7To68T27imvry9t6bpsMj96eFZeuz/rEz8Ocwqa4wZvOW2YoCbitnl8qoAZERsfxRkUephw3SWAE3dmTuyW0wdNSfCQulNfc/sZLiGA8IghzIxnbc8Cnbu7eXn1QBwAOsvE2KpNxCMbvfIx5eLRT7gKJ9iIiEgPKVzyTNk1c2TA4fUQ5n1qDJ/I18I2mnqIFS5KU716z+vI8+55o4wI8/Our/ysfbje2JtEUJKXue3QEoX7w03kW7ziQ1rTYXhqZeZfiORo+19I/wvLsMFTtIpBvtBs/SszVYMpQKUsX3yGw7nz6Ocy6ou5PWA==
+ b=vNknfc5gnVNwdH8FmDOsU93WABterChViuZ1ygdCbP5iNW9jxeZb32nr2BlHRJmPzT6OCY/fLOA9pH4eEnMtlh1gdIgxZvtMQ18SS3wHRRSe4/vRGWCC/LmSsIXc8gl+uqVP0+iVqbS1dTjlzrE1c9BI4yCzPpwUM5+UuQ7AWuqJJ/BgYuHHf+OyJSimkDebCUZrOQ/GBpQrmVj0bx/Xz1b56fX90mSH6qcsnlfOdTClEGLRawhlHbXqHTOoLomfnPxgecUUZgsFYa/JxX/BFqxmhmaoB3vdTK8MsIJenZrFFLHN78xtIg9+7im5+t5bDrV3G6d+4f7QTkk05Kik3Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EjvtEPQotadLfAop1EjpnQEEbBpyTlm3XNcLRGKOGE0=;
- b=aTTQgi3JuubCrwn1Di3aOfSFj/zrYHTXDkr73KJ5x5zyRVrYXjyJKpwfxi6bgpI87Rc/IgbWbxkJLh+QkVGLx3aZ2R12KyT+RotMwIv3Wp1QhrBJEJThqsk5Tnc2StSmtFlbs/A+ueyd2O6W1xtoBdeOvPb22mIBKMgmeMjxLrIghhhSBpjjHEuS7JCtEUKxlU4R5gmCVnffCW0wd1Uj3g+KQ1M8vUxUp/BUyqkW7MB+GC/PY5AvMXq0IFhAmA09z1Wl6/Q2Tb29zZbpCgbP8yy8Ndc4i3yXVJi6CkBcHYgjIML/zvhqWCYPRCMCpIr/7MDi4FyQwGcqPy91NQYHTA==
+ bh=xqddPQE1Js8Eox/Gktmud8L6kVPco0pYeKNXXk3PvGc=;
+ b=SSGBM23b2HIGbLYppHkUeyo6qrmEKFIuyJxqVOMP6EEGfrievFzYiLronX+CCPDPwqXyDSlhEXpBkIzYB1HU9pH7BausbvtkLxxuAT2Sm8GxmLbo5LkXL6sj2wxqxhlqdp3ZAxW3ZvyzBysFu7EZqMCel5qz9RCojxIYSpIZQMzkq+BbuUidrvA4Bx6g6WAgYXoO1YhqQFijHCI7R6GP1+/06shhc8mYRPvAm56R6dj1CyTGxCAxAI+eBY+r4IpsSHgrY5VUUFZENddrXVZFQ8ok3BzXPj4ywZgFWEYOCNzshCpOUboNeaJ0rGMqkY7Pv3b5aSpqACgbkvvTAY1zrw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from SJ2PR11MB8587.namprd11.prod.outlook.com (2603:10b6:a03:568::21)
- by CY8PR11MB6914.namprd11.prod.outlook.com (2603:10b6:930:5a::13) with
+ by IA0PR11MB7837.namprd11.prod.outlook.com (2603:10b6:208:406::9) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8026.22; Tue, 8 Oct
- 2024 08:01:50 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8026.23; Tue, 8 Oct
+ 2024 08:32:11 +0000
 Received: from SJ2PR11MB8587.namprd11.prod.outlook.com
  ([fe80::4050:8bc7:b7c9:c125]) by SJ2PR11MB8587.namprd11.prod.outlook.com
  ([fe80::4050:8bc7:b7c9:c125%4]) with mapi id 15.20.8026.020; Tue, 8 Oct 2024
- 08:01:50 +0000
-Date: Tue, 8 Oct 2024 16:01:37 +0800
+ 08:32:10 +0000
+Date: Tue, 8 Oct 2024 16:31:59 +0800
 From: Oliver Sang <oliver.sang@intel.com>
-To: Jeff Layton <jlayton@kernel.org>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Linux Memory Management List
-	<linux-mm@kvack.org>, Chuck Lever <chuck.lever@oracle.com>,
-	<linux-nfs@vger.kernel.org>, <ying.huang@intel.com>, <feng.tang@intel.com>,
-	<fengwei.yin@intel.com>, <oliver.sang@intel.com>
-Subject: Re: [linux-next:master] [nfsd]  8cb33389f6:  fsmark.app_overhead
- 81.6% regression
-Message-ID: <ZwTm4e5JxOOJc7JC@xsang-OptiPlex-9020>
-References: <202409161645.d44bced5-oliver.sang@intel.com>
- <70ce1781c9fb39d974d38b7426194ead97926ed3.camel@kernel.org>
+To: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>, Mark Brown <broonie@kernel.org>,
+	"Liam R. Howlett" <Liam.Howlett@oracle.com>, Vlastimil Babka
+	<vbabka@suse.cz>, Bert Karwatzki <spasswolf@web.de>, Jeff Xu
+	<jeffxu@chromium.org>, Jiri Olsa <olsajiri@gmail.com>, Kees Cook
+	<kees@kernel.org>, Lorenzo Stoakes <lstoakes@gmail.com>, Matthew Wilcox
+	<willy@infradead.org>, "Paul E. McKenney" <paulmck@kernel.org>, Paul Moore
+	<paul@paul-moore.com>, Sidhartha Kumar <sidhartha.kumar@oracle.com>, "Suren
+ Baghdasaryan" <surenb@google.com>, <linux-mm@kvack.org>,
+	<ying.huang@intel.com>, <feng.tang@intel.com>, <fengwei.yin@intel.com>,
+	<oliver.sang@intel.com>
+Subject: Re: [linus:master] [mm]  cacded5e42:  aim9.brk_test.ops_per_sec
+ -5.0% regression
+Message-ID: <ZwTt/wB/mmszSXc3@xsang-OptiPlex-9020>
+References: <202409301043.629bea78-oliver.sang@intel.com>
+ <77321196-5812-4e5b-be4c-20930e6f22bc@lucifer.local>
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <70ce1781c9fb39d974d38b7426194ead97926ed3.camel@kernel.org>
-X-ClientProxiedBy: SG2PR06CA0210.apcprd06.prod.outlook.com
- (2603:1096:4:68::18) To SJ2PR11MB8587.namprd11.prod.outlook.com
+In-Reply-To: <77321196-5812-4e5b-be4c-20930e6f22bc@lucifer.local>
+X-ClientProxiedBy: KL1PR01CA0152.apcprd01.prod.exchangelabs.com
+ (2603:1096:820:149::20) To SJ2PR11MB8587.namprd11.prod.outlook.com
  (2603:10b6:a03:568::21)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -106,247 +109,340 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ2PR11MB8587:EE_|CY8PR11MB6914:EE_
-X-MS-Office365-Filtering-Correlation-Id: 395c2f2f-72d1-49e2-2efc-08dce76f772f
+X-MS-TrafficTypeDiagnostic: SJ2PR11MB8587:EE_|IA0PR11MB7837:EE_
+X-MS-Office365-Filtering-Correlation-Id: c4a59121-6028-4ae8-6725-08dce773b3e9
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016;
-X-Microsoft-Antispam-Message-Info: =?iso-8859-1?Q?KkytKH0Rv19bswReeyy+aRYXFEXZw0fjo0JxojtEOOgpBY5inznAPTUn/x?=
- =?iso-8859-1?Q?qG/vEIP6dnTzF8pYZ6kyHoKVpoq94mxPH7zbMGQpEhZmGDM8Sd/mY10BPo?=
- =?iso-8859-1?Q?MNVNNmuH6G1ClbTdK+QLj9dJvFzxamOZD/acj5Q8M54fDS4ke300/dge4+?=
- =?iso-8859-1?Q?7UckffYHwIFEzDLH57KRaCs+ulvbJIh4I9f0DZOn2MQQOjRFI76rqOBlvi?=
- =?iso-8859-1?Q?cerv/hMl/xji6Li/2j3/nFqseMQ6V4YFprvEWMRTwvwzX9bK5DOyWoTblx?=
- =?iso-8859-1?Q?iOF1XRdrNCfFgBq9X6+9A2b217NeMicR42w+/J7JtWP24F+DCkZ1w2otDU?=
- =?iso-8859-1?Q?zM5ROMlXxEc+mKddRJg5qN3Dd/UDL13qnMNu+vYldHxSfEKh41o2OHwtEZ?=
- =?iso-8859-1?Q?OXgQ8cfAMOIjM78e7vwZCVrbBJb0jfYFMiwWtUfpwfCzYjvz3SpwI7O7dX?=
- =?iso-8859-1?Q?1AKVriEz/7fzqe4537veoPHOg4gW6pMjKPlEqXKEUUBL/I6x27+RNPP98u?=
- =?iso-8859-1?Q?PWwLjRSXjIypYtuE6JQrR1rHllNYC+5wIpX/+l6zhCMpD1XAAgEY3HIni3?=
- =?iso-8859-1?Q?9+JMmfpQO4GRxZeJtJ5oAyybLDYMBzt5JEl7g9Da2DBlDBnE8ReDKhglfx?=
- =?iso-8859-1?Q?B5Eor+AzLSVFNKN2oZtHjcSPIN2OfkInWX39CbrJb2jSx8rShTFnzaNEEC?=
- =?iso-8859-1?Q?KDt1+2uobtifTPzCxCiLG5JfkIgT4SsDZUFC11s12t8o7xx74osDPvHhoR?=
- =?iso-8859-1?Q?ePhIlfEBM8uuUZxtEPsU6L+mMYP9Dt9zN9Sn4xGspEG8PkMM4jYWF6R9xG?=
- =?iso-8859-1?Q?c7sz1yunhdUppiBdmNc4TdbmGbBOHoV5AMAzdqyvas2IuOaV+6tKRsdgns?=
- =?iso-8859-1?Q?JfwL+clD7NIN0+LoqGIOeQTW/QwiZflBZ//Q4SMD69InX2uaoGx2iBT4qN?=
- =?iso-8859-1?Q?0OlfV6UlmTfCA7Iwg2voqLwhE9DSxT/vhAckA4doAqr4tgd337hdXnoI6y?=
- =?iso-8859-1?Q?gtNBS99OP5RJnkrhmgm+J//rBaS/gejeYg24Ap87yAhcbSZDijhm90LS6/?=
- =?iso-8859-1?Q?GyFdtujoZYAeIMwiTtzClV+A6Ikb3RfcWBQLOhM1H15GIcFRyEIsAzHVqy?=
- =?iso-8859-1?Q?2gt4Dv70wYXt7A5X/OTGwXZTmyF6oaNTLCQ1S8P4NAxCoijYyzJ3gUVPbz?=
- =?iso-8859-1?Q?/iBjwVuKSD4Cfx3mEhd/lgadLnVo07zsGQhoV0TiiSkwVAMl+2eMh2VKSC?=
- =?iso-8859-1?Q?5/zSpAKVuPAj0f+fy+plZVjxC+J8carXYXSTtVeK8hwRc/gU7ja1lLv05s?=
- =?iso-8859-1?Q?psHsInmzE8n815uqgocG3xDW3d916+JMIv0eJ7JDmvAcSD0=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ2PR11MB8587.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|7416014|376014|1800799024;
+X-Microsoft-Antispam-Message-Info: =?iso-8859-1?Q?ZJQgxEqwNsfSyoe7diuNjUnP3XA4hUQniSzzM+eGElhhWqmfPjaNDkyDmU?=
+ =?iso-8859-1?Q?JlufJd2tzkM1856J3h9gtqQ53Cz8w90E513oizoE3+nSYl+QaRv5E0UHyW?=
+ =?iso-8859-1?Q?mm4RDPzNQFJuBw8ZF0t5T/Ne9XrZbi2meO8GZys4+Xj2exHdFwFFJxDtRy?=
+ =?iso-8859-1?Q?ebLLUq+bK0R4x2pPmarMAoVwiRU/OoPGOn4ZDTasCC3IE7hvhdLD1lULjZ?=
+ =?iso-8859-1?Q?2knZWQ8j9FtZ5tFMFapav9rbceHF4AJSHjd6KHkYmpIQWlIFWXuCO2bQpG?=
+ =?iso-8859-1?Q?+DVZ53jQZZGviomsRnwO6wCCTJ6KzJymyrktKouD/NmWuYxaLgpLsts8VR?=
+ =?iso-8859-1?Q?+9hM+l84OeX1rS8g0UvkLHonvpFaN15QYasbYf4dhdrH5QfljAfNgd5XaZ?=
+ =?iso-8859-1?Q?Y98n+SdumY9phNF2Ym4QEZoRJLRVUT4Bjg8DBz3o+mNtVPSiJl9CwFacA7?=
+ =?iso-8859-1?Q?KZBG8+rLQUzZUu1tFee0UCl98J6d4+HjnUukFKZ172SP42Ll/8xHGbWH63?=
+ =?iso-8859-1?Q?ilo/Am/+oUZKYr5n7/4LMqrHNtGaiaMUWRzJQXfumdRlBb71n54Fm4cC+t?=
+ =?iso-8859-1?Q?fgpj9H8oRwH79rg+U6VN4+BYT+DcaagLVDzcUX6eiEN03daUfi6gors8/+?=
+ =?iso-8859-1?Q?nF+ogaSkp71NDtJ9+7w8CIllgogQbDD1lFYmSFP52L33WtrYkUyCVsvB9W?=
+ =?iso-8859-1?Q?Zl2DEyRi9Abpo93SYdkS159xFLt9+l2qzOFvCk16IFFa2FZcqGznFdX66H?=
+ =?iso-8859-1?Q?WzLjbGxwmCTqTtJIZG36DTbANR0PBz/6JJrRk/wM+H+ViH8UhiDyhNzcil?=
+ =?iso-8859-1?Q?QBznMGSjn4YEehaJiKCGJ6LXdFPJAgjaQm9VEQ1nli6e9IiPRza12Hvviy?=
+ =?iso-8859-1?Q?ZzLtfJmCIph4tO8Gp4J9gkL6Kb2sRWjGN48O+QwhDt74LXItkVDTK/Xy7F?=
+ =?iso-8859-1?Q?dZ5XxZD/iFsdjP42ary7CysBM/g1MvU5D1FUX/dFNAUbsF4SlF1AMgxIe6?=
+ =?iso-8859-1?Q?GhgrhSRu4E5R9k/8qb2Tuu5YAYwFnKP4ThkkWwLnHW0JQsbmdF3VeHYH7E?=
+ =?iso-8859-1?Q?R4nKFCdDimQtU0uH1lkDjFej9M3ZxRNlfTNtsw1xiH2IbCM11H08y2dEe7?=
+ =?iso-8859-1?Q?iDatmcJTBgt4bzgoDHStutmAcgIfYHVjKghTa4lcxYK7ZOVKxL4SvDUypE?=
+ =?iso-8859-1?Q?kqd6NtyxgiQfOIb0rJL+/bKvddbiyi4XRMUPEL8czja27Zvetrv/7L4oKO?=
+ =?iso-8859-1?Q?nURE4j5UiK0P9ViaXt3keuYDqRDfeZJgD9oZ+juUXKVEO08uS85rpjfAt6?=
+ =?iso-8859-1?Q?S1Ocn/Hd5iEqeMuX+yzMD506elDR+SR1hQCOye/Fp0+2tTA=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ2PR11MB8587.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(1800799024);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?BymWKu6dVMr1bQ9swkso+4Gg0o1ZM8ZMoALm44hiDnP3XhI6AvvlWprQA6?=
- =?iso-8859-1?Q?IG5quR2cfM1oitlW5qNUBE/8QuT0iGyciylfJy2f6WgfDi3DU7K3K3cbmD?=
- =?iso-8859-1?Q?OtMxMCMTm8ZAOMDacwyxf26ZJ7qpP+wdw77CY/kmxnaTfBgok/gCFz470f?=
- =?iso-8859-1?Q?sA62l2jDauHWNT/GKKJMo8ugGLxG3uUpwK0GRgG1UhYfG/XeoKVtp8/1zw?=
- =?iso-8859-1?Q?Kls0Z4GrIINcOb3xnS/Q9c6SnIugqC/GRewQLujroL6XHtoat2uom9K9G4?=
- =?iso-8859-1?Q?wEzXo8U84Jhfw3hsEUgOG0ACRu/SFTjUQ1vil+ZdtPg0AQRo4lbbTvBUdx?=
- =?iso-8859-1?Q?6yBH+NrBiNdxInIFkKPUIm7qZNNN4O1I7w/t9mtLnI5cR2Kj3huBf0wyr2?=
- =?iso-8859-1?Q?gQGztBD38giyEUevjUKdtaB2i4ii+9/1LOJR23oI3e1vjc5WyoSlDFOJS+?=
- =?iso-8859-1?Q?83z2eVcBcTI0WcLnVAvzmdf5VYu+EK5IGIjy3T5k5FjL9+8kXgJaMaLWZT?=
- =?iso-8859-1?Q?g2qY+phdTM3pAVXZX6Cl7Ua+uZbpeHunDlsbAXDN7oQmPLUDWm2P6+XGoJ?=
- =?iso-8859-1?Q?DxpnQw4tj7XMseD9pAh3tW2I38FqMG22khQsitW2qZEhvPr0keJ8Efl4hU?=
- =?iso-8859-1?Q?cYdQkWRAIpq4ss/w354ReQK3wRoRratZWoIp1qyv0QeOkBqCX0mSCFINWB?=
- =?iso-8859-1?Q?r08ZO79foYkSARxOgNeaycNfVOB/v1zJSpRTlsJP95sFrUiO9fi/WtwAym?=
- =?iso-8859-1?Q?5BjoofJKYP8iHfJNSU1lPElLMqOEQqkZRcPfWINgdGmU3eUysAp3nrT7cz?=
- =?iso-8859-1?Q?7TIESVwVmmDAeSaES+TZAY+wUjrtibO4rQCQ4lKPNS/yxES8LExvfVeYbU?=
- =?iso-8859-1?Q?ET4JCu2d3QnLnqKAQkBtCDZLm7+HmknfhA8WJjaBLNVSn/T2KF5hEKvd/p?=
- =?iso-8859-1?Q?rPLCoZMxDB/Fc7COSyHImdY7/QhC+soU+BCOpI7QiY/v68zPFiYPwTGrgH?=
- =?iso-8859-1?Q?iQVJ9wZKbHzjPpGshwBMQJUluck60Tevxcs+w1+AJoW2GEb+swIRRcKkjg?=
- =?iso-8859-1?Q?qlw51tLPBCmBvZsHAJ12KGSTqZdFOEMgYyPLaQIdatvhPeV/YEU9DqRo6q?=
- =?iso-8859-1?Q?f9PhlO5Liro/X7/QKE4gIBPNFVnP4vLHqosylnUCv4HaBUXy9LZS52qeAM?=
- =?iso-8859-1?Q?MiWm/m6+TytH4RJHmAWguH03Hi32tOa12A3wdXkmyp8l5Le+/grX5rySVR?=
- =?iso-8859-1?Q?aIJ1dUEbRzcB+Xc2yd+qjFLCQYdhRugKdFWX/dhk8XqWrlNRnQYJufwIrh?=
- =?iso-8859-1?Q?lzF9zsXlHsV4W8YfUi6QaaNXLsorUKze0ACjAyfz+jDcpyr/Zuj3nFaJTT?=
- =?iso-8859-1?Q?HkkVdvyjowH2S6e64zMXxECBREG8gaSiMDGsIU4iis6LIcqECBwqqSkO+g?=
- =?iso-8859-1?Q?fQyQpxzUA+lXUTYDOtEgjp0wubyRfs/V9c0nGdq2D4JAHy4VyhuWzlNe4Z?=
- =?iso-8859-1?Q?U+gK2DVd+L9Su/13cKZznpnqEJucVAnPIFxRGMq3vAVIzG+moMRtl/2ovE?=
- =?iso-8859-1?Q?RHIR9jh+IOATCsgckl0s7dj+4fVTZNeXgm8kbT9PNO6T00qwg5VXJ6VbSE?=
- =?iso-8859-1?Q?g/2EFGPhZI4iQKTGvqzhicUtnNY0TyX+OMKYBh5JOaCt11RkM+BtFgig?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?Aazu+IW7s5CosxrG5V/1z5WC6Nu25bSKlHsHwnCJpVrhrRCIMN/qDx9zUg?=
+ =?iso-8859-1?Q?AftlIG439SQs2t0Znk25s6A+tBsSt1BdUF5x+JXZIE2uBInGddLhQLK6G5?=
+ =?iso-8859-1?Q?6dE2pCaYFWSSQxdebsOKJBgh/j6PivQB51MEifNUKiJ4b+VwKCneOnJAkx?=
+ =?iso-8859-1?Q?j83cMeH9CrCvSQX6NibqWZIKsaMx5PuCBbaSH16xUQIBymU15SFn6tiWfn?=
+ =?iso-8859-1?Q?mNxDmKMRiboVS9E94wW8CjomDTo+Wuq8w/Bx45zmTRgBrAm407IwPpdAiS?=
+ =?iso-8859-1?Q?ugR8GAZUTT3cu9eWIkXMgAgv8X0F9Tu/OztccyvWAPUveHOYQNZax6u6OF?=
+ =?iso-8859-1?Q?XMd1xQTAUGp/1dbbibuElxtuVi44CnUmSZCckAG59sn8zTtLKKt03exOXF?=
+ =?iso-8859-1?Q?94hid1mYWDmPzxqSj8bqVBBCr/fEuI1/d8fRNG3rUBODwM6f9IqReDcM/K?=
+ =?iso-8859-1?Q?uM61BBG9N1FkUdaTdfCGDrhw0uzNfh+OqFsCZegfJlQ41e7K/7qCZp76bs?=
+ =?iso-8859-1?Q?0vdVeCq3kp0K+dNNhaF86AX4MzpbOXdXlSK3M+SapajTqI9wnuGTxnDxou?=
+ =?iso-8859-1?Q?ESD8Vlw78kj0WbzKaBRkCaW7FP5OBNbnw9j87kPK/7+kE8nW02nm/Rf4Lh?=
+ =?iso-8859-1?Q?5zoCqGgLVMpEErZZMa+uH96xUYxgNFI4C+WFATBpCEnKSZLTHDQtLlmacP?=
+ =?iso-8859-1?Q?cdSkO+iA+sXeQPshGH97wj0G2O5UBJfBn/b1pRVbbDVuUPA1UwSxU07E9A?=
+ =?iso-8859-1?Q?svXI/MOHhsykLp94zpDPkmjIihpCV/S2dr58ZPhCXRa5L3FCZlORYKIK4s?=
+ =?iso-8859-1?Q?kjhIK8z1tXncOIgYifvtXfAvh9EHxvl9qXZzDzxVBL5qYMxxwTP1/q06LX?=
+ =?iso-8859-1?Q?NPsqKAkGAJEPwbHc4Laf57zPQXuOyUrCWtYTXG4my2YS/7Jb962xHU0Dp7?=
+ =?iso-8859-1?Q?/bkqkwLaQDM3YoE1gH7/Ug2ZiiKdGm6Z/hTFHGuImVTFWhwqWLoVDHgOI0?=
+ =?iso-8859-1?Q?T+s2gMVLC+dCue6rTYcUJ7vLSdoHRdib+/WVY7vdghG3K0EBoBmwHC7n9g?=
+ =?iso-8859-1?Q?LQdMBn9UhyORxPSGbDDk9fkRg/sw9gXnS35xEkMftI+sSVMTEHQNby3Zoq?=
+ =?iso-8859-1?Q?dWmEFuO3TqNXUWqihbeqam0ug/zwVhq6d8BdBF7UKD9nBZ4CuqRkGck0IS?=
+ =?iso-8859-1?Q?NwbYFd0KDee6+ToC5uIrIlE1OI3lmsPxwR2RWW6S+BOqBeBC9RJMW/nwfz?=
+ =?iso-8859-1?Q?53MQMZ5LziEWcnnZiwl+Qf7pjUtX/c+a+ZxrVtIHdz08GkmJyLGcGnOotK?=
+ =?iso-8859-1?Q?VBAPylf2ZAoz/iNcbTmNuDeIRIQkNP/5cVzRxsLTV2EV9HKnJwEHBvYfSo?=
+ =?iso-8859-1?Q?0A9jo+tXv1dsW/oOtpYICBNR8oJUjT/zqKsj+8f6hGgEJT6jg6H627cipa?=
+ =?iso-8859-1?Q?qior6XjB0ey+vobC4GFo7rBvIrRebguu6L9tdADhLtPeEhJHks9rwADkZl?=
+ =?iso-8859-1?Q?JJWob8hv+Fi3sv76iOxzMslp4FFbk2lcPWTDL1zmexjLrr047E9o+6Y1pa?=
+ =?iso-8859-1?Q?Yi1ZyUjKuN2Djdj1Y8MvNxTXZ6Pi+fU0k/hlTSdKzwr6rjxPd2mxP1OED/?=
+ =?iso-8859-1?Q?Ly8Azb7Gv/W1UZ3o0t3yoBHN02ond46vcfzzIFpo35vQszjFL/ENTnEA?=
  =?iso-8859-1?Q?=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 395c2f2f-72d1-49e2-2efc-08dce76f772f
+X-MS-Exchange-CrossTenant-Network-Message-Id: c4a59121-6028-4ae8-6725-08dce773b3e9
 X-MS-Exchange-CrossTenant-AuthSource: SJ2PR11MB8587.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Oct 2024 08:01:50.8517
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Oct 2024 08:32:10.8207
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9yINH0dx8I1JgFjmbngw/xWK8JI/I5j7GuLmwtLWfGXMq7yQH3bSSjQb6t9gSC6/WX5aIHEVVWysI+k1N3r+Bg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR11MB6914
+X-MS-Exchange-CrossTenant-UserPrincipalName: ey6PW6+PkRT8tq1Z9FSilAsoXXs1rRMaPLF3a4aehtUdgvOM+zG0FAFd6RXP2J6k7sQIL2dzg9C6bJBcCL+pcw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR11MB7837
 X-OriginatorOrg: intel.com
 
-hi, Jeff Layton,
+hi, Lorenzo Stoakes,
 
-On Tue, Oct 01, 2024 at 08:44:43AM -0400, Jeff Layton wrote:
-> On Mon, 2024-09-16 at 16:41 +0800, kernel test robot wrote:
-> > 
+sorry for late, we are in holidays last week.
+
+On Mon, Sep 30, 2024 at 09:21:52AM +0100, Lorenzo Stoakes wrote:
+> On Mon, Sep 30, 2024 at 10:21:27AM GMT, kernel test robot wrote:
+> >
+> >
 > > Hello,
-> > 
-> > kernel test robot noticed a 81.6% regression of fsmark.app_overhead on:
-> > 
-> > 
-> > commit: 8cb33389f66441dc4e54b28fe0d9bd4bcd9b796d ("nfsd: implement OPEN_ARGS_SHARE_ACCESS_WANT_OPEN_XOR_DELEGATION")
-> > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
-> > 
-> > testcase: fsmark
-> > test machine: 128 threads 2 sockets Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz (Ice Lake) with 128G memory
-> > parameters:
-> > 
-> > 	iterations: 1x
-> > 	nr_threads: 1t
-> > 	disk: 1HDD
-> > 	fs: btrfs
-> > 	fs2: nfsv4
-> > 	filesize: 4K
-> > 	test_size: 40M
-> > 	sync_method: fsyncBeforeClose
-> > 	nr_files_per_directory: 1fpd
-> > 	cpufreq_governor: performance
-> > 
-> > 
-> > 
-> > 
-> > If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> > the same patch/commit), kindly add following tags
-> > > Reported-by: kernel test robot <oliver.sang@intel.com>
-> > > Closes: https://lore.kernel.org/oe-lkp/202409161645.d44bced5-oliver.sang@intel.com
-> > 
-> > 
-> > Details are as below:
-> > -------------------------------------------------------------------------------------------------->
-> > 
-> > 
-> > The kernel config and materials to reproduce are available at:
-> > https://download.01.org/0day-ci/archive/20240916/202409161645.d44bced5-oliver.sang@intel.com
-> > 
-> > =========================================================================================
-> > compiler/cpufreq_governor/disk/filesize/fs2/fs/iterations/kconfig/nr_files_per_directory/nr_threads/rootfs/sync_method/tbox_group/test_size/testcase:
-> >   gcc-12/performance/1HDD/4K/nfsv4/btrfs/1x/x86_64-rhel-8.3/1fpd/1t/debian-12-x86_64-20240206.cgz/fsyncBeforeClose/lkp-icl-2sp6/40M/fsmark
-> > 
-> > commit: 
-> >   e29c78a693 ("nfsd: add support for FATTR4_OPEN_ARGUMENTS")
-> >   8cb33389f6 ("nfsd: implement OPEN_ARGS_SHARE_ACCESS_WANT_OPEN_XOR_DELEGATION")
-> > 
-> > e29c78a6936e7422 8cb33389f66441dc4e54b28fe0d 
-> > ---------------- --------------------------- 
-> >          %stddev     %change         %stddev
-> >              \          |                \  
-> >      24388 ± 20%     -32.8%      16400 ± 18%  numa-vmstat.node0.nr_slab_reclaimable
-> >      61.50 ±  4%     -10.6%      55.00 ±  6%  perf-c2c.HITM.local
-> >       0.20 ±  3%     +23.0%       0.24 ± 13%  perf-sched.sch_delay.max.ms.__cond_resched.__wait_for_common.affine_move_task.__set_cpus_allowed_ptr.__sched_setaffinity
-> >       2977            -6.1%       2796        vmstat.system.cs
-> >    2132466 ±  2%     +81.6%    3871852        fsmark.app_overhead
+> >
+> > kernel test robot noticed a -5.0% regression of aim9.brk_test.ops_per_sec on:
+> >
+> >
+> > commit: cacded5e42b9609b07b22d80c10f0076d439f7d1 ("mm: avoid using vma_merge() for new VMAs")
+> > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> >
+> > testcase: aim9
+> > test machine: 48 threads 2 sockets Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GHz (Ivy Bridge-EP) with 64G memory
 > 
-> I have been unable to reproduce this result with fs_mark. I've run a
-> number of repeated tests, and I can create files just as fast with or
-> without this patch (roughly ~46 files/s on my test machine).
+> Hm, quite an old microarchitecture no?
 > 
-> I'm particularly suspicious of the fsmark.app_overhead value above. The
-> fsmark output says:
-> 
-> #       App overhead is time in microseconds spent in the test not doing file writing related system calls.
-> 
-> That seems outside the purview of anything we're altering here, so I
-> have to wonder if something else is going on. Oliver, can you rerun
-> this test and see if this regression is reproducible?
+> Would it be possible to try this on a range of uarch's, especially more
+> recent noes, with some repeated runs to rule out statistical noise? Much
+> appreciated!
 
-we rebuild kernel and rerun tests for both parent and this commit, the data
-is stable and the regression is still reproducible.
+we run this test on below platforms, and observed similar regression.
+one thing I want to mention is for performance tests, we run one commit at least
+6 times. for this aim9 test, the data is quite stable, so there is no %stddev
+value in our table. we won't show this value if it's <2%
 
-but one thing I want to mention is there is no diff for "fsmark.files_per_sec"
+(1)
+
+model: Granite Rapids
+nr_node: 1
+nr_cpu: 240
+memory: 192G
 
 =========================================================================================
-compiler/cpufreq_governor/disk/filesize/fs2/fs/iterations/kconfig/nr_files_per_directory/nr_threads/rootfs/sync_method/tbox_group/test_size/testcase:
-  gcc-12/performance/1HDD/4K/nfsv4/btrfs/1x/x86_64-rhel-8.3/1fpd/1t/debian-12-x86_64-20240206.cgz/fsyncBeforeClose/lkp-icl-2sp6/40M/fsmark
+compiler/cpufreq_governor/kconfig/rootfs/tbox_group/test/testcase/testtime:
+  gcc-12/performance/x86_64-rhel-8.3/debian-12-x86_64-20240206.cgz/lkp-gnr-1ap1/brk_test/aim9/300s
 
-e29c78a6936e7422 8cb33389f66441dc4e54b28fe0d
+fc21959f74bc1138 cacded5e42b9609b07b22d80c10
 ---------------- ---------------------------
          %stddev     %change         %stddev
              \          |                \
-   2080540 ±  2%     +86.6%    3881862        fsmark.app_overhead
-     18.56            +0.0%      18.56        fsmark.files_per_sec
+   3220697            -6.0%    3028867        aim9.brk_test.ops_per_sec
 
 
-we happen to report another report which has similar behavior that big changes
-of fsmark.app_overhead, but little difference for fsmark.files_per_sec
-https://lore.kernel.org/all/202410072214.11d18a3c-oliver.sang@intel.com/
+(2)
 
-Christian Loehle <christian.loehle@arm.com> shared some information in
-https://lore.kernel.org/all/01c3073b-84d0-4986-b6d5-a8877ae8a046@arm.com/
+model: Emerald Rapids
+nr_node: 4
+nr_cpu: 256
+memory: 256G
+brand: INTEL(R) XEON(R) PLATINUM 8592+
 
-"App overhead is time in microseconds spent in the test not doing file writing related system calls."
-So the loop is:
-	/*
-	 * MAIN FILE WRITE LOOP:
-	 * This loop measures the specific steps in creating files:
-	 *      Step 1: Make up a file name
-	 *      Step 2: Creat(file_name);
-	 *      Step 3: write file data
-	 *      Step 4: fsync() file data (optional)
-	 *      Step 5: close() file descriptor
-	 */
+=========================================================================================
+compiler/cpufreq_governor/kconfig/rootfs/tbox_group/test/testcase/testtime:
+  gcc-12/performance/x86_64-rhel-8.3/debian-12-x86_64-20240206.cgz/lkp-emr-2sp1/brk_test/aim9/300s
 
-And it gets the timestamps before and after each syscall.
-It then subtracts all those times (spent in syscalls) from the total time.
+fc21959f74bc1138 cacded5e42b9609b07b22d80c10
+---------------- ---------------------------
+         %stddev     %change         %stddev
+             \          |                \
+   3669298            -6.5%    3430070        aim9.brk_test.ops_per_sec
 
 
-not sure if this information is helpful to you?
+(3)
+
+model: Sapphire Rapids
+nr_node: 2
+nr_cpu: 224
+memory: 512G
+brand: Intel(R) Xeon(R) Platinum 8480CTDX
+
+=========================================================================================
+compiler/cpufreq_governor/kconfig/rootfs/tbox_group/test/testcase/testtime:
+  gcc-12/performance/x86_64-rhel-8.3/debian-12-x86_64-20240206.cgz/lkp-spr-2sp4/brk_test/aim9/300s
+
+fc21959f74bc1138 cacded5e42b9609b07b22d80c10
+---------------- ---------------------------
+         %stddev     %change         %stddev
+             \          |                \
+   3540976            -6.4%    3314159        aim9.brk_test.ops_per_sec
+
+
+(4)
+
+model: Ice Lake
+nr_node: 2
+nr_cpu: 64
+memory: 256G
+brand: Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz
+
+=========================================================================================
+compiler/cpufreq_governor/kconfig/rootfs/tbox_group/test/testcase/testtime:
+  gcc-12/performance/x86_64-rhel-8.3/debian-12-x86_64-20240206.cgz/lkp-icl-2sp9/brk_test/aim9/300s
+
+fc21959f74bc1138 cacded5e42b9609b07b22d80c10
+---------------- ---------------------------
+         %stddev     %change         %stddev
+             \          |                \
+   2667734            -5.6%    2518021        aim9.brk_test.ops_per_sec
+
 
 > 
-> Thanks,
+> > parameters:
+> >
+> > 	testtime: 300s
+> > 	test: brk_test
+> > 	cpufreq_governor: performance
+> >
+> >
+> >
+> >
+> > If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> > the same patch/commit), kindly add following tags
+> > | Reported-by: kernel test robot <oliver.sang@intel.com>
+> > | Closes: https://lore.kernel.org/oe-lkp/202409301043.629bea78-oliver.sang@intel.com
+> >
+> >
+> > Details are as below:
+> > -------------------------------------------------------------------------------------------------->
+> >
+> >
+> > The kernel config and materials to reproduce are available at:
+> > https://download.01.org/0day-ci/archive/20240930/202409301043.629bea78-oliver.sang@intel.com
+> >
+> > =========================================================================================
+> > compiler/cpufreq_governor/kconfig/rootfs/tbox_group/test/testcase/testtime:
+> >   gcc-12/performance/x86_64-rhel-8.3/debian-12-x86_64-20240206.cgz/lkp-ivb-2ep2/brk_test/aim9/300s
+> >
+> > commit:
+> >   fc21959f74 ("mm: abstract vma_expand() to use vma_merge_struct")
+> >   cacded5e42 ("mm: avoid using vma_merge() for new VMAs")
 > 
-> >      53442           -17.3%      44172        fsmark.time.voluntary_context_switches
-> >       2907            -5.7%       2742        perf-stat.i.context-switches
-> >       2902            -5.7%       2737        perf-stat.ps.context-switches
-> >    1724787            -1.0%    1706808        proc-vmstat.numa_hit
-> >    1592345            -1.1%    1574310        proc-vmstat.numa_local
-> >      24.87 ± 33%     -38.9%      15.20 ± 12%  sched_debug.cpu.nr_uninterruptible.max
-> >       4.36 ±  9%     -17.1%       3.61 ± 10%  sched_debug.cpu.nr_uninterruptible.stddev
-> >      97541 ± 20%     -32.7%      65610 ± 18%  numa-meminfo.node0.KReclaimable
-> >      97541 ± 20%     -32.7%      65610 ± 18%  numa-meminfo.node0.SReclaimable
-> >     256796 ±  9%     -18.7%     208805 ± 13%  numa-meminfo.node0.Slab
-> >    2307911 ± 52%     +68.5%    3888971 ±  5%  numa-meminfo.node1.MemUsed
-> >     193326 ± 12%     +24.7%     241049 ± 12%  numa-meminfo.node1.Slab
-> >       0.90 ± 27%      -0.5        0.36 ±103%  perf-profile.calltrace.cycles-pp.evsel__read_counter.read_counters.process_interval.dispatch_events.cmd_stat
-> >       0.36 ± 70%      +0.2        0.58 ±  3%  perf-profile.calltrace.cycles-pp.btrfs_commit_transaction.btrfs_sync_file.btrfs_do_write_iter.do_iter_readv_writev.vfs_iter_write
-> >       0.52 ± 47%      +0.3        0.78 ±  8%  perf-profile.calltrace.cycles-pp.vfs_write.ksys_write.do_syscall_64.entry_SYSCALL_64_after_hwframe.write
-> >       1.62 ± 12%      +0.3        1.93 ±  9%  perf-profile.calltrace.cycles-pp.__handle_mm_fault.handle_mm_fault.do_user_addr_fault.exc_page_fault.asm_exc_page_fault
-> >       1.22 ± 21%      -0.3        0.89 ± 10%  perf-profile.children.cycles-pp.readn
-> >       0.46 ± 32%      -0.2        0.24 ± 34%  perf-profile.children.cycles-pp.__close
-> >       0.45 ± 32%      -0.2        0.22 ± 15%  perf-profile.children.cycles-pp.__x64_sys_close
-> >       0.40 ± 29%      -0.2        0.18 ± 38%  perf-profile.children.cycles-pp.__fput
-> >       0.31 ± 23%      -0.2        0.16 ± 33%  perf-profile.children.cycles-pp.irq_work_tick
-> >       0.17 ± 51%      -0.1        0.03 ±111%  perf-profile.children.cycles-pp.nfs_file_release
-> >       0.16 ± 43%      -0.1        0.03 ±111%  perf-profile.children.cycles-pp.__put_nfs_open_context
-> >       0.26 ± 18%      -0.1        0.15 ± 34%  perf-profile.children.cycles-pp.perf_event_task_tick
-> >       0.15 ± 41%      -0.1        0.03 ±108%  perf-profile.children.cycles-pp.get_free_pages_noprof
-> >       0.18 ± 55%      -0.1        0.06 ± 32%  perf-profile.children.cycles-pp.native_apic_mem_eoi
-> >       0.18 ± 32%      -0.1        0.07 ± 81%  perf-profile.children.cycles-pp.flush_end_io
-> >       0.17 ± 41%      -0.1        0.07 ± 93%  perf-profile.children.cycles-pp.mas_store_gfp
-> >       0.52 ±  5%      +0.1        0.58 ±  3%  perf-profile.children.cycles-pp.btrfs_commit_transaction
-> >       0.02 ±141%      +0.1        0.08 ± 42%  perf-profile.children.cycles-pp.uptime_proc_show
-> >       0.02 ±141%      +0.1        0.08 ± 44%  perf-profile.children.cycles-pp.get_zeroed_page_noprof
-> >       0.02 ±141%      +0.1        0.09 ± 35%  perf-profile.children.cycles-pp.__rmqueue_pcplist
-> >       0.14 ± 12%      +0.1        0.28 ± 29%  perf-profile.children.cycles-pp.hrtimer_next_event_without
-> >       0.47 ± 27%      +0.2        0.67 ± 19%  perf-profile.children.cycles-pp.__mmap
-> >       0.70 ± 21%      +0.2        0.91 ±  7%  perf-profile.children.cycles-pp.vfs_write
-> >       0.74 ± 20%      +0.2        0.96 ±  9%  perf-profile.children.cycles-pp.ksys_write
-> >       0.73 ± 21%      +0.3        1.00 ±  7%  perf-profile.children.cycles-pp.copy_process
-> >       1.05 ± 13%      +0.3        1.38 ± 10%  perf-profile.children.cycles-pp.kernel_clone
-> >       0.28 ± 22%      -0.1        0.13 ± 35%  perf-profile.self.cycles-pp.irq_work_tick
-> >       0.18 ± 55%      -0.1        0.06 ± 32%  perf-profile.self.cycles-pp.native_apic_mem_eoi
-> > 
-> > 
-> > 
-> > 
+> Yup this results in a different code path for brk(), but local testing
+> indicated no regression (a prior revision of the series had encountered
+> one, so I carefully assessed this, found the bug, and noted no clear
+> regression after this - but a lot of variance in the numbers).
+> 
+> >
+> > fc21959f74bc1138 cacded5e42b9609b07b22d80c10
+> > ---------------- ---------------------------
+> >          %stddev     %change         %stddev
+> >              \          |                \
+> >    1322908            -5.0%    1256536        aim9.brk_test.ops_per_sec
+> 
+> Unfortunate there's no stddev figure here, and 5% feels borderline on noise
+> - as above it'd be great to get some multiple runs going to rule out
+> noise. Thanks!
+
+as above mentioned, the reason there is no %stddev here is it's <2%
+
+just list raw data FYI.
+
+for cacded5e42b9609b07b22d80c10
+
+  "aim9.brk_test.ops_per_sec": [
+    1268030.0,
+    1277110.76,
+    1226452.45,
+    1275850.0,
+    1249628.35,
+    1242148.6
+  ],
+
+
+for fc21959f74bc1138
+
+  "aim9.brk_test.ops_per_sec": [
+    1351624.95,
+    1316322.79,
+    1330363.33,
+    1289563.33,
+    1314100.0,
+    1335475.48
+  ],
+
+
+> 
+> >     201.54            +2.9%     207.44        aim9.time.system_time
+> >      97.58            -6.0%      91.75        aim9.time.user_time
+> >       0.04 ± 82%    -100.0%       0.00        perf-sched.sch_delay.avg.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
+> >       0.10 ± 60%    -100.0%       0.00        perf-sched.sch_delay.max.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
+> >       0.04 ± 82%    -100.0%       0.00        perf-sched.wait_time.avg.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
+> >       0.10 ± 60%    -100.0%       0.00        perf-sched.wait_time.max.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
+> >   8.33e+08            +3.9%  8.654e+08        perf-stat.i.branch-instructions
+> >       1.15            -0.1        1.09        perf-stat.i.branch-miss-rate%
+> >   12964626            -1.9%   12711922        perf-stat.i.branch-misses
+> >       1.11            -7.4%       1.03        perf-stat.i.cpi
+> >  3.943e+09            +6.0%   4.18e+09        perf-stat.i.instructions
+> >       0.91            +7.9%       0.98        perf-stat.i.ipc
+> >       0.29 ±  2%      -9.1%       0.27 ±  4%  perf-stat.overall.MPKI
+> >       1.56            -0.1        1.47        perf-stat.overall.branch-miss-rate%
+> >       1.08            -6.8%       1.01        perf-stat.overall.cpi
+> >       0.92            +7.2%       0.99        perf-stat.overall.ipc
+> >  8.303e+08            +3.9%  8.627e+08        perf-stat.ps.branch-instructions
+> >   12931205            -2.0%   12678170        perf-stat.ps.branch-misses
+> >   3.93e+09            +6.0%  4.167e+09        perf-stat.ps.instructions
+> >  1.184e+12            +6.1%  1.256e+12        perf-stat.total.instructions
+> >       7.16 ±  2%      -0.4        6.76 ±  4%  perf-profile.calltrace.cycles-pp.entry_SYSRETQ_unsafe_stack.brk
+> >       5.72 ±  2%      -0.4        5.35 ±  3%  perf-profile.calltrace.cycles-pp.perf_event_mmap_event.perf_event_mmap.do_brk_flags.__do_sys_brk.do_syscall_64
+> >       6.13 ±  2%      -0.3        5.84 ±  3%  perf-profile.calltrace.cycles-pp.perf_event_mmap.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
+> >       0.83 ± 11%      -0.1        0.71 ±  5%  perf-profile.calltrace.cycles-pp.__vm_enough_memory.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
+> >       0.00            +0.6        0.58 ±  5%  perf-profile.calltrace.cycles-pp.mas_leaf_max_gap.mas_update_gap.mas_store_prealloc.vma_expand.vma_merge_new_range
+> >      16.73 ±  2%      +0.6       17.34        perf-profile.calltrace.cycles-pp.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
+> >       0.00            +0.7        0.66 ±  6%  perf-profile.calltrace.cycles-pp.mas_wr_store_type.mas_preallocate.vma_expand.vma_merge_new_range.do_brk_flags
+> >      24.21            +0.7       24.90        perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
+> >      23.33            +0.7       24.05 ±  2%  perf-profile.calltrace.cycles-pp.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
+> >       0.00            +0.8        0.82 ±  4%  perf-profile.calltrace.cycles-pp.vma_complete.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
+> >       0.00            +0.9        0.87 ±  5%  perf-profile.calltrace.cycles-pp.mas_update_gap.mas_store_prealloc.vma_expand.vma_merge_new_range.do_brk_flags
+> >       0.00            +1.1        1.07 ±  9%  perf-profile.calltrace.cycles-pp.vma_prepare.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
+> >       0.00            +1.1        1.10 ±  6%  perf-profile.calltrace.cycles-pp.mas_preallocate.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
+> >       0.00            +2.3        2.26 ±  5%  perf-profile.calltrace.cycles-pp.mas_store_prealloc.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
+> >       0.00            +7.6        7.56 ±  3%  perf-profile.calltrace.cycles-pp.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk.do_syscall_64
+> >       0.00            +8.6        8.62 ±  4%  perf-profile.calltrace.cycles-pp.vma_merge_new_range.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
+> >       7.74 ±  2%      -0.4        7.30 ±  4%  perf-profile.children.cycles-pp.entry_SYSRETQ_unsafe_stack
+> >       5.81 ±  2%      -0.4        5.43 ±  3%  perf-profile.children.cycles-pp.perf_event_mmap_event
+> >       6.18 ±  2%      -0.3        5.88 ±  3%  perf-profile.children.cycles-pp.perf_event_mmap
+> >       3.93            -0.2        3.73 ±  3%  perf-profile.children.cycles-pp.perf_iterate_sb
+> >       0.22 ± 29%      -0.1        0.08 ± 17%  perf-profile.children.cycles-pp.may_expand_vm
+> >       0.96 ±  3%      -0.1        0.83 ±  4%  perf-profile.children.cycles-pp.vma_complete
+> >       0.61 ± 14%      -0.1        0.52 ±  7%  perf-profile.children.cycles-pp.percpu_counter_add_batch
+> >       0.15 ±  7%      -0.1        0.08 ± 20%  perf-profile.children.cycles-pp.brk_test
+> >       0.08 ± 11%      +0.0        0.12 ± 14%  perf-profile.children.cycles-pp.mas_prev_setup
+> >       0.17 ± 12%      +0.1        0.27 ± 10%  perf-profile.children.cycles-pp.mas_wr_store_entry
+> >       0.00            +0.2        0.15 ± 11%  perf-profile.children.cycles-pp.mas_next_range
+> >       0.19 ±  8%      +0.2        0.38 ± 10%  perf-profile.children.cycles-pp.mas_next_slot
+> >       0.34 ± 17%      +0.3        0.64 ±  6%  perf-profile.children.cycles-pp.mas_prev_slot
+> >      23.40            +0.7       24.12 ±  2%  perf-profile.children.cycles-pp.__do_sys_brk
+> >       0.00            +7.6        7.59 ±  3%  perf-profile.children.cycles-pp.vma_expand
+> >       0.00            +8.7        8.66 ±  4%  perf-profile.children.cycles-pp.vma_merge_new_range
+> >       1.61 ± 10%      -0.9        0.69 ±  8%  perf-profile.self.cycles-pp.do_brk_flags
+> >       7.64 ±  2%      -0.4        7.20 ±  4%  perf-profile.self.cycles-pp.entry_SYSRETQ_unsafe_stack
+> >       0.22 ± 30%      -0.1        0.08 ± 17%  perf-profile.self.cycles-pp.may_expand_vm
+> >       0.57 ± 15%      -0.1        0.46 ±  6%  perf-profile.self.cycles-pp.percpu_counter_add_batch
+> >       0.15 ±  7%      -0.1        0.08 ± 20%  perf-profile.self.cycles-pp.brk_test
+> >       0.20 ±  5%      -0.0        0.18 ±  4%  perf-profile.self.cycles-pp.anon_vma_interval_tree_insert
+> >       0.07 ± 18%      +0.0        0.10 ± 18%  perf-profile.self.cycles-pp.mas_prev_setup
+> >       0.00            +0.1        0.09 ± 12%  perf-profile.self.cycles-pp.mas_next_range
+> >       0.36 ±  8%      +0.1        0.45 ±  6%  perf-profile.self.cycles-pp.perf_event_mmap
+> >       0.15 ± 13%      +0.1        0.25 ± 14%  perf-profile.self.cycles-pp.mas_wr_store_entry
+> >       0.17 ± 11%      +0.2        0.37 ± 11%  perf-profile.self.cycles-pp.mas_next_slot
+> >       0.34 ± 17%      +0.3        0.64 ±  6%  perf-profile.self.cycles-pp.mas_prev_slot
+> >       0.00            +0.3        0.33 ±  5%  perf-profile.self.cycles-pp.vma_merge_new_range
+> >       0.00            +0.8        0.81 ±  9%  perf-profile.self.cycles-pp.vma_expand
+> >
+> >
+> >
+> >
 > > Disclaimer:
 > > Results have been estimated based on internal Intel analysis and are provided
 > > for informational purposes only. Any difference in system hardware or software
 > > design or configuration may affect actual performance.
-> > 
-> > 
+> >
+> >
+> > --
+> > 0-DAY CI Kernel Test Service
+> > https://github.com/intel/lkp-tests/wiki
+> >
 > 
-> -- 
-> Jeff Layton <jlayton@kernel.org>
+> Overall, previously we special-cased brk() to avoid regression, but the
+> special-casing is horribly duplicative and bug-prone so, while we can
+> revert to doing that again, I'd really, really like to avoid it if we
+> possibly can :)
