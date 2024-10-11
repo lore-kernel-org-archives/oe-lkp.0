@@ -1,110 +1,107 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A164017BA9
-	for <oe-lkp@lists.linux.dev>; Fri, 11 Oct 2024 02:46:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 978281F4FAF
+	for <oe-lkp@lists.linux.dev>; Fri, 11 Oct 2024 04:33:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.7
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728614804; cv=fail; b=hk/dWkPyvjQBbrGJ0OlQzAAlpV2EQH/4PTRbjZDkb9Z89yjcaQKwid1YElpGUoUVM9IsgrULrZAW7ZvkHMw6p4Ficrri6NmPQ5131dhgqAN222Uc4G04Ifs5sxFSMJHagn3XF1tsxVVDUvc5agB6ig8/t9SAySO4BQzSum9+L84=
+	t=1728621199; cv=fail; b=kXlgmFGd2h6vG3XCvNAbpQzjLxAgHbM4HcCBz+lqYnXETRtRgg73/eHaJT+OV59fszTVtmfkYqIsRdSKK/8p4CS8daK0L+DOgphdN3WYn2sKBgLSVMinNRAQ8nO2pw030R2UdEBsC72slZl4SP5gt75QxB9RNfIpXa9zyejpDVc=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728614804; c=relaxed/simple;
-	bh=gx1rzFRtXkTG1hDgpHvEFZveU+BJmIjSfME7FlnMhls=;
-	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=CYlQd459sMfsIYmqmkJm9SSi8Yi44AVBiM/kDMTG1oHNFPu2FWoHs9vPEewdHmBD7M6KOLFgUU/bG1XqFJf1OqJmbWlV9xMT0lqURayw9GbFctzrVvejrzAYE3wWFEVZEoijoehgqA64+fJjWUIm8yDqVP6NRS1/aj7gXjMilWY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Qa2IY1v5; arc=fail smtp.client-ip=198.175.65.17
+	s=arc-20240116; t=1728621199; c=relaxed/simple;
+	bh=Jly/rBQ9u0Z891gLT0O8zcfgvtRkttVvz3L7XzCThvA=;
+	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=AkZBI4r7L/5GNskOEjFMBWYBlyysulo/sSUpJF5VR3dgo9ZbCOl01YWp6ISzpAJer08TqplQBFHbb2wDi4qzWIj7+aGnzawNqvfTPNWzC8UGDF8hlVQE0tDK1jDezBsubgzHTGnJ/ni7zwwsynJSF8uUo3jKCS2e3K6levs1tb4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TLfWd5qO; arc=fail smtp.client-ip=192.198.163.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Qa2IY1v5"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TLfWd5qO"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1728614799; x=1760150799;
-  h=date:from:to:cc:subject:message-id:references:
-   content-transfer-encoding:in-reply-to:mime-version;
-  bh=gx1rzFRtXkTG1hDgpHvEFZveU+BJmIjSfME7FlnMhls=;
-  b=Qa2IY1v5wYvvEza1ipBRuQGpJrD2WIScqsX9w5NfM//zPak4BzAC1P9M
-   s/DoztjMabKIdnTFNkOgkbFBrbXP7cTJnRb41EtdOtUtrUW+GSBSPmsRr
-   fATMK5K4xXKjwQ5G9nWRTA4140vAH9b8WoPFzW0gVVRBR6Lv1+bRvdYhX
-   xzIpwNcqagA6EDNkl1/Bjupjmeyfo9ba23SyNJ5kX/XN0XJmii2NG5hg5
-   b7vYp99oTNmTcSrJGsj4PFak+4MXSdFExcvnpZ+Fp7HXGoKlE3p4xYzcn
-   Orec2wXspXXDYb+XBUofLVWXRa475XYl1Gnn1YXiyEQXAd0sz8RspwT0I
-   A==;
-X-CSE-ConnectionGUID: sGzbravORKWd8VKdImh36w==
-X-CSE-MsgGUID: f5785d5hRbiNBap8X65Dbw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11221"; a="28116024"
+  t=1728621191; x=1760157191;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   mime-version;
+  bh=Jly/rBQ9u0Z891gLT0O8zcfgvtRkttVvz3L7XzCThvA=;
+  b=TLfWd5qOWrgBllcf7LJYZRA/RhljjbBh2170Ltz6+4D6pQ5lPKg8DVKR
+   Qyd7HSR00CLMEw5PG1Dshk6uJyVbldJJt0/iZWwhU1s1jvQiXBQT/y9oD
+   UIqLmRk1OdrVg5eBJVmp7ujzinwzLdUdU4j8464FBSZQv25qlr7cGbuND
+   TTTYNzHWpWO2durKPh5d6MNyf6W8mdHVaPgYocgEDBSQXUlxXDchkzbM7
+   /WaI8dSEtgYs1VQDA3FWX1VD6uBOmql+creooyQ+4ysGwemZC9M5pxxx4
+   d7InWXCJN7XWaq5+RgI9EXIqI10ZyfZ3wnilTDOcsCevqXgigfOusDDeW
+   Q==;
+X-CSE-ConnectionGUID: 7WGCZM1RRX2O9ZyMwP6ycw==
+X-CSE-MsgGUID: YDcRKtZbS8e8qENFZEEdjg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11221"; a="53413595"
 X-IronPort-AV: E=Sophos;i="6.11,194,1725346800"; 
-   d="scan'208,209";a="28116024"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Oct 2024 19:46:37 -0700
-X-CSE-ConnectionGUID: lboNORKHTMGZRTk6SDK4lA==
-X-CSE-MsgGUID: GzuZE+8pQ5yDB3O20kNLQQ==
+   d="scan'208";a="53413595"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Oct 2024 21:33:09 -0700
+X-CSE-ConnectionGUID: f8vrBkzSSTCl3ZJ0aZxYpg==
+X-CSE-MsgGUID: pgpSQ61RRZWoB9/H3HnZmQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.11,194,1725346800"; 
-   d="scan'208,209";a="107651995"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by orviesa002.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 10 Oct 2024 19:46:37 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+   d="scan'208";a="77112073"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by fmviesa010.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 10 Oct 2024 21:33:09 -0700
+Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Thu, 10 Oct 2024 19:46:36 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ 15.1.2507.39; Thu, 10 Oct 2024 21:33:09 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Thu, 10 Oct 2024 19:46:36 -0700
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (104.47.73.175)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ 15.1.2507.39; Thu, 10 Oct 2024 21:33:08 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39 via Frontend Transport; Thu, 10 Oct 2024 21:33:08 -0700
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.171)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Thu, 10 Oct 2024 19:46:36 -0700
+ 15.1.2507.39; Thu, 10 Oct 2024 21:33:08 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Wqv5APjNFHdzqH7MyoDG2cQHsf6u3YPH3wtLQKkpXvyYQhEDbQdq+vEd7ZsQU27qPYaYg3FEkprYSIIFLjTeDZG/tnaCHmcswbYgXQ7VzYDPcby7xhHun+ky3jT8uQHAmhBk8sG8JjmIVgwO1w9OM/q58ODSKaxiBpYHMYdNYC1/6pUM6xB8VNGaZQIXeSFAlxW5YL0OFWURdMKNV9vsQvvXbzJqrJQQZHFnAAoXNHGy/GwyJffshuNIyI+JPlSwYfZcQ3Q0WKiAC0DalZ32AMWWhwDMIajfOjkC8MF4X3gvjXdEBsS0T0i3fQVsgM6+vEuwELrda0yWPVJ2299kdA==
+ b=YkBAFF0XSC5Q0uHQNTkSBAcOey5Nm9pHlW2wGEAFn5bcQB+Q7KDJna/uPNdFKWd1TKjmarQjWM2sJ1wkTsa0M0enxfXnRnKPBA/QncjRGcalv7kM4MYAkWT9Vi4pOZCeRxaxnyOwCyJTvFEp0NwsR3rP7j2re8x/NDA39wFGCOv7GCZT6KZe2ylA9fnQLii8SnAUQQeN9YbVq40JpYpfhpe3cX9I599ALV+gzh6BGh4tt49U9Q8YAy3YG7qa0IjmK9w4WpQsJKZ2q7lV623Di/v8TBs1tfxmE8ORcqs9+j1T9TzpjHtU70hL0jrm+bvSW2h/+AJkFHTJP4WR40lBuw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MKA7M+EMnHwRxvBWayWWvJpmQtzgRunble4O/d42iIQ=;
- b=v7ZhxQNROx0/2ypG39e7IC3ceqGbuCUPMh8XD2EBqwXw26LikNIOAMQ5S/9wJ3urcXv/8xLZ6EIAy07/Donx9VBzwmKwWJXJl4Pm5w7fGIpPQUknUiQwELdNaoE/jhS5kP14XV2oRu5G6+DIAGFW8S3BN4u9gHkYxFkrmprcX/1fDoUKp5A7TDEx0fOmvBryzrugDFnmPAA5yR3p8wgUIGn4PNOQphRmVgrcBDEkqM+vF7APFXL9zH2r4H9cDkvealMp1Pzrnyo9JrPTzfwot3CCmVxxSrLEpq2w9BgFztqPKYe+M6PQjQ7Pa64kNyWA2NEfn+kewsbUTsZB+hY9hQ==
+ bh=ZgCSL58pu6cWtXD4tjgG//o5WHVZBjYqwcrMGTKAfUg=;
+ b=iNaCiFPvYC31TKEYM/TTPCwq3VxrIcsbKpr/qARkRoViISfgITkAnTfPV7an+FbL4BE6Bc3itmhCDi09Hwk0/IbvCkp9PIHOJs3WnrK6TjBmGwVggtUYQX88JwQCwkox7dB3KFH9i014rSol+ALch/Dy/AhkHDIjF822ePpT43QxWbFK7wOKfHY9EDxEU4xeVnIL4zqa1jvtGQEeRZv6haRESoCv5EnCwCDtk/yeeGXDj54UmRqs5IyBonpIT71pSeK9oi058JGbUzlFRe+FhCuxheXcAdrPgMw2p9E5luOyPEz7Dn9KwVfXZC77oAaVUbqudMeLHjMYoCsfhfCrxA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by PH7PR11MB6722.namprd11.prod.outlook.com (2603:10b6:510:1ae::15) with
+ by SN7PR11MB6727.namprd11.prod.outlook.com (2603:10b6:806:265::7) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8026.23; Fri, 11 Oct
- 2024 02:46:28 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8026.24; Fri, 11 Oct
+ 2024 04:33:04 +0000
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.8048.017; Fri, 11 Oct 2024
- 02:46:28 +0000
-Date: Fri, 11 Oct 2024 10:46:13 +0800
-From: Oliver Sang <oliver.sang@intel.com>
-To: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
-	Andrew Morton <akpm@linux-foundation.org>, Mark Brown <broonie@kernel.org>,
-	"Liam R. Howlett" <Liam.Howlett@oracle.com>, Vlastimil Babka
-	<vbabka@suse.cz>, Bert Karwatzki <spasswolf@web.de>, Jeff Xu
-	<jeffxu@chromium.org>, Jiri Olsa <olsajiri@gmail.com>, Kees Cook
-	<kees@kernel.org>, Lorenzo Stoakes <lstoakes@gmail.com>, Matthew Wilcox
-	<willy@infradead.org>, "Paul E. McKenney" <paulmck@kernel.org>, Paul Moore
-	<paul@paul-moore.com>, Sidhartha Kumar <sidhartha.kumar@oracle.com>, "Suren
- Baghdasaryan" <surenb@google.com>, <linux-mm@kvack.org>,
-	<ying.huang@intel.com>, <feng.tang@intel.com>, <fengwei.yin@intel.com>,
+ 04:33:04 +0000
+Date: Fri, 11 Oct 2024 12:32:50 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: Ian Rogers <irogers@google.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>,
+	<linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>, "Peter
+ Zijlstra" <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, "Arnaldo
+ Carvalho de Melo" <acme@kernel.org>, Namhyung Kim <namhyung@kernel.org>, Mark
+ Rutland <mark.rutland@arm.com>, Alexander Shishkin
+	<alexander.shishkin@linux.intel.com>, Jiri Olsa <jolsa@kernel.org>, "Ian
+ Rogers" <irogers@google.com>, Adrian Hunter <adrian.hunter@intel.com>, "Kan
+ Liang" <kan.liang@linux.intel.com>, John Garry <john.g.garry@oracle.com>,
+	Jing Zhang <renyu.zj@linux.alibaba.com>, Sandipan Das <sandipan.das@amd.com>,
+	Benjamin Gray <bgray@linux.ibm.com>, Xu Yang <xu.yang_2@nxp.com>,
 	<oliver.sang@intel.com>
-Subject: Re: [linus:master] [mm]  cacded5e42:  aim9.brk_test.ops_per_sec
- -5.0% regression
-Message-ID: <ZwiRdemGMY6Z6pSN@xsang-OptiPlex-9020>
-References: <202409301043.629bea78-oliver.sang@intel.com>
- <77321196-5812-4e5b-be4c-20930e6f22bc@lucifer.local>
- <ZwTt/wB/mmszSXc3@xsang-OptiPlex-9020>
- <8f5e8ae0-dfaf-4b33-ae79-ca6065dc96ec@lucifer.local>
- <ZwYmTnWEhgWO702t@xsang-OptiPlex-9020>
- <5b7227fa-d0f1-452e-b1b3-9d7b87641522@lucifer.local>
-Content-Type: multipart/mixed; boundary="ruHRZqqTcJu9mXyR"
+Subject: Re: [PATCH v4 12/12] perf jevents: Add load event json to verify and
+ allow fallbacks
+Message-ID: <202410111230.6218f561-oliver.sang@intel.com>
+Content-Type: multipart/mixed; boundary="VZJJSsuX2mnIFoRA"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <5b7227fa-d0f1-452e-b1b3-9d7b87641522@lucifer.local>
-X-ClientProxiedBy: KL1PR0401CA0003.apcprd04.prod.outlook.com
- (2603:1096:820:f::8) To LV3PR11MB8603.namprd11.prod.outlook.com
+In-Reply-To: <20240926173554.404411-13-irogers@google.com>
+X-ClientProxiedBy: KL1PR01CA0075.apcprd01.prod.exchangelabs.com
+ (2603:1096:820:2::15) To LV3PR11MB8603.namprd11.prod.outlook.com
  (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -113,1068 +110,2727 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|PH7PR11MB6722:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5c18d8d2-a7b7-4c55-0aa0-08dce99ee734
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|SN7PR11MB6727:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5bd508dc-2fcc-4c64-e74d-08dce9adcbc1
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|7416014|1800799024|366016;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?tVZPLcKcpe8EMn/MyKq7aLOebnD5eh1ukzIcJ7AGZtAjRGPsMiDi7nJhylXN?=
- =?us-ascii?Q?ujMmRz2+gfYva4C4jmJJM5NJfiudK7nNPTDTmJM6Ggc1fUVJJXW21KMJaYLI?=
- =?us-ascii?Q?Ao7Ej6RbXCISjYSs2Umyl6CeZHWHwjs7VFemCeHOBCo+sJCd9o10MYHDiW2R?=
- =?us-ascii?Q?aGDoFhdIGT08PanjuRhYbVquxK83PeaxxFYfFnRpV4VaR5SSxG5LtJgW4Ct3?=
- =?us-ascii?Q?9tMacIAxctFrP2gOp+Kl8pq0o4f90B6Hyg5RvpXXQkjl6XcU5/Cqgvn2Qp8X?=
- =?us-ascii?Q?bSTjF3D1PoTUPvxKIKsL1ydq1oqLIMU/1ceXkW0PgccXzB3MvB2wh5w+g5EF?=
- =?us-ascii?Q?J1PW6ORIv+Uy91vuE87pbJgdMbez+tfQU2JX1RuF3tFxbSN2lF8/5PIDIxry?=
- =?us-ascii?Q?D8YakLgH1C7rjzEZZZ3Twp+3oPaDLiCIVJGnytMFKc15Zr8Nc2Xd/L7u0jJY?=
- =?us-ascii?Q?pfUSwCHLQHhhM7UvgEDzEDmY+wm598tXqI1gTadqnWKktn0fCVZuZAi2i3DR?=
- =?us-ascii?Q?r4KWoLpjPz04BTNqrGVSM1ug07jN7Vgo8md9pn4qN5pIvR766SLG80X+udEJ?=
- =?us-ascii?Q?vyEzgGKuy6LfMFH5q9WMHlePJP+fPpWT6eYzTbsAFVbVuXkO5+FeFWSzkk/V?=
- =?us-ascii?Q?dtPptyO/BdpTsy0QRtcL2r6YBShvRnI1p2FALZI2wsLTImoX7S9kH0G8MW03?=
- =?us-ascii?Q?bhio+6aClr4YZndbW2VWy3UQNWh2FC2K2UAESUtkMyqq6ztmxk8miyL3XNGO?=
- =?us-ascii?Q?Uj4SopB9M4RxKP+pSyNSBtKg+R5zXNUakzq1H4bNH6/GGPdIkrINln6IS/y3?=
- =?us-ascii?Q?yDuICIblNvVvUw02LU2uUtED5S49Ujo59eZf6vSNS0WAeC6BmQHEm0cFxuuI?=
- =?us-ascii?Q?tWoiTJ9JS1RYey3H4gCxEXwV8hJtT/4UkZXX3HY/7Xs5HktyQazN+vy1LPUh?=
- =?us-ascii?Q?cTj3U1UuiMRlwSqkvb3BjHLkO7XPXKELnx7wC3HU4TO4rwqFqwsV7wJHp/lv?=
- =?us-ascii?Q?aIbB1T1gZv4oL9sVX/rZzF1y1JggwBiQGsZlT6ReKaZJGtC6NQlD6nkJZSmW?=
- =?us-ascii?Q?UEe3mlaKoCXsL5coM5zgHvf+OzBGc2/XtWn3rx4GjpNvuOW7lzndmFFNZjfz?=
- =?us-ascii?Q?CT+gJPJhtl28uqZwRQcac46T4PtVNKA9LfVe0OkRawGIAok6HNgtHGfmiKdI?=
- =?us-ascii?Q?tFdZc+orCTn45kndAuwzlP0CgrK/oyKBbYhtYWkPWupXe8q24nIZuX8n5i5Z?=
- =?us-ascii?Q?Y5BpAC7QcGZ7siDmnY3MDq4HSckum5L1NkXaNuHR4w=3D=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(366016);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|7416014|376014;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?61VBpOZ/peA0SjhixXyOt3/UBn0IB72MV2c13fyYjaO+YOkpdZDhariZCe6d?=
+ =?us-ascii?Q?y1HbCrIa0DwjBxjK+KntoldZScEZfGou4+taVrWaiTQw2kLBKHony6bbSdth?=
+ =?us-ascii?Q?KTp397uHRZ81y38N2SIiT1IwRV2/R6Doo8utwP8ymz3UAslTSaHRSj62FIuC?=
+ =?us-ascii?Q?cP/zJMXecBvy9DfxCiXrj99zh+8ddv+GuatXHwL/Hv26VPLuxzreSqpdXlCo?=
+ =?us-ascii?Q?KGW5lPPy8E9Vwbcnnt6qdof1sv5JeeqkEESwqyXursEH6pxbKtnstuJRo4NL?=
+ =?us-ascii?Q?1xR7tL2IKY/vsJHWRmnO1eXnCv9JCn2FaZzKvkY7PnrKQFpGQOxjjlA2gbrL?=
+ =?us-ascii?Q?xk1RH0v47Sk/RTDOtSv0kglSasSvyR4LbuRZ4+tJM1r7vbLYXTzwa9zZEF3u?=
+ =?us-ascii?Q?mDnqJTmZRa9ZmYQehSh/MuGOcvUBr/LV/kSSJca9FYxs1rkw7PPt/Q9wddBs?=
+ =?us-ascii?Q?AjFrMmts/aKjnbjs5P5Cl9VlGvKkose1qriwggu70slBX2/CP78I16kScjQn?=
+ =?us-ascii?Q?CVf2KfAybtm0wXxojMPBPNUfuCyRAocsCGHijNgpljaHW7PCMsoD7Sk4u9Py?=
+ =?us-ascii?Q?tohd0yNkA6GVyDtpgyBF27hlnPW7XRT8v1W05gR16bfG5XkRkvZs5SpeZ+NN?=
+ =?us-ascii?Q?w+8R8CKH1EnMTQhzVwlS1WB1TFOqSbdNCvxMXgVJgpj3gflR6rNxCv0CFndw?=
+ =?us-ascii?Q?XGgaGevYRW7unOfY/Clj19Y7x413f8o6eJY9hwBmI+E2dbxjtVNyRLz03evC?=
+ =?us-ascii?Q?tGILhZ/bLjpDOR/bhyFfG7v/SY3s1ChKdQJ1kUR0yTPkCnoMPs5R5bGGkc3t?=
+ =?us-ascii?Q?WM17YZpUeYr689O3iIE4XLDLsZFrjUl54bcJSmKiwiw/bgSki86+DieZbhhY?=
+ =?us-ascii?Q?mgxlIhpG/uYNpE9GWaGwxTdzrjsoYD4hOn8Eg6dnq92ufezbgc1sjVOCQMkr?=
+ =?us-ascii?Q?itswnhbrqPzuhmGIksmuMYa5Q7bhhfgRO+2hqh49+x04QwJSP7TR5rYssm2f?=
+ =?us-ascii?Q?Rt0x12U/5IS7+AWv6Z9eerX6GTUQQHpUMxzdEp01Z5Xsjk+EPmC1bmcznbyS?=
+ =?us-ascii?Q?cBEvJVCImjZa/c0xqZ7rogOPePlnomNCdKK48LhajExjAjqmqozhku216/7E?=
+ =?us-ascii?Q?h/A2uVnJdc2q9vjDcyLtAhlOQLrH7fVmxhREID21SaYQonh+7ONG4RvSxbeL?=
+ =?us-ascii?Q?2nIq7KKEVY+or3B+Z2pW/Un0B+i8wzmiDd5Wems+sPEFi9yzmpL78gGYCk4?=
+ =?us-ascii?Q?=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(7416014)(376014);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?+Xdp15hGqZgEfppEFM3ntz2Tu7RV86AM4bZSFgE8bFR/wG9isZjHZzNyNlod?=
- =?us-ascii?Q?kbRKyhPYpML7oFaE6jdPZjOHLS76BoReuUE+I55sNi99s6pMqPjVPDgUxFxh?=
- =?us-ascii?Q?Qdlpn7XIG/rdWfIYFHu4Ya+f++ya+7hCZdMPoSE9MR7XQzIzWNER9SzlBYGF?=
- =?us-ascii?Q?VwB8Norzo16r7Akt1MKm4OVsTl2/8Q5NL/+i0SJQLEM4f16JLno/wVb6llRI?=
- =?us-ascii?Q?+LI/X3ibLBd1z13iMc7peW8ldFrV7MkwjClN9ko+LiZ0kVYNI8gXzDvBRzLw?=
- =?us-ascii?Q?MYGSFUs8/N1t78rZo7+ktAgGbNcHY0sHAfoy2KY1Fktj4u4vi/o1vby02buP?=
- =?us-ascii?Q?+RYZtjp7wi4Ibm/hSyRY4mMVsb9XfiipUz3R2lRwykTCKJGk8LJuNocrGhb+?=
- =?us-ascii?Q?WxqzXf+of+3nE/e6Er8Poa6rOTLa/fVI79euzdwJcu6uL7NEOL5/cUpWO+SG?=
- =?us-ascii?Q?IUAM+Wq3xep3MIHKTpaKZpfFlAWlmDNabB50T6bfVzXx18jt/tnzhizumL/+?=
- =?us-ascii?Q?ikw3FRWAx97Nb2rVw0GfGWntsFoBMycf9xPMHAw7BtgQT3IBZXh3ez1A+KJ7?=
- =?us-ascii?Q?mq6NT0e0oWjSbSCy8clONixx1O1FnybKJh0RvDklRJz3YmZMw5sbvBdOoMNX?=
- =?us-ascii?Q?gWqi+4N06HCY7RQOdoNczM4GUlZSVeX/6f1zf78AAVYzOa8RcRErA1xJiDvI?=
- =?us-ascii?Q?yHcUaGhIyAQcYjLtmKM3IK34KAEyK6y4n4b/6a8hK2R+9WuvbdkaY/JkDdQM?=
- =?us-ascii?Q?A8rlUh3vK0Z0WMwLPuT5/8gbnOHmOELrqg0TTuXLkS57DgK//VFYQbRaYaBj?=
- =?us-ascii?Q?pSWkzdDCQcFoZp9Pg92aUfJ9LIVtybRUuwrH1mU27XiPbXc9eL/dImuMFfd6?=
- =?us-ascii?Q?GRWvGqqa1lcJpo77WH+qN+Jn8eid5Dd2CYs9Ev2+RH301gqhfE2am89HaoHq?=
- =?us-ascii?Q?SPNezKIyDyTtH03xun17gbRVeyEuwX7D/4IqMNfh3GCWotEihn76PHvffqtD?=
- =?us-ascii?Q?N6Vuqq2pH+ZavSNiEfGHvV752M+l+lOZg7F5m/nMI2+ZTxu4BRirmbJgBVmx?=
- =?us-ascii?Q?oEsrwAQFiJyaH5WcKrZkGv53KHSeETCg+xbD3bzYL23s+/md1/8LNkEYiwoS?=
- =?us-ascii?Q?6JssExPrHgiHU3q+0+1AEWpHDaicT3pQcZmtDgZH/8OTY5Kd8InwbaS4WmGI?=
- =?us-ascii?Q?UaI08NRhFA1/ZrO4lK4XvpSZJcibYEwRSbkB/4PZF4Zf8Wyr0WJFudZ7c7/9?=
- =?us-ascii?Q?gbvyb0GmnYRuQ4ZE3TtDedpwwYXyewAnQupe7MmWFCnzjdkvGX6rTNn/O13Y?=
- =?us-ascii?Q?HlNfxBJw8hAq+Oz75Cqx2rwvQfJ/Br/JQzZ4fTksMjrLkA3YABj6H7mjzQX2?=
- =?us-ascii?Q?16gOfsk4aGr2c//bNyIDJe4FRAm5uOVvMpa3sy1B6R2K3a8vcCenZAqP99uS?=
- =?us-ascii?Q?HYZwJIgUOJcWECrBrJXxVcgAqIEJzUHqmVeISjNBDO1qlVUTmHMmKOIKiGek?=
- =?us-ascii?Q?nKo15RTG5/06px/+QOqbKfulTOinDgZn1QfAVmT50rwDEK0JCAUlqv9yZrlT?=
- =?us-ascii?Q?CyOJ5SHvepdBwIQUV8CBW8WFWBse3YeHfQFqtWs9MpD7A1pM2WXImM5RPufV?=
- =?us-ascii?Q?bQ=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5c18d8d2-a7b7-4c55-0aa0-08dce99ee734
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?MxrLIQD06gVhg7xFaiuH7OsAG28hkia8LrCLVFm5M0hSE7uS/31HmGRoDqfi?=
+ =?us-ascii?Q?7EyVdYx1a+WXjCEkOV9jC12boCJMAJj6/DtWv9jN5ueV2jwEqDkvQBdXCM8Y?=
+ =?us-ascii?Q?1//41USRgXAW0FpeC3Kc6m8AKKmIA89GNSbP21zcBhiTSLl3pTGJnyrm7ITw?=
+ =?us-ascii?Q?pUx8DmsJnnx1qV2AkSHYO3lmnTzBJ45+XK/u3uEm4rgx5W5he4rwtmHtxAgf?=
+ =?us-ascii?Q?jp2gCI5WOAF/XI9zU5w7Wav33gxr7pZxjFW6B8EQPyLPFjppV4WUyxo9YjfP?=
+ =?us-ascii?Q?ceARbVy1f18aq6kp9XZ9QkCOj2J36ic3exWwzV1sHxuxSKIxKMbKs3QoDoFm?=
+ =?us-ascii?Q?SUxXBehP5aN1rW4Yr6jn3OAn/FLTWSKDSxgU5itZqfR9getzcGEeu0K1GUIV?=
+ =?us-ascii?Q?NzgGlCg0PyyEqymyrY8upZBnhxxdL0mne+olOQ8iKgxs6Zb1YW6tTn37brN3?=
+ =?us-ascii?Q?IYKo2UhG/Z9JlFAFUOiAlxCmXCRniz9mZ1C/D5ReKiuyXIi8gu0f3xoMHPa2?=
+ =?us-ascii?Q?j7Ru4r+e5Ra+oUTwF7Pmwy14E6O/rto1r42sLykYBGR7zY5+HtSynFiXEXRl?=
+ =?us-ascii?Q?ZyfcU0QMqW+Ze4If1kz46ZTskCWVGZHBVnAa+ANCCozk0nBbIVOYZ8BmFWo4?=
+ =?us-ascii?Q?u6q+EoG0NZ4jH7icxDV2pQMXDVd/7ba9HaCfHQFdLXghPDF95MQRjBWTlJYf?=
+ =?us-ascii?Q?DIY64SxzpSRc1PSirH/QY5BQknTNbIslHWohO1ozWXFXq9cjt8GPJSBSKBSG?=
+ =?us-ascii?Q?MNuX0ffFYTGw4b4Yr1nZ09Tn5Gy+uhdlmTgSC5nQ+1Zu2Ju0wsiss0nIZddE?=
+ =?us-ascii?Q?vTMa5aBwudaPIQmqIIS83Occyo8achD3OVXf8dsnFyRUSBHSofMHerufGeSD?=
+ =?us-ascii?Q?bgUVaQuLHzcoIYcYWi8wghIpNu2sOL/wYaocJru7O1GsJGMUfPsXJW9xIm7t?=
+ =?us-ascii?Q?2wOpMhnrciY63QKvnUwvt4cvN/XSwEcO6ZYSWwnSUMX8jHDx6ySVaJFD9AL4?=
+ =?us-ascii?Q?WT7lB4aII8kBH+Q6C1uflHvuOXmrNK4lyoDbj7WsArN2HaJ9qosvajqNKeDt?=
+ =?us-ascii?Q?bBhq+7wiYyOqPVARGLhVa1sMOvgADrqMHZSg9VkDUJ0t4J7PlPX0A3RBJXUv?=
+ =?us-ascii?Q?kMVseFyUIugnSsMHOgiRx6ZqQYxM1Fg1QMEP8JY0+lODx6ByYD9RQZkW9uaB?=
+ =?us-ascii?Q?4IHjMSq5sJ4qaKBZOW1Xyc2bH6cwqJ8DHxD4p0LI/8lCZOB3tuBF59HOkJGA?=
+ =?us-ascii?Q?9MXucRJYZsvrL2Bu54ZSdzXv+NjvOvK+Y3MQEvSMwXPxY0s2aBabwaaZABJr?=
+ =?us-ascii?Q?JdFkNw9PkUAOVo2XrkJm7LKzRuXHn7ngVMI1z+gIRj3O3tqw1ZgUg1B25TXW?=
+ =?us-ascii?Q?mlRJASgaK4yL5D9rX71Ge1JGquwAEhRvAWpUzjbCCekuR/H9CqAhJ3GcJnGs?=
+ =?us-ascii?Q?9UuQhor3GoYD304PcrIF/SoyAHbQjZtB47XSx/T1685Ipn2G1p086coQGgI1?=
+ =?us-ascii?Q?zaQ8rqz9jcqe5bGDtBfsQqsq3MkjprIH/HeA7hHS/JV4h+w1uZLp3hbJvNMd?=
+ =?us-ascii?Q?zP0cfrUZW3Z4rqHZA4pPmohEs0YPy571jApqNm8MwJ1TGWyguKEu9TiJKulV?=
+ =?us-ascii?Q?9g=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5bd508dc-2fcc-4c64-e74d-08dce9adcbc1
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Oct 2024 02:46:27.9198
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Oct 2024 04:33:04.4763
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: vozTzcZNsjhP3fMq6/6nfH3ERFKeHQPsW2gTr+TkpPAPr4x2fZrsuqE8bELafhQHS6AiidA74diOGgjRUqmYpw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB6722
+X-MS-Exchange-CrossTenant-UserPrincipalName: 01YogCSXQcFxC2zaZsxKfFQRoxjgeSD8m6NVPo5JGB/yqOo9vaWUaPWgHt+3NvwsYACSwzvFac6vvmm7xxA9BQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB6727
 X-OriginatorOrg: intel.com
 
---ruHRZqqTcJu9mXyR
+--VZJJSsuX2mnIFoRA
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
 
-hi, Lorenzo,
-
-On Wed, Oct 09, 2024 at 10:24:58PM +0100, Lorenzo Stoakes wrote:
-> On Wed, Oct 09, 2024 at 02:44:30PM +0800, Oliver Sang wrote:
-> [snip]
-> > >
-> > > I will look into this now, if I provide patches would you be able to test
-> > > them using the same boxes? It'd be much appreciated!
-> >
-> > sure! that's our pleasure!
-> >
-> 
-> Hi Oliver,
-> 
-> Thanks so much for this, could you give the below a try? I've not tried to
-> seriously test it locally yet, so it'd be good to set your test machines on
-> it.
-> 
-> If this doesn't help it suggests call stack/branching might be a thing here
-> in which case I have other approaches I can take before we have to
-> duplicate this code.
-> 
-> This patch is against the mm-unstable branch in Andrew's tree [0] but
-> hopefully should apply fine to Linus's too.
-> 
-> [0]:https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git/
-> 
-> Thanks again!
-
-you are welcome!
-
-I found the patch could be applied directly on cacded5e42, so I did it.
-this is our normal practice that we want to avoid impacts from other commits.
-
-but if your patch should reply on some new patches in mm-unstable or mainline,
-please let me know. I could reapply and retest.
-
-I mentioned patch base since I found by my applyment upon cacded5e42, your
-patch seems not have obvious performance impact, still have similar regression.
-
-for brief, I just list 2 examples here. all tests and full data are attached
-as fc21959f74bc11-cacded5e42b960-2e71337ac26478
-
-(1)
-
-model: Sapphire Rapids
-nr_node: 2
-nr_cpu: 224
-memory: 512G
-brand: Intel(R) Xeon(R) Platinum 8480CTDX
-
-=========================================================================================
-compiler/cpufreq_governor/kconfig/rootfs/tbox_group/test/testcase/testtime:
-  gcc-12/performance/x86_64-rhel-8.3/debian-12-x86_64-20240206.cgz/lkp-spr-2sp4/brk_test/aim9/300s
-
-commit:
-  fc21959f74bc11 ("mm: abstract vma_expand() to use vma_merge_struct")
-  cacded5e42b960 ("mm: avoid using vma_merge() for new VMAs")
-  2e71337ac26478 ("mm: explicitly enable an expand-only merge mode for brk()")
-
-fc21959f74bc1138 cacded5e42b9609b07b22d80c10 2e71337ac2647889d3d9d76a5ce
----------------- --------------------------- ---------------------------
-         %stddev     %change         %stddev     %change         %stddev
-             \          |                \          |                \
-   3540976            -6.4%    3314159            -6.7%    3302864        aim9.brk_test.ops_per_sec
 
 
-(2) which is using same Ivy Bridge-EP in our original report
-(test machine: 48 threads 2 sockets Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GHz (Ivy Bridge-EP) with 64G memory)
+Hello,
 
-=========================================================================================
-compiler/cpufreq_governor/kconfig/rootfs/tbox_group/test/testcase/testtime:
-  gcc-12/performance/x86_64-rhel-8.3/debian-12-x86_64-20240206.cgz/lkp-ivb-2ep2/brk_test/aim9/300s
+kernel test robot noticed "perf-test.perf.make.fail" on:
 
-commit:
-  fc21959f74bc11 ("mm: abstract vma_expand() to use vma_merge_struct")
-  cacded5e42b960 ("mm: avoid using vma_merge() for new VMAs")
-  2e71337ac26478 ("mm: explicitly enable an expand-only merge mode for brk()")
+commit: 1b58625961de2638d2d798db2f87b3ea0f3a53ed ("[PATCH v4 12/12] perf jevents: Add load event json to verify and allow fallbacks")
+url: https://github.com/intel-lab-lkp/linux/commits/Ian-Rogers/perf-jevents-Allow-multiple-metricgroups-json-files/20240927-014027
+base: https://git.kernel.org/cgit/linux/kernel/git/perf/perf-tools-next.git perf-tools-next
+patch link: https://lore.kernel.org/all/20240926173554.404411-13-irogers@google.com/
+patch subject: [PATCH v4 12/12] perf jevents: Add load event json to verify and allow fallbacks
 
-fc21959f74bc1138 cacded5e42b9609b07b22d80c10 2e71337ac2647889d3d9d76a5ce
----------------- --------------------------- ---------------------------
-         %stddev     %change         %stddev     %change         %stddev
-             \          |                \          |                \
-   1322908            -5.0%    1256536            -4.1%    1268145        aim9.brk_test.ops_per_sec
+in testcase: perf-test
+version: perf-test-x86_64-679c985-1_20240823
+with following parameters:
 
-> 
-> Best, Lorenzo
-> 
-> 
-> ----8<----
-> From 7eb4aa421b357668bc44405c58b0444abf44334a Mon Sep 17 00:00:00 2001
-> From: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
-> Date: Wed, 9 Oct 2024 21:57:03 +0100
-> Subject: [PATCH] mm: explicitly enable an expand-only merge mode for brk()
-> 
-> Try to do less work on brk() to improve perf.
-> ---
->  mm/mmap.c |  1 +
->  mm/vma.c  | 25 ++++++++++++++++---------
->  mm/vma.h  | 11 +++++++++++
->  3 files changed, 28 insertions(+), 9 deletions(-)
-> 
-> diff --git a/mm/mmap.c b/mm/mmap.c
-> index 02f7b45c3076..c2c68ef45a3b 100644
-> --- a/mm/mmap.c
-> +++ b/mm/mmap.c
-> @@ -1740,6 +1740,7 @@ static int do_brk_flags(struct vma_iterator *vmi, struct vm_area_struct *vma,
->  	if (vma && vma->vm_end == addr) {
->  		VMG_STATE(vmg, mm, vmi, addr, addr + len, flags, PHYS_PFN(addr));
-> 
-> +		vmg.mode = VMA_MERGE_MODE_EXPAND_ONLY;
->  		vmg.prev = vma;
->  		vma_iter_next_range(vmi);
-> 
-> diff --git a/mm/vma.c b/mm/vma.c
-> index 749c4881fd60..f525a0750c41 100644
-> --- a/mm/vma.c
-> +++ b/mm/vma.c
-> @@ -561,6 +561,7 @@ struct vm_area_struct *vma_merge_new_range(struct vma_merge_struct *vmg)
->  	unsigned long end = vmg->end;
->  	pgoff_t pgoff = vmg->pgoff;
->  	pgoff_t pglen = PHYS_PFN(end - start);
-> +	bool expand_only = vmg_mode_expand_only(vmg);
->  	bool can_merge_left, can_merge_right;
-> 
->  	mmap_assert_write_locked(vmg->mm);
-> @@ -575,7 +576,7 @@ struct vm_area_struct *vma_merge_new_range(struct vma_merge_struct *vmg)
->  		return NULL;
-> 
->  	can_merge_left = can_vma_merge_left(vmg);
-> -	can_merge_right = can_vma_merge_right(vmg, can_merge_left);
-> +	can_merge_right = !expand_only && can_vma_merge_right(vmg, can_merge_left);
-> 
->  	/* If we can merge with the next VMA, adjust vmg accordingly. */
->  	if (can_merge_right) {
-> @@ -603,13 +604,18 @@ struct vm_area_struct *vma_merge_new_range(struct vma_merge_struct *vmg)
->  		return vmg->vma;
->  	}
-> 
-> -	/* If expansion failed, reset state. Allows us to retry merge later. */
-> -	vmg->vma = NULL;
-> -	vmg->start = start;
-> -	vmg->end = end;
-> -	vmg->pgoff = pgoff;
-> -	if (vmg->vma == prev)
-> -		vma_iter_set(vmg->vmi, start);
-> +	/*
-> +	 * Unless in expand only case and expansion failed, reset state.
-> +	 * Allows us to retry merge later.
-> +	 */
-> +	if (!expand_only) {
-> +		vmg->vma = NULL;
-> +		vmg->start = start;
-> +		vmg->end = end;
-> +		vmg->pgoff = pgoff;
-> +		if (vmg->vma == prev)
-> +			vma_iter_set(vmg->vmi, start);
-> +	}
-> 
->  	return NULL;
->  }
-> @@ -641,7 +647,8 @@ int vma_expand(struct vma_merge_struct *vmg)
->  	mmap_assert_write_locked(vmg->mm);
-> 
->  	vma_start_write(vma);
-> -	if (next && (vma != next) && (vmg->end == next->vm_end)) {
-> +	if (!vmg_mode_expand_only(vmg) && next &&
-> +	    (vma != next) && (vmg->end == next->vm_end)) {
->  		int ret;
-> 
->  		remove_next = true;
-> diff --git a/mm/vma.h b/mm/vma.h
-> index 82354fe5edd0..14224b36a979 100644
-> --- a/mm/vma.h
-> +++ b/mm/vma.h
-> @@ -52,6 +52,11 @@ struct vma_munmap_struct {
->  	unsigned long data_vm;
->  };
-> 
-> +enum vma_merge_mode {
-> +	VMA_MERGE_MODE_NORMAL,
-> +	VMA_MERGE_MODE_EXPAND_ONLY,
-> +};
-> +
->  enum vma_merge_state {
->  	VMA_MERGE_START,
->  	VMA_MERGE_ERROR_NOMEM,
-> @@ -75,9 +80,15 @@ struct vma_merge_struct {
->  	struct mempolicy *policy;
->  	struct vm_userfaultfd_ctx uffd_ctx;
->  	struct anon_vma_name *anon_name;
-> +	enum vma_merge_mode mode;
->  	enum vma_merge_state state;
->  };
-> 
-> +static inline bool vmg_mode_expand_only(struct vma_merge_struct *vmg)
-> +{
-> +	return vmg->mode == VMA_MERGE_MODE_EXPAND_ONLY;
-> +}
-> +
->  static inline bool vmg_nomem(struct vma_merge_struct *vmg)
->  {
->  	return vmg->state == VMA_MERGE_ERROR_NOMEM;
-> --
-> 2.46.2
-
---ruHRZqqTcJu9mXyR
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: attachment;
-	filename="fc21959f74bc11-cacded5e42b960-2e71337ac26478"
-Content-Transfer-Encoding: 8bit
-
-=========================================================================================
-compiler/cpufreq_governor/kconfig/rootfs/tbox_group/test/testcase/testtime:
-  gcc-12/performance/x86_64-rhel-8.3/debian-12-x86_64-20240206.cgz/lkp-gnr-1ap1/brk_test/aim9/300s
-
-commit:
-  fc21959f74bc11 ("mm: abstract vma_expand() to use vma_merge_struct")
-  cacded5e42b960 ("mm: avoid using vma_merge() for new VMAs")
-  2e71337ac26478 ("mm: explicitly enable an expand-only merge mode for brk()")
-
-fc21959f74bc1138 cacded5e42b9609b07b22d80c10 2e71337ac2647889d3d9d76a5ce
----------------- --------------------------- ---------------------------
-         %stddev     %change         %stddev     %change         %stddev
-             \          |                \          |                \
-   3220697            -6.0%    3028867            -6.4%    3014713        aim9.brk_test.ops_per_sec
-     24.58            -3.9%      23.63            -5.5%      23.24        time.user_time
-    119459            -3.2%     115601            -2.9%     115971        proc-vmstat.nr_active_anon
-    120943            -3.2%     117079            -2.9%     117450        proc-vmstat.nr_shmem
-    119459            -3.2%     115601            -2.9%     115971        proc-vmstat.nr_zone_active_anon
-      0.02 ±120%    -100.0%       0.00          -100.0%       0.00        perf-sched.sch_delay.avg.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
-      3.27 ±  5%   +5112.4%     170.40 ±218%   +5144.5%     171.45 ±216%  perf-sched.sch_delay.max.ms.__cond_resched.__wait_for_common.affine_move_task.__set_cpus_allowed_ptr.__sched_setaffinity
-      0.20 ±188%    -100.0%       0.00          -100.0%       0.00        perf-sched.sch_delay.max.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.01 ± 70%    +100.0%       0.01 ± 84%   +3512.9%       0.19 ±199%  perf-sched.sch_delay.max.ms.irqentry_exit_to_user_mode.asm_sysvec_apic_timer_interrupt.[unknown]
-      0.93 ± 16%      -4.1%       0.89 ± 14%     -25.0%       0.70 ± 11%  perf-sched.sch_delay.max.ms.pipe_read.vfs_read.ksys_read.do_syscall_64
-      0.02 ±120%    -100.0%       0.00          -100.0%       0.00        perf-sched.wait_time.avg.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.20 ±188%    -100.0%       0.00          -100.0%       0.00        perf-sched.wait_time.max.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.01 ± 70%    +100.0%       0.01 ± 84%   +3512.9%       0.19 ±199%  perf-sched.wait_time.max.ms.irqentry_exit_to_user_mode.asm_sysvec_apic_timer_interrupt.[unknown]
-      0.02 ±  2%      -4.1%       0.02 ±  2%      -6.3%       0.02 ±  4%  perf-stat.i.MPKI
- 1.767e+09            +4.2%  1.841e+09            +3.7%  1.833e+09        perf-stat.i.branch-instructions
-      0.45            -6.2%       0.42            -5.9%       0.42        perf-stat.i.cpi
- 8.347e+09            +6.6%    8.9e+09            +6.2%  8.863e+09        perf-stat.i.instructions
-      2.27            +6.6%       2.42            +6.0%       2.41        perf-stat.i.ipc
-      0.03 ±  4%      -2.0%       0.03 ±  3%      -7.8%       0.03 ±  4%  perf-stat.overall.MPKI
-      0.44            -5.9%       0.42            -5.4%       0.42        perf-stat.overall.cpi
-      2.25            +6.2%       2.39            +5.7%       2.38        perf-stat.overall.ipc
- 1.761e+09            +4.2%  1.834e+09            +3.7%  1.827e+09        perf-stat.ps.branch-instructions
- 8.319e+09            +6.6%   8.87e+09            +6.2%  8.834e+09        perf-stat.ps.instructions
- 2.519e+12            +6.4%   2.68e+12            +5.8%  2.665e+12        perf-stat.total.instructions
-      7.07            -7.1        0.00            -7.1        0.00        perf-profile.calltrace.cycles-pp.mas_store_prealloc.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      6.30            -6.3        0.00            -6.3        0.00        perf-profile.calltrace.cycles-pp.mas_preallocate.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-     18.35            -1.0       17.36            -1.4       16.92        perf-profile.calltrace.cycles-pp.perf_event_mmap.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-     16.40            -0.9       15.47            -1.3       15.05        perf-profile.calltrace.cycles-pp.perf_event_mmap_event.perf_event_mmap.do_brk_flags.__do_sys_brk.do_syscall_64
-     10.17            -0.8        9.36            -1.2        8.93        perf-profile.calltrace.cycles-pp.perf_event_mmap_output.perf_iterate_sb.perf_event_mmap_event.perf_event_mmap.do_brk_flags
-     11.92            -0.8       11.12            -1.3       10.64        perf-profile.calltrace.cycles-pp.perf_iterate_sb.perf_event_mmap_event.perf_event_mmap.do_brk_flags.__do_sys_brk
-      5.07 ±  3%      -0.2        4.84 ±  2%      -0.2        4.88 ±  3%  perf-profile.calltrace.cycles-pp.__get_unmapped_area.check_brk_limits.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      5.40 ±  3%      -0.2        5.18 ±  2%      -0.1        5.28 ±  3%  perf-profile.calltrace.cycles-pp.check_brk_limits.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
-      3.66 ±  2%      -0.2        3.50 ±  2%      -0.1        3.52 ±  3%  perf-profile.calltrace.cycles-pp.thp_get_unmapped_area_vmflags.__get_unmapped_area.check_brk_limits.__do_sys_brk.do_syscall_64
-      0.60 ±  5%      -0.1        0.46 ± 45%      -0.2        0.36 ± 70%  perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_safe_stack.brk
-      1.66 ±  2%      -0.1        1.56 ±  3%      -0.1        1.60 ±  2%  perf-profile.calltrace.cycles-pp.up_write.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
-      0.68 ±  3%      -0.1        0.60 ±  5%      -0.1        0.60 ±  5%  perf-profile.calltrace.cycles-pp.kfree.perf_event_mmap_event.perf_event_mmap.do_brk_flags.__do_sys_brk
-      5.91 ±  2%      -0.1        5.85            -0.4        5.49        perf-profile.calltrace.cycles-pp.mas_find.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
-      0.97 ±  4%      -0.1        0.91 ±  4%      -0.1        0.91 ±  3%  perf-profile.calltrace.cycles-pp.mas_next_slot.mas_find.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      4.23 ±  2%      -0.0        4.21            -0.4        3.82        perf-profile.calltrace.cycles-pp.mas_walk.mas_find.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      0.37 ± 70%      +0.3        0.67 ±  4%      +0.2        0.57 ± 44%  perf-profile.calltrace.cycles-pp.strlen.perf_event_mmap_event.perf_event_mmap.do_brk_flags.__do_sys_brk
-      0.00            +0.5        0.47 ± 44%      +0.6        0.58 ±  5%  perf-profile.calltrace.cycles-pp.mas_wr_store_entry.mas_store_prealloc.vma_expand.vma_merge_new_range.do_brk_flags
-      0.49 ± 44%      +0.5        1.02 ±  5%      +0.5        1.02 ±  8%  perf-profile.calltrace.cycles-pp.__vm_enough_memory.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-     83.74            +0.5       84.28            +0.6       84.32        perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
-      0.00            +0.6        0.60 ±  6%      +0.6        0.58 ±  7%  perf-profile.calltrace.cycles-pp.mas_next_range.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      0.00            +0.7        0.65 ±  7%      +0.7        0.66 ±  4%  perf-profile.calltrace.cycles-pp.mas_wr_slot_store.mas_store_prealloc.vma_expand.vma_merge_new_range.do_brk_flags
-      0.00            +0.7        0.68 ±  4%      +0.7        0.67 ±  8%  perf-profile.calltrace.cycles-pp.percpu_counter_add_batch.__vm_enough_memory.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.00            +0.7        0.68 ±  2%      +0.8        0.80 ±  4%  perf-profile.calltrace.cycles-pp.mas_next_slot.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-     80.24            +0.7       80.95            +0.7       80.98        perf-profile.calltrace.cycles-pp.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
-      0.00            +0.7        0.74 ±  2%      +0.8        0.76 ±  2%  perf-profile.calltrace.cycles-pp.vma_adjust_trans_huge.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +0.8        0.75 ±  4%      +0.8        0.81 ±  5%  perf-profile.calltrace.cycles-pp.can_vma_merge_after.vma_merge_new_range.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.00            +0.8        0.81 ±  3%      +0.7        0.69 ±  7%  perf-profile.calltrace.cycles-pp.mas_prev.vma_merge_new_range.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.00            +0.8        0.84 ±  5%      +0.8        0.84 ±  6%  perf-profile.calltrace.cycles-pp.__anon_vma_interval_tree_remove.vma_prepare.vma_expand.vma_merge_new_range.do_brk_flags
-      0.00            +1.3        1.30 ±  5%      +1.3        1.32 ±  2%  perf-profile.calltrace.cycles-pp.mas_prev_slot.vma_merge_new_range.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.00            +1.4        1.35 ±  4%      +1.3        1.32 ±  4%  perf-profile.calltrace.cycles-pp.up_write.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +1.6        1.60 ±  4%      +1.6        1.56 ±  4%  perf-profile.calltrace.cycles-pp.up_write.vma_complete.vma_expand.vma_merge_new_range.do_brk_flags
-      0.00            +1.8        1.76 ±  2%      +1.9        1.86 ±  2%  perf-profile.calltrace.cycles-pp.mas_leaf_max_gap.mas_update_gap.mas_store_prealloc.vma_expand.vma_merge_new_range
-      0.00            +1.8        1.78 ±  2%      +1.6        1.64 ±  4%  perf-profile.calltrace.cycles-pp.init_multi_vma_prep.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +2.0        2.03            +2.0        2.04 ±  2%  perf-profile.calltrace.cycles-pp.down_write.vma_prepare.vma_expand.vma_merge_new_range.do_brk_flags
-      0.00            +2.1        2.06 ±  3%      +2.1        2.06 ±  4%  perf-profile.calltrace.cycles-pp.down_write.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +2.3        2.29 ±  3%      +2.4        2.37 ±  2%  perf-profile.calltrace.cycles-pp.mas_update_gap.mas_store_prealloc.vma_expand.vma_merge_new_range.do_brk_flags
-     53.64            +2.6       56.21            +2.6       56.28        perf-profile.calltrace.cycles-pp.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
-      0.00            +3.1        3.14 ±  2%      +3.1        3.10 ±  5%  perf-profile.calltrace.cycles-pp.vma_complete.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +3.2        3.25            +3.6        3.64 ±  3%  perf-profile.calltrace.cycles-pp.mas_wr_store_type.mas_preallocate.vma_expand.vma_merge_new_range.do_brk_flags
-      0.00            +3.8        3.84            +3.9        3.86 ±  2%  perf-profile.calltrace.cycles-pp.vma_prepare.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +5.3        5.31 ±  2%      +5.7        5.67 ±  2%  perf-profile.calltrace.cycles-pp.mas_preallocate.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +6.1        6.07            +6.4        6.41        perf-profile.calltrace.cycles-pp.mas_store_prealloc.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00           +27.7       27.74           +28.3       28.33        perf-profile.calltrace.cycles-pp.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.00           +32.4       32.43           +33.0       33.02        perf-profile.calltrace.cycles-pp.vma_merge_new_range.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-     18.49            -1.0       17.47            -1.5       17.01        perf-profile.children.cycles-pp.perf_event_mmap
-      6.54            -1.0        5.54 ±  2%      -0.7        5.90 ±  2%  perf-profile.children.cycles-pp.mas_preallocate
-      7.40            -1.0        6.40 ±  2%      -0.6        6.76        perf-profile.children.cycles-pp.mas_store_prealloc
-      5.68            -1.0        4.72            -1.0        4.66 ±  3%  perf-profile.children.cycles-pp.up_write
-     16.88            -0.9       15.93            -1.4       15.51        perf-profile.children.cycles-pp.perf_event_mmap_event
-     10.35            -0.8        9.53            -1.2        9.10        perf-profile.children.cycles-pp.perf_event_mmap_output
-     12.16            -0.8       11.35            -1.3       10.86        perf-profile.children.cycles-pp.perf_iterate_sb
-      4.02 ±  2%      -0.7        3.32            -0.3        3.72 ±  3%  perf-profile.children.cycles-pp.mas_wr_store_type
-      2.97            -0.6        2.37 ±  3%      -0.5        2.45 ±  2%  perf-profile.children.cycles-pp.mas_update_gap
-      1.36 ±  8%      -0.6        0.80 ±  4%      -0.5        0.86 ±  4%  perf-profile.children.cycles-pp.can_vma_merge_after
-      2.26 ±  2%      -0.5        1.80 ±  2%      -0.4        1.89 ±  2%  perf-profile.children.cycles-pp.mas_leaf_max_gap
-      3.71 ±  2%      -0.3        3.44            -0.3        3.42 ±  4%  perf-profile.children.cycles-pp.vma_complete
-      5.62 ±  3%      -0.2        5.40 ±  2%      -0.1        5.51 ±  3%  perf-profile.children.cycles-pp.check_brk_limits
-      3.83 ±  2%      -0.2        3.65 ±  2%      -0.2        3.67 ±  3%  perf-profile.children.cycles-pp.thp_get_unmapped_area_vmflags
-      0.66 ±  7%      -0.1        0.55 ±  9%      -0.1        0.54 ±  6%  perf-profile.children.cycles-pp.may_expand_vm
-      1.98 ±  3%      -0.1        1.86 ±  2%      -0.3        1.71 ±  4%  perf-profile.children.cycles-pp.init_multi_vma_prep
-      0.78 ±  3%      -0.1        0.69 ±  4%      -0.1        0.69 ±  5%  perf-profile.children.cycles-pp.kfree
-      0.15 ± 12%      -0.1        0.08 ± 13%      -0.1        0.07 ± 23%  perf-profile.children.cycles-pp.arch_vma_name
-      6.23 ±  2%      -0.1        6.17            -0.4        5.78        perf-profile.children.cycles-pp.mas_find
-      0.60 ±  6%      -0.1        0.54 ±  8%      -0.1        0.51 ±  7%  perf-profile.children.cycles-pp.entry_SYSCALL_64_safe_stack
-      4.32 ±  2%      -0.0        4.30            -0.4        3.92        perf-profile.children.cycles-pp.mas_walk
-      0.20 ±  8%      -0.0        0.17 ±  7%      -0.0        0.15 ± 14%  perf-profile.children.cycles-pp.__x64_sys_brk
-      0.26 ±  5%      -0.0        0.24 ±  9%      -0.0        0.22 ±  9%  perf-profile.children.cycles-pp.__rb_insert_augmented
-      0.23 ±  7%      +0.0        0.24 ± 18%      +0.0        0.27 ±  6%  perf-profile.children.cycles-pp.hrtimer_interrupt
-      0.24 ±  7%      +0.0        0.24 ± 18%      +0.0        0.27 ±  5%  perf-profile.children.cycles-pp.__sysvec_apic_timer_interrupt
-      0.58 ±  7%      +0.1        0.66 ±  7%      +0.1        0.67 ±  2%  perf-profile.children.cycles-pp.mas_wr_slot_store
-      0.19 ± 10%      +0.1        0.31 ± 10%      +0.1        0.32 ± 16%  perf-profile.children.cycles-pp.rb_next
-      0.50 ±  4%      +0.1        0.62 ±  7%      +0.2        0.66 ±  7%  perf-profile.children.cycles-pp.mas_wr_store_entry
-      0.40 ±  6%      +0.1        0.53 ±  6%      +0.1        0.54 ±  6%  perf-profile.children.cycles-pp.strnlen
-      0.58 ± 13%      +0.2        0.75 ±  4%      +0.1        0.72 ± 13%  perf-profile.children.cycles-pp.strlen
-      0.96 ±  6%      +0.2        1.14 ±  3%      +0.2        1.16 ±  3%  perf-profile.children.cycles-pp.rcu_all_qs
-      0.68 ±  3%      +0.3        0.98 ±  5%      +0.3        1.01 ±  6%  perf-profile.children.cycles-pp.__anon_vma_interval_tree_remove
-      1.77 ±  4%      +0.3        2.09            +0.3        2.08 ±  4%  perf-profile.children.cycles-pp.__cond_resched
-      0.00            +0.4        0.36 ±  9%      +0.4        0.36 ±  8%  perf-profile.children.cycles-pp.mas_next_setup
-      0.36 ±  8%      +0.4        0.76 ±  3%      +0.4        0.76 ±  9%  perf-profile.children.cycles-pp.percpu_counter_add_batch
-      0.48 ±  7%      +0.4        0.90 ±  6%      +0.4        0.86 ±  4%  perf-profile.children.cycles-pp.mas_prev_setup
-     84.69            +0.5       85.19            +0.6       85.27        perf-profile.children.cycles-pp.do_syscall_64
-      0.67 ±  9%      +0.6        1.24 ±  4%      +0.6        1.27 ±  7%  perf-profile.children.cycles-pp.__vm_enough_memory
-      3.81            +0.6        4.39            +0.6        4.40 ±  3%  perf-profile.children.cycles-pp.down_write
-     80.98            +0.7       81.64            +0.7       81.71        perf-profile.children.cycles-pp.__do_sys_brk
-      1.05 ±  4%      +0.7        1.72 ±  3%      +0.8        1.82 ±  3%  perf-profile.children.cycles-pp.mas_next_slot
-      0.00            +0.7        0.70 ±  6%      +0.7        0.69 ±  5%  perf-profile.children.cycles-pp.mas_next_range
-      1.11 ±  4%      +1.0        2.10 ±  3%      +0.8        1.92 ±  3%  perf-profile.children.cycles-pp.mas_prev
-      2.82 ±  3%      +1.2        4.07            +1.3        4.09 ±  2%  perf-profile.children.cycles-pp.vma_prepare
-      1.54 ±  4%      +1.3        2.88 ±  3%      +1.3        2.84 ±  3%  perf-profile.children.cycles-pp.mas_prev_slot
-     54.97            +1.6       56.61            +1.8       56.79        perf-profile.children.cycles-pp.do_brk_flags
-      0.00           +28.6       28.64           +29.2       29.16        perf-profile.children.cycles-pp.vma_expand
-      0.00           +32.9       32.91           +33.4       33.37        perf-profile.children.cycles-pp.vma_merge_new_range
-      5.90 ±  2%      -3.5        2.37 ±  4%      -3.4        2.55        perf-profile.self.cycles-pp.do_brk_flags
-      5.36 ±  2%      -1.0        4.38            -1.0        4.36 ±  3%  perf-profile.self.cycles-pp.up_write
-     10.18            -0.8        9.36            -1.2        8.94        perf-profile.self.cycles-pp.perf_event_mmap_output
-      3.86 ±  2%      -0.7        3.18            -0.3        3.57 ±  3%  perf-profile.self.cycles-pp.mas_wr_store_type
-      1.28 ±  7%      -0.5        0.74 ±  4%      -0.5        0.78 ±  4%  perf-profile.self.cycles-pp.can_vma_merge_after
-      3.02 ±  2%      -0.5        2.52 ±  4%      -0.3        2.75 ±  3%  perf-profile.self.cycles-pp.mas_store_prealloc
-      2.19 ±  2%      -0.4        1.78 ±  2%      -0.3        1.87 ±  2%  perf-profile.self.cycles-pp.mas_leaf_max_gap
-      5.03            -0.4        4.67            -0.1        4.92 ±  2%  perf-profile.self.cycles-pp.__do_sys_brk
-      2.60 ±  4%      -0.3        2.27 ±  5%      -0.3        2.25 ±  2%  perf-profile.self.cycles-pp.mas_preallocate
-      1.89 ±  4%      -0.3        1.59 ±  4%      -0.3        1.62 ±  5%  perf-profile.self.cycles-pp.perf_event_mmap_event
-      1.71 ±  4%      -0.2        1.53 ±  3%      -0.2        1.50 ±  5%  perf-profile.self.cycles-pp.entry_SYSCALL_64
-      0.74 ±  3%      -0.2        0.57 ±  7%      -0.2        0.56 ±  6%  perf-profile.self.cycles-pp.mas_update_gap
-      1.89 ±  4%      -0.2        1.73 ±  2%      -0.3        1.62 ±  4%  perf-profile.self.cycles-pp.init_multi_vma_prep
-      1.58 ±  4%      -0.1        1.47 ±  3%      -0.2        1.42 ±  4%  perf-profile.self.cycles-pp.perf_event_mmap
-      1.27 ±  2%      -0.1        1.16 ±  2%      -0.1        1.19 ±  9%  perf-profile.self.cycles-pp.vma_complete
-      1.20 ±  2%      -0.1        1.12 ±  4%      -0.1        1.08 ±  2%  perf-profile.self.cycles-pp.do_syscall_64
-      0.69 ±  2%      -0.1        0.61 ±  4%      -0.1        0.60 ±  5%  perf-profile.self.cycles-pp.kfree
-      0.60 ±  6%      -0.1        0.54 ±  8%      -0.1        0.51 ±  7%  perf-profile.self.cycles-pp.entry_SYSCALL_64_safe_stack
-      1.60 ±  2%      -0.1        1.56 ±  6%      -0.1        1.55        perf-profile.self.cycles-pp.down_write_killable
-      4.24 ±  2%      -0.0        4.20            -0.4        3.84        perf-profile.self.cycles-pp.mas_walk
-      0.50 ±  7%      -0.0        0.47 ±  9%      -0.1        0.45 ±  5%  perf-profile.self.cycles-pp.may_expand_vm
-      0.42 ±  4%      +0.1        0.49 ±  7%      +0.1        0.53 ±  6%  perf-profile.self.cycles-pp.mas_wr_store_entry
-      0.15 ± 10%      +0.1        0.24 ± 11%      +0.1        0.23 ± 19%  perf-profile.self.cycles-pp.rb_next
-      0.58 ±  8%      +0.1        0.68 ±  5%      +0.1        0.71 ±  6%  perf-profile.self.cycles-pp.rcu_all_qs
-      0.37 ±  5%      +0.1        0.50 ±  7%      +0.1        0.50 ±  4%  perf-profile.self.cycles-pp.strnlen
-      0.54 ± 13%      +0.2        0.68 ±  4%      +0.1        0.64 ± 14%  perf-profile.self.cycles-pp.strlen
-      1.01 ±  6%      +0.2        1.17 ±  2%      +0.1        1.11 ±  4%  perf-profile.self.cycles-pp.__cond_resched
-      0.66 ±  6%      +0.2        0.83 ±  2%      +0.2        0.84 ±  3%  perf-profile.self.cycles-pp.vma_prepare
-      0.46 ±  6%      +0.2        0.67 ±  7%      +0.2        0.70 ±  5%  perf-profile.self.cycles-pp.__anon_vma_interval_tree_remove
-      0.34 ± 12%      +0.2        0.54 ±  3%      +0.2        0.58 ±  9%  perf-profile.self.cycles-pp.__vm_enough_memory
-      0.00            +0.3        0.29 ± 10%      +0.3        0.28 ± 11%  perf-profile.self.cycles-pp.mas_next_setup
-      0.32 ± 11%      +0.3        0.62 ±  7%      +0.3        0.58 ±  8%  perf-profile.self.cycles-pp.mas_prev_setup
-      0.23 ±  7%      +0.3        0.55 ±  6%      +0.3        0.55 ± 10%  perf-profile.self.cycles-pp.percpu_counter_add_batch
-      0.00            +0.4        0.35 ±  7%      +0.3        0.30 ±  7%  perf-profile.self.cycles-pp.mas_next_range
-      2.65 ±  3%      +0.4        3.00 ±  2%      +0.4        3.05 ±  2%  perf-profile.self.cycles-pp.down_write
-      0.64 ±  5%      +0.6        1.21 ±  3%      +0.5        1.12 ±  5%  perf-profile.self.cycles-pp.mas_prev
-      0.89 ±  5%      +0.7        1.54 ±  3%      +0.8        1.64 ±  4%  perf-profile.self.cycles-pp.mas_next_slot
-      1.46 ±  4%      +1.3        2.72 ±  3%      +1.2        2.70 ±  3%  perf-profile.self.cycles-pp.mas_prev_slot
-      0.00            +1.3        1.33 ±  2%      +1.2        1.16 ±  4%  perf-profile.self.cycles-pp.vma_merge_new_range
-      0.00            +3.5        3.54 ±  3%      +3.6        3.55 ±  2%  perf-profile.self.cycles-pp.vma_expand
-
-=========================================================================================
-compiler/cpufreq_governor/kconfig/rootfs/tbox_group/test/testcase/testtime:
-  gcc-12/performance/x86_64-rhel-8.3/debian-12-x86_64-20240206.cgz/lkp-emr-2sp1/brk_test/aim9/300s
-
-commit:
-  fc21959f74bc11 ("mm: abstract vma_expand() to use vma_merge_struct")
-  cacded5e42b960 ("mm: avoid using vma_merge() for new VMAs")
-  2e71337ac26478 ("mm: explicitly enable an expand-only merge mode for brk()")
-
-fc21959f74bc1138 cacded5e42b9609b07b22d80c10 2e71337ac2647889d3d9d76a5ce
----------------- --------------------------- ---------------------------
-         %stddev     %change         %stddev     %change         %stddev
-             \          |                \          |                \
-   3669298            -6.5%    3430070            -6.8%    3420919        aim9.brk_test.ops_per_sec
-     23.53            -4.9%      22.38            -6.4%      22.03        time.user_time
-    491107 ±  5%      -7.2%     455906 ±  6%      -5.5%     464283 ±  6%  meminfo.Active
-    491011 ±  5%      -7.2%     455810 ±  6%      -5.5%     464155 ±  6%  meminfo.Active(anon)
-    505666 ±  5%      -7.0%     470410 ±  5%      -5.3%     478879 ±  6%  meminfo.Shmem
-    122753 ±  5%      -7.1%     113979 ±  6%      -5.5%     116019 ±  6%  proc-vmstat.nr_active_anon
-    899298            -1.0%     890515            -0.7%     892592        proc-vmstat.nr_file_pages
-    126417 ±  5%      -6.9%     117634 ±  5%      -5.3%     119701 ±  6%  proc-vmstat.nr_shmem
-    122753 ±  5%      -7.1%     113979 ±  6%      -5.5%     116019 ±  6%  proc-vmstat.nr_zone_active_anon
-    595.50 ± 22%     +53.6%     914.50 ± 12%     +17.1%     697.33 ± 20%  proc-vmstat.numa_hint_faults_local
-     17958            -4.3%      17188 ±  2%      -4.3%      17180 ±  2%  proc-vmstat.pgactivate
-   1817569 ± 69%     -43.1%    1035076 ±127%     +63.5%    2972153 ±  3%  numa-meminfo.node0.FilePages
-     16515 ± 73%     -29.4%      11657 ±108%     +79.5%      29650        numa-meminfo.node0.Mapped
-   1811617 ± 69%     -43.2%    1029482 ±128%     +63.8%    2967951 ±  3%  numa-meminfo.node0.Unevictable
-     40474 ± 40%     -61.8%      15444 ± 40%     -50.4%      20065 ± 59%  numa-meminfo.node1.KReclaimable
-     40474 ± 40%     -61.8%      15444 ± 40%     -50.4%      20065 ± 59%  numa-meminfo.node1.SReclaimable
-    484115 ±  6%      -7.3%     448760 ±  6%     -10.1%     435387 ± 11%  numa-meminfo.node3.Active
-    484083 ±  6%      -7.3%     448760 ±  6%     -10.1%     435387 ± 11%  numa-meminfo.node3.Active(anon)
-    485577 ±  6%      -7.3%     450224 ±  6%     -10.0%     436799 ± 11%  numa-meminfo.node3.Shmem
-    454393 ± 69%     -43.1%     258770 ±127%     +63.5%     743038 ±  3%  numa-vmstat.node0.nr_file_pages
-      4178 ± 73%     -28.5%       2988 ±107%     +81.6%       7590 ±  2%  numa-vmstat.node0.nr_mapped
-    452904 ± 69%     -43.2%     257370 ±128%     +63.8%     741987 ±  3%  numa-vmstat.node0.nr_unevictable
-    452904 ± 69%     -43.2%     257370 ±128%     +63.8%     741987 ±  3%  numa-vmstat.node0.nr_zone_unevictable
-     10118 ± 40%     -61.8%       3861 ± 40%     -50.4%       5016 ± 59%  numa-vmstat.node1.nr_slab_reclaimable
-    121015 ±  6%      -7.3%     112196 ±  6%     -10.1%     108836 ± 11%  numa-vmstat.node3.nr_active_anon
-    121371 ±  6%      -7.3%     112537 ±  6%     -10.1%     109168 ± 11%  numa-vmstat.node3.nr_shmem
-    121015 ±  6%      -7.3%     112196 ±  6%     -10.1%     108836 ± 11%  numa-vmstat.node3.nr_zone_active_anon
-      0.01 ± 52%    -100.0%       0.00          -100.0%       0.00        perf-sched.sch_delay.avg.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.01 ± 15%      +7.0%       0.01 ± 16%    -100.0%       0.00        perf-sched.sch_delay.avg.ms.irq_thread.kthread.ret_from_fork.ret_from_fork_asm
-      0.06 ± 69%    -100.0%       0.00          -100.0%       0.00        perf-sched.sch_delay.max.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.01 ± 17%      -3.8%       0.01 ± 21%    -100.0%       0.00        perf-sched.sch_delay.max.ms.irq_thread.kthread.ret_from_fork.ret_from_fork_asm
-    400.06            +0.0%     400.07          -100.0%       0.00        perf-sched.wait_and_delay.avg.ms.irq_thread.kthread.ret_from_fork.ret_from_fork_asm
-     10.00            +0.0%      10.00          -100.0%       0.00        perf-sched.wait_and_delay.count.irq_thread.kthread.ret_from_fork.ret_from_fork_asm
-    999.53            -0.0%     999.38          -100.0%       0.00        perf-sched.wait_and_delay.max.ms.irq_thread.kthread.ret_from_fork.ret_from_fork_asm
-      0.01 ± 52%    -100.0%       0.00          -100.0%       0.00        perf-sched.wait_time.avg.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
-    400.05            +0.0%     400.06          -100.0%       0.00        perf-sched.wait_time.avg.ms.irq_thread.kthread.ret_from_fork.ret_from_fork_asm
-      0.06 ± 69%    -100.0%       0.00          -100.0%       0.00        perf-sched.wait_time.max.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
-    999.52            -0.0%     999.37          -100.0%       0.00        perf-sched.wait_time.max.ms.irq_thread.kthread.ret_from_fork.ret_from_fork_asm
- 2.071e+09            +2.8%  2.128e+09            +2.8%   2.13e+09        perf-stat.i.branch-instructions
-      0.48            -4.2%       0.46            -4.9%       0.45        perf-stat.i.cpi
- 4.717e+09            -0.7%  4.686e+09            +0.1%  4.723e+09        perf-stat.i.cpu-cycles
- 9.794e+09            +5.1%   1.03e+10            +5.2%   1.03e+10        perf-stat.i.instructions
-      2.15            +5.8%       2.28            +5.5%       2.27        perf-stat.i.ipc
-      0.34 ±  3%      -0.0        0.33            -0.0        0.34        perf-stat.overall.branch-miss-rate%
-      0.48            -5.5%       0.46            -4.8%       0.46        perf-stat.overall.cpi
-      2.08            +5.8%       2.20            +5.1%       2.18        perf-stat.overall.ipc
- 2.063e+09            +2.8%   2.12e+09            +2.8%  2.122e+09        perf-stat.ps.branch-instructions
- 4.703e+09            -0.7%  4.672e+09            +0.1%  4.709e+09        perf-stat.ps.cpu-cycles
- 9.758e+09            +5.1%  1.026e+10            +5.2%  1.026e+10        perf-stat.ps.instructions
- 2.944e+12            +5.5%  3.106e+12            +5.0%  3.092e+12        perf-stat.total.instructions
-      6.54 ±  2%      -6.5        0.00            -6.5        0.00        perf-profile.calltrace.cycles-pp.mas_store_prealloc.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      6.22            -6.2        0.00            -6.2        0.00        perf-profile.calltrace.cycles-pp.mas_preallocate.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-     17.43            -0.7       16.76            -1.0       16.39        perf-profile.calltrace.cycles-pp.perf_event_mmap.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      9.69 ±  2%      -0.6        9.07            -1.0        8.73        perf-profile.calltrace.cycles-pp.perf_event_mmap_output.perf_iterate_sb.perf_event_mmap_event.perf_event_mmap.do_brk_flags
-     11.30 ±  2%      -0.6       10.71            -0.9       10.35        perf-profile.calltrace.cycles-pp.perf_iterate_sb.perf_event_mmap_event.perf_event_mmap.do_brk_flags.__do_sys_brk
-     15.57            -0.5       15.05            -0.8       14.73        perf-profile.calltrace.cycles-pp.perf_event_mmap_event.perf_event_mmap.do_brk_flags.__do_sys_brk.do_syscall_64
-      2.76            -0.1        2.62 ±  3%      -0.2        2.60 ±  3%  perf-profile.calltrace.cycles-pp.userfaultfd_unmap_complete.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
-      0.84 ±  4%      -0.1        0.74 ±  8%      -0.1        0.70 ±  5%  perf-profile.calltrace.cycles-pp.security_vm_enough_memory_mm.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      0.75 ±  7%      -0.1        0.68 ± 10%      -0.1        0.64 ± 10%  perf-profile.calltrace.cycles-pp.kthread.ret_from_fork.ret_from_fork_asm
-      0.75 ±  7%      -0.1        0.68 ± 10%      -0.1        0.64 ± 10%  perf-profile.calltrace.cycles-pp.ret_from_fork.ret_from_fork_asm
-      0.75 ±  7%      -0.1        0.68 ± 10%      -0.1        0.64 ± 10%  perf-profile.calltrace.cycles-pp.ret_from_fork_asm
-      1.12 ±  5%      +0.2        1.29 ±  3%      +0.2        1.29 ±  2%  perf-profile.calltrace.cycles-pp.sized_strscpy.perf_event_mmap_event.perf_event_mmap.do_brk_flags.__do_sys_brk
-      0.65 ±  6%      +0.4        1.07 ±  5%      +0.4        1.07 ±  4%  perf-profile.calltrace.cycles-pp.__vm_enough_memory.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      0.00            +0.5        0.48 ± 45%      +0.5        0.54 ±  6%  perf-profile.calltrace.cycles-pp.mas_next_range.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      0.00            +0.5        0.54 ±  4%      +0.4        0.36 ± 70%  perf-profile.calltrace.cycles-pp.mas_wr_slot_store.mas_store_prealloc.vma_expand.vma_merge_new_range.do_brk_flags
-      0.00            +0.5        0.55 ±  4%      +0.5        0.48 ± 45%  perf-profile.calltrace.cycles-pp.mas_wr_store_entry.mas_store_prealloc.vma_expand.vma_merge_new_range.do_brk_flags
-      0.00            +0.7        0.66 ±  4%      +0.8        0.80 ±  4%  perf-profile.calltrace.cycles-pp.mas_next_slot.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      0.00            +0.7        0.68 ±  9%      +0.7        0.71 ±  5%  perf-profile.calltrace.cycles-pp.percpu_counter_add_batch.__vm_enough_memory.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.00            +0.7        0.68 ±  4%      +0.8        0.76 ±  6%  perf-profile.calltrace.cycles-pp.can_vma_merge_after.vma_merge_new_range.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.00            +0.8        0.76 ±  2%      +0.8        0.77 ±  7%  perf-profile.calltrace.cycles-pp.vma_adjust_trans_huge.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-     81.90            +0.8       82.67            +0.7       82.64        perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.brk
-      0.00            +0.8        0.80 ±  3%      +0.7        0.65 ±  8%  perf-profile.calltrace.cycles-pp.mas_prev.vma_merge_new_range.do_brk_flags.__do_sys_brk.do_syscall_64
-     80.94            +0.8       81.76            +0.8       81.74        perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
-      0.00            +0.8        0.82 ±  3%      +0.9        0.87 ±  6%  perf-profile.calltrace.cycles-pp.__anon_vma_interval_tree_remove.vma_prepare.vma_expand.vma_merge_new_range.do_brk_flags
-     77.52            +1.0       78.50            +0.9       78.40        perf-profile.calltrace.cycles-pp.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
-      0.00            +1.3        1.26 ±  3%      +1.3        1.33 ±  5%  perf-profile.calltrace.cycles-pp.mas_prev_slot.vma_merge_new_range.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.00            +1.3        1.35 ±  3%      +1.3        1.30 ±  4%  perf-profile.calltrace.cycles-pp.up_write.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +1.6        1.56 ±  2%      +1.6        1.56 ±  5%  perf-profile.calltrace.cycles-pp.up_write.vma_complete.vma_expand.vma_merge_new_range.do_brk_flags
-      0.00            +1.7        1.72 ±  3%      +1.7        1.66 ±  3%  perf-profile.calltrace.cycles-pp.init_multi_vma_prep.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +1.9        1.87 ±  4%      +1.9        1.94 ±  4%  perf-profile.calltrace.cycles-pp.mas_leaf_max_gap.mas_update_gap.mas_store_prealloc.vma_expand.vma_merge_new_range
-      0.00            +2.1        2.07 ±  2%      +2.1        2.15 ±  4%  perf-profile.calltrace.cycles-pp.down_write.vma_prepare.vma_expand.vma_merge_new_range.do_brk_flags
-      0.00            +2.1        2.14 ±  2%      +2.1        2.12 ±  3%  perf-profile.calltrace.cycles-pp.down_write.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +2.4        2.37 ±  2%      +2.4        2.41 ±  3%  perf-profile.calltrace.cycles-pp.mas_update_gap.mas_store_prealloc.vma_expand.vma_merge_new_range.do_brk_flags
-     51.80            +2.9       54.66            +2.7       54.52        perf-profile.calltrace.cycles-pp.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
-      0.00            +3.0        3.02 ±  2%      +3.2        3.17        perf-profile.calltrace.cycles-pp.mas_wr_store_type.mas_preallocate.vma_expand.vma_merge_new_range.do_brk_flags
-      0.00            +3.1        3.06            +3.1        3.08 ±  2%  perf-profile.calltrace.cycles-pp.vma_complete.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +3.9        3.86            +4.0        3.96 ±  2%  perf-profile.calltrace.cycles-pp.vma_prepare.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +5.0        5.01            +5.2        5.18 ±  2%  perf-profile.calltrace.cycles-pp.mas_preallocate.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +5.9        5.88            +6.1        6.10        perf-profile.calltrace.cycles-pp.mas_store_prealloc.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00           +27.1       27.13           +27.4       27.39        perf-profile.calltrace.cycles-pp.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.00           +31.6       31.63           +32.0       32.01        perf-profile.calltrace.cycles-pp.vma_merge_new_range.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      6.46            -1.2        5.24            -1.1        5.40 ±  2%  perf-profile.children.cycles-pp.mas_preallocate
-      5.54            -0.9        4.64            -0.9        4.63 ±  3%  perf-profile.children.cycles-pp.up_write
-      3.99            -0.9        3.10 ±  2%      -0.8        3.24        perf-profile.children.cycles-pp.mas_wr_store_type
-     17.57            -0.7       16.87            -1.1       16.50        perf-profile.children.cycles-pp.perf_event_mmap
-      9.85 ±  2%      -0.6        9.22            -1.0        8.90        perf-profile.children.cycles-pp.perf_event_mmap_output
-      6.82 ±  2%      -0.6        6.22            -0.4        6.43        perf-profile.children.cycles-pp.mas_store_prealloc
-      1.33 ±  5%      -0.6        0.75 ±  4%      -0.5        0.82 ±  5%  perf-profile.children.cycles-pp.can_vma_merge_after
-     11.53 ±  2%      -0.6       10.96            -1.0       10.58        perf-profile.children.cycles-pp.perf_iterate_sb
-     16.03            -0.5       15.50            -0.8       15.18        perf-profile.children.cycles-pp.perf_event_mmap_event
-      2.65 ±  3%      -0.2        2.40 ±  3%      -0.2        2.44 ±  3%  perf-profile.children.cycles-pp.mas_update_gap
-      2.18 ±  2%      -0.2        1.94 ±  3%      -0.2        1.99 ±  3%  perf-profile.children.cycles-pp.mas_leaf_max_gap
-      2.85            -0.2        2.70 ±  3%      -0.2        2.68 ±  3%  perf-profile.children.cycles-pp.userfaultfd_unmap_complete
-      3.52            -0.1        3.38 ±  2%      -0.1        3.38 ±  2%  perf-profile.children.cycles-pp.vma_complete
-      0.62 ±  7%      -0.1        0.48 ±  9%      -0.1        0.50 ±  7%  perf-profile.children.cycles-pp.may_expand_vm
-      1.92 ±  2%      -0.1        1.79 ±  3%      -0.2        1.73 ±  3%  perf-profile.children.cycles-pp.init_multi_vma_prep
-      1.05 ±  3%      -0.1        0.95 ±  6%      -0.1        0.91 ±  6%  perf-profile.children.cycles-pp.security_vm_enough_memory_mm
-      0.75 ±  7%      -0.1        0.68 ± 10%      -0.1        0.64 ± 10%  perf-profile.children.cycles-pp.kthread
-      0.40 ±  6%      -0.1        0.35 ±  9%      -0.0        0.38 ±  8%  perf-profile.children.cycles-pp.syscall_exit_to_user_mode_prepare
-      0.35 ±  2%      -0.0        0.33 ±  7%      -0.0        0.31 ±  6%  perf-profile.children.cycles-pp.brk_test
-      0.11 ± 20%      +0.0        0.14 ±  8%      +0.0        0.13 ±  6%  perf-profile.children.cycles-pp.anon_vma_interval_tree_remove
-      0.52 ±  3%      +0.0        0.56 ±  4%      +0.0        0.54 ± 10%  perf-profile.children.cycles-pp.mas_wr_slot_store
-      0.20 ± 11%      +0.1        0.28 ±  7%      +0.1        0.31 ±  5%  perf-profile.children.cycles-pp.rb_next
-      0.49 ±  3%      +0.1        0.61 ±  4%      +0.2        0.64 ±  7%  perf-profile.children.cycles-pp.mas_wr_store_entry
-      0.98 ±  4%      +0.1        1.11 ±  3%      +0.1        1.11 ±  4%  perf-profile.children.cycles-pp.rcu_all_qs
-      0.39 ±  7%      +0.2        0.55 ±  7%      +0.2        0.60 ±  6%  perf-profile.children.cycles-pp.strnlen
-      1.18 ±  5%      +0.2        1.37 ±  3%      +0.2        1.36 ±  2%  perf-profile.children.cycles-pp.sized_strscpy
-      1.78 ±  3%      +0.3        2.04 ±  2%      +0.2        2.02 ±  3%  perf-profile.children.cycles-pp.__cond_resched
-      0.00            +0.3        0.33 ±  4%      +0.3        0.31 ± 10%  perf-profile.children.cycles-pp.mas_next_setup
-      0.41 ±  9%      +0.4        0.76 ±  7%      +0.4        0.80 ±  6%  perf-profile.children.cycles-pp.percpu_counter_add_batch
-      0.58 ±  4%      +0.4        0.96 ±  2%      +0.4        1.01 ±  6%  perf-profile.children.cycles-pp.__anon_vma_interval_tree_remove
-      0.44 ± 17%      +0.4        0.85 ±  7%      +0.4        0.80 ±  5%  perf-profile.children.cycles-pp.mas_prev_setup
-      4.11 ±  2%      +0.4        4.52            +0.5        4.58        perf-profile.children.cycles-pp.down_write
-      0.74 ±  6%      +0.6        1.29 ±  5%      +0.6        1.32 ±  3%  perf-profile.children.cycles-pp.__vm_enough_memory
-      0.00            +0.7        0.67 ±  6%      +0.6        0.63 ±  7%  perf-profile.children.cycles-pp.mas_next_range
-      0.95 ±  5%      +0.7        1.64 ±  2%      +0.9        1.84 ±  3%  perf-profile.children.cycles-pp.mas_next_slot
-     78.23            +0.9       79.17            +0.8       79.07        perf-profile.children.cycles-pp.__do_sys_brk
-      1.02 ± 14%      +1.0        1.99 ±  4%      +0.8        1.86 ±  6%  perf-profile.children.cycles-pp.mas_prev
-      2.89 ±  3%      +1.2        4.10            +1.3        4.19 ±  2%  perf-profile.children.cycles-pp.vma_prepare
-      1.38 ± 12%      +1.3        2.73 ±  4%      +1.3        2.73 ±  3%  perf-profile.children.cycles-pp.mas_prev_slot
-     53.08            +1.9       55.03            +1.9       54.96        perf-profile.children.cycles-pp.do_brk_flags
-      0.00           +28.0       27.95           +28.2       28.20        perf-profile.children.cycles-pp.vma_expand
-      0.00           +32.1       32.10           +32.3       32.32        perf-profile.children.cycles-pp.vma_merge_new_range
-      5.69            -3.4        2.34 ±  3%      -3.3        2.36 ±  3%  perf-profile.self.cycles-pp.do_brk_flags
-      5.22            -0.9        4.33 ±  2%      -0.9        4.33 ±  3%  perf-profile.self.cycles-pp.up_write
-      3.82            -0.9        2.95 ±  3%      -0.7        3.09        perf-profile.self.cycles-pp.mas_wr_store_type
-      9.68 ±  2%      -0.6        9.05            -1.0        8.73        perf-profile.self.cycles-pp.perf_event_mmap_output
-      1.28 ±  5%      -0.6        0.69 ±  6%      -0.5        0.75 ±  5%  perf-profile.self.cycles-pp.can_vma_merge_after
-      2.88 ±  3%      -0.4        2.44 ±  2%      -0.2        2.65 ±  2%  perf-profile.self.cycles-pp.mas_store_prealloc
-      2.55            -0.3        2.22 ±  2%      -0.3        2.22 ±  4%  perf-profile.self.cycles-pp.mas_preallocate
-      4.98 ±  2%      -0.3        4.70            -0.2        4.76        perf-profile.self.cycles-pp.__do_sys_brk
-      2.15 ±  3%      -0.2        1.93 ±  3%      -0.2        1.98 ±  3%  perf-profile.self.cycles-pp.mas_leaf_max_gap
-      1.82            -0.2        1.60 ±  4%      -0.2        1.62 ±  3%  perf-profile.self.cycles-pp.perf_event_mmap_event
-      1.51 ±  4%      -0.2        1.31 ±  4%      -0.3        1.26        perf-profile.self.cycles-pp.perf_event_mmap
-      1.85 ±  2%      -0.2        1.66 ±  3%      -0.2        1.61 ±  3%  perf-profile.self.cycles-pp.init_multi_vma_prep
-      2.77            -0.1        2.63 ±  3%      -0.2        2.60 ±  3%  perf-profile.self.cycles-pp.userfaultfd_unmap_complete
-      0.75 ±  5%      -0.1        0.67 ±  4%      -0.1        0.65 ±  5%  perf-profile.self.cycles-pp.security_vm_enough_memory_mm
-      0.88 ±  2%      -0.0        0.85 ±  3%      -0.1        0.82 ±  4%  perf-profile.self.cycles-pp.entry_SYSCALL_64_after_hwframe
-      0.28 ±  5%      -0.0        0.26 ±  8%      -0.0        0.24 ±  8%  perf-profile.self.cycles-pp.brk_test
-      0.03 ± 70%      +0.0        0.07 ± 14%      +0.0        0.07 ±  8%  perf-profile.self.cycles-pp.anon_vma_interval_tree_remove
-      0.15 ± 12%      +0.1        0.20 ±  5%      +0.1        0.24 ±  6%  perf-profile.self.cycles-pp.rb_next
-      0.40 ±  5%      +0.1        0.48 ±  5%      +0.1        0.50 ± 10%  perf-profile.self.cycles-pp.mas_wr_store_entry
-      0.34 ±  6%      +0.2        0.50 ±  8%      +0.2        0.54 ±  4%  perf-profile.self.cycles-pp.strnlen
-      0.66 ±  4%      +0.2        0.84 ±  5%      +0.1        0.80 ±  4%  perf-profile.self.cycles-pp.vma_prepare
-      1.12 ±  5%      +0.2        1.30 ±  3%      +0.2        1.28 ±  2%  perf-profile.self.cycles-pp.sized_strscpy
-      3.00 ±  2%      +0.2        3.19 ±  2%      +0.3        3.27 ±  2%  perf-profile.self.cycles-pp.down_write
-      0.92 ±  4%      +0.2        1.13 ±  2%      +0.2        1.08 ±  3%  perf-profile.self.cycles-pp.__cond_resched
-      0.00            +0.3        0.26 ±  7%      +0.3        0.25 ± 12%  perf-profile.self.cycles-pp.mas_next_setup
-      0.28 ±  8%      +0.3        0.54 ±  8%      +0.3        0.56 ±  6%  perf-profile.self.cycles-pp.percpu_counter_add_batch
-      0.29 ± 12%      +0.3        0.58 ±  9%      +0.3        0.60 ±  4%  perf-profile.self.cycles-pp.__vm_enough_memory
-      0.29 ± 24%      +0.3        0.58 ±  7%      +0.2        0.54 ±  7%  perf-profile.self.cycles-pp.mas_prev_setup
-      0.40 ±  4%      +0.3        0.70 ±  2%      +0.3        0.72 ±  8%  perf-profile.self.cycles-pp.__anon_vma_interval_tree_remove
-      0.00            +0.4        0.36 ±  6%      +0.3        0.28 ± 12%  perf-profile.self.cycles-pp.mas_next_range
-      0.58 ± 14%      +0.5        1.12 ±  5%      +0.5        1.10 ±  6%  perf-profile.self.cycles-pp.mas_prev
-      0.81 ±  4%      +0.7        1.48 ±  3%      +0.8        1.64 ±  4%  perf-profile.self.cycles-pp.mas_next_slot
-      1.32 ± 11%      +1.3        2.59 ±  3%      +1.3        2.60 ±  3%  perf-profile.self.cycles-pp.mas_prev_slot
-      0.00            +1.3        1.30 ±  4%      +1.1        1.14 ±  6%  perf-profile.self.cycles-pp.vma_merge_new_range
-      0.00            +3.4        3.39            +3.4        3.36        perf-profile.self.cycles-pp.vma_expand
-
-=========================================================================================
-compiler/cpufreq_governor/kconfig/rootfs/tbox_group/test/testcase/testtime:
-  gcc-12/performance/x86_64-rhel-8.3/debian-12-x86_64-20240206.cgz/lkp-spr-2sp4/brk_test/aim9/300s
-
-commit:
-  fc21959f74bc11 ("mm: abstract vma_expand() to use vma_merge_struct")
-  cacded5e42b960 ("mm: avoid using vma_merge() for new VMAs")
-  2e71337ac26478 ("mm: explicitly enable an expand-only merge mode for brk()")
-
-fc21959f74bc1138 cacded5e42b9609b07b22d80c10 2e71337ac2647889d3d9d76a5ce
----------------- --------------------------- ---------------------------
-         %stddev     %change         %stddev     %change         %stddev
-             \          |                \          |                \
-   3540976            -6.4%    3314159            -6.7%    3302864        aim9.brk_test.ops_per_sec
-     23.65            -5.8%      22.28            -6.5%      22.10        time.user_time
-    568.02 ± 10%      -0.2%     567.09 ± 12%     +18.0%     670.52 ±  8%  sched_debug.cfs_rq:/.avg_vruntime.min
-    568.02 ± 10%      -0.2%     567.09 ± 12%     +18.0%     670.52 ±  8%  sched_debug.cfs_rq:/.min_vruntime.min
-    111409 ±  2%      -5.1%     105748 ±  3%      -4.9%     105984 ±  2%  proc-vmstat.nr_active_anon
-    114711 ±  2%      -5.0%     109006 ±  3%      -4.7%     109341 ±  2%  proc-vmstat.nr_shmem
-    111409 ±  2%      -5.1%     105748 ±  3%      -4.9%     105984 ±  2%  proc-vmstat.nr_zone_active_anon
-     17422 ±  2%      -5.3%      16494            -1.9%      17084 ±  2%  proc-vmstat.pgactivate
- 1.999e+09            +3.2%  2.064e+09            +2.9%  2.057e+09        perf-stat.i.branch-instructions
-      0.47            -5.1%       0.44            -4.4%       0.45        perf-stat.i.cpi
- 9.452e+09            +5.6%  9.983e+09            +5.3%  9.951e+09        perf-stat.i.instructions
-      2.19            +5.8%       2.31            +5.2%       2.30        perf-stat.i.ipc
-      0.33 ±  3%      -0.0        0.31            -0.0        0.32        perf-stat.overall.branch-miss-rate%
-      0.47            -5.1%       0.45            -4.4%       0.45        perf-stat.overall.cpi
-      2.12            +5.4%       2.23            +4.7%       2.21        perf-stat.overall.ipc
- 1.991e+09            +3.2%  2.056e+09            +2.9%   2.05e+09        perf-stat.ps.branch-instructions
- 9.417e+09            +5.6%  9.946e+09            +5.3%  9.915e+09        perf-stat.ps.instructions
- 2.841e+12            +5.7%  3.002e+12            +5.2%  2.988e+12        perf-stat.total.instructions
-      0.01 ± 42%    -100.0%       0.00          -100.0%       0.00        perf-sched.sch_delay.avg.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.02 ± 37%     -68.5%       0.01 ± 44%     -57.7%       0.01 ± 63%  perf-sched.sch_delay.avg.ms.__cond_resched.down_write_killable.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      0.02 ± 38%     +31.7%       0.02 ± 21%     +53.8%       0.03 ± 10%  perf-sched.sch_delay.avg.ms.syscall_exit_to_user_mode.do_syscall_64.entry_SYSCALL_64_after_hwframe.[unknown]
-      0.04 ± 66%    -100.0%       0.00          -100.0%       0.00        perf-sched.sch_delay.max.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.05 ± 47%     -75.3%       0.01 ± 83%     -69.2%       0.01 ± 74%  perf-sched.sch_delay.max.ms.__cond_resched.down_write_killable.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      0.01 ±  9%     +33.8%       0.02 ± 18%     +17.5%       0.02 ± 10%  perf-sched.sch_delay.max.ms.__x64_sys_pause.do_syscall_64.entry_SYSCALL_64_after_hwframe.[unknown]
-      0.44 ± 49%     -29.7%       0.31 ± 35%    +145.0%       1.09 ± 41%  perf-sched.sch_delay.max.ms.pipe_read.vfs_read.ksys_read.do_syscall_64
-      0.08 ± 57%     -69.7%       0.02 ±146%      +6.7%       0.09 ± 66%  perf-sched.sch_delay.max.ms.schedule_timeout.__wait_for_common.wait_for_completion_state.kernel_clone
-      0.10 ± 37%     +45.2%       0.15 ±  8%     +20.5%       0.12 ± 13%  perf-sched.sch_delay.max.ms.syscall_exit_to_user_mode.do_syscall_64.entry_SYSCALL_64_after_hwframe.[unknown]
-      7209 ±  3%      -7.8%       6648 ±  2%      -3.6%       6948 ±  3%  perf-sched.total_wait_and_delay.count.ms
-      1533 ±  6%     -10.2%       1377            -2.6%       1493 ±  7%  perf-sched.wait_and_delay.count.smpboot_thread_fn.kthread.ret_from_fork.ret_from_fork_asm
-      0.01 ± 42%    -100.0%       0.00          -100.0%       0.00        perf-sched.wait_time.avg.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.02 ± 37%     -68.5%       0.01 ± 44%     -57.7%       0.01 ± 63%  perf-sched.wait_time.avg.ms.__cond_resched.down_write_killable.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      0.04 ± 66%    -100.0%       0.00          -100.0%       0.00        perf-sched.wait_time.max.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.05 ± 47%     -75.3%       0.01 ± 83%     -69.2%       0.01 ± 74%  perf-sched.wait_time.max.ms.__cond_resched.down_write_killable.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      6.61            -6.6        0.00            -6.6        0.00        perf-profile.calltrace.cycles-pp.mas_store_prealloc.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      6.20            -6.2        0.00            -6.2        0.00        perf-profile.calltrace.cycles-pp.mas_preallocate.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-     17.96            -1.1       16.87            -1.5       16.43        perf-profile.calltrace.cycles-pp.perf_event_mmap.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-     16.08            -1.0       15.10            -1.3       14.78        perf-profile.calltrace.cycles-pp.perf_event_mmap_event.perf_event_mmap.do_brk_flags.__do_sys_brk.do_syscall_64
-      9.85            -0.8        9.02            -1.2        8.66        perf-profile.calltrace.cycles-pp.perf_event_mmap_output.perf_iterate_sb.perf_event_mmap_event.perf_event_mmap.do_brk_flags
-     11.56            -0.8       10.73            -1.2       10.33 ±  2%  perf-profile.calltrace.cycles-pp.perf_iterate_sb.perf_event_mmap_event.perf_event_mmap.do_brk_flags.__do_sys_brk
-      5.32            -0.2        5.10 ±  5%      -0.3        5.03        perf-profile.calltrace.cycles-pp.check_brk_limits.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
-      3.57 ±  2%      -0.1        3.43 ±  3%      -0.2        3.40 ±  3%  perf-profile.calltrace.cycles-pp.thp_get_unmapped_area_vmflags.__get_unmapped_area.check_brk_limits.__do_sys_brk.do_syscall_64
-      4.87            -0.1        4.74 ±  4%      -0.2        4.66 ±  2%  perf-profile.calltrace.cycles-pp.__get_unmapped_area.check_brk_limits.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      2.76 ±  2%      -0.1        2.66 ±  3%      -0.2        2.58 ±  3%  perf-profile.calltrace.cycles-pp.userfaultfd_unmap_complete.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
-      1.11 ± 15%      -0.1        1.04 ±  4%      -0.1        0.96 ±  5%  perf-profile.calltrace.cycles-pp.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call.do_idle.cpu_startup_entry
-      0.64 ±  4%      +0.4        1.06 ±  2%      +0.4        1.06 ±  5%  perf-profile.calltrace.cycles-pp.__vm_enough_memory.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      0.00            +0.6        0.56 ±  5%      +0.6        0.56 ±  4%  perf-profile.calltrace.cycles-pp.mas_wr_store_entry.mas_store_prealloc.vma_expand.vma_merge_new_range.do_brk_flags
-      0.00            +0.6        0.57 ±  6%      +0.5        0.47 ± 46%  perf-profile.calltrace.cycles-pp.mas_wr_slot_store.mas_store_prealloc.vma_expand.vma_merge_new_range.do_brk_flags
-      0.00            +0.6        0.58 ±  7%      +0.6        0.58 ±  3%  perf-profile.calltrace.cycles-pp.mas_next_range.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      0.00            +0.7        0.69 ±  4%      +0.7        0.71 ±  5%  perf-profile.calltrace.cycles-pp.percpu_counter_add_batch.__vm_enough_memory.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.00            +0.7        0.70 ±  6%      +0.8        0.78 ±  6%  perf-profile.calltrace.cycles-pp.mas_next_slot.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      0.00            +0.7        0.73 ±  8%      +0.7        0.74 ±  8%  perf-profile.calltrace.cycles-pp.vma_adjust_trans_huge.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +0.7        0.74 ±  5%      +0.7        0.74 ±  7%  perf-profile.calltrace.cycles-pp.can_vma_merge_after.vma_merge_new_range.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.00            +0.8        0.84 ±  2%      +0.7        0.70 ±  4%  perf-profile.calltrace.cycles-pp.mas_prev.vma_merge_new_range.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.00            +0.9        0.88 ±  5%      +0.9        0.86 ±  3%  perf-profile.calltrace.cycles-pp.__anon_vma_interval_tree_remove.vma_prepare.vma_expand.vma_merge_new_range.do_brk_flags
-     78.92            +0.9       79.81            +0.5       79.46        perf-profile.calltrace.cycles-pp.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
-      0.00            +1.3        1.28 ±  2%      +1.3        1.30 ±  5%  perf-profile.calltrace.cycles-pp.mas_prev_slot.vma_merge_new_range.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.00            +1.4        1.42 ±  3%      +1.4        1.36 ±  3%  perf-profile.calltrace.cycles-pp.up_write.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +1.6        1.59 ±  4%      +1.6        1.64 ±  3%  perf-profile.calltrace.cycles-pp.up_write.vma_complete.vma_expand.vma_merge_new_range.do_brk_flags
-      0.00            +1.8        1.80 ±  4%      +1.7        1.73 ±  2%  perf-profile.calltrace.cycles-pp.init_multi_vma_prep.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +1.9        1.89 ±  4%      +1.9        1.90 ±  5%  perf-profile.calltrace.cycles-pp.mas_leaf_max_gap.mas_update_gap.mas_store_prealloc.vma_expand.vma_merge_new_range
-      0.00            +2.1        2.06 ±  3%      +2.2        2.17 ±  2%  perf-profile.calltrace.cycles-pp.down_write.vma_prepare.vma_expand.vma_merge_new_range.do_brk_flags
-      0.00            +2.1        2.12 ±  2%      +2.1        2.14 ±  2%  perf-profile.calltrace.cycles-pp.down_write.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +2.4        2.43 ±  4%      +2.4        2.40 ±  4%  perf-profile.calltrace.cycles-pp.mas_update_gap.mas_store_prealloc.vma_expand.vma_merge_new_range.do_brk_flags
-     52.76            +2.6       55.40            +2.7       55.48        perf-profile.calltrace.cycles-pp.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
-      0.00            +3.0        2.98            +3.4        3.38 ±  2%  perf-profile.calltrace.cycles-pp.mas_wr_store_type.mas_preallocate.vma_expand.vma_merge_new_range.do_brk_flags
-      0.00            +3.1        3.11 ±  3%      +3.2        3.18 ±  5%  perf-profile.calltrace.cycles-pp.vma_complete.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +3.9        3.90 ±  2%      +4.0        4.00 ±  2%  perf-profile.calltrace.cycles-pp.vma_prepare.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +5.0        4.96            +5.4        5.39        perf-profile.calltrace.cycles-pp.mas_preallocate.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +6.0        6.04 ±  2%      +6.2        6.15        perf-profile.calltrace.cycles-pp.mas_store_prealloc.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00           +27.5       27.47           +28.1       28.06        perf-profile.calltrace.cycles-pp.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.00           +32.1       32.09           +32.7       32.73        perf-profile.calltrace.cycles-pp.vma_merge_new_range.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      6.44            -1.2        5.20            -0.8        5.64        perf-profile.children.cycles-pp.mas_preallocate
-     18.11            -1.1       16.99            -1.6       16.55        perf-profile.children.cycles-pp.perf_event_mmap
-      4.01 ±  2%      -1.0        3.06            -0.6        3.45 ±  2%  perf-profile.children.cycles-pp.mas_wr_store_type
-     16.54            -0.9       15.60            -1.3       15.27        perf-profile.children.cycles-pp.perf_event_mmap_event
-     10.02            -0.8        9.18            -1.2        8.80        perf-profile.children.cycles-pp.perf_event_mmap_output
-      5.61            -0.8        4.77            -0.8        4.80 ±  2%  perf-profile.children.cycles-pp.up_write
-     11.80            -0.8       10.97            -1.2       10.57 ±  2%  perf-profile.children.cycles-pp.perf_iterate_sb
-      1.39            -0.6        0.81 ±  3%      -0.6        0.81 ±  6%  perf-profile.children.cycles-pp.can_vma_merge_after
-      6.89            -0.5        6.38            -0.4        6.52        perf-profile.children.cycles-pp.mas_store_prealloc
-      3.67 ±  2%      -0.3        3.41 ±  3%      -0.2        3.48 ±  5%  perf-profile.children.cycles-pp.vma_complete
-      5.55            -0.2        5.32 ±  4%      -0.3        5.23        perf-profile.children.cycles-pp.check_brk_limits
-      2.20 ±  4%      -0.2        1.97 ±  3%      -0.2        1.96 ±  4%  perf-profile.children.cycles-pp.mas_leaf_max_gap
-      2.68 ±  3%      -0.2        2.47 ±  3%      -0.2        2.44 ±  4%  perf-profile.children.cycles-pp.mas_update_gap
-      5.11            -0.2        4.91 ±  4%      -0.3        4.84 ±  2%  perf-profile.children.cycles-pp.__get_unmapped_area
-      2.51 ±  3%      -0.1        2.36 ±  3%      -0.2        2.32 ±  2%  perf-profile.children.cycles-pp.down_write_killable
-      0.61 ±  5%      -0.1        0.49 ±  7%      -0.1        0.50 ±  5%  perf-profile.children.cycles-pp.may_expand_vm
-      3.67            -0.1        3.55 ±  3%      -0.2        3.51 ±  3%  perf-profile.children.cycles-pp.thp_get_unmapped_area_vmflags
-      1.25 ±  4%      -0.1        1.14 ±  5%      -0.1        1.19 ±  4%  perf-profile.children.cycles-pp.syscall_exit_to_user_mode
-      2.85 ±  2%      -0.1        2.74 ±  2%      -0.2        2.66 ±  3%  perf-profile.children.cycles-pp.userfaultfd_unmap_complete
-      0.14 ± 11%      -0.1        0.08 ± 12%      -0.1        0.06 ± 14%  perf-profile.children.cycles-pp.arch_vma_name
-      0.42            -0.1        0.36 ±  4%      -0.0        0.40 ±  3%  perf-profile.children.cycles-pp.syscall_exit_to_user_mode_prepare
-      0.36 ±  6%      -0.1        0.31 ±  4%      -0.0        0.34 ± 11%  perf-profile.children.cycles-pp.brk_test
-      2.39            -0.1        2.34 ±  5%      -0.1        2.29        perf-profile.children.cycles-pp.arch_get_unmapped_area_topdown_vmflags
-      0.25 ±  5%      -0.0        0.21 ±  9%      -0.0        0.23 ± 13%  perf-profile.children.cycles-pp.__rb_insert_augmented
-      1.92 ±  2%      -0.0        1.89 ±  4%      -0.1        1.80 ±  2%  perf-profile.children.cycles-pp.init_multi_vma_prep
-      0.31 ± 10%      -0.0        0.29 ± 10%      -0.0        0.26 ±  9%  perf-profile.children.cycles-pp.sched_setaffinity
-      0.14 ±  3%      -0.0        0.14 ±  7%      -0.0        0.11 ±  8%  perf-profile.children.cycles-pp.intel_idle
-      0.08 ± 10%      +0.0        0.12 ± 16%      +0.0        0.10 ±  9%  perf-profile.children.cycles-pp.mmap_region
-      0.09 ±  8%      +0.0        0.12 ± 15%      +0.0        0.11 ±  8%  perf-profile.children.cycles-pp.do_mmap
-      0.10 ± 14%      +0.0        0.15 ± 11%      +0.0        0.14 ± 13%  perf-profile.children.cycles-pp.anon_vma_interval_tree_remove
-      1.01 ±  5%      +0.1        1.08 ±  5%      +0.1        1.12        perf-profile.children.cycles-pp.rcu_all_qs
-      0.19 ±  5%      +0.1        0.30 ±  5%      +0.1        0.28 ±  8%  perf-profile.children.cycles-pp.rb_next
-      1.27 ±  4%      +0.1        1.40 ±  2%      +0.1        1.37 ±  5%  perf-profile.children.cycles-pp.sized_strscpy
-      0.42 ±  6%      +0.1        0.57 ±  6%      +0.2        0.63 ±  9%  perf-profile.children.cycles-pp.strnlen
-      0.48 ±  4%      +0.2        0.64 ±  5%      +0.2        0.65 ±  5%  perf-profile.children.cycles-pp.mas_wr_store_entry
-      1.80 ±  4%      +0.2        2.02 ±  2%      +0.2        2.00        perf-profile.children.cycles-pp.__cond_resched
-      0.00            +0.3        0.31 ± 12%      +0.3        0.32 ±  3%  perf-profile.children.cycles-pp.mas_next_setup
-      4.16 ±  3%      +0.3        4.48            +0.5        4.64 ±  3%  perf-profile.children.cycles-pp.down_write
-      0.40 ±  6%      +0.4        0.78 ±  4%      +0.4        0.79 ±  3%  perf-profile.children.cycles-pp.percpu_counter_add_batch
-      0.48 ±  4%      +0.4        0.92 ±  5%      +0.4        0.90 ±  3%  perf-profile.children.cycles-pp.mas_prev_setup
-      0.56 ±  6%      +0.5        1.02 ±  4%      +0.5        1.01 ±  4%  perf-profile.children.cycles-pp.__anon_vma_interval_tree_remove
-      0.79 ±  4%      +0.5        1.30 ±  3%      +0.5        1.30 ±  4%  perf-profile.children.cycles-pp.__vm_enough_memory
-      1.02 ±  2%      +0.7        1.72 ±  3%      +0.8        1.79 ±  4%  perf-profile.children.cycles-pp.mas_next_slot
-      0.00            +0.7        0.70 ±  6%      +0.7        0.68 ±  4%  perf-profile.children.cycles-pp.mas_next_range
-     79.62            +0.9       80.50            +0.5       80.13        perf-profile.children.cycles-pp.__do_sys_brk
-      1.10 ±  3%      +1.0        2.10 ±  3%      +0.8        1.94 ±  3%  perf-profile.children.cycles-pp.mas_prev
-      2.86 ±  3%      +1.3        4.12 ±  3%      +1.4        4.25        perf-profile.children.cycles-pp.vma_prepare
-      1.45 ±  4%      +1.3        2.79 ±  3%      +1.3        2.77 ±  3%  perf-profile.children.cycles-pp.mas_prev_slot
-     54.06            +1.8       55.82            +1.9       55.95        perf-profile.children.cycles-pp.do_brk_flags
-      0.00           +28.3       28.30           +28.9       28.88        perf-profile.children.cycles-pp.vma_expand
-      0.00           +32.6       32.58           +33.1       33.05        perf-profile.children.cycles-pp.vma_merge_new_range
-      5.90 ±  2%      -3.4        2.47 ±  3%      -3.4        2.47 ±  2%  perf-profile.self.cycles-pp.do_brk_flags
-      3.84 ±  2%      -0.9        2.90            -0.6        3.28 ±  3%  perf-profile.self.cycles-pp.mas_wr_store_type
-      9.85            -0.8        9.02            -1.2        8.63        perf-profile.self.cycles-pp.perf_event_mmap_output
-      5.26            -0.8        4.47 ±  2%      -0.8        4.49 ±  2%  perf-profile.self.cycles-pp.up_write
-      1.34 ±  2%      -0.6        0.75 ±  3%      -0.6        0.74 ±  5%  perf-profile.self.cycles-pp.can_vma_merge_after
-      2.86            -0.4        2.47 ±  5%      -0.2        2.70 ±  2%  perf-profile.self.cycles-pp.mas_store_prealloc
-      2.50 ±  2%      -0.3        2.22 ±  2%      -0.2        2.27 ±  2%  perf-profile.self.cycles-pp.mas_preallocate
-      5.02 ±  2%      -0.2        4.79            -0.3        4.69        perf-profile.self.cycles-pp.__do_sys_brk
-      2.19 ±  4%      -0.2        1.96 ±  3%      -0.2        1.95 ±  4%  perf-profile.self.cycles-pp.mas_leaf_max_gap
-      1.87 ±  3%      -0.2        1.66 ±  4%      -0.2        1.71 ±  6%  perf-profile.self.cycles-pp.perf_event_mmap_event
-      1.52 ±  3%      -0.2        1.33 ±  2%      -0.3        1.24 ±  2%  perf-profile.self.cycles-pp.perf_event_mmap
-      1.82 ±  3%      -0.1        1.68 ±  4%      -0.2        1.66 ±  3%  perf-profile.self.cycles-pp.down_write_killable
-      1.84 ±  2%      -0.1        1.74 ±  4%      -0.2        1.67 ±  2%  perf-profile.self.cycles-pp.init_multi_vma_prep
-      2.77 ±  2%      -0.1        2.67 ±  2%      -0.2        2.58 ±  3%  perf-profile.self.cycles-pp.userfaultfd_unmap_complete
-      1.18 ±  2%      -0.1        1.09            -0.1        1.11 ±  6%  perf-profile.self.cycles-pp.do_syscall_64
-      0.92 ±  3%      -0.1        0.84 ±  6%      -0.1        0.82 ±  5%  perf-profile.self.cycles-pp.__get_unmapped_area
-      2.30            -0.0        2.26 ±  5%      -0.1        2.21        perf-profile.self.cycles-pp.arch_get_unmapped_area_topdown_vmflags
-      0.33 ±  4%      -0.0        0.30 ±  5%      -0.0        0.33 ±  6%  perf-profile.self.cycles-pp.syscall_exit_to_user_mode_prepare
-      1.08 ±  2%      -0.0        1.05 ±  4%      -0.1        1.00 ±  2%  perf-profile.self.cycles-pp.mas_find
-      0.14 ±  3%      -0.0        0.14 ±  7%      -0.0        0.11 ±  8%  perf-profile.self.cycles-pp.intel_idle
-      0.03 ± 70%      +0.1        0.08 ± 14%      +0.0        0.07 ± 15%  perf-profile.self.cycles-pp.anon_vma_interval_tree_remove
-      0.13 ±  7%      +0.1        0.22 ± 10%      +0.1        0.22 ± 11%  perf-profile.self.cycles-pp.rb_next
-      0.40 ±  7%      +0.1        0.50 ±  9%      +0.1        0.51 ±  6%  perf-profile.self.cycles-pp.mas_wr_store_entry
-      1.21 ±  4%      +0.1        1.32 ±  2%      +0.1        1.30 ±  5%  perf-profile.self.cycles-pp.sized_strscpy
-      0.38 ±  7%      +0.1        0.50 ±  7%      +0.2        0.57 ±  9%  perf-profile.self.cycles-pp.strnlen
-      0.95 ±  7%      +0.1        1.10 ±  4%      +0.1        1.08        perf-profile.self.cycles-pp.__cond_resched
-      0.63 ±  5%      +0.2        0.82 ±  9%      +0.2        0.83 ±  2%  perf-profile.self.cycles-pp.vma_prepare
-      2.98 ±  2%      +0.2        3.20            +0.3        3.32 ±  4%  perf-profile.self.cycles-pp.down_write
-      0.37 ±  6%      +0.2        0.60 ±  6%      +0.2        0.58 ±  4%  perf-profile.self.cycles-pp.__vm_enough_memory
-      0.00            +0.2        0.24 ± 11%      +0.2        0.24 ±  5%  perf-profile.self.cycles-pp.mas_next_setup
-      0.24 ±  6%      +0.3        0.54 ±  6%      +0.3        0.56 ±  4%  perf-profile.self.cycles-pp.percpu_counter_add_batch
-      0.32 ±  4%      +0.3        0.64 ±  5%      +0.3        0.62 ±  3%  perf-profile.self.cycles-pp.mas_prev_setup
-      0.38 ± 10%      +0.3        0.72 ±  6%      +0.3        0.73 ±  6%  perf-profile.self.cycles-pp.__anon_vma_interval_tree_remove
-      0.00            +0.4        0.41 ±  5%      +0.3        0.33 ±  9%  perf-profile.self.cycles-pp.mas_next_range
-      0.63 ±  5%      +0.5        1.17 ±  3%      +0.5        1.10 ±  5%  perf-profile.self.cycles-pp.mas_prev
-      0.87 ±  3%      +0.6        1.49 ±  3%      +0.7        1.61 ±  6%  perf-profile.self.cycles-pp.mas_next_slot
-      1.37 ±  4%      +1.3        2.64 ±  3%      +1.3        2.62 ±  4%  perf-profile.self.cycles-pp.mas_prev_slot
-      0.00            +1.3        1.30            +1.2        1.19 ±  4%  perf-profile.self.cycles-pp.vma_merge_new_range
-      0.00            +3.4        3.45 ±  2%      +3.4        3.43 ±  2%  perf-profile.self.cycles-pp.vma_expand
-
-=========================================================================================
-compiler/cpufreq_governor/kconfig/rootfs/tbox_group/test/testcase/testtime:
-  gcc-12/performance/x86_64-rhel-8.3/debian-12-x86_64-20240206.cgz/lkp-icl-2sp9/brk_test/aim9/300s
-
-commit:
-  fc21959f74bc11 ("mm: abstract vma_expand() to use vma_merge_struct")
-  cacded5e42b960 ("mm: avoid using vma_merge() for new VMAs")
-  2e71337ac26478 ("mm: explicitly enable an expand-only merge mode for brk()")
-
-fc21959f74bc1138 cacded5e42b9609b07b22d80c10 2e71337ac2647889d3d9d76a5ce
----------------- --------------------------- ---------------------------
-         %stddev     %change         %stddev     %change         %stddev
-             \          |                \          |                \
-   2667734            -5.6%    2518021            -6.2%    2503505        aim9.brk_test.ops_per_sec
-    196.00            +0.0%     196.00         +1038.8%       2231 ± 89%  meminfo.Inactive(file)
-     23.94            -8.7%      21.86 ±  2%      -6.0%      22.51        time.user_time
-      0.01 ± 47%    -100.0%       0.00          -100.0%       0.00        perf-sched.sch_delay.avg.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.06 ± 34%    -100.0%       0.00          -100.0%       0.00        perf-sched.sch_delay.max.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.01 ± 47%    -100.0%       0.00          -100.0%       0.00        perf-sched.wait_time.avg.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.06 ± 34%    -100.0%       0.00          -100.0%       0.00        perf-sched.wait_time.max.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
-     49.00            +0.0%      49.00         +1039.3%     558.24 ± 89%  proc-vmstat.nr_inactive_file
-     49.00            +0.0%      49.00         +1039.3%     558.24 ± 89%  proc-vmstat.nr_zone_inactive_file
-    948658            +2.3%     970280            +3.2%     978780        proc-vmstat.pgalloc_normal
-    792310            -1.5%     780779            -1.7%     779104        proc-vmstat.pgfault
-    814343            +2.4%     833987            +3.0%     839063        proc-vmstat.pgfree
- 1.721e+09            +3.0%  1.773e+09            +2.6%  1.765e+09        perf-stat.i.branch-instructions
-      0.54            -5.4%       0.52            -4.8%       0.52        perf-stat.i.cpi
- 7.553e+09            +6.0%  8.003e+09            +5.5%  7.968e+09        perf-stat.i.instructions
-      1.86            +6.1%       1.97            +5.3%       1.96        perf-stat.i.ipc
-      2399            -1.1%       2372            -1.3%       2367        perf-stat.i.minor-faults
-      2399            -1.1%       2372            -1.3%       2367        perf-stat.i.page-faults
-      0.36 ±  2%      -0.0        0.35            +0.0        0.36        perf-stat.overall.branch-miss-rate%
-      0.55            -5.3%       0.52            -4.6%       0.52        perf-stat.overall.cpi
-      1.82            +5.6%       1.92            +4.8%       1.91        perf-stat.overall.ipc
- 1.715e+09            +3.0%  1.767e+09            +2.6%   1.76e+09        perf-stat.ps.branch-instructions
- 7.529e+09            +5.9%  7.977e+09            +5.5%  7.942e+09        perf-stat.ps.instructions
-      2391            -1.1%       2364            -1.3%       2359        perf-stat.ps.minor-faults
-      2391            -1.1%       2364            -1.3%       2359        perf-stat.ps.page-faults
- 2.275e+12            +5.8%  2.408e+12            +5.3%  2.395e+12        perf-stat.total.instructions
-      6.58 ±  2%      -6.6        0.00            -6.6        0.00        perf-profile.calltrace.cycles-pp.mas_store_prealloc.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      5.76 ±  2%      -5.8        0.00            -5.8        0.00        perf-profile.calltrace.cycles-pp.mas_preallocate.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-     18.35            -1.3       17.10            -1.0       17.32        perf-profile.calltrace.cycles-pp.perf_event_mmap.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-     15.92            -1.1       14.78 ±  2%      -0.9       15.03        perf-profile.calltrace.cycles-pp.perf_event_mmap_event.perf_event_mmap.do_brk_flags.__do_sys_brk.do_syscall_64
-     11.03            -0.7       10.33            -0.7       10.36        perf-profile.calltrace.cycles-pp.perf_iterate_sb.perf_event_mmap_event.perf_event_mmap.do_brk_flags.__do_sys_brk
-      4.22 ±  3%      -0.4        3.79 ±  2%      -0.5        3.69        perf-profile.calltrace.cycles-pp.mas_walk.mas_find.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      8.48            -0.4        8.08 ±  2%      -0.5        7.95        perf-profile.calltrace.cycles-pp.perf_event_mmap_output.perf_iterate_sb.perf_event_mmap_event.perf_event_mmap.do_brk_flags
-      5.32            -0.3        4.98            -0.2        5.10 ±  3%  perf-profile.calltrace.cycles-pp.clear_bhb_loop.brk
-      5.38 ±  3%      -0.3        5.06            -0.5        4.89        perf-profile.calltrace.cycles-pp.mas_find.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
-      1.16 ±  7%      -0.3        0.86 ±  5%      -0.3        0.90 ±  5%  perf-profile.calltrace.cycles-pp.__vm_enough_memory.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      0.88 ± 14%      -0.2        0.64 ±  8%      -0.2        0.64 ±  4%  perf-profile.calltrace.cycles-pp.security_vm_enough_memory_mm.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      5.56            -0.2        5.38            -0.2        5.34        perf-profile.calltrace.cycles-pp.check_brk_limits.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
-      0.74 ±  6%      -0.2        0.57 ±  6%      -0.1        0.62 ±  7%  perf-profile.calltrace.cycles-pp.percpu_counter_add_batch.__vm_enough_memory.do_brk_flags.__do_sys_brk.do_syscall_64
-      5.09            -0.2        4.92            -0.2        4.90        perf-profile.calltrace.cycles-pp.__get_unmapped_area.check_brk_limits.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      3.73            -0.2        3.56 ±  2%      -0.2        3.58 ±  2%  perf-profile.calltrace.cycles-pp.thp_get_unmapped_area_vmflags.__get_unmapped_area.check_brk_limits.__do_sys_brk.do_syscall_64
-      1.25 ±  2%      -0.2        1.08 ±  9%      -0.1        1.13 ±  4%  perf-profile.calltrace.cycles-pp.sized_strscpy.perf_event_mmap_event.perf_event_mmap.do_brk_flags.__do_sys_brk
-      1.98 ±  2%      -0.1        1.84 ±  3%      -0.1        1.88 ±  2%  perf-profile.calltrace.cycles-pp.down_write_killable.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
-      0.55 ±  2%      -0.1        0.42 ± 44%      -0.1        0.46 ± 44%  perf-profile.calltrace.cycles-pp.__cond_resched.down_write_killable.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      0.78 ±  3%      -0.1        0.72 ±  4%      -0.1        0.72 ±  3%  perf-profile.calltrace.cycles-pp.mas_prev.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
-      0.00            +0.6        0.56 ±  5%      +0.1        0.09 ±223%  perf-profile.calltrace.cycles-pp.anon_vma_interval_tree_insert.vma_complete.vma_expand.vma_merge_new_range.do_brk_flags
-      0.00            +0.6        0.64            +0.6        0.60 ±  7%  perf-profile.calltrace.cycles-pp.vma_adjust_trans_huge.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +0.7        0.69 ±  8%      +0.7        0.70 ±  8%  perf-profile.calltrace.cycles-pp.__anon_vma_interval_tree_remove.vma_prepare.vma_expand.vma_merge_new_range.do_brk_flags
-      0.00            +0.8        0.78 ±  4%      +0.9        0.88 ±  5%  perf-profile.calltrace.cycles-pp.mas_next_range.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      0.00            +0.8        0.80 ±  2%      +0.7        0.72 ±  3%  perf-profile.calltrace.cycles-pp.mas_prev.vma_merge_new_range.do_brk_flags.__do_sys_brk.do_syscall_64
-     82.26            +0.8       83.07            +0.7       82.95        perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.brk
-      0.00            +0.8        0.82 ±  4%      +0.8        0.80 ±  5%  perf-profile.calltrace.cycles-pp.can_vma_merge_after.vma_merge_new_range.do_brk_flags.__do_sys_brk.do_syscall_64
-     81.38            +0.8       82.20            +0.7       82.07        perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
-      0.00            +0.8        0.84 ±  4%      +0.8        0.80 ±  7%  perf-profile.calltrace.cycles-pp.mas_wr_slot_store.mas_store_prealloc.vma_expand.vma_merge_new_range.do_brk_flags
-     77.94            +1.0       78.92            +0.8       78.74        perf-profile.calltrace.cycles-pp.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
-      0.00            +1.2        1.24 ±  3%      +1.2        1.18 ±  4%  perf-profile.calltrace.cycles-pp.mas_prev_slot.vma_merge_new_range.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.00            +1.3        1.32 ±  2%      +1.4        1.37 ±  3%  perf-profile.calltrace.cycles-pp.mas_next_slot.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      0.00            +1.4        1.38 ±  2%      +1.4        1.42 ±  4%  perf-profile.calltrace.cycles-pp.down_write.vma_prepare.vma_expand.vma_merge_new_range.do_brk_flags
-      0.00            +1.4        1.40 ±  4%      +1.4        1.38        perf-profile.calltrace.cycles-pp.up_write.vma_complete.vma_expand.vma_merge_new_range.do_brk_flags
-      0.00            +1.6        1.64            +1.7        1.66 ±  3%  perf-profile.calltrace.cycles-pp.up_write.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +1.8        1.82 ±  5%      +1.7        1.73 ±  3%  perf-profile.calltrace.cycles-pp.down_write.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +1.9        1.89 ±  3%      +1.9        1.89 ±  2%  perf-profile.calltrace.cycles-pp.init_multi_vma_prep.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +1.9        1.92 ±  3%      +1.9        1.91        perf-profile.calltrace.cycles-pp.mas_leaf_max_gap.mas_update_gap.mas_store_prealloc.vma_expand.vma_merge_new_range
-      0.00            +2.3        2.31            +2.3        2.31 ±  3%  perf-profile.calltrace.cycles-pp.mas_wr_store_type.mas_preallocate.vma_expand.vma_merge_new_range.do_brk_flags
-      0.00            +2.7        2.68 ±  2%      +2.6        2.62        perf-profile.calltrace.cycles-pp.mas_update_gap.mas_store_prealloc.vma_expand.vma_merge_new_range.do_brk_flags
-      0.00            +2.9        2.92 ±  4%      +2.8        2.81        perf-profile.calltrace.cycles-pp.vma_complete.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +2.9        2.93 ±  2%      +2.9        2.94 ±  3%  perf-profile.calltrace.cycles-pp.vma_prepare.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-     53.19            +3.0       56.14            +2.6       55.83        perf-profile.calltrace.cycles-pp.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
-      0.00            +4.4        4.42            +4.4        4.40        perf-profile.calltrace.cycles-pp.mas_preallocate.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +7.1        7.09            +7.0        6.95        perf-profile.calltrace.cycles-pp.mas_store_prealloc.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00           +26.8       26.83           +26.3       26.31        perf-profile.calltrace.cycles-pp.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.00           +31.4       31.41           +30.8       30.83        perf-profile.calltrace.cycles-pp.vma_merge_new_range.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      5.93            -1.3        4.62            -1.3        4.60        perf-profile.children.cycles-pp.mas_preallocate
-     18.48            -1.3       17.23            -1.0       17.46        perf-profile.children.cycles-pp.perf_event_mmap
-     16.41            -1.2       15.23            -0.9       15.47        perf-profile.children.cycles-pp.perf_event_mmap_event
-      3.46            -1.1        2.37            -1.1        2.38 ±  3%  perf-profile.children.cycles-pp.mas_wr_store_type
-     11.24            -0.7       10.52 ±  2%      -0.7       10.56        perf-profile.children.cycles-pp.perf_iterate_sb
-      4.29 ±  3%      -0.4        3.86 ±  2%      -0.5        3.76        perf-profile.children.cycles-pp.mas_walk
-      8.61            -0.4        8.21 ±  2%      -0.5        8.07        perf-profile.children.cycles-pp.perf_event_mmap_output
-      0.83 ±  7%      -0.4        0.47 ±  8%      -0.4        0.45 ± 10%  perf-profile.children.cycles-pp.may_expand_vm
-      3.82            -0.3        3.48 ±  3%      -0.4        3.41        perf-profile.children.cycles-pp.down_write
-      5.39            -0.3        5.06            -0.2        5.18 ±  3%  perf-profile.children.cycles-pp.clear_bhb_loop
-      1.36 ±  5%      -0.3        1.03 ±  5%      -0.3        1.08 ±  4%  perf-profile.children.cycles-pp.__vm_enough_memory
-      5.64 ±  3%      -0.3        5.32            -0.5        5.13        perf-profile.children.cycles-pp.mas_find
-      1.18 ±  5%      -0.3        0.88 ±  4%      -0.3        0.87 ±  3%  perf-profile.children.cycles-pp.can_vma_merge_after
-      0.57 ± 22%      -0.2        0.33 ± 12%      -0.2        0.36 ±  7%  perf-profile.children.cycles-pp.cap_vm_enough_memory
-      1.06 ± 11%      -0.2        0.83 ±  9%      -0.2        0.82 ±  5%  perf-profile.children.cycles-pp.security_vm_enough_memory_mm
-      5.30            -0.2        5.11            -0.2        5.10        perf-profile.children.cycles-pp.__get_unmapped_area
-      5.75            -0.2        5.56            -0.2        5.52        perf-profile.children.cycles-pp.check_brk_limits
-      0.82 ±  4%      -0.2        0.64 ±  4%      -0.1        0.70 ±  7%  perf-profile.children.cycles-pp.percpu_counter_add_batch
-      3.86            -0.2        3.69 ±  2%      -0.1        3.71 ±  2%  perf-profile.children.cycles-pp.thp_get_unmapped_area_vmflags
-      1.32 ±  2%      -0.2        1.16 ±  8%      -0.1        1.20 ±  3%  perf-profile.children.cycles-pp.sized_strscpy
-      2.10 ±  2%      -0.1        1.96 ±  2%      -0.1        2.00 ±  3%  perf-profile.children.cycles-pp.down_write_killable
-      1.86 ±  3%      -0.1        1.74 ±  2%      -0.1        1.80 ±  4%  perf-profile.children.cycles-pp.__cond_resched
-      0.57 ±  7%      -0.1        0.45 ± 13%      -0.1        0.46 ±  2%  perf-profile.children.cycles-pp.strlen
-      2.78            -0.1        2.66 ±  2%      -0.1        2.64 ±  2%  perf-profile.children.cycles-pp.arch_get_unmapped_area_topdown_vmflags
-      0.10 ± 13%      +0.0        0.11 ± 16%      +0.0        0.12 ± 11%  perf-profile.children.cycles-pp.vfs_read
-      0.10 ± 11%      +0.0        0.12 ± 13%      +0.0        0.14 ±  8%  perf-profile.children.cycles-pp.read
-      0.70 ±  2%      +0.1        0.81 ±  6%      +0.1        0.82 ±  7%  perf-profile.children.cycles-pp.__anon_vma_interval_tree_remove
-      0.68 ±  9%      +0.2        0.90 ±  3%      +0.2        0.86 ±  6%  perf-profile.children.cycles-pp.mas_wr_slot_store
-      0.34 ±  5%      +0.3        0.68 ±  6%      +0.3        0.68 ±  4%  perf-profile.children.cycles-pp.mas_prev_setup
-      0.00            +0.4        0.43 ±  2%      +0.4        0.41 ±  7%  perf-profile.children.cycles-pp.mas_next_setup
-      6.91 ±  2%      +0.5        7.37            +0.4        7.26        perf-profile.children.cycles-pp.mas_store_prealloc
-      0.92 ±  3%      +0.8        1.76 ±  3%      +0.8        1.69 ±  2%  perf-profile.children.cycles-pp.mas_prev
-     83.20            +0.9       84.05            +0.7       83.90        perf-profile.children.cycles-pp.entry_SYSCALL_64_after_hwframe
-     82.36            +0.9       83.23            +0.7       83.08        perf-profile.children.cycles-pp.do_syscall_64
-     78.68            +0.9       79.62            +0.8       79.46        perf-profile.children.cycles-pp.__do_sys_brk
-      0.00            +0.9        0.94 ±  3%      +1.1        1.05 ±  5%  perf-profile.children.cycles-pp.mas_next_range
-      1.35 ±  5%      +1.2        2.59 ±  3%      +1.2        2.52        perf-profile.children.cycles-pp.mas_prev_slot
-      0.84 ±  3%      +1.4        2.26 ±  3%      +1.4        2.27 ±  2%  perf-profile.children.cycles-pp.mas_next_slot
-     54.26            +2.3       56.54            +2.0       56.30        perf-profile.children.cycles-pp.do_brk_flags
-      0.00           +27.5       27.55           +27.0       27.00        perf-profile.children.cycles-pp.vma_expand
-      0.00           +31.9       31.86           +31.1       31.13        perf-profile.children.cycles-pp.vma_merge_new_range
-      6.50            -3.3        3.19 ±  2%      -3.1        3.35        perf-profile.self.cycles-pp.do_brk_flags
-      3.35            -1.1        2.25            -1.1        2.25 ±  2%  perf-profile.self.cycles-pp.mas_wr_store_type
-      5.31 ±  2%      -0.4        4.88            -0.2        5.14 ±  2%  perf-profile.self.cycles-pp.__do_sys_brk
-      4.22 ±  3%      -0.4        3.80 ±  2%      -0.5        3.70        perf-profile.self.cycles-pp.mas_walk
-      8.47            -0.4        8.07 ±  2%      -0.5        7.94        perf-profile.self.cycles-pp.perf_event_mmap_output
-      0.71 ±  8%      -0.3        0.38 ±  8%      -0.3        0.36 ± 12%  perf-profile.self.cycles-pp.may_expand_vm
-      5.32            -0.3        5.00            -0.2        5.11 ±  3%  perf-profile.self.cycles-pp.clear_bhb_loop
-      1.12 ±  5%      -0.3        0.82 ±  4%      -0.3        0.80 ±  5%  perf-profile.self.cycles-pp.can_vma_merge_after
-      2.62            -0.2        2.38 ±  5%      -0.3        2.32 ±  3%  perf-profile.self.cycles-pp.down_write
-      0.44 ± 28%      -0.2        0.20 ± 13%      -0.2        0.24 ±  7%  perf-profile.self.cycles-pp.cap_vm_enough_memory
-      2.50 ±  3%      -0.2        2.31 ±  2%      -0.2        2.28        perf-profile.self.cycles-pp.mas_preallocate
-      0.61 ±  9%      -0.2        0.42 ±  7%      -0.2        0.42 ±  6%  perf-profile.self.cycles-pp.__vm_enough_memory
-      1.26 ±  2%      -0.2        1.09 ±  9%      -0.1        1.14 ±  3%  perf-profile.self.cycles-pp.sized_strscpy
-      0.57 ±  5%      -0.1        0.44 ±  4%      -0.1        0.47 ±  8%  perf-profile.self.cycles-pp.percpu_counter_add_batch
-      2.25 ±  3%      -0.1        2.13 ±  3%      -0.0        2.25 ±  2%  perf-profile.self.cycles-pp.perf_event_mmap_event
-      2.70            -0.1        2.60 ±  2%      -0.1        2.58 ±  2%  perf-profile.self.cycles-pp.arch_get_unmapped_area_topdown_vmflags
-      0.50 ±  8%      -0.1        0.40 ± 12%      -0.1        0.41 ±  2%  perf-profile.self.cycles-pp.strlen
-      0.57 ±  4%      -0.1        0.52 ±  4%      -0.0        0.55 ±  4%  perf-profile.self.cycles-pp.strnlen
-      1.40 ±  3%      -0.0        1.34 ±  2%      -0.1        1.33 ±  2%  perf-profile.self.cycles-pp.down_write_killable
-      0.01 ±223%      +0.1        0.06 ± 15%      +0.0        0.05 ± 48%  perf-profile.self.cycles-pp.anon_vma_interval_tree_remove
-      0.51 ±  4%      +0.1        0.60 ±  5%      +0.1        0.60 ±  7%  perf-profile.self.cycles-pp.__anon_vma_interval_tree_remove
-      2.87 ±  2%      +0.2        3.10 ±  2%      +0.2        3.09 ±  2%  perf-profile.self.cycles-pp.mas_store_prealloc
-      0.61 ±  8%      +0.2        0.84 ±  4%      +0.2        0.81 ±  7%  perf-profile.self.cycles-pp.mas_wr_slot_store
-      0.26 ±  7%      +0.3        0.56 ±  5%      +0.3        0.56 ±  7%  perf-profile.self.cycles-pp.mas_prev_setup
-      0.00            +0.3        0.33 ±  3%      +0.3        0.31 ± 10%  perf-profile.self.cycles-pp.mas_next_setup
-      0.53 ±  6%      +0.4        0.98 ±  3%      +0.4        0.94 ±  7%  perf-profile.self.cycles-pp.mas_prev
-      0.00            +0.6        0.56 ±  5%      +0.6        0.62 ±  5%  perf-profile.self.cycles-pp.mas_next_range
-      1.29 ±  4%      +1.2        2.46 ±  3%      +1.1        2.39        perf-profile.self.cycles-pp.mas_prev_slot
-      0.72 ±  4%      +1.4        2.07 ±  3%      +1.4        2.09        perf-profile.self.cycles-pp.mas_next_slot
-      0.00            +1.4        1.40 ±  4%      +1.2        1.24 ±  5%  perf-profile.self.cycles-pp.vma_merge_new_range
-      0.00            +3.6        3.55 ±  6%      +3.4        3.42 ±  2%  perf-profile.self.cycles-pp.vma_expand
-
-=========================================================================================
-compiler/cpufreq_governor/kconfig/rootfs/tbox_group/test/testcase/testtime:
-  gcc-12/performance/x86_64-rhel-8.3/debian-12-x86_64-20240206.cgz/lkp-ivb-2ep2/brk_test/aim9/300s
-
-commit:
-  fc21959f74bc11 ("mm: abstract vma_expand() to use vma_merge_struct")
-  cacded5e42b960 ("mm: avoid using vma_merge() for new VMAs")
-  2e71337ac26478 ("mm: explicitly enable an expand-only merge mode for brk()")
-
-fc21959f74bc1138 cacded5e42b9609b07b22d80c10 2e71337ac2647889d3d9d76a5ce
----------------- --------------------------- ---------------------------
-         %stddev     %change         %stddev     %change         %stddev
-             \          |                \          |                \
-    201.54            +2.9%     207.44            +2.5%     206.52        time.system_time
-     97.58            -6.0%      91.75            -5.0%      92.66        time.user_time
-   1322908            -5.0%    1256536            -4.1%    1268145        aim9.brk_test.ops_per_sec
-    201.54            +2.9%     207.44            +2.5%     206.52        aim9.time.system_time
-     97.58            -6.0%      91.75            -5.0%      92.66        aim9.time.user_time
-      0.04 ± 82%    -100.0%       0.00          -100.0%       0.00        perf-sched.sch_delay.avg.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.10 ± 60%    -100.0%       0.00          -100.0%       0.00        perf-sched.sch_delay.max.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
-     90.66 ± 71%    +411.1%     463.37 ±113%    +160.5%     236.20 ± 12%  perf-sched.wait_and_delay.avg.ms.schedule_timeout.io_schedule_timeout.__wait_for_common.blk_execute_rq
-    127.98 ± 86%    +586.2%     878.13 ±150%    +192.6%     374.47 ± 56%  perf-sched.wait_and_delay.max.ms.schedule_timeout.io_schedule_timeout.__wait_for_common.blk_execute_rq
-      0.04 ± 82%    -100.0%       0.00          -100.0%       0.00        perf-sched.wait_time.avg.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
-    111.98 ± 31%    +323.3%     474.03 ±108%    +110.6%     235.86 ± 12%  perf-sched.wait_time.avg.ms.schedule_timeout.io_schedule_timeout.__wait_for_common.blk_execute_rq
-      0.10 ± 60%    -100.0%       0.00          -100.0%       0.00        perf-sched.wait_time.max.ms.__cond_resched.down_write.do_brk_flags.__do_sys_brk.do_syscall_64
-    149.30 ± 58%    +495.3%     888.79 ±147%    +150.4%     373.80 ± 57%  perf-sched.wait_time.max.ms.schedule_timeout.io_schedule_timeout.__wait_for_common.blk_execute_rq
-      0.30 ±  2%      -9.0%       0.27 ±  4%     -11.5%       0.27 ±  7%  perf-stat.i.MPKI
-  8.33e+08            +3.9%  8.654e+08            +4.5%  8.708e+08        perf-stat.i.branch-instructions
-      1.15            -0.1        1.09            -0.1        1.08        perf-stat.i.branch-miss-rate%
-  12964626            -1.9%   12711922            -2.6%   12624576        perf-stat.i.branch-misses
-      1.11            -7.4%       1.03            -7.9%       1.03        perf-stat.i.cpi
- 3.943e+09            +6.0%   4.18e+09            +6.7%  4.206e+09        perf-stat.i.instructions
-      0.91            +7.9%       0.98            +8.5%       0.99        perf-stat.i.ipc
-      0.29 ±  2%      -9.1%       0.27 ±  4%     -10.8%       0.26 ±  7%  perf-stat.overall.MPKI
-      1.56            -0.1        1.47            -0.1        1.45        perf-stat.overall.branch-miss-rate%
-      1.08            -6.8%       1.01            -7.2%       1.01        perf-stat.overall.cpi
-      0.92            +7.2%       0.99            +7.8%       0.99        perf-stat.overall.ipc
- 8.303e+08            +3.9%  8.627e+08            +4.5%  8.681e+08        perf-stat.ps.branch-instructions
-  12931205            -2.0%   12678170            -2.6%   12593410        perf-stat.ps.branch-misses
-  3.93e+09            +6.0%  4.167e+09            +6.7%  4.193e+09        perf-stat.ps.instructions
- 1.184e+12            +6.1%  1.256e+12            +6.7%  1.263e+12        perf-stat.total.instructions
-      7.16 ±  2%      -0.4        6.76 ±  4%      -0.3        6.83 ±  5%  perf-profile.calltrace.cycles-pp.entry_SYSRETQ_unsafe_stack.brk
-      5.72 ±  2%      -0.4        5.35 ±  3%      -0.2        5.53 ±  4%  perf-profile.calltrace.cycles-pp.perf_event_mmap_event.perf_event_mmap.do_brk_flags.__do_sys_brk.do_syscall_64
-      6.13 ±  2%      -0.3        5.84 ±  3%      -0.2        5.97 ±  4%  perf-profile.calltrace.cycles-pp.perf_event_mmap.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      0.83 ± 11%      -0.1        0.71 ±  5%      -0.1        0.76 ±  5%  perf-profile.calltrace.cycles-pp.__vm_enough_memory.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      0.00            +0.6        0.58 ±  5%      +0.6        0.57 ±  8%  perf-profile.calltrace.cycles-pp.mas_leaf_max_gap.mas_update_gap.mas_store_prealloc.vma_expand.vma_merge_new_range
-     16.73 ±  2%      +0.6       17.34            +0.5       17.27 ±  4%  perf-profile.calltrace.cycles-pp.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
-      0.00            +0.7        0.66 ±  6%      +0.6        0.61 ± 45%  perf-profile.calltrace.cycles-pp.mas_wr_store_type.mas_preallocate.vma_expand.vma_merge_new_range.do_brk_flags
-     24.21            +0.7       24.90            +0.5       24.71 ±  2%  perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
-     23.33            +0.7       24.05 ±  2%      +0.5       23.87 ±  3%  perf-profile.calltrace.cycles-pp.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe.brk
-      0.00            +0.8        0.82 ±  4%      +0.9        0.92 ± 11%  perf-profile.calltrace.cycles-pp.vma_complete.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +0.9        0.87 ±  5%      +0.9        0.86 ±  6%  perf-profile.calltrace.cycles-pp.mas_update_gap.mas_store_prealloc.vma_expand.vma_merge_new_range.do_brk_flags
-      0.00            +1.1        1.07 ±  9%      +1.0        1.01 ± 14%  perf-profile.calltrace.cycles-pp.vma_prepare.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +1.1        1.10 ±  6%      +1.2        1.15 ± 10%  perf-profile.calltrace.cycles-pp.mas_preallocate.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +2.3        2.26 ±  5%      +2.2        2.19 ±  5%  perf-profile.calltrace.cycles-pp.mas_store_prealloc.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk
-      0.00            +7.6        7.56 ±  3%      +7.5        7.48 ±  4%  perf-profile.calltrace.cycles-pp.vma_expand.vma_merge_new_range.do_brk_flags.__do_sys_brk.do_syscall_64
-      0.00            +8.6        8.62 ±  4%      +8.4        8.40 ±  4%  perf-profile.calltrace.cycles-pp.vma_merge_new_range.do_brk_flags.__do_sys_brk.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      7.74 ±  2%      -0.4        7.30 ±  4%      -0.4        7.38 ±  5%  perf-profile.children.cycles-pp.entry_SYSRETQ_unsafe_stack
-      5.81 ±  2%      -0.4        5.43 ±  3%      -0.2        5.60 ±  4%  perf-profile.children.cycles-pp.perf_event_mmap_event
-      6.18 ±  2%      -0.3        5.88 ±  3%      -0.2        6.00 ±  4%  perf-profile.children.cycles-pp.perf_event_mmap
-      3.93            -0.2        3.73 ±  3%      -0.1        3.81 ±  4%  perf-profile.children.cycles-pp.perf_iterate_sb
-      0.22 ± 29%      -0.1        0.08 ± 17%      -0.1        0.09 ± 42%  perf-profile.children.cycles-pp.may_expand_vm
-      0.96 ±  3%      -0.1        0.83 ±  4%      -0.0        0.93 ± 11%  perf-profile.children.cycles-pp.vma_complete
-      0.61 ± 14%      -0.1        0.52 ±  7%      -0.0        0.57 ±  9%  perf-profile.children.cycles-pp.percpu_counter_add_batch
-      0.15 ±  7%      -0.1        0.08 ± 20%      -0.1        0.08 ± 25%  perf-profile.children.cycles-pp.brk_test
-      0.10 ± 11%      +0.0        0.10 ± 28%      +0.0        0.12 ± 10%  perf-profile.children.cycles-pp.run_posix_cpu_timers
-      0.08 ± 11%      +0.0        0.12 ± 14%      +0.0        0.12 ± 12%  perf-profile.children.cycles-pp.mas_prev_setup
-      0.00            +0.0        0.05 ± 46%      +0.1        0.08 ± 16%  perf-profile.children.cycles-pp.mas_next_setup
-      0.24 ± 19%      +0.1        0.31 ±  9%      +0.1        0.32 ±  9%  perf-profile.children.cycles-pp.mas_prev
-      0.17 ± 12%      +0.1        0.27 ± 10%      +0.0        0.19 ± 16%  perf-profile.children.cycles-pp.mas_wr_store_entry
-      0.00            +0.2        0.15 ± 11%      +0.2        0.17 ±  8%  perf-profile.children.cycles-pp.mas_next_range
-      0.19 ±  8%      +0.2        0.38 ± 10%      +0.2        0.41 ±  8%  perf-profile.children.cycles-pp.mas_next_slot
-      0.34 ± 17%      +0.3        0.64 ±  6%      +0.3        0.61 ±  6%  perf-profile.children.cycles-pp.mas_prev_slot
-     23.40            +0.7       24.12 ±  2%      +0.5       23.94 ±  3%  perf-profile.children.cycles-pp.__do_sys_brk
-      0.00            +7.6        7.59 ±  3%      +7.5        7.49 ±  4%  perf-profile.children.cycles-pp.vma_expand
-      0.00            +8.7        8.66 ±  4%      +8.5        8.46 ±  4%  perf-profile.children.cycles-pp.vma_merge_new_range
-      1.61 ± 10%      -0.9        0.69 ±  8%      -0.8        0.83 ± 14%  perf-profile.self.cycles-pp.do_brk_flags
-      7.64 ±  2%      -0.4        7.20 ±  4%      -0.4        7.28 ±  5%  perf-profile.self.cycles-pp.entry_SYSRETQ_unsafe_stack
-      0.22 ± 30%      -0.1        0.08 ± 17%      -0.1        0.09 ± 42%  perf-profile.self.cycles-pp.may_expand_vm
-      0.57 ± 15%      -0.1        0.46 ±  6%      -0.0        0.53 ± 10%  perf-profile.self.cycles-pp.percpu_counter_add_batch
-      0.77 ±  7%      -0.1        0.69 ±  5%      -0.1        0.69 ±  5%  perf-profile.self.cycles-pp.perf_event_mmap_event
-      0.15 ±  7%      -0.1        0.08 ± 20%      -0.1        0.08 ± 24%  perf-profile.self.cycles-pp.brk_test
-      0.20 ±  5%      -0.0        0.18 ±  4%      +0.0        0.20 ±  9%  perf-profile.self.cycles-pp.anon_vma_interval_tree_insert
-      0.10 ± 11%      +0.0        0.10 ± 28%      +0.0        0.12 ± 10%  perf-profile.self.cycles-pp.run_posix_cpu_timers
-      0.07 ± 18%      +0.0        0.10 ± 18%      +0.0        0.11 ± 11%  perf-profile.self.cycles-pp.mas_prev_setup
-      0.00            +0.1        0.09 ± 12%      +0.1        0.11 ±  9%  perf-profile.self.cycles-pp.mas_next_range
-      0.36 ±  8%      +0.1        0.45 ±  6%      +0.0        0.40 ± 11%  perf-profile.self.cycles-pp.perf_event_mmap
-      0.15 ± 13%      +0.1        0.25 ± 14%      +0.0        0.17 ± 16%  perf-profile.self.cycles-pp.mas_wr_store_entry
-      0.17 ± 11%      +0.2        0.37 ± 11%      +0.2        0.40 ±  9%  perf-profile.self.cycles-pp.mas_next_slot
-      0.34 ± 17%      +0.3        0.64 ±  6%      +0.3        0.61 ±  6%  perf-profile.self.cycles-pp.mas_prev_slot
-      0.00            +0.3        0.33 ±  5%      +0.3        0.30 ±  7%  perf-profile.self.cycles-pp.vma_merge_new_range
-      0.00            +0.8        0.81 ±  9%      +0.7        0.74 ±  9%  perf-profile.self.cycles-pp.vma_expand
+	type: lkp
+	group: group-00
 
 
---ruHRZqqTcJu9mXyR--
+
+compiler: gcc-12
+test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480+ (Sapphire Rapids) with 256G memory
+
+(please refer to attached dmesg/kmsg for entire log/backtrace)
+
+
+
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202410111230.6218f561-oliver.sang@intel.com
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20241011/202410111230.6218f561-oliver.sang@intel.com
+
+
+(more build log is in attached output)
+
+
+Traceback (most recent call last):
+  File "/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d798db2f87b3ea0f3a53ed/tools/perf/pmu-events/amd_metrics.py", line 42, in <module>
+    main()
+  File "/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d798db2f87b3ea0f3a53ed/tools/perf/pmu-events/amd_metrics.py", line 32, in main
+    LoadEvents(directory)
+  File "/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d798db2f87b3ea0f3a53ed/tools/perf/pmu-events/metric.py", line 26, in LoadEvents
+    for x in json.load(open(f"{directory}/{filename}")):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+...
+
+Traceback (most recent call last):
+  File "/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d798db2f87b3ea0f3a53ed/tools/perf/pmu-events/amd_metrics.py", line 42, in <module>
+    main()
+  File "/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d798db2f87b3ea0f3a53ed/tools/perf/pmu-events/amd_metrics.py", line 32, in main
+    LoadEvents(directory)
+  File "/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d798db2f87b3ea0f3a53ed/tools/perf/pmu-events/metric.py", line 26, in LoadEvents
+    for x in json.load(open(f"{directory}/{filename}")):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+...
+
+Traceback (most recent call last):
+  File "/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d798db2f87b3ea0f3a53ed/tools/perf/pmu-events/amd_metrics.py", line 42, in <module>
+    main()
+  File "/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d798db2f87b3ea0f3a53ed/tools/perf/pmu-events/amd_metrics.py", line 32, in main
+    LoadEvents(directory)
+  File "/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d798db2f87b3ea0f3a53ed/tools/perf/pmu-events/metric.py", line 26, in LoadEvents
+    for x in json.load(open(f"{directory}/{filename}")):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+make[3]: *** [pmu-events/Build:49: pmu-events/arch/x86/amdzen3/extra-metrics.json] Error 1
+make[3]: *** Deleting file 'pmu-events/arch/x86/amdzen3/extra-metrics.json'
+make[2]: *** [Makefile.perf:765: pmu-events/pmu-events-in.o] Error 2
+make[2]: *** Waiting for unfinished jobs....
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
+
+--VZJJSsuX2mnIFoRA
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: attachment; filename="output"
+Content-Transfer-Encoding: quoted-printable
+
+=3D=3D> /tmp/stdout <=3D=3D
+
+=3D=3D> /tmp/stderr <=3D=3D
+
+=3D=3D> /tmp/stdout <=3D=3D
+RESULT_ROOT=3D/result/perf-test/group-00-lkp/lkp-spr-2sp1/debian-12-x86_64-=
+20240206.cgz/x86_64-rhel-8.3-bpf/gcc-12/1b58625961de2638d2d798db2f87b3ea0f3=
+a53ed/3
+job=3D/lkp/jobs/scheduled/lkp-spr-2sp1/perf-test-group-00-lkp-debian-12-x86=
+_64-20240206.cgz-1b58625961de-20241002-83947-l8seva-1.yaml
+result_service: raw_upload, RESULT_MNT: /internal-lkp-server/result, RESULT=
+_ROOT: /internal-lkp-server/result/perf-test/group-00-lkp/lkp-spr-2sp1/debi=
+an-12-x86_64-20240206.cgz/x86_64-rhel-8.3-bpf/gcc-12/1b58625961de2638d2d798=
+db2f87b3ea0f3a53ed/3, TMP_RESULT_ROOT: /tmp/lkp/result
+run-job /lkp/jobs/scheduled/lkp-spr-2sp1/perf-test-group-00-lkp-debian-12-x=
+86_64-20240206.cgz-1b58625961de-20241002-83947-l8seva-1.yaml
+/usr/bin/wget -q --timeout=3D3600 --tries=3D1 --local-encoding=3DUTF-8 http=
+://internal-lkp-server:80/~lkp/cgi-bin/lkp-jobfile-append-var?job_file=3D/l=
+kp/jobs/scheduled/lkp-spr-2sp1/perf-test-group-00-lkp-debian-12-x86_64-2024=
+0206.cgz-1b58625961de-20241002-83947-l8seva-1.yaml&job_state=3Drunning -O /=
+dev/null
+target ucode: 0x2b0004b1
+LKP: stdout: 3334: current_version: 2b0004b1, target_version: 2b0004b1
+check_nr_cpu
+CPU(s):                               224
+On-line CPU(s) list:                  0-223
+Thread(s) per core:                   2
+Core(s) per socket:                   56
+Socket(s):                            2
+CPU(s) scaling MHz:                   26%
+NUMA node(s):                         2
+NUMA node0 CPU(s):                    0-55,112-167
+NUMA node1 CPU(s):                    56-111,168-223
+IPMI BMC is not supported on this machine, skip bmc-watchdog setup!
+gcc march setting is sapphirerapids
+valid
+2024-10-02 01:02:46 make -j224 WERROR=3D0 ARCH=3D DEBUG=3D1 EXTRA_CFLAGS=3D=
+-fno-omit-frame-pointer -fsanitize=3Dundefined -fsanitize=3Daddress -C /usr=
+/src/linux-perf-x86_64-rhel-8.3-bpf-1b58625961de2638d2d798db2f87b3ea0f3a53e=
+d/tools/perf
+make: Entering directory '/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b586=
+25961de2638d2d798db2f87b3ea0f3a53ed/tools/perf'
+  BUILD:   Doing 'make =1B[33m-j224=1B[m' parallel build
+
+=3D=3D> /tmp/stderr <=3D=3D
+  diff -u tools/include/linux/coresight-pmu.h include/linux/coresight-pmu.h
+  diff -u tools/lib/list_sort.c lib/list_sort.c
+
+=3D=3D> /tmp/stdout <=3D=3D
+=1B[0;33mWarning=1B[0m: Kernel ABI header differences:
+
+=3D=3D> /tmp/stderr <=3D=3D
+Makefile.config:700: Warning: Disabled BPF skeletons as clang (clang) is mi=
+ssing
+Makefile.config:991: No libllvm 13+ found, slower source file resolution, p=
+lease install llvm-devel/llvm-dev
+
+=3D=3D> /tmp/stdout <=3D=3D
+
+Auto-detecting system features:
+...                                   dwarf: [ =1B[32mon=1B[m  ]
+...                      dwarf_getlocations: [ =1B[32mon=1B[m  ]
+...                                   glibc: [ =1B[32mon=1B[m  ]
+...                                  libbfd: [ =1B[32mon=1B[m  ]
+...                          libbfd-buildid: [ =1B[32mon=1B[m  ]
+...                                  libcap: [ =1B[32mon=1B[m  ]
+...                                  libelf: [ =1B[32mon=1B[m  ]
+...                                 libnuma: [ =1B[32mon=1B[m  ]
+...                  numa_num_possible_cpus: [ =1B[32mon=1B[m  ]
+...                                 libperl: [ =1B[32mon=1B[m  ]
+...                               libpython: [ =1B[32mon=1B[m  ]
+...                               libcrypto: [ =1B[32mon=1B[m  ]
+...                               libunwind: [ =1B[32mon=1B[m  ]
+...                      libdw-dwarf-unwind: [ =1B[32mon=1B[m  ]
+...                             libcapstone: [ =1B[32mon=1B[m  ]
+...                               llvm-perf: [ =1B[31mOFF=1B[m ]
+...                                    zlib: [ =1B[32mon=1B[m  ]
+...                                    lzma: [ =1B[32mon=1B[m  ]
+...                               get_cpuid: [ =1B[32mon=1B[m  ]
+...                                     bpf: [ =1B[32mon=1B[m  ]
+...                                  libaio: [ =1B[32mon=1B[m  ]
+...                                 libzstd: [ =1B[32mon=1B[m  ]
+
+  GEN     common-cmds.h
+  GEN     /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/arch/arm64/include/generated/asm/sysreg-defs=
+.h
+  CC      jvmti/libjvmti.o
+  CC      dlfilters/dlfilter-test-api-v0.o
+  CC      jvmti/jvmti_agent.o
+  CC      dlfilters/dlfilter-test-api-v2.o
+  CC      dlfilters/dlfilter-show-cycles.o
+  CC      jvmti/libstring.o
+  CC      jvmti/libctype.o
+
+=3D=3D> /tmp/stderr <=3D=3D
+  PERF_VERSION =3D 6.11.0-rc6
+
+=3D=3D> /tmp/stdout <=3D=3D
+  GEN     perf-archive
+  GEN     perf-iostat
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libsubcmd/include/subcmd/exec-cmd.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libsubcmd/include/subcmd/help.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libsubcmd/include/subcmd/pager.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libsubcmd/include/subcmd/parse-options.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libsubcmd/include/subcmd/run-command.h
+  INSTALL libsubcmd_headers
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libperf/include/perf/bpf_perf.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libperf/include/perf/core.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libapi/include/api/cpu.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libperf/include/perf/cpumap.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libapi/include/api/debug.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libperf/include/perf/threadmap.h
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libperf/core.o
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libperf/include/perf/evlist.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libsymbol/include/symbol/kallsyms.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libapi/include/api/io.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libapi/include/api/fd/array.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libperf/include/perf/evsel.h
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libperf/cpumap.o
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libapi/include/api/fs/fs.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libperf/include/perf/event.h
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libperf/threadmap.o
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libperf/include/perf/mmap.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libapi/include/api/fs/tracing_path.h
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libapi/cpu.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libsymbol/kallsyms.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libperf/evsel.o
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libperf/include/internal/cpumap.h
+  MKDIR   /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libapi/fd/
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libapi/debug.o
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libperf/include/internal/evlist.h
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libapi/str_error_r.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libperf/evlist.o
+  MKDIR   /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libapi/fs/
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libperf/include/internal/evsel.h
+  MKDIR   /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libapi/fs/
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libperf/mmap.o
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libperf/include/internal/lib.h
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libperf/zalloc.o
+  MKDIR   /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libapi/fs/
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libperf/xyarray.o
+  INSTALL libsymbol_headers
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libperf/include/internal/mmap.h
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libapi/fd/array.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libperf/lib.o
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libperf/include/internal/threadmap.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libperf/include/internal/rc_check.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libperf/include/internal/xyarray.h
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libapi/fs/fs.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libapi/fs/tracing_path.o
+  INSTALL libapi_headers
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libapi/fs/cgroup.o
+  GEN     /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/bpf_helper_defs.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/include/bpf/bpf.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/include/bpf/libbpf.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/include/bpf/btf.h
+  INSTALL libperf_headers
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/include/bpf/libbpf_common.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/include/bpf/libbpf_legacy.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/include/bpf/bpf_helpers.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/include/bpf/bpf_tracing.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/include/bpf/bpf_endian.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/include/bpf/bpf_core_read.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/include/bpf/skel_internal.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/include/bpf/libbpf_version.h
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/include/bpf/usdt.bpf.h
+  LINK    dlfilters/dlfilter-show-cycles.so
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libsubcmd/exec-cmd.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libsubcmd/help.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libsubcmd/pager.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libsubcmd/parse-options.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libsubcmd/run-command.o
+  LINK    dlfilters/dlfilter-test-api-v0.so
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libsubcmd/sigchain.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libsubcmd/subcmd-config.o
+  LINK    dlfilters/dlfilter-test-api-v2.so
+  INSTALL /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/include/bpf/bpf_helper_defs.h
+  INSTALL libbpf_headers
+  LD      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libapi/fd/libapi-in.o
+  LD      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libsymbol/libsymbol-in.o
+  LD      jvmti/jvmti-in.o
+  AR      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libsymbol/libsymbol.a
+  LINK    libperf-jvmti.so
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/staticobjs/libbpf.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/staticobjs/bpf.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/staticobjs/nlattr.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/staticobjs/btf.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/staticobjs/libbpf_errno.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/staticobjs/str_error.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/staticobjs/netlink.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/staticobjs/bpf_prog_linfo.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/staticobjs/libbpf_probes.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/staticobjs/hashmap.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/staticobjs/btf_dump.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/staticobjs/ringbuf.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/staticobjs/strset.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/staticobjs/linker.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/staticobjs/gen_loader.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/staticobjs/relo_core.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/staticobjs/usdt.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/staticobjs/zip.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/staticobjs/elf.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/staticobjs/features.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/staticobjs/btf_iter.o
+  CC      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/staticobjs/btf_relocate.o
+  LD      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libapi/fs/libapi-in.o
+  LD      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libapi/libapi-in.o
+  AR      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libapi/libapi.a
+  LD      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libperf/libperf-in.o
+  AR      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libperf/libperf.a
+  LD      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libsubcmd/libsubcmd-in.o
+  AR      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libsubcmd/libsubcmd.a
+  LD      /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/staticobjs/libbpf-in.o
+  LINK    /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d79=
+8db2f87b3ea0f3a53ed/tools/perf/libbpf/libbpf.a
+  CC      builtin-bench.o
+  CC      ui/setup.o
+  CC      bench/sched-messaging.o
+  CC      tests/builtin-test.o
+  CC      bench/sched-pipe.o
+  CC      ui/helpline.o
+  CC      builtin-annotate.o
+  CC      tests/tests-scripts.o
+  CC      ui/progress.o
+  CC      bench/sched-seccomp-notify.o
+  CC      arch/common.o
+  CC      builtin-check.o
+  CC      tests/parse-events.o
+  CC      ui/util.o
+  CC      bench/syscall.o
+  CC      builtin-config.o
+  CC      tests/dso-data.o
+  CC      ui/hist.o
+  CC      tests/attr.o
+  CC      builtin-diff.o
+  CC      bench/mem-functions.o
+  CC      tests/vmlinux-kallsyms.o
+  CC      ui/stdio/hist.o
+  CC      builtin-evlist.o
+  CC      tests/openat-syscall.o
+  CC      bench/futex-hash.o
+  CC      ui/browser.o
+  CC      builtin-ftrace.o
+  CC      tests/openat-syscall-all-cpus.o
+  CC      scripts/python/Perf-Trace-Util/Context.o
+  CC      bench/futex-wake.o
+  CC      arch/x86/tests/regs_load.o
+  CC      builtin-help.o
+  CC      scripts/perl/Perf-Trace-Util/Context.o
+  CC      arch/x86/tests/dwarf-unwind.o
+  CC      builtin-buildid-list.o
+  CC      bench/futex-wake-parallel.o
+  CC      tests/openat-syscall-tp-fields.o
+  CC      arch/x86/tests/arch-tests.o
+  CC      arch/x86/tests/sample-parsing.o
+  CC      builtin-buildid-cache.o
+  CC      bench/futex-requeue.o
+  CC      tests/mmap-basic.o
+  CC      arch/x86/tests/hybrid.o
+  CC      builtin-kallsyms.o
+  CC      tests/perf-record.o
+  CC      bench/futex-lock-pi.o
+  CC      bench/epoll-wait.o
+  CC      builtin-list.o
+  CC      tests/evsel-roundtrip-name.o
+  CC      arch/x86/tests/intel-pt-test.o
+  CC      arch/x86/util/header.o
+  CC      arch/x86/tests/bp-modify.o
+  CC      builtin-record.o
+  CC      ui/browsers/annotate.o
+  CC      tests/evsel-tp-sched.o
+  CC      bench/epoll-ctl.o
+  CC      arch/x86/util/tsc.o
+  CC      ui/tui/setup.o
+  CC      tests/fdarray.o
+  CC      bench/synthesize.o
+  CC      arch/x86/tests/amd-ibs-via-core-pmu.o
+  CC      builtin-report.o
+  CC      arch/x86/util/pmu.o
+  CC      ui/tui/util.o
+  CC      ui/browsers/annotate-data.o
+  CC      ui/browsers/map.o
+  CC      tests/pmu-events.o
+  CC      ui/browsers/hists.o
+  CC      bench/kallsyms-parse.o
+  CC      arch/x86/util/kvm-stat.o
+  CC      ui/tui/progress.o
+  CC      tests/pmu.o
+  CC      ui/tui/helpline.o
+  CC      builtin-stat.o
+  CC      bench/find-bit-bench.o
+  CC      builtin-top.o
+  CC      tests/hists_common.o
+  CC      arch/x86/util/perf_regs.o
+  CC      ui/browsers/scripts.o
+  CC      tests/hists_link.o
+  CC      arch/x86/util/topdown.o
+  CC      bench/inject-buildid.o
+  CC      arch/x86/util/machine.o
+  CC      bench/evlist-open-close.o
+  CC      bench/breakpoint.o
+  CC      tests/hists_output.o
+  CC      tests/hists_filter.o
+  CC      ui/browsers/header.o
+  CC      builtin-script.o
+  CC      ui/browsers/res_sample.o
+  CC      builtin-kvm.o
+  CC      arch/x86/util/evlist.o
+  CC      tests/hists_cumulate.o
+  CC      arch/x86/util/event.o
+  CC      bench/pmu-scan.o
+  CC      builtin-inject.o
+  CC      tests/python-use.o
+  CC      arch/x86/util/mem-events.o
+  CC      bench/uprobe.o
+  CC      tests/bp_signal.o
+  CC      arch/x86/util/evsel.o
+  CC      bench/mem-memcpy-x86-64-asm.o
+  CC      builtin-mem.o
+  CC      bench/mem-memset-x86-64-asm.o
+  CC      tests/bp_signal_overflow.o
+  CC      builtin-data.o
+  CC      bench/numa.o
+  CC      arch/x86/util/iostat.o
+  CC      tests/wp.o
+  CC      builtin-version.o
+  CC      tests/bp_account.o
+  CC      arch/x86/util/dwarf-regs.o
+  CC      arch/x86/util/env.o
+  CC      arch/x86/util/unwind-libunwind.o
+  CC      builtin-c2c.o
+  CC      builtin-daemon.o
+  CC      tests/sw-clock.o
+  CC      tests/task-exit.o
+  CC      tests/mmap-thread-lookup.o
+  CC      arch/x86/util/archinsn.o
+  CC      builtin-kmem.o
+  CC      arch/x86/util/intel-pt.o
+  CC      arch/x86/util/auxtrace.o
+  CC      tests/thread-maps-share.o
+  CC      builtin-kwork.o
+  CC      arch/x86/util/intel-bts.o
+  CC      tests/keep-tracking.o
+  CC      builtin-lock.o
+  CC      tests/switch-tracking.o
+  CC      tests/code-reading.o
+  CC      builtin-timechart.o
+  CC      builtin-sched.o
+  CC      tests/parse-no-sample-id-all.o
+  CC      tests/sample-parsing.o
+  CC      tests/kmod-path.o
+  CC      tests/thread-map.o
+  CC      tests/mem.o
+  CC      builtin-trace.o
+  CC      builtin-probe.o
+  CC      tests/topology.o
+  CC      tests/cpumap.o
+  CC      perf.o
+  CC      tests/stat.o
+  CC      tests/event_update.o
+  CC      tests/event-times.o
+  LD      arch/perf-in.o
+  CC      tests/expr.o
+  CC      tests/backward-ring-buffer.o
+  CC      trace/beauty/clone.o
+  CC      tests/sdt.o
+  CC      trace/beauty/fcntl.o
+  CC      trace/beauty/flock.o
+  CC      tests/is_printable_array.o
+  CC      tests/bitmap.o
+  CC      trace/beauty/fs_at_flags.o
+  CC      tests/perf-hooks.o
+  CC      trace/beauty/fsmount.o
+  CC      trace/beauty/fspick.o
+  CC      tests/unit_number__scnprintf.o
+  CC      trace/beauty/ioctl.o
+  CC      tests/mem2node.o
+  CC      trace/beauty/kcmp.o
+  CC      tests/maps.o
+  CC      tests/time-utils-test.o
+  CC      trace/beauty/mount_flags.o
+  CC      tests/genelf.o
+  CC      trace/beauty/move_mount.o
+  CC      tests/api-io.o
+  CC      tests/demangle-java-test.o
+  CC      trace/beauty/pkey_alloc.o
+  CC      trace/beauty/arch_prctl.o
+  CC      tests/demangle-ocaml-test.o
+  CC      tests/pfm.o
+  CC      trace/beauty/prctl.o
+  CC      trace/beauty/renameat.o
+  CC      trace/beauty/sockaddr.o
+  CC      tests/parse-metric.o
+  CC      tests/expand-cgroup.o
+  CC      tests/pe-file-parsing.o
+  CC      tests/sigtrap.o
+  CC      trace/beauty/statx.o
+  CC      trace/beauty/socket.o
+  CC      tests/perf-time-to-tsc.o
+  CC      tests/dlfilter-test.o
+  CC      trace/beauty/sync_file_range.o
+  CC      trace/beauty/timespec.o
+  CC      tests/event_groups.o
+  CC      tests/symbols.o
+  CC      tests/util.o
+  CC      tests/dwarf-unwind.o
+  CC      trace/beauty/tracepoints/x86_irq_vectors.o
+  CC      trace/beauty/tracepoints/x86_msr.o
+  CC      tests/workloads/noploop.o
+  CC      tests/workloads/thloop.o
+  CC      tests/workloads/leafloop.o
+  CC      tests/workloads/sqrtloop.o
+  CC      tests/workloads/brstack.o
+  CC      tests/workloads/datasym.o
+  CC      tests/workloads/landlock.o
+  CC      util/arm64-frame-pointer-unwind-support.o
+  CC      util/addr_location.o
+  CC      util/annotate.o
+  CC      util/block-info.o
+  CC      util/block-range.o
+  CC      util/build-id.o
+  CC      util/cacheline.o
+  CC      util/config.o
+  CC      util/copyfile.o
+  CC      util/ctype.o
+  CC      util/db-export.o
+  CC      util/disasm.o
+  CC      util/disasm_bpf.o
+  CC      util/env.o
+  CC      util/event.o
+  CC      util/evlist.o
+  CC      util/sideband_evlist.o
+  CC      util/evsel.o
+  CC      util/evsel_fprintf.o
+  CC      util/perf_event_attr_fprintf.o
+  CC      util/evswitch.o
+  CC      util/find_bit.o
+  CC      util/get_current_dir_name.o
+  CC      util/levenshtein.o
+  CC      util/mmap.o
+  CC      util/memswap.o
+  BISON   util/parse-events-bison.c
+  CC      util/print-events.o
+  CC      util/tracepoint.o
+  CC      util/perf_regs.o
+  CC      util/intel-pt-decoder/intel-pt-pkt-decoder.o
+  CC      util/perf-regs-arch/perf_regs_aarch64.o
+
+=3D=3D> /tmp/stderr <=3D=3D
+make[3]: Circular pmu-events/arch/test/arch-std-events.json <- pmu-events/a=
+rch/test/arch-std-events.json dependency dropped.
+make[3]: Circular pmu-events/arch/test/test_soc/sys/uncore.json <- pmu-even=
+ts/arch/test/test_soc/sys/uncore.json dependency dropped.
+make[3]: Circular pmu-events/arch/test/test_soc/cpu/metrics.json <- pmu-eve=
+nts/arch/test/test_soc/cpu/metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/test/test_soc/cpu/uncore.json <- pmu-even=
+ts/arch/test/test_soc/cpu/uncore.json dependency dropped.
+make[3]: Circular pmu-events/arch/test/test_soc/cpu/branch.json <- pmu-even=
+ts/arch/test/test_soc/cpu/branch.json dependency dropped.
+make[3]: Circular pmu-events/arch/test/test_soc/cpu/cache.json <- pmu-event=
+s/arch/test/test_soc/cpu/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/test/test_soc/cpu/other.json <- pmu-event=
+s/arch/test/test_soc/cpu/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/nds32/n13/atcpmu.json <- pmu-events/arch/=
+nds32/n13/atcpmu.json dependency dropped.
+make[3]: Circular pmu-events/arch/nds32/mapfile.csv <- pmu-events/arch/nds3=
+2/mapfile.csv dependency dropped.
+make[3]: Circular pmu-events/arch/riscv/thead/c900-legacy/firmware.json <- =
+pmu-events/arch/riscv/thead/c900-legacy/firmware.json dependency dropped.
+make[3]: Circular pmu-events/arch/riscv/thead/c900-legacy/microarch.json <-=
+ pmu-events/arch/riscv/thead/c900-legacy/microarch.json dependency dropped.
+make[3]: Circular pmu-events/arch/riscv/thead/c900-legacy/cache.json <- pmu=
+-events/arch/riscv/thead/c900-legacy/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/riscv/thead/c900-legacy/instruction.json =
+<- pmu-events/arch/riscv/thead/c900-legacy/instruction.json dependency drop=
+ped.
+make[3]: Circular pmu-events/arch/riscv/sifive/u74/firmware.json <- pmu-eve=
+nts/arch/riscv/sifive/u74/firmware.json dependency dropped.
+make[3]: Circular pmu-events/arch/riscv/sifive/u74/memory.json <- pmu-event=
+s/arch/riscv/sifive/u74/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/riscv/sifive/u74/microarch.json <- pmu-ev=
+ents/arch/riscv/sifive/u74/microarch.json dependency dropped.
+make[3]: Circular pmu-events/arch/riscv/sifive/u74/instructions.json <- pmu=
+-events/arch/riscv/sifive/u74/instructions.json dependency dropped.
+make[3]: Circular pmu-events/arch/riscv/andes/ax45/firmware.json <- pmu-eve=
+nts/arch/riscv/andes/ax45/firmware.json dependency dropped.
+make[3]: Circular pmu-events/arch/riscv/andes/ax45/memory.json <- pmu-event=
+s/arch/riscv/andes/ax45/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/riscv/andes/ax45/microarch.json <- pmu-ev=
+ents/arch/riscv/andes/ax45/microarch.json dependency dropped.
+make[3]: Circular pmu-events/arch/riscv/andes/ax45/instructions.json <- pmu=
+-events/arch/riscv/andes/ax45/instructions.json dependency dropped.
+make[3]: Circular pmu-events/arch/riscv/mapfile.csv <- pmu-events/arch/risc=
+v/mapfile.csv dependency dropped.
+make[3]: Circular pmu-events/arch/riscv/starfive/dubhe-80/firmware.json <- =
+pmu-events/arch/riscv/starfive/dubhe-80/firmware.json dependency dropped.
+make[3]: Circular pmu-events/arch/riscv/starfive/dubhe-80/common.json <- pm=
+u-events/arch/riscv/starfive/dubhe-80/common.json dependency dropped.
+make[3]: Circular pmu-events/arch/riscv/riscv-sbi-firmware.json <- pmu-even=
+ts/arch/riscv/riscv-sbi-firmware.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/freescale/imx93/sys/metrics.json <-=
+ pmu-events/arch/arm64/freescale/imx93/sys/metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/freescale/imx93/sys/ddrc.json <- pm=
+u-events/arch/arm64/freescale/imx93/sys/ddrc.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/freescale/imx8mq/sys/metrics.json <=
+- pmu-events/arch/arm64/freescale/imx8mq/sys/metrics.json dependency droppe=
+d.
+make[3]: Circular pmu-events/arch/arm64/freescale/imx8mq/sys/ddrc.json <- p=
+mu-events/arch/arm64/freescale/imx8mq/sys/ddrc.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/freescale/imx8mn/sys/metrics.json <=
+- pmu-events/arch/arm64/freescale/imx8mn/sys/metrics.json dependency droppe=
+d.
+make[3]: Circular pmu-events/arch/arm64/freescale/imx8mn/sys/ddrc.json <- p=
+mu-events/arch/arm64/freescale/imx8mn/sys/ddrc.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/freescale/imx8mp/sys/metrics.json <=
+- pmu-events/arch/arm64/freescale/imx8mp/sys/metrics.json dependency droppe=
+d.
+make[3]: Circular pmu-events/arch/arm64/freescale/imx8mp/sys/ddrc.json <- p=
+mu-events/arch/arm64/freescale/imx8mp/sys/ddrc.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/freescale/imx95/sys/metrics.json <-=
+ pmu-events/arch/arm64/freescale/imx95/sys/metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/freescale/imx95/sys/ddrc.json <- pm=
+u-events/arch/arm64/freescale/imx95/sys/ddrc.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/freescale/imx8mm/sys/metrics.json <=
+- pmu-events/arch/arm64/freescale/imx8mm/sys/metrics.json dependency droppe=
+d.
+make[3]: Circular pmu-events/arch/arm64/freescale/imx8mm/sys/ddrc.json <- p=
+mu-events/arch/arm64/freescale/imx8mm/sys/ddrc.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/cavium/thunderx2/core-imp-def.json =
+<- pmu-events/arch/arm64/cavium/thunderx2/core-imp-def.json dependency drop=
+ped.
+make[3]: Circular pmu-events/arch/arm64/thead/yitian710/sys/metrics.json <-=
+ pmu-events/arch/arm64/thead/yitian710/sys/metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/thead/yitian710/sys/ali_drw.json <-=
+ pmu-events/arch/arm64/thead/yitian710/sys/ali_drw.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/hisilicon/hip09/sys/uncore-cpa.json=
+ <- pmu-events/arch/arm64/hisilicon/hip09/sys/uncore-cpa.json dependency dr=
+opped.
+make[3]: Circular pmu-events/arch/arm64/hisilicon/hip08/metrics.json <- pmu=
+-events/arch/arm64/hisilicon/hip08/metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/hisilicon/hip08/uncore-ddrc.json <-=
+ pmu-events/arch/arm64/hisilicon/hip08/uncore-ddrc.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/hisilicon/hip08/uncore-l3c.json <- =
+pmu-events/arch/arm64/hisilicon/hip08/uncore-l3c.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/hisilicon/hip08/core-imp-def.json <=
+- pmu-events/arch/arm64/hisilicon/hip08/core-imp-def.json dependency droppe=
+d.
+make[3]: Circular pmu-events/arch/arm64/hisilicon/hip08/uncore-hha.json <- =
+pmu-events/arch/arm64/hisilicon/hip08/uncore-hha.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/fujitsu/a64fx/sve.json <- pmu-event=
+s/arch/arm64/fujitsu/a64fx/sve.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/fujitsu/a64fx/memory.json <- pmu-ev=
+ents/arch/arm64/fujitsu/a64fx/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/fujitsu/a64fx/cycle.json <- pmu-eve=
+nts/arch/arm64/fujitsu/a64fx/cycle.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/fujitsu/a64fx/branch.json <- pmu-ev=
+ents/arch/arm64/fujitsu/a64fx/branch.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/fujitsu/a64fx/cache.json <- pmu-eve=
+nts/arch/arm64/fujitsu/a64fx/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/fujitsu/a64fx/exception.json <- pmu=
+-events/arch/arm64/fujitsu/a64fx/exception.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/fujitsu/a64fx/other.json <- pmu-eve=
+nts/arch/arm64/fujitsu/a64fx/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/fujitsu/a64fx/bus.json <- pmu-event=
+s/arch/arm64/fujitsu/a64fx/bus.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/fujitsu/a64fx/pipeline.json <- pmu-=
+events/arch/arm64/fujitsu/a64fx/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/fujitsu/a64fx/instruction.json <- p=
+mu-events/arch/arm64/fujitsu/a64fx/instruction.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/common-and-microarch.json <- pmu-ev=
+ents/arch/arm64/common-and-microarch.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a78/memory.json <- pmu-e=
+vents/arch/arm64/arm/cortex-a78/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a78/branch.json <- pmu-e=
+vents/arch/arm64/arm/cortex-a78/branch.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a78/cache.json <- pmu-ev=
+ents/arch/arm64/arm/cortex-a78/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a78/exception.json <- pm=
+u-events/arch/arm64/arm/cortex-a78/exception.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a78/bus.json <- pmu-even=
+ts/arch/arm64/arm/cortex-a78/bus.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a78/pipeline.json <- pmu=
+-events/arch/arm64/arm/cortex-a78/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a78/instruction.json <- =
+pmu-events/arch/arm64/arm/cortex-a78/instruction.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cmn/sys/metric.json <- pmu-even=
+ts/arch/arm64/arm/cmn/sys/metric.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cmn/sys/cmn.json <- pmu-events/=
+arch/arm64/arm/cmn/sys/cmn.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a710/trace.json <- pmu-e=
+vents/arch/arm64/arm/cortex-a710/trace.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a710/memory.json <- pmu-=
+events/arch/arm64/arm/cortex-a710/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a710/branch.json <- pmu-=
+events/arch/arm64/arm/cortex-a710/branch.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a710/cache.json <- pmu-e=
+vents/arch/arm64/arm/cortex-a710/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a710/exception.json <- p=
+mu-events/arch/arm64/arm/cortex-a710/exception.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a710/bus.json <- pmu-eve=
+nts/arch/arm64/arm/cortex-a710/bus.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a710/pipeline.json <- pm=
+u-events/arch/arm64/arm/cortex-a710/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a710/instruction.json <-=
+ pmu-events/arch/arm64/arm/cortex-a710/instruction.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a510/pmu.json <- pmu-eve=
+nts/arch/arm64/arm/cortex-a510/pmu.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a510/trace.json <- pmu-e=
+vents/arch/arm64/arm/cortex-a510/trace.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a510/memory.json <- pmu-=
+events/arch/arm64/arm/cortex-a510/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a510/branch.json <- pmu-=
+events/arch/arm64/arm/cortex-a510/branch.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a510/cache.json <- pmu-e=
+vents/arch/arm64/arm/cortex-a510/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a510/exception.json <- p=
+mu-events/arch/arm64/arm/cortex-a510/exception.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a510/bus.json <- pmu-eve=
+nts/arch/arm64/arm/cortex-a510/bus.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a510/pipeline.json <- pm=
+u-events/arch/arm64/arm/cortex-a510/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a510/instruction.json <-=
+ pmu-events/arch/arm64/arm/cortex-a510/instruction.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-x2/trace.json <- pmu-eve=
+nts/arch/arm64/arm/cortex-x2/trace.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-x2/memory.json <- pmu-ev=
+ents/arch/arm64/arm/cortex-x2/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-x2/branch.json <- pmu-ev=
+ents/arch/arm64/arm/cortex-x2/branch.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-x2/cache.json <- pmu-eve=
+nts/arch/arm64/arm/cortex-x2/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-x2/exception.json <- pmu=
+-events/arch/arm64/arm/cortex-x2/exception.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-x2/bus.json <- pmu-event=
+s/arch/arm64/arm/cortex-x2/bus.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-x2/pipeline.json <- pmu-=
+events/arch/arm64/arm/cortex-x2/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-x2/instruction.json <- p=
+mu-events/arch/arm64/arm/cortex-x2/instruction.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-v1/metrics.json <- pmu=
+-events/arch/arm64/arm/neoverse-v1/metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-v1/general.json <- pmu=
+-events/arch/arm64/arm/neoverse-v1/general.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-v1/sve.json <- pmu-eve=
+nts/arch/arm64/arm/neoverse-v1/sve.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-v1/l1i_cache.json <- p=
+mu-events/arch/arm64/arm/neoverse-v1/l1i_cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-v1/fp_operation.json <=
+- pmu-events/arch/arm64/arm/neoverse-v1/fp_operation.json dependency droppe=
+d.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-v1/spe.json <- pmu-eve=
+nts/arch/arm64/arm/neoverse-v1/spe.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-v1/spec_operation.json=
+ <- pmu-events/arch/arm64/arm/neoverse-v1/spec_operation.json dependency dr=
+opped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-v1/memory.json <- pmu-=
+events/arch/arm64/arm/neoverse-v1/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-v1/l3_cache.json <- pm=
+u-events/arch/arm64/arm/neoverse-v1/l3_cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-v1/stall.json <- pmu-e=
+vents/arch/arm64/arm/neoverse-v1/stall.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-v1/exception.json <- p=
+mu-events/arch/arm64/arm/neoverse-v1/exception.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-v1/ll_cache.json <- pm=
+u-events/arch/arm64/arm/neoverse-v1/ll_cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-v1/l2_cache.json <- pm=
+u-events/arch/arm64/arm/neoverse-v1/l2_cache.json dependency dropped.
+
+=3D=3D> /tmp/stdout <=3D=3D
+  GEN     util/intel-pt-decoder/inat-tables.c
+
+=3D=3D> /tmp/stderr <=3D=3D
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-v1/bus.json <- pmu-eve=
+nts/arch/arm64/arm/neoverse-v1/bus.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-v1/l1d_cache.json <- p=
+mu-events/arch/arm64/arm/neoverse-v1/l1d_cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-v1/retired.json <- pmu=
+-events/arch/arm64/arm/neoverse-v1/retired.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-v1/tlb.json <- pmu-eve=
+nts/arch/arm64/arm/neoverse-v1/tlb.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n1/metrics.json <- pmu=
+-events/arch/arm64/arm/neoverse-n1/metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n1/general.json <- pmu=
+-events/arch/arm64/arm/neoverse-n1/general.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n1/l1i_cache.json <- p=
+mu-events/arch/arm64/arm/neoverse-n1/l1i_cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n1/spe.json <- pmu-eve=
+nts/arch/arm64/arm/neoverse-n1/spe.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n1/spec_operation.json=
+ <- pmu-events/arch/arm64/arm/neoverse-n1/spec_operation.json dependency dr=
+opped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n1/memory.json <- pmu-=
+events/arch/arm64/arm/neoverse-n1/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n1/l3_cache.json <- pm=
+u-events/arch/arm64/arm/neoverse-n1/l3_cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n1/stall.json <- pmu-e=
+vents/arch/arm64/arm/neoverse-n1/stall.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n1/exception.json <- p=
+mu-events/arch/arm64/arm/neoverse-n1/exception.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n1/ll_cache.json <- pm=
+u-events/arch/arm64/arm/neoverse-n1/ll_cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n1/l2_cache.json <- pm=
+u-events/arch/arm64/arm/neoverse-n1/l2_cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n1/bus.json <- pmu-eve=
+nts/arch/arm64/arm/neoverse-n1/bus.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n1/l1d_cache.json <- p=
+mu-events/arch/arm64/arm/neoverse-n1/l1d_cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n1/retired.json <- pmu=
+-events/arch/arm64/arm/neoverse-n1/retired.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n1/tlb.json <- pmu-eve=
+nts/arch/arm64/arm/neoverse-n1/tlb.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a35/memory.json <- pmu-e=
+vents/arch/arm64/arm/cortex-a35/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a35/branch.json <- pmu-e=
+vents/arch/arm64/arm/cortex-a35/branch.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a35/cache.json <- pmu-ev=
+ents/arch/arm64/arm/cortex-a35/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a35/exception.json <- pm=
+u-events/arch/arm64/arm/cortex-a35/exception.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a35/bus.json <- pmu-even=
+ts/arch/arm64/arm/cortex-a35/bus.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a35/instruction.json <- =
+pmu-events/arch/arm64/arm/cortex-a35/instruction.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a55/memory.json <- pmu-e=
+vents/arch/arm64/arm/cortex-a55/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a55/branch.json <- pmu-e=
+vents/arch/arm64/arm/cortex-a55/branch.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a55/cache.json <- pmu-ev=
+ents/arch/arm64/arm/cortex-a55/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a55/exception.json <- pm=
+u-events/arch/arm64/arm/cortex-a55/exception.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a55/bus.json <- pmu-even=
+ts/arch/arm64/arm/cortex-a55/bus.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a55/pipeline.json <- pmu=
+-events/arch/arm64/arm/cortex-a55/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a55/instruction.json <- =
+pmu-events/arch/arm64/arm/cortex-a55/instruction.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a34/memory.json <- pmu-e=
+vents/arch/arm64/arm/cortex-a34/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a34/branch.json <- pmu-e=
+vents/arch/arm64/arm/cortex-a34/branch.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a34/cache.json <- pmu-ev=
+ents/arch/arm64/arm/cortex-a34/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a34/exception.json <- pm=
+u-events/arch/arm64/arm/cortex-a34/exception.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a34/bus.json <- pmu-even=
+ts/arch/arm64/arm/cortex-a34/bus.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a34/instruction.json <- =
+pmu-events/arch/arm64/arm/cortex-a34/instruction.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a75/mmu.json <- pmu-even=
+ts/arch/arm64/arm/cortex-a75/mmu.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a75/memory.json <- pmu-e=
+vents/arch/arm64/arm/cortex-a75/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a75/etm.json <- pmu-even=
+ts/arch/arm64/arm/cortex-a75/etm.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a75/branch.json <- pmu-e=
+vents/arch/arm64/arm/cortex-a75/branch.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a75/cache.json <- pmu-ev=
+ents/arch/arm64/arm/cortex-a75/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a75/exception.json <- pm=
+u-events/arch/arm64/arm/cortex-a75/exception.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a75/bus.json <- pmu-even=
+ts/arch/arm64/arm/cortex-a75/bus.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a75/pipeline.json <- pmu=
+-events/arch/arm64/arm/cortex-a75/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a75/instruction.json <- =
+pmu-events/arch/arm64/arm/cortex-a75/instruction.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a57-a72/memory.json <- p=
+mu-events/arch/arm64/arm/cortex-a57-a72/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a57-a72/branch.json <- p=
+mu-events/arch/arm64/arm/cortex-a57-a72/branch.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a57-a72/cache.json <- pm=
+u-events/arch/arm64/arm/cortex-a57-a72/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a57-a72/exception.json <=
+- pmu-events/arch/arm64/arm/cortex-a57-a72/exception.json dependency droppe=
+d.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a57-a72/bus.json <- pmu-=
+events/arch/arm64/arm/cortex-a57-a72/bus.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a57-a72/instruction.json=
+ <- pmu-events/arch/arm64/arm/cortex-a57-a72/instruction.json dependency dr=
+opped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a73/mmu.json <- pmu-even=
+ts/arch/arm64/arm/cortex-a73/mmu.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a73/memory.json <- pmu-e=
+vents/arch/arm64/arm/cortex-a73/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a73/etm.json <- pmu-even=
+ts/arch/arm64/arm/cortex-a73/etm.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a73/branch.json <- pmu-e=
+vents/arch/arm64/arm/cortex-a73/branch.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a73/cache.json <- pmu-ev=
+ents/arch/arm64/arm/cortex-a73/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a73/exception.json <- pm=
+u-events/arch/arm64/arm/cortex-a73/exception.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a73/bus.json <- pmu-even=
+ts/arch/arm64/arm/cortex-a73/bus.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a73/pipeline.json <- pmu=
+-events/arch/arm64/arm/cortex-a73/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a73/instruction.json <- =
+pmu-events/arch/arm64/arm/cortex-a73/instruction.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a53/memory.json <- pmu-e=
+vents/arch/arm64/arm/cortex-a53/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a53/branch.json <- pmu-e=
+vents/arch/arm64/arm/cortex-a53/branch.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a53/cache.json <- pmu-ev=
+ents/arch/arm64/arm/cortex-a53/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a53/other.json <- pmu-ev=
+ents/arch/arm64/arm/cortex-a53/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a53/bus.json <- pmu-even=
+ts/arch/arm64/arm/cortex-a53/bus.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a53/pipeline.json <- pmu=
+-events/arch/arm64/arm/cortex-a53/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-x1/memory.json <- pmu-ev=
+ents/arch/arm64/arm/cortex-x1/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-x1/branch.json <- pmu-ev=
+ents/arch/arm64/arm/cortex-x1/branch.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-x1/cache.json <- pmu-eve=
+nts/arch/arm64/arm/cortex-x1/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-x1/exception.json <- pmu=
+-events/arch/arm64/arm/cortex-x1/exception.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-x1/bus.json <- pmu-event=
+s/arch/arm64/arm/cortex-x1/bus.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-x1/pipeline.json <- pmu-=
+events/arch/arm64/arm/cortex-x1/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-x1/instruction.json <- p=
+mu-events/arch/arm64/arm/cortex-x1/instruction.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a77/memory.json <- pmu-e=
+vents/arch/arm64/arm/cortex-a77/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a77/branch.json <- pmu-e=
+vents/arch/arm64/arm/cortex-a77/branch.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a77/cache.json <- pmu-ev=
+ents/arch/arm64/arm/cortex-a77/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a77/exception.json <- pm=
+u-events/arch/arm64/arm/cortex-a77/exception.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a77/bus.json <- pmu-even=
+ts/arch/arm64/arm/cortex-a77/bus.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a77/pipeline.json <- pmu=
+-events/arch/arm64/arm/cortex-a77/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a77/instruction.json <- =
+pmu-events/arch/arm64/arm/cortex-a77/instruction.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n2-v2/metrics.json <- =
+pmu-events/arch/arm64/arm/neoverse-n2-v2/metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n2-v2/general.json <- =
+pmu-events/arch/arm64/arm/neoverse-n2-v2/general.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n2-v2/trace.json <- pm=
+u-events/arch/arm64/arm/neoverse-n2-v2/trace.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n2-v2/sve.json <- pmu-=
+events/arch/arm64/arm/neoverse-n2-v2/sve.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n2-v2/l1i_cache.json <=
+- pmu-events/arch/arm64/arm/neoverse-n2-v2/l1i_cache.json dependency droppe=
+d.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n2-v2/fp_operation.jso=
+n <- pmu-events/arch/arm64/arm/neoverse-n2-v2/fp_operation.json dependency =
+dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n2-v2/spe.json <- pmu-=
+events/arch/arm64/arm/neoverse-n2-v2/spe.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n2-v2/spec_operation.j=
+son <- pmu-events/arch/arm64/arm/neoverse-n2-v2/spec_operation.json depende=
+ncy dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n2-v2/memory.json <- p=
+mu-events/arch/arm64/arm/neoverse-n2-v2/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n2-v2/l3_cache.json <-=
+ pmu-events/arch/arm64/arm/neoverse-n2-v2/l3_cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n2-v2/stall.json <- pm=
+u-events/arch/arm64/arm/neoverse-n2-v2/stall.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n2-v2/exception.json <=
+- pmu-events/arch/arm64/arm/neoverse-n2-v2/exception.json dependency droppe=
+d.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n2-v2/ll_cache.json <-=
+ pmu-events/arch/arm64/arm/neoverse-n2-v2/ll_cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n2-v2/l2_cache.json <-=
+ pmu-events/arch/arm64/arm/neoverse-n2-v2/l2_cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n2-v2/bus.json <- pmu-=
+events/arch/arm64/arm/neoverse-n2-v2/bus.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n2-v2/l1d_cache.json <=
+- pmu-events/arch/arm64/arm/neoverse-n2-v2/l1d_cache.json dependency droppe=
+d.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n2-v2/retired.json <- =
+pmu-events/arch/arm64/arm/neoverse-n2-v2/retired.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/neoverse-n2-v2/tlb.json <- pmu-=
+events/arch/arm64/arm/neoverse-n2-v2/tlb.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a76/memory.json <- pmu-e=
+vents/arch/arm64/arm/cortex-a76/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a76/branch.json <- pmu-e=
+vents/arch/arm64/arm/cortex-a76/branch.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a76/cache.json <- pmu-ev=
+ents/arch/arm64/arm/cortex-a76/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a76/exception.json <- pm=
+u-events/arch/arm64/arm/cortex-a76/exception.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a76/bus.json <- pmu-even=
+ts/arch/arm64/arm/cortex-a76/bus.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a76/pipeline.json <- pmu=
+-events/arch/arm64/arm/cortex-a76/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a76/instruction.json <- =
+pmu-events/arch/arm64/arm/cortex-a76/instruction.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a65-e1/ifu.json <- pmu-e=
+vents/arch/arm64/arm/cortex-a65-e1/ifu.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a65-e1/memory.json <- pm=
+u-events/arch/arm64/arm/cortex-a65-e1/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a65-e1/branch.json <- pm=
+u-events/arch/arm64/arm/cortex-a65-e1/branch.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a65-e1/dpu.json <- pmu-e=
+vents/arch/arm64/arm/cortex-a65-e1/dpu.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a65-e1/cache.json <- pmu=
+-events/arch/arm64/arm/cortex-a65-e1/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a65-e1/exception.json <-=
+ pmu-events/arch/arm64/arm/cortex-a65-e1/exception.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a65-e1/bus.json <- pmu-e=
+vents/arch/arm64/arm/cortex-a65-e1/bus.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a65-e1/pipeline.json <- =
+pmu-events/arch/arm64/arm/cortex-a65-e1/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/arm/cortex-a65-e1/instruction.json =
+<- pmu-events/arch/arm64/arm/cortex-a65-e1/instruction.json dependency drop=
+ped.
+make[3]: Circular pmu-events/arch/arm64/recommended.json <- pmu-events/arch=
+/arm64/recommended.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/mapfile.csv <- pmu-events/arch/arm6=
+4/mapfile.csv dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/sbsa.json <- pmu-events/arch/arm64/=
+sbsa.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/ampere/ampereone/metrics.json <- pm=
+u-events/arch/arm64/ampere/ampereone/metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/ampere/ampereone/intrinsic.json <- =
+pmu-events/arch/arm64/ampere/ampereone/intrinsic.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/ampere/ampereone/spe.json <- pmu-ev=
+ents/arch/arm64/ampere/ampereone/spe.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/ampere/ampereone/memory.json <- pmu=
+-events/arch/arm64/ampere/ampereone/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/ampere/ampereone/branch.json <- pmu=
+-events/arch/arm64/ampere/ampereone/branch.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/ampere/ampereone/core-imp-def.json =
+<- pmu-events/arch/arm64/ampere/ampereone/core-imp-def.json dependency drop=
+ped.
+make[3]: Circular pmu-events/arch/arm64/ampere/ampereone/cache.json <- pmu-=
+events/arch/arm64/ampere/ampereone/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/ampere/ampereone/exception.json <- =
+pmu-events/arch/arm64/ampere/ampereone/exception.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/ampere/ampereone/bus.json <- pmu-ev=
+ents/arch/arm64/ampere/ampereone/bus.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/ampere/ampereone/pipeline.json <- p=
+mu-events/arch/arm64/ampere/ampereone/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/ampere/ampereone/instruction.json <=
+- pmu-events/arch/arm64/ampere/ampereone/instruction.json dependency droppe=
+d.
+make[3]: Circular pmu-events/arch/arm64/ampere/ampereonex/metrics.json <- p=
+mu-events/arch/arm64/ampere/ampereonex/metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/ampere/ampereonex/mmu.json <- pmu-e=
+vents/arch/arm64/ampere/ampereonex/mmu.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/ampere/ampereonex/intrinsic.json <-=
+ pmu-events/arch/arm64/ampere/ampereonex/intrinsic.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/ampere/ampereonex/spe.json <- pmu-e=
+vents/arch/arm64/ampere/ampereonex/spe.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/ampere/ampereonex/memory.json <- pm=
+u-events/arch/arm64/ampere/ampereonex/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/ampere/ampereonex/branch.json <- pm=
+u-events/arch/arm64/ampere/ampereonex/branch.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/ampere/ampereonex/core-imp-def.json=
+ <- pmu-events/arch/arm64/ampere/ampereonex/core-imp-def.json dependency dr=
+opped.
+make[3]: Circular pmu-events/arch/arm64/ampere/ampereonex/cache.json <- pmu=
+-events/arch/arm64/ampere/ampereonex/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/ampere/ampereonex/exception.json <-=
+ pmu-events/arch/arm64/ampere/ampereonex/exception.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/ampere/ampereonex/bus.json <- pmu-e=
+vents/arch/arm64/ampere/ampereonex/bus.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/ampere/ampereonex/pipeline.json <- =
+pmu-events/arch/arm64/ampere/ampereonex/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/ampere/ampereonex/instruction.json =
+<- pmu-events/arch/arm64/ampere/ampereonex/instruction.json dependency drop=
+ped.
+make[3]: Circular pmu-events/arch/arm64/ampere/emag/clock.json <- pmu-event=
+s/arch/arm64/ampere/emag/clock.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/ampere/emag/intrinsic.json <- pmu-e=
+vents/arch/arm64/ampere/emag/intrinsic.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/ampere/emag/memory.json <- pmu-even=
+ts/arch/arm64/ampere/emag/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/ampere/emag/branch.json <- pmu-even=
+ts/arch/arm64/ampere/emag/branch.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/ampere/emag/cache.json <- pmu-event=
+s/arch/arm64/ampere/emag/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/ampere/emag/exception.json <- pmu-e=
+vents/arch/arm64/ampere/emag/exception.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/ampere/emag/bus.json <- pmu-events/=
+arch/arm64/ampere/emag/bus.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/ampere/emag/pipeline.json <- pmu-ev=
+ents/arch/arm64/ampere/emag/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/arm64/ampere/emag/instruction.json <- pmu=
+-events/arch/arm64/ampere/emag/instruction.json dependency dropped.
+make[3]: Circular pmu-events/arch/s390/cf_z196/basic.json <- pmu-events/arc=
+h/s390/cf_z196/basic.json dependency dropped.
+make[3]: Circular pmu-events/arch/s390/cf_z196/extended.json <- pmu-events/=
+arch/s390/cf_z196/extended.json dependency dropped.
+make[3]: Circular pmu-events/arch/s390/cf_z196/crypto.json <- pmu-events/ar=
+ch/s390/cf_z196/crypto.json dependency dropped.
+make[3]: Circular pmu-events/arch/s390/cf_zec12/basic.json <- pmu-events/ar=
+ch/s390/cf_zec12/basic.json dependency dropped.
+make[3]: Circular pmu-events/arch/s390/cf_zec12/extended.json <- pmu-events=
+/arch/s390/cf_zec12/extended.json dependency dropped.
+make[3]: Circular pmu-events/arch/s390/cf_zec12/crypto.json <- pmu-events/a=
+rch/s390/cf_zec12/crypto.json dependency dropped.
+make[3]: Circular pmu-events/arch/s390/cf_zec12/transaction.json <- pmu-eve=
+nts/arch/s390/cf_zec12/transaction.json dependency dropped.
+make[3]: Circular pmu-events/arch/s390/cf_z10/basic.json <- pmu-events/arch=
+/s390/cf_z10/basic.json dependency dropped.
+make[3]: Circular pmu-events/arch/s390/cf_z10/extended.json <- pmu-events/a=
+rch/s390/cf_z10/extended.json dependency dropped.
+make[3]: Circular pmu-events/arch/s390/cf_z10/crypto.json <- pmu-events/arc=
+h/s390/cf_z10/crypto.json dependency dropped.
+make[3]: Circular pmu-events/arch/s390/cf_z15/basic.json <- pmu-events/arch=
+/s390/cf_z15/basic.json dependency dropped.
+make[3]: Circular pmu-events/arch/s390/cf_z15/crypto6.json <- pmu-events/ar=
+ch/s390/cf_z15/crypto6.json dependency dropped.
+make[3]: Circular pmu-events/arch/s390/cf_z15/extended.json <- pmu-events/a=
+rch/s390/cf_z15/extended.json dependency dropped.
+make[3]: Circular pmu-events/arch/s390/cf_z15/transaction.json <- pmu-event=
+s/arch/s390/cf_z15/transaction.json dependency dropped.
+make[3]: Circular pmu-events/arch/s390/mapfile.csv <- pmu-events/arch/s390/=
+mapfile.csv dependency dropped.
+make[3]: Circular pmu-events/arch/s390/cf_z14/basic.json <- pmu-events/arch=
+/s390/cf_z14/basic.json dependency dropped.
+make[3]: Circular pmu-events/arch/s390/cf_z14/extended.json <- pmu-events/a=
+rch/s390/cf_z14/extended.json dependency dropped.
+make[3]: Circular pmu-events/arch/s390/cf_z14/crypto.json <- pmu-events/arc=
+h/s390/cf_z14/crypto.json dependency dropped.
+make[3]: Circular pmu-events/arch/s390/cf_z14/transaction.json <- pmu-event=
+s/arch/s390/cf_z14/transaction.json dependency dropped.
+make[3]: Circular pmu-events/arch/s390/cf_z16/basic.json <- pmu-events/arch=
+/s390/cf_z16/basic.json dependency dropped.
+make[3]: Circular pmu-events/arch/s390/cf_z16/crypto6.json <- pmu-events/ar=
+ch/s390/cf_z16/crypto6.json dependency dropped.
+make[3]: Circular pmu-events/arch/s390/cf_z16/extended.json <- pmu-events/a=
+rch/s390/cf_z16/extended.json dependency dropped.
+make[3]: Circular pmu-events/arch/s390/cf_z16/transaction.json <- pmu-event=
+s/arch/s390/cf_z16/transaction.json dependency dropped.
+make[3]: Circular pmu-events/arch/s390/cf_z16/pai_crypto.json <- pmu-events=
+/arch/s390/cf_z16/pai_crypto.json dependency dropped.
+make[3]: Circular pmu-events/arch/s390/cf_z16/pai_ext.json <- pmu-events/ar=
+ch/s390/cf_z16/pai_ext.json dependency dropped.
+make[3]: Circular pmu-events/arch/s390/cf_z13/basic.json <- pmu-events/arch=
+/s390/cf_z13/basic.json dependency dropped.
+make[3]: Circular pmu-events/arch/s390/cf_z13/extended.json <- pmu-events/a=
+rch/s390/cf_z13/extended.json dependency dropped.
+make[3]: Circular pmu-events/arch/s390/cf_z13/crypto.json <- pmu-events/arc=
+h/s390/cf_z13/crypto.json dependency dropped.
+make[3]: Circular pmu-events/arch/s390/cf_z13/transaction.json <- pmu-event=
+s/arch/s390/cf_z13/transaction.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power10/pmc.json <- pmu-events/ar=
+ch/powerpc/power10/pmc.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power10/frontend.json <- pmu-even=
+ts/arch/powerpc/power10/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power10/metrics.json <- pmu-event=
+s/arch/powerpc/power10/metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power10/nest_metrics.json <- pmu-=
+events/arch/powerpc/power10/nest_metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power10/others.json <- pmu-events=
+/arch/powerpc/power10/others.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power10/datasource.json <- pmu-ev=
+ents/arch/powerpc/power10/datasource.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power10/translation.json <- pmu-e=
+vents/arch/powerpc/power10/translation.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power10/memory.json <- pmu-events=
+/arch/powerpc/power10/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power10/marked.json <- pmu-events=
+/arch/powerpc/power10/marked.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power10/floating_point.json <- pm=
+u-events/arch/powerpc/power10/floating_point.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power10/cache.json <- pmu-events/=
+arch/powerpc/power10/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power10/locks.json <- pmu-events/=
+arch/powerpc/power10/locks.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power10/pipeline.json <- pmu-even=
+ts/arch/powerpc/power10/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power8/pmc.json <- pmu-events/arc=
+h/powerpc/power8/pmc.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power8/frontend.json <- pmu-event=
+s/arch/powerpc/power8/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power8/metrics.json <- pmu-events=
+/arch/powerpc/power8/metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power8/floating-point.json <- pmu=
+-events/arch/powerpc/power8/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power8/translation.json <- pmu-ev=
+ents/arch/powerpc/power8/translation.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power8/memory.json <- pmu-events/=
+arch/powerpc/power8/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power8/marked.json <- pmu-events/=
+arch/powerpc/power8/marked.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power8/cache.json <- pmu-events/a=
+rch/powerpc/power8/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power8/other.json <- pmu-events/a=
+rch/powerpc/power8/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power8/pipeline.json <- pmu-event=
+s/arch/powerpc/power8/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/mapfile.csv <- pmu-events/arch/po=
+werpc/mapfile.csv dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power9/pmc.json <- pmu-events/arc=
+h/powerpc/power9/pmc.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power9/frontend.json <- pmu-event=
+s/arch/powerpc/power9/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power9/metrics.json <- pmu-events=
+/arch/powerpc/power9/metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power9/nest_metrics.json <- pmu-e=
+vents/arch/powerpc/power9/nest_metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power9/floating-point.json <- pmu=
+-events/arch/powerpc/power9/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power9/translation.json <- pmu-ev=
+ents/arch/powerpc/power9/translation.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power9/memory.json <- pmu-events/=
+arch/powerpc/power9/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power9/marked.json <- pmu-events/=
+arch/powerpc/power9/marked.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power9/cache.json <- pmu-events/a=
+rch/powerpc/power9/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power9/other.json <- pmu-events/a=
+rch/powerpc/power9/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/powerpc/power9/pipeline.json <- pmu-event=
+s/arch/powerpc/power9/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/silvermont/frontend.json <- pmu-event=
+s/arch/x86/silvermont/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/silvermont/floating-point.json <- pmu=
+-events/arch/x86/silvermont/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/silvermont/counter.json <- pmu-events=
+/arch/x86/silvermont/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/silvermont/memory.json <- pmu-events/=
+arch/x86/silvermont/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/silvermont/cache.json <- pmu-events/a=
+rch/x86/silvermont/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/silvermont/other.json <- pmu-events/a=
+rch/x86/silvermont/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/silvermont/virtual-memory.json <- pmu=
+-events/arch/x86/silvermont/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/silvermont/pipeline.json <- pmu-event=
+s/arch/x86/silvermont/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/elkhartlake/frontend.json <- pmu-even=
+ts/arch/x86/elkhartlake/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/elkhartlake/floating-point.json <- pm=
+u-events/arch/x86/elkhartlake/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/elkhartlake/ehl-metrics.json <- pmu-e=
+vents/arch/x86/elkhartlake/ehl-metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/elkhartlake/counter.json <- pmu-event=
+s/arch/x86/elkhartlake/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/elkhartlake/memory.json <- pmu-events=
+/arch/x86/elkhartlake/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/elkhartlake/cache.json <- pmu-events/=
+arch/x86/elkhartlake/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/elkhartlake/other.json <- pmu-events/=
+arch/x86/elkhartlake/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/elkhartlake/virtual-memory.json <- pm=
+u-events/arch/x86/elkhartlake/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/elkhartlake/pipeline.json <- pmu-even=
+ts/arch/x86/elkhartlake/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sandybridge/frontend.json <- pmu-even=
+ts/arch/x86/sandybridge/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sandybridge/floating-point.json <- pm=
+u-events/arch/x86/sandybridge/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sandybridge/snb-metrics.json <- pmu-e=
+vents/arch/x86/sandybridge/snb-metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sandybridge/metricgroups.json <- pmu-=
+events/arch/x86/sandybridge/metricgroups.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sandybridge/uncore-interconnect.json =
+<- pmu-events/arch/x86/sandybridge/uncore-interconnect.json dependency drop=
+ped.
+make[3]: Circular pmu-events/arch/x86/sandybridge/counter.json <- pmu-event=
+s/arch/x86/sandybridge/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sandybridge/memory.json <- pmu-events=
+/arch/x86/sandybridge/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sandybridge/cache.json <- pmu-events/=
+arch/x86/sandybridge/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sandybridge/other.json <- pmu-events/=
+arch/x86/sandybridge/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sandybridge/virtual-memory.json <- pm=
+u-events/arch/x86/sandybridge/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sandybridge/uncore-cache.json <- pmu-=
+events/arch/x86/sandybridge/uncore-cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sandybridge/pipeline.json <- pmu-even=
+ts/arch/x86/sandybridge/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/westmereep-sp/frontend.json <- pmu-ev=
+ents/arch/x86/westmereep-sp/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/westmereep-sp/floating-point.json <- =
+pmu-events/arch/x86/westmereep-sp/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/westmereep-sp/counter.json <- pmu-eve=
+nts/arch/x86/westmereep-sp/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/westmereep-sp/memory.json <- pmu-even=
+ts/arch/x86/westmereep-sp/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/westmereep-sp/cache.json <- pmu-event=
+s/arch/x86/westmereep-sp/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/westmereep-sp/other.json <- pmu-event=
+s/arch/x86/westmereep-sp/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/westmereep-sp/virtual-memory.json <- =
+pmu-events/arch/x86/westmereep-sp/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/westmereep-sp/pipeline.json <- pmu-ev=
+ents/arch/x86/westmereep-sp/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/icelakex/frontend.json <- pmu-events/=
+arch/x86/icelakex/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/icelakex/floating-point.json <- pmu-e=
+vents/arch/x86/icelakex/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/icelakex/uncore-memory.json <- pmu-ev=
+ents/arch/x86/icelakex/uncore-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/icelakex/uncore-io.json <- pmu-events=
+/arch/x86/icelakex/uncore-io.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/icelakex/metricgroups.json <- pmu-eve=
+nts/arch/x86/icelakex/metricgroups.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/icelakex/uncore-interconnect.json <- =
+pmu-events/arch/x86/icelakex/uncore-interconnect.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/icelakex/counter.json <- pmu-events/a=
+rch/x86/icelakex/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/icelakex/memory.json <- pmu-events/ar=
+ch/x86/icelakex/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/icelakex/cache.json <- pmu-events/arc=
+h/x86/icelakex/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/icelakex/uncore-power.json <- pmu-eve=
+nts/arch/x86/icelakex/uncore-power.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/icelakex/other.json <- pmu-events/arc=
+h/x86/icelakex/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/icelakex/virtual-memory.json <- pmu-e=
+vents/arch/x86/icelakex/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/icelakex/uncore-cache.json <- pmu-eve=
+nts/arch/x86/icelakex/uncore-cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/icelakex/pipeline.json <- pmu-events/=
+arch/x86/icelakex/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/icelakex/icx-metrics.json <- pmu-even=
+ts/arch/x86/icelakex/icx-metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/tigerlake/frontend.json <- pmu-events=
+/arch/x86/tigerlake/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/tigerlake/floating-point.json <- pmu-=
+events/arch/x86/tigerlake/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/tigerlake/uncore-memory.json <- pmu-e=
+vents/arch/x86/tigerlake/uncore-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/tigerlake/metricgroups.json <- pmu-ev=
+ents/arch/x86/tigerlake/metricgroups.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/tigerlake/uncore-interconnect.json <-=
+ pmu-events/arch/x86/tigerlake/uncore-interconnect.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/tigerlake/counter.json <- pmu-events/=
+arch/x86/tigerlake/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/tigerlake/tgl-metrics.json <- pmu-eve=
+nts/arch/x86/tigerlake/tgl-metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/tigerlake/memory.json <- pmu-events/a=
+rch/x86/tigerlake/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/tigerlake/cache.json <- pmu-events/ar=
+ch/x86/tigerlake/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/tigerlake/other.json <- pmu-events/ar=
+ch/x86/tigerlake/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/tigerlake/uncore-other.json <- pmu-ev=
+ents/arch/x86/tigerlake/uncore-other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/tigerlake/virtual-memory.json <- pmu-=
+events/arch/x86/tigerlake/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/tigerlake/pipeline.json <- pmu-events=
+/arch/x86/tigerlake/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/graniterapids/uncore-cxl.json <- pmu-=
+events/arch/x86/graniterapids/uncore-cxl.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/graniterapids/frontend.json <- pmu-ev=
+ents/arch/x86/graniterapids/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/graniterapids/floating-point.json <- =
+pmu-events/arch/x86/graniterapids/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/graniterapids/uncore-memory.json <- p=
+mu-events/arch/x86/graniterapids/uncore-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/graniterapids/uncore-io.json <- pmu-e=
+vents/arch/x86/graniterapids/uncore-io.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/graniterapids/uncore-interconnect.jso=
+n <- pmu-events/arch/x86/graniterapids/uncore-interconnect.json dependency =
+dropped.
+make[3]: Circular pmu-events/arch/x86/graniterapids/counter.json <- pmu-eve=
+nts/arch/x86/graniterapids/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/graniterapids/memory.json <- pmu-even=
+ts/arch/x86/graniterapids/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/graniterapids/cache.json <- pmu-event=
+s/arch/x86/graniterapids/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/graniterapids/uncore-power.json <- pm=
+u-events/arch/x86/graniterapids/uncore-power.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/graniterapids/other.json <- pmu-event=
+s/arch/x86/graniterapids/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/graniterapids/virtual-memory.json <- =
+pmu-events/arch/x86/graniterapids/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/graniterapids/uncore-cache.json <- pm=
+u-events/arch/x86/graniterapids/uncore-cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/graniterapids/pipeline.json <- pmu-ev=
+ents/arch/x86/graniterapids/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/nehalemex/frontend.json <- pmu-events=
+/arch/x86/nehalemex/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/nehalemex/floating-point.json <- pmu-=
+events/arch/x86/nehalemex/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/nehalemex/counter.json <- pmu-events/=
+arch/x86/nehalemex/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/nehalemex/memory.json <- pmu-events/a=
+rch/x86/nehalemex/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/nehalemex/cache.json <- pmu-events/ar=
+ch/x86/nehalemex/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/nehalemex/other.json <- pmu-events/ar=
+ch/x86/nehalemex/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/nehalemex/virtual-memory.json <- pmu-=
+events/arch/x86/nehalemex/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/nehalemex/pipeline.json <- pmu-events=
+/arch/x86/nehalemex/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen1/floating-point.json <- pmu-ev=
+ents/arch/x86/amdzen1/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen1/data-fabric.json <- pmu-event=
+s/arch/x86/amdzen1/data-fabric.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen1/memory.json <- pmu-events/arc=
+h/x86/amdzen1/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen1/branch.json <- pmu-events/arc=
+h/x86/amdzen1/branch.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen1/cache.json <- pmu-events/arch=
+/x86/amdzen1/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen1/core.json <- pmu-events/arch/=
+x86/amdzen1/core.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen1/recommended.json <- pmu-event=
+s/arch/x86/amdzen1/recommended.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen1/other.json <- pmu-events/arch=
+/x86/amdzen1/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwellde/frontend.json <- pmu-even=
+ts/arch/x86/broadwellde/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwellde/floating-point.json <- pm=
+u-events/arch/x86/broadwellde/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwellde/uncore-memory.json <- pmu=
+-events/arch/x86/broadwellde/uncore-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwellde/uncore-io.json <- pmu-eve=
+nts/arch/x86/broadwellde/uncore-io.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwellde/metricgroups.json <- pmu-=
+events/arch/x86/broadwellde/metricgroups.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwellde/uncore-interconnect.json =
+<- pmu-events/arch/x86/broadwellde/uncore-interconnect.json dependency drop=
+ped.
+make[3]: Circular pmu-events/arch/x86/broadwellde/counter.json <- pmu-event=
+s/arch/x86/broadwellde/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwellde/memory.json <- pmu-events=
+/arch/x86/broadwellde/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwellde/cache.json <- pmu-events/=
+arch/x86/broadwellde/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwellde/bdwde-metrics.json <- pmu=
+-events/arch/x86/broadwellde/bdwde-metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwellde/uncore-power.json <- pmu-=
+events/arch/x86/broadwellde/uncore-power.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwellde/other.json <- pmu-events/=
+arch/x86/broadwellde/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwellde/virtual-memory.json <- pm=
+u-events/arch/x86/broadwellde/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwellde/uncore-cache.json <- pmu-=
+events/arch/x86/broadwellde/uncore-cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwellde/pipeline.json <- pmu-even=
+ts/arch/x86/broadwellde/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/westmereep-dp/frontend.json <- pmu-ev=
+ents/arch/x86/westmereep-dp/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/westmereep-dp/floating-point.json <- =
+pmu-events/arch/x86/westmereep-dp/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/westmereep-dp/counter.json <- pmu-eve=
+nts/arch/x86/westmereep-dp/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/westmereep-dp/memory.json <- pmu-even=
+ts/arch/x86/westmereep-dp/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/westmereep-dp/cache.json <- pmu-event=
+s/arch/x86/westmereep-dp/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/westmereep-dp/other.json <- pmu-event=
+s/arch/x86/westmereep-dp/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/westmereep-dp/virtual-memory.json <- =
+pmu-events/arch/x86/westmereep-dp/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/westmereep-dp/pipeline.json <- pmu-ev=
+ents/arch/x86/westmereep-dp/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/alderlaken/frontend.json <- pmu-event=
+s/arch/x86/alderlaken/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/alderlaken/floating-point.json <- pmu=
+-events/arch/x86/alderlaken/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/alderlaken/adln-metrics.json <- pmu-e=
+vents/arch/x86/alderlaken/adln-metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/alderlaken/uncore-memory.json <- pmu-=
+events/arch/x86/alderlaken/uncore-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/alderlaken/metricgroups.json <- pmu-e=
+vents/arch/x86/alderlaken/metricgroups.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/alderlaken/uncore-interconnect.json <=
+- pmu-events/arch/x86/alderlaken/uncore-interconnect.json dependency droppe=
+d.
+make[3]: Circular pmu-events/arch/x86/alderlaken/memory.json <- pmu-events/=
+arch/x86/alderlaken/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/alderlaken/cache.json <- pmu-events/a=
+rch/x86/alderlaken/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/alderlaken/other.json <- pmu-events/a=
+rch/x86/alderlaken/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/alderlaken/uncore-other.json <- pmu-e=
+vents/arch/x86/alderlaken/uncore-other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/alderlaken/virtual-memory.json <- pmu=
+-events/arch/x86/alderlaken/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/alderlaken/pipeline.json <- pmu-event=
+s/arch/x86/alderlaken/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/rocketlake/frontend.json <- pmu-event=
+s/arch/x86/rocketlake/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/rocketlake/rkl-metrics.json <- pmu-ev=
+ents/arch/x86/rocketlake/rkl-metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/rocketlake/floating-point.json <- pmu=
+-events/arch/x86/rocketlake/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/rocketlake/metricgroups.json <- pmu-e=
+vents/arch/x86/rocketlake/metricgroups.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/rocketlake/uncore-interconnect.json <=
+- pmu-events/arch/x86/rocketlake/uncore-interconnect.json dependency droppe=
+d.
+make[3]: Circular pmu-events/arch/x86/rocketlake/counter.json <- pmu-events=
+/arch/x86/rocketlake/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/rocketlake/memory.json <- pmu-events/=
+arch/x86/rocketlake/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/rocketlake/cache.json <- pmu-events/a=
+rch/x86/rocketlake/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/rocketlake/other.json <- pmu-events/a=
+rch/x86/rocketlake/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/rocketlake/uncore-other.json <- pmu-e=
+vents/arch/x86/rocketlake/uncore-other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/rocketlake/virtual-memory.json <- pmu=
+-events/arch/x86/rocketlake/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/rocketlake/pipeline.json <- pmu-event=
+s/arch/x86/rocketlake/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/jaketown/frontend.json <- pmu-events/=
+arch/x86/jaketown/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/jaketown/floating-point.json <- pmu-e=
+vents/arch/x86/jaketown/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/jaketown/uncore-memory.json <- pmu-ev=
+ents/arch/x86/jaketown/uncore-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/jaketown/uncore-io.json <- pmu-events=
+/arch/x86/jaketown/uncore-io.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/jaketown/jkt-metrics.json <- pmu-even=
+ts/arch/x86/jaketown/jkt-metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/jaketown/metricgroups.json <- pmu-eve=
+nts/arch/x86/jaketown/metricgroups.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/jaketown/uncore-interconnect.json <- =
+pmu-events/arch/x86/jaketown/uncore-interconnect.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/jaketown/counter.json <- pmu-events/a=
+rch/x86/jaketown/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/jaketown/memory.json <- pmu-events/ar=
+ch/x86/jaketown/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/jaketown/cache.json <- pmu-events/arc=
+h/x86/jaketown/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/jaketown/uncore-power.json <- pmu-eve=
+nts/arch/x86/jaketown/uncore-power.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/jaketown/other.json <- pmu-events/arc=
+h/x86/jaketown/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/jaketown/virtual-memory.json <- pmu-e=
+vents/arch/x86/jaketown/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/jaketown/uncore-cache.json <- pmu-eve=
+nts/arch/x86/jaketown/uncore-cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/jaketown/pipeline.json <- pmu-events/=
+arch/x86/jaketown/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwellx/frontend.json <- pmu-event=
+s/arch/x86/broadwellx/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwellx/floating-point.json <- pmu=
+-events/arch/x86/broadwellx/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwellx/uncore-memory.json <- pmu-=
+events/arch/x86/broadwellx/uncore-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwellx/uncore-io.json <- pmu-even=
+ts/arch/x86/broadwellx/uncore-io.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwellx/metricgroups.json <- pmu-e=
+vents/arch/x86/broadwellx/metricgroups.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwellx/uncore-interconnect.json <=
+- pmu-events/arch/x86/broadwellx/uncore-interconnect.json dependency droppe=
+d.
+make[3]: Circular pmu-events/arch/x86/broadwellx/counter.json <- pmu-events=
+/arch/x86/broadwellx/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwellx/memory.json <- pmu-events/=
+arch/x86/broadwellx/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwellx/cache.json <- pmu-events/a=
+rch/x86/broadwellx/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwellx/uncore-power.json <- pmu-e=
+vents/arch/x86/broadwellx/uncore-power.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwellx/bdx-metrics.json <- pmu-ev=
+ents/arch/x86/broadwellx/bdx-metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwellx/other.json <- pmu-events/a=
+rch/x86/broadwellx/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwellx/virtual-memory.json <- pmu=
+-events/arch/x86/broadwellx/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwellx/uncore-cache.json <- pmu-e=
+vents/arch/x86/broadwellx/uncore-cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwellx/pipeline.json <- pmu-event=
+s/arch/x86/broadwellx/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/goldmont/frontend.json <- pmu-events/=
+arch/x86/goldmont/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/goldmont/floating-point.json <- pmu-e=
+vents/arch/x86/goldmont/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/goldmont/counter.json <- pmu-events/a=
+rch/x86/goldmont/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/goldmont/memory.json <- pmu-events/ar=
+ch/x86/goldmont/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/goldmont/cache.json <- pmu-events/arc=
+h/x86/goldmont/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/goldmont/other.json <- pmu-events/arc=
+h/x86/goldmont/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/goldmont/virtual-memory.json <- pmu-e=
+vents/arch/x86/goldmont/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/goldmont/pipeline.json <- pmu-events/=
+arch/x86/goldmont/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/ivybridge/frontend.json <- pmu-events=
+/arch/x86/ivybridge/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/ivybridge/floating-point.json <- pmu-=
+events/arch/x86/ivybridge/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/ivybridge/metricgroups.json <- pmu-ev=
+ents/arch/x86/ivybridge/metricgroups.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/ivybridge/uncore-interconnect.json <-=
+ pmu-events/arch/x86/ivybridge/uncore-interconnect.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/ivybridge/counter.json <- pmu-events/=
+arch/x86/ivybridge/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/ivybridge/memory.json <- pmu-events/a=
+rch/x86/ivybridge/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/ivybridge/cache.json <- pmu-events/ar=
+ch/x86/ivybridge/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/ivybridge/other.json <- pmu-events/ar=
+ch/x86/ivybridge/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/ivybridge/virtual-memory.json <- pmu-=
+events/arch/x86/ivybridge/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/ivybridge/uncore-cache.json <- pmu-ev=
+ents/arch/x86/ivybridge/uncore-cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/ivybridge/pipeline.json <- pmu-events=
+/arch/x86/ivybridge/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/ivybridge/ivb-metrics.json <- pmu-eve=
+nts/arch/x86/ivybridge/ivb-metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/snowridgex/frontend.json <- pmu-event=
+s/arch/x86/snowridgex/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/snowridgex/floating-point.json <- pmu=
+-events/arch/x86/snowridgex/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/snowridgex/uncore-memory.json <- pmu-=
+events/arch/x86/snowridgex/uncore-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/snowridgex/uncore-io.json <- pmu-even=
+ts/arch/x86/snowridgex/uncore-io.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/snowridgex/uncore-interconnect.json <=
+- pmu-events/arch/x86/snowridgex/uncore-interconnect.json dependency droppe=
+d.
+make[3]: Circular pmu-events/arch/x86/snowridgex/counter.json <- pmu-events=
+/arch/x86/snowridgex/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/snowridgex/memory.json <- pmu-events/=
+arch/x86/snowridgex/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/snowridgex/cache.json <- pmu-events/a=
+rch/x86/snowridgex/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/snowridgex/uncore-power.json <- pmu-e=
+vents/arch/x86/snowridgex/uncore-power.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/snowridgex/other.json <- pmu-events/a=
+rch/x86/snowridgex/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/snowridgex/virtual-memory.json <- pmu=
+-events/arch/x86/snowridgex/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/snowridgex/uncore-cache.json <- pmu-e=
+vents/arch/x86/snowridgex/uncore-cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/snowridgex/pipeline.json <- pmu-event=
+s/arch/x86/snowridgex/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/haswellx/frontend.json <- pmu-events/=
+arch/x86/haswellx/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/haswellx/floating-point.json <- pmu-e=
+vents/arch/x86/haswellx/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/haswellx/uncore-memory.json <- pmu-ev=
+ents/arch/x86/haswellx/uncore-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/haswellx/uncore-io.json <- pmu-events=
+/arch/x86/haswellx/uncore-io.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/haswellx/metricgroups.json <- pmu-eve=
+nts/arch/x86/haswellx/metricgroups.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/haswellx/uncore-interconnect.json <- =
+pmu-events/arch/x86/haswellx/uncore-interconnect.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/haswellx/counter.json <- pmu-events/a=
+rch/x86/haswellx/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/haswellx/memory.json <- pmu-events/ar=
+ch/x86/haswellx/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/haswellx/hsx-metrics.json <- pmu-even=
+ts/arch/x86/haswellx/hsx-metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/haswellx/cache.json <- pmu-events/arc=
+h/x86/haswellx/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/haswellx/uncore-power.json <- pmu-eve=
+nts/arch/x86/haswellx/uncore-power.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/haswellx/other.json <- pmu-events/arc=
+h/x86/haswellx/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/haswellx/virtual-memory.json <- pmu-e=
+vents/arch/x86/haswellx/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/haswellx/uncore-cache.json <- pmu-eve=
+nts/arch/x86/haswellx/uncore-cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/haswellx/pipeline.json <- pmu-events/=
+arch/x86/haswellx/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/bonnell/frontend.json <- pmu-events/a=
+rch/x86/bonnell/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/bonnell/floating-point.json <- pmu-ev=
+ents/arch/x86/bonnell/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/bonnell/counter.json <- pmu-events/ar=
+ch/x86/bonnell/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/bonnell/memory.json <- pmu-events/arc=
+h/x86/bonnell/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/bonnell/cache.json <- pmu-events/arch=
+/x86/bonnell/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/bonnell/other.json <- pmu-events/arch=
+/x86/bonnell/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/bonnell/virtual-memory.json <- pmu-ev=
+ents/arch/x86/bonnell/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/bonnell/pipeline.json <- pmu-events/a=
+rch/x86/bonnell/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/haswell/frontend.json <- pmu-events/a=
+rch/x86/haswell/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/haswell/floating-point.json <- pmu-ev=
+ents/arch/x86/haswell/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/haswell/metricgroups.json <- pmu-even=
+ts/arch/x86/haswell/metricgroups.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/haswell/uncore-interconnect.json <- p=
+mu-events/arch/x86/haswell/uncore-interconnect.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/haswell/counter.json <- pmu-events/ar=
+ch/x86/haswell/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/haswell/hsw-metrics.json <- pmu-event=
+s/arch/x86/haswell/hsw-metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/haswell/memory.json <- pmu-events/arc=
+h/x86/haswell/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/haswell/cache.json <- pmu-events/arch=
+/x86/haswell/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/haswell/other.json <- pmu-events/arch=
+/x86/haswell/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/haswell/uncore-other.json <- pmu-even=
+ts/arch/x86/haswell/uncore-other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/haswell/virtual-memory.json <- pmu-ev=
+ents/arch/x86/haswell/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/haswell/uncore-cache.json <- pmu-even=
+ts/arch/x86/haswell/uncore-cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/haswell/pipeline.json <- pmu-events/a=
+rch/x86/haswell/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwell/frontend.json <- pmu-events=
+/arch/x86/broadwell/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwell/floating-point.json <- pmu-=
+events/arch/x86/broadwell/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwell/bdw-metrics.json <- pmu-eve=
+nts/arch/x86/broadwell/bdw-metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwell/metricgroups.json <- pmu-ev=
+ents/arch/x86/broadwell/metricgroups.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwell/uncore-interconnect.json <-=
+ pmu-events/arch/x86/broadwell/uncore-interconnect.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwell/counter.json <- pmu-events/=
+arch/x86/broadwell/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwell/memory.json <- pmu-events/a=
+rch/x86/broadwell/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwell/cache.json <- pmu-events/ar=
+ch/x86/broadwell/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwell/other.json <- pmu-events/ar=
+ch/x86/broadwell/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwell/virtual-memory.json <- pmu-=
+events/arch/x86/broadwell/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwell/uncore-cache.json <- pmu-ev=
+ents/arch/x86/broadwell/uncore-cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/broadwell/pipeline.json <- pmu-events=
+/arch/x86/broadwell/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/grandridge/frontend.json <- pmu-event=
+s/arch/x86/grandridge/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/grandridge/grr-metrics.json <- pmu-ev=
+ents/arch/x86/grandridge/grr-metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/grandridge/floating-point.json <- pmu=
+-events/arch/x86/grandridge/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/grandridge/uncore-memory.json <- pmu-=
+events/arch/x86/grandridge/uncore-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/grandridge/uncore-io.json <- pmu-even=
+ts/arch/x86/grandridge/uncore-io.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/grandridge/metricgroups.json <- pmu-e=
+vents/arch/x86/grandridge/metricgroups.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/grandridge/uncore-interconnect.json <=
+- pmu-events/arch/x86/grandridge/uncore-interconnect.json dependency droppe=
+d.
+make[3]: Circular pmu-events/arch/x86/grandridge/counter.json <- pmu-events=
+/arch/x86/grandridge/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/grandridge/memory.json <- pmu-events/=
+arch/x86/grandridge/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/grandridge/cache.json <- pmu-events/a=
+rch/x86/grandridge/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/grandridge/uncore-power.json <- pmu-e=
+vents/arch/x86/grandridge/uncore-power.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/grandridge/other.json <- pmu-events/a=
+rch/x86/grandridge/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/grandridge/virtual-memory.json <- pmu=
+-events/arch/x86/grandridge/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/grandridge/uncore-cache.json <- pmu-e=
+vents/arch/x86/grandridge/uncore-cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/grandridge/pipeline.json <- pmu-event=
+s/arch/x86/grandridge/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/lunarlake/frontend.json <- pmu-events=
+/arch/x86/lunarlake/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/lunarlake/memory.json <- pmu-events/a=
+rch/x86/lunarlake/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/lunarlake/cache.json <- pmu-events/ar=
+ch/x86/lunarlake/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/lunarlake/other.json <- pmu-events/ar=
+ch/x86/lunarlake/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/lunarlake/virtual-memory.json <- pmu-=
+events/arch/x86/lunarlake/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/lunarlake/pipeline.json <- pmu-events=
+/arch/x86/lunarlake/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen2/floating-point.json <- pmu-ev=
+ents/arch/x86/amdzen2/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen2/data-fabric.json <- pmu-event=
+s/arch/x86/amdzen2/data-fabric.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen2/memory.json <- pmu-events/arc=
+h/x86/amdzen2/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen2/branch.json <- pmu-events/arc=
+h/x86/amdzen2/branch.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen2/cache.json <- pmu-events/arch=
+/x86/amdzen2/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen2/core.json <- pmu-events/arch/=
+x86/amdzen2/core.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen2/recommended.json <- pmu-event=
+s/arch/x86/amdzen2/recommended.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen2/other.json <- pmu-events/arch=
+/x86/amdzen2/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/alderlake/frontend.json <- pmu-events=
+/arch/x86/alderlake/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/alderlake/floating-point.json <- pmu-=
+events/arch/x86/alderlake/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/alderlake/uncore-memory.json <- pmu-e=
+vents/arch/x86/alderlake/uncore-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/alderlake/metricgroups.json <- pmu-ev=
+ents/arch/x86/alderlake/metricgroups.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/alderlake/uncore-interconnect.json <-=
+ pmu-events/arch/x86/alderlake/uncore-interconnect.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/alderlake/memory.json <- pmu-events/a=
+rch/x86/alderlake/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/alderlake/adl-metrics.json <- pmu-eve=
+nts/arch/x86/alderlake/adl-metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/alderlake/cache.json <- pmu-events/ar=
+ch/x86/alderlake/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/alderlake/other.json <- pmu-events/ar=
+ch/x86/alderlake/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/alderlake/uncore-other.json <- pmu-ev=
+ents/arch/x86/alderlake/uncore-other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/alderlake/virtual-memory.json <- pmu-=
+events/arch/x86/alderlake/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/alderlake/pipeline.json <- pmu-events=
+/arch/x86/alderlake/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen4/floating-point.json <- pmu-ev=
+ents/arch/x86/amdzen4/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen4/data-fabric.json <- pmu-event=
+s/arch/x86/amdzen4/data-fabric.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen4/memory-controller.json <- pmu=
+-events/arch/x86/amdzen4/memory-controller.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen4/memory.json <- pmu-events/arc=
+h/x86/amdzen4/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen4/branch.json <- pmu-events/arc=
+h/x86/amdzen4/branch.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen4/cache.json <- pmu-events/arch=
+/x86/amdzen4/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen4/core.json <- pmu-events/arch/=
+x86/amdzen4/core.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen4/recommended.json <- pmu-event=
+s/arch/x86/amdzen4/recommended.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen4/other.json <- pmu-events/arch=
+/x86/amdzen4/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen4/pipeline.json <- pmu-events/a=
+rch/x86/amdzen4/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/nehalemep/frontend.json <- pmu-events=
+/arch/x86/nehalemep/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/nehalemep/floating-point.json <- pmu-=
+events/arch/x86/nehalemep/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/nehalemep/counter.json <- pmu-events/=
+arch/x86/nehalemep/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/nehalemep/memory.json <- pmu-events/a=
+rch/x86/nehalemep/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/nehalemep/cache.json <- pmu-events/ar=
+ch/x86/nehalemep/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/nehalemep/other.json <- pmu-events/ar=
+ch/x86/nehalemep/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/nehalemep/virtual-memory.json <- pmu-=
+events/arch/x86/nehalemep/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/nehalemep/pipeline.json <- pmu-events=
+/arch/x86/nehalemep/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen5/l2-cache.json <- pmu-events/a=
+rch/x86/amdzen5/l2-cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen5/floating-point.json <- pmu-ev=
+ents/arch/x86/amdzen5/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen5/load-store.json <- pmu-events=
+/arch/x86/amdzen5/load-store.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen5/branch-prediction.json <- pmu=
+-events/arch/x86/amdzen5/branch-prediction.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen5/memory-controller.json <- pmu=
+-events/arch/x86/amdzen5/memory-controller.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen5/decode.json <- pmu-events/arc=
+h/x86/amdzen5/decode.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen5/recommended.json <- pmu-event=
+s/arch/x86/amdzen5/recommended.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen5/execution.json <- pmu-events/=
+arch/x86/amdzen5/execution.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen5/l3-cache.json <- pmu-events/a=
+rch/x86/amdzen5/l3-cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen5/pipeline.json <- pmu-events/a=
+rch/x86/amdzen5/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen5/inst-cache.json <- pmu-events=
+/arch/x86/amdzen5/inst-cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/meteorlake/frontend.json <- pmu-event=
+s/arch/x86/meteorlake/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/meteorlake/floating-point.json <- pmu=
+-events/arch/x86/meteorlake/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/meteorlake/uncore-memory.json <- pmu-=
+events/arch/x86/meteorlake/uncore-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/meteorlake/metricgroups.json <- pmu-e=
+vents/arch/x86/meteorlake/metricgroups.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/meteorlake/uncore-interconnect.json <=
+- pmu-events/arch/x86/meteorlake/uncore-interconnect.json dependency droppe=
+d.
+make[3]: Circular pmu-events/arch/x86/meteorlake/memory.json <- pmu-events/=
+arch/x86/meteorlake/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/meteorlake/cache.json <- pmu-events/a=
+rch/x86/meteorlake/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/meteorlake/other.json <- pmu-events/a=
+rch/x86/meteorlake/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/meteorlake/uncore-other.json <- pmu-e=
+vents/arch/x86/meteorlake/uncore-other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/meteorlake/virtual-memory.json <- pmu=
+-events/arch/x86/meteorlake/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/meteorlake/mtl-metrics.json <- pmu-ev=
+ents/arch/x86/meteorlake/mtl-metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/meteorlake/uncore-cache.json <- pmu-e=
+vents/arch/x86/meteorlake/uncore-cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/meteorlake/pipeline.json <- pmu-event=
+s/arch/x86/meteorlake/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/skylake/frontend.json <- pmu-events/a=
+rch/x86/skylake/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/skylake/floating-point.json <- pmu-ev=
+ents/arch/x86/skylake/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/skylake/metricgroups.json <- pmu-even=
+ts/arch/x86/skylake/metricgroups.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/skylake/uncore-interconnect.json <- p=
+mu-events/arch/x86/skylake/uncore-interconnect.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/skylake/counter.json <- pmu-events/ar=
+ch/x86/skylake/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/skylake/memory.json <- pmu-events/arc=
+h/x86/skylake/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/skylake/skl-metrics.json <- pmu-event=
+s/arch/x86/skylake/skl-metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/skylake/cache.json <- pmu-events/arch=
+/x86/skylake/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/skylake/other.json <- pmu-events/arch=
+/x86/skylake/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/skylake/virtual-memory.json <- pmu-ev=
+ents/arch/x86/skylake/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/skylake/uncore-cache.json <- pmu-even=
+ts/arch/x86/skylake/uncore-cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/skylake/pipeline.json <- pmu-events/a=
+rch/x86/skylake/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/knightslanding/frontend.json <- pmu-e=
+vents/arch/x86/knightslanding/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/knightslanding/floating-point.json <-=
+ pmu-events/arch/x86/knightslanding/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/knightslanding/uncore-memory.json <- =
+pmu-events/arch/x86/knightslanding/uncore-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/knightslanding/uncore-io.json <- pmu-=
+events/arch/x86/knightslanding/uncore-io.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/knightslanding/counter.json <- pmu-ev=
+ents/arch/x86/knightslanding/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/knightslanding/memory.json <- pmu-eve=
+nts/arch/x86/knightslanding/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/knightslanding/cache.json <- pmu-even=
+ts/arch/x86/knightslanding/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/knightslanding/virtual-memory.json <-=
+ pmu-events/arch/x86/knightslanding/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/knightslanding/uncore-cache.json <- p=
+mu-events/arch/x86/knightslanding/uncore-cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/knightslanding/pipeline.json <- pmu-e=
+vents/arch/x86/knightslanding/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/mapfile.csv <- pmu-events/arch/x86/ma=
+pfile.csv dependency dropped.
+make[3]: Circular pmu-events/arch/x86/emeraldrapids/uncore-cxl.json <- pmu-=
+events/arch/x86/emeraldrapids/uncore-cxl.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/emeraldrapids/emr-metrics.json <- pmu=
+-events/arch/x86/emeraldrapids/emr-metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/emeraldrapids/frontend.json <- pmu-ev=
+ents/arch/x86/emeraldrapids/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/emeraldrapids/floating-point.json <- =
+pmu-events/arch/x86/emeraldrapids/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/emeraldrapids/uncore-memory.json <- p=
+mu-events/arch/x86/emeraldrapids/uncore-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/emeraldrapids/uncore-io.json <- pmu-e=
+vents/arch/x86/emeraldrapids/uncore-io.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/emeraldrapids/metricgroups.json <- pm=
+u-events/arch/x86/emeraldrapids/metricgroups.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/emeraldrapids/uncore-interconnect.jso=
+n <- pmu-events/arch/x86/emeraldrapids/uncore-interconnect.json dependency =
+dropped.
+make[3]: Circular pmu-events/arch/x86/emeraldrapids/counter.json <- pmu-eve=
+nts/arch/x86/emeraldrapids/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/emeraldrapids/memory.json <- pmu-even=
+ts/arch/x86/emeraldrapids/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/emeraldrapids/cache.json <- pmu-event=
+s/arch/x86/emeraldrapids/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/emeraldrapids/uncore-power.json <- pm=
+u-events/arch/x86/emeraldrapids/uncore-power.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/emeraldrapids/other.json <- pmu-event=
+s/arch/x86/emeraldrapids/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/emeraldrapids/virtual-memory.json <- =
+pmu-events/arch/x86/emeraldrapids/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/emeraldrapids/uncore-cache.json <- pm=
+u-events/arch/x86/emeraldrapids/uncore-cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/emeraldrapids/pipeline.json <- pmu-ev=
+ents/arch/x86/emeraldrapids/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/goldmontplus/frontend.json <- pmu-eve=
+nts/arch/x86/goldmontplus/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/goldmontplus/floating-point.json <- p=
+mu-events/arch/x86/goldmontplus/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/goldmontplus/counter.json <- pmu-even=
+ts/arch/x86/goldmontplus/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/goldmontplus/memory.json <- pmu-event=
+s/arch/x86/goldmontplus/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/goldmontplus/cache.json <- pmu-events=
+/arch/x86/goldmontplus/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/goldmontplus/other.json <- pmu-events=
+/arch/x86/goldmontplus/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/goldmontplus/virtual-memory.json <- p=
+mu-events/arch/x86/goldmontplus/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/goldmontplus/pipeline.json <- pmu-eve=
+nts/arch/x86/goldmontplus/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sierraforest/uncore-cxl.json <- pmu-e=
+vents/arch/x86/sierraforest/uncore-cxl.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sierraforest/frontend.json <- pmu-eve=
+nts/arch/x86/sierraforest/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sierraforest/floating-point.json <- p=
+mu-events/arch/x86/sierraforest/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sierraforest/uncore-memory.json <- pm=
+u-events/arch/x86/sierraforest/uncore-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sierraforest/uncore-io.json <- pmu-ev=
+ents/arch/x86/sierraforest/uncore-io.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sierraforest/srf-metrics.json <- pmu-=
+events/arch/x86/sierraforest/srf-metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sierraforest/metricgroups.json <- pmu=
+-events/arch/x86/sierraforest/metricgroups.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sierraforest/uncore-interconnect.json=
+ <- pmu-events/arch/x86/sierraforest/uncore-interconnect.json dependency dr=
+opped.
+make[3]: Circular pmu-events/arch/x86/sierraforest/counter.json <- pmu-even=
+ts/arch/x86/sierraforest/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sierraforest/memory.json <- pmu-event=
+s/arch/x86/sierraforest/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sierraforest/cache.json <- pmu-events=
+/arch/x86/sierraforest/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sierraforest/uncore-power.json <- pmu=
+-events/arch/x86/sierraforest/uncore-power.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sierraforest/other.json <- pmu-events=
+/arch/x86/sierraforest/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sierraforest/virtual-memory.json <- p=
+mu-events/arch/x86/sierraforest/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sierraforest/uncore-cache.json <- pmu=
+-events/arch/x86/sierraforest/uncore-cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sierraforest/pipeline.json <- pmu-eve=
+nts/arch/x86/sierraforest/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/ivytown/frontend.json <- pmu-events/a=
+rch/x86/ivytown/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/ivytown/floating-point.json <- pmu-ev=
+ents/arch/x86/ivytown/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/ivytown/uncore-memory.json <- pmu-eve=
+nts/arch/x86/ivytown/uncore-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/ivytown/uncore-io.json <- pmu-events/=
+arch/x86/ivytown/uncore-io.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/ivytown/metricgroups.json <- pmu-even=
+ts/arch/x86/ivytown/metricgroups.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/ivytown/uncore-interconnect.json <- p=
+mu-events/arch/x86/ivytown/uncore-interconnect.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/ivytown/counter.json <- pmu-events/ar=
+ch/x86/ivytown/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/ivytown/memory.json <- pmu-events/arc=
+h/x86/ivytown/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/ivytown/cache.json <- pmu-events/arch=
+/x86/ivytown/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/ivytown/uncore-power.json <- pmu-even=
+ts/arch/x86/ivytown/uncore-power.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/ivytown/other.json <- pmu-events/arch=
+/x86/ivytown/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/ivytown/virtual-memory.json <- pmu-ev=
+ents/arch/x86/ivytown/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/ivytown/uncore-cache.json <- pmu-even=
+ts/arch/x86/ivytown/uncore-cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/ivytown/pipeline.json <- pmu-events/a=
+rch/x86/ivytown/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/ivytown/ivt-metrics.json <- pmu-event=
+s/arch/x86/ivytown/ivt-metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/cascadelakex/clx-metrics.json <- pmu-=
+events/arch/x86/cascadelakex/clx-metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/cascadelakex/frontend.json <- pmu-eve=
+nts/arch/x86/cascadelakex/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/cascadelakex/floating-point.json <- p=
+mu-events/arch/x86/cascadelakex/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/cascadelakex/uncore-memory.json <- pm=
+u-events/arch/x86/cascadelakex/uncore-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/cascadelakex/uncore-io.json <- pmu-ev=
+ents/arch/x86/cascadelakex/uncore-io.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/cascadelakex/metricgroups.json <- pmu=
+-events/arch/x86/cascadelakex/metricgroups.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/cascadelakex/uncore-interconnect.json=
+ <- pmu-events/arch/x86/cascadelakex/uncore-interconnect.json dependency dr=
+opped.
+make[3]: Circular pmu-events/arch/x86/cascadelakex/counter.json <- pmu-even=
+ts/arch/x86/cascadelakex/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/cascadelakex/memory.json <- pmu-event=
+s/arch/x86/cascadelakex/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/cascadelakex/cache.json <- pmu-events=
+/arch/x86/cascadelakex/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/cascadelakex/uncore-power.json <- pmu=
+-events/arch/x86/cascadelakex/uncore-power.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/cascadelakex/other.json <- pmu-events=
+/arch/x86/cascadelakex/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/cascadelakex/virtual-memory.json <- p=
+mu-events/arch/x86/cascadelakex/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/cascadelakex/uncore-cache.json <- pmu=
+-events/arch/x86/cascadelakex/uncore-cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/cascadelakex/pipeline.json <- pmu-eve=
+nts/arch/x86/cascadelakex/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/westmereex/frontend.json <- pmu-event=
+s/arch/x86/westmereex/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/westmereex/floating-point.json <- pmu=
+-events/arch/x86/westmereex/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/westmereex/counter.json <- pmu-events=
+/arch/x86/westmereex/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/westmereex/memory.json <- pmu-events/=
+arch/x86/westmereex/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/westmereex/cache.json <- pmu-events/a=
+rch/x86/westmereex/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/westmereex/other.json <- pmu-events/a=
+rch/x86/westmereex/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/westmereex/virtual-memory.json <- pmu=
+-events/arch/x86/westmereex/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/westmereex/pipeline.json <- pmu-event=
+s/arch/x86/westmereex/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sapphirerapids/uncore-cxl.json <- pmu=
+-events/arch/x86/sapphirerapids/uncore-cxl.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sapphirerapids/frontend.json <- pmu-e=
+vents/arch/x86/sapphirerapids/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sapphirerapids/floating-point.json <-=
+ pmu-events/arch/x86/sapphirerapids/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sapphirerapids/uncore-memory.json <- =
+pmu-events/arch/x86/sapphirerapids/uncore-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sapphirerapids/uncore-io.json <- pmu-=
+events/arch/x86/sapphirerapids/uncore-io.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sapphirerapids/metricgroups.json <- p=
+mu-events/arch/x86/sapphirerapids/metricgroups.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sapphirerapids/uncore-interconnect.js=
+on <- pmu-events/arch/x86/sapphirerapids/uncore-interconnect.json dependenc=
+y dropped.
+make[3]: Circular pmu-events/arch/x86/sapphirerapids/counter.json <- pmu-ev=
+ents/arch/x86/sapphirerapids/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sapphirerapids/memory.json <- pmu-eve=
+nts/arch/x86/sapphirerapids/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sapphirerapids/cache.json <- pmu-even=
+ts/arch/x86/sapphirerapids/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sapphirerapids/uncore-power.json <- p=
+mu-events/arch/x86/sapphirerapids/uncore-power.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sapphirerapids/other.json <- pmu-even=
+ts/arch/x86/sapphirerapids/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sapphirerapids/virtual-memory.json <-=
+ pmu-events/arch/x86/sapphirerapids/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sapphirerapids/uncore-cache.json <- p=
+mu-events/arch/x86/sapphirerapids/uncore-cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sapphirerapids/pipeline.json <- pmu-e=
+vents/arch/x86/sapphirerapids/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/sapphirerapids/spr-metrics.json <- pm=
+u-events/arch/x86/sapphirerapids/spr-metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen3/floating-point.json <- pmu-ev=
+ents/arch/x86/amdzen3/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen3/data-fabric.json <- pmu-event=
+s/arch/x86/amdzen3/data-fabric.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen3/memory.json <- pmu-events/arc=
+h/x86/amdzen3/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen3/branch.json <- pmu-events/arc=
+h/x86/amdzen3/branch.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen3/cache.json <- pmu-events/arch=
+/x86/amdzen3/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen3/core.json <- pmu-events/arch/=
+x86/amdzen3/core.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen3/recommended.json <- pmu-event=
+s/arch/x86/amdzen3/recommended.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/amdzen3/other.json <- pmu-events/arch=
+/x86/amdzen3/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/icelake/frontend.json <- pmu-events/a=
+rch/x86/icelake/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/icelake/floating-point.json <- pmu-ev=
+ents/arch/x86/icelake/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/icelake/metricgroups.json <- pmu-even=
+ts/arch/x86/icelake/metricgroups.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/icelake/uncore-interconnect.json <- p=
+mu-events/arch/x86/icelake/uncore-interconnect.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/icelake/icl-metrics.json <- pmu-event=
+s/arch/x86/icelake/icl-metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/icelake/counter.json <- pmu-events/ar=
+ch/x86/icelake/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/icelake/memory.json <- pmu-events/arc=
+h/x86/icelake/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/icelake/cache.json <- pmu-events/arch=
+/x86/icelake/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/icelake/other.json <- pmu-events/arch=
+/x86/icelake/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/icelake/uncore-other.json <- pmu-even=
+ts/arch/x86/icelake/uncore-other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/icelake/virtual-memory.json <- pmu-ev=
+ents/arch/x86/icelake/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/icelake/pipeline.json <- pmu-events/a=
+rch/x86/icelake/pipeline.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/skylakex/frontend.json <- pmu-events/=
+arch/x86/skylakex/frontend.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/skylakex/floating-point.json <- pmu-e=
+vents/arch/x86/skylakex/floating-point.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/skylakex/uncore-memory.json <- pmu-ev=
+ents/arch/x86/skylakex/uncore-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/skylakex/uncore-io.json <- pmu-events=
+/arch/x86/skylakex/uncore-io.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/skylakex/metricgroups.json <- pmu-eve=
+nts/arch/x86/skylakex/metricgroups.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/skylakex/uncore-interconnect.json <- =
+pmu-events/arch/x86/skylakex/uncore-interconnect.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/skylakex/counter.json <- pmu-events/a=
+rch/x86/skylakex/counter.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/skylakex/memory.json <- pmu-events/ar=
+ch/x86/skylakex/memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/skylakex/cache.json <- pmu-events/arc=
+h/x86/skylakex/cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/skylakex/uncore-power.json <- pmu-eve=
+nts/arch/x86/skylakex/uncore-power.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/skylakex/other.json <- pmu-events/arc=
+h/x86/skylakex/other.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/skylakex/virtual-memory.json <- pmu-e=
+vents/arch/x86/skylakex/virtual-memory.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/skylakex/skx-metrics.json <- pmu-even=
+ts/arch/x86/skylakex/skx-metrics.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/skylakex/uncore-cache.json <- pmu-eve=
+nts/arch/x86/skylakex/uncore-cache.json dependency dropped.
+make[3]: Circular pmu-events/arch/x86/skylakex/pipeline.json <- pmu-events/=
+arch/x86/skylakex/pipeline.json dependency dropped.
+
+=3D=3D> /tmp/stdout <=3D=3D
+  CC      util/arm-spe-decoder/arm-spe-pkt-decoder.o
+  CC      util/arm-spe-decoder/arm-spe-decoder.o
+  CC      util/perf-regs-arch/perf_regs_arm.o
+  CC      util/intel-pt-decoder/intel-pt-log.o
+  GEN     pmu-events/arch/x86/amdzen1/extra-metrics.json
+  CC      util/intel-pt-decoder/intel-pt-decoder.o
+  CC      util/perf-regs-arch/perf_regs_csky.o
+  CC      util/path.o
+  CC      util/hisi-ptt-decoder/hisi-ptt-pkt-decoder.o
+  CC      util/perf-regs-arch/perf_regs_loongarch.o
+  CC      util/perf-regs-arch/perf_regs_mips.o
+  CC      util/scripting-engines/trace-event-perl.o
+  CC      util/print_binary.o
+  GEN     pmu-events/arch/x86/amdzen2/extra-metrics.json
+  CC      util/scripting-engines/trace-event-python.o
+  CC      util/print_insn.o
+
+=3D=3D> /tmp/stderr <=3D=3D
+Traceback (most recent call last):
+  File "/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d798d=
+b2f87b3ea0f3a53ed/tools/perf/pmu-events/amd_metrics.py", line 42, in <modul=
+e>
+    main()
+  File "/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d798d=
+b2f87b3ea0f3a53ed/tools/perf/pmu-events/amd_metrics.py", line 32, in main
+    LoadEvents(directory)
+  File "/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d798d=
+b2f87b3ea0f3a53ed/tools/perf/pmu-events/metric.py", line 26, in LoadEvents
+    for x in json.load(open(f"{directory}/{filename}")):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/decoder.py", line 337, in decode
+    obj, end =3D self.raw_decode(s, idx=3D_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+=3D=3D> /tmp/stdout <=3D=3D
+  CC      util/perf-regs-arch/perf_regs_powerpc.o
+  CC      util/rlimit.o
+  CC      util/argv_split.o
+  CC      util/perf-regs-arch/perf_regs_riscv.o
+  GEN     pmu-events/arch/x86/amdzen3/extra-metrics.json
+  CC      util/rbtree.o
+  CC      util/libstring.o
+  CC      util/bitmap.o
+  CC      util/hweight.o
+
+=3D=3D> /tmp/stderr <=3D=3D
+make[3]: *** [pmu-events/Build:49: pmu-events/arch/x86/amdzen1/extra-metric=
+s.json] Error 1
+make[3]: *** Deleting file 'pmu-events/arch/x86/amdzen1/extra-metrics.json'
+
+=3D=3D> /tmp/stdout <=3D=3D
+  CC      util/perf-regs-arch/perf_regs_s390.o
+
+=3D=3D> /tmp/stderr <=3D=3D
+make[3]: *** Waiting for unfinished jobs....
+
+=3D=3D> /tmp/stdout <=3D=3D
+  CC      util/perf-regs-arch/perf_regs_x86.o
+  CC      util/strbuf.o
+  CC      util/smt.o
+  CC      util/string.o
+
+=3D=3D> /tmp/stderr <=3D=3D
+Traceback (most recent call last):
+  File "/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d798d=
+b2f87b3ea0f3a53ed/tools/perf/pmu-events/amd_metrics.py", line 42, in <modul=
+e>
+    main()
+  File "/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d798d=
+b2f87b3ea0f3a53ed/tools/perf/pmu-events/amd_metrics.py", line 32, in main
+    LoadEvents(directory)
+  File "/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d798d=
+b2f87b3ea0f3a53ed/tools/perf/pmu-events/metric.py", line 26, in LoadEvents
+    for x in json.load(open(f"{directory}/{filename}")):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/decoder.py", line 337, in decode
+    obj, end =3D self.raw_decode(s, idx=3D_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+=3D=3D> /tmp/stdout <=3D=3D
+  CC      util/strlist.o
+  CC      util/strfilter.o
+
+=3D=3D> /tmp/stderr <=3D=3D
+make[3]: *** [pmu-events/Build:49: pmu-events/arch/x86/amdzen2/extra-metric=
+s.json] Error 1
+make[3]: *** Deleting file 'pmu-events/arch/x86/amdzen2/extra-metrics.json'
+
+=3D=3D> /tmp/stdout <=3D=3D
+  CC      util/top.o
+  LD      trace/beauty/tracepoints/perf-in.o
+  CC      util/usage.o
+  CC      util/dso.o
+  CC      util/dsos.o
+  CC      util/symbol.o
+  CC      util/symbol_fprintf.o
+  CC      util/map_symbol.o
+  CC      util/color.o
+  CC      util/color_config.o
+  CC      util/metricgroup.o
+  CC      util/header.o
+  CC      util/callchain.o
+  CC      util/values.o
+  CC      util/debug.o
+  CC      util/fncache.o
+  CC      util/machine.o
+  CC      util/pstack.o
+  CC      util/map.o
+  CC      util/tool.o
+  CC      util/session.o
+  CC      util/sample-raw.o
+  CC      util/maps.o
+
+=3D=3D> /tmp/stderr <=3D=3D
+Traceback (most recent call last):
+  File "/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d798d=
+b2f87b3ea0f3a53ed/tools/perf/pmu-events/amd_metrics.py", line 42, in <modul=
+e>
+    main()
+  File "/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d798d=
+b2f87b3ea0f3a53ed/tools/perf/pmu-events/amd_metrics.py", line 32, in main
+    LoadEvents(directory)
+  File "/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b58625961de2638d2d798d=
+b2f87b3ea0f3a53ed/tools/perf/pmu-events/metric.py", line 26, in LoadEvents
+    for x in json.load(open(f"{directory}/{filename}")):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/decoder.py", line 337, in decode
+    obj, end =3D self.raw_decode(s, idx=3D_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+make[3]: *** [pmu-events/Build:49: pmu-events/arch/x86/amdzen3/extra-metric=
+s.json] Error 1
+make[3]: *** Deleting file 'pmu-events/arch/x86/amdzen3/extra-metrics.json'
+make[2]: *** [Makefile.perf:765: pmu-events/pmu-events-in.o] Error 2
+make[2]: *** Waiting for unfinished jobs....
+
+=3D=3D> /tmp/stdout <=3D=3D
+  CC      util/s390-sample-raw.o
+  CC      util/amd-sample-raw.o
+  CC      util/syscalltbl.o
+  CC      util/ordered-events.o
+  CC      util/namespaces.o
+  CC      util/comm.o
+  CC      util/thread.o
+  CC      util/threads.o
+  CC      util/thread_map.o
+  CC      util/parse-events-bison.o
+  BISON   util/pmu-bison.c
+  CC      util/pmus.o
+  LD      trace/beauty/perf-in.o
+  CC      util/svghelper.o
+  CC      util/trace-event-info.o
+  CC      util/trace-event-scripting.o
+  CC      util/trace-event.o
+  CC      util/trace-event-parse.o
+  CC      util/trace-event-read.o
+  CC      util/sort.o
+  CC      util/hist.o
+  CC      util/util.o
+  CC      util/cpumap.o
+  CC      util/affinity.o
+  CC      util/cgroup.o
+  CC      util/cputopo.o
+  CC      util/target.o
+  CC      util/rblist.o
+  CC      util/intlist.o
+  CC      util/vdso.o
+  CC      util/stat.o
+  CC      util/counts.o
+  CC      util/stat-shadow.o
+  CC      util/stat-display.o
+  CC      util/perf_api_probe.o
+  CC      util/record.o
+  CC      util/srcline.o
+  CC      util/srccode.o
+  CC      util/synthetic-events.o
+  CC      util/data.o
+  CC      util/tsc.o
+  CC      util/cloexec.o
+  CC      util/rwsem.o
+  CC      util/call-path.o
+  LD      tests/workloads/perf-test-in.o
+  CC      util/thread-stack.o
+  CC      util/spark.o
+  CC      util/topdown.o
+  CC      util/iostat.o
+  CC      util/stream.o
+  CC      util/intel-pt.o
+  CC      util/auxtrace.o
+  CC      util/intel-bts.o
+  CC      util/hisi-ptt.o
+  CC      util/s390-cpumsf.o
+  CC      util/arm-spe.o
+  CC      util/parse-branch-options.o
+  CC      util/dump-insn.o
+  CC      util/cs-etm-base.o
+  CC      util/parse-regs-options.o
+  CC      util/parse-sublevel-options.o
+  CC      util/term.o
+  CC      util/help-unknown-cmd.o
+  CC      util/dlfilter.o
+  CC      util/mem-events.o
+  LD      ui/tui/perf-ui-in.o
+  CC      util/vsprintf.o
+  CC      util/mem-info.o
+  CC      util/units.o
+  CC      util/time-utils.o
+  CC      util/branch.o
+  BISON   util/expr-bison.c
+  CC      util/mem2node.o
+  LD      util/perf-regs-arch/perf-util-in.o
+  CC      util/clockid.o
+  CC      util/list_sort.o
+  CC      util/mutex.o
+  CC      util/sharded_mutex.o
+  CC      util/intel-tpebs.o
+  CC      util/bpf_map.o
+  CC      util/symbol-elf.o
+  CC      util/probe-file.o
+  CC      util/probe-event.o
+  CC      util/probe-finder.o
+  CC      util/dwarf-aux.o
+  CC      util/dwarf-regs.o
+  CC      util/debuginfo.o
+  CC      util/annotate-data.o
+  CC      util/unwind-libunwind-local.o
+  CC      util/unwind-libunwind.o
+  CC      util/data-convert-bt.o
+  CC      util/data-convert-json.o
+  CC      util/zlib.o
+  CC      util/lzma.o
+  CC      util/zstd.o
+  CC      util/cap.o
+  CXX     util/demangle-cxx.o
+  CC      util/demangle-ocaml.o
+  CC      util/demangle-rust.o
+  CC      util/demangle-java.o
+  CC      util/jitdump.o
+  CC      util/genelf.o
+  CC      util/genelf_debug.o
+  CC      util/perf-hooks.o
+  CC      util/bpf-utils.o
+  CC      util/bpf-event.o
+  CC      util/pfm.o
+  FLEX    util/parse-events-flex.c
+  FLEX    util/pmu-flex.c
+  CC      util/pmu-bison.o
+  FLEX    util/expr-flex.c
+  CC      util/expr-bison.o
+  LD      arch/x86/tests/perf-test-in.o
+  CC      util/intel-pt-decoder/intel-pt-insn-decoder.o
+  LD      arch/x86/perf-test-in.o
+  CC      util/pmu.o
+  CC      util/pmu-flex.o
+  CC      util/expr-flex.o
+  CC      util/expr.o
+  CC      util/parse-events.o
+  LD      util/hisi-ptt-decoder/perf-util-in.o
+  CC      util/parse-events-flex.o
+  LD      arch/perf-test-in.o
+  LD      scripts/python/Perf-Trace-Util/perf-util-in.o
+  LD      util/arm-spe-decoder/perf-util-in.o
+  LD      arch/x86/util/perf-util-in.o
+  LD      arch/x86/perf-util-in.o
+  LD      arch/perf-util-in.o
+  LD      bench/perf-bench-in.o
+  LD      perf-bench-in.o
+  LD      scripts/perl/Perf-Trace-Util/perf-util-in.o
+  LD      scripts/perf-util-in.o
+  LD      tests/perf-test-in.o
+  LD      perf-test-in.o
+  LD      util/scripting-engines/perf-util-in.o
+  LD      ui/browsers/perf-ui-in.o
+  LD      ui/perf-ui-in.o
+  LD      perf-ui-in.o
+  LD      util/intel-pt-decoder/perf-util-in.o
+  LD      perf-in.o
+  LD      util/perf-util-in.o
+  LD      perf-util-in.o
+
+=3D=3D> /tmp/stderr <=3D=3D
+make[1]: *** [Makefile.perf:292: sub-make] Error 2
+make: *** [Makefile:76: all] Error 2
+
+=3D=3D> /tmp/stdout <=3D=3D
+make: Leaving directory '/usr/src/perf_selftests-x86_64-rhel-8.3-bpf-1b5862=
+5961de2638d2d798db2f87b3ea0f3a53ed/tools/perf'
+make perf failed
+
+--VZJJSsuX2mnIFoRA--
