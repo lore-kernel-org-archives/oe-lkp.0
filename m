@@ -1,357 +1,184 @@
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0ABAF1F80C7
-	for <oe-lkp@lists.linux.dev>; Tue, 15 Oct 2024 19:56:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.177.32
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729022221; cv=fail; b=G1PyWLvrsB9sXnBT5Xq6eM3lYYiAkkTpxY7D54GZXCBdYxgbA1dGEJJkvqv51OLHhuJzAtngaLOh1o4/NWWK7OxrRuvdTpbs5Ha7Nu87aeOWaAnbwuVxkwkMhgvwNF5oN1ldU4a8WouvIWViiAZw53sxlw7HdEl4AU9S5i9w6Jc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729022221; c=relaxed/simple;
-	bh=dVhTK6NrLVsVm6NGFosgiA+aPyCqGTJVxJlcwrZ7k2o=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=LfC/VoPXKr6Zppk51rIIcFw0ASuDac2aHo5rabYE/pJ9SmNVJnUY0OzHazL/Jt+G2JQqjItyOs12ZSmONocLvc2ufQji2QO3NodUBpZReI6EEvtyaJio48TTLL/MjZKEqOPWdd9MEimfwxB9E0M0o9DhjNN5Mxt7gJqbiAC4vB0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=Rt3a96tN; dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b=VzWBRRoT; arc=fail smtp.client-ip=205.220.177.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7D6021E3B5
+	for <oe-lkp@lists.linux.dev>; Tue, 15 Oct 2024 21:51:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1729029066; cv=none; b=btik35zX7T9Xnho78/66wGFxB0PVd3KaJKrkxnAvlIQaqNGP8PPfC4JagSzQtX1Fd3HVWg5xrXs4Vqi/dRRWM+IW2FSqr+k4lL6nfPBHb7AAGHwK4dlwt0bA3P9CNIYg92jCfDA76Jsnc2H0c2ni6xzBFjkrL75k5GiDQwbFEU0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1729029066; c=relaxed/simple;
+	bh=hSozEFv8m/TbtSvxb0FHznXq89oiylmQ9bp16lbzkB8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nH1KRI19Kov4uhiIcAH8Vtw80bV4FKpYq6DI795TwGR4GyjY2fTkZn6AfzxZfEQuO1Chyq8/Z+ZM/EafPi9iILCElAVDwdCiWMR4mbwjry2MC2Z8am47/fFtnRlVH76bfm56nrZWiV3eNTus8x17p3qgkf+y/0JI/m4YHyecaXk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=fromorbit.com; spf=pass smtp.mailfrom=fromorbit.com; dkim=pass (2048-bit key) header.d=fromorbit-com.20230601.gappssmtp.com header.i=@fromorbit-com.20230601.gappssmtp.com header.b=rOlywsth; arc=none smtp.client-ip=209.85.214.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=fromorbit.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fromorbit.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="Rt3a96tN";
-	dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="VzWBRRoT"
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49FHtd8L011659;
-	Tue, 15 Oct 2024 19:56:39 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
-	:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=corp-2023-11-20; bh=dZOs1hVmv6vJyNYkxD
-	NjQ/me3LXTGjiFcrRgnm3Y8tc=; b=Rt3a96tNftAPzR1Boy7Q6OUia7CeSVY4Wj
-	hYq+TGjOUrPaiipeDymWPFMm4LzJ69/S3Gqz9Hz2UCq3rujbxqoWt2q56GxuTjim
-	fDG3b2bOillbSFlU1BPGbAgxT4PsEf0JynIezOGuHC0e3hCu4P0+OekLZX0VmQ7G
-	JFRgmmObKHuc8EZRVEgLONZVDPIyhg1Pt3yCF6bkhjV+Vc21khKSzdnuwJB9yEWw
-	AEMGxFhRLJN6Tni7gNGjiMqAGNMybtqjYhyApUVK0jkVk7G1VfrNLOLQE63rWJ1A
-	gLyTkfoUmD0j087okjyh73/QzGaiv9RFocMflqvzlC+HFH0CvLaQ==
-Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 427gqt22fb-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 15 Oct 2024 19:56:39 +0000 (GMT)
-Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 49FIFgVH027134;
-	Tue, 15 Oct 2024 19:56:38 GMT
-Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2173.outbound.protection.outlook.com [104.47.56.173])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 427fjeg2tv-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 15 Oct 2024 19:56:38 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=JXvFPNq3CtMIe6nI6K8qnAcix6w7IBNUAFwx6LSV0QRtyjbcgOGMw2tr8e5rufqVo2exoQDwGWinBEw0sjtMG/oiwdy0gjfTw+Pg8U2A6oPM9jhnpdkvUZklxaNjP2htzfqwk3PDIU8yeNqmOhSi3u21agak2SO1aq1+SuLKrcnKFbLqUsk/RFa10kf0cYbDe3AFFYbsLR/vXqD4k3/blJRDOAGYPWooEzsMt3rPdNR6X7HvFxGHS5u7DxrmyyW89TpRSgcMPVi3jog/oYNo5mkLJkPl08cAxtK4l6iJma0ngtO0INqFZo119b1Dg6OoLATZz0+3tghHyXQ7pa8Zsg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dZOs1hVmv6vJyNYkxDNjQ/me3LXTGjiFcrRgnm3Y8tc=;
- b=EPn555ieTvgD7H1qWrC1fCoD7V3yUUqbYiXFFn8RWm3Xl+lWei9xoYN1ugQYdQeAhuLSRH5uW2zwWvjlDRCZYvNywjh59klgn1GARjNdflbXqlOKC46swGWJsVzur6OqSpNqIiP5+IejojRvIJqyIMD+DDcirQssmeKkU9kARbO6yNcq595uLPM3nfCnhhOOrlTIXS3WBkCJuj7HVj4fl0l5Fwh4SGZ/QyTWp18xqTD2lPeku/i4UWS/U4ntLFrFYj1gPS5gXa06NhRBXNaSqdZpyR5FSbCBG6tAYK+zZUUiPj5av42p6aSBmYHBlzqcdaa+Jp7zzjf3RtFGJoPkeQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+	dkim=pass (2048-bit key) header.d=fromorbit-com.20230601.gappssmtp.com header.i=@fromorbit-com.20230601.gappssmtp.com header.b="rOlywsth"
+Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-20cb7088cbcso32231575ad.0
+        for <oe-lkp@lists.linux.dev>; Tue, 15 Oct 2024 14:51:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dZOs1hVmv6vJyNYkxDNjQ/me3LXTGjiFcrRgnm3Y8tc=;
- b=VzWBRRoTZLMf1oNQ9dRoRTocOaN+lZrZO9D+PEdZcmOEgnQXOyZUzICbh6fagTPDEsKUDMgpcq62ef/rmAHaAjzm9YWFCF4uilN9it5fohl+EfCK07vBK3LE5eaA2rs8FAjcUYeGSjryDv8HJF3M3mt/lqIsqMxWlQ/9/mRyIu8=
-Received: from SJ0PR10MB5613.namprd10.prod.outlook.com (2603:10b6:a03:3d0::5)
- by BY5PR10MB4371.namprd10.prod.outlook.com (2603:10b6:a03:210::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8048.27; Tue, 15 Oct
- 2024 19:56:32 +0000
-Received: from SJ0PR10MB5613.namprd10.prod.outlook.com
- ([fe80::4239:cf6f:9caa:940e]) by SJ0PR10MB5613.namprd10.prod.outlook.com
- ([fe80::4239:cf6f:9caa:940e%5]) with mapi id 15.20.8048.020; Tue, 15 Oct 2024
- 19:56:32 +0000
-Date: Tue, 15 Oct 2024 20:56:28 +0100
-From: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mark Brown <broonie@kernel.org>,
-        "Liam R. Howlett" <Liam.Howlett@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>, Bert Karwatzki <spasswolf@web.de>,
-        Jeff Xu <jeffxu@chromium.org>, Jiri Olsa <olsajiri@gmail.com>,
-        Kees Cook <kees@kernel.org>, Lorenzo Stoakes <lstoakes@gmail.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Paul Moore <paul@paul-moore.com>,
-        Sidhartha Kumar <sidhartha.kumar@oracle.com>,
-        Suren Baghdasaryan <surenb@google.com>, linux-mm@kvack.org,
-        ying.huang@intel.com, feng.tang@intel.com, fengwei.yin@intel.com
-Subject: Re: [linus:master] [mm]  cacded5e42:  aim9.brk_test.ops_per_sec
- -5.0% regression
-Message-ID: <af510726-4245-46c1-81bb-e32379c2c127@lucifer.local>
-References: <202409301043.629bea78-oliver.sang@intel.com>
- <77321196-5812-4e5b-be4c-20930e6f22bc@lucifer.local>
- <ZwTt/wB/mmszSXc3@xsang-OptiPlex-9020>
- <8f5e8ae0-dfaf-4b33-ae79-ca6065dc96ec@lucifer.local>
- <ZwYmTnWEhgWO702t@xsang-OptiPlex-9020>
- <5b7227fa-d0f1-452e-b1b3-9d7b87641522@lucifer.local>
- <ZwiRdemGMY6Z6pSN@xsang-OptiPlex-9020>
- <fa645dd9-3835-4e1d-aa04-1892d97a6c86@lucifer.local>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fa645dd9-3835-4e1d-aa04-1892d97a6c86@lucifer.local>
-X-ClientProxiedBy: LO4P123CA0071.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:153::22) To SJ0PR10MB5613.namprd10.prod.outlook.com
- (2603:10b6:a03:3d0::5)
+        d=fromorbit-com.20230601.gappssmtp.com; s=20230601; t=1729029063; x=1729633863; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=RIbql7FxBLA7l3QYk3auusd9TTm3/LPL/t4lU1Jlbps=;
+        b=rOlywsth/G/EplriU4SYuRXJXetcS7tUsPZT5J9yBHXKYl2bzhMYP6RAyq+1OopsMc
+         1t6toYtdeHNy0Fpt+cQcs3eul5w7NQISsUN/LHipdCOZ1c92dH21kRRGfbWl43kwC+S0
+         rVAnWzSIsRdMa6R1RDhTv1BaNJMtCIn8ss6ttYXdLlLxUDpqXxDt2/pZigMXPI3n0x7T
+         V3a57FV9hfbCOTR2jCnkBXBsOhKEym1eNiEOTh9h0w/QbwZ4JP799nXT0O/c0LX7Tsq1
+         hWjUPAzM1cAyWXG02snLWKyEMKhHbJRsbaMVY01BuQz4JxUl2n8C7dvfawTP2tTB2DHx
+         i9iQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1729029063; x=1729633863;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=RIbql7FxBLA7l3QYk3auusd9TTm3/LPL/t4lU1Jlbps=;
+        b=Wchv+IjdYEgSZxenncvTs79Rc4mSPZ1nt+WbPNp4gTXQz5pfu0J4/bt64vPQnSk/VQ
+         VOKnKBxYqrdZ0gQ7Y9HxENc0VfBHM1vxSvAkxaxqr9NhNRtTdLeBqJ9PYqMEAWzUoNlz
+         Vuoe7dseckomtVV+jkQjUpykx8zo1NjDYGDn48yognIpau5vtFJxUENhSTzYo/YeS9Tc
+         xfSPc3VR52ar1AxCSJZ7eu8YGuvnkDHaacoC0z2rzSSmfyh7CgmUSnj/eK9xdemB49bG
+         mK7l7w7U7FS7k6ACceFDGdXxheATU68P37gINbzhD499bLpJljNnhfNg7kNhcAAKkHyC
+         uSGg==
+X-Forwarded-Encrypted: i=1; AJvYcCXgGgq02fwQvwpcpWR5AcaBlkp5HoDxb9VSOtz8faN49F+PcO4MBbRRrr+a1VvVp3alTRsPfRo=@lists.linux.dev
+X-Gm-Message-State: AOJu0YyYmX4tGZFUrppR1UP/r5KPtjbSm4tZ/GTgaU3M41psqx75SVdB
+	ANSjvoN8MQ3m9d7c7qlLTy1BxgdedyAqhdSe54aLGBH8IsddCmuac94bfJdtT1s=
+X-Google-Smtp-Source: AGHT+IE/XMxkLQRQ+1ybzN2RlD4aGRDcGf735MJ5FdQ2NG2Jfi6aKsAKSmpvMZQwyvpmVGmFPZWcpA==
+X-Received: by 2002:a17:902:d490:b0:20c:f3cf:50eb with SMTP id d9443c01a7336-20cf3cf5379mr85213165ad.44.1729029062976;
+        Tue, 15 Oct 2024 14:51:02 -0700 (PDT)
+Received: from dread.disaster.area (pa49-186-209-182.pa.vic.optusnet.com.au. [49.186.209.182])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-20d17f844b0sm16990155ad.38.2024.10.15.14.51.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Oct 2024 14:51:02 -0700 (PDT)
+Received: from dave by dread.disaster.area with local (Exim 4.96)
+	(envelope-from <david@fromorbit.com>)
+	id 1t0pRT-001IyZ-02;
+	Wed, 16 Oct 2024 08:50:59 +1100
+Date: Wed, 16 Oct 2024 08:50:58 +1100
+From: Dave Chinner <david@fromorbit.com>
+To: Brian Foster <bfoster@redhat.com>
+Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, linux-kernel@vger.kernel.org,
+	Christian Brauner <brauner@kernel.org>,
+	"Darrick J. Wong" <djwong@kernel.org>,
+	Josef Bacik <josef@toxicpanda.com>, linux-xfs@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org, ying.huang@intel.com,
+	feng.tang@intel.com, fengwei.yin@intel.com
+Subject: Re: [linus:master] [iomap]  c5c810b94c:
+ stress-ng.metamix.ops_per_sec -98.4% regression
+Message-ID: <Zw7jwnvBaMwloHXG@dread.disaster.area>
+References: <202410141536.1167190b-oliver.sang@intel.com>
+ <Zw1IHVLclhiBjDkP@bfoster>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ0PR10MB5613:EE_|BY5PR10MB4371:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2ab79880-0ce7-4add-87ec-08dced537715
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|376014|366016|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?w57sZIvxCwn0WeLYo9KQi+UVl+yi7zPyncerogEljUisHZTRbYm9wyRzH16T?=
- =?us-ascii?Q?j0GqNiY7GMcoteyufs2dK3wfzq5rKZqRDOWoLpPwvx7VXgG4IoaobxDMB+qA?=
- =?us-ascii?Q?/C1kps//Gce1oiSo98WVjMsdG1/jIwVdWFmMAe9gVthRw43MFW2UhljPV+sa?=
- =?us-ascii?Q?cLVnkLnXayQQwZNfIeKmfm1f1pPgyPrc5JbGt7R5xhIqdvoEeO9uq66+z198?=
- =?us-ascii?Q?yzAC2g5YJeh4Q+AcKkvA63+FQdKwDRFwOhQQpEGB7mUzJVr/JnL+qEBxuxzY?=
- =?us-ascii?Q?3kS+TnhAeAExppoY4KZkqsxqlOJKtfpaPnylKkwQGESJoUu/8zMX67RwpNML?=
- =?us-ascii?Q?9MjECEguLYWu+yMKoamT7LPHpqFRXF80WMyumTrvBhEVCQdTLg6OZSdcmkxn?=
- =?us-ascii?Q?xBRyFL0ywXQcsP/mXybBJZs3Eq9R2ST380TRLtfZ7qWLSRjF8vSrUOhxGJg4?=
- =?us-ascii?Q?Pw3Dbm+KusSIhhwjJjdqYKuF1b8g0Mf3r33PPL8bS/Gn2fNOB+pEcousLi6x?=
- =?us-ascii?Q?t/Fbnu0FIQkWG9O0a4AgGxHdV0+kb2fqKAAWhZJa5Oxko8oiJ7PpMEpu+Zzh?=
- =?us-ascii?Q?h2oMEmn96nJ7uccY5xWmRYx1DRWmXjkF5skbH/+gXh+8Xpkks5ARp1mW4bEO?=
- =?us-ascii?Q?bXrs0NJmjaDzNoOWjbmy+ZXxLk2XDhY6fkmDI3U7/hkNI0XJUA28KZtVABL6?=
- =?us-ascii?Q?vKHfjB0dSxPfY3TLnWC5bVmnsMSNFTPSXWIc5AUodEo/9SkBgJP63L0Ky1S0?=
- =?us-ascii?Q?a2XQRPP/p1dxu8JcgKxadgBL1exdHlJ2JeDhyJMPq/Ot7iueGqW1cPaw4i8s?=
- =?us-ascii?Q?F/hIx37+bdp0SCVB1gRZYlTJSX+OhFyKcI9CG72DMvinHHykgIzu6/pgX9eZ?=
- =?us-ascii?Q?Hzfn6nORKk+BCxzY8wBozib4/9tXLhxCahn9qKgMfUVuAcyRR2+7uKm8BquN?=
- =?us-ascii?Q?5myMYzBBTDOT7FvfJIvgoft8oE7a0RV1a/e+DwrgNQ6f9CNT+3UAJwD+OAwA?=
- =?us-ascii?Q?81BWym8MzjMYw5sYmZ8BLIoQyxn40I760IxbBpPohNFg9+TTdvUd3OYQo6+N?=
- =?us-ascii?Q?6vFdSl6NHmC+dCBKZGap1yMbW8eTdA1ZncSjvjm4RGV1NWWFD7oNqzXt2JVu?=
- =?us-ascii?Q?IUZYTTytINRJ3wqVARoRNEOMveq5uXUy+u8PaJI2iMkxSJSOsbvY+4swFbCt?=
- =?us-ascii?Q?Lw0JttpPgIjcUzZyxuQQ8V4lW+FCWk5ZnTGsNDRCNm8oNCWRz9dSFzRXEucv?=
- =?us-ascii?Q?5Csl0TfqcBikPWV3h8c4v/lWxiICGmoSX4caLhhq2w=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR10MB5613.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?HCC/VFuXIwZR+Z9Ff//uzFnONWFly/XAhXe1eErMGjF90S7nnRj5Mo8gKPBn?=
- =?us-ascii?Q?A/JVLtOd/yX9f7pgEUkl895SaQ9EndAV5uJToFVwVr/v/BIbKGFIERi5kDKY?=
- =?us-ascii?Q?YbSf0+9dJk62oyQXj4Dv1lvfsdBHP32d1Axh6rfd89EfuFy63h4eLIzH9Sxe?=
- =?us-ascii?Q?ELZCwgwRZ1w35cSbObSMEC6o72zZHk9NyxW28rwpQdJ1MAVptoD+4rsipNfw?=
- =?us-ascii?Q?AvzSwS8uW9DzycDQ0/JMtNMN0a8EKUcsg1/76EknhY6v2SJPmhFhdhlMxudj?=
- =?us-ascii?Q?xib4g/5wR0VmvFfMpoqLuNYNHHbYFX89KQR3W96YApesitR0RuIDSCp6ypfc?=
- =?us-ascii?Q?VwI4hSRxQ8cUxUPYLG2NpK9fiAh2/bB4V+2t7l+kUlyPr5FcTQUPF8j0krkR?=
- =?us-ascii?Q?EREo+3J6dynAbKMAdl0b5mHg7umEJVCLZMg9yjBiEJ9x3elMebCt1k7y/mUW?=
- =?us-ascii?Q?p6c+2f8KF3shCAErHYh1unz+vS257TW9WIhkiGz9OvqsOOWZsucL6Jhs4Kq5?=
- =?us-ascii?Q?Y9B7bLM7l+uJfjcFuUgLlhIhePAPz44VdvWdDqJFv5nupa8NMxM2IpzkQkJg?=
- =?us-ascii?Q?X3yay3+tWxoy/jHg1PdpgQOfYcVRNdlgb6bOmVBlfh8csbwfkdwMD6sgXf0A?=
- =?us-ascii?Q?lo67VNmfgGc0oyEBT8vWXspSgtFFcI5VrNxtclujTV12ERTVCn7Kd+5My9QX?=
- =?us-ascii?Q?79TrihTG8zVGwChxl5lFzhu+ImlagnMyVShr9DGez/TBtx3Qe1diUSwjSHLJ?=
- =?us-ascii?Q?7C1nbYAfIEJ/WaIcvuy1Yvlwjo0e+il/xYH9VlSGziLE9rFUUV7QIGeBmcB3?=
- =?us-ascii?Q?L+Rw9EEs+WhVGzTTLA4FDbitxlNOxSE6zoAvVvCwDmhXfPoVRAcCmsLAT6PK?=
- =?us-ascii?Q?XuLyO1PAT1rOPuX148XPiV91ovs9P1xLihWyCdsFyBy8A5K199mWNJjL51ul?=
- =?us-ascii?Q?mZksmvLoDiqOHPHL3uiGe/N8a5Br27/lbUq/6SbgTaUyr/+sj9URCAwZpkOL?=
- =?us-ascii?Q?aBXcX7xHL4bYAb2d3X0vKgDUeQYLCQ4a/JeXqfMm7aRH+jR+Sf26mpeBbbAp?=
- =?us-ascii?Q?2knKyOxeEIHQctx3IAIb5s24VbinbIODbGXBjkNnlzwqvR0986s1jHkNBdlb?=
- =?us-ascii?Q?z5U+YVP07T4fO3MzYSi7jb5wlDD38ZAhjx5WjJzjQjJ/rL8p5VKoAE4NVtm8?=
- =?us-ascii?Q?fEJ/MFmRdtSdLQYxoJcm/h9n42zGhfCxR2Qg5Q8JDEWKHi/U0SmpTvwEQL6U?=
- =?us-ascii?Q?dVa6gmUvX/BAY9MtNNND5PC74hQ7P3ESpL+ZR41TEPDKTYcqs9tmXzRsOlyt?=
- =?us-ascii?Q?flHapiKt8GtvV0P1/pzJDAiu8wMLmytKEWf95LLOMQ23flGmLdEDc1/OrV7N?=
- =?us-ascii?Q?2pYqYHTTVAwB2D+Dn8hhZjWFqnr2AWb46s34ucRDMihfCpiHpMIfc6yCcccq?=
- =?us-ascii?Q?ViUxcVu6+S9FqvVsVmG6tmpSR7AXqeocEq2fwqYcusgz9L99mzQfkHKOrb3X?=
- =?us-ascii?Q?7dNRzImKONPd99KM3lk8HRqvYB+KBvrfWbexASjkSVd+xQocXeDz6Xc5Ftlk?=
- =?us-ascii?Q?cXhzjkW0b5Nnio1DLK6qwLnCC38EY+KLYlA9uhcUKPH1ZMEi0OtvKo62yL9H?=
- =?us-ascii?Q?Dw=3D=3D?=
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
-	ZoPUqu/IF9+Q2CRY5cR3udPPdeqJP9zKPgJHT9ak5il6b/KcN+AePxw8esqEEsw3ULbR8fbH/Rn7cp0/6MmkqDUOGmFMnhQINoOoRCANkxspaoI1Hbu17PKMJRvyb7mbBs+aV/up1q+fExRqwTkp+HKzfLzG19m3//VynPji8JBv5k+Lu6+zqFlSi7+4GOOUf2nI4wSx04ewYUNfqvpiin0aoyxFxCWIOiRnRlE5nysIbhXYvG4ov4mt0LaTun1nuhK5crbBFBW24cHgiegzs8YJlcJg/UIuMnJXeI2a/tpv9dlrsJjVSwF4D++Qdh8mJynThAkNmmwVQe/msbPCKmBPo1cI5TWBS6P0G1zgtuYUxd2ZL5F9+DlsJdapbhz6280KLSHqWIj0tbO9gBYJ0yKCRgyW3HPidu5AUytNtV9Z3AcUFbcW3CFQGUpElnI3tYKxBDKzY1iCpqwyQ6x3BKJsmix5rYX5OW3Mp7YHoUspm0KxCelKg4CJCNBV2DB+NS5NI7SuvD2QmnG6DZGUCJUYi9MnmY/wsY4Qm+gsTWD3UVZgx/2E4X3M4OSRDlSOK7r60yDmihbb5Xi2dUc+cL1H/DqOxV7bfBch5Dw5+04=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2ab79880-0ce7-4add-87ec-08dced537715
-X-MS-Exchange-CrossTenant-AuthSource: SJ0PR10MB5613.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Oct 2024 19:56:31.8595
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: jPwwqUGdqui1zll24xCAV0VnQmnp/0Q2xSETJZbedYcDPCgYA2ocVfyMBg6rlaCejnGfSnDz+voI4hUjJbQIQtLLl8gaRpUwL6bAC00q8o8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR10MB4371
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1051,Hydra:6.0.680,FMLib:17.12.62.30
- definitions=2024-10-15_15,2024-10-15_01,2024-09-30_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 adultscore=0
- spamscore=0 malwarescore=0 bulkscore=0 suspectscore=0 mlxscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2409260000 definitions=main-2410150134
-X-Proofpoint-GUID: 3mO3eZQsdrAAWvyka2gG673FkSlacXlc
-X-Proofpoint-ORIG-GUID: 3mO3eZQsdrAAWvyka2gG673FkSlacXlc
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Zw1IHVLclhiBjDkP@bfoster>
 
-On Fri, Oct 11, 2024 at 08:26:37AM +0100, Lorenzo Stoakes wrote:
-[snip]
+On Mon, Oct 14, 2024 at 12:34:37PM -0400, Brian Foster wrote:
+> On Mon, Oct 14, 2024 at 03:55:24PM +0800, kernel test robot wrote:
+> > 
+> > 
+> > Hello,
+> > 
+> > kernel test robot noticed a -98.4% regression of stress-ng.metamix.ops_per_sec on:
+> > 
+> > 
+> > commit: c5c810b94cfd818fc2f58c96feee58a9e5ead96d ("iomap: fix handling of dirty folios over unwritten extents")
+> > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> > 
+> > testcase: stress-ng
+> > config: x86_64-rhel-8.3
+> > compiler: gcc-12
+> > test machine: 64 threads 2 sockets Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz (Ice Lake) with 256G memory
+> > parameters:
+> > 
+> > 	nr_threads: 100%
+> > 	disk: 1HDD
+> > 	testtime: 60s
+> > 	fs: xfs
+> > 	test: metamix
+> > 	cpufreq_governor: performance
+> > 
+> > 
+> > 
+> > 
+> > If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> > the same patch/commit), kindly add following tags
+> > | Reported-by: kernel test robot <oliver.sang@intel.com>
+> > | Closes: https://lore.kernel.org/oe-lkp/202410141536.1167190b-oliver.sang@intel.com
+> > 
+> > 
+> > Details are as below:
+> > -------------------------------------------------------------------------------------------------->
+> > 
+> > 
+> > The kernel config and materials to reproduce are available at:
+> > https://download.01.org/0day-ci/archive/20241014/202410141536.1167190b-oliver.sang@intel.com
+> > 
+> 
+> So I basically just run this on a >64xcpu guest and reproduce the delta:
+> 
+>   stress-ng --timeout 60 --times --verify --metrics --no-rand-seed --metamix 64
+> 
+> The short of it is that with tracing enabled, I see a very large number
+> of extending writes across unwritten mappings, which basically means XFS
+> eof zeroing is calling zero range and hitting the newly introduced
+> flush. This is all pretty much expected given the patch.
 
-> Thanks for testing this suffices to rule this one out... I will try to get a
-> functional and reliable performance environment locally so I can properly
-> address this and then we can try something else.
->
-> Thanks!
-> Lorenzo
->
+Ouch.
 
-OK Oliver, could you try the below patch? I have got aim9.brk up and
-running locally and for me this seems to address the issue.
+The conditions required to cause this regression are that we either
+first use fallocate() to preallocate beyond EOF, or buffered writes
+trigger specualtive delalloc beyond EOF and they get converted to
+unwritten beyond EOF through background writeback or fsync
+operations. Both of these lead to unwritten extents beyond EOF that
+extending writes will fall into.
 
-This is against Andrew's tree [0] in the mm-unstable branch. It should
-hopefully apply cleanly to -next also.
+All we need now is the extending writes to be slightly
+non-sequential and those non-sequential extending writes will not
+land at EOF but at some distance beyond it. At this point, we
+trigger the new flush code. Unfortunately, this is actually a fairly
+common workload pattern.
 
-Very much appreciated, thanks!
+For example, experience tells me that NFS server processing of async
+sequential write requests from a client will -always- end up with
+slightly out of order extending writes because the incoming async
+write requests are processed concurrently. Hence they always race to
+extend the file and slightly out of order file extension happens
+quite frequently.
 
-[0]:https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git/
+Further, the NFS client will also periodically be sending a write
+commit request (i.e. server side fsync), the
+NFS server writeback will convert the speculative delalloc that
+extends beyond EOF into unwritten extents beyond EOF whilst the
+incoming extending write requests are still incoming from the
+client.
 
-----8<----
-From cee7f4196247de0da2b7632838fd36aee8b77e13 Mon Sep 17 00:00:00 2001
-From: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
-Date: Tue, 15 Oct 2024 20:16:32 +0100
-Subject: [PATCH] mm: add expand-only VMA merge mode and optimise
- do_brk_flags()
+Hence I think that there are common workloads (e.g. large sequential
+writes on a NFS client) that set up the exact conditions and IO
+patterns necessary to trigger this performance regression in
+production systems...
 
-We know in advance that do_brk_flags() wants only to perform a VMA
-expansion (if the prior VMA is compatible), and that we assume no mergeable
-VMA follows it.
+> I ran a quick experiment to skip the flush on sub-4k ranges in favor of
+> doing explicit folio zeroing. The idea with that is that the range is
+> likely restricted to single folio and since it's dirty, we can assume
+> unwritten conversion is imminent and just explicitly zero the range. I
+> still see a decent number of flushes from larger ranges in that
+> experiment, but that still seems to get things pretty close to my
+> baseline test (on a 6.10 distro kernel).
 
-These are the semantics of this function prior to the recent rewrite of the
-VMA merging logic, however we are now doing more work than necessary -
-positioning the VMA iterator at the prior VMA and performing tasks that are
-not required.
+What filesystems other than XFS actually need this iomap bandaid
+right now?  If there are none (which I think is the case), then we
+should just revert this change it until a more performant fix is
+available for XFS.
 
-Add a new field to the vmg struct to permit merge flags and add a new merge
-flag VMG_FLAG_JUST_EXPAND which implies this behaviour, and have
-do_brk_flags() use this.
-
-This fixes a reported performance regression in a brk() benchmarking suite.
----
- mm/mmap.c |  3 ++-
- mm/vma.c  | 23 +++++++++++++++--------
- mm/vma.h  | 16 ++++++++++++++++
- 3 files changed, 33 insertions(+), 9 deletions(-)
-
-diff --git a/mm/mmap.c b/mm/mmap.c
-index 02f7b45c3076..b99ba4cac9fe 100644
---- a/mm/mmap.c
-+++ b/mm/mmap.c
-@@ -1741,7 +1741,8 @@ static int do_brk_flags(struct vma_iterator *vmi, struct vm_area_struct *vma,
- 		VMG_STATE(vmg, mm, vmi, addr, addr + len, flags, PHYS_PFN(addr));
-
- 		vmg.prev = vma;
--		vma_iter_next_range(vmi);
-+		/* vmi is positioned at prev, which this mode expects. */
-+		vmg.merge_flags = VMG_FLAG_JUST_EXPAND;
-
- 		if (vma_merge_new_range(&vmg))
- 			goto out;
-diff --git a/mm/vma.c b/mm/vma.c
-index 749c4881fd60..69ce9e07ab11 100644
---- a/mm/vma.c
-+++ b/mm/vma.c
-@@ -562,6 +562,7 @@ struct vm_area_struct *vma_merge_new_range(struct vma_merge_struct *vmg)
- 	pgoff_t pgoff = vmg->pgoff;
- 	pgoff_t pglen = PHYS_PFN(end - start);
- 	bool can_merge_left, can_merge_right;
-+	bool just_expand = vmg->merge_flags & VMG_FLAG_JUST_EXPAND;
-
- 	mmap_assert_write_locked(vmg->mm);
- 	VM_WARN_ON(vmg->vma);
-@@ -575,7 +576,7 @@ struct vm_area_struct *vma_merge_new_range(struct vma_merge_struct *vmg)
- 		return NULL;
-
- 	can_merge_left = can_vma_merge_left(vmg);
--	can_merge_right = can_vma_merge_right(vmg, can_merge_left);
-+	can_merge_right = !just_expand && can_vma_merge_right(vmg, can_merge_left);
-
- 	/* If we can merge with the next VMA, adjust vmg accordingly. */
- 	if (can_merge_right) {
-@@ -590,7 +591,11 @@ struct vm_area_struct *vma_merge_new_range(struct vma_merge_struct *vmg)
- 		vmg->vma = prev;
- 		vmg->pgoff = prev->vm_pgoff;
-
--		vma_prev(vmg->vmi); /* Equivalent to going to the previous range */
-+		/* In expand-only case we are already positioned here. */
-+		if (!just_expand) {
-+			/* Equivalent to going to the previous range. */
-+			vma_prev(vmg->vmi);
-+		}
- 	}
-
- 	/*
-@@ -604,12 +609,14 @@ struct vm_area_struct *vma_merge_new_range(struct vma_merge_struct *vmg)
- 	}
-
- 	/* If expansion failed, reset state. Allows us to retry merge later. */
--	vmg->vma = NULL;
--	vmg->start = start;
--	vmg->end = end;
--	vmg->pgoff = pgoff;
--	if (vmg->vma == prev)
--		vma_iter_set(vmg->vmi, start);
-+	if (!just_expand) {
-+		vmg->vma = NULL;
-+		vmg->start = start;
-+		vmg->end = end;
-+		vmg->pgoff = pgoff;
-+		if (vmg->vma == prev)
-+			vma_iter_set(vmg->vmi, start);
-+	}
-
- 	return NULL;
- }
-diff --git a/mm/vma.h b/mm/vma.h
-index 82354fe5edd0..8f8548958e41 100644
---- a/mm/vma.h
-+++ b/mm/vma.h
-@@ -59,6 +59,19 @@ enum vma_merge_state {
- 	VMA_MERGE_SUCCESS,
- };
-
-+typedef unsigned long vma_merge_flags_t;
-+
-+ /*
-+  * If we can expand, simply do so. We know there is nothing to merge to the
-+  * right.
-+  *
-+  * Does not reset state upon failure to merge.
-+  *
-+  * IMPORTANT: The VMA iterator is assumed to be positioned at the previous VMA,
-+  *            rather than at the gap.
-+  */
-+#define VMG_FLAG_JUST_EXPAND (1 << 0)
-+
- /* Represents a VMA merge operation. */
- struct vma_merge_struct {
- 	struct mm_struct *mm;
-@@ -75,6 +88,7 @@ struct vma_merge_struct {
- 	struct mempolicy *policy;
- 	struct vm_userfaultfd_ctx uffd_ctx;
- 	struct anon_vma_name *anon_name;
-+	vma_merge_flags_t merge_flags;
- 	enum vma_merge_state state;
- };
-
-@@ -99,6 +113,7 @@ static inline pgoff_t vma_pgoff_offset(struct vm_area_struct *vma,
- 		.flags = flags_,					\
- 		.pgoff = pgoff_,					\
- 		.state = VMA_MERGE_START,				\
-+		.merge_flags = 0,					\
- 	}
-
- #define VMG_VMA_STATE(name, vmi_, prev_, vma_, start_, end_)	\
-@@ -118,6 +133,7 @@ static inline pgoff_t vma_pgoff_offset(struct vm_area_struct *vma,
- 		.uffd_ctx = vma_->vm_userfaultfd_ctx,		\
- 		.anon_name = anon_vma_name(vma_),		\
- 		.state = VMA_MERGE_START,			\
-+		.merge_flags = 0,				\
- 	}
-
- #ifdef CONFIG_DEBUG_VM_MAPLE_TREE
---
-2.46.2
+-Dave.
+-- 
+Dave Chinner
+david@fromorbit.com
