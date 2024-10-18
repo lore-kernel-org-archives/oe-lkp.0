@@ -1,217 +1,356 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 994E7383A5
-	for <oe-lkp@lists.linux.dev>; Fri, 18 Oct 2024 00:34:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.21
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729211687; cv=fail; b=Pa+20vTvhumdXihFwPA7++XuG3yqdKTV5gynmgYgtn7mG72DVyXeTcL2Hp/o6k1AyobLNWcd2xvEI2FMcg+zt+uiNRLaHQ+YIezlTf78E1CGKAx6lv2Cr9yTr36OTYPM8KQf4Nr7nyX0jLbfUuu4Cn6T4zMGLiphzuiwaUIFRlk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729211687; c=relaxed/simple;
-	bh=vMZgyha66GJbOI4pjQVix75M+mlt/3YsryLb8QZOEsk=;
-	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=KiloufoLLJTdhL7D9zErpA6t398aAjlGXyMTtToQyh4LCjoz8X/hO2z7gLXrtyaYmZrVt1ByV0Zm7aiwfw2prvdUD354QlGWpwqwyey34mecr/k761Y9zE4hdREUKuHe2dLkaXE55PcxbaQJYjJ14vSQAKAtNu00K2xzozB9q6k=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=F0PL3BcG; arc=fail smtp.client-ip=198.175.65.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.5])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6C06520E312
+	for <oe-lkp@lists.linux.dev>; Fri, 18 Oct 2024 14:53:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.5
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1729263206; cv=none; b=TZ6ZZDm+gB3cweO+3za/EiQ6IrfBtRgMgAYzhkTu5yle/pLHVl6lQP0UNDDsfTQVW5cwg69YEBzKKh/7j/p/dLwLhsMA9VmKmUxpFrUk9VPF5ooiYHK9AaVtF5gbeuQAd0Qfd8ku5w6yY/RZYH0qEQ11B+jsymSzf24WGdISwJ0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1729263206; c=relaxed/simple;
+	bh=TTgcUlAV9bGV+DOK+9HEeNqcQnOVrkv5CMh3NsU3Hzw=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=XA3uJlZqHn+zRZYlZE5QXWnschF2bRNpq1nd/1XGl1Ic3eKTuuKthVXoXKNRMjFIcn5uLwUxnldAcTJAVRQDr8ByeAQVLjjP2lnR2fsPQjZfUI+6grtqUXoExw9TvcblYm0uVOKtyLYdKuzO6o+Z7WyKjm5jXJsIE95Zg29WcGM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=krWwBvip; arc=none smtp.client-ip=117.135.210.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="F0PL3BcG"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1729211685; x=1760747685;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=vMZgyha66GJbOI4pjQVix75M+mlt/3YsryLb8QZOEsk=;
-  b=F0PL3BcGirBxwe6ypdOKnktDTt/4TMyhnaiP3GPrGjmRmihaB3r3az1d
-   13Rpb2byTmM3+0O880YO7G+i2np3r2/qdWSRGfagjIP3pmxvmqimMK4I3
-   Mo6R3jPan83VPch2EcE01PEY58vG7ivgTY+Hlq8jPFWNOKjFeczr9/soh
-   6OIaMnTaQzqXMAx3pLfQ4DZTTYrjGzPBnaHmC+4BzjqTU80neTsDAkvzA
-   A/a3K7ZKzSO6AMoFuQvNKfDZXGKi6yteY+VebEKvucp491h1BJ1zsD2Ap
-   oN1ejPYFEsRd52wv9hVOJIj9Awq8gfdPqiVwUEZRB3aAdKA9tds7R92gv
-   w==;
-X-CSE-ConnectionGUID: mJq5RBPFTDenGILXK5qrgA==
-X-CSE-MsgGUID: HoZHWD4BR6+dNuHJUbHetw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="28690487"
-X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
-   d="scan'208";a="28690487"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Oct 2024 17:34:45 -0700
-X-CSE-ConnectionGUID: Vcbe2pZ6SkOs8Q3r8EaBrQ==
-X-CSE-MsgGUID: xTL3EQuTRESWN7+NnbZumg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,212,1725346800"; 
-   d="scan'208";a="83489230"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by orviesa005.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 17 Oct 2024 17:34:45 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Thu, 17 Oct 2024 17:34:44 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Thu, 17 Oct 2024 17:34:44 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.49) by
- edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Thu, 17 Oct 2024 17:34:44 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Y3wpnMugou/kpgQ892pCC9XrRuq4sHstT8KxNpLxJkxc01DsK57OI+MJoEOrajmBdabMDF+c1Hz5zCLeOmVw2K9ouvwiFaLMec9ayeK+VZkmR+oonkr4sQKSaqpz0u3RfDDCRjc0tlVKnEF5XUCGVLW9YtE40RJgK0S9pnOIG6QGGwtUzncupxcARNlHyq2EqTLm+E8dD0R59V5jCfQgqAvhxwBqVoNTE9V19prr1QMaQFNN3t4oSvpAqKsVZZeM9+LLibUEysect3wcw7UwqseQofMqXNegJjAQzBzRAbKNKPljgYkwV844ao/dclSQHuBEamZiRhfphQYL316JTg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DJkrnzloDKxr4GSfBbs6JaSGcAyvTM5Ui0YdrT4oAjk=;
- b=Awsbn8YE1bN6z+W8zqdcB37GYvsbOlZmYL/dfQTigyuiJK0rk7RdbLPr0aMxRgtAGXDxgyj/6JKxOpz5habYTD1mTaGG1MaCXD4k+LORPivmQDujgjd6g1BmJgaecqeMzaB7WiU7yL/o1H/v/npuI0JQM2AfWkIrAGRm5XJiQFqkapNFvAX5vTcY6aSxfboPkNoC8k4MvrNZUwPZ85OiQZw60HSMG7Ill/fSohZz14txD94QxP6cpGjabip5azJnFaMZ9EJURLghk3Nzjmn+ayNOaiTgNmWi5MFSN7lCH+J9IPJYrnwy6Ry6aT+6H4j/c3w/We46ZwcqMTu4vWZiPA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by CH3PR11MB7180.namprd11.prod.outlook.com (2603:10b6:610:148::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8069.18; Fri, 18 Oct
- 2024 00:34:42 +0000
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.8069.018; Fri, 18 Oct 2024
- 00:34:42 +0000
-Date: Fri, 18 Oct 2024 08:34:28 +0800
-From: Oliver Sang <oliver.sang@intel.com>
-To: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
-	Andrew Morton <akpm@linux-foundation.org>, Mark Brown <broonie@kernel.org>,
-	"Liam R. Howlett" <Liam.Howlett@oracle.com>, Vlastimil Babka
-	<vbabka@suse.cz>, Bert Karwatzki <spasswolf@web.de>, Jeff Xu
-	<jeffxu@chromium.org>, Jiri Olsa <olsajiri@gmail.com>, Kees Cook
-	<kees@kernel.org>, Lorenzo Stoakes <lstoakes@gmail.com>, Matthew Wilcox
-	<willy@infradead.org>, "Paul E. McKenney" <paulmck@kernel.org>, Paul Moore
-	<paul@paul-moore.com>, Sidhartha Kumar <sidhartha.kumar@oracle.com>, "Suren
- Baghdasaryan" <surenb@google.com>, <linux-mm@kvack.org>,
-	<ying.huang@intel.com>, <feng.tang@intel.com>, <fengwei.yin@intel.com>,
-	<oliver.sang@intel.com>
-Subject: Re: [linus:master] [mm]  cacded5e42:  aim9.brk_test.ops_per_sec
- -5.0% regression
-Message-ID: <ZxGtFCzk5kwycFV3@xsang-OptiPlex-9020>
-References: <77321196-5812-4e5b-be4c-20930e6f22bc@lucifer.local>
- <ZwTt/wB/mmszSXc3@xsang-OptiPlex-9020>
- <8f5e8ae0-dfaf-4b33-ae79-ca6065dc96ec@lucifer.local>
- <ZwYmTnWEhgWO702t@xsang-OptiPlex-9020>
- <5b7227fa-d0f1-452e-b1b3-9d7b87641522@lucifer.local>
- <ZwiRdemGMY6Z6pSN@xsang-OptiPlex-9020>
- <fa645dd9-3835-4e1d-aa04-1892d97a6c86@lucifer.local>
- <af510726-4245-46c1-81bb-e32379c2c127@lucifer.local>
- <ZxB9XpvYoDrYgnah@xsang-OptiPlex-9020>
- <ac1e101c-f3ed-4e9a-9ef4-37788fce4680@lucifer.local>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <ac1e101c-f3ed-4e9a-9ef4-37788fce4680@lucifer.local>
-X-ClientProxiedBy: KL1P15301CA0059.APCP153.PROD.OUTLOOK.COM
- (2603:1096:820:3d::20) To LV3PR11MB8603.namprd11.prod.outlook.com
- (2603:10b6:408:1b6::9)
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="krWwBvip"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=From:Subject:Date:Message-Id:MIME-Version:
+	Content-Type; bh=q8hANp2XcwaDh96QM7Oc9kDe5x1PwrM2RyXe7XW8blI=;
+	b=krWwBvipfcjTqsH59zI8ans8MRX3sjeSoHPs9IRlgxjVa36pP23ST0n2E1+T95
+	4mD3xHPvCTkrjrnyGK4ZKAPiO108GIjf3OvUxRgThxL9frq9o/g3aJnHtRAqra75
+	d8SvfI4U2KSt/hwjt4lChcrZE33BEcW+W9ESmZ6O0tN/E=
+Received: from localhost (unknown [101.132.132.191])
+	by gzga-smtp-mtada-g1-1 (Coremail) with SMTP id _____wD3nxAtdhJnkGvJBw--.31137S2;
+	Fri, 18 Oct 2024 22:52:29 +0800 (CST)
+From: Xavier <xavier_qy@163.com>
+To: oliver.sang@intel.com
+Cc: aubrey.li@linux.intel.com,
+	bsegall@google.com,
+	dietmar.eggemann@arm.com,
+	feng.tang@intel.com,
+	fengwei.yin@intel.com,
+	juri.lelli@redhat.com,
+	linux-kernel@vger.kernel.org,
+	lkp@intel.com,
+	mgorman@suse.de,
+	mingo@redhat.com,
+	oe-lkp@lists.linux.dev,
+	peterz@infradead.org,
+	rostedt@goodmis.org,
+	vincent.guittot@linaro.org,
+	vschneid@redhat.com,
+	xavier_qy@163.com,
+	ying.huang@intel.com,
+	yu.c.chen@intel.com
+Subject: [PATCH v3] sched/eevdf: Remove the consideration of the current task's time in  vruntime_eligible() and avg_vruntime()
+Date: Fri, 18 Oct 2024 22:52:16 +0800
+Message-Id: <20241018145216.1021494-1-xavier_qy@163.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <202410171258.5873933a-oliver.sang@intel.com>
+References: <202410171258.5873933a-oliver.sang@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|CH3PR11MB7180:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1ead933f-7da2-4ade-8dd5-08dcef0ca842
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|376014|1800799024|366016;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?zu1N2bsGkrMj5LZrctlboImhrLIJQRhExHAEbPBUHDks39nZSeczQrXBcCYC?=
- =?us-ascii?Q?7fWvPEiIJYLLGcLt+s7dYGBdzxV7tEcxJCwQEjteL9Nsoh0fcliefX/tqk60?=
- =?us-ascii?Q?ALSu6Y6JfsM0x1gfT+aPk72XP/gIFwzmN/LJXyhfZ0YiMBc1pPSxu3sVK+e1?=
- =?us-ascii?Q?/NVXcIYF40TsbqQ4/JUeWpsE+qoyKUVG0yLoP/LkXMl5SujDvMrxWY9x28t0?=
- =?us-ascii?Q?Hk8h5HX4rtYPlcZ+JeRhZxHvPDdtY4t5stRleElwFCf4BNla0lqd99MBNZoM?=
- =?us-ascii?Q?IYXphu394PDe1zVwWCK0DU1pHKWWoBfkuEnjYULbsrsyX6nfMGZDZptKgL9t?=
- =?us-ascii?Q?pzaZr1cYAokHTGHLtLSxk4ET3LwtJuHVVzaE3M17BL/QpcABZXSy2iA0MYzH?=
- =?us-ascii?Q?NfpN6DujbjojgwVsCJwxX6TY2KU6wPutAhm35iAOqE21pm3JaJj/II6+T+g6?=
- =?us-ascii?Q?RD5hjIlojikF9hhjt8WciGxSE2hv+2ZpPhKoerhH+cpgX3KguBwQI94Rnfe/?=
- =?us-ascii?Q?PXNWQ9R+8qc60OoFsxVPUGBX15c3pSC4DEQ/GTUoapHxoJTvUEq884urFxjc?=
- =?us-ascii?Q?J88k4YM+U73AWEgjEx5oOSkNsQfkLcMwlRmGOMu08/VTZHxxBTC2/ACfzZkE?=
- =?us-ascii?Q?cWXaejW3Hj/BJWtlCS8EnAWDLm+yTR8ASgyCqVmoA5VeGGn0hZ3O0WSAaTOL?=
- =?us-ascii?Q?w6/uxd4YC3EEGtgzVNF5hOtR13RGM53FSeiyyqOLyV1I+lS3yJk+OuEZMTLe?=
- =?us-ascii?Q?6nIUgHrnizHCH32ZDIKbxfHf0T/CrnphrlUEJPSJ6yAm0E0dnCbhbLrszjLm?=
- =?us-ascii?Q?+ZOi0+B6r3I1HsIJpHZZ6+ynWT+E80i3joRbsUfkqHzojaejI1t3qjXgSX7+?=
- =?us-ascii?Q?ksCLmXLEDlBpUaxa+0Wh1da3XcRoUvb0SkyiQ6plb5h7wCnkVMTkrjJiDSnj?=
- =?us-ascii?Q?t0mD+d49Nuuv1IjNUwPgWPRgllq91lq/ir6587m7oYjbe31vD6ZdbbdF6vm5?=
- =?us-ascii?Q?oYebo18yTpqwrjaAsuO+yTFP05KPwn87w5ugmncLwJgRBDW5ENLkOWe21BUa?=
- =?us-ascii?Q?6YwuM8XpnL33sAy/mJn54iEsxmbaRElfqsXpOwqd8AtsBpM7aQ6wKyhvFXs2?=
- =?us-ascii?Q?4zdtmOwmn3fCNhx70gw5Nbtwq0q1B5MT/EOihxHMO2Rpn4Mf7K8iOLm+UiWg?=
- =?us-ascii?Q?kH2JaDbDyldTs1DSShpye5G7ngJwv+d4lwpqyulhrOnAMRjVaC106YhAKjld?=
- =?us-ascii?Q?OtbCTFdeZtiX014Si3junCYOOGsl+ShZA0h8muC5ggMh3RuZm5phjV6ltF7R?=
- =?us-ascii?Q?vYgn+j5Kdx+lgTvNZDhBc2IT?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Ck09GUJYD8ZUVCVMn5/swn2HnY8Ao3mVVynMxs6a6aBngbcn1kXcTHGs1sJa?=
- =?us-ascii?Q?6MjDzMv4dahJxW83yJM0dRpPZSZEKtRgxV1A8H/ZL3vFSyBogxH2Bc3mKR/B?=
- =?us-ascii?Q?WNZ+XWlpTxmCkJc1g021ncpSm+30206USgH+WIoDGw03X2BZipegTps+48qU?=
- =?us-ascii?Q?T5KGkXOQQllQfaQlmBJNsWaFDtuaCo0r09wrCT+OZJ3wR3t0EVtuuO9boAoV?=
- =?us-ascii?Q?gnpnKPE1XXvESOC5a/8n9dMips3c03GO+a+yXd0KRVJVI9UjuqR1ltPros9s?=
- =?us-ascii?Q?vimu4+eA2++O9LS5FAAr+RtSh/vWDxxMmpd/wcdb2FUQ2TiWUk+67mhZntgI?=
- =?us-ascii?Q?sfc4wTgLYuom0AY/wJ0wm2N1vvU9HAl6SVd2TVg1qSA16UogvMiS7cZKXj2G?=
- =?us-ascii?Q?/QPhDtUSUYJK8D1a5ES2GY2rGt+XGyh6kQAMrg0zMgzPeOHQJHGyxggEVOaL?=
- =?us-ascii?Q?BJGvbhHN7C7wFD+JQSkH+WLtX4FZljphKXzHeKnnwa+Yvw0kV2fPFfYHCkOF?=
- =?us-ascii?Q?C+VzWVKjZF18vg1qz8AYDJnPJJ//fSWdA6+GjpkchZzG0xweDgo5c74GWEVS?=
- =?us-ascii?Q?11owgT4D64Zc+R5rs4WrLboa1sRknKSV5ZtJjel8/juFSCRPSLDzt7fYCea4?=
- =?us-ascii?Q?0vSi/ovzXOqlN8zZfe2FxlP2sgxAAO0OoRdIP3zXLKenPJSGiAmPrvkQvhsq?=
- =?us-ascii?Q?mN1f42GtIlRY2Ap+dDu7wBB5qevMJOSqAmEPtgapbRA/yhgMHcy3malRlc4L?=
- =?us-ascii?Q?JIeJjjicB+bNraORXddJU8XX1PmPvZB2C2ZzKlOtk6PX+/kkFSu2R//EUJE/?=
- =?us-ascii?Q?F9uaqCXCIUWbycyiWuYYSOBIXySO4M3HEUUKtRdJRrMKoOPcXadRqoiBSQmP?=
- =?us-ascii?Q?B4Uc6lr9HdIIXxgZOw2At8qsI+ngHI1sk5ucPo9oJlwfZkTBj3spQWV8zIRQ?=
- =?us-ascii?Q?nvqFo17lg5pnipGtKNT4PmBsf5y4pmXJqd+/5LPOJCr9D0ow6HkuV/rfxo3Z?=
- =?us-ascii?Q?zduOhIDvA7vU1fW6r5baSjdguAJ8pDu8Abrc6ypbIUdtxzvB6qSb9jX2kp6X?=
- =?us-ascii?Q?4XFcijTA9+mFEIaS0PpZG5MJ6OzxLjEHQG0x7mnf8FLYSwAR9a830rvf6H+M?=
- =?us-ascii?Q?LrR2tECLYmXMNB5h1DqRHkuRgufapKY/TbguweKmvKVZ68GMCtsfgZ1wKMGA?=
- =?us-ascii?Q?+UHy0M5T79Moyg+97Uoy5Uy7bsQdXi2Hpjv78fqTVoJggpjaUv556dWYXWaV?=
- =?us-ascii?Q?dS3GoXJNFsgTzNC60O4FlAvViAVxTRoSo8F3D0oJIj/nTuHAGsxbnkBWGQjS?=
- =?us-ascii?Q?NPQZa3NnuHDu8euUZYKIP6Aod7mc0Ay1AbF7ysGAD9wAB2Cgza25iFpe4CUR?=
- =?us-ascii?Q?G1BqwbETfFSI0QsolQp+xF3+XJ1Z3N1TGEuIjJN8CYWajXU2K1qjapCt3NR+?=
- =?us-ascii?Q?ehS+tYJnr+/CauOquhoNqbWWrSTjIpCNEh0KwW2I7ortpHDYCPdTRqBQerdi?=
- =?us-ascii?Q?CcWGdpxxwMrSK+m9PUkBD/l+FWAEEK62k/l+67+lunSrqKmuWrZCWuUTb+go?=
- =?us-ascii?Q?wbZCwwJ448xONmmsCxU3MChH/fpTDJbpEj3vb0mR9H3CefgX1wHDXzuf7vJp?=
- =?us-ascii?Q?Mw=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1ead933f-7da2-4ade-8dd5-08dcef0ca842
-X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Oct 2024 00:34:42.2313
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2HUCiegI6WXhh9X34qvlwMQp6qZz/hmqOdNc748YQYY4gpTsJZyZaeby0/Tq/npP63jKemM5m9oAjYje9NoTYA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR11MB7180
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:_____wD3nxAtdhJnkGvJBw--.31137S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW3Jw15ZFW7Ww4DZw17XF1kZrb_yoWfCFyUpF
+	WUXay3tr40qr1qvr4DArZrWF9xGr95G3y2qFyvyayIyws8K3s8tFyaqrW3tF1YkrWkCFy7
+	ArW0qrW7Cr47KrUanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zi75r7UUUUU=
+X-CM-SenderInfo: 50dyxvpubt5qqrwthudrp/1tbiYwx8EGcSZ3vcTwAAs5
 
-hi, Lorenzo,
+The current code subtracts the value of curr from avg_vruntime and
+avg_load during runtime. Then, every time avg_vruntime() and
+vruntime_eligible() are called, the values of curr need to be added to
+the avg_vruntime and avg_load.
 
-On Thu, Oct 17, 2024 at 09:54:13AM +0100, Lorenzo Stoakes wrote:
-> On Thu, Oct 17, 2024 at 10:58:38AM +0800, Oliver Sang wrote:
+There is no need to subtract curr’s load from avg_load during runtime.
+Instead, we only need to calculate the incremental change and update
+tot_vruntime whenever curr’s time is updated. This can effectively reduce
+the number of calculations for curr’s time.
 
-[...]
+To better represent their functions, rename the original avg_vruntime and
+avg_load to tot_vruntime and tot_load, respectively, which more accurately
+describes their roles in the computation.
 
-> 
-> Thanks for this. As far as I'm concerned this puts us into noise territory,
-> so we'll go with this as the solution!
-> 
-> A side-note, the brk2 test from the will-it-scale suite, written explicitly
-> to be more real-world representative, sees an actual performance
-> _improvement_ here (though small).
-> 
-> So overall I'm comfortable with this, we can revisit if anybody raises any
-> objection! The benefit in de-duplicating code is very significant.
+Signed-off-by: Xavier <xavier_qy@163.com>
+---
 
-thanks a lot for all these informations!
+Note:
+To address the performance decline in V2, the V3 patch reduces the unnecessary
+ calculations of avg_vruntime.
 
-> 
-> Thanks for all your help, hugely appreciated!
 
-you are welcome :) just our great pleasure!
+ kernel/sched/fair.c  | 104 ++++++++++++++++++++++++-------------------
+ kernel/sched/sched.h |   3 +-
+ 2 files changed, 59 insertions(+), 48 deletions(-)
 
-> 
-> Cheers, Lorenzo
-> 
-> [snip]
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 6512258dc71..cbcdf8686fe 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -606,8 +606,8 @@ static inline s64 entity_key(struct cfs_rq *cfs_rq, struct sched_entity *se)
+  * Which we track using:
+  *
+  *                    v0 := cfs_rq->min_vruntime
+- * \Sum (v_i - v0) * w_i := cfs_rq->avg_vruntime
+- *              \Sum w_i := cfs_rq->avg_load
++ * \Sum (v_i - v0) * w_i := cfs_rq->tot_vruntime
++ *              \Sum w_i := cfs_rq->tot_load
+  *
+  * Since min_vruntime is a monotonic increasing variable that closely tracks
+  * the per-task service, these deltas: (v_i - v), will be in the order of the
+@@ -617,14 +617,28 @@ static inline s64 entity_key(struct cfs_rq *cfs_rq, struct sched_entity *se)
+  *
+  * As measured, the max (key * weight) value was ~44 bits for a kernel build.
+  */
++static inline void avg_vruntime_update(struct cfs_rq *cfs_rq)
++{
++	s64	tot_vruntime = cfs_rq->tot_vruntime;
++
++	/* sign flips effective floor / ceiling */
++	if (cfs_rq->tot_load) {
++		if (tot_vruntime < 0)
++			tot_vruntime -= (cfs_rq->tot_load - 1);
++		cfs_rq->avg_vruntime = div_s64(tot_vruntime, cfs_rq->tot_load);
++	} else {
++		cfs_rq->avg_vruntime = cfs_rq->tot_vruntime;
++	}
++}
++
+ static void
+ avg_vruntime_add(struct cfs_rq *cfs_rq, struct sched_entity *se)
+ {
+ 	unsigned long weight = scale_load_down(se->load.weight);
+ 	s64 key = entity_key(cfs_rq, se);
+ 
+-	cfs_rq->avg_vruntime += key * weight;
+-	cfs_rq->avg_load += weight;
++	cfs_rq->tot_vruntime += key * weight;
++	cfs_rq->tot_load += weight;
+ }
+ 
+ static void
+@@ -633,17 +647,26 @@ avg_vruntime_sub(struct cfs_rq *cfs_rq, struct sched_entity *se)
+ 	unsigned long weight = scale_load_down(se->load.weight);
+ 	s64 key = entity_key(cfs_rq, se);
+ 
+-	cfs_rq->avg_vruntime -= key * weight;
+-	cfs_rq->avg_load -= weight;
++	cfs_rq->tot_vruntime -= key * weight;
++	cfs_rq->tot_load -= weight;
++}
++
++static inline
++void tot_vruntime_update_for_curr(struct cfs_rq *cfs_rq, s64 delta)
++{
++	struct sched_entity *curr = cfs_rq->curr;
++	unsigned long weight = scale_load_down(curr->load.weight);
++
++	cfs_rq->tot_vruntime += delta * weight;
+ }
+ 
+ static inline
+-void avg_vruntime_update(struct cfs_rq *cfs_rq, s64 delta)
++void tot_vruntime_update_for_minv(struct cfs_rq *cfs_rq, s64 delta)
+ {
+ 	/*
+-	 * v' = v + d ==> avg_vruntime' = avg_runtime - d*avg_load
++	 * v' = v + d ==> avg_runtime' = tot_runtime - d*tot_load
+ 	 */
+-	cfs_rq->avg_vruntime -= cfs_rq->avg_load * delta;
++	cfs_rq->tot_vruntime -= cfs_rq->tot_load * delta;
+ }
+ 
+ /*
+@@ -652,25 +675,9 @@ void avg_vruntime_update(struct cfs_rq *cfs_rq, s64 delta)
+  */
+ u64 avg_vruntime(struct cfs_rq *cfs_rq)
+ {
+-	struct sched_entity *curr = cfs_rq->curr;
+-	s64 avg = cfs_rq->avg_vruntime;
+-	long load = cfs_rq->avg_load;
+-
+-	if (curr && curr->on_rq) {
+-		unsigned long weight = scale_load_down(curr->load.weight);
+-
+-		avg += entity_key(cfs_rq, curr) * weight;
+-		load += weight;
+-	}
+-
+-	if (load) {
+-		/* sign flips effective floor / ceiling */
+-		if (avg < 0)
+-			avg -= (load - 1);
+-		avg = div_s64(avg, load);
+-	}
++	avg_vruntime_update(cfs_rq);
+ 
+-	return cfs_rq->min_vruntime + avg;
++	return cfs_rq->min_vruntime + cfs_rq->avg_vruntime;
+ }
+ 
+ /*
+@@ -725,18 +732,8 @@ static void update_entity_lag(struct cfs_rq *cfs_rq, struct sched_entity *se)
+  */
+ static int vruntime_eligible(struct cfs_rq *cfs_rq, u64 vruntime)
+ {
+-	struct sched_entity *curr = cfs_rq->curr;
+-	s64 avg = cfs_rq->avg_vruntime;
+-	long load = cfs_rq->avg_load;
+-
+-	if (curr && curr->on_rq) {
+-		unsigned long weight = scale_load_down(curr->load.weight);
+-
+-		avg += entity_key(cfs_rq, curr) * weight;
+-		load += weight;
+-	}
+-
+-	return avg >= (s64)(vruntime - cfs_rq->min_vruntime) * load;
++	return cfs_rq->tot_vruntime >=
++			(s64)(vruntime - cfs_rq->min_vruntime) * (s64)cfs_rq->tot_load;
+ }
+ 
+ int entity_eligible(struct cfs_rq *cfs_rq, struct sched_entity *se)
+@@ -752,7 +749,7 @@ static u64 __update_min_vruntime(struct cfs_rq *cfs_rq, u64 vruntime)
+ 	 */
+ 	s64 delta = (s64)(vruntime - min_vruntime);
+ 	if (delta > 0) {
+-		avg_vruntime_update(cfs_rq, delta);
++		tot_vruntime_update_for_minv(cfs_rq, delta);
+ 		min_vruntime = vruntime;
+ 	}
+ 	return min_vruntime;
+@@ -851,7 +848,6 @@ RB_DECLARE_CALLBACKS(static, min_vruntime_cb, struct sched_entity,
+  */
+ static void __enqueue_entity(struct cfs_rq *cfs_rq, struct sched_entity *se)
+ {
+-	avg_vruntime_add(cfs_rq, se);
+ 	se->min_vruntime = se->vruntime;
+ 	se->min_slice = se->slice;
+ 	rb_add_augmented_cached(&se->run_node, &cfs_rq->tasks_timeline,
+@@ -862,7 +858,6 @@ static void __dequeue_entity(struct cfs_rq *cfs_rq, struct sched_entity *se)
+ {
+ 	rb_erase_augmented_cached(&se->run_node, &cfs_rq->tasks_timeline,
+ 				  &min_vruntime_cb);
+-	avg_vruntime_sub(cfs_rq, se);
+ }
+ 
+ struct sched_entity *__pick_root_entity(struct cfs_rq *cfs_rq)
+@@ -1219,6 +1214,7 @@ static void update_curr(struct cfs_rq *cfs_rq)
+ 	struct rq *rq = rq_of(cfs_rq);
+ 	s64 delta_exec;
+ 	bool resched;
++	s64 vdelta_exec;
+ 
+ 	if (unlikely(!curr))
+ 		return;
+@@ -1227,8 +1223,11 @@ static void update_curr(struct cfs_rq *cfs_rq)
+ 	if (unlikely(delta_exec <= 0))
+ 		return;
+ 
+-	curr->vruntime += calc_delta_fair(delta_exec, curr);
++	vdelta_exec = calc_delta_fair(delta_exec, curr);
++	curr->vruntime += vdelta_exec;
+ 	resched = update_deadline(cfs_rq, curr);
++
++	tot_vruntime_update_for_curr(cfs_rq, vdelta_exec);
+ 	update_min_vruntime(cfs_rq);
+ 
+ 	if (entity_is_task(curr)) {
+@@ -3883,6 +3882,8 @@ static void reweight_entity(struct cfs_rq *cfs_rq, struct sched_entity *se,
+ 		avruntime = avg_vruntime(cfs_rq);
+ 		if (!curr)
+ 			__dequeue_entity(cfs_rq, se);
++
++		avg_vruntime_sub(cfs_rq, se);
+ 		update_load_sub(&cfs_rq->load, se->load.weight);
+ 	}
+ 	dequeue_load_avg(cfs_rq, se);
+@@ -3913,6 +3914,8 @@ static void reweight_entity(struct cfs_rq *cfs_rq, struct sched_entity *se,
+ 		if (!curr)
+ 			__enqueue_entity(cfs_rq, se);
+ 
++		avg_vruntime_add(cfs_rq, se);
++
+ 		/*
+ 		 * The entity's vruntime has been adjusted, so let's check
+ 		 * whether the rq-wide min_vruntime needs updated too. Since
+@@ -5281,7 +5284,6 @@ place_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int flags)
+ 	 * EEVDF: placement strategy #1 / #2
+ 	 */
+ 	if (sched_feat(PLACE_LAG) && cfs_rq->nr_running && se->vlag) {
+-		struct sched_entity *curr = cfs_rq->curr;
+ 		unsigned long load;
+ 
+ 		lag = se->vlag;
+@@ -5338,9 +5340,7 @@ place_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int flags)
+ 		 *
+ 		 *   vl_i = (W + w_i)*vl'_i / W
+ 		 */
+-		load = cfs_rq->avg_load;
+-		if (curr && curr->on_rq)
+-			load += scale_load_down(curr->load.weight);
++		load = cfs_rq->tot_load;
+ 
+ 		lag *= load + scale_load_down(se->load.weight);
+ 		if (WARN_ON_ONCE(!load))
+@@ -5427,6 +5427,8 @@ enqueue_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int flags)
+ 	update_stats_enqueue_fair(cfs_rq, se, flags);
+ 	if (!curr)
+ 		__enqueue_entity(cfs_rq, se);
++
++	avg_vruntime_add(cfs_rq, se);
+ 	se->on_rq = 1;
+ 
+ 	if (cfs_rq->nr_running == 1) {
+@@ -5530,6 +5532,8 @@ dequeue_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int flags)
+ 
+ 	if (se != cfs_rq->curr)
+ 		__dequeue_entity(cfs_rq, se);
++
++	avg_vruntime_sub(cfs_rq, se);
+ 	se->on_rq = 0;
+ 	account_entity_dequeue(cfs_rq, se);
+ 
+@@ -6927,11 +6931,17 @@ requeue_delayed_entity(struct sched_entity *se)
+ 			cfs_rq->nr_running--;
+ 			if (se != cfs_rq->curr)
+ 				__dequeue_entity(cfs_rq, se);
++			avg_vruntime_sub(cfs_rq, se);
++
+ 			se->vlag = 0;
+ 			place_entity(cfs_rq, se, 0);
++
+ 			if (se != cfs_rq->curr)
+ 				__enqueue_entity(cfs_rq, se);
++			avg_vruntime_add(cfs_rq, se);
+ 			cfs_rq->nr_running++;
++
++			update_min_vruntime(cfs_rq);
+ 		}
+ 	}
+ 
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index 5f3de82ec9c..b5b4062db3e 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -650,8 +650,9 @@ struct cfs_rq {
+ 	unsigned int		idle_nr_running;   /* SCHED_IDLE */
+ 	unsigned int		idle_h_nr_running; /* SCHED_IDLE */
+ 
++	s64			tot_vruntime;
+ 	s64			avg_vruntime;
+-	u64			avg_load;
++	u64			tot_load;
+ 
+ 	u64			min_vruntime;
+ #ifdef CONFIG_SCHED_CORE
+-- 
+2.45.2
+
