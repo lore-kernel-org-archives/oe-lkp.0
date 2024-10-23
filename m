@@ -1,270 +1,172 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18C561B982C
-	for <oe-lkp@lists.linux.dev>; Wed, 23 Oct 2024 14:14:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4790C1C9B71
+	for <oe-lkp@lists.linux.dev>; Wed, 23 Oct 2024 17:39:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=99.78.197.218
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729692845; cv=none; b=ckokT7BQ5i80bgjzXdKNSZHrMzNcb9Ro6Ui/dggYynlGRBm+MeYYfZQ6ciuGxwDGWy4SpD7mANRJ8CqnUMDY8aFl3eCw+kPQV1GY8gHql81H0f3c3f/nWEda1R0D0/2+ro27FKf0vZbJEswmOOPCsKlHm8WQEE5/NyD7M/urKU4=
+	t=1729705176; cv=none; b=H+tWsfCigV6SAxrXB/MKs9GTrAaQ0fh5abEtaw+ASnN6us+2F4jLisQSRthTTkLVXFB1DMyQ/FbOYPv0peSMfgF/Rysq4sAvmvGCePN7PCI5lSNnGwZj0fx83nEA6j7einzqGaAC6lLlozKAXizm9yA1E7iTTdEdLiQSRggssFc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729692845; c=relaxed/simple;
-	bh=e5lfgz9uob4k1uyFDQD3okYiID40ELTcQ6BULB07Cwo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hQTRvAn8zbOjqTMd55+eHqKDJBWNeEcRfUcf9I4+0G71d8UVhRhc/0SuPDs1hWKr7LNtAf4M4QwvCalOHo1hpyKZpH26E5izef5Jr72PMsOK2ThkKeZUzBUaxwwdBqHO+s4H06dJjsUKc9gPQfmMQls9P9bcatCGVInU47vl/Bk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=DsQ4BbDF; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1729705176; c=relaxed/simple;
+	bh=Hi01OAOJDmxWrPbHj7eMTsvkCoVn1z+pxs6LbaghJlw=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=sDipZGCWMI3NUux6G0VMdrPFYR+y5XdA5lwkmPuVDmAufNwRjWtj2WRSuBhC58GDFFMQdd01wrggtKKc0wHo94H9rUA+xiVa1Nj9fokdiIRShWhQN+VPyMhOnkWgpxJH16afXj3KhqfFbS4AVZJZAvMzTq1wmvS/uRjs5uqq72I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com; spf=pass smtp.mailfrom=amazon.co.jp; dkim=pass (1024-bit key) header.d=amazon.com header.i=@amazon.com header.b=F3mcV2i5; arc=none smtp.client-ip=99.78.197.218
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amazon.co.jp
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="DsQ4BbDF"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1729692841;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=nI/0JofbsRUc5jiX0lc5WWWG5OVrjpTvPysCApLQIp4=;
-	b=DsQ4BbDFu9ftIQ9WAiYeJtwvdGAk/ejNj9FlSfHNQ9l+2dtlJiRFzcqqEppZcSUMkUfx0O
-	Xy7yMdSWyHKRhbfEenM5Pu7judnAenxxHGqWepuKUN+ncscDNxkI2WxHq4388FMtM5cID4
-	2WYew+CYXG18m47h84f61Pq3PdF4g/0=
-Received: from mx-prod-mc-04.mail-002.prod.us-west-2.aws.redhat.com
- (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-377-rVLAevbrP12kSKshpNraxw-1; Wed,
- 23 Oct 2024 10:13:57 -0400
-X-MC-Unique: rVLAevbrP12kSKshpNraxw-1
-Received: from mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.40])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mx-prod-mc-04.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id D920019059B4;
-	Wed, 23 Oct 2024 14:13:54 +0000 (UTC)
-Received: from bfoster (unknown [10.22.80.135])
-	by mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 51E661956054;
-	Wed, 23 Oct 2024 14:13:52 +0000 (UTC)
-Date: Wed, 23 Oct 2024 10:15:19 -0400
-From: Brian Foster <bfoster@redhat.com>
-To: Dave Chinner <david@fromorbit.com>
-Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, linux-kernel@vger.kernel.org,
-	Christian Brauner <brauner@kernel.org>,
-	"Darrick J. Wong" <djwong@kernel.org>,
-	Josef Bacik <josef@toxicpanda.com>, linux-xfs@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org, ying.huang@intel.com,
-	feng.tang@intel.com, fengwei.yin@intel.com
-Subject: Re: [linus:master] [iomap]  c5c810b94c:
- stress-ng.metamix.ops_per_sec -98.4% regression
-Message-ID: <ZxkE93Vz3ZQaAFO1@bfoster>
-References: <202410141536.1167190b-oliver.sang@intel.com>
- <Zw1IHVLclhiBjDkP@bfoster>
- <Zw7jwnvBaMwloHXG@dread.disaster.area>
- <Zw_gDDlIEgZbApU_@bfoster>
+	dkim=pass (1024-bit key) header.d=amazon.com header.i=@amazon.com header.b="F3mcV2i5"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1729705175; x=1761241175;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=c+clLEDqhpVnAQ/9JllL5Jgk73yPmpsY2D2x4Lyyp2g=;
+  b=F3mcV2i5ObGMQD5WWmwI9dYMedgHFVw4WYdyD+6AsHP9jdOptnFWIBK3
+   ayFrcJ0g2vbhRzszw8Cat+Nq+BAvrECSi9fBfuX2vJLQfA3lb8uJG1XPM
+   sbG2xUUJpKWWyDXE2Xo920xOqMKoTmFlucFM61an6cYEcrgqINtYSEoNq
+   I=;
+X-IronPort-AV: E=Sophos;i="6.11,226,1725321600"; 
+   d="scan'208";a="346063021"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO smtpout.prod.us-west-2.prod.farcaster.email.amazon.dev) ([10.25.36.210])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2024 17:39:32 +0000
+Received: from EX19MTAUWC001.ant.amazon.com [10.0.7.35:64515]
+ by smtpin.naws.us-west-2.prod.farcaster.email.amazon.dev [10.0.62.162:2525] with esmtp (Farcaster)
+ id bc0458b7-221d-4e04-ae32-84b104827060; Wed, 23 Oct 2024 17:39:31 +0000 (UTC)
+X-Farcaster-Flow-ID: bc0458b7-221d-4e04-ae32-84b104827060
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX19MTAUWC001.ant.amazon.com (10.250.64.174) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1258.34;
+ Wed, 23 Oct 2024 17:39:31 +0000
+Received: from 6c7e67c6786f.amazon.com (10.106.100.17) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1258.35;
+ Wed, 23 Oct 2024 17:39:28 +0000
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
+To: <oliver.sang@intel.com>
+CC: <edumazet@google.com>, <ignat@cloudflare.com>, <kuba@kernel.org>,
+	<kuniyu@amazon.com>, <lkp@intel.com>, <netdev@vger.kernel.org>,
+	<oe-lkp@lists.linux.dev>
+Subject: Re: [linux-next:master] [net]  18429e6e0c: WARNING:at_net/socket.c:#__sock_create
+Date: Wed, 23 Oct 2024 10:39:25 -0700
+Message-ID: <20241023173925.34267-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.39.5 (Apple Git-154)
+In-Reply-To: <202410231427.633734b3-lkp@intel.com>
+References: <202410231427.633734b3-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Zw_gDDlIEgZbApU_@bfoster>
-X-Scanned-By: MIMEDefang 3.0 on 10.30.177.40
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: EX19D033UWA002.ant.amazon.com (10.13.139.10) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
 
-On Wed, Oct 16, 2024 at 11:47:24AM -0400, Brian Foster wrote:
-> On Wed, Oct 16, 2024 at 08:50:58AM +1100, Dave Chinner wrote:
-> > On Mon, Oct 14, 2024 at 12:34:37PM -0400, Brian Foster wrote:
-> > > On Mon, Oct 14, 2024 at 03:55:24PM +0800, kernel test robot wrote:
-> > > > 
-> > > > 
-> > > > Hello,
-> > > > 
-> > > > kernel test robot noticed a -98.4% regression of stress-ng.metamix.ops_per_sec on:
-> > > > 
-> > > > 
-> > > > commit: c5c810b94cfd818fc2f58c96feee58a9e5ead96d ("iomap: fix handling of dirty folios over unwritten extents")
-> > > > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> > > > 
-> > > > testcase: stress-ng
-> > > > config: x86_64-rhel-8.3
-> > > > compiler: gcc-12
-> > > > test machine: 64 threads 2 sockets Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz (Ice Lake) with 256G memory
-> > > > parameters:
-> > > > 
-> > > > 	nr_threads: 100%
-> > > > 	disk: 1HDD
-> > > > 	testtime: 60s
-> > > > 	fs: xfs
-> > > > 	test: metamix
-> > > > 	cpufreq_governor: performance
-> > > > 
-> > > > 
-> > > > 
-> > > > 
-> > > > If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> > > > the same patch/commit), kindly add following tags
-> > > > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> > > > | Closes: https://lore.kernel.org/oe-lkp/202410141536.1167190b-oliver.sang@intel.com
-> > > > 
-> > > > 
-> > > > Details are as below:
-> > > > -------------------------------------------------------------------------------------------------->
-> > > > 
-> > > > 
-> > > > The kernel config and materials to reproduce are available at:
-> > > > https://download.01.org/0day-ci/archive/20241014/202410141536.1167190b-oliver.sang@intel.com
-> > > > 
-> > > 
-> > > So I basically just run this on a >64xcpu guest and reproduce the delta:
-> > > 
-> > >   stress-ng --timeout 60 --times --verify --metrics --no-rand-seed --metamix 64
-> > > 
-> > > The short of it is that with tracing enabled, I see a very large number
-> > > of extending writes across unwritten mappings, which basically means XFS
-> > > eof zeroing is calling zero range and hitting the newly introduced
-> > > flush. This is all pretty much expected given the patch.
-> > 
-> > Ouch.
-> > 
-> > The conditions required to cause this regression are that we either
-> > first use fallocate() to preallocate beyond EOF, or buffered writes
-> > trigger specualtive delalloc beyond EOF and they get converted to
-> > unwritten beyond EOF through background writeback or fsync
-> > operations. Both of these lead to unwritten extents beyond EOF that
-> > extending writes will fall into.
-> > 
-> > All we need now is the extending writes to be slightly
-> > non-sequential and those non-sequential extending writes will not
-> > land at EOF but at some distance beyond it. At this point, we
-> > trigger the new flush code. Unfortunately, this is actually a fairly
-> > common workload pattern.
-> > 
-> > For example, experience tells me that NFS server processing of async
-> > sequential write requests from a client will -always- end up with
-> > slightly out of order extending writes because the incoming async
-> > write requests are processed concurrently. Hence they always race to
-> > extend the file and slightly out of order file extension happens
-> > quite frequently.
-> > 
-> > Further, the NFS client will also periodically be sending a write
-> > commit request (i.e. server side fsync), the
-> > NFS server writeback will convert the speculative delalloc that
-> > extends beyond EOF into unwritten extents beyond EOF whilst the
-> > incoming extending write requests are still incoming from the
-> > client.
-> > 
-> > Hence I think that there are common workloads (e.g. large sequential
-> > writes on a NFS client) that set up the exact conditions and IO
-> > patterns necessary to trigger this performance regression in
-> > production systems...
-> > 
+From: kernel test robot <oliver.sang@intel.com>
+Date: Wed, 23 Oct 2024 15:02:51 +0800
 > 
-> It's not clear to me that purely out of order writeback via NFS would
-> produce the same sort of hit here because we'd only flush on write
-> extensions. I think the pathological case would have to be something
-> like reordering such that every other write lands sequentially to
-> maximize the number of post-eof write extensions, and then going back
-> and filling in the gaps. That seems rather suboptimal to start, and
-> short of that the cost of the flushes will start to amortize to some
-> degree (including with commit requests, etc.).
+> Hello,
 > 
-> That said, I don't have much experience with NFS and I think this is a
-> reasonable enough argument to try and optimize here. If you or anybody
-> has an NFS test/workload that might exacerbate this condition, let me
-> know and I'll try to play around with it.
+> kernel test robot noticed "WARNING:at_net/socket.c:#__sock_create" on:
 > 
-> > > I ran a quick experiment to skip the flush on sub-4k ranges in favor of
-> > > doing explicit folio zeroing. The idea with that is that the range is
-> > > likely restricted to single folio and since it's dirty, we can assume
-> > > unwritten conversion is imminent and just explicitly zero the range. I
-> > > still see a decent number of flushes from larger ranges in that
-> > > experiment, but that still seems to get things pretty close to my
-> > > baseline test (on a 6.10 distro kernel).
-> > 
-> > What filesystems other than XFS actually need this iomap bandaid
-> > right now?  If there are none (which I think is the case), then we
-> > should just revert this change it until a more performant fix is
-> > available for XFS.
-> > 
+> commit: 18429e6e0c2ad26250862a786964d8c73400d9a0 ("Revert "net: do not leave a dangling sk pointer, when socket creation fails"")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
 > 
-> I think that's a bit hasty. I had one or two ideas/prototypes to work
-> around this sort of problem before the flush patches even landed, it
-> just wasn't clear to me they were worth the extra logic. I'd prefer to
-> try and iterate on performance from a baseline of functional correctness
-> rather than the other way around, if possible.
+> [test failed on linux-next/master f2493655d2d3d5c6958ed996b043c821c23ae8d3]
 > 
-> A quick hack to test out some of that on latest master brings the result
-> of this test right back to baseline in my local env. Let me play around
-> with trying to work that into something more production worthy before we
-> break out the pitchforks.. ;)
+> in testcase: trinity
+> version: 
+> with following parameters:
 > 
-
-So it turns out there is a little bit more going on here. The regression
-is not so much the flush on its own, but the combination of the flush
-and changes in commit 5ce5674187c34 ("xfs: convert delayed extents to
-unwritten when zeroing post eof blocks"). This changes post-eof zero
-range calls on XFS to convert delalloc extents to unwritten instead of
-the prior behavior of leaving them as delalloc, zeroing in memory, and
-continuing on. IOW, the regression also goes away by bypassing this
-particular commit, even with flushing in place.
-
-The prealloc change seems fairly reasonable at face value, but the
-commit log description documents it as purely an i_size change bug fix
-associated with an internal zero range, which AFAICT isn't relevant any
-more because iomap_zero_range() doesn't update i_size AFAICS. However,
-it looks like it did so in the past and this behavior also swizzled back
-and forth a time or two in the same timeframe as this particular commit,
-so perhaps it was a problem when this was introduced and then iomap
-changed again after (or maybe I'm just missing something?).
-
-On thinking more about this, I'd be a little concerned on whether this
-will reduce effectiveness of speculative preallocation on similar sorts
-of write extending workloads as this test (i.e. strided extending
-writes). This changes behavior from doing in-memory zeroing between
-physical allocations via the writeback path to doing physical allocation
-on every write that starts beyond EOF, which feels a little like going
-from one extreme to the other. Instead, I'd expect to see something
-where this converts larger mappings to avoid excessive zeroing and
-zeroes on smallish ranges to avoid overly frequent and unnecessarily
-small physical allocations, allowing multiple speculative preallocations
-to compound.
-
-Anyways, I've not dug into this enough to know whether it's a problem,
-but since this is documented purely as a bug fix I don't see any
-evidence that potential impact on allocation patterns was tested either.
-This might be something to evaluate more closely in XFS.
-
-On the iomap side, it also seems like the current handling of i_size on
-zero range is confused. If iomap_zero_range() doesn't update i_size,
-then it basically doesn't fully support post-eof ranges. It zeroes
-through buffered writes, which writeback will just drop on the floor if
-beyond EOF. However, XFS explicitly calls zero range on post-eof ranges
-to trigger the aforementioned conversion in its begin callback (but
-never expecting to see ranges that need buffered writes).
-
-I think this is a landmine waiting to happen. If iomap decides to be
-deliberate and skip post-eof ranges, then this could break current XFS
-behavior if it skips the begin callback. OTOH if XFS were to change back
-to at least doing some speculative prealloc delalloc zeroing, IIUC this
-now introduces a race between writeback potentially throwing away the
-zeroed folios over delalloc preallocation and the subsequent write
-operation extending i_size so that doesn't happen. :/ None of this is
-particularly obvious. And FWIW, I'm also skeptical that i_size updates
-were ever consistent across mapping types. I.e., if the size was only
-ever updated via iomap_write_end() for example, then behavior is kind of
-unpredictable.
-
-Maybe this is something that should be configurable via a keepsize flag
-or some such. That would at least allow for correct behavior and/or a
-failure/warning if we ever fell into doing zeroing for post-eof ranges
-without updating i_size. Thoughts on any of this?
-
-Brian
-
-> Brian
-> 
-> > -Dave.
-> > -- 
-> > Dave Chinner
-> > david@fromorbit.com
-> > 
+> 	runtime: 600s
 > 
 > 
+> 
+> config: x86_64-randconfig-072-20241019
+> compiler: gcc-12
+> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+> 
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+> 
+> 
+> +------------------------------------------------+------------+------------+
+> |                                                | 48156296a0 | 18429e6e0c |
+> +------------------------------------------------+------------+------------+
+> | WARNING:at_net/socket.c:#__sock_create         | 0          | 23         |
+> | RIP:__sock_create                              | 0          | 23         |
+> +------------------------------------------------+------------+------------+
+> 
+> 
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202410231427.633734b3-lkp@intel.com
+> 
+> 
+> [   81.874092][  T849] ------------[ cut here ]------------
+> [ 81.874427][ T849] WARNING: CPU: 0 PID: 849 at net/socket.c:1581 __sock_create (net/socket.c:1581 (discriminator 1)) 
+> [   81.874997][  T849] Modules linked in:
+> [   81.875214][  T849] CPU: 0 UID: 8192 PID: 849 Comm: trinity-c5 Not tainted 6.12.0-rc2-00650-g18429e6e0c2a #1
+> [ 81.875701][ T849] RIP: 0010:__sock_create (net/socket.c:1581 (discriminator 1)) 
+> [ 81.876000][ T849] Code: e9 19 fd ff ff e8 a3 16 d7 fd e9 4f f9 ff ff 41 bd 9f ff ff ff e9 b8 fa ff ff 41 bd ea ff ff ff e9 ad fa ff ff e8 83 95 9c fd <0f> 0b e9 72 ff ff ff e8 77 95 9c fd e8 62 72 12 00 31 ff 89 c3 89
+[...]
+> [   81.881295][  T849] Call Trace:
+> [   81.881474][  T849]  <TASK>
+> [ 81.881634][ T849] ? __sock_create (net/socket.c:1581 (discriminator 1)) 
+> [ 81.881908][ T849] ? __warn (kernel/panic.c:748) 
+> [ 81.882130][ T849] ? __sock_create (net/socket.c:1581 (discriminator 1)) 
+> [ 81.882395][ T849] ? report_bug (lib/bug.c:180 lib/bug.c:219) 
+> [ 81.882655][ T849] ? handle_bug (arch/x86/kernel/traps.c:285) 
+> [ 81.882910][ T849] ? exc_invalid_op (arch/x86/kernel/traps.c:309 (discriminator 1)) 
+> [ 81.883164][ T849] ? asm_exc_invalid_op (arch/x86/include/asm/idtentry.h:621) 
+> [ 81.883446][ T849] ? __sock_create (net/socket.c:1581 (discriminator 1)) 
+> [ 81.883725][ T849] __sys_socket (net/socket.c:1670 net/socket.c:1716) 
+> [ 81.883995][ T849] ? update_socket_protocol+0x20/0x20 
+> [ 81.884432][ T849] ? ftrace_likely_update (arch/x86/include/asm/smap.h:56 kernel/trace/trace_branch.c:229) 
+> [ 81.885031][ T849] ? tracer_hardirqs_on (kernel/trace/trace_irqsoff.c:57 kernel/trace/trace_irqsoff.c:613) 
+> [ 81.885310][ T849] __ia32_sys_socket (net/socket.c:1728) 
+> [ 81.885863][ T849] do_int80_emulation (arch/x86/entry/common.c:165 arch/x86/entry/common.c:253) 
+> [ 81.886413][ T849] asm_int80_emulation (arch/x86/include/asm/idtentry.h:626)
 
+I find this stack trace useless unless we have a strace log or
+repro as syzkaller provides.
+
+I should've suggested like below to make debugging easier.
+
+This might be already fixed by Eric's vsock patch, but I'll post a
+patch later.
+
+---8<---
+diff --git a/include/net/net_debug.h b/include/net/net_debug.h
+index 1e74684cbbdb..5bcd9a18d00a 100644
+--- a/include/net/net_debug.h
++++ b/include/net/net_debug.h
+@@ -150,8 +150,10 @@ do {								\
+ 
+ #if defined(CONFIG_DEBUG_NET)
+ #define DEBUG_NET_WARN_ON_ONCE(cond) (void)WARN_ON_ONCE(cond)
++#define DEBUG_NET_WARN_ONCE(cond, format...) (void)WARN_ONCE(cond, format)
+ #else
+ #define DEBUG_NET_WARN_ON_ONCE(cond) BUILD_BUG_ON_INVALID(cond)
++#define DEBUG_NET_WARN_ONCE(cond, format...) BUILD_BUG_ON_INVALID(cond)
+ #endif
+ 
+ #endif	/* _LINUX_NET_DEBUG_H */
+diff --git a/net/socket.c b/net/socket.c
+index 9a8e4452b9b2..da00db3824e3 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -1578,7 +1578,9 @@ int __sock_create(struct net *net, int family, int type, int protocol,
+ 		/* ->create should release the allocated sock->sk object on error
+ 		 * and make sure sock->sk is set to NULL to avoid use-after-free
+ 		 */
+-		DEBUG_NET_WARN_ON_ONCE(sock->sk);
++		DEBUG_NET_WARN_ONCE(sock->sk,
++				    "%pS must clear sock->sk on failure, family: %d, type: %d, protocol: %d\n",
++				    pf->create, family, type, protocol);
+ 		goto out_module_put;
+ 	}
+ 
+---8<---
