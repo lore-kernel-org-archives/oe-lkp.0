@@ -1,172 +1,321 @@
-Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4790C1C9B71
-	for <oe-lkp@lists.linux.dev>; Wed, 23 Oct 2024 17:39:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=99.78.197.218
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729705176; cv=none; b=H+tWsfCigV6SAxrXB/MKs9GTrAaQ0fh5abEtaw+ASnN6us+2F4jLisQSRthTTkLVXFB1DMyQ/FbOYPv0peSMfgF/Rysq4sAvmvGCePN7PCI5lSNnGwZj0fx83nEA6j7einzqGaAC6lLlozKAXizm9yA1E7iTTdEdLiQSRggssFc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729705176; c=relaxed/simple;
-	bh=Hi01OAOJDmxWrPbHj7eMTsvkCoVn1z+pxs6LbaghJlw=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=sDipZGCWMI3NUux6G0VMdrPFYR+y5XdA5lwkmPuVDmAufNwRjWtj2WRSuBhC58GDFFMQdd01wrggtKKc0wHo94H9rUA+xiVa1Nj9fokdiIRShWhQN+VPyMhOnkWgpxJH16afXj3KhqfFbS4AVZJZAvMzTq1wmvS/uRjs5uqq72I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com; spf=pass smtp.mailfrom=amazon.co.jp; dkim=pass (1024-bit key) header.d=amazon.com header.i=@amazon.com header.b=F3mcV2i5; arc=none smtp.client-ip=99.78.197.218
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amazon.co.jp
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60BB7C8DF
+	for <oe-lkp@lists.linux.dev>; Fri, 25 Oct 2024 02:13:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.8
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1729822403; cv=fail; b=lBe2PiLbj5q+zkTTX4lDbTvPX6z6xgvKJE5TEy8xOQ2nv5Id0yEJ0svxG62JZhBhU5SsqsvPAuIrZS8bD+Plxm2JucaMgswvtG+c3L/AdHgbcBHNBj6SoGFRz8oRoJLSpwLG3gjLm9qbnCptYoliWzpwOVeDcYn1kZtTLmGcQxI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1729822403; c=relaxed/simple;
+	bh=3gD4NdKLr4b5D6NF69+f27H5rHnRcPKghEhWyjs4fVo=;
+	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=ul9Dl4B94iYvD32+4xCuutXiUjCZos73a6kEihpXcjEn43satUWYpA7u6WLuNEzNbHMA72hcaV6yemLhhhWpoLoxR3m8LMRHPagVbSB8iH0/S704WeRbhsqDjq5mpQpNSgBsiUVqsFmssn4nif6gppBO584yHBJ46dJ2VlRjSF4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=L4VPC8MG; arc=fail smtp.client-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amazon.com header.i=@amazon.com header.b="F3mcV2i5"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1729705175; x=1761241175;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=c+clLEDqhpVnAQ/9JllL5Jgk73yPmpsY2D2x4Lyyp2g=;
-  b=F3mcV2i5ObGMQD5WWmwI9dYMedgHFVw4WYdyD+6AsHP9jdOptnFWIBK3
-   ayFrcJ0g2vbhRzszw8Cat+Nq+BAvrECSi9fBfuX2vJLQfA3lb8uJG1XPM
-   sbG2xUUJpKWWyDXE2Xo920xOqMKoTmFlucFM61an6cYEcrgqINtYSEoNq
-   I=;
-X-IronPort-AV: E=Sophos;i="6.11,226,1725321600"; 
-   d="scan'208";a="346063021"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO smtpout.prod.us-west-2.prod.farcaster.email.amazon.dev) ([10.25.36.210])
-  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2024 17:39:32 +0000
-Received: from EX19MTAUWC001.ant.amazon.com [10.0.7.35:64515]
- by smtpin.naws.us-west-2.prod.farcaster.email.amazon.dev [10.0.62.162:2525] with esmtp (Farcaster)
- id bc0458b7-221d-4e04-ae32-84b104827060; Wed, 23 Oct 2024 17:39:31 +0000 (UTC)
-X-Farcaster-Flow-ID: bc0458b7-221d-4e04-ae32-84b104827060
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX19MTAUWC001.ant.amazon.com (10.250.64.174) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1258.34;
- Wed, 23 Oct 2024 17:39:31 +0000
-Received: from 6c7e67c6786f.amazon.com (10.106.100.17) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1258.35;
- Wed, 23 Oct 2024 17:39:28 +0000
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
-To: <oliver.sang@intel.com>
-CC: <edumazet@google.com>, <ignat@cloudflare.com>, <kuba@kernel.org>,
-	<kuniyu@amazon.com>, <lkp@intel.com>, <netdev@vger.kernel.org>,
-	<oe-lkp@lists.linux.dev>
-Subject: Re: [linux-next:master] [net]  18429e6e0c: WARNING:at_net/socket.c:#__sock_create
-Date: Wed, 23 Oct 2024 10:39:25 -0700
-Message-ID: <20241023173925.34267-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.39.5 (Apple Git-154)
-In-Reply-To: <202410231427.633734b3-lkp@intel.com>
-References: <202410231427.633734b3-lkp@intel.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="L4VPC8MG"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1729822400; x=1761358400;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   mime-version;
+  bh=3gD4NdKLr4b5D6NF69+f27H5rHnRcPKghEhWyjs4fVo=;
+  b=L4VPC8MG7Dayy3eQxQPxJt1oKltdnmryTs5y4ZsQmxcMTC9gcBd2umj1
+   FaWQWsgDHBUy1eRQSI2AKOFMwp/LYqSdpzsu4vcPoqcEg3U2VLk8EdfUP
+   gMZKnS65d6wfoHsSltuFmx5s/kaFy9x4OTxotbndiKeg+UupwsGOFvSUq
+   oHsYmkUpQ8APofLIeDed8xrpWfYTCKxjaKTFACJsj/lWVniH5zyIZIo7m
+   TOU7IJ68grgVum5cu/Jhcaj18IFF0n1w4HbdLqx/HFKgwavCpqLfRnkDn
+   9zi2nw5XqshuPd20S+L+or63GDTjCqzqpqeFe81V9QCAhAMomxhBIJVe6
+   w==;
+X-CSE-ConnectionGUID: 8zWL3nirStCR4TirycmwBw==
+X-CSE-MsgGUID: +aEhr8poTsuoWXvFPXgbdg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11235"; a="46966083"
+X-IronPort-AV: E=Sophos;i="6.11,230,1725346800"; 
+   d="scan'208";a="46966083"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2024 19:13:20 -0700
+X-CSE-ConnectionGUID: QOk8f6caTlKLtFmY7aZcbw==
+X-CSE-MsgGUID: 7CrodPTbQLOWAZcukJDw/Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.11,230,1725346800"; 
+   d="scan'208";a="85368746"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by fmviesa004.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 24 Oct 2024 19:13:18 -0700
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39; Thu, 24 Oct 2024 19:13:17 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39 via Frontend Transport; Thu, 24 Oct 2024 19:13:17 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.44) by
+ edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.39; Thu, 24 Oct 2024 19:13:17 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=lIBCEoIWeGB2Z9nq2tcoOCuBiFupR62HMr08QlU4Uy74teKFDuozh5OWwHY7GPDlbYXDPCXn2dSNLuCzGJgL2lVtasmLNGEef0WR+PNhCVv361Brs6MQ+VMaGdBHSnrm/OGZFLiQIgHdYEL3Fb+27YbY+Pke3cjnT6NCTMxcsytdJ9Sj3CtkZHno+V6GE6IjWOZj0AoauO5faK6VtnsmjTxUf8Iwhe9pzOuo1i5062nR6b/NjWfsc1esa+/kO5nRZl3Wo5zMK3IolJuWpOPFoxJRij+x9lTezsMg1tFtjR5xmHTYA3xfoqpOAFrgcmEmTVS0VMv0aVl1YEP8jq0IVw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=FjwcZkNh2xPF6Mf7Dy8AL4rW+0wFpDThveuQpDm/d7g=;
+ b=jLcyY0nW3m3VDMF86x3fPzFhDhBbuhnh9x/lwpF4LNgT7F92ZLF+MVMBUk3nXIUM2391XCwjWJdUUSmi5b49P5VL+NlwUNDDZjjFyTfjMbtfvWalrOM0V3naaHBdf1g3nHrb1wwprI3Twpb2pXbgeJzylMVqtYJPpdgX9h5dqBe1iE8SdhkySpmKOGNRIEyJ0pmXz8JfKas83Lh3h0rxGn3lTAGl6sBCYsraX8f8/pCZFiiZDP5tvJXYQXzTWUyL7Tk5UG3yRHQFdyFgwB6GoSfGmQq+7gPwqWYLsETWv+qkIh95QIWg2wDK58bSGSgz5z+SNDhvgo5nbtvNV+CKWg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by DM4PR11MB6216.namprd11.prod.outlook.com (2603:10b6:8:a8::7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8093.18; Fri, 25 Oct 2024 02:13:15 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.8093.014; Fri, 25 Oct 2024
+ 02:13:15 +0000
+Date: Fri, 25 Oct 2024 10:13:05 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: Hua Su <suhua.tanke@gmail.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-mm@kvack.org>,
+	<rppt@kernel.org>, <akpm@linux-foundation.org>,
+	<linux-kernel@vger.kernel.org>, Hua Su <suhua.tanke@gmail.com>,
+	<oliver.sang@intel.com>
+Subject: Re: [PATCH] memblock: uniformly initialize all reserved pages to
+ MIGRATE_MOVABLE
+Message-ID: <202410251024.eb4a89f1-oliver.sang@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20241021051151.4664-1-suhua.tanke@gmail.com>
+X-ClientProxiedBy: SG2PR03CA0131.apcprd03.prod.outlook.com
+ (2603:1096:4:91::35) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: EX19D033UWA002.ant.amazon.com (10.13.139.10) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|DM4PR11MB6216:EE_
+X-MS-Office365-Filtering-Correlation-Id: 90594c54-b973-49ec-dc51-08dcf49a959d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?V8b3GdgvOTZEVGQwjcT3DrvILzOuo6M899BNo95OrAhHIxV+a0s7XIc4Ae0C?=
+ =?us-ascii?Q?OAQSmOsOZVTfxQTQhsWlVMiGCA/nFtptVRx9eut+X0PRDsNZwXMCY7JwONss?=
+ =?us-ascii?Q?yBEkZo/WwWVe0Cl0b9zCiuf+8Q9NRIM4K/eRAJ7VHi/7ZRY0d/CFE1JNqSTO?=
+ =?us-ascii?Q?WZBizEui+6oqwGFTSzeczXXz4914Hila5LUeN7Un3dgI+AUmqOZZkU913rmr?=
+ =?us-ascii?Q?ZoK4HOX+TWz9+GDd+5odeafvq0Kn8X3oR+lTVAVGZn1NyqmgNOxtQfw9l/QR?=
+ =?us-ascii?Q?tMpM/+yy60z6kGJj7r8ljG1dF0PcvNV9y+tdvy87+iXJWneuwV+Igpa/Kzj6?=
+ =?us-ascii?Q?IR6uaZ8UlQT0oqp9UCPpK6pCvWsMOCrJMtmL1xvPhxbhbCBAdJrMpbaJs0X7?=
+ =?us-ascii?Q?ouY2Ft2I/TsqWmD3D1YN4jkpFwqkORmk5J3FZWBTx8oy35oTRY85kC5a14NS?=
+ =?us-ascii?Q?QoI+gCSjFvnNuYiYQ8KHvcW2NM6yEyLaPCfdzJFTUsdhaowNJbkJxHviUVsQ?=
+ =?us-ascii?Q?+Q2hgPYATLKRcaATzFS32tnihWhgD1QHIaJgIpCjNoTYXaGvl6D04Zs0Xu6E?=
+ =?us-ascii?Q?RrCRzWoyeW90vYzCmxbU0bZRhDHd+TrfBhxXfdevooO1RV4zKysmPp0XSmlC?=
+ =?us-ascii?Q?1hsVwB/MuBsmKiFOjf0MzzzCzQwqMocLjMZzD1MvX/j9wSg2/bNaIoyoz1/w?=
+ =?us-ascii?Q?MtFsJT+LVk+g76SsIcxnEd0Zg6jQstRaCkVE2OmEJhFKQP2H6xQNxfpa/lSc?=
+ =?us-ascii?Q?UE56WWmPDZTB6gTEzj5UkQhkPftaYvbmUtWzQBKj7DKPBW5J919EE1gyJyhU?=
+ =?us-ascii?Q?ZUIC0r5R9sGa4ch7+gXHEeuCDXEuh8tBiaKRsHAMpgaDm/TJhgxT+vQEXVgC?=
+ =?us-ascii?Q?DvbGfdNVXVBCcTUgzXv0O7dZWAyeH5cPPL94yjxHZa8IavDR0kZ2Mp13v9TL?=
+ =?us-ascii?Q?kMZs022r2Mw3dWU3lUeGV2Cl2WRWGrS5oEkM7PqpDtdJc08XQdb7N4SwUU7c?=
+ =?us-ascii?Q?AocryO91dDua2/W7wDP10F789VgAc2CZS8CXlPhZKsojIdMw0tPASnC8D4LT?=
+ =?us-ascii?Q?vG/0vvLVvXCZ2L5D6fWZDKn9IQ9cKzgIctOpceIARFMFED9e1BFu4v+vS+6l?=
+ =?us-ascii?Q?BlFccn8SxXAnZ8nuG3OuHuhvrJvXB1sz0bQoYkJ9uPdE6PLCIjgszAPVDCyX?=
+ =?us-ascii?Q?vdQmsraETdDAJg3duAUSg+DKbV8y0v8WdBaGmRQhRYTaQbKEnDF3iRNbV9op?=
+ =?us-ascii?Q?Z2Qoc14fwrPkEe0Itdp2+bb2Is9CVdMP0nu1BqgqsQ=3D=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?LIwC3eV9j3NH6Y9fpgXT4CZuHT98unETXElBydtnlNKCDKBkzR5RmueG4n/n?=
+ =?us-ascii?Q?Fu64Uz+CgJ5m4b9bFW6gcYaNFykzVLOoYRPv/qSokaqs241tB0x2cLmm3b4n?=
+ =?us-ascii?Q?Pb5SI4zZINoFecll+YJFEdCb7+7k5MSWPHLHhTgA9mmXP53RcJRkuY5ORrOI?=
+ =?us-ascii?Q?xwlPoq1AX+oDnFaQAhja9JDrwIfZpOn0OmA+32T9rg9FUcVsRu+2c20Sg+WT?=
+ =?us-ascii?Q?Plw/5E9IO9UrzX73vcOV37AFVKvf6cp9QAu+xOEZqbV0GD7f4csE6V4hYsQp?=
+ =?us-ascii?Q?qCnWuLB0aJlLblpvDyWuMIV8vSpmtfQUS8r6qQ395M/7GI4zNjEEo+vThp1Q?=
+ =?us-ascii?Q?SSgqFaEyx7ApcJou7czFsWjI6Ub/F+ST52CxL+bSDD/pt1JxN1cn5t4d+lnI?=
+ =?us-ascii?Q?ZRl6+azkTjooCJSIgSnR62oviGBLaW4p6OlJ0AnLn8UXnjz759b/MfCFyRMB?=
+ =?us-ascii?Q?9/UsRtIdNC7ANcEOKZYRPZ4eiT+NzR25086KvxzKDF4NcFd2ffzo8f1vzqfD?=
+ =?us-ascii?Q?GAlR7ogsXIhF2GpUi4ymOJ7CpoFknG4mG0pMLaCqhC7OTWn7YGF91kk7jgko?=
+ =?us-ascii?Q?oJ9IcdjjcnauORhRgms5uLPibKgciEhSqqBzfdPm/Zx2DCdwJ0JVIB9FCafR?=
+ =?us-ascii?Q?aRfLgVHIcC8Rj3Zqasws+1AefvONgkXQYaLzl9aedxQTJG7WdG5nU6ir2rX3?=
+ =?us-ascii?Q?PXZTRTCMVWqBchEObxZ1We2D+Shnmv6EJ5DU9yxidz7GETTy+kLvrfJEnm3X?=
+ =?us-ascii?Q?u6jADG9srKqzan0R7wcUqBzOXmUzo9Wz+pjJBSYO0eZYbivRGlxwTdoK6Xuw?=
+ =?us-ascii?Q?cqc0I++fat3xTGRE0MW4dh/iq5P7KcpuThGIEIn8hGEwBlgHTgmbqz2BcRqR?=
+ =?us-ascii?Q?DmDoDDSFVTwVHIU0C497QQo20hN/vvKRKUK345pmNIrqL5No2nonG0kWCmEH?=
+ =?us-ascii?Q?E6Vgf64ISSuDXNBEEQAizKvhUXGV7FCC4Kj62J/FPwwyLOfm1F2SR02ka51S?=
+ =?us-ascii?Q?roSVgSAsLRN0XkOnyOqkQuzbvgs+uOZgcFi0hcbEPhHLSYN074m+8aJa1Zet?=
+ =?us-ascii?Q?3aLA1qFSxyHM148x+tSvYGp6lZxRzKtZi5ePJMLYx+LZ6DOjncDRGK9sh8AP?=
+ =?us-ascii?Q?tSYQ5qiYiZycmgrW2ZwI5zqJ2FZofsueIYEquGTj+xgJ3C1m/6aHM+e0Tl6H?=
+ =?us-ascii?Q?wla13pItDYKPX2n4QmrqP6t1zNAPmR54/L3VSqNf1x34BC7Qq6T6HbKakXMt?=
+ =?us-ascii?Q?pQtk3MLhkHmVwcLyJDMdecrfSynRwmV0P6dbubN5OpQbkJVV2Ui5oJzPJH/B?=
+ =?us-ascii?Q?zC/LZSpA+SXxoaRlRSR9NGQKqkcLNgJEctXx27jj4vlYc8t50zAlyyBzjwkC?=
+ =?us-ascii?Q?PhJBIYPdkv1dWFJevU9rnXNCJkGorQKfbYYd+8BP2c47XtMzDmuJlDZVysXU?=
+ =?us-ascii?Q?m8HiaBu3+8KXSIC1zVhymOi/t+62xfXp7A+BYZPnTeZAajFXZ3YaEQFDCD71?=
+ =?us-ascii?Q?3KkWmPhACyB+62VITIa5iSRIln2J0VxHjaZ64r3dV73uTJRexoKX5dv4Tw7i?=
+ =?us-ascii?Q?hkSqGyrBMpCU1Axht8VA19VNOIQ+fEqV3FbCR+PR?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 90594c54-b973-49ec-dc51-08dcf49a959d
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Oct 2024 02:13:15.5587
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: D0WOei/7SkDjeDFkDujnVn4HRmNKBhyanh7fHtNgMouEKu1MH4h+LH0uitq6WspIckSXEikuk5xlF3ygJ3Yi/A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB6216
+X-OriginatorOrg: intel.com
 
-From: kernel test robot <oliver.sang@intel.com>
-Date: Wed, 23 Oct 2024 15:02:51 +0800
-> 
-> Hello,
-> 
-> kernel test robot noticed "WARNING:at_net/socket.c:#__sock_create" on:
-> 
-> commit: 18429e6e0c2ad26250862a786964d8c73400d9a0 ("Revert "net: do not leave a dangling sk pointer, when socket creation fails"")
-> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
-> 
-> [test failed on linux-next/master f2493655d2d3d5c6958ed996b043c821c23ae8d3]
-> 
-> in testcase: trinity
-> version: 
-> with following parameters:
-> 
-> 	runtime: 600s
-> 
-> 
-> 
-> config: x86_64-randconfig-072-20241019
-> compiler: gcc-12
-> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-> 
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
-> 
-> 
-> +------------------------------------------------+------------+------------+
-> |                                                | 48156296a0 | 18429e6e0c |
-> +------------------------------------------------+------------+------------+
-> | WARNING:at_net/socket.c:#__sock_create         | 0          | 23         |
-> | RIP:__sock_create                              | 0          | 23         |
-> +------------------------------------------------+------------+------------+
-> 
-> 
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202410231427.633734b3-lkp@intel.com
-> 
-> 
-> [   81.874092][  T849] ------------[ cut here ]------------
-> [ 81.874427][ T849] WARNING: CPU: 0 PID: 849 at net/socket.c:1581 __sock_create (net/socket.c:1581 (discriminator 1)) 
-> [   81.874997][  T849] Modules linked in:
-> [   81.875214][  T849] CPU: 0 UID: 8192 PID: 849 Comm: trinity-c5 Not tainted 6.12.0-rc2-00650-g18429e6e0c2a #1
-> [ 81.875701][ T849] RIP: 0010:__sock_create (net/socket.c:1581 (discriminator 1)) 
-> [ 81.876000][ T849] Code: e9 19 fd ff ff e8 a3 16 d7 fd e9 4f f9 ff ff 41 bd 9f ff ff ff e9 b8 fa ff ff 41 bd ea ff ff ff e9 ad fa ff ff e8 83 95 9c fd <0f> 0b e9 72 ff ff ff e8 77 95 9c fd e8 62 72 12 00 31 ff 89 c3 89
-[...]
-> [   81.881295][  T849] Call Trace:
-> [   81.881474][  T849]  <TASK>
-> [ 81.881634][ T849] ? __sock_create (net/socket.c:1581 (discriminator 1)) 
-> [ 81.881908][ T849] ? __warn (kernel/panic.c:748) 
-> [ 81.882130][ T849] ? __sock_create (net/socket.c:1581 (discriminator 1)) 
-> [ 81.882395][ T849] ? report_bug (lib/bug.c:180 lib/bug.c:219) 
-> [ 81.882655][ T849] ? handle_bug (arch/x86/kernel/traps.c:285) 
-> [ 81.882910][ T849] ? exc_invalid_op (arch/x86/kernel/traps.c:309 (discriminator 1)) 
-> [ 81.883164][ T849] ? asm_exc_invalid_op (arch/x86/include/asm/idtentry.h:621) 
-> [ 81.883446][ T849] ? __sock_create (net/socket.c:1581 (discriminator 1)) 
-> [ 81.883725][ T849] __sys_socket (net/socket.c:1670 net/socket.c:1716) 
-> [ 81.883995][ T849] ? update_socket_protocol+0x20/0x20 
-> [ 81.884432][ T849] ? ftrace_likely_update (arch/x86/include/asm/smap.h:56 kernel/trace/trace_branch.c:229) 
-> [ 81.885031][ T849] ? tracer_hardirqs_on (kernel/trace/trace_irqsoff.c:57 kernel/trace/trace_irqsoff.c:613) 
-> [ 81.885310][ T849] __ia32_sys_socket (net/socket.c:1728) 
-> [ 81.885863][ T849] do_int80_emulation (arch/x86/entry/common.c:165 arch/x86/entry/common.c:253) 
-> [ 81.886413][ T849] asm_int80_emulation (arch/x86/include/asm/idtentry.h:626)
 
-I find this stack trace useless unless we have a strace log or
-repro as syzkaller provides.
 
-I should've suggested like below to make debugging easier.
+Hello,
 
-This might be already fixed by Eric's vsock patch, but I'll post a
-patch later.
+kernel test robot noticed "kernel_BUG_at_include/linux/mm.h" on:
 
----8<---
-diff --git a/include/net/net_debug.h b/include/net/net_debug.h
-index 1e74684cbbdb..5bcd9a18d00a 100644
---- a/include/net/net_debug.h
-+++ b/include/net/net_debug.h
-@@ -150,8 +150,10 @@ do {								\
- 
- #if defined(CONFIG_DEBUG_NET)
- #define DEBUG_NET_WARN_ON_ONCE(cond) (void)WARN_ON_ONCE(cond)
-+#define DEBUG_NET_WARN_ONCE(cond, format...) (void)WARN_ONCE(cond, format)
- #else
- #define DEBUG_NET_WARN_ON_ONCE(cond) BUILD_BUG_ON_INVALID(cond)
-+#define DEBUG_NET_WARN_ONCE(cond, format...) BUILD_BUG_ON_INVALID(cond)
- #endif
- 
- #endif	/* _LINUX_NET_DEBUG_H */
-diff --git a/net/socket.c b/net/socket.c
-index 9a8e4452b9b2..da00db3824e3 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -1578,7 +1578,9 @@ int __sock_create(struct net *net, int family, int type, int protocol,
- 		/* ->create should release the allocated sock->sk object on error
- 		 * and make sure sock->sk is set to NULL to avoid use-after-free
- 		 */
--		DEBUG_NET_WARN_ON_ONCE(sock->sk);
-+		DEBUG_NET_WARN_ONCE(sock->sk,
-+				    "%pS must clear sock->sk on failure, family: %d, type: %d, protocol: %d\n",
-+				    pf->create, family, type, protocol);
- 		goto out_module_put;
- 	}
- 
----8<---
+commit: 0a19e28247d042d639e5a46c3698adeda268a7a2 ("[PATCH] memblock: uniformly initialize all reserved pages to MIGRATE_MOVABLE")
+url: https://github.com/intel-lab-lkp/linux/commits/Hua-Su/memblock-uniformly-initialize-all-reserved-pages-to-MIGRATE_MOVABLE/20241021-131358
+base: https://git.kernel.org/cgit/linux/kernel/git/akpm/mm.git mm-everything
+patch link: https://lore.kernel.org/all/20241021051151.4664-1-suhua.tanke@gmail.com/
+patch subject: [PATCH] memblock: uniformly initialize all reserved pages to MIGRATE_MOVABLE
+
+in testcase: boot
+
+config: x86_64-randconfig-012-20241023
+compiler: gcc-12
+test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+
+(please refer to attached dmesg/kmsg for entire log/backtrace)
+
+
++------------------------------------------+------------+------------+
+|                                          | a8883372ec | 0a19e28247 |
++------------------------------------------+------------+------------+
+| boot_successes                           | 18         | 0          |
+| boot_failures                            | 0          | 18         |
+| kernel_BUG_at_include/linux/mm.h         | 0          | 18         |
+| Oops:invalid_opcode:#[##]SMP_PTI         | 0          | 18         |
+| RIP:page_zone                            | 0          | 18         |
+| Kernel_panic-not_syncing:Fatal_exception | 0          | 18         |
++------------------------------------------+------------+------------+
+
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202410251024.eb4a89f1-oliver.sang@intel.com
+
+
+[    0.262363][    T0] ------------[ cut here ]------------
+[    0.262921][    T0] kernel BUG at include/linux/mm.h:1637!
+[    0.263532][    T0] Oops: invalid opcode: 0000 [#1] SMP PTI
+[    0.264140][    T0] CPU: 0 UID: 0 PID: 0 Comm: swapper Tainted: G                T  6.12.0-rc3-00235-g0a19e28247d0 #1
+[    0.265300][    T0] Tainted: [T]=RANDSTRUCT
+[ 0.265762][ T0] RIP: 0010:page_zone (include/linux/mm.h:1858) 
+[ 0.266284][ T0] Code: 43 08 89 ee 48 89 df 31 d2 5b 5d 41 5c 41 5d 41 5e e9 f1 08 02 00 48 8b 07 48 ff c0 75 0e 48 c7 c6 27 2e 99 ac e8 42 73 fd ff <0f> 0b 48 8b 07 48 c1 e8 3e 48 69 c0 40 06 00 00 48 05 c0 63 6c ad
+All code
+========
+   0:	43 08 89 ee 48 89 df 	rex.XB or %cl,-0x2076b712(%r9)
+   7:	31 d2                	xor    %edx,%edx
+   9:	5b                   	pop    %rbx
+   a:	5d                   	pop    %rbp
+   b:	41 5c                	pop    %r12
+   d:	41 5d                	pop    %r13
+   f:	41 5e                	pop    %r14
+  11:	e9 f1 08 02 00       	jmpq   0x20907
+  16:	48 8b 07             	mov    (%rdi),%rax
+  19:	48 ff c0             	inc    %rax
+  1c:	75 0e                	jne    0x2c
+  1e:	48 c7 c6 27 2e 99 ac 	mov    $0xffffffffac992e27,%rsi
+  25:	e8 42 73 fd ff       	callq  0xfffffffffffd736c
+  2a:*	0f 0b                	ud2    		<-- trapping instruction
+  2c:	48 8b 07             	mov    (%rdi),%rax
+  2f:	48 c1 e8 3e          	shr    $0x3e,%rax
+  33:	48 69 c0 40 06 00 00 	imul   $0x640,%rax,%rax
+  3a:	48 05 c0 63 6c ad    	add    $0xffffffffad6c63c0,%rax
+
+Code starting with the faulting instruction
+===========================================
+   0:	0f 0b                	ud2    
+   2:	48 8b 07             	mov    (%rdi),%rax
+   5:	48 c1 e8 3e          	shr    $0x3e,%rax
+   9:	48 69 c0 40 06 00 00 	imul   $0x640,%rax,%rax
+  10:	48 05 c0 63 6c ad    	add    $0xffffffffad6c63c0,%rax
+[    0.268346][    T0] RSP: 0000:fffffffface03dc0 EFLAGS: 00010046
+[    0.268988][    T0] RAX: 0000000000000000 RBX: 0000000000000007 RCX: 0000000000000000
+[    0.269844][    T0] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+[    0.270685][    T0] RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+[    0.271486][    T0] R10: 0000000000000000 R11: 6d75642065676170 R12: 0000000000000001
+[    0.272336][    T0] R13: 0000000000159400 R14: fffff7bb05650000 R15: ffff9bfa1ffff178
+[    0.273172][    T0] FS:  0000000000000000(0000) GS:ffff9bfcefa00000(0000) knlGS:0000000000000000
+[    0.274145][    T0] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    0.274817][    T0] CR2: ffff9bfcfffff000 CR3: 000000015c2b2000 CR4: 00000000000000b0
+[    0.275658][    T0] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[    0.276502][    T0] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[    0.277343][    T0] Call Trace:
+[    0.277691][    T0]  <TASK>
+[ 0.277992][ T0] ? __die_body (arch/x86/kernel/dumpstack.c:421) 
+[ 0.278448][ T0] ? die (arch/x86/kernel/dumpstack.c:449) 
+[ 0.278838][ T0] ? do_trap (arch/x86/kernel/traps.c:156 arch/x86/kernel/traps.c:197) 
+[ 0.279276][ T0] ? page_zone (include/linux/mm.h:1858) 
+[ 0.279720][ T0] ? page_zone (include/linux/mm.h:1858) 
+[ 0.280170][ T0] ? do_error_trap (arch/x86/kernel/traps.c:218) 
+[ 0.280648][ T0] ? page_zone (include/linux/mm.h:1858) 
+[ 0.281095][ T0] ? exc_invalid_op (arch/x86/kernel/traps.c:316) 
+[ 0.281597][ T0] ? page_zone (include/linux/mm.h:1858) 
+[ 0.282041][ T0] ? asm_exc_invalid_op (arch/x86/include/asm/idtentry.h:621) 
+[ 0.282582][ T0] ? page_zone (include/linux/mm.h:1858) 
+[ 0.283027][ T0] set_pfnblock_flags_mask (mm/page_alloc.c:408) 
+[ 0.283583][ T0] reserve_bootmem_region (mm/mm_init.c:729 mm/mm_init.c:765) 
+[ 0.284142][ T0] free_low_memory_core_early (mm/memblock.c:2192 mm/memblock.c:2205) 
+[ 0.284736][ T0] ? swiotlb_init_io_tlb_pool+0x86/0x133 
+[ 0.285419][ T0] memblock_free_all (mm/memblock.c:2252) 
+[ 0.285925][ T0] mem_init (arch/x86/mm/init_64.c:1360) 
+[ 0.286332][ T0] mm_core_init (mm/mm_init.c:2658) 
+[ 0.286790][ T0] start_kernel (init/main.c:965) 
+[ 0.287272][ T0] x86_64_start_reservations (arch/x86/kernel/head64.c:381) 
+[ 0.287850][ T0] x86_64_start_kernel (arch/x86/kernel/ebda.c:57) 
+[ 0.288377][ T0] common_startup_64 (arch/x86/kernel/head_64.S:414) 
+[    0.288899][    T0]  </TASK>
+[    0.289213][    T0] Modules linked in:
+[    0.289626][    T0] ---[ end trace 0000000000000000 ]---
+[ 0.290175][ T0] RIP: 0010:page_zone (include/linux/mm.h:1858) 
+[ 0.290680][ T0] Code: 43 08 89 ee 48 89 df 31 d2 5b 5d 41 5c 41 5d 41 5e e9 f1 08 02 00 48 8b 07 48 ff c0 75 0e 48 c7 c6 27 2e 99 ac e8 42 73 fd ff <0f> 0b 48 8b 07 48 c1 e8 3e 48 69 c0 40 06 00 00 48 05 c0 63 6c ad
+All code
+========
+   0:	43 08 89 ee 48 89 df 	rex.XB or %cl,-0x2076b712(%r9)
+   7:	31 d2                	xor    %edx,%edx
+   9:	5b                   	pop    %rbx
+   a:	5d                   	pop    %rbp
+   b:	41 5c                	pop    %r12
+   d:	41 5d                	pop    %r13
+   f:	41 5e                	pop    %r14
+  11:	e9 f1 08 02 00       	jmpq   0x20907
+  16:	48 8b 07             	mov    (%rdi),%rax
+  19:	48 ff c0             	inc    %rax
+  1c:	75 0e                	jne    0x2c
+  1e:	48 c7 c6 27 2e 99 ac 	mov    $0xffffffffac992e27,%rsi
+  25:	e8 42 73 fd ff       	callq  0xfffffffffffd736c
+  2a:*	0f 0b                	ud2    		<-- trapping instruction
+  2c:	48 8b 07             	mov    (%rdi),%rax
+  2f:	48 c1 e8 3e          	shr    $0x3e,%rax
+  33:	48 69 c0 40 06 00 00 	imul   $0x640,%rax,%rax
+  3a:	48 05 c0 63 6c ad    	add    $0xffffffffad6c63c0,%rax
+
+Code starting with the faulting instruction
+===========================================
+   0:	0f 0b                	ud2    
+   2:	48 8b 07             	mov    (%rdi),%rax
+   5:	48 c1 e8 3e          	shr    $0x3e,%rax
+   9:	48 69 c0 40 06 00 00 	imul   $0x640,%rax,%rax
+  10:	48 05 c0 63 6c ad    	add    $0xffffffffad6c63c0,%rax
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20241025/202410251024.eb4a89f1-oliver.sang@intel.com
+
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
