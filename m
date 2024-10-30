@@ -1,93 +1,93 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 006D91991DB
-	for <oe-lkp@lists.linux.dev>; Wed, 30 Oct 2024 05:39:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43A7C2C95
+	for <oe-lkp@lists.linux.dev>; Wed, 30 Oct 2024 05:48:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.18
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730266748; cv=fail; b=XdZgUgkU4zCdTxfuHnK4MejjjcmCqYnVCiuEX1CFYBoc/+EOm2MGGLvUk1fjV95hz/Lu3G3IfpEUjYuThT5i2bXYFujMoZVE5vjxyskSk0lZ5C0tclwMFeCfRX9m4plXAQ+dea6rgQOjDKDxaaYPBSOr4DsFS7oayugbwoY/n7o=
+	t=1730267300; cv=fail; b=S5v0gsyMKvmfuvGAtLrOdjMeYUY3OV3pu2MG6aEeSgWEf8xNQYRyrC/Rndl9O2E6SrxWO1by3ynZ4DJMZ1KIJlG35mBiPhm25eB3yitmeZ3PN/6qQpPMKB6lG2VsL6JAL4JFKCJ4+kVlNwCA8t/ji8CndM72DWM2Uo3/tA4judU=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730266748; c=relaxed/simple;
-	bh=kU+PEuFrebbVBCFEARwHms0zKZyZlE9e3pbpYugLc0A=;
+	s=arc-20240116; t=1730267300; c=relaxed/simple;
+	bh=+yew7Rny07CZ32gPvn8l2QWh8OYG5Aw4k+rzQUwUSws=;
 	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=pYYgAWdujO4BsAGPG3hlOQjRvZ+O/ntzHFKai5rDAGp7IUDJmgyXDYoWg3bDfa/rsNosyEoFZD3kEcyq81JmMaYN6Fy1kQUHQCBQn7wWJQo+b+lqrT+t6wyHYMQRvobUjr9ltkj5pGReX7oiMrhBJjfTkfo7bd9bIv/VE8rb05A=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DbqgdZED; arc=fail smtp.client-ip=198.175.65.14
+	 Content-Disposition:MIME-Version; b=MjTmUnkMLHrnIRAv7w/E2yx08R7owjEC6lqUt1/RARPsMT/Ev2jLA/bztZOIYuZM60mJEHNBSHRlp/44xMv0+rWWSqFg+AZ9kIVwrsIziq1Ns4PrHdoa/0s1S4t/1IduKgwdPrmJIMWLXsv8HVxgSQ4uWvVLJHSdbyD8VLhPWtc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lNGMUrIS; arc=fail smtp.client-ip=192.198.163.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DbqgdZED"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lNGMUrIS"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1730266746; x=1761802746;
+  t=1730267296; x=1761803296;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=kU+PEuFrebbVBCFEARwHms0zKZyZlE9e3pbpYugLc0A=;
-  b=DbqgdZEDJXtNN0ptMKXChp+Rr3GJkkFRJ47/g+J9tiIumjXqhnOw5txf
-   Eil2jAkG56F+7tqiunQbbq437dNOoHYoheWhmRv6CwPdaAAVeIzdz4yTH
-   BdmGY2O8SIUzehMXHuOjp/73BQ6Nh1i1G2UadMJ4anrPjYXO/cLj8D7MT
-   b5TCjKO7f0CSbJ34vKVOPMJDA0WSpzahntIE434qR3XzFd7BunOp+QeaN
-   J6Zd5s13uIYxJVnqwYBtqxZE+lwqN3iSfbOgRgGLGX0zY9cFnh2XlMnwW
-   /aBCOocbEhnhVaSsPVeK+gv0jwc21osQ+agOfwNj9o+YEgYffnjoa8Fat
+  bh=+yew7Rny07CZ32gPvn8l2QWh8OYG5Aw4k+rzQUwUSws=;
+  b=lNGMUrIS1dw3C6q05vEC1jmpzdTuXFX0q2Eno6MsJZzMIpqqghnJ2e8f
+   T43vTmNLovh+OBtlJ0GtcpzX6yaaFZ07vRONGUsyGI4PBgs1rbBgpkqO6
+   edrtSU+idh+YlJqycqJu+BmYbGIEyFTYQdfYUbYAhs7GICnqclZeaR6WK
+   jzrFhF9LuugMJh4D8xcnscIpYNYgHy60zZkeAJxV6W2IdVU45EStEC0F+
+   pBciRf+suf3stu9iPHB10nGoUzH6AYB3drDBzAqNPNC1CW/pjvkSiyovk
+   f3/0EOxpVLYIr+K0PVFGrgV6caC94ZhRLoUY/nKYZjz66i7v5uE40luRm
    Q==;
-X-CSE-ConnectionGUID: LpUktLhmRFaq6XvAEkTTDg==
-X-CSE-MsgGUID: 1C1QcuPuRO+sdXCEznyrkw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11240"; a="33748708"
+X-CSE-ConnectionGUID: pf+EGUOrScaiDltAQJkTBg==
+X-CSE-MsgGUID: Evs0PIB1QvWCv1e3k7NnJg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11240"; a="29371443"
 X-IronPort-AV: E=Sophos;i="6.11,244,1725346800"; 
-   d="scan'208";a="33748708"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2024 22:38:53 -0700
-X-CSE-ConnectionGUID: b6pZ9ACISLa2BYxOewgyYg==
-X-CSE-MsgGUID: /MmoP2o8TeitTxUsvmXR3w==
+   d="scan'208";a="29371443"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2024 22:48:07 -0700
+X-CSE-ConnectionGUID: 0pi6QozETKSqmEkeVBeScA==
+X-CSE-MsgGUID: ZG2vcbmrTFCGuC2FlPpH2g==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.11,244,1725346800"; 
-   d="scan'208";a="86807698"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by fmviesa004.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 29 Oct 2024 22:38:49 -0700
-Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+   d="scan'208";a="82117355"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by orviesa010.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 29 Oct 2024 22:48:06 -0700
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Tue, 29 Oct 2024 22:38:49 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ 15.1.2507.39; Tue, 29 Oct 2024 22:48:06 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Tue, 29 Oct 2024 22:38:49 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.173)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ 15.1.2507.39 via Frontend Transport; Tue, 29 Oct 2024 22:48:06 -0700
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.57.40) by
+ edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Tue, 29 Oct 2024 22:38:49 -0700
+ 15.1.2507.39; Tue, 29 Oct 2024 22:48:05 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=AiF/eXR37gFdJpVtCnEHmDQlUkDfiOkVDTEEfTwARSlHdzYwc2f6H3oKwqI3bljBV0J1Z0Z37YWUqut+1oGyrqDsWg7T0RbqhXyaUiHzLELR0S9Og0OzJBskAPJ1rb4opk2qbRljNlAte3YUAhsZAUX+k2uqIz8IHSpNlf9UdQz2XV8cB+BlpEvcTQORcfpbeUk8BBRrdeKPzBu2tqd5PhilWWcmm+ctrsqYdnn5gZNqyJ8T7p4gAA/amXU8IfVQ5OGnd0osHjSD5g9Wc6uDV8myGcBdlNkNWXcGdroOzeh6eRKxA+OZbCJl6++WozbUHEHyjyoImlA6u6f2jEhUrA==
+ b=ysu2/7Lffdb17lGEfprjxx/qjuebCRJcXLxYz0TGN9nwfSMmpFYAF1BON0RiUgPI5DRFlYBOuqJIL9ovWGkZbr4acErorqE63Yh3djX0Qr+fYww5y4xw811PGZMrKWUV4z/HUUI+BDYNbSYACEzHWbePKEqz9y7Cu8P99m4mVPB6hVuhqw2XGhfkuCrVrLacOThMgR0M/sVAHAnfP42GKoJpXXr/4qqhZ4G7NIeFVPPcjtg1QlhCZDLn6vuiSI98SM5XqrLMT6+PFdp+mgqfVElDGLogR5llK0Bu/jLb8VAI1VmnWWun3Bc1I0Q+KabN/a5hMeB+vzgtgxTs9Rog8A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rnRIQVbME081KFF6T/yL8YOHXPE4OGU1pVm08Ob3UKo=;
- b=sJQu3a65Smz6Qm3DNrnRrKyoVgpDpq+7GeRVovD3RaSmgmC9KblzbdZlenUULW2v3ccCDJpbSJw+5JYUVo6bcf3xYECvtr9zdM0k+T56ymSkQEI7d7WqJs8FV+U8GhdF3giGnNPqeKFVOkTssc4nrlLw2m1aM1J6x3sGyWtMn0iabBHkZQ4u2UHdH582o8mylc+qMLEi7PqGLUIKq/wRVIfB2E6VUSd0izpe1L+/3tnhuzCjIfLQc7fCtRy0IQUTnW60iFxyrZ9gdv8oqeGMrjNVR1lpX21GCTvIfV8qJKpydZsOr7L7o3KbXhguFf74/tBIo+vb3z2YyMGQ4chF2g==
+ bh=AfNkjXpx57XXQDPn4DBoMMSkGQpZhGlmEsqFo0hgDME=;
+ b=Gycn2Xrda+/MvaxtMwt6ZV6JNvBG+Jq/GbhmE8/q4Fkdib9dzBeKiTsSsamWR7+BuYDUKekeqESEE6qxPuMlzjzZsnHIXyFZLMmMVHSkk4QmMA6posReZfSCr4K087Lsu7b2WIV4fz01XYVupLC3oYnv3Zt1NFF0S1IkiLPTID472Z4OACASpz6bDD/SPVxU72kblfIW38Vm5vfUUG4BXbS8PhqgoYTwM+xBbuGeLCMLZaiOpSW1rfn+uTWAFeEX0j9Tfq0zbSX+ILN5rs8BFeoCLaPqoZ62WJN+DmN8CWBEAYvyi1OQnL33t1yqh1z1UFYHuvPwk0j4EPR3XpprXg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by SJ0PR11MB4957.namprd11.prod.outlook.com (2603:10b6:a03:2df::21) with
+ by DM4PR11MB6311.namprd11.prod.outlook.com (2603:10b6:8:a6::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8093.25; Wed, 30 Oct
- 2024 05:38:42 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8093.27; Wed, 30 Oct
+ 2024 05:47:54 +0000
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.8093.025; Wed, 30 Oct 2024
- 05:38:42 +0000
-Date: Wed, 30 Oct 2024 13:38:34 +0800
+ 05:47:54 +0000
+Date: Wed, 30 Oct 2024 13:47:41 +0800
 From: kernel test robot <oliver.sang@intel.com>
 To: Anna-Maria Behnsen <anna-maria@linutronix.de>
 CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
-	Thomas Gleixner <tglx@linutronix.de>, Frederic Weisbecker
-	<frederic@kernel.org>, <oliver.sang@intel.com>
-Subject: [linus:master] [timers]  fe90c5ba88:
- BUG:KCSAN:data-race_in_timer_expire_remote/timer_recalc_next_expiry
-Message-ID: <202410301205.ef8e9743-lkp@intel.com>
+	<x86@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, John Stultz
+	<jstultz@google.com>, <oliver.sang@intel.com>
+Subject: [tip:timers/core] [timekeeping]  5aa6c43eca:
+ BUG:KCSAN:data-race_in_timekeeping_debug_get_ns/timekeeping_update_from_shadow
+Message-ID: <202410301316.e51421de-lkp@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-X-ClientProxiedBy: SI2P153CA0010.APCP153.PROD.OUTLOOK.COM
- (2603:1096:4:140::13) To LV3PR11MB8603.namprd11.prod.outlook.com
+X-ClientProxiedBy: SI2PR06CA0008.apcprd06.prod.outlook.com
+ (2603:1096:4:186::23) To LV3PR11MB8603.namprd11.prod.outlook.com
  (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -96,73 +96,73 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|SJ0PR11MB4957:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5aabf092-de67-4377-4091-08dcf8a51d47
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|DM4PR11MB6311:EE_
+X-MS-Office365-Filtering-Correlation-Id: 41ffa76f-a152-4e94-1f01-08dcf8a6663b
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?CzfbL+1I3Kcz1r7pC3XuZpundT2WbpDOrSmbY900GUuCoR+N3T5GzpGlQjGq?=
- =?us-ascii?Q?w6ORf5kuEHUajffcJ2LBGQKVR2CbWpo7nlHIazf+rBaYQr+ZwKYi9Y8Do72n?=
- =?us-ascii?Q?VLq1VR9fk3B9fuiQueU7+WVOpO8206DLIUU59r5eUAqF7BwXfA6iji6V5OPU?=
- =?us-ascii?Q?1gTeVTs5Fq10NGMQAxgwC78k/FK3zmggHDhwJXy1xuCCK99f18TwhkOfno4t?=
- =?us-ascii?Q?j9AzZfl7/CBNHEpz+imLthClGYoxyjnh53oI8RZawkzNAJFhW7xNep6KEKAh?=
- =?us-ascii?Q?tzNhY+1x7kYDBHpezLaQ882I66xLLiqK0umI36sT9JOc1Dc+oMIy2ZYrWFnU?=
- =?us-ascii?Q?LYru2+Jy8S6mQ/J6Sv3yy5RTtTg+VKx1c9YgIa5Tqs8qWx0wbLZdlY1iXLfc?=
- =?us-ascii?Q?o+Yvql7O5tGejmvuTC7GAlf3wv2ivowCoV3oIH2g8ugCcUrGMtkcYSu8qDel?=
- =?us-ascii?Q?/5S3JIhCmSeTZkXz1ORxDOfMwj7dpGZJyetfif7n+jC0IjuR+7bmYW+1N0YQ?=
- =?us-ascii?Q?4Li8Vg+JClKD+gbwIriGFzT7HLQdIqkMLc+hl3eg262R2yox6qWhz4M1pklS?=
- =?us-ascii?Q?1vwpW3+WQBXCf50jLXca9xIVN+Pd5s3rq7IhLsNCk6/LAhR7hwAC7i6Mbmbd?=
- =?us-ascii?Q?WFfxSMeiCbjM75Oq/2jhsQSfn68Sa5igFTOFps6TJYugH/ZWx5ecLaa2qh91?=
- =?us-ascii?Q?vJ7tCNJJ3NMC03YYPnjEuvQmQvqA5wsX+A0+v7DfRT04zKCqcXDYQJwZHsiZ?=
- =?us-ascii?Q?jHSXmNUMyYWueJWxbMTzkePWKVZNMAfoCTPBlNo4vcwfriY6xCDCgUewC7Wc?=
- =?us-ascii?Q?v5S9pK9gtrl4TT8AFpDkIa5Ga9DzkEnQKeMcir8kD9tk1rpy/V+DJk9yQzvp?=
- =?us-ascii?Q?XDVmDvZNlyL8bGI+gmQsO6uMvKVGVLqZkkhP3BtHx7SovVEE0LkAVuVvpjuv?=
- =?us-ascii?Q?Nu9oAvv75a28+k4By2XEFPh1jWMCt9MbLT3NDVAGBMh59J7oR9bO5fR/e+gJ?=
- =?us-ascii?Q?KbAuWYbvjAbZl7FrFWa3nUUp2h3mRW2b2BImzO2bUe7tRpaqU11hCvme+eJG?=
- =?us-ascii?Q?vKH4yMGhjF/bP+DlXifQa+eQiWTFQDW6uOJ7FQGe0VotQJwnCO0x0rw+av9A?=
- =?us-ascii?Q?wzyidXvb98g0OGdieiRDp+6RFnBxhtAUJgWNc9acQ7A7VCUzu9tIC+zm50sC?=
- =?us-ascii?Q?IyOGG+4e2JOWuVFetYYIZPx5wMXqXe9F5mOEpr+6N+b+r/07DtTqE5VNnBA8?=
- =?us-ascii?Q?LhKVmlmzqKMITi9l1E+qqbqcWJ0c10L9T20VSkNKng=3D=3D?=
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?vDXEFkvGiGoZxq/elbwqKXsYK4ni3VPZYSRTQBqivJ1gVxIIeefgN0VIWRLA?=
+ =?us-ascii?Q?9MjI/rg8H7K5cza4jwzJXjGKdsplV7oBXpjxKZo8ykRp9c4xw2WwsEscs9Ef?=
+ =?us-ascii?Q?Lu7Tnyc04ojn6D5bVZ9wQeqZTEvaeQTf/yJLraJFzY3E+XdO2gqabSW+vwGo?=
+ =?us-ascii?Q?Ck9VsdnnYh7Qw1ZAazIkfCs8MpZuPjjERJpqYhpxIF5KzOsRhwmL9WMQngeJ?=
+ =?us-ascii?Q?+wNKu6FFWhzRQjX0izYVoEHEqpRQS3tnwn6aZ2ys4cdDjOwqI86zD59RSirm?=
+ =?us-ascii?Q?7GDyt/ReDpVg58gZSeNMConWx1EvcNyCF7RiAUcV5BfIW0W85RVYzjL8OeWy?=
+ =?us-ascii?Q?gE+2+mT6ZMRErYYdHDHnoi/9hirvX1TUc6HeqMU3BsSsvPgGGvg0B4d3s6iO?=
+ =?us-ascii?Q?gFWuFloW0hvJELwe/O1nq/bRm6r8XAH5dlV74cykzwjd5iYuaspNmgBtlRQm?=
+ =?us-ascii?Q?PpWNVucDhUYdEG9rbdt7uo5v53WAX5BLkomsSZoIW60uWJDuoRTu+Iarfdh3?=
+ =?us-ascii?Q?Mt8qn7s8PnmPxthAf8C1TKUJB1CdOtUSzn+zABi0UvIlu1Lou/wOcOosLBJh?=
+ =?us-ascii?Q?J1yNjATgKFzmffO29cYuNs0xCoPyNVIrLgwx6KMLAl0FjxbimS47WIo+iPeQ?=
+ =?us-ascii?Q?7VuVsakx/rCzzC/ZMrlduoEQdwMJSusUFDUidpNwD3QAbPAm8iupnEXnuRxj?=
+ =?us-ascii?Q?f04Jz1ZtkOwhTjw0bzPoHlFGUwxkg6Sr/TNKNiOLLO+rnYvWkU+raGnc+vRU?=
+ =?us-ascii?Q?Tvz1hnZBxCvnhyZ0ajIB8aTVr9CwwSoNTO7erxySMpgoevSJrm+bSscrmByA?=
+ =?us-ascii?Q?qgkeKgjBl1D380bbGOOJoHjGrKy1ZSYxPwCfgnQNuNqb4H6XMHx7D460WPfC?=
+ =?us-ascii?Q?H8C7RrSb1J3AmeMFu+NdD4XPZ5bY0QmYFY0ory3SNt+Cw69L4qkLYY2FoMqo?=
+ =?us-ascii?Q?Xx/LlPgx7u2vCS7fAJ6JBtiP3/D0KXCZvbQpyz6Nc5U26+SasJzPBoVCWBM6?=
+ =?us-ascii?Q?ML/rXqkv2Wy+akjsH30JGWlOvupkhjACK+FPiVWLG/gSInq37RXI4mG48Ue9?=
+ =?us-ascii?Q?rd33jub/E/7YtkyOhNudQWfUr07aOKjOZcbyX2l7aL0Ea+PcZSGL3BoQPm+w?=
+ =?us-ascii?Q?h3kXgPi2Goqi6v8y14ee1pqQ34eQqiyUb5a9WaYcv+68nSjeitNw4UlceLxw?=
+ =?us-ascii?Q?NoPXMAoVqfw+9vorgspC23DOlQK0J7Jv1+tHoPIwFDdMgWj5DTYzo7gE/+tS?=
+ =?us-ascii?Q?Bb8I4mG3iPEGKrKbH8JOSbE/Pga5yrSXrDYqCJ1AwA=3D=3D?=
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hEmXQ4mWqykNAydzODmQEYIE7xm1vHVmrPJvp2iuZnzfKcFoikSjZY+MB8Bz?=
- =?us-ascii?Q?mtJcQQDczmHgunYPILFN958q3JvE1Zo5ZdsqKa5yJTWC2wG+TjGq0/XKH7ab?=
- =?us-ascii?Q?qUWZnKGZbku7DXrs3W+pw6QntvYMee9cN5CuJmgfn1vthHvrX0gKzMDkGNOo?=
- =?us-ascii?Q?w5p2QkPe6izYLo+ExsYEXuDSYWO64xPl9eDmWvGjUaN95tl5e+JkJWWQEDao?=
- =?us-ascii?Q?4ElgwBufV7uR4V222/XH0d83PvLRci5ln5QDtEmuzmtFhQcAw+/P0Y5FnnYP?=
- =?us-ascii?Q?Ze+9JErvQ/MFVm7BPzUyf9TczdEJK3JGWyH5r+6d/JxluBDmMMCQ2Al0Jswe?=
- =?us-ascii?Q?9UMjCU2ResFL06BU6DJNWEguTl4uXplO7r3DxUVP1ITYqybnb9EW8hLpdbnz?=
- =?us-ascii?Q?QS1HA6PV6NP2YvSzoOSAVDwSgy4pgSVrWQwg0HF51BgHsVjxBETNUK6+WpwT?=
- =?us-ascii?Q?84yibLTZtwroghdrQBIR53kN6xMLZs+/9Mg5JTWgrjh9ehajRBi6FLfyDOQq?=
- =?us-ascii?Q?qDko8U/JmQ37kYxXlhi0YjcVBiOmDCsWQQOkoNd5vVgmZTYx4PAxdYR4VvqW?=
- =?us-ascii?Q?ogooFbiX+J0psK65AFC1vqF/am25jCiRZSa85PS6X2GpDZJHhWNIX+3FBUSX?=
- =?us-ascii?Q?wbgPmSnLf51d7Jkg3r22AzH2pRTirKSu7Xcl/T3dt4WG3/SBzG1HHCK1lR3L?=
- =?us-ascii?Q?ee0fVs06gGcE4PJjLgal76R7YojrE3JLqUg9D7PANVBnPILWKbg7542VhUTo?=
- =?us-ascii?Q?Tin0od7MUXHMnsLzKm6GYZ0SUjLrkitBFIoxKkYgHxiXsKtraQNuQDP/5sbX?=
- =?us-ascii?Q?INMmljXX2yXUTHL5hqwvR0xW+DacFWFWJeUScgWQpTqkPlaRH89GSEkd4muD?=
- =?us-ascii?Q?TDs02Ku6QNwNrGURM9KYhbA9OL2/NTUP6p1FUiCvD4fU1NmpDcVJfIMtCj0F?=
- =?us-ascii?Q?2ijQkA6AtLbWPmlllceQeTLBmiThsf8gVoOzc5hYqhK1qVckWIC1w+cy1cEd?=
- =?us-ascii?Q?YNhfcKtAo0AzQ59ujDBlDmxOKxI7EkCOhULEXwWMFU5EA9UIczC/2eCmIKpM?=
- =?us-ascii?Q?Br7uq+j4uYtt7K43g0XKdQWyVTQzuUyOV9JQjSncLViu4mQ3jDm8Bb8XImEN?=
- =?us-ascii?Q?sI2dVAF7xuUQgEFIIfGjrMLCnUJiHzj7DnCdw9HcMooEMo7rz5ChbJ6euU6D?=
- =?us-ascii?Q?jNcchiwT0FEMDky9d3hM5rizSTmRSSOLcf5YVsomuVXRFxTxIQJOf7VFsGKc?=
- =?us-ascii?Q?EeMDHq0frJQooTRqZqwmE2qbgLqHWSumL80JMIT7tjVybWbhPLy+PrqrIVmJ?=
- =?us-ascii?Q?t2oZZueQ+xn6eE27etaHblMm65zcKvPAH0ALHL0Z6PdnkOiN7AYOFMLq4oJm?=
- =?us-ascii?Q?Tr/v37VqU61mcUWxQAehQMSKkx9tZSeyVinkLwh7dfWKFxFJTBWMtpUIG2/g?=
- =?us-ascii?Q?n88PjHYy6rLuj6lrdukZ2kUnLMehEKjfC2xUquAoAHRe+7HK3/mKBtVzd/WJ?=
- =?us-ascii?Q?tUMn6BtZmHZWkdgrXKXoHpUbd6Ljhk34dKsC3KCxNC4QT4AAtPWfubHpxUuv?=
- =?us-ascii?Q?8y/GYRdlVFdPEqmlJsfjlCVQhDD5zq6OkE3sCZiMEl6F/PA5XTCr0dFYMJVq?=
- =?us-ascii?Q?Dw=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5aabf092-de67-4377-4091-08dcf8a51d47
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?7MbRDtU9Fjy46yDx4gLua/lB0BaEY1QfDE/aDdgpI9kpdOywgMvSEWCu1Sy9?=
+ =?us-ascii?Q?n2zesRV9dIdhg3JPLvQaKKONinBhAGyilra5LggCF6C4BqPy+4Qd3N65+ihX?=
+ =?us-ascii?Q?HhjQ7FdFiihtLXnBCZrFk8JdQxnMrKzlf6D1TxLyeimzOQsJnvp/DBk+E4NX?=
+ =?us-ascii?Q?9Vp8jqWlFdD7VWaUyVLEFg3FFKU/0Dn7tQrf4pizTsqaYN1DlqHv3hCs8gWI?=
+ =?us-ascii?Q?jE9eB3n4EQEdwbam9ZkKkcBrdoEdVOGO6Oa04AAOEq/js0ZL6Uj0TU7PAVSv?=
+ =?us-ascii?Q?Lun8beAvQNvWFAXX9vjx4uLOMJTyjkc64QTfKljXggiYNei1TOE1FsnCC4XJ?=
+ =?us-ascii?Q?bTgkqmZDuWCdM/5C2hIFFezFefY91mhes3AO/D0B+tHaGXYtTEzLXt+bqPgp?=
+ =?us-ascii?Q?lhRx8nLFpU8h/bo3BL8i95p584iQdrDQPnEYlC6knT1oCNIsysKC4nv3csPE?=
+ =?us-ascii?Q?809rqIhsBarkLLBBjIUk7CqKeAeD8s/sUKibjwuqElPZzGg6XXFXYo9Kobc2?=
+ =?us-ascii?Q?Xy8RSXK70oPQFpF3+TrHsfADRkbeaakbHpYNFJPk8SiV6V50d8OY3DtE7x8v?=
+ =?us-ascii?Q?GBrljJ6ahcQ7KsFky7yDpZL8dICoM5Jw3V7K6CMN98CiKWqWD/yOxBY/xI7M?=
+ =?us-ascii?Q?PTrmmGuvx6bcwLZB+HFTnyQO+ijax1W2Q5lipS9haAMWQUKoEch90y8eVaWD?=
+ =?us-ascii?Q?6yTVWo5FZgnHOVArKVoDUqIfynMbfsFAz7z5BRRCko7by11QUN3whJy+8tui?=
+ =?us-ascii?Q?jxQ+dO4L3vuX701bcqNGAeK8B244S+6anDOvd8jLuaJrqyJ9lPAHjAPhG/wX?=
+ =?us-ascii?Q?01Ios1PU3vfBJ0qVJCSruMn8JSdsNVto23Ve5C/VFxqM2DSLVIY6tSpFP11C?=
+ =?us-ascii?Q?Y/+xN2y2MBWRdVs/MPOKsV9L+Oclm1H4k6fME7RnRInYj39umvsBruD1PyAp?=
+ =?us-ascii?Q?EbQ4aSU8o7XGJfa0qUt0gGx3/UT1VimoHdTfI36+jsvlAgAyJ5TNlreK0KzH?=
+ =?us-ascii?Q?a4aW/p2FiM4BeUcWMi8gc+rR8trOtQTzTKjph344yAIRtoHcyE9G3X8ZuZBB?=
+ =?us-ascii?Q?mmIcI8fQhqR/s+Jzu+r5QPxd1a5Od9qvG3y3VNK8PRaGxUFT37xGm2a7noky?=
+ =?us-ascii?Q?zAB/sOkktbfxlWy7TAc9bjzpquF+1FUYDHzyULfcDkVJNcs/85ejPfbZsMld?=
+ =?us-ascii?Q?jbbBQ7exEpzeTsnJ4/uaosXAdccgQ8usdjTGPAGK/GkF2FeDvk4vvN8skpAG?=
+ =?us-ascii?Q?ARWQO2SBsB5oECuEn7VQP74XvaVLHzZ/iyGsJZd5zuLJsflCGrGk+e3bn/eM?=
+ =?us-ascii?Q?1RrXuM4xvkHECUuZtDavWd0VK+Y4d+l03rFSt7N7up62MJz7j8AKLDHdOUZ5?=
+ =?us-ascii?Q?PEqI2I6A1tYIugB2jsyekR+MUkE/EbHepokUTTQTBVdOonZkWRTFKCnr2iNH?=
+ =?us-ascii?Q?F7qMhg3Mtyh3Kig6FPvj108ELezXg/76aBUm/deoG3yCQ2B0e5YcwaB29dZy?=
+ =?us-ascii?Q?LpHx1hK6ONsWU88JZfJl7XgkgmIbghpAtYb61HOqrOv4ZDye37PWin3ef3V0?=
+ =?us-ascii?Q?8bWA5xmHDeNgsZXPYe4bnHUNNLQ0Dy/D2xEdh11zFYi3QxsAM3uT+uc/RAbP?=
+ =?us-ascii?Q?Eg=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 41ffa76f-a152-4e94-1f01-08dcf8a6663b
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Oct 2024 05:38:42.5171
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Oct 2024 05:47:54.6594
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1Aynv5nDcig5jq9b9nY/x93QuQpqWPDmAF2wToArkSKFvlzLJUnCNVI56CEavnlc00YTIr/z3RUySRtUPWnKUQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB4957
+X-MS-Exchange-CrossTenant-UserPrincipalName: gXlCRQtxMm2+ezGrIqU9BfKRxnJsPZ5hiVHPafDfecXIyHkqMpbgIUfKGBoEwjObfygIypvyp11YieOUkN5GTw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB6311
 X-OriginatorOrg: intel.com
 
 
@@ -170,43 +170,32 @@ X-OriginatorOrg: intel.com
 Hello,
 
 
-we understand this is a renaming commit, which causes below KCSAN report
-difference.
+this is another report about BUG:KCSAN, the change does not introduce new KCSAN
+issue, but causes stats changes as below.
 
-d7b01b81bd2dad57 fe90c5ba88ad43d42acefb21b57
+
+1d72d7b5fd535923 5aa6c43eca21a929ace6a8e31ab
 ---------------- ---------------------------
        fail:runs  %reproduction    fail:runs
            |             |             |
-         20:300         -7%            :300   dmesg.BUG:KCSAN:data-race_in_next_expiry_recalc/run_timer_softirq
-         11:300         -4%            :300   dmesg.BUG:KCSAN:data-race_in_next_expiry_recalc/timer_expire_remote
-           :300          6%          18:300   dmesg.BUG:KCSAN:data-race_in_run_timer_softirq/timer_recalc_next_expiry
-           :300          5%          14:300   dmesg.BUG:KCSAN:data-race_in_timer_expire_remote/timer_recalc_next_expiry
-
-we made out this report to let you be aware that the possible issues in
-related code. then it's up to you to see if these issues need to care.
-
-if you need us do more tests or test some patch, please let us know. thanks!
-
-below is full report FYI.
+          6:6          -83%            :6     dmesg.BUG:KCSAN:data-race_in_timekeeping_advance/timekeeping_debug_get_ns
+           :6          100%           6:6     dmesg.BUG:KCSAN:data-race_in_timekeeping_debug_get_ns/timekeeping_update_from_shadow
 
 
-kernel test robot noticed "BUG:KCSAN:data-race_in_timer_expire_remote/timer_recalc_next_expiry" on:
+again, this report is just FYI what's the possible issue in related code.
+and if you need more tests or want us to test some patches, please let us know.
 
-commit: fe90c5ba88ad43d42acefb21b57df837be86a61a ("timers: Rename next_expiry_recalc() to be unique")
-https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-
-[test failed on linus/master      81983758430957d9a5cb3333fe324fd70cf63e7e]
-[test failed on linux-next/master dec9255a128e19c5fcc3bdb18175d78094cc624d]
-
-in testcase: trinity
-version: 
-with following parameters:
-
-	runtime: 300s
-	group: group-03
-	nr_groups: 5
+thanks!
 
 
+kernel test robot noticed "BUG:KCSAN:data-race_in_timekeeping_debug_get_ns/timekeeping_update_from_shadow" on:
+
+commit: 5aa6c43eca21a929ace6a8e31ab3520ddc50dfa9 ("timekeeping: Split out timekeeper update of timekeeping_advanced()")
+https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git timers/core
+
+[test failed on linux-next/master 6fb2fa9805c501d9ade047fc511961f3273cdcb5]
+
+in testcase: boot
 
 config: x86_64-randconfig-073-20241025
 compiler: gcc-12
@@ -219,57 +208,125 @@ test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202410301205.ef8e9743-lkp@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202410301316.e51421de-lkp@intel.com
 
 
-[  131.612941][    C0] ==================================================================
-[  131.614221][    C0] BUG: KCSAN: data-race in timer_expire_remote / timer_recalc_next_expiry
-[  131.615526][    C0]
-[  131.615932][    C0] write (marked) to 0xffff88842fd1d4d0 of 8 bytes by interrupt on cpu 1:
-[ 131.617229][ C0] timer_recalc_next_expiry (kernel/time/timer.c:1969 (discriminator 2)) 
-[ 131.618104][ C0] __run_timers (kernel/time/timer.c:2399) 
-[ 131.618818][ C0] run_timer_softirq (kernel/time/timer.c:2431 kernel/time/timer.c:2423 kernel/time/timer.c:2439 kernel/time/timer.c:2449) 
-[ 131.619581][ C0] handle_softirqs (arch/x86/include/asm/jump_label.h:27 include/linux/jump_label.h:207 include/trace/events/irq.h:142 kernel/softirq.c:555) 
-[ 131.620321][ C0] __irq_exit_rcu (kernel/softirq.c:589 kernel/softirq.c:428 kernel/softirq.c:637) 
-[ 131.621036][ C0] irq_exit_rcu (kernel/softirq.c:651) 
-[ 131.621719][ C0] sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1043 arch/x86/kernel/apic/apic.c:1043) 
-[ 131.622596][ C0] asm_sysvec_apic_timer_interrupt (arch/x86/include/asm/idtentry.h:702) 
-[ 131.623523][ C0] default_idle (arch/x86/include/asm/irqflags.h:37 arch/x86/include/asm/irqflags.h:92 arch/x86/kernel/process.c:743) 
-[ 131.628342][ C0] default_idle_call (include/linux/cpuidle.h:143 kernel/sched/idle.c:118) 
-[ 131.629091][ C0] cpuidle_idle_call (kernel/sched/idle.c:186) 
-[ 131.629892][ C0] do_idle (kernel/sched/idle.c:328) 
-[ 131.630536][ C0] cpu_startup_entry (kernel/sched/idle.c:423 (discriminator 1)) 
-[ 131.631318][ C0] start_secondary (arch/x86/kernel/smpboot.c:224 arch/x86/kernel/smpboot.c:291) 
-[ 131.632082][ C0] common_startup_64 (arch/x86/kernel/head_64.S:421) 
-[  131.632864][    C0]
-[  131.633255][    C0] read to 0xffff88842fd1d4d0 of 8 bytes by interrupt on cpu 0:
-[ 131.634436][ C0] timer_expire_remote (kernel/time/timer.c:2425 kernel/time/timer.c:2182) 
-[ 131.635247][ C0] tmigr_handle_remote_up (arch/x86/include/asm/irqflags.h:26 arch/x86/include/asm/irqflags.h:87 arch/x86/include/asm/irqflags.h:147 kernel/time/timer_migration.c:947 kernel/time/timer_migration.c:1021) 
-[ 131.636092][ C0] tmigr_handle_remote (kernel/time/timer_migration.c:533 kernel/time/timer_migration.c:1080) 
-[ 131.636875][ C0] run_timer_softirq (kernel/time/timer.c:2455) 
-[ 131.637671][ C0] handle_softirqs (arch/x86/include/asm/jump_label.h:27 include/linux/jump_label.h:207 include/trace/events/irq.h:142 kernel/softirq.c:555) 
-[ 131.638358][ C0] __irq_exit_rcu (kernel/softirq.c:589 kernel/softirq.c:428 kernel/softirq.c:637) 
-[ 131.639083][ C0] irq_exit_rcu (kernel/softirq.c:651) 
-[ 131.639737][ C0] sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1043 arch/x86/kernel/apic/apic.c:1043) 
-[ 131.640600][ C0] asm_sysvec_apic_timer_interrupt (arch/x86/include/asm/idtentry.h:702) 
-[ 131.641494][ C0] mtree_range_walk (lib/maple_tree.c:788 lib/maple_tree.c:2792) 
-[ 131.642226][ C0] mas_walk (lib/maple_tree.c:265 lib/maple_tree.c:4907) 
-[ 131.642874][ C0] lock_vma_under_rcu (mm/memory.c:5996) 
-[ 131.643627][ C0] do_user_addr_fault (arch/x86/mm/fault.c:1330) 
-[ 131.644422][ C0] exc_page_fault (arch/x86/include/asm/irqflags.h:26 arch/x86/include/asm/irqflags.h:87 arch/x86/include/asm/irqflags.h:147 arch/x86/mm/fault.c:1489 arch/x86/mm/fault.c:1539) 
-[ 131.645154][ C0] asm_exc_page_fault (arch/x86/include/asm/idtentry.h:623) 
-[  131.645911][    C0]
-[  131.646292][    C0] value changed: 0x00000000ffff5991 -> 0x00000000ffff5bc0
-[  131.647367][    C0]
-[  131.647755][    C0] Reported by Kernel Concurrency Sanitizer on:
-[  131.648646][    C0] CPU: 0 UID: 0 PID: 518 Comm: run Not tainted 6.11.0-rc1-00042-gfe90c5ba88ad #1 cf6842c5d2875ed08b01af3196bb8a34c3713203
-[  131.650536][    C0] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-[  131.652009][    C0] ==================================================================
+[   70.265411][    C1] BUG: KCSAN: data-race in timekeeping_debug_get_ns / timekeeping_update_from_shadow
+[   70.265430][    C1]
+[   70.265433][    C1] write to 0xffffffff8483fef8 of 296 bytes by interrupt on cpu 0:
+[ 70.265440][ C1] timekeeping_update_from_shadow+0x8e/0x140 
+[ 70.265452][ C1] timekeeping_advance (kernel/time/timekeeping.c:2394) 
+[ 70.265462][ C1] update_wall_time (kernel/time/timekeeping.c:2403) 
+[ 70.265472][ C1] tick_do_update_jiffies64 (kernel/time/tick-sched.c:150) 
+[ 70.265485][ C1] tick_nohz_lowres_handler (kernel/time/tick-sched.c:232 kernel/time/tick-sched.c:290 kernel/time/tick-sched.c:1486) 
+[ 70.265498][ C1] __sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1044) 
+[ 70.265515][ C1] sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1037 arch/x86/kernel/apic/apic.c:1037) 
+[ 70.265526][ C1] asm_sysvec_apic_timer_interrupt (arch/x86/include/asm/idtentry.h:702) 
+[ 70.265539][ C1] __tsan_read8 (kernel/kcsan/core.c:280 kernel/kcsan/core.c:752 kernel/kcsan/core.c:1025) 
+[ 70.265548][ C1] rcu_lockdep_current_cpu_online (kernel/rcu/tree.c:4740 kernel/rcu/tree.c:4781) 
+[ 70.265562][ C1] rcu_read_lock_held (kernel/rcu/update.c:113 kernel/rcu/update.c:349) 
+[ 70.265573][ C1] mtree_range_walk (lib/maple_tree.c:789 lib/maple_tree.c:2789) 
+[ 70.265584][ C1] mas_walk (lib/maple_tree.c:265 lib/maple_tree.c:4949) 
+[ 70.265594][ C1] lock_vma_under_rcu (mm/memory.c:6225) 
+[ 70.265606][ C1] do_user_addr_fault (arch/x86/mm/fault.c:1330) 
+[ 70.265617][ C1] exc_page_fault (arch/x86/include/asm/irqflags.h:26 arch/x86/include/asm/irqflags.h:87 arch/x86/include/asm/irqflags.h:147 arch/x86/mm/fault.c:1489 arch/x86/mm/fault.c:1539) 
+[ 70.265624][ C1] asm_exc_page_fault (arch/x86/include/asm/idtentry.h:623) 
+[   70.265634][    C1]
+[   70.265636][    C1] read to 0xffffffff8483ff18 of 8 bytes by interrupt on cpu 1:
+[ 70.265642][ C1] timekeeping_debug_get_ns (kernel/time/timekeeping.c:415 kernel/time/timekeeping.c:399 kernel/time/timekeeping.c:307) 
+[ 70.265653][ C1] ktime_get (kernel/time/timekeeping.c:431 (discriminator 4) kernel/time/timekeeping.c:897 (discriminator 4)) 
+[ 70.265660][ C1] tick_nohz_lowres_handler (kernel/time/tick-sched.c:220 kernel/time/tick-sched.c:290 kernel/time/tick-sched.c:1486) 
+[ 70.265671][ C1] __sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1044) 
+[ 70.265683][ C1] sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1037 arch/x86/kernel/apic/apic.c:1037) 
+[ 70.265690][ C1] asm_sysvec_apic_timer_interrupt (arch/x86/include/asm/idtentry.h:702) 
+[ 70.265701][ C1] __tsan_unaligned_write8 (arch/x86/include/asm/current.h:49 kernel/kcsan/core.c:206 kernel/kcsan/core.c:750 kernel/kcsan/core.c:1025) 
+[ 70.265711][ C1] mntput_no_expire (fs/namespace.c:1396) 
+[ 70.265719][ C1] mntput (fs/namespace.c:1471 (discriminator 3)) 
+[ 70.265728][ C1] path_openat (fs/namei.c:3910) 
+[ 70.265738][ C1] do_filp_open (fs/namei.c:3961) 
+[ 70.265749][ C1] do_sys_openat2 (fs/open.c:1416) 
+[ 70.265760][ C1] __ia32_compat_sys_openat (fs/open.c:1488) 
+[ 70.265772][ C1] ia32_sys_call (arch/x86/entry/syscall_32.c:44) 
+[ 70.265781][ C1] __do_fast_syscall_32 (arch/x86/entry/common.c:165 arch/x86/entry/common.c:386) 
+[ 70.265792][ C1] do_fast_syscall_32 (arch/x86/entry/common.c:411) 
+[ 70.265803][ C1] do_SYSENTER_32 (arch/x86/entry/common.c:450) 
+[ 70.265814][ C1] entry_SYSENTER_compat_after_hwframe (arch/x86/entry/entry_64_compat.S:127) 
+[   70.265827][    C1]
+[   70.265829][    C1] value changed: 0x000bfafab0800000 -> 0x000c197f30800000
+[   70.265834][    C1]
+[   70.265837][    C1] Reported by Kernel Concurrency Sanitizer on:
+[   70.265841][    C1] CPU: 1 UID: 0 PID: 135 Comm: systemd-udevd Not tainted 6.12.0-rc1-00057-g5aa6c43eca21 #1 dac0ad7371e68d11ebb5ff151a0b0e46d35a6ac0
+[   70.265853][    C1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+[   70.265858][    C1] ==================================================================
+[  OK  ] Started Regular background program processing daemon.
+[  OK  ] Started D-Bus System Message Bus.
+Starting Helper to synchronize boot up for ifupdown...
+Starting LSB: OpenIPMI Driver init script...
+Starting System Logging Service...
+Starting User Login Management...
+[  OK  ] Finished Helper to synchronize boot up for ifupdown.
+Starting Raise network interfaces...
+Starting LSB: Load kernel image with kexec...
+[   70.813962][  T196] IPMI message handler: version 39.2
+[  OK  ] Finished Raise network interfaces.
+[  OK  ] Reached target Network.
+[   71.021971][  T208] ipmi_si: IPMI System Interface driver
+Starting LKP bootstrap...
+[   71.073697][  T208] ipmi_si: Unable to find any System Interface(s)
+Starting /etc/rc.local Compatibility...
+Starting OpenBSD Secure Shell server...
+Starting Permit User Sessions...
+[  OK  ] Started LSB: Load kernel image with kexec.
+[  OK  ] Started User Login Management.
+[   71.125252] rc.local[223]: PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/lkp/lkp/src/bin
+[  OK  ] Started /etc/rc.local Compatibility.
+[  OK  ] Finished Permit User Sessions.
+LKP: ttyS0: 223: skip deploy intel ucode as no ucode is specified
+[   71.266778] rc.local[223]: LKP: stdout: 223: skip deploy intel ucode as no ucode is specified
+[  OK  ] Started Getty on tty1.
+[  OK  ] Reached target Login Prompts.
+[FAILED] Failed to start LSB: OpenIPMI Driver init script.
+See 'systemctl status openipmi.service' for details.
+[  OK  ] Started OpenBSD Secure Shell server.
+LKP: ttyS0: 223: Kernel tests: Boot OK!
+LKP: ttyS0: 223: HOSTNAME vm-snb, MAC 52:54:00:12:34:56, kernel 6.12.0-rc1-00057-g5aa6c43eca21 1
+LKP: ttyS0: 223:  /lkp/lkp/src/bin/run-lkp /lkp/jobs/scheduled/vm-meta-135/boot-1-debian-11.1-i386-20220923.cgz-x86_64-randconfig-073-20241025-5aa6c43eca21-20241030-925541-jrgvjy-5.yaml
+[   80.243928][  T241] is_virt=true
+[   80.243958][  T241]
+[   80.596747][    C0] ==================================================================
+[   80.597444][    C0] BUG: KCSAN: data-race in timekeeping_debug_get_ns / timekeeping_update_from_shadow
+[   80.598259][    C0]
+[   80.598445][    C0] write to 0xffffffff8483fef8 of 296 bytes by interrupt on cpu 1:
+[ 80.599035][ C0] timekeeping_update_from_shadow+0x8e/0x140 
+[ 80.599730][ C0] timekeeping_advance (kernel/time/timekeeping.c:2394) 
+[ 80.600108][ C0] update_wall_time (kernel/time/timekeeping.c:2403) 
+[ 80.600452][ C0] tick_do_update_jiffies64 (kernel/time/tick-sched.c:150) 
+[ 80.600881][ C0] tick_nohz_lowres_handler (kernel/time/tick-sched.c:232 kernel/time/tick-sched.c:290 kernel/time/tick-sched.c:1486) 
+[ 80.601309][ C0] __sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1044) 
+[ 80.601767][ C0] sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1037 arch/x86/kernel/apic/apic.c:1037) 
+[ 80.602211][ C0] asm_sysvec_apic_timer_interrupt (arch/x86/include/asm/idtentry.h:702) 
+[   80.602705][    C0]
+[   80.602997][    C0] read to 0xffffffff8483ff18 of 8 bytes by interrupt on cpu 0:
+[ 80.603583][ C0] timekeeping_debug_get_ns (kernel/time/timekeeping.c:415 kernel/time/timekeeping.c:399 kernel/time/timekeeping.c:307) 
+[ 80.604050][ C0] ktime_get_update_offsets_now (kernel/time/timekeeping.c:2583 (discriminator 4)) 
+[ 80.604545][ C0] hrtimer_run_queues (kernel/time/hrtimer.c:637 kernel/time/hrtimer.c:1904) 
+[ 80.604974][ C0] update_process_times (kernel/time/timer.c:2465 kernel/time/timer.c:2517) 
+[ 80.605404][ C0] tick_nohz_lowres_handler (kernel/time/tick-sched.c:277 kernel/time/tick-sched.c:297 kernel/time/tick-sched.c:1486) 
+[ 80.605866][ C0] __sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1044) 
+[ 80.606508][ C0] sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1037 arch/x86/kernel/apic/apic.c:1037) 
+[ 80.606958][ C0] asm_sysvec_apic_timer_interrupt (arch/x86/include/asm/idtentry.h:702) 
+[   80.607450][    C0]
+[   80.607656][    C0] value changed: 0x0015dff030800000 -> 0x0015fe74b0800000
+[   80.608228][    C0]
+[   80.608442][    C0] Reported by Kernel Concurrency Sanitizer on:
+[   80.608945][    C0] CPU: 0 UID: 0 PID: 241 Comm: sed Not tainted 6.12.0-rc1-00057-g5aa6c43eca21 #1 dac0ad7371e68d11ebb5ff151a0b0e46d35a6ac0
+[   80.610047][    C0] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+[   80.610868][    C0] ==================================================================
 
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20241030/202410301205.ef8e9743-lkp@intel.com
+https://download.01.org/0day-ci/archive/20241030/202410301316.e51421de-lkp@intel.com
 
 
 
