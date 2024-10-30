@@ -1,279 +1,258 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from out30-110.freemail.mail.aliyun.com (out30-110.freemail.mail.aliyun.com [115.124.30.110])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69D531E1A36
-	for <oe-lkp@lists.linux.dev>; Wed, 30 Oct 2024 08:50:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86BBC1E0E03
+	for <oe-lkp@lists.linux.dev>; Wed, 30 Oct 2024 09:11:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.110
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730278232; cv=none; b=KvQaTRH6tOuPTcLvww84cLNQKgHDSYKgf3XH8cZw6sOdX1xKl+UKRoP3u7quZO4DgP7c3gEXKMr90CfW2B6MicFwqmG/RqD2ZN13eu8G9SxRLzLWu73nBnSJFnnMexrpjdRYknxe28sW+twnYHV9WfpUuqe5V3sw4l3eW4NTMyw=
+	t=1730279506; cv=none; b=dDEYfEXKvWLD2I6tTDb5uLqOF8c/e/YFYH+gufD7DQcg4kV7ZkdwJzHPH4NT27lHkWnGxG3XNeHHPiY2pHJjvHz2SS4+1fVRuQtkuyAUUakuRsSrDofJb1ygDGWVFLOb+OGvIqsHU+79RPEaiKQ0kKm4cLRuNeVR6/LIUY/0eds=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730278232; c=relaxed/simple;
-	bh=MW1cvSIgXQQweni8xpqI9UlPmU7TfkyFIvvx/VCnM08=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=mULokjY2oIPhsifY9U4e6eTdz2df2soj7QTuhsPG0IkgIR2oYLkjAosvFUcpgT1XqorkNSW0f09LnSr+XI7+D6AoeqrTKJjRrRtQPtceKSlZmjEPRudzX6gQpjSF+g2cUknzwLxr73AAzfz8GyGnuiZypiZjzqqTMdxhGYKspYo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=ZYk0JYGu; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=KHJTL7ah; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1730279506; c=relaxed/simple;
+	bh=2xY069ofHmy4rNARHKYc+PQAGt8OAzWJhiOIbfatK6k=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=EP6VEzERU0EhglrXotUuNGIb8J/hYIRbZfW6nTHE1b+rSHYP6VVOw+p7ewkHqPtOm3r4kYgL2OJAP7ba7jiUMcvsURqSF4gDEni1Z+r9NNK0QKHVdQ0CdYLV24DyJsEdB9rY+42Y7GZQQ38zT/7963pf4HHb/rNSvS0RVI+PCFk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=tUzV+rwj; arc=none smtp.client-ip=115.124.30.110
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="ZYk0JYGu";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="KHJTL7ah"
-From: Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1730278227;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=DEEncBPPE/chMonzXun3zXcQ8sc4lIaBCOXSozYEIWw=;
-	b=ZYk0JYGuWJiqKIaUCGZTh8K6mk629SRTNVazpmw3Co3G74moz9YmwY0iaaCGZF3i9E+ERQ
-	EFqaqHheIf3b4dvApHy1htCSCqJTbdITrfdJwZIiSFX3Nsu4i+CEZ5aNPleU3Hq3NZ8Bq2
-	4fnGWBNjPL76X72RW6wOhTd6QcXPIJYOxYKG/udhJvwZMMpPc3mvHrEVfbGpqoauG96wiS
-	JBsIJSV4F+WdLKBzDOqmVw6b+3tymeEtgvG9FwH1waqmB4h89TfLL3Aex9CXhMxyuk8b4V
-	CwfmuBs/O+10D2+aT4wGmCHRweTkiRq6BD4NYBhA6uKoN5hZgwI3MEpoaYCh2A==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1730278227;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=DEEncBPPE/chMonzXun3zXcQ8sc4lIaBCOXSozYEIWw=;
-	b=KHJTL7ahXzC8iGJoCRkuxTz9vukexBjgdeR+m1QR2p2SyJsSM3ert8iL6SZ2UucooEDDE5
-	5D0ofHu5PEoGGcAA==
-To: kernel test robot <oliver.sang@intel.com>, Anna-Maria Behnsen
- <anna-maria@linutronix.de>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
- x86@kernel.org, John Stultz <jstultz@google.com>, oliver.sang@intel.com,
- Marco Elver <elver@google.com>, Dmitry Vyukov <dvyukov@google.com>,
- Frederic Weisbecker <frederic@kernel.org>, Peter Zijlstra
- <peterz@infradead.org>, Stephen Boyd <sboyd@kernel.org>
-Subject: Re: [tip:timers/core] [timekeeping]  5aa6c43eca:
- BUG:KCSAN:data-race_in_timekeeping_debug_get_ns/timekeeping_update_from_shadow
-In-Reply-To: <202410301316.e51421de-lkp@intel.com>
-References: <202410301316.e51421de-lkp@intel.com>
-Date: Wed, 30 Oct 2024 09:50:27 +0100
-Message-ID: <877c9qynxo.ffs@tglx>
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="tUzV+rwj"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1730279493; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
+	bh=B1Nj0TklQpMbeBFOiToWO0uWUZIy7wiCw7UL6E3FWT4=;
+	b=tUzV+rwj8MTU729IS8RqTue7o8VF1m6GmmuZt9uNxx7RrW0wZ2GZsJKIjromdw31WHaogfnQcGkXByFXevtb+2fQklV0dcqRNJ50XEB/9ngJk1U1s2JtVW3htKqPcJjmuLBMBS2vbQV8lOvn4RvIxeJ1Wlsz7zF6Nv4sJhWT3vQ=
+Received: from 30.166.35.5(mailfrom:dtcccc@linux.alibaba.com fp:SMTPD_---0WIDTc5c_1730279491 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Wed, 30 Oct 2024 17:11:32 +0800
+Message-ID: <5be3b8a9-dbd9-4640-94ba-78f2c19fa264@linux.alibaba.com>
+Date: Wed, 30 Oct 2024 17:11:31 +0800
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] sched/eevdf: Force propagating min_slice of cfs_rq when a
+ task changing slice
+Content-Language: en-US
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+ aubrey.li@linux.intel.com, yu.c.chen@intel.com,
+ Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>,
+ Juri Lelli <juri.lelli@redhat.com>,
+ Vincent Guittot <vincent.guittot@linaro.org>,
+ Dietmar Eggemann <dietmar.eggemann@arm.com>,
+ Steven Rostedt <rostedt@goodmis.org>, Ben Segall <bsegall@google.com>,
+ Mel Gorman <mgorman@suse.de>, Valentin Schneider <vschneid@redhat.com>,
+ Tejun Heo <tj@kernel.org>
+References: <202410301535.14e0855c-lkp@intel.com>
+From: Tianchen Ding <dtcccc@linux.alibaba.com>
+In-Reply-To: <202410301535.14e0855c-lkp@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Oct 30 2024 at 13:47, kernel test robot wrote:
-> this is another report about BUG:KCSAN, the change does not introduce new KCSAN
-> issue, but causes stats changes as below.
->
-> [   70.265411][    C1] BUG: KCSAN: data-race in timekeeping_debug_get_ns / timekeeping_update_from_shadow
-> [   70.265430][    C1]
-> [   70.265433][    C1] write to 0xffffffff8483fef8 of 296 bytes by interrupt on cpu 0:
-> [ 70.265440][ C1] timekeeping_update_from_shadow+0x8e/0x140 
-> [ 70.265452][ C1] timekeeping_advance (kernel/time/timekeeping.c:2394) 
-> [ 70.265462][ C1] update_wall_time (kernel/time/timekeeping.c:2403)
+On 2024/10/30 16:18, kernel test robot wrote:
+> 
+> 
+> Hello,
+> 
+> kernel test robot noticed "BUG:KASAN:slab-use-after-free_in_enqueue_task_fair" on:
+> 
+> commit: e9b718a38463470cc388aaa3ff50f12bbe8c4279 ("[PATCH] sched/eevdf: Force propagating min_slice of cfs_rq when a task changing slice")
+> url: https://github.com/intel-lab-lkp/linux/commits/Tianchen-Ding/sched-eevdf-Force-propagating-min_slice-of-cfs_rq-when-a-task-changing-slice/20241028-143410
+> base: https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git d1fb8a78b2ff1fe4e9478c75b4fbec588a73c1b0
+> patch link: https://lore.kernel.org/all/20241028063313.8039-2-dtcccc@linux.alibaba.com/
+> patch subject: [PATCH] sched/eevdf: Force propagating min_slice of cfs_rq when a task changing slice
+> 
+> in testcase: trinity
+> version: trinity-x86_64-ba2360ed-1_20240923
+> with following parameters:
+> 
+> 	runtime: 600s
+> 
+> 
+> 
+> config: x86_64-randconfig-014-20241028
+> compiler: clang-19
+> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+> 
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+> 
+> 
+> +------------------------------------------------------------------------------+------------+------------+
+> |                                                                              | d1fb8a78b2 | e9b718a384 |
+> +------------------------------------------------------------------------------+------------+------------+
+> | BUG:KASAN:slab-use-after-free_in_enqueue_task_fair                           | 0          | 4          |
+> | BUG:KASAN:slab-use-after-free_in_dequeue_entities                            | 0          | 1          |
+> +------------------------------------------------------------------------------+------------+------------+
+> 
+> 
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202410301535.14e0855c-lkp@intel.com
+> 
+> 
+> [ 117.822447][ T468] BUG: KASAN: slab-use-after-free in enqueue_task_fair (kernel/sched/fair.c:831 kernel/sched/fair.c:846 kernel/sched/fair.c:7020)
+> [  117.825270][  T468] Read of size 8 at addr ffff8881678c1c30 by task trinity-main/468
+> [  117.826451][  T468]
+> [  117.826941][  T468] CPU: 0 UID: 65534 PID: 468 Comm: trinity-main Not tainted 6.12.0-rc4-00025-ge9b718a38463 #1
+> [  117.828330][  T468] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> [  117.829779][  T468] Call Trace:
+> [  117.830339][  T468]  <TASK>
+> [ 117.830865][ T468] dump_stack_lvl (lib/dump_stack.c:122)
+> [ 117.831554][ T468] ? enqueue_task_fair (kernel/sched/fair.c:831 kernel/sched/fair.c:846 kernel/sched/fair.c:7020)
+> [ 117.832327][ T468] print_report (mm/kasan/report.c:378)
+> [ 117.833021][ T468] ? __virt_addr_valid (include/linux/rcupdate.h:337 include/linux/rcupdate.h:941 include/linux/mmzone.h:2043 arch/x86/mm/physaddr.c:65)
+> [ 117.833768][ T468] ? __virt_addr_valid (arch/x86/include/asm/preempt.h:103 include/linux/rcupdate.h:964 include/linux/mmzone.h:2053 arch/x86/mm/physaddr.c:65)
+> [ 117.834510][ T468] ? enqueue_task_fair (kernel/sched/fair.c:831 kernel/sched/fair.c:846 kernel/sched/fair.c:7020)
+> [ 117.835304][ T468] ? kasan_complete_mode_report_info (mm/kasan/report_generic.c:179)
+> [ 117.836192][ T468] ? enqueue_task_fair (kernel/sched/fair.c:831 kernel/sched/fair.c:846 kernel/sched/fair.c:7020)
+> [ 117.836990][ T468] kasan_report (mm/kasan/report.c:603)
+> [ 117.837670][ T468] ? enqueue_task_fair (kernel/sched/fair.c:831 kernel/sched/fair.c:846 kernel/sched/fair.c:7020)
+> [ 117.838449][ T468] __asan_report_load8_noabort (mm/kasan/report_generic.c:381)
+> [ 117.839276][ T468] enqueue_task_fair (kernel/sched/fair.c:831 kernel/sched/fair.c:846 kernel/sched/fair.c:7020)
+> [ 117.840026][ T468] enqueue_task (kernel/sched/core.c:2027)
+> [ 117.840701][ T468] activate_task (kernel/sched/core.c:2069)
+> [ 117.841383][ T468] wake_up_new_task (arch/x86/include/asm/jump_label.h:27 include/linux/jump_label.h:207 include/trace/events/sched.h:185 kernel/sched/core.c:4829)
+> [ 117.842104][ T468] kernel_clone (kernel/fork.c:2818)
+> [ 117.842786][ T468] __x64_sys_clone (kernel/fork.c:2927)
+> [ 117.843490][ T468] x64_sys_call (kbuild/obj/consumer/x86_64-randconfig-014-20241028/./arch/x86/include/generated/asm/syscalls_64.h:161)
+> [ 117.844198][ T468] do_syscall_64 (arch/x86/entry/common.c:?)
+> [ 117.844861][ T468] ? lockdep_hardirqs_on_prepare (kernel/locking/lockdep.c:467)
+> [ 117.845742][ T468] ? syscall_exit_to_user_mode (kernel/entry/common.c:221)
+> [ 117.846571][ T468] ? do_syscall_64 (arch/x86/entry/common.c:102)
+> [ 117.848374][ T468] ? irqentry_exit_to_user_mode (kernel/entry/common.c:234)
+> [ 117.849183][ T468] ? irqentry_exit (kernel/entry/common.c:367)
+> [ 117.849897][ T468] ? exc_page_fault (arch/x86/mm/fault.c:1543)
+> [ 117.850589][ T468] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130)
+> [  117.851487][  T468] RIP: 0033:0x7f97dcccc293
+> [ 117.852155][ T468] Code: 00 00 00 00 00 66 90 64 48 8b 04 25 10 00 00 00 45 31 c0 31 d2 31 f6 bf 11 00 20 01 4c 8d 90 d0 02 00 00 b8 38 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 35 89 c2 85 c0 75 2c 64 48 8b 04 25 10 00 00
+> All code
+> ========
+>     0:	00 00                	add    %al,(%rax)
+>     2:	00 00                	add    %al,(%rax)
+>     4:	00 66 90             	add    %ah,-0x70(%rsi)
+>     7:	64 48 8b 04 25 10 00 	mov    %fs:0x10,%rax
+>     e:	00 00
+>    10:	45 31 c0             	xor    %r8d,%r8d
+>    13:	31 d2                	xor    %edx,%edx
+>    15:	31 f6                	xor    %esi,%esi
+>    17:	bf 11 00 20 01       	mov    $0x1200011,%edi
+>    1c:	4c 8d 90 d0 02 00 00 	lea    0x2d0(%rax),%r10
+>    23:	b8 38 00 00 00       	mov    $0x38,%eax
+>    28:	0f 05                	syscall
+>    2a:*	48 3d 00 f0 ff ff    	cmp    $0xfffffffffffff000,%rax		<-- trapping instruction
+>    30:	77 35                	ja     0x67
+>    32:	89 c2                	mov    %eax,%edx
+>    34:	85 c0                	test   %eax,%eax
+>    36:	75 2c                	jne    0x64
+>    38:	64                   	fs
+>    39:	48                   	rex.W
+>    3a:	8b                   	.byte 0x8b
+>    3b:	04 25                	add    $0x25,%al
+>    3d:	10 00                	adc    %al,(%rax)
+> 	...
+> 
+> Code starting with the faulting instruction
+> ===========================================
+>     0:	48 3d 00 f0 ff ff    	cmp    $0xfffffffffffff000,%rax
+>     6:	77 35                	ja     0x3d
+>     8:	89 c2                	mov    %eax,%edx
+>     a:	85 c0                	test   %eax,%eax
+>     c:	75 2c                	jne    0x3a
+>     e:	64                   	fs
+>     f:	48                   	rex.W
+>    10:	8b                   	.byte 0x8b
+>    11:	04 25                	add    $0x25,%al
+>    13:	10 00                	adc    %al,(%rax)
+> 	...
+> [  117.854567][  T468] RSP: 002b:00007fff02a6b648 EFLAGS: 00000246 ORIG_RAX: 0000000000000038
+> [  117.855822][  T468] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f97dcccc293
+> [  117.856993][  T468] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000001200011
+> [  117.858049][  T468] RBP: 0000000000000000 R08: 0000000000000000 R09: 7fffffffffffffff
+> [  117.859328][  T468] R10: 00007f97dcbf5a10 R11: 0000000000000246 R12: 0000000000000001
+> [  117.860342][  T468] R13: 0000000000000002 R14: 0000000000000000 R15: 0000000000000000
+> [  117.861176][  T468]  </TASK>
+> [  117.861691][  T468]
+> [  117.862096][  T468] Allocated by task 902:
+> [ 117.862719][ T468] kasan_save_track (mm/kasan/common.c:48 mm/kasan/common.c:68)
+> [ 117.863560][ T468] kasan_save_alloc_info (mm/kasan/generic.c:566)
+> [ 117.864398][ T468] __kasan_kmalloc (mm/kasan/common.c:398)
+> [ 117.865193][ T468] __kmalloc_cache_node_noprof (mm/slub.c:4308)
+> [ 117.866038][ T468] alloc_fair_sched_group (include/linux/slab.h:? kernel/sched/fair.c:13312)
+> [ 117.866871][ T468] sched_create_group (kernel/sched/core.c:8853)
+> [ 117.867588][ T468] sched_autogroup_create_attach (include/linux/err.h:67 kernel/sched/autogroup.c:93 kernel/sched/autogroup.c:194)
+> [ 117.868413][ T468] ksys_setsid (kernel/sys.c:?)
+> [ 117.869079][ T468] __ia32_sys_setsid (kernel/sys.c:1269)
+> [ 117.869767][ T468] x64_sys_call (kbuild/obj/consumer/x86_64-randconfig-014-20241028/./arch/x86/include/generated/asm/syscalls_64.h:161)
+> [ 117.870453][ T468] do_syscall_64 (arch/x86/entry/common.c:?)
+> [ 117.871156][ T468] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130)
+> [  117.872032][  T468]
+> [  117.872468][  T468] Freed by task 243:
+> [ 117.873823][ T468] kasan_save_track (mm/kasan/common.c:48 mm/kasan/common.c:68)
+> [ 117.874518][ T468] kasan_save_free_info (mm/kasan/generic.c:582)
+> [ 117.875278][ T468] __kasan_slab_free (mm/kasan/common.c:271)
+> [ 117.875923][ T468] kfree (mm/slub.c:4579)
+> [ 117.876526][ T468] free_fair_sched_group (kernel/sched/fair.c:13278)
+> [ 117.877340][ T468] sched_free_group (kernel/sched/core.c:8823)
+> [ 117.878034][ T468] sched_free_group_rcu (kernel/sched/core.c:8831)
+> [ 117.878758][ T468] rcu_core (kernel/rcu/tree.c:?)
+> [ 117.879467][ T468] rcu_core_si (kernel/rcu/tree.c:2841)
+> [ 117.880104][ T468] handle_softirqs (arch/x86/include/asm/jump_label.h:27 include/linux/jump_label.h:207 include/trace/events/irq.h:142 kernel/softirq.c:555)
+> [ 117.880824][ T468] __irq_exit_rcu (kernel/softirq.c:617 kernel/softirq.c:639)
+> [ 117.881526][ T468] irq_exit_rcu (kernel/softirq.c:651)
+> [ 117.882185][ T468] sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1049)
+> [ 117.883046][ T468] asm_sysvec_apic_timer_interrupt (arch/x86/include/asm/idtentry.h:702)
+> [  117.883877][  T468]
+> [  117.884299][  T468] The buggy address belongs to the object at ffff8881678c1c00
+> [  117.884299][  T468]  which belongs to the cache kmalloc-rnd-07-1k of size 1024
+> [  117.886238][  T468] The buggy address is located 48 bytes inside of
+> [  117.886238][  T468]  freed 1024-byte region [ffff8881678c1c00, ffff8881678c2000)
+> [  117.888235][  T468]
+> [  117.888665][  T468] The buggy address belongs to the physical page:
+> [  117.889558][  T468] page: refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1678c0
+> [  117.890880][  T468] head: order:3 mapcount:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
+> [  117.892051][  T468] memcg:ffff88814cf29cc1
+> [  117.892690][  T468] flags: 0x8000000000000040(head|zone=2)
+> [  117.893467][  T468] page_type: f5(slab)
+> [  117.894072][  T468] raw: 8000000000000040 ffff888100059b40 ffffea000479e610 ffff88810005a828
+> [  117.896842][  T468] raw: 0000000000000000 00000000000a000a 00000001f5000000 ffff88814cf29cc1
+> [  117.898038][  T468] head: 8000000000000040 ffff888100059b40 ffffea000479e610 ffff88810005a828
+> [  117.899301][  T468] head: 0000000000000000 00000000000a000a 00000001f5000000 ffff88814cf29cc1
+> [  117.900519][  T468] head: 8000000000000003 ffffea00059e3001 ffffffffffffffff 0000000000000000
+> [  117.901731][  T468] head: 0000000000000008 0000000000000000 00000000ffffffff 0000000000000000
+> [  117.903000][  T468] page dumped because: kasan: bad access detected
+> [  117.903859][  T468] page_owner tracks the page as allocated
+> [  117.904643][  T468] page last allocated via order 3, migratetype Unmovable, gfp_mask 0x252800(GFP_NOWAIT|__GFP_NORETRY|__GFP_COMP|__GFP_THISNODE), pid 194, tgid 194 ((sh)), ts 46703728016, free_ts 0
+> [ 117.906952][ T468] post_alloc_hook (include/linux/page_owner.h:?)
+> [ 117.907672][ T468] prep_new_page (mm/page_alloc.c:1547)
+> [ 117.908338][ T468] get_page_from_freelist (mm/page_alloc.c:?)
+> [ 117.909140][ T468] __alloc_pages_noprof (mm/page_alloc.c:4733)
+> [ 117.909885][ T468] new_slab (mm/slub.c:?)
+> [ 117.910539][ T468] ___slab_alloc (mm/slub.c:3819)
+> [ 117.911291][ T468] __slab_alloc (mm/slub.c:3910)
+> [ 117.911959][ T468] __kmalloc_cache_node_noprof (mm/slub.c:3961)
+> [ 117.912775][ T468] alloc_fair_sched_group (include/linux/slab.h:? kernel/sched/fair.c:13312)
+> [ 117.913582][ T468] sched_create_group (kernel/sched/core.c:8853)
+> [ 117.914420][ T468] sched_autogroup_create_attach (include/linux/err.h:67 kernel/sched/autogroup.c:93 kernel/sched/autogroup.c:194)
+> [ 117.915352][ T468] ksys_setsid (kernel/sys.c:?)
+> [ 117.916031][ T468] __ia32_sys_setsid (kernel/sys.c:1269)
+> [ 117.916779][ T468] x64_sys_call (kbuild/obj/consumer/x86_64-randconfig-014-20241028/./arch/x86/include/generated/asm/syscalls_64.h:161)
+> [ 117.917631][ T468] do_syscall_64 (arch/x86/entry/common.c:?)
+> [ 117.918407][ T468] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130)
+> [  117.919324][  T468] page_owner free stack trace missing
+> [  117.920090][  T468]
+> [  117.920515][  T468] Memory state around the buggy address:
+> 
+> 
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20241030/202410301535.14e0855c-lkp@intel.com
+> 
+> 
 
-timekeeping_update_from_shadow() holds the sequence count write.
+Hmm... Should add a check about whether se node is on rb tree effectively.
 
-> [ 70.265642][ C1] timekeeping_debug_get_ns (kernel/time/timekeeping.c:415 kernel/time/timekeeping.c:399 kernel/time/timekeeping.c:307) 
-> [ 70.265653][ C1] ktime_get (kernel/time/timekeeping.c:431 (discriminator 4) kernel/time/timekeeping.c:897 (discriminator 4)) 
-> [ 70.265660][ C1] tick_nohz_lowres_handler (kernel/time/tick-sched.c:220 kernel/time/tick-sched.c:290 kernel/time/tick-sched.c:1486) 
-
-ktime_get()
-
-        do {
-           seq = read_seqcount_begin(&tk_core.seq);
-           timekeeping_debug_get_ns();
-        } while (read_seqcount_retry(&tk_core.seq, seq));
-
-So this should be safe against concurreny. I assume the issue here is
-that timekeeping_debug_get_ns() has a nested
-
-        do {
-           seq = read_seqcount_begin(&tk_core.seq);
-           ....
-        } while (read_seqcount_retry(&tk_core.seq, seq));
-
-inside. Which is still correct, but confuses KCSAN. Marco?
-
-But that aside, since 135225a363ae timekeeping_cycles_to_ns() is fully
-overflow protected and unconditionally handles negative motion (before
-it was x86 only), the value of timekeeping_debug_get_ns() becomes
-questionable.
-
-I'm leaning towards removing it completely.
-
-John?
-
-Thanks,
-
-        tglx
----
- include/linux/timekeeper_internal.h |   16 ------
- kernel/time/timekeeping.c           |   87 ++----------------------------------
- 2 files changed, 5 insertions(+), 98 deletions(-)
-
---- a/include/linux/timekeeper_internal.h
-+++ b/include/linux/timekeeper_internal.h
-@@ -76,9 +76,6 @@ struct tk_read_base {
-  *				ntp shifted nano seconds.
-  * @ntp_err_mult:		Multiplication factor for scaled math conversion
-  * @skip_second_overflow:	Flag used to avoid updating NTP twice with same second
-- * @last_warning:		Warning ratelimiter (DEBUG_TIMEKEEPING)
-- * @underflow_seen:		Underflow warning flag (DEBUG_TIMEKEEPING)
-- * @overflow_seen:		Overflow warning flag (DEBUG_TIMEKEEPING)
-  *
-  * Note: For timespec(64) based interfaces wall_to_monotonic is what
-  * we need to add to xtime (or xtime corrected for sub jiffy times)
-@@ -147,19 +144,6 @@ struct timekeeper {
- 	u32			ntp_error_shift;
- 	u32			ntp_err_mult;
- 	u32			skip_second_overflow;
--
--#ifdef CONFIG_DEBUG_TIMEKEEPING
--	long			last_warning;
--	/*
--	 * These simple flag variables are managed
--	 * without locks, which is racy, but they are
--	 * ok since we don't really care about being
--	 * super precise about how many events were
--	 * seen, just that a problem was observed.
--	 */
--	int			underflow_seen;
--	int			overflow_seen;
--#endif
- };
- 
- #ifdef CONFIG_GENERIC_TIME_VSYSCALL
---- a/kernel/time/timekeeping.c
-+++ b/kernel/time/timekeeping.c
-@@ -227,8 +227,6 @@ static inline u64 tk_clock_read(const st
- }
- 
- #ifdef CONFIG_DEBUG_TIMEKEEPING
--#define WARNING_FREQ (HZ*300) /* 5 minute rate-limiting */
--
- static void timekeeping_check_update(struct timekeeper *tk, u64 offset)
- {
- 
-@@ -239,82 +237,15 @@ static void timekeeping_check_update(str
- 		printk_deferred("WARNING: timekeeping: Cycle offset (%lld) is larger than allowed by the '%s' clock's max_cycles value (%lld): time overflow danger\n",
- 				offset, name, max_cycles);
- 		printk_deferred("         timekeeping: Your kernel is sick, but tries to cope by capping time updates\n");
--	} else {
--		if (offset > (max_cycles >> 1)) {
-+	} else if (offset > (max_cycles >> 1)) {
- 			printk_deferred("INFO: timekeeping: Cycle offset (%lld) is larger than the '%s' clock's 50%% safety margin (%lld)\n",
- 					offset, name, max_cycles >> 1);
- 			printk_deferred("      timekeeping: Your kernel is still fine, but is feeling a bit nervous\n");
--		}
--	}
--
--	if (tk->underflow_seen) {
--		if (jiffies - tk->last_warning > WARNING_FREQ) {
--			printk_deferred("WARNING: Underflow in clocksource '%s' observed, time update ignored.\n", name);
--			printk_deferred("         Please report this, consider using a different clocksource, if possible.\n");
--			printk_deferred("         Your kernel is probably still fine.\n");
--			tk->last_warning = jiffies;
--		}
--		tk->underflow_seen = 0;
--	}
--
--	if (tk->overflow_seen) {
--		if (jiffies - tk->last_warning > WARNING_FREQ) {
--			printk_deferred("WARNING: Overflow in clocksource '%s' observed, time update capped.\n", name);
--			printk_deferred("         Please report this, consider using a different clocksource, if possible.\n");
--			printk_deferred("         Your kernel is probably still fine.\n");
--			tk->last_warning = jiffies;
--		}
--		tk->overflow_seen = 0;
- 	}
- }
- 
--static inline u64 timekeeping_cycles_to_ns(const struct tk_read_base *tkr, u64 cycles);
--
--static inline u64 timekeeping_debug_get_ns(const struct tk_read_base *tkr)
--{
--	struct timekeeper *tk = &tk_core.timekeeper;
--	u64 now, last, mask, max, delta;
--	unsigned int seq;
--
--	/*
--	 * Since we're called holding a seqcount, the data may shift
--	 * under us while we're doing the calculation. This can cause
--	 * false positives, since we'd note a problem but throw the
--	 * results away. So nest another seqcount here to atomically
--	 * grab the points we are checking with.
--	 */
--	do {
--		seq = read_seqcount_begin(&tk_core.seq);
--		now = tk_clock_read(tkr);
--		last = tkr->cycle_last;
--		mask = tkr->mask;
--		max = tkr->clock->max_cycles;
--	} while (read_seqcount_retry(&tk_core.seq, seq));
--
--	delta = clocksource_delta(now, last, mask);
--
--	/*
--	 * Try to catch underflows by checking if we are seeing small
--	 * mask-relative negative values.
--	 */
--	if (unlikely((~delta & mask) < (mask >> 3)))
--		tk->underflow_seen = 1;
--
--	/* Check for multiplication overflows */
--	if (unlikely(delta > max))
--		tk->overflow_seen = 1;
--
--	/* timekeeping_cycles_to_ns() handles both under and overflow */
--	return timekeeping_cycles_to_ns(tkr, now);
--}
- #else
--static inline void timekeeping_check_update(struct timekeeper *tk, u64 offset)
--{
--}
--static inline u64 timekeeping_debug_get_ns(const struct tk_read_base *tkr)
--{
--	BUG();
--}
-+static inline void timekeeping_check_update(struct timekeeper *tk, u64 offset) { }
- #endif
- 
- /**
-@@ -421,19 +352,11 @@ static inline u64 timekeeping_cycles_to_
- 	return ((delta * tkr->mult) + tkr->xtime_nsec) >> tkr->shift;
- }
- 
--static __always_inline u64 __timekeeping_get_ns(const struct tk_read_base *tkr)
-+static __always_inline u64 timekeeping_get_ns(const struct tk_read_base *tkr)
- {
- 	return timekeeping_cycles_to_ns(tkr, tk_clock_read(tkr));
- }
- 
--static inline u64 timekeeping_get_ns(const struct tk_read_base *tkr)
--{
--	if (IS_ENABLED(CONFIG_DEBUG_TIMEKEEPING))
--		return timekeeping_debug_get_ns(tkr);
--
--	return __timekeeping_get_ns(tkr);
--}
--
- /**
-  * update_fast_timekeeper - Update the fast and NMI safe monotonic timekeeper.
-  * @tkr: Timekeeping readout base from which we take the update
-@@ -477,7 +400,7 @@ static __always_inline u64 __ktime_get_f
- 		seq = raw_read_seqcount_latch(&tkf->seq);
- 		tkr = tkf->base + (seq & 0x01);
- 		now = ktime_to_ns(tkr->base);
--		now += __timekeeping_get_ns(tkr);
-+		now += timekeeping_get_ns(tkr);
- 	} while (raw_read_seqcount_latch_retry(&tkf->seq, seq));
- 
- 	return now;
-@@ -593,7 +516,7 @@ static __always_inline u64 __ktime_get_r
- 		tkr = tkf->base + (seq & 0x01);
- 		basem = ktime_to_ns(tkr->base);
- 		baser = ktime_to_ns(tkr->base_real);
--		delta = __timekeeping_get_ns(tkr);
-+		delta = timekeeping_get_ns(tkr);
- 	} while (raw_read_seqcount_latch_retry(&tkf->seq, seq));
- 
- 	if (mono)
+Thanks for the report.
 
