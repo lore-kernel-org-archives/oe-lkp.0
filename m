@@ -1,327 +1,355 @@
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B6A113B2A5
-	for <oe-lkp@lists.linux.dev>; Wed, 13 Nov 2024 15:48:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.177.32
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731512919; cv=fail; b=ZZsUoHLBU4slrkexI7Wzs0mO3Psja9sucKJBWief2kDisCF5udFw59oD/a9AB4S6sM8XikQ+e6E08KtG5Mrq4BTvlnIF4AZD70tmgs8KRgmZ52ZMxdwZzK9fWwckKvsST2AqhVn0/1J9IWw0yzG6ypucOy73wL1kmiKiT7MCDKI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731512919; c=relaxed/simple;
-	bh=Yaue9KYB6oGfmDaK5UHVRns5Fzjtsaggne1S+yRJMw4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=dOSfPKvxZbvi+AR4NzZ7e00B1TfFg/bfQGbrl0Npa27VxHHtPmP9HxP7Do6OoQoFt0TVxge6hts9vHUMbNqr6uBYVw4SJ2uPIIe5Ir3nTWQGCdssRsvD6qY/ZK6Y0/QAn1x7N9QOqJTC8ExkJ+FXNNzs8g6ja1AKyEKdMF3ScF8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=nuu7bbGv; dkim=fail (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b=yZmLs2bp reason="signature verification failed"; arc=fail smtp.client-ip=205.220.177.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EE631547D4;
+	Wed, 13 Nov 2024 16:10:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1731514237; cv=none; b=Q8FP/jfXxOAFbLJ3ZeMhsCTyTTVaB5lW0t7v8OK00+jOR323+7gjWxY7yz9QSwhb27E0YQu2jB7+XWf8qrVZRvy/7+k7whkrVRRs5vzpqRixppJogHTI304R8zYu+V4cl6/10+nE4Ve7/iYbeO/TbRFHFwSYiOXATXbTVfY2mXg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1731514237; c=relaxed/simple;
+	bh=K7W5PoLh2TImy6dsPZoMot/j0CZyQL0pSCoDiEA1sro=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=f3LJLI/+6gbwkU8X/xPpZ09c1vLwBwkgrj9xnfRMRAtUr6/UgIRMv35HTD/QInymvMjnVs0XD29Y01rGDRzukKfBesGUxTJ3vbgX+/7fuzzK78ZVzxYD/rnqX6/zwknkNnX45wzXz1cumS37awO7nmdqbIJ/Kt57nAIYhX6ndYk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GY41XLhO; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="nuu7bbGv";
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="yZmLs2bp"
-Received: from pps.filterd (m0333520.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4ADDXW0q018901;
-	Wed, 13 Nov 2024 15:48:30 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=
-	corp-2023-11-20; bh=TrNk+qJZPPq1LeCYDuzC1Rc3dugCXT3pl1wLEAMp2ZE=; b=
-	nuu7bbGv14M6vL8793LbGkgAN0kZXMeRZNkd1A9FuaZ7Uo+UrOTJzC7YvXuByvUO
-	sPINRu72YiIDgF3WIq5uT/c/brs4tzojQHxjEC3Xzar7+2x6Xs8gkdov5xuXfOCd
-	7SAjTV2Jl8db6C5TKqxvDR8EZ18eUEGGmZnFxIs+AGxCWUMwkSOZ/kEp0sIXmx4A
-	JKYsJhdvI4rirQak2IssCqbUuwP4KyeSJLg6msVJzQc6Va4Z4WMoc2I4hOIPAVLR
-	TTB322A/tPxr93YkxJNh96PJkIGS1Yfppod2AUNUehX9EfR+BbAUBDCl2d2ODgop
-	gRzQesyXWXPMCa0VOYl8Mw==
-Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 42t0nwq5ns-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 13 Nov 2024 15:48:29 +0000 (GMT)
-Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 4ADEEiIe025914;
-	Wed, 13 Nov 2024 15:48:28 GMT
-Received: from nam04-bn8-obe.outbound.protection.outlook.com (mail-bn8nam04lp2041.outbound.protection.outlook.com [104.47.74.41])
-	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 42sx69gab7-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 13 Nov 2024 15:48:28 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=UbRYLo5H+aUYHfml9/e7zDFjwz7cO8Kd4QXaJ9H+gVG1bzxjCj8kErku4HSWIBiQOkkCiZuOyCfF4D6otNu3QCZXxgS8UPZW6OCljYv93vx2uxwi2jUzhC2qZopiXPwU5NpCZ+wBSm2xraw0pFzRUjImcGLbmw8+HI9f0Ld4Q6u5n9/bM8MSHJU9/vgb43N9atc/t89rslydPWy8WLrhJdML6WNLzLE8g66/itLfq2WYTJeMaSqkhxX9KmKUyHro8txExXvlRbltebZCe+UKMAl0VE7z7qnSzHBp/VhgBt6HUU3APYux9cqs8fKdcV9vbmDMAvmrBIMrrqOeZVX4TA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BLxC/eHYu0BzWoX4mfPOQ7RdniePETjtSbsMyi2ZZpI=;
- b=FyfN9aUBDl5eV06QX5N3q0DXY6PRl9sLfSUgNam5Qeka0X4r7NS6l/nieCYBwUyu4Q5pVhLDx2za1zVDhRUHSrpC07gZ0L1Moh/CJIEgFlnf+lqiyCWhPE5FdPXzSAxH0fij/Q+qmX7vTdH13hjuBQtxK0JvQP65xrrHmhv/Z9K9dUHQ7jQiqbayll9dFQ9VotEsF3tjjJUH8jrQ77Dt7EJtVM9ttooWHJeJ/yOTtEmxWQMFWi/8s9lKgRbVtoJHwYDip1V/RmTK1Lx9Sz/OGnIu3OQMCGUzGLfnuWLOTlNheTL7HFksyK4JbfdN/fyFSIsGtG+GOOEf14270oAEFw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BLxC/eHYu0BzWoX4mfPOQ7RdniePETjtSbsMyi2ZZpI=;
- b=yZmLs2bpZdlsC/eTlpYEwPVDBaGQUa/v4buqbhs5Mu2WVeD6ee7jvu1Z1pIdOUxgSt7ikw5r5rRFsC9JxDKIW2XpeDn3tM5RGPoSUeXRX7xZ3OOFB/a/XvASR/clYqcNoBSCRD1A9Wo9d5mg+8FHyYIXZfaq74hTMptf9fh/UI4=
-Received: from BN0PR10MB5128.namprd10.prod.outlook.com (2603:10b6:408:117::24)
- by BN0PR10MB5046.namprd10.prod.outlook.com (2603:10b6:408:127::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8158.17; Wed, 13 Nov
- 2024 15:48:19 +0000
-Received: from BN0PR10MB5128.namprd10.prod.outlook.com
- ([fe80::743a:3154:40da:cf90]) by BN0PR10MB5128.namprd10.prod.outlook.com
- ([fe80::743a:3154:40da:cf90%4]) with mapi id 15.20.8158.013; Wed, 13 Nov 2024
- 15:48:19 +0000
-Date: Wed, 13 Nov 2024 10:48:16 -0500
-From: Chuck Lever <chuck.lever@oracle.com>
-To: Jeff Layton <jlayton@kernel.org>
-Cc: kernel test robot <oliver.sang@intel.com>,
-        Mike Snitzer <snitzer@redhat.com>, oe-lkp@lists.linux.dev,
-        lkp@intel.com
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GY41XLhO"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ED1FC4CEC3;
+	Wed, 13 Nov 2024 16:10:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1731514237;
+	bh=K7W5PoLh2TImy6dsPZoMot/j0CZyQL0pSCoDiEA1sro=;
+	h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+	b=GY41XLhO1XWiZAKxQjFTQUt+gjS+pU50XGxLuBHgmj8D6sPgx8KfS6Atws8CJHPd7
+	 7aIT9ku0OUpClIc/C+VraoSTlOEyG3nxqrQu9bjTCAOsTDJW6u8wQcPbrPCocTjBkk
+	 Aj+SOap5KDmPKvqN+Pl2XR9xzelF18aAc8YIdx6s4Y6jbkI2ufIaq2KuZNJQK+LH4B
+	 EtUSOsDT31QHz3nDHo7ToLG6IJ5mPx2h/nDj7RtXKcVxZZrIqm0kbNFS5NJLGiDMLz
+	 HPuBTLc8BZLgf0+2xNa/i5BCgTNYAZg2nUino/+GTplqlhlLGPTQCg+lAz5rSb3lMR
+	 XEkJZnpa9cIiQ==
+Message-ID: <48ad2574e14c35aca27c10e68f2a1069ccb646df.camel@kernel.org>
 Subject: Re: [snitzer:cel-nfsd-next-6.12-rc5] [nfsd]  b4be3ccf1c:
  fsmark.app_overhead 92.0% regression
-Message-ID: <ZzTKQGYJFh7PH4Fw@tissot.1015granger.net>
+From: Jeff Layton <jlayton@kernel.org>
+To: Chuck Lever <chuck.lever@oracle.com>
+Cc: kernel test robot <oliver.sang@intel.com>, Mike Snitzer
+ <snitzer@redhat.com>,  oe-lkp@lists.linux.dev, lkp@intel.com, Anna
+ Schumaker <anna@kernel.org>, Trond Myklebust
+ <trond.myklebust@primarydata.com>, Thomas Haynes <loghyr@gmail.com>, 
+ linux-nfs@vger.kernel.org
+Date: Wed, 13 Nov 2024 11:10:35 -0500
+In-Reply-To: <ZzTKQGYJFh7PH4Fw@tissot.1015granger.net>
 References: <202411071017.ddd9e9e2-oliver.sang@intel.com>
- <4d5d966b2efc0b5b8c59ef179e99f3f8fbf792f8.camel@kernel.org>
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <4d5d966b2efc0b5b8c59ef179e99f3f8fbf792f8.camel@kernel.org>
-X-ClientProxiedBy: CH2PR14CA0011.namprd14.prod.outlook.com
- (2603:10b6:610:60::21) To BN0PR10MB5128.namprd10.prod.outlook.com
- (2603:10b6:408:117::24)
+	 <4d5d966b2efc0b5b8c59ef179e99f3f8fbf792f8.camel@kernel.org>
+	 <ZzTKQGYJFh7PH4Fw@tissot.1015granger.net>
+Autocrypt: addr=jlayton@kernel.org; prefer-encrypt=mutual;
+ keydata=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
+ QZIQXVeAA+smfTT0tDrisj1U5x6ZB9b3nBg65kc=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.52.4 (3.52.4-2.fc40) 
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN0PR10MB5128:EE_|BN0PR10MB5046:EE_
-X-MS-Office365-Filtering-Correlation-Id: be74fbfa-a67b-4685-b10c-08dd03fa9892
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?iso-8859-1?Q?f3BFmxIDUTCabO6XsROCBJer73FmMJjAt2lcOne9S685uvQkysC5WGSWnH?=
- =?iso-8859-1?Q?aqHMLe+E/mdsbZHYa9N7D9cAubEiHXtn0EYURcU5rYxyCBFoQaANjQUG2/?=
- =?iso-8859-1?Q?v7ty7+oHgLn21vzW02DGYfE4liIy3j2U85678XGnuCW1v0ryRGwV6Is+oa?=
- =?iso-8859-1?Q?ShadqIpo4UwdXMLHhpFAS+zaBp1+whNYdL98y66CHhZaFNUqGQETmvhUUL?=
- =?iso-8859-1?Q?A+EdqfYXvr/17JCRH/Yd6aCHBVabR1ffHNwz8YtkbZfP7sLrzeqWqJVcb8?=
- =?iso-8859-1?Q?SVBnIQ48tH5aJnu8BUj+EXis5fQtC1VMR10L2q3g1xwg1NAnVaudnmxOFZ?=
- =?iso-8859-1?Q?/WH1WG3rfaP5sRa7mn5WJJGG6E+Q/+zON0ZJM8SUm0v1fIYe/VoeHTeOuG?=
- =?iso-8859-1?Q?j/XYa0N33AkUrZbzVmiwKVtmLHyT9qZ9kehsM7qxnZc8B+7q0z+lM2x89A?=
- =?iso-8859-1?Q?TUeUnqAIdcDXe7CbLtDYtPFaxSpbXXlQrRHrIz7/J5f3tewz6sfYoEVU6n?=
- =?iso-8859-1?Q?5iRN2t5L5OrHlegJbYZZrITHhDSq8f9h99l9ulNZav14FHXZnLfhtCVIG1?=
- =?iso-8859-1?Q?8jY8UWF5b4806NQ8uP5DN3d12rsfzMkZ1WFPnlP4wHDjaQwBvUMFt6w125?=
- =?iso-8859-1?Q?F0GG1o6F3lhRfhTdjjnKX94iBBW9BfkMh6FC9o2L3REQcQzU86eU/4SNKx?=
- =?iso-8859-1?Q?E+7FYvFTP7oaO4IuV8cE9LQuMQnFBu//VR8a3/QUnNsqRGjKnTTFLkAAXg?=
- =?iso-8859-1?Q?yzhIng+NJ6oOl3O++5FHLmaj7OBGH9y5uC4D1YHZolZ4ZfBZdh5SRAqKB8?=
- =?iso-8859-1?Q?w5ne26fj5PXehYrzNbyQG2H/u/a798AGg4GPyXYHxvsxnIplNWezW0m8FA?=
- =?iso-8859-1?Q?ZNQeVGOM6INSX2LwsWG6dWjhqtSBIb5kzK/IBMu3qGsi2WlRsoW2WBZKmY?=
- =?iso-8859-1?Q?LYWRARNpfleoP2iL1mq88B4hcYvAsnTSNCmwQvBxE4X9eUoJ+HQuUkzrQX?=
- =?iso-8859-1?Q?5qu58z60VLc/tAaOXjnR5NcJd70q9+VRCoM/ODkrD7vsoeh6C4loeEjDXX?=
- =?iso-8859-1?Q?XlObqCq0dFSa4I7kvPgarSyYgH9WyqUHaAfyYBItv8nZrjNwk+2VSiR02r?=
- =?iso-8859-1?Q?kiAwrOlkrMbvbYVA9N/g0WYoVyis8TGDmrVSj/LMzfY4FPGfT/rB6eoIxt?=
- =?iso-8859-1?Q?tO7v8GXSD/MdmwPBBnYrfX6m1kcqUOhCcwpV2MJsYgfNI19b1HkY/sLMru?=
- =?iso-8859-1?Q?Lc2L8jrVrdehpjbHyqrRRZok5F108r3t48KBYJTI8JbP2AVF9g8NgW+EtJ?=
- =?iso-8859-1?Q?JIx0O/mNXkoZl58jakBFT9ff8Q=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN0PR10MB5128.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?iso-8859-1?Q?O9IusNcRPAPCm2wUUnMwPVTntI9O1VaLwIRvHmTB5q4aMwvCzmFp904rvT?=
- =?iso-8859-1?Q?wFqyfuXQxeiWyZDRo37oqAdExy3UH8iciUNKWhh7LNHtpFZrEu+KtRNa2o?=
- =?iso-8859-1?Q?to269zioXpKqSWJhW3/A8UXcysDlNRu61T2CWhZfjqIoG7W16RYYEaaMFr?=
- =?iso-8859-1?Q?EcibhnczSaRyR3prEF9uf+OIk3sh5Qd4z+Swoo8H0AI2Ozub+arsiJ3+sn?=
- =?iso-8859-1?Q?twdDPBQiyn+PBUR58ZftkFJYinmr1U8j3ZHHSXjdZJdoLKfiWH+JYC4hGI?=
- =?iso-8859-1?Q?T0B5eiRld/eizIrEnSBTKYwyFhfwEjL1U8uTwOkxBIVUDwAw5fEnJVFBdz?=
- =?iso-8859-1?Q?Rx6EstzE/a//dw3W8/9o4vJvbnsQdAtxJRxY9te1JCgXZ55ffb7POzC5NJ?=
- =?iso-8859-1?Q?MiFv04TAcReAREwA8SKLxj+lOIg5xG86KAl5feD83Y8RSS2tdrtfF/7der?=
- =?iso-8859-1?Q?7AR3rewzDIascEP8790ObkDN18/VKGMdxGIgYN1vPjreG3mJRYCE4/c5LX?=
- =?iso-8859-1?Q?Edm4rHhpH3PNcM95aLdhFTm7AEag1S7wBfc0HiO9dTBfRzUIRd6XlK+FNF?=
- =?iso-8859-1?Q?iMslJvvYrHcUVHjKwZ0Kd0Hu3R2rOeivvDso9t+iLNuGho//IcY2i12rjF?=
- =?iso-8859-1?Q?zK6c4UBth4S0Z5kjajX/IH4hVeOH09tap07H4ZU7rovVwt9eY51ogbw2xi?=
- =?iso-8859-1?Q?MAS8gAi8FcXMCrfIrOO/mZ9C6ip691jqTS8adqsuN/uxHV0lZAazXZRYfH?=
- =?iso-8859-1?Q?bFyFNBt1lDcUFcpDwps66Hb1NRFhm+TpuPltb39bpZuEUZuNAaPnp1gBrf?=
- =?iso-8859-1?Q?59UqthAp1JTPy9ivdVhVN9uJ57EW2OX4dbV77+M5s6YK2pGJvsoVn3P9gX?=
- =?iso-8859-1?Q?dep5zqk9Ysd3uFmEkEyHDc7Eo6K0yxC5mzqwC09rCunXlaBE21+T+9k0pM?=
- =?iso-8859-1?Q?1vuLEBoulTO628OPeNWqTrhigzT6a/ETxfs5BZ09AVcJM5qcyvAKvYaXJy?=
- =?iso-8859-1?Q?wDcLLFgTaQZPIRax3MuLbTgh934bIXj3mF4W5wkb2lUSYvnSfJoGy0zde2?=
- =?iso-8859-1?Q?8toT9508nWzLZxfms5NEyoUM8czC7W9EQwhvrwzLtKRxaXb3mBA311wL9N?=
- =?iso-8859-1?Q?K/85NozermkySPU7EsO6MWgEfEJEvuCz5aFb1ueoHG6sBYpp9rMwuZINLs?=
- =?iso-8859-1?Q?LnlGBezqoPwAecLJmxcCF43MOaj5nUD+s2kEGfPBK8/ETXYsDaxkbl+yUC?=
- =?iso-8859-1?Q?uF8PTqgNEUS7VZF2ZA/kf938ts2NqRWSciUqfS0Ii04bK98JanjmyiQSLf?=
- =?iso-8859-1?Q?iV6ynsInzzA40LrKTi1vBcgYx3HzektEjv70miZloP2MpPPS2lYb4q3yBj?=
- =?iso-8859-1?Q?yNIYMDdiBbkfA5RfdstWfFmvbpc9k3eHYrlPvfhA+wgfj1YFrXDZpkBh/8?=
- =?iso-8859-1?Q?+1QwxDI3skGFNE6GhyVfFeUr+iEZhok9WhL50vqpA8H6pgjyWvceMr/UHf?=
- =?iso-8859-1?Q?yTNROmpbSkTKlwN/naxTrm8A/eNRu1tnFDa/rCJsqXDEoevKx4Cix9qCho?=
- =?iso-8859-1?Q?PqUuRaHVvOz6yJqxFmqro5gLHeUHk6O560lgTIspPbKGFXiM642WRVtnj1?=
- =?iso-8859-1?Q?VDQq3PvwqiHXy+O4LxeSRPjw3Vr9AndXASm040mNcBLzyLlmihNlUKyQ?=
- =?iso-8859-1?Q?=3D=3D?=
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
-	MyUVJ3A0vkviYjJWlVOZXLebkT5Yk+ZrD1H9mQpuc9t/dOUSKPAi7IhE6X5uEGk4a5YZq0Zsup0GNLMnE1K+GCjWyqS9jKkDlw10Y+AcBnKyBstmyRrJjy2/Bcw3uLfcRcmcQ3uXfV3tqk7uzEVI/hhpr7ngSjjLfnq3IEgnbU7qNea3U8mI4c40VXQod/K26CZTccf2JIqfD+6q655EKPKB//VVSRUA9Pw9kFjnofxsy+r9M9UMGJyweemyvbBq9fRdH4DozuSSqcxC2y2S3ktLxOnRU0QK6rArzZRFDClHrUQ5xBaUISX9lQUskd+14gPDvjI56GR+EeslVtv5un9JO+VqikWlLSvibVd9duiTnHufN5OyVfQe5OhmU5Np2GkPR28IG5z9OYI9nhBMseHokjzI5OQlZpPkLhz5VZjhIR2EyasD6re4OvO+nAQc/RORINTihsGrURqdo6Dud0buHP7qFZkbzZsK5yLLmGmlWfwF9uqHpkvCa3njStp0x64mC/oD85QgplwiICzH0uW1KskzZ79TttDplYsV9xri7eoa10Io3M3AWrPmNA5osrYGTYejNtX3N3aYcDWQZgi6P+UYwiwc8jfo0lVpFSg=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: be74fbfa-a67b-4685-b10c-08dd03fa9892
-X-MS-Exchange-CrossTenant-AuthSource: BN0PR10MB5128.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Nov 2024 15:48:19.4523
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 5seCma/MbJl7T97EHqhqaWlbvBqJtlVBFc3GDAQlSYr5M/+NIdKdpfp8fRUbK4Ads/89WIN5p2iJoVHPxAbi9Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN0PR10MB5046
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.62.30
- definitions=2024-11-13_08,2024-11-13_01,2024-09-30_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 adultscore=0
- spamscore=0 bulkscore=0 phishscore=0 mlxscore=0 suspectscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2409260000 definitions=main-2411130133
-X-Proofpoint-GUID: l2wW-z2xdhCXXPgKHEy2KVH89JT2qMhF
-X-Proofpoint-ORIG-GUID: l2wW-z2xdhCXXPgKHEy2KVH89JT2qMhF
 
-On Thu, Nov 07, 2024 at 06:35:11AM -0500, Jeff Layton wrote:
-> On Thu, 2024-11-07 at 12:55 +0800, kernel test robot wrote:
-> > hi, Jeff Layton,
-> > 
-> > in commit message, it is mentioned the change is expected to solve the
-> > "App Overhead" on the fs_mark test we reported in
-> > https://lore.kernel.org/oe-lkp/202409161645.d44bced5-oliver.sang@intel.com/
-> > 
-> > however, in our tests, there is sill similar regression. at the same
-> > time, there is still no performance difference for fsmark.files_per_sec
-> > 
-> >    2015880 ±  3%     +92.0%    3870164        fsmark.app_overhead
-> >      18.57            +0.0%      18.57        fsmark.files_per_sec
-> > 
-> > 
-> > another thing is our bot bisect to this commit in repo/branch as below detail
-> > information. if there is a more porper repo/branch to test the patch, could
-> > you let us know? thanks a lot!
-> > 
-> > 
-> > 
-> > Hello,
-> > 
-> > kernel test robot noticed a 92.0% regression of fsmark.app_overhead on:
-> > 
-> > 
-> > commit: b4be3ccf1c251cbd3a3cf5391a80fe3a5f6f075e ("nfsd: implement OPEN_ARGS_SHARE_ACCESS_WANT_OPEN_XOR_DELEGATION")
-> > https://git.kernel.org/cgit/linux/kernel/git/snitzer/linux.git cel-nfsd-next-6.12-rc5
-> > 
-> > 
-> > testcase: fsmark
-> > config: x86_64-rhel-8.3
-> > compiler: gcc-12
-> > test machine: 128 threads 2 sockets Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz (Ice Lake) with 128G memory
-> > parameters:
-> > 
-> > 	iterations: 1x
-> > 	nr_threads: 1t
-> > 	disk: 1HDD
-> > 	fs: btrfs
-> > 	fs2: nfsv4
-> > 	filesize: 4K
-> > 	test_size: 40M
-> > 	sync_method: fsyncBeforeClose
-> > 	nr_files_per_directory: 1fpd
-> > 	cpufreq_governor: performance
-> > 
-> > 
-> > 
-> > 
-> > If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> > the same patch/commit), kindly add following tags
-> > > Reported-by: kernel test robot <oliver.sang@intel.com>
-> > > Closes: https://lore.kernel.org/oe-lkp/202411071017.ddd9e9e2-oliver.sang@intel.com
-> > 
-> > 
-> > Details are as below:
-> > -------------------------------------------------------------------------------------------------->
-> > 
-> > 
-> > The kernel config and materials to reproduce are available at:
-> > https://download.01.org/0day-ci/archive/20241107/202411071017.ddd9e9e2-oliver.sang@intel.com
-> > 
-> > =========================================================================================
-> > compiler/cpufreq_governor/disk/filesize/fs2/fs/iterations/kconfig/nr_files_per_directory/nr_threads/rootfs/sync_method/tbox_group/test_size/testcase:
-> >   gcc-12/performance/1HDD/4K/nfsv4/btrfs/1x/x86_64-rhel-8.3/1fpd/1t/debian-12-x86_64-20240206.cgz/fsyncBeforeClose/lkp-icl-2sp6/40M/fsmark
-> > 
-> > commit: 
-> >   37f27b20cd ("nfsd: add support for FATTR4_OPEN_ARGUMENTS")
-> >   b4be3ccf1c ("nfsd: implement OPEN_ARGS_SHARE_ACCESS_WANT_OPEN_XOR_DELEGATION")
-> > 
-> > 37f27b20cd64e2e0 b4be3ccf1c251cbd3a3cf5391a8 
-> > ---------------- --------------------------- 
-> >          %stddev     %change         %stddev
-> >              \          |                \  
-> >      97.33 ±  9%     -16.3%      81.50 ±  9%  perf-c2c.HITM.local
-> >       3788 ±101%    +147.5%       9377 ±  6%  sched_debug.cfs_rq:/.load_avg.max
-> >       2936            -6.2%       2755        vmstat.system.cs
-> >    2015880 ±  3%     +92.0%    3870164        fsmark.app_overhead
-> >      18.57            +0.0%      18.57        fsmark.files_per_sec
-> >      53420           -17.3%      44185        fsmark.time.voluntary_context_switches
-> >       1.50 ±  7%     +13.4%       1.70 ±  3%  perf-sched.wait_time.avg.ms.devkmsg_read.vfs_read.ksys_read.do_syscall_64
-> >       3.00 ±  7%     +13.4%       3.40 ±  3%  perf-sched.wait_time.max.ms.devkmsg_read.vfs_read.ksys_read.do_syscall_64
-> >    1756957            -2.1%    1720536        proc-vmstat.numa_hit
-> >    1624496            -2.2%    1588039        proc-vmstat.numa_local
-> >       1.28 ±  4%      -8.2%       1.17 ±  3%  perf-stat.i.MPKI
-> >       2916            -6.2%       2735        perf-stat.i.context-switches
-> >       1529 ±  4%      +8.2%       1655 ±  3%  perf-stat.i.cycles-between-cache-misses
-> >       2910            -6.2%       2729        perf-stat.ps.context-switches
-> >       0.67 ± 15%      -0.4        0.27 ±100%  perf-profile.calltrace.cycles-pp._Fork
-> >       0.95 ± 15%      +0.3        1.26 ± 11%  perf-profile.calltrace.cycles-pp.__sched_setaffinity.sched_setaffinity.__x64_sys_sched_setaffinity.do_syscall_64.entry_SYSCALL_64_after_hwframe
-> >       0.70 ± 47%      +0.3        1.04 ±  9%  perf-profile.calltrace.cycles-pp._nohz_idle_balance.do_idle.cpu_startup_entry.start_secondary.common_startup_64
-> >       0.52 ± 45%      +0.3        0.86 ± 15%  perf-profile.calltrace.cycles-pp.seq_read_iter.vfs_read.ksys_read.do_syscall_64.entry_SYSCALL_64_after_hwframe
-> >       0.72 ± 50%      +0.4        1.12 ± 18%  perf-profile.calltrace.cycles-pp.link_path_walk.path_openat.do_filp_open.do_sys_openat2.__x64_sys_openat
-> >       1.22 ± 26%      +0.4        1.67 ± 12%  perf-profile.calltrace.cycles-pp.sched_setaffinity.evlist_cpu_iterator__next.read_counters.process_interval.dispatch_events
-> >       2.20 ± 11%      +0.6        2.78 ± 13%  perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.read
-> >       2.20 ± 11%      +0.6        2.82 ± 12%  perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.read
-> >       2.03 ± 13%      +0.6        2.67 ± 13%  perf-profile.calltrace.cycles-pp.ksys_read.do_syscall_64.entry_SYSCALL_64_after_hwframe.read
-> >       0.68 ± 15%      -0.2        0.47 ± 19%  perf-profile.children.cycles-pp._Fork
-> >       0.56 ± 15%      -0.1        0.42 ± 16%  perf-profile.children.cycles-pp.tcp_v6_do_rcv
-> >       0.46 ± 13%      -0.1        0.35 ± 16%  perf-profile.children.cycles-pp.alloc_pages_mpol_noprof
-> >       0.10 ± 75%      +0.2        0.29 ± 19%  perf-profile.children.cycles-pp.refresh_cpu_vm_stats
-> >       0.28 ± 33%      +0.2        0.47 ± 16%  perf-profile.children.cycles-pp.show_stat
-> >       0.34 ± 32%      +0.2        0.54 ± 16%  perf-profile.children.cycles-pp.fold_vm_numa_events
-> >       0.37 ± 11%      +0.3        0.63 ± 23%  perf-profile.children.cycles-pp.setup_items_for_insert
-> >       0.88 ± 15%      +0.3        1.16 ± 12%  perf-profile.children.cycles-pp.__set_cpus_allowed_ptr
-> >       0.37 ± 14%      +0.3        0.67 ± 61%  perf-profile.children.cycles-pp.btrfs_writepages
-> >       0.37 ± 14%      +0.3        0.67 ± 61%  perf-profile.children.cycles-pp.extent_write_cache_pages
-> >       0.64 ± 19%      +0.3        0.94 ± 15%  perf-profile.children.cycles-pp.btrfs_insert_empty_items
-> >       0.38 ± 12%      +0.3        0.68 ± 58%  perf-profile.children.cycles-pp.btrfs_fdatawrite_range
-> >       0.32 ± 23%      +0.3        0.63 ± 64%  perf-profile.children.cycles-pp.extent_writepage
-> >       0.97 ± 14%      +0.3        1.31 ± 10%  perf-profile.children.cycles-pp.__sched_setaffinity
-> >       1.07 ± 16%      +0.4        1.44 ± 10%  perf-profile.children.cycles-pp.__x64_sys_sched_setaffinity
-> >       1.39 ± 18%      +0.5        1.90 ± 12%  perf-profile.children.cycles-pp.seq_read_iter
-> >       0.34 ± 30%      +0.2        0.52 ± 16%  perf-profile.self.cycles-pp.fold_vm_numa_events
-> > 
-> > 
-> > 
-> > 
-> > Disclaimer:
-> > Results have been estimated based on internal Intel analysis and are provided
-> > for informational purposes only. Any difference in system hardware or software
-> > design or configuration may affect actual performance.
-> > 
-> > 
-> 
-> This patch (b4be3ccf1c) is exceedingly simple, so I doubt it's causing
-> a performance regression in the server. The only thing I can figure
-> here is that this test is causing the server to recall the delegation
-> that it hands out, and then the client has to go and establish a new
-> open stateid in order to return it. That would likely be slower than
-> just handing out both an open and delegation stateid in the first
-> place.
-> 
-> I don't think there is anything we can do about that though, since the
-> feature seems to is working as designed.
+On Wed, 2024-11-13 at 10:48 -0500, Chuck Lever wrote:
+> On Thu, Nov 07, 2024 at 06:35:11AM -0500, Jeff Layton wrote:
+> > On Thu, 2024-11-07 at 12:55 +0800, kernel test robot wrote:
+> > > hi, Jeff Layton,
+> > >=20
+> > > in commit message, it is mentioned the change is expected to solve th=
+e
+> > > "App Overhead" on the fs_mark test we reported in
+> > > https://lore.kernel.org/oe-lkp/202409161645.d44bced5-oliver.sang@inte=
+l.com/
+> > >=20
+> > > however, in our tests, there is sill similar regression. at the same
+> > > time, there is still no performance difference for fsmark.files_per_s=
+ec
+> > >=20
+> > >    2015880 =C2=B1  3%     +92.0%    3870164        fsmark.app_overhea=
+d
+> > >      18.57            +0.0%      18.57        fsmark.files_per_sec
+> > >=20
+> > >=20
+> > > another thing is our bot bisect to this commit in repo/branch as belo=
+w detail
+> > > information. if there is a more porper repo/branch to test the patch,=
+ could
+> > > you let us know? thanks a lot!
+> > >=20
+> > >=20
+> > >=20
+> > > Hello,
+> > >=20
+> > > kernel test robot noticed a 92.0% regression of fsmark.app_overhead o=
+n:
+> > >=20
+> > >=20
+> > > commit: b4be3ccf1c251cbd3a3cf5391a80fe3a5f6f075e ("nfsd: implement OP=
+EN_ARGS_SHARE_ACCESS_WANT_OPEN_XOR_DELEGATION")
+> > > https://git.kernel.org/cgit/linux/kernel/git/snitzer/linux.git cel-nf=
+sd-next-6.12-rc5
+> > >=20
+> > >=20
+> > > testcase: fsmark
+> > > config: x86_64-rhel-8.3
+> > > compiler: gcc-12
+> > > test machine: 128 threads 2 sockets Intel(R) Xeon(R) Platinum 8358 CP=
+U @ 2.60GHz (Ice Lake) with 128G memory
+> > > parameters:
+> > >=20
+> > > 	iterations: 1x
+> > > 	nr_threads: 1t
+> > > 	disk: 1HDD
+> > > 	fs: btrfs
+> > > 	fs2: nfsv4
+> > > 	filesize: 4K
+> > > 	test_size: 40M
+> > > 	sync_method: fsyncBeforeClose
+> > > 	nr_files_per_directory: 1fpd
+> > > 	cpufreq_governor: performance
+> > >=20
+> > >=20
+> > >=20
+> > >=20
+> > > If you fix the issue in a separate patch/commit (i.e. not just a new =
+version of
+> > > the same patch/commit), kindly add following tags
+> > > > Reported-by: kernel test robot <oliver.sang@intel.com>
+> > > > Closes: https://lore.kernel.org/oe-lkp/202411071017.ddd9e9e2-oliver=
+.sang@intel.com
+> > >=20
+> > >=20
+> > > Details are as below:
+> > > ---------------------------------------------------------------------=
+----------------------------->
+> > >=20
+> > >=20
+> > > The kernel config and materials to reproduce are available at:
+> > > https://download.01.org/0day-ci/archive/20241107/202411071017.ddd9e9e=
+2-oliver.sang@intel.com
+> > >=20
+> > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > > compiler/cpufreq_governor/disk/filesize/fs2/fs/iterations/kconfig/nr_=
+files_per_directory/nr_threads/rootfs/sync_method/tbox_group/test_size/test=
+case:
+> > >   gcc-12/performance/1HDD/4K/nfsv4/btrfs/1x/x86_64-rhel-8.3/1fpd/1t/d=
+ebian-12-x86_64-20240206.cgz/fsyncBeforeClose/lkp-icl-2sp6/40M/fsmark
+> > >=20
+> > > commit:=20
+> > >   37f27b20cd ("nfsd: add support for FATTR4_OPEN_ARGUMENTS")
+> > >   b4be3ccf1c ("nfsd: implement OPEN_ARGS_SHARE_ACCESS_WANT_OPEN_XOR_D=
+ELEGATION")
+> > >=20
+> > > 37f27b20cd64e2e0 b4be3ccf1c251cbd3a3cf5391a8=20
+> > > ---------------- ---------------------------=20
+> > >          %stddev     %change         %stddev
+> > >              \          |                \ =20
+> > >      97.33 =C2=B1  9%     -16.3%      81.50 =C2=B1  9%  perf-c2c.HITM=
+.local
+> > >       3788 =C2=B1101%    +147.5%       9377 =C2=B1  6%  sched_debug.c=
+fs_rq:/.load_avg.max
+> > >       2936            -6.2%       2755        vmstat.system.cs
+> > >    2015880 =C2=B1  3%     +92.0%    3870164        fsmark.app_overhea=
+d
+> > >      18.57            +0.0%      18.57        fsmark.files_per_sec
+> > >      53420           -17.3%      44185        fsmark.time.voluntary_c=
+ontext_switches
+> > >       1.50 =C2=B1  7%     +13.4%       1.70 =C2=B1  3%  perf-sched.wa=
+it_time.avg.ms.devkmsg_read.vfs_read.ksys_read.do_syscall_64
+> > >       3.00 =C2=B1  7%     +13.4%       3.40 =C2=B1  3%  perf-sched.wa=
+it_time.max.ms.devkmsg_read.vfs_read.ksys_read.do_syscall_64
+> > >    1756957            -2.1%    1720536        proc-vmstat.numa_hit
+> > >    1624496            -2.2%    1588039        proc-vmstat.numa_local
+> > >       1.28 =C2=B1  4%      -8.2%       1.17 =C2=B1  3%  perf-stat.i.M=
+PKI
+> > >       2916            -6.2%       2735        perf-stat.i.context-swi=
+tches
+> > >       1529 =C2=B1  4%      +8.2%       1655 =C2=B1  3%  perf-stat.i.c=
+ycles-between-cache-misses
+> > >       2910            -6.2%       2729        perf-stat.ps.context-sw=
+itches
+> > >       0.67 =C2=B1 15%      -0.4        0.27 =C2=B1100%  perf-profile.=
+calltrace.cycles-pp._Fork
+> > >       0.95 =C2=B1 15%      +0.3        1.26 =C2=B1 11%  perf-profile.=
+calltrace.cycles-pp.__sched_setaffinity.sched_setaffinity.__x64_sys_sched_s=
+etaffinity.do_syscall_64.entry_SYSCALL_64_after_hwframe
+> > >       0.70 =C2=B1 47%      +0.3        1.04 =C2=B1  9%  perf-profile.=
+calltrace.cycles-pp._nohz_idle_balance.do_idle.cpu_startup_entry.start_seco=
+ndary.common_startup_64
+> > >       0.52 =C2=B1 45%      +0.3        0.86 =C2=B1 15%  perf-profile.=
+calltrace.cycles-pp.seq_read_iter.vfs_read.ksys_read.do_syscall_64.entry_SY=
+SCALL_64_after_hwframe
+> > >       0.72 =C2=B1 50%      +0.4        1.12 =C2=B1 18%  perf-profile.=
+calltrace.cycles-pp.link_path_walk.path_openat.do_filp_open.do_sys_openat2.=
+__x64_sys_openat
+> > >       1.22 =C2=B1 26%      +0.4        1.67 =C2=B1 12%  perf-profile.=
+calltrace.cycles-pp.sched_setaffinity.evlist_cpu_iterator__next.read_counte=
+rs.process_interval.dispatch_events
+> > >       2.20 =C2=B1 11%      +0.6        2.78 =C2=B1 13%  perf-profile.=
+calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.read
+> > >       2.20 =C2=B1 11%      +0.6        2.82 =C2=B1 12%  perf-profile.=
+calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.read
+> > >       2.03 =C2=B1 13%      +0.6        2.67 =C2=B1 13%  perf-profile.=
+calltrace.cycles-pp.ksys_read.do_syscall_64.entry_SYSCALL_64_after_hwframe.=
+read
+> > >       0.68 =C2=B1 15%      -0.2        0.47 =C2=B1 19%  perf-profile.=
+children.cycles-pp._Fork
+> > >       0.56 =C2=B1 15%      -0.1        0.42 =C2=B1 16%  perf-profile.=
+children.cycles-pp.tcp_v6_do_rcv
+> > >       0.46 =C2=B1 13%      -0.1        0.35 =C2=B1 16%  perf-profile.=
+children.cycles-pp.alloc_pages_mpol_noprof
+> > >       0.10 =C2=B1 75%      +0.2        0.29 =C2=B1 19%  perf-profile.=
+children.cycles-pp.refresh_cpu_vm_stats
+> > >       0.28 =C2=B1 33%      +0.2        0.47 =C2=B1 16%  perf-profile.=
+children.cycles-pp.show_stat
+> > >       0.34 =C2=B1 32%      +0.2        0.54 =C2=B1 16%  perf-profile.=
+children.cycles-pp.fold_vm_numa_events
+> > >       0.37 =C2=B1 11%      +0.3        0.63 =C2=B1 23%  perf-profile.=
+children.cycles-pp.setup_items_for_insert
+> > >       0.88 =C2=B1 15%      +0.3        1.16 =C2=B1 12%  perf-profile.=
+children.cycles-pp.__set_cpus_allowed_ptr
+> > >       0.37 =C2=B1 14%      +0.3        0.67 =C2=B1 61%  perf-profile.=
+children.cycles-pp.btrfs_writepages
+> > >       0.37 =C2=B1 14%      +0.3        0.67 =C2=B1 61%  perf-profile.=
+children.cycles-pp.extent_write_cache_pages
+> > >       0.64 =C2=B1 19%      +0.3        0.94 =C2=B1 15%  perf-profile.=
+children.cycles-pp.btrfs_insert_empty_items
+> > >       0.38 =C2=B1 12%      +0.3        0.68 =C2=B1 58%  perf-profile.=
+children.cycles-pp.btrfs_fdatawrite_range
+> > >       0.32 =C2=B1 23%      +0.3        0.63 =C2=B1 64%  perf-profile.=
+children.cycles-pp.extent_writepage
+> > >       0.97 =C2=B1 14%      +0.3        1.31 =C2=B1 10%  perf-profile.=
+children.cycles-pp.__sched_setaffinity
+> > >       1.07 =C2=B1 16%      +0.4        1.44 =C2=B1 10%  perf-profile.=
+children.cycles-pp.__x64_sys_sched_setaffinity
+> > >       1.39 =C2=B1 18%      +0.5        1.90 =C2=B1 12%  perf-profile.=
+children.cycles-pp.seq_read_iter
+> > >       0.34 =C2=B1 30%      +0.2        0.52 =C2=B1 16%  perf-profile.=
+self.cycles-pp.fold_vm_numa_events
+> > >=20
+> > >=20
+> > >=20
+> > >=20
+> > > Disclaimer:
+> > > Results have been estimated based on internal Intel analysis and are =
+provided
+> > > for informational purposes only. Any difference in system hardware or=
+ software
+> > > design or configuration may affect actual performance.
+> > >=20
+> > >=20
+> >=20
+> > This patch (b4be3ccf1c) is exceedingly simple, so I doubt it's causing
+> > a performance regression in the server. The only thing I can figure
+> > here is that this test is causing the server to recall the delegation
+> > that it hands out, and then the client has to go and establish a new
+> > open stateid in order to return it. That would likely be slower than
+> > just handing out both an open and delegation stateid in the first
+> > place.
+> >=20
+> > I don't think there is anything we can do about that though, since the
+> > feature seems to is working as designed.
+>=20
+> We seem to have hit this problem before. That makes me wonder
+> whether it is actually worth supporting the XOR flag at all. After
+> all, the client sends the CLOSE asynchronously; applications are not
+> being held up while the unneeded state ID is returned.
+>=20
+> Can XOR support be disabled for now? I don't want to add an
+> administrative interface for that, but also, "no regressions" is
+> ringing in my ears, and 92% is a mighty noticeable one.
+>=20
+>=20
 
-We seem to have hit this problem before. That makes me wonder
-whether it is actually worth supporting the XOR flag at all. After
-all, the client sends the CLOSE asynchronously; applications are not
-being held up while the unneeded state ID is returned.
+To be clear, this increase is for the "App Overhead" which is all of
+the operations between the stuff that is being measured in this test. I
+did run this test for a bit and got similar results, but was never able
+to nail down where the overhead came from. My speculation is that it's
+the recall and reestablishment of an open stateid that slows things
+down, but I never could fully confirm it.
 
-Can XOR support be disabled for now? I don't want to add an
-administrative interface for that, but also, "no regressions" is
-ringing in my ears, and 92% is a mighty noticeable one.
+My issue with disabling this is that the decision of whether to set
+OPEN_XOR_DELEGATION is up to the client. The server in this case is
+just doing what the client asks. ISTM that if we were going to disable
+(or throttle) this anywhere, that should be done by the client.
 
-
--- 
-Chuck Lever
+--=20
+Jeff Layton <jlayton@kernel.org>
