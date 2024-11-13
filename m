@@ -1,413 +1,438 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB5FE7083F;
-	Wed, 13 Nov 2024 17:02:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DFCC173347
+	for <oe-lkp@lists.linux.dev>; Wed, 13 Nov 2024 21:35:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731517361; cv=none; b=olB1n335L5SBQSuYVFKA5rQKg5GNpYAqiIJPoIfMKUN3/EWM8TBKP6whMS8rwx3R2GxYBI7z3jV+/sI6J/WO9B5NnGeXzuq8P7sApq51987jR5RAFxDB3DeUIFXDR4o5JJzQVoh74IGIyEJXg44bo4tkXoCwkpBsVeiAY0WiRL0=
+	t=1731533713; cv=none; b=GULC9t8lyk4tvvVOzK479yHcAFn6n4ew6EW8lN3/kFoq+l0/xtw75cu6EJQ+n3kerTG8MNCHR5H3f31ZQbirGfoDoUb3Y9X+8xPhHpO2P0sXZb9vmpgnYxZT6Qx8LAlc6d2o4aTSztDUQ9BDNUWVuDK8tUm7TjUHZ+B5h3q0UiU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731517361; c=relaxed/simple;
-	bh=hUzsV5dfW8+myzSG+550fwEiED6lhGPOgQG9wWgzPH4=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=iEwlrF5fmkUMuMSt7vpAQ1aItaxGlRZGhebpc5hMlv2aPxQV2/eWVbNf3nPavsx0iimaXs+I+hkyHhq672GaZ1LCDtqCm5o0crS2J8KcgUR16V7TkNh7N9k0TgfYL6rta5IrC1qRzjGaTLIYZZo7k4F6mLs9Y9VuX8cBGBpc3e8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MeSwlbMJ; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1731533713; c=relaxed/simple;
+	bh=/DpCGdCuH/O3B8tEqzzBfzSwiEIWvUdeTAnWnnxvh+o=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=j1y8ARCaVLKYMVjqz4mx64zpldN2NG3VJggorvd8jp/1HZdsQbu1vQyEFI+LAx/ikhF+oBxPF+sO7kF+RUa4JSAkVOzmiwRMOMu1VnaPM3YV5JNHvk5k6hJLpnjASo5wtlGHexNGjW8MPMnyUWig+LpUUC0A/bfUZFPJ1lKAVcE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=KKUmP1pl; arc=none smtp.client-ip=209.85.160.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MeSwlbMJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54802C4CECF;
-	Wed, 13 Nov 2024 17:02:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1731517361;
-	bh=hUzsV5dfW8+myzSG+550fwEiED6lhGPOgQG9wWgzPH4=;
-	h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-	b=MeSwlbMJB45QWIkPEPafwISLSKpfr62v2xvvVoCcSkqLsf/0CW8XA4LPjD0VsZEiU
-	 hwsl2xxRo8rdeBNGtbdneGF12otxEwTobbAP0uXqXh5hiBzjffIq2nHSBDcBTUZvBk
-	 NLRIopgFDyr2csl3uo2sRIwEZlXy8/jCLt/Zyc2Iq0aaiDZBlnEsubqLgVKpmZbydk
-	 RIFNce878Eur9FtkrvvMwv3xN9jWKK67W3xwkbqIimQdk7Gq3F3CRZeTI302OG5hY6
-	 5GO4DJRgYecxIA0e9FTvXALLmpF/nxTRkPhR5gChQsDsOmsBwsyC2mxb4YDc1F+pbO
-	 Np+FujBGnm2xw==
-Message-ID: <0c209627e0bf5ce0933bb87c1b3e989fda38db3a.camel@kernel.org>
-Subject: Re: [snitzer:cel-nfsd-next-6.12-rc5] [nfsd]  b4be3ccf1c:
- fsmark.app_overhead 92.0% regression
-From: Jeff Layton <jlayton@kernel.org>
-To: Chuck Lever III <chuck.lever@oracle.com>
-Cc: kernel test robot <oliver.sang@intel.com>, Mike Snitzer
- <snitzer@redhat.com>,  "oe-lkp@lists.linux.dev" <oe-lkp@lists.linux.dev>,
- kernel test robot <lkp@intel.com>, Anna Schumaker <anna@kernel.org>, Trond
- Myklebust <trond.myklebust@primarydata.com>, Tom Haynes <loghyr@gmail.com>,
- Linux NFS Mailing List <linux-nfs@vger.kernel.org>
-Date: Wed, 13 Nov 2024 12:02:39 -0500
-In-Reply-To: <00A9E843-767A-40B6-9963-41C8508A655A@oracle.com>
-References: <202411071017.ddd9e9e2-oliver.sang@intel.com>
-	 <4d5d966b2efc0b5b8c59ef179e99f3f8fbf792f8.camel@kernel.org>
-	 <ZzTKQGYJFh7PH4Fw@tissot.1015granger.net>
-	 <48ad2574e14c35aca27c10e68f2a1069ccb646df.camel@kernel.org>
-	 <ZzTQd5NKe5WXkLlA@tissot.1015granger.net>
-	 <79e94b2225fa8e4a4723b8941eea79111f77c55f.camel@kernel.org>
-	 <00A9E843-767A-40B6-9963-41C8508A655A@oracle.com>
-Autocrypt: addr=jlayton@kernel.org; prefer-encrypt=mutual;
- keydata=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
- QZIQXVeAA+smfTT0tDrisj1U5x6ZB9b3nBg65kc=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.52.4 (3.52.4-2.fc40) 
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="KKUmP1pl"
+Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-460969c49f2so42341cf.0
+        for <oe-lkp@lists.linux.dev>; Wed, 13 Nov 2024 13:35:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1731533709; x=1732138509; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=/+QUsfBkDaGMc1G1N8sAelLnYeC6zEILXzACCN0H4mA=;
+        b=KKUmP1plK0S9+84bkYpg+BxvtFhYMSEICSK5drfKYP0nin0lkqwsR1ims+tO26f/0O
+         e+cYn4uNsVvy4Hb3HmbL4pBFTDaBmn9RaG68X94QVbotshS8SXZuCoD2fcDwvg0WRrK6
+         KBTAJKUMQtK2OPU5d2tQHEQjD9GSuLMCep6tEK2dTzg60LO/uYY2hIZjRCRovrWvBveI
+         HaWYhJTfa0obsfXcsY8Ml/yxDEXqqDUkBmgnWsPmWM4oXWNUCl9WJsb6/a0WBQ1ewQ7I
+         1NM9zuSREXqPptImFY4eVXqoarPrgAgUJbnthJa4JTcJIwmSTendD6MkyMaufVcWH/3p
+         UK3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1731533709; x=1732138509;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=/+QUsfBkDaGMc1G1N8sAelLnYeC6zEILXzACCN0H4mA=;
+        b=Ft4+stHk80TGTzzxtld49ES0w7NxOY4vA75xvk+OT8BLfQAfk4KmAxYw0nwhAYb195
+         /4YXpW9gUZYXeqxLHEAzMjG1rDCTZgDRoPS2ryIoA5WlsiuezexgfKSu4HnDk5jc5O88
+         UD3raWJj4SL8/KFyvc0hnteJIR2zj2Lp3Wvrz3dlcPA4HyYS9YDRVsnckWRmv3PeR/AI
+         0PtyEKHlE5u+Stk/tUD1dWvOD/tWzbJKhpqehaFjg+x7qUSCPbnZBAS9MkkTi28vVpMs
+         pRWYIEC1yM7CxWOl+wMI0n55NFyKB2X6D3Eh3bSuwCuXzA5cr968JFURay/aykh75yU6
+         1J1g==
+X-Gm-Message-State: AOJu0Yzf0OQxId6oKXXDmTs9HsNAxHg20Vj5XgrLAGIs4dH7+d/N6WIT
+	VuYv17px/CRXllCg+eSmpdj7zaMGYJFH+tAJ+cznQof7JXHAkLbClvvakaDGbV5230LuQ3cDDrJ
+	eJBb3yY/7FcG/V44VNWIbYMZGE0BP2KA0R1qo
+X-Gm-Gg: ASbGncv8wEONZeLYHO1lmV6hO7aOV4ySSw2a4H90zjxf+uxXbXr+Ay3Rip/K61ReUgZ
+	kXerJh34px6W5SQm2yHNZrqw4cool0A0SYjFR8Bob3c3XujUR94ntRlBm1to=
+X-Google-Smtp-Source: AGHT+IFExc7QAOHP1FLSmdV7yp0F0bSVm+6gYINU8GqQqgqDjZK9UqrspGTAbxXP1Lgt1j1d5MF4h0F415vERHKeRw0=
+X-Received: by 2002:a05:622a:5b96:b0:462:1db:549 with SMTP id
+ d75a77b69052e-463571e380emr808821cf.8.1731533708795; Wed, 13 Nov 2024
+ 13:35:08 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+References: <202411132111.6a221562-lkp@intel.com>
+In-Reply-To: <202411132111.6a221562-lkp@intel.com>
+From: Suren Baghdasaryan <surenb@google.com>
+Date: Wed, 13 Nov 2024 21:34:57 +0000
+Message-ID: <CAJuCfpGMM1=3eS_1yCEFrwdFHv_dYZ3f1fXaFaKzT-hcNfjxfw@mail.gmail.com>
+Subject: Re: [linux-next:master] [alloc_tag] 0f9b685626: BUG:KASAN:vmalloc-out-of-bounds_in_move_module
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, 
+	Andrew Morton <akpm@linux-foundation.org>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
+	Ard Biesheuvel <ardb@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>, 
+	Christoph Hellwig <hch@infradead.org>, Daniel Gomez <da.gomez@samsung.com>, 
+	David Hildenbrand <david@redhat.com>, Davidlohr Bueso <dave@stgolabs.net>, 
+	David Rientjes <rientjes@google.com>, Dennis Zhou <dennis@kernel.org>, 
+	Johannes Weiner <hannes@cmpxchg.org>, John Hubbard <jhubbard@nvidia.com>, 
+	Jonathan Corbet <corbet@lwn.net>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, 
+	Kalesh Singh <kaleshsingh@google.com>, Kees Cook <keescook@chromium.org>, 
+	Kent Overstreet <kent.overstreet@linux.dev>, "Liam R. Howlett" <Liam.Howlett@oracle.com>, 
+	Luis Chamberlain <mcgrof@kernel.org>, Matthew Wilcox <willy@infradead.org>, Michal Hocko <mhocko@suse.com>, 
+	Mike Rapoport <rppt@kernel.org>, Minchan Kim <minchan@google.com>, 
+	"Paul E. McKenney" <paulmck@kernel.org>, Petr Pavlu <petr.pavlu@suse.com>, 
+	Roman Gushchin <roman.gushchin@linux.dev>, Sami Tolvanen <samitolvanen@google.com>, 
+	Sourav Panda <souravpanda@google.com>, Steven Rostedt <rostedt@goodmis.org>, 
+	Thomas Gleixner <tglx@linutronix.de>, Thomas Huth <thuth@redhat.com>, 
+	Uladzislau Rezki <urezki@gmail.com>, Vlastimil Babka <vbabka@suse.cz>, 
+	Xiongwei Song <xiongwei.song@windriver.com>, Yu Zhao <yuzhao@google.com>, 
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, 2024-11-13 at 16:37 +0000, Chuck Lever III wrote:
->=20
-> > On Nov 13, 2024, at 11:20=E2=80=AFAM, Jeff Layton <jlayton@kernel.org> =
-wrote:
-> >=20
-> > On Wed, 2024-11-13 at 11:14 -0500, Chuck Lever wrote:
-> > > On Wed, Nov 13, 2024 at 11:10:35AM -0500, Jeff Layton wrote:
-> > > > On Wed, 2024-11-13 at 10:48 -0500, Chuck Lever wrote:
-> > > > > On Thu, Nov 07, 2024 at 06:35:11AM -0500, Jeff Layton wrote:
-> > > > > > On Thu, 2024-11-07 at 12:55 +0800, kernel test robot wrote:
-> > > > > > > hi, Jeff Layton,
-> > > > > > >=20
-> > > > > > > in commit message, it is mentioned the change is expected to =
-solve the
-> > > > > > > "App Overhead" on the fs_mark test we reported in
-> > > > > > > https://lore.kernel.org/oe-lkp/202409161645.d44bced5-oliver.s=
-ang@intel.com/
-> > > > > > >=20
-> > > > > > > however, in our tests, there is sill similar regression. at t=
-he same
-> > > > > > > time, there is still no performance difference for fsmark.fil=
-es_per_sec
-> > > > > > >=20
-> > > > > > >   2015880 =C2=B1  3%     +92.0%    3870164        fsmark.app_=
-overhead
-> > > > > > >     18.57            +0.0%      18.57        fsmark.files_per=
-_sec
-> > > > > > >=20
-> > > > > > >=20
-> > > > > > > another thing is our bot bisect to this commit in repo/branch=
- as below detail
-> > > > > > > information. if there is a more porper repo/branch to test th=
-e patch, could
-> > > > > > > you let us know? thanks a lot!
-> > > > > > >=20
-> > > > > > >=20
-> > > > > > >=20
-> > > > > > > Hello,
-> > > > > > >=20
-> > > > > > > kernel test robot noticed a 92.0% regression of fsmark.app_ov=
-erhead on:
-> > > > > > >=20
-> > > > > > >=20
-> > > > > > > commit: b4be3ccf1c251cbd3a3cf5391a80fe3a5f6f075e ("nfsd: impl=
-ement OPEN_ARGS_SHARE_ACCESS_WANT_OPEN_XOR_DELEGATION")
-> > > > > > > https://git.kernel.org/cgit/linux/kernel/git/snitzer/linux.gi=
-t cel-nfsd-next-6.12-rc5
-> > > > > > >=20
-> > > > > > >=20
-> > > > > > > testcase: fsmark
-> > > > > > > config: x86_64-rhel-8.3
-> > > > > > > compiler: gcc-12
-> > > > > > > test machine: 128 threads 2 sockets Intel(R) Xeon(R) Platinum=
- 8358 CPU @ 2.60GHz (Ice Lake) with 128G memory
-> > > > > > > parameters:
-> > > > > > >=20
-> > > > > > > iterations: 1x
-> > > > > > > nr_threads: 1t
-> > > > > > > disk: 1HDD
-> > > > > > > fs: btrfs
-> > > > > > > fs2: nfsv4
-> > > > > > > filesize: 4K
-> > > > > > > test_size: 40M
-> > > > > > > sync_method: fsyncBeforeClose
-> > > > > > > nr_files_per_directory: 1fpd
-> > > > > > > cpufreq_governor: performance
-> > > > > > >=20
-> > > > > > >=20
-> > > > > > >=20
-> > > > > > >=20
-> > > > > > > If you fix the issue in a separate patch/commit (i.e. not jus=
-t a new version of
-> > > > > > > the same patch/commit), kindly add following tags
-> > > > > > > > Reported-by: kernel test robot <oliver.sang@intel.com>
-> > > > > > > > Closes: https://lore.kernel.org/oe-lkp/202411071017.ddd9e9e=
-2-oliver.sang@intel.com
-> > > > > > >=20
-> > > > > > >=20
-> > > > > > > Details are as below:
-> > > > > > > -------------------------------------------------------------=
-------------------------------------->
-> > > > > > >=20
-> > > > > > >=20
-> > > > > > > The kernel config and materials to reproduce are available at=
-:
-> > > > > > > https://download.01.org/0day-ci/archive/20241107/202411071017=
-.ddd9e9e2-oliver.sang@intel.com
-> > > > > > >=20
-> > > > > > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+On Wed, Nov 13, 2024 at 2:07=E2=80=AFPM kernel test robot <oliver.sang@inte=
+l.com> wrote:
+>
+>
+>
+> Hello,
+>
+>
+> we reported
+> "[linux-next:master] [alloc_tag]  a9c60bb0d0: BUG:KASAN:vmalloc-out-of-bo=
+unds_in_load_module"
+> in
+> https://lore.kernel.org/all/202410281441.216670ac-lkp@intel.com/
+>
+> we noticed it seems there is following patch.
+>
+> we made below report just FYI that the commit still cause similar issue o=
+n
+> linux-next/master and not fixed on tip of linux-next/master when this bis=
+ect
+> is done.
+>
+>
+> kernel test robot noticed "BUG:KASAN:vmalloc-out-of-bounds_in_move_module=
+" on:
+>
+> commit: 0f9b685626daa2f8e19a9788625c9b624c223e45 ("alloc_tag: populate me=
+mory for module tags as needed")
+> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+>
+> [test failed on linux-next/master 929beafbe7acce3267c06115e13e03ff6e50548=
+a]
+>
+> in testcase: rcuscale
+> version:
+> with following parameters:
+>
+>         runtime: 300s
+>         scale_type: srcu
+>
+>
+>
+> config: x86_64-randconfig-014-20241107
+> compiler: gcc-12
+> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 1=
+6G
+>
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+>
+>
+> +------------------------------------------------+------------+----------=
+--+
+> |                                                | 0db6f8d782 | 0f9b68562=
+6 |
+> +------------------------------------------------+------------+----------=
+--+
+> | boot_successes                                 | 18         | 0        =
+  |
+> | boot_failures                                  | 0          | 18       =
+  |
+> | BUG:KASAN:vmalloc-out-of-bounds_in_move_module | 0          | 18       =
+  |
+> | BUG:unable_to_handle_page_fault_for_address    | 0          | 18       =
+  |
+> | Oops                                           | 0          | 18       =
+  |
+> | RIP:kasan_metadata_fetch_row                   | 0          | 18       =
+  |
+> | Kernel_panic-not_syncing:Fatal_exception       | 0          | 18       =
+  |
+> +------------------------------------------------+------------+----------=
+--+
+>
+>
+> If you fix the issue in a separate patch/commit (i.e. not just a new vers=
+ion of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202411132111.6a221562-lkp@intel.=
+com
+
+
+Thanks for the report! I'm looking into this but so far could not find
+an obvious issue. Will try to reproduce.
+
+>
+>
+> [ 153.897376][ T402] BUG: KASAN: vmalloc-out-of-bounds in move_module (ke=
+rnel/module/main.c:2357)
+> [  153.899141][  T402] Write of size 40 at addr ffffffffa0000000 by task =
+modprobe/402
+> [  153.900837][  T402]
+> [  153.901496][  T402] CPU: 0 UID: 0 PID: 402 Comm: modprobe Tainted: G  =
+              T  6.12.0-rc6-00146-g0f9b685626da #1 87c8486a909ba2f90eff061a=
+4c9c1fa5c9cd90ea
+> [  153.904537][  T402] Tainted: [T]=3DRANDSTRUCT
+> [  153.905500][  T402] Hardware name: QEMU Standard PC (i440FX + PIIX, 19=
+96), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> [  153.907702][  T402] Call Trace:
+> [  153.908510][  T402]  <TASK>
+> [ 153.909241][ T402] print_address_description+0x65/0x2fa
+> [ 153.910663][ T402] print_report (mm/kasan/report.c:489)
+> [ 153.911771][ T402] ? move_module (kernel/module/main.c:2357)
+> [ 153.912825][ T402] kasan_report (mm/kasan/report.c:603)
+> [ 153.913821][ T402] ? move_module (kernel/module/main.c:2357)
+> [ 153.914904][ T402] kasan_check_range (mm/kasan/generic.c:183 mm/kasan/g=
+eneric.c:189)
+> [ 153.916029][ T402] __asan_memcpy (mm/kasan/shadow.c:105 (discriminator =
+1))
+> [ 153.917057][ T402] move_module (kernel/module/main.c:2357)
+> [ 153.918071][ T402] layout_and_allocate+0x446/0x523
+> [ 153.919459][ T402] load_module (kernel/module/main.c:2985)
+> [ 153.920457][ T402] ? mode_strip_umask (fs/namei.c:3248)
+> [ 153.921557][ T402] init_module_from_file (kernel/module/main.c:3266)
+> [ 153.922825][ T402] ? __ia32_sys_init_module (kernel/module/main.c:3266)
+> [ 153.923992][ T402] ? __lock_release+0x106/0x38c
+> [ 153.925173][ T402] ? idempotent_init_module (kernel/module/main.c:3301)
+> [ 153.926364][ T402] ? lock_release (kernel/locking/lockdep.c:467 kernel/=
+locking/lockdep.c:5848)
+> [ 153.944053][ T402] idempotent_init_module (kernel/module/main.c:3302)
+> [ 153.945164][ T402] ? init_module_from_file (kernel/module/main.c:3294)
+> [ 153.946268][ T402] ? security_capable (security/security.c:1143)
+> [ 153.947421][ T402] __do_sys_finit_module (include/linux/file.h:68 kerne=
+l/module/main.c:3330)
+> [ 153.948495][ T402] do_syscall_64 (arch/x86/entry/common.c:52 arch/x86/e=
+ntry/common.c:83)
+> [ 153.949540][ T402] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry=
+_64.S:130)
+> [  153.950855][  T402] RIP: 0033:0x7f0f37df7719
+> [ 153.951869][ T402] Code: 08 89 e8 5b 5d c3 66 2e 0f 1f 84 00 00 00 00 0=
+0 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0=
+f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d b7 06 0d 00 f7 d8 64 89 01 48
+> All code
+> =3D=3D=3D=3D=3D=3D=3D=3D
+>    0:   08 89 e8 5b 5d c3       or     %cl,-0x3ca2a418(%rcx)
+>    6:   66 2e 0f 1f 84 00 00    cs nopw 0x0(%rax,%rax,1)
+>    d:   00 00 00
+>   10:   90                      nop
+>   11:   48 89 f8                mov    %rdi,%rax
+>   14:   48 89 f7                mov    %rsi,%rdi
+>   17:   48 89 d6                mov    %rdx,%rsi
+>   1a:   48 89 ca                mov    %rcx,%rdx
+>   1d:   4d 89 c2                mov    %r8,%r10
+>   20:   4d 89 c8                mov    %r9,%r8
+>   23:   4c 8b 4c 24 08          mov    0x8(%rsp),%r9
+>   28:   0f 05                   syscall
+>   2a:*  48 3d 01 f0 ff ff       cmp    $0xfffffffffffff001,%rax         <=
+-- trapping instruction
+>   30:   73 01                   jae    0x33
+>   32:   c3                      ret
+>   33:   48 8b 0d b7 06 0d 00    mov    0xd06b7(%rip),%rcx        # 0xd06f=
+1
+>   3a:   f7 d8                   neg    %eax
+>   3c:   64 89 01                mov    %eax,%fs:(%rcx)
+>   3f:   48                      rex.W
+>
+> Code starting with the faulting instruction
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > > > > > > compiler/cpufreq_governor/disk/filesize/fs2/fs/iterations/kco=
-nfig/nr_files_per_directory/nr_threads/rootfs/sync_method/tbox_group/test_s=
-ize/testcase:
-> > > > > > >  gcc-12/performance/1HDD/4K/nfsv4/btrfs/1x/x86_64-rhel-8.3/1f=
-pd/1t/debian-12-x86_64-20240206.cgz/fsyncBeforeClose/lkp-icl-2sp6/40M/fsmar=
-k
-> > > > > > >=20
-> > > > > > > commit:=20
-> > > > > > >  37f27b20cd ("nfsd: add support for FATTR4_OPEN_ARGUMENTS")
-> > > > > > >  b4be3ccf1c ("nfsd: implement OPEN_ARGS_SHARE_ACCESS_WANT_OPE=
-N_XOR_DELEGATION")
-> > > > > > >=20
-> > > > > > > 37f27b20cd64e2e0 b4be3ccf1c251cbd3a3cf5391a8=20
-> > > > > > > ---------------- ---------------------------=20
-> > > > > > >         %stddev     %change         %stddev
-> > > > > > >             \          |                \ =20
-> > > > > > >     97.33 =C2=B1  9%     -16.3%      81.50 =C2=B1  9%  perf-c=
-2c.HITM.local
-> > > > > > >      3788 =C2=B1101%    +147.5%       9377 =C2=B1  6%  sched_=
-debug.cfs_rq:/.load_avg.max
-> > > > > > >      2936            -6.2%       2755        vmstat.system.cs
-> > > > > > >   2015880 =C2=B1  3%     +92.0%    3870164        fsmark.app_=
-overhead
-> > > > > > >     18.57            +0.0%      18.57        fsmark.files_per=
-_sec
-> > > > > > >     53420           -17.3%      44185        fsmark.time.volu=
-ntary_context_switches
-> > > > > > >      1.50 =C2=B1  7%     +13.4%       1.70 =C2=B1  3%  perf-s=
-ched.wait_time.avg.ms.devkmsg_read.vfs_read.ksys_read.do_syscall_64
-> > > > > > >      3.00 =C2=B1  7%     +13.4%       3.40 =C2=B1  3%  perf-s=
-ched.wait_time.max.ms.devkmsg_read.vfs_read.ksys_read.do_syscall_64
-> > > > > > >   1756957            -2.1%    1720536        proc-vmstat.numa=
-_hit
-> > > > > > >   1624496            -2.2%    1588039        proc-vmstat.numa=
-_local
-> > > > > > >      1.28 =C2=B1  4%      -8.2%       1.17 =C2=B1  3%  perf-s=
-tat.i.MPKI
-> > > > > > >      2916            -6.2%       2735        perf-stat.i.cont=
-ext-switches
-> > > > > > >      1529 =C2=B1  4%      +8.2%       1655 =C2=B1  3%  perf-s=
-tat.i.cycles-between-cache-misses
-> > > > > > >      2910            -6.2%       2729        perf-stat.ps.con=
-text-switches
-> > > > > > >      0.67 =C2=B1 15%      -0.4        0.27 =C2=B1100%  perf-p=
-rofile.calltrace.cycles-pp._Fork
-> > > > > > >      0.95 =C2=B1 15%      +0.3        1.26 =C2=B1 11%  perf-p=
-rofile.calltrace.cycles-pp.__sched_setaffinity.sched_setaffinity.__x64_sys_=
-sched_setaffinity.do_syscall_64.entry_SYSCALL_64_after_hwframe
-> > > > > > >      0.70 =C2=B1 47%      +0.3        1.04 =C2=B1  9%  perf-p=
-rofile.calltrace.cycles-pp._nohz_idle_balance.do_idle.cpu_startup_entry.sta=
-rt_secondary.common_startup_64
-> > > > > > >      0.52 =C2=B1 45%      +0.3        0.86 =C2=B1 15%  perf-p=
-rofile.calltrace.cycles-pp.seq_read_iter.vfs_read.ksys_read.do_syscall_64.e=
-ntry_SYSCALL_64_after_hwframe
-> > > > > > >      0.72 =C2=B1 50%      +0.4        1.12 =C2=B1 18%  perf-p=
-rofile.calltrace.cycles-pp.link_path_walk.path_openat.do_filp_open.do_sys_o=
-penat2.__x64_sys_openat
-> > > > > > >      1.22 =C2=B1 26%      +0.4        1.67 =C2=B1 12%  perf-p=
-rofile.calltrace.cycles-pp.sched_setaffinity.evlist_cpu_iterator__next.read=
-_counters.process_interval.dispatch_events
-> > > > > > >      2.20 =C2=B1 11%      +0.6        2.78 =C2=B1 13%  perf-p=
-rofile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.rea=
-d
-> > > > > > >      2.20 =C2=B1 11%      +0.6        2.82 =C2=B1 12%  perf-p=
-rofile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.read
-> > > > > > >      2.03 =C2=B1 13%      +0.6        2.67 =C2=B1 13%  perf-p=
-rofile.calltrace.cycles-pp.ksys_read.do_syscall_64.entry_SYSCALL_64_after_h=
-wframe.read
-> > > > > > >      0.68 =C2=B1 15%      -0.2        0.47 =C2=B1 19%  perf-p=
-rofile.children.cycles-pp._Fork
-> > > > > > >      0.56 =C2=B1 15%      -0.1        0.42 =C2=B1 16%  perf-p=
-rofile.children.cycles-pp.tcp_v6_do_rcv
-> > > > > > >      0.46 =C2=B1 13%      -0.1        0.35 =C2=B1 16%  perf-p=
-rofile.children.cycles-pp.alloc_pages_mpol_noprof
-> > > > > > >      0.10 =C2=B1 75%      +0.2        0.29 =C2=B1 19%  perf-p=
-rofile.children.cycles-pp.refresh_cpu_vm_stats
-> > > > > > >      0.28 =C2=B1 33%      +0.2        0.47 =C2=B1 16%  perf-p=
-rofile.children.cycles-pp.show_stat
-> > > > > > >      0.34 =C2=B1 32%      +0.2        0.54 =C2=B1 16%  perf-p=
-rofile.children.cycles-pp.fold_vm_numa_events
-> > > > > > >      0.37 =C2=B1 11%      +0.3        0.63 =C2=B1 23%  perf-p=
-rofile.children.cycles-pp.setup_items_for_insert
-> > > > > > >      0.88 =C2=B1 15%      +0.3        1.16 =C2=B1 12%  perf-p=
-rofile.children.cycles-pp.__set_cpus_allowed_ptr
-> > > > > > >      0.37 =C2=B1 14%      +0.3        0.67 =C2=B1 61%  perf-p=
-rofile.children.cycles-pp.btrfs_writepages
-> > > > > > >      0.37 =C2=B1 14%      +0.3        0.67 =C2=B1 61%  perf-p=
-rofile.children.cycles-pp.extent_write_cache_pages
-> > > > > > >      0.64 =C2=B1 19%      +0.3        0.94 =C2=B1 15%  perf-p=
-rofile.children.cycles-pp.btrfs_insert_empty_items
-> > > > > > >      0.38 =C2=B1 12%      +0.3        0.68 =C2=B1 58%  perf-p=
-rofile.children.cycles-pp.btrfs_fdatawrite_range
-> > > > > > >      0.32 =C2=B1 23%      +0.3        0.63 =C2=B1 64%  perf-p=
-rofile.children.cycles-pp.extent_writepage
-> > > > > > >      0.97 =C2=B1 14%      +0.3        1.31 =C2=B1 10%  perf-p=
-rofile.children.cycles-pp.__sched_setaffinity
-> > > > > > >      1.07 =C2=B1 16%      +0.4        1.44 =C2=B1 10%  perf-p=
-rofile.children.cycles-pp.__x64_sys_sched_setaffinity
-> > > > > > >      1.39 =C2=B1 18%      +0.5        1.90 =C2=B1 12%  perf-p=
-rofile.children.cycles-pp.seq_read_iter
-> > > > > > >      0.34 =C2=B1 30%      +0.2        0.52 =C2=B1 16%  perf-p=
-rofile.self.cycles-pp.fold_vm_numa_events
-> > > > > > >=20
-> > > > > > >=20
-> > > > > > >=20
-> > > > > > >=20
-> > > > > > > Disclaimer:
-> > > > > > > Results have been estimated based on internal Intel analysis =
-and are provided
-> > > > > > > for informational purposes only. Any difference in system har=
-dware or software
-> > > > > > > design or configuration may affect actual performance.
-> > > > > > >=20
-> > > > > > >=20
-> > > > > >=20
-> > > > > > This patch (b4be3ccf1c) is exceedingly simple, so I doubt it's =
-causing
-> > > > > > a performance regression in the server. The only thing I can fi=
-gure
-> > > > > > here is that this test is causing the server to recall the dele=
-gation
-> > > > > > that it hands out, and then the client has to go and establish =
-a new
-> > > > > > open stateid in order to return it. That would likely be slower=
- than
-> > > > > > just handing out both an open and delegation stateid in the fir=
-st
-> > > > > > place.
-> > > > > >=20
-> > > > > > I don't think there is anything we can do about that though, si=
-nce the
-> > > > > > feature seems to is working as designed.
-> > > > >=20
-> > > > > We seem to have hit this problem before. That makes me wonder
-> > > > > whether it is actually worth supporting the XOR flag at all. Afte=
-r
-> > > > > all, the client sends the CLOSE asynchronously; applications are =
-not
-> > > > > being held up while the unneeded state ID is returned.
-> > > > >=20
-> > > > > Can XOR support be disabled for now? I don't want to add an
-> > > > > administrative interface for that, but also, "no regressions" is
-> > > > > ringing in my ears, and 92% is a mighty noticeable one.
-> > > >=20
-> > > > To be clear, this increase is for the "App Overhead" which is all o=
-f
-> > > > the operations between the stuff that is being measured in this tes=
-t. I
-> > > > did run this test for a bit and got similar results, but was never =
-able
-> > > > to nail down where the overhead came from. My speculation is that i=
-t's
-> > > > the recall and reestablishment of an open stateid that slows things
-> > > > down, but I never could fully confirm it.
-> > > >=20
-> > > > My issue with disabling this is that the decision of whether to set
-> > > > OPEN_XOR_DELEGATION is up to the client. The server in this case is
-> > > > just doing what the client asks. ISTM that if we were going to disa=
-ble
-> > > > (or throttle) this anywhere, that should be done by the client.
-> > >=20
-> > > If the client sets the XOR flag, NFSD could simply return only an
-> > > OPEN stateid, for instance.
-> >=20
-> > Sure, but then it's disabled for everyone, for every workload. There
-> > may be workloads the benefit too.
->=20
-> It doesn't impact NFSv4.[01] mounts, nor will it impact any
-> workload on a client that does not now support XOR.
->=20
-> I don't think we need bad press around this feature, nor do we
-> want complaints about "why didn't you add a switch to disable
-> this?". I'd also like to avoid a bug filed for this regression
-> if it gets merged.
->=20
-> Can you test to see if returning only the OPEN stateid makes the
-> regression go away? The behavior would be in place only until
-> there is a root cause and a way to avoid the regression.
->=20
-
-I don't have a test rig set up for this at the moment as this sort of
-testing requires real hw. I also don't have anything automated for
-doing this.
-
-That will probably take a while, so if you're that concerned, then just
-drop the patch. Maybe we'll get a datapoint from the hammerspace folks
-that will help clarify the problem in the meantime.
-
---=20
-Jeff Layton <jlayton@kernel.org>
+>    0:   48 3d 01 f0 ff ff       cmp    $0xfffffffffffff001,%rax
+>    6:   73 01                   jae    0x9
+>    8:   c3                      ret
+>    9:   48 8b 0d b7 06 0d 00    mov    0xd06b7(%rip),%rcx        # 0xd06c=
+7
+>   10:   f7 d8                   neg    %eax
+>   12:   64 89 01                mov    %eax,%fs:(%rcx)
+>   15:   48                      rex.W
+> [  153.955810][  T402] RSP: 002b:00007ffccd7f7198 EFLAGS: 00000246 ORIG_R=
+AX: 0000000000000139
+> [  153.957666][  T402] RAX: ffffffffffffffda RBX: 000055cc9f9fddd0 RCX: 0=
+0007f0f37df7719
+> [  153.959411][  T402] RDX: 0000000000000000 RSI: 000055cc9f9f24a0 RDI: 0=
+000000000000004
+> [  153.961142][  T402] RBP: 000055cc9f9f24a0 R08: 0000000000000000 R09: 0=
+00055cc9f9ff250
+> [  153.962910][  T402] R10: 0000000000000004 R11: 0000000000000246 R12: 0=
+000000000040000
+> [  153.964665][  T402] R13: 0000000000000000 R14: 000055cc9f9fdd80 R15: 0=
+000000000000000
+> [  153.966393][  T402]  </TASK>
+> [  153.967209][  T402]
+> [  153.967856][  T402] Memory state around the buggy address:
+> [  153.969123][  T402] BUG: unable to handle page fault for address: ffff=
+fbfff3ffffe0
+> [  153.970807][  T402] #PF: supervisor read access in kernel mode
+> [  153.972036][  T402] #PF: error_code(0x0000) - not-present page
+> [  153.973220][  T402] PGD 417fdb067 P4D 417fdb067 PUD 417fd7067 PMD 0
+> [  153.974560][  T402] Oops: Oops: 0000 [#1] PREEMPT KASAN
+> [  153.975758][  T402] CPU: 0 UID: 0 PID: 402 Comm: modprobe Tainted: G  =
+              T  6.12.0-rc6-00146-g0f9b685626da #1 87c8486a909ba2f90eff061a=
+4c9c1fa5c9cd90ea
+> [  153.978853][  T402] Tainted: [T]=3DRANDSTRUCT
+> [  153.979851][  T402] Hardware name: QEMU Standard PC (i440FX + PIIX, 19=
+96), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> [ 153.982008][ T402] RIP: 0010:kasan_metadata_fetch_row (mm/kasan/report_=
+generic.c:186)
+> [ 153.983368][ T402] Code: 40 08 48 89 43 58 5b 31 c0 31 d2 31 c9 31 f6 3=
+1 ff c3 cc cc cc cc 66 0f 1f 00 b8 ff ff 37 00 48 c1 ee 03 48 c1 e0 2a 48 0=
+1 c6 <48> 8b 06 48 89 07 48 8b 46 08 48 89 47 08 31 c0 31 f6 31 ff c3 cc
+> All code
+> =3D=3D=3D=3D=3D=3D=3D=3D
+>    0:   40 08 48 89             rex or %cl,-0x77(%rax)
+>    4:   43 58                   rex.XB pop %r8
+>    6:   5b                      pop    %rbx
+>    7:   31 c0                   xor    %eax,%eax
+>    9:   31 d2                   xor    %edx,%edx
+>    b:   31 c9                   xor    %ecx,%ecx
+>    d:   31 f6                   xor    %esi,%esi
+>    f:   31 ff                   xor    %edi,%edi
+>   11:   c3                      ret
+>   12:   cc                      int3
+>   13:   cc                      int3
+>   14:   cc                      int3
+>   15:   cc                      int3
+>   16:   66 0f 1f 00             nopw   (%rax)
+>   1a:   b8 ff ff 37 00          mov    $0x37ffff,%eax
+>   1f:   48 c1 ee 03             shr    $0x3,%rsi
+>   23:   48 c1 e0 2a             shl    $0x2a,%rax
+>   27:   48 01 c6                add    %rax,%rsi
+>   2a:*  48 8b 06                mov    (%rsi),%rax              <-- trapp=
+ing instruction
+>   2d:   48 89 07                mov    %rax,(%rdi)
+>   30:   48 8b 46 08             mov    0x8(%rsi),%rax
+>   34:   48 89 47 08             mov    %rax,0x8(%rdi)
+>   38:   31 c0                   xor    %eax,%eax
+>   3a:   31 f6                   xor    %esi,%esi
+>   3c:   31 ff                   xor    %edi,%edi
+>   3e:   c3                      ret
+>   3f:   cc                      int3
+>
+> Code starting with the faulting instruction
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>    0:   48 8b 06                mov    (%rsi),%rax
+>    3:   48 89 07                mov    %rax,(%rdi)
+>    6:   48 8b 46 08             mov    0x8(%rsi),%rax
+>    a:   48 89 47 08             mov    %rax,0x8(%rdi)
+>    e:   31 c0                   xor    %eax,%eax
+>   10:   31 f6                   xor    %esi,%esi
+>   12:   31 ff                   xor    %edi,%edi
+>   14:   c3                      ret
+>   15:   cc                      int3
+> [  153.987254][  T402] RSP: 0018:ffffc9000218f9f8 EFLAGS: 00010082
+> [  153.988595][  T402] RAX: dffffc0000000000 RBX: ffffffff9fffff00 RCX: 0=
+000000000000000
+> [  153.990325][  T402] RDX: 0000000000000000 RSI: fffffbfff3ffffe0 RDI: f=
+fffc9000218fa04
+> [  153.992086][  T402] RBP: 00000000fffffffe R08: 0000000000000000 R09: 0=
+000000000000000
+> [  153.993786][  T402] R10: 0000000000000000 R11: 0000000000000000 R12: f=
+fffffffa0000000
+> [  153.995554][  T402] R13: ffffffff864b4994 R14: ffffffff9fffff80 R15: 0=
+000000000000028
+> [  153.997305][  T402] FS:  00007f0f37cf5040(0000) GS:ffffffff86989000(00=
+00) knlGS:0000000000000000
+> [  153.999133][  T402] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [  154.000578][  T402] CR2: fffffbfff3ffffe0 CR3: 0000000128853000 CR4: 0=
+0000000000006b0
+> [  154.002367][  T402] Call Trace:
+> [  154.003318][  T402]  <TASK>
+> [ 154.004087][ T402] ? __die_body (arch/x86/kernel/dumpstack.c:421)
+> [ 154.005074][ T402] ? page_fault_oops (arch/x86/mm/fault.c:710)
+> [ 154.006242][ T402] ? show_fault_oops (arch/x86/mm/fault.c:643)
+> [ 154.007368][ T402] ? search_module_extables (kernel/module/main.c:3369)
+> [ 154.008525][ T402] ? fixup_exception (arch/x86/mm/extable.c:321)
+> [ 154.009629][ T402] ? exc_page_fault (arch/x86/mm/fault.c:1479 arch/x86/=
+mm/fault.c:1539)
+> [ 154.010771][ T402] ? asm_exc_page_fault (arch/x86/include/asm/idtentry.=
+h:623)
+> [ 154.011853][ T402] ? kasan_metadata_fetch_row (mm/kasan/report_generic.=
+c:186)
+> [ 154.013072][ T402] print_report (mm/kasan/report.c:466 mm/kasan/report.=
+c:489)
+> [ 154.014122][ T402] ? move_module (kernel/module/main.c:2357)
+> [ 154.015238][ T402] kasan_report (mm/kasan/report.c:603)
+> [ 154.016231][ T402] ? move_module (kernel/module/main.c:2357)
+> [ 154.017255][ T402] kasan_check_range (mm/kasan/generic.c:183 mm/kasan/g=
+eneric.c:189)
+> [ 154.018379][ T402] __asan_memcpy (mm/kasan/shadow.c:105 (discriminator =
+1))
+> [ 154.019400][ T402] move_module (kernel/module/main.c:2357)
+> [ 154.020435][ T402] layout_and_allocate+0x446/0x523
+> [ 154.021792][ T402] load_module (kernel/module/main.c:2985)
+> [ 154.022822][ T402] ? mode_strip_umask (fs/namei.c:3248)
+> [ 154.023928][ T402] init_module_from_file (kernel/module/main.c:3266)
+> [ 154.025069][ T402] ? __ia32_sys_init_module (kernel/module/main.c:3266)
+> [ 154.026265][ T402] ? __lock_release+0x106/0x38c
+> [ 154.027496][ T402] ? idempotent_init_module (kernel/module/main.c:3301)
+> [ 154.028688][ T402] ? lock_release (kernel/locking/lockdep.c:467 kernel/=
+locking/lockdep.c:5848)
+> [ 154.029766][ T402] idempotent_init_module (kernel/module/main.c:3302)
+> [ 154.030985][ T402] ? init_module_from_file (kernel/module/main.c:3294)
+> [ 154.032192][ T402] ? security_capable (security/security.c:1143)
+> [ 154.033310][ T402] __do_sys_finit_module (include/linux/file.h:68 kerne=
+l/module/main.c:3330)
+> [ 154.034478][ T402] do_syscall_64 (arch/x86/entry/common.c:52 arch/x86/e=
+ntry/common.c:83)
+> [ 154.035532][ T402] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry=
+_64.S:130)
+> [  154.036819][  T402] RIP: 0033:0x7f0f37df7719
+> [ 154.037865][ T402] Code: 08 89 e8 5b 5d c3 66 2e 0f 1f 84 00 00 00 00 0=
+0 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0=
+f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d b7 06 0d 00 f7 d8 64 89 01 48
+> All code
+> =3D=3D=3D=3D=3D=3D=3D=3D
+>    0:   08 89 e8 5b 5d c3       or     %cl,-0x3ca2a418(%rcx)
+>    6:   66 2e 0f 1f 84 00 00    cs nopw 0x0(%rax,%rax,1)
+>    d:   00 00 00
+>   10:   90                      nop
+>   11:   48 89 f8                mov    %rdi,%rax
+>   14:   48 89 f7                mov    %rsi,%rdi
+>   17:   48 89 d6                mov    %rdx,%rsi
+>   1a:   48 89 ca                mov    %rcx,%rdx
+>   1d:   4d 89 c2                mov    %r8,%r10
+>   20:   4d 89 c8                mov    %r9,%r8
+>   23:   4c 8b 4c 24 08          mov    0x8(%rsp),%r9
+>   28:   0f 05                   syscall
+>   2a:*  48 3d 01 f0 ff ff       cmp    $0xfffffffffffff001,%rax         <=
+-- trapping instruction
+>   30:   73 01                   jae    0x33
+>   32:   c3                      ret
+>   33:   48 8b 0d b7 06 0d 00    mov    0xd06b7(%rip),%rcx        # 0xd06f=
+1
+>   3a:   f7 d8                   neg    %eax
+>   3c:   64 89 01                mov    %eax,%fs:(%rcx)
+>   3f:   48                      rex.W
+>
+> Code starting with the faulting instruction
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>    0:   48 3d 01 f0 ff ff       cmp    $0xfffffffffffff001,%rax
+>    6:   73 01                   jae    0x9
+>    8:   c3                      ret
+>    9:   48 8b 0d b7 06 0d 00    mov    0xd06b7(%rip),%rcx        # 0xd06c=
+7
+>   10:   f7 d8                   neg    %eax
+>   12:   64 89 01                mov    %eax,%fs:(%rcx)
+>   15:   48                      rex.W
+>
+>
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20241113/202411132111.6a221562-lk=
+p@intel.com
+>
+>
+>
+> --
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
+>
