@@ -1,493 +1,525 @@
-Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFD1D1B219D
-	for <oe-lkp@lists.linux.dev>; Thu, 14 Nov 2024 23:40:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9E581863F
+	for <oe-lkp@lists.linux.dev>; Sun, 17 Nov 2024 16:42:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731627623; cv=none; b=JR5FB+x3RK73zvo1RRZXCbmkXzu//AojezjqlRYFAR2p9pqzj+yA1R59QfAHAyTuydY/+kmJFOkACRPyqK6rK1tk1+Gaqb3S0TiO8e4bKMGJmoEecXZGggS2VlVm/SevA1WOlyp7z3br5c5pa7A95zaqVrGBUFF78gjWA02lTpM=
+	t=1731861749; cv=none; b=qrRXzJag3XjqS0mfmFUbTfA6h57bQ2XVKQhXpajQCncXhO2MzgmOHcZ/2I8i7qP4JSwF2q7fl1PhEdjf3n1tRohZIrWH47RoYRn0wUzEOfKVG43cQ5JTn1Ei8lUtUgcjJU3x4plxFknzajiuSGjW3MtzgTtijWMVVku8v/7/V+c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731627623; c=relaxed/simple;
-	bh=DMtVX9eRbcA//1qkoVvSOBBrR76isl6SSA10Sin2K2U=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=e3j5s832c2R/Np4RO+Sw6yX5vyFctKq5Tpcr/B+q7xjkkSIqOGcRKlagdOhP7jYmrcLmg1dFxusZNbitr/jk8zJpst71f03I9GChzIKKQulQWP3A2dkYn2qe06b2FPggsJ5OatQ5Zj29tACLnpMwNK0dghXuaQAULZuHeQnHdxM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=e/u5QNbx; arc=none smtp.client-ip=209.85.160.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1731861749; c=relaxed/simple;
+	bh=hrKTC9vUngDZpamtnSUS+U/sDaYNdQZQFeqflQVgEkY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=mmIhj8KDG0RTQyJRXMUPPeh/87ZiBQcGG1ianUfWxnvI+HlDVEc3e3bS/E2eVvwMb7gPZkb09uuwdrqHaDqERD6ivFUWIcqZDNtLiOifbftDhfh/fRazYaHx5HIkpmW7O6Sfpwz/nej7Mfrm6Z1QdHGiXPDX5khFM5MgIlhry2Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=kiqwWdz7; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=CyEYIieF; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=beepaNc/; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=IL18o+p1; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="e/u5QNbx"
-Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-4635b03a3cdso33521cf.1
-        for <oe-lkp@lists.linux.dev>; Thu, 14 Nov 2024 15:40:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1731627619; x=1732232419; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=y/mYu1uf/OogqfnJuVw7gNYHLp5xGrDHdo9WzrZTnF4=;
-        b=e/u5QNbxojZ4p3i6jYjBTlOiZ3+ScWda1sEoWS1eIwtMLp2up+NORpgpyolgnRgoqI
-         sa1mxk4WPrRFftY3NbVSsbF+kmdi23QHmkrax4aEmnzpASyZMl8y0oMuTI5UmbHLrQ4M
-         4jGaZ4YljwFgRZLsUup4H6g3bKr86oX9oj+SSFBnSxu9SyNoxFVsshQ5uKAk9/u+e177
-         Oq6fgvMJgXaAYBrN407PM0RGYYU4UZcRbQupP6GR8S0S2IMyfvlqdr6ZW8+VOVqoGlAZ
-         FizsJFlC6ZSjXpvKWXuk1S+RCbOlR7FKbgrsiguQZDYE1ySPmTKJS3hgx+vq/bvFegTy
-         /vOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1731627619; x=1732232419;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=y/mYu1uf/OogqfnJuVw7gNYHLp5xGrDHdo9WzrZTnF4=;
-        b=CzG5MaafGmJABbWOkA+5TE3eDJQjS1flP04KpOHl4AB71Gq1CohCbXxW8gSFXkIAoK
-         SIcZSwmSUxh6VoL/EIuRNu6vGdb1s67cw6GGJcVfkLC0LS+ZfYSW9UbpTbbR2bz77NU/
-         76VYvVPI1cX5qixw8fLM9N2N6jtv4rQAOMiQpTtagn0VtBdQ4m0+bvTsXiWrubxEMQbl
-         i1+lFtOqwLR0F/blKTW1707GlH7WRUElyaXG1G0PkDQzbT4A6Q2vbNmUfcWhpjn5wq1T
-         k+liL/LBzrsLrubUpXorY4NXKokjkYvj2xlBLJyQlwkfqOTpNTQsmXL3DuI6Ljt2D0xK
-         HUZA==
-X-Gm-Message-State: AOJu0Ywua0SM+/4auDRoC62ZnkqNR8H7b39lUYcMdczB5DYSmYcFInL5
-	UdkEjBGGBnLILffrpzb62f3/0+Wy7R0RxKpq8oiG6YBPxMWRzUer+IT3GwDYCU71vQXbjbpzLh1
-	/YEBWoIK4X/2DPNP4f6Z3F0EELIsJLbS0B1fa
-X-Gm-Gg: ASbGnct4oMnNJ//sH+C+W8czDtS/x67fZULIWpHbWPLlU63EhtXxUnRxUqkday8xrsO
-	VT0+HdW4AtBVPLh32MbVc7iGQ1nlsaA8=
-X-Google-Smtp-Source: AGHT+IGR9AhlnFKHQyFrI06bTxVO+2Tjsift6wNOPa3DaSoeAk5nPlvY67KrX29+jwbC1I58Vs5bvlxMXEZ6Oug0MXg=
-X-Received: by 2002:ac8:5f8b:0:b0:462:b2f5:b24c with SMTP id
- d75a77b69052e-46364da6c83mr383071cf.29.1731627619268; Thu, 14 Nov 2024
- 15:40:19 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="kiqwWdz7";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="CyEYIieF";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="beepaNc/";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="IL18o+p1"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 73AE021262;
+	Sun, 17 Nov 2024 16:42:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1731861744; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=fsGGRc2sM/xmwo/RSxKb68Fl8UeCiWFSKc3NrncSX+Q=;
+	b=kiqwWdz7HRmOO+KwL5waquLQDCGWfTJYurv7RmqLfXbjOSpTf5RjBx+3wl5GN4kAl1mXYK
+	pedVPj9vTnpKCsN6oN7Z6t/3Cm4jdlz3JbWdxERYYYGfH+sZItNh2t4HcFvyW7IaPcjhRT
+	StvIYX6C4Ht/824Re551cOlD60cdhc0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1731861744;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=fsGGRc2sM/xmwo/RSxKb68Fl8UeCiWFSKc3NrncSX+Q=;
+	b=CyEYIieFpJbGj1TqLstDuQNeNLNmuJ6Ff3QbU39Ewp1KmXeEVDDjq0p5ab+wCqKK8aWnN8
+	1N1EYg2KNkZjlIAA==
+Authentication-Results: smtp-out1.suse.de;
+	dkim=pass header.d=suse.cz header.s=susede2_rsa header.b="beepaNc/";
+	dkim=pass header.d=suse.cz header.s=susede2_ed25519 header.b=IL18o+p1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1731861743; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=fsGGRc2sM/xmwo/RSxKb68Fl8UeCiWFSKc3NrncSX+Q=;
+	b=beepaNc//CLLsklQFDqj7VyiEg64oiDIrVKlGo181qK5PJG052kbgVvSqnU8vKu+445Dz+
+	QoBFupweNxAFn2Q+MnDX11h/Ddv4UryQVWnTDlaWLSet5tegvY0uF3mw0C1d095lw90Ptv
+	VJogXc9JQeKMfpfV4DDGQ5kEHwIRC28=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1731861743;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=fsGGRc2sM/xmwo/RSxKb68Fl8UeCiWFSKc3NrncSX+Q=;
+	b=IL18o+p14BMei9vB+HT4VB+wpoCAjETM0oOdlfzNr2WG9sl54UymriuP9JcReVX0rhtxop
+	m9alZSWWfiywIeCA==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 446BD13297;
+	Sun, 17 Nov 2024 16:42:23 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id pCTwD+8cOmeQHgAAD6G6ig
+	(envelope-from <vbabka@suse.cz>); Sun, 17 Nov 2024 16:42:23 +0000
+Message-ID: <3b09bf98-9bd4-465b-b9c5-5483a6261dc7@suse.cz>
+Date: Sun, 17 Nov 2024 17:42:21 +0100
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202411132111.6a221562-lkp@intel.com> <CAJuCfpGMM1=3eS_1yCEFrwdFHv_dYZ3f1fXaFaKzT-hcNfjxfw@mail.gmail.com>
-In-Reply-To: <CAJuCfpGMM1=3eS_1yCEFrwdFHv_dYZ3f1fXaFaKzT-hcNfjxfw@mail.gmail.com>
-From: Suren Baghdasaryan <surenb@google.com>
-Date: Thu, 14 Nov 2024 15:40:08 -0800
-Message-ID: <CAJuCfpH4Vz_CxGFT7qbziF6jZ448Riss89KNXzDw3CG3gecHhw@mail.gmail.com>
-Subject: Re: [linux-next:master] [alloc_tag] 0f9b685626: BUG:KASAN:vmalloc-out-of-bounds_in_move_module
+User-Agent: Mozilla Thunderbird
+Subject: Re: [linus:master] [mm, mmap] d4148aeab4:
+ will-it-scale.per_process_ops 3888.9% improvement
+Content-Language: en-US
 To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, 
-	Andrew Morton <akpm@linux-foundation.org>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
-	Ard Biesheuvel <ardb@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>, 
-	Christoph Hellwig <hch@infradead.org>, Daniel Gomez <da.gomez@samsung.com>, 
-	David Hildenbrand <david@redhat.com>, Davidlohr Bueso <dave@stgolabs.net>, 
-	David Rientjes <rientjes@google.com>, Dennis Zhou <dennis@kernel.org>, 
-	Johannes Weiner <hannes@cmpxchg.org>, John Hubbard <jhubbard@nvidia.com>, 
-	Jonathan Corbet <corbet@lwn.net>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, 
-	Kalesh Singh <kaleshsingh@google.com>, Kees Cook <keescook@chromium.org>, 
-	Kent Overstreet <kent.overstreet@linux.dev>, "Liam R. Howlett" <Liam.Howlett@oracle.com>, 
-	Luis Chamberlain <mcgrof@kernel.org>, Matthew Wilcox <willy@infradead.org>, Michal Hocko <mhocko@suse.com>, 
-	Mike Rapoport <rppt@kernel.org>, Minchan Kim <minchan@google.com>, 
-	"Paul E. McKenney" <paulmck@kernel.org>, Petr Pavlu <petr.pavlu@suse.com>, 
-	Roman Gushchin <roman.gushchin@linux.dev>, Sami Tolvanen <samitolvanen@google.com>, 
-	Sourav Panda <souravpanda@google.com>, Steven Rostedt <rostedt@goodmis.org>, 
-	Thomas Gleixner <tglx@linutronix.de>, Thomas Huth <thuth@redhat.com>, 
-	Uladzislau Rezki <urezki@gmail.com>, Vlastimil Babka <vbabka@suse.cz>, 
-	Xiongwei Song <xiongwei.song@windriver.com>, Yu Zhao <yuzhao@google.com>, 
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+ Andrew Morton <akpm@linux-foundation.org>, Michael Matz <matz@suse.de>,
+ Gabriel Krisman Bertazi <gabriel@krisman.be>,
+ Matthias Bodenbinder <matthias@bodenbinder.de>,
+ Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
+ Yang Shi <yang@os.amperecomputing.com>, Rik van Riel <riel@surriel.com>,
+ Jann Horn <jannh@google.com>, "Liam R. Howlett" <Liam.Howlett@oracle.com>,
+ Petr Tesarik <ptesarik@suse.com>,
+ Thorsten Leemhuis <regressions@leemhuis.info>, linux-mm@kvack.org,
+ ying.huang@intel.com, feng.tang@intel.com, fengwei.yin@intel.com,
+ Pedro Falcato <pedro.falcato@gmail.com>
+References: <202411072132.a8d2cf0f-oliver.sang@intel.com>
+From: Vlastimil Babka <vbabka@suse.cz>
+Autocrypt: addr=vbabka@suse.cz; keydata=
+ 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
+ EP+ylKVEKb0Q2A==
+In-Reply-To: <202411072132.a8d2cf0f-oliver.sang@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Rspamd-Queue-Id: 73AE021262
+X-Spam-Score: -3.01
+X-Rspamd-Action: no action
+X-Spamd-Result: default: False [-3.01 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	SUSPICIOUS_RECIPS(1.50)[];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	MX_GOOD(-0.01)[];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	FUZZY_BLOCKED(0.00)[rspamd.com];
+	ARC_NA(0.00)[];
+	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	RCPT_COUNT_TWELVE(0.00)[20];
+	MIME_TRACE(0.00)[0:+];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com];
+	FREEMAIL_CC(0.00)[lists.linux.dev,intel.com,vger.kernel.org,linux-foundation.org,suse.de,krisman.be,bodenbinder.de,oracle.com,os.amperecomputing.com,surriel.com,google.com,suse.com,leemhuis.info,kvack.org,gmail.com];
+	RCVD_TLS_ALL(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	TO_DN_SOME(0.00)[];
+	MID_RHS_MATCH_FROM(0.00)[];
+	TAGGED_RCPT(0.00)[];
+	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
+	DKIM_TRACE(0.00)[suse.cz:+];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[plt:email,suse.cz:mid,suse.cz:dkim,01.org:url,imap1.dmz-prg2.suse.org:rdns,imap1.dmz-prg2.suse.org:helo]
+X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
+X-Spam-Flag: NO
+X-Spam-Level: 
 
-On Wed, Nov 13, 2024 at 1:34=E2=80=AFPM Suren Baghdasaryan <surenb@google.c=
-om> wrote:
->
-> On Wed, Nov 13, 2024 at 2:07=E2=80=AFPM kernel test robot <oliver.sang@in=
-tel.com> wrote:
-> >
-> >
-> >
-> > Hello,
-> >
-> >
-> > we reported
-> > "[linux-next:master] [alloc_tag]  a9c60bb0d0: BUG:KASAN:vmalloc-out-of-=
-bounds_in_load_module"
-> > in
-> > https://lore.kernel.org/all/202410281441.216670ac-lkp@intel.com/
-> >
-> > we noticed it seems there is following patch.
-> >
-> > we made below report just FYI that the commit still cause similar issue=
- on
-> > linux-next/master and not fixed on tip of linux-next/master when this b=
-isect
-> > is done.
-> >
-> >
-> > kernel test robot noticed "BUG:KASAN:vmalloc-out-of-bounds_in_move_modu=
-le" on:
-> >
-> > commit: 0f9b685626daa2f8e19a9788625c9b624c223e45 ("alloc_tag: populate =
-memory for module tags as needed")
-> > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
-> >
-> > [test failed on linux-next/master 929beafbe7acce3267c06115e13e03ff6e505=
-48a]
-> >
-> > in testcase: rcuscale
-> > version:
-> > with following parameters:
-> >
-> >         runtime: 300s
-> >         scale_type: srcu
-> >
-> >
-> >
-> > config: x86_64-randconfig-014-20241107
-> > compiler: gcc-12
-> > test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m=
- 16G
-> >
-> > (please refer to attached dmesg/kmsg for entire log/backtrace)
-> >
-> >
-> > +------------------------------------------------+------------+--------=
-----+
-> > |                                                | 0db6f8d782 | 0f9b685=
-626 |
-> > +------------------------------------------------+------------+--------=
-----+
-> > | boot_successes                                 | 18         | 0      =
-    |
-> > | boot_failures                                  | 0          | 18     =
-    |
-> > | BUG:KASAN:vmalloc-out-of-bounds_in_move_module | 0          | 18     =
-    |
-> > | BUG:unable_to_handle_page_fault_for_address    | 0          | 18     =
-    |
-> > | Oops                                           | 0          | 18     =
-    |
-> > | RIP:kasan_metadata_fetch_row                   | 0          | 18     =
-    |
-> > | Kernel_panic-not_syncing:Fatal_exception       | 0          | 18     =
-    |
-> > +------------------------------------------------+------------+--------=
-----+
-> >
-> >
-> > If you fix the issue in a separate patch/commit (i.e. not just a new ve=
-rsion of
-> > the same patch/commit), kindly add following tags
-> > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> > | Closes: https://lore.kernel.org/oe-lkp/202411132111.6a221562-lkp@inte=
-l.com
->
->
-> Thanks for the report! I'm looking into this but so far could not find
-> an obvious issue. Will try to reproduce.
+On 11/7/24 15:10, kernel test robot wrote:
+> 
+> 
+> Hello,
+> 
+> kernel test robot noticed a 3888.9% improvement of will-it-scale.per_process_ops on:
+> 
+> 
+> commit: d4148aeab412432bf928f311eca8a2ba52bb05df ("mm, mmap: limit THP alignment of anonymous mappings to PMD-aligned sizes")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> 
+> [test failed on linux-next/master 5b913f5d7d7fe0f567dea8605f21da6eaa1735fb]
+> 
+> testcase: will-it-scale
+> config: x86_64-rhel-8.3
+> compiler: gcc-12
+> test machine: 224 threads 4 sockets Intel(R) Xeon(R) Platinum 8380H CPU @ 2.90GHz (Cooper Lake) with 192G memory
+> parameters:
+> 
+> 	nr_task: 100%
+> 	mode: process
+> 	test: malloc1
+> 	cpufreq_governor: performance
 
-For some reason I'm getting this panic when trying to follow the repro step=
-s:
+Since this report is now linked from youtube videos with 200k views, maybe
+someone will appreciate reading about what's actually happening here, in
+more detail that would be normally sufficient for linux-mm. Thanks to Pedro
+who initially brought up what malloc1 does on IRC.
 
-# bin/lkp qemu -k /home/suren/linux-next/arch/x86_64/boot/bzImage -m
-/home/suren/linux-next/out/modules.cgz job-script
-...
-[   22.813623][    T1] Kernel panic - not syncing: VFS: Unable to
-mount root fs on unknown-block(0,0)
-[   22.815461][    T1] CPU: 0 UID: 0 PID: 1 Comm: swapper Not tainted
-6.12.0-rc7-next-20241113 #1 060e60d2378c08a3d0121faf43856b671a45697c
-[   22.817822][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX,
-1996), BIOS 1.15.0-1 04/01/2014
-[   22.819655][    T1] Call Trace:
-[   22.820399][    T1]  <TASK>
-[   22.821077][    T1]  panic+0x243/0x486
-[   22.821965][    T1]  ? crash_smp_send_stop+0x1c/0x1c
-[   22.823019][    T1]  ? lock_release+0x17c/0x1b1
-[   22.824006][    T1]  mount_root_generic+0x31d/0x3d0
-[   22.825064][    T1]  ? init_rootfs+0x4c/0x4c
-[   22.826011][    T1]  ? init_stat+0xd8/0xd8
-[   22.826920][    T1]  ? __asan_memcpy+0x3c/0x65
-[   22.827880][    T1]  ? getname_kernel+0x3dc/0x41e
-[   22.828887][    T1]  prepare_namespace+0x21e/0x289
-[   22.829895][    T1]  ? mount_root+0xc6/0xc6
-[   22.830819][    T1]  ? fput+0x1b/0x194
-[   22.831682][    T1]  ? rest_init+0x183/0x183
-[   22.832624][    T1]  kernel_init+0x17/0x138
-[   22.833535][    T1]  ? rest_init+0x183/0x183
-[   22.834490][    T1]  ret_from_fork+0x20/0x54
-[   22.835419][    T1]  ? rest_init+0x183/0x183
-[   22.836343][    T1]  ret_from_fork_asm+0x11/0x20
-[   22.837335][    T1]  </TASK>
-[   22.838082][    T1] Kernel Offset: disabled
+The test [1] just performs repeatedly a malloc()/free() of a 128MB large buffer.
 
-I see that PeterZ had the same issue back in September:
-https://lore.kernel.org/lkml/20240909091531.GA4723@noisy.programming.kicks-=
-ass.net/
-, so might this be a known issue? If anyone has an idea what I'm doing
-wrong I would appreciate your help.
-Thanks,
-Suren.
+#define SIZE (128UL * 1024 * 1024)
 
+while(1) {
+	void *addr = malloc(SIZE);
+	assert(addr != NULL);
+	free(addr);
+}
 
->
-> >
-> >
-> > [ 153.897376][ T402] BUG: KASAN: vmalloc-out-of-bounds in move_module (=
-kernel/module/main.c:2357)
-> > [  153.899141][  T402] Write of size 40 at addr ffffffffa0000000 by tas=
-k modprobe/402
-> > [  153.900837][  T402]
-> > [  153.901496][  T402] CPU: 0 UID: 0 PID: 402 Comm: modprobe Tainted: G=
-                T  6.12.0-rc6-00146-g0f9b685626da #1 87c8486a909ba2f90eff06=
-1a4c9c1fa5c9cd90ea
-> > [  153.904537][  T402] Tainted: [T]=3DRANDSTRUCT
-> > [  153.905500][  T402] Hardware name: QEMU Standard PC (i440FX + PIIX, =
-1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-> > [  153.907702][  T402] Call Trace:
-> > [  153.908510][  T402]  <TASK>
-> > [ 153.909241][ T402] print_address_description+0x65/0x2fa
-> > [ 153.910663][ T402] print_report (mm/kasan/report.c:489)
-> > [ 153.911771][ T402] ? move_module (kernel/module/main.c:2357)
-> > [ 153.912825][ T402] kasan_report (mm/kasan/report.c:603)
-> > [ 153.913821][ T402] ? move_module (kernel/module/main.c:2357)
-> > [ 153.914904][ T402] kasan_check_range (mm/kasan/generic.c:183 mm/kasan=
-/generic.c:189)
-> > [ 153.916029][ T402] __asan_memcpy (mm/kasan/shadow.c:105 (discriminato=
-r 1))
-> > [ 153.917057][ T402] move_module (kernel/module/main.c:2357)
-> > [ 153.918071][ T402] layout_and_allocate+0x446/0x523
-> > [ 153.919459][ T402] load_module (kernel/module/main.c:2985)
-> > [ 153.920457][ T402] ? mode_strip_umask (fs/namei.c:3248)
-> > [ 153.921557][ T402] init_module_from_file (kernel/module/main.c:3266)
-> > [ 153.922825][ T402] ? __ia32_sys_init_module (kernel/module/main.c:326=
-6)
-> > [ 153.923992][ T402] ? __lock_release+0x106/0x38c
-> > [ 153.925173][ T402] ? idempotent_init_module (kernel/module/main.c:330=
-1)
-> > [ 153.926364][ T402] ? lock_release (kernel/locking/lockdep.c:467 kerne=
-l/locking/lockdep.c:5848)
-> > [ 153.944053][ T402] idempotent_init_module (kernel/module/main.c:3302)
-> > [ 153.945164][ T402] ? init_module_from_file (kernel/module/main.c:3294=
-)
-> > [ 153.946268][ T402] ? security_capable (security/security.c:1143)
-> > [ 153.947421][ T402] __do_sys_finit_module (include/linux/file.h:68 ker=
-nel/module/main.c:3330)
-> > [ 153.948495][ T402] do_syscall_64 (arch/x86/entry/common.c:52 arch/x86=
-/entry/common.c:83)
-> > [ 153.949540][ T402] entry_SYSCALL_64_after_hwframe (arch/x86/entry/ent=
-ry_64.S:130)
-> > [  153.950855][  T402] RIP: 0033:0x7f0f37df7719
-> > [ 153.951869][ T402] Code: 08 89 e8 5b 5d c3 66 2e 0f 1f 84 00 00 00 00=
- 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08=
- 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d b7 06 0d 00 f7 d8 64 89 01 48
-> > All code
-> > =3D=3D=3D=3D=3D=3D=3D=3D
-> >    0:   08 89 e8 5b 5d c3       or     %cl,-0x3ca2a418(%rcx)
-> >    6:   66 2e 0f 1f 84 00 00    cs nopw 0x0(%rax,%rax,1)
-> >    d:   00 00 00
-> >   10:   90                      nop
-> >   11:   48 89 f8                mov    %rdi,%rax
-> >   14:   48 89 f7                mov    %rsi,%rdi
-> >   17:   48 89 d6                mov    %rdx,%rsi
-> >   1a:   48 89 ca                mov    %rcx,%rdx
-> >   1d:   4d 89 c2                mov    %r8,%r10
-> >   20:   4d 89 c8                mov    %r9,%r8
-> >   23:   4c 8b 4c 24 08          mov    0x8(%rsp),%r9
-> >   28:   0f 05                   syscall
-> >   2a:*  48 3d 01 f0 ff ff       cmp    $0xfffffffffffff001,%rax        =
- <-- trapping instruction
-> >   30:   73 01                   jae    0x33
-> >   32:   c3                      ret
-> >   33:   48 8b 0d b7 06 0d 00    mov    0xd06b7(%rip),%rcx        # 0xd0=
-6f1
-> >   3a:   f7 d8                   neg    %eax
-> >   3c:   64 89 01                mov    %eax,%fs:(%rcx)
-> >   3f:   48                      rex.W
-> >
-> > Code starting with the faulting instruction
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> >    0:   48 3d 01 f0 ff ff       cmp    $0xfffffffffffff001,%rax
-> >    6:   73 01                   jae    0x9
-> >    8:   c3                      ret
-> >    9:   48 8b 0d b7 06 0d 00    mov    0xd06b7(%rip),%rcx        # 0xd0=
-6c7
-> >   10:   f7 d8                   neg    %eax
-> >   12:   64 89 01                mov    %eax,%fs:(%rcx)
-> >   15:   48                      rex.W
-> > [  153.955810][  T402] RSP: 002b:00007ffccd7f7198 EFLAGS: 00000246 ORIG=
-_RAX: 0000000000000139
-> > [  153.957666][  T402] RAX: ffffffffffffffda RBX: 000055cc9f9fddd0 RCX:=
- 00007f0f37df7719
-> > [  153.959411][  T402] RDX: 0000000000000000 RSI: 000055cc9f9f24a0 RDI:=
- 0000000000000004
-> > [  153.961142][  T402] RBP: 000055cc9f9f24a0 R08: 0000000000000000 R09:=
- 000055cc9f9ff250
-> > [  153.962910][  T402] R10: 0000000000000004 R11: 0000000000000246 R12:=
- 0000000000040000
-> > [  153.964665][  T402] R13: 0000000000000000 R14: 000055cc9f9fdd80 R15:=
- 0000000000000000
-> > [  153.966393][  T402]  </TASK>
-> > [  153.967209][  T402]
-> > [  153.967856][  T402] Memory state around the buggy address:
-> > [  153.969123][  T402] BUG: unable to handle page fault for address: ff=
-fffbfff3ffffe0
-> > [  153.970807][  T402] #PF: supervisor read access in kernel mode
-> > [  153.972036][  T402] #PF: error_code(0x0000) - not-present page
-> > [  153.973220][  T402] PGD 417fdb067 P4D 417fdb067 PUD 417fd7067 PMD 0
-> > [  153.974560][  T402] Oops: Oops: 0000 [#1] PREEMPT KASAN
-> > [  153.975758][  T402] CPU: 0 UID: 0 PID: 402 Comm: modprobe Tainted: G=
-                T  6.12.0-rc6-00146-g0f9b685626da #1 87c8486a909ba2f90eff06=
-1a4c9c1fa5c9cd90ea
-> > [  153.978853][  T402] Tainted: [T]=3DRANDSTRUCT
-> > [  153.979851][  T402] Hardware name: QEMU Standard PC (i440FX + PIIX, =
-1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-> > [ 153.982008][ T402] RIP: 0010:kasan_metadata_fetch_row (mm/kasan/repor=
-t_generic.c:186)
-> > [ 153.983368][ T402] Code: 40 08 48 89 43 58 5b 31 c0 31 d2 31 c9 31 f6=
- 31 ff c3 cc cc cc cc 66 0f 1f 00 b8 ff ff 37 00 48 c1 ee 03 48 c1 e0 2a 48=
- 01 c6 <48> 8b 06 48 89 07 48 8b 46 08 48 89 47 08 31 c0 31 f6 31 ff c3 cc
-> > All code
-> > =3D=3D=3D=3D=3D=3D=3D=3D
-> >    0:   40 08 48 89             rex or %cl,-0x77(%rax)
-> >    4:   43 58                   rex.XB pop %r8
-> >    6:   5b                      pop    %rbx
-> >    7:   31 c0                   xor    %eax,%eax
-> >    9:   31 d2                   xor    %edx,%edx
-> >    b:   31 c9                   xor    %ecx,%ecx
-> >    d:   31 f6                   xor    %esi,%esi
-> >    f:   31 ff                   xor    %edi,%edi
-> >   11:   c3                      ret
-> >   12:   cc                      int3
-> >   13:   cc                      int3
-> >   14:   cc                      int3
-> >   15:   cc                      int3
-> >   16:   66 0f 1f 00             nopw   (%rax)
-> >   1a:   b8 ff ff 37 00          mov    $0x37ffff,%eax
-> >   1f:   48 c1 ee 03             shr    $0x3,%rsi
-> >   23:   48 c1 e0 2a             shl    $0x2a,%rax
-> >   27:   48 01 c6                add    %rax,%rsi
-> >   2a:*  48 8b 06                mov    (%rsi),%rax              <-- tra=
-pping instruction
-> >   2d:   48 89 07                mov    %rax,(%rdi)
-> >   30:   48 8b 46 08             mov    0x8(%rsi),%rax
-> >   34:   48 89 47 08             mov    %rax,0x8(%rdi)
-> >   38:   31 c0                   xor    %eax,%eax
-> >   3a:   31 f6                   xor    %esi,%esi
-> >   3c:   31 ff                   xor    %edi,%edi
-> >   3e:   c3                      ret
-> >   3f:   cc                      int3
-> >
-> > Code starting with the faulting instruction
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> >    0:   48 8b 06                mov    (%rsi),%rax
-> >    3:   48 89 07                mov    %rax,(%rdi)
-> >    6:   48 8b 46 08             mov    0x8(%rsi),%rax
-> >    a:   48 89 47 08             mov    %rax,0x8(%rdi)
-> >    e:   31 c0                   xor    %eax,%eax
-> >   10:   31 f6                   xor    %esi,%esi
-> >   12:   31 ff                   xor    %edi,%edi
-> >   14:   c3                      ret
-> >   15:   cc                      int3
-> > [  153.987254][  T402] RSP: 0018:ffffc9000218f9f8 EFLAGS: 00010082
-> > [  153.988595][  T402] RAX: dffffc0000000000 RBX: ffffffff9fffff00 RCX:=
- 0000000000000000
-> > [  153.990325][  T402] RDX: 0000000000000000 RSI: fffffbfff3ffffe0 RDI:=
- ffffc9000218fa04
-> > [  153.992086][  T402] RBP: 00000000fffffffe R08: 0000000000000000 R09:=
- 0000000000000000
-> > [  153.993786][  T402] R10: 0000000000000000 R11: 0000000000000000 R12:=
- ffffffffa0000000
-> > [  153.995554][  T402] R13: ffffffff864b4994 R14: ffffffff9fffff80 R15:=
- 0000000000000028
-> > [  153.997305][  T402] FS:  00007f0f37cf5040(0000) GS:ffffffff86989000(=
-0000) knlGS:0000000000000000
-> > [  153.999133][  T402] CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003=
-3
-> > [  154.000578][  T402] CR2: fffffbfff3ffffe0 CR3: 0000000128853000 CR4:=
- 00000000000006b0
-> > [  154.002367][  T402] Call Trace:
-> > [  154.003318][  T402]  <TASK>
-> > [ 154.004087][ T402] ? __die_body (arch/x86/kernel/dumpstack.c:421)
-> > [ 154.005074][ T402] ? page_fault_oops (arch/x86/mm/fault.c:710)
-> > [ 154.006242][ T402] ? show_fault_oops (arch/x86/mm/fault.c:643)
-> > [ 154.007368][ T402] ? search_module_extables (kernel/module/main.c:336=
-9)
-> > [ 154.008525][ T402] ? fixup_exception (arch/x86/mm/extable.c:321)
-> > [ 154.009629][ T402] ? exc_page_fault (arch/x86/mm/fault.c:1479 arch/x8=
-6/mm/fault.c:1539)
-> > [ 154.010771][ T402] ? asm_exc_page_fault (arch/x86/include/asm/idtentr=
-y.h:623)
-> > [ 154.011853][ T402] ? kasan_metadata_fetch_row (mm/kasan/report_generi=
-c.c:186)
-> > [ 154.013072][ T402] print_report (mm/kasan/report.c:466 mm/kasan/repor=
-t.c:489)
-> > [ 154.014122][ T402] ? move_module (kernel/module/main.c:2357)
-> > [ 154.015238][ T402] kasan_report (mm/kasan/report.c:603)
-> > [ 154.016231][ T402] ? move_module (kernel/module/main.c:2357)
-> > [ 154.017255][ T402] kasan_check_range (mm/kasan/generic.c:183 mm/kasan=
-/generic.c:189)
-> > [ 154.018379][ T402] __asan_memcpy (mm/kasan/shadow.c:105 (discriminato=
-r 1))
-> > [ 154.019400][ T402] move_module (kernel/module/main.c:2357)
-> > [ 154.020435][ T402] layout_and_allocate+0x446/0x523
-> > [ 154.021792][ T402] load_module (kernel/module/main.c:2985)
-> > [ 154.022822][ T402] ? mode_strip_umask (fs/namei.c:3248)
-> > [ 154.023928][ T402] init_module_from_file (kernel/module/main.c:3266)
-> > [ 154.025069][ T402] ? __ia32_sys_init_module (kernel/module/main.c:326=
-6)
-> > [ 154.026265][ T402] ? __lock_release+0x106/0x38c
-> > [ 154.027496][ T402] ? idempotent_init_module (kernel/module/main.c:330=
-1)
-> > [ 154.028688][ T402] ? lock_release (kernel/locking/lockdep.c:467 kerne=
-l/locking/lockdep.c:5848)
-> > [ 154.029766][ T402] idempotent_init_module (kernel/module/main.c:3302)
-> > [ 154.030985][ T402] ? init_module_from_file (kernel/module/main.c:3294=
-)
-> > [ 154.032192][ T402] ? security_capable (security/security.c:1143)
-> > [ 154.033310][ T402] __do_sys_finit_module (include/linux/file.h:68 ker=
-nel/module/main.c:3330)
-> > [ 154.034478][ T402] do_syscall_64 (arch/x86/entry/common.c:52 arch/x86=
-/entry/common.c:83)
-> > [ 154.035532][ T402] entry_SYSCALL_64_after_hwframe (arch/x86/entry/ent=
-ry_64.S:130)
-> > [  154.036819][  T402] RIP: 0033:0x7f0f37df7719
-> > [ 154.037865][ T402] Code: 08 89 e8 5b 5d c3 66 2e 0f 1f 84 00 00 00 00=
- 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08=
- 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d b7 06 0d 00 f7 d8 64 89 01 48
-> > All code
-> > =3D=3D=3D=3D=3D=3D=3D=3D
-> >    0:   08 89 e8 5b 5d c3       or     %cl,-0x3ca2a418(%rcx)
-> >    6:   66 2e 0f 1f 84 00 00    cs nopw 0x0(%rax,%rax,1)
-> >    d:   00 00 00
-> >   10:   90                      nop
-> >   11:   48 89 f8                mov    %rdi,%rax
-> >   14:   48 89 f7                mov    %rsi,%rdi
-> >   17:   48 89 d6                mov    %rdx,%rsi
-> >   1a:   48 89 ca                mov    %rcx,%rdx
-> >   1d:   4d 89 c2                mov    %r8,%r10
-> >   20:   4d 89 c8                mov    %r9,%r8
-> >   23:   4c 8b 4c 24 08          mov    0x8(%rsp),%r9
-> >   28:   0f 05                   syscall
-> >   2a:*  48 3d 01 f0 ff ff       cmp    $0xfffffffffffff001,%rax        =
- <-- trapping instruction
-> >   30:   73 01                   jae    0x33
-> >   32:   c3                      ret
-> >   33:   48 8b 0d b7 06 0d 00    mov    0xd06b7(%rip),%rcx        # 0xd0=
-6f1
-> >   3a:   f7 d8                   neg    %eax
-> >   3c:   64 89 01                mov    %eax,%fs:(%rcx)
-> >   3f:   48                      rex.W
-> >
-> > Code starting with the faulting instruction
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> >    0:   48 3d 01 f0 ff ff       cmp    $0xfffffffffffff001,%rax
-> >    6:   73 01                   jae    0x9
-> >    8:   c3                      ret
-> >    9:   48 8b 0d b7 06 0d 00    mov    0xd06b7(%rip),%rcx        # 0xd0=
-6c7
-> >   10:   f7 d8                   neg    %eax
-> >   12:   64 89 01                mov    %eax,%fs:(%rcx)
-> >   15:   48                      rex.W
-> >
-> >
-> > The kernel config and materials to reproduce are available at:
-> > https://download.01.org/0day-ci/archive/20241113/202411132111.6a221562-=
-lkp@intel.com
-> >
-> >
-> >
-> > --
-> > 0-DAY CI Kernel Test Service
-> > https://github.com/intel/lkp-tests/wiki
-> >
+We can compile the same code outside of the test, without the iterations,
+but printing the addr and pausing the process so we can look at
+/proc/$pid/smaps.
+
+Before the commit was applied I get:
+
+addr: 0x7f0f62a00010
+
+And the corresponding area in smaps is:
+7f0f62a00000-7f0f6aa01000 rw-p 00000000 00:00 0
+Size:             131076 kB
+KernelPageSize:        4 kB
+MMUPageSize:           4 kB
+Rss:                2048 kB
+Pss:                2048 kB
+Pss_Dirty:          2048 kB
+Shared_Clean:          0 kB
+Shared_Dirty:          0 kB
+Private_Clean:         0 kB
+Private_Dirty:      2048 kB
+Referenced:         2048 kB
+Anonymous:          2048 kB
+KSM:                   0 kB
+LazyFree:              0 kB
+AnonHugePages:      2048 kB
+ShmemPmdMapped:        0 kB
+FilePmdMapped:         0 kB
+Shared_Hugetlb:        0 kB
+Private_Hugetlb:       0 kB
+Swap:                  0 kB
+SwapPss:               0 kB
+Locked:                0 kB
+THPeligible:           1
+
+We can notice the 128MB become 128MB+4kB and he address returned by malloc()
+is offset by 16bytes (0x10) from the mmapped aread.
+So we have
+7f0f62a00000 - start of mmapped area
+7f0f62a00010 - start of malloc()-returned buffer
+7f0f6aa00010 - end of malloc()'d buffer (128MB)
+7f0f6aa01000 - end of mmapped area
+
+malloc() AFAIK would normally manage some large-ish arena allocated by a
+single mmap() and give out addresses to smaller allocations from that, but
+any request as large as 128MB is turned directly into a mmap(). But malloc()
+has to remember how large the allocation was in order to turn free(addr)
+into an appropriate munmap(addr, size), so it prepends the 16 byte header to
+store the size, but any mmap() needs to be rounded up to page size so this
+16 bytes become 4kB and the mmap() is not exactly 128MB but 4kB larger.
+
+Before commit d4148aeab412, due to commit efa7df3e3bb5 the implementation is
+that mmap() >= 2MB will have the start of the area aligned to 2MB, which we
+can see from the address 7f0f62a00000 which is divisible by 2MB.
+The fields Rss: 2048 kB and AnonHugePages: 2048 kB above also reveal that
+when malloc() wrote its 16 byte header, a transparent hugepage (THP) was
+allocated for the first 2MB of the area.
+
+After commit d4148aeab412 we get
+
+addr: 0x7fd7b9998010
+
+7fd7b9998000-7fd7c199c000 rw-p 00000000 00:00 0
+Size:             131088 kB
+KernelPageSize:        4 kB
+MMUPageSize:           4 kB
+Rss:                  12 kB
+Pss:                  12 kB
+Pss_Dirty:            12 kB
+Shared_Clean:          0 kB
+Shared_Dirty:          0 kB
+Private_Clean:         0 kB
+Private_Dirty:        12 kB
+Referenced:           12 kB
+Anonymous:            12 kB
+KSM:                   0 kB
+LazyFree:              0 kB
+AnonHugePages:         0 kB
+ShmemPmdMapped:        0 kB
+FilePmdMapped:         0 kB
+Shared_Hugetlb:        0 kB
+Private_Hugetlb:       0 kB
+Swap:                  0 kB
+SwapPss:               0 kB
+Locked:                0 kB
+THPeligible:           1
+
+Again mmap() was done with an extra page for the 16byte header, but the area
+is no longer aligned to 2MB because the size of the area is not multiple of
+2MB. Thus the header cannot be populated with a 2MB THP but only a 4kB base
+page.
+
+And that's the whole difference. The test allocates 128MB via malloc() but
+doesn't actually touch the memory at all. So only the page with the header
+is faulted, and obviously it's much faster to allocate and clear (write with
+zeros, as the kernel has to do for userspace pages) a 4kB page instead of
+2MB. But it's an artifact of the benchmark - we can assume a program that
+allocates memory with malloc() would also use it, and then most of the 128MB
++ 4kB would get backed with THPs and the differences would largely disappear.
+
+Also you might be wondering - if improvement was reported for malloc1 due to
+d4148aeab412432, shouldn't have a regression been reported in the past for
+efa7df3e3bb5? In fact it was, actually a multiple regressions for various
+prior versions of the patch that eventually became commit efa7df3e3bb5, but
+this particular one in malloc1 was (rightfully) dismissed as not important
+enough [2]
+
+[1] https://github.com/antonblanchard/will-it-scale/blob/master/tests/malloc1.c
+[2] https://lore.kernel.org/all/87edv4r2ip.fsf@yhuang6-desk2.ccr.corp.intel.com/
+
+> In addition to that, the commit also has significant impact on the following tests:
+> 
+> +------------------+---------------------------------------------------------------------------------------------+
+> | testcase: change | stress-ng: stress-ng.radixsort.ops_per_sec 9.2% regression                                  |
+
+BTW, nobody seems to have noticed this part, which looks like a regression
+report :)
+
+> | test machine     | 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480CTDX (Sapphire Rapids) with 256G memory |
+> | test parameters  | cpufreq_governor=performance                                                                |
+> |                  | nr_threads=100%                                                                             |
+> |                  | test=radixsort                                                                              |
+> |                  | testtime=60s                                                                                |
+> +------------------+---------------------------------------------------------------------------------------------+
+> 
+> 
+> 
+> 
+> Details are as below:
+> -------------------------------------------------------------------------------------------------->
+> 
+> 
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20241107/202411072132.a8d2cf0f-oliver.sang@intel.com
+> 
+> =========================================================================================
+> compiler/cpufreq_governor/kconfig/mode/nr_task/rootfs/tbox_group/test/testcase:
+>   gcc-12/performance/x86_64-rhel-8.3/process/100%/debian-12-x86_64-20240206.cgz/lkp-cpl-4sp2/malloc1/will-it-scale
+> 
+> commit: 
+>   15e8156713 ("mm: shrinker: avoid memleak in alloc_shrinker_info")
+>   d4148aeab4 ("mm, mmap: limit THP alignment of anonymous mappings to PMD-aligned sizes")
+> 
+> 15e8156713cc3803 d4148aeab412432bf928f311eca 
+> ---------------- --------------------------- 
+>          %stddev     %change         %stddev
+>              \          |                \  
+
+<snip>
+
+>      89.46           -89.3        0.20 ± 22%  perf-profile.children.cycles-pp.clear_page_erms
+
+This confirms we are clearing much less memory (4KB instead of 2MB) because
+we spend way less time in the clearing function.
+
+> ***************************************************************************************************
+> lkp-spr-r02: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480CTDX (Sapphire Rapids) with 256G memory
+> =========================================================================================
+> compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testcase/testtime:
+>   gcc-12/performance/x86_64-rhel-8.3/100%/debian-12-x86_64-20240206.cgz/lkp-spr-r02/radixsort/stress-ng/60s
+
+And this is the regression report of another benchmark that nobody noticed.
+
+> commit: 
+>   15e8156713 ("mm: shrinker: avoid memleak in alloc_shrinker_info")
+>   d4148aeab4 ("mm, mmap: limit THP alignment of anonymous mappings to PMD-aligned sizes")
+> 
+> 15e8156713cc3803 d4148aeab412432bf928f311eca 
+> ---------------- --------------------------- 
+>          %stddev     %change         %stddev
+>              \          |                \  
+>      18.98 ±  5%     +30.5%      24.78 ± 14%  sched_debug.cpu.clock.stddev
+>       0.05 ±  7%    +886.3%       0.50 ± 86%  perf-sched.sch_delay.avg.ms.__cond_resched.__wait_for_common.affine_move_task.__set_cpus_allowed_ptr.__sched_setaffinity
+>       1.14 ± 74%     -55.5%       0.51 ± 37%  perf-sched.sch_delay.avg.ms.__x64_sys_pause.do_syscall_64.entry_SYSCALL_64_after_hwframe.[unknown]
+>     265008 ± 13%     -37.2%     166403 ± 22%  meminfo.Active
+>     264976 ± 13%     -37.2%     166371 ± 22%  meminfo.Active(anon)
+>    1315990           -63.8%     475807 ±  3%  meminfo.AnonHugePages
+
+So we get fewer THPs but unlike the malloc1 test, this one seems to be
+benefiting from them, so having fewer of them causes a regression.
+
+Maybe it does mmap()'s of some unfortunate size like 3MB?
+Before commit d4148aeab412 such mmap() would be guaranteed a THP for the
+first 2MB and no THP's for the other 1MB, i.e.:
+| [ 2 MB | 1 MB ]
+
+But now the result can be [ 1.5MB | 1.5 MB ]
+(where | is a 2MB boundary) hence no THP backing at all.
+
+This probably just shows that no heuristic can be optimal for every possible
+use case.
+
+>     164713            -9.2%     149574        stress-ng.radixsort.ops
+>       2745            -9.2%       2492        stress-ng.radixsort.ops_per_sec
+>      78925          +289.9%     307739        stress-ng.time.minor_page_faults
+>     327.88 ±  3%     -67.1%     107.89 ±  3%  numa-vmstat.node0.nr_anon_transparent_hugepages
+>      63711 ± 11%     -40.7%      37791 ± 25%  numa-vmstat.node1.nr_active_anon
+>     317.83 ±  3%     -60.5%     125.70 ±  8%  numa-vmstat.node1.nr_anon_transparent_hugepages
+>     293623 ± 18%     +35.1%     396637 ± 14%  numa-vmstat.node1.nr_inactive_anon
+>      63710 ± 11%     -40.7%      37791 ± 25%  numa-vmstat.node1.nr_zone_active_anon
+>     293622 ± 18%     +35.1%     396635 ± 14%  numa-vmstat.node1.nr_zone_inactive_anon
+>     668445 ±  3%     -67.1%     220222 ±  3%  numa-meminfo.node0.AnonHugePages
+>    1317034 ± 13%     -23.2%    1010970 ± 16%  numa-meminfo.node0.AnonPages.max
+>     254241 ± 11%     -40.5%     151233 ± 26%  numa-meminfo.node1.Active
+>     254219 ± 11%     -40.5%     151227 ± 26%  numa-meminfo.node1.Active(anon)
+>     647491 ±  3%     -60.4%     256719 ±  8%  numa-meminfo.node1.AnonHugePages
+>    1170941 ± 18%     +35.3%    1583801 ± 14%  numa-meminfo.node1.Inactive
+>    1170783 ± 18%     +35.3%    1583760 ± 14%  numa-meminfo.node1.Inactive(anon)
+>      66923 ± 13%     -36.6%      42442 ± 22%  proc-vmstat.nr_active_anon
+>     642.60           -63.8%     232.40 ±  3%  proc-vmstat.nr_anon_transparent_hugepages
+>     597472 ±  2%      +5.6%     630776        proc-vmstat.nr_inactive_anon
+>      66923 ± 13%     -36.6%      42442 ± 22%  proc-vmstat.nr_zone_active_anon
+>     597472 ±  2%      +5.6%     630776        proc-vmstat.nr_zone_inactive_anon
+>    1188533           +19.2%    1416356        proc-vmstat.numa_hit
+>       2502           -63.5%     913.67        proc-vmstat.numa_huge_pte_updates
+>     956729           +23.2%    1178316        proc-vmstat.numa_local
+>    1495630 ±  2%     -54.0%     687360 ±  6%  proc-vmstat.numa_pte_updates
+>     820025           +26.8%    1040066        proc-vmstat.pgfault
+>       6.20            +9.6%       6.79        perf-stat.i.MPKI
+>  4.203e+10            -6.8%  3.916e+10        perf-stat.i.branch-instructions
+>       6.15            +0.2        6.30        perf-stat.i.branch-miss-rate%
+>  2.636e+09            -6.2%  2.474e+09        perf-stat.i.branch-misses
+>       2.56 ±  2%      +8.5%       2.77        perf-stat.i.cpi
+>  2.444e+11            -6.9%  2.276e+11        perf-stat.i.instructions
+>       0.40            -9.1%       0.36        perf-stat.i.ipc
+>       2.20 ±  2%     +90.0%       4.18 ±  2%  perf-stat.i.metric.K/sec
+>      10808           +45.4%      15713 ±  2%  perf-stat.i.minor-faults
+>      10809           +45.4%      15713 ±  2%  perf-stat.i.page-faults
+>       6.34            +7.9%       6.84        perf-stat.overall.MPKI
+>      37.76            -0.6       37.12        perf-stat.overall.cache-miss-rate%
+>       2.54            +9.9%       2.80        perf-stat.overall.cpi
+>     401.20            +1.8%     408.57        perf-stat.overall.cycles-between-cache-misses
+>       0.39            -9.0%       0.36        perf-stat.overall.ipc
+>  4.134e+10 ±  2%      -7.4%  3.829e+10        perf-stat.ps.branch-instructions
+>  2.592e+09            -6.7%  2.419e+09        perf-stat.ps.branch-misses
+>  2.404e+11 ±  2%      -7.4%  2.226e+11        perf-stat.ps.instructions
+>      10358           +36.2%      14109 ±  2%  perf-stat.ps.minor-faults
+>      10358           +36.2%      14109 ±  2%  perf-stat.ps.page-faults
+>  1.525e+13            -9.9%  1.374e+13        perf-stat.total.instructions
+>       0.60 ± 10%      -0.3        0.28 ±100%  perf-profile.calltrace.cycles-pp.__perf_mmap__read_init.perf_mmap__read_init.perf_mmap__push.record__mmap_read_evlist.__cmd_record
+>       0.71 ±  4%      +0.1        0.77 ±  3%  perf-profile.calltrace.cycles-pp.update_load_avg.task_tick_fair.sched_tick.update_process_times.tick_nohz_handler
+>       1.25 ±  9%      +0.3        1.54 ±  4%  perf-profile.calltrace.cycles-pp.update_curr.task_tick_fair.sched_tick.update_process_times.tick_nohz_handler
+>       0.26 ±100%      +0.3        0.57 ±  3%  perf-profile.calltrace.cycles-pp.__irq_exit_rcu.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt
+>       2.64 ±  6%      +0.4        3.09 ±  3%  perf-profile.calltrace.cycles-pp.task_tick_fair.sched_tick.update_process_times.tick_nohz_handler.__hrtimer_run_queues
+>       0.08 ±223%      +0.5        0.55 ±  4%  perf-profile.calltrace.cycles-pp.account_user_time.update_process_times.tick_nohz_handler.__hrtimer_run_queues.hrtimer_interrupt
+>       5.00 ±  6%      +0.7        5.75 ±  3%  perf-profile.calltrace.cycles-pp.sched_tick.update_process_times.tick_nohz_handler.__hrtimer_run_queues.hrtimer_interrupt
+>       7.66 ±  5%      +1.1        8.72 ±  3%  perf-profile.calltrace.cycles-pp.update_process_times.tick_nohz_handler.__hrtimer_run_queues.hrtimer_interrupt.__sysvec_apic_timer_interrupt
+>       8.10 ±  5%      +1.1        9.18 ±  3%  perf-profile.calltrace.cycles-pp.tick_nohz_handler.__hrtimer_run_queues.hrtimer_interrupt.__sysvec_apic_timer_interrupt.sysvec_apic_timer_interrupt
+>       8.38 ±  5%      +1.1        9.51 ±  3%  perf-profile.calltrace.cycles-pp.__hrtimer_run_queues.hrtimer_interrupt.__sysvec_apic_timer_interrupt.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt
+>      10.78 ±  5%      +1.3       12.08 ±  3%  perf-profile.calltrace.cycles-pp.hrtimer_interrupt.__sysvec_apic_timer_interrupt.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt
+>      11.04 ±  5%      +1.3       12.36 ±  3%  perf-profile.calltrace.cycles-pp.__sysvec_apic_timer_interrupt.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt
+>      11.77 ±  5%      +1.4       13.19 ±  2%  perf-profile.calltrace.cycles-pp.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt
+>      12.68 ±  5%      +1.6       14.23 ±  2%  perf-profile.calltrace.cycles-pp.asm_sysvec_apic_timer_interrupt
+>      12.84            -0.4       12.47 ±  2%  perf-profile.children.cycles-pp.strcmp@plt
+>       0.65 ± 10%      -0.2        0.50 ± 30%  perf-profile.children.cycles-pp.__perf_mmap__read_init
+>       0.12 ±  3%      +0.0        0.14 ±  4%  perf-profile.children.cycles-pp.sched_clock
+>       0.05 ±  8%      +0.0        0.08 ±  8%  perf-profile.children.cycles-pp.rb_next
+>       0.09 ±  7%      +0.0        0.13 ± 10%  perf-profile.children.cycles-pp.timerqueue_del
+>       0.20 ±  4%      +0.0        0.23 ±  4%  perf-profile.children.cycles-pp.lapic_next_deadline
+>       0.40 ±  7%      +0.0        0.44 ±  5%  perf-profile.children.cycles-pp.handle_softirqs
+>       0.42 ±  4%      +0.0        0.47 ±  5%  perf-profile.children.cycles-pp.native_irq_return_iret
+>       0.20 ±  9%      +0.1        0.26 ±  6%  perf-profile.children.cycles-pp.__cgroup_account_cputime_field
+>       0.12 ±  4%      +0.1        0.19 ± 10%  perf-profile.children.cycles-pp._raw_spin_lock
+>       0.75 ±  4%      +0.1        0.82 ±  3%  perf-profile.children.cycles-pp.update_load_avg
+>       0.40 ±  4%      +0.1        0.47 ±  2%  perf-profile.children.cycles-pp.hrtimer_active
+>       0.34 ±  9%      +0.1        0.41 ±  5%  perf-profile.children.cycles-pp.irqtime_account_irq
+>       0.52 ±  5%      +0.1        0.60 ±  3%  perf-profile.children.cycles-pp.__irq_exit_rcu
+>       0.12 ±  9%      +0.1        0.20 ±  6%  perf-profile.children.cycles-pp.perf_trace_sched_stat_runtime
+>       0.36 ±  2%      +0.1        0.44 ±  3%  perf-profile.children.cycles-pp.task_mm_cid_work
+>       0.50 ±  6%      +0.1        0.58 ±  4%  perf-profile.children.cycles-pp.account_user_time
+>       0.38 ±  2%      +0.1        0.48 ±  3%  perf-profile.children.cycles-pp.task_work_run
+>       0.46 ±  2%      +0.1        0.56 ±  3%  perf-profile.children.cycles-pp.irqentry_exit_to_user_mode
+>       1.32 ±  9%      +0.3        1.64 ±  4%  perf-profile.children.cycles-pp.update_curr
+>       2.76 ±  6%      +0.5        3.25 ±  3%  perf-profile.children.cycles-pp.task_tick_fair
+>       5.24 ±  6%      +0.8        6.04 ±  3%  perf-profile.children.cycles-pp.sched_tick
+>       7.99 ±  5%      +1.2        9.14 ±  3%  perf-profile.children.cycles-pp.update_process_times
+>       8.45 ±  5%      +1.2        9.63 ±  3%  perf-profile.children.cycles-pp.tick_nohz_handler
+>       8.75 ±  5%      +1.2        9.99 ±  3%  perf-profile.children.cycles-pp.__hrtimer_run_queues
+>      11.23 ±  5%      +1.4       12.66 ±  3%  perf-profile.children.cycles-pp.hrtimer_interrupt
+>      11.50 ±  5%      +1.4       12.94 ±  3%  perf-profile.children.cycles-pp.__sysvec_apic_timer_interrupt
+>      12.26 ±  5%      +1.6       13.82 ±  3%  perf-profile.children.cycles-pp.sysvec_apic_timer_interrupt
+>      13.22 ±  5%      +1.7       14.92 ±  2%  perf-profile.children.cycles-pp.asm_sysvec_apic_timer_interrupt
+>       6.12            -0.2        5.92 ±  2%  perf-profile.self.cycles-pp.strcmp@plt
+>       0.09 ± 11%      +0.0        0.11 ±  6%  perf-profile.self.cycles-pp.__hrtimer_run_queues
+>       0.10 ±  9%      +0.0        0.12 ±  5%  perf-profile.self.cycles-pp.task_tick_fair
+>       0.05 ±  8%      +0.0        0.08 ± 10%  perf-profile.self.cycles-pp.rb_next
+>       0.20 ±  4%      +0.0        0.23 ±  3%  perf-profile.self.cycles-pp.lapic_next_deadline
+>       0.42 ±  4%      +0.0        0.47 ±  5%  perf-profile.self.cycles-pp.native_irq_return_iret
+>       0.16 ± 14%      +0.1        0.21 ±  4%  perf-profile.self.cycles-pp.__cgroup_account_cputime_field
+>       0.12 ±  4%      +0.1        0.18 ± 10%  perf-profile.self.cycles-pp._raw_spin_lock
+>       0.24 ±  9%      +0.1        0.30 ±  7%  perf-profile.self.cycles-pp.irqtime_account_irq
+>       0.40 ±  4%      +0.1        0.46 ±  3%  perf-profile.self.cycles-pp.hrtimer_active
+>       0.10 ±  3%      +0.1        0.18 ±  8%  perf-profile.self.cycles-pp.hrtimer_interrupt
+>       0.11 ± 11%      +0.1        0.20 ±  6%  perf-profile.self.cycles-pp.perf_trace_sched_stat_runtime
+>       0.33 ±  3%      +0.1        0.42 ±  4%  perf-profile.self.cycles-pp.task_mm_cid_work
+>       0.88 ± 11%      +0.2        1.05 ±  5%  perf-profile.self.cycles-pp.update_curr
+> 
+> 
+> 
+> 
+> 
+> Disclaimer:
+> Results have been estimated based on internal Intel analysis and are provided
+> for informational purposes only. Any difference in system hardware or software
+> design or configuration may affect actual performance.
+> 
+> 
+
