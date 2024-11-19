@@ -1,208 +1,524 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C73415C0
-	for <oe-lkp@lists.linux.dev>; Mon, 18 Nov 2024 07:53:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.8
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731916418; cv=fail; b=VBAdDpBFFDb3KzgpDAyQh1Ik0I3jmAiRiFSTTrabOt4Zs8D3uViyS8gcZrc82pphr5XZuXc9FZwgO08ApQKXUlbruZgaDGmlaIbhu2owgPGJ3il53r/hQPARUen8ENg4pTQ5DeeaOzQ+SjbShH/jbJyEakrwmRVS/9WWxIhqOyo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731916418; c=relaxed/simple;
-	bh=IvnzmSbG0xP2vQ+dQgaNXxPcH92IhhwzJvQlbQeWUVU=;
-	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=W0oSVVNkOKakVuxGFOkBDhbyabu2GXE+gWlHs9fYd0vycrLC2yRETtcG6Ve/BAcz6CvKe7wP/laLZBGtav6jFNBEXNEfF8ImKD4qEN3XVb1jCTNVMGRFS5rCUenreheZ9gngbJ0AXtcA1oL7suzA3conMWNd5jjofEk/cdAIyb0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KVx+c/Tq; arc=fail smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E39F814B06E
+	for <oe-lkp@lists.linux.dev>; Tue, 19 Nov 2024 20:30:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1732048230; cv=none; b=W/WsLYQo561QFre5Df2ioKwLg4UzxI3lrYLXdvp3D74bRrdNVzZxyK/RE7UaAwIeTzvD1Qlbj8dm/wx1t1eIwVLNhfTKz7oAHWu8xJYCA2XSkmLAUAA1l1R5Y2PkoYNzKNdxydvBFV5kBMjFL1BNtcyrcMJqHw0QwFMUTwWygCs=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1732048230; c=relaxed/simple;
+	bh=6VVGIr7Ys4ulOXwsMuZ6GwDZL0pJ37g/m9ZfNxdOMZ0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=IIGxshHZlReT41atCfExgdxOpotQNwSSkpd4h+J3C3pf7r1j2aCY10rQGPvt4PbEG/LuKMrBuYUdGQVa9WmAVYcJo6pYqWAM8G6JINj8A3Zp4eAV2aA3JDIXGAiFoobLHycXnICHO2u9RqOJZhAfaQTVj2Quj0j+2IDL+ya/Gaw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=TC8MbzzS; arc=none smtp.client-ip=209.85.160.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KVx+c/Tq"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1731916416; x=1763452416;
-  h=date:from:to:cc:subject:message-id:references:
-   content-transfer-encoding:in-reply-to:mime-version;
-  bh=IvnzmSbG0xP2vQ+dQgaNXxPcH92IhhwzJvQlbQeWUVU=;
-  b=KVx+c/Tq3xGXDa7VhNj0GaQ43gVp3//zqWJjDdsA/TVUN4b6+w3FxNic
-   hzrW/S13vqxl/yMQR7qlOpRKUR1dgVx0n8I9Fz8Rdd1oxJDMU1/qUZXTp
-   cI4W0sdTVAZTgpIDH9qm5alEYU82sifLPTqX2raqXYatJrEen1OQq1SlD
-   EwTuDL3SgkIUi0wMaAU9qBCgsui6Q29ZmfB6by/k+dK7y2VqmqZPi+Xm4
-   MZLjDr8U3zgS0rMUP5AZqcCLj1wHOxR16Z/qQ0zzojlXsXO5txDvDRpau
-   t1CztuPqxpNBrre0giPYrebefb7VhqMZAZ8H8sk7c0970q7r9GC7GOctA
-   g==;
-X-CSE-ConnectionGUID: nDGcF6uARheJL4IPuGDQsg==
-X-CSE-MsgGUID: cOrvoy8zTvqYg+7WbijWIA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11259"; a="49390137"
-X-IronPort-AV: E=Sophos;i="6.12,163,1728975600"; 
-   d="scan'208";a="49390137"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2024 23:53:35 -0800
-X-CSE-ConnectionGUID: LgVbmiuqSeOHDMH2UarJIQ==
-X-CSE-MsgGUID: 7b+D7YcfRmiS2Bcdu/jzQw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,163,1728975600"; 
-   d="scan'208";a="89301825"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orviesa006.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 17 Nov 2024 23:53:35 -0800
-Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Sun, 17 Nov 2024 23:53:35 -0800
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Sun, 17 Nov 2024 23:53:35 -0800
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.175)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Sun, 17 Nov 2024 23:53:35 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=XhUqMkxEHeW1Cus6HQA++66UaItYepYwYAmHZuwYVaE9y703xTjpqIR4rvZOMW2Wl/E8pXBDvcTdA2vd8nq0MzRBmV8Px7bn/uXomNJKl3NeCRpfuJ+QfT6YEtQN0JVxE4pjHtXKTRYzPTqmQTkLgiTt5yDOc7/aQmt+/cVHAgNqV55gFK1yvecAsnn8btq6Rj8KJDzBt0xS7dQdR9Wv67+QDaTknBCo+ePZSYQW6boID2vV5Y9SCg7FiH/gJw1RqHTtbCl0ZRmVeQ1QcCiU97S/pW9k7G+/jhZOUQQORzFMZsSaqznWLekhY3RUEfZ+NNoI1O4+S2n1rJ7+B/TVHw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FiGzpIDhRJ+BSsMCiankwi21WOKjf2vJDNG49xJ13CM=;
- b=Bhp3VOubMSZTmW1OYM3dn4eJZWVs2QqUqI/QzKaF/SDA0xbdQuNqq8DJPXg95SXrFrh7qU5RqEX/oedIJv9S2qD+f44yvyjAm0j1R3Ywk65DBvPVN4bcq8nfEWiLmcQMhVnJtZ+fsHKP5sprUqZGOecBtrklOkKmq7eribcFK3sRDbAoHtR33G9HnDLFtUIuUYuAIP7Z6GTLI8Zwg3ZVeCir/xS0DAYZAsyeOE36/b/Tz5E2ydAWGk+SKuQw1Pyc/GPYgmlGPHVyprLITkLazIsEP1h3gARN4LkfSeFd1X7k+NvtC09uCy/boaWgEWB9WbAWx6uJ/xw8K2h3z0nvyw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by SJ0PR11MB5070.namprd11.prod.outlook.com (2603:10b6:a03:2d5::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8158.23; Mon, 18 Nov
- 2024 07:53:33 +0000
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c%5]) with mapi id 15.20.8158.023; Mon, 18 Nov 2024
- 07:53:33 +0000
-Date: Mon, 18 Nov 2024 15:53:24 +0800
-From: Oliver Sang <oliver.sang@intel.com>
-To: Chuck Lever <chuck.lever@oracle.com>
-CC: Jeff Layton <jlayton@kernel.org>, Mike Snitzer <snitzer@redhat.com>,
-	<oe-lkp@lists.linux.dev>, <lkp@intel.com>, <oliver.sang@intel.com>
-Subject: Re: [snitzer:cel-nfsd-next-6.12-rc5] [nfsd]  b4be3ccf1c:
- fsmark.app_overhead 92.0% regression
-Message-ID: <ZzrydFbfitmuKeFd@xsang-OptiPlex-9020>
-References: <202411071017.ddd9e9e2-oliver.sang@intel.com>
- <ZzYLKgijp6OeGF2A@tissot.1015granger.net>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ZzYLKgijp6OeGF2A@tissot.1015granger.net>
-X-ClientProxiedBy: SI1PR02CA0027.apcprd02.prod.outlook.com
- (2603:1096:4:1f4::18) To LV3PR11MB8603.namprd11.prod.outlook.com
- (2603:10b6:408:1b6::9)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="TC8MbzzS"
+Received: by mail-qt1-f172.google.com with SMTP id d75a77b69052e-460969c49f2so395381cf.0
+        for <oe-lkp@lists.linux.dev>; Tue, 19 Nov 2024 12:30:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1732048227; x=1732653027; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=laovRPuTDT80AGDsSKY4+0qzZmV9xhUGaDChPDN0TL0=;
+        b=TC8MbzzScuV89zbvEbbLBwp4R4JDTn3jb/orEnqsGO+Tbu0hBdAnE5hXoBMafxme9M
+         ieozgM9pwKWajdb2kh1mewgOlEquWzH74T6kpKf1QA+xsfHg/46wOs1wZ5wxczQ7cvwJ
+         b8Z9gF7EMKqgTF11OVe/X658J2QnLtBcrKmZLvkpV7ig4vp5e9klWtbeYAubyTy5j44l
+         5Hm33jambaJlvHkNHO5r1ef4bkMwizyTajvHEcb55y+Mu8N9hDbGhGGtxbDv/A3Evuym
+         zdo13fwV3Mr1SZmP9dRtiZ/Pj9Bs8CsIEYcNWW5qbb2vA1VmAs9CfMV5aevpLhbWSmrl
+         tJmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1732048227; x=1732653027;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=laovRPuTDT80AGDsSKY4+0qzZmV9xhUGaDChPDN0TL0=;
+        b=N5SxKFzD51NrxjGHflx/Ry07wwK2jieuTs4qw+oO/1uRwLYFxxAuVtw249zYkYf9RP
+         U7l7nNH9uQf2tMpnLSbyTl5RJWQHXbAt09FnJS8yZF7ZwqS2OBTaeVh+1jOmcg95Z1cK
+         +6wzBktWfbb8+5EieT7ZzE1JPphI1SAKPgjccXqrhL6DvtTAjAx41s8bGkni4WZ1qoSc
+         X7momo3hT1WJPp9AwnvcMiPS0DtFXwq9+s+cSS9iQp9NgprtjMFi0WvvK5nHrmiCDvcI
+         bLMPtWatKQvK6nn54Q40jPMe7ZSqg0J6ktBsX8jFNd9OmeWF2an7eHgE/Pe1c9pL7jiP
+         vHkQ==
+X-Gm-Message-State: AOJu0Ywxi2mBkq1yQe88SwL1gyPP14W18OGSeVGfMwBybfsNd8SzLF4e
+	x/RhcsMWK+sUr1UGmVUxIxcCguj7jp3EKD/pnK7byPCsVLyQeHZZi2sTkP1fl48JirVX5qBHcdA
+	TJnp9MpcG9H+2MVKyc/3XGEAuk1JPAjwHhZye
+X-Gm-Gg: ASbGncsFtIz7ANxf4bgCcRoaIsP5xDGqYosNk7+NEudUYedR7wa9Uj94B4OiAzTJAHI
+	s7iQhHg/+Exh231dRyFRBCUlyRid1psyJfYrB8jfRaxZTc81YpbxVcpU2Owg=
+X-Google-Smtp-Source: AGHT+IHRJelR513IpRflcSXOnmABzdJHwWan9D8lehhGQSG6jpHraUvdwhBrGxxIZWxbjHFVPPnmYCyGQLOkwxqJcos=
+X-Received: by 2002:a05:622a:27c8:b0:460:8444:d017 with SMTP id
+ d75a77b69052e-4643015edc1mr301441cf.27.1732048226240; Tue, 19 Nov 2024
+ 12:30:26 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|SJ0PR11MB5070:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4c751746-a1e3-488a-f45b-08dd07a61978
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016;
-X-Microsoft-Antispam-Message-Info: =?iso-8859-1?Q?o5JZijlNC4D4KHBkawggNVZwutyLVkUeTjBoQAS/25NLxnYjLU2d41sN14?=
- =?iso-8859-1?Q?t7eAtCMkAtthQW/e3Yiui1Lk4i/xCglMQr35dpY2I2C0MHEZIXvBrZh5fl?=
- =?iso-8859-1?Q?1FRvSyKVm+UKSmyBBQ6grzupWVjNzmQ+LnllmYGjK262iGbX8xqd6Ft+xu?=
- =?iso-8859-1?Q?/UCn7Bw8Pb4qHPBsM46HE8tc3ZqSp4NVLgnNBe18lqQvD8GqxsyECGWdwd?=
- =?iso-8859-1?Q?hSf0HFAZr8v2YD07P60fARDmFtv7ylHITBNDEagooIMSeFVMnaUDpgHvcg?=
- =?iso-8859-1?Q?RupLvjxrst2m2OzKo+nTYNKOLv+5FApB59LDdPM1HLFtRAIXiSoVNay/Dm?=
- =?iso-8859-1?Q?zDGelf42RTuMPFxP0E/hc4u1lzsJvmippOiLeUqsE/OG1qNKPUE8gQrbQv?=
- =?iso-8859-1?Q?bYaHWOu5xdrvDZtFUlYtIlYAm+nvlw8YzBk/xPE65R33sOp8ujt1L8la97?=
- =?iso-8859-1?Q?OV8mWCyPnMoKmIt9Wd5YFmdVGVVeTR9q6gedkooLE4KT131Jsdwg0Y8pNG?=
- =?iso-8859-1?Q?MjQtQlpDEyKcWHuDuQQp2KaCp7I4jRUxz+FBvMwA6CAIynrCx+CJk4ohDW?=
- =?iso-8859-1?Q?stSQ8xYrb7Wx/qd5HHZkWljhPqSpj7raHDWNVS5OVg79N/7n4O6QkdHTbI?=
- =?iso-8859-1?Q?V+w3MINkoBewvpjW+v8+YtimR4pse1YTPYPQqVeruDSL61WZL/17YYZtVJ?=
- =?iso-8859-1?Q?EJRmE3JkFfQhXt1R+p9OazW4Tn/DOWgVGfQOWiXdIEaf6rdtsnRnKHW/FN?=
- =?iso-8859-1?Q?gMAOw+QjPIQm5oxolXiTym1gaN5Oq6lIVPpNyf6CCcAK+ScBpcG0JI6dVM?=
- =?iso-8859-1?Q?wHzFhNYdgoSFapQ7+R84Xafj1BNJ26S+xJlyCNExU0wGAYEDiE6a4jCKac?=
- =?iso-8859-1?Q?kJfMrZRsuf1B/sGw9gXAocestdFZO9zkz1/z4Q7XemcSytAKJ/y4GOGT5t?=
- =?iso-8859-1?Q?tQ7IVLsEyvEVmkDYgqG5gfaqU1D7ROpXxZBnG40GQ1lKLZOSwqR7dIzOqi?=
- =?iso-8859-1?Q?gMm7OH9dm0UHnCqcpD4GRI7B4Z7BkD/9VmLzz67vLdDyBbcOrcZqj3nSWe?=
- =?iso-8859-1?Q?aYYH+QsF45l/EMqyvrFxwexSfSrpy0bhu+3fcqmQS7/+oYqmTTjqrY7eQk?=
- =?iso-8859-1?Q?PYv1IDb7w1tFWEJNNdIhA4RxdpwIjU+3bwWajBirx/HeL5tEV6edhx4TxL?=
- =?iso-8859-1?Q?46Aby40mA3eZGJ3ZszXT+biTEalc9NYPruSHYrHp/EnbkXzz8gUzr++rd4?=
- =?iso-8859-1?Q?Ept9Q4ipKFnVxj85K6ae3awcVje85FeqGPQMTfAZ1+O2+M2tuQ8POHX3l6?=
- =?iso-8859-1?Q?ivlf+rCt/TSkgScbZW6kmoaozkmVnxvMqe0Cz+IY7R+kXg6a0KV7n0vt25?=
- =?iso-8859-1?Q?sDOlquIthY?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?5UsreSFFwPaNKXdFgydLc1U9tq1dSw387uIZyEfwszbz4LRsJHEXrxqb2t?=
- =?iso-8859-1?Q?KaikJbnRKQ53ep6dj44vbl3M4EO+JYZdZ/oC1tFSxe2JKXgnGaCW421sh+?=
- =?iso-8859-1?Q?0aQ83vHoCenpxJgvPmLwuenb8sCvXulpLZpTfpAiakjTux510PJzMKlvLF?=
- =?iso-8859-1?Q?X9dfbubl1q6FmZJ2fLyluHB1EE4ZO2B0FNymVVCPohV7HrCZ1uxzt8UlT2?=
- =?iso-8859-1?Q?u3jcitF38gcnhUOrJeWGbDaL1CA/nA9cvM1+0/j2Wz999oIv/sb077wbhU?=
- =?iso-8859-1?Q?zNuJYDr/GxIivCmH032yzyjGyEKHMu56KtrsbcqSG9opaSrNG4XAMKELav?=
- =?iso-8859-1?Q?iVThBINZuaNH+aI7CYe1MmRpFcI+mB0cYoFqI2/Z8i+cGuTH1QxdZctfJ1?=
- =?iso-8859-1?Q?lsCGwNgmI9/EEv41Pt6vz7loC+X/z4AMXBQQWw8iF2L4DQDeybLYcrt4pn?=
- =?iso-8859-1?Q?Pl5e9ZrUGe2Q+vRX2qZ8vuMoa1EujckVe6qPwR/XMM5XfmQn0KgmptUeRR?=
- =?iso-8859-1?Q?iq5ZeLEyWfDg+FF2SQW01fmMau2KEPl4x9yRfOM729yw57CyldqFDy8MC4?=
- =?iso-8859-1?Q?QLYvGs7hQ6yk38hBjR451zpDB0oPTJRH4MLUx917GdnA/qdsTw8GwctuRd?=
- =?iso-8859-1?Q?lwKQtAvqKzOwAbsIcmOgx+TqfLnQtUvZrExAuzHQlZl7PfqiRmufleNNGX?=
- =?iso-8859-1?Q?So8eEqXESzRXs/CFAYEpAz+dtp1w0kbl7PDDlANoB3ZELaj6x8yxgaJwZQ?=
- =?iso-8859-1?Q?ulGvOh/yW/D2Gz1GGAhqJSppj4ovk30MaJZQl7qwDWpRHZS9p/+VOO8vgW?=
- =?iso-8859-1?Q?o2A+bOmbvrfQKBjVVHgcwshZ8+si3DqOiBdB1JxUldvxvBY45wvNKXL/2L?=
- =?iso-8859-1?Q?JEsDgUB5WEgtGDhw9+7jT+9Ng9EgyIp798UkxAWQ3IJE+HS4wW2ErngLcW?=
- =?iso-8859-1?Q?nr7le2Ix/hKEH1ppSWCm5HwksGt+0gWultOdNxWSUC9w/RTkNslhAwOv1Y?=
- =?iso-8859-1?Q?2quDLa2dO1pZFDcbbywIaSWHiYTZir/l3ZzBphgbwTpekwqBxiZZ8QmMgc?=
- =?iso-8859-1?Q?DtuSL3x/0rAZi6eiw/CW709pBcSriaUSLKbCxwHL/LtIgZnnBh4Ozl9/5Y?=
- =?iso-8859-1?Q?JmaAK2hrM9WAyZ0ENMuXgj47RfMC2DhOFH/bjIvFsZSWMvd61DobFetGHA?=
- =?iso-8859-1?Q?83qubEhhVnO6CcSlyZbWzqIZNqup+cr0I3bSHsLjz65c5lI6WD0yYLcJV6?=
- =?iso-8859-1?Q?pruEHdhcZDW0t3np7vZ0CVpTBzcdHE0xjpTJsE8Dfev17qLWlF44SXxR+I?=
- =?iso-8859-1?Q?4xO9KTRKqXDDeN6LMANNeBYpg3nTRL882zbcLu0BCJ6UUD+1pQ+kl2W6AT?=
- =?iso-8859-1?Q?0njClmu1qUCKBt/4l6LA1WWJ+cLk4Krca+m70vXwow+eRanuhtpjNSFIml?=
- =?iso-8859-1?Q?SJromdKvQBvZSjQkgMCCZFcjdkemPBJHHu+MoEkKxsVVMoFYfw6Tyl3qFs?=
- =?iso-8859-1?Q?nanxRPvFQdnpu1MNUaepqBvHYYfADjVZ4B8Y3aHw/noVT76Z06MQNn40Pz?=
- =?iso-8859-1?Q?AMGRyiu0jEFLASliV2UMgvrrjpmuyHwOYSBInq052g/VsXTAIDkwaHxTWA?=
- =?iso-8859-1?Q?RXdpdVkq3ORB2j/5/Ly/m+gvrIJ6fPyc74pWrJkZZPqqcxfp3AJAP9Cg?=
- =?iso-8859-1?Q?=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4c751746-a1e3-488a-f45b-08dd07a61978
-X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Nov 2024 07:53:33.0969
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: TbfRG/lXPySfRix/y1tZ+xxHIZOfztGR1d0meNiGXHflbTdG9onkxXdzsmNX3v8K/+AqU1kpiKdZ4TWVixgWWQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB5070
-X-OriginatorOrg: intel.com
+References: <202411132111.6a221562-lkp@intel.com> <CAJuCfpGMM1=3eS_1yCEFrwdFHv_dYZ3f1fXaFaKzT-hcNfjxfw@mail.gmail.com>
+ <CAJuCfpH4Vz_CxGFT7qbziF6jZ448Riss89KNXzDw3CG3gecHhw@mail.gmail.com> <ZzrlO9wi8P8cyrk7@xsang-OptiPlex-9020>
+In-Reply-To: <ZzrlO9wi8P8cyrk7@xsang-OptiPlex-9020>
+From: Suren Baghdasaryan <surenb@google.com>
+Date: Tue, 19 Nov 2024 20:30:15 +0000
+Message-ID: <CAJuCfpGRwqUq063pwfL3HiQ-8g1HSDz+EKdW1CWKMXbxS1=2pQ@mail.gmail.com>
+Subject: Re: [linux-next:master] [alloc_tag] 0f9b685626: BUG:KASAN:vmalloc-out-of-bounds_in_move_module
+To: Oliver Sang <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, 
+	Andrew Morton <akpm@linux-foundation.org>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
+	Ard Biesheuvel <ardb@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>, 
+	Christoph Hellwig <hch@infradead.org>, Daniel Gomez <da.gomez@samsung.com>, 
+	David Hildenbrand <david@redhat.com>, Davidlohr Bueso <dave@stgolabs.net>, 
+	David Rientjes <rientjes@google.com>, Dennis Zhou <dennis@kernel.org>, 
+	Johannes Weiner <hannes@cmpxchg.org>, John Hubbard <jhubbard@nvidia.com>, 
+	Jonathan Corbet <corbet@lwn.net>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, 
+	Kalesh Singh <kaleshsingh@google.com>, Kees Cook <keescook@chromium.org>, 
+	Kent Overstreet <kent.overstreet@linux.dev>, "Liam R. Howlett" <Liam.Howlett@oracle.com>, 
+	Luis Chamberlain <mcgrof@kernel.org>, Matthew Wilcox <willy@infradead.org>, Michal Hocko <mhocko@suse.com>, 
+	Mike Rapoport <rppt@kernel.org>, Minchan Kim <minchan@google.com>, 
+	"Paul E. McKenney" <paulmck@kernel.org>, Petr Pavlu <petr.pavlu@suse.com>, 
+	Roman Gushchin <roman.gushchin@linux.dev>, Sami Tolvanen <samitolvanen@google.com>, 
+	Sourav Panda <souravpanda@google.com>, Steven Rostedt <rostedt@goodmis.org>, 
+	Thomas Gleixner <tglx@linutronix.de>, Thomas Huth <thuth@redhat.com>, 
+	Uladzislau Rezki <urezki@gmail.com>, Vlastimil Babka <vbabka@suse.cz>, 
+	Xiongwei Song <xiongwei.song@windriver.com>, Yu Zhao <yuzhao@google.com>, 
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-hi, Chuck Lever,
+On Mon, Nov 18, 2024 at 6:57=E2=80=AFAM Oliver Sang <oliver.sang@intel.com>=
+ wrote:
+>
+> hi, Suren,
+>
+> On Thu, Nov 14, 2024 at 03:40:08PM -0800, Suren Baghdasaryan wrote:
+> > On Wed, Nov 13, 2024 at 1:34=E2=80=AFPM Suren Baghdasaryan <surenb@goog=
+le.com> wrote:
+> > >
+> > > On Wed, Nov 13, 2024 at 2:07=E2=80=AFPM kernel test robot <oliver.san=
+g@intel.com> wrote:
+> > > >
+> > > >
+> > > >
+> > > > Hello,
+> > > >
+> > > >
+> > > > we reported
+> > > > "[linux-next:master] [alloc_tag]  a9c60bb0d0: BUG:KASAN:vmalloc-out=
+-of-bounds_in_load_module"
+> > > > in
+> > > > https://lore.kernel.org/all/202410281441.216670ac-lkp@intel.com/
+> > > >
+> > > > we noticed it seems there is following patch.
+> > > >
+> > > > we made below report just FYI that the commit still cause similar i=
+ssue on
+> > > > linux-next/master and not fixed on tip of linux-next/master when th=
+is bisect
+> > > > is done.
+> > > >
+> > > >
+> > > > kernel test robot noticed "BUG:KASAN:vmalloc-out-of-bounds_in_move_=
+module" on:
+> > > >
+> > > > commit: 0f9b685626daa2f8e19a9788625c9b624c223e45 ("alloc_tag: popul=
+ate memory for module tags as needed")
+> > > > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git ma=
+ster
+> > > >
+> > > > [test failed on linux-next/master 929beafbe7acce3267c06115e13e03ff6=
+e50548a]
+> > > >
+> > > > in testcase: rcuscale
+> > > > version:
+> > > > with following parameters:
+> > > >
+> > > >         runtime: 300s
+> > > >         scale_type: srcu
+> > > >
+> > > >
+> > > >
+> > > > config: x86_64-randconfig-014-20241107
+> > > > compiler: gcc-12
+> > > > test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp =
+2 -m 16G
+> > > >
+> > > > (please refer to attached dmesg/kmsg for entire log/backtrace)
+> > > >
+> > > >
+> > > > +------------------------------------------------+------------+----=
+--------+
+> > > > |                                                | 0db6f8d782 | 0f9=
+b685626 |
+> > > > +------------------------------------------------+------------+----=
+--------+
+> > > > | boot_successes                                 | 18         | 0  =
+        |
+> > > > | boot_failures                                  | 0          | 18 =
+        |
+> > > > | BUG:KASAN:vmalloc-out-of-bounds_in_move_module | 0          | 18 =
+        |
+> > > > | BUG:unable_to_handle_page_fault_for_address    | 0          | 18 =
+        |
+> > > > | Oops                                           | 0          | 18 =
+        |
+> > > > | RIP:kasan_metadata_fetch_row                   | 0          | 18 =
+        |
+> > > > | Kernel_panic-not_syncing:Fatal_exception       | 0          | 18 =
+        |
+> > > > +------------------------------------------------+------------+----=
+--------+
+> > > >
+> > > >
+> > > > If you fix the issue in a separate patch/commit (i.e. not just a ne=
+w version of
+> > > > the same patch/commit), kindly add following tags
+> > > > | Reported-by: kernel test robot <oliver.sang@intel.com>
+> > > > | Closes: https://lore.kernel.org/oe-lkp/202411132111.6a221562-lkp@=
+intel.com
+> > >
+> > >
+> > > Thanks for the report! I'm looking into this but so far could not fin=
+d
+> > > an obvious issue. Will try to reproduce.
+> >
+> > For some reason I'm getting this panic when trying to follow the repro =
+steps:
+>
+> sorry about this. kernel test robot run into some cluster issues these da=
+ys
+> and most of my time is occupied to solve them.
+>
+> I will look at this later when our cluster back to normal and give you an=
+ update
 
-On Thu, Nov 14, 2024 at 09:37:30AM -0500, Chuck Lever wrote:
-> On Thu, Nov 07, 2024 at 12:55:02PM +0800, kernel test robot wrote:
-> > 
-> > hi, Jeff Layton,
-> > 
-> > in commit message, it is mentioned the change is expected to solve the
-> > "App Overhead" on the fs_mark test we reported in
-> > https://lore.kernel.org/oe-lkp/202409161645.d44bced5-oliver.sang@intel.com/
-> > 
-> > however, in our tests, there is sill similar regression. at the same
-> > time, there is still no performance difference for fsmark.files_per_sec
-> > 
-> >    2015880 ±  3%     +92.0%    3870164        fsmark.app_overhead
-> >      18.57            +0.0%      18.57        fsmark.files_per_sec
-> 
-> Because the most recent version of this commit does not appear to
-> address the reported regression, Jeff suggested dropping it. I've
-> done that in the branch below, which is being prepared for v6.13.
-> 
-> 
-> > another thing is our bot bisect to this commit in repo/branch as below detail
-> > information. if there is a more porper repo/branch to test the patch, could
-> > you let us know? thanks a lot!
-> 
-> The proper branch to test is:
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/cel/linux.git/log/?h=nfsd-next
+Thanks! I would appreciate that. I tried several hints I found online
+but still unsuccessful.
 
-thanks for information! this repo is under bot's monitoring.
-unfortunately, our cluster run into problems these days and need some time
-to full back. so if there is still regression reports, maybe will delay to
-a later time.
+>
+> sorry again for any inconvenience.
+>
+> >
+> > # bin/lkp qemu -k /home/suren/linux-next/arch/x86_64/boot/bzImage -m
+> > /home/suren/linux-next/out/modules.cgz job-script
+> > ...
+> > [   22.813623][    T1] Kernel panic - not syncing: VFS: Unable to
+> > mount root fs on unknown-block(0,0)
+> > [   22.815461][    T1] CPU: 0 UID: 0 PID: 1 Comm: swapper Not tainted
+> > 6.12.0-rc7-next-20241113 #1 060e60d2378c08a3d0121faf43856b671a45697c
+> > [   22.817822][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX,
+> > 1996), BIOS 1.15.0-1 04/01/2014
+> > [   22.819655][    T1] Call Trace:
+> > [   22.820399][    T1]  <TASK>
+> > [   22.821077][    T1]  panic+0x243/0x486
+> > [   22.821965][    T1]  ? crash_smp_send_stop+0x1c/0x1c
+> > [   22.823019][    T1]  ? lock_release+0x17c/0x1b1
+> > [   22.824006][    T1]  mount_root_generic+0x31d/0x3d0
+> > [   22.825064][    T1]  ? init_rootfs+0x4c/0x4c
+> > [   22.826011][    T1]  ? init_stat+0xd8/0xd8
+> > [   22.826920][    T1]  ? __asan_memcpy+0x3c/0x65
+> > [   22.827880][    T1]  ? getname_kernel+0x3dc/0x41e
+> > [   22.828887][    T1]  prepare_namespace+0x21e/0x289
+> > [   22.829895][    T1]  ? mount_root+0xc6/0xc6
+> > [   22.830819][    T1]  ? fput+0x1b/0x194
+> > [   22.831682][    T1]  ? rest_init+0x183/0x183
+> > [   22.832624][    T1]  kernel_init+0x17/0x138
+> > [   22.833535][    T1]  ? rest_init+0x183/0x183
+> > [   22.834490][    T1]  ret_from_fork+0x20/0x54
+> > [   22.835419][    T1]  ? rest_init+0x183/0x183
+> > [   22.836343][    T1]  ret_from_fork_asm+0x11/0x20
+> > [   22.837335][    T1]  </TASK>
+> > [   22.838082][    T1] Kernel Offset: disabled
+> >
+> > I see that PeterZ had the same issue back in September:
+> > https://lore.kernel.org/lkml/20240909091531.GA4723@noisy.programming.ki=
+cks-ass.net/
+> > , so might this be a known issue? If anyone has an idea what I'm doing
+> > wrong I would appreciate your help.
+> > Thanks,
+> > Suren.
+> >
+> >
+> > >
+> > > >
+> > > >
+> > > > [ 153.897376][ T402] BUG: KASAN: vmalloc-out-of-bounds in move_modu=
+le (kernel/module/main.c:2357)
+> > > > [  153.899141][  T402] Write of size 40 at addr ffffffffa0000000 by=
+ task modprobe/402
+> > > > [  153.900837][  T402]
+> > > > [  153.901496][  T402] CPU: 0 UID: 0 PID: 402 Comm: modprobe Tainte=
+d: G                T  6.12.0-rc6-00146-g0f9b685626da #1 87c8486a909ba2f90e=
+ff061a4c9c1fa5c9cd90ea
+> > > > [  153.904537][  T402] Tainted: [T]=3DRANDSTRUCT
+> > > > [  153.905500][  T402] Hardware name: QEMU Standard PC (i440FX + PI=
+IX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> > > > [  153.907702][  T402] Call Trace:
+> > > > [  153.908510][  T402]  <TASK>
+> > > > [ 153.909241][ T402] print_address_description+0x65/0x2fa
+> > > > [ 153.910663][ T402] print_report (mm/kasan/report.c:489)
+> > > > [ 153.911771][ T402] ? move_module (kernel/module/main.c:2357)
+> > > > [ 153.912825][ T402] kasan_report (mm/kasan/report.c:603)
+> > > > [ 153.913821][ T402] ? move_module (kernel/module/main.c:2357)
+> > > > [ 153.914904][ T402] kasan_check_range (mm/kasan/generic.c:183 mm/k=
+asan/generic.c:189)
+> > > > [ 153.916029][ T402] __asan_memcpy (mm/kasan/shadow.c:105 (discrimi=
+nator 1))
+> > > > [ 153.917057][ T402] move_module (kernel/module/main.c:2357)
+> > > > [ 153.918071][ T402] layout_and_allocate+0x446/0x523
+> > > > [ 153.919459][ T402] load_module (kernel/module/main.c:2985)
+> > > > [ 153.920457][ T402] ? mode_strip_umask (fs/namei.c:3248)
+> > > > [ 153.921557][ T402] init_module_from_file (kernel/module/main.c:32=
+66)
+> > > > [ 153.922825][ T402] ? __ia32_sys_init_module (kernel/module/main.c=
+:3266)
+> > > > [ 153.923992][ T402] ? __lock_release+0x106/0x38c
+> > > > [ 153.925173][ T402] ? idempotent_init_module (kernel/module/main.c=
+:3301)
+> > > > [ 153.926364][ T402] ? lock_release (kernel/locking/lockdep.c:467 k=
+ernel/locking/lockdep.c:5848)
+> > > > [ 153.944053][ T402] idempotent_init_module (kernel/module/main.c:3=
+302)
+> > > > [ 153.945164][ T402] ? init_module_from_file (kernel/module/main.c:=
+3294)
+> > > > [ 153.946268][ T402] ? security_capable (security/security.c:1143)
+> > > > [ 153.947421][ T402] __do_sys_finit_module (include/linux/file.h:68=
+ kernel/module/main.c:3330)
+> > > > [ 153.948495][ T402] do_syscall_64 (arch/x86/entry/common.c:52 arch=
+/x86/entry/common.c:83)
+> > > > [ 153.949540][ T402] entry_SYSCALL_64_after_hwframe (arch/x86/entry=
+/entry_64.S:130)
+> > > > [  153.950855][  T402] RIP: 0033:0x7f0f37df7719
+> > > > [ 153.951869][ T402] Code: 08 89 e8 5b 5d c3 66 2e 0f 1f 84 00 00 0=
+0 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 2=
+4 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d b7 06 0d 00 f7 d8 64 89 01=
+ 48
+> > > > All code
+> > > > =3D=3D=3D=3D=3D=3D=3D=3D
+> > > >    0:   08 89 e8 5b 5d c3       or     %cl,-0x3ca2a418(%rcx)
+> > > >    6:   66 2e 0f 1f 84 00 00    cs nopw 0x0(%rax,%rax,1)
+> > > >    d:   00 00 00
+> > > >   10:   90                      nop
+> > > >   11:   48 89 f8                mov    %rdi,%rax
+> > > >   14:   48 89 f7                mov    %rsi,%rdi
+> > > >   17:   48 89 d6                mov    %rdx,%rsi
+> > > >   1a:   48 89 ca                mov    %rcx,%rdx
+> > > >   1d:   4d 89 c2                mov    %r8,%r10
+> > > >   20:   4d 89 c8                mov    %r9,%r8
+> > > >   23:   4c 8b 4c 24 08          mov    0x8(%rsp),%r9
+> > > >   28:   0f 05                   syscall
+> > > >   2a:*  48 3d 01 f0 ff ff       cmp    $0xfffffffffffff001,%rax    =
+     <-- trapping instruction
+> > > >   30:   73 01                   jae    0x33
+> > > >   32:   c3                      ret
+> > > >   33:   48 8b 0d b7 06 0d 00    mov    0xd06b7(%rip),%rcx        # =
+0xd06f1
+> > > >   3a:   f7 d8                   neg    %eax
+> > > >   3c:   64 89 01                mov    %eax,%fs:(%rcx)
+> > > >   3f:   48                      rex.W
+> > > >
+> > > > Code starting with the faulting instruction
+> > > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > > >    0:   48 3d 01 f0 ff ff       cmp    $0xfffffffffffff001,%rax
+> > > >    6:   73 01                   jae    0x9
+> > > >    8:   c3                      ret
+> > > >    9:   48 8b 0d b7 06 0d 00    mov    0xd06b7(%rip),%rcx        # =
+0xd06c7
+> > > >   10:   f7 d8                   neg    %eax
+> > > >   12:   64 89 01                mov    %eax,%fs:(%rcx)
+> > > >   15:   48                      rex.W
+> > > > [  153.955810][  T402] RSP: 002b:00007ffccd7f7198 EFLAGS: 00000246 =
+ORIG_RAX: 0000000000000139
+> > > > [  153.957666][  T402] RAX: ffffffffffffffda RBX: 000055cc9f9fddd0 =
+RCX: 00007f0f37df7719
+> > > > [  153.959411][  T402] RDX: 0000000000000000 RSI: 000055cc9f9f24a0 =
+RDI: 0000000000000004
+> > > > [  153.961142][  T402] RBP: 000055cc9f9f24a0 R08: 0000000000000000 =
+R09: 000055cc9f9ff250
+> > > > [  153.962910][  T402] R10: 0000000000000004 R11: 0000000000000246 =
+R12: 0000000000040000
+> > > > [  153.964665][  T402] R13: 0000000000000000 R14: 000055cc9f9fdd80 =
+R15: 0000000000000000
+> > > > [  153.966393][  T402]  </TASK>
+> > > > [  153.967209][  T402]
+> > > > [  153.967856][  T402] Memory state around the buggy address:
+> > > > [  153.969123][  T402] BUG: unable to handle page fault for address=
+: fffffbfff3ffffe0
+> > > > [  153.970807][  T402] #PF: supervisor read access in kernel mode
+> > > > [  153.972036][  T402] #PF: error_code(0x0000) - not-present page
+> > > > [  153.973220][  T402] PGD 417fdb067 P4D 417fdb067 PUD 417fd7067 PM=
+D 0
+> > > > [  153.974560][  T402] Oops: Oops: 0000 [#1] PREEMPT KASAN
+> > > > [  153.975758][  T402] CPU: 0 UID: 0 PID: 402 Comm: modprobe Tainte=
+d: G                T  6.12.0-rc6-00146-g0f9b685626da #1 87c8486a909ba2f90e=
+ff061a4c9c1fa5c9cd90ea
+> > > > [  153.978853][  T402] Tainted: [T]=3DRANDSTRUCT
+> > > > [  153.979851][  T402] Hardware name: QEMU Standard PC (i440FX + PI=
+IX, 1996), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+> > > > [ 153.982008][ T402] RIP: 0010:kasan_metadata_fetch_row (mm/kasan/r=
+eport_generic.c:186)
+> > > > [ 153.983368][ T402] Code: 40 08 48 89 43 58 5b 31 c0 31 d2 31 c9 3=
+1 f6 31 ff c3 cc cc cc cc 66 0f 1f 00 b8 ff ff 37 00 48 c1 ee 03 48 c1 e0 2=
+a 48 01 c6 <48> 8b 06 48 89 07 48 8b 46 08 48 89 47 08 31 c0 31 f6 31 ff c3=
+ cc
+> > > > All code
+> > > > =3D=3D=3D=3D=3D=3D=3D=3D
+> > > >    0:   40 08 48 89             rex or %cl,-0x77(%rax)
+> > > >    4:   43 58                   rex.XB pop %r8
+> > > >    6:   5b                      pop    %rbx
+> > > >    7:   31 c0                   xor    %eax,%eax
+> > > >    9:   31 d2                   xor    %edx,%edx
+> > > >    b:   31 c9                   xor    %ecx,%ecx
+> > > >    d:   31 f6                   xor    %esi,%esi
+> > > >    f:   31 ff                   xor    %edi,%edi
+> > > >   11:   c3                      ret
+> > > >   12:   cc                      int3
+> > > >   13:   cc                      int3
+> > > >   14:   cc                      int3
+> > > >   15:   cc                      int3
+> > > >   16:   66 0f 1f 00             nopw   (%rax)
+> > > >   1a:   b8 ff ff 37 00          mov    $0x37ffff,%eax
+> > > >   1f:   48 c1 ee 03             shr    $0x3,%rsi
+> > > >   23:   48 c1 e0 2a             shl    $0x2a,%rax
+> > > >   27:   48 01 c6                add    %rax,%rsi
+> > > >   2a:*  48 8b 06                mov    (%rsi),%rax              <--=
+ trapping instruction
+> > > >   2d:   48 89 07                mov    %rax,(%rdi)
+> > > >   30:   48 8b 46 08             mov    0x8(%rsi),%rax
+> > > >   34:   48 89 47 08             mov    %rax,0x8(%rdi)
+> > > >   38:   31 c0                   xor    %eax,%eax
+> > > >   3a:   31 f6                   xor    %esi,%esi
+> > > >   3c:   31 ff                   xor    %edi,%edi
+> > > >   3e:   c3                      ret
+> > > >   3f:   cc                      int3
+> > > >
+> > > > Code starting with the faulting instruction
+> > > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > > >    0:   48 8b 06                mov    (%rsi),%rax
+> > > >    3:   48 89 07                mov    %rax,(%rdi)
+> > > >    6:   48 8b 46 08             mov    0x8(%rsi),%rax
+> > > >    a:   48 89 47 08             mov    %rax,0x8(%rdi)
+> > > >    e:   31 c0                   xor    %eax,%eax
+> > > >   10:   31 f6                   xor    %esi,%esi
+> > > >   12:   31 ff                   xor    %edi,%edi
+> > > >   14:   c3                      ret
+> > > >   15:   cc                      int3
+> > > > [  153.987254][  T402] RSP: 0018:ffffc9000218f9f8 EFLAGS: 00010082
+> > > > [  153.988595][  T402] RAX: dffffc0000000000 RBX: ffffffff9fffff00 =
+RCX: 0000000000000000
+> > > > [  153.990325][  T402] RDX: 0000000000000000 RSI: fffffbfff3ffffe0 =
+RDI: ffffc9000218fa04
+> > > > [  153.992086][  T402] RBP: 00000000fffffffe R08: 0000000000000000 =
+R09: 0000000000000000
+> > > > [  153.993786][  T402] R10: 0000000000000000 R11: 0000000000000000 =
+R12: ffffffffa0000000
+> > > > [  153.995554][  T402] R13: ffffffff864b4994 R14: ffffffff9fffff80 =
+R15: 0000000000000028
+> > > > [  153.997305][  T402] FS:  00007f0f37cf5040(0000) GS:ffffffff86989=
+000(0000) knlGS:0000000000000000
+> > > > [  153.999133][  T402] CS:  0010 DS: 0000 ES: 0000 CR0: 00000000800=
+50033
+> > > > [  154.000578][  T402] CR2: fffffbfff3ffffe0 CR3: 0000000128853000 =
+CR4: 00000000000006b0
+> > > > [  154.002367][  T402] Call Trace:
+> > > > [  154.003318][  T402]  <TASK>
+> > > > [ 154.004087][ T402] ? __die_body (arch/x86/kernel/dumpstack.c:421)
+> > > > [ 154.005074][ T402] ? page_fault_oops (arch/x86/mm/fault.c:710)
+> > > > [ 154.006242][ T402] ? show_fault_oops (arch/x86/mm/fault.c:643)
+> > > > [ 154.007368][ T402] ? search_module_extables (kernel/module/main.c=
+:3369)
+> > > > [ 154.008525][ T402] ? fixup_exception (arch/x86/mm/extable.c:321)
+> > > > [ 154.009629][ T402] ? exc_page_fault (arch/x86/mm/fault.c:1479 arc=
+h/x86/mm/fault.c:1539)
+> > > > [ 154.010771][ T402] ? asm_exc_page_fault (arch/x86/include/asm/idt=
+entry.h:623)
+> > > > [ 154.011853][ T402] ? kasan_metadata_fetch_row (mm/kasan/report_ge=
+neric.c:186)
+> > > > [ 154.013072][ T402] print_report (mm/kasan/report.c:466 mm/kasan/r=
+eport.c:489)
+> > > > [ 154.014122][ T402] ? move_module (kernel/module/main.c:2357)
+> > > > [ 154.015238][ T402] kasan_report (mm/kasan/report.c:603)
+> > > > [ 154.016231][ T402] ? move_module (kernel/module/main.c:2357)
+> > > > [ 154.017255][ T402] kasan_check_range (mm/kasan/generic.c:183 mm/k=
+asan/generic.c:189)
+> > > > [ 154.018379][ T402] __asan_memcpy (mm/kasan/shadow.c:105 (discrimi=
+nator 1))
+> > > > [ 154.019400][ T402] move_module (kernel/module/main.c:2357)
+> > > > [ 154.020435][ T402] layout_and_allocate+0x446/0x523
+> > > > [ 154.021792][ T402] load_module (kernel/module/main.c:2985)
+> > > > [ 154.022822][ T402] ? mode_strip_umask (fs/namei.c:3248)
+> > > > [ 154.023928][ T402] init_module_from_file (kernel/module/main.c:32=
+66)
+> > > > [ 154.025069][ T402] ? __ia32_sys_init_module (kernel/module/main.c=
+:3266)
+> > > > [ 154.026265][ T402] ? __lock_release+0x106/0x38c
+> > > > [ 154.027496][ T402] ? idempotent_init_module (kernel/module/main.c=
+:3301)
+> > > > [ 154.028688][ T402] ? lock_release (kernel/locking/lockdep.c:467 k=
+ernel/locking/lockdep.c:5848)
+> > > > [ 154.029766][ T402] idempotent_init_module (kernel/module/main.c:3=
+302)
+> > > > [ 154.030985][ T402] ? init_module_from_file (kernel/module/main.c:=
+3294)
+> > > > [ 154.032192][ T402] ? security_capable (security/security.c:1143)
+> > > > [ 154.033310][ T402] __do_sys_finit_module (include/linux/file.h:68=
+ kernel/module/main.c:3330)
+> > > > [ 154.034478][ T402] do_syscall_64 (arch/x86/entry/common.c:52 arch=
+/x86/entry/common.c:83)
+> > > > [ 154.035532][ T402] entry_SYSCALL_64_after_hwframe (arch/x86/entry=
+/entry_64.S:130)
+> > > > [  154.036819][  T402] RIP: 0033:0x7f0f37df7719
+> > > > [ 154.037865][ T402] Code: 08 89 e8 5b 5d c3 66 2e 0f 1f 84 00 00 0=
+0 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 2=
+4 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d b7 06 0d 00 f7 d8 64 89 01=
+ 48
+> > > > All code
+> > > > =3D=3D=3D=3D=3D=3D=3D=3D
+> > > >    0:   08 89 e8 5b 5d c3       or     %cl,-0x3ca2a418(%rcx)
+> > > >    6:   66 2e 0f 1f 84 00 00    cs nopw 0x0(%rax,%rax,1)
+> > > >    d:   00 00 00
+> > > >   10:   90                      nop
+> > > >   11:   48 89 f8                mov    %rdi,%rax
+> > > >   14:   48 89 f7                mov    %rsi,%rdi
+> > > >   17:   48 89 d6                mov    %rdx,%rsi
+> > > >   1a:   48 89 ca                mov    %rcx,%rdx
+> > > >   1d:   4d 89 c2                mov    %r8,%r10
+> > > >   20:   4d 89 c8                mov    %r9,%r8
+> > > >   23:   4c 8b 4c 24 08          mov    0x8(%rsp),%r9
+> > > >   28:   0f 05                   syscall
+> > > >   2a:*  48 3d 01 f0 ff ff       cmp    $0xfffffffffffff001,%rax    =
+     <-- trapping instruction
+> > > >   30:   73 01                   jae    0x33
+> > > >   32:   c3                      ret
+> > > >   33:   48 8b 0d b7 06 0d 00    mov    0xd06b7(%rip),%rcx        # =
+0xd06f1
+> > > >   3a:   f7 d8                   neg    %eax
+> > > >   3c:   64 89 01                mov    %eax,%fs:(%rcx)
+> > > >   3f:   48                      rex.W
+> > > >
+> > > > Code starting with the faulting instruction
+> > > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > > >    0:   48 3d 01 f0 ff ff       cmp    $0xfffffffffffff001,%rax
+> > > >    6:   73 01                   jae    0x9
+> > > >    8:   c3                      ret
+> > > >    9:   48 8b 0d b7 06 0d 00    mov    0xd06b7(%rip),%rcx        # =
+0xd06c7
+> > > >   10:   f7 d8                   neg    %eax
+> > > >   12:   64 89 01                mov    %eax,%fs:(%rcx)
+> > > >   15:   48                      rex.W
+> > > >
+> > > >
+> > > > The kernel config and materials to reproduce are available at:
+> > > > https://download.01.org/0day-ci/archive/20241113/202411132111.6a221=
+562-lkp@intel.com
+> > > >
+> > > >
+> > > >
+> > > > --
+> > > > 0-DAY CI Kernel Test Service
+> > > > https://github.com/intel/lkp-tests/wiki
+> > > >
