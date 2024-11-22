@@ -1,81 +1,71 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86FFD171D2
-	for <oe-lkp@lists.linux.dev>; Fri, 22 Nov 2024 14:28:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64BE715383F
+	for <oe-lkp@lists.linux.dev>; Fri, 22 Nov 2024 14:53:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.181.97.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732285690; cv=none; b=Ktw1gJo/mYjIaB88jxi8UsAmflCrmmewL8gtsC2xCS0tR4aj3hyVm1s2NSnj8b1kgLWhR3oHUfMt2WOBXUznlGWp82piuzoXbKH5Jt2EP0HMVX9oLHH4ljrPVFX5Q+x16DyccsZJz2vGK5GKFq8L+WeaIBmpY0hc/klTAPE/Agc=
+	t=1732287243; cv=none; b=e89CNr9c5tJd4w6630A0iTW3XFULGegXgq4E/yoeDiMLcYm31j9RzH900+LFOtmEngmpWsHsV5/wqvvrxOu7kdNhc2DbJLM2cOcX9ZOhP4Gw3GeS8ZNEFkyVTxcS1ku8gjEjzeIdCLmn3ddQfjdjfMLGwmTK0J4PROkMWGQPf9Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732285690; c=relaxed/simple;
-	bh=Ff+UZyO/JMj9DISe2UePaOTQblPds44n39t8KwMbeqY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uyZ91s5Ps1WPGkE1XXCFA0LGnDRTF3UGr5iX9NSPRK5gHgdQyrz4OjHZFCveoPXRPCBa7VgMaY3yd7hewX+UAQ+irVJsOHGleV1KkoxRrarV2C7Kwv3M2oEqzLXbhdnIbyXddikADRedGXbcYZqQVQ2Cqp+1eEkFcv8PZAHeSck=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=MtKeHHIm; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=rhbD7aIj; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="MtKeHHIm";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="rhbD7aIj"
-Date: Fri, 22 Nov 2024 15:28:04 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1732285686;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=g/PQb43MX+EV+Rlm4+ty7y06eu8hbzBoZm6Y4VLtEv4=;
-	b=MtKeHHIm9VHY92ZpQyya0e1vdNmhTlkQmeTDwV+gUV4O+yfCNqZhOqz65jZjyrg1ZdbBAp
-	AuJuotoiPLUV5KBKOa5Dj8ye3BZL/+4Sdu/l3aqtHipY5q19Q+7nZXEgIujAcL1ihKPzGu
-	Ui3QHUlxM8FYla1Pohuin4+QMQsG7TRdD8vhKOVe4GyjNYyYoGJS4s/DvSKsuNL9MNtpLb
-	8eYvG1gGRRnpkbroL7l6l/HRON58cPe5ATF8gUTzItd8hRSy6+FATfjMMJurPPUQGBmkR8
-	9E1+bBvhkmw7J/y2medn3/+yX7x6EF54eeyW8pVQ3yNn+4JiFrK9wIM65DeQlw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1732285686;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=g/PQb43MX+EV+Rlm4+ty7y06eu8hbzBoZm6Y4VLtEv4=;
-	b=rhbD7aIjM0vCtRns4Qvm6CwnmwS9g1he5tgJiJ14gdH4gbPbh27lHt99SZhPsuAoncrEST
-	d9UwfJha20VDQaDg==
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-	linux-mm@kvack.org,
-	=?utf-8?B?QW5kcsOp?= Almeida <andrealmeid@igalia.com>,
-	Darren Hart <dvhart@infradead.org>,
-	Davidlohr Bueso <dave@stgolabs.net>, Ingo Molnar <mingo@redhat.com>,
-	Juri Lelli <juri.lelli@redhat.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Valentin Schneider <vschneid@redhat.com>,
-	Waiman Long <longman@redhat.com>
-Subject: Re: [RFC PATCH v3 5/9] futex: Track the futex hash bucket.
-Message-ID: <20241122142804.7tGirPjt@linutronix.de>
-References: <20241115172035.795842-6-bigeasy@linutronix.de>
- <202411221706.c9d399d3-lkp@intel.com>
+	s=arc-20240116; t=1732287243; c=relaxed/simple;
+	bh=QVy/1XkB1RqI0zvpm8rKiO0UAG8yi3ndNGtakNbq1YA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=mD80K0nI/eu8P48cGuNGMRBYkFBWc2VJ4q1pdcK1jirrliSbv8LMPCswhHHpUOw99w1k/62Y0ROJ+ApR1CDNqD0K06k26uCxmuAJ0gDccHwa53YKtnglU5OjfImYFWR/1Rl5tPXUccx0XmQI1ITkDDsGaZiN0oTE/T0FwOfi3h8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=I-love.SAKURA.ne.jp; spf=pass smtp.mailfrom=I-love.SAKURA.ne.jp; arc=none smtp.client-ip=202.181.97.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=I-love.SAKURA.ne.jp
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=I-love.SAKURA.ne.jp
+Received: from www262.sakura.ne.jp (localhost [127.0.0.1])
+	by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 4AMErl8d006475;
+	Fri, 22 Nov 2024 23:53:47 +0900 (JST)
+	(envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from [192.168.1.6] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+	(authenticated bits=0)
+	by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 4AMErkXM006467
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+	Fri, 22 Nov 2024 23:53:46 +0900 (JST)
+	(envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Message-ID: <e0a6a2b5-acff-4b58-9457-292864a5bc91@I-love.SAKURA.ne.jp>
+Date: Fri, 22 Nov 2024 23:53:47 +0900
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <202411221706.c9d399d3-lkp@intel.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [linus:master] [tomoyo] c5e3cdbf2a: Kernel_panic-not_syncing:STOP
+To: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+        lkp@intel.com
+Cc: linux-kernel@vger.kernel.org, John Johansen
+ <john.johansen@canonical.com>,
+        Paul Moore <paul@paul-moore.com>
+References: <202411221744.1a298e1e-lkp@intel.com>
+Content-Language: en-US
+From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+In-Reply-To: <202411221744.1a298e1e-lkp@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Anti-Virus-Server: fsav102.rs.sakura.ne.jp
+X-Virus-Status: clean
 
-On 2024-11-22 18:08:03 [+0800], kernel test robot wrote:
-> Hello,
-Hi,
+That commit is not bad.
 
-> kernel test robot noticed "WARNING:at_lib/rcuref.c:#rcuref_put_slowpath" on:
-> 
-> commit: 85bef61dcb6b15e3f68893e8bb8178f38ef4e58d ("[RFC PATCH v3 5/9] futex: Track the futex hash bucket.")
-> url: https://github.com/intel-lab-lkp/linux/commits/Sebastian-Andrzej-Siewior/futex-Create-helper-function-to-initialize-a-hash-slot/20241116-230708
-> base: https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git 3b49a347d751553b1d1be69c8619ae2e85fdc28d
-> patch link: https://lore.kernel.org/all/20241115172035.795842-6-bigeasy@linutronix.de/
-> patch subject: [RFC PATCH v3 5/9] futex: Track the futex hash bucket.
+Kernel config says
 
-thank you for the report. There is a missing init which has been made
-visible by CONFIG_BASE_SMALL.
+  CONFIG_SECURITY_TOMOYO_OMIT_USERSPACE_LOADER=y
+  # CONFIG_SECURITY_TOMOYO_INSECURE_BUILTIN_SETTING is not set
 
-Sebastian
+which is a combination that cannot boot without doing one of choices listed below.
+
+  Change CONFIG_SECURITY_TOMOYO_INSECURE_BUILTIN_SETTING to y.
+
+  Change CONFIG_SECURITY_TOMOYO_OMIT_USERSPACE_LOADER to n and
+  install tomoyo-tools package and initialize on-disk policy.
+
+  Modify built-in policy to include a complete set of on-disk policy.
+
+On 2024/11/22 19:11, kernel test robot wrote:
+> config: i386-randconfig-005-20241118
+
+Please correct kernel config if random config selection hit this combination.
+
