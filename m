@@ -1,95 +1,95 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E260615B14B
-	for <oe-lkp@lists.linux.dev>; Sat, 30 Nov 2024 10:44:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D681F1991B4
+	for <oe-lkp@lists.linux.dev>; Sat, 30 Nov 2024 14:36:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.19
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732963473; cv=fail; b=ZzPYsc+5cRF7gqm8pO5JXr69C/Dtf0enPa9fL8bvOyzrlGd98q2VA8JNJUt8RhF5g++WD6hxEK/1l+ypKJPCgNfjCqfYohx5MiTagiv87Z2xVNlm3qVgP4wqvkiyataaDS7VstbiZ9ohJh5AnD/4NMNw5PCG7UbR1/3PvZYeoL0=
+	t=1732977406; cv=fail; b=IuGz1SlCmSrvdHs0NUmNK1HPxErNpeb9SIVovRJaXA8Zu9IKdPeBxoNqE01oKKZLjAoQilx4rowo3bkpbhVqnFEK10CJIicg61pXcdYDA/ZeMCNr7al0MT6XDWZ/u2zog73sT0dZXgtMBVolW2ijsMD40WKzxfYfhxRruesbIjU=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732963473; c=relaxed/simple;
-	bh=j+VxmUz7GV1tblNYm+xpUCC7hTvPfhXiNr8d/+ONoMc=;
+	s=arc-20240116; t=1732977406; c=relaxed/simple;
+	bh=Eg2iDbQvKY87s85t1RRt0bCDmobBPg32mGqMeLH0Zgc=;
 	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=QIYGwd1Yv1c7W9L3aP4tIvjv/96rZ7exxW8NHDu9CueTKrarxO8EquCNz4/o8I4PBy5474sYIPAIb7CqXznUKDcw01a5/GShUyRs+lBGdnlPvfWH50laAYrelaOjY6Ltl3ISFNzg/Lu429m7V8AevCp1PhfMqfynSd0NuOMUc3A=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Xa9Hv37E; arc=fail smtp.client-ip=198.175.65.10
+	 Content-Disposition:MIME-Version; b=BVsMFOSJtWMeenlo+YPSEve9mndlWliPrwRkoTAeVl2Q2UFPjwjypyyMeSokibLUczZBjjL/6buXQqU5ZmHeKps1e67vaNhqcgrKP2MZ5RAT8XM+ok7QS+b+87OqADQAoza0Syl0e3ioWMvyKQlZGklDjvHDkBuS0HM+E7ZPx1o=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gtxAnuA8; arc=fail smtp.client-ip=198.175.65.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Xa9Hv37E"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gtxAnuA8"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1732963470; x=1764499470;
+  t=1732977402; x=1764513402;
   h=date:from:to:cc:subject:message-id:
    content-transfer-encoding:mime-version;
-  bh=j+VxmUz7GV1tblNYm+xpUCC7hTvPfhXiNr8d/+ONoMc=;
-  b=Xa9Hv37En98uCg4/k2lG7WXRjpv/8ZDctNsGn4R76RMxmNIuu/0J+i2m
-   +5EVY5r6bHa8Z/bZaVk+dgWmw7yUt1NZWYixugzUzUrhGnKdvzbW8vdmI
-   4TklZjw4dv+2au0cL5gPCuk2SR9qw24hdf2z0TGwOhcwfszgRBlnMhP7A
-   hrjktTGz+V8HLiziDN4mk217d6UXIYq1u+nko1J9u4gmtvP/7WiUa4J4U
-   2Cu1GEwfwAzFitnmStym7yFQ73ooCytEZkP8neQ2/hwesZMqo+NBtYC8o
-   prUq4Et6uJ53gJiTu5DZ5PqcE18XDjQUOleoATHOKO4cnFUtsteQF0qQp
-   Q==;
-X-CSE-ConnectionGUID: Qdd+YNNFRJ2G0nRwglPx2A==
-X-CSE-MsgGUID: 06mAejIhQESAZGUrz1w5dg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11271"; a="50579614"
+  bh=Eg2iDbQvKY87s85t1RRt0bCDmobBPg32mGqMeLH0Zgc=;
+  b=gtxAnuA84wiM8h8r4MmBSdNuBmD/PQFL9S9qYWIVw1VCbGrW48OsZOnK
+   /WcDcKvGieWkmI4lf7HLymqb8fFQHiPCE350dzwxdp1ekkSC23IH63hUJ
+   ovZTLLh+Q7wiakSgendWd5mm5sUiQfDJKFEoAuWrpS/DXbiplr+ON2P3G
+   iMNSpyEMhXXWsIYBTq81L3EyglqttVPRnCRZoUsxfT8I0mEAFz6cHhcvd
+   H97tQ/ufqCkXSrLb/Q8VQmEmvIgWvaecdizY/f/xLlav+tiiSa++YncDR
+   pLe+GvoSVC6Kgt+bWeownaAmOfYmRvn+yF3UjSr4LuAQMRzJ7N1uD1Ql9
+   g==;
+X-CSE-ConnectionGUID: BmJ5NX0hRkCI/4kg0nNS5Q==
+X-CSE-MsgGUID: PCxPXcEqSw6gfGkJkThg+Q==
+X-IronPort-AV: E=McAfee;i="6700,10204,11272"; a="33045152"
 X-IronPort-AV: E=Sophos;i="6.12,198,1728975600"; 
-   d="scan'208";a="50579614"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2024 02:44:29 -0800
-X-CSE-ConnectionGUID: OUtYUaQ1RWCkHBKjmJLKrA==
-X-CSE-MsgGUID: xwPDXXM5RIC7jYe9giv20w==
+   d="scan'208";a="33045152"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2024 06:36:41 -0800
+X-CSE-ConnectionGUID: hmHxnYhaTT+LaP4q+xuZjw==
+X-CSE-MsgGUID: gz6hiu7MQc+dEZYT7lpV3w==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
-   d="scan'208";a="97704719"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by orviesa003.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 30 Nov 2024 02:44:29 -0800
+X-IronPort-AV: E=Sophos;i="6.12,198,1728975600"; 
+   d="scan'208";a="93524167"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orviesa008.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 30 Nov 2024 06:35:19 -0800
 Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Sat, 30 Nov 2024 02:44:28 -0800
+ 15.1.2507.39; Sat, 30 Nov 2024 06:35:18 -0800
 Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
  fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Sat, 30 Nov 2024 02:44:28 -0800
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.40) by
- edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ 15.1.2507.39 via Frontend Transport; Sat, 30 Nov 2024 06:35:18 -0800
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (104.47.73.175)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Sat, 30 Nov 2024 02:44:28 -0800
+ 15.1.2507.39; Sat, 30 Nov 2024 06:35:17 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=RA2kLObFzfGHZrueNzcdmWU0kjilD/ZhdhXtfp08vB02YlDsYOCORXyOGnHSQc7pfNMKqqXRJDUvfUUHSQQwAlIuAHxSftFvjekkQn2g1aCM3cao1q0bhl4E5tuVpU/AlPliocS7awdZiOBIrsd4cv+ayYxxO1jgn0ta/m13JbVfK5hHgXdpg8zwlE9H+OLmAn+I/Tr8nfarZNUAR+bvGRYnN33+lkyFaBEciJe7LBo3a/8RO1cZ68cmQRKh7d8NP3+32uLFaECEMEKa9Cu6k/TrgY5S08f5QWREtyxMt2V4yiHEz7ghpAbd2ZGZ46AV9Q519O36KVuf8dWiafDIwQ==
+ b=ZsbSAqTlFyZ6ffj+fGieeJ3UtdQqFeu4wyC/AOtrYBL85qtX34ZxhRrHwMT0qygaclK1PXHsT8e8I8nhAL0HAn4Fc4V8AzurGaAIV7cHMAWWeUCbm+tlrGjcbwgf6/aSafbn50JLfbmpoLCKQLacB29VKew2gF633mccgsD69QtC6+2eqz+ZyyAXNeZ3Rdypzem/UY2KqzplYWEE1dgWR5AosOe+52okGhHKBWJFzR5GktNgQmcABOpaUqLeR787Chh6Rt8ZZNj5Fl5b62CcZ/aFfyVLEcO01UZH1rROuXL6Jrh1i3y77yTWx49sDTNpSdRywhWsicb3rQzo5N/o4g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=S8OLWbUxMZiM5VQ709MwvT1ajZbKbvszN5m8KYaobDg=;
- b=xF1FX6YTz5fO4vHPryX+I7YBVu4ajTIfpihxHVqJdKKVIQGY54yqOIXWyvcVtGHWo+9c3zQMRQ+ffZrcjXhvxycxkqKM0jzb6nPsqtN7t4Gpzo42u20+bbNncxkV5YrP/sLBkGG1U6zcH+1K58GNgqeT/elJwPo0x7KYfzFIc4zKbQxEsm8OZpi2/+xL1F2oo8vJw99A1DgMejr2KF/mHNMZynZFaFiLIiG2HPtM1CnZrdYLwi7x54nf9oM52ppyMsnmm1jC004oTiFKzvvEj981CRUXsu4A9HTffXeGBoDX7NxxpE6tKvpLkGqO1AI0/re4G8aMwb384nyX2pb9wQ==
+ bh=RaxYA6pxCvJkaLCMcomLQn7Nll89+wOOZBWuWEvCssI=;
+ b=bldgSkJBslGpp/uX0D1J5+BYIsf6L4i3LOoNIcwMtTgOgJCFK1o+bdVAHlhe9Bi3n8y3PJXNC9gQxsy8N6GM2NpLUMUEIeiImaEISbuBVpnDjhlhvPDygNwlKEcuxmBn2nlpicKmRhX5ECd9fbGZiIiN/RWsacuge5yFWMiaFduLWWdxYfdl4u2O+LhwFmDLt7VlD3L748x+0hlZ1fgthAd8MRZtFEQ3FaP/HmuOihjWLDFfee1n9mgBeXC3Nv/uIBYa40+TwnpweQOpUut7rLNvULL49tEzopD8L0uEUJneHQri8kOKVwDxqyZGm8rT7liDi4eFpqv8nYJGXfgL8g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by PH0PR11MB7635.namprd11.prod.outlook.com (2603:10b6:510:28e::14) with
+ by CH3PR11MB8361.namprd11.prod.outlook.com (2603:10b6:610:172::5) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8207.13; Sat, 30 Nov
- 2024 10:44:25 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8207.16; Sat, 30 Nov
+ 2024 14:35:09 +0000
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c%6]) with mapi id 15.20.8207.014; Sat, 30 Nov 2024
- 10:44:24 +0000
-Date: Sat, 30 Nov 2024 18:44:15 +0800
+ 14:35:08 +0000
+Date: Sat, 30 Nov 2024 22:34:59 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Li Lingfeng <lilingfeng3@huawei.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Trond Myklebust
-	<trond.myklebust@hammerspace.com>, <linux-nfs@vger.kernel.org>,
+To: Qu Wenruo <wqu@suse.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
+	David Sterba <dsterba@suse.com>, <linux-btrfs@vger.kernel.org>,
 	<oliver.sang@intel.com>
-Subject: [linux-next:master] [nfs]  b6dea6c7fe:  fsmark.files_per_sec 17.6%
+Subject: [linus:master] [btrfs]  c87c299776:  iozone.average_KBps 18.5%
  regression
-Message-ID: <202411301633.3ed8df2-lkp@intel.com>
+Message-ID: <202411302252.67284087-lkp@intel.com>
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SI1PR02CA0022.apcprd02.prod.outlook.com
- (2603:1096:4:1f4::16) To LV3PR11MB8603.namprd11.prod.outlook.com
+X-ClientProxiedBy: SI1PR02CA0037.apcprd02.prod.outlook.com
+ (2603:1096:4:1f6::13) To LV3PR11MB8603.namprd11.prod.outlook.com
  (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -98,146 +98,109 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|PH0PR11MB7635:EE_
-X-MS-Office365-Filtering-Correlation-Id: abefe153-c141-4831-4ad3-08dd112bf4b6
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|CH3PR11MB8361:EE_
+X-MS-Office365-Filtering-Correlation-Id: 531c51f9-ffc3-49b9-4546-08dd114c3056
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016;
-X-Microsoft-Antispam-Message-Info: =?iso-8859-1?Q?qrAM7e01/S7JcnTtNNA/Rb7LvN/Bj3MxWHBUoRSSoYRl4NVZXUk2yahmJJ?=
- =?iso-8859-1?Q?3hWOt+3RI2BJONe/IhbEVPZXFipOBK/vDZhiYjHR0HIjvfTUmDi0f9b0GR?=
- =?iso-8859-1?Q?f6jtk5ac+u8z0YkMP2OGEXbz5Yi7KMWYcTOwLnSJTZOQmU3ibOyC2uc2Qg?=
- =?iso-8859-1?Q?HuC3S7veC3HcTWbldw8CzMLYQfWXK13ZQw3x0jFiHNkesOCj28//6weqC9?=
- =?iso-8859-1?Q?O6vHq6QQ2rhsZjdCxZH+t1vg6eGVXIIfJzUvwFDFOfglhEGxKhXNR80sqe?=
- =?iso-8859-1?Q?VzPlfgkpRIO4V7M1plQaeCaW25LMEKJ9rb/75dUlTUrBwbAIu9uRQK9Ufa?=
- =?iso-8859-1?Q?dWMbGXwt9EdBv0tOdKkRa7180eGYlZhUFecZxPBvJyG+zjCOtJ2Us8xfEa?=
- =?iso-8859-1?Q?19+96fkGdB8j/aVpPePwvMAA/ywAz3qO1wpP7X7EBUmGTiYW2Cl7PI5kSa?=
- =?iso-8859-1?Q?VknOtZxkyrdIoGaZc9+TGUhOumDFZJfFO+iW2Nb/AHwpSz2WDF8Gax8lNU?=
- =?iso-8859-1?Q?IW+4fmDM7qeacrZ53vMEIg4qT3gQyXl/Ep3GkxIsOVD/8XCG8DvXGByBgm?=
- =?iso-8859-1?Q?/ptz0bz0yMtpIzM/sKV7OdYKE0q9eif+/kYg7bx4cwVJXKRQjhxb0CwzD6?=
- =?iso-8859-1?Q?skJyeKvxE534Xnzr6SjAjvvKQEYJ0kLNqwOx9ISpU7eC4mMyWditxsmRSL?=
- =?iso-8859-1?Q?DgOAIWOL78XCFUauCjILdBKao5K7+2fdV7g5GvLZFKR1rI9xINJrDSOkMt?=
- =?iso-8859-1?Q?3wZfi0RC0FQJWQgqVQFtkaDI5veHf5Xydl0aZxj1w3O1g0TmlJ2Q31sV1u?=
- =?iso-8859-1?Q?aqZAHGAR6uF7sx6GaZfBOWsuge+4QthJLJ7AoBKM53jSU0EDENmthA1F5d?=
- =?iso-8859-1?Q?21Emv8vFbRxXVCEQydJsf3uNnoYoQHxu041bClJG/pBCRFCj24O9SeA5zZ?=
- =?iso-8859-1?Q?akYTdi5UHjCU4IHmIyFg0AtvfeCdbDdx3lwTaxEZ9ToaQUhgRgcoQUwnyi?=
- =?iso-8859-1?Q?XYB6Ehr6Fcimi4dXs8b4YVncXYBVf5grR/iNxoqk2GIGy8/VJeZMsO3nj2?=
- =?iso-8859-1?Q?RIOhyLDNJxiJef3QlnlsDODU2hgNx/LuIXDoBoeoBrn3MejMjoblm/oF6t?=
- =?iso-8859-1?Q?Npdv99bjduNnP82zc9KRV61lNeecF8wi/7Yv+9rCDvluBSc+QTClb1pbR+?=
- =?iso-8859-1?Q?CYrfwz9lOzr39M8UvPeVpSA1e9jo9KZUe2L5DnrFxoa+dlCSWPbTVHVBg9?=
- =?iso-8859-1?Q?mT8RF718iYwfJ6XXDj6x8sjeEdv/Q6m5iNQXYDXDJqvnoy/fTXffDDwaJn?=
- =?iso-8859-1?Q?4Kiw8q6MKsJQs0lq+coTtX1jrN7RYLx2iT0V3LGN2AuhdCHzRD1Isr5UwC?=
- =?iso-8859-1?Q?P77ooi6kjY?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
+X-Microsoft-Antispam-Message-Info: =?iso-8859-1?Q?68z+PO5otCOvnL9U9gyJdxm6Fzyl6jyWdTYhXSoiMXqyM+u3chotwNcOKL?=
+ =?iso-8859-1?Q?sMA/b1U8AbHQJur9ValSuvKYBySpNSNzKeyqmbP39Yr5h60nnl0gS27tos?=
+ =?iso-8859-1?Q?afYw50Rn9Ay7vZ8MHN9Tzxs3HgzXOI2AH6wB8h5r/oxrvBeVjOD+QVm1g7?=
+ =?iso-8859-1?Q?7/ZdZXquWPq9CH9hIeFytpUoCuLCGFr6VjsXiBtZdGdqeca0LDfBu22+Dj?=
+ =?iso-8859-1?Q?WJe4/3H2S/E/+7c13ehb4vw9dCx8kBYZYOtbEtzN+KmlQVj1bG8mvWeTBh?=
+ =?iso-8859-1?Q?sdVy7egT0WCPKV2HJHA10174ZyJ0tawi6GJ6pZ3FV7txzAwrzW14WBP3Ye?=
+ =?iso-8859-1?Q?kJ7Bine+4Deor5NDwfyu4t0xWp6NdkvVW4MjkW0LalnaJWtndpPaIGGRmu?=
+ =?iso-8859-1?Q?zjnS+DLjs+sjXWCT02ivWrVrnBVHfNh8fotHVsnoDYYs5aohV+dffwbipq?=
+ =?iso-8859-1?Q?SP7a/4JYSV5tet5OtSIBMSNZAtJcO07Pn+SHGhJpUBhMdocoJTxqGgOibT?=
+ =?iso-8859-1?Q?Ly632J1Vy141YHTbwG19uLn+gUhf2Pnd4NzUX/8WohOdN8+qhqBoN2k8Cx?=
+ =?iso-8859-1?Q?BRAHpE79T/6F3yRKWWqpogPSLKAGalhqKKjcYhSNunJkjjmwhV+Qyz2FCR?=
+ =?iso-8859-1?Q?u/zI/SKJtaoy2LL4i1cEjSku/PPg+KaV0G3d+jkN0Zc4CXaWVhwYgVs+3Y?=
+ =?iso-8859-1?Q?mCD3BbZwCRJ5TLqvnukBxAjOel376z5N7kYM2EkjS973koM4jz+j3mIlyU?=
+ =?iso-8859-1?Q?+gJNeF7QXKxh+tgT+WMVRgWjEBzbA+s6X4/Ev+AFoxSzteL9FVpLO51AW5?=
+ =?iso-8859-1?Q?NECHvgWnnONGeJ7w3rftGGurMr45626p6X2NUr7WnBTkowmxbZUrM66S0V?=
+ =?iso-8859-1?Q?dK448ZRvevAIrQbbdoq8teVDc0eevJnbwdb7GHspuhVmZi9FtZuwy5H1Mv?=
+ =?iso-8859-1?Q?e+5z0Ua58DbDP75e7wDwXVdAnidJWv7RV2JQ43FzvXTvW9CdJIQgx+GLnb?=
+ =?iso-8859-1?Q?Wkn8sgyW1qDICVGGonLfNlHaXvMyUlKSoi9JuGYy7G/wZHGxNNNYENLx9/?=
+ =?iso-8859-1?Q?eoNVVZ03B8+Nj+rqRfFpFYbVZZVTMEXAT6Tf0/d3ia316o0pa4vA9gbyrw?=
+ =?iso-8859-1?Q?foV22bXv1CtgODLUx1Cdlk9kwWqrs75AVOcHCw0Xk4xgMWkAreyFiHMEXY?=
+ =?iso-8859-1?Q?SWRWZkgg8lVlZwnLntykLgRXw+dmvN3ODUfuu0f/YLtckgJa3x4LIFHhm4?=
+ =?iso-8859-1?Q?d9MIR4YpPpPvPHdZa4db3CFtYVu10vpvV1B2pUrBvwzVMydDO0YXOHCguK?=
+ =?iso-8859-1?Q?DFqwVbQxj86YzfELZFpnRpgrtp1jO78qlGn2r9Z3NMa6d3SGFjrEFRP28q?=
+ =?iso-8859-1?Q?/PJnUTcpEL?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?tCEUj2ZReQdp9KuSKpXieRxchfggUYAcR9HldSHybhUH1KNRCNIwmoZESW?=
- =?iso-8859-1?Q?d6gVrSFztAufM+UQ4BA3ubjOjnXAPdic/euk6nJnokssYPLAlwPz3PN48o?=
- =?iso-8859-1?Q?1qk8jqGHzBICHUVJWL47V7IYh8NEAwwem+aF9xbnV19Yifty1CSBaRSECp?=
- =?iso-8859-1?Q?el3M1mZ7KtCX4Fw7qlMXSr6JvJAtJlfOuuJbrRGlcdIgV77XRmu123knGa?=
- =?iso-8859-1?Q?70fOeniqLQmPbMWDbOtR+o9BRwHpF1Ue7eCLRjPOcgzY046VW8/+f3gF01?=
- =?iso-8859-1?Q?XYpUXHv7CbctpHxXRUCtqXSUnn0pBF3ESvBdbISSFcC7Q79d9OCj8AvsvN?=
- =?iso-8859-1?Q?KwOuDJGqe1hKXaFBzPXeS9ONCiZPelmYgnszaxBYoSwjasz+vNYaP/MXq6?=
- =?iso-8859-1?Q?DNk2grxyDZ1fAvIbTYAhAhofy+XHg4Q7NEWNJ4MD9Sio+/eknWmt/uMPRt?=
- =?iso-8859-1?Q?RvvL6i38PU9zXpCE/ALbjI08aeBB2NLsQcJKAfbitecJPNsLYemTPRZbF3?=
- =?iso-8859-1?Q?pfbP0mONf6Eu2Lj9edXp21yYB3PypEFxv8gUEdNZqMvxppzLjfIoezqpK+?=
- =?iso-8859-1?Q?bRLeu9i1AUcY+ru90qTrFHXAxEjr6BUYMR8U21Tx2gaZFVJQOUPfskDCcK?=
- =?iso-8859-1?Q?HfLefy8yZxMAh2sP42KFlbV56Rso94eXGrcdDFU1G7Xk43umDT2Ty3XjUC?=
- =?iso-8859-1?Q?AoBW68QCd0OHYYdx0ie0SlhMvrCn80yNAC4m5M4MjhLRdIN3jd3aFEUUYZ?=
- =?iso-8859-1?Q?KzGKSxjUcVW7k4Iks+k4ynz7hgsajgfueJeMWV+My/EHswWZ+5ggrWKk8v?=
- =?iso-8859-1?Q?sYV0j4BxPPCmKFCAcgm1zHHghWpDNqFVEKMC++ontAS32FNfa6gQ/fXBsj?=
- =?iso-8859-1?Q?BjKOCsycYAPMtTJqvnI7Tn9+gflrW+jTZTao8SEhYw5JIl2xpkXshkg+ao?=
- =?iso-8859-1?Q?hsT1TVSIxqFfa4/1gL0oifk4cirfYk9S0G6EM6S7PlMcQlAjZqPkb9MKDv?=
- =?iso-8859-1?Q?rH1Zs7MIKueF/lh1WDCkA4mq5eS09WPhFavNvShDBG/upF8tBkEnmqXoGs?=
- =?iso-8859-1?Q?Oo7V6bHZZ3U+Jgm62C5rgr58WATrNYwk5hxqLY88WjIQfQylqaCY0eBKj8?=
- =?iso-8859-1?Q?G4cdtFs3TecTRNlk+N7SSsBNRpWTPZWX/O3vgsDz+E84WrXEGTCS9W+U2k?=
- =?iso-8859-1?Q?gBN4osOzEQgvztTfhwpWfFAJAK+VhWV64dGktxTr5ySsXDEof6b8s+Pt3a?=
- =?iso-8859-1?Q?K49fyFfB9SPoo9BXI8s2tMhGov0uz3kmwGXNx3lyW73BsPsACDlP9w3K/j?=
- =?iso-8859-1?Q?Gur3dEBoBn60Mmig1UfUA7t4iRZ7eH+GfRGPCvr9Q6iyoUdIn/vOaM05+Z?=
- =?iso-8859-1?Q?RCf/S+7I3AYiLEJbZxd9aFEYkMxQrF9QfkYYwh7t2bZ/bXnezJtMlHGEhJ?=
- =?iso-8859-1?Q?/f4oVQ7kWa5JbVO4QcOTNQA4CytyBsmY9FOAbUZ24umh46E1FZy7Hru9V2?=
- =?iso-8859-1?Q?pzmmVc6wfR+SbZQKzaVUVce+OxEJvd/17ISht41WY5PdRPSJoHObOaijKC?=
- =?iso-8859-1?Q?UF5k4R+1e07U0nYLc6tWl8w2nWVFeAPjzippCu8k50X7SG/aN+1pRuvEPI?=
- =?iso-8859-1?Q?hwMhrjIa5cAToI9M8AHSAxigwxrWP802sNzoDmVYNvG7AgbE8T3+0Prg?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?8p/TZ6lSJDkFcVKip72EnskxqVj88Q7dR1nJ9KbkDe+1YV6LERbiKdTQzR?=
+ =?iso-8859-1?Q?nAh4dpgDEP/FoOk2SLNRlHKm5pbccIKijksDsNKiZqcu/qCC4cxLDgf++w?=
+ =?iso-8859-1?Q?5OA5fmgdOXoWIZ7SWghoTyXKxVYUbc+jJfq27cwbSgF3yOaCmynl1SvK6T?=
+ =?iso-8859-1?Q?IYjzTxw1k/C1DGDYgzMZueKDOULPA8eXeeh6KuI/JJgmHpk/2iGamiCnYq?=
+ =?iso-8859-1?Q?fhwY6pCfAWsGaxMzKrORJGLmYs1edr8OYMB3WagFFo5TeHekBLP3BGbXWP?=
+ =?iso-8859-1?Q?/8X0p+GAAPgPH5wORcEHxu+fs5lVV0z0qe+WVqUuInmX8k+GZwir4fYnWJ?=
+ =?iso-8859-1?Q?+1Qis+558wwpdvtthYgwoCvW31NUH1OdxXMQrsRNesBenY9q1eL6Y7x94x?=
+ =?iso-8859-1?Q?9oo/OOLb5od1Nf3UWi4BX1pkzXA8HSpJm0tF527NMKwDNjkK4BQn+r4Ghs?=
+ =?iso-8859-1?Q?/tmeIbsSnrnaXQd1gylfcLm6Zmyg0UFkAeCIfP06WHq4UK/Sp0Pvof73Vb?=
+ =?iso-8859-1?Q?qusR29bIn6XthHCFErCZDmltA+TXNFOjNDtuwyrT/vzcsP8yUeNYwvGhJi?=
+ =?iso-8859-1?Q?1o4cK8Mw3M85waGwtoX9TJ5/QxgtzhrfR6XIZmNidqJq2TPCI2amaY+6LW?=
+ =?iso-8859-1?Q?ld33FaB/TE6dK8Wg4WsSEwLNc6YhwrphSr9gpK+QIUQTiBvmrJC4t8wFY+?=
+ =?iso-8859-1?Q?Jcj3ViNwJ1wYCFvdlvc4hE5Yh2y/mvCRxJAamHhewu3HBd/M49NPwkb8w9?=
+ =?iso-8859-1?Q?yvUw2MsGzHdRCDECFimvjC7Ab5NXDqe67yKaMFTtXWvYL0DYy76z3dkF2a?=
+ =?iso-8859-1?Q?sdq98ucJXRTRTGzHpyADNYtR8bbEEYP2fYJdedRrOL7yeWWOGjY2jX7ywz?=
+ =?iso-8859-1?Q?3H/qGOBMWtSkJSC5Ru/xgvbxcbhLIc8F1J2xOhAe+pGMujCtmTCfliaGso?=
+ =?iso-8859-1?Q?hOcoI7y+JBYrL0HWsvxAUhIQmU3j96iIcLLtlVqqKTlnr/gp1ZUrq+rYS5?=
+ =?iso-8859-1?Q?UR25uL2z4B9k36Oe/sETk9i4lt3Qr9rBsjR46Cntj/9rKvMhoaQjzZz3Hh?=
+ =?iso-8859-1?Q?tG1zB/yrMnW63wJg46OjZOtuDVCfs3Z3NYV5LMHJId5d2r5KkmNmAz3e04?=
+ =?iso-8859-1?Q?dmlHd5C13pZToJC/TblVezJr5OVq3Ykpso2u5Jn0DFJp0gouyyHzpciS6A?=
+ =?iso-8859-1?Q?syW2TgOayyotER98ZOLdvn1FxenIk+wneYTkFvUGN6XJzN76DRsmeJaOch?=
+ =?iso-8859-1?Q?kMxg6X7uzPkhdxStxfNJN6jFy9d+qvUgPbRSHNGidR6qUYJNy+NVAwm8xS?=
+ =?iso-8859-1?Q?LdmroDG3FIsiV6Er3jFoB/gf3+eqL98JIwHqo1fTrRYHRvjbZwe0SynqXP?=
+ =?iso-8859-1?Q?hgYHdOrSsxhhosJ9w0C/H5sV58QgdOdlFbcyGqdqyQ+HfPOVqDz2aZxL4p?=
+ =?iso-8859-1?Q?uFQdnXsJpV88WdhV72SvSwX2VPXBoYG1mMZ6jYCFOzF4bYJH1d5U6Iz/fa?=
+ =?iso-8859-1?Q?+wQb0UFosHU+diHd/u/oOL9HYooBiCTTVtufPhLrx+Mz8g79ISojT+11q8?=
+ =?iso-8859-1?Q?Nqja/ol8ErNZS7+bSaL+58QUIWmC/OTfokIXUj0zj7EreHN9NZLZtcb48W?=
+ =?iso-8859-1?Q?Dc8AdRElxf4zxraAZQfaV8LHieqs6SUyyrwqc+IzmshiTM4Rg4XVeh2Q?=
  =?iso-8859-1?Q?=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: abefe153-c141-4831-4ad3-08dd112bf4b6
+X-MS-Exchange-CrossTenant-Network-Message-Id: 531c51f9-ffc3-49b9-4546-08dd114c3056
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Nov 2024 10:44:24.6602
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Nov 2024 14:35:08.8037
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: wv79jPfidCBoSFoHmOAIGcoy8SDdz24A7NKunx9iMbDmRCPY5DZklrTuyuFLATaAXLryKDMFlNxudjp8a/SyHQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB7635
+X-MS-Exchange-CrossTenant-UserPrincipalName: OG6M98pqPZjqlxav7PqKBsSnGuZI8tNekKHtBSj4Jo5q5N0w/QYoBC1ihD0hxkOA3Fw/04v/buU/YQ/yGK4YIA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR11MB8361
 X-OriginatorOrg: intel.com
 
 
 
 Hello,
 
-kernel test robot noticed a 17.6% regression of fsmark.files_per_sec on:
+kernel test robot noticed a 18.5% regression of iozone.average_KBps on:
 
 
-commit: b6dea6c7fe2d8187050f882fe6f872d30e495ffe ("nfs: pass flags to second superblock")
-https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+commit: c87c299776e4d75bcc5559203ae2c37dc0396d80 ("btrfs: make buffered write to copy one page a time")
+https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-[test failed on linux-next/master cfba9f07a1d6aeca38f47f1f472cfb0ba133d341]
+[still regression on linus/master      2ba9f676d0a2e408aef14d679984c26373bf37b7]
+[still regression on linux-next/master f486c8aa16b8172f63bddc70116a0c897a7f3f02]
 
-testcase: fsmark
+testcase: iozone
 config: x86_64-rhel-9.4
 compiler: gcc-12
-test machine: 48 threads 2 sockets Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GHz (Ivy Bridge-EP) with 64G memory
+test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-7700 CPU @ 3.60GHz (Kaby Lake) with 32G memory
 parameters:
 
-	iterations: 1x
-	nr_threads: 32t
-	disk: 1SSD
-	fs: xfs
-	fs2: nfsv4
-	filesize: 8K
-	test_size: 400M
-	sync_method: fsyncBeforeClose
-	nr_directories: 16d
-	nr_files_per_directory: 256fpd
+	disk: 2HDD
+	fs: btrfs
+	iosched: kyber
 	cpufreq_governor: performance
 
 
-In addition to that, the commit also has significant impact on the following tests:
-
-+------------------+------------------------------------------------------------------------------------------------+
-| testcase: change | fsmark: fsmark.files_per_sec  9.4% regression                                                  |
-| test machine     | 48 threads 2 sockets Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GHz (Ivy Bridge-EP) with 64G memory |
-| test parameters  | cpufreq_governor=performance                                                                   |
-|                  | disk=1SSD                                                                                      |
-|                  | filesize=9B                                                                                    |
-|                  | fs2=nfsv4                                                                                      |
-|                  | fs=ext4                                                                                        |
-|                  | iterations=1x                                                                                  |
-|                  | nr_directories=16d                                                                             |
-|                  | nr_files_per_directory=256fpd                                                                  |
-|                  | nr_threads=32t                                                                                 |
-|                  | sync_method=fsyncBeforeClose                                                                   |
-|                  | test_size=400M                                                                                 |
-+------------------+------------------------------------------------------------------------------------------------+
-| testcase: change | fsmark: fsmark.files_per_sec  15.9% regression                                                 |
-| test machine     | 48 threads 2 sockets Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GHz (Ivy Bridge-EP) with 64G memory |
-| test parameters  | cpufreq_governor=performance                                                                   |
-|                  | disk=1SSD                                                                                      |
-|                  | filesize=9B                                                                                    |
-|                  | fs2=nfsv4                                                                                      |
-|                  | fs=btrfs                                                                                       |
-|                  | iterations=1x                                                                                  |
-|                  | nr_directories=16d                                                                             |
-|                  | nr_files_per_directory=256fpd                                                                  |
-|                  | nr_threads=32t                                                                                 |
-|                  | sync_method=fsyncBeforeClose                                                                   |
-|                  | test_size=400M                                                                                 |
-+------------------+------------------------------------------------------------------------------------------------+
 
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202411301633.3ed8df2-lkp@intel.com
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202411302252.67284087-lkp@intel.com
 
 
 Details are as below:
@@ -245,507 +208,894 @@ Details are as below:
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20241130/202411301633.3ed8df2-lkp@intel.com
+https://download.01.org/0day-ci/archive/20241130/202411302252.67284087-lkp@intel.com
 
 =========================================================================================
-compiler/cpufreq_governor/disk/filesize/fs2/fs/iterations/kconfig/nr_directories/nr_files_per_directory/nr_threads/rootfs/sync_method/tbox_group/test_size/testcase:
-  gcc-12/performance/1SSD/8K/nfsv4/xfs/1x/x86_64-rhel-9.4/16d/256fpd/32t/debian-12-x86_64-20240206.cgz/fsyncBeforeClose/lkp-ivb-2ep2/400M/fsmark
+compiler/cpufreq_governor/disk/fs/iosched/kconfig/rootfs/tbox_group/testcase:
+  gcc-12/performance/2HDD/btrfs/kyber/x86_64-rhel-9.4/debian-12-x86_64-20240206.cgz/lkp-kbl-d01/iozone
 
 commit: 
-  66f9dac907 ("Revert "nfs: don't reuse partially completed requests in nfs_lock_and_join_requests"")
-  b6dea6c7fe ("nfs: pass flags to second superblock")
+  b1c5f6eda2 ("btrfs: fix wrong sizeof in btrfs_do_encoded_write()")
+  c87c299776 ("btrfs: make buffered write to copy one page a time")
 
-66f9dac9077c9c06 b6dea6c7fe2d8187050f882fe6f 
+b1c5f6eda2d024c1 c87c299776e4d75bcc5559203ae 
 ---------------- --------------------------- 
          %stddev     %change         %stddev
              \          |                \  
- 5.937e+08 ±  2%     +12.7%   6.69e+08        cpuidle..time
-   2360703           +75.8%    4150723        cpuidle..usage
-    381905 ±  4%     +70.8%     652235 ±  2%  numa-numastat.node0.local_node
-    410324           +65.9%     680670 ±  3%  numa-numastat.node0.numa_hit
-      0.48 ±223%      +2.8        3.27 ± 55%  perf-profile.calltrace.cycles-pp.__mmput.exit_mm.do_exit.do_group_exit.__x64_sys_exit_group
-      0.48 ±223%      +2.8        3.27 ± 55%  perf-profile.calltrace.cycles-pp.exit_mm.do_exit.do_group_exit.__x64_sys_exit_group.x64_sys_call
-     75.28            +5.2%      79.20        iostat.cpu.idle
-     16.87           -36.2%      10.76        iostat.cpu.iowait
-      5.30 ±  2%     +42.1%       7.52 ±  2%  iostat.cpu.system
-     19.34            -7.3       12.07        mpstat.cpu.all.iowait%
-      0.65 ±  3%      +0.3        0.94 ±  2%  mpstat.cpu.all.soft%
-      4.88 ±  3%      +2.1        7.00 ±  3%  mpstat.cpu.all.sys%
-     11.82 ±  3%     +20.4%      14.24        mpstat.max_utilization_pct
-  72239710 ±  2%     +55.2%  1.121e+08        fsmark.app_overhead
-      4389 ±  2%     -17.6%       3614        fsmark.files_per_sec
-     54.67 ±  2%    +106.1%     112.67        fsmark.time.percent_of_cpu_this_job_got
-      5.94          +160.1%      15.45        fsmark.time.system_time
-    285139          +307.7%    1162591        fsmark.time.voluntary_context_switches
-    368790           -47.8%     192655 ±  2%  meminfo.Inactive
-    368790           -47.8%     192655 ±  2%  meminfo.Inactive(file)
-    173587           -23.0%     133612        meminfo.KReclaimable
-    173587           -23.0%     133612        meminfo.SReclaimable
-    317373           -13.0%     276190        meminfo.Slab
-     16.92           -36.4%      10.76        vmstat.cpu.wa
-     58264 ±  3%     -11.4%      51622 ±  2%  vmstat.io.bo
-      8.45 ±  7%     -37.6%       5.27 ±  7%  vmstat.procs.b
-    269409 ±  2%     +66.6%     448791 ±  3%  vmstat.system.cs
-     61548           +16.2%      71538        vmstat.system.in
-     53681           -19.8%      43073 ±  8%  numa-vmstat.node0.nr_inactive_file
-     53681           -19.8%      43073 ±  8%  numa-vmstat.node0.nr_zone_inactive_file
-    410388           +66.1%     681472 ±  3%  numa-vmstat.node0.numa_hit
-    381970 ±  4%     +71.0%     653038 ±  2%  numa-vmstat.node0.numa_local
-     60942 ± 22%     -48.1%      31659 ± 28%  numa-vmstat.node1.nr_file_pages
-     38775 ±  5%     -87.9%       4703 ± 62%  numa-vmstat.node1.nr_inactive_file
-     12374 ±  5%     -60.4%       4902 ± 17%  numa-vmstat.node1.nr_slab_reclaimable
-     38775 ±  5%     -87.9%       4703 ± 62%  numa-vmstat.node1.nr_zone_inactive_file
-    998853            -4.5%     954271        proc-vmstat.nr_file_pages
-     92299 ±  2%     -48.3%      47689 ±  2%  proc-vmstat.nr_inactive_file
-     43433           -23.4%      33269        proc-vmstat.nr_slab_reclaimable
-     92299 ±  2%     -48.3%      47689 ±  2%  proc-vmstat.nr_zone_inactive_file
-    646052           +46.8%     948130        proc-vmstat.numa_hit
-    596308           +50.7%     898452        proc-vmstat.numa_local
-   1067778           +28.3%    1369682        proc-vmstat.pgalloc_normal
-    791047 ±  7%     +39.5%    1103617 ±  2%  proc-vmstat.pgfree
-    214306           -19.8%     171874 ±  8%  numa-meminfo.node0.Inactive
-    214306           -19.8%     171874 ±  8%  numa-meminfo.node0.Inactive(file)
-    243433 ± 22%     -48.0%     126616 ± 28%  numa-meminfo.node1.FilePages
-    154772 ±  5%     -87.9%      18798 ± 62%  numa-meminfo.node1.Inactive
-    154772 ±  5%     -87.9%      18798 ± 62%  numa-meminfo.node1.Inactive(file)
-     49305 ±  5%     -60.2%      19601 ± 17%  numa-meminfo.node1.KReclaimable
-   1226203 ± 10%     -21.5%     962004 ±  4%  numa-meminfo.node1.MemUsed
-     49305 ±  5%     -60.2%      19601 ± 17%  numa-meminfo.node1.SReclaimable
-    113120 ±  4%     -30.5%      78616 ±  6%  numa-meminfo.node1.Slab
-      1.09 ±  2%     +17.2%       1.28 ±  2%  perf-stat.i.MPKI
- 2.083e+09           +19.9%  2.496e+09        perf-stat.i.branch-instructions
-      5.09            -0.6        4.46        perf-stat.i.branch-miss-rate%
- 1.047e+08            +6.2%  1.112e+08        perf-stat.i.branch-misses
-  10791820 ±  2%     +39.9%   15097313        perf-stat.i.cache-misses
- 2.272e+08           +34.6%  3.058e+08        perf-stat.i.cache-references
-    326576 ±  2%     +60.3%     523588        perf-stat.i.context-switches
-      1.62            +8.2%       1.75        perf-stat.i.cpi
- 1.584e+10           +30.3%  2.063e+10        perf-stat.i.cpu-cycles
-      2314 ±  5%     +68.5%       3899 ±  2%  perf-stat.i.cpu-migrations
-      1484            -7.9%       1366        perf-stat.i.cycles-between-cache-misses
- 1.002e+10           +18.8%  1.191e+10        perf-stat.i.instructions
-      0.64            -7.8%       0.59        perf-stat.i.ipc
-      6.98 ±  2%     +58.4%      11.06        perf-stat.i.metric.K/sec
-      9083 ±  4%     -12.8%       7919 ±  5%  perf-stat.i.minor-faults
-      9084 ±  4%     -12.8%       7919 ±  5%  perf-stat.i.page-faults
-      1.08 ±  2%     +17.7%       1.27        perf-stat.overall.MPKI
-      5.03            -0.6        4.46        perf-stat.overall.branch-miss-rate%
-      4.75            +0.2        4.94        perf-stat.overall.cache-miss-rate%
-      1.58            +9.6%       1.73        perf-stat.overall.cpi
-      1468            -6.9%       1366        perf-stat.overall.cycles-between-cache-misses
-      0.63            -8.8%       0.58        perf-stat.overall.ipc
- 1.923e+09           +21.2%   2.33e+09        perf-stat.ps.branch-instructions
-  96657387            +7.4%  1.038e+08        perf-stat.ps.branch-misses
-   9961712 ±  2%     +41.5%   14091659        perf-stat.ps.cache-misses
- 2.097e+08           +36.1%  2.854e+08        perf-stat.ps.cache-references
-    301501 ±  2%     +62.1%     488770        perf-stat.ps.context-switches
-     44319            +1.1%      44810        perf-stat.ps.cpu-clock
- 1.462e+10           +31.7%  1.926e+10        perf-stat.ps.cpu-cycles
-      2137 ±  5%     +70.3%       3640 ±  2%  perf-stat.ps.cpu-migrations
-  9.25e+09           +20.2%  1.112e+10        perf-stat.ps.instructions
-     44319            +1.1%      44810        perf-stat.ps.task-clock
- 1.206e+11           +38.7%  1.673e+11        perf-stat.total.instructions
-
-
-***************************************************************************************************
-lkp-ivb-2ep2: 48 threads 2 sockets Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GHz (Ivy Bridge-EP) with 64G memory
-=========================================================================================
-compiler/cpufreq_governor/disk/filesize/fs2/fs/iterations/kconfig/nr_directories/nr_files_per_directory/nr_threads/rootfs/sync_method/tbox_group/test_size/testcase:
-  gcc-12/performance/1SSD/9B/nfsv4/ext4/1x/x86_64-rhel-9.4/16d/256fpd/32t/debian-12-x86_64-20240206.cgz/fsyncBeforeClose/lkp-ivb-2ep2/400M/fsmark
-
-commit: 
-  66f9dac907 ("Revert "nfs: don't reuse partially completed requests in nfs_lock_and_join_requests"")
-  b6dea6c7fe ("nfs: pass flags to second superblock")
-
-66f9dac9077c9c06 b6dea6c7fe2d8187050f882fe6f 
----------------- --------------------------- 
-         %stddev     %change         %stddev
-             \          |                \  
-   5106420           +67.0%    8530260        cpuidle..usage
-     -7.83           +34.0%     -10.50        sched_debug.cpu.nr_uninterruptible.min
-     74.15            +4.5%      77.46        iostat.cpu.idle
-     18.76           -31.4%      12.87        iostat.cpu.iowait
-      4.63           +49.8%       6.94        iostat.cpu.system
-      2.46 ±  2%     +10.9%       2.73        iostat.cpu.user
-    693560 ± 10%     +42.7%     989531 ± 10%  numa-numastat.node0.local_node
-    707512 ±  9%     +42.3%    1007109 ±  9%  numa-numastat.node0.numa_hit
-    506340 ± 12%     +85.9%     941327 ± 10%  numa-numastat.node1.local_node
-    542074 ± 11%     +79.6%     973549 ±  9%  numa-numastat.node1.numa_hit
- 2.236e+08           +34.9%  3.016e+08        fsmark.app_overhead
-      2969            -9.4%       2692        fsmark.files_per_sec
-     40.17          +138.2%      95.67        fsmark.time.percent_of_cpu_this_job_got
-     12.75          +176.3%      35.23        fsmark.time.system_time
-    568715          +308.9%    2325201        fsmark.time.voluntary_context_switches
-     19.76            -6.3       13.49        mpstat.cpu.all.iowait%
-      0.59            +0.3        0.88        mpstat.cpu.all.soft%
-      3.90            +2.1        5.99        mpstat.cpu.all.sys%
-      2.38 ±  2%      +0.3        2.71        mpstat.cpu.all.usr%
-      2.00         +1783.3%      37.67        mpstat.max_utilization.seconds
-     10.03           +37.5%      13.79        mpstat.max_utilization_pct
-     18.74           -31.0%      12.92        vmstat.cpu.wa
-    107144            -5.5%     101202        vmstat.io.bo
-      9.71 ±  3%     -35.7%       6.24 ± 10%  vmstat.procs.b
-      4.53 ±  5%     +27.6%       5.78 ±  6%  vmstat.procs.r
-    197002           +79.6%     353838        vmstat.system.cs
-     58233           +13.7%      66197        vmstat.system.in
-    853950           +11.7%     954196        meminfo.Active
-    853950           +11.7%     954196        meminfo.Active(anon)
-    215530           +11.0%     239344        meminfo.Buffers
-    625583           -28.1%     449956        meminfo.Inactive
-    625583           -28.1%     449956        meminfo.Inactive(file)
-    241001           -27.6%     174436        meminfo.KReclaimable
-    106011 ±  8%     +49.3%     158268 ± 10%  meminfo.Mapped
-    241001           -27.6%     174436        meminfo.SReclaimable
-     46597 ± 21%    +201.0%     140273 ±  8%  meminfo.Shmem
-    388729           -19.3%     313805        meminfo.Slab
-     82817 ± 40%     +45.7%     120654 ±  7%  numa-vmstat.node0.nr_active_anon
-     76526 ± 43%     +41.7%     108400 ±  2%  numa-vmstat.node0.nr_anon_pages
-    951.19 ± 20%     -22.7%     735.13 ±  7%  numa-vmstat.node0.nr_dirty
-     80529 ± 21%     -37.8%      50085 ± 10%  numa-vmstat.node0.nr_inactive_file
-     21948 ±  8%     +24.0%      27212 ± 10%  numa-vmstat.node0.nr_mapped
-     39688 ±  5%     -25.1%      29725 ±  4%  numa-vmstat.node0.nr_slab_reclaimable
-     21176 ±  2%      -8.3%      19425 ±  3%  numa-vmstat.node0.nr_slab_unreclaimable
-     82817 ± 40%     +45.7%     120653 ±  7%  numa-vmstat.node0.nr_zone_active_anon
-     80529 ± 21%     -37.8%      50085 ± 10%  numa-vmstat.node0.nr_zone_inactive_file
-    707539 ±  9%     +42.5%    1008378 ±  9%  numa-vmstat.node0.numa_hit
-    693587 ± 10%     +42.9%     990800 ± 10%  numa-vmstat.node0.numa_local
-      5107 ± 58%    +162.7%      13416 ± 30%  numa-vmstat.node1.nr_mapped
-      5650 ± 24%    +315.7%      23492 ± 41%  numa-vmstat.node1.nr_shmem
-     20564 ± 10%     -32.2%      13935 ±  9%  numa-vmstat.node1.nr_slab_reclaimable
-    541047 ± 11%     +80.2%     974981 ±  9%  numa-vmstat.node1.numa_hit
-    505313 ± 13%     +86.6%     942759 ± 10%  numa-vmstat.node1.numa_local
-      6.38 ± 46%      -3.5        2.85 ±141%  perf-profile.calltrace.cycles-pp.__cmd_record
-      6.38 ± 46%      -3.5        2.85 ±141%  perf-profile.calltrace.cycles-pp.perf_session__process_events.record__finish_output.__cmd_record
-      6.38 ± 46%      -3.5        2.85 ±141%  perf-profile.calltrace.cycles-pp.reader__read_event.perf_session__process_events.record__finish_output.__cmd_record
-      6.38 ± 46%      -3.5        2.85 ±141%  perf-profile.calltrace.cycles-pp.record__finish_output.__cmd_record
-      5.88 ± 35%      -3.4        2.47 ±142%  perf-profile.calltrace.cycles-pp.ordered_events__queue.process_simple.reader__read_event.perf_session__process_events.record__finish_output
-      5.88 ± 35%      -3.4        2.47 ±142%  perf-profile.calltrace.cycles-pp.queue_event.ordered_events__queue.process_simple.reader__read_event.perf_session__process_events
-      4.37 ± 56%      -1.5        2.85 ±141%  perf-profile.calltrace.cycles-pp.process_simple.reader__read_event.perf_session__process_events.record__finish_output.__cmd_record
-      7.90 ± 12%      -5.0        2.85 ±141%  perf-profile.children.cycles-pp.perf_session__process_events
-      7.90 ± 12%      -5.0        2.85 ±141%  perf-profile.children.cycles-pp.reader__read_event
-      7.90 ± 12%      -5.0        2.85 ±141%  perf-profile.children.cycles-pp.record__finish_output
-      5.88 ± 35%      -3.4        2.47 ±142%  perf-profile.children.cycles-pp.ordered_events__queue
-      5.88 ± 35%      -3.4        2.47 ±142%  perf-profile.children.cycles-pp.queue_event
-      5.88 ± 35%      -3.0        2.85 ±141%  perf-profile.children.cycles-pp.process_simple
-      5.74 ± 74%      +5.4       11.18 ± 11%  perf-profile.children.cycles-pp.syscall_exit_to_user_mode
-     31.02 ± 11%     +10.6       41.66 ± 12%  perf-profile.children.cycles-pp.do_syscall_64
-     31.29 ± 11%     +10.7       42.01 ± 12%  perf-profile.children.cycles-pp.entry_SYSCALL_64_after_hwframe
-      5.47 ± 35%      -3.3        2.14 ±141%  perf-profile.self.cycles-pp.queue_event
-    331331 ± 40%     +45.4%     481839 ±  6%  numa-meminfo.node0.Active
-    331331 ± 40%     +45.4%     481839 ±  6%  numa-meminfo.node0.Active(anon)
-     36095 ± 34%    +185.6%     103075 ± 61%  numa-meminfo.node0.AnonHugePages
-    306688 ± 43%     +41.3%     433493 ±  2%  numa-meminfo.node0.AnonPages
-    352666 ± 34%     +39.9%     493368 ±  2%  numa-meminfo.node0.AnonPages.max
-      3781 ± 20%     -22.7%       2921 ±  7%  numa-meminfo.node0.Dirty
-    321823 ± 21%     -37.9%     199875 ± 10%  numa-meminfo.node0.Inactive
-    321823 ± 21%     -37.9%     199875 ± 10%  numa-meminfo.node0.Inactive(file)
-    158690 ±  5%     -25.1%     118818 ±  4%  numa-meminfo.node0.KReclaimable
-     86534 ±  7%     +23.8%     107125 ± 10%  numa-meminfo.node0.Mapped
-    158690 ±  5%     -25.1%     118818 ±  4%  numa-meminfo.node0.SReclaimable
-     84681 ±  2%      -8.2%      77738 ±  3%  numa-meminfo.node0.SUnreclaim
-    243372 ±  3%     -19.2%     196556 ±  3%  numa-meminfo.node0.Slab
-    546078 ± 22%     -22.0%     425684 ±  3%  numa-meminfo.node1.AnonPages.max
-     82272 ± 10%     -32.3%      55659 ±  9%  numa-meminfo.node1.KReclaimable
-     19884 ± 58%    +162.6%      52218 ± 29%  numa-meminfo.node1.Mapped
-     82272 ± 10%     -32.3%      55659 ±  9%  numa-meminfo.node1.SReclaimable
-     22229 ± 25%    +316.9%      92680 ± 41%  numa-meminfo.node1.Shmem
-    145380 ±  5%     -19.3%     117350 ±  5%  numa-meminfo.node1.Slab
-    213612           +11.8%     238855        proc-vmstat.nr_active_anon
-   1073968            -1.9%    1053722        proc-vmstat.nr_file_pages
-    156460           -28.0%     112595        proc-vmstat.nr_inactive_file
-     26834 ±  8%     +49.6%      40137 ± 10%  proc-vmstat.nr_mapped
-     11754 ± 21%    +200.7%      35348 ±  8%  proc-vmstat.nr_shmem
-     60226           -27.6%      43625        proc-vmstat.nr_slab_reclaimable
-     36950            -5.6%      34868        proc-vmstat.nr_slab_unreclaimable
-    212974            -1.3%     210204        proc-vmstat.nr_written
-    213612           +11.8%     238855        proc-vmstat.nr_zone_active_anon
-    156460           -28.0%     112595        proc-vmstat.nr_zone_inactive_file
-      1933 ±131%   +2667.4%      53507 ± 10%  proc-vmstat.numa_hint_faults
-      1881 ±136%   +1483.1%      29778 ± 17%  proc-vmstat.numa_hint_faults_local
-   1251477           +58.6%    1984851        proc-vmstat.numa_hit
-   1201787           +60.9%    1933842        proc-vmstat.numa_local
-     44.50 ± 97%  +17611.6%       7881 ± 45%  proc-vmstat.numa_pages_migrated
-    104657 ± 37%    +114.9%     224925 ± 28%  proc-vmstat.numa_pte_updates
-   1702749           +43.7%    2446144        proc-vmstat.pgalloc_normal
-    296195 ±  2%     +22.1%     361669 ±  2%  proc-vmstat.pgfault
-   1182870 ±  5%     +53.0%    1809606        proc-vmstat.pgfree
-     44.50 ± 97%  +17611.6%       7881 ± 45%  proc-vmstat.pgmigrate_success
-   4105642            +2.2%    4195938        proc-vmstat.pgpgout
-      1.28 ±  4%     +11.1%       1.43        perf-stat.i.MPKI
- 1.739e+09           +34.1%  2.331e+09        perf-stat.i.branch-instructions
-      6.12            -1.1        5.00        perf-stat.i.branch-miss-rate%
- 1.039e+08            +9.3%  1.136e+08        perf-stat.i.branch-misses
-  10490708 ±  4%     +46.2%   15335649        perf-stat.i.cache-misses
- 1.682e+08           +46.6%  2.467e+08        perf-stat.i.cache-references
-    212706           +77.6%     377834        perf-stat.i.context-switches
-      1.61            +6.3%       1.71        perf-stat.i.cpi
- 1.309e+10           +40.3%  1.836e+10        perf-stat.i.cpu-cycles
-      2446 ± 11%     +59.1%       3891 ±  3%  perf-stat.i.cpu-migrations
-      1267 ±  4%      -5.2%       1201        perf-stat.i.cycles-between-cache-misses
- 8.326e+09           +32.8%  1.106e+10        perf-stat.i.instructions
-      0.63            -5.3%       0.60        perf-stat.i.ipc
-      4.47           +77.3%       7.93        perf-stat.i.metric.K/sec
-      5993 ±  3%     +21.2%       7266 ±  3%  perf-stat.i.minor-faults
-      5994 ±  3%     +21.2%       7266 ±  3%  perf-stat.i.page-faults
-      1.26 ±  4%     +10.1%       1.39        perf-stat.overall.MPKI
-      5.98            -1.1        4.87        perf-stat.overall.branch-miss-rate%
-      1.57            +5.6%       1.66        perf-stat.overall.cpi
-      1249 ±  4%      -4.2%       1197        perf-stat.overall.cycles-between-cache-misses
-      0.64            -5.3%       0.60        perf-stat.overall.ipc
-  1.69e+09           +34.4%  2.271e+09        perf-stat.ps.branch-instructions
-  1.01e+08            +9.5%  1.106e+08        perf-stat.ps.branch-misses
-  10198918 ±  4%     +46.5%   14941127        perf-stat.ps.cache-misses
- 1.636e+08           +47.0%  2.404e+08        perf-stat.ps.cache-references
-    206791           +78.0%     368107        perf-stat.ps.context-switches
- 1.272e+10           +40.6%  1.788e+10        perf-stat.ps.cpu-cycles
-      2378 ± 11%     +59.4%       3791 ±  3%  perf-stat.ps.cpu-migrations
- 8.094e+09           +33.1%  1.077e+10        perf-stat.ps.instructions
-      5824 ±  3%     +21.5%       7077 ±  3%  perf-stat.ps.minor-faults
-      5824 ±  3%     +21.5%       7077 ±  3%  perf-stat.ps.page-faults
- 2.924e+11 ±  2%     +43.5%  4.197e+11        perf-stat.total.instructions
-      0.00 ±223%   +1020.0%       0.01 ± 59%  perf-sched.sch_delay.avg.ms.__cond_resched.down_read.walk_component.link_path_walk.part
-      0.00 ±223%    +560.0%       0.01 ± 37%  perf-sched.sch_delay.avg.ms.__cond_resched.jbd2_log_wait_commit.ext4_sync_file.ext4_buffered_write_iter.do_iter_readv_writev
-      0.01 ±  7%     -26.4%       0.01 ± 21%  perf-sched.sch_delay.avg.ms.__cond_resched.stop_one_cpu.sched_exec.bprm_execve.part
-      0.01           -20.0%       0.00        perf-sched.sch_delay.avg.ms.__lock_sock.lock_sock_nested.tcp_recvmsg.inet6_recvmsg
-      0.01           -20.0%       0.00        perf-sched.sch_delay.avg.ms.__lock_sock.lock_sock_nested.tcp_sendmsg.sock_sendmsg
-      0.01           -30.0%       0.00 ± 14%  perf-sched.sch_delay.avg.ms.__lock_sock.lock_sock_nested.tcp_sock_set_cork.xs_tcp_send_request
-      0.01           -11.1%       0.01        perf-sched.sch_delay.avg.ms.io_schedule.folio_wait_bit_common.folio_wait_writeback.__filemap_fdatawait_range
-      0.01 ± 74%     +84.8%       0.01 ± 17%  perf-sched.sch_delay.avg.ms.io_schedule.rq_qos_wait.wbt_wait.__rq_qos_throttle
-      0.02 ± 39%     +78.6%       0.03 ± 34%  perf-sched.sch_delay.avg.ms.irqentry_exit_to_user_mode.asm_sysvec_reschedule_ipi.[unknown].[unknown]
-      0.01 ±  5%     -30.2%       0.01        perf-sched.sch_delay.avg.ms.jbd2_log_wait_commit.ext4_nfs_commit_metadata.nfsd_create_setattr.nfsd4_create_file
-      0.01           -22.2%       0.01        perf-sched.sch_delay.avg.ms.rpc_wait_bit_killable.__wait_on_bit.out_of_line_wait_on_bit.__rpc_execute
-      0.01           -12.5%       0.01        perf-sched.sch_delay.avg.ms.rpc_wait_bit_killable.__wait_on_bit.out_of_line_wait_on_bit.nfs4_do_close
-      0.01 ±  4%     -20.3%       0.01 ±  5%  perf-sched.sch_delay.avg.ms.rpc_wait_bit_killable.__wait_on_bit.out_of_line_wait_on_bit.nfs4_run_open_task
-      0.01 ± 10%     -44.6%       0.01 ±  7%  perf-sched.sch_delay.avg.ms.schedule_preempt_disabled.__mutex_lock.constprop.0.svc_tcp_sendto
-      0.01 ± 14%     -22.4%       0.01 ± 12%  perf-sched.sch_delay.avg.ms.schedule_timeout.rcu_gp_fqs_loop.rcu_gp_kthread.kthread
-      0.01 ±  5%     -50.0%       0.01        perf-sched.sch_delay.avg.ms.svc_recv.nfsd.kthread.ret_from_fork
-      0.01 ±117%    +245.2%       0.02 ± 36%  perf-sched.sch_delay.max.ms.__cond_resched.__release_sock.release_sock.tcp_recvmsg.inet6_recvmsg
-      0.00 ±223%    +710.3%       0.04 ± 31%  perf-sched.sch_delay.max.ms.__cond_resched.__rpc_execute.rpc_execute.rpc_run_task.nfs4_call_sync_sequence
-      0.00 ±223%   +1520.0%       0.01 ± 75%  perf-sched.sch_delay.max.ms.__cond_resched.down_read.walk_component.link_path_walk.part
-      0.00 ±223%    +600.0%       0.01 ± 26%  perf-sched.sch_delay.max.ms.__cond_resched.jbd2_log_wait_commit.ext4_sync_file.ext4_buffered_write_iter.do_iter_readv_writev
-      0.00 ±126%    +359.1%       0.02 ± 73%  perf-sched.sch_delay.max.ms.__cond_resched.lock_sock_nested.tcp_sendmsg.sock_sendmsg.svc_tcp_sendmsg
-      0.00 ±169%    +769.2%       0.02 ± 80%  perf-sched.sch_delay.max.ms.__cond_resched.mutex_lock.svc_tcp_sendto.svc_send.svc_handle_xprt
-      0.01 ± 85%    +186.7%       0.03 ± 30%  perf-sched.sch_delay.max.ms.__cond_resched.xs_stream_data_receive_workfn.process_one_work.worker_thread.kthread
-      0.06 ± 34%     -33.1%       0.04 ± 32%  perf-sched.sch_delay.max.ms.jbd2_log_wait_commit.ext4_nfs_commit_metadata.nfsd_create_setattr.nfsd_create_locked
-      3.59 ± 11%     -52.9%       1.69 ± 75%  perf-sched.sch_delay.max.ms.rpc_wait_bit_killable.__wait_on_bit.out_of_line_wait_on_bit.nfs4_do_close
-      0.09 ± 34%   +3544.0%       3.30 ± 42%  perf-sched.sch_delay.max.ms.schedule_timeout.__wait_for_common.__synchronize_srcu.part.0
-      0.01 ± 25%     +50.0%       0.01 ± 14%  perf-sched.sch_delay.max.ms.start_this_handle.jbd2_journal_start_reserved.__ext4_journal_start_reserved.ext4_convert_unwritten_io_end_vec
-      0.02 ± 51%     +89.1%       0.03 ± 21%  perf-sched.sch_delay.max.ms.wait_transaction_locked.add_transaction_credits.start_this_handle.jbd2__journal_start
-      0.01 ±  5%     -16.3%       0.01        perf-sched.total_sch_delay.average.ms
-      2.35 ±  4%     -40.7%       1.39        perf-sched.total_wait_and_delay.average.ms
-    473705 ±  6%     +83.6%     869820        perf-sched.total_wait_and_delay.count.ms
-      2.34 ±  4%     -40.8%       1.39        perf-sched.total_wait_time.average.ms
-     14.98 ±  6%      -6.8%      13.95        perf-sched.wait_and_delay.avg.ms.__cond_resched.__wait_for_common.affine_move_task.__set_cpus_allowed_ptr.__sched_setaffinity
-      0.14 ±  3%     -48.0%       0.07 ±  2%  perf-sched.wait_and_delay.avg.ms.__lock_sock.lock_sock_nested.tcp_recvmsg.inet6_recvmsg
-      0.11 ±  5%     -53.7%       0.05 ±  3%  perf-sched.wait_and_delay.avg.ms.__lock_sock.lock_sock_nested.tcp_sendmsg.sock_sendmsg
-      0.16 ±  4%     -55.2%       0.07 ± 40%  perf-sched.wait_and_delay.avg.ms.__lock_sock.lock_sock_nested.tcp_sock_set_cork.xs_tcp_send_request
-     21.65 ± 14%     +50.9%      32.67        perf-sched.wait_and_delay.avg.ms.do_task_dead.do_exit.do_group_exit.__x64_sys_exit_group.x64_sys_call
-      1.74 ±  2%     -36.1%       1.11        perf-sched.wait_and_delay.avg.ms.io_schedule.folio_wait_bit_common.folio_wait_writeback.__filemap_fdatawait_range
-      0.22 ±  3%     -20.6%       0.18 ±  2%  perf-sched.wait_and_delay.avg.ms.jbd2_log_wait_commit.ext4_nfs_commit_metadata.nfsd_create_setattr.nfsd4_create_file
-      1.00           -58.9%       0.41        perf-sched.wait_and_delay.avg.ms.rpc_wait_bit_killable.__wait_on_bit.out_of_line_wait_on_bit.__rpc_execute
-      3.31 ±  2%     -33.1%       2.22        perf-sched.wait_and_delay.avg.ms.rpc_wait_bit_killable.__wait_on_bit.out_of_line_wait_on_bit.nfs4_do_close
-      1.99 ±  2%     -53.0%       0.94        perf-sched.wait_and_delay.avg.ms.rpc_wait_bit_killable.__wait_on_bit.out_of_line_wait_on_bit.nfs4_run_open_task
-     91.01 ± 16%     -50.9%      44.65        perf-sched.wait_and_delay.avg.ms.schedule_hrtimeout_range_clock.do_poll.constprop.0.do_sys_poll
-    246.90 ±  5%     -39.0%     150.63 ±  3%  perf-sched.wait_and_delay.avg.ms.smpboot_thread_fn.kthread.ret_from_fork.ret_from_fork_asm
-      0.42 ±  3%     -60.8%       0.16 ±  2%  perf-sched.wait_and_delay.avg.ms.svc_recv.nfsd.kthread.ret_from_fork
-      0.83 ±107%    +340.0%       3.67 ± 46%  perf-sched.wait_and_delay.count.__cond_resched.mutex_lock.srcu_gp_end.process_srcu.process_one_work
-     24.83 ± 19%     +59.1%      39.50 ± 16%  perf-sched.wait_and_delay.count.__cond_resched.smpboot_thread_fn.kthread.ret_from_fork.ret_from_fork_asm
-     62182 ±  7%    +156.7%     159647        perf-sched.wait_and_delay.count.__lock_sock.lock_sock_nested.tcp_recvmsg.inet6_recvmsg
-      3956 ±  7%    +206.9%      12142 ±  2%  perf-sched.wait_and_delay.count.__lock_sock.lock_sock_nested.tcp_sendmsg.sock_sendmsg
-      8707 ±  6%    +320.1%      36582 ±  2%  perf-sched.wait_and_delay.count.__lock_sock.lock_sock_nested.tcp_sock_set_cork.xs_tcp_send_request
-     26809 ±  6%      -9.6%      24244        perf-sched.wait_and_delay.count.io_schedule.folio_wait_bit_common.folio_wait_writeback.__filemap_fdatawait_range
-     26615 ±  7%     -12.6%      23273        perf-sched.wait_and_delay.count.jbd2_log_wait_commit.ext4_nfs_commit_metadata.nfsd_create_setattr.nfsd4_create_file
-     26752 ±  6%     -11.5%      23677        perf-sched.wait_and_delay.count.jbd2_log_wait_commit.ext4_sync_file.ext4_buffered_write_iter.do_iter_readv_writev
-     30657 ±  7%    +600.8%     214838        perf-sched.wait_and_delay.count.rpc_wait_bit_killable.__wait_on_bit.out_of_line_wait_on_bit.__rpc_execute
-     13405 ±  6%      -9.6%      12116        perf-sched.wait_and_delay.count.rpc_wait_bit_killable.__wait_on_bit.out_of_line_wait_on_bit.nfs4_do_close
-     13399 ±  6%      -9.5%      12122        perf-sched.wait_and_delay.count.rpc_wait_bit_killable.__wait_on_bit.out_of_line_wait_on_bit.nfs4_run_open_task
-    207.17 ±  5%     +74.8%     362.17        perf-sched.wait_and_delay.count.schedule_hrtimeout_range_clock.do_poll.constprop.0.do_sys_poll
-      1532 ±  6%     +88.8%       2892 ±  2%  perf-sched.wait_and_delay.count.smpboot_thread_fn.kthread.ret_from_fork.ret_from_fork_asm
-     34990 ±  7%    +154.4%      89028 ±  2%  perf-sched.wait_and_delay.count.svc_recv.nfsd.kthread.ret_from_fork
-    192563 ±  6%     +15.3%     222007        perf-sched.wait_and_delay.count.worker_thread.kthread.ret_from_fork.ret_from_fork_asm
-     27.54 ±107%   +2216.5%     638.01 ±179%  perf-sched.wait_and_delay.max.ms.__lock_sock.lock_sock_nested.tcp_sock_set_cork.xs_tcp_send_request
-     60.18 ±105%     -91.6%       5.05        perf-sched.wait_and_delay.max.ms.schedule_timeout.rcu_gp_fqs_loop.rcu_gp_kthread.kthread
-      3455 ± 22%     -48.1%       1792 ± 25%  perf-sched.wait_and_delay.max.ms.smpboot_thread_fn.kthread.ret_from_fork.ret_from_fork_asm
-    203.43 ± 94%     -95.2%       9.74 ±  7%  perf-sched.wait_and_delay.max.ms.svc_recv.nfsd.kthread.ret_from_fork
-     14.95 ±  6%      -6.8%      13.93        perf-sched.wait_time.avg.ms.__cond_resched.__wait_for_common.affine_move_task.__set_cpus_allowed_ptr.__sched_setaffinity
-      0.00 ±223%  +46408.3%       0.93 ± 21%  perf-sched.wait_time.avg.ms.__cond_resched.down_read.walk_component.link_path_walk.part
-      0.30 ±  2%     -16.0%       0.25        perf-sched.wait_time.avg.ms.__cond_resched.jbd2_journal_commit_transaction.kjournald2.kthread.ret_from_fork
-      0.01 ±223%   +1045.5%       0.15 ± 70%  perf-sched.wait_time.avg.ms.__cond_resched.jbd2_log_wait_commit.ext4_sync_file.ext4_buffered_write_iter.do_iter_readv_writev
-      0.01 ± 23%     +52.4%       0.02 ± 19%  perf-sched.wait_time.avg.ms.__cond_resched.xs_stream_data_receive_workfn.process_one_work.worker_thread.kthread
-      0.14 ±  3%     -49.1%       0.07 ±  2%  perf-sched.wait_time.avg.ms.__lock_sock.lock_sock_nested.tcp_recvmsg.inet6_recvmsg
-      0.11 ±  6%     -55.1%       0.05 ±  4%  perf-sched.wait_time.avg.ms.__lock_sock.lock_sock_nested.tcp_sendmsg.sock_sendmsg
-      0.15 ±  4%     -56.1%       0.07 ± 43%  perf-sched.wait_time.avg.ms.__lock_sock.lock_sock_nested.tcp_sock_set_cork.xs_tcp_send_request
-     21.65 ± 14%     +50.9%      32.67        perf-sched.wait_time.avg.ms.do_task_dead.do_exit.do_group_exit.__x64_sys_exit_group.x64_sys_call
-      1.73 ±  2%     -36.2%       1.11        perf-sched.wait_time.avg.ms.io_schedule.folio_wait_bit_common.folio_wait_writeback.__filemap_fdatawait_range
-      0.20 ±  3%     +17.3%       0.24 ±  3%  perf-sched.wait_time.avg.ms.jbd2_journal_wait_updates.jbd2_journal_commit_transaction.kjournald2.kthread
-      0.22 ±  3%     -20.5%       0.17 ±  2%  perf-sched.wait_time.avg.ms.jbd2_log_wait_commit.ext4_nfs_commit_metadata.nfsd_create_setattr.nfsd4_create_file
-      0.19 ±  5%     -19.3%       0.16 ± 13%  perf-sched.wait_time.avg.ms.jbd2_log_wait_commit.ext4_nfs_commit_metadata.nfsd_create_setattr.nfsd_create_locked
-      0.99 ±  2%     -59.2%       0.40        perf-sched.wait_time.avg.ms.rpc_wait_bit_killable.__wait_on_bit.out_of_line_wait_on_bit.__rpc_execute
-      3.30 ±  2%     -33.1%       2.21        perf-sched.wait_time.avg.ms.rpc_wait_bit_killable.__wait_on_bit.out_of_line_wait_on_bit.nfs4_do_close
-      1.98 ±  2%     -53.2%       0.93        perf-sched.wait_time.avg.ms.rpc_wait_bit_killable.__wait_on_bit.out_of_line_wait_on_bit.nfs4_run_open_task
-     91.01 ± 16%     -50.9%      44.65        perf-sched.wait_time.avg.ms.schedule_hrtimeout_range_clock.do_poll.constprop.0.do_sys_poll
-    246.89 ±  5%     -39.0%     150.61 ±  3%  perf-sched.wait_time.avg.ms.smpboot_thread_fn.kthread.ret_from_fork.ret_from_fork_asm
-      0.41 ±  3%     -61.1%       0.16 ±  2%  perf-sched.wait_time.avg.ms.svc_recv.nfsd.kthread.ret_from_fork
-      3.64 ± 10%     -65.9%       1.24 ±103%  perf-sched.wait_time.max.ms.__cond_resched.__kmalloc_cache_noprof.nfs_get_lock_context.nfs_page_create_from_folio.nfs_writepage_setup
-      0.02 ±126%   +1465.3%       0.26 ± 81%  perf-sched.wait_time.max.ms.__cond_resched.__release_sock.release_sock.tcp_recvmsg.inet6_recvmsg
-      0.30 ± 95%    +190.8%       0.88 ± 12%  perf-sched.wait_time.max.ms.__cond_resched.__release_sock.release_sock.tcp_sendmsg.sock_sendmsg
-      0.31 ±223%    +557.0%       2.06 ± 19%  perf-sched.wait_time.max.ms.__cond_resched.__rpc_execute.rpc_execute.rpc_run_task.nfs4_call_sync_sequence
-      0.00 ±223%  +54158.3%       1.09 ± 31%  perf-sched.wait_time.max.ms.__cond_resched.down_read.walk_component.link_path_walk.part
-      0.01 ±223%   +1262.3%       0.17 ± 73%  perf-sched.wait_time.max.ms.__cond_resched.jbd2_log_wait_commit.ext4_sync_file.ext4_buffered_write_iter.do_iter_readv_writev
-      0.11 ±203%    +600.3%       0.78 ± 41%  perf-sched.wait_time.max.ms.__cond_resched.kmem_cache_alloc_noprof.prepare_creds.nfsd_setuser.nfsd_setuser_and_check_port
-      0.02 ± 73%   +2366.0%       0.44 ±161%  perf-sched.wait_time.max.ms.__cond_resched.lock_sock_nested.tcp_recvmsg.inet6_recvmsg.sock_recvmsg
-      0.11 ±213%    +698.2%       0.88 ±  6%  perf-sched.wait_time.max.ms.__cond_resched.lock_sock_nested.tcp_sendmsg.sock_sendmsg.svc_tcp_sendmsg
-      0.01 ± 33%    +451.2%       0.08 ± 74%  perf-sched.wait_time.max.ms.__cond_resched.xs_stream_data_receive_workfn.process_one_work.worker_thread.kthread
-     27.53 ±107%   +2217.8%     638.00 ±179%  perf-sched.wait_time.max.ms.__lock_sock.lock_sock_nested.tcp_sock_set_cork.xs_tcp_send_request
-      0.46 ± 10%    +218.9%       1.48 ± 71%  perf-sched.wait_time.max.ms.jbd2_journal_wait_updates.jbd2_journal_commit_transaction.kjournald2.kthread
-      2.69           +11.4%       2.99 ±  6%  perf-sched.wait_time.max.ms.schedule_timeout.__wait_for_common.wait_for_completion_state.kernel_clone
-     60.15 ±105%     -91.7%       5.02        perf-sched.wait_time.max.ms.schedule_timeout.rcu_gp_fqs_loop.rcu_gp_kthread.kthread
-      3455 ± 22%     -48.1%       1792 ± 25%  perf-sched.wait_time.max.ms.smpboot_thread_fn.kthread.ret_from_fork.ret_from_fork_asm
-    203.35 ± 94%     -95.2%       9.67 ±  7%  perf-sched.wait_time.max.ms.svc_recv.nfsd.kthread.ret_from_fork
-
-
-
-***************************************************************************************************
-lkp-ivb-2ep2: 48 threads 2 sockets Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GHz (Ivy Bridge-EP) with 64G memory
-=========================================================================================
-compiler/cpufreq_governor/disk/filesize/fs2/fs/iterations/kconfig/nr_directories/nr_files_per_directory/nr_threads/rootfs/sync_method/tbox_group/test_size/testcase:
-  gcc-12/performance/1SSD/9B/nfsv4/btrfs/1x/x86_64-rhel-9.4/16d/256fpd/32t/debian-12-x86_64-20240206.cgz/fsyncBeforeClose/lkp-ivb-2ep2/400M/fsmark
-
-commit: 
-  66f9dac907 ("Revert "nfs: don't reuse partially completed requests in nfs_lock_and_join_requests"")
-  b6dea6c7fe ("nfs: pass flags to second superblock")
-
-66f9dac9077c9c06 b6dea6c7fe2d8187050f882fe6f 
----------------- --------------------------- 
-         %stddev     %change         %stddev
-             \          |                \  
- 1.188e+09           +11.3%  1.322e+09        cpuidle..time
-   3929892           +91.6%    7529218        cpuidle..usage
-     69.88            +7.4%      75.03        iostat.cpu.idle
-     22.22           -34.0%      14.67        iostat.cpu.iowait
-      5.52 ±  3%     +43.8%       7.94        iostat.cpu.system
-    786761 ±  9%     +24.2%     977255 ±  8%  numa-numastat.node0.local_node
-    804849 ±  9%     +23.7%     995380 ±  7%  numa-numastat.node0.numa_hit
-    916826 ±  8%     +55.5%    1425647 ±  5%  numa-numastat.node1.local_node
-    948417 ±  8%     +53.7%    1457243 ±  4%  numa-numastat.node1.numa_hit
-     23.86            -8.3       15.58        mpstat.cpu.all.iowait%
-      0.30            +0.0        0.33        mpstat.cpu.all.irq%
-      0.58            +0.3        0.93        mpstat.cpu.all.soft%
-      4.95 ±  3%      +2.2        7.10        mpstat.cpu.all.sys%
-     11.40 ±  2%     +23.4%      14.06 ±  2%  mpstat.max_utilization_pct
- 1.358e+08 ±  2%     +73.7%  2.359e+08        fsmark.app_overhead
-      4107           -15.9%       3456        fsmark.files_per_sec
-      6386 ±  9%      -9.9%       5754        fsmark.time.maximum_resident_set_size
-     49.17          +128.5%     112.33        fsmark.time.percent_of_cpu_this_job_got
-     11.25          +185.3%      32.10        fsmark.time.system_time
-    575615          +300.3%    2304344        fsmark.time.voluntary_context_switches
-     13811 ±  2%     -17.8%      11354        meminfo.Dirty
-   1073015           -12.6%     938340        meminfo.Inactive
-   1073015           -12.6%     938340        meminfo.Inactive(file)
-    219309           -30.5%     152451        meminfo.KReclaimable
-    219309           -30.5%     152451        meminfo.SReclaimable
-    387968           -19.8%     311283        meminfo.Slab
-     69.89            +7.4%      75.05        vmstat.cpu.id
-     22.21           -33.6%      14.75        vmstat.cpu.wa
-     12.73 ±  4%     -39.9%       7.65 ±  6%  vmstat.procs.b
-      4.99 ± 10%     +21.9%       6.08 ±  5%  vmstat.procs.r
-    216786           +92.3%     416945        vmstat.system.cs
-     53985           +16.2%      62753        vmstat.system.in
-      5358 ± 13%     -19.4%       4316 ±  7%  numa-meminfo.node0.Dirty
-    463057 ±  9%     -25.2%     346146 ±  9%  numa-meminfo.node0.Inactive
-    463057 ±  9%     -25.2%     346146 ±  9%  numa-meminfo.node0.Inactive(file)
-      8474 ±  8%     -16.8%       7049 ±  6%  numa-meminfo.node1.Dirty
-     90297 ± 23%     -37.0%      56862 ±  7%  numa-meminfo.node1.KReclaimable
-     90297 ± 23%     -37.0%      56862 ±  7%  numa-meminfo.node1.SReclaimable
-    169041 ± 12%     -21.1%     133345 ±  2%  numa-meminfo.node1.Slab
-      1339 ± 12%     -19.4%       1079 ±  7%  numa-vmstat.node0.nr_dirty
-    115964 ±  9%     -25.6%      86318 ±  9%  numa-vmstat.node0.nr_inactive_file
-    115964 ±  9%     -25.6%      86318 ±  9%  numa-vmstat.node0.nr_zone_inactive_file
-      1192 ± 12%     -28.5%     852.16 ± 10%  numa-vmstat.node0.nr_zone_write_pending
-    804755 ±  9%     +23.5%     994145 ±  7%  numa-vmstat.node0.numa_hit
-    786667 ±  9%     +24.1%     976013 ±  8%  numa-vmstat.node0.numa_local
-    338555 ±  7%     +15.7%     391647 ±  5%  numa-vmstat.node1.nr_dirtied
-      2120 ±  8%     -16.7%       1766 ±  6%  numa-vmstat.node1.nr_dirty
-     22647 ± 23%     -37.3%      14193 ±  8%  numa-vmstat.node1.nr_slab_reclaimable
-    338299 ±  8%     +15.3%     390105 ±  5%  numa-vmstat.node1.nr_written
-      2027 ± 10%     -19.4%       1634 ±  8%  numa-vmstat.node1.nr_zone_write_pending
-    947862 ±  8%     +53.5%    1454904 ±  4%  numa-vmstat.node1.numa_hit
-    916271 ±  8%     +55.3%    1423309 ±  5%  numa-vmstat.node1.numa_local
-    600332            +9.7%     658719        proc-vmstat.nr_dirtied
-      3457           -17.7%       2844 ±  2%  proc-vmstat.nr_dirty
-   1175196            -2.8%    1141722        proc-vmstat.nr_file_pages
-    268553           -12.5%     234871        proc-vmstat.nr_inactive_file
-     54906           -30.5%      38145        proc-vmstat.nr_slab_reclaimable
-     42192            -5.9%      39710        proc-vmstat.nr_slab_unreclaimable
-    599793            +9.4%     656108        proc-vmstat.nr_written
-    268553           -12.5%     234871        proc-vmstat.nr_zone_inactive_file
-      3187 ±  3%     -23.3%       2444 ±  5%  proc-vmstat.nr_zone_write_pending
-   1754966           +39.9%    2454658        proc-vmstat.numa_hit
-   1709407           +41.7%    2421514        proc-vmstat.numa_local
-   2209705           +31.8%    2912839        proc-vmstat.pgalloc_normal
-   1655605 ±  3%     +39.7%    2312933        proc-vmstat.pgfree
-   3264798           +14.5%    3739381        proc-vmstat.pgpgout
-      0.02 ± 97%    +118.2%       0.04 ± 31%  perf-sched.sch_delay.avg.ms.irqentry_exit_to_user_mode.asm_sysvec_reschedule_ipi.[unknown]
-      2.40 ±192%     -98.4%       0.04 ±144%  perf-sched.sch_delay.avg.ms.worker_thread.kthread.ret_from_fork.ret_from_fork_asm
-      0.11 ± 20%     -64.1%       0.04 ± 91%  perf-sched.sch_delay.max.ms.devkmsg_read.vfs_read.ksys_read.do_syscall_64
-      0.01 ±223%    +588.9%       0.05 ± 36%  perf-sched.sch_delay.max.ms.do_nanosleep.hrtimer_nanosleep.common_nsleep.__x64_sys_clock_nanosleep
-      0.03 ± 88%    +232.1%       0.10 ± 36%  perf-sched.sch_delay.max.ms.irqentry_exit_to_user_mode.asm_sysvec_reschedule_ipi.[unknown]
-     96.58 ± 63%    +711.2%     783.54 ± 44%  perf-sched.total_wait_and_delay.max.ms
-     62.71 ± 53%   +1124.4%     767.88 ± 44%  perf-sched.total_wait_time.max.ms
-      0.95 ± 60%    +370.2%       4.47 ± 35%  perf-sched.wait_and_delay.avg.ms.__cond_resched.__wait_for_common.affine_move_task.__set_cpus_allowed_ptr.__sched_setaffinity
-      6.05 ± 77%     -96.3%       0.22 ±223%  perf-sched.wait_and_delay.avg.ms.devkmsg_read.vfs_read.ksys_read.do_syscall_64
-      0.87 ± 40%     -82.8%       0.15 ±141%  perf-sched.wait_and_delay.avg.ms.do_wait.kernel_wait4.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      1.67 ± 43%     -90.2%       0.16 ±102%  perf-sched.wait_and_delay.avg.ms.pipe_read.vfs_read.ksys_read.do_syscall_64
-      3.38 ± 13%    +174.6%       9.29 ± 32%  perf-sched.wait_and_delay.avg.ms.schedule_timeout.rcu_gp_fqs_loop.rcu_gp_kthread.kthread
-      8.07 ±109%   +1338.7%     116.15 ± 23%  perf-sched.wait_and_delay.avg.ms.smpboot_thread_fn.kthread.ret_from_fork.ret_from_fork_asm
-      4.33 ± 52%     -92.3%       0.33 ±223%  perf-sched.wait_and_delay.count.devkmsg_read.vfs_read.ksys_read.do_syscall_64
-      1.17 ±104%    +957.1%      12.33 ± 57%  perf-sched.wait_and_delay.count.schedule_hrtimeout_range_clock.do_poll.constprop.0.do_sys_poll
-     94.18 ± 68%    +533.2%     596.36 ± 43%  perf-sched.wait_and_delay.max.ms.__cond_resched.__wait_for_common.affine_move_task.__set_cpus_allowed_ptr.__sched_setaffinity
-     15.07 ±103%     -97.1%       0.43 ±223%  perf-sched.wait_and_delay.max.ms.devkmsg_read.vfs_read.ksys_read.do_syscall_64
-      6.60 ± 99%     -93.2%       0.45 ±141%  perf-sched.wait_and_delay.max.ms.do_wait.kernel_wait4.do_syscall_64.entry_SYSCALL_64_after_hwframe
-      4.18 ±  8%   +5513.8%     234.70 ± 49%  perf-sched.wait_and_delay.max.ms.schedule_timeout.rcu_gp_fqs_loop.rcu_gp_kthread.kthread
-     61.50 ± 50%    +957.2%     650.14 ± 46%  perf-sched.wait_and_delay.max.ms.smpboot_thread_fn.kthread.ret_from_fork.ret_from_fork_asm
-      0.48 ± 60%    +777.3%       4.17 ± 35%  perf-sched.wait_time.avg.ms.__cond_resched.__wait_for_common.affine_move_task.__set_cpus_allowed_ptr.__sched_setaffinity
-      1.61 ± 44%     -82.4%       0.28 ± 17%  perf-sched.wait_time.avg.ms.pipe_read.vfs_read.ksys_read.do_syscall_64
-      3.02 ± 18%    +206.6%       9.26 ± 32%  perf-sched.wait_time.avg.ms.schedule_timeout.rcu_gp_fqs_loop.rcu_gp_kthread.kthread
-      7.94 ±112%   +1360.8%     116.00 ± 23%  perf-sched.wait_time.avg.ms.smpboot_thread_fn.kthread.ret_from_fork.ret_from_fork_asm
-     47.09 ± 68%   +1166.4%     596.35 ± 43%  perf-sched.wait_time.max.ms.__cond_resched.__wait_for_common.affine_move_task.__set_cpus_allowed_ptr.__sched_setaffinity
-      0.03 ±105%   +3091.2%       0.90 ±126%  perf-sched.wait_time.max.ms.irqentry_exit_to_user_mode.asm_sysvec_reschedule_ipi.[unknown]
-      4.16 ±  8%   +5536.1%     234.65 ± 49%  perf-sched.wait_time.max.ms.schedule_timeout.rcu_gp_fqs_loop.rcu_gp_kthread.kthread
-     61.02 ± 51%    +937.2%     632.92 ± 45%  perf-sched.wait_time.max.ms.smpboot_thread_fn.kthread.ret_from_fork.ret_from_fork_asm
-      1.32           +19.1%       1.57        perf-stat.i.MPKI
- 1.869e+09           +22.9%  2.298e+09        perf-stat.i.branch-instructions
-      5.44            -0.7        4.74        perf-stat.i.branch-miss-rate%
- 1.006e+08            +7.9%  1.086e+08        perf-stat.i.branch-misses
-  11843942 ±  2%     +46.2%   17314122        perf-stat.i.cache-misses
- 1.886e+08           +46.1%  2.755e+08        perf-stat.i.cache-references
-    239152           +87.2%     447643        perf-stat.i.context-switches
-      1.58           +10.8%       1.75        perf-stat.i.cpi
- 1.418e+10           +35.9%  1.927e+10        perf-stat.i.cpu-cycles
-      1842 ±  2%     +73.5%       3195        perf-stat.i.cpu-migrations
-      1202 ±  2%      -7.5%       1112        perf-stat.i.cycles-between-cache-misses
- 9.107e+09           +21.9%   1.11e+10        perf-stat.i.instructions
-      0.65            -9.8%       0.58        perf-stat.i.ipc
-      5.03           +86.7%       9.40        perf-stat.i.metric.K/sec
-      5735 ±  4%     -10.8%       5115 ±  3%  perf-stat.i.minor-faults
-      5735 ±  4%     -10.8%       5116 ±  3%  perf-stat.i.page-faults
-      1.30           +19.9%       1.56        perf-stat.overall.MPKI
-      5.38            -0.7        4.73        perf-stat.overall.branch-miss-rate%
-      1.56           +11.5%       1.74        perf-stat.overall.cpi
-      1197            -7.1%       1113        perf-stat.overall.cycles-between-cache-misses
-      0.64           -10.3%       0.58        perf-stat.overall.ipc
- 1.799e+09           +23.6%  2.223e+09        perf-stat.ps.branch-instructions
-  96805423            +8.5%  1.051e+08        perf-stat.ps.branch-misses
-  11396718 ±  2%     +47.0%   16750043        perf-stat.ps.cache-misses
- 1.815e+08           +46.9%  2.665e+08        perf-stat.ps.cache-references
-    230141           +88.2%     433076        perf-stat.ps.context-switches
- 1.364e+10           +36.6%  1.864e+10        perf-stat.ps.cpu-cycles
-      1772 ±  2%     +74.4%       3091        perf-stat.ps.cpu-migrations
- 8.763e+09           +22.6%  1.074e+10        perf-stat.ps.instructions
-      5514 ±  4%     -10.3%       4945 ±  3%  perf-stat.ps.minor-faults
-      5514 ±  4%     -10.3%       4945 ±  3%  perf-stat.ps.page-faults
-  2.33e+11           +41.9%  3.305e+11        perf-stat.total.instructions
-
+      1.05 ±  3%      +0.3        1.35        mpstat.cpu.all.sys%
+      0.39 ± 10%     +17.3%       0.46 ± 11%  sched_debug.cfs_rq:/.h_nr_running.avg
+     23.55            -1.2%      23.26        iostat.cpu.iowait
+      1.23 ±  3%     +23.8%       1.52        iostat.cpu.system
+      0.03 ±  5%     +16.8%       0.04 ± 12%  perf-sched.sch_delay.avg.ms.rcu_gp_kthread.kthread.ret_from_fork.ret_from_fork_asm
+      0.04 ± 32%     -88.8%       0.00 ±173%  perf-sched.sch_delay.avg.ms.wait_for_commit.btrfs_wait_for_commit.btrfs_attach_transaction_barrier.btrfs_sync_fs
+      0.04 ± 24%     -84.4%       0.01 ±191%  perf-sched.sch_delay.max.ms.wait_for_commit.btrfs_wait_for_commit.btrfs_attach_transaction_barrier.btrfs_sync_fs
+     24.46 ± 45%     -71.5%       6.97 ±144%  perf-sched.wait_time.avg.ms.schedule_preempt_disabled.rwsem_down_write_slowpath.down_write.sync_inodes_sb
+     12.63 ± 83%     -99.7%       0.04 ±217%  perf-sched.wait_time.avg.ms.wait_for_commit.btrfs_wait_for_commit.btrfs_attach_transaction_barrier.btrfs_sync_fs
+     18.59 ± 72%     -99.7%       0.05 ±218%  perf-sched.wait_time.max.ms.wait_for_commit.btrfs_wait_for_commit.btrfs_attach_transaction_barrier.btrfs_sync_fs
+     40.90           -26.7%      30.00        perf-stat.i.MPKI
+  94960381           +25.6%  1.193e+08        perf-stat.i.branch-instructions
+      1.67            -0.2        1.47        perf-stat.i.branch-miss-rate%
+      1.49 ±  2%     -11.9%       1.31        perf-stat.i.cpi
+ 6.076e+08 ±  2%     +14.4%  6.953e+08        perf-stat.i.cpu-cycles
+ 4.902e+08           +28.1%   6.28e+08        perf-stat.i.instructions
+      0.73 ±  2%     +11.0%       0.81        perf-stat.i.ipc
+      0.06 ± 11%     -22.9%       0.05 ± 14%  perf-stat.i.metric.K/sec
+     35.24 ± 44%     +38.6%      48.83        perf-stat.overall.cycles-between-cache-misses
+      0.67 ± 44%     +33.8%       0.90        perf-stat.overall.ipc
+  78962447 ± 44%     +50.8%  1.191e+08        perf-stat.ps.branch-instructions
+ 5.036e+08 ± 44%     +37.9%  6.945e+08        perf-stat.ps.cpu-cycles
+ 4.076e+08 ± 44%     +53.9%  6.272e+08        perf-stat.ps.instructions
+ 2.992e+11 ± 44%     +56.0%  4.667e+11        perf-stat.total.instructions
+      0.28 ±100%      +0.6        0.86 ± 31%  perf-profile.calltrace.cycles-pp.btrfs_delalloc_reserve_metadata.btrfs_buffered_write.btrfs_do_write_iter.vfs_write.ksys_write
+      0.00            +0.7        0.69 ± 13%  perf-profile.calltrace.cycles-pp.__set_extent_bit.__lock_extent.lock_and_cleanup_extent_if_need.btrfs_buffered_write.btrfs_do_write_iter
+      0.00            +0.7        0.72 ± 13%  perf-profile.calltrace.cycles-pp.__lock_extent.lock_and_cleanup_extent_if_need.btrfs_buffered_write.btrfs_do_write_iter.vfs_write
+      0.00            +0.7        0.72 ± 11%  perf-profile.calltrace.cycles-pp.filemap_dirty_folio.btrfs_dirty_page.btrfs_buffered_write.btrfs_do_write_iter.vfs_write
+      0.00            +0.8        0.83 ± 15%  perf-profile.calltrace.cycles-pp.__set_extent_bit.set_extent_bit.btrfs_dirty_page.btrfs_buffered_write.btrfs_do_write_iter
+      0.36 ±100%      +0.8        1.19 ± 21%  perf-profile.calltrace.cycles-pp.__clear_extent_bit.btrfs_buffered_write.btrfs_do_write_iter.vfs_write.ksys_write
+      0.00            +0.8        0.84 ± 14%  perf-profile.calltrace.cycles-pp.set_extent_bit.btrfs_dirty_page.btrfs_buffered_write.btrfs_do_write_iter.vfs_write
+      0.00            +0.9        0.92 ±  9%  perf-profile.calltrace.cycles-pp.lock_and_cleanup_extent_if_need.btrfs_buffered_write.btrfs_do_write_iter.vfs_write.ksys_write
+      0.00            +1.1        1.10 ± 20%  perf-profile.calltrace.cycles-pp.__filemap_get_folio.pagecache_get_page.prepare_one_page.btrfs_buffered_write.btrfs_do_write_iter
+      0.00            +1.1        1.12 ± 21%  perf-profile.calltrace.cycles-pp.pagecache_get_page.prepare_one_page.btrfs_buffered_write.btrfs_do_write_iter.vfs_write
+      0.00            +1.2        1.25 ± 19%  perf-profile.calltrace.cycles-pp.prepare_one_page.btrfs_buffered_write.btrfs_do_write_iter.vfs_write.ksys_write
+      9.26 ± 16%      +2.6       11.81 ± 10%  perf-profile.calltrace.cycles-pp.entry_SYSCALL_64_after_hwframe.write
+      9.01 ± 16%      +2.6       11.59 ±  9%  perf-profile.calltrace.cycles-pp.do_syscall_64.entry_SYSCALL_64_after_hwframe.write
+      8.84 ± 15%      +2.6       11.45 ±  9%  perf-profile.calltrace.cycles-pp.vfs_write.ksys_write.do_syscall_64.entry_SYSCALL_64_after_hwframe.write
+      8.92 ± 16%      +2.6       11.55 ±  9%  perf-profile.calltrace.cycles-pp.ksys_write.do_syscall_64.entry_SYSCALL_64_after_hwframe.write
+      8.60 ± 16%      +2.7       11.26 ±  9%  perf-profile.calltrace.cycles-pp.btrfs_do_write_iter.vfs_write.ksys_write.do_syscall_64.entry_SYSCALL_64_after_hwframe
+      0.00            +2.7        2.66 ± 17%  perf-profile.calltrace.cycles-pp.btrfs_dirty_page.btrfs_buffered_write.btrfs_do_write_iter.vfs_write.ksys_write
+      8.50 ± 15%      +2.7       11.19 ±  8%  perf-profile.calltrace.cycles-pp.btrfs_buffered_write.btrfs_do_write_iter.vfs_write.ksys_write.do_syscall_64
+     25.33 ± 45%      +7.9       33.20 ±  6%  perf-profile.calltrace.cycles-pp.intel_idle_ibrs.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call.do_idle
+      8.18 ±  7%      -1.0        7.13 ±  8%  perf-profile.children.cycles-pp.do_writepages
+      7.96 ±  7%      -0.9        7.02 ±  8%  perf-profile.children.cycles-pp.__filemap_fdatawrite_range
+      7.96 ±  7%      -0.9        7.02 ±  8%  perf-profile.children.cycles-pp.filemap_fdatawrite_wbc
+      0.80 ± 11%      -0.2        0.58 ± 12%  perf-profile.children.cycles-pp.__folio_mark_dirty
+      0.54 ± 13%      -0.2        0.35 ± 27%  perf-profile.children.cycles-pp.find_lock_delalloc_range
+      0.52 ± 16%      -0.1        0.38 ± 16%  perf-profile.children.cycles-pp.folio_account_dirtied
+      0.72 ± 12%      -0.1        0.60 ± 15%  perf-profile.children.cycles-pp.__folio_start_writeback
+      0.19 ± 24%      -0.1        0.11 ± 45%  perf-profile.children.cycles-pp.__mod_node_page_state
+      0.14 ± 33%      -0.1        0.08 ± 31%  perf-profile.children.cycles-pp.xas_set_mark
+      0.02 ±141%      +0.1        0.08 ± 36%  perf-profile.children.cycles-pp.do_dentry_open
+      0.02 ±141%      +0.1        0.08 ± 36%  perf-profile.children.cycles-pp.vfs_open
+      0.02 ±143%      +0.1        0.11 ± 37%  perf-profile.children.cycles-pp.perf_event_mmap
+      0.00            +0.1        0.11 ± 37%  perf-profile.children.cycles-pp.perf_event_mmap_event
+      0.11 ± 67%      +0.1        0.25 ± 13%  perf-profile.children.cycles-pp.slab_show
+      0.05 ±107%      +0.1        0.18 ± 46%  perf-profile.children.cycles-pp.btrfs_reserve_data_bytes
+      0.08 ± 57%      +0.1        0.22 ±  8%  perf-profile.children.cycles-pp.seq_printf
+      0.10 ± 76%      +0.1        0.25 ± 10%  perf-profile.children.cycles-pp.vsnprintf
+      0.10 ± 57%      +0.2        0.25 ± 14%  perf-profile.children.cycles-pp.btrfs_block_rsv_release
+      0.30 ± 18%      +0.2        0.46 ± 26%  perf-profile.children.cycles-pp.kmem_cache_free
+      0.13 ± 53%      +0.2        0.30 ± 20%  perf-profile.children.cycles-pp.btrfs_inode_rsv_release
+      0.11 ± 32%      +0.2        0.30 ± 34%  perf-profile.children.cycles-pp.free_extent_state
+      0.00            +0.2        0.19 ± 41%  perf-profile.children.cycles-pp.btrfs_drop_page
+      0.12 ± 54%      +0.2        0.31 ± 31%  perf-profile.children.cycles-pp.btrfs_delalloc_release_extents
+      0.16 ± 57%      +0.2        0.37 ± 35%  perf-profile.children.cycles-pp.set_state_bits
+      0.09 ± 72%      +0.2        0.32 ± 30%  perf-profile.children.cycles-pp.btrfs_check_data_free_space
+      0.19 ± 52%      +0.3        0.45 ± 40%  perf-profile.children.cycles-pp.__reserve_bytes
+      0.08 ± 95%      +0.3        0.34 ± 28%  perf-profile.children.cycles-pp.fault_in_iov_iter_readable
+      0.40 ± 25%      +0.4        0.77 ±  9%  perf-profile.children.cycles-pp.kmem_cache_alloc_noprof
+      0.37 ± 55%      +0.4        0.73 ± 24%  perf-profile.children.cycles-pp.clear_state_bit
+      0.36 ± 37%      +0.4        0.78 ± 12%  perf-profile.children.cycles-pp.alloc_extent_state
+      0.27 ± 51%      +0.5        0.72 ± 14%  perf-profile.children.cycles-pp.__lock_extent
+      0.40 ± 50%      +0.5        0.88 ± 30%  perf-profile.children.cycles-pp.btrfs_delalloc_reserve_metadata
+      0.38 ± 49%      +0.5        0.87 ± 16%  perf-profile.children.cycles-pp.set_extent_bit
+      0.35 ± 46%      +0.6        0.92 ±  9%  perf-profile.children.cycles-pp.lock_and_cleanup_extent_if_need
+      1.17 ± 20%      +0.6        1.79 ± 16%  perf-profile.children.cycles-pp._raw_spin_lock
+      0.64 ± 46%      +0.9        1.54 ± 11%  perf-profile.children.cycles-pp.__set_extent_bit
+      1.05 ± 42%      +0.9        1.96 ± 19%  perf-profile.children.cycles-pp.__clear_extent_bit
+      0.00            +1.2        1.25 ± 19%  perf-profile.children.cycles-pp.prepare_one_page
+      8.87 ± 15%      +2.6       11.47 ±  9%  perf-profile.children.cycles-pp.vfs_write
+      8.96 ± 15%      +2.6       11.57 ±  9%  perf-profile.children.cycles-pp.ksys_write
+      8.60 ± 16%      +2.7       11.27 ±  9%  perf-profile.children.cycles-pp.btrfs_do_write_iter
+      0.00            +2.7        2.70 ± 16%  perf-profile.children.cycles-pp.btrfs_dirty_page
+      8.52 ± 15%      +2.7       11.23 ±  9%  perf-profile.children.cycles-pp.btrfs_buffered_write
+     25.45 ± 45%      +7.8       33.20 ±  6%  perf-profile.children.cycles-pp.intel_idle_ibrs
+      0.13 ± 36%      -0.1        0.08 ± 31%  perf-profile.self.cycles-pp.xas_set_mark
+      0.13 ± 56%      +0.2        0.28 ±  8%  perf-profile.self.cycles-pp.btrfs_delalloc_reserve_metadata
+      0.10 ± 30%      +0.2        0.28 ± 32%  perf-profile.self.cycles-pp.free_extent_state
+      0.28 ± 40%      +0.3        0.60 ± 13%  perf-profile.self.cycles-pp.kmem_cache_alloc_noprof
+      1.01 ± 22%      +0.5        1.49 ± 18%  perf-profile.self.cycles-pp._raw_spin_lock
+     25.42 ± 45%      +7.8       33.20 ±  6%  perf-profile.self.cycles-pp.intel_idle_ibrs
+    404026 ±  8%     -20.1%     322736 ±  5%  iozone.1024KB_1024reclen
+   5779343 ±  8%     -46.0%    3120020 ±  4%  iozone.1024KB_1024reclen.frewrite
+   5520470 ±  8%     -47.4%    2902678 ±  8%  iozone.1024KB_1024reclen.fwrite
+   7595960 ± 23%     -60.3%    3018802 ±  5%  iozone.1024KB_1024reclen.random_write
+   7268453 ± 15%     -56.1%    3187394 ± 10%  iozone.1024KB_1024reclen.record_rewrite
+   6148488 ± 12%     -49.5%    3107881 ±  8%  iozone.1024KB_1024reclen.rewrite
+   3887031 ± 10%     -28.6%    2775959        iozone.1024KB_1024reclen.write
+    480379 ±  3%     -18.1%     393482 ±  5%  iozone.1024KB_128reclen
+   6443434 ±  3%     -47.5%    3385255 ±  3%  iozone.1024KB_128reclen.frewrite
+   6286942 ±  6%     -47.0%    3329021 ±  4%  iozone.1024KB_128reclen.fwrite
+   8220107 ± 11%     -56.1%    3607230 ±  3%  iozone.1024KB_128reclen.random_write
+  10884743 ± 16%     -70.5%    3214497 ± 15%  iozone.1024KB_128reclen.record_rewrite
+   6539228 ±  4%     -52.4%    3113754 ± 12%  iozone.1024KB_128reclen.rewrite
+   4379578 ±  8%     -40.0%    2626472 ± 12%  iozone.1024KB_128reclen.write
+    299421 ±  5%     -10.7%     267395        iozone.1024KB_16reclen
+   3996999 ± 11%     -30.0%    2798786 ±  2%  iozone.1024KB_16reclen.frewrite
+   4292405 ±  9%     -32.3%    2905607 ±  3%  iozone.1024KB_16reclen.fwrite
+   4301482 ±  7%     -36.8%    2717189 ±  3%  iozone.1024KB_16reclen.random_write
+   5666753 ± 11%     -51.8%    2729481 ± 16%  iozone.1024KB_16reclen.record_rewrite
+   4481831 ±  7%     -33.0%    3004970 ±  6%  iozone.1024KB_16reclen.rewrite
+   3477849 ± 12%     -23.6%    2655911 ±  3%  iozone.1024KB_16reclen.write
+    476237 ±  3%     -22.0%     371524 ±  9%  iozone.1024KB_256reclen
+   6810247 ±  8%     -45.2%    3731155 ±  7%  iozone.1024KB_256reclen.frewrite
+   6581797 ±  7%     -46.4%    3528219 ±  4%  iozone.1024KB_256reclen.fwrite
+   8923106 ±  7%     -63.8%    3225985 ± 14%  iozone.1024KB_256reclen.random_write
+  11411063 ±  8%     -74.4%    2920507 ± 23%  iozone.1024KB_256reclen.record_rewrite
+   6677329 ±  9%     -53.1%    3133697 ±  6%  iozone.1024KB_256reclen.rewrite
+   4742314 ±  5%     -43.8%    2665096 ± 11%  iozone.1024KB_256reclen.write
+    387624 ±  8%     -18.9%     314517 ±  3%  iozone.1024KB_32reclen
+   5275639 ± 10%     -44.6%    2921319 ±  4%  iozone.1024KB_32reclen.frewrite
+   5133958 ± 13%     -41.8%    2990409 ±  6%  iozone.1024KB_32reclen.fwrite
+   6099796 ±  6%     -47.9%    3180923 ±  4%  iozone.1024KB_32reclen.random_write
+   8251223 ± 15%     -60.1%    3293523 ±  2%  iozone.1024KB_32reclen.record_rewrite
+   5514773           -45.3%    3018489 ±  4%  iozone.1024KB_32reclen.rewrite
+   4085563 ±  7%     -33.1%    2733760 ±  7%  iozone.1024KB_32reclen.write
+   8121273 ± 11%     -39.7%    4894208 ±  4%  iozone.1024KB_512reclen.frewrite
+   4559484 ± 10%     -25.2%    3410930 ±  4%  iozone.1024KB_512reclen.fwrite
+   8155517 ± 14%     -60.2%    3243802 ±  8%  iozone.1024KB_512reclen.random_write
+   8781751 ± 20%     -63.3%    3224865 ±  3%  iozone.1024KB_512reclen.record_rewrite
+   6229116 ± 16%     -48.6%    3198827 ±  5%  iozone.1024KB_512reclen.rewrite
+   4347573 ±  8%     -32.7%    2923786 ±  5%  iozone.1024KB_512reclen.write
+    472615 ±  5%     -19.0%     383049 ±  5%  iozone.1024KB_64reclen
+   5744325 ±  8%     -45.3%    3140431 ± 10%  iozone.1024KB_64reclen.frewrite
+   5722211 ±  8%     -44.4%    3180853 ±  7%  iozone.1024KB_64reclen.fwrite
+   7092470 ±  6%     -53.5%    3296493 ±  4%  iozone.1024KB_64reclen.random_write
+  10932587 ± 12%     -68.8%    3411418 ±  3%  iozone.1024KB_64reclen.record_rewrite
+   6410689 ± 13%     -48.4%    3308809 ±  3%  iozone.1024KB_64reclen.rewrite
+   4686039 ± 10%     -36.7%    2964454 ±  5%  iozone.1024KB_64reclen.write
+   3176666 ± 13%     -26.0%    2350845 ± 13%  iozone.1024KB_8reclen.frewrite
+   3260613 ± 10%     -25.4%    2430999 ±  5%  iozone.1024KB_8reclen.fwrite
+   3027211 ± 16%     -25.8%    2245006 ±  5%  iozone.1024KB_8reclen.random_write
+   3467121 ± 14%     -31.9%    2361237 ±  7%  iozone.1024KB_8reclen.record_rewrite
+   3238895 ± 13%     -19.5%    2608521 ±  4%  iozone.1024KB_8reclen.rewrite
+   2967947 ±  6%     -20.2%    2367737 ±  7%  iozone.1024KB_8reclen.write
+   5972578 ± 17%     -48.0%    3106248 ± 11%  iozone.128KB_128reclen.frewrite
+   6234234 ± 16%     -48.4%    3214381 ±  6%  iozone.128KB_128reclen.fwrite
+   6367969 ± 18%     -47.4%    3350240 ±  3%  iozone.128KB_128reclen.random_write
+   6485048 ± 16%     -49.1%    3302444 ±  2%  iozone.128KB_128reclen.record_rewrite
+   5871537 ± 16%     -50.3%    2917168 ± 23%  iozone.128KB_128reclen.rewrite
+   4188255 ± 10%     -32.4%    2829753 ±  7%  iozone.128KB_128reclen.write
+   4246115 ±  6%     -31.6%    2904229 ± 15%  iozone.128KB_16reclen.frewrite
+   4294051 ±  8%     -31.6%    2938769 ± 17%  iozone.128KB_16reclen.fwrite
+   3953683 ±  5%     -34.3%    2598443 ± 16%  iozone.128KB_16reclen.random_write
+   4874725 ±  4%     -44.8%    2688912 ± 15%  iozone.128KB_16reclen.record_rewrite
+   4427850 ±  8%     -35.7%    2845297 ± 13%  iozone.128KB_16reclen.rewrite
+   3447668 ±  9%     -25.9%    2555642 ± 15%  iozone.128KB_16reclen.write
+   5363997 ± 10%     -36.1%    3428810 ± 15%  iozone.128KB_32reclen.frewrite
+   5213895 ± 14%     -31.9%    3551187 ± 15%  iozone.128KB_32reclen.fwrite
+   5070545 ± 10%     -42.8%    2900559 ± 13%  iozone.128KB_32reclen.random_write
+   6108263 ± 11%     -52.0%    2931575 ± 13%  iozone.128KB_32reclen.record_rewrite
+   4891011 ±  7%     -43.1%    2783075 ± 15%  iozone.128KB_32reclen.rewrite
+   3720260 ± 10%     -28.1%    2673930 ± 15%  iozone.128KB_32reclen.write
+   8113389 ± 21%     -42.7%    4652126 ± 22%  iozone.128KB_64reclen.frewrite
+   5894858 ± 16%     -44.2%    3287762        iozone.128KB_64reclen.random_write
+   6703523 ± 16%     -51.2%    3272488 ±  2%  iozone.128KB_64reclen.record_rewrite
+   3325282 ±  8%     -24.9%    2498270 ± 15%  iozone.128KB_8reclen.fwrite
+   2858073 ± 11%     -25.9%    2118973 ± 16%  iozone.128KB_8reclen.random_write
+   3332162 ± 11%     -29.8%    2337539 ± 15%  iozone.128KB_8reclen.record_rewrite
+   2790298 ±  7%     -18.1%    2285025 ± 15%  iozone.128KB_8reclen.write
+    556595 ±  2%     -24.9%     418035        iozone.131072KB_1024reclen
+   7283879 ± 10%     -53.7%    3375992 ±  3%  iozone.131072KB_1024reclen.frewrite
+   7603171 ±  7%     -54.8%    3440316 ±  2%  iozone.131072KB_1024reclen.fwrite
+   9011412 ±  5%     -59.8%    3619676        iozone.131072KB_1024reclen.random_write
+  16871237 ±  3%     -77.8%    3751658        iozone.131072KB_1024reclen.record_rewrite
+   8768236 ±  5%     -57.7%    3705171        iozone.131072KB_1024reclen.rewrite
+   5576785 ±  6%     -39.2%    3390303        iozone.131072KB_1024reclen.write
+    540004 ±  3%     -24.5%     407855 ±  3%  iozone.131072KB_128reclen
+   7567260 ±  4%     -53.8%    3497294        iozone.131072KB_128reclen.frewrite
+   7543641 ±  4%     -53.8%    3483685        iozone.131072KB_128reclen.fwrite
+   8214156 ±  5%     -57.6%    3483198 ±  3%  iozone.131072KB_128reclen.random_write
+  15791699 ±  6%     -76.3%    3749820        iozone.131072KB_128reclen.record_rewrite
+   8530694 ±  3%     -56.1%    3741683        iozone.131072KB_128reclen.rewrite
+   5440759 ±  6%     -37.8%    3384168        iozone.131072KB_128reclen.write
+    355415 ±  6%     -14.9%     302352 ±  5%  iozone.131072KB_16384reclen
+   5293019 ±  4%     -40.1%    3170551 ±  2%  iozone.131072KB_16384reclen.frewrite
+   5102705 ±  8%     -38.2%    3154449        iozone.131072KB_16384reclen.fwrite
+   6085033 ±  9%     -48.0%    3161684 ±  2%  iozone.131072KB_16384reclen.random_write
+   6714005 ±  7%     -56.4%    2924415 ±  2%  iozone.131072KB_16384reclen.record_rewrite
+   5912564 ±  4%     -45.4%    3229169        iozone.131072KB_16384reclen.rewrite
+   4361256 ±  4%     -31.3%    2995716        iozone.131072KB_16384reclen.write
+    524466 ±  4%     -20.9%     414665 ±  2%  iozone.131072KB_2048reclen
+   5642668 ± 13%     -46.8%    3004614 ±  4%  iozone.131072KB_2048reclen.frewrite
+   6069745 ± 13%     -49.3%    3075768 ±  2%  iozone.131072KB_2048reclen.fwrite
+   7818775 ± 10%     -55.6%    3472227 ±  3%  iozone.131072KB_2048reclen.random_write
+  16255595 ±  6%     -77.6%    3647697        iozone.131072KB_2048reclen.record_rewrite
+   7549840 ± 13%     -53.6%    3503649 ±  3%  iozone.131072KB_2048reclen.rewrite
+   5063081 ± 16%     -34.3%    3325803 ±  2%  iozone.131072KB_2048reclen.write
+    543287 ±  2%     -23.5%     415738        iozone.131072KB_256reclen
+   7525988 ±  4%     -53.7%    3486107        iozone.131072KB_256reclen.frewrite
+   7551370 ±  4%     -54.9%    3405302 ±  4%  iozone.131072KB_256reclen.fwrite
+   8775926 ±  4%     -58.7%    3622848        iozone.131072KB_256reclen.random_write
+  16089046 ±  4%     -76.7%    3741974        iozone.131072KB_256reclen.record_rewrite
+   8961286 ±  5%     -58.1%    3753775        iozone.131072KB_256reclen.rewrite
+   5329259 ±  3%     -36.2%    3398000        iozone.131072KB_256reclen.write
+    467257 ±  6%     -20.9%     369445 ±  5%  iozone.131072KB_4096reclen
+   5344053 ± 10%     -45.8%    2894013 ±  3%  iozone.131072KB_4096reclen.frewrite
+   5178859 ± 11%     -44.2%    2888296        iozone.131072KB_4096reclen.fwrite
+   7091453 ±  8%     -53.9%    3267343        iozone.131072KB_4096reclen.random_write
+   9958856 ± 23%     -69.0%    3089468 ±  8%  iozone.131072KB_4096reclen.record_rewrite
+   6790908 ±  9%     -52.0%    3257618 ±  3%  iozone.131072KB_4096reclen.rewrite
+   4657075 ±  6%     -33.3%    3104395 ±  2%  iozone.131072KB_4096reclen.write
+    550746 ±  2%     -24.2%     417706 ±  2%  iozone.131072KB_512reclen
+   7643592 ±  4%     -54.3%    3492423        iozone.131072KB_512reclen.frewrite
+   7622635 ±  4%     -54.9%    3434029 ±  3%  iozone.131072KB_512reclen.fwrite
+   9038913 ±  4%     -59.4%    3665678        iozone.131072KB_512reclen.random_write
+  16159032 ±  3%     -77.0%    3721799        iozone.131072KB_512reclen.record_rewrite
+   9021758 ±  4%     -58.6%    3732833        iozone.131072KB_512reclen.rewrite
+   5550664 ±  6%     -39.9%    3337160 ±  4%  iozone.131072KB_512reclen.write
+    495904 ±  4%     -21.7%     388115 ±  2%  iozone.131072KB_64reclen
+   6944981 ±  4%     -50.3%    3452635        iozone.131072KB_64reclen.frewrite
+   6941633 ±  5%     -50.4%    3443365        iozone.131072KB_64reclen.fwrite
+   7083196 ±  6%     -53.3%    3311192        iozone.131072KB_64reclen.random_write
+  13356791 ±  8%     -72.4%    3689259        iozone.131072KB_64reclen.record_rewrite
+   7656280 ±  5%     -52.0%    3675163        iozone.131072KB_64reclen.rewrite
+   4889990 ± 14%     -31.2%    3364128        iozone.131072KB_64reclen.write
+    375509 ±  5%     -18.4%     306526 ±  5%  iozone.131072KB_8192reclen
+   5144601 ±  8%     -42.1%    2979704        iozone.131072KB_8192reclen.frewrite
+   4994124 ±  9%     -40.5%    2973687        iozone.131072KB_8192reclen.fwrite
+   5966882 ±  7%     -47.6%    3128779 ±  3%  iozone.131072KB_8192reclen.random_write
+   6897733 ± 12%     -55.5%    3068179        iozone.131072KB_8192reclen.record_rewrite
+   6166392 ±  7%     -48.4%    3179624 ±  3%  iozone.131072KB_8192reclen.rewrite
+   4547664 ±  4%     -34.3%    2985575        iozone.131072KB_8192reclen.write
+    502575 ±  3%     -26.1%     371228 ±  9%  iozone.16384KB_1024reclen
+  10293176 ±  6%      -9.5%    9320083 ±  6%  iozone.16384KB_1024reclen.bkwd_read
+   6646368 ±  3%     -49.2%    3376676 ±  6%  iozone.16384KB_1024reclen.frewrite
+   6339526 ±  6%     -47.3%    3339024 ±  6%  iozone.16384KB_1024reclen.fwrite
+   8911501 ±  7%     -61.4%    3442980 ± 14%  iozone.16384KB_1024reclen.random_write
+  16155159 ±  3%     -78.0%    3546393 ±  7%  iozone.16384KB_1024reclen.record_rewrite
+   7372124 ±  8%     -54.3%    3369335 ±  9%  iozone.16384KB_1024reclen.rewrite
+   5245926 ±  6%     -42.3%    3029117 ± 14%  iozone.16384KB_1024reclen.write
+    500856 ±  2%     -25.0%     375560 ±  2%  iozone.16384KB_128reclen
+   6866695 ±  6%     -51.8%    3308318 ±  5%  iozone.16384KB_128reclen.frewrite
+   7195384 ±  2%     -55.9%    3173530 ± 12%  iozone.16384KB_128reclen.fwrite
+   8774656 ±  4%     -58.5%    3640393        iozone.16384KB_128reclen.random_write
+  15591161 ±  6%     -75.9%    3754231        iozone.16384KB_128reclen.record_rewrite
+   7949451           -55.1%    3568843 ±  5%  iozone.16384KB_128reclen.rewrite
+   5252802 ±  6%     -37.5%    3281669 ±  6%  iozone.16384KB_128reclen.write
+    396193           -24.2%     300141 ±  8%  iozone.16384KB_16384reclen
+   6388871 ±  4%     -50.1%    3189918        iozone.16384KB_16384reclen.frewrite
+   6534523 ±  4%     -51.8%    3151340 ±  5%  iozone.16384KB_16384reclen.fwrite
+   6456084 ±  5%     -52.7%    3053804 ± 11%  iozone.16384KB_16384reclen.random_write
+   6672258           -54.2%    3057919 ± 10%  iozone.16384KB_16384reclen.record_rewrite
+   6171950 ±  5%     -49.0%    3148548 ±  3%  iozone.16384KB_16384reclen.rewrite
+   4441138 ±  5%     -37.0%    2797259 ± 11%  iozone.16384KB_16384reclen.write
+   4823195 ±  4%     -37.8%    2998684 ±  3%  iozone.16384KB_16reclen.frewrite
+   4601430 ±  7%     -32.9%    3087716        iozone.16384KB_16reclen.fwrite
+   4180916 ±  8%     -33.1%    2798844 ±  2%  iozone.16384KB_16reclen.random_write
+   5667637 ±  5%     -44.9%    3122971 ±  2%  iozone.16384KB_16reclen.record_rewrite
+   4955347 ±  5%     -35.1%    3214593 ±  2%  iozone.16384KB_16reclen.rewrite
+    473227 ±  7%     -21.4%     371728 ±  6%  iozone.16384KB_2048reclen
+   5739847 ± 15%     -43.7%    3233427 ±  7%  iozone.16384KB_2048reclen.frewrite
+   6333846 ±  3%     -47.4%    3333479 ±  2%  iozone.16384KB_2048reclen.fwrite
+   8062496 ± 11%     -58.0%    3389775 ±  9%  iozone.16384KB_2048reclen.random_write
+  14684802 ±  9%     -74.8%    3698168        iozone.16384KB_2048reclen.record_rewrite
+   6685406 ± 10%     -48.8%    3425186 ±  3%  iozone.16384KB_2048reclen.rewrite
+   4783654 ± 10%     -36.9%    3017283 ±  9%  iozone.16384KB_2048reclen.write
+    501522 ±  2%     -24.6%     378391 ±  2%  iozone.16384KB_256reclen
+   6882929 ±  3%     -50.8%    3387288 ±  4%  iozone.16384KB_256reclen.frewrite
+   7052407 ±  6%     -53.1%    3310175 ±  7%  iozone.16384KB_256reclen.fwrite
+   9032840 ±  4%     -59.6%    3650079 ±  5%  iozone.16384KB_256reclen.random_write
+  16000820 ±  4%     -77.4%    3615234 ±  7%  iozone.16384KB_256reclen.record_rewrite
+   8093572 ±  3%     -55.8%    3577186 ±  4%  iozone.16384KB_256reclen.rewrite
+   5364208 ±  6%     -38.6%    3294480 ±  3%  iozone.16384KB_256reclen.write
+    399141 ±  5%     -18.6%     325048 ±  3%  iozone.16384KB_32reclen
+  10066483 ±  3%      -8.9%    9165856 ±  7%  iozone.16384KB_32reclen.fread
+  10168580 ±  3%      -8.3%    9327535 ±  4%  iozone.16384KB_32reclen.freread
+   5723442 ±  8%     -46.5%    3061356 ± 12%  iozone.16384KB_32reclen.frewrite
+   5547324 ± 11%     -43.2%    3148213 ±  6%  iozone.16384KB_32reclen.fwrite
+   5623221 ± 11%     -43.8%    3158882 ±  5%  iozone.16384KB_32reclen.random_write
+   8720163 ±  7%     -62.1%    3303932 ±  9%  iozone.16384KB_32reclen.record_rewrite
+   6067131 ± 10%     -44.4%    3370477 ±  5%  iozone.16384KB_32reclen.rewrite
+   4440172 ±  9%     -31.0%    3063071 ±  7%  iozone.16384KB_32reclen.write
+    421223 ±  5%     -13.4%     364901 ±  2%  iozone.16384KB_4096reclen
+   6166229 ±  8%     -39.7%    3715837 ±  2%  iozone.16384KB_4096reclen.frewrite
+   6007088 ±  9%     -39.0%    3665450 ±  3%  iozone.16384KB_4096reclen.fwrite
+   7077043 ± 13%     -50.6%    3493249 ±  3%  iozone.16384KB_4096reclen.random_write
+   9964873 ± 11%     -65.1%    3482055 ±  3%  iozone.16384KB_4096reclen.record_rewrite
+   6184702 ±  5%     -47.1%    3269031        iozone.16384KB_4096reclen.rewrite
+   4538005 ±  8%     -33.3%    3027051 ±  2%  iozone.16384KB_4096reclen.write
+   2049020 ±  8%      +8.4%    2220129 ±  2%  iozone.16384KB_4reclen.frewrite
+   1789750 ±  6%      +8.0%    1933158        iozone.16384KB_4reclen.record_rewrite
+    494259 ±  3%     -22.7%     381984 ±  5%  iozone.16384KB_512reclen
+   6748999 ±  5%     -50.7%    3328128 ±  6%  iozone.16384KB_512reclen.frewrite
+   6687674 ±  4%     -52.1%    3203532 ± 13%  iozone.16384KB_512reclen.fwrite
+   8480038 ± 15%     -57.1%    3635705 ±  6%  iozone.16384KB_512reclen.random_write
+  15766929 ±  5%     -77.0%    3631363 ±  6%  iozone.16384KB_512reclen.record_rewrite
+   7773133 ±  2%     -54.9%    3502963 ±  6%  iozone.16384KB_512reclen.rewrite
+   5301780 ±  3%     -38.8%    3242233 ±  6%  iozone.16384KB_512reclen.write
+    465431           -24.3%     352331 ±  6%  iozone.16384KB_64reclen
+   6370739 ±  8%     -47.4%    3350737 ±  2%  iozone.16384KB_64reclen.frewrite
+   6523478 ±  3%     -49.8%    3271535 ±  6%  iozone.16384KB_64reclen.fwrite
+   7573757 ±  4%     -56.8%    3270565 ± 13%  iozone.16384KB_64reclen.random_write
+  12463547 ±  4%     -70.8%    3642499        iozone.16384KB_64reclen.record_rewrite
+   7391311 ±  2%     -54.1%    3391977 ±  7%  iozone.16384KB_64reclen.rewrite
+   5008942 ±  7%     -41.0%    2954378 ± 17%  iozone.16384KB_64reclen.write
+    391993           -15.1%     332951 ±  2%  iozone.16384KB_8192reclen
+   8341214 ±  5%     -39.4%    5058416 ±  5%  iozone.16384KB_8192reclen.frewrite
+   5672835 ±  7%     -29.8%    3983885 ±  7%  iozone.16384KB_8192reclen.fwrite
+   6224158 ±  6%     -46.2%    3346580        iozone.16384KB_8192reclen.random_write
+   6748212 ±  5%     -52.9%    3175726 ±  2%  iozone.16384KB_8192reclen.record_rewrite
+   6137617 ±  5%     -48.1%    3185708 ±  2%  iozone.16384KB_8192reclen.rewrite
+   4332394 ±  9%     -34.2%    2848563 ± 11%  iozone.16384KB_8192reclen.write
+    236378            -8.3%     216744 ±  7%  iozone.16384KB_8reclen
+   3537772 ±  7%     -22.8%    2730676        iozone.16384KB_8reclen.frewrite
+   3389032 ± 11%     -19.7%    2721082        iozone.16384KB_8reclen.fwrite
+   3686254 ± 13%     -28.7%    2626627 ±  2%  iozone.16384KB_8reclen.record_rewrite
+   3748926 ±  8%     -23.0%    2886966        iozone.16384KB_8reclen.rewrite
+   6836731 ±  9%     -28.6%    4884626 ± 15%  iozone.2048KB_1024reclen.frewrite
+   8202740 ±  8%     -55.6%    3644862 ±  2%  iozone.2048KB_1024reclen.random_write
+   6719919 ± 20%     -50.6%    3319142 ±  8%  iozone.2048KB_1024reclen.record_rewrite
+   5154945 ± 17%     -43.7%    2900878 ±  4%  iozone.2048KB_1024reclen.rewrite
+   6855424 ± 11%     -53.8%    3170377 ±  4%  iozone.2048KB_128reclen.frewrite
+   6667708 ±  6%     -49.1%    3395053 ±  5%  iozone.2048KB_128reclen.fwrite
+   8305700 ± 16%     -56.9%    3577221 ±  5%  iozone.2048KB_128reclen.random_write
+  13050534 ± 13%     -73.4%    3466133 ±  5%  iozone.2048KB_128reclen.record_rewrite
+   7308813 ± 14%     -55.0%    3290657 ±  3%  iozone.2048KB_128reclen.rewrite
+   4992493 ±  3%     -39.6%    3016190 ±  5%  iozone.2048KB_128reclen.write
+    306815 ±  4%     -13.0%     266929        iozone.2048KB_16reclen
+   4236894 ±  7%     -33.1%    2834252 ±  5%  iozone.2048KB_16reclen.frewrite
+   4446168 ±  7%     -38.6%    2728494 ±  3%  iozone.2048KB_16reclen.fwrite
+   4123681 ±  5%     -31.8%    2812183        iozone.2048KB_16reclen.random_write
+   5747492 ±  8%     -52.2%    2744589 ± 12%  iozone.2048KB_16reclen.record_rewrite
+   4667894 ±  7%     -35.4%    3013487 ±  4%  iozone.2048KB_16reclen.rewrite
+   3702137 ±  7%     -21.1%    2919899 ±  3%  iozone.2048KB_16reclen.write
+   5910897 ± 11%     -52.9%    2785979 ± 13%  iozone.2048KB_2048reclen.frewrite
+   6013474 ± 14%     -52.1%    2878111 ± 16%  iozone.2048KB_2048reclen.fwrite
+  10690202 ± 13%     -64.9%    3756371 ± 14%  iozone.2048KB_2048reclen.random_write
+   6212344 ± 20%     -50.2%    3091598 ± 16%  iozone.2048KB_2048reclen.record_rewrite
+   5276785 ± 13%     -47.7%    2760399 ± 13%  iozone.2048KB_2048reclen.rewrite
+   3998119 ±  8%     -29.1%    2836278 ± 11%  iozone.2048KB_2048reclen.write
+   6633759 ±  9%     -51.5%    3218824 ±  8%  iozone.2048KB_256reclen.frewrite
+   6329173 ±  8%     -46.3%    3398214 ±  4%  iozone.2048KB_256reclen.fwrite
+   7819350 ± 19%     -55.2%    3501850 ±  6%  iozone.2048KB_256reclen.random_write
+  11989233 ± 14%     -71.4%    3424885 ±  6%  iozone.2048KB_256reclen.record_rewrite
+   7056075 ± 17%     -53.6%    3272935 ±  5%  iozone.2048KB_256reclen.rewrite
+   4733134 ± 19%     -35.5%    3051341 ±  6%  iozone.2048KB_256reclen.write
+    375013 ±  4%     -20.6%     297592 ± 12%  iozone.2048KB_32reclen
+   5269739 ±  9%     -45.7%    2858907 ± 12%  iozone.2048KB_32reclen.frewrite
+   5178543 ±  7%     -44.5%    2871717 ± 12%  iozone.2048KB_32reclen.fwrite
+   5138533 ±  4%     -42.1%    2972723 ± 11%  iozone.2048KB_32reclen.random_write
+   8859050 ±  5%     -64.9%    3105152 ± 13%  iozone.2048KB_32reclen.record_rewrite
+   5481755 ± 14%     -47.3%    2890654 ± 11%  iozone.2048KB_32reclen.rewrite
+   4133954 ±  4%     -32.8%    2777714 ± 12%  iozone.2048KB_32reclen.write
+   5935222 ± 18%     -41.0%    3503137 ±  6%  iozone.2048KB_512reclen.frewrite
+   5755516 ± 14%     -40.4%    3432196 ±  3%  iozone.2048KB_512reclen.fwrite
+   7882965 ± 13%     -55.4%    3518040 ±  6%  iozone.2048KB_512reclen.random_write
+   9812967 ± 27%     -69.2%    3023544 ± 16%  iozone.2048KB_512reclen.record_rewrite
+   6668951 ± 10%     -52.4%    3173521 ±  6%  iozone.2048KB_512reclen.rewrite
+   4387223 ± 16%     -32.3%    2971535 ±  4%  iozone.2048KB_512reclen.write
+    452484 ± 11%     -20.8%     358435 ±  9%  iozone.2048KB_64reclen
+   5940340 ± 12%     -48.7%    3048096 ±  4%  iozone.2048KB_64reclen.frewrite
+   6047329 ±  4%     -48.5%    3114050 ±  3%  iozone.2048KB_64reclen.fwrite
+   6736254 ±  8%     -51.0%    3299184 ±  4%  iozone.2048KB_64reclen.random_write
+  11611764 ±  8%     -70.8%    3394295 ±  4%  iozone.2048KB_64reclen.record_rewrite
+   6392041 ± 11%     -50.1%    3188337 ±  3%  iozone.2048KB_64reclen.rewrite
+   4636089 ±  4%     -33.3%    3091914 ±  3%  iozone.2048KB_64reclen.write
+   3081425 ±  7%     -25.0%    2309660 ±  7%  iozone.2048KB_8reclen.random_write
+   3470896 ± 16%     -30.0%    2429657 ± 14%  iozone.2048KB_8reclen.record_rewrite
+   3476842 ± 12%     -25.7%    2584243 ±  8%  iozone.2048KB_8reclen.rewrite
+   2896290 ±  7%     -13.1%    2517752 ±  2%  iozone.2048KB_8reclen.write
+   9446659 ± 19%     -49.8%    4740773 ± 19%  iozone.256KB_128reclen.frewrite
+   7603751 ± 19%     -52.2%    3638190 ±  2%  iozone.256KB_128reclen.random_write
+   8755883 ± 17%     -61.4%    3383990 ±  4%  iozone.256KB_128reclen.record_rewrite
+   6438162 ± 21%     -51.5%    3123611 ±  9%  iozone.256KB_128reclen.rewrite
+   4297120 ± 18%     -36.8%    2716274 ± 14%  iozone.256KB_128reclen.write
+   4559373 ±  4%     -39.9%    2739746 ± 15%  iozone.256KB_16reclen.frewrite
+   4647079 ±  5%     -33.3%    3101322 ±  4%  iozone.256KB_16reclen.fwrite
+   4386424 ±  8%     -36.9%    2767743 ±  2%  iozone.256KB_16reclen.random_write
+   5309170 ±  7%     -49.1%    2704335 ±  8%  iozone.256KB_16reclen.record_rewrite
+   4649650 ±  6%     -37.2%    2921374 ±  9%  iozone.256KB_16reclen.rewrite
+   6300156 ± 18%     -52.8%    2972816 ±  6%  iozone.256KB_256reclen.frewrite
+   6706970 ± 16%     -52.9%    3160789 ±  9%  iozone.256KB_256reclen.fwrite
+   7540355 ± 18%     -54.4%    3436809 ±  5%  iozone.256KB_256reclen.random_write
+   7477530 ± 13%     -53.8%    3451828 ±  8%  iozone.256KB_256reclen.record_rewrite
+   6516052 ± 14%     -53.2%    3051536 ±  5%  iozone.256KB_256reclen.rewrite
+   4441003 ± 14%     -36.4%    2826469 ± 11%  iozone.256KB_256reclen.write
+   5352524 ± 16%     -40.9%    3161312 ± 13%  iozone.256KB_32reclen.frewrite
+   5358245 ± 15%     -39.6%    3235923 ± 12%  iozone.256KB_32reclen.fwrite
+   5690762 ±  2%     -45.2%    3120219 ±  4%  iozone.256KB_32reclen.random_write
+   7748557 ±  4%     -59.1%    3172741 ±  4%  iozone.256KB_32reclen.record_rewrite
+   5649007 ± 10%     -46.7%    3009095 ± 12%  iozone.256KB_32reclen.rewrite
+   6259857 ± 16%     -43.4%    3542430 ±  9%  iozone.256KB_64reclen.frewrite
+   6914597 ± 17%     -48.2%    3583163 ± 10%  iozone.256KB_64reclen.fwrite
+   6646532 ± 18%     -49.1%    3381439 ±  8%  iozone.256KB_64reclen.random_write
+   8821271 ± 16%     -63.1%    3258484 ±  6%  iozone.256KB_64reclen.record_rewrite
+   6218666 ± 16%     -54.0%    2857628 ± 12%  iozone.256KB_64reclen.rewrite
+   4063725 ± 16%     -34.2%    2675796 ± 11%  iozone.256KB_64reclen.write
+   3309908 ±  6%     -20.3%    2637427 ±  2%  iozone.256KB_8reclen.frewrite
+   3387771 ±  6%     -23.0%    2607782 ± 10%  iozone.256KB_8reclen.fwrite
+   3449324 ±  9%     -21.5%    2709361 ±  4%  iozone.256KB_8reclen.rewrite
+   2940894 ±  5%     -17.1%    2436701 ±  7%  iozone.256KB_8reclen.write
+    565917 ±  3%     -24.7%     426394        iozone.262144KB_1024reclen
+   7426604 ±  4%     -53.6%    3447449        iozone.262144KB_1024reclen.frewrite
+   7465832 ±  7%     -54.1%    3426029        iozone.262144KB_1024reclen.fwrite
+   9241493 ±  4%     -60.5%    3646617        iozone.262144KB_1024reclen.random_write
+  16705624 ±  3%     -77.8%    3710189        iozone.262144KB_1024reclen.record_rewrite
+   9117761 ±  4%     -59.0%    3739487        iozone.262144KB_1024reclen.rewrite
+   5658804 ±  6%     -41.1%    3333708        iozone.262144KB_1024reclen.write
+    548834 ±  2%     -24.2%     415789 ±  3%  iozone.262144KB_128reclen
+   7580407 ±  4%     -53.9%    3496669        iozone.262144KB_128reclen.frewrite
+   7599726 ±  4%     -54.1%    3491630        iozone.262144KB_128reclen.fwrite
+   8254162 ±  5%     -58.6%    3419671        iozone.262144KB_128reclen.random_write
+  15674857 ±  5%     -76.0%    3757127        iozone.262144KB_128reclen.record_rewrite
+   8578160 ±  4%     -56.7%    3716083        iozone.262144KB_128reclen.rewrite
+   5455478 ±  6%     -38.4%    3362617        iozone.262144KB_128reclen.write
+   5122765 ±  8%     -41.8%    2979344 ±  3%  iozone.262144KB_16384reclen.frewrite
+   5043992 ±  9%     -42.0%    2924477 ±  2%  iozone.262144KB_16384reclen.fwrite
+   6495456 ±  8%     -51.1%    3175821 ±  2%  iozone.262144KB_16384reclen.random_write
+   6973977 ± 10%     -58.0%    2927753 ±  2%  iozone.262144KB_16384reclen.record_rewrite
+   6455402 ±  8%     -50.1%    3223833        iozone.262144KB_16384reclen.rewrite
+   4302269 ±  4%     -32.8%    2890933 ±  2%  iozone.262144KB_16384reclen.write
+    542367 ±  2%     -22.9%     418397 ±  4%  iozone.262144KB_2048reclen
+   6322086 ±  6%     -52.1%    3028214 ±  3%  iozone.262144KB_2048reclen.frewrite
+   6134575 ± 10%     -50.6%    3028663 ±  3%  iozone.262144KB_2048reclen.fwrite
+   8308015 ± 11%     -58.1%    3484881 ±  2%  iozone.262144KB_2048reclen.random_write
+  16212043 ±  2%     -78.2%    3529138 ±  3%  iozone.262144KB_2048reclen.record_rewrite
+   7969765 ± 10%     -54.8%    3604916 ±  3%  iozone.262144KB_2048reclen.rewrite
+   5300877 ± 14%     -39.8%    3192843 ±  3%  iozone.262144KB_2048reclen.write
+    554017           -26.2%     408919        iozone.262144KB_256reclen
+  13019165            -6.0%   12236091 ±  2%  iozone.262144KB_256reclen.fread
+  12622409 ±  2%      -7.1%   11731982 ±  4%  iozone.262144KB_256reclen.freread
+   7704530 ±  2%     -54.8%    3482335        iozone.262144KB_256reclen.frewrite
+   7812833 ±  4%     -55.9%    3446681 ±  2%  iozone.262144KB_256reclen.fwrite
+   8835487 ±  5%     -60.1%    3523916 ±  4%  iozone.262144KB_256reclen.random_write
+  15997491 ±  4%     -76.7%    3730589        iozone.262144KB_256reclen.record_rewrite
+   9008693 ±  4%     -58.9%    3699947 ±  2%  iozone.262144KB_256reclen.rewrite
+   5557851 ±  5%     -39.2%    3378939        iozone.262144KB_256reclen.write
+    474514 ±  4%     -23.1%     364705 ±  9%  iozone.262144KB_4096reclen
+   5309234 ±  9%     -45.8%    2878750 ±  3%  iozone.262144KB_4096reclen.frewrite
+   5093529 ±  5%     -44.3%    2834589        iozone.262144KB_4096reclen.fwrite
+   7364778 ±  7%     -55.6%    3267439 ±  2%  iozone.262144KB_4096reclen.random_write
+  10366266 ± 20%     -69.5%    3156979 ±  4%  iozone.262144KB_4096reclen.record_rewrite
+   7365247 ±  5%     -54.8%    3330171 ±  2%  iozone.262144KB_4096reclen.rewrite
+   4798280 ±  7%     -38.1%    2968182 ±  7%  iozone.262144KB_4096reclen.write
+    563088 ±  3%     -25.9%     417441        iozone.262144KB_512reclen
+   7752515 ±  5%     -55.0%    3488123        iozone.262144KB_512reclen.frewrite
+   7707353 ±  5%     -55.0%    3465149 ±  2%  iozone.262144KB_512reclen.fwrite
+   9122558 ±  7%     -60.3%    3619515        iozone.262144KB_512reclen.random_write
+  16131006 ±  4%     -76.9%    3723603        iozone.262144KB_512reclen.record_rewrite
+   9178400 ±  4%     -59.1%    3751173        iozone.262144KB_512reclen.rewrite
+   5645649 ±  6%     -40.0%    3384873        iozone.262144KB_512reclen.write
+    504017 ±  3%     -21.9%     393712 ±  2%  iozone.262144KB_64reclen
+   6978079 ±  3%     -52.7%    3299284 ±  5%  iozone.262144KB_64reclen.frewrite
+   7041202 ±  3%     -51.8%    3391815 ±  2%  iozone.262144KB_64reclen.fwrite
+   7114665 ±  7%     -54.6%    3231979        iozone.262144KB_64reclen.random_write
+  13278679 ±  8%     -72.3%    3672374        iozone.262144KB_64reclen.record_rewrite
+   7586597 ±  2%     -52.0%    3644015        iozone.262144KB_64reclen.rewrite
+   5143061 ±  5%     -35.8%    3304019 ±  2%  iozone.262144KB_64reclen.write
+   5066711 ±  9%     -43.8%    2845739 ±  2%  iozone.262144KB_8192reclen.frewrite
+   4851138 ± 10%     -40.9%    2865015        iozone.262144KB_8192reclen.fwrite
+   6278072 ± 11%     -49.0%    3198761 ±  4%  iozone.262144KB_8192reclen.random_write
+   7316116 ± 13%     -59.0%    2998594 ±  2%  iozone.262144KB_8192reclen.record_rewrite
+   6450681 ±  6%     -50.0%    3228542 ±  2%  iozone.262144KB_8192reclen.rewrite
+   4436484 ±  5%     -33.3%    2960325        iozone.262144KB_8192reclen.write
+    520469 ±  2%     -22.5%     403395 ±  2%  iozone.32768KB_1024reclen
+   6865305 ±  7%     -50.5%    3401362        iozone.32768KB_1024reclen.frewrite
+   7344207 ±  2%     -52.8%    3464329        iozone.32768KB_1024reclen.fwrite
+   8864633 ±  4%     -60.4%    3513828 ±  9%  iozone.32768KB_1024reclen.random_write
+  16492032 ±  4%     -78.0%    3628653 ±  5%  iozone.32768KB_1024reclen.record_rewrite
+  11235546 ±  2%      +4.9%   11791425 ±  2%  iozone.32768KB_1024reclen.reread
+   8292466 ±  5%     -57.5%    3523443 ±  5%  iozone.32768KB_1024reclen.rewrite
+   4828682 ± 20%     -37.0%    3042222 ± 13%  iozone.32768KB_1024reclen.write
+    520358 ±  3%     -26.5%     382529 ±  6%  iozone.32768KB_128reclen
+   7345834 ±  2%     -53.2%    3440812        iozone.32768KB_128reclen.frewrite
+   7129775 ±  7%     -54.6%    3238633 ± 12%  iozone.32768KB_128reclen.fwrite
+   8363525 ±  5%     -59.5%    3387573 ± 13%  iozone.32768KB_128reclen.random_write
+  15671110 ±  7%     -76.4%    3705583 ±  2%  iozone.32768KB_128reclen.record_rewrite
+   8327280 ±  4%     -58.5%    3451855 ±  9%  iozone.32768KB_128reclen.rewrite
+   5254021 ±  3%     -35.4%    3394572        iozone.32768KB_128reclen.write
+   8066011 ± 14%     -37.1%    5071119 ±  2%  iozone.32768KB_16384reclen.frewrite
+   6501615 ±  8%     -33.0%    4358118 ±  5%  iozone.32768KB_16384reclen.fwrite
+   6098219 ±  9%     -47.8%    3183470 ±  2%  iozone.32768KB_16384reclen.random_write
+   6585067 ± 10%     -53.5%    3061524        iozone.32768KB_16384reclen.record_rewrite
+   6353925 ±  5%     -49.5%    3206168        iozone.32768KB_16384reclen.rewrite
+   4210893 ±  5%     -29.3%    2977793        iozone.32768KB_16384reclen.write
+    522544 ±  2%     -23.6%     399333        iozone.32768KB_2048reclen
+   5825805 ±  4%     -46.8%    3099754 ±  5%  iozone.32768KB_2048reclen.frewrite
+   5988705 ±  7%     -47.7%    3131337 ±  5%  iozone.32768KB_2048reclen.fwrite
+   7737310 ± 13%     -54.7%    3506923 ±  5%  iozone.32768KB_2048reclen.random_write
+  16280549 ±  3%     -78.4%    3515026 ± 11%  iozone.32768KB_2048reclen.record_rewrite
+   7342137 ±  9%     -53.4%    3422572 ±  4%  iozone.32768KB_2048reclen.rewrite
+   4608264 ±  8%     -35.2%    2985182 ± 14%  iozone.32768KB_2048reclen.write
+    514576 ±  3%     -24.1%     390757 ±  2%  iozone.32768KB_256reclen
+   7237739 ±  4%     -52.7%    3423888        iozone.32768KB_256reclen.frewrite
+   7300628 ±  4%     -52.6%    3458449        iozone.32768KB_256reclen.fwrite
+   8901040 ±  4%     -59.2%    3631801        iozone.32768KB_256reclen.random_write
+  16048341 ±  4%     -78.5%    3445786 ± 11%  iozone.32768KB_256reclen.record_rewrite
+   8280876 ±  3%     -57.1%    3555933 ±  8%  iozone.32768KB_256reclen.rewrite
+   5120802 ± 15%     -37.3%    3208182 ± 13%  iozone.32768KB_256reclen.write
+   5646923 ±  7%     -42.2%    3265200        iozone.32768KB_4096reclen.frewrite
+   5116212 ± 18%     -39.5%    3095721 ±  8%  iozone.32768KB_4096reclen.fwrite
+   6684645 ± 10%     -50.6%    3301571 ±  4%  iozone.32768KB_4096reclen.random_write
+  10282683 ± 24%     -65.8%    3515692        iozone.32768KB_4096reclen.record_rewrite
+   6857545 ±  3%     -51.2%    3348852        iozone.32768KB_4096reclen.rewrite
+   4366899 ± 12%     -35.0%    2839282 ± 11%  iozone.32768KB_4096reclen.write
+    529392 ±  3%     -25.9%     392508 ±  3%  iozone.32768KB_512reclen
+   7040580 ±  5%     -51.0%    3453327        iozone.32768KB_512reclen.frewrite
+   7364648 ±  2%     -53.5%    3425392 ±  2%  iozone.32768KB_512reclen.fwrite
+   8918336 ±  6%     -59.6%    3603100 ±  3%  iozone.32768KB_512reclen.random_write
+  15612101 ±  7%     -76.0%    3741355        iozone.32768KB_512reclen.record_rewrite
+  11511261            -7.9%   10602443 ±  7%  iozone.32768KB_512reclen.reread
+   8402000 ±  4%     -58.6%    3482441 ±  6%  iozone.32768KB_512reclen.rewrite
+   5168215 ± 15%     -40.1%    3097976 ± 13%  iozone.32768KB_512reclen.write
+    480712 ±  6%     -20.3%     382907 ±  2%  iozone.32768KB_64reclen
+   6825879 ±  3%     -50.2%    3401691        iozone.32768KB_64reclen.frewrite
+   6690195 ±  6%     -48.8%    3427805        iozone.32768KB_64reclen.fwrite
+   7198635 ± 10%     -52.0%    3457655        iozone.32768KB_64reclen.random_write
+  13214747 ±  7%     -71.9%    3707938        iozone.32768KB_64reclen.record_rewrite
+   7547549 ±  4%     -52.2%    3608505        iozone.32768KB_64reclen.rewrite
+   4935168 ±  9%     -32.0%    3353703        iozone.32768KB_64reclen.write
+    393804 ±  4%     -21.0%     311208 ±  5%  iozone.32768KB_8192reclen
+   6301898 ±  5%     -44.5%    3499366 ±  4%  iozone.32768KB_8192reclen.frewrite
+   6295064 ±  7%     -41.5%    3680383        iozone.32768KB_8192reclen.fwrite
+   9535662 ±  2%     -21.0%    7533567 ± 15%  iozone.32768KB_8192reclen.random_read
+   6543055           -52.3%    3121724 ±  2%  iozone.32768KB_8192reclen.random_write
+   7549220 ±  8%     -60.0%    3016909 ±  2%  iozone.32768KB_8192reclen.record_rewrite
+   6235066 ±  5%     -49.2%    3166141 ±  2%  iozone.32768KB_8192reclen.rewrite
+   3951810 ± 13%     -27.2%    2878694 ±  6%  iozone.32768KB_8192reclen.write
+    410587 ±  7%     -18.8%     333504 ±  8%  iozone.4096KB_1024reclen
+   5581206 ± 14%     -36.4%    3551408 ±  6%  iozone.4096KB_1024reclen.frewrite
+   4963156 ± 11%     -32.6%    3346141 ±  6%  iozone.4096KB_1024reclen.fwrite
+  10197657 ± 15%     -60.9%    3984266        iozone.4096KB_1024reclen.random_write
+   9292095 ±  4%     -65.2%    3237748 ± 16%  iozone.4096KB_1024reclen.record_rewrite
+   6008436 ± 12%     -48.7%    3083516 ±  4%  iozone.4096KB_1024reclen.rewrite
+   4580562 ± 14%     -34.7%    2990265 ±  5%  iozone.4096KB_1024reclen.write
+    446062 ±  7%     -19.2%     360512        iozone.4096KB_128reclen
+   6407111 ±  3%     -49.6%    3230105 ±  4%  iozone.4096KB_128reclen.frewrite
+   6033084 ±  8%     -47.1%    3193901 ±  2%  iozone.4096KB_128reclen.fwrite
+   8353476 ± 13%     -55.7%    3699894        iozone.4096KB_128reclen.random_write
+  13371492 ± 17%     -72.8%    3632717 ±  3%  iozone.4096KB_128reclen.record_rewrite
+   6698376 ±  8%     -49.4%    3388864        iozone.4096KB_128reclen.rewrite
+   4758658 ± 13%     -33.5%    3163675 ±  3%  iozone.4096KB_128reclen.write
+    317419 ±  3%     -15.3%     268982 ±  2%  iozone.4096KB_16reclen
+   4412358 ±  5%     -32.8%    2964307 ±  2%  iozone.4096KB_16reclen.frewrite
+   4482749 ±  9%     -34.9%    2917748 ±  2%  iozone.4096KB_16reclen.fwrite
+   4844116 ±  9%     -38.9%    2961492 ±  3%  iozone.4096KB_16reclen.random_write
+   5829791 ± 12%     -47.0%    3090613 ±  2%  iozone.4096KB_16reclen.record_rewrite
+   4799124 ±  3%     -36.5%    3048105 ±  3%  iozone.4096KB_16reclen.rewrite
+   3680378 ±  4%     -23.9%    2802502 ±  2%  iozone.4096KB_16reclen.write
+    400116 ±  6%     -15.0%     340096 ±  2%  iozone.4096KB_2048reclen
+   7868614 ±  8%     -40.9%    4654236 ±  8%  iozone.4096KB_2048reclen.frewrite
+   3987532 ±  9%     -19.5%    3209474 ±  4%  iozone.4096KB_2048reclen.fwrite
+   9991875 ± 19%     -60.2%    3977591 ±  5%  iozone.4096KB_2048reclen.random_write
+   9042388 ±  8%     -61.9%    3444073 ±  2%  iozone.4096KB_2048reclen.record_rewrite
+   5365959 ±  6%     -43.4%    3034539 ±  3%  iozone.4096KB_2048reclen.rewrite
+   4099336 ± 10%     -27.4%    2975606 ±  3%  iozone.4096KB_2048reclen.write
+    473068 ±  6%     -17.5%     390054 ±  4%  iozone.4096KB_256reclen
+   6284695 ±  9%     -49.4%    3177255 ±  2%  iozone.4096KB_256reclen.frewrite
+   6025809 ±  9%     -46.8%    3206110 ±  2%  iozone.4096KB_256reclen.fwrite
+   8872736 ± 13%     -57.9%    3735368        iozone.4096KB_256reclen.random_write
+  12166515 ± 14%     -70.5%    3587021        iozone.4096KB_256reclen.record_rewrite
+   6906230 ± 13%     -51.6%    3342769 ±  2%  iozone.4096KB_256reclen.rewrite
+   4802214 ± 13%     -32.9%    3222318 ±  2%  iozone.4096KB_256reclen.write
+    392538 ±  6%     -20.0%     314015 ±  3%  iozone.4096KB_32reclen
+   5166220 ± 12%     -41.5%    3022049 ±  4%  iozone.4096KB_32reclen.frewrite
+   5287356 ± 13%     -43.4%    2993166 ±  2%  iozone.4096KB_32reclen.fwrite
+   6648671 ±  5%     -49.9%    3332904 ±  2%  iozone.4096KB_32reclen.random_write
+   8724643 ± 13%     -60.9%    3415035        iozone.4096KB_32reclen.record_rewrite
+   6000969 ±  8%     -46.1%    3234179        iozone.4096KB_32reclen.rewrite
+   4412112 ±  5%     -30.6%    3064044        iozone.4096KB_32reclen.write
+    407911 ±  6%     -14.1%     350231        iozone.4096KB_4096reclen
+   5645033 ± 10%     -47.3%    2977074 ±  5%  iozone.4096KB_4096reclen.frewrite
+   5443644 ±  3%     -45.7%    2956973        iozone.4096KB_4096reclen.fwrite
+   9344545 ±  8%     -58.4%    3883484        iozone.4096KB_4096reclen.random_write
+   7819624 ± 10%     -56.3%    3413703 ±  2%  iozone.4096KB_4096reclen.record_rewrite
+   5468720 ± 11%     -44.6%    3029332 ±  2%  iozone.4096KB_4096reclen.rewrite
+   4997122 ±  7%     -37.3%    3132483        iozone.4096KB_4096reclen.write
+   5504982 ±  9%     -42.3%    3178736 ±  3%  iozone.4096KB_512reclen.frewrite
+   5520488 ±  7%     -42.5%    3173812 ±  6%  iozone.4096KB_512reclen.fwrite
+   9231637 ± 13%     -58.9%    3792217        iozone.4096KB_512reclen.random_write
+  10670349 ± 16%     -67.6%    3453684        iozone.4096KB_512reclen.record_rewrite
+   6376172 ± 13%     -49.2%    3237695 ±  2%  iozone.4096KB_512reclen.rewrite
+   4817759 ±  6%     -35.1%    3127697        iozone.4096KB_512reclen.write
+    421961 ±  5%     -19.9%     338058 ±  2%  iozone.4096KB_64reclen
+   5633467 ±  7%     -44.1%    3147447 ±  2%  iozone.4096KB_64reclen.frewrite
+   5660179 ±  5%     -44.8%    3124977 ±  3%  iozone.4096KB_64reclen.fwrite
+   7673862 ±  7%     -53.0%    3605881        iozone.4096KB_64reclen.random_write
+  11265069 ± 15%     -68.4%    3559151 ±  2%  iozone.4096KB_64reclen.record_rewrite
+   6544015 ±  5%     -49.2%    3322831        iozone.4096KB_64reclen.rewrite
+   4506577 ± 10%     -28.6%    3217752 ±  2%  iozone.4096KB_64reclen.write
+    236006 ±  4%     -13.9%     203254 ±  7%  iozone.4096KB_8reclen
+   3321733 ±  5%     -24.6%    2504197 ±  5%  iozone.4096KB_8reclen.frewrite
+   3436964 ±  6%     -22.2%    2674833        iozone.4096KB_8reclen.fwrite
+   3140234 ± 12%     -27.0%    2293239 ± 16%  iozone.4096KB_8reclen.random_write
+   3692256 ± 11%     -28.6%    2637149        iozone.4096KB_8reclen.record_rewrite
+   6484428 ±  2%     -11.9%    5711723 ± 12%  iozone.4096KB_8reclen.reread
+   3633536 ±  3%     -29.3%    2567758 ± 13%  iozone.4096KB_8reclen.rewrite
+   3079501 ±  5%     -19.3%    2483867 ± 14%  iozone.4096KB_8reclen.write
+    476193 ±  7%     -22.5%     369196 ±  8%  iozone.512KB_128reclen
+   6530898 ± 17%     -46.2%    3514641 ±  3%  iozone.512KB_128reclen.frewrite
+   6822052 ±  8%     -48.1%    3543008 ±  9%  iozone.512KB_128reclen.fwrite
+   8081924 ± 13%     -62.1%    3060587 ± 12%  iozone.512KB_128reclen.random_write
+   9905588 ± 14%     -66.8%    3286321 ± 12%  iozone.512KB_128reclen.record_rewrite
+   6311295 ± 10%     -55.1%    2831485 ± 14%  iozone.512KB_128reclen.rewrite
+   4269431 ±  5%     -34.2%    2811007 ± 15%  iozone.512KB_128reclen.write
+   4279482 ± 15%     -36.4%    2719661 ±  2%  iozone.512KB_16reclen.frewrite
+   4415628 ± 13%     -36.5%    2802469 ±  9%  iozone.512KB_16reclen.fwrite
+   4095069 ± 13%     -34.8%    2669395 ±  5%  iozone.512KB_16reclen.random_write
+   5485427 ± 17%     -50.2%    2732355 ±  3%  iozone.512KB_16reclen.record_rewrite
+   4150782 ± 22%     -35.0%    2697202 ±  7%  iozone.512KB_16reclen.rewrite
+    460266 ±  4%     -17.0%     381794 ±  3%  iozone.512KB_256reclen
+   8556758 ±  8%     -43.8%    4810503 ±  9%  iozone.512KB_256reclen.frewrite
+   4821544 ±  8%     -29.7%    3389921 ±  6%  iozone.512KB_256reclen.fwrite
+   8131467 ± 11%     -55.6%    3612634 ±  2%  iozone.512KB_256reclen.random_write
+   9058008 ±  9%     -64.8%    3190513 ±  8%  iozone.512KB_256reclen.record_rewrite
+   6719047 ± 10%     -56.8%    2904750 ± 11%  iozone.512KB_256reclen.rewrite
+   4373093 ±  6%     -40.7%    2592783 ±  5%  iozone.512KB_256reclen.write
+    393424 ±  7%     -13.3%     341171 ±  2%  iozone.512KB_32reclen
+   4895953 ±  7%     -42.6%    2811812 ± 13%  iozone.512KB_32reclen.frewrite
+   5181996 ±  8%     -42.1%    3001102 ±  8%  iozone.512KB_32reclen.fwrite
+   6088473 ± 17%     -47.9%    3170840 ±  7%  iozone.512KB_32reclen.random_write
+   8043848 ±  8%     -61.2%    3123743 ±  6%  iozone.512KB_32reclen.record_rewrite
+   5180448 ±  5%     -43.3%    2936157 ± 10%  iozone.512KB_32reclen.rewrite
+   3782107 ± 13%     -28.2%    2713878 ±  7%  iozone.512KB_32reclen.write
+   6285151 ± 17%     -50.6%    3107107 ±  3%  iozone.512KB_512reclen.frewrite
+   6338153 ±  9%     -53.6%    2940734 ±  8%  iozone.512KB_512reclen.fwrite
+   7737841 ±  8%     -52.8%    3654890 ±  5%  iozone.512KB_512reclen.random_write
+   7350493 ± 16%     -55.0%    3304559 ±  4%  iozone.512KB_512reclen.record_rewrite
+   6702196 ±  7%     -55.6%    2975296 ±  7%  iozone.512KB_512reclen.rewrite
+   4282814 ± 10%     -38.4%    2637095 ±  7%  iozone.512KB_512reclen.write
+    461038 ±  4%     -21.9%     360197 ±  4%  iozone.512KB_64reclen
+   5976515 ±  4%     -48.3%    3089257 ±  5%  iozone.512KB_64reclen.frewrite
+   6215990 ±  5%     -48.7%    3190509 ±  3%  iozone.512KB_64reclen.fwrite
+   7028609 ± 10%     -51.9%    3378061 ±  5%  iozone.512KB_64reclen.random_write
+  11056059 ±  5%     -12.0%    9732466 ±  6%  iozone.512KB_64reclen.read
+   9887177 ± 14%     -66.7%    3288094 ±  8%  iozone.512KB_64reclen.record_rewrite
+   6086083 ±  4%     -49.6%    3065835 ±  8%  iozone.512KB_64reclen.rewrite
+   4121861 ± 10%     -33.8%    2729029 ±  6%  iozone.512KB_64reclen.write
+   5478377 ±  8%     +10.9%    6076595        iozone.512KB_8reclen.freread
+   3144247 ±  5%     -23.4%    2407541 ±  7%  iozone.512KB_8reclen.frewrite
+   3264788 ±  8%     -22.0%    2546212 ±  3%  iozone.512KB_8reclen.fwrite
+    546111 ±  3%     -21.6%     428357 ±  2%  iozone.524288KB_1024reclen
+   7147373 ±  8%     -51.7%    3453896        iozone.524288KB_1024reclen.frewrite
+   7619267 ±  7%     -54.3%    3479943        iozone.524288KB_1024reclen.fwrite
+   8971485 ±  4%     -59.7%    3618266        iozone.524288KB_1024reclen.random_write
+  11472240 ±  6%      +7.7%   12360252 ±  4%  iozone.524288KB_1024reclen.read
+  16359250 ±  4%     -77.2%    3723122        iozone.524288KB_1024reclen.record_rewrite
+   8956596 ±  3%     -58.8%    3692978        iozone.524288KB_1024reclen.rewrite
+   5561660 ±  5%     -39.8%    3349116        iozone.524288KB_1024reclen.write
+    544356 ±  3%     -24.1%     413231 ±  2%  iozone.524288KB_128reclen
+   7586281 ±  4%     -54.3%    3468246        iozone.524288KB_128reclen.frewrite
+   7799627 ±  4%     -55.6%    3460094        iozone.524288KB_128reclen.fwrite
+   8203000 ±  5%     -58.8%    3375607        iozone.524288KB_128reclen.random_write
+  14847756 ± 14%     -74.7%    3761943        iozone.524288KB_128reclen.record_rewrite
+   8675467 ±  5%     -57.2%    3714167        iozone.524288KB_128reclen.rewrite
+   5444683 ±  7%     -39.0%    3321742        iozone.524288KB_128reclen.write
+   4804260 ± 10%     -39.9%    2886096 ±  3%  iozone.524288KB_16384reclen.frewrite
+   4932218 ± 13%     -41.0%    2910119 ±  2%  iozone.524288KB_16384reclen.fwrite
+   6144575 ±  9%     -48.1%    3186721 ±  3%  iozone.524288KB_16384reclen.random_write
+   6068686 ±  9%     -52.3%    2891868        iozone.524288KB_16384reclen.record_rewrite
+   6144818 ± 10%     -47.9%    3202812 ±  2%  iozone.524288KB_16384reclen.rewrite
+   4393484 ±  4%     -33.1%    2939119 ±  2%  iozone.524288KB_16384reclen.write
+    531931 ±  6%     -20.6%     422173 ±  3%  iozone.524288KB_2048reclen
+   5305317 ± 10%     -43.0%    3025608 ±  4%  iozone.524288KB_2048reclen.frewrite
+   5693440 ±  9%     -45.9%    3082446 ±  3%  iozone.524288KB_2048reclen.fwrite
+   7698042 ± 11%     -55.0%    3462543 ±  2%  iozone.524288KB_2048reclen.random_write
+  15532439 ± 10%     -77.3%    3527035 ±  3%  iozone.524288KB_2048reclen.record_rewrite
+   7919782 ± 15%     -54.8%    3582221 ±  4%  iozone.524288KB_2048reclen.rewrite
+   5033940 ± 12%     -36.7%    3186813        iozone.524288KB_2048reclen.write
+    551674 ±  3%     -25.1%     413284 ±  3%  iozone.524288KB_256reclen
+   7720443 ±  5%     -55.4%    3440267 ±  2%  iozone.524288KB_256reclen.frewrite
+   7697144 ±  2%     -55.1%    3454789        iozone.524288KB_256reclen.fwrite
+   8736880 ±  4%     -59.9%    3503065        iozone.524288KB_256reclen.random_write
+  16137422 ±  5%     -77.1%    3703151        iozone.524288KB_256reclen.record_rewrite
+   9146274 ±  5%     -58.9%    3759435        iozone.524288KB_256reclen.rewrite
+   5495525 ±  6%     -39.3%    3338003 ±  2%  iozone.524288KB_256reclen.write
+   5118402 ± 12%     -44.7%    2831910 ±  3%  iozone.524288KB_4096reclen.frewrite
+   5225137 ± 10%     -44.5%    2897829 ±  4%  iozone.524288KB_4096reclen.fwrite
+   6682671 ±  9%     -50.9%    3282453 ±  2%  iozone.524288KB_4096reclen.random_write
+  10213606 ± 19%     -69.7%    3092221 ±  3%  iozone.524288KB_4096reclen.record_rewrite
+   6601112 ± 13%     -49.0%    3365783 ±  2%  iozone.524288KB_4096reclen.rewrite
+   4543441 ±  5%     -34.3%    2982887 ±  3%  iozone.524288KB_4096reclen.write
+    563145 ±  2%     -24.3%     426078 ±  3%  iozone.524288KB_512reclen
+   7877345 ±  4%     -55.8%    3482088        iozone.524288KB_512reclen.frewrite
+   7911042 ±  3%     -56.0%    3480149        iozone.524288KB_512reclen.fwrite
+   9103372 ±  6%     -60.4%    3603133        iozone.524288KB_512reclen.random_write
+  16296711 ±  3%     -77.2%    3712815        iozone.524288KB_512reclen.record_rewrite
+   9176768 ±  6%     -59.3%    3732033        iozone.524288KB_512reclen.rewrite
+   5593247 ±  6%     -40.3%    3341511 ±  3%  iozone.524288KB_512reclen.write
+    505113           -21.1%     398547        iozone.524288KB_64reclen
+   7015773 ±  4%     -50.9%    3446298        iozone.524288KB_64reclen.frewrite
+   7106825 ±  2%     -51.4%    3451915        iozone.524288KB_64reclen.fwrite
+   7018984 ±  3%     -54.3%    3207930        iozone.524288KB_64reclen.random_write
+  13071765 ± 10%     -71.8%    3692656        iozone.524288KB_64reclen.record_rewrite
+   7791774 ±  3%     -53.2%    3646300        iozone.524288KB_64reclen.rewrite
+   5080218           -35.4%    3282308 ±  2%  iozone.524288KB_64reclen.write
+   4473639 ±  6%     -38.0%    2772538 ±  3%  iozone.524288KB_8192reclen.frewrite
+   4665490 ± 13%     -38.2%    2885216 ±  3%  iozone.524288KB_8192reclen.fwrite
+   5959551 ±  9%     -46.4%    3194100 ±  2%  iozone.524288KB_8192reclen.random_write
+   6651150 ± 16%     -56.5%    2894310 ±  2%  iozone.524288KB_8192reclen.record_rewrite
+   5990381 ±  9%     -45.7%    3253373 ±  3%  iozone.524288KB_8192reclen.rewrite
+   4124475 ±  5%     -28.9%    2931933 ±  2%  iozone.524288KB_8192reclen.write
+    366230 ± 11%     -23.1%     281729 ± 20%  iozone.64KB_16reclen
+   4199734 ± 11%     -37.5%    2626023 ± 19%  iozone.64KB_16reclen.frewrite
+   3822917 ±  9%     -33.1%    2558035 ± 16%  iozone.64KB_16reclen.fwrite
+   3601543 ± 13%     -40.6%    2139824 ± 17%  iozone.64KB_16reclen.random_write
+   4056590 ±  9%     -47.7%    2120903 ± 16%  iozone.64KB_16reclen.record_rewrite
+   3459658 ± 13%     -39.8%    2083160 ± 18%  iozone.64KB_16reclen.rewrite
+   8427164 ±  4%     -20.1%    6732788 ± 13%  iozone.64KB_16reclen.stride_read
+   6120260 ± 12%     -36.5%    3889010 ± 10%  iozone.64KB_32reclen.frewrite
+   4801505 ± 15%     -47.0%    2545830 ± 14%  iozone.64KB_32reclen.record_rewrite
+   3263725 ± 16%     -34.9%    2124296 ± 10%  iozone.64KB_32reclen.write
+   4880991 ± 17%     -43.0%    2784004 ± 15%  iozone.64KB_64reclen.fwrite
+   5292359 ± 17%     -44.7%    2928253 ± 12%  iozone.64KB_64reclen.random_write
+   5648278 ±  7%     -48.1%    2930218 ± 14%  iozone.64KB_64reclen.record_rewrite
+   4698367 ± 18%     -42.1%    2719953 ± 12%  iozone.64KB_64reclen.rewrite
+    256272 ±  8%     -20.3%     204300 ± 19%  iozone.64KB_8reclen
+   3018760 ±  5%     -28.6%    2154883 ± 17%  iozone.64KB_8reclen.fwrite
+   2589554 ±  9%     -30.9%    1790083 ± 20%  iozone.64KB_8reclen.random_write
+   2776391 ±  5%     -34.0%    1831472 ± 20%  iozone.64KB_8reclen.record_rewrite
+   9689106 ±  6%     -24.4%    7325245 ± 22%  iozone.64KB_8reclen.reread
+   2780070 ±  8%     -26.5%    2044117 ± 19%  iozone.64KB_8reclen.rewrite
+    523517 ±  5%     -21.4%     411517 ±  3%  iozone.65536KB_1024reclen
+   7309716 ±  6%     -52.8%    3449150        iozone.65536KB_1024reclen.frewrite
+   7136170 ± 10%     -51.8%    3436908        iozone.65536KB_1024reclen.fwrite
+   8589516 ±  8%     -57.5%    3653446        iozone.65536KB_1024reclen.random_write
+  16522904 ±  3%     -77.4%    3740756        iozone.65536KB_1024reclen.record_rewrite
+   8237647 ± 13%     -55.2%    3693916        iozone.65536KB_1024reclen.rewrite
+   5028003 ± 15%     -32.8%    3379528        iozone.65536KB_1024reclen.write
+    532763 ±  3%     -25.6%     396335 ±  3%  iozone.65536KB_128reclen
+   7333316 ±  2%     -52.8%    3461546        iozone.65536KB_128reclen.frewrite
+   7291372 ±  6%     -52.5%    3461086 ±  2%  iozone.65536KB_128reclen.fwrite
+  11653668 ±  2%      -7.9%   10737854 ±  5%  iozone.65536KB_128reclen.random_read
+   8279730 ±  4%     -58.6%    3425741 ±  6%  iozone.65536KB_128reclen.random_write
+  15784970 ±  6%     -77.4%    3564663 ± 13%  iozone.65536KB_128reclen.record_rewrite
+   8209229 ±  4%     -57.6%    3480549 ± 10%  iozone.65536KB_128reclen.rewrite
+   5385626 ±  7%     -38.9%    3292029 ±  7%  iozone.65536KB_128reclen.write
+    364555 ±  5%     -14.9%     310230 ±  3%  iozone.65536KB_16384reclen
+   6121630 ±  8%     -43.7%    3444762 ±  5%  iozone.65536KB_16384reclen.frewrite
+   5977371 ± 11%     -39.8%    3600389 ±  2%  iozone.65536KB_16384reclen.fwrite
+   5875081 ±  7%     -46.1%    3168819        iozone.65536KB_16384reclen.random_write
+   6547127 ± 12%     -55.1%    2937757 ±  2%  iozone.65536KB_16384reclen.record_rewrite
+   6309500 ±  6%     -49.4%    3194181        iozone.65536KB_16384reclen.rewrite
+   4280168 ±  9%     -30.3%    2981202        iozone.65536KB_16384reclen.write
+    523194 ±  3%     -24.7%     393917 ±  3%  iozone.65536KB_2048reclen
+   6033279 ±  7%     -47.9%    3140454 ±  4%  iozone.65536KB_2048reclen.frewrite
+   5694042 ± 10%     -45.9%    3078205 ±  3%  iozone.65536KB_2048reclen.fwrite
+   8145174 ± 12%     -59.9%    3266812 ± 11%  iozone.65536KB_2048reclen.random_write
+  15342282 ±  6%     -76.6%    3590795 ±  2%  iozone.65536KB_2048reclen.record_rewrite
+   8223228 ±  8%     -56.4%    3581365 ±  2%  iozone.65536KB_2048reclen.rewrite
+   4780028 ± 13%     -32.8%    3211311        iozone.65536KB_2048reclen.write
+    533351 ±  3%     -24.5%     402890 ±  4%  iozone.65536KB_256reclen
+  12079128 ±  2%      -6.9%   11241418 ±  5%  iozone.65536KB_256reclen.bkwd_read
+   7334735 ±  8%     -52.5%    3480491        iozone.65536KB_256reclen.frewrite
+   7534682 ±  3%     -53.8%    3481345        iozone.65536KB_256reclen.fwrite
+   8373364 ± 10%     -58.8%    3453897 ±  9%  iozone.65536KB_256reclen.random_write
+  15885493 ±  5%     -76.3%    3761757        iozone.65536KB_256reclen.record_rewrite
+   8576540 ±  5%     -58.7%    3543897 ± 12%  iozone.65536KB_256reclen.rewrite
+   5497339 ±  5%     -41.8%    3201097 ± 12%  iozone.65536KB_256reclen.write
+    447161 ±  7%     -11.7%     395001 ±  5%  iozone.65536KB_4096reclen
+  10988607 ±  3%      +7.3%   11794894        iozone.65536KB_4096reclen.bkwd_read
+   5013257 ± 15%     -39.4%    3039515 ±  2%  iozone.65536KB_4096reclen.frewrite
+   4813077 ± 13%     -36.3%    3064406 ±  3%  iozone.65536KB_4096reclen.fwrite
+   6399770 ± 10%     -46.8%    3407474 ±  2%  iozone.65536KB_4096reclen.random_write
+  10205662 ± 19%     -66.2%    3454282 ±  4%  iozone.65536KB_4096reclen.record_rewrite
+   6482710 ±  9%     -48.2%    3357054 ±  2%  iozone.65536KB_4096reclen.rewrite
+   4401916 ± 11%     -30.4%    3065639        iozone.65536KB_4096reclen.write
+    535125 ±  3%     -23.3%     410409        iozone.65536KB_512reclen
+   7295801 ±  9%     -52.2%    3487131        iozone.65536KB_512reclen.frewrite
+   7315293 ±  5%     -52.5%    3476743        iozone.65536KB_512reclen.fwrite
+   8838896 ±  5%     -59.8%    3555162 ±  4%  iozone.65536KB_512reclen.random_write
+  16004485 ±  5%     -76.7%    3725394        iozone.65536KB_512reclen.record_rewrite
+   8725959 ±  5%     -58.4%    3632000 ±  5%  iozone.65536KB_512reclen.rewrite
+   5498540 ±  7%     -40.1%    3291327 ±  6%  iozone.65536KB_512reclen.write
+    493180 ±  2%     -22.4%     382816        iozone.65536KB_64reclen
+   6810831 ±  6%     -50.0%    3407101        iozone.65536KB_64reclen.frewrite
+   6441149 ± 15%     -47.1%    3406167        iozone.65536KB_64reclen.fwrite
+   7150939 ±  4%     -53.0%    3361410        iozone.65536KB_64reclen.random_write
+  13342191 ±  8%     -72.4%    3680370        iozone.65536KB_64reclen.record_rewrite
+   7346364 ±  4%     -50.4%    3644451        iozone.65536KB_64reclen.rewrite
+   5059274 ±  5%     -34.1%    3333866        iozone.65536KB_64reclen.write
+    367800 ±  8%     -13.0%     319920 ±  4%  iozone.65536KB_8192reclen
+   5130108 ± 13%     -38.7%    3144695 ±  2%  iozone.65536KB_8192reclen.frewrite
+   5282928 ± 14%     -43.3%    2993237 ±  4%  iozone.65536KB_8192reclen.fwrite
+   5864239 ± 13%     -44.5%    3255758 ±  2%  iozone.65536KB_8192reclen.random_write
+   7447215 ± 12%     -60.8%    2921843 ±  9%  iozone.65536KB_8192reclen.record_rewrite
+   6015508 ± 11%     -46.1%    3240985        iozone.65536KB_8192reclen.rewrite
+   4093019 ± 10%     -26.5%    3007445        iozone.65536KB_8192reclen.write
+    475130 ± 12%     -17.0%     394591 ±  8%  iozone.8192KB_1024reclen
+   6130421 ± 12%     -42.9%    3498269 ±  2%  iozone.8192KB_1024reclen.frewrite
+   6337955 ± 16%     -45.0%    3486354 ±  5%  iozone.8192KB_1024reclen.fwrite
+   9934170 ±  7%     -61.8%    3796260 ±  3%  iozone.8192KB_1024reclen.random_write
+  15509021 ±  5%     -76.1%    3701585 ±  3%  iozone.8192KB_1024reclen.record_rewrite
+   6870785 ± 13%     -49.9%    3442812 ±  2%  iozone.8192KB_1024reclen.rewrite
+   4989329 ± 12%     -35.6%    3210789 ±  2%  iozone.8192KB_1024reclen.write
+    465061           -21.4%     365480 ±  3%  iozone.8192KB_128reclen
+   6065060 ±  8%     -45.0%    3337027 ±  2%  iozone.8192KB_128reclen.frewrite
+   6493273 ±  5%     -49.8%    3259540        iozone.8192KB_128reclen.fwrite
+   9439549 ±  5%     -59.4%    3833701        iozone.8192KB_128reclen.random_write
+  14670770 ±  2%     -75.0%    3674591        iozone.8192KB_128reclen.record_rewrite
+   7314592 ±  4%     -51.4%    3557764 ±  2%  iozone.8192KB_128reclen.rewrite
+   5108572 ±  7%     -34.4%    3349232        iozone.8192KB_128reclen.write
+    314148 ±  5%     -13.1%     272915 ±  2%  iozone.8192KB_16reclen
+   4553655 ±  7%     -34.4%    2984927 ±  2%  iozone.8192KB_16reclen.frewrite
+   4576435 ±  2%     -35.0%    2975972        iozone.8192KB_16reclen.fwrite
+   4601444 ± 11%     -37.3%    2883163 ±  6%  iozone.8192KB_16reclen.random_write
+   6059685 ± 12%     -47.8%    3164798        iozone.8192KB_16reclen.record_rewrite
+   4987759 ±  3%     -36.2%    3183789        iozone.8192KB_16reclen.rewrite
+    462578 ±  8%     -20.2%     368979 ± 11%  iozone.8192KB_2048reclen
+   6306206 ± 10%     -43.2%    3580659 ±  7%  iozone.8192KB_2048reclen.frewrite
+   6659820 ± 16%     -44.3%    3709375 ±  6%  iozone.8192KB_2048reclen.fwrite
+   9498869 ±  8%     -62.0%    3614123 ±  5%  iozone.8192KB_2048reclen.random_write
+  14512262 ±  5%     -75.4%    3574411 ±  5%  iozone.8192KB_2048reclen.record_rewrite
+   6602412 ± 11%     -49.9%    3304954 ±  4%  iozone.8192KB_2048reclen.rewrite
+    466781 ±  5%     -20.2%     372625 ±  4%  iozone.8192KB_256reclen
+   6386508 ±  8%     -47.9%    3325742 ±  3%  iozone.8192KB_256reclen.frewrite
+   5820585 ± 11%     -43.1%    3314745 ±  3%  iozone.8192KB_256reclen.fwrite
+   9800951 ±  6%     -61.3%    3789649 ±  3%  iozone.8192KB_256reclen.random_write
+  14772982 ±  8%     -75.3%    3642014        iozone.8192KB_256reclen.record_rewrite
+   7350256 ±  5%     -51.3%    3580211        iozone.8192KB_256reclen.rewrite
+   5247001 ±  4%     -36.6%    3328082        iozone.8192KB_256reclen.write
+   5460768 ±  8%     -43.4%    3091787 ±  4%  iozone.8192KB_32reclen.frewrite
+   5534873 ±  5%     -42.6%    3179338        iozone.8192KB_32reclen.fwrite
+   6216039 ± 17%     -47.5%    3263073 ±  7%  iozone.8192KB_32reclen.random_write
+   8438285 ± 22%     -59.2%    3443608        iozone.8192KB_32reclen.record_rewrite
+   5910033 ±  6%     -44.6%    3274775 ±  5%  iozone.8192KB_32reclen.rewrite
+    430569 ±  6%     -17.9%     353551 ±  4%  iozone.8192KB_4096reclen
+   8002703 ± 11%     -36.7%    5069052 ±  6%  iozone.8192KB_4096reclen.frewrite
+   4862899 ± 12%     -27.2%    3538752 ±  8%  iozone.8192KB_4096reclen.fwrite
+   8342306 ± 11%     -57.6%    3541294 ±  3%  iozone.8192KB_4096reclen.random_write
+  10085813 ±  5%     -67.3%    3297639 ±  4%  iozone.8192KB_4096reclen.record_rewrite
+   6381708 ±  9%     -49.2%    3240446        iozone.8192KB_4096reclen.rewrite
+   4568275 ±  9%     -35.5%    2948307 ±  2%  iozone.8192KB_4096reclen.write
+    490409 ±  2%     -19.8%     393423 ± 10%  iozone.8192KB_512reclen
+   6399076 ± 11%     -47.9%    3335299 ±  4%  iozone.8192KB_512reclen.frewrite
+   5784862 ±  8%     -42.4%    3332431 ±  4%  iozone.8192KB_512reclen.fwrite
+   9010939 ± 16%     -57.8%    3800958 ±  2%  iozone.8192KB_512reclen.random_write
+  15187696 ±  3%     -76.0%    3652068 ±  2%  iozone.8192KB_512reclen.record_rewrite
+   6918403 ±  6%     -48.8%    3545527 ±  2%  iozone.8192KB_512reclen.rewrite
+   4858375 ± 10%     -33.5%    3232714 ±  4%  iozone.8192KB_512reclen.write
+    434205 ±  6%     -19.5%     349456 ±  2%  iozone.8192KB_64reclen
+   6063804 ±  4%     -45.6%    3297539        iozone.8192KB_64reclen.frewrite
+   6053168 ±  3%     -47.7%    3164408 ±  6%  iozone.8192KB_64reclen.fwrite
+   8298214 ± 12%     -55.4%    3702040        iozone.8192KB_64reclen.random_write
+  12308732 ±  9%     -70.3%    3651140        iozone.8192KB_64reclen.record_rewrite
+   6862988 ±  6%     -50.1%    3426635 ±  6%  iozone.8192KB_64reclen.rewrite
+   4552180 ± 13%     -30.0%    3186567 ±  6%  iozone.8192KB_64reclen.write
+    387354 ±  4%     -15.3%     328219 ±  2%  iozone.8192KB_8192reclen
+   6174265 ±  7%     -49.0%    3149477        iozone.8192KB_8192reclen.frewrite
+   6270247 ±  3%     -49.3%    3180202        iozone.8192KB_8192reclen.fwrite
+   6440330 ±  8%     -50.0%    3219047 ±  4%  iozone.8192KB_8192reclen.random_write
+   6417631 ±  7%     -49.6%    3233756 ±  2%  iozone.8192KB_8192reclen.record_rewrite
+   6213176 ±  6%     -48.9%    3174174        iozone.8192KB_8192reclen.rewrite
+   4263827 ± 11%     -32.8%    2866624 ±  4%  iozone.8192KB_8192reclen.write
+    238775 ±  8%      -8.6%     218130        iozone.8192KB_8reclen
+   3470213 ±  6%     -21.4%    2727307        iozone.8192KB_8reclen.frewrite
+   3492178 ±  8%     -21.7%    2734116        iozone.8192KB_8reclen.fwrite
+   3088507 ± 11%     -22.7%    2385914        iozone.8192KB_8reclen.random_write
+   3794719 ± 12%     -29.6%    2673377        iozone.8192KB_8reclen.record_rewrite
+   3626974 ± 11%     -20.3%    2890733        iozone.8192KB_8reclen.rewrite
+   4092925 ±  2%     -18.5%    3337298        iozone.average_KBps
+  55650360 ±  3%     -44.2%   31052398        iozone.frewrite_KBps
+  53439424 ±  3%     -43.6%   30144851        iozone.fwrite_KBps
+  64647843 ±  5%     -52.7%   30607658        iozone.random_write_KBps
+  94823016 ±  5%     -67.5%   30823219        iozone.record_rewrite_KBps
+  59841456 ±  3%     -48.9%   30554034        iozone.rewrite_KBps
+    733.66            +1.3%     743.16        iozone.time.elapsed_time
+    733.66            +1.3%     743.16        iozone.time.elapsed_time.max
+      6.83 ±  5%     +31.7%       9.00        iozone.time.percent_of_cpu_this_job_got
+     52.33 ±  3%     +34.3%      70.29        iozone.time.system_time
+  41427226 ±  5%     -32.2%   28071504        iozone.write_KBps
 
 
 
