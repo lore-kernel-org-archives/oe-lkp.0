@@ -1,127 +1,129 @@
-Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 739571A262D
-	for <oe-lkp@lists.linux.dev>; Sat, 30 Nov 2024 17:54:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1DAC3D3B3;
+	Sat, 30 Nov 2024 19:56:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=96.67.55.147
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732989302; cv=none; b=GSXLb+OspfEZEf71qLt6nmrTsgOjiDrTxOvHlLgtuUywjdX8kMnZQz1C3/uiuRf7usZOaofTbX20+bybZES5RJnXPxHM+vemSPBam/Vtn9gOndd/WCLIUclK7If1i4LGdM7NQVrRixIYjXKuANi6Z8/ISleMdzDL0vofaVcjtRs=
+	t=1732996624; cv=none; b=g5HvFKDPedaEGBpN7vNG10kFXai40Hv8lAnJfO4QseI6+vGfb0moVJcEhIGdt/Wt2KxKqq9O4O6r0MAuQDmgYGscqthmunvdtzPU+AiXQoUycL6zdifkorlYZfBWbMA1vaP6IGVWv79c/8H/8FkLMHaVN+KZRviGkQ8UBz1VijI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732989302; c=relaxed/simple;
-	bh=TBkohQCe2NGHE89Lnt7hpzegbj2T78s6vHSK58z3pLM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=oa6SuCnA2Pupuvac4m0z87mNSF2boSRKwLGRY0vGFxNIuyaqlwK7LYSHQIZJdeyTPnCG0rddy6UkVts6Pcv6XQEIhR3snnV5G9x+7prgpIvJj1noJTU93OJ5WW+kgnycUCaHJqtEnpvGleUe8GDQFykgBFmdTiadXcoFAjkwxpk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=Yap7fj6v; arc=none smtp.client-ip=209.85.218.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="Yap7fj6v"
-Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-a9e44654ae3so353870566b.1
-        for <oe-lkp@lists.linux.dev>; Sat, 30 Nov 2024 09:54:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1732989298; x=1733594098; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=UmhUEJ3l16+JAXSnSdZ675vJ19gWez6ArVsbJQ9w8QQ=;
-        b=Yap7fj6vraztwW25vYQgMTK+aKTtwjHu4Rj8kCLDC9XljSOOqKRMu/g8QaHwqUDWdI
-         td6bbY5axy4kMzn9/nUu799/OwNFaL/HJEqW2WHg0npUHfVujYG/P5yYy5N41Q6dmWTj
-         Zq+mxNWt6kyuxy0jmKUO5PU2PhIoujpcNbQzk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1732989298; x=1733594098;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=UmhUEJ3l16+JAXSnSdZ675vJ19gWez6ArVsbJQ9w8QQ=;
-        b=FpwpduSmhn6LaHTGSODzqesKOr1x8sy48JYyC5188/Ge6mzOGdEoFBV00hEUR8ILWO
-         DdFqaJirREW+TcgUtgXtLw3ilNcl3CRm1l08U9PAY5opAGTX9WtuS+gQzOtT9pC+hG2Y
-         3SeXN/WlbkoppUcm0a6mZCIAZkEwc+YdyABqvaQqjjFzkmxziMRE3x5y1ViKVNjpNV8i
-         a/wVN6PvlmWxDZu9TPZpr1D5/+iHHu7o90xj7iVzIljp8wemmaxhSeiogncP4AA6QACP
-         mIlEUq3bORCpqxC7N89VxK3u0fdUKimXqiX21Uke1LSRfC0wt4zMgL4WiMbIBw9vwkBe
-         tsmg==
-X-Forwarded-Encrypted: i=1; AJvYcCWVODtS7C9qKyK4wP1pw1/32sEi9KSLwvaPrwtbjCLHCdYrycuY6gIDcT7KL7SXi8iulm3Zv8A=@lists.linux.dev
-X-Gm-Message-State: AOJu0YyOuDrLBAIOOAYRkfDUtxtoVJXD2Iedkm+r3NLEh1Hg8VXJMQBK
-	QjWildvNWx4dg5B+o/5vVZi8My07tHY8r7Mi5Pn273938S9ApGx+vwXUSbl0eDVNbssQkfIJX17
-	lNZTnJQ==
-X-Gm-Gg: ASbGnctBGqk0o3OK2d5c4m9izAXR1lY0cr0OkPa/IAibfJBwdN0kS8zU2deDjPawMg+
-	1BklQB3LUxzmmAUHl7RuXmpwKSo/ODxkIIl9OWBuVrdURN793kfxNzf2UBj5+3cByNovIssrhpt
-	S+WO/MKGEGd67QEOHbqoRWd+4Ll+cELSd6tO5abSMekQI1k1Q72mhYIYPxDW0A7oRnUeXztCXcq
-	Kp0DxoqJ0N1/zcJwNSGHoXQViK+1JCsS2/1IkuHkwFiAnyZNozBAT+bt3QjgFuzhEgO9ewKmkmm
-	5z082IO11WBHyRGw5RQY2bIq
-X-Google-Smtp-Source: AGHT+IE2qTmB+3sD6pnhuUUTPmaqfZHCI6hJiPo5t8Kx4494UvY+oQPFxipFsLSRH0EIBZoPsQr8yA==
-X-Received: by 2002:a17:907:6ea6:b0:aa5:4c3a:3b55 with SMTP id a640c23a62f3a-aa580f5814amr1746609366b.36.1732989297530;
-        Sat, 30 Nov 2024 09:54:57 -0800 (PST)
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com. [209.85.218.46])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-aa599953f89sm299351966b.192.2024.11.30.09.54.56
-        for <oe-lkp@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 30 Nov 2024 09:54:56 -0800 (PST)
-Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-aa5366d3b47so443320366b.0
-        for <oe-lkp@lists.linux.dev>; Sat, 30 Nov 2024 09:54:56 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCUrERhfxtCOUcVu2NIDdBHSCXGyOOi9gnfJNbyqOcynBvmBGoMGBDYK9Z82y5dQFocp78tvnO4=@lists.linux.dev
-X-Received: by 2002:a17:907:780e:b0:aa5:1d6a:540b with SMTP id
- a640c23a62f3a-aa580edf9f2mr1127107466b.1.1732989296168; Sat, 30 Nov 2024
- 09:54:56 -0800 (PST)
+	s=arc-20240116; t=1732996624; c=relaxed/simple;
+	bh=iliAV4e1ag5AmPwuqTfpm94XBTsvFbIoc0GjRaaazmI=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=cAezEQQ6dHDvUPXpWWkpnPOLUrMA4y4uZ2qpvIo+xYL1wopGprl3cuUAe3+uMzK6VpAsxYBCcXBLNSeMKTLZSMVNFl1j1h7oUjuzbmNrvN5VHQ77R43w2YdU6ZZayKfqSh57QJMsM8LQVLK0/fDJ1/6uS9uAmQp5wWisDB4E3PE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=surriel.com; spf=pass smtp.mailfrom=shelob.surriel.com; arc=none smtp.client-ip=96.67.55.147
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=surriel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=shelob.surriel.com
+Received: from fangorn.home.surriel.com ([10.0.13.7])
+	by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.97.1)
+	(envelope-from <riel@shelob.surriel.com>)
+	id 1tHTa0-000000006XM-3qRr;
+	Sat, 30 Nov 2024 14:56:36 -0500
+Message-ID: <e1d810d7c2bc77961828ee38ef322f5ec49181d8.camel@surriel.com>
+Subject: Re: [linus:master] [x86/mm/tlb] 7e33001b8b:
+ will-it-scale.per_thread_ops 20.7% improvement
+From: Rik van Riel <riel@surriel.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, 
+	lkp@intel.com, linux-kernel@vger.kernel.org, Ingo Molnar
+ <mingo@kernel.org>,  Andy Lutomirski	 <luto@kernel.org>, Peter Zijlstra
+ <peterz@infradead.org>
+Date: Sat, 30 Nov 2024 14:56:36 -0500
+In-Reply-To: <CAHk-=wj0HyNR+d+=te8x3CEApCDJFwFfb22DH5TAVyPArNK9Tg@mail.gmail.com>
+References: <202411301528.342383d8-lkp@intel.com>
+	 <069d686ab958d973563cfad52373ec6c8aad72ca.camel@surriel.com>
+	 <CAHk-=wj0HyNR+d+=te8x3CEApCDJFwFfb22DH5TAVyPArNK9Tg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.54.1 (3.54.1-1.fc41) 
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202411301528.342383d8-lkp@intel.com> <069d686ab958d973563cfad52373ec6c8aad72ca.camel@surriel.com>
-In-Reply-To: <069d686ab958d973563cfad52373ec6c8aad72ca.camel@surriel.com>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Sat, 30 Nov 2024 09:54:40 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wj0HyNR+d+=te8x3CEApCDJFwFfb22DH5TAVyPArNK9Tg@mail.gmail.com>
-Message-ID: <CAHk-=wj0HyNR+d+=te8x3CEApCDJFwFfb22DH5TAVyPArNK9Tg@mail.gmail.com>
-Subject: Re: [linus:master] [x86/mm/tlb] 7e33001b8b: will-it-scale.per_thread_ops
- 20.7% improvement
-To: Rik van Riel <riel@surriel.com>
-Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
-	linux-kernel@vger.kernel.org, Ingo Molnar <mingo@kernel.org>, 
-	Andy Lutomirski <luto@kernel.org>, Peter Zijlstra <peterz@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Sender: riel@surriel.com
 
-On Sat, 30 Nov 2024 at 09:31, Rik van Riel <riel@surriel.com> wrote:
->
-> 1) Stop using the mm_cpumask altogether on x86
+On Sat, 2024-11-30 at 09:54 -0800, Linus Torvalds wrote:
+> On Sat, 30 Nov 2024 at 09:31, Rik van Riel <riel@surriel.com> wrote:
+> >=20
+> > 1) Stop using the mm_cpumask altogether on x86
+>=20
+> I think you would still want it as a "this is the upper bound" thing
+> -
+> exactly like your lazy code effectively does now.
+>=20
+> It's not giving some precise "these are the CPU's that have TLB
+> contents", but instead just a "these CPU's *might* have TLB
+> contents".
+>=20
+> But that's a *big* win for any single-threaded case, to not have to
+> walk over potentially hundreds of CPUs when that thing has only ever
+> actually been on one or two cores.
+>=20
+> Because a lot of short-lived processes only ever live on a single
+> CPU.
+>=20
+Good point. We do want to keep optimizations for single
+threaded processes in place.
 
-I think you would still want it as a "this is the upper bound" thing -
-exactly like your lazy code effectively does now.
+> The benchmarks you are optimizing for - as well as the ones that
+> regress - are
+>=20
+> =C2=A0(a) made up micobenchmark loads
+>=20
+> =C2=A0(b) ridiculously many threads
+>=20
+> and I think you should take some of what they say with a big pinch of
+> salt.
+>=20
+> Those "20% difference" numbers aren't actually *real*, is what I'm
+> saying.
 
-It's not giving some precise "these are the CPU's that have TLB
-contents", but instead just a "these CPU's *might* have TLB contents".
+Agreed that it won't be a 20% difference on real
+workloads, but there are a few real world workloads
+where these optimizations do make a fairly significant
+difference.
 
-But that's a *big* win for any single-threaded case, to not have to
-walk over potentially hundreds of CPUs when that thing has only ever
-actually been on one or two cores.
+For example, this change below made a 2% performance
+difference for a memcache style workload on 2 socket
+systems back in 2018, when CPU counts were much smaller
+than today:
 
-Because a lot of short-lived processes only ever live on a single CPU.
+e9d8c6155768 ("x86/mm/tlb: Skip atomic operations for 'init_mm' in
+switch_mm_irqs_off()")
 
-The benchmarks you are optimizing for - as well as the ones that regress - are
+>=20
+> > 2) Instead, at context switch time just update
+> > =C2=A0=C2=A0 per_cpu variables like cpu_tlbstate.loaded_mm
+> > =C2=A0=C2=A0 and friends
+>=20
+> See aboive. I think you'll still want to limit the actual real
+> situation of "look, ma, I'm a single-threaded compiler".
+>=20
+> > 3) At (much rarer) TLB flush time:
+> > =C2=A0=C2=A0 - Iterate over all CPUs
+>=20
+> Change this to "iterate over mm_cpumask", and I think it will work a
+> whole lot better.
+>=20
+> Because yes, clearly with just the *pure* lazy mm_cpumask, you won
+> some at scheduling time, but you lost a *lot* by just forcing
+> pointless stale IPIs instead.
 
- (a) made up micobenchmark loads
+I struggle to think of a way to synchronize clearing
+bits from the mm_cpumask that does not involve IPIs,
+but I suppose we could rate limit that clearing to
+something like once a second?
 
- (b) ridiculously many threads
+The rest of the time we could compare whether a
+CPU's cpustate_loaded_mm matches the target mm, and
+skip sending an IPI to that CPU?
 
-and I think you should take some of what they say with a big pinch of salt.
+We already seem to be passing info through to
+tlb_is_not_lazy, so the logic could all be implemented
+inside there if we wanted to.
 
-Those "20% difference" numbers aren't actually *real*, is what I'm saying.
-
-> 2) Instead, at context switch time just update
->    per_cpu variables like cpu_tlbstate.loaded_mm
->    and friends
-
-See aboive. I think you'll still want to limit the actual real
-situation of "look, ma, I'm a single-threaded compiler".
-
-> 3) At (much rarer) TLB flush time:
->    - Iterate over all CPUs
-
-Change this to "iterate over mm_cpumask", and I think it will work a
-whole lot better.
-
-Because yes, clearly with just the *pure* lazy mm_cpumask, you won
-some at scheduling time, but you lost a *lot* by just forcing
-pointless stale IPIs instead.
-
-            Linus
+--=20
+All Rights Reversed.
