@@ -1,89 +1,116 @@
-Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD0E11DDC37;
-	Mon,  2 Dec 2024 18:12:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=96.67.55.147
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96BDAB667;
+	Mon,  2 Dec 2024 20:32:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733163181; cv=none; b=GsT7/L/lyInjG6Qoc7vLcwAZceR4ZoWb0P7w2AYpOIsgbsVtnV+nyGlrA8/EjhEilp8X6A9vaWxalRBK3yomA+7lk0RCrDIJjuy9JE7yehbEFU1LZZu9xzmYzksaMRbmtv/xiKvop4o8iLLDT1nD0L2pfOL5k8ZE5kg8NuPAtY0=
+	t=1733171538; cv=none; b=tP68ez5fyby7oIxSpLEjw4s31BTE0DrVXHOEF3Fi3B6AlMkLOGWa2D7WFVZJ+gfLV16Re7oJDEZJYcAql8uWRr1cmIVujjMCM1pCVAN9cOA22GzMbz9HP6IC0p4sbGvdnhY8C0DvKN46s8EmYPJLtbx00kO9tqw6PkDnioAlFXg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733163181; c=relaxed/simple;
-	bh=I4ZvUmkhKhe+ozjF1y6BcfEPFCwqisJ0O6LrGfuu6cc=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=P73qNz5/biw7BAqWwJADzmm4/DZHaqtVT9qfrxL0Ptqde6cuGPw3gs4B3bJofbztnfURDMDtlDQT9hUHpTmCZOGoOIiP7f2M3c54nvS62ZFkLgLpaz9gluy3IKQBI66S4wV7gjttYIcixHPDKPFMNfg70vS3ahm4JO2eHyCQJuc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=surriel.com; spf=pass smtp.mailfrom=shelob.surriel.com; arc=none smtp.client-ip=96.67.55.147
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=surriel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=shelob.surriel.com
-Received: from fangorn.home.surriel.com ([10.0.13.7])
-	by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.97.1)
-	(envelope-from <riel@shelob.surriel.com>)
-	id 1tIAsG-000000004ix-3Aog;
-	Mon, 02 Dec 2024 13:10:20 -0500
-Message-ID: <23808da41421f3d95b65a2346ea7591631af322d.camel@surriel.com>
-Subject: Re: [tip:x86/mm] [x86/mm/tlb] 209954cbc7:
- will-it-scale.per_thread_ops 13.2% regression
-From: Rik van Riel <riel@surriel.com>
-To: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, Peter Zijlstra
-	 <peterz@infradead.org>
-Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, 
-	lkp@intel.com, linux-kernel@vger.kernel.org, x86@kernel.org, Ingo Molnar
-	 <mingo@kernel.org>, Dave Hansen <dave.hansen@intel.com>, Linus Torvalds
-	 <torvalds@linux-foundation.org>, Mel Gorman <mgorman@suse.de>
-Date: Mon, 02 Dec 2024 13:10:20 -0500
-In-Reply-To: <9b3bd9b0-fd5b-4239-8ee4-ebabd0667b4b@efficios.com>
-References: <202411282207.6bd28eae-lkp@intel.com>
-	 <Z0jIsYsuo_9w16tK@localhost.localdomain>
-	 <8bf303a222ba27f3a86b357db58ee3df3fa7f82e.camel@surriel.com>
-	 <9b3bd9b0-fd5b-4239-8ee4-ebabd0667b4b@efficios.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.54.1 (3.54.1-1.fc41) 
+	s=arc-20240116; t=1733171538; c=relaxed/simple;
+	bh=hjvqc3c12KRn51rb3VdSmYWNcmRjrZOff4t1bjmP+C4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=sQtofRZ1xBzkOHip8NdXw/g9/ZZsbufS1CaZ2dMEhLOyd2k3K2/ubYq60wCGHSHfkcs54/hSJEhzDHL9Y0GoKAfeP399vSv1MWRL8WxbWIgYTJObMg/VpMxg4bDJ7hSgys43Ils7wDGPcsXetktQOvV78gHAm713Q5Pf6b6aaKM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XFLIYKBu; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XFLIYKBu"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADC93C4CED1;
+	Mon,  2 Dec 2024 20:32:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1733171538;
+	bh=hjvqc3c12KRn51rb3VdSmYWNcmRjrZOff4t1bjmP+C4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=XFLIYKBug64GubPQJJRCwotXqXP0UGsKjb79n0IbeZUh/mAHv5p63raN4JpNlme+s
+	 l+2kHEk0IN5pofJ12g9kiv9CMoqHG4AhKDghlvoRWIE7lSJjh9D/xAyXHIJxZUtYRx
+	 gxD/sjZXpfvpns4hmdhdCgHGNpwn9JLcvlRGE1cypPDWjGhjQBVr9NdlIz3RF9SKjE
+	 TCZFqscG6cEQB/3RQR6TJRqfZ0QpTTytTklQdmEcgkulzUeTZYHNCEMrskre9GrY0I
+	 7OtIieewQSCPNArJUqLZagBdK4qXn58DHFzt7fagglB3ZPTsgfubroiHadm++sk/2g
+	 keDxTKq0ULn8g==
+Date: Mon, 2 Dec 2024 12:32:16 -0800
+From: Namhyung Kim <namhyung@kernel.org>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+	James Clark <james.clark@linaro.org>,
+	Ravi Bangoria <ravi.bangoria@amd.com>,
+	Kan Liang <kan.liang@linux.intel.com>,
+	James Clark <james.clark@arm.com>,
+	Atish Patra <atishp@atishpatra.org>,
+	Mingwei Zhang <mizhang@google.com>,
+	Kajol Jain <kjain@linux.ibm.com>,
+	Thomas Richter <tmricht@linux.ibm.com>,
+	Palmer Dabbelt <palmer@rivosinc.com>,
+	linux-perf-users@vger.kernel.org
+Subject: Re: [linus:master] [perf tools]  af954f76ee:
+ perf-sanity-tests.Test_data_symbol.fail
+Message-ID: <Z04ZUHaGdsBapIEL@google.com>
+References: <202411301431.799e5531-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Sender: riel@surriel.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <202411301431.799e5531-lkp@intel.com>
 
-On Mon, 2024-12-02 at 11:30 -0500, Mathieu Desnoyers wrote:
->=20
-> Or we just build a per-cpu mm_cpumask from per-CPU state
-> every time we want to use the mm_cpumask. But AFAIU this
-> is going to be a tradeoff between:
->=20
-> - Overhead of context switch at scale
->=20
-> =C2=A0=C2=A0 vs
->=20
-> - Overhead of TLB flush
->=20
->=20
-> So I guess what we end up doing really depends which scenario we
-> consider
-> most frequent.
->=20
-I think that is going to be more workload dependent than
-anything else.
+Hello,
 
-If you're doing a kernel compile, or running a bunch of
-shell scripts and simple Unix commands, you are dealing
-mostly with single threaded programs, where not sending
-IPIs is the best thing to do.
+On Sat, Nov 30, 2024 at 03:03:10PM +0800, kernel test robot wrote:
+> 
+> 
+> Hello,
+> 
+> kernel test robot noticed "perf-sanity-tests.Test_data_symbol.fail" on:
+> 
+> commit: af954f76eea56453713ae657f6812d4063f9bc57 ("perf tools: Check fallback error and order")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> 
+> [test failed on linus/master      7af08b57bcb9ebf78675c50069c54125c0a8b795]
+> [test failed on linux-next/master f486c8aa16b8172f63bddc70116a0c897a7f3f02]
+> 
+> in testcase: perf-sanity-tests
+> version: 
+> with following parameters:
+> 
+> 	perf_compiler: gcc
+> 
+> 
+> 
+> config: x86_64-rhel-8.3-bpf
+> compiler: gcc-12
+> test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480+ (Sapphire Rapids) with 256G memory
+> 
+> (please refer to attached dmesg/kmsg for entire log/backtrace)
+> 
+> 
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <oliver.sang@intel.com>
+> | Closes: https://lore.kernel.org/oe-lkp/202411301431.799e5531-lkp@intel.com
+> 
+> 
+> 
+> 2024-11-28 08:31:19 sudo /usr/src/linux-perf-x86_64-rhel-8.3-bpf-af954f76eea56453713ae657f6812d4063f9bc57/tools/perf/perf test 121
+> 121: Test data symbol                                                : FAILED!
 
-If you're running a long-lived, heavily multithreaded
-program, you will benefit from reducing the context
-switch overhead more than anything else.
+Thanks for the report.  But I have a request.
 
-Both seem like equally valid use cases.
+Can you please run the perf test with -v option so that we can see the
+detailed error messages when it failed?
 
-I'm playing around with a patch now that builds on
-my previous patches, but only trims the mm_cpumask
-once a second.
+Thanks,
+Namhyung
 
-Hopefully that can give us a reasonable medium between
-the two.
-
---=20
-All Rights Reversed.
+> 
+> 
+> 
+> The kernel config and materials to reproduce are available at:
+> https://download.01.org/0day-ci/archive/20241130/202411301431.799e5531-lkp@intel.com
+> 
+> 
+> 
+> -- 
+> 0-DAY CI Kernel Test Service
+> https://github.com/intel/lkp-tests/wiki
+> 
