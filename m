@@ -1,276 +1,257 @@
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3423238DDB
-	for <oe-lkp@lists.linux.dev>; Tue,  3 Dec 2024 02:15:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.182
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733192130; cv=none; b=GDbAJxgWCW9U9I4BazEWw8qucP52Ip7c9fiW3eig/R4jwUg/NSCbdje6X+y2eyW7SKv5OYqWr8WLOXGQwSRyAVXShV38n/eRJrSoUMVWqaffCu6NQLcB+dqxnnfmY+ADYcs5vs6cXWPxSfZjmom87tmNGVDKZrhJZ5GVciSk/T0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733192130; c=relaxed/simple;
-	bh=hSIw31BHDv5TDglVjAhNL9kAbbpjGpqfBEq/VofFTIk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Mf0w1k658+7KS+Ppft06AAUGpRNHWAHrtnHxin3q2TnvwyZDW4Le4UGj1BHFzxv+AvidRoGTBi5S0AjaMBv2OrwNgObFuNcLnw3uicnMS4hsDCcoWpECQf/aDAiSy4/0r1vV5k+Av9QsGYZXUnqoNq7BzH8hRmRntfebRLKggKk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BZDyhsKg; arc=none smtp.client-ip=209.85.160.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CA8318EB0
+	for <oe-lkp@lists.linux.dev>; Tue,  3 Dec 2024 03:04:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.13
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1733195071; cv=fail; b=mIdv6zVoQk+N0nMh7NRPwfRI0qHFR5kzMY4ltwXLQrC5Vuj5jL3DA7KC0nymu4GcrC0IeCfOul1ywxyDvwk0j08bykdyqxVTUbRCOtg2Dgi/TjsJE6qWqh1hlf6fglILmP4HjKi6+FSQS0XG7bCtmYXvvmpT13AuwZQ51+2FGwk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1733195071; c=relaxed/simple;
+	bh=2gFRHEnMpy7xR7RQc5YauyZX8cmti3p+M5s75iKWsXc=;
+	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=ZJBHM7X1Wpagy/D1n0FVy8Gnu1e36s95Z61t+TpcAlYqU0ZqE3jcht/zmxat6D4HJWWB5GIAJzI3vSLnV6U1T6fi3w5A7nP0NskDph4mZNy3FhCe89G08H4udHyHZ7GFVkIcCMfwqCvqSRMtwtHgZxfY7Igd4NlRxj1UnxcdMBg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=K3ypQwzF; arc=fail smtp.client-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BZDyhsKg"
-Received: by mail-qt1-f182.google.com with SMTP id d75a77b69052e-46694ca7de5so57790491cf.2
-        for <oe-lkp@lists.linux.dev>; Mon, 02 Dec 2024 18:15:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1733192127; x=1733796927; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mfSMydoRR81hJZsdUfsBGe1AdHbNuc2ffXIxCy0+80c=;
-        b=BZDyhsKglnUKJK648gKe8rVfWg4O7RZEqCIQXKlKFUrGA4T7ecIbQQCsgE0vE6h5PM
-         xDnbPMwL3eyPYAl0V7YjE9zU+Vab68qKfAInT/69qPmgq9MWdKTJdXDaHyQzOVFTjhy8
-         2ebAl0ojw1Fuy7JlGSBfS5iLNbjHGgFmB3wD2c7NDrC4nEThJwuDWm4rhSn8HlfBd+3h
-         anF7spDlmA3YhxyBNrwyl7zn511CmP2q22azweP6/1+jOHg3TKFnamllAIVZT0S4x0TC
-         3afilee9KHEaXv3r1KfuLUxu7rm0+lQ+/yBemTPhLnfcM8/Od7peQ0ZWrhcBlR4Stmi3
-         CONQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733192127; x=1733796927;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=mfSMydoRR81hJZsdUfsBGe1AdHbNuc2ffXIxCy0+80c=;
-        b=Op5e5EHeLUFezM7M+p0OBY1tuf/nx3qNUSeNj1OFLm5jjwLUHsPLajQqdwPxUK30jo
-         YKoADMCX0EDAshF0YYCK+CQYaPmfwVdx311u8sGu4DBFCUycazPEM3UP4rwSi4NUJZ9a
-         7B3ADl+426YzzZxlIY8clVxRlcceFKa36y7hP9PRsUrARg5/RqHhouG09XeZG3DGBLYg
-         0TzdnfxYBYqYjlfLE59IZ3Rc8xsgvD1PTOBtm79olQxy+xvwED5c8fMV+8kqB64t6BSm
-         LX3zijyeJpcy8cF/bn+8t2btWMGFVuWMbnmcfJMyrsouGOXz9dYXVGUUarsSgPUqx49J
-         8/SA==
-X-Gm-Message-State: AOJu0YzYUcM3lnbl1LW8fDIfxbxRIUBW8dLZgqn9wrBmD9UZI8XQO1ll
-	Fd7w2yg0SZ0ifC3b0yHob1FEQ4E/WwiNl3GhmbwXklnKkRkErDMCllKv9/3bhsNjZzFvMwYaktz
-	Kp/JqM6b+tHzpVo4oZLJGl0n3UIw=
-X-Gm-Gg: ASbGncudaFpThoc9YB8e1XHAsDg3Rj3mPMQ7P2Dlp4JO3SbhixEZXcbXW/XuA0YvaNu
-	COs5SRAe3q0REdf6MDEwGywI+DhG+79rEXg==
-X-Google-Smtp-Source: AGHT+IFR60pEpkbdMDdZM7tLfYiB/vuUYepSXg1KltBZZ1T8gRqBdXDal4Z77VibByzkK5V7O3cfMfwFbTFQxWTzFCo=
-X-Received: by 2002:ad4:5f85:0:b0:6d4:142d:8119 with SMTP id
- 6a1803df08f44-6d8b7423a21mr15525506d6.42.1733192126691; Mon, 02 Dec 2024
- 18:15:26 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="K3ypQwzF"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1733195069; x=1764731069;
+  h=date:from:to:cc:subject:message-id:references:
+   content-transfer-encoding:in-reply-to:mime-version;
+  bh=2gFRHEnMpy7xR7RQc5YauyZX8cmti3p+M5s75iKWsXc=;
+  b=K3ypQwzFCWkkoAKjnt/JORrDf6ayltPoWHgGOApMrWBtU0jtZHyblF7G
+   gQu0cYss17LlNIpedfM5tsQAB6puL2kNM6XXb/Uj9dfPTMbhcEOGy7nrJ
+   /H8YZ++UovI/7P2xM8KFqt62ytyjbSlJBJ7A3QPProvvOizrJ1EfQFUdQ
+   F/YmtKwavC90AYkN4Lfqb+wDIWSahrMRatk8QelRG7S/CYdiZyUpUvAv4
+   zLI1o6McTED6lnnfD0ocDsBkJadHtvdf/6SibwcVWdP/xKnUoLqRbRuLH
+   Tzn4HNBVCZ3DcSiyrN/jbm/slCGplK7z19jmu2m75PJ4SAh5O+lh5tLgz
+   w==;
+X-CSE-ConnectionGUID: gjHffeUyQduizGlinfGDLw==
+X-CSE-MsgGUID: 2jq5XZzkS5Gj6cjjfaLeug==
+X-IronPort-AV: E=McAfee;i="6700,10204,11274"; a="44424222"
+X-IronPort-AV: E=Sophos;i="6.12,204,1728975600"; 
+   d="scan'208";a="44424222"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Dec 2024 19:04:28 -0800
+X-CSE-ConnectionGUID: Cj/etIRHRZCnzOyR936XXA==
+X-CSE-MsgGUID: UAFX/jg4SluFVO2xYltIBg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,204,1728975600"; 
+   d="scan'208";a="93193128"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by orviesa010.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 02 Dec 2024 19:04:28 -0800
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39; Mon, 2 Dec 2024 19:04:28 -0800
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39 via Frontend Transport; Mon, 2 Dec 2024 19:04:28 -0800
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.177)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.39; Mon, 2 Dec 2024 19:04:28 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=SOW7XtO6g9j0ousavoUmM4rlQT/bQXbSYTKqRb0gMtGk0gI7wlXtP+uqfspdlY6EPrEETyBKlrMolPUEjIGi/I+O+Jd3E/L8K1Y3uwCfdFSNWrzEXZIBEjABY824Aethx1vDHbUj06tRI0Gj/LNKj/avXfWLqcOfK16/rnGAl6529N2exZzBbLyZvdAXeP1veUF1a5nIE2cDfzAKL7dRQlABGCaRT+bDZn0ipp9pmOpvZI3ISkapL5OTDqORlveRyGFXQjJxIiNdlItPLzKtAxMcQ5M9FaDd72iZxBG7Wp4iuCDgA5uFXkiO0oSWcUClnNR26eGvmuSRYehR3VyxVw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=gomZL2sPl3xDVRBWCeasjFWin1f3b0pQWKeZWeWk8bI=;
+ b=hexzrIQCdiKqFz6pBfdHdqlH48nwtijbtbN4xvcQCYRVo46ixr0FBt0eFGEIfOc+f9iaM44wQvr5Fwsd/3PAST4N5I6Zu5kzV1vM4/Ica4yKEyii3Rj3cqH8FUFJFi1C79x5Q7TooTcNPmn6IaCa7ZuPQpzZIrHsWYnp18Do1nkvvEDAQoImGqX65k+S6odjY65BFmWGN7D0EXQQBWlalm7qpyFs46R2pZMVDH6KefnaDp5FF8S4KZ6clXsyh+xK8OEzCGTC6RFamLSvaHGUROl+mz6BDod1COBmPhQj7fZbMEw6lsBiREH4yKmYjo8Tpy1bnbcQ+5lGGrVPlCgb+w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by SA1PR11MB8490.namprd11.prod.outlook.com (2603:10b6:806:3a7::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8207.18; Tue, 3 Dec
+ 2024 03:04:25 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c%6]) with mapi id 15.20.8207.017; Tue, 3 Dec 2024
+ 03:04:25 +0000
+Date: Tue, 3 Dec 2024 11:04:15 +0800
+From: Oliver Sang <oliver.sang@intel.com>
+To: Yafang Shao <laoar.shao@gmail.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Andrew Morton
+	<akpm@linux-foundation.org>, Matthew Wilcox <willy@infradead.org>,
+	<linux-fsdevel@vger.kernel.org>, <oliver.sang@intel.com>
+Subject: Re: [linux-next:master] [mm/readahead] 13da30d6f9:
+ BUG:soft_lockup-CPU##stuck_for#s![usemem:#]
+Message-ID: <Z051LzN/qkrHrAMh@xsang-OptiPlex-9020>
+References: <202411292300.61edbd37-lkp@intel.com>
+ <CALOAHbABe2DFLWboZ7KF-=d643keJYBx0Es=+aF-J=GxqLXHAA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CALOAHbABe2DFLWboZ7KF-=d643keJYBx0Es=+aF-J=GxqLXHAA@mail.gmail.com>
+X-ClientProxiedBy: SI1PR02CA0017.apcprd02.prod.outlook.com
+ (2603:1096:4:1f4::10) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202411292300.61edbd37-lkp@intel.com>
-In-Reply-To: <202411292300.61edbd37-lkp@intel.com>
-From: Yafang Shao <laoar.shao@gmail.com>
-Date: Tue, 3 Dec 2024 10:14:50 +0800
-Message-ID: <CALOAHbABe2DFLWboZ7KF-=d643keJYBx0Es=+aF-J=GxqLXHAA@mail.gmail.com>
-Subject: Re: [linux-next:master] [mm/readahead] 13da30d6f9: BUG:soft_lockup-CPU##stuck_for#s![usemem:#]
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, 
-	Andrew Morton <akpm@linux-foundation.org>, Matthew Wilcox <willy@infradead.org>, 
-	linux-fsdevel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|SA1PR11MB8490:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2bb0b9e7-8ba5-489d-dc49-08dd13473169
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
+X-Microsoft-Antispam-Message-Info: =?utf-8?B?VVFSWUwwRDNFK2cveUY1NUNuam5tQ0VIRm5sZU1lM2Y0V2JWNFVqRzJxRWhx?=
+ =?utf-8?B?NmZUc1JCNzVHYWdZQXA1ZzhCZDNKSWsrTGd5NTNxb0o4bEVwMFI1WVJMSnpj?=
+ =?utf-8?B?VWZvWjcvY3BRa2RRdHlubGpVVkdxNHFUSlFoRFZKcld6aUdDd3AwdVd0VDVw?=
+ =?utf-8?B?WlpJS21tb1dOenlQSjFhYkZBOTMwRm9ZNlk3bnVYb1Rpc3hNczFwVGhQYW1M?=
+ =?utf-8?B?d1BtVjNNQXFtdm40TFd4U2g3QnpnOXR1R0FhVUdSOEpiSWc1RnRDVGhyU3hV?=
+ =?utf-8?B?azlqUmE4cG9keTBhNmo2SDFOR05CREdPR1ByaDlzanNPQW85VWE5ZUVzNEw5?=
+ =?utf-8?B?NExUY2ZtUmJDUXpVMHNTdUdiaHJ5ZThncmRGZlFjRlBHb2lKUlpZNDNuSXk3?=
+ =?utf-8?B?QmJBeTRmNHp4cWFseDJtZzlSNEtsY1Erdm9Ga3psS2VLNnZqUkloaGtGV0Qv?=
+ =?utf-8?B?RmsrYm9KTE1ZUkUwZ3Bsa3VtQmlEVnR2UWpNc1dRNzRrUldYSlFyL3UvOGxk?=
+ =?utf-8?B?VUcyTkh6OG5sTmlKaC9EL2VtUk02d0QzTzlhWHh3T25lOHorVHhaMjgwRGNU?=
+ =?utf-8?B?bUMxakZQb1dkSGNuSlNDTjVPQlBuRjA0T05PaEpERm9zSmNpcGdzOHhidkVR?=
+ =?utf-8?B?dXQ4R1NMR3ZOSWVkNFhlcnovVVpDNUt0c2U1UUV4eS93S0hGTDc2YlpnV0U3?=
+ =?utf-8?B?NUVnOHhpeDlUR3BUZ2lWWXVZZ3dHZDAxaW1qRW1TZmZBdHRmQVQ1S2FWUUpk?=
+ =?utf-8?B?OEtla0FpVCttb25pSklHS28wcU1VbFo2bTNKOUZ1ZWR3ZWJ5OUdqdmlPTGE0?=
+ =?utf-8?B?OVpLUGxJSmJpVzlpTTNxVUVnQnRIRmhRNTFUN0ZQM01lMWREbGRtMWtXSThw?=
+ =?utf-8?B?RVZXWTVUZnJ2UEdhZlBLMm5hMCsxWEl1YWpxS3c2TmdtMkt3VEVrVVBsbmZX?=
+ =?utf-8?B?SU05K1hRRW0wM1JtUDJSR3o3NDBrMVRxUnRTMDNXY0NQVUQ3dUpjZHQySkJi?=
+ =?utf-8?B?aVRLZkZDQ1lxd0t3UTF3bElNeHpRbmF3TXh1M0xUc3R4clN5NzdpSmg4dm9s?=
+ =?utf-8?B?QVNSWGtSS3U4a3hPWjVpS3l6bTZXVm5QZVowUnAzVEpjNUhoN1ZCM1N2cy9K?=
+ =?utf-8?B?QkU0T3VkalhKN0xQbndQZzRpWWdvcHdzTkora3lxaVo0ZXpMTTRwZmtNLzJM?=
+ =?utf-8?B?aVpjQkM0Zy9kTE5adkduY0NqU3E1cWdocms2MnpZTUF4R205NlhHWXA4WVli?=
+ =?utf-8?B?TnpZOXA2a25ITGN0blcwTWZEWHhnMmYrRmhGdTMraGpCRmJGWGc4N1k3T3Np?=
+ =?utf-8?B?dU0raE1KUm5oYWNIT2RCUkJNcWFPcW5nYVo2Ry9lQ0lRaEU2Yit2dHhwS0VU?=
+ =?utf-8?B?dHkyb1JMcXN3YlNLdFpxZXZwN21selFxN0ZERzc0Y0lwQmNrU3B1b0tOQW1E?=
+ =?utf-8?B?UHVWTGxrMmx2WW01cWFrMGRPbnVxYzRoTmN2aU56MWJkYklVakdibEttVDZH?=
+ =?utf-8?B?VTNzcUxNVWpNVGJ3R2pEYUxmSEtxOWhSYk9zMlEvaDI3c2lTZ1R1OXRMemh3?=
+ =?utf-8?B?VnVUWG5jRXRna2F0T1R0ck9WbmdQL0hiQ0hSS01BU1E2RWZBRnVxRVZBOHFL?=
+ =?utf-8?B?M0FLMHNSbEVKZTFYM1liYVJtTnFzRWtwS3FuYktGQlE1WUtmV1hHQXJHSVpl?=
+ =?utf-8?B?Uk51VVFjOEZvQ05zOWUrcVQ3NFNYaEpmdXZFeXlieWgvWk8yYkVYZUtGeDhp?=
+ =?utf-8?B?Y0g2TXdWd014R0lZSTZONVVSRUVVRkZBTkV5cnFBcmZJamFrU05VVDM0UmY1?=
+ =?utf-8?Q?BEX1Ep5PBNJ5ajviwsioEsIavC+BL6eR2DZVY=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Z0pOR1J1NDFUU3phZGs2eUpSWTJmMkI0VVFpblA2U2hFc1pKUzhrL0NGMjQ3?=
+ =?utf-8?B?U0ZIclFkdHUwdXVoWmVkeks4cHFETk5RK1FlMlRrNmNKZEZtY3RjTXdnZ0ZU?=
+ =?utf-8?B?U0c0TG81U0dQYitQUk9UWWNlS3daanJEWkFwSFdqSlppRE1vOFBxTDd2M2Nz?=
+ =?utf-8?B?RmVXRmt5MlEzcFFPUkNRdndhYi9zeFVwVTdjSTVqZFZLQW4wSmhKZ1dPL2N3?=
+ =?utf-8?B?OVZrajRQU0pZTmpYMXdvY1NHcFRWcWM5cHpwc0xGZ0RlcWpVTlpIek51Qy9o?=
+ =?utf-8?B?NHkzZlhxeVFqc05SdjcvT1FFLy9RdEFvOW1CTUZTMGxKSkYyUmNmRmQ2Mm1Z?=
+ =?utf-8?B?UmY5QTkyM0tibFRQemIvOTR6WHc3c1J0bFgwckJjY041SThUWitsUDVCaHpz?=
+ =?utf-8?B?YTFrTy9IUmxvRis0THFERzF0NmdYZEtVOC9YMzJnOGVicjFnMjVTTEFrVkdz?=
+ =?utf-8?B?MDIzdE9KZi9MaFM5TVBJS0dTVVJjMzJyaUFKNlhjWkJsTHlVTGJQOVBOUEYx?=
+ =?utf-8?B?RFF5dlA1ZTBMVFA5cjU1TlJ0Tk1FNGJUY3V3S2VQcWhpNWxiQnZ4a0FLQ0NW?=
+ =?utf-8?B?c1NHdFRtTTkzWHRYVnVnMndMUkdZOFI1UnFsUFRncEtYSmxsL0hLZ3VlYmZS?=
+ =?utf-8?B?MUQySnF2bG52Y1Fyd0pWN2tsdGk0c2FDQ1NjZVNtUVNRcjNqK0xaazRkTnJa?=
+ =?utf-8?B?K3FPVEpmTDh2d041eUpYVmdpTDRKRFFQMWZXVlNWVUVpcVU3aGN1VHlHOUho?=
+ =?utf-8?B?cjRPSndZT2FRNFIyeWpSYnJKOTdiNTBMKzBSSkVtenhiZE94Wi9ZekVLd3NB?=
+ =?utf-8?B?cTNtTWdlUVNtV05JMkdZcHFZckdjYS9VTTMrV2tJMlJacThORkljREY2Zitq?=
+ =?utf-8?B?TDl3d01qRldEWmNScG4vOFB5Y0dXNGV2QWExV3gyUjhMQVZIR3hhVGRpMS91?=
+ =?utf-8?B?ZXFDV3EyeW1KV2ZPYkNJWXN1WG9TcVB4QlhBMGVMU0laYmtFUmFaTitLeGNr?=
+ =?utf-8?B?M0Y4b1hDQldPdjhkZWt2VEZpaDlyc0UvQ1dxaDFEanNqajFXdnh3OUlWZU9o?=
+ =?utf-8?B?MGtWRlU3UzhzcWJhSUxtWFVtRHdKd2J4bXZoTVdSdlBFT0FIRitTRUhrQnVu?=
+ =?utf-8?B?c1lMaER3dmJGTjVDTW5QRFNPVU1MNlNaOU5aay94WFplaEVhdFFsMytHNkw4?=
+ =?utf-8?B?WkJtUW13a1BMR25oa05ZOEZ3YUVETTVNTXdjNWV5QnVMejFkSnlhcmJCSDJx?=
+ =?utf-8?B?U0ppVTBLM2VRTXhsOE5YdjVvQUhLYW1FTmZUVVNncVZQYnczU3dQMS8zWTZQ?=
+ =?utf-8?B?MkpldXp6WTg1UEFsaEpjaGcwM2IzTE93NVkySmVhYTdWaXJNUWo4RjFYdURZ?=
+ =?utf-8?B?bURjd1YxN0MrOWZGVnl0VnExZkJrWUNxVS9Yem9hTTJLR1VhL3A1VytMMWhG?=
+ =?utf-8?B?NFEzMTNoNWVyTGs3Rk1UTGorMDRJSURnd3Q5Nm9xYUVkaTcrRURRbzZLS3Rs?=
+ =?utf-8?B?NW81dVJBbU1BbnBITWs4WEZPTkxFcnFWM2FOREFrWUxIcFJaaE1WejBZQTFl?=
+ =?utf-8?B?cS9OL2hacG1sS09aRjRpb0VtR09vNm1Ddm5kaWJSTEhLai9xL0o2eW03dGk1?=
+ =?utf-8?B?KzZSR2VaSmdNWFUxQVNWejJwaHFpalJFTjBmVVNoamRYcU9vcG1FZTlxZkZB?=
+ =?utf-8?B?S05sT1dyYkRlMmJMZC9kbkdlZjkrcWlaZHU4cVNEVDFQUlhrQ1FGclFEQ2dL?=
+ =?utf-8?B?WlhESHUyemxNK0t1L2piZWE4MWhRZ3pJWUxCRDNIRHJTdXpWOGY4bHpIeVY3?=
+ =?utf-8?B?TzBXdDRZUTVLdDAzYjV0cmNhYlBiK2FUR2Q1aVI2UTc0V0t0cHVYYzc5NHR3?=
+ =?utf-8?B?WDZIekF1R2ZUaUdiS2NGWU1wb29kVFJrWlFQREhGN0xTODlpa0IrcXhWQVRt?=
+ =?utf-8?B?MXpOeTZUMkUvNkpUMWM1TTBwL0dVN1pKTkVsYjM1WXZHUmVNUFBOdW9pK3pZ?=
+ =?utf-8?B?dW5tUTlKYitrMi8rODJsWGM4L0Y2cnhqcEUzUUFkYU1MNk9ZSEhJL2dQbThG?=
+ =?utf-8?B?aGtsV0pWdHJyRTZYWElIY2ZaOC96UEVNWitnMy9tVDRtSU80N0lDN3l4aDlD?=
+ =?utf-8?B?TysyRllVWjlmSmhPczBuVTVYMGE0cjBlL3ZaL1Rkdkw0dXhhbVNGbHYvMEJv?=
+ =?utf-8?B?SVE9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2bb0b9e7-8ba5-489d-dc49-08dd13473169
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Dec 2024 03:04:24.9921
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: jVdhw5njUoB3OlKtc1Jl2W47nLCADMGw7ZWXkVwuL1UQrq202zjGpd1FHjuZJdPWrkcPQwEmP4WeSqWNwB1/pA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR11MB8490
+X-OriginatorOrg: intel.com
 
-On Fri, Nov 29, 2024 at 11:19=E2=80=AFPM kernel test robot
-<oliver.sang@intel.com> wrote:
->
->
->
-> Hello,
->
-> kernel test robot noticed "BUG:soft_lockup-CPU##stuck_for#s![usemem:#]" o=
-n:
->
-> commit: 13da30d6f9150dff876f94a3f32d555e484ad04f ("mm/readahead: fix larg=
-e folio support in async readahead")
-> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
->
-> [test failed on linux-next/master cfba9f07a1d6aeca38f47f1f472cfb0ba133d34=
-1]
->
-> in testcase: vm-scalability
-> version: vm-scalability-x86_64-6f4ef16-0_20241103
-> with following parameters:
->
->         runtime: 300s
->         test: mmap-xread-seq-mt
->         cpufreq_governor: performance
->
->
->
-> config: x86_64-rhel-9.4
-> compiler: gcc-12
-> test machine: 224 threads 4 sockets Intel(R) Xeon(R) Platinum 8380H CPU @=
- 2.90GHz (Cooper Lake) with 192G memory
->
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
->
->
->
-> If you fix the issue in a separate patch/commit (i.e. not just a new vers=
-ion of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202411292300.61edbd37-lkp@intel.=
-com
->
->
-> [  133.054592][    C1] watchdog: BUG: soft lockup - CPU#1 stuck for 22s! =
-[usemem:5463]
-> [  133.062611][    C1] Modules linked in: xfs intel_rapl_msr intel_rapl_c=
-ommon intel_uncore_frequency intel_uncore_frequency_common isst_if_mbox_msr=
- isst_if_common skx_edac skx_edac_common nfit libnvdimm x86_pkg_temp_therma=
-l coretemp btrfs blake2b_generic xor kvm_intel raid6_pq libcrc32c kvm crct1=
-0dif_pclmul crc32_pclmul crc32c_intel ghash_clmulni_intel sd_mod rapl sg in=
-tel_cstate ipmi_ssif acpi_power_meter binfmt_misc snd_pcm dax_hmem cxl_acpi=
- snd_timer cxl_port snd ast ahci mei_me cxl_core libahci soundcore drm_shme=
-m_helper ioatdma i2c_i801 intel_uncore einj pcspkr libata megaraid_sas drm_=
-kms_helper mei ipmi_si acpi_ipmi i2c_smbus dca intel_pch_thermal wmi ipmi_d=
-evintf ipmi_msghandler joydev drm fuse loop dm_mod ip_tables
-> [  133.127927][    C1] CPU: 1 UID: 0 PID: 5463 Comm: usemem Not tainted 6=
-.12.0-rc6-00041-g13da30d6f915 #1
-> [  133.137519][    C1] Hardware name: Inspur NF8260M6/NF8260M6, BIOS 06.0=
-0.01 04/22/2022
-> [ 133.145595][ C1] RIP: 0010:memset_orig (arch/x86/lib/memset_64.S:71)
-> [ 133.150781][ C1] Code: c1 41 89 f9 41 83 e1 07 75 70 48 89 d1 48 c1 e9 =
-06 74 35 0f 1f 44 00 00 48 ff c9 48 89 07 48 89 47 08 48 89 47 10 48 89 47 =
-18 <48> 89 47 20 48 89 47 28 48 89 47 30 48 89 47 38 48 8d 7f 40 75 d8
-> All code
-> =3D=3D=3D=3D=3D=3D=3D=3D
->    0:   c1 41 89 f9             roll   $0xf9,-0x77(%rcx)
->    4:   41 83 e1 07             and    $0x7,%r9d
->    8:   75 70                   jne    0x7a
->    a:   48 89 d1                mov    %rdx,%rcx
->    d:   48 c1 e9 06             shr    $0x6,%rcx
->   11:   74 35                   je     0x48
->   13:   0f 1f 44 00 00          nopl   0x0(%rax,%rax,1)
->   18:   48 ff c9                dec    %rcx
->   1b:   48 89 07                mov    %rax,(%rdi)
->   1e:   48 89 47 08             mov    %rax,0x8(%rdi)
->   22:   48 89 47 10             mov    %rax,0x10(%rdi)
->   26:   48 89 47 18             mov    %rax,0x18(%rdi)
->   2a:*  48 89 47 20             mov    %rax,0x20(%rdi)          <-- trapp=
-ing instruction
->   2e:   48 89 47 28             mov    %rax,0x28(%rdi)
->   32:   48 89 47 30             mov    %rax,0x30(%rdi)
->   36:   48 89 47 38             mov    %rax,0x38(%rdi)
->   3a:   48 8d 7f 40             lea    0x40(%rdi),%rdi
->   3e:   75 d8                   jne    0x18
->
-> Code starting with the faulting instruction
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->    0:   48 89 47 20             mov    %rax,0x20(%rdi)
->    4:   48 89 47 28             mov    %rax,0x28(%rdi)
->    8:   48 89 47 30             mov    %rax,0x30(%rdi)
->    c:   48 89 47 38             mov    %rax,0x38(%rdi)
->   10:   48 8d 7f 40             lea    0x40(%rdi),%rdi
->   14:   75 d8                   jne    0xffffffffffffffee
-> [  133.170775][    C1] RSP: 0018:ffffc900126efa20 EFLAGS: 00000206
-> [  133.177015][    C1] RAX: 0000000000000000 RBX: ffffea00a7c878c0 RCX: 0=
-000000000000030
-> [  133.185139][    C1] RDX: 0000000000001000 RSI: 0000000000000000 RDI: f=
-fff88a9f21e33c0
-> [  133.193229][    C1] RBP: ffff88a9f21e3000 R08: 0000000000000000 R09: 0=
-000000000000000
-> [  133.201373][    C1] R10: ffff88a9f21e3000 R11: 0000000000001000 R12: 0=
-000000000000000
-> [  133.209522][    C1] R13: 0000000000000000 R14: 0000000000000000 R15: 0=
-0000026b5fdf000
-> [  133.217642][    C1] FS:  00007f21a47e86c0(0000) GS:ffff888c0f680000(00=
-00) knlGS:0000000000000000
-> [  133.226703][    C1] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  133.233410][    C1] CR2: 00005641d476a000 CR3: 0000000c4b6b6003 CR4: 0=
-0000000007726f0
-> [  133.241514][    C1] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0=
-000000000000000
-> [  133.249679][    C1] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0=
-000000000000400
-> [  133.257776][    C1] PKRU: 55555554
-> [  133.261446][    C1] Call Trace:
-> [  133.264848][    C1]  <IRQ>
-> [ 133.267875][ C1] ? watchdog_timer_fn (kernel/watchdog.c:762)
-> [ 133.273139][ C1] ? __pfx_watchdog_timer_fn (kernel/watchdog.c:677)
-> [ 133.278704][ C1] ? __hrtimer_run_queues (kernel/time/hrtimer.c:1691 ker=
-nel/time/hrtimer.c:1755)
-> [ 133.284250][ C1] ? hrtimer_interrupt (kernel/time/hrtimer.c:1820)
-> [ 133.289443][ C1] ? __sysvec_apic_timer_interrupt (arch/x86/kernel/apic/=
-apic.c:1038 arch/x86/kernel/apic/apic.c:1055)
-> [ 133.295587][ C1] ? sysvec_apic_timer_interrupt (arch/x86/kernel/apic/ap=
-ic.c:1049 arch/x86/kernel/apic/apic.c:1049)
-> [  133.301543][    C1]  </IRQ>
-> [  133.304608][    C1]  <TASK>
-> [ 133.307641][ C1] ? asm_sysvec_apic_timer_interrupt (arch/x86/include/as=
-m/idtentry.h:702)
-> [ 133.313886][ C1] ? memset_orig (arch/x86/lib/memset_64.S:71)
-> [ 133.318457][ C1] zero_user_segments (include/linux/highmem.h:280)
-> [ 133.323465][ C1] iomap_readpage_iter (fs/iomap/buffered-io.c:392)
-> [ 133.328698][ C1] ? xas_load (include/linux/xarray.h:175 include/linux/x=
-array.h:1264 lib/xarray.c:240)
-> [ 133.332919][ C1] iomap_readahead (fs/iomap/buffered-io.c:514 fs/iomap/b=
-uffered-io.c:550)
-> [ 133.337765][ C1] read_pages (mm/readahead.c:160)
-> [ 133.342137][ C1] ? alloc_pages_mpol_noprof (mm/mempolicy.c:2267)
-> [ 133.347774][ C1] page_cache_ra_unbounded (include/linux/fs.h:882 mm/rea=
-dahead.c:291)
-> [ 133.353303][ C1] filemap_fault (mm/filemap.c:3230 mm/filemap.c:3329)
-> [ 133.357982][ C1] __do_fault (mm/memory.c:4882)
-> [ 133.362292][ C1] do_read_fault (mm/memory.c:5297)
-> [ 133.366985][ C1] do_pte_missing (mm/memory.c:5431 mm/memory.c:3965)
-> [ 133.371754][ C1] __handle_mm_fault (mm/memory.c:5909)
-> [ 133.376818][ C1] handle_mm_fault (mm/memory.c:6077)
-> [ 133.381717][ C1] do_user_addr_fault (arch/x86/mm/fault.c:1339)
-> [ 133.386820][ C1] exc_page_fault (arch/x86/include/asm/irqflags.h:37 arc=
-h/x86/include/asm/irqflags.h:92 arch/x86/mm/fault.c:1489 arch/x86/mm/fault.=
-c:1539)
-> [ 133.391500][ C1] asm_exc_page_fault (arch/x86/include/asm/idtentry.h:62=
-3)
-> [  133.396396][    C1] RIP: 0033:0x55578aeb9acc
-> [ 133.400849][ C1] Code: 00 00 e8 b7 f8 ff ff bf 01 00 00 00 e8 0d f9 ff =
-ff 89 c7 e8 6c ff ff ff bf 00 00 00 00 e8 fc f8 ff ff 85 d2 74 08 48 8d 04 =
-f7 <48> 8b 00 c3 48 8d 04 f7 48 89 30 b8 00 00 00 00 c3 41 54 55 53 48
-> All code
-> =3D=3D=3D=3D=3D=3D=3D=3D
->    0:   00 00                   add    %al,(%rax)
->    2:   e8 b7 f8 ff ff          call   0xfffffffffffff8be
->    7:   bf 01 00 00 00          mov    $0x1,%edi
->    c:   e8 0d f9 ff ff          call   0xfffffffffffff91e
->   11:   89 c7                   mov    %eax,%edi
->   13:   e8 6c ff ff ff          call   0xffffffffffffff84
->   18:   bf 00 00 00 00          mov    $0x0,%edi
->   1d:   e8 fc f8 ff ff          call   0xfffffffffffff91e
->   22:   85 d2                   test   %edx,%edx
->   24:   74 08                   je     0x2e
->   26:   48 8d 04 f7             lea    (%rdi,%rsi,8),%rax
->   2a:*  48 8b 00                mov    (%rax),%rax              <-- trapp=
-ing instruction
->   2d:   c3                      ret
->   2e:   48 8d 04 f7             lea    (%rdi,%rsi,8),%rax
->   32:   48 89 30                mov    %rsi,(%rax)
->   35:   b8 00 00 00 00          mov    $0x0,%eax
->   3a:   c3                      ret
->   3b:   41 54                   push   %r12
->   3d:   55                      push   %rbp
->   3e:   53                      push   %rbx
->   3f:   48                      rex.W
->
-> Code starting with the faulting instruction
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->    0:   48 8b 00                mov    (%rax),%rax
->    3:   c3                      ret
->    4:   48 8d 04 f7             lea    (%rdi,%rsi,8),%rax
->    8:   48 89 30                mov    %rsi,(%rax)
->    b:   b8 00 00 00 00          mov    $0x0,%eax
->   10:   c3                      ret
->   11:   41 54                   push   %r12
->   13:   55                      push   %rbp
->   14:   53                      push   %rbx
->   15:   48                      rex.W
+hi, Yafang,
 
-Is this issue consistently reproducible?
-I attempted to reproduce it using the mmap-xread-seq-mt test case but
-was unsuccessful.
+On Tue, Dec 03, 2024 at 10:14:50AM +0800, Yafang Shao wrote:
+> On Fri, Nov 29, 2024 at 11:19 PM kernel test robot
+> <oliver.sang@intel.com> wrote:
+> >
+> >
+> >
+> > Hello,
+> >
+> > kernel test robot noticed "BUG:soft_lockup-CPU##stuck_for#s![usemem:#]" on:
+> >
+> > commit: 13da30d6f9150dff876f94a3f32d555e484ad04f ("mm/readahead: fix large folio support in async readahead")
+> > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+> >
+> > [test failed on linux-next/master cfba9f07a1d6aeca38f47f1f472cfb0ba133d341]
+> >
+> > in testcase: vm-scalability
+> > version: vm-scalability-x86_64-6f4ef16-0_20241103
+> > with following parameters:
+> >
+> >         runtime: 300s
+> >         test: mmap-xread-seq-mt
+> >         cpufreq_governor: performance
+> >
+> >
+> >
+> > config: x86_64-rhel-9.4
+> > compiler: gcc-12
+> > test machine: 224 threads 4 sockets Intel(R) Xeon(R) Platinum 8380H CPU @ 2.90GHz (Cooper Lake) with 192G memory
+> >
+> > (please refer to attached dmesg/kmsg for entire log/backtrace)
+> >
+> >
+> >
+> > If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> > the same patch/commit), kindly add following tags
+> > | Reported-by: kernel test robot <oliver.sang@intel.com>
+> > | Closes: https://lore.kernel.org/oe-lkp/202411292300.61edbd37-lkp@intel.com
+> >
+> >
 
---
-Regards
-Yafang
+[...]
+
+> 
+> Is this issue consistently reproducible?
+> I attempted to reproduce it using the mmap-xread-seq-mt test case but
+> was unsuccessful.
+
+in our tests, the issue is quite persistent. as below, 100% reproduced in all
+8 runs, keeps clean on parent.
+
+d1aa0c04294e2988 13da30d6f9150dff876f94a3f32
+---------------- ---------------------------
+       fail:runs  %reproduction    fail:runs
+           |             |             |
+           :8          100%           8:8     dmesg.BUG:soft_lockup-CPU##stuck_for#s![usemem:#]
+           :8          100%           8:8     dmesg.Kernel_panic-not_syncing:softlockup:hung_tasks
+
+to avoid any env issue, we rebuild kernel and rerun more to check. if still
+consistently reproduced, we will follow your further requests. thanks
+
+
+> 
+> --
+> Regards
+> Yafang
