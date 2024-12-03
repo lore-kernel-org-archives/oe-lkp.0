@@ -1,148 +1,189 @@
-Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7228D1DF746
-	for <oe-lkp@lists.linux.dev>; Mon,  2 Dec 2024 22:24:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B189B2500BD;
+	Tue,  3 Dec 2024 00:44:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=96.67.55.147
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733178297; cv=none; b=VpSs6BYna0bJ2p4CDq9K+7XuvOqgJzdUDmeDGyjIJWhwBLHjlN3tcwXoZB1J6Ej05jjKsFxqM9dP5pN6ud7yvZjzXo5YpJqkahuOf7YKC+/ozxWMIgYH2kqH+SceYTGhHKIRawcxW3PFALC7Dj2LYul0MS1ANzH8UR4bTF9wdqQ=
+	t=1733186667; cv=none; b=bO3ugTHMIHG3tKcNFwKFwlWBP/Q5oX0fosveufBoijvho819IesICG6B9d+r6DLn2QRK2S7LqoKRK+rWxmxjon5Rjngqw4q95e7skhhV9tUbA6SmoUxJ4H1wFJvRs13mji4tr7XCf0Us2UFTivGGRi1S38DLj1mQBj/KvC5qxrI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733178297; c=relaxed/simple;
-	bh=3SCjs69uV3EDmq6n+IU/rsyU2Ua5ivJVRg07utNZIDo=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=J8HXUkYO3yzeh8027mo6PcJRnuVZA4pn33zzGz1EOOda18kwhBtex+GUTBHhvnox6FzgBFB+Skx9fnmWFK/Vq9Q/Ln1EkzGBo1Zg/ioE5kc8AIUHWkBrqBWqXaBBy9YRUlJ3kiOUkdY26NP+GO0S+qQRQW2JCmZjnRt2/gRmFbQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=b/k7kC2p; arc=none smtp.client-ip=209.85.210.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="b/k7kC2p"
-Received: by mail-ot1-f52.google.com with SMTP id 46e09a7af769-71d502644e2so2191215a34.0
-        for <oe-lkp@lists.linux.dev>; Mon, 02 Dec 2024 14:24:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1733178295; x=1733783095; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=YJCGC/sgJEzOQ87RHSL5ZFr+7rlghNfPZJAqWvkg6xg=;
-        b=b/k7kC2pKI09VrmpZyDnjsuuKCD/aFNwea5EeUwxhH6kC6urzWrwdsLFxsCpinX8SO
-         V49De3RXOZ1vj6mnGr9TcFOq1LIAdnS0JLxqKE+I+mr/UNk5Ie9ZCisJqMGFiOh1+S3o
-         V52+moNhqSd4qxfE4p2zls/TWuGeTy4iwNmm8DjLM7g1CKxrwoL/UjBg8Ke7jUB6M500
-         SydRxVGhykpotTQl5uBeQ3JQRzVuhpwv4ilJ7pLAIOQ5kBp3frBTk3jIJZQo60JNj/8b
-         xMlwNGHNL9dLhQFhPJ75qFA2FBPQW4uc2776Aq5tL6z+6yYEzbBH2xnFVZpkSYeWW/rE
-         lywQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733178295; x=1733783095;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=YJCGC/sgJEzOQ87RHSL5ZFr+7rlghNfPZJAqWvkg6xg=;
-        b=uZDtViNyaeq58TrghFzwbpS4b5d70uq1CQLJKsFfr/hI1N1yFpmaTUf0sFvlUWPiWg
-         bWufD7e0fc0H68JE8H2zRebt+1bkUQr6AproO60U+YwBpMx5qf++lgtBZGDqyzyIxU2K
-         UftVNBrM5GhVMgggoe9pZOvE4faqBuH7r3Do6T+XLvUBxS6hxbgUJ1vLRafQ74Tenu/i
-         mas9Yuv81QHLi6vMc23CiuHY9mX7UQ0F+wuvTe2xLJkxAlUTcylQPT6s2xKjipAjtLNf
-         hAGSo6ZaRyIQyEfOLqT3JzXUaUhdeJY+a1iafcNJk5VhnP650AqGWEhAv/QHieFJD5RP
-         SWUA==
-X-Forwarded-Encrypted: i=1; AJvYcCUpW8semtsoM38Jfdk42LLNDK4a3WB4uW9fdLIN00AK5dqOTDT/nDAuA4yCxXEiYfCgdIse7GM=@lists.linux.dev
-X-Gm-Message-State: AOJu0YwV4RG4TqwmDc2KYIn3NzqYpet8IO5biHC7fo3G8/fTm0vWpNiC
-	TAFUHJ4eLRBX79skPZnXUjTf1Y6opGHf7lbPTx7WCenRH14HSXsDQtU2j8sTkMG3+hoo3GkBknt
-	BgLGwL+v5gd4ynf+Cy/hafqfouUmTWY9s9/Rw
-X-Gm-Gg: ASbGncuiHt4T5PTcv10+YV4J1O+2baFfwHEmqZWkz6SmbFQV0ai7vGTDFOYtfmsXoQK
-	QlxoTL0W7AY6yxFZdOrZt7vWmDb/yhjWgY/WT7CyO3ydAnAfUC0n5YxDrbzacu7w=
-X-Google-Smtp-Source: AGHT+IGeeo+ghKLojpnbWTzZom5/ogyh7WRdIQxYXPU0UtlV2C/NyHWZ8m/Ani2xjLVRzoyaFLhWiHGqggOcj7aCcyE=
-X-Received: by 2002:a05:6358:280d:b0:1c3:7415:693d with SMTP id
- e5c5f4694b2df-1caeaa8ba16mr49600855d.5.1733178295304; Mon, 02 Dec 2024
- 14:24:55 -0800 (PST)
+	s=arc-20240116; t=1733186667; c=relaxed/simple;
+	bh=ivVr7+hkGcjr2KePLormpOBddy+1jbddzb/J2KjZu58=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=DeBwNeQxMZG6YydbAaswiCo43q9VP/z5CZWS7perulcvzadrZwQkSU/WsGOchWc2hUvPMEO06z27d61Kpgy/AVVb+cyPgtAzY6CG7MdML6uzhdvWS9+3QbocGJz1ttY0l6Q9kGKYTXVnytboxoMNPXeZnZrjVvphveVIrd0B6Rw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=surriel.com; spf=pass smtp.mailfrom=shelob.surriel.com; arc=none smtp.client-ip=96.67.55.147
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=surriel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=shelob.surriel.com
+Received: from [2601:18c:9101:a8b6:82e7:cf5d:dfd9:50ef] (helo=fangorn)
+	by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.97.1)
+	(envelope-from <riel@shelob.surriel.com>)
+	id 1tIH1D-000000002M5-35IQ;
+	Mon, 02 Dec 2024 19:43:59 -0500
+Date: Mon, 2 Dec 2024 19:43:58 -0500
+From: Rik van Riel <riel@surriel.com>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: <oe-lkp@lists.linux.dev>, <lkp@intel.com>,
+ <linux-kernel@vger.kernel.org>, <x86@kernel.org>, Ingo Molnar
+ <mingo@kernel.org>, Dave Hansen <dave.hansen@intel.com>, Linus Torvalds
+ <torvalds@linux-foundation.org>, Peter Zijlstra <peterz@infradead.org>, Mel
+ Gorman <mgorman@suse.de>, Oliver Sang <oliver.sang@intel.com>, Mathieu
+ Desnoyers <mathieu.desnoyers@efficios.com>
+Subject: [PATCH] x86,mm: only trim the mm_cpumask once a second
+Message-ID: <20241202194358.59089122@fangorn>
+In-Reply-To: <202411282207.6bd28eae-lkp@intel.com>
+References: <202411282207.6bd28eae-lkp@intel.com>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.43; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202411291513.ad55672a-lkp@intel.com>
-In-Reply-To: <202411291513.ad55672a-lkp@intel.com>
-From: Yu Zhao <yuzhao@google.com>
-Date: Mon, 2 Dec 2024 15:24:18 -0700
-Message-ID: <CAOUHufYFT3jeY-1ruDwocuGQmW4-Gn69=-DhEHfQuEpv9t4KtA@mail.gmail.com>
-Subject: Re: [linus:master] [madvise] 2f406263e3: stress-ng.mremap.ops_per_sec
- 6.7% regression
-To: oliver.sang@intel.com
-Cc: Yin Fengwei <fengwei.yin@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
-	linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, 
-	Ryan Roberts <ryan.roberts@arm.com>, David Hildenbrand <david@redhat.com>, 
-	Kefeng Wang <wangkefeng.wang@huawei.com>, Matthew Wilcox <willy@infradead.org>, 
-	Minchan Kim <minchan@kernel.org>, Vishal Moola <vishal.moola@gmail.com>, 
-	Yang Shi <shy828301@gmail.com>, linux-mm@kvack.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
+Sender: riel@surriel.com
 
-Hi Oliver,
+On Thu, 28 Nov 2024 22:57:35 +0800
+kernel test robot <oliver.sang@intel.com> wrote:
 
-On Fri, Nov 29, 2024 at 12:50=E2=80=AFAM kernel test robot
-<oliver.sang@intel.com> wrote:
->
->
->
 > Hello,
->
-> kernel test robot noticed a 6.7% regression of stress-ng.mremap.ops_per_s=
-ec on:
->
->
-> commit: 2f406263e3e954aa24c1248edcfa9be0c1bb30fa ("madvise:madvise_cold_o=
-r_pageout_pte_range(): don't use mapcount() against large folio for sharing=
- check")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
->
-> [still regression on fix commit cc864ebba5f612ce2960e7e09322a193e8fda0d7]
->
-> testcase: stress-ng
-> config: x86_64-rhel-8.3
-> compiler: gcc-12
-> test machine: 64 threads 2 sockets Intel(R) Xeon(R) Gold 6346 CPU @ 3.10G=
-Hz (Ice Lake) with 256G memory
-> parameters:
->
->         nr_threads: 100%
->         testtime: 60s
->         test: mremap
->         cpufreq_governor: performance
->
->
->
->
-> If you fix the issue in a separate patch/commit (i.e. not just a new vers=
-ion of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202411291513.ad55672a-lkp@intel.=
-com
->
->
-> Details are as below:
-> -------------------------------------------------------------------------=
-------------------------->
->
->
-> The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20241129/202411291513.ad55672a-lk=
-p@intel.com
->
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> compiler/cpufreq_governor/kconfig/nr_threads/rootfs/tbox_group/test/testc=
-ase/testtime:
->   gcc-12/performance/x86_64-rhel-8.3/100%/debian-12-x86_64-20240206.cgz/l=
-kp-icl-2sp7/mremap/stress-ng/60s
->
-> commit:
->   6867c7a332 ("mm: multi-gen LRU: don't spin during memcg release")
->   2f406263e3 ("madvise:madvise_cold_or_pageout_pte_range(): don't use map=
-count() against large folio for sharing check")
+>=20
+> kernel test robot noticed a 13.2% regression of will-it-scale.per_thread_=
+ops on:
+>=20
+>=20
+> commit: 209954cbc7d0ce1a190fc725d20ce303d74d2680 ("x86/mm/tlb: Update mm_=
+cpumask lazily")
+> https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git x86/mm
 
-The .config you attached shows CONFIG_LRU_GEN_ENABLED is NOT set for
-LKP. So this regression can't be from the first commit above.
+The patch below should fix the will-it-scale performance regression,
+while still allowing us to keep the lazy mm_cpumask updates that help
+workloads in other ways.
 
-Also, I asked you a few times if it's possible to set it to 'y'. It'd
-be great if we could do that :)
+I do not have the same hardware as the Intel guys have access to, and
+could only test this on one two socket system, but hopefully this
+provides a simple (enough) compromise that allows us to keep both
+the lazier context switch code, and a limited mm_cpumask to keep
+TLB flushing work bounded.
+
+---8<---
+
+=46rom b639c1f16ddf4bcfc44dbaa2b8077220f88b1876 Mon Sep 17 00:00:00 2001
+From: Rik van Riel <riel@fb.com>
+Date: Mon, 2 Dec 2024 09:57:31 -0800
+Subject: [PATCH] x86,mm: only trim the mm_cpumask once a second
+
+Setting and clearing CPU bits in the mm_cpumask is only ever done
+by the CPU itself, from the context switch code or the TLB flush
+code.
+
+Synchronization is handled by switch_mm_irqs_off blocking interrupts.
+
+Sending TLB flush IPIs to CPUs that are in the mm_cpumask, but no
+longer running the program causes a regression in the will-it-scale
+tlbflush2 test. This test is contrived, but a large regression here
+might cause a small regression in some real world workload.
+
+Instead of always sending IPIs to CPUs that are in the mm_cpumask,
+but no longer running the program, send these IPIs only once a second.
+
+The rest of the time we can skip over CPUs where the loaded_mm is
+different from the target mm.
+
+On a two socket system with 20 CPU cores on each socket (80 CPUs total),
+this patch, on top of the other context switch patches shows a 3.6%
+speedup in the total runtime of will-it-scale tlbflush2 -t 40 -s 100000.
+
+Signed-off-by: Rik van Riel <riel@surriel.com>
+Reported-by: kernel test roboto <oliver.sang@intel.com>
+Closes: https://lore.kernel.org/oe-lkp/202411282207.6bd28eae-lkp@intel.com/
+---
+ arch/x86/include/asm/mmu.h         |  2 ++
+ arch/x86/include/asm/mmu_context.h |  1 +
+ arch/x86/mm/tlb.c                  | 25 ++++++++++++++++++++++---
+ 3 files changed, 25 insertions(+), 3 deletions(-)
+
+diff --git a/arch/x86/include/asm/mmu.h b/arch/x86/include/asm/mmu.h
+index ce4677b8b735..2c7e3855b88b 100644
+--- a/arch/x86/include/asm/mmu.h
++++ b/arch/x86/include/asm/mmu.h
+@@ -37,6 +37,8 @@ typedef struct {
+ 	 */
+ 	atomic64_t tlb_gen;
+=20
++	unsigned long last_trimmed_cpumask;
++
+ #ifdef CONFIG_MODIFY_LDT_SYSCALL
+ 	struct rw_semaphore	ldt_usr_sem;
+ 	struct ldt_struct	*ldt;
+diff --git a/arch/x86/include/asm/mmu_context.h b/arch/x86/include/asm/mmu_=
+context.h
+index 8dac45a2c7fc..428fd190477a 100644
+--- a/arch/x86/include/asm/mmu_context.h
++++ b/arch/x86/include/asm/mmu_context.h
+@@ -145,6 +145,7 @@ static inline int init_new_context(struct task_struct *=
+tsk,
+=20
+ 	mm->context.ctx_id =3D atomic64_inc_return(&last_mm_ctx_id);
+ 	atomic64_set(&mm->context.tlb_gen, 0);
++	mm->context.last_trimmed_cpumask =3D jiffies;
+=20
+ #ifdef CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS
+ 	if (cpu_feature_enabled(X86_FEATURE_OSPKE)) {
+diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
+index fcea29e07eed..0ce5f2ed7825 100644
+--- a/arch/x86/mm/tlb.c
++++ b/arch/x86/mm/tlb.c
+@@ -766,6 +766,7 @@ static void flush_tlb_func(void *info)
+ 		 */
+ 		if (f->mm && f->mm !=3D loaded_mm) {
+ 			cpumask_clear_cpu(raw_smp_processor_id(), mm_cpumask(f->mm));
++			f->mm->context.last_trimmed_cpumask =3D jiffies;
+ 			return;
+ 		}
+ 	}
+@@ -897,9 +898,27 @@ static void flush_tlb_func(void *info)
+ 			nr_invalidate);
+ }
+=20
+-static bool tlb_is_not_lazy(int cpu, void *data)
++static bool should_flush_tlb(int cpu, void *data)
+ {
+-	return !per_cpu(cpu_tlbstate_shared.is_lazy, cpu);
++	struct flush_tlb_info *info =3D data;
++
++	/* Lazy TLB will get flushed at the next context switch. */
++	if (per_cpu(cpu_tlbstate_shared.is_lazy, cpu))
++		return false;
++
++	/* No mm means kernel memory flush. */
++	if (!info->mm)
++		return true;
++
++	/* The target mm is loaded, and the CPU is not lazy. */
++	if (per_cpu(cpu_tlbstate.loaded_mm, cpu) =3D=3D info->mm)
++		return true;
++
++	/* In cpumask, but not the loaded mm? Periodically remove by flushing. */
++	if (jiffies > info->mm->context.last_trimmed_cpumask + HZ)
++		return true;
++
++	return false;
+ }
+=20
+ DEFINE_PER_CPU_SHARED_ALIGNED(struct tlb_state_shared, cpu_tlbstate_shared=
+);
+@@ -933,7 +952,7 @@ STATIC_NOPV void native_flush_tlb_multi(const struct cp=
+umask *cpumask,
+ 	if (info->freed_tables)
+ 		on_each_cpu_mask(cpumask, flush_tlb_func, (void *)info, true);
+ 	else
+-		on_each_cpu_cond_mask(tlb_is_not_lazy, flush_tlb_func,
++		on_each_cpu_cond_mask(should_flush_tlb, flush_tlb_func,
+ 				(void *)info, 1, cpumask);
+ }
+=20
+--=20
+2.43.5
+
