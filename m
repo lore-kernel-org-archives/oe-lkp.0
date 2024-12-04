@@ -1,35 +1,36 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1F662119;
-	Wed,  4 Dec 2024 21:44:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA237191F9C;
+	Wed,  4 Dec 2024 22:21:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733348649; cv=none; b=Im/GfhkYYLrKnEIbrYx59CqXE1KNxpjiLVoCUWWbM5yBI6L4crWxtb5Zhd1C+VuXew1iO9H8Y/td9XKQ8XMP+ImcRWFNzDbZZJRPBAghMue3bkoHYlulZwivzXFiwWAtG2j1ArhFZ05HYL0UxtbhndIWQZe9eUdBHTGy+BeXGGM=
+	t=1733350869; cv=none; b=isWJs2Ic6aNtCXI6thIRvUkEMfI2UnmFyzR8lvLnMCv4gHS2l/GgFKkx/PtbhUvsoWPLSjJya2k3nyNREUUMYEmsYR6+gWKkcE5gpiijGErlrgN3zxIccMoE18yR7LSY3qoA0XSZY5l/GcyVx2H+rVZhOD3DcmJvRYX6j6gU7jU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733348649; c=relaxed/simple;
-	bh=stKQ7fcojg34li0rOLarPjl4Anxwtj3iQSIz+P329ns=;
+	s=arc-20240116; t=1733350869; c=relaxed/simple;
+	bh=7Kjwv6X8sBlPbnZSg35bGxloNhQZkO7cxpO2/leNb70=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=u2tQnq8sot2/jzENJaBO92LhASVdOzUF9r9cbMOAd1XelH96ejuL9QzV5q1H4XkdYxxB7+0B31ENVy/2j0zzvVl4gLsWsSkvRcdooLBXbOSYuJtKlUJsaV0GAuci21T2h+oKe8LxD/rFx4BZBCucFmlBDBT5yiWAjEjVnxLOLwE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=juZMzVzY; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=D7H0jz/+B0UWVKP/dPZ4aLDyHcfax120+Tp2wtf9sQCb/cVqRoziD5RwIkeqANvs6DkY0oBm3fXXZj+JSKNllaOqZjIl440BnW0uuEOeYJCaOPmc6YWeJs3q8bKRhKEbtOdUNLnVTd+ZbqZJlWfQ7B5VzE3QoCnWF7IRYNTnV/Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NG6WqY8n; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="juZMzVzY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E79DDC4CED1;
-	Wed,  4 Dec 2024 21:44:07 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NG6WqY8n"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35233C4CECD;
+	Wed,  4 Dec 2024 22:21:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1733348648;
-	bh=stKQ7fcojg34li0rOLarPjl4Anxwtj3iQSIz+P329ns=;
+	s=k20201202; t=1733350868;
+	bh=7Kjwv6X8sBlPbnZSg35bGxloNhQZkO7cxpO2/leNb70=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=juZMzVzYnSVSBGCqozInVaum7QWNhmhTIs1HSUyguByEg0TQqqmcZYk5r8/GIzAp1
-	 YGLN15PpwDo5FxmxHTpFJqmeJafuYKGELsGZ/4XgUI+R3a+08G+LGYRqXlpAJM0IK6
-	 gbfR9goh7UquxzPm7YfgoPm6PWlFSeI4c8/kXs4L9FMRC71e222I1UP3TsKJ0wFqSW
-	 8qpDSDkUEjXhIhGXz3KoPpm3brd3WyrcWzpRH/C1wbAvdfJU2eIsyeI9ONEH/CIrJh
-	 rspKsq6NNokLMVOTHP7NoiOZAjXxdnf2XYknCjJDFDjC9mkSosSqItE68gWR16ksTy
-	 XxDIirpMCMhaA==
-Date: Wed, 4 Dec 2024 13:44:06 -0800
+	b=NG6WqY8nt8BOlMu3is3Z8/126MyljUh+G25WjO47mr3cx7/Kw2Wb/UYef8zXXW44A
+	 eW3g3J9aTPwlz0VVfL1QAqjP12xCjK27qlN8Xxidn5TRERb5AQM9FJDOP2KUOJsXlF
+	 mpEMerhgCI0dOgPWDyl7X0mIgUaonr/DWOlxMQvv3GgiYQOtgH01PAAi2buk46tMw3
+	 9JANmaCDcfJ1vF1DCwBNQvjcx191In0hzmMasmqzqJx4OVoN1LpFrJVxwESv6xn27R
+	 1IrKBivisRl/XfCWinYnu5Ld3DYgaGANn9mljubBh/ref+1sRfqf68QzMfp/J9wr31
+	 pVRzP3kA8idiw==
+Date: Wed, 4 Dec 2024 14:21:06 -0800
 From: Namhyung Kim <namhyung@kernel.org>
 To: Oliver Sang <oliver.sang@intel.com>
 Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+	Arnaldo Carvalho de Melo <acme@kernel.org>,
 	James Clark <james.clark@linaro.org>,
 	Ravi Bangoria <ravi.bangoria@amd.com>,
 	Kan Liang <kan.liang@linux.intel.com>,
@@ -42,10 +43,11 @@ Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
 	linux-perf-users@vger.kernel.org
 Subject: Re: [linus:master] [perf tools]  af954f76ee:
  perf-sanity-tests.Test_data_symbol.fail
-Message-ID: <Z1DNJpDzCIBFrIZT@google.com>
+Message-ID: <Z1DV0lN8qHSysX7f@google.com>
 References: <202411301431.799e5531-lkp@intel.com>
  <Z04ZUHaGdsBapIEL@google.com>
  <Z1BhfpYWpUQ0p+qR@xsang-OptiPlex-9020>
+ <Z1DNJpDzCIBFrIZT@google.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -54,119 +56,63 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <Z1BhfpYWpUQ0p+qR@xsang-OptiPlex-9020>
+In-Reply-To: <Z1DNJpDzCIBFrIZT@google.com>
 
-On Wed, Dec 04, 2024 at 10:04:46PM +0800, Oliver Sang wrote:
-> hi, Namhyung Kim,
+On Wed, Dec 04, 2024 at 01:44:06PM -0800, Namhyung Kim wrote:
+[SNIP]
+>   perf_event_attr:
+>     type                             4 (cpu)
+>     size                             136
+>     config                           0x1cd (mem-loads)
+>     { sample_period, sample_freq }   4000
+>     sample_type                      IP|TID|TIME|ADDR|CPU|PERIOD|IDENTIFIER|DATA_SRC|WEIGHT_STRUCT
+>     read_format                      ID|LOST
+>     freq                             1
+>     precise_ip                       3
+>     sample_id_all                    1
+>     { bp_addr, config1 }             0x1f
+>   ------------------------------------------------------------
+>   sys_perf_event_open: pid -1  cpu 0  group_fd 5  flags 0x8
+>   sys_perf_event_open failed, error -22
+>   Using PERF_SAMPLE_READ / :S modifier is not compatible with inherit, falling back to no-inherit.
+>   Error:
+>   The sys_perf_event_open() syscall returned with 22 (Invalid argument) for event (cpu/mem-loads,ldlat=30/).
+>   "dmesg | grep -i perf" may provide additional information.
 > 
-> On Mon, Dec 02, 2024 at 12:32:16PM -0800, Namhyung Kim wrote:
-> > Hello,
-> > 
-> > On Sat, Nov 30, 2024 at 03:03:10PM +0800, kernel test robot wrote:
-> > > 
-> > > 
-> > > Hello,
-> > > 
-> > > kernel test robot noticed "perf-sanity-tests.Test_data_symbol.fail" on:
-> > > 
-> > > commit: af954f76eea56453713ae657f6812d4063f9bc57 ("perf tools: Check fallback error and order")
-> > > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> > > 
-> > > [test failed on linus/master      7af08b57bcb9ebf78675c50069c54125c0a8b795]
-> > > [test failed on linux-next/master f486c8aa16b8172f63bddc70116a0c897a7f3f02]
-> > > 
-> > > in testcase: perf-sanity-tests
-> > > version: 
-> > > with following parameters:
-> > > 
-> > > 	perf_compiler: gcc
-> > > 
-> > > 
-> > > 
-> > > config: x86_64-rhel-8.3-bpf
-> > > compiler: gcc-12
-> > > test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480+ (Sapphire Rapids) with 256G memory
-> > > 
-> > > (please refer to attached dmesg/kmsg for entire log/backtrace)
-> > > 
-> > > 
-> > > If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> > > the same patch/commit), kindly add following tags
-> > > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> > > | Closes: https://lore.kernel.org/oe-lkp/202411301431.799e5531-lkp@intel.com
-> > > 
-> > > 
-> > > 
-> > > 2024-11-28 08:31:19 sudo /usr/src/linux-perf-x86_64-rhel-8.3-bpf-af954f76eea56453713ae657f6812d4063f9bc57/tools/perf/perf test 121
-> > > 121: Test data symbol                                                : FAILED!
-> > 
-> > Thanks for the report.  But I have a request.
-> > 
-> > Can you please run the perf test with -v option so that we can see the
-> > detailed error messages when it failed?
-> 
-> below is the log with '-v'
-> 
-> 2024-12-03 11:20:32 sudo /usr/src/linux-perf-x86_64-rhel-8.3-bpf-af954f76eea56453713ae657f6812d4063f9bc57/tools/perf/perf test 121 -v
-> 121: Test data symbol:
-> --- start ---
-> test child forked, pid 143127
->  294e400-294e439 l buf1
-> perf does have symbol 'buf1'
-> Recording workload...
-> Waiting for "perf record has started" message
-> /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-af954f76eea56453713ae657f6812d4063f9bc57/tools/perf/tests/shell/test_data_symbol.sh: line 74: kill: (143139) - No such process
-> Cleaning up files...
-> ---- end(-1) ----
-> 121: Test data symbol                                                : FAILED!
+> There's an issue with fallback on the inherit bit with the sample read.
+> I'll take a look.
 
-Thanks for the log.  I think it failed to run perf mem record at all.
+Hmm, no.  It doesn't have neight SAMPLE_READ nor inherit.  So the error
+message was misleading.  Maybe it should be printed when it actually
+clears the bits.
 
-I've set up a Sapphire Rapids and run the test.  It said:
-
-  # perf mem record -avv -C0 true
-  DEBUGINFOD_URLS=
-  nr_cblocks: 0
-  affinity: SYS
-  mmap flush: 1
-  comp level: 0
-  ------------------------------------------------------------
-  perf_event_attr:
-    type                             4 (cpu)
-    size                             136
-    config                           0x8203 (mem-loads-aux)
-    { sample_period, sample_freq }   4000
-    sample_type                      IP|TID|TIME|ADDR|CPU|PERIOD|IDENTIFIER|DATA_SRC|WEIGHT_STRUCT
-    read_format                      ID|LOST
-    disabled                         1
-    freq                             1
-    precise_ip                       3
-    sample_id_all                    1
-  ------------------------------------------------------------
-  sys_perf_event_open: pid -1  cpu 0  group_fd -1  flags 0x8 = 5
-  ------------------------------------------------------------
-  perf_event_attr:
-    type                             4 (cpu)
-    size                             136
-    config                           0x1cd (mem-loads)
-    { sample_period, sample_freq }   4000
-    sample_type                      IP|TID|TIME|ADDR|CPU|PERIOD|IDENTIFIER|DATA_SRC|WEIGHT_STRUCT
-    read_format                      ID|LOST
-    freq                             1
-    precise_ip                       3
-    sample_id_all                    1
-    { bp_addr, config1 }             0x1f
-  ------------------------------------------------------------
-  sys_perf_event_open: pid -1  cpu 0  group_fd 5  flags 0x8
-  sys_perf_event_open failed, error -22
-  Using PERF_SAMPLE_READ / :S modifier is not compatible with inherit, falling back to no-inherit.
-  Error:
-  The sys_perf_event_open() syscall returned with 22 (Invalid argument) for event (cpu/mem-loads,ldlat=30/).
-  "dmesg | grep -i perf" may provide additional information.
-
-There's an issue with fallback on the inherit bit with the sample read.
-I'll take a look.
+Anyway, I've tested with the old code and realzed that it might be due
+to precise_ip being 3.  I expected it'd return EOPNOTSUPP for the case
+but it seems to return EINVAL sometimes.  Then it should check it after
+the missing features like below.  Can you please test?
 
 Thanks,
 Namhyung
 
+
+---8<---
+diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
+index f745723d486ba962..d22c5df1701eccc5 100644
+--- a/tools/perf/util/evsel.c
++++ b/tools/perf/util/evsel.c
+@@ -2571,12 +2571,12 @@ static int evsel__open_cpu(struct evsel *evsel, struct perf_cpu_map *cpus,
+ 	if (err == -EMFILE && rlimit__increase_nofile(&set_rlimit))
+ 		goto retry_open;
+ 
+-	if (err == -EOPNOTSUPP && evsel__precise_ip_fallback(evsel))
+-		goto retry_open;
+-
+ 	if (err == -EINVAL && evsel__detect_missing_features(evsel))
+ 		goto fallback_missing_features;
+ 
++	if (evsel__precise_ip_fallback(evsel))
++		goto retry_open;
++
+ 	if (evsel__handle_error_quirks(evsel, err))
+ 		goto retry_open;
+ 
