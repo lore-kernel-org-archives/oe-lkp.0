@@ -1,189 +1,172 @@
-Received: from smtpout.efficios.com (smtpout.efficios.com [158.69.130.18])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1538A1F03C8
-	for <oe-lkp@lists.linux.dev>; Wed,  4 Dec 2024 20:19:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=158.69.130.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1F662119;
+	Wed,  4 Dec 2024 21:44:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733343596; cv=none; b=hBJkopmO8Na44z3OnLn0rv3cF43FZrqHLmc+elNaVS9qFoZilAhFhHvDZGPcsyG9fZJeytZKJHh162XcWjftgqLLwljRTeFZ7DRbXFYVofmIDi6sVUZXMvAVdZqrep7fQCZf5ZEe8Uz4DLfq+CyG5ciptcIRtbCw/LkQ26mV440=
+	t=1733348649; cv=none; b=Im/GfhkYYLrKnEIbrYx59CqXE1KNxpjiLVoCUWWbM5yBI6L4crWxtb5Zhd1C+VuXew1iO9H8Y/td9XKQ8XMP+ImcRWFNzDbZZJRPBAghMue3bkoHYlulZwivzXFiwWAtG2j1ArhFZ05HYL0UxtbhndIWQZe9eUdBHTGy+BeXGGM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733343596; c=relaxed/simple;
-	bh=+B1oBcmjip8MCv2+oNZlZ/mq046xmivhhOIvQgpgSuo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=jg2F7jqRT/M/d+YhsVHvLK1MUAv/iH1NjDWg3q2bVva5DG4SDpFqH0G3So0pCxE7IgFfd4puHPmnmYKWDZog+hoCqChWoWYlCbazEclRnz2u7Yagb2VkrBjBGPGz5vHEMrkgDPeFY8udyrOXyTbgkyxEfdm4sPTy6ev4xyJPHAg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=efficios.com; spf=pass smtp.mailfrom=efficios.com; dkim=pass (2048-bit key) header.d=efficios.com header.i=@efficios.com header.b=Hx8/tiI5; arc=none smtp.client-ip=158.69.130.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=efficios.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=efficios.com
+	s=arc-20240116; t=1733348649; c=relaxed/simple;
+	bh=stKQ7fcojg34li0rOLarPjl4Anxwtj3iQSIz+P329ns=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=u2tQnq8sot2/jzENJaBO92LhASVdOzUF9r9cbMOAd1XelH96ejuL9QzV5q1H4XkdYxxB7+0B31ENVy/2j0zzvVl4gLsWsSkvRcdooLBXbOSYuJtKlUJsaV0GAuci21T2h+oKe8LxD/rFx4BZBCucFmlBDBT5yiWAjEjVnxLOLwE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=juZMzVzY; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=efficios.com header.i=@efficios.com header.b="Hx8/tiI5"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=efficios.com;
-	s=smtpout1; t=1733343586;
-	bh=+B1oBcmjip8MCv2+oNZlZ/mq046xmivhhOIvQgpgSuo=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=Hx8/tiI5eYY8Rxea/n9Vta7TH43LVvqNlZZLVn4VX7SpXfHcME7cMd+25TdMWXmNc
-	 P5CQ+KK3jZZHnCmn48xg6WfqgWtL5cXKlaNZoRsiIfS44tsM4I4RtECOj6xPP10yqM
-	 JXuVx7RZKa9bgXj5HcGg/h/cHdkX4TEBJTY/qo+Fw6fwXgWQPlLiZ4gJfDDlZnBgrD
-	 QtwYeBoYB+1Q0X7B/1FqhotLdoN7132+m52w9D7KJ9qLKH41s/3WSk6gsvOTu3/En5
-	 fmZ3thMX8dJcUwjB/KrrbBor+lCS85saI2IM6T2/XoiNZwVs7uq7Z62xJfJEriMWnc
-	 OFbro8NDVc1bA==
-Received: from [172.16.0.134] (96-127-217-162.qc.cable.ebox.net [96.127.217.162])
-	by smtpout.efficios.com (Postfix) with ESMTPSA id 4Y3TQV1tSBzTxh;
-	Wed,  4 Dec 2024 15:19:46 -0500 (EST)
-Message-ID: <43835b8c-53cd-428f-a46f-554bfa5c2cdd@efficios.com>
-Date: Wed, 4 Dec 2024 15:19:46 -0500
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="juZMzVzY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E79DDC4CED1;
+	Wed,  4 Dec 2024 21:44:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1733348648;
+	bh=stKQ7fcojg34li0rOLarPjl4Anxwtj3iQSIz+P329ns=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=juZMzVzYnSVSBGCqozInVaum7QWNhmhTIs1HSUyguByEg0TQqqmcZYk5r8/GIzAp1
+	 YGLN15PpwDo5FxmxHTpFJqmeJafuYKGELsGZ/4XgUI+R3a+08G+LGYRqXlpAJM0IK6
+	 gbfR9goh7UquxzPm7YfgoPm6PWlFSeI4c8/kXs4L9FMRC71e222I1UP3TsKJ0wFqSW
+	 8qpDSDkUEjXhIhGXz3KoPpm3brd3WyrcWzpRH/C1wbAvdfJU2eIsyeI9ONEH/CIrJh
+	 rspKsq6NNokLMVOTHP7NoiOZAjXxdnf2XYknCjJDFDjC9mkSosSqItE68gWR16ksTy
+	 XxDIirpMCMhaA==
+Date: Wed, 4 Dec 2024 13:44:06 -0800
+From: Namhyung Kim <namhyung@kernel.org>
+To: Oliver Sang <oliver.sang@intel.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
+	James Clark <james.clark@linaro.org>,
+	Ravi Bangoria <ravi.bangoria@amd.com>,
+	Kan Liang <kan.liang@linux.intel.com>,
+	James Clark <james.clark@arm.com>,
+	Atish Patra <atishp@atishpatra.org>,
+	Mingwei Zhang <mizhang@google.com>,
+	Kajol Jain <kjain@linux.ibm.com>,
+	Thomas Richter <tmricht@linux.ibm.com>,
+	Palmer Dabbelt <palmer@rivosinc.com>,
+	linux-perf-users@vger.kernel.org
+Subject: Re: [linus:master] [perf tools]  af954f76ee:
+ perf-sanity-tests.Test_data_symbol.fail
+Message-ID: <Z1DNJpDzCIBFrIZT@google.com>
+References: <202411301431.799e5531-lkp@intel.com>
+ <Z04ZUHaGdsBapIEL@google.com>
+ <Z1BhfpYWpUQ0p+qR@xsang-OptiPlex-9020>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3] x86,mm: only trim the mm_cpumask once a second
-To: Rik van Riel <riel@surriel.com>, Oliver Sang <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
- x86@kernel.org, Ingo Molnar <mingo@kernel.org>,
- Dave Hansen <dave.hansen@intel.com>,
- Linus Torvalds <torvalds@linux-foundation.org>,
- Peter Zijlstra <peterz@infradead.org>, Mel Gorman <mgorman@suse.de>
-References: <202411282207.6bd28eae-lkp@intel.com>
- <20241202194358.59089122@fangorn> <Z1BV7NG/Qp0BNw3Y@xsang-OptiPlex-9020>
- <20241204115634.28964c62@fangorn>
-From: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Content-Language: en-US
-In-Reply-To: <20241204115634.28964c62@fangorn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Z1BhfpYWpUQ0p+qR@xsang-OptiPlex-9020>
 
-On 2024-12-04 11:56, Rik van Riel wrote:
-[...]
+On Wed, Dec 04, 2024 at 10:04:46PM +0800, Oliver Sang wrote:
+> hi, Namhyung Kim,
 > 
-> Signed-off-by: Rik van Riel <riel@surriel.com>
-> Reported-by: kernel test roboto <oliver.sang@intel.com>
-> Closes: https://lore.kernel.org/oe-lkp/202411282207.6bd28eae-lkp@intel.com/
-> ---
->   arch/x86/include/asm/mmu.h         |  2 ++
->   arch/x86/include/asm/mmu_context.h |  1 +
->   arch/x86/include/asm/tlbflush.h    |  1 +
->   arch/x86/mm/tlb.c                  | 35 +++++++++++++++++++++++++++---
->   4 files changed, 36 insertions(+), 3 deletions(-)
+> On Mon, Dec 02, 2024 at 12:32:16PM -0800, Namhyung Kim wrote:
+> > Hello,
+> > 
+> > On Sat, Nov 30, 2024 at 03:03:10PM +0800, kernel test robot wrote:
+> > > 
+> > > 
+> > > Hello,
+> > > 
+> > > kernel test robot noticed "perf-sanity-tests.Test_data_symbol.fail" on:
+> > > 
+> > > commit: af954f76eea56453713ae657f6812d4063f9bc57 ("perf tools: Check fallback error and order")
+> > > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> > > 
+> > > [test failed on linus/master      7af08b57bcb9ebf78675c50069c54125c0a8b795]
+> > > [test failed on linux-next/master f486c8aa16b8172f63bddc70116a0c897a7f3f02]
+> > > 
+> > > in testcase: perf-sanity-tests
+> > > version: 
+> > > with following parameters:
+> > > 
+> > > 	perf_compiler: gcc
+> > > 
+> > > 
+> > > 
+> > > config: x86_64-rhel-8.3-bpf
+> > > compiler: gcc-12
+> > > test machine: 224 threads 2 sockets Intel(R) Xeon(R) Platinum 8480+ (Sapphire Rapids) with 256G memory
+> > > 
+> > > (please refer to attached dmesg/kmsg for entire log/backtrace)
+> > > 
+> > > 
+> > > If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> > > the same patch/commit), kindly add following tags
+> > > | Reported-by: kernel test robot <oliver.sang@intel.com>
+> > > | Closes: https://lore.kernel.org/oe-lkp/202411301431.799e5531-lkp@intel.com
+> > > 
+> > > 
+> > > 
+> > > 2024-11-28 08:31:19 sudo /usr/src/linux-perf-x86_64-rhel-8.3-bpf-af954f76eea56453713ae657f6812d4063f9bc57/tools/perf/perf test 121
+> > > 121: Test data symbol                                                : FAILED!
+> > 
+> > Thanks for the report.  But I have a request.
+> > 
+> > Can you please run the perf test with -v option so that we can see the
+> > detailed error messages when it failed?
 > 
-> diff --git a/arch/x86/include/asm/mmu.h b/arch/x86/include/asm/mmu.h
-> index ce4677b8b735..3b496cdcb74b 100644
-> --- a/arch/x86/include/asm/mmu.h
-> +++ b/arch/x86/include/asm/mmu.h
-> @@ -37,6 +37,8 @@ typedef struct {
->   	 */
->   	atomic64_t tlb_gen;
->   
-> +	unsigned long next_trim_cpumask;
-> +
->   #ifdef CONFIG_MODIFY_LDT_SYSCALL
->   	struct rw_semaphore	ldt_usr_sem;
->   	struct ldt_struct	*ldt;
-> diff --git a/arch/x86/include/asm/mmu_context.h b/arch/x86/include/asm/mmu_context.h
-> index 2886cb668d7f..795fdd53bd0a 100644
-> --- a/arch/x86/include/asm/mmu_context.h
-> +++ b/arch/x86/include/asm/mmu_context.h
-> @@ -151,6 +151,7 @@ static inline int init_new_context(struct task_struct *tsk,
->   
->   	mm->context.ctx_id = atomic64_inc_return(&last_mm_ctx_id);
->   	atomic64_set(&mm->context.tlb_gen, 0);
-> +	mm->context.next_trim_cpumask = jiffies + HZ;
->   
->   #ifdef CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS
->   	if (cpu_feature_enabled(X86_FEATURE_OSPKE)) {
-> diff --git a/arch/x86/include/asm/tlbflush.h b/arch/x86/include/asm/tlbflush.h
-> index 69e79fff41b8..02fc2aa06e9e 100644
-> --- a/arch/x86/include/asm/tlbflush.h
-> +++ b/arch/x86/include/asm/tlbflush.h
-> @@ -222,6 +222,7 @@ struct flush_tlb_info {
->   	unsigned int		initiating_cpu;
->   	u8			stride_shift;
->   	u8			freed_tables;
-> +	u8			trim_cpumask;
->   };
->   
->   void flush_tlb_local(void);
-> diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
-> index 1aac4fa90d3d..a758143afa01 100644
-> --- a/arch/x86/mm/tlb.c
-> +++ b/arch/x86/mm/tlb.c
-> @@ -892,9 +892,36 @@ static void flush_tlb_func(void *info)
->   			nr_invalidate);
->   }
->   
-> -static bool tlb_is_not_lazy(int cpu, void *data)
-> +static bool should_flush_tlb(int cpu, void *data)
->   {
-> -	return !per_cpu(cpu_tlbstate_shared.is_lazy, cpu);
-> +	struct flush_tlb_info *info = data;
-> +
-> +	/* Lazy TLB will get flushed at the next context switch. */
-> +	if (per_cpu(cpu_tlbstate_shared.is_lazy, cpu))
-> +		return false;
-> +
-> +	/* No mm means kernel memory flush. */
-> +	if (!info->mm)
-> +		return true;
-> +
-> +	/* The target mm is loaded, and the CPU is not lazy. */
-> +	if (per_cpu(cpu_tlbstate.loaded_mm, cpu) == info->mm)
-> +		return true;
-> +
-> +	/* In cpumask, but not the loaded mm? Periodically remove by flushing. */
-> +	if (info->trim_cpumask)
-> +		return true;
-> +
-> +	return false;
-> +}
-> +
-> +static bool should_trim_cpumask(struct mm_struct *mm)
-> +{
-> +	if (time_after(jiffies, mm->context.next_trim_cpumask)) {
-> +		mm->context.next_trim_cpumask = jiffies + HZ;
+> below is the log with '-v'
+> 
+> 2024-12-03 11:20:32 sudo /usr/src/linux-perf-x86_64-rhel-8.3-bpf-af954f76eea56453713ae657f6812d4063f9bc57/tools/perf/perf test 121 -v
+> 121: Test data symbol:
+> --- start ---
+> test child forked, pid 143127
+>  294e400-294e439 l buf1
+> perf does have symbol 'buf1'
+> Recording workload...
+> Waiting for "perf record has started" message
+> /usr/src/perf_selftests-x86_64-rhel-8.3-bpf-af954f76eea56453713ae657f6812d4063f9bc57/tools/perf/tests/shell/test_data_symbol.sh: line 74: kill: (143139) - No such process
+> Cleaning up files...
+> ---- end(-1) ----
+> 121: Test data symbol                                                : FAILED!
 
-AFAIU this should_trim_cpumask can be called from many cpus
-concurrently for a given mm, so we'd want READ_ONCE/WRITE_ONCE
-on the next_trim_cpumask.
+Thanks for the log.  I think it failed to run perf mem record at all.
+
+I've set up a Sapphire Rapids and run the test.  It said:
+
+  # perf mem record -avv -C0 true
+  DEBUGINFOD_URLS=
+  nr_cblocks: 0
+  affinity: SYS
+  mmap flush: 1
+  comp level: 0
+  ------------------------------------------------------------
+  perf_event_attr:
+    type                             4 (cpu)
+    size                             136
+    config                           0x8203 (mem-loads-aux)
+    { sample_period, sample_freq }   4000
+    sample_type                      IP|TID|TIME|ADDR|CPU|PERIOD|IDENTIFIER|DATA_SRC|WEIGHT_STRUCT
+    read_format                      ID|LOST
+    disabled                         1
+    freq                             1
+    precise_ip                       3
+    sample_id_all                    1
+  ------------------------------------------------------------
+  sys_perf_event_open: pid -1  cpu 0  group_fd -1  flags 0x8 = 5
+  ------------------------------------------------------------
+  perf_event_attr:
+    type                             4 (cpu)
+    size                             136
+    config                           0x1cd (mem-loads)
+    { sample_period, sample_freq }   4000
+    sample_type                      IP|TID|TIME|ADDR|CPU|PERIOD|IDENTIFIER|DATA_SRC|WEIGHT_STRUCT
+    read_format                      ID|LOST
+    freq                             1
+    precise_ip                       3
+    sample_id_all                    1
+    { bp_addr, config1 }             0x1f
+  ------------------------------------------------------------
+  sys_perf_event_open: pid -1  cpu 0  group_fd 5  flags 0x8
+  sys_perf_event_open failed, error -22
+  Using PERF_SAMPLE_READ / :S modifier is not compatible with inherit, falling back to no-inherit.
+  Error:
+  The sys_perf_event_open() syscall returned with 22 (Invalid argument) for event (cpu/mem-loads,ldlat=30/).
+  "dmesg | grep -i perf" may provide additional information.
+
+There's an issue with fallback on the inherit bit with the sample read.
+I'll take a look.
 
 Thanks,
-
-Mathieu
-
-> +		return true;
-> +	}
-> +	return false;
->   }
->   
->   DEFINE_PER_CPU_SHARED_ALIGNED(struct tlb_state_shared, cpu_tlbstate_shared);
-> @@ -928,7 +955,7 @@ STATIC_NOPV void native_flush_tlb_multi(const struct cpumask *cpumask,
->   	if (info->freed_tables)
->   		on_each_cpu_mask(cpumask, flush_tlb_func, (void *)info, true);
->   	else
-> -		on_each_cpu_cond_mask(tlb_is_not_lazy, flush_tlb_func,
-> +		on_each_cpu_cond_mask(should_flush_tlb, flush_tlb_func,
->   				(void *)info, 1, cpumask);
->   }
->   
-> @@ -979,6 +1006,7 @@ static struct flush_tlb_info *get_flush_tlb_info(struct mm_struct *mm,
->   	info->freed_tables	= freed_tables;
->   	info->new_tlb_gen	= new_tlb_gen;
->   	info->initiating_cpu	= smp_processor_id();
-> +	info->trim_cpumask	= 0;
->   
->   	return info;
->   }
-> @@ -1021,6 +1049,7 @@ void flush_tlb_mm_range(struct mm_struct *mm, unsigned long start,
->   	 * flush_tlb_func_local() directly in this case.
->   	 */
->   	if (cpumask_any_but(mm_cpumask(mm), cpu) < nr_cpu_ids) {
-> +		info->trim_cpumask = should_trim_cpumask(mm);
->   		flush_tlb_multi(mm_cpumask(mm), info);
->   	} else if (mm == this_cpu_read(cpu_tlbstate.loaded_mm)) {
->   		lockdep_assert_irqs_enabled();
-
--- 
-Mathieu Desnoyers
-EfficiOS Inc.
-https://www.efficios.com
+Namhyung
 
