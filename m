@@ -1,36 +1,50 @@
-Received: from smtpout.efficios.com (smtpout.efficios.com [158.69.130.18])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FE9320B7E0
-	for <oe-lkp@lists.linux.dev>; Tue,  3 Dec 2024 23:27:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=158.69.130.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAF347F9
+	for <oe-lkp@lists.linux.dev>; Wed,  4 Dec 2024 00:46:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733268477; cv=none; b=XrcPsNypxEYLg+WhHr23zhMZN/GDQbLiuPyaco9C/5RQBVtzG6ryPaAd32ghYz3/85k0l3S8YHcPyr5MEtN8z83upTQivJRDy7be7v6xXVJ/6aRuV1uYcGJRlJyBL6liDrIIrhpzgz3p5EqSfFmgPrFrvrVfIhjOFwrXCUY+w+E=
+	t=1733273196; cv=none; b=QDFVtZQJOwOSOXmSKmSUiuTd2u+P90jMGUANoM969QlsHN9F6qCb0GYa+rl8bqD3dQqFWTCfncB6/GLJTWSH+uWY+BXzzsvMR4NvLPlZ6yfJj21bzk9ylktTy93aINsvH8sT1/MRybyXNNtOilb1js1qK90plaFTh3emDr+ZfuU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733268477; c=relaxed/simple;
-	bh=1Zg6xqKmkaJdB7fF0cwCPNd1LzG3HXrmtryrah+eL1E=;
+	s=arc-20240116; t=1733273196; c=relaxed/simple;
+	bh=YCd+iKZ9hgdSEt4Ob/vLfq8idska0koAISciiAqZkkU=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=PFYKWjcZiXyFTFoMa/OVQ3UCVS1r8Gc6I3u6+AHqaTCJxEjq9TzuZyDlvq3U6Nw+qoGgLFQKQTJVMTGBhEdderKKpkKRTpmusNyHwXVxv7aDSL8xBAUrzaScmDuRgldrCoRE4eOIlq1hPisIkNaOWxGtL8J5WrZRPm/eVquFZc4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=efficios.com; spf=pass smtp.mailfrom=efficios.com; dkim=pass (2048-bit key) header.d=efficios.com header.i=@efficios.com header.b=rhlJfm9I; arc=none smtp.client-ip=158.69.130.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=efficios.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=efficios.com
+	 In-Reply-To:Content-Type; b=NXxyVkZqsgryOBjg4R7a3D5zj3+r/j0ZOU272h+ZNeg+HDsixgim5aV8pPDCmkkN1WI1djxlpSF/cBpX7u6OmFvjfXC7QBSq4OAEuBPclInSKrNlnSiJzT8msT6uGkQ3nmAYIns3nJKaKw5T6Qa9G6AsYbTnBDOiGQ1NIbDFOdM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PLpG6vMb; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=efficios.com header.i=@efficios.com header.b="rhlJfm9I"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=efficios.com;
-	s=smtpout1; t=1733268473;
-	bh=1Zg6xqKmkaJdB7fF0cwCPNd1LzG3HXrmtryrah+eL1E=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=rhlJfm9I+Y24cIvjNPGrIKIKnMIHGOtC3kPYU8A5MXyjfAeLBJbeIF/AEpiW1c/fL
-	 4iQQ7ojsEXJ3OeEIsdu0D3C/wyArbmkpoUo2gh9olHRjRIrmeOJrhtcyj4B7pWLeJj
-	 dyPNfx8BgKwNT5HGKSFQHGYfnZABNLYqDAGGjsBH537ceDbhZTpTA3kQAVibelcppL
-	 f8Ed9apcktH9zAaeYeVU7MLc28vic7QRgy6QcYfybPh8vT3+7l7aqyum57oMR6CsPZ
-	 bjlQYOYtlAzoEpWU8h/dBDzLtoEOCc0krhUKlN+tYF3NdVQ9kSt3RqVgPAe8FzdKhr
-	 iFixSPQv3h44g==
-Received: from [IPV6:2606:6d00:100:4000:cacb:9855:de1f:ded2] (unknown [IPv6:2606:6d00:100:4000:cacb:9855:de1f:ded2])
-	by smtpout.efficios.com (Postfix) with ESMTPSA id 4Y2xf06hYQzVGt;
-	Tue,  3 Dec 2024 18:27:52 -0500 (EST)
-Message-ID: <4bd16d01-89bf-4c6a-87dc-30f0f6245728@efficios.com>
-Date: Tue, 3 Dec 2024 18:27:52 -0500
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PLpG6vMb"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1733273195; x=1764809195;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=YCd+iKZ9hgdSEt4Ob/vLfq8idska0koAISciiAqZkkU=;
+  b=PLpG6vMblZ310j57ZFmzh8al+DwbLzsL3ihboZl07v0pp1T96jUG6fgk
+   2atJsoFCweycCnGkIx4lRMqEapyo1PMVzRH/1nY/fifMPm7wHvSijYbHN
+   HeWoZzLMBirwnjs1I3jgxO78AfP6fdhkapEKDWd7AKQnG4Mw4RnCe5+nN
+   7CXX4dcFuZXEi+79GkvUrTdLSBlNPhXV/kfsjm4KMx1wn75aDMU+bNcw8
+   IvNbhPs8N3CpqLv5rvF5HiCE8/NSVP3eNbKxl74mbCl3eXVS3KDgTtNzv
+   2dz8fErybvWrfkXKm/IE98PhW/mX29WA1QhHgtqdQ3fjb5uHjZ80lpyV/
+   A==;
+X-CSE-ConnectionGUID: O8T3vzfWQPWag27Y+FBKmg==
+X-CSE-MsgGUID: kj635Mt9Q2CFca+5UVM2Qg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11275"; a="33395730"
+X-IronPort-AV: E=Sophos;i="6.12,206,1728975600"; 
+   d="scan'208";a="33395730"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Dec 2024 16:46:34 -0800
+X-CSE-ConnectionGUID: XkxcxuLTS1K6c/b/Be/33A==
+X-CSE-MsgGUID: qkVIXpAYRfCQrcf4jWGQIw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,206,1728975600"; 
+   d="scan'208";a="94057589"
+Received: from tfalcon-desk.amr.corp.intel.com (HELO [10.124.223.112]) ([10.124.223.112])
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Dec 2024 16:46:34 -0800
+Message-ID: <4360210d-0656-4328-ab67-240465ab2f9c@intel.com>
+Date: Tue, 3 Dec 2024 16:46:32 -0800
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -39,159 +53,84 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v2] x86,mm: only trim the mm_cpumask once a second
-To: Rik van Riel <riel@surriel.com>
+To: Rik van Riel <riel@surriel.com>,
+ Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
 Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
  lkp@intel.com, linux-kernel@vger.kernel.org, x86@kernel.org,
- Ingo Molnar <mingo@kernel.org>, Dave Hansen <dave.hansen@intel.com>,
+ Ingo Molnar <mingo@kernel.org>,
  Linus Torvalds <torvalds@linux-foundation.org>,
  Peter Zijlstra <peterz@infradead.org>, Mel Gorman <mgorman@suse.de>
 References: <202411282207.6bd28eae-lkp@intel.com>
  <20241202202213.26a79ed6@fangorn>
  <5dcb4050-f0f3-43d6-b4b1-42fa305a0fba@efficios.com>
  <20241203144845.7093ea1a@fangorn>
-From: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+ <5544716d-31be-40c6-a289-030220e518de@intel.com>
+ <cc6d6e0be9b4fb61228f42ad82a057f60a1c1e12.camel@surriel.com>
+From: Dave Hansen <dave.hansen@intel.com>
 Content-Language: en-US
-In-Reply-To: <20241203144845.7093ea1a@fangorn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Autocrypt: addr=dave.hansen@intel.com; keydata=
+ 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
+In-Reply-To: <cc6d6e0be9b4fb61228f42ad82a057f60a1c1e12.camel@surriel.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 2024-12-03 14:48, Rik van Riel wrote:
-> On Tue, 3 Dec 2024 09:57:55 -0500
-> Mathieu Desnoyers <mathieu.desnoyers@efficios.com> wrote:
+On 12/3/24 12:07, Rik van Riel wrote:
+> The tlb_flush2 threaded test does not only madvise in a
+> loop, but also mmap and munmap from inside every thread.
 > 
+> This should create massive contention on the mmap_lock,
+> resulting in threads going to sleep while waiting in
+> mmap and munmap.
 > 
->> I'd recommend to rename "last_trimmed_cpumask" to "next_trim_cpumask",
->> and always update it to "jiffies + HZ". Then we can remove the addition
->> from the comparison in the should_flush_tlb() fast-path:
-> 
-> Thanks Mathieu, I have applied your suggested improvements,
-> except for the one you posted as a separate patch earlier.
-> 
-> ---8<---
-> 
->  From c7d04233f15ba217ce6ebd0dcf12fab91c437e96 Mon Sep 17 00:00:00 2001
-> From: Rik van Riel <riel@fb.com>
-> Date: Mon, 2 Dec 2024 09:57:31 -0800
-> Subject: [PATCH] x86,mm: only trim the mm_cpumask once a second
-> 
-> Setting and clearing CPU bits in the mm_cpumask is only ever done
-> by the CPU itself, from the context switch code or the TLB flush
-> code.
-> 
-> Synchronization is handled by switch_mm_irqs_off blocking interrupts.
-> 
-> Sending TLB flush IPIs to CPUs that are in the mm_cpumask, but no
-> longer running the program causes a regression in the will-it-scale
-> tlbflush2 test. This test is contrived, but a large regression here
-> might cause a small regression in some real world workload.
+> https://github.com/antonblanchard/will-it-scale/blob/master/tests/tlb_flush2.c
 
-We should add information detailing why tlbflush2 end up
-contending on the mmap_sem, and thus schedule often.
+Oh, wow, it only madvise()'s a 1MB allocation before doing the
+munmap()/mmap(). I somehow remembered it being a lot larger. And, yeah,
+I see a ton of idle time which would be 100% explained by mmap_lock
+contention.
 
-> 
-> Instead of always sending IPIs to CPUs that are in the mm_cpumask,
-> but no longer running the program, send these IPIs only once a second.
-> 
-> The rest of the time we can skip over CPUs where the loaded_mm is
-> different from the target mm.
-> 
-> Signed-off-by: Rik van Riel <riel@surriel.com>
+Did the original workload that you care about have idle time?
 
-Much better !
-
-Reviewed-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-
-> Reported-by: kernel test roboto <oliver.sang@intel.com>
-> Closes: https://lore.kernel.org/oe-lkp/202411282207.6bd28eae-lkp@intel.com/
-> ---
->   arch/x86/include/asm/mmu.h         |  2 ++
->   arch/x86/include/asm/mmu_context.h |  1 +
->   arch/x86/mm/tlb.c                  | 27 ++++++++++++++++++++++++---
->   3 files changed, 27 insertions(+), 3 deletions(-)
-> 
-> diff --git a/arch/x86/include/asm/mmu.h b/arch/x86/include/asm/mmu.h
-> index ce4677b8b735..3b496cdcb74b 100644
-> --- a/arch/x86/include/asm/mmu.h
-> +++ b/arch/x86/include/asm/mmu.h
-> @@ -37,6 +37,8 @@ typedef struct {
->   	 */
->   	atomic64_t tlb_gen;
->   
-> +	unsigned long next_trim_cpumask;
-> +
->   #ifdef CONFIG_MODIFY_LDT_SYSCALL
->   	struct rw_semaphore	ldt_usr_sem;
->   	struct ldt_struct	*ldt;
-> diff --git a/arch/x86/include/asm/mmu_context.h b/arch/x86/include/asm/mmu_context.h
-> index 2886cb668d7f..795fdd53bd0a 100644
-> --- a/arch/x86/include/asm/mmu_context.h
-> +++ b/arch/x86/include/asm/mmu_context.h
-> @@ -151,6 +151,7 @@ static inline int init_new_context(struct task_struct *tsk,
->   
->   	mm->context.ctx_id = atomic64_inc_return(&last_mm_ctx_id);
->   	atomic64_set(&mm->context.tlb_gen, 0);
-> +	mm->context.next_trim_cpumask = jiffies + HZ;
->   
->   #ifdef CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS
->   	if (cpu_feature_enabled(X86_FEATURE_OSPKE)) {
-> diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
-> index 1aac4fa90d3d..e90edbbf0188 100644
-> --- a/arch/x86/mm/tlb.c
-> +++ b/arch/x86/mm/tlb.c
-> @@ -759,8 +759,11 @@ static void flush_tlb_func(void *info)
->   
->   		/* Can only happen on remote CPUs */
->   		if (f->mm && f->mm != loaded_mm) {
-> +			unsigned long next_jiffies = jiffies + HZ;
->   			cpumask_clear_cpu(raw_smp_processor_id(), mm_cpumask(f->mm));
->   			trace_tlb_flush(TLB_REMOTE_WRONG_CPU, 0);
-> +			if (time_after(next_jiffies, READ_ONCE(f->mm->context.next_trim_cpumask)))
-> +				WRITE_ONCE(f->mm->context.next_trim_cpumask, next_jiffies);
->   			return;
->   		}
->   	}
-> @@ -892,9 +895,27 @@ static void flush_tlb_func(void *info)
->   			nr_invalidate);
->   }
->   
-> -static bool tlb_is_not_lazy(int cpu, void *data)
-> +static bool should_flush_tlb(int cpu, void *data)
->   {
-> -	return !per_cpu(cpu_tlbstate_shared.is_lazy, cpu);
-> +	struct flush_tlb_info *info = data;
-> +
-> +	/* Lazy TLB will get flushed at the next context switch. */
-> +	if (per_cpu(cpu_tlbstate_shared.is_lazy, cpu))
-> +		return false;
-> +
-> +	/* No mm means kernel memory flush. */
-> +	if (!info->mm)
-> +		return true;
-> +
-> +	/* The target mm is loaded, and the CPU is not lazy. */
-> +	if (per_cpu(cpu_tlbstate.loaded_mm, cpu) == info->mm)
-> +		return true;
-> +
-> +	/* In cpumask, but not the loaded mm? Periodically remove by flushing. */
-> +	if (time_after(jiffies, info->mm->context.next_trim_cpumask))
-> +		return true;
-> +
-> +	return false;
->   }
->   
->   DEFINE_PER_CPU_SHARED_ALIGNED(struct tlb_state_shared, cpu_tlbstate_shared);
-> @@ -928,7 +949,7 @@ STATIC_NOPV void native_flush_tlb_multi(const struct cpumask *cpumask,
->   	if (info->freed_tables)
->   		on_each_cpu_mask(cpumask, flush_tlb_func, (void *)info, true);
->   	else
-> -		on_each_cpu_cond_mask(tlb_is_not_lazy, flush_tlb_func,
-> +		on_each_cpu_cond_mask(should_flush_tlb, flush_tlb_func,
->   				(void *)info, 1, cpumask);
->   }
->   
-
--- 
-Mathieu Desnoyers
-EfficiOS Inc.
-https://www.efficios.com
-
+I'm wondering if trimming mm_cpumask() on the way to idle but leaving it
+alone on a context switch to another thread is a good idea.
