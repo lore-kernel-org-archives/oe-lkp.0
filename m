@@ -1,118 +1,212 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA237191F9C;
-	Wed,  4 Dec 2024 22:21:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EBD841C69;
+	Thu,  5 Dec 2024 02:03:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=96.67.55.147
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733350869; cv=none; b=isWJs2Ic6aNtCXI6thIRvUkEMfI2UnmFyzR8lvLnMCv4gHS2l/GgFKkx/PtbhUvsoWPLSjJya2k3nyNREUUMYEmsYR6+gWKkcE5gpiijGErlrgN3zxIccMoE18yR7LSY3qoA0XSZY5l/GcyVx2H+rVZhOD3DcmJvRYX6j6gU7jU=
+	t=1733364234; cv=none; b=bMD22NgbqsDtBFE+cWgxgHbGKFdtc4yx07JHqz5ulCuYSuSISVKGo5RQlz9qefur/ShiJTTAgHNvbMqBN+5KrZqNYFIUHH6DoWq7wU69AuFZO+5+anuipG1vtWtCLGzYJP1WrENmFzVUsbHw9DKw5bXVAvj+E70vzJ07OYYLmgI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733350869; c=relaxed/simple;
-	bh=7Kjwv6X8sBlPbnZSg35bGxloNhQZkO7cxpO2/leNb70=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=D7H0jz/+B0UWVKP/dPZ4aLDyHcfax120+Tp2wtf9sQCb/cVqRoziD5RwIkeqANvs6DkY0oBm3fXXZj+JSKNllaOqZjIl440BnW0uuEOeYJCaOPmc6YWeJs3q8bKRhKEbtOdUNLnVTd+ZbqZJlWfQ7B5VzE3QoCnWF7IRYNTnV/Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NG6WqY8n; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NG6WqY8n"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35233C4CECD;
-	Wed,  4 Dec 2024 22:21:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1733350868;
-	bh=7Kjwv6X8sBlPbnZSg35bGxloNhQZkO7cxpO2/leNb70=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=NG6WqY8nt8BOlMu3is3Z8/126MyljUh+G25WjO47mr3cx7/Kw2Wb/UYef8zXXW44A
-	 eW3g3J9aTPwlz0VVfL1QAqjP12xCjK27qlN8Xxidn5TRERb5AQM9FJDOP2KUOJsXlF
-	 mpEMerhgCI0dOgPWDyl7X0mIgUaonr/DWOlxMQvv3GgiYQOtgH01PAAi2buk46tMw3
-	 9JANmaCDcfJ1vF1DCwBNQvjcx191In0hzmMasmqzqJx4OVoN1LpFrJVxwESv6xn27R
-	 1IrKBivisRl/XfCWinYnu5Ld3DYgaGANn9mljubBh/ref+1sRfqf68QzMfp/J9wr31
-	 pVRzP3kA8idiw==
-Date: Wed, 4 Dec 2024 14:21:06 -0800
-From: Namhyung Kim <namhyung@kernel.org>
-To: Oliver Sang <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, linux-kernel@vger.kernel.org,
-	Arnaldo Carvalho de Melo <acme@kernel.org>,
-	James Clark <james.clark@linaro.org>,
-	Ravi Bangoria <ravi.bangoria@amd.com>,
-	Kan Liang <kan.liang@linux.intel.com>,
-	James Clark <james.clark@arm.com>,
-	Atish Patra <atishp@atishpatra.org>,
-	Mingwei Zhang <mizhang@google.com>,
-	Kajol Jain <kjain@linux.ibm.com>,
-	Thomas Richter <tmricht@linux.ibm.com>,
-	Palmer Dabbelt <palmer@rivosinc.com>,
-	linux-perf-users@vger.kernel.org
-Subject: Re: [linus:master] [perf tools]  af954f76ee:
- perf-sanity-tests.Test_data_symbol.fail
-Message-ID: <Z1DV0lN8qHSysX7f@google.com>
-References: <202411301431.799e5531-lkp@intel.com>
- <Z04ZUHaGdsBapIEL@google.com>
- <Z1BhfpYWpUQ0p+qR@xsang-OptiPlex-9020>
- <Z1DNJpDzCIBFrIZT@google.com>
+	s=arc-20240116; t=1733364234; c=relaxed/simple;
+	bh=GvOwOZEqvRgYu2PVU0Jj/cD9X7xmD7tDJ1JGk+fLUj4=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=XcIa63qM0DxxynUSE2m44yNR2kXBH5HkiJUqQirklgxy2GVZGIbcNgYQx8xmj3J3Q/8vkVQ/JkZSpIEM30tIOBRBgd2BHzmS+VyNAXPBOxHZUS3Pmz0i1K1IFU9YCS5Q3banXMY1wkAyzH2wSifVzlDtPisIwJUPqBUAox0fX9Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=surriel.com; spf=pass smtp.mailfrom=shelob.surriel.com; arc=none smtp.client-ip=96.67.55.147
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=surriel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=shelob.surriel.com
+Received: from [2601:18c:9101:a8b6:82e7:cf5d:dfd9:50ef] (helo=fangorn)
+	by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.97.1)
+	(envelope-from <riel@shelob.surriel.com>)
+	id 1tJ1D3-0000000065H-2LoB;
+	Wed, 04 Dec 2024 21:03:17 -0500
+Date: Wed, 4 Dec 2024 21:03:16 -0500
+From: Rik van Riel <riel@surriel.com>
+To: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Cc: Oliver Sang <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+ lkp@intel.com, linux-kernel@vger.kernel.org, x86@kernel.org, Ingo Molnar
+ <mingo@kernel.org>, Dave Hansen <dave.hansen@intel.com>, Linus Torvalds
+ <torvalds@linux-foundation.org>, Peter Zijlstra <peterz@infradead.org>, Mel
+ Gorman <mgorman@suse.de>
+Subject: [PATCH v4] x86,mm: only trim the mm_cpumask once a second
+Message-ID: <20241204210316.612ee573@fangorn>
+In-Reply-To: <43835b8c-53cd-428f-a46f-554bfa5c2cdd@efficios.com>
+References: <202411282207.6bd28eae-lkp@intel.com>
+	<20241202194358.59089122@fangorn>
+	<Z1BV7NG/Qp0BNw3Y@xsang-OptiPlex-9020>
+	<20241204115634.28964c62@fangorn>
+	<43835b8c-53cd-428f-a46f-554bfa5c2cdd@efficios.com>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.43; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <Z1DNJpDzCIBFrIZT@google.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+Sender: riel@surriel.com
 
-On Wed, Dec 04, 2024 at 01:44:06PM -0800, Namhyung Kim wrote:
-[SNIP]
->   perf_event_attr:
->     type                             4 (cpu)
->     size                             136
->     config                           0x1cd (mem-loads)
->     { sample_period, sample_freq }   4000
->     sample_type                      IP|TID|TIME|ADDR|CPU|PERIOD|IDENTIFIER|DATA_SRC|WEIGHT_STRUCT
->     read_format                      ID|LOST
->     freq                             1
->     precise_ip                       3
->     sample_id_all                    1
->     { bp_addr, config1 }             0x1f
->   ------------------------------------------------------------
->   sys_perf_event_open: pid -1  cpu 0  group_fd 5  flags 0x8
->   sys_perf_event_open failed, error -22
->   Using PERF_SAMPLE_READ / :S modifier is not compatible with inherit, falling back to no-inherit.
->   Error:
->   The sys_perf_event_open() syscall returned with 22 (Invalid argument) for event (cpu/mem-loads,ldlat=30/).
->   "dmesg | grep -i perf" may provide additional information.
-> 
-> There's an issue with fallback on the inherit bit with the sample read.
-> I'll take a look.
+On Wed, 4 Dec 2024 15:19:46 -0500
+Mathieu Desnoyers <mathieu.desnoyers@efficios.com> wrote:
 
-Hmm, no.  It doesn't have neight SAMPLE_READ nor inherit.  So the error
-message was misleading.  Maybe it should be printed when it actually
-clears the bits.
+> AFAIU this should_trim_cpumask can be called from many cpus
+> concurrently for a given mm, so we'd want READ_ONCE/WRITE_ONCE
+> on the next_trim_cpumask.
 
-Anyway, I've tested with the old code and realzed that it might be due
-to precise_ip being 3.  I expected it'd return EOPNOTSUPP for the case
-but it seems to return EINVAL sometimes.  Then it should check it after
-the missing features like below.  Can you please test?
+Here is v4, which is identical to v3 except for READ_ONCE/WRITE_ONCE.
 
-Thanks,
-Namhyung
-
+Looking forward to the test bot results, since the hardware I have
+available does not seem to behave in quite the same way :)
 
 ---8<---
-diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
-index f745723d486ba962..d22c5df1701eccc5 100644
---- a/tools/perf/util/evsel.c
-+++ b/tools/perf/util/evsel.c
-@@ -2571,12 +2571,12 @@ static int evsel__open_cpu(struct evsel *evsel, struct perf_cpu_map *cpus,
- 	if (err == -EMFILE && rlimit__increase_nofile(&set_rlimit))
- 		goto retry_open;
- 
--	if (err == -EOPNOTSUPP && evsel__precise_ip_fallback(evsel))
--		goto retry_open;
--
- 	if (err == -EINVAL && evsel__detect_missing_features(evsel))
- 		goto fallback_missing_features;
- 
-+	if (evsel__precise_ip_fallback(evsel))
-+		goto retry_open;
+
+=46rom 49af9b203e971d00c87b2d020f48602936870576 Mon Sep 17 00:00:00 2001
+From: Rik van Riel <riel@fb.com>
+Date: Mon, 2 Dec 2024 09:57:31 -0800
+Subject: [PATCH] x86,mm: only trim the mm_cpumask once a second
+
+Setting and clearing CPU bits in the mm_cpumask is only ever done
+by the CPU itself, from the context switch code or the TLB flush
+code.
+
+Synchronization is handled by switch_mm_irqs_off blocking interrupts.
+
+Sending TLB flush IPIs to CPUs that are in the mm_cpumask, but no
+longer running the program causes a regression in the will-it-scale
+tlbflush2 test. This test is contrived, but a large regression here
+might cause a small regression in some real world workload.
+
+Instead of always sending IPIs to CPUs that are in the mm_cpumask,
+but no longer running the program, send these IPIs only once a second.
+
+The rest of the time we can skip over CPUs where the loaded_mm is
+different from the target mm.
+
+Signed-off-by: Rik van Riel <riel@surriel.com>
+Reported-by: kernel test roboto <oliver.sang@intel.com>
+Closes: https://lore.kernel.org/oe-lkp/202411282207.6bd28eae-lkp@intel.com/
+---
+ arch/x86/include/asm/mmu.h         |  2 ++
+ arch/x86/include/asm/mmu_context.h |  1 +
+ arch/x86/include/asm/tlbflush.h    |  1 +
+ arch/x86/mm/tlb.c                  | 35 +++++++++++++++++++++++++++---
+ 4 files changed, 36 insertions(+), 3 deletions(-)
+
+diff --git a/arch/x86/include/asm/mmu.h b/arch/x86/include/asm/mmu.h
+index ce4677b8b735..3b496cdcb74b 100644
+--- a/arch/x86/include/asm/mmu.h
++++ b/arch/x86/include/asm/mmu.h
+@@ -37,6 +37,8 @@ typedef struct {
+ 	 */
+ 	atomic64_t tlb_gen;
+=20
++	unsigned long next_trim_cpumask;
 +
- 	if (evsel__handle_error_quirks(evsel, err))
- 		goto retry_open;
- 
+ #ifdef CONFIG_MODIFY_LDT_SYSCALL
+ 	struct rw_semaphore	ldt_usr_sem;
+ 	struct ldt_struct	*ldt;
+diff --git a/arch/x86/include/asm/mmu_context.h b/arch/x86/include/asm/mmu_=
+context.h
+index 2886cb668d7f..795fdd53bd0a 100644
+--- a/arch/x86/include/asm/mmu_context.h
++++ b/arch/x86/include/asm/mmu_context.h
+@@ -151,6 +151,7 @@ static inline int init_new_context(struct task_struct *=
+tsk,
+=20
+ 	mm->context.ctx_id =3D atomic64_inc_return(&last_mm_ctx_id);
+ 	atomic64_set(&mm->context.tlb_gen, 0);
++	mm->context.next_trim_cpumask =3D jiffies + HZ;
+=20
+ #ifdef CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS
+ 	if (cpu_feature_enabled(X86_FEATURE_OSPKE)) {
+diff --git a/arch/x86/include/asm/tlbflush.h b/arch/x86/include/asm/tlbflus=
+h.h
+index 69e79fff41b8..02fc2aa06e9e 100644
+--- a/arch/x86/include/asm/tlbflush.h
++++ b/arch/x86/include/asm/tlbflush.h
+@@ -222,6 +222,7 @@ struct flush_tlb_info {
+ 	unsigned int		initiating_cpu;
+ 	u8			stride_shift;
+ 	u8			freed_tables;
++	u8			trim_cpumask;
+ };
+=20
+ void flush_tlb_local(void);
+diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
+index 1aac4fa90d3d..0507a6773a37 100644
+--- a/arch/x86/mm/tlb.c
++++ b/arch/x86/mm/tlb.c
+@@ -892,9 +892,36 @@ static void flush_tlb_func(void *info)
+ 			nr_invalidate);
+ }
+=20
+-static bool tlb_is_not_lazy(int cpu, void *data)
++static bool should_flush_tlb(int cpu, void *data)
+ {
+-	return !per_cpu(cpu_tlbstate_shared.is_lazy, cpu);
++	struct flush_tlb_info *info =3D data;
++
++	/* Lazy TLB will get flushed at the next context switch. */
++	if (per_cpu(cpu_tlbstate_shared.is_lazy, cpu))
++		return false;
++
++	/* No mm means kernel memory flush. */
++	if (!info->mm)
++		return true;
++
++	/* The target mm is loaded, and the CPU is not lazy. */
++	if (per_cpu(cpu_tlbstate.loaded_mm, cpu) =3D=3D info->mm)
++		return true;
++
++	/* In cpumask, but not the loaded mm? Periodically remove by flushing. */
++	if (info->trim_cpumask)
++		return true;
++
++	return false;
++}
++
++static bool should_trim_cpumask(struct mm_struct *mm)
++{
++	if (time_after(jiffies, READ_ONCE(mm->context.next_trim_cpumask))) {
++		WRITE_ONCE(mm->context.next_trim_cpumask, jiffies + HZ);
++		return true;
++	}
++	return false;
+ }
+=20
+ DEFINE_PER_CPU_SHARED_ALIGNED(struct tlb_state_shared, cpu_tlbstate_shared=
+);
+@@ -928,7 +955,7 @@ STATIC_NOPV void native_flush_tlb_multi(const struct cp=
+umask *cpumask,
+ 	if (info->freed_tables)
+ 		on_each_cpu_mask(cpumask, flush_tlb_func, (void *)info, true);
+ 	else
+-		on_each_cpu_cond_mask(tlb_is_not_lazy, flush_tlb_func,
++		on_each_cpu_cond_mask(should_flush_tlb, flush_tlb_func,
+ 				(void *)info, 1, cpumask);
+ }
+=20
+@@ -979,6 +1006,7 @@ static struct flush_tlb_info *get_flush_tlb_info(struc=
+t mm_struct *mm,
+ 	info->freed_tables	=3D freed_tables;
+ 	info->new_tlb_gen	=3D new_tlb_gen;
+ 	info->initiating_cpu	=3D smp_processor_id();
++	info->trim_cpumask	=3D 0;
+=20
+ 	return info;
+ }
+@@ -1021,6 +1049,7 @@ void flush_tlb_mm_range(struct mm_struct *mm, unsigne=
+d long start,
+ 	 * flush_tlb_func_local() directly in this case.
+ 	 */
+ 	if (cpumask_any_but(mm_cpumask(mm), cpu) < nr_cpu_ids) {
++		info->trim_cpumask =3D should_trim_cpumask(mm);
+ 		flush_tlb_multi(mm_cpumask(mm), info);
+ 	} else if (mm =3D=3D this_cpu_read(cpu_tlbstate.loaded_mm)) {
+ 		lockdep_assert_irqs_enabled();
+--=20
+2.47.0
+
+
+
