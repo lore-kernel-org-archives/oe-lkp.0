@@ -1,317 +1,271 @@
-Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26E1D4502F
-	for <oe-lkp@lists.linux.dev>; Mon,  9 Dec 2024 02:09:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.171
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733710161; cv=none; b=XatmuwvomI4IhR60+lkBlnuxw0jzCDFjJi376oVw9cB1GV8Hcl1jUTfhxV7av4/VlEKaNBM+PMM9F2Wi8r5QMT9nKWHLsWPYv8Awmb29wr8FcOifPPPx93zInDhPrl4dYHkamJi3p/R7Zh12MzAh6phNBkwbsDjSUPi1yq07joA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733710161; c=relaxed/simple;
-	bh=9O9pWs4kUKmvU4fetS1LqPCPby0E+QddQr35BAvOjkE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=YM0VJSRETZmGWmcOgBb22iTs+fXppRxoituJXTtvVXS05XwlzqKjjicwGHwL9XJLE+gNhNVzRY8Or5ttguY/FVGOpzZETzoQ2mG7xtOg3EnLwQ8Svqb/sq+fhAf47WSI3/LRPG3xuLnKh2J3JuktgyICm3fo0hZgRGrkxDs+OXA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=d33qreLk; arc=none smtp.client-ip=209.85.160.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40E9C19343B
+	for <oe-lkp@lists.linux.dev>; Mon,  9 Dec 2024 04:59:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.17
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1733720370; cv=fail; b=d4In28/C1ua83f7nKmgqHVvLztvf0drH5IWcZQFubV1eHRcUMlsFZV+aIW+cNoTOqUTPGGHiZK+uB7Fl0FCdWDlg1r+x3AcivT7JywNzdJtK2NRIRO9Wpla092vepY90+A7fKRE5BAGFTOYmqtnl/2CSFJJkAGUP9SMCAJPIJjU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1733720370; c=relaxed/simple;
+	bh=CiTv/AALIV66QZoQek0LVJwjIcwQOE1e0pTTHhvTUpU=;
+	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=a4FUyW8H+tMrf98wK8z1PF6ZsP0AyWS+8EQC8zDCOY0HLKmbPh89HNka5zH6/nowRCGagkqWCMyMNpXw6UqqHI3Jep9C/UkXKFe+ZNMm3ck0Gw8+PLvO7PnXzwZKbyYmQ7u5N1qOq0V+UgY4wRI/njPkr2En7kP6xSpm1LWYI8U=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cIqe91DP; arc=fail smtp.client-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="d33qreLk"
-Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-4674a47b7e4so366031cf.1
-        for <oe-lkp@lists.linux.dev>; Sun, 08 Dec 2024 18:09:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1733710157; x=1734314957; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=0Bo4HBWAqousHOYJdPF3EMPMGka7vrl2TiE+JGDByw8=;
-        b=d33qreLk1CpC3FYf+u1PRXXsM33nqkCEkNLRIuAA+qxrxQqOeKO+BfJAtsD1jMXYTI
-         xX7MSX8LdhAvL/FjGCz6utOeI3lLYT2WhhWOzjeMDnfdRUH2Yv6wpWxyvVDxMLQensu6
-         50SB2Fdsjia3UkVO+VzN5ZJYnOzomBaSyAkcnam6ZAqjKTIVsq41thszasx1fvMHIrCH
-         0JJvv/23+vzD2x87p3Yljv1DMsXmGrB5dQff2H3iMUfzEeSAfe4KWHY7FzEikdlUzPvI
-         F7zUcZhjpclKBg7QBg2gNj+LLTDD5EGmGZxhn7x0B8SKpGU041i+P2uovyVdbaRqRtv+
-         T6xw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733710157; x=1734314957;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=0Bo4HBWAqousHOYJdPF3EMPMGka7vrl2TiE+JGDByw8=;
-        b=DLdhkY6L4QWjwakzmTBLJ+Kj9RrFW+fe0neQegdNmkorm4+vyj0lE4Zljoti51Twr/
-         kgvF4MbCDehb+lPHKqjM7WNp2b9FoO8lW6oDraHa0q1UJQ6gLLku4Gt6IHZRbb0dgaGO
-         b2akdmKHpiSnwyVEx/TZO9rhu1qaLVl50mxGw2rGYzFO1x1WYen1hkUmw4NjaROyFf/z
-         2ugu8jRjlybd/04BUvTQUAV1es9I7HvEwP0dB5dgp9CDbhvEQ3LKWm8rA6qsB1O9l+Bm
-         cWTjwYbKDEpL04jnukKiuqm7+ZpVRkvnMVmJdm4K/Ky9ikIMWYnQokwx9Trvhfzh06tM
-         s29A==
-X-Gm-Message-State: AOJu0YxK2Xx5dBQjVH/LWZ0IRF3m36afa547F+UUe+WgYzePoksx/kIM
-	i0V1nPiE56JfRWSdVBx/u8j4c4+i0rfISC5rvqEPFsJjIdiyv65Vry8gsJyGxuSjJQBWlXSU8Am
-	JR25Bt5tVGCsex9LZZ1wn44OlxJpNOvkeznOk
-X-Gm-Gg: ASbGncvHXz05oX3ZqpzR5ijRocG2apl6yL1YswMQR0icZcKDsUviXzzk9b8TGkNSvHt
-	gp3XrGOEoW+IC16SDw1ry4BuSy7TOCgE=
-X-Google-Smtp-Source: AGHT+IGyVdOaH3CJDTjUh7NqZc3tkr+a64QziAJ9EgHIPVClMGxk/UwhPqp5tjdHMLGCvGZgQ0jnVHdShP2JR9uzjpI=
-X-Received: by 2002:a05:622a:5e13:b0:466:a3bf:41ab with SMTP id
- d75a77b69052e-4674c9ac794mr5372731cf.21.1733710156700; Sun, 08 Dec 2024
- 18:09:16 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cIqe91DP"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1733720370; x=1765256370;
+  h=date:from:to:cc:subject:message-id:references:
+   content-transfer-encoding:in-reply-to:mime-version;
+  bh=CiTv/AALIV66QZoQek0LVJwjIcwQOE1e0pTTHhvTUpU=;
+  b=cIqe91DPfwV9FJIWNx9DCid4xY304vNqd9Hsh5yUFo0IWboX9l+XVote
+   eYIw3vx1HZqj0xNgQZmbzuTZoiLGTasIa1kQdAeAaq0QisJtcX6R4+il2
+   EWB2+pepl7gpzcpiHOIG0o8goiIgK/QG0cN/q0hng5/hIo1hsTrgEfrlz
+   89EUfj+X4cccKGXcnrEnbFqzpb1QiyJ5p4RMQSi6IeUXxB6MJ3csZfHuV
+   PuWFgn7bF1QPAsQaBv/ivkOvovmGDhatylfKygyesklwZzXvdbE3x+Ekz
+   8JxzOYG5kDl5BowEbYzI5ip1tYagRi+BUY2VJmcZWYWszZh/wXdG6VObo
+   A==;
+X-CSE-ConnectionGUID: E8m/0JGwQ02oI3REjGuvcw==
+X-CSE-MsgGUID: JZDlKEqNQEacwRrPauhjTg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11280"; a="34061077"
+X-IronPort-AV: E=Sophos;i="6.12,218,1728975600"; 
+   d="scan'208";a="34061077"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2024 20:59:29 -0800
+X-CSE-ConnectionGUID: rTL1Q26fRTKbt1CqYOnulg==
+X-CSE-MsgGUID: OpqwcYrvT3qFnF7WH2hdWg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,218,1728975600"; 
+   d="scan'208";a="99014325"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by fmviesa003.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 08 Dec 2024 20:59:27 -0800
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39; Sun, 8 Dec 2024 20:59:27 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.39 via Frontend Transport; Sun, 8 Dec 2024 20:59:27 -0800
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.173)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.39; Sun, 8 Dec 2024 20:59:26 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=U6n6MvFYBm2PADHENZ+1fDWlLrj7y/n8IoPtJKI1FyWBDOJ1LNj4EwZHwjUuTAMLwtcQShlYa1KYasvYCKhikH48FiTJEOcFeOfUhSyIPd1wLPINsTZwpYfJziJSoBKvG85v++tv2g3ptSth7Y/IbzvTUVtEbpQHtmxtw3aDPopstE4HJa9itT7ZGjXdE4KvJUxRDwcHI04sGFNHb9P0sD6DvVJN0bwNVNmjo0t8cR7kBjlLtpSJ+v2jl0jpFuEq3ETwocJwF5ukKjtsO/AVN6mgs7s2UQf22hErYfusEsHRzu9a0I/Fxc9ngP/iz5LSyVKVNS/7T+eCWY0+EVtaJg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=k5YkC//5aD8UOrBXj0QV4RKwFTXnGFge1N+uKKsV3Eo=;
+ b=xcoJyakFFiSZpfgbc35iItV1T0a08771Uh4xTfubGgaCMu0jku+ECivnlgWNSQ+47UXjbsiFRA/P+48pILyt06NWQVKzkqJfMaQU37nJIXjUea9EPNePzx/G9fuiyTpW9z+LItFn2bMMTmfYvS5+YGSZlFNxgW0KWCSWEQKA8PgdJAWr0aS9PGGa+JOlbU1o+yLDH4EG5Mc9TSdFcC9zFnlmTEQHz+rLkdvDUUHbWgnaCgaqYEVRk34Lvt9ccwcyjin/FuOvB6lumMxR7iahfHE6YnX0eY6YDSGcph/gVtJEKIs9BjDHXX25RSHqa2QbuZSxxYcKRaUZ5xxgEuKmFA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+ by PH8PR11MB8064.namprd11.prod.outlook.com (2603:10b6:510:253::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8230.11; Mon, 9 Dec
+ 2024 04:59:17 +0000
+Received: from LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
+ ([fe80::4622:29cf:32b:7e5c%6]) with mapi id 15.20.8230.010; Mon, 9 Dec 2024
+ 04:59:17 +0000
+Date: Mon, 9 Dec 2024 12:59:01 +0800
+From: Oliver Sang <oliver.sang@intel.com>
+To: Suren Baghdasaryan <surenb@google.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Andrew Morton
+	<akpm@linux-foundation.org>, Christian Brauner <brauner@kernel.org>, "David
+ Hildenbrand" <david@redhat.com>, David Howells <dhowells@redhat.com>,
+	Davidlohr Bueso <dave@stgolabs.net>, Hillf Danton <hdanton@sina.com>, "Hugh
+ Dickins" <hughd@google.com>, Jann Horn <jannh@google.com>, Johannes Weiner
+	<hannes@cmpxchg.org>, Jonathan Corbet <corbet@lwn.net>, "Liam R. Howlett"
+	<Liam.Howlett@oracle.com>, Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
+	Mateusz Guzik <mjguzik@gmail.com>, Matthew Wilcox <willy@infradead.org>, "Mel
+ Gorman" <mgorman@techsingularity.net>, Michal Hocko <mhocko@suse.com>,
+	"Minchan Kim" <minchan@google.com>, Oleg Nesterov <oleg@redhat.com>, Pasha
+ Tatashin <pasha.tatashin@soleen.com>, "Paul E. McKenney"
+	<paulmck@kernel.org>, "Peter Xu" <peterx@redhat.com>, Peter Zijlstra
+	<peterz@infradead.org>, Shakeel Butt <shakeel.butt@linux.dev>, Sourav Panda
+	<souravpanda@google.com>, "Vlastimil Babka" <vbabka@suse.cz>, Wei Yang
+	<richard.weiyang@gmail.com>, <linux-mm@kvack.org>,
+	<linux-kernel@vger.kernel.org>, <oliver.sang@intel.com>
+Subject: Re: [akpm-mm:mm-unstable] [mm] 85ad413389:
+ BUG:kernel_NULL_pointer_dereference,address
+Message-ID: <Z1Z5FbBHojF6ywfA@xsang-OptiPlex-9020>
+References: <202412082208.db1fb2c9-lkp@intel.com>
+ <CAJuCfpGeKgOgqq69OD-TMoQLhyy+HuTKK=cQPHMY2DgNcJf5Xg@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAJuCfpGeKgOgqq69OD-TMoQLhyy+HuTKK=cQPHMY2DgNcJf5Xg@mail.gmail.com>
+X-ClientProxiedBy: SG2PR06CA0235.apcprd06.prod.outlook.com
+ (2603:1096:4:ac::19) To LV3PR11MB8603.namprd11.prod.outlook.com
+ (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <202412082208.db1fb2c9-lkp@intel.com>
-In-Reply-To: <202412082208.db1fb2c9-lkp@intel.com>
-From: Suren Baghdasaryan <surenb@google.com>
-Date: Sun, 8 Dec 2024 18:09:05 -0800
-Message-ID: <CAJuCfpGeKgOgqq69OD-TMoQLhyy+HuTKK=cQPHMY2DgNcJf5Xg@mail.gmail.com>
-Subject: Re: [akpm-mm:mm-unstable] [mm] 85ad413389: BUG:kernel_NULL_pointer_dereference,address
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, 
-	Andrew Morton <akpm@linux-foundation.org>, Christian Brauner <brauner@kernel.org>, 
-	David Hildenbrand <david@redhat.com>, David Howells <dhowells@redhat.com>, 
-	Davidlohr Bueso <dave@stgolabs.net>, Hillf Danton <hdanton@sina.com>, Hugh Dickins <hughd@google.com>, 
-	Jann Horn <jannh@google.com>, Johannes Weiner <hannes@cmpxchg.org>, Jonathan Corbet <corbet@lwn.net>, 
-	"Liam R. Howlett" <Liam.Howlett@oracle.com>, Lorenzo Stoakes <lorenzo.stoakes@oracle.com>, 
-	Mateusz Guzik <mjguzik@gmail.com>, Matthew Wilcox <willy@infradead.org>, 
-	Mel Gorman <mgorman@techsingularity.net>, Michal Hocko <mhocko@suse.com>, 
-	Minchan Kim <minchan@google.com>, Oleg Nesterov <oleg@redhat.com>, 
-	Pasha Tatashin <pasha.tatashin@soleen.com>, "Paul E. McKenney" <paulmck@kernel.org>, 
-	Peter Xu <peterx@redhat.com>, Peter Zijlstra <peterz@infradead.org>, 
-	Shakeel Butt <shakeel.butt@linux.dev>, Sourav Panda <souravpanda@google.com>, 
-	Vlastimil Babka <vbabka@suse.cz>, Wei Yang <richard.weiyang@gmail.com>, linux-mm@kvack.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|PH8PR11MB8064:EE_
+X-MS-Office365-Filtering-Correlation-Id: f3a1bbfd-fcea-40c2-3e7b-08dd180e3c07
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|376014|1800799024|366016;
+X-Microsoft-Antispam-Message-Info: =?utf-8?B?c1pSTmgwcHcrdERvcVFqR1AwRmppWjBtY3RHTFVKaVlJRkZUMVQxcjc1aE5B?=
+ =?utf-8?B?d3BVMGQyN1MrZm5za1N6TUJrOWZIeFF6am1Ha09GaDhYa2k3UG9La2w1WFlE?=
+ =?utf-8?B?eUNLdkpqNFJ0NFA5d3F6eEFlcHA0OUZhVE8zdWtROVB3aEI4MVlBQ0tWdFN6?=
+ =?utf-8?B?TlFtVGZCU2M1V1lYdXFYLy9LaHdnWktLQ1JaSnhiTmtjd0dqOCtLTkIzR25y?=
+ =?utf-8?B?RFU5TWdwRFZzcmNHdkc5ZCt3TnUvSjF1TUJGanJIWTNKaDUxaEorTVFKZjdN?=
+ =?utf-8?B?S0lQY0NFZEFFOEoyaXRmd2I1M044L1prV2pqWHl2cm85emo4eVhzZFBKU0Nw?=
+ =?utf-8?B?c3RrZng4bldMQU4yTFZ5MTlMUVNGanh0L0FKK1pSTG5jZzg1MTZMQWlZQUJl?=
+ =?utf-8?B?Kysxa2ZuOUMrckpMY1BYRUprN25pN1lvS0RXLzdlMUV2d2xOSGh6eGZtcVNW?=
+ =?utf-8?B?SUp3ZUVlZVo5UXFjM0FaVVd5UjZyUld4N1h2N2Q4bVRZeUFiQnVuT1Rvb2tB?=
+ =?utf-8?B?Q2R5YjY2OTRhRnd0T1M4Yk9zeTd1OXFnSUttMnFyb3BKWUwvRXhHenNsUGpu?=
+ =?utf-8?B?RktZeDJGTmlja1N2aHI0a09VNjFLUko2SDc5QVNRWmM1ZVdLdENJTjYzblVm?=
+ =?utf-8?B?MFc5cHVBUFBSWDRaRVlFZXA5NmNCRUd0d1NlQmJUaHd4N2o3WlZucUZHdkpS?=
+ =?utf-8?B?L002aFh6aTc5NGI1cUVPQy9xNFlrazl2OVFsSUJHSXRpTWNqenFSeGY5MVNZ?=
+ =?utf-8?B?UUJJR0JlUy8ydmU1VXRvUjZFMUxRWVlUMlB1aXVPSVRnRFRBNWFyMnViNGtT?=
+ =?utf-8?B?cGpUM1dQblVkaFNJcDZrbXN5RktBQlYzZ1JPUGg3UzhsVFpkc3U3UEo5a0Z5?=
+ =?utf-8?B?MGxOaWtoRWRiZDhNM2ZSUlhEM3FhTE94d3Q5YjhNdm9KUlRFT0pHWjZIN2dO?=
+ =?utf-8?B?aU92WWUwbkNaUzFPZFUzMWNkZmYvY0szMllNcFArK013NFRLdzJjL0tKNEUy?=
+ =?utf-8?B?Z0J0NFFvZjdTU0F6WDg1UERLTEZvdjRXWmxOaUc3OG5zVUl2YVU3dHZTUTIy?=
+ =?utf-8?B?Uyt2R0k4RU9OU1Q5MC8vSCtFZGxiUmRTM2liekhPVlRKS3JxMlZBSnRuWTR2?=
+ =?utf-8?B?SVpYZnYyeHN0RUtFR2h3T0Q1b05waERrQWdibkNBZUt1SkpCU3UzWUhidERI?=
+ =?utf-8?B?RDN0WWdSeTNFMjY2eTBxbTU1Z1RMVHZCZEVxTExlNUJTZWh4QTZ1aTR0VDBR?=
+ =?utf-8?B?Zi85MlVEUHlFRExoNFgyZEZkTldQMmtoRmc0a0JzWDNIeFhLcnhYSmw1anRm?=
+ =?utf-8?B?Yjl1RldIc0tnYU5yRkwwZURoNy94YkJBbXNEVG8zdStTMkt0MzE5S1B0VG5n?=
+ =?utf-8?B?TEhTN1hTV0kzcjBpdUtmV1VQZ1QzM3pXUjVwbE1LMm5xV2ZMQU44L3JjWjUy?=
+ =?utf-8?B?eURYSzNDMVoySTdteCtCaVFTY2llR3NpckZwUjRCUk45dVhSTE5hMTg1b2R5?=
+ =?utf-8?B?VTNsYndoZ1NDRFgyTDg4Zm9FZ0hsdzNYYXlLSm1LdVNzTy8zcnNlc1lzYlMx?=
+ =?utf-8?B?S2dudWVUZVNXc2RLcjhoaTZRTDU0aDJ5Mmp2eVRjc1BvY0RnaUhYbSthaU10?=
+ =?utf-8?B?VGpCMmdtZ0o0K1kyYlE5VEJTQ1RyWHJwZGVtbjRzenVNYi9aREM0U3lSYVd1?=
+ =?utf-8?B?dUhqYmYyeVVNVFhkKys4QktBVE90SzNLNjJtbkhKVGxZVWN0bm1WNnRwMlJi?=
+ =?utf-8?B?Tks3RXQrNUwwM2ZOemZ4Z2lsRDUvVk5sVjRDWjNwUkl3Ry9XajlRNUNHMGFJ?=
+ =?utf-8?Q?hc0DZHuQpseZXamFpLQsLhMku0W+ffTku2L7o=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NVJWYzlrRTBFbFB6THhHSDluNncwMkpRWGRPVWx2bXVSNnpvV3BidHl1N0Uz?=
+ =?utf-8?B?OG9ueHFJTW1YdW5iTlV3aDhDUW9oM21BVk05TzBNVmk3aWltaHlqTUcyK1lR?=
+ =?utf-8?B?SXAyM01Qai94MWRTNWI0WDVnNjNMYXpMZXFCMFp4dmkrZW1Tc2ZGZEliN3Nj?=
+ =?utf-8?B?MllwQWdJeFA1bW1YZ2tVZnpKVWUwMnhsd09OYlFHNDVUQ1FaQzJYYXRvcUZy?=
+ =?utf-8?B?SGFEOEpYV0k2S0RYbmdmVlFuVlUzWkdTN21HN0RoYXlRQVRWTFc0SEduUHpp?=
+ =?utf-8?B?cVhOdkxpdFp4cHZ6NTZHL056dFpLaUUzemdzaUJ1eDdjQnJjd3dJY24xc2k3?=
+ =?utf-8?B?OXZBWkQvK0JoN29RdWpQMGFwd3Z5UkV6WmJPRkQ0MS9hYVBjNVEvT1JjNFhW?=
+ =?utf-8?B?RkwvQnVEUVlxTGxicGV2aFo2TkJKNWwxcEhVeEtkcXVBTG5mMFV4NWdaTkdl?=
+ =?utf-8?B?OVNEcm9tOVJzaDVhemsyU2ZzaXVWM2tkZ1RxRWhQVjFJdDB0NFErd1BDYmxy?=
+ =?utf-8?B?ZHBZZTA3MHAwNlBqaks4MG84b1dEWmJFZC9WRkJkUVlNZnVvMzNDSWhOTU1u?=
+ =?utf-8?B?TXNrSWtQeEdVRDk3ZGcrdHpoL0dpQ0VoazlRbGc2TDZudWtEQXN6RjYxR3NL?=
+ =?utf-8?B?UFFheEU3RXphNS90Vk1LZHNWVkl4UWhaMXhMdm5RZW9vaWwxRVBPRlRMUzhl?=
+ =?utf-8?B?L3lvWGp1SDMzWFM1ZzNQQ0V3NGg0WlFtWkhDTTZIYUswS25QNXRIYThBTmpr?=
+ =?utf-8?B?VCtkZjlqMUtGRS9POWNzck8rQ1ByUmNJb013eXlhTnc0RnMvVU1NcmwyaURW?=
+ =?utf-8?B?a0gzS2hqN1NRRlc3cERFOW4vdHdyd3h2czQzMWhPSnZ5NnpMaHhNd2oyVXlT?=
+ =?utf-8?B?bGh0Z0dMSzlIQlphdkpCUXU4cHQ2NytXeGQrUk5ZRUN2ZTAvK2dDR0E0anV5?=
+ =?utf-8?B?ekdwYkNZNFpjVGY4cFpjRHZudFUyRUR0ZkJhSE9ocnM4NWRZWGpCS1U2VFJQ?=
+ =?utf-8?B?VE42MlhvbitKY3ptVDhQZVJicWE0UXd0VUIrS3kxRDRtZVFpR2xETWcrNWR4?=
+ =?utf-8?B?dW9VWVFJMDNCNytVNWtBL2Y3UDFxUSs3UFpLZCszYTdNejgreFN4Yi9oam02?=
+ =?utf-8?B?dDBHeXZkWVBZZjVCSHhOdk1vNzdMOStWaDRMNnk3SzFBYk0xMStDVUxiSkVt?=
+ =?utf-8?B?Q041SUd0WG53UXRIeFZuODFPL0FMaWZCSzdDOHNINGlidHBORExtQ1ZpTE10?=
+ =?utf-8?B?U2p3TTNZc09IZDlqZDhQWitDTkRMTzFPc0tZSTZzRWFYb2dOZHd2UnVrMmpi?=
+ =?utf-8?B?Vy9JejVqRkI4YW53N3ZZSHN3MWw0SEI1TWkvQ3RaaXluZjFIUnphL1ZQaXFi?=
+ =?utf-8?B?MzEyVW4vc1p2MnNlUEVROFhkQzkxQ3RycTVzRVB0SjkwOForRmFLTFBiWFo3?=
+ =?utf-8?B?OXhkWWt3QU9xYTd5eDl3QTNKeHVMb1VyZjQ0Qjk1ckx1MUtDRlBLTTJaS2tj?=
+ =?utf-8?B?WnB1R3VySkM2SzhIdjdTVmJWNnp0eDg1ZHdyVTRaR0F6T3BUYmpKSzYvTjNv?=
+ =?utf-8?B?d093Tm43NFF2Tld4L2lZT3JVWXVzdThncTB5NUZBckwyVFlnZDJBV3dHTVZE?=
+ =?utf-8?B?ZXpXbCs1d2dRcVQyTzhaUVFKMGZxdlJCTXpueE52a29MdUtxMGhtT2RRQTNx?=
+ =?utf-8?B?UWxwc1JlcncycWhlVnhHUlJjMHkwdThIL1h0Ni81VzNHdnRNVmpoeDc4U2lK?=
+ =?utf-8?B?N1hBeTJob3pEL0I0czZKQXpVMnNPYUgybEhJNG9SYVBVTzhhR29aWlZpRjI2?=
+ =?utf-8?B?bUpXT2lIanBSOTVUcWowUHN4U3VkMUhWd1k3OVZQMVZ4ZmVLdGhiRVpBVDlU?=
+ =?utf-8?B?YnNJVUZwRnhPanNVcXZmNTdpeGtrSGd2UGZTZVlvVjgxK2lidmxtbVF1UUU5?=
+ =?utf-8?B?UGhYZVF6VjRYZllXQ0NBYmxlc2N0MnBkRzJHcnhsRHpubzVrMVo3czV3WXZK?=
+ =?utf-8?B?N1I3M0MyOFdsMjFNOHpmcEJSdXB1VmlmcmRrSHBYRXVyTGcyNmNSMjZCQ0sr?=
+ =?utf-8?B?SkhKb1pwREJPVXREdTdDS2VVOEJNOXBJcld2aElidGdWb0RjQ3hzYWh4T1Jx?=
+ =?utf-8?B?dThPZDcxdkREYmxvOEZFcDN5L3BBdDNKMWpUZUgzNnFaUVZONFBZS2NiNytH?=
+ =?utf-8?B?Y2c9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: f3a1bbfd-fcea-40c2-3e7b-08dd180e3c07
+X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Dec 2024 04:59:17.3335
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1pl7PY9PlCllVwL1Ip1Puo4gpx3zV6feWDmK09yNr+OvZ9AotkqZdQuqSawW6LE3h4OBDKSUI+OLCZtbsjZXyA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR11MB8064
+X-OriginatorOrg: intel.com
 
-On Sun, Dec 8, 2024 at 7:26=E2=80=AFAM kernel test robot <oliver.sang@intel=
-.com> wrote:
->
->
->
-> Hello,
->
-> kernel test robot noticed "BUG:kernel_NULL_pointer_dereference,address" o=
-n:
->
-> commit: 85ad413389aec04cfaaba043caa8128b76c6e491 ("mm: make vma cache SLA=
-B_TYPESAFE_BY_RCU")
-> https://git.kernel.org/cgit/linux/kernel/git/akpm/mm.git mm-unstable
->
-> in testcase: boot
->
-> config: i386-randconfig-141-20241208
-> compiler: gcc-11
-> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 1=
-6G
->
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
->
->
-> +------------------------------------------------+------------+----------=
---+
-> |                                                | 98d5eefb97 | 85ad41338=
-9 |
-> +------------------------------------------------+------------+----------=
---+
-> | BUG:kernel_NULL_pointer_dereference,address    | 0          | 12       =
-  |
-> | Oops                                           | 0          | 12       =
-  |
-> | EIP:lock_anon_vma_root                         | 0          | 12       =
-  |
-> | Kernel_panic-not_syncing:Fatal_exception       | 0          | 12       =
-  |
-> +------------------------------------------------+------------+----------=
---+
->
->
-> If you fix the issue in a separate patch/commit (i.e. not just a new vers=
-ion of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202412082208.db1fb2c9-lkp@intel.=
-com
+hi, Suren Baghdasaryan,
 
-Thanks for the report!
-It looks like anon_vma passed to lock_anon_vma_root() is NULL but it's
-not obvious to me why my patch would cause that.
+On Sun, Dec 08, 2024 at 06:09:05PM -0800, Suren Baghdasaryan wrote:
+> On Sun, Dec 8, 2024 at 7:26 AM kernel test robot <oliver.sang@intel.com> wrote:
+> >
+> >
+> >
+> > Hello,
+> >
+> > kernel test robot noticed "BUG:kernel_NULL_pointer_dereference,address" on:
+> >
+> > commit: 85ad413389aec04cfaaba043caa8128b76c6e491 ("mm: make vma cache SLAB_TYPESAFE_BY_RCU")
+> > https://git.kernel.org/cgit/linux/kernel/git/akpm/mm.git mm-unstable
+> >
+> > in testcase: boot
+> >
+> > config: i386-randconfig-141-20241208
+> > compiler: gcc-11
+> > test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+> >
+> > (please refer to attached dmesg/kmsg for entire log/backtrace)
+> >
+> >
+> > +------------------------------------------------+------------+------------+
+> > |                                                | 98d5eefb97 | 85ad413389 |
+> > +------------------------------------------------+------------+------------+
+> > | BUG:kernel_NULL_pointer_dereference,address    | 0          | 12         |
+> > | Oops                                           | 0          | 12         |
+> > | EIP:lock_anon_vma_root                         | 0          | 12         |
+> > | Kernel_panic-not_syncing:Fatal_exception       | 0          | 12         |
+> > +------------------------------------------------+------------+------------+
+> >
+> >
+> > If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> > the same patch/commit), kindly add following tags
+> > | Reported-by: kernel test robot <oliver.sang@intel.com>
+> > | Closes: https://lore.kernel.org/oe-lkp/202412082208.db1fb2c9-lkp@intel.com
+> 
+> Thanks for the report!
+> It looks like anon_vma passed to lock_anon_vma_root() is NULL but it's
+> not obvious to me why my patch would cause that.
+> 
+> Oliver, how can I reproduce this locally?
+> 
 
-Oliver, how can I reproduce this locally?
+To reproduce:
 
->
->
-> [    6.680723][    T1] BUG: kernel NULL pointer dereference, address: 000=
-00000
-> [    6.681291][    T1] #PF: supervisor read access in kernel mode
-> [    6.681706][    T1] #PF: error_code(0x0000) - not-present page
-> [    6.682122][    T1] *pde =3D 00000000
-> [    6.682389][    T1] Oops: Oops: 0000 [#1] PREEMPT
-> [    6.682741][    T1] CPU: 0 UID: 0 PID: 1 Comm: init Tainted: G        =
-        T  6.13.0-rc1-00162-g85ad413389ae #1 b25e7d42bdbf00dd0b477b43b1be4c=
-6af368b663
-> [    6.683729][    T1] Tainted: [T]=3DRANDSTRUCT
-> [ 6.684044][ T1] EIP: lock_anon_vma_root (mm/rmap.c:245)
-> [ 6.684422][ T1] Code: 31 d2 31 c9 c3 55 89 e5 e8 55 68 15 00 5d 31 c0 31=
- d2 31 c9 c3 55 8b 00 83 c0 04 89 e5 e8 64 5f f2 ff 5d 31 c0 c3 55 89 e5 53=
- <8b> 1a 39 c3 74 18 85 c0 74 0a 0f 0b 83 c0 04 e8 48 5f f2 ff 8d 43
-> All code
-> =3D=3D=3D=3D=3D=3D=3D=3D
->    0:   31 d2                   xor    %edx,%edx
->    2:   31 c9                   xor    %ecx,%ecx
->    4:   c3                      ret
->    5:   55                      push   %rbp
->    6:   89 e5                   mov    %esp,%ebp
->    8:   e8 55 68 15 00          call   0x156862
->    d:   5d                      pop    %rbp
->    e:   31 c0                   xor    %eax,%eax
->   10:   31 d2                   xor    %edx,%edx
->   12:   31 c9                   xor    %ecx,%ecx
->   14:   c3                      ret
->   15:   55                      push   %rbp
->   16:   8b 00                   mov    (%rax),%eax
->   18:   83 c0 04                add    $0x4,%eax
->   1b:   89 e5                   mov    %esp,%ebp
->   1d:   e8 64 5f f2 ff          call   0xfffffffffff25f86
->   22:   5d                      pop    %rbp
->   23:   31 c0                   xor    %eax,%eax
->   25:   c3                      ret
->   26:   55                      push   %rbp
->   27:   89 e5                   mov    %esp,%ebp
->   29:   53                      push   %rbx
->   2a:*  8b 1a                   mov    (%rdx),%ebx              <-- trapp=
-ing instruction
->   2c:   39 c3                   cmp    %eax,%ebx
->   2e:   74 18                   je     0x48
->   30:   85 c0                   test   %eax,%eax
->   32:   74 0a                   je     0x3e
->   34:   0f 0b                   ud2
->   36:   83 c0 04                add    $0x4,%eax
->   39:   e8 48 5f f2 ff          call   0xfffffffffff25f86
->   3e:   8d                      .byte 0x8d
->   3f:   43                      rex.XB
->
-> Code starting with the faulting instruction
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->    0:   8b 1a                   mov    (%rdx),%ebx
->    2:   39 c3                   cmp    %eax,%ebx
->    4:   74 18                   je     0x1e
->    6:   85 c0                   test   %eax,%eax
->    8:   74 0a                   je     0x14
->    a:   0f 0b                   ud2
->    c:   83 c0 04                add    $0x4,%eax
->    f:   e8 48 5f f2 ff          call   0xfffffffffff25f5c
->   14:   8d                      .byte 0x8d
->   15:   43                      rex.XB
-> [    6.685810][    T1] EAX: 00000000 EBX: 4ccbd680 ECX: 00000000 EDX: 000=
-00000
-> [    6.686314][    T1] ESI: 4ccbd678 EDI: 4ccbd800 EBP: 416e1c60 ESP: 416=
-e1c5c
-> [    6.686817][    T1] DS: 007b ES: 007b FS: 0000 GS: 0000 SS: 0068 EFLAG=
-S: 00010202
-> [    6.687338][    T1] CR0: 80050033 CR2: 00000000 CR3: 0ccbc000 CR4: 000=
-406d0
-> [    6.687821][    T1] DR0: 00000000 DR1: 00000000 DR2: 00000000 DR3: 000=
-00000
-> [    6.688313][    T1] DR6: fffe0ff0 DR7: 00000400
-> [    6.688632][    T1] Call Trace:
-> [ 6.688880][ T1] ? show_regs (arch/x86/kernel/dumpstack.c:479 arch/x86/ke=
-rnel/dumpstack.c:465)
-> [ 6.689181][ T1] ? __die_body (arch/x86/kernel/dumpstack.c:421)
-> [ 6.689478][ T1] ? __die (arch/x86/kernel/dumpstack.c:435)
-> [ 6.689745][ T1] ? page_fault_oops (arch/x86/mm/fault.c:712)
-> [ 6.690080][ T1] ? lock_anon_vma_root (mm/rmap.c:245)
-> [ 6.690427][ T1] ? kernelmode_fixup_or_oops+0x50/0x5e
-> [ 6.690891][ T1] ? __bad_area_nosemaphore+0x2c/0x17c
-> [ 6.691343][ T1] ? bad_area_nosemaphore (arch/x86/mm/fault.c:835)
-> [ 6.691700][ T1] ? do_user_addr_fault (arch/x86/mm/fault.c:1280 (discrimi=
-nator 1))
-> [ 6.692055][ T1] ? exc_page_fault (arch/x86/include/asm/irqflags.h:26 arc=
-h/x86/include/asm/irqflags.h:87 arch/x86/include/asm/irqflags.h:147 arch/x8=
-6/mm/fault.c:1489 arch/x86/mm/fault.c:1539)
-> [ 6.692391][ T1] ? pvclock_clocksource_read_nowd (arch/x86/mm/fault.c:149=
-4)
-> [ 6.692815][ T1] ? handle_exception (arch/x86/entry/entry_32.S:1048)
-> [ 6.693136][ T1] ? pvclock_clocksource_read_nowd (arch/x86/mm/fault.c:149=
-4)
-> [ 6.693560][ T1] ? lock_anon_vma_root (mm/rmap.c:245)
-> [ 6.693913][ T1] ? pvclock_clocksource_read_nowd (arch/x86/mm/fault.c:149=
-4)
-> [ 6.694352][ T1] ? lock_anon_vma_root (mm/rmap.c:245)
-> [ 6.694717][ T1] ? anon_vma_clone (mm/rmap.c:298)
-> [ 6.695053][ T1] ? __split_vma (mm/vma.c:486)
-> [ 6.695375][ T1] ? vms_gather_munmap_vmas (mm/vma.c:1289)
-> [ 6.695763][ T1] ? __mmap_prepare (mm/vma.c:2242)
-> [ 6.696108][ T1] ? __mmap_region (mm/vma.c:2443)
-> [ 6.696454][ T1] ? mmap_region (mm/mmap.c:1037)
-> [ 6.696782][ T1] ? do_mmap (mm/mmap.c:499)
-> [ 6.697091][ T1] ? vm_mmap_pgoff (mm/util.c:580)
-> [ 6.697433][ T1] ? ksys_mmap_pgoff (mm/mmap.c:545)
-> [ 6.697782][ T1] ? __ia32_sys_mmap_pgoff (mm/mmap.c:552)
-> [ 6.698159][ T1] ? ia32_sys_call (kbuild/obj/consumer/i386-randconfig-141=
--20241208/./arch/x86/include/generated/asm/syscalls_32.h:193)
-> [ 6.698507][ T1] ? do_int80_syscall_32 (arch/x86/entry/common.c:165 arch/=
-x86/entry/common.c:339)
-> [ 6.698869][ T1] ? entry_INT80_32 (arch/x86/entry/entry_32.S:945)
-> [    6.699231][    T1] Modules linked in:
-> [    6.699518][    T1] CR2: 0000000000000000
-> [    6.699858][    T1] ---[ end trace 0000000000000000 ]---
-> [ 6.700258][ T1] EIP: lock_anon_vma_root (mm/rmap.c:245)
-> [ 6.700625][ T1] Code: 31 d2 31 c9 c3 55 89 e5 e8 55 68 15 00 5d 31 c0 31=
- d2 31 c9 c3 55 8b 00 83 c0 04 89 e5 e8 64 5f f2 ff 5d 31 c0 c3 55 89 e5 53=
- <8b> 1a 39 c3 74 18 85 c0 74 0a 0f 0b 83 c0 04 e8 48 5f f2 ff 8d 43
-> All code
-> =3D=3D=3D=3D=3D=3D=3D=3D
->    0:   31 d2                   xor    %edx,%edx
->    2:   31 c9                   xor    %ecx,%ecx
->    4:   c3                      ret
->    5:   55                      push   %rbp
->    6:   89 e5                   mov    %esp,%ebp
->    8:   e8 55 68 15 00          call   0x156862
->    d:   5d                      pop    %rbp
->    e:   31 c0                   xor    %eax,%eax
->   10:   31 d2                   xor    %edx,%edx
->   12:   31 c9                   xor    %ecx,%ecx
->   14:   c3                      ret
->   15:   55                      push   %rbp
->   16:   8b 00                   mov    (%rax),%eax
->   18:   83 c0 04                add    $0x4,%eax
->   1b:   89 e5                   mov    %esp,%ebp
->   1d:   e8 64 5f f2 ff          call   0xfffffffffff25f86
->   22:   5d                      pop    %rbp
->   23:   31 c0                   xor    %eax,%eax
->   25:   c3                      ret
->   26:   55                      push   %rbp
->   27:   89 e5                   mov    %esp,%ebp
->   29:   53                      push   %rbx
->   2a:*  8b 1a                   mov    (%rdx),%ebx              <-- trapp=
-ing instruction
->   2c:   39 c3                   cmp    %eax,%ebx
->   2e:   74 18                   je     0x48
->   30:   85 c0                   test   %eax,%eax
->   32:   74 0a                   je     0x3e
->   34:   0f 0b                   ud2
->   36:   83 c0 04                add    $0x4,%eax
->   39:   e8 48 5f f2 ff          call   0xfffffffffff25f86
->   3e:   8d                      .byte 0x8d
->   3f:   43                      rex.XB
->
-> Code starting with the faulting instruction
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->    0:   8b 1a                   mov    (%rdx),%ebx
->    2:   39 c3                   cmp    %eax,%ebx
->    4:   74 18                   je     0x1e
->    6:   85 c0                   test   %eax,%eax
->    8:   74 0a                   je     0x14
->    a:   0f 0b                   ud2
->    c:   83 c0 04                add    $0x4,%eax
->    f:   e8 48 5f f2 ff          call   0xfffffffffff25f5c
->   14:   8d                      .byte 0x8d
->   15:   43                      rex.XB
->
->
->
-> --
-> 0-DAY CI Kernel Test Service
-> https://github.com/intel/lkp-tests/wiki
->
->
+        # build kernel
+	cd linux
+	cp config-6.13.0-rc1-00162-g85ad413389ae .config
+	make -j$(nproc) HOSTCC=gcc-11 CC=gcc-11 ARCH=i386 olddefconfig prepare modules_prepare bzImage modules
+	make -j$(nproc) HOSTCC=gcc-11 CC=gcc-11 ARCH=i386 INSTALL_MOD_PATH=<mod-install-dir> modules_install
+	cd <mod-install-dir>
+	find lib/ | cpio -o -H newc --quiet | gzip > modules.cgz
+
+
+        git clone https://github.com/intel/lkp-tests.git
+        cd lkp-tests
+        bin/lkp qemu -k <bzImage> -m modules.cgz job-script # job-script is attached in this email
+
+        # if come across any failure that blocks the test,
+        # please remove ~/.lkp and /lkp dir to run from a clean state.
+
+
+config and job-script files are attached in original report.
+
+one thing we want to mention is this seems only reproducible with i386 config in
+our tests.
