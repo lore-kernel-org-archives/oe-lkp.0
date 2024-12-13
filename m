@@ -1,110 +1,76 @@
-Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.5])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3EBA0DDDC
-	for <oe-lkp@lists.linux.dev>; Fri, 13 Dec 2024 01:34:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.5
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 801CC155398;
+	Fri, 13 Dec 2024 04:12:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734053670; cv=none; b=m4PpN1Ixl5wUVjc3Feqfs49ySF2A2i5sjvlRkcNgQ6sKncrPcFC/mTRvPz9thMC2zEzQMBq8UL2SVtwWY0PnEVpZSX2pKThn+pHC2JaHcUo96BpCwBgwtjfJV793LxVG6LH708pUC6HtiFkBsQePRLlUlTDBzutkOPnWkiT4wyY=
+	t=1734063133; cv=none; b=bDl006MjxCJDrb3XoxTL3A+FGQX7OwLZ4bS1Vk10B4W/KwBPBahMPXX33MYuxAVy+6kY4xM+tnoC9Ya+0EpzhUZdckIqDccUhN4OoaHK/9yBkgXBsHkUlfRbFg1OFV6jbWLJdMV7nwXppAgrSWr82Nl8EZQJ34JHsIqW8oUoqbk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734053670; c=relaxed/simple;
-	bh=3Mwrc50tBykuEB4xXl5KImDQb1dbDzpxLfUyp9ZmWTc=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=UF8RlM7qPIrR+PbQST7HZ+IWnHMTq6z1ksTdxTCUtgwtjN27Dq4AsqDfAdic8drBh+G1JlC7oiq4UDwmVCQ9Zeg8IqgqQfD5df1vWib/f6fPw/Rwklzs1BB3ovnVr1Rvm8TGTFulNputosU1PKSRKm0ePkwpU51yT04eNId+bvQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=Oz3iCFXp; arc=none smtp.client-ip=117.135.210.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1734063133; c=relaxed/simple;
+	bh=l7+0soeLZV6Tw88As9C8X85YyYlNicvO0yLGnHWSOIY=;
+	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
+	 Mime-Version:Content-Type; b=s/etrc6sfJ/ZyKcvhIvFmsQIdbKOv4ImS+YtGmXCrFl3KsXG63O96eqdXe0YYaph8JsKyvKlIn6OoYy5xepet2wz/S7IgVaD8KzGuosNkTM5NyPzDI0ywTsxwWEPuF+dx5JXQ4RK6MyR+nlDvqnFMT1gPgqU8i+1XHZXL47EejA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=uUrqx2lt; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="Oz3iCFXp"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=QSqfE
-	9gWL2eSEncQbXA9WzU3XQBVueorn8PymwoOkrw=; b=Oz3iCFXpZt85h5EDcULaL
-	IUEpyQKOLU8jKm+VzQJJhRwlHmKCV78aD4P4cdHnx5ok0nHR40s3p/0u7YgJF32M
-	f/NkKksdSksMIU70+nej6izwYU0ovVRGdPy+bL51sVF61JgKxHG3YavwQDczGh9j
-	8hiHWnR2bHzJ6UeOVJa+mc=
-Received: from localhost.localdomain (unknown [])
-	by gzga-smtp-mtada-g1-3 (Coremail) with SMTP id _____wD3n9XujltnbdXUAA--.513S4;
-	Fri, 13 Dec 2024 09:33:49 +0800 (CST)
-From: David Wang <00107082@163.com>
-To: surenb@google.com
-Cc: akpm@linux-foundation.org,
-	kent.overstreet@linux.dev,
-	linux-kernel@vger.kernel.org,
-	linux-mm@kvack.org,
-	lkp@intel.com,
-	oe-lkp@lists.linux.dev,
-	oliver.sang@intel.com,
-	yuzhao@google.com,
-	David Wang <00107082@163.com>
-Subject: [PATCH v3] mm/codetag: clear tags before swap
-Date: Fri, 13 Dec 2024 09:33:32 +0800
-Message-Id: <20241213013332.89910-1-00107082@163.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <CAJuCfpF2e7niEbR=nX2u0HZHq-7tjRGB=xV397pFpjdzBqUGfQ@mail.gmail.com>
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="uUrqx2lt"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACC82C4CED2;
+	Fri, 13 Dec 2024 04:12:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+	s=korg; t=1734063133;
+	bh=l7+0soeLZV6Tw88As9C8X85YyYlNicvO0yLGnHWSOIY=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=uUrqx2lt0ci4QISGJJyjYSwwnPMgN93yieOP/7gPivjxgfpBIIpI7WDM+Iqkf+HMb
+	 71ZgyDAM0tHo4XDsuoS7Nxa1w2rKX78q+O/OSwMXUE7XCC2HuAHUE0JiCfl0j/mOTA
+	 icMhtwsYogA6BKeo60OBca4MMcoRjH7NpAAUVdGM=
+Date: Thu, 12 Dec 2024 20:12:12 -0800
+From: Andrew Morton <akpm@linux-foundation.org>
+To: David Wang <00107082@163.com>
+Cc: surenb@google.com, kent.overstreet@linux.dev,
+ linux-kernel@vger.kernel.org, linux-mm@kvack.org, lkp@intel.com,
+ oe-lkp@lists.linux.dev, oliver.sang@intel.com, yuzhao@google.com
+Subject: Re: [PATCH v3] mm/codetag: clear tags before swap
+Message-Id: <20241212201212.c61bfebbbdb51b3c8bfeed11@linux-foundation.org>
+In-Reply-To: <20241213013332.89910-1-00107082@163.com>
 References: <CAJuCfpF2e7niEbR=nX2u0HZHq-7tjRGB=xV397pFpjdzBqUGfQ@mail.gmail.com>
+	<20241213013332.89910-1-00107082@163.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wD3n9XujltnbdXUAA--.513S4
-X-Coremail-Antispam: 1Uf129KBjvJXoW7Wry3Zw4rJw1xWFyxGFWruFg_yoW8Zw4Dpr
-	47Wr1UGa95JryxCrWkK3W2vr13Xw45tw15GFWa9a9YvryayrsrGrn5WFW2qFnrZFWkAF4S
-	yrsFgrWIk3WUJ37anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0piJ5rxUUUUU=
-X-CM-SenderInfo: qqqrilqqysqiywtou0bp/xtbB0hC0qmdbjOs+3QAAsk
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-When CONFIG_MEM_ALLOC_PROFILING_DEBUG is set, kernel WARN would be
-triggered when calling __alloc_tag_ref_set() during swap:
+On Fri, 13 Dec 2024 09:33:32 +0800 David Wang <00107082@163.com> wrote:
 
-	alloc_tag was not cleared (got tag for mm/filemap.c:1951)
-	WARNING: CPU: 0 PID: 816 at ./include/linux/alloc_tag.h...
+> When CONFIG_MEM_ALLOC_PROFILING_DEBUG is set, kernel WARN would be
+> triggered when calling __alloc_tag_ref_set() during swap:
+> 
+> 	alloc_tag was not cleared (got tag for mm/filemap.c:1951)
+> 	WARNING: CPU: 0 PID: 816 at ./include/linux/alloc_tag.h...
+> 
+> Clear code tags before swap can fix the warning. And this patch also fix
+> a potential invalid address dereference in alloc_tag_add_check() when
+> CONFIG_MEM_ALLOC_PROFILING_DEBUG is set and ref->ct is CODETAG_EMPTY,
+> which is defined as ((void *)1).
+> 
+> Signed-off-by: David Wang <00107082@163.com>
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> Closes: https://lore.kernel.org/oe-lkp/202412112227.df61ebb-lkp@intel.com
 
-Clear code tags before swap can fix the warning. And this patch also fix
-a potential invalid address dereference in alloc_tag_add_check() when
-CONFIG_MEM_ALLOC_PROFILING_DEBUG is set and ref->ct is CODETAG_EMPTY,
-which is defined as ((void *)1).
+This points at 
 
-Signed-off-by: David Wang <00107082@163.com>
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Closes: https://lore.kernel.org/oe-lkp/202412112227.df61ebb-lkp@intel.com
-Acked-by: Suren Baghdasaryan <surenb@google.com>
----
- include/linux/alloc_tag.h | 2 +-
- lib/alloc_tag.c           | 7 +++++++
- 2 files changed, 8 insertions(+), 1 deletion(-)
+51f43d5d82ed ("mm/codetag: swap tags when migrate pages"), which had
+	Fixes: e0a955bf7f61 ("mm/codetag: add pgalloc_tag_copy()")
 
-diff --git a/include/linux/alloc_tag.h b/include/linux/alloc_tag.h
-index 7c0786bdf9af..cba024bf2db3 100644
---- a/include/linux/alloc_tag.h
-+++ b/include/linux/alloc_tag.h
-@@ -135,7 +135,7 @@ static inline struct alloc_tag_counters alloc_tag_read(struct alloc_tag *tag)
- #ifdef CONFIG_MEM_ALLOC_PROFILING_DEBUG
- static inline void alloc_tag_add_check(union codetag_ref *ref, struct alloc_tag *tag)
- {
--	WARN_ONCE(ref && ref->ct,
-+	WARN_ONCE(ref && ref->ct && !is_codetag_empty(ref),
- 		  "alloc_tag was not cleared (got tag for %s:%u)\n",
- 		  ref->ct->filename, ref->ct->lineno);
- 
-diff --git a/lib/alloc_tag.c b/lib/alloc_tag.c
-index 35f7560a309a..3a0413462e9f 100644
---- a/lib/alloc_tag.c
-+++ b/lib/alloc_tag.c
-@@ -209,6 +209,13 @@ void pgalloc_tag_swap(struct folio *new, struct folio *old)
- 		return;
- 	}
- 
-+	/*
-+	 * Clear tag references to avoid debug warning when using
-+	 * __alloc_tag_ref_set() with non-empty reference.
-+	 */
-+	set_codetag_empty(&ref_old);
-+	set_codetag_empty(&ref_new);
-+
- 	/* swap tags */
- 	__alloc_tag_ref_set(&ref_old, tag_new);
- 	update_page_tag_ref(handle_old, &ref_old);
--- 
-2.39.2
+e0a955bf7f61 ("mm/codetag: add pgalloc_tag_copy()") had
+	Fixes: dcfe378c81f7 ("lib: introduce support for page allocation tagging")
+	Cc: <stable@vger.kernel.org>
+
+And I'm thinking that this fix should have
+	Fixes: 51f43d5d82ed ("mm/codetag: swap tags when migrate pages")
+	Cc: <stable@vger.kernel.org>
 
