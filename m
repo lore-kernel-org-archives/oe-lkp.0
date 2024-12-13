@@ -1,113 +1,52 @@
-Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0BD515442D
-	for <oe-lkp@lists.linux.dev>; Fri, 13 Dec 2024 04:22:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 000CB1AC882;
+	Fri, 13 Dec 2024 14:32:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734063768; cv=none; b=n/Nqo5nqWaP+ONwAyKi2I63wKoLi29XOQq8Yvz1jZpYM7hvgPg0+c4tbiQbjL5I9QhDfBG+7K0nb1JyximevNmvydwG7niwMnah/IZByt5kriHINPWXT8fYzEgae5PKtSV2ZWCv2koAl+2kF3/xWZvzt7SoWcg5e6GDSc/qZ+L8=
+	t=1734100352; cv=none; b=uDiGQ3MSZD/UKeMVyeyASNTdF7dULfly6zokc6IafkO3dRgxaCNam3CMiJgdaUDzSut4wV3j3OZ6x9NCkqOn0pSPMYBlWMk0NYhoTpS4enqm148QaWypiakJ8dq5qoGjuWg/0l0giai/CZxBk+Bl3hsSzuUvn8vS5l6KBkexP/Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734063768; c=relaxed/simple;
-	bh=ojlvihfvzGrfCRyRnL2DrfCyL4PYjfoSzc9ch2VJB/s=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=d3/l0NoqBqAWjoqe94kuhXIPfA0vnf2lDooBaCxdYVWG8tHQ7BZ8bUSDa2KIyE8ERIyKrxt1Vg8YzsGL+kKV1mvBdinCvtJ1AzgxW40r84JQgrFtmWkQSYZ0F5egN8O9ZAcI4tm8SFMrvMsjrXYEDYTLd5uGPBJNRaeyrHymIg4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Ob8dhcF3; arc=none smtp.client-ip=209.85.160.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Ob8dhcF3"
-Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-4679b5c66d0so96471cf.1
-        for <oe-lkp@lists.linux.dev>; Thu, 12 Dec 2024 20:22:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1734063766; x=1734668566; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2zusNDVE9tIk+XAMjo2wDNCl3eBQntRzpxBDCfZphJ0=;
-        b=Ob8dhcF3hKJSayUE+FiIa0x02fbMj+HId/AotndBjCTDfko/HV/Pmlk7IJGJRDVvQA
-         jYYJiOqi0AITMcfQJfTM3BH8CCtjCjWUVYmUgcXwsXvxRUi70Tn8D5D8fri2W4s9SB1/
-         Qe9rWRp7pzr6GaW+ElJlIwaDzLhtFSKGMyYFgpxZktLC3TwUi22lHQSS9wFbwcs8T3Rx
-         Q+UeSVByr0bo2sXULCVTtL1s7J+WXUyUyu2vFU0D0696pgoiIuEZH3dWDfoOKgRD5VRr
-         CA2X6fvY8osAEaH7QIFgUmeta15YtZfyf6Gy9HwphJvldRZm7I+hBUNIX4bpz/mtF60V
-         zgug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1734063766; x=1734668566;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=2zusNDVE9tIk+XAMjo2wDNCl3eBQntRzpxBDCfZphJ0=;
-        b=wZYAAvD3wexSqQzm6XgLjKAhjD8kQ8cPSNDT2NEKk7pn+Pax5D2SG3ag9ShZgAXwoB
-         t9zENa/jEYRRlf5xF7uo7DVzpasM1wuppcoYGuFhlvKmOD/Iedy3ZRNjoemvPVBYHRqb
-         pfDc0H/9794FfegkTRqJYUpNunxORq+6Ok3tepI4zQOC8Gf7iSY0l8lBI+4eXiCb7igW
-         tfwmQ17UTA1BlK7PRCuxUj6t8Uc8HTQWTvc6QePA3SyhhNWhn/nbiDp4t4LSOdWKCPDL
-         BoOvbQdtCfHcT+/VJ2aLP47VgoSQ79lEzzvcPHBijrnqGGMghJJmQQEuflJGmCdiL2/V
-         WPFA==
-X-Forwarded-Encrypted: i=1; AJvYcCXBd02uO9JUNhoDxp2rDoakWuYAhVa9VsI1n7WdJyOTrsE20/vzH2NfDJTkGjo9aUcfueGjJl4=@lists.linux.dev
-X-Gm-Message-State: AOJu0YzCtqEjJ8jmqM85op6vYSk9Q60LvietWObjdyeAiSKU24sgggwt
-	6cFCojwqjmqwGND8irmNHKH7bO6btQlA/h/iIz5I/VL2plWB1FpCilScLPY/kNL9sCMUoz8w2qO
-	A/JGTy6ci6qAAxIpqQtl74e3E2EbEzXSmU8Go
-X-Gm-Gg: ASbGncsLgc6TZqytJr/JXEDYZYb9u0fYwUYFAztmlS8uXFoGmEl4fbGArx1dHFMumxs
-	wbdFNYkPYKmb4rz6ZAmJb0OeErf8d1qmtWHpbdQ==
-X-Google-Smtp-Source: AGHT+IHUjsjX9/4hhtNsDvYlspKvkzYig7wPXadi+PWScjnds/jNc+sQHm8865fCSk/cwCPwuMUgBfUr39sbO0iN8jA=
-X-Received: by 2002:a05:622a:250e:b0:467:462e:a51b with SMTP id
- d75a77b69052e-467a4275a11mr2308501cf.14.1734063765511; Thu, 12 Dec 2024
- 20:22:45 -0800 (PST)
+	s=arc-20240116; t=1734100352; c=relaxed/simple;
+	bh=54OcNMBybF+2eT6jBOQ1+NbFOErP7vQScU+RY88GHSs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=P1h4rrxsCgu0L0NR+VlQLa1QB7SzHcEb/xQn1X0jlVyNC0pieuDluMF0lIc9M+IGyIxcjxLQIXrcBVPei0b2nx/oHBgSnESvwaeEMd8QHKgqB34e8B88K9MTc7DEPYNUE+UqSMJawKYEIBIaRHLgnTvrvgMqwpaoxiOZnWkKkEI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id B179268AA6; Fri, 13 Dec 2024 15:32:24 +0100 (CET)
+Date: Fri, 13 Dec 2024 15:32:24 +0100
+From: Christoph Hellwig <hch@lst.de>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: Christoph Hellwig <hch@lst.de>, oe-lkp@lists.linux.dev, lkp@intel.com,
+	linux-kernel@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
+	linux-block@vger.kernel.org, virtualization@lists.linux.dev,
+	linux-nvme@lists.infradead.org
+Subject: Re: [linus:master] [block]  e70c301fae: stress-ng.aiol.ops_per_sec
+ 49.6% regression
+Message-ID: <20241213143224.GA16111@lst.de>
+References: <202412122112.ca47bcec-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CAJuCfpF2e7niEbR=nX2u0HZHq-7tjRGB=xV397pFpjdzBqUGfQ@mail.gmail.com>
- <20241213013332.89910-1-00107082@163.com> <20241212201212.c61bfebbbdb51b3c8bfeed11@linux-foundation.org>
-In-Reply-To: <20241212201212.c61bfebbbdb51b3c8bfeed11@linux-foundation.org>
-From: Suren Baghdasaryan <surenb@google.com>
-Date: Thu, 12 Dec 2024 20:22:34 -0800
-Message-ID: <CAJuCfpEbEd57-8Lrn9_jSK0p=KN7p0PwsuhhjxJViqcN+v+0bw@mail.gmail.com>
-Subject: Re: [PATCH v3] mm/codetag: clear tags before swap
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: David Wang <00107082@163.com>, kent.overstreet@linux.dev, 
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org, lkp@intel.com, 
-	oe-lkp@lists.linux.dev, oliver.sang@intel.com, yuzhao@google.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202412122112.ca47bcec-lkp@intel.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On Thu, Dec 12, 2024 at 8:12=E2=80=AFPM Andrew Morton <akpm@linux-foundatio=
-n.org> wrote:
->
-> On Fri, 13 Dec 2024 09:33:32 +0800 David Wang <00107082@163.com> wrote:
->
-> > When CONFIG_MEM_ALLOC_PROFILING_DEBUG is set, kernel WARN would be
-> > triggered when calling __alloc_tag_ref_set() during swap:
-> >
-> >       alloc_tag was not cleared (got tag for mm/filemap.c:1951)
-> >       WARNING: CPU: 0 PID: 816 at ./include/linux/alloc_tag.h...
-> >
-> > Clear code tags before swap can fix the warning. And this patch also fi=
-x
-> > a potential invalid address dereference in alloc_tag_add_check() when
-> > CONFIG_MEM_ALLOC_PROFILING_DEBUG is set and ref->ct is CODETAG_EMPTY,
-> > which is defined as ((void *)1).
-> >
-> > Signed-off-by: David Wang <00107082@163.com>
-> > Reported-by: kernel test robot <oliver.sang@intel.com>
-> > Closes: https://lore.kernel.org/oe-lkp/202412112227.df61ebb-lkp@intel.c=
-om
->
-> This points at
->
-> 51f43d5d82ed ("mm/codetag: swap tags when migrate pages"), which had
->         Fixes: e0a955bf7f61 ("mm/codetag: add pgalloc_tag_copy()")
->
-> e0a955bf7f61 ("mm/codetag: add pgalloc_tag_copy()") had
->         Fixes: dcfe378c81f7 ("lib: introduce support for page allocation =
-tagging")
->         Cc: <stable@vger.kernel.org>
->
-> And I'm thinking that this fix should have
->         Fixes: 51f43d5d82ed ("mm/codetag: swap tags when migrate pages")
->         Cc: <stable@vger.kernel.org>
+On Thu, Dec 12, 2024 at 09:51:45PM +0800, kernel test robot wrote:
+> 
+> 
+> Hello,
+> 
+> kernel test robot noticed a 49.6% regression of stress-ng.aiol.ops_per_sec on:
 
-Yes, that is correct. Sorry for missing that.
+This sounds like there is some other I/O path that still reorders,
+which got messed up.  What storage driver is this using?  The repro
+material talks about an ata disk, but I'm still curious if it's ahci
+or some other driver, or a SAS HBA?
 
->
