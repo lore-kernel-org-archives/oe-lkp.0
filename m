@@ -1,98 +1,97 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12CDA10F1
-	for <oe-lkp@lists.linux.dev>; Tue, 31 Dec 2024 02:52:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0391B153800
+	for <oe-lkp@lists.linux.dev>; Tue, 31 Dec 2024 04:59:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.11
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735613531; cv=fail; b=WeRccClgCWcUm9FOIIyNqOqweJS8IUmKpX+d5TIpSClOae6GU05d/ZX7RRJ6WxAxNl4MAOs76KU0kjNB2PKu2dmv5/7RflSS6+TRsKJ1O7EBukuH0/EckxBuv+aQJ0De6YFYA83k+PAc+1kcolZ2QEH4ApfMd67ZphcNkRvshQI=
+	t=1735621169; cv=fail; b=FZ9Jul6OaAaV13zkmVvbuOZmG28dAfR204ZeLa7pxuyPOXkF1hQxCMf2+buBpa+JAu06LZyG+OhdqOifo7LVmor57jcgznCF3LF/q/J/cr96Vjd2uExkAHdSgQ7JzrKO4rSSxWyoJyurkq2lH5G/H69SAuX4VmDAEXLViFc4BBw=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735613531; c=relaxed/simple;
-	bh=HyKruaZRXKx6NT91QQ0zZPtUQcVQZapUyWn4H7p42AU=;
-	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=lnZxUikG4cJ+tcEq6kdb6l056+aEZfdSt80+f97DHPD9x0E5WliWLix/euY/tlKjuXNttXWWxh5tYoXyDc+keKoadpoFW4BnRpjGq3RwRF5lQH615rBehwbtVshsXu1wPMjWXltoIu3ZwzKsOwlJNKQuP5bqM0+ikFAH57l/OhM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QOL/1qz5; arc=fail smtp.client-ip=192.198.163.15
+	s=arc-20240116; t=1735621169; c=relaxed/simple;
+	bh=8X8kTK4+KRyUyaTikTQNu7al6tlsySZtJl06vlUqtlI=;
+	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=Oy9QgMu9pknI302HXJUkZR4yRQdWf7kfmPzF2c3cv7rSza+9Ho4Gbnj/6xvE5OEVwgTuvfAUg0mzRw3cFXdqRdmb+h956WQ/lX3C1Bx73xrP4rKgXDXWTgeXcW7Mpx+Ln48tIyX1fydSR2gqh8zlfbBn3cxSvNRIwWbJEIzJ2Iw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XmBQ6il6; arc=fail smtp.client-ip=198.175.65.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QOL/1qz5"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XmBQ6il6"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1735613529; x=1767149529;
-  h=date:from:to:cc:subject:message-id:references:
-   content-transfer-encoding:in-reply-to:mime-version;
-  bh=HyKruaZRXKx6NT91QQ0zZPtUQcVQZapUyWn4H7p42AU=;
-  b=QOL/1qz57k3V4yU/bNCF1XVeHzSyYwiam+HdQ5DDrr33lTyaL5xzltM4
-   +O58OUivrs4DyGyZnu7jEmbMfLW2tPJNGNgCaZWNLa3K/UxwU8aMpt6ZR
-   5ZAkRs32fFM5c1ljSDHarF1f47s7ZLVPwlbLSLY7kHwSkDs0jAcaXXFWE
-   VMcFXCqBEF63YTHpr2h4mTAU+K8hN9efr4zxVXuDUAVej3bgFJ3PZv01k
-   6Vw2Ysq5VaroShBTNcDwKo+TVN53vTxNRVLi2Opofv15X54Dnasl20gY/
-   YowR6R/jBmWRz0nkHlwgbrlqQtJh71LnN0Ea0ceHRyMZCrOd59G0UuL9z
-   Q==;
-X-CSE-ConnectionGUID: iEveD0p7ToyTzhZ+v1Oe0A==
-X-CSE-MsgGUID: mpma3NEhQieWGFFmTIW43w==
-X-IronPort-AV: E=McAfee;i="6700,10204,11301"; a="36056785"
+  t=1735621167; x=1767157167;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   mime-version;
+  bh=8X8kTK4+KRyUyaTikTQNu7al6tlsySZtJl06vlUqtlI=;
+  b=XmBQ6il6wrSP1cJAF3fjkh+z+D5F4Wyfx669318r1S+JgOBI2gdMoOjx
+   2a2LdgWTP/NCQDPTBM6aF5q7/+5RqzOjw9tGLZ54OOg1Uma6Q9RU1ZFVf
+   T+gb22ayvtQL9kHC61eyeHiJ5sZxBoMhS58u1CCJAYeKM1PvelZx3BWj2
+   nKraFeg/OQnGqlJPIVfV4Ixl5ZSGf4wqxWx9yDd5ipUNpb4/6a8aRJrCF
+   x4/PNRUqjG4wA1QnwaT255JyisQVbFQR2Jl0nI58Y45HfXh4s4wb5b12A
+   6D88xYfB4Rw5qA+Hb95FzOIcnngxlqigsa+aaXmQRKY8Ep4CMWEEvrL77
+   g==;
+X-CSE-ConnectionGUID: +9n5+HOKQxCegi9tJ6VJMA==
+X-CSE-MsgGUID: pSAaVnCJQP2WuNuatRgR6g==
+X-IronPort-AV: E=McAfee;i="6700,10204,11301"; a="46395947"
 X-IronPort-AV: E=Sophos;i="6.12,278,1728975600"; 
-   d="scan'208";a="36056785"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Dec 2024 18:52:05 -0800
-X-CSE-ConnectionGUID: n05yKaByS6e18E3Cb9Gj8g==
-X-CSE-MsgGUID: GESo9ZYfRFOW7nCFM25qpg==
+   d="scan'208";a="46395947"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Dec 2024 20:59:26 -0800
+X-CSE-ConnectionGUID: u7zBJ4qITA2yHCN9AjwQJg==
+X-CSE-MsgGUID: 0Bav5vfaQt6Txe1v//tnIQ==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
-   d="scan'208";a="105562600"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmviesa005.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 30 Dec 2024 18:51:37 -0800
-Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+X-IronPort-AV: E=Sophos;i="6.12,278,1728975600"; 
+   d="scan'208";a="101376073"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by fmviesa010.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 30 Dec 2024 20:59:26 -0800
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.44; Mon, 30 Dec 2024 18:51:36 -0800
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ 15.1.2507.44; Mon, 30 Dec 2024 20:59:25 -0800
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.44 via Frontend Transport; Mon, 30 Dec 2024 18:51:36 -0800
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.40) by
- edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ 15.1.2507.44 via Frontend Transport; Mon, 30 Dec 2024 20:59:25 -0800
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.170)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.44; Mon, 30 Dec 2024 18:51:36 -0800
+ 15.1.2507.44; Mon, 30 Dec 2024 20:59:25 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=gAPe/7sB5vvc5fhhAaWujWeqTvp6BZWVTgHdu3FneC4GrIP6GmyMHCSMIhHQ4m0E0xmfQALkS/NoMql8xYfFI76v/AGmJcBVPnxrj7hiCHEGVI31YtnV5NpwzHEyn/6PulpRsZGIj7KwNW1KtzJp0s9QMjT9Gpmk9nVMA/U0Gvqbv0lFn17NoOPx5h0N30ocupuKI8UzisulfAdpcYBbuNftRnEGvomnC4iklvCmIpWC/UlC5FjKqZNCsB2Qc71sywsrqbAL97lX8yeG5YsT0EGGiOTNzmtXIj9LMwuTvh8ZDv0zgZeqwvzcJS7Kz8/J8M/qZhkL+x9IxPhZdnSTHw==
+ b=wQjqKbL+MPKFc6kMucmt+SKkaYGRIE7b8OMKyhdXH4RNSxAEcjQGm2o26T/lYdbbLYniSBFETK1Eh3hmtrGArCXswKqs8sWzsR+R7uAhwsa+yEpOk8a1r5kLSmCadG2zdjvtKrJc/VclGD5o3rzKW1kfq6K78KCK5TSbd3gxYDN/AUBdtbz4XYmCSLqkIdBp8n7DulbcXSrMecPo1cOPMQEY8wjU3g7t+Xi5PG1KX0R2aW+/U1tENp1mO4MNP7GHDj1t5moL1mDjWHEPfjs9QQSjPZdidzRyuSXQlhmfQ8bCZTPvfv1eeDDu1Fku/ExdKjNLifIrbobCXuz3Ain50w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sOY29f19pJZ1S+tZunmQ6OQDp5V4aylKqju64DlnXWk=;
- b=yoxe3cB6u1aVdozfI3kiA0UJoeT4IX68RoPQRe0/Lh4uAYtvBYWyQuId2ljERToO0cHiVxemlMw7QHGpaiUl23bLSB5wEBvdDFUeZeVbjhQhG0iCj46HKa3W1E6UbaXz/m9ZeTLdYK4KDpKGUuKNkkvT89dD5JOkmOClixHHHoImE81RQeYKp3psrZ2VVhocF1ctnlStAxuBlSu1j3mFHfCFhXJThUbskifDixh7Lu9xX8hgR1+3z8wpMnl/kP+Tz5d0FZZQ4ZyfWt9grVU0zjSi7/8TUcdzGLHwXOY8uy32oJcEYJSfhoaVIIzRx11x8E1pj+NNP/1g1+9nH0rfhw==
+ bh=EHGq8Db+fPJ+ta3jfRC5/+tmvAP7PjsayyPvV2qpsbo=;
+ b=yOTnqGFjFTTwWfVFtJz5gGps0gjqlPN5NvIVqzagSpKbwj6+b8Mj56Z2J/KzdCYVT5mmCDD82YpZWjWkfHG/1H/fNmrT8X4SMu6T9VVEXR18hdfLJIq6K4c4K7T2wODyU3FMWPUjp+JtD18ADzOuiwAuKKQHE26sIvK3k1uYzCI5QGEU1ZrTscVx9KATeAf6QBfp2EbKWOfbJFuku8ZP4UT9hGNfFgUEpAyf5hboIWTKN3bzSLFAnCE2oq5CO77UlCIeJMWNII/jdLpnLaJ6AqFB+0zssSlx2rOVCmsEFqzGrfzni9kxJSYdLg4lKxAAXfLnbbljOjSm+ZLn8+a5FQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by DM4PR11MB6480.namprd11.prod.outlook.com (2603:10b6:8:8d::17) with
+ by CO1PR11MB5124.namprd11.prod.outlook.com (2603:10b6:303:92::12) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8293.18; Tue, 31 Dec
- 2024 02:51:03 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8293.16; Tue, 31 Dec
+ 2024 04:59:18 +0000
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c%6]) with mapi id 15.20.8293.000; Tue, 31 Dec 2024
- 02:51:03 +0000
-Date: Tue, 31 Dec 2024 10:50:54 +0800
-From: Oliver Sang <oliver.sang@intel.com>
-To: Chuck Lever <chuck.lever@oracle.com>
-CC: NeilBrown <neilb@suse.de>, <oe-lkp@lists.linux.dev>, <lkp@intel.com>,
-	"Jeff Layton" <jlayton@kernel.org>, <linux-nfs@vger.kernel.org>,
+ 04:59:18 +0000
+Date: Tue, 31 Dec 2024 12:59:08 +0800
+From: kernel test robot <oliver.sang@intel.com>
+To: Dmitry Antipov <dmantipov@yandex.ru>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>,
+	<linux-wireless@vger.kernel.org>, Johannes Berg <johannes.berg@intel.com>,
+	Kees Cook <kees@kernel.org>, "Gustavo A . R . Silva" <gustavoars@kernel.org>,
+	<linux-hardening@vger.kernel.org>, Dmitry Antipov <dmantipov@yandex.ru>,
 	<oliver.sang@intel.com>
-Subject: Re: [cel:nfsd-testing] [nfsd] ab62726202: fsmark.app_overhead 186.4%
- regression
-Message-ID: <Z3NcDsti9+zpfPT+@xsang-OptiPlex-9020>
-References: <202412271641.cfba5666-lkp@intel.com>
- <eafd5b52-694c-4abb-8c2d-84094def4751@oracle.com>
-Content-Type: text/plain; charset="iso-8859-1"
+Subject: Re: [PATCH 2/2] wifi: cfg80211: simplify
+ cfg80211_mlme_register_mgmt()
+Message-ID: <202412311225.52d0fafe-lkp@intel.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <eafd5b52-694c-4abb-8c2d-84094def4751@oracle.com>
-X-ClientProxiedBy: SI1PR02CA0012.apcprd02.prod.outlook.com
- (2603:1096:4:1f7::8) To LV3PR11MB8603.namprd11.prod.outlook.com
+In-Reply-To: <20241210143951.5685-2-dmantipov@yandex.ru>
+X-ClientProxiedBy: SI2PR02CA0050.apcprd02.prod.outlook.com
+ (2603:1096:4:196::11) To LV3PR11MB8603.namprd11.prod.outlook.com
  (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -101,270 +100,236 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|DM4PR11MB6480:EE_
-X-MS-Office365-Filtering-Correlation-Id: 67a1b943-09fe-4623-065e-08dd2945f70d
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|CO1PR11MB5124:EE_
+X-MS-Office365-Filtering-Correlation-Id: bb1c6fa8-a5b9-4721-4839-08dd2957e1e8
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016;
-X-Microsoft-Antispam-Message-Info: =?iso-8859-1?Q?NccVcvbqIr7Y1zC2hvTlTL9C+MnFzjtGgLT08q86mj8C/Os6lCW5De5rWM?=
- =?iso-8859-1?Q?vXImDjJsdq7ofqL9iMp+7mnfrTB/5gzTvX0GucBzEHCrDWjqYK6xRMHPB4?=
- =?iso-8859-1?Q?jtC/6M/dJ9cu3+TlkVvBgVrTEurCPWxl5hl5cKDOpQuqvOj8ehzaQzVXyV?=
- =?iso-8859-1?Q?T4KGepSV2gtc2dKmXYCn3uqbyBe3ceju+SCTpg+OzIDhndL4kyr8kWNbMZ?=
- =?iso-8859-1?Q?kbqqa66kea/H4jE65NZBoAD+m7foxG6bHDdRDP0oIpoo0RBAeZrGPGIKGj?=
- =?iso-8859-1?Q?XqVFfQwA5CDyERfrXcsT+td4kFdXiVuLOOnQs4LJq8UxXMJEDYhnjNh/MN?=
- =?iso-8859-1?Q?v+VajixEI/6f7+3TKippEhNn/+vQIHTLCswrVGfSrcHDJV0e9P9ozfJaK1?=
- =?iso-8859-1?Q?X4diXzfOnQEI8wyYvEKv/jNoqXb4HYTlrNloUT4YG4kxxyL1639gR2EvtV?=
- =?iso-8859-1?Q?2x3deRHCU/Ad45qAuUTaKHdV8PzSK+/Y0TTmKFH32k3omtQA/hdpXoPKWK?=
- =?iso-8859-1?Q?8wtyUZQxdXlYVq+ecC82Ike4iKmpkjTROYc47AT0FZmaW+N1n8US6FbtcG?=
- =?iso-8859-1?Q?b8VYB9dT4TaLHzryou8uf3+ajmy0om/Fj5+U3osDIHMqOb3pS5Cb7z/vuk?=
- =?iso-8859-1?Q?Zl/v7+qKhVq2DnH54URhOheAqYVWoXBf9hwSTfW7IhR3Op+MXj/KejtG+x?=
- =?iso-8859-1?Q?dQJKPZDESm8oKxk941ae/5yeVOS9/rXWBLot+E6x2y8nv3Ab92YBQRNx7/?=
- =?iso-8859-1?Q?92B8HINUjc1P/s9DCozUzIyPofBEgzdSefVI0SxOmfLqGWOV1tXq7dVWIZ?=
- =?iso-8859-1?Q?3XZNR+YSFjIFfTSpIsSu1RcLNrdxRR5bC0wFoLj1Om48iM4gbZbmokBaY7?=
- =?iso-8859-1?Q?ZKel+SA9x59g5XJ6VlC9l07eHJQMJC08wKzZ/o1oeo9GRrOEgbLGuqcLXy?=
- =?iso-8859-1?Q?XFbHey88ab+Ko9xxUJ4GNyWiul9fscyRFj+nBueWqatVqzp+ItEv9gtSZk?=
- =?iso-8859-1?Q?/gtvW5mJnq7GMY1UkOtfiiqXHfn5UwKyDp9+qLqjbnhjruu5AAmPf5Scbx?=
- =?iso-8859-1?Q?ygjrCeUeZj6h38iB9r2+hfmep6rwYXAsxgLKO+1r2j4RdAsxWugMXMKHtU?=
- =?iso-8859-1?Q?JRAIp6jm/WCujTFC6nUX9BUvlMcX4uqI6eOGote0LDOce7ALy1LK6nfXBr?=
- =?iso-8859-1?Q?rYAI6ZzCcCEwxVVm6uPbXBHhUhJui1U5vZgdxvgIyqP+BPF4sJb/OlrjUS?=
- =?iso-8859-1?Q?+Jp1TnDM3JKLoenwJ0lKT6k6L4seAPiqoaJcqZ+WA4jPNYe585YzxoyUVO?=
- =?iso-8859-1?Q?HzbMJ7S/aUz/Kejv+4qP5PO39i21J22b5dfDC9sjt6fDRR2PjXs5yBRbf+?=
- =?iso-8859-1?Q?tSyrsJmagxvzPR2mRguINzNOgSxuTPFw=3D=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014|7053199007;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?o9y9NAPFESJr0e+RTq0jlDKj2OQVGGB4EeXNY2ZM8eITNK3b9yYqUkIT3NyM?=
+ =?us-ascii?Q?rJPwewuasoR9eOAOev6DJyjUtF4HpGKpioL7lm8ey4BzUMrHHQ64XA8Vhamz?=
+ =?us-ascii?Q?+FUPrQoWjbUGkdBi86ml+G3NVSak5a24ztAgJX3lN36LY1uwiKRrqPtz/sM8?=
+ =?us-ascii?Q?eiEv2M8PVByahSNhro6p0kP9UFtFtYE7vyDuEi9JPn5MFTd3cPhGjgw5Y01r?=
+ =?us-ascii?Q?V+F0MhE5xslnSIgN63Ibm0g5sIzhDtLD3FS3gvODcsE5tqcHzcAvEMx3M1zu?=
+ =?us-ascii?Q?tMNxwyg+EU0sT5AJhvDqa0z0/9GGHEc2wAGLbrGOUvR3Yq3124NliW+mbDLp?=
+ =?us-ascii?Q?o4CK35gp5y7U8A5SmCNZ3KswhSY73RTBZWIHMdtwIyXk+IB/uZkY4CmmlL5y?=
+ =?us-ascii?Q?2sJM+vT9jlTGxOPpBT0RA2Ct+BWrfNi2x5siTNqENnq0KyCYo08LNBZzUXRe?=
+ =?us-ascii?Q?6dlx68GhNeHpKB7/I99UDIqc66i02HilpOlctMqgSwT7cL27QJb6jtqHDtFw?=
+ =?us-ascii?Q?jHe7XS6ccJ9MFkqm3t6MuIJ7EittsrbN2HlkRv02vZ4CgGnx3GWkTMx4Wt/N?=
+ =?us-ascii?Q?ZjAohZoLDG71lrmlO3xDvwujZwmwTeon1ByJqhanOTBZX0W2/mUNVC/58o4N?=
+ =?us-ascii?Q?ANtZAXS2p/YSxm2VEYKV+LXeksLZ+6XVWh3PqOg1C+vdeVi1ox3Ir+Dj5jqi?=
+ =?us-ascii?Q?zNFxFaczMxODH3KZhOKHskX+kONySTTv0BVU8Dm47MfXWoBlIog+BYJaMggm?=
+ =?us-ascii?Q?0+mKG5tnsGyUseW2ZMP6P89jNOIzMPY3jt3IgNVyDmYxip6UlO0Qv0+s0UEX?=
+ =?us-ascii?Q?D8yO6EL3yhkRYtjlWcyZRYZOZj746tgTNiGz1dqCXa+ZIQ2FpAfdnk6YbSsN?=
+ =?us-ascii?Q?5ngGE9VX6qRnSYwbcAqnmtHqcYmAB3bU9RU1oUyTvEJW9WbXQ4rgNsYC4Ka/?=
+ =?us-ascii?Q?vBQMQ3Zh6QeZ502BsIZmZidH8FTggNnNRQi6HKrQf5cDYksgCKuPjjRN3tTM?=
+ =?us-ascii?Q?iMfrpTI5EBBVyEjjAWLSvZJj9GUuxj4oL/bg1YF8rRlXQvsg/4Q8AjuXd6EP?=
+ =?us-ascii?Q?dgRKHbye3oFCXDLGoPC0U8vJTqKPOh9W7fn/AyCCzOfJJw1jtwgxGyxvk6hI?=
+ =?us-ascii?Q?vzp1txMBxZP6OwOhKfywMf6tXX6JCa0BVNakHDFcwWRYqX4JJUmkBveLXs8s?=
+ =?us-ascii?Q?bGuEAAhamglQRTdzEv6lBx8QruEr3lJ4TMltDyYMpSmvQJ44OytTdSai8Tsk?=
+ =?us-ascii?Q?shXkT6b8X8U+i7g/u3uwzIcdH8u/A8npHNArmO5dYAQ59ovLMTMc/R7InQ2L?=
+ =?us-ascii?Q?4n2RrKfVv8Mya/MFs7qmA9GWDM3xJOs5jDAPHaUI8XDd2g=3D=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7053199007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?g0xzQoueSp9Ta8VsGNMM/BDO6s+9YdgBve9TlxvvT9gYOu+OB7LuuOsJt/?=
- =?iso-8859-1?Q?ssXtD9mrFQ3l5I3g4l0/yK+FZ7X+BRCWl3hIICL2i4Z7bbCw9clUq4ruxn?=
- =?iso-8859-1?Q?lCg3UOIIMyUlJx+vy7iZji6FAW2pBXks/SmjWR9Mu6ij2dmEumTI4r41DE?=
- =?iso-8859-1?Q?Lg1q8E+pzaoVSR2ayddtD48RZEcFMeaddrUvRAYlCUQhqyQ84HWjl66XWr?=
- =?iso-8859-1?Q?7proAkCufY/sehpo1cHhgrm7XsbnfXJlhn4PJpanKChF+F3uOFQMZC6kw6?=
- =?iso-8859-1?Q?+dByuZzpbMwMKTdNyAaQDj4aLn1sIGR25vaXBLmG9PkRa/kSmSQJWxyxtC?=
- =?iso-8859-1?Q?GW+31N9FiVQbTO4Eo0A+Pfn1nfusfAFqUi4dNWpm4vL1GE6ZtZxQco6cli?=
- =?iso-8859-1?Q?/BzRAqDIooXCxaXsOvuq/hXThMLP/un9MMPHDxCdYhH+JxCQgRpLFPz73+?=
- =?iso-8859-1?Q?AQSX/8wkQeNfh6wP1urG+kw6m6mwLoSAjxE8il8CcNviQeZNhDgZwIvLX2?=
- =?iso-8859-1?Q?WLKHpedyML+nk4AfiXPKZEVvBmX9J6xSVLXT+r3DODT7lxpTCMx5GWKHD6?=
- =?iso-8859-1?Q?2x23AE59uzUiSCrFd89f/+ZLzk4+R8LofRdZmYU+xYaHptl0MpzXhzym1d?=
- =?iso-8859-1?Q?5ZLSWDDax352yXp92uw2eQERrleNf+sh/1uwvXs1ECwRjsbCgfA7iNhfcZ?=
- =?iso-8859-1?Q?gVkwMEjZ+RgwSlRPj84NSmh2a7cyC2SvewBKh1ViNPYMoUAKYc/0E2AtN/?=
- =?iso-8859-1?Q?dy+thaacwf3HN85wboJuAZzl284ab8clqbxvIof4/jocxSFaYDAofCrNd6?=
- =?iso-8859-1?Q?U6USisiBmESRhaipXcP1Hc6IxicAhk1ChonqsZfX26KfJuWs4RJVfMQmTG?=
- =?iso-8859-1?Q?IWutuXVwytjwXGEjm7fzCDTwVXPup1pTA1FHdeSxqmXRfgKIbKymBG29lN?=
- =?iso-8859-1?Q?/NI3FrCynVHq6hUPlL7Oyqbrj6sQxzjTsOUpU9RwahmrqDe1WScllqVbCw?=
- =?iso-8859-1?Q?UMveHQmw/N2BoNUfYaeb5UHdQkJlzr/JWb8DF19LchU98KgYQyQExzAjrG?=
- =?iso-8859-1?Q?EblTQmedaRIFT6czoMsNkNjTo+FwQp/CCiyV+N673OCI3lNDTYFXRRWkli?=
- =?iso-8859-1?Q?TwZ3dR+aRmtfEHb/iEMHDBnuVuDk2FOZwJNyyTl7F9wAD/FQqYQxT0vWMk?=
- =?iso-8859-1?Q?AQupP+9AFPTFxgaAO/LFM48CSOMJGBqmJIpsdMCBFjMM5KAbFgWVNND9vL?=
- =?iso-8859-1?Q?6lm65swnyzgjGHImI9Bgp3zrEZDcDo5COmnIFElBcvVdfH8rb2Km3j19dd?=
- =?iso-8859-1?Q?VM5VR7mn3LOQL8LpHEQldaiuSeCWq7ku+CfYrj+bkac6gsvJfv/W+gs+hq?=
- =?iso-8859-1?Q?hCMdgTgWokwk5jJG4zaqJ5pqi87UV/FEzOrGgLCPJeHp2NCJVtUZVEsc+0?=
- =?iso-8859-1?Q?CGUAlMSW25cUlA0P8x4/iv6mQMBWMw8UuPXjUWF+FK2tiRYdr75O5S6LiA?=
- =?iso-8859-1?Q?FvMRw4+s7LEy/31kzCldOuc3FkbE93CyrK+5vsrSiKimdyMYWAIUererQN?=
- =?iso-8859-1?Q?vzPjZ+OD25mdQBI890i/0beag6+T0ljV11MgcFKxx4245xBLFZlMK2r3E6?=
- =?iso-8859-1?Q?Igwn1g9vYCiVvVe+oujAxqKZmo0SPJ3wqossH1zu7XeJxqOY/R+oDWSQ?=
- =?iso-8859-1?Q?=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 67a1b943-09fe-4623-065e-08dd2945f70d
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?LSnt0HsIibzYoWc4+6/R1ry2aEreVBU9nn6TS1r11WHF12N5XJzKwvtM9+qX?=
+ =?us-ascii?Q?NNMz4DLcZIINC85X9IWlZi0CyZASl5JPXOf+ZddDkFhFU5rI5RSVeo+SXayM?=
+ =?us-ascii?Q?vvq3pyw8mxH+XfzKkfTXVTHssyNyWVK2c0T2y+vX19bKY/6ppWwpFmpgO4t/?=
+ =?us-ascii?Q?T3mH5evqNGY8tYj+TTGWS43ZNoRDxRLPmzKkYb/5ayzlh/OBiuI1Vj+jCjOp?=
+ =?us-ascii?Q?yqPA/jdqJMtS8DOTsrTN0NDlZDAwOxjyedOv/+TOqC5XoHQ//PCLGDUJwOjv?=
+ =?us-ascii?Q?fJu9FXC+NgTXDlLhJ3kG0YuP2AppBns3NxtoloyHlcz2BiNQrh/vqyIZeNmF?=
+ =?us-ascii?Q?XjnGYx2kPEmd0LB3i6LczFkGU09ia/OItePEqM7wZ0pnGRAv7NPTE6abHW0H?=
+ =?us-ascii?Q?vLx1OzbzNWq9hA8+rIwTmiXSYeR7Wtjj5Fb7WSCyIusJhYuygwl5kgPEA1j2?=
+ =?us-ascii?Q?wcDKpnpta2TZvicGDijqJV9TDPygKkoCzaMyUyo6EftZ2SKAJq8Dd4MqLUB6?=
+ =?us-ascii?Q?biVJIUJiKLXKZGB8cND6KdrX6qatCr/EgBN+lqk7dn45+GbAOFcix0zrLLHO?=
+ =?us-ascii?Q?0ozpMFv/E81dVbylqJgXkR51oxUMMnIveohaVg1QGvpxe3VsNAuThSYO19qp?=
+ =?us-ascii?Q?+KrGs5QyWz6/AZm1NEHsA8XZD70tH/K+QKYimmN4UOdN/3ic+VFciJ3HCb5W?=
+ =?us-ascii?Q?CW5foZNpxnQejp/pb6ZcwlsKHUxPUuQu/DoWf4RqtRBcA7edsrundCnhjrRT?=
+ =?us-ascii?Q?DingjLZ3//KcqGbldgMQy+z9LWMIcqvMZ67JSEw6UYlEnguUjwhVOhJOBDhM?=
+ =?us-ascii?Q?QOnimd/8EEHxGb7Mlj9i/rPjbxpTfGoBrNIiUAZWJvrcdmatE+K3DP59mDAR?=
+ =?us-ascii?Q?P49AxaO8fBYwD+hBW3ml0l9FTLNMrid2mEqAs1AeERtrvoqaEJN9kNa2WqiA?=
+ =?us-ascii?Q?j4kg1fuLhE3mpodFxwHC0/MsYYhzbELPahFwcem/0/Fr/WnJUVs6ta+1XNNs?=
+ =?us-ascii?Q?NdskzIOYd953cNWYvCphvKBdy8twbOdrgihMv8P9LdZbECRKD4nI1FFpW8/b?=
+ =?us-ascii?Q?FDR9d//EooPBESlgESbwkZ3ipYX/uIpyCknPtK44i71ckOo76HsS9H1otdQm?=
+ =?us-ascii?Q?mY/8/ZpKANHnwtCMfak0zIrEAUWYcv3+MRFrJioem7aVS2Cr5324KlIWauso?=
+ =?us-ascii?Q?BpdtWyfYjAIChAGpdhC7OG7f7iDnYl/dwnW48HbEgN0DMwEVIxB8bJIhXSE5?=
+ =?us-ascii?Q?A9lFftpsyaFJQDEl14uvuLe0EP+xJRyXXVfLZq2xV6+MZuKxHzjLj6AtA6up?=
+ =?us-ascii?Q?urhJec10XcqTDC1qQDtVQmfo0qwS+HPQoVIpnAhFefIhxO0SF+35CZbHuL2C?=
+ =?us-ascii?Q?G9PuEW4eo9VDRTLNR+j/fBuG/vPmCKH3Yu3qAhepncwTd+2CBv0z3tkP33Sw?=
+ =?us-ascii?Q?VcX0KFsrL76HHX+yEu9JU9CBVHWI+rwfQxu4HwJcKY0OXlgKZ+cxCSCBiZ7m?=
+ =?us-ascii?Q?lT+o42PPYxI5Np+rDli9gGCe3KdOmDXxAmUyAIm1xlQRQAaeJTf1BLKoBRyY?=
+ =?us-ascii?Q?4e9ttl2CWWNg9Ht4N60hvyvyCDTY4z4e+P4e/pDA13tKfCdEj0csu/hLr8dg?=
+ =?us-ascii?Q?Cw=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: bb1c6fa8-a5b9-4721-4839-08dd2957e1e8
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Dec 2024 02:51:03.2197
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Dec 2024 04:59:18.8429
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cpBbumqsMKNDqlwmcPJ2TJ2XwerJOLgCgV8RtOJwwRIrlFiueN4i3NyXvIMcS5vdew9xmVCO5YjAK2qRmuyP7A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB6480
+X-MS-Exchange-CrossTenant-UserPrincipalName: AEzCkCeEmHQpaRJiYF38vJ/INnAzxF0lUqD+TSBDWEYaQqyaurrs2AoVs6ysmlSNgKFAqDaZdHJj2ikZm3DF3w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR11MB5124
 X-OriginatorOrg: intel.com
 
-hi, Chuck Lever,
 
-On Sat, Dec 28, 2024 at 12:32:55PM -0500, Chuck Lever wrote:
-> On 12/27/24 4:13 AM, kernel test robot wrote:
-> > 
-> > 
-> > Hello,
-> > 
-> > kernel test robot noticed a 186.4% regression of fsmark.app_overhead on:
-> > (but no diff for fsmark.files_per_sec as below (a))
-> 
-> Hello Oliver -
-> 
-> I have questions about this test result.
-> 
-> Is this https://github.com/josefbacik/fs_mark ?
 
-yes, we use fsmark test suite from this url.
+Hello,
 
-> 
-> I don't understand what "app_overhead" is measuring. Is this "think
-> time"?
+kernel test robot noticed "BUG:sleeping_function_called_from_invalid_context_at_include/linux/sched/mm.h" on:
 
-sorry, we just follow the guidance to enable the test.
+commit: f3ec4051049a8cc013993b615303b283770c6482 ("[PATCH 2/2] wifi: cfg80211: simplify cfg80211_mlme_register_mgmt()")
+url: https://github.com/intel-lab-lkp/linux/commits/Dmitry-Antipov/wifi-cfg80211-simplify-cfg80211_mlme_register_mgmt/20241210-225049
+base: https://git.kernel.org/cgit/linux/kernel/git/wireless/wireless-next.git main
+patch link: https://lore.kernel.org/all/20241210143951.5685-2-dmantipov@yandex.ru/
+patch subject: [PATCH 2/2] wifi: cfg80211: simplify cfg80211_mlme_register_mgmt()
 
-as in https://download.01.org/0day-ci/archive/20241227/202412271641.cfba5666-lkp@intel.com/repro-script
-we run the test by:
+in testcase: hwsim
+version: hwsim-x86_64-4ea2c336d-1_20241103
+with following parameters:
 
-fs_mark -d /nfs/sdb1/1 -d /nfs/sdb1/2 -d /nfs/sdb1/3 -d /nfs/sdb1/4 -d /nfs/sdb1/5 -d /nfs/sdb1/6 -d /nfs/sdb1/7 -d /nfs/sdb1/8 -d /nfs/sdb1/9 -d /nfs/sdb1/10 -d /nfs/sdb1/11 -d /nfs/sdb1/12 -d /nfs/sdb1/13 -d /nfs/sdb1/14 -d /nfs/sdb1/15 -d /nfs/sdb1/16 -d /nfs/sdb1/17 -d /nfs/sdb1/18 -d /nfs/sdb1/19 -d /nfs/sdb1/20 -d /nfs/sdb1/21 -d /nfs/sdb1/22 -d /nfs/sdb1/23 -d /nfs/sdb1/24 -d /nfs/sdb1/25 -d /nfs/sdb1/26 -d /nfs/sdb1/27 -d /nfs/sdb1/28 -d /nfs/sdb1/29 -d /nfs/sdb1/30 -d /nfs/sdb1/31 -d /nfs/sdb1/32 -D 16 -N 256 -n 30 -L 1 -S 0 -s 16777216
+	test: group-24
 
 
 
-below is an example of output (there is oneline to explain App overhead (1)):
+config: x86_64-rhel-9.4-func
+compiler: gcc-12
+test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4790 v3 @ 3.60GHz (Haswell) with 6G memory
 
-2024-12-27 00:12:33 fs_mark -d /nfs/sdb1/1 -d /nfs/sdb1/2 -d /nfs/sdb1/3 -d /nfs/sdb1/4 -d /nfs/sdb1/5 -d /nfs/sdb1/6 -d /nfs/sdb1/7 -d /nfs/sdb1/8 -d /nfs/sdb1/9 -d /nfs/sdb1/10 -d /nfs/sdb1/11 -d /nfs/sdb1/12 -d /nfs/sdb1/13 -d /nfs/sdb1/14 -d /nfs/sdb1/15 -d /nfs/sdb1/16 -d /nfs/sdb1/17 -d /nfs/sdb1/18 -d /nfs/sdb1/19 -d /nfs/sdb1/20 -d /nfs/sdb1/21 -d /nfs/sdb1/22 -d /nfs/sdb1/23 -d /nfs/sdb1/24 -d /nfs/sdb1/25 -d /nfs/sdb1/26 -d /nfs/sdb1/27 -d /nfs/sdb1/28 -d /nfs/sdb1/29 -d /nfs/sdb1/30 -d /nfs/sdb1/31 -d /nfs/sdb1/32 -D 16 -N 256 -n 30 -L 1 -S 0 -s 16777216
-
-#  fs_mark  -d  /nfs/sdb1/1  -d  /nfs/sdb1/2  -d  /nfs/sdb1/3  -d  /nfs/sdb1/4  -d  /nfs/sdb1/5  -d  /nfs/sdb1/6  -d  /nfs/sdb1/7  -d  /nfs/sdb1/8  -d  /nfs/sdb1/9  -d  /nfs/sdb1/10  -d  /nfs/sdb1/11  -d  /nfs/sdb1/12  -d  /nfs/sdb1/13  -d  /nfs/sdb1/14  -d  /nfs/sdb1/15  -d  /nfs/sdb1/16  -d  /nfs/sdb1/17  -d  /nfs/sdb1/18  -d  /nfs/sdb1/19  -d  /nfs/sdb1/20  -d  /nfs/sdb1/21  -d  /nfs/sdb1/22  -d  /nfs/sdb1/23  -d  /nfs/sdb1/24  -d  /nfs/sdb1/25  -d  /nfs/sdb1/26  -d  /nfs/sdb1/27  -d  /nfs/sdb1/28  -d  /nfs/sdb1/29  -d  /nfs/sdb1/30  -d  /nfs/sdb1/31  -d  /nfs/sdb1/32  -D  16  -N  256  -n  30  -L  1  -S  0  -s  16777216
-#       Version 3.3, 32 thread(s) starting at Fri Dec 27 00:12:33 2024
-#       Sync method: NO SYNC: Test does not issue sync() or fsync() calls.
-#       Directories:  Round Robin between directories across 16 subdirectories with 256 files per subdirectory.
-#       File names: 40 bytes long, (16 initial bytes of time stamp with 24 random bytes at end of name)
-#       Files info: size 16777216 bytes, written with an IO size of 16384 bytes per write
-#       App overhead is time in microseconds spent in the test not doing file writing related system calls.   <---- (1)
-
-FSUse%        Count         Size    Files/sec     App Overhead
-     7          960     16777216          6.4        920331167
-Average Files/sec:          6.0
-p50 Files/sec: 6
-p90 Files/sec: 6
-p99 Files/sec: 6
+(please refer to attached dmesg/kmsg for entire log/backtrace)
 
 
-> 
-> A more concerning regression might be:
-> 
->        13.03 ±170%    +566.0%      86.78 ± 77%
-> 
-> perf-sched.wait_and_delay.avg.ms.schedule_preempt_disabled.__mutex_lock.constprop.0.svc_tcp_sendto
-> 
-> But these metrics look like they improved:
-> 
->         0.03 ± 56%     -73.4%       0.01 ±149%
-> perf-sched.sch_delay.avg.ms.btrfs_commit_transaction.btrfs_sync_file.nfsd_commit.nfsd4_commit
->         0.05 ± 60%     -72.1%       0.02 ±165%
-> perf-sched.sch_delay.max.ms.btrfs_commit_transaction.btrfs_sync_file.nfsd_commit.nfsd4_commit
-> 
-> This is a quite mixed result, IMO -- I'm not convinced it's actionable.
-> Can someone help explain/analyze the metrics?
-> 
-> 
-> > commit: ab627262022ed8c6a68e619ed03a14e47acf2e39 ("nfsd: allocate new session-based DRC slots on demand.")
-> > https://git.kernel.org/cgit/linux/kernel/git/cel/linux nfsd-testing
-> > 
-> > testcase: fsmark
-> > config: x86_64-rhel-9.4
-> > compiler: gcc-12
-> > test machine: 64 threads 2 sockets Intel(R) Xeon(R) Gold 6346 CPU @ 3.10GHz (Ice Lake) with 256G memory
-> > parameters:
-> > 
-> > 	iterations: 1x
-> > 	nr_threads: 32t
-> > 	disk: 1HDD
-> > 	fs: btrfs
-> > 	fs2: nfsv4
-> > 	filesize: 16MB
-> > 	test_size: 15G
-> > 	sync_method: NoSync
-> > 	nr_directories: 16d
-> > 	nr_files_per_directory: 256fpd
-> > 	cpufreq_governor: performance
-> > 
-> > 
-> > 
-> > 
-> > If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> > the same patch/commit), kindly add following tags
-> > | Reported-by: kernel test robot <oliver.sang@intel.com>
-> > | Closes: https://lore.kernel.org/oe-lkp/202412271641.cfba5666-lkp@intel.com
-> > 
-> > 
-> > Details are as below:
-> > -------------------------------------------------------------------------------------------------->
-> > 
-> > 
-> > The kernel config and materials to reproduce are available at:
-> > https://download.01.org/0day-ci/archive/20241227/202412271641.cfba5666-lkp@intel.com
-> > 
-> > =========================================================================================
-> > compiler/cpufreq_governor/disk/filesize/fs2/fs/iterations/kconfig/nr_directories/nr_files_per_directory/nr_threads/rootfs/sync_method/tbox_group/test_size/testcase:
-> >    gcc-12/performance/1HDD/16MB/nfsv4/btrfs/1x/x86_64-rhel-9.4/16d/256fpd/32t/debian-12-x86_64-20240206.cgz/NoSync/lkp-icl-2sp7/15G/fsmark
-> > 
-> > commit:
-> >    ccd01c7601 ("nfsd: add session slot count to /proc/fs/nfsd/clients/*/info")
-> >    ab62726202 ("nfsd: allocate new session-based DRC slots on demand.")
-> > 
-> > ccd01c76017847d1 ab627262022ed8c6a68e619ed03
-> > ---------------- ---------------------------
-> >           %stddev     %change         %stddev
-> >               \          |                \
-> >        5.48 ±  9%     +24.9%       6.85 ± 14%  sched_debug.cpu.nr_uninterruptible.stddev
-> >       12489           +11.1%      13876        uptime.idle
-> >   3.393e+08 ± 16%    +186.4%  9.717e+08 ±  9%  fsmark.app_overhead
-> >        6.40            +0.0%       6.40        fsmark.files_per_sec     <-------- (a)
-> >        6.00           +27.8%       7.67 ±  6%  fsmark.time.percent_of_cpu_this_job_got
-> >       72.33           +15.8%      83.79        iostat.cpu.idle
-> >       25.91 ±  3%     -44.3%      14.42 ± 11%  iostat.cpu.iowait
-> >       72.08           +11.6       83.64        mpstat.cpu.all.idle%
-> >       26.18 ±  3%     -11.6       14.58 ± 11%  mpstat.cpu.all.iowait%
-> >      153772 ±  5%     +19.1%     183126 ±  8%  meminfo.DirectMap4k
-> >      156099           +19.5%     186594        meminfo.Dirty
-> >      467358           -12.9%     406910 ±  2%  meminfo.Writeback
-> >       72.35           +15.8%      83.79        vmstat.cpu.id
-> >       25.90 ±  3%     -44.3%      14.41 ± 11%  vmstat.cpu.wa
-> >       17.61 ±  3%     -45.8%       9.55 ± 10%  vmstat.procs.b
-> >        5909 ±  2%      -6.2%       5545        vmstat.system.in
-> >        0.03 ± 56%     -73.4%       0.01 ±149%  perf-sched.sch_delay.avg.ms.btrfs_commit_transaction.btrfs_sync_file.nfsd_commit.nfsd4_commit
-> >        0.05 ± 60%     -72.1%       0.02 ±165%  perf-sched.sch_delay.max.ms.btrfs_commit_transaction.btrfs_sync_file.nfsd_commit.nfsd4_commit
-> >        0.07 ± 41%     +36.1%       0.10 ±  8%  perf-sched.sch_delay.max.ms.schedule_preempt_disabled.rwsem_down_read_slowpath.down_read.btrfs_tree_read_lock_nested
-> >       13.03 ±170%    +566.0%      86.78 ± 77%  perf-sched.wait_and_delay.avg.ms.schedule_preempt_disabled.__mutex_lock.constprop.0.svc_tcp_sendto
-> >      206.83 ± 14%     -31.5%     141.67 ±  6%  perf-sched.wait_and_delay.count.rpc_wait_bit_killable.__wait_on_bit.out_of_line_wait_on_bit.__rpc_execute
-> >        0.30 ± 62%     -82.1%       0.05 ±110%  perf-sched.wait_time.avg.ms.handle_reserve_ticket.__reserve_bytes.btrfs_reserve_data_bytes.btrfs_check_data_free_space
-> >        7.37 ±  4%     -15.8%       6.20 ±  4%  perf-stat.i.MPKI
-> >       44.13 ±  2%      -2.9       41.25 ±  2%  perf-stat.i.cache-miss-rate%
-> >      103.65 ±  2%     +17.9%     122.17 ±  8%  perf-stat.i.cpu-migrations
-> >      627.67 ±  3%     +25.4%     787.18 ±  6%  perf-stat.i.cycles-between-cache-misses
-> >        0.67            +3.7%       0.70        perf-stat.i.ipc
-> >        1.35            +2.2%       1.38        perf-stat.overall.cpi
-> >      373.39            +4.1%     388.79        perf-stat.overall.cycles-between-cache-misses
-> >        0.74            -2.1%       0.73        perf-stat.overall.ipc
-> >      102.89 ±  2%     +17.9%     121.32 ±  8%  perf-stat.ps.cpu-migrations
-> >       39054           +19.0%      46460 ±  2%  proc-vmstat.nr_dirty
-> >       15139            +2.2%      15476        proc-vmstat.nr_kernel_stack
-> >       45710            +1.9%      46570        proc-vmstat.nr_slab_unreclaimable
-> >      116900           -13.5%     101162        proc-vmstat.nr_writeback
-> >       87038           -18.2%      71185 ±  2%  proc-vmstat.nr_zone_write_pending
-> >     6949807            -3.8%    6688660        proc-vmstat.numa_hit
-> >     6882153            -3.8%    6622312        proc-vmstat.numa_local
-> >    13471776            -2.0%   13204489        proc-vmstat.pgalloc_normal
-> >      584292            +3.8%     606391 ±  3%  proc-vmstat.pgfault
-> >       25859            +9.8%      28392 ±  9%  proc-vmstat.pgreuse
-> >        2.02 ±  8%      -0.3        1.71 ±  5%  perf-profile.calltrace.cycles-pp.asm_sysvec_apic_timer_interrupt.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call.do_idle
-> >        1.86 ±  8%      -0.3        1.58 ±  6%  perf-profile.calltrace.cycles-pp.sysvec_apic_timer_interrupt.asm_sysvec_apic_timer_interrupt.cpuidle_enter_state.cpuidle_enter.cpuidle_idle_call
-> >        3.42 ±  5%      -0.6        2.87 ±  5%  perf-profile.children.cycles-pp.asm_sysvec_apic_timer_interrupt
-> >        2.96 ±  4%      -0.4        2.55 ±  5%  perf-profile.children.cycles-pp.sysvec_apic_timer_interrupt
-> >        0.35 ± 45%      -0.2        0.14 ± 71%  perf-profile.children.cycles-pp.khugepaged
-> >        0.34 ± 46%      -0.2        0.14 ± 71%  perf-profile.children.cycles-pp.hpage_collapse_scan_pmd
-> >        0.34 ± 46%      -0.2        0.14 ± 71%  perf-profile.children.cycles-pp.khugepaged_scan_mm_slot
-> >        0.34 ± 47%      -0.2        0.14 ± 72%  perf-profile.children.cycles-pp.collapse_huge_page
-> >        1.21 ± 10%      -0.2        1.01 ±  8%  perf-profile.children.cycles-pp.__hrtimer_run_queues
-> >        0.82 ±  9%      -0.1        0.68 ± 10%  perf-profile.children.cycles-pp.update_process_times
-> >        0.41 ±  8%      -0.1        0.29 ± 22%  perf-profile.children.cycles-pp.btrfs_check_data_free_space
-> >        0.21 ±  7%      -0.1        0.11 ± 73%  perf-profile.children.cycles-pp.copy_mc_enhanced_fast_string
-> >        0.55 ± 11%      -0.1        0.46 ± 14%  perf-profile.children.cycles-pp.__set_extent_bit
-> >        0.33 ±  9%      -0.1        0.28 ±  8%  perf-profile.children.cycles-pp.nfs_request_add_commit_list
-> >        0.17 ±  9%      -0.0        0.13 ± 16%  perf-profile.children.cycles-pp.readn
-> >        0.08 ± 13%      -0.0        0.06 ± 14%  perf-profile.children.cycles-pp.load_elf_interp
-> >        1.00 ± 16%      +1.2        2.18 ± 53%  perf-profile.children.cycles-pp.folio_batch_move_lru
-> >        0.21 ±  8%      -0.1        0.11 ± 73%  perf-profile.self.cycles-pp.copy_mc_enhanced_fast_string
-> >        0.05 ± 49%      +0.1        0.15 ± 61%  perf-profile.self.cycles-pp.nfs_update_folio
-> >        0.94 ±  5%      +0.2        1.11 ±  4%  perf-profile.self.cycles-pp._raw_spin_lock_irqsave
-> >        0.25 ± 17%      +0.4        0.63 ± 61%  perf-profile.self.cycles-pp.nfs_page_async_flush
-> > 
-> > 
-> > 
-> > 
-> > Disclaimer:
-> > Results have been estimated based on internal Intel analysis and are provided
-> > for informational purposes only. Any difference in system hardware or software
-> > design or configuration may affect actual performance.
-> > 
-> > 
-> 
-> 
-> -- 
-> Chuck Lever
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <oliver.sang@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202412311225.52d0fafe-lkp@intel.com
+
+
+[   86.645507][ T5533] BUG: sleeping function called from invalid context at include/linux/sched/mm.h:321
+[   86.653092][ T5537] ieee80211 phy1: mac80211_hwsim_start
+[   86.654820][ T5533] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 5533, name: wpa_supplicant
+[   86.660121][ T5537] ieee80211 phy1: mac80211_hwsim_add_interface (type=2 mac_addr=02:00:00:00:01:00)
+[   86.660169][ T5537] ieee80211 phy1: mac80211_hwsim_link_info_changed(changed=0xe vif->addr=02:00:00:00:01:00, link id 0)
+[   86.669338][ T5533] preempt_count: 201, expected: 0
+[   86.669350][ T5533] RCU nest depth: 0, expected: 0
+[   86.669353][ T5533] CPU: 5 UID: 0 PID: 5533 Comm: wpa_supplicant Tainted: G S                 6.13.0-rc1-00077-gf3ec4051049a #1
+[   86.678470][ T5537] ieee80211 phy1:   ERP_CTS_PROT: 0
+[   86.689309][ T5533] Tainted: [S]=CPU_OUT_OF_SPEC
+[   86.689311][ T5533] Hardware name: Dell Inc. OptiPlex 9020/03CPWF, BIOS A11 04/01/2015
+[   86.689312][ T5533] Call Trace:
+[   86.689314][ T5533]  <TASK>
+[ 86.689326][ T5533] dump_stack_lvl (lib/dump_stack.c:123 (discriminator 1))
+[   86.694193][ T5537] ieee80211 phy1:   ERP_PREAMBLE: 0
+[ 86.698967][ T5533] __might_resched (kernel/sched/core.c:8759)
+[ 86.698984][ T5533] __kmalloc_noprof (include/linux/kernel.h:73 include/linux/sched/mm.h:321 include/linux/sched/mm.h:316 mm/slub.c:4055 mm/slub.c:4133 mm/slub.c:4282 mm/slub.c:4295)
+[   86.710436][ T5537] ieee80211 phy1:   ERP_SLOT: 0
+[ 86.715468][ T5533] ? __pfx__raw_spin_lock_bh (kernel/locking/spinlock.c:177)
+[ 86.715473][ T5533] ? cfg80211_mlme_register_mgmt (include/linux/slab.h:905 net/wireless/mlme.c:708) cfg80211
+[   86.720106][ T5537] ieee80211 phy1: mac80211_hwsim_conf_tx (queue=0 txop=0 cw_min=15 cw_max=1023 aifs=2)
+[ 86.727993][ T5533] ? cfg80211_mlme_register_mgmt (include/linux/slab.h:905 net/wireless/mlme.c:708) cfg80211
+[   86.731138][ T5537] ieee80211 phy1: mac80211_hwsim_conf_tx (queue=1 txop=0 cw_min=15 cw_max=1023 aifs=2)
+[ 86.733922][ T5533] cfg80211_mlme_register_mgmt (include/linux/slab.h:905 net/wireless/mlme.c:708) cfg80211
+[   86.738276][ T5537] ieee80211 phy1: mac80211_hwsim_conf_tx (queue=2 txop=0 cw_min=15 cw_max=1023 aifs=2)
+[ 86.743313][ T5533] nl80211_register_mgmt (net/wireless/nl80211.c:12697) cfg80211
+[   86.747938][ T5537] ieee80211 phy1: mac80211_hwsim_conf_tx (queue=3 txop=0 cw_min=15 cw_max=1023 aifs=2)
+[ 86.752614][ T5533] ? nl80211_pre_doit (net/wireless/nl80211.c:16626) cfg80211
+[   86.757317][ T5537] ieee80211 phy1: mac80211_hwsim_link_info_changed(changed=0x2000 vif->addr=02:00:00:00:01:00, link id 0)
+[ 86.762609][ T5533] genl_family_rcv_msg_doit (net/netlink/genetlink.c:1117)
+[   86.769392][ T5537] ieee80211 phy1: mac80211_hwsim_config (freq=2412(2412 - 0)/noht idle=1 ps=0 smps=static)
+[ 86.778848][ T5533] ? __pfx_genl_family_rcv_msg_doit (net/netlink/genetlink.c:1088)
+[   86.785649][   T11] ieee80211 phy1: mac80211_hwsim_configure_filter
+[ 86.795082][ T5533] ? security_capable (security/security.c:1142)
+[ 86.795090][ T5533] genl_family_rcv_msg (net/netlink/genetlink.c:1195)
+[   86.801696][   T11] ieee80211 phy1: mac80211_hwsim_configure_filter
+[ 86.811153][ T5533] ? __sys_sendmsg (net/socket.c:2654)
+[ 86.811174][ T5533] ? __pfx_genl_family_rcv_msg (net/netlink/genetlink.c:1160)
+[ 86.897075][ T5533] ? netlink_sendmsg (net/netlink/af_netlink.c:1866)
+[ 86.901865][ T5533] ? ____sys_sendmsg (net/socket.c:711 net/socket.c:726 net/socket.c:2583)
+[ 86.906664][ T5533] ? ___sys_sendmsg (net/socket.c:2639)
+[ 86.911279][ T5533] ? __pfx_nl80211_pre_doit (net/wireless/nl80211.c:16536) cfg80211
+[ 86.917589][ T5533] ? __pfx_nl80211_register_mgmt (net/wireless/nl80211.c:12655) cfg80211
+[ 86.924312][ T5533] ? __pfx_nl80211_post_doit (net/wireless/nl80211.c:16638) cfg80211
+[ 86.930688][ T5533] ? is_bpf_text_address (kernel/bpf/core.c:769)
+[ 86.935653][ T5533] genl_rcv_msg (net/netlink/genetlink.c:65 net/netlink/genetlink.c:1211)
+[ 86.939928][ T5533] netlink_rcv_skb (net/netlink/af_netlink.c:2542)
+[ 86.944544][ T5533] ? __pfx_genl_rcv_msg (net/netlink/genetlink.c:1201)
+[ 86.949418][ T5533] ? __pfx_netlink_rcv_skb (net/netlink/af_netlink.c:2519)
+[ 86.954555][ T5533] ? __pfx_down_read (kernel/locking/rwsem.c:1522)
+[ 86.959169][ T5533] ? __pfx_netlink_lookup (net/netlink/af_netlink.c:514)
+[ 86.964214][ T5533] ? _copy_from_iter (arch/x86/include/asm/uaccess_64.h:126 arch/x86/include/asm/uaccess_64.h:141 lib/iov_iter.c:55 include/linux/iov_iter.h:30 include/linux/iov_iter.h:300 include/linux/iov_iter.h:328 lib/iov_iter.c:249 lib/iov_iter.c:260)
+[ 86.969090][ T5533] genl_rcv (net/netlink/genetlink.c:1220)
+[ 86.972925][ T5533] netlink_unicast (net/netlink/af_netlink.c:1322 net/netlink/af_netlink.c:1347)
+[ 86.977540][ T5533] ? __pfx_netlink_unicast (net/netlink/af_netlink.c:1332)
+[   86.982673][ T5533]  ? 0xffffffff81000000
+[ 86.986678][ T5533] ? __check_object_size (mm/memremap.c:421)
+[ 86.992336][ T5533] netlink_sendmsg (net/netlink/af_netlink.c:1891)
+[ 86.996950][ T5533] ? __pfx_netlink_sendmsg (net/netlink/af_netlink.c:1810)
+[ 87.002083][ T5533] ? __import_iovec (lib/iov_iter.c:1438 lib/iov_iter.c:1454)
+[ 87.006782][ T5533] ? _inline_copy_from_user (arch/x86/include/asm/uaccess_64.h:134 arch/x86/include/asm/uaccess_64.h:134 arch/x86/include/asm/uaccess_64.h:141 include/linux/uaccess.h:178)
+[ 87.012003][ T5533] ? __pfx_netlink_sendmsg (net/netlink/af_netlink.c:1810)
+[ 87.017135][ T5533] ____sys_sendmsg (net/socket.c:711 net/socket.c:726 net/socket.c:2583)
+[ 87.021749][ T5533] ? __pfx_____sys_sendmsg (net/socket.c:2529)
+[ 87.026895][ T5533] ? __pfx_copy_msghdr_from_user (net/socket.c:2509)
+[ 87.032559][ T5533] ? copy_from_sockptr_offset (include/linux/sockptr.h:51)
+[ 87.039082][ T5533] ___sys_sendmsg (net/socket.c:2639)
+[ 87.043523][ T5533] ? __pfx____sys_sendmsg (net/socket.c:2626)
+[ 87.048571][ T5533] ? do_sock_setsockopt (net/socket.c:2282)
+[ 87.053617][ T5533] ? do_sock_setsockopt (net/socket.c:2282)
+[ 87.058664][ T5533] ? __pfx_do_sock_setsockopt (net/socket.c:2282)
+[ 87.064055][ T5533] ? up_write (arch/x86/include/asm/atomic64_64.h:87 include/linux/atomic/atomic-arch-fallback.h:2852 include/linux/atomic/atomic-long.h:268 include/linux/atomic/atomic-instrumented.h:3391 kernel/locking/rwsem.c:1372 kernel/locking/rwsem.c:1630)
+[ 87.068064][ T5533] ? fdget (include/linux/atomic/atomic-arch-fallback.h:479 include/linux/atomic/atomic-instrumented.h:50 fs/file.c:1145 fs/file.c:1159)
+[ 87.071898][ T5533] ? fdget (include/linux/atomic/atomic-arch-fallback.h:479 include/linux/atomic/atomic-instrumented.h:50 fs/file.c:1145 fs/file.c:1159)
+[ 87.075742][ T5533] __sys_sendmsg (net/socket.c:2669)
+[ 87.080182][ T5533] ? __pfx___sys_sendmsg (net/socket.c:2654)
+[ 87.085144][ T5533] ? ksys_write (fs/read_write.c:731)
+[ 87.089412][ T5533] ? __pfx_ksys_write (fs/read_write.c:721)
+[ 87.094112][ T5533] do_syscall_64 (arch/x86/entry/common.c:52 arch/x86/entry/common.c:83)
+[ 87.098466][ T5533] ? syscall_exit_to_user_mode (arch/x86/include/asm/irqflags.h:37 arch/x86/include/asm/irqflags.h:92 include/linux/entry-common.h:232 kernel/entry/common.c:206 kernel/entry/common.c:218)
+[ 87.103947][ T5533] ? do_syscall_64 (arch/x86/entry/common.c:102)
+[ 87.108474][ T5533] ? __count_memcg_events (arch/x86/include/asm/atomic64_64.h:15 include/linux/atomic/atomic-arch-fallback.h:2583 include/linux/atomic/atomic-instrumented.h:1611 mm/memcontrol.c:569 mm/memcontrol.c:594 mm/memcontrol.c:857)
+[ 87.113694][ T5533] ? handle_mm_fault (mm/memory.c:5986 mm/memory.c:6138)
+[ 87.118482][ T5533] ? do_user_addr_fault (include/linux/rcupdate.h:882 include/linux/mm.h:741 arch/x86/mm/fault.c:1340)
+[ 87.123530][ T5533] ? exc_page_fault (arch/x86/include/asm/irqflags.h:37 arch/x86/include/asm/irqflags.h:92 arch/x86/mm/fault.c:1489 arch/x86/mm/fault.c:1539)
+[ 87.128058][ T5533] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130)
+[   87.133802][ T5533] RIP: 0033:0x7fdd421a8af0
+[ 87.138067][ T5533] Code: 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b7 66 2e 0f 1f 84 00 00 00 00 00 90 80 3d f1 fa 0c 00 00 74 17 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 58 c3 0f 1f 80 00 00 00 00 48 83 ec 28 89 54
+All code
+========
+   0:	00 f7                	add    %dh,%bh
+   2:	d8 64 89 02          	fsubs  0x2(%rcx,%rcx,4)
+   6:	48 c7 c0 ff ff ff ff 	mov    $0xffffffffffffffff,%rax
+   d:	eb b7                	jmp    0xffffffffffffffc6
+   f:	66 2e 0f 1f 84 00 00 	cs nopw 0x0(%rax,%rax,1)
+  16:	00 00 00 
+  19:	90                   	nop
+  1a:	80 3d f1 fa 0c 00 00 	cmpb   $0x0,0xcfaf1(%rip)        # 0xcfb12
+  21:	74 17                	je     0x3a
+  23:	b8 2e 00 00 00       	mov    $0x2e,%eax
+  28:	0f 05                	syscall
+  2a:*	48 3d 00 f0 ff ff    	cmp    $0xfffffffffffff000,%rax		<-- trapping instruction
+  30:	77 58                	ja     0x8a
+  32:	c3                   	ret
+  33:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+  3a:	48 83 ec 28          	sub    $0x28,%rsp
+  3e:	89                   	.byte 0x89
+  3f:	54                   	push   %rsp
+
+Code starting with the faulting instruction
+===========================================
+   0:	48 3d 00 f0 ff ff    	cmp    $0xfffffffffffff000,%rax
+   6:	77 58                	ja     0x60
+   8:	c3                   	ret
+   9:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+  10:	48 83 ec 28          	sub    $0x28,%rsp
+  14:	89                   	.byte 0x89
+  15:	54                   	push   %rsp
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20241231/202412311225.52d0fafe-lkp@intel.com
+
+
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
