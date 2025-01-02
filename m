@@ -1,47 +1,59 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 783E628E3F;
-	Thu,  2 Jan 2025 09:49:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 302541B4139
+	for <oe-lkp@lists.linux.dev>; Thu,  2 Jan 2025 15:45:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735811387; cv=none; b=EN0QmiDhdwW5F3fejKgTkNB67W2KzqddZNaMEdQB7S2FX2BVBhN1EC3pTt1OvqSTDHsrRwEo1KDEEyRQU8ha4OKC1tgM+36sxqncUwT32QhVIrTYbflaHbFAMy8qBVKP1X2nTPN8YRj2+1rRH/v+/EFcO7wSEd/KQb4aJaRHFHY=
+	t=1735832760; cv=none; b=r+HYdiBRZ+nIGUwUXf3bDzbG+ZZhXS8LtwdAGaaXUKJ8C86P+qSRAlfCDfq+vqEP1T/giD/AZDbRQcJ+MBvU1ZpbEEq5vnPUraFM36s+qlMiPOG47lOaaFrVVLcOOcUEtOG8H7b6FolX8KyKIMFYNtciaw+Zn89YH6pigiUDfGI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735811387; c=relaxed/simple;
-	bh=tXfAAU26K170fcnqh0owN8PXAjsnMTBCFumiGjaOeBg=;
+	s=arc-20240116; t=1735832760; c=relaxed/simple;
+	bh=Gt9IgQcdS6zTtWyLM76yOke5d3ktR6jtS0PEnFYEGhk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qqpbtACp+SFyDlStRog/3fF/TESpqgR6+NUs4uVvZGi5M7M+LwEjzHUom+WQj5j9s5oynOL7Y3Svida0l04dGx4LspDHjlenSI9S34b4KdHkFtc2Q8HzajnLe1Sw4LxQ/PD2umxVdE1TzXO6GcbP76EIbJw/jBY2NsCBsgDEByU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jymOAf3D; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jymOAf3D"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2992C4CED6;
-	Thu,  2 Jan 2025 09:49:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1735811387;
-	bh=tXfAAU26K170fcnqh0owN8PXAjsnMTBCFumiGjaOeBg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=jymOAf3D7m3mfa7J4H+4AdQp8u9ITBFukQZjQSGCcf1jCIi+tFh8LUPsn93CKUekn
-	 ZV+A3NPZPdfCraH+d/Df8654DTUCWxocnkDuxolncQhl6spIpsAgKyCU6S0/vd+FPo
-	 fM+UTBqmZag9Re3Wm509djGWaeGHZGqbHDI/1lMV9dUloHcwcZM5hZ/2pBOCyoPbXD
-	 a2QgPtWadwW1B1HFWk37zRFS8bWsstfnpydiYRy7k+2ZSi/vyfWAqp/uu7C3tJlkfG
-	 djL+YkI4j1sLsY3lz31p9rzKQ8EhaRP45bHWa57AUvECyfDSI0mBWdfkYR4gBscK2p
-	 i06VwGFRO/JNg==
-Date: Thu, 2 Jan 2025 10:49:41 +0100
-From: Niklas Cassel <cassel@kernel.org>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Oliver Sang <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, linux-kernel@vger.kernel.org,
-	Jens Axboe <axboe@kernel.dk>, linux-block@vger.kernel.org,
-	virtualization@lists.linux.dev, linux-nvme@lists.infradead.org,
-	Damien Le Moal <dlemoal@kernel.org>
-Subject: Re: [linus:master] [block]  e70c301fae: stress-ng.aiol.ops_per_sec
- 49.6% regression
-Message-ID: <Z3ZhNYHKZPMpv8Cz@ryzen>
-References: <202412122112.ca47bcec-lkp@intel.com>
- <20241213143224.GA16111@lst.de>
- <20241217045527.GA16091@lst.de>
- <Z2EgW8/WNfzZ28mn@xsang-OptiPlex-9020>
- <20241217065614.GA19113@lst.de>
+	 Content-Type:Content-Disposition:In-Reply-To; b=IKYZZZiVDqtko/MdoHbouoM9Nh0U6Yn5Idzz1dyz8gf3tFFe14JGr2QzZv2hmzqVSnVKsXxBDaGwJcyxEx7mWTc8iOJqaGTAKxt6gca3gu8bwQgAJHVt5eJjC/hGe1UQ/0/toBYxjHHIjl38OEtJwzbQRsr227QeCIQONy5FT0o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=debian.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=debian.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-aa689a37dd4so1777790166b.3
+        for <oe-lkp@lists.linux.dev>; Thu, 02 Jan 2025 07:45:57 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1735832756; x=1736437556;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=h2g0ivZyP4Gq3elbBwKgtWXwEWLwxdsNB8Grs3eMANo=;
+        b=Nue06PHxftidpsrQjdeJvG5BtMumH4k8sOMBDBUk4oHzx3Fxf9GEG2AU/Xvs0nO6NV
+         JeF8BIM1Q3oDqOXILuFBUFLFPXBbsZRRylbknC+X2071mLVuHIWR18uSUo/kwZHjY2P5
+         /lhY4JkgdbqliIP/XXp8wy1Fc+wHdzH4GZDdQomJZwZPO9rnMA8u7AsMNYGEHuGNimFe
+         Iw/vLbRXbOO+hUyC9w9z+SJhso9A2n09LV5/oxWiaNgDv1TBomsirJ+1PLdbqhLUv4vt
+         RaZfBGIDeDoP3acoEi8sRf+YtYkkQGwLdMzIRPj7M0F+vXDcUtceiycsWN0KjFweLWLv
+         2+2w==
+X-Forwarded-Encrypted: i=1; AJvYcCXK6Zv0H8fMzw2o/nAWl2Hl3vKw2NdTWW2SD/oxn74oCFcqmk87iTj0AYo0gXjFRctE4QNnyvE=@lists.linux.dev
+X-Gm-Message-State: AOJu0YwcELLmU6owbhVizOkfkpf9v6lijlXk63MH0ZLlGymziNnYd3bx
+	a7VCpln4Yfz5G19H792Dk6L5GJZO2TmRg1yj7U4GcTX/TddZ6H8e
+X-Gm-Gg: ASbGncuw/AU0nxO/hQzxHXhOZXfeIGlMigDEHOTLxyBWYlDPVb0dlimfYqMderFZ38Z
+	uWCuhHGx5TYqe3eyezXA9nyJGnt8aCIPq8UfmqcmJgfkV4KniLlCZ2KHhYaQMgicbeuOj+ex2jP
+	w3r+myvjt+fVljXZq1dAP+V1QDlHSDTpApE4hMaPNiScwIXKkdCyIaqB+m6MUl7bJKzoi/xCpQe
+	dmkAgOIHafOXi42i54dFLCrJvYS2/zy2S203E22CsVRqFh0
+X-Google-Smtp-Source: AGHT+IF9Opy0LyTeLf+WcovwqPhZVqY0yducz1jeXl63C6Qhux/jKU7KQXgPiT1DvlqzIjf2tKzdQQ==
+X-Received: by 2002:a17:907:961f:b0:aa6:abe2:5cba with SMTP id a640c23a62f3a-aac27026cfemr4744580766b.2.1735832755949;
+        Thu, 02 Jan 2025 07:45:55 -0800 (PST)
+Received: from gmail.com ([2a03:2880:30ff:70::])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-aac0f06629esm1800682366b.189.2025.01.02.07.45.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Jan 2025 07:45:55 -0800 (PST)
+Date: Thu, 2 Jan 2025 07:45:53 -0800
+From: Breno Leitao <leitao@debian.org>
+To: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: Tejun Heo <tj@kernel.org>, kernel test robot <oliver.sang@intel.com>,
+	oe-lkp@lists.linux.dev, lkp@intel.com, linux-crypto@vger.kernel.org,
+	netdev@vger.kernel.org
+Subject: Re: [herbert-cryptodev-2.6:master] [rhashtable]  e1d3422c95:
+ stress-ng.syscall.ops_per_sec 98.9% regression
+Message-ID: <20250102-bizarre-griffin-of-attraction-c1f728@leitao>
+References: <202412271017.cad7675-lkp@intel.com>
+ <Z3HTN1gvVE9tfa4Y@slm.duckdns.org>
+ <Z3XndzXUa9KYYz9f@gondor.apana.org.au>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -50,27 +62,23 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20241217065614.GA19113@lst.de>
+In-Reply-To: <Z3XndzXUa9KYYz9f@gondor.apana.org.au>
 
-Hello Oliver, Christoph,
-
-On Tue, Dec 17, 2024 at 07:56:14AM +0100, Christoph Hellwig wrote:
-> On Tue, Dec 17, 2024 at 02:55:23PM +0800, Oliver Sang wrote:
-> > from below information, it seems an 'ahci' to me. but since I have limited
-> > knowledge about storage driver, maybe I'm wrong. if you want more information,
-> > please let us know. thanks a lot!
+On Thu, Jan 02, 2025 at 09:10:15AM +0800, Herbert Xu wrote:
+> On Sun, Dec 29, 2024 at 12:54:47PM -1000, Tejun Heo wrote:
+> >
+> > Hmm... the only meaningful behavior difference would be that after the
+> > patch, rht_grow_above_75() test is done regardless of the return value while
+> > before it was done only when the return value is zero. Breno, can you please
+> > look into whether this report is valid and whether restoring the NULL check
+> > makes it go away?
 > 
-> Yes, this looks like ahci.  Thanks a lot!
+> Actually I fixed that when committing the patch.  It should be
+> conditional on whether the insertion succeeds or not.
 
-Did this ever get resolved?
+Thanks.
 
-I haven't seen a patch that seems to address this.
+I am finally back from vacation. I will try to reproduce the issue
+reported in this report, and double-check the regression.
 
-AHCI (ata_scsi_queuecmd()) only issues a single command, so if there is any
-reordering when issuing a batch of commands, my guess is that the problem
-also affects SCSI / the problem is in upper layers above AHCI, i.e. SCSI lib
-or block layer.
-
-
-Kind regards,
-Niklas
+--breno
