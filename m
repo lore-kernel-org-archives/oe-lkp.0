@@ -1,126 +1,267 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A8AE146D55;
-	Sat,  4 Jan 2025 20:31:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C02E1C6B4
+	for <oe-lkp@lists.linux.dev>; Mon,  6 Jan 2025 03:25:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736022711; cv=none; b=rPHGcBedO7RGHeqFbyVZKpJ9J24v6HQU20LLdDN0hZPUWrfadOmycf0mqlffcKCzcBYwMoZU5fzfGr5hL0FLc/hxt2RRlMWTqMYO+0tRK5rkjuoybYYe2FLtAqcW25IulFuxngIqRcQkOXphBJ6nWcHlUZ/EwnLAsi69uhZ+rsg=
+	t=1736133908; cv=none; b=rzd1QwgvyvaAahkifm93pAHRGQgBgy5ok3lTDjPCVZd5AnH+gOdzhFFQjxwRAdoV8/2VL/nx8u0b9AI7ZQlndWq9wWv7VBrLvSvGwwWT2eNEihOr0mKRT1YW8t8NQFosqu3H1Z8rQ3twHO7ayshJ6WY2FNGx7/7iqvGj5UoegbA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736022711; c=relaxed/simple;
-	bh=i6nmLTZnibj2QAxHEm/s+eSLxbOLL14aDEJcnf3S2/s=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=M4A1UOFwJKk/QnSucuLAGzoPJsLpmmyAy7GEpwfAceEu7tC4z7wLqaLUaoy1lgy5JZDG1grfC1bHdK7Dd69wMIl8P3L5WMNtkRb9zBAIS+HRA7/Cf1B7tshnbp3V9nAw9T/LCLY16NPTzw2RzUwSk690PJ9J7BnPMco0cpBm+lI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jqTljzVR; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1736133908; c=relaxed/simple;
+	bh=41AAFZgDZIZZn9RfZjpSZBHdG0oRXvgFwHi2gPWys1g=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=fpV9tzbIFCqjJ6ATch4RcoCkRGlflVJeBThkffJ7F2pYIwW5x89ToFdTXIOoUQb/8id94AXBLdJkXgJdQfgEAbdk3Wjuo6l07BjxX7sGOXCrxPG0/p7xaFsyNzO3zHCg9pc8ynOts/7vlBjr5723w+2Pkwr2IN1empGMJPOlXog=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GYNG8/gX; arc=none smtp.client-ip=209.85.214.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jqTljzVR"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0D83C4CED1;
-	Sat,  4 Jan 2025 20:31:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1736022711;
-	bh=i6nmLTZnibj2QAxHEm/s+eSLxbOLL14aDEJcnf3S2/s=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=jqTljzVRLPD85eGsU1O+pkeql88KuZhfJONcqk2SwrLekQN23StoZOlFU+6A596hH
-	 Go1aeLIZz63x4I7b1GEkhRWwQQ7uDG1m62kwAoI92YL1u7NG4yjjZ1XvcsHxbf/JXE
-	 dHXK4bX+F3naTT1ediM2K0R2N1nom+I1Op0JI/VUhlAI7dpWFw5kRXDMGQlKRIj9mi
-	 aXgNW8HaYD5paPGmes9T/wrase3pREiw6Ki7wEZvfmtdyKrRij7vlPdTo2ll6Qg3f/
-	 O5Jumabpty0pazItlMWZSgR/USfptTX7kqu1dIVYILRc/ZmRUm2Zku8KGFwqaXS4JN
-	 Vs3dw9GgJ52LA==
-Date: Sat, 4 Jan 2025 21:31:48 +0100
-From: Frederic Weisbecker <frederic@kernel.org>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: Anna-Maria Behnsen <anna-maria@linutronix.de>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, linux-kernel@vger.kernel.org,
-	Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [linus:master] [timers/migration]  10a0e6f3d3:
- BUG:KCSAN:data-race_in__tmigr_cpu_activate/print_report
-Message-ID: <Z3matMUxYXfIzZ8c@pavilion.home>
-References: <202501031612.62e0c498-lkp@intel.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GYNG8/gX"
+Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-21644aca3a0so12929575ad.3
+        for <oe-lkp@lists.linux.dev>; Sun, 05 Jan 2025 19:25:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1736133906; x=1736738706; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=qwu0CGLfx4PBv0aP19byG7/qRPpn0POPKp0Znpy+smk=;
+        b=GYNG8/gXpTxWKWvrKct995kaFcmAbHOq7DkXuv0Hx20awKULtGysVhVNV0DuosgyZW
+         BgiZCZltLUZG3t2y0VUv0eWQrfMJPw4tKahgVlJBiEF3QvbRqZrjo3Ga5qpZHpoyOmNT
+         1ckI7JG1r3i1GXZ3zAeZ3mepYBwrTlDNFxzmcsth3Hq9gRlC/YCyG3vmyuE1Y8eh85wD
+         RhOYEg37Ez+YWw5Hx/xJTaExTLSkK012yklVCA7TrWvNURtTCPQ0iWui3qarq4sG9I34
+         PNaC82AVvD2E4rsYKujnjo5SqUMSd3dKVQKvzgdxRyGXdIQX0lCgt4r6L/htnWSq8Qvj
+         j0Hg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1736133906; x=1736738706;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=qwu0CGLfx4PBv0aP19byG7/qRPpn0POPKp0Znpy+smk=;
+        b=joWC3vzDYUy+lRDRVkYUan/ZNyStOrQSxdTSO92xU6o44cJya3JUNYNnCKu2nfDa8+
+         XvPyz3bN3HBSfueL0vajEl3AkAbh53NAl1oMaeg+pulsl7qs22cudwQxtTtL25pbBs5K
+         hhMuiBJEux/Y53fKbx4iOa6R4+VXrCmA8Kd6spP6P4E8euuho2oATMEObozP5M25Jdim
+         ibGJSWjJMTYdGUlmVUacFeX5Fo9XWaMQSAGkbI5qCj/7nl0Ft3je1HWDgkxqRfnKCYQz
+         AO6aLU3Nf0/wny0sRfNXFUOwyHOdeYCxOElD55HgBeY71+EjGeIIZwZ0ASPnDWelJmqu
+         vKvA==
+X-Forwarded-Encrypted: i=1; AJvYcCWa54uX9Jo2O+OJQbcXYo//qUrAi2mYW2EeLWGf2Tfj3RvrDIAQuWR3gpUB2RW9lF3mUzm4ne4=@lists.linux.dev
+X-Gm-Message-State: AOJu0YxHn+dNaHX23NAkr8KXWHLMAQ/VU57LF/qHY4Vot8K7Asiy5lEG
+	D5mSvyJkQmMQWa6PWuF0VuwTCthaiNgbI/1NDig96ECQlZpVp4MoVf+YWkY2w9r1ooud47pE5q+
+	/lPg5NlEdtIuFbZpbBZJye57aNTatrXB9KZWDyg==
+X-Gm-Gg: ASbGncs9iSC8sv0bffinxJ5XvOcudnJmOIs9tgZxP9tE6FzHT8yb7jjWmXLwxcNTQ0k
+	tfdYArLk7PR2oDhacl0KgkiOULWIXi6QWjRvhlHU=
+X-Google-Smtp-Source: AGHT+IEd9uX8m62UbCkIiqMruS24B5gEb7kpnbKEoxfd8QD3vky/MOHt+yDs5UgtyZvPgih7cjAnP+84f7NsF2hO8po=
+X-Received: by 2002:a17:902:e5c7:b0:215:bf1b:a894 with SMTP id
+ d9443c01a7336-219e6eb5bffmr826923375ad.24.1736133905685; Sun, 05 Jan 2025
+ 19:25:05 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <202501031612.62e0c498-lkp@intel.com>
+References: <202412311203.ca7bddba-lkp@intel.com> <CALm+0cWOxUm_hrNe4UP4Z-vyr4RCOw+dc=kCBTgsyjHFHiHDsg@mail.gmail.com>
+ <949f6251-d411-45ef-9f85-d5d069b90b0e@paulmck-laptop> <Z3Ym/DDtGOPamGjZ@xsang-OptiPlex-9020>
+ <c8c4c6d6-ad52-4cd2-ba1f-c442da4432af@paulmck-laptop> <CALm+0cVbaJuMWMkU4g_6inCKiBVaVD3iixvBrfMJTqZ-3OUCvg@mail.gmail.com>
+ <c2561f0c-9bc1-4492-b9dd-655502f101f7@paulmck-laptop>
+In-Reply-To: <c2561f0c-9bc1-4492-b9dd-655502f101f7@paulmck-laptop>
+From: Z qiang <qiang.zhang1211@gmail.com>
+Date: Mon, 6 Jan 2025 11:24:54 +0800
+Message-ID: <CALm+0cWoK_+xMxZ1xddZGt9KxuUqkW13fqwtOm9NtBEd+LqBFQ@mail.gmail.com>
+Subject: Re: [paulmckrcu:dev.2024.12.24a] [srcu] 9216c28c6a: BUG:unable_to_handle_page_fault_for_address
+To: paulmck@kernel.org
+Cc: Oliver Sang <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	rcu@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-Le Fri, Jan 03, 2025 at 04:24:52PM +0800, kernel test robot a écrit :
-> 
-> 
-> Hello,
-> 
-> kernel test robot noticed "BUG:KCSAN:data-race_in__tmigr_cpu_activate/print_report" on:
-> 
-> commit: 10a0e6f3d3db7dcfe36e578923e5f038f1d2b72a ("timers/migration: Move hierarchy setup into cpuhotplug prepare callback")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> 
-> [test failed on linus/master      ccb98ccef0e543c2bd4ef1a72270461957f3d8d0]
-> [test failed on linux-next/master 8155b4ef3466f0e289e8fcc9e6e62f3f4dceeac2]
-> 
-> in testcase: trinity
-> version: 
-> with following parameters:
-> 
-> 	runtime: 300s
-> 	group: group-00
-> 	nr_groups: 5
-> 
-> 
-> 
-> config: x86_64-randconfig-003-20241231
-> compiler: gcc-12
-> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-> 
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
-> 
-> 
-> we observed the issue happens randomly, but keeps clean on parent.
-> 
-> 
-> facd40aa5c4699f9 10a0e6f3d3db7dcfe36e578923e
-> ---------------- ---------------------------
->        fail:runs  %reproduction    fail:runs
->            |             |             |
->            :48          17%           8:48    dmesg.BUG:KCSAN:data-race_in__tmigr_cpu_activate/print_report
-> 
-> 
-> 
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202501031612.62e0c498-lkp@intel.com
-> 
-> 
-> [   30.027314][    T0] BUG: KCSAN: data-race in __tmigr_cpu_activate / print_report
-> [   30.027314][    T0]
-> [   30.027314][    T0] write to 0xffff88842fc28004 of 1 bytes by task 0 on cpu 0:
-> [ 30.027314][ T0] __tmigr_cpu_activate (kernel/time/timer_migration.c:689)
-> [ 30.027314][ T0] tmigr_cpu_activate (kernel/time/timer_migration.c:713)
-> [ 30.027314][ T0] timer_clear_idle (kernel/time/timer.c:2380 (discriminator 22))
-> [ 30.027314][ T0] tick_nohz_restart_sched_tick (kernel/time/tick-sched.c:1097)
-> [ 30.027314][ T0] tick_nohz_idle_exit (kernel/time/tick-sched.c:1442 kernel/time/tick-sched.c:1483)
-> [ 30.027314][ T0] do_idle (arch/x86/include/asm/bitops.h:75 include/linux/sched/idle.h:36 kernel/sched/idle.c:346)
-> [ 30.027314][ T0] cpu_startup_entry (kernel/sched/idle.c:429 (discriminator 1))
-> [ 30.027314][ T0] kernel_init (init/main.c:1459)
-> [ 30.027314][ T0] do_initcalls (init/main.c:1333)
-> [ 30.027314][ T0] clear_bss (arch/x86/kernel/head64.c:381)
-> [ 30.027314][ T0] reserve_bios_regions (arch/x86/kernel/ebda.c:57)
-> [ 30.027314][ T0] common_startup_64 (arch/x86/kernel/head_64.S:421)
-> [   30.027314][    T0]
-> [   30.027314][    T0] read to 0xffff88842fc28004 of 1 bytes by task 0 on cpu 1:
-> [ 30.027314][ T0] print_report (kernel/kcsan/report.c:395)
-> [ 30.027314][ T0] kcsan_report_known_origin (kernel/kcsan/report.c:504 kernel/kcsan/report.c:694)
-> [ 30.027314][ T0] kcsan_setup_watchpoint (kernel/kcsan/core.c:678)
-> [ 30.027314][ T0] tmigr_next_groupevt (kernel/time/timer_migration.c:576)
-> [ 30.027314][ T0] tmigr_update_events (kernel/time/timer_migration.c:618 kernel/time/timer_migration.c:853)
-> [ 30.027314][ T0] tmigr_inactive_up (kernel/time/timer_migration.c:1327)
+>
+> On Fri, Jan 03, 2025 at 01:50:50PM +0800, Z qiang wrote:
+> > >
+> > > On Thu, Jan 02, 2025 at 01:41:16PM +0800, Oliver Sang wrote:
+> > > > hi, Zqiang, hi, Paul,
+> > > >
+> > > > On Tue, Dec 31, 2024 at 08:19:44AM -0800, Paul E. McKenney wrote:
+> > > > > On Tue, Dec 31, 2024 at 03:16:25PM +0800, Z qiang wrote:
+> > > >
+> > > > [...]
+> > > >
+> > > > > > >
+> > > > > > > If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> > > > > > > the same patch/commit), kindly add following tags
+> > > > > > > | Reported-by: kernel test robot <oliver.sang@intel.com>
+> > > > > > > | Closes: https://lore.kernel.org/oe-lkp/202412311203.ca7bddba-lkp@intel.com
+> > > > > > >
+> > > > > >
+> > > > > > Please try the following modifications:
+> > > >
+> > > > yes, the following modifications fix the issues we found for 9216c28c6a. thanks!
+> > > >
+> > > > Tested-by: kernel test robot <oliver.sang@intel.com>
+> > >
+> > > Thank you, and I will apply this during my next rebase.
+> > >
+> > > Zqiang, unless you tell me otherwise, I will add your Co-developed-by
+> > > and Signed-off-by.
+> > >
+> > > Either way, Happy Square New Year!
+> >
+> > Thank you,  Happy New Year!  :)
+>
+> And here you go!  Please let me know of anything I missed.
+>
+> And thank you for saving me the time it would have taken to track
+> this one down.  ;-)
+>
+>                                                         Thanx, Paul
+>
+> ------------------------------------------------------------------------
+>
+> commit 71c893e6d1857d1e4ea37aec557d734a560fdb39
+> Author: Paul E. McKenney <paulmck@kernel.org>
+> Date:   Thu Dec 19 16:08:54 2024 -0800
+>
+>     srcu: Make SRCU readers use ->srcu_ctrs for counter selection
+>
+>     This commit causes SRCU readers to use ->srcu_ctrs for counter
+>     selection instead of ->srcu_idx.  This takes another step towards
+>     array-indexing-free SRCU readers.
+>
+>     [ paulmck: Apply kernel test robot feedback. ]
+>
+>     Co-developed-by: Z qiang <qiang.zhang1211@gmail.com>
+>     Signed-off-by: Z qiang <qiang.zhang1211@gmail.com>
+>     Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+>     Tested-by: kernel test robot <oliver.sang@intel.com>
+>
+> diff --git a/include/linux/srcutree.h b/include/linux/srcutree.h
+> index c794d599db5c1..1b01ced61a45b 100644
+> --- a/include/linux/srcutree.h
+> +++ b/include/linux/srcutree.h
+> @@ -101,6 +101,7 @@ struct srcu_usage {
+>   */
+>  struct srcu_struct {
+>         unsigned int srcu_idx;                  /* Current rdr array element. */
+> +       struct srcu_ctr __percpu *srcu_ctrp;
+>         struct srcu_data __percpu *sda;         /* Per-CPU srcu_data array. */
+>         struct lockdep_map dep_map;
+>         struct srcu_usage *srcu_sup;            /* Update-side data. */
+> @@ -167,6 +168,7 @@ struct srcu_struct {
+>  #define __SRCU_STRUCT_INIT(name, usage_name, pcpu_name)                                                \
+>  {                                                                                              \
+>         .sda = &pcpu_name,                                                                      \
+> +       .srcu_ctrp = &pcpu_name.srcu_ctrs[0],                                                   \
+>         __SRCU_STRUCT_INIT_COMMON(name, usage_name)                                             \
+>  }
+>
+> @@ -222,13 +224,12 @@ void srcu_torture_stats_print(struct srcu_struct *ssp, char *tt, char *tf);
+>   */
+>  static inline int __srcu_read_lock_lite(struct srcu_struct *ssp)
+>  {
+> -       int idx;
+> +       struct srcu_ctr __percpu *scp = READ_ONCE(ssp->srcu_ctrp);
+>
+>         RCU_LOCKDEP_WARN(!rcu_is_watching(), "RCU must be watching srcu_read_lock_lite().");
+> -       idx = READ_ONCE(ssp->srcu_idx) & 0x1;
+> -       this_cpu_inc(ssp->sda->srcu_ctrs[idx].srcu_locks.counter); /* Y */
+> +       this_cpu_inc(scp->srcu_locks.counter); /* Y */
+>         barrier(); /* Avoid leaking the critical section. */
+> -       return idx;
+> +       return scp - &ssp->sda->srcu_ctrs[0];
+>  }
+>
+>  /*
+> diff --git a/kernel/rcu/srcutree.c b/kernel/rcu/srcutree.c
+> index d7ee2f345e192..3bf7f41ad72b8 100644
+> --- a/kernel/rcu/srcutree.c
+> +++ b/kernel/rcu/srcutree.c
+> @@ -253,8 +253,10 @@ static int init_srcu_struct_fields(struct srcu_struct *ssp, bool is_static)
+>         atomic_set(&ssp->srcu_sup->srcu_barrier_cpu_cnt, 0);
+>         INIT_DELAYED_WORK(&ssp->srcu_sup->work, process_srcu);
+>         ssp->srcu_sup->sda_is_static = is_static;
+> -       if (!is_static)
+> +       if (!is_static) {
+>                 ssp->sda = alloc_percpu(struct srcu_data);
+> +               ssp->srcu_ctrp = &ssp->sda->srcu_ctrs[0];
+> +       }
+>         if (!ssp->sda)
+>                 goto err_free_sup;
 
-It looks like the .ignore flag accesses and I think it should be tagged as a
-voluntary data_race().
+ssp->srcu_ctrp should be assigned a value under the condition that
+ssp->sda is  allocated successfully.
 
-Let me cook a patch for that.
+-       if (!is_static) {
++       if (!is_static)
+                ssp->sda = alloc_percpu(struct srcu_data);
+-               ssp->srcu_ctrp = &ssp->sda->srcu_ctrs[0];
+-       }
+        if (!ssp->sda)
+                goto err_free_sup;
++       if (!is_static)
++               ssp->srcu_ctrp = &ssp->sda->srcu_ctrs[0];
 
-Thanks.
+
+
+>         init_srcu_struct_data(ssp);
+> @@ -742,12 +744,11 @@ EXPORT_SYMBOL_GPL(__srcu_check_read_flavor);
+>   */
+>  int __srcu_read_lock(struct srcu_struct *ssp)
+>  {
+> -       int idx;
+> +       struct srcu_ctr __percpu *scp = READ_ONCE(ssp->srcu_ctrp);
+>
+> -       idx = READ_ONCE(ssp->srcu_idx) & 0x1;
+> -       this_cpu_inc(ssp->sda->srcu_ctrs[idx].srcu_locks.counter);
+> +       this_cpu_inc(scp->srcu_locks.counter);
+>         smp_mb(); /* B */  /* Avoid leaking the critical section. */
+> -       return idx;
+> +       return scp - &ssp->sda->srcu_ctrs[0];
+>  }
+>  EXPORT_SYMBOL_GPL(__srcu_read_lock);
+>
+> @@ -772,13 +773,11 @@ EXPORT_SYMBOL_GPL(__srcu_read_unlock);
+>   */
+>  int __srcu_read_lock_nmisafe(struct srcu_struct *ssp)
+>  {
+> -       int idx;
+> -       struct srcu_data *sdp = raw_cpu_ptr(ssp->sda);
+> +       struct srcu_ctr __percpu *scp = READ_ONCE(ssp->srcu_ctrp);
+
+Should this be the case?
+
+struct srcu_ctr  *scp = raw_cpu_ptr(ssp->srcu_ctrp);
+
+>
+> -       idx = READ_ONCE(ssp->srcu_idx) & 0x1;
+> -       atomic_long_inc(&sdp->srcu_ctrs[idx].srcu_locks);
+> +       atomic_long_inc(&scp->srcu_locks);
+>         smp_mb__after_atomic(); /* B */  /* Avoid leaking the critical section. */
+> -       return idx;
+> +       return scp - &ssp->sda->srcu_ctrs[0];
+>  }
+>  EXPORT_SYMBOL_GPL(__srcu_read_lock_nmisafe);
+>
+> @@ -1152,6 +1151,8 @@ static void srcu_flip(struct srcu_struct *ssp)
+>         smp_mb(); /* E */  /* Pairs with B and C. */
+>
+>         WRITE_ONCE(ssp->srcu_idx, ssp->srcu_idx + 1); // Flip the counter.
+> +       WRITE_ONCE(ssp->srcu_ctrp,
+> +                  &ssp->sda->srcu_ctrs[!(ssp->srcu_ctrp - &ssp->sda->srcu_ctrs[0])]);
+>
+>         /*
+>          * Ensure that if the updater misses an __srcu_read_unlock()
+> @@ -1998,6 +1999,7 @@ static int srcu_module_coming(struct module *mod)
+>         for (i = 0; i < mod->num_srcu_structs; i++) {
+>                 ssp = *(sspp++);
+>                 ssp->sda = alloc_percpu(struct srcu_data);
+> +               ssp->srcu_ctrp = &ssp->sda->srcu_ctrs[0];
+>                 if (WARN_ON_ONCE(!ssp->sda))
+>                         return -ENOMEM;
+
+
+-               ssp->srcu_ctrp = &ssp->sda->srcu_ctrs[0];
+                if (WARN_ON_ONCE(!ssp->sda))
+                        return -ENOMEM;
++               ssp->srcu_ctrp = &ssp->sda->srcu_ctrs[0];
+
+
+Thanks
+Zqiang
+
+>         }
