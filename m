@@ -1,364 +1,92 @@
-Received: from smtp1.cs.Stanford.EDU (smtp1.cs.stanford.edu [171.64.64.25])
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA4DB15C158
-	for <oe-lkp@lists.linux.dev>; Mon,  6 Jan 2025 17:49:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=171.64.64.25
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 341641DED57;
+	Mon,  6 Jan 2025 19:09:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=156.67.10.101
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736185796; cv=none; b=hhxmh3lAHegmk6UjuPJIOHrSczHw7L4nUPs3ywvL3nvrnvJkpGUGcmEFAAOV7Fsxz266QZs4CbpqT9uZ65jbIl6xRrnvRhPrR5x0tKkwVicUrbD+kXGokmo2ycI80UnAlHN3HEFXq2u53F6J4z3W2vBv+tr0CKu2NVfekVpq6eE=
+	t=1736190545; cv=none; b=oVZzpgbTvpB89aMvPYHUdJxRzzFfbRkJBZ+BNvRGetCWlgIKcXCJjN93iC6YdvB2cY/5qVvHOIbbKf/zssGtAwQrQtT1AwT4MHfTT/uLnPfXMw75Xsano8iIZ81G/xVSGrybUOJGS6s57uRmcd1dhw13gd90vydxSZHLjVFCs94=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736185796; c=relaxed/simple;
-	bh=6fVhLpe7YkMEwQLXkQGg5YrbtcfpbJxSDOU6l6IHp3k=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=louq8zofZtwiv84+07vV5DM6k4AO6YpMVK/uoNZch1MDtF5ZzBPcKIl6Z6svSImn8b2Zl+MiSsONVcEkJOzSr39Scq4GkeZvuzhofPShPow8QIfBc79illOJ8rbQf26FdIhrej5KAYYVRYjrVyVi35UmImg5um7eftfaafVzQ1Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cs.stanford.edu; spf=pass smtp.mailfrom=cs.stanford.edu; dkim=pass (2048-bit key) header.d=cs.stanford.edu header.i=@cs.stanford.edu header.b=oGOsiEVy; arc=none smtp.client-ip=171.64.64.25
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cs.stanford.edu
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cs.stanford.edu
+	s=arc-20240116; t=1736190545; c=relaxed/simple;
+	bh=nMGfaadlVsGjqu8K+hfU6mQYuUffsCjF2gbZLUjfeDw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=cBnhkWSp7iXrGIavUwc3Vrvuz8oWo/VvXx/6ojG00fBLLZftsS/6PwCGur9Ky+PQexipLIHZvTSqB/dob8tMlAmduQTmAowaWYdEWmOKyxMtEsa1/bzGqkeW2d9TKHuu7ty+HU0oDb8ofkkGK86M3+5PzX7erUxIW1ZLSAlRujA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lunn.ch; spf=pass smtp.mailfrom=lunn.ch; dkim=pass (1024-bit key) header.d=lunn.ch header.i=@lunn.ch header.b=f7hT5vMW; arc=none smtp.client-ip=156.67.10.101
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lunn.ch
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lunn.ch
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=cs.stanford.edu header.i=@cs.stanford.edu header.b="oGOsiEVy"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=cs.stanford.edu; s=cs2308; h=Content-Transfer-Encoding:Content-Type:Cc:To:
-	Subject:Message-ID:Date:From:In-Reply-To:References:MIME-Version:Sender:
-	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
-	:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=h+Wo5pjlAec1dqs9IdIsj75ouyAkSewnJM6WeOl2q6k=; t=1736185794; x=1737049794; 
-	b=oGOsiEVyCjS2vy3jckU2HPoDsPrwG1mV+trPAhsJZTNHghcuhMfUFtFsBmBkx5lfIKga/JGBMpb
-	e1NH7ZpgtKOp7oPgG5DEUkc7PlIBPMUji3I8bXb9S+XHG/dHvi0A0XVGTh3aITXiWr/ajnb2mtNp5
-	aFpaN850FxYsFcjSlFBpvitiOsSurtN2ub3gTZMQVcxi2gPhvmvSkvT0GmLxmNMFRqUJ4vdMRDqQI
-	wC6FZ6XLScMPs6xLzrtS8xA3H7gy8FREf4E6wloRR1MWIzUjscB0yG+eBRehTJZWXHHvAx6dNL/3W
-	l1JPB0+CKlx/qBdzRgrqSjrKlbCCjrK38G3w==;
-Received: from mail-oi1-f177.google.com ([209.85.167.177]:43429)
-	by smtp1.cs.Stanford.EDU with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-	(Exim 4.94.2)
-	(envelope-from <ouster@cs.stanford.edu>)
-	id 1tUqtU-0003nz-Qm
-	for oe-lkp@lists.linux.dev; Mon, 06 Jan 2025 09:28:03 -0800
-Received: by mail-oi1-f177.google.com with SMTP id 5614622812f47-3eb3c143727so7867318b6e.1
-        for <oe-lkp@lists.linux.dev>; Mon, 06 Jan 2025 09:28:00 -0800 (PST)
-X-Gm-Message-State: AOJu0YxE3H9xBGk8rdDRtuVXsh+iL23kcKfnweUfW82GhO7d3buTDp6c
-	HEshwXjXvtUCXpnNZgdfRcWeEXxpKunaN4PYIsKZlEHyvQPafx2iPjJenwbEpIZMO26c/5ngchz
-	bQzmWGpB90B5xrdWzNaiDpBZoj/s=
-X-Google-Smtp-Source: AGHT+IEcWuQKC7ECdLpls4+VkWHjnbQNX8Puiabwf9yiEDmUX27JAp96DTBkJmJHjhyCKyh9knun4EiiI/m+anvQzP8=
-X-Received: by 2002:a05:6871:a008:b0:29f:99de:4330 with SMTP id
- 586e51a60fabf-2a9eaa0cc86mr99054fac.4.1736184480162; Mon, 06 Jan 2025
- 09:28:00 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=lunn.ch header.i=@lunn.ch header.b="f7hT5vMW"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+	bh=e/R1UdYvxk0YJsmL66xbwctMTho6iYBFo4WoXyUZiCg=; b=f7hT5vMW4IrBQ43+hH+z/RfjyQ
+	6amAAN3TLhs7KpMWz87WdUKm0OpwjvYy07NNKrceGw+bW9a8T9N086GT3I6OEpen123+b1kBXcDRj
+	px9/hQdZ9VDs8i0PRBmzTzvN9FpnWkvCbFQG48u6v3oesmLn3SzvVJnPECPwM+g5qQ+U=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+	(envelope-from <andrew@lunn.ch>)
+	id 1tUsTD-001y2y-88; Mon, 06 Jan 2025 20:08:59 +0100
+Date: Mon, 6 Jan 2025 20:08:59 +0100
+From: Andrew Lunn <andrew@lunn.ch>
+To: John Ousterhout <ouster@cs.stanford.edu>
+Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, netdev@vger.kernel.org, pabeni@redhat.com,
+	edumazet@google.com, horms@kernel.org, kuba@kernel.org
+Subject: Re: [PATCH net-next v4 12/12] net: homa: create Makefile and Kconfig
+Message-ID: <de0a7ef1-c2d0-4db4-8267-9d5ac96f0e23@lunn.ch>
+References: <20241217000626.2958-13-ouster@cs.stanford.edu>
+ <202412251044.574ee2c0-lkp@intel.com>
+ <CAGXJAmzUZLKZj_7M63r2NXHV41_zf7aUH-b9LtAQOMgcheVUrQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20241217000626.2958-13-ouster@cs.stanford.edu> <202412251044.574ee2c0-lkp@intel.com>
-In-Reply-To: <202412251044.574ee2c0-lkp@intel.com>
-From: John Ousterhout <ouster@cs.stanford.edu>
-Date: Mon, 6 Jan 2025 09:27:24 -0800
-X-Gmail-Original-Message-ID: <CAGXJAmzUZLKZj_7M63r2NXHV41_zf7aUH-b9LtAQOMgcheVUrQ@mail.gmail.com>
-Message-ID: <CAGXJAmzUZLKZj_7M63r2NXHV41_zf7aUH-b9LtAQOMgcheVUrQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 12/12] net: homa: create Makefile and Kconfig
-To: kernel test robot <oliver.sang@intel.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, netdev@vger.kernel.org, 
-	pabeni@redhat.com, edumazet@google.com, horms@kernel.org, kuba@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Score: -1.0
-X-Spam-Level: 
-X-Scan-Signature: d419784c47c095b08cbe302b66275b1c
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGXJAmzUZLKZj_7M63r2NXHV41_zf7aUH-b9LtAQOMgcheVUrQ@mail.gmail.com>
 
-I have pored over this message for a while and can't figure out how
-Homa code could participate in this deadlock, other than by calling
-hrtimer_init (which is done without holding any locks). If anyone else
-can figure out exactly what this message means and how it relates to
-Homa, I'd love to hear it. Otherwise I'm going to assume it's either a
-false positive or a problem elsewhere in the Linux kernel.
+On Mon, Jan 06, 2025 at 09:27:24AM -0800, John Ousterhout wrote:
+> I have pored over this message for a while and can't figure out how
+> Homa code could participate in this deadlock, other than by calling
+> hrtimer_init (which is done without holding any locks). If anyone else
+> can figure out exactly what this message means and how it relates to
+> Homa, I'd love to hear it. Otherwise I'm going to assume it's either a
+> false positive or a problem elsewhere in the Linux kernel.
 
--John-
+The problem with ignoring these splats is that after the first splat,
+you don't get any more. So if Homa does have a real deadlock, you
+might never get it reported, you just deadlock.
 
+Have you reproduced this?
 
-On Tue, Dec 24, 2024 at 6:27=E2=80=AFPM kernel test robot <oliver.sang@inte=
-l.com> wrote:
->
->
->
-> Hello,
->
-> kernel test robot noticed "WARNING:possible_circular_locking_dependency_d=
-etected" on:
->
-> commit: 087197983ce53b12680eedd496208567f189fbb6 ("[PATCH net-next v4 12/=
-12] net: homa: create Makefile and Kconfig")
-> url: https://github.com/intel-lab-lkp/linux/commits/John-Ousterhout/inet-=
-homa-define-user-visible-API-for-Homa/20241217-081126
-> base: https://git.kernel.org/cgit/linux/kernel/git/davem/net-next.git bc6=
-a5efe3dcd9ada8d76eeb69039a11a86add39b
-> patch link: https://lore.kernel.org/all/20241217000626.2958-13-ouster@cs.=
-stanford.edu/
-> patch subject: [PATCH net-next v4 12/12] net: homa: create Makefile and K=
-config
->
-> in testcase: trinity
-> version:
-> with following parameters:
->
->         runtime: 600s
->
->
->
-> config: x86_64-randconfig-075-20241223
-> compiler: gcc-12
-> test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 1=
-6G
->
-> (please refer to attached dmesg/kmsg for entire log/backtrace)
->
->
-> +------------------------------------------------------------------------=
----------------------------------------------------------------------------=
------------------+------------+------------+
-> |                                                                        =
-                                                                           =
-                 | 3a0d944318 | 087197983c |
-> +------------------------------------------------------------------------=
----------------------------------------------------------------------------=
------------------+------------+------------+
-> | WARNING:possible_circular_locking_dependency_detected                  =
-                                                                           =
-                 | 0          | 21         |
-> | WARNING:possible_circular_locking_dependency_detected_homa_timer_is_try=
-ing_to_acquire_lock:at:down_trylock_but_task_is_already_holding_lock:at:__d=
-ebug_object_init | 0          | 21         |
-> | WARNING:at_lib/debugobjects.c:#lookup_object_or_alloc                  =
-                                                                           =
-                 | 0          | 21         |
-> | RIP:lookup_object_or_alloc                                             =
-                                                                           =
-                 | 0          | 21         |
-> +------------------------------------------------------------------------=
----------------------------------------------------------------------------=
------------------+------------+------------+
->
->
-> If you fix the issue in a separate patch/commit (i.e. not just a new vers=
-ion of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <oliver.sang@intel.com>
-> | Closes: https://lore.kernel.org/oe-lkp/202412251044.574ee2c0-lkp@intel.=
-com
->
->
-> [   11.584244][  T133] WARNING: possible circular locking dependency dete=
-cted
-> [   11.584248][  T133] 6.13.0-rc2-00436-g087197983ce5 #1 Not tainted
-> [   11.584253][  T133] --------------------------------------------------=
-----
-> [   11.584256][  T133] homa_timer/133 is trying to acquire lock:
-> [ 11.584261][ T133] ffffffff8c9b9318 ((console_sem).lock){-...}-{2:2}, at=
-: down_trylock (kernel/locking/semaphore.c:140)
-> [   11.585197][  T133]
-> [   11.585197][  T133] but task is already holding lock:
-> [ 11.585197][ T133] ffffffff9165dbb0 (&obj_hash[i].lock){-.-.}-{2:2}, at:=
- __debug_object_init (lib/debugobjects.c:662 lib/debugobjects.c:743)
-> [   11.585197][  T133]
-> [   11.585197][  T133] which lock already depends on the new lock.
-> [   11.585197][  T133]
-> [   11.585197][  T133] the existing dependency chain (in reverse order) i=
-s:
-> [   11.585197][  T133]
-> [   11.585197][  T133] -> #3 (&obj_hash[i].lock){-.-.}-{2:2}:
-> [ 11.585197][ T133] __lock_acquire (kernel/locking/lockdep.c:5226)
-> [ 11.585197][ T133] lock_acquire (kernel/locking/lockdep.c:467 kernel/loc=
-king/lockdep.c:5851 kernel/locking/lockdep.c:5814)
-> [ 11.585197][ T133] _raw_spin_lock_irqsave (include/linux/spinlock_api_sm=
-p.h:111 kernel/locking/spinlock.c:162)
-> [ 11.585197][ T133] debug_object_assert_init (lib/debugobjects.c:1007)
-> [ 11.585197][ T133] __mod_timer (kernel/time/timer.c:1078)
-> [ 11.585197][ T133] add_timer_global (kernel/time/timer.c:1330)
-> [ 11.585197][ T133] __queue_delayed_work (kernel/workqueue.c:2527)
-> [ 11.585197][ T133] queue_delayed_work_on (kernel/workqueue.c:2553)
-> [ 11.585197][ T133] psi_task_change (kernel/sched/psi.c:913 (discriminato=
-r 1))
-> [ 11.585197][ T133] enqueue_task (kernel/sched/core.c:2070)
-> [ 11.585197][ T133] wake_up_new_task (kernel/sched/core.c:2110 kernel/sch=
-ed/core.c:4870)
-> [ 11.585197][ T133] kernel_clone (kernel/fork.c:2841)
-> [ 11.585197][ T133] user_mode_thread (kernel/fork.c:2876)
-> [ 11.585197][ T133] rest_init (init/main.c:712)
-> [ 11.585197][ T133] start_kernel (init/main.c:1052 (discriminator 1))
-> [ 11.585197][ T133] x86_64_start_reservations (arch/x86/kernel/head64.c:4=
-95)
-> [ 11.585197][ T133] x86_64_start_kernel (arch/x86/kernel/head64.c:437 (di=
-scriminator 17))
-> [ 11.585197][ T133] common_startup_64 (arch/x86/kernel/head_64.S:415)
-> [   11.585197][  T133]
-> [   11.585197][  T133] -> #2 (&rq->__lock){-.-.}-{2:2}:
-> [ 11.585197][ T133] __lock_acquire (kernel/locking/lockdep.c:5226)
-> [ 11.585197][ T133] lock_acquire (kernel/locking/lockdep.c:467 kernel/loc=
-king/lockdep.c:5851 kernel/locking/lockdep.c:5814)
-> [ 11.585197][ T133] _raw_spin_lock_nested (kernel/locking/spinlock.c:379)
-> [ 11.585197][ T133] raw_spin_rq_lock_nested (arch/x86/include/asm/preempt=
-.h:84 kernel/sched/core.c:600)
-> [ 11.585197][ T133] task_rq_lock (kernel/sched/core.c:718)
-> [ 11.585197][ T133] cgroup_move_task (kernel/sched/psi.c:1187)
-> [ 11.585197][ T133] css_set_move_task (kernel/cgroup/cgroup.c:899 (discri=
-minator 3))
-> [ 11.585197][ T133] cgroup_post_fork (kernel/cgroup/cgroup.c:6697)
-> [ 11.585197][ T133] copy_process (kernel/fork.c:2622)
-> [ 11.585197][ T133] kernel_clone (include/linux/random.h:26 kernel/fork.c=
-:2808)
-> [ 11.585197][ T133] user_mode_thread (kernel/fork.c:2876)
-> [ 11.585197][ T133] rest_init (init/main.c:712)
-> [ 11.585197][ T133] start_kernel (init/main.c:1052 (discriminator 1))
-> [ 11.585197][ T133] x86_64_start_reservations (arch/x86/kernel/head64.c:4=
-95)
-> [ 11.585197][ T133] x86_64_start_kernel (arch/x86/kernel/head64.c:437 (di=
-scriminator 17))
-> [ 11.585197][ T133] common_startup_64 (arch/x86/kernel/head_64.S:415)
-> [   11.585197][  T133]
-> [   11.585197][  T133] -> #1 (&p->pi_lock){-.-.}-{2:2}:
-> [ 11.585197][ T133] __lock_acquire (kernel/locking/lockdep.c:5226)
-> [ 11.585197][ T133] lock_acquire (kernel/locking/lockdep.c:467 kernel/loc=
-king/lockdep.c:5851 kernel/locking/lockdep.c:5814)
-> [ 11.585197][ T133] _raw_spin_lock_irqsave (include/linux/spinlock_api_sm=
-p.h:111 kernel/locking/spinlock.c:162)
-> [ 11.585197][ T133] try_to_wake_up (kernel/sched/core.c:2197 kernel/sched=
-/core.c:4025 kernel/sched/core.c:4207)
-> [ 11.585197][ T133] up (kernel/locking/semaphore.c:191)
-> [ 11.585197][ T133] __up_console_sem (kernel/printk/printk.c:344 (discrim=
-inator 1))
-> [ 11.585197][ T133] console_unlock (kernel/printk/printk.c:2870 kernel/pr=
-intk/printk.c:3271 kernel/printk/printk.c:3309)
-> [ 11.585197][ T133] vga_remove_vgacon (drivers/pci/vgaarb.c:188 drivers/p=
-ci/vgaarb.c:167)
-> [ 11.585197][ T133] aperture_remove_conflicting_pci_devices (drivers/vide=
-o/aperture.c:331 drivers/video/aperture.c:369)
-> [ 11.585197][ T133] bochs_pci_probe (drivers/gpu/drm/tiny/bochs.c:724)
-> [ 11.585197][ T133] local_pci_probe (drivers/pci/pci-driver.c:325)
-> [ 11.585197][ T133] pci_call_probe (drivers/pci/pci-driver.c:392)
-> [ 11.585197][ T133] pci_device_probe (drivers/pci/pci-driver.c:452)
-> [ 11.585197][ T133] really_probe (drivers/base/dd.c:579 drivers/base/dd.c=
-:658)
-> [ 11.585197][ T133] __driver_probe_device (drivers/base/dd.c:800)
-> [ 11.585197][ T133] driver_probe_device (drivers/base/dd.c:831)
-> [ 11.585197][ T133] __driver_attach (drivers/base/dd.c:1217)
-> [ 11.585197][ T133] bus_for_each_dev (drivers/base/bus.c:369)
-> [ 11.585197][ T133] bus_add_driver (drivers/base/bus.c:676)
-> [ 11.585197][ T133] driver_register (drivers/base/driver.c:247)
-> [ 11.585197][ T133] bochs_pci_driver_init (include/drm/drm_module.h:69 dr=
-ivers/gpu/drm/tiny/bochs.c:806)
-> [ 11.585197][ T133] do_one_initcall (init/main.c:1267)
-> [ 11.585197][ T133] do_initcalls (init/main.c:1327 init/main.c:1344)
-> [ 11.585197][ T133] kernel_init_freeable (init/main.c:1581)
-> [ 11.585197][ T133] kernel_init (init/main.c:1468)
-> [ 11.585197][ T133] ret_from_fork (arch/x86/kernel/process.c:153)
-> [ 11.585197][ T133] ret_from_fork_asm (arch/x86/entry/entry_64.S:254)
-> [   11.585197][  T133]
-> [   11.585197][  T133] -> #0 ((console_sem).lock){-...}-{2:2}:
-> [ 11.585197][ T133] check_prev_add (kernel/locking/lockdep.c:3162)
-> [ 11.585197][ T133] validate_chain (kernel/locking/lockdep.c:3281 kernel/=
-locking/lockdep.c:3904)
-> [ 11.585197][ T133] __lock_acquire (kernel/locking/lockdep.c:5226)
-> [ 11.585197][ T133] lock_acquire (kernel/locking/lockdep.c:467 kernel/loc=
-king/lockdep.c:5851 kernel/locking/lockdep.c:5814)
-> [ 11.585197][ T133] _raw_spin_lock_irqsave (include/linux/spinlock_api_sm=
-p.h:111 kernel/locking/spinlock.c:162)
-> [ 11.585197][ T133] down_trylock (kernel/locking/semaphore.c:140)
-> [ 11.585197][ T133] __down_trylock_console_sem (kernel/printk/printk.c:32=
-6)
-> [ 11.585197][ T133] console_trylock_spinning (kernel/printk/printk.c:2852=
- kernel/printk/printk.c:2009)
-> [ 11.585197][ T133] vprintk_emit (kernel/printk/printk.c:2431 kernel/prin=
-tk/printk.c:2378)
-> [ 11.585197][ T133] vprintk (kernel/printk/printk_safe.c:86)
-> [ 11.585197][ T133] _printk (kernel/printk/printk.c:2452)
-> [ 11.585197][ T133] lookup_object_or_alloc+0x3d4/0x590
-> [ 11.585197][ T133] __debug_object_init (lib/debugobjects.c:744)
-> [ 11.585197][ T133] hrtimer_init (kernel/time/hrtimer.c:456 kernel/time/h=
-rtimer.c:1606)
-> [ 11.585197][ T133] homa_timer_main (net/homa/homa_plumbing.c:971)
-> [ 11.585197][ T133] kthread (kernel/kthread.c:389)
-> [ 11.585197][ T133] ret_from_fork (arch/x86/kernel/process.c:153)
-> [ 11.585197][ T133] ret_from_fork_asm (arch/x86/entry/entry_64.S:254)
-> [   11.585197][  T133]
-> [   11.585197][  T133] other info that might help us debug this:
-> [   11.585197][  T133]
-> [   11.585197][  T133] Chain exists of:
-> [   11.585197][  T133]   (console_sem).lock --> &rq->__lock --> &obj_hash=
-[i].lock
-> [   11.585197][  T133]
-> [   11.585197][  T133]  Possible unsafe locking scenario:
-> [   11.585197][  T133]
-> [   11.585197][  T133]        CPU0                    CPU1
-> [   11.585197][  T133]        ----                    ----
-> [   11.585197][  T133]   lock(&obj_hash[i].lock);
-> [   11.585197][  T133]                                lock(&rq->__lock);
-> [   11.585197][  T133]                                lock(&obj_hash[i].l=
-ock);
-> [   11.585197][  T133]   lock((console_sem).lock);
-> [   11.585197][  T133]
-> [   11.585197][  T133]  *** DEADLOCK ***
-> [   11.585197][  T133]
-> [   11.585197][  T133] 1 lock held by homa_timer/133:
-> [ 11.585197][ T133] #0: ffffffff9165dbb0 (&obj_hash[i].lock){-.-.}-{2:2},=
- at: __debug_object_init (lib/debugobjects.c:662 lib/debugobjects.c:743)
-> [   11.585197][  T133]
-> [   11.585197][  T133] stack backtrace:
-> [   11.585197][  T133] CPU: 0 UID: 0 PID: 133 Comm: homa_timer Not tainte=
-d 6.13.0-rc2-00436-g087197983ce5 #1
-> [   11.585197][  T133] Hardware name: QEMU Standard PC (i440FX + PIIX, 19=
-96), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-> [   11.585197][  T133] Call Trace:
-> [   11.585197][  T133]  <TASK>
-> [ 11.585197][ T133] dump_stack_lvl (lib/dump_stack.c:123)
-> [ 11.585197][ T133] print_circular_bug (kernel/locking/lockdep.c:2077)
-> [ 11.585197][ T133] check_noncircular (kernel/locking/lockdep.c:2206)
-> [ 11.585197][ T133] ? print_circular_bug (kernel/locking/lockdep.c:2182)
-> [ 11.585197][ T133] ? prb_read (kernel/printk/printk_ringbuffer.c:1909)
-> [ 11.585197][ T133] ? alloc_chain_hlocks (kernel/locking/lockdep.c:3528)
-> [ 11.585197][ T133] check_prev_add (kernel/locking/lockdep.c:3162)
-> [ 11.585197][ T133] ? lockdep_lock (arch/x86/include/asm/atomic.h:107 (di=
-scriminator 13) include/linux/atomic/atomic-arch-fallback.h:2170 (discrimin=
-ator 13) include/linux/atomic/atomic-instrumented.h:1302 (discriminator 13)=
- include/asm-generic/qspinlock.h:111 (discriminator 13) kernel/locking/lock=
-dep.c:144 (discriminator 13))
-> [ 11.585197][ T133] validate_chain (kernel/locking/lockdep.c:3281 kernel/=
-locking/lockdep.c:3904)
-> [ 11.585197][ T133] ? check_prev_add (kernel/locking/lockdep.c:3860)
-> [ 11.585197][ T133] ? mark_lock (kernel/locking/lockdep.c:4727 (discrimin=
-ator 3))
-> [ 11.585197][ T133] __lock_acquire (kernel/locking/lockdep.c:5226)
-> [ 11.585197][ T133] lock_acquire (kernel/locking/lockdep.c:467 kernel/loc=
-king/lockdep.c:5851 kernel/locking/lockdep.c:5814)
-> [ 11.585197][ T133] ? down_trylock (kernel/locking/semaphore.c:140)
-> [ 11.585197][ T133] ? lock_sync (kernel/locking/lockdep.c:5817)
-> [ 11.585197][ T133] ? validate_chain (kernel/locking/lockdep.c:3797 kerne=
-l/locking/lockdep.c:3817 kernel/locking/lockdep.c:3872)
-> [ 11.585197][ T133] _raw_spin_lock_irqsave (include/linux/spinlock_api_sm=
-p.h:111 kernel/locking/spinlock.c:162)
-> [ 11.585197][ T133] ? down_trylock (kernel/locking/semaphore.c:140)
-> [ 11.585197][ T133] ? vprintk_emit (kernel/printk/printk.c:2431 kernel/pr=
-intk/printk.c:2378)
-> [ 11.585197][ T133] down_trylock (kernel/locking/semaphore.c:140)
-> [ 11.585197][ T133] __down_trylock_console_sem (kernel/printk/printk.c:32=
-6)
-> [ 11.585197][ T133] console_trylock_spinning (kernel/printk/printk.c:2852=
- kernel/printk/printk.c:2009)
-> [ 11.585197][ T133] vprintk_emit (kernel/printk/printk.c:2431 kernel/prin=
-tk/printk.c:2378)
-> [ 11.585197][ T133] ? wake_up_klogd_work_func (kernel/printk/printk.c:238=
-1)
-> [ 11.585197][ T133] vprintk (kernel/printk/printk_safe.c:86)
-> [ 11.585197][ T133] _printk (kernel/printk/printk.c:2452)
-> [ 11.585197][ T133] ? printk_get_console_flush_type (kernel/printk/printk=
-.c:2452)
->
->
-> The kernel config and materials to reproduce are available at:
-> https://download.01.org/0day-ci/archive/20241225/202412251044.574ee2c0-lk=
-p@intel.com
->
->
->
-> --
-> 0-DAY CI Kernel Test Service
-> https://github.com/intel/lkp-tests/wiki
->
+> > [   11.585197][  T133] -> #0 ((console_sem).lock){-...}-{2:2}:
+> > [ 11.585197][ T133] check_prev_add (kernel/locking/lockdep.c:3162)
+> > [ 11.585197][ T133] validate_chain (kernel/locking/lockdep.c:3281 kernel/locking/lockdep.c:3904)
+> > [ 11.585197][ T133] __lock_acquire (kernel/locking/lockdep.c:5226)
+> > [ 11.585197][ T133] lock_acquire (kernel/locking/lockdep.c:467 kernel/locking/lockdep.c:5851 kernel/locking/lockdep.c:5814)
+> > [ 11.585197][ T133] _raw_spin_lock_irqsave (include/linux/spinlock_api_smp.h:111 kernel/locking/spinlock.c:162)
+> > [ 11.585197][ T133] down_trylock (kernel/locking/semaphore.c:140)
+> > [ 11.585197][ T133] __down_trylock_console_sem (kernel/printk/printk.c:326)
+> > [ 11.585197][ T133] console_trylock_spinning (kernel/printk/printk.c:2852 kernel/printk/printk.c:2009)
+> > [ 11.585197][ T133] vprintk_emit (kernel/printk/printk.c:2431 kernel/printk/printk.c:2378)
+> > [ 11.585197][ T133] vprintk (kernel/printk/printk_safe.c:86)
+> > [ 11.585197][ T133] _printk (kernel/printk/printk.c:2452)
+> > [ 11.585197][ T133] lookup_object_or_alloc+0x3d4/0x590
+> > [ 11.585197][ T133] __debug_object_init (lib/debugobjects.c:744)
+> > [ 11.585197][ T133] hrtimer_init (kernel/time/hrtimer.c:456 kernel/time/hrtimer.c:1606)
+> > [ 11.585197][ T133] homa_timer_main (net/homa/homa_plumbing.c:971)
+> > [ 11.585197][ T133] kthread (kernel/kthread.c:389)
+> > [ 11.585197][ T133] ret_from_fork (arch/x86/kernel/process.c:153)
+> > [ 11.585197][ T133] ret_from_fork_asm (arch/x86/entry/entry_64.S:254)
+
+Do you see something in the console log at this point?
+
+I find it odd that hrtimer_init() results in a console message. Maybe
+the console message itself is a clue, there is something wrong with
+the timer setup. If you can avoid the console message, you might then
+avoid the later lock inversion.
+
+      Andrew
