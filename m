@@ -1,92 +1,83 @@
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 341641DED57;
-	Mon,  6 Jan 2025 19:09:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=156.67.10.101
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC9D91D5CF8;
+	Mon,  6 Jan 2025 21:41:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736190545; cv=none; b=oVZzpgbTvpB89aMvPYHUdJxRzzFfbRkJBZ+BNvRGetCWlgIKcXCJjN93iC6YdvB2cY/5qVvHOIbbKf/zssGtAwQrQtT1AwT4MHfTT/uLnPfXMw75Xsano8iIZ81G/xVSGrybUOJGS6s57uRmcd1dhw13gd90vydxSZHLjVFCs94=
+	t=1736199663; cv=none; b=a7hyk4mz8ehx230UWSVJccS/1w4o28SIA+F8rlZLGhxSwCwIdm6AN+MScLF42qXPpFNGDKQWngIucu9rFVFsFwjZjGagOYFAicMJkpaOko5hcq0ueIgCVbzrDhoeeNQ1O5S2xyT0acSDINm9fN8s59+viZeQYh76PMku8pZoEWw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736190545; c=relaxed/simple;
-	bh=nMGfaadlVsGjqu8K+hfU6mQYuUffsCjF2gbZLUjfeDw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cBnhkWSp7iXrGIavUwc3Vrvuz8oWo/VvXx/6ojG00fBLLZftsS/6PwCGur9Ky+PQexipLIHZvTSqB/dob8tMlAmduQTmAowaWYdEWmOKyxMtEsa1/bzGqkeW2d9TKHuu7ty+HU0oDb8ofkkGK86M3+5PzX7erUxIW1ZLSAlRujA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lunn.ch; spf=pass smtp.mailfrom=lunn.ch; dkim=pass (1024-bit key) header.d=lunn.ch header.i=@lunn.ch header.b=f7hT5vMW; arc=none smtp.client-ip=156.67.10.101
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lunn.ch
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lunn.ch
+	s=arc-20240116; t=1736199663; c=relaxed/simple;
+	bh=whkyItMfgglssGje1r+plJGpoFrwosjREQUWHGtHGdM=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=PB7rTeJUUS6dsZrzAyKttiIsR2mCuzebx+j2so8dxwIn0U6CWha3qniJS3U2C5/ZgCJqUryY5jF8/yfmllndjRnSV0113peBjiNb+soW+mQPNK1exFhMMwpCih7zr2cn74b3ScnPlHZK2wGx6yBRIBqYV2fx5uEJhUBAS1ieIfI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Y9gYwC93; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=lunn.ch header.i=@lunn.ch header.b="f7hT5vMW"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-	bh=e/R1UdYvxk0YJsmL66xbwctMTho6iYBFo4WoXyUZiCg=; b=f7hT5vMW4IrBQ43+hH+z/RfjyQ
-	6amAAN3TLhs7KpMWz87WdUKm0OpwjvYy07NNKrceGw+bW9a8T9N086GT3I6OEpen123+b1kBXcDRj
-	px9/hQdZ9VDs8i0PRBmzTzvN9FpnWkvCbFQG48u6v3oesmLn3SzvVJnPECPwM+g5qQ+U=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-	(envelope-from <andrew@lunn.ch>)
-	id 1tUsTD-001y2y-88; Mon, 06 Jan 2025 20:08:59 +0100
-Date: Mon, 6 Jan 2025 20:08:59 +0100
-From: Andrew Lunn <andrew@lunn.ch>
-To: John Ousterhout <ouster@cs.stanford.edu>
-Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, netdev@vger.kernel.org, pabeni@redhat.com,
-	edumazet@google.com, horms@kernel.org, kuba@kernel.org
-Subject: Re: [PATCH net-next v4 12/12] net: homa: create Makefile and Kconfig
-Message-ID: <de0a7ef1-c2d0-4db4-8267-9d5ac96f0e23@lunn.ch>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Y9gYwC93"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AE4EC4CED2;
+	Mon,  6 Jan 2025 21:41:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1736199662;
+	bh=whkyItMfgglssGje1r+plJGpoFrwosjREQUWHGtHGdM=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=Y9gYwC93ngLFDoWBuMJ0dP9dg+rRgn7vh78osigZS1GZ8sAqrmO5M+4DG/l3OELnu
+	 eyWMoDcz+XzCqroyQFgyPybWMUW/wplHTEJ4VQaRb5YTxHa7B4Ib9G6VJzOXuz/uYt
+	 o2BXDedTho84pt4siWSXYYx881KuHvwbDjLyGAS/qHk7IfRA080EtaOMXvEngyMlr7
+	 UoQLuirVxPhwwBlPeEm+48iN1bmGj+ns0hPFX7Ur9ewZBnuARuOmTEWrxxCk+BYT7Q
+	 qNz10jzNXkwWcvOvHiapNonitLllAmnMapFyvnNDWAbjDcHfhlFpet7p32L4I4VCV5
+	 Iq1Ett3YKzSZA==
+Date: Mon, 6 Jan 2025 13:41:01 -0800
+From: Jakub Kicinski <kuba@kernel.org>
+To: Andrew Lunn <andrew@lunn.ch>
+Cc: John Ousterhout <ouster@cs.stanford.edu>, kernel test robot
+ <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com,
+ netdev@vger.kernel.org, pabeni@redhat.com, edumazet@google.com,
+ horms@kernel.org
+Subject: Re: [PATCH net-next v4 12/12] net: homa: create Makefile and
+ Kconfig
+Message-ID: <20250106134101.2efd5957@kernel.org>
+In-Reply-To: <de0a7ef1-c2d0-4db4-8267-9d5ac96f0e23@lunn.ch>
 References: <20241217000626.2958-13-ouster@cs.stanford.edu>
- <202412251044.574ee2c0-lkp@intel.com>
- <CAGXJAmzUZLKZj_7M63r2NXHV41_zf7aUH-b9LtAQOMgcheVUrQ@mail.gmail.com>
+	<202412251044.574ee2c0-lkp@intel.com>
+	<CAGXJAmzUZLKZj_7M63r2NXHV41_zf7aUH-b9LtAQOMgcheVUrQ@mail.gmail.com>
+	<de0a7ef1-c2d0-4db4-8267-9d5ac96f0e23@lunn.ch>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGXJAmzUZLKZj_7M63r2NXHV41_zf7aUH-b9LtAQOMgcheVUrQ@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Mon, Jan 06, 2025 at 09:27:24AM -0800, John Ousterhout wrote:
-> I have pored over this message for a while and can't figure out how
-> Homa code could participate in this deadlock, other than by calling
-> hrtimer_init (which is done without holding any locks). If anyone else
-> can figure out exactly what this message means and how it relates to
-> Homa, I'd love to hear it. Otherwise I'm going to assume it's either a
-> false positive or a problem elsewhere in the Linux kernel.
+On Mon, 6 Jan 2025 20:08:59 +0100 Andrew Lunn wrote:
+> > > [   11.585197][  T133] -> #0 ((console_sem).lock){-...}-{2:2}:
+> > > [ 11.585197][ T133] check_prev_add (kernel/locking/lockdep.c:3162)
+> > > [ 11.585197][ T133] validate_chain (kernel/locking/lockdep.c:3281 kernel/locking/lockdep.c:3904)
+> > > [ 11.585197][ T133] __lock_acquire (kernel/locking/lockdep.c:5226)
+> > > [ 11.585197][ T133] lock_acquire (kernel/locking/lockdep.c:467 kernel/locking/lockdep.c:5851 kernel/locking/lockdep.c:5814)
+> > > [ 11.585197][ T133] _raw_spin_lock_irqsave (include/linux/spinlock_api_smp.h:111 kernel/locking/spinlock.c:162)
+> > > [ 11.585197][ T133] down_trylock (kernel/locking/semaphore.c:140)
+> > > [ 11.585197][ T133] __down_trylock_console_sem (kernel/printk/printk.c:326)
+> > > [ 11.585197][ T133] console_trylock_spinning (kernel/printk/printk.c:2852 kernel/printk/printk.c:2009)
+> > > [ 11.585197][ T133] vprintk_emit (kernel/printk/printk.c:2431 kernel/printk/printk.c:2378)
+> > > [ 11.585197][ T133] vprintk (kernel/printk/printk_safe.c:86)
+> > > [ 11.585197][ T133] _printk (kernel/printk/printk.c:2452)
+> > > [ 11.585197][ T133] lookup_object_or_alloc+0x3d4/0x590
+> > > [ 11.585197][ T133] __debug_object_init (lib/debugobjects.c:744)
+> > > [ 11.585197][ T133] hrtimer_init (kernel/time/hrtimer.c:456 kernel/time/hrtimer.c:1606)
+> > > [ 11.585197][ T133] homa_timer_main (net/homa/homa_plumbing.c:971)
+> > > [ 11.585197][ T133] kthread (kernel/kthread.c:389)
+> > > [ 11.585197][ T133] ret_from_fork (arch/x86/kernel/process.c:153)
+> > > [ 11.585197][ T133] ret_from_fork_asm (arch/x86/entry/entry_64.S:254)  
+> 
+> Do you see something in the console log at this point?
+> 
+> I find it odd that hrtimer_init() results in a console message. Maybe
+> the console message itself is a clue, there is something wrong with
+> the timer setup. If you can avoid the console message, you might then
+> avoid the later lock inversion.
 
-The problem with ignoring these splats is that after the first splat,
-you don't get any more. So if Homa does have a real deadlock, you
-might never get it reported, you just deadlock.
-
-Have you reproduced this?
-
-> > [   11.585197][  T133] -> #0 ((console_sem).lock){-...}-{2:2}:
-> > [ 11.585197][ T133] check_prev_add (kernel/locking/lockdep.c:3162)
-> > [ 11.585197][ T133] validate_chain (kernel/locking/lockdep.c:3281 kernel/locking/lockdep.c:3904)
-> > [ 11.585197][ T133] __lock_acquire (kernel/locking/lockdep.c:5226)
-> > [ 11.585197][ T133] lock_acquire (kernel/locking/lockdep.c:467 kernel/locking/lockdep.c:5851 kernel/locking/lockdep.c:5814)
-> > [ 11.585197][ T133] _raw_spin_lock_irqsave (include/linux/spinlock_api_smp.h:111 kernel/locking/spinlock.c:162)
-> > [ 11.585197][ T133] down_trylock (kernel/locking/semaphore.c:140)
-> > [ 11.585197][ T133] __down_trylock_console_sem (kernel/printk/printk.c:326)
-> > [ 11.585197][ T133] console_trylock_spinning (kernel/printk/printk.c:2852 kernel/printk/printk.c:2009)
-> > [ 11.585197][ T133] vprintk_emit (kernel/printk/printk.c:2431 kernel/printk/printk.c:2378)
-> > [ 11.585197][ T133] vprintk (kernel/printk/printk_safe.c:86)
-> > [ 11.585197][ T133] _printk (kernel/printk/printk.c:2452)
-> > [ 11.585197][ T133] lookup_object_or_alloc+0x3d4/0x590
-> > [ 11.585197][ T133] __debug_object_init (lib/debugobjects.c:744)
-> > [ 11.585197][ T133] hrtimer_init (kernel/time/hrtimer.c:456 kernel/time/hrtimer.c:1606)
-> > [ 11.585197][ T133] homa_timer_main (net/homa/homa_plumbing.c:971)
-> > [ 11.585197][ T133] kthread (kernel/kthread.c:389)
-> > [ 11.585197][ T133] ret_from_fork (arch/x86/kernel/process.c:153)
-> > [ 11.585197][ T133] ret_from_fork_asm (arch/x86/entry/entry_64.S:254)
-
-Do you see something in the console log at this point?
-
-I find it odd that hrtimer_init() results in a console message. Maybe
-the console message itself is a clue, there is something wrong with
-the timer setup. If you can avoid the console message, you might then
-avoid the later lock inversion.
-
-      Andrew
+Just eyeballing the code I suspect object debug is upset that
+we're initializing an on-stack object. John, you should probably
+switch to hrtimer_setup_on_stack() ?
