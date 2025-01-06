@@ -1,83 +1,133 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from smtp1.cs.Stanford.EDU (smtp1.cs.stanford.edu [171.64.64.25])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC9D91D5CF8;
-	Mon,  6 Jan 2025 21:41:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54F311DE898
+	for <oe-lkp@lists.linux.dev>; Mon,  6 Jan 2025 21:54:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=171.64.64.25
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736199663; cv=none; b=a7hyk4mz8ehx230UWSVJccS/1w4o28SIA+F8rlZLGhxSwCwIdm6AN+MScLF42qXPpFNGDKQWngIucu9rFVFsFwjZjGagOYFAicMJkpaOko5hcq0ueIgCVbzrDhoeeNQ1O5S2xyT0acSDINm9fN8s59+viZeQYh76PMku8pZoEWw=
+	t=1736200471; cv=none; b=lTDLSenBnndvlZwdgSyRr8V66QAVmeP7k5iCPkwQHqrhnyiQslwg5MP8p8YRQlR1MXrNcAS2bccgoyTtNUSByY2esZbpYnxIis5HHcsHQnzNRnNg40Dwoxi1f8KhyNngPxC3IXbH64Cayx+Pk/kRiAuz0N1IuBdnhSJby6PmPsc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736199663; c=relaxed/simple;
-	bh=whkyItMfgglssGje1r+plJGpoFrwosjREQUWHGtHGdM=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=PB7rTeJUUS6dsZrzAyKttiIsR2mCuzebx+j2so8dxwIn0U6CWha3qniJS3U2C5/ZgCJqUryY5jF8/yfmllndjRnSV0113peBjiNb+soW+mQPNK1exFhMMwpCih7zr2cn74b3ScnPlHZK2wGx6yBRIBqYV2fx5uEJhUBAS1ieIfI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Y9gYwC93; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1736200471; c=relaxed/simple;
+	bh=nM6HMfZO9oOrnxHruHfEgJ5NCsG3NGWp9hE0HFPtInw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=fwm1oDCWGbCXfKNLf2jRrEY/upPFGgJvhA6HPZ5TimbP9YvaMViX4aJO3aPeRjFKvRABA/cPyf77LI8YjAuSENjsdMdouNyaGQ+tVRSPS4xMfqO+jmg1e3/rW/FmvpnLyOdGeob+3RnFsGCg3+MBk2wrgxJ6WOhqw5hNcDqrEOg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cs.stanford.edu; spf=pass smtp.mailfrom=cs.stanford.edu; dkim=pass (2048-bit key) header.d=cs.stanford.edu header.i=@cs.stanford.edu header.b=fDiE1Npa; arc=none smtp.client-ip=171.64.64.25
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cs.stanford.edu
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cs.stanford.edu
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Y9gYwC93"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AE4EC4CED2;
-	Mon,  6 Jan 2025 21:41:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1736199662;
-	bh=whkyItMfgglssGje1r+plJGpoFrwosjREQUWHGtHGdM=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Y9gYwC93ngLFDoWBuMJ0dP9dg+rRgn7vh78osigZS1GZ8sAqrmO5M+4DG/l3OELnu
-	 eyWMoDcz+XzCqroyQFgyPybWMUW/wplHTEJ4VQaRb5YTxHa7B4Ib9G6VJzOXuz/uYt
-	 o2BXDedTho84pt4siWSXYYx881KuHvwbDjLyGAS/qHk7IfRA080EtaOMXvEngyMlr7
-	 UoQLuirVxPhwwBlPeEm+48iN1bmGj+ns0hPFX7Ur9ewZBnuARuOmTEWrxxCk+BYT7Q
-	 qNz10jzNXkwWcvOvHiapNonitLllAmnMapFyvnNDWAbjDcHfhlFpet7p32L4I4VCV5
-	 Iq1Ett3YKzSZA==
-Date: Mon, 6 Jan 2025 13:41:01 -0800
-From: Jakub Kicinski <kuba@kernel.org>
-To: Andrew Lunn <andrew@lunn.ch>
-Cc: John Ousterhout <ouster@cs.stanford.edu>, kernel test robot
- <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com,
- netdev@vger.kernel.org, pabeni@redhat.com, edumazet@google.com,
- horms@kernel.org
-Subject: Re: [PATCH net-next v4 12/12] net: homa: create Makefile and
- Kconfig
-Message-ID: <20250106134101.2efd5957@kernel.org>
-In-Reply-To: <de0a7ef1-c2d0-4db4-8267-9d5ac96f0e23@lunn.ch>
-References: <20241217000626.2958-13-ouster@cs.stanford.edu>
-	<202412251044.574ee2c0-lkp@intel.com>
-	<CAGXJAmzUZLKZj_7M63r2NXHV41_zf7aUH-b9LtAQOMgcheVUrQ@mail.gmail.com>
-	<de0a7ef1-c2d0-4db4-8267-9d5ac96f0e23@lunn.ch>
+	dkim=pass (2048-bit key) header.d=cs.stanford.edu header.i=@cs.stanford.edu header.b="fDiE1Npa"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=cs.stanford.edu; s=cs2308; h=Content-Transfer-Encoding:Content-Type:Cc:To:
+	Subject:Message-ID:Date:From:In-Reply-To:References:MIME-Version:Sender:
+	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
+	:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+	List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=+6qLutr/S3PlqjyN0MSRfd0GMUbW88wayTw34CHLCTM=; t=1736200470; x=1737064470; 
+	b=fDiE1Npa8MGWWPfyANjajplVHn1iM8XyjcYwCCvlohCqHs0RR14ZebjSO1uygVwEhcQsg/OSA+S
+	q9CUDwaczqmC6i74ZHT3VW5yJT3al92Z9NdiGgJHgOaXl1YchzkDv6TQ61Cu0dzBJj903/Tuzh94i
+	UX8VbN+LHU44PusIcWhDpBJ2pUfZMBTHC1R+q/S0GHG2OfJA2GlEJuxmsHEgarUmLWo2mx7Qwmu/g
+	SY0IuJFyz9KRcxme/ikhscU4MhhaXjhhWL+zkssrFgEaG4QhgN9SOrDIcwfwDY+HVE9LXovcTkfON
+	XxOrG/ETAPLff1jy+6tlS441Vqap/2gAMPug==;
+Received: from mail-oo1-f47.google.com ([209.85.161.47]:45338)
+	by smtp1.cs.Stanford.EDU with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+	(Exim 4.94.2)
+	(envelope-from <ouster@cs.stanford.edu>)
+	id 1tUv3N-0005XC-4U
+	for oe-lkp@lists.linux.dev; Mon, 06 Jan 2025 13:54:29 -0800
+Received: by mail-oo1-f47.google.com with SMTP id 006d021491bc7-5f31f8f4062so6918208eaf.3
+        for <oe-lkp@lists.linux.dev>; Mon, 06 Jan 2025 13:54:29 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCXW0LVb1k9Ys7TVLw1EM6p4GXNpHtqCWTqEIPbX5lV02jGhlLyYqRp2cFRYa1x9SlLOY0f2PxE=@lists.linux.dev
+X-Gm-Message-State: AOJu0YxVhFJJNSsH6bk8Hb4ymZNSpgJsI6sPtQqXxfPv4BkaLRBPEGC7
+	AOeqSCk4KLFp70DiLtnXZO5m4qAdn/R0togFjdo6/+DEDdgTWrmxZSXLt2xqs6olSsJKDEEzkZl
+	srhpYG2RM77st4G4cOFdFK25Baew=
+X-Google-Smtp-Source: AGHT+IGh6bvpBPsLWhTGv8i7jK5ROcZoYQqEc7qiX09aYWnIpyp2LneZjVzqx3huz2z2HbRsfZHDFCaDi1WjTID5FD4=
+X-Received: by 2002:a05:6870:b607:b0:29e:5ffa:b769 with SMTP id
+ 586e51a60fabf-2a7fb4bd121mr33137901fac.29.1736200468590; Mon, 06 Jan 2025
+ 13:54:28 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20241217000626.2958-13-ouster@cs.stanford.edu>
+ <202412251044.574ee2c0-lkp@intel.com> <CAGXJAmzUZLKZj_7M63r2NXHV41_zf7aUH-b9LtAQOMgcheVUrQ@mail.gmail.com>
+ <de0a7ef1-c2d0-4db4-8267-9d5ac96f0e23@lunn.ch>
+In-Reply-To: <de0a7ef1-c2d0-4db4-8267-9d5ac96f0e23@lunn.ch>
+From: John Ousterhout <ouster@cs.stanford.edu>
+Date: Mon, 6 Jan 2025 13:53:51 -0800
+X-Gmail-Original-Message-ID: <CAGXJAmyufo2j2zbooDM5uqrFSkkH-SDoJicq=K=SYDJAoZzeDw@mail.gmail.com>
+Message-ID: <CAGXJAmyufo2j2zbooDM5uqrFSkkH-SDoJicq=K=SYDJAoZzeDw@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 12/12] net: homa: create Makefile and Kconfig
+To: Andrew Lunn <andrew@lunn.ch>
+Cc: kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	netdev@vger.kernel.org, pabeni@redhat.com, edumazet@google.com, 
+	horms@kernel.org, kuba@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Score: -1.0
+X-Spam-Level: 
+X-Scan-Signature: f824399eb00b5943f8bdbe5dd24fccda
 
-On Mon, 6 Jan 2025 20:08:59 +0100 Andrew Lunn wrote:
+On Mon, Jan 6, 2025 at 11:09=E2=80=AFAM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> On Mon, Jan 06, 2025 at 09:27:24AM -0800, John Ousterhout wrote:
+> > I have pored over this message for a while and can't figure out how
+> > Homa code could participate in this deadlock, other than by calling
+> > hrtimer_init (which is done without holding any locks). If anyone else
+> > can figure out exactly what this message means and how it relates to
+> > Homa, I'd love to hear it. Otherwise I'm going to assume it's either a
+> > false positive or a problem elsewhere in the Linux kernel.
+>
+> The problem with ignoring these splats is that after the first splat,
+> you don't get any more. So if Homa does have a real deadlock, you
+> might never get it reported, you just deadlock.
+>
+> Have you reproduced this?
+
+If there is actually a problem, I'd definitely like to fix it.
+However, I have not been able to reproduce this.
+
 > > > [   11.585197][  T133] -> #0 ((console_sem).lock){-...}-{2:2}:
 > > > [ 11.585197][ T133] check_prev_add (kernel/locking/lockdep.c:3162)
-> > > [ 11.585197][ T133] validate_chain (kernel/locking/lockdep.c:3281 kernel/locking/lockdep.c:3904)
+> > > [ 11.585197][ T133] validate_chain (kernel/locking/lockdep.c:3281 ker=
+nel/locking/lockdep.c:3904)
 > > > [ 11.585197][ T133] __lock_acquire (kernel/locking/lockdep.c:5226)
-> > > [ 11.585197][ T133] lock_acquire (kernel/locking/lockdep.c:467 kernel/locking/lockdep.c:5851 kernel/locking/lockdep.c:5814)
-> > > [ 11.585197][ T133] _raw_spin_lock_irqsave (include/linux/spinlock_api_smp.h:111 kernel/locking/spinlock.c:162)
+> > > [ 11.585197][ T133] lock_acquire (kernel/locking/lockdep.c:467 kernel=
+/locking/lockdep.c:5851 kernel/locking/lockdep.c:5814)
+> > > [ 11.585197][ T133] _raw_spin_lock_irqsave (include/linux/spinlock_ap=
+i_smp.h:111 kernel/locking/spinlock.c:162)
 > > > [ 11.585197][ T133] down_trylock (kernel/locking/semaphore.c:140)
-> > > [ 11.585197][ T133] __down_trylock_console_sem (kernel/printk/printk.c:326)
-> > > [ 11.585197][ T133] console_trylock_spinning (kernel/printk/printk.c:2852 kernel/printk/printk.c:2009)
-> > > [ 11.585197][ T133] vprintk_emit (kernel/printk/printk.c:2431 kernel/printk/printk.c:2378)
+> > > [ 11.585197][ T133] __down_trylock_console_sem (kernel/printk/printk.=
+c:326)
+> > > [ 11.585197][ T133] console_trylock_spinning (kernel/printk/printk.c:=
+2852 kernel/printk/printk.c:2009)
+> > > [ 11.585197][ T133] vprintk_emit (kernel/printk/printk.c:2431 kernel/=
+printk/printk.c:2378)
 > > > [ 11.585197][ T133] vprintk (kernel/printk/printk_safe.c:86)
 > > > [ 11.585197][ T133] _printk (kernel/printk/printk.c:2452)
 > > > [ 11.585197][ T133] lookup_object_or_alloc+0x3d4/0x590
 > > > [ 11.585197][ T133] __debug_object_init (lib/debugobjects.c:744)
-> > > [ 11.585197][ T133] hrtimer_init (kernel/time/hrtimer.c:456 kernel/time/hrtimer.c:1606)
+> > > [ 11.585197][ T133] hrtimer_init (kernel/time/hrtimer.c:456 kernel/ti=
+me/hrtimer.c:1606)
 > > > [ 11.585197][ T133] homa_timer_main (net/homa/homa_plumbing.c:971)
 > > > [ 11.585197][ T133] kthread (kernel/kthread.c:389)
 > > > [ 11.585197][ T133] ret_from_fork (arch/x86/kernel/process.c:153)
-> > > [ 11.585197][ T133] ret_from_fork_asm (arch/x86/entry/entry_64.S:254)  
-> 
+> > > [ 11.585197][ T133] ret_from_fork_asm (arch/x86/entry/entry_64.S:254)
+>
 > Do you see something in the console log at this point?
-> 
+
+No: when I "sudo insmod homa.ko" I see nothing in the log other than a
+"Homa module loading" message, which occurs well before
+homa_timer_main starts up in its own thread.
+
 > I find it odd that hrtimer_init() results in a console message. Maybe
 > the console message itself is a clue, there is something wrong with
 > the timer setup. If you can avoid the console message, you might then
 > avoid the later lock inversion.
 
-Just eyeballing the code I suspect object debug is upset that
-we're initializing an on-stack object. John, you should probably
-switch to hrtimer_setup_on_stack() ?
+Yep, this seems odd to me as well.  I think Jakub's message below may
+explain the problem.
+
+
+-John-
