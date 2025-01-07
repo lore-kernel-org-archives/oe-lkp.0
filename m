@@ -1,85 +1,286 @@
-Received: from smtp1.cs.Stanford.EDU (smtp1.cs.stanford.edu [171.64.64.25])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C41301DF984
-	for <oe-lkp@lists.linux.dev>; Mon,  6 Jan 2025 21:56:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=171.64.64.25
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E44B17C9E8;
+	Tue,  7 Jan 2025 05:50:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736200589; cv=none; b=ok7ODFYdFRoeI0PkahTcFwB9pW4cOsZzcYYsx6g8ooVJRq1Pebox0bm+YXvbNNESZxkA2TFGrAD2xfugZPnfgjmYa2if1CsguRFZX3Yx/GgTXz6tB9AvwLkhxzYVICYzL3Vh7O1JIduORsIWLu2FVinS3WHxZq2+RXyeIDvRBs8=
+	t=1736229051; cv=none; b=TeUzeeB2QUXiEPnTSJtAopuxrG349v/3BaLWEe2dURPfXv9/UkxSFAWbqlj9dwNPXTXebkUo2lS1QyjtCgB3hlMM6eYIW9ne9rznSbvLM8FjNq5bbwGE5duRny0LAuCMz+LE+iqRW5DjzjHX8iZ6xemvClb5/UcPyuoy0dae4EE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736200589; c=relaxed/simple;
-	bh=Y0w61zwauEXM1sYntGqvWaV9bjyp1Ac1exbSTai63fc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=KY2A6x4e+cevR6kadnJq11B1JYlG8QHxmtkd2+jNCsT7/FjwUPVK7nEp1eghRVp/BwqPsJ/DQmP0vk27Gxh6ZRb4Zyr5y5kTLxkUqAHBiaFSAgSX3VOrPkEFWuDxzjtBMnIKV6Jw2B5hMzyGEIdPdO4Uimjl4+7C9/iXa46UERU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cs.stanford.edu; spf=pass smtp.mailfrom=cs.stanford.edu; dkim=pass (2048-bit key) header.d=cs.stanford.edu header.i=@cs.stanford.edu header.b=rNkW3wuh; arc=none smtp.client-ip=171.64.64.25
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cs.stanford.edu
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cs.stanford.edu
+	s=arc-20240116; t=1736229051; c=relaxed/simple;
+	bh=mPqkHolay7yXa56tkt6buDJ2oLJOcqqZ3s/yJ3UqDsk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=s+XAWAqqgP9N7++P0ubO9SoBJPUFXvvcfjctCcnuAgciNh6Nc43sSrI1gnYuPbdzPIJufNwv1FBZWvwjNX0vQO1ExkmcVBHOplANLKPYtej6umSGGvRRL9zgTECAlrwX631iBuvdRUjNTsOTrZeXBFwyZmjs8GIbisXBvfT/aiU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=i17FGAdM; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=cs.stanford.edu header.i=@cs.stanford.edu header.b="rNkW3wuh"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=cs.stanford.edu; s=cs2308; h=Content-Transfer-Encoding:Content-Type:Cc:To:
-	Subject:Message-ID:Date:From:In-Reply-To:References:MIME-Version:Sender:
-	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
-	:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=Y0w61zwauEXM1sYntGqvWaV9bjyp1Ac1exbSTai63fc=; t=1736200587; x=1737064587; 
-	b=rNkW3wuhxQ94MtqvuwUyqOn3qiFgUpE8vKakEapyEswhp0QEf0DFw3H6l1BMmKM8cQQkJGDOiJu
-	COcA8xU6FPKRJhmLbVCTp4E9U9Bq7hGIDruCYLkaq5Qa+kFexnuGfVzG0bbSZefhPeDb6n1m5JaE6
-	smhGVMnHYAF0IbzDwSkeFkDVqTpKfmEfjDe+vAJ9s4h43Vya6Oacn4edigeX2c1EVHBcqrD1x24uv
-	D/N7NR/oV0msyp5KZK/OJthGleUF7OA867N0VIhymL8JQz45JVDDYNtKcBUTmpMa3cMstnpQFUJW2
-	hRgLzROJHPfI0Yj0flgIKtzbaiQ44bobgIMA==;
-Received: from mail-oo1-f47.google.com ([209.85.161.47]:49529)
-	by smtp1.cs.Stanford.EDU with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-	(Exim 4.94.2)
-	(envelope-from <ouster@cs.stanford.edu>)
-	id 1tUv5F-0005ec-6s
-	for oe-lkp@lists.linux.dev; Mon, 06 Jan 2025 13:56:26 -0800
-Received: by mail-oo1-f47.google.com with SMTP id 006d021491bc7-5f32168ddd8so5107608eaf.3
-        for <oe-lkp@lists.linux.dev>; Mon, 06 Jan 2025 13:56:25 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCWx/J+i17Lu36lStl5bfjMGrENp8Y005oCZe29PCqSZ4t3MavY6ubbd1eeyxKBc/yQzIYHdVY4=@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy/JFNur/+qohRIZeMeQgv4G4fViDQ2SVJs3og5j+/4l471NwGo
-	tN/BWobm6bSNmSowenztMj5Q/qEA43HJiwefi3f63sCSl2IhuMcpykvy3KkUkeebX5cpRbpSB9w
-	vcjvnNTCmDy9kjCnihvzgUq6oBIU=
-X-Google-Smtp-Source: AGHT+IEH8etA4mo5xN152GTaIe3TN8uzdgxPgIQs+o5hqYwMpKJqvnMEugNybhTqFlB5ER7g4W5mQX3EsP1kW0FWrAs=
-X-Received: by 2002:a05:6870:8e17:b0:297:24ad:402f with SMTP id
- 586e51a60fabf-2a7fb09bad4mr31969333fac.12.1736200584612; Mon, 06 Jan 2025
- 13:56:24 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="i17FGAdM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2375AC4CED6;
+	Tue,  7 Jan 2025 05:50:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1736229051;
+	bh=mPqkHolay7yXa56tkt6buDJ2oLJOcqqZ3s/yJ3UqDsk=;
+	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+	b=i17FGAdM17lGkT5M3UjJfy6IXvW59XK4wxbVE08TgVeyhcM9maSLk74yzlBJ3CFqG
+	 lgNO6F0MM6t7UoPtY4tdSmtex97z9gOEuI31UueH+88ngcRjIr9QgoUORmUws9QM+9
+	 +ZfXXdA7ZGcy204aJh6GoVgM+W8DGrezTN7UPYpNbLvoLAU9WH2RNeLd0X4dp3NltL
+	 DzvAKFHMyi31SNsWV/HCT9nVrMD9Wjd+z1e7OlDvipV0faFXWjbWkKTpKgrlST8WW6
+	 uN19i6Uz8TPcXfi2UX4ft6pcAtgt8dzVUmQvY8JRPJVJEBOCLPlC88quX4eZ4+A/5v
+	 dKDeS/CSKMwSQ==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+	id 9732ACE0C4A; Mon,  6 Jan 2025 21:50:50 -0800 (PST)
+Date: Mon, 6 Jan 2025 21:50:50 -0800
+From: "Paul E. McKenney" <paulmck@kernel.org>
+To: Z qiang <qiang.zhang1211@gmail.com>
+Cc: Oliver Sang <oliver.sang@intel.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, rcu@vger.kernel.org
+Subject: Re: [paulmckrcu:dev.2024.12.24a] [srcu] 9216c28c6a:
+ BUG:unable_to_handle_page_fault_for_address
+Message-ID: <8f42f7ac-3d5d-43c7-a646-fe46576397ff@paulmck-laptop>
+Reply-To: paulmck@kernel.org
+References: <202412311203.ca7bddba-lkp@intel.com>
+ <CALm+0cWOxUm_hrNe4UP4Z-vyr4RCOw+dc=kCBTgsyjHFHiHDsg@mail.gmail.com>
+ <949f6251-d411-45ef-9f85-d5d069b90b0e@paulmck-laptop>
+ <Z3Ym/DDtGOPamGjZ@xsang-OptiPlex-9020>
+ <c8c4c6d6-ad52-4cd2-ba1f-c442da4432af@paulmck-laptop>
+ <CALm+0cVbaJuMWMkU4g_6inCKiBVaVD3iixvBrfMJTqZ-3OUCvg@mail.gmail.com>
+ <c2561f0c-9bc1-4492-b9dd-655502f101f7@paulmck-laptop>
+ <CALm+0cWoK_+xMxZ1xddZGt9KxuUqkW13fqwtOm9NtBEd+LqBFQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20241217000626.2958-13-ouster@cs.stanford.edu>
- <202412251044.574ee2c0-lkp@intel.com> <CAGXJAmzUZLKZj_7M63r2NXHV41_zf7aUH-b9LtAQOMgcheVUrQ@mail.gmail.com>
- <de0a7ef1-c2d0-4db4-8267-9d5ac96f0e23@lunn.ch> <20250106134101.2efd5957@kernel.org>
-In-Reply-To: <20250106134101.2efd5957@kernel.org>
-From: John Ousterhout <ouster@cs.stanford.edu>
-Date: Mon, 6 Jan 2025 13:55:47 -0800
-X-Gmail-Original-Message-ID: <CAGXJAmx_0GKAUAWQwr9x11OFJKpfd1mQLjim_nrMW1NbUY=C+A@mail.gmail.com>
-Message-ID: <CAGXJAmx_0GKAUAWQwr9x11OFJKpfd1mQLjim_nrMW1NbUY=C+A@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 12/12] net: homa: create Makefile and Kconfig
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: Andrew Lunn <andrew@lunn.ch>, kernel test robot <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, 
-	lkp@intel.com, netdev@vger.kernel.org, pabeni@redhat.com, edumazet@google.com, 
-	horms@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Score: -1.0
-X-Spam-Level: 
-X-Scan-Signature: 4c7a780eb20f40a19c8376fd8d8b00d5
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CALm+0cWoK_+xMxZ1xddZGt9KxuUqkW13fqwtOm9NtBEd+LqBFQ@mail.gmail.com>
 
-On Mon, Jan 6, 2025 at 1:41=E2=80=AFPM Jakub Kicinski <kuba@kernel.org> wro=
-te:
->
-> Just eyeballing the code I suspect object debug is upset that
-> we're initializing an on-stack object. John, you should probably
-> switch to hrtimer_setup_on_stack() ?
+On Mon, Jan 06, 2025 at 11:24:54AM +0800, Z qiang wrote:
+> >
+> > On Fri, Jan 03, 2025 at 01:50:50PM +0800, Z qiang wrote:
+> > > >
+> > > > On Thu, Jan 02, 2025 at 01:41:16PM +0800, Oliver Sang wrote:
+> > > > > hi, Zqiang, hi, Paul,
+> > > > >
+> > > > > On Tue, Dec 31, 2024 at 08:19:44AM -0800, Paul E. McKenney wrote:
+> > > > > > On Tue, Dec 31, 2024 at 03:16:25PM +0800, Z qiang wrote:
+> > > > >
+> > > > > [...]
+> > > > >
+> > > > > > > >
+> > > > > > > > If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> > > > > > > > the same patch/commit), kindly add following tags
+> > > > > > > > | Reported-by: kernel test robot <oliver.sang@intel.com>
+> > > > > > > > | Closes: https://lore.kernel.org/oe-lkp/202412311203.ca7bddba-lkp@intel.com
+> > > > > > > >
+> > > > > > >
+> > > > > > > Please try the following modifications:
+> > > > >
+> > > > > yes, the following modifications fix the issues we found for 9216c28c6a. thanks!
+> > > > >
+> > > > > Tested-by: kernel test robot <oliver.sang@intel.com>
+> > > >
+> > > > Thank you, and I will apply this during my next rebase.
+> > > >
+> > > > Zqiang, unless you tell me otherwise, I will add your Co-developed-by
+> > > > and Signed-off-by.
+> > > >
+> > > > Either way, Happy Square New Year!
+> > >
+> > > Thank you,  Happy New Year!  :)
+> >
+> > And here you go!  Please let me know of anything I missed.
+> >
+> > And thank you for saving me the time it would have taken to track
+> > this one down.  ;-)
+> >
+> >                                                         Thanx, Paul
+> >
+> > ------------------------------------------------------------------------
+> >
+> > commit 71c893e6d1857d1e4ea37aec557d734a560fdb39
+> > Author: Paul E. McKenney <paulmck@kernel.org>
+> > Date:   Thu Dec 19 16:08:54 2024 -0800
+> >
+> >     srcu: Make SRCU readers use ->srcu_ctrs for counter selection
+> >
+> >     This commit causes SRCU readers to use ->srcu_ctrs for counter
+> >     selection instead of ->srcu_idx.  This takes another step towards
+> >     array-indexing-free SRCU readers.
+> >
+> >     [ paulmck: Apply kernel test robot feedback. ]
+> >
+> >     Co-developed-by: Z qiang <qiang.zhang1211@gmail.com>
+> >     Signed-off-by: Z qiang <qiang.zhang1211@gmail.com>
+> >     Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+> >     Tested-by: kernel test robot <oliver.sang@intel.com>
+> >
+> > diff --git a/include/linux/srcutree.h b/include/linux/srcutree.h
+> > index c794d599db5c1..1b01ced61a45b 100644
+> > --- a/include/linux/srcutree.h
+> > +++ b/include/linux/srcutree.h
+> > @@ -101,6 +101,7 @@ struct srcu_usage {
+> >   */
+> >  struct srcu_struct {
+> >         unsigned int srcu_idx;                  /* Current rdr array element. */
+> > +       struct srcu_ctr __percpu *srcu_ctrp;
+> >         struct srcu_data __percpu *sda;         /* Per-CPU srcu_data array. */
+> >         struct lockdep_map dep_map;
+> >         struct srcu_usage *srcu_sup;            /* Update-side data. */
+> > @@ -167,6 +168,7 @@ struct srcu_struct {
+> >  #define __SRCU_STRUCT_INIT(name, usage_name, pcpu_name)                                                \
+> >  {                                                                                              \
+> >         .sda = &pcpu_name,                                                                      \
+> > +       .srcu_ctrp = &pcpu_name.srcu_ctrs[0],                                                   \
+> >         __SRCU_STRUCT_INIT_COMMON(name, usage_name)                                             \
+> >  }
+> >
+> > @@ -222,13 +224,12 @@ void srcu_torture_stats_print(struct srcu_struct *ssp, char *tt, char *tf);
+> >   */
+> >  static inline int __srcu_read_lock_lite(struct srcu_struct *ssp)
+> >  {
+> > -       int idx;
+> > +       struct srcu_ctr __percpu *scp = READ_ONCE(ssp->srcu_ctrp);
+> >
+> >         RCU_LOCKDEP_WARN(!rcu_is_watching(), "RCU must be watching srcu_read_lock_lite().");
+> > -       idx = READ_ONCE(ssp->srcu_idx) & 0x1;
+> > -       this_cpu_inc(ssp->sda->srcu_ctrs[idx].srcu_locks.counter); /* Y */
+> > +       this_cpu_inc(scp->srcu_locks.counter); /* Y */
+> >         barrier(); /* Avoid leaking the critical section. */
+> > -       return idx;
+> > +       return scp - &ssp->sda->srcu_ctrs[0];
+> >  }
+> >
+> >  /*
+> > diff --git a/kernel/rcu/srcutree.c b/kernel/rcu/srcutree.c
+> > index d7ee2f345e192..3bf7f41ad72b8 100644
+> > --- a/kernel/rcu/srcutree.c
+> > +++ b/kernel/rcu/srcutree.c
+> > @@ -253,8 +253,10 @@ static int init_srcu_struct_fields(struct srcu_struct *ssp, bool is_static)
+> >         atomic_set(&ssp->srcu_sup->srcu_barrier_cpu_cnt, 0);
+> >         INIT_DELAYED_WORK(&ssp->srcu_sup->work, process_srcu);
+> >         ssp->srcu_sup->sda_is_static = is_static;
+> > -       if (!is_static)
+> > +       if (!is_static) {
+> >                 ssp->sda = alloc_percpu(struct srcu_data);
+> > +               ssp->srcu_ctrp = &ssp->sda->srcu_ctrs[0];
+> > +       }
+> >         if (!ssp->sda)
+> >                 goto err_free_sup;
+> 
+> ssp->srcu_ctrp should be assigned a value under the condition that
+> ssp->sda is  allocated successfully.
+> 
+> -       if (!is_static) {
+> +       if (!is_static)
+>                 ssp->sda = alloc_percpu(struct srcu_data);
+> -               ssp->srcu_ctrp = &ssp->sda->srcu_ctrs[0];
+> -       }
+>         if (!ssp->sda)
+>                 goto err_free_sup;
+> +       if (!is_static)
+> +               ssp->srcu_ctrp = &ssp->sda->srcu_ctrs[0];
 
-I'll bet that explains it. I wasn't aware that hrtimer_init might be
-unhappy with an on-stack object. I will change the code so that the
-object is no longer on the stack.
+It doesn't hurt to assign NULL to ssp->srcu_ctrp on allocation failure.
 
-Thanks!
+Or am I missing something here?
 
--John-
+> >         init_srcu_struct_data(ssp);
+> > @@ -742,12 +744,11 @@ EXPORT_SYMBOL_GPL(__srcu_check_read_flavor);
+> >   */
+> >  int __srcu_read_lock(struct srcu_struct *ssp)
+> >  {
+> > -       int idx;
+> > +       struct srcu_ctr __percpu *scp = READ_ONCE(ssp->srcu_ctrp);
+> >
+> > -       idx = READ_ONCE(ssp->srcu_idx) & 0x1;
+> > -       this_cpu_inc(ssp->sda->srcu_ctrs[idx].srcu_locks.counter);
+> > +       this_cpu_inc(scp->srcu_locks.counter);
+> >         smp_mb(); /* B */  /* Avoid leaking the critical section. */
+> > -       return idx;
+> > +       return scp - &ssp->sda->srcu_ctrs[0];
+> >  }
+> >  EXPORT_SYMBOL_GPL(__srcu_read_lock);
+> >
+> > @@ -772,13 +773,11 @@ EXPORT_SYMBOL_GPL(__srcu_read_unlock);
+> >   */
+> >  int __srcu_read_lock_nmisafe(struct srcu_struct *ssp)
+> >  {
+> > -       int idx;
+> > -       struct srcu_data *sdp = raw_cpu_ptr(ssp->sda);
+> > +       struct srcu_ctr __percpu *scp = READ_ONCE(ssp->srcu_ctrp);
+> 
+> Should this be the case?
+> 
+> struct srcu_ctr  *scp = raw_cpu_ptr(ssp->srcu_ctrp);
+
+Good catch!  This is messed up.  I am now thinking in terms of something
+like this:
+
+	struct srcu_ctr *scp = this_cpu_ptr(READ_ONCE(ssp->srcu_ctrp));
+
+Except that I broke the CONFIG_NEED_SRCU_NMI_SAFE=y case at some point,
+and need to fix that first.  This commit works:
+
+c10edfa489eb ("srcu: Pull ->srcu_{un,}lock_count into a new srcu_ctr structure")
+
+I am now trying:
+
+71c893e6d185 ("srcu: Make SRCU readers use ->srcu_ctrs for counter selection")
+
+The trick is to apply this patch:
+
+------------------------------------------------------------------------
+diff --git a/kernel/rcu/Kconfig b/kernel/rcu/Kconfig
+index 26ae869865a12..74809a083e2b5 100644
+--- a/kernel/rcu/Kconfig
++++ b/kernel/rcu/Kconfig
+@@ -66,7 +66,7 @@ config TREE_SRCU
+ 	  This option selects the full-fledged version of SRCU.
+ 
+ config NEED_SRCU_NMI_SAFE
+-	def_bool HAVE_NMI && !ARCH_HAS_NMI_SAFE_THIS_CPU_OPS && !TINY_SRCU
++	def_bool HAVE_NMI && !TINY_SRCU
+ 
+ config TASKS_RCU_GENERIC
+ 	def_bool TASKS_RCU || TASKS_RUDE_RCU || TASKS_TRACE_RCU
+------------------------------------------------------------------------
+
+Or run some system with CONFIG_ARCH_HAS_NMI_SAFE_THIS_CPU_OPS=n.
+
+> > -       idx = READ_ONCE(ssp->srcu_idx) & 0x1;
+> > -       atomic_long_inc(&sdp->srcu_ctrs[idx].srcu_locks);
+> > +       atomic_long_inc(&scp->srcu_locks);
+> >         smp_mb__after_atomic(); /* B */  /* Avoid leaking the critical section. */
+> > -       return idx;
+> > +       return scp - &ssp->sda->srcu_ctrs[0];
+> >  }
+> >  EXPORT_SYMBOL_GPL(__srcu_read_lock_nmisafe);
+> >
+> > @@ -1152,6 +1151,8 @@ static void srcu_flip(struct srcu_struct *ssp)
+> >         smp_mb(); /* E */  /* Pairs with B and C. */
+> >
+> >         WRITE_ONCE(ssp->srcu_idx, ssp->srcu_idx + 1); // Flip the counter.
+> > +       WRITE_ONCE(ssp->srcu_ctrp,
+> > +                  &ssp->sda->srcu_ctrs[!(ssp->srcu_ctrp - &ssp->sda->srcu_ctrs[0])]);
+> >
+> >         /*
+> >          * Ensure that if the updater misses an __srcu_read_unlock()
+> > @@ -1998,6 +1999,7 @@ static int srcu_module_coming(struct module *mod)
+> >         for (i = 0; i < mod->num_srcu_structs; i++) {
+> >                 ssp = *(sspp++);
+> >                 ssp->sda = alloc_percpu(struct srcu_data);
+> > +               ssp->srcu_ctrp = &ssp->sda->srcu_ctrs[0];
+> >                 if (WARN_ON_ONCE(!ssp->sda))
+> >                         return -ENOMEM;
+> 
+> 
+> -               ssp->srcu_ctrp = &ssp->sda->srcu_ctrs[0];
+>                 if (WARN_ON_ONCE(!ssp->sda))
+>                         return -ENOMEM;
+> +               ssp->srcu_ctrp = &ssp->sda->srcu_ctrs[0];
+
+Again, the assigment does not hurt anything, but in this case I agree
+that your way is more clear, so I will use that.
+
+							Thanx, Paul
