@@ -1,232 +1,312 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD3BD8634D;
-	Tue,  7 Jan 2025 08:28:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.9
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736238511; cv=fail; b=vCclbjXkFRtzLDa5jG9TgjE8J1mPGn9CNOnqCs4NnH7zOirdn0kEPy+Um7yz34jz6tmi0n8HRt/Ma0M2vGrNAKPr/FIFQuDeDOo6wWSiY9GpDRCn8yP4b87Ahfa8thoVbYryvhNMEPszEXTz9wtfIMb1NnQchLNlCMdL0SPYeXQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736238511; c=relaxed/simple;
-	bh=AUPkL6Z5du5J99VXLnvWWXSoMEd5GkBhr+y6eNIx8Ug=;
-	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=WC7H5iAShY88EooEXb+Tw9VX9LAuyD9NV6Ebh7CzP7BHjTd3n4UCEMTPqnuj9ZH5c+sWJjhxZCDYcNRDurb7Dcyu6A+b4qS7vHX1Xqg/1Zn1VLUg0b/rk/k69Ym2axLSe3fMjdBZW9DwRr5vXdVdUw0vzdsztbmYPyugMUCT5ho=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=beucoZdk; arc=fail smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B49B18CC15
+	for <oe-lkp@lists.linux.dev>; Tue,  7 Jan 2025 09:49:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1736243399; cv=none; b=iZW7PPLmgkoWqUG5yDLOIiGbgxYyeobjNmyO8aO7hEcYWiiC+SZnz7SBSk28nZdULtO+GglZbtsVzDsldbtA/7IUH+QI1KeEFl4b3REbYj+vUhHCw4d0Kp+vH6qdEisQy442gC2TfZL+JyWtnXZP0iJbiQE5qlpzNe6jM41CPOY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1736243399; c=relaxed/simple;
+	bh=/P5MAf/Q16xLxWpLBxiuUitMX8lqq7bYFQDKeAbW0Cw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=HeyYif4W6kEDm+lsHpMmf9HrXj1mUkNoRDXeuSg3P25DRjVOkco66y7b5WGbowNDZ3i9sjWMINy3vfkYqdcmiBPDT5Qc/CK0f/TygxrgTAqcjF/GCtN6f5a9v9Fz62s3n61EaDJe7y/jm7zWjGx52dYXIo1mJ518wTojS/0JJpY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ePxqq4Bi; arc=none smtp.client-ip=209.85.214.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="beucoZdk"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1736238509; x=1767774509;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=AUPkL6Z5du5J99VXLnvWWXSoMEd5GkBhr+y6eNIx8Ug=;
-  b=beucoZdkKUT482MpJbr+Q6wAtbnzZDdlJ6a2JPE5z3N5VVJHBybHUZ9g
-   k0OhdRr/pHKSoU+3WZI4Is2bydMhKTIDM2Xhcpq18gfR+ml8PRmZN6tEI
-   aKJ2BnJvne/Z/dW4dimAce/xwS33qoG2LDeq2SdaD+yRyrWLVZJRvEI1c
-   7GU1rrAX26ea5rrqUwynmHerC6hyVGyMK+/5WDg0hvTAkLo5VmSlz+OCd
-   KVyEbBzjgqccT+pxh8ypOcXERSTFAgJEaCXoOqgembZ+RAnHb5IPQW/Jz
-   p1nMTIc6O9ak9HsrbFPe7O9AkHRyAntMY9GlsQ64Lh42AvcrgG7+6do1+
-   w==;
-X-CSE-ConnectionGUID: umd3D82HR3SEdjLa74Ua1g==
-X-CSE-MsgGUID: liuZXiRWRIijGVwy8YIxFg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11307"; a="58871031"
-X-IronPort-AV: E=Sophos;i="6.12,295,1728975600"; 
-   d="scan'208";a="58871031"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2025 00:28:27 -0800
-X-CSE-ConnectionGUID: mJBl2nYlR46rVQkQZy+hPw==
-X-CSE-MsgGUID: Vfntu2j+SoC1/GvAcD9fWQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
-   d="scan'208";a="107752641"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by orviesa003.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 07 Jan 2025 00:28:27 -0800
-Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.44; Tue, 7 Jan 2025 00:28:26 -0800
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.44 via Frontend Transport; Tue, 7 Jan 2025 00:28:26 -0800
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.57.45) by
- edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.44; Tue, 7 Jan 2025 00:28:15 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=KTrfM50tz35LFfLgDmyCWtBOHaJNOkTY11LyocMzdySkGV6sYUJuV9/O9H+1O4hmBnaKg8Zp7sbjlRz37Jeh8oitU26kGTJT0uUoNuzNNKXyEd86hulHQSb67buDMd//EdqFZNdxSwJ/cKpnH0Aj84+Gb4L37b8Xxm/TMH+rLjeX19oyK483A2E63dg1oVOX1YP5KUijhRG0HVGpJ1EOQ8iiUTE9Btrbltj1i8F4m4SFu2oTW2/GBGa/BSgLNIx3qiAMPLLaOdxL3S5V5PxTgzzCwX4iq7pqc3yZl71uhd57MT7RfQhxZhQ3zrP7R99itMUTarbgWTodtJpHD/9ImA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=t0wUSzRciiqTAcp6VmyRi0QCmUK23k4wo6bjKitVfYM=;
- b=urUU+ywm7mnbf2d7B6wAWFPIPZAOkuLTFTmWJVaKGDmt19kqlMXANQ2vPhz6OUv38ISLlTM6gQtCef9Er4ht0MoJOacVhUpdqUzllmMcXe7yR6G4BFLpISGjz8Q+NViIMacLho8WGzp4YDmSwnOEdBLx4yZOU4PZFZsU6YLHbvIONfhcK+Y9xnhsAzq9KOeaJJhy/ksrPUdz+44AsKhzcW3AN5E0kBo7QMsflvZytLrlDC5MEiMWJPMvrCYWxL5QSHlzchnYN6Gz7u35ce8iPc/25fYkqvzKaUIRip6kfibhkTApXOvgs6lxaL2Onfqi+L1D+Mtzmo4jLn3+jTDuww==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by CY5PR11MB6092.namprd11.prod.outlook.com (2603:10b6:930:2c::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8314.17; Tue, 7 Jan
- 2025 08:27:56 +0000
-Received: from LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
- ([fe80::4622:29cf:32b:7e5c%3]) with mapi id 15.20.8335.010; Tue, 7 Jan 2025
- 08:27:55 +0000
-Date: Tue, 7 Jan 2025 16:27:44 +0800
-From: Oliver Sang <oliver.sang@intel.com>
-To: Niklas Cassel <cassel@kernel.org>
-CC: Christoph Hellwig <hch@lst.de>, <oe-lkp@lists.linux.dev>, <lkp@intel.com>,
-	<linux-kernel@vger.kernel.org>, Jens Axboe <axboe@kernel.dk>,
-	<linux-block@vger.kernel.org>, <virtualization@lists.linux.dev>,
-	<linux-nvme@lists.infradead.org>, Damien Le Moal <dlemoal@kernel.org>,
-	<linux-btrfs@vger.kernel.org>, <linux-aio@kvack.org>, <oliver.sang@intel.com>
-Subject: Re: [linus:master] [block]  e70c301fae: stress-ng.aiol.ops_per_sec
- 49.6% regression
-Message-ID: <Z3zlgBB3ZrGApew7@xsang-OptiPlex-9020>
-References: <202412122112.ca47bcec-lkp@intel.com>
- <20241213143224.GA16111@lst.de>
- <20241217045527.GA16091@lst.de>
- <Z2EgW8/WNfzZ28mn@xsang-OptiPlex-9020>
- <20241217065614.GA19113@lst.de>
- <Z3ZhNYHKZPMpv8Cz@ryzen>
- <20250103064925.GB27984@lst.de>
- <Z3epOlVGDBqj72xC@ryzen>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <Z3epOlVGDBqj72xC@ryzen>
-X-ClientProxiedBy: SG2P153CA0051.APCP153.PROD.OUTLOOK.COM (2603:1096:4:c6::20)
- To LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ePxqq4Bi"
+Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-2165448243fso24376435ad.1
+        for <oe-lkp@lists.linux.dev>; Tue, 07 Jan 2025 01:49:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1736243395; x=1736848195; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=ikRfWEA7ucNTYUoom2gsK05Rdbwx58/vRt4HSDogJ6s=;
+        b=ePxqq4Binq5JBIJVtMK/WaWu0L7QaT6nF7Sip5HB9TIyWEpjiChdH4Q8WCVEx/A8fe
+         bljFQ9Sh0qhNEo/UOktRZE19O1jyHf09ut7Z6xmiTj2JN56CUROcFyVsO6O0RR5rvx/2
+         GIRpks9wIru8d3IaBip+Dj3C7ORJJ3a9upFAzTCmH6xYl/XQHTxHR36wdXyI6Q2E8AaI
+         F0iqFPzRehkAEWvYKVCFMc5U0d+h67vnlEymYUu9NqosUm49OjNtZNuYC/USR8aTYRgA
+         hhPZH7NqCbzY8yuKxUXk7QTgdlY5CuJ2Pb6VN1Y0g28YpQC6O6HQdCxOwXaUnXv7zxRX
+         Luvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1736243395; x=1736848195;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ikRfWEA7ucNTYUoom2gsK05Rdbwx58/vRt4HSDogJ6s=;
+        b=j+/GDgNAanseLpNK9kPbgw/yWrDlWD0pUBhxoFhJniS86UQ67vM+xfhnO8ItT9uLXr
+         luAKn0tQb2y2WqVSP2d/Sua9Qy8LLw0oX2J5oc4XBU+MqkDSHUzuVedAscbPC1HVVtSL
+         RFK9xv4sRE0xN7fHXyGVLooodJZBiOFN3zIoEwx0kRDzLTCGJQ3GqtvwJuLkJEy0EbRO
+         ciKpwR5yldpvaK64sOzo3OxDcgNvsdc/Tojq4WE7WLb1mE/Z4ATYWS1kCk+rD7ZssQTn
+         LayEWnvEmgDiK7LRIICql6gyCheoncd2T0IPuR8TGt2lb9daQQS95sGyz2AktG4g/mvL
+         SKEw==
+X-Forwarded-Encrypted: i=1; AJvYcCUSLaVr3NdEkwDT3rZX3c/t4MDuowM7DR3ru/w/roKCG3fY0z1hBAiGwbx59U3Y6V/OwBbF50E=@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw6DbInSDWdTm+GCCVd+I1gGu8ALkQFEhkhxk6kF1pgbozF1cao
+	jXyii9rtq7YIHhbx/1RJAQ/0I3eoIZr83OXRMst84FItercOIFBs/GqRKz+weBAxcthQkk1rTmr
+	qxGwNK2H+oY3CFBDnU3qkqcPRKFw=
+X-Gm-Gg: ASbGncs+PMtOFj/M5A0nJSLnEq+T9H63cJUe4bxIXGN/U4XFTXyE8qyKDakaYsv9ZTV
+	5BNfjHY811wc5S6gE4foQ7A8vFBvV2fc8gBfkrEw=
+X-Google-Smtp-Source: AGHT+IHo1qKzQnmzfF/o64hJYDxtDD/NvVmhtDZTM7htbVixxRZrDD5hunCq7w/4cTE8iqUHVlCovjfMSmPYMU/R+Hw=
+X-Received: by 2002:a05:6a21:3a8e:b0:1e0:c6c0:1e08 with SMTP id
+ adf61e73a8af0-1e5e04a0c87mr105512454637.25.1736243395187; Tue, 07 Jan 2025
+ 01:49:55 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
 List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|CY5PR11MB6092:EE_
-X-MS-Office365-Filtering-Correlation-Id: 420b8d4c-3f2b-40fa-a825-08dd2ef52fae
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|7416014|376014|1800799024;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?9Mf8u2UKGhRfmldAkO4GykQu42XU/3/rb9GA90SOCI/6cVbfaLSRS1Jnwh1R?=
- =?us-ascii?Q?0I2WDlk3c0GEyJDtVADjNnPJGHh5pVOBw9CVWLYimcxhyEgX0jGST3Y3iJ6q?=
- =?us-ascii?Q?cazrOHft/OFSSQoWyK9wqI8JtOYc7vL/H7BQeai8Bm6r9L2iJ/lkp2rRdBPB?=
- =?us-ascii?Q?oWb/w3YDVX7AjLc1G2oRC8m7PSknMp45nxVHG0ss2wnGmjgF/+G0npsvMzJ/?=
- =?us-ascii?Q?4TJNyRj+Zq5clfDrkv0wnjLthexO78Hd/6Jvsu4ktMjiYzVY8u7TVi+K7j0s?=
- =?us-ascii?Q?FuyAR0RZXK4E2OFrga6KZf+8zaHkXNTNKPxlkx5BG0Ih6RG5HiqBA5IyvpuI?=
- =?us-ascii?Q?41qOgbIg6sYa+a24/SKZa6eBNuxboQqWSMG1GpTAu1qq1sCfOy5RBabqkSna?=
- =?us-ascii?Q?jjsODjNY+hWEn1vmbLf7gTBZV4TWFa3hmTqkTRMZl55lZd9vVAh2nLNTZ2O+?=
- =?us-ascii?Q?+Tyh9QWzUFtf7sfLGgr7kU1SP8tCmohxVlnN7tIvrdx6TQPbIAjvEZHpOZKU?=
- =?us-ascii?Q?/spW+3yGAzfh9IXwEw65SOxp6I4sQiOQjIgWs89PyXkyG6eAwKY/lBxSWgSa?=
- =?us-ascii?Q?EBEhZ9VGiuwBGwSQ3u/6Q5fvnGfcWyK0xZJG/oAr7r5rc0qpOyDi0yboK1EU?=
- =?us-ascii?Q?OlCYhbvktd6iHglYHKubJhWuISIHutyMWbDSLwpSMwgO0btBLtrctvjKWSlA?=
- =?us-ascii?Q?Xr7wS0DUQge8cJ67CfkuKFGQG0PShYw1lWNcEYKhEg04t33DwmA5uPGn3PH2?=
- =?us-ascii?Q?oIVL+IG5v/9wDIEE5bEoBNK3583nQQIgtmraDinhKf0VPR5WuSUaJwyOcx5u?=
- =?us-ascii?Q?dXnjxj7+ZoTi1hFfqrYk8VE4UJzcJeJ+0Je+JpBmX0+OuZeQ2tYGnaIc1kM7?=
- =?us-ascii?Q?RHTYTYwQOJHXcopeelHp6FHyZ47j40eG/IbWwe4pbkXrVvvoNe36GhqQi3hQ?=
- =?us-ascii?Q?XzWKivv7GWQrZ4/y3GTdakHKrca127M2+fcL/eLgk+KCk4YPwVRiGKfsBPws?=
- =?us-ascii?Q?L3CONqH/orusIXDc+Q4xE4pxHdi6CUUeIxC+mII+py40HgTpouRZbOu3cArQ?=
- =?us-ascii?Q?RIbT8QdMbxT8Hj/oaBIsbYFq7IBsbmha/k5W0nT8adyoRosKsjrG2HZ/ORMY?=
- =?us-ascii?Q?SGzLmJeccRx2twlyXRNEy3NS7LH3aMjuNlCGKi9YfTP3whY5KoseVS9iqJ75?=
- =?us-ascii?Q?z+HJ5R06Ceb4IxRmvv4ta3z2EONoVgvqhVZ80+8Cd2kVqzn98ufbNcUSkdmN?=
- =?us-ascii?Q?2dj20yHGWeUfKXxPEZ1YxbwGry1WipwZ/gXLZZaC47wPNjXl7ddUVAX9zcSo?=
- =?us-ascii?Q?QB5ZzyF+mSbKeVtHVBOzT0XSBgJJL7b73KaoMYn985ivFO7OkiCjbogSO6sk?=
- =?us-ascii?Q?q/4QTxz0JsosRClv1QUdRcL45///?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?aRiJa+ToqOqjFAfCzDKwXQQQpcVyZ6KsKkb/HbnDeJsWfph7Nx3qlafFbilw?=
- =?us-ascii?Q?dK9moWilnRlBSTPZFeqfa4ttuIyqKiyxJwXR4i2tws6vrrkYaHS/ij6aFeUO?=
- =?us-ascii?Q?m4p16P8ZlWMZ/b2wU2Ar2nKgokKxEXBfAHBQpNNAOeI4ZMM8l6nErwM3GyuS?=
- =?us-ascii?Q?nWitMn5wjh7wpPWItVdpe6RWlGy+D2Y1EvcuTQDNITSaMKMuU19qBuqlbiWt?=
- =?us-ascii?Q?mc5w0nhWeMwFIsa7//EWMQm1n+EKB/1sSqvhlKOgE4OGRxBzfM1g6z1WPn+3?=
- =?us-ascii?Q?RTRnQURhURYayeU0rvHUGFkU88UJa3+rXh3cZ85doXswgdLkS9bFVQlAOKl4?=
- =?us-ascii?Q?ucArDFqE74V56nPA0ZhcVQZ95nln8rBS+/SLuQV70HylZhSZSdytPm/ZWg60?=
- =?us-ascii?Q?QuFZKP+Nu2qp0mxNRNjDgOFuP49V/kl0+jSccBOt1hphmYsp0b+DLgA6azYM?=
- =?us-ascii?Q?Yyd6DPeYSdXM8JdLe9nL7cSvsCoo+THE+HEl8sIfV08UQ02gVtXXONGvvSVJ?=
- =?us-ascii?Q?sWqaCc2Giqdr6z/B106wSp/n5ya1xkO1of3DVgXnwW3vdXO9AaNE7lBcveIH?=
- =?us-ascii?Q?B79P01Ubf4bH11IH3OGS+WBw1JI2OScaCUSeK6A4Uy0teuZilC6b57xaS44i?=
- =?us-ascii?Q?/5jmlFobPiCVKQqPWcZs/+ywSWPtFuuKQktyWrFZ+8IOET0XuLTY2t07L7WU?=
- =?us-ascii?Q?mSTFukv8yX7Ww9AdjDDf+vcLUq2ZtghNQiq/NRmn3z22xc6D6W+UyEI1TnOO?=
- =?us-ascii?Q?+6ayWkxg1Dc7ruKyZbIAuLbBL3GYPq7rgI4NNAPmcZJ9NTCMS5KyLjUj+SU1?=
- =?us-ascii?Q?0ahhOXqNrwpiv485Hb/bj7mZ77xKxz4k0mJW8BEFJ0D0hvFPKHXtpUtJIDjj?=
- =?us-ascii?Q?LThYEtCIfxdnk83nc6TMmZh5SvmQ+IC9uKgitHka1pvY9TaWuaMfbm5cPhYP?=
- =?us-ascii?Q?SsP4N6Mifg0J16zDCBfOUICd84+T55lXGLAYEi/p/1YibaG3BTsptES7/9Dv?=
- =?us-ascii?Q?Hh2ONkV5qSQQQNm+Q0+cmps3vJwzdA+rP2QRoTCUQ4T7osIPw9Y0nrSJ4ZW9?=
- =?us-ascii?Q?psm6/6B+HTG6tKpb6vkOB3nEA7UN62A6DE/8MzuvTmIIYVc9dzK0ueo021lt?=
- =?us-ascii?Q?/3FMk2U5MW5s71lWN7EDBbySz3kXBiLDp4YqL2V1qVUunE/avYPvrZWiprBa?=
- =?us-ascii?Q?uqfaBiEGdIioUm/EcOL76BUSXTZdXYi15IpGCFa/cTM8K5/631DHQhm/1+yw?=
- =?us-ascii?Q?wnAKGUAdm23pimTg8sFqMyqKxIxtQO8QD3p0JMRpOY8lbs9OGyMgEj84XEqL?=
- =?us-ascii?Q?UixdDpJ5ekfQWCxey3mr1sjPj3kLWU99PQ0m1yo3Uwf3lVpL7yWZLw6mCqQi?=
- =?us-ascii?Q?QcE4+AAdkttJ5tZs/5nBz5bLR2cJ11hwGuYmhLL6wEepn5lWOsCeubmr+cqp?=
- =?us-ascii?Q?Uc0//9uBTFdUHSI1Z7OuuzkL2eKf7tRfFEZEEMYn09RVBnyNrQmFJnx1fDLh?=
- =?us-ascii?Q?HWj9D59S4xe8jua3ioo6AtlZs6XL+PI14xMxJb9NfHqu43mA+F/Vwamlqr/s?=
- =?us-ascii?Q?d8WFNW0a9R/lOfFUnGn7Sn7u4rUC++J/XtfDIjrIy8li/3R5zOwNC8/u7Obp?=
- =?us-ascii?Q?Yg=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 420b8d4c-3f2b-40fa-a825-08dd2ef52fae
-X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jan 2025 08:27:55.9264
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 31+3rDB74QdmysPjyw8DBi0pGbVvAfd/hc6GfM3E/K9gYYGbrpQy1Le02DnmhjVwtBI605yn+rC1DSqQ5jiYgw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR11MB6092
-X-OriginatorOrg: intel.com
+References: <202412311203.ca7bddba-lkp@intel.com> <CALm+0cWOxUm_hrNe4UP4Z-vyr4RCOw+dc=kCBTgsyjHFHiHDsg@mail.gmail.com>
+ <949f6251-d411-45ef-9f85-d5d069b90b0e@paulmck-laptop> <Z3Ym/DDtGOPamGjZ@xsang-OptiPlex-9020>
+ <c8c4c6d6-ad52-4cd2-ba1f-c442da4432af@paulmck-laptop> <CALm+0cVbaJuMWMkU4g_6inCKiBVaVD3iixvBrfMJTqZ-3OUCvg@mail.gmail.com>
+ <c2561f0c-9bc1-4492-b9dd-655502f101f7@paulmck-laptop> <CALm+0cWoK_+xMxZ1xddZGt9KxuUqkW13fqwtOm9NtBEd+LqBFQ@mail.gmail.com>
+ <8f42f7ac-3d5d-43c7-a646-fe46576397ff@paulmck-laptop>
+In-Reply-To: <8f42f7ac-3d5d-43c7-a646-fe46576397ff@paulmck-laptop>
+From: Z qiang <qiang.zhang1211@gmail.com>
+Date: Tue, 7 Jan 2025 17:49:42 +0800
+X-Gm-Features: AbW1kvaZ3GYQV5H-YCD28ipd1468GTANUUTlpM9y_9r0e0CUkcBzwrmvXbGtSTU
+Message-ID: <CALm+0cXXe86aAeyBYnb6z3xBFvLeGxD+yjg_uzBB5PHCG9f3QQ@mail.gmail.com>
+Subject: Re: [paulmckrcu:dev.2024.12.24a] [srcu] 9216c28c6a: BUG:unable_to_handle_page_fault_for_address
+To: paulmck@kernel.org
+Cc: Oliver Sang <oliver.sang@intel.com>, oe-lkp@lists.linux.dev, lkp@intel.com, 
+	rcu@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-hi, Niklas,
+>
+> On Mon, Jan 06, 2025 at 11:24:54AM +0800, Z qiang wrote:
+> > >
+> > > On Fri, Jan 03, 2025 at 01:50:50PM +0800, Z qiang wrote:
+> > > > >
+> > > > > On Thu, Jan 02, 2025 at 01:41:16PM +0800, Oliver Sang wrote:
+> > > > > > hi, Zqiang, hi, Paul,
+> > > > > >
+> > > > > > On Tue, Dec 31, 2024 at 08:19:44AM -0800, Paul E. McKenney wrote:
+> > > > > > > On Tue, Dec 31, 2024 at 03:16:25PM +0800, Z qiang wrote:
+> > > > > >
+> > > > > > [...]
+> > > > > >
+> > > > > > > > >
+> > > > > > > > > If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> > > > > > > > > the same patch/commit), kindly add following tags
+> > > > > > > > > | Reported-by: kernel test robot <oliver.sang@intel.com>
+> > > > > > > > > | Closes: https://lore.kernel.org/oe-lkp/202412311203.ca7bddba-lkp@intel.com
+> > > > > > > > >
+> > > > > > > >
+> > > > > > > > Please try the following modifications:
+> > > > > >
+> > > > > > yes, the following modifications fix the issues we found for 9216c28c6a. thanks!
+> > > > > >
+> > > > > > Tested-by: kernel test robot <oliver.sang@intel.com>
+> > > > >
+> > > > > Thank you, and I will apply this during my next rebase.
+> > > > >
+> > > > > Zqiang, unless you tell me otherwise, I will add your Co-developed-by
+> > > > > and Signed-off-by.
+> > > > >
+> > > > > Either way, Happy Square New Year!
+> > > >
+> > > > Thank you,  Happy New Year!  :)
+> > >
+> > > And here you go!  Please let me know of anything I missed.
+> > >
+> > > And thank you for saving me the time it would have taken to track
+> > > this one down.  ;-)
+> > >
+> > >                                                         Thanx, Paul
+> > >
+> > > ------------------------------------------------------------------------
+> > >
+> > > commit 71c893e6d1857d1e4ea37aec557d734a560fdb39
+> > > Author: Paul E. McKenney <paulmck@kernel.org>
+> > > Date:   Thu Dec 19 16:08:54 2024 -0800
+> > >
+> > >     srcu: Make SRCU readers use ->srcu_ctrs for counter selection
+> > >
+> > >     This commit causes SRCU readers to use ->srcu_ctrs for counter
+> > >     selection instead of ->srcu_idx.  This takes another step towards
+> > >     array-indexing-free SRCU readers.
+> > >
+> > >     [ paulmck: Apply kernel test robot feedback. ]
+> > >
+> > >     Co-developed-by: Z qiang <qiang.zhang1211@gmail.com>
+> > >     Signed-off-by: Z qiang <qiang.zhang1211@gmail.com>
+> > >     Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+> > >     Tested-by: kernel test robot <oliver.sang@intel.com>
+> > >
+> > > diff --git a/include/linux/srcutree.h b/include/linux/srcutree.h
+> > > index c794d599db5c1..1b01ced61a45b 100644
+> > > --- a/include/linux/srcutree.h
+> > > +++ b/include/linux/srcutree.h
+> > > @@ -101,6 +101,7 @@ struct srcu_usage {
+> > >   */
+> > >  struct srcu_struct {
+> > >         unsigned int srcu_idx;                  /* Current rdr array element. */
+> > > +       struct srcu_ctr __percpu *srcu_ctrp;
+> > >         struct srcu_data __percpu *sda;         /* Per-CPU srcu_data array. */
+> > >         struct lockdep_map dep_map;
+> > >         struct srcu_usage *srcu_sup;            /* Update-side data. */
+> > > @@ -167,6 +168,7 @@ struct srcu_struct {
+> > >  #define __SRCU_STRUCT_INIT(name, usage_name, pcpu_name)                                                \
+> > >  {                                                                                              \
+> > >         .sda = &pcpu_name,                                                                      \
+> > > +       .srcu_ctrp = &pcpu_name.srcu_ctrs[0],                                                   \
+> > >         __SRCU_STRUCT_INIT_COMMON(name, usage_name)                                             \
+> > >  }
+> > >
+> > > @@ -222,13 +224,12 @@ void srcu_torture_stats_print(struct srcu_struct *ssp, char *tt, char *tf);
+> > >   */
+> > >  static inline int __srcu_read_lock_lite(struct srcu_struct *ssp)
+> > >  {
+> > > -       int idx;
+> > > +       struct srcu_ctr __percpu *scp = READ_ONCE(ssp->srcu_ctrp);
+> > >
+> > >         RCU_LOCKDEP_WARN(!rcu_is_watching(), "RCU must be watching srcu_read_lock_lite().");
+> > > -       idx = READ_ONCE(ssp->srcu_idx) & 0x1;
+> > > -       this_cpu_inc(ssp->sda->srcu_ctrs[idx].srcu_locks.counter); /* Y */
+> > > +       this_cpu_inc(scp->srcu_locks.counter); /* Y */
+> > >         barrier(); /* Avoid leaking the critical section. */
+> > > -       return idx;
+> > > +       return scp - &ssp->sda->srcu_ctrs[0];
+> > >  }
+> > >
+> > >  /*
+> > > diff --git a/kernel/rcu/srcutree.c b/kernel/rcu/srcutree.c
+> > > index d7ee2f345e192..3bf7f41ad72b8 100644
+> > > --- a/kernel/rcu/srcutree.c
+> > > +++ b/kernel/rcu/srcutree.c
+> > > @@ -253,8 +253,10 @@ static int init_srcu_struct_fields(struct srcu_struct *ssp, bool is_static)
+> > >         atomic_set(&ssp->srcu_sup->srcu_barrier_cpu_cnt, 0);
+> > >         INIT_DELAYED_WORK(&ssp->srcu_sup->work, process_srcu);
+> > >         ssp->srcu_sup->sda_is_static = is_static;
+> > > -       if (!is_static)
+> > > +       if (!is_static) {
+> > >                 ssp->sda = alloc_percpu(struct srcu_data);
+> > > +               ssp->srcu_ctrp = &ssp->sda->srcu_ctrs[0];
+> > > +       }
+> > >         if (!ssp->sda)
+> > >                 goto err_free_sup;
+> >
+> > ssp->srcu_ctrp should be assigned a value under the condition that
+> > ssp->sda is  allocated successfully.
+> >
+> > -       if (!is_static) {
+> > +       if (!is_static)
+> >                 ssp->sda = alloc_percpu(struct srcu_data);
+> > -               ssp->srcu_ctrp = &ssp->sda->srcu_ctrs[0];
+> > -       }
+> >         if (!ssp->sda)
+> >                 goto err_free_sup;
+> > +       if (!is_static)
+> > +               ssp->srcu_ctrp = &ssp->sda->srcu_ctrs[0];
+>
+> It doesn't hurt to assign NULL to ssp->srcu_ctrp on allocation failure.
+>
+> Or am I missing something here?
 
-On Fri, Jan 03, 2025 at 10:09:14AM +0100, Niklas Cassel wrote:
-> On Fri, Jan 03, 2025 at 07:49:25AM +0100, Christoph Hellwig wrote:
-> > On Thu, Jan 02, 2025 at 10:49:41AM +0100, Niklas Cassel wrote:
-> > > > > from below information, it seems an 'ahci' to me. but since I have limited
-> > > > > knowledge about storage driver, maybe I'm wrong. if you want more information,
-> > > > > please let us know. thanks a lot!
-> > > > 
-> > > > Yes, this looks like ahci.  Thanks a lot!
-> > > 
-> > > Did this ever get resolved?
-> > > 
-> > > I haven't seen a patch that seems to address this.
-> > > 
-> > > AHCI (ata_scsi_queuecmd()) only issues a single command, so if there is any
-> > > reordering when issuing a batch of commands, my guess is that the problem
-> > > also affects SCSI / the problem is in upper layers above AHCI, i.e. SCSI lib
-> > > or block layer.
-> > 
-> > I started looking into this before the holidays.  blktrace shows perfectly
-> > sequential writes without any reordering using ahci, directly on the
-> > block device or using xfs and btrfs when using dd.  I also started
-> > looking into what the test does and got as far as checking out the
-> > stress-ng source tree and looking at stress-aiol.c.  AFAICS the default
-> > submission does simple reads and writes using increasing offsets.
-> > So if the test result isn't a fluke either the aio code does some
-> > weird reordering or btrfs does.
-> > 
-> > Oliver, did the test also show any interesting results on non-btrfs
-> > setups?
-> > 
-> 
-> One thing that came to mind.
-> Some distros (e.g. Fedora and openSUSE) ship with an udev rule that sets
-> the I/O scheduler to BFQ for single-queue HDDs.
-> 
-> It could very well be the I/O scheduler that reorders.
-> 
-> Oliver, which I/O scheduler are you using?
-> $ cat /sys/block/sdb/queue/scheduler 
-> none mq-deadline kyber [bfq]
+No, I just think in case of failed allocation, there is no need to set
+srcu_ctrp. :)
 
-while our test running:
+Thanks
+Zqiang
 
-# cat /sys/block/sdb/queue/scheduler
-none [mq-deadline] kyber bfq
-
-> 
-> 
-> Kind regards,
-> Niklas
+>
+> > >         init_srcu_struct_data(ssp);
+> > > @@ -742,12 +744,11 @@ EXPORT_SYMBOL_GPL(__srcu_check_read_flavor);
+> > >   */
+> > >  int __srcu_read_lock(struct srcu_struct *ssp)
+> > >  {
+> > > -       int idx;
+> > > +       struct srcu_ctr __percpu *scp = READ_ONCE(ssp->srcu_ctrp);
+> > >
+> > > -       idx = READ_ONCE(ssp->srcu_idx) & 0x1;
+> > > -       this_cpu_inc(ssp->sda->srcu_ctrs[idx].srcu_locks.counter);
+> > > +       this_cpu_inc(scp->srcu_locks.counter);
+> > >         smp_mb(); /* B */  /* Avoid leaking the critical section. */
+> > > -       return idx;
+> > > +       return scp - &ssp->sda->srcu_ctrs[0];
+> > >  }
+> > >  EXPORT_SYMBOL_GPL(__srcu_read_lock);
+> > >
+> > > @@ -772,13 +773,11 @@ EXPORT_SYMBOL_GPL(__srcu_read_unlock);
+> > >   */
+> > >  int __srcu_read_lock_nmisafe(struct srcu_struct *ssp)
+> > >  {
+> > > -       int idx;
+> > > -       struct srcu_data *sdp = raw_cpu_ptr(ssp->sda);
+> > > +       struct srcu_ctr __percpu *scp = READ_ONCE(ssp->srcu_ctrp);
+> >
+> > Should this be the case?
+> >
+> > struct srcu_ctr  *scp = raw_cpu_ptr(ssp->srcu_ctrp);
+>
+> Good catch!  This is messed up.  I am now thinking in terms of something
+> like this:
+>
+>         struct srcu_ctr *scp = this_cpu_ptr(READ_ONCE(ssp->srcu_ctrp));
+>
+> Except that I broke the CONFIG_NEED_SRCU_NMI_SAFE=y case at some point,
+> and need to fix that first.  This commit works:
+>
+> c10edfa489eb ("srcu: Pull ->srcu_{un,}lock_count into a new srcu_ctr structure")
+>
+> I am now trying:
+>
+> 71c893e6d185 ("srcu: Make SRCU readers use ->srcu_ctrs for counter selection")
+>
+> The trick is to apply this patch:
+>
+> ------------------------------------------------------------------------
+> diff --git a/kernel/rcu/Kconfig b/kernel/rcu/Kconfig
+> index 26ae869865a12..74809a083e2b5 100644
+> --- a/kernel/rcu/Kconfig
+> +++ b/kernel/rcu/Kconfig
+> @@ -66,7 +66,7 @@ config TREE_SRCU
+>           This option selects the full-fledged version of SRCU.
+>
+>  config NEED_SRCU_NMI_SAFE
+> -       def_bool HAVE_NMI && !ARCH_HAS_NMI_SAFE_THIS_CPU_OPS && !TINY_SRCU
+> +       def_bool HAVE_NMI && !TINY_SRCU
+>
+>  config TASKS_RCU_GENERIC
+>         def_bool TASKS_RCU || TASKS_RUDE_RCU || TASKS_TRACE_RCU
+> ------------------------------------------------------------------------
+>
+> Or run some system with CONFIG_ARCH_HAS_NMI_SAFE_THIS_CPU_OPS=n.
+>
+> > > -       idx = READ_ONCE(ssp->srcu_idx) & 0x1;
+> > > -       atomic_long_inc(&sdp->srcu_ctrs[idx].srcu_locks);
+> > > +       atomic_long_inc(&scp->srcu_locks);
+> > >         smp_mb__after_atomic(); /* B */  /* Avoid leaking the critical section. */
+> > > -       return idx;
+> > > +       return scp - &ssp->sda->srcu_ctrs[0];
+> > >  }
+> > >  EXPORT_SYMBOL_GPL(__srcu_read_lock_nmisafe);
+> > >
+> > > @@ -1152,6 +1151,8 @@ static void srcu_flip(struct srcu_struct *ssp)
+> > >         smp_mb(); /* E */  /* Pairs with B and C. */
+> > >
+> > >         WRITE_ONCE(ssp->srcu_idx, ssp->srcu_idx + 1); // Flip the counter.
+> > > +       WRITE_ONCE(ssp->srcu_ctrp,
+> > > +                  &ssp->sda->srcu_ctrs[!(ssp->srcu_ctrp - &ssp->sda->srcu_ctrs[0])]);
+> > >
+> > >         /*
+> > >          * Ensure that if the updater misses an __srcu_read_unlock()
+> > > @@ -1998,6 +1999,7 @@ static int srcu_module_coming(struct module *mod)
+> > >         for (i = 0; i < mod->num_srcu_structs; i++) {
+> > >                 ssp = *(sspp++);
+> > >                 ssp->sda = alloc_percpu(struct srcu_data);
+> > > +               ssp->srcu_ctrp = &ssp->sda->srcu_ctrs[0];
+> > >                 if (WARN_ON_ONCE(!ssp->sda))
+> > >                         return -ENOMEM;
+> >
+> >
+> > -               ssp->srcu_ctrp = &ssp->sda->srcu_ctrs[0];
+> >                 if (WARN_ON_ONCE(!ssp->sda))
+> >                         return -ENOMEM;
+> > +               ssp->srcu_ctrp = &ssp->sda->srcu_ctrs[0];
+>
+> Again, the assigment does not hurt anything, but in this case I agree
+> that your way is more clear, so I will use that.
+>
+>                                                         Thanx, Paul
