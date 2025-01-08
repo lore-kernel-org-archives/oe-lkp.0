@@ -1,51 +1,59 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E75AD38F82;
-	Wed,  8 Jan 2025 10:39:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1802F1FA151
+	for <oe-lkp@lists.linux.dev>; Wed,  8 Jan 2025 12:20:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736332774; cv=none; b=AuxclAxGTnqan6KMGk7NG8SiOwo+suALXPRFGx1/5ITsder+SLNTFhG1+hkfDbR/jEQXPWtrmx9dL+WUUNDNYBVa342h7ciRB40ndntTvb5f6RgccvZnJif544ipstH+sLvnzeyIsabODmmOKRRe0KXhVraFjnjDK55VXQNSOqY=
+	t=1736338814; cv=none; b=UT9usQUiCujsTi+DFeMOUsxtC8AXrcd3GN9qjAEyf0OJ/X2+pzAL6I7J0Pq0qfbjwupNZ/ASBGW1pkyMKbbyu+tohL2MieLk7nkYBcXtQXonAU05p9MM5IQju9OguyqqZv/pKm6qX+Eg221YU5qCDXQNtBd3aoTW9nbcFIeOGaA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736332774; c=relaxed/simple;
-	bh=wWO6nKxlaHTQ6vNc0Fh7xbXckRbHyUTC/A+5O8lcDs4=;
+	s=arc-20240116; t=1736338814; c=relaxed/simple;
+	bh=psC96hGThSrXWDDpjppiOYa5dVQa1twKUb1zxXZvS2E=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jR8MbnbJYcvpfrB6ec6HR3MhZMuSGFVlTp0g40nA5h0eH0YE+vyGI4VUoPvof2AHRUuBBPZHK+gvA3fdcTN4T1T/eX8PXVeJ+9dAdJM2EMCM4KaM1XBaXU/wIzOA6LMujHtpsiK2QB3n2QnzDBrNkzRA+1NY0FnBfx3QZh27utQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JvOE7pRE; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JvOE7pRE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C209FC4CEDF;
-	Wed,  8 Jan 2025 10:39:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1736332773;
-	bh=wWO6nKxlaHTQ6vNc0Fh7xbXckRbHyUTC/A+5O8lcDs4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=JvOE7pREw2XNT2FOLTj9XPsqmdUeDCjXbEwyNhfEKPa7cxVIO69gpfrMyzn35bcNj
-	 iMJzQvYfKm382us4awXbrEM/hNYmEI2kU9LmXnB45a24U4ZNqSS81qrpyoY9+0cEmL
-	 KBQTxCUgaAWuU8YY5mKpXW7a2dOw0w93XLnr8MiWLQCV4//I1omUR1lbpBdvMpvCoH
-	 lJr2Eo6tE9UM7t07kb8xvCs0q1KaRAzicyugQE0QlBSJ34BBMoWrOe8jenbsiu+Zgv
-	 18H1f1QFusrNdKMR0ldDqAUoMNCwVawZaNxftCXhzc1N4S6yPunX+b9YQZvLaFYSud
-	 TeOhkvgOJhi5w==
-Date: Wed, 8 Jan 2025 11:39:28 +0100
-From: Niklas Cassel <cassel@kernel.org>
+	 Content-Type:Content-Disposition:In-Reply-To; b=VS3R3vvxzBtkqbTY5GNKr6W0h+5tghyyB+6Ycm4h72/4Uj6AplpWk8IGJyMru6m6asSvN2rKPZveQPRoHLiV0fcpeheUxr4kgJCOcSivd091ldLNoL3WAsFycgNBZIrI+gBnKuklr8J4RKp+S4hW52Iuk226cRGVwj30oSnFueo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=debian.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=debian.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-ab2b29dfc65so91699966b.1
+        for <oe-lkp@lists.linux.dev>; Wed, 08 Jan 2025 04:20:12 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1736338811; x=1736943611;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=gBFg4Bhi0ssoJ+zZkMYuUyTLeYoitBIeZtECwrD9GaU=;
+        b=UugyMivNEGKkHHAl9X8jNcHuxt8369g5iFUzkuzhKCA0N/nSS3SY0v1QpDC0bF7Gup
+         JgrSirjihXsP9JgJ5zqDtF0t5eHT/R7VknsLLESsFih2AMof3ZUBz7Rzy1AnBMpU4SYH
+         uQjBxKHsPdVg22tCqmrSCSPdjY830SVcLpQf9uabK8Od5qt4X8wWQ/bFjQDKbVNB6dQm
+         5M2J3/dEBILTXGCQAht4DllTafz9Jp1ZIFN+n7oqnYA8PpJV+ZxDXqaZxHrAXh0VRBxL
+         qhEs8g2nd/ubHtrn+uoPMv8NBcPp/pTTwLRcinuT094POoHbx5D4ak5snXNfdaciH7zx
+         MbHA==
+X-Forwarded-Encrypted: i=1; AJvYcCW3UM1WxDfpUu3bkXkswNDt+QbVqFY/UU5pmWFdFUaaRdPYJEp7bNXn6jb2Fn09Ie8hAtdsPJ0=@lists.linux.dev
+X-Gm-Message-State: AOJu0YwF4UhTjZVkaQqVxFmpP8425UsBDDDguPGTNQZ9IuDxn0ErYmd/
+	Den4eQ3khZEY8wLdBmRWkB171I0Ux7ngVacRW+fg87Ok14rLYys56pcxIg==
+X-Gm-Gg: ASbGnctVdDHNL2Exmcy0Pk+Svf2sRn+IT1bGKqPZe/wlBqW3EOwc3W4faiCf0TW2ZvN
+	0OVJ5r/OWtcUyNRqgwB0R9SzeQIOHqbxstOgVOFaxR5raZTIfxIDDigkhWg45ryV7EgZIW6JyeM
+	x+G1joN437j9a5lfzb9uNjh5VQM7hI1d1qlbEnE2tcm/X0nN7NKm1HNEicR0wFt5JzdE1Thj0XO
+	FJowTTW6Jp+MiRw2JEML2c+7h33PMFUVees9JnArD4XvMQ=
+X-Google-Smtp-Source: AGHT+IHWO5vLxafuUApNxdvwx8CDjd/fGi89O8UCOvaoBBxdvpAxSS1H9g4wPSpUBBSNnq/kZ3njlw==
+X-Received: by 2002:a17:906:f5a0:b0:aaf:87e6:8fe3 with SMTP id a640c23a62f3a-ab2ab6a75damr230027166b.6.1736338811256;
+        Wed, 08 Jan 2025 04:20:11 -0800 (PST)
+Received: from gmail.com ([2a03:2880:30ff:1::])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-aac0e83017asm2483129966b.32.2025.01.08.04.20.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jan 2025 04:20:10 -0800 (PST)
+Date: Wed, 8 Jan 2025 04:20:08 -0800
+From: Breno Leitao <leitao@debian.org>
 To: Oliver Sang <oliver.sang@intel.com>
-Cc: Christoph Hellwig <hch@lst.de>, oe-lkp@lists.linux.dev, lkp@intel.com,
-	linux-kernel@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
-	linux-block@vger.kernel.org, virtualization@lists.linux.dev,
-	linux-nvme@lists.infradead.org, Damien Le Moal <dlemoal@kernel.org>,
-	linux-btrfs@vger.kernel.org, linux-aio@kvack.org
-Subject: Re: [linus:master] [block]  e70c301fae: stress-ng.aiol.ops_per_sec
- 49.6% regression
-Message-ID: <Z35VVvuT0nl0iDfd@ryzen>
-References: <202412122112.ca47bcec-lkp@intel.com>
- <20241213143224.GA16111@lst.de>
- <20241217045527.GA16091@lst.de>
- <Z2EgW8/WNfzZ28mn@xsang-OptiPlex-9020>
- <20241217065614.GA19113@lst.de>
- <Z3ZhNYHKZPMpv8Cz@ryzen>
- <20250103064925.GB27984@lst.de>
- <Z3epOlVGDBqj72xC@ryzen>
- <Z3zlgBB3ZrGApew7@xsang-OptiPlex-9020>
+Cc: lkp@intel.com, oe-lkp@lists.linux.dev, linux-crypto@vger.kernel.org,
+	Herbert Xu <herbert@gondor.apana.org.au>, Tejun Heo <tj@kernel.org>,
+	netdev@vger.kernel.org
+Subject: Re: [herbert-cryptodev-2.6:master] [rhashtable]  e1d3422c95:
+ stress-ng.syscall.ops_per_sec 98.9% regression
+Message-ID: <20250108-smiling-sensible-llama-d8b124@leitao>
+References: <202412271017.cad7675-lkp@intel.com>
+ <20250103-singing-crow-of-fantasy-fd061f@leitao>
+ <Z3zLQObsD42R6Nwz@xsang-OptiPlex-9020>
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
 List-Id: <oe-lkp.lists.linux.dev>
@@ -54,69 +62,52 @@ List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Z3zlgBB3ZrGApew7@xsang-OptiPlex-9020>
+In-Reply-To: <Z3zLQObsD42R6Nwz@xsang-OptiPlex-9020>
 
-On Tue, Jan 07, 2025 at 04:27:44PM +0800, Oliver Sang wrote:
-> hi, Niklas,
+Hello Oliver,
+
+On Tue, Jan 07, 2025 at 02:35:44PM +0800, Oliver Sang wrote:
+> hi, Breno Leitao,
 > 
-> On Fri, Jan 03, 2025 at 10:09:14AM +0100, Niklas Cassel wrote:
-> > On Fri, Jan 03, 2025 at 07:49:25AM +0100, Christoph Hellwig wrote:
-> > > On Thu, Jan 02, 2025 at 10:49:41AM +0100, Niklas Cassel wrote:
-> > > > > > from below information, it seems an 'ahci' to me. but since I have limited
-> > > > > > knowledge about storage driver, maybe I'm wrong. if you want more information,
-> > > > > > please let us know. thanks a lot!
-> > > > > 
-> > > > > Yes, this looks like ahci.  Thanks a lot!
-> > > > 
-> > > > Did this ever get resolved?
-> > > > 
-> > > > I haven't seen a patch that seems to address this.
-> > > > 
-> > > > AHCI (ata_scsi_queuecmd()) only issues a single command, so if there is any
-> > > > reordering when issuing a batch of commands, my guess is that the problem
-> > > > also affects SCSI / the problem is in upper layers above AHCI, i.e. SCSI lib
-> > > > or block layer.
-> > > 
-> > > I started looking into this before the holidays.  blktrace shows perfectly
-> > > sequential writes without any reordering using ahci, directly on the
-> > > block device or using xfs and btrfs when using dd.  I also started
-> > > looking into what the test does and got as far as checking out the
-> > > stress-ng source tree and looking at stress-aiol.c.  AFAICS the default
-> > > submission does simple reads and writes using increasing offsets.
-> > > So if the test result isn't a fluke either the aio code does some
-> > > weird reordering or btrfs does.
-> > > 
-> > > Oliver, did the test also show any interesting results on non-btrfs
-> > > setups?
-> > > 
+> > I am trying to reproduce this report, and I would appreciate some help
+> > to understand what is being measured, and try to reproduce the reported
+> > problem.
 > > 
-> > One thing that came to mind.
-> > Some distros (e.g. Fedora and openSUSE) ship with an udev rule that sets
-> > the I/O scheduler to BFQ for single-queue HDDs.
+> > On Fri, Dec 27, 2024 at 11:10:11AM +0800, kernel test robot wrote:
+> > > kernel test robot noticed a 98.9% regression of stress-ng.syscall.ops_per_sec on:
 > > 
-> > It could very well be the I/O scheduler that reorders.
-> > 
-> > Oliver, which I/O scheduler are you using?
-> > $ cat /sys/block/sdb/queue/scheduler 
-> > none mq-deadline kyber [bfq]
+> > Is this metric coming from `bogo ops/s` from stress-ng?
 > 
-> while our test running:
+> yes, it's from bogo ops/s (real time).
 > 
-> # cat /sys/block/sdb/queue/scheduler
-> none [mq-deadline] kyber bfq
+> one thing we want to mention is the test runs unstably upon e1d3422c95.
+> as below, %stddev for it reaches 67%.
 
-The stddev numbers you showed is all over the place, so are we certain
-if this is a regression caused by commit e70c301faece ("block:
-don't reorder requests in blk_add_rq_to_plug") ?
+Thanks. From what I understand, this is clock time, which can vary a
+lot.
 
-Do you know if the stddev has such big variation for this test even before
-the commit?
+I see a small variation, but, inside the standard deviation:
 
+Kernels I've tested:
+	Kernel A: 6.13-rc6 (9d89551994a43)
+	Kernel B: 9d89551994a43 + cherry pick of e1d3422c95f003e ("rhashtable: Fix potential deadlock by moving schedule_work outside lock")
 
-If it is not too much to ask... It might be interesting to know if we see
-a regression when comparing before/after e70c301faece with scheduler none
-instead of mq-deadline.
+Average result: (Bogo op/s)
+	* kernel A:
+		* Average      : 2776.70
+		* Min value    : 1946.22
+		* Max value    : 3278.67 
+		* Standard dev :  387.01
 
+	* Kernel B:
+		* Average      : 3158.60
+		* Min value    : 1850.91
+		* Max value    : 4120.10
+		* Standard dev :  507.19
 
-Kind regards,
-Niklas
+Host: Intel(R) Xeon(R) D-2191A CPU with 64GB of RAM.
+
+I booted the machines 2 times, with A, B, kernel sequentially, and
+for each case I run the following command 10 times:
+
+	stress-ng --timeout 10 --times --verify --metrics --no-rand-seed --syscall 224
