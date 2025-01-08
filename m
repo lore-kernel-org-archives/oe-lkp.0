@@ -1,94 +1,97 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C6CB1A9B48
-	for <oe-lkp@lists.linux.dev>; Wed,  8 Jan 2025 07:04:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0627A1B394F
+	for <oe-lkp@lists.linux.dev>; Wed,  8 Jan 2025 07:56:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.16
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736319866; cv=fail; b=FvMMSS55lwyYXyLROFBJY49+M3EssxfmUk41gKC7555szNmC5jM+COl65XDkxUltfkbfF+XXDhJdHZwHHVpmTr8GzaUe6eqvwFY0mlRWvakc3zzTZsnZ7rHLJLDXT6O04VEEKOFXzxnWB2HBXcumtEY+96NQAXlfrMou0om9t28=
+	t=1736322973; cv=fail; b=OiMoWAfoNVAVXhS475VBZ7901drlAgokoO+bGipFNbN/nUvfUmF1evL/dy6iqI749ME1oK471uW4eA4pgicPhk9/jcN3KRbzuB62HBoRBsy74LCplir+xMmd4NeE/baL8zZAyCuwj0yGdH45NSnqYBTKvpTEirxGnWtp87eea+0=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736319866; c=relaxed/simple;
-	bh=g31TnoWA2OE0HpeuZypk9Z9vtI8KdroE8W64YGCLhq4=;
+	s=arc-20240116; t=1736322973; c=relaxed/simple;
+	bh=DZ4I+jTl1E3xHP+yA9ZDH22kIzm6fmjAzZrLxuF6h3U=;
 	h=Date:From:To:CC:Subject:Message-ID:Content-Type:
-	 Content-Disposition:MIME-Version; b=Fmr1OvIPo1MXFsidpRhNrLtCGWKj9LZmRRaz0FXukRXY9DyRZLkial2OMUeE5kYo2RxA5r1IGqju3XQIrqUtu6fW1eoFBtGbsUy7Akih6RzaQWGAFu+vkUVzNt0z1QjK8FT54Ghe7JkFewTJlFXk9oWqD89ikrgya/IJfIstZ7k=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cgTdzUsi; arc=fail smtp.client-ip=198.175.65.17
+	 Content-Disposition:In-Reply-To:MIME-Version; b=OpbjZizyX4jOQvMw3xzyv84ed9+0MbIPPkANZSkhNi7PUcHCaUcTfpT32RK3sBwsdGNEpoqG2mQlAw/cW/8Q9eUBIeoyCPuTShBsSYLe6FWQUyovZByUijgoF7xHeBu1RuK4rw2IDDPY0HQOJQZf4zm2hb2VW4XoQiNGmizdJpQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eIWVjvhy; arc=fail smtp.client-ip=198.175.65.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cgTdzUsi"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eIWVjvhy"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1736319865; x=1767855865;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=g31TnoWA2OE0HpeuZypk9Z9vtI8KdroE8W64YGCLhq4=;
-  b=cgTdzUsixocbl+xZtVqWGWunVaYfRoEyQpUSZQqgpAgKmI6kUjsUJCAT
-   WfGL6lieiFriS/A/Eaxh3+C7ChwvhHdAhqXN+7X6V43YrZE/TCOEChrMN
-   zv/3aWdZXLuc6cMcJ1dNlG26GevNLI7lApHtcwIP17l3NOwGZCP0ZkHH5
-   aiSIfxL/pwob1/zX8n/N0XNXObQPLPcvwEtcLIEqKgM1TmPsMhxNBonvk
-   2A+vRh2W53tOWSBVkhNCov4MLCeDgTOHrJoPe3oiPHudXHlOa252nsox5
-   T7FfuMZikTZU9lhcIoEv7HRZzDoJFwKoLoYJ0SEVH5IPB0DF/ZWYxQiv7
-   w==;
-X-CSE-ConnectionGUID: S62n6vrRQ8u0g9m2Yh/2WA==
-X-CSE-MsgGUID: jw36o6oLQZWE9+5uu7N94A==
-X-IronPort-AV: E=McAfee;i="6700,10204,11308"; a="36552910"
+  t=1736322972; x=1767858972;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   mime-version;
+  bh=DZ4I+jTl1E3xHP+yA9ZDH22kIzm6fmjAzZrLxuF6h3U=;
+  b=eIWVjvhylDKvrZLbU7rrpx5KQ5EmPUwl1TLFyXKFjzoEtK/ZF3U4/R3c
+   kS0PC1W7mLFsGPCHdRUAbAqjKT7xKNyoi4DR5x0TBPvLlx60hK21tmG8d
+   DWk4kWXlZAaWud184wJCc3K1gsW36U/v1CjHKAm+7h0GCYL1cPSBeJn41
+   hn5SG9yp9exHR2YvSShPYPddm9hDHuEjGMOT+IBx5If5v+u23HiLr8Dw5
+   DtbtWR/7mwMa2s61YjVkLezxQnJYBnTTAPz/LT8071XG+CMA3TA4NEsKD
+   2yCmmDEpFAi05s+mDEJXOdt1xFxlazNqdFjH1StYZHztCxxld1w7qhn6u
+   A==;
+X-CSE-ConnectionGUID: XZZBa1AsSFK8LJ+ksWtJSg==
+X-CSE-MsgGUID: dPktIzAXSqqUAiOdmaDHAw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11308"; a="36697495"
 X-IronPort-AV: E=Sophos;i="6.12,297,1728975600"; 
-   d="scan'208";a="36552910"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2025 23:04:24 -0800
-X-CSE-ConnectionGUID: 3gtnNn+FRlmzjd59wZBvjg==
-X-CSE-MsgGUID: mld1vos3STufW8mjKHyUuA==
+   d="scan'208";a="36697495"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2025 23:56:06 -0800
+X-CSE-ConnectionGUID: WhW6lvqRTByOgHv7Yuf9Bw==
+X-CSE-MsgGUID: NqUrjdAsTAKMfjSep9VbgQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
-   d="scan'208";a="107628686"
+   d="scan'208";a="107046683"
 Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmviesa005.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 07 Jan 2025 23:04:23 -0800
+  by fmviesa003.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 07 Jan 2025 23:55:56 -0800
 Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
  ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.44; Tue, 7 Jan 2025 23:04:22 -0800
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ 15.1.2507.44; Tue, 7 Jan 2025 23:55:56 -0800
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
  orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.44 via Frontend Transport; Tue, 7 Jan 2025 23:04:22 -0800
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.173)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ 15.1.2507.44 via Frontend Transport; Tue, 7 Jan 2025 23:55:56 -0800
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.49) by
+ edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.44; Tue, 7 Jan 2025 23:04:21 -0800
+ 15.1.2507.44; Tue, 7 Jan 2025 23:55:56 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=xG8TBovWTx3e8PqtVDI/WBwnNl3E3wKZI27OLNLp8+s2JwoGWQS51LL9SgH2tjzNIRomlWWa8qlHugjoUq3rxKfd4X/t9mjrOnXx2X/H3bQITlGQSRCtZ5Hdznny4O7batOlGwlIH7bhpn4h9cbLEAYOxZh3MAWQyh30DppRuva45mE988PAdz9cX8aRxxSuSvm8sKdeBruKfE9DQzSOFCVZ6rGALggFgTl0hiPg3fl7CXiNde0q3Xyf1asXYUne/qpK071FAV33FDh5TJkFGZF3Nn40LxGYgBCMA+TsLuaS0j+cJ4tFly1ocFe/IaMdFnoYj0nNfCeXbuI8JX+TIQ==
+ b=PjkS6BfqkegTTpC2075Ml5Aheu3d48aAArNUCfKy6TPBN9bwPIGZexvLTypQ/uO3p7x1OgxmGPhm1iE+AnAfbdMunyhVsgiE5J8ifPT6D1v4LWNilY4jwnWwPI9k4iod0FJPUv7J/GTA1STljMFkbpHrWj2R6mZ6EixuzXWC1l2O14/KGIXO+gwiVYsb0SwP2Y2QMGWS8eUIjWjKm5+Ro/YMahy0TZnwVLV0ke872Lv2Y/A7iErfDHr8QiBQm6wfCEGl6/3XTGShuXHkeoK7XNaw6tP4nyxGdBUAFIlheuelayF6CFWVVvUC5f71b8y+wOQ9ak7h5J+riNzozig20Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=SJvqAE7bHrUE1WRtE3hfmeGNsVNOlr6ScKxBxfO0+a0=;
- b=I+50/jC8La9ovJncZgs5QDsF+JEomT2rkn64hhYpNLUSLYPxSp5yhkWDPQ1Gx+ajx8TN2Gi57sc2P2gF1dePLSGux2reH7gmLuJm8t1kLQeRFABf8cZyQKHON/TEzM7muNtJmYiMQ8Hw0LbCZ00zpRzw9Oj68Il+nNeQXxOPxPuIFWOaLOzbK33Wlkdk//kwkr4+UtAR6LUXdUG/SCl/ozO3O+7uS6yC39gRK75hVOeOINcykMfIhcWHp9diuWMzXmrqTS4NumBU+uYWE+bknZy4vMUpvhz3pZQ7buJZZ+L/kKMUaZ4VVEWyYrtOhxfCnBg0Bd8dkVD2zN56f1D+eQ==
+ bh=JKPA0+lnU7WFVpjXSfsUUMT0zL3jfWwMe09RFxnr37E=;
+ b=lSblLIyvICPgAuPIfusX6rc1ScxHKMvj/JwLexS6LJnAEaHzdwaSwDW0ZD98wpS7KuWNoQPQ/6bTAxEKQKl68NTAYqmoyXAveNqvPp3B+uQ9pETzd8cRw9LJb3jd7yrAbXiGfus1F1ubZhqqiV/EQGNsDCcc0xw61AizsR025HY8PMInxhp9vp02jNlEUuOoNUcum2rEV5XYbfTiS1H7khj1f+yZq5eUBXWaC7VSQARobbfAewcfKipcRmqIPodyTTSqlxIMZ/XNOcxbDNtRSfXg96ljpiadA7ko4URqRPQSOAuzkhcMcdkF+2HC95fTB+7p4EaSKz+a6th9Kc3fFA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com (2603:10b6:408:1b6::9)
- by PH0PR11MB5879.namprd11.prod.outlook.com (2603:10b6:510:142::5) with
+ by PH0PR11MB5832.namprd11.prod.outlook.com (2603:10b6:510:141::7) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8314.17; Wed, 8 Jan
- 2025 07:04:01 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8335.11; Wed, 8 Jan
+ 2025 07:55:53 +0000
 Received: from LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c]) by LV3PR11MB8603.namprd11.prod.outlook.com
  ([fe80::4622:29cf:32b:7e5c%3]) with mapi id 15.20.8335.010; Wed, 8 Jan 2025
- 07:04:01 +0000
-Date: Wed, 8 Jan 2025 15:03:52 +0800
+ 07:55:53 +0000
+Date: Wed, 8 Jan 2025 15:55:43 +0800
 From: kernel test robot <oliver.sang@intel.com>
-To: Nihar Chaithanya <niharchaithanya@gmail.com>
-CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, <linux-kernel@vger.kernel.org>,
-	Andrew Morton <akpm@linux-foundation.org>, Andrey Konovalov
-	<andreyknvl@gmail.com>, Andrey Ryabinin <ryabinin.a.a@gmail.com>, "Dmitry
- Vyukov" <dvyukov@google.com>, Shuah Khan <skhan@linuxfoundation.org>,
-	<kasan-dev@googlegroups.com>, <oliver.sang@intel.com>
-Subject: [linus:master] [kasan]  3738290bfc: kunit.kasan.fail
-Message-ID: <202501081209.b7d8b735-lkp@intel.com>
+To: Miri Korenblit <miriam.rachel.korenblit@intel.com>
+CC: <oe-lkp@lists.linux.dev>, <lkp@intel.com>, Johannes Berg
+	<johannes.berg@intel.com>, Miri Korenblit
+	<miriam.rachel.korenblit@intel.com>, <linux-wireless@vger.kernel.org>,
+	<johannes@sipsolutions.net>, Benjamin Berg <benjamin.berg@intel.com>,
+	<oliver.sang@intel.com>
+Subject: Re: [PATCH 17/19] wifi: mac80211: also verify requirements in
+ EXT_SUPP_RATES
+Message-ID: <202501081559.1c188f65-lkp@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-X-ClientProxiedBy: SG2PR02CA0129.apcprd02.prod.outlook.com
- (2603:1096:4:188::19) To LV3PR11MB8603.namprd11.prod.outlook.com
+In-Reply-To: <20250101070249.f1840f19afa7.I12e3a0e634ce7014f5067256d9a6215fec6bf165@changeid>
+X-ClientProxiedBy: SI2PR01CA0030.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:192::15) To LV3PR11MB8603.namprd11.prod.outlook.com
  (2603:10b6:408:1b6::9)
 Precedence: bulk
 X-Mailing-List: oe-lkp@lists.linux.dev
@@ -97,113 +100,99 @@ List-Subscribe: <mailto:oe-lkp+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:oe-lkp+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|PH0PR11MB5879:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5346d774-6982-4714-fe67-08dd2fb2a175
+X-MS-TrafficTypeDiagnostic: LV3PR11MB8603:EE_|PH0PR11MB5832:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5d74b7c2-fbbb-4f72-5b3f-08dd2fb9e00c
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?8U5uvxZuX/ak7uskAquMrg33ObVL1OORL8Ippd+tXUJEBiYf/pqBYEtNFSGL?=
- =?us-ascii?Q?fBkvv17JyP5EG29yKlJ2RUMjlMps17Lu11TlXIv37Aokt+tO1vfEyWG/yp15?=
- =?us-ascii?Q?DrGn0C1d3yfIdKkifGuyChAkcM3Nv5Ukgjee3QvPvuSueGSau2asA/yskB3U?=
- =?us-ascii?Q?ZyoON9ZmYrwl6FZSo/r7GAm7OxI5FIFV9I6xPx65V68x/1mb3JjjqzfpWnS7?=
- =?us-ascii?Q?sUfD37w9wJYjhCco2ovI7UTg3BPYBOqlRk1V1B3GJf5UwQvBFIeMw2PZjhCI?=
- =?us-ascii?Q?Mo6PQj+U9e6W4m5VOgjL5IMs4SqNEXGjOgmlBkH9x57zsLi4x5ubwT5XNGzH?=
- =?us-ascii?Q?WnF7LXevGJT8tD8vuorm6SWnZcp3mB0Aaun/6FhrqTSUxc1tyQv7aL+A1JGa?=
- =?us-ascii?Q?w0fJDL1BhiBcXPUpfRRmHpeYEOXwhcddv9wjkpJ2ldbNLuMMZLeF94pphgqJ?=
- =?us-ascii?Q?u+5ebVWn4eyJxsb2M/di/7vbust3J/fQg2cWzZ9Fst/GH0cRf6/YOX2cF3xe?=
- =?us-ascii?Q?/TiOTsr6c4tX6UrIXgAOzHD3G+zkjZeKjZMVyo6wX/CnKhC85Y9+Sv1z7p9b?=
- =?us-ascii?Q?MvD8kCqHOCkopxsUdqZxugBDoDTqyw0nqzx0+JhKmXhbXvoWkgRGDaR8eEUw?=
- =?us-ascii?Q?Wx0RKkZy3juC+i1mw1RM804kMx9Fz5B6GCJUmo/4DRx1RYUmeYT4e1FiUiZf?=
- =?us-ascii?Q?hsJcXFxiQiI4ErlnNgQ5/23XbA+3S4NVwDQq6ijlsNkRoqOWgma5NmLhbUj+?=
- =?us-ascii?Q?48zbayROIcwDL5lYm5oGy7Wp6A7PfXr5TR2n8d4EW7yJeblThj0oKNFtuHD4?=
- =?us-ascii?Q?hvb6p9wH7WOgsB5Xmaan5wkp+TLapvfzO6SJj3vWDwmLjDHdqe6pCEcnc3kM?=
- =?us-ascii?Q?E/xY6SV9uqFDS5w2Yl2v00E7keMNnAaKYmtNTBhdZZDPib5eCmY4CAn0tpvt?=
- =?us-ascii?Q?EZTHWLohTGbLPFp1Cj0jVperB74SkEJlkJC9CI6EPcZy32w5prQmYZdWeKPE?=
- =?us-ascii?Q?aHVudVzUfrM089hoK7BQ4PMr6uTXWli3M0gYlL/x+fs66TUYMC+CrwfZ4lw1?=
- =?us-ascii?Q?eS/DuoPLXZ7ikLpn7RVeZLaXrLXdsK3bZ13r5M90DEZCFaXC4pp5pB0iRxQP?=
- =?us-ascii?Q?hrkmM1tQinrri43nUcJwF0nvLYR2KjBByu5l2beahSCHoxxu5Zy4958QNt9H?=
- =?us-ascii?Q?DpQwcd6WTbo5C8f95uuEq+MbodEJnOawoIOlNhhDGheGTNAAO/cWTBd8M0fk?=
- =?us-ascii?Q?+ZYQbq+CCeTWoyLlOvGNyPG3Ibfzox2KQWMPGufW+qmrkgSL2SbcmZK5oZDz?=
- =?us-ascii?Q?HDVpUqM+gTiwjUXSeEBvC+IZY01G7zdsao/1nDyYDeyNwA=3D=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?xLHX3CaeYsfHUbmj7ClgBe8zbm5woHkSX8OlLlNPpuCD5/Wu9yTRB47Dpxqk?=
+ =?us-ascii?Q?TpniBJYRKcKLMc/IkAlEIf2Cy6rr/5LVzI/DVwc5vgB5ddEb7Zb75aPbvdwM?=
+ =?us-ascii?Q?juy5xkus7LohJjS5k0jiB0J/10vEn/BU7pQz3OE2oBvYvmKUPGjh+QlmBhD5?=
+ =?us-ascii?Q?ILmYwwEDVCxXAvk62HSQVp3MZ7hZv3ML8ntj4/OISeO3VMEUx9vMtqklPZdw?=
+ =?us-ascii?Q?MXkO7APOPXT1T633AzUKEyK9v8/+xvEUVjhIDLXbT5waM1P7ilCK8s5IDNh8?=
+ =?us-ascii?Q?utnA3u0fX7DiwJcL4KQvGIad5+nDATp2cRXHb8gCFigyUiArYXCDcj8GoCXQ?=
+ =?us-ascii?Q?y3J+B5w2b5YqF85EBmjMtpG3RS3zhwtRQG/hIbPtqAiyO9QJ9nWr+ebfSd9g?=
+ =?us-ascii?Q?3TxnzFLin3aK/YjhnIEKn0vymt7pmqtHgcI27vZMEah0bwA5AHqiF64eI6ve?=
+ =?us-ascii?Q?Mh0b8PS+s4JCfG6Mr7TL+5mKVv7MDTY/CGDAn4wVsm+aagEz1JPXgzJLCo7e?=
+ =?us-ascii?Q?hKq08nXfz37CGvPouTNHiuThI1BhA8nnAjFFaRZ+AnCtOZSO7d7F5ErWs84F?=
+ =?us-ascii?Q?W4OJhIh0O/4HS5ek+y67oyLCKV5Wc/bhGH+B9NZhzpHNvPQx6JZUG4IquMu+?=
+ =?us-ascii?Q?hdS6KhV+EDsgm92xINQ1LPEL+N4xN78lMYi0BWan0ioW1rcl22w/dgRKLLaR?=
+ =?us-ascii?Q?BTwFKJfvSccBsbWQZMaZ1BfinQ0jimnQ8z/jRkLcTJltH+YzJfE23jV5JP8I?=
+ =?us-ascii?Q?uCGyE/8cZ+xxFHmRo0xb+mn1h4UM2UgtfV242P57dPJXPDC3LFExUcIP0Dn0?=
+ =?us-ascii?Q?+3oY1q94FGzsD6DevzOJD4vjiuzxtACYu6zAfORZ8giCapYKz9A/e+X3kRTr?=
+ =?us-ascii?Q?vmdbihN64/LFGF9QkAV3PyzIsKFpHFMWqiQxgftbzHx3rG1Wxj8jAx1L3POu?=
+ =?us-ascii?Q?y8gMYd22S0rZZBIg8zc+lO6X3M4fcj224dF1DJ4wpXJQ16WCA27g45ZHbUhc?=
+ =?us-ascii?Q?l8O5BbHjR1wxUO3YArOUPjljVE7nOkfH6rY/VlgW6MOd1wFT6MxENZx2N/BK?=
+ =?us-ascii?Q?BNHpo26OLYtGCuzTqDyHSEEGV2tc58bVFZSIM/hHIAvBSelO1SWslXNDrzvn?=
+ =?us-ascii?Q?uSkSDKbOVmFOBfbMoOzQ2HNfpIX/ppNvHxIylPgg7Y53hw6NJSWMDCCNcKfg?=
+ =?us-ascii?Q?1Xf2bqAChehghSTTHEGVHNBYa+634EjpPWvawe9MJw2kgQRyfr4AcXSM3xNj?=
+ =?us-ascii?Q?+0rwRsJSc7Es9YwQyMSG2WAUKedc8311qcAJAOJIiujvA7X1BjRLQIGIl4gs?=
+ =?us-ascii?Q?gGrwXBQ1IChWNsIYzU1IXJP41PzTvQ1iXYoJfDMumOtMFQ=3D=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR11MB8603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?fs8JIT7miI459ZV7JzyJXCXV3LXsZWWckcosexzjXMFPtAgn57vtUpCOfNwQ?=
- =?us-ascii?Q?WSE1RV0LtqDVWmY4aTinhn4QVts7FLchamDqBR6YsNlJ89d5Nq3c2bsJ9Ozj?=
- =?us-ascii?Q?ElmFIqudXtGESzKtg8TA3Ues+GE2id23nmOfVpz/BaqdLwit3NtlhmDQ8bAU?=
- =?us-ascii?Q?DeZCw7i0N8eb1OcZ4VI+hSwJ3BgcP2cXPgS6ZvbeLCpHs6vArrpydsAML33A?=
- =?us-ascii?Q?GqpPcTu32PIeFXK6diFJrDpFxTZmBrO+V6Ad9z0HAuZmrydcrt3C9265ugvi?=
- =?us-ascii?Q?hmHtAya29AgG8f/VyxL+/LnB4TJXkThaD+Au2jqmLKXec5SNh3Bv3q0+7bF9?=
- =?us-ascii?Q?hUemz6RdORsPcK+y3UagywFUTGHOhivVNqdGlfuvEh9/3Tk+CLw3AdcUfq0M?=
- =?us-ascii?Q?3twUTq/6SM2JVolT6rC/reZvC0H8q0U8d1Ix7pgwTTDyTs8p8grGOXA0MZwy?=
- =?us-ascii?Q?PSWH0JFTO/mWSLAUgXrNZXJ2ck35jYvYSEhaGnOqexIwTmFB2vPGLkbbTL3+?=
- =?us-ascii?Q?sAmve1LXSkqfEWBbTP4TcMD04a5xIRL9iTDG5Dd76I0kIhurH/M3aH1quM8D?=
- =?us-ascii?Q?D2B/dTbAmowOJIvueHfyPCx0XhQEw0ZepnEMSWLVM54f33r3YQORkzeDurmQ?=
- =?us-ascii?Q?fnPZHSAqUWgBRTX1tMhq3bT0vPMcDn8SIZ0mCWSkCopdxpZyG+bc/A2JQ5fs?=
- =?us-ascii?Q?YbFQz076n/R3M9X80xZr00GixQiDceRdfoFkN0Mfj96lFZ5b8L1rgXZaPrTW?=
- =?us-ascii?Q?12nbKwWWLdPCstrSo4Je78CQuD3RQpPth9y/mJjeUJqIk1HOES8yAufOAhtH?=
- =?us-ascii?Q?MdAPL7mmFPPM5kdCeONHcIZIMvqYcaSS4pDFX1PAc9wogWEgSh6BzBMINgDX?=
- =?us-ascii?Q?Z+2UKCVLwHaG39eJupfusJvAn4DkL0+I7za3O8xRBcKh4KnSoIIrI9J1+RXS?=
- =?us-ascii?Q?oCqRdVLWJ/xMffyOhbSn2RJEf9NtjHiZBGRQCvAhRipIUeRFn1Pgab3qkCtD?=
- =?us-ascii?Q?fNdcW0jIHU521GleXbOfpiUsc7ozC+Vg6BVNnI9chqYSkrYoryr4cQYKKZbb?=
- =?us-ascii?Q?Nb5Y5MbivhLLEI7srtpk7HuM7VftQsqUkIj5tSlJFbEJm1q6ilXY+J9GyigF?=
- =?us-ascii?Q?6ES0FhMOwI1LPl6ck5cMYRL/4Kfpigve+YJGBRdKNNw/xWs32k1LmTOw/Orx?=
- =?us-ascii?Q?R5IOJZUIChaR8TY26YfD4OAa2N5vRKzR5Ptouyn5XlWSSIlbvkB8tS1/ihz9?=
- =?us-ascii?Q?pcdAjL6paWbJHbD8nJmmpNhjAbNjspeJQs7jF87khB6iN5sKnf/ukQEvtvty?=
- =?us-ascii?Q?4QlgiE7U8sZy05Wt+YGTrbtkPfGrEf6g3z08f9Us2QA3OFJk/oljri+pbaQ8?=
- =?us-ascii?Q?wPjwGEuKnzyGWi0xgndZoRm3bF4mhyR8OrHFC6uxF7+jHoLidXsIQuYfjCrL?=
- =?us-ascii?Q?XNSDuQyKHH/v3eu7Oz61QYxGF+utN0GPPO0qP8RbCuaKpk1XNIPViiJcCknS?=
- =?us-ascii?Q?/ugAtf4GkM2KbHGyLxyevcINETvJhBFJrjhgE/efUrMRxsfTQMPgswyIpR5G?=
- =?us-ascii?Q?5k01DFJoDo903HZinMsl8PM7jG4GWhIhNysYIQYsR2DoXxlJeDEw2x5gI2Ff?=
- =?us-ascii?Q?Ng=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5346d774-6982-4714-fe67-08dd2fb2a175
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?obicLDSgH/tcQSQxjCMzw5ywSxEnVi5tNWmI5NiDSUf6KClt0HOsbki89Ar2?=
+ =?us-ascii?Q?ZdkSBmhBAoya1EoVxqntp4PfC+ti363UJktifwe1fAgwqRIa2e9Xz9LMsuq8?=
+ =?us-ascii?Q?nkRSxAS+L0b2ZyK1v9j8BP3PsIYj7/n+8XYpHgehaeh9A/SDbW2wjK3kaHDl?=
+ =?us-ascii?Q?x1HdfcWpfginkt3DC3m13skYWqgU/l7qUiZv6vlcB6mx4OxRRvxaQKistzYT?=
+ =?us-ascii?Q?N9ue81jb9Xb6q3uvq4MbpfKhh/iBIPjwhATTPg485+JEldWbXA/98jpcEn4e?=
+ =?us-ascii?Q?BhcdvQgik0v+4s+/dvLj97A+jmdrxsojNZ/Oy75c5kn2HYI/Tz/NI9+ZoM/6?=
+ =?us-ascii?Q?ZCrDYw8Nf/0cTwpff1AjmsLqZb3eNcL7UBzrIu4sfGShs8Rgk8D8lHOs6yvJ?=
+ =?us-ascii?Q?PR5RiYBXyEBq87XSG2DX8nDF+DwCI43ZTaJc9euyG3s8TCDcYq0/djgf4NaK?=
+ =?us-ascii?Q?OyI893Zqs4rmZMA0aP/mm54WPEtLQNoEjzbNMJ7ru+py55C4WtvhKFDQu0nb?=
+ =?us-ascii?Q?kTPzCZqFxYkioq+Pae8asYybT5hWzg6GPScQkCsskZDx7QexLagyfZ2tm3BE?=
+ =?us-ascii?Q?Ewgy4z5IZtgqsIe2JrYymNwsl+q9CHMuFzAvIIaTWbhkwq02So2Bwk+YRIrH?=
+ =?us-ascii?Q?mFIhvhV6L//eaD9K7CU9XJAdzqWCsUq0GkFixHJcdv1yUX22sAVttMAGKAyL?=
+ =?us-ascii?Q?Qy+ynYTTa/durcB6xbzrG1vECb2yPem7LCLtUJLmILq0xwKP7Zz83+H+DkrL?=
+ =?us-ascii?Q?B60W9QgSP07d9KxJ3b1tfxVsYecXoxexxZ52Gw51dDegtgu+KXypNkwd5jsn?=
+ =?us-ascii?Q?wwJzjscNBt+0LNCo2X4HzDv5KMqadlqejrhRwq1XSREZnz+O38h2a38Yfza2?=
+ =?us-ascii?Q?vqJhK8GPeB0aZoYpWO4rSRwdgNnKEM1ERLV3RZG7mk+Etg/GHE36iI6tu6Ku?=
+ =?us-ascii?Q?39Rrw5tFNWy3nGOwh/eWmxYz5YiOHa5ej8cxsuN0sovpyr5nUTTChG+4lSJY?=
+ =?us-ascii?Q?slamWP1Ai4YPkmjqqHC7DZEFxtHyJ6TYJTc/lCST1xH/ODWHj+Cwwxj5oofi?=
+ =?us-ascii?Q?kbDC3KnpqEyP+32bpRjxDowBb2V75Yq/i+42uCDyHm44zhswLOXaCWNgW4VE?=
+ =?us-ascii?Q?Rnr/GZQoWA6h2varDVnXCX7ewxyIkWWW1D1sSK8dOMvlFMPfLaX8i45ysJmI?=
+ =?us-ascii?Q?dHQMlj4YibuVgKwAWp1ksRRIKnUxfCLizgwKq2CseaFqqOWT4KOPs2H3RCuo?=
+ =?us-ascii?Q?n2S1F/ugULRSwFYaIJqP2H1HV3yr0OEfeanE63qi19GuwnIiY/HL9LYt4Afd?=
+ =?us-ascii?Q?5XDeVjxLIWWI21ZTavYkqZu5nvdGC+n3euJkeam8w2XszeScfnSrrfMrxyds?=
+ =?us-ascii?Q?e3h3Ujq5IoE0vVcgAuQa3B5fCuQgm1WmpPwRjU2EZAGKUOZsXgebpVKTJcMo?=
+ =?us-ascii?Q?FngnDUsjgYz8nxBPb6dOdEfCAFsbl7sUPjQTz7J6GOyb0Jpmhcw3lcT3Eayc?=
+ =?us-ascii?Q?WzG5NxjgV6KkXtC+3lsqNzVg7KqHRWOhvfUntxgEP5N5xF2+0h/B5GcFWAgI?=
+ =?us-ascii?Q?YDAr5ZyVjP/EfRz9Db1clf9BA85KE4jI4sJK8bNIHC2JQxNOu8Bmd4qRGsUV?=
+ =?us-ascii?Q?RQ=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5d74b7c2-fbbb-4f72-5b3f-08dd2fb9e00c
 X-MS-Exchange-CrossTenant-AuthSource: LV3PR11MB8603.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jan 2025 07:04:01.7744
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jan 2025 07:55:53.1706
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: lDiGfYN3vS81hNBPRH1I7D7I2A7QOqB+UQAOGaASUfnlaNLnczTlZ69sURkLxPLnhtgQFarhW6C5LaTQt6FdHg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5879
+X-MS-Exchange-CrossTenant-UserPrincipalName: w3f8+cD+bDSG0D11IBiyXBWsPQthqon3rYAymFmxDiG4bkHy8R4jfUqybU1AXj5pTIqodDd6L6IyMAgkQM4Vew==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5832
 X-OriginatorOrg: intel.com
 
 
 
 Hello,
 
+kernel test robot noticed "hwsim.owe_assoc_reject.fail" on:
 
-we found the new added test kmalloc_track_caller_oob_right randomly failed
-(10 out of 30 runs) which seems due to below (1)
+commit: 1539283361bfb9c62eb3486ded2c4d38e5858510 ("[PATCH 17/19] wifi: mac80211: also verify requirements in EXT_SUPP_RATES")
+url: https://github.com/intel-lab-lkp/linux/commits/Miri-Korenblit/wifi-mac80211-add-some-support-for-RX-OMI-power-saving/20250101-131018
+base: https://git.kernel.org/cgit/linux/kernel/git/wireless/wireless-next.git main
+patch link: https://lore.kernel.org/all/20250101070249.f1840f19afa7.I12e3a0e634ce7014f5067256d9a6215fec6bf165@changeid/
+patch subject: [PATCH 17/19] wifi: mac80211: also verify requirements in EXT_SUPP_RATES
 
-1857099c18e16a72 3738290bfc99606787f515a4590
----------------- ---------------------------
-       fail:runs  %reproduction    fail:runs
-           |             |             |
-           :30          33%          10:30    kunit.kasan.fail
-           :30          33%          10:30    dmesg.BUG:KFENCE:memory_corruption_in_kmalloc_track_caller_oob_right <-- (1)
-
-below are details.
-
-
-kernel test robot noticed "kunit.kasan.fail" on:
-
-commit: 3738290bfc99606787f515a4590ad38dc4f79ca4 ("kasan: add kunit tests for kmalloc_track_caller, kmalloc_node_track_caller")
-https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-
-[test failed on linus/master      0bc21e701a6ffacfdde7f04f87d664d82e8a13bf]
-[test failed on linux-next/master 8155b4ef3466f0e289e8fcc9e6e62f3f4dceeac2]
-
-in testcase: kunit
-version: 
+in testcase: hwsim
+version: hwsim-x86_64-4ea2c336d-1_20241103
 with following parameters:
 
-	group: group-03
+	test: owe_assoc_reject
 
 
 
-config: x86_64-rhel-9.4-kunit
+config: x86_64-rhel-9.4-func
 compiler: gcc-12
-test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-7700 CPU @ 3.60GHz (Kaby Lake) with 32G memory
+test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz (Haswell) with 8G memory
 
 (please refer to attached dmesg/kmsg for entire log/backtrace)
 
@@ -213,136 +202,44 @@ test machine: 8 threads 1 sockets Intel(R) Core(TM) i7-7700 CPU @ 3.60GHz (Kaby 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <oliver.sang@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202501081209.b7d8b735-lkp@intel.com
+| Closes: https://lore.kernel.org/oe-lkp/202501081559.1c188f65-lkp@intel.com
 
-
-
-[  117.724741]     ok 3 kmalloc_node_oob_right
-[  117.724849] ==================================================================
-[  117.737591] BUG: KASAN: slab-out-of-bounds in kmalloc_track_caller_oob_right+0x4ca/0x530 [kasan_test]
-[  117.747467] Write of size 1 at addr ffff888165906078 by task kunit_try_catch/3613
-
-[  117.757782] CPU: 7 UID: 0 PID: 3613 Comm: kunit_try_catch Tainted: G    B   W        N 6.12.0-rc6-00221-g3738290bfc99 #1
-[  117.769291] Tainted: [B]=BAD_PAGE, [W]=WARN, [N]=TEST
-[  117.775007] Hardware name: Dell Inc. OptiPlex 7050/062KRH, BIOS 1.2.0 12/22/2016
-[  117.783056] Call Trace:
-[  117.786185]  <TASK>
-[  117.788966]  dump_stack_lvl+0x4f/0x70
-[  117.793307]  print_address_description.constprop.0+0x2c/0x3a0
-[  117.799721]  ? kmalloc_track_caller_oob_right+0x4ca/0x530 [kasan_test]
-[  117.806918]  print_report+0xb9/0x280
-[  117.811183]  ? kasan_addr_to_slab+0x9/0x90
-[  117.815961]  ? kmalloc_track_caller_oob_right+0x4ca/0x530 [kasan_test]
-[  117.823154]  kasan_report+0xcb/0x100
-[  117.827408]  ? kmalloc_track_caller_oob_right+0x4ca/0x530 [kasan_test]
-[  117.834602]  kmalloc_track_caller_oob_right+0x4ca/0x530 [kasan_test]
-[  117.841626]  ? __pfx_kmalloc_track_caller_oob_right+0x10/0x10 [kasan_test]
-[  117.849166]  ? __schedule+0x716/0x15e0
-[  117.853589]  ? ktime_get_ts64+0x7f/0x240
-[  117.858186]  kunit_try_run_case+0x173/0x440
-[  117.863043]  ? try_to_wake_up+0x913/0x1580
-[  117.867813]  ? __pfx_kunit_try_run_case+0x10/0x10
-[  117.873187]  ? __pfx__raw_spin_lock_irqsave+0x10/0x10
-[  117.878915]  ? set_cpus_allowed_ptr+0x81/0xb0
-[  117.883956]  ? __pfx_set_cpus_allowed_ptr+0x10/0x10
-[  117.889502]  ? __pfx_kunit_try_run_case+0x10/0x10
-[  117.894876]  ? __pfx_kunit_generic_run_threadfn_adapter+0x10/0x10
-[  117.901633]  kunit_generic_run_threadfn_adapter+0x79/0xe0
-[  117.907698]  kthread+0x2d4/0x3c0
-[  117.911604]  ? __pfx_kthread+0x10/0x10
-[  117.916032]  ret_from_fork+0x2d/0x70
-[  117.920291]  ? __pfx_kthread+0x10/0x10
-[  117.924718]  ret_from_fork_asm+0x1a/0x30
-[  117.929324]  </TASK>
-
-[  117.934373] Allocated by task 3613:
-[  117.938544]  kasan_save_stack+0x1c/0x40
-[  117.943062]  kasan_save_track+0x10/0x30
-[  117.947574]  __kasan_kmalloc+0xa6/0xb0
-[  117.951998]  __kmalloc_node_track_caller_noprof+0x1bd/0x470
-[  117.958239]  kmalloc_track_caller_oob_right+0x8c/0x530 [kasan_test]
-[  117.965176]  kunit_try_run_case+0x173/0x440
-[  117.970031]  kunit_generic_run_threadfn_adapter+0x79/0xe0
-[  117.976097]  kthread+0x2d4/0x3c0
-[  117.980000]  ret_from_fork+0x2d/0x70
-[  117.984251]  ret_from_fork_asm+0x1a/0x30
-
-[  117.991022] The buggy address belongs to the object at ffff888165906000
-                which belongs to the cache kmalloc-128 of size 128
-[  118.004873] The buggy address is located 0 bytes to the right of
-                allocated 120-byte region [ffff888165906000, ffff888165906078)
-
-[  118.021331] The buggy address belongs to the physical page:
-[  118.027566] page: refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x165906
-[  118.036221] head: order:1 mapcount:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
-[  118.044530] ksm flags: 0x17ffffc0000040(head|node=0|zone=2|lastcpupid=0x1fffff)
-[  118.052494] page_type: f5(slab)
-[  118.056314] raw: 0017ffffc0000040 ffff888100042a00 ffffea00202bd080 0000000000000003
-[  118.064708] raw: 0000000000000000 0000000080200020 00000001f5000000 0000000000000000
-[  118.073102] head: 0017ffffc0000040 ffff888100042a00 ffffea00202bd080 0000000000000003
-[  118.081581] head: 0000000000000000 0000000080200020 00000001f5000000 0000000000000000
-[  118.090061] head: 0017ffffc0000001 ffffea0005964181 ffffffffffffffff 0000000000000000
-[  118.098541] head: 0000000000000002 0000000000000000 00000000ffffffff 0000000000000000
-[  118.107021] page dumped because: kasan: bad access detected
-
-[  118.115431] Memory state around the buggy address:
-[  118.120904]  ffff888165905f00: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[  118.128782]  ffff888165905f80: fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc fc
-[  118.136658] >ffff888165906000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 fc
-[  118.144535]                                                                 ^
-[  118.152323]  ffff888165906080: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-[  118.160211]  ffff888165906100: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 fc fc
-[  118.168100] ==================================================================
-[  118.176059]     # kmalloc_track_caller_oob_right: EXPECTATION FAILED at mm/kasan/kasan_test_c.c:243
-                   KASAN failure expected in "ptr[size] = 'y'", but none occurred
-[  118.176103] ==================================================================
-[  118.201544] BUG: KFENCE: memory corruption in kmalloc_track_caller_oob_right+0x27b/0x530 [kasan_test]
-
-[  118.213582] Corrupted memory at 0x00000000e59a4b3f [ ! . . . . . . . . . . . . . . . ] (in kfence-#20):
-[  118.223645]  kmalloc_track_caller_oob_right+0x27b/0x530 [kasan_test]
-[  118.230667]  kunit_try_run_case+0x173/0x440
-[  118.235525]  kunit_generic_run_threadfn_adapter+0x79/0xe0
-[  118.241590]  kthread+0x2d4/0x3c0
-[  118.245497]  ret_from_fork+0x2d/0x70
-[  118.249748]  ret_from_fork_asm+0x1a/0x30
-
-[  118.256520] kfence-#20: 0x0000000036299d7e-0x000000000c1813d3, size=120, cache=kmalloc-128
-
-[  118.267597] allocated by task 3613 on cpu 7 at 118.176015s (0.091581s ago):
-[  118.275220]  kmalloc_track_caller_oob_right+0x190/0x530 [kasan_test]
-[  118.282241]  kunit_try_run_case+0x173/0x440
-[  118.287100]  kunit_generic_run_threadfn_adapter+0x79/0xe0
-[  118.293166]  kthread+0x2d4/0x3c0
-[  118.297071]  ret_from_fork+0x2d/0x70
-[  118.301322]  ret_from_fork_asm+0x1a/0x30
-
-[  118.308107] freed by task 3613 on cpu 7 at 118.176094s (0.132012s ago):
-[  118.315381]  kmalloc_track_caller_oob_right+0x27b/0x530 [kasan_test]
-[  118.322403]  kunit_try_run_case+0x173/0x440
-[  118.327260]  kunit_generic_run_threadfn_adapter+0x79/0xe0
-[  118.333327]  kthread+0x2d4/0x3c0
-[  118.337233]  ret_from_fork+0x2d/0x70
-[  118.341482]  ret_from_fork_asm+0x1a/0x30
-
-[  118.348258] CPU: 7 UID: 0 PID: 3613 Comm: kunit_try_catch Tainted: G    B   W        N 6.12.0-rc6-00221-g3738290bfc99 #1
-[  118.359770] Tainted: [B]=BAD_PAGE, [W]=WARN, [N]=TEST
-[  118.365490] Hardware name: Dell Inc. OptiPlex 7050/062KRH, BIOS 1.2.0 12/22/2016
-[  118.373542] ==================================================================
-[  118.381677]     not ok 4 kmalloc_track_caller_oob_right
-[  118.381777] ==================================================================
-
-...
-
-[  183.260210]     ok 75 copy_user_test_oob
-[  183.279934] # kasan: pass:50 fail:1 skip:24 total:75
-[  183.284696] # Totals: pass:50 fail:1 skip:24 total:75
-[  183.290383] not ok 1 kasan
-
+group: group-00, test: owe_assoc_reject
+2025-01-04 14:31:54 export USER=root
+2025-01-04 14:31:54 ./build.sh
+Building TNC testing tools
+Building wlantest
+Building hs20-osu-client
+Building hostapd
+Building wpa_supplicant
+2025-01-04 14:32:44 ./start.sh
+2025-01-04 14:32:45 ./run-tests.py owe_assoc_reject
+DEV: wlan0: 02:00:00:00:00:00
+DEV: wlan1: 02:00:00:00:01:00
+DEV: wlan2: 02:00:00:00:02:00
+APDEV: wlan3
+APDEV: wlan4
+START owe_assoc_reject 1/1
+Test: Opportunistic Wireless Encryption association rejection handling
+Starting AP wlan3
+Connect STA wlan0 to AP
+Association result not reported
+Traceback (most recent call last):
+  File "/lkp/benchmarks/hwsim/tests/hwsim/./run-tests.py", line 591, in main
+    t(dev, apdev)
+  File "/lkp/benchmarks/hwsim/tests/hwsim/test_owe.py", line 766, in test_owe_assoc_reject
+    raise Exception("Association result not reported")
+Exception: Association result not reported
+FAIL owe_assoc_reject 13.055277 2025-01-04 14:32:59.681039
+passed 0 test case(s)
+skipped 0 test case(s)
+failed tests: owe_assoc_reject
+2025-01-04 14:32:59 ./stop.sh
 
 
 
 The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20250108/202501081209.b7d8b735-lkp@intel.com
+https://download.01.org/0day-ci/archive/20250108/202501081559.1c188f65-lkp@intel.com
 
 
 
